@@ -172,6 +172,9 @@ export const sideNavMachine = createMachine({
         const e = event.current()
         if (e.type !== 'POPOUT.OPEN')
           return
+        // 换枝时旧坐标当场作废：留着它新面板会在旧分支的位置画一帧再跳走
+        if (context.get('popoutValue') !== e.value)
+          context.set('popoutPosition', null)
         context.set('popoutValue', e.value)
         context.set('popoutIntent', e.focus ?? 'none')
       },

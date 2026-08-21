@@ -148,6 +148,11 @@
     pointer-events: auto;
   }
 
+  /* 还没落位就先藏着：visibility 而非 display，display:none 会让引擎量不到面板尺寸 */
+  [data-scope='side-nav'][data-part='positioner'][data-hidden] {
+    visibility: hidden;
+  }
+
   /* 折叠态的弹出面板：贴着触发按钮旁侧的浮层卡片。
      面板自己不吃子层缩进（padding 整圈盖掉），面板内的嵌套子层照常缩进 */
   [data-scope='side-nav'][data-part='branch-content'][data-popout] {

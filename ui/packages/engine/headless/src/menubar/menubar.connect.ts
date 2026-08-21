@@ -45,6 +45,8 @@ export function connectMenubar<T extends PropTypes>(
   const value = context.get('value') ?? null
   const open = value != null
   const position = context.get('position')
+  const placements = context.get('placements')
+  const switching = context.get('switching')
   const placement = position?.placement ?? prop('placement') ?? MENUBAR_DEFAULT_PLACEMENT
   const focusedValue = context.get('focusedValue') ?? null
   const focusedItem = context.get('focusedItem') ?? null
@@ -294,6 +296,9 @@ export function connectMenubar<T extends PropTypes>(
 
     getPositionerProps: (item) => {
       const isOpen = item.value === value
+      // 坐标取本菜单名下的那份，不取共享份：换菜单时共享份立刻归新菜单所有，
+      // 正在收起的那张若从共享份取会当场归零，退场动画就在视口左上角播
+      const placed = placements[item.value]
       return normalize.element({
         ...parts.positioner.attrs,
         [ITEM_VALUE_ATTR]: item.value,
@@ -302,16 +307,15 @@ export function connectMenubar<T extends PropTypes>(
         'data-size': prop('size'),
         'data-state': stateAttr(isOpen),
         'data-placement': isOpen ? placement : undefined,
-        // 锚点滚出可视区时由引擎置位
-        // 展开那一帧引擎还没量完，坐标是兜底的 0——不藏的话菜单会先在视口左上角闪一下
-        'data-hidden': dataAttr(overlayUnplaced(isOpen, position)),
-        // 坐标与可用高度只发给展开的那一张
+        // 展开那一帧引擎还没量完（展开前本菜单的旧账已清），藏到拿到新坐标为止；
+        // 锚点滚出可视区时引擎置 hidden，同样藏
+        'data-hidden': dataAttr(overlayUnplaced(isOpen, placed)),
         'style': {
           position: 'fixed',
-          left: `${(isOpen ? position?.x : undefined) ?? 0}px`,
-          top: `${(isOpen ? position?.y : undefined) ?? 0}px`,
+          left: `${placed?.x ?? 0}px`,
+          top: `${placed?.y ?? 0}px`,
           // content 继承这个高度上限，超出的条目在菜单内部滚
-          ...availableHeightVar(isOpen ? position?.availableHeight : undefined),
+          ...availableHeightVar(isOpen ? placed?.availableHeight : undefined),
         },
       })
     },
@@ -323,6 +327,9 @@ export function connectMenubar<T extends PropTypes>(
         ...parts.content.attrs,
         [ITEM_VALUE_ATTR]: item.value,
         'id': contentId(item.value),
+        // 换张进行中两侧都带上：新开的不播进场、收起的不播退场，瞬时换张。
+        // 首次展开与末次收起不带，动画照常
+        'data-instant': dataAttr(switching),
         'role': 'menu',
         'aria-labelledby': triggerId(item.value),
         // Tab 位归锚点条目，展开却无锚点时由容器兜底

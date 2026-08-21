@@ -177,6 +177,13 @@
     animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
+  /* 在一排入口间换张时两侧都瞬时：交叉淡变读起来就是闪烁，且退场关键帧从不透明度 1
+     起跳，打断未播完的进场还会亮一下。原生菜单栏的成规——首开有进场、末收有退场、
+     换张不播。没有动画时退场闸门当场落定，收起即藏 */
+  [data-scope='menubar'][data-part='content'][data-instant] {
+    animation: none;
+  }
+
   [data-scope='menubar'][data-part='group'] {
     display: flex;
     flex-direction: column;

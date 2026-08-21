@@ -21,6 +21,15 @@ export const MENUBAR_DEFAULT_PLACEMENT: Placement = 'bottom-start'
  * 菜单栏：一排 trigger，同时只展开一张浮层菜单。
  * 展开项存在 context.value，状态只表示有无菜单展开；value 变化后由 watch 派发 SYNC.* 转移状态。
  */
+/** 展开一张菜单前清掉它名下的旧坐标：那是上一次展开留下的，页面滚过就不作数了。 */
+function clearPlacement(context: { get: (k: 'placements') => Record<string, PositionResult>, set: (k: 'placements', v: Record<string, PositionResult>) => void }, value: string): void {
+  const placements = context.get('placements')
+  if (!(value in placements))
+    return
+  const { [value]: _dropped, ...rest } = placements
+  context.set('placements', rest)
+}
+
 export const menubarMachine = createMachine({
   name: 'menubar',
   context: ({ prop, cell }) => ({
@@ -31,6 +40,10 @@ export const menubarMachine = createMachine({
     })),
     // 位置结果由 trackPosition 回填
     position: cell<PositionResult | null>(() => ({ defaultValue: null })),
+    // 逐菜单的最后一次定位：收起中的那张靠它留在原地播完退场
+    placements: cell<Record<string, PositionResult>>(() => ({ defaultValue: {} })),
+    // 换张进行中：两侧面板都不播进出场
+    switching: cell<boolean>(() => ({ defaultValue: false })),
     // 两个焦点锚点：focusedValue 服务 trigger 的 roving tabindex，focusedItem 服务菜单内条目导航
     focusedValue: cell<string | null>(() => ({ defaultValue: null })),
     focusedItem: cell<string | null>(() => ({ defaultValue: null })),
@@ -153,9 +166,13 @@ export const menubarMachine = createMachine({
         // 点击与 Enter 用 none：焦点留在 trigger 上，不预先高亮条目
         context.set('focusIntent', e.type === 'TRIGGER.OPEN' ? (e.focus ?? 'first') : 'none')
         context.set('focusedValue', e.value)
+        // 之前已有展开的才算换张；首次展开照常播进场
+        context.set('switching', context.get('value') != null && context.get('value') !== e.value)
         context.set('value', e.value)
-        // 换了一张菜单，上一张的坐标当场作废：留着它新菜单会先按旧位置画一帧再跳走
+        // 共享份交给新菜单，同时清掉它自己上一次的旧账（可能已过时）——
+        // 新菜单藏到拿到新坐标为止；收起中的那张有自己名下的那份，不受影响
         context.set('position', null)
+        clearPlacement(context, e.value)
         // 显式激活的展开不算自动
         context.set('autoValue', null)
       },
@@ -165,9 +182,10 @@ export const menubarMachine = createMachine({
         if (e.type !== 'TRIGGER.POINTER' && e.type !== 'TRIGGER.FOCUS')
           return
         context.set('focusIntent', 'none')
+        context.set('switching', context.get('value') != null && context.get('value') !== e.value)
         context.set('value', e.value)
-        // 同上：掠过换张时坐标一并作废，否则指针一路扫过去每张都先闪一下旧位置
         context.set('position', null)
+        clearPlacement(context, e.value)
         // 记下自动弹出的项，紧跟的 click 会被吸收
         context.set('autoValue', e.value)
       },
@@ -177,11 +195,17 @@ export const menubarMachine = createMachine({
         if (e.type !== 'VALUE.SET')
           return
         context.set('focusIntent', 'none')
+        context.set('switching', e.value != null && context.get('value') != null && context.get('value') !== e.value)
         context.set('value', e.value)
         context.set('position', null)
+        // 程序化传 null 是全收起，没有新菜单要清账
+        if (e.value != null)
+          clearPlacement(context, e.value)
         context.set('autoValue', null)
       },
       clearValue: ({ context }) => {
+        // 末次收起照常播退场
+        context.set('switching', false)
         context.set('value', null)
         context.set('autoValue', null)
       },
@@ -285,7 +309,13 @@ export const menubarMachine = createMachine({
               // 落定那一侧的可用空间，connect 转成内联自定义属性给皮肤限高
               size: true,
             },
-            result => context.set('position', result),
+            (result) => {
+              context.set('position', result)
+              // 记到这张菜单名下：收起中的那张靠自己的这份留在原地播完退场
+              const owner = context.get('value')
+              if (owner != null)
+                context.set('placements', { ...context.get('placements'), [owner]: result })
+            },
           )
         }
 
