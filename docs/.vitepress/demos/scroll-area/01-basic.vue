@@ -5,6 +5,7 @@ import {
   XhScrollAreaRoot,
   XhScrollAreaScrollbar,
   XhScrollAreaThumb,
+  XhScrollAreaTrack,
   XhScrollAreaViewport,
 } from "@xihan-ui/vue";
 
@@ -21,7 +22,9 @@ const lines = Array.from({ length: 30 }, (_, i) => `第 ${i + 1} 行内容`);
       </XhScrollAreaContent>
     </XhScrollAreaViewport>
     <XhScrollAreaScrollbar orientation="vertical">
-      <XhScrollAreaThumb />
+      <XhScrollAreaTrack>
+        <XhScrollAreaThumb />
+      </XhScrollAreaTrack>
     </XhScrollAreaScrollbar>
   </XhScrollAreaRoot>
 </template>

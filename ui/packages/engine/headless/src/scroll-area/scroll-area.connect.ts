@@ -1,90 +1,85 @@
 import type { NormalizeProps, Orientation, PropTypes } from '@xihan-ui/kernel'
-import type { Service } from '@xihan-ui/machine'
-import type { ScrollAreaApi, ScrollAreaAxisState, ScrollAreaSchema } from './scroll-area.types'
+import type { ScrollbarApi, ScrollbarSchema } from '../scrollbar/scrollbar.types'
+import type { ScrollAreaApi, ScrollAreaAxisState, ScrollAreaProps, ScrollAreaServices } from './scroll-area.types'
 import { dataAttr } from '@xihan-ui/kernel'
+import { connectScrollbar } from '../scrollbar/scrollbar.connect'
+import { SCROLLBAR_DEFAULT_TYPE } from '../scrollbar/scrollbar.machine'
 import { scrollAreaAnatomy } from './scroll-area.anatomy'
-import { scrollbarGeometry } from '../shared/scroll-geometry'
-import { SCROLL_AREA_DEFAULT_TYPE } from './scroll-area.machine'
 
 const parts = scrollAreaAnatomy.build()
 
-/** 比例转 CSS 长度，留两位小数。 */
-function pct(ratio: number): string {
-  return `${Math.round(ratio * 10000) / 100}%`
+/** 哪几条轴归这块滚动区管。 */
+function axisEnabled(props: Pick<ScrollAreaProps, 'orientation'>, axis: Orientation): boolean {
+  const orientation = props.orientation ?? 'both'
+  return orientation === 'both' || orientation === axis
+}
+
+/**
+ * 某条轴那台 scrollbar 机器的 props：滚动区的 type / hideDelay / size / dir / forceVisible
+ * 原样交下去；被 orientation 关掉的那条轴按禁用跑——不接指针、恒不显形。
+ * 交叉口的让位（gutter）不在这里给：它取决于另一条轴此刻显不显形，由 connect 按帧算。
+ */
+export function scrollAreaScrollbarProps(props: ScrollAreaProps, axis: Orientation): ScrollbarSchema['props'] {
+  return {
+    orientation: axis,
+    type: props.type,
+    hideDelay: props.hideDelay,
+    size: props.size,
+    dir: props.dir,
+    forceVisible: props.forceVisible,
+    disabled: !axisEnabled(props, axis),
+  }
 }
 
 export function connectScrollArea<T extends PropTypes>(
-  service: Service<ScrollAreaSchema>,
+  services: ScrollAreaServices,
+  props: ScrollAreaProps,
   normalize: NormalizeProps<T>,
 ): ScrollAreaApi<T> {
-  const { state, prop, send, context } = service
+  const type = props.type ?? SCROLLBAR_DEFAULT_TYPE
+  const orientation = props.orientation ?? 'both'
+  const dir = props.dir
 
-  const type = prop('type') ?? SCROLL_AREA_DEFAULT_TYPE
-  const orientation = prop('orientation') ?? 'both'
-  const dir = prop('dir')
-  const stateName = state.get()
-  const drag = context.get('drag')
-  const draggingAxis = drag?.axis ?? null
+  // 两条轴各是一台完整的 scrollbar：显隐、拖动、几何全从它们读，这里不再量一遍
+  const bars: Record<Orientation, ScrollbarApi<T>> = {
+    vertical: connectScrollbar(services.vertical, normalize),
+    horizontal: connectScrollbar(services.horizontal, normalize),
+  }
+  // 一条轴在场 = orientation 没关掉它，且作者真写了那条滚动条：没写的轴不占道、不让位、不算显形
+  const enabled = (axis: Orientation): boolean => axisEnabled(props, axis) && services[axis].context.get('rootMounted')
 
-  const axisEnabled = (axis: Orientation): boolean => orientation === 'both' || orientation === axis
-
-  /**
-   * 一条轴此刻的完整状态，尺寸全从 context 读。
-   * connect 在 Vue 的 render 期求值，此时 DOM 尚不存在，不得读 DOM。
-   * auto / always 不看状态机，运行期改 type 立刻生效。
-   */
   const axisState = (axis: Orientation): ScrollAreaAxisState => {
-    const geometry = scrollbarGeometry(context.get(axis))
-    const shown = type === 'always'
-      ? true
-      : type === 'auto'
-        ? geometry.overflow
-        : geometry.overflow && stateName !== 'hidden'
+    const bar = bars[axis]
     return {
-      overflow: geometry.overflow,
-      visible: axisEnabled(axis) && shown,
-      size: geometry.size,
-      offset: geometry.offset,
+      overflow: bar.overflow,
+      visible: enabled(axis) && bar.visible,
+      size: bar.thumbSize,
+      offset: bar.thumbOffset,
     }
   }
-
   const vertical = axisState('vertical')
   const horizontal = axisState('horizontal')
+  const draggingAxis: Orientation | null = bars.vertical.dragging ? 'vertical' : bars.horizontal.dragging ? 'horizontal' : null
   const cornerVisible = vertical.visible && horizontal.visible
 
   /**
    * 这条轴要不要在布局里占一条道：只有常驻的滚动条才占，浮在内容上的不占。
    * always 恒占；auto 溢出才占；hover 与 scroll 是临时露面，一律不占。
    * 判据取 overflow 而非 visible——visible 随指针进出翻转，占道与否不跟着翻。
-   * 只喂给皮肤的 data-gutter，不进 ScrollAreaAxisState、不进公开 api。
+   * 只喂给视口上的 data-lane-*，不进 ScrollAreaAxisState、不进公开 api。
    */
   const persistent = type === 'always' || type === 'auto'
-  const reserved: Record<Orientation, boolean> = {
-    vertical: persistent && axisEnabled('vertical') && (type === 'always' || vertical.overflow),
-    horizontal: persistent && axisEnabled('horizontal') && (type === 'always' || horizontal.overflow),
-  }
-
-  const stateOf = (axis: Orientation): ScrollAreaAxisState => (axis === 'vertical' ? vertical : horizontal)
+  /** 这条轴的滚动条常驻在场：在场、没交给原生滚动，且 always 恒在或确实溢出。 */
+  const standing = (axis: Orientation): boolean =>
+    enabled(axis) && !bars[axis].native && (type === 'always' || bars[axis].overflow)
+  const lane = (axis: Orientation): boolean => persistent && standing(axis)
 
   /**
-   * 滑块在主轴上的起点与长度。两条轴的键每帧都写全（用不上的写空串清掉）：
-   * WC 侧 Object.assign 到 style 上不会撤掉上一帧的旧键，换轴时两轴会同时被钉死。
-   * 横轴用 inset-inline-start，与机器给出的距逻辑起始缘滚动量同向。
+   * 两条都在场且都会露面时，各自在末端让出交叉口那一格；只有一条时不让，免得滑块行程平白短一截。
+   * 判据同样取溢出而非 visible：hover / scroll 档两条一起淡出时，长度不能在半透明里跳一下。
    */
-  const thumbStyle = (axis: Orientation, axisView: ScrollAreaAxisState): Record<string, string> =>
-    axis === 'vertical'
-      ? {
-          insetInlineStart: '',
-          inlineSize: '',
-          insetBlockStart: pct(axisView.offset),
-          blockSize: pct(axisView.size),
-        }
-      : {
-          insetBlockStart: '',
-          blockSize: '',
-          insetInlineStart: pct(axisView.offset),
-          inlineSize: pct(axisView.size),
-        }
+  const both = standing('vertical') && standing('horizontal')
+  const gutter = (axis: Orientation): boolean => enabled(axis) && both
 
   return {
     type,
@@ -101,9 +96,8 @@ export function connectScrollArea<T extends PropTypes>(
       'data-orientation': orientation,
       'data-type': type,
       'data-dragging': dataAttr(draggingAxis != null),
-      // 这两个事件不冒泡，只在指针进出组件边界时各来一次
-      'onPointerEnter': () => send({ type: 'POINTER.ENTER' }),
-      'onPointerLeave': () => send({ type: 'POINTER.LEAVE' }),
+      // 缺省档不写属性：皮肤的基础规则就是缺省档
+      'data-size': props.size,
     }),
 
     // 滚动本身不接管：不监听按键、不拦滚轮，按键与滚轮全部走浏览器原生通路。
@@ -112,6 +106,11 @@ export function connectScrollArea<T extends PropTypes>(
       ...parts.viewport.attrs,
       'tabindex': 0,
       'data-orientation': orientation,
+      // 皮肤据此把视口在该轴上缩掉一条道的宽度，末端内容不再被压在滚动条底下
+      'data-lane-vertical': dataAttr(lane('vertical')),
+      'data-lane-horizontal': dataAttr(lane('horizontal')),
+      // 触屏上自绘滚动条交给了原生，皮肤据此把原生滚动条放回来
+      'data-native': dataAttr(bars.vertical.native),
     }),
 
     getContentProps: () => normalize.element({
@@ -119,66 +118,35 @@ export function connectScrollArea<T extends PropTypes>(
       'data-orientation': orientation,
     }),
 
-    getScrollbarProps: (bar) => {
-      const axis = bar.orientation
-      const axisView = stateOf(axis)
+    // 挂载点同时是那条 scrollbar 的根：根上的状态照 scrollbar 那份抄一遍，
+    // 皮肤两边写法一致；指针进出由机器的效应挂在节点上，不经 props
+    getScrollbarProps: ({ orientation: axis }) => {
+      const bar = bars[axis]
+      const shown = enabled(axis) && bar.visible
       return normalize.element({
         ...parts.scrollbar.attrs,
-        // 自绘滚动条只是视觉替身，键盘与读屏走原生滚动，不再报 role=scrollbar
+        // 自绘滚动条只是视觉替身，键盘与读屏走原生滚动，不报 role=scrollbar
         'aria-hidden': 'true',
         'data-orientation': axis,
-        'data-state': axisView.visible ? 'visible' : 'hidden',
-        // 皮肤据此把视口在该轴上缩掉一条道的宽度
-        'data-gutter': dataAttr(reserved[axis]),
-        'data-dragging': dataAttr(draggingAxis === axis),
-        // 收起时留在 DOM 里只隐藏，不卸载作者节点
-        'hidden': !axisView.visible || undefined,
-        'onPointerDown': (event: PointerEvent) => {
-          // 只认主键：右键要弹上下文菜单，中键是自动滚动
-          if (event.button !== 0)
-            return
-          // 落在滑块上的那一下由滑块自己拦住，走不到这里；这里收的是轨道空白处
-          event.preventDefault()
-          send({
-            type: 'TRACK.CLICK',
-            axis,
-            point: { clientX: event.clientX, clientY: event.clientY },
-          })
-        },
+        'data-type': type,
+        'data-state': shown ? 'visible' : 'hidden',
+        'data-hover': dataAttr(bar.hover),
+        'data-scrolling': dataAttr(bar.scrolling),
+        'data-dragging': dataAttr(bar.dragging),
+        'data-native': dataAttr(bar.native),
+        'data-gutter': dataAttr(gutter(axis)),
+        'data-size': props.size,
       })
     },
 
-    getThumbProps: (bar) => {
-      const axis = bar.orientation
-      const axisView = stateOf(axis)
-      return normalize.element({
-        ...parts.thumb.attrs,
-        'data-orientation': axis,
-        'data-state': axisView.visible ? 'visible' : 'hidden',
-        'data-dragging': dataAttr(draggingAxis === axis),
-        'style': thumbStyle(axis, axisView),
-        'onPointerDown': (event: PointerEvent) => {
-          if (event.button !== 0)
-            return
-          // 拦住轨道那一层的跳转：同一下按压不该既抓住滑块、又把视口跳到别处
-          event.stopPropagation()
-          // 挡掉文本选中与默认聚焦
-          event.preventDefault()
-          send({
-            type: 'DRAG.START',
-            axis,
-            point: { clientX: event.clientX, clientY: event.clientY },
-          })
-        },
-      })
-    },
+    getTrackProps: ({ orientation: axis }) => bars[axis].getTrackProps(),
+    getThumbProps: ({ orientation: axis }) => bars[axis].getThumbProps(),
 
+    // 补丁住在竖条的挂载点里，随它一起淡入淡出；只有一条滚动条时右下角没有缺口要补，留着会平白盖住一块内容
     getCornerProps: () => normalize.element({
-      ...parts.corner.attrs,
-      'aria-hidden': 'true',
+      ...bars.vertical.getCornerProps() as Record<string, unknown>,
       'data-state': cornerVisible ? 'visible' : 'hidden',
-      // 只有一条滚动条时右下角没有缺口要补，留着会平白盖住一块内容
-      'hidden': !cornerVisible || undefined,
+      'hidden': !both || undefined,
     }),
   }
 }

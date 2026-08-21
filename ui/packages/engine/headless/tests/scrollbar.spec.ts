@@ -514,3 +514,37 @@ describe('触屏与交叉口', () => {
     expect((r.api().getThumbProps() as Dict)['aria-controls']).toBe('elsewhere')
   })
 })
+
+describe('容器上的标记', () => {
+  it('挂上打 data-xh-scrollbar，拆走撤掉；交给原生滚动时不打', async () => {
+    const r = rig({ type: 'always' })
+    await settle()
+    expect(r.scrollable.getAttribute('data-xh-scrollbar')).toBe('1')
+
+    const original = window.matchMedia
+    window.matchMedia = ((query: string) => ({
+      matches: query === '(pointer: coarse)',
+      media: query,
+      addEventListener: () => {},
+      removeEventListener: () => {},
+    })) as unknown as typeof window.matchMedia
+    try {
+      const touch = rig({ type: 'always' })
+      await settle()
+      expect(touch.scrollable.getAttribute('data-xh-scrollbar')).toBeNull()
+      touch.setProps({ forceVisible: true })
+      await settle()
+      expect(touch.scrollable.getAttribute('data-xh-scrollbar')).toBe('1')
+      touch.stop()
+      rigs.pop()
+    }
+    finally {
+      window.matchMedia = original
+    }
+
+    const el = r.scrollable
+    r.stop()
+    rigs.pop()
+    expect(el.getAttribute('data-xh-scrollbar')).toBeNull()
+  })
+})

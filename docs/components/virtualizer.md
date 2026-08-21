@@ -44,6 +44,12 @@ horizontal 把主轴换成行内轴：位移改写进行首侧，条目宽度由
 
 <XhDemo src="virtualizer/04-horizontal" />
 
+### 挂自绘滚动条
+
+滚动容器是视口，给它一个 id 交给滚动条即可；虚拟滚动只管渲哪几条，滚动条只管画滚动位置
+
+<XhDemo src="virtualizer/05-scrollbar" />
+
 ## 产物
 
 | 层 | 值 |

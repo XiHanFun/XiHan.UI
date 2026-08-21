@@ -109,6 +109,7 @@ export function connectScrollbar<T extends PropTypes>(
     overflow: geometry.overflow,
     visible,
     native,
+    hover,
     dragging,
     scrolling,
     thumbSize: geometry.size,

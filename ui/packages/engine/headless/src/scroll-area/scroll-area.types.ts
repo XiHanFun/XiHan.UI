@@ -1,45 +1,39 @@
-import type { Direction, Orientation, PropTypes } from '@xihan-ui/kernel'
-import type { MachineSchema } from '@xihan-ui/machine'
-import type { ScrollAxisMetrics } from '../shared/scroll-geometry'
-
-/**
- * 滚动条什么时候露面：
- * - auto 溢出就一直露着；
- * - always 恒露，即便内容不溢出；
- * - scroll 滚动时露出，停手 hideDelay 毫秒后收起；
- * - hover 指针进入组件时露出，离开后 hideDelay 毫秒收起。
- */
-export type ScrollAreaType = 'auto' | 'always' | 'scroll' | 'hover'
+import type { Direction, Orientation, PropTypes, Size } from '@xihan-ui/kernel'
+import type { Service } from '@xihan-ui/machine'
+import type { ScrollbarSchema, ScrollbarType } from '../scrollbar/scrollbar.types'
 
 /** 哪几条轴归本组件管。被关掉的那条轴滚动条恒不显形，视口那一向也不滚。 */
 export type ScrollAreaOrientation = Orientation | 'both'
 
-/** 指针位置，只取两个坐标。 */
-export interface ScrollAreaPoint {
-  clientX: number
-  clientY: number
+/**
+ * 滚动区域自己没有机器：它只是视口加两条 scrollbar 的组装。滚动条的显隐、拖动、
+ * 键盘与尺寸测量全在 scrollbar 那两台机器里，这里按轴各跑一台。
+ */
+export interface ScrollAreaProps {
+  /** 滚动条露面的时机，默认 hover。 */
+  type?: ScrollbarType
+  /** 收起前的等待毫秒（type 为 scroll / hover 时生效），默认 600。 */
+  hideDelay?: number
+  /** 哪几条轴归本组件管，默认 both。 */
+  orientation?: ScrollAreaOrientation
+  /** 尺寸：sm / md / lg，换的是滚动条厚度。 */
+  size?: Size
+  /**
+   * 排版方向，默认随文档。只影响横轴：RTL 下滚动量的正负、指针位移的方向都要翻一次。
+   * 必须显式给：组件不读计算样式，看不见从 RTL 祖先继承来的方向。
+   */
+  dir?: Direction
+  /** 触屏（粗指针）上也画自绘滚动条，默认 false：缺省交给原生滚动。 */
+  forceVisible?: boolean
 }
 
-/** 一次滑块拖动的起点快照，位移相对它计算。 */
-export interface ScrollAreaDragSession {
-  axis: Orientation
-  /** 按下那一刻指针在该轴上的客户端坐标。 */
-  origin: number
-  /** 按下那一刻的滚动量（距逻辑起始缘）。 */
-  startScroll: number
+/** 两条轴各一台 scrollbar 机器；适配器建好后交给 connect。 */
+export interface ScrollAreaServices {
+  vertical: Service<ScrollbarSchema>
+  horizontal: Service<ScrollbarSchema>
 }
 
-// 适配器挂载前填入；保持缺省时副作用短路，机器状态照常转移但量不到尺寸、也不挂监听器。
-export interface ScrollAreaRefs {
-  /** 真正 overflow:auto 的那层：尺寸、滚动量、scroll 事件与写回滚动位置都落在它身上。 */
-  getViewportEl: () => HTMLElement | null
-  /** 内容包裹层。只用于跟随尺寸变化（ResizeObserver），量数字仍以视口为准。 */
-  getContentEl: () => HTMLElement | null
-  /** 按轴取滚动条节点：轨道长度要在拖动/点击那一刻现量。 */
-  getScrollbarEl: (orientation: Orientation) => HTMLElement | null
-}
-
-/** 滚动条自报家门：轴向是作者在部件上的声明，connect 据此产出属性，不反查 DOM。 */
+/** 滚动条自报家门：轴向是作者在部件上的声明，connect 据此取对应那台机器，不反查 DOM。 */
 export interface ScrollAreaScrollbarProps {
   orientation: Orientation
 }
@@ -56,67 +50,8 @@ export interface ScrollAreaAxisState {
   offset: number
 }
 
-export interface ScrollAreaSchema extends MachineSchema {
-  props: {
-    /** 滚动条露面的时机，默认 hover。 */
-    type?: ScrollAreaType
-    /** 收起前的等待毫秒（type 为 scroll / hover 时生效），默认 600。 */
-    hideDelay?: number
-    /** 哪几条轴归本组件管，默认 both。 */
-    orientation?: ScrollAreaOrientation
-    /**
-     * 排版方向，默认随文档。只影响横轴：RTL 下滚动量的正负、指针位移的方向都要翻一次。
-     * 必须显式给：组件不读计算样式，看不见从 RTL 祖先继承来的方向。
-     */
-    dir?: Direction
-  }
-  context: {
-    /** 竖轴量到的尺寸；connect 只读它，不碰 DOM。 */
-    vertical: ScrollAxisMetrics
-    /** 横轴量到的尺寸。 */
-    horizontal: ScrollAxisMetrics
-    /** 指针此刻在组件里。拖动结束后要靠它决定是留着滚动条还是开始倒计时。 */
-    pointerInside: boolean
-    /** 正在进行的滑块拖动；没在拖为 null。 */
-    drag: ScrollAreaDragSession | null
-  }
-  computed: Record<string, never>
-  refs: ScrollAreaRefs
-  /**
-   * 只有 hover / scroll 两种 type 会在这四个状态间走动，auto / always 的可见性由 connect 直接按 type 判。
-   * hidden 收着；visible 露着且没有倒计时；hiding 露着且倒计时在跑；dragging 手正按在滑块上。
-   */
-  state: 'hidden' | 'visible' | 'hiding' | 'dragging'
-  event:
-    /** 重新量一遍尺寸（挂载后首帧、ResizeObserver 回调）。 */
-    | { type: 'MEASURE' }
-    /** 视口滚了。 */
-    | { type: 'SCROLL' }
-    | { type: 'POINTER.ENTER' }
-    | { type: 'POINTER.LEAVE' }
-    /** 按住滑块。 */
-    | { type: 'DRAG.START', axis: Orientation, point: ScrollAreaPoint }
-    | { type: 'DRAG.MOVE', point: ScrollAreaPoint }
-    | { type: 'DRAG.END' }
-    /** 点在轨道空白处：把滑块中心挪过去。 */
-    | { type: 'TRACK.CLICK', axis: Orientation, point: ScrollAreaPoint }
-    | { type: 'after.hideDelay' }
-  tag: never
-  guard: 'isHoverType' | 'isScrollType' | 'staysVisible'
-  action:
-    | 'measure'
-    | 'measureSoon'
-    | 'markPointerInside'
-    | 'clearPointerInside'
-    | 'startDrag'
-    | 'dragScroll'
-    | 'endDrag'
-    | 'scrollToTrackPoint'
-  effect: 'trackViewport' | 'waitForHideDelay' | 'trackPointer'
-}
-
 export interface ScrollAreaApi<T extends PropTypes = PropTypes> {
-  type: ScrollAreaType
+  type: ScrollbarType
   orientation: ScrollAreaOrientation
   vertical: ScrollAreaAxisState
   horizontal: ScrollAreaAxisState
@@ -127,8 +62,11 @@ export interface ScrollAreaApi<T extends PropTypes = PropTypes> {
   getRootProps: () => T['element']
   getViewportProps: () => T['element']
   getContentProps: () => T['element']
+  /** 某条轴的滚动条挂载点，同时充当那条 scrollbar 的根节点。 */
   getScrollbarProps: (props: ScrollAreaScrollbarProps) => T['element']
+  getTrackProps: (props: ScrollAreaScrollbarProps) => T['element']
   getThumbProps: (props: ScrollAreaScrollbarProps) => T['element']
+  /** 交叉口补丁，写在竖条的挂载点里；只有两条都在场时才显形。 */
   getCornerProps: () => T['element']
 }
 

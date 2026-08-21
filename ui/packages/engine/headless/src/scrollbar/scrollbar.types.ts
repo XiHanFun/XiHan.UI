@@ -114,6 +114,8 @@ export interface ScrollbarSchema extends MachineSchema {
     coarse: boolean
     /** 此刻挂着的滚动容器的 id；作者没给 controls 时 aria-controls 用它。 */
     scrollableId: string | null
+    /** 作者把根节点交上来了。滚动区据此判断某条轴的滚动条在不在场。 */
+    rootMounted: boolean
   }
   computed: Record<string, never>
   refs: ScrollbarRefs
@@ -169,6 +171,8 @@ export interface ScrollbarApi<T extends PropTypes = PropTypes> {
   visible: boolean
   /** 交给了原生滚动：粗指针设备且没开 forceVisible，整条不显形。 */
   native: boolean
+  /** 指针此刻在滚动容器或滚动条上。 */
+  hover: boolean
   /** 手正按在滑块上。 */
   dragging: boolean
   /** 这一段滚动还在进行中。 */

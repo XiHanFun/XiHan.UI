@@ -4,6 +4,16 @@
     --xh-scrollbar-skin: 1;
   }
 
+  /* 挂了自绘滚动条的容器：原生滚动条只藏外观，滚动能力一点不动。
+     标记由机器挂监听时打上，最后一条滚动条拆走才撤。下面那条 ::-webkit-scrollbar 兜住还没实现 scrollbar-width 的引擎 */
+  [data-xh-scrollbar] {
+    scrollbar-width: none;
+  }
+
+  [data-xh-scrollbar]::-webkit-scrollbar {
+    display: none;
+  }
+
   /* 定位分工：滑块在**主轴**上的起点与长度由连接层每帧写进内联样式——
      竖向是 inset-block-start / block-size，横向是 inset-inline-start / inline-size。
      这份皮肤一个都不碰：内联优先级高于样式表，写了不但是死声明，

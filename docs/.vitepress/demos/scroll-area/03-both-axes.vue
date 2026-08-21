@@ -6,6 +6,7 @@ import {
   XhScrollAreaRoot,
   XhScrollAreaScrollbar,
   XhScrollAreaThumb,
+  XhScrollAreaTrack,
   XhScrollAreaViewport,
 } from "@xihan-ui/vue";
 
@@ -32,11 +33,15 @@ const rows = Array.from(
       </XhScrollAreaContent>
     </XhScrollAreaViewport>
     <XhScrollAreaScrollbar orientation="vertical">
-      <XhScrollAreaThumb />
+      <XhScrollAreaTrack>
+        <XhScrollAreaThumb />
+      </XhScrollAreaTrack>
+      <XhScrollAreaCorner />
     </XhScrollAreaScrollbar>
     <XhScrollAreaScrollbar orientation="horizontal">
-      <XhScrollAreaThumb />
+      <XhScrollAreaTrack>
+        <XhScrollAreaThumb />
+      </XhScrollAreaTrack>
     </XhScrollAreaScrollbar>
-    <XhScrollAreaCorner />
   </XhScrollAreaRoot>
 </template>
