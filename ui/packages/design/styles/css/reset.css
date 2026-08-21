@@ -19,4 +19,21 @@
     font: inherit;
     letter-spacing: inherit;
   }
+
+  /*
+   * 浮层定位层的生命周期契约：落位才露。
+   *
+   * 坐标依赖浮层自己的尺寸，尺寸要等元素进 DOM 参与排版才量得到，所以浮层一定先渲染、
+   * 再量、再定位——展开的那几帧坐标还是兜底的 0。默认藏着，连接层算出坐标后打
+   * data-positioned 才显示，忘了接线的新浮层只会不显示，不会先在视口左上角闪一帧。
+   * 用 visibility 而不是 display：display:none 会让浮层退出排版，引擎量不到它的尺寸。
+   * 锚点被滚出可视区时引擎置 hidden，各皮肤另有一条 [data-hidden] 压回去。
+   */
+  [data-scope][data-part='positioner'] {
+    visibility: hidden;
+  }
+
+  [data-scope][data-part='positioner'][data-positioned] {
+    visibility: visible;
+  }
 }

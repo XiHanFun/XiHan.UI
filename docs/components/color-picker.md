@@ -258,6 +258,7 @@ format 只管对外的序列化：换过之后把当前值原样写回一次，�
 | `swatch` | `data-value` | context.get('value') |
 | `positioner` | `data-hidden` | ''（条件成立时才出现） |
 | `positioner` | `data-placement` | 定位引擎算出的实际落位 |
+| `positioner` | `data-positioned` | ''（条件成立时才出现） |
 | `positioner` | `data-state` | 'open' \| 'closed' |
 | `content` | `data-placement` | 定位引擎算出的实际落位 |
 | `area` | `data-dragging` | ''（条件成立时才出现） |

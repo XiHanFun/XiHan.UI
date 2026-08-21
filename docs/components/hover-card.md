@@ -175,6 +175,7 @@ disabled 只关掉卡片本身，触发器照样可点、可聚焦，也照样�
 | `trigger` | `data-state` | 'open' \| 'closed' |
 | `positioner` | `data-hidden` | ''（条件成立时才出现） |
 | `positioner` | `data-placement` | 定位引擎算出的实际落位 |
+| `positioner` | `data-positioned` | ''（条件成立时才出现） |
 | `positioner` | `data-state` | 'open' \| 'closed' |
 | `content` | `data-placement` | 定位引擎算出的实际落位 |
 | `content` | `data-size` | props.size |

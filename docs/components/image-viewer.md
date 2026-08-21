@@ -202,6 +202,7 @@ open 与 index 双受控；translations 换工具条的可及名与计数文案
 | --- | --- | --- |
 | `trigger` | `data-state` | 'open' \| 'closed' |
 | `backdrop` | `data-state` | 'open' \| 'closed' |
+| `positioner` | `data-positioned` | '' |
 | `positioner` | `data-state` | 'open' \| 'closed' |
 | `content` | `data-state` | 'open' \| 'closed' |
 | `viewport` | `data-panning` | ''（条件成立时才出现） |

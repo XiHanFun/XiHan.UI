@@ -228,6 +228,7 @@ open 与 position 都交给外面握着：面板只报意图，值写回来才�
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `trigger` | `data-state` | 'open' \| 'closed' |
+| `positioner` | `data-positioned` | '' |
 | `positioner` | `data-stage` | context.get('stage') |
 | `positioner` | `data-state` | 'open' \| 'closed' |
 | `header` | `data-dragging` | ''（条件成立时才出现） |

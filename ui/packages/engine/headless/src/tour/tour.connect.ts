@@ -1,3 +1,4 @@
+import { overlayPositioned } from '../shared/overlay'
 import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { TourApi, TourSchema } from './tour.types'
@@ -118,6 +119,8 @@ export function connectTour<T extends PropTypes>(
     getPositionerProps: () => normalize.element({
       ...parts.positioner.attrs,
       'data-state': stateAttr,
+      // 锚定步等引擎量完才算落位；居中步由皮肤铺满视口摆中间，恒已落位
+      'data-positioned': dataAttr(anchored ? overlayPositioned(position) : true),
       // 居中步交给样式表摆，锚定步的坐标由引擎写内联
       'data-position': anchored ? 'anchored' : 'center',
       'data-placement': placement,

@@ -151,6 +151,9 @@ export const tooltipMachine = createMachine({
         setTimeoutEffect(() => send({ type: 'after.closeDelay' }), prop('closeDelay') ?? CLOSE_DELAY),
       // 引擎经 refs 注入；缺引擎或缺元素时静默跳过，状态转移不受影响
       trackPosition: ({ refs, prop, context, flush }) => {
+        // 进入展开态先清上一次的坐标：引擎量完之前不算落位，皮肤据此藏着。
+        // 不清的话重开会按上次的位置判「已落位」——页面滚过就在旧位置闪一帧
+        context.set('position', null)
         const engine = refs.get('position')
         if (!engine)
           return undefined

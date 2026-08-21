@@ -228,6 +228,7 @@ XhContextMenuSub 在右键菜单里嵌一台子菜单：触发条目双重身份
 | `trigger` | `data-state` | 'open' \| 'closed' |
 | `positioner` | `data-hidden` | ''（条件成立时才出现） |
 | `positioner` | `data-placement` | 定位引擎算出的实际落位 |
+| `positioner` | `data-positioned` | ''（条件成立时才出现） |
 | `positioner` | `data-size` | props.size |
 | `positioner` | `data-state` | 'open' \| 'closed' |
 | `positioner` | `data-tone` | props.tone |

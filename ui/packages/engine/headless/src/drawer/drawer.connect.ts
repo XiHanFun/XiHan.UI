@@ -58,6 +58,8 @@ export function connectDrawer<T extends PropTypes>(
     getPositionerProps: () => normalize.element({
       ...parts.positioner.attrs,
       'data-state': stateAttr,
+      // 由皮肤的 inset 直接摆，不问引擎要坐标，没有「还没量完」的窗口：恒已落位
+      'data-positioned': '',
       'data-contained': dataAttr(contained),
     }),
     getContentProps: () => normalize.element({

@@ -137,6 +137,8 @@ export function connectFloatingPanel<T extends PropTypes>(
       ...parts.positioner.attrs,
       'data-state': stateAttr,
       'data-stage': stage,
+      // 坐标由自己的拖拽状态每帧写死，不问引擎、没有「还没量完」的窗口：恒已落位
+      'data-positioned': '',
       // 落位与尺寸每帧写死，皮肤不要再碰这四个属性
       'style': floatingPanelRectStyle(stage, position, size),
       // 收起态自带 hidden：面板整棵子树都在 positioner 底下，收住它就够

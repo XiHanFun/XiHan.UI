@@ -338,6 +338,7 @@ footer 是 list 的兄弟：不随条目滚走，也不会被方向键与连打�
 | `tag-remove` | `data-disabled` | ''（条件成立时才出现） |
 | `positioner` | `data-hidden` | ''（条件成立时才出现） |
 | `positioner` | `data-placement` | 定位引擎算出的实际落位 |
+| `positioner` | `data-positioned` | ''（条件成立时才出现） |
 | `positioner` | `data-size` | props.size |
 | `positioner` | `data-state` | 'open' \| 'closed' |
 | `positioner` | `data-tone` | props.tone |
