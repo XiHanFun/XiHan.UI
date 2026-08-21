@@ -1658,6 +1658,51 @@
               "attribute": "size"
             },
             {
+              "kind": "field",
+              "name": "count",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "count"
+            },
+            {
+              "kind": "field",
+              "name": "max",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "max"
+            },
+            {
+              "kind": "field",
+              "name": "showZero",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "show-zero"
+            },
+            {
+              "kind": "field",
+              "name": "dot",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "dot"
+            },
+            {
+              "kind": "field",
+              "name": "label",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "label"
+            },
+            {
               "kind": "method",
               "name": "wire",
               "privacy": "protected",
@@ -1692,6 +1737,46 @@
               "description": "尺寸",
               "name": "size",
               "fieldName": "size"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "计数：给了它徽标就自己出数字，超过 max 写成「max+」；节点已有内容时以内容为准",
+              "name": "count",
+              "fieldName": "count"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "计数上限，默认 99",
+              "name": "max",
+              "fieldName": "max"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "计数为 0 时也显示，默认不显示",
+              "name": "show-zero",
+              "fieldName": "showZero"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "只出一个点，不出数字",
+              "name": "dot",
+              "fieldName": "dot"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "读屏怎么念这枚徽标，例如「3 条未读」",
+              "name": "label",
+              "fieldName": "label"
             }
           ],
           "superclass": {
@@ -1703,6 +1788,9 @@
           "cssProperties": [
             {
               "name": "--xh-badge-bg"
+            },
+            {
+              "name": "--xh-badge-dot-size"
             },
             {
               "name": "--xh-badge-fg"

@@ -5379,6 +5379,11 @@
       "visibilityHeight"
     ],
     "badge": [
+      "count",
+      "dot",
+      "label",
+      "max",
+      "showZero",
       "size",
       "tone",
       "variant"
@@ -6811,6 +6816,7 @@
     "data-current",
     "data-direction",
     "data-disabled",
+    "data-dot",
     "data-dragging",
     "data-drawing",
     "data-edge",
@@ -7234,6 +7240,7 @@
     "--xh-back-top-radius",
     "--xh-back-top-trigger-size",
     "--xh-badge-bg",
+    "--xh-badge-dot-size",
     "--xh-badge-fg",
     "--xh-badge-font-size",
     "--xh-badge-font-weight",
@@ -9488,6 +9495,11 @@
     },
     "xh-badge": {
       "attributes": [
+        "count",
+        "dot",
+        "label",
+        "max",
+        "show-zero",
         "size",
         "tone",
         "variant"

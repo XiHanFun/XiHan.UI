@@ -9,9 +9,29 @@ export interface BadgeProps {
   tone?: Tone
   /** 尺寸：sm / md / lg */
   size?: Size
+  /**
+   * 计数。给了它徽标就自己出数字，超过 max 写成「max+」。
+   * 与默认插槽二选一：插槽有内容时以插槽为准。
+   */
+  count?: number
+  /** 计数上限，默认 99：再多也只写 99+，免得徽标被撑变形。 */
+  max?: number
+  /** 计数为 0 时是否照样显示，默认不显示——没有未读就不该有角标。 */
+  showZero?: boolean
+  /** 只出一个点，不出数字。给了它 count 只用来决定显不显示。 */
+  dot?: boolean
+  /**
+   * 读屏怎么念这枚徽标。
+   * 角标挂在按钮、头像上时，光念数字听不出这是什么，得由宿主给出「3 条未读」这样的整句。
+   */
+  label?: string
 }
 
 export interface BadgeApi<T extends PropTypes = PropTypes> {
+  /** 此刻该不该渲染：计数为 0 且没开 showZero 时为假。 */
+  visible: boolean
+  /** 算好的显示文本：超过 max 的写成「99+」；dot 模式与无 count 时为空串。 */
+  text: string
   getRootProps: () => T['element']
 }
 
