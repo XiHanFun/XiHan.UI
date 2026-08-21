@@ -75,12 +75,6 @@ size 只改内边距与字号，不写就是缺省档
 
 <XhDemo src="badge/08-anchor" />
 
-### 可关闭标签
-
-根是 inline-flex 且自带间距，关闭件直接写进内容里跟文字并排；点击语义、Tab 停靠与回车触发由原生按钮自带
-
-<XhDemo src="badge/09-closable" />
-
 ## 产物
 
 | 层 | 值 |
