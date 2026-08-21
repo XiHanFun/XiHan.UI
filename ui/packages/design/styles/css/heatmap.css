@@ -18,8 +18,8 @@
        不接控件高度那把尺——它是给可点可输的控件在一行里排齐用的，矩阵格子不可交互，
        接上去密度档一换矩阵就跟着变形 */
     --xh-_heatmap-row-h: var(--xh-heatmap-row-h, var(--xh-space-5));
-    /* 格间距等于聚焦环占的宽度（偏移 + 环宽）：环因此落在格子之间的空当里，
-       不压在相邻格子上，各档格子的深浅都不影响环的对比度 */
+    /* 格间距等于聚焦环占的宽度（偏移 + 环宽）：环因此整圈落在格子之间的空当里，
+       不压到相邻的格子上（外缘与相邻格相接） */
     --xh-_heatmap-gap: calc(var(--xh-ring-offset) + var(--xh-ring-width));
     --xh-_heatmap-gutter: var(--xh-heatmap-gutter, var(--xh-space-8));
     --xh-_heatmap-font-size: var(--xh-font-size-xs);
@@ -28,7 +28,7 @@
        改写这个槽为一个看得见的颜色（`var(--xh-heatmap-label-fg, var(--xh-fg-subtle))`）即七行全画。
        周首日是星期一时留下的是二 / 四 / 六，是星期日时留下的是一 / 三 / 五 */
     --xh-_heatmap-week-day-skip: var(--xh-heatmap-week-day-skip, transparent);
-    /* 色阶的两端：0 档的空格底与满档的实心底。没写 data-tone 时就是这里的取值 */
+    /* 色阶的两端：0 档的空格底与满档的实心底。没写 data-tone 也没写 data-palette 时就是这里的取值 */
     --xh-_heatmap-empty: var(--xh-heatmap-empty, var(--xh-bg-subtle));
     --xh-_heatmap-ink: var(--xh-heatmap-ink, var(--xh-bg-brand));
     /* 钉住的行首那一列自带的底色：格子从它下面滚过去时不能透出来。
@@ -59,6 +59,47 @@
   /* 选择器带 [data-tone] 限定：不限定的话，放在语气容器里的热力图会跟着改色 */
   [data-scope='heatmap'][data-part='root'][data-tone] {
     --xh-_heatmap-ink: var(--xh-heatmap-ink, var(--xh-_tone, var(--xh-bg-brand)));
+  }
+
+  /* —— 色板 —— */
+  /* 直接按颜色点名，定的是满档那一端的实心底；0 档的空格底与中间各档的兑法一概不动。
+     六条规则与上面那条语气规则同特指度，排在它之后：两个都写时色板赢——
+     色板指名了一个具体颜色，语气只是推得出一个颜色，指名的那个更具体。
+     取值一律逐值写死原语、不经 --xh-_tone：那一族槽位是语气层的派生结果，
+     色板借道它就会连带把语气的悬停 / 淡底 / 前景一起绑进来，也会被祖先的 data-tone 染色。
+     色板拼错取值时六条都不命中，落回上面两条，与没写一样 */
+  [data-scope='heatmap'][data-part='root'][data-palette='green'] {
+    --xh-_heatmap-ink: var(--xh-heatmap-ink, var(--xh-color-success-600));
+  }
+
+  [data-scope='heatmap'][data-part='root'][data-palette='blue'] {
+    --xh-_heatmap-ink: var(--xh-heatmap-ink, var(--xh-color-info-600));
+  }
+
+  [data-scope='heatmap'][data-part='root'][data-palette='orange'] {
+    --xh-_heatmap-ink: var(--xh-heatmap-ink, var(--xh-color-warning-600));
+  }
+
+  [data-scope='heatmap'][data-part='root'][data-palette='purple'] {
+    --xh-_heatmap-ink: var(--xh-heatmap-ink, var(--xh-color-purple-600));
+  }
+
+  [data-scope='heatmap'][data-part='root'][data-palette='red'] {
+    --xh-_heatmap-ink: var(--xh-heatmap-ink, var(--xh-color-danger-600));
+  }
+
+  /* 灰是唯一按主题换档的一族：五个彩色族的 600 档明度在 0.577–0.705，
+     深色态的空格底（neutral-800，明度 0.269）离得够远；中性 600 档只有 0.439，
+     五档摊下来每档只差 0.0425、相邻两档对比度 1.16–1.20，等于看不出分档。
+     深色态改取 neutral-450（明度 0.65），步长回到 0.095、相邻两档 1.42–1.50，与彩色族齐平。
+     不取更亮的 neutral-400：高对比档的 border-default 正是那一档，满档格子的描边会与底色同色。
+     data-theme 写在自己身上还是写在祖先上都算，两种用法都成立 */
+  [data-scope='heatmap'][data-part='root'][data-palette='gray'] {
+    --xh-_heatmap-ink: var(--xh-heatmap-ink, var(--xh-color-neutral-600));
+  }
+
+  :is([data-theme='dark'] *, [data-theme='dark'])[data-scope='heatmap'][data-part='root'][data-palette='gray'] {
+    --xh-_heatmap-ink: var(--xh-heatmap-ink, var(--xh-color-neutral-450));
   }
 
   /* —— 尺寸 —— */

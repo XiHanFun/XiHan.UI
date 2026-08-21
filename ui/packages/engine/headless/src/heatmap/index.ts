@@ -77,6 +77,7 @@ export type {
   HeatmapLegendLabelProps,
   HeatmapMonthBlockProps,
   HeatmapMonthLabelProps,
+  HeatmapPalette,
   HeatmapRowLabelProps,
   HeatmapRowProps,
   HeatmapSchema,
