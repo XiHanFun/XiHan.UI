@@ -212,6 +212,12 @@
     color: var(--xh-fg-disabled);
   }
 
+  /* 有值时清空钮顶上来，箭头让位：两个图标并排堆着，用户分不清点哪个。
+     让位而不是禁用——禁用的图标还占着位置，看着像坏了 */
+  [data-scope='tree-select'][data-part='indicator'][data-clearable] {
+    display: none;
+  }
+
   [data-scope='tree-select'][data-part='indicator'] {
     display: inline-flex;
     flex: none;

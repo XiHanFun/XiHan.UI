@@ -730,7 +730,7 @@ export const timePickerSuite: ConformanceSuite = {
             parts: {
               'root': { 'data-empty': '' },
               [HOUR_SEG]: { 'data-placeholder': '' },
-              'clear-trigger': { disabled: '' },
+              'clear-trigger': { hidden: '', disabled: '' },
             },
             // 这个按钮对读屏隐身也不占 Tab 位，清完必须把焦点送回首段
             activeElement: { part: HOUR_SEG, exact: true },
@@ -1000,7 +1000,7 @@ export const timePickerSuite: ConformanceSuite = {
           // 只读态在 control 上只留 data 属性，aria-readonly 落在每个段上
           'control': { 'data-readonly': '', 'aria-readonly': null },
           [HOUR_SEG]: { 'aria-readonly': 'true', 'tabindex': '0' },
-          'clear-trigger': { disabled: '' },
+          'clear-trigger': { hidden: '', disabled: '' },
         },
       },
       steps: [

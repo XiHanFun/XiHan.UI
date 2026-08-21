@@ -944,7 +944,7 @@ export const treeSelectSuite: ConformanceSuite = {
           'item[0]': { 'aria-disabled': 'true', 'data-disabled': '', 'disabled': null },
           // 禁用的控件不该提交出值
           'hidden-input': { disabled: '' },
-          'clear-trigger': { disabled: '' },
+          'clear-trigger': { hidden: '', disabled: '' },
         },
       },
       steps: [
@@ -984,7 +984,7 @@ export const treeSelectSuite: ConformanceSuite = {
           'root': { 'data-readonly': '', 'data-disabled': null },
           // 只读仍可聚焦、仍能展开，禁用则没有键盘入口
           'trigger': { 'disabled': null, 'aria-readonly': 'true', 'data-readonly': '' },
-          'clear-trigger': { 'disabled': '', 'data-disabled': '' },
+          'clear-trigger': { 'hidden': '', 'disabled': '', 'data-disabled': '' },
         },
       },
       steps: [
@@ -1028,7 +1028,7 @@ export const treeSelectSuite: ConformanceSuite = {
       props: props({ defaultValue: 'license', placeholder: '请选择', name: 'dir' }),
       initial: {
         parts: {
-          'clear-trigger': { 'disabled': null, 'data-disabled': null, 'tabindex': '-1', 'aria-hidden': 'true' },
+          'clear-trigger': { 'hidden': null, 'disabled': null, 'data-disabled': null, 'tabindex': '-1', 'aria-hidden': 'true' },
           'trigger': { 'data-placeholder': null },
           'value-text': { 'data-placeholder': null },
           'item': itemsSelected('license'),
@@ -1058,7 +1058,7 @@ export const treeSelectSuite: ConformanceSuite = {
               'trigger': { 'data-placeholder': '' },
               'value-text': { 'data-placeholder': '' },
               // 清完就按不动了
-              'clear-trigger': { 'disabled': '', 'data-disabled': '' },
+              'clear-trigger': { 'hidden': '', 'disabled': '', 'data-disabled': '' },
             },
             events: [{ type: 'value-change', detail: { value: [] } }],
           },

@@ -176,7 +176,7 @@ export const tagsInputSuite: ConformanceSuite = {
             'name': null,
           },
           // 没东西可清时按钮置灰而不是收起：位置留着，加进第一个标签就亮
-          'clear-trigger': { 'type': 'button', 'tabindex': '-1', 'disabled': '', 'data-disabled': '', 'hidden': null },
+          'clear-trigger': { 'type': 'button', 'tabindex': '-1', 'disabled': '', 'data-disabled': '', 'hidden': '' },
           'hidden-input': { type: 'hidden', name: null, disabled: null },
         },
       },
@@ -422,7 +422,7 @@ export const tagsInputSuite: ConformanceSuite = {
       spec: { apg: APG },
       fixture: withTags('vue', 'react'),
       props: { defaultValue: ['vue', 'react'] },
-      initial: { parts: { 'clear-trigger': { 'disabled': null, 'data-disabled': null } } },
+      initial: { parts: { 'clear-trigger': { 'hidden': null, 'disabled': null, 'data-disabled': null } } },
       steps: [
         { kind: 'raw', why: 'type 步骤落不到 value 上', run: async ctx => typeInto(ctx, 'sol') },
         {
@@ -432,7 +432,7 @@ export const tagsInputSuite: ConformanceSuite = {
             activeElement: { part: 'input', exact: true },
             parts: {
               'root': { 'data-empty': '' },
-              'clear-trigger': { 'disabled': '', 'data-disabled': '' },
+              'clear-trigger': { 'hidden': '', 'disabled': '', 'data-disabled': '' },
             },
             events: [{ type: 'value-change', detail: { value: [] } }],
           },
@@ -619,7 +619,7 @@ export const tagsInputSuite: ConformanceSuite = {
           'control': { 'aria-disabled': 'true', 'data-disabled': '' },
           'input': { disabled: '' },
           'item-delete-trigger': [{ disabled: '' }],
-          'clear-trigger': { disabled: '' },
+          'clear-trigger': { hidden: '', disabled: '' },
           // 禁用的控件不该提交出值
           'hidden-input': { disabled: '' },
         },

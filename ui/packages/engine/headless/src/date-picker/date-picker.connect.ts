@@ -392,6 +392,8 @@ export function connectDatePicker<T extends PropTypes>(
       // 图标按钮无文字，名字借标题；作者写的 aria-label 会盖过这条
       'aria-labelledby': ids.label,
       'data-state': stateAttr,
+      // 有值时清空钮会顶上来：皮肤据此让位，两个钮不并排堆在框里
+      'data-clearable': dataAttr(canClear),
       'data-disabled': dataAttr(disabled),
       'onClick': () => {
         // 守卫防程序化派发（原生 disabled 不派 click）
@@ -406,6 +408,9 @@ export function connectDatePicker<T extends PropTypes>(
       // 不进 Tab 序列也不报给读屏：段位上按退格即可清值
       'tabindex': -1,
       'aria-hidden': true,
+      // 没值就整个收起，不是禁用：清空钮与下拉钮并排时，一个灰着一个亮着，
+      // 用户分不清哪个能点。有值才出现，出现即可用
+      'hidden': !canClear || undefined,
       'disabled': !canClear || undefined,
       'data-disabled': dataAttr(!canClear),
       // 不拦的话浏览器会把焦点挪到这个按钮上，清完焦点就落在一个隐身节点里

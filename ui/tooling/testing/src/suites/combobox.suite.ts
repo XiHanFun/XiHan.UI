@@ -361,7 +361,7 @@ export const comboboxSuite: ConformanceSuite = {
               'item[2]': { 'aria-selected': 'true', 'data-state': 'checked' },
               'item-indicator[2]': { 'data-state': 'checked' },
               // 有东西可清了，清空按钮跟着亮起来
-              'clear-trigger': { 'disabled': null, 'data-disabled': null },
+              'clear-trigger': { 'hidden': null, 'disabled': null, 'data-disabled': null },
             },
             // 先值后开合
             events: [
@@ -663,7 +663,7 @@ export const comboboxSuite: ConformanceSuite = {
           expect: {
             parts: {
               'item[0]': { 'aria-selected': 'false', 'data-state': 'unchecked' },
-              'clear-trigger': { 'disabled': '', 'data-disabled': '' },
+              'clear-trigger': { 'hidden': '', 'disabled': '', 'data-disabled': '' },
             },
             activeElement: { part: 'input', exact: true },
             events: [{ type: 'value-change', detail: { value: [] } }],
@@ -730,7 +730,7 @@ export const comboboxSuite: ConformanceSuite = {
           'root': { 'data-disabled': '' },
           'input': { 'disabled': '', 'data-disabled': '' },
           'trigger': { 'disabled': '', 'data-disabled': '' },
-          'clear-trigger': { disabled: '' },
+          'clear-trigger': { hidden: '', disabled: '' },
         },
       },
       steps: [
@@ -752,7 +752,7 @@ export const comboboxSuite: ConformanceSuite = {
           'root': { 'data-readonly': '' },
           'input': { 'readonly': '', 'disabled': null, 'data-readonly': '' },
           // 只读时没东西可清
-          'clear-trigger': { disabled: '' },
+          'clear-trigger': { hidden: '', disabled: '' },
         },
       },
       steps: [

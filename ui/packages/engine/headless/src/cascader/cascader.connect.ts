@@ -284,6 +284,8 @@ export function connectCascader<T extends PropTypes>(
     }),
 
     getIndicatorProps: () => normalize.element({
+      // 有值时清空钮顶上来，箭头让位：两个图标并排堆在框里，用户分不清点哪个
+      'data-clearable': dataAttr(canClear),
       ...parts.indicator.attrs,
       'aria-hidden': 'true',
       'data-state': stateAttr,
@@ -296,6 +298,9 @@ export function connectCascader<T extends PropTypes>(
       // 整个控件只占一个 Tab 位（trigger），清空按钮不进 Tab 序、也不暴露给读屏
       'tabindex': -1,
       'aria-hidden': true,
+      // 没值就整个收起，不是禁用：清空钮与下拉钮并排时，一个灰着一个亮着，
+      // 用户分不清哪个能点。有值才出现，出现即可用
+      'hidden': !canClear || undefined,
       'disabled': !canClear || undefined,
       'data-disabled': dataAttr(!canClear),
       // 拦掉默认聚焦，否则焦点会从 trigger 挪到这个隐身按钮上

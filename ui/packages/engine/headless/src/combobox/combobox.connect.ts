@@ -327,6 +327,8 @@ export function connectCombobox<T extends PropTypes>(
       'disabled': !interactive || undefined,
       'aria-controls': ids.content,
       'data-state': stateAttr,
+      // 有值时清空钮会顶上来：皮肤据此让位，两个钮不并排堆在框里
+      'data-clearable': dataAttr(canClear),
       'data-disabled': dataAttr(!interactive),
       'onPointerDown': keepFocus,
       'onClick': () => {
@@ -345,6 +347,9 @@ export function connectCombobox<T extends PropTypes>(
       'tabindex': -1,
       // 字符串而非布尔：WC 侧把属性值原样往 setAttribute 送，本文件其余各处也一律是字符串
       'aria-hidden': 'true',
+      // 没值就整个收起，不是禁用：清空钮与下拉钮并排时，一个灰着一个亮着，
+      // 用户分不清哪个能点。有值才出现，出现即可用
+      'hidden': !canClear || undefined,
       'disabled': !canClear || undefined,
       'data-disabled': dataAttr(!canClear),
       'onPointerDown': keepFocus,
