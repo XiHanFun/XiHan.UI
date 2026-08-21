@@ -138,6 +138,12 @@ export interface MenubarSchema extends MachineSchema {
      * 且退场关键帧从不透明度 1 起跳，打断未播完的进场还会亮一下。
      */
     switching: boolean
+    /**
+     * 换张交接：新菜单拿到坐标之前，上一张（最后一张已落位的）保持原样显示，
+     * 坐标一到同帧换掉。否则「旧的立刻消失、新的等定位」之间有一到几帧空档，
+     * 快速掠过就成了频闪——空档在快机器上恰好赶在绘制前闭合，在慢机器上闭不上。
+     */
+    handoffValue: string | null
     /** trigger 的 roving 锚点，焦点离开菜单栏即清空。 */
     focusedValue: string | null
     /** 展开菜单内持有焦点的条目；换项与收起都清空。 */

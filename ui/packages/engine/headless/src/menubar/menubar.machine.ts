@@ -44,6 +44,8 @@ export const menubarMachine = createMachine({
     placements: cell<Record<string, PositionResult>>(() => ({ defaultValue: {} })),
     // 换张进行中：两侧面板都不播进出场
     switching: cell<boolean>(() => ({ defaultValue: false })),
+    // 交接中的那张：新菜单落位前它保持显示
+    handoffValue: cell<string | null>(() => ({ defaultValue: null })),
     // 两个焦点锚点：focusedValue 服务 trigger 的 roving tabindex，focusedItem 服务菜单内条目导航
     focusedValue: cell<string | null>(() => ({ defaultValue: null })),
     focusedItem: cell<string | null>(() => ({ defaultValue: null })),
@@ -168,6 +170,11 @@ export const menubarMachine = createMachine({
         context.set('focusedValue', e.value)
         // 之前已有展开的才算换张；首次展开照常播进场
         context.set('switching', context.get('value') != null && context.get('value') !== e.value)
+        {
+          const prev = context.get('value')
+          if (prev != null && prev !== e.value && context.get('placements')[prev] != null)
+            context.set('handoffValue', prev)
+        }
         context.set('value', e.value)
         // 共享份交给新菜单，同时清掉它自己上一次的旧账（可能已过时）——
         // 新菜单藏到拿到新坐标为止；收起中的那张有自己名下的那份，不受影响
@@ -183,6 +190,11 @@ export const menubarMachine = createMachine({
           return
         context.set('focusIntent', 'none')
         context.set('switching', context.get('value') != null && context.get('value') !== e.value)
+        {
+          const prev = context.get('value')
+          if (prev != null && prev !== e.value && context.get('placements')[prev] != null)
+            context.set('handoffValue', prev)
+        }
         context.set('value', e.value)
         context.set('position', null)
         clearPlacement(context, e.value)
@@ -196,6 +208,11 @@ export const menubarMachine = createMachine({
           return
         context.set('focusIntent', 'none')
         context.set('switching', e.value != null && context.get('value') != null && context.get('value') !== e.value)
+        {
+          const prev = context.get('value')
+          if (prev != null && prev !== e.value && context.get('placements')[prev] != null)
+            context.set('handoffValue', prev)
+        }
         context.set('value', e.value)
         context.set('position', null)
         // 程序化传 null 是全收起，没有新菜单要清账
@@ -204,8 +221,9 @@ export const menubarMachine = createMachine({
         context.set('autoValue', null)
       },
       clearValue: ({ context }) => {
-        // 末次收起照常播退场
+        // 末次收起照常播退场；交接一并终止
         context.set('switching', false)
+        context.set('handoffValue', null)
         context.set('value', null)
         context.set('autoValue', null)
       },
@@ -313,8 +331,11 @@ export const menubarMachine = createMachine({
               context.set('position', result)
               // 记到这张菜单名下：收起中的那张靠自己的这份留在原地播完退场
               const owner = context.get('value')
-              if (owner != null)
+              if (owner != null) {
                 context.set('placements', { ...context.get('placements'), [owner]: result })
+                // 新菜单落位，交接完成——上一张同帧收起
+                context.set('handoffValue', null)
+              }
             },
           )
         }
