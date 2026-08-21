@@ -334,6 +334,7 @@ export default defineConfig({
         "@xihan-ui/vue/sound",
         "@xihan-ui/motion",
         "@xihan-ui/animations",
+        "@xihan-ui/icons",
       ],
     },
   },

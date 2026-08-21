@@ -3,11 +3,13 @@
 import { ref } from "vue";
 import {
   XhTreeBranch,
+  XhTreeBranchCheckbox,
   XhTreeBranchContent,
   XhTreeBranchControl,
   XhTreeBranchText,
   XhTreeBranchTrigger,
   XhTreeItem,
+  XhTreeItemCheckbox,
   XhTreeItemText,
   XhTreeLabel,
   XhTreeRoot,
@@ -35,25 +37,11 @@ const collection = [
 ];
 
 const selected = ref<string[]>(["hz"]);
-
-const boxStyle = {
-  display: "inline-flex",
-  flex: "none",
-  alignItems: "center",
-  justifyContent: "center",
-  inlineSize: "1rem",
-  blockSize: "1rem",
-  border: "1px solid var(--xh-border-strong)",
-  borderRadius: "3px",
-  fontSize: "0.75rem",
-  lineHeight: "1",
-};
 </script>
 
 <template>
   <div style="display: grid; gap: 8px; justify-items: start">
     <XhTreeRoot
-      v-slot="{ isSelected, isIndeterminate }"
       v-model:selected-value="selected"
       :collection="collection"
       :default-expanded-value="['east', 'north']"
@@ -65,16 +53,12 @@ const boxStyle = {
         <XhTreeBranch v-for="region in collection" :key="region.value" :value="region.value">
           <XhTreeBranchControl>
             <XhTreeBranchTrigger />
-            <span aria-hidden="true" :style="boxStyle">
-              {{ isSelected(region.value) ? "✓" : isIndeterminate(region.value) ? "–" : "" }}
-            </span>
+            <XhTreeBranchCheckbox />
             <XhTreeBranchText>{{ region.label }}</XhTreeBranchText>
           </XhTreeBranchControl>
           <XhTreeBranchContent>
             <XhTreeItem v-for="city in region.children" :key="city.value" :value="city.value">
-              <span aria-hidden="true" :style="boxStyle">
-                {{ isSelected(city.value) ? "✓" : "" }}
-              </span>
+              <XhTreeItemCheckbox />
               <XhTreeItemText>{{ city.label }}</XhTreeItemText>
             </XhTreeItem>
           </XhTreeBranchContent>

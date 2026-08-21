@@ -1,6 +1,8 @@
 <!-- 图标与自定义排版 | 卡片里排什么由作者定：图标与标题排成一行，标题、描述两个部件的内容都归作者写 -->
 <script setup lang="ts">
+import { CheckIcon, TriangleAlertIcon, XIcon } from "@xihan-ui/icons";
 import {
+  XhIcon,
   XhToastDescription,
   XhToastRoot,
   XhToastTitle,
@@ -9,19 +11,19 @@ import {
 const items = [
   {
     type: "success",
-    glyph: "✓",
+    glyph: CheckIcon,
     title: "发布成功",
     description: "文档已对所有人可见",
   },
   {
     type: "warning",
-    glyph: "!",
+    glyph: TriangleAlertIcon,
     title: "配额即将用尽",
     description: "本月还剩 8% 额度",
   },
   {
     type: "error",
-    glyph: "✕",
+    glyph: XIcon,
     title: "同步失败",
     description: "网络中断，稍后自动重试",
   },
@@ -51,7 +53,7 @@ const glyphStyle = {
       :closable="false"
     >
       <div style="display: flex; align-items: center; gap: 8px">
-        <span aria-hidden="true" :style="glyphStyle">{{ item.glyph }}</span>
+        <span aria-hidden="true" :style="glyphStyle"><XhIcon :icon="item.glyph" /></span>
         <XhToastTitle>{{ item.title }}</XhToastTitle>
       </div>
       <XhToastDescription>{{ item.description }}</XhToastDescription>

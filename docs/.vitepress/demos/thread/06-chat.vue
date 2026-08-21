@@ -1,10 +1,12 @@
 <!-- 会话页 | 线程管滚动与粘底，编辑器管收话：发出去先落一条自己的消息，回话一段段写进来时消息区自动跟到底 -->
 <script setup lang="ts">
 import { ref } from "vue";
+import { ArrowDownIcon } from "@xihan-ui/icons";
 import {
   XhComposerInput,
   XhComposerRoot,
   XhComposerSubmitTrigger,
+  XhIcon,
   XhThreadContent,
   XhThreadRoot,
   XhThreadScrollButton,
@@ -62,7 +64,7 @@ function onStop(): void {
           </p>
         </XhThreadContent>
       </XhThreadViewport>
-      <XhThreadScrollButton>↓ 回到底部</XhThreadScrollButton>
+      <XhThreadScrollButton><XhIcon :icon="ArrowDownIcon" /> 回到底部</XhThreadScrollButton>
     </XhThreadRoot>
 
     <XhComposerRoot

@@ -1,7 +1,9 @@
 <!-- 分组与标记位 | 组标题与组内条目用 role="group" 加 aria-labelledby 对上；中间包一层不影响方向键行程，条目里标记位与文字各占一段 -->
 <script setup lang="ts">
+import { CheckIcon } from "@xihan-ui/icons";
 import { ref } from "vue";
 import {
+  XhIcon,
   XhMenuContent,
   XhMenuItem,
   XhMenuPositioner,
@@ -70,7 +72,7 @@ const markStyle = {
             <div role="group" :aria-labelledby="`menu-group-${g.value}`">
               <div :id="`menu-group-${g.value}`" :style="labelStyle">{{ g.label }}</div>
               <XhMenuItem v-for="item in g.items" :key="item.value" :value="item.value">
-                <span :style="markStyle">{{ checked(g.value, item.value) ? "✓" : "" }}</span>
+                <span :style="markStyle"><XhIcon v-if="checked(g.value, item.value)" :icon="CheckIcon" /></span>
                 <span>{{ item.label }}</span>
               </XhMenuItem>
             </div>

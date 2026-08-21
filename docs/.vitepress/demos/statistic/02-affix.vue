@@ -1,6 +1,8 @@
 <!-- 前后缀 | prefix 与 suffix 和数值排在同一行、按基线对齐，比数值小一档 -->
 <script setup lang="ts">
+import { ArrowUpIcon } from "@xihan-ui/icons";
 import {
+  XhIcon,
   XhStatisticLabel,
   XhStatisticPrefix,
   XhStatisticRoot,
@@ -25,7 +27,7 @@ import {
 
     <XhStatisticRoot>
       <XhStatisticLabel>较上月</XhStatisticLabel>
-      <XhStatisticPrefix>↑</XhStatisticPrefix>
+      <XhStatisticPrefix><XhIcon :icon="ArrowUpIcon" /></XhStatisticPrefix>
       <XhStatisticValue>12.5</XhStatisticValue>
       <XhStatisticSuffix>%</XhStatisticSuffix>
     </XhStatisticRoot>

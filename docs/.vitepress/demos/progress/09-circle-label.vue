@@ -1,6 +1,7 @@
 <!-- 环心文字 | 组件只负责把内容摆到环心，写什么由使用者决定 -->
 <script setup lang="ts">
-import { XhProgress } from "@xihan-ui/vue";
+import { CheckIcon } from "@xihan-ui/icons";
+import { XhIcon, XhProgress } from "@xihan-ui/vue";
 </script>
 
 <template>
@@ -15,7 +16,7 @@ import { XhProgress } from "@xihan-ui/vue";
     </XhProgress>
 
     <XhProgress variant="circle" :value="100" tone="success">
-      <span style="font-size: 24px">✓</span>
+      <span style="font-size: 24px"><XhIcon :icon="CheckIcon" /></span>
     </XhProgress>
   </div>
 </template>

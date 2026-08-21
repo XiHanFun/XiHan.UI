@@ -35,14 +35,14 @@ const groups = [
 </script>
 
 <template>
-  <XhListboxRoot v-slot="{ isSelected }" v-model:value="city" style="max-inline-size: 320px">
+  <XhListboxRoot v-model:value="city" style="max-inline-size: 320px">
     <XhListboxLabel>城市</XhListboxLabel>
     <XhListboxContent>
       <XhListboxItemGroup v-for="g in groups" :key="g.value" :value="g.value">
         <XhListboxItemGroupLabel>{{ g.label }}</XhListboxItemGroupLabel>
         <XhListboxItem v-for="c in g.items" :key="c.value" :value="c.value">
           <XhListboxItemText>{{ c.label }}</XhListboxItemText>
-          <XhListboxItemIndicator>{{ isSelected(c.value) ? "✓" : "" }}</XhListboxItemIndicator>
+          <XhListboxItemIndicator />
         </XhListboxItem>
       </XhListboxItemGroup>
     </XhListboxContent>

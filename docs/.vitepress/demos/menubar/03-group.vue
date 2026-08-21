@@ -31,15 +31,15 @@ function onSelect(details: { menu: string; value: string }): void {
           <XhMenubarGroup value="theme">
             <XhMenubarGroupLabel>主题</XhMenubarGroupLabel>
             <XhMenubarItem value="light">
-              <XhMenubarItemIndicator>
-                {{ theme === "light" ? "✓" : "" }}
-              </XhMenubarItemIndicator>
+              <XhMenubarItemIndicator
+                :style="{ visibility: theme === 'light' ? 'visible' : 'hidden' }"
+              />
               <XhMenubarItemText>浅色</XhMenubarItemText>
             </XhMenubarItem>
             <XhMenubarItem value="dark">
-              <XhMenubarItemIndicator>
-                {{ theme === "dark" ? "✓" : "" }}
-              </XhMenubarItemIndicator>
+              <XhMenubarItemIndicator
+                :style="{ visibility: theme === 'dark' ? 'visible' : 'hidden' }"
+              />
               <XhMenubarItemText>深色</XhMenubarItemText>
             </XhMenubarItem>
           </XhMenubarGroup>

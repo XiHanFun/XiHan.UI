@@ -14,7 +14,7 @@
               <span data-xh-part="item-text">按名称</span>
             </div>
             <div data-xh-part="item" value="time">
-              <span data-xh-part="item-indicator"></span>
+              <span data-xh-part="item-indicator" style="visibility: hidden"></span>
               <span data-xh-part="item-text">按时间</span>
             </div>
           </div>
@@ -49,8 +49,8 @@
     if (!(picked in labels)) return;
     for (const value of Object.keys(labels)) {
       const item = menu.querySelector(`[data-xh-part="item"][value="${value}"]`);
-      item.querySelector('[data-xh-part="item-indicator"]').textContent =
-        value === picked ? "✓" : "";
+      item.querySelector('[data-xh-part="item-indicator"]').style.visibility =
+        value === picked ? "" : "hidden";
     }
     readout.textContent = labels[picked];
   });

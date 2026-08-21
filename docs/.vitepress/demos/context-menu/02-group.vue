@@ -35,15 +35,15 @@ function onSelect(details: { value: string }): void {
           <XhContextMenuGroup value="sort">
             <XhContextMenuGroupLabel>排序方式</XhContextMenuGroupLabel>
             <XhContextMenuItem value="name">
-              <XhContextMenuItemIndicator>
-                {{ sortBy === "name" ? "✓" : "" }}
-              </XhContextMenuItemIndicator>
+              <XhContextMenuItemIndicator
+                :style="{ visibility: sortBy === 'name' ? 'visible' : 'hidden' }"
+              />
               <XhContextMenuItemText>按名称</XhContextMenuItemText>
             </XhContextMenuItem>
             <XhContextMenuItem value="time">
-              <XhContextMenuItemIndicator>
-                {{ sortBy === "time" ? "✓" : "" }}
-              </XhContextMenuItemIndicator>
+              <XhContextMenuItemIndicator
+                :style="{ visibility: sortBy === 'time' ? 'visible' : 'hidden' }"
+              />
               <XhContextMenuItemText>按时间</XhContextMenuItemText>
             </XhContextMenuItem>
           </XhContextMenuGroup>

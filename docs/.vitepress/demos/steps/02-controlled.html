@@ -58,7 +58,7 @@
     steps.step = next;
     readout.textContent = String(next);
     indicators.forEach((indicator, index) => {
-      indicator.textContent = next > index ? "✓" : String(index + 1);
+      indicator.textContent = next > index ? "" : String(index + 1);
     });
   }
 

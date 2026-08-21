@@ -129,4 +129,21 @@
     inline-size: var(--xh-breadcrumb-ellipsis-size, var(--xh-space-5));
     cursor: default;
   }
+
+  /* 没写内容就由皮肤画兜底字形（向前的尖角）；作者写了斜杠或自己的图形，这条即不命中 */
+  [data-scope='breadcrumb'][data-part='separator']:empty::before {
+    content: '';
+    display: inline-block;
+    inline-size: 1em;
+    block-size: 1em;
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
+  }
+
+  /* 从右往左排版时「向前」在左边 */
+  [dir='rtl'] [data-scope='breadcrumb'][data-part='separator']:empty::before {
+    rotate: 180deg;
+  }
 }
