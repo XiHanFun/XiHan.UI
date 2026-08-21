@@ -99,7 +99,7 @@
 
   /* 没写内容就由皮肤画；作者往部件里塞了自己的图形，这条规则即不命中 */
   [data-scope='accordion'][data-part='indicator']:empty::before {
-    content: '⌄';
+    content: var(--xh-glyph-mark-chevron-down);
   }
 
   [data-scope='accordion'][data-part='indicator'][data-state='open'] {

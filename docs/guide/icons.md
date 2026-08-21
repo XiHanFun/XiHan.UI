@@ -14,6 +14,57 @@ import { ArrowDownIcon } from '@xihan-ui/icons'
 
 它不打算做成一套穷尽的图标库。图标审美与授权都属于使用者，我们不替你选——要用 Lucide、Tabler、Bootstrap Icons 还是你自己画的一套，把 SVG 目录交给下面的转换器就行。集合大小不影响你的产物：打包器逐枚证明未被引用并摇掉，只引一枚就只付一枚的体积。
 
+## 组件自带的兜底字形
+
+作者什么都不往指示器里塞时，皮肤会替他画一个：多选框里的勾、下拉框的箭头、表头的排序方向。这些字形不再散在各份皮肤里各写一遍，而是收在一族令牌上，改一处全库跟着走：
+
+| 令牌 | 缺省 | 用在哪 |
+| --- | --- | --- |
+| `--xh-glyph-mark-check` | ✓ | cascader · checkbox · checkbox-group · combobox · listbox · popselect · select · transfer · tree |
+| `--xh-glyph-mark-minus` | − | cascader · checkbox-group · transfer · tree 的半选 |
+| `--xh-glyph-mark-caret-down` | ▾ | cascader · combobox · select 的展开箭头 |
+| `--xh-glyph-mark-caret-right` | ▸ | json-viewer 的分支三角 |
+| `--xh-glyph-mark-chevron-down` | ⌄ | accordion 的展开箭头 |
+| `--xh-glyph-mark-close` | ✕ | combobox 的清空钮 |
+| `--xh-glyph-mark-sort` · `-sort-asc` · `-sort-desc` | ↕ ↑ ↓ | table 的排序方向 |
+| `--xh-glyph-mark-required` | * | field · fieldset 的必填星号 |
+
+accordion 与 select 族用的是两种不同的下箭头（细弧的 `⌄` 与实心的 `▾`），这是既有观感、没有动它；想统一成一种，把两个令牌设成同一个值即可。
+
+### 换掉它们
+
+**通道一：改令牌。** 全局改写在 `:root` 上，只改一块就写在那块的容器上——它是普通的自定义属性，跟着 DOM 继承走：
+
+```css
+:root {
+  --xh-glyph-mark-check: '✔';
+}
+
+/* 只有这张表里的排序箭头换成三角 */
+.report-table {
+  --xh-glyph-mark-sort-asc: '▲';
+  --xh-glyph-mark-sort-desc: '▼';
+}
+```
+
+取值就是 CSS `content` 的取值，所以也可以给一张图：`--xh-glyph-mark-check: url("data:image/svg+xml,…")`。图片不吃 `currentColor`，要让图形跟着语气变色请走通道二。
+
+**通道二：自己放节点。** 往那个部件里写内容，皮肤那条规则就不命中——它带着 `:empty` 守卫：
+
+```vue
+<XhSelectItemIndicator>
+  <XhIcon :icon="CheckIcon" />
+</XhSelectItemIndicator>
+```
+
+```html
+<span data-xh-part="item-indicator"><svg data-xh-part="root">…</svg></span>
+```
+
+有九处只走通道一：checkbox-group 与 transfer 的全选格、table 的排序钮、field 与 fieldset 的必填星号。它们的伪元素要么是方框本身、要么贴在一行文字后面，那个部件里本来就装着别的东西，`:empty` 恒不命中。在这几处要自己接管，把令牌设成 `none` 再把图形放进相应部件。
+
+json-viewer 键名后面那个冒号不在这族里：它是 JSON 这个数据格式的语法字符，不是视觉标记。hotkeys 的 `⌘` `⇧` 键帽、image-viewer 工具条、以及命令式 toast / dialog 默认模板里的字形走的是另一条路——它们由 JS 渲染成文本，各有自己的覆盖口，不受这族令牌影响。
+
 ## 把任意 SVG 目录转成图标集
 
 包里带一个 `xihan-icons` 命令：

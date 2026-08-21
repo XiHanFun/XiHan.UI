@@ -43,7 +43,7 @@
 
   /* 必填星号：跟着根上的 data-required 亮，选填不标 */
   [data-scope='fieldset'][data-part='root'][data-required] > [data-scope='fieldset'][data-part='legend']::after {
-    content: '*';
+    content: var(--xh-glyph-mark-required);
     margin-inline-start: var(--xh-space-1);
     color: var(--xh-fieldset-legend-star, var(--xh-fg-danger));
   }

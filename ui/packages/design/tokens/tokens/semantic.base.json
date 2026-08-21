@@ -73,6 +73,46 @@
     "baseline-shift": {
       "$type": "dimension",
       "$value": "-0.125em"
+    },
+    "mark-check": {
+      "$type": "string",
+      "$value": "'✓'"
+    },
+    "mark-minus": {
+      "$type": "string",
+      "$value": "'−'"
+    },
+    "mark-close": {
+      "$type": "string",
+      "$value": "'✕'"
+    },
+    "mark-caret-down": {
+      "$type": "string",
+      "$value": "'▾'"
+    },
+    "mark-caret-right": {
+      "$type": "string",
+      "$value": "'▸'"
+    },
+    "mark-chevron-down": {
+      "$type": "string",
+      "$value": "'⌄'"
+    },
+    "mark-sort": {
+      "$type": "string",
+      "$value": "'↕'"
+    },
+    "mark-sort-asc": {
+      "$type": "string",
+      "$value": "'↑'"
+    },
+    "mark-sort-desc": {
+      "$type": "string",
+      "$value": "'↓'"
+    },
+    "mark-required": {
+      "$type": "string",
+      "$value": "'*'"
     }
   },
   "field": {

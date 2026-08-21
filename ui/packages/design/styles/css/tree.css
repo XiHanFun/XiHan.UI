@@ -132,12 +132,12 @@
   /* 没写内容就由皮肤画；作者往把手里塞了自己的图形，这条规则即不命中 */
   [data-scope='tree'][data-part='item-checkbox'][data-selected]:empty::before,
   [data-scope='tree'][data-part='branch-checkbox'][data-selected]:empty::before {
-    content: '✓';
+    content: var(--xh-glyph-mark-check);
   }
 
   [data-scope='tree'][data-part='item-checkbox'][data-indeterminate]:not([data-selected]):empty::before,
   [data-scope='tree'][data-part='branch-checkbox'][data-indeterminate]:not([data-selected]):empty::before {
-    content: '−';
+    content: var(--xh-glyph-mark-minus);
   }
 
   [data-scope='tree'][data-part='item-checkbox'][data-disabled],

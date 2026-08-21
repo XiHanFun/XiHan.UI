@@ -197,7 +197,7 @@
 
   /* 没写内容就由皮肤画；作者往部件里塞了自己的图形，这条规则即不命中 */
   [data-scope='json-viewer'][data-part='branch-indicator']:empty::before {
-    content: '▸';
+    content: var(--xh-glyph-mark-caret-right);
   }
 
   /* 收起时朝向行首、展开时转向下方，与逻辑书写方向一致：

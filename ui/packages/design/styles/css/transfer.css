@@ -216,19 +216,21 @@
     background: var(--xh-transfer-checkbox-bg-checked, var(--xh-bg-brand));
   }
 
-  /* 勾号由皮肤补，作者不必自己往格子里塞字符 */
-  [data-scope='transfer'][data-part='item-checkbox'][data-state='checked']::before {
-    content: '✓';
+  /* 没写内容就由皮肤画勾；作者往格子里塞了自己的图形，这条规则即不命中。
+     底下两处（全选格的两态）不带这条守卫：那里的 ::before 是方框本身，
+     而触发器里装的是全选那行文字，:empty 恒不命中，加了勾号会整个消失 */
+  [data-scope='transfer'][data-part='item-checkbox'][data-state='checked']:empty::before {
+    content: var(--xh-glyph-mark-check);
   }
 
   /* 全选格的三态：all 打勾、some 打横杠、none 留空。
      some 就是读屏听到的 aria-checked=mixed，两者同源，样式只认 data-state */
   [data-scope='transfer'][data-part='select-all-trigger'][data-state='all']::before {
-    content: '✓';
+    content: var(--xh-glyph-mark-check);
   }
 
   [data-scope='transfer'][data-part='select-all-trigger'][data-state='some']::before {
-    content: '−';
+    content: var(--xh-glyph-mark-minus);
   }
 
   [data-scope='transfer'][data-part='item-checkbox'][data-disabled] {

@@ -1,6 +1,6 @@
 import type { CheckboxCheckedState, CheckboxSchema } from '@xihan-ui/headless'
 import type { Size, Tone } from '@xihan-ui/kernel'
-import type { PropType } from 'vue'
+import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { slotPaints } from '../../runtime/slot-content'
@@ -24,6 +24,12 @@ export const XhCheckbox = defineComponent({
     tone: String as PropType<Tone>,
     size: String as PropType<Size>,
   },
+  slots: Object as SlotsType<{
+    /** 方框旁的文字；不写就只有一个方框。 */
+    default?: () => VNode[]
+    /** 方框里的图形；不写由皮肤画勾。 */
+    indicator?: () => VNode[]
+  }>,
   // checked-change 携带 { checked }，update:checked 携带裸布尔
   emits: {
     'checked-change': (_details: PayloadOf<CheckboxProps, 'onCheckedChange'>) => true,
@@ -39,7 +45,7 @@ export const XhCheckbox = defineComponent({
     // 给了 name 才有这个节点——type=hidden 不是交互内容，放进 button 里是合法的
     return () => {
       const box = h('button', api.value.getRootProps() as Record<string, unknown>, [
-        h('span', api.value.getIndicatorProps() as Record<string, unknown>),
+        h('span', api.value.getIndicatorProps() as Record<string, unknown>, slots.indicator?.()),
         props.name === undefined ? null : h('input', api.value.getHiddenInputProps() as Record<string, unknown>),
       ])
       // 默认插槽是方框旁的文字：<label> 包住两者，点文字即切换。没给文字就只有方框
