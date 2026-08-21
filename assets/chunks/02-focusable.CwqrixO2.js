@@ -1,0 +1,50 @@
+const n=`<!-- 横向 + 键盘可达 | focusable 让滑块进 Tab 序并报 role=scrollbar，方向键与翻页键可用 -->
+<div style="position: relative; inline-size: 320px">
+  <div
+    id="scrollbar-focusable-box"
+    style="
+      overflow: auto;
+      scrollbar-width: none;
+      border: 1px solid var(--xh-border-default);
+      border-radius: var(--xh-shape-surface);
+      padding: 8px;
+    "
+  >
+    <div id="scrollbar-focusable-row" style="display: flex; gap: 8px; inline-size: max-content"></div>
+  </div>
+
+  <xh-scrollbar
+    id="scrollbar-focusable"
+    controls="scrollbar-focusable-box"
+    orientation="horizontal"
+    type="always"
+    size="lg"
+    focusable
+  >
+    <div data-xh-part="root">
+      <div data-xh-part="track">
+        <div data-xh-part="thumb"></div>
+      </div>
+    </div>
+  </xh-scrollbar>
+</div>
+
+<span style="font-size: 13px">Tab 到滑块上，用左右键 / PageUp / PageDown / Home / End 滚动</span>
+
+<script type="module">
+  document.getElementById("scrollbar-focusable-row").replaceChildren(
+    ...Array.from({ length: 24 }, (_, i) => {
+      const cell = document.createElement("div");
+      cell.style.padding = "6px 12px";
+      cell.style.borderRadius = "var(--xh-shape-control)";
+      cell.style.background = "var(--xh-bg-subtle)";
+      cell.style.whiteSpace = "nowrap";
+      cell.textContent = \`第 \${i + 1} 列\`;
+      return cell;
+    }),
+  );
+
+  // 文案是对象，只能走 property
+  document.getElementById("scrollbar-focusable").translations = { thumb: "横向滚动条" };
+<\/script>
+`;export{n as default};

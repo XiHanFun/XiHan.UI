@@ -1,0 +1,37 @@
+const n=`<!-- 挂在自己的滚动容器上 | 滚动容器归你，滚动条只要拿到它；把节点交给 scrollable 即可 -->
+<!-- 定位上下文归容器：滚动条是绝对定位的，贴的是最近那个定位祖先 -->
+<div style="position: relative; inline-size: 240px">
+  <!-- 藏掉原生滚动条的外观，滚动能力一点不动 -->
+  <div
+    id="scrollbar-basic-box"
+    style="
+      block-size: 160px;
+      overflow: auto;
+      scrollbar-width: none;
+      border: 1px solid var(--xh-border-default);
+      border-radius: var(--xh-shape-surface);
+      padding: 8px;
+    "
+  ></div>
+
+  <xh-scrollbar controls="scrollbar-basic-box" type="always">
+    <div data-xh-part="root">
+      <div data-xh-part="track">
+        <div data-xh-part="thumb"></div>
+      </div>
+    </div>
+  </xh-scrollbar>
+</div>
+
+<script type="module">
+  const box = document.getElementById("scrollbar-basic-box");
+  box.replaceChildren(
+    ...Array.from({ length: 40 }, (_, i) => {
+      const line = document.createElement("div");
+      line.style.paddingBlock = "2px";
+      line.textContent = \`第 \${i + 1} 行内容\`;
+      return line;
+    }),
+  );
+<\/script>
+`;export{n as default};

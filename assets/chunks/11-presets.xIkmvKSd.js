@@ -1,0 +1,82 @@
+const e=`<!-- 快捷选项 | presets 在列旁边多排一列，点一条整份写进值并收起；时刻在组件外算好再传 -->
+<div id="time-picker-presets"></div>
+<span style="font-size: 13px">
+  当前值：<span id="time-picker-presets-value">（空）</span>
+</span>
+
+<!-- 结构先收在模板里：列里的格子与快捷选项要在元素接线前就位，所以铺满了才入页 -->
+<template id="time-picker-presets-shell">
+  <xh-time-picker step="15">
+    <div data-xh-part="root">
+      <label data-xh-part="label">提交时刻</label>
+      <div data-xh-part="control">
+        <span data-xh-part="input" segment="hour"></span>
+        <span>:</span>
+        <span data-xh-part="input" segment="minute"></span>
+        <button data-xh-part="trigger">▾</button>
+      </div>
+      <div data-xh-part="positioner">
+        <div data-xh-part="content">
+          <div data-xh-part="presets"></div>
+          <div data-xh-part="column" unit="hour"></div>
+          <div data-xh-part="column" unit="minute"></div>
+        </div>
+      </div>
+    </div>
+  </xh-time-picker>
+</template>
+
+<script type="module">
+  const stage = document.getElementById("time-picker-presets");
+  const readout = document.getElementById("time-picker-presets-value");
+  const node = document
+    .getElementById("time-picker-presets-shell")
+    .content.cloneNode(true);
+
+  // 往一列里铺格子，值是两位补零的显示串
+  function fill(column, count, step) {
+    for (let i = 0; i < count; i += step) {
+      const item = document.createElement("div");
+      item.dataset.xhPart = "item";
+      item.setAttribute("value", String(i).padStart(2, "0"));
+      column.append(item);
+    }
+  }
+
+  // 示例台不能 import 包，这里把 timePickerPresetNow 做的事等价地写一遍
+  function now() {
+    const d = new Date();
+    return \`\${\`\${d.getHours()}\`.padStart(2, "0")}:\${\`\${d.getMinutes()}\`.padStart(2, "0")}\`;
+  }
+
+  // 时刻算一次就固定下来，组件只认已经算好的字面值
+  const presets = [
+    { label: "此刻", value: now() },
+    { label: "上午 9 点", value: "09:00" },
+    { label: "午休", value: "12:00" },
+    { label: "下班", value: "18:00" },
+  ];
+
+  fill(node.querySelector('[unit="hour"]'), 24, 1);
+  fill(node.querySelector('[unit="minute"]'), 60, 15);
+
+  // 条目由作者铺，身份写在 value 属性上；元素只负责把行为打上去
+  node.querySelector('[data-xh-part="presets"]').replaceChildren(
+    ...presets.map((preset) => {
+      const item = document.createElement("div");
+      item.dataset.xhPart = "preset";
+      item.setAttribute("value", preset.value);
+      item.textContent = preset.label;
+      return item;
+    }),
+  );
+
+  const picker = node.querySelector("xh-time-picker");
+  picker.presets = presets;
+  picker.addEventListener("value-change", (event) => {
+    readout.textContent = event.detail.value || "（空）";
+  });
+
+  stage.append(node);
+<\/script>
+`;export{e as default};
