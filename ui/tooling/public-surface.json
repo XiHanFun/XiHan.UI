@@ -6804,6 +6804,7 @@
     "data-channel",
     "data-checked-count",
     "data-circular",
+    "data-clearable",
     "data-collapsed",
     "data-cols",
     "data-column",

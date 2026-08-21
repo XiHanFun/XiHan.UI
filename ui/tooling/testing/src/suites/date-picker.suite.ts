@@ -585,7 +585,7 @@ export const datePickerSuite: ConformanceSuite = {
           part: 'clear-trigger',
           expect: {
             parts: {
-              'clear-trigger': { 'disabled': '', 'data-disabled': '' },
+              'clear-trigger': { 'hidden': '', 'disabled': '', 'data-disabled': '' },
               'input[0]': { 'data-empty': '', 'data-complete': null },
               'input[1]': { 'data-empty': '', 'data-complete': null },
             },
@@ -663,7 +663,7 @@ export const datePickerSuite: ConformanceSuite = {
           part: 'clear-trigger',
           expect: {
             parts: {
-              'clear-trigger': { 'disabled': '', 'data-disabled': '' },
+              'clear-trigger': { 'hidden': '', 'disabled': '', 'data-disabled': '' },
               'input': { 'data-empty': '', 'data-complete': null },
             },
             events: [{ type: 'value-change', detail: { value: [] } }],
@@ -755,7 +755,7 @@ export const datePickerSuite: ConformanceSuite = {
           'root': { 'data-disabled': '' },
           'input': { 'aria-disabled': 'true', 'data-disabled': '' },
           'trigger': { disabled: '' },
-          'clear-trigger': { disabled: '' },
+          'clear-trigger': { hidden: '', disabled: '' },
         },
       },
       steps: [

@@ -397,6 +397,9 @@ export function connectTagsInput<T extends PropTypes>(
       'aria-label': label.clearTrigger,
       // 不占 Tab 位，键盘用户走 Backspace 逐个删
       'tabindex': -1,
+      // 没值就整个收起，不是禁用：清空钮与下拉钮并排时，一个灰着一个亮着，
+      // 用户分不清哪个能点。有值才出现，出现即可用
+      'hidden': !canClear || undefined,
       'disabled': !canClear || undefined,
       'data-disabled': dataAttr(!canClear),
       'onPointerDown': (event: PointerEvent) => {

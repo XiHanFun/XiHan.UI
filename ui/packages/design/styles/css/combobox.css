@@ -255,6 +255,12 @@
     transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
+  /* 有值时清空钮顶上来，下拉钮让位：两个钮并排堆在框里，用户分不清点哪个。
+     让位而不是禁用——禁用的钮还占着位置，看着像坏了 */
+  [data-scope='combobox'][data-part='trigger'][data-clearable] {
+    display: none;
+  }
+
   [data-scope='combobox'][data-part='trigger'][hidden],
   [data-scope='combobox'][data-part='clear-trigger'][hidden] {
     display: none;

@@ -8347,6 +8347,12 @@ input[data-scope='mention'][data-part='input'] {
   color: var(--xh-fg-disabled);
 }
 
+/* 有值时清空钮顶上来，箭头让位：两个图标并排堆着，用户分不清点哪个。
+   让位而不是禁用——禁用的图标还占着位置，看着像坏了 */
+[data-scope='cascader'][data-part='indicator'][data-clearable] {
+  display: none;
+}
+
 [data-scope='cascader'][data-part='indicator'] {
   display: inline-flex;
   flex: none;
@@ -10142,6 +10148,12 @@ input[data-scope='mention'][data-part='input'] {
   transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
+/* 有值时清空钮顶上来，下拉钮让位：两个钮并排堆在框里，用户分不清点哪个。
+   让位而不是禁用——禁用的钮还占着位置，看着像坏了 */
+[data-scope='combobox'][data-part='trigger'][data-clearable] {
+  display: none;
+}
+
 [data-scope='combobox'][data-part='trigger'][hidden],
 [data-scope='combobox'][data-part='clear-trigger'][hidden] {
   display: none;
@@ -11219,6 +11231,12 @@ input[data-scope='mention'][data-part='input'] {
   cursor: pointer;
   user-select: none;
   transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+/* 有值时清空钮顶上来，下拉钮让位：两个钮并排堆在框里，用户分不清点哪个。
+   让位而不是禁用——禁用的钮还占着位置，看着像坏了 */
+[data-scope='date-picker'][data-part='trigger'][data-clearable] {
+  display: none;
 }
 
 [data-scope='date-picker'][data-part='trigger'][hidden],
@@ -19013,6 +19031,12 @@ input[data-scope='mention'][data-part='input'] {
   transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
+/* 有值时清空钮顶上来，下拉钮让位：两个钮并排堆在框里，用户分不清点哪个。
+   让位而不是禁用——禁用的钮还占着位置，看着像坏了 */
+[data-scope='time-picker'][data-part='trigger'][data-clearable] {
+  display: none;
+}
+
 [data-scope='time-picker'][data-part='trigger'][hidden],
 [data-scope='time-picker'][data-part='clear-trigger'][hidden] {
   display: none;
@@ -21180,6 +21204,12 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='tree-select'][data-part='value-text'][data-disabled] {
   color: var(--xh-fg-disabled);
+}
+
+/* 有值时清空钮顶上来，箭头让位：两个图标并排堆着，用户分不清点哪个。
+   让位而不是禁用——禁用的图标还占着位置，看着像坏了 */
+[data-scope='tree-select'][data-part='indicator'][data-clearable] {
+  display: none;
 }
 
 [data-scope='tree-select'][data-part='indicator'] {
