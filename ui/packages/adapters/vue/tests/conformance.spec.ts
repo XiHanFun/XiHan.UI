@@ -89,7 +89,7 @@ runConformance(
     radioGroupSuite,
     ratingSuite,
     scrollAreaSuite,
-  scrollbarSuite,
+    scrollbarSuite,
     selectSuite,
     separatorSuite,
     sliderSuite,
