@@ -122,7 +122,7 @@
 | [倒计时](./countdown) | `countdown` | 1 | 0 | 4 |
 | [描述列表](./descriptions) | `descriptions` | 4 | 0 | 5 |
 | [空状态](./empty-state) | `empty-state` | 5 | 0 | 5 |
-| [热力图](./heatmap) | `heatmap` | 13 | 10 | 10 |
+| [热力图](./heatmap) | `heatmap` | 13 | 10 | 11 |
 | [文本高亮](./highlight) | `highlight` | 2 | 0 | 4 |
 | [图片](./image) | `image` | 3 | 0 | 8 |
 | [图片预览](./image-viewer) | `image-viewer` | 18 | 8 | 3 |

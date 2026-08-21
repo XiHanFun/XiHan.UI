@@ -15673,6 +15673,15 @@
             },
             {
               "kind": "field",
+              "name": "palette",
+              "privacy": "public",
+              "type": {
+                "text": "HeatmapPalette | undefined"
+              },
+              "attribute": "palette"
+            },
+            {
+              "kind": "field",
               "name": "size",
               "privacy": "public",
               "type": {
@@ -15861,6 +15870,14 @@
               "description": "语气",
               "name": "tone",
               "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "HeatmapPalette | undefined"
+              },
+              "description": "色板，直接点名色阶满档的颜色；同时写了 tone 时听它的",
+              "name": "palette",
+              "fieldName": "palette"
             },
             {
               "type": {

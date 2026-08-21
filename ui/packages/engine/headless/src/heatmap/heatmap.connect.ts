@@ -240,6 +240,8 @@ export function connectHeatmap<T extends PropTypes>(
       // 缺省的 calendar 档写在皮肤的基础规则里，不写时不产出这个属性
       'data-variant': prop('variant'),
       'data-tone': prop('tone'),
+      // 皮肤里消费它的规则排在语气那条之后，两个都写时色板压过语气
+      'data-palette': prop('palette'),
       'data-size': prop('size'),
     }),
 

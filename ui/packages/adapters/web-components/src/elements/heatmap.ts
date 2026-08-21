@@ -5,6 +5,7 @@ import type {
   HeatmapGrid,
   HeatmapMatrixGrid,
   HeatmapMonthGrid,
+  HeatmapPalette,
   HeatmapRowProps,
   HeatmapSchema,
   HeatmapTranslations,
@@ -72,6 +73,7 @@ function ancestorValue(el: HTMLElement, part: string): string | undefined {
  * @attr {string} locale - 月份名与星期名的书写 locale，缺省 zh-CN
  * @attr {'ltr'|'rtl'} dir - 文字方向；只作显式覆盖，不写时方向从 DOM 现读
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
+ * @attr {'green'|'blue'|'orange'|'purple'|'red'|'gray'} palette - 色板，直接点名色阶满档的颜色；同时写了 tone 时听它的
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires cell-focus - 焦点落到某一格；detail 为 `{ date, row, column, count, level, percent }`
  * @fires cell-active - 详情该显示哪一格（悬停或聚焦）；收起时 detail 为 null
@@ -109,6 +111,7 @@ export class XhHeatmapElement extends XhElement {
     locale: { converter: STRING_CONVERTER },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     tone: { converter: STRING_CONVERTER },
+    palette: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
   }
 
@@ -125,6 +128,7 @@ export class XhHeatmapElement extends XhElement {
   declare locale?: string
   declare direction?: Direction
   declare tone?: Tone
+  declare palette?: HeatmapPalette
   declare size?: Size
 
   private readonly notifyFocus = (details: HeatmapCellFocusDetails): void => {
@@ -152,6 +156,7 @@ export class XhHeatmapElement extends XhElement {
       locale: this.locale,
       dir: this.direction,
       tone: this.tone,
+      palette: this.palette,
       size: this.size,
       translations: this.translations,
       onCellFocus: this.notifyFocus,

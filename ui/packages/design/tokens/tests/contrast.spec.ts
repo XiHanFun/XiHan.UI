@@ -274,6 +274,17 @@ describe('高对比档（data-contrast=\'more\'）：每条边界都不低于 4.
   })
 })
 
+describe('常规聚焦环', () => {
+  for (const theme of ['light', 'dark'] as const) {
+    // 环是图形不是文字，WCAG 1.4.11 要的是 3:1。这里算的是环对容器底色，
+    // 环压在别的颜色上（组件自己的底、相邻的实心块）由那些组件各自守
+    it(`${theme}：对画布与卡面都够到非文本那条线`, () => {
+      expect(round(contrast(theme, 'ring.focus', 'bg.canvas'))).toBeGreaterThanOrEqual(3)
+      expect(round(contrast(theme, 'ring.focus', 'bg.surface'))).toBeGreaterThanOrEqual(3)
+    })
+  }
+})
+
 // 三轴里的 tone 不改聚焦环，是因为 success / warning / info 对白底够不着对比度；
 // invalid 只有 danger 一种，那条理由在它身上不成立，所以两件事分开定。
 describe('校验失败的聚焦环', () => {
@@ -289,4 +300,153 @@ describe('校验失败的聚焦环', () => {
         .not.toBe(contrast(theme, 'ring.focus', 'bg.canvas'))
     })
   }
+})
+
+/* ---------- 热力图色板轴的色阶 ---------- */
+
+// 色阶不是一族令牌，是皮肤里一条 color-mix：0 档的空格底与满档的实心底在 oklab 里
+// 逐档兑出来。兑出来什么样只有把数算出来才知道，门禁与 axe 都看不见这一条。
+
+/** oklch 文本 → [明度, 彩度, 色相]。 */
+function oklchParts(css: string): [number, number, number] {
+  const m = /oklch\(\s*([\d.]+)\s+([\d.]+)\s+([\d.]+)/.exec(css)
+  if (!m)
+    throw new Error(`不是 oklch 颜色：${css}`)
+  return [Number(m[1]), Number(m[2]), Number(m[3])]
+}
+
+/** oklch 文本 → oklab 三分量。 */
+function toOklab(css: string): { l: number, a: number, b: number } {
+  const [lightness, chroma, hue] = oklchParts(css)
+  const h = (hue * Math.PI) / 180
+  return { l: lightness, a: chroma * Math.cos(h), b: chroma * Math.sin(h) }
+}
+
+/** oklab 三分量 → oklch 文本，接回上面那套亮度与对比度算法。 */
+function toOklch({ l, a, b }: { l: number, a: number, b: number }): string {
+  const hue = (Math.atan2(b, a) * 180) / Math.PI
+  return `oklch(${l} ${Math.hypot(a, b)} ${hue < 0 ? hue + 360 : hue})`
+}
+
+function primitiveValue(path: string): string {
+  const node = at(primitive, path)
+  if (!node?.$value)
+    throw new Error(`原语不存在：${path}`)
+  return node.$value
+}
+
+/** 色阶第 level 档：满档实心底按 level/(levels-1) 的比例兑进空格底。 */
+function heatmapStep(ink: string, empty: string, level: number, levels: number): string {
+  const p = level / (levels - 1)
+  const i = toOklab(ink)
+  const e = toOklab(empty)
+  return toOklch({ l: p * i.l + (1 - p) * e.l, a: p * i.a + (1 - p) * e.a, b: p * i.b + (1 - p) * e.b })
+}
+
+function ratio(fg: string, bg: string): number {
+  const a = luminance(fg)
+  const b = luminance(bg)
+  const [hi, lo] = a > b ? [a, b] : [b, a]
+  return (hi + 0.05) / (lo + 0.05)
+}
+
+// 缺省档数，与 headless 的 HEATMAP_LEVELS 同值
+const HEATMAP_LEVELS = 5
+
+// 满档实心底的取值，与 css/heatmap.css 的 [data-palette] 六条规则逐条对上。
+// 灰是唯一按主题换档的一族：中性 600 档明度 0.439 离深色态的空格底（0.269）太近。
+// 「不写色板」那一档走语义令牌 bg.brand，它本就按主题翻。
+const HEATMAP_PALETTES: ReadonlyArray<[string, string | null, string | null]> = [
+  ['不写色板', null, null],
+  ['green', 'color.success.600', 'color.success.600'],
+  ['blue', 'color.info.600', 'color.info.600'],
+  ['orange', 'color.warning.600', 'color.warning.600'],
+  ['purple', 'color.purple.600', 'color.purple.600'],
+  ['red', 'color.danger.600', 'color.danger.600'],
+  ['gray', 'color.neutral.600', 'color.neutral.450'],
+]
+
+// 四档主题各算一遍：高对比档换的是边框那一族，色阶的两端（bg.subtle 与各色板的原语）
+// 在那两档里不变，但格子的描边取的是 border.default，它在高对比档换了档
+const HEATMAP_THEMES = ['light', 'dark', 'light-more', 'dark-more'] as const
+
+function heatmapInk(theme: typeof HEATMAP_THEMES[number], light: string | null, dark: string | null): string {
+  const path = theme.startsWith('light') ? light : dark
+  return path == null ? resolve(theme, 'bg.brand') : primitiveValue(path)
+}
+
+describe('热力图色板轴：逐档明度严格单调', () => {
+  for (const theme of HEATMAP_THEMES) {
+    for (const [name, light, dark] of HEATMAP_PALETTES) {
+      it(`${theme} ${name}`, () => {
+        const ink = heatmapInk(theme, light, dark)
+        const empty = resolve(theme, 'bg.subtle')
+        const ls = Array.from({ length: HEATMAP_LEVELS }, (_, i) => toOklab(heatmapStep(ink, empty, i, HEATMAP_LEVELS)).l)
+        // 浅色态从亮走到暗，深色态反过来；方向由两端定，中间各档不许走回头路
+        const descending = ls[0]! > ls[HEATMAP_LEVELS - 1]!
+        for (let i = 1; i < HEATMAP_LEVELS; i++)
+          expect(descending ? ls[i]! < ls[i - 1]! : ls[i]! > ls[i - 1]!).toBe(true)
+      })
+    }
+  }
+})
+
+// 相邻两档的对比度棘轮。1.2 是实测最低的那一档（浅色态 orange 的 0↔1，1.225）再留一点余量：
+// 分档靠的是「看得出深浅不同」，不是 WCAG 的任何一条线（格子不是文字也不是控件边界），
+// 所以这里钉的是不许更淡，而不是某条规范阈值。
+describe('热力图色板轴：相邻两档分得开', () => {
+  for (const theme of HEATMAP_THEMES) {
+    for (const [name, light, dark] of HEATMAP_PALETTES) {
+      it(`${theme} ${name}`, () => {
+        const ink = heatmapInk(theme, light, dark)
+        const empty = resolve(theme, 'bg.subtle')
+        for (let i = 1; i < HEATMAP_LEVELS; i++) {
+          const lo = heatmapStep(ink, empty, i - 1, HEATMAP_LEVELS)
+          const hi = heatmapStep(ink, empty, i, HEATMAP_LEVELS)
+          expect(round(ratio(hi, lo))).toBeGreaterThanOrEqual(1.2)
+        }
+      })
+    }
+
+    // 0 档是空格、1 档是最低的有值档，这一对分不开整张图就读不出「哪几天是空的」
+    it(`${theme}：0 档与 1 档各色板都分得开`, () => {
+      for (const [, light, dark] of HEATMAP_PALETTES) {
+        const ink = heatmapInk(theme, light, dark)
+        const empty = resolve(theme, 'bg.subtle')
+        const zero = heatmapStep(ink, empty, 0, HEATMAP_LEVELS)
+        const one = heatmapStep(ink, empty, 1, HEATMAP_LEVELS)
+        expect(round(ratio(one, zero))).toBeGreaterThanOrEqual(1.2)
+      }
+    })
+  }
+})
+
+// 每格另有一圈 border.default 的内描边（css/heatmap.css 的 cell 与 legend-item）。
+// 它是空格与浅档在底色上的边界线索，两件事各钉一条：对 0 档要看得见，
+// 与满档实心底不能是同一个颜色——同色时那一档的描边等于没画。
+describe('热力图色板轴：格子的描边', () => {
+  for (const theme of HEATMAP_THEMES) {
+    it(`${theme}：描边对 0 档的空格看得出边界`, () => {
+      expect(round(ratio(resolve(theme, 'border.default'), resolve(theme, 'bg.subtle'))))
+        .toBeGreaterThanOrEqual(1.1)
+    })
+
+    for (const [name, light, dark] of HEATMAP_PALETTES) {
+      it(`${theme} ${name}：描边与满档实心底不同色`, () => {
+        expect(heatmapInk(theme, light, dark)).not.toBe(resolve(theme, 'border.default'))
+      })
+    }
+  }
+})
+
+// 紫不对应任何语气，只服务色板轴。它的明度与彩度逐档照 danger 族、只换色相：
+// 照抄一条已经验过的明度曲线，色阶的单调与分档质量就与 red 那一列逐值相同。
+describe('紫色原语沿用 danger 的明度曲线', () => {
+  it('purple.600 与 danger.600 只差色相', () => {
+    const [purpleL, purpleC, purpleH] = oklchParts(primitiveValue('color.purple.600'))
+    const [dangerL, dangerC] = oklchParts(primitiveValue('color.danger.600'))
+    expect(purpleL).toBe(dangerL)
+    expect(purpleC).toBe(dangerC)
+    expect(purpleH).toBe(302)
+  })
 })

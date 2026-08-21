@@ -20,6 +20,14 @@ import type {
 export type HeatmapCellFocusDetails = HeatmapCellDetails
 
 /**
+ * 色板：直接按颜色点名，定的是色阶满档那一端的实心底。
+ * 它是装饰性的一条轴，不是第四条语义轴——取值念的就是颜色本身，
+ * 与 tone 那六个语气词不同源，也不参与语气层的悬停 / 淡底 / 前景派生。
+ * 两个都写时听色板的：色板指名了一个具体颜色，语气只是推得出一个颜色。
+ */
+export type HeatmapPalette = 'blue' | 'gray' | 'green' | 'orange' | 'purple' | 'red'
+
+/**
  * 格子自报家门：日期形态给 date，矩阵形态给 row 与 column。
  * connect 据此产出属性，不反查 DOM：它在 Vue 的 render 期求值，此时 DOM 尚不存在。
  */
@@ -142,6 +150,8 @@ export interface HeatmapSchema extends MachineSchema {
     dir?: Direction
     /** 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 */
     tone?: Tone
+    /** 色板：green / blue / orange / purple / red / gray，直接点名色阶满档那一端的颜色；同时写了 tone 时听它的。 */
+    palette?: HeatmapPalette
     /** 尺寸：sm / md / lg。 */
     size?: Size
     translations?: Partial<HeatmapTranslations>

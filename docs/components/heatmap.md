@@ -32,14 +32,29 @@
 - 格距四周一样宽：数据行的高度钉死成格子的边长，不由行首那一列星期名的字撑开。三档尺寸的横向与纵向格距都是「聚焦环偏移 + 环宽」那一个值（缺省 4px），格子 sm 8px / md 10px / lg 12px。
 - 行首那一列星期名隔行画：只留第 0/2/4/6 行之外的那三行——周首日是星期一时是「二 / 四 / 六」，是星期日时是「一 / 三 / 五」。一行只有 10px 高而字是 12px，七个挨着写会上下叠在一起；隔一行之后每个留下来的字有两行的高度可用。三档尺寸一视同仁，不随档位变。要七行全画就把 `--xh-heatmap-week-day-skip` 改成一个看得见的颜色，比如 `var(--xh-heatmap-label-fg, var(--xh-fg-subtle))`（此时 `sm` 档会挨得很紧）。跳过的是字不是盒子：那几行只是字不上色，节点、文字、盒子与底色都还在——钉住那一列的实色底不能缺四行，缺了格子就从行首透出来，那四行也会不再参与命中测试，鼠标划过行首弹出的是看不见那一格的详情条。
 - 色阶对照条两端各写一个字（缺省「少」「多」），一排色块自己说不出哪头是多。文案走 `translations.legendLow` / `legendHigh`，部件是 `legend-label`（`value` 写 `low` 或 `high`）；Vue 侧不写默认插槽时两端自动铺出来，WC 侧从元素的 `legendText` 属性取这两个字。
-- 别的库把配色单开一条 `color-theme` 轴（green / blue / orange / purple / red），本库统一走 `tone` 这条语气轴，与其余组件共用：要绿写 `tone="success"`、要蓝写 `tone="info"`、要橙写 `tone="warning"`、要红写 `tone="danger"`、要灰写 `tone="neutral"`，不写即品牌色。语气轴之外的自定义色（紫色这类）改写 `--xh-heatmap-ink`（满档的实心底）与 `--xh-heatmap-empty`（0 档的空格底），中间各档由这两端兑出来。
+- 配色有两条路，缺省是品牌色。一条是 `tone` 语气轴（brand / neutral / success / warning / danger / info），与其余组件共用；另一条是 `palette` 色板轴（green / blue / orange / purple / red / gray），直接按颜色点名。色板只定色阶满档那一端的实心底，0 档的空格底与中间各档的兑法一概不动，也不参与语气层的悬停 / 淡底 / 前景派生——它是装饰性的一条轴，不是第四条语义轴。两个都写时听色板的：色板指名了一个具体颜色，语气只是推得出一个颜色。
 - 档数可调：不给 `thresholds` 就按网格内的最大值均分，给了就以它为准。
 - 要在图外报「总天数 / 空白天数与占比 / 最大值 / 平均值」不必自己再遍历一遍数据：三张网格都带 `max`（最大值）、`total`（总和）与 `emptyCount`（值为 0 的格子数），格子总数从 `cells.size` 读。`emptyCount` 数的是值为 0 的格子：没有数据的日子与写了 0 的日子都算。它不是「色阶第 0 档的格子数」——不给 `thresholds` 时首个下界恒为 1，两个数恰好相等；给了 `thresholds` 之后第 0 档还会收进低于首个下界的那些非零值，两个数不再相等。
 - 悬停或键盘聚焦到某一格就显示详情条，内容由作者写；组件只给身份、位置与这一格的数据（日期或行列、原始值、档位、在色阶里的位置）。
-- 语气与尺寸两轴与其余组件同源。
+- 语气与尺寸两轴与其余组件同源；色板轴是热力图独有的。
 - 两个适配器的作者侧写法不同，最终 DOM 一致：Vue 侧不写默认插槽就按形态自动铺开整棵树，另有 `cell` 插槽往每格里塞内容（三种形态都铺，载荷是日历那一格或矩阵那一格，用 `'date' in cell` 分辨）、`tooltip` 插槽写详情条的内容（写了它才铺出详情条）；Web Components 侧元素不生成任何结构，各部件都要作者写进标记，元素只负责按部件名打属性。
 - Web Components 侧铺一整年不必手写三百多个格子：`<xh-heatmap>` 上有 `grid` / `monthGrid` / `matrixGrid` 三个只读属性，分别对应三种形态推导出来的网格（行、列、月份段、星期名、档位标尺都在里面），照着循环生成节点即可——元素一连上就读得到，接线排在这之后，当场铺出来的格子赶得上。每读一次都重算一遍整张网格，取一次存下来用。两个插槽是 Vue 专属，WC 侧靠 `cell-active` 事件自己填详情条。
 - 自己写默认插槽铺网格时，锚点从载荷里的 `focusedCell` / `anchorCell` 读、用 `setFocusedCell` 挪：这一组三形态通用，带 `Date` 的那一组在矩阵形态下恒为 null。
+
+从别的库过来的对号入座表。左边一列是那些库写在 `color-theme` 上的取值，右边两列是本库的两条路——写哪一条都行，同一行的两种写法在缺省主题下产出同一个颜色（`gray` 是唯一的例外，见表下那条）：
+
+| 别处的 `color-theme` | 色板轴（推荐） | 语气轴 | 满档实心底取的原语 |
+| --- | --- | --- | --- |
+| `green` | `palette="green"` | `tone="success"` | `--xh-color-success-600` |
+| `blue` | `palette="blue"` | `tone="info"` | `--xh-color-info-600` |
+| `orange` | `palette="orange"` | `tone="warning"` | `--xh-color-warning-600` |
+| `purple` | `palette="purple"` | 语气轴里没有紫 | `--xh-color-purple-600` |
+| `red` | `palette="red"` | `tone="danger"` | `--xh-color-danger-600` |
+| （多数库没有） | `palette="gray"` | `tone="neutral"` | `--xh-color-neutral-600`；深色态换 `--xh-color-neutral-450` |
+| （多数库的缺省是绿） | 不写 | 不写 | `--xh-bg-brand`，跟着使用者的品牌色走 |
+
+- 灰是唯一按主题换档的一族：五个彩色族的 600 档明度在 0.577–0.705，深色态的空格底（`neutral-800`，明度 0.269）离得够远；中性 600 档只有 0.439，五档摊下来每档只差 0.0425、相邻两档对比度 1.16–1.20，等于看不出分档。因此深色态改取 `neutral-450`（明度 0.65），步长回到 0.095、相邻两档 1.42–1.50，与彩色族齐平；不取更亮的 `neutral-400` 是因为高对比档的 `border-default` 正是那一档，满档格子的描边会与底色同色。`tone="neutral"` 没有这层照顾，要灰色热力图请写 `palette="gray"`。
+- 这七种之外的任何颜色一直都可以直接给：改写 `--xh-heatmap-ink`（满档的实心底）与 `--xh-heatmap-empty`（0 档的空格底），中间各档由这两端在 oklab 里兑出来。这个口子的优先级最高，色板与语气都压不过它。
 
 ## 示例
 
@@ -55,53 +70,59 @@ tone 决定用哪族颜色，色阶两端跟着换，格子的分档不变
 
 <XhDemo src="heatmap/02-tone" />
 
+### 色板换色
+
+palette 直接按颜色点名，六个色板只换色阶满档那一端，分档与空格底都不动
+
+<XhDemo src="heatmap/03-palette" />
+
 ### 尺寸
 
 size 换格子边长与行首星期名的留白，一屏能放下的周数跟着变
 
-<XhDemo src="heatmap/03-size" />
+<XhDemo src="heatmap/04-size" />
 
 ### 档数
 
 levels 决定分几档，图例与格子共用同一条色阶
 
-<XhDemo src="heatmap/04-levels" />
+<XhDemo src="heatmap/05-levels" />
 
 ### 焦点明细
 
 焦点落到某一天时报出日期与计数，键盘用户与鼠标用户看到同一份明细
 
-<XhDemo src="heatmap/05-focus" />
+<XhDemo src="heatmap/06-focus" />
 
 ### 月历形态
 
 按自然月分块，每块是一张真月历，1 号落在它真实的星期几上
 
-<XhDemo src="heatmap/06-month" />
+<XhDemo src="heatmap/07-month" />
 
 ### 矩阵形态
 
 行列都由作者给，数据按行列定位而不按日期：星期 × 时段的活跃度
 
-<XhDemo src="heatmap/07-matrix" />
+<XhDemo src="heatmap/08-matrix" />
 
 ### 悬停详情
 
 指针悬停与键盘聚焦走同一条路：详情条跟着那一格走，Escape 收起
 
-<XhDemo src="heatmap/08-detail" />
+<XhDemo src="heatmap/09-detail" />
 
 ### 年份切换
 
 一排按钮换的是区间，网格、月份段、色阶与锚点全按新区间从头算
 
-<XhDemo src="heatmap/09-year" />
+<XhDemo src="heatmap/10-year" />
 
 ### 数据统计
 
 总天数、空白天数与占比、最大值、平均值都从网格模型直接读，不必自己再遍历一遍数据
 
-<XhDemo src="heatmap/10-stats" />
+<XhDemo src="heatmap/11-stats" />
 
 ## 产物
 
@@ -135,6 +156,7 @@ levels 决定分几档，图例与格子共用同一条色阶
 | `locale` | `string` |  | 月份名与星期名的书写 locale，缺省 zh-CN。 |
 | `dir` | `Direction` |  | 文字方向。只作显式覆盖：不写时方向从 DOM 现读， 左右方向键的语义跟着视觉次序走，上下键与它无关。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
+| `palette` | `HeatmapPalette` |  | 色板：green / blue / orange / purple / red / gray，直接点名色阶满档那一端的颜色；同时写了 tone 时听它的。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `translations` | `Partial<HeatmapTranslations>` |  |  |
 | `onCellFocus` | `(details: HeatmapCellFocusDetails) => void` |  | DOM 焦点落到某一格时通知一次；同一格重复聚焦不重复通知。 只由真实的聚焦触发，程序化挪锚点（`setFocusedCell`）不派这个回调。 |
@@ -272,6 +294,7 @@ levels 决定分几档，图例与格子共用同一条色阶
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `root` | `data-palette` | props.palette |
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
@@ -313,6 +336,8 @@ levels 决定分几档，图例与格子共用同一条色阶
 
 - 图例两端的那两个字照默认铺出来就好；要换成「Less / More」或别的说法改 `translations.legendLow` / `legendHigh`，别把它们删掉——只给一排色块，读者猜不出深色是多还是少。
 - 深浅不是唯一线索：数值必须在文案里说清楚，否则色觉障碍的用户什么都读不到。
+- 一张图只挑一条轴：要表达「这一族数据是告警」就写 `tone`，要表达「这张图用绿色」就写 `palette`，两个都写只会让读代码的人猜哪个赢。同一页并排的几张图更要统一，混着写会让读者以为颜色有语义。
+- 色板换的只是颜色不是语义：`palette="red"` 的格子不代表这些天出了问题，那层意思只能靠标题与文案说。
 - 数据里出现极端值时自己给 `thresholds`，按最大值均分会把其余格子全压到第 0、1 档，整张图变成一片空白加一个亮点。
 - 一屏放不下就让网格自己横向滚动，不要把格子压到看不清。整年在 `md` 档要 774px 上下，`sm` 档 660px 上下，容器窄于这个数就会出横向滚动条。
 - 键盘走到视口外的格子时网格会自己滚过去，落点已经让开钉住的那一列；给 root 另加内边距或换 `--xh-heatmap-gutter` 时不必再管这件事，两处读的是同一个值。
