@@ -127,6 +127,8 @@ export const scrollbarMachine = createMachine({
     pointerInside: cell<boolean>(() => ({ defaultValue: false })),
     drag: cell<ScrollbarSchema['context']['drag']>(() => ({ defaultValue: null })),
     scrolling: cell<boolean>(() => ({ defaultValue: false })),
+    coarse: cell<boolean>(() => ({ defaultValue: false })),
+    scrollableId: cell<string | null>(() => ({ defaultValue: null })),
   }),
   refs: () => ({
     getScrollableEl: () => null,
@@ -138,8 +140,8 @@ export const scrollbarMachine = createMachine({
     const type = prop('type') ?? SCROLLBAR_DEFAULT_TYPE
     return type === 'hover' || type === 'scroll' ? 'hidden' : 'visible'
   },
-  // 尺寸监听与首帧测量全程挂着
-  effects: ['trackScrollable'],
+  // 尺寸监听、首帧测量与指针类型探测全程挂着
+  effects: ['trackScrollable', 'trackPointerType'],
   on: {
     'MEASURE': { actions: ['measure'] },
     // 这几件在哪个状态下都是同一件事
@@ -388,6 +390,7 @@ export const scrollbarMachine = createMachine({
           detach = undefined
           attached = next
           if (!next) {
+            context.set('scrollableId', null)
             reportDiagnostic({
               code: DIAGNOSTIC_CODES.scrollbarMissingScrollable,
               level: 'warn',
@@ -397,6 +400,7 @@ export const scrollbarMachine = createMachine({
             return
           }
           detach = attach(next)
+          context.set('scrollableId', next.id || null)
           send({ type: 'MEASURE' })
         }
 
@@ -410,6 +414,18 @@ export const scrollbarMachine = createMachine({
           detach?.()
           detach = undefined
         }
+      },
+
+      /** 触屏（粗指针）上默认交给原生滚动；外接鼠标等设备切换时跟着变。 */
+      trackPointerType: ({ scope, context }) => {
+        const win = scope.getWin()
+        if (typeof win.matchMedia !== 'function')
+          return undefined
+        const query = win.matchMedia('(pointer: coarse)')
+        const sync = (): void => context.set('coarse', query.matches)
+        sync()
+        query.addEventListener('change', sync)
+        return () => query.removeEventListener('change', sync)
       },
 
       waitForHideDelay: ({ prop, send }) => {

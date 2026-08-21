@@ -16364,19 +16364,6 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 /* styles/scrollbar.css */
-/* 从收起到露出的淡入。收起走的是 [hidden]（display:none），没有退场动画可言——
-   display:none 是瞬时的，硬挂 fade-out 只会看到一帧都不播。
-   元素从 display:none 变回可见时动画会重新开始，这一条因此每次露面都播一遍。 */
-@keyframes xh-scrollbar-in {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
-}
-
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='scrollbar'] {
   --xh-scrollbar-skin: 1;
@@ -16391,45 +16378,62 @@ input[data-scope='mention'][data-part='input'] {
    根用绝对定位、贴容器的对应边：滚动容器归作者，本组件只要求它自己的定位祖先建了上下文。
    作者要把它放在别处（比如浮在内容之上、或摆到框外），改这一条即可。 */
 [data-scope='scrollbar'][data-part='root'] {
+  /* 厚度只算一次：尺寸档换的就是它，交叉口的让位与补丁都按同一个数 */
+  --xh-_scrollbar-thickness: var(--xh-scrollbar-thickness-md);
+
   position: absolute;
   /* touch-action 关掉浏览器自己的手势：不关的话手指一按滑块页面就跟着滚，
      指针随即被系统收走（pointercancel），拖到一半的滑块停在原地。
      user-select 同理——拖动时选中页面文字会让滑块"粘"住。 */
   touch-action: none;
   user-select: none;
+  /* 露出与收起都淡变；收起态连 visibility 一起收，退场播完才真正摸不到、也进不了 Tab 序 */
+  transition:
+    opacity var(--xh-motion-duration-enter) var(--xh-motion-ease-enter),
+    visibility 0s linear 0s;
+}
+
+[data-scope='scrollbar'][data-part='root'][data-size='sm'] {
+  --xh-_scrollbar-thickness: var(--xh-scrollbar-thickness-sm);
+}
+
+[data-scope='scrollbar'][data-part='root'][data-size='lg'] {
+  --xh-_scrollbar-thickness: var(--xh-scrollbar-thickness-lg);
 }
 
 [data-scope='scrollbar'][data-part='root'][data-orientation='vertical'] {
   inset-block: 0;
   inset-inline-end: 0;
-  inline-size: var(--xh-scrollbar-thickness-md);
+  inline-size: var(--xh-_scrollbar-thickness);
 }
 
 [data-scope='scrollbar'][data-part='root'][data-orientation='horizontal'] {
   inset-inline: 0;
   inset-block-end: 0;
-  block-size: var(--xh-scrollbar-thickness-md);
+  block-size: var(--xh-_scrollbar-thickness);
 }
 
-/* 尺寸档换的是厚度。两条轴各换各的那一维，另一维由上面两条铺满 */
-[data-scope='scrollbar'][data-part='root'][data-size='sm'][data-orientation='vertical'] {
-  inline-size: var(--xh-scrollbar-thickness-sm);
+/* 横竖两条同时摆着：各自在末端让出交叉口那一格，交叉口由 corner 补 */
+[data-scope='scrollbar'][data-part='root'][data-orientation='vertical'][data-gutter] {
+  inset-block-end: var(--xh-_scrollbar-thickness);
 }
 
-[data-scope='scrollbar'][data-part='root'][data-size='sm'][data-orientation='horizontal'] {
-  block-size: var(--xh-scrollbar-thickness-sm);
+[data-scope='scrollbar'][data-part='root'][data-orientation='horizontal'][data-gutter] {
+  inset-inline-end: var(--xh-_scrollbar-thickness);
 }
 
-[data-scope='scrollbar'][data-part='root'][data-size='lg'][data-orientation='vertical'] {
-  inline-size: var(--xh-scrollbar-thickness-lg);
+[data-scope='scrollbar'][data-part='root'][data-state='hidden'] {
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity var(--xh-motion-duration-exit) var(--xh-motion-ease-exit),
+    visibility 0s linear var(--xh-motion-duration-exit);
 }
 
-[data-scope='scrollbar'][data-part='root'][data-size='lg'][data-orientation='horizontal'] {
-  block-size: var(--xh-scrollbar-thickness-lg);
-}
-
-[data-scope='scrollbar'][data-part='root'][data-state='visible'] {
-  animation: xh-scrollbar-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+/* 触屏上交给原生滚动：整条不占位也不画 */
+[data-scope='scrollbar'][data-part='root'][data-native] {
+  display: none;
 }
 
 /* 轨道铺满根，滑块的行程按它量。内边距把滑块从两侧收进来一点，
@@ -16493,9 +16497,26 @@ input[data-scope='mention'][data-part='input'] {
   cursor: not-allowed;
 }
 
-/* display 会盖掉 UA 的 [hidden]{display:none}，凡是被赋了 display 的角色节点都要显式让位。
-   根没写 display，但 WC 侧会用内联 display 收它，这条把两条路对齐 */
-[data-scope='scrollbar'][data-part='root'][hidden] {
+/* 交叉口补丁：贴在本条末端之外的那一格，与轨道同色，跟着本条淡入淡出 */
+[data-scope='scrollbar'][data-part='corner'] {
+  position: absolute;
+  inline-size: var(--xh-_scrollbar-thickness);
+  block-size: var(--xh-_scrollbar-thickness);
+  background: var(--xh-scrollbar-corner-bg, var(--xh-scrollbar-track-bg, var(--xh-bg-scrollbar-track)));
+}
+
+[data-scope='scrollbar'][data-part='corner'][data-orientation='vertical'] {
+  inset-inline-start: 0;
+  inset-block-end: calc(-1 * var(--xh-_scrollbar-thickness));
+}
+
+[data-scope='scrollbar'][data-part='corner'][data-orientation='horizontal'] {
+  inset-block-start: 0;
+  inset-inline-end: calc(-1 * var(--xh-_scrollbar-thickness));
+}
+
+[data-scope='scrollbar'][data-part='root'][hidden],
+[data-scope='scrollbar'][data-part='corner'][hidden] {
   display: none;
 }
 

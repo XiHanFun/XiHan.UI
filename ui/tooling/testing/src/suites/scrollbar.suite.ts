@@ -153,7 +153,8 @@ export const scrollbarSuite: ConformanceSuite = {
             'data-type': 'always',
             'data-state': 'visible',
             'data-dragging': null,
-            'hidden': null,
+            'data-native': null,
+            'data-gutter': null,
           },
           track: { 'data-orientation': 'vertical' },
           thumb: {
@@ -167,11 +168,11 @@ export const scrollbarSuite: ConformanceSuite = {
       },
     },
     {
-      name: '默认（hover）：挂载时收着，根带 hidden',
+      name: '默认（hover）：挂载时收着，data-state=hidden 由皮肤淡出',
       spec: { apg: WCAG },
       props: BASE,
       initial: {
-        parts: { root: { 'data-type': 'hover', 'data-state': 'hidden', 'hidden': '' } },
+        parts: { root: { 'data-type': 'hover', 'data-state': 'hidden' } },
       },
     },
     {
@@ -179,7 +180,7 @@ export const scrollbarSuite: ConformanceSuite = {
       spec: { apg: WCAG },
       props: { ...BASE, type: 'auto' },
       steps: [
-        { ...layoutStep, expect: { parts: { root: { 'data-state': 'visible', 'hidden': null } } } },
+        { ...layoutStep, expect: { parts: { root: { 'data-state': 'visible' } } } },
       ],
     },
     {
@@ -188,7 +189,7 @@ export const scrollbarSuite: ConformanceSuite = {
       props: { ...BASE, type: 'hover', hideDelay: 300 },
       steps: [
         layoutStep,
-        { ...pointerOnTarget('pointerenter'), expect: { parts: { root: { 'data-state': 'visible', 'hidden': null } } } },
+        { ...pointerOnTarget('pointerenter'), expect: { parts: { root: { 'data-state': 'visible', 'data-hover': '' } } } },
         { ...pointerOnTarget('pointerleave'), expect: { parts: { root: { 'data-state': 'visible' } } } },
         { kind: 'settle', until: { attr: { part: 'root', name: 'data-state', value: 'hidden' } } },
       ],
@@ -313,7 +314,7 @@ export const scrollbarSuite: ConformanceSuite = {
           ...layoutStep,
           expect: {
             parts: {
-              root: { 'data-state': 'hidden', 'data-disabled': '', 'hidden': '' },
+              root: { 'data-state': 'hidden', 'data-disabled': '' },
               thumb: { 'data-disabled': '', 'tabindex': '-1' },
             },
           },

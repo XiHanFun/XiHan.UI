@@ -469,3 +469,48 @@ describe('命令式出口', () => {
     expect(r.scrollable.scrollTop).toBe(200)
   })
 })
+
+describe('触屏与交叉口', () => {
+  it('粗指针设备上交给原生滚动：不显形并带 data-native；forceVisible 打开才画', async () => {
+    const original = window.matchMedia
+    window.matchMedia = ((query: string) => ({
+      matches: query === '(pointer: coarse)',
+      media: query,
+      addEventListener: () => {},
+      removeEventListener: () => {},
+    })) as unknown as typeof window.matchMedia
+    try {
+      const r = rig({ type: 'always' })
+      await settle()
+      expect(r.api().native).toBe(true)
+      expect(r.api().visible).toBe(false)
+      expect((r.api().getRootProps() as Dict)['data-native']).toBe('')
+      r.setProps({ forceVisible: true })
+      expect(r.api().native).toBe(false)
+      expect(r.api().visible).toBe(true)
+    }
+    finally {
+      window.matchMedia = original
+    }
+  })
+
+  it('gutter 打在根上，corner 跟着本条的显隐与方向', async () => {
+    const r = rig({ type: 'hover', gutter: true })
+    await settle()
+    expect((r.api().getRootProps() as Dict)['data-gutter']).toBe('')
+    const corner = r.api().getCornerProps() as Dict
+    expect(corner['data-part']).toBe('corner')
+    expect(corner['data-orientation']).toBe('vertical')
+    expect(corner['data-state']).toBe('hidden')
+    r.setProps({ type: 'always' })
+    expect((r.api().getCornerProps() as Dict)['data-state']).toBe('visible')
+  })
+
+  it('没给 controls 时 aria-controls 用容器自己的 id', async () => {
+    const r = rig({ type: 'always', focusable: true })
+    await settle()
+    expect((r.api().getThumbProps() as Dict)['aria-controls']).toBe('scrollable')
+    r.setProps({ controls: 'elsewhere' })
+    expect((r.api().getThumbProps() as Dict)['aria-controls']).toBe('elsewhere')
+  })
+})

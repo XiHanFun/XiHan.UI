@@ -6,10 +6,11 @@ import { createAnatomy } from '@xihan-ui/kernel'
 // 三层而不是两层：hover 时加粗这类做法要改 root 的厚度，而滑块的行程按 track 算——
 // 两者压在同一个节点上，一加粗滑块就会跳。
 //
-// 没有 corner：两条滚动条交叉口那块补丁属于同时摆了两条的那个容器（scroll-area 有它），
-// 单轴滚动条自己没有可补的缺口。
+// corner 是横竖两条同时摆着时交叉口那块补丁，可选：写在其中一条的 root 里，
+// 贴在它末端之外的那一格上，跟着这一条的显隐走；配合 gutter 让两条各自让出交叉口。
 export const scrollbarAnatomy = createAnatomy('scrollbar', [
   'root',
   'track',
   'thumb',
+  'corner',
 ])

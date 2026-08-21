@@ -28561,7 +28561,7 @@
           "name": "XhScrollbarElement",
           "cssParts": [
             {
-              "description": "定位盒与指针热区，承载 data-orientation / data-type / data-state / data-scrolling / data-dragging / data-size；收起时带 hidden",
+              "description": "定位盒与指针热区，承载 data-orientation / data-type / data-state / data-hover / data-scrolling / data-dragging / data-size / data-gutter / data-native；收起走 data-state=hidden 由皮肤淡出",
               "name": "root"
             },
             {
@@ -28571,6 +28571,10 @@
             {
               "description": "滑块，位置与长度由内联逻辑属性给出；按住可拖，focusable 时可聚焦并吃方向键",
               "name": "thumb"
+            },
+            {
+              "description": "交叉口补丁（可选），写在根里、贴在本条末端之外那一格，跟着本条显隐",
+              "name": "corner"
             }
           ],
           "members": [
@@ -28663,6 +28667,24 @@
                 "text": "boolean | undefined"
               },
               "attribute": "focusable"
+            },
+            {
+              "kind": "field",
+              "name": "gutter",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "gutter"
+            },
+            {
+              "kind": "field",
+              "name": "forceVisible",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "force-visible"
             },
             {
               "kind": "field",
@@ -28870,6 +28892,22 @@
             },
             {
               "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "横竖两条同时摆着时在末端让出交叉口那一格，交叉口由 corner 部件补",
+              "name": "gutter",
+              "fieldName": "gutter"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "触屏（粗指针）上也显形；缺省交给原生滚动，整条不画并带 data-native",
+              "name": "force-visible",
+              "fieldName": "forceVisible"
+            },
+            {
+              "type": {
                 "text": "Direction | undefined"
               },
               "description": "排版方向，只改写横轴的滚动量正负与指针位移方向",
@@ -28884,6 +28922,9 @@
           "tagName": "xh-scrollbar",
           "customElement": true,
           "cssProperties": [
+            {
+              "name": "--xh-scrollbar-corner-bg"
+            },
             {
               "name": "--xh-scrollbar-gutter"
             },
