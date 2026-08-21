@@ -13,9 +13,10 @@ const parts = tourAnatomy.build()
  */
 const INTERACTIVE = 'button, a[href], input, select, textarea, [role="button"], [contenteditable="true"]'
 
-// 落定那一侧的可用高度。贴边时引擎会回报 0，直接写进 min() 会把气泡压成零高，
-// 所以低于这个下限就当作没算出来：空串撤掉声明，退回皮肤 positioner 上那档 100vh
-const AVAILABLE_H_FLOOR = 96
+// 落定那一侧的可用高度。低于这个值气泡自身骨架（内缩、标题、按钮行）就放不下，
+// 当作没算出来：空串撤掉声明，退回皮肤 positioner 上那档 100vh。
+// 比别的浮层高一截，因为气泡的固定部件比一张空面板多
+const AVAILABLE_H_FLOOR = 160
 
 function availableHeightVar(available: number | undefined): Record<string, string> {
   return {

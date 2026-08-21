@@ -87,7 +87,7 @@ selection-mode="multiple" 加 cascade 内建父子传导：点分支整枝勾上
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-tree>` |
-| Vue 组件 | `XhTreeBranch` `XhTreeBranchContent` `XhTreeBranchControl` `XhTreeBranchIndicator` `XhTreeBranchText` `XhTreeBranchTrigger` `XhTreeItem` `XhTreeItemIndicator` `XhTreeItemText` `XhTreeLabel` `XhTreeRoot` `XhTreeTree` |
+| Vue 组件 | `XhTreeBranch` `XhTreeBranchCheckbox` `XhTreeBranchContent` `XhTreeBranchControl` `XhTreeBranchIndicator` `XhTreeBranchText` `XhTreeBranchTrigger` `XhTreeItem` `XhTreeItemCheckbox` `XhTreeItemIndicator` `XhTreeItemText` `XhTreeLabel` `XhTreeRoot` `XhTreeTree` |
 | 组合式函数 | `useTree` |
 | 状态机 | `treeMachine` |
 | 皮肤 | `@xihan-ui/styles/tree.css` |
@@ -96,7 +96,7 @@ selection-mode="multiple" 加 cascade 内建父子传导：点分支整枝勾上
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="tree"`：`root` · `label` · **`tree`** · **`item`** · `item-indicator` · `item-text` · `branch` · `branch-control` · `branch-trigger` · `branch-indicator` · `branch-text` · `branch-content`
+`data-scope="tree"`：`root` · `label` · **`tree`** · **`item`** · `item-checkbox` · `item-indicator` · `item-text` · `branch` · `branch-checkbox` · `branch-control` · `branch-trigger` · `branch-indicator` · `branch-text` · `branch-content`
 
 ## Props
 
@@ -169,8 +169,10 @@ selection-mode="multiple" 加 cascade 内建父子传导：点分支整枝勾上
 | `getTreeProps` | `() => T['element']` |  |
 | `getItemProps` | `(props: TreeNodeProps) => T['element']` |  |
 | `getItemTextProps` | `(props: TreeNodeProps) => T['element']` |  |
+| `getItemCheckboxProps` | `(props: TreeNodeProps) => T['element']` | 勾选把手：把「勾这一项」与「点这一行」分成两个可点区域，不给它就没有独立把手。 |
 | `getItemIndicatorProps` | `(props: TreeNodeProps) => T['element']` |  |
 | `getBranchProps` | `(props: TreeNodeProps) => T['element']` |  |
+| `getBranchCheckboxProps` | `(props: TreeNodeProps) => T['element']` |  |
 | `getBranchControlProps` | `(props: TreeNodeProps) => T['element']` |  |
 | `getBranchTriggerProps` | `(props: TreeNodeProps) => T['element']` |  |
 | `getBranchIndicatorProps` | `(props: TreeNodeProps) => T['element']` |  |
@@ -204,9 +206,11 @@ selection-mode="multiple" 加 cascade 内建父子传导：点分支整枝勾上
 | `tree` | `aria-labelledby` | `label` 部件的 id |
 | `tree` | `aria-multiselectable` | 'true' \| 'false' |
 | `tree` | `role` | 'tree' |
+| `item-checkbox` | `aria-hidden` | 'true' |
 | `item-indicator` | `aria-hidden` | 'true' |
 | `branch` | `aria-expanded` | 'true' \| 'false' |
 | `branch` | `aria-label` | metaOf(node.value)?.label |
+| `branch-checkbox` | `aria-hidden` | 'true' |
 | `branch-trigger` | `aria-hidden` | 'true' |
 | `branch-indicator` | `aria-hidden` | 'true' |
 | `branch-content` | `role` | 'group' |
@@ -229,7 +233,7 @@ selection-mode="multiple" 加 cascade 内建父子传导：点分支整枝勾上
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-tree-bg` · `--xh-tree-border` · `--xh-tree-branch-indicator-fg` · `--xh-tree-fg` · `--xh-tree-gap` · `--xh-tree-indent` · `--xh-tree-indicator-fg` · `--xh-tree-indicator-size` · `--xh-tree-label-fg` · `--xh-tree-label-font-size` · `--xh-tree-label-font-weight` · `--xh-tree-max-h` · `--xh-tree-px` · `--xh-tree-py` · `--xh-tree-radius` · `--xh-tree-row-bg-hover` · `--xh-tree-row-fg` · `--xh-tree-row-fg-selected` · `--xh-tree-row-font-size` · `--xh-tree-row-gap` · `--xh-tree-row-leading` · `--xh-tree-row-px` · `--xh-tree-row-py` · `--xh-tree-row-radius` · `--xh-tree-row-selected-font-weight`
+`--xh-tree-bg` · `--xh-tree-border` · `--xh-tree-branch-indicator-fg` · `--xh-tree-checkbox-bg` · `--xh-tree-checkbox-bg-checked` · `--xh-tree-checkbox-border` · `--xh-tree-checkbox-border-checked` · `--xh-tree-checkbox-border-disabled` · `--xh-tree-checkbox-fg` · `--xh-tree-checkbox-radius` · `--xh-tree-checkbox-size` · `--xh-tree-fg` · `--xh-tree-gap` · `--xh-tree-indent` · `--xh-tree-indicator-fg` · `--xh-tree-indicator-size` · `--xh-tree-label-fg` · `--xh-tree-label-font-size` · `--xh-tree-label-font-weight` · `--xh-tree-max-h` · `--xh-tree-px` · `--xh-tree-py` · `--xh-tree-radius` · `--xh-tree-row-bg-hover` · `--xh-tree-row-fg` · `--xh-tree-row-fg-selected` · `--xh-tree-row-font-size` · `--xh-tree-row-gap` · `--xh-tree-row-leading` · `--xh-tree-row-px` · `--xh-tree-row-py` · `--xh-tree-row-radius` · `--xh-tree-row-selected-font-weight`
 
 ## 动效
 
