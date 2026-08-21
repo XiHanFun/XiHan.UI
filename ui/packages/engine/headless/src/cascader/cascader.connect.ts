@@ -320,6 +320,8 @@ export function connectCascader<T extends PropTypes>(
 
     getPositionerProps: () => normalize.element({
       ...parts.positioner.attrs,
+      // 定位层被搬到 portal 落点，继承不到作者子树上的方向；作者没给就不写，交给落点处的继承
+      'dir': prop('dir'),
       // 视觉轴在浮层这一侧再打一次：positioner 被搬到 portal 落点，继承不到根上的私有槽
       'data-variant': prop('variant'),
       'data-tone': prop('tone'),

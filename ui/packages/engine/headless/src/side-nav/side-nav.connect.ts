@@ -341,6 +341,8 @@ export function connectSideNav<T extends PropTypes>(
       return normalize.element({
         ...parts.positioner.attrs,
         'id': positionerId(v),
+        // 定位层被搬到 portal 落点，继承不到作者子树上的方向；作者没给就不写，交给落点处的继承
+        'dir': prop('dir'),
         'data-state': open ? 'open' : 'closed',
         'data-placement': popoutPosition?.placement ?? (dir === 'rtl' ? 'left-start' : 'right-start'),
         // 落位才露：展开或换枝后坐标已清，引擎量完之前藏着
