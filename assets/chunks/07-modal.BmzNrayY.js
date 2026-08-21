@@ -1,0 +1,45 @@
+const t=`<!-- 模态浮层 | modal 让焦点陷在浮层里：Tab 到末尾回绕，旁边那颗按钮这时接不到焦点 -->
+<div style="display: flex; align-items: center; gap: 16px">
+  <xh-popover id="popover-modal" modal placement="bottom-start">
+    <button data-xh-part="trigger">移动到分组</button>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <h3 data-xh-part="title">移动到分组</h3>
+        <p data-xh-part="description">按 Tab 试试，焦点只在浮层里打转。</p>
+        <div style="display: flex; gap: 8px">
+          <xh-button size="sm" variant="outline">
+            <button data-xh-part="root" data-group>收件箱</button>
+          </xh-button>
+          <xh-button size="sm" variant="outline">
+            <button data-xh-part="root" data-group>待办</button>
+          </xh-button>
+          <xh-button size="sm" variant="outline">
+            <button data-xh-part="root" data-group>归档</button>
+          </xh-button>
+        </div>
+        <button data-xh-part="close-trigger">✕</button>
+        <div data-xh-part="arrow"></div>
+      </div>
+    </div>
+  </xh-popover>
+
+  <xh-button variant="ghost">
+    <button data-xh-part="root">页面上的另一颗按钮</button>
+  </xh-button>
+  <span>当前分组：<span id="popover-modal-picked">收件箱</span></span>
+</div>
+
+<script type="module">
+  const popover = document.getElementById("popover-modal");
+  // 文案是对象，只走 property
+  popover.translations = { close: "关闭" };
+
+  // 三颗分组按钮把选中的名字写到后面那行文字上
+  const picked = document.getElementById("popover-modal-picked");
+  for (const button of popover.querySelectorAll("[data-group]")) {
+    button.addEventListener("click", () => {
+      picked.textContent = button.textContent;
+    });
+  }
+<\/script>
+`;export{t as default};

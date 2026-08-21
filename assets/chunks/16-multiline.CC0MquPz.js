@@ -1,0 +1,37 @@
+const t=`<!-- 多行与自动长高 | input 部件写成 textarea 即多行宿主；autoSize 让高度跟内容走，对象形态钉行数上下限（顶到 maxRows 后内部滚动） -->
+<div style="display: grid; gap: 16px; inline-size: 320px">
+  <xh-text-field id="text-field-multiline" max-length="120" placeholder="说点什么">
+    <div data-xh-part="root">
+      <label data-xh-part="label">备注（2-6 行自动长高）</label>
+      <textarea data-xh-part="input"></textarea>
+      <p
+        id="text-field-multiline-count"
+        style="margin: 4px 0 0; font-size: 12px; color: var(--xh-fg-subtle)"
+      >
+        0 / 120
+      </p>
+    </div>
+  </xh-text-field>
+
+  <xh-text-field auto-size placeholder="不设行数界限，完全跟内容走">
+    <div data-xh-part="root">
+      <label data-xh-part="label">随写随长</label>
+      <textarea data-xh-part="input"></textarea>
+    </div>
+  </xh-text-field>
+</div>
+
+<script type="module">
+  // 行数上下限是对象，只能经 property 交给元素
+  const field = document.getElementById("text-field-multiline");
+  field.autoSize = { minRows: 2, maxRows: 6 };
+
+  // 字数跟着值走，顶到上限换成危险色
+  const count = document.getElementById("text-field-multiline-count");
+  field.addEventListener("value-change", (event) => {
+    const length = event.detail.value.length;
+    count.textContent = \`\${length} / 120\`;
+    count.style.color = length >= 120 ? "var(--xh-fg-danger)" : "var(--xh-fg-subtle)";
+  });
+<\/script>
+`;export{t as default};

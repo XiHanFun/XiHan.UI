@@ -1,0 +1,45 @@
+const a=`<!-- 尺寸 | size 改轨道厚度与滑块直径，不写即缺省中档 -->
+<div style="display: grid; gap: 20px">
+  <xh-slider default-value="50" size="sm">
+    <div data-xh-part="root" style="inline-size: 280px">
+      <label data-xh-part="label">sm</label>
+      <div data-xh-part="control">
+        <div data-xh-part="track">
+          <div data-xh-part="range"></div>
+        </div>
+        <div data-xh-part="thumb">
+          <input data-xh-part="hidden-input" />
+        </div>
+      </div>
+    </div>
+  </xh-slider>
+
+  <xh-slider default-value="50">
+    <div data-xh-part="root" style="inline-size: 280px">
+      <label data-xh-part="label">缺省</label>
+      <div data-xh-part="control">
+        <div data-xh-part="track">
+          <div data-xh-part="range"></div>
+        </div>
+        <div data-xh-part="thumb">
+          <input data-xh-part="hidden-input" />
+        </div>
+      </div>
+    </div>
+  </xh-slider>
+
+  <xh-slider default-value="50" size="lg">
+    <div data-xh-part="root" style="inline-size: 280px">
+      <label data-xh-part="label">lg</label>
+      <div data-xh-part="control">
+        <div data-xh-part="track">
+          <div data-xh-part="range"></div>
+        </div>
+        <div data-xh-part="thumb">
+          <input data-xh-part="hidden-input" />
+        </div>
+      </div>
+    </div>
+  </xh-slider>
+</div>
+`;export{a as default};

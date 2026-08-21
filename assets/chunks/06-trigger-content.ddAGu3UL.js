@@ -1,0 +1,24 @@
+const n=`<!-- 分隔条里放内容 | 分隔条内可以再摆一个把手，粗细由 --xh-splitter-trigger-thickness 让出位置 -->
+<xh-splitter
+  panels='[{"id":"list","min":25,"max":75},{"id":"detail","min":25}]'
+  default-sizes="40,60"
+  style="display: contents"
+>
+  <div data-xh-part="root" style="inline-size: 100%; block-size: 140px">
+    <div data-xh-part="panel" index="0">
+      <p style="padding: 12px">列表</p>
+    </div>
+    <!-- 把手不参与命中判定，指针与键盘照旧落在分隔条自己身上 -->
+    <div
+      data-xh-part="resize-trigger"
+      index="0"
+      style="--xh-splitter-trigger-thickness: 14px"
+    >
+      <span aria-hidden="true" style="font-size: 12px; line-height: 1; color: var(--xh-fg-muted)">⋮⋮</span>
+    </div>
+    <div data-xh-part="panel" index="1">
+      <p style="padding: 12px">详情</p>
+    </div>
+  </div>
+</xh-splitter>
+`;export{n as default};

@@ -1,0 +1,83 @@
+const t=`<!-- 空态 | 条目筛空时收起列表、亮出空态节点：它挂在 content 之外，方向键、连打检索与全选都看不见它 -->
+<div
+  style="display: flex; flex-direction: column; gap: 8px; max-inline-size: 320px"
+>
+  <xh-text-field id="listbox-empty-query" placeholder="输入姓名筛选">
+    <div data-xh-part="root">
+      <label data-xh-part="label">搜索</label>
+      <input data-xh-part="input" />
+    </div>
+  </xh-text-field>
+
+  <xh-listbox id="listbox-empty">
+    <div data-xh-part="root">
+      <span data-xh-part="label">成员</span>
+      <div data-xh-part="content">
+        <div data-xh-part="item" value="liuyi">
+          <span data-xh-part="item-text">刘一</span>
+          <span data-xh-part="item-indicator"></span>
+        </div>
+        <div data-xh-part="item" value="chener">
+          <span data-xh-part="item-text">陈二</span>
+          <span data-xh-part="item-indicator"></span>
+        </div>
+        <div data-xh-part="item" value="zhangsan">
+          <span data-xh-part="item-text">张三</span>
+          <span data-xh-part="item-indicator"></span>
+        </div>
+        <div data-xh-part="item" value="lisi">
+          <span data-xh-part="item-text">李四</span>
+          <span data-xh-part="item-indicator"></span>
+        </div>
+      </div>
+      <!-- 空态节点常挂、靠 hidden 收起，它自带的活区才播报得到这次筛空 -->
+      <xh-empty-state id="listbox-empty-state" size="sm">
+        <div data-xh-part="root" hidden>
+          <div data-xh-part="title">没有匹配的成员</div>
+          <div data-xh-part="description">换个关键词再试试。</div>
+        </div>
+      </xh-empty-state>
+    </div>
+  </xh-listbox>
+</div>
+<p>已选：<span id="listbox-empty-value">（无）</span></p>
+
+<script type="module">
+  const list = document.getElementById("listbox-empty");
+  const content = list.querySelector('[data-xh-part="content"]');
+  const empty = document
+    .getElementById("listbox-empty-state")
+    .querySelector('[data-xh-part="root"]');
+  const items = [...content.querySelectorAll('[data-xh-part="item"]')];
+
+  // 命中的条目按原顺序放回列表，落选的整个摘走
+  function filter(query) {
+    let hit = 0;
+    for (const item of items) {
+      const label = item.querySelector('[data-xh-part="item-text"]').textContent;
+      if (query === "" || label.includes(query)) {
+        content.append(item);
+        hit += 1;
+      } else {
+        item.remove();
+      }
+    }
+    content.hidden = hit === 0;
+    empty.hidden = hit > 0;
+  }
+
+  document
+    .getElementById("listbox-empty-query")
+    .addEventListener("value-change", (event) => {
+      filter(event.detail.value.trim());
+    });
+
+  // 受控：初值是空集合，只走 property
+  const readout = document.getElementById("listbox-empty-value");
+  list.value = [];
+  list.addEventListener("value-change", (event) => {
+    list.value = event.detail.value;
+    readout.textContent = event.detail.value.join("、") || "（无）";
+  });
+<\/script>
+`;export{t as default};

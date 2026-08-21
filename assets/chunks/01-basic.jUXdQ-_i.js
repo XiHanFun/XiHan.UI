@@ -1,0 +1,12 @@
+const t=`<!-- 基础用法 | 加减按钮与输入框共用一份状态；值是原始输入串，不传 value 即为非受控 -->
+<xh-number-field default-value="1">
+  <div data-xh-part="root">
+    <label data-xh-part="label">数量</label>
+    <div data-xh-part="control">
+      <button data-xh-part="decrement-trigger">−</button>
+      <input data-xh-part="input" />
+      <button data-xh-part="increment-trigger">+</button>
+    </div>
+  </div>
+</xh-number-field>
+`;export{t as default};

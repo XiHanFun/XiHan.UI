@@ -1,0 +1,35 @@
+const t=`<!-- 流式与停止 | run-status 翻成 streaming 后，发送按钮原位变停止：同一个节点、同一个位置，只换 data-mode 与可访问名 -->
+<div style="width: 100%; display: grid; gap: 12px">
+  <xh-composer id="composer-streaming" run-status="ready">
+    <div data-xh-part="root">
+      <textarea
+        data-xh-part="input"
+        placeholder="发一条，按钮就变成停止"
+        rows="1"
+      ></textarea>
+      <button data-xh-part="submit-trigger">发送</button>
+    </div>
+  </xh-composer>
+  <span id="composer-streaming-log">run-status：ready · （还没发过）</span>
+</div>
+
+<script type="module">
+  // 运行态的真源在宿主，组件既不猜也不改
+  const composer = document.getElementById("composer-streaming");
+  const trigger = composer.querySelector('[data-xh-part="submit-trigger"]');
+  const log = document.getElementById("composer-streaming-log");
+
+  function render(status, text) {
+    composer.setAttribute("run-status", status);
+    trigger.textContent = status === "streaming" ? "停止" : "发送";
+    log.textContent = \`run-status：\${status} · \${text}\`;
+  }
+
+  composer.addEventListener("submit", (event) => {
+    render("streaming", \`提交：\${event.detail.value}\`);
+  });
+  composer.addEventListener("stop", () => {
+    render("ready", "已按下停止");
+  });
+<\/script>
+`;export{t as default};

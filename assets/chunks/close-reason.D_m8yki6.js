@@ -1,0 +1,1 @@
+const t=new Set(["esc","close-trigger","interact-outside","tab","hover","selection"]),E=new Set(["ITEM.SELECT","ITEM.CLICK","VALUE.SET","SELECT","NODE.SELECT"]);function c(e,s){if(e.type==="ESCAPE")return"esc";const r=e.src;return r&&t.has(r)?r:e.type==="TOGGLE"?"close-trigger":E.has(e.type)?"selection":"programmatic"}export{c};

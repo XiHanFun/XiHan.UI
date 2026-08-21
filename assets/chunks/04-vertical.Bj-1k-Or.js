@@ -1,0 +1,38 @@
+const a=`<!-- 竖排 | orientation="vertical" 把步骤列与面板并排摆，方向键随之改收上下键 -->
+<xh-steps count="3" default-step="1" orientation="vertical">
+  <div data-xh-part="root" style="inline-size: 100%">
+    <div data-xh-part="list">
+      <div data-xh-part="item" value="0">
+        <button data-xh-part="trigger">
+          <span data-xh-part="indicator">1</span>
+          <span data-xh-part="title">打包</span>
+          <span data-xh-part="description">生成产物</span>
+        </button>
+        <div data-xh-part="separator"></div>
+      </div>
+      <div data-xh-part="item" value="1">
+        <button data-xh-part="trigger">
+          <span data-xh-part="indicator">2</span>
+          <span data-xh-part="title">测试</span>
+          <span data-xh-part="description">跑单元测试</span>
+        </button>
+        <div data-xh-part="separator"></div>
+      </div>
+      <div data-xh-part="item" value="2">
+        <button data-xh-part="trigger">
+          <span data-xh-part="indicator">3</span>
+          <span data-xh-part="title">发布</span>
+          <span data-xh-part="description">推到镜像仓库</span>
+        </button>
+        <div data-xh-part="separator"></div>
+      </div>
+    </div>
+
+    <div data-xh-part="content" value="0">面板 1：打包日志。</div>
+    <div data-xh-part="content" value="1">面板 2：测试报告。</div>
+    <div data-xh-part="content" value="2">面板 3：发布记录。</div>
+    <!-- value 等于 count 的这块是完成页：走完最后一步之后的那一格 -->
+    <div data-xh-part="content" value="3">流水线跑完了。</div>
+  </div>
+</xh-steps>
+`;export{a as default};

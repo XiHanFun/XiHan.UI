@@ -1,0 +1,74 @@
+const t=`<!-- 形态与语气 | 形态决定颜色怎么用、语气决定用哪族颜色，两者都写在组上，段自己不重复标注 -->
+<div style="display: grid; gap: 12px; justify-items: start">
+  <xh-button-group variant="solid" tone="brand">
+    <div data-xh-part="root">
+      <xh-button>
+        <button data-xh-part="root">日</button>
+      </xh-button>
+      <xh-button>
+        <button data-xh-part="root">周</button>
+      </xh-button>
+      <xh-button>
+        <button data-xh-part="root">月</button>
+      </xh-button>
+    </div>
+  </xh-button-group>
+
+  <xh-button-group variant="subtle" tone="brand">
+    <div data-xh-part="root">
+      <xh-button>
+        <button data-xh-part="root">日</button>
+      </xh-button>
+      <xh-button>
+        <button data-xh-part="root">周</button>
+      </xh-button>
+      <xh-button>
+        <button data-xh-part="root">月</button>
+      </xh-button>
+    </div>
+  </xh-button-group>
+
+  <xh-button-group variant="outline" tone="brand">
+    <div data-xh-part="root">
+      <xh-button>
+        <button data-xh-part="root">日</button>
+      </xh-button>
+      <xh-button>
+        <button data-xh-part="root">周</button>
+      </xh-button>
+      <xh-button>
+        <button data-xh-part="root">月</button>
+      </xh-button>
+    </div>
+  </xh-button-group>
+
+  <xh-button-group variant="ghost" tone="brand">
+    <div data-xh-part="root">
+      <xh-button>
+        <button data-xh-part="root">日</button>
+      </xh-button>
+      <xh-button>
+        <button data-xh-part="root">周</button>
+      </xh-button>
+      <xh-button>
+        <button data-xh-part="root">月</button>
+      </xh-button>
+    </div>
+  </xh-button-group>
+
+  <!-- 换一族颜色只改语气，形态那条规则一个字不动 -->
+  <xh-button-group variant="solid" tone="danger">
+    <div data-xh-part="root">
+      <xh-button>
+        <button data-xh-part="root">日</button>
+      </xh-button>
+      <xh-button>
+        <button data-xh-part="root">周</button>
+      </xh-button>
+      <xh-button>
+        <button data-xh-part="root">月</button>
+      </xh-button>
+    </div>
+  </xh-button-group>
+</div>
+`;export{t as default};

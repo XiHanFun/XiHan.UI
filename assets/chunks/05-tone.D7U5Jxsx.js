@@ -1,0 +1,82 @@
+const n=`<!-- 语气 | tone 只换进度段的底色（取柔和档）；条子本身是 fixed，这里给它写死 absolute 并配一个相对定位的框子，六条才留在示例里而不是叠到页面顶边 -->
+<div style="display: flex; flex-direction: column; gap: 12px; inline-size: 100%">
+  <div style="display: flex; flex-direction: column; gap: 6px">
+    <span>brand 品牌</span>
+    <!-- 框住条子：条子改走 absolute，inset 就落在这个框上 -->
+    <div style="position: relative; overflow: hidden; inline-size: 100%; block-size: 6px; border-radius: 999px; background: var(--xh-bg-muted)">
+      <xh-loading-bar loading value="60" height="6" tone="brand">
+        <div data-xh-part="root" style="position: absolute">
+          <div data-xh-part="track">
+            <div data-xh-part="range"></div>
+          </div>
+        </div>
+      </xh-loading-bar>
+    </div>
+  </div>
+  <div style="display: flex; flex-direction: column; gap: 6px">
+    <span>neutral 中性</span>
+    <!-- 框住条子：条子改走 absolute，inset 就落在这个框上 -->
+    <div style="position: relative; overflow: hidden; inline-size: 100%; block-size: 6px; border-radius: 999px; background: var(--xh-bg-muted)">
+      <xh-loading-bar loading value="60" height="6" tone="neutral">
+        <div data-xh-part="root" style="position: absolute">
+          <div data-xh-part="track">
+            <div data-xh-part="range"></div>
+          </div>
+        </div>
+      </xh-loading-bar>
+    </div>
+  </div>
+  <div style="display: flex; flex-direction: column; gap: 6px">
+    <span>success 成功</span>
+    <!-- 框住条子：条子改走 absolute，inset 就落在这个框上 -->
+    <div style="position: relative; overflow: hidden; inline-size: 100%; block-size: 6px; border-radius: 999px; background: var(--xh-bg-muted)">
+      <xh-loading-bar loading value="60" height="6" tone="success">
+        <div data-xh-part="root" style="position: absolute">
+          <div data-xh-part="track">
+            <div data-xh-part="range"></div>
+          </div>
+        </div>
+      </xh-loading-bar>
+    </div>
+  </div>
+  <div style="display: flex; flex-direction: column; gap: 6px">
+    <span>warning 警示</span>
+    <!-- 框住条子：条子改走 absolute，inset 就落在这个框上 -->
+    <div style="position: relative; overflow: hidden; inline-size: 100%; block-size: 6px; border-radius: 999px; background: var(--xh-bg-muted)">
+      <xh-loading-bar loading value="60" height="6" tone="warning">
+        <div data-xh-part="root" style="position: absolute">
+          <div data-xh-part="track">
+            <div data-xh-part="range"></div>
+          </div>
+        </div>
+      </xh-loading-bar>
+    </div>
+  </div>
+  <div style="display: flex; flex-direction: column; gap: 6px">
+    <span>danger 危险</span>
+    <!-- 框住条子：条子改走 absolute，inset 就落在这个框上 -->
+    <div style="position: relative; overflow: hidden; inline-size: 100%; block-size: 6px; border-radius: 999px; background: var(--xh-bg-muted)">
+      <xh-loading-bar loading value="60" height="6" tone="danger">
+        <div data-xh-part="root" style="position: absolute">
+          <div data-xh-part="track">
+            <div data-xh-part="range"></div>
+          </div>
+        </div>
+      </xh-loading-bar>
+    </div>
+  </div>
+  <div style="display: flex; flex-direction: column; gap: 6px">
+    <span>info 提示</span>
+    <!-- 框住条子：条子改走 absolute，inset 就落在这个框上 -->
+    <div style="position: relative; overflow: hidden; inline-size: 100%; block-size: 6px; border-radius: 999px; background: var(--xh-bg-muted)">
+      <xh-loading-bar loading value="60" height="6" tone="info">
+        <div data-xh-part="root" style="position: absolute">
+          <div data-xh-part="track">
+            <div data-xh-part="range"></div>
+          </div>
+        </div>
+      </xh-loading-bar>
+    </div>
+  </div>
+</div>
+`;export{n as default};

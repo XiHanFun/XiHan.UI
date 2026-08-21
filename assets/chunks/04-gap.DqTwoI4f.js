@@ -1,0 +1,101 @@
+const a=`<!-- 间距档位 | gap 收的是档位名不是像素：xs / sm / md / lg / xl 逐档指向一个间距令牌 -->
+<style>
+  #flex-gap [data-box] {
+    padding: 6px 12px;
+    border-radius: var(--xh-radius-md);
+    background: var(--xh-bg-subtle);
+    color: var(--xh-fg-default);
+  }
+  #flex-gap [data-label] {
+    font-size: 13px;
+    color: var(--xh-fg-muted);
+    inline-size: 96px;
+  }
+</style>
+
+<!-- 宿主设 display: contents，排布落在 root 上 -->
+<div id="flex-gap">
+  <xh-flex direction="column" gap="sm" style="display: contents">
+    <div data-xh-part="root">
+      <xh-flex align="center" gap="md" style="display: contents">
+        <div data-xh-part="root">
+          <span data-label>gap = xs</span>
+          <xh-flex gap="xs" style="display: contents">
+            <div data-xh-part="root">
+              <span data-box>甲</span>
+              <span data-box>乙</span>
+              <span data-box>丙</span>
+            </div>
+          </xh-flex>
+        </div>
+      </xh-flex>
+
+      <xh-flex align="center" gap="md" style="display: contents">
+        <div data-xh-part="root">
+          <span data-label>gap = sm</span>
+          <xh-flex gap="sm" style="display: contents">
+            <div data-xh-part="root">
+              <span data-box>甲</span>
+              <span data-box>乙</span>
+              <span data-box>丙</span>
+            </div>
+          </xh-flex>
+        </div>
+      </xh-flex>
+
+      <xh-flex align="center" gap="md" style="display: contents">
+        <div data-xh-part="root">
+          <span data-label>gap = md</span>
+          <xh-flex gap="md" style="display: contents">
+            <div data-xh-part="root">
+              <span data-box>甲</span>
+              <span data-box>乙</span>
+              <span data-box>丙</span>
+            </div>
+          </xh-flex>
+        </div>
+      </xh-flex>
+
+      <xh-flex align="center" gap="md" style="display: contents">
+        <div data-xh-part="root">
+          <span data-label>gap = lg</span>
+          <xh-flex gap="lg" style="display: contents">
+            <div data-xh-part="root">
+              <span data-box>甲</span>
+              <span data-box>乙</span>
+              <span data-box>丙</span>
+            </div>
+          </xh-flex>
+        </div>
+      </xh-flex>
+
+      <xh-flex align="center" gap="md" style="display: contents">
+        <div data-xh-part="root">
+          <span data-label>gap = xl</span>
+          <xh-flex gap="xl" style="display: contents">
+            <div data-xh-part="root">
+              <span data-box>甲</span>
+              <span data-box>乙</span>
+              <span data-box>丙</span>
+            </div>
+          </xh-flex>
+        </div>
+      </xh-flex>
+
+      <!-- 档位不够用时，直接给使用者槽位写值，它排在所有档位之前 -->
+      <xh-flex align="center" gap="md" style="display: contents">
+        <div data-xh-part="root">
+          <span data-label>槽位覆盖</span>
+          <xh-flex gap="xs" style="display: contents">
+            <div data-xh-part="root" style="--xh-flex-gap: 40px">
+              <span data-box>甲</span>
+              <span data-box>乙</span>
+              <span data-box>丙</span>
+            </div>
+          </xh-flex>
+        </div>
+      </xh-flex>
+    </div>
+  </xh-flex>
+</div>
+`;export{a as default};

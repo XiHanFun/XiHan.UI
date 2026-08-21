@@ -1,0 +1,92 @@
+const e=`<!-- 排布 | layout 三档：vertical 竖排（默认）、horizontal 标签左置两列（labelWidth 统一列宽、labelAlign 换对齐缘）、inline 横排一行流；整表标签对齐一个开关搞定，不必逐字段写栅格 -->
+<div style="display: grid; gap: 16px; justify-items: start">
+  <label style="display: flex; gap: 8px; align-items: center; font-size: 13px">
+    排布
+    <select id="form-layout-picker">
+      <option value="vertical">vertical</option>
+      <option value="horizontal" selected>horizontal</option>
+      <option value="inline">inline</option>
+    </select>
+  </label>
+
+  <xh-form id="form-layout" layout="horizontal" label-width="96px">
+    <form data-xh-part="root" style="inline-size: 100%; max-inline-size: 460px">
+      <div data-xh-part="field-group" value="username">
+        <xh-field>
+          <div data-xh-part="root">
+            <label data-xh-part="label">用户名</label>
+            <input data-xh-part="control" placeholder="字母开头" />
+            <p data-xh-part="error-text"></p>
+          </div>
+        </xh-field>
+      </div>
+
+      <div data-xh-part="field-group" value="email">
+        <xh-field>
+          <div data-xh-part="root">
+            <label data-xh-part="label">邮箱</label>
+            <input data-xh-part="control" placeholder="you@example.com" />
+            <p data-xh-part="error-text"></p>
+          </div>
+        </xh-field>
+      </div>
+
+      <div data-xh-part="field-group" value="city">
+        <xh-field>
+          <div data-xh-part="root">
+            <label data-xh-part="label">所在城市</label>
+            <input data-xh-part="control" placeholder="选填" />
+            <p data-xh-part="error-text"></p>
+          </div>
+        </xh-field>
+      </div>
+
+      <button data-xh-part="submit-trigger">提交</button>
+    </form>
+  </xh-form>
+</div>
+
+<script type="module">
+  const host = document.getElementById("form-layout");
+  const picker = document.getElementById("form-layout-picker");
+
+  const defaults = { username: "", email: "", city: "" };
+  let values = { ...defaults };
+
+  host.rules = {
+    username: { required: true, message: "用户名不能为空" },
+    email: { required: true, message: "邮箱不能为空" },
+  };
+  host.defaultValues = defaults;
+  host.values = values;
+
+  const groups = [...host.querySelectorAll('[data-xh-part="field-group"]')];
+  const nameOf = (el) => el.getAttribute("value");
+
+  for (const group of groups) {
+    const input = group.querySelector('[data-xh-part="control"]');
+    input.addEventListener("input", () => host.setFieldValue(nameOf(group), input.value));
+  }
+
+  host.addEventListener("values-change", (event) => {
+    values = event.detail.values;
+    host.values = values;
+    for (const group of groups) {
+      const input = group.querySelector('[data-xh-part="control"]');
+      const next = String(values[nameOf(group)] ?? "");
+      if (input.value !== next) input.value = next;
+    }
+  });
+
+  host.addEventListener("errors-change", (event) => {
+    for (const group of groups)
+      group.querySelector('[data-xh-part="error-text"]').textContent
+        = event.detail.errors[nameOf(group)] ?? "";
+  });
+
+  // 换一档排布就是换一个属性，字段标记一个字都不用动
+  picker.addEventListener("change", () => {
+    host.layout = picker.value;
+  });
+<\/script>
+`;export{e as default};

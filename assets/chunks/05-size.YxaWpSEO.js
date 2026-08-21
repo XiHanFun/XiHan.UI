@@ -1,0 +1,134 @@
+const a=`<!-- 密度 | size 只落成 root 的 data-size，换的是单元格纵向内边距与字号；三档并排，差别在行高上 -->
+<div
+  id="table-size"
+  style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start"
+>
+  <div style="flex: 1 1 190px; min-width: 190px">
+    <xh-table size="sm">
+      <div data-xh-part="root">
+        <div data-xh-part="caption">sm 紧凑</div>
+        <div data-xh-part="header">
+          <div data-xh-part="row">
+            <div data-xh-part="column-header" value="name">姓名</div>
+            <div data-xh-part="column-header" value="level">职级</div>
+          </div>
+        </div>
+        <div data-xh-part="body">
+          <div data-xh-part="row" value="u1">
+            <div data-xh-part="cell" value="name">赵一</div>
+            <div data-xh-part="cell" value="level">P6</div>
+          </div>
+          <div data-xh-part="row" value="u2">
+            <div data-xh-part="cell" value="name">钱二</div>
+            <div data-xh-part="cell" value="level">P7</div>
+          </div>
+          <div data-xh-part="row" value="u3">
+            <div data-xh-part="cell" value="name">孙三</div>
+            <div data-xh-part="cell" value="level">P6</div>
+          </div>
+          <div data-xh-part="row" value="u4">
+            <div data-xh-part="cell" value="name">李四</div>
+            <div data-xh-part="cell" value="level">P5</div>
+          </div>
+          <div data-xh-part="row" value="u5">
+            <div data-xh-part="cell" value="name">周五</div>
+            <div data-xh-part="cell" value="level">P7</div>
+          </div>
+        </div>
+      </div>
+    </xh-table>
+  </div>
+
+  <!-- 中间档不写 size，缺省即中密度 -->
+  <div style="flex: 1 1 190px; min-width: 190px">
+    <xh-table>
+      <div data-xh-part="root">
+        <div data-xh-part="caption">缺省</div>
+        <div data-xh-part="header">
+          <div data-xh-part="row">
+            <div data-xh-part="column-header" value="name">姓名</div>
+            <div data-xh-part="column-header" value="level">职级</div>
+          </div>
+        </div>
+        <div data-xh-part="body">
+          <div data-xh-part="row" value="u1">
+            <div data-xh-part="cell" value="name">赵一</div>
+            <div data-xh-part="cell" value="level">P6</div>
+          </div>
+          <div data-xh-part="row" value="u2">
+            <div data-xh-part="cell" value="name">钱二</div>
+            <div data-xh-part="cell" value="level">P7</div>
+          </div>
+          <div data-xh-part="row" value="u3">
+            <div data-xh-part="cell" value="name">孙三</div>
+            <div data-xh-part="cell" value="level">P6</div>
+          </div>
+          <div data-xh-part="row" value="u4">
+            <div data-xh-part="cell" value="name">李四</div>
+            <div data-xh-part="cell" value="level">P5</div>
+          </div>
+          <div data-xh-part="row" value="u5">
+            <div data-xh-part="cell" value="name">周五</div>
+            <div data-xh-part="cell" value="level">P7</div>
+          </div>
+        </div>
+      </div>
+    </xh-table>
+  </div>
+
+  <div style="flex: 1 1 190px; min-width: 190px">
+    <xh-table size="lg">
+      <div data-xh-part="root">
+        <div data-xh-part="caption">lg 宽松</div>
+        <div data-xh-part="header">
+          <div data-xh-part="row">
+            <div data-xh-part="column-header" value="name">姓名</div>
+            <div data-xh-part="column-header" value="level">职级</div>
+          </div>
+        </div>
+        <div data-xh-part="body">
+          <div data-xh-part="row" value="u1">
+            <div data-xh-part="cell" value="name">赵一</div>
+            <div data-xh-part="cell" value="level">P6</div>
+          </div>
+          <div data-xh-part="row" value="u2">
+            <div data-xh-part="cell" value="name">钱二</div>
+            <div data-xh-part="cell" value="level">P7</div>
+          </div>
+          <div data-xh-part="row" value="u3">
+            <div data-xh-part="cell" value="name">孙三</div>
+            <div data-xh-part="cell" value="level">P6</div>
+          </div>
+          <div data-xh-part="row" value="u4">
+            <div data-xh-part="cell" value="name">李四</div>
+            <div data-xh-part="cell" value="level">P5</div>
+          </div>
+          <div data-xh-part="row" value="u5">
+            <div data-xh-part="cell" value="name">周五</div>
+            <div data-xh-part="cell" value="level">P7</div>
+          </div>
+        </div>
+      </div>
+    </xh-table>
+  </div>
+</div>
+
+<script type="module">
+  // 三档摆同一份数据，只有 size 不同
+  const stage = document.getElementById("table-size");
+
+  for (const table of stage.querySelectorAll("xh-table")) {
+    table.columns = [
+      { id: "name", label: "姓名" },
+      { id: "level", label: "职级" },
+    ];
+    table.rows = [
+      { id: "u1" },
+      { id: "u2" },
+      { id: "u3" },
+      { id: "u4" },
+      { id: "u5" },
+    ];
+  }
+<\/script>
+`;export{a as default};

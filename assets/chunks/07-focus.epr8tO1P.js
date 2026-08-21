@@ -1,0 +1,32 @@
+const t=`<!-- 命令式聚焦 | 节点由作者自己写，DOM 引用因此拿得到：聚焦、失焦与翻转都走命令式 -->
+<div style="display: flex; align-items: center; gap: 12px">
+  <xh-checkbox id="checkbox-focus">
+    <button data-xh-part="root">
+      <span data-xh-part="indicator"></span>
+    </button>
+  </xh-checkbox>
+  <button type="button" id="checkbox-focus-in">聚焦</button>
+  <button type="button" id="checkbox-focus-out">失焦</button>
+  <button type="button" id="checkbox-focus-toggle">翻转</button>
+  <span>当前：<span id="checkbox-focus-state">未勾选</span></span>
+</div>
+
+<script type="module">
+  // 三个按钮各自命令式操作方框
+  const host = document.getElementById("checkbox-focus");
+  const box = host.querySelector('[data-xh-part="root"]');
+  const state = document.getElementById("checkbox-focus-state");
+  document
+    .getElementById("checkbox-focus-in")
+    .addEventListener("click", () => box.focus());
+  document
+    .getElementById("checkbox-focus-out")
+    .addEventListener("click", () => box.blur());
+  document
+    .getElementById("checkbox-focus-toggle")
+    .addEventListener("click", () => box.click());
+  host.addEventListener("checked-change", (event) => {
+    state.textContent = event.detail.checked ? "已勾选" : "未勾选";
+  });
+<\/script>
+`;export{t as default};

@@ -1,0 +1,124 @@
+const n=`<!-- 年份切换 | 一排按钮换的是区间，网格、月份段、色阶与锚点全按新区间从头算 -->
+<div style="display: grid; gap: 12px">
+  <div id="heatmap-year-tabs" style="display: flex; flex-wrap: wrap; gap: 8px"></div>
+  <div id="heatmap-year-mount"></div>
+</div>
+
+<!-- 元素不生成结构：换区间之后照新的 grid 重铺一遍月份行、七行星期与图例 -->
+<template id="heatmap-year-template">
+  <xh-heatmap>
+    <div data-xh-part="root"></div>
+  </xh-heatmap>
+</template>
+
+<script type="module">
+  const DAY_MS = 86400000;
+
+  // 一段区间的提交量：数值由天序号哈希出来，同一段区间恒出同一份数据
+  function buildRange(start, end) {
+    const days = [];
+    const from = Date.parse(\`\${start}T00:00:00Z\`);
+    const to = Date.parse(\`\${end}T00:00:00Z\`);
+    let index = 0;
+    for (let time = from; time <= to; time += DAY_MS) {
+      const at = new Date(time);
+      const noise = ((Math.imul(++index, 2654435761) >>> 8) % 1000) / 1000;
+      const weekend = at.getUTCDay() === 0 || at.getUTCDay() === 6;
+      const ceiling = weekend ? 4 : 8;
+      days.push({
+        date: at.toISOString().slice(0, 10),
+        count: noise < 0.2 ? 0 : Math.round(noise * ceiling),
+      });
+    }
+    return days;
+  }
+
+  /** 一个角色节点：身份写在 value 上，元素照它回网格里查数值与档位。 */
+  function part(tag, name, value, text) {
+    const el = document.createElement(tag);
+    el.dataset.xhPart = name;
+    if (value !== undefined) el.setAttribute("value", value);
+    if (text !== undefined) el.textContent = text;
+    return el;
+  }
+
+  // 今天按 UTC 取整到当天零点，「最近一年」从它往回数 364 天
+  const today = Math.floor(Date.now() / DAY_MS) * DAY_MS;
+  const iso = (time) => new Date(time).toISOString().slice(0, 10);
+
+  const ranges = [
+    { key: "recent", label: "最近一年", start: iso(today - 364 * DAY_MS), end: iso(today) },
+    { key: "2024", label: "2024", start: "2024-01-01", end: "2024-12-31" },
+    { key: "2023", label: "2023", start: "2023-01-01", end: "2023-12-31" },
+    { key: "2022", label: "2022", start: "2022-01-01", end: "2022-12-31" },
+  ];
+
+  const fragment = document
+    .getElementById("heatmap-year-template")
+    .content.cloneNode(true);
+  const heatmap = fragment.querySelector("xh-heatmap");
+  const root = fragment.querySelector('[data-xh-part="root"]');
+  const tabs = document.getElementById("heatmap-year-tabs");
+
+  const buttons = ranges.map((range) => {
+    const host = document.createElement("xh-button");
+    host.setAttribute("size", "sm");
+    const button = document.createElement("button");
+    button.dataset.xhPart = "root";
+    button.textContent = range.label;
+    button.addEventListener("click", () => show(range.key));
+    host.append(button);
+    tabs.append(host);
+    return host;
+  });
+
+  /** 换区间：属性与数据一起换，再照新的 grid 重铺一遍。 */
+  function show(key) {
+    const range = ranges.find((item) => item.key === key) ?? ranges[0];
+    buttons.forEach((host, index) => {
+      host.setAttribute("variant", ranges[index].key === key ? "solid" : "outline");
+    });
+    heatmap.setAttribute("start-date", range.start);
+    heatmap.setAttribute("end-date", range.end);
+    // 数据是数组，只走 property：HTML 属性装不下它
+    heatmap.value = buildRange(range.start, range.end);
+
+    // 只读的 grid 一次取出来用：每读一次都重算一遍整张网格
+    const grid = heatmap.grid;
+    root.replaceChildren();
+
+    // 月份行排在网格之外，行首那个占位与下面各行的星期名同宽，月份才对得上列
+    const monthRow = part("div", "row");
+    monthRow.append(part("span", "week-day-label"));
+    for (const month of grid.months) {
+      monthRow.append(part("span", "month-label", month.value, month.label));
+    }
+
+    const gridEl = part("div", "grid");
+    for (const row of grid.rows) {
+      const line = part("div", "row", row.weekDay);
+      line.append(part("span", "week-day-label", row.weekDay, grid.weekDays[row.weekDay].label));
+      for (const day of row.cells) {
+        line.append(part("div", "cell", day.date));
+      }
+      gridEl.append(line);
+    }
+
+    const legend = part("div", "legend");
+    // 两端各一个字：一排色块自己说不出哪头是多，文案跟着 legendText 走
+    legend.append(part("span", "legend-label", "low", heatmap.legendText.low));
+    for (let level = 0; level < grid.levels; level++) {
+      legend.append(part("span", "legend-item", level));
+    }
+    legend.append(part("span", "legend-label", "high", heatmap.legendText.high));
+
+    root.append(monthRow, gridEl, legend);
+  }
+
+  // 元素一连上就能读 grid，接线排在这之后，铺出来的格子赶得上。
+  // 换区间不必自己动手清理：上一次聚焦的那一格不在新区间里时，
+  // Tab 位自动退回新网格文档序的头一格
+  document.getElementById("heatmap-year-mount").append(fragment);
+  show(ranges[0].key);
+<\/script>
+`;export{n as default};

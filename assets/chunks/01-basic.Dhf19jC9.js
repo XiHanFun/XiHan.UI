@@ -1,0 +1,5 @@
+const a=`<!-- 基础用法 | root 是 role=status 的活区，转圈图形由皮肤画在伪元素上；label 给出这一处在等什么 -->
+<xh-spinner label="加载中">
+  <span data-xh-part="root"></span>
+</xh-spinner>
+`;export{a as default};

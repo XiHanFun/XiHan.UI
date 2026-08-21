@@ -1,0 +1,32 @@
+const t=`<!-- 状态与失败 | 写入是异步的也真的会失败：按下先进 copying，写成功才翻成 copied，失败一律退回 idle 并把原因报出来 -->
+<!-- timeout 决定“已复制”停留多久，到点自己回落 -->
+<xh-clipboard id="clipboard-status" value="订单号 A2026-0809-117" timeout="2000">
+  <div data-xh-part="root">
+    <div data-xh-part="control">
+      <input data-xh-part="input" />
+      <button data-xh-part="trigger">
+        <span data-xh-part="indicator">复制</span>
+        <span data-xh-part="indicator" copied>✓ 已复制</span>
+      </button>
+    </div>
+  </div>
+</xh-clipboard>
+
+<span style="font-size: 13px">
+  状态：<span id="clipboard-status-text">idle</span
+  ><span id="clipboard-status-error"></span>
+</span>
+
+<script type="module">
+  // 状态与失败原因回显在下面那行文字里
+  const clipboard = document.getElementById("clipboard-status");
+  const status = document.getElementById("clipboard-status-text");
+  const error = document.getElementById("clipboard-status-error");
+  clipboard.addEventListener("status-change", (event) => {
+    status.textContent = event.detail.status;
+  });
+  clipboard.addEventListener("copy-error", (event) => {
+    error.textContent = \` · 上次失败：\${String(event.detail.error)}\`;
+  });
+<\/script>
+`;export{t as default};

@@ -1,0 +1,98 @@
+const a=`<!-- 尺寸 | size 一档换掉 trigger 与菜单条目的字号与内边距，写在 root 上、浮层里的条目一并跟着变 -->
+<!-- 菜单浮层往下落位，给容器底部留出它展开的空间 -->
+<div style="inline-size: 100%; display: grid; gap: 12px; padding-block-end: 180px">
+  <div style="display: flex; align-items: center; gap: 12px">
+    <span style="inline-size: 60px; flex: none">sm</span>
+    <xh-menubar size="sm">
+      <div data-xh-part="root">
+        <button data-xh-part="trigger" value="file">文件</button>
+        <button data-xh-part="trigger" value="view">视图</button>
+
+        <div data-xh-part="positioner" value="file">
+          <div data-xh-part="content" value="file">
+            <div data-xh-part="item" value="new">
+              <span data-xh-part="item-text">新建</span>
+            </div>
+            <div data-xh-part="item" value="open">
+              <span data-xh-part="item-text">打开</span>
+            </div>
+          </div>
+        </div>
+
+        <div data-xh-part="positioner" value="view">
+          <div data-xh-part="content" value="view">
+            <div data-xh-part="item" value="zoom-in">
+              <span data-xh-part="item-text">放大</span>
+            </div>
+            <div data-xh-part="item" value="zoom-out">
+              <span data-xh-part="item-text">缩小</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </xh-menubar>
+  </div>
+  <div style="display: flex; align-items: center; gap: 12px">
+    <span style="inline-size: 60px; flex: none">缺省</span>
+    <xh-menubar>
+      <div data-xh-part="root">
+        <button data-xh-part="trigger" value="file">文件</button>
+        <button data-xh-part="trigger" value="view">视图</button>
+
+        <div data-xh-part="positioner" value="file">
+          <div data-xh-part="content" value="file">
+            <div data-xh-part="item" value="new">
+              <span data-xh-part="item-text">新建</span>
+            </div>
+            <div data-xh-part="item" value="open">
+              <span data-xh-part="item-text">打开</span>
+            </div>
+          </div>
+        </div>
+
+        <div data-xh-part="positioner" value="view">
+          <div data-xh-part="content" value="view">
+            <div data-xh-part="item" value="zoom-in">
+              <span data-xh-part="item-text">放大</span>
+            </div>
+            <div data-xh-part="item" value="zoom-out">
+              <span data-xh-part="item-text">缩小</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </xh-menubar>
+  </div>
+  <div style="display: flex; align-items: center; gap: 12px">
+    <span style="inline-size: 60px; flex: none">lg</span>
+    <xh-menubar size="lg">
+      <div data-xh-part="root">
+        <button data-xh-part="trigger" value="file">文件</button>
+        <button data-xh-part="trigger" value="view">视图</button>
+
+        <div data-xh-part="positioner" value="file">
+          <div data-xh-part="content" value="file">
+            <div data-xh-part="item" value="new">
+              <span data-xh-part="item-text">新建</span>
+            </div>
+            <div data-xh-part="item" value="open">
+              <span data-xh-part="item-text">打开</span>
+            </div>
+          </div>
+        </div>
+
+        <div data-xh-part="positioner" value="view">
+          <div data-xh-part="content" value="view">
+            <div data-xh-part="item" value="zoom-in">
+              <span data-xh-part="item-text">放大</span>
+            </div>
+            <div data-xh-part="item" value="zoom-out">
+              <span data-xh-part="item-text">缩小</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </xh-menubar>
+  </div>
+</div>
+`;export{a as default};

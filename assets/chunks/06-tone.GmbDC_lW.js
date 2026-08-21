@@ -1,0 +1,75 @@
+const t=`<!-- 语气 | tone 决定选中态用哪族颜色，与 variant 正交；这里固定 card 形态只看语气的差别 -->
+<div style="display: flex; flex-direction: column; gap: 16px; inline-size: 100%">
+  <xh-tabs variant="card" tone="brand" default-value="selected">
+    <div data-xh-part="root" style="inline-size: 100%">
+      <div data-xh-part="list">
+        <button data-xh-part="trigger" value="selected">brand（选中）</button>
+        <button data-xh-part="trigger" value="other">未选</button>
+      </div>
+
+      <div data-xh-part="content" value="selected">选中面板</div>
+      <div data-xh-part="content" value="other">另一个面板</div>
+    </div>
+  </xh-tabs>
+
+  <xh-tabs variant="card" tone="neutral" default-value="selected">
+    <div data-xh-part="root" style="inline-size: 100%">
+      <div data-xh-part="list">
+        <button data-xh-part="trigger" value="selected">neutral（选中）</button>
+        <button data-xh-part="trigger" value="other">未选</button>
+      </div>
+
+      <div data-xh-part="content" value="selected">选中面板</div>
+      <div data-xh-part="content" value="other">另一个面板</div>
+    </div>
+  </xh-tabs>
+
+  <xh-tabs variant="card" tone="success" default-value="selected">
+    <div data-xh-part="root" style="inline-size: 100%">
+      <div data-xh-part="list">
+        <button data-xh-part="trigger" value="selected">success（选中）</button>
+        <button data-xh-part="trigger" value="other">未选</button>
+      </div>
+
+      <div data-xh-part="content" value="selected">选中面板</div>
+      <div data-xh-part="content" value="other">另一个面板</div>
+    </div>
+  </xh-tabs>
+
+  <xh-tabs variant="card" tone="warning" default-value="selected">
+    <div data-xh-part="root" style="inline-size: 100%">
+      <div data-xh-part="list">
+        <button data-xh-part="trigger" value="selected">warning（选中）</button>
+        <button data-xh-part="trigger" value="other">未选</button>
+      </div>
+
+      <div data-xh-part="content" value="selected">选中面板</div>
+      <div data-xh-part="content" value="other">另一个面板</div>
+    </div>
+  </xh-tabs>
+
+  <xh-tabs variant="card" tone="danger" default-value="selected">
+    <div data-xh-part="root" style="inline-size: 100%">
+      <div data-xh-part="list">
+        <button data-xh-part="trigger" value="selected">danger（选中）</button>
+        <button data-xh-part="trigger" value="other">未选</button>
+      </div>
+
+      <div data-xh-part="content" value="selected">选中面板</div>
+      <div data-xh-part="content" value="other">另一个面板</div>
+    </div>
+  </xh-tabs>
+
+  <xh-tabs variant="card" tone="info" default-value="selected">
+    <div data-xh-part="root" style="inline-size: 100%">
+      <div data-xh-part="list">
+        <button data-xh-part="trigger" value="selected">info（选中）</button>
+        <button data-xh-part="trigger" value="other">未选</button>
+      </div>
+
+      <div data-xh-part="content" value="selected">选中面板</div>
+      <div data-xh-part="content" value="other">另一个面板</div>
+    </div>
+  </xh-tabs>
+</div>
+`;export{t as default};

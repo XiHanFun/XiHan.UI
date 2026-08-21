@@ -1,0 +1,28 @@
+const a=`<!-- 前后缀 | prefix 与 suffix 和数值排在同一行、按基线对齐，比数值小一档 -->
+<div style="display: flex; flex-wrap: wrap; gap: 40px">
+  <xh-statistic>
+    <div data-xh-part="root">
+      <span data-xh-part="label">账户余额</span>
+      <span data-xh-part="prefix">¥</span>
+      <span data-xh-part="value">3,240.00</span>
+    </div>
+  </xh-statistic>
+
+  <xh-statistic>
+    <div data-xh-part="root">
+      <span data-xh-part="label">转化率</span>
+      <span data-xh-part="value">68.4</span>
+      <span data-xh-part="suffix">%</span>
+    </div>
+  </xh-statistic>
+
+  <xh-statistic>
+    <div data-xh-part="root">
+      <span data-xh-part="label">较上月</span>
+      <span data-xh-part="prefix">↑</span>
+      <span data-xh-part="value">12.5</span>
+      <span data-xh-part="suffix">%</span>
+    </div>
+  </xh-statistic>
+</div>
+`;export{a as default};

@@ -1,0 +1,22 @@
+const a=`<!-- 基础用法 | 组内只有一个 Tab 停靠点，进组后四个方向键都能切换 -->
+<xh-radio-group default-value="standard" name="plan">
+  <div data-xh-part="root">
+    <span data-xh-part="label">套餐</span>
+    <div data-xh-part="item" value="free">
+      <input data-xh-part="hidden-input" />
+      <span data-xh-part="indicator"></span>
+      <span data-xh-part="item-text">免费版</span>
+    </div>
+    <div data-xh-part="item" value="standard">
+      <input data-xh-part="hidden-input" />
+      <span data-xh-part="indicator"></span>
+      <span data-xh-part="item-text">标准版</span>
+    </div>
+    <div data-xh-part="item" value="pro">
+      <input data-xh-part="hidden-input" />
+      <span data-xh-part="indicator"></span>
+      <span data-xh-part="item-text">专业版</span>
+    </div>
+  </div>
+</xh-radio-group>
+`;export{a as default};

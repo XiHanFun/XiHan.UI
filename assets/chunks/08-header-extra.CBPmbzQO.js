@@ -1,0 +1,60 @@
+const n=`<!-- 标题栏附加信息 | 标题栏里的节点全归作者，把计数与指示器包成一组排在末尾 -->
+<div style="width: 100%; max-width: 420px">
+  <xh-accordion id="accordion-header-extra">
+    <div data-xh-part="root">
+      <div data-xh-part="item" value="todo">
+        <h3 data-xh-part="header">
+          <button data-xh-part="trigger">
+            <span>待处理</span>
+            <!-- 附加信息与指示器同属末尾这一组，标题栏两端对齐照旧生效 -->
+            <span
+              style="display: flex; align-items: center; gap: 8px; font-size: 12px"
+            >
+              <span>3 项</span>
+              <span data-xh-part="indicator"></span>
+            </span>
+          </button>
+        </h3>
+        <div data-xh-part="content">还没有人认领。</div>
+      </div>
+      <div data-xh-part="item" value="doing">
+        <h3 data-xh-part="header">
+          <button data-xh-part="trigger">
+            <span>进行中</span>
+            <span
+              style="display: flex; align-items: center; gap: 8px; font-size: 12px"
+            >
+              <span>1 项</span>
+              <span data-xh-part="indicator"></span>
+            </span>
+          </button>
+        </h3>
+        <div data-xh-part="content">预计今天完成。</div>
+      </div>
+      <div data-xh-part="item" value="done">
+        <h3 data-xh-part="header">
+          <button data-xh-part="trigger">
+            <span>已完成</span>
+            <span
+              style="display: flex; align-items: center; gap: 8px; font-size: 12px"
+            >
+              <span>12 项</span>
+              <span data-xh-part="indicator"></span>
+            </span>
+          </button>
+        </h3>
+        <div data-xh-part="content">本周已归档。</div>
+      </div>
+    </div>
+  </xh-accordion>
+</div>
+
+<script type="module">
+  // 展开集合是数组，只走 property：设初值、每次变更写回
+  const accordion = document.getElementById("accordion-header-extra");
+  accordion.value = ["todo"];
+  accordion.addEventListener("value-change", (event) => {
+    accordion.value = event.detail.value;
+  });
+<\/script>
+`;export{n as default};

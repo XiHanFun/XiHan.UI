@@ -1,0 +1,29 @@
+const e=`<!-- 行数 | lines 为 1 走单行省略，大于 1 按行数裁，末行收省略号 -->
+<div style="display: grid; gap: 12px; inline-size: 100%; max-inline-size: 420px">
+  <label style="display: flex; align-items: center; gap: 8px">
+    夹几行
+    <input id="ellipsis-lines-input" type="range" min="1" max="5" step="1" value="2" />
+    <span id="ellipsis-lines-text">2</span>
+  </label>
+
+  <!-- 换行数就是换了一把尺，组件会自己重量一次，不必手动触发 -->
+  <xh-ellipsis id="ellipsis-lines" lines="2">
+    <div data-xh-part="root">
+      这条商品说明写得很长：材质为 100%
+      长绒棉，机洗需用中性洗涤剂，不可漂白，低温熨烫，深浅色分开洗涤，首次下水建议单独清洗以免染色。
+    </div>
+  </xh-ellipsis>
+</div>
+
+<script type="module">
+  // 滑杆改的就是 lines 属性
+  const host = document.getElementById("ellipsis-lines");
+  const slider = document.getElementById("ellipsis-lines-input");
+  const text = document.getElementById("ellipsis-lines-text");
+
+  slider.addEventListener("input", () => {
+    host.setAttribute("lines", slider.value);
+    text.textContent = slider.value;
+  });
+<\/script>
+`;export{e as default};

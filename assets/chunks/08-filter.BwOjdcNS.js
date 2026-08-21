@@ -1,0 +1,39 @@
+const e=`<!-- 过滤输入 | 写回这一步由宿主说了算：把不要的字符滤掉再落回去，框里留下的始终是滤过的那一份 -->
+<div style="width: 100%; display: grid; gap: 12px">
+  <xh-composer id="composer-filter">
+    <div data-xh-part="root">
+      <textarea
+        data-xh-part="input"
+        placeholder="敲几个字母试试，只有数字留得下"
+        rows="1"
+      ></textarea>
+      <span style="font-size: 13px; white-space: nowrap">
+        <span id="composer-filter-count">0</span> 位
+      </span>
+      <button data-xh-part="submit-trigger">发送</button>
+    </div>
+  </xh-composer>
+  <span id="composer-filter-log">（还没发过）</span>
+</div>
+
+<script type="module">
+  const composer = document.getElementById("composer-filter");
+  const count = document.getElementById("composer-filter-count");
+  const log = document.getElementById("composer-filter-log");
+
+  // 只留数字与空格
+  function digits(text) {
+    return text.replace(/[^\\d ]/g, "");
+  }
+
+  // 值受控：组件报上来的每一份都滤过再落回去
+  composer.value = "";
+  composer.addEventListener("value-change", (event) => {
+    composer.value = digits(event.detail.value);
+    count.textContent = composer.value.length;
+  });
+  composer.addEventListener("submit", (event) => {
+    log.textContent = \`提交：\${event.detail.value}\`;
+  });
+<\/script>
+`;export{e as default};

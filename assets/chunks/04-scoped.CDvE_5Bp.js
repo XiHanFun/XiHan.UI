@@ -1,0 +1,31 @@
+const n=`<!-- 限定范围 | target 写 parent 时只在组件所在的那一层容器里接组合，整页范围的组合不会互相抢 -->
+<div
+  id="hotkeys-scope"
+  style="
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+    border: 1px solid currentColor;
+    border-radius: 8px;
+  "
+>
+  <!-- 监听装在这一层容器上：焦点在框外时按同一组合不会触发 -->
+  <input placeholder="在这里按 Mod+Enter" />
+  <xh-hotkeys id="hotkeys-scoped" keys="Mod,Enter" target="parent">
+    <span data-xh-part="root"></span>
+  </xh-hotkeys>
+  <span id="hotkeys-scoped-count">框内已触发 0 次</span>
+</div>
+
+<script type="module">
+  // 监听虽然装在容器上，事件仍从元素自己派出来
+  const host = document.getElementById("hotkeys-scoped");
+  const readout = document.getElementById("hotkeys-scoped-count");
+  let hits = 0;
+  host.addEventListener("hot-key", () => {
+    hits += 1;
+    readout.textContent = \`框内已触发 \${hits} 次\`;
+  });
+<\/script>
+`;export{n as default};

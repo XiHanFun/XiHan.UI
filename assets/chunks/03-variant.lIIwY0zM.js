@@ -1,0 +1,13 @@
+const a=`<!-- 形态 | variant 决定颜色怎么用：实心填底、淡色填底、只描边 -->
+<xh-badge variant="solid">
+  <span data-xh-part="root">solid</span>
+</xh-badge>
+
+<xh-badge variant="subtle">
+  <span data-xh-part="root">subtle</span>
+</xh-badge>
+
+<xh-badge variant="outline">
+  <span data-xh-part="root">outline</span>
+</xh-badge>
+`;export{a as default};

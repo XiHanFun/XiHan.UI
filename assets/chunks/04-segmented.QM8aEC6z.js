@@ -1,0 +1,22 @@
+const a=`<!-- 分段与悬停 | segmented 在段与段之间画一条分隔线；hoverable 只在能用指针的设备上抬起 -->
+<div style="display: flex; flex-wrap: wrap; gap: 16px">
+  <xh-card variant="outline" segmented>
+    <div data-xh-part="root" style="inline-size: 220px">
+      <div data-xh-part="header">
+        <div data-xh-part="title">分段</div>
+      </div>
+      <div data-xh-part="body">头、身、脚之间各有一条线。</div>
+      <div data-xh-part="footer">底部操作位</div>
+    </div>
+  </xh-card>
+
+  <xh-card variant="outline" hoverable>
+    <div data-xh-part="root" style="inline-size: 220px">
+      <div data-xh-part="header">
+        <div data-xh-part="title">可悬停</div>
+      </div>
+      <div data-xh-part="body">把指针移上来看抬起效果。</div>
+    </div>
+  </xh-card>
+</div>
+`;export{a as default};

@@ -1,0 +1,22 @@
+const a=`<!-- 折叠中间层级 | 省略号与分隔符同为 ol 的直接子 li，两者都对读屏隐藏，念出来仍是「列表，共 3 项」 -->
+<xh-breadcrumb>
+  <nav data-xh-part="root">
+    <ol data-xh-part="list">
+      <li data-xh-part="item">
+        <a data-xh-part="link" href="#/">首页</a>
+      </li>
+      <li data-xh-part="separator">›</li>
+      <li data-xh-part="item">
+        <a data-xh-part="link" href="#/docs">文档</a>
+      </li>
+      <li data-xh-part="separator">›</li>
+      <!-- 被折叠掉的那几层，只是视觉占位，不参与列表项计数 -->
+      <li data-xh-part="ellipsis">…</li>
+      <li data-xh-part="separator">›</li>
+      <li data-xh-part="item">
+        <a data-xh-part="link" href="#/docs/deep/current" current>当前页</a>
+      </li>
+    </ol>
+  </nav>
+</xh-breadcrumb>
+`;export{a as default};

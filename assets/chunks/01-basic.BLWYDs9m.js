@@ -1,0 +1,11 @@
+const t=`<!-- 基础用法 | 悬停或聚焦触发器即出；指针停在提示上也不收起 -->
+<xh-tooltip>
+  <button data-xh-part="trigger">保存</button>
+  <div data-xh-part="positioner">
+    <div data-xh-part="content">
+      写入草稿箱，不会发布
+      <div data-xh-part="arrow"></div>
+    </div>
+  </div>
+</xh-tooltip>
+`;export{t as default};

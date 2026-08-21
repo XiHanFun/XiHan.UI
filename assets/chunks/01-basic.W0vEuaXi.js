@@ -1,0 +1,1 @@
+import{X as o}from"./spinner.Ddoqo1XA.js";import{d as r,o as e,b as t,k as a}from"./framework.CyyS6Zdm.js";import"./config.B53Kmf2s.js";import"./normalize-props.DWkyZsBF.js";import"./normalize-props.C19uE7bg.js";import"./spinner.connect.DPP4C_4C.js";const u=r({__name:"01-basic",setup(p){return(n,m)=>(e(),t(a(o),{label:"加载中"}))}});export{u as default};

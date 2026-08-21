@@ -1,0 +1,1 @@
+import{a as n}from"./normalize-props.C19uE7bg.js";const r=n("button-group",["root"]),e=r.build();function u(t,o){const a=t.orientation??"horizontal";return{getRootProps:()=>o.element({...e.root.attrs,role:"group","data-orientation":a,"data-variant":t.variant,"data-tone":t.tone,"data-size":t.size})}}export{r as b,u as c};

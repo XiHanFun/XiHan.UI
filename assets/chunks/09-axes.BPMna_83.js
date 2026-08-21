@@ -1,0 +1,63 @@
+const n=`<!-- 三轴 | variant 决定描边与底怎么画、tone 决定用哪族颜色、size 换几何档；三者只落在 root，浮层里的格子一并跟着换 -->
+<div id="time-picker-axes" style="display: flex; flex-direction: column; gap: 20px"></div>
+
+<!-- 结构先收在模板里：列里的格子要在元素接线前就位，所以铺满了才入页 -->
+<template id="time-picker-axes-shell">
+  <xh-time-picker default-value="09:30">
+    <div data-xh-part="root">
+      <label data-xh-part="label"></label>
+      <div data-xh-part="control">
+        <span data-xh-part="input" segment="hour"></span>
+        <span>:</span>
+        <span data-xh-part="input" segment="minute"></span>
+        <button data-xh-part="clear-trigger">✕</button>
+        <button data-xh-part="trigger">▾</button>
+      </div>
+      <div data-xh-part="positioner">
+        <div data-xh-part="content">
+          <div data-xh-part="column" unit="hour"></div>
+          <div data-xh-part="column" unit="minute"></div>
+        </div>
+      </div>
+    </div>
+  </xh-time-picker>
+</template>
+
+<script type="module">
+  const stage = document.getElementById("time-picker-axes");
+  const shell = document.getElementById("time-picker-axes-shell");
+
+  // 往一列里铺 count 格，值是两位补零的显示串
+  function fill(column, count) {
+    for (let i = 0; i < count; i++) {
+      const item = document.createElement("div");
+      item.dataset.xhPart = "item";
+      item.setAttribute("value", String(i).padStart(2, "0"));
+      column.append(item);
+    }
+  }
+
+  // 一行只换一根轴，标题写的就是那一档的取值
+  const rows = [
+    { axis: "variant", values: ["outline", "subtle", "ghost"] },
+    { axis: "tone", values: ["brand", "success", "danger"] },
+    { axis: "size", values: ["sm", "md", "lg"] },
+  ];
+
+  for (const row of rows) {
+    const line = document.createElement("div");
+    line.style.display = "flex";
+    line.style.flexWrap = "wrap";
+    line.style.gap = "16px";
+    for (const value of row.values) {
+      const node = shell.content.cloneNode(true);
+      node.querySelector("xh-time-picker").setAttribute(row.axis, value);
+      node.querySelector('[data-xh-part="label"]').textContent = value;
+      fill(node.querySelector('[unit="hour"]'), 24);
+      fill(node.querySelector('[unit="minute"]'), 60);
+      line.append(node);
+    }
+    stage.append(line);
+  }
+<\/script>
+`;export{n as default};

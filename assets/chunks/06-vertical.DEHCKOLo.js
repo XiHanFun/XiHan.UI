@@ -1,0 +1,45 @@
+const t=`<!-- 竖排菜单栏 | orientation 决定主轴：竖排时上下键在入口之间走，左右键改为展开本项的菜单 -->
+<div style="inline-size: 100%; padding-block-end: 60px">
+  <!-- 竖排时菜单该从入口侧边长出来，placement 一并改掉 -->
+  <xh-menubar orientation="vertical" placement="right-start" offset="6">
+    <div data-xh-part="root" style="inline-size: 160px">
+      <button data-xh-part="trigger" value="file">文件</button>
+      <button data-xh-part="trigger" value="edit">编辑</button>
+      <button data-xh-part="trigger" value="help">帮助</button>
+
+      <div data-xh-part="positioner" value="file">
+        <div data-xh-part="content" value="file">
+          <div data-xh-part="item" value="new">
+            <span data-xh-part="item-text">新建</span>
+          </div>
+          <div data-xh-part="item" value="open">
+            <span data-xh-part="item-text">打开</span>
+          </div>
+          <div data-xh-part="item" value="save">
+            <span data-xh-part="item-text">保存</span>
+          </div>
+        </div>
+      </div>
+
+      <div data-xh-part="positioner" value="edit">
+        <div data-xh-part="content" value="edit">
+          <div data-xh-part="item" value="undo">
+            <span data-xh-part="item-text">撤销</span>
+          </div>
+          <div data-xh-part="item" value="redo">
+            <span data-xh-part="item-text">重做</span>
+          </div>
+        </div>
+      </div>
+
+      <div data-xh-part="positioner" value="help">
+        <div data-xh-part="content" value="help">
+          <div data-xh-part="item" value="about">
+            <span data-xh-part="item-text">关于</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </xh-menubar>
+</div>
+`;export{t as default};

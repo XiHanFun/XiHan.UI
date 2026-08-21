@@ -1,0 +1,32 @@
+const a=`<!-- 自定义颜色 | 点亮色与未点亮色各是一个组件令牌，写在行内即可脱开语气档 -->
+<div style="display: flex; gap: 32px; flex-wrap: wrap">
+  <xh-rating default-value="4" read-only>
+    <div data-xh-part="root" style="--xh-rating-item-fg-highlighted: #4fb233">
+      <span data-xh-part="label">只换点亮色</span>
+      <div data-xh-part="control">
+        <span data-xh-part="item" value="1">★</span>
+        <span data-xh-part="item" value="2">★</span>
+        <span data-xh-part="item" value="3">★</span>
+        <span data-xh-part="item" value="4">★</span>
+        <span data-xh-part="item" value="5">★</span>
+      </div>
+    </div>
+  </xh-rating>
+
+  <xh-rating default-value="2.5" allow-half>
+    <div
+      data-xh-part="root"
+      style="--xh-rating-item-fg-highlighted: #e11d48; --xh-rating-item-fg: #fecdd3"
+    >
+      <span data-xh-part="label">点亮与未点亮各给一色</span>
+      <div data-xh-part="control">
+        <span data-xh-part="item" value="1">★</span>
+        <span data-xh-part="item" value="2">★</span>
+        <span data-xh-part="item" value="3">★</span>
+        <span data-xh-part="item" value="4">★</span>
+        <span data-xh-part="item" value="5">★</span>
+      </div>
+    </div>
+  </xh-rating>
+</div>
+`;export{a as default};

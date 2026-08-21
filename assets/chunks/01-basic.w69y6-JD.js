@@ -1,0 +1,32 @@
+const t=`<!-- 基础用法 | 不传 open 即为非受控；Esc 或点遮罩关闭，关闭后焦点回到触发按钮 -->
+<xh-dialog id="dialog-basic">
+  <button data-xh-part="trigger">打开对话框</button>
+  <div data-xh-part="backdrop"></div>
+  <div data-xh-part="positioner">
+    <div data-xh-part="content">
+      <h2 data-xh-part="title">确认发布</h2>
+      <p data-xh-part="description">
+        发布后这篇文档对所有人可见，之后仍可撤回。
+      </p>
+      <div style="display: flex; justify-content: flex-end; gap: 8px">
+        <xh-button variant="ghost">
+          <button data-xh-part="root" data-dismiss>取消</button>
+        </xh-button>
+        <xh-button variant="solid">
+          <button data-xh-part="root" data-dismiss>发布</button>
+        </xh-button>
+      </div>
+      <button data-xh-part="close-trigger" aria-label="关闭">✕</button>
+    </div>
+  </div>
+</xh-dialog>
+
+<script type="module">
+  // 底部两个按钮把关闭转交给已接线的关闭部件
+  const dialog = document.getElementById("dialog-basic");
+  const close = dialog.querySelector('[data-xh-part="close-trigger"]');
+  for (const button of dialog.querySelectorAll("[data-dismiss]")) {
+    button.addEventListener("click", () => close.click());
+  }
+<\/script>
+`;export{t as default};

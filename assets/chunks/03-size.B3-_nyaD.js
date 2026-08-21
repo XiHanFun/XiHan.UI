@@ -1,0 +1,27 @@
+const a=`<!-- 尺寸 | size 换的是标签、数值与前后缀的字号，不传 size 即默认档 -->
+<div style="display: flex; flex-wrap: wrap; align-items: flex-start; gap: 40px">
+  <xh-statistic size="sm">
+    <div data-xh-part="root">
+      <span data-xh-part="label">小</span>
+      <span data-xh-part="value">86.7</span>
+      <span data-xh-part="suffix">%</span>
+    </div>
+  </xh-statistic>
+
+  <xh-statistic>
+    <div data-xh-part="root">
+      <span data-xh-part="label">默认</span>
+      <span data-xh-part="value">86.7</span>
+      <span data-xh-part="suffix">%</span>
+    </div>
+  </xh-statistic>
+
+  <xh-statistic size="lg">
+    <div data-xh-part="root">
+      <span data-xh-part="label">大</span>
+      <span data-xh-part="value">86.7</span>
+      <span data-xh-part="suffix">%</span>
+    </div>
+  </xh-statistic>
+</div>
+`;export{a as default};

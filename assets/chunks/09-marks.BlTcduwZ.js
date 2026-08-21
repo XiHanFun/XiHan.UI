@@ -1,0 +1,61 @@
+const a=`<!-- 轨道刻度 | 刻度分圆点与文案两层：圆点钉在轨道上、文案排在下方且点按跳值，落进已选区间的刻度分段上色；snapToMarks 让拖动/点按/键盘只认刻度落点 -->
+<div style="display: grid; gap: 40px; inline-size: 320px">
+  <xh-slider default-value="26">
+    <div data-xh-part="root">
+      <label data-xh-part="label">自由落点（点文案跳值）</label>
+      <div data-xh-part="control">
+        <div data-xh-part="track">
+          <div data-xh-part="range"></div>
+        </div>
+        <div data-xh-part="marks">
+          <span data-xh-part="mark" value="0"></span>
+          <span data-xh-part="mark-label" value="0">0°C</span>
+          <span data-xh-part="mark" value="26"></span>
+          <span data-xh-part="mark-label" value="26">26°C</span>
+          <span data-xh-part="mark" value="37"></span>
+          <span data-xh-part="mark-label" value="37">37°C</span>
+          <span data-xh-part="mark" value="100"></span>
+          <span data-xh-part="mark-label" value="100">沸腾</span>
+        </div>
+        <div data-xh-part="thumb">
+          <input data-xh-part="hidden-input" />
+        </div>
+      </div>
+    </div>
+  </xh-slider>
+
+  <xh-slider id="slider-snapped" default-value="37" snap-to-marks>
+    <div data-xh-part="root">
+      <label data-xh-part="label">只认刻度（拖动与方向键都吸档）</label>
+      <div data-xh-part="control">
+        <div data-xh-part="track">
+          <div data-xh-part="range"></div>
+        </div>
+        <div data-xh-part="marks">
+          <span data-xh-part="mark" value="0"></span>
+          <span data-xh-part="mark-label" value="0">0°C</span>
+          <span data-xh-part="mark" value="26"></span>
+          <span data-xh-part="mark-label" value="26">26°C</span>
+          <span data-xh-part="mark" value="37"></span>
+          <span data-xh-part="mark-label" value="37">37°C</span>
+          <span data-xh-part="mark" value="100"></span>
+          <span data-xh-part="mark-label" value="100">沸腾</span>
+        </div>
+        <div data-xh-part="thumb">
+          <input data-xh-part="hidden-input" />
+        </div>
+      </div>
+    </div>
+  </xh-slider>
+</div>
+
+<script type="module">
+  // 刻度表是数组，只走属性；开了 snapToMarks 才据它吸档
+  document.getElementById("slider-snapped").marks = [
+    { value: 0, label: "0°C" },
+    { value: 26, label: "26°C" },
+    { value: 37, label: "37°C" },
+    { value: 100, label: "沸腾" },
+  ];
+<\/script>
+`;export{a as default};

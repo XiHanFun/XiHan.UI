@@ -1,0 +1,53 @@
+const n=`<!-- 跟着数据走 | 改 to 就从当前数字接着走向新终点，跑完停下之后再改也照样重新跑；active 翻假即停在当前值 -->
+<div id="number-animation-follow">
+  <xh-number-animation
+    id="number-animation-follow-value"
+    to="3600"
+    duration="1200"
+    easing="ease-out"
+    separator=","
+    size="lg"
+  >
+    <span data-xh-part="root"></span>
+  </xh-number-animation>
+
+  <xh-button variant="solid">
+    <button data-xh-part="root" id="number-animation-follow-next">
+      换一组读数
+    </button>
+  </xh-button>
+  <xh-button variant="outline">
+    <button data-xh-part="root" id="number-animation-follow-run">暂停</button>
+  </xh-button>
+  <span id="number-animation-follow-settled"></span>
+</div>
+
+<script type="module">
+  // 一组读数轮着换，终点每换一次数字就从当前值接着走
+  const readings = [3600, 8250, 4180, 12040];
+  const stage = document.getElementById("number-animation-follow");
+  const number = stage.querySelector("#number-animation-follow-value");
+  const next = stage.querySelector("#number-animation-follow-next");
+  const run = stage.querySelector("#number-animation-follow-run");
+  const settled = stage.querySelector("#number-animation-follow-settled");
+
+  let at = 0;
+  let running = true;
+
+  next.addEventListener("click", () => {
+    at = (at + 1) % readings.length;
+    number.to = readings[at];
+  });
+
+  // active 翻假就停在当前值，翻真接着走完
+  run.addEventListener("click", () => {
+    running = !running;
+    number.active = running;
+    run.textContent = running ? "暂停" : "继续";
+  });
+
+  number.addEventListener("finish", (event) => {
+    settled.textContent = \`上一次停在：\${event.detail.value}\`;
+  });
+<\/script>
+`;export{n as default};

@@ -1,0 +1,13 @@
+const t=`<!-- 基础用法 | 不传 checked 即为非受控，开关自己维护状态 -->
+<xh-switch>
+  <button data-xh-part="root">
+    <span data-xh-part="thumb"></span>
+  </button>
+</xh-switch>
+
+<xh-switch default-checked>
+  <button data-xh-part="root">
+    <span data-xh-part="thumb"></span>
+  </button>
+</xh-switch>
+`;export{t as default};

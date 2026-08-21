@@ -1,0 +1,12 @@
+const t=`<!-- 悬停触发 | open-on-hover 一个 prop：进触发器延时展开，离开后指针经安全三角赶往浮层不误收，走岔或停滞才收起；延时可调 -->
+<xh-menu open-on-hover hover-open-delay="80">
+  <button data-xh-part="trigger">悬停打开</button>
+  <div data-xh-part="positioner">
+    <div data-xh-part="content">
+      <div data-xh-part="item" value="profile">个人资料</div>
+      <div data-xh-part="item" value="settings">偏好设置</div>
+      <div data-xh-part="item" value="logout">退出登录</div>
+    </div>
+  </div>
+</xh-menu>
+`;export{t as default};

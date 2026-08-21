@@ -1,0 +1,19 @@
+const a=`<!-- 带封面 | 封面顶到根的边上、不吃内边距，圆角由根统一裁 -->
+<xh-card variant="elevated">
+  <div data-xh-part="root" style="max-inline-size: 300px">
+    <div data-xh-part="cover">
+      <div
+        style="
+          block-size: 120px;
+          background: linear-gradient(135deg, var(--xh-bg-brand), var(--xh-bg-subtle));
+        "
+      ></div>
+    </div>
+    <div data-xh-part="header">
+      <div data-xh-part="title">七月总结</div>
+      <div data-xh-part="description">封面是任意内容，放图片或自绘都行</div>
+    </div>
+    <div data-xh-part="body">正文。</div>
+  </div>
+</xh-card>
+`;export{a as default};

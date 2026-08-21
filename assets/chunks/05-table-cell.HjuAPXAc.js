@@ -1,0 +1,206 @@
+const n=`<!-- 表格里的单元格 | 一格一个就地编辑：点开就是输入框，收尾即写回行数据；autoResize 让输入框按内容宽窄走，不把列撑变形 -->
+<div id="editable-table" style="width: 100%; max-width: 520px; display: grid; gap: 12px">
+  <table style="width: 100%; border-collapse: collapse">
+    <thead>
+      <tr>
+        <th
+          style="
+            padding: 6px 10px;
+            border-block-end: 1px solid var(--xh-border-subtle);
+            text-align: start;
+            font-weight: 500;
+            color: var(--xh-fg-muted);
+          "
+        >
+          姓名
+        </th>
+        <th
+          style="
+            padding: 6px 10px;
+            border-block-end: 1px solid var(--xh-border-subtle);
+            text-align: start;
+            font-weight: 500;
+            color: var(--xh-fg-muted);
+          "
+        >
+          部门
+        </th>
+        <th
+          style="
+            padding: 6px 10px;
+            border-block-end: 1px solid var(--xh-border-subtle);
+            text-align: start;
+            font-weight: 500;
+            color: var(--xh-fg-muted);
+          "
+        >
+          手机号
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="padding: 6px 10px; border-block-end: 1px solid var(--xh-border-subtle)">
+          <xh-editable data-row="0" data-field="name" value="赵一" placeholder="未填写" auto-resize>
+            <div data-xh-part="root">
+              <div data-xh-part="area">
+                <span data-xh-part="preview"></span>
+                <input data-xh-part="input" />
+              </div>
+            </div>
+          </xh-editable>
+        </td>
+        <td style="padding: 6px 10px; border-block-end: 1px solid var(--xh-border-subtle)">
+          <xh-editable
+            data-row="0"
+            data-field="dept"
+            value="平台研发"
+            placeholder="未填写"
+            auto-resize
+          >
+            <div data-xh-part="root">
+              <div data-xh-part="area">
+                <span data-xh-part="preview"></span>
+                <input data-xh-part="input" />
+              </div>
+            </div>
+          </xh-editable>
+        </td>
+        <td style="padding: 6px 10px; border-block-end: 1px solid var(--xh-border-subtle)">
+          <xh-editable
+            data-row="0"
+            data-field="phone"
+            value="13800000001"
+            placeholder="未填写"
+            max-length="11"
+            auto-resize
+          >
+            <div data-xh-part="root">
+              <div data-xh-part="area">
+                <span data-xh-part="preview"></span>
+                <input data-xh-part="input" />
+              </div>
+            </div>
+          </xh-editable>
+        </td>
+      </tr>
+      <tr>
+        <td style="padding: 6px 10px; border-block-end: 1px solid var(--xh-border-subtle)">
+          <xh-editable data-row="1" data-field="name" value="钱二" placeholder="未填写" auto-resize>
+            <div data-xh-part="root">
+              <div data-xh-part="area">
+                <span data-xh-part="preview"></span>
+                <input data-xh-part="input" />
+              </div>
+            </div>
+          </xh-editable>
+        </td>
+        <td style="padding: 6px 10px; border-block-end: 1px solid var(--xh-border-subtle)">
+          <xh-editable
+            data-row="1"
+            data-field="dept"
+            value="前端体验"
+            placeholder="未填写"
+            auto-resize
+          >
+            <div data-xh-part="root">
+              <div data-xh-part="area">
+                <span data-xh-part="preview"></span>
+                <input data-xh-part="input" />
+              </div>
+            </div>
+          </xh-editable>
+        </td>
+        <td style="padding: 6px 10px; border-block-end: 1px solid var(--xh-border-subtle)">
+          <xh-editable
+            data-row="1"
+            data-field="phone"
+            value="13800000002"
+            placeholder="未填写"
+            max-length="11"
+            auto-resize
+          >
+            <div data-xh-part="root">
+              <div data-xh-part="area">
+                <span data-xh-part="preview"></span>
+                <input data-xh-part="input" />
+              </div>
+            </div>
+          </xh-editable>
+        </td>
+      </tr>
+      <tr>
+        <td style="padding: 6px 10px; border-block-end: 1px solid var(--xh-border-subtle)">
+          <xh-editable data-row="2" data-field="name" value="孙三" placeholder="未填写" auto-resize>
+            <div data-xh-part="root">
+              <div data-xh-part="area">
+                <span data-xh-part="preview"></span>
+                <input data-xh-part="input" />
+              </div>
+            </div>
+          </xh-editable>
+        </td>
+        <td style="padding: 6px 10px; border-block-end: 1px solid var(--xh-border-subtle)">
+          <xh-editable
+            data-row="2"
+            data-field="dept"
+            value="基础架构"
+            placeholder="未填写"
+            auto-resize
+          >
+            <div data-xh-part="root">
+              <div data-xh-part="area">
+                <span data-xh-part="preview"></span>
+                <input data-xh-part="input" />
+              </div>
+            </div>
+          </xh-editable>
+        </td>
+        <td style="padding: 6px 10px; border-block-end: 1px solid var(--xh-border-subtle)">
+          <xh-editable
+            data-row="2"
+            data-field="phone"
+            value="13800000003"
+            placeholder="未填写"
+            max-length="11"
+            auto-resize
+          >
+            <div data-xh-part="root">
+              <div data-xh-part="area">
+                <span data-xh-part="preview"></span>
+                <input data-xh-part="input" />
+              </div>
+            </div>
+          </xh-editable>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span>数据源：<span id="editable-table-source"></span></span>
+</div>
+
+<script type="module">
+  // 每格的值受控于行数据，改一格就写回那一行
+  const host = document.getElementById("editable-table");
+  const readout = document.getElementById("editable-table-source");
+  const rows = [
+    { name: "赵一", dept: "平台研发", phone: "13800000001" },
+    { name: "钱二", dept: "前端体验", phone: "13800000002" },
+    { name: "孙三", dept: "基础架构", phone: "13800000003" },
+  ];
+
+  function render() {
+    readout.textContent = rows.map((row) => \`\${row.name}/\${row.dept}\`).join("，");
+  }
+
+  for (const cell of host.querySelectorAll("xh-editable")) {
+    cell.addEventListener("value-change", (event) => {
+      rows[Number(cell.dataset.row)][cell.dataset.field] = event.detail.value;
+      cell.value = event.detail.value;
+      render();
+    });
+  }
+  render();
+<\/script>
+`;export{n as default};

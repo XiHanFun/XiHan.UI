@@ -1,0 +1,51 @@
+const a=`<!-- 基础用法 | columns 是列号与列宽的唯一事实源，rows 是行序与行号的唯一事实源，标记只管长相 -->
+<div style="width: 100%; max-width: 560px">
+  <xh-table id="table-basic">
+    <div data-xh-part="root">
+      <div data-xh-part="caption">团队成员</div>
+      <div data-xh-part="header">
+        <!-- 表头行不给 value，它恒占行号空间的第 1 行 -->
+        <div data-xh-part="row">
+          <div data-xh-part="column-header" value="name">姓名</div>
+          <div data-xh-part="column-header" value="dept">部门</div>
+          <div data-xh-part="column-header" value="level">职级</div>
+        </div>
+      </div>
+      <div data-xh-part="body">
+        <div data-xh-part="row" value="u1">
+          <div data-xh-part="cell" value="name">赵一</div>
+          <div data-xh-part="cell" value="dept">平台研发</div>
+          <div data-xh-part="cell" value="level">P6</div>
+        </div>
+        <div data-xh-part="row" value="u2">
+          <div data-xh-part="cell" value="name">钱二</div>
+          <div data-xh-part="cell" value="dept">前端体验</div>
+          <div data-xh-part="cell" value="level">P7</div>
+        </div>
+        <div data-xh-part="row" value="u3">
+          <div data-xh-part="cell" value="name">孙三</div>
+          <div data-xh-part="cell" value="dept">基础架构</div>
+          <div data-xh-part="cell" value="level">P6</div>
+        </div>
+        <div data-xh-part="row" value="u4">
+          <div data-xh-part="cell" value="name">李四</div>
+          <div data-xh-part="cell" value="dept">质量保障</div>
+          <div data-xh-part="cell" value="level">P5</div>
+        </div>
+      </div>
+    </div>
+  </xh-table>
+</div>
+
+<script type="module">
+  // 两份定义都是数组，只能走 property
+  const table = document.getElementById("table-basic");
+
+  table.columns = [
+    { id: "name", label: "姓名", width: "8rem" },
+    { id: "dept", label: "部门" },
+    { id: "level", label: "职级", width: "6rem" },
+  ];
+  table.rows = [{ id: "u1" }, { id: "u2" }, { id: "u3" }, { id: "u4" }];
+<\/script>
+`;export{a as default};

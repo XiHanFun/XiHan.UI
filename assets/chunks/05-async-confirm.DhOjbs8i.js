@@ -1,0 +1,37 @@
+const n=`<!-- 异步确认 | 确认回调返回 Promise 即挂起确认门：浮层等兑现才收起、确认按钮转圈且再点无效，落空（reject）留在原地；不必再手动受控拦收起 -->
+<div style="display: flex; align-items: center; gap: 16px">
+  <xh-popconfirm id="popconfirm-async">
+    <div data-xh-part="root">
+      <button data-xh-part="trigger">提交审核</button>
+      <div data-xh-part="positioner">
+        <div data-xh-part="content">
+          <h2 data-xh-part="title">提交后不能再改</h2>
+          <p data-xh-part="description">这份稿件会立刻进入审核队列。</p>
+          <button data-xh-part="cancel-trigger">再看看</button>
+          <button data-xh-part="confirm-trigger" id="popconfirm-async-confirm">提交</button>
+        </div>
+      </div>
+    </div>
+  </xh-popconfirm>
+  <span id="popconfirm-async-result">尚未提交</span>
+</div>
+
+<script type="module">
+  // 异步门走 confirmAction 属性：事件拿不到监听函数的返回值
+  const host = document.getElementById("popconfirm-async");
+  const button = document.getElementById("popconfirm-async-confirm");
+  const result = document.getElementById("popconfirm-async-result");
+
+  host.confirmAction = () => {
+    result.textContent = "提交中…";
+    button.textContent = "提交中…";
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        result.textContent = "已提交";
+        button.textContent = "提交";
+        resolve();
+      }, 900);
+    });
+  };
+<\/script>
+`;export{n as default};

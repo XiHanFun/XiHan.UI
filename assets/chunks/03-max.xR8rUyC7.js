@@ -1,0 +1,19 @@
+const a=`<!-- 自定义量程 | max 不是 100 时按 value/max 折算，用于「已完成 3/8 步」这类场景 -->
+<div style="width: 100%; display: grid; gap: 12px">
+  <xh-progress value="3" max="8">
+    <div data-xh-part="root">
+      <div data-xh-part="track">
+        <div data-xh-part="range"></div>
+      </div>
+    </div>
+  </xh-progress>
+
+  <xh-progress value="8" max="8">
+    <div data-xh-part="root">
+      <div data-xh-part="track">
+        <div data-xh-part="range"></div>
+      </div>
+    </div>
+  </xh-progress>
+</div>
+`;export{a as default};

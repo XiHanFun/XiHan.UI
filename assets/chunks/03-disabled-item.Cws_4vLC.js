@@ -1,0 +1,78 @@
+const a=`<!-- 条目禁用 | 禁用写在 items 上：勾不动也搬不动，但仍可聚焦、仍是方向键的起点 -->
+<div id="transfer-disabled" style="inline-size: 100%; max-inline-size: 520px">
+  <xh-transfer>
+    <div data-xh-part="root">
+      <div data-xh-part="source-panel">
+        <div data-xh-part="panel-header">
+          <span data-xh-part="panel-title">待选</span>
+          <span data-xh-part="panel-count"></span>
+        </div>
+        <div data-xh-part="list">
+          <div data-xh-part="item" value="read">
+            <span data-xh-part="item-checkbox"></span>
+            <span data-xh-part="item-text">查看</span>
+          </div>
+          <div data-xh-part="item" value="create">
+            <span data-xh-part="item-checkbox"></span>
+            <span data-xh-part="item-text">新建</span>
+          </div>
+          <div data-xh-part="item" value="owner">
+            <span data-xh-part="item-checkbox"></span>
+            <span data-xh-part="item-text">所有者（内置）</span>
+          </div>
+          <div data-xh-part="item" value="delete">
+            <span data-xh-part="item-checkbox"></span>
+            <span data-xh-part="item-text">删除</span>
+          </div>
+        </div>
+      </div>
+
+      <button data-xh-part="to-target-trigger">›</button>
+      <button data-xh-part="to-source-trigger">‹</button>
+
+      <div data-xh-part="target-panel">
+        <div data-xh-part="panel-header">
+          <span data-xh-part="panel-title">已选</span>
+          <span data-xh-part="panel-count"></span>
+        </div>
+        <div data-xh-part="list">
+          <div data-xh-part="item" value="read">
+            <span data-xh-part="item-checkbox"></span>
+            <span data-xh-part="item-text">查看</span>
+          </div>
+          <div data-xh-part="item" value="create">
+            <span data-xh-part="item-checkbox"></span>
+            <span data-xh-part="item-text">新建</span>
+          </div>
+          <div data-xh-part="item" value="owner">
+            <span data-xh-part="item-checkbox"></span>
+            <span data-xh-part="item-text">所有者（内置）</span>
+          </div>
+          <div data-xh-part="item" value="delete">
+            <span data-xh-part="item-checkbox"></span>
+            <span data-xh-part="item-text">删除</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </xh-transfer>
+</div>
+
+<script type="module">
+  const stage = document.getElementById("transfer-disabled");
+  const transfer = stage.querySelector("xh-transfer");
+
+  transfer.collection = [
+    { value: "read", label: "查看" },
+    { value: "create", label: "新建" },
+    // 内置角色不许被挪走，禁用直接写在条目上
+    { value: "owner", label: "所有者（内置）", disabled: true },
+    { value: "delete", label: "删除" },
+  ];
+
+  transfer.value = ["owner"];
+  transfer.addEventListener("value-change", (event) => {
+    transfer.value = event.detail.value;
+  });
+<\/script>
+`;export{a as default};

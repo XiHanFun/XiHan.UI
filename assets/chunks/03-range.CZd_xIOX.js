@@ -1,0 +1,32 @@
+const a=`<!-- 可填区间 | min / max 收窄各段的加减范围，越界的初值只做标注、不被改写 -->
+<div style="display: grid; gap: 16px">
+  <xh-date-field default-value="2026-07-28" locale="zh-CN" min="2020-01-01" max="2030-12-31">
+    <div data-xh-part="root">
+      <label data-xh-part="label">在区间内（2020 – 2030）</label>
+      <div data-xh-part="control">
+        <span data-xh-part="segment" index="0"></span>
+        <span>年</span>
+        <span data-xh-part="segment" index="1"></span>
+        <span>月</span>
+        <span data-xh-part="segment" index="2"></span>
+        <span>日</span>
+      </div>
+    </div>
+  </xh-date-field>
+
+  <!-- 初值早于 min：root 挂上 data-out-of-range，值本身原样留着 -->
+  <xh-date-field default-value="2019-05-01" locale="zh-CN" min="2020-01-01">
+    <div data-xh-part="root">
+      <label data-xh-part="label">越界（min 2020-01-01）</label>
+      <div data-xh-part="control">
+        <span data-xh-part="segment" index="0"></span>
+        <span>年</span>
+        <span data-xh-part="segment" index="1"></span>
+        <span>月</span>
+        <span data-xh-part="segment" index="2"></span>
+        <span>日</span>
+      </div>
+    </div>
+  </xh-date-field>
+</div>
+`;export{a as default};

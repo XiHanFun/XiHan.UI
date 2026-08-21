@@ -1,0 +1,14 @@
+const a=`<!-- 基础用法 | 不传 value 即为非受控，组件自己维护评分；default-value 只决定初始那一档 -->
+<xh-rating default-value="3">
+  <div data-xh-part="root">
+    <span data-xh-part="label">整体满意度</span>
+    <div data-xh-part="control">
+      <span data-xh-part="item" value="1">★</span>
+      <span data-xh-part="item" value="2">★</span>
+      <span data-xh-part="item" value="3">★</span>
+      <span data-xh-part="item" value="4">★</span>
+      <span data-xh-part="item" value="5">★</span>
+    </div>
+  </div>
+</xh-rating>
+`;export{a as default};

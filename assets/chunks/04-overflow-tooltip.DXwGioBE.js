@@ -1,0 +1,80 @@
+const n=`<!-- 溢出才提示 | 上面套 Tooltip 按 overflow-change 开关，下面用 tooltip 交给平台的原生提示 -->
+<div id="ellipsis-tip" style="display: grid; gap: 16px; inline-size: 100%">
+  <label style="display: flex; align-items: center; gap: 8px">
+    容器宽度
+    <input
+      id="ellipsis-tip-width"
+      type="range"
+      min="120"
+      max="560"
+      step="20"
+      value="200"
+    />
+    <span id="ellipsis-tip-width-text">200px</span>
+  </label>
+
+  <!-- 组件只报「被裁了没有」，浮层归 Tooltip；没被裁时把提示整个关掉 -->
+  <div class="ellipsis-tip-box" style="inline-size: 200px; max-inline-size: 100%">
+    <xh-tooltip id="ellipsis-tip-tooltip" disabled>
+      <!-- 触发器本身是按钮，这里让它按普通文字那样铺满一行 -->
+      <button
+        data-xh-part="trigger"
+        style="
+          display: block;
+          inline-size: 100%;
+          padding: 0;
+          border: 0;
+          background: none;
+          font: inherit;
+          color: inherit;
+          text-align: start;
+          cursor: default;
+        "
+      >
+        <xh-ellipsis id="ellipsis-tip-source">
+          <div data-xh-part="root">
+            配送地址：浙江省杭州市余杭区文一西路 969 号 3 号楼 12 层 1203 室
+          </div>
+        </xh-ellipsis>
+      </button>
+      <div data-xh-part="positioner">
+        <div data-xh-part="content">
+          配送地址：浙江省杭州市余杭区文一西路 969 号 3 号楼 12 层 1203 室
+        </div>
+      </div>
+    </xh-tooltip>
+  </div>
+
+  <!-- 不想要浮层就开 tooltip：被裁时整段文字写进 title，交给平台自己的提示 -->
+  <div class="ellipsis-tip-box" style="inline-size: 200px; max-inline-size: 100%">
+    <xh-ellipsis tooltip>
+      <div data-xh-part="root">
+        配送地址：浙江省杭州市余杭区文一西路 969 号 3 号楼 12 层 1203 室
+      </div>
+    </xh-ellipsis>
+  </div>
+</div>
+
+<script type="module">
+  // 没被裁就把提示整个关掉，被裁了才放它出来
+  const slider = document.getElementById("ellipsis-tip-width");
+  const widthText = document.getElementById("ellipsis-tip-width-text");
+  const tooltip = document.getElementById("ellipsis-tip-tooltip");
+  const boxes = document
+    .getElementById("ellipsis-tip")
+    .querySelectorAll(".ellipsis-tip-box");
+
+  slider.addEventListener("input", () => {
+    for (const box of boxes) {
+      box.style.inlineSize = \`\${slider.value}px\`;
+    }
+    widthText.textContent = \`\${slider.value}px\`;
+  });
+
+  document
+    .getElementById("ellipsis-tip-source")
+    .addEventListener("overflow-change", (event) => {
+      tooltip.disabled = !event.detail.overflowing;
+    });
+<\/script>
+`;export{n as default};

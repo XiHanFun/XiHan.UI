@@ -1,0 +1,42 @@
+const t=`<!-- 状态码页 | 404 / 403 / 500 三档各并进一族语气色，操作槽里放这一页的回退出口 -->
+<div style="display: flex; flex-wrap: wrap; align-items: flex-start; gap: 16px">
+  <xh-result status="404" size="sm">
+    <div data-xh-part="root" style="inline-size: 220px">
+      <span data-xh-part="icon">?</span>
+      <p data-xh-part="title">404 页面不存在</p>
+      <p data-xh-part="description">地址可能敲错了，或者这条记录已经被删掉。</p>
+      <div data-xh-part="action">
+        <xh-button size="sm" variant="outline">
+          <button data-xh-part="root">回到首页</button>
+        </xh-button>
+      </div>
+    </div>
+  </xh-result>
+
+  <xh-result status="403" size="sm">
+    <div data-xh-part="root" style="inline-size: 220px">
+      <span data-xh-part="icon">⊘</span>
+      <p data-xh-part="title">403 没有权限</p>
+      <p data-xh-part="description">这块内容需要更高的角色，找管理员要一下。</p>
+      <div data-xh-part="action">
+        <xh-button size="sm" variant="outline">
+          <button data-xh-part="root">申请权限</button>
+        </xh-button>
+      </div>
+    </div>
+  </xh-result>
+
+  <xh-result status="500" size="sm">
+    <div data-xh-part="root" style="inline-size: 220px">
+      <span data-xh-part="icon">!</span>
+      <p data-xh-part="title">500 服务出错</p>
+      <p data-xh-part="description">请求没能处理完，稍后再试一次。</p>
+      <div data-xh-part="action">
+        <xh-button size="sm" variant="outline">
+          <button data-xh-part="root">重试</button>
+        </xh-button>
+      </div>
+    </div>
+  </xh-result>
+</div>
+`;export{t as default};

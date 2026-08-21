@@ -1,0 +1,51 @@
+const t=`<!-- 随表单提交 | 给了 name 才生出表单影子：开着才提交，值缺省是 on，与原生复选框一致 -->
+<form id="switch-form" style="display: grid; gap: 12px">
+  <label>
+    <xh-switch name="notify" default-checked>
+      <button data-xh-part="root">
+        <span data-xh-part="thumb"></span>
+        <input data-xh-part="hidden-input" />
+      </button>
+    </xh-switch>
+    接收通知（开着，提交 notify=on）
+  </label>
+  <label>
+    <xh-switch name="beta">
+      <button data-xh-part="root">
+        <span data-xh-part="thumb"></span>
+        <input data-xh-part="hidden-input" />
+      </button>
+    </xh-switch>
+    加入内测（没开就整条不进 FormData）
+  </label>
+  <!-- value 换掉默认的 on -->
+  <label>
+    <xh-switch name="theme" value="dark" default-checked>
+      <button data-xh-part="root">
+        <span data-xh-part="thumb"></span>
+        <input data-xh-part="hidden-input" />
+      </button>
+    </xh-switch>
+    深色主题（提交 theme=dark）
+  </label>
+
+  <div>
+    <xh-button type="submit" size="sm">
+      <button data-xh-part="root">提交</button>
+    </xh-button>
+  </div>
+
+  <span id="switch-form-result"></span>
+</form>
+
+<script type="module">
+  // 提交时把 FormData 里收到的字段列出来
+  const form = document.getElementById("switch-form");
+  const result = document.getElementById("switch-form-result");
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const fields = [...new FormData(form).entries()].map(([k, v]) => \`\${k}=\${v}\`);
+    result.textContent = \`表单收到：\${fields.length ? fields.join("  ") : "（一个字段都没提交）"}\`;
+  });
+<\/script>
+`;export{t as default};

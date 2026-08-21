@@ -1,0 +1,88 @@
+const t=`<!-- 换过渡效果 | 条目的内联样式只有尺寸与间距，位移之外的表现全归作者：把条目摞起来再按当前页调透明度与缩放，翻页、键盘与指示点一概照旧 -->
+<style>
+  /* 后两档把条目摞在一起，轨道那条整页位移随之作废 */
+  #carousel-effect:not([data-effect="slide"]) [data-xh-part="item-group"] {
+    position: relative;
+    transform: none !important;
+  }
+  #carousel-effect:not([data-effect="slide"]) [data-xh-part="item"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition:
+      opacity 320ms ease,
+      scale 320ms ease;
+  }
+  /* 露在外面的那一张由组件标出来，样式跟着它走 */
+  #carousel-effect:not([data-effect="slide"]) [data-xh-part="item"][data-inview] {
+    opacity: 1;
+  }
+  #carousel-effect[data-effect="zoom"] [data-xh-part="item"] {
+    scale: 0.9;
+  }
+  #carousel-effect[data-effect="zoom"] [data-xh-part="item"][data-inview] {
+    scale: 1;
+  }
+</style>
+
+<xh-carousel id="carousel-effect" data-effect="fade" slide-count="4">
+  <div data-xh-part="root" style="inline-size: 100%">
+    <button data-xh-part="prev-trigger">‹</button>
+    <div data-xh-part="viewport" style="block-size: 140px">
+      <div data-xh-part="item-group">
+        <div data-xh-part="item" index="0">
+          <div style="display: grid; place-items: center; block-size: 100%">
+            城市夜景
+          </div>
+        </div>
+        <div data-xh-part="item" index="1">
+          <div style="display: grid; place-items: center; block-size: 100%">
+            海岸线
+          </div>
+        </div>
+        <div data-xh-part="item" index="2">
+          <div style="display: grid; place-items: center; block-size: 100%">
+            雪山
+          </div>
+        </div>
+        <div data-xh-part="item" index="3">
+          <div style="display: grid; place-items: center; block-size: 100%">
+            沙漠
+          </div>
+        </div>
+      </div>
+    </div>
+    <button data-xh-part="next-trigger">›</button>
+    <div data-xh-part="indicator-group">
+      <button data-xh-part="indicator" index="0"></button>
+      <button data-xh-part="indicator" index="1"></button>
+      <button data-xh-part="indicator" index="2"></button>
+      <button data-xh-part="indicator" index="3"></button>
+    </div>
+    <div
+      id="carousel-effect-picker"
+      style="flex-basis: 100%; display: flex; justify-content: center; gap: 8px"
+    >
+      <button type="button" data-effect="slide" aria-pressed="false">平移</button>
+      <button type="button" data-effect="fade" aria-pressed="true">淡入</button>
+      <button type="button" data-effect="zoom" aria-pressed="false">缩放淡入</button>
+    </div>
+  </div>
+</xh-carousel>
+
+<script type="module">
+  // 挡位落在宿主的 data-effect 上，上面那段样式照它选形态
+  const carousel = document.getElementById("carousel-effect");
+  const picker = document.getElementById("carousel-effect-picker");
+  const buttons = [...picker.querySelectorAll("[data-effect]")];
+
+  for (const button of buttons) {
+    button.addEventListener("click", () => {
+      carousel.dataset.effect = button.dataset.effect;
+      for (const other of buttons) {
+        other.setAttribute("aria-pressed", String(other === button));
+      }
+    });
+  }
+<\/script>
+`;export{t as default};

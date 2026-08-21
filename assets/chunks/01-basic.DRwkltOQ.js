@@ -1,0 +1,59 @@
+const t=`<!-- 基础用法 | 一排入口各带一张菜单，同时只展开一张；条目以 value 标识身份，禁用项方向键跳过也选不中 -->
+<div style="inline-size: 100%; display: grid; gap: 12px; justify-items: start">
+  <xh-menubar id="menubar-basic">
+    <div data-xh-part="root">
+      <button data-xh-part="trigger" value="file">文件</button>
+      <button data-xh-part="trigger" value="edit">编辑</button>
+      <button data-xh-part="trigger" value="view">视图</button>
+
+      <div data-xh-part="positioner" value="file">
+        <div data-xh-part="content" value="file">
+          <div data-xh-part="item" value="new">
+            <span data-xh-part="item-text">新建</span>
+          </div>
+          <div data-xh-part="item" value="open">
+            <span data-xh-part="item-text">打开</span>
+          </div>
+          <div data-xh-part="item" value="close" aria-disabled="true">
+            <span data-xh-part="item-text">关闭</span>
+          </div>
+        </div>
+      </div>
+
+      <div data-xh-part="positioner" value="edit">
+        <div data-xh-part="content" value="edit">
+          <div data-xh-part="item" value="undo">
+            <span data-xh-part="item-text">撤销</span>
+          </div>
+          <div data-xh-part="item" value="redo">
+            <span data-xh-part="item-text">重做</span>
+          </div>
+        </div>
+      </div>
+
+      <div data-xh-part="positioner" value="view">
+        <div data-xh-part="content" value="view">
+          <div data-xh-part="item" value="zoom-in">
+            <span data-xh-part="item-text">放大</span>
+          </div>
+          <div data-xh-part="item" value="zoom-out">
+            <span data-xh-part="item-text">缩小</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </xh-menubar>
+
+  <span>最近选中：<span id="menubar-basic-readout">（无）</span></span>
+</div>
+
+<script type="module">
+  // select 带上条目所属的那张菜单，两段一起回显
+  const readout = document.getElementById("menubar-basic-readout");
+  document
+    .getElementById("menubar-basic")
+    .addEventListener("select", (event) => {
+      readout.textContent = \`\${event.detail.menu} / \${event.detail.value}\`;
+    });
+<\/script>
+`;export{t as default};

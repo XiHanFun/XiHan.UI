@@ -1,0 +1,94 @@
+const t=`<!-- 自动跟到底部 | 新行进来时视口自己跟着走；往上滚一段就停住跟随，组件报出的 atBottom 与 scrollToBottom 够自己画一条回到最新 -->
+<div id="log-follow" style="width: 100%; display: grid; gap: 12px">
+  <xh-log id="log-follow-view" rows="8">
+    <div data-xh-part="root">
+      <div data-xh-part="viewport">
+        <div data-xh-part="content" id="log-follow-content">
+          <div data-xh-part="line">12:00:00  boot  第 1 行 · 往上滚一段试试</div>
+          <div data-xh-part="line">12:00:01  boot  第 2 行 · 往上滚一段试试</div>
+          <div data-xh-part="line">12:00:02  boot  第 3 行 · 往上滚一段试试</div>
+          <div data-xh-part="line">12:00:03  boot  第 4 行 · 往上滚一段试试</div>
+          <div data-xh-part="line">12:00:04  boot  第 5 行 · 往上滚一段试试</div>
+          <div data-xh-part="line">12:00:05  boot  第 6 行 · 往上滚一段试试</div>
+          <div data-xh-part="line">12:00:06  boot  第 7 行 · 往上滚一段试试</div>
+          <div data-xh-part="line">12:00:07  boot  第 8 行 · 往上滚一段试试</div>
+          <div data-xh-part="line">12:00:08  boot  第 9 行 · 往上滚一段试试</div>
+          <div data-xh-part="line">12:00:09  boot  第 10 行 · 往上滚一段试试</div>
+        </div>
+      </div>
+
+      <!-- 不在底部时才露出来，排在视口下面 -->
+      <div
+        id="log-follow-bar"
+        style="
+          display: none;
+          align-items: center;
+          justify-content: space-between;
+          gap: 8px;
+          padding: 6px 12px;
+        "
+      >
+        <span id="log-follow-hint" style="font-size: 13px"></span>
+        <xh-button variant="outline" size="sm">
+          <button data-xh-part="root" id="log-follow-back">回到最新</button>
+        </xh-button>
+      </div>
+    </div>
+  </xh-log>
+
+  <div style="display: flex; gap: 8px">
+    <xh-button variant="solid">
+      <button data-xh-part="root" id="log-follow-stream">开始输出</button>
+    </xh-button>
+    <xh-button variant="outline">
+      <button data-xh-part="root" id="log-follow-append">追加一行</button>
+    </xh-button>
+  </div>
+</div>
+
+<script type="module">
+  const stage = document.getElementById("log-follow");
+  const view = stage.querySelector("#log-follow-view");
+  const content = stage.querySelector("#log-follow-content");
+  const bar = stage.querySelector("#log-follow-bar");
+  const hint = stage.querySelector("#log-follow-hint");
+  const stream = stage.querySelector("#log-follow-stream");
+
+  let seq = content.children.length;
+  let timer;
+  let streaming = false;
+
+  function append() {
+    // 示例被换走后停掉定时器
+    if (!content.isConnected) {
+      window.clearInterval(timer);
+      return;
+    }
+    seq += 1;
+    const line = document.createElement("div");
+    line.dataset.xhPart = "line";
+    line.textContent = \`12:0\${Math.floor(seq / 60)}:\${String(seq % 60).padStart(2, "0")}  http  第 \${seq} 行 · 新来的\`;
+    content.append(line);
+  }
+
+  stage.querySelector("#log-follow-append").addEventListener("click", append);
+
+  stream.addEventListener("click", () => {
+    streaming = !streaming;
+    stream.textContent = streaming ? "停止输出" : "开始输出";
+    if (streaming) timer = window.setInterval(append, 400);
+    else window.clearInterval(timer);
+  });
+
+  stage
+    .querySelector("#log-follow-back")
+    .addEventListener("click", () => view.scrollToBottom());
+
+  // 离开底部才露出那一条，跟随意图一并写出来
+  view.addEventListener("stick-change", (event) => {
+    const { atBottom, sticking } = event.detail;
+    bar.style.display = atBottom ? "none" : "flex";
+    hint.textContent = \`已暂停跟随 · 跟随意图：\${sticking ? "开" : "关"}\`;
+  });
+<\/script>
+`;export{t as default};

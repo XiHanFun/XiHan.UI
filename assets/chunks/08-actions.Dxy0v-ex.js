@@ -1,0 +1,63 @@
+const t=`<!-- 外部写值与清空 | 值由宿主持有，按钮直接写值或清空；空与越界两个判据由组件给出，按钮照它们摆 -->
+<xh-time-field id="time-field-actions" value="" min="09:00" max="18:00">
+  <div data-xh-part="root">
+    <label data-xh-part="label">上门时间</label>
+    <div data-xh-part="control">
+      <span data-xh-part="segment" segment="hour"></span>
+      <span>:</span>
+      <span data-xh-part="segment" segment="minute"></span>
+    </div>
+
+    <div style="display: flex; gap: 8px">
+      <xh-button id="time-field-actions-now" size="sm" variant="outline">
+        <button data-xh-part="root">此刻</button>
+      </xh-button>
+      <xh-button id="time-field-actions-open" size="sm" variant="outline">
+        <button data-xh-part="root">开门时间</button>
+      </xh-button>
+      <!-- 一段都没填时这颗按钮按不动 -->
+      <xh-button id="time-field-actions-clear" size="sm" variant="ghost" disabled>
+        <button data-xh-part="root">清空</button>
+      </xh-button>
+    </div>
+
+    <span id="time-field-actions-status" style="font-size: 13px">未填齐</span>
+  </div>
+</xh-time-field>
+
+<script type="module">
+  const field = document.getElementById("time-field-actions");
+  const root = field.querySelector('[data-xh-part="root"]');
+  const clear = document.getElementById("time-field-actions-clear");
+  const status = document.getElementById("time-field-actions-status");
+
+  // 此刻的时分，两位补零
+  function now() {
+    const d = new Date();
+    return \`\${\`\${d.getHours()}\`.padStart(2, "0")}:\${\`\${d.getMinutes()}\`.padStart(2, "0")}\`;
+  }
+
+  // 空与越界两个判据落在根节点上，等这一轮更新写完再读
+  async function sync() {
+    await field.updateComplete;
+    const empty = root.hasAttribute("data-empty");
+    const outOfRange = root.hasAttribute("data-out-of-range");
+    clear.toggleAttribute("disabled", empty);
+    status.textContent = empty
+      ? "未填齐"
+      : outOfRange
+        ? "不在营业时段（09:00 – 18:00）"
+        : "可上门";
+  }
+
+  function write(next) {
+    field.value = next;
+    void sync();
+  }
+
+  field.addEventListener("value-change", (event) => write(event.detail.value));
+  document.getElementById("time-field-actions-now").addEventListener("click", () => write(now()));
+  document.getElementById("time-field-actions-open").addEventListener("click", () => write("09:00"));
+  clear.addEventListener("click", () => write(""));
+<\/script>
+`;export{t as default};

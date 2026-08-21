@@ -1,0 +1,73 @@
+const t=`<!-- 禁用与只读 | disabled 把提交、重置、写值三条路一起封死；read-only 只封写值与重置，提交照发 -->
+<!-- 整表禁用：两颗按钮自带原生 disabled，控件那一侧的 disabled 由自己落 -->
+<xh-form id="form-disabled" disabled>
+  <form data-xh-part="root" style="inline-size: 260px">
+    <div data-xh-part="field-group" value="token">
+      <xh-field>
+        <div data-xh-part="root">
+          <label data-xh-part="label">接入令牌</label>
+          <input data-xh-part="control" disabled />
+          <p data-xh-part="description">整表禁用</p>
+        </div>
+      </xh-field>
+    </div>
+
+    <div style="display: flex; gap: 8px">
+      <button data-xh-part="submit-trigger">提交</button>
+      <button data-xh-part="reset-trigger">重置</button>
+    </div>
+  </form>
+</xh-form>
+
+<!-- 只读：重置键置灰、写值不发生，提交仍旧把当下这份值交出去 -->
+<xh-form id="form-readonly" read-only>
+  <form data-xh-part="root" style="inline-size: 260px">
+    <div data-xh-part="field-group" value="token">
+      <xh-field>
+        <div data-xh-part="root">
+          <label data-xh-part="label">接入令牌</label>
+          <input data-xh-part="control" readonly />
+          <p data-xh-part="description">只读：能提交，改不动</p>
+        </div>
+      </xh-field>
+    </div>
+
+    <div style="display: flex; gap: 8px">
+      <button data-xh-part="submit-trigger">提交</button>
+      <button data-xh-part="reset-trigger">重置</button>
+    </div>
+  </form>
+</xh-form>
+
+<p id="form-disabled-submitted" style="margin: 0; font-size: 13px">已提交：（还没提交过）</p>
+
+<script type="module">
+  const submitted = document.getElementById("form-disabled-submitted");
+
+  function wire(id) {
+    const host = document.getElementById(id);
+    const defaults = { token: "xh-0f2a" };
+    let values = { ...defaults };
+
+    host.defaultValues = defaults;
+    host.values = values;
+
+    const input = host.querySelector('[data-xh-part="control"]');
+    input.addEventListener("input", () => host.setFieldValue("token", input.value));
+    host.addEventListener("values-change", (event) => {
+      values = event.detail.values;
+      host.values = values;
+      const next = String(values.token ?? "");
+      if (input.value !== next) input.value = next;
+    });
+    host.addEventListener("submit", (event) => {
+      submitted.textContent = \`已提交：\${JSON.stringify(event.detail.values)}\`;
+    });
+
+    input.value = String(values.token ?? "");
+  }
+
+  wire("form-disabled");
+  wire("form-readonly");
+<\/script>
+`;export{t as default};

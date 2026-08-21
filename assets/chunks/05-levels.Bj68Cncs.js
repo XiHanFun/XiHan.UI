@@ -1,0 +1,84 @@
+const a=`<!-- 档数 | levels 决定分几档，图例与格子共用同一条色阶 -->
+<!-- 三档：没有数据、少、多。要自己定分档边界就改传 thresholds -->
+<xh-heatmap id="heatmap-levels" start-date="2024-01-01" end-date="2024-01-28" levels="3">
+  <div data-xh-part="root">
+    <div data-xh-part="row">
+      <span data-xh-part="week-day-label"></span>
+      <span data-xh-part="month-label" value="2024-01">1月</span>
+    </div>
+    <div data-xh-part="grid">
+      <div data-xh-part="row" value="0">
+        <span data-xh-part="week-day-label" value="0">一</span>
+        <div data-xh-part="cell" value="2024-01-01"></div>
+        <div data-xh-part="cell" value="2024-01-08"></div>
+        <div data-xh-part="cell" value="2024-01-15"></div>
+        <div data-xh-part="cell" value="2024-01-22"></div>
+      </div>
+      <div data-xh-part="row" value="1">
+        <span data-xh-part="week-day-label" value="1">二</span>
+        <div data-xh-part="cell" value="2024-01-02"></div>
+        <div data-xh-part="cell" value="2024-01-09"></div>
+        <div data-xh-part="cell" value="2024-01-16"></div>
+        <div data-xh-part="cell" value="2024-01-23"></div>
+      </div>
+      <div data-xh-part="row" value="2">
+        <span data-xh-part="week-day-label" value="2">三</span>
+        <div data-xh-part="cell" value="2024-01-03"></div>
+        <div data-xh-part="cell" value="2024-01-10"></div>
+        <div data-xh-part="cell" value="2024-01-17"></div>
+        <div data-xh-part="cell" value="2024-01-24"></div>
+      </div>
+      <div data-xh-part="row" value="3">
+        <span data-xh-part="week-day-label" value="3">四</span>
+        <div data-xh-part="cell" value="2024-01-04"></div>
+        <div data-xh-part="cell" value="2024-01-11"></div>
+        <div data-xh-part="cell" value="2024-01-18"></div>
+        <div data-xh-part="cell" value="2024-01-25"></div>
+      </div>
+      <div data-xh-part="row" value="4">
+        <span data-xh-part="week-day-label" value="4">五</span>
+        <div data-xh-part="cell" value="2024-01-05"></div>
+        <div data-xh-part="cell" value="2024-01-12"></div>
+        <div data-xh-part="cell" value="2024-01-19"></div>
+        <div data-xh-part="cell" value="2024-01-26"></div>
+      </div>
+      <div data-xh-part="row" value="5">
+        <span data-xh-part="week-day-label" value="5">六</span>
+        <div data-xh-part="cell" value="2024-01-06"></div>
+        <div data-xh-part="cell" value="2024-01-13"></div>
+        <div data-xh-part="cell" value="2024-01-20"></div>
+        <div data-xh-part="cell" value="2024-01-27"></div>
+      </div>
+      <div data-xh-part="row" value="6">
+        <span data-xh-part="week-day-label" value="6">日</span>
+        <div data-xh-part="cell" value="2024-01-07"></div>
+        <div data-xh-part="cell" value="2024-01-14"></div>
+        <div data-xh-part="cell" value="2024-01-21"></div>
+        <div data-xh-part="cell" value="2024-01-28"></div>
+      </div>
+    </div>
+    <div data-xh-part="legend">
+      <span data-xh-part="legend-label" value="low">少</span>
+      <span data-xh-part="legend-item" value="0"></span>
+      <span data-xh-part="legend-item" value="1"></span>
+      <span data-xh-part="legend-item" value="2"></span>
+      <span data-xh-part="legend-label" value="high">多</span>
+    </div>
+  </div>
+</xh-heatmap>
+
+<script type="module">
+  // 数据是数组，只走 property：HTML 属性装不下它
+  document.getElementById("heatmap-levels").value = [
+    { date: "2024-01-02", count: 1 },
+    { date: "2024-01-04", count: 3 },
+    { date: "2024-01-08", count: 6 },
+    { date: "2024-01-11", count: 2 },
+    { date: "2024-01-15", count: 9 },
+    { date: "2024-01-17", count: 4 },
+    { date: "2024-01-22", count: 12 },
+    { date: "2024-01-25", count: 7 },
+    { date: "2024-01-27", count: 2 },
+  ];
+<\/script>
+`;export{a as default};

@@ -1,0 +1,1 @@
+function u(e,a){var r;const t=e==="am"?"AM":"PM";if(!a)return t;try{const n=new Date(Date.UTC(2020,0,1,e==="am"?6:18));return((r=new Intl.DateTimeFormat(a,{hour:"numeric",hour12:!0,timeZone:"UTC"}).formatToParts(n).find(o=>o.type==="dayPeriod"))==null?void 0:r.value)??t}catch{return t}}export{u as d};

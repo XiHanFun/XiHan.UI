@@ -1,0 +1,76 @@
+const a=`<!-- 尺寸 | size 换的是圆点直径、条目间距与字号，不传 size 即默认档 -->
+<div style="display: flex; flex-wrap: wrap; align-items: flex-start; gap: 24px">
+  <div style="inline-size: 200px">
+    <div style="margin-block-end: 8px; font-size: 12px">小</div>
+    <xh-timeline size="sm">
+      <ol data-xh-part="root">
+        <li data-xh-part="item">
+          <span data-xh-part="indicator"></span>
+          <span data-xh-part="connector"></span>
+          <div data-xh-part="content">
+            <div data-xh-part="title">提交</div>
+            <div data-xh-part="description">12 个文件</div>
+          </div>
+        </li>
+        <li data-xh-part="item">
+          <span data-xh-part="indicator"></span>
+          <span data-xh-part="connector"></span>
+          <div data-xh-part="content">
+            <div data-xh-part="title">合并</div>
+            <div data-xh-part="description">两条评审意见</div>
+          </div>
+        </li>
+      </ol>
+    </xh-timeline>
+  </div>
+
+  <div style="inline-size: 200px">
+    <div style="margin-block-end: 8px; font-size: 12px">默认</div>
+    <!-- 这一档不写 size -->
+    <xh-timeline>
+      <ol data-xh-part="root">
+        <li data-xh-part="item">
+          <span data-xh-part="indicator"></span>
+          <span data-xh-part="connector"></span>
+          <div data-xh-part="content">
+            <div data-xh-part="title">提交</div>
+            <div data-xh-part="description">12 个文件</div>
+          </div>
+        </li>
+        <li data-xh-part="item">
+          <span data-xh-part="indicator"></span>
+          <span data-xh-part="connector"></span>
+          <div data-xh-part="content">
+            <div data-xh-part="title">合并</div>
+            <div data-xh-part="description">两条评审意见</div>
+          </div>
+        </li>
+      </ol>
+    </xh-timeline>
+  </div>
+
+  <div style="inline-size: 200px">
+    <div style="margin-block-end: 8px; font-size: 12px">大</div>
+    <xh-timeline size="lg">
+      <ol data-xh-part="root">
+        <li data-xh-part="item">
+          <span data-xh-part="indicator"></span>
+          <span data-xh-part="connector"></span>
+          <div data-xh-part="content">
+            <div data-xh-part="title">提交</div>
+            <div data-xh-part="description">12 个文件</div>
+          </div>
+        </li>
+        <li data-xh-part="item">
+          <span data-xh-part="indicator"></span>
+          <span data-xh-part="connector"></span>
+          <div data-xh-part="content">
+            <div data-xh-part="title">合并</div>
+            <div data-xh-part="description">两条评审意见</div>
+          </div>
+        </li>
+      </ol>
+    </xh-timeline>
+  </div>
+</div>
+`;export{a as default};

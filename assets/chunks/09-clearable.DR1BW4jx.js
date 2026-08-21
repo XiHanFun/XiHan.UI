@@ -1,0 +1,51 @@
+const a=`<!-- 再点一次清空 | allowClear 缺省就开：点中当前那一档清回“还没评”，键盘在最低档再往下走一步同样清零；设为 false 关掉 -->
+<div style="display: grid; gap: 12px">
+  <div>
+    <xh-rating id="rating-clearable" value="3">
+      <div data-xh-part="root">
+        <span data-xh-part="label">整体满意度（可清空）</span>
+        <div data-xh-part="control">
+          <span data-xh-part="item" value="1">★</span>
+          <span data-xh-part="item" value="2">★</span>
+          <span data-xh-part="item" value="3">★</span>
+          <span data-xh-part="item" value="4">★</span>
+          <span data-xh-part="item" value="5">★</span>
+        </div>
+      </div>
+    </xh-rating>
+    <p style="margin: 4px 0 0; font-size: 13px">当前：<span id="rating-clearable-value">3</span></p>
+  </div>
+  <div>
+    <xh-rating id="rating-sticky" value="3" allow-clear="false">
+      <div data-xh-part="root">
+        <span data-xh-part="label">关掉清空（再点不清）</span>
+        <div data-xh-part="control">
+          <span data-xh-part="item" value="1">★</span>
+          <span data-xh-part="item" value="2">★</span>
+          <span data-xh-part="item" value="3">★</span>
+          <span data-xh-part="item" value="4">★</span>
+          <span data-xh-part="item" value="5">★</span>
+        </div>
+      </div>
+    </xh-rating>
+    <p style="margin: 4px 0 0; font-size: 13px">当前：<span id="rating-sticky-value">3</span></p>
+  </div>
+</div>
+
+<script type="module">
+  // 值由外面这份状态持有，组件报上来才写回去
+  const clearable = document.getElementById("rating-clearable");
+  const clearableValue = document.getElementById("rating-clearable-value");
+  clearable.addEventListener("value-change", (event) => {
+    clearable.value = event.detail.value;
+    clearableValue.textContent = event.detail.value === 0 ? "还没评" : event.detail.value;
+  });
+
+  const sticky = document.getElementById("rating-sticky");
+  const stickyValue = document.getElementById("rating-sticky-value");
+  sticky.addEventListener("value-change", (event) => {
+    sticky.value = event.detail.value;
+    stickyValue.textContent = event.detail.value;
+  });
+<\/script>
+`;export{a as default};

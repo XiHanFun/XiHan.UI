@@ -1,0 +1,14 @@
+const t=`<!-- 纯装饰 | decorative 开启后读屏跳过它；只是排版用的横线应该这么写 -->
+<div style="width: 100%">
+  <p>语义分隔：读屏会念出一条分隔线</p>
+  <!-- 宿主不占布局，分隔线本体直接落进外层排版 -->
+  <xh-separator style="display: contents">
+    <div data-xh-part="root"></div>
+  </xh-separator>
+  <p>装饰分隔：读屏跳过</p>
+  <xh-separator decorative style="display: contents">
+    <div data-xh-part="root"></div>
+  </xh-separator>
+  <p>末段</p>
+</div>
+`;export{t as default};

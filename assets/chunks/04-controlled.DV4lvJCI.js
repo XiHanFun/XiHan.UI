@@ -1,0 +1,71 @@
+const n=`<!-- 受控正文与选中回调 | 正文由宿主持有，select 事件报回插进去的是哪一条，用来攒收件人名单 -->
+<xh-mention id="mention-controlled" value="周会纪要：" tone="brand" placeholder="输入 @ 提及同事">
+  <div data-xh-part="root">
+    <textarea data-xh-part="input"></textarea>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content"></div>
+    </div>
+  </div>
+</xh-mention>
+<p>已提及：<span id="mention-controlled-list">（无）</span></p>
+<button type="button" id="mention-controlled-reset">清空</button>
+
+<script type="module">
+  const people = [
+    { value: "lilei", label: "李雷" },
+    { value: "hanmeimei", label: "韩梅梅" },
+    { value: "poly", label: "Poly" },
+  ];
+
+  const mention = document.getElementById("mention-controlled");
+  const content = mention.querySelector('[data-xh-part="content"]');
+  const readout = document.getElementById("mention-controlled-list");
+  const reset = document.getElementById("mention-controlled-reset");
+  let mentioned = [];
+
+  mention.translations = { input: "会议纪要", content: "提及谁" };
+
+  function itemNode(person) {
+    const item = document.createElement("div");
+    item.dataset.xhPart = "item";
+    item.setAttribute("value", person.value);
+    const text = document.createElement("span");
+    text.dataset.xhPart = "item-text";
+    text.textContent = person.label;
+    item.append(text);
+    return item;
+  }
+
+  function render(query) {
+    const q = (query ?? "").trim().toLowerCase();
+    const matched =
+      q === ""
+        ? people
+        : people.filter((p) => p.value.includes(q) || p.label.toLowerCase().includes(q));
+    content.replaceChildren(...matched.map(itemNode));
+  }
+
+  function showMentioned() {
+    readout.textContent = mentioned.join("、") || "（无）";
+  }
+
+  render("");
+  mention.addEventListener("query-change", (event) => render(event.detail.query));
+  // 正文由外面这份状态持有，组件报上来才写回去
+  mention.addEventListener("value-change", (event) => {
+    mention.value = event.detail.value;
+  });
+  // 名单按值去重；正文里被删掉的提及不在这里回收，需要的话按正文重新扫一遍
+  mention.addEventListener("select", (event) => {
+    if (!mentioned.includes(event.detail.value)) {
+      mentioned = [...mentioned, event.detail.value];
+      showMentioned();
+    }
+  });
+  reset.addEventListener("click", () => {
+    mention.value = "";
+    mentioned = [];
+    showMentioned();
+  });
+<\/script>
+`;export{n as default};

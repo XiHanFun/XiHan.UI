@@ -1,0 +1,159 @@
+const n=`<!-- 点开看大图 | 缩略图的点击与键盘自己接，放大层是一个对话框，里面再放一份独立的图片实例 -->
+<!-- 缩略图当触发器：角色、Tab 位与两个按键都写在根上 -->
+<xh-image
+  id="image-preview-thumb"
+  src="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%204%203%22%3E%3Crect%20width=%224%22%20height=%223%22%20fill=%22%230f172a%22/%3E%3Ccircle%20cx=%223.1%22%20cy=%220.8%22%20r=%220.35%22%20fill=%22%23fbbf24%22/%3E%3Cpath%20d=%22M0%203%201.4%201.4%202.4%202.3%203.1%201.6%204%202.4V3z%22%20fill=%22%2334d399%22/%3E%3C/svg%3E"
+  alt="山间日出"
+>
+  <div
+    data-xh-part="root"
+    role="button"
+    tabindex="0"
+    aria-label="放大查看 山间日出"
+    style="--xh-image-w: 160px; --xh-image-ratio: 4 / 3; cursor: zoom-in"
+  >
+    <img data-xh-part="image" />
+    <div data-xh-part="fallback">加载中</div>
+  </div>
+</xh-image>
+
+<!-- 遮罩、居中定位与焦点圈禁都由对话框给，Esc 与点遮罩就是关闭预览 -->
+<xh-dialog id="image-preview-dialog" size="lg" open="false">
+  <div data-xh-part="backdrop"></div>
+  <div data-xh-part="positioner">
+    <div data-xh-part="content">
+      <h2 data-xh-part="title">山间日出</h2>
+
+      <!-- 放大层里是另一份图片实例：它的 alt、裁切方式与缩略图那份互不相干 -->
+      <xh-image
+        id="image-preview-large"
+        src="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%204%203%22%3E%3Crect%20width=%224%22%20height=%223%22%20fill=%22%230f172a%22/%3E%3Ccircle%20cx=%223.1%22%20cy=%220.8%22%20r=%220.35%22%20fill=%22%23fbbf24%22/%3E%3Cpath%20d=%22M0%203%201.4%201.4%202.4%202.3%203.1%201.6%204%202.4V3z%22%20fill=%22%2334d399%22/%3E%3C/svg%3E"
+        alt="山间日出，放大查看"
+      >
+        <div
+          data-xh-part="root"
+          style="--xh-image-w: 100%; --xh-image-ratio: 4 / 3; --xh-image-fit: contain"
+        >
+          <img
+            data-xh-part="image"
+            style="transition: transform 120ms var(--xh-ease-standard)"
+          />
+          <div data-xh-part="fallback">加载中</div>
+        </div>
+      </xh-image>
+
+      <!-- 缩放与旋转是两个数值加一条 transform，工具条只负责把这几颗按钮串成一个 Tab 位 -->
+      <xh-toolbar id="image-preview-toolbar">
+        <div data-xh-part="root">
+          <button
+            type="button"
+            data-xh-part="item"
+            value="zoom-in"
+            style="
+              padding: 4px 10px;
+              border-radius: 6px;
+              border: 1px solid var(--xh-border-default);
+              background: var(--xh-bg-surface);
+            "
+          >
+            放大
+          </button>
+          <button
+            type="button"
+            data-xh-part="item"
+            value="zoom-out"
+            style="
+              padding: 4px 10px;
+              border-radius: 6px;
+              border: 1px solid var(--xh-border-default);
+              background: var(--xh-bg-surface);
+            "
+          >
+            缩小
+          </button>
+          <button
+            type="button"
+            data-xh-part="item"
+            value="rotate"
+            style="
+              padding: 4px 10px;
+              border-radius: 6px;
+              border: 1px solid var(--xh-border-default);
+              background: var(--xh-bg-surface);
+            "
+          >
+            旋转
+          </button>
+          <button
+            type="button"
+            data-xh-part="item"
+            value="reset"
+            style="
+              padding: 4px 10px;
+              border-radius: 6px;
+              border: 1px solid var(--xh-border-default);
+              background: var(--xh-bg-surface);
+            "
+          >
+            还原
+          </button>
+        </div>
+      </xh-toolbar>
+
+      <button data-xh-part="close-trigger" aria-label="关闭">✕</button>
+    </div>
+  </div>
+</xh-dialog>
+
+<script type="module">
+  const dialog = document.getElementById("image-preview-dialog");
+  const thumb = document
+    .getElementById("image-preview-thumb")
+    .querySelector('[data-xh-part="root"]');
+  const large = document
+    .getElementById("image-preview-large")
+    .querySelector('[data-xh-part="image"]');
+  const toolbar = document.getElementById("image-preview-toolbar");
+
+  let scale = 1;
+  let rotate = 0;
+
+  // 两个数值合成一条 transform 写回放大层那份图片
+  function apply() {
+    large.style.transform = \`scale(\${scale}) rotate(\${rotate}deg)\`;
+  }
+
+  // 每次打开都从原始比例起看
+  function openPreview() {
+    scale = 1;
+    rotate = 0;
+    apply();
+    dialog.open = true;
+  }
+
+  thumb.addEventListener("click", openPreview);
+  thumb.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      openPreview();
+    }
+  });
+  dialog.addEventListener("open-change", (event) => {
+    dialog.open = event.detail.open;
+  });
+
+  const actions = {
+    "zoom-in": () => (scale = Math.min(3, scale + 0.25)),
+    "zoom-out": () => (scale = Math.max(0.5, scale - 0.25)),
+    "rotate": () => (rotate += 90),
+    "reset": () => ((scale = 1), (rotate = 0)),
+  };
+
+  for (const item of toolbar.querySelectorAll('[data-xh-part="item"]')) {
+    item.addEventListener("click", () => {
+      actions[item.value]();
+      apply();
+    });
+  }
+<\/script>
+`;export{n as default};

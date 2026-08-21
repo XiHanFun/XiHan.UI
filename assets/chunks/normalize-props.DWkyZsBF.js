@@ -1,0 +1,1 @@
+import{c as n}from"./normalize-props.C19uE7bg.js";function s(t){return t.length>2&&t.startsWith("on")&&t[2]>="A"&&t[2]<="Z"?`on${t[2]}${t.slice(3).toLowerCase()}`:t}const a=new Set(["inert"]),i=n(t=>{const o={};for(const e of Object.keys(t)){const r=t[e];o[s(e)]=a.has(e)&&r===!0?"":r}return o});export{i as v};

@@ -1,0 +1,141 @@
+const a=`<!-- 语气 | tone 换的是当前项的文字色，以及可点那几层悬停时的文字色；末级预置为当前项 -->
+<div style="inline-size: 100%; display: grid; gap: 12px">
+  <div style="display: flex; align-items: center; gap: 12px">
+    <span style="inline-size: 80px; flex: none; font-size: 12px">brand</span>
+    <xh-breadcrumb tone="brand">
+      <nav data-xh-part="root">
+        <ol data-xh-part="list">
+          <li data-xh-part="item">
+            <a data-xh-part="link" href="#/">首页</a>
+          </li>
+          <li data-xh-part="separator">/</li>
+          <li data-xh-part="item">
+            <a data-xh-part="link" href="#/components">组件</a>
+          </li>
+          <li data-xh-part="separator">/</li>
+          <li data-xh-part="item">
+            <a data-xh-part="link" href="#/components/breadcrumb" current>
+              面包屑
+            </a>
+          </li>
+        </ol>
+      </nav>
+    </xh-breadcrumb>
+  </div>
+
+  <div style="display: flex; align-items: center; gap: 12px">
+    <span style="inline-size: 80px; flex: none; font-size: 12px">neutral</span>
+    <xh-breadcrumb tone="neutral">
+      <nav data-xh-part="root">
+        <ol data-xh-part="list">
+          <li data-xh-part="item">
+            <a data-xh-part="link" href="#/">首页</a>
+          </li>
+          <li data-xh-part="separator">/</li>
+          <li data-xh-part="item">
+            <a data-xh-part="link" href="#/components">组件</a>
+          </li>
+          <li data-xh-part="separator">/</li>
+          <li data-xh-part="item">
+            <a data-xh-part="link" href="#/components/breadcrumb" current>
+              面包屑
+            </a>
+          </li>
+        </ol>
+      </nav>
+    </xh-breadcrumb>
+  </div>
+
+  <div style="display: flex; align-items: center; gap: 12px">
+    <span style="inline-size: 80px; flex: none; font-size: 12px">success</span>
+    <xh-breadcrumb tone="success">
+      <nav data-xh-part="root">
+        <ol data-xh-part="list">
+          <li data-xh-part="item">
+            <a data-xh-part="link" href="#/">首页</a>
+          </li>
+          <li data-xh-part="separator">/</li>
+          <li data-xh-part="item">
+            <a data-xh-part="link" href="#/components">组件</a>
+          </li>
+          <li data-xh-part="separator">/</li>
+          <li data-xh-part="item">
+            <a data-xh-part="link" href="#/components/breadcrumb" current>
+              面包屑
+            </a>
+          </li>
+        </ol>
+      </nav>
+    </xh-breadcrumb>
+  </div>
+
+  <div style="display: flex; align-items: center; gap: 12px">
+    <span style="inline-size: 80px; flex: none; font-size: 12px">warning</span>
+    <xh-breadcrumb tone="warning">
+      <nav data-xh-part="root">
+        <ol data-xh-part="list">
+          <li data-xh-part="item">
+            <a data-xh-part="link" href="#/">首页</a>
+          </li>
+          <li data-xh-part="separator">/</li>
+          <li data-xh-part="item">
+            <a data-xh-part="link" href="#/components">组件</a>
+          </li>
+          <li data-xh-part="separator">/</li>
+          <li data-xh-part="item">
+            <a data-xh-part="link" href="#/components/breadcrumb" current>
+              面包屑
+            </a>
+          </li>
+        </ol>
+      </nav>
+    </xh-breadcrumb>
+  </div>
+
+  <div style="display: flex; align-items: center; gap: 12px">
+    <span style="inline-size: 80px; flex: none; font-size: 12px">danger</span>
+    <xh-breadcrumb tone="danger">
+      <nav data-xh-part="root">
+        <ol data-xh-part="list">
+          <li data-xh-part="item">
+            <a data-xh-part="link" href="#/">首页</a>
+          </li>
+          <li data-xh-part="separator">/</li>
+          <li data-xh-part="item">
+            <a data-xh-part="link" href="#/components">组件</a>
+          </li>
+          <li data-xh-part="separator">/</li>
+          <li data-xh-part="item">
+            <a data-xh-part="link" href="#/components/breadcrumb" current>
+              面包屑
+            </a>
+          </li>
+        </ol>
+      </nav>
+    </xh-breadcrumb>
+  </div>
+
+  <div style="display: flex; align-items: center; gap: 12px">
+    <span style="inline-size: 80px; flex: none; font-size: 12px">info</span>
+    <xh-breadcrumb tone="info">
+      <nav data-xh-part="root">
+        <ol data-xh-part="list">
+          <li data-xh-part="item">
+            <a data-xh-part="link" href="#/">首页</a>
+          </li>
+          <li data-xh-part="separator">/</li>
+          <li data-xh-part="item">
+            <a data-xh-part="link" href="#/components">组件</a>
+          </li>
+          <li data-xh-part="separator">/</li>
+          <li data-xh-part="item">
+            <a data-xh-part="link" href="#/components/breadcrumb" current>
+              面包屑
+            </a>
+          </li>
+        </ol>
+      </nav>
+    </xh-breadcrumb>
+  </div>
+</div>
+`;export{a as default};

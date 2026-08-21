@@ -1,0 +1,71 @@
+const t=`<!-- 校验时机 | blur 与 change 两种模式下 validate 仍整表跑（校验可能带跨字段规则），但只把当事字段那一条写回错误表 -->
+<!-- 失焦时校验这一个字段：填的过程中不打断 -->
+<xh-form id="form-validate-blur" validate-on="blur">
+  <form data-xh-part="root" style="inline-size: 240px">
+    <div data-xh-part="field-group" value="port">
+      <xh-field>
+        <div data-xh-part="root">
+          <label data-xh-part="label">端口（失焦校验）</label>
+          <input data-xh-part="control" />
+          <p data-xh-part="error-text"></p>
+        </div>
+      </xh-field>
+    </div>
+    <button data-xh-part="submit-trigger">提交</button>
+  </form>
+</xh-form>
+
+<!-- 改一个字就校验一次：错误随输入实时消长 -->
+<xh-form id="form-validate-change" validate-on="change">
+  <form data-xh-part="root" style="inline-size: 240px">
+    <div data-xh-part="field-group" value="port">
+      <xh-field>
+        <div data-xh-part="root">
+          <label data-xh-part="label">端口（改动即校验）</label>
+          <input data-xh-part="control" />
+          <p data-xh-part="error-text"></p>
+        </div>
+      </xh-field>
+    </div>
+    <button data-xh-part="submit-trigger">提交</button>
+  </form>
+</xh-form>
+
+<script type="module">
+  function validate(source) {
+    const port = String(source.port ?? "").trim();
+    return { port: /^\\d+$/.test(port) ? "" : "端口只能是数字" };
+  }
+
+  // 两份表单接线相同，只有校验时机那一条属性不一样
+  function wire(id) {
+    const host = document.getElementById(id);
+    const defaults = { port: "abc" };
+    let values = { ...defaults };
+
+    host.validate = validate;
+    host.defaultValues = defaults;
+    host.values = values;
+
+    const group = host.querySelector('[data-xh-part="field-group"]');
+    const input = group.querySelector('[data-xh-part="control"]');
+    const errorText = group.querySelector('[data-xh-part="error-text"]');
+
+    input.addEventListener("input", () => host.setFieldValue("port", input.value));
+    host.addEventListener("values-change", (event) => {
+      values = event.detail.values;
+      host.values = values;
+      const next = String(values.port ?? "");
+      if (input.value !== next) input.value = next;
+    });
+    host.addEventListener("errors-change", (event) => {
+      errorText.textContent = event.detail.errors.port ?? "";
+    });
+
+    input.value = String(values.port ?? "");
+  }
+
+  wire("form-validate-blur");
+  wire("form-validate-change");
+<\/script>
+`;export{t as default};

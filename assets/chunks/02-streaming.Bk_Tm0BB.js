@@ -1,0 +1,43 @@
+const e=`<!-- 流式未闭合 | complete 为 false 时默认不着色：半截代码的词法本来就不稳，每来一个记号整块变一次色比不着色更难看 -->
+<!-- 语言标注也没吐出来：空白、半截、不认识的一律落到 plaintext -->
+<xh-code-block
+  code="const stream = await client.chat({
+  model: 'demo',
+  messages,
+  onToken(token) {
+    buffer +="
+  complete="false"
+  style="inline-size: 100%"
+>
+  <div data-xh-part="root">
+    <span data-xh-part="lang-label">plaintext</span>
+    <pre data-xh-part="pre"><code data-xh-part="code">const stream = await client.chat({
+  model: 'demo',
+  messages,
+  onToken(token) {
+    buffer +=</code></pre>
+  </div>
+</xh-code-block>
+
+<!-- 真要看流式着色，把这一条打开 -->
+<xh-code-block
+  code="const stream = await client.chat({
+  model: 'demo',
+  messages,
+  onToken(token) {
+    buffer +="
+  code-lang="typescript"
+  complete="false"
+  highlight-while-streaming
+  style="inline-size: 100%"
+>
+  <div data-xh-part="root">
+    <span data-xh-part="lang-label">typescript</span>
+    <pre data-xh-part="pre"><code data-xh-part="code">const stream = await client.chat({
+  model: 'demo',
+  messages,
+  onToken(token) {
+    buffer +=</code></pre>
+  </div>
+</xh-code-block>
+`;export{e as default};

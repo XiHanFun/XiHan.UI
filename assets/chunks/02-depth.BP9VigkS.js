@@ -1,0 +1,27 @@
+const n=`<!-- 默认展开层数 | defaultExpandedDepth 决定初次摊到第几层：1 只展开根行，3 连孙层一起铺开 -->
+<div style="display: grid; gap: 16px; inline-size: 100%; max-inline-size: 420px">
+  <xh-json-viewer id="json-depth-1" default-expanded-depth="1">
+    <div data-xh-part="root"></div>
+  </xh-json-viewer>
+
+  <xh-json-viewer id="json-depth-3" default-expanded-depth="3">
+    <div data-xh-part="root"></div>
+  </xh-json-viewer>
+</div>
+
+<script type="module">
+  // 同一份数据喂给两个视图，差别只在初次摊到第几层
+  const payload = {
+    server: {
+      host: "127.0.0.1",
+      port: 5173,
+      tls: { enabled: false, cert: null },
+    },
+    build: { target: "es2022", minify: true },
+  };
+
+  for (const id of ["json-depth-1", "json-depth-3"]) {
+    document.getElementById(id).value = payload;
+  }
+<\/script>
+`;export{n as default};

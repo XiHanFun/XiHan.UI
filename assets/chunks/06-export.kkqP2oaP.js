@@ -1,0 +1,27 @@
+const t=`<!-- 取出签名 | 签名定稿时 draw-end 带上一份可直接落库的 SVG；提交前用 empty 拦一道，空签名不该走出客户端 -->
+<xh-signature-pad id="xh-signature-export">
+  <div data-xh-part="root" style="max-inline-size: 22rem">
+    <svg data-xh-part="control">
+      <line data-xh-part="guide"></line>
+      <path data-xh-part="segment"></path>
+    </svg>
+    <div style="display: flex; gap: 8px; align-items: center">
+      <button data-xh-part="clear-trigger">清空</button>
+      <!-- 空签名与"签了但很潦草"是两回事，前者应该在客户端就挡住 -->
+      <button type="button" id="xh-signature-submit" disabled>提交</button>
+      <span id="xh-signature-size" style="font-size: 12px">SVG 0 字节</span>
+    </div>
+  </div>
+</xh-signature-pad>
+
+<script type="module">
+  const host = document.getElementById("xh-signature-export");
+  const submit = document.getElementById("xh-signature-submit");
+  const size = document.getElementById("xh-signature-size");
+  // 清空与表单重置同样发 draw-end，一个监听器就够，不必去嗅探清空按钮
+  host.addEventListener("draw-end", (event) => {
+    size.textContent = \`SVG \${event.detail.svg.length} 字节\`;
+    submit.disabled = event.detail.svg.length === 0;
+  });
+<\/script>
+`;export{t as default};

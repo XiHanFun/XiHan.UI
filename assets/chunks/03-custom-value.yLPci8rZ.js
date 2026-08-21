@@ -1,0 +1,49 @@
+const t=`<!-- 允许自由文本 | allow-custom-value 让没匹配上候选的输入也能落值，适合标签、邮箱这类开放集合 -->
+<xh-combobox id="combobox-custom-value" allow-custom-value placeholder="选一个或直接打字">
+  <div data-xh-part="root">
+    <label data-xh-part="label">技术栈</label>
+    <div data-xh-part="control">
+      <input data-xh-part="input" />
+      <button data-xh-part="trigger"></button>
+      <button data-xh-part="clear-trigger"></button>
+    </div>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <div data-xh-part="item" value="vue">
+          <span data-xh-part="item-text">Vue</span>
+          <span data-xh-part="item-indicator"></span>
+        </div>
+        <div data-xh-part="item" value="react">
+          <span data-xh-part="item-text">React</span>
+          <span data-xh-part="item-indicator"></span>
+        </div>
+        <div data-xh-part="item" value="svelte">
+          <span data-xh-part="item-text">Svelte</span>
+          <span data-xh-part="item-indicator"></span>
+        </div>
+      </div>
+      <div data-xh-part="empty">没有候选，按 Enter 直接用这串文本</div>
+    </div>
+  </div>
+</xh-combobox>
+<p>当前值：<span id="combobox-custom-value-readout">（未选）</span></p>
+
+<script type="module">
+  const combobox = document.getElementById("combobox-custom-value");
+  const content = combobox.querySelector('[data-xh-part="content"]');
+  const readout = document.getElementById("combobox-custom-value-readout");
+  // 候选整份留在手上，输入串一变就按它重铺
+  const all = [...content.children];
+  const labelOf = (item) => item.querySelector('[data-xh-part="item-text"]').textContent.toLowerCase();
+
+  combobox.addEventListener("input-value-change", (event) => {
+    const q = event.detail.inputValue.trim().toLowerCase();
+    content.replaceChildren(...all.filter((item) => labelOf(item).includes(q)));
+  });
+
+  combobox.addEventListener("value-change", (event) => {
+    combobox.value = event.detail.value;
+    readout.textContent = event.detail.value[0] ?? "（未选）";
+  });
+<\/script>
+`;export{t as default};

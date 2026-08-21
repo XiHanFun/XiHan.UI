@@ -1,0 +1,45 @@
+const t=`<!-- 条目自带的属性与事件 | 条目上的原生属性照常生效，自己挂的 click 与内部的选中处理并存 -->
+<div style="inline-size: 100%; display: grid; gap: 12px; justify-items: start">
+  <xh-menu id="menu-item-attrs">
+    <button data-xh-part="trigger">导出</button>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <!-- title 是原生属性，悬停就出提示 -->
+        <div data-xh-part="item" value="csv" title="逗号分隔，表格软件直接打得开">导出 CSV</div>
+        <div data-xh-part="item" value="json" title="结构化数据，留给程序读">导出 JSON</div>
+        <div data-xh-part="item" value="pdf" aria-disabled="true" title="当前视图不支持">
+          导出 PDF
+        </div>
+      </div>
+    </div>
+  </xh-menu>
+
+  <ol id="menu-item-attrs-trace" style="display: grid; gap: 4px; margin: 0; padding-inline-start: 20px">
+    <li>（还没动过）</li>
+  </ol>
+</div>
+
+<script type="module">
+  // 最近四条动静倒序列在下面
+  const menu = document.getElementById("menu-item-attrs");
+  const list = document.getElementById("menu-item-attrs-trace");
+  const trace = [];
+
+  function push(text) {
+    trace.unshift(text);
+    trace.length = Math.min(trace.length, 4);
+    list.replaceChildren(
+      ...trace.map((line) => {
+        const li = document.createElement("li");
+        li.textContent = line;
+        return li;
+      }),
+    );
+  }
+
+  // 条目自己的 click 与菜单内部的选中处理两边都会跑
+  const csv = menu.querySelector('[data-xh-part="item"][value="csv"]');
+  csv.addEventListener("click", () => push("条目自己的 click：csv"));
+  menu.addEventListener("select", (event) => push(\`菜单的 select：\${event.detail.value}\`));
+<\/script>
+`;export{t as default};

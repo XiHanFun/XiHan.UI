@@ -1,0 +1,1 @@
+function o(t){var i,n;const e=(i=t==null?void 0:t.ownerDocument)==null?void 0:i.defaultView;if(!e)return"ltr";const r=e.getComputedStyle(t).direction;return r==="rtl"||r==="ltr"?r:((n=t.closest("[dir]"))==null?void 0:n.getAttribute("dir"))==="rtl"?"rtl":"ltr"}export{o as r};

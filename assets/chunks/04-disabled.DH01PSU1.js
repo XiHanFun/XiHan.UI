@@ -1,0 +1,17 @@
+const n=`<!-- 禁用 | disabled 后拖不动也推不动，分隔条整个退出 Tab 序列，方向键放行给页面 -->
+<xh-splitter
+  panels='[{"id":"aside"},{"id":"main"}]'
+  disabled
+  style="display: contents"
+>
+  <div data-xh-part="root" style="inline-size: 100%; block-size: 120px">
+    <div data-xh-part="panel" index="0">
+      <p style="padding: 12px">侧栏</p>
+    </div>
+    <div data-xh-part="resize-trigger" index="0"></div>
+    <div data-xh-part="panel" index="1">
+      <p style="padding: 12px">正文</p>
+    </div>
+  </div>
+</xh-splitter>
+`;export{n as default};

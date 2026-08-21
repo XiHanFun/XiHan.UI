@@ -1,0 +1,1 @@
+import{a as e}from"./normalize-props.C19uE7bg.js";const n=e("avatar-group",["root","overflow"]),a=n.build();function c(t,o){const r={...a.root.attrs,"data-size":t.size,"data-max":t.max==null?void 0:String(t.max)};return{getRootProps:()=>o.element(r),getOverflowProps:()=>o.element(a.overflow.attrs)}}export{n as a,c};

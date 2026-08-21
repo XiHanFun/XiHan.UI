@@ -1,0 +1,28 @@
+const t=`<!-- 尺寸 | size 换的是留白、图标框与标题字号，不传 size 即默认档 -->
+<div style="display: flex; flex-direction: column; gap: 16px">
+  <xh-result status="info" size="sm">
+    <div data-xh-part="root">
+      <span data-xh-part="icon">i</span>
+      <p data-xh-part="title">小档</p>
+      <p data-xh-part="description">同一段文案在三档下的留白与字号。</p>
+    </div>
+  </xh-result>
+
+  <!-- 中间一档不写 size -->
+  <xh-result status="info">
+    <div data-xh-part="root">
+      <span data-xh-part="icon">i</span>
+      <p data-xh-part="title">默认档</p>
+      <p data-xh-part="description">同一段文案在三档下的留白与字号。</p>
+    </div>
+  </xh-result>
+
+  <xh-result status="info" size="lg">
+    <div data-xh-part="root">
+      <span data-xh-part="icon">i</span>
+      <p data-xh-part="title">大档</p>
+      <p data-xh-part="description">同一段文案在三档下的留白与字号。</p>
+    </div>
+  </xh-result>
+</div>
+`;export{t as default};

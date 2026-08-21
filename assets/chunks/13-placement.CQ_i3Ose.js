@@ -1,0 +1,52 @@
+const t=`<!-- 标签栏摆在哪一边 | root 按书写顺序渲染子节点：把面板写在 list 前面，标签栏就落到内容之后，基线换到另一边 -->
+<div style="display: flex; flex-direction: column; gap: 24px; inline-size: 100%">
+  <div>
+    <div style="margin-block-end: 8px; font-size: 12px">标签在下</div>
+    <xh-tabs default-value="overview">
+      <div data-xh-part="root" style="inline-size: 100%">
+        <div data-xh-part="content" value="overview">概览 的面板</div>
+        <div data-xh-part="content" value="usage">用法 的面板</div>
+        <div data-xh-part="content" value="api">API 的面板</div>
+
+        <!-- 基线跟着换边：横排的基线在 list 底边，标签在下就把它挪到顶边 -->
+        <div
+          data-xh-part="list"
+          style="
+            border-block-end: 0;
+            border-block-start: var(--xh-stroke-thin) solid var(--xh-border-default);
+          "
+        >
+          <button data-xh-part="trigger" value="overview">概览</button>
+          <button data-xh-part="trigger" value="usage">用法</button>
+          <button data-xh-part="trigger" value="api">API</button>
+        </div>
+      </div>
+    </xh-tabs>
+  </div>
+
+  <div>
+    <div style="margin-block-end: 8px; font-size: 12px">标签在右</div>
+    <xh-tabs default-value="overview" orientation="vertical">
+      <div data-xh-part="root" style="inline-size: 100%">
+        <div data-xh-part="content" value="overview" style="flex: 1">
+          概览 的面板
+        </div>
+        <div data-xh-part="content" value="usage" style="flex: 1">用法 的面板</div>
+        <div data-xh-part="content" value="api" style="flex: 1">API 的面板</div>
+
+        <div
+          data-xh-part="list"
+          style="
+            border-inline-end: 0;
+            border-inline-start: var(--xh-stroke-thin) solid var(--xh-border-default);
+          "
+        >
+          <button data-xh-part="trigger" value="overview">概览</button>
+          <button data-xh-part="trigger" value="usage">用法</button>
+          <button data-xh-part="trigger" value="api">API</button>
+        </div>
+      </div>
+    </xh-tabs>
+  </div>
+</div>
+`;export{t as default};

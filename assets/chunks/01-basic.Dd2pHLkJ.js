@@ -1,0 +1,27 @@
+const a=`<!-- 基础用法 | value 与 max 共同决定百分比 -->
+<div style="width: 100%; display: grid; gap: 12px">
+  <xh-progress value="30">
+    <div data-xh-part="root">
+      <div data-xh-part="track">
+        <div data-xh-part="range"></div>
+      </div>
+    </div>
+  </xh-progress>
+
+  <xh-progress value="72">
+    <div data-xh-part="root">
+      <div data-xh-part="track">
+        <div data-xh-part="range"></div>
+      </div>
+    </div>
+  </xh-progress>
+
+  <xh-progress value="3" max="4">
+    <div data-xh-part="root">
+      <div data-xh-part="track">
+        <div data-xh-part="range"></div>
+      </div>
+    </div>
+  </xh-progress>
+</div>
+`;export{a as default};

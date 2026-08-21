@@ -1,0 +1,32 @@
+const n=`<!-- 受控 | 传了 value 就由宿主说了算，取色只回写不自改 -->
+<xh-color-picker id="color-picker-controlled" value="#3b82f6">
+  <div data-xh-part="root">
+    <button data-xh-part="trigger">
+      <span data-xh-part="swatch"></span>
+    </button>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <div data-xh-part="area">
+          <div data-xh-part="area-thumb"></div>
+        </div>
+        <div data-xh-part="channel-slider" channel="hue">
+          <div data-xh-part="channel-slider-track"></div>
+          <div data-xh-part="channel-slider-thumb"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</xh-color-picker>
+<span>当前：<span id="color-picker-controlled-value">#3b82f6</span></span>
+
+<script type="module">
+  // 值由宿主握着：变更经事件回来，写回去才生效
+  const picker = document.getElementById("color-picker-controlled");
+  const readout = document.getElementById("color-picker-controlled-value");
+
+  picker.addEventListener("value-change", (event) => {
+    picker.value = event.detail.value;
+    readout.textContent = event.detail.value;
+  });
+<\/script>
+`;export{n as default};

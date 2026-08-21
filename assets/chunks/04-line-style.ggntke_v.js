@@ -1,0 +1,46 @@
+const t=`<!-- 线型、粗细与颜色 | 线是拿背景画出来的：颜色槽位收的是背景值，填一段重复渐变就是虚线；粗细是另一个槽位 -->
+<div style="width: 100%; display: grid; gap: 10px">
+  <span style="font-size: 13px">实线（缺省）</span>
+  <!-- 宿主不占布局，分隔线本体直接落进外层排版 -->
+  <xh-separator decorative style="display: contents">
+    <div data-xh-part="root"></div>
+  </xh-separator>
+
+  <span style="font-size: 13px">虚线</span>
+  <!-- 实线段与空白段交替：横线沿 to right 铺 -->
+  <xh-separator decorative style="display: contents">
+    <div
+      data-xh-part="root"
+      style="--xh-separator-color: repeating-linear-gradient(to right, var(--xh-border-default) 0 6px, transparent 6px 12px)"
+    ></div>
+  </xh-separator>
+
+  <span style="font-size: 13px">点线</span>
+  <xh-separator decorative style="display: contents">
+    <div
+      data-xh-part="root"
+      style="--xh-separator-color: repeating-linear-gradient(to right, var(--xh-border-default) 0 2px, transparent 2px 6px)"
+    ></div>
+  </xh-separator>
+
+  <span style="font-size: 13px">加粗并换色</span>
+  <xh-separator decorative style="display: contents">
+    <div
+      data-xh-part="root"
+      style="--xh-separator-thickness: 3px; --xh-separator-color: var(--xh-color-brand-500)"
+    ></div>
+  </xh-separator>
+
+  <!-- 竖向同样成立，只把渐变方向换成 to bottom -->
+  <div style="display: flex; align-items: center; gap: 12px; height: 32px">
+    <span style="font-size: 13px">左</span>
+    <xh-separator orientation="vertical" decorative style="display: contents">
+      <div
+        data-xh-part="root"
+        style="--xh-separator-color: repeating-linear-gradient(to bottom, var(--xh-border-default) 0 6px, transparent 6px 12px)"
+      ></div>
+    </xh-separator>
+    <span style="font-size: 13px">右</span>
+  </div>
+</div>
+`;export{t as default};

@@ -1,0 +1,13 @@
+const n=`<!-- 基础用法 | 挂载即从 from 走到 to，三个尺寸档只改字号；不写 size 就跟着上下文的字号走 -->
+<xh-number-animation from="0" to="1024" size="sm">
+  <span data-xh-part="root"></span>
+</xh-number-animation>
+
+<xh-number-animation from="0" to="12480" size="md">
+  <span data-xh-part="root"></span>
+</xh-number-animation>
+
+<xh-number-animation from="0" to="98600" size="lg" tone="brand">
+  <span data-xh-part="root"></span>
+</xh-number-animation>
+`;export{n as default};

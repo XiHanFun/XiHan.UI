@@ -1,0 +1,19 @@
+const t=`<!-- 撑满行宽 | block 让整组占满一行，各段等分剩余空间，长短不一的文字也排得齐 -->
+<div style="inline-size: 420px">
+  <xh-segmented block default-value="auto">
+    <div data-xh-part="root" aria-label="执行方式">
+      <span data-xh-part="indicator"></span>
+      <button data-xh-part="item" value="auto">
+        <span data-xh-part="item-text">自动</span>
+      </button>
+      <button data-xh-part="item" value="manual">
+        <span data-xh-part="item-text">手动</span>
+      </button>
+      <button data-xh-part="item" value="scheduled">
+        <span data-xh-part="item-text">按计划执行</span>
+      </button>
+      <input data-xh-part="hidden-input" />
+    </div>
+  </xh-segmented>
+</div>
+`;export{t as default};

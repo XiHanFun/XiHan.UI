@@ -1,0 +1,66 @@
+const a=`<!-- 值串写法 | format 只决定对外的序列化，工作色始终是同一套；三种写法各挑一个色，改动后按各自的写法产出 -->
+<div style="display: flex; flex-wrap: wrap; gap: 16px">
+  <xh-color-picker format="hex" default-value="#00a98e">
+    <div data-xh-part="root">
+      <label data-xh-part="label">hex</label>
+      <button data-xh-part="trigger">
+        <span data-xh-part="swatch"></span>
+        <span data-xh-part="value-text"></span>
+      </button>
+      <div data-xh-part="positioner">
+        <div data-xh-part="content">
+          <div data-xh-part="area">
+            <div data-xh-part="area-thumb"></div>
+          </div>
+          <div data-xh-part="channel-slider" channel="hue">
+            <div data-xh-part="channel-slider-track"></div>
+            <div data-xh-part="channel-slider-thumb"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </xh-color-picker>
+
+  <xh-color-picker format="rgba" default-value="rgba(59, 130, 246, 1)">
+    <div data-xh-part="root">
+      <label data-xh-part="label">rgba</label>
+      <button data-xh-part="trigger">
+        <span data-xh-part="swatch"></span>
+        <span data-xh-part="value-text"></span>
+      </button>
+      <div data-xh-part="positioner">
+        <div data-xh-part="content">
+          <div data-xh-part="area">
+            <div data-xh-part="area-thumb"></div>
+          </div>
+          <div data-xh-part="channel-slider" channel="hue">
+            <div data-xh-part="channel-slider-track"></div>
+            <div data-xh-part="channel-slider-thumb"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </xh-color-picker>
+
+  <xh-color-picker format="hsla" default-value="hsla(38, 92%, 50%, 1)">
+    <div data-xh-part="root">
+      <label data-xh-part="label">hsla</label>
+      <button data-xh-part="trigger">
+        <span data-xh-part="swatch"></span>
+        <span data-xh-part="value-text"></span>
+      </button>
+      <div data-xh-part="positioner">
+        <div data-xh-part="content">
+          <div data-xh-part="area">
+            <div data-xh-part="area-thumb"></div>
+          </div>
+          <div data-xh-part="channel-slider" channel="hue">
+            <div data-xh-part="channel-slider-track"></div>
+            <div data-xh-part="channel-slider-thumb"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </xh-color-picker>
+</div>
+`;export{a as default};

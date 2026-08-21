@@ -1,0 +1,22 @@
+const e=`<!-- 尺寸 | size 三档只换字号与层级缩进，行的结构与配色都不变 -->
+<div style="display: grid; gap: 12px; inline-size: 100%; max-inline-size: 420px">
+  <xh-json-viewer id="json-size-sm" default-expanded-depth="2" size="sm">
+    <div data-xh-part="root"></div>
+  </xh-json-viewer>
+
+  <xh-json-viewer id="json-size-md" default-expanded-depth="2" size="md">
+    <div data-xh-part="root"></div>
+  </xh-json-viewer>
+
+  <xh-json-viewer id="json-size-lg" default-expanded-depth="2" size="lg">
+    <div data-xh-part="root"></div>
+  </xh-json-viewer>
+</div>
+
+<script type="module">
+  const payload = { id: 7, label: "曦寒", nested: { ok: true } };
+  for (const id of ["json-size-sm", "json-size-md", "json-size-lg"]) {
+    document.getElementById(id).value = payload;
+  }
+<\/script>
+`;export{e as default};

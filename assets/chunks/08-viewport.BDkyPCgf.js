@@ -1,0 +1,36 @@
+const a=`<!-- 共享面板外壳 | 面板整批塞进 viewport 后落位归外壳管：几个入口的面板落在同一处，宽窄不同也不再各贴各的入口 -->
+<div style="inline-size: 100%; padding-block-end: 180px">
+  <xh-navigation-menu style="display: contents">
+    <nav data-xh-part="root">
+      <ul data-xh-part="list">
+        <li data-xh-part="item">
+          <button data-xh-part="trigger" value="products">产品</button>
+        </li>
+        <li data-xh-part="item">
+          <button data-xh-part="trigger" value="docs">文档</button>
+        </li>
+        <li data-xh-part="item">
+          <button data-xh-part="trigger" value="about">关于</button>
+        </li>
+      </ul>
+
+      <!-- 外壳放在 root 内、list 之后；里面装哪一份面板由各自的 value 决定。
+           面板不再住在各自那一项里，按 Tab 走进面板要先走完全部入口 -->
+      <div data-xh-part="viewport">
+        <div data-xh-part="content" value="products">
+          <a data-xh-part="link" href="#/products/runtime">运行时内核</a>
+          <a data-xh-part="link" href="#/products/vue">Vue 适配器</a>
+          <a data-xh-part="link" href="#/products/wc">Web Components 适配器</a>
+        </div>
+        <div data-xh-part="content" value="docs">
+          <a data-xh-part="link" href="#/docs/guide">上手指南</a>
+        </div>
+        <div data-xh-part="content" value="about">
+          <a data-xh-part="link" href="#/about/team">团队</a>
+          <a data-xh-part="link" href="#/about/contact">联系我们</a>
+        </div>
+      </div>
+    </nav>
+  </xh-navigation-menu>
+</div>
+`;export{a as default};

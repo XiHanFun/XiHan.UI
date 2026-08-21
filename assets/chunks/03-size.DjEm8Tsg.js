@@ -1,0 +1,75 @@
+const a=`<!-- 尺寸 | 直径、字号与叠放量在组上写一次，沿自定义属性流给组内每一枚，「+N」跟着一起换 -->
+<div style="display: grid; gap: 16px; justify-items: start">
+  <xh-avatar-group size="sm" max="3">
+    <div data-xh-part="root">
+      <xh-avatar>
+        <span data-xh-part="root">
+          <img data-xh-part="image" />
+          <span data-xh-part="fallback">曦</span>
+        </span>
+      </xh-avatar>
+      <xh-avatar>
+        <span data-xh-part="root">
+          <img data-xh-part="image" />
+          <span data-xh-part="fallback">寒</span>
+        </span>
+      </xh-avatar>
+      <xh-avatar>
+        <span data-xh-part="root">
+          <img data-xh-part="image" />
+          <span data-xh-part="fallback">懿</span>
+        </span>
+      </xh-avatar>
+      <span data-xh-part="overflow">+3</span>
+    </div>
+  </xh-avatar-group>
+
+  <xh-avatar-group size="md" max="3">
+    <div data-xh-part="root">
+      <xh-avatar>
+        <span data-xh-part="root">
+          <img data-xh-part="image" />
+          <span data-xh-part="fallback">曦</span>
+        </span>
+      </xh-avatar>
+      <xh-avatar>
+        <span data-xh-part="root">
+          <img data-xh-part="image" />
+          <span data-xh-part="fallback">寒</span>
+        </span>
+      </xh-avatar>
+      <xh-avatar>
+        <span data-xh-part="root">
+          <img data-xh-part="image" />
+          <span data-xh-part="fallback">懿</span>
+        </span>
+      </xh-avatar>
+      <span data-xh-part="overflow">+3</span>
+    </div>
+  </xh-avatar-group>
+
+  <xh-avatar-group size="lg" max="3">
+    <div data-xh-part="root">
+      <xh-avatar>
+        <span data-xh-part="root">
+          <img data-xh-part="image" />
+          <span data-xh-part="fallback">曦</span>
+        </span>
+      </xh-avatar>
+      <xh-avatar>
+        <span data-xh-part="root">
+          <img data-xh-part="image" />
+          <span data-xh-part="fallback">寒</span>
+        </span>
+      </xh-avatar>
+      <xh-avatar>
+        <span data-xh-part="root">
+          <img data-xh-part="image" />
+          <span data-xh-part="fallback">懿</span>
+        </span>
+      </xh-avatar>
+      <span data-xh-part="overflow">+3</span>
+    </div>
+  </xh-avatar-group>
+</div>
+`;export{a as default};

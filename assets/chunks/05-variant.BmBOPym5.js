@@ -1,0 +1,31 @@
+const t=`<!-- 形态 | variant 决定底与描边怎么画：描边、淡色填底、无框；密码框没有实心档 -->
+<xh-password-input variant="outline" default-value="hunter2">
+  <div data-xh-part="root">
+    <label data-xh-part="label">outline</label>
+    <div data-xh-part="control">
+      <input data-xh-part="input" style="inline-size: 160px" />
+      <button data-xh-part="visibility-trigger">○</button>
+    </div>
+  </div>
+</xh-password-input>
+
+<xh-password-input variant="subtle" default-value="hunter2">
+  <div data-xh-part="root">
+    <label data-xh-part="label">subtle</label>
+    <div data-xh-part="control">
+      <input data-xh-part="input" style="inline-size: 160px" />
+      <button data-xh-part="visibility-trigger">○</button>
+    </div>
+  </div>
+</xh-password-input>
+
+<xh-password-input variant="ghost" default-value="hunter2">
+  <div data-xh-part="root">
+    <label data-xh-part="label">ghost</label>
+    <div data-xh-part="control">
+      <input data-xh-part="input" style="inline-size: 160px" />
+      <button data-xh-part="visibility-trigger">○</button>
+    </div>
+  </div>
+</xh-password-input>
+`;export{t as default};

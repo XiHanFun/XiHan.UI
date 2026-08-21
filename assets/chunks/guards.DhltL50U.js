@@ -1,0 +1,1 @@
+function o(){return typeof document>"u"||typeof window>"u"}function t(n){return typeof Document<"u"&&n instanceof Document}function i(n){return typeof ShadowRoot<"u"&&n instanceof ShadowRoot}function f(n){return typeof HTMLElement<"u"&&n instanceof HTMLElement}function u(n,e){return!n||!e?!1:n===e||n.contains(e)}export{o as a,i as b,u as c,f as d,t as i};

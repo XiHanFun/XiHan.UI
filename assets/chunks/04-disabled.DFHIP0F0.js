@@ -1,0 +1,14 @@
+const a=`<!-- 禁用 | disabled 把投放区、触发器与隐藏输入一并关停，拖拽进来也不再收 -->
+<xh-file-upload disabled>
+  <div data-xh-part="root" style="inline-size: 100%; max-inline-size: 480px">
+    <label data-xh-part="label">附件</label>
+    <div data-xh-part="dropzone">
+      <span>当前不接受上传</span>
+    </div>
+    <div>
+      <button data-xh-part="trigger">选择文件</button>
+    </div>
+    <input data-xh-part="hidden-input" />
+  </div>
+</xh-file-upload>
+`;export{a as default};

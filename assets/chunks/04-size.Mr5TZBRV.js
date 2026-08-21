@@ -1,0 +1,31 @@
+const t=`<!-- 尺寸 | size 换的是触发按钮的高度、内边距与字号，三档并排对照 -->
+<div
+  style="
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    align-items: start;
+  "
+>
+  <xh-collapsible size="sm" default-open>
+    <div data-xh-part="root">
+      <button data-xh-part="trigger">小号 sm</button>
+      <div data-xh-part="content">按钮最矮，字号也最小。</div>
+    </div>
+  </xh-collapsible>
+
+  <xh-collapsible default-open>
+    <div data-xh-part="root">
+      <button data-xh-part="trigger">缺省档</button>
+      <div data-xh-part="content">不写 size 就是这一档。</div>
+    </div>
+  </xh-collapsible>
+
+  <xh-collapsible size="lg" default-open>
+    <div data-xh-part="root">
+      <button data-xh-part="trigger">大号 lg</button>
+      <div data-xh-part="content">按钮最高，字号也最大。</div>
+    </div>
+  </xh-collapsible>
+</div>
+`;export{t as default};

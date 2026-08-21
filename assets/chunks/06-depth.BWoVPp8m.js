@@ -1,0 +1,53 @@
+const n=`<!-- 前景分级 | 图标没有底色，前景是一个组件令牌；跟正文取同一族文字色，图标就跟着排出主次 -->
+<!-- 前景取普通背景上的四档文字色，从正文一路淡到不可用 -->
+<span id="icon-depth" style="display: contents">
+  <span style="display: inline-flex; align-items: center; gap: 6px; color: var(--xh-fg-default)">
+    <xh-icon size="lg">
+      <svg data-xh-part="root" style="--xh-icon-fg: var(--xh-fg-default)"><g data-xh-part="glyph"></g></svg>
+    </xh-icon>
+    <span style="font-size: 13px">正文</span>
+  </span>
+  <span style="display: inline-flex; align-items: center; gap: 6px; color: var(--xh-fg-muted)">
+    <xh-icon size="lg">
+      <svg data-xh-part="root" style="--xh-icon-fg: var(--xh-fg-muted)"><g data-xh-part="glyph"></g></svg>
+    </xh-icon>
+    <span style="font-size: 13px">次要</span>
+  </span>
+  <span style="display: inline-flex; align-items: center; gap: 6px; color: var(--xh-fg-subtle)">
+    <xh-icon size="lg">
+      <svg data-xh-part="root" style="--xh-icon-fg: var(--xh-fg-subtle)"><g data-xh-part="glyph"></g></svg>
+    </xh-icon>
+    <span style="font-size: 13px">更次要</span>
+  </span>
+  <span style="display: inline-flex; align-items: center; gap: 6px; color: var(--xh-fg-disabled)">
+    <xh-icon size="lg">
+      <svg data-xh-part="root" style="--xh-icon-fg: var(--xh-fg-disabled)"><g data-xh-part="glyph"></g></svg>
+    </xh-icon>
+    <span style="font-size: 13px">不可用</span>
+  </span>
+</span>
+
+<script type="module">
+  // 图标记录是对象，只走 property
+  const infoIcon = {
+    name: "info",
+    viewBox: "0 0 24 24",
+    attrs: {
+      "fill": "none",
+      "stroke": "currentColor",
+      "stroke-width": "2",
+      "stroke-linecap": "round",
+      "stroke-linejoin": "round",
+    },
+    nodes: [
+      { tag: "circle", attrs: { cx: "12", cy: "12", r: "9" } },
+      { tag: "path", attrs: { d: "M12 11V16.5" } },
+      { tag: "path", attrs: { d: "M12 7.5V8" } },
+    ],
+  };
+
+  for (const icon of document.getElementById("icon-depth").querySelectorAll("xh-icon")) {
+    icon.icon = infoIcon;
+  }
+<\/script>
+`;export{n as default};

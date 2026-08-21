@@ -1,0 +1,19 @@
+const a=`<!-- 基础用法 | 一维排布容器：子项横着排，间距走档位，容器自己不给子项加任何样式 -->
+<style>
+  #flex-basic [data-box] {
+    padding: 8px 14px;
+    border-radius: var(--xh-radius-md);
+    background: var(--xh-bg-subtle);
+    color: var(--xh-fg-default);
+  }
+</style>
+
+<!-- 宿主设 display: contents，排布落在 root 上 -->
+<xh-flex id="flex-basic" gap="sm" style="display: contents">
+  <div data-xh-part="root">
+    <span data-box>甲</span>
+    <span data-box>乙</span>
+    <span data-box>丙</span>
+  </div>
+</xh-flex>
+`;export{a as default};

@@ -1,0 +1,29 @@
+const a=`<!-- 禁用与只读 | 禁用的拇指退出 Tab 序列、值也不再随表单提交；只读仍可聚焦与朗读，只是推不动 -->
+<xh-slider default-value="60" disabled name="brightness">
+  <div data-xh-part="root" style="inline-size: 280px">
+    <label data-xh-part="label">禁用</label>
+    <div data-xh-part="control">
+      <div data-xh-part="track">
+        <div data-xh-part="range"></div>
+      </div>
+      <div data-xh-part="thumb">
+        <input data-xh-part="hidden-input" />
+      </div>
+    </div>
+  </div>
+</xh-slider>
+
+<xh-slider default-value="60" read-only>
+  <div data-xh-part="root" style="inline-size: 280px">
+    <label data-xh-part="label">只读</label>
+    <div data-xh-part="control">
+      <div data-xh-part="track">
+        <div data-xh-part="range"></div>
+      </div>
+      <div data-xh-part="thumb">
+        <input data-xh-part="hidden-input" />
+      </div>
+    </div>
+  </div>
+</xh-slider>
+`;export{a as default};

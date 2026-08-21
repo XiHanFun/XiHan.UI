@@ -1,0 +1,47 @@
+const a=`<!-- 分组 | item-group 把条目分段，group-label 是这一段的可及名字，不参与选中也不接方向键 -->
+<xh-listbox id="listbox-group">
+  <div data-xh-part="root" style="max-inline-size: 320px">
+    <span data-xh-part="label">城市</span>
+    <div data-xh-part="content">
+      <div data-xh-part="item-group" value="asia">
+        <span data-xh-part="item-group-label">亚洲</span>
+        <div data-xh-part="item" value="bangkok">
+          <span data-xh-part="item-text">Bangkok 曼谷</span>
+          <span data-xh-part="item-indicator"></span>
+        </div>
+        <div data-xh-part="item" value="beijing">
+          <span data-xh-part="item-text">Beijing 北京</span>
+          <span data-xh-part="item-indicator"></span>
+        </div>
+        <div data-xh-part="item" value="chengdu">
+          <span data-xh-part="item-text">Chengdu 成都</span>
+          <span data-xh-part="item-indicator"></span>
+        </div>
+      </div>
+      <div data-xh-part="item-group" value="europe">
+        <span data-xh-part="item-group-label">欧洲</span>
+        <div data-xh-part="item" value="berlin">
+          <span data-xh-part="item-text">Berlin 柏林</span>
+          <span data-xh-part="item-indicator"></span>
+        </div>
+        <div data-xh-part="item" value="london">
+          <span data-xh-part="item-text">London 伦敦</span>
+          <span data-xh-part="item-indicator"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</xh-listbox>
+<p>已选：<span id="listbox-group-value">（无）</span></p>
+
+<script type="module">
+  // 受控：初值是空集合，只走 property
+  const listbox = document.getElementById("listbox-group");
+  const readout = document.getElementById("listbox-group-value");
+  listbox.value = [];
+  listbox.addEventListener("value-change", (event) => {
+    listbox.value = event.detail.value;
+    readout.textContent = event.detail.value.join("、") || "（无）";
+  });
+<\/script>
+`;export{a as default};

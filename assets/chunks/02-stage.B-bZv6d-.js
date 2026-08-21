@@ -1,0 +1,25 @@
+const t=`<!-- 三种形态 | 收拢只留标题栏、铺满占满视口；按着的那个钮再按一次回到常规 -->
+<xh-floating-panel default-position="200,180" style="display: contents">
+  <div data-xh-part="root">
+    <button data-xh-part="trigger">打开面板</button>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <div data-xh-part="header">
+          <h2 data-xh-part="title">播放器</h2>
+          <button data-xh-part="drag-trigger"></button>
+          <!-- 当前形态的那个钮会被压住（aria-pressed=true） -->
+          <button data-xh-part="stage-trigger" stage="minimized">—</button>
+          <button data-xh-part="stage-trigger" stage="maximized">▢</button>
+          <button data-xh-part="close-trigger">✕</button>
+        </div>
+        <div data-xh-part="body">
+          <p style="margin: 0">
+            收拢时这段正文带上 hidden，Tab 与读屏都进不来。
+          </p>
+        </div>
+        <div data-xh-part="resize-trigger" edge="se"></div>
+      </div>
+    </div>
+  </div>
+</xh-floating-panel>
+`;export{t as default};

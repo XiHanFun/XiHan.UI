@@ -1,0 +1,9 @@
+const t=`<!-- 禁用 | disabled 同时挡住指针与键盘，按下态保持原样 -->
+<xh-toggle disabled>
+  <button data-xh-part="root">未按下</button>
+</xh-toggle>
+
+<xh-toggle disabled default-pressed>
+  <button data-xh-part="root">已按下</button>
+</xh-toggle>
+`;export{t as default};

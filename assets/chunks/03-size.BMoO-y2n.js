@@ -1,0 +1,14 @@
+const e=`<!-- 尺寸 | size 换的是字号与键帽的内边距，三档与其余控件同源 -->
+<div style="display: flex; align-items: center; gap: 24px">
+  <!-- 三枚各占一组组合，同一组注册两遍会一起响应；这一节只演尺寸，命中不拦浏览器的默认动作 -->
+  <xh-hotkeys keys="Mod,1" size="sm" prevent-default="false">
+    <span data-xh-part="root"></span>
+  </xh-hotkeys>
+  <xh-hotkeys keys="Mod,2" size="md" prevent-default="false">
+    <span data-xh-part="root"></span>
+  </xh-hotkeys>
+  <xh-hotkeys keys="Mod,3" size="lg" prevent-default="false">
+    <span data-xh-part="root"></span>
+  </xh-hotkeys>
+</div>
+`;export{e as default};

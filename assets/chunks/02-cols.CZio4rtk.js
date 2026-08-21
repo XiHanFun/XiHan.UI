@@ -1,0 +1,96 @@
+const a=`<!-- 列数 | cols 收 1 到 12 的整数；各列等宽，放不下的格子自动换到下一行 -->
+<style>
+  #grid-cols [data-cell] {
+    padding: 10px;
+    border-radius: var(--xh-radius-md);
+    background: var(--xh-bg-subtle);
+    color: var(--xh-fg-default);
+    text-align: center;
+  }
+  #grid-cols [data-label] {
+    font-size: 13px;
+    color: var(--xh-fg-muted);
+  }
+  #grid-cols [data-inner] {
+    margin-block-start: 6px;
+  }
+</style>
+
+<!-- 宿主设 display: contents，排布落在 root 上 -->
+<xh-grid id="grid-cols" gap="lg" style="display: contents">
+  <div data-xh-part="root">
+    <div data-xh-part="item">
+      <div data-label>cols = 2</div>
+      <xh-grid cols="2" gap="sm" style="display: contents">
+        <div data-xh-part="root" data-inner>
+          <div data-xh-part="item" data-cell>甲</div>
+          <div data-xh-part="item" data-cell>乙</div>
+          <div data-xh-part="item" data-cell>丙</div>
+          <div data-xh-part="item" data-cell>丁</div>
+        </div>
+      </xh-grid>
+    </div>
+
+    <div data-xh-part="item">
+      <div data-label>cols = 3</div>
+      <xh-grid cols="3" gap="sm" style="display: contents">
+        <div data-xh-part="root" data-inner>
+          <div data-xh-part="item" data-cell>甲</div>
+          <div data-xh-part="item" data-cell>乙</div>
+          <div data-xh-part="item" data-cell>丙</div>
+          <div data-xh-part="item" data-cell>丁</div>
+          <div data-xh-part="item" data-cell>戊</div>
+          <div data-xh-part="item" data-cell>己</div>
+        </div>
+      </xh-grid>
+    </div>
+
+    <div data-xh-part="item">
+      <div data-label>cols = 4</div>
+      <xh-grid cols="4" gap="sm" style="display: contents">
+        <div data-xh-part="root" data-inner>
+          <div data-xh-part="item" data-cell>甲</div>
+          <div data-xh-part="item" data-cell>乙</div>
+          <div data-xh-part="item" data-cell>丙</div>
+          <div data-xh-part="item" data-cell>丁</div>
+          <div data-xh-part="item" data-cell>戊</div>
+          <div data-xh-part="item" data-cell>己</div>
+          <div data-xh-part="item" data-cell>庚</div>
+          <div data-xh-part="item" data-cell>辛</div>
+        </div>
+      </xh-grid>
+    </div>
+
+    <div data-xh-part="item">
+      <div data-label>cols = 6</div>
+      <xh-grid cols="6" gap="sm" style="display: contents">
+        <div data-xh-part="root" data-inner>
+          <div data-xh-part="item" data-cell>甲</div>
+          <div data-xh-part="item" data-cell>乙</div>
+          <div data-xh-part="item" data-cell>丙</div>
+          <div data-xh-part="item" data-cell>丁</div>
+          <div data-xh-part="item" data-cell>戊</div>
+          <div data-xh-part="item" data-cell>己</div>
+          <div data-xh-part="item" data-cell>庚</div>
+          <div data-xh-part="item" data-cell>辛</div>
+          <div data-xh-part="item" data-cell>壬</div>
+          <div data-xh-part="item" data-cell>癸</div>
+          <div data-xh-part="item" data-cell>子</div>
+          <div data-xh-part="item" data-cell>丑</div>
+        </div>
+      </xh-grid>
+    </div>
+
+    <!-- 各列等宽不够用时，直接给使用者槽位写一份轨道表，它排在所有列数档之前 -->
+    <div data-xh-part="item">
+      <div data-label>槽位覆盖：侧栏定宽、正文吃掉剩下的宽度</div>
+      <xh-grid gap="sm" style="display: contents">
+        <div data-xh-part="root" data-inner style="--xh-grid-columns: 160px 1fr">
+          <div data-xh-part="item" data-cell>侧栏</div>
+          <div data-xh-part="item" data-cell>正文</div>
+        </div>
+      </xh-grid>
+    </div>
+  </div>
+</xh-grid>
+`;export{a as default};

@@ -1,0 +1,54 @@
+const n=`<!-- 请求在途 | 受控的 pressed 不写回就不会动，在途期间来的意图直接丢掉；忙碌反馈由 aria-busy 与一枚转圈补在按钮上 -->
+<xh-toggle id="toggle-pending" pressed="false" variant="outline">
+  <!-- aria-disabled 而非 disabled：焦点留得住，读屏也报得出「这颗按不动」 -->
+  <button
+    data-xh-part="root"
+    aria-busy="false"
+    aria-disabled="false"
+    style="min-inline-size: 108px"
+  >
+    <!-- 转圈自带活区与名字，「在等什么」由它的 label 念出来 -->
+    <xh-spinner id="toggle-pending-spinner" size="sm" label="正在提交" style="display: none">
+      <span data-xh-part="root"></span>
+    </xh-spinner>
+    <span id="toggle-pending-text">订阅</span>
+  </button>
+</xh-toggle>
+
+<span id="toggle-pending-hint" style="font-size: 13px">
+  点一下，落定要等 1.2 秒
+</span>
+
+<script type="module">
+  const toggle = document.getElementById("toggle-pending");
+  const root = toggle.querySelector('[data-xh-part="root"]');
+  const spinner = document.getElementById("toggle-pending-spinner");
+  const text = document.getElementById("toggle-pending-text");
+  const hint = document.getElementById("toggle-pending-hint");
+  let pending = false;
+
+  // 在途标记落成 aria-busy 与 aria-disabled，转圈跟着显隐
+  function setPending(next) {
+    pending = next;
+    root.setAttribute("aria-busy", String(next));
+    root.setAttribute("aria-disabled", String(next));
+    spinner.style.display = next ? "" : "none";
+    hint.textContent = next
+      ? "请求在飞，这时候再点没有反应"
+      : "点一下，落定要等 1.2 秒";
+  }
+
+  // 在途期间不写回 pressed，按钮就停在原来的按下态上
+  toggle.addEventListener("pressed-change", (event) => {
+    if (pending) {
+      return;
+    }
+    setPending(true);
+    setTimeout(() => {
+      toggle.pressed = event.detail.pressed;
+      text.textContent = event.detail.pressed ? "已订阅" : "订阅";
+      setPending(false);
+    }, 1200);
+  });
+<\/script>
+`;export{n as default};

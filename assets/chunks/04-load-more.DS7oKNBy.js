@@ -1,0 +1,74 @@
+const n=`<!-- 触底加载更多 | stick-change 报到底，宿主据此去取下一页；先往上滚一段再滚回底部，取回来的消息追加在后面 -->
+<div style="width: 100%; display: grid; gap: 12px">
+  <xh-thread id="thread-load-more">
+    <div data-xh-part="root" style="block-size: 220px">
+      <div data-xh-part="viewport">
+        <div data-xh-part="content" id="thread-load-more-content">
+          <p style="margin: 0">第 1 条 · 先往上滚一段，再滚回底部</p>
+          <p style="margin: 0">第 2 条 · 先往上滚一段，再滚回底部</p>
+          <p style="margin: 0">第 3 条 · 先往上滚一段，再滚回底部</p>
+          <p style="margin: 0">第 4 条 · 先往上滚一段，再滚回底部</p>
+          <p style="margin: 0">第 5 条 · 先往上滚一段，再滚回底部</p>
+          <p style="margin: 0">第 6 条 · 先往上滚一段，再滚回底部</p>
+          <p style="margin: 0">第 7 条 · 先往上滚一段，再滚回底部</p>
+          <p style="margin: 0">第 8 条 · 先往上滚一段，再滚回底部</p>
+        </div>
+      </div>
+      <button data-xh-part="scroll-button">↓ 回到底部</button>
+    </div>
+  </xh-thread>
+
+  <span id="thread-load-more-readout">已加载 8 条 · 第 1 / 3 页</span>
+</div>
+
+<script type="module">
+  const host = document.getElementById("thread-load-more");
+  const content = document.getElementById("thread-load-more-content");
+  const readout = document.getElementById("thread-load-more-readout");
+  const maxPage = 3;
+  let count = 8;
+  let page = 1;
+  let loading = false;
+  // 取回来之前顶在最后的那行提示
+  let hint = null;
+
+  function setHint(text) {
+    if (!text) {
+      hint?.remove();
+      hint = null;
+      return;
+    }
+    if (!hint) {
+      hint = document.createElement("p");
+      hint.style.margin = "0";
+      content.append(hint);
+    }
+    hint.textContent = text;
+  }
+
+  function render() {
+    readout.textContent = \`已加载 \${count} 条 · 第 \${page} / \${maxPage} 页\`;
+    setHint(loading ? "正在取下一页…" : page >= maxPage ? "没有更多了" : "");
+  }
+
+  // 到了底、手上没在取、还有下一页，三条都满足才发起这一次加载
+  host.addEventListener("stick-change", (event) => {
+    if (!event.detail.atBottom || loading || page >= maxPage)
+      return;
+    loading = true;
+    render();
+    window.setTimeout(() => {
+      page += 1;
+      for (let i = 1; i <= 4; i += 1) {
+        const line = document.createElement("p");
+        line.style.margin = "0";
+        line.textContent = \`第 \${count + i} 条 · 第 \${page} 页取回来的\`;
+        content.insertBefore(line, hint);
+      }
+      count += 4;
+      loading = false;
+      render();
+    }, 600);
+  });
+<\/script>
+`;export{n as default};

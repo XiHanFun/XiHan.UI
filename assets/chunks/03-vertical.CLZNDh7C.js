@@ -1,0 +1,26 @@
+const t=`<!-- 竖向 | orientation 换成 vertical 后整条控件收成一块，键盘与拖动的方向跟着一起翻 -->
+<xh-slider id="slider-vertical" default-value="30" orientation="vertical">
+  <div data-xh-part="root">
+    <label data-xh-part="label">
+      亮度：<span id="slider-vertical-value">30</span>
+    </label>
+    <div data-xh-part="control">
+      <div data-xh-part="track">
+        <div data-xh-part="range"></div>
+      </div>
+      <div data-xh-part="thumb">
+        <input data-xh-part="hidden-input" />
+      </div>
+    </div>
+  </div>
+</xh-slider>
+
+<script type="module">
+  // 标签里的数字跟着值走
+  const slider = document.getElementById("slider-vertical");
+  const readout = document.getElementById("slider-vertical-value");
+  slider.addEventListener("value-change", (event) => {
+    readout.textContent = event.detail.value[0];
+  });
+<\/script>
+`;export{t as default};

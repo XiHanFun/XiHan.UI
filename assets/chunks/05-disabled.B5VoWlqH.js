@@ -1,0 +1,9 @@
+const t=`<!-- 禁用 | 禁用的触发器不可聚焦也点不动，连取数函数都不会被调用 -->
+<xh-download-trigger
+  disabled
+  data="曦寒 UI 导出示例：这一行会被写进 notes.txt"
+  file-name="notes.txt"
+>
+  <button data-xh-part="root">导出文本（暂不可用）</button>
+</xh-download-trigger>
+`;export{t as default};

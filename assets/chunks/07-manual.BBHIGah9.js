@@ -1,0 +1,89 @@
+const n=`<!-- 跨字段规则与手动入口 | validate 拿到的是整张值表，可以写两个字段互相约束的规则；setFieldError 与 clearErrors 随时能单独动一条 -->
+<xh-form id="form-manual">
+  <form data-xh-part="root" style="inline-size: 320px">
+    <div data-xh-part="field-group" value="password">
+      <xh-field>
+        <div data-xh-part="root">
+          <label data-xh-part="label">密码</label>
+          <input data-xh-part="control" type="password" />
+          <p data-xh-part="error-text"></p>
+        </div>
+      </xh-field>
+    </div>
+
+    <div data-xh-part="field-group" value="confirm">
+      <xh-field>
+        <div data-xh-part="root">
+          <label data-xh-part="label">确认密码</label>
+          <input data-xh-part="control" type="password" />
+          <p data-xh-part="error-text"></p>
+        </div>
+      </xh-field>
+    </div>
+
+    <div style="display: flex; gap: 8px">
+      <button data-xh-part="submit-trigger">提交</button>
+      <!-- 只动确认密码这一条：给文案就写上，给空串就撤掉 -->
+      <xh-button variant="outline">
+        <button data-xh-part="root" id="form-manual-check">只查确认密码</button>
+      </xh-button>
+      <xh-button variant="ghost">
+        <button data-xh-part="root" id="form-manual-clear">清空错误</button>
+      </xh-button>
+    </div>
+  </form>
+</xh-form>
+
+<script type="module">
+  const host = document.getElementById("form-manual");
+
+  const defaults = { password: "", confirm: "" };
+  let values = { ...defaults };
+
+  // 确认密码这一条要跟密码比，单看自己判不出来
+  function confirmError(source) {
+    const password = String(source.password ?? "");
+    const confirm = String(source.confirm ?? "");
+    if (confirm === "") return "请再输入一遍密码";
+    return confirm === password ? "" : "两次输入不一致";
+  }
+
+  host.defaultValues = defaults;
+  host.values = values;
+  host.validate = (source) => ({
+    password: String(source.password ?? "").length >= 8 ? "" : "密码至少 8 位",
+    confirm: confirmError(source),
+  });
+
+  const groups = [...host.querySelectorAll('[data-xh-part="field-group"]')];
+  const nameOf = (el) => el.getAttribute("value");
+
+  for (const group of groups) {
+    const input = group.querySelector('[data-xh-part="control"]');
+    input.addEventListener("input", () => host.setFieldValue(nameOf(group), input.value));
+  }
+
+  host.addEventListener("values-change", (event) => {
+    values = event.detail.values;
+    host.values = values;
+    for (const group of groups) {
+      const input = group.querySelector('[data-xh-part="control"]');
+      const next = String(values[nameOf(group)] ?? "");
+      if (input.value !== next) input.value = next;
+    }
+  });
+
+  host.addEventListener("errors-change", (event) => {
+    for (const group of groups)
+      group.querySelector('[data-xh-part="error-text"]').textContent
+        = event.detail.errors[nameOf(group)] ?? "";
+  });
+
+  document.getElementById("form-manual-check").addEventListener("click", () => {
+    host.setFieldError("confirm", confirmError(values));
+  });
+  document.getElementById("form-manual-clear").addEventListener("click", () => {
+    host.clearErrors();
+  });
+<\/script>
+`;export{n as default};

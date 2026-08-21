@@ -1,0 +1,131 @@
+const a=`<!-- 语气 | tone 换的是选中那一节的指示条与文字颜色，这里用 default-value 预置「用法」为选中项 -->
+<div
+  style="
+    inline-size: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 20px;
+  "
+>
+  <div>
+    <div style="margin-block-end: 8px; font-size: 12px">brand</div>
+    <xh-anchor tone="brand" default-value="anchor-tone-usage">
+      <nav data-xh-part="root">
+        <ul data-xh-part="list">
+          <li data-xh-part="item">
+            <a data-xh-part="link" value="anchor-tone-install">安装</a>
+          </li>
+          <li data-xh-part="item">
+            <a data-xh-part="link" value="anchor-tone-usage">用法</a>
+          </li>
+          <li data-xh-part="item">
+            <a data-xh-part="link" value="anchor-tone-faq">常见问题</a>
+          </li>
+          <!-- 指示条必须住在 list 里：它以 list 为定位参照系 -->
+          <li data-xh-part="indicator"></li>
+        </ul>
+      </nav>
+    </xh-anchor>
+  </div>
+
+  <div>
+    <div style="margin-block-end: 8px; font-size: 12px">neutral</div>
+    <xh-anchor tone="neutral" default-value="anchor-tone-usage">
+      <nav data-xh-part="root">
+        <ul data-xh-part="list">
+          <li data-xh-part="item">
+            <a data-xh-part="link" value="anchor-tone-install">安装</a>
+          </li>
+          <li data-xh-part="item">
+            <a data-xh-part="link" value="anchor-tone-usage">用法</a>
+          </li>
+          <li data-xh-part="item">
+            <a data-xh-part="link" value="anchor-tone-faq">常见问题</a>
+          </li>
+          <li data-xh-part="indicator"></li>
+        </ul>
+      </nav>
+    </xh-anchor>
+  </div>
+
+  <div>
+    <div style="margin-block-end: 8px; font-size: 12px">success</div>
+    <xh-anchor tone="success" default-value="anchor-tone-usage">
+      <nav data-xh-part="root">
+        <ul data-xh-part="list">
+          <li data-xh-part="item">
+            <a data-xh-part="link" value="anchor-tone-install">安装</a>
+          </li>
+          <li data-xh-part="item">
+            <a data-xh-part="link" value="anchor-tone-usage">用法</a>
+          </li>
+          <li data-xh-part="item">
+            <a data-xh-part="link" value="anchor-tone-faq">常见问题</a>
+          </li>
+          <li data-xh-part="indicator"></li>
+        </ul>
+      </nav>
+    </xh-anchor>
+  </div>
+
+  <div>
+    <div style="margin-block-end: 8px; font-size: 12px">warning</div>
+    <xh-anchor tone="warning" default-value="anchor-tone-usage">
+      <nav data-xh-part="root">
+        <ul data-xh-part="list">
+          <li data-xh-part="item">
+            <a data-xh-part="link" value="anchor-tone-install">安装</a>
+          </li>
+          <li data-xh-part="item">
+            <a data-xh-part="link" value="anchor-tone-usage">用法</a>
+          </li>
+          <li data-xh-part="item">
+            <a data-xh-part="link" value="anchor-tone-faq">常见问题</a>
+          </li>
+          <li data-xh-part="indicator"></li>
+        </ul>
+      </nav>
+    </xh-anchor>
+  </div>
+
+  <div>
+    <div style="margin-block-end: 8px; font-size: 12px">danger</div>
+    <xh-anchor tone="danger" default-value="anchor-tone-usage">
+      <nav data-xh-part="root">
+        <ul data-xh-part="list">
+          <li data-xh-part="item">
+            <a data-xh-part="link" value="anchor-tone-install">安装</a>
+          </li>
+          <li data-xh-part="item">
+            <a data-xh-part="link" value="anchor-tone-usage">用法</a>
+          </li>
+          <li data-xh-part="item">
+            <a data-xh-part="link" value="anchor-tone-faq">常见问题</a>
+          </li>
+          <li data-xh-part="indicator"></li>
+        </ul>
+      </nav>
+    </xh-anchor>
+  </div>
+
+  <div>
+    <div style="margin-block-end: 8px; font-size: 12px">info</div>
+    <xh-anchor tone="info" default-value="anchor-tone-usage">
+      <nav data-xh-part="root">
+        <ul data-xh-part="list">
+          <li data-xh-part="item">
+            <a data-xh-part="link" value="anchor-tone-install">安装</a>
+          </li>
+          <li data-xh-part="item">
+            <a data-xh-part="link" value="anchor-tone-usage">用法</a>
+          </li>
+          <li data-xh-part="item">
+            <a data-xh-part="link" value="anchor-tone-faq">常见问题</a>
+          </li>
+          <li data-xh-part="indicator"></li>
+        </ul>
+      </nav>
+    </xh-anchor>
+  </div>
+</div>
+`;export{a as default};

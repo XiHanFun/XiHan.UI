@@ -1,0 +1,91 @@
+const e=`<!-- 尺寸 | size 换格子边长与行首星期名的留白，一屏能放下的周数跟着变 -->
+<div id="heatmap-size-mount" style="display: grid; gap: 16px"></div>
+
+<!-- 元素不生成结构：外壳只写 root，一整年的月份行、七行星期与图例由脚本照 grid 铺 -->
+<template id="heatmap-size-template">
+  <xh-heatmap start-date="2024-01-01" end-date="2024-12-31">
+    <div data-xh-part="root"></div>
+  </xh-heatmap>
+</template>
+
+<script type="module">
+  const DAY_MS = 86400000;
+
+  // 与基础用法同一份年度数据：只换尺寸档，看同一年占多宽
+  function buildYear(year) {
+    const days = [];
+    let index = 0;
+    for (let time = Date.UTC(year, 0, 1); time <= Date.UTC(year, 11, 31); time += DAY_MS) {
+      const at = new Date(time);
+      const noise = ((Math.imul(++index, 2654435761) >>> 8) % 1000) / 1000;
+      const month = at.getUTCMonth();
+      const peak = month === 2 || month === 9 ? 16 : month === 7 ? 3 : 8;
+      const weekend = at.getUTCDay() === 0 || at.getUTCDay() === 6;
+      const ceiling = weekend ? peak / 2 : peak;
+      days.push({
+        date: at.toISOString().slice(0, 10),
+        count: noise < 0.16 ? 0 : Math.round(noise * ceiling),
+      });
+    }
+    return days;
+  }
+
+  /** 一个角色节点：身份写在 value 上，元素照它回网格里查数值与档位。 */
+  function part(tag, name, value, text) {
+    const el = document.createElement(tag);
+    el.dataset.xhPart = name;
+    if (value !== undefined) el.setAttribute("value", value);
+    if (text !== undefined) el.textContent = text;
+    return el;
+  }
+
+  const activity = buildYear(2024);
+  const mount = document.getElementById("heatmap-size-mount");
+
+  /** 铺一档：sm 档格子最小，同样一整年 53 列只要 660px，md 档要 774px，lg 档要 880px。 */
+  function render(size) {
+    const fragment = document
+      .getElementById("heatmap-size-template")
+      .content.cloneNode(true);
+    const heatmap = fragment.querySelector("xh-heatmap");
+    const root = fragment.querySelector('[data-xh-part="root"]');
+    heatmap.setAttribute("size", size);
+
+    mount.append(fragment);
+    // 数据是数组，只走 property：HTML 属性装不下它
+    heatmap.value = activity;
+
+    // 只读的 grid 一次取出来用：每读一次都重算一遍整张网格
+    const grid = heatmap.grid;
+
+    const monthRow = part("div", "row");
+    monthRow.append(part("span", "week-day-label"));
+    for (const month of grid.months) {
+      monthRow.append(part("span", "month-label", month.value, month.label));
+    }
+
+    const gridEl = part("div", "grid");
+    for (const row of grid.rows) {
+      const line = part("div", "row", row.weekDay);
+      line.append(part("span", "week-day-label", row.weekDay, grid.weekDays[row.weekDay].label));
+      for (const day of row.cells) {
+        line.append(part("div", "cell", day.date));
+      }
+      gridEl.append(line);
+    }
+
+    const legend = part("div", "legend");
+    // 两端各一个字：一排色块自己说不出哪头是多，文案跟着 legendText 走
+    legend.append(part("span", "legend-label", "low", heatmap.legendText.low));
+    for (let level = 0; level < grid.levels; level++) {
+      legend.append(part("span", "legend-item", level));
+    }
+    legend.append(part("span", "legend-label", "high", heatmap.legendText.high));
+
+    root.append(monthRow, gridEl, legend);
+  }
+
+  render("sm");
+  render("lg");
+<\/script>
+`;export{e as default};

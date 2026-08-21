@@ -1,0 +1,68 @@
+const t=`<!-- 语气 | type 落成 data-type，皮肤据此换色条；error 走 alert + assertive，loading 表示事情还没完、不自动消失 -->
+<div style="display: grid; gap: 12px; justify-items: start">
+  <xh-toast
+    type="info"
+    title="草稿已保存"
+    description="内容已同步到云端"
+    duration="0"
+    closable="false"
+  >
+    <div data-xh-part="root">
+      <div data-xh-part="title"></div>
+      <div data-xh-part="description"></div>
+    </div>
+  </xh-toast>
+
+  <xh-toast
+    type="success"
+    title="发布成功"
+    description="文档已对所有人可见"
+    duration="0"
+    closable="false"
+  >
+    <div data-xh-part="root">
+      <div data-xh-part="title"></div>
+      <div data-xh-part="description"></div>
+    </div>
+  </xh-toast>
+
+  <xh-toast
+    type="warning"
+    title="配额即将用尽"
+    description="本月还剩 8% 额度"
+    duration="0"
+    closable="false"
+  >
+    <div data-xh-part="root">
+      <div data-xh-part="title"></div>
+      <div data-xh-part="description"></div>
+    </div>
+  </xh-toast>
+
+  <xh-toast
+    type="error"
+    title="同步失败"
+    description="网络中断，稍后自动重试"
+    duration="0"
+    closable="false"
+  >
+    <div data-xh-part="root">
+      <div data-xh-part="title"></div>
+      <div data-xh-part="description"></div>
+    </div>
+  </xh-toast>
+
+  <xh-toast
+    type="loading"
+    title="正在上传"
+    description="已完成 42%"
+    duration="0"
+    closable="false"
+  >
+    <div data-xh-part="root">
+      <div data-xh-part="title"></div>
+      <div data-xh-part="description"></div>
+    </div>
+  </xh-toast>
+</div>
+`;export{t as default};

@@ -1,0 +1,45 @@
+const e=`<!-- 缩略图墙 | item-preview 是个空方框，作者往里塞什么都行；塞进去的图会被裁成方格，一行摆几张由外层网格定 -->
+<xh-file-upload id="file-upload-wall" accept="image/*" max-files="6">
+  <div data-xh-part="root" style="inline-size: 100%; max-inline-size: 480px">
+    <label data-xh-part="label">相册</label>
+    <div data-xh-part="dropzone">
+      <span>把图片拖进来，最多 6 张</span>
+    </div>
+    <div>
+      <button data-xh-part="trigger">选择图片</button>
+    </div>
+    <input data-xh-part="hidden-input" />
+    <div
+      data-xh-part="item-group"
+      style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr))"
+    ></div>
+  </div>
+</xh-file-upload>
+
+<script type="module">
+  const upload = document.getElementById("file-upload-wall");
+  const group = upload.querySelector('[data-xh-part="item-group"]');
+  const card =
+    "flex-direction: column; align-items: stretch; --xh-file-upload-preview-size: 96px";
+
+  // 一批地址用完就交还，重铺时统一换成新的
+  let urls = [];
+
+  upload.addEventListener("files-change", (event) => {
+    urls.forEach((url) => URL.revokeObjectURL(url));
+    urls = event.detail.files.map((file) => URL.createObjectURL(file));
+    group.replaceChildren(
+      ...urls.map((url) => {
+        const item = document.createElement("div");
+        item.dataset.xhPart = "item";
+        item.style.cssText = card;
+        item.innerHTML =
+          \`<span data-xh-part="item-preview"><img src="\${url}" alt="" /></span>\` +
+          '<span data-xh-part="item-name"></span>' +
+          '<button data-xh-part="item-delete-trigger">移除</button>';
+        return item;
+      })
+    );
+  });
+<\/script>
+`;export{e as default};

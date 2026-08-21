@@ -1,0 +1,60 @@
+const n=`<!-- 显隐时机 | type 决定滚动条什么时候露面：hover 指针进来才露，always 恒露，scroll 滚动时露、停手后收起 -->
+<div id="scroll-area-type" style="width: 100%; display: flex; flex-wrap: wrap; gap: 16px">
+  <div style="display: grid; gap: 6px">
+    <span>type = hover</span>
+    <xh-scroll-area type="hover">
+      <div data-xh-part="root" style="block-size: 140px; inline-size: 180px">
+        <div data-xh-part="viewport">
+          <div data-xh-part="content" style="padding: 8px 12px"></div>
+        </div>
+        <div data-xh-part="scrollbar" orientation="vertical">
+          <div data-xh-part="thumb"></div>
+        </div>
+      </div>
+    </xh-scroll-area>
+  </div>
+
+  <div style="display: grid; gap: 6px">
+    <span>type = always</span>
+    <xh-scroll-area type="always">
+      <div data-xh-part="root" style="block-size: 140px; inline-size: 180px">
+        <div data-xh-part="viewport">
+          <div data-xh-part="content" style="padding: 8px 12px"></div>
+        </div>
+        <div data-xh-part="scrollbar" orientation="vertical">
+          <div data-xh-part="thumb"></div>
+        </div>
+      </div>
+    </xh-scroll-area>
+  </div>
+
+  <div style="display: grid; gap: 6px">
+    <span>type = scroll</span>
+    <xh-scroll-area type="scroll">
+      <div data-xh-part="root" style="block-size: 140px; inline-size: 180px">
+        <div data-xh-part="viewport">
+          <div data-xh-part="content" style="padding: 8px 12px"></div>
+        </div>
+        <div data-xh-part="scrollbar" orientation="vertical">
+          <div data-xh-part="thumb"></div>
+        </div>
+      </div>
+    </xh-scroll-area>
+  </div>
+</div>
+
+<script type="module">
+  // 三份都填上同样的 20 行
+  const contents = document
+    .getElementById("scroll-area-type")
+    .querySelectorAll('[data-xh-part="content"]');
+  for (const content of contents) {
+    for (let i = 1; i <= 20; i++) {
+      const line = document.createElement("p");
+      line.style.cssText = "margin: 0; line-height: 22px";
+      line.textContent = \`第 \${i} 行\`;
+      content.append(line);
+    }
+  }
+<\/script>
+`;export{n as default};

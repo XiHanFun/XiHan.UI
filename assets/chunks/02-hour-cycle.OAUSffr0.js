@@ -1,0 +1,28 @@
+const e=`<!-- 12 小时制 | hour-cycle=12 多出一个上午/下午段，值本身仍是 24 小时的串 -->
+<div style="display: grid; gap: 8px; justify-items: start">
+  <xh-time-field id="time-field-hour-cycle" hour-cycle="12" default-value="13:45">
+    <div data-xh-part="root">
+      <label data-xh-part="label">会议时间</label>
+      <div data-xh-part="control">
+        <span data-xh-part="segment" segment="hour"></span>
+        <span>:</span>
+        <span data-xh-part="segment" segment="minute"></span>
+        <span>&nbsp;</span>
+        <!-- 在这一段上按 a / p 直接指定上下午，翻面只改值不改数字 -->
+        <span data-xh-part="segment" segment="dayPeriod"></span>
+      </div>
+    </div>
+  </xh-time-field>
+
+  <span style="font-size: 13px">当前值：<span id="time-field-hour-cycle-readout">13:45</span></span>
+</div>
+
+<script type="module">
+  // 值变化回显在下面那行文字里
+  const field = document.getElementById("time-field-hour-cycle");
+  const readout = document.getElementById("time-field-hour-cycle-readout");
+  field.addEventListener("value-change", (event) => {
+    readout.textContent = event.detail.value || "（未填齐）";
+  });
+<\/script>
+`;export{e as default};

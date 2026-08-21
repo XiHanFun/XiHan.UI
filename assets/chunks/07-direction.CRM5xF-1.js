@@ -1,0 +1,49 @@
+const n=`<!-- 文字方向 | dir 换成 rtl 后轨道从右往左填，左右两键的语义跟着对调；上下键与 Home、End 不受影响 -->
+<div style="display: grid; gap: 20px">
+  <xh-slider id="slider-ltr" default-value="35">
+    <div data-xh-part="root" style="inline-size: 280px">
+      <label data-xh-part="label">
+        从左往右：<span id="slider-ltr-value">35</span>
+      </label>
+      <div data-xh-part="control">
+        <div data-xh-part="track">
+          <div data-xh-part="range"></div>
+        </div>
+        <div data-xh-part="thumb">
+          <input data-xh-part="hidden-input" />
+        </div>
+      </div>
+    </div>
+  </xh-slider>
+
+  <!-- 外层节点声明文字方向，轨道与滑块用的逻辑属性据此换向 -->
+  <div dir="rtl">
+    <xh-slider id="slider-rtl" dir="rtl" default-value="35">
+      <div data-xh-part="root" style="inline-size: 280px">
+        <label data-xh-part="label">
+          从右往左：<span id="slider-rtl-value">35</span>
+        </label>
+        <div data-xh-part="control">
+          <div data-xh-part="track">
+            <div data-xh-part="range"></div>
+          </div>
+          <div data-xh-part="thumb">
+            <input data-xh-part="hidden-input" />
+          </div>
+        </div>
+      </div>
+    </xh-slider>
+  </div>
+</div>
+
+<script type="module">
+  // 两条轨道各自把当前值写回自己的标签
+  for (const id of ["slider-ltr", "slider-rtl"]) {
+    const slider = document.getElementById(id);
+    const readout = document.getElementById(\`\${id}-value\`);
+    slider.addEventListener("value-change", (event) => {
+      readout.textContent = event.detail.value[0];
+    });
+  }
+<\/script>
+`;export{n as default};

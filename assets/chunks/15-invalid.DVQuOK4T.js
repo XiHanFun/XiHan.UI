@@ -1,0 +1,45 @@
+const t=`<!-- 校验状态 | 校验结论由宿主给出：invalid 让触发器标红并输出 aria-invalid，错误文案用 aria-describedby 挂到触发器上 -->
+<xh-select id="select-invalid" invalid placeholder="必须选一个">
+  <div data-xh-part="root">
+    <span data-xh-part="label">所属部门</span>
+    <button data-xh-part="trigger" aria-describedby="select-invalid-tip">
+      <span data-xh-part="value-text"></span>
+      <span data-xh-part="indicator"></span>
+    </button>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <div data-xh-part="list">
+          <div data-xh-part="item" value="design">
+            <span data-xh-part="item-text">设计组</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="frontend">
+            <span data-xh-part="item-text">前端组</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="server">
+            <span data-xh-part="item-text">服务端组</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</xh-select>
+<p id="select-invalid-tip" style="color: var(--xh-fg-danger)">这一项必填</p>
+
+<script type="module">
+  // 没选中即判为不合格：校验结论、错误文案与它的 IDREF 都由宿主一起开合
+  const select = document.getElementById("select-invalid");
+  const trigger = select.querySelector('[data-xh-part="trigger"]');
+  const tip = document.getElementById("select-invalid-tip");
+
+  select.addEventListener("value-change", (event) => {
+    const invalid = event.detail.value.length === 0;
+    select.invalid = invalid;
+    tip.hidden = !invalid;
+    if (invalid) trigger.setAttribute("aria-describedby", "select-invalid-tip");
+    else trigger.removeAttribute("aria-describedby");
+  });
+<\/script>
+`;export{t as default};

@@ -1,0 +1,1 @@
+import{a as e}from"./normalize-props.C19uE7bg.js";import{d as a}from"./attrs.BPPH_QIK.js";const i=e("flex",["root"]),o=i.build();function c(t,n){return{getRootProps:()=>n.element({...o.root.attrs,"data-direction":t.direction??"row","data-align":t.align,"data-justify":t.justify,"data-gap":t.gap,"data-wrap":a(t.wrap),"data-inline":a(t.inline)})}}export{c,i as f};

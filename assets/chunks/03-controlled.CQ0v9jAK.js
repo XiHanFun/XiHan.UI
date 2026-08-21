@@ -1,0 +1,41 @@
+const t=`<!-- 受控 | 传了 open 就由宿主说了算；这里额外关掉点外部关闭，只有按钮与 Escape 能收起 -->
+<div style="display: flex; align-items: center; gap: 16px">
+  <xh-popover
+    id="popover-controlled"
+    open="false"
+    placement="bottom-start"
+    close-on-interact-outside="false"
+  >
+    <button data-xh-part="trigger">浮层</button>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <h3 data-xh-part="title">受控浮层</h3>
+        <p data-xh-part="description">点页面别处不再关它，Escape 仍然有效。</p>
+        <div data-xh-part="arrow"></div>
+      </div>
+    </div>
+  </xh-popover>
+
+  <xh-button id="popover-controlled-toggle" variant="outline">
+    <button data-xh-part="root">展开</button>
+  </xh-button>
+  <span>当前：<span id="popover-controlled-state">收起</span></span>
+</div>
+
+<script type="module">
+  // 展开态由这段脚本持有：组件只发意图，写回 open 才真的展开
+  const popover = document.getElementById("popover-controlled");
+  const toggle = document.getElementById("popover-controlled-toggle");
+  const label = toggle.querySelector('[data-xh-part="root"]');
+  const readout = document.getElementById("popover-controlled-state");
+
+  function apply(open) {
+    popover.open = open;
+    label.textContent = open ? "收起" : "展开";
+    readout.textContent = open ? "展开" : "收起";
+  }
+
+  toggle.addEventListener("click", () => apply(!popover.open));
+  popover.addEventListener("open-change", (event) => apply(event.detail.open));
+<\/script>
+`;export{t as default};

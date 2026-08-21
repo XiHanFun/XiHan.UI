@@ -1,0 +1,84 @@
+const n=`<!-- 选项里的自定义内容 | 条目与触发器显示的内容都由你写：想写什么写什么，选中与键盘行为不变 -->
+<xh-select id="select-custom" default-value="liuyi" placeholder="请选择成员">
+  <div data-xh-part="root">
+    <span data-xh-part="label">负责人</span>
+    <button data-xh-part="trigger">
+      <span data-xh-part="value-text">
+        <span style="display: inline-flex; align-items: center; gap: 8px">
+          <xh-avatar size="sm">
+            <span data-xh-part="fallback" id="select-custom-initial">刘</span>
+          </xh-avatar>
+          <span id="select-custom-name">刘一</span>
+        </span>
+      </span>
+      <span data-xh-part="indicator"></span>
+    </button>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <div data-xh-part="list">
+          <div data-xh-part="item" value="liuyi">
+            <span data-xh-part="item-text">
+              <span style="display: inline-flex; align-items: center; gap: 8px">
+                <xh-avatar size="sm">
+                  <span data-xh-part="fallback">刘</span>
+                </xh-avatar>
+                <span>
+                  刘一
+                  <span style="color: var(--xh-fg-muted); font-size: 12px">设计组</span>
+                </span>
+              </span>
+            </span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="chener">
+            <span data-xh-part="item-text">
+              <span style="display: inline-flex; align-items: center; gap: 8px">
+                <xh-avatar size="sm">
+                  <span data-xh-part="fallback">陈</span>
+                </xh-avatar>
+                <span>
+                  陈二
+                  <span style="color: var(--xh-fg-muted); font-size: 12px">前端组</span>
+                </span>
+              </span>
+            </span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="zhangsan">
+            <span data-xh-part="item-text">
+              <span style="display: inline-flex; align-items: center; gap: 8px">
+                <xh-avatar size="sm">
+                  <span data-xh-part="fallback">张</span>
+                </xh-avatar>
+                <span>
+                  张三
+                  <span style="color: var(--xh-fg-muted); font-size: 12px">服务端组</span>
+                </span>
+              </span>
+            </span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</xh-select>
+
+<script type="module">
+  // 触发器里的头像与姓名跟着选中值走；value-text 里作者写了内容就归作者，元素不再改写
+  const select = document.getElementById("select-custom");
+  const initial = document.getElementById("select-custom-initial");
+  const name = document.getElementById("select-custom-name");
+  const members = {
+    liuyi: ["刘", "刘一"],
+    chener: ["陈", "陈二"],
+    zhangsan: ["张", "张三"],
+  };
+
+  select.addEventListener("value-change", (event) => {
+    const [mark, label] = members[event.detail.value[0]] ?? ["", "请选择成员"];
+    initial.textContent = mark;
+    name.textContent = label;
+  });
+<\/script>
+`;export{n as default};

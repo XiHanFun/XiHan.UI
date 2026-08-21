@@ -1,0 +1,19 @@
+const a=`<!-- 基础用法 | 一排东西挨着摆：什么参数都不写也留 md 间距，这是它与弹性容器的分野 -->
+<style>
+  #space-basic [data-box] {
+    padding: 6px 12px;
+    border-radius: var(--xh-radius-md);
+    background: var(--xh-bg-subtle);
+    color: var(--xh-fg-default);
+  }
+</style>
+
+<!-- 宿主设 display: contents，排布落在 root 上 -->
+<xh-space id="space-basic" style="display: contents">
+  <div data-xh-part="root">
+    <span data-box>甲</span>
+    <span data-box>乙</span>
+    <span data-box>丙</span>
+  </div>
+</xh-space>
+`;export{a as default};

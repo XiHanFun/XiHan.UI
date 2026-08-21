@@ -1,0 +1,72 @@
+const a=`<!-- 尺寸 | size 换条目的字号与左右内边距，不传 size 即默认档 -->
+<div
+  style="
+    inline-size: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 20px;
+    align-items: start;
+  "
+>
+  <div>
+    <div style="margin-block-end: 8px; font-size: 12px">小</div>
+    <xh-anchor size="sm" default-value="anchor-size-usage">
+      <nav data-xh-part="root">
+        <ul data-xh-part="list">
+          <li data-xh-part="item">
+            <a data-xh-part="link" value="anchor-size-install">安装</a>
+          </li>
+          <li data-xh-part="item">
+            <a data-xh-part="link" value="anchor-size-usage">用法</a>
+          </li>
+          <li data-xh-part="item">
+            <a data-xh-part="link" value="anchor-size-faq">常见问题</a>
+          </li>
+          <li data-xh-part="indicator"></li>
+        </ul>
+      </nav>
+    </xh-anchor>
+  </div>
+
+  <!-- 中间一档不写 size -->
+  <div>
+    <div style="margin-block-end: 8px; font-size: 12px">默认</div>
+    <xh-anchor default-value="anchor-size-usage">
+      <nav data-xh-part="root">
+        <ul data-xh-part="list">
+          <li data-xh-part="item">
+            <a data-xh-part="link" value="anchor-size-install">安装</a>
+          </li>
+          <li data-xh-part="item">
+            <a data-xh-part="link" value="anchor-size-usage">用法</a>
+          </li>
+          <li data-xh-part="item">
+            <a data-xh-part="link" value="anchor-size-faq">常见问题</a>
+          </li>
+          <li data-xh-part="indicator"></li>
+        </ul>
+      </nav>
+    </xh-anchor>
+  </div>
+
+  <div>
+    <div style="margin-block-end: 8px; font-size: 12px">大</div>
+    <xh-anchor size="lg" default-value="anchor-size-usage">
+      <nav data-xh-part="root">
+        <ul data-xh-part="list">
+          <li data-xh-part="item">
+            <a data-xh-part="link" value="anchor-size-install">安装</a>
+          </li>
+          <li data-xh-part="item">
+            <a data-xh-part="link" value="anchor-size-usage">用法</a>
+          </li>
+          <li data-xh-part="item">
+            <a data-xh-part="link" value="anchor-size-faq">常见问题</a>
+          </li>
+          <li data-xh-part="indicator"></li>
+        </ul>
+      </nav>
+    </xh-anchor>
+  </div>
+</div>
+`;export{a as default};

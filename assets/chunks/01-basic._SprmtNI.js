@@ -1,0 +1,19 @@
+const t=`<!-- 基础用法 | 不传 open 即为非受控，defaultOpen 只给初始值，之后由组件自己维护开合 -->
+<div style="width: 100%; max-width: 420px; display: grid; gap: 12px">
+  <xh-collapsible>
+    <div data-xh-part="root">
+      <button data-xh-part="trigger">展开详情</button>
+      <div data-xh-part="content">
+        收起时节点不卸载，里面的输入框与滚动位置都留着。
+      </div>
+    </div>
+  </xh-collapsible>
+
+  <xh-collapsible default-open>
+    <div data-xh-part="root">
+      <button data-xh-part="trigger">一上来就开着</button>
+      <div data-xh-part="content">defaultOpen 只影响初始状态。</div>
+    </div>
+  </xh-collapsible>
+</div>
+`;export{t as default};

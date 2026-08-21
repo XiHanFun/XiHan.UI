@@ -1,0 +1,36 @@
+const a=`<!-- 形态 | variant 只改分段框的底色与描边用法，分段结构与键盘行为都不变 -->
+<div style="display: grid; gap: 16px; justify-items: start">
+  <xh-time-field variant="outline" default-value="09:30">
+    <div data-xh-part="root">
+      <label data-xh-part="label">outline</label>
+      <div data-xh-part="control">
+        <span data-xh-part="segment" segment="hour"></span>
+        <span>:</span>
+        <span data-xh-part="segment" segment="minute"></span>
+      </div>
+    </div>
+  </xh-time-field>
+
+  <xh-time-field variant="subtle" default-value="09:30">
+    <div data-xh-part="root">
+      <label data-xh-part="label">subtle</label>
+      <div data-xh-part="control">
+        <span data-xh-part="segment" segment="hour"></span>
+        <span>:</span>
+        <span data-xh-part="segment" segment="minute"></span>
+      </div>
+    </div>
+  </xh-time-field>
+
+  <xh-time-field variant="ghost" default-value="09:30">
+    <div data-xh-part="root">
+      <label data-xh-part="label">ghost</label>
+      <div data-xh-part="control">
+        <span data-xh-part="segment" segment="hour"></span>
+        <span>:</span>
+        <span data-xh-part="segment" segment="minute"></span>
+      </div>
+    </div>
+  </xh-time-field>
+</div>
+`;export{a as default};

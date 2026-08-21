@@ -1,0 +1,114 @@
+const t=`<!-- 入口与条目的图标 | 图标是插槽里的普通节点：入口里排在文字前，条目里排在 item-text 前，逐项自己写 -->
+<div style="inline-size: 100%; padding-block-end: 160px">
+  <xh-menubar id="menubar-icon">
+    <div data-xh-part="root">
+      <button data-xh-part="trigger" value="file">
+        <xh-icon size="sm" data-glyph="file">
+          <svg data-xh-part="root"><g data-xh-part="glyph"></g></svg>
+        </xh-icon>
+        文件
+      </button>
+      <button data-xh-part="trigger" value="edit">
+        <xh-icon size="sm" data-glyph="edit">
+          <svg data-xh-part="root"><g data-xh-part="glyph"></g></svg>
+        </xh-icon>
+        编辑
+      </button>
+
+      <div data-xh-part="positioner" value="file">
+        <div data-xh-part="content" value="file">
+          <div data-xh-part="item" value="new">
+            <xh-icon size="sm" data-glyph="plus">
+              <svg data-xh-part="root"><g data-xh-part="glyph"></g></svg>
+            </xh-icon>
+            <span data-xh-part="item-text">新建</span>
+          </div>
+          <div data-xh-part="item" value="open">
+            <xh-icon size="sm" data-glyph="folder">
+              <svg data-xh-part="root"><g data-xh-part="glyph"></g></svg>
+            </xh-icon>
+            <span data-xh-part="item-text">打开</span>
+          </div>
+          <div data-xh-part="separator"></div>
+          <div data-xh-part="item" value="save">
+            <xh-icon size="sm" data-glyph="save">
+              <svg data-xh-part="root"><g data-xh-part="glyph"></g></svg>
+            </xh-icon>
+            <span data-xh-part="item-text">保存</span>
+          </div>
+        </div>
+      </div>
+
+      <div data-xh-part="positioner" value="edit">
+        <div data-xh-part="content" value="edit">
+          <div data-xh-part="item" value="undo">
+            <span data-xh-part="item-text">撤销</span>
+          </div>
+          <div data-xh-part="item" value="redo">
+            <span data-xh-part="item-text">重做</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </xh-menubar>
+</div>
+
+<script type="module">
+  // 描边取 currentColor，图标颜色随入口与条目当下的文字色走
+  const strokeAttrs = {
+    "fill": "none",
+    "stroke": "currentColor",
+    "stroke-width": "2",
+    "stroke-linecap": "round",
+    "stroke-linejoin": "round",
+  };
+
+  const icons = {
+    file: {
+      name: "file",
+      viewBox: "0 0 24 24",
+      attrs: strokeAttrs,
+      nodes: [
+        { tag: "path", attrs: { d: "M13 3H7A2 2 0 0 0 5 5V19A2 2 0 0 0 7 21H17A2 2 0 0 0 19 19V9Z" } },
+        { tag: "path", attrs: { d: "M13 3V9H19" } },
+      ],
+    },
+    edit: {
+      name: "edit",
+      viewBox: "0 0 24 24",
+      attrs: strokeAttrs,
+      nodes: [{ tag: "path", attrs: { d: "M4 20H8L19 9A2.8 2.8 0 0 0 15 5L4 16Z" } }],
+    },
+    plus: {
+      name: "plus",
+      viewBox: "0 0 24 24",
+      attrs: strokeAttrs,
+      nodes: [{ tag: "path", attrs: { d: "M12 5V19M5 12H19" } }],
+    },
+    folder: {
+      name: "folder",
+      viewBox: "0 0 24 24",
+      attrs: strokeAttrs,
+      nodes: [
+        { tag: "path", attrs: { d: "M3 7A2 2 0 0 1 5 5H9L11 8H19A2 2 0 0 1 21 10V17A2 2 0 0 1 19 19H5A2 2 0 0 1 3 17Z" } },
+      ],
+    },
+    save: {
+      name: "save",
+      viewBox: "0 0 24 24",
+      attrs: strokeAttrs,
+      nodes: [
+        { tag: "path", attrs: { d: "M5 4H16L20 8V19A1 1 0 0 1 19 20H5A1 1 0 0 1 4 19V5A1 1 0 0 1 5 4Z" } },
+        { tag: "path", attrs: { d: "M8 4V9H15" } },
+      ],
+    },
+  };
+
+  // 图标记录是对象，只能作为 property 交给每个 xh-icon
+  for (const el of document
+    .getElementById("menubar-icon")
+    .querySelectorAll("xh-icon")) {
+    el.icon = icons[el.dataset.glyph];
+  }
+<\/script>
+`;export{t as default};

@@ -1,0 +1,105 @@
+const a=`<!-- 基础用法 | collection 是条目全集的唯一事实源，value 只装落在右侧的那批 -->
+<div id="transfer-basic" style="inline-size: 100%; max-inline-size: 520px">
+  <xh-transfer>
+    <div data-xh-part="root">
+      <div data-xh-part="source-panel">
+        <div data-xh-part="panel-header">
+          <span data-xh-part="panel-title">待选权限</span>
+          <span data-xh-part="panel-count"></span>
+        </div>
+        <div data-xh-part="list">
+          <!-- 两侧各挂一份全集，不属于本侧的那一份由元素打上 hidden，不卸载节点 -->
+          <div data-xh-part="item" value="read">
+            <span data-xh-part="item-checkbox"></span>
+            <span data-xh-part="item-text">查看</span>
+          </div>
+          <div data-xh-part="item" value="create">
+            <span data-xh-part="item-checkbox"></span>
+            <span data-xh-part="item-text">新建</span>
+          </div>
+          <div data-xh-part="item" value="update">
+            <span data-xh-part="item-checkbox"></span>
+            <span data-xh-part="item-text">编辑</span>
+          </div>
+          <div data-xh-part="item" value="delete">
+            <span data-xh-part="item-checkbox"></span>
+            <span data-xh-part="item-text">删除</span>
+          </div>
+          <div data-xh-part="item" value="export">
+            <span data-xh-part="item-checkbox"></span>
+            <span data-xh-part="item-text">导出</span>
+          </div>
+          <div data-xh-part="item" value="audit">
+            <span data-xh-part="item-checkbox"></span>
+            <span data-xh-part="item-text">审计</span>
+          </div>
+        </div>
+      </div>
+
+      <button data-xh-part="to-target-trigger">›</button>
+      <button data-xh-part="to-source-trigger">‹</button>
+
+      <div data-xh-part="target-panel">
+        <div data-xh-part="panel-header">
+          <span data-xh-part="panel-title">已选权限</span>
+          <span data-xh-part="panel-count"></span>
+        </div>
+        <div data-xh-part="list">
+          <div data-xh-part="item" value="read">
+            <span data-xh-part="item-checkbox"></span>
+            <span data-xh-part="item-text">查看</span>
+          </div>
+          <div data-xh-part="item" value="create">
+            <span data-xh-part="item-checkbox"></span>
+            <span data-xh-part="item-text">新建</span>
+          </div>
+          <div data-xh-part="item" value="update">
+            <span data-xh-part="item-checkbox"></span>
+            <span data-xh-part="item-text">编辑</span>
+          </div>
+          <div data-xh-part="item" value="delete">
+            <span data-xh-part="item-checkbox"></span>
+            <span data-xh-part="item-text">删除</span>
+          </div>
+          <div data-xh-part="item" value="export">
+            <span data-xh-part="item-checkbox"></span>
+            <span data-xh-part="item-text">导出</span>
+          </div>
+          <div data-xh-part="item" value="audit">
+            <span data-xh-part="item-checkbox"></span>
+            <span data-xh-part="item-text">审计</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </xh-transfer>
+
+  <p style="margin-block-start: 12px; font-size: 13px">
+    已选：<span id="transfer-basic-value"></span>
+  </p>
+</div>
+
+<script type="module">
+  // 条目全集与右侧的值都是数组，只能走 property
+  const stage = document.getElementById("transfer-basic");
+  const transfer = stage.querySelector("xh-transfer");
+  const readout = stage.querySelector("#transfer-basic-value");
+
+  transfer.collection = [
+    { value: "read", label: "查看" },
+    { value: "create", label: "新建" },
+    { value: "update", label: "编辑" },
+    { value: "delete", label: "删除" },
+    { value: "export", label: "导出" },
+    { value: "audit", label: "审计" },
+  ];
+
+  function apply(value) {
+    transfer.value = value;
+    readout.textContent = value.length ? value.join("、") : "（无）";
+  }
+
+  apply(["read"]);
+  transfer.addEventListener("value-change", (event) => apply(event.detail.value));
+<\/script>
+`;export{a as default};

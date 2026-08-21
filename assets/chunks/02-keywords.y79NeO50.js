@@ -1,0 +1,27 @@
+const n=`<!-- 一组关键词 | 传数组即可；同一处多个关键词都命中时取最长的那个，重叠只切出一段 -->
+<div style="display: flex; flex-direction: column; gap: 12px">
+  <xh-highlight
+    id="highlight-keywords-many"
+    text="曦寒 UI 是一套框架无关的设计系统运行时，组件的行为与皮肤各走各的。"
+  >
+    <span data-xh-part="root"></span>
+  </xh-highlight>
+
+  <xh-highlight
+    id="highlight-keywords-overlapping"
+    text="曦寒 UI 是一套框架无关的设计系统运行时，组件的行为与皮肤各走各的。"
+  >
+    <span data-xh-part="root"></span>
+  </xh-highlight>
+</div>
+
+<script type="module">
+  // 一组关键词走 property：属性里的一个串整体算一个关键词，带空格的关键词才写得出来
+  const many = document.getElementById("highlight-keywords-many");
+  const overlapping = document.getElementById("highlight-keywords-overlapping");
+
+  many.keyword = ["曦寒", "设计系统", "行为"];
+  // 「设计」与「设计系统」在同一处起跳，切出来的是长的那个
+  overlapping.keyword = ["设计", "设计系统"];
+<\/script>
+`;export{n as default};

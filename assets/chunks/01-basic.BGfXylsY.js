@@ -1,0 +1,42 @@
+const t=`<!-- 基础用法 | 在触发区上右键（触摸端长按），菜单钉在按下去的那一点上 -->
+<div style="inline-size: 100%; display: grid; gap: 12px">
+  <xh-context-menu id="context-menu-basic">
+    <div data-xh-part="root">
+      <!-- 触发区的尺寸与排布归作者，皮肤只管它的交互观感 -->
+      <div data-xh-part="trigger">
+        <span style="display: grid; place-items: center; min-block-size: 120px">
+          在这块区域上右键
+        </span>
+      </div>
+      <div data-xh-part="positioner">
+        <div data-xh-part="content">
+          <div data-xh-part="item" value="copy">
+            <span data-xh-part="item-text">复制</span>
+          </div>
+          <div data-xh-part="item" value="paste" aria-disabled="true">
+            <span data-xh-part="item-text">粘贴</span>
+          </div>
+          <div data-xh-part="item" value="rename">
+            <span data-xh-part="item-text">重命名</span>
+          </div>
+          <div data-xh-part="separator"></div>
+          <div data-xh-part="item" value="delete">
+            <span data-xh-part="item-text">删除</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </xh-context-menu>
+
+  <span>最近选中：<span id="context-menu-basic-readout">（无）</span></span>
+</div>
+
+<script type="module">
+  // 选中的条目值回显在下面那行文字里
+  const menu = document.getElementById("context-menu-basic");
+  const readout = document.getElementById("context-menu-basic-readout");
+  menu.addEventListener("select", (event) => {
+    readout.textContent = event.detail.value;
+  });
+<\/script>
+`;export{t as default};

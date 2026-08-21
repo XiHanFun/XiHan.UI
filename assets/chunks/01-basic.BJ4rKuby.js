@@ -1,0 +1,34 @@
+const t=`<!-- 基础用法 | 单独一条通知：title 与 description 两个部件留空时由属性上的文案填入；duration 给 0 即不自动消失 -->
+<div style="display: grid; gap: 12px; justify-items: start">
+  <div id="toast-basic-slot"></div>
+  <xh-button id="toast-basic-again" size="sm" variant="outline">
+    <button data-xh-part="root">再挂一条</button>
+  </xh-button>
+</div>
+
+<template id="toast-basic-template">
+  <xh-toast title="草稿已保存" description="内容已同步到云端" duration="0">
+    <div data-xh-part="root">
+      <div data-xh-part="title"></div>
+      <div data-xh-part="description"></div>
+      <button data-xh-part="close-trigger">✕</button>
+    </div>
+  </xh-toast>
+</template>
+
+<script type="module">
+  const slot = document.getElementById("toast-basic-slot");
+  const template = document.getElementById("toast-basic-template");
+
+  // 关掉之后换一条新的挂上去，方便反复看
+  function mount() {
+    const node = document.importNode(template.content.firstElementChild, true);
+    // 文案是对象，只走 property
+    node.translations = { close: "关闭" };
+    slot.replaceChildren(node);
+  }
+
+  mount();
+  document.getElementById("toast-basic-again").addEventListener("click", mount);
+<\/script>
+`;export{t as default};

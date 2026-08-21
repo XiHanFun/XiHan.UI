@@ -1,0 +1,17 @@
+const n=`<!-- 方向 | 竖向分隔线需要父容器有确定高度 -->
+<div style="width: 100%">
+  <p>上一段</p>
+  <!-- 宿主不占布局，分隔线本体直接落进外层排版 -->
+  <xh-separator style="display: contents">
+    <div data-xh-part="root"></div>
+  </xh-separator>
+  <p>下一段</p>
+</div>
+<div style="display: flex; align-items: center; gap: 12px; height: 24px">
+  <span>左</span>
+  <xh-separator orientation="vertical" style="display: contents">
+    <div data-xh-part="root"></div>
+  </xh-separator>
+  <span>右</span>
+</div>
+`;export{n as default};

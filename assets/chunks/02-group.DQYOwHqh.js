@@ -1,0 +1,58 @@
+const t=`<!-- 分组与标记位 | group 用 value 跟自己的 group-label 配对，item-indicator 是纯装饰的勾选位 -->
+<div style="inline-size: 100%; display: grid; gap: 12px">
+  <xh-context-menu id="context-menu-group">
+    <div data-xh-part="root">
+      <div data-xh-part="trigger" style="display: grid; place-items: center; min-block-size: 120px">
+        <span>右键看看排序与视图两组</span>
+      </div>
+      <div data-xh-part="positioner">
+        <div data-xh-part="content">
+          <div data-xh-part="group" value="sort">
+            <span data-xh-part="group-label">排序方式</span>
+            <div data-xh-part="item" value="name">
+              <span data-xh-part="item-indicator">✓</span>
+              <span data-xh-part="item-text">按名称</span>
+            </div>
+            <div data-xh-part="item" value="time">
+              <span data-xh-part="item-indicator"></span>
+              <span data-xh-part="item-text">按时间</span>
+            </div>
+          </div>
+
+          <div data-xh-part="separator"></div>
+
+          <div data-xh-part="group" value="view">
+            <span data-xh-part="group-label">视图</span>
+            <div data-xh-part="item" value="list">
+              <span data-xh-part="item-text">列表</span>
+            </div>
+            <div data-xh-part="item" value="grid">
+              <span data-xh-part="item-text">网格</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </xh-context-menu>
+
+  <span>当前排序：<span id="context-menu-group-readout">按名称</span></span>
+</div>
+
+<script type="module">
+  // 选中排序项后勾移到那一条上
+  const menu = document.getElementById("context-menu-group");
+  const readout = document.getElementById("context-menu-group-readout");
+  const labels = { name: "按名称", time: "按时间" };
+
+  menu.addEventListener("select", (event) => {
+    const picked = event.detail.value;
+    if (!(picked in labels)) return;
+    for (const value of Object.keys(labels)) {
+      const item = menu.querySelector(\`[data-xh-part="item"][value="\${value}"]\`);
+      item.querySelector('[data-xh-part="item-indicator"]').textContent =
+        value === picked ? "✓" : "";
+    }
+    readout.textContent = labels[picked];
+  });
+<\/script>
+`;export{t as default};

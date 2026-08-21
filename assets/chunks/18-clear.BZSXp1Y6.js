@@ -1,0 +1,47 @@
+const t=`<!-- 清空按钮 | 清空钮是触发器的兄弟节点，一起收在 control 里：嵌在触发器右端、悬停时替换下拉箭头；有选中才显形，点按清空全部选中、不展开浮层；可及名走 translations.clear -->
+<xh-select id="select-clear" default-value="design" placeholder="选一个组">
+  <div data-xh-part="root" style="inline-size: 240px">
+    <span data-xh-part="label">所属小组</span>
+    <div data-xh-part="control">
+      <button data-xh-part="trigger">
+        <span data-xh-part="value-text"></span>
+        <span data-xh-part="indicator"></span>
+      </button>
+      <button data-xh-part="clear-trigger">✕</button>
+    </div>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <div data-xh-part="list">
+          <div data-xh-part="item" value="design">
+            <span data-xh-part="item-text">设计组</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="frontend">
+            <span data-xh-part="item-text">前端组</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="server">
+            <span data-xh-part="item-text">服务端组</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</xh-select>
+<p style="margin: 8px 0 0; font-size: 13px">
+  选中：<span id="select-clear-value">design</span>
+</p>
+
+<script type="module">
+  const select = document.getElementById("select-clear");
+  const readout = document.getElementById("select-clear-value");
+
+  // 读屏文案是对象，只能走 property
+  select.translations = { clear: "清空所选" };
+
+  select.addEventListener("value-change", (event) => {
+    readout.textContent = event.detail.value.join(", ") || "（空）";
+  });
+<\/script>
+`;export{t as default};

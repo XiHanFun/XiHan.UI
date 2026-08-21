@@ -1,0 +1,20 @@
+const t=`<!-- 变化回调 | pressed-change 每次带着 details 报一次按下意图；不做受控绑定时它就是拿到新值的唯一出口 -->
+<xh-toggle id="toggle-events" variant="outline">
+  <button data-xh-part="root">静音</button>
+</xh-toggle>
+
+<span id="toggle-events-trail" style="font-size: 13px">
+  最近三次：（还没动过）
+</span>
+
+<script type="module">
+  // 只留最近三次
+  const toggle = document.getElementById("toggle-events");
+  const readout = document.getElementById("toggle-events-trail");
+  let trail = [];
+  toggle.addEventListener("pressed-change", (event) => {
+    trail = [event.detail.pressed ? "开" : "关", ...trail].slice(0, 3);
+    readout.textContent = \`最近三次：\${trail.join(" · ")}\`;
+  });
+<\/script>
+`;export{t as default};

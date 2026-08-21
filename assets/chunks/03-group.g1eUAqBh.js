@@ -1,0 +1,57 @@
+const a=`<!-- 分组与标记位 | group 用 value 跟自己的 group-label 配对，item-indicator 是纯装饰的勾选位 -->
+<div style="inline-size: 100%; display: grid; gap: 12px; justify-items: start">
+  <xh-menubar id="menubar-group">
+    <div data-xh-part="root">
+      <button data-xh-part="trigger" value="view">视图</button>
+
+      <div data-xh-part="positioner" value="view">
+        <div data-xh-part="content" value="view">
+          <div data-xh-part="group" value="theme">
+            <span data-xh-part="group-label">主题</span>
+            <div data-xh-part="item" value="light">
+              <span data-xh-part="item-indicator">✓</span>
+              <span data-xh-part="item-text">浅色</span>
+            </div>
+            <div data-xh-part="item" value="dark">
+              <span data-xh-part="item-indicator"></span>
+              <span data-xh-part="item-text">深色</span>
+            </div>
+          </div>
+
+          <div data-xh-part="separator"></div>
+
+          <div data-xh-part="group" value="panel">
+            <span data-xh-part="group-label">面板</span>
+            <div data-xh-part="item" value="sidebar">
+              <span data-xh-part="item-text">侧栏</span>
+            </div>
+            <div data-xh-part="item" value="terminal">
+              <span data-xh-part="item-text">终端</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </xh-menubar>
+
+  <span>当前主题：<span id="menubar-group-readout">浅色</span></span>
+</div>
+
+<script type="module">
+  // 选中主题项后勾移到那一条上
+  const menubar = document.getElementById("menubar-group");
+  const readout = document.getElementById("menubar-group-readout");
+  const labels = { light: "浅色", dark: "深色" };
+
+  menubar.addEventListener("select", (event) => {
+    const picked = event.detail.value;
+    if (!(picked in labels)) return;
+    for (const value of Object.keys(labels)) {
+      const item = menubar.querySelector(\`[data-xh-part="item"][value="\${value}"]\`);
+      item.querySelector('[data-xh-part="item-indicator"]').textContent =
+        value === picked ? "✓" : "";
+    }
+    readout.textContent = labels[picked];
+  });
+<\/script>
+`;export{a as default};

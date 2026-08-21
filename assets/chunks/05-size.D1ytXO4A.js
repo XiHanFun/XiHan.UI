@@ -1,0 +1,147 @@
+const n=`<!-- 尺寸 | size 只换整条的内边距与条目间的间距，条目自身的高度与字号归条目的皮肤管 -->
+<div style="display: flex; flex-wrap: wrap; align-items: flex-start; gap: 16px">
+  <div style="display: flex; flex-direction: column; gap: 6px">
+    <span>sm</span>
+    <xh-toolbar size="sm">
+      <div data-xh-part="root">
+        <button
+          type="button"
+          data-xh-part="item"
+          value="sm-bold"
+          style="
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--xh-border-default);
+            background: var(--xh-bg-surface);
+          "
+        >
+          粗体
+        </button>
+        <button
+          type="button"
+          data-xh-part="item"
+          value="sm-italic"
+          style="
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--xh-border-default);
+            background: var(--xh-bg-surface);
+          "
+        >
+          斜体
+        </button>
+        <div data-xh-part="separator"></div>
+        <button
+          type="button"
+          data-xh-part="item"
+          value="sm-link"
+          style="
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--xh-border-default);
+            background: var(--xh-bg-surface);
+          "
+        >
+          链接
+        </button>
+      </div>
+    </xh-toolbar>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 6px">
+    <span>缺省</span>
+    <xh-toolbar>
+      <div data-xh-part="root">
+        <button
+          type="button"
+          data-xh-part="item"
+          value="md-bold"
+          style="
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--xh-border-default);
+            background: var(--xh-bg-surface);
+          "
+        >
+          粗体
+        </button>
+        <button
+          type="button"
+          data-xh-part="item"
+          value="md-italic"
+          style="
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--xh-border-default);
+            background: var(--xh-bg-surface);
+          "
+        >
+          斜体
+        </button>
+        <div data-xh-part="separator"></div>
+        <button
+          type="button"
+          data-xh-part="item"
+          value="md-link"
+          style="
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--xh-border-default);
+            background: var(--xh-bg-surface);
+          "
+        >
+          链接
+        </button>
+      </div>
+    </xh-toolbar>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 6px">
+    <span>lg</span>
+    <xh-toolbar size="lg">
+      <div data-xh-part="root">
+        <button
+          type="button"
+          data-xh-part="item"
+          value="lg-bold"
+          style="
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--xh-border-default);
+            background: var(--xh-bg-surface);
+          "
+        >
+          粗体
+        </button>
+        <button
+          type="button"
+          data-xh-part="item"
+          value="lg-italic"
+          style="
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--xh-border-default);
+            background: var(--xh-bg-surface);
+          "
+        >
+          斜体
+        </button>
+        <div data-xh-part="separator"></div>
+        <button
+          type="button"
+          data-xh-part="item"
+          value="lg-link"
+          style="
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--xh-border-default);
+            background: var(--xh-bg-surface);
+          "
+        >
+          链接
+        </button>
+      </div>
+    </xh-toolbar>
+  </div>
+</div>
+`;export{n as default};

@@ -1,0 +1,1 @@
+import{a as e}from"./normalize-props.C19uE7bg.js";const n=e("separator",["root"]),i=n.build();function s(t,r){const o=t.orientation??"horizontal",a=!!t.decorative;return{getRootProps:()=>r.element({...i.root.attrs,role:a?"none":"separator","aria-orientation":!a&&o==="vertical"?"vertical":void 0,"data-orientation":o})}}export{s as c,n as s};

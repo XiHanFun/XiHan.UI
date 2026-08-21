@@ -1,0 +1,29 @@
+const a=`<!-- 只读与禁用 | read-only 仍进 Tab 序列、读屏念得出但改不动；disabled 整条退出 Tab 序列 -->
+<div style="display: flex; gap: 32px; flex-wrap: wrap">
+  <xh-rating default-value="4" read-only>
+    <div data-xh-part="root">
+      <span data-xh-part="label">只读（4 星）</span>
+      <div data-xh-part="control">
+        <span data-xh-part="item" value="1">★</span>
+        <span data-xh-part="item" value="2">★</span>
+        <span data-xh-part="item" value="3">★</span>
+        <span data-xh-part="item" value="4">★</span>
+        <span data-xh-part="item" value="5">★</span>
+      </div>
+    </div>
+  </xh-rating>
+
+  <xh-rating default-value="2" disabled>
+    <div data-xh-part="root">
+      <span data-xh-part="label">禁用（2 星）</span>
+      <div data-xh-part="control">
+        <span data-xh-part="item" value="1">★</span>
+        <span data-xh-part="item" value="2">★</span>
+        <span data-xh-part="item" value="3">★</span>
+        <span data-xh-part="item" value="4">★</span>
+        <span data-xh-part="item" value="5">★</span>
+      </div>
+    </div>
+  </xh-rating>
+</div>
+`;export{a as default};

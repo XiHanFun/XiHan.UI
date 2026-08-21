@@ -1,0 +1,22 @@
+const a=`<!-- 基础用法 | 二维排布容器：cols 定分几列，gap 走间距档位，每一格按文档序依次落格 -->
+<style>
+  #grid-basic [data-cell] {
+    padding: 12px;
+    border-radius: var(--xh-radius-md);
+    background: var(--xh-bg-subtle);
+    color: var(--xh-fg-default);
+  }
+</style>
+
+<!-- 宿主设 display: contents，排布落在 root 上 -->
+<xh-grid id="grid-basic" cols="3" gap="md" style="display: contents">
+  <div data-xh-part="root">
+    <div data-xh-part="item" data-cell>甲</div>
+    <div data-xh-part="item" data-cell>乙</div>
+    <div data-xh-part="item" data-cell>丙</div>
+    <div data-xh-part="item" data-cell>丁</div>
+    <div data-xh-part="item" data-cell>戊</div>
+    <div data-xh-part="item" data-cell>己</div>
+  </div>
+</xh-grid>
+`;export{a as default};

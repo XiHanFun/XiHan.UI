@@ -1,0 +1,52 @@
+const a=`<!-- 脚注合计 | footer 把行号空间的最后一行留给脚注；脚注单元格不属于任何数据行，也就没有选中与禁用可言 -->
+<div style="width: 100%; max-width: 560px">
+  <xh-table id="table-footer" footer>
+    <div data-xh-part="root">
+      <div data-xh-part="caption">采购清单</div>
+      <div data-xh-part="header">
+        <div data-xh-part="row">
+          <div data-xh-part="column-header" value="item">条目</div>
+          <div data-xh-part="column-header" value="count">数量</div>
+          <div data-xh-part="column-header" value="amount">金额</div>
+        </div>
+      </div>
+      <div data-xh-part="body">
+        <div data-xh-part="row" value="l1">
+          <div data-xh-part="cell" value="item">键盘</div>
+          <div data-xh-part="cell" value="count">2</div>
+          <div data-xh-part="cell" value="amount">¥ 1280</div>
+        </div>
+        <div data-xh-part="row" value="l2">
+          <div data-xh-part="cell" value="item">鼠标</div>
+          <div data-xh-part="cell" value="count">3</div>
+          <div data-xh-part="cell" value="amount">¥ 447</div>
+        </div>
+        <div data-xh-part="row" value="l3">
+          <div data-xh-part="cell" value="item">显示器支架</div>
+          <div data-xh-part="cell" value="count">1</div>
+          <div data-xh-part="cell" value="amount">¥ 320</div>
+        </div>
+      </div>
+      <div data-xh-part="footer">
+        <!-- 脚注行不给 value：它占的是行号空间的最后一行 -->
+        <div data-xh-part="row">
+          <div data-xh-part="cell" value="item">合计</div>
+          <div data-xh-part="cell" value="count">6</div>
+          <div data-xh-part="cell" value="amount">¥ 2047</div>
+        </div>
+      </div>
+    </div>
+  </xh-table>
+</div>
+
+<script type="module">
+  const table = document.getElementById("table-footer");
+
+  table.columns = [
+    { id: "item", label: "条目", width: "10rem" },
+    { id: "count", label: "数量", width: "5rem" },
+    { id: "amount", label: "金额" },
+  ];
+  table.rows = [{ id: "l1" }, { id: "l2" }, { id: "l3" }];
+<\/script>
+`;export{a as default};

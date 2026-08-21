@@ -1,0 +1,25 @@
+const t=`<!-- 尺寸 | size 只换留白与字号，语义一点不动；不传即 md -->
+<xh-empty-state size="sm">
+  <div data-xh-part="root" style="inline-size: 220px">
+    <span data-xh-part="icon">∅</span>
+    <p data-xh-part="title">sm</p>
+    <p data-xh-part="description">塞进侧栏或卡片里的那一档。</p>
+  </div>
+</xh-empty-state>
+
+<xh-empty-state>
+  <div data-xh-part="root" style="inline-size: 220px">
+    <span data-xh-part="icon">∅</span>
+    <p data-xh-part="title">md</p>
+    <p data-xh-part="description">缺省档，列表与表格用它。</p>
+  </div>
+</xh-empty-state>
+
+<xh-empty-state size="lg">
+  <div data-xh-part="root" style="inline-size: 220px">
+    <span data-xh-part="icon">∅</span>
+    <p data-xh-part="title">lg</p>
+    <p data-xh-part="description">整页只有这一块时用它。</p>
+  </div>
+</xh-empty-state>
+`;export{t as default};

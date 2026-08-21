@@ -1,0 +1,15 @@
+const a=`<!-- 加载失败回退 | 图片地址取不到时切到 fallback，切换由状态机决定而不是 CSS -->
+<xh-avatar src="/images/does-not-exist.png" alt="取不到的图">
+  <span data-xh-part="root">
+    <img data-xh-part="image" />
+    <span data-xh-part="fallback">回退</span>
+  </span>
+</xh-avatar>
+
+<xh-avatar>
+  <span data-xh-part="root">
+    <img data-xh-part="image" />
+    <span data-xh-part="fallback">无图</span>
+  </span>
+</xh-avatar>
+`;export{a as default};

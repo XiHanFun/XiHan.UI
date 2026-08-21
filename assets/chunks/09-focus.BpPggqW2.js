@@ -1,0 +1,49 @@
+const t=`<!-- 聚焦与选中 | 输入部件就是一个原生 textarea，拿到它的节点就能聚焦、全选、失焦；发完一条把焦点送回去，接着敲下一条 -->
+<div style="width: 100%; display: grid; gap: 12px">
+  <xh-composer id="composer-focus">
+    <div data-xh-part="root">
+      <textarea
+        data-xh-part="input"
+        placeholder="发一条，焦点会自己回来"
+        rows="1"
+      ></textarea>
+      <button data-xh-part="submit-trigger">发送</button>
+    </div>
+  </xh-composer>
+
+  <div style="display: flex; gap: 8px">
+    <xh-button id="composer-focus-focus" variant="outline" size="sm">
+      <button data-xh-part="root">聚焦</button>
+    </xh-button>
+    <xh-button id="composer-focus-select" variant="outline" size="sm">
+      <button data-xh-part="root">全选</button>
+    </xh-button>
+    <xh-button id="composer-focus-blur" variant="ghost" size="sm">
+      <button data-xh-part="root">失焦</button>
+    </xh-button>
+  </div>
+  <span id="composer-focus-log">（还没发过）</span>
+</div>
+
+<script type="module">
+  const composer = document.getElementById("composer-focus");
+  const input = composer.querySelector('[data-xh-part="input"]');
+  const log = document.getElementById("composer-focus-log");
+
+  composer.addEventListener("submit", (event) => {
+    log.textContent = \`提交：\${event.detail.value}\`;
+    // 点发送按钮会把焦点留在按钮上，这里送回输入框
+    input.focus();
+  });
+
+  document
+    .getElementById("composer-focus-focus")
+    .addEventListener("click", () => input.focus());
+  document
+    .getElementById("composer-focus-select")
+    .addEventListener("click", () => input.select());
+  document
+    .getElementById("composer-focus-blur")
+    .addEventListener("click", () => input.blur());
+<\/script>
+`;export{t as default};

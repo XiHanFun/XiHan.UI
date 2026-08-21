@@ -1,0 +1,24 @@
+const n=`<!-- 用作状态标记 | 徽标不接收焦点、也不进 Tab 序列，状态语义靠文字本身表达 -->
+<div style="display: grid; gap: 8px">
+  <div style="display: flex; align-items: center; gap: 10px">
+    <span style="min-width: 90px">构建 #182</span>
+    <xh-badge variant="solid">
+      <span data-xh-part="root">运行中</span>
+    </xh-badge>
+  </div>
+
+  <div style="display: flex; align-items: center; gap: 10px">
+    <span style="min-width: 90px">构建 #181</span>
+    <xh-badge variant="subtle">
+      <span data-xh-part="root">已完成</span>
+    </xh-badge>
+  </div>
+
+  <div style="display: flex; align-items: center; gap: 10px">
+    <span style="min-width: 90px">构建 #180</span>
+    <xh-badge variant="outline">
+      <span data-xh-part="root">已取消</span>
+    </xh-badge>
+  </div>
+</div>
+`;export{n as default};

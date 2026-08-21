@@ -1,0 +1,79 @@
+const n=`<!-- 挂成角标 | 外层套一层定位上下文，徽标就落到子元素的角上。计数、上限截断、0 值收起、圆点都归徽标自己算，宿主只管定位 -->
+<div style="display: flex; align-items: center; gap: 24px">
+  <!-- 计数角标：给了 count 就自己出数字，超过 max 写成 99+，为 0 整枚收起 -->
+  <span style="position: relative; display: inline-flex">
+    <xh-button variant="outline">
+      <button data-xh-part="root">消息</button>
+    </xh-button>
+    <xh-badge
+      id="badge-anchor-count"
+      variant="solid"
+      tone="danger"
+      size="sm"
+      count="5"
+      label="5 条未读"
+    >
+      <span
+        data-xh-part="root"
+        style="position: absolute; inset-block-start: -6px; inset-inline-end: -8px"
+      ></span>
+    </xh-badge>
+  </span>
+
+  <!-- 圆点：只表示「有」，不表示「有几个」；同样为 0 时收起 -->
+  <span style="position: relative; display: inline-flex">
+    <xh-button variant="outline">
+      <button data-xh-part="root">动态</button>
+    </xh-button>
+    <xh-badge id="badge-anchor-dot" dot variant="solid" tone="danger" count="5" label="有新动态">
+      <span
+        data-xh-part="root"
+        style="position: absolute; inset-block-start: -4px; inset-inline-end: -4px"
+      ></span>
+    </xh-badge>
+  </span>
+</div>
+
+<div style="display: flex; align-items: center; gap: 8px">
+  <xh-button size="sm">
+    <button data-xh-part="root" id="badge-anchor-minus">减一</button>
+  </xh-button>
+  <xh-button size="sm">
+    <button data-xh-part="root" id="badge-anchor-plus">加五十</button>
+  </xh-button>
+  <xh-button size="sm" variant="ghost">
+    <button data-xh-part="root" id="badge-anchor-reset">归零</button>
+  </xh-button>
+  <span style="font-size: 13px">
+    当前 <span id="badge-anchor-readout">5</span>：为 0 收起，超过 99 截成 99+
+  </span>
+</div>
+
+<script type="module">
+  // 只把数字交给徽标，截断与收起由它自己算
+  const count$ = document.getElementById("badge-anchor-count");
+  const dot$ = document.getElementById("badge-anchor-dot");
+  const readout = document.getElementById("badge-anchor-readout");
+  let count = 5;
+
+  function paint() {
+    count$.count = count;
+    count$.label = \`\${count} 条未读\`;
+    dot$.count = count;
+    readout.textContent = String(count);
+  }
+
+  document.getElementById("badge-anchor-minus").addEventListener("click", () => {
+    count = Math.max(0, count - 1);
+    paint();
+  });
+  document.getElementById("badge-anchor-plus").addEventListener("click", () => {
+    count += 50;
+    paint();
+  });
+  document.getElementById("badge-anchor-reset").addEventListener("click", () => {
+    count = 0;
+    paint();
+  });
+<\/script>
+`;export{n as default};

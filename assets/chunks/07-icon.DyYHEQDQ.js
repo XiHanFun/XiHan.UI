@@ -1,0 +1,49 @@
+const a=`<!-- 自定义图案 | 星形由作者写，条目自带这颗的点亮状态，点亮与未点亮可以画成两个字形 -->
+<div style="display: flex; gap: 32px; flex-wrap: wrap">
+  <xh-rating default-value="3">
+    <div data-xh-part="root">
+      <span data-xh-part="label">换个字形</span>
+      <div data-xh-part="control">
+        <span data-xh-part="item" value="1">♥</span>
+        <span data-xh-part="item" value="2">♥</span>
+        <span data-xh-part="item" value="3">♥</span>
+        <span data-xh-part="item" value="4">♥</span>
+        <span data-xh-part="item" value="5">♥</span>
+      </div>
+    </div>
+  </xh-rating>
+
+  <xh-rating id="rating-outline" default-value="2" allow-half>
+    <div data-xh-part="root">
+      <span data-xh-part="label">空心与实心（半颗仍由皮肤裁）</span>
+      <div data-xh-part="control">
+        <span data-xh-part="item" value="1">★</span>
+        <span data-xh-part="item" value="2">★</span>
+        <span data-xh-part="item" value="3">☆</span>
+        <span data-xh-part="item" value="4">☆</span>
+        <span data-xh-part="item" value="5">☆</span>
+      </div>
+    </div>
+  </xh-rating>
+</div>
+
+<script type="module">
+  // 点亮状态由组件写在条目上，照它换字形
+  const rating = document.getElementById("rating-outline");
+  const items = [...rating.querySelectorAll('[data-xh-part="item"]')];
+
+  function paint() {
+    for (const item of items) {
+      const glyph = item.hasAttribute("data-highlighted") ? "★" : "☆";
+      if (item.textContent !== glyph) item.textContent = glyph;
+    }
+  }
+
+  new MutationObserver(paint).observe(rating, {
+    subtree: true,
+    attributes: true,
+    attributeFilter: ["data-highlighted"],
+  });
+  paint();
+<\/script>
+`;export{a as default};

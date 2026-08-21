@@ -1,0 +1,40 @@
+const a=`<!-- 禁用与只读 | 两者都进不了编辑态；值为空时预览区退回压淡的占位文字 -->
+<xh-editable default-value="改不动" placeholder="未填写" disabled>
+  <div data-xh-part="root">
+    <label data-xh-part="label">禁用</label>
+    <div data-xh-part="area">
+      <span data-xh-part="preview"></span>
+      <input data-xh-part="input" />
+    </div>
+    <div data-xh-part="control">
+      <button data-xh-part="edit-trigger">编辑</button>
+    </div>
+  </div>
+</xh-editable>
+
+<xh-editable default-value="只能看" placeholder="未填写" read-only>
+  <div data-xh-part="root">
+    <label data-xh-part="label">只读</label>
+    <div data-xh-part="area">
+      <span data-xh-part="preview"></span>
+      <input data-xh-part="input" />
+    </div>
+    <div data-xh-part="control">
+      <button data-xh-part="edit-trigger">编辑</button>
+    </div>
+  </div>
+</xh-editable>
+
+<xh-editable placeholder="未填写">
+  <div data-xh-part="root">
+    <label data-xh-part="label">空值占位</label>
+    <div data-xh-part="area">
+      <span data-xh-part="preview"></span>
+      <input data-xh-part="input" />
+    </div>
+    <div data-xh-part="control">
+      <button data-xh-part="edit-trigger">编辑</button>
+    </div>
+  </div>
+</xh-editable>
+`;export{a as default};

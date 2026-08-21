@@ -1,0 +1,39 @@
+const n=`<!-- 语气 | tone 只换圆环起始边那一段颜色，轨道留在中性描边上，转到哪儿才看得出来 -->
+<!-- 语气名写在旁边的普通文字上，转圈自身的可及名字仍是"加载中" -->
+<span style="display: inline-flex; align-items: center; gap: 6px">
+  <xh-spinner tone="brand" label="加载中">
+    <span data-xh-part="root"></span>
+  </xh-spinner>
+  <span style="font-size: 13px">brand</span>
+</span>
+<span style="display: inline-flex; align-items: center; gap: 6px">
+  <xh-spinner tone="neutral" label="加载中">
+    <span data-xh-part="root"></span>
+  </xh-spinner>
+  <span style="font-size: 13px">neutral</span>
+</span>
+<span style="display: inline-flex; align-items: center; gap: 6px">
+  <xh-spinner tone="success" label="加载中">
+    <span data-xh-part="root"></span>
+  </xh-spinner>
+  <span style="font-size: 13px">success</span>
+</span>
+<span style="display: inline-flex; align-items: center; gap: 6px">
+  <xh-spinner tone="warning" label="加载中">
+    <span data-xh-part="root"></span>
+  </xh-spinner>
+  <span style="font-size: 13px">warning</span>
+</span>
+<span style="display: inline-flex; align-items: center; gap: 6px">
+  <xh-spinner tone="danger" label="加载中">
+    <span data-xh-part="root"></span>
+  </xh-spinner>
+  <span style="font-size: 13px">danger</span>
+</span>
+<span style="display: inline-flex; align-items: center; gap: 6px">
+  <xh-spinner tone="info" label="加载中">
+    <span data-xh-part="root"></span>
+  </xh-spinner>
+  <span style="font-size: 13px">info</span>
+</span>
+`;export{n as default};

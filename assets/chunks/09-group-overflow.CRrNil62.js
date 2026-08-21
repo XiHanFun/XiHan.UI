@@ -1,0 +1,118 @@
+const a=`<!-- 成组与溢出计数 | 组内共用的直径、字号、形状在容器上写一次，自定义属性沿继承流给每一枚；超出上限的收成一枚「+N」，它只是又一枚落回退态的头像 -->
+<div style="display: grid; gap: 16px">
+  <!-- 叠放是外层的事：后一枚往回挪一段，再描一圈底色把压住的边分开 -->
+  <div
+    style="
+      display: flex;
+      align-items: center;
+      --xh-avatar-size: 36px;
+      --xh-avatar-font-size: 14px;
+    "
+  >
+    <xh-avatar>
+      <span data-xh-part="root" style="outline: 2px solid var(--vp-c-bg)">
+        <img data-xh-part="image" />
+        <span data-xh-part="fallback">曦</span>
+      </span>
+    </xh-avatar>
+    <xh-avatar>
+      <span
+        data-xh-part="root"
+        style="margin-inline-start: -10px; outline: 2px solid var(--vp-c-bg)"
+      >
+        <img data-xh-part="image" />
+        <span data-xh-part="fallback">寒</span>
+      </span>
+    </xh-avatar>
+    <xh-avatar>
+      <span
+        data-xh-part="root"
+        style="margin-inline-start: -10px; outline: 2px solid var(--vp-c-bg)"
+      >
+        <img data-xh-part="image" />
+        <span data-xh-part="fallback">懿</span>
+      </span>
+    </xh-avatar>
+    <xh-avatar>
+      <span
+        data-xh-part="root"
+        style="margin-inline-start: -10px; outline: 2px solid var(--vp-c-bg)"
+      >
+        <img data-xh-part="image" />
+        <span data-xh-part="fallback">承</span>
+      </span>
+    </xh-avatar>
+    <!-- 计数格没有图，只写回退内容 -->
+    <xh-avatar>
+      <span
+        data-xh-part="root"
+        style="
+          margin-inline-start: -10px;
+          outline: 2px solid var(--vp-c-bg);
+          --xh-avatar-bg: var(--xh-bg-muted);
+          --xh-avatar-fg: var(--xh-fg-muted);
+        "
+      >
+        <span data-xh-part="fallback">+2</span>
+      </span>
+    </xh-avatar>
+  </div>
+
+  <div
+    style="
+      display: flex;
+      align-items: center;
+      --xh-avatar-size: 26px;
+      --xh-avatar-font-size: 11px;
+      --xh-avatar-radius: var(--xh-radius-md);
+    "
+  >
+    <xh-avatar>
+      <span data-xh-part="root" style="outline: 2px solid var(--vp-c-bg)">
+        <img data-xh-part="image" />
+        <span data-xh-part="fallback">曦</span>
+      </span>
+    </xh-avatar>
+    <xh-avatar>
+      <span
+        data-xh-part="root"
+        style="margin-inline-start: -10px; outline: 2px solid var(--vp-c-bg)"
+      >
+        <img data-xh-part="image" />
+        <span data-xh-part="fallback">寒</span>
+      </span>
+    </xh-avatar>
+    <xh-avatar>
+      <span
+        data-xh-part="root"
+        style="margin-inline-start: -10px; outline: 2px solid var(--vp-c-bg)"
+      >
+        <img data-xh-part="image" />
+        <span data-xh-part="fallback">懿</span>
+      </span>
+    </xh-avatar>
+    <xh-avatar>
+      <span
+        data-xh-part="root"
+        style="margin-inline-start: -10px; outline: 2px solid var(--vp-c-bg)"
+      >
+        <img data-xh-part="image" />
+        <span data-xh-part="fallback">承</span>
+      </span>
+    </xh-avatar>
+    <xh-avatar>
+      <span
+        data-xh-part="root"
+        style="
+          margin-inline-start: -10px;
+          outline: 2px solid var(--vp-c-bg);
+          --xh-avatar-bg: var(--xh-bg-muted);
+          --xh-avatar-fg: var(--xh-fg-muted);
+        "
+      >
+        <span data-xh-part="fallback">+2</span>
+      </span>
+    </xh-avatar>
+  </div>
+</div>
+`;export{a as default};

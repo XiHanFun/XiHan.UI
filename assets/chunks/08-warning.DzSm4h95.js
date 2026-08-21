@@ -1,0 +1,86 @@
+const e=`<!-- 提醒但不拦下 | 可疑的值只在描述里提醒一句，不写进错误表：控件的 aria-invalid 仍是 false，提交照样放行 -->
+<xh-form id="form-warning">
+  <form data-xh-part="root" style="inline-size: 320px">
+    <div data-xh-part="field-group" value="email">
+      <xh-field>
+        <div data-xh-part="root">
+          <label data-xh-part="label">邮箱</label>
+          <input data-xh-part="control" type="email" />
+          <!-- 描述恒在描述链里：提醒会被念出来，又不会把控件标成无效 -->
+          <p data-xh-part="description"></p>
+          <p data-xh-part="error-text"></p>
+        </div>
+      </xh-field>
+    </div>
+
+    <button data-xh-part="submit-trigger">提交</button>
+    <p id="form-warning-submitted" style="margin: 0; font-size: 13px">已提交：（还没提交过）</p>
+  </form>
+</xh-form>
+
+<script type="module">
+  const host = document.getElementById("form-warning");
+  const submitted = document.getElementById("form-warning-submitted");
+  const group = host.querySelector('[data-xh-part="field-group"]');
+  const fieldRoot = group.querySelector("xh-field > [data-xh-part='root']");
+  const input = group.querySelector('[data-xh-part="control"]');
+  const description = group.querySelector('[data-xh-part="description"]');
+  const errorText = group.querySelector('[data-xh-part="error-text"]');
+
+  const personal = ["qq.com", "163.com", "gmail.com"];
+  const defaults = { email: "zhaifanhua@qq.com" };
+  let values = { ...defaults };
+  let errors = {};
+
+  // 拦得住的只有格式这一条，它才进错误表
+  host.defaultValues = defaults;
+  host.values = values;
+  host.validate = (source) => ({
+    email: String(source.email ?? "").includes("@") ? "" : "邮箱要带一个 @",
+  });
+
+  // 提醒由值现算，与错误表无关
+  function warningOf() {
+    const text = String(values.email ?? "");
+    const domain = text.slice(text.indexOf("@") + 1).toLowerCase();
+    return text.includes("@") && personal.includes(domain)
+      ? "这是个人邮箱，同事之间通常填公司邮箱"
+      : "";
+  }
+
+  // 警告档只换配色：边框取语气层的强调色，描述取语气层的文字色
+  function render() {
+    const warning = warningOf();
+    const invalid = errors.email !== undefined;
+    if (!invalid && warning) {
+      fieldRoot.dataset.tone = "warning";
+      fieldRoot.style.setProperty("--xh-field-control-border", "var(--xh-_tone-soft)");
+      fieldRoot.style.setProperty("--xh-field-description-fg", "var(--xh-_tone-fg)");
+    } else {
+      delete fieldRoot.dataset.tone;
+      fieldRoot.style.removeProperty("--xh-field-control-border");
+      fieldRoot.style.removeProperty("--xh-field-description-fg");
+    }
+    description.textContent = warning || "用于接收账单与安全提醒";
+    errorText.textContent = errors.email ?? "";
+    const next = String(values.email ?? "");
+    if (input.value !== next) input.value = next;
+  }
+
+  input.addEventListener("input", () => host.setFieldValue("email", input.value));
+  host.addEventListener("values-change", (event) => {
+    values = event.detail.values;
+    host.values = values;
+    render();
+  });
+  host.addEventListener("errors-change", (event) => {
+    errors = event.detail.errors;
+    render();
+  });
+  host.addEventListener("submit", (event) => {
+    submitted.textContent = \`已提交：\${String(event.detail.values.email ?? "")}\`;
+  });
+
+  render();
+<\/script>
+`;export{e as default};

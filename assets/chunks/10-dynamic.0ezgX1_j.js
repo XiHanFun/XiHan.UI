@@ -1,0 +1,101 @@
+const t=`<!-- 动态增删 | 标签清单归宿主维护；关掉当前这页时把选中值挪到相邻一项，全关完选中值是 null -->
+<xh-tabs id="tabs-dynamic" variant="card" value="doc-1">
+  <div data-xh-part="root" id="tabs-dynamic-root" style="inline-size: 100%">
+    <div style="display: flex; align-items: center; gap: 8px">
+      <div data-xh-part="list" id="tabs-dynamic-list">
+        <button data-xh-part="trigger" value="doc-1">文档 1</button>
+        <button data-xh-part="trigger" value="doc-2">文档 2</button>
+      </div>
+      <xh-button id="tabs-dynamic-add" size="sm" variant="outline">
+        <button data-xh-part="root">新增一页</button>
+      </xh-button>
+    </div>
+
+    <div data-xh-part="content" value="doc-1">
+      <div style="display: flex; align-items: center; gap: 8px">
+        <span>文档 1 的内容</span>
+        <xh-button size="sm" variant="outline" data-close>
+          <button data-xh-part="root">关闭本页</button>
+        </xh-button>
+      </div>
+    </div>
+    <div data-xh-part="content" value="doc-2">
+      <div style="display: flex; align-items: center; gap: 8px">
+        <span>文档 2 的内容</span>
+        <xh-button size="sm" variant="outline" data-close>
+          <button data-xh-part="root">关闭本页</button>
+        </xh-button>
+      </div>
+    </div>
+
+    <p id="tabs-dynamic-empty" hidden>已经全部关掉，当前选中值是 null。</p>
+  </div>
+</xh-tabs>
+
+<script type="module">
+  // 标签与面板由这段脚本增删，选中值也由它写
+  const tabs = document.getElementById("tabs-dynamic");
+  const root = document.getElementById("tabs-dynamic-root");
+  const list = document.getElementById("tabs-dynamic-list");
+  const add = document.getElementById("tabs-dynamic-add");
+  const empty = document.getElementById("tabs-dynamic-empty");
+  let seed = 2;
+
+  function panels() {
+    return [...root.querySelectorAll(':scope > [data-xh-part="content"]')];
+  }
+
+  function setValue(next) {
+    tabs.value = next;
+    empty.hidden = panels().length > 0;
+  }
+
+  add.addEventListener("click", () => {
+    seed += 1;
+    const value = \`doc-\${seed}\`;
+
+    const trigger = document.createElement("button");
+    trigger.dataset.xhPart = "trigger";
+    trigger.setAttribute("value", value);
+    trigger.textContent = \`文档 \${seed}\`;
+    list.append(trigger);
+
+    const content = document.createElement("div");
+    content.dataset.xhPart = "content";
+    content.setAttribute("value", value);
+    content.innerHTML = \`
+      <div style="display: flex; align-items: center; gap: 8px">
+        <span>文档 \${seed} 的内容</span>
+        <xh-button size="sm" variant="outline" data-close>
+          <button data-xh-part="root">关闭本页</button>
+        </xh-button>
+      </div>\`;
+    empty.before(content);
+
+    setValue(value);
+  });
+
+  root.addEventListener("click", (event) => {
+    const closer = event.target.closest("[data-close]");
+    if (!closer) {
+      return;
+    }
+    const panel = closer.closest('[data-xh-part="content"]');
+    const value = panel.getAttribute("value");
+    const index = panels().indexOf(panel);
+
+    list.querySelector(\`[data-xh-part="trigger"][value="\${value}"]\`).remove();
+    panel.remove();
+
+    if (tabs.value !== value) {
+      setValue(tabs.value);
+      return;
+    }
+    // 关掉的正是当前页：往后顺延，没有后一项就退回最后一项
+    const rest = panels().map((el) => el.getAttribute("value"));
+    setValue(rest[Math.min(index, rest.length - 1)] ?? null);
+  });
+
+  tabs.addEventListener("value-change", (event) => setValue(event.detail.value));
+<\/script>
+`;export{t as default};

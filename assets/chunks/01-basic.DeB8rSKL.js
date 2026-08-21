@@ -1,0 +1,8 @@
+const a=`<!-- 基础用法 | 除了 root，返回位、副标题、操作、页脚都可选；只写用得上的那几段 -->
+<xh-page-header>
+  <div data-xh-part="root">
+    <div data-xh-part="title">订单详情</div>
+    <div data-xh-part="subtitle">编号 SO-20260731-004</div>
+  </div>
+</xh-page-header>
+`;export{a as default};

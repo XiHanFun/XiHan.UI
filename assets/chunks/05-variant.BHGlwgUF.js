@@ -1,0 +1,23 @@
+const t=`<!-- 形态 | variant 决定底与描边怎么画：描边、淡色填底、无框；输入框没有实心档 -->
+<xh-text-field variant="outline" placeholder="请输入内容">
+  <div data-xh-part="root">
+    <label data-xh-part="label">outline</label>
+    <input data-xh-part="input" style="inline-size: 180px" />
+  </div>
+</xh-text-field>
+
+<xh-text-field variant="subtle" placeholder="请输入内容">
+  <div data-xh-part="root">
+    <label data-xh-part="label">subtle</label>
+    <input data-xh-part="input" style="inline-size: 180px" />
+  </div>
+</xh-text-field>
+
+<!-- 无框档平时只看得见字，把指针移上去或聚焦才浮出边界 -->
+<xh-text-field variant="ghost" placeholder="请输入内容">
+  <div data-xh-part="root">
+    <label data-xh-part="label">ghost</label>
+    <input data-xh-part="input" style="inline-size: 180px" />
+  </div>
+</xh-text-field>
+`;export{t as default};

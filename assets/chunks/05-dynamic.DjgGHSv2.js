@@ -1,0 +1,109 @@
+const n=`<!-- 动态字段 | 字段容器随数组增删，值表的键跟着字段名走；校验只遍历当下这几行，删掉的行不再参与 -->
+<xh-form id="form-dynamic">
+  <form data-xh-part="root" style="inline-size: 320px">
+    <div id="form-dynamic-actions" style="display: flex; gap: 8px">
+      <xh-button variant="outline">
+        <button data-xh-part="root" id="form-dynamic-add">添加一行</button>
+      </xh-button>
+      <button data-xh-part="submit-trigger">提交</button>
+    </div>
+
+    <p id="form-dynamic-submitted" style="margin: 0; font-size: 13px">已提交：（还没提交过）</p>
+  </form>
+</xh-form>
+
+<!-- 一行的骨架，脚本按当前行数组克隆出字段容器来 -->
+<template id="form-dynamic-row">
+  <div data-xh-part="field-group">
+    <xh-field>
+      <div data-xh-part="root">
+        <label data-xh-part="label"></label>
+        <input data-xh-part="control" />
+        <p data-xh-part="error-text"></p>
+      </div>
+    </xh-field>
+    <xh-button variant="ghost" size="sm">
+      <button data-xh-part="root">删掉这一行</button>
+    </xh-button>
+  </div>
+</template>
+
+<script type="module">
+  const host = document.getElementById("form-dynamic");
+  const root = host.querySelector('[data-xh-part="root"]');
+  const template = document.getElementById("form-dynamic-row");
+  const actions = document.getElementById("form-dynamic-actions");
+  const submitted = document.getElementById("form-dynamic-submitted");
+
+  // 字段名的派生规则只此一处：铺行、校验、提交回调都读它
+  const fieldName = (id) => \`tag-\${id}\`;
+
+  let nextId = 1;
+  let rows = [{ id: nextId }];
+  let values = {};
+
+  host.values = values;
+  host.validate = (source) => {
+    const errors = {};
+    for (const row of rows) {
+      const name = fieldName(row.id);
+      errors[name] = String(source[name] ?? "").trim() ? "" : "标签不能为空";
+    }
+    return errors;
+  };
+
+  const groups = () => [...root.querySelectorAll('[data-xh-part="field-group"]')];
+
+  function render() {
+    for (const group of groups()) group.remove();
+    rows.forEach((row, index) => {
+      const name = fieldName(row.id);
+      const group = template.content.firstElementChild.cloneNode(true);
+      group.setAttribute("value", name);
+      group.querySelector('[data-xh-part="label"]').textContent = \`标签 \${index + 1}\`;
+
+      const input = group.querySelector('[data-xh-part="control"]');
+      input.value = String(values[name] ?? "");
+      input.addEventListener("input", () => host.setFieldValue(name, input.value));
+
+      group.querySelector("xh-button button").addEventListener("click", () => {
+        rows = rows.filter((item) => item.id !== row.id);
+        render();
+      });
+
+      root.insertBefore(group, actions);
+    });
+  }
+
+  host.addEventListener("values-change", (event) => {
+    values = event.detail.values;
+    host.values = values;
+    for (const group of groups()) {
+      const input = group.querySelector('[data-xh-part="control"]');
+      const next = String(values[group.getAttribute("value")] ?? "");
+      if (input.value !== next) input.value = next;
+    }
+  });
+
+  host.addEventListener("errors-change", (event) => {
+    for (const group of groups()) {
+      const message = event.detail.errors[group.getAttribute("value")] ?? "";
+      group.querySelector('[data-xh-part="error-text"]').textContent = message;
+    }
+  });
+
+  host.addEventListener("submit", (event) => {
+    submitted.textContent = \`已提交：\${rows
+      .map((row) => String(event.detail.values[fieldName(row.id)] ?? ""))
+      .join(" / ")}\`;
+  });
+
+  document.getElementById("form-dynamic-add").addEventListener("click", () => {
+    nextId += 1;
+    rows = [...rows, { id: nextId }];
+    render();
+  });
+
+  render();
+<\/script>
+`;export{n as default};

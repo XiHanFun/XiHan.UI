@@ -1,0 +1,44 @@
+const a=`<!-- 方向 | direction 换排布轴：horizontal 横排（缺省）按中线对齐，vertical 竖排拉伸占满 -->
+<style>
+  #space-direction [data-box] {
+    padding: 6px 12px;
+    border-radius: var(--xh-radius-md);
+    background: var(--xh-bg-subtle);
+    color: var(--xh-fg-default);
+  }
+  #space-direction [data-label] {
+    font-size: 13px;
+    color: var(--xh-fg-muted);
+  }
+  #space-direction [data-stack] {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+</style>
+
+<div id="space-direction" style="display: flex; flex-direction: column; gap: 24px">
+  <div data-stack>
+    <span data-label>horizontal（缺省）</span>
+    <!-- 宿主设 display: contents，排布落在 root 上 -->
+    <xh-space style="display: contents">
+      <div data-xh-part="root">
+        <span data-box>甲</span>
+        <span data-box>乙</span>
+        <span data-box>丙</span>
+      </div>
+    </xh-space>
+  </div>
+
+  <div data-stack>
+    <span data-label>vertical</span>
+    <xh-space direction="vertical" style="display: contents">
+      <div data-xh-part="root">
+        <span data-box>甲</span>
+        <span data-box>乙</span>
+        <span data-box>丙</span>
+      </div>
+    </xh-space>
+  </div>
+</div>
+`;export{a as default};

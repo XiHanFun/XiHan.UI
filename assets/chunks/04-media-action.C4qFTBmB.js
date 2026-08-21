@@ -1,0 +1,37 @@
+const t=`<!-- 媒体位与操作位 | 一条条目最全的形态：媒体、标题、说明、操作四个位都摆上 -->
+<style>
+  #list-media-action [data-xh-part="item-media"] {
+    inline-size: 32px;
+    block-size: 32px;
+    border-radius: 999px;
+    background: var(--xh-bg-subtle);
+  }
+</style>
+
+<!-- 宿主设 display: contents，列表落在 root 上 -->
+<xh-list id="list-media-action" bordered hoverable split style="display: contents">
+  <ul data-xh-part="root" style="max-inline-size: 420px">
+    <li data-xh-part="item">
+      <!-- 媒体位画什么由使用者决定，这里放一个首字头像 -->
+      <div data-xh-part="item-media">张</div>
+      <div data-xh-part="item-content">
+        <div data-xh-part="item-title">张三</div>
+        <div data-xh-part="item-description">zhangsan@example.com</div>
+      </div>
+      <div data-xh-part="item-action">
+        <button type="button">移除</button>
+      </div>
+    </li>
+    <li data-xh-part="item">
+      <div data-xh-part="item-media">李</div>
+      <div data-xh-part="item-content">
+        <div data-xh-part="item-title">李四</div>
+        <div data-xh-part="item-description">lisi@example.com</div>
+      </div>
+      <div data-xh-part="item-action">
+        <button type="button">移除</button>
+      </div>
+    </li>
+  </ul>
+</xh-list>
+`;export{t as default};

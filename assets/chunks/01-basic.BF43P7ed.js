@@ -1,0 +1,27 @@
+const a=`<!-- 基础用法 | 等宽不等高的项按最短列优先落进三列，底边尽量齐平 -->
+<style>
+  #masonry-basic [data-card] {
+    padding: 12px;
+    border-radius: var(--xh-radius-md);
+    background: var(--xh-bg-subtle);
+    color: var(--xh-fg-default);
+  }
+</style>
+
+<!-- 宿主设 display: contents，排布落在 root 上；列写成空容器，项由元素搬进去 -->
+<!-- item 只做承重的盒子，卡片样式落在它的子节点上，与 Vue 版铺出来的结构一致 -->
+<xh-masonry id="masonry-basic" columns="3" gap="md" style="display: contents">
+  <div data-xh-part="root">
+    <div data-xh-part="column"></div>
+    <div data-xh-part="column"></div>
+    <div data-xh-part="column"></div>
+
+    <div data-xh-part="item"><div data-card style="block-size: 90px">甲</div></div>
+    <div data-xh-part="item"><div data-card style="block-size: 140px">乙</div></div>
+    <div data-xh-part="item"><div data-card style="block-size: 60px">丙</div></div>
+    <div data-xh-part="item"><div data-card style="block-size: 110px">丁</div></div>
+    <div data-xh-part="item"><div data-card style="block-size: 70px">戊</div></div>
+    <div data-xh-part="item"><div data-card style="block-size: 150px">己</div></div>
+  </div>
+</xh-masonry>
+`;export{a as default};

@@ -1,0 +1,19 @@
+const t=`<!-- 基础用法 | 一排互斥选项：root 是 radiogroup、每段是 radio；整组只占一个 Tab 位，进组后四个方向键都能走 -->
+<!-- 指示器写在段之前：它绝对定位，靠文档序让段压在它上面 -->
+<!-- 段内文字包一层 item-text 部件，与 Vue 侧铺开的结构逐个节点对得上 -->
+<xh-segmented default-value="week">
+  <div data-xh-part="root" aria-label="时间粒度">
+    <span data-xh-part="indicator"></span>
+    <button data-xh-part="item" value="day">
+      <span data-xh-part="item-text">日</span>
+    </button>
+    <button data-xh-part="item" value="week">
+      <span data-xh-part="item-text">周</span>
+    </button>
+    <button data-xh-part="item" value="month">
+      <span data-xh-part="item-text">月</span>
+    </button>
+    <input data-xh-part="hidden-input" />
+  </div>
+</xh-segmented>
+`;export{t as default};

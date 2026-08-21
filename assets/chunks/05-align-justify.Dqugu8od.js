@@ -1,0 +1,122 @@
+const a=`<!-- 格内对齐 | align 管每一项在自己那格里的块向落点，justify 管行内落点；两轴缺省都是铺满整格 -->
+<style>
+  #grid-align-justify [data-cell],
+  #grid-align-justify [data-tall] {
+    padding: 8px 12px;
+    border-radius: var(--xh-radius-md);
+  }
+  #grid-align-justify [data-cell] {
+    background: var(--xh-bg-subtle);
+    color: var(--xh-fg-default);
+  }
+  #grid-align-justify [data-tall] {
+    background: var(--xh-bg-brand-subtle);
+    color: var(--xh-fg-brand-strong);
+  }
+  #grid-align-justify [data-track] {
+    border: 1px solid var(--xh-border-default);
+    border-radius: var(--xh-radius-md);
+    padding: 8px;
+    margin-block-start: 6px;
+  }
+  #grid-align-justify [data-label] {
+    font-size: 13px;
+    color: var(--xh-fg-muted);
+  }
+</style>
+
+<!-- 宿主设 display: contents，排布落在 root 上 -->
+<xh-grid id="grid-align-justify" gap="lg" style="display: contents">
+  <div data-xh-part="root">
+    <!-- 第一格把整行撑高，另外两格才有块向落点可看 -->
+    <div data-xh-part="item">
+      <div data-label>align = start</div>
+      <xh-grid cols="3" gap="sm" align="start" style="display: contents">
+        <div data-xh-part="root" data-track>
+          <div data-xh-part="item" data-tall>这一格内容多<br />把整行撑高<br />共三行</div>
+          <div data-xh-part="item" data-cell>乙</div>
+          <div data-xh-part="item" data-cell>丙</div>
+        </div>
+      </xh-grid>
+    </div>
+
+    <div data-xh-part="item">
+      <div data-label>align = center</div>
+      <xh-grid cols="3" gap="sm" align="center" style="display: contents">
+        <div data-xh-part="root" data-track>
+          <div data-xh-part="item" data-tall>这一格内容多<br />把整行撑高<br />共三行</div>
+          <div data-xh-part="item" data-cell>乙</div>
+          <div data-xh-part="item" data-cell>丙</div>
+        </div>
+      </xh-grid>
+    </div>
+
+    <div data-xh-part="item">
+      <div data-label>align = end</div>
+      <xh-grid cols="3" gap="sm" align="end" style="display: contents">
+        <div data-xh-part="root" data-track>
+          <div data-xh-part="item" data-tall>这一格内容多<br />把整行撑高<br />共三行</div>
+          <div data-xh-part="item" data-cell>乙</div>
+          <div data-xh-part="item" data-cell>丙</div>
+        </div>
+      </xh-grid>
+    </div>
+
+    <div data-xh-part="item">
+      <div data-label>align = stretch</div>
+      <xh-grid cols="3" gap="sm" align="stretch" style="display: contents">
+        <div data-xh-part="root" data-track>
+          <div data-xh-part="item" data-tall>这一格内容多<br />把整行撑高<br />共三行</div>
+          <div data-xh-part="item" data-cell>乙</div>
+          <div data-xh-part="item" data-cell>丙</div>
+        </div>
+      </xh-grid>
+    </div>
+
+    <!-- 内容比列窄，才看得出行内落点；stretch 下每一格铺满整列 -->
+    <div data-xh-part="item">
+      <div data-label>justify = start</div>
+      <xh-grid cols="3" gap="sm" justify="start" style="display: contents">
+        <div data-xh-part="root" data-track>
+          <div data-xh-part="item" data-cell>甲</div>
+          <div data-xh-part="item" data-cell>乙</div>
+          <div data-xh-part="item" data-cell>丙</div>
+        </div>
+      </xh-grid>
+    </div>
+
+    <div data-xh-part="item">
+      <div data-label>justify = center</div>
+      <xh-grid cols="3" gap="sm" justify="center" style="display: contents">
+        <div data-xh-part="root" data-track>
+          <div data-xh-part="item" data-cell>甲</div>
+          <div data-xh-part="item" data-cell>乙</div>
+          <div data-xh-part="item" data-cell>丙</div>
+        </div>
+      </xh-grid>
+    </div>
+
+    <div data-xh-part="item">
+      <div data-label>justify = end</div>
+      <xh-grid cols="3" gap="sm" justify="end" style="display: contents">
+        <div data-xh-part="root" data-track>
+          <div data-xh-part="item" data-cell>甲</div>
+          <div data-xh-part="item" data-cell>乙</div>
+          <div data-xh-part="item" data-cell>丙</div>
+        </div>
+      </xh-grid>
+    </div>
+
+    <div data-xh-part="item">
+      <div data-label>justify = stretch</div>
+      <xh-grid cols="3" gap="sm" justify="stretch" style="display: contents">
+        <div data-xh-part="root" data-track>
+          <div data-xh-part="item" data-cell>甲</div>
+          <div data-xh-part="item" data-cell>乙</div>
+          <div data-xh-part="item" data-cell>丙</div>
+        </div>
+      </xh-grid>
+    </div>
+  </div>
+</xh-grid>
+`;export{a as default};

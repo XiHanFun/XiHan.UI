@@ -1,0 +1,23 @@
+const a=`<!-- 禁用 | disabled 让标签留在原地却摘不掉：关闭钮仍占着位置，标签宽度不因禁用跳变 -->
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
+  <xh-tag variant="subtle" tone="brand" closable>
+    <span data-xh-part="root">
+      <span data-xh-part="label">可摘掉</span>
+      <button data-xh-part="close-trigger">×</button>
+    </span>
+  </xh-tag>
+
+  <xh-tag variant="subtle" tone="brand" closable disabled>
+    <span data-xh-part="root">
+      <span data-xh-part="label">锁定的分类</span>
+      <button data-xh-part="close-trigger">×</button>
+    </span>
+  </xh-tag>
+
+  <xh-tag variant="outline" disabled>
+    <span data-xh-part="root">
+      <span data-xh-part="label">只读</span>
+    </span>
+  </xh-tag>
+</div>
+`;export{a as default};

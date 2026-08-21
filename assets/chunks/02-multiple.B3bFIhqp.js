@@ -1,0 +1,55 @@
+const t=`<!-- 多选 | multiple 下落值是切换、浮层不收起，可以接着挑；收起交给 Esc 或点浮层外 -->
+<xh-popselect
+  id="popselect-multiple"
+  multiple
+  default-value="bj"
+  placement="bottom-start"
+>
+  <div data-xh-part="root">
+    <button data-xh-part="trigger">北京</button>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <div data-xh-part="item" value="bj">
+          <span data-xh-part="item-text">北京</span>
+          <span data-xh-part="item-indicator"></span>
+        </div>
+        <div data-xh-part="item" value="sh">
+          <span data-xh-part="item-text">上海</span>
+          <span data-xh-part="item-indicator"></span>
+        </div>
+        <div data-xh-part="item" value="gz">
+          <span data-xh-part="item-text">广州</span>
+          <span data-xh-part="item-indicator"></span>
+        </div>
+        <div data-xh-part="item" value="sz">
+          <span data-xh-part="item-text">深圳</span>
+          <span data-xh-part="item-indicator"></span>
+        </div>
+        <div data-xh-part="item" value="cd">
+          <span data-xh-part="item-text">成都</span>
+          <span data-xh-part="item-indicator"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</xh-popselect>
+<p>已选 <span id="popselect-multiple-count">1</span> 个</p>
+
+<script type="module">
+  // 触发器把各项文本连起来显示
+  const popselect = document.getElementById("popselect-multiple");
+  const count = document.getElementById("popselect-multiple-count");
+  const trigger = popselect.querySelector('[data-xh-part="trigger"]');
+
+  function labelOf(value) {
+    const item = popselect.querySelector(\`[data-xh-part="item"][value="\${value}"]\`);
+    return item.querySelector('[data-xh-part="item-text"]').textContent;
+  }
+
+  popselect.addEventListener("value-change", (event) => {
+    const picked = event.detail.value;
+    trigger.textContent = picked.length ? picked.map(labelOf).join("、") : "请选择城市";
+    count.textContent = String(picked.length);
+  });
+<\/script>
+`;export{t as default};

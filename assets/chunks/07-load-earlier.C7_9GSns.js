@@ -1,0 +1,66 @@
+const n=`<!-- 向上加载更早的消息 | 视口的滚动事件直接监听：滚到接近顶部就去取上一页，取回来的插在最前面 -->
+<div style="width: 100%; display: grid; gap: 12px">
+  <xh-thread>
+    <div data-xh-part="root" style="block-size: 220px">
+      <div data-xh-part="viewport" id="thread-load-earlier-viewport">
+        <div data-xh-part="content" id="thread-load-earlier-content">
+          <p style="margin: 0" id="thread-load-earlier-hint" hidden></p>
+          <p style="margin: 0">第 33 条 · 会话记录</p>
+          <p style="margin: 0">第 34 条 · 会话记录</p>
+          <p style="margin: 0">第 35 条 · 会话记录</p>
+          <p style="margin: 0">第 36 条 · 会话记录</p>
+          <p style="margin: 0">第 37 条 · 会话记录</p>
+          <p style="margin: 0">第 38 条 · 会话记录</p>
+          <p style="margin: 0">第 39 条 · 会话记录</p>
+          <p style="margin: 0">第 40 条 · 会话记录</p>
+        </div>
+      </div>
+      <button data-xh-part="scroll-button">↓ 回到底部</button>
+    </div>
+  </xh-thread>
+
+  <span id="thread-load-earlier-readout">已加载 8 条 · 最早到第 33 条</span>
+</div>
+
+<script type="module">
+  const viewport = document.getElementById("thread-load-earlier-viewport");
+  const hint = document.getElementById("thread-load-earlier-hint");
+  const readout = document.getElementById("thread-load-earlier-readout");
+  // 编号越小越早，取历史就是往前减
+  let earliest = 33;
+  let count = 8;
+  let loading = false;
+  let hasMore = true;
+
+  function render() {
+    const text = loading ? "正在取更早的…" : hasMore ? "" : "已经是最早的了";
+    hint.textContent = text;
+    hint.hidden = text === "";
+    readout.textContent = \`已加载 \${count} 条 · 最早到第 \${earliest} 条\`;
+  }
+
+  // 离顶部不到 48px 就取上一页；不在底部时内容增高会按锚点补偿，读到一半的位置不会被顶走
+  viewport.addEventListener("scroll", () => {
+    if (viewport.scrollTop > 48 || loading || !hasMore)
+      return;
+    loading = true;
+    render();
+    window.setTimeout(() => {
+      const size = Math.min(6, earliest - 1);
+      earliest -= size;
+      const batch = document.createDocumentFragment();
+      for (let i = 0; i < size; i += 1) {
+        const line = document.createElement("p");
+        line.style.margin = "0";
+        line.textContent = \`第 \${earliest + i} 条 · 会话记录\`;
+        batch.append(line);
+      }
+      hint.after(batch);
+      count += size;
+      hasMore = earliest > 1;
+      loading = false;
+      render();
+    }, 500);
+  });
+<\/script>
+`;export{n as default};

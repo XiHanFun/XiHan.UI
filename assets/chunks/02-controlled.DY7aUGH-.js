@@ -1,0 +1,39 @@
+const t=`<!-- 受控 | 传了 value 就由宿主说了算；值可以是 null，表示一段都没选中 -->
+<xh-segmented id="segmented-controlled" value="list">
+  <div data-xh-part="root" aria-label="视图">
+    <span data-xh-part="indicator"></span>
+    <button data-xh-part="item" value="list">
+      <span data-xh-part="item-text">列表</span>
+    </button>
+    <button data-xh-part="item" value="board">
+      <span data-xh-part="item-text">看板</span>
+    </button>
+    <button data-xh-part="item" value="calendar">
+      <span data-xh-part="item-text">日历</span>
+    </button>
+    <input data-xh-part="hidden-input" />
+  </div>
+</xh-segmented>
+<span id="segmented-controlled-readout">当前：list</span>
+<button id="segmented-controlled-clear" type="button">清空</button>
+
+<script type="module">
+  // 选中值由宿主写回元素，清空按钮把它置为 null
+  const group = document.getElementById("segmented-controlled");
+  const readout = document.getElementById("segmented-controlled-readout");
+  const clear = document.getElementById("segmented-controlled-clear");
+
+  function render() {
+    readout.textContent = \`当前：\${group.value ?? "（未选）"}\`;
+  }
+
+  group.addEventListener("value-change", (event) => {
+    group.value = event.detail.value;
+    render();
+  });
+  clear.addEventListener("click", () => {
+    group.value = null;
+    render();
+  });
+<\/script>
+`;export{t as default};
