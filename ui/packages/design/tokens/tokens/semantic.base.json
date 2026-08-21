@@ -61,10 +61,6 @@
     "gutter": {
       "$type": "dimension",
       "$value": "2px"
-    },
-    "min-thumb": {
-      "$type": "dimension",
-      "$value": "20px"
     }
   },
   "glyph": {

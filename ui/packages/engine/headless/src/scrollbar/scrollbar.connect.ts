@@ -75,12 +75,14 @@ export function connectScrollbar<T extends PropTypes>(
   /**
    * 键盘只在滑块上收口，且只认本轴那两个方向键：交叉轴的方向键不拦，
    * 让它照常冒上去交给页面（滑块常常就浮在一片可滚内容之上）。
+   * 横轴的左右键按排版方向解释：RTL 下起始缘在右，往回走是 ArrowRight。
    */
   const onKeyDown = (event: KeyboardEvent): void => {
     if (disabled || event.ctrlKey || event.metaKey || event.altKey)
       return
-    const back = vertical ? 'ArrowUp' : 'ArrowLeft'
-    const forward = vertical ? 'ArrowDown' : 'ArrowRight'
+    const rtl = !vertical && dir === 'rtl'
+    const back = vertical ? 'ArrowUp' : rtl ? 'ArrowRight' : 'ArrowLeft'
+    const forward = vertical ? 'ArrowDown' : rtl ? 'ArrowLeft' : 'ArrowRight'
     const page = Math.max(metrics.viewport, step)
     const moves: Record<string, (() => void) | undefined> = {
       [back]: () => scrollBy(-step),

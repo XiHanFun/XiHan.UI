@@ -2,7 +2,7 @@ import type { ScrollbarApi, ScrollbarSchema, ScrollbarType } from '@xihan-ui/hea
 import type { Direction, Orientation, Size } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import type { ScrollbarTarget } from './use-scrollbar'
+import type { ScrollbarSource, ScrollbarTarget } from './use-scrollbar'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { provideScrollbar, useScrollbarContext } from './context'
@@ -52,17 +52,12 @@ export const XhScrollbarRoot = defineComponent({
     default?: (props: ScrollbarRootSlotProps) => VNode[]
   }>,
   setup(props, { slots, emit }) {
-    const configured = withXhConfig('scrollbar', props) as ScrollbarProps & { scrollable?: ScrollbarTarget }
-    const ctx = useScrollbar(
-      {
-        ...configured,
-        onScrollStart: details => emit('scroll-start', details),
-        onScrollEnd: details => emit('scroll-end', details),
-        onDragStart: details => emit('drag-start', details),
-        onDragEnd: details => emit('drag-end', details),
-      },
-      () => props.scrollable,
-    )
+    const ctx = useScrollbar(withXhConfig('scrollbar', props) as ScrollbarSource, {
+      onScrollStart: details => emit('scroll-start', details),
+      onScrollEnd: details => emit('scroll-end', details),
+      onDragStart: details => emit('drag-start', details),
+      onDragEnd: details => emit('drag-end', details),
+    })
     provideScrollbar(ctx)
 
     return () => h('div', {
