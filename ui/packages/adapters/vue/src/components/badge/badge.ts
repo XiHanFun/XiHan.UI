@@ -3,6 +3,7 @@ import type { Size, Tone } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import { connectBadge } from '@xihan-ui/headless'
 import { defineComponent, h } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
 
 export const XhBadge = defineComponent({
@@ -23,8 +24,10 @@ export const XhBadge = defineComponent({
     label: { type: String, default: undefined },
   },
   setup(props, { slots }) {
+    // withXhConfig 只能在 setup 期调，连接层在渲染期读这份代理
+    const configured = withXhConfig('badge', props)
     return () => {
-      const api = connectBadge(props as BadgeProps, vueNormalize)
+      const api = connectBadge(configured as BadgeProps, vueNormalize)
       // 插槽有内容就以它为准，没有才用算好的计数文本
       return h('span', api.getRootProps() as Record<string, unknown>, slots.default?.() ?? api.text)
     }

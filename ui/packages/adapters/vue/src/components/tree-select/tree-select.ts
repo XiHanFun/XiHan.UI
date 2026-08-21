@@ -4,6 +4,7 @@ import type { PropType, Ref, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import type { TreeSelectContext } from './use-tree-select'
 import { computed, defineComponent, h, mergeProps, onBeforeUnmount, ref, Teleport, watch } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { provideTreeSelect, provideTreeSelectNode, useTreeSelectContext, useTreeSelectNodeContext } from './context'
 import { useTreeSelect } from './use-tree-select'
 
@@ -106,7 +107,7 @@ export const XhTreeSelectRoot = defineComponent({
       emit('open-change', details)
       emit('update:open', details.open)
     }
-    const ctx = useTreeSelect(props as TreeSelectProps, {
+    const ctx = useTreeSelect(withXhConfig('tree-select', props) as TreeSelectProps, {
       onValueChange: notifyValue,
       onExpandedChange: notifyExpanded,
       onOpenChange: notifyOpen,

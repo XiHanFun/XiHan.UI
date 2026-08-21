@@ -3,6 +3,7 @@ import type { Size, Tone } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import { connectProgress } from '@xihan-ui/headless'
 import { defineComponent, h } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { slotPaints } from '../../runtime/slot-content'
 
@@ -22,8 +23,10 @@ export const XhProgress = defineComponent({
     size: String as PropType<Size>,
   },
   setup(props, { slots }) {
+    // withXhConfig 只能在 setup 期调，连接层在渲染期读这份代理
+    const configured = withXhConfig('progress', props)
     return () => {
-      const a = connectProgress(props as ProgressProps, vueNormalize)
+      const a = connectProgress(configured as ProgressProps, vueNormalize)
       const rootProps = a.getRootProps() as Record<string, unknown>
       if (a.variant === 'line') {
         return h('div', rootProps, [

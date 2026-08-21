@@ -1126,6 +1126,7 @@
       "createVueIdGenerator",
       "createVueRuntime",
       "getSoundPlayer",
+      "mergeXhConfig",
       "provideAffix",
       "provideAvatarGroup",
       "provideBackTop",
@@ -1330,6 +1331,8 @@
       "XhComboboxElement",
       "XhComposerElement",
       "XhConfig",
+      "XhConfigElement",
+      "XhConfigScope",
       "XhContextMenuElement",
       "XhDateFieldElement",
       "XhDatePickerElement",
@@ -1406,7 +1409,9 @@
       "defineXhElements",
       "discoverParts",
       "getXhConfig",
+      "mergeXhConfig",
       "onXhConfigChange",
+      "resolveXhConfig",
       "setXhConfig",
       "wcNormalize"
     ],
@@ -9802,6 +9807,13 @@
         "submit",
         "value-change"
       ]
+    },
+    "xh-config": {
+      "attributes": [
+        "locale",
+        "size"
+      ],
+      "events": []
     },
     "xh-context-menu": {
       "attributes": [

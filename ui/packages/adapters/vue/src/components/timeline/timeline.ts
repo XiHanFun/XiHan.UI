@@ -3,6 +3,7 @@ import type { Orientation, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import { connectTimeline } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { provideTimeline, provideTimelineItem, useTimelineContext, useTimelineItem } from './context'
 
@@ -16,7 +17,7 @@ export const XhTimelineRoot = defineComponent({
     size: { type: String as PropType<Size>, default: undefined },
   },
   setup(props, { slots }) {
-    const api = computed(() => connectTimeline(props as TimelineProps, vueNormalize))
+    const api = computed(() => connectTimeline(withXhConfig('timeline', props) as TimelineProps, vueNormalize))
     provideTimeline({ api })
     return () => h('ol', api.value.getRootProps() as Record<string, unknown>, slots.default?.())
   },

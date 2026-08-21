@@ -3,6 +3,7 @@ import type { Size } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import { connectAvatarGroup } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { provideAvatarGroup, useAvatarGroupContext } from './context'
 
@@ -14,7 +15,7 @@ export const XhAvatarGroupRoot = defineComponent({
     size: { type: String as PropType<Size>, default: undefined },
   },
   setup(props, { slots }) {
-    const api = computed(() => connectAvatarGroup(props as AvatarGroupProps, vueNormalize))
+    const api = computed(() => connectAvatarGroup(withXhConfig('avatar-group', props) as AvatarGroupProps, vueNormalize))
     provideAvatarGroup({ api })
     return () => h('div', api.value.getRootProps() as Record<string, unknown>, slots.default?.())
   },

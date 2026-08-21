@@ -1,5 +1,5 @@
-export type { XhConfig, XhTranslationOverrides } from './config'
-export { getXhConfig, onXhConfigChange, setXhConfig } from './config'
+export type { XhConfig, XhConfigScope, XhTranslationOverrides } from './config'
+export { getXhConfig, mergeXhConfig, onXhConfigChange, resolveXhConfig, setXhConfig } from './config'
 // @xihan-ui/web-components —— Web Components 适配器（Light-DOM 行为宿主）。
 // 主入口只导出运行时/DOM 原语，不含元素类，Node 下可安全 import。
 // 元素类与注册在 @xihan-ui/web-components/define。

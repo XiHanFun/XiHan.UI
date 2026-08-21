@@ -152,7 +152,7 @@
     "path": "packages/adapters/vue/dist/index.js",
     "import": "{ XhBadge }",
     "gzip": true,
-    "limit": "800 B",
+    "limit": "1 kB",
     "ignore": [
       "vue"
     ]

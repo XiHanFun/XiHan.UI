@@ -2,6 +2,7 @@ import type { Size } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import { connectList } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { provideList, useListContext } from './context'
 
@@ -17,11 +18,13 @@ export const XhListRoot = defineComponent({
     as: { type: String, default: 'ul' },
   },
   setup(props, { slots }) {
+    // withXhConfig 只能在 setup 期调，连接层在渲染期读这份代理
+    const configured = withXhConfig('list', props)
     const api = computed(() => connectList({
-      bordered: props.bordered,
-      hoverable: props.hoverable,
-      split: props.split,
-      size: props.size,
+      bordered: configured.bordered,
+      hoverable: configured.hoverable,
+      split: configured.split,
+      size: configured.size,
     }, vueNormalize))
     provideList({ api })
     return () => h(props.as, api.value.getRootProps() as Record<string, unknown>, slots.default?.())

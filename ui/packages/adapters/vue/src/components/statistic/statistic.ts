@@ -3,6 +3,7 @@ import type { Size, Tone } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import { connectStatistic } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { provideStatistic, useStatisticContext } from './context'
 
@@ -14,7 +15,7 @@ export const XhStatisticRoot = defineComponent({
     tone: { type: String as PropType<Tone>, default: undefined },
   },
   setup(props, { slots }) {
-    const api = computed(() => connectStatistic(props as StatisticProps, vueNormalize))
+    const api = computed(() => connectStatistic(withXhConfig('statistic', props) as StatisticProps, vueNormalize))
     provideStatistic({ api })
     return () => h('div', api.value.getRootProps() as Record<string, unknown>, slots.default?.())
   },

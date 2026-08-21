@@ -4,6 +4,7 @@ import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { mergeProps } from '@xihan-ui/kernel'
 import { computed, defineComponent, h, mergeProps as mergeVueProps, onBeforeUnmount, ref, Teleport, watch } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { mergeIntoChild } from '../../runtime/as-child'
 import { provideMenu, provideMenuChain, useMenuContext } from '../menu/context'
 import { useMenu } from '../menu/use-menu'
@@ -63,7 +64,7 @@ export const XhContextMenuRoot = defineComponent({
       emit('update:open', details.open)
     }
     const notifySelect: ContextMenuProps['onSelect'] = details => emit('select', details)
-    const ctx = useContextMenu(props as ContextMenuProps, notifyOpen, notifySelect)
+    const ctx = useContextMenu(withXhConfig('context-menu', props) as ContextMenuProps, notifyOpen, notifySelect)
     provideContextMenu(ctx)
     // 菜单钉在坐标上，坐标只能由 openAt 交进来。默认插槽那条路从载荷里拿，
     // 只交 collection 的那条路没有载荷，所以同一组命令也从实例上暴露一份。

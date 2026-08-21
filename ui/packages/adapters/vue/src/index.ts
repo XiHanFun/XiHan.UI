@@ -965,7 +965,7 @@ export type { VirtualizerRootSlotProps } from './components/virtualizer/virtuali
 export { provideWatermark, useWatermarkContext } from './components/watermark/context'
 export type { WatermarkContext } from './components/watermark/context'
 export { XhWatermarkContent, XhWatermarkRoot } from './components/watermark/watermark'
-export { provideXhConfig, useXhConfig, withXhConfig } from './config/config'
+export { mergeXhConfig, provideXhConfig, useXhConfig, withXhConfig } from './config/config'
 export type { XhConfig, XhTranslationOverrides } from './config/config'
 export { createVueRuntime } from './runtime/create-vue-runtime'
 export { vueNormalize } from './runtime/normalize-props'

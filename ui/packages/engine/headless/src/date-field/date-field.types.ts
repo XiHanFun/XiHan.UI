@@ -127,7 +127,7 @@ export interface DateFieldSchema extends MachineSchema {
     /** 各段未填时显示的占位串，逐段覆盖内置默认（yyyy / mm / dd / hh / mm / ss）。 */
     placeholder?: { readonly [K in DateSegmentType]?: string }
     /** 各段的读屏名字，逐段覆盖内置默认。段是 spinbutton，没有名字读屏只念得出一串数字。 */
-    translations?: { readonly [K in DateSegmentType]?: string }
+    translations?: DateFieldTranslations
     /** 形态：outline / subtle / ghost，决定描边与底色怎么用。 */
     variant?: ControlVariant
     /** 语气：brand / neutral / success / warning / danger / info，决定聚焦与强调用哪族颜色。 */
@@ -225,5 +225,5 @@ export interface DateFieldApi<T extends PropTypes = PropTypes> {
   getHiddenInputProps: () => T['input']
 }
 
-/** 读屏用的文案。本组件目前没有需要外露的文案，位先留着。 */
-export interface DateFieldTranslations {}
+/** 读屏用的文案：逐段的名字。段是 spinbutton，没有名字读屏只念得出一串数字。 */
+export type DateFieldTranslations = { readonly [K in DateSegmentType]?: string }
