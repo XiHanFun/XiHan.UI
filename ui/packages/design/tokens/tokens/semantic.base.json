@@ -197,6 +197,10 @@
     "scale-enter": {
       "$type": "number",
       "$value": 0.96
+    },
+    "scale-press": {
+      "$type": "number",
+      "$value": 0.97
     }
   },
   "spin": {

@@ -24,6 +24,10 @@
     "scale-enter": {
       "$type": "number",
       "$value": 1
+    },
+    "scale-press": {
+      "$type": "number",
+      "$value": 1
     }
   }
 }
