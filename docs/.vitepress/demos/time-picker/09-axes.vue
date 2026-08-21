@@ -38,7 +38,7 @@ const sizes: Size[] = ["sm", "md", "lg"];
           <XhTimePickerInput segment="hour" />
           <span>:</span>
           <XhTimePickerInput segment="minute" />
-          <XhTimePickerClearTrigger>✕</XhTimePickerClearTrigger>
+          <XhTimePickerClearTrigger />
         </XhTimePickerControl>
         <XhTimePickerPositioner>
           <XhTimePickerContent>

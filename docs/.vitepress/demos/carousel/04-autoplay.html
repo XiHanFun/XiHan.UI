@@ -1,7 +1,7 @@
 <!-- 自动播放与回绕 | autoplay 给毫秒即间隔，鼠标停上去或焦点走进来都会把计时按住 -->
 <xh-carousel id="carousel-autoplay" slide-count="3" autoplay="2500" loop>
   <div data-xh-part="root" style="inline-size: 100%">
-    <button data-xh-part="prev-trigger">‹</button>
+    <button data-xh-part="prev-trigger"></button>
     <div data-xh-part="viewport" style="block-size: 120px">
       <div data-xh-part="item-group">
         <div data-xh-part="item" index="0">
@@ -21,7 +21,7 @@
         </div>
       </div>
     </div>
-    <button data-xh-part="next-trigger">›</button>
+    <button data-xh-part="next-trigger"></button>
     <!-- root 自己就是会换行的横排 flex，回显想独占一行得自己占满 -->
     <span id="carousel-autoplay-readout" style="flex-basis: 100%"></span>
   </div>

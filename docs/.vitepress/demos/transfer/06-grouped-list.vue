@@ -81,8 +81,8 @@ const value = ref<string[]>(["list"]);
         </XhTransferList>
       </XhTransferSourcePanel>
 
-      <XhTransferToTargetTrigger>›</XhTransferToTargetTrigger>
-      <XhTransferToSourceTrigger>‹</XhTransferToSourceTrigger>
+      <XhTransferToTargetTrigger />
+      <XhTransferToSourceTrigger />
 
       <XhTransferTargetPanel v-slot="{ items }">
         <XhTransferPanelHeader>

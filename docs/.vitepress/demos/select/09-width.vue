@@ -27,14 +27,14 @@ const plans = [
       <XhSelectLabel>缺省宽度</XhSelectLabel>
       <XhSelectTrigger>
         <XhSelectValueText />
-        <XhSelectIndicator>▾</XhSelectIndicator>
+        <XhSelectIndicator />
       </XhSelectTrigger>
       <XhSelectPositioner>
         <XhSelectContent>
           <XhSelectList>
             <XhSelectItem v-for="p in plans" :key="p.value" :value="p.value">
               <XhSelectItemText>{{ p.label }}</XhSelectItemText>
-              <XhSelectItemIndicator>✓</XhSelectItemIndicator>
+              <XhSelectItemIndicator />
             </XhSelectItem>
           </XhSelectList>
         </XhSelectContent>
@@ -49,14 +49,14 @@ const plans = [
       <XhSelectLabel>加宽</XhSelectLabel>
       <XhSelectTrigger>
         <XhSelectValueText />
-        <XhSelectIndicator>▾</XhSelectIndicator>
+        <XhSelectIndicator />
       </XhSelectTrigger>
       <XhSelectPositioner>
         <XhSelectContent>
           <XhSelectList>
             <XhSelectItem v-for="p in plans" :key="p.value" :value="p.value">
               <XhSelectItemText>{{ p.label }}</XhSelectItemText>
-              <XhSelectItemIndicator>✓</XhSelectItemIndicator>
+              <XhSelectItemIndicator />
             </XhSelectItem>
           </XhSelectList>
         </XhSelectContent>

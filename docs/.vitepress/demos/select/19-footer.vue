@@ -36,7 +36,7 @@ function addOne() {
     <XhSelectLabel>水果</XhSelectLabel>
     <XhSelectTrigger>
       <XhSelectValueText />
-      <XhSelectIndicator>▾</XhSelectIndicator>
+      <XhSelectIndicator />
     </XhSelectTrigger>
     <XhSelectPositioner>
       <XhSelectContent>
@@ -44,7 +44,7 @@ function addOne() {
         <XhSelectList>
           <XhSelectItem v-for="f in fruits" :key="f.value" :value="f.value">
             <XhSelectItemText>{{ f.label }}</XhSelectItemText>
-            <XhSelectItemIndicator>✓</XhSelectItemIndicator>
+            <XhSelectItemIndicator />
           </XhSelectItem>
         </XhSelectList>
         <!-- 按钮放这里才不违反 listbox 的子节点约束；条目多到要滚时它也贴在下沿不动 -->

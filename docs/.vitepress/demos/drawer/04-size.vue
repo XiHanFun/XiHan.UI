@@ -34,7 +34,7 @@ const sizes = [
           面板贴住右边，三档只有厚度不同。
         </XhDrawerDescription>
         <XhButton variant="solid" @click="setOpen(false)">关闭</XhButton>
-        <XhDrawerCloseTrigger>✕</XhDrawerCloseTrigger>
+        <XhDrawerCloseTrigger />
       </XhDrawerContent>
     </XhDrawerRoot>
   </div>

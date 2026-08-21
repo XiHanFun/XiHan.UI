@@ -60,6 +60,9 @@ for (const file of fs.readdirSync(cssDir).filter(f => f.endsWith('.css')).sort()
     // 自己带了 [hidden] / :not([hidden]) 的说明作者想清楚了
     if (/\[hidden\]|:not\(\[hidden\]\)/.test(selector))
       return
+    // 伪元素的 display 管的是它自己的盒子：宿主一旦 display:none，伪元素根本不生成
+    if (/::(?:before|after)\s*[,{]/.test(selector) || /::(?:before|after)\s*$/.test(selector.trim()))
+      return
     offenders.push(`${file}:${i + 1}  display: ${decl[1]}\n    ${selector.trim()}`)
   })
 }

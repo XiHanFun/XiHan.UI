@@ -25,7 +25,7 @@ const value = ref("");
       <XhTimePickerInput segment="minute" />
       <span>:</span>
       <XhTimePickerInput segment="second" />
-      <XhTimePickerClearTrigger>✕</XhTimePickerClearTrigger>
+      <XhTimePickerClearTrigger />
     </XhTimePickerControl>
     <XhTimePickerPositioner>
       <XhTimePickerContent>

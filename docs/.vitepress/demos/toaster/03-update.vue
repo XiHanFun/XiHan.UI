@@ -58,7 +58,7 @@ function startUpload(create: Create, update: Update): void {
         >
           <XhToastTitle />
           <XhToastDescription />
-          <XhToastCloseTrigger>✕</XhToastCloseTrigger>
+          <XhToastCloseTrigger />
         </XhToastRoot>
       </template>
     </XhToasterGroup>

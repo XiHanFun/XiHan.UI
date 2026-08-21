@@ -56,38 +56,38 @@ const expanded = ref<string[]>(["docs"]);
     <XhTreeSelectLabel>文档</XhTreeSelectLabel>
     <XhTreeSelectTrigger>
       <XhTreeSelectValueText />
-      <XhTreeSelectIndicator>▾</XhTreeSelectIndicator>
+      <XhTreeSelectIndicator />
     </XhTreeSelectTrigger>
-    <XhTreeSelectClearTrigger>✕</XhTreeSelectClearTrigger>
+    <XhTreeSelectClearTrigger />
     <XhTreeSelectPositioner>
       <XhTreeSelectContent>
         <XhTreeSelectTree>
           <XhTreeSelectBranch value="docs">
             <XhTreeSelectBranchControl>
-              <XhTreeSelectBranchTrigger>▸</XhTreeSelectBranchTrigger>
+              <XhTreeSelectBranchTrigger />
               <XhTreeSelectBranchText>docs</XhTreeSelectBranchText>
             </XhTreeSelectBranchControl>
             <XhTreeSelectBranchContent>
               <XhTreeSelectItem value="guide">
-                <XhTreeSelectItemIndicator>✓</XhTreeSelectItemIndicator>
+                <XhTreeSelectItemIndicator />
                 <XhTreeSelectItemText>guide.md</XhTreeSelectItemText>
               </XhTreeSelectItem>
               <XhTreeSelectItem value="draft">
-                <XhTreeSelectItemIndicator>✓</XhTreeSelectItemIndicator>
+                <XhTreeSelectItemIndicator />
                 <XhTreeSelectItemText>draft.md（禁用）</XhTreeSelectItemText>
               </XhTreeSelectItem>
               <XhTreeSelectBranch value="i18n">
                 <XhTreeSelectBranchControl>
-                  <XhTreeSelectBranchTrigger>▸</XhTreeSelectBranchTrigger>
+                  <XhTreeSelectBranchTrigger />
                   <XhTreeSelectBranchText>i18n</XhTreeSelectBranchText>
                 </XhTreeSelectBranchControl>
                 <XhTreeSelectBranchContent>
                   <XhTreeSelectItem value="zh">
-                    <XhTreeSelectItemIndicator>✓</XhTreeSelectItemIndicator>
+                    <XhTreeSelectItemIndicator />
                     <XhTreeSelectItemText>zh-CN.md</XhTreeSelectItemText>
                   </XhTreeSelectItem>
                   <XhTreeSelectItem value="en">
-                    <XhTreeSelectItemIndicator>✓</XhTreeSelectItemIndicator>
+                    <XhTreeSelectItemIndicator />
                     <XhTreeSelectItemText>en-US.md</XhTreeSelectItemText>
                   </XhTreeSelectItem>
                 </XhTreeSelectBranchContent>

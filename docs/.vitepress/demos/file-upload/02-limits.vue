@@ -65,7 +65,7 @@ const translations = {
           <XhFileUploadItemPreview />
           <XhFileUploadItemName />
           <XhFileUploadItemSizeText />
-          <XhFileUploadItemDeleteTrigger>✕</XhFileUploadItemDeleteTrigger>
+          <XhFileUploadItemDeleteTrigger />
         </XhFileUploadItem>
       </XhFileUploadItemGroup>
       <!-- 列表为空时清空按钮带原生 disabled，Tab 停都停不上去 -->

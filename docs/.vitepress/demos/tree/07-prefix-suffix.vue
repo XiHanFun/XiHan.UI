@@ -47,7 +47,7 @@ function rename(label: string): void {
             <span aria-hidden="true">📁</span>
             <XhTreeBranchText>{{ dir.label }}</XhTreeBranchText>
             <!-- 指示器不带点击语义，展开态转 90° 全靠皮肤读 data-state -->
-            <XhTreeBranchIndicator>›</XhTreeBranchIndicator>
+            <XhTreeBranchIndicator />
           </XhTreeBranchControl>
           <XhTreeBranchContent>
             <XhTreeItem v-for="file in dir.children" :key="file.value" :value="file.value">

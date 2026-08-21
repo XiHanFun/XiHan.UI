@@ -14,9 +14,9 @@ import {
   <XhNumberFieldRoot default-value="1">
     <XhNumberFieldLabel>数量</XhNumberFieldLabel>
     <XhNumberFieldControl>
-      <XhNumberFieldDecrementTrigger>−</XhNumberFieldDecrementTrigger>
+      <XhNumberFieldDecrementTrigger />
       <XhNumberFieldInput />
-      <XhNumberFieldIncrementTrigger>+</XhNumberFieldIncrementTrigger>
+      <XhNumberFieldIncrementTrigger />
     </XhNumberFieldControl>
   </XhNumberFieldRoot>
 </template>

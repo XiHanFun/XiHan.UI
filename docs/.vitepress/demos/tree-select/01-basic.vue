@@ -52,41 +52,41 @@ const doc = ref<string[]>([]);
     <XhTreeSelectLabel>文档</XhTreeSelectLabel>
     <XhTreeSelectTrigger>
       <XhTreeSelectValueText />
-      <XhTreeSelectIndicator>▾</XhTreeSelectIndicator>
+      <XhTreeSelectIndicator />
     </XhTreeSelectTrigger>
     <XhTreeSelectPositioner>
       <XhTreeSelectContent>
         <XhTreeSelectTree>
           <XhTreeSelectBranch value="docs">
             <XhTreeSelectBranchControl>
-              <XhTreeSelectBranchTrigger>▸</XhTreeSelectBranchTrigger>
+              <XhTreeSelectBranchTrigger />
               <XhTreeSelectBranchText>docs</XhTreeSelectBranchText>
             </XhTreeSelectBranchControl>
             <XhTreeSelectBranchContent>
               <XhTreeSelectItem value="guide">
-                <XhTreeSelectItemIndicator>✓</XhTreeSelectItemIndicator>
+                <XhTreeSelectItemIndicator />
                 <XhTreeSelectItemText>guide.md</XhTreeSelectItemText>
               </XhTreeSelectItem>
               <XhTreeSelectItem value="api">
-                <XhTreeSelectItemIndicator>✓</XhTreeSelectItemIndicator>
+                <XhTreeSelectItemIndicator />
                 <XhTreeSelectItemText>api.md</XhTreeSelectItemText>
               </XhTreeSelectItem>
             </XhTreeSelectBranchContent>
           </XhTreeSelectBranch>
           <XhTreeSelectBranch value="assets">
             <XhTreeSelectBranchControl>
-              <XhTreeSelectBranchTrigger>▸</XhTreeSelectBranchTrigger>
+              <XhTreeSelectBranchTrigger />
               <XhTreeSelectBranchText>assets</XhTreeSelectBranchText>
             </XhTreeSelectBranchControl>
             <XhTreeSelectBranchContent>
               <XhTreeSelectItem value="logo">
-                <XhTreeSelectItemIndicator>✓</XhTreeSelectItemIndicator>
+                <XhTreeSelectItemIndicator />
                 <XhTreeSelectItemText>logo.svg</XhTreeSelectItemText>
               </XhTreeSelectItem>
             </XhTreeSelectBranchContent>
           </XhTreeSelectBranch>
           <XhTreeSelectItem value="readme">
-            <XhTreeSelectItemIndicator>✓</XhTreeSelectItemIndicator>
+            <XhTreeSelectItemIndicator />
             <XhTreeSelectItemText>README.md</XhTreeSelectItemText>
           </XhTreeSelectItem>
         </XhTreeSelectTree>

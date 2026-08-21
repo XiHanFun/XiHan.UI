@@ -50,20 +50,20 @@ const selected = ref<string[]>(["hz"]);
       <XhTreeTree>
         <XhTreeBranch value="cn">
           <XhTreeBranchControl>
-            <XhTreeBranchTrigger>▸</XhTreeBranchTrigger>
+            <XhTreeBranchTrigger />
             <XhTreeBranchText>华东</XhTreeBranchText>
           </XhTreeBranchControl>
           <XhTreeBranchContent>
             <XhTreeItem value="sh">
-              <XhTreeItemIndicator>✓</XhTreeItemIndicator>
+              <XhTreeItemIndicator />
               <XhTreeItemText>上海</XhTreeItemText>
             </XhTreeItem>
             <XhTreeItem value="hz">
-              <XhTreeItemIndicator>✓</XhTreeItemIndicator>
+              <XhTreeItemIndicator />
               <XhTreeItemText>杭州</XhTreeItemText>
             </XhTreeItem>
             <XhTreeItem value="nj">
-              <XhTreeItemIndicator>✓</XhTreeItemIndicator>
+              <XhTreeItemIndicator />
               <XhTreeItemText>南京</XhTreeItemText>
             </XhTreeItem>
           </XhTreeBranchContent>
@@ -71,16 +71,16 @@ const selected = ref<string[]>(["hz"]);
 
         <XhTreeBranch value="north">
           <XhTreeBranchControl>
-            <XhTreeBranchTrigger>▸</XhTreeBranchTrigger>
+            <XhTreeBranchTrigger />
             <XhTreeBranchText>华北</XhTreeBranchText>
           </XhTreeBranchControl>
           <XhTreeBranchContent>
             <XhTreeItem value="bj">
-              <XhTreeItemIndicator>✓</XhTreeItemIndicator>
+              <XhTreeItemIndicator />
               <XhTreeItemText>北京</XhTreeItemText>
             </XhTreeItem>
             <XhTreeItem value="tj">
-              <XhTreeItemIndicator>✓</XhTreeItemIndicator>
+              <XhTreeItemIndicator />
               <XhTreeItemText>天津</XhTreeItemText>
             </XhTreeItem>
           </XhTreeBranchContent>

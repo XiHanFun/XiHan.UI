@@ -42,14 +42,14 @@ function blurTrigger(): void {
     <XhSelectLabel>优先级</XhSelectLabel>
     <XhSelectTrigger ref="trigger">
       <XhSelectValueText />
-      <XhSelectIndicator>▾</XhSelectIndicator>
+      <XhSelectIndicator />
     </XhSelectTrigger>
     <XhSelectPositioner>
       <XhSelectContent>
         <XhSelectList>
           <XhSelectItem v-for="l in levels" :key="l.value" :value="l.value">
             <XhSelectItemText>{{ l.label }}</XhSelectItemText>
-            <XhSelectItemIndicator>✓</XhSelectItemIndicator>
+            <XhSelectItemIndicator />
           </XhSelectItem>
         </XhSelectList>
       </XhSelectContent>

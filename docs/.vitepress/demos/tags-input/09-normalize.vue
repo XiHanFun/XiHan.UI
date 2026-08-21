@@ -41,7 +41,7 @@ function onValueChange(details: { value: string[] }) {
       <XhTagsInputItem v-for="t in value" :key="t" :value="t">
         <XhTagsInputItemPreview>
           <XhTagsInputItemText>{{ t }}</XhTagsInputItemText>
-          <XhTagsInputItemDeleteTrigger>×</XhTagsInputItemDeleteTrigger>
+          <XhTagsInputItemDeleteTrigger />
         </XhTagsInputItemPreview>
       </XhTagsInputItem>
       <XhTagsInputInput />

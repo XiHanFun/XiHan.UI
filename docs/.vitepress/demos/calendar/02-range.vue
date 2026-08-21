@@ -36,9 +36,9 @@ const text = computed(() => {
     style="max-inline-size: 280px"
   >
     <XhCalendarHeader>
-      <XhCalendarPrevTrigger aria-label="上个月">‹</XhCalendarPrevTrigger>
+      <XhCalendarPrevTrigger aria-label="上个月" />
       <XhCalendarHeading />
-      <XhCalendarNextTrigger aria-label="下个月">›</XhCalendarNextTrigger>
+      <XhCalendarNextTrigger aria-label="下个月" />
     </XhCalendarHeader>
     <XhCalendarGrid>
       <XhCalendarGridHead>

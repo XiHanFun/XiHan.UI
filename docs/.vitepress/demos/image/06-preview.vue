@@ -96,7 +96,7 @@ const itemStyle = {
         </XhToolbarItem>
       </XhToolbarRoot>
 
-      <XhDialogCloseTrigger>✕</XhDialogCloseTrigger>
+      <XhDialogCloseTrigger />
     </XhDialogContent>
   </XhDialogRoot>
 </template>

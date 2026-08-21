@@ -52,14 +52,14 @@ function onScroll(event: Event): void {
     <XhSelectLabel>工单</XhSelectLabel>
     <XhSelectTrigger>
       <XhSelectValueText />
-      <XhSelectIndicator>▾</XhSelectIndicator>
+      <XhSelectIndicator />
     </XhSelectTrigger>
     <XhSelectPositioner>
       <XhSelectContent @scroll="onScroll">
         <XhSelectList>
           <XhSelectItem v-for="t in tickets" :key="t.value" :value="t.value">
             <XhSelectItemText>{{ t.label }}</XhSelectItemText>
-            <XhSelectItemIndicator>✓</XhSelectItemIndicator>
+            <XhSelectItemIndicator />
           </XhSelectItem>
           <XhSelectItem v-if="loading" value="loading" disabled>
             <XhSelectItemText>加载中…</XhSelectItemText>

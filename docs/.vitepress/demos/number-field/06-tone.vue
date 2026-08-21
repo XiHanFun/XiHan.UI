@@ -17,9 +17,9 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
     <XhNumberFieldRoot v-for="t in tones" :key="t" variant="outline" :tone="t" default-value="1">
       <XhNumberFieldLabel>{{ t }}</XhNumberFieldLabel>
       <XhNumberFieldControl>
-        <XhNumberFieldDecrementTrigger>−</XhNumberFieldDecrementTrigger>
+        <XhNumberFieldDecrementTrigger />
         <XhNumberFieldInput />
-        <XhNumberFieldIncrementTrigger>+</XhNumberFieldIncrementTrigger>
+        <XhNumberFieldIncrementTrigger />
       </XhNumberFieldControl>
     </XhNumberFieldRoot>
   </div>

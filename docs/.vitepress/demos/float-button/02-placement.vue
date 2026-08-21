@@ -30,7 +30,7 @@ const placement = ref<(typeof placements)[number]>("bottom-end");
         :offset="16"
         default-open
       >
-        <XhFloatButtonTrigger>＋</XhFloatButtonTrigger>
+        <XhFloatButtonTrigger />
         <XhFloatButtonList>
           <button type="button" title="编辑">✎</button>
           <button type="button" title="分享">↗</button>

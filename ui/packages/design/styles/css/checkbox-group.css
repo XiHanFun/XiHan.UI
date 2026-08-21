@@ -116,17 +116,38 @@
 
   /* 勾号由皮肤补，作者不必自己往 indicator 里塞字符 */
   [data-scope='checkbox-group'][data-part='indicator'][data-state='checked']:empty::before {
-    content: var(--xh-glyph-mark-check);
+    content: '';
+    display: inline-block;
+    inline-size: 1em;
+    block-size: 1em;
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-check) center / contain no-repeat;
   }
 
   /* 全选格的三态：all 打勾、some 打横杠、none 留空。
      some 就是读屏听到的 aria-checked=mixed，两者同源，样式只认 data-state */
   [data-scope='checkbox-group'][data-part='trigger'][data-state='all']::before {
-    content: var(--xh-glyph-mark-check);
+    content: '';
+    display: inline-block;
+    inline-size: 1em;
+    block-size: 1em;
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-check) center / contain no-repeat;
   }
 
   [data-scope='checkbox-group'][data-part='trigger'][data-state='some']::before {
-    content: var(--xh-glyph-mark-minus);
+    content: '';
+    display: inline-block;
+    inline-size: 1em;
+    block-size: 1em;
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
   }
 
   /* 校验失败标在每个方框上：root 上的 data-invalid 是唯一出处，条目自己不带这个属性 */

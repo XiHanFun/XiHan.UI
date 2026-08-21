@@ -53,7 +53,7 @@ const size = ref("md");
         :translations="{ trigger: '回到顶部' }"
         style="position: absolute; --xh-back-top-inset-block: 12px; --xh-back-top-inset-inline: 12px"
       >
-        <XhBackTopTrigger>↑</XhBackTopTrigger>
+        <XhBackTopTrigger />
       </XhBackTopRoot>
     </div>
   </div>

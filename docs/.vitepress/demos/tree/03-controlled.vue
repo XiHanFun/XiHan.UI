@@ -62,16 +62,16 @@ function onSelectionChange(details: { value: string[] }) {
       <XhTreeTree>
         <XhTreeBranch value="api">
           <XhTreeBranchControl>
-            <XhTreeBranchTrigger>▸</XhTreeBranchTrigger>
+            <XhTreeBranchTrigger />
             <XhTreeBranchText>接口</XhTreeBranchText>
           </XhTreeBranchControl>
           <XhTreeBranchContent>
             <XhTreeItem value="auth">
-              <XhTreeItemIndicator>✓</XhTreeItemIndicator>
+              <XhTreeItemIndicator />
               <XhTreeItemText>鉴权</XhTreeItemText>
             </XhTreeItem>
             <XhTreeItem value="user">
-              <XhTreeItemIndicator>✓</XhTreeItemIndicator>
+              <XhTreeItemIndicator />
               <XhTreeItemText>用户</XhTreeItemText>
             </XhTreeItem>
           </XhTreeBranchContent>
@@ -79,12 +79,12 @@ function onSelectionChange(details: { value: string[] }) {
 
         <XhTreeBranch value="guide">
           <XhTreeBranchControl>
-            <XhTreeBranchTrigger>▸</XhTreeBranchTrigger>
+            <XhTreeBranchTrigger />
             <XhTreeBranchText>指南</XhTreeBranchText>
           </XhTreeBranchControl>
           <XhTreeBranchContent>
             <XhTreeItem value="start">
-              <XhTreeItemIndicator>✓</XhTreeItemIndicator>
+              <XhTreeItemIndicator />
               <XhTreeItemText>快速开始</XhTreeItemText>
             </XhTreeItem>
           </XhTreeBranchContent>

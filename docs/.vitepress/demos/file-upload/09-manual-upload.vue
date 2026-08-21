@@ -70,7 +70,7 @@ function upload(request: FileUploadRequest): Promise<FileUploadResult> {
             <XhButton size="sm" variant="outline" @click="startUpload(file)">重试</XhButton>
           </template>
         </template>
-        <XhFileUploadItemDeleteTrigger>✕</XhFileUploadItemDeleteTrigger>
+        <XhFileUploadItemDeleteTrigger />
       </XhFileUploadItem>
     </XhFileUploadItemGroup>
   </XhFileUploadRoot>

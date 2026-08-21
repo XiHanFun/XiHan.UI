@@ -20,7 +20,7 @@ import {
         面板贴住右边，这是 side 的默认值。
       </XhDrawerDescription>
       <XhButton variant="solid" @click="setOpen(false)">应用并关闭</XhButton>
-      <XhDrawerCloseTrigger>✕</XhDrawerCloseTrigger>
+      <XhDrawerCloseTrigger />
     </XhDrawerContent>
   </XhDrawerRoot>
 </template>

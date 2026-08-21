@@ -52,14 +52,14 @@ function onSubmit(event: Event): void {
       <XhComboboxLabel>常驻城市</XhComboboxLabel>
       <XhComboboxControl>
         <XhComboboxInput />
-        <XhComboboxTrigger>▾</XhComboboxTrigger>
-        <XhComboboxClearTrigger>✕</XhComboboxClearTrigger>
+        <XhComboboxTrigger />
+        <XhComboboxClearTrigger />
       </XhComboboxControl>
       <XhComboboxPositioner>
         <XhComboboxContent>
           <XhComboboxItem v-for="c in filtered" :key="c.value" :value="c.value">
             <XhComboboxItemText>{{ c.label }}</XhComboboxItemText>
-            <XhComboboxItemIndicator>✓</XhComboboxItemIndicator>
+            <XhComboboxItemIndicator />
           </XhComboboxItem>
         </XhComboboxContent>
         <XhComboboxEmpty>无匹配城市</XhComboboxEmpty>

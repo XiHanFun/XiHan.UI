@@ -55,7 +55,7 @@ const collapsed = ref(false);
           <XhSideNavBranchTrigger>
             <span aria-hidden="true">▦</span>
             <XhSideNavBranchText>{{ branch.label }}</XhSideNavBranchText>
-            <XhSideNavBranchIndicator>›</XhSideNavBranchIndicator>
+            <XhSideNavBranchIndicator />
           </XhSideNavBranchTrigger>
           <XhSideNavBranchContent>
             <XhSideNavLink v-for="leaf in branch.children" :key="leaf.value" :value="leaf.value">

@@ -49,7 +49,7 @@ const value = ref<string | null>("user-list");
       <XhSideNavBranch v-for="branch in collection.filter((n) => n.children)" :key="branch.value" :value="branch.value">
         <XhSideNavBranchTrigger>
           <XhSideNavBranchText>{{ branch.label }}</XhSideNavBranchText>
-          <XhSideNavBranchIndicator>›</XhSideNavBranchIndicator>
+          <XhSideNavBranchIndicator />
         </XhSideNavBranchTrigger>
         <XhSideNavBranchContent>
           <XhSideNavLink v-for="leaf in branch.children" :key="leaf.value" :value="leaf.value">

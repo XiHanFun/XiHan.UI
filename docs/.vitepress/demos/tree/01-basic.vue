@@ -52,28 +52,28 @@ const collection = [
     <XhTreeTree>
       <XhTreeBranch value="src">
         <XhTreeBranchControl>
-          <XhTreeBranchTrigger>▸</XhTreeBranchTrigger>
+          <XhTreeBranchTrigger />
           <XhTreeBranchText>src</XhTreeBranchText>
         </XhTreeBranchControl>
         <XhTreeBranchContent>
           <XhTreeBranch value="components">
             <XhTreeBranchControl>
-              <XhTreeBranchTrigger>▸</XhTreeBranchTrigger>
+              <XhTreeBranchTrigger />
               <XhTreeBranchText>components</XhTreeBranchText>
             </XhTreeBranchControl>
             <XhTreeBranchContent>
               <XhTreeItem value="button">
-                <XhTreeItemIndicator>✓</XhTreeItemIndicator>
+                <XhTreeItemIndicator />
                 <XhTreeItemText>Button.vue</XhTreeItemText>
               </XhTreeItem>
               <XhTreeItem value="dialog">
-                <XhTreeItemIndicator>✓</XhTreeItemIndicator>
+                <XhTreeItemIndicator />
                 <XhTreeItemText>Dialog.vue</XhTreeItemText>
               </XhTreeItem>
             </XhTreeBranchContent>
           </XhTreeBranch>
           <XhTreeItem value="main">
-            <XhTreeItemIndicator>✓</XhTreeItemIndicator>
+            <XhTreeItemIndicator />
             <XhTreeItemText>main.ts</XhTreeItemText>
           </XhTreeItem>
         </XhTreeBranchContent>
@@ -81,23 +81,23 @@ const collection = [
 
       <XhTreeBranch value="docs">
         <XhTreeBranchControl>
-          <XhTreeBranchTrigger>▸</XhTreeBranchTrigger>
+          <XhTreeBranchTrigger />
           <XhTreeBranchText>docs</XhTreeBranchText>
         </XhTreeBranchControl>
         <XhTreeBranchContent>
           <XhTreeItem value="guide">
-            <XhTreeItemIndicator>✓</XhTreeItemIndicator>
+            <XhTreeItemIndicator />
             <XhTreeItemText>guide.md</XhTreeItemText>
           </XhTreeItem>
           <XhTreeItem value="api">
-            <XhTreeItemIndicator>✓</XhTreeItemIndicator>
+            <XhTreeItemIndicator />
             <XhTreeItemText>api.md</XhTreeItemText>
           </XhTreeItem>
         </XhTreeBranchContent>
       </XhTreeBranch>
 
       <XhTreeItem value="readme">
-        <XhTreeItemIndicator>✓</XhTreeItemIndicator>
+        <XhTreeItemIndicator />
         <XhTreeItemText>README.md</XhTreeItemText>
       </XhTreeItem>
     </XhTreeTree>

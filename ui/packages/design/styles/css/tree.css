@@ -132,12 +132,26 @@
   /* 没写内容就由皮肤画；作者往把手里塞了自己的图形，这条规则即不命中 */
   [data-scope='tree'][data-part='item-checkbox'][data-selected]:empty::before,
   [data-scope='tree'][data-part='branch-checkbox'][data-selected]:empty::before {
-    content: var(--xh-glyph-mark-check);
+    content: '';
+    display: inline-block;
+    inline-size: 1em;
+    block-size: 1em;
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-check) center / contain no-repeat;
   }
 
   [data-scope='tree'][data-part='item-checkbox'][data-indeterminate]:not([data-selected]):empty::before,
   [data-scope='tree'][data-part='branch-checkbox'][data-indeterminate]:not([data-selected]):empty::before {
-    content: var(--xh-glyph-mark-minus);
+    content: '';
+    display: inline-block;
+    inline-size: 1em;
+    block-size: 1em;
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
   }
 
   [data-scope='tree'][data-part='item-checkbox'][data-disabled],
@@ -251,5 +265,29 @@
   /* 收起态的唯一开关：display 会盖掉 hidden 属性的 UA 规则，漏了这条整棵子树就收不起来 */
   [data-scope='tree'][data-part='branch-content'][hidden] {
     display: none;
+  }
+
+  /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
+  [data-scope='tree'][data-part='branch-trigger']:empty::before,
+  [data-scope='tree'][data-part='branch-indicator']:empty::before {
+    content: '';
+    display: inline-block;
+    inline-size: 1em;
+    block-size: 1em;
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
+  }
+
+  [data-scope='tree'][data-part='item-indicator']:empty::before {
+    content: '';
+    display: inline-block;
+    inline-size: 1em;
+    block-size: 1em;
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-check) center / contain no-repeat;
   }
 }

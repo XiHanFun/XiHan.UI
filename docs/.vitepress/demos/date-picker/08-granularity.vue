@@ -70,7 +70,7 @@ const values = ref<Record<string, string[]>>({
             <span v-if="seg.type === 'week'">周</span>
           </template>
         </XhDatePickerInput>
-        <XhDatePickerClearTrigger>✕</XhDatePickerClearTrigger>
+        <XhDatePickerClearTrigger />
       </XhDatePickerControl>
       <XhDatePickerPositioner>
         <XhDatePickerContent>
@@ -78,14 +78,14 @@ const values = ref<Record<string, string[]>>({
             <XhDatePickerHeader>
               <!-- « 与 » 走大步：日视图一年，粗粒度视图十页 -->
               <XhDatePickerPrevYearTrigger aria-label="快退">«</XhDatePickerPrevYearTrigger>
-              <XhDatePickerPrevTrigger aria-label="上一页">‹</XhDatePickerPrevTrigger>
+              <XhDatePickerPrevTrigger aria-label="上一页" />
               <XhDatePickerHeading :index="panel.index">
                 <!-- 年与月各是一个钮：点年进十年格、点月进月格；到顶那一截自动按不动，
                      没有的那一截自动收起 -->
                 <XhDatePickerHeadingYearTrigger :index="panel.index" />
                 <XhDatePickerHeadingMonthTrigger :index="panel.index" />
               </XhDatePickerHeading>
-              <XhDatePickerNextTrigger aria-label="下一页">›</XhDatePickerNextTrigger>
+              <XhDatePickerNextTrigger aria-label="下一页" />
               <XhDatePickerNextYearTrigger aria-label="快进">»</XhDatePickerNextYearTrigger>
             </XhDatePickerHeader>
             <XhDatePickerGrid :index="panel.index">

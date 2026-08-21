@@ -48,14 +48,14 @@ const files = [
     <XhTreeSelectLabel>文档</XhTreeSelectLabel>
     <XhTreeSelectTrigger>
       <XhTreeSelectValueText />
-      <XhTreeSelectIndicator>▾</XhTreeSelectIndicator>
+      <XhTreeSelectIndicator />
     </XhTreeSelectTrigger>
     <XhTreeSelectPositioner>
       <XhTreeSelectContent>
         <XhTreeSelectTree>
           <XhTreeSelectBranch v-for="dir in files" :key="dir.value" :value="dir.value">
             <XhTreeSelectBranchControl>
-              <XhTreeSelectBranchTrigger>▸</XhTreeSelectBranchTrigger>
+              <XhTreeSelectBranchTrigger />
               <XhTreeSelectBranchText>{{ dir.label }}</XhTreeSelectBranchText>
             </XhTreeSelectBranchControl>
             <XhTreeSelectBranchContent>
@@ -64,7 +64,7 @@ const files = [
                 :key="file.value"
                 :value="file.value"
               >
-                <XhTreeSelectItemIndicator>✓</XhTreeSelectItemIndicator>
+                <XhTreeSelectItemIndicator />
                 <XhTreeSelectItemText>{{ file.label }}</XhTreeSelectItemText>
               </XhTreeSelectItem>
             </XhTreeSelectBranchContent>

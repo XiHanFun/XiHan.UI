@@ -30,8 +30,8 @@ function commit() {
     <XhNumberFieldLabel>数量</XhNumberFieldLabel>
     <XhNumberFieldControl>
       <XhNumberFieldInput @blur="commit" @keydown.enter="commit" />
-      <XhNumberFieldDecrementTrigger>−</XhNumberFieldDecrementTrigger>
-      <XhNumberFieldIncrementTrigger>+</XhNumberFieldIncrementTrigger>
+      <XhNumberFieldDecrementTrigger />
+      <XhNumberFieldIncrementTrigger />
     </XhNumberFieldControl>
     <span>草稿：{{ draft || "（空）" }} · 已提交：{{ model }}</span>
   </XhNumberFieldRoot>

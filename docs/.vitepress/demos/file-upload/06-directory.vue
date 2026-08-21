@@ -32,7 +32,7 @@ const noLimit = Number.POSITIVE_INFINITY;
         <XhFileUploadItem v-for="file in acceptedFiles" :key="file" :file="file">
           <XhFileUploadItemName />
           <XhFileUploadItemSizeText />
-          <XhFileUploadItemDeleteTrigger>✕</XhFileUploadItemDeleteTrigger>
+          <XhFileUploadItemDeleteTrigger />
         </XhFileUploadItem>
       </XhFileUploadItemGroup>
     </XhFileUploadRoot>

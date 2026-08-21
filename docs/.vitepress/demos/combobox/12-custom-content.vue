@@ -41,8 +41,8 @@ const filtered = computed(() => {
     <XhComboboxLabel>邮箱</XhComboboxLabel>
     <XhComboboxControl>
       <XhComboboxInput />
-      <XhComboboxTrigger>▾</XhComboboxTrigger>
-      <XhComboboxClearTrigger>✕</XhComboboxClearTrigger>
+      <XhComboboxTrigger />
+      <XhComboboxClearTrigger />
     </XhComboboxControl>
     <XhComboboxPositioner>
       <XhComboboxContent>
@@ -53,7 +53,7 @@ const filtered = computed(() => {
               <XhBadge variant="subtle" :tone="m.tone" size="sm">{{ m.note }}</XhBadge>
             </span>
           </XhComboboxItemText>
-          <XhComboboxItemIndicator>✓</XhComboboxItemIndicator>
+          <XhComboboxItemIndicator />
         </XhComboboxItem>
       </XhComboboxContent>
       <XhComboboxEmpty>没有匹配的邮箱</XhComboboxEmpty>

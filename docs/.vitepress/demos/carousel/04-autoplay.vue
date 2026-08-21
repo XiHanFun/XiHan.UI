@@ -20,7 +20,7 @@ const slides = ["公告一", "公告二", "公告三"];
     loop
     style="inline-size: 100%"
   >
-    <XhCarouselPrevTrigger>‹</XhCarouselPrevTrigger>
+    <XhCarouselPrevTrigger />
     <XhCarouselViewport style="block-size: 120px">
       <XhCarouselItemGroup>
         <XhCarouselItem v-for="(text, i) in slides" :key="text" :index="i">
@@ -30,7 +30,7 @@ const slides = ["公告一", "公告二", "公告三"];
         </XhCarouselItem>
       </XhCarouselItemGroup>
     </XhCarouselViewport>
-    <XhCarouselNextTrigger>›</XhCarouselNextTrigger>
+    <XhCarouselNextTrigger />
     <!-- root 自己就是会换行的横排 flex，回显想独占一行得自己占满 -->
     <span style="flex-basis: 100%">
       第 {{ page + 1 }} / {{ totalPages }} 页 ·

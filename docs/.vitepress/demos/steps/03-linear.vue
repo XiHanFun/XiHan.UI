@@ -25,7 +25,7 @@ const steps = ["实名认证", "绑定银行卡", "签署协议"];
     <XhStepsList>
       <XhStepsItem v-for="(s, i) in steps" :key="s" :value="i">
         <XhStepsTrigger>
-          <XhStepsIndicator>{{ step > i ? "✓" : i + 1 }}</XhStepsIndicator>
+          <XhStepsIndicator>{{ step > i ? "" : i + 1 }}</XhStepsIndicator>
           <XhStepsTitle>{{ s }}</XhStepsTitle>
         </XhStepsTrigger>
         <XhStepsSeparator />

@@ -36,7 +36,7 @@ const clauses = Array.from({ length: 16 }, (_, i) => `第 ${i + 1} 条 条款正
         <XhButton variant="ghost" @click="setOpen(false)">再看看</XhButton>
         <XhButton variant="solid" @click="setOpen(false)">同意</XhButton>
       </div>
-      <XhDialogCloseTrigger>✕</XhDialogCloseTrigger>
+      <XhDialogCloseTrigger />
     </XhDialogContent>
   </XhDialogRoot>
 </template>

@@ -20,7 +20,7 @@ const slides = ["第一张", "第二张", "第三张"];
     :slide-count="slides.length"
     style="inline-size: 100%"
   >
-    <XhCarouselPrevTrigger>‹</XhCarouselPrevTrigger>
+    <XhCarouselPrevTrigger />
     <!-- 视口只负责裁切，高度由页面给：不给高度就没有可裁的窗口 -->
     <XhCarouselViewport style="block-size: 140px">
       <XhCarouselItemGroup>
@@ -31,7 +31,7 @@ const slides = ["第一张", "第二张", "第三张"];
         </XhCarouselItem>
       </XhCarouselItemGroup>
     </XhCarouselViewport>
-    <XhCarouselNextTrigger>›</XhCarouselNextTrigger>
+    <XhCarouselNextTrigger />
     <XhCarouselIndicatorGroup>
       <!-- 指示点一页一个，作者照着 totalPages 渲染 -->
       <XhCarouselIndicator v-for="p in totalPages" :key="p" :index="p - 1" />

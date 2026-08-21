@@ -220,17 +220,38 @@
      底下两处（全选格的两态）不带这条守卫：那里的 ::before 是方框本身，
      而触发器里装的是全选那行文字，:empty 恒不命中，加了勾号会整个消失 */
   [data-scope='transfer'][data-part='item-checkbox'][data-state='checked']:empty::before {
-    content: var(--xh-glyph-mark-check);
+    content: '';
+    display: inline-block;
+    inline-size: 1em;
+    block-size: 1em;
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-check) center / contain no-repeat;
   }
 
   /* 全选格的三态：all 打勾、some 打横杠、none 留空。
      some 就是读屏听到的 aria-checked=mixed，两者同源，样式只认 data-state */
   [data-scope='transfer'][data-part='select-all-trigger'][data-state='all']::before {
-    content: var(--xh-glyph-mark-check);
+    content: '';
+    display: inline-block;
+    inline-size: 1em;
+    block-size: 1em;
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-check) center / contain no-repeat;
   }
 
   [data-scope='transfer'][data-part='select-all-trigger'][data-state='some']::before {
-    content: var(--xh-glyph-mark-minus);
+    content: '';
+    display: inline-block;
+    inline-size: 1em;
+    block-size: 1em;
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
   }
 
   [data-scope='transfer'][data-part='item-checkbox'][data-disabled] {
@@ -323,5 +344,28 @@
   [data-scope='transfer'][data-part='to-target-trigger'][hidden],
   [data-scope='transfer'][data-part='to-source-trigger'][hidden] {
     display: none;
+  }
+
+  /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
+  [data-scope='transfer'][data-part='to-source-trigger']:empty::before {
+    content: '';
+    display: inline-block;
+    inline-size: 1em;
+    block-size: 1em;
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-chevron-left) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-chevron-left) center / contain no-repeat;
+  }
+
+  [data-scope='transfer'][data-part='to-target-trigger']:empty::before {
+    content: '';
+    display: inline-block;
+    inline-size: 1em;
+    block-size: 1em;
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
   }
 }

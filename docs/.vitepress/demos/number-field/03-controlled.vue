@@ -23,9 +23,9 @@ const asNumber = ref(3);
   >
     <XhNumberFieldLabel>数量</XhNumberFieldLabel>
     <XhNumberFieldControl>
-      <XhNumberFieldDecrementTrigger>−</XhNumberFieldDecrementTrigger>
+      <XhNumberFieldDecrementTrigger />
       <XhNumberFieldInput />
-      <XhNumberFieldIncrementTrigger>+</XhNumberFieldIncrementTrigger>
+      <XhNumberFieldIncrementTrigger />
     </XhNumberFieldControl>
   </XhNumberFieldRoot>
   <span>输入串：{{ qty === "" ? "（空）" : qty }} · 数值：{{ asNumber }}</span>

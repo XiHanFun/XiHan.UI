@@ -100,7 +100,7 @@ function onOpenChange(details: { open: boolean }): void {
     <XhTreeSelectLabel>投放城市</XhTreeSelectLabel>
     <XhTreeSelectTrigger>
       <XhTreeSelectValueText />
-      <XhTreeSelectIndicator>▾</XhTreeSelectIndicator>
+      <XhTreeSelectIndicator />
     </XhTreeSelectTrigger>
     <XhTreeSelectPositioner>
       <XhTreeSelectContent>
@@ -119,7 +119,7 @@ function onOpenChange(details: { open: boolean }): void {
             :value="region.value"
           >
             <XhTreeSelectBranchControl>
-              <XhTreeSelectBranchTrigger>▸</XhTreeSelectBranchTrigger>
+              <XhTreeSelectBranchTrigger />
               <XhTreeSelectBranchText>{{ region.label }}</XhTreeSelectBranchText>
             </XhTreeSelectBranchControl>
             <XhTreeSelectBranchContent>
@@ -128,7 +128,7 @@ function onOpenChange(details: { open: boolean }): void {
                 :key="city.value"
                 :value="city.value"
               >
-                <XhTreeSelectItemIndicator>✓</XhTreeSelectItemIndicator>
+                <XhTreeSelectItemIndicator />
                 <XhTreeSelectItemText>{{ city.label }}</XhTreeSelectItemText>
               </XhTreeSelectItem>
             </XhTreeSelectBranchContent>

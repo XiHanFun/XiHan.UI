@@ -48,7 +48,7 @@ const selection = ref<string[] | "all">(["u2"]);
         <XhTableRow>
           <XhTableColumnHeader value="select">
             <!-- 全选把手是三态的唯一载体，自己占一个 Tab 位 -->
-            <XhTableSelectAllTrigger>✓</XhTableSelectAllTrigger>
+            <XhTableSelectAllTrigger />
           </XhTableColumnHeader>
           <XhTableColumnHeader value="name">姓名</XhTableColumnHeader>
           <XhTableColumnHeader value="dept">部门</XhTableColumnHeader>
@@ -57,7 +57,7 @@ const selection = ref<string[] | "all">(["u2"]);
       <XhTableBody>
         <XhTableRow v-for="m in members" :key="m.id" :value="m.id">
           <XhTableCell value="select">
-            <XhTableRowSelectTrigger>✓</XhTableRowSelectTrigger>
+            <XhTableRowSelectTrigger />
           </XhTableCell>
           <XhTableCell value="name">{{ m.name }}</XhTableCell>
           <XhTableCell value="dept">{{ m.dept }}</XhTableCell>

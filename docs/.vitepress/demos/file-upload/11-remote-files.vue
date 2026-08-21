@@ -42,7 +42,7 @@ const remoteFiles = ref<FileUploadRemoteFile[]>([
         <XhFileUploadItemName />
         <XhFileUploadItemSizeText />
         <a v-if="'url' in file && file.url" :href="file.url" target="_blank" rel="noreferrer">查看</a>
-        <XhFileUploadItemDeleteTrigger>✕</XhFileUploadItemDeleteTrigger>
+        <XhFileUploadItemDeleteTrigger />
       </XhFileUploadItem>
     </XhFileUploadItemGroup>
   </XhFileUploadRoot>

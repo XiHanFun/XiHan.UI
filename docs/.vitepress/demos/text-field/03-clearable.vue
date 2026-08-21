@@ -19,7 +19,7 @@ import {
     <XhTextFieldLabel>昵称</XhTextFieldLabel>
     <div style="display: flex; gap: 4px">
       <XhTextFieldInput style="inline-size: 200px" />
-      <XhTextFieldClearTrigger>✕</XhTextFieldClearTrigger>
+      <XhTextFieldClearTrigger />
     </div>
     <span>{{ value.length }} / 10{{ atLimit ? "（已到上限）" : "" }}</span>
   </XhTextFieldRoot>

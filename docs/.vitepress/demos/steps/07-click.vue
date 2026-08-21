@@ -32,7 +32,7 @@ const current = ref(0);
           :disabled="s.disabled"
         >
           <XhStepsTrigger>
-            <XhStepsIndicator>{{ current > i ? "✓" : i + 1 }}</XhStepsIndicator>
+            <XhStepsIndicator>{{ current > i ? "" : i + 1 }}</XhStepsIndicator>
             <XhStepsTitle>{{ s.title }}</XhStepsTitle>
           </XhStepsTrigger>
           <XhStepsSeparator />

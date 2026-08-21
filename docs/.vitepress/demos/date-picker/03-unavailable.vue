@@ -49,15 +49,15 @@ function isWeekend(iso: string) {
         <span>-</span>
         <XhDatePickerSegment :index="2" />
       </XhDatePickerInput>
-      <XhDatePickerClearTrigger>✕</XhDatePickerClearTrigger>
+      <XhDatePickerClearTrigger />
     </XhDatePickerControl>
     <XhDatePickerPositioner>
       <XhDatePickerContent>
         <XhDatePickerCalendar>
           <XhDatePickerHeader>
-            <XhDatePickerPrevTrigger aria-label="上个月">‹</XhDatePickerPrevTrigger>
+            <XhDatePickerPrevTrigger aria-label="上个月" />
             <XhDatePickerHeading />
-            <XhDatePickerNextTrigger aria-label="下个月">›</XhDatePickerNextTrigger>
+            <XhDatePickerNextTrigger aria-label="下个月" />
           </XhDatePickerHeader>
           <XhDatePickerGrid>
             <XhDatePickerGridHead>

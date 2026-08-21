@@ -70,7 +70,7 @@ function defaultToast(
       h(XhToastTitle),
     ]),
     toast.description ? h(XhToastDescription) : null,
-    toast.closable !== false ? h(XhToastCloseTrigger, () => '✕') : null,
+    toast.closable !== false ? h(XhToastCloseTrigger) : null,
   ])
 }
 

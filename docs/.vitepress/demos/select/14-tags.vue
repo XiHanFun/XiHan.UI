@@ -47,14 +47,14 @@ const picked = ref<string[]>(["vue", "svelte", "solid"]);
           +{{ overflowCount }}
         </span>
       </span>
-      <XhSelectIndicator>▾</XhSelectIndicator>
+      <XhSelectIndicator />
     </XhSelectTrigger>
     <XhSelectPositioner>
       <XhSelectContent>
         <XhSelectList>
           <XhSelectItem v-for="o in options" :key="o.value" :value="o.value">
             <XhSelectItemText>{{ o.label }}</XhSelectItemText>
-            <XhSelectItemIndicator>✓</XhSelectItemIndicator>
+            <XhSelectItemIndicator />
           </XhSelectItem>
         </XhSelectList>
       </XhSelectContent>
@@ -63,7 +63,7 @@ const picked = ref<string[]>(["vue", "svelte", "solid"]);
     <div style="display: flex; flex-wrap: wrap; gap: 4px; margin-block-start: 6px">
       <XhSelectTag v-for="v in picked" :key="v" :value="v">
         {{ options.find((o) => o.value === v)?.label ?? v }}
-        <XhSelectTagRemove>✕</XhSelectTagRemove>
+        <XhSelectTagRemove />
       </XhSelectTag>
     </div>
   </XhSelectRoot>

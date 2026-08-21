@@ -21,9 +21,9 @@ import {
   >
     <XhNumberFieldLabel>数量（0 – 20，每档 2）</XhNumberFieldLabel>
     <XhNumberFieldControl>
-      <XhNumberFieldDecrementTrigger>−</XhNumberFieldDecrementTrigger>
+      <XhNumberFieldDecrementTrigger />
       <XhNumberFieldInput />
-      <XhNumberFieldIncrementTrigger>+</XhNumberFieldIncrementTrigger>
+      <XhNumberFieldIncrementTrigger />
     </XhNumberFieldControl>
     <span>
       数值：{{ Number.isNaN(valueAsNumber) ? "（空）" : valueAsNumber }} ·

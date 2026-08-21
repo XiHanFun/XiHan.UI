@@ -16,38 +16,37 @@ import { ArrowDownIcon } from '@xihan-ui/icons'
 
 ## 组件自带的兜底字形
 
-作者什么都不往指示器里塞时，皮肤会替他画一个：多选框里的勾、下拉框的箭头、表头的排序方向。这些字形不再散在各份皮肤里各写一遍，而是收在一族令牌上，改一处全库跟着走：
+作者什么都不往部件里塞时，皮肤会替他画一个：多选框里的勾、下拉框的箭头、清空钮的叉、表头的排序方向、树的展开把手、数字框的加减号。这些图形不是字符，是图标包里对应的那枚 SVG：令牌 `--xh-glyph-mark-*` 的取值是 `url("data:image/svg+xml,…")`，皮肤拿它当 `mask-image`、用 `currentColor` 着色，于是随语气、悬停、禁用自动变色，与你用 `<XhIcon>` 画出来的一模一样。
 
-| 令牌 | 缺省 | 用在哪 |
+| 令牌 | 取自 | 用在哪 |
 | --- | --- | --- |
-| `--xh-glyph-mark-check` | ✓ | cascader · checkbox · checkbox-group · combobox · listbox · popselect · select · transfer · tree |
-| `--xh-glyph-mark-minus` | − | cascader · checkbox-group · transfer · tree 的半选 |
-| `--xh-glyph-mark-caret-down` | ▾ | cascader · combobox · select 的展开箭头 |
-| `--xh-glyph-mark-caret-right` | ▸ | json-viewer 的分支三角 |
-| `--xh-glyph-mark-chevron-down` | ⌄ | accordion 的展开箭头 |
-| `--xh-glyph-mark-close` | ✕ | combobox 的清空钮 |
-| `--xh-glyph-mark-sort` · `-sort-asc` · `-sort-desc` | ↕ ↑ ↓ | table 的排序方向 |
-| `--xh-glyph-mark-required` | * | field · fieldset 的必填星号 |
-
-accordion 与 select 族用的是两种不同的下箭头（细弧的 `⌄` 与实心的 `▾`），这是既有观感、没有动它；想统一成一种，把两个令牌设成同一个值即可。
+| `--xh-glyph-mark-check` | `check` | 各列表族的条目勾、多选框、树、穿梭框、表格勾选把手、步骤条已完成 |
+| `--xh-glyph-mark-minus` | `minus` | 半选横杠；number-field 的减号 |
+| `--xh-glyph-mark-plus` | `plus` | number-field 的加号、悬浮按钮 |
+| `--xh-glyph-mark-close` | `x` | 清空钮、关闭钮、标签与文件条目的删除钮 |
+| `--xh-glyph-mark-chevron-down` · `-up` · `-left` · `-right` | `chevron-*` | 展开箭头、树与侧栏的分支把手、轮播与穿梭框的翻页、回到顶部 |
+| `--xh-glyph-mark-sort` · `-sort-asc` · `-sort-desc` | `arrow-up-down` / `arrow-up` / `arrow-down` | table 的排序方向 |
+| `--xh-glyph-mark-info` · `-warning` | `info` / `triangle-alert` | 命令式 toast / dialog 的类型徽记 |
+| `--xh-glyph-mark-zoom-in` · `-zoom-out` · `-rotate-left` · `-rotate-right` · `-flip-horizontal` · `-flip-vertical` | 同名图标 | image-viewer 的工具条 |
+| `--xh-glyph-mark-required` | `'*'` | field · fieldset 的必填星号（这是文字，不是图标） |
 
 ### 换掉它们
 
-**通道一：改令牌。** 全局改写在 `:root` 上，只改一块就写在那块的容器上——它是普通的自定义属性，跟着 DOM 继承走：
+**通道一：改令牌。** 全局改写在 `:root` 上，只改一块就写在那块的容器上——它是普通的自定义属性，跟着 DOM 继承走。取值是任意一张 SVG 的 `url()`，着色一样走 `currentColor`：
 
 ```css
 :root {
-  --xh-glyph-mark-check: '✔';
+  --xh-glyph-mark-check: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E…%3C/svg%3E");
 }
 
-/* 只有这张表里的排序箭头换成三角 */
+/* 只有这张表里的排序箭头换成实心三角 */
 .report-table {
-  --xh-glyph-mark-sort-asc: '▲';
-  --xh-glyph-mark-sort-desc: '▼';
+  --xh-glyph-mark-sort-asc: url("/icons/caret-up.svg");
+  --xh-glyph-mark-sort-desc: url("/icons/caret-down.svg");
 }
 ```
 
-取值就是 CSS `content` 的取值，所以也可以给一张图：`--xh-glyph-mark-check: url("data:image/svg+xml,…")`。图片不吃 `currentColor`，要让图形跟着语气变色请走通道二。
+遮罩只看图形的不透明度，颜色由部件的 `color` 决定，所以 SVG 里 `fill` / `stroke` 写什么都行。
 
 **通道二：自己放节点。** 往那个部件里写内容，皮肤那条规则就不命中——它带着 `:empty` 守卫：
 
@@ -61,9 +60,12 @@ accordion 与 select 族用的是两种不同的下箭头（细弧的 `⌄` 与�
 <span data-xh-part="item-indicator"><svg data-xh-part="root">…</svg></span>
 ```
 
-有九处只走通道一：checkbox-group 与 transfer 的全选格、table 的排序钮、field 与 fieldset 的必填星号。它们的伪元素要么是方框本身、要么贴在一行文字后面，那个部件里本来就装着别的东西，`:empty` 恒不命中。在这几处要自己接管，把令牌设成 `none` 再把图形放进相应部件。
+注意 `:empty` 连空白文本都不放过：HTML 里要写成 `<span data-xh-part="item-indicator"></span>`，标签之间不留换行。
 
-json-viewer 键名后面那个冒号不在这族里：它是 JSON 这个数据格式的语法字符，不是视觉标记。hotkeys 的 `⌘` `⇧` 键帽、image-viewer 工具条、以及命令式 toast / dialog 默认模板里的字形走的是另一条路——它们由 JS 渲染成文本，各有自己的覆盖口，不受这族令牌影响。
+有几处的部件里本来就装着别的东西，`:empty` 恒不命中，只能走通道一：checkbox-group 与 transfer 的全选格、field 与 fieldset 的必填星号。
+
+json-viewer 键名后面那个冒号不在这族里：它是 JSON 这个数据格式的语法字符，不是视觉标记。hotkeys 的 `⌘` `⇧` 键帽由 JS 渲染成文本，走它自己的 `translations`。
+
 
 ## 把任意 SVG 目录转成图标集
 

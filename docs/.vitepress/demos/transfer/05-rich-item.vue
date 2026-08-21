@@ -63,8 +63,8 @@ const value = ref<string[]>(["he"]);
         </XhTransferList>
       </XhTransferSourcePanel>
 
-      <XhTransferToTargetTrigger>›</XhTransferToTargetTrigger>
-      <XhTransferToSourceTrigger>‹</XhTransferToSourceTrigger>
+      <XhTransferToTargetTrigger />
+      <XhTransferToSourceTrigger />
 
       <XhTransferTargetPanel>
         <XhTransferPanelHeader>

@@ -17,7 +17,7 @@ const page = ref(1);
 <template>
   <div style="inline-size: 100%; display: grid; gap: 12px">
     <XhCarouselRoot v-model:page="page" :slide-count="slides.length">
-      <XhCarouselPrevTrigger>‹</XhCarouselPrevTrigger>
+      <XhCarouselPrevTrigger />
       <XhCarouselViewport style="block-size: 120px">
         <XhCarouselItemGroup>
           <XhCarouselItem v-for="(text, i) in slides" :key="text" :index="i">
@@ -27,7 +27,7 @@ const page = ref(1);
           </XhCarouselItem>
         </XhCarouselItemGroup>
       </XhCarouselViewport>
-      <XhCarouselNextTrigger>›</XhCarouselNextTrigger>
+      <XhCarouselNextTrigger />
     </XhCarouselRoot>
 
     <!-- 页码握在宿主手里，外部按钮直接改它 -->

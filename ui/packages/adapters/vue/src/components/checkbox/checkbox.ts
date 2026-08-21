@@ -41,8 +41,7 @@ export const XhCheckbox = defineComponent({
       emit('update:checked', details.checked)
     }
     const { api } = useCheckbox(props as CheckboxProps, notify)
-    // 表单影子由组件自己渲染：单体控件的方框里没有子部件插槽，作者递不进来。
-    // 给了 name 才有这个节点——type=hidden 不是交互内容，放进 button 里是合法的
+    // 表单影子由组件自己渲染，给了 name 才有这个节点——type=hidden 不是交互内容，放进 button 里是合法的
     return () => {
       const box = h('button', api.value.getRootProps() as Record<string, unknown>, [
         h('span', api.value.getIndicatorProps() as Record<string, unknown>, slots.indicator?.()),

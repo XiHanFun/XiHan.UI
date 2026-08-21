@@ -22,7 +22,7 @@ const slides = ["拖我", "再拖", "还能拖", "最后一张"];
     loop
     style="inline-size: 100%"
   >
-    <XhCarouselPrevTrigger>‹</XhCarouselPrevTrigger>
+    <XhCarouselPrevTrigger />
     <XhCarouselViewport style="block-size: 130px">
       <XhCarouselItemGroup>
         <XhCarouselItem v-for="(text, i) in slides" :key="text" :index="i">
@@ -32,7 +32,7 @@ const slides = ["拖我", "再拖", "还能拖", "最后一张"];
         </XhCarouselItem>
       </XhCarouselItemGroup>
     </XhCarouselViewport>
-    <XhCarouselNextTrigger>›</XhCarouselNextTrigger>
+    <XhCarouselNextTrigger />
     <XhCarouselIndicatorGroup>
       <XhCarouselIndicator v-for="p in totalPages" :key="p" :index="p - 1" />
     </XhCarouselIndicatorGroup>

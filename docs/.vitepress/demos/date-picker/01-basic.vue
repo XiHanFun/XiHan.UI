@@ -45,7 +45,7 @@ const value = ref<string[]>([]);
         <span>-</span>
         <XhDatePickerSegment :index="2" />
       </XhDatePickerInput>
-      <XhDatePickerClearTrigger>✕</XhDatePickerClearTrigger>
+      <XhDatePickerClearTrigger />
     </XhDatePickerControl>
     <!-- 表单出口：随表单提交的是 ISO 串 -->
     <XhDatePickerHiddenInput />
@@ -53,9 +53,9 @@ const value = ref<string[]>([]);
       <XhDatePickerContent>
         <XhDatePickerCalendar>
           <XhDatePickerHeader>
-            <XhDatePickerPrevTrigger aria-label="上个月">‹</XhDatePickerPrevTrigger>
+            <XhDatePickerPrevTrigger aria-label="上个月" />
             <XhDatePickerHeading />
-            <XhDatePickerNextTrigger aria-label="下个月">›</XhDatePickerNextTrigger>
+            <XhDatePickerNextTrigger aria-label="下个月" />
           </XhDatePickerHeader>
           <XhDatePickerGrid>
             <XhDatePickerGridHead>

@@ -36,7 +36,7 @@ const picked = ref("收件箱");
               {{ g }}
             </XhButton>
           </div>
-          <XhPopoverCloseTrigger>✕</XhPopoverCloseTrigger>
+          <XhPopoverCloseTrigger />
           <XhPopoverArrow />
         </XhPopoverContent>
       </XhPopoverPositioner>

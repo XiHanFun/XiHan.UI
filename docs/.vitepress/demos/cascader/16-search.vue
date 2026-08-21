@@ -64,7 +64,7 @@ const area = ref<string[][]>([]);
     <XhCascaderLabel>收货地区</XhCascaderLabel>
     <XhCascaderTrigger>
       <XhCascaderValueText />
-      <XhCascaderIndicator>▾</XhCascaderIndicator>
+      <XhCascaderIndicator />
     </XhCascaderTrigger>
     <XhCascaderPositioner>
       <XhCascaderContent>
@@ -73,7 +73,7 @@ const area = ref<string[][]>([]);
         <XhCascaderColumn v-for="lv in levels" :key="lv.level" :level="lv.level">
           <XhCascaderItem v-for="node in lv.items" :key="node.value" :value="node.value">
             <XhCascaderItemText>{{ node.label }}</XhCascaderItemText>
-            <XhCascaderItemIndicator>✓</XhCascaderItemIndicator>
+            <XhCascaderItemIndicator />
           </XhCascaderItem>
         </XhCascaderColumn>
       </XhCascaderContent>

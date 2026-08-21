@@ -47,8 +47,8 @@ const value = ref<string[]>(["owner"]);
         </XhTransferList>
       </XhTransferSourcePanel>
 
-      <XhTransferToTargetTrigger>›</XhTransferToTargetTrigger>
-      <XhTransferToSourceTrigger>‹</XhTransferToSourceTrigger>
+      <XhTransferToTargetTrigger />
+      <XhTransferToSourceTrigger />
 
       <XhTransferTargetPanel>
         <XhTransferPanelHeader>

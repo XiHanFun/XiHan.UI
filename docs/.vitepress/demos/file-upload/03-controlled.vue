@@ -43,7 +43,7 @@ function onFilesChange(details: { files: File[] }) {
         <XhFileUploadItem v-for="file in acceptedFiles" :key="file" :file="file">
           <XhFileUploadItemName />
           <XhFileUploadItemSizeText />
-          <XhFileUploadItemDeleteTrigger>✕</XhFileUploadItemDeleteTrigger>
+          <XhFileUploadItemDeleteTrigger />
         </XhFileUploadItem>
       </XhFileUploadItemGroup>
     </XhFileUploadRoot>

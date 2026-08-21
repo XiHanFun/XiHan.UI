@@ -43,7 +43,7 @@ const expanded = ref<string[]>(["o1"]);
         <template v-for="o in orders" :key="o.id">
           <XhTableRow :value="o.id">
             <XhTableCell value="expand">
-              <XhTableExpandTrigger>▸</XhTableExpandTrigger>
+              <XhTableExpandTrigger />
             </XhTableCell>
             <XhTableCell value="order">{{ o.no }}</XhTableCell>
             <XhTableCell value="amount">{{ o.amount }}</XhTableCell>

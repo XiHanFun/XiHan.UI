@@ -15,7 +15,7 @@ import { XhFloatButtonList, XhFloatButtonRoot, XhFloatButtonTrigger } from "@xih
     >
       <p style="margin: 12px; color: var(--xh-fg-muted)">hover：指针移上去就展开</p>
       <XhFloatButtonRoot style="position: absolute" :offset="16" expand-trigger="hover">
-        <XhFloatButtonTrigger>＋</XhFloatButtonTrigger>
+        <XhFloatButtonTrigger />
         <XhFloatButtonList>
           <button type="button" title="编辑">✎</button>
           <button type="button" title="分享">↗</button>
@@ -33,7 +33,7 @@ import { XhFloatButtonList, XhFloatButtonRoot, XhFloatButtonTrigger } from "@xih
     >
       <p style="margin: 12px; color: var(--xh-fg-muted)">click：点一下展开，Escape 收起</p>
       <XhFloatButtonRoot style="position: absolute" :offset="16" expand-trigger="click">
-        <XhFloatButtonTrigger>＋</XhFloatButtonTrigger>
+        <XhFloatButtonTrigger />
         <XhFloatButtonList>
           <button type="button" title="编辑">✎</button>
           <button type="button" title="分享">↗</button>

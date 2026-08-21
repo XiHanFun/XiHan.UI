@@ -30,9 +30,9 @@ const value = ref<string[]>([]);
   >
     <XhCalendarHeader>
       <!-- 箭头字符念不出「上个月」，可及名字得自己给 -->
-      <XhCalendarPrevTrigger aria-label="上个月">‹</XhCalendarPrevTrigger>
+      <XhCalendarPrevTrigger aria-label="上个月" />
       <XhCalendarHeading />
-      <XhCalendarNextTrigger aria-label="下个月">›</XhCalendarNextTrigger>
+      <XhCalendarNextTrigger aria-label="下个月" />
     </XhCalendarHeader>
     <XhCalendarGrid>
       <XhCalendarGridHead>

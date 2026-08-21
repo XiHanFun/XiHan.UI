@@ -26,7 +26,7 @@ import {
           <XhFloatingPanelStageTrigger stage="minimized"
             >—</XhFloatingPanelStageTrigger
           >
-          <XhFloatingPanelCloseTrigger>✕</XhFloatingPanelCloseTrigger>
+          <XhFloatingPanelCloseTrigger />
         </XhFloatingPanelHeader>
         <XhFloatingPanelBody>
           <p style="margin: 0">

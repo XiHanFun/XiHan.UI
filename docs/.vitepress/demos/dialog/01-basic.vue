@@ -23,7 +23,7 @@ import {
         <XhButton variant="ghost" @click="setOpen(false)">取消</XhButton>
         <XhButton variant="solid" @click="setOpen(false)">发布</XhButton>
       </div>
-      <XhDialogCloseTrigger>✕</XhDialogCloseTrigger>
+      <XhDialogCloseTrigger />
     </XhDialogContent>
   </XhDialogRoot>
 </template>

@@ -69,7 +69,7 @@ function end(event: PointerEvent): void {
         当前厚度：{{ width ? width + " px" : "默认" }}
       </p>
       <XhButton variant="solid" @click="setOpen(false)">关闭</XhButton>
-      <XhDrawerCloseTrigger>✕</XhDrawerCloseTrigger>
+      <XhDrawerCloseTrigger />
     </XhDrawerContent>
   </XhDrawerRoot>
 </template>

@@ -66,8 +66,8 @@ function filter(item: { value: string; label: string }, query: string) {
         </XhTransferList>
       </XhTransferSourcePanel>
 
-      <XhTransferToTargetTrigger>›</XhTransferToTargetTrigger>
-      <XhTransferToSourceTrigger>‹</XhTransferToSourceTrigger>
+      <XhTransferToTargetTrigger />
+      <XhTransferToSourceTrigger />
 
       <XhTransferTargetPanel>
         <XhTransferPanelHeader>

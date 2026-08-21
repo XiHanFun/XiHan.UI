@@ -55,7 +55,7 @@ const sizes: Size[] = ["sm", "md", "lg"];
             <span>-</span>
             <XhDatePickerSegment :index="2" />
           </XhDatePickerInput>
-          <XhDatePickerClearTrigger>✕</XhDatePickerClearTrigger>
+          <XhDatePickerClearTrigger />
         </XhDatePickerControl>
         <XhDatePickerPositioner>
           <XhDatePickerContent>

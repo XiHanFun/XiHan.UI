@@ -33,7 +33,7 @@ function onAction(details: { id: string }): void {
       <XhToastDescription />
       <div style="display: flex; align-items: center; gap: 8px">
         <XhToastActionTrigger>撤销</XhToastActionTrigger>
-        <XhToastCloseTrigger>✕</XhToastCloseTrigger>
+        <XhToastCloseTrigger />
       </div>
     </XhToastRoot>
     <div style="display: flex; align-items: center; gap: 12px">

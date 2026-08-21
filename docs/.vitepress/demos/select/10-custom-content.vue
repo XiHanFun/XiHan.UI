@@ -42,7 +42,7 @@ const current = computed(() => members.find((m) => m.value === picked.value[0]) 
         </span>
         <span v-else>请选择成员</span>
       </XhSelectValueText>
-      <XhSelectIndicator>▾</XhSelectIndicator>
+      <XhSelectIndicator />
     </XhSelectTrigger>
     <XhSelectPositioner>
       <XhSelectContent>
@@ -60,7 +60,7 @@ const current = computed(() => members.find((m) => m.value === picked.value[0]) 
                 </span>
               </span>
             </XhSelectItemText>
-            <XhSelectItemIndicator>✓</XhSelectItemIndicator>
+            <XhSelectItemIndicator />
           </XhSelectItem>
         </XhSelectList>
       </XhSelectContent>

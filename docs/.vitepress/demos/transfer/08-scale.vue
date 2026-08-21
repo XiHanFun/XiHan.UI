@@ -67,8 +67,8 @@ const loose = ref<string[]>(["read"]);
           </XhTransferList>
         </XhTransferSourcePanel>
 
-        <XhTransferToTargetTrigger>›</XhTransferToTargetTrigger>
-        <XhTransferToSourceTrigger>‹</XhTransferToSourceTrigger>
+        <XhTransferToTargetTrigger />
+        <XhTransferToSourceTrigger />
 
         <XhTransferTargetPanel>
           <XhTransferPanelHeader>
@@ -111,8 +111,8 @@ const loose = ref<string[]>(["read"]);
           </XhTransferList>
         </XhTransferSourcePanel>
 
-        <XhTransferToTargetTrigger>›</XhTransferToTargetTrigger>
-        <XhTransferToSourceTrigger>‹</XhTransferToSourceTrigger>
+        <XhTransferToTargetTrigger />
+        <XhTransferToSourceTrigger />
 
         <XhTransferTargetPanel>
           <XhTransferPanelHeader>

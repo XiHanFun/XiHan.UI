@@ -70,7 +70,7 @@ const boxStyle = {
     <XhTreeSelectTrigger>
       <!-- parent 收敛下整组选满值就是组名，缺省显示文本直接可用 -->
       <XhTreeSelectValueText />
-      <XhTreeSelectIndicator>▾</XhTreeSelectIndicator>
+      <XhTreeSelectIndicator />
     </XhTreeSelectTrigger>
     <XhTreeSelectPositioner>
       <XhTreeSelectContent>
@@ -81,7 +81,7 @@ const boxStyle = {
             :value="group.value"
           >
             <XhTreeSelectBranchControl>
-              <XhTreeSelectBranchTrigger>▸</XhTreeSelectBranchTrigger>
+              <XhTreeSelectBranchTrigger />
               <span aria-hidden="true" :style="boxStyle">
                 {{ isSelected(group.value) ? "✓" : isIndeterminate(group.value) ? "–" : "" }}
               </span>

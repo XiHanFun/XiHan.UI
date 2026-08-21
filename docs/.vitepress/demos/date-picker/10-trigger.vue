@@ -39,18 +39,18 @@ const value = ref<string[]>([]);
         <span>-</span>
         <XhDatePickerSegment :index="2" />
       </XhDatePickerInput>
-      <XhDatePickerClearTrigger>✕</XhDatePickerClearTrigger>
+      <XhDatePickerClearTrigger />
       <!-- 写上它多一个明写的入口；不写也照样能展开——点输入行即可，
            键盘则在段上按 Alt+ArrowDown -->
-      <XhDatePickerTrigger aria-label="展开日历">▾</XhDatePickerTrigger>
+      <XhDatePickerTrigger aria-label="展开日历" />
     </XhDatePickerControl>
     <XhDatePickerPositioner>
       <XhDatePickerContent>
         <XhDatePickerCalendar>
           <XhDatePickerHeader>
-            <XhDatePickerPrevTrigger aria-label="上个月">‹</XhDatePickerPrevTrigger>
+            <XhDatePickerPrevTrigger aria-label="上个月" />
             <XhDatePickerHeading />
-            <XhDatePickerNextTrigger aria-label="下个月">›</XhDatePickerNextTrigger>
+            <XhDatePickerNextTrigger aria-label="下个月" />
           </XhDatePickerHeader>
           <XhDatePickerGrid>
             <XhDatePickerGridHead>

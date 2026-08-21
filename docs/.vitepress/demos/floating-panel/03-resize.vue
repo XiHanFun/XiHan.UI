@@ -40,7 +40,7 @@ const edges: FloatingPanelResizeEdge[] = [
         <XhFloatingPanelHeader>
           <XhFloatingPanelTitle>图层属性</XhFloatingPanelTitle>
           <XhFloatingPanelDragTrigger />
-          <XhFloatingPanelCloseTrigger>✕</XhFloatingPanelCloseTrigger>
+          <XhFloatingPanelCloseTrigger />
         </XhFloatingPanelHeader>
         <XhFloatingPanelBody>
           <p style="margin: 0">

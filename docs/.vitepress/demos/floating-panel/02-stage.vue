@@ -30,7 +30,7 @@ import {
           <XhFloatingPanelStageTrigger stage="maximized"
             >▢</XhFloatingPanelStageTrigger
           >
-          <XhFloatingPanelCloseTrigger>✕</XhFloatingPanelCloseTrigger>
+          <XhFloatingPanelCloseTrigger />
         </XhFloatingPanelHeader>
         <XhFloatingPanelBody>
           <p style="margin: 0">

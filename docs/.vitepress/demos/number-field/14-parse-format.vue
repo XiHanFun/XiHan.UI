@@ -32,9 +32,9 @@ const formatWeight = (value: number) => `${value} kg`;
   >
     <XhNumberFieldLabel>金额（千位分隔）</XhNumberFieldLabel>
     <XhNumberFieldControl>
-      <XhNumberFieldDecrementTrigger>−</XhNumberFieldDecrementTrigger>
+      <XhNumberFieldDecrementTrigger />
       <XhNumberFieldInput style="inline-size: 96px" />
-      <XhNumberFieldIncrementTrigger>+</XhNumberFieldIncrementTrigger>
+      <XhNumberFieldIncrementTrigger />
     </XhNumberFieldControl>
   </XhNumberFieldRoot>
 
@@ -48,9 +48,9 @@ const formatWeight = (value: number) => `${value} kg`;
   >
     <XhNumberFieldLabel>体重（带单位）</XhNumberFieldLabel>
     <XhNumberFieldControl>
-      <XhNumberFieldDecrementTrigger>−</XhNumberFieldDecrementTrigger>
+      <XhNumberFieldDecrementTrigger />
       <XhNumberFieldInput style="inline-size: 88px" />
-      <XhNumberFieldIncrementTrigger>+</XhNumberFieldIncrementTrigger>
+      <XhNumberFieldIncrementTrigger />
     </XhNumberFieldControl>
   </XhNumberFieldRoot>
 

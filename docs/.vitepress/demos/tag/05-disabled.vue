@@ -7,12 +7,12 @@ import { XhTagCloseTrigger, XhTagLabel, XhTagRoot } from "@xihan-ui/vue";
   <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
     <XhTagRoot variant="subtle" tone="brand" closable>
       <XhTagLabel>可摘掉</XhTagLabel>
-      <XhTagCloseTrigger>×</XhTagCloseTrigger>
+      <XhTagCloseTrigger />
     </XhTagRoot>
 
     <XhTagRoot variant="subtle" tone="brand" closable disabled>
       <XhTagLabel>锁定的分类</XhTagLabel>
-      <XhTagCloseTrigger>×</XhTagCloseTrigger>
+      <XhTagCloseTrigger />
     </XhTagRoot>
 
     <XhTagRoot variant="outline" disabled>

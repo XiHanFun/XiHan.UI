@@ -64,7 +64,7 @@ const boxStyle = {
       <XhTreeTree>
         <XhTreeBranch v-for="region in collection" :key="region.value" :value="region.value">
           <XhTreeBranchControl>
-            <XhTreeBranchTrigger>▸</XhTreeBranchTrigger>
+            <XhTreeBranchTrigger />
             <span aria-hidden="true" :style="boxStyle">
               {{ isSelected(region.value) ? "✓" : isIndeterminate(region.value) ? "–" : "" }}
             </span>

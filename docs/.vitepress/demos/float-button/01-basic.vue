@@ -15,7 +15,7 @@ import { XhFloatButtonList, XhFloatButtonRoot, XhFloatButtonTrigger } from "@xih
     "
   >
     <XhFloatButtonRoot style="position: absolute" :offset="16">
-      <XhFloatButtonTrigger>＋</XhFloatButtonTrigger>
+      <XhFloatButtonTrigger />
       <XhFloatButtonList>
         <button type="button" title="编辑">✎</button>
         <button type="button" title="分享">↗</button>

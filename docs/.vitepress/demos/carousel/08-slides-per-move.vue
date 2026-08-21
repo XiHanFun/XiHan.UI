@@ -23,7 +23,7 @@ const slides = ["A", "B", "C", "D", "E", "F"];
     spacing="10px"
     style="inline-size: 100%"
   >
-    <XhCarouselPrevTrigger>‹</XhCarouselPrevTrigger>
+    <XhCarouselPrevTrigger />
     <XhCarouselViewport style="block-size: 110px">
       <XhCarouselItemGroup>
         <XhCarouselItem v-for="(text, i) in slides" :key="text" :index="i">
@@ -33,7 +33,7 @@ const slides = ["A", "B", "C", "D", "E", "F"];
         </XhCarouselItem>
       </XhCarouselItemGroup>
     </XhCarouselViewport>
-    <XhCarouselNextTrigger>›</XhCarouselNextTrigger>
+    <XhCarouselNextTrigger />
     <XhCarouselIndicatorGroup>
       <XhCarouselIndicator v-for="p in totalPages" :key="p" :index="p - 1" />
     </XhCarouselIndicatorGroup>

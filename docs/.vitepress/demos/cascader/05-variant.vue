@@ -45,7 +45,7 @@ const regions = [
       <XhCascaderLabel>{{ v }}</XhCascaderLabel>
       <XhCascaderTrigger>
         <XhCascaderValueText />
-        <XhCascaderIndicator>▾</XhCascaderIndicator>
+        <XhCascaderIndicator />
       </XhCascaderTrigger>
       <XhCascaderPositioner>
         <XhCascaderContent>

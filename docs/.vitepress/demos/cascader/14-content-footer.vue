@@ -50,7 +50,7 @@ const picked = ref<string[][]>([["fruit", "apple"]]);
     <XhCascaderLabel>采购清单</XhCascaderLabel>
     <XhCascaderTrigger>
       <XhCascaderValueText />
-      <XhCascaderIndicator>▾</XhCascaderIndicator>
+      <XhCascaderIndicator />
     </XhCascaderTrigger>
     <XhCascaderPositioner>
       <!-- 浮层壳改成竖排：上半是并排的列，下半是横跨全宽的底栏 -->
@@ -67,7 +67,7 @@ const picked = ref<string[][]>([["fruit", "apple"]]);
               :value="node.value"
             >
               <XhCascaderItemText>{{ node.label }}</XhCascaderItemText>
-              <XhCascaderItemIndicator>✓</XhCascaderItemIndicator>
+              <XhCascaderItemIndicator />
             </XhCascaderItem>
           </XhCascaderColumn>
         </div>

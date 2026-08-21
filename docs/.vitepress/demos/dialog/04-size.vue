@@ -36,7 +36,7 @@ const sizes = [
         <div style="display: flex; justify-content: flex-end">
           <XhButton variant="solid" @click="setOpen(false)">知道了</XhButton>
         </div>
-        <XhDialogCloseTrigger>✕</XhDialogCloseTrigger>
+        <XhDialogCloseTrigger />
       </XhDialogContent>
     </XhDialogRoot>
   </div>

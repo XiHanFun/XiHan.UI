@@ -24,7 +24,7 @@ import {
           <XhFloatingPanelTitle>调试面板</XhFloatingPanelTitle>
           <!-- 把手自己不显示内容，它铺满标题栏剩下的横向空间 -->
           <XhFloatingPanelDragTrigger />
-          <XhFloatingPanelCloseTrigger>✕</XhFloatingPanelCloseTrigger>
+          <XhFloatingPanelCloseTrigger />
         </XhFloatingPanelHeader>
         <XhFloatingPanelBody>
           <p style="margin: 0">面板不挡住页面，底下的内容照常能点。</p>

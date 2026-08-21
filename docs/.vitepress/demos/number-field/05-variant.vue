@@ -17,9 +17,9 @@ const variants = ["outline", "subtle", "ghost"] as const;
     <XhNumberFieldRoot v-for="v in variants" :key="v" :variant="v" default-value="1">
       <XhNumberFieldLabel>{{ v }}</XhNumberFieldLabel>
       <XhNumberFieldControl>
-        <XhNumberFieldDecrementTrigger>−</XhNumberFieldDecrementTrigger>
+        <XhNumberFieldDecrementTrigger />
         <XhNumberFieldInput />
-        <XhNumberFieldIncrementTrigger>+</XhNumberFieldIncrementTrigger>
+        <XhNumberFieldIncrementTrigger />
       </XhNumberFieldControl>
     </XhNumberFieldRoot>
   </div>

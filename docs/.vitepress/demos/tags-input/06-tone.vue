@@ -30,7 +30,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
         <XhTagsInputItem v-for="v in value" :key="v" :value="v">
           <XhTagsInputItemPreview>
             <XhTagsInputItemText>{{ v }}</XhTagsInputItemText>
-            <XhTagsInputItemDeleteTrigger>×</XhTagsInputItemDeleteTrigger>
+            <XhTagsInputItemDeleteTrigger />
           </XhTagsInputItemPreview>
         </XhTagsInputItem>
         <XhTagsInputInput />

@@ -49,8 +49,8 @@ const value = ref<string[]>(["read"]);
         </XhTransferList>
       </XhTransferSourcePanel>
 
-      <XhTransferToTargetTrigger>›</XhTransferToTargetTrigger>
-      <XhTransferToSourceTrigger>‹</XhTransferToSourceTrigger>
+      <XhTransferToTargetTrigger />
+      <XhTransferToSourceTrigger />
 
       <XhTransferTargetPanel>
         <XhTransferPanelHeader>

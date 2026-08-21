@@ -39,7 +39,7 @@ const initialFiles = [
           <XhFileUploadItemPreview />
           <XhFileUploadItemName />
           <XhFileUploadItemSizeText />
-          <XhFileUploadItemDeleteTrigger>✕</XhFileUploadItemDeleteTrigger>
+          <XhFileUploadItemDeleteTrigger />
         </XhFileUploadItem>
       </XhFileUploadItemGroup>
       <XhFileUploadClearTrigger>清空</XhFileUploadClearTrigger>

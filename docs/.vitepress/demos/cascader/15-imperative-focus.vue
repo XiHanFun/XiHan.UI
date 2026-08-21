@@ -49,7 +49,7 @@ const triggerEl = () => trigger.value?.$el as HTMLButtonElement | undefined;
     <XhCascaderLabel>收货地区</XhCascaderLabel>
     <XhCascaderTrigger ref="trigger">
       <XhCascaderValueText />
-      <XhCascaderIndicator>▾</XhCascaderIndicator>
+      <XhCascaderIndicator />
     </XhCascaderTrigger>
     <XhCascaderPositioner>
       <XhCascaderContent>
@@ -60,7 +60,7 @@ const triggerEl = () => trigger.value?.$el as HTMLButtonElement | undefined;
             :value="node.value"
           >
             <XhCascaderItemText>{{ node.label }}</XhCascaderItemText>
-            <XhCascaderItemIndicator>✓</XhCascaderItemIndicator>
+            <XhCascaderItemIndicator />
           </XhCascaderItem>
         </XhCascaderColumn>
       </XhCascaderContent>

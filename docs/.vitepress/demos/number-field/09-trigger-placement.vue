@@ -14,18 +14,18 @@ import {
   <XhNumberFieldRoot default-value="1" :min="0" :max="9">
     <XhNumberFieldLabel>一体式（control）</XhNumberFieldLabel>
     <XhNumberFieldControl>
-      <XhNumberFieldDecrementTrigger>−</XhNumberFieldDecrementTrigger>
+      <XhNumberFieldDecrementTrigger />
       <XhNumberFieldInput />
-      <XhNumberFieldIncrementTrigger>+</XhNumberFieldIncrementTrigger>
+      <XhNumberFieldIncrementTrigger />
     </XhNumberFieldControl>
   </XhNumberFieldRoot>
 
   <XhNumberFieldRoot default-value="1" :min="0" :max="9">
     <XhNumberFieldLabel>三件并排（不写 control）</XhNumberFieldLabel>
     <div style="display: flex; gap: 4px">
-      <XhNumberFieldDecrementTrigger>−</XhNumberFieldDecrementTrigger>
+      <XhNumberFieldDecrementTrigger />
       <XhNumberFieldInput style="inline-size: 80px; text-align: center" />
-      <XhNumberFieldIncrementTrigger>+</XhNumberFieldIncrementTrigger>
+      <XhNumberFieldIncrementTrigger />
     </div>
   </XhNumberFieldRoot>
 </template>

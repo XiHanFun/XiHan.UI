@@ -7,15 +7,15 @@ import { XhTagCloseTrigger, XhTagLabel, XhTagRoot } from "@xihan-ui/vue";
   <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
     <XhTagRoot variant="subtle" size="sm" closable>
       <XhTagLabel>小</XhTagLabel>
-      <XhTagCloseTrigger>×</XhTagCloseTrigger>
+      <XhTagCloseTrigger />
     </XhTagRoot>
     <XhTagRoot variant="subtle" closable>
       <XhTagLabel>缺省</XhTagLabel>
-      <XhTagCloseTrigger>×</XhTagCloseTrigger>
+      <XhTagCloseTrigger />
     </XhTagRoot>
     <XhTagRoot variant="subtle" size="lg" closable>
       <XhTagLabel>大</XhTagLabel>
-      <XhTagCloseTrigger>×</XhTagCloseTrigger>
+      <XhTagCloseTrigger />
     </XhTagRoot>
   </div>
 </template>

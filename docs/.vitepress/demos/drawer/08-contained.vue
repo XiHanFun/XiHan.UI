@@ -37,7 +37,7 @@ const panel = ref<HTMLElement | null>(null);
         <XhDrawerDescription>
           它贴的是这个容器的右沿，不是视口的右沿。
         </XhDrawerDescription>
-        <XhDrawerCloseTrigger>✕</XhDrawerCloseTrigger>
+        <XhDrawerCloseTrigger />
       </XhDrawerContent>
     </XhDrawerRoot>
   </div>

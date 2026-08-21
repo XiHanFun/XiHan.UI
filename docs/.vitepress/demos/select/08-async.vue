@@ -47,7 +47,7 @@ function onOpenChange(details: { open: boolean }): void {
     <XhSelectLabel>曲目</XhSelectLabel>
     <XhSelectTrigger>
       <XhSelectValueText />
-      <XhSelectIndicator>▾</XhSelectIndicator>
+      <XhSelectIndicator />
     </XhSelectTrigger>
     <XhSelectPositioner>
       <XhSelectContent>
@@ -57,7 +57,7 @@ function onOpenChange(details: { open: boolean }): void {
           </XhSelectItem>
           <XhSelectItem v-for="s in songs" :key="s.value" :value="s.value">
             <XhSelectItemText>{{ s.label }}</XhSelectItemText>
-            <XhSelectItemIndicator>✓</XhSelectItemIndicator>
+            <XhSelectItemIndicator />
           </XhSelectItem>
         </XhSelectList>
       </XhSelectContent>
