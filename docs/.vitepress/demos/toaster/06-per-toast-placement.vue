@@ -60,7 +60,7 @@ function pop(create: Create, placement: string, label: string): void {
         >
           <XhToastTitle />
           <XhToastDescription />
-          <XhToastCloseTrigger>✕</XhToastCloseTrigger>
+          <XhToastCloseTrigger />
         </XhToastRoot>
       </template>
     </XhToasterGroup>

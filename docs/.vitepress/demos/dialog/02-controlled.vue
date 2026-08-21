@@ -25,7 +25,7 @@ const open = ref(false);
       <XhDialogDescription>
         这里没有 trigger，开合完全由外面那颗按钮与 open 决定。
       </XhDialogDescription>
-      <XhDialogCloseTrigger>✕</XhDialogCloseTrigger>
+      <XhDialogCloseTrigger />
     </XhDialogContent>
   </XhDialogRoot>
 </template>

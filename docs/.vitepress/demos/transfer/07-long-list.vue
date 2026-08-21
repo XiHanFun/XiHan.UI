@@ -102,8 +102,8 @@ const value = ref<string[]>(["sku-3"]);
         </XhTransferList>
       </XhTransferSourcePanel>
 
-      <XhTransferToTargetTrigger>›</XhTransferToTargetTrigger>
-      <XhTransferToSourceTrigger>‹</XhTransferToSourceTrigger>
+      <XhTransferToTargetTrigger />
+      <XhTransferToSourceTrigger />
 
       <XhTransferTargetPanel v-slot="{ items: shown }">
         <XhTransferPanelHeader>

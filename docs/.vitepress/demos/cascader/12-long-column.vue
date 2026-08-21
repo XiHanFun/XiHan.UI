@@ -129,7 +129,7 @@ const shelf = ref<string[][]>([]);
       <XhCascaderLabel>货位（每仓 1000 条）</XhCascaderLabel>
       <XhCascaderTrigger>
         <XhCascaderValueText />
-        <XhCascaderIndicator>▾</XhCascaderIndicator>
+        <XhCascaderIndicator />
       </XhCascaderTrigger>
       <XhCascaderPositioner>
         <XhCascaderContent @keydown="syncFocus">
@@ -163,7 +163,7 @@ const shelf = ref<string[][]>([]);
               }"
             >
               <XhCascaderItemText>{{ row.label }}</XhCascaderItemText>
-              <XhCascaderItemIndicator>✓</XhCascaderItemIndicator>
+              <XhCascaderItemIndicator />
             </XhCascaderItem>
           </XhCascaderColumn>
         </XhCascaderContent>

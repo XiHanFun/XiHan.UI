@@ -57,7 +57,7 @@ const dept = ref<string[][]>([]);
     <XhCascaderLabel>团队</XhCascaderLabel>
     <XhCascaderTrigger>
       <XhCascaderValueText />
-      <XhCascaderIndicator>▾</XhCascaderIndicator>
+      <XhCascaderIndicator />
     </XhCascaderTrigger>
     <XhCascaderPositioner>
       <XhCascaderContent>
@@ -67,7 +67,7 @@ const dept = ref<string[][]>([]);
             <span style="flex: none; color: var(--xh-fg-subtle); font-size: 12px">
               {{ headcount[node.value] }} 人
             </span>
-            <XhCascaderItemIndicator>✓</XhCascaderItemIndicator>
+            <XhCascaderItemIndicator />
           </XhCascaderItem>
         </XhCascaderColumn>
       </XhCascaderContent>

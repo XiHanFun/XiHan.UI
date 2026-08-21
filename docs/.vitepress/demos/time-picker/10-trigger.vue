@@ -24,10 +24,10 @@ const value = ref("09:30");
       <XhTimePickerInput segment="hour" />
       <span>:</span>
       <XhTimePickerInput segment="minute" />
-      <XhTimePickerClearTrigger>✕</XhTimePickerClearTrigger>
+      <XhTimePickerClearTrigger />
       <!-- 写上它多一个明写的入口；不写也照样能展开——点输入行即可，
            键盘则在段上按 Alt+ArrowDown -->
-      <XhTimePickerTrigger aria-label="展开时间列">▾</XhTimePickerTrigger>
+      <XhTimePickerTrigger aria-label="展开时间列" />
     </XhTimePickerControl>
     <XhTimePickerPositioner>
       <XhTimePickerContent>

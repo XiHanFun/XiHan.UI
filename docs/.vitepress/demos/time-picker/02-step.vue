@@ -23,7 +23,7 @@ const value = ref("09:30");
       <XhTimePickerInput segment="hour" />
       <span>:</span>
       <XhTimePickerInput segment="minute" />
-      <XhTimePickerClearTrigger>✕</XhTimePickerClearTrigger>
+      <XhTimePickerClearTrigger />
     </XhTimePickerControl>
     <XhTimePickerPositioner>
       <XhTimePickerContent>

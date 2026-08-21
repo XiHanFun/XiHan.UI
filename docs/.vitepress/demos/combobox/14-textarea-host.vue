@@ -34,13 +34,13 @@ const filtered = computed(() => {
     <XhComboboxControl>
       <!-- 换标签只此一处；键盘、高亮与选中回填的行为一律不变 -->
       <XhComboboxInput as="textarea" rows="3" placeholder="挑一条常用语，或自己写" />
-      <XhComboboxTrigger>▾</XhComboboxTrigger>
+      <XhComboboxTrigger />
     </XhComboboxControl>
     <XhComboboxPositioner>
       <XhComboboxContent>
         <XhComboboxItem v-for="r in filtered" :key="r.value" :value="r.value">
           <XhComboboxItemText>{{ r.label }}</XhComboboxItemText>
-          <XhComboboxItemIndicator>✓</XhComboboxItemIndicator>
+          <XhComboboxItemIndicator />
         </XhComboboxItem>
       </XhComboboxContent>
     </XhComboboxPositioner>

@@ -30,7 +30,7 @@ const tasks = ref<string[]>(["写方案", "评审", "上线"]);
     <XhDynamicInputItem v-for="row in items" :key="row.key" :index="row.index">
       <XhDynamicInputItemContent>{{ row.value }}</XhDynamicInputItemContent>
       <XhDynamicInputItemAction>
-        <XhDynamicInputRemoveTrigger>×</XhDynamicInputRemoveTrigger>
+        <XhDynamicInputRemoveTrigger />
       </XhDynamicInputItemAction>
     </XhDynamicInputItem>
     <XhDynamicInputAddTrigger>+ 添加任务</XhDynamicInputAddTrigger>

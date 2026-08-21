@@ -53,9 +53,9 @@ function patch(index: number, key: keyof Header, next: string) {
         />
       </XhDynamicInputItemContent>
       <XhDynamicInputItemAction>
-        <XhDynamicInputMoveUpTrigger>↑</XhDynamicInputMoveUpTrigger>
-        <XhDynamicInputMoveDownTrigger>↓</XhDynamicInputMoveDownTrigger>
-        <XhDynamicInputRemoveTrigger>×</XhDynamicInputRemoveTrigger>
+        <XhDynamicInputMoveUpTrigger />
+        <XhDynamicInputMoveDownTrigger />
+        <XhDynamicInputRemoveTrigger />
       </XhDynamicInputItemAction>
     </XhDynamicInputItem>
     <XhDynamicInputAddTrigger>+ 添加请求头</XhDynamicInputAddTrigger>

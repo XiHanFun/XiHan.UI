@@ -33,7 +33,7 @@ import {
           <XhFileUploadItemPreview />
           <XhFileUploadItemName />
           <XhFileUploadItemSizeText />
-          <XhFileUploadItemDeleteTrigger>✕</XhFileUploadItemDeleteTrigger>
+          <XhFileUploadItemDeleteTrigger />
         </XhFileUploadItem>
       </XhFileUploadItemGroup>
     </XhFileUploadRoot>

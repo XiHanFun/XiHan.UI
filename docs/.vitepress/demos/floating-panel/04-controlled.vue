@@ -30,7 +30,7 @@ const position = ref<FloatingPanelPosition>({ x: 280, y: 260 });
         <XhFloatingPanelHeader>
           <XhFloatingPanelTitle>受控面板</XhFloatingPanelTitle>
           <XhFloatingPanelDragTrigger />
-          <XhFloatingPanelCloseTrigger>✕</XhFloatingPanelCloseTrigger>
+          <XhFloatingPanelCloseTrigger />
         </XhFloatingPanelHeader>
         <XhFloatingPanelBody>
           <p style="margin: 0">

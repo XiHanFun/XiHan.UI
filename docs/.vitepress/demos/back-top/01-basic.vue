@@ -26,7 +26,7 @@ const scrollEl = ref<HTMLElement | null>(null);
       :target="scrollEl"
       style="position: absolute; --xh-back-top-inset-block: 12px; --xh-back-top-inset-inline: 12px"
     >
-      <XhBackTopTrigger>↑</XhBackTopTrigger>
+      <XhBackTopTrigger />
     </XhBackTopRoot>
   </div>
 </template>

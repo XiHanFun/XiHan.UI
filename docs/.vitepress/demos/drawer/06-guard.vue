@@ -41,7 +41,7 @@ function discard() {
         <XhButton variant="outline" @click="asking = false">继续编辑</XhButton>
         <XhButton variant="solid" @click="discard">丢弃并关闭</XhButton>
       </div>
-      <XhDrawerCloseTrigger>✕</XhDrawerCloseTrigger>
+      <XhDrawerCloseTrigger />
     </XhDrawerContent>
   </XhDrawerRoot>
 </template>

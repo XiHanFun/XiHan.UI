@@ -47,7 +47,7 @@ const current = ref(1);
         >
           <XhStepsTrigger>
             <XhStepsIndicator>
-              {{ i === errorAt ? "!" : current > i ? "✓" : i + 1 }}
+              {{ i === errorAt ? "!" : current > i ? "" : i + 1 }}
             </XhStepsIndicator>
             <XhStepsTitle>{{ s.title }}</XhStepsTitle>
             <XhStepsDescription>{{ s.description }}</XhStepsDescription>

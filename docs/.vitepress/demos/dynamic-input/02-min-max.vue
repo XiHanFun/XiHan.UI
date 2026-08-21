@@ -36,7 +36,7 @@ function setAt(index: number, next: string) {
         />
       </XhDynamicInputItemContent>
       <XhDynamicInputItemAction>
-        <XhDynamicInputRemoveTrigger>×</XhDynamicInputRemoveTrigger>
+        <XhDynamicInputRemoveTrigger />
       </XhDynamicInputItemAction>
     </XhDynamicInputItem>
     <XhDynamicInputAddTrigger>+ 添加选项</XhDynamicInputAddTrigger>

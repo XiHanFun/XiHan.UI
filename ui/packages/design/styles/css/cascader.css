@@ -203,7 +203,14 @@
 
   /* 没写内容就由皮肤画箭头；作者往部件里塞了自己的图形，这条规则即不命中 */
   [data-scope='cascader'][data-part='indicator']:empty::before {
-    content: var(--xh-glyph-mark-caret-down);
+    content: '';
+    display: inline-block;
+    inline-size: 1em;
+    block-size: 1em;
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
   }
 
   [data-scope='cascader'][data-part='indicator'][data-state='open'] {
@@ -442,7 +449,14 @@
 
   /* 没写内容就由皮肤画勾；作者往部件里塞了自己的图形，这条规则即不命中 */
   [data-scope='cascader'][data-part='item-indicator']:empty::before {
-    content: var(--xh-glyph-mark-check);
+    content: '';
+    display: inline-block;
+    inline-size: 1em;
+    block-size: 1em;
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-check) center / contain no-repeat;
   }
 
   [data-scope='cascader'][data-part='item-indicator'][data-state='checked'] {
@@ -456,7 +470,14 @@
   }
 
   [data-scope='cascader'][data-part='item-indicator'][data-indeterminate]:not([data-state='checked']):empty::before {
-    content: var(--xh-glyph-mark-minus);
+    content: '';
+    display: inline-block;
+    inline-size: 1em;
+    block-size: 1em;
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
     font-weight: var(--xh-font-weight-semibold);
   }
 
@@ -571,6 +592,18 @@
 
   [data-scope='cascader'][data-part='empty'][hidden] {
     display: none;
+  }
+
+  /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
+  [data-scope='cascader'][data-part='clear-trigger']:empty::before {
+    content: '';
+    display: inline-block;
+    inline-size: 1em;
+    block-size: 1em;
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-close) center / contain no-repeat;
   }
 }
 

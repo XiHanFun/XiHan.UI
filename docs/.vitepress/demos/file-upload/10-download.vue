@@ -67,7 +67,7 @@ const action = {
           <button :style="action" type="button" @click="saveCopy(file)">
             存为副本
           </button>
-          <XhFileUploadItemDeleteTrigger>✕</XhFileUploadItemDeleteTrigger>
+          <XhFileUploadItemDeleteTrigger />
         </XhFileUploadItem>
       </XhFileUploadItemGroup>
     </XhFileUploadRoot>

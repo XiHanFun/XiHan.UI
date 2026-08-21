@@ -29,8 +29,8 @@ function onValueChange(details: { valueAsNumber: number }) {
     <XhNumberFieldLabel>购买数量</XhNumberFieldLabel>
     <XhNumberFieldControl>
       <XhNumberFieldInput />
-      <XhNumberFieldDecrementTrigger>−</XhNumberFieldDecrementTrigger>
-      <XhNumberFieldIncrementTrigger>+</XhNumberFieldIncrementTrigger>
+      <XhNumberFieldDecrementTrigger />
+      <XhNumberFieldIncrementTrigger />
     </XhNumberFieldControl>
     <span>{{ qty > stock ? "库存只有 " + stock + " 件" : "库存充足" }}</span>
   </XhNumberFieldRoot>

@@ -76,7 +76,7 @@ function step(delta: number): void {
         <XhButton size="sm" variant="outline" @click="step(1)">下一张</XhButton>
       </div>
 
-      <XhDialogCloseTrigger>✕</XhDialogCloseTrigger>
+      <XhDialogCloseTrigger />
     </XhDialogContent>
   </XhDialogRoot>
 </template>

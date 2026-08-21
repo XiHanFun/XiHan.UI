@@ -89,9 +89,9 @@ const text = computed(() => value.value.map(labelOf).join("、"));
       <XhCascaderValueText>
         {{ text || "请选择品类" }}
       </XhCascaderValueText>
-      <XhCascaderIndicator>▾</XhCascaderIndicator>
+      <XhCascaderIndicator />
     </XhCascaderTrigger>
-    <XhCascaderClearTrigger>✕</XhCascaderClearTrigger>
+    <XhCascaderClearTrigger />
     <XhCascaderPositioner>
       <XhCascaderContent>
         <XhCascaderColumn v-for="lv in levels" :key="lv.level" :level="lv.level">
@@ -108,7 +108,7 @@ const text = computed(() => value.value.map(labelOf).join("、"));
             >
               －
             </span>
-            <XhCascaderItemIndicator>✓</XhCascaderItemIndicator>
+            <XhCascaderItemIndicator />
           </XhCascaderItem>
         </XhCascaderColumn>
       </XhCascaderContent>

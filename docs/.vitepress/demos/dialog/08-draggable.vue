@@ -68,7 +68,7 @@ function reset(details: { open: boolean }): void {
       <div style="display: flex; justify-content: flex-end">
         <XhButton variant="solid" @click="setOpen(false)">关闭</XhButton>
       </div>
-      <XhDialogCloseTrigger>✕</XhDialogCloseTrigger>
+      <XhDialogCloseTrigger />
     </XhDialogContent>
   </XhDialogRoot>
 </template>

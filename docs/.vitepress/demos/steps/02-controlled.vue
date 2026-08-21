@@ -22,7 +22,7 @@ const current = ref(1);
       <XhStepsList>
         <XhStepsItem v-for="(s, i) in steps" :key="s" :value="i">
           <XhStepsTrigger>
-            <XhStepsIndicator>{{ current > i ? "✓" : i + 1 }}</XhStepsIndicator>
+            <XhStepsIndicator>{{ current > i ? "" : i + 1 }}</XhStepsIndicator>
             <XhStepsTitle>{{ s }}</XhStepsTitle>
           </XhStepsTrigger>
           <XhStepsSeparator />

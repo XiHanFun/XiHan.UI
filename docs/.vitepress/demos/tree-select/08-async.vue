@@ -77,7 +77,7 @@ function onExpandedChange(details: { value: string[] }): void {
     <XhTreeSelectLabel>投放城市</XhTreeSelectLabel>
     <XhTreeSelectTrigger>
       <XhTreeSelectValueText />
-      <XhTreeSelectIndicator>▾</XhTreeSelectIndicator>
+      <XhTreeSelectIndicator />
     </XhTreeSelectTrigger>
     <XhTreeSelectPositioner>
       <XhTreeSelectContent>
@@ -88,7 +88,7 @@ function onExpandedChange(details: { value: string[] }): void {
             :value="region.value"
           >
             <XhTreeSelectBranchControl>
-              <XhTreeSelectBranchTrigger>▸</XhTreeSelectBranchTrigger>
+              <XhTreeSelectBranchTrigger />
               <XhTreeSelectBranchText>{{ region.label }}</XhTreeSelectBranchText>
             </XhTreeSelectBranchControl>
             <XhTreeSelectBranchContent>
@@ -97,7 +97,7 @@ function onExpandedChange(details: { value: string[] }): void {
                 :key="city.value"
                 :value="city.value"
               >
-                <XhTreeSelectItemIndicator>✓</XhTreeSelectItemIndicator>
+                <XhTreeSelectItemIndicator />
                 <XhTreeSelectItemText>{{ city.label }}</XhTreeSelectItemText>
               </XhTreeSelectItem>
             </XhTreeSelectBranchContent>

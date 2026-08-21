@@ -93,40 +93,80 @@
       "$value": "-0.125em"
     },
     "mark-check": {
-      "$type": "string",
-      "$value": "'✓'"
+      "$type": "icon",
+      "$value": "check"
     },
     "mark-minus": {
-      "$type": "string",
-      "$value": "'−'"
+      "$type": "icon",
+      "$value": "minus"
+    },
+    "mark-plus": {
+      "$type": "icon",
+      "$value": "plus"
     },
     "mark-close": {
-      "$type": "string",
-      "$value": "'✕'"
-    },
-    "mark-caret-down": {
-      "$type": "string",
-      "$value": "'▾'"
-    },
-    "mark-caret-right": {
-      "$type": "string",
-      "$value": "'▸'"
+      "$type": "icon",
+      "$value": "x"
     },
     "mark-chevron-down": {
-      "$type": "string",
-      "$value": "'⌄'"
+      "$type": "icon",
+      "$value": "chevron-down"
+    },
+    "mark-chevron-up": {
+      "$type": "icon",
+      "$value": "chevron-up"
+    },
+    "mark-chevron-left": {
+      "$type": "icon",
+      "$value": "chevron-left"
+    },
+    "mark-chevron-right": {
+      "$type": "icon",
+      "$value": "chevron-right"
     },
     "mark-sort": {
-      "$type": "string",
-      "$value": "'↕'"
+      "$type": "icon",
+      "$value": "arrow-up-down"
     },
     "mark-sort-asc": {
-      "$type": "string",
-      "$value": "'↑'"
+      "$type": "icon",
+      "$value": "arrow-up"
     },
     "mark-sort-desc": {
-      "$type": "string",
-      "$value": "'↓'"
+      "$type": "icon",
+      "$value": "arrow-down"
+    },
+    "mark-info": {
+      "$type": "icon",
+      "$value": "info"
+    },
+    "mark-warning": {
+      "$type": "icon",
+      "$value": "triangle-alert"
+    },
+    "mark-zoom-in": {
+      "$type": "icon",
+      "$value": "zoom-in"
+    },
+    "mark-zoom-out": {
+      "$type": "icon",
+      "$value": "zoom-out"
+    },
+    "mark-rotate-left": {
+      "$type": "icon",
+      "$value": "rotate-left"
+    },
+    "mark-rotate-right": {
+      "$type": "icon",
+      "$value": "rotate-right"
+    },
+    "mark-flip-horizontal": {
+      "$type": "icon",
+      "$value": "flip-horizontal"
+    },
+    "mark-flip-vertical": {
+      "$type": "icon",
+      "$value": "flip-vertical"
     },
     "mark-required": {
       "$type": "string",

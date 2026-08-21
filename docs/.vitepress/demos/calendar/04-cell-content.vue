@@ -34,9 +34,9 @@ function hasPlan(iso: string) {
     style="max-inline-size: 360px"
   >
     <XhCalendarHeader>
-      <XhCalendarPrevTrigger aria-label="上个月">‹</XhCalendarPrevTrigger>
+      <XhCalendarPrevTrigger aria-label="上个月" />
       <XhCalendarHeading />
-      <XhCalendarNextTrigger aria-label="下个月">›</XhCalendarNextTrigger>
+      <XhCalendarNextTrigger aria-label="下个月" />
     </XhCalendarHeader>
     <XhCalendarGrid>
       <XhCalendarGridHead>

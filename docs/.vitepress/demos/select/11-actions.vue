@@ -33,14 +33,14 @@ const fruits = [
     <XhSelectLabel>水果</XhSelectLabel>
     <XhSelectTrigger>
       <XhSelectValueText />
-      <XhSelectIndicator>▾</XhSelectIndicator>
+      <XhSelectIndicator />
     </XhSelectTrigger>
     <XhSelectPositioner>
       <XhSelectContent>
         <XhSelectList>
           <XhSelectItem v-for="f in fruits" :key="f.value" :value="f.value">
             <XhSelectItemText>{{ f.label }}</XhSelectItemText>
-            <XhSelectItemIndicator>✓</XhSelectItemIndicator>
+            <XhSelectItemIndicator />
           </XhSelectItem>
         </XhSelectList>
       </XhSelectContent>

@@ -24,7 +24,7 @@ const seq = ref(0);
     >
       <XhToastTitle />
       <XhToastDescription />
-      <XhToastCloseTrigger>✕</XhToastCloseTrigger>
+      <XhToastCloseTrigger />
     </XhToastRoot>
     <XhButton size="sm" variant="outline" @click="seq++">再挂一条</XhButton>
   </div>

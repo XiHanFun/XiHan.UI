@@ -91,7 +91,7 @@ function onSkip(details: { step: number }): void {
           <XhTourPrevTrigger>上一步</XhTourPrevTrigger>
           <XhTourNextTrigger>下一步</XhTourNextTrigger>
         </div>
-        <XhTourCloseTrigger>✕</XhTourCloseTrigger>
+        <XhTourCloseTrigger />
         <XhTourArrow />
       </XhTourContent>
     </XhTourPositioner>

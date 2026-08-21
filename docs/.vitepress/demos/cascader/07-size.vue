@@ -49,7 +49,7 @@ const regions = [
       <XhCascaderLabel>{{ s.label }}</XhCascaderLabel>
       <XhCascaderTrigger>
         <XhCascaderValueText />
-        <XhCascaderIndicator>▾</XhCascaderIndicator>
+        <XhCascaderIndicator />
       </XhCascaderTrigger>
       <XhCascaderPositioner>
         <XhCascaderContent>

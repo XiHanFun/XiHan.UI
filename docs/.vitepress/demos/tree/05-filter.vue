@@ -86,12 +86,12 @@ watch(keyword, () => {
       <XhTreeTree>
         <XhTreeBranch v-for="region in collection" :key="region.value" :value="region.value">
           <XhTreeBranchControl>
-            <XhTreeBranchTrigger>▸</XhTreeBranchTrigger>
+            <XhTreeBranchTrigger />
             <XhTreeBranchText>{{ region.label }}</XhTreeBranchText>
           </XhTreeBranchControl>
           <XhTreeBranchContent>
             <XhTreeItem v-for="city in region.children" :key="city.value" :value="city.value">
-              <XhTreeItemIndicator>✓</XhTreeItemIndicator>
+              <XhTreeItemIndicator />
               <XhTreeItemText>{{ city.label }}</XhTreeItemText>
             </XhTreeItem>
           </XhTreeBranchContent>

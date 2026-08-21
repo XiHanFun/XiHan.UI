@@ -292,6 +292,18 @@
     margin-block: var(--xh-menubar-separator-my, var(--xh-space-1));
     background: var(--xh-menubar-separator-color, var(--xh-border-default));
   }
+
+  /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
+  [data-scope='menubar'][data-part='item-indicator']:empty::before {
+    content: '';
+    display: inline-block;
+    inline-size: 1em;
+    block-size: 1em;
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+  }
 }
 
 @layer xihan.motion {

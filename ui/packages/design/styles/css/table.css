@@ -361,17 +361,38 @@
   /* 排序方向用箭头字形表出来：aria-sort 只报给读屏，视觉侧也得有对应的东西 */
   [data-scope='table'][data-part='sort-trigger']::after {
     color: var(--xh-table-sort-fg, var(--xh-fg-subtle));
-    content: var(--xh-glyph-mark-sort);
+    content: '';
+    display: inline-block;
+    inline-size: 1em;
+    block-size: 1em;
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-sort) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-sort) center / contain no-repeat;
   }
 
   [data-scope='table'][data-part='sort-trigger'][data-sort='asc']::after {
     color: var(--xh-table-sort-fg-active, var(--xh-fg-default));
-    content: var(--xh-glyph-mark-sort-asc);
+    content: '';
+    display: inline-block;
+    inline-size: 1em;
+    block-size: 1em;
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-sort-asc) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-sort-asc) center / contain no-repeat;
   }
 
   [data-scope='table'][data-part='sort-trigger'][data-sort='desc']::after {
     color: var(--xh-table-sort-fg-active, var(--xh-fg-default));
-    content: var(--xh-glyph-mark-sort-desc);
+    content: '';
+    display: inline-block;
+    inline-size: 1em;
+    block-size: 1em;
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-sort-desc) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-sort-desc) center / contain no-repeat;
   }
 
   /* 多字段排序的优先级角标：链里第几环就显几，只在参与排序时才有 data-sort-index */
@@ -437,5 +458,29 @@
 
   [data-scope='table'][data-part='loading-state'] {
     animation: xh-table-loading-pulse var(--xh-duration-slow) var(--xh-ease-standard) infinite alternate;
+  }
+
+  /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
+  [data-scope='table'][data-part='select-all-trigger']:empty::before,
+  [data-scope='table'][data-part='row-select-trigger']:empty::before {
+    content: '';
+    display: inline-block;
+    inline-size: 1em;
+    block-size: 1em;
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+  }
+
+  [data-scope='table'][data-part='expand-trigger']:empty::before {
+    content: '';
+    display: inline-block;
+    inline-size: 1em;
+    block-size: 1em;
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
   }
 }

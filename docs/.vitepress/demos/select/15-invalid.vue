@@ -30,14 +30,14 @@ const invalid = computed(() => picked.value.length === 0);
     <XhSelectLabel>所属部门</XhSelectLabel>
     <XhSelectTrigger :aria-describedby="invalid ? 'select-invalid-tip' : undefined">
       <XhSelectValueText />
-      <XhSelectIndicator>▾</XhSelectIndicator>
+      <XhSelectIndicator />
     </XhSelectTrigger>
     <XhSelectPositioner>
       <XhSelectContent>
         <XhSelectList>
           <XhSelectItem v-for="d in departments" :key="d.value" :value="d.value">
             <XhSelectItemText>{{ d.label }}</XhSelectItemText>
-            <XhSelectItemIndicator>✓</XhSelectItemIndicator>
+            <XhSelectItemIndicator />
           </XhSelectItem>
         </XhSelectList>
       </XhSelectContent>

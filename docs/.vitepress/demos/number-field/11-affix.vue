@@ -14,21 +14,21 @@ import {
   <XhNumberFieldRoot default-value="99" :min="0" :max="9999">
     <XhNumberFieldLabel>单价</XhNumberFieldLabel>
     <XhNumberFieldControl>
-      <XhNumberFieldDecrementTrigger>−</XhNumberFieldDecrementTrigger>
+      <XhNumberFieldDecrementTrigger />
       <span style="color: var(--xh-fg-muted)">¥</span>
       <XhNumberFieldInput />
       <span style="color: var(--xh-fg-muted)">元</span>
-      <XhNumberFieldIncrementTrigger>+</XhNumberFieldIncrementTrigger>
+      <XhNumberFieldIncrementTrigger />
     </XhNumberFieldControl>
   </XhNumberFieldRoot>
 
   <XhNumberFieldRoot default-value="500" :min="0" :max="5000" :step="50">
     <XhNumberFieldLabel>重量</XhNumberFieldLabel>
     <XhNumberFieldControl>
-      <XhNumberFieldDecrementTrigger>−</XhNumberFieldDecrementTrigger>
+      <XhNumberFieldDecrementTrigger />
       <XhNumberFieldInput />
       <span style="color: var(--xh-fg-muted)">g</span>
-      <XhNumberFieldIncrementTrigger>+</XhNumberFieldIncrementTrigger>
+      <XhNumberFieldIncrementTrigger />
     </XhNumberFieldControl>
   </XhNumberFieldRoot>
 </template>

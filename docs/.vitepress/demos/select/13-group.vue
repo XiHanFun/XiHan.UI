@@ -42,7 +42,7 @@ const picked = ref<string[]>([]);
     <XhSelectLabel>食材</XhSelectLabel>
     <XhSelectTrigger>
       <XhSelectValueText />
-      <XhSelectIndicator>▾</XhSelectIndicator>
+      <XhSelectIndicator />
     </XhSelectTrigger>
     <XhSelectPositioner>
       <XhSelectContent>
@@ -54,7 +54,7 @@ const picked = ref<string[]>([]);
             </div>
             <XhSelectItem v-for="o in g.items" :key="o.value" :value="o.value">
               <XhSelectItemText>{{ o.label }}</XhSelectItemText>
-              <XhSelectItemIndicator>✓</XhSelectItemIndicator>
+              <XhSelectItemIndicator />
             </XhSelectItem>
           </div>
         </XhSelectList>

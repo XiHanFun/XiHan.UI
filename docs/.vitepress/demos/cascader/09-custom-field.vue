@@ -87,14 +87,14 @@ const area = ref<string[][]>([]);
     <XhCascaderLabel>服务区域</XhCascaderLabel>
     <XhCascaderTrigger>
       <XhCascaderValueText />
-      <XhCascaderIndicator>▾</XhCascaderIndicator>
+      <XhCascaderIndicator />
     </XhCascaderTrigger>
     <XhCascaderPositioner>
       <XhCascaderContent>
         <XhCascaderColumn v-for="lv in levels" :key="lv.level" :level="lv.level">
           <XhCascaderItem v-for="node in lv.items" :key="node.value" :value="node.value">
             <XhCascaderItemText>{{ node.label }}</XhCascaderItemText>
-            <XhCascaderItemIndicator>✓</XhCascaderItemIndicator>
+            <XhCascaderItemIndicator />
           </XhCascaderItem>
         </XhCascaderColumn>
       </XhCascaderContent>

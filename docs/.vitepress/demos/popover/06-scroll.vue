@@ -35,7 +35,7 @@ const versions = Array.from({ length: 18 }, (_, i) => ({
             {{ v.text }}
           </p>
         </div>
-        <XhPopoverCloseTrigger>✕</XhPopoverCloseTrigger>
+        <XhPopoverCloseTrigger />
         <XhPopoverArrow />
       </XhPopoverContent>
     </XhPopoverPositioner>

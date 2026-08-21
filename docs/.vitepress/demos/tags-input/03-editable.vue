@@ -29,7 +29,7 @@ const tags = ref<string[]>(["前端", "组件库", "无障碍"]);
       <XhTagsInputItem v-for="t in value" :key="t" :value="t">
         <XhTagsInputItemPreview>
           <XhTagsInputItemText>{{ t }}</XhTagsInputItemText>
-          <XhTagsInputItemDeleteTrigger>×</XhTagsInputItemDeleteTrigger>
+          <XhTagsInputItemDeleteTrigger />
         </XhTagsInputItemPreview>
         <!-- 编辑框常挂不卸载，不编辑时由组件收起 -->
         <XhTagsInputItemInput />

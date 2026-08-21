@@ -78,7 +78,7 @@ const area = ref<string[][]>([]);
     <XhCascaderLabel>收货地区</XhCascaderLabel>
     <XhCascaderTrigger>
       <XhCascaderValueText />
-      <XhCascaderIndicator>▾</XhCascaderIndicator>
+      <XhCascaderIndicator />
     </XhCascaderTrigger>
     <XhCascaderPositioner>
       <XhCascaderContent>
@@ -97,7 +97,7 @@ const area = ref<string[][]>([]);
             >
               取数中
             </span>
-            <XhCascaderItemIndicator>✓</XhCascaderItemIndicator>
+            <XhCascaderItemIndicator />
           </XhCascaderItem>
         </XhCascaderColumn>
       </XhCascaderContent>

@@ -93,7 +93,7 @@ const dropStyle = {
             @dragleave="over = null"
             @drop.prevent="onDrop(folder.value)"
           >
-            <XhTreeBranchTrigger>▸</XhTreeBranchTrigger>
+            <XhTreeBranchTrigger />
             <XhTreeBranchText>{{ folder.label }}</XhTreeBranchText>
             <span style="margin-inline-start: auto">{{ folder.children.length }}</span>
           </XhTreeBranchControl>

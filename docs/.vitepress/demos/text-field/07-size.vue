@@ -14,7 +14,7 @@ import {
     <XhTextFieldLabel>sm</XhTextFieldLabel>
     <div style="display: flex; gap: 4px">
       <XhTextFieldInput style="inline-size: 160px" />
-      <XhTextFieldClearTrigger>✕</XhTextFieldClearTrigger>
+      <XhTextFieldClearTrigger />
     </div>
   </XhTextFieldRoot>
 
@@ -22,7 +22,7 @@ import {
     <XhTextFieldLabel>缺省</XhTextFieldLabel>
     <div style="display: flex; gap: 4px">
       <XhTextFieldInput style="inline-size: 160px" />
-      <XhTextFieldClearTrigger>✕</XhTextFieldClearTrigger>
+      <XhTextFieldClearTrigger />
     </div>
   </XhTextFieldRoot>
 
@@ -30,7 +30,7 @@ import {
     <XhTextFieldLabel>lg</XhTextFieldLabel>
     <div style="display: flex; gap: 4px">
       <XhTextFieldInput style="inline-size: 160px" />
-      <XhTextFieldClearTrigger>✕</XhTextFieldClearTrigger>
+      <XhTextFieldClearTrigger />
     </div>
   </XhTextFieldRoot>
 </template>

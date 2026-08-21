@@ -48,7 +48,7 @@ function itemStyle(index: number, page: number): Record<string, string> | undefi
     :slide-count="slides.length"
     style="inline-size: 100%"
   >
-    <XhCarouselPrevTrigger>‹</XhCarouselPrevTrigger>
+    <XhCarouselPrevTrigger />
     <XhCarouselViewport style="block-size: 140px">
       <XhCarouselItemGroup :style="groupStyle">
         <XhCarouselItem
@@ -63,7 +63,7 @@ function itemStyle(index: number, page: number): Record<string, string> | undefi
         </XhCarouselItem>
       </XhCarouselItemGroup>
     </XhCarouselViewport>
-    <XhCarouselNextTrigger>›</XhCarouselNextTrigger>
+    <XhCarouselNextTrigger />
     <XhCarouselIndicatorGroup>
       <XhCarouselIndicator v-for="p in totalPages" :key="p" :index="p - 1" />
     </XhCarouselIndicatorGroup>

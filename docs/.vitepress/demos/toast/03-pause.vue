@@ -27,7 +27,7 @@ const seq = ref(0);
       <span style="font-size: 12px; opacity: 0.75">
         状态：{{ status }} · {{ paused ? "计时已按住" : "计时在走" }}
       </span>
-      <XhToastCloseTrigger>✕</XhToastCloseTrigger>
+      <XhToastCloseTrigger />
     </XhToastRoot>
     <XhButton size="sm" variant="outline" @click="seq++">重新计时</XhButton>
   </div>

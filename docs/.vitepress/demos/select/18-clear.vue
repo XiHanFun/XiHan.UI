@@ -37,16 +37,16 @@ const picked = ref<string[]>(["design"]);
     <XhSelectControl>
       <XhSelectTrigger>
         <XhSelectValueText />
-        <XhSelectIndicator>▾</XhSelectIndicator>
+        <XhSelectIndicator />
       </XhSelectTrigger>
-      <XhSelectClearTrigger>✕</XhSelectClearTrigger>
+      <XhSelectClearTrigger />
     </XhSelectControl>
     <XhSelectPositioner>
       <XhSelectContent>
         <XhSelectList>
           <XhSelectItem v-for="t in teams" :key="t.value" :value="t.value">
             <XhSelectItemText>{{ t.label }}</XhSelectItemText>
-            <XhSelectItemIndicator>✓</XhSelectItemIndicator>
+            <XhSelectItemIndicator />
           </XhSelectItem>
         </XhSelectList>
       </XhSelectContent>

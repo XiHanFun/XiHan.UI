@@ -59,7 +59,7 @@ const toastTranslations = { close: "关闭" };
         >
           <XhToastTitle />
           <XhToastDescription />
-          <XhToastCloseTrigger>✕</XhToastCloseTrigger>
+          <XhToastCloseTrigger />
         </XhToastRoot>
       </template>
     </XhToasterGroup>

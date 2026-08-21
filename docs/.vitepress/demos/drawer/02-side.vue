@@ -32,7 +32,7 @@ const sides = [
         <XhDrawerDescription>
           当前 data-side 是 {{ side }}。
         </XhDrawerDescription>
-        <XhDrawerCloseTrigger>✕</XhDrawerCloseTrigger>
+        <XhDrawerCloseTrigger />
       </XhDrawerContent>
     </XhDrawerRoot>
   </div>

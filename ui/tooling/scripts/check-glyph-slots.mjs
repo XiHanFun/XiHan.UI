@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-// 门禁：皮肤里的字形一律走 --xh-glyph-mark-* 令牌槽，不许再写字面字符。
+// 门禁：皮肤里的兜底字形一律走 --xh-glyph-mark-* 令牌（图标包的 SVG 经 mask 着色），
+// 不许再写字面字符；声明了的令牌要有人用，用到的令牌要声明过。
 //
 // 同一个勾号曾散在 8 份皮肤里各写一遍，换一套图形要逐份改、漏一份就长歪一处；
 // 而使用者想换掉它时也无处下手——伪元素的 content 既没有槽位也接不了节点。
@@ -10,6 +11,8 @@ import { join } from 'node:path'
 
 const STYLES_DIR = 'packages/design/styles/css'
 const TOKENS_CSS = 'packages/design/tokens/tokens.css'
+/** 适配器里由 JS 拼出来的默认模板（命令式 toast / dialog 的类型徽记）也引这族令牌。 */
+const ADAPTER_SRC = ['packages/adapters/vue/src', 'packages/adapters/web-components/src']
 
 /** 数据本身的语法字符，不是视觉标记：换掉它渲染出来的就不是那个数据格式了。 */
 const NOT_A_MARK = new Map([
@@ -49,6 +52,16 @@ for (const file of files) {
   })
 }
 
+for (const root of ADAPTER_SRC) {
+  for (const entry of await readdir(root, { withFileTypes: true, recursive: true })) {
+    if (!entry.isFile() || !entry.name.endsWith('.ts'))
+      continue
+    const source = await readFile(join(entry.parentPath ?? entry.path, entry.name), 'utf8')
+    for (const m of source.matchAll(/(--xh-glyph-mark-[a-z0-9-]+)/g))
+      used.add(m[1])
+  }
+}
+
 const unknown = [...used].filter(name => !declared.has(name))
 const dead = [...declared].filter(name => !used.has(name))
 
@@ -71,4 +84,4 @@ if (dead.length) {
 if (literals.length || unknown.length || dead.length)
   process.exit(1)
 
-console.log(`[check-glyph-slots] 通过：${declared.size} 个字形槽，${files.length} 份皮肤里没有写死的字形`)
+console.log(`[check-glyph-slots] 通过：${declared.size} 个字形令牌都有人用，${files.length} 份皮肤里没有写死的字形`)

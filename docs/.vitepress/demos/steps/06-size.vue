@@ -38,7 +38,7 @@ const steps = [
         <XhStepsList>
           <XhStepsItem v-for="(item, i) in steps" :key="item.title" :value="i">
             <XhStepsTrigger>
-              <XhStepsIndicator>{{ i === 0 ? "✓" : i + 1 }}</XhStepsIndicator>
+              <XhStepsIndicator>{{ i === 0 ? "" : i + 1 }}</XhStepsIndicator>
               <XhStepsTitle>{{ item.title }}</XhStepsTitle>
               <XhStepsDescription>{{ item.description }}</XhStepsDescription>
             </XhStepsTrigger>

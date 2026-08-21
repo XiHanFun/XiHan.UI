@@ -31,14 +31,14 @@ const pageSize = computed(() => Number(picked.value[0] ?? "10"));
       <XhSelectLabel>每页条数</XhSelectLabel>
       <XhSelectTrigger>
         <XhSelectValueText />
-        <XhSelectIndicator>▾</XhSelectIndicator>
+        <XhSelectIndicator />
       </XhSelectTrigger>
       <XhSelectPositioner>
         <XhSelectContent>
           <XhSelectList>
             <XhSelectItem v-for="o in options" :key="o" :value="o">
               <XhSelectItemText>{{ o }} 条 / 页</XhSelectItemText>
-              <XhSelectItemIndicator>✓</XhSelectItemIndicator>
+              <XhSelectItemIndicator />
             </XhSelectItem>
           </XhSelectList>
         </XhSelectContent>

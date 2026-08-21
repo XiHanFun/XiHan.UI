@@ -22,9 +22,9 @@ const sizes = [
     <XhNumberFieldRoot v-for="s in sizes" :key="s.label" :size="s.size" default-value="1">
       <XhNumberFieldLabel>{{ s.label }}</XhNumberFieldLabel>
       <XhNumberFieldControl>
-        <XhNumberFieldDecrementTrigger>−</XhNumberFieldDecrementTrigger>
+        <XhNumberFieldDecrementTrigger />
         <XhNumberFieldInput />
-        <XhNumberFieldIncrementTrigger>+</XhNumberFieldIncrementTrigger>
+        <XhNumberFieldIncrementTrigger />
       </XhNumberFieldControl>
     </XhNumberFieldRoot>
   </div>

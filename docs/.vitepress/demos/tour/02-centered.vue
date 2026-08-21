@@ -78,7 +78,7 @@ const translations = {
           <XhTourNextTrigger>{{ lastStep ? "完成" : "下一步" }}</XhTourNextTrigger>
           <XhTourSkipTrigger>跳过</XhTourSkipTrigger>
         </div>
-        <XhTourCloseTrigger>✕</XhTourCloseTrigger>
+        <XhTourCloseTrigger />
         <XhTourArrow />
       </XhTourContent>
     </XhTourPositioner>

@@ -24,8 +24,8 @@ function pad() {
     <XhNumberFieldLabel>单价（每档 0.1）</XhNumberFieldLabel>
     <XhNumberFieldControl>
       <XhNumberFieldInput @blur="pad" />
-      <XhNumberFieldDecrementTrigger @pointerup="pad">−</XhNumberFieldDecrementTrigger>
-      <XhNumberFieldIncrementTrigger @pointerup="pad">+</XhNumberFieldIncrementTrigger>
+      <XhNumberFieldDecrementTrigger @pointerup="pad" />
+      <XhNumberFieldIncrementTrigger @pointerup="pad" />
     </XhNumberFieldControl>
     <span>当前：{{ price || "（空）" }}</span>
   </XhNumberFieldRoot>

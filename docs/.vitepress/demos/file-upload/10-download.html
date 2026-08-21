@@ -43,7 +43,7 @@
           '<span data-xh-part="item-size-text"></span>' +
           `<a style="${action}" href="${url}" download="${file.name}">下载</a>` +
           `<button style="${action}" type="button">存为副本</button>` +
-          '<button data-xh-part="item-delete-trigger">✕</button>';
+          '<button data-xh-part="item-delete-trigger"></button>';
         item.querySelector("button").addEventListener("click", () => {
           saveCopy(file, url);
         });

@@ -25,7 +25,7 @@ const value = ref("");
       <XhTimePickerInput segment="hour" />
       <span>:</span>
       <XhTimePickerInput segment="minute" />
-      <XhTimePickerClearTrigger>✕</XhTimePickerClearTrigger>
+      <XhTimePickerClearTrigger />
     </XhTimePickerControl>
     <!-- 表单出口：随表单提交的是完整 ISO 串 -->
     <XhTimePickerHiddenInput />

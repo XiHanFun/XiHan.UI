@@ -50,7 +50,7 @@ async function remove(tag: string) {
       @open-change="remove(tag)"
     >
       <XhTagLabel>{{ tag }}</XhTagLabel>
-      <XhTagCloseTrigger>×</XhTagCloseTrigger>
+      <XhTagCloseTrigger />
     </XhTagRoot>
 
     <span v-if="!tags.length" style="font-size: 13px">已全部移除</span>

@@ -53,7 +53,7 @@ function nextTitle(): string {
         >
           <XhToastTitle />
           <XhToastDescription />
-          <XhToastCloseTrigger>✕</XhToastCloseTrigger>
+          <XhToastCloseTrigger />
         </XhToastRoot>
       </template>
     </XhToasterGroup>

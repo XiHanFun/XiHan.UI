@@ -30,7 +30,7 @@ const steps = [
       <XhStepsItem v-for="(s, i) in steps" :key="s.title" :value="i">
         <XhStepsTrigger>
           <!-- 圆点里的字符是作者内容：皮肤只按 data-state 管描边与填充 -->
-          <XhStepsIndicator>{{ step > i ? "✓" : i + 1 }}</XhStepsIndicator>
+          <XhStepsIndicator>{{ step > i ? "" : i + 1 }}</XhStepsIndicator>
           <XhStepsTitle>{{ s.title }}</XhStepsTitle>
           <XhStepsDescription>{{ s.description }}</XhStepsDescription>
         </XhStepsTrigger>

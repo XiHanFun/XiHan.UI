@@ -49,29 +49,29 @@ const picked = ref<string[]>(["index"]);
     <XhTreeSelectLabel>提交范围</XhTreeSelectLabel>
     <XhTreeSelectTrigger>
       <XhTreeSelectValueText />
-      <XhTreeSelectIndicator>▾</XhTreeSelectIndicator>
+      <XhTreeSelectIndicator />
     </XhTreeSelectTrigger>
     <XhTreeSelectPositioner>
       <XhTreeSelectContent>
         <XhTreeSelectTree>
           <XhTreeSelectBranch value="src">
             <XhTreeSelectBranchControl>
-              <XhTreeSelectBranchTrigger>▸</XhTreeSelectBranchTrigger>
+              <XhTreeSelectBranchTrigger />
               <XhTreeSelectBranchText>src</XhTreeSelectBranchText>
             </XhTreeSelectBranchControl>
             <XhTreeSelectBranchContent>
               <XhTreeSelectItem value="index">
-                <XhTreeSelectItemIndicator>✓</XhTreeSelectItemIndicator>
+                <XhTreeSelectItemIndicator />
                 <XhTreeSelectItemText>index.ts</XhTreeSelectItemText>
               </XhTreeSelectItem>
               <XhTreeSelectItem value="app">
-                <XhTreeSelectItemIndicator>✓</XhTreeSelectItemIndicator>
+                <XhTreeSelectItemIndicator />
                 <XhTreeSelectItemText>app.vue</XhTreeSelectItemText>
               </XhTreeSelectItem>
             </XhTreeSelectBranchContent>
           </XhTreeSelectBranch>
           <XhTreeSelectItem value="readme">
-            <XhTreeSelectItemIndicator>✓</XhTreeSelectItemIndicator>
+            <XhTreeSelectItemIndicator />
             <XhTreeSelectItemText>README.md</XhTreeSelectItemText>
           </XhTreeSelectItem>
         </XhTreeSelectTree>

@@ -24,7 +24,7 @@ const open = ref(false);
       <XhDrawerDescription>
         这里没有 trigger，开合完全跟着外面那颗按钮与 open 走。
       </XhDrawerDescription>
-      <XhDrawerCloseTrigger>✕</XhDrawerCloseTrigger>
+      <XhDrawerCloseTrigger />
     </XhDrawerContent>
   </XhDrawerRoot>
 </template>

@@ -23,7 +23,7 @@ const slides = ["一", "二", "三", "四", "五", "六"];
     style="inline-size: 100%"
   >
     <!-- 不回绕：首页的上一张与末页的下一张转成原生 disabled -->
-    <XhCarouselPrevTrigger>‹</XhCarouselPrevTrigger>
+    <XhCarouselPrevTrigger />
     <XhCarouselViewport style="block-size: 120px">
       <XhCarouselItemGroup>
         <XhCarouselItem v-for="(text, i) in slides" :key="text" :index="i">
@@ -33,7 +33,7 @@ const slides = ["一", "二", "三", "四", "五", "六"];
         </XhCarouselItem>
       </XhCarouselItemGroup>
     </XhCarouselViewport>
-    <XhCarouselNextTrigger>›</XhCarouselNextTrigger>
+    <XhCarouselNextTrigger />
     <XhCarouselIndicatorGroup>
       <XhCarouselIndicator v-for="p in totalPages" :key="p" :index="p - 1" />
     </XhCarouselIndicatorGroup>

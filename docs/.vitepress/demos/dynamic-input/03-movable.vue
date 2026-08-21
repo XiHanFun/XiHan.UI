@@ -38,9 +38,9 @@ function setAt(index: number, next: string) {
         />
       </XhDynamicInputItemContent>
       <XhDynamicInputItemAction>
-        <XhDynamicInputMoveUpTrigger>↑</XhDynamicInputMoveUpTrigger>
-        <XhDynamicInputMoveDownTrigger>↓</XhDynamicInputMoveDownTrigger>
-        <XhDynamicInputRemoveTrigger>×</XhDynamicInputRemoveTrigger>
+        <XhDynamicInputMoveUpTrigger />
+        <XhDynamicInputMoveDownTrigger />
+        <XhDynamicInputRemoveTrigger />
       </XhDynamicInputItemAction>
     </XhDynamicInputItem>
     <XhDynamicInputAddTrigger>+ 添加一步</XhDynamicInputAddTrigger>

@@ -28,7 +28,7 @@ const autoEl = ref<HTMLElement | null>(null);
         size="sm"
         style="position: absolute; --xh-back-top-inset-block: 12px; --xh-back-top-inset-inline: 12px"
       >
-        <XhBackTopTrigger>↑</XhBackTopTrigger>
+        <XhBackTopTrigger />
       </XhBackTopRoot>
     </div>
 
@@ -51,7 +51,7 @@ const autoEl = ref<HTMLElement | null>(null);
         size="sm"
         style="position: absolute; --xh-back-top-inset-block: 12px; --xh-back-top-inset-inline: 12px"
       >
-        <XhBackTopTrigger>↑</XhBackTopTrigger>
+        <XhBackTopTrigger />
       </XhBackTopRoot>
     </div>
   </div>

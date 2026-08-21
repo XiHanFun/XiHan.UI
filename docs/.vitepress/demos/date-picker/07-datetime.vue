@@ -45,9 +45,9 @@ const stamp = ref<string[]>([]);
         <div style="display: flex; align-items: stretch">
           <XhDatePickerCalendar>
             <XhDatePickerHeader>
-              <XhDatePickerPrevTrigger aria-label="上个月">‹</XhDatePickerPrevTrigger>
+              <XhDatePickerPrevTrigger aria-label="上个月" />
               <XhDatePickerHeading />
-              <XhDatePickerNextTrigger aria-label="下个月">›</XhDatePickerNextTrigger>
+              <XhDatePickerNextTrigger aria-label="下个月" />
             </XhDatePickerHeader>
             <XhDatePickerGrid>
               <XhDatePickerGridHead>

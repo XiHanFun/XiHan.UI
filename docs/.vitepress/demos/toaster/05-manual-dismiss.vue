@@ -73,7 +73,7 @@ function settle(
         >
           <XhToastTitle />
           <XhToastDescription />
-          <XhToastCloseTrigger>✕</XhToastCloseTrigger>
+          <XhToastCloseTrigger />
         </XhToastRoot>
       </template>
     </XhToasterGroup>

@@ -15,7 +15,7 @@ const open = ref(true);
   <div style="width: 100%; display: grid; gap: 12px">
     <XhAlertRoot v-model:open="open" closable>
       <XhAlertTitle>点右侧关闭</XhAlertTitle>
-      <XhAlertCloseTrigger>×</XhAlertCloseTrigger>
+      <XhAlertCloseTrigger />
     </XhAlertRoot>
     <XhButton v-if="!open" size="sm" @click="open = true">再显示一次</XhButton>
   </div>

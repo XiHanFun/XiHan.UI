@@ -200,6 +200,18 @@
   outline-offset: var(--xh-ring-offset);
 }
 
+/* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
+[data-scope='back-top'][data-part='trigger']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-chevron-up) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-chevron-up) center / contain no-repeat;
+}
+
 /* styles/button-group.css */
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='button-group'] {
@@ -806,6 +818,40 @@
   cursor: not-allowed;
 }
 
+/* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
+[data-scope='dynamic-input'][data-part='move-up-trigger']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-chevron-up) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-chevron-up) center / contain no-repeat;
+}
+
+[data-scope='dynamic-input'][data-part='move-down-trigger']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
+}
+
+[data-scope='dynamic-input'][data-part='remove-trigger']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+}
+
 /* styles/ellipsis.css */
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='ellipsis'] {
@@ -1147,6 +1193,18 @@
   border-radius: var(--xh-_float-button-radius);
 }
 
+/* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
+[data-scope='float-button'][data-part='trigger']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-plus) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-plus) center / contain no-repeat;
+}
+
 /* styles/floating-panel.css */
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='floating-panel'] {
@@ -1421,6 +1479,18 @@
 /* 收拢时连接层给正文打 hidden，这里把 UA 的 [hidden] 还回来（上面那条 display 盖掉了它） */
 [data-scope='floating-panel'][data-part='body'][hidden] {
   display: none;
+}
+
+/* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
+[data-scope='floating-panel'][data-part='close-trigger']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-close) center / contain no-repeat;
 }
 
 /* styles/gradient-text.css */
@@ -2975,7 +3045,14 @@
 
 /* 没写内容就由皮肤画；作者往部件里塞了自己的图形，这条规则即不命中 */
 [data-scope='json-viewer'][data-part='branch-indicator']:empty::before {
-  content: var(--xh-glyph-mark-caret-right);
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
 }
 
 /* 收起时朝向行首、展开时转向下方，与逻辑书写方向一致：
@@ -4837,7 +4914,14 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 没写内容就由皮肤画勾；作者往部件里塞了自己的图形，这条规则即不命中 */
 [data-scope='popselect'][data-part='item-indicator']:empty::before {
-  content: var(--xh-glyph-mark-check);
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-check) center / contain no-repeat;
 }
 
 [data-scope='popselect'][data-part='item-indicator'][data-state='checked'] {
@@ -5736,6 +5820,18 @@ input[data-scope='mention'][data-part='input'] {
   cursor: not-allowed;
 }
 
+/* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
+[data-scope='tag'][data-part='close-trigger']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+}
+
 /* styles/time.css */
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='time'] {
@@ -6611,6 +6707,18 @@ input[data-scope='mention'][data-part='input'] {
   outline-offset: var(--xh-ring-offset);
 }
 
+/* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
+[data-scope='alert'][data-part='close-trigger']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+}
+
 /* styles/empty-state.css */
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='empty-state'] {
@@ -6955,7 +7063,14 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 没写内容就由皮肤画；作者往部件里塞了自己的图形，这条规则即不命中 */
 [data-scope='accordion'][data-part='indicator']:empty::before {
-  content: var(--xh-glyph-mark-chevron-down);
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
 }
 
 [data-scope='accordion'][data-part='indicator'][data-state='open'] {
@@ -7861,6 +7976,29 @@ input[data-scope='mention'][data-part='input'] {
   outline-offset: calc(-1 * var(--xh-ring-width));
 }
 
+/* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
+[data-scope='calendar'][data-part='prev-trigger']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-chevron-left) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-chevron-left) center / contain no-repeat;
+}
+
+[data-scope='calendar'][data-part='next-trigger']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
+}
+
 /* styles/card.css */
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='card'] {
@@ -8180,6 +8318,29 @@ input[data-scope='mention'][data-part='input'] {
   }
 }
 
+/* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
+[data-scope='carousel'][data-part='prev-trigger']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-chevron-left) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-chevron-left) center / contain no-repeat;
+}
+
+[data-scope='carousel'][data-part='next-trigger']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
+}
+
 /* styles/cascader.css */
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='cascader'] {
@@ -8385,7 +8546,14 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 没写内容就由皮肤画箭头；作者往部件里塞了自己的图形，这条规则即不命中 */
 [data-scope='cascader'][data-part='indicator']:empty::before {
-  content: var(--xh-glyph-mark-caret-down);
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
 }
 
 [data-scope='cascader'][data-part='indicator'][data-state='open'] {
@@ -8624,7 +8792,14 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 没写内容就由皮肤画勾；作者往部件里塞了自己的图形，这条规则即不命中 */
 [data-scope='cascader'][data-part='item-indicator']:empty::before {
-  content: var(--xh-glyph-mark-check);
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-check) center / contain no-repeat;
 }
 
 [data-scope='cascader'][data-part='item-indicator'][data-state='checked'] {
@@ -8638,7 +8813,14 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='cascader'][data-part='item-indicator'][data-indeterminate]:not([data-state='checked']):empty::before {
-  content: var(--xh-glyph-mark-minus);
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
   font-weight: var(--xh-font-weight-semibold);
 }
 
@@ -8753,6 +8935,18 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='cascader'][data-part='empty'][hidden] {
   display: none;
+}
+
+/* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
+[data-scope='cascader'][data-part='clear-trigger']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-close) center / contain no-repeat;
 }
 
 /* 浮层是横向长出来的：淡入之外再沿书写方向起始缘推一小段，观感上像列被「拉开」。
@@ -8870,7 +9064,14 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 没写内容就由皮肤画；作者往部件里塞了自己的图形，这条规则即不命中 */
 [data-scope='checkbox'][data-part='indicator']:empty::before {
-  content: var(--xh-glyph-mark-check);
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-check) center / contain no-repeat;
 }
 
 [data-scope='checkbox'][data-part='indicator'][data-state='unchecked'] {
@@ -9031,17 +9232,38 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 勾号由皮肤补，作者不必自己往 indicator 里塞字符 */
 [data-scope='checkbox-group'][data-part='indicator'][data-state='checked']:empty::before {
-  content: var(--xh-glyph-mark-check);
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-check) center / contain no-repeat;
 }
 
 /* 全选格的三态：all 打勾、some 打横杠、none 留空。
    some 就是读屏听到的 aria-checked=mixed，两者同源，样式只认 data-state */
 [data-scope='checkbox-group'][data-part='trigger'][data-state='all']::before {
-  content: var(--xh-glyph-mark-check);
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-check) center / contain no-repeat;
 }
 
 [data-scope='checkbox-group'][data-part='trigger'][data-state='some']::before {
-  content: var(--xh-glyph-mark-minus);
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
 }
 
 /* 校验失败标在每个方框上：root 上的 data-invalid 是唯一出处，条目自己不带这个属性 */
@@ -10185,12 +10407,26 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 没写内容就由皮肤画箭头；作者往部件里塞了自己的图形，这条规则即不命中 */
 [data-scope='combobox'][data-part='trigger']:empty::before {
-  content: var(--xh-glyph-mark-caret-down);
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
 }
 
 /* 同上：没写内容就由皮肤画叉 */
 [data-scope='combobox'][data-part='clear-trigger']:empty::before {
-  content: var(--xh-glyph-mark-close);
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-close) center / contain no-repeat;
 }
 
 [data-scope='combobox'][data-part='trigger'][data-state='open']:empty::before,
@@ -10370,7 +10606,14 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 同上：没写内容就由皮肤画勾 */
 [data-scope='combobox'][data-part='item-indicator']:empty::before {
-  content: var(--xh-glyph-mark-check);
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-check) center / contain no-repeat;
 }
 
 [data-scope='combobox'][data-part='item-indicator'][data-state='checked'] {
@@ -10797,6 +11040,18 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='context-menu'][data-part='arrow'][hidden] {
   display: none;
+}
+
+/* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
+[data-scope='context-menu'][data-part='item-indicator']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-check) center / contain no-repeat;
 }
 
 /* 自带前缀独占一个名字，不动公共的那份关键帧 */
@@ -11489,6 +11744,29 @@ input[data-scope='mention'][data-part='input'] {
   display: none;
 }
 
+/* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
+[data-scope='date-picker'][data-part='clear-trigger']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+}
+
+[data-scope='date-picker'][data-part='trigger']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
+}
+
 /* 浮层进场：淡入 + 轻微上浮。名字带组件前缀，不与公共关键帧抢名 */
 @keyframes xh-pop-in {
   from {
@@ -11696,6 +11974,18 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='dialog'][data-part='close-trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
   outline-offset: var(--xh-ring-offset);
+}
+
+/* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
+[data-scope='dialog'][data-part='close-trigger']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-close) center / contain no-repeat;
 }
 
 /* styles/drawer.css */
@@ -12095,6 +12385,18 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='drawer'][data-part='close-trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
   outline-offset: var(--xh-ring-offset);
+}
+
+/* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
+[data-scope='drawer'][data-part='close-trigger']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-close) center / contain no-repeat;
 }
 
 /* styles/editable.css */
@@ -12754,6 +13056,19 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='file-upload'][data-part='clear-trigger']:disabled {
   color: var(--xh-fg-disabled);
   cursor: not-allowed;
+}
+
+/* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
+[data-scope='file-upload'][data-part='item-delete-trigger']:empty::before,
+[data-scope='file-upload'][data-part='clear-trigger']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-close) center / contain no-repeat;
 }
 
 /* styles/form.css */
@@ -13417,6 +13732,106 @@ input[data-scope='mention'][data-part='input'] {
   }
 }
 
+/* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
+[data-scope='image-viewer'][data-part='zoom-in-trigger']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-zoom-in) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-zoom-in) center / contain no-repeat;
+}
+
+[data-scope='image-viewer'][data-part='zoom-out-trigger']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-zoom-out) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-zoom-out) center / contain no-repeat;
+}
+
+[data-scope='image-viewer'][data-part='rotate-left-trigger']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-rotate-left) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-rotate-left) center / contain no-repeat;
+}
+
+[data-scope='image-viewer'][data-part='rotate-right-trigger']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-rotate-right) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-rotate-right) center / contain no-repeat;
+}
+
+[data-scope='image-viewer'][data-part='flip-horizontal-trigger']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-flip-horizontal) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-flip-horizontal) center / contain no-repeat;
+}
+
+[data-scope='image-viewer'][data-part='flip-vertical-trigger']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-flip-vertical) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-flip-vertical) center / contain no-repeat;
+}
+
+[data-scope='image-viewer'][data-part='prev-trigger']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-chevron-left) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-chevron-left) center / contain no-repeat;
+}
+
+[data-scope='image-viewer'][data-part='next-trigger']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
+}
+
+[data-scope='image-viewer'][data-part='close-trigger']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+}
+
 /* styles/listbox.css */
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='listbox'] {
@@ -13594,7 +14009,14 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 没写内容就由皮肤画勾；作者往部件里塞了自己的图形，这条规则即不命中 */
 [data-scope='listbox'][data-part='item-indicator']:empty::before {
-  content: var(--xh-glyph-mark-check);
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-check) center / contain no-repeat;
 }
 
 [data-scope='listbox'][data-part='item-indicator'][data-state='checked'] {
@@ -14150,6 +14572,18 @@ input[data-scope='mention'][data-part='input'] {
   block-size: var(--xh-menubar-separator-thickness, var(--xh-stroke-thin));
   margin-block: var(--xh-menubar-separator-my, var(--xh-space-1));
   background: var(--xh-menubar-separator-color, var(--xh-border-default));
+}
+
+/* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
+[data-scope='menubar'][data-part='item-indicator']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-check) center / contain no-repeat;
 }
 
 /* 自带前缀独占一个名字，不动公共的那份关键帧 */
@@ -14838,6 +15272,29 @@ input[data-scope='mention'][data-part='input'] {
   cursor: not-allowed;
 }
 
+/* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
+[data-scope='number-field'][data-part='increment-trigger']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-plus) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-plus) center / contain no-repeat;
+}
+
+[data-scope='number-field'][data-part='decrement-trigger']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
+}
+
 /* styles/pagination.css */
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='pagination'] {
@@ -15323,6 +15780,18 @@ input[data-scope='mention'][data-part='input'] {
 
   background: var(--xh-popover-bg, var(--xh-bg-surface));
   border: var(--xh-stroke-thin) solid var(--xh-popover-border, var(--xh-border-default));
+}
+
+/* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
+[data-scope='popover'][data-part='close-trigger']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-close) center / contain no-repeat;
 }
 
 /* styles/progress.css */
@@ -16340,7 +16809,14 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 没写内容就由皮肤画箭头；作者往部件里塞了自己的图形，这条规则即不命中 */
 [data-scope='select'][data-part='indicator']:empty::before {
-  content: var(--xh-glyph-mark-caret-down);
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
 }
 
 [data-scope='select'][data-part='indicator'][data-state='open'] {
@@ -16494,7 +16970,14 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 同上：没写内容就由皮肤画勾 */
 [data-scope='select'][data-part='item-indicator']:empty::before {
-  content: var(--xh-glyph-mark-check);
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-check) center / contain no-repeat;
 }
 
 [data-scope='select'][data-part='item-indicator'][data-state='checked'] {
@@ -16504,6 +16987,29 @@ input[data-scope='mention'][data-part='input'] {
 /* 表单影子：视觉隐藏但留在布局与表单里，原生校验提示需要一个可定位的框 */
 [data-scope='select'][data-part='hidden-select'] {
   pointer-events: none;
+}
+
+/* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
+[data-scope='select'][data-part='clear-trigger']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+}
+
+[data-scope='select'][data-part='tag-remove']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-close) center / contain no-repeat;
 }
 
 /* styles/separator.css */
@@ -16714,6 +17220,18 @@ input[data-scope='mention'][data-part='input'] {
   [data-scope='side-nav'][data-part='branch-indicator'] {
     transition: none;
   }
+}
+
+/* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
+[data-scope='side-nav'][data-part='branch-indicator']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
 }
 
 /* styles/slider.css */
@@ -17362,6 +17880,18 @@ input[data-scope='mention'][data-part='input'] {
   outline-offset: var(--xh-ring-offset);
 }
 
+/* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
+[data-scope='steps'][data-part='indicator'][data-state='completed']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+}
+
 /* styles/switch.css */
 /* 转圈的关键帧定义在本文件里：引用别处文件的动画名时那份文件不一定在场，动画会静默不跑 */
 @keyframes xh-switch-rotate {
@@ -17851,17 +18381,38 @@ input[data-scope='mention'][data-part='input'] {
 /* 排序方向用箭头字形表出来：aria-sort 只报给读屏，视觉侧也得有对应的东西 */
 [data-scope='table'][data-part='sort-trigger']::after {
   color: var(--xh-table-sort-fg, var(--xh-fg-subtle));
-  content: var(--xh-glyph-mark-sort);
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-sort) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-sort) center / contain no-repeat;
 }
 
 [data-scope='table'][data-part='sort-trigger'][data-sort='asc']::after {
   color: var(--xh-table-sort-fg-active, var(--xh-fg-default));
-  content: var(--xh-glyph-mark-sort-asc);
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-sort-asc) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-sort-asc) center / contain no-repeat;
 }
 
 [data-scope='table'][data-part='sort-trigger'][data-sort='desc']::after {
   color: var(--xh-table-sort-fg-active, var(--xh-fg-default));
-  content: var(--xh-glyph-mark-sort-desc);
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-sort-desc) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-sort-desc) center / contain no-repeat;
 }
 
 /* 多字段排序的优先级角标：链里第几环就显几，只在参与排序时才有 data-sort-index */
@@ -17927,6 +18478,30 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='table'][data-part='loading-state'] {
   animation: xh-table-loading-pulse var(--xh-duration-slow) var(--xh-ease-standard) infinite alternate;
+}
+
+/* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
+[data-scope='table'][data-part='select-all-trigger']:empty::before,
+[data-scope='table'][data-part='row-select-trigger']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+}
+
+[data-scope='table'][data-part='expand-trigger']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
 }
 
 /* styles/tabs.css */
@@ -18466,6 +19041,29 @@ input[data-scope='mention'][data-part='input'] {
   cursor: not-allowed;
 }
 
+/* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
+[data-scope='tags-input'][data-part='clear-trigger']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+}
+
+[data-scope='tags-input'][data-part='item-delete-trigger']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+}
+
 /* styles/text-field.css */
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='text-field'] {
@@ -18685,6 +19283,18 @@ input[data-scope='mention'][data-part='input'] {
   background: var(--xh-text-field-clear-bg, transparent);
   color: var(--xh-fg-disabled);
   cursor: not-allowed;
+}
+
+/* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
+[data-scope='text-field'][data-part='clear-trigger']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-close) center / contain no-repeat;
 }
 
 /* styles/thread.css */
@@ -19494,6 +20104,29 @@ input[data-scope='mention'][data-part='input'] {
   pointer-events: none;
 }
 
+/* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
+[data-scope='time-picker'][data-part='clear-trigger']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+}
+
+[data-scope='time-picker'][data-part='trigger']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
+}
+
 /* 浮层进场：淡入 + 轻微上浮，方向与它从输入行下方展开一致。
    关键帧写在自己文件里并带组件前缀，不去动共享的 motion.css */
 @keyframes xh-pop-in {
@@ -19711,6 +20344,18 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='toast'][data-part='close-trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
   outline-offset: var(--xh-ring-offset);
+}
+
+/* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
+[data-scope='toast'][data-part='close-trigger']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-close) center / contain no-repeat;
 }
 
 /* styles/toaster.css */
@@ -20631,6 +21276,18 @@ input[data-scope='mention'][data-part='input'] {
   display: none;
 }
 
+/* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
+[data-scope='tour'][data-part='close-trigger']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+}
+
 /* 气泡限高之后只让正文让步：标题与上下步按钮滚出视线就点不到了 */
 [data-scope='tour'][data-part='description'] {
   flex: 1 1 auto;
@@ -20913,17 +21570,38 @@ input[data-scope='mention'][data-part='input'] {
    底下两处（全选格的两态）不带这条守卫：那里的 ::before 是方框本身，
    而触发器里装的是全选那行文字，:empty 恒不命中，加了勾号会整个消失 */
 [data-scope='transfer'][data-part='item-checkbox'][data-state='checked']:empty::before {
-  content: var(--xh-glyph-mark-check);
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-check) center / contain no-repeat;
 }
 
 /* 全选格的三态：all 打勾、some 打横杠、none 留空。
    some 就是读屏听到的 aria-checked=mixed，两者同源，样式只认 data-state */
 [data-scope='transfer'][data-part='select-all-trigger'][data-state='all']::before {
-  content: var(--xh-glyph-mark-check);
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-check) center / contain no-repeat;
 }
 
 [data-scope='transfer'][data-part='select-all-trigger'][data-state='some']::before {
-  content: var(--xh-glyph-mark-minus);
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
 }
 
 [data-scope='transfer'][data-part='item-checkbox'][data-disabled] {
@@ -21016,6 +21694,29 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='transfer'][data-part='to-target-trigger'][hidden],
 [data-scope='transfer'][data-part='to-source-trigger'][hidden] {
   display: none;
+}
+
+/* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
+[data-scope='transfer'][data-part='to-source-trigger']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-chevron-left) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-chevron-left) center / contain no-repeat;
+}
+
+[data-scope='transfer'][data-part='to-target-trigger']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
 }
 
 /* styles/tree.css */
@@ -21152,12 +21853,26 @@ input[data-scope='mention'][data-part='input'] {
 /* 没写内容就由皮肤画；作者往把手里塞了自己的图形，这条规则即不命中 */
 [data-scope='tree'][data-part='item-checkbox'][data-selected]:empty::before,
 [data-scope='tree'][data-part='branch-checkbox'][data-selected]:empty::before {
-  content: var(--xh-glyph-mark-check);
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-check) center / contain no-repeat;
 }
 
 [data-scope='tree'][data-part='item-checkbox'][data-indeterminate]:not([data-selected]):empty::before,
 [data-scope='tree'][data-part='branch-checkbox'][data-indeterminate]:not([data-selected]):empty::before {
-  content: var(--xh-glyph-mark-minus);
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
 }
 
 [data-scope='tree'][data-part='item-checkbox'][data-disabled],
@@ -21271,6 +21986,30 @@ input[data-scope='mention'][data-part='input'] {
 /* 收起态的唯一开关：display 会盖掉 hidden 属性的 UA 规则，漏了这条整棵子树就收不起来 */
 [data-scope='tree'][data-part='branch-content'][hidden] {
   display: none;
+}
+
+/* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
+[data-scope='tree'][data-part='branch-trigger']:empty::before,
+[data-scope='tree'][data-part='branch-indicator']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
+}
+
+[data-scope='tree'][data-part='item-indicator']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-check) center / contain no-repeat;
 }
 
 /* styles/tree-select.css */
@@ -21770,6 +22509,52 @@ input[data-scope='mention'][data-part='input'] {
 /* 收起态的唯一开关：display 盖掉了 UA 的 [hidden]{display:none}，漏了这条整棵子树就收不起来 */
 [data-scope='tree-select'][data-part='branch-content'][hidden] {
   display: none;
+}
+
+/* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
+[data-scope='tree-select'][data-part='indicator']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
+}
+
+[data-scope='tree-select'][data-part='item-indicator']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+}
+
+[data-scope='tree-select'][data-part='branch-trigger']:empty::before,
+[data-scope='tree-select'][data-part='branch-indicator']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
+}
+
+[data-scope='tree-select'][data-part='clear-trigger']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-close) center / contain no-repeat;
 }
 
 /* styles/virtualizer.css */

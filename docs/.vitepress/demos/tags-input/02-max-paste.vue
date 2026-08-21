@@ -31,11 +31,11 @@ const tags = ref<string[]>(["Vue"]);
       <XhTagsInputItem v-for="t in value" :key="t" :value="t">
         <XhTagsInputItemPreview>
           <XhTagsInputItemText>{{ t }}</XhTagsInputItemText>
-          <XhTagsInputItemDeleteTrigger>×</XhTagsInputItemDeleteTrigger>
+          <XhTagsInputItemDeleteTrigger />
         </XhTagsInputItemPreview>
       </XhTagsInputItem>
       <XhTagsInputInput />
-      <XhTagsInputClearTrigger>⨯</XhTagsInputClearTrigger>
+      <XhTagsInputClearTrigger />
     </XhTagsInputControl>
     <span>{{ count }} / 4{{ atMax ? " · 已到上限" : "" }}</span>
   </XhTagsInputRoot>

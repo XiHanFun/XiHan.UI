@@ -58,8 +58,8 @@ const filtered = computed(() => {
     <XhComboboxLabel>城市</XhComboboxLabel>
     <XhComboboxControl>
       <XhComboboxInput />
-      <XhComboboxTrigger>▾</XhComboboxTrigger>
-      <XhComboboxClearTrigger>✕</XhComboboxClearTrigger>
+      <XhComboboxTrigger />
+      <XhComboboxClearTrigger />
     </XhComboboxControl>
     <XhComboboxPositioner>
       <XhComboboxContent>
@@ -67,7 +67,7 @@ const filtered = computed(() => {
           <XhComboboxItemGroupLabel>{{ g.label }}</XhComboboxItemGroupLabel>
           <XhComboboxItem v-for="c in g.items" :key="c.value" :value="c.value">
             <XhComboboxItemText>{{ c.label }}</XhComboboxItemText>
-            <XhComboboxItemIndicator>✓</XhComboboxItemIndicator>
+            <XhComboboxItemIndicator />
           </XhComboboxItem>
         </XhComboboxItemGroup>
       </XhComboboxContent>

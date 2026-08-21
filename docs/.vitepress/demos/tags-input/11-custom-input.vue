@@ -48,7 +48,7 @@ function options(text: string): string[] {
       <XhTagsInputItem v-for="t in value" :key="t" :value="t">
         <XhTagsInputItemPreview>
           <XhTagsInputItemText>{{ t }}</XhTagsInputItemText>
-          <XhTagsInputItemDeleteTrigger>×</XhTagsInputItemDeleteTrigger>
+          <XhTagsInputItemDeleteTrigger />
         </XhTagsInputItemPreview>
       </XhTagsInputItem>
       <XhTagsInputInput v-if="typing" ref="input" @blur="typing = false" />

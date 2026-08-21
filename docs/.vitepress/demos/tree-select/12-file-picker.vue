@@ -97,33 +97,33 @@ function onOpenChange(details: { open: boolean }): void {
     <XhTreeSelectLabel>附件</XhTreeSelectLabel>
     <XhTreeSelectTrigger>
       <XhTreeSelectValueText />
-      <XhTreeSelectIndicator>▾</XhTreeSelectIndicator>
+      <XhTreeSelectIndicator />
     </XhTreeSelectTrigger>
     <XhTreeSelectPositioner>
       <XhTreeSelectContent>
         <XhTreeSelectTree>
           <XhTreeSelectBranch value="docs">
             <XhTreeSelectBranchControl>
-              <XhTreeSelectBranchTrigger>▸</XhTreeSelectBranchTrigger>
+              <XhTreeSelectBranchTrigger />
               <XhTreeSelectBranchText>docs</XhTreeSelectBranchText>
             </XhTreeSelectBranchControl>
             <XhTreeSelectBranchContent>
               <XhTreeSelectItem value="guide">
-                <XhTreeSelectItemIndicator>✓</XhTreeSelectItemIndicator>
+                <XhTreeSelectItemIndicator />
                 <XhTreeSelectItemText>guide.md</XhTreeSelectItemText>
               </XhTreeSelectItem>
               <XhTreeSelectBranch value="i18n">
                 <XhTreeSelectBranchControl>
-                  <XhTreeSelectBranchTrigger>▸</XhTreeSelectBranchTrigger>
+                  <XhTreeSelectBranchTrigger />
                   <XhTreeSelectBranchText>i18n</XhTreeSelectBranchText>
                 </XhTreeSelectBranchControl>
                 <XhTreeSelectBranchContent>
                   <XhTreeSelectItem value="zh">
-                    <XhTreeSelectItemIndicator>✓</XhTreeSelectItemIndicator>
+                    <XhTreeSelectItemIndicator />
                     <XhTreeSelectItemText>zh-CN.md</XhTreeSelectItemText>
                   </XhTreeSelectItem>
                   <XhTreeSelectItem value="en">
-                    <XhTreeSelectItemIndicator>✓</XhTreeSelectItemIndicator>
+                    <XhTreeSelectItemIndicator />
                     <XhTreeSelectItemText>en-US.md</XhTreeSelectItemText>
                   </XhTreeSelectItem>
                 </XhTreeSelectBranchContent>
@@ -133,19 +133,19 @@ function onOpenChange(details: { open: boolean }): void {
 
           <XhTreeSelectBranch value="assets">
             <XhTreeSelectBranchControl>
-              <XhTreeSelectBranchTrigger>▸</XhTreeSelectBranchTrigger>
+              <XhTreeSelectBranchTrigger />
               <XhTreeSelectBranchText>assets</XhTreeSelectBranchText>
             </XhTreeSelectBranchControl>
             <XhTreeSelectBranchContent>
               <XhTreeSelectItem value="logo">
-                <XhTreeSelectItemIndicator>✓</XhTreeSelectItemIndicator>
+                <XhTreeSelectItemIndicator />
                 <XhTreeSelectItemText>logo.svg</XhTreeSelectItemText>
               </XhTreeSelectItem>
             </XhTreeSelectBranchContent>
           </XhTreeSelectBranch>
 
           <XhTreeSelectItem value="readme">
-            <XhTreeSelectItemIndicator>✓</XhTreeSelectItemIndicator>
+            <XhTreeSelectItemIndicator />
             <XhTreeSelectItemText>README.md</XhTreeSelectItemText>
           </XhTreeSelectItem>
         </XhTreeSelectTree>

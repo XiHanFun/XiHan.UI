@@ -78,7 +78,7 @@ function text(v: string[]): string {
             <span v-if="seg.type === 'week'">周</span>
           </template>
         </XhDatePickerInput>
-        <XhDatePickerClearTrigger>✕</XhDatePickerClearTrigger>
+        <XhDatePickerClearTrigger />
       </XhDatePickerControl>
       <XhDatePickerPositioner>
         <XhDatePickerContent>
@@ -88,13 +88,9 @@ function text(v: string[]): string {
               <XhDatePickerPrevYearTrigger v-if="panel.index === 0" aria-label="快退">
                 «
               </XhDatePickerPrevYearTrigger>
-              <XhDatePickerPrevTrigger v-if="panel.index === 0" aria-label="上一页">
-                ‹
-              </XhDatePickerPrevTrigger>
+              <XhDatePickerPrevTrigger v-if="panel.index === 0" aria-label="上一页" />
               <XhDatePickerHeading :index="panel.index" />
-              <XhDatePickerNextTrigger v-if="panel.index === panels.length - 1" aria-label="下一页">
-                ›
-              </XhDatePickerNextTrigger>
+              <XhDatePickerNextTrigger v-if="panel.index === panels.length - 1" aria-label="下一页" />
               <XhDatePickerNextYearTrigger
                 v-if="panel.index === panels.length - 1"
                 aria-label="快进"

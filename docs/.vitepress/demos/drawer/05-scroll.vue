@@ -36,7 +36,7 @@ const records = Array.from({ length: 24 }, (_, i) => ({
         </p>
       </div>
       <XhButton variant="solid" @click="setOpen(false)">看完了</XhButton>
-      <XhDrawerCloseTrigger>✕</XhDrawerCloseTrigger>
+      <XhDrawerCloseTrigger />
     </XhDrawerContent>
   </XhDrawerRoot>
 </template>

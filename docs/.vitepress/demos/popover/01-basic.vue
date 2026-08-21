@@ -21,7 +21,7 @@ import {
         <XhPopoverDescription>
           role=dialog，触发器与内容四处 ARIA 互指；非模态，焦点不被陷住。
         </XhPopoverDescription>
-        <XhPopoverCloseTrigger>✕</XhPopoverCloseTrigger>
+        <XhPopoverCloseTrigger />
         <XhPopoverArrow />
       </XhPopoverContent>
     </XhPopoverPositioner>

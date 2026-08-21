@@ -15,8 +15,8 @@ import {
     <XhNumberFieldLabel>禁用</XhNumberFieldLabel>
     <XhNumberFieldControl>
       <XhNumberFieldInput />
-      <XhNumberFieldDecrementTrigger>−</XhNumberFieldDecrementTrigger>
-      <XhNumberFieldIncrementTrigger>+</XhNumberFieldIncrementTrigger>
+      <XhNumberFieldDecrementTrigger />
+      <XhNumberFieldIncrementTrigger />
     </XhNumberFieldControl>
   </XhNumberFieldRoot>
 
@@ -24,8 +24,8 @@ import {
     <XhNumberFieldLabel>只读</XhNumberFieldLabel>
     <XhNumberFieldControl>
       <XhNumberFieldInput />
-      <XhNumberFieldDecrementTrigger>−</XhNumberFieldDecrementTrigger>
-      <XhNumberFieldIncrementTrigger>+</XhNumberFieldIncrementTrigger>
+      <XhNumberFieldDecrementTrigger />
+      <XhNumberFieldIncrementTrigger />
     </XhNumberFieldControl>
   </XhNumberFieldRoot>
 </template>

@@ -59,7 +59,7 @@ function pin(event: MouseEvent): void {
           <XhPopoverDescription>
             落点 {{ point.x }} / {{ point.y }}，按 Escape 收起。
           </XhPopoverDescription>
-          <XhPopoverCloseTrigger>✕</XhPopoverCloseTrigger>
+          <XhPopoverCloseTrigger />
           <XhPopoverArrow />
         </XhPopoverContent>
       </XhPopoverPositioner>

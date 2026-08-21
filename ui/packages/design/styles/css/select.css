@@ -310,7 +310,14 @@
 
   /* 没写内容就由皮肤画箭头；作者往部件里塞了自己的图形，这条规则即不命中 */
   [data-scope='select'][data-part='indicator']:empty::before {
-    content: var(--xh-glyph-mark-caret-down);
+    content: '';
+    display: inline-block;
+    inline-size: 1em;
+    block-size: 1em;
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
   }
 
   [data-scope='select'][data-part='indicator'][data-state='open'] {
@@ -464,7 +471,14 @@
 
   /* 同上：没写内容就由皮肤画勾 */
   [data-scope='select'][data-part='item-indicator']:empty::before {
-    content: var(--xh-glyph-mark-check);
+    content: '';
+    display: inline-block;
+    inline-size: 1em;
+    block-size: 1em;
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-check) center / contain no-repeat;
   }
 
   [data-scope='select'][data-part='item-indicator'][data-state='checked'] {
@@ -474,5 +488,28 @@
   /* 表单影子：视觉隐藏但留在布局与表单里，原生校验提示需要一个可定位的框 */
   [data-scope='select'][data-part='hidden-select'] {
     pointer-events: none;
+  }
+
+  /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
+  [data-scope='select'][data-part='clear-trigger']:empty::before {
+    content: '';
+    display: inline-block;
+    inline-size: 1em;
+    block-size: 1em;
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+  }
+
+  [data-scope='select'][data-part='tag-remove']:empty::before {
+    content: '';
+    display: inline-block;
+    inline-size: 1em;
+    block-size: 1em;
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-close) center / contain no-repeat;
   }
 }
