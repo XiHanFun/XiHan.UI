@@ -54,7 +54,7 @@
 | [面包屑](./breadcrumb) | `breadcrumb` | 6 | 2 | 6 |
 | [右键菜单](./context-menu) | `context-menu` | 11 | 9 | 9 |
 | [菜单](./menu) | `menu` | 6 | 9 | 11 |
-| [菜单栏](./menubar) | `menubar` | 10 | 15 | 9 |
+| [菜单栏](./menubar) | `menubar` | 10 | 15 | 10 |
 | [导航菜单](./navigation-menu) | `navigation-menu` | 8 | 7 | 10 |
 | [页头](./page-header) | `page-header` | 6 | 0 | 5 |
 | [分页](./pagination) | `pagination` | 5 | 4 | 10 |
@@ -139,7 +139,7 @@
 | [时间](./time) | `time` | 1 | 0 | 4 |
 | [时间线](./timeline) | `timeline` | 8 | 0 | 5 |
 | [计时器](./timer) | `timer` | 5 | 1 | 6 |
-| [树](./tree) | `tree` | 12 | 10 | 10 |
+| [树](./tree) | `tree` | 14 | 10 | 10 |
 | [虚拟滚动](./virtualizer) | `virtualizer` | 4 | 0 | 4 |
 
 ## 反馈
