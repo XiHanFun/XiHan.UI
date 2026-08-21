@@ -122,3 +122,53 @@ describe('换张瞬时，首开末收有动画', () => {
     expect(instantOf(api, 'file')).toBeUndefined()
   })
 })
+
+describe('换张交接：新菜单落位前上一张保持显示', () => {
+  function contentHidden(api: ReturnType<typeof menubar>['api'], menu: string): unknown {
+    return (api().getContentProps({ value: menu }) as Record<string, unknown>).hidden
+  }
+
+  it('切走之后旧张不藏——否则两张之间有空档，快速掠过成频闪', () => {
+    const { service, api } = menubar({ defaultValue: 'file' })
+    placeFile(service)
+    service.send({ type: 'TRIGGER.POINTER', value: 'edit' })
+    // edit 还没落位：file 举着
+    expect(contentHidden(api, 'file')).toBeUndefined()
+    expect(service.context.get('handoffValue')).toBe('file')
+  })
+
+  it('新张落位即交棒，旧张同帧收起', () => {
+    const { service, api } = menubar({ defaultValue: 'file' })
+    placeFile(service)
+    service.send({ type: 'TRIGGER.POINTER', value: 'edit' })
+    // 模拟引擎落位后的账目状态
+    service.context.set('placements', { ...service.context.get('placements'), edit: { x: 408, y: 464, placement: 'bottom-start' } })
+    service.context.set('handoffValue', null)
+    expect(contentHidden(api, 'file')).toBe(true)
+  })
+
+  it('连跳时棒不换手：A→B→C，B 没落位就仍由 A 举着', () => {
+    const { service } = menubar({ defaultValue: 'file' })
+    placeFile(service)
+    service.send({ type: 'TRIGGER.POINTER', value: 'edit' })
+    service.send({ type: 'TRIGGER.POINTER', value: 'view' })
+    expect(service.context.get('handoffValue')).toBe('file')
+  })
+
+  it('没落过位的旧张不接棒——没有坐标举不起来', () => {
+    const { service } = menubar()
+    service.send({ type: 'TRIGGER.OPEN', value: 'file' })
+    // file 从未落位就切走
+    service.send({ type: 'TRIGGER.POINTER', value: 'edit' })
+    expect(service.context.get('handoffValue') ?? null).toBeNull()
+  })
+
+  it('全收起终止交接，旧张照常退场', () => {
+    const { service, api } = menubar({ defaultValue: 'file' })
+    placeFile(service)
+    service.send({ type: 'TRIGGER.POINTER', value: 'edit' })
+    service.send({ type: 'CLOSE' })
+    expect(service.context.get('handoffValue') ?? null).toBeNull()
+    expect(contentHidden(api, 'file')).toBe(true)
+  })
+})

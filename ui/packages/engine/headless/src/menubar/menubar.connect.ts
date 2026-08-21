@@ -47,6 +47,7 @@ export function connectMenubar<T extends PropTypes>(
   const position = context.get('position')
   const placements = context.get('placements')
   const switching = context.get('switching')
+  const handoffValue = context.get('handoffValue')
   const placement = position?.placement ?? prop('placement') ?? MENUBAR_DEFAULT_PLACEMENT
   const focusedValue = context.get('focusedValue') ?? null
   const focusedItem = context.get('focusedItem') ?? null
@@ -323,6 +324,8 @@ export function connectMenubar<T extends PropTypes>(
     /** 菜单内的键盘在 content 上靠冒泡统一处理，Escape 由消解层负责。 */
     getContentProps: (item) => {
       const isOpen = item.value === value
+      // 交接：新菜单落位前上一张保持显示——否则两张之间有一到几帧空档，快速掠过成频闪
+      const holding = !isOpen && switching && item.value === handoffValue
       return normalize.element({
         ...parts.content.attrs,
         [ITEM_VALUE_ATTR]: item.value,
@@ -336,8 +339,8 @@ export function connectMenubar<T extends PropTypes>(
         'tabindex': isOpen && focusedItem == null ? 0 : -1,
         'data-state': stateAttr(isOpen),
         'data-placement': isOpen ? placement : undefined,
-        // 收起时留在 DOM 只隐藏
-        'hidden': !isOpen || undefined,
+        // 收起时留在 DOM 只隐藏；交接中的那张先不藏，等新菜单落位同帧换掉
+        'hidden': (!isOpen && !holding) || undefined,
         'onKeyDown': (event: KeyboardEvent) => {
           // 子菜单已经处理掉的键不再由本层接管：子层的收回键与 Escape 都会冒泡上来
           if (event.defaultPrevented)
