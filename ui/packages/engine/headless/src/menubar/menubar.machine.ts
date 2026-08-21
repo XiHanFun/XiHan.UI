@@ -154,6 +154,8 @@ export const menubarMachine = createMachine({
         context.set('focusIntent', e.type === 'TRIGGER.OPEN' ? (e.focus ?? 'first') : 'none')
         context.set('focusedValue', e.value)
         context.set('value', e.value)
+        // 换了一张菜单，上一张的坐标当场作废：留着它新菜单会先按旧位置画一帧再跳走
+        context.set('position', null)
         // 显式激活的展开不算自动
         context.set('autoValue', null)
       },
@@ -164,6 +166,8 @@ export const menubarMachine = createMachine({
           return
         context.set('focusIntent', 'none')
         context.set('value', e.value)
+        // 同上：掠过换张时坐标一并作废，否则指针一路扫过去每张都先闪一下旧位置
+        context.set('position', null)
         // 记下自动弹出的项，紧跟的 click 会被吸收
         context.set('autoValue', e.value)
       },
@@ -174,6 +178,7 @@ export const menubarMachine = createMachine({
           return
         context.set('focusIntent', 'none')
         context.set('value', e.value)
+        context.set('position', null)
         context.set('autoValue', null)
       },
       clearValue: ({ context }) => {
