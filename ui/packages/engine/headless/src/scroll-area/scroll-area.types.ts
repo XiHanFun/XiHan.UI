@@ -1,13 +1,13 @@
 import type { Direction, Orientation, PropTypes } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
-import type { ScrollAreaAxisMetrics } from './scroll-area.geometry'
+import type { ScrollAxisMetrics } from '../shared/scroll-geometry'
 
 /**
  * 滚动条什么时候露面：
  * - auto 溢出就一直露着；
  * - always 恒露，即便内容不溢出；
- * - scroll 滚动时露出，停手 scrollHideDelay 毫秒后收起；
- * - hover 指针进入组件时露出，离开后 scrollHideDelay 毫秒收起。
+ * - scroll 滚动时露出，停手 hideDelay 毫秒后收起；
+ * - hover 指针进入组件时露出，离开后 hideDelay 毫秒收起。
  */
 export type ScrollAreaType = 'auto' | 'always' | 'scroll' | 'hover'
 
@@ -61,7 +61,7 @@ export interface ScrollAreaSchema extends MachineSchema {
     /** 滚动条露面的时机，默认 hover。 */
     type?: ScrollAreaType
     /** 收起前的等待毫秒（type 为 scroll / hover 时生效），默认 600。 */
-    scrollHideDelay?: number
+    hideDelay?: number
     /** 哪几条轴归本组件管，默认 both。 */
     orientation?: ScrollAreaOrientation
     /**
@@ -72,9 +72,9 @@ export interface ScrollAreaSchema extends MachineSchema {
   }
   context: {
     /** 竖轴量到的尺寸；connect 只读它，不碰 DOM。 */
-    vertical: ScrollAreaAxisMetrics
+    vertical: ScrollAxisMetrics
     /** 横轴量到的尺寸。 */
-    horizontal: ScrollAreaAxisMetrics
+    horizontal: ScrollAxisMetrics
     /** 指针此刻在组件里。拖动结束后要靠它决定是留着滚动条还是开始倒计时。 */
     pointerInside: boolean
     /** 正在进行的滑块拖动；没在拖为 null。 */
@@ -100,7 +100,7 @@ export interface ScrollAreaSchema extends MachineSchema {
     | { type: 'DRAG.END' }
     /** 点在轨道空白处：把滑块中心挪过去。 */
     | { type: 'TRACK.CLICK', axis: Orientation, point: ScrollAreaPoint }
-    | { type: 'after.scrollHideDelay' }
+    | { type: 'after.hideDelay' }
   tag: never
   guard: 'isHoverType' | 'isScrollType' | 'staysVisible'
   action:

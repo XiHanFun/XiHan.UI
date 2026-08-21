@@ -48,7 +48,7 @@ orientation 关掉的那条轴滚动条恒不显形，视口那一向也不再�
 
 ### 收起的等待
 
-type 为 scroll 时滚动条停手后不立刻收起，scrollHideDelay 决定还留多少毫秒
+type 为 scroll 时滚动条停手后不立刻收起，hideDelay 决定还留多少毫秒
 
 <XhDemo src="scroll-area/05-hide-delay" />
 
@@ -73,7 +73,7 @@ type 为 scroll 时滚动条停手后不立刻收起，scrollHideDelay 决定还
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `type` | `ScrollAreaType` |  | 滚动条露面的时机，默认 hover。 |
-| `scrollHideDelay` | `number` |  | 收起前的等待毫秒（type 为 scroll / hover 时生效），默认 600。 |
+| `hideDelay` | `number` |  | 收起前的等待毫秒（type 为 scroll / hover 时生效），默认 600。 |
 | `orientation` | `ScrollAreaOrientation` |  | 哪几条轴归本组件管，默认 both。 |
 | `dir` | `Direction` |  | 排版方向，默认随文档。只影响横轴：RTL 下滚动量的正负、指针位移的方向都要翻一次。 必须显式给：组件不读计算样式，看不见从 RTL 祖先继承来的方向。 |
 
@@ -99,7 +99,7 @@ type 为 scroll 时滚动条停手后不立刻收起，scrollHideDelay 决定还
 
 **状态**：`hidden` · `visible` · `hiding` · `dragging`
 
-**事件**：`MEASURE` · `SCROLL` · `POINTER.ENTER` · `POINTER.LEAVE` · `DRAG.START` · `DRAG.MOVE` · `DRAG.END` · `TRACK.CLICK` · `after.scrollHideDelay`
+**事件**：`MEASURE` · `SCROLL` · `POINTER.ENTER` · `POINTER.LEAVE` · `DRAG.START` · `DRAG.MOVE` · `DRAG.END` · `TRACK.CLICK` · `after.hideDelay`
 
 **判据**：`isHoverType` · `isScrollType` · `staysVisible`
 

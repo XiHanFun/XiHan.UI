@@ -1,6 +1,6 @@
 import type { Direction, Orientation } from '@xihan-ui/kernel'
 import type { Params, Transition } from '@xihan-ui/machine'
-import type { ScrollAreaAxisMetrics } from './scroll-area.geometry'
+import type { ScrollAxisMetrics } from '../shared/scroll-geometry'
 import type { ScrollAreaSchema, ScrollAreaType } from './scroll-area.types'
 import { setTimeoutEffect, setup } from '@xihan-ui/machine'
 import {
@@ -10,7 +10,7 @@ import {
   toDomScroll,
   toLogicalScroll,
   trackOffset,
-} from './scroll-area.geometry'
+} from '../shared/scroll-geometry'
 
 const { createMachine } = setup<ScrollAreaSchema>()
 
@@ -33,10 +33,10 @@ function resolveHideDelay(ms: number | undefined): number | null {
 export const SCROLL_AREA_DEFAULT_TYPE: ScrollAreaType = 'hover'
 
 const AXES: readonly Orientation[] = ['vertical', 'horizontal']
-const EMPTY_METRICS: ScrollAreaAxisMetrics = { viewport: 0, content: 0, scroll: 0, track: 0 }
+const EMPTY_METRICS: ScrollAxisMetrics = { viewport: 0, content: 0, scroll: 0, track: 0 }
 
 /** 逐字段比：每次量尺寸都产出新对象，默认的 Object.is 恒不相等。 */
-function sameMetrics(a: ScrollAreaAxisMetrics, b: ScrollAreaAxisMetrics | undefined): boolean {
+function sameMetrics(a: ScrollAxisMetrics, b: ScrollAxisMetrics | undefined): boolean {
   return !!b && a.viewport === b.viewport && a.content === b.content && a.scroll === b.scroll && a.track === b.track
 }
 
@@ -48,7 +48,7 @@ function measureAxis(
   scrollbar: HTMLElement | null,
   axis: Orientation,
   dir: Direction | undefined,
-): ScrollAreaAxisMetrics {
+): ScrollAxisMetrics {
   const vertical = axis === 'vertical'
   return {
     viewport: vertical ? viewport.clientHeight : viewport.clientWidth,
@@ -97,8 +97,8 @@ export const scrollAreaMachine = createMachine({
   name: 'scroll-area',
   context: ({ cell }) => ({
     // 尺寸是量出来的，不受控、不对外通知
-    vertical: cell<ScrollAreaAxisMetrics>(() => ({ defaultValue: EMPTY_METRICS, isEqual: sameMetrics })),
-    horizontal: cell<ScrollAreaAxisMetrics>(() => ({ defaultValue: EMPTY_METRICS, isEqual: sameMetrics })),
+    vertical: cell<ScrollAxisMetrics>(() => ({ defaultValue: EMPTY_METRICS, isEqual: sameMetrics })),
+    horizontal: cell<ScrollAxisMetrics>(() => ({ defaultValue: EMPTY_METRICS, isEqual: sameMetrics })),
     pointerInside: cell<boolean>(() => ({ defaultValue: false })),
     drag: cell<ScrollAreaSchema['context']['drag']>(() => ({ defaultValue: null })),
   }),
@@ -145,7 +145,7 @@ export const scrollAreaMachine = createMachine({
       entry: ['measureSoon'],
       effects: ['waitForHideDelay'],
       on: {
-        'after.scrollHideDelay': { target: 'hidden' },
+        'after.hideDelay': { target: 'hidden' },
         'POINTER.ENTER': ENTER_SHOWS,
         'POINTER.LEAVE': { actions: ['clearPointerInside'] },
         // reenter 强制重挂计时器，把倒计时推倒重来
@@ -286,10 +286,10 @@ export const scrollAreaMachine = createMachine({
       },
 
       waitForHideDelay: ({ prop, send }) => {
-        const delay = resolveHideDelay(prop('scrollHideDelay'))
+        const delay = resolveHideDelay(prop('hideDelay'))
         if (delay == null)
           return undefined
-        return setTimeoutEffect(() => send({ type: 'after.scrollHideDelay' }), delay)
+        return setTimeoutEffect(() => send({ type: 'after.hideDelay' }), delay)
       },
 
       // 监听器挂在文档上，指针拖出滚动条仍要跟手；pointercancel 不收会让状态永远停在 dragging

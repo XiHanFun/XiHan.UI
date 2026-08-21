@@ -1,8 +1,8 @@
-<!-- 收起的等待 | type 为 scroll 时滚动条停手后不立刻收起，scrollHideDelay 决定还留多少毫秒 -->
+<!-- 收起的等待 | type 为 scroll 时滚动条停手后不立刻收起，hideDelay 决定还留多少毫秒 -->
 <div id="scroll-area-hide-delay" style="width: 100%; display: flex; flex-wrap: wrap; gap: 16px">
   <div style="display: grid; gap: 6px">
     <span>200ms：停手就收</span>
-    <xh-scroll-area type="scroll" scroll-hide-delay="200">
+    <xh-scroll-area type="scroll" hide-delay="200">
       <div data-xh-part="root" style="block-size: 140px; inline-size: 200px">
         <div data-xh-part="viewport">
           <div data-xh-part="content" style="padding: 8px 12px"></div>
@@ -16,7 +16,7 @@
 
   <div style="display: grid; gap: 6px">
     <span>2000ms：停手后还留两秒</span>
-    <xh-scroll-area type="scroll" scroll-hide-delay="2000">
+    <xh-scroll-area type="scroll" hide-delay="2000">
       <div data-xh-part="root" style="block-size: 140px; inline-size: 200px">
         <div data-xh-part="viewport">
           <div data-xh-part="content" style="padding: 8px 12px"></div>

@@ -2533,7 +2533,7 @@
       "SCROLLBAR_STEP",
       "SCROLL_AREA_DEFAULT_TYPE",
       "SCROLL_AREA_HIDE_DELAY",
-      "SCROLL_AREA_MIN_THUMB_SIZE",
+      "SCROLL_MIN_THUMB_SIZE",
       "SELECT_DEFAULT_PLACEMENT",
       "SIGNATURE_PAD_SIZE",
       "SIZE_IS_NOT_AXIS",
@@ -2546,19 +2546,19 @@
       "SPLITTER_STEP",
       "SPLITTER_TOTAL",
       "ScrollAreaApi",
-      "ScrollAreaAxis",
-      "ScrollAreaAxisGeometry",
-      "ScrollAreaAxisMetrics",
       "ScrollAreaAxisState",
       "ScrollAreaDragSession",
       "ScrollAreaOrientation",
       "ScrollAreaPoint",
-      "ScrollAreaRect",
       "ScrollAreaRefs",
       "ScrollAreaSchema",
       "ScrollAreaScrollbarProps",
       "ScrollAreaTranslations",
       "ScrollAreaType",
+      "ScrollAxis",
+      "ScrollAxisGeometry",
+      "ScrollAxisMetrics",
+      "ScrollRect",
       "ScrollbarApi",
       "ScrollbarDragSession",
       "ScrollbarPoint",
@@ -6364,8 +6364,8 @@
     ],
     "scroll-area": [
       "dir",
+      "hideDelay",
       "orientation",
-      "scrollHideDelay",
       "type"
     ],
     "scrollbar": [
@@ -10764,8 +10764,8 @@
     "xh-scroll-area": {
       "attributes": [
         "dir",
+        "hide-delay",
         "orientation",
-        "scroll-hide-delay",
         "type"
       ],
       "events": []
