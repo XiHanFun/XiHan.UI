@@ -37,15 +37,18 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {'sm'|'md'|'lg'} size - 尺寸档，换的是滚动条厚度
  * @attr {boolean} disabled - 不接指针也不接键盘，恒不显形
  * @attr {boolean} focusable - 滑块进 Tab 序并报 role=scrollbar，默认关
+ * @attr {boolean} gutter - 横竖两条同时摆着时在末端让出交叉口那一格，交叉口由 corner 部件补
+ * @attr {boolean} force-visible - 触屏（粗指针）上也显形；缺省交给原生滚动，整条不画并带 data-native
  * @attr {'ltr'|'rtl'} dir - 排版方向，只改写横轴的滚动量正负与指针位移方向
  * @prop {HTMLElement} scrollable - 直接给滚动容器节点（对象只走 property），优先于 controls
  * @fires scroll-start - 开始滚了；detail 为 `{ offset: number, max: number }`
  * @fires scroll-end - 一段滚动结束（停手 120ms）；detail 同上
  * @fires drag-start - 按住滑块；detail 同上
  * @fires drag-end - 松开滑块；detail 同上
- * @csspart root - 定位盒与指针热区，承载 data-orientation / data-type / data-state / data-scrolling / data-dragging / data-size；收起时带 hidden
+ * @csspart root - 定位盒与指针热区，承载 data-orientation / data-type / data-state / data-hover / data-scrolling / data-dragging / data-size / data-gutter / data-native；收起走 data-state=hidden 由皮肤淡出
  * @csspart track - 量长度的那条轨，点空白处把滑块中心挪过去
  * @csspart thumb - 滑块，位置与长度由内联逻辑属性给出；按住可拖，focusable 时可聚焦并吃方向键
+ * @csspart corner - 交叉口补丁（可选），写在根里、贴在本条末端之外那一格，跟着本条显隐
  */
 export class XhScrollbarElement extends XhElement {
   static override partContract = { anatomy: scrollbarAnatomy, meta: scrollbarMeta }
@@ -62,6 +65,8 @@ export class XhScrollbarElement extends XhElement {
     size: { converter: STRING_CONVERTER },
     disabled: { converter: BOOLEAN_CONVERTER },
     focusable: { converter: BOOLEAN_CONVERTER },
+    gutter: { converter: BOOLEAN_CONVERTER },
+    forceVisible: { converter: BOOLEAN_CONVERTER, attribute: 'force-visible' },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     // 节点与文案是对象，只能走 property
     scrollable: { attribute: false },
@@ -77,6 +82,8 @@ export class XhScrollbarElement extends XhElement {
   declare size?: Size
   declare disabled?: boolean
   declare focusable?: boolean
+  declare gutter?: boolean
+  declare forceVisible?: boolean
   declare direction?: Direction
   declare scrollable?: HTMLElement | null
   declare translations?: ScrollbarSchema['props']['translations']
@@ -99,6 +106,8 @@ export class XhScrollbarElement extends XhElement {
       size: this.size,
       disabled: this.disabled ?? false,
       focusable: this.focusable ?? false,
+      gutter: this.gutter ?? false,
+      forceVisible: this.forceVisible ?? false,
       dir: this.direction,
       translations: this.translations,
       onScrollStart: details => this.emit('scroll-start', details),
@@ -145,10 +154,6 @@ export class XhScrollbarElement extends XhElement {
     put('track', api.getTrackProps() as Record<string, unknown>)
     // 滑块的 style 是对象（两条轴的键每帧写全），spreader 见对象 style 会逐条写内联样式
     put('thumb', api.getThumbProps() as Record<string, unknown>)
-
-    // Light DOM 常驻，WC 自管可见性：作者层若给这个 part 声明了 display，
-    // 会盖过 UA 的 [hidden]{display:none}，光靠 hidden 属性收不起来。
-    // 本包的样式自带 [hidden]{display:none} 压得住，但宿主不能指望作者装了这份样式
-    this.setPartHidden(this.getPart('root'), !api.visible)
+    put('corner', api.getCornerProps() as Record<string, unknown>)
   }
 }

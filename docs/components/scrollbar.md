@@ -33,12 +33,24 @@ focusable 让滑块进 Tab 序并报 role=scrollbar，方向键与翻页键可�
 
 <XhDemo src="scrollbar/02-focusable" />
 
+### 横竖两条
+
+同一个容器挂两条，gutter 让各自在末端让出交叉口，XhScrollbarCorner 把那一格补上
+
+<XhDemo src="scrollbar/03-both-axes" />
+
+### 四种露面时机
+
+auto 溢出就露、always 恒露、scroll 滚动时露、hover 指针进入才露；收起都是淡出
+
+<XhDemo src="scrollbar/04-types" />
+
 ## 产物
 
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-scrollbar>` |
-| Vue 组件 | `XhScrollbarRoot` `XhScrollbarThumb` `XhScrollbarTrack` |
+| Vue 组件 | `XhScrollbarCorner` `XhScrollbarRoot` `XhScrollbarThumb` `XhScrollbarTrack` |
 | 组合式函数 | `useScrollbar` |
 | 状态机 | `scrollbarMachine` |
 | 皮肤 | `@xihan-ui/styles/scrollbar.css` |
@@ -47,7 +59,7 @@ focusable 让滑块进 Tab 序并报 role=scrollbar，方向键与翻页键可�
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="scrollbar"`：**`root`** · **`track`** · **`thumb`**
+`data-scope="scrollbar"`：**`root`** · **`track`** · **`thumb`** · `corner`
 
 ## Props
 
@@ -61,7 +73,9 @@ focusable 让滑块进 Tab 序并报 role=scrollbar，方向键与翻页键可�
 | `size` | `Size` |  | 尺寸：sm / md / lg，换的是滚动条厚度。 |
 | `disabled` | `boolean` |  | 禁用：不接指针也不接键盘，恒不显形。 |
 | `focusable` | `boolean` |  | 滑块进 Tab 序并报 role=scrollbar，默认 false。 缺省不进：滚动容器自己已经能用键盘滚，再给每条滚动条一个 Tab 停靠点， 长页面上会平白多出十几站。要键盘操作滑块本身时才开。 |
-| `controls` | `string` |  | 被控滚动容器的 id；focusable 时落到滑块的 aria-controls 上。 |
+| `controls` | `string` |  | 被控滚动容器的 id；focusable 时落到滑块的 aria-controls 上（没给就用容器自己的 id）。 |
+| `gutter` | `boolean` |  | 横竖两条同时摆着时，各自在末端让出交叉口那一格：竖条不伸到底、横条不伸到头。 交叉口由其中一条里的 corner 部件补上。 |
+| `forceVisible` | `boolean` |  | 触屏设备（粗指针）上也显形，默认 false：触屏没有悬停、拖滑块也不如直接划内容， 缺省交给原生滚动，本组件整条不显形并带 data-native。 |
 | `dir` | `Direction` |  | 排版方向，默认随文档。只影响横轴：RTL 下滚动量的正负、指针位移的方向都要翻一次。 必须显式给：组件不读计算样式，看不见从 RTL 祖先继承来的方向。 |
 | `translations` | `Partial<ScrollbarTranslations>` |  |  |
 | `onScrollStart` | `(details: ScrollbarScrollDetails) => void` |  | 开始滚了（停手 120ms 才算一段结束，中途连滚不重复通知）。 |
@@ -96,6 +110,7 @@ focusable 让滑块进 Tab 序并报 role=scrollbar，方向键与翻页键可�
 | 部件 | 取值 |
 | --- | --- |
 | `root` | 'visible' \| 'hidden' |
+| `corner` | 'visible' \| 'hidden' |
 
 状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
@@ -114,7 +129,8 @@ focusable 让滑块进 Tab 序并报 role=scrollbar，方向键与翻页键可�
 | `orientation` | `Orientation` |  |
 | `type` | `ScrollbarType` |  |
 | `overflow` | `boolean` | 内容比可视区长。不溢出时 auto 档整条不显形。 |
-| `visible` | `boolean` | 这一刻该不该显形（已把 type 与 disabled 都算进去）。 |
+| `visible` | `boolean` | 这一刻该不该显形（已把 type、disabled 与触屏原生那一路都算进去）。 |
+| `native` | `boolean` | 交给了原生滚动：粗指针设备且没开 forceVisible，整条不显形。 |
 | `dragging` | `boolean` | 手正按在滑块上。 |
 | `scrolling` | `boolean` | 这一段滚动还在进行中。 |
 | `thumbSize` | `number` | 滑块长度占轨道的比例，0-1。 |
@@ -127,6 +143,7 @@ focusable 让滑块进 Tab 序并报 role=scrollbar，方向键与翻页键可�
 | `getRootProps` | `() => T['element']` |  |
 | `getTrackProps` | `() => T['element']` |  |
 | `getThumbProps` | `() => T['element']` |  |
+| `getCornerProps` | `() => T['element']` | 交叉口补丁，写在其中一条的 root 里；跟着这一条的显隐走。 |
 
 ## 键盘
 
@@ -160,7 +177,7 @@ focusable 让滑块进 Tab 序并报 role=scrollbar，方向键与翻页键可�
 
 ## 样式
 
-默认皮肤 `@xihan-ui/styles/scrollbar.css` 按部件选择：`[data-scope="scrollbar"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+默认皮肤 `@xihan-ui/styles/scrollbar.css` 按部件选择：`[data-scope="scrollbar"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
 
 ## 数据属性
 
@@ -170,6 +187,9 @@ focusable 让滑块进 Tab 序并报 role=scrollbar，方向键与翻页键可�
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
 | `root` | `data-dragging` | ''（条件成立时才出现） |
+| `root` | `data-gutter` | ''（条件成立时才出现） |
+| `root` | `data-hover` | ''（条件成立时才出现） |
+| `root` | `data-native` | ''（条件成立时才出现） |
 | `root` | `data-orientation` | props.orientation |
 | `root` | `data-scrolling` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
@@ -180,6 +200,9 @@ focusable 让滑块进 Tab 序并报 role=scrollbar，方向键与翻页键可�
 | `thumb` | `data-disabled` | ''（条件成立时才出现） |
 | `thumb` | `data-dragging` | ''（条件成立时才出现） |
 | `thumb` | `data-orientation` | props.orientation |
+| `corner` | `data-orientation` | props.orientation |
+| `corner` | `data-size` | props.size |
+| `corner` | `data-state` | 'visible' \| 'hidden' |
 
 ## CSS 变量
 
@@ -189,7 +212,7 @@ focusable 让滑块进 Tab 序并报 role=scrollbar，方向键与翻页键可�
 
 ## 动效
 
-关键帧 `xh-scrollbar-in` 随皮肤自带，不引用别处文件里的名字；状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

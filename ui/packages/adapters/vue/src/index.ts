@@ -627,7 +627,7 @@ export type { ScrollAreaRootSlotProps } from './components/scroll-area/scroll-ar
 export { useScrollArea } from './components/scroll-area/use-scroll-area'
 export type { ScrollAreaContext } from './components/scroll-area/use-scroll-area'
 export { provideScrollbar, useScrollbarContext } from './components/scrollbar/context'
-export { XhScrollbarRoot, XhScrollbarThumb, XhScrollbarTrack } from './components/scrollbar/scrollbar'
+export { XhScrollbarCorner, XhScrollbarRoot, XhScrollbarThumb, XhScrollbarTrack } from './components/scrollbar/scrollbar'
 export type { ScrollbarRootSlotProps } from './components/scrollbar/scrollbar'
 export { useScrollbar } from './components/scrollbar/use-scrollbar'
 export type { ScrollbarContext, ScrollbarSource, ScrollbarTarget } from './components/scrollbar/use-scrollbar'

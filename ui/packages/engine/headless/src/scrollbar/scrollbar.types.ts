@@ -74,8 +74,18 @@ export interface ScrollbarSchema extends MachineSchema {
      * 长页面上会平白多出十几站。要键盘操作滑块本身时才开。
      */
     focusable?: boolean
-    /** 被控滚动容器的 id；focusable 时落到滑块的 aria-controls 上。 */
+    /** 被控滚动容器的 id；focusable 时落到滑块的 aria-controls 上（没给就用容器自己的 id）。 */
     controls?: string
+    /**
+     * 横竖两条同时摆着时，各自在末端让出交叉口那一格：竖条不伸到底、横条不伸到头。
+     * 交叉口由其中一条里的 corner 部件补上。
+     */
+    gutter?: boolean
+    /**
+     * 触屏设备（粗指针）上也显形，默认 false：触屏没有悬停、拖滑块也不如直接划内容，
+     * 缺省交给原生滚动，本组件整条不显形并带 data-native。
+     */
+    forceVisible?: boolean
     /**
      * 排版方向，默认随文档。只影响横轴：RTL 下滚动量的正负、指针位移的方向都要翻一次。
      * 必须显式给：组件不读计算样式，看不见从 RTL 祖先继承来的方向。
@@ -100,6 +110,10 @@ export interface ScrollbarSchema extends MachineSchema {
     drag: ScrollbarDragSession | null
     /** 这一段滚动还在进行中。停手 120ms 后落回 false。 */
     scrolling: boolean
+    /** 主指针是粗指针（触屏）。没有 matchMedia 的环境恒为 false。 */
+    coarse: boolean
+    /** 此刻挂着的滚动容器的 id；作者没给 controls 时 aria-controls 用它。 */
+    scrollableId: string | null
   }
   computed: Record<string, never>
   refs: ScrollbarRefs
@@ -143,7 +157,7 @@ export interface ScrollbarSchema extends MachineSchema {
     | 'scrollToTrackPoint'
     | 'stepScroll'
     | 'scrollToOffset'
-  effect: 'trackScrollable' | 'waitForHideDelay' | 'trackPointer'
+  effect: 'trackScrollable' | 'trackPointerType' | 'waitForHideDelay' | 'trackPointer'
 }
 
 export interface ScrollbarApi<T extends PropTypes = PropTypes> {
@@ -151,8 +165,10 @@ export interface ScrollbarApi<T extends PropTypes = PropTypes> {
   type: ScrollbarType
   /** 内容比可视区长。不溢出时 auto 档整条不显形。 */
   overflow: boolean
-  /** 这一刻该不该显形（已把 type 与 disabled 都算进去）。 */
+  /** 这一刻该不该显形（已把 type、disabled 与触屏原生那一路都算进去）。 */
   visible: boolean
+  /** 交给了原生滚动：粗指针设备且没开 forceVisible，整条不显形。 */
+  native: boolean
   /** 手正按在滑块上。 */
   dragging: boolean
   /** 这一段滚动还在进行中。 */
@@ -177,4 +193,6 @@ export interface ScrollbarApi<T extends PropTypes = PropTypes> {
   getRootProps: () => T['element']
   getTrackProps: () => T['element']
   getThumbProps: () => T['element']
+  /** 交叉口补丁，写在其中一条的 root 里；跟着这一条的显隐走。 */
+  getCornerProps: () => T['element']
 }

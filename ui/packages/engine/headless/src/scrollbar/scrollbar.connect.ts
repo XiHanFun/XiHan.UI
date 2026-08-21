@@ -29,6 +29,9 @@ export function connectScrollbar<T extends PropTypes>(
   const stateName = state.get()
   const dragging = context.get('drag') != null
   const scrolling = context.get('scrolling')
+  const hover = context.get('pointerInside')
+  // 触屏上默认交给原生滚动：没有悬停，拖滑块也不如直接划内容
+  const native = context.get('coarse') && !prop('forceVisible')
 
   // connect 在 Vue 的 render 期求值，此时 DOM 尚不存在，不得读 DOM：几何全从 context 读
   const metrics = context.get('metrics')
@@ -39,7 +42,7 @@ export function connectScrollbar<T extends PropTypes>(
    * 这一刻该不该显形。auto / always 不看状态机，运行期改 type 立刻生效；
    * 禁用恒不显形——它连指针都不接，露一条按不动的灰条只会让人反复点。
    */
-  const visible = disabled
+  const visible = disabled || native
     ? false
     : type === 'always'
       ? true
@@ -105,6 +108,7 @@ export function connectScrollbar<T extends PropTypes>(
     type,
     overflow: geometry.overflow,
     visible,
+    native,
     dragging,
     scrolling,
     thumbSize: geometry.size,
@@ -123,14 +127,16 @@ export function connectScrollbar<T extends PropTypes>(
       'aria-hidden': focusable ? undefined : 'true',
       'data-orientation': orientation,
       'data-type': type,
+      // 收起时留在 DOM 里，由皮肤按 data-state 淡出；不写 hidden，display:none 播不了退场
       'data-state': visible ? 'visible' : 'hidden',
+      'data-hover': dataAttr(hover),
       'data-scrolling': dataAttr(scrolling),
       'data-dragging': dataAttr(dragging),
       'data-disabled': dataAttr(disabled),
+      'data-native': dataAttr(native),
+      'data-gutter': dataAttr(prop('gutter')),
       // 缺省档不写属性：皮肤的基础规则就是缺省档
       'data-size': prop('size'),
-      // 收起时留在 DOM 里只隐藏，不卸载作者节点
-      'hidden': !visible || undefined,
     }),
 
     getTrackProps: () => normalize.element({
@@ -153,7 +159,7 @@ export function connectScrollbar<T extends PropTypes>(
       'role': focusable ? 'scrollbar' : undefined,
       'aria-orientation': focusable ? orientation : undefined,
       'aria-label': focusable ? (prop('translations')?.thumb ?? 'Scrollbar') : undefined,
-      'aria-controls': focusable ? prop('controls') : undefined,
+      'aria-controls': focusable ? (prop('controls') ?? context.get('scrollableId') ?? undefined) : undefined,
       'aria-valuemin': focusable ? 0 : undefined,
       'aria-valuemax': focusable ? Math.round(max) : undefined,
       'aria-valuenow': focusable ? Math.round(metrics.scroll) : undefined,
@@ -173,6 +179,13 @@ export function connectScrollbar<T extends PropTypes>(
         send({ type: 'DRAG.START', point: { clientX: event.clientX, clientY: event.clientY } })
       },
       onKeyDown,
+    }),
+
+    getCornerProps: () => normalize.element({
+      ...parts.corner.attrs,
+      'data-orientation': orientation,
+      'data-state': visible ? 'visible' : 'hidden',
+      'data-size': prop('size'),
     }),
   }
 }

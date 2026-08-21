@@ -75,7 +75,7 @@ describe('滚动条与作者的滚动容器', () => {
     expect(thumb.style.insetBlockStart).toBe('37.5%')
   })
 
-  it('挂载后改 type 与 disabled：根的 data-type 与显隐跟着变', async () => {
+  it('挂载后改 type 与 disabled：根的 data-type 与 data-state 跟着变', async () => {
     const host = document.createElement('div')
     document.body.appendChild(host)
 
@@ -103,17 +103,17 @@ describe('滚动条与作者的滚动容器', () => {
 
     const root = host.querySelector<HTMLElement>('[data-part="root"]')!
     expect(root.getAttribute('data-type')).toBe('hover')
-    expect(root.hasAttribute('hidden')).toBe(true)
+    expect(root.getAttribute('data-state')).toBe('hidden')
 
     type.value = 'always'
     await nextTick()
     expect(root.getAttribute('data-type')).toBe('always')
-    expect(root.hasAttribute('hidden')).toBe(false)
+    expect(root.getAttribute('data-state')).toBe('visible')
 
     disabled.value = true
     await nextTick()
     expect(root.hasAttribute('data-disabled')).toBe(true)
-    expect(root.hasAttribute('hidden')).toBe(true)
+    expect(root.getAttribute('data-state')).toBe('hidden')
   })
 
   it('容器换成另一个节点：监听挪过去，新容器的滚动反映到滑块', async () => {

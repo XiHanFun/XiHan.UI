@@ -38,7 +38,7 @@
 | [布局](./layout) | `layout` | 6 | 1 | 7 |
 | [瀑布流](./masonry) | `masonry` | 3 | 0 | 5 |
 | [滚动区域](./scroll-area) | `scroll-area` | 6 | 5 | 5 |
-| [滚动条](./scrollbar) | `scrollbar` | 3 | 7 | 2 |
+| [滚动条](./scrollbar) | `scrollbar` | 4 | 7 | 4 |
 | [分隔线](./separator) | `separator` | 1 | 0 | 4 |
 | [间距](./space) | `space` | 2 | 0 | 5 |
 | [分栏](./splitter) | `splitter` | 3 | 7 | 6 |

@@ -13,7 +13,7 @@ type ScrollbarProps = ScrollbarSchema['props']
 /** 默认插槽的载荷：这一条此刻的显隐、几何与位置，以及两个命令式动作。 */
 export type ScrollbarRootSlotProps = Pick<
   ScrollbarApi,
-  'visible' | 'overflow' | 'dragging' | 'scrolling' | 'thumbSize' | 'thumbOffset' | 'scroll' | 'max' | 'scrollTo' | 'scrollBy'
+  'visible' | 'native' | 'overflow' | 'dragging' | 'scrolling' | 'thumbSize' | 'thumbOffset' | 'scroll' | 'max' | 'scrollTo' | 'scrollBy'
 >
 
 export const XhScrollbarRoot = defineComponent({
@@ -38,6 +38,10 @@ export const XhScrollbarRoot = defineComponent({
     disabled: Boolean,
     /** 滑块进 Tab 序并报 role=scrollbar；缺省不进，滚动仍归滚动容器自己。 */
     focusable: Boolean,
+    /** 横竖两条同时摆着时在末端让出交叉口那一格，交叉口由 XhScrollbarCorner 补。 */
+    gutter: Boolean,
+    /** 触屏（粗指针）上也显形；缺省交给原生滚动，整条不画。 */
+    forceVisible: Boolean,
     dir: { type: String as PropType<Direction>, default: undefined },
     translations: { type: Object as PropType<ScrollbarProps['translations']>, default: undefined },
   },
@@ -65,6 +69,7 @@ export const XhScrollbarRoot = defineComponent({
       ref: (el: unknown) => { ctx.rootRef.value = el as HTMLElement },
     }, slots.default?.({
       visible: ctx.api.value.visible,
+      native: ctx.api.value.native,
       overflow: ctx.api.value.overflow,
       dragging: ctx.api.value.dragging,
       scrolling: ctx.api.value.scrolling,
@@ -95,5 +100,14 @@ export const XhScrollbarThumb = defineComponent({
   setup(_, { slots }) {
     const ctx = useScrollbarContext()
     return () => h('div', ctx.api.value.getThumbProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+/** 交叉口补丁：写在其中一条的根里，贴在它末端之外那一格，跟着这一条显隐。 */
+export const XhScrollbarCorner = defineComponent({
+  name: 'XhScrollbarCorner',
+  setup(_, { slots }) {
+    const ctx = useScrollbarContext()
+    return () => h('div', ctx.api.value.getCornerProps() as Record<string, unknown>, slots.default?.())
   },
 })
