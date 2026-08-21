@@ -83,6 +83,7 @@ import type { RadioGroupTranslations } from '../radio-group/radio-group.types'
 import type { RatingTranslations } from '../rating/rating.types'
 import type { ResultTranslations } from '../result/result.types'
 import type { ScrollAreaTranslations } from '../scroll-area/scroll-area.types'
+import type { ScrollbarTranslations } from '../scrollbar/scrollbar.types'
 import type { SegmentedTranslations } from '../segmented/segmented.types'
 import type { SelectTranslations } from '../select/select.types'
 import type { SeparatorTranslations } from '../separator/separator.types'
@@ -204,6 +205,7 @@ export interface XhTranslationOverrides {
   'rating'?: Partial<RatingTranslations>
   'result'?: Partial<ResultTranslations>
   'scroll-area'?: Partial<ScrollAreaTranslations>
+  'scrollbar'?: Partial<ScrollbarTranslations>
   'segmented'?: Partial<SegmentedTranslations>
   'select'?: Partial<SelectTranslations>
   'separator'?: Partial<SeparatorTranslations>

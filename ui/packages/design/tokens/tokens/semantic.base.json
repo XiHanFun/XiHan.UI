@@ -45,6 +45,28 @@
       "$value": "1rem"
     }
   },
+  "scrollbar": {
+    "thickness-sm": {
+      "$type": "dimension",
+      "$value": "6px"
+    },
+    "thickness-md": {
+      "$type": "dimension",
+      "$value": "10px"
+    },
+    "thickness-lg": {
+      "$type": "dimension",
+      "$value": "14px"
+    },
+    "gutter": {
+      "$type": "dimension",
+      "$value": "2px"
+    },
+    "min-thumb": {
+      "$type": "dimension",
+      "$value": "20px"
+    }
+  },
   "glyph": {
     "size-sm": {
       "$type": "dimension",
