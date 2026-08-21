@@ -203,7 +203,7 @@
 
   /* 没写内容就由皮肤画箭头；作者往部件里塞了自己的图形，这条规则即不命中 */
   [data-scope='cascader'][data-part='indicator']:empty::before {
-    content: '▾';
+    content: var(--xh-glyph-mark-caret-down);
   }
 
   [data-scope='cascader'][data-part='indicator'][data-state='open'] {
@@ -442,7 +442,7 @@
 
   /* 没写内容就由皮肤画勾；作者往部件里塞了自己的图形，这条规则即不命中 */
   [data-scope='cascader'][data-part='item-indicator']:empty::before {
-    content: '✓';
+    content: var(--xh-glyph-mark-check);
   }
 
   [data-scope='cascader'][data-part='item-indicator'][data-state='checked'] {
@@ -456,7 +456,7 @@
   }
 
   [data-scope='cascader'][data-part='item-indicator'][data-indeterminate]:not([data-state='checked']):empty::before {
-    content: '−';
+    content: var(--xh-glyph-mark-minus);
     font-weight: var(--xh-font-weight-semibold);
   }
 

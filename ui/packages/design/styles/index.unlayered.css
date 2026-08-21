@@ -897,7 +897,7 @@
 
 /* 必填星号：跟着根上的 data-required 亮，选填不标 */
 [data-scope='fieldset'][data-part='root'][data-required] > [data-scope='fieldset'][data-part='legend']::after {
-  content: '*';
+  content: var(--xh-glyph-mark-required);
   margin-inline-start: var(--xh-space-1);
   color: var(--xh-fieldset-legend-star, var(--xh-fg-danger));
 }
@@ -2975,7 +2975,7 @@
 
 /* 没写内容就由皮肤画；作者往部件里塞了自己的图形，这条规则即不命中 */
 [data-scope='json-viewer'][data-part='branch-indicator']:empty::before {
-  content: '▸';
+  content: var(--xh-glyph-mark-caret-right);
 }
 
 /* 收起时朝向行首、展开时转向下方，与逻辑书写方向一致：
@@ -4837,7 +4837,7 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 没写内容就由皮肤画勾；作者往部件里塞了自己的图形，这条规则即不命中 */
 [data-scope='popselect'][data-part='item-indicator']:empty::before {
-  content: '✓';
+  content: var(--xh-glyph-mark-check);
 }
 
 [data-scope='popselect'][data-part='item-indicator'][data-state='checked'] {
@@ -6938,7 +6938,7 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 没写内容就由皮肤画；作者往部件里塞了自己的图形，这条规则即不命中 */
 [data-scope='accordion'][data-part='indicator']:empty::before {
-  content: '⌄';
+  content: var(--xh-glyph-mark-chevron-down);
 }
 
 [data-scope='accordion'][data-part='indicator'][data-state='open'] {
@@ -8368,7 +8368,7 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 没写内容就由皮肤画箭头；作者往部件里塞了自己的图形，这条规则即不命中 */
 [data-scope='cascader'][data-part='indicator']:empty::before {
-  content: '▾';
+  content: var(--xh-glyph-mark-caret-down);
 }
 
 [data-scope='cascader'][data-part='indicator'][data-state='open'] {
@@ -8607,7 +8607,7 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 没写内容就由皮肤画勾；作者往部件里塞了自己的图形，这条规则即不命中 */
 [data-scope='cascader'][data-part='item-indicator']:empty::before {
-  content: '✓';
+  content: var(--xh-glyph-mark-check);
 }
 
 [data-scope='cascader'][data-part='item-indicator'][data-state='checked'] {
@@ -8621,7 +8621,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='cascader'][data-part='item-indicator'][data-indeterminate]:not([data-state='checked']):empty::before {
-  content: '−';
+  content: var(--xh-glyph-mark-minus);
   font-weight: var(--xh-font-weight-semibold);
 }
 
@@ -8853,7 +8853,7 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 没写内容就由皮肤画；作者往部件里塞了自己的图形，这条规则即不命中 */
 [data-scope='checkbox'][data-part='indicator']:empty::before {
-  content: '✓';
+  content: var(--xh-glyph-mark-check);
 }
 
 [data-scope='checkbox'][data-part='indicator'][data-state='unchecked'] {
@@ -9014,17 +9014,17 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 勾号由皮肤补，作者不必自己往 indicator 里塞字符 */
 [data-scope='checkbox-group'][data-part='indicator'][data-state='checked']:empty::before {
-  content: '✓';
+  content: var(--xh-glyph-mark-check);
 }
 
 /* 全选格的三态：all 打勾、some 打横杠、none 留空。
    some 就是读屏听到的 aria-checked=mixed，两者同源，样式只认 data-state */
 [data-scope='checkbox-group'][data-part='trigger'][data-state='all']::before {
-  content: '✓';
+  content: var(--xh-glyph-mark-check);
 }
 
 [data-scope='checkbox-group'][data-part='trigger'][data-state='some']::before {
-  content: '−';
+  content: var(--xh-glyph-mark-minus);
 }
 
 /* 校验失败标在每个方框上：root 上的 data-invalid 是唯一出处，条目自己不带这个属性 */
@@ -10168,12 +10168,12 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 没写内容就由皮肤画箭头；作者往部件里塞了自己的图形，这条规则即不命中 */
 [data-scope='combobox'][data-part='trigger']:empty::before {
-  content: '▾';
+  content: var(--xh-glyph-mark-caret-down);
 }
 
 /* 同上：没写内容就由皮肤画叉 */
 [data-scope='combobox'][data-part='clear-trigger']:empty::before {
-  content: '✕';
+  content: var(--xh-glyph-mark-close);
 }
 
 [data-scope='combobox'][data-part='trigger'][data-state='open']:empty::before,
@@ -10353,7 +10353,7 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 同上：没写内容就由皮肤画勾 */
 [data-scope='combobox'][data-part='item-indicator']:empty::before {
-  content: '✓';
+  content: var(--xh-glyph-mark-check);
 }
 
 [data-scope='combobox'][data-part='item-indicator'][data-state='checked'] {
@@ -12327,7 +12327,7 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 必填星号：跟着根上的 data-required 亮，选填不标 */
 [data-scope='field'][data-part='root'][data-required] [data-part='label']::after {
-  content: '*';
+  content: var(--xh-glyph-mark-required);
   margin-inline-start: var(--xh-space-1);
   color: var(--xh-field-label-star, var(--xh-fg-danger));
 }
@@ -13520,7 +13520,7 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 没写内容就由皮肤画勾；作者往部件里塞了自己的图形，这条规则即不命中 */
 [data-scope='listbox'][data-part='item-indicator']:empty::before {
-  content: '✓';
+  content: var(--xh-glyph-mark-check);
 }
 
 [data-scope='listbox'][data-part='item-indicator'][data-state='checked'] {
@@ -16130,7 +16130,7 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 没写内容就由皮肤画箭头；作者往部件里塞了自己的图形，这条规则即不命中 */
 [data-scope='select'][data-part='indicator']:empty::before {
-  content: '▾';
+  content: var(--xh-glyph-mark-caret-down);
 }
 
 [data-scope='select'][data-part='indicator'][data-state='open'] {
@@ -16284,7 +16284,7 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 同上：没写内容就由皮肤画勾 */
 [data-scope='select'][data-part='item-indicator']:empty::before {
-  content: '✓';
+  content: var(--xh-glyph-mark-check);
 }
 
 [data-scope='select'][data-part='item-indicator'][data-state='checked'] {
@@ -17641,17 +17641,17 @@ input[data-scope='mention'][data-part='input'] {
 /* 排序方向用箭头字形表出来：aria-sort 只报给读屏，视觉侧也得有对应的东西 */
 [data-scope='table'][data-part='sort-trigger']::after {
   color: var(--xh-table-sort-fg, var(--xh-fg-subtle));
-  content: '↕';
+  content: var(--xh-glyph-mark-sort);
 }
 
 [data-scope='table'][data-part='sort-trigger'][data-sort='asc']::after {
   color: var(--xh-table-sort-fg-active, var(--xh-fg-default));
-  content: '↑';
+  content: var(--xh-glyph-mark-sort-asc);
 }
 
 [data-scope='table'][data-part='sort-trigger'][data-sort='desc']::after {
   color: var(--xh-table-sort-fg-active, var(--xh-fg-default));
-  content: '↓';
+  content: var(--xh-glyph-mark-sort-desc);
 }
 
 /* 多字段排序的优先级角标：链里第几环就显几，只在参与排序时才有 data-sort-index */
@@ -20644,19 +20644,21 @@ input[data-scope='mention'][data-part='input'] {
   background: var(--xh-transfer-checkbox-bg-checked, var(--xh-bg-brand));
 }
 
-/* 勾号由皮肤补，作者不必自己往格子里塞字符 */
-[data-scope='transfer'][data-part='item-checkbox'][data-state='checked']::before {
-  content: '✓';
+/* 没写内容就由皮肤画勾；作者往格子里塞了自己的图形，这条规则即不命中。
+   底下两处（全选格的两态）不带这条守卫：那里的 ::before 是方框本身，
+   而触发器里装的是全选那行文字，:empty 恒不命中，加了勾号会整个消失 */
+[data-scope='transfer'][data-part='item-checkbox'][data-state='checked']:empty::before {
+  content: var(--xh-glyph-mark-check);
 }
 
 /* 全选格的三态：all 打勾、some 打横杠、none 留空。
    some 就是读屏听到的 aria-checked=mixed，两者同源，样式只认 data-state */
 [data-scope='transfer'][data-part='select-all-trigger'][data-state='all']::before {
-  content: '✓';
+  content: var(--xh-glyph-mark-check);
 }
 
 [data-scope='transfer'][data-part='select-all-trigger'][data-state='some']::before {
-  content: '−';
+  content: var(--xh-glyph-mark-minus);
 }
 
 [data-scope='transfer'][data-part='item-checkbox'][data-disabled] {
@@ -20885,12 +20887,12 @@ input[data-scope='mention'][data-part='input'] {
 /* 没写内容就由皮肤画；作者往把手里塞了自己的图形，这条规则即不命中 */
 [data-scope='tree'][data-part='item-checkbox'][data-selected]:empty::before,
 [data-scope='tree'][data-part='branch-checkbox'][data-selected]:empty::before {
-  content: '✓';
+  content: var(--xh-glyph-mark-check);
 }
 
 [data-scope='tree'][data-part='item-checkbox'][data-indeterminate]:not([data-selected]):empty::before,
 [data-scope='tree'][data-part='branch-checkbox'][data-indeterminate]:not([data-selected]):empty::before {
-  content: '−';
+  content: var(--xh-glyph-mark-minus);
 }
 
 [data-scope='tree'][data-part='item-checkbox'][data-disabled],

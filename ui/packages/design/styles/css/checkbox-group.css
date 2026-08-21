@@ -116,17 +116,17 @@
 
   /* 勾号由皮肤补，作者不必自己往 indicator 里塞字符 */
   [data-scope='checkbox-group'][data-part='indicator'][data-state='checked']:empty::before {
-    content: '✓';
+    content: var(--xh-glyph-mark-check);
   }
 
   /* 全选格的三态：all 打勾、some 打横杠、none 留空。
      some 就是读屏听到的 aria-checked=mixed，两者同源，样式只认 data-state */
   [data-scope='checkbox-group'][data-part='trigger'][data-state='all']::before {
-    content: '✓';
+    content: var(--xh-glyph-mark-check);
   }
 
   [data-scope='checkbox-group'][data-part='trigger'][data-state='some']::before {
-    content: '−';
+    content: var(--xh-glyph-mark-minus);
   }
 
   /* 校验失败标在每个方框上：root 上的 data-invalid 是唯一出处，条目自己不带这个属性 */

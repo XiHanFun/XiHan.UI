@@ -361,17 +361,17 @@
   /* 排序方向用箭头字形表出来：aria-sort 只报给读屏，视觉侧也得有对应的东西 */
   [data-scope='table'][data-part='sort-trigger']::after {
     color: var(--xh-table-sort-fg, var(--xh-fg-subtle));
-    content: '↕';
+    content: var(--xh-glyph-mark-sort);
   }
 
   [data-scope='table'][data-part='sort-trigger'][data-sort='asc']::after {
     color: var(--xh-table-sort-fg-active, var(--xh-fg-default));
-    content: '↑';
+    content: var(--xh-glyph-mark-sort-asc);
   }
 
   [data-scope='table'][data-part='sort-trigger'][data-sort='desc']::after {
     color: var(--xh-table-sort-fg-active, var(--xh-fg-default));
-    content: '↓';
+    content: var(--xh-glyph-mark-sort-desc);
   }
 
   /* 多字段排序的优先级角标：链里第几环就显几，只在参与排序时才有 data-sort-index */

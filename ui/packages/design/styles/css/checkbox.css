@@ -87,7 +87,7 @@
 
   /* 没写内容就由皮肤画；作者往部件里塞了自己的图形，这条规则即不命中 */
   [data-scope='checkbox'][data-part='indicator']:empty::before {
-    content: '✓';
+    content: var(--xh-glyph-mark-check);
   }
 
   [data-scope='checkbox'][data-part='indicator'][data-state='unchecked'] {
