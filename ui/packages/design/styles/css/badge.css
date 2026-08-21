@@ -20,6 +20,20 @@
     white-space: nowrap;
   }
 
+  /* 声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
+     计数为 0 且没开 showZero 时连接层会发 hidden */
+  [data-scope='badge'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  /* 圆点形态：只表示「有」，不表示「有几个」——收掉内边距与文字盒 */
+  [data-scope='badge'][data-part='root'][data-dot] {
+    inline-size: var(--xh-badge-dot-size, var(--xh-space-2));
+    block-size: var(--xh-badge-dot-size, var(--xh-space-2));
+    padding: 0;
+    font-size: 0;
+  }
+
   /* —— 变体 —— */
   /* 形态只决定颜色怎么用；用哪族颜色由 data-tone 决定，没写 tone 就沿用原来的品牌/中性配色 */
   [data-scope='badge'][data-part='root'][data-variant='solid'] {

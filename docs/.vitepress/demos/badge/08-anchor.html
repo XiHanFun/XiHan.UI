@@ -1,36 +1,34 @@
-<!-- 挂成角标 | 徽标本身随文排；外层套一层定位上下文，它就落到子元素的角上。计数、圆点、0 值收起、上限截断都在宿主这一侧 -->
+<!-- 挂成角标 | 外层套一层定位上下文，徽标就落到子元素的角上。计数、上限截断、0 值收起、圆点都归徽标自己算，宿主只管定位 -->
 <div style="display: flex; align-items: center; gap: 24px">
-  <!-- 计数角标：外层给定位上下文，徽标绝对定位到右上角；偏移逐个实例写 -->
+  <!-- 计数角标：给了 count 就自己出数字，超过 max 写成 99+，为 0 整枚收起 -->
   <span style="position: relative; display: inline-flex">
     <xh-button variant="outline">
       <button data-xh-part="root">消息</button>
     </xh-button>
-    <xh-badge id="badge-anchor-count" variant="solid" tone="danger" size="sm">
+    <xh-badge
+      id="badge-anchor-count"
+      variant="solid"
+      tone="danger"
+      size="sm"
+      count="5"
+      label="5 条未读"
+    >
       <span
         data-xh-part="root"
         style="position: absolute; inset-block-start: -6px; inset-inline-end: -8px"
-      >
-        5
-      </span>
+      ></span>
     </xh-badge>
   </span>
 
-  <!-- 圆点：内容留空，内边距收成 0 再给一个直径，根本来就是胶囊圆角 -->
+  <!-- 圆点：只表示「有」，不表示「有几个」；同样为 0 时收起 -->
   <span style="position: relative; display: inline-flex">
     <xh-button variant="outline">
       <button data-xh-part="root">动态</button>
     </xh-button>
-    <xh-badge variant="solid" tone="danger">
+    <xh-badge id="badge-anchor-dot" dot variant="solid" tone="danger" count="5" label="有新动态">
       <span
         data-xh-part="root"
-        style="
-          position: absolute;
-          inset-block-start: -4px;
-          inset-inline-end: -4px;
-          padding: 0;
-          inline-size: 8px;
-          block-size: 8px;
-        "
+        style="position: absolute; inset-block-start: -4px; inset-inline-end: -4px"
       ></span>
     </xh-badge>
   </span>
@@ -52,16 +50,16 @@
 </div>
 
 <script type="module">
-  // 计数为 0 收起徽标，超过 99 截成 99+
-  const max = 99;
-  const host = document.getElementById("badge-anchor-count");
-  const label = host.querySelector('[data-xh-part="root"]');
+  // 只把数字交给徽标，截断与收起由它自己算
+  const count$ = document.getElementById("badge-anchor-count");
+  const dot$ = document.getElementById("badge-anchor-dot");
   const readout = document.getElementById("badge-anchor-readout");
   let count = 5;
 
   function paint() {
-    host.style.display = count > 0 ? "" : "none";
-    label.textContent = count > max ? `${max}+` : String(count);
+    count$.count = count;
+    count$.label = `${count} 条未读`;
+    dot$.count = count;
     readout.textContent = String(count);
   }
 
