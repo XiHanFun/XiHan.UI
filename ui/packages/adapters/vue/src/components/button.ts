@@ -3,6 +3,7 @@ import type { PropTypes } from '@xihan-ui/kernel'
 import type { InjectionKey, PropType, Ref } from 'vue'
 import { connectButton } from '@xihan-ui/headless'
 import { computed, defineComponent, h, inject, provide } from 'vue'
+import { withXhConfig } from '../config/config'
 import { vueNormalize } from '../runtime/normalize-props'
 
 /** 从实际调用推出 api 形状，免得再写一遍 normalize 的类型参数。 */
@@ -30,7 +31,9 @@ export const XhButton = defineComponent({
     size: String,
   },
   setup(props, { slots }) {
-    const api = computed(() => connectButton(props as ButtonProps, vueNormalize))
+    // withXhConfig 只能在 setup 期调，连接层在渲染期读这份代理
+    const configured = withXhConfig('button', props as ButtonProps)
+    const api = computed(() => connectButton(configured, vueNormalize))
     provide(ButtonKey, api)
     return () => h('button', api.value.getRootProps() as Record<string, unknown>, slots.default?.())
   },

@@ -112,6 +112,43 @@ describe('<xh-config> 作用域', () => {
     setXhConfig({ locale: 'zh-CN' })
     expect(withXhConfig('date-picker', { locale: undefined }).locale).toBe('zh-CN')
   })
+
+  it('不跑机器的元素也吃这一层的尺寸档，改了跟着变', async () => {
+    const host = await mountTree(`<xh-config id="scope" size="lg">
+      <xh-badge><span data-xh-part="root">新</span></xh-badge>
+      <xh-button><button data-xh-part="root">去</button></xh-button>
+    </xh-config>`)
+    const roots = () => [...host.querySelectorAll('[data-xh-part="root"]')].map(el => el.getAttribute('data-size'))
+    expect(roots()).toEqual(['lg', 'lg'])
+
+    const scope = host.querySelector('#scope') as HTMLElement
+    scope.setAttribute('size', 'sm')
+    for (const el of host.querySelectorAll('xh-badge, xh-button')) {
+      await (el as Updatable).updateComplete
+      await (el as Updatable).updateComplete
+    }
+    expect(roots()).toEqual(['sm', 'sm'])
+  })
+
+  it('scrollRoot 交给滚动锁：模态打开时锁的是它，不是 body', async () => {
+    const host = await mountTree(`<xh-config id="scope">
+      <div id="scroller" style="overflow: auto"></div>
+      ${dialog}
+    </xh-config>`)
+    const scroller = host.querySelector('#scroller') as HTMLElement
+    const scope = host.querySelector('#scope') as HTMLElement & { scrollRoot?: () => HTMLElement | null }
+    // 先给 scrollRoot 再开：滚动锁在打开那一刻解析目标
+    scope.scrollRoot = () => scroller
+    const dialogEl = host.querySelector('xh-dialog') as Updatable & { open?: boolean }
+    dialogEl.open = false
+    await dialogEl.updateComplete
+    await dialogEl.updateComplete
+    dialogEl.open = true
+    await dialogEl.updateComplete
+    await dialogEl.updateComplete
+    expect(scroller.style.overflow).toBe('hidden')
+    expect(document.body.style.overflow).not.toBe('hidden')
+  })
 })
 
 describe('接到真元素上', () => {

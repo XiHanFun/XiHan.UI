@@ -36,7 +36,7 @@ export class XhEmptyStateElement extends XhElement {
   protected wire(): void {
     // 读响应式 property，不回读 DOM 特性
     const props: EmptyStateProps = { size: this.size, live: this.live }
-    const api = connectEmptyState(props, wcNormalize)
+    const api = connectEmptyState(this.configured('empty-state', props), wcNormalize)
 
     const put = (name: string, attrs: Record<string, unknown>): void => {
       const el = this.getPart(name)

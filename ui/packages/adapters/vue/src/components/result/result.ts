@@ -2,6 +2,7 @@ import type { ResultProps, ResultStatus } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
 import { connectResult } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { provideResult, useResultContext } from './context'
 
@@ -13,7 +14,8 @@ export const XhResultRoot = defineComponent({
     size: { type: String as PropType<'sm' | 'md' | 'lg'>, default: undefined },
   },
   setup(props, { slots }) {
-    const api = computed(() => connectResult(props as ResultProps, vueNormalize))
+    const configured = withXhConfig('result', props as ResultProps)
+    const api = computed(() => connectResult(configured, vueNormalize))
     provideResult({ api })
     return () => h('div', api.value.getRootProps() as Record<string, unknown>, slots.default?.())
   },

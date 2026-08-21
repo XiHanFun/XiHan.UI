@@ -28,7 +28,8 @@ for (const name of entries) {
 comps.sort()
 
 const map = await readFile(MAP, 'utf8')
-const listed = new Set([...map.matchAll(/^\s*'([\w-]+)'\?: Partial</gm)].map(hit => hit[1]))
+// 键 → 它指向的文案类型名：指错类型（date-field 指成 date-picker 的）编译照样过，只有这里能抓
+const listed = new Map([...map.matchAll(/^\s*'([\w-]+)'\?: Partial<(\w+)>/gm)].map(hit => [hit[1], hit[2]]))
 
 const errors = []
 
@@ -38,11 +39,14 @@ for (const comp of comps) {
   if (!new RegExp(`\\b(?:interface|type) ${name}\\b`).test(types))
     errors.push(`${comp}：${comp}.types.ts 里没有 ${name}，空接口也要留着`)
 
-  if (!listed.has(comp))
+  const pointed = listed.get(comp)
+  if (pointed === undefined)
     errors.push(`${comp}：没挂进 XhTranslationOverrides，全局配置到不了它`)
+  else if (pointed !== name)
+    errors.push(`${comp}：XhTranslationOverrides 里指向 ${pointed}，该是 ${name}`)
 }
 
-for (const comp of listed) {
+for (const comp of listed.keys()) {
   if (!comps.includes(comp))
     errors.push(`XhTranslationOverrides 里的 '${comp}' 不是组件`)
 }

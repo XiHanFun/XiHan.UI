@@ -39,7 +39,7 @@ export class XhStatisticElement extends XhElement {
   protected wire(): void {
     // 读响应式 property，不回读 DOM 特性
     const props: StatisticProps = { size: this.size, tone: this.tone }
-    const api = connectStatistic(props, wcNormalize)
+    const api = connectStatistic(this.configured('statistic', props), wcNormalize)
 
     const put = (name: string, attrs: Record<string, unknown>): void => {
       const el = this.getPart(name)

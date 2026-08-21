@@ -2,7 +2,7 @@
 // 全局配置注入的取值优先级：实例 props > provideXhConfig > 组件内建默认。
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, defineComponent, h, nextTick, ref } from 'vue'
-import { provideXhConfig, XhBadge, XhBreadcrumbRoot, XhSpinner, XhTime } from '../src'
+import { provideXhConfig, XhBadge, XhBreadcrumbRoot, XhButton, XhEmptyStateRoot, XhResultRoot, XhSpinner, XhTime } from '../src'
 
 let mounted: Array<() => void> = []
 
@@ -104,6 +104,24 @@ describe('provideXhConfig · size', () => {
     })
     expect(host.querySelector('#global [data-scope="badge"]')?.getAttribute('data-size')).toBe('lg')
     expect(host.querySelector('#own [data-scope="badge"]')?.getAttribute('data-size')).toBe('sm')
+  })
+
+  it('不跑机器的组件也吃全局尺寸档，全局值是 ref 时切换即重渲', async () => {
+    const config = ref({ size: 'lg' as const })
+    const host = mount(() => {
+      provideXhConfig(config)
+      return () => [
+        h(XhButton, () => '去'),
+        h(XhEmptyStateRoot, () => '空'),
+        h(XhResultRoot, { status: 'success' }, () => '成'),
+      ]
+    })
+    const sizes = (): Array<string | null> => ['button', 'empty-state', 'result']
+      .map(scope => host.querySelector(`[data-scope="${scope}"]`)?.getAttribute('data-size') ?? null)
+    expect(sizes()).toEqual(['lg', 'lg', 'lg'])
+    config.value = { size: 'sm' }
+    await nextTick()
+    expect(sizes()).toEqual(['sm', 'sm', 'sm'])
   })
 })
 

@@ -35,12 +35,12 @@ export class XhButtonGroupElement extends XhElement {
 
   protected wire(): void {
     // 读响应式 property，不回读 DOM 特性
-    const api = connectButtonGroup({
+    const api = connectButtonGroup(this.configured('button-group', {
       orientation: this.orientation as ButtonGroupProps['orientation'],
       variant: this.variant,
       tone: this.tone,
       size: this.size,
-    } satisfies ButtonGroupProps, wcNormalize)
+    } satisfies ButtonGroupProps), wcNormalize)
 
     const root = this.getPart('root')
     if (root)

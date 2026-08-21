@@ -63,11 +63,11 @@ export class XhTimelineElement extends XhElement {
 
   protected wire(): void {
     // 读响应式 property，不回读 DOM 特性
-    const api = connectTimeline({
+    const api = connectTimeline(this.configured('timeline', {
       orientation: this.orientation,
       placement: this.placement,
       size: this.size,
-    } satisfies TimelineProps, wcNormalize)
+    } satisfies TimelineProps), wcNormalize)
 
     const put = (name: string, props: Record<string, unknown>): void => {
       const el = this.getPart(name)

@@ -1,6 +1,7 @@
 import type { EmptyStateLive, EmptyStateProps } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
 import { defineComponent, h } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { provideEmptyState, useEmptyStateContext } from './context'
 import { useEmptyState } from './use-empty-state'
 
@@ -12,7 +13,7 @@ export const XhEmptyStateRoot = defineComponent({
     live: { type: String as PropType<EmptyStateLive>, default: undefined },
   },
   setup(props, { slots }) {
-    const ctx = useEmptyState(props as EmptyStateProps)
+    const ctx = useEmptyState(withXhConfig('empty-state', props as EmptyStateProps))
     provideEmptyState(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.())
   },

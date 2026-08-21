@@ -4,6 +4,7 @@ import type { Service } from '@xihan-ui/machine'
 import type { OverlayExit } from '../overlay-exit'
 import { connectDrawer, drawerAnatomy, drawerMachine, drawerMeta } from '@xihan-ui/headless'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/kernel'
+import { resolveXhConfig } from '../config'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
@@ -110,7 +111,12 @@ export class XhDrawerElement extends XhElement {
   private ensureConfig(): void {
     if (this.config)
       return
-    this.config = createRuntimeConfig({ scope: this.drawerScope, idGenerator: this.idGen })
+    // scrollRoot 每次现读：配置沿祖先链解析，元素搬家或 <xh-config> 改了都要跟上
+    this.config = createRuntimeConfig({
+      scope: this.drawerScope,
+      idGenerator: this.idGen,
+      scrollRoot: () => resolveXhConfig(this).scrollRoot?.() ?? null,
+    })
   }
 
   /** 退场闸门建一次；presence 不是响应式 cell，退场结束要显式排一次更新才轮得到收起。 */

@@ -31,11 +31,11 @@ export class XhIconWrapperElement extends XhElement {
 
   protected wire(): void {
     // 读响应式 property，不回读 DOM 特性
-    const api = connectIconWrapper({
+    const api = connectIconWrapper(this.configured('icon-wrapper', {
       variant: this.variant,
       tone: this.tone,
       size: this.size,
-    } satisfies IconWrapperProps, wcNormalize)
+    } satisfies IconWrapperProps), wcNormalize)
 
     const root = this.getPart('root')
     if (root)

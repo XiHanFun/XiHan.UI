@@ -16489,15 +16489,6 @@
             },
             {
               "kind": "field",
-              "name": "#stopConfig",
-              "privacy": "private",
-              "type": {
-                "text": "() => void | undefined"
-              },
-              "description": "退订全局配置变更。"
-            },
-            {
-              "kind": "field",
               "name": "#notify",
               "privacy": "private"
             },

@@ -23,7 +23,7 @@ provideXhConfig({
 | --- | --- | --- |
 | `locale` | `string` | BCP 47 语言标记，喂给日期时间系组件（`calendar` / `date-*` / `time-*`）。它只管这几个组件的日期时间格式，不换文案。 |
 | `translations` | `XhTranslationOverrides` | 按组件 id 分组的文案覆盖。每个组件的可覆盖键就是它 `<Pascal>Translations` 里的字段，组件页的 Props 表里能查到。 |
-| `size` | `'sm' \| 'md' \| 'lg'` | 尺寸档的默认值，落到每个声明了三轴 `size` 的组件上。`floating-panel` 的 `size` 是一对像素数、同名不同义，不受它影响。 |
+| `size` | `'sm' \| 'md' \| 'lg'` | 尺寸档的默认值，落到每个声明了三轴 `size` 的组件上——跑机器的与不跑机器的（按钮、徽标、空状态这些）都算。它与 `data-density` 是两条独立的轴：`size` 换的是控件高度与字号档，密度只收紧间距。`floating-panel` 的 `size` 是一对像素数、同名不同义，不受它影响。 |
 | `portalContainer` | `() => Element \| null` | 浮层默认挂到哪个容器；返回 `null` 即挂 `body`。实例上写了容器的以实例为准。仅 Vue 适配器有——Web Components 是 Light DOM，浮层不搬运。 |
 | `scrollRoot` | `() => HTMLElement \| null` | 真正在滚的那个元素。宿主把滚动搬进内容容器（`body` 本身不滚）时必须给，否则模态浮层加的滚动锁是空操作、背后照样能滚。返回 `null` 即交给滚动锁自行探测。 |
 
@@ -86,7 +86,7 @@ provideXhConfig({ translations: { dialog: { close: 'Close' } } })
 </script>
 ```
 
-`locale` 与 `size` 两条属性写在标签上就行；`translations` 是对象、`scrollRoot` 是函数，只能走 property。`<xh-config>` 自己不渲染任何东西，也不接线任何角色节点——它是 `display: contents`，布局上完全让开。
+`locale` 与 `size` 两条属性写在标签上就行；`translations` 是对象、`scrollRoot` 是函数，只能走 property。子树里每个元素都沿祖先链解析，跑机器的与不跑机器的一视同仁；`scrollRoot` 由 `xh-dialog` / `xh-drawer` / `xh-image-viewer` 开模态时现读，改了下一次打开就生效。`<xh-config>` 自己不渲染任何东西，也不接线任何角色节点——它是 `display: contents`，布局上完全让开。
 
 `setXhConfig` 是**整份替换**（不深合并），想改一处就把整份拿去改；`<xh-config>` 之间以及它与全局那份之间才是逐键合并。
 

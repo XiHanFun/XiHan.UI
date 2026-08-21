@@ -55,7 +55,7 @@ export class XhBreadcrumbElement extends XhElement {
       tone: this.tone,
       size: this.size,
     }
-    const api = connectBreadcrumb(props, wcNormalize)
+    const api = connectBreadcrumb(this.configured('breadcrumb', props), wcNormalize)
 
     const put = (name: string, attrs: Record<string, unknown>): void => {
       const el = this.getPart(name)

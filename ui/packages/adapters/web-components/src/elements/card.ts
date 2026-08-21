@@ -41,12 +41,12 @@ export class XhCardElement extends XhElement {
 
   protected wire(): void {
     // 读响应式 property，不回读 DOM 特性
-    const api = connectCard({
+    const api = connectCard(this.configured('card', {
       variant: this.variant,
       size: this.size,
       hoverable: this.hoverable ?? false,
       segmented: this.segmented ?? false,
-    } satisfies CardProps, wcNormalize)
+    } satisfies CardProps), wcNormalize)
 
     const put = (name: string, props: Record<string, unknown>): void => {
       const el = this.getPart(name)

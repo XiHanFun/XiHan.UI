@@ -45,7 +45,7 @@ export class XhTypographyElement extends XhElement {
 
   protected wire(): void {
     // 读响应式 property，不回读 DOM 特性
-    const api = connectTypography({ size: this.size } satisfies TypographyProps, wcNormalize)
+    const api = connectTypography(this.configured('typography', { size: this.size } satisfies TypographyProps), wcNormalize)
 
     const root = this.getPart('root')
     if (root)

@@ -42,7 +42,7 @@ export class XhSpinnerElement extends XhElement {
       tone: this.tone,
       translations: this.translations,
     }
-    const api = connectSpinner(props, wcNormalize)
+    const api = connectSpinner(this.configured('spinner', props), wcNormalize)
 
     const put = (name: string, attrs: Record<string, unknown>): void => {
       const el = this.getPart(name)

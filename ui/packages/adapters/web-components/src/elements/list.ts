@@ -45,12 +45,12 @@ export class XhListElement extends XhElement {
 
   protected wire(): void {
     // 读响应式 property，不回读 DOM 特性
-    const api = connectList({
+    const api = connectList(this.configured('list', {
       bordered: this.bordered ?? false,
       hoverable: this.hoverable ?? false,
       split: this.split ?? false,
       size: this.size,
-    } satisfies ListProps, wcNormalize)
+    } satisfies ListProps), wcNormalize)
 
     const root = this.getPart('root')
     if (root)

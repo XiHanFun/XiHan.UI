@@ -38,10 +38,10 @@ export class XhPageHeaderElement extends XhElement {
 
   protected wire(): void {
     // 读响应式 property，不回读 DOM 特性
-    const api = connectPageHeader({
+    const api = connectPageHeader(this.configured('page-header', {
       size: this.size,
       bordered: this.bordered ?? false,
-    } satisfies PageHeaderProps, wcNormalize)
+    } satisfies PageHeaderProps), wcNormalize)
 
     const put = (name: string, props: Record<string, unknown>): void => {
       const el = this.getPart(name)
