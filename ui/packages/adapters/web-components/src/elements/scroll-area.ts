@@ -28,7 +28,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  *
  * @customElement xh-scroll-area
  * @attr {'auto'|'always'|'scroll'|'hover'} type - 滚动条露面的时机，默认 hover
- * @attr {number} scroll-hide-delay - 收起前的等待毫秒（type 为 scroll / hover 时生效），默认 600
+ * @attr {number} hide-delay - 收起前的等待毫秒（type 为 scroll / hover 时生效），默认 600
  * @attr {'horizontal'|'vertical'|'both'} orientation - 哪几条轴归本组件管，默认 both
  * @attr {'ltr'|'rtl'} dir - 排版方向，只改写横轴的滚动量正负与指针位移方向
  * @csspart root - 组件根容器（承载 data-orientation / data-type / data-dragging），指针进出的判据挂在它身上
@@ -46,13 +46,13 @@ export class XhScrollAreaElement extends XhElement {
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     type: { converter: STRING_CONVERTER },
-    scrollHideDelay: { converter: NUMBER_CONVERTER, attribute: 'scroll-hide-delay' },
+    hideDelay: { converter: NUMBER_CONVERTER, attribute: 'hide-delay' },
     orientation: { converter: STRING_CONVERTER },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
   }
 
   declare type?: ScrollAreaType
-  declare scrollHideDelay?: number
+  declare hideDelay?: number
   declare orientation?: ScrollAreaOrientation
   declare direction?: Direction
 
@@ -69,7 +69,7 @@ export class XhScrollAreaElement extends XhElement {
   private machineProps(): Partial<ScrollAreaSchema['props']> {
     return {
       type: this.type,
-      scrollHideDelay: this.scrollHideDelay,
+      hideDelay: this.hideDelay,
       orientation: this.orientation,
       dir: this.direction,
     }

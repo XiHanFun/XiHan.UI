@@ -28343,12 +28343,12 @@
             },
             {
               "kind": "field",
-              "name": "scrollHideDelay",
+              "name": "hideDelay",
               "privacy": "public",
               "type": {
                 "text": "number | undefined"
               },
-              "attribute": "scroll-hide-delay"
+              "attribute": "hide-delay"
             },
             {
               "kind": "field",
@@ -28486,8 +28486,8 @@
                 "text": "number | undefined"
               },
               "description": "收起前的等待毫秒（type 为 scroll / hover 时生效），默认 600",
-              "name": "scroll-hide-delay",
-              "fieldName": "scrollHideDelay"
+              "name": "hide-delay",
+              "fieldName": "hideDelay"
             },
             {
               "type": {

@@ -1,4 +1,4 @@
-<!-- 收起的等待 | type 为 scroll 时滚动条停手后不立刻收起，scrollHideDelay 决定还留多少毫秒 -->
+<!-- 收起的等待 | type 为 scroll 时滚动条停手后不立刻收起，hideDelay 决定还留多少毫秒 -->
 <script setup lang="ts">
 import {
   XhScrollAreaContent,
@@ -21,7 +21,7 @@ const lines = Array.from({ length: 20 }, (_, i) => `第 ${i + 1} 行`);
       <span>{{ item.label }}</span>
       <XhScrollAreaRoot
         type="scroll"
-        :scroll-hide-delay="item.delay"
+        :hide-delay="item.delay"
         style="block-size: 140px; inline-size: 200px"
       >
         <XhScrollAreaViewport>

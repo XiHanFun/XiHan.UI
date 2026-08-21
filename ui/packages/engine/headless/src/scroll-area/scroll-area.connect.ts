@@ -3,7 +3,7 @@ import type { Service } from '@xihan-ui/machine'
 import type { ScrollAreaApi, ScrollAreaAxisState, ScrollAreaSchema } from './scroll-area.types'
 import { dataAttr } from '@xihan-ui/kernel'
 import { scrollAreaAnatomy } from './scroll-area.anatomy'
-import { scrollbarGeometry } from './scroll-area.geometry'
+import { scrollbarGeometry } from '../shared/scroll-geometry'
 import { SCROLL_AREA_DEFAULT_TYPE } from './scroll-area.machine'
 
 const parts = scrollAreaAnatomy.build()

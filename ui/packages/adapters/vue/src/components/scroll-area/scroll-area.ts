@@ -20,7 +20,7 @@ export const XhScrollAreaRoot = defineComponent({
   // 缺省值由机器与 connect 给出，这里一律 default: undefined
   props: {
     type: { type: String as PropType<ScrollAreaType>, default: undefined },
-    scrollHideDelay: { type: Number, default: undefined },
+    hideDelay: { type: Number, default: undefined },
     orientation: { type: String as PropType<ScrollAreaOrientation>, default: undefined },
     dir: { type: String as PropType<Direction>, default: undefined },
   },

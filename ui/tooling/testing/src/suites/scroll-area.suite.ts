@@ -193,9 +193,9 @@ export const scrollAreaSuite: ConformanceSuite = {
       },
     },
     {
-      name: 'hover：指针进入才露出，离开后要等满 scrollHideDelay 才收起',
+      name: 'hover：指针进入才露出，离开后要等满 hideDelay 才收起',
       spec: { apg: WCAG },
-      props: { type: 'hover', scrollHideDelay: 300 },
+      props: { type: 'hover', hideDelay: 300 },
       steps: [
         layoutStep,
         {
@@ -226,9 +226,9 @@ export const scrollAreaSuite: ConformanceSuite = {
       ],
     },
     {
-      name: 'scroll：滚动时露出，停手满 scrollHideDelay 后收起',
+      name: 'scroll：滚动时露出，停手满 hideDelay 后收起',
       spec: { apg: WCAG },
-      props: { type: 'scroll', scrollHideDelay: 300 },
+      props: { type: 'scroll', hideDelay: 300 },
       steps: [
         {
           // layout 末尾那次 scroll 就是第一下滚动

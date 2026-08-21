@@ -7,13 +7,12 @@ import { createService } from '@xihan-ui/machine'
 import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 // 直接指向组件目录：包主入口的导出由接线一并补，测试不等它
+import { connectScrollArea, scrollAreaMachine } from '../src/scroll-area'
 import {
-  connectScrollArea,
   isOverflowing,
   maxScrollOffset,
   pointerDelta,
-  SCROLL_AREA_MIN_THUMB_SIZE,
-  scrollAreaMachine,
+  SCROLL_MIN_THUMB_SIZE,
   scrollbarGeometry,
   scrollFromThumbDrag,
   scrollFromTrackPoint,
@@ -22,7 +21,7 @@ import {
   toDomScroll,
   toLogicalScroll,
   trackOffset,
-} from '../src/scroll-area'
+} from '../src/shared/scroll-geometry'
 
 type Props = ScrollAreaSchema['props']
 type Dict = Record<string, unknown>
@@ -67,7 +66,7 @@ describe('thumbSizeRatio', () => {
   it('比例太小时兜住像素下限', () => {
     // 一万像素的内容配一百像素的视口，纯按比例只有 1px，按都按不住
     expect(thumbSizeRatio({ viewport: 100, content: 10000, scroll: 0, track: 100 })).toBe(0.2)
-    expect(SCROLL_AREA_MIN_THUMB_SIZE).toBe(20)
+    expect(SCROLL_MIN_THUMB_SIZE).toBe(20)
   })
 
   it('轨道还没量到（收起的滚动条 clientHeight 是 0）时只用比例，不做除零', () => {
@@ -450,9 +449,9 @@ describe('显隐时机', () => {
     expect(barProps(r)['data-state']).toBe('visible')
   })
 
-  it('hover：指针离开后要等满 scrollHideDelay 才收起', async () => {
+  it('hover：指针离开后要等满 hideDelay 才收起', async () => {
     vi.useFakeTimers()
-    const r = rig({ type: 'hover', scrollHideDelay: 300 })
+    const r = rig({ type: 'hover', hideDelay: 300 })
     await settle()
     const root = (): Dict => r.api().getRootProps() as Dict
     ;(root().onPointerEnter as () => void)()
@@ -468,10 +467,10 @@ describe('显隐时机', () => {
     expect(barProps(r)['data-state']).toBe('hidden')
   })
 
-  it('scrollHideDelay 给 Infinity 就一直露着，不该当场抛', async () => {
+  it('hideDelay 给 Infinity 就一直露着，不该当场抛', async () => {
     vi.useFakeTimers()
     // Infinity 是"永不收起"的自然写法；直接喂给定时器会在 dev 下抛 INVALID_DELAY
-    const r = rig({ type: 'hover', scrollHideDelay: Number.POSITIVE_INFINITY })
+    const r = rig({ type: 'hover', hideDelay: Number.POSITIVE_INFINITY })
     await settle()
     const root = (): Dict => r.api().getRootProps() as Dict
     ;(root().onPointerEnter as () => void)()
@@ -481,10 +480,10 @@ describe('显隐时机', () => {
     expect(barProps(r)['data-state']).toBe('visible')
   })
 
-  it('scrollHideDelay 给 NaN 同样不排期，不会被当成 0 立刻收起', async () => {
+  it('hideDelay 给 NaN 同样不排期，不会被当成 0 立刻收起', async () => {
     vi.useFakeTimers()
     // 与 toast 同一判据：非有限值一律不起计时器，而不是喂给 setTimeout 折算成 0
-    const r = rig({ type: 'hover', scrollHideDelay: Number.NaN })
+    const r = rig({ type: 'hover', hideDelay: Number.NaN })
     await settle()
     const root = (): Dict => r.api().getRootProps() as Dict
     ;(root().onPointerEnter as () => void)()
@@ -495,7 +494,7 @@ describe('显隐时机', () => {
 
   it('hover：收起倒计时里指针又回来即撤销', async () => {
     vi.useFakeTimers()
-    const r = rig({ type: 'hover', scrollHideDelay: 300 })
+    const r = rig({ type: 'hover', hideDelay: 300 })
     await settle()
     const root = (): Dict => r.api().getRootProps() as Dict
     ;(root().onPointerEnter as () => void)()
@@ -515,7 +514,7 @@ describe('显隐时机', () => {
 
   it('type=scroll：滚动时露出，停手一段时间后收起', async () => {
     vi.useFakeTimers()
-    const r = rig({ type: 'scroll', scrollHideDelay: 200 })
+    const r = rig({ type: 'scroll', hideDelay: 200 })
     await settle()
     expect(barProps(r)['data-state']).toBe('hidden')
 
@@ -619,7 +618,7 @@ describe('拖动滑块', () => {
   })
 
   it('松手后指针还在组件里就留着滚动条，人走了才开始倒计时', async () => {
-    const r = rig({ type: 'hover', scrollHideDelay: 200 })
+    const r = rig({ type: 'hover', hideDelay: 200 })
     await settle()
     ;((r.api().getRootProps() as Dict).onPointerEnter as () => void)()
     ;(thumbProps(r).onPointerDown as (e: PointerEvent) => void)(pointer('pointerdown', { clientY: 10 }))
