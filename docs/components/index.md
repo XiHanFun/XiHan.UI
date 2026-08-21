@@ -1,6 +1,6 @@
 # 组件总览
 
-118 个组件，每个都同时提供**无头内核**（`@xihan-ui/headless`）、**Vue 组件**（`@xihan-ui/vue`）、**自定义元素**（`@xihan-ui/web-components`）与**默认皮肤**（`@xihan-ui/styles`）四份产物。四者同源：内核是唯一的行为定义，另外三份不重新实现任何逻辑。
+119 个组件，每个都同时提供**无头内核**（`@xihan-ui/headless`）、**Vue 组件**（`@xihan-ui/vue`）、**自定义元素**（`@xihan-ui/web-components`）与**默认皮肤**（`@xihan-ui/styles`）四份产物。四者同源：内核是唯一的行为定义，另外三份不重新实现任何逻辑。
 
 本册每个组件一页，页内小节固定：概述 · 何时使用 · 何时不用 · 特性 · 示例 · 产物 · 解剖 · Props · 事件 · 插槽 · 状态 · connect API · 键盘 · 无障碍 · 样式 · 数据属性 · CSS 变量 · 动效 · 响应式 · RTL · 组合 · 最佳实践 · 反模式。其中契约类的小节由组件源码、连接层与皮肤直接生成，不会与代码对不上；讲取舍的几节与组件源码同放，见各组件目录下的 doc.md。某一节没有内容时整节不出现，不留空标题。
 
@@ -38,6 +38,7 @@
 | [布局](./layout) | `layout` | 6 | 1 | 7 |
 | [瀑布流](./masonry) | `masonry` | 3 | 0 | 5 |
 | [滚动区域](./scroll-area) | `scroll-area` | 6 | 5 | 5 |
+| [滚动条](./scrollbar) | `scrollbar` | 3 | 7 | 2 |
 | [分隔线](./separator) | `separator` | 1 | 0 | 4 |
 | [间距](./space) | `space` | 2 | 0 | 5 |
 | [分栏](./splitter) | `splitter` | 3 | 7 | 6 |

@@ -89,6 +89,10 @@
           "name": "滚动区域"
         },
         {
+          "id": "scrollbar",
+          "name": "滚动条"
+        },
+        {
           "id": "separator",
           "name": "分隔线"
         },

@@ -35,6 +35,8 @@ export const DIAGNOSTIC_CODES = {
   ignoredSlot: 'core.ignored-slot',
   /** 浮层的祖先建了层叠上下文，浮层的层号被困在其中。 */
   overlayStackingTrap: 'overlay.stacking-trap',
+  /** 滚动条挂载时找不到它要管的滚动容器：作者没给 scrollable，也没给能查到节点的 controls。 */
+  scrollbarMissingScrollable: 'scrollbar.missing-scrollable',
   /** 浮层展开了却没有锚点：坐标与触发区都缺席，位置无从算起。 */
   overlayMissingAnchor: 'overlay.missing-anchor',
 } as const

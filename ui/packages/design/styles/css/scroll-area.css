@@ -72,11 +72,11 @@
      缩视口而不是给视口加内边距：滚动容器末端缘的 padding 计不计进 scrollWidth，各引擎不一致。
      子结合符：只认自己这一层的滚动条，嵌套滚动区不会把外层视口也削掉。 */
   [data-scope='scroll-area'][data-part='root']:has(> [data-part='scrollbar'][data-orientation='vertical'][data-gutter]) > [data-scope='scroll-area'][data-part='viewport'] {
-    inline-size: calc(100% - var(--xh-scroll-area-bar-size, 10px));
+    inline-size: calc(100% - var(--xh-scroll-area-bar-size, var(--xh-scrollbar-thickness-md)));
   }
 
   [data-scope='scroll-area'][data-part='root']:has(> [data-part='scrollbar'][data-orientation='horizontal'][data-gutter]) > [data-scope='scroll-area'][data-part='viewport'] {
-    block-size: calc(100% - var(--xh-scroll-area-bar-size, 10px));
+    block-size: calc(100% - var(--xh-scroll-area-bar-size, var(--xh-scrollbar-thickness-md)));
   }
 
   /* 横向溢出全靠它撑：内容若跟着视口一起收成 100% 宽，横轴永远量不出溢出，
@@ -90,8 +90,8 @@
      user-select 同理——拖动时选中页面文字会让滑块"粘"住。 */
   [data-scope='scroll-area'][data-part='scrollbar'] {
     position: absolute;
-    padding: var(--xh-scroll-area-bar-padding, 2px);
-    background: var(--xh-scroll-area-bar-bg, var(--xh-bg-subtle));
+    padding: var(--xh-scroll-area-bar-padding, var(--xh-scrollbar-gutter));
+    background: var(--xh-scroll-area-bar-bg, var(--xh-bg-scrollbar-track));
     touch-action: none;
     user-select: none;
   }
@@ -99,13 +99,13 @@
   [data-scope='scroll-area'][data-part='scrollbar'][data-orientation='vertical'] {
     inset-block: 0;
     inset-inline-end: 0;
-    inline-size: var(--xh-scroll-area-bar-size, 10px);
+    inline-size: var(--xh-scroll-area-bar-size, var(--xh-scrollbar-thickness-md));
   }
 
   [data-scope='scroll-area'][data-part='scrollbar'][data-orientation='horizontal'] {
     inset-inline: 0;
     inset-block-end: 0;
-    block-size: var(--xh-scroll-area-bar-size, 10px);
+    block-size: var(--xh-scroll-area-bar-size, var(--xh-scrollbar-thickness-md));
   }
 
   [data-scope='scroll-area'][data-part='scrollbar'][data-state='visible'] {
@@ -138,11 +138,11 @@
      不写的话绝对定位会退回"静态位置"。
      主轴那一侧一律不写：几何层量的轨道是 padding box，滑块长度也解析在同一个盒子上。 */
   [data-scope='scroll-area'][data-part='thumb'][data-orientation='vertical'] {
-    inset-inline: var(--xh-scroll-area-bar-padding, 2px);
+    inset-inline: var(--xh-scroll-area-bar-padding, var(--xh-scrollbar-gutter));
   }
 
   [data-scope='scroll-area'][data-part='thumb'][data-orientation='horizontal'] {
-    inset-block: var(--xh-scroll-area-bar-padding, 2px);
+    inset-block: var(--xh-scroll-area-bar-padding, var(--xh-scrollbar-gutter));
   }
 
   [data-scope='scroll-area'][data-part='thumb']:hover {
@@ -162,9 +162,9 @@
     display: block;
     inset-block-end: 0;
     inset-inline-end: 0;
-    inline-size: var(--xh-scroll-area-bar-size, 10px);
-    block-size: var(--xh-scroll-area-bar-size, 10px);
-    background: var(--xh-scroll-area-corner-bg, var(--xh-bg-subtle));
+    inline-size: var(--xh-scroll-area-bar-size, var(--xh-scrollbar-thickness-md));
+    block-size: var(--xh-scroll-area-bar-size, var(--xh-scrollbar-thickness-md));
+    background: var(--xh-scroll-area-corner-bg, var(--xh-bg-scrollbar-track));
   }
 
   /* display 会盖掉 UA 的 [hidden]{display:none}，凡是被赋了 display 的角色节点都要显式让位 */

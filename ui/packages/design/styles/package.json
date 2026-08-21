@@ -115,6 +115,7 @@
     "./reset.css": "./css/reset.css",
     "./result.css": "./css/result.css",
     "./scroll-area.css": "./css/scroll-area.css",
+    "./scrollbar.css": "./css/scrollbar.css",
     "./segmented.css": "./css/segmented.css",
     "./select.css": "./css/select.css",
     "./separator.css": "./css/separator.css",

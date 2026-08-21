@@ -84,6 +84,7 @@ import { XhRadioGroupElement } from './elements/radio-group'
 import { XhRatingElement } from './elements/rating'
 import { XhResultElement } from './elements/result'
 import { XhScrollAreaElement } from './elements/scroll-area'
+import { XhScrollbarElement } from './elements/scrollbar'
 import { XhSegmentedElement } from './elements/segmented'
 import { XhSelectElement } from './elements/select'
 import { XhSeparatorElement } from './elements/separator'
@@ -212,6 +213,7 @@ export function defineXhElements(): void {
   defineElement('xh-number-field', XhNumberFieldElement, VERSION)
   defineElement('xh-rating', XhRatingElement, VERSION)
   defineElement('xh-scroll-area', XhScrollAreaElement, VERSION)
+  defineElement('xh-scrollbar', XhScrollbarElement, VERSION)
   defineElement('xh-select', XhSelectElement, VERSION)
   defineElement('xh-separator', XhSeparatorElement, VERSION)
   defineElement('xh-side-nav', XhSideNavElement, VERSION)
@@ -313,6 +315,7 @@ export {
   XhRadioGroupElement,
   XhRatingElement,
   XhScrollAreaElement,
+  XhScrollbarElement,
   XhSegmentedElement,
   XhSelectElement,
   XhSeparatorElement,

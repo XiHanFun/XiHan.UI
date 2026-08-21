@@ -79,6 +79,7 @@ import { radioGroupSuite } from './radio-group.suite'
 import { ratingSuite } from './rating.suite'
 import { resultSuite } from './result.suite'
 import { scrollAreaSuite } from './scroll-area.suite'
+import { scrollbarSuite } from './scrollbar.suite'
 import { segmentedSuite } from './segmented.suite'
 import { selectSuite } from './select.suite'
 import { separatorSuite } from './separator.suite'
@@ -198,6 +199,7 @@ export const allSuites: readonly ConformanceSuite[] = [
   ratingSuite,
   resultSuite,
   scrollAreaSuite,
+  scrollbarSuite,
   segmentedSuite,
   selectSuite,
   separatorSuite,

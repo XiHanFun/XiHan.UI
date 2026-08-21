@@ -28562,6 +28562,383 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/scrollbar.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-scrollbar>` —— Light-DOM 行为宿主：作者写 root/track/thumb 三个角色节点，\n元素跑 scrollbar 机器并把 connect 产出打上去。\n\n滚动容器由作者交出来，且**不必**是本元素的后代：写 `controls=\"内容区的 id\"`，\n或者用 JS 把节点赋给 `scrollable` 属性。表格的滚动盒、虚拟滚动的视口、\n随手一个 overflow:auto 的 div 都行。\n\n滚动本身一概不接管：键盘（PageUp/PageDown、方向键、Home/End）与滚轮在滚动容器上\n走浏览器原生通路，本元素只是另画一套并接上拖拽与点轨道。滑块缺省不进 Tab 序、\n也对读屏隐藏——同一件事没必要报两遍；要用键盘操作滑块本身时开 `focusable`。\n\n滑块的位置与长度按可视区/内容/滚动量算出来后写进内联样式：竖向是\ninset-block-start + block-size，横向是 inset-inline-start + inline-size（逻辑属性，RTL 自动换向）。",
+          "name": "XhScrollbarElement",
+          "cssParts": [
+            {
+              "description": "定位盒与指针热区，承载 data-orientation / data-type / data-state / data-scrolling / data-dragging / data-size；收起时带 hidden",
+              "name": "root"
+            },
+            {
+              "description": "量长度的那条轨，点空白处把滑块中心挪过去",
+              "name": "track"
+            },
+            {
+              "description": "滑块，位置与长度由内联逻辑属性给出；按住可拖，focusable 时可聚焦并吃方向键",
+              "name": "thumb"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: scrollbarAnatomy, meta: scrollbarMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "controls",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "controls"
+            },
+            {
+              "kind": "field",
+              "name": "orientation",
+              "privacy": "public",
+              "type": {
+                "text": "Orientation | undefined"
+              },
+              "attribute": "orientation"
+            },
+            {
+              "kind": "field",
+              "name": "type",
+              "privacy": "public",
+              "type": {
+                "text": "ScrollbarType | undefined"
+              },
+              "attribute": "type"
+            },
+            {
+              "kind": "field",
+              "name": "hideDelay",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "hide-delay"
+            },
+            {
+              "kind": "field",
+              "name": "minThumbSize",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "min-thumb-size"
+            },
+            {
+              "kind": "field",
+              "name": "step",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "step"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "Size | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "focusable",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "focusable"
+            },
+            {
+              "kind": "field",
+              "name": "direction",
+              "privacy": "public",
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "attribute": "dir"
+            },
+            {
+              "kind": "field",
+              "name": "scrollable",
+              "privacy": "public",
+              "type": {
+                "text": "HTMLElement"
+              },
+              "description": "直接给滚动容器节点（对象只走 property），优先于 controls"
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "ScrollbarSchema['props']['translations'] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<ScrollbarSchema>( this, scrollbarMachine, () => this.machineProps(), { onBuilt: svc => this.injectRefs(svc) }, )"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<ScrollbarSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "emit",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "type",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "detail",
+                  "type": {
+                    "text": "unknown"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "resolveScrollable",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "HTMLElement | null"
+                }
+              },
+              "description": "先认 scrollable 属性给的节点，没有再按 controls 当 id 去查。\n每次调用现查：作者的容器可能是后插进来的，缓存住会永远指向第一次那个（或 null）。"
+            },
+            {
+              "kind": "method",
+              "name": "injectRefs",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "svc",
+                  "type": {
+                    "text": "Service<ScrollbarSchema>"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "name": "type",
+              "type": {
+                "text": "CustomEvent"
+              }
+            },
+            {
+              "description": "开始滚了；detail 为 `{ offset: number, max: number }`",
+              "name": "scroll-start"
+            },
+            {
+              "description": "一段滚动结束（停手 120ms）；detail 同上",
+              "name": "scroll-end"
+            },
+            {
+              "description": "按住滑块；detail 同上",
+              "name": "drag-start"
+            },
+            {
+              "description": "松开滑块；detail 同上",
+              "name": "drag-end"
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "滚动容器的 id；没设 scrollable 属性时按它查节点，focusable 时同时落到 aria-controls",
+              "name": "controls",
+              "fieldName": "controls"
+            },
+            {
+              "type": {
+                "text": "Orientation | undefined"
+              },
+              "description": "这条滚动条管哪条轴，默认 vertical",
+              "name": "orientation",
+              "fieldName": "orientation"
+            },
+            {
+              "type": {
+                "text": "ScrollbarType | undefined"
+              },
+              "description": "露面的时机，默认 hover",
+              "name": "type",
+              "fieldName": "type"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "收起前的等待毫秒（type 为 scroll / hover 时生效），默认 600",
+              "name": "hide-delay",
+              "fieldName": "hideDelay"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "滑块最短多少像素，默认 20",
+              "name": "min-thumb-size",
+              "fieldName": "minThumbSize"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "方向键一步滚多少像素，默认 40",
+              "name": "step",
+              "fieldName": "step"
+            },
+            {
+              "type": {
+                "text": "Size | undefined"
+              },
+              "description": "尺寸档，换的是滚动条厚度",
+              "name": "size",
+              "fieldName": "size"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "不接指针也不接键盘，恒不显形",
+              "name": "disabled",
+              "fieldName": "disabled"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "滑块进 Tab 序并报 role=scrollbar，默认关",
+              "name": "focusable",
+              "fieldName": "focusable"
+            },
+            {
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "description": "排版方向，只改写横轴的滚动量正负与指针位移方向",
+              "name": "dir",
+              "fieldName": "direction"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-scrollbar",
+          "customElement": true,
+          "cssProperties": [
+            {
+              "name": "--xh-scrollbar-gutter"
+            },
+            {
+              "name": "--xh-scrollbar-thickness-lg"
+            },
+            {
+              "name": "--xh-scrollbar-thickness-md"
+            },
+            {
+              "name": "--xh-scrollbar-thickness-sm"
+            },
+            {
+              "name": "--xh-scrollbar-thumb-bg"
+            },
+            {
+              "name": "--xh-scrollbar-thumb-bg-active"
+            },
+            {
+              "name": "--xh-scrollbar-thumb-bg-disabled"
+            },
+            {
+              "name": "--xh-scrollbar-thumb-bg-hover"
+            },
+            {
+              "name": "--xh-scrollbar-thumb-radius"
+            },
+            {
+              "name": "--xh-scrollbar-track-bg"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhScrollbarElement",
+          "declaration": {
+            "name": "XhScrollbarElement",
+            "module": "src/elements/scrollbar.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/segmented.ts",
       "declarations": [
         {
