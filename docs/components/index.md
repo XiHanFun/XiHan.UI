@@ -77,7 +77,7 @@
 | [颜色选择器](./color-picker) | `color-picker` | 17 | 9 | 10 |
 | [组合框](./combobox) | `combobox` | 15 | 14 | 14 |
 | [日期输入](./date-field) | `date-field` | 5 | 9 | 13 |
-| [日期选择器](./date-picker) | `date-picker` | 12 | 7 | 10 |
+| [日期选择器](./date-picker) | `date-picker` | 14 | 9 | 10 |
 | [动态录入](./dynamic-input) | `dynamic-input` | 8 | 0 | 5 |
 | [就地编辑](./editable) | `editable` | 9 | 3 | 6 |
 | [表单字段](./field) | `field` | 5 | 0 | 6 |
@@ -100,7 +100,7 @@
 | [标签输入](./tags-input) | `tags-input` | 11 | 13 | 12 |
 | [文本输入](./text-field) | `text-field` | 4 | 1 | 16 |
 | [时间输入](./time-field) | `time-field` | 5 | 9 | 9 |
-| [时间选择器](./time-picker) | `time-picker` | 11 | 22 | 10 |
+| [时间选择器](./time-picker) | `time-picker` | 13 | 24 | 11 |
 | [穿梭框](./transfer) | `transfer` | 14 | 11 | 8 |
 | [树选择](./tree-select) | `tree-select` | 19 | 14 | 12 |
 

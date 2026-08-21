@@ -4,6 +4,8 @@ import type {
   TimePickerApi,
   TimePickerColumn,
   TimePickerColumnUnit,
+  TimePickerPreset,
+  TimePickerPresetState,
   TimePickerSchema,
   TimeSegmentType,
 } from '@xihan-ui/headless'
@@ -12,6 +14,7 @@ import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h, mergeProps, Teleport } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { slotPaints } from '../../runtime/slot-content'
 import {
   provideTimePicker,
   provideTimePickerColumn,
@@ -42,6 +45,11 @@ export interface TimePickerColumnSlotProps {
   options: TimePickerColumn['options']
 }
 
+/** 快捷选项列默认插槽的载荷：逐条的投影，作者据此自己铺条目。 */
+export interface TimePickerPresetsSlotProps {
+  presets: readonly TimePickerPresetState[]
+}
+
 export const XhTimePickerRoot = defineComponent({
   name: 'XhTimePickerRoot',
   // 缺省值由 connect 给出，这里一律 default: undefined
@@ -56,6 +64,8 @@ export const XhTimePickerRoot = defineComponent({
     hourCycle: { type: Number as PropType<TimeHourCycle>, default: undefined },
     granularity: { type: String as PropType<TimeGranularity>, default: undefined },
     step: { type: Number, default: undefined },
+    /** 快捷选项；给了就在浮层里多出一列，时刻要在自己的 computed 里算好再传。 */
+    presets: { type: Array as PropType<TimePickerPreset[]>, default: undefined },
     disabled: Boolean,
     translations: { type: Object as PropType<TimePickerProps['translations']>, default: undefined },
     isTimeUnavailable: { type: Function as PropType<(value: string, unit: TimePickerColumnUnit) => boolean>, default: undefined },
@@ -189,6 +199,56 @@ export const XhTimePickerContent = defineComponent({
       style: ctx.visible.value ? undefined : { display: 'none' },
       ref: (el: unknown) => { ctx.contentRef.value = el as HTMLElement },
     }, slots.default?.())
+  },
+})
+
+export const XhTimePickerPresets = defineComponent({
+  name: 'XhTimePickerPresets',
+  slots: Object as SlotsType<{
+    /** 自己铺条目；不写就按 presets 数据自动铺，两者产出的 DOM 一致。 */
+    default?: (props: TimePickerPresetsSlotProps) => VNode[]
+  }>,
+  setup(_, { slots }) {
+    const ctx = useTimePickerContext()
+    return () => {
+      const api = ctx.api.value
+      const authored = slots.default?.({ presets: api.presets })
+      return h(
+        'div',
+        api.getPresetsProps() as Record<string, unknown>,
+        slotPaints(authored)
+          ? authored
+          : api.presets.map(preset => h(
+              'div',
+              { ...api.getPresetProps({ value: preset.value }) as Record<string, unknown>, key: preset.value },
+              preset.label,
+            )),
+      )
+    }
+  },
+})
+
+export const XhTimePickerPreset = defineComponent({
+  name: 'XhTimePickerPreset',
+  props: {
+    /** 这一条的身份，与 presets 数据里的 value 逐字对上。 */
+    value: { type: String, required: true },
+  },
+  slots: Object as SlotsType<{
+    /** 条目内容；不写就用数据里的 label。 */
+    default?: () => VNode[]
+  }>,
+  setup(props, { slots }) {
+    const ctx = useTimePickerContext()
+    return () => {
+      const api = ctx.api.value
+      const authored = slots.default?.()
+      return h(
+        'div',
+        api.getPresetProps({ value: props.value }) as Record<string, unknown>,
+        slotPaints(authored) ? authored : api.presets.find(p => p.value === props.value)?.label,
+      )
+    }
   },
 })
 

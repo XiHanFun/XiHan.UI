@@ -16,6 +16,15 @@ export {
 } from './date-picker.machine'
 export { datePickerMeta } from './date-picker.meta'
 export {
+  DATE_PICKER_RANGE_SEPARATOR,
+  datePickerPresetDates,
+  datePickerPresetDay,
+  datePickerPresetMonth,
+  datePickerPresetRange,
+  datePickerPresetValue,
+  datePickerPresetYear,
+} from './date-picker.presets'
+export {
   datePickerDatePart,
   datePickerJoinDateTime,
   datePickerSetTimeUnit,
@@ -29,6 +38,9 @@ export type {
   DatePickerFocusChangeDetails,
   DatePickerInputProps,
   DatePickerOpenChangeDetails,
+  DatePickerPreset,
+  DatePickerPresetProps,
+  DatePickerPresetState,
   DatePickerRefs,
   DatePickerSchema,
   DatePickerServices,

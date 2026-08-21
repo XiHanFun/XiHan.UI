@@ -366,12 +366,12 @@ export const datePickerMachine = createMachine({
       isOpenControlled: ({ prop }) => prop('open') !== undefined,
 
       /**
-       * 这一次写值该不该收起浮层：只认日历那一路，多选不收起，区间要两端都落定。
+       * 这一次写值该不该收起浮层：只认日历与快捷选项两路，多选不收起，区间要两端都落定。
        * showTime 下选完日子还要挑时间，收口交给确认按钮。
        */
       closesOnSelect: ({ prop, event }) => {
         const e = event.current()
-        if (e.type !== 'VALUE.SET' || e.src !== 'calendar')
+        if (e.type !== 'VALUE.SET' || (e.src !== 'calendar' && e.src !== 'preset'))
           return false
         if (prop('showTime') && (prop('selectionMode') ?? 'single') === 'single')
           return false

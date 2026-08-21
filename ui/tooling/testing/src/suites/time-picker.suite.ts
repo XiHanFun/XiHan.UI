@@ -1,4 +1,4 @@
-import type { ConformanceSuite, FixtureNode } from '../conformance/types'
+import type { ConformanceSuite, FixtureNode, RawStepContext } from '../conformance/types'
 import { timePickerAnatomy, timePickerKeyboard } from '@xihan-ui/headless'
 import { nativeActivation } from './shared/native-activation'
 
@@ -67,6 +67,51 @@ function expectHidden(doc: Document, want: string, why: string): void {
     throw new Error(`${why}：隐藏输入期望 "${want}"，实际 "${got}"`)
 }
 
+/** 快捷选项写死在 min/max 之内，断言不随运行时刻改口。 */
+const PRESETS = [
+  { value: '08:30', label: '开工' },
+  { value: '09:00', label: '早会' },
+  { value: '10:30', label: '茶歇' },
+] as const
+
+/** 快捷选项列排在时分秒那几列前面，只有用到它的那条用例派生这一份。 */
+function presetsFixture(base: FixtureNode): FixtureNode {
+  const list: FixtureNode = {
+    part: 'presets',
+    children: PRESETS.map(preset => ({
+      part: 'preset',
+      attrs: { value: preset.value },
+      text: preset.label,
+    })),
+  }
+  return {
+    ...base,
+    children: base.children?.map((node) => {
+      if (node.part !== 'positioner')
+        return node
+      return {
+        ...node,
+        children: node.children?.map(content => ({
+          ...content,
+          children: [list, ...(content.children ?? [])],
+        })),
+      }
+    }),
+  }
+}
+
+/** 快捷选项条目，文档序。 */
+function presetItems(doc: Document): HTMLElement[] {
+  return [...doc.querySelectorAll<HTMLElement>(`${SCOPE}[data-part="preset"]`)]
+}
+
+/** 往某一条快捷选项上直接派按键；处理器挂在 presets 那一层，靠冒泡收。 */
+async function pressOnPreset(ctx: RawStepContext, el: HTMLElement, key: string): Promise<void> {
+  // 显式 cancelable，否则 preventDefault 是空操作
+  el.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true }))
+  await ctx.flush()
+}
+
 export const timePickerSuite: ConformanceSuite = {
   component: 'time-picker',
   anatomy: timePickerAnatomy,
@@ -107,6 +152,36 @@ export const timePickerSuite: ConformanceSuite = {
     ],
   },
   cases: [
+    {
+      name: '快捷选项列自成一套键盘：上下键在条目间走，Enter 整份写进值并收起',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      covers: ['time-picker.kbd.preset-move', 'time-picker.kbd.preset-pick'],
+      fixture: presetsFixture,
+      props: { ...BASE, presets: [...PRESETS] },
+      steps: [
+        { kind: 'click', part: 'trigger' },
+        { kind: 'settle', until: { attr: { part: 'content', name: 'hidden', value: null } } },
+        {
+          kind: 'raw',
+          why: '这一列的键盘处理器挂在 presets 自己身上，按键要从条目上派；条目按 data-value 认，不进快照',
+          run: async (ctx) => {
+            const items = presetItems(ctx.doc)
+            // 还没有值，锚点落在头一条
+            if (items[0]?.getAttribute('tabindex') !== '0')
+              throw new Error('没有值时 Tab 落点应停在头一条')
+            items[0]!.focus()
+            await pressOnPreset(ctx, items[0]!, 'ArrowDown')
+            if (ctx.doc.activeElement !== items[1])
+              throw new Error('下键应把焦点移到下一条快捷选项')
+            await pressOnPreset(ctx, items[1]!, 'Enter')
+            expectHidden(ctx.doc, '09:00', 'Enter 应把这一条整份写进值')
+            const content = ctx.doc.querySelector(`${SCOPE}[data-part="content"]`)
+            if (!content?.hasAttribute('hidden'))
+              throw new Error('快捷选项给的是整份时间，写完该收起浮层')
+          },
+        },
+      ],
+    },
     {
       name: '段上 Enter 收起：段位敲出来的值不触发「选完即收」，这是那条路的收口手势',
       spec: { apg: APG },

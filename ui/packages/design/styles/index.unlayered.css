@@ -11325,6 +11325,13 @@ input[data-scope='mention'][data-part='input'] {
   align-items: flex-start;
 }
 
+/* 快捷选项列摆在日历的行内起始一侧，同样只在它真在场时才横过来。
+   与上一条同理：不加 :not([hidden])，退场那几帧塌回 block 会让两块竖着堆一下 */
+[data-scope='date-picker'][data-part='content']:has(> [data-part='presets']) {
+  display: flex;
+  align-items: stretch;
+}
+
 /* 第二个起的面板画一道左分隔线：两张网格挨着排时要有条界，
    否则 8 月末与 9 月初那两列看着像同一张表 */
 [data-scope='date-picker'][data-part='calendar'] + [data-scope='date-picker'][data-part='calendar'] {
@@ -11342,6 +11349,56 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='date-picker'][data-part='calendar'][hidden] {
   display: none;
+}
+
+/* —— 快捷选项：一列按钮式条目，贴在日历的行内起始一侧 —— */
+[data-scope='date-picker'][data-part='presets'] {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  gap: var(--xh-date-picker-presets-gap, var(--xh-space-0_5));
+  /* 选项多起来时这一列自己滚，不把整张面板撑高 */
+  max-block-size: var(--xh-date-picker-presets-h, var(--xh-date-picker-time-column-h, 14rem));
+  padding: var(--xh-space-1);
+  overflow-y: auto;
+  border-inline-end: var(--xh-stroke-thin) solid var(--xh-date-picker-content-border, var(--xh-border-default));
+}
+
+[data-scope='date-picker'][data-part='presets'][hidden] {
+  display: none;
+}
+
+[data-scope='date-picker'][data-part='preset'] {
+  padding-block: var(--xh-space-1);
+  padding-inline: var(--xh-space-3);
+  border-radius: var(--xh-shape-control);
+  font-size: var(--xh-font-size-sm);
+  line-height: var(--xh-leading-normal);
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* 悬停与键盘锚点共用中性轻档，命中那一条才走品牌淡底——两档靠色相分家 */
+[data-scope='date-picker'][data-part='preset']:hover {
+  background: var(--xh-date-picker-preset-bg-hover, var(--xh-bg-subtle));
+}
+
+[data-scope='date-picker'][data-part='preset']:focus-visible,
+[data-scope='date-picker'][data-part='presets']:focus-visible {
+  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline-offset: calc(-1 * var(--xh-ring-width));
+}
+
+[data-scope='date-picker'][data-part='preset'][data-state='checked'] {
+  background: var(--xh-date-picker-preset-bg-selected, var(--xh-_date-picker-accent-subtle));
+  color: var(--xh-date-picker-preset-fg-selected, var(--xh-fg-brand));
+  font-weight: var(--xh-font-weight-medium);
+}
+
+[data-scope='date-picker'][data-part='preset'][data-disabled] {
+  color: var(--xh-date-picker-preset-fg-disabled, var(--xh-fg-disabled));
+  cursor: not-allowed;
 }
 
 /* —— showTime：时间列贴在日历右侧、逐列滚动，确认按钮收口 ——
@@ -19120,6 +19177,57 @@ input[data-scope='mention'][data-part='input'] {
    免得动画结束到真收起之间闪一下原样 */
 [data-scope='time-picker'][data-part='content'][data-state='closed'] {
   animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+}
+
+/* 快捷选项也是一列，与时分秒那几列并排，排在行内起始一侧 */
+[data-scope='time-picker'][data-part='presets'] {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  gap: var(--xh-time-picker-presets-gap, var(--xh-space-0_5));
+  max-block-size: var(--xh-time-picker-presets-h, var(--xh-time-picker-column-max-h, 12rem));
+  padding-inline: var(--xh-time-picker-presets-px, var(--xh-space-1));
+  overflow-y: auto;
+  border-inline-end: var(--xh-stroke-thin) solid var(--xh-time-picker-column-divider, var(--xh-border-subtle));
+  scrollbar-width: thin;
+}
+
+[data-scope='time-picker'][data-part='presets'][hidden] {
+  display: none;
+}
+
+[data-scope='time-picker'][data-part='preset'] {
+  padding-block: var(--xh-time-picker-preset-py, var(--xh-space-1));
+  padding-inline: var(--xh-time-picker-preset-px, var(--xh-space-3));
+  border-radius: var(--xh-shape-control);
+  font-size: var(--xh-font-size-sm);
+  line-height: var(--xh-leading-normal);
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* 悬停与键盘锚点共用中性轻档，命中那一条才走品牌淡底 */
+[data-scope='time-picker'][data-part='preset']:hover {
+  background: var(--xh-time-picker-preset-bg-hover, var(--xh-bg-subtle));
+}
+
+[data-scope='time-picker'][data-part='preset']:focus-visible,
+[data-scope='time-picker'][data-part='presets']:focus-visible {
+  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline-offset: calc(-1 * var(--xh-ring-width));
+}
+
+/* 命中的那一条与选中的格子同一副实心底：同一份浮层里两种「选中」不该长成两个样 */
+[data-scope='time-picker'][data-part='preset'][data-state='checked'] {
+  background: var(--xh-time-picker-preset-bg-selected, var(--xh-_time-picker-accent));
+  color: var(--xh-time-picker-preset-fg-selected, var(--xh-_time-picker-accent-fg));
+  font-weight: var(--xh-font-weight-medium);
+}
+
+[data-scope='time-picker'][data-part='preset'][data-disabled] {
+  color: var(--xh-time-picker-preset-fg-disabled, var(--xh-fg-disabled));
+  cursor: not-allowed;
 }
 
 /* 一列一个滚动区：列与列之间用细分隔线，视觉上"时 | 分 | 秒"三栏分明 */

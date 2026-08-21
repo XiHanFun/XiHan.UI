@@ -1,4 +1,4 @@
-<!-- 浮层里的快捷选项 | 日历下面这排按钮是作者自己的节点，点它把值写下、把浮层一并收起 -->
+<!-- 快捷选项 | presets 在浮层里排出一列，点一条整份写进去并收起；日子在组件外算好再传 -->
 <div id="date-picker-shortcuts-mount"></div>
 <span style="font-size: 13px">
   当前值：<span id="date-picker-shortcuts-value">（未选）</span>
@@ -20,6 +20,7 @@
       </div>
       <div data-xh-part="positioner">
         <div data-xh-part="content">
+          <div data-xh-part="presets"></div>
           <div data-xh-part="calendar">
             <div data-xh-part="header">
               <button data-xh-part="prev-trigger" aria-label="上个月">‹</button>
@@ -33,7 +34,6 @@
               <div data-xh-part="grid-body"></div>
             </div>
           </div>
-          <div data-shortcuts style="display: flex; gap: 8px; margin-block-start: 12px"></div>
         </div>
       </div>
     </div>
@@ -50,7 +50,7 @@
     '[data-xh-part="grid-head"] [data-xh-part="week-row"]',
   );
   const body = fragment.querySelector('[data-xh-part="grid-body"]');
-  const bar = fragment.querySelector("[data-shortcuts]");
+  const list = fragment.querySelector('[data-xh-part="presets"]');
   const readout = document.getElementById("date-picker-shortcuts-value");
 
   let month = "";
@@ -93,7 +93,8 @@
     );
   }
 
-  // 相对今天偏移若干天的 ISO 串
+  // 示例台不能 import 包，这里把 datePickerPresetDay 做的事等价地写一遍；
+  // 真实项目里从 @xihan-ui/headless 引它，还有 -Range / -Month / -Year 三个
   function shift(days) {
     const d = new Date();
     d.setDate(d.getDate() + days);
@@ -102,29 +103,24 @@
     return `${d.getFullYear()}-${month}-${day}`;
   }
 
-  const shortcuts = [
+  // 日子算一次就固定下来，组件只认已经算好的字面值
+  const presets = [
     { label: "今天", value: shift(0) },
     { label: "明天", value: shift(1) },
     { label: "一周后", value: shift(7) },
   ];
 
-  bar.replaceChildren(
-    ...shortcuts.map((shortcut) => {
-      const host = document.createElement("xh-button");
-      host.setAttribute("size", "sm");
-      host.setAttribute("variant", "outline");
-      const button = document.createElement("button");
-      button.dataset.xhPart = "root";
-      button.textContent = shortcut.label;
-      // 选中值恒为数组，写一天也要装进数组里
-      button.addEventListener("click", () => {
-        setValue([shortcut.value]);
-        setOpen(false);
-      });
-      host.append(button);
-      return host;
+  // 条目由作者铺，身份写在 value 属性上；元素只负责把行为打上去
+  list.replaceChildren(
+    ...presets.map((preset) => {
+      const item = document.createElement("div");
+      item.dataset.xhPart = "preset";
+      item.setAttribute("value", preset.value);
+      item.textContent = preset.label;
+      return item;
     }),
   );
+  picker.presets = presets;
 
   // 值与展开态都由这段脚本持有：组件只发意图，写回才算数
   function setValue(value) {

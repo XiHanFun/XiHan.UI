@@ -9039,6 +9039,14 @@
               "name": "content"
             },
             {
+              "description": "快捷选项列（role=listbox）；没给 presets 时带 hidden",
+              "name": "presets"
+            },
+            {
+              "description": "一条快捷选项（role=option），须自带 value 属性（与 presets 数据里的 value 逐字对上）",
+              "name": "preset"
+            },
+            {
               "description": "内嵌日历的挂载点，同时充当日历的根节点",
               "name": "calendar"
             },
@@ -9248,6 +9256,15 @@
                 "text": "boolean | undefined"
               },
               "attribute": "week-selection"
+            },
+            {
+              "kind": "field",
+              "name": "presets",
+              "privacy": "public",
+              "type": {
+                "text": "DatePickerPreset[]"
+              },
+              "description": "快捷选项（数组只走 property）：给了就在浮层里多出一列"
             },
             {
               "kind": "field",
@@ -10028,6 +10045,24 @@
             },
             {
               "name": "--xh-date-picker-panel-gap"
+            },
+            {
+              "name": "--xh-date-picker-preset-bg-hover"
+            },
+            {
+              "name": "--xh-date-picker-preset-bg-selected"
+            },
+            {
+              "name": "--xh-date-picker-preset-fg-disabled"
+            },
+            {
+              "name": "--xh-date-picker-preset-fg-selected"
+            },
+            {
+              "name": "--xh-date-picker-presets-gap"
+            },
+            {
+              "name": "--xh-date-picker-presets-h"
             },
             {
               "name": "--xh-date-picker-time-column-gap"
@@ -28885,6 +28920,9 @@
               "name": "--xh-segmented-indicator-shadow-disabled"
             },
             {
+              "name": "--xh-segmented-item-bg-hover"
+            },
+            {
               "name": "--xh-segmented-item-fg"
             },
             {
@@ -28904,6 +28942,9 @@
             },
             {
               "name": "--xh-segmented-item-h"
+            },
+            {
+              "name": "--xh-segmented-item-press-scale"
             },
             {
               "name": "--xh-segmented-item-px"
@@ -36151,6 +36192,14 @@
               "name": "content"
             },
             {
+              "description": "快捷选项列（role=listbox）；没给 presets 时带 hidden",
+              "name": "presets"
+            },
+            {
+              "description": "一条快捷选项（role=option），须自带 value 属性（与 presets 数据里的 value 逐字对上）",
+              "name": "preset"
+            },
+            {
               "description": "role=listbox 的一列，可自带 unit 属性声明单位，缺省按文档序",
               "name": "column"
             },
@@ -36262,6 +36311,15 @@
                 "text": "number | undefined"
               },
               "attribute": "step"
+            },
+            {
+              "kind": "field",
+              "name": "presets",
+              "privacy": "public",
+              "type": {
+                "text": "TimePickerPreset[]"
+              },
+              "description": "快捷选项（数组只走 property）：给了就在浮层里多出一列"
             },
             {
               "kind": "field",
@@ -36844,6 +36902,33 @@
             },
             {
               "name": "--xh-time-picker-label-font-weight"
+            },
+            {
+              "name": "--xh-time-picker-preset-bg-hover"
+            },
+            {
+              "name": "--xh-time-picker-preset-bg-selected"
+            },
+            {
+              "name": "--xh-time-picker-preset-fg-disabled"
+            },
+            {
+              "name": "--xh-time-picker-preset-fg-selected"
+            },
+            {
+              "name": "--xh-time-picker-preset-px"
+            },
+            {
+              "name": "--xh-time-picker-preset-py"
+            },
+            {
+              "name": "--xh-time-picker-presets-gap"
+            },
+            {
+              "name": "--xh-time-picker-presets-h"
+            },
+            {
+              "name": "--xh-time-picker-presets-px"
             },
             {
               "name": "--xh-time-picker-segment-bg-focus"

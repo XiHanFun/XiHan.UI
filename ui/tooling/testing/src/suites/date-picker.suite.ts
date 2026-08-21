@@ -19,6 +19,13 @@ const WEEK_DAYS = buildWeekDays({ reference: GRID.monthStart, locale: LOCALE, ti
 /** 作者写足六个段位节点，用不上的由连接层收起、不卸载。 */
 const SEGMENT_NODES = 6
 
+/** 快捷选项写死在锚点月里，断言不随运行日期改口。 */
+const PRESETS = [
+  { value: '2024-02-01', label: '月初' },
+  { value: '2024-02-15', label: '锚点日' },
+  { value: '2024-02-29', label: '月末' },
+] as const
+
 const CALENDAR = '[data-scope="calendar"]'
 const FIELD = '[data-scope="date-field"]'
 /** 分段容器；区间模式下有两组，文档序即起止序。 */
@@ -73,6 +80,18 @@ function expectHidden(doc: Document, want: string, why: string, group = 0): void
 /** 点某一天；格子属于内嵌日历那份解剖。 */
 async function pickDay(ctx: RawStepContext, value: string): Promise<void> {
   cellTrigger(ctx.doc, value).click()
+  await ctx.flush()
+}
+
+/** 快捷选项条目，文档序。 */
+function presetItems(doc: Document): HTMLElement[] {
+  return [...doc.querySelectorAll<HTMLElement>('[data-scope="date-picker"][data-part="preset"]')]
+}
+
+/** 往某一条快捷选项上直接派按键；处理器挂在 presets 那一层，靠冒泡收。 */
+async function pressOnPreset(ctx: RawStepContext, el: HTMLElement, key: string): Promise<void> {
+  // 显式 cancelable，否则 preventDefault 是空操作
+  el.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true }))
   await ctx.flush()
 }
 
@@ -194,6 +213,32 @@ function rangeFixture(base: FixtureNode): FixtureNode {
         ...node,
         children: node.children?.flatMap(kid => (kid.part === 'input' ? pair(kid) : [kid])),
       }]
+    }),
+  }
+}
+
+/** 快捷选项列排在日历前面，只有用到它的那条用例派生这一份。 */
+function presetsFixture(base: FixtureNode): FixtureNode {
+  const list: FixtureNode = {
+    part: 'presets',
+    children: PRESETS.map(preset => ({
+      part: 'preset',
+      attrs: { value: preset.value },
+      text: preset.label,
+    })),
+  }
+  return {
+    ...base,
+    children: base.children?.map((node) => {
+      if (node.part !== 'positioner')
+        return node
+      return {
+        ...node,
+        children: node.children?.map(content => ({
+          ...content,
+          children: [list, ...(content.children ?? [])],
+        })),
+      }
     }),
   }
 }
@@ -389,6 +434,41 @@ export const datePickerSuite: ConformanceSuite = {
           run: ({ doc }) => {
             if (doc.activeElement !== cellTrigger(doc, ANCHOR))
               throw new Error('焦点应落在当前选中日那一格')
+          },
+        },
+      ],
+    },
+    {
+      name: '快捷选项列自成一套键盘：上下键在条目间走，Enter 整份写进去并收起',
+      spec: { apg: 'https://www.w3.org/WAI/ARIA/apg/patterns/listbox/#keyboardinteraction' },
+      covers: ['date-picker.kbd.preset-move', 'date-picker.kbd.preset-pick'],
+      fixture: presetsFixture,
+      props: { ...BASE_PROPS, presets: [...PRESETS] },
+      steps: [
+        { kind: 'focus', part: 'trigger' },
+        { kind: 'click', part: 'trigger' },
+        { kind: 'settle', until: { activeElement: 'calendar' } },
+        {
+          kind: 'raw',
+          why: '这一列的键盘处理器挂在 presets 自己身上，按键要从条目上派；条目按 data-value 认，不进快照',
+          run: async (ctx) => {
+            const items = presetItems(ctx.doc)
+            // 锚点是命中当前值的那一条（BASE_PROPS 选中 2024-02-15，即第 1 条）
+            if (items[1]?.getAttribute('tabindex') !== '0')
+              throw new Error('Tab 落点应停在命中当前值的那一条上')
+            items[1]!.focus()
+            await pressOnPreset(ctx, items[1]!, 'ArrowDown')
+            if (ctx.doc.activeElement !== items[2])
+              throw new Error('下键应把焦点移到下一条快捷选项')
+            await pressOnPreset(ctx, items[2]!, 'Enter')
+            expectHidden(ctx.doc, '2024-02-29', 'Enter 应把这一条整份写进选中值')
+          },
+          expect: {
+            parts: { content: { hidden: '' } },
+            events: [
+              { type: 'value-change', detail: { value: ['2024-02-29'] } },
+              { type: 'open-change', detail: { open: false } },
+            ],
           },
         },
       ],

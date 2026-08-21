@@ -9,7 +9,7 @@ import type { DatePickerTimeGranularity } from './date-picker.time'
  * 值的来源；只有 calendar 一路参与「选完即收起」判定。
  * field 是起点那组段位，field-end 是终点那组（只在区间模式下有）。
  */
-export type DatePickerValueSource = 'calendar' | 'field' | 'field-end' | 'api'
+export type DatePickerValueSource = 'calendar' | 'preset' | 'field' | 'field-end' | 'api'
 
 /** 读屏用的文案，默认英文。区间模式下两组段位各是一个 role=group，各要一个名字。 */
 export interface DatePickerTranslations {
@@ -17,6 +17,36 @@ export interface DatePickerTranslations {
   startDate: string
   /** 终点那组段位的名字。 */
   endDate: string
+  /** 快捷选项那一列的名字。 */
+  presets: string
+}
+
+/**
+ * 一条快捷选项。
+ *
+ * value 同时是写进去的日期与这一项的身份：单日是一条 ISO 日期串，区间用 ISO 8601 的
+ * 区间写法把两端拼起来（`2026-08-15/2026-08-21`）。日子由作者算好传进来，
+ * `date-picker.presets` 里备了几个纯函数（`datePickerPresetDay` / `-Range` / `-Month` / `-Year`）。
+ */
+export interface DatePickerPreset {
+  value: string
+  /** 显示文案，同时是这一项的可及名字。 */
+  label: string
+  /** 禁用这一项：方向键仍能停上去，但按下不写值。 */
+  disabled?: boolean
+}
+
+/** 一条快捷选项此刻的样子，连接层算好后透出，两个适配器照它渲染。 */
+export interface DatePickerPresetState extends DatePickerPreset {
+  /** 拆开的日期，长度 1 是单日、2 是区间。 */
+  dates: string[]
+  /** 当前选中集合与它逐位相同。 */
+  selected: boolean
+}
+
+/** 选项自报自己是哪一条（值即身份）。 */
+export interface DatePickerPresetProps {
+  value: string
 }
 
 /** 分段容器自报家门：区间模式下 0 是起点那组、1 是终点那组。 */
@@ -128,6 +158,11 @@ export interface DatePickerSchema extends MachineSchema {
     segments?: DateSegmentSet
     /** 周选：点任意一天选中它所在的整周。只在 view=day 且区间模式下生效。 */
     weekSelection?: boolean
+    /**
+     * 快捷选项（「今天」「近 7 天」这类）。给了就在浮层里多出一列，点一下整份写进选中值。
+     * 日子要算好再传：连接层每帧求值，把 `today()` 放进渲染期会跨零点算出两个答案。
+     */
+    presets?: DatePickerPreset[]
     /**
      * 并排展示几个连续月，默认单选 1、区间 2。
      * 区间的起止常跨月，一个面板要来回翻页才挑得完,两个并排才顺手。
@@ -289,6 +324,8 @@ export interface DatePickerApi<T extends PropTypes = PropTypes> {
   clear: () => void
   /** 直接钻到某一层。 */
   setActiveView: (next: CalendarView) => void
+  /** 快捷选项逐条的样子，数据顺序。没给 presets 时为空数组。 */
+  presets: readonly DatePickerPresetState[]
   /** showTime 生效（开了且是单选模式）。 */
   showTime: boolean
   /** 时间列（时/分[/秒]）；没开 showTime 时为空数组。 */
@@ -310,6 +347,10 @@ export interface DatePickerApi<T extends PropTypes = PropTypes> {
   getClearTriggerProps: () => T['button']
   getPositionerProps: () => T['element']
   getContentProps: () => T['element']
+  /** 快捷选项列（role=listbox）；没给 presets 时带 hidden。 */
+  getPresetsProps: () => T['element']
+  /** 一条快捷选项（role=option）：点按把整份日期写进选中值。 */
+  getPresetProps: (props: DatePickerPresetProps) => T['element']
   /** 内嵌日历的挂载点，同时充当日历的根节点。 */
   getCalendarProps: () => T['element']
   /** 时间列容器（时/分[/秒]各一列）；没开 showTime 时带 hidden。 */

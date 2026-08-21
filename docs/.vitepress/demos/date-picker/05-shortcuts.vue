@@ -1,8 +1,7 @@
-<!-- 浮层里的快捷选项 | 日历下面这排按钮是作者自己的节点，点它把值写下、把浮层一并收起 -->
+<!-- 快捷选项 | presets 在浮层里排出一列，点一条整份写进去并收起；日子在组件外算好再传 -->
 <script setup lang="ts">
-import { ref } from "vue";
+import { datePickerPresetDay } from "@xihan-ui/headless";
 import {
-  XhButton,
   XhDatePickerCalendar,
   XhDatePickerCell,
   XhDatePickerCellTrigger,
@@ -18,35 +17,31 @@ import {
   XhDatePickerLabel,
   XhDatePickerNextTrigger,
   XhDatePickerPositioner,
+  XhDatePickerPresets,
   XhDatePickerPrevTrigger,
   XhDatePickerRoot,
   XhDatePickerSegment,
   XhDatePickerWeekDay,
   XhDatePickerWeekRow,
 } from "@xihan-ui/vue";
+import { computed, ref } from "vue";
 
 const value = ref<string[]>([]);
 
-// 相对今天偏移若干天的 ISO 串
-function shift(days: number) {
-  const d = new Date();
-  d.setDate(d.getDate() + days);
-  const month = `${d.getMonth() + 1}`.padStart(2, "0");
-  const day = `${d.getDate()}`.padStart(2, "0");
-  return `${d.getFullYear()}-${month}-${day}`;
-}
-
-const shortcuts = [
-  { label: "今天", value: shift(0) },
-  { label: "明天", value: shift(1) },
-  { label: "一周后", value: shift(7) },
-];
+// 日子在 computed 里算一次。connect 每帧都会跑一遍，把 today() 放进渲染期会跨零点算出两个答案。
+// 区间用 datePickerPresetRange(-6, 0) 这类算出 '起/止' 一个串，两端一次落定
+const presets = computed(() => [
+  { label: "今天", value: datePickerPresetDay(0) },
+  { label: "明天", value: datePickerPresetDay(1) },
+  { label: "一周后", value: datePickerPresetDay(7) },
+]);
 </script>
 
 <template>
   <XhDatePickerRoot
-    v-slot="{ weeks, weekDays, setValue, setOpen }"
+    v-slot="{ weeks, weekDays }"
     v-model:value="value"
+    :presets="presets"
     locale="zh-CN"
   >
     <XhDatePickerLabel>提醒日期</XhDatePickerLabel>
@@ -62,6 +57,8 @@ const shortcuts = [
     </XhDatePickerControl>
     <XhDatePickerPositioner>
       <XhDatePickerContent>
+        <!-- 不写默认插槽就按 presets 数据自动铺，产出的 DOM 与手写部件一致 -->
+        <XhDatePickerPresets />
         <XhDatePickerCalendar>
           <XhDatePickerHeader>
             <XhDatePickerPrevTrigger aria-label="上个月">‹</XhDatePickerPrevTrigger>
@@ -91,22 +88,6 @@ const shortcuts = [
             </XhDatePickerGridBody>
           </XhDatePickerGrid>
         </XhDatePickerCalendar>
-
-        <!-- 选中值恒为数组，写一天也要装进数组里 -->
-        <div style="display: flex; gap: 8px; margin-block-start: 12px">
-          <XhButton
-            v-for="s in shortcuts"
-            :key="s.label"
-            size="sm"
-            variant="outline"
-            @click="
-              setValue([s.value]);
-              setOpen(false);
-            "
-          >
-            {{ s.label }}
-          </XhButton>
-        </div>
       </XhDatePickerContent>
     </XhDatePickerPositioner>
   </XhDatePickerRoot>
