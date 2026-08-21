@@ -58,6 +58,62 @@ describe('全局配置', () => {
   })
 })
 
+describe('<xh-config> 作用域', () => {
+  async function mountTree(html: string): Promise<HTMLElement> {
+    const host = document.createElement('div')
+    host.innerHTML = html
+    document.body.appendChild(host)
+    for (const el of host.querySelectorAll('*')) {
+      const updatable = el as Partial<Updatable>
+      if (updatable.updateComplete) {
+        await updatable.updateComplete
+        await updatable.updateComplete
+      }
+    }
+    return host
+  }
+
+  const dialog = `<xh-dialog default-open>
+    <div data-xh-part="positioner"><div data-xh-part="content">
+      <button data-xh-part="close-trigger">x</button>
+    </div></div>
+  </xh-dialog>`
+
+  it('包住的子树取这一层的文案，外面的仍取全局', async () => {
+    setXhConfig({ translations: { dialog: { close: '全局' } } })
+    const host = await mountTree(`<div>${dialog}<xh-config id="scope">${dialog}</xh-config></div>`)
+    const scope = host.querySelector('#scope') as HTMLElement & { translations?: unknown }
+    scope.translations = { dialog: { close: '局部' } }
+    const inside = scope.firstElementChild as Updatable
+    await inside.updateComplete
+    await inside.updateComplete
+
+    const labels = [...host.querySelectorAll('[data-xh-part="close-trigger"]')]
+      .map(el => el.getAttribute('aria-label'))
+    expect(labels).toEqual(['全局', '局部'])
+  })
+
+  it('内层只写文案时，外层的 locale 仍然生效', () => {
+    setXhConfig({})
+    const host = document.createElement('div')
+    host.innerHTML = '<xh-config id="outer"><xh-config id="inner"><span id="leaf"></span></xh-config></xh-config>'
+    document.body.appendChild(host)
+    const outer = host.querySelector('#outer') as HTMLElement & { locale?: string }
+    const inner = host.querySelector('#inner') as HTMLElement & { translations?: unknown }
+    outer.locale = 'en-US'
+    inner.translations = { dialog: { close: '局部' } }
+
+    const props = withXhConfig('dialog', { locale: undefined }, host.querySelector('#leaf'))
+    expect(props.locale).toBe('en-US')
+    expect((props as { translations?: unknown }).translations).toEqual({ close: '局部' })
+  })
+
+  it('不传节点时只看全局那份', () => {
+    setXhConfig({ locale: 'zh-CN' })
+    expect(withXhConfig('date-picker', { locale: undefined }).locale).toBe('zh-CN')
+  })
+})
+
 describe('接到真元素上', () => {
   const html = `<xh-dialog default-open>
     <button data-xh-part="trigger">开</button>

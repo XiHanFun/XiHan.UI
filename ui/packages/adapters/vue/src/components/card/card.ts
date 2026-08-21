@@ -3,6 +3,7 @@ import type { Size } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import { connectCard } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { provideCard, useCardContext } from './context'
 
@@ -16,7 +17,7 @@ export const XhCardRoot = defineComponent({
     segmented: Boolean,
   },
   setup(props, { slots }) {
-    const api = computed(() => connectCard(props as CardProps, vueNormalize))
+    const api = computed(() => connectCard(withXhConfig('card', props) as CardProps, vueNormalize))
     provideCard({ api })
     return () => h('div', api.value.getRootProps() as Record<string, unknown>, slots.default?.())
   },

@@ -27,6 +27,7 @@ import type { ComboboxTranslations } from '../combobox/combobox.types'
 import type { ComposerTranslations } from '../composer/composer.types'
 import type { ContextMenuTranslations } from '../context-menu/context-menu.types'
 import type { CountdownTranslations } from '../countdown/countdown.types'
+import type { DateFieldTranslations } from '../date-field/date-field.types'
 import type { DatePickerTranslations } from '../date-picker/date-picker.types'
 import type { DescriptionsTranslations } from '../descriptions/descriptions.types'
 import type { DialogTranslations } from '../dialog/dialog.types'
@@ -147,7 +148,7 @@ export interface XhTranslationOverrides {
   'composer'?: Partial<ComposerTranslations>
   'context-menu'?: Partial<ContextMenuTranslations>
   'countdown'?: Partial<CountdownTranslations>
-  'date-field'?: Partial<DatePickerTranslations>
+  'date-field'?: Partial<DateFieldTranslations>
   'date-picker'?: Partial<DatePickerTranslations>
   'descriptions'?: Partial<DescriptionsTranslations>
   'dialog'?: Partial<DialogTranslations>

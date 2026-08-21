@@ -37,10 +37,16 @@ export function useImageViewer(
   // 服务端算不出 rendered 就只发一个空占位，客户端水合时补出整棵子树 = mismatch。
   const rendered = ref(service.state.get() === 'open')
 
+  const xhConfig = useXhConfig()
   let config: RuntimeConfig | null = null
 
   if (typeof document !== 'undefined') {
-    config = createRuntimeConfig({ scope, idGenerator: idGen })
+    config = createRuntimeConfig({
+      scope,
+      idGenerator: idGen,
+      // 宿主把滚动搬进内容容器时 body 本身不滚，加锁会是空操作；这条把真正在滚的那层交给滚动锁
+      scrollRoot: () => xhConfig.value.scrollRoot?.() ?? null,
+    })
     // 只提供注册函数，入栈出栈由机器的 trackOverlay 效应按展开态驱动
     const registerLayer = (): { layer: Layer, dispose: Cleanup } => config!.layerRegistry.register({
       kind: 'modal',
@@ -80,7 +86,6 @@ export function useImageViewer(
   }
 
   const api = computed(() => connectImageViewer(service, vueNormalize))
-  const xhConfig = useXhConfig()
   const portalTarget = computed<string | Element>(() => xhConfig.value.portalContainer?.() ?? config?.portalContainer() ?? 'body')
 
   return { service, api, rendered, contentRef, backdropRef, portalTarget }

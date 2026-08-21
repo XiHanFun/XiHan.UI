@@ -7,6 +7,7 @@ import { createService } from '@xihan-ui/machine'
 import { toValue } from 'vue'
 import { version as VUE_VERSION } from '../../package.json'
 import { attachFormReset } from './attach-form-reset'
+import { applyXhConfigDefaults, useXhConfigDefaults } from './config-defaults'
 import { createVueRuntime } from './create-vue-runtime'
 
 // 废弃探测与锁步版本检查都只启动一次：第一个组件建机器时借路启动，之后的组件全走这个开关。
@@ -37,9 +38,12 @@ export function useMachine<T extends MachineSchema>(
   scope?: Scope,
 ): Service<T> {
   ensureDevChecks()
+  // 全局配置在这一处并进来：所有跑机器的组件都从这里取 props，不必逐个接线。
+  // 与 WC 侧 MachineController 里那一处对位，两个适配器的生效面因此一致
+  const config = useXhConfigDefaults()
   const service = createService(machine, {
     // 每次展开成新对象，让 machine 的身份缓存失效
-    props: () => ({ ...toValue(userProps) }) as never,
+    props: () => applyXhConfigDefaults(machine.name, { ...toValue(userProps) }, config()) as never,
     runtime: createVueRuntime(),
     scope,
   })

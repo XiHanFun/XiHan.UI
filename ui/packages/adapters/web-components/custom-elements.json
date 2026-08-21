@@ -7798,6 +7798,98 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/config.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-config>` —— 配置作用域。包住一棵子树，里面的元素解析 locale / size / translations\n时先看最近的这一层，再往外层与全局那份回落。\n\n它不渲染任何东西、不接线任何角色节点：作者写的子节点原样留在 Light DOM 里，\n这个元素只是 DOM 树上的一个记号。皮肤里没有它的规则，布局上它是 display: contents。\n\n与 Vue 适配器的 `provideXhConfig` 是同一件事的两种写法：那边沿组件树找，这边沿 DOM 祖先链找。\n逐键合并，本层只覆盖自己写了的那几项——只想改文案的子树不会把外层的 locale 一并抹掉。\n\n`translations` 与 `scrollRoot` 是对象与函数，只能走 property；`locale` 与 `size` 两条属性都行。",
+          "name": "XhConfigElement",
+          "members": [
+            {
+              "kind": "field",
+              "name": "locale",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "locale"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "Size | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "XhTranslationOverrides"
+              },
+              "description": "各组件内建文案的覆盖（对象只走 property）"
+            },
+            {
+              "kind": "field",
+              "name": "scrollRoot",
+              "privacy": "public",
+              "type": {
+                "text": "() => HTMLElement | null"
+              },
+              "description": "真正在滚的那个元素，交给滚动锁（函数只走 property）"
+            },
+            {
+              "kind": "field",
+              "name": "xhConfig",
+              "type": {
+                "text": "XhConfig"
+              },
+              "description": "本层声明的那几项；解析器沿祖先链读它，缺席的键交给外层。",
+              "readonly": true
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "BCP 47 语言标记，喂给日期时间系组件",
+              "name": "locale",
+              "fieldName": "locale"
+            },
+            {
+              "type": {
+                "text": "Size | undefined"
+              },
+              "description": "尺寸档的默认值，落到子树里每个声明了三轴 size 的组件上",
+              "name": "size",
+              "fieldName": "size"
+            }
+          ],
+          "superclass": {
+            "name": "XhReactiveElement",
+            "module": "/src/reactive"
+          },
+          "tagName": "xh-config",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhConfigElement",
+          "declaration": {
+            "name": "XhConfigElement",
+            "module": "src/elements/config.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/context-menu.ts",
       "declarations": [
         {

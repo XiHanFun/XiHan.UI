@@ -30,8 +30,9 @@ export class MachineController<T extends MachineSchema> implements ReactiveContr
     props: () => Partial<T['props']>,
     private readonly opts: MachineControllerOptions<T> = {},
   ) {
-    // 全局配置在这一处并进来：31 个元素都从这里取 props，不必逐个接线
-    this.props = () => withXhConfig(machine.name, props())
+    // 全局配置在这一处并进来：所有跑机器的元素都从这里取 props，不必逐个接线。
+    // 传宿主元素而不是只看全局那份：配置沿 DOM 祖先链解析，作者用 <xh-config> 包住一棵子树即可局部覆盖
+    this.props = () => withXhConfig(machine.name, props(), host instanceof Element ? host : null)
     host.addController(this)
     // 延到 hostConnected 再 build，构造期 attribute 尚未反射到 reactive property。
   }

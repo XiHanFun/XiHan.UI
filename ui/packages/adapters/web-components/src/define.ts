@@ -25,6 +25,7 @@ import { XhCollapsibleElement } from './elements/collapsible'
 import { XhColorPickerElement } from './elements/color-picker'
 import { XhComboboxElement } from './elements/combobox'
 import { XhComposerElement } from './elements/composer'
+import { XhConfigElement } from './elements/config'
 import { XhContextMenuElement } from './elements/context-menu'
 import { XhCountdownElement } from './elements/countdown'
 import { XhDateFieldElement } from './elements/date-field'
@@ -179,6 +180,7 @@ export function defineXhElements(): void {
   defineElement('xh-checkbox', XhCheckboxElement, VERSION)
   defineElement('xh-checkbox-group', XhCheckboxGroupElement, VERSION)
   defineElement('xh-clipboard', XhClipboardElement, VERSION)
+  defineElement('xh-config', XhConfigElement, VERSION)
   defineElement('xh-code-block', XhCodeBlockElement, VERSION)
   defineElement('xh-collapsible', XhCollapsibleElement, VERSION)
   defineElement('xh-color-picker', XhColorPickerElement, VERSION)
@@ -274,6 +276,7 @@ export {
   XhColorPickerElement,
   XhComboboxElement,
   XhComposerElement,
+  XhConfigElement,
   XhContextMenuElement,
   XhDateFieldElement,
   XhDatePickerElement,

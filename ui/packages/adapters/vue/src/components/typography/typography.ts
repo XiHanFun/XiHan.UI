@@ -3,6 +3,7 @@ import type { Size, Tone } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import { connectTypography } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { provideTypography, useTypographyContext } from './context'
 
@@ -13,7 +14,7 @@ export const XhTypographyRoot = defineComponent({
     size: { type: String as PropType<Size>, default: undefined },
   },
   setup(props, { slots }) {
-    const api = computed(() => connectTypography(props as TypographyProps, vueNormalize))
+    const api = computed(() => connectTypography(withXhConfig('typography', props) as TypographyProps, vueNormalize))
     provideTypography({ api })
     return () => h('div', api.value.getRootProps() as Record<string, unknown>, slots.default?.())
   },

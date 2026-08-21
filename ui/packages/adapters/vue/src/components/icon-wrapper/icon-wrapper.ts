@@ -3,6 +3,7 @@ import type { ActionVariant, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import { connectIconWrapper } from '@xihan-ui/headless'
 import { defineComponent, h } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
 
 export const XhIconWrapper = defineComponent({
@@ -16,7 +17,7 @@ export const XhIconWrapper = defineComponent({
   setup(props, { slots }) {
     return () => h(
       'span',
-      connectIconWrapper(props as IconWrapperProps, vueNormalize).getRootProps() as Record<string, unknown>,
+      connectIconWrapper(withXhConfig('icon-wrapper', props) as IconWrapperProps, vueNormalize).getRootProps() as Record<string, unknown>,
       slots.default?.(),
     )
   },

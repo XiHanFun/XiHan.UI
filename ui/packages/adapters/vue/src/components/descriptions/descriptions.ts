@@ -3,6 +3,7 @@ import type { Size } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import { connectDescriptions } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { provideDescriptions, useDescriptionsContext } from './context'
 
@@ -18,11 +19,13 @@ export const XhDescriptionsRoot = defineComponent({
     as: { type: String, default: 'dl' },
   },
   setup(props, { slots }) {
+    // withXhConfig 只能在 setup 期调，连接层在渲染期读这份代理
+    const configured = withXhConfig('descriptions', props)
     const api = computed(() => connectDescriptions({
-      columns: props.columns,
-      bordered: props.bordered,
-      placement: props.placement,
-      size: props.size,
+      columns: configured.columns,
+      bordered: configured.bordered,
+      placement: configured.placement,
+      size: configured.size,
     }, vueNormalize))
     provideDescriptions({ api })
     return () => h(props.as, api.value.getRootProps() as Record<string, unknown>, slots.default?.())
