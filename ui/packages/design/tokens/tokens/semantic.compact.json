@@ -11,7 +11,7 @@
     "px-md": { "$type": "dimension", "$value": "{space.2}" },
     "px-lg": { "$type": "dimension", "$value": "{space.3}" },
     "gap-md": { "$type": "dimension", "$value": "{space.1_5}" },
-    "gap-lg": { "$type": "dimension", "$value": "{space.1_5}" },
+    "gap-lg": { "$type": "dimension", "$value": "{space.2}" },
     "action-size": { "$type": "dimension", "$value": "1.25rem" },
     "indicator-size": { "$type": "dimension", "$value": "0.875rem" }
   },

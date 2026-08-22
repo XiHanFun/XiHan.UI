@@ -54,6 +54,9 @@ export class XhButtonElement extends XhElement {
       size: this.size,
       iconOnly: this.iconOnly,
       fullWidth: this.fullWidth,
+      // 作者写在根节点上的可及名转告连接层，图标按钮缺名时由它提醒
+      ariaLabel: root.getAttribute('aria-label') ?? undefined,
+      ariaLabelledby: root.getAttribute('aria-labelledby') ?? undefined,
     } satisfies ButtonProps), wcNormalize)
     this.spreader.spread(root, api.getRootProps() as Record<string, unknown>)
 

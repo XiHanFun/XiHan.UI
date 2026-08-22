@@ -504,7 +504,7 @@ describe('connectHoverCard', () => {
   })
 
   it('箭头是装饰：aria-hidden 恒为真', () => {
-    expect((makeCard().api().getArrowProps() as Record<string, unknown>)['aria-hidden']).toBe('true')
+    expect((makeCard().api().getArrowProps() as Record<string, unknown>)['aria-hidden']).toBe(true)
   })
 
   it('引擎给的箭头落点原样写成内联自定义属性；没给那一根轴就撤掉声明', () => {

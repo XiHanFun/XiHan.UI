@@ -22,3 +22,24 @@ pnpm add @xihan-ui/tokens
 完整文档见 [https://ui.docs.xihanfun.com](https://ui.docs.xihanfun.com)。这个包属于 `design/` 组，组的含义见仓库里的 `ui/packages/README.md`。
 
 许可：MIT
+
+## px 与 rem 的口径
+
+令牌里的长度只分两类，按「是否该随根字号缩放」定单位：
+
+| 单位 | 给谁 | 例子 |
+| --- | --- | --- |
+| `px` | 不随根字号缩放的几何：描边、圆角、间距、控件高度、开关轨道、滑杆拇指、滚动条厚度、字形描边与字形尺寸 | `stroke.*`、`radius.*`、`space.*`、`control.h-*` / `box-*`、`switch.track-h-*`、`track.*`、`scrollbar.*`、`glyph.stroke-*` |
+| `rem` | 随根字号缩放的排版量：字号、行宽（measure）、面板宽、抽屉厚度、最小宽 / 最大高 | `control.min-w`、`nav.link-max-w`、`viewport.max-h`、`overlay.*`（含 `sheet-w-*` / `drawer-w-*`） |
+
+判据只有一条：用户把浏览器根字号从 16 调到 20，这个量该不该跟着变大。一段文字的读行宽该变（rem），一条 1px 描边和一个 32px 高的按钮不该变（px）。`em` 只给「跟着当前字号走」的字形档（`glyph.size-text`、`glyph.baseline-shift`）。断点 `breakpoint.*` 写 px：媒体查询里的 rem 按初始根字号算，两种写法等价，取可读的那种。
+
+现状与口径不一致、暂未改值的：
+
+- `font-size.*` 七档全是 px（12 / 13 / 14 / 16 / 18 / 22 / 28）——字号按口径该是 rem。
+- `glyph.size-sm/md/lg/xl/2xl/3xl/4xl` 是 rem——字形尺寸按口径该是 px。
+- `control.action-size`（1.5rem）与 `control.indicator-size`（1rem）是 rem——单行控件里的动作钮与指示器是控件几何，按口径该是 px。
+
+## 单行控件本体的槽一律叫 control
+
+组件级覆盖槽里，单行控件本体的高度槽统一叫 `--xh-<组件>-control-h`。只有部件在解剖里确实叫 `trigger` / `input` 时才用 `--xh-<组件>-trigger-h` / `--xh-<组件>-input-h`：前者是弹出型控件的触发钮（select / popselect / tree-select），后者是文本类控件里真正的 `<input>`（text-field / number-field / password-input / mention）。槽名与它落在的部件名必须一致，不能选择器写 `control`、槽名叫 `input-h`。

@@ -116,7 +116,7 @@
   }
 
   [data-scope='slider'][data-part='range'][data-invalid] {
-    background: var(--xh-slider-range-bg-invalid, var(--xh-color-danger-500));
+    background: var(--xh-slider-range-bg-invalid, var(--xh-border-invalid));
   }
 
   /* 圆点浮在轨道之上：轨道是流内的，拇指是绝对定位的，天然后来居上，不必再堆 z-index。
@@ -167,7 +167,7 @@
   }
 
   [data-scope='slider'][data-part='thumb'][data-invalid] {
-    background: var(--xh-slider-thumb-bg-invalid, var(--xh-color-danger-500));
+    background: var(--xh-slider-thumb-bg-invalid, var(--xh-border-invalid));
   }
 
   [data-scope='slider'][data-part='thumb'][data-readonly] {

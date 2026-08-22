@@ -17,8 +17,8 @@
     --xh-_typography-h6: var(--xh-font-size-sm);
     /* 读行宽度：整块正文不收窄就会拉成一行行难读的长句 */
     --xh-_typography-measure: 68ch;
-    /* 行内代码跟着所在那行的字号缩，用相对单位而不是档位 */
-    --xh-_typography-code-size: 0.9em;
+    /* 行内代码跟着所在那行的字号缩：以「随文字走」的字形尺寸为基数按比例收一点，不取固定档位 */
+    --xh-_typography-code-size: calc(var(--xh-glyph-size-text) * 0.9);
 
     /* 建块级格式化上下文，段落的外边距不越过根往外塌 */
     display: flow-root;

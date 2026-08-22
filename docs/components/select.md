@@ -296,6 +296,7 @@ footer 是 list 的兄弟：不随条目滚走，也不会被方向键与连打�
 | `trigger` | `aria-invalid` | 'true' \| 'false' |
 | `trigger` | `aria-labelledby` | `label` 部件的 id `value-text` 部件的 id |
 | `trigger` | `aria-readonly` | 'true' \| 'false' |
+| `trigger` | `role` | 'combobox' |
 | `indicator` | `aria-hidden` | 'true' |
 | `clear-trigger` | `aria-label` | props.translations.clearTrigger |
 | `tag-remove` | `aria-label` | (prop('translations')?.removeTag ?? 'Remove {label}')… |

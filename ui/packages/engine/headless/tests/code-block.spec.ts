@@ -81,8 +81,8 @@ describe('连接层结构与标注', () => {
   })
 
   it('lang-label 恒对读屏隐藏：语言名代码里已经写着，再念一遍只是噪音', () => {
-    expect((api().getLangLabelProps() as Dict)['aria-hidden']).toBe('true')
-    expect((api({ lang: 'ts' }).getLangLabelProps() as Dict)['aria-hidden']).toBe('true')
+    expect((api().getLangLabelProps() as Dict)['aria-hidden']).toBe(true)
+    expect((api({ lang: 'ts' }).getLangLabelProps() as Dict)['aria-hidden']).toBe(true)
   })
 
   it('未闭合时不出 data-complete，闭合后出空串', () => {

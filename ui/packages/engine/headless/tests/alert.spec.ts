@@ -95,7 +95,7 @@ describe('connectAlert 实时区语义', () => {
     expect(root['aria-labelledby']).toBe(api.getTitleProps().id)
     expect(root['aria-describedby']).toBe(api.getDescriptionProps().id)
     expect(root['aria-atomic']).toBe('true')
-    expect(api.getIconProps()['aria-hidden']).toBe('true')
+    expect(api.getIconProps()['aria-hidden']).toBe(true)
   })
 
   it('收起态给 root 打 hidden，展开态不留这个属性', () => {

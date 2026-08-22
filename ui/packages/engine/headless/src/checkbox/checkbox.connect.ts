@@ -54,7 +54,7 @@ export function connectCheckbox<T extends PropTypes>(
     getIndicatorProps: () => normalize.element({
       ...parts.indicator.attrs,
       'data-state': stateAttr,
-      'aria-hidden': 'true',
+      'aria-hidden': true,
     }),
 
     getHiddenInputProps: () => normalize.input({

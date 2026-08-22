@@ -70,7 +70,7 @@
     background: var(--xh-float-button-bg, var(--xh-bg-surface-raised));
     color: var(--xh-float-button-fg, var(--xh-fg-default));
     /* 浮在内容之上，靠投影与页面拉开层次 */
-    box-shadow: var(--xh-elevation-sheet);
+    box-shadow: var(--xh-float-button-shadow, var(--xh-elevation-sheet));
     cursor: pointer;
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),

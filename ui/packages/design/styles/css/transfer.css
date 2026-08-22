@@ -193,13 +193,13 @@
     flex: none;
     align-items: center;
     justify-content: center;
-    inline-size: var(--xh-transfer-checkbox-size, 16px);
-    block-size: var(--xh-transfer-checkbox-size, 16px);
+    inline-size: var(--xh-transfer-checkbox-size, var(--xh-control-indicator-size));
+    block-size: var(--xh-transfer-checkbox-size, var(--xh-control-indicator-size));
     border: var(--xh-stroke-thin) solid var(--xh-transfer-checkbox-border, var(--xh-border-control));
     border-radius: var(--xh-transfer-checkbox-radius, var(--xh-shape-inset));
     background: var(--xh-transfer-checkbox-bg, var(--xh-bg-canvas));
     color: var(--xh-transfer-checkbox-fg, var(--xh-fg-on-brand));
-    font-size: var(--xh-transfer-checkbox-font-size, 12px);
+    font-size: var(--xh-transfer-checkbox-font-size, calc(var(--xh-control-indicator-size) * 0.75));
     line-height: var(--xh-leading-none);
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),

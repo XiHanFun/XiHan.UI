@@ -352,9 +352,9 @@ describe('connectTimer 部件属性', () => {
   it('数字与分隔符对读屏隐藏：整段时间的读法归时间区的名字管', () => {
     const t = makeTimer({})
     const item = t.api().getItemProps({ unit: 'minutes' }) as Dict
-    expect(item['aria-hidden']).toBe('true')
+    expect(item['aria-hidden']).toBe(true)
     expect(item['data-unit']).toBe('minutes')
-    expect((t.api().getSeparatorProps() as Dict)['aria-hidden']).toBe('true')
+    expect((t.api().getSeparatorProps() as Dict)['aria-hidden']).toBe(true)
   })
 
   it('起停按钮是原生 button，语义与名字随状态换', () => {

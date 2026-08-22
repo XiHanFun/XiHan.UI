@@ -1,4 +1,3 @@
-import { overlayPositioned } from '../shared/overlay'
 import type { NavIntent } from '@xihan-ui/behavior'
 import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
@@ -16,6 +15,7 @@ import {
   queryItems,
 } from '@xihan-ui/behavior'
 import { dataAttr } from '@xihan-ui/kernel'
+import { overlayPositioned } from '../shared/overlay'
 import { contextMenuAnatomy, contextMenuItemQuery, contextMenuItemText } from './context-menu.anatomy'
 import { CONTEXT_MENU_DEFAULT_PLACEMENT } from './context-menu.machine'
 
@@ -324,7 +324,7 @@ export function connectContextMenu<T extends PropTypes>(
       ...parts['item-indicator'].attrs,
       ...itemStateAttrs(item),
       // 标记位是纯装饰，语义由条目自己给出
-      'aria-hidden': 'true',
+      'aria-hidden': true,
     }),
 
     getSeparatorProps: () => normalize.element({
@@ -347,7 +347,7 @@ export function connectContextMenu<T extends PropTypes>(
 
     getArrowProps: () => normalize.element({
       ...parts.arrow.attrs,
-      'aria-hidden': 'true',
+      'aria-hidden': true,
       'data-placement': placement,
       // 箭头交叉轴上的落点由定位引擎给：上下两侧走行内轴、左右两侧走块轴。
       // 两根轴每帧都写，翻面后另一根不会留着上一帧的值；空串即撤掉声明，皮肤退回居中

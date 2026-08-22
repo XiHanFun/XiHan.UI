@@ -107,7 +107,7 @@ export function connectAccordion<T extends PropTypes>(
     }),
     getIndicatorProps: item => normalize.element({
       ...parts.indicator.attrs,
-      'aria-hidden': 'true',
+      'aria-hidden': true,
       'data-state': stateAttr(item),
       'data-disabled': dataAttr(itemDisabled(item)),
     }),

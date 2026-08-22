@@ -95,7 +95,7 @@ export function connectPopover<T extends PropTypes>(
     }),
     getArrowProps: () => normalize.element({
       ...parts.arrow.attrs,
-      'aria-hidden': 'true',
+      'aria-hidden': true,
       'data-placement': placement,
       // 箭头交叉轴上的落点由定位引擎给：上下两侧走行内轴、左右两侧走块轴。
       // 两根轴每帧都写，翻面后另一根不会留着上一帧的值；空串即撤掉声明，皮肤退回居中

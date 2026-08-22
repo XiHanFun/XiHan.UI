@@ -37,7 +37,7 @@ export function connectSkeleton<T extends PropTypes>(
 
     getBoneProps: (bone: SkeletonBoneProps = {}) => normalize.element({
       ...parts.bone.attrs,
-      'aria-hidden': loading ? 'true' : undefined,
+      'aria-hidden': loading ? true : undefined,
       'data-variant': bone.variant ?? variant,
     }),
   }

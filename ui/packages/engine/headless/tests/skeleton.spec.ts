@@ -29,7 +29,7 @@ describe('connectSkeleton', () => {
     const bone = api().getBoneProps() as Props
     expect(bone['data-scope']).toBe('skeleton')
     expect(bone['data-part']).toBe('bone')
-    expect(bone['aria-hidden']).toBe('true')
+    expect(bone['aria-hidden']).toBe(true)
   })
 
   it('loading 缺省为真', () => {

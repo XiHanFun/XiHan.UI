@@ -63,7 +63,7 @@ export function connectProgress<T extends PropTypes>(
       ...parts.canvas.attrs,
       'viewBox': `0 0 ${PROGRESS_VIEW} ${PROGRESS_VIEW}`,
       // 值与语义都在 root 上，这一层纯粹是画面
-      'aria-hidden': 'true',
+      'aria-hidden': true,
       'focusable': 'false',
       'data-variant': variant,
     }),

@@ -503,7 +503,7 @@ describe('connectNavigationMenu 输出', () => {
     c.api().setValue('docs')
 
     const indicator = c.api().getIndicatorProps() as Record<string, unknown>
-    expect(indicator['aria-hidden']).toBe('true')
+    expect(indicator['aria-hidden']).toBe(true)
     expect(indicator['data-value']).toBe('docs')
     expect(indicator.hidden).toBeUndefined()
     // 交叉轴（贴边与粗细）归样式层，内联样式一个字都不该写

@@ -338,7 +338,7 @@ export function connectHeatmap<T extends PropTypes>(
         if (row.week == null) {
           return normalize.element({
             ...parts.row.attrs,
-            'aria-hidden': 'true',
+            'aria-hidden': true,
           })
         }
         const meta = monthRowOf.get(`${row.month ?? ''}#${row.week}`)
@@ -376,14 +376,14 @@ export function connectHeatmap<T extends PropTypes>(
     // 读屏再把两条轴念一遍只是噪音，一律藏起来
     getWeekDayLabelProps: label => normalize.element({
       ...parts['week-day-label'].attrs,
-      'aria-hidden': 'true',
+      'aria-hidden': true,
       'data-week-day': label.weekDay == null ? undefined : String(label.weekDay),
     }),
 
     getMonthLabelProps: month => normalize.element({
       ...parts['month-label'].attrs,
       [ITEM_VALUE_ATTR]: month.value,
-      'aria-hidden': 'true',
+      'aria-hidden': true,
       // 日历形态里标签横跨这个月占的那几列，宽度由皮肤按列数算；
       // 月历形态里它是一块的标题，占满整块，列数写 0 让皮肤走另一条规则
       'style': {
@@ -398,7 +398,7 @@ export function connectHeatmap<T extends PropTypes>(
         // 表头行行首那个角落占位，只负责让列名与格子对齐
         return normalize.element({
           ...parts['row-label'].attrs,
-          'aria-hidden': 'true',
+          'aria-hidden': true,
         })
       }
       return normalize.element({
@@ -473,7 +473,7 @@ export function connectHeatmap<T extends PropTypes>(
     // 再念一遍是重复。写进条里的文字必须与 cellLabel 同源，别只写在这里
     getTooltipProps: () => normalize.element({
       ...parts.tooltip.attrs,
-      'aria-hidden': 'true',
+      'aria-hidden': true,
       // 收起时靠 hidden 属性，皮肤的 [hidden] 兜底把它藏掉
       'hidden': activeRef == null || undefined,
       'data-placement': activeRef == null ? undefined : tipPlacement,
@@ -511,7 +511,7 @@ export function connectHeatmap<T extends PropTypes>(
     getLegendItemProps: item => normalize.element({
       ...parts['legend-item'].attrs,
       // 色块是对照条，每格自己念得出计数，读屏再念一遍档位没有信息量
-      'aria-hidden': 'true',
+      'aria-hidden': true,
       'data-level': String(item.level),
       'style': levelStyle(item.level),
     }),

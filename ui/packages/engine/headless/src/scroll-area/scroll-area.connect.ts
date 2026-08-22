@@ -126,7 +126,7 @@ export function connectScrollArea<T extends PropTypes>(
       return normalize.element({
         ...parts.scrollbar.attrs,
         // 自绘滚动条只是视觉替身，键盘与读屏走原生滚动，不报 role=scrollbar
-        'aria-hidden': 'true',
+        'aria-hidden': true,
         'data-orientation': axis,
         'data-type': type,
         'data-state': shown ? 'visible' : 'hidden',

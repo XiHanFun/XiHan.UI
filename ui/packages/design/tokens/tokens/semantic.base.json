@@ -50,7 +50,7 @@
     },
     "gap-lg": {
       "$type": "dimension",
-      "$value": "{space.2}"
+      "$value": "{space.3}"
     },
     "font-sm": {
       "$type": "dimension",
@@ -120,6 +120,23 @@
     "size-lg": {
       "$type": "dimension",
       "$value": "1.5rem"
+    },
+    "size-xl": {
+      "$description": "展示型大图标四档（空态、结果页的主图标）：从这一档起不再对齐单行控件。",
+      "$type": "dimension",
+      "$value": "2rem"
+    },
+    "size-2xl": {
+      "$type": "dimension",
+      "$value": "2.5rem"
+    },
+    "size-3xl": {
+      "$type": "dimension",
+      "$value": "3.5rem"
+    },
+    "size-4xl": {
+      "$type": "dimension",
+      "$value": "4.5rem"
     },
     "stroke-light": {
       "$type": "dimension",
@@ -452,6 +469,32 @@
     "max-h": {
       "$type": "dimension",
       "$value": "16rem"
+    },
+    "sheet-w-sm": {
+      "$description": "居中遮罩面板（对话框）的最大宽度三档。",
+      "$type": "dimension",
+      "$value": "24rem"
+    },
+    "sheet-w-md": {
+      "$type": "dimension",
+      "$value": "32rem"
+    },
+    "sheet-w-lg": {
+      "$type": "dimension",
+      "$value": "48rem"
+    },
+    "drawer-w-sm": {
+      "$description": "贴边抽屉的面板厚度三档：左右放置时是宽度、上下放置时是高度。",
+      "$type": "dimension",
+      "$value": "16rem"
+    },
+    "drawer-w-md": {
+      "$type": "dimension",
+      "$value": "20rem"
+    },
+    "drawer-w-lg": {
+      "$type": "dimension",
+      "$value": "28rem"
     }
   },
   "text": {

@@ -65,6 +65,6 @@ describe('勾选把手', () => {
     const { api } = tree()
     const leaf = api().getItemCheckboxProps({ value: 'a.ts' }) as Record<string, unknown>
     expect(leaf.tabindex).toBe(-1)
-    expect(leaf['aria-hidden']).toBe('true')
+    expect(leaf['aria-hidden']).toBe(true)
   })
 })

@@ -442,11 +442,11 @@ describe('connectHeatmap 网格与格子的属性', () => {
     const weekRow = api.getRowProps({ weekDay: 2 }) as Record<string, unknown>
     expect(weekRow.role).toBe('row')
     expect(weekRow['aria-rowindex']).toBe(3)
-    expect((api.getWeekDayLabelProps({ weekDay: 0 }) as Record<string, unknown>)['aria-hidden']).toBe('true')
-    expect((api.getMonthLabelProps({ value: '2024-01' }) as Record<string, unknown>)['aria-hidden']).toBe('true')
+    expect((api.getWeekDayLabelProps({ weekDay: 0 }) as Record<string, unknown>)['aria-hidden']).toBe(true)
+    expect((api.getMonthLabelProps({ value: '2024-01' }) as Record<string, unknown>)['aria-hidden']).toBe(true)
     // 图例容器不藏：作者写在色块旁的「少 → 多」要念得到；藏的是色块本身
     expect((api.getLegendProps() as Record<string, unknown>)['aria-hidden']).toBeUndefined()
-    expect((api.getLegendItemProps({ level: 1 }) as Record<string, unknown>)['aria-hidden']).toBe('true')
+    expect((api.getLegendItemProps({ level: 1 }) as Record<string, unknown>)['aria-hidden']).toBe(true)
   })
 
   it('月份名的宽度按它占的列数给出，图例的色块与格子共用同一条色阶', () => {
@@ -995,7 +995,7 @@ describe('connectHeatmap 月历形态', () => {
     expect(block.role).toBe('rowgroup')
     expect(String(block['aria-label'])).toContain('1')
     const axis = api.getRowProps({}) as Record<string, unknown>
-    expect(axis['aria-hidden']).toBe('true')
+    expect(axis['aria-hidden']).toBe(true)
     expect(axis.role).toBeUndefined()
   })
 
@@ -1053,7 +1053,7 @@ describe('connectHeatmap 矩阵形态', () => {
   it('行名是 rowheader、列名是 columnheader，角落占位不进读屏', () => {
     const api = apiOf(mountMatrix(MATRIX).service)
     const corner = api.getRowLabelProps({}) as Record<string, unknown>
-    expect(corner['aria-hidden']).toBe('true')
+    expect(corner['aria-hidden']).toBe(true)
     expect(corner.role).toBeUndefined()
     const rowLabel = api.getRowLabelProps({ value: '周一' }) as Record<string, unknown>
     expect(rowLabel.role).toBe('rowheader')
@@ -1254,7 +1254,7 @@ describe('connectHeatmap 悬停详情', () => {
 
   it('详情条不进读屏：同一份信息已经写在每格的可及名字里', () => {
     const api = apiOf(mountMonth(RANGE_TIP).service)
-    expect((api.getTooltipProps() as Record<string, unknown>)['aria-hidden']).toBe('true')
+    expect((api.getTooltipProps() as Record<string, unknown>)['aria-hidden']).toBe(true)
     // 没量过就不给 style 这个键，免得把作者写在条上的内联样式整条删掉
     expect('style' in (api.getTooltipProps() as Record<string, unknown>)).toBe(false)
   })
@@ -1277,7 +1277,7 @@ describe('色阶对照条的文案', () => {
     expect(high['data-bound']).toBe('high')
     expect('aria-hidden' in low).toBe(false)
     // 色块本身仍然是藏的：每格自己念得出计数，档位念一遍没有信息量
-    expect((api.getLegendItemProps({ level: 1 }) as Record<string, unknown>)['aria-hidden']).toBe('true')
+    expect((api.getLegendItemProps({ level: 1 }) as Record<string, unknown>)['aria-hidden']).toBe(true)
   })
 
   it('三条文案整条可换', () => {

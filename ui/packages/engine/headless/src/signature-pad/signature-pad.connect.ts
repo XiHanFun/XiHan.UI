@@ -2,23 +2,11 @@ import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { SignaturePadApi, SignaturePadSchema } from './signature-pad.types'
 import { dataAttr } from '@xihan-ui/kernel'
+import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { signaturePadAnatomy } from './signature-pad.anatomy'
 import { signaturePadSvg, strokesToPaths } from './signature-pad.geometry'
 
 const parts = signaturePadAnatomy.build()
-
-// 视觉隐藏但保留在布局与表单里，不能 display:none——原生校验提示需要一个可定位的框
-const HIDDEN_INPUT_STYLE = {
-  position: 'absolute',
-  inlineSize: '1px',
-  blockSize: '1px',
-  margin: '-1px',
-  padding: '0',
-  border: '0',
-  overflow: 'hidden',
-  clipPath: 'inset(50%)',
-  whiteSpace: 'nowrap',
-}
 
 /**
  * 基准线在画布上的落位，用百分比表达，跟着画布一起缩放。
@@ -127,7 +115,7 @@ export function connectSignaturePad<T extends PropTypes>(
       'x2': GUIDE_END,
       'y2': GUIDE_BASELINE,
       // 基准线只是画面，读屏念它没有任何意义
-      'aria-hidden': 'true',
+      'aria-hidden': true,
       'data-disabled': dataAttr(disabled),
     }),
 
@@ -180,10 +168,10 @@ export function connectSignaturePad<T extends PropTypes>(
       // 只读随 prop 走，恒真会让 required 不生效
       'readonly': readOnly || undefined,
       'aria-invalid': invalid ? 'true' : 'false',
-      'aria-hidden': 'true',
+      'aria-hidden': true,
       'tabindex': -1,
       'data-disabled': dataAttr(disabled),
-      'style': HIDDEN_INPUT_STYLE,
+      'style': VISUALLY_HIDDEN_STYLE,
     }),
   }
 }

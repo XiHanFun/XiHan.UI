@@ -608,6 +608,13 @@ describe('selectSelect 原生表单提交', () => {
 describe('selectSelect 列表框的名字', () => {
   const labelId = (h: Harness): string => h.root.querySelector('[data-part="label"]')!.id
 
+  it('trigger 扮演 combobox：aria-haspopup 报列表框、aria-controls 指向它', () => {
+    const h = mount()
+    expect(h.trigger.getAttribute('role')).toBe('combobox')
+    expect(h.trigger.getAttribute('aria-haspopup')).toBe('listbox')
+    expect(h.trigger.getAttribute('aria-controls')).toBe(h.list.id)
+  })
+
   it('名字与 trigger 同源：标题 + 当前值', () => {
     const h = mount({ defaultValue: 'apple' })
     expect(h.list.getAttribute('role')).toBe('listbox')

@@ -23,7 +23,7 @@ export function connectResult<T extends PropTypes>(
     // 画什么由作者塞进这个槽，库不带插画资产，status 只决定这块的语气色。
     getIconProps: () => normalize.element({
       ...parts.icon.attrs,
-      'aria-hidden': 'true',
+      'aria-hidden': true,
     }),
 
     // 标题不占标题层级：结果页嵌在页面哪一层由使用者决定，组件自己插一级标题会污染文档大纲

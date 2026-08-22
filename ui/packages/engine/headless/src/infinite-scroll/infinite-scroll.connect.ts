@@ -32,7 +32,7 @@ export function connectInfiniteScroll<T extends PropTypes>(
     // 哨兵是纯机制，尺寸由皮肤给成一条细线，不进无障碍树
     getSentinelProps: () => normalize.element({
       ...parts.sentinel.attrs,
-      'aria-hidden': 'true',
+      'aria-hidden': true,
     }),
   }
 }

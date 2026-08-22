@@ -478,7 +478,7 @@ describe('connectTour 输出', () => {
   it('backdrop 由 showBackdrop 决定收放，恒 aria-hidden', () => {
     const on = makeService({ steps: STEPS, defaultOpen: true })
     expect((on.api().getBackdropProps() as Dict).hidden).toBeUndefined()
-    expect((on.api().getBackdropProps() as Dict)['aria-hidden']).toBe('true')
+    expect((on.api().getBackdropProps() as Dict)['aria-hidden']).toBe(true)
     const off = makeService({ steps: STEPS, defaultOpen: true, showBackdrop: false })
     expect((off.api().getBackdropProps() as Dict).hidden).toBe(true)
   })

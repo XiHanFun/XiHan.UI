@@ -177,7 +177,7 @@ export function connectNavigationMenu<T extends PropTypes>(
     // 指示条是纯装饰
     getIndicatorProps: () => normalize.element({
       ...parts.indicator.attrs,
-      'aria-hidden': 'true',
+      'aria-hidden': true,
       'data-state': stateAttr(open),
       'data-orientation': orientation,
       'data-value': value ?? undefined,

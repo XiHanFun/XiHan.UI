@@ -125,7 +125,7 @@ export function connectScrollbar<T extends PropTypes>(
       // 作者没给就不写：写死 ltr 会切断从 RTL 祖先继承来的方向
       'dir': dir,
       // 不进 Tab 序时对读屏整条隐藏：滚动本身由滚动容器报，同一件事没必要报两遍
-      'aria-hidden': focusable ? undefined : 'true',
+      'aria-hidden': focusable ? undefined : true,
       'data-orientation': orientation,
       'data-type': type,
       // 收起时留在 DOM 里，由皮肤按 data-state 淡出；不写 hidden，display:none 播不了退场

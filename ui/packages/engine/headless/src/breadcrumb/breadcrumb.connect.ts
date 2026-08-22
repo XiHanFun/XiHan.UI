@@ -53,13 +53,13 @@ export function connectBreadcrumb<T extends PropTypes>(
     // 分隔符纯视觉，不进读屏
     getSeparatorProps: () => normalize.element({
       ...parts.separator.attrs,
-      'aria-hidden': 'true',
+      'aria-hidden': true,
     }),
 
     // 省略号纯视觉占位，不进读屏
     getEllipsisProps: () => normalize.element({
       ...parts.ellipsis.attrs,
-      'aria-hidden': 'true',
+      'aria-hidden': true,
     }),
   }
 }

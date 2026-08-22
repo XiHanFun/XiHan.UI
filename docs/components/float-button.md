@@ -159,7 +159,7 @@ shape 换圆角档，offset 决定距那两条边多远；translations 换掉读
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-float-button-bg` · `--xh-float-button-bg-active` · `--xh-float-button-bg-hover` · `--xh-float-button-border` · `--xh-float-button-border-hover` · `--xh-float-button-fg` · `--xh-float-button-gap` · `--xh-float-button-icon-size` · `--xh-float-button-layer` · `--xh-float-button-radius` · `--xh-float-button-size`
+`--xh-float-button-bg` · `--xh-float-button-bg-active` · `--xh-float-button-bg-hover` · `--xh-float-button-border` · `--xh-float-button-border-hover` · `--xh-float-button-fg` · `--xh-float-button-gap` · `--xh-float-button-icon-size` · `--xh-float-button-layer` · `--xh-float-button-radius` · `--xh-float-button-shadow` · `--xh-float-button-size`
 
 ## 动效
 

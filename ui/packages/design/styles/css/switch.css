@@ -70,7 +70,7 @@
     block-size: var(--xh-_switch-thumb-size);
     border-radius: var(--xh-shape-pill);
     background: var(--xh-switch-thumb, var(--xh-bg-canvas));
-    box-shadow: var(--xh-elevation-raised);
+    box-shadow: var(--xh-switch-thumb-shadow, var(--xh-elevation-raised));
     transition: translate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 

@@ -249,7 +249,7 @@ describe('占道、让位与交叉口', () => {
     const mount = r.api().getScrollbarProps({ orientation: 'vertical' }) as Dict
     expect(mount['data-scope']).toBe('scroll-area')
     expect(mount['data-part']).toBe('scrollbar')
-    expect(mount['aria-hidden']).toBe('true')
+    expect(mount['aria-hidden']).toBe(true)
     expect((r.api().getTrackProps({ orientation: 'vertical' }) as Dict)['data-scope']).toBe('scrollbar')
     expect((r.api().getThumbProps({ orientation: 'vertical' }) as Dict)['data-part']).toBe('thumb')
     expect((r.api().getCornerProps() as Dict)['data-scope']).toBe('scrollbar')

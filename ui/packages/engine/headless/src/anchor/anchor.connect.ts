@@ -72,7 +72,7 @@ export function connectAnchor<T extends PropTypes>(
     // 指示条位置铺成内联样式
     getIndicatorProps: () => normalize.element({
       ...parts.indicator.attrs,
-      'aria-hidden': 'true',
+      'aria-hidden': true,
       'data-orientation': orientation,
       'data-value': value ?? undefined,
       'hidden': indicator == null || undefined,

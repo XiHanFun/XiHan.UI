@@ -125,7 +125,7 @@
 
   /* 分隔符常常是个图标：给一个跟着字号走的方框，斜杠与图标混用时基线才不跳 */
   [data-scope='breadcrumb'][data-part='separator'] {
-    inline-size: var(--xh-breadcrumb-separator-size, 1em);
+    inline-size: var(--xh-breadcrumb-separator-size, var(--xh-glyph-size-text));
   }
 
   [data-scope='breadcrumb'][data-part='ellipsis'] {

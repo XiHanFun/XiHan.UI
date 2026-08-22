@@ -9,7 +9,7 @@
   [data-scope='anchor'][data-part='root'] {
     /* 尺寸档只换这两个私有槽，链接从 root 继承它们，换档不必给每个部件各写一条选择器 */
     --xh-_anchor-font-size: var(--xh-text-label-size);
-    --xh-_anchor-link-px: var(--xh-space-3);
+    --xh-_anchor-link-px: var(--xh-control-px-md);
     /* 当前那一节的指示条与文字随语气走。没写 data-tone 时这两个槽都没被声明，退回原来的品牌色。
        指示条是装饰性的色条，取柔和档；文字要压在普通背景上读，取语气的文字档。
        聚焦环不在其列，它恒是 --xh-ring-focus */
@@ -22,7 +22,7 @@
   }
 
   /* —— 尺寸 —— */
-  /* 缺省档写在上面的基础规则里；链接的内边距走控件内边距那把尺，缺省的 --xh-space-3 即它的中档 */
+  /* 缺省档写在上面的基础规则里；链接的内边距三档都走控件内边距那把尺 */
   [data-scope='anchor'][data-part='root'][data-size='sm'] {
     --xh-_anchor-font-size: var(--xh-control-font-sm);
     --xh-_anchor-link-px: var(--xh-control-px-sm);

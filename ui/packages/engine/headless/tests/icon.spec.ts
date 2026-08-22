@@ -73,7 +73,7 @@ describe('connectIcon 命名两态', () => {
 
   it('label 缺席：aria-hidden="true"，不写 role、不写 aria-label', () => {
     const attrs = root({ icon: check })
-    expect(attrs['aria-hidden']).toBe('true')
+    expect(attrs['aria-hidden']).toBe(true)
     expect(attrs.role).toBeUndefined()
     expect(attrs['aria-label']).toBeUndefined()
     expect(api({ icon: check }).decorative).toBe(true)
@@ -83,7 +83,7 @@ describe('connectIcon 命名两态', () => {
   it('空串与纯空白不算给过名字：认了它就得到一个有 role="img" 却没有名字的对象', () => {
     for (const label of ['', '   ']) {
       const attrs = root({ icon: check, label })
-      expect(attrs['aria-hidden']).toBe('true')
+      expect(attrs['aria-hidden']).toBe(true)
       expect(attrs.role).toBeUndefined()
       expect(attrs['aria-label']).toBeUndefined()
       expect(api({ icon: check, label }).decorative).toBe(true)
@@ -139,7 +139,7 @@ describe('connectIcon 记录属性', () => {
     expect(decorated['data-part']).toBe('root')
     expect(decorated['data-icon']).toBe('rogue')
     expect(decorated.viewBox).toBe('0 0 24 24')
-    expect(decorated['aria-hidden']).toBe('true')
+    expect(decorated['aria-hidden']).toBe(true)
     expect(decorated.role).toBeUndefined()
     expect(decorated['aria-label']).toBeUndefined()
     // 档位只认 props，记录写不进去

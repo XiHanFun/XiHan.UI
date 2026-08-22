@@ -41,7 +41,7 @@ export function connectIcon<T extends PropTypes>(
       'data-icon': icon?.name,
       'role': decorative ? undefined : 'img',
       'aria-label': label,
-      'aria-hidden': decorative ? 'true' : undefined,
+      'aria-hidden': decorative ? true : undefined,
       // 缺省档不写属性：皮肤的基础规则就是缺省档
       'data-size': props.size,
       'data-weight': props.weight,

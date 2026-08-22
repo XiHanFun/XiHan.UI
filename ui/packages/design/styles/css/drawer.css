@@ -223,7 +223,7 @@
     /* 尺寸档只换这一个私有槽：左右放置时它是面板宽度、上下放置时是面板高度，
        两种取法都在下面「四条边」那两条规则里。声明在 content 而不是 root：
        content 会被 portal 到 body，root 上的槽位继承不过来（data-side 也是同一个道理） */
-    --xh-_drawer-size: 20rem;
+    --xh-_drawer-size: var(--xh-overlay-drawer-w-md);
 
     position: fixed;
     z-index: var(--xh-drawer-layer, var(--xh-layer-drawer));
@@ -265,11 +265,11 @@
   /* 只有面板厚度分档；中间档不写规则，缺省即中档。
      data-size 与 data-side 一样同时打在 root 与 content 上，这里只认 content 自己那一份。 */
   [data-scope='drawer'][data-part='content'][data-size='sm'] {
-    --xh-_drawer-size: 16rem;
+    --xh-_drawer-size: var(--xh-overlay-drawer-w-sm);
   }
 
   [data-scope='drawer'][data-part='content'][data-size='lg'] {
-    --xh-_drawer-size: 28rem;
+    --xh-_drawer-size: var(--xh-overlay-drawer-w-lg);
   }
 
   /* —— 四条边 ——

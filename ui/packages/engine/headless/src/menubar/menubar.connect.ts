@@ -1,4 +1,3 @@
-import { overlayPositioned } from '../shared/overlay'
 import type { NavIntent } from '@xihan-ui/behavior'
 import type { NormalizeProps, Orientation, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
@@ -15,6 +14,7 @@ import {
   queryItems,
 } from '@xihan-ui/behavior'
 import { contains, dataAttr } from '@xihan-ui/kernel'
+import { overlayPositioned } from '../shared/overlay'
 import {
   menubarAnatomy,
   menubarItemQuery,
@@ -413,7 +413,7 @@ export function connectMenubar<T extends PropTypes>(
       ...parts['item-indicator'].attrs,
       ...itemStateAttrs(item),
       // 标记位是纯装饰
-      'aria-hidden': 'true',
+      'aria-hidden': true,
     }),
 
     getSeparatorProps: () => normalize.element({

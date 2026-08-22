@@ -1,9 +1,12 @@
 import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { ButtonApi, ButtonProps } from './button.types'
-import { dataAttr } from '@xihan-ui/kernel'
+import { dataAttr, isDev } from '@xihan-ui/kernel'
 import { buttonAnatomy } from './button.anatomy'
 
 const parts = buttonAnatomy.build()
+
+/** 图标按钮缺可及名的提醒只投一次，连接层每次重算都会经过这里。 */
+let iconOnlyNameWarned = false
 
 // Button 无状态机，状态来自 props 与原生伪类。
 export function connectButton<T extends PropTypes>(
@@ -13,6 +16,11 @@ export function connectButton<T extends PropTypes>(
   const disabled = !!props.disabled
   const loading = !!props.loading
   const interactive = !disabled && !loading
+  // 图标按钮没有可见文字，没给 aria-label / aria-labelledby 就没有可及名；只在开发模式提醒一次
+  if (isDev() && !iconOnlyNameWarned && props.iconOnly && !props.ariaLabel && !props.ariaLabelledby) {
+    iconOnlyNameWarned = true
+    console.warn('[xh:button] iconOnly 按钮没有可见文字，须给 aria-label 或 aria-labelledby')
+  }
 
   return {
     disabled,
@@ -39,8 +47,8 @@ export function connectButton<T extends PropTypes>(
       },
     }),
     getLabelProps: () => normalize.element({ ...parts.label.attrs }),
-    getIndicatorProps: () => normalize.element({ ...parts.indicator.attrs, 'aria-hidden': 'true' }),
-    getPrefixProps: () => normalize.element({ ...parts.prefix.attrs, 'aria-hidden': 'true' }),
-    getSuffixProps: () => normalize.element({ ...parts.suffix.attrs, 'aria-hidden': 'true' }),
+    getIndicatorProps: () => normalize.element({ ...parts.indicator.attrs, 'aria-hidden': true }),
+    getPrefixProps: () => normalize.element({ ...parts.prefix.attrs, 'aria-hidden': true }),
+    getSuffixProps: () => normalize.element({ ...parts.suffix.attrs, 'aria-hidden': true }),
   }
 }

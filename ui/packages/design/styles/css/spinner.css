@@ -30,8 +30,8 @@
     /* 边框算进直径，换厚度不会把圆环撑大 */
     box-sizing: border-box;
     flex: none;
-    inline-size: var(--xh-spinner-size, var(--xh-control-action-size));
-    block-size: var(--xh-spinner-size, var(--xh-control-action-size));
+    inline-size: var(--xh-spinner-size, var(--xh-glyph-size-md));
+    block-size: var(--xh-spinner-size, var(--xh-glyph-size-md));
     border: var(--xh-spinner-thickness, var(--xh-stroke-thick)) solid var(--xh-spinner-track, var(--xh-border-default));
 
     /* 一整圈是轨道色，只有起始边换成前景色，转起来才看得出方向 */
@@ -40,15 +40,16 @@
     animation: xh-spinner-rotate var(--xh-spinner-duration, var(--xh-spin-duration)) linear infinite;
   }
 
-  /* 三档直径对齐控件档位，缺省档写在上面的基础规则里 */
+  /* 三档直径走字形尺寸那把尺：圆环与同一行文字里的图标同级，三档同族才不会在 compact 下错位。
+     缺省档写在上面的基础规则里 */
   [data-scope='spinner'][data-part='root'][data-size='sm']::before {
-    inline-size: var(--xh-control-indicator-size);
-    block-size: var(--xh-control-indicator-size);
+    inline-size: var(--xh-glyph-size-sm);
+    block-size: var(--xh-glyph-size-sm);
   }
 
   [data-scope='spinner'][data-part='root'][data-size='lg']::before {
-    inline-size: var(--xh-control-h-md);
-    block-size: var(--xh-control-h-md);
+    inline-size: var(--xh-glyph-size-lg);
+    block-size: var(--xh-glyph-size-lg);
   }
 
   /* 语气只换起始边那一段，轨道留在中性描边上：轨道与起始边的反差就是转向的读法，

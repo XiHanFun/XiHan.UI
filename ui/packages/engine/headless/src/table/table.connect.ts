@@ -483,7 +483,7 @@ export function connectTable<T extends PropTypes>(
     getRowSelectTriggerProps: row => normalize.element({
       ...parts['row-select-trigger'].attrs,
       ...rowState(row.value),
-      'aria-hidden': 'true',
+      'aria-hidden': true,
       'tabindex': -1,
       'onClick': (event: MouseEvent) => {
         if (mode === 'none' || isRowDisabled(row.value))
@@ -523,7 +523,7 @@ export function connectTable<T extends PropTypes>(
     getExpandTriggerProps: row => normalize.element({
       ...parts['expand-trigger'].attrs,
       ...rowState(row.value),
-      'aria-hidden': 'true',
+      'aria-hidden': true,
       'tabindex': -1,
       'onClick': (event: MouseEvent) => {
         if (!metaOf(row.value)?.expandable || isRowDisabled(row.value))

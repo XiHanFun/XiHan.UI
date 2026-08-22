@@ -5,6 +5,7 @@ import type { SelectApi, SelectItemProps, SelectNodeMeta, SelectSchema } from '.
 import { focusItem, focusSafely, indexOfValue, isItemDisabled, ITEM_VALUE_ATTR, itemValue, matchTypeahead, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/behavior'
 import { dataAttr } from '@xihan-ui/kernel'
 import { overlayPositioned } from '../shared/overlay'
+import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { selectAnatomy, selectItemQuery, selectItemText } from './select.anatomy'
 import { SELECT_DEFAULT_PLACEMENT } from './select.machine'
 
@@ -12,19 +13,6 @@ const parts = selectAnatomy.build()
 
 // 指针亲手点亮过的条目：pointerleave 只收自己点的漆，键盘建立的高亮被指针路过不受影响
 const pointerHot = new WeakSet<Element>()
-
-// 隐藏 select 要留在布局与表单里，不能 display:none——原生校验提示需要一个可定位的框。
-const HIDDEN_SELECT_STYLE = {
-  position: 'absolute',
-  inlineSize: '1px',
-  blockSize: '1px',
-  margin: '-1px',
-  padding: '0',
-  border: '0',
-  overflow: 'hidden',
-  clipPath: 'inset(50%)',
-  whiteSpace: 'nowrap',
-}
 
 // 落定那一侧的可用高度。贴边时引擎会回报 0，直接写进 min() 会把面板压成零高，
 // 所以低于这个下限就当作没算出来：空串撤掉声明，退回皮肤 positioner 上那档 100vh
@@ -186,7 +174,8 @@ export function connectSelect<T extends PropTypes>(
       'type': 'button',
       // trigger 是单体控件：用原生 disabled，不可聚焦也不派 click
       'disabled': disabled || undefined,
-      // 展开的是 listbox 不是 menu：读屏据此播报「折叠列表框」而不是「菜单按钮」
+      // 按钮扮演 combobox（select-only 形态）：读屏据此播报「组合框，已折叠」并把 aria-controls 指向列表框
+      'role': 'combobox',
       'aria-haspopup': 'listbox',
       'aria-expanded': open ? 'true' : 'false',
       'aria-controls': ids.content,
@@ -250,7 +239,7 @@ export function connectSelect<T extends PropTypes>(
     }),
     getIndicatorProps: () => normalize.element({
       ...parts.indicator.attrs,
-      'aria-hidden': 'true',
+      'aria-hidden': true,
       // 有值时清空钮顶上来，箭头让位：两个图标并排堆在框里，用户分不清点哪个
       'data-clearable': dataAttr(canClear),
       'data-state': stateAttr,
@@ -438,7 +427,7 @@ export function connectSelect<T extends PropTypes>(
     getItemIndicatorProps: item => normalize.element({
       ...parts['item-indicator'].attrs,
       ...itemStateAttrs(item),
-      'aria-hidden': 'true',
+      'aria-hidden': true,
     }),
     // 表单出口：选中值靠这份原生 select 提交并被 required 校验看见，对键盘与读屏不存在。
     getHiddenSelectProps: () => normalize.select({
@@ -451,8 +440,8 @@ export function connectSelect<T extends PropTypes>(
       // 单体控件用原生 disabled（与条目的 aria-disabled 相反）：禁用的控件不该提交出值
       'disabled': disabled || undefined,
       'tabindex': -1,
-      'aria-hidden': 'true',
-      'style': HIDDEN_SELECT_STYLE,
+      'aria-hidden': true,
+      'style': VISUALLY_HIDDEN_STYLE,
     }),
   }
 }

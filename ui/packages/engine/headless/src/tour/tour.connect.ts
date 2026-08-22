@@ -1,8 +1,8 @@
-import { overlayPositioned } from '../shared/overlay'
 import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { TourApi, TourSchema } from './tour.types'
 import { dataAttr } from '@xihan-ui/kernel'
+import { overlayPositioned } from '../shared/overlay'
 import { tourAnatomy } from './tour.anatomy'
 import { clampTourStep, currentTourStep, isTourLastStep, TOUR_DEFAULT_PLACEMENT, tourStepCount } from './tour.machine'
 
@@ -92,7 +92,7 @@ export function connectTour<T extends PropTypes>(
     // 遮罩纯装饰，读屏不念它；点它关不关由 closeOnInteractOutside 说了算
     getBackdropProps: () => normalize.element({
       ...parts.backdrop.attrs,
-      'aria-hidden': 'true',
+      'aria-hidden': true,
       'data-state': stateAttr,
       'hidden': !open || !(prop('showBackdrop') ?? true) || undefined,
     }),
@@ -103,7 +103,7 @@ export function connectTour<T extends PropTypes>(
      */
     getSpotlightProps: () => normalize.element({
       ...parts.spotlight.attrs,
-      'aria-hidden': 'true',
+      'aria-hidden': true,
       'data-state': stateAttr,
       // 收起态与居中步都不画；判据用作者声明的 target 而不是量到的框，与量测时机无关
       'hidden': !open || !anchored || undefined,
@@ -213,7 +213,7 @@ export function connectTour<T extends PropTypes>(
 
     getArrowProps: () => normalize.element({
       ...parts.arrow.attrs,
-      'aria-hidden': 'true',
+      'aria-hidden': true,
       'data-placement': placement,
       // 居中步没有锚点，不出箭头
       'hidden': !open || !anchored || undefined,

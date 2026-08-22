@@ -239,6 +239,7 @@ XhMenuSub 内嵌一台子菜单：触发条目双重身份（父层方向键照�
 | `content` | `data-state` | 'open' \| 'closed' |
 | `content` | `data-tone` | props.tone |
 | `item` | `data-disabled` | ''（条件成立时才出现） |
+| `item` | `data-highlighted` | ''（条件成立时才出现） |
 | `arrow` | `data-placement` | 定位引擎算出的实际落位 |
 | `submenu-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `submenu-trigger` | `data-state` | 'open' \| 'closed' |

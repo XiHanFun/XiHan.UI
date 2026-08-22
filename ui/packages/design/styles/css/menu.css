@@ -135,8 +135,8 @@
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
-  /* 悬停与键盘焦点共用中性灰轻档：条目本身承载焦点，不另画描边 */
-  [data-scope='menu'][data-part='item']:not([data-disabled]):is(:hover, :focus) {
+  /* 悬停与键盘锚点共用中性灰轻档：锚点只认连接层打的 data-highlighted，不读 :focus */
+  [data-scope='menu'][data-part='item']:not([data-disabled]):is(:hover, [data-highlighted]) {
     background: var(--xh-menu-item-bg-hover, var(--xh-bg-subtle));
   }
 

@@ -82,7 +82,7 @@
 
   [data-scope='code-block'][data-part='token'][data-kind='keyword'] {
     color: var(--xh-code-block-keyword-fg);
-    font-weight: var(--xh-code-block-keyword-weight, 600);
+    font-weight: var(--xh-code-block-keyword-weight, var(--xh-font-weight-semibold));
   }
 
   [data-scope='code-block'][data-part='token'][data-kind='punctuation'] {

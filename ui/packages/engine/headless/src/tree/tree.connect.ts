@@ -340,7 +340,7 @@ export function connectTree<T extends PropTypes>(
     getItemIndicatorProps: node => normalize.element({
       ...parts['item-indicator'].attrs,
       ...itemState(node.value),
-      'aria-hidden': 'true',
+      'aria-hidden': true,
     }),
 
     getBranchProps: node => normalize.element({
@@ -360,7 +360,7 @@ export function connectTree<T extends PropTypes>(
       ...parts['item-checkbox'].attrs,
       ...itemState(node.value),
       // 勾选态由所在的 treeitem 用 aria-selected / aria-checked 报，把手自己不重复一遍
-      'aria-hidden': 'true',
+      'aria-hidden': true,
       'tabindex': -1,
       'onClick': (event: MouseEvent) => {
         // 把手长在条目里面，不掐断冒泡会再跑一遍点行
@@ -374,7 +374,7 @@ export function connectTree<T extends PropTypes>(
     getBranchCheckboxProps: node => normalize.element({
       ...parts['branch-checkbox'].attrs,
       ...branchState(node.value),
-      'aria-hidden': 'true',
+      'aria-hidden': true,
       'tabindex': -1,
       'onClick': (event: MouseEvent) => {
         // 不掐断冒泡会顺带把这一枝展开或收起
@@ -406,7 +406,7 @@ export function connectTree<T extends PropTypes>(
       ...branchState(node.value),
       // 展开箭头重复了 branch 已有的左右方向键与点行语义，对读屏隐藏；
       // tabindex=-1 让它退出 Tab 序列，否则每条分支多占一个 Tab 位会让 roving tabindex 失效
-      'aria-hidden': 'true',
+      'aria-hidden': true,
       'tabindex': -1,
       'onClick': (event: MouseEvent) => {
         // 箭头长在 branch-control 里面，不掐断冒泡会再跑一遍点行，展开态被切两回
@@ -425,7 +425,7 @@ export function connectTree<T extends PropTypes>(
     getBranchIndicatorProps: node => normalize.element({
       ...parts['branch-indicator'].attrs,
       ...branchState(node.value),
-      'aria-hidden': 'true',
+      'aria-hidden': true,
     }),
 
     getBranchTextProps: node => normalize.element({

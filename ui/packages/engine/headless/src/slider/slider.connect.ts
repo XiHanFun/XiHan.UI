@@ -216,7 +216,7 @@ export function connectSlider<T extends PropTypes>(
 
     getMarkProps: ({ value: v }) => normalize.element({
       ...parts.mark.attrs,
-      'aria-hidden': 'true',
+      'aria-hidden': true,
       'data-passed': dataAttr(markActive(v)),
       'style': axisStyle(valueToPercent(v, min, max)),
     }),

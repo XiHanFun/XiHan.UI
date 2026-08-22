@@ -292,7 +292,7 @@ describe('connectAnchor 静态输出', () => {
   it('指示条是装饰：aria-hidden 恒真；没有激活项时整条收起', () => {
     const c = makeAnchor()
     const indicator = c.api().getIndicatorProps() as Record<string, unknown>
-    expect(indicator['aria-hidden']).toBe('true')
+    expect(indicator['aria-hidden']).toBe(true)
     expect(indicator.hidden).toBe(true)
     expect(indicator.style).toBeUndefined()
   })

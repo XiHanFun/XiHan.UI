@@ -328,7 +328,7 @@ export function connectSideNav<T extends PropTypes>(
 
     getBranchIndicatorProps: ({ value: v }) => normalize.element({
       ...parts['branch-indicator'].attrs,
-      'aria-hidden': 'true',
+      'aria-hidden': true,
       'data-state': (popoutEnabled && !isTopLevel(v)) || isExpanded(v) ? 'open' : 'closed',
     }),
 

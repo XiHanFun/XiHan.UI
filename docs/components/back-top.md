@@ -150,7 +150,7 @@ tone 决定按钮用哪族颜色，size 换一档尺寸；translations 换掉读
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-back-top-bg` · `--xh-back-top-bg-active` · `--xh-back-top-bg-hover` · `--xh-back-top-border` · `--xh-back-top-border-hover` · `--xh-back-top-fg` · `--xh-back-top-icon-size` · `--xh-back-top-inset-block` · `--xh-back-top-inset-inline` · `--xh-back-top-layer` · `--xh-back-top-radius` · `--xh-back-top-trigger-size`
+`--xh-back-top-bg` · `--xh-back-top-bg-active` · `--xh-back-top-bg-hover` · `--xh-back-top-border` · `--xh-back-top-border-hover` · `--xh-back-top-fg` · `--xh-back-top-icon-size` · `--xh-back-top-inset-block` · `--xh-back-top-inset-inline` · `--xh-back-top-layer` · `--xh-back-top-radius` · `--xh-back-top-shadow` · `--xh-back-top-trigger-size`
 
 ## 动效
 

@@ -465,7 +465,7 @@ export function connectCombobox<T extends PropTypes>(
     getItemIndicatorProps: item => normalize.element({
       ...parts['item-indicator'].attrs,
       ...itemStateAttrs(item),
-      'aria-hidden': 'true',
+      'aria-hidden': true,
     }),
 
     getEmptyProps: () => normalize.element({

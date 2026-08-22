@@ -4,25 +4,13 @@ import type { Service } from '@xihan-ui/machine'
 import type { RadioGroupApi, RadioGroupItemProps, RadioGroupNodeMeta, RadioGroupSchema } from './radio-group.types'
 import { anchorItem, focusItem, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/behavior'
 import { contains, dataAttr } from '@xihan-ui/kernel'
+import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { radioGroupAnatomy } from './radio-group.anatomy'
 
 const parts = radioGroupAnatomy.build()
 
 // 条目查询描述符；只在事件处理器里查活 DOM，渲染期不得调用
 const ITEM_QUERY: ItemQuery = { scope: radioGroupAnatomy.name, part: 'item' }
-
-// 视觉隐藏但保留在布局与表单里，不能 display:none——原生校验提示需要一个可定位的框
-const HIDDEN_INPUT_STYLE = {
-  position: 'absolute',
-  inlineSize: '1px',
-  blockSize: '1px',
-  margin: '-1px',
-  padding: '0',
-  border: '0',
-  overflow: 'hidden',
-  clipPath: 'inset(50%)',
-  whiteSpace: 'nowrap',
-}
 
 export function connectRadioGroup<T extends PropTypes>(
   service: Service<RadioGroupSchema>,
@@ -161,7 +149,7 @@ export function connectRadioGroup<T extends PropTypes>(
     getIndicatorProps: item => normalize.element({
       ...parts.indicator.attrs,
       ...stateAttrs(item),
-      'aria-hidden': 'true',
+      'aria-hidden': true,
     }),
     // 表单出口：选中值随这份原生输入提交
     getHiddenInputProps: item => normalize.input({
@@ -179,8 +167,8 @@ export function connectRadioGroup<T extends PropTypes>(
       // 它的后代里不能留下可聚焦的控件（负 tabindex 与 aria-hidden 都拦不住读屏的虚拟光标）
       'inert': true,
       'tabindex': -1,
-      'aria-hidden': 'true',
-      'style': HIDDEN_INPUT_STYLE,
+      'aria-hidden': true,
+      'style': VISUALLY_HIDDEN_STYLE,
     }),
   }
 }
