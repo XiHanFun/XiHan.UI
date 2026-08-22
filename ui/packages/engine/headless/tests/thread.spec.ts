@@ -67,8 +67,7 @@ function mount(initial: Props = {}, options: { config?: boolean } = {}): Rig {
   stubBox(viewport, scrollTo)
 
   if (options.config !== false) {
-    // 显式给出 reducedMotion，默认实现要读 jsdom 未实现的 matchMedia
-    service.refs.set('config', createRuntimeConfig({ scope, idGenerator: idGen, reducedMotion: () => false }))
+    service.refs.set('config', createRuntimeConfig({ scope, idGenerator: idGen }))
   }
   service.refs.set('getViewportEl', () => viewport)
   service.refs.set('getContentEl', () => content)

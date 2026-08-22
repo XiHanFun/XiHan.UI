@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import type { ContextMenuNode } from '@xihan-ui/headless'
 import { mount } from '@vue/test-utils'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it } from 'vitest'
 import { defineComponent, h } from 'vue'
 import {
   XhContextMenuContent,
@@ -24,14 +24,8 @@ const COLLECTION: ContextMenuNode[] = [
   { value: 'delete', label: '删除', separatorBefore: true },
 ]
 
-beforeEach(() => {
-  // jsdom 无 matchMedia，桩掉供 RuntimeConfig.reducedMotion 使用
-  vi.stubGlobal('matchMedia', (q: string) => ({ matches: false, media: q, addEventListener: () => {}, removeEventListener: () => {} }))
-})
-
 afterEach(() => {
   document.body.innerHTML = ''
-  vi.unstubAllGlobals()
 })
 
 /** 只交数据，结构由组件铺开；触发区的内容走 trigger 插槽 */

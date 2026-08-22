@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import type { TabsNode, TabsNodeMeta } from '@xihan-ui/headless'
 import { mount } from '@vue/test-utils'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it } from 'vitest'
 import { defineComponent, h } from 'vue'
 import { XhTabsContent, XhTabsList, XhTabsRoot, XhTabsTrigger } from '../src'
 
@@ -16,14 +16,8 @@ function panelText(label: string): string {
   return `${label} 的面板`
 }
 
-beforeEach(() => {
-  // jsdom 无 matchMedia，桩掉供 RuntimeConfig.reducedMotion 使用
-  vi.stubGlobal('matchMedia', (q: string) => ({ matches: false, media: q, addEventListener: () => {}, removeEventListener: () => {} }))
-})
-
 afterEach(() => {
   document.body.innerHTML = ''
-  vi.unstubAllGlobals()
 })
 
 /** 只交数据，结构由组件铺开，面板内容走 panel 插槽 */

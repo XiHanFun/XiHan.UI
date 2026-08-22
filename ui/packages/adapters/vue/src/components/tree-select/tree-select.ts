@@ -59,6 +59,10 @@ export const XhTreeSelectRoot = defineComponent({
   // 有 connect 兜底的 prop 一律 default: undefined
   props: {
     collection: { type: Array as PropType<TreeNode[]>, default: undefined },
+    /** 标题文字。给了它就不必再写 label 部件；要放别的内容改用 label 插槽。 */
+    label: { type: String, default: undefined },
+    /** 自动渲染树里是否带清空按钮；手写部件不看它，写了节点即可清。 */
+    clearable: Boolean,
     value: { type: [String, Array] as PropType<string | string[]>, default: undefined },
     defaultValue: { type: [String, Array] as PropType<string | string[]>, default: undefined },
     expandedValue: { type: Array as PropType<string[]>, default: undefined },
@@ -93,6 +97,7 @@ export const XhTreeSelectRoot = defineComponent({
   },
   slots: Object as SlotsType<{
     default?: (props: TreeSelectRootSlotProps) => VNode[]
+    label?: () => VNode[]
   }>,
   setup(props, { slots, emit }) {
     const notifyValue: TreeSelectProps['onValueChange'] = (details) => {
@@ -114,25 +119,33 @@ export const XhTreeSelectRoot = defineComponent({
     })
     provideTreeSelect(ctx)
 
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
-      open: ctx.api.value.open,
-      value: ctx.api.value.value,
-      expandedValue: ctx.api.value.expandedValue,
-      visibleNodes: ctx.api.value.visibleNodes,
-      focusedValue: ctx.api.value.focusedValue,
-      displayText: ctx.api.value.displayText,
-      canClear: ctx.api.value.canClear,
-      isSelected: ctx.api.value.isSelected,
-      isIndeterminate: ctx.api.value.isIndeterminate,
-      isExpanded: ctx.api.value.isExpanded,
-      setOpen: ctx.api.value.setOpen,
-      setValue: ctx.api.value.setValue,
-      setExpandedValue: ctx.api.value.setExpandedValue,
-      expand: ctx.api.value.expand,
-      collapse: ctx.api.value.collapse,
-      select: ctx.api.value.select,
-      clear: ctx.api.value.clear,
-    }))
+    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default
+      ? slots.default({
+          open: ctx.api.value.open,
+          value: ctx.api.value.value,
+          expandedValue: ctx.api.value.expandedValue,
+          visibleNodes: ctx.api.value.visibleNodes,
+          focusedValue: ctx.api.value.focusedValue,
+          displayText: ctx.api.value.displayText,
+          canClear: ctx.api.value.canClear,
+          isSelected: ctx.api.value.isSelected,
+          isIndeterminate: ctx.api.value.isIndeterminate,
+          isExpanded: ctx.api.value.isExpanded,
+          setOpen: ctx.api.value.setOpen,
+          setValue: ctx.api.value.setValue,
+          setExpandedValue: ctx.api.value.setExpandedValue,
+          expand: ctx.api.value.expand,
+          collapse: ctx.api.value.collapse,
+          select: ctx.api.value.select,
+          clear: ctx.api.value.clear,
+        })
+      : props.collection
+        ? renderDefaultTree(
+            ctx.api.value.collection,
+            slots.label?.() ?? (props.label != null ? [props.label] : null),
+            props.clearable,
+          )
+        : [])
   },
 })
 
@@ -334,3 +347,39 @@ export const XhTreeSelectHiddenInput = defineComponent({
     return () => h('input', ctx.api.value.getHiddenInputProps() as Record<string, unknown>)
   },
 })
+
+/** 按 collection 递归铺节点：带 children 的落成 branch，其余落成 item。 */
+function renderNodes(nodes: readonly TreeNode[]): VNode[] {
+  return nodes.map(node => node.children
+    ? h(XhTreeSelectBranch, { key: node.value, value: node.value }, () => [
+        h(XhTreeSelectBranchControl, null, () => [
+          h(XhTreeSelectBranchTrigger),
+          h(XhTreeSelectBranchText, null, () => node.label ?? node.value),
+        ]),
+        h(XhTreeSelectBranchContent, null, () => renderNodes(node.children!)),
+      ])
+    : h(XhTreeSelectItem, { key: node.value, value: node.value }, () => [
+        h(XhTreeSelectItemIndicator),
+        h(XhTreeSelectItemText, null, () => node.label ?? node.value),
+      ]))
+}
+
+/**
+ * 没写默认插槽时按 collection 铺开的整套结构，作者只交数据。
+ * 与手写部件产出的 DOM 完全一致，要改结构就写默认插槽，行为不变。
+ */
+function renderDefaultTree(
+  collection: readonly TreeNode[],
+  label: (VNode | string)[] | null,
+  clearable: boolean,
+): VNode[] {
+  return [
+    ...(label ? [h(XhTreeSelectLabel, null, () => label)] : []),
+    h(XhTreeSelectTrigger, null, () => [h(XhTreeSelectValueText), h(XhTreeSelectIndicator)]),
+    // 清空钮是触发器的兄弟（按钮不能套按钮）
+    ...(clearable ? [h(XhTreeSelectClearTrigger)] : []),
+    h(XhTreeSelectPositioner, null, () => [
+      h(XhTreeSelectContent, null, () => h(XhTreeSelectTree, null, () => renderNodes(collection))),
+    ]),
+  ]
+}

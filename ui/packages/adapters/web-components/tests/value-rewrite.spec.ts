@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
 import { defineXhElements } from '../src/define'
 
 defineXhElements()
@@ -9,7 +9,6 @@ interface Updatable extends HTMLElement { updateComplete: Promise<unknown> }
 
 beforeEach(() => {
   document.body.innerHTML = ''
-  vi.stubGlobal('matchMedia', (q: string) => ({ matches: false, media: q, addEventListener: () => {}, removeEventListener: () => {} }))
 })
 
 async function settle(el: Updatable): Promise<void> {

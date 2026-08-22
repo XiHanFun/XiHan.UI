@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import type { SelectNode } from '@xihan-ui/headless'
 import { mount } from '@vue/test-utils'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it } from 'vitest'
 import { defineComponent, h } from 'vue'
 import {
   provideXhConfig,
@@ -24,14 +24,8 @@ const COLLECTION: SelectNode[] = [
   { value: 'cherry', label: '樱桃', disabled: true },
 ]
 
-beforeEach(() => {
-  // jsdom 无 matchMedia，桩掉供 RuntimeConfig.reducedMotion 使用
-  vi.stubGlobal('matchMedia', (q: string) => ({ matches: false, media: q, addEventListener: () => {}, removeEventListener: () => {} }))
-})
-
 afterEach(() => {
   document.body.innerHTML = ''
-  vi.unstubAllGlobals()
 })
 
 /** 一个实例一个 portal 落点：两棵树同时在场时，搬出去的浮层不会混在一起。 */

@@ -40,7 +40,7 @@ export function connectSideNav<T extends PropTypes>(
   // 弹出与否看状态位：context 里的 popoutValue 在关闭后留给效应拆除用，不外露
   const popoutEnabled = collapsed && (prop('collapsedPopout') ?? true)
   const popoutValue = popoutEnabled && state.get() === 'popout' ? context.get('popoutValue') : null
-  const popoutPosition = context.get('popoutPosition')
+  const popoutPlacements = context.get('popoutPlacements')
   /** 事件回调里现读的弹出分支；渲染期快照失效后仍然准确。 */
   const livePopout = (): string | null =>
     state.get() === 'popout' ? context.get('popoutValue') ?? null : null
@@ -338,23 +338,26 @@ export function connectSideNav<T extends PropTypes>(
     // 祖先的层叠上下文。面板本身只管内容，不再自己写 fixed 坐标
     getPopoutPositionerProps: ({ value: v }) => {
       const open = isPopoutPanel(v) && popoutValue === v
+      // 坐标取这一枝名下的那份：换枝时新枝的账已清、旧枝的账还在，
+      // 旧面板据此留在原地播退场，新面板藏到拿到自己的坐标为止
+      const placed = popoutPlacements[v]
       return normalize.element({
         ...parts.positioner.attrs,
         'id': positionerId(v),
         // 定位层被搬到 portal 落点，继承不到作者子树上的方向；作者没给就不写，交给落点处的继承
         'dir': prop('dir'),
         'data-state': open ? 'open' : 'closed',
-        'data-placement': popoutPosition?.placement ?? (dir === 'rtl' ? 'left-start' : 'right-start'),
-        // 落位才露：展开或换枝后坐标已清，引擎量完之前藏着
-        'data-positioned': dataAttr(overlayPositioned(popoutPosition)),
+        'data-placement': placed?.placement ?? (dir === 'rtl' ? 'left-start' : 'right-start'),
+        // 落位才露：展开或换枝后这一枝的坐标已清，引擎量完之前藏着
+        'data-positioned': dataAttr(overlayPositioned(placed)),
         'hidden': !open || undefined,
-        // 收起后坐标留到下一次展开才作废：退场动画在原位播
-        'style': popoutPosition
+        // 收起后坐标留到这一枝下一次展开才作废：退场动画在原位播
+        'style': placed
           ? {
               position: 'fixed',
-              left: `${popoutPosition?.x ?? 0}px`,
-              top: `${popoutPosition?.y ?? 0}px`,
-              ...availableHeightVar(popoutPosition?.availableHeight),
+              left: `${placed.x ?? 0}px`,
+              top: `${placed.y ?? 0}px`,
+              ...availableHeightVar(placed.availableHeight),
             }
           // 逐属性清而非摘掉整个 style：折叠开关来回切换时不残留 fixed 坐标，
           // 作者写的其他内联样式不受波及

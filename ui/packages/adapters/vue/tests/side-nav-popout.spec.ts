@@ -128,6 +128,54 @@ describe('side-nav 折叠态弹出', () => {
     expect(panelOf('blog').hasAttribute('hidden')).toBe(true)
   })
 
+  it('换枝播退场：旧面板 data-state=closed 且留在原位直到退场播完，新面板同时 open', async () => {
+    mountNav()
+    await tick()
+    el(TRIGGER('docs')).click()
+    await tick()
+    const docs = positionerOf('docs')
+    expect(docs.hasAttribute('data-positioned')).toBe(true)
+
+    // jsdom 不把样式表里的 animation 算进 getComputedStyle：给收起态的定位层伪造一支退场动画，退场闸门才申领得到租约
+    const native = window.getComputedStyle
+    const spy = vi.spyOn(window, 'getComputedStyle').mockImplementation((target, pseudo) => {
+      const style = native.call(window, target, pseudo)
+      if (target.getAttribute('data-part') !== 'positioner' || target.getAttribute('data-state') !== 'closed')
+        return style
+      return new Proxy(style, {
+        get(t, key) {
+          if (key === 'animationName')
+            return 'xh-pop-out'
+          if (key === 'display')
+            return 'block'
+          const value = Reflect.get(t, key)
+          return typeof value === 'function' ? value.bind(t) : value
+        },
+      })
+    })
+    cleanup.push(() => spy.mockRestore())
+
+    el(TRIGGER('blog')).click()
+    await tick()
+    // 旧面板：收起态、未藏、坐标仍是它自己名下那份；新面板同帧展开
+    expect(docs.getAttribute('data-state')).toBe('closed')
+    expect(docs.hasAttribute('hidden')).toBe(false)
+    expect(docs.hasAttribute('data-positioned')).toBe(true)
+    expect(docs.style.position).toBe('fixed')
+    expect(panelOf('docs').hasAttribute('hidden')).toBe(false)
+    expect(positionerOf('blog').getAttribute('data-state')).toBe('open')
+    expect(panelOf('blog').hasAttribute('hidden')).toBe(false)
+
+    // 退场播完才真收
+    const end = new Event('animationend', { bubbles: true })
+    Object.defineProperty(end, 'animationName', { value: 'xh-pop-out' })
+    docs.dispatchEvent(end)
+    await tick()
+    expect(docs.hasAttribute('hidden')).toBe(true)
+    expect(panelOf('docs').hasAttribute('hidden')).toBe(true)
+    expect(panelOf('blog').hasAttribute('hidden')).toBe(false)
+  })
+
   it('面板内点链接：落选中并收面板', async () => {
     const t = mountNav()
     await tick()

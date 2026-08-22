@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import type { ComboboxNode } from '@xihan-ui/headless'
 import { mount } from '@vue/test-utils'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it } from 'vitest'
 import { defineComponent, h, nextTick } from 'vue'
 import {
   XhComboboxClearTrigger,
@@ -24,14 +24,8 @@ const COLLECTION: ComboboxNode[] = [
   { value: 'cherry', label: '樱桃', disabled: true },
 ]
 
-beforeEach(() => {
-  // jsdom 无 matchMedia，桩掉供 RuntimeConfig.reducedMotion 使用
-  vi.stubGlobal('matchMedia', (q: string) => ({ matches: false, media: q, addEventListener: () => {}, removeEventListener: () => {} }))
-})
-
 afterEach(() => {
   document.body.innerHTML = ''
-  vi.unstubAllGlobals()
 })
 
 /** 只交数据，结构由组件铺开 */

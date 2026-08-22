@@ -79,11 +79,11 @@
     },
     "action-size": {
       "$type": "dimension",
-      "$value": "1.5rem"
+      "$value": "24px"
     },
     "indicator-size": {
       "$type": "dimension",
-      "$value": "1rem"
+      "$value": "16px"
     }
   },
   "scrollbar": {
@@ -111,32 +111,32 @@
     },
     "size-sm": {
       "$type": "dimension",
-      "$value": "1rem"
+      "$value": "16px"
     },
     "size-md": {
       "$type": "dimension",
-      "$value": "1.25rem"
+      "$value": "20px"
     },
     "size-lg": {
       "$type": "dimension",
-      "$value": "1.5rem"
+      "$value": "24px"
     },
     "size-xl": {
       "$description": "展示型大图标四档（空态、结果页的主图标）：从这一档起不再对齐单行控件。",
       "$type": "dimension",
-      "$value": "2rem"
+      "$value": "32px"
     },
     "size-2xl": {
       "$type": "dimension",
-      "$value": "2.5rem"
+      "$value": "40px"
     },
     "size-3xl": {
       "$type": "dimension",
-      "$value": "3.5rem"
+      "$value": "56px"
     },
     "size-4xl": {
       "$type": "dimension",
-      "$value": "4.5rem"
+      "$value": "72px"
     },
     "stroke-light": {
       "$type": "dimension",
