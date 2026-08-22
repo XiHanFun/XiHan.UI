@@ -10,25 +10,13 @@ import type {
 } from './checkbox-group.types'
 import { isItemDisabled, ITEM_VALUE_ATTR, itemValue, queryItems } from '@xihan-ui/behavior'
 import { dataAttr } from '@xihan-ui/kernel'
+import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { checkboxGroupAnatomy } from './checkbox-group.anatomy'
 
 const parts = checkboxGroupAnatomy.build()
 
 // 条目集合在事件处理器里现查活 DOM，顺序即文档序。
 const ITEM_QUERY: ItemQuery = { scope: checkboxGroupAnatomy.name, part: 'item' }
-
-// 隐藏输入保留在布局与表单里，不用 display:none，原生校验提示需要一个可定位的框。
-const HIDDEN_INPUT_STYLE = {
-  position: 'absolute',
-  inlineSize: '1px',
-  blockSize: '1px',
-  margin: '-1px',
-  padding: '0',
-  border: '0',
-  overflow: 'hidden',
-  clipPath: 'inset(50%)',
-  whiteSpace: 'nowrap',
-}
 
 /** 全选态：拿选中集合去比作者声明的全集；全集缺省时只答 unchecked / indeterminate。 */
 export function resolveCheckedState(
@@ -157,7 +145,7 @@ export function connectCheckboxGroup<T extends PropTypes>(
     getIndicatorProps: item => normalize.element({
       ...parts.indicator.attrs,
       ...stateAttrs(item),
-      'aria-hidden': 'true',
+      'aria-hidden': true,
     }),
 
     getItemTextProps: item => normalize.element({
@@ -181,8 +169,8 @@ export function connectCheckboxGroup<T extends PropTypes>(
       // 它的后代里不能留下可聚焦的控件（负 tabindex 与 aria-hidden 都拦不住读屏的虚拟光标）
       'inert': true,
       'tabindex': -1,
-      'aria-hidden': 'true',
-      'style': HIDDEN_INPUT_STYLE,
+      'aria-hidden': true,
+      'style': VISUALLY_HIDDEN_STYLE,
     }),
 
     getTriggerProps: () => normalize.element({

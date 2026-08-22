@@ -288,7 +288,7 @@ export function connectListbox<T extends PropTypes>(
     getItemIndicatorProps: item => normalize.element({
       ...parts['item-indicator'].attrs,
       ...stateAttrs(item),
-      'aria-hidden': 'true',
+      'aria-hidden': true,
     }),
   }
 }

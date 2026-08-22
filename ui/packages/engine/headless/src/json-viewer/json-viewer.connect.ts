@@ -307,7 +307,7 @@ export function connectJsonViewer<T extends PropTypes>(
       // 展开箭头重复了分支自己的左右方向键与点行语义，对读屏隐藏。
       // 不给 tabindex：两个适配器都把它铺成 span，本来就不在 Tab 序列里，
       // 写上 -1 只会把一个 aria-hidden 的节点变成可编程聚焦的节点
-      'aria-hidden': 'true',
+      'aria-hidden': true,
       'onClick': (event: MouseEvent) => {
         // 箭头长在 branch-control 里，不掐断冒泡会再跑一遍点行，展开态被切两回
         event.stopPropagation()
@@ -322,7 +322,7 @@ export function connectJsonViewer<T extends PropTypes>(
     getBranchIndicatorProps: props => normalize.element({
       ...parts['branch-indicator'].attrs,
       ...branchState(nodeOf(props.value), props.value),
-      'aria-hidden': 'true',
+      'aria-hidden': true,
     }),
 
     getBranchTextProps: props => normalize.element({
@@ -341,7 +341,7 @@ export function connectJsonViewer<T extends PropTypes>(
       ...parts.preview.attrs,
       ...branchState(nodeOf(props.value), props.value),
       // 摘要是括号加省略号的排版记号，念出来只有噪音；里头的成员数已折进分支的可及名字
-      'aria-hidden': 'true',
+      'aria-hidden': true,
     }),
   }
 }

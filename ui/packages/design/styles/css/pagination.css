@@ -11,7 +11,7 @@
     /* 尺寸档只换这三个私有槽，上一页/下一页、页码与省略号都从 root 继承它们，
        换档不必给每个部件各写一条选择器 */
     --xh-_pagination-item-size: var(--xh-control-h-md);
-    --xh-_pagination-item-px: var(--xh-space-2);
+    --xh-_pagination-item-px: var(--xh-control-px-md);
     --xh-_pagination-font-size: var(--xh-text-label-size);
 
     /* 当前页的选中态随语气走。没写 data-tone 时这几个 --xh-_tone-* 都没被声明，
@@ -29,17 +29,17 @@
   }
 
   /* —— 尺寸 —— */
-  /* 缺省档写在上面的基础规则里。格子高度走控件高度尺；内边距不在控件内边距那把尺上
-     （页码格子靠最小宽度撑等宽，内边距比同高的控件窄一档），三档一律取空间尺 */
+  /* 缺省档写在上面的基础规则里。格子高度、内边距、字号三者各走控件尺的同一档；
+     页码格子靠最小宽度撑等宽，内边距只在页码超出最小宽度时才起作用 */
   [data-scope='pagination'][data-part='root'][data-size='sm'] {
     --xh-_pagination-item-size: var(--xh-control-h-sm);
-    --xh-_pagination-item-px: var(--xh-space-1_5);
+    --xh-_pagination-item-px: var(--xh-control-px-sm);
     --xh-_pagination-font-size: var(--xh-control-font-sm);
   }
 
   [data-scope='pagination'][data-part='root'][data-size='lg'] {
     --xh-_pagination-item-size: var(--xh-control-h-lg);
-    --xh-_pagination-item-px: var(--xh-space-3);
+    --xh-_pagination-item-px: var(--xh-control-px-lg);
     --xh-_pagination-font-size: var(--xh-control-font-lg);
   }
 

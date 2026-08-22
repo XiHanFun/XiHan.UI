@@ -177,10 +177,8 @@
     display: none;
   }
 
-  /* 悬停与键盘焦点共用中性灰轻档：条目本身承载焦点，不另画描边。
-     data-highlighted 跟的是连接层记的焦点条目，与 :focus 说的是同一件事，
-     子部件够不着那个伪类，只能读这个标记 */
-  [data-scope='context-menu'][data-part='item']:not([data-disabled]):is(:hover, :focus, [data-highlighted]) {
+  /* 悬停与键盘锚点共用中性灰轻档：锚点只认连接层打的 data-highlighted，不读 :focus */
+  [data-scope='context-menu'][data-part='item']:not([data-disabled]):is(:hover, [data-highlighted]) {
     background: var(--xh-context-menu-item-bg-hover, var(--xh-bg-subtle));
   }
 

@@ -412,7 +412,7 @@ describe('读屏面', () => {
   it('缺省整条隐藏、滑块退出 Tab 序：滚动本身由滚动容器报，没必要报两遍', async () => {
     const r = rig({ type: 'always' })
     await settle()
-    expect((r.api().getRootProps() as Dict)['aria-hidden']).toBe('true')
+    expect((r.api().getRootProps() as Dict)['aria-hidden']).toBe(true)
     const thumb = r.api().getThumbProps() as Dict
     expect(thumb.role).toBeUndefined()
     expect(thumb.tabindex).toBe(-1)

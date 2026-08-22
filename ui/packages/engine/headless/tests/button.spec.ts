@@ -50,4 +50,37 @@ describe('connectButton', () => {
     expect(e.preventDefault).not.toHaveBeenCalled()
     expect(e.stopImmediatePropagation).not.toHaveBeenCalled()
   })
+
+  describe('图标按钮的可及名', () => {
+    function collect(run: () => void): string[] {
+      const spy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+      run()
+      const messages = spy.mock.calls.map(call => String(call[0]))
+      spy.mockRestore()
+      return messages
+    }
+
+    it('iconOnly 且没给 aria-label / aria-labelledby：提醒一次，重复调用不再提醒', () => {
+      const records = collect(() => {
+        connectButton({ iconOnly: true }, normalizeProps).getRootProps()
+        connectButton({ iconOnly: true }, normalizeProps).getRootProps()
+      })
+      expect(records.filter(m => m.includes('iconOnly'))).toHaveLength(1)
+    })
+
+    it('给了可及名或不是图标按钮：不提醒', () => {
+      const records = collect(() => {
+        connectButton({ iconOnly: true, ariaLabel: '关闭' }, normalizeProps).getRootProps()
+        connectButton({ iconOnly: true, ariaLabelledby: 'x' }, normalizeProps).getRootProps()
+        connectButton({}, normalizeProps).getRootProps()
+      })
+      expect(records.filter(m => m.includes('iconOnly'))).toHaveLength(0)
+    })
+
+    it('装饰性子部件对读屏隐藏：aria-hidden 写布尔', () => {
+      const api = connectButton({}, normalizeProps)
+      expect((api.getPrefixProps() as Record<string, unknown>)['aria-hidden']).toBe(true)
+      expect((api.getIndicatorProps() as Record<string, unknown>)['aria-hidden']).toBe(true)
+    })
+  })
 })

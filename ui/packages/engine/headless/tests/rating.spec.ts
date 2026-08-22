@@ -374,7 +374,7 @@ describe('connectRating', () => {
     expect(input.name).toBe('score')
     expect(input.type).toBe('text')
     expect(input.tabindex).toBe(-1)
-    expect(input['aria-hidden']).toBe('true')
+    expect(input['aria-hidden']).toBe(true)
     expect(input.required).toBe(true)
     // readonly 会让原生校验整个跳过这个字段，required 就永远不生效
     expect(input.readonly).toBeUndefined()

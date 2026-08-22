@@ -27,7 +27,7 @@ export function connectSpace<T extends PropTypes>(
     // aria-hidden 恒为真：它是装饰，逐条念出来只会打断内容。
     getSplitProps: () => normalize.element({
       ...parts.split.attrs,
-      'aria-hidden': 'true',
+      'aria-hidden': true,
     }),
   }
 }

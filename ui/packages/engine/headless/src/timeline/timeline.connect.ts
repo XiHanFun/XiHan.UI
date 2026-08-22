@@ -45,14 +45,14 @@ export function connectTimeline<T extends PropTypes>(
     // 圆点是纯视觉的，这一条说了什么全在 content 里；语气色落在它身上
     getIndicatorProps: item => normalize.element({
       ...parts.indicator.attrs,
-      'aria-hidden': 'true',
+      'aria-hidden': true,
       'data-tone': item.tone,
     }),
 
     // 圆点之间的连线，纯视觉；线有多长、首尾怎么裁由皮肤决定
     getConnectorProps: () => normalize.element({
       ...parts.connector.attrs,
-      'aria-hidden': 'true',
+      'aria-hidden': true,
       'data-orientation': orientation,
     }),
 

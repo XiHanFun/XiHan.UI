@@ -334,7 +334,7 @@ describe('connectPagination', () => {
   it('省略号对读屏隐藏', () => {
     const el = api(makeService({ count: 100 })).getEllipsisProps() as Props
     expect(el['data-part']).toBe('ellipsis')
-    expect(el['aria-hidden']).toBe('true')
+    expect(el['aria-hidden']).toBe(true)
   })
 
   it('pageRange 与 slice 走同一份页码，末页不满时按实际条数收口', () => {

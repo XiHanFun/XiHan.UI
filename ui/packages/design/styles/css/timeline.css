@@ -7,7 +7,7 @@
   [data-scope='timeline'][data-part='root'] {
     /* 尺寸档只换这几个私有槽，条目、圆点与文字都从 root 继承它们，
        换档不必给每个部件各写一条选择器 */
-    --xh-_timeline-dot-size: 10px;
+    --xh-_timeline-dot-size: var(--xh-space-2_5);
     --xh-_timeline-gutter: var(--xh-space-3);
     --xh-_timeline-item-gap: var(--xh-space-5);
     --xh-_timeline-title-font-size: var(--xh-text-label-size);
@@ -39,9 +39,9 @@
   }
 
   /* —— 尺寸 —— */
-  /* 缺省档写在上面的基础规则里。圆点直径不在控件高度那把尺上，两侧直接给像素 */
+  /* 缺省档写在上面的基础规则里。圆点直径不在控件高度那把尺上，三档走空间尺相邻的三格 */
   [data-scope='timeline'][data-part='root'][data-size='sm'] {
-    --xh-_timeline-dot-size: 8px;
+    --xh-_timeline-dot-size: var(--xh-space-2);
     --xh-_timeline-gutter: var(--xh-space-2);
     --xh-_timeline-item-gap: var(--xh-space-4);
     --xh-_timeline-title-font-size: var(--xh-control-font-sm);
@@ -49,7 +49,7 @@
   }
 
   [data-scope='timeline'][data-part='root'][data-size='lg'] {
-    --xh-_timeline-dot-size: 12px;
+    --xh-_timeline-dot-size: var(--xh-space-3);
     --xh-_timeline-gutter: var(--xh-space-4);
     --xh-_timeline-item-gap: var(--xh-space-6);
     --xh-_timeline-title-font-size: var(--xh-control-font-lg);

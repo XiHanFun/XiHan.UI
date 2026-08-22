@@ -134,7 +134,7 @@
     /* 居中而不是拉伸：作者插在框里的前后缀是一行文字，被拉满整框高度后字会贴着框顶。
        要占满整框高度的只有 input 与加减钮，它们各自明写 */
     align-items: center;
-    block-size: var(--xh-number-field-input-h, var(--xh-_number-field-h));
+    block-size: var(--xh-number-field-control-h, var(--xh-_number-field-h));
     border: var(--xh-stroke-thin) solid var(--xh-number-field-input-border, var(--xh-_number-field-border));
     border-radius: var(--xh-_number-field-radius);
     background: var(--xh-number-field-input-bg, var(--xh-_number-field-bg));

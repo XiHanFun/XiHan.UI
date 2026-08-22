@@ -2,23 +2,11 @@ import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { FileUploadApi, FileUploadFile, FileUploadSchema, FileUploadSnapshot } from './file-upload.types'
 import { contains, dataAttr, isHTMLElement } from '@xihan-ui/kernel'
+import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { fileUploadAnatomy, fileUploadHiddenInputId } from './file-upload.anatomy'
 import { acceptAttr, formatFileSize, normalizeMaxFiles } from './file-upload.machine'
 
 const parts = fileUploadAnatomy.build()
-
-/** 隐藏输入不能用 display:none：原生校验提示需要一个可定位的框。 */
-const VISUALLY_HIDDEN = {
-  position: 'absolute',
-  inlineSize: '1px',
-  blockSize: '1px',
-  margin: '-1px',
-  padding: '0',
-  border: '0',
-  overflow: 'hidden',
-  clipPath: 'inset(50%)',
-  whiteSpace: 'nowrap',
-}
 
 /** 投放区内自带行为的节点。隐藏输入的 click 会冒上来，不拦下会闭成死循环。 */
 const INTERACTIVE_SELECTOR = [
@@ -211,7 +199,7 @@ export function connectFileUpload<T extends PropTypes>(
       disabled: disabled || undefined,
       // 隐藏输入不占 Tab 位，键盘入口是投放区与 trigger
       tabindex: -1,
-      style: VISUALLY_HIDDEN,
+      style: VISUALLY_HIDDEN_STYLE,
       onClick: (event: MouseEvent) => {
         // 打开选择框调的就是本节点 click()，冒到投放区会被当成再次打开
         event.stopPropagation()
@@ -264,7 +252,7 @@ export function connectFileUpload<T extends PropTypes>(
     getItemPreviewProps: ({ file }) => normalize.element({
       ...parts['item-preview'].attrs,
       // 纯装饰，对读屏隐藏
-      'aria-hidden': 'true',
+      'aria-hidden': true,
       // 系统给不出 MIME 时写 unknown，留空串会让未知类型与属性没写在选择器里分不开
       'data-file-type': (isRemote(file) ? file.type ?? '' : file.type) || 'unknown',
       'data-disabled': dataAttr(disabled),

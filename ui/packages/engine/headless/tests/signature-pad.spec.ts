@@ -358,7 +358,7 @@ describe('connectSignaturePad 属性表', () => {
     expect(api(h.service).getGuideProps()).toMatchObject({
       'x1': '8%',
       'x2': '92%',
-      'aria-hidden': 'true',
+      'aria-hidden': true,
     })
   })
 

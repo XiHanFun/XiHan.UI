@@ -70,8 +70,8 @@ describe('connectBreadcrumb', () => {
   })
 
   it('分隔符与省略号对读屏隐藏', () => {
-    expect((api().getSeparatorProps() as Props)['aria-hidden']).toBe('true')
-    expect((api().getEllipsisProps() as Props)['aria-hidden']).toBe('true')
+    expect((api().getSeparatorProps() as Props)['aria-hidden']).toBe(true)
+    expect((api().getEllipsisProps() as Props)['aria-hidden']).toBe(true)
   })
 
   it('meta 的必备 part 都在 anatomy 里', () => {

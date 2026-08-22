@@ -165,6 +165,8 @@ export const selectSuite: ConformanceSuite = {
         parts: {
           'trigger': {
             'type': 'button',
+            // select-only 形态的组合框：按钮扮演 combobox，列表框由 aria-controls 指过去
+            'role': 'combobox',
             'aria-haspopup': 'listbox',
             'aria-expanded': 'false',
             'aria-controls': '@part(list)',

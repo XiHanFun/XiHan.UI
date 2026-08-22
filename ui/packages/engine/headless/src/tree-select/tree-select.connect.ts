@@ -265,7 +265,7 @@ export function connectTreeSelect<T extends PropTypes>(
       // 有值时清空钮顶上来，箭头让位：两个图标并排堆在框里，用户分不清点哪个
       'data-clearable': dataAttr(canClear),
       ...parts.indicator.attrs,
-      'aria-hidden': 'true',
+      'aria-hidden': true,
       'data-state': stateAttr,
       'data-disabled': dataAttr(disabled),
     }),
@@ -475,7 +475,7 @@ export function connectTreeSelect<T extends PropTypes>(
     getItemIndicatorProps: node => normalize.element({
       ...parts['item-indicator'].attrs,
       ...nodeState(node.value),
-      'aria-hidden': 'true',
+      'aria-hidden': true,
     }),
 
     getBranchProps: node => normalize.element({
@@ -507,7 +507,7 @@ export function connectTreeSelect<T extends PropTypes>(
       ...parts['branch-trigger'].attrs,
       ...branchState(node.value),
       // 箭头与 branch 的左右方向键语义重复，退出可及树与 Tab 序列
-      'aria-hidden': 'true',
+      'aria-hidden': true,
       'tabindex': -1,
       'onClick': (event: MouseEvent) => {
         // 箭头位于 branch-control 内，掐断冒泡以免再跑一遍「点行」
@@ -526,7 +526,7 @@ export function connectTreeSelect<T extends PropTypes>(
     getBranchIndicatorProps: node => normalize.element({
       ...parts['branch-indicator'].attrs,
       ...branchState(node.value),
-      'aria-hidden': 'true',
+      'aria-hidden': true,
     }),
 
     getBranchTextProps: node => normalize.element({

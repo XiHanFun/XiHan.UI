@@ -393,7 +393,7 @@ export function connectTransfer<T extends PropTypes>(
     getItemCheckboxProps: item => normalize.element({
       ...parts['item-checkbox'].attrs,
       ...itemState(item),
-      'aria-hidden': 'true',
+      'aria-hidden': true,
       'hidden': !selectable[item.side] || undefined,
     }),
 

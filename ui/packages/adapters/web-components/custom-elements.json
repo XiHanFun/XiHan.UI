@@ -1602,6 +1602,9 @@
               "name": "--xh-back-top-radius"
             },
             {
+              "name": "--xh-back-top-shadow"
+            },
+            {
               "name": "--xh-back-top-trigger-size"
             }
           ]
@@ -3172,6 +3175,9 @@
             },
             {
               "name": "--xh-card-radius"
+            },
+            {
+              "name": "--xh-card-shadow"
             },
             {
               "name": "--xh-card-title-font-size"
@@ -11824,6 +11830,9 @@
               "name": "--xh-dynamic-input-add-border"
             },
             {
+              "name": "--xh-dynamic-input-add-border-disabled"
+            },
+            {
               "name": "--xh-dynamic-input-add-border-hover"
             },
             {
@@ -13047,6 +13056,9 @@
             },
             {
               "name": "--xh-field-label-gap"
+            },
+            {
+              "name": "--xh-field-label-leading"
             },
             {
               "name": "--xh-field-label-star"
@@ -14476,6 +14488,9 @@
             },
             {
               "name": "--xh-float-button-radius"
+            },
+            {
+              "name": "--xh-float-button-shadow"
             },
             {
               "name": "--xh-float-button-size"
@@ -24099,6 +24114,9 @@
           "tagName": "xh-number-field",
           "customElement": true,
           "cssProperties": [
+            {
+              "name": "--xh-number-field-control-h"
+            },
             {
               "name": "--xh-number-field-gap"
             },
@@ -33949,6 +33967,9 @@
             },
             {
               "name": "--xh-switch-thumb"
+            },
+            {
+              "name": "--xh-switch-thumb-shadow"
             },
             {
               "name": "--xh-switch-track-h-lg"

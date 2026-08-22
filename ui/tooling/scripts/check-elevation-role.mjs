@@ -6,13 +6,17 @@
 // sheet = 遮罩式与通知（dialog / drawer / toast / tour / floating-panel / float-button / back-top）。
 // 皮肤直接引 --xh-shadow-* 原语或给 box-shadow 写字面值，海拔就脱离了层级阶梯。
 //
-// 允许：var(--xh-elevation-<role>) / 组件槽包着它 / 私有槽 / none / 0 / inset 描边式阴影（focus ring 与分割线那种）。
+// 允许：组件槽包着角色令牌 / 私有槽 / none / 0 / inset 描边式阴影（focus ring 与分割线那种）。
+// box-shadow 直接写 var(--xh-elevation-<role>) 也拦：使用者没有槽可以改这块面的投影，
+// 其余皮肤都留了 var(--xh-<组件>-…-shadow, var(--xh-elevation-<role>))，这里不许例外。
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
 const STYLES_DIR = 'packages/design/styles/css'
 
 const ROLE = /--xh-elevation-(raised|floating|sheet)\b/
+/** 使用者槽包着角色令牌：var(--xh-<组件>-…, var(--xh-elevation-<role>)) */
+const SLOTTED = /^var\(--xh-[a-z][a-z0-9-]*,\s*var\(--xh-elevation-(?:raised|floating|sheet)\)\)$/
 /** 锚定浮层与遮罩面的内容部件该落在哪一档；不在表里的部件只要求走角色令牌。 */
 const EXPECTED = {
   floating: new Set(['select', 'combobox', 'cascader', 'tree-select', 'mention', 'popselect', 'menu', 'menubar', 'context-menu', 'popover', 'popconfirm', 'hover-card', 'tooltip', 'time-picker', 'date-picker', 'color-picker', 'navigation-menu', 'side-nav', 'heatmap']),
@@ -42,6 +46,8 @@ for (const file of files) {
         problems.push(`${file}  ${selector.slice(0, 60)}  ${decl[1]}: ${value.slice(0, 60)}  —— 没走 --xh-elevation-raised / floating / sheet`)
         continue
       }
+      if (decl[1] === 'box-shadow' && !SLOTTED.test(value))
+        problems.push(`${file}  ${selector.slice(0, 60)}  box-shadow: ${value.slice(0, 60)}  —— 没给使用者留 --xh-<组件>-…-shadow 槽`)
       const want = EXPECTED.floating.has(comp) ? 'floating' : EXPECTED.sheet.has(comp) ? 'sheet' : null
       const isSurface = /\[data-part='(?:content|positioner|root|panel)'\]/.test(selector)
       if (want && isSurface && role !== want)

@@ -171,7 +171,7 @@
   }
 
   [data-scope='dynamic-input'][data-part='add-trigger'][aria-disabled='true'] {
-    border-color: var(--xh-border-subtle);
+    border-color: var(--xh-dynamic-input-add-border-disabled, var(--xh-border-subtle));
     background: transparent;
     color: var(--xh-fg-disabled);
     cursor: not-allowed;

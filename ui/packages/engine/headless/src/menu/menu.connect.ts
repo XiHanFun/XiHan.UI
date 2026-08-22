@@ -1,10 +1,10 @@
-import { overlayPositioned } from '../shared/overlay'
 import type { NavIntent } from '@xihan-ui/behavior'
 import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { MenuApi, MenuItemProps, MenuNodeMeta, MenuSchema } from './menu.types'
 import { focusItem, focusSafely, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/behavior'
 import { dataAttr } from '@xihan-ui/kernel'
+import { overlayPositioned } from '../shared/overlay'
 import { menuAnatomy, menuItemQuery } from './menu.anatomy'
 import { menuFallbackPlacement } from './menu.machine'
 
@@ -181,6 +181,8 @@ export function connectMenu<T extends PropTypes>(
       // 用 aria-disabled 而非原生 disabled，禁用条目仍可聚焦
       'aria-disabled': itemDisabled(item) ? 'true' : 'false',
       'data-disabled': dataAttr(itemDisabled(item)),
+      // 皮肤的高亮只读这个标记：焦点落在条目上时由这里同步打上
+      'data-highlighted': dataAttr(anchor === item.value),
       // roving tabindex：整组只有锚点条目留在 Tab 序列内
       'tabindex': anchor === item.value ? 0 : -1,
       'onClick': (event: MouseEvent) => {
@@ -258,7 +260,7 @@ export function connectMenu<T extends PropTypes>(
     }),
     getArrowProps: () => normalize.element({
       ...parts.arrow.attrs,
-      'aria-hidden': 'true',
+      'aria-hidden': true,
       'data-placement': placement,
       // 箭头交叉轴上的落点由定位引擎给：上下两侧走行内轴、左右两侧走块轴。
       // 两根轴每帧都写，翻面后另一根不会留着上一帧的值；空串即撤掉声明，皮肤退回居中

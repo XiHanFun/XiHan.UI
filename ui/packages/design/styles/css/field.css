@@ -22,8 +22,10 @@
   [data-scope='form'][data-part='root'][data-layout='horizontal'] [data-scope='field'][data-part='label'] {
     grid-column: 1;
     justify-self: end;
-    /* 与控件的首行文字对齐：按控件高度撑一行再居中 */
-    line-height: var(--xh-control-h-md);
+    /* 与控件的首行文字对齐：行高保持正文行距（标签折行时每行不会撑成一个控件高），
+       上下留白把单行文本盒撑到控件高度；配的是哪一档控件由 --xh-field-control-h 告诉它 */
+    line-height: var(--xh-field-label-leading, var(--xh-leading-normal));
+    padding-block: calc((var(--xh-field-control-h, var(--xh-control-h-md)) - 1lh) / 2);
   }
 
   [data-scope='form'][data-part='root'][data-layout='horizontal'][data-label-align='start'] [data-scope='field'][data-part='label'] {

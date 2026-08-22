@@ -12,7 +12,8 @@
     display: flex;
     align-items: flex-end;
     gap: var(--xh-composer-gap, var(--xh-control-gap-md));
-    padding: var(--xh-composer-p, var(--xh-space-2));
+    /* 整框的内衬走控件内边距尺的小档，密度收紧时随之收窄 */
+    padding: var(--xh-composer-p, var(--xh-control-px-sm));
     border: var(--xh-stroke-thin) solid var(--xh-composer-border, var(--xh-border-control));
     border-radius: var(--xh-composer-radius, var(--xh-shape-surface));
     background: var(--xh-composer-bg, var(--xh-bg-surface));

@@ -36,7 +36,7 @@ export function connectCodeBlock<T extends PropTypes>(
     // 纯装饰角标，对读屏隐藏
     getLangLabelProps: () => normalize.element({
       ...parts['lang-label'].attrs,
-      'aria-hidden': 'true',
+      'aria-hidden': true,
     }),
 
     getPreProps: () => normalize.element({

@@ -42,7 +42,7 @@
     background: var(--xh-back-top-bg, var(--xh-bg-surface-raised));
     color: var(--xh-back-top-fg, var(--xh-_tone-fg, var(--xh-fg-default)));
     /* 浮在内容之上，靠投影与页面拉开层次 */
-    box-shadow: var(--xh-elevation-sheet);
+    box-shadow: var(--xh-back-top-shadow, var(--xh-elevation-sheet));
     cursor: pointer;
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),

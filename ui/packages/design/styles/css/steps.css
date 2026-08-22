@@ -108,7 +108,9 @@
     grid-template-columns: auto minmax(0, 1fr);
     align-items: center;
     column-gap: var(--xh-steps-trigger-gap, var(--xh-control-gap-md));
-    padding: var(--xh-steps-trigger-p, var(--xh-space-1));
+    /* 纵向留一圈给悬停底色与焦点环，横向走控件内边距尺的小档；一个槽同时盖住两轴 */
+    padding-block: var(--xh-steps-trigger-p, var(--xh-space-1));
+    padding-inline: var(--xh-steps-trigger-p, var(--xh-control-px-sm));
     border: 0;
     border-radius: var(--xh-steps-trigger-radius, var(--xh-shape-control));
     background: transparent;
@@ -241,7 +243,7 @@
     /* 圆点半径减去线宽的一半：calc 里的除法要写成乘 0.5，除号在这儿是无效语法 */
     margin-inline-start: calc(
       var(--xh-steps-indicator-size, var(--xh-_steps-indicator-size)) * 0.5
-      + var(--xh-steps-trigger-p, var(--xh-space-1))
+      + var(--xh-steps-trigger-p, var(--xh-control-px-sm))
       - var(--xh-steps-separator-thickness, var(--xh-stroke-thick)) * 0.5
     );
   }

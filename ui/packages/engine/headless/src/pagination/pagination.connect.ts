@@ -101,7 +101,7 @@ export function connectPagination<T extends PropTypes>(
     // 省略号是纯视觉占位，对读屏隐藏
     getEllipsisProps: () => normalize.element({
       ...parts.ellipsis.attrs,
-      'aria-hidden': 'true',
+      'aria-hidden': true,
     }),
   }
 }

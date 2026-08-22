@@ -103,7 +103,8 @@ export const imageViewerSuite: ConformanceSuite = {
           expect: {
             counts: { content: 1, backdrop: 1, positioner: 1 },
             parts: {
-              'trigger': { 'aria-expanded': 'true', 'data-state': 'open' },
+              // content 挂载后 aria-controls 才解析得到对象
+              'trigger': { 'aria-expanded': 'true', 'aria-controls': '@part(content)', 'data-state': 'open' },
               'backdrop': { 'aria-hidden': 'true', 'data-state': 'open', 'hidden': null },
               'positioner': { 'data-state': 'open', 'data-positioned': '', 'hidden': null },
               'content': {

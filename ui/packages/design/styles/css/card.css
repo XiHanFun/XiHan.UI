@@ -27,7 +27,7 @@
   }
 
   [data-scope='card'][data-part='root'][data-variant='elevated'] {
-    box-shadow: var(--xh-elevation-raised);
+    box-shadow: var(--xh-card-shadow, var(--xh-elevation-raised));
   }
 
   [data-scope='card'][data-part='root'][data-variant='ghost'] {
@@ -47,7 +47,7 @@
   @media (hover: hover) {
     [data-scope='card'][data-part='root'][data-hoverable]:hover {
       border-color: var(--xh-card-border, var(--xh-border-strong));
-      box-shadow: var(--xh-elevation-raised);
+      box-shadow: var(--xh-card-shadow, var(--xh-elevation-raised));
     }
   }
 

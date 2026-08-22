@@ -161,7 +161,7 @@ export function connectSegmented<T extends PropTypes>(
     // 要按排布挑选它，从根上的 data-orientation 往下选
     getIndicatorProps: () => normalize.element({
       ...parts.indicator.attrs,
-      'aria-hidden': 'true',
+      'aria-hidden': true,
       'data-value': value ?? undefined,
       'hidden': indicator == null || undefined,
       'style': indicator

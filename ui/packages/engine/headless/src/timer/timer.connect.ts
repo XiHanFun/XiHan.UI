@@ -97,14 +97,14 @@ export function connectTimer<T extends PropTypes>(
     getItemProps: item => normalize.element({
       ...parts.item.attrs,
       // 整段时间的读法归 area 的名字管，这里的裸数字不必再被逐个念一遍
-      'aria-hidden': 'true',
+      'aria-hidden': true,
       'data-unit': item.unit,
     }),
 
     getSeparatorProps: () => normalize.element({
       ...parts.separator.attrs,
       // 冒号一类的记号只是排版，念出来是噪音
-      'aria-hidden': 'true',
+      'aria-hidden': true,
     }),
 
     getControlProps: () => normalize.button({

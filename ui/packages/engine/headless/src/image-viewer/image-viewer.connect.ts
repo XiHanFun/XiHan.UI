@@ -87,13 +87,14 @@ export function connectImageViewer<T extends PropTypes>(
       'type': 'button',
       'aria-haspopup': 'dialog',
       'aria-expanded': open ? 'true' : 'false',
+      'aria-controls': ids.content,
       'data-state': stateAttr,
       'onClick': () => send({ type: 'OPEN' }),
     }),
 
     getBackdropProps: () => normalize.element({
       ...parts.backdrop.attrs,
-      'aria-hidden': 'true',
+      'aria-hidden': true,
       'data-state': stateAttr,
       'hidden': !open || undefined,
     }),

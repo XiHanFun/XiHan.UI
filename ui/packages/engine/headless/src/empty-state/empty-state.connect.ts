@@ -30,7 +30,7 @@ export function connectEmptyState<T extends PropTypes>(
     // 图标是纯装饰：它表达的信息标题里已经写了，念出来只会重复一遍
     getIconProps: () => normalize.element({
       ...parts.icon.attrs,
-      'aria-hidden': 'true',
+      'aria-hidden': true,
     }),
 
     // 标题与说明不占标题层级：活区会把整段读完，再插一级标题只会污染文档大纲

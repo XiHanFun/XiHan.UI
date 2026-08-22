@@ -180,6 +180,7 @@ open 与 index 双受控；translations 换工具条的可及名与计数文案
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `trigger` | `aria-controls` | `content` 部件的 id |
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
 | `trigger` | `aria-haspopup` | 'dialog' |
 | `backdrop` | `aria-hidden` | 'true' |

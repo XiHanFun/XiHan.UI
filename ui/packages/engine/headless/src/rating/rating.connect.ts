@@ -4,6 +4,7 @@ import type { Service } from '@xihan-ui/machine'
 import type { RatingApi, RatingItemProps, RatingItemState, RatingSchema } from './rating.types'
 import { focusItem, ITEM_VALUE_ATTR, itemValue, queryItems } from '@xihan-ui/behavior'
 import { contains, dataAttr } from '@xihan-ui/kernel'
+import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { ratingAnatomy } from './rating.anatomy'
 import { clampRating, ratingMax } from './rating.machine'
 
@@ -11,19 +12,6 @@ const parts = ratingAnatomy.build()
 
 // 条目查询描述符，事件处理器据此查活 DOM
 const ITEM_QUERY: ItemQuery = { scope: ratingAnatomy.name, part: 'item' }
-
-// 视觉隐藏但保留在布局与表单里，不能 display:none——原生校验提示需要一个可定位的框
-const HIDDEN_INPUT_STYLE = {
-  position: 'absolute',
-  inlineSize: '1px',
-  blockSize: '1px',
-  margin: '-1px',
-  padding: '0',
-  border: '0',
-  overflow: 'hidden',
-  clipPath: 'inset(50%)',
-  whiteSpace: 'nowrap',
-}
 
 /** 键盘意图：走一档、取下界、取上界。 */
 export type RatingKeyIntent
@@ -269,9 +257,9 @@ export function connectRating<T extends PropTypes>(
       // 只读随 prop 走，恒真会让 required 不生效
       'readonly': readOnly || undefined,
       'tabindex': -1,
-      'aria-hidden': 'true',
+      'aria-hidden': true,
       'data-disabled': dataAttr(disabled),
-      'style': HIDDEN_INPUT_STYLE,
+      'style': VISUALLY_HIDDEN_STYLE,
     }),
   }
 }

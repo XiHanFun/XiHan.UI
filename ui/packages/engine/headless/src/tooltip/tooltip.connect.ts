@@ -92,7 +92,7 @@ export function connectTooltip<T extends PropTypes>(
     }),
     getArrowProps: () => normalize.element({
       ...parts.arrow.attrs,
-      'aria-hidden': 'true',
+      'aria-hidden': true,
       // 箭头自报朝向，皮肤据此贴边，不必再从祖先 positioner 上找
       'data-placement': placement,
       // 箭头交叉轴上的落点由定位引擎给：上下两侧走行内轴、左右两侧走块轴。

@@ -298,7 +298,7 @@ export function connectCascader<T extends PropTypes>(
       // 有值时清空钮顶上来，箭头让位：两个图标并排堆在框里，用户分不清点哪个
       'data-clearable': dataAttr(canClear),
       ...parts.indicator.attrs,
-      'aria-hidden': 'true',
+      'aria-hidden': true,
       'data-state': stateAttr,
       'data-disabled': dataAttr(disabled),
     }),
@@ -616,7 +616,7 @@ export function connectCascader<T extends PropTypes>(
     getItemIndicatorProps: item => normalize.element({
       ...parts['item-indicator'].attrs,
       ...itemState(item.value),
-      'aria-hidden': 'true',
+      'aria-hidden': true,
     }),
   }
 }

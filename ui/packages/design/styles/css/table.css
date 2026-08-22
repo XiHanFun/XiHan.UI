@@ -251,8 +251,8 @@
     flex: none;
     align-items: center;
     justify-content: center;
-    inline-size: var(--xh-table-trigger-size, 1rem);
-    block-size: var(--xh-table-trigger-size, 1rem);
+    inline-size: var(--xh-table-trigger-size, var(--xh-control-indicator-size));
+    block-size: var(--xh-table-trigger-size, var(--xh-control-indicator-size));
     border-radius: var(--xh-table-trigger-radius, var(--xh-shape-control));
     cursor: pointer;
   }

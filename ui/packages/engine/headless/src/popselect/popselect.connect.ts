@@ -210,7 +210,8 @@ export function connectPopselect<T extends PropTypes>(
       'type': 'button',
       // trigger 是单体控件：用原生 disabled，不可聚焦也不派 click
       'disabled': disabled || undefined,
-      // 弹出的是 listbox 不是 dialog：读屏据此播报「折叠列表框」
+      // 按钮式弹出：触发器保持原生 button 角色不扮演 combobox，它不承载当前值、也不是表单控件，
+      // 只靠 aria-haspopup 告诉读屏弹出的是列表框
       'aria-haspopup': 'listbox',
       'aria-expanded': open ? 'true' : 'false',
       'aria-controls': ids.content,
@@ -400,7 +401,7 @@ export function connectPopselect<T extends PropTypes>(
     getItemIndicatorProps: item => normalize.element({
       ...parts['item-indicator'].attrs,
       ...itemStateAttrs(item),
-      'aria-hidden': 'true',
+      'aria-hidden': true,
     }),
   }
 }

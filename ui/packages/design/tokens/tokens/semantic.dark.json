@@ -23,6 +23,8 @@
     "brand": { "$type": "color", "$value": "{color.brand.400}" },
     "brand-strong": { "$type": "color", "$value": "{color.brand.300}" },
     "success": { "$type": "color", "$value": "{color.success.500}" },
+    "warning": { "$type": "color", "$value": "{color.warning.500}" },
+    "info": { "$type": "color", "$value": "{color.info.500}" },
     "danger": { "$type": "color", "$value": "{color.danger.500}" },
     "danger-hover": { "$type": "color", "$value": "{color.danger.400}" },
     "scrollbar-thumb": { "$type": "color", "$value": "{color.neutral.500}" },

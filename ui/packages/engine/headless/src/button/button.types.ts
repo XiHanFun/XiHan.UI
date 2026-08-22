@@ -15,6 +15,12 @@ export interface ButtonProps {
    * 不必把档位写进行内样式。图标按钮没有可见文字，作者须自行给可及名。
    */
   iconOnly?: boolean
+  /**
+   * 作者写在根节点上的可及名（aria-label / aria-labelledby）。
+   * 宿主只把它们转告连接层，用来判断图标按钮有没有名字；属性本身仍由宿主写进根节点。
+   */
+  ariaLabel?: string
+  ariaLabelledby?: string
   /** 撑满行宽：表单末尾的提交按钮与移动端常用。 */
   fullWidth?: boolean
 }

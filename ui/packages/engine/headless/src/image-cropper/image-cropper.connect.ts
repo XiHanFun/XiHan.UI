@@ -242,7 +242,7 @@ export function connectImageCropper<T extends PropTypes>(
     // 构图参考线纯装饰，读屏不必念它
     getGridProps: () => normalize.element({
       ...parts.grid.attrs,
-      'aria-hidden': 'true',
+      'aria-hidden': true,
       'data-shape': shape,
     }),
 

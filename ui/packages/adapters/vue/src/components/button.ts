@@ -2,7 +2,7 @@ import type { ButtonProps } from '@xihan-ui/headless'
 import type { PropTypes } from '@xihan-ui/kernel'
 import type { InjectionKey, PropType, Ref } from 'vue'
 import { connectButton } from '@xihan-ui/headless'
-import { computed, defineComponent, h, inject, provide } from 'vue'
+import { computed, defineComponent, h, inject, provide, useAttrs } from 'vue'
 import { withXhConfig } from '../config/config'
 import { vueNormalize } from '../runtime/normalize-props'
 
@@ -31,9 +31,15 @@ export const XhButton = defineComponent({
     size: String,
   },
   setup(props, { slots }) {
+    const attrs = useAttrs()
     // withXhConfig 只能在 setup 期调，连接层在渲染期读这份代理
     const configured = withXhConfig('button', props as ButtonProps)
-    const api = computed(() => connectButton(configured, vueNormalize))
+    // 作者写在根节点上的可及名转告连接层，图标按钮缺名时由它提醒
+    const api = computed(() => connectButton({
+      ...configured,
+      ariaLabel: attrs['aria-label'] as string | undefined,
+      ariaLabelledby: attrs['aria-labelledby'] as string | undefined,
+    }, vueNormalize))
     provide(ButtonKey, api)
     return () => h('button', api.value.getRootProps() as Record<string, unknown>, slots.default?.())
   },

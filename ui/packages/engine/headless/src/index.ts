@@ -178,6 +178,7 @@ export type { SeparatorApi, SeparatorProps, SeparatorTranslations } from './sepa
 export { OVERLAY_OFFSET, OVERLAY_PLACEMENT_ANCHORED, OVERLAY_PLACEMENT_LIST } from './shared/overlay'
 export { isOverflowing, maxScrollOffset, pointerDelta, SCROLL_MIN_THUMB_SIZE, scrollbarGeometry, scrollFromThumbDrag, scrollFromTrackPoint, thumbOffsetRatio, thumbSizeRatio, toDomScroll, toLogicalScroll, trackOffset } from './shared/scroll-geometry'
 export type { ScrollAxis, ScrollAxisGeometry, ScrollAxisMetrics, ScrollRect } from './shared/scroll-geometry'
+export { VISUALLY_HIDDEN_STYLE } from './shared/visually-hidden'
 export { accordionSiblings, connectSideNav, sideNavAnatomy, sideNavKeyboard, sideNavLinkQuery, sideNavMachine, sideNavMeta, sideNavTriggerQuery } from './side-nav'
 export type { SideNavApi, SideNavExpandedChangeDetails, SideNavNode, SideNavNodeProps, SideNavSchema, SideNavTranslations, SideNavValueChangeDetails } from './side-nav'
 export { connectSignaturePad, pathFromPoints, SIGNATURE_PAD_SIZE, signaturePadAnatomy, signaturePadKeyboard, signaturePadMachine, signaturePadMeta, signaturePadSvg, simulatedPressure, strokeRadius, strokesToPaths } from './signature-pad'

@@ -312,7 +312,7 @@ export function connectQrCode<T extends PropTypes>(
       'shape-rendering': curved ? 'geometricPrecision' : 'crispEdges',
       'role': label === undefined ? undefined : 'img',
       'aria-label': label,
-      'aria-hidden': label === undefined ? 'true' : undefined,
+      'aria-hidden': label === undefined ? true : undefined,
       'data-level': level,
       // 没画出码时这两个属性不写，皮肤与调试都不会读到一个假的版本号
       'data-version': version === 0 ? undefined : String(version),

@@ -185,7 +185,7 @@ export function connectSteps<T extends PropTypes>(
     // 序号圆点是纯视觉的，第 k 步共 n 步已由 posinset/setsize 说明，不参与名字计算
     getIndicatorProps: item => normalize.element({
       ...parts.indicator.attrs,
-      'aria-hidden': 'true',
+      'aria-hidden': true,
       'data-state': getItemState(item).status,
     }),
 
@@ -204,7 +204,7 @@ export function connectSteps<T extends PropTypes>(
     // 连接线属于它前面那一步，走过了就点亮整条
     getSeparatorProps: item => normalize.element({
       ...parts.separator.attrs,
-      'aria-hidden': 'true',
+      'aria-hidden': true,
       'data-orientation': orientation,
       'data-state': getItemState(item).status,
     }),

@@ -256,7 +256,7 @@ describe('connectCheckboxGroup：条目的表单影子与装饰件', () => {
     expect(on.value).toBe('a')
     expect(on.checked).toBe(true)
     expect(on.tabindex).toBe(-1)
-    expect(on['aria-hidden']).toBe('true')
+    expect(on['aria-hidden']).toBe(true)
     // 条目是 role=checkbox，后代里不能留下可聚焦的控件
     expect(on.inert).toBe(true)
     // type 必须排在 checked 前面：改 type 会把选中态重置掉
@@ -277,7 +277,7 @@ describe('connectCheckboxGroup：条目的表单影子与装饰件', () => {
     const s = makeService({ defaultValue: ['a'] })
     const control = api(s).getIndicatorProps({ value: 'a' }) as Record<string, unknown>
     const text = api(s).getItemTextProps({ value: 'a' }) as Record<string, unknown>
-    expect(control['aria-hidden']).toBe('true')
+    expect(control['aria-hidden']).toBe(true)
     expect(control['data-state']).toBe('checked')
     expect(text['data-state']).toBe('checked')
     // 文本是条目可及名的来源，不能对读屏隐藏

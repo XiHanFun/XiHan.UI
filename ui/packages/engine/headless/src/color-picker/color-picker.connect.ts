@@ -1,4 +1,3 @@
-import { overlayPositioned } from '../shared/overlay'
 import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { ColorPickerChannel, ColorPickerInputChannel } from './color-picker.color'
@@ -13,6 +12,7 @@ import type {
 } from './color-picker.types'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
 import { dataAttr, isComposingEvent } from '@xihan-ui/kernel'
+import { overlayPositioned } from '../shared/overlay'
 import { colorPickerAnatomy } from './color-picker.anatomy'
 import {
   colorPickerApplyInput,
@@ -224,7 +224,7 @@ export function connectColorPicker<T extends PropTypes>(
       ...parts.swatch.attrs,
       ...stateAttrs(),
       // 纯装饰：颜色已由 value-text 念出
-      'aria-hidden': 'true',
+      'aria-hidden': true,
       'data-value': value,
       'style': { background: colorPickerCss(rgba) },
     }),
