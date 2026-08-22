@@ -1,12 +1,12 @@
 # 包与依赖关系
 
-XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（按角色分 `adapters` / `design` / `features` / `engine` 四组），`tooling/*` 是内部工具（永不发布），`apps/*` 是两个 playground。
+XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（按角色分 `adapters` / `design` / `features` / `engine` 四组），`tooling/*` 是内部工具（永不发布）。
 
 ## 全部库包
 
 | 包 | 版本 | 依赖 | peer 依赖 | 层 |
 | --- | --- | --- | --- | --- |
-| `@xihan-ui/kernel` | `1.0.0-alpha.2` | — | — | 1 |
+| `@xihan-ui/kernel` | `1.0.0-alpha.2` | `motion` | — | 1 |
 | `@xihan-ui/machine` | `1.0.0-alpha.2` | `kernel` | — | 1 |
 | `@xihan-ui/tokens` | `1.0.0-alpha.2` | — | — | 1 |
 | `@xihan-ui/icons` | `1.0.0-alpha.2` | — | — | 1 |
@@ -20,7 +20,7 @@ XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（�
 | `@xihan-ui/animations` | `1.0.0-alpha.2` | `kernel` `motion` | — | 2 |
 | `@xihan-ui/headless` | `1.0.0-alpha.2` | `kernel` `machine` `behavior` `motion` + `@internationalized/date` | — | 3 |
 | `@xihan-ui/styles` | `1.0.0-alpha.2` | `tokens`（只取其 CSS 产物） | — | 3 |
-| `@xihan-ui/backgrounds` | `1.0.0-alpha.2` | `kernel` `behavior` | — | 3 |
+| `@xihan-ui/backgrounds` | `1.0.0-alpha.2` | `kernel` `behavior` `motion` | — | 3 |
 | `@xihan-ui/vue` | `1.0.0-alpha.2` | `kernel` `machine` `behavior` `motion` `headless` `position` `code-highlight` | `vue`、`backgrounds`（可选）、`sound`（可选） | 4 |
 | `@xihan-ui/web-components` | `1.0.0-alpha.2` | `kernel` `machine` `behavior` `motion` `headless` `position` `code-highlight` | `backgrounds`（可选） | 4 |
 
@@ -32,31 +32,32 @@ XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（�
 
 ## 依赖图
 
-箭头方向 = 依赖方向，只画实际声明的依赖。同层之间除 `machine → kernel` 外无横向依赖。
+箭头方向 = 依赖方向，只画实际声明的依赖。同层之间只有 `machine → kernel` 与 `kernel → motion` 两条横向依赖。
 
 ```
 层 4   ┌─────────────┐       ┌──────────────────┐
-       │     vue     │       │  web-components  │  peer: backgrounds·sound（可选）；vue 另有 peer: vue
+       │     vue     │       │  web-components  │  peer: backgrounds（可选）；vue 另有 peer: sound（可选）、vue
        └──────┬──────┘       └────────┬─────────┘
-              │  kernel · machine · behavior · headless · position · code-highlight
+              │  kernel · machine · motion · behavior · headless · position · code-highlight
               └───────────┬───────────┘
                           ▼
-层 3   ┌──────────────┐  ┌─────────────┐      ┌────────────────┐
-       │   headless   │  │ backgrounds │      │ styles（纯CSS）│
-       └──────┬───────┘  └──────┬──────┘      └───────┬────────┘
-  kernel·machine·behavior   kernel·behavior       tokens 的 CSS 产物
+层 3   ┌──────────────┐  ┌───────────────────┐   ┌────────────────┐
+       │   headless   │  │    backgrounds    │   │ styles（纯CSS）│
+       └──────┬───────┘  └─────────┬─────────┘   └───────┬────────┘
+  kernel·machine·behavior·motion  kernel·behavior·motion   tokens 的 CSS 产物
         + @internationalized/date
-              │                 │
-              ▼                 ▼
-层 2   ┌──────────┐ ┌──────────┐ ┌────────────────┐ ┌─────────────┐ ┌───────┐ ┌──────────┐
-       │ behavior │ │ position │ │ code-highlight │ │ chat-stream │ │ sound │ │ markdown │
-       └────┬─────┘ └────┬─────┘ └───────┬────────┘ └──────┬──────┘ └───┬───┘ └──────────┘
-            └────────────┴───────────────┴─────────────────┴────────────┘       无依赖
+              │                    │
+              ▼                    ▼
+层 2   ┌──────────┐ ┌──────────┐ ┌────────────────┐ ┌─────────────┐ ┌───────┐ ┌────────────┐ ┌──────────┐
+       │ behavior │ │ position │ │ code-highlight │ │ chat-stream │ │ sound │ │ animations │ │ markdown │
+       └────┬─────┘ └────┬─────┘ └───────┬────────┘ └──────┬──────┘ └───┬───┘ └─────┬──────┘ └──────────┘
+            └────────────┴───────────────┴─────────────────┴───────────┴───────────┘            无依赖
                           ▼
-层 1   ┌──────────┐  ┌──────────┐   ┌──────────┐  ┌───────┐
-       │  kernel  │◄─┤ machine  │   │  tokens  │  │ icons │
-       └──────────┘  └──────────┘   └──────────┘  └───────┘
-        零运行时依赖   零运行时依赖      无依赖       无依赖
+层 1   ┌──────────┐  ┌──────────┐  ┌──────────┐   ┌──────────┐  ┌───────┐
+       │  kernel  │◄─┤ machine  │  │  motion  │   │  tokens  │  │ icons │
+       └────┬─────┘  └──────────┘  └──────────┘   └──────────┘  └───────┘
+            └──────────────────────────▲            无依赖        无依赖
+                                  零运行时依赖
 ```
 
 三个包完全独立、可以单独用：
@@ -117,16 +118,22 @@ XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（�
 
 ## 子路径导出
 
-大多数包只有主入口。有子路径的：
+主入口之外还开了子路径的包：
 
 | 包 | 子路径 |
 | --- | --- |
+| `@xihan-ui/kernel` | `./anatomy` `./attrs` `./compose` `./constants` `./deprecations` `./guards` `./id-generator` `./merge-props` `./metadata` `./normalize-props` `./runtime-config` `./scope` `./skin-check` `./types` |
+| `@xihan-ui/machine` | `./create-machine` `./delay` `./errors` `./form-reset` `./guards` `./service` `./setup` `./state` `./transitions` `./vanilla` |
+| `@xihan-ui/behavior` | `./dispatch` `./presence` |
+| `@xihan-ui/position` | `./compute` |
+| `@xihan-ui/code-highlight` | `./languages` `./tokenize` |
 | `@xihan-ui/tokens` | `./runtime` `./tokens.css` `./tokens.json` |
-| `@xihan-ui/machine` | `./vanilla` |
-| `@xihan-ui/behavior` | `./presence` |
+| `@xihan-ui/icons` | `./codegen` |
 | `@xihan-ui/vue` | `./backgrounds` `./sound` |
 | `@xihan-ui/web-components` | `./define` `./backgrounds` `./custom-elements.json` |
-| `@xihan-ui/styles` | 每份皮肤一条 CSS，共 110 条，另有 `./index.css` 与 `./index.unlayered.css` 两个整包入口 |
+| `@xihan-ui/styles` | 每份皮肤一条 CSS，共 125 条（119 份组件皮肤 + 6 份共享层），另有 `./index.css` 与 `./index.unlayered.css` 两个整包入口 |
+
+其余七个包（`headless` / `motion` / `animations` / `backgrounds` / `chat-stream` / `markdown` / `sound`）只有主入口。
 
 组件**没有**单独的子路径导出——按需引入靠 tree-shaking，不靠手写路径。
 

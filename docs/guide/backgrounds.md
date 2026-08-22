@@ -13,7 +13,7 @@ WebGL2 缺席时自动降级成 CSS 静态背景，不报错、不留白。
 
 14 个：`aurora` `beam` `flow-field` `fluid` `glass` `grain` `mesh` `nebula` `orb` `particles` `plasma` `ripple` `starfield` `wave`。
 
-每个效果自带参数规格（数值、布尔、枚举、颜色四类），可以据此自动生成调参面板——playground 里的效果画廊就是这么做的。
+每个效果自带参数规格（数值、布尔、枚举、颜色四类），可以据此自动生成调参面板。
 
 这 14 个**不自动注册**。按名字取用前要先注册；直接传效果对象则不需要，见下。
 

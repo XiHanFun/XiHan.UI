@@ -4,7 +4,7 @@
 
 不能用于生产。库包已发布到 npm，当前版本 `1.0.0-alpha.2`——这是预发布版本，不承诺语义化版本，接口还会变。无障碍存量违规还剩两条登记在案（共用表里 tag 的禁用态对比度、WC 侧 steps 的必需子节点），另有一条 breadcrumb 的步骤重放豁免。
 
-能做的是：从 npm 装一份试用、克隆仓库跑 playground 看行为、读源码。见[安装与接入](./installation)。
+能做的是：从 npm 装一份试用、克隆仓库把文档站跑起来看行为、读源码。见[安装与接入](./installation)。
 
 ## `npm install` 能装到哪些包
 
@@ -18,7 +18,7 @@ BasicApp 的前端约定请看[基础应用前端手册](https://basicapp.docs.x
 
 ## 到底有多少个组件
 
-**104 个**。每个组件同时有无头内核、Vue 组件、自定义元素与默认皮肤四份产物，本文档的[组件总览](./components/)按分类列全，每个组件一页。
+**119 个**。每个组件同时有无头内核、Vue 组件、自定义元素与默认皮肤四份产物，本文档的[组件总览](./components/)按分类列全，每个组件一页。
 
 ## 组件的 props 有哪些？文档里怎么没有
 
@@ -95,11 +95,11 @@ BasicApp 的前端约定请看[基础应用前端手册](https://basicapp.docs.x
 
 ## 无障碍问题什么时候能修完
 
-没有承诺的时间表。当前状态诚实记录在[无障碍与键盘规格](./guide/a11y#存量违规登记表)：两张存量违规表现在都是空的，只剩 WC 侧 steps 一条与 breadcrumb 一条步骤重放豁免。
+没有承诺的时间表。当前状态诚实记录在[无障碍与键盘规格](./guide/a11y#存量违规登记表)：共用表里 tag 一条、WC 侧 steps 一条，全局登记表为空，另有 breadcrumb 一条步骤重放豁免。
 
 登记表有一条自净规则：一条都不再命中时判登记过期，修好了必须从表里删掉。
 
 ## 还有别的问题
 
 - 源码仓库：[GitHub](https://github.com/XiHanFun/XiHan.UI) · [Gitee](https://gitee.com/XiHanFun/XiHan.UI) · [GitCode](https://gitcode.com/XiHanFun/XiHan.UI)
-- 两个 playground 覆盖全部 104 个组件，行为问题优先在那里复现
+- 文档站的组件示例覆盖全部 119 个组件，且 Vue 与自定义元素两套写法并排，行为问题优先在那里复现

@@ -6,9 +6,9 @@
 
 Framework-agnostic component library. State machines and accessibility live in a headless core; each framework only gets a thin adapter.
 
-104 components, each shipping a headless core, a Vue component, a custom element, and a default skin.
+119 components, each shipping a headless core, a Vue component, a custom element, and a default skin.
 
-> **Experimental.** Published to npm as `1.0.0-alpha.0` — a pre-release: no semver guarantees, the API can still change. The documentation site is live at https://ui.docs.xihanfun.com. Accessibility is scanned in real Chromium, but the backlog is down to two recorded entries (WC-side `steps` required-children, plus one replay exemption for `breadcrumb`). Do not depend on it in production.
+> **Experimental.** Published to npm as `1.0.0-alpha.0` — a pre-release: no semver guarantees, the API can still change. The documentation site is live at https://ui.docs.xihanfun.com. Accessibility is scanned in real Chromium; the backlog is down to two recorded entries (the shared table’s `tag` disabled-state contrast and the WC-side `steps` required-children), plus one replay exemption for `breadcrumb`. Do not depend on it in production.
 
 ## Packages
 
@@ -18,7 +18,7 @@ Framework-agnostic component library. State machines and accessibility live in a
 | `@xihan-ui/machine` | State machine runtime: `createMachine`, interpreter contract, controlled bindings |
 | `@xihan-ui/behavior` | Behavior primitives: dismissable layer, focus scope, scroll lock, presence, collection, typeahead |
 | `@xihan-ui/motion` | Motion primitives: easing single source, tweening, frame loop, reduced-motion preference, closed-form springs, Web Animations wrapper |
-| `@xihan-ui/headless` | 104 components as anatomy + machine + `connect` — no styles, no framework |
+| `@xihan-ui/headless` | 119 components as anatomy + machine + `connect` — no styles, no framework |
 | `@xihan-ui/vue` | Vue 3 adapter |
 | `@xihan-ui/web-components` | Web Components adapter (own reactive base, no third-party runtime dep) |
 | `@xihan-ui/styles` | Default skins, layered CSS |
@@ -54,12 +54,12 @@ pnpm typecheck
 pnpm lint
 pnpm boundaries   # layered dependency gate (dependency-cruiser)
 pnpm build
-pnpm size         # bundle size ratchet — builds, then checks the 25 budgets in .size-limit.json
+pnpm size         # bundle size ratchet — builds, then checks the 26 budgets in .size-limit.json
 ```
 
 ## Conventions
 
 - Internal runtime dependencies are always `workspace:^` (dev-only ones use `workspace:*`); third-party versions come from the workspace catalog only.
-- `packages/engine/kernel` and `packages/engine/machine` have zero runtime dependencies.
+- `packages/engine/motion` has zero runtime dependencies; `kernel` depends only on `motion`, `machine` only on `kernel`.
 - Layer order is enforced by dependency-cruiser, not by convention.
 - Commits follow conventional commits; releases go through changesets as one fixed version group.
