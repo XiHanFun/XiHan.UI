@@ -39,7 +39,7 @@ accordion 让同层只开一枝；collapsed 折叠成图标栏（内嵌展开整
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-side-nav>` |
-| Vue 组件 | `XhSideNavBranch` `XhSideNavBranchContent` `XhSideNavBranchIndicator` `XhSideNavBranchText` `XhSideNavBranchTrigger` `XhSideNavGroup` `XhSideNavGroupLabel` `XhSideNavLink` `XhSideNavLinkText` `XhSideNavList` `XhSideNavRoot` |
+| Vue 组件 | `XhSideNavBranch` `XhSideNavBranchContent` `XhSideNavBranchIndicator` `XhSideNavBranchText` `XhSideNavBranchTrigger` `XhSideNavGroup` `XhSideNavGroupLabel` `XhSideNavItem` `XhSideNavLink` `XhSideNavLinkText` `XhSideNavList` `XhSideNavRoot` |
 | 组合式函数 | `useSideNav` |
 | 状态机 | `sideNavMachine` |
 | 皮肤 | `@xihan-ui/styles/side-nav.css` |
@@ -48,7 +48,7 @@ accordion 让同层只开一枝；collapsed 折叠成图标栏（内嵌展开整
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="side-nav"`：**`root`** · **`list`** · `group` · `group-label` · `branch` · `branch-trigger` · `branch-text` · `branch-indicator` · `positioner` · `branch-content` · **`link`** · `link-text`
+`data-scope="side-nav"`：**`root`** · **`list`** · **`item`** · `group` · `group-label` · `branch` · `branch-trigger` · `branch-text` · `branch-indicator` · `positioner` · `branch-content` · **`link`** · `link-text`
 
 ## Props
 
@@ -129,6 +129,7 @@ accordion 让同层只开一枝；collapsed 折叠成图标栏（内嵌展开整
 | `collapse` | `(value: string) => void` |  |
 | `getRootProps` | `() => T['element']` |  |
 | `getListProps` | `() => T['element']` |  |
+| `getItemProps` | `() => T['element']` | 叶子行的列表项容器：链接与分支一样是列表的一条，作者把 link 裹在它里面。 |
 | `getGroupProps` | `(props: SideNavNodeProps) => T['element']` |  |
 | `getGroupLabelProps` | `(props: SideNavNodeProps) => T['element']` |  |
 | `getBranchProps` | `(props: SideNavNodeProps) => T['element']` |  |
@@ -173,6 +174,10 @@ accordion 让同层只开一枝；collapsed 折叠成图标栏（内嵌展开整
 | `branch-indicator` | `aria-hidden` | 'true' |
 | `link` | `aria-current` | 'page' \| undefined |
 | `link` | `aria-disabled` | 'true' \| undefined |
+
+- `list` 与 `branch-content` 是列表容器（`ul`），直接子节点只能是列表项：分支写 `branch`（`li`），叶子写 `item`（`li`）裹住 `link`（`a`）。链接直接挂在列表下会让列表语义作废。
+- 行文字必须写进 `branch-text` / `link-text`。折叠成图标栏时这段文字被裁到看不见但仍参与播报，它就是按钮与链接在图标栏里唯一的可及名；行里只放图标不写文字，折叠后读屏报不出这一项是什么。
+- 行里的图标是装饰，写 `aria-hidden="true"`，别让它挤进可及名。
 
 ## 样式
 

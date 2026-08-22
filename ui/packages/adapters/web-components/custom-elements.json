@@ -31061,8 +31061,12 @@
               "name": "root"
             },
             {
-              "description": "顶层列表容器",
+              "description": "顶层列表容器（ul），直接子节点只能是 item 与 branch",
               "name": "list"
+            },
+            {
+              "description": "叶子行的列表项（li），裹住一个 link",
+              "name": "item"
             },
             {
               "description": "role=group 分组，须自带 value 属性",
@@ -31081,7 +31085,7 @@
               "name": "branch-trigger"
             },
             {
-              "description": "行文字载体，折叠成图标栏时隐藏",
+              "description": "行文字载体，折叠成图标栏时裁到看不见但仍参与播报，是按钮在图标栏里的可及名",
               "name": "branch-text"
             },
             {
@@ -31101,7 +31105,7 @@
               "name": "link"
             },
             {
-              "description": "链接文字载体，折叠成图标栏时隐藏",
+              "description": "链接文字载体，折叠成图标栏时裁到看不见但仍参与播报，是链接在图标栏里的可及名",
               "name": "link-text"
             }
           ],

@@ -60,7 +60,7 @@
 | [页头](./page-header) | `page-header` | 6 | 0 | 5 |
 | [分页](./pagination) | `pagination` | 5 | 4 | 10 |
 | [分段控制器](./segmented) | `segmented` | 5 | 6 | 8 |
-| [侧栏导航](./side-nav) | `side-nav` | 12 | 10 | 2 |
+| [侧栏导航](./side-nav) | `side-nav` | 13 | 10 | 2 |
 | [步骤条](./steps) | `steps` | 9 | 6 | 8 |
 | [标签页](./tabs) | `tabs` | 4 | 6 | 13 |
 | [工具栏](./toolbar) | `toolbar` | 4 | 6 | 7 |

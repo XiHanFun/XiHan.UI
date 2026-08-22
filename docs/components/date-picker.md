@@ -306,7 +306,6 @@ variant 决定描边与底怎么画、tone 决定用哪族颜色、size 换几�
 | `segment-group` | `data-invalid` | ''（条件成立时才出现） |
 | `segment-group` | `data-out-of-range` | ''（条件成立时才出现） |
 | `segment-group` | `data-readonly` | ''（条件成立时才出现） |
-| `trigger` | `data-clearable` | ''（条件成立时才出现） |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `trigger` | `data-state` | 'open' \| 'closed' |
 | `positioner` | `data-hidden` | ''（条件成立时才出现） |

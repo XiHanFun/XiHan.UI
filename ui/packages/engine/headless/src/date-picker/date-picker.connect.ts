@@ -451,8 +451,6 @@ export function connectDatePicker<T extends PropTypes>(
       // 图标按钮无文字，名字借标题；作者写的 aria-label 会盖过这条
       'aria-labelledby': ids.label,
       'data-state': stateAttr,
-      // 有值时清空钮会顶上来：皮肤据此让位，两个钮不并排堆在框里
-      'data-clearable': dataAttr(canClear),
       'data-disabled': dataAttr(disabled),
       'onClick': () => {
         // 守卫防程序化派发（原生 disabled 不派 click）

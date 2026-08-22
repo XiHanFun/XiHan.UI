@@ -253,6 +253,10 @@ export function connectSideNav<T extends PropTypes>(
       'data-collapsed': dataAttr(collapsed),
     }),
 
+    getItemProps: () => normalize.element({
+      ...parts.item.attrs,
+    }),
+
     getGroupProps: ({ value: v }) => normalize.element({
       ...parts.group.attrs,
       'role': 'group',

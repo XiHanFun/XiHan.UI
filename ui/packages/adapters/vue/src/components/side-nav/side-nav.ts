@@ -95,6 +95,15 @@ export const XhSideNavList = defineComponent({
   },
 })
 
+// 叶子行的列表项：列表容器是 ul，链接得裹在 li 里才是它合法的直接子节点
+export const XhSideNavItem = defineComponent({
+  name: 'XhSideNavItem',
+  setup(_, { slots }) {
+    const ctx = useSideNavContext()
+    return () => h('li', ctx.api.value.getItemProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhSideNavGroup = defineComponent({
   name: 'XhSideNavGroup',
   props: {
@@ -207,9 +216,6 @@ export const XhSideNavLink = defineComponent({
   },
   setup(props, { slots }) {
     const ctx = useSideNavContext()
-    // 链接是行内容器里的一等行，外面包一层 li 维持列表语义
-    return () => h('li', null, [
-      h('a', ctx.api.value.getLinkProps({ value: props.value }) as Record<string, unknown>, slots.default?.()),
-    ])
+    return () => h('a', ctx.api.value.getLinkProps({ value: props.value }) as Record<string, unknown>, slots.default?.())
   },
 })

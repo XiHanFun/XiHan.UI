@@ -8,6 +8,7 @@ import {
   XhSideNavBranchContent,
   XhSideNavBranchText,
   XhSideNavBranchTrigger,
+  XhSideNavItem,
   XhSideNavLink,
   XhSideNavLinkText,
   XhSideNavList,
@@ -48,7 +49,7 @@ function mountNav(props: Record<string, unknown> = {}): { select: ReturnType<typ
     h(XhSideNavBranch, { value: v }, () => [
       h(XhSideNavBranchTrigger, () => [h(XhSideNavBranchText, () => v)]),
       h(XhSideNavBranchContent, null, () => links.map(l =>
-        h(XhSideNavLink, { value: l }, () => [h(XhSideNavLinkText, () => l)]),
+        h(XhSideNavItem, { key: l }, () => [h(XhSideNavLink, { value: l }, () => [h(XhSideNavLinkText, () => l)])]),
       )),
     ])
   const app = createApp({
@@ -57,7 +58,7 @@ function mountNav(props: Record<string, unknown> = {}): { select: ReturnType<typ
         h(XhSideNavList, null, () => [
           branch('docs', ['guide', 'api']),
           branch('blog', ['b1']),
-          h(XhSideNavLink, { value: 'home' }, () => [h(XhSideNavLinkText, () => 'home')]),
+          h(XhSideNavItem, null, () => [h(XhSideNavLink, { value: 'home' }, () => [h(XhSideNavLinkText, () => 'home')])]),
         ]),
       ]),
   })
@@ -270,7 +271,7 @@ describe('side-nav 折叠态弹出', () => {
             h(XhSideNavBranch, { value: 'docs' }, () => [
               h(XhSideNavBranchTrigger, () => [h(XhSideNavBranchText, () => 'docs')]),
               h(XhSideNavBranchContent, null, () => [
-                h(XhSideNavLink, { value: 'guide' }, () => [h(XhSideNavLinkText, () => 'guide')]),
+                h(XhSideNavItem, null, () => [h(XhSideNavLink, { value: 'guide' }, () => [h(XhSideNavLinkText, () => 'guide')])]),
               ]),
             ]),
           ]),

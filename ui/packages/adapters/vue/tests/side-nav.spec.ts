@@ -7,6 +7,7 @@ import {
   XhSideNavBranch,
   XhSideNavBranchContent,
   XhSideNavBranchTrigger,
+  XhSideNavItem,
   XhSideNavLink,
   XhSideNavList,
   XhSideNavRoot,
@@ -73,12 +74,14 @@ function mountNav(opts: MountOptions = {}): { value: () => string | null, expand
         },
       }, () => [
         h(XhSideNavList, null, () => [
-          h(XhSideNavLink, { value: 'home' }, () => '工作台'),
+          h(XhSideNavItem, null, () => [h(XhSideNavLink, { value: 'home' }, () => '工作台')]),
           ...branches.map(branch =>
             h(XhSideNavBranch, { key: branch.value, value: branch.value }, () => [
               h(XhSideNavBranchTrigger, () => branch.label),
               h(XhSideNavBranchContent, null, () => branch.children!.map(leaf =>
-                h(XhSideNavLink, { key: leaf.value, value: leaf.value }, () => leaf.label))),
+                h(XhSideNavItem, { key: leaf.value }, () => [
+                  h(XhSideNavLink, { value: leaf.value }, () => leaf.label),
+                ]))),
             ])),
         ]),
       ]),

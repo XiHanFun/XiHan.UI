@@ -37,17 +37,18 @@ const GROUP_SELECTOR = '[data-xh-part="group"]'
  * @fires value-change - 选中变化；detail 为 `{ value: string | null }`
  * @fires expanded-change - 展开集合变化；detail 为 `{ value: string[] }`
  * @csspart root - nav 地标根容器（aria-label 由 translations.root 给）
- * @csspart list - 顶层列表容器
+ * @csspart list - 顶层列表容器（ul），直接子节点只能是 item 与 branch
+ * @csspart item - 叶子行的列表项（li），裹住一个 link
  * @csspart group - role=group 分组，须自带 value 属性
  * @csspart group-label - 分组标题（aria-labelledby 目标）
  * @csspart branch - 分支行容器，须自带 value 属性；它裹着自己的 branch-content
  * @csspart branch-trigger - 展开/收起按钮（aria-expanded / aria-controls）；落在选中路径上输出 data-in-path
- * @csspart branch-text - 行文字载体，折叠成图标栏时隐藏
+ * @csspart branch-text - 行文字载体，折叠成图标栏时裁到看不见但仍参与播报，是按钮在图标栏里的可及名
  * @csspart branch-indicator - 展开方向指示符（aria-hidden）
  * @csspart positioner - 折叠态弹出面板的定位层，坐标写在它身上；平铺态不用渲染
  * @csspart branch-content - 内嵌子层容器，收起时隐藏
  * @csspart link - 去处链接，须自带 value 属性；选中输出 aria-current="page" 与 data-current
- * @csspart link-text - 链接文字载体，折叠成图标栏时隐藏
+ * @csspart link-text - 链接文字载体，折叠成图标栏时裁到看不见但仍参与播报，是链接在图标栏里的可及名
  */
 export class XhSideNavElement extends XhElement {
   static override partContract = { anatomy: sideNavAnatomy, meta: sideNavMeta }
@@ -196,6 +197,8 @@ export class XhSideNavElement extends XhElement {
     }
     put('root', api.getRootProps() as Record<string, unknown>)
     put('list', api.getListProps() as Record<string, unknown>)
+    for (const el of this.getParts('item'))
+      this.spreader.spread(el, api.getItemProps() as Record<string, unknown>)
 
     // 集合类 part 逐个 spread：身份由节点自报，不依赖下标，节点增删无需记账
     const putAll = (name: string, selector: string, get: (node: SideNavNodeProps) => unknown): void => {

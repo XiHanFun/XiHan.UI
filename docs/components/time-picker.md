@@ -330,7 +330,6 @@ presets 在列旁边多排一列，点一条整份写进值并收起；时刻在
 | `input` | `data-invalid` | ''（条件成立时才出现） |
 | `input` | `data-placeholder` | ''（条件成立时才出现） |
 | `input` | `data-readonly` | ''（条件成立时才出现） |
-| `trigger` | `data-clearable` | ''（条件成立时才出现） |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `trigger` | `data-state` | 'open' \| 'closed' |
 | `positioner` | `data-hidden` | ''（条件成立时才出现） |

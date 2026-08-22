@@ -674,6 +674,7 @@ export {
   XhSideNavBranchTrigger,
   XhSideNavGroup,
   XhSideNavGroupLabel,
+  XhSideNavItem,
   XhSideNavLink,
   XhSideNavLinkText,
   XhSideNavList,

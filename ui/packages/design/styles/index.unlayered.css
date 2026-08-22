@@ -10742,12 +10742,6 @@ input[data-scope='mention'][data-part='input'] {
   transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
-/* 有值时清空钮顶上来，下拉钮让位：两个钮并排堆在框里，用户分不清点哪个。
-   让位而不是禁用——禁用的钮还占着位置，看着像坏了 */
-[data-scope='combobox'][data-part='trigger'][data-clearable] {
-  display: none;
-}
-
 [data-scope='combobox'][data-part='trigger'][hidden],
 [data-scope='combobox'][data-part='clear-trigger'][hidden] {
   display: none;
@@ -11777,6 +11771,9 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_date-picker-accent-hover: var(--xh-_tone-hover, var(--xh-bg-brand-hover));
   --xh-_date-picker-accent-fg: var(--xh-_tone-on, var(--xh-fg-on-brand));
   --xh-_date-picker-accent-subtle: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
+  /* 淡底上的字与实心底上的字是两档：--xh-_tone-fg 是语气层为淡底配的那一档，
+     没写 data-tone 时退到 fg-brand-strong——fg-brand（600）压在 brand-100 上只有 4.21 */
+  --xh-_date-picker-accent-subtle-fg: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
 }
 
 /* 与文本框、分段日期同一套堆叠：标签一行、输入行一行 */
@@ -11952,12 +11949,6 @@ input[data-scope='mention'][data-part='input'] {
   transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
-/* 有值时清空钮顶上来，下拉钮让位：两个钮并排堆在框里，用户分不清点哪个。
-   让位而不是禁用——禁用的钮还占着位置，看着像坏了 */
-[data-scope='date-picker'][data-part='trigger'][data-clearable] {
-  display: none;
-}
-
 [data-scope='date-picker'][data-part='trigger'][hidden],
 [data-scope='date-picker'][data-part='clear-trigger'][hidden] {
   display: none;
@@ -12115,7 +12106,7 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='date-picker'][data-part='preset'][data-state='checked'] {
   background: var(--xh-date-picker-preset-bg-selected, var(--xh-_date-picker-accent-subtle));
-  color: var(--xh-date-picker-preset-fg-selected, var(--xh-fg-brand));
+  color: var(--xh-date-picker-preset-fg-selected, var(--xh-_date-picker-accent-subtle-fg));
   font-weight: var(--xh-font-weight-medium);
 }
 
@@ -12165,7 +12156,7 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='date-picker'][data-part='time-item'][data-state='checked'] {
   background: var(--xh-date-picker-time-item-bg-selected, var(--xh-_date-picker-accent-subtle));
-  color: var(--xh-date-picker-time-item-fg-selected, var(--xh-fg-brand));
+  color: var(--xh-date-picker-time-item-fg-selected, var(--xh-_date-picker-accent-subtle-fg));
   font-weight: var(--xh-font-weight-medium);
 }
 
@@ -17832,6 +17823,13 @@ input[data-scope='mention'][data-part='input'] {
   list-style: none;
 }
 
+/* 叶子行的列表项：链接自己撑满，这一层只负责列表语义 */
+[data-scope='side-nav'][data-part='item'] {
+  display: flex;
+  flex-direction: column;
+  list-style: none;
+}
+
 /* —— 行：分支按钮与链接同一副长相 —— */
 [data-scope='side-nav'][data-part='branch-trigger'],
 [data-scope='side-nav'][data-part='link'] {
@@ -17867,7 +17865,8 @@ input[data-scope='mention'][data-part='input'] {
    守卫与轻档那条同特指度，写在其后才压得住——键盘走到当前页那一行时底色仍是品牌淡底 */
 [data-scope='side-nav'][data-part='link']:not([data-disabled])[data-current] {
   background: var(--xh-bg-brand-subtle);
-  color: var(--xh-fg-brand);
+  /* 淡底上的字走 strong 档：fg-brand（600）压在 brand-subtle（100）上只有 4.21 */
+  color: var(--xh-fg-brand-strong);
   font-weight: var(--xh-font-weight-medium);
 }
 
@@ -17891,10 +17890,25 @@ input[data-scope='mention'][data-part='input'] {
   white-space: nowrap;
 }
 
-/* 折叠成图标栏：文字与展开指示整个藏掉、行内容居中，不裁半个字。
+/* 折叠成图标栏：行文字裁到看不见但仍参与播报，行内容居中，不裁半个字。
+   用 clip-path 而不是 display:none——图标栏里按钮与链接的可及名就是这段文字，
+   藏成 display:none 它们就一个名字都没有了。
+   white-space: nowrap 防止 1px 宽把文本挤成竖排。
    弹出面板里的行不在此列——面板是正常宽度的浮层，文字照常显示 */
 [data-scope='side-nav'][data-part='root'][data-collapsed] [data-part='branch-text']:not([data-popout] *),
-[data-scope='side-nav'][data-part='root'][data-collapsed] [data-part='link-text']:not([data-popout] *),
+[data-scope='side-nav'][data-part='root'][data-collapsed] [data-part='link-text']:not([data-popout] *) {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* 展开指示是纯装饰（aria-hidden），折叠态整个不占位 */
 [data-scope='side-nav'][data-part='root'][data-collapsed] [data-part='branch-indicator']:not([data-popout] *) {
   display: none;
 }
@@ -20821,12 +20835,6 @@ input[data-scope='mention'][data-part='input'] {
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
-}
-
-/* 有值时清空钮顶上来，下拉钮让位：两个钮并排堆在框里，用户分不清点哪个。
-   让位而不是禁用——禁用的钮还占着位置，看着像坏了 */
-[data-scope='time-picker'][data-part='trigger'][data-clearable] {
-  display: none;
 }
 
 [data-scope='time-picker'][data-part='trigger'][hidden],

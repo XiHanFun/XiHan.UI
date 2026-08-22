@@ -201,6 +201,24 @@ for (const entry of await readdir(HEADLESS, { withFileTypes: true })) {
   }
   for (const m of src.matchAll(/'(data-[a-z0-9-]+)'\s*:/g))
     dataAttrs.add(m[1])
+
+  // 常量形态：先 export const X = 'data-y'，再以 [X]: … 当计算键用
+  const anatomyFile = join(HEADLESS, entry.name, `${entry.name}.anatomy.ts`)
+  let decls = src
+  try {
+    decls += await readFile(anatomyFile, 'utf8')
+  }
+  catch {
+    // 没有 anatomy 就只看 connect 自己声明的常量
+  }
+  const constants = new Map()
+  for (const m of decls.matchAll(/(?:export\s+)?const\s+([A-Z][A-Z0-9_]*)\s*=\s*'(data-[a-z0-9-]+)'/g))
+    constants.set(m[1], m[2])
+  for (const m of src.matchAll(/\[([A-Z][A-Z0-9_]*)\]\s*:/g)) {
+    const attr = constants.get(m[1])
+    if (attr != null)
+      dataAttrs.add(attr)
+  }
 }
 
 // ── 五、CSS：令牌名、@layer 名、组件覆盖槽 ──

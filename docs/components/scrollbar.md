@@ -90,7 +90,7 @@ auto 溢出就露、always 恒露、scroll 滚动时露、hover 指针进入才�
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `type` | `CustomEvent` |  |
+| `name` | `CustomEvent` |  |
 | `scroll-start` | `` | 开始滚了；detail 为 `{ offset: number, max: number }` |
 | `scroll-end` | `` | 一段滚动结束（停手 120ms）；detail 同上 |
 | `drag-start` | `` | 按住滑块；detail 同上 |

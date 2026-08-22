@@ -9,6 +9,7 @@ import {
   XhSideNavBranchIndicator,
   XhSideNavBranchText,
   XhSideNavBranchTrigger,
+  XhSideNavItem,
   XhSideNavLink,
   XhSideNavLinkText,
   XhSideNavList,
@@ -58,9 +59,11 @@ const collapsed = ref(false);
             <XhSideNavBranchIndicator />
           </XhSideNavBranchTrigger>
           <XhSideNavBranchContent>
-            <XhSideNavLink v-for="leaf in branch.children" :key="leaf.value" :value="leaf.value">
-              <XhSideNavLinkText>{{ leaf.label }}</XhSideNavLinkText>
-            </XhSideNavLink>
+            <XhSideNavItem v-for="leaf in branch.children" :key="leaf.value">
+              <XhSideNavLink :value="leaf.value">
+                <XhSideNavLinkText>{{ leaf.label }}</XhSideNavLinkText>
+              </XhSideNavLink>
+            </XhSideNavItem>
           </XhSideNavBranchContent>
         </XhSideNavBranch>
       </XhSideNavList>

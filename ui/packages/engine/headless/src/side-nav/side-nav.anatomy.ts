@@ -5,6 +5,7 @@ import { createAnatomy } from '@xihan-ui/kernel'
 export const sideNavAnatomy = createAnatomy('side-nav', [
   'root',
   'list',
+  'item',
   'group',
   'group-label',
   'branch',
