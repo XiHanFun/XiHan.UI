@@ -18,7 +18,7 @@ function row(index: number): FixtureNode {
         children: [
           { part: 'move-up-trigger', tag: 'button', text: '↑' },
           { part: 'move-down-trigger', tag: 'button', text: '↓' },
-          { part: 'remove-trigger', tag: 'button', text: '×' },
+          { part: 'remove-trigger', tag: 'button' },
         ],
       },
     ],

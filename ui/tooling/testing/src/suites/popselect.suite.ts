@@ -25,6 +25,8 @@ const FIXTURE: FixtureNode = {
   children: [
     // 必须是 button：WC 侧由 fixture 的 tag 决定，div 不可聚焦
     { part: 'trigger', tag: 'button', text: '选择' },
+    // 清空钮是 trigger 的兄弟节点：按钮不能套按钮
+    { part: 'clear-trigger', tag: 'button' },
     {
       part: 'positioner',
       children: [
@@ -66,6 +68,7 @@ export const popselectSuite: ConformanceSuite = {
         order: [
           'root',
           'trigger',
+          'clear-trigger',
           'positioner',
           'content',
           'item[0]',
@@ -81,6 +84,7 @@ export const popselectSuite: ConformanceSuite = {
         counts: {
           'root': 1,
           'trigger': 1,
+          'clear-trigger': 1,
           'positioner': 1,
           'content': 1,
           'item': 3,
@@ -105,6 +109,16 @@ export const popselectSuite: ConformanceSuite = {
             'data-state': 'closed',
             'data-placeholder': '',
             'disabled': null,
+          },
+          // 没值即收起：不占 Tab 位、不对读屏隐藏、不灰留位
+          'clear-trigger': {
+            'type': 'button',
+            'hidden': '',
+            'tabindex': '-1',
+            'aria-label': 'Clear',
+            'aria-hidden': null,
+            'disabled': null,
+            'data-disabled': null,
           },
           'positioner': {
             'data-state': 'closed',
@@ -459,6 +473,92 @@ export const popselectSuite: ConformanceSuite = {
               { type: 'value-change', detail: { value: ['cherry'] } },
               { type: 'open-change', detail: { open: false, reason: 'selection' } },
             ],
+          },
+        },
+      ],
+    },
+    {
+      name: '清空钮：有选中才显出，点按清空全部并把焦点送回 trigger',
+      spec: { apg: APG },
+      props: { multiple: true, defaultValue: ['apple', 'banana'], translations: { clearTrigger: '清空所选' } },
+      initial: {
+        parts: {
+          'item': selected('apple', 'banana'),
+          'clear-trigger': { 'hidden': null, 'aria-label': '清空所选', 'tabindex': '-1' },
+        },
+      },
+      steps: [
+        {
+          kind: 'click',
+          part: 'clear-trigger',
+          expect: {
+            parts: {
+              'item': selected(),
+              'trigger': { 'data-placeholder': '', 'aria-expanded': 'false' },
+              // 清完就没值了，按钮当场收起
+              'clear-trigger': { hidden: '' },
+            },
+            events: [{ type: 'value-change', detail: { value: [] } }],
+          },
+        },
+        {
+          kind: 'settle',
+          until: { activeElement: 'trigger' },
+          expect: { activeElement: { part: 'trigger', exact: true } },
+        },
+      ],
+    },
+    {
+      name: '禁用：有值也不给清，清空钮收起',
+      spec: { apg: APG },
+      props: { disabled: true, defaultValue: 'apple' },
+      initial: { parts: { 'item': selected('apple'), 'clear-trigger': { hidden: '' } } },
+    },
+    {
+      name: '键盘清空：trigger 上按 Delete 清空全部，浮层不展开',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      covers: ['popselect.kbd.clear'],
+      props: { multiple: true, defaultValue: ['apple', 'banana'] },
+      steps: [
+        { kind: 'focus', part: 'trigger' },
+        {
+          kind: 'key',
+          key: 'Delete',
+          expect: {
+            activeElement: { part: 'trigger', exact: true },
+            parts: {
+              'item': selected(),
+              'trigger': { 'data-placeholder': '', 'aria-expanded': 'false' },
+              'clear-trigger': { hidden: '' },
+            },
+            events: [{ type: 'value-change', detail: { value: [] } }],
+          },
+        },
+        // 没值了再按：什么都不发生
+        { kind: 'key', key: 'Delete', expect: { events: [] } },
+      ],
+    },
+    {
+      name: '键盘 Backspace：多选只去掉最后一个，单选直接清空',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      covers: ['popselect.kbd.backspace'],
+      props: { multiple: true, defaultValue: ['apple', 'banana'] },
+      steps: [
+        { kind: 'focus', part: 'trigger' },
+        {
+          kind: 'key',
+          key: 'Backspace',
+          expect: {
+            parts: { 'item': selected('apple'), 'clear-trigger': { hidden: null } },
+            events: [{ type: 'value-change', detail: { value: ['apple'] } }],
+          },
+        },
+        {
+          kind: 'key',
+          key: 'Backspace',
+          expect: {
+            parts: { 'item': selected(), 'clear-trigger': { hidden: '' }, 'trigger': { 'aria-expanded': 'false' } },
+            events: [{ type: 'value-change', detail: { value: [] } }],
           },
         },
       ],

@@ -30,6 +30,7 @@ function onOpenChange(details: { open: boolean }): void {
     v-model:value="value"
     v-model:input-value="query"
     :collection="filtered"
+    clearable
     :open="open"
     label="城市"
     empty="无匹配城市"

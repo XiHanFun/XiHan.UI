@@ -131,6 +131,8 @@ export interface TimeFieldApi<T extends PropTypes = PropTypes> {
   disabled: boolean
   readOnly: boolean
   invalid: boolean
+  /** 有值且可编辑（既不 disabled 也不 readOnly）；清空按钮据此显隐。 */
+  canClear: boolean
   /** 实际生效的小时制（prop 没给时由 locale 推出来的那个）。 */
   hourCycle: TimeHourCycle
   granularity: TimeGranularity
@@ -146,11 +148,13 @@ export interface TimeFieldApi<T extends PropTypes = PropTypes> {
   getLabelProps: () => T['label']
   getControlProps: () => T['element']
   getSegmentProps: (props: TimeFieldSegmentProps) => T['element']
+  /** 清空按钮：有值才显形，不占 Tab 位，点完焦点回到第一段。 */
+  getClearTriggerProps: () => T['button']
   /** 表单出口：一份 type=hidden 的原生输入，随表单提交 ISO 串。 */
   getHiddenInputProps: () => T['input']
 }
 
-/** 读屏用的文案。本组件目前没有需要外露的文案，位先留着。 */
+/** 读屏用的文案。 */
 export interface TimeFieldTranslations {
   /** 小时段的可及名。 */
   hour: string
@@ -160,4 +164,6 @@ export interface TimeFieldTranslations {
   second: string
   /** 上午下午段的可及名。 */
   dayPeriod: string
+  /** 清空按钮的可及名。 */
+  clearTrigger: string
 }

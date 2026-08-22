@@ -1,4 +1,4 @@
-import type { DateFieldApi, DateFieldSchema, DateFieldSegmentState, DateGranularity, DateSegmentSet, DateSegmentType } from '@xihan-ui/headless'
+import type { DateFieldApi, DateFieldSchema, DateFieldSegmentState, DateFieldTranslations, DateGranularity, DateSegmentSet, DateSegmentType } from '@xihan-ui/headless'
 import type { ControlVariant, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
@@ -22,6 +22,7 @@ export type DateFieldRootSlotProps = Pick<
   | 'focusedSegment'
   | 'setValue'
   | 'clear'
+  | 'canClear'
 >
 
 /** 段位默认插槽的载荷：本段的投影；下标越界时缺席。 */
@@ -48,7 +49,7 @@ export const XhDateFieldRoot = defineComponent({
     required: Boolean,
     name: { type: String, default: undefined },
     placeholder: { type: Object as PropType<SegmentTexts>, default: undefined },
-    translations: { type: Object as PropType<SegmentTexts>, default: undefined },
+    translations: { type: Object as PropType<DateFieldTranslations>, default: undefined },
     variant: { type: String as PropType<ControlVariant>, default: undefined },
     tone: { type: String as PropType<Tone>, default: undefined },
     size: { type: String as PropType<Size>, default: undefined },
@@ -78,6 +79,7 @@ export const XhDateFieldRoot = defineComponent({
       focusedSegment: ctx.api.value.focusedSegment,
       setValue: ctx.api.value.setValue,
       clear: ctx.api.value.clear,
+      canClear: ctx.api.value.canClear,
     }))
   },
 })
@@ -126,6 +128,15 @@ export const XhDateFieldSegment = defineComponent({
         slots.default ? slots.default({ segment: state }) : state?.text,
       )
     }
+  },
+})
+
+export const XhDateFieldClearTrigger = defineComponent({
+  name: 'XhDateFieldClearTrigger',
+  setup(_, { slots }) {
+    const ctx = useDateFieldContext()
+    // 没有默认插槽时由皮肤画兜底字形
+    return () => h('button', ctx.api.value.getClearTriggerProps() as Record<string, unknown>, slots.default?.())
   },
 })
 

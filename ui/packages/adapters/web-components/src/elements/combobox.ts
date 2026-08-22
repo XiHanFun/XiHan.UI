@@ -67,7 +67,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart control - 输入行容器，同时是浮层的定位锚点
  * @csspart input - 输入框，整个组合框唯一的 Tab 停靠点；写 input 时带 role=combobox，写 textarea 时保留它自带的 textbox 角色
  * @csspart trigger - 展开/收起按钮，须是原生 button；不占 Tab 位，可及名字由作者给
- * @csspart clear-trigger - 清空按钮，须是原生 button；不占 Tab 位且对读屏隐藏
+ * @csspart clear-trigger - 清空按钮，须是原生 button；不占 Tab 位，读屏按 aria-label 找到它
  * @csspart positioner - 浮层定位容器，坐标由引擎写成内联样式
  * @csspart content - role=listbox 容器（消解层的根节点），收起时带 hidden
  * @csspart item - role=option 候选，须自带 value 属性标识身份；禁用写 aria-disabled="true"
@@ -86,6 +86,8 @@ export class XhComboboxElement extends XhElement {
   static override properties = {
     // 数组只走 property，属性表达不了；给了它候选的文本与禁用即以数据为准
     collection: { attribute: false },
+    // 文案对象只走 property
+    translations: { attribute: false },
     name: { converter: STRING_CONVERTER },
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
@@ -110,6 +112,7 @@ export class XhComboboxElement extends XhElement {
   }
 
   declare collection?: ComboboxNode[]
+  declare translations?: ComboboxSchema['props']['translations']
   declare value?: string | string[]
   declare defaultValue?: string | string[]
   declare inputValue?: string
@@ -164,6 +167,7 @@ export class XhComboboxElement extends XhElement {
   private machineProps(): Partial<ComboboxSchema['props']> {
     return {
       collection: this.collection,
+      translations: this.translations,
       value: this.value,
       defaultValue: this.defaultValue,
       inputValue: this.inputValue,

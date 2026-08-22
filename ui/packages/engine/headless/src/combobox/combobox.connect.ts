@@ -1,10 +1,10 @@
-import { overlayPositioned } from '../shared/overlay'
 import type { NavIntent } from '@xihan-ui/behavior'
 import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { ComboboxApi, ComboboxInputEl, ComboboxInputProps, ComboboxItemProps, ComboboxNodeMeta, ComboboxSchema } from './combobox.types'
 import { isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, queryItems } from '@xihan-ui/behavior'
 import { contains, dataAttr, isComposingEvent } from '@xihan-ui/kernel'
+import { overlayPositioned } from '../shared/overlay'
 import { comboboxAnatomy, comboboxItemQuery, comboboxItemText } from './combobox.anatomy'
 import { COMBOBOX_DEFAULT_PLACEMENT } from './combobox.machine'
 
@@ -344,21 +344,21 @@ export function connectCombobox<T extends PropTypes>(
     getClearTriggerProps: () => normalize.button({
       ...parts['clear-trigger'].attrs,
       'type': 'button',
-      // 键盘用户走退格与 Escape，这个按钮不进 Tab 序列也不暴露给读屏
+      // 键盘用户走退格与 Escape，这个按钮不进 Tab 序列；读屏按虚拟光标仍找得到它
       'tabindex': -1,
-      // 字符串而非布尔：WC 侧把属性值原样往 setAttribute 送，本文件其余各处也一律是字符串
-      'aria-hidden': 'true',
-      // 没值就整个收起，不是禁用：清空钮与下拉钮并排时，一个灰着一个亮着，
-      // 用户分不清哪个能点。有值才出现，出现即可用
+      'aria-label': prop('translations')?.clearTrigger ?? 'Clear',
+      // 没值就整个收起，不是禁用：有值才出现，出现即可用
       'hidden': !canClear || undefined,
-      'disabled': !canClear || undefined,
-      'data-disabled': dataAttr(!canClear),
-      'onPointerDown': keepFocus,
+      // 按下不夺焦：焦点留在输入框，aria-activedescendant 才不断
+      'onPointerDown': (event: PointerEvent) => {
+        if (event.button === 0)
+          event.preventDefault()
+      },
       'onClick': () => {
         if (!canClear)
           return
         send({ type: 'VALUE.CLEAR' })
-        focusInput()
+        refs.get('getInputEl')()?.focus()
       },
     }),
 

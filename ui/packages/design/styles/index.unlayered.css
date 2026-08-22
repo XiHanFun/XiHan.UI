@@ -718,18 +718,31 @@
   flex: none;
   align-items: center;
   justify-content: center;
-  inline-size: var(--xh-dynamic-input-trigger-size, var(--xh-control-action-size));
-  block-size: var(--xh-dynamic-input-trigger-size, var(--xh-control-action-size));
   padding: 0;
   border: 0;
-  border-radius: var(--xh-dynamic-input-trigger-radius, var(--xh-shape-control));
   background: var(--xh-dynamic-input-trigger-bg, transparent);
   color: var(--xh-dynamic-input-trigger-fg, var(--xh-fg-muted));
   font-family: inherit;
   font-size: var(--xh-dynamic-input-trigger-font-size, var(--xh-text-secondary-size));
   line-height: var(--xh-leading-none);
   cursor: pointer;
-  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+/* 行级删除把手：命中区取行内动作按钮尺寸，圆角取控件圆角 */
+[data-scope='dynamic-input'][data-part='remove-trigger'] {
+  inline-size: var(--xh-dynamic-input-trigger-size, var(--xh-control-action-size));
+  block-size: var(--xh-dynamic-input-trigger-size, var(--xh-control-action-size));
+  border-radius: var(--xh-dynamic-input-trigger-radius, var(--xh-shape-control));
+}
+
+[data-scope='dynamic-input'][data-part='move-up-trigger'],
+[data-scope='dynamic-input'][data-part='move-down-trigger'] {
+  inline-size: var(--xh-dynamic-input-trigger-size, var(--xh-control-action-size));
+  block-size: var(--xh-dynamic-input-trigger-size, var(--xh-control-action-size));
+  border-radius: var(--xh-dynamic-input-trigger-radius, var(--xh-shape-control));
 }
 
 /* 不换序时连接层给换序把手写 hidden；上面那条 display 会把 UA 的 [hidden]{display:none}
@@ -748,10 +761,11 @@
   color: var(--xh-dynamic-input-trigger-fg-hover, var(--xh-fg-default));
 }
 
-[data-scope='dynamic-input'][data-part='remove-trigger']:active:not([aria-disabled='true']),
-[data-scope='dynamic-input'][data-part='move-up-trigger']:active:not([aria-disabled='true']),
-[data-scope='dynamic-input'][data-part='move-down-trigger']:active:not([aria-disabled='true']) {
+[data-scope='dynamic-input'][data-part='remove-trigger']:not([aria-disabled='true']):active,
+[data-scope='dynamic-input'][data-part='move-up-trigger']:not([aria-disabled='true']):active,
+[data-scope='dynamic-input'][data-part='move-down-trigger']:not([aria-disabled='true']):active {
   background: var(--xh-dynamic-input-trigger-bg-active, var(--xh-bg-subtle-active));
+  scale: var(--xh-motion-scale-press);
 }
 
 /* 删除把手悬停转危险色：它是这一行里唯一不可撤销的动作 */
@@ -808,7 +822,7 @@
   background: var(--xh-dynamic-input-add-bg-hover, var(--xh-bg-subtle-hover));
 }
 
-[data-scope='dynamic-input'][data-part='add-trigger']:active:not([aria-disabled='true']) {
+[data-scope='dynamic-input'][data-part='add-trigger']:not([aria-disabled='true']):active {
   background: var(--xh-dynamic-input-add-bg-active, var(--xh-bg-subtle-active));
 }
 
@@ -1438,14 +1452,27 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  inline-size: var(--xh-control-action-size);
-  block-size: var(--xh-control-action-size);
   border: 0;
-  border-radius: var(--xh-floating-panel-action-radius, var(--xh-shape-inset));
   background: transparent;
   color: var(--xh-floating-panel-action-fg, var(--xh-fg-muted));
   cursor: pointer;
-  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+/* 两颗钮同高同圆角，尺寸与圆角槽按各自角色命名 */
+[data-scope='floating-panel'][data-part='stage-trigger'] {
+  inline-size: var(--xh-floating-panel-action-size, var(--xh-control-h-sm));
+  block-size: var(--xh-floating-panel-action-size, var(--xh-control-h-sm));
+  border-radius: var(--xh-floating-panel-action-radius, var(--xh-shape-control));
+}
+
+[data-scope='floating-panel'][data-part='close-trigger'] {
+  inline-size: var(--xh-floating-panel-close-size, var(--xh-control-h-sm));
+  block-size: var(--xh-floating-panel-close-size, var(--xh-control-h-sm));
+  border-radius: var(--xh-floating-panel-close-radius, var(--xh-shape-control));
 }
 
 [data-scope='floating-panel'][data-part='stage-trigger'][hidden],
@@ -1457,6 +1484,12 @@
 [data-scope='floating-panel'][data-part='close-trigger']:hover {
   background: var(--xh-floating-panel-action-bg-hover, var(--xh-bg-subtle-hover));
   color: var(--xh-floating-panel-action-fg-hover, var(--xh-fg-default));
+}
+
+[data-scope='floating-panel'][data-part='stage-trigger']:active,
+[data-scope='floating-panel'][data-part='close-trigger']:active {
+  background: var(--xh-floating-panel-action-bg-active, var(--xh-bg-subtle-active));
+  scale: var(--xh-motion-scale-press);
 }
 
 /* 当前形态的那个按钮压着不放，用户一眼看得出面板正处于哪一档。
@@ -4740,6 +4773,8 @@ input[data-scope='mention'][data-part='input'] {
   --xh-icon-size: var(--xh-popselect-icon-size, var(--xh-glyph-size-text));
 
   display: inline-flex;
+  align-items: center;
+  gap: var(--xh-popselect-root-gap, var(--xh-space-1));
 }
 
 /* —— 尺寸 —— */
@@ -4815,6 +4850,57 @@ input[data-scope='mention'][data-part='input'] {
 /* 无选中：触发器上显示的是占位文字，画淡一档 */
 [data-scope='popselect'][data-part='trigger'][data-placeholder] {
   color: var(--xh-popselect-placeholder-fg, var(--xh-fg-subtle));
+}
+
+/* 清空钮：触发器旁的方形小钮，没值即 hidden 收起；图标盒与指示符同一把尺 */
+[data-scope='popselect'][data-part='clear-trigger'] {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  inline-size: var(--xh-popselect-action-size, var(--xh-control-action-size));
+  block-size: var(--xh-popselect-action-size, var(--xh-control-action-size));
+  padding: 0;
+  border: none;
+  border-radius: var(--xh-popselect-action-radius, var(--xh-shape-control));
+  background: none;
+  color: var(--xh-popselect-clear-fg, var(--xh-fg-subtle));
+  line-height: var(--xh-leading-none);
+  cursor: pointer;
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+[data-scope='popselect'][data-part='clear-trigger']:hover {
+  background: var(--xh-popselect-clear-bg-hover, var(--xh-bg-subtle-hover));
+  color: var(--xh-popselect-clear-fg-hover, var(--xh-fg-default));
+}
+
+[data-scope='popselect'][data-part='clear-trigger']:active {
+  background: var(--xh-popselect-clear-bg-active, var(--xh-bg-subtle-active));
+  scale: var(--xh-motion-scale-press);
+}
+
+[data-scope='popselect'][data-part='clear-trigger']:focus-visible {
+  outline: var(--xh-ring-width) solid var(--xh-_popselect-ring);
+  outline-offset: var(--xh-ring-offset);
+}
+
+[data-scope='popselect'][data-part='clear-trigger'][hidden] {
+  display: none;
+}
+
+/* 没写内容就由皮肤画叉；作者往部件里塞了自己的图形，这条规则即不命中 */
+[data-scope='popselect'][data-part='clear-trigger']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-close) center / contain no-repeat;
 }
 
 [data-scope='popselect'][data-part='content'] {
@@ -5453,11 +5539,19 @@ input[data-scope='mention'][data-part='input'] {
   font-size: var(--xh-text-label-size);
   line-height: var(--xh-leading-none);
   cursor: pointer;
-  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='signature-pad'][data-part='clear-trigger']:hover {
   background: var(--xh-signature-pad-clear-bg-hover, var(--xh-bg-subtle-hover));
+}
+
+/* 按下：换到按压档底色并轻微下压，松手弹回；禁用钮不压 */
+[data-scope='signature-pad'][data-part='clear-trigger']:not(:disabled):active {
+  background: var(--xh-signature-pad-clear-bg-active, var(--xh-bg-subtle-active));
+  scale: var(--xh-motion-scale-press);
 }
 
 [data-scope='signature-pad'][data-part='clear-trigger']:focus-visible {
@@ -5741,9 +5835,9 @@ input[data-scope='mention'][data-part='input'] {
   align-items: center;
   justify-content: center;
   flex: none;
-  /* 命中区取行内动作按钮的标准尺寸，不随标签档位缩小：叉本来就是最难点中的那一个 */
-  block-size: var(--xh-tag-close-size, var(--xh-control-action-size));
-  inline-size: var(--xh-tag-close-size, var(--xh-control-action-size));
+  /* 命中区取标签内移除钮的指示符尺寸，不随标签档位缩小 */
+  block-size: var(--xh-tag-close-size, var(--xh-control-indicator-size));
+  inline-size: var(--xh-tag-close-size, var(--xh-control-indicator-size));
   /* 命中区比字形大一圈，往内收一格才不会在标签右缘留出一块空白 */
   margin-inline-end: calc(-1 * var(--xh-space-1));
   border: 0;
@@ -5755,6 +5849,9 @@ input[data-scope='mention'][data-part='input'] {
   font: inherit;
   line-height: var(--xh-leading-none);
   cursor: pointer;
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 /* closable=false 时连接层同时给了 hidden 与 disabled，这条是它真正收起的那一半 */
@@ -5762,9 +5859,14 @@ input[data-scope='mention'][data-part='input'] {
   display: none;
 }
 
-/* 悬停只加一层同色薄底，实心与淡底两种形态上都成立 */
 [data-scope='tag'][data-part='close-trigger']:hover:not(:disabled) {
-  background: color-mix(in oklab, currentColor 14%, transparent);
+  /* 底色从当前前景色调出来：标签的实心 / 淡底 / 描边各形态下都压得住 */
+  background: var(--xh-tag-close-bg-hover, color-mix(in oklab, currentColor 14%, transparent));
+}
+
+[data-scope='tag'][data-part='close-trigger']:not(:disabled):active {
+  background: var(--xh-tag-close-bg-active, color-mix(in oklab, currentColor 22%, transparent));
+  scale: var(--xh-motion-scale-press);
 }
 
 [data-scope='tag'][data-part='close-trigger']:disabled {
@@ -6713,6 +6815,10 @@ input[data-scope='mention'][data-part='input'] {
   font: inherit;
   line-height: var(--xh-leading-none);
   cursor: pointer;
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 /* closable=false 时连接层同时给了 hidden 与 disabled，这条是它真正收起的那一半 */
@@ -6720,9 +6826,15 @@ input[data-scope='mention'][data-part='input'] {
   display: none;
 }
 
+/* 悬停与按下的底色跟着语气走：提示本体已是该语气的淡底，叉的底色在同一色系里再深两档 */
 [data-scope='alert'][data-part='close-trigger']:hover:not(:disabled) {
-  background: color-mix(in oklab, var(--xh-_alert-accent) 16%, transparent);
+  background: var(--xh-alert-close-bg-hover, var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover)));
   color: var(--xh-alert-close-fg-hover, var(--xh-fg-default));
+}
+
+[data-scope='alert'][data-part='close-trigger']:active {
+  background: var(--xh-alert-close-bg-active, var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active)));
+  scale: var(--xh-motion-scale-press);
 }
 
 [data-scope='alert'][data-part='close-trigger']:disabled {
@@ -8643,20 +8755,21 @@ input[data-scope='mention'][data-part='input'] {
   line-height: var(--xh-leading-none);
   cursor: pointer;
   user-select: none;
-  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='cascader'][data-part='clear-trigger'][hidden] {
   display: none;
 }
 
-[data-scope='cascader'][data-part='clear-trigger']:hover:not(:disabled) {
+[data-scope='cascader'][data-part='clear-trigger']:hover {
   background: var(--xh-cascader-action-bg-hover, var(--xh-bg-subtle-hover));
   color: var(--xh-cascader-action-fg-hover, var(--xh-fg-default));
 }
 
-[data-scope='cascader'][data-part='clear-trigger']:active:not(:disabled) {
+[data-scope='cascader'][data-part='clear-trigger']:active {
   background: var(--xh-cascader-action-bg-active, var(--xh-bg-subtle-active));
+  scale: var(--xh-motion-scale-press);
 }
 
 /* 清空按钮退出了 Tab 序列（tabindex=-1），正常操作走不到这里；
@@ -8664,13 +8777,6 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='cascader'][data-part='clear-trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
   outline-offset: var(--xh-ring-offset);
-}
-
-/* 无选中、只读、整控件禁用三种情况下都按不动，用的是原生 disabled */
-[data-scope='cascader'][data-part='clear-trigger']:disabled {
-  background: var(--xh-cascader-action-bg, transparent);
-  color: var(--xh-fg-disabled);
-  cursor: not-allowed;
 }
 
 /* 级联的骨架就在这一条上：列沿书写方向并排，一层一列。
@@ -10449,7 +10555,7 @@ input[data-scope='mention'][data-part='input'] {
   line-height: var(--xh-leading-none);
   cursor: pointer;
   user-select: none;
-  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 /* 有值时清空钮顶上来，下拉钮让位：两个钮并排堆在框里，用户分不清点哪个。
@@ -10508,6 +10614,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='combobox'][data-part='trigger']:active:not(:disabled),
 [data-scope='combobox'][data-part='clear-trigger']:active:not(:disabled) {
   background: var(--xh-combobox-action-bg-active, var(--xh-bg-subtle-active));
+  scale: var(--xh-motion-scale-press);
 }
 
 /* 两个按钮都退出了 Tab 序列（tabindex=-1），正常操作走不到这里；
@@ -10518,8 +10625,7 @@ input[data-scope='mention'][data-part='input'] {
   outline-offset: var(--xh-ring-offset);
 }
 
-[data-scope='combobox'][data-part='trigger']:disabled,
-[data-scope='combobox'][data-part='clear-trigger']:disabled {
+[data-scope='combobox'][data-part='trigger']:disabled {
   background: var(--xh-combobox-action-bg, transparent);
   color: var(--xh-fg-disabled);
   cursor: not-allowed;
@@ -11345,6 +11451,60 @@ input[data-scope='mention'][data-part='input'] {
   color: var(--xh-date-field-segment-fg-focus, var(--xh-_date-field-segment-fg));
 }
 
+/* 清空钮排在段位之后、与框等高的一颗小方钮：没值或不可编辑时连接层给 hidden 收起 */
+[data-scope='date-field'][data-part='clear-trigger'] {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--xh-date-field-action-size, var(--xh-control-action-size));
+  block-size: var(--xh-date-field-action-size, var(--xh-control-action-size));
+  padding: 0;
+  border: 0;
+  border-radius: var(--xh-date-field-action-radius, var(--xh-shape-control));
+  background: var(--xh-date-field-action-bg, transparent);
+  color: var(--xh-date-field-action-fg, var(--xh-fg-muted));
+  font-family: inherit;
+  font-size: var(--xh-date-field-action-font-size, var(--xh-text-secondary-size));
+  line-height: var(--xh-leading-none);
+  cursor: pointer;
+  user-select: none;
+  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+/* 上面给了 display，UA 的 [hidden]{display:none} 已被盖掉，这里补回来 */
+[data-scope='date-field'][data-part='clear-trigger'][hidden] {
+  display: none;
+}
+
+[data-scope='date-field'][data-part='clear-trigger']:hover {
+  background: var(--xh-date-field-action-bg-hover, var(--xh-bg-subtle-hover));
+  color: var(--xh-date-field-action-fg-hover, var(--xh-fg-default));
+}
+
+[data-scope='date-field'][data-part='clear-trigger']:active {
+  background: var(--xh-date-field-action-bg-active, var(--xh-bg-subtle-active));
+  scale: var(--xh-motion-scale-press);
+}
+
+/* 按钮不占 Tab 位（tabindex=-1），留给程序化聚焦兜底，落焦时得看得见 */
+[data-scope='date-field'][data-part='clear-trigger']:focus-visible {
+  outline: var(--xh-ring-width) solid var(--xh-_date-field-ring);
+  outline-offset: var(--xh-ring-offset);
+}
+
+/* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这条即不命中 */
+[data-scope='date-field'][data-part='clear-trigger']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+}
+
 /* 连接层把它写成 type=hidden，UA 自己就不渲染；这里的视觉隐藏是给元素升级前那一瞬兜底
    （作者手写的是一个普通 input，升级完成前它是可见的文本框）。
    刻意不写 display：写了反而会盖掉 UA 对 type=hidden 的收起，把它显出来 */
@@ -11575,7 +11735,7 @@ input[data-scope='mention'][data-part='input'] {
   line-height: var(--xh-leading-none);
   cursor: pointer;
   user-select: none;
-  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 /* 有值时清空钮顶上来，下拉钮让位：两个钮并排堆在框里，用户分不清点哪个。
@@ -11590,14 +11750,18 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='date-picker'][data-part='trigger']:hover:not(:disabled),
-[data-scope='date-picker'][data-part='clear-trigger']:hover:not(:disabled) {
+[data-scope='date-picker'][data-part='clear-trigger']:hover {
   background: var(--xh-date-picker-action-bg-hover, var(--xh-bg-subtle-hover));
   color: var(--xh-date-picker-action-fg-hover, var(--xh-fg-default));
 }
 
-[data-scope='date-picker'][data-part='trigger']:active:not(:disabled),
-[data-scope='date-picker'][data-part='clear-trigger']:active:not(:disabled) {
+[data-scope='date-picker'][data-part='trigger']:active:not(:disabled) {
   background: var(--xh-date-picker-action-bg-active, var(--xh-bg-subtle-active));
+}
+
+[data-scope='date-picker'][data-part='clear-trigger']:active {
+  background: var(--xh-date-picker-action-bg-active, var(--xh-bg-subtle-active));
+  scale: var(--xh-motion-scale-press);
 }
 
 /* 展开时按钮压一层底色，与浮层的存在互相印证 */
@@ -11613,8 +11777,7 @@ input[data-scope='mention'][data-part='input'] {
   outline-offset: var(--xh-ring-offset);
 }
 
-[data-scope='date-picker'][data-part='trigger']:disabled,
-[data-scope='date-picker'][data-part='clear-trigger']:disabled {
+[data-scope='date-picker'][data-part='trigger']:disabled {
   background: var(--xh-date-picker-action-bg, transparent);
   color: var(--xh-fg-disabled);
   cursor: not-allowed;
@@ -12023,7 +12186,7 @@ input[data-scope='mention'][data-part='input'] {
    否则长标题会直接钻到按钮底下。只在真有关闭按钮时让位。 */
 [data-scope='dialog'][data-part='content']:has([data-scope='dialog'][data-part='close-trigger'])
   [data-scope='dialog'][data-part='title'] {
-  padding-inline-end: calc(var(--xh-control-h-sm) + var(--xh-space-3));
+  padding-inline-end: calc(var(--xh-dialog-close-size, var(--xh-control-h-sm)) + var(--xh-space-3));
 }
 
 [data-scope='dialog'][data-part='close-trigger'] {
@@ -12033,18 +12196,30 @@ input[data-scope='mention'][data-part='input'] {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  block-size: var(--xh-control-h-sm);
-  inline-size: var(--xh-control-h-sm);
+  block-size: var(--xh-dialog-close-size, var(--xh-control-h-sm));
+  inline-size: var(--xh-dialog-close-size, var(--xh-control-h-sm));
   border: 0;
-  border-radius: var(--xh-shape-control);
+  border-radius: var(--xh-dialog-close-radius, var(--xh-shape-control));
   background: transparent;
   color: var(--xh-fg-muted);
   cursor: pointer;
+  transition:
+    background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+[data-scope='dialog'][data-part='close-trigger'][hidden] {
+  display: none;
 }
 
 [data-scope='dialog'][data-part='close-trigger']:hover {
-  background: var(--xh-bg-subtle);
+  background: var(--xh-dialog-close-bg-hover, var(--xh-bg-subtle-hover));
   color: var(--xh-fg-default);
+}
+
+[data-scope='dialog'][data-part='close-trigger']:active {
+  background: var(--xh-dialog-close-bg-active, var(--xh-bg-subtle-active));
+  scale: var(--xh-motion-scale-press);
 }
 
 [data-scope='dialog'][data-part='close-trigger']:focus-visible {
@@ -12433,7 +12608,7 @@ input[data-scope='mention'][data-part='input'] {
    否则长标题会直接钻到按钮底下。只在真有关闭按钮时让位。 */
 [data-scope='drawer'][data-part='content']:has([data-scope='drawer'][data-part='close-trigger'])
   [data-scope='drawer'][data-part='title'] {
-  padding-inline-end: calc(var(--xh-control-h-sm) + var(--xh-space-3));
+  padding-inline-end: calc(var(--xh-drawer-close-size, var(--xh-control-h-sm)) + var(--xh-space-3));
 }
 
 [data-scope='drawer'][data-part='close-trigger'] {
@@ -12443,13 +12618,16 @@ input[data-scope='mention'][data-part='input'] {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  block-size: var(--xh-control-h-sm);
-  inline-size: var(--xh-control-h-sm);
+  block-size: var(--xh-drawer-close-size, var(--xh-control-h-sm));
+  inline-size: var(--xh-drawer-close-size, var(--xh-control-h-sm));
   border: 0;
-  border-radius: var(--xh-shape-control);
+  border-radius: var(--xh-drawer-close-radius, var(--xh-shape-control));
   background: transparent;
   color: var(--xh-fg-muted);
   cursor: pointer;
+  transition:
+    background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='drawer'][data-part='close-trigger'][hidden] {
@@ -12457,8 +12635,13 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='drawer'][data-part='close-trigger']:hover {
-  background: var(--xh-bg-subtle);
+  background: var(--xh-drawer-close-bg-hover, var(--xh-bg-subtle-hover));
   color: var(--xh-fg-default);
+}
+
+[data-scope='drawer'][data-part='close-trigger']:active {
+  background: var(--xh-drawer-close-bg-active, var(--xh-bg-subtle-active));
+  scale: var(--xh-motion-scale-press);
 }
 
 [data-scope='drawer'][data-part='close-trigger']:focus-visible {
@@ -13071,8 +13254,8 @@ input[data-scope='mention'][data-part='input'] {
   flex: none;
   align-items: center;
   justify-content: center;
-  inline-size: var(--xh-file-upload-delete-size, var(--xh-control-h-sm));
-  block-size: var(--xh-file-upload-delete-size, var(--xh-control-h-sm));
+  inline-size: var(--xh-file-upload-delete-size, var(--xh-control-action-size));
+  block-size: var(--xh-file-upload-delete-size, var(--xh-control-action-size));
   padding: 0;
   border: 0;
   border-radius: var(--xh-file-upload-delete-radius, var(--xh-shape-control));
@@ -13081,6 +13264,9 @@ input[data-scope='mention'][data-part='input'] {
   font-family: inherit;
   line-height: var(--xh-leading-none);
   cursor: pointer;
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='file-upload'][data-part='item-delete-trigger'][hidden] {
@@ -13090,6 +13276,12 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='file-upload'][data-part='item-delete-trigger']:hover:not(:disabled) {
   background: var(--xh-file-upload-delete-bg-hover, var(--xh-bg-subtle-hover));
   color: var(--xh-file-upload-delete-fg-hover, var(--xh-fg-danger-hover));
+}
+
+/* 按下：换到按压档底色并轻微下压，松手弹回；禁用钮不压 */
+[data-scope='file-upload'][data-part='item-delete-trigger']:not(:disabled):active {
+  background: var(--xh-file-upload-delete-bg-active, var(--xh-bg-subtle-active));
+  scale: var(--xh-motion-scale-press);
 }
 
 [data-scope='file-upload'][data-part='item-delete-trigger']:focus-visible {
@@ -13102,8 +13294,7 @@ input[data-scope='mention'][data-part='input'] {
   cursor: not-allowed;
 }
 
-/* 清空是收尾动作，画成不带底色的文字按钮：它比"选择文件"次要，
-   且列表为空时连接层会给原生 disabled，那时它本就该看着点不动 */
+/* 清空是收尾动作，画成不带底色的文字按钮：它比"选择文件"次要 */
 [data-scope='file-upload'][data-part='clear-trigger'] {
   display: inline-flex;
   flex: none;
@@ -13121,6 +13312,9 @@ input[data-scope='mention'][data-part='input'] {
   font-size: var(--xh-file-upload-clear-font-size, var(--xh-text-caption-size));
   line-height: var(--xh-leading-none);
   cursor: pointer;
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='file-upload'][data-part='clear-trigger'][hidden] {
@@ -13132,9 +13326,20 @@ input[data-scope='mention'][data-part='input'] {
   color: var(--xh-file-upload-clear-fg-hover, var(--xh-fg-default));
 }
 
+/* 按下：换到按压档底色并轻微下压，松手弹回；禁用钮不压 */
+[data-scope='file-upload'][data-part='clear-trigger']:not(:disabled):active {
+  background: var(--xh-file-upload-clear-bg-active, var(--xh-bg-subtle-active));
+  scale: var(--xh-motion-scale-press);
+}
+
 [data-scope='file-upload'][data-part='clear-trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
   outline-offset: var(--xh-ring-offset);
+}
+
+/* 空列表时按钮照常可按（收起它会让焦点掉回 body），只把前景压淡一档 */
+[data-scope='file-upload'][data-part='clear-trigger'][data-empty] {
+  color: var(--xh-fg-subtle);
 }
 
 [data-scope='file-upload'][data-part='clear-trigger']:disabled {
@@ -13730,8 +13935,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='image-viewer'][data-part='toolbar'],
 [data-scope='image-viewer'][data-part='counter'],
 [data-scope='image-viewer'][data-part='prev-trigger'],
-[data-scope='image-viewer'][data-part='next-trigger'],
-[data-scope='image-viewer'][data-part='close-trigger'] {
+[data-scope='image-viewer'][data-part='next-trigger'] {
   position: absolute;
   z-index: 1;
   background: var(--xh-image-viewer-chrome-bg, color-mix(in oklab, var(--xh-color-neutral-950) 55%, transparent));
@@ -13775,8 +13979,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='image-viewer'][data-part='prev-trigger'],
-[data-scope='image-viewer'][data-part='next-trigger'],
-[data-scope='image-viewer'][data-part='close-trigger'] {
+[data-scope='image-viewer'][data-part='next-trigger'] {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -13798,9 +14001,39 @@ input[data-scope='mention'][data-part='input'] {
   translate: 0 -50%;
 }
 
+/* 右上角的关闭钮：与翻页钮同底同高，但圆角走控件档，按下有缩放 */
 [data-scope='image-viewer'][data-part='close-trigger'] {
+  position: absolute;
+  z-index: 1;
   inset-block-start: var(--xh-space-6);
   inset-inline-end: var(--xh-space-6);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--xh-image-viewer-close-size, var(--xh-control-h-lg));
+  block-size: var(--xh-image-viewer-close-size, var(--xh-control-h-lg));
+  border: none;
+  border-radius: var(--xh-image-viewer-close-radius, var(--xh-shape-control));
+  background: var(--xh-image-viewer-chrome-bg, color-mix(in oklab, var(--xh-color-neutral-950) 55%, transparent));
+  color: inherit;
+  font-size: var(--xh-glyph-size-md);
+  cursor: pointer;
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+[data-scope='image-viewer'][data-part='close-trigger'][hidden] {
+  display: none;
+}
+
+[data-scope='image-viewer'][data-part='close-trigger']:hover:not(:disabled) {
+  background: var(--xh-image-viewer-close-bg-hover, color-mix(in oklab, var(--xh-color-neutral-950) 70%, transparent));
+}
+
+[data-scope='image-viewer'][data-part='close-trigger']:active {
+  background: var(--xh-image-viewer-close-bg-active, color-mix(in oklab, var(--xh-color-neutral-950) 80%, transparent));
+  scale: var(--xh-motion-scale-press);
 }
 
 [data-scope='image-viewer'] button[data-part]:focus-visible {
@@ -15839,7 +16072,7 @@ input[data-scope='mention'][data-part='input'] {
    否则长标题会直接钻到按钮底下。只在真有关闭按钮时让位。 */
 [data-scope='popover'][data-part='content']:has([data-scope='popover'][data-part='close-trigger'])
   [data-scope='popover'][data-part='title'] {
-  padding-inline-end: calc(var(--xh-control-h-sm) + var(--xh-space-2));
+  padding-inline-end: calc(var(--xh-popover-close-size, var(--xh-control-h-sm)) + var(--xh-space-2));
 }
 
 [data-scope='popover'][data-part='close-trigger'] {
@@ -15849,18 +16082,30 @@ input[data-scope='mention'][data-part='input'] {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  block-size: var(--xh-control-h-sm);
-  inline-size: var(--xh-control-h-sm);
+  block-size: var(--xh-popover-close-size, var(--xh-control-h-sm));
+  inline-size: var(--xh-popover-close-size, var(--xh-control-h-sm));
   border: 0;
-  border-radius: var(--xh-shape-control);
+  border-radius: var(--xh-popover-close-radius, var(--xh-shape-control));
   background: transparent;
   color: var(--xh-fg-muted);
   cursor: pointer;
+  transition:
+    background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+[data-scope='popover'][data-part='close-trigger'][hidden] {
+  display: none;
 }
 
 [data-scope='popover'][data-part='close-trigger']:hover {
-  background: var(--xh-bg-subtle);
+  background: var(--xh-popover-close-bg-hover, var(--xh-bg-subtle-hover));
   color: var(--xh-fg-default);
+}
+
+[data-scope='popover'][data-part='close-trigger']:active {
+  background: var(--xh-popover-close-bg-active, var(--xh-bg-subtle-active));
+  scale: var(--xh-motion-scale-press);
 }
 
 [data-scope='popover'][data-part='close-trigger']:focus-visible {
@@ -16767,70 +17012,58 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_select-ring: var(--xh-ring-invalid);
 }
 
-/* 收纳容器：触发器与清空按钮的定位基准，触发器在里面占满一行 */
+/* 收纳容器：触发器与清空按钮在里面并排，触发器占满剩余一行 */
 [data-scope='select'][data-part='control'] {
-  position: relative;
   display: flex;
   align-items: center;
+  gap: var(--xh-select-control-gap, var(--xh-space-1));
 }
 
 [data-scope='select'][data-part='control'] > [data-part='trigger'] {
   flex: 1;
 }
 
-/* 清空按钮：trigger 的兄弟节点，幽灵小圆钮；没选中或禁用时连接层给 hidden */
+/* 清空按钮：trigger 的兄弟节点，贴在触发框旁边的小方钮，不撑高那一行；清不了时连接层给 hidden */
 [data-scope='select'][data-part='clear-trigger'] {
-  display: inline-grid;
-  place-items: center;
-  inline-size: var(--xh-select-clear-size, var(--xh-control-indicator-size));
-  block-size: var(--xh-select-clear-size, var(--xh-control-indicator-size));
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--xh-select-action-size, var(--xh-control-action-size));
+  block-size: var(--xh-select-action-size, var(--xh-control-action-size));
   padding: 0;
-  border: none;
-  border-radius: var(--xh-shape-pill);
-  background: none;
-  color: var(--xh-select-clear-fg, var(--xh-fg-subtle));
+  border: 0;
+  border-radius: var(--xh-select-action-radius, var(--xh-shape-control));
+  background: var(--xh-select-action-bg, transparent);
+  color: var(--xh-select-action-fg, var(--xh-fg-muted));
+  font-family: inherit;
 
   /* 字号行高钉死：继承页面字号会让行框高过按钮，字形被基线顶离正中 */
-  font-size: var(--xh-select-clear-font-size, var(--xh-text-caption-size));
+  font-size: var(--xh-select-action-font-size, var(--xh-text-secondary-size));
   line-height: var(--xh-leading-none);
   cursor: pointer;
-}
-
-[data-scope='select'][data-part='clear-trigger']:hover {
-  background: var(--xh-select-clear-bg-hover, var(--xh-bg-subtle-hover));
-  color: var(--xh-select-clear-fg-hover, var(--xh-fg-default));
-}
-
-[data-scope='select'][data-part='clear-trigger']:focus-visible {
-  outline: var(--xh-ring-width) solid var(--xh-_select-ring);
-  outline-offset: var(--xh-ring-offset);
+  user-select: none;
+  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='select'][data-part='clear-trigger'][hidden] {
   display: none;
 }
 
-/* 进了 control 就嵌进触发器右端（与展开指示符同位），纵向钉在正中；平时不占位也不接指针 */
-[data-scope='select'][data-part='control'] [data-part='clear-trigger'] {
-  position: absolute;
-  inset-block-start: 50%;
-  inset-inline-end: var(--xh-select-trigger-px, var(--xh-_select-px));
-  translate: 0 -50%;
-  opacity: 0;
-  pointer-events: none;
+[data-scope='select'][data-part='clear-trigger']:hover {
+  background: var(--xh-select-action-bg-hover, var(--xh-bg-subtle-hover));
+  color: var(--xh-select-action-fg-hover, var(--xh-fg-default));
 }
 
-/* 悬停或键盘聚到清空钮上时显形 */
-[data-scope='select'][data-part='control']:hover [data-part='clear-trigger']:not([hidden]),
-[data-scope='select'][data-part='control'] [data-part='clear-trigger']:focus-visible {
-  opacity: 1;
-  pointer-events: auto;
+[data-scope='select'][data-part='clear-trigger']:active {
+  background: var(--xh-select-action-bg-active, var(--xh-bg-subtle-active));
+  scale: var(--xh-motion-scale-press);
 }
 
-/* 清空钮显形期间展开指示符让位，两个图标不叠在一起 */
-[data-scope='select'][data-part='control']:hover:has([data-part='clear-trigger']:not([hidden])) [data-part='indicator'],
-[data-scope='select'][data-part='control']:has([data-part='clear-trigger']:focus-visible) [data-part='indicator'] {
-  opacity: 0;
+/* 清空按钮退出了 Tab 序列（tabindex=-1），正常操作走不到这里；留着是给程序化聚焦兜底，落焦时得看得见 */
+[data-scope='select'][data-part='clear-trigger']:focus-visible {
+  outline: var(--xh-ring-width) solid var(--xh-_select-ring);
+  outline-offset: var(--xh-ring-offset);
 }
 
 /* 多选标签：淡底小药丸；放触发器里是纯展示，放外面配 tag-remove 可删 */
@@ -16852,20 +17085,34 @@ input[data-scope='mention'][data-part='input'] {
   color: var(--xh-fg-disabled);
 }
 
+/* 标签内的删除钮：与指示符同尺寸的小钮，贴着标签文字 */
 [data-scope='select'][data-part='tag-remove'] {
   display: inline-grid;
   place-items: center;
+  inline-size: var(--xh-select-tag-remove-size, var(--xh-control-indicator-size));
+  block-size: var(--xh-select-tag-remove-size, var(--xh-control-indicator-size));
   padding: 0;
   border: none;
-  border-radius: var(--xh-shape-pill);
+  border-radius: var(--xh-select-tag-remove-radius, var(--xh-shape-inset));
   background: none;
   color: var(--xh-select-tag-remove-fg, var(--xh-fg-subtle));
   font-size: inherit;
   cursor: pointer;
+  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+[data-scope='select'][data-part='tag-remove'][hidden] {
+  display: none;
 }
 
 [data-scope='select'][data-part='tag-remove']:hover {
+  background: var(--xh-select-tag-remove-bg-hover, var(--xh-bg-subtle-hover));
   color: var(--xh-select-tag-remove-fg-hover, var(--xh-fg-default));
+}
+
+[data-scope='select'][data-part='tag-remove']:active {
+  background: var(--xh-select-tag-remove-bg-active, var(--xh-bg-subtle-active));
+  scale: var(--xh-motion-scale-press);
 }
 
 [data-scope='select'][data-part='tag-remove']:focus-visible {
@@ -16888,6 +17135,11 @@ input[data-scope='mention'][data-part='input'] {
   border-color: var(--xh-select-trigger-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
 }
 
+/* 只读仍可聚焦、浮层仍展得开、条目仍能浏览，所以不置灰，只把底色压下去表示「改不动」 */
+[data-scope='select'][data-part='trigger'][data-readonly] {
+  background: var(--xh-select-trigger-bg-readonly, var(--xh-bg-subtle));
+}
+
 /* trigger 是单体控件，用原生 disabled（条目那边一律 aria-disabled） */
 [data-scope='select'][data-part='trigger']:disabled {
   color: var(--xh-fg-disabled);
@@ -16907,6 +17159,11 @@ input[data-scope='mention'][data-part='input'] {
 /* 无选中：显示的是 placeholder，画淡一档 */
 [data-scope='select'][data-part='value-text'][data-placeholder] {
   color: var(--xh-select-placeholder-fg, var(--xh-fg-subtle));
+}
+
+/* 有值时清空钮顶上来，箭头让位：两个图标并排堆着，用户分不清点哪个 */
+[data-scope='select'][data-part='indicator'][data-clearable] {
+  display: none;
 }
 
 [data-scope='select'][data-part='indicator'] {
@@ -19053,14 +19310,16 @@ input[data-scope='mention'][data-part='input'] {
   block-size: var(--xh-tags-input-delete-size, var(--xh-control-indicator-size));
   padding: 0;
   border: 0;
-  border-radius: var(--xh-shape-pill);
+  border-radius: var(--xh-tags-input-delete-radius, var(--xh-shape-inset));
   background: var(--xh-tags-input-delete-bg, transparent);
   color: var(--xh-tags-input-delete-fg, var(--xh-fg-muted));
   font-family: inherit;
   font-size: var(--xh-tags-input-delete-font-size, var(--xh-text-caption-size));
   line-height: var(--xh-leading-none);
   cursor: pointer;
-  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='tags-input'][data-part='item-delete-trigger'][hidden] {
@@ -19079,6 +19338,7 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='tags-input'][data-part='item-delete-trigger']:active:not(:disabled) {
   background: var(--xh-tags-input-delete-bg-active, var(--xh-bg-subtle-active));
+  scale: var(--xh-motion-scale-press);
 }
 
 /* 按钮不占 Tab 位（tabindex=-1），正常操作走不到这里；
@@ -19125,50 +19385,49 @@ input[data-scope='mention'][data-part='input'] {
   cursor: not-allowed;
 }
 
-/* 清空按钮贴在框的末端，与输入框同一行，尺寸取控件指示件档（随密度收） */
+/* 清空按钮贴在框的末端，与输入框同一行，尺寸取控件动作钮档（随密度收） */
 [data-scope='tags-input'][data-part='clear-trigger'] {
   display: inline-flex;
   flex: none;
   align-items: center;
   justify-content: center;
-  inline-size: var(--xh-tags-input-clear-size, var(--xh-control-indicator-size));
-  block-size: var(--xh-tags-input-clear-size, var(--xh-control-indicator-size));
+  inline-size: var(--xh-tags-input-action-size, var(--xh-control-action-size));
+  block-size: var(--xh-tags-input-action-size, var(--xh-control-action-size));
   padding: 0;
   border: 0;
-  border-radius: var(--xh-shape-pill);
-  background: var(--xh-tags-input-clear-bg, transparent);
-  color: var(--xh-tags-input-clear-fg, var(--xh-fg-muted));
+  border-radius: var(--xh-tags-input-action-radius, var(--xh-shape-control));
+  background: var(--xh-tags-input-action-bg, transparent);
+  color: var(--xh-tags-input-action-fg, var(--xh-fg-muted));
   font-family: inherit;
-  font-size: var(--xh-tags-input-clear-font-size, var(--xh-text-secondary-size));
+  font-size: var(--xh-tags-input-action-font-size, var(--xh-text-secondary-size));
   line-height: var(--xh-leading-none);
   cursor: pointer;
-  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
+/* 没值可清时连接层只打 hidden；上面那条 display 会盖掉 UA 规则，少了这条按钮就一直杵着 */
 [data-scope='tags-input'][data-part='clear-trigger'][hidden] {
   display: none;
 }
 
-[data-scope='tags-input'][data-part='clear-trigger']:hover:not(:disabled) {
-  background: var(--xh-tags-input-clear-bg-hover, var(--xh-bg-subtle-hover));
-  color: var(--xh-tags-input-clear-fg-hover, var(--xh-fg-default));
+[data-scope='tags-input'][data-part='clear-trigger']:hover {
+  background: var(--xh-tags-input-action-bg-hover, var(--xh-bg-subtle-hover));
+  color: var(--xh-tags-input-action-fg-hover, var(--xh-fg-default));
 }
 
-[data-scope='tags-input'][data-part='clear-trigger']:active:not(:disabled) {
-  background: var(--xh-tags-input-clear-bg-active, var(--xh-bg-subtle-active));
+[data-scope='tags-input'][data-part='clear-trigger']:active {
+  background: var(--xh-tags-input-action-bg-active, var(--xh-bg-subtle-active));
+  scale: var(--xh-motion-scale-press);
 }
 
+/* 按钮不占 Tab 位（tabindex=-1），正常操作走不到这里；
+   留着焦点环是给程序化聚焦兜底——清完把焦点交回输入框之前，它确实短暂持有过焦点 */
 [data-scope='tags-input'][data-part='clear-trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-_tags-input-ring);
-  /* 比默认档窄一道：它长在胶囊里，按默认偏移画会压到相邻胶囊 */
+  /* 比默认档窄一道：它长在框的末端，按默认偏移画会压到相邻胶囊 */
   outline-offset: var(--xh-stroke-thin);
-}
-
-/* 没东西可清、只读或禁用时按钮转灰但不收起：位置留着，加进第一个标签就亮 */
-[data-scope='tags-input'][data-part='clear-trigger']:disabled {
-  background: transparent;
-  color: var(--xh-fg-disabled);
-  cursor: not-allowed;
 }
 
 /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
@@ -19213,7 +19472,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_text-field-px: var(--xh-control-px-md);
   --xh-_text-field-font-size: var(--xh-text-body-size);
   --xh-_text-field-label-font-size: var(--xh-text-label-size);
-  --xh-_text-field-clear-font-size: var(--xh-text-secondary-size);
+  --xh-_text-field-action-font-size: var(--xh-text-secondary-size);
 
   /* 形态档只换这三个私有槽：底、常态描边、悬停描边 */
   --xh-_text-field-bg: var(--xh-bg-canvas);
@@ -19243,7 +19502,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_text-field-px: var(--xh-control-px-sm);
   --xh-_text-field-font-size: var(--xh-control-font-sm);
   --xh-_text-field-label-font-size: var(--xh-control-font-sm);
-  --xh-_text-field-clear-font-size: var(--xh-control-caption-sm);
+  --xh-_text-field-action-font-size: var(--xh-control-caption-sm);
 }
 
 [data-scope='text-field'][data-part='root'][data-size='lg'] {
@@ -19252,7 +19511,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_text-field-px: var(--xh-control-px-lg);
   --xh-_text-field-font-size: var(--xh-control-font-lg);
   --xh-_text-field-label-font-size: var(--xh-control-font-lg);
-  --xh-_text-field-clear-font-size: var(--xh-control-caption-lg);
+  --xh-_text-field-action-font-size: var(--xh-control-caption-lg);
 }
 
 /* —— 形态 —— */
@@ -19365,41 +19624,42 @@ input[data-scope='mention'][data-part='input'] {
   cursor: not-allowed;
 }
 
-/* 清空按钮画成输入框右侧的小方钮：它是 input 的兄弟节点而不是子节点，
-   没法叠进框内，只能与框等高、贴着排，靠同一套边角与高度看起来是一体的 */
+/* 清空按钮是 input 的兄弟节点而不是子节点，由作者与 input 排成一行；
+   它按行内动作钮的尺寸画，在作者那一行里居中即与框对齐 */
 [data-scope='text-field'][data-part='clear-trigger'] {
   display: inline-flex;
   flex: none;
   align-items: center;
   justify-content: center;
-  inline-size: var(--xh-text-field-clear-size, var(--xh-_text-field-h));
-  block-size: var(--xh-text-field-clear-size, var(--xh-_text-field-h));
+  inline-size: var(--xh-text-field-action-size, var(--xh-control-action-size));
+  block-size: var(--xh-text-field-action-size, var(--xh-control-action-size));
   padding: 0;
   border: 0;
-  border-radius: var(--xh-text-field-clear-radius, var(--xh-shape-control));
-  background: var(--xh-text-field-clear-bg, transparent);
-  color: var(--xh-text-field-clear-fg, var(--xh-fg-muted));
+  border-radius: var(--xh-text-field-action-radius, var(--xh-shape-control));
+  background: var(--xh-text-field-action-bg, transparent);
+  color: var(--xh-text-field-action-fg, var(--xh-fg-muted));
   font-family: inherit;
-  font-size: var(--xh-text-field-clear-font-size, var(--xh-_text-field-clear-font-size));
+  font-size: var(--xh-text-field-action-font-size, var(--xh-_text-field-action-font-size));
   line-height: var(--xh-leading-none);
   cursor: pointer;
   user-select: none;
-  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
-/* 没开 clearable 时连接层给的是 hidden 属性；上面那条 display 会把 UA 规则盖掉，
+/* 没开 clearable 或清不了时连接层给的是 hidden 属性；上面那条 display 会把 UA 规则盖掉，
    少了这条按钮就一直杵在那儿 */
 [data-scope='text-field'][data-part='clear-trigger'][hidden] {
   display: none;
 }
 
-[data-scope='text-field'][data-part='clear-trigger']:hover:not(:disabled) {
-  background: var(--xh-text-field-clear-bg-hover, var(--xh-bg-subtle-hover));
-  color: var(--xh-text-field-clear-fg-hover, var(--xh-fg-default));
+[data-scope='text-field'][data-part='clear-trigger']:hover {
+  background: var(--xh-text-field-action-bg-hover, var(--xh-bg-subtle-hover));
+  color: var(--xh-text-field-action-fg-hover, var(--xh-fg-default));
 }
 
-[data-scope='text-field'][data-part='clear-trigger']:active:not(:disabled) {
-  background: var(--xh-text-field-clear-bg-active, var(--xh-bg-subtle-active));
+[data-scope='text-field'][data-part='clear-trigger']:active {
+  background: var(--xh-text-field-action-bg-active, var(--xh-bg-subtle-active));
+  scale: var(--xh-motion-scale-press);
 }
 
 /* 按钮不占 Tab 位（tabindex=-1）也不抢焦点，正常操作走不到这里；
@@ -19407,13 +19667,6 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='text-field'][data-part='clear-trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-_text-field-ring);
   outline-offset: var(--xh-ring-offset);
-}
-
-/* 框里没字、只读或禁用时按钮转灰但不收起：位置留着，敲进第一个字就亮 */
-[data-scope='text-field'][data-part='clear-trigger']:disabled {
-  background: var(--xh-text-field-clear-bg, transparent);
-  color: var(--xh-fg-disabled);
-  cursor: not-allowed;
 }
 
 /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
@@ -19740,6 +19993,63 @@ input[data-scope='mention'][data-part='input'] {
   cursor: not-allowed;
 }
 
+/* 清空按钮贴在框内末端：不占宽度也不撑高 control，有值时才显形 */
+[data-scope='time-field'][data-part='clear-trigger'] {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--xh-time-field-action-size, var(--xh-control-action-size));
+  block-size: var(--xh-time-field-action-size, var(--xh-control-action-size));
+  padding: 0;
+  margin-inline-start: auto;
+  border: 0;
+  border-radius: var(--xh-time-field-action-radius, var(--xh-shape-control));
+  background: var(--xh-time-field-action-bg, transparent);
+  color: var(--xh-time-field-action-fg, var(--xh-fg-muted));
+  font-family: inherit;
+  font-size: var(--xh-time-field-action-font-size, var(--xh-text-secondary-size));
+  line-height: var(--xh-leading-none);
+  cursor: pointer;
+  user-select: none;
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+/* 没值时连接层给的是 hidden 属性；上面那条 display 会把 UA 规则盖掉 */
+[data-scope='time-field'][data-part='clear-trigger'][hidden] {
+  display: none;
+}
+
+[data-scope='time-field'][data-part='clear-trigger']:hover {
+  background: var(--xh-time-field-action-bg-hover, var(--xh-bg-subtle-hover));
+  color: var(--xh-time-field-action-fg-hover, var(--xh-fg-default));
+}
+
+[data-scope='time-field'][data-part='clear-trigger']:active {
+  background: var(--xh-time-field-action-bg-active, var(--xh-bg-subtle-active));
+  scale: var(--xh-motion-scale-press);
+}
+
+/* 按钮不占 Tab 位（tabindex=-1），这条是给程序化聚焦兜底：落焦时得看得见 */
+[data-scope='time-field'][data-part='clear-trigger']:focus-visible {
+  outline: var(--xh-ring-width) solid var(--xh-_time-field-ring);
+  outline-offset: var(--xh-ring-offset);
+}
+
+/* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这条即不命中 */
+[data-scope='time-field'][data-part='clear-trigger']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+}
+
 /* 连接层把它写成 type=hidden，UA 自己就不渲染；这里的视觉隐藏是给元素升级前那一瞬兜底
    （作者手写的是一个普通 input，升级完成前它是可见的文本框）。
    刻意不写 display：写了反而会盖掉 UA 对 type=hidden 的收起，把它显出来 */
@@ -19998,7 +20308,9 @@ input[data-scope='mention'][data-part='input'] {
   line-height: var(--xh-leading-none);
   cursor: pointer;
   user-select: none;
-  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 /* 有值时清空钮顶上来，下拉钮让位：两个钮并排堆在框里，用户分不清点哪个。
@@ -20018,14 +20330,19 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='time-picker'][data-part='trigger']:hover:not(:disabled),
-[data-scope='time-picker'][data-part='clear-trigger']:hover:not(:disabled) {
+[data-scope='time-picker'][data-part='clear-trigger']:hover {
   background: var(--xh-time-picker-action-bg-hover, var(--xh-bg-subtle-hover));
   color: var(--xh-time-picker-action-fg-hover, var(--xh-fg-default));
 }
 
-[data-scope='time-picker'][data-part='trigger']:active:not(:disabled),
-[data-scope='time-picker'][data-part='clear-trigger']:active:not(:disabled) {
+[data-scope='time-picker'][data-part='trigger']:active:not(:disabled) {
   background: var(--xh-time-picker-action-bg-active, var(--xh-bg-subtle-active));
+}
+
+/* 清空钮按下时换底并微缩，给指针一个按到了的反馈 */
+[data-scope='time-picker'][data-part='clear-trigger']:active {
+  background: var(--xh-time-picker-action-bg-active, var(--xh-bg-subtle-active));
+  scale: var(--xh-motion-scale-press);
 }
 
 /* 触发器是常规 Tab 停靠点，落焦必须看得见；清空按钮退出了 Tab 序列，
@@ -20036,9 +20353,9 @@ input[data-scope='mention'][data-part='input'] {
   outline-offset: var(--xh-ring-offset);
 }
 
-/* 两个按钮都是单体控件，禁用走原生 :disabled（列里的格一律 data-disabled） */
-[data-scope='time-picker'][data-part='trigger']:disabled,
-[data-scope='time-picker'][data-part='clear-trigger']:disabled {
+/* 下拉钮是单体控件，禁用走原生 :disabled（列里的格一律 data-disabled）；
+   清空钮没值即收起，不做灰态 */
+[data-scope='time-picker'][data-part='trigger']:disabled {
   background: var(--xh-time-picker-action-bg, transparent);
   color: var(--xh-fg-disabled);
   cursor: not-allowed;
@@ -20462,6 +20779,10 @@ input[data-scope='mention'][data-part='input'] {
   font: inherit;
   line-height: var(--xh-leading-none);
   cursor: pointer;
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 /* closable=false 时连接层同时给了 hidden 与 disabled，这条是它真正收起的那一半：
@@ -20471,8 +20792,13 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='toast'][data-part='close-trigger']:hover:not(:disabled) {
-  background: var(--xh-toast-close-bg-hover, var(--xh-bg-subtle));
+  background: var(--xh-toast-close-bg-hover, var(--xh-bg-subtle-hover));
   color: var(--xh-toast-close-fg-hover, var(--xh-fg-default));
+}
+
+[data-scope='toast'][data-part='close-trigger']:active {
+  background: var(--xh-toast-close-bg-active, var(--xh-bg-subtle-active));
+  scale: var(--xh-motion-scale-press);
 }
 
 /* 单体控件用原生 disabled。常规路径下它与 hidden 同时出现看不见，
@@ -21300,7 +21626,7 @@ input[data-scope='mention'][data-part='input'] {
    否则长标题会直接钻到按钮底下。只在真有关闭按钮时让位。 */
 [data-scope='tour'][data-part='content']:has([data-scope='tour'][data-part='close-trigger'])
   [data-scope='tour'][data-part='title'] {
-  padding-inline-end: calc(var(--xh-control-h-sm) + var(--xh-space-2));
+  padding-inline-end: calc(var(--xh-tour-close-size, var(--xh-control-h-sm)) + var(--xh-space-2));
 }
 
 [data-scope='tour'][data-part='description'] {
@@ -21376,13 +21702,16 @@ input[data-scope='mention'][data-part='input'] {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  block-size: var(--xh-control-h-sm);
-  inline-size: var(--xh-control-h-sm);
+  block-size: var(--xh-tour-close-size, var(--xh-control-h-sm));
+  inline-size: var(--xh-tour-close-size, var(--xh-control-h-sm));
   border: 0;
-  border-radius: var(--xh-shape-control);
+  border-radius: var(--xh-tour-close-radius, var(--xh-shape-control));
   background: transparent;
   color: var(--xh-fg-muted);
   cursor: pointer;
+  transition:
+    background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='tour'][data-part='close-trigger'][hidden] {
@@ -21390,8 +21719,13 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='tour'][data-part='close-trigger']:hover {
-  background: var(--xh-bg-subtle);
+  background: var(--xh-tour-close-bg-hover, var(--xh-bg-subtle-hover));
   color: var(--xh-fg-default);
+}
+
+[data-scope='tour'][data-part='close-trigger']:active {
+  background: var(--xh-tour-close-bg-active, var(--xh-bg-subtle-active));
+  scale: var(--xh-motion-scale-press);
 }
 
 [data-scope='tour'][data-part='prev-trigger']:focus-visible,
@@ -22423,20 +22757,21 @@ input[data-scope='mention'][data-part='input'] {
   line-height: var(--xh-leading-none);
   cursor: pointer;
   user-select: none;
-  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='tree-select'][data-part='clear-trigger'][hidden] {
   display: none;
 }
 
-[data-scope='tree-select'][data-part='clear-trigger']:hover:not(:disabled) {
+[data-scope='tree-select'][data-part='clear-trigger']:hover {
   background: var(--xh-tree-select-action-bg-hover, var(--xh-bg-subtle-hover));
   color: var(--xh-tree-select-action-fg-hover, var(--xh-fg-default));
 }
 
-[data-scope='tree-select'][data-part='clear-trigger']:active:not(:disabled) {
+[data-scope='tree-select'][data-part='clear-trigger']:active {
   background: var(--xh-tree-select-action-bg-active, var(--xh-bg-subtle-active));
+  scale: var(--xh-motion-scale-press);
 }
 
 /* 清空按钮退出了 Tab 序列（tabindex=-1），正常操作走不到这里；
@@ -22444,13 +22779,6 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='tree-select'][data-part='clear-trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
   outline-offset: var(--xh-ring-offset);
-}
-
-/* 无选中、只读、整控件禁用三种情况下都按不动，用的是原生 disabled */
-[data-scope='tree-select'][data-part='clear-trigger']:disabled {
-  background: var(--xh-tree-select-action-bg, transparent);
-  color: var(--xh-fg-disabled);
-  cursor: not-allowed;
 }
 
 [data-scope='tree-select'][data-part='content'] {

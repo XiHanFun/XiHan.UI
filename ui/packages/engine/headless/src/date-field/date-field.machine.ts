@@ -49,6 +49,9 @@ export const DATE_SEGMENT_PLACEHOLDER: Readonly<Record<DateSegmentType, string>>
   dayPeriod: '--',
 }
 
+/** 清空钮的缺省 aria-label。 */
+export const DATE_FIELD_CLEAR_LABEL = 'Clear'
+
 /** 各段默认的读屏名字。段是 spinbutton，没有名字读屏只念得出一串数字。 */
 export const DATE_SEGMENT_LABEL: Readonly<Record<DateSegmentType, string>> = {
   year: 'year',
@@ -605,7 +608,7 @@ export const dateFieldMachine = createMachine({
   on: {
     'FORM.RESET': { actions: ['resetToDefault'] },
     'VALUE.SET': { actions: ['setValue'] },
-    'VALUE.CLEAR': { actions: ['clearValue'] },
+    'VALUE.CLEAR': { guard: 'canEdit', actions: ['clearValue'] },
     'SEGMENT.STEP': { guard: 'canEdit', actions: ['stepSegment'] },
     'SEGMENT.TYPE': { guard: 'canEdit', actions: ['typeSegment'] },
     'SEGMENT.CLEAR': { guard: 'canEdit', actions: ['clearSegment'] },

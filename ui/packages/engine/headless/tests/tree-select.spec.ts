@@ -938,19 +938,69 @@ describe('禁用与只读', () => {
 })
 
 describe('清空按钮', () => {
-  it('无选中时按不动，有选中时清空并把焦点还给 trigger', () => {
+  it('无选中时收起，有选中时清空并把焦点还给 trigger', () => {
     const onValueChange = vi.fn()
     const h = mount({ defaultValue: 'license', onValueChange })
     expect(h.api().canClear).toBe(true)
+    expect(h.clear.hasAttribute('hidden')).toBe(false)
     expect(h.clear.hasAttribute('disabled')).toBe(false)
 
     click(h.clear)
     expect(h.value()).toEqual([])
     expect(onValueChange).toHaveBeenLastCalledWith({ value: [] })
     expect(document.activeElement).toBe(h.trigger)
-    // 清完就按不动了：原生 disabled 的按钮连 click 都不派发
+    // 清完就收起：只打 hidden，不灰留位
     expect(h.api().canClear).toBe(false)
-    expect(h.clear.hasAttribute('disabled')).toBe(true)
+    expect(h.clear.hasAttribute('hidden')).toBe(true)
+    expect(h.clear.hasAttribute('disabled')).toBe(false)
+    expect(h.clear.hasAttribute('data-disabled')).toBe(false)
+  })
+
+  it('只读与禁用下都收起', () => {
+    expect(mount({ defaultValue: 'license', readOnly: true }).clear.hasAttribute('hidden')).toBe(true)
+    expect(mount({ defaultValue: 'license', disabled: true }).clear.hasAttribute('hidden')).toBe(true)
+  })
+
+  it('可及名字取 translations.clearTrigger，缺省 Clear', () => {
+    expect(mount({ defaultValue: 'license' }).clear.getAttribute('aria-label')).toBe('Clear')
+    expect(mount({ defaultValue: 'license', translations: { clearTrigger: '清空' } }).clear.getAttribute('aria-label')).toBe('清空')
+  })
+
+  it('delete 在 trigger 上清空全部；Backspace 多选去掉最后一个、单选清空', () => {
+    const onValueChange = vi.fn()
+    const h = mount({ multiple: true, defaultValue: ['index', 'license'], onValueChange })
+    h.trigger.focus()
+    let event = press(h.trigger, 'Backspace')
+    expect(event.defaultPrevented).toBe(true)
+    expect(h.value()).toEqual(['index'])
+    expect(onValueChange).toHaveBeenLastCalledWith({ value: ['index'] })
+    expect(h.api().open).toBe(false)
+    expect(document.activeElement).toBe(h.trigger)
+
+    event = press(h.trigger, 'Delete')
+    expect(event.defaultPrevented).toBe(true)
+    expect(h.value()).toEqual([])
+    expect(h.api().open).toBe(false)
+
+    // 没值了不吞键
+    onValueChange.mockClear()
+    event = press(h.trigger, 'Delete')
+    expect(event.defaultPrevented).toBe(false)
+    expect(onValueChange).not.toHaveBeenCalled()
+
+    const single = mount({ defaultValue: 'license' })
+    press(single.trigger, 'Backspace')
+    expect(single.value()).toEqual([])
+  })
+
+  it('只读与禁用下 Delete / Backspace 不清值', () => {
+    const ro = mount({ defaultValue: 'license', readOnly: true })
+    press(ro.trigger, 'Delete')
+    press(ro.trigger, 'Backspace')
+    expect(ro.value()).toEqual(['license'])
+    const dis = mount({ defaultValue: 'license', disabled: true })
+    press(dis.trigger, 'Delete')
+    expect(dis.value()).toEqual(['license'])
   })
 
   it('按下指针不把焦点从 trigger 挪走', () => {
@@ -1009,10 +1059,10 @@ describe('aRIA 契约', () => {
     expect(h.node('src').getAttribute('aria-label')).toBe('Source')
   })
 
-  it('清空按钮与展开箭头都退出 Tab 序列，也不进可及树', () => {
+  it('清空按钮退出 Tab 序列但留在可及树；展开箭头两者都退出', () => {
     const h = mount({ defaultValue: 'license' })
     expect(h.clear.getAttribute('tabindex')).toBe('-1')
-    expect(h.clear.getAttribute('aria-hidden')).toBe('true')
+    expect(h.clear.hasAttribute('aria-hidden')).toBe(false)
     expect(h.branch('src').trigger.getAttribute('tabindex')).toBe('-1')
     expect(h.branch('src').trigger.getAttribute('aria-hidden')).toBe('true')
   })

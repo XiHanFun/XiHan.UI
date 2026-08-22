@@ -1,10 +1,10 @@
-import { overlayPositioned } from '../shared/overlay'
 import type { NavIntent } from '@xihan-ui/behavior'
 import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { CascaderApi, CascaderNodeMeta, CascaderSchema, CascaderSearchResult, CascaderTranslations } from './cascader.types'
 import { cascadeState, focusItem, ITEM_VALUE_ATTR, navIntentFromKey } from '@xihan-ui/behavior'
 import { dataAttr, isComposingEvent } from '@xihan-ui/kernel'
+import { overlayPositioned } from '../shared/overlay'
 import { cascaderAnatomy } from './cascader.anatomy'
 import {
   cascaderBuildColumns,
@@ -176,6 +176,7 @@ export function connectCascader<T extends PropTypes>(
     empty: prop('translations')?.empty ?? 'No data',
     noMatch: prop('translations')?.noMatch ?? 'No matches',
     column: prop('translations')?.column ?? 'Options',
+    clearTrigger: prop('translations')?.clearTrigger ?? 'Clear',
   }
 
   return {
@@ -267,6 +268,15 @@ export function connectCascader<T extends PropTypes>(
           send({ type: 'OPEN', focus: intent })
           return
         }
+        // 清空钮不占 Tab 位，键盘清空走这里：Delete 清空全部，Backspace 单选清空、多选去掉最后一个
+        if (canClear && (event.key === 'Delete' || event.key === 'Backspace')) {
+          event.preventDefault()
+          if (event.key === 'Delete' || !multiple)
+            send({ type: 'VALUE.CLEAR' })
+          else
+            send({ type: 'VALUE.SET', value: value.slice(0, -1) })
+          return
+        }
         // 吞掉 Enter 与空格，否则按钮的默认激活会再合成一次 click 把浮层关掉。
         // 键盘打开要有可见落点：无选中值时锚定根列首项，有选中仍定位到选中路径末项
         if (event.key === 'Enter' || event.key === ' ') {
@@ -296,14 +306,12 @@ export function connectCascader<T extends PropTypes>(
     getClearTriggerProps: () => normalize.button({
       ...parts['clear-trigger'].attrs,
       'type': 'button',
-      // 整个控件只占一个 Tab 位（trigger），清空按钮不进 Tab 序、也不暴露给读屏
+      // 整个控件只占一个 Tab 位（trigger），清空按钮不进 Tab 序，但保留可及名字给读屏
       'tabindex': -1,
-      'aria-hidden': true,
+      'aria-label': translations.clearTrigger,
       // 没值就整个收起，不是禁用：清空钮与下拉钮并排时，一个灰着一个亮着，
       // 用户分不清哪个能点。有值才出现，出现即可用
       'hidden': !canClear || undefined,
-      'disabled': !canClear || undefined,
-      'data-disabled': dataAttr(!canClear),
       // 拦掉默认聚焦，否则焦点会从 trigger 挪到这个隐身按钮上
       'onPointerDown': (event: PointerEvent) => {
         if (event.button === 0)

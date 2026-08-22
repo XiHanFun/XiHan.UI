@@ -102,6 +102,16 @@ function selectTree(disabled?: string): FixtureNode {
   }
 }
 
+/** 带清空钮的变体：trigger 与 clear-trigger 一起收进 control（按钮不能套按钮，清空钮只能是 trigger 的兄弟）。 */
+function withClearTrigger(base: FixtureNode): FixtureNode {
+  const children = (base.children ?? []).map(node =>
+    node.part === 'trigger'
+      ? { part: 'control', children: [node, { part: 'clear-trigger', tag: 'button' }] }
+      : node,
+  )
+  return { ...base, children }
+}
+
 // content 始终在 DOM，展开态靠 hidden 属性显隐，不卸载作者节点。
 // 隐藏 select 由根部件自行装配，不作为 fixture 节点；采集器仍会抓到它。
 // 位置由引擎异步回填，快照不采集 style，因此这里只断言 data-placement 这类语义属性。
@@ -889,6 +899,197 @@ export const selectSuite: ConformanceSuite = {
             assertValueText(doc, 'Banana')
             assertMultiHiddenSelect(doc, 'fruit', ['banana'])
           },
+        },
+      ],
+    },
+
+    {
+      name: '清空钮：不占 Tab 位且不对读屏隐藏、可及名走 translations.clearTrigger；有值时出现并让指示符让位，点按清空、浮层不展开、焦点回到 trigger',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: withClearTrigger,
+      props: { defaultValue: 'banana', placeholder: '请选择', name: 'fruit', translations: { clearTrigger: '清空所选' } },
+      initial: {
+        parts: {
+          'clear-trigger': { 'hidden': null, 'tabindex': '-1', 'aria-hidden': null, 'aria-label': '清空所选', 'disabled': null, 'data-disabled': null, 'data-state': null },
+          'indicator': { 'data-clearable': '' },
+        },
+      },
+      steps: [
+        {
+          kind: 'click',
+          part: 'clear-trigger',
+          expect: {
+            activeElement: 'trigger',
+            parts: {
+              'trigger': { 'aria-expanded': 'false', 'data-placeholder': '' },
+              'content': { hidden: '' },
+              'clear-trigger': { hidden: '' },
+              'indicator': { 'data-clearable': null },
+              'item[1]': { 'aria-selected': 'false' },
+            },
+            events: [{ type: 'value-change', detail: { value: [] } }],
+          },
+        },
+        {
+          kind: 'raw',
+          why: '显示文字与表单值都不进属性快照，只能直接读 DOM',
+          run: ({ doc }) => {
+            assertValueText(doc, '请选择')
+            assertHiddenSelect(doc, 'fruit', '')
+          },
+        },
+      ],
+    },
+    {
+      name: '清空钮：禁用与只读时 hidden 不灰留位，解除后回来；无值时同样 hidden',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: withClearTrigger,
+      props: { defaultValue: 'banana', placeholder: '请选择', name: 'fruit' },
+      initial: { parts: { 'clear-trigger': { hidden: null, disabled: null }, 'indicator': { 'data-clearable': '' } } },
+      steps: [
+        {
+          kind: 'setProps',
+          props: { disabled: true },
+          expect: { parts: { 'clear-trigger': { 'hidden': '', 'disabled': null, 'data-disabled': null }, 'indicator': { 'data-clearable': null } } },
+        },
+        {
+          kind: 'setProps',
+          props: { disabled: false, readOnly: true },
+          expect: { parts: { 'clear-trigger': { hidden: '' }, 'trigger': { 'aria-readonly': 'true' } } },
+        },
+        {
+          kind: 'setProps',
+          props: { readOnly: false },
+          expect: { parts: { 'clear-trigger': { hidden: null }, 'indicator': { 'data-clearable': '' } } },
+        },
+        {
+          kind: 'setProps',
+          props: { value: [] },
+          expect: { parts: { 'clear-trigger': { hidden: '' }, 'indicator': { 'data-clearable': null } } },
+        },
+      ],
+    },
+    {
+      name: '只读：trigger 报 aria-readonly，浮层照常展开，点条目不落值、也不收起，清空钮藏着',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: withClearTrigger,
+      props: { readOnly: true, defaultValue: 'banana', name: 'fruit' },
+      initial: { parts: { 'trigger': { 'aria-readonly': 'true', 'data-readonly': '', 'disabled': null }, 'clear-trigger': { hidden: '' } } },
+      steps: [
+        {
+          kind: 'click',
+          part: 'trigger',
+          expect: {
+            parts: { trigger: { 'aria-expanded': 'true' }, content: { hidden: null } },
+            events: [{ type: 'open-change', detail: { open: true } }],
+          },
+        },
+        {
+          kind: 'click',
+          part: 'item[2]',
+          expect: {
+            parts: {
+              'item[1]': { 'aria-selected': 'true' },
+              'item[2]': { 'aria-selected': 'false' },
+              'content': { hidden: null },
+            },
+            events: [],
+          },
+        },
+      ],
+    },
+    {
+      name: 'Delete 在 trigger 上清空全部选中值：浮层不展开、焦点留在 trigger、清空钮随之收起',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      fixture: withClearTrigger,
+      props: { multiple: true, defaultValue: ['apple', 'cherry'], placeholder: '请选择', name: 'fruit' },
+      initial: { parts: { 'clear-trigger': { hidden: null }, 'trigger': { 'data-placeholder': null } } },
+      covers: ['select.kbd.clear'],
+      steps: [
+        { kind: 'focus', part: 'trigger' },
+        {
+          kind: 'key',
+          key: 'Delete',
+          expect: {
+            activeElement: 'trigger',
+            parts: {
+              'trigger': { 'aria-expanded': 'false', 'data-placeholder': '' },
+              'content': { hidden: '' },
+              'clear-trigger': { hidden: '' },
+              'item[0]': { 'aria-selected': 'false' },
+              'item[2]': { 'aria-selected': 'false' },
+            },
+            events: [{ type: 'value-change', detail: { value: [] } }],
+          },
+        },
+      ],
+    },
+    {
+      name: 'Backspace 在 trigger 上：多选只去掉最后一个选中值，再按一次清空',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      fixture: withClearTrigger,
+      props: { multiple: true, defaultValue: ['apple', 'cherry'], name: 'fruit' },
+      covers: ['select.kbd.backspace'],
+      steps: [
+        { kind: 'focus', part: 'trigger' },
+        {
+          kind: 'key',
+          key: 'Backspace',
+          expect: {
+            activeElement: 'trigger',
+            parts: {
+              'trigger': { 'aria-expanded': 'false' },
+              'clear-trigger': { hidden: null },
+              'item[0]': { 'aria-selected': 'true' },
+              'item[2]': { 'aria-selected': 'false' },
+            },
+            events: [{ type: 'value-change', detail: { value: ['apple'] } }],
+          },
+        },
+        {
+          kind: 'key',
+          key: 'Backspace',
+          expect: {
+            activeElement: 'trigger',
+            parts: { 'clear-trigger': { hidden: '' }, 'item[0]': { 'aria-selected': 'false' } },
+            events: [{ type: 'value-change', detail: { value: [] } }],
+          },
+        },
+      ],
+    },
+    {
+      name: 'Backspace 单选：一键清空',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      props: { defaultValue: 'banana', placeholder: '请选择', name: 'fruit' },
+      covers: ['select.kbd.backspace'],
+      steps: [
+        { kind: 'focus', part: 'trigger' },
+        {
+          kind: 'key',
+          key: 'Backspace',
+          expect: {
+            activeElement: 'trigger',
+            parts: { 'trigger': { 'aria-expanded': 'false', 'data-placeholder': '' }, 'item[1]': { 'aria-selected': 'false' } },
+            events: [{ type: 'value-change', detail: { value: [] } }],
+          },
+        },
+      ],
+    },
+    {
+      name: '只读与无值时 Delete / Backspace 在 trigger 上不清值、也不展开',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      props: { readOnly: true, defaultValue: 'banana', name: 'fruit' },
+      steps: [
+        { kind: 'focus', part: 'trigger' },
+        {
+          kind: 'key',
+          key: 'Delete',
+          expect: { parts: { 'trigger': { 'aria-expanded': 'false' }, 'item[1]': { 'aria-selected': 'true' } }, events: [] },
+        },
+        {
+          kind: 'key',
+          key: 'Backspace',
+          expect: { parts: { 'trigger': { 'aria-expanded': 'false' }, 'item[1]': { 'aria-selected': 'true' } }, events: [] },
         },
       ],
     },

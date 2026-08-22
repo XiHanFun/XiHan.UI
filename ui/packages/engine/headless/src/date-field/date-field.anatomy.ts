@@ -7,5 +7,6 @@ export const dateFieldAnatomy = createAnatomy('date-field', [
   'label',
   'control',
   'segment',
+  'clear-trigger',
   'hidden-input',
 ])

@@ -55,6 +55,8 @@ interface Harness {
   root: HTMLElement
   form: HTMLFormElement | null
   trigger: HTMLButtonElement
+  clear: HTMLButtonElement
+  indicator: HTMLElement
   valueTextEl: HTMLElement
   content: HTMLElement
   list: HTMLElement
@@ -96,6 +98,8 @@ function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harnes
   const valueTextEl = doc.createElement('span')
   const indicator = doc.createElement('span')
   trigger.append(valueTextEl, indicator)
+  // 清空钮是 trigger 的兄弟（按钮不能套按钮）
+  const clear = doc.createElement('button')
   const positioner = doc.createElement('div')
   const content = doc.createElement('div')
   // list 是列表框本体，条目住在它里面；footer 是它的兄弟，两个适配器铺的都是这个形状
@@ -103,7 +107,7 @@ function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harnes
   const footer = doc.createElement('div')
   content.append(list, footer)
   positioner.appendChild(content)
-  root.append(hiddenSelect, label, trigger, positioner)
+  root.append(hiddenSelect, label, trigger, clear, positioner)
   const form = options.inForm ? doc.createElement('form') : null
   if (form) {
     form.appendChild(root)
@@ -156,6 +160,7 @@ function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harnes
     spread(valueTextEl, api.getValueTextProps() as Record<string, unknown>)
     valueTextEl.textContent = api.displayText
     spread(indicator, api.getIndicatorProps() as Record<string, unknown>)
+    spread(clear, api.getClearTriggerProps() as Record<string, unknown>)
     spread(positioner, api.getPositionerProps() as Record<string, unknown>)
     spread(content, api.getContentProps() as Record<string, unknown>)
     spread(list, api.getListProps() as Record<string, unknown>)
@@ -190,6 +195,8 @@ function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harnes
     root,
     form,
     trigger,
+    clear,
+    indicator,
     valueTextEl,
     content,
     list,
@@ -632,5 +639,123 @@ describe('selectSelect 收起态连打检索', () => {
     press(h.trigger, 'c')
     expect(h.value()).toEqual(['apple', 'cherry'])
     expect(h.state()).toBe('closed')
+  })
+})
+
+describe('selectSelect 清空按钮', () => {
+  it('不占 Tab 位但对读屏可见；可及名走 translations.clearTrigger', () => {
+    const h = mount({ defaultValue: 'apple' })
+    expect(h.clear.getAttribute('tabindex')).toBe('-1')
+    expect(h.clear.hasAttribute('aria-hidden')).toBe(false)
+    expect(h.clear.getAttribute('aria-label')).toBe('Clear')
+    h.setProps({ translations: { clearTrigger: '清空所选' } })
+    expect(h.clear.getAttribute('aria-label')).toBe('清空所选')
+  })
+
+  it('没值 / 禁用 / 只读时整个 hidden 不灰留位；有值时顶替指示符', () => {
+    const empty = mount()
+    expect(empty.clear.hasAttribute('hidden')).toBe(true)
+    expect(empty.indicator.hasAttribute('data-clearable')).toBe(false)
+    expect(empty.api().canClear).toBe(false)
+
+    const h = mount({ defaultValue: 'apple' })
+    expect(h.clear.hasAttribute('hidden')).toBe(false)
+    expect(h.clear.hasAttribute('disabled')).toBe(false)
+    expect(h.clear.hasAttribute('data-disabled')).toBe(false)
+    expect(h.clear.hasAttribute('data-state')).toBe(false)
+    expect(h.indicator.hasAttribute('data-clearable')).toBe(true)
+    expect(h.api().canClear).toBe(true)
+
+    h.setProps({ disabled: true })
+    expect(h.clear.hasAttribute('hidden')).toBe(true)
+    h.setProps({ disabled: false, readOnly: true })
+    expect(h.clear.hasAttribute('hidden')).toBe(true)
+    expect(h.indicator.hasAttribute('data-clearable')).toBe(false)
+  })
+
+  it('按下不把焦点从 trigger 挪走；点完清空、不展开、焦点送回 trigger', () => {
+    const h = mount({ defaultValue: ['apple', 'cherry'], multiple: true, placeholder: '请选择' })
+    const down = new MouseEvent('pointerdown', { bubbles: true, cancelable: true, button: 0 })
+    h.clear.dispatchEvent(down)
+    expect(down.defaultPrevented).toBe(true)
+
+    click(h.clear)
+    expect(h.value()).toEqual([])
+    expect(h.valueTextEl.textContent).toBe('请选择')
+    expect(h.state()).toBe('closed')
+    expect(h.clear.hasAttribute('hidden')).toBe(true)
+    expect(document.activeElement).toBe(h.trigger)
+  })
+
+  it('api.clear 走同一条路：清空并通知一次', () => {
+    const onValueChange = vi.fn()
+    const h = mount({ defaultValue: 'apple', onValueChange })
+    h.api().clear()
+    expect(h.value()).toEqual([])
+    expect(onValueChange).toHaveBeenCalledTimes(1)
+    expect(onValueChange).toHaveBeenCalledWith({ value: [] })
+  })
+})
+
+describe('selectSelect 只读', () => {
+  it('浮层照常展开、条目照常浏览，但选中值改不动、也清不掉', async () => {
+    const h = mount({ readOnly: true, defaultValue: 'apple' })
+    expect(h.trigger.getAttribute('aria-readonly')).toBe('true')
+    expect(h.trigger.hasAttribute('disabled')).toBe(false)
+    click(h.trigger)
+    await tick()
+    expect(h.state()).toBe('open')
+    click(h.item('cherry'))
+    expect(h.value()).toEqual(['apple'])
+    expect(h.state()).toBe('open')
+    press(h.content, 'ArrowDown')
+    expect(h.highlighted()).toBe('banana')
+    press(h.content, 'Enter')
+    expect(h.value()).toEqual(['apple'])
+    h.api().clear()
+    expect(h.value()).toEqual(['apple'])
+    h.api().setValue('cherry')
+    expect(h.value()).toEqual(['apple'])
+  })
+
+  it('收起态连打与键盘清空都不动值', () => {
+    const h = mount({ readOnly: true, defaultValue: 'apple' })
+    press(h.trigger, 'c')
+    expect(h.value()).toEqual(['apple'])
+    press(h.trigger, 'Delete')
+    expect(h.value()).toEqual(['apple'])
+  })
+})
+
+describe('selectSelect 键盘清空', () => {
+  it('delete 清空全部，列表不展开', () => {
+    const h = mount({ defaultValue: ['apple', 'cherry'], multiple: true })
+    const event = press(h.trigger, 'Delete')
+    expect(event.defaultPrevented).toBe(true)
+    expect(h.value()).toEqual([])
+    expect(h.state()).toBe('closed')
+  })
+
+  it('backspace 单选清空、多选去掉最后一个', () => {
+    const single = mount({ defaultValue: 'apple' })
+    press(single.trigger, 'Backspace')
+    expect(single.value()).toEqual([])
+
+    const multi = mount({ defaultValue: ['apple', 'cherry'], multiple: true })
+    press(multi.trigger, 'Backspace')
+    expect(multi.value()).toEqual(['apple'])
+    press(multi.trigger, 'Backspace')
+    expect(multi.value()).toEqual([])
+    expect(multi.state()).toBe('closed')
+  })
+
+  it('没值或禁用时不吞键', () => {
+    const h = mount()
+    expect(press(h.trigger, 'Delete').defaultPrevented).toBe(false)
+    expect(press(h.trigger, 'Backspace').defaultPrevented).toBe(false)
+    h.api().setValue('apple')
+    h.setProps({ disabled: true })
+    expect(press(h.trigger, 'Delete').defaultPrevented).toBe(false)
+    expect(h.value()).toEqual(['apple'])
   })
 })

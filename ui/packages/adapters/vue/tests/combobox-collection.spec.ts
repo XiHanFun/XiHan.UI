@@ -35,7 +35,7 @@ afterEach(() => {
 })
 
 /** 只交数据，结构由组件铺开 */
-function mountFromCollection(value: string[]) {
+function mountFromCollection(value: string[], clearable = true) {
   return mount(defineComponent({
     setup: () => () => h(XhComboboxRoot, {
       value,
@@ -43,6 +43,7 @@ function mountFromCollection(value: string[]) {
       label: '水果',
       empty: '无匹配水果',
       placeholder: '输入水果名筛选',
+      clearable,
     }),
   }), { attachTo: document.body })
 }
@@ -58,8 +59,8 @@ function mountFromParts(value: string[]) {
       h(XhComboboxLabel, () => '水果'),
       h(XhComboboxControl, () => [
         h(XhComboboxInput),
-        h(XhComboboxTrigger),
         h(XhComboboxClearTrigger),
+        h(XhComboboxTrigger),
       ]),
       h(XhComboboxPositioner, () => [
         h(XhComboboxContent, () => COLLECTION.map(node =>
@@ -106,8 +107,8 @@ describe('combobox 的 collection', () => {
       'label',
       'control',
       'input',
-      'trigger',
       'clear-trigger',
+      'trigger',
       'positioner',
       'content',
       'item',
@@ -121,6 +122,13 @@ describe('combobox 的 collection', () => {
       'item-indicator',
       'empty',
     ])
+    w.unmount()
+  })
+
+  it('不传 clearable 时自动树里没有清空钮', () => {
+    const w = mountFromCollection(['banana'], false)
+    const parts = partsIn().map(el => el.getAttribute('data-part'))
+    expect(parts).not.toContain('clear-trigger')
     w.unmount()
   })
 

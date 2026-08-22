@@ -17,6 +17,7 @@ import { isMetaSegment } from './date-field.blocks'
 import {
   applySegmentDigit,
   compareDateSegments,
+  DATE_FIELD_CLEAR_LABEL,
   DATE_FIELD_GRANULARITY,
   DATE_FIELD_LOCALE,
   DATE_SEGMENT_LABEL,
@@ -71,6 +72,9 @@ export function connectDateField<T extends PropTypes>(
 
   const labelOf = (type: DateSegmentType): string =>
     prop('translations')?.[type] ?? DATE_SEGMENT_LABEL[type]
+  const clearLabel = prop('translations')?.clearTrigger ?? DATE_FIELD_CLEAR_LABEL
+  // 填了哪怕一段就能清；禁用与只读下清空钮收起
+  const canClear = editable && !empty
 
   const state = (type: DateSegmentType, index: number): DateFieldSegmentState => {
     const raw = segments[type]
@@ -141,6 +145,7 @@ export function connectDateField<T extends PropTypes>(
     focusedSegment,
     locale,
     granularity,
+    canClear,
     setValue: next => send({ type: 'VALUE.SET', value: next }),
     clear: () => send({ type: 'VALUE.CLEAR' }),
 
@@ -297,6 +302,28 @@ export function connectDateField<T extends PropTypes>(
             },
       })
     },
+
+    getClearTriggerProps: () => normalize.button({
+      ...parts['clear-trigger'].attrs,
+      'type': 'button',
+      // 不进 Tab 序：段位上按退格即可清值；读屏仍能按名字找到它
+      'tabindex': -1,
+      'aria-label': clearLabel,
+      // 没值或不可编辑就整个收起：出现即可用
+      'hidden': !canClear || undefined,
+      // 不拦的话浏览器会把焦点挪到这个按钮上，清完焦点就落在一个收起的节点里
+      'onPointerDown': (event: PointerEvent) => {
+        if (event.button === 0)
+          event.preventDefault()
+      },
+      'onClick': (event: MouseEvent) => {
+        if (!canClear)
+          return
+        send({ type: 'VALUE.CLEAR' })
+        // pointerdown 已拦掉默认聚焦，键盘 / 程序化激活这一路则要主动把焦点送回首段
+        focusSafely(nodesOf(event.currentTarget as HTMLElement).find(node => !isSpare(node)))
+      },
+    }),
 
     getHiddenInputProps: () => normalize.input({
       ...parts['hidden-input'].attrs,

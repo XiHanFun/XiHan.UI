@@ -126,7 +126,7 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 
 ### 清空按钮
 
-清空钮是触发器的兄弟节点，一起收在 control 里：嵌在触发器右端、悬停时替换下拉箭头；有选中才显形，点按清空全部选中、不展开浮层；可及名走 translations.clear
+清空钮是触发器的兄弟节点，一起收在 control 里并排（Vue 的 collection 自动渲染加 clearable 即带上它）；有选中才出现、出现即顶替下拉箭头，不占 Tab 位（键盘清空走 Delete / Backspace）；点按清空全部选中、不展开浮层，焦点回到触发器；可及名走 translations.clearTrigger
 
 <XhDemo src="select/18-clear" />
 
@@ -163,6 +163,7 @@ footer 是 list 的兄弟：不随条目滚走，也不会被方向键与连打�
 | `open` | `boolean` |  | 展开态。给定即受控：内部不再自改，只发 onOpenChange。 |
 | `defaultOpen` | `boolean` |  |  |
 | `disabled` | `boolean` |  | 整个控件禁用：trigger 用原生 disabled，隐藏 select 不参与提交。 |
+| `readOnly` | `boolean` |  | 只读：浮层照常展开与浏览，但选中值改不动、也清不掉。 |
 | `invalid` | `boolean` |  | 校验错误态：trigger 标红并输出 aria-invalid。 |
 | `translations` | `Partial<SelectTranslations>` |  | 读屏用的文案，默认英文。 |
 | `maxTagCount` | `number` |  | 多选标签最多摆几个，其余折进 overflowCount；缺省全摆。 |
@@ -208,7 +209,6 @@ footer 是 list 的兄弟：不随条目滚走，也不会被方向键与连打�
 | `control` | 'open' \| 'closed' |
 | `trigger` | 'open' \| 'closed' |
 | `indicator` | 'open' \| 'closed' |
-| `clear-trigger` | 'open' \| 'closed' |
 | `positioner` | 'open' \| 'closed' |
 | `content` | 'open' \| 'closed' |
 | `list` | 'open' \| 'closed' |
@@ -218,9 +218,9 @@ footer 是 list 的兄弟：不随条目滚走，也不会被方向键与连打�
 
 **状态**：`open` · `closed`
 
-**事件**：`OPEN` · `TOGGLE` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `ITEM.HIGHLIGHT` · `HIGHLIGHT.CLEAR` · `ITEM.LOST` · `ITEM.SELECT` · `VALUE.SET` · `FORM.RESET`
+**事件**：`OPEN` · `TOGGLE` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `ITEM.HIGHLIGHT` · `HIGHLIGHT.CLEAR` · `ITEM.LOST` · `ITEM.SELECT` · `VALUE.SET` · `VALUE.CLEAR` · `FORM.RESET`
 
-**判据**：`isOpenControlled` · `isMultiple`
+**判据**：`isOpenControlled` · `isMultiple` · `isReadOnly`
 
 ## connect API
 
@@ -235,6 +235,8 @@ footer 是 list 的兄弟：不随条目滚走，也不会被方向键与连打�
 | `displayText` | `string` | value-text 实际显示的文字：有选中取其文本（多选按半角逗号加空格连起来），否则取 placeholder。 |
 | `multiple` | `boolean` | 是否允许多选。 |
 | `invalid` | `boolean` | 校验错误态。 |
+| `readOnly` | `boolean` | 只读态。 |
+| `canClear` | `boolean` | 此刻能否清空：有选中且既不禁用也不只读。 |
 | `tags` | `SelectTagMeta[]` | 可见标签（受 maxTagCount 截断），与 value/valueText 同序。 |
 | `overflowCount` | `number` | 被 maxTagCount 折起来的标签数；作者据此渲染 +N。 |
 | `highlightedValue` | `string \| null` | 高亮锚点；收起时为 null。 |
@@ -244,11 +246,11 @@ footer 是 list 的兄弟：不随条目滚走，也不会被方向键与连打�
 | `deselect` | `(value: string) => void` | 摘掉一个选中值。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['element']` |  |
-| `getControlProps` | `() => T['element']` | 触发器与清空按钮的收纳容器兼定位基准：清空钮据此嵌进触发器右端、悬停时替换展开指示符。 |
+| `getControlProps` | `() => T['element']` | 触发器与清空按钮的收纳容器：两者在里面并排，有值时清空钮顶替展开指示符。 |
 | `getTriggerProps` | `() => T['button']` |  |
 | `getValueTextProps` | `() => T['element']` |  |
 | `getIndicatorProps` | `() => T['element']` |  |
-| `getClearTriggerProps` | `() => T['button']` | 清空按钮：没选中或禁用时整个藏掉；点按清空全部选中、不展开浮层。 |
+| `getClearTriggerProps` | `() => T['button']` | 清空按钮：不占 Tab 位；清不了时整个藏掉；点按清空全部选中、不展开浮层，焦点送回 trigger。 |
 | `getTagProps` | `(props: SelectTagProps) => T['element']` | 标签：一个选中值一枚；放触发器里就是纯展示，放外面配 tag-remove 可删。 |
 | `getTagRemoveProps` | `(props: SelectTagProps) => T['button']` | 标签删除按钮：点按摘掉所在标签的选中值；须放在 tag 部件里。 |
 | `getPositionerProps` | `() => T['element']` |  |
@@ -270,6 +272,8 @@ footer 是 list 的兄弟：不随条目滚走，也不会被方向键与连打�
 | `ArrowDown` | closed, focus in trigger | 展开列表并把高亮落到选中项的下一个可用条目 |
 | `ArrowUp` | closed, focus in trigger | 展开列表并把高亮落到选中项的上一个可用条目 |
 | `单个可打印字符` | closed, focus in trigger | 连打检索命中的条目直接成为选中值（多选是加进集合，已在集合里则不动），列表不展开 |
+| `Delete` | closed, focus in trigger, 有选中值且未禁用、未只读 | 清空全部选中，列表不展开 |
+| `Backspace` | closed, focus in trigger, 有选中值且未禁用、未只读 | 单选清空；多选去掉最后一个选中值，列表不展开 |
 | `ArrowDown` | open, focus in content | 高亮移到下一个条目（禁用项跳过、尽头按 loop 回绕） |
 | `ArrowUp` | open, focus in content | 高亮移到上一个条目（禁用项跳过、尽头按 loop 回绕） |
 | `Home` | open, focus in content | 高亮移到首个可用条目 |
@@ -291,8 +295,9 @@ footer 是 list 的兄弟：不随条目滚走，也不会被方向键与连打�
 | `trigger` | `aria-haspopup` | 'listbox' |
 | `trigger` | `aria-invalid` | 'true' \| 'false' |
 | `trigger` | `aria-labelledby` | `label` 部件的 id `value-text` 部件的 id |
+| `trigger` | `aria-readonly` | 'true' \| 'false' |
 | `indicator` | `aria-hidden` | 'true' |
-| `clear-trigger` | `aria-label` | props.translations.clear |
+| `clear-trigger` | `aria-label` | props.translations.clearTrigger |
 | `tag-remove` | `aria-label` | (prop('translations')?.removeTag ?? 'Remove {label}')… |
 | `list` | `aria-label` | props.translations.content |
 | `list` | `aria-labelledby` | `label` 部件的 id `value-text` 部件的 id |
@@ -316,6 +321,7 @@ footer 是 list 的兄弟：不随条目滚走，也不会被方向键与连打�
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
 | `root` | `data-invalid` | ''（条件成立时才出现） |
+| `root` | `data-readonly` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | 'open' \| 'closed' |
 | `root` | `data-tone` | props.tone |
@@ -327,12 +333,13 @@ footer 是 list 的兄弟：不随条目滚走，也不会被方向键与连打�
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `trigger` | `data-invalid` | ''（条件成立时才出现） |
 | `trigger` | `data-placeholder` | ''（条件成立时才出现） |
+| `trigger` | `data-readonly` | ''（条件成立时才出现） |
 | `trigger` | `data-state` | 'open' \| 'closed' |
 | `value-text` | `data-disabled` | ''（条件成立时才出现） |
 | `value-text` | `data-placeholder` | ''（条件成立时才出现） |
+| `indicator` | `data-clearable` | ''（条件成立时才出现） |
 | `indicator` | `data-disabled` | ''（条件成立时才出现） |
 | `indicator` | `data-state` | 'open' \| 'closed' |
-| `clear-trigger` | `data-state` | 'open' \| 'closed' |
 | `tag` | `data-disabled` | ''（条件成立时才出现） |
 | `tag` | `data-value` | v |
 | `tag-remove` | `data-disabled` | ''（条件成立时才出现） |
@@ -353,7 +360,7 @@ footer 是 list 的兄弟：不随条目滚走，也不会被方向键与连打�
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-select-clear-bg-hover` · `--xh-select-clear-fg` · `--xh-select-clear-fg-hover` · `--xh-select-clear-font-size` · `--xh-select-clear-size` · `--xh-select-content-bg` · `--xh-select-content-border` · `--xh-select-content-fg` · `--xh-select-content-max-h` · `--xh-select-content-max-w` · `--xh-select-content-min-w` · `--xh-select-content-px` · `--xh-select-content-py` · `--xh-select-content-radius` · `--xh-select-content-shadow` · `--xh-select-footer-border` · `--xh-select-footer-fg` · `--xh-select-footer-font-size` · `--xh-select-footer-gap` · `--xh-select-footer-px` · `--xh-select-footer-py` · `--xh-select-gap` · `--xh-select-icon-size` · `--xh-select-indicator-fg` · `--xh-select-item-bg-hover` · `--xh-select-item-fg` · `--xh-select-item-fg-selected` · `--xh-select-item-font-size` · `--xh-select-item-font-weight-selected` · `--xh-select-item-gap` · `--xh-select-item-indicator-fg` · `--xh-select-item-indicator-size` · `--xh-select-item-leading` · `--xh-select-item-px` · `--xh-select-item-py` · `--xh-select-item-radius` · `--xh-select-label-fg` · `--xh-select-label-font-size` · `--xh-select-label-font-weight` · `--xh-select-placeholder-fg` · `--xh-select-tag-bg` · `--xh-select-tag-fg` · `--xh-select-tag-font-size` · `--xh-select-tag-gap` · `--xh-select-tag-px` · `--xh-select-tag-radius` · `--xh-select-tag-remove-fg` · `--xh-select-tag-remove-fg-hover` · `--xh-select-trigger-bg` · `--xh-select-trigger-border` · `--xh-select-trigger-border-focus` · `--xh-select-trigger-border-hover` · `--xh-select-trigger-border-invalid` · `--xh-select-trigger-fg` · `--xh-select-trigger-font-size` · `--xh-select-trigger-gap` · `--xh-select-trigger-h` · `--xh-select-trigger-max-w` · `--xh-select-trigger-min-w` · `--xh-select-trigger-px` · `--xh-select-trigger-radius`
+`--xh-select-action-bg` · `--xh-select-action-bg-active` · `--xh-select-action-bg-hover` · `--xh-select-action-fg` · `--xh-select-action-fg-hover` · `--xh-select-action-font-size` · `--xh-select-action-radius` · `--xh-select-action-size` · `--xh-select-content-bg` · `--xh-select-content-border` · `--xh-select-content-fg` · `--xh-select-content-max-h` · `--xh-select-content-max-w` · `--xh-select-content-min-w` · `--xh-select-content-px` · `--xh-select-content-py` · `--xh-select-content-radius` · `--xh-select-content-shadow` · `--xh-select-control-gap` · `--xh-select-footer-border` · `--xh-select-footer-fg` · `--xh-select-footer-font-size` · `--xh-select-footer-gap` · `--xh-select-footer-px` · `--xh-select-footer-py` · `--xh-select-gap` · `--xh-select-icon-size` · `--xh-select-indicator-fg` · `--xh-select-item-bg-hover` · `--xh-select-item-fg` · `--xh-select-item-fg-selected` · `--xh-select-item-font-size` · `--xh-select-item-font-weight-selected` · `--xh-select-item-gap` · `--xh-select-item-indicator-fg` · `--xh-select-item-indicator-size` · `--xh-select-item-leading` · `--xh-select-item-px` · `--xh-select-item-py` · `--xh-select-item-radius` · `--xh-select-label-fg` · `--xh-select-label-font-size` · `--xh-select-label-font-weight` · `--xh-select-placeholder-fg` · `--xh-select-tag-bg` · `--xh-select-tag-fg` · `--xh-select-tag-font-size` · `--xh-select-tag-gap` · `--xh-select-tag-px` · `--xh-select-tag-radius` · `--xh-select-tag-remove-bg-active` · `--xh-select-tag-remove-bg-hover` · `--xh-select-tag-remove-fg` · `--xh-select-tag-remove-fg-hover` · `--xh-select-tag-remove-radius` · `--xh-select-tag-remove-size` · `--xh-select-trigger-bg` · `--xh-select-trigger-bg-readonly` · `--xh-select-trigger-border` · `--xh-select-trigger-border-focus` · `--xh-select-trigger-border-hover` · `--xh-select-trigger-border-invalid` · `--xh-select-trigger-fg` · `--xh-select-trigger-font-size` · `--xh-select-trigger-gap` · `--xh-select-trigger-h` · `--xh-select-trigger-max-w` · `--xh-select-trigger-min-w` · `--xh-select-trigger-px` · `--xh-select-trigger-radius`
 
 ## 动效
 

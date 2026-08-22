@@ -54,7 +54,7 @@ export interface SelectNode {
 /** 读屏用的文案，默认英文。 */
 export interface SelectTranslations {
   /** 清空按钮的可及名。 */
-  clear: string
+  clearTrigger: string
   /** 标签删除按钮的可及名模板，{label} 现场代入。 */
   removeTag: string
   /** 列表框容器的兜底名字，作者两个名字部件（label / value-text）都没渲染时才出面。 */
@@ -110,6 +110,8 @@ export interface SelectSchema extends MachineSchema {
     defaultOpen?: boolean
     /** 整个控件禁用：trigger 用原生 disabled，隐藏 select 不参与提交。 */
     disabled?: boolean
+    /** 只读：浮层照常展开与浏览，但选中值改不动、也清不掉。 */
+    readOnly?: boolean
     /** 校验错误态：trigger 标红并输出 aria-invalid。 */
     invalid?: boolean
     /** 读屏用的文案，默认英文。 */
@@ -171,15 +173,18 @@ export interface SelectSchema extends MachineSchema {
     | { type: 'ITEM.SELECT', value: string }
     /** 整体改写选中集合（收起态连打检索、外部 setValue 都走它）。裸串同 props 一样按单选简写处理。 */
     | { type: 'VALUE.SET', value: string | string[] }
+    /** 清空全部选中（清空按钮、键盘 Delete 与 api.clear 都走它）。 */
+    | { type: 'VALUE.CLEAR' }
     | { type: 'FORM.RESET' }
   tag: never
-  guard: 'isOpenControlled' | 'isMultiple'
+  guard: 'isOpenControlled' | 'isMultiple' | 'isReadOnly'
   action:
     | 'invokeOnOpen'
     | 'invokeOnClose'
     | 'syncOpen'
     | 'syncValueText'
     | 'setValue'
+    | 'clearValue'
     | 'normalizeValue'
     | 'setFocusIntent'
     | 'setReturnFocus'
@@ -205,6 +210,10 @@ export interface SelectApi<T extends PropTypes = PropTypes> {
   multiple: boolean
   /** 校验错误态。 */
   invalid: boolean
+  /** 只读态。 */
+  readOnly: boolean
+  /** 此刻能否清空：有选中且既不禁用也不只读。 */
+  canClear: boolean
   /** 可见标签（受 maxTagCount 截断），与 value/valueText 同序。 */
   tags: SelectTagMeta[]
   /** 被 maxTagCount 折起来的标签数；作者据此渲染 +N。 */
@@ -219,12 +228,12 @@ export interface SelectApi<T extends PropTypes = PropTypes> {
   deselect: (value: string) => void
   getRootProps: () => T['element']
   getLabelProps: () => T['element']
-  /** 触发器与清空按钮的收纳容器兼定位基准：清空钮据此嵌进触发器右端、悬停时替换展开指示符。 */
+  /** 触发器与清空按钮的收纳容器：两者在里面并排，有值时清空钮顶替展开指示符。 */
   getControlProps: () => T['element']
   getTriggerProps: () => T['button']
   getValueTextProps: () => T['element']
   getIndicatorProps: () => T['element']
-  /** 清空按钮：没选中或禁用时整个藏掉；点按清空全部选中、不展开浮层。 */
+  /** 清空按钮：不占 Tab 位；清不了时整个藏掉；点按清空全部选中、不展开浮层，焦点送回 trigger。 */
   getClearTriggerProps: () => T['button']
   /** 标签：一个选中值一枚；放触发器里就是纯展示，放外面配 tag-remove 可删。 */
   getTagProps: (props: SelectTagProps) => T['element']

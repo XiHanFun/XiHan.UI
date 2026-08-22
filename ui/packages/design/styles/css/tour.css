@@ -207,7 +207,7 @@
      否则长标题会直接钻到按钮底下。只在真有关闭按钮时让位。 */
   [data-scope='tour'][data-part='content']:has([data-scope='tour'][data-part='close-trigger'])
     [data-scope='tour'][data-part='title'] {
-    padding-inline-end: calc(var(--xh-control-h-sm) + var(--xh-space-2));
+    padding-inline-end: calc(var(--xh-tour-close-size, var(--xh-control-h-sm)) + var(--xh-space-2));
   }
 
   [data-scope='tour'][data-part='description'] {
@@ -283,13 +283,16 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    block-size: var(--xh-control-h-sm);
-    inline-size: var(--xh-control-h-sm);
+    block-size: var(--xh-tour-close-size, var(--xh-control-h-sm));
+    inline-size: var(--xh-tour-close-size, var(--xh-control-h-sm));
     border: 0;
-    border-radius: var(--xh-shape-control);
+    border-radius: var(--xh-tour-close-radius, var(--xh-shape-control));
     background: transparent;
     color: var(--xh-fg-muted);
     cursor: pointer;
+    transition:
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='tour'][data-part='close-trigger'][hidden] {
@@ -297,8 +300,13 @@
   }
 
   [data-scope='tour'][data-part='close-trigger']:hover {
-    background: var(--xh-bg-subtle);
+    background: var(--xh-tour-close-bg-hover, var(--xh-bg-subtle-hover));
     color: var(--xh-fg-default);
+  }
+
+  [data-scope='tour'][data-part='close-trigger']:active {
+    background: var(--xh-tour-close-bg-active, var(--xh-bg-subtle-active));
+    scale: var(--xh-motion-scale-press);
   }
 
   [data-scope='tour'][data-part='prev-trigger']:focus-visible,

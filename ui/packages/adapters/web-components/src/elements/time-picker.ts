@@ -88,7 +88,7 @@ function declaredUnit(el: HTMLElement, position: number): TimePickerColumnUnit {
  * @csspart control - role=group 的输入行，同时是浮层的定位锚点
  * @csspart input - 一段一个的 spinbutton，可自带 segment 属性声明身份，缺省按文档序
  * @csspart trigger - 展开/收起按钮，须是原生 button
- * @csspart clear-trigger - 清空按钮，须是原生 button；不占 Tab 位且对读屏隐藏
+ * @csspart clear-trigger - 清空按钮，须是原生 button；不占 Tab 位，可及名走 translations.clearTrigger；没值即收起
  * @csspart positioner - 浮层定位容器，坐标由引擎写成内联样式
  * @csspart content - 浮层容器（消解层与焦点域的根节点），收起时带 hidden
  * @csspart presets - 快捷选项列（role=listbox）；没给 presets 时带 hidden

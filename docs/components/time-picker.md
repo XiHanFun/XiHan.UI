@@ -275,7 +275,7 @@ presets 在列旁边多排一列，点一条整份写进值并收起；时刻在
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
 | `trigger` | `aria-haspopup` | 'dialog' |
 | `trigger` | `aria-labelledby` | `label` 部件的 id |
-| `clear-trigger` | `aria-hidden` | 'true' |
+| `clear-trigger` | `aria-label` | props.translations.clearTrigger |
 | `content` | `aria-labelledby` | `label` 部件的 id |
 | `content` | `aria-modal` | 'false' |
 | `content` | `role` | 'dialog' |
@@ -329,7 +329,6 @@ presets 在列旁边多排一列，点一条整份写进值并收起；时刻在
 | `trigger` | `data-clearable` | ''（条件成立时才出现） |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `trigger` | `data-state` | 'open' \| 'closed' |
-| `clear-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `positioner` | `data-hidden` | ''（条件成立时才出现） |
 | `positioner` | `data-placement` | 定位引擎算出的实际落位 |
 | `positioner` | `data-positioned` | ''（条件成立时才出现） |

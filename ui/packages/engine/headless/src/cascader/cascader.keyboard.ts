@@ -11,6 +11,8 @@ export const cascaderKeyboard: KeyboardTable = {
     { id: 'cascader.kbd.open', keys: ['Enter', 'Space'], when: 'closed, focus in trigger', does: '展开浮层并把焦点落到选中路径的末项（无选中或它已禁用则落该列首个可用条目）' },
     { id: 'cascader.kbd.open-next', keys: ['ArrowDown'], when: 'closed, focus in trigger', does: '展开浮层并把焦点落到选中条目在它那一列里的下一个可用条目' },
     { id: 'cascader.kbd.open-prev', keys: ['ArrowUp'], when: 'closed, focus in trigger', does: '展开浮层并把焦点落到选中条目在它那一列里的上一个可用条目' },
+    { id: 'cascader.kbd.clear', keys: ['Delete'], when: 'focus in trigger, 有值且未禁用、未只读', does: '清空全部选中值，浮层不展开、焦点留在 trigger' },
+    { id: 'cascader.kbd.backspace', keys: ['Backspace'], when: 'focus in trigger, 有值且未禁用、未只读', does: '单选清空；多选去掉最后一个选中路径' },
     { id: 'cascader.kbd.next', keys: ['ArrowDown'], when: 'open, focus in content', does: '焦点移到当前列的下一个条目（禁用条目跳过；loop 默认开，末项回绕到首项）；别的列不动' },
     { id: 'cascader.kbd.prev', keys: ['ArrowUp'], when: 'open, focus in content', does: '焦点移到当前列的上一个条目（禁用条目跳过；loop 默认开，首项回绕到末项）' },
     { id: 'cascader.kbd.first', keys: ['Home'], when: 'open, focus in content', does: '焦点移到当前列的首个可用条目' },

@@ -108,8 +108,7 @@
   [data-scope='image-viewer'][data-part='toolbar'],
   [data-scope='image-viewer'][data-part='counter'],
   [data-scope='image-viewer'][data-part='prev-trigger'],
-  [data-scope='image-viewer'][data-part='next-trigger'],
-  [data-scope='image-viewer'][data-part='close-trigger'] {
+  [data-scope='image-viewer'][data-part='next-trigger'] {
     position: absolute;
     z-index: 1;
     background: var(--xh-image-viewer-chrome-bg, color-mix(in oklab, var(--xh-color-neutral-950) 55%, transparent));
@@ -153,8 +152,7 @@
   }
 
   [data-scope='image-viewer'][data-part='prev-trigger'],
-  [data-scope='image-viewer'][data-part='next-trigger'],
-  [data-scope='image-viewer'][data-part='close-trigger'] {
+  [data-scope='image-viewer'][data-part='next-trigger'] {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -176,9 +174,39 @@
     translate: 0 -50%;
   }
 
+  /* 右上角的关闭钮：与翻页钮同底同高，但圆角走控件档，按下有缩放 */
   [data-scope='image-viewer'][data-part='close-trigger'] {
+    position: absolute;
+    z-index: 1;
     inset-block-start: var(--xh-space-6);
     inset-inline-end: var(--xh-space-6);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--xh-image-viewer-close-size, var(--xh-control-h-lg));
+    block-size: var(--xh-image-viewer-close-size, var(--xh-control-h-lg));
+    border: none;
+    border-radius: var(--xh-image-viewer-close-radius, var(--xh-shape-control));
+    background: var(--xh-image-viewer-chrome-bg, color-mix(in oklab, var(--xh-color-neutral-950) 55%, transparent));
+    color: inherit;
+    font-size: var(--xh-glyph-size-md);
+    cursor: pointer;
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='image-viewer'][data-part='close-trigger'][hidden] {
+    display: none;
+  }
+
+  [data-scope='image-viewer'][data-part='close-trigger']:hover:not(:disabled) {
+    background: var(--xh-image-viewer-close-bg-hover, color-mix(in oklab, var(--xh-color-neutral-950) 70%, transparent));
+  }
+
+  [data-scope='image-viewer'][data-part='close-trigger']:active {
+    background: var(--xh-image-viewer-close-bg-active, color-mix(in oklab, var(--xh-color-neutral-950) 80%, transparent));
+    scale: var(--xh-motion-scale-press);
   }
 
   [data-scope='image-viewer'] button[data-part]:focus-visible {

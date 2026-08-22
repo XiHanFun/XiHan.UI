@@ -345,8 +345,8 @@ export const timePickerSuite: ConformanceSuite = {
             'aria-controls': '@part(content)',
             'data-state': 'closed',
           },
-          // 键盘用户在段上按退格即可清，这个按钮不占 Tab 位也不报给读屏
-          'clear-trigger': { 'tabindex': '-1', 'aria-hidden': 'true', 'disabled': '' },
+          // 键盘用户在段上按退格即可清，这个按钮不占 Tab 位；读屏能摸到它，名字走文案键；没值即收起
+          'clear-trigger': { 'tabindex': '-1', 'aria-hidden': null, 'aria-label': 'Clear', 'hidden': '', 'disabled': null, 'data-disabled': null },
           // 浮层报的是非模态对话框，与 trigger 的 aria-haspopup="dialog" 对上
           'content': { 'role': 'dialog', 'aria-modal': 'false', 'hidden': '', 'data-state': 'closed' },
           [HOUR_COL]: {
@@ -846,9 +846,9 @@ export const timePickerSuite: ConformanceSuite = {
             parts: {
               'root': { 'data-empty': '' },
               [HOUR_SEG]: { 'data-placeholder': '' },
-              'clear-trigger': { hidden: '', disabled: '' },
+              'clear-trigger': { hidden: '', disabled: null },
             },
-            // 这个按钮对读屏隐身也不占 Tab 位，清完必须把焦点送回首段
+            // 这个按钮不占 Tab 位，清完必须把焦点送回首段
             activeElement: { part: HOUR_SEG, exact: true },
             events: [{ type: 'value-change', detail: { value: '' } }],
           },
@@ -1116,7 +1116,7 @@ export const timePickerSuite: ConformanceSuite = {
           // 只读态在 control 上只留 data 属性，aria-readonly 落在每个段上
           'control': { 'data-readonly': '', 'aria-readonly': null },
           [HOUR_SEG]: { 'aria-readonly': 'true', 'tabindex': '0' },
-          'clear-trigger': { hidden: '', disabled: '' },
+          'clear-trigger': { hidden: '', disabled: null },
         },
       },
       steps: [

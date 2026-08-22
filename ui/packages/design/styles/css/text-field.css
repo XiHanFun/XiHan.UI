@@ -17,7 +17,7 @@
     --xh-_text-field-px: var(--xh-control-px-md);
     --xh-_text-field-font-size: var(--xh-text-body-size);
     --xh-_text-field-label-font-size: var(--xh-text-label-size);
-    --xh-_text-field-clear-font-size: var(--xh-text-secondary-size);
+    --xh-_text-field-action-font-size: var(--xh-text-secondary-size);
 
     /* 形态档只换这三个私有槽：底、常态描边、悬停描边 */
     --xh-_text-field-bg: var(--xh-bg-canvas);
@@ -47,7 +47,7 @@
     --xh-_text-field-px: var(--xh-control-px-sm);
     --xh-_text-field-font-size: var(--xh-control-font-sm);
     --xh-_text-field-label-font-size: var(--xh-control-font-sm);
-    --xh-_text-field-clear-font-size: var(--xh-control-caption-sm);
+    --xh-_text-field-action-font-size: var(--xh-control-caption-sm);
   }
 
   [data-scope='text-field'][data-part='root'][data-size='lg'] {
@@ -56,7 +56,7 @@
     --xh-_text-field-px: var(--xh-control-px-lg);
     --xh-_text-field-font-size: var(--xh-control-font-lg);
     --xh-_text-field-label-font-size: var(--xh-control-font-lg);
-    --xh-_text-field-clear-font-size: var(--xh-control-caption-lg);
+    --xh-_text-field-action-font-size: var(--xh-control-caption-lg);
   }
 
   /* —— 形态 —— */
@@ -169,41 +169,42 @@
     cursor: not-allowed;
   }
 
-  /* 清空按钮画成输入框右侧的小方钮：它是 input 的兄弟节点而不是子节点，
-     没法叠进框内，只能与框等高、贴着排，靠同一套边角与高度看起来是一体的 */
+  /* 清空按钮是 input 的兄弟节点而不是子节点，由作者与 input 排成一行；
+     它按行内动作钮的尺寸画，在作者那一行里居中即与框对齐 */
   [data-scope='text-field'][data-part='clear-trigger'] {
     display: inline-flex;
     flex: none;
     align-items: center;
     justify-content: center;
-    inline-size: var(--xh-text-field-clear-size, var(--xh-_text-field-h));
-    block-size: var(--xh-text-field-clear-size, var(--xh-_text-field-h));
+    inline-size: var(--xh-text-field-action-size, var(--xh-control-action-size));
+    block-size: var(--xh-text-field-action-size, var(--xh-control-action-size));
     padding: 0;
     border: 0;
-    border-radius: var(--xh-text-field-clear-radius, var(--xh-shape-control));
-    background: var(--xh-text-field-clear-bg, transparent);
-    color: var(--xh-text-field-clear-fg, var(--xh-fg-muted));
+    border-radius: var(--xh-text-field-action-radius, var(--xh-shape-control));
+    background: var(--xh-text-field-action-bg, transparent);
+    color: var(--xh-text-field-action-fg, var(--xh-fg-muted));
     font-family: inherit;
-    font-size: var(--xh-text-field-clear-font-size, var(--xh-_text-field-clear-font-size));
+    font-size: var(--xh-text-field-action-font-size, var(--xh-_text-field-action-font-size));
     line-height: var(--xh-leading-none);
     cursor: pointer;
     user-select: none;
-    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
-  /* 没开 clearable 时连接层给的是 hidden 属性；上面那条 display 会把 UA 规则盖掉，
+  /* 没开 clearable 或清不了时连接层给的是 hidden 属性；上面那条 display 会把 UA 规则盖掉，
      少了这条按钮就一直杵在那儿 */
   [data-scope='text-field'][data-part='clear-trigger'][hidden] {
     display: none;
   }
 
-  [data-scope='text-field'][data-part='clear-trigger']:hover:not(:disabled) {
-    background: var(--xh-text-field-clear-bg-hover, var(--xh-bg-subtle-hover));
-    color: var(--xh-text-field-clear-fg-hover, var(--xh-fg-default));
+  [data-scope='text-field'][data-part='clear-trigger']:hover {
+    background: var(--xh-text-field-action-bg-hover, var(--xh-bg-subtle-hover));
+    color: var(--xh-text-field-action-fg-hover, var(--xh-fg-default));
   }
 
-  [data-scope='text-field'][data-part='clear-trigger']:active:not(:disabled) {
-    background: var(--xh-text-field-clear-bg-active, var(--xh-bg-subtle-active));
+  [data-scope='text-field'][data-part='clear-trigger']:active {
+    background: var(--xh-text-field-action-bg-active, var(--xh-bg-subtle-active));
+    scale: var(--xh-motion-scale-press);
   }
 
   /* 按钮不占 Tab 位（tabindex=-1）也不抢焦点，正常操作走不到这里；
@@ -211,13 +212,6 @@
   [data-scope='text-field'][data-part='clear-trigger']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-_text-field-ring);
     outline-offset: var(--xh-ring-offset);
-  }
-
-  /* 框里没字、只读或禁用时按钮转灰但不收起：位置留着，敲进第一个字就亮 */
-  [data-scope='text-field'][data-part='clear-trigger']:disabled {
-    background: var(--xh-text-field-clear-bg, transparent);
-    color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
   /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */

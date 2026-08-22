@@ -41,7 +41,7 @@ export const timeFieldSuite: ConformanceSuite = {
     part: 'root',
     children: [
       { part: 'label', tag: 'label', text: '开始时间' },
-      { part: 'control', children: SEGMENTS.map(s => segment(s)) },
+      { part: 'control', children: [...SEGMENTS.map(s => segment(s)), { part: 'clear-trigger', tag: 'button' }] },
       { part: 'hidden-input', tag: 'input' },
     ],
   },
@@ -51,7 +51,7 @@ export const timeFieldSuite: ConformanceSuite = {
       spec: { apg: APG },
       props: { name: 'start' },
       initial: {
-        order: ['root', 'label', 'control', HOUR, MINUTE, SECOND, DAY_PERIOD, 'hidden-input'],
+        order: ['root', 'label', 'control', HOUR, MINUTE, SECOND, DAY_PERIOD, 'clear-trigger', 'hidden-input'],
         counts: { segment: 4 },
         parts: {
           'root': {
@@ -89,6 +89,8 @@ export const timeFieldSuite: ConformanceSuite = {
           [SECOND]: { 'data-value': 'second', 'hidden': '', 'tabindex': null },
           // 24 小时制下没有上下午段
           [DAY_PERIOD]: { 'data-value': 'dayPeriod', 'hidden': '', 'tabindex': null },
+          // 空时清空钮收起（不是禁用）：不占 Tab 位，但不对读屏隐藏
+          'clear-trigger': { 'tabindex': '-1', 'aria-hidden': null, 'aria-label': 'Clear', 'hidden': '', 'disabled': null, 'data-disabled': null },
           'hidden-input': { type: 'hidden', name: 'start' },
         },
       },
@@ -421,6 +423,48 @@ export const timeFieldSuite: ConformanceSuite = {
       },
     },
     {
+      name: '清空钮：有值才显形，按完各段回到占位符、值退回空串、焦点回到第一段',
+      spec: { apg: APG },
+      props: { defaultValue: '13:45' },
+      initial: {
+        parts: { 'clear-trigger': { hidden: null, disabled: null } },
+      },
+      steps: [
+        { kind: 'focus', part: MINUTE },
+        {
+          kind: 'click',
+          part: 'clear-trigger',
+          expect: {
+            parts: {
+              'root': { 'data-empty': '' },
+              [HOUR]: { 'aria-valuenow': null, 'data-placeholder': '' },
+              [MINUTE]: { 'aria-valuenow': null, 'data-placeholder': '' },
+              'clear-trigger': { hidden: '', disabled: null },
+            },
+            // 这个按钮不占 Tab 位，清完必须把焦点送回第一段
+            activeElement: { part: HOUR, exact: true },
+            events: [{ type: 'value-change', detail: { value: '' } }],
+          },
+        },
+        {
+          kind: 'raw',
+          why: '段上的文字是文本节点',
+          run: ({ doc }) => {
+            expectTexts(doc, ['--', '--'], '清空后各段回到占位符')
+            expectHidden(doc, '', '清空后隐藏输入退回空串')
+          },
+        },
+      ],
+    },
+    {
+      name: '清空钮：translations.clearTrigger 换可及名',
+      spec: { apg: APG },
+      props: { defaultValue: '13:45', translations: { hour: '时', minute: '分', second: '秒', dayPeriod: '上下午', clearTrigger: '清空' } },
+      initial: {
+        parts: { 'clear-trigger': { 'aria-label': '清空', 'hidden': null } },
+      },
+    },
+    {
       name: 'disabled：整组退出 Tab 序列，隐藏输入不参与提交，键盘推不动值',
       spec: { apg: APG },
       props: { defaultValue: '13:45', disabled: true },
@@ -430,6 +474,8 @@ export const timeFieldSuite: ConformanceSuite = {
           'control': { 'aria-disabled': 'true' },
           // 禁用时连 -1 都不给：节点彻底不可聚焦，与原生 disabled 控件一致
           [HOUR]: { 'aria-disabled': 'true', 'tabindex': null, 'data-disabled': '' },
+          // 禁用时有值也清不得：清空钮收起
+          'clear-trigger': { hidden: '' },
           'hidden-input': { disabled: '' },
         },
       },
@@ -455,10 +501,12 @@ export const timeFieldSuite: ConformanceSuite = {
       props: { defaultValue: '13:45', readOnly: true },
       initial: {
         parts: {
-          root: { 'data-readonly': '' },
+          'root': { 'data-readonly': '' },
           // 只读态在 control 上只留 data 属性，aria-readonly 落在每个段上
-          control: { 'data-readonly': '', 'aria-readonly': null },
+          'control': { 'data-readonly': '', 'aria-readonly': null },
           [HOUR]: { 'aria-readonly': 'true', 'tabindex': '0' },
+          // 只读时有值也清不得：清空钮收起
+          'clear-trigger': { hidden: '' },
         },
       },
       steps: [

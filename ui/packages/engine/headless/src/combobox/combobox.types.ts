@@ -130,6 +130,8 @@ export interface ComboboxSchema extends MachineSchema {
     loop?: boolean
     /** 输入框占位文字。 */
     placeholder?: string
+    /** 读屏文案；不给的键走英文缺省。 */
+    translations?: Partial<ComboboxTranslations>
     /** 允许提交候选列表里没有的值（回车与失焦时把输入串本身收成选中值）。 */
     allowCustomValue?: boolean
     /** 点输入框即展开，默认 false（只有触发按钮与方向键展开）。 */
@@ -271,5 +273,8 @@ export interface ComboboxApi<T extends PropTypes = PropTypes> {
   getHiddenInputProps: () => T['input']
 }
 
-/** 读屏用的文案。本组件目前没有需要外露的文案，位先留着。 */
-export interface ComboboxTranslations {}
+/** 读屏用的文案。 */
+export interface ComboboxTranslations {
+  /** 清空按钮的无障碍名，缺省 'Clear'。 */
+  clearTrigger: string
+}

@@ -52,6 +52,7 @@ export const listboxMachine = createMachine({
       // 省略 target：只跑 actions，不换状态
       on: {
         'VALUE.SET': { actions: ['setValue'] },
+        'VALUE.CLEAR': { actions: ['clearValue'] },
         'ITEM.SELECT': { actions: ['selectItem'] },
         'ITEM.TOGGLE': { actions: ['toggleItem'] },
         'ITEM.FOCUS': { actions: ['setFocusedValue'] },
@@ -69,6 +70,7 @@ export const listboxMachine = createMachine({
           return
         context.set('value', normalizeSelection(e.value, listboxSelectionMode(prop('selectionMode'), prop('multiple'))))
       },
+      clearValue: ({ context }) => context.set('value', []),
       selectItem: ({ context, event }) => {
         const e = event.current()
         if (e.type !== 'ITEM.SELECT')

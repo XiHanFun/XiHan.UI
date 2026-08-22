@@ -268,6 +268,8 @@ searchable 让搜索框可用：输入后整条路径连缀过滤，候选列表
 | `Enter` / `Space` | closed, focus in trigger | 展开浮层并把焦点落到选中路径的末项（无选中或它已禁用则落该列首个可用条目） |
 | `ArrowDown` | closed, focus in trigger | 展开浮层并把焦点落到选中条目在它那一列里的下一个可用条目 |
 | `ArrowUp` | closed, focus in trigger | 展开浮层并把焦点落到选中条目在它那一列里的上一个可用条目 |
+| `Delete` | focus in trigger, 有值且未禁用、未只读 | 清空全部选中值，浮层不展开、焦点留在 trigger |
+| `Backspace` | focus in trigger, 有值且未禁用、未只读 | 单选清空；多选去掉最后一个选中路径 |
 | `ArrowDown` | open, focus in content | 焦点移到当前列的下一个条目（禁用条目跳过；loop 默认开，末项回绕到首项）；别的列不动 |
 | `ArrowUp` | open, focus in content | 焦点移到当前列的上一个条目（禁用条目跳过；loop 默认开，首项回绕到末项） |
 | `Home` | open, focus in content | 焦点移到当前列的首个可用条目 |
@@ -292,7 +294,7 @@ searchable 让搜索框可用：输入后整条路径连缀过滤，候选列表
 | `trigger` | `aria-readonly` | 'true' \| 'false' |
 | `trigger` | `role` | 'combobox' |
 | `indicator` | `aria-hidden` | 'true' |
-| `clear-trigger` | `aria-hidden` | 'true' |
+| `clear-trigger` | `aria-label` | translations.clearTrigger |
 | `input` | `aria-activedescendant` | `search-item` 部件的 id \| undefined |
 | `input` | `aria-autocomplete` | 'list' |
 | `input` | `aria-controls` | `search-list` 部件的 id |
@@ -341,7 +343,6 @@ searchable 让搜索框可用：输入后整条路径连缀过滤，候选列表
 | `indicator` | `data-clearable` | ''（条件成立时才出现） |
 | `indicator` | `data-disabled` | ''（条件成立时才出现） |
 | `indicator` | `data-state` | 'open' \| 'closed' |
-| `clear-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `positioner` | `data-hidden` | ''（条件成立时才出现） |
 | `positioner` | `data-placement` | 定位引擎算出的实际落位 |
 | `positioner` | `data-positioned` | ''（条件成立时才出现） |

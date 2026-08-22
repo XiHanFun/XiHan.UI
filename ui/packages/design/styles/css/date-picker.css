@@ -212,7 +212,7 @@
     line-height: var(--xh-leading-none);
     cursor: pointer;
     user-select: none;
-    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 有值时清空钮顶上来，下拉钮让位：两个钮并排堆在框里，用户分不清点哪个。
@@ -227,14 +227,18 @@
   }
 
   [data-scope='date-picker'][data-part='trigger']:hover:not(:disabled),
-  [data-scope='date-picker'][data-part='clear-trigger']:hover:not(:disabled) {
+  [data-scope='date-picker'][data-part='clear-trigger']:hover {
     background: var(--xh-date-picker-action-bg-hover, var(--xh-bg-subtle-hover));
     color: var(--xh-date-picker-action-fg-hover, var(--xh-fg-default));
   }
 
-  [data-scope='date-picker'][data-part='trigger']:active:not(:disabled),
-  [data-scope='date-picker'][data-part='clear-trigger']:active:not(:disabled) {
+  [data-scope='date-picker'][data-part='trigger']:active:not(:disabled) {
     background: var(--xh-date-picker-action-bg-active, var(--xh-bg-subtle-active));
+  }
+
+  [data-scope='date-picker'][data-part='clear-trigger']:active {
+    background: var(--xh-date-picker-action-bg-active, var(--xh-bg-subtle-active));
+    scale: var(--xh-motion-scale-press);
   }
 
   /* 展开时按钮压一层底色，与浮层的存在互相印证 */
@@ -250,8 +254,7 @@
     outline-offset: var(--xh-ring-offset);
   }
 
-  [data-scope='date-picker'][data-part='trigger']:disabled,
-  [data-scope='date-picker'][data-part='clear-trigger']:disabled {
+  [data-scope='date-picker'][data-part='trigger']:disabled {
     background: var(--xh-date-picker-action-bg, transparent);
     color: var(--xh-fg-disabled);
     cursor: not-allowed;

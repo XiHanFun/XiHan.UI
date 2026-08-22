@@ -233,8 +233,8 @@
     flex: none;
     align-items: center;
     justify-content: center;
-    inline-size: var(--xh-file-upload-delete-size, var(--xh-control-h-sm));
-    block-size: var(--xh-file-upload-delete-size, var(--xh-control-h-sm));
+    inline-size: var(--xh-file-upload-delete-size, var(--xh-control-action-size));
+    block-size: var(--xh-file-upload-delete-size, var(--xh-control-action-size));
     padding: 0;
     border: 0;
     border-radius: var(--xh-file-upload-delete-radius, var(--xh-shape-control));
@@ -243,6 +243,9 @@
     font-family: inherit;
     line-height: var(--xh-leading-none);
     cursor: pointer;
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='file-upload'][data-part='item-delete-trigger'][hidden] {
@@ -252,6 +255,12 @@
   [data-scope='file-upload'][data-part='item-delete-trigger']:hover:not(:disabled) {
     background: var(--xh-file-upload-delete-bg-hover, var(--xh-bg-subtle-hover));
     color: var(--xh-file-upload-delete-fg-hover, var(--xh-fg-danger-hover));
+  }
+
+  /* 按下：换到按压档底色并轻微下压，松手弹回；禁用钮不压 */
+  [data-scope='file-upload'][data-part='item-delete-trigger']:not(:disabled):active {
+    background: var(--xh-file-upload-delete-bg-active, var(--xh-bg-subtle-active));
+    scale: var(--xh-motion-scale-press);
   }
 
   [data-scope='file-upload'][data-part='item-delete-trigger']:focus-visible {
@@ -264,8 +273,7 @@
     cursor: not-allowed;
   }
 
-  /* 清空是收尾动作，画成不带底色的文字按钮：它比"选择文件"次要，
-     且列表为空时连接层会给原生 disabled，那时它本就该看着点不动 */
+  /* 清空是收尾动作，画成不带底色的文字按钮：它比"选择文件"次要 */
   [data-scope='file-upload'][data-part='clear-trigger'] {
     display: inline-flex;
     flex: none;
@@ -283,6 +291,9 @@
     font-size: var(--xh-file-upload-clear-font-size, var(--xh-text-caption-size));
     line-height: var(--xh-leading-none);
     cursor: pointer;
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='file-upload'][data-part='clear-trigger'][hidden] {
@@ -294,9 +305,20 @@
     color: var(--xh-file-upload-clear-fg-hover, var(--xh-fg-default));
   }
 
+  /* 按下：换到按压档底色并轻微下压，松手弹回；禁用钮不压 */
+  [data-scope='file-upload'][data-part='clear-trigger']:not(:disabled):active {
+    background: var(--xh-file-upload-clear-bg-active, var(--xh-bg-subtle-active));
+    scale: var(--xh-motion-scale-press);
+  }
+
   [data-scope='file-upload'][data-part='clear-trigger']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
     outline-offset: var(--xh-ring-offset);
+  }
+
+  /* 空列表时按钮照常可按（收起它会让焦点掉回 body），只把前景压淡一档 */
+  [data-scope='file-upload'][data-part='clear-trigger'][data-empty] {
+    color: var(--xh-fg-subtle);
   }
 
   [data-scope='file-upload'][data-part='clear-trigger']:disabled {

@@ -1,10 +1,10 @@
-import { overlayPositioned } from '../shared/overlay'
 import type { NavIntent } from '@xihan-ui/behavior'
 import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { SelectApi, SelectItemProps, SelectNodeMeta, SelectSchema } from './select.types'
 import { focusItem, focusSafely, indexOfValue, isItemDisabled, ITEM_VALUE_ATTR, itemValue, matchTypeahead, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/behavior'
 import { dataAttr } from '@xihan-ui/kernel'
+import { overlayPositioned } from '../shared/overlay'
 import { selectAnatomy, selectItemQuery, selectItemText } from './select.anatomy'
 import { SELECT_DEFAULT_PLACEMENT } from './select.machine'
 
@@ -81,7 +81,11 @@ export function connectSelect<T extends PropTypes>(
   // roving tabindex 与方向键起点共用这一个锚点；收起时为 null（条目此刻不可达）
   const highlighted = context.get('highlightedValue') ?? null
   const disabled = !!prop('disabled')
+  const readOnly = !!prop('readOnly')
   const invalid = !!prop('invalid')
+  // 只读与禁用都改不了选中值，区别在于禁用连浮层都展不开
+  const interactive = !disabled && !readOnly
+  const canClear = interactive && value.length > 0
   const loop = prop('loop') ?? true
   const dir = prop('dir')
 
@@ -125,7 +129,7 @@ export function connectSelect<T extends PropTypes>(
 
   /** 确认键：认高亮所在的条目，自报禁用的不认。 */
   const activate = (event: KeyboardEvent): void => {
-    if (highlighted == null)
+    if (highlighted == null || !interactive)
       return
     const el = items().find(item => itemValue(item) === highlighted)
     if (!el || isItemDisabled(el))
@@ -142,6 +146,8 @@ export function connectSelect<T extends PropTypes>(
     displayText,
     multiple,
     invalid,
+    readOnly,
+    canClear,
     tags,
     overflowCount,
     highlightedValue: highlighted,
@@ -150,7 +156,7 @@ export function connectSelect<T extends PropTypes>(
         send(next ? { type: 'OPEN', focus: 'selected' } : { type: 'CLOSE' })
     },
     setValue: next => send({ type: 'VALUE.SET', value: next }),
-    clear: () => send({ type: 'VALUE.SET', value: [] }),
+    clear: () => send({ type: 'VALUE.CLEAR' }),
     deselect: v => send({ type: 'VALUE.SET', value: value.filter(x => x !== v) }),
     // 三个视觉轴打在根与 positioner 上：触发器与条目各从就近的那一处继承私有槽，其余子部件不重复标注
     getRootProps: () => normalize.element({
@@ -160,6 +166,7 @@ export function connectSelect<T extends PropTypes>(
       'data-tone': prop('tone'),
       'data-size': prop('size'),
       'data-disabled': dataAttr(disabled),
+      'data-readonly': dataAttr(readOnly),
       'data-invalid': dataAttr(invalid),
     }),
     getLabelProps: () => normalize.element({
@@ -187,12 +194,23 @@ export function connectSelect<T extends PropTypes>(
       // 作者没写 label 时那段是悬空 IDREF，按 accname 规则跳过。
       'aria-labelledby': `${ids.label} ${ids['value-text']}`,
       'aria-invalid': invalid ? 'true' : 'false',
+      'aria-readonly': readOnly ? 'true' : 'false',
       'data-state': stateAttr,
       'data-disabled': dataAttr(disabled),
+      'data-readonly': dataAttr(readOnly),
       'data-invalid': dataAttr(invalid),
       'data-placeholder': dataAttr(value.length === 0),
       'onClick': () => send({ type: 'TOGGLE', focus: 'selected' }),
       'onKeydown': (event: KeyboardEvent) => {
+        // 收起态的键盘清空：Delete 清空全部，Backspace 单选清空、多选去掉最后一个
+        if (canClear && (event.key === 'Delete' || event.key === 'Backspace')) {
+          event.preventDefault()
+          if (event.key === 'Delete' || !multiple)
+            send({ type: 'VALUE.CLEAR' })
+          else
+            send({ type: 'VALUE.SET', value: value.slice(0, -1) })
+          return
+        }
         // 纵向轴且不收 Home/End；返回 null 的按键不归导航管，不得 preventDefault
         const intent = navIntentFromKey(event, { axis: 'vertical', home: false })
         if (intent) {
@@ -212,7 +230,7 @@ export function connectSelect<T extends PropTypes>(
         if (query != null) {
           event.preventDefault()
           const next = itemValue(match(query, value.at(-1) ?? null))
-          if (next != null)
+          if (next != null && interactive)
             send({ type: 'VALUE.SET', value: multiple ? (value.includes(next) ? value : [...value, next]) : [next] })
           return
         }
@@ -233,6 +251,8 @@ export function connectSelect<T extends PropTypes>(
     getIndicatorProps: () => normalize.element({
       ...parts.indicator.attrs,
       'aria-hidden': 'true',
+      // 有值时清空钮顶上来，箭头让位：两个图标并排堆在框里，用户分不清点哪个
+      'data-clearable': dataAttr(canClear),
       'data-state': stateAttr,
       'data-disabled': dataAttr(disabled),
     }),
@@ -247,7 +267,7 @@ export function connectSelect<T extends PropTypes>(
       'aria-label': (prop('translations')?.removeTag ?? 'Remove {label}').replace('{label}', tagLabel(v)),
       'data-disabled': dataAttr(disabled),
       'onClick': () => {
-        if (!disabled)
+        if (interactive)
           send({ type: 'VALUE.SET', value: value.filter(x => x !== v) })
       },
     }),
@@ -255,10 +275,26 @@ export function connectSelect<T extends PropTypes>(
     getClearTriggerProps: () => normalize.button({
       ...parts['clear-trigger'].attrs,
       'type': 'button',
-      'aria-label': prop('translations')?.clear ?? 'Clear',
-      'hidden': value.length === 0 || disabled || undefined,
-      'data-state': stateAttr,
-      'onClick': () => send({ type: 'VALUE.SET', value: [] }),
+      // 整个控件只占一个 Tab 位（trigger）：清空钮不进 Tab 序，但仍对读屏可见
+      'tabindex': -1,
+      'aria-label': prop('translations')?.clearTrigger ?? 'Clear',
+      // 清不了就整个收起，不灰留位
+      'hidden': !canClear || undefined,
+      // 拦掉默认聚焦，否则焦点会从 trigger 挪到这个按钮上
+      'onPointerDown': (event: PointerEvent) => {
+        if (event.button === 0)
+          event.preventDefault()
+      },
+      'onClick': (event: MouseEvent) => {
+        if (!canClear)
+          return
+        send({ type: 'VALUE.CLEAR' })
+        // 键盘/程序化激活这一路没走 pointerdown，主动把焦点送回 trigger；
+        // 适配器没挂锚点 ref 时按 id 在同一文档里找
+        const doc = (event.currentTarget as HTMLElement | null)?.ownerDocument
+        const trigger = refs.get('getAnchorEl')() ?? doc?.getElementById(ids.trigger) ?? null
+        trigger?.focus()
+      },
     }),
     getPositionerProps: () => normalize.element({
       ...parts.positioner.attrs,
@@ -365,7 +401,7 @@ export function connectSelect<T extends PropTypes>(
       // roving tabindex：整组只有高亮条目留在 Tab 序列内；收起态无锚点
       'tabindex': highlighted === item.value ? 0 : -1,
       'onClick': () => {
-        if (!itemDisabled(item))
+        if (interactive && !itemDisabled(item))
           send({ type: 'ITEM.SELECT', value: item.value })
       },
       // 焦点是事实不是许可：禁用条目被点到也记锚点，方向键才知道从哪儿起步

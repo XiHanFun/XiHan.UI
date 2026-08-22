@@ -76,6 +76,7 @@ interface Mounted {
   control: HTMLElement
   label: HTMLElement
   hidden: HTMLInputElement
+  clear: HTMLButtonElement
   seg: (type: TimeSegmentType) => HTMLElement
   api: () => ReturnType<typeof connectTimeField>
   /** 手动重打一遍。props 是宿主那侧的东西，改了不会触发 cell 通知，得自己推一拍。 */
@@ -100,6 +101,8 @@ function mount(props: Props = {}): Mounted {
     control.appendChild(el)
     nodes.set(type, el)
   }
+  const clear = document.createElement('button')
+  control.appendChild(clear)
   const hidden = document.createElement('input')
   root.appendChild(hidden)
 
@@ -123,6 +126,7 @@ function mount(props: Props = {}): Mounted {
       // 两个适配器都由自己填段上的文字（spreader 不碰文本节点），这里照做
       el.textContent = api.getSegmentText({ segment: type })
     }
+    applyProps(clear, api.getClearTriggerProps() as Record<string, unknown>, bound(clear))
     applyProps(hidden, api.getHiddenInputProps() as Record<string, unknown>, bound(hidden))
   }
   // 任一 cell 变化就整体重打，与 WC 宿主的 wire() 同语义
@@ -134,6 +138,7 @@ function mount(props: Props = {}): Mounted {
     control,
     label,
     hidden,
+    clear,
     seg: type => nodes.get(type)!,
     api: () => connectTimeField(service, normalizeProps),
     rerender: render,
@@ -932,6 +937,54 @@ describe('connectTimeField 受控与命令式出口', () => {
     m.api().clear()
     expect(texts(m)).toEqual(['--', '--'])
     expect(m.api().empty).toBe(true)
+  })
+
+  it('清空钮：没值收起，有值显形且不占 Tab 位、不对读屏隐藏', () => {
+    const m = open({ granularity: 'minute' })
+    expect(m.clear.hasAttribute('hidden')).toBe(true)
+    expect(m.api().canClear).toBe(false)
+    m.api().setValue('13:45')
+    expect(m.clear.hasAttribute('hidden')).toBe(false)
+    expect(m.clear.getAttribute('tabindex')).toBe('-1')
+    expect(m.clear.hasAttribute('aria-hidden')).toBe(false)
+    expect(m.clear.hasAttribute('disabled')).toBe(false)
+    expect(m.clear.getAttribute('aria-label')).toBe('Clear')
+    expect(m.api().canClear).toBe(true)
+  })
+
+  it('清空钮：aria-label 走 translations.clearTrigger', () => {
+    const m = open({
+      defaultValue: '13:45',
+      translations: { hour: '时', minute: '分', second: '秒', dayPeriod: '上下午', clearTrigger: '清空' },
+    })
+    expect(m.clear.getAttribute('aria-label')).toBe('清空')
+  })
+
+  it('清空钮：disabled / readOnly 下即使有值也收起', () => {
+    expect(open({ defaultValue: '13:45', disabled: true }).clear.hasAttribute('hidden')).toBe(true)
+    expect(open({ defaultValue: '13:45', readOnly: true }).clear.hasAttribute('hidden')).toBe(true)
+  })
+
+  it('清空钮：点一下清空全部段，焦点回到第一段', () => {
+    const onValueChange = vi.fn()
+    const m = open({ defaultValue: '13:45', granularity: 'minute', onValueChange })
+    m.seg('minute').focus()
+    m.clear.dispatchEvent(new MouseEvent('click', { bubbles: true }))
+    expect(m.api().value).toBe('')
+    expect(texts(m)).toEqual(['--', '--'])
+    expect(onValueChange).toHaveBeenCalledWith({ value: '' })
+    expect(focusedType(m)).toBe('hour')
+    expect(m.clear.hasAttribute('hidden')).toBe(true)
+  })
+
+  it('清空钮：主键按下被拦住，焦点不会从段上被夺走', () => {
+    const m = open({ defaultValue: '13:45' })
+    const down = new PointerEvent('pointerdown', { button: 0, bubbles: true, cancelable: true })
+    m.clear.dispatchEvent(down)
+    expect(down.defaultPrevented).toBe(true)
+    const right = new PointerEvent('pointerdown', { button: 2, bubbles: true, cancelable: true })
+    m.clear.dispatchEvent(right)
+    expect(right.defaultPrevented).toBe(false)
   })
 
   it('getSegmentText 与段上的文字是同一份（两个适配器都拿它填文本）', () => {

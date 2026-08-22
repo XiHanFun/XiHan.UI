@@ -24,6 +24,7 @@ const filtered = computed(() => {
     v-model:value="value"
     v-model:input-value="query"
     :collection="filtered"
+    clearable
     label="城市"
     empty="无匹配城市"
     open-on-click

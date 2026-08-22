@@ -92,6 +92,10 @@
     font: inherit;
     line-height: var(--xh-leading-none);
     cursor: pointer;
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* closable=false 时连接层同时给了 hidden 与 disabled，这条是它真正收起的那一半 */
@@ -99,9 +103,15 @@
     display: none;
   }
 
+  /* 悬停与按下的底色跟着语气走：提示本体已是该语气的淡底，叉的底色在同一色系里再深两档 */
   [data-scope='alert'][data-part='close-trigger']:hover:not(:disabled) {
-    background: color-mix(in oklab, var(--xh-_alert-accent) 16%, transparent);
+    background: var(--xh-alert-close-bg-hover, var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover)));
     color: var(--xh-alert-close-fg-hover, var(--xh-fg-default));
+  }
+
+  [data-scope='alert'][data-part='close-trigger']:active {
+    background: var(--xh-alert-close-bg-active, var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active)));
+    scale: var(--xh-motion-scale-press);
   }
 
   [data-scope='alert'][data-part='close-trigger']:disabled {

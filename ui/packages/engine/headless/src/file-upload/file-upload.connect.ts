@@ -69,7 +69,7 @@ export function connectFileUpload<T extends PropTypes>(
    * 恰好空出来——Vue 卸载它、WC 释放并隐藏它，焦点当场又丢了。
    * 要按「删完之后谁占了这个位子」取，就得有一个更新后的钩子，connect 这一层没有。
    *
-   * 兜底也不取 clear-trigger：删空那一刻它带原生 disabled，禁用元素持不住焦点。
+   * 也不取 clear-trigger：它是收尾动作钮，删完一条焦点落回投放区更顺手。
    */
   const focusAfterDelete = (from: HTMLElement): HTMLElement | null => {
     const root = from.closest<HTMLElement>(parts.root.selector)
@@ -80,7 +80,7 @@ export function connectFileUpload<T extends PropTypes>(
   const label = {
     dropzone: translations?.dropzone ?? 'Drop files here',
     deleteFile: translations?.deleteFile ?? ((file: FileUploadFile) => `Delete ${file.name}`),
-    clearFiles: translations?.clearFiles ?? 'Clear all files',
+    clearTrigger: translations?.clearTrigger ?? 'Clear all files',
   }
 
   /** 判断点击是否落在区内自带行为的节点上。只在事件回调里调用，渲染期不得调用。 */
@@ -114,7 +114,7 @@ export function connectFileUpload<T extends PropTypes>(
     setFiles: files => send({ type: 'FILES.SET', files }),
     addFiles: files => send({ type: 'FILES.ADD', files }),
     deleteFile: file => (isRemote(file) ? send({ type: 'REMOTE.DELETE', id: file.id }) : send({ type: 'FILE.DELETE', file })),
-    clearFiles: () => send({ type: 'FILES.CLEAR' }),
+    clear: () => send({ type: 'FILES.CLEAR' }),
     openFilePicker: () => send({ type: 'PICKER.OPEN' }),
 
     getRootProps: () => normalize.element({
@@ -292,10 +292,11 @@ export function connectFileUpload<T extends PropTypes>(
     getClearTriggerProps: () => normalize.button({
       ...parts['clear-trigger'].attrs,
       'type': 'button',
-      'aria-label': label.clearFiles,
-      // 无文件时禁用，单体控件用原生 disabled
-      'disabled': disabled || empty || undefined,
-      'data-disabled': dataAttr(disabled || empty),
+      'aria-label': label.clearTrigger,
+      // 空列表时按钮照常在位、可聚焦，只打 data-empty 由皮肤压淡；点击是空操作
+      'disabled': disabled || undefined,
+      'data-disabled': dataAttr(disabled),
+      'data-empty': dataAttr(empty),
       'onClick': () => send({ type: 'FILES.CLEAR' }),
     }),
   }

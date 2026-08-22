@@ -324,11 +324,12 @@ describe('connectCombobox 属性输出', () => {
     expect(h.root.querySelector('label')!.getAttribute('for')).toBe(h.input.id)
   })
 
-  it('清除按钮的 aria-hidden 产出的是字符串，不是布尔', () => {
-    // 落到 DOM 上都会被隐式转字符串，所以这条只能直接看 connect 的产出；
-    // 同文件其余各处一律是字符串，布尔在 WC 侧走的是另一条属性写入路径
+  it('清空按钮对读屏不隐藏，靠 aria-label 报名，文案可经 translations 覆盖', () => {
     const props = mount().api().getClearTriggerProps() as Record<string, unknown>
-    expect(props['aria-hidden']).toBe('true')
+    expect(props['aria-hidden']).toBeUndefined()
+    expect(props['aria-label']).toBe('Clear')
+    const named = mount({ translations: { clearTrigger: '清空' } })
+    expect(named.clear.getAttribute('aria-label')).toBe('清空')
   })
 
   it('inputBehavior=autocomplete 时 aria-autocomplete 报 both', () => {
@@ -714,11 +715,12 @@ describe('inputBehavior', () => {
 })
 
 describe('禁用与只读', () => {
-  it('禁用：输入框与两个按钮都用原生 disabled，键盘展不开列表', () => {
+  it('禁用：输入框与下拉钮用原生 disabled、清空钮收起，键盘展不开列表', () => {
     const h = mount({ disabled: true })
     expect(h.input.hasAttribute('disabled')).toBe(true)
     expect(h.trigger.hasAttribute('disabled')).toBe(true)
-    expect(h.clear.hasAttribute('disabled')).toBe(true)
+    expect(h.clear.hasAttribute('hidden')).toBe(true)
+    expect(h.clear.hasAttribute('disabled')).toBe(false)
     expect(h.root.getAttribute('data-disabled')).toBe('')
     press(h.input, 'ArrowDown')
     expect(h.state()).toBe('closed')
@@ -768,12 +770,14 @@ describe('触发按钮与清空按钮', () => {
     expect(h.api().highlightedValue).toBeNull()
   })
 
-  it('清空按钮：没东西可清时置灰，清完选中值与输入串都空', async () => {
+  it('清空按钮：没东西可清时只收起不置灰，清完选中值与输入串都空', async () => {
     const h = mount()
-    expect(h.clear.hasAttribute('disabled')).toBe(true)
+    expect(h.clear.hasAttribute('hidden')).toBe(true)
+    expect(h.clear.hasAttribute('disabled')).toBe(false)
+    expect(h.clear.hasAttribute('data-disabled')).toBe(false)
     const nothing = mount({ defaultValue: 'apple' })
     await tick()
-    expect(nothing.clear.hasAttribute('disabled')).toBe(false)
+    expect(nothing.clear.hasAttribute('hidden')).toBe(false)
     click(nothing.clear)
     expect(nothing.value()).toEqual([])
     expect(nothing.inputValue()).toBe('')

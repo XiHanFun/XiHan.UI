@@ -29,6 +29,7 @@ export {
   clampSegment,
   compareDateSegments,
   constrainSegments,
+  DATE_FIELD_CLEAR_LABEL,
   DATE_FIELD_GRANULARITY,
   DATE_FIELD_LOCALE,
   DATE_FIELD_YEAR_MAX,

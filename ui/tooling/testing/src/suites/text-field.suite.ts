@@ -91,8 +91,8 @@ export const textFieldSuite: ConformanceSuite = {
             'readonly': null,
             'data-at-limit': null,
           },
-          // 没开 clearable：按钮收起而不是卸载，节点是作者写的
-          'clear-trigger': { 'hidden': '', 'disabled': '', 'aria-hidden': 'true', 'tabindex': '-1', 'type': 'button' },
+          // 没开 clearable：按钮收起而不是卸载，节点是作者写的；不占 Tab 位但带名字、不对读屏隐藏
+          'clear-trigger': { 'hidden': '', 'disabled': null, 'data-disabled': null, 'aria-hidden': null, 'aria-label': 'Clear', 'tabindex': '-1', 'type': 'button' },
         },
       },
       steps: [
@@ -125,13 +125,13 @@ export const textFieldSuite: ConformanceSuite = {
       ],
     },
     {
-      name: 'clearable + 有值：清空按钮显出且可用，点它清空并派 value-change',
+      name: 'clearable + 有值：清空按钮显出，点它清空、派 value-change、焦点回到 input',
       spec: { apg: HTML_SPEC },
       props: { defaultValue: '阿旺', clearable: true },
       initial: {
         parts: {
           'root': { 'data-empty': null },
-          'clear-trigger': { 'hidden': null, 'disabled': null, 'data-disabled': null },
+          'clear-trigger': { 'hidden': null, 'disabled': null, 'data-disabled': null, 'aria-label': 'Clear' },
         },
       },
       steps: [
@@ -140,18 +140,21 @@ export const textFieldSuite: ConformanceSuite = {
           part: 'clear-trigger',
           expect: {
             parts: {
-              // 清完值就空了，按钮当场转不可用：再点一次只会派一条没有变化的通知
+              // 清完值就空了，按钮当场收起
               'root': { 'data-empty': '' },
-              'clear-trigger': { 'disabled': '', 'data-disabled': '', 'hidden': null },
+              'clear-trigger': { 'hidden': '', 'disabled': null, 'data-disabled': null },
             },
             events: [{ type: 'value-change', detail: { value: '' } }],
+            activeElement: { part: 'input', exact: true },
           },
         },
         { kind: 'raw', why: 'value 是 property', run: ({ doc }) => expectValue(doc, '', '点清空后框里应当没有字') },
         {
-          // 已经空了再点：按钮是 disabled，浏览器根本不派 click，什么都不该发生
-          kind: 'click',
-          part: 'clear-trigger',
+          kind: 'raw',
+          why: '按钮已收起，click 步骤点不到；直接派 click 才碰得到处理器里的守卫',
+          run: ({ doc }) => {
+            doc.querySelector(CLEAR)!.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }))
+          },
           expect: { events: [] },
         },
       ],
@@ -250,14 +253,14 @@ export const textFieldSuite: ConformanceSuite = {
         parts: {
           'root': { 'data-disabled': '', 'data-empty': null },
           'input': { 'disabled': '', 'data-disabled': '' },
-          'clear-trigger': { disabled: '' },
+          'clear-trigger': { hidden: '', disabled: null },
         },
       },
       steps: [
         {
           kind: 'raw',
-          // 焦点落不到禁用的 input 上、禁用按钮的 click 被短路，必须直接往节点上派事件
-          why: '禁用控件上 focus/click 都被浏览器短路，只有直接派发才碰得到守卫',
+          // 焦点落不到禁用的 input 上、按钮已收起点不到，必须直接往节点上派事件
+          why: '禁用控件上 focus 被浏览器短路、收起的按钮点不到，只有直接派发才碰得到守卫',
           run: async (ctx) => {
             const { doc } = ctx
             await typeInto(ctx, '换个名字')
@@ -279,7 +282,7 @@ export const textFieldSuite: ConformanceSuite = {
           // 与 disabled 的差别就在这里：input 不带原生 disabled，因此仍可聚焦
           'root': { 'data-readonly': '' },
           'input': { readonly: '', disabled: null },
-          'clear-trigger': { disabled: '', hidden: null },
+          'clear-trigger': { hidden: '', disabled: null },
         },
       },
       steps: [
@@ -311,7 +314,7 @@ export const textFieldSuite: ConformanceSuite = {
       name: '受控 value：宿主不写回则状态纹丝不动，回调照发；写回后以宿主的为准',
       spec: { apg: HTML_SPEC },
       props: { value: '', clearable: true },
-      initial: { parts: { 'root': { 'data-empty': '' }, 'clear-trigger': { disabled: '' } } },
+      initial: { parts: { 'root': { 'data-empty': '' }, 'clear-trigger': { hidden: '' } } },
       steps: [
         { kind: 'focus', part: 'input' },
         {
@@ -322,14 +325,14 @@ export const textFieldSuite: ConformanceSuite = {
           // 通知里带的是用户敲的那串。
           // 不比 input.value：宿主没写回时框里显示什么取决于适配器是否重渲。
           expect: {
-            parts: { 'root': { 'data-empty': '' }, 'clear-trigger': { disabled: '' } },
+            parts: { 'root': { 'data-empty': '' }, 'clear-trigger': { hidden: '' } },
             events: [{ type: 'value-change', detail: { value: '换个名字' } }],
           },
         },
         {
           kind: 'setProps',
           props: { value: '小黑' },
-          expect: { parts: { 'root': { 'data-empty': null }, 'clear-trigger': { disabled: null } } },
+          expect: { parts: { 'root': { 'data-empty': null }, 'clear-trigger': { hidden: null } } },
         },
         {
           kind: 'raw',

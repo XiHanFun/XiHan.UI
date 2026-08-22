@@ -509,12 +509,14 @@ describe('选中值的三个入口', () => {
     expect(day!.getAttribute('data-segment')).toBe('day')
   })
 
-  it('清空：按钮不可按 → 有值才可按，点完值清空、焦点回首段', () => {
+  it('清空：无值收起 → 有值才出现，点完值清空、焦点回首段', () => {
     const empty = mount()
-    expect(empty.clear.disabled).toBe(true)
+    expect(empty.clear.hidden).toBe(true)
+    expect(empty.clear.hasAttribute('disabled')).toBe(false)
+    expect(empty.clear.hasAttribute('data-disabled')).toBe(false)
 
     const h = mount({ defaultValue: '2026-07-28' })
-    expect(h.clear.disabled).toBe(false)
+    expect(h.clear.hidden).toBe(false)
     click(h.clear)
     expect(h.value()).toEqual([])
     expect(h.hiddenInput.value).toBe('')
@@ -965,10 +967,14 @@ describe('无障碍与表单出口', () => {
     expect(off.hiddenInput.disabled).toBe(true)
   })
 
-  it('清空按钮不占 Tab 位也不报给读屏：同一个能力不报两遍', () => {
+  it('清空按钮不占 Tab 位但带名字：读屏能找到它', () => {
     const h = mount({ defaultValue: '2026-07-28' })
     expect(h.clear.getAttribute('tabindex')).toBe('-1')
-    expect(h.clear.getAttribute('aria-hidden')).toBe('true')
+    expect(h.clear.hasAttribute('aria-hidden')).toBe(false)
+    expect(h.clear.getAttribute('aria-label')).toBe('Clear')
+
+    const named = mount({ defaultValue: '2026-07-28', translations: { clearTrigger: '清空' } })
+    expect(named.clear.getAttribute('aria-label')).toBe('清空')
   })
 })
 

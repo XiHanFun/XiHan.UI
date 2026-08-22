@@ -1,4 +1,3 @@
-import { overlayPositioned } from '../shared/overlay'
 import type { NavIntent } from '@xihan-ui/behavior'
 import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
@@ -6,6 +5,7 @@ import type { TreeNodeMeta, TreeVisibleNode } from '../tree'
 import type { TreeSelectApi, TreeSelectSchema } from './tree-select.types'
 import { cascadeState, focusItem, indexOfValue, isItemDisabled, ITEM_VALUE_ATTR, itemValue, matchTypeahead, navigateItems, navIntentFromKey } from '@xihan-ui/behavior'
 import { dataAttr } from '@xihan-ui/kernel'
+import { overlayPositioned } from '../shared/overlay'
 import { flattenTree, indexTree } from '../tree'
 import { treeSelectAnatomy } from './tree-select.anatomy'
 import { TREE_SELECT_DEFAULT_PLACEMENT, treeSelectNodeEls } from './tree-select.machine'
@@ -228,6 +228,15 @@ export function connectTreeSelect<T extends PropTypes>(
       'onKeydown': (event: KeyboardEvent) => {
         if (disabled)
           return
+        // 清空钮不占 Tab 位，键盘在 trigger 上清值：Delete 清空全部，Backspace 单选清空、多选去掉最后一个
+        if (canClear && (event.key === 'Delete' || event.key === 'Backspace')) {
+          event.preventDefault()
+          if (event.key === 'Delete' || !multiple)
+            send({ type: 'VALUE.CLEAR' })
+          else
+            send({ type: 'VALUE.SET', value: value.slice(0, -1) })
+          return
+        }
         // 纵向轴且不收 Home/End；返回 null 时不 preventDefault
         const intent = navIntentFromKey(event, { axis: 'vertical', home: false })
         if (intent) {
@@ -264,14 +273,12 @@ export function connectTreeSelect<T extends PropTypes>(
     getClearTriggerProps: () => normalize.button({
       ...parts['clear-trigger'].attrs,
       'type': 'button',
-      // 整个控件只占一个 Tab 位（trigger），此按钮不入 Tab 序列也不暴露给读屏
+      // 整个控件只占一个 Tab 位（trigger），此按钮不入 Tab 序列；读屏按虚拟光标仍找得到它
       'tabindex': -1,
-      'aria-hidden': true,
+      'aria-label': prop('translations')?.clearTrigger ?? 'Clear',
       // 没值就整个收起，不是禁用：清空钮与下拉钮并排时，一个灰着一个亮着，
       // 用户分不清哪个能点。有值才出现，出现即可用
       'hidden': !canClear || undefined,
-      'disabled': !canClear || undefined,
-      'data-disabled': dataAttr(!canClear),
       // 拦掉默认聚焦，避免焦点从 trigger 挪到本按钮
       'onPointerDown': (event: PointerEvent) => {
         if (event.button === 0)

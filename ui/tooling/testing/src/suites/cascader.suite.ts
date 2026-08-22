@@ -216,13 +216,15 @@ export const cascaderSuite: ConformanceSuite = {
           },
           'value-text': { 'id': '@self', 'data-placeholder': '', 'data-disabled': null },
           'indicator': { 'aria-hidden': 'true', 'data-state': 'closed' },
-          // 清空按钮不进 Tab 序列与可及树，无选中时用原生 disabled
+          // 清空按钮不进 Tab 序列但保留可及名字，无选中时只收起、不打 disabled
           'clear-trigger': {
             'type': 'button',
             'tabindex': '-1',
-            'aria-hidden': 'true',
-            'disabled': '',
-            'data-disabled': '',
+            'aria-hidden': null,
+            'aria-label': 'Clear',
+            'hidden': '',
+            'disabled': null,
+            'data-disabled': null,
           },
           'positioner': { 'data-state': 'closed', 'data-placement': 'bottom-start', 'data-hidden': null },
           'content': {
@@ -525,6 +527,97 @@ export const cascaderSuite: ConformanceSuite = {
         },
         { kind: 'key', key: 'ArrowLeft', expect: { activeElement: { part: 'item[4]', exact: true } } },
         { kind: 'key', key: 'ArrowRight', expect: { activeElement: { part: 'item[0]', exact: true } } },
+      ],
+    },
+    {
+      name: 'Delete 在 trigger 上清空全部选中值：浮层不展开、焦点留在 trigger、清空钮随之收起',
+      spec: { apg: `${APG_COMBOBOX}#keyboardinteraction` },
+      props: props({ multiple: true, defaultValue: [['macau'], ['taiwan']], placeholder: '请选择' }),
+      initial: { parts: { 'clear-trigger': { hidden: null }, 'trigger': { 'data-placeholder': null } } },
+      covers: ['cascader.kbd.clear'],
+      steps: [
+        { kind: 'focus', part: 'trigger' },
+        {
+          kind: 'key',
+          key: 'Delete',
+          expect: {
+            activeElement: 'trigger',
+            parts: {
+              'trigger': { 'aria-expanded': 'false', 'data-placeholder': '' },
+              'content': { hidden: '' },
+              'clear-trigger': { hidden: '' },
+              'item': itemsSelected(),
+            },
+            events: [{ type: 'value-change', detail: { value: [] } }],
+          },
+        },
+      ],
+    },
+    {
+      name: 'Backspace 在 trigger 上：单选清空，多选只去掉最后一个选中路径',
+      spec: { apg: `${APG_COMBOBOX}#keyboardinteraction` },
+      props: props({ multiple: true, defaultValue: [['macau'], ['taiwan']] }),
+      covers: ['cascader.kbd.backspace'],
+      steps: [
+        { kind: 'focus', part: 'trigger' },
+        {
+          kind: 'key',
+          key: 'Backspace',
+          expect: {
+            activeElement: 'trigger',
+            parts: {
+              'trigger': { 'aria-expanded': 'false' },
+              'clear-trigger': { hidden: null },
+              'item': itemsSelected('macau'),
+            },
+            events: [{ type: 'value-change', detail: { value: [['macau']] } }],
+          },
+        },
+        {
+          kind: 'key',
+          key: 'Backspace',
+          expect: {
+            activeElement: 'trigger',
+            parts: { 'clear-trigger': { hidden: '' }, 'item': itemsSelected() },
+            events: [{ type: 'value-change', detail: { value: [] } }],
+          },
+        },
+      ],
+    },
+    {
+      name: 'Backspace 单选：一键清空',
+      spec: { apg: `${APG_COMBOBOX}#keyboardinteraction` },
+      props: props({ defaultValue: ['zhejiang', 'hangzhou'] }),
+      covers: ['cascader.kbd.backspace'],
+      steps: [
+        { kind: 'focus', part: 'trigger' },
+        {
+          kind: 'key',
+          key: 'Backspace',
+          expect: {
+            activeElement: 'trigger',
+            parts: { 'trigger': { 'aria-expanded': 'false' }, 'clear-trigger': { hidden: '' }, 'item': itemsSelected() },
+            events: [{ type: 'value-change', detail: { value: [] } }],
+          },
+        },
+      ],
+    },
+    {
+      name: '只读与无值时 Delete / Backspace 在 trigger 上不清值、也不展开',
+      spec: { apg: `${APG_COMBOBOX}#keyboardinteraction` },
+      props: props({ readOnly: true, defaultValue: ['macau'] }),
+      steps: [
+        { kind: 'focus', part: 'trigger' },
+        {
+          kind: 'key',
+          key: 'Delete',
+          expect: { parts: { trigger: { 'aria-expanded': 'false' }, item: itemsSelected('macau') }, events: [] },
+        },
+        {
+          kind: 'key',
+          key: 'Backspace',
+          expect: { parts: { trigger: { 'aria-expanded': 'false' }, item: itemsSelected('macau') }, events: [] },
+        },
       ],
     },
     {
@@ -874,7 +967,7 @@ export const cascaderSuite: ConformanceSuite = {
           'column[0]': { 'aria-disabled': 'true' },
           // 集合条目不输出原生 disabled
           'item[0]': { 'aria-disabled': 'true', 'data-disabled': '', 'disabled': null },
-          'clear-trigger': { hidden: '', disabled: '' },
+          'clear-trigger': { hidden: '', disabled: null },
         },
       },
       steps: [
@@ -909,7 +1002,7 @@ export const cascaderSuite: ConformanceSuite = {
           'root': { 'data-readonly': '', 'data-disabled': null },
           // 只读仍可聚焦、仍能展开，禁用则没有键盘入口
           'trigger': { 'disabled': null, 'aria-readonly': 'true', 'data-readonly': '' },
-          'clear-trigger': { 'hidden': '', 'disabled': '', 'data-disabled': '' },
+          'clear-trigger': { 'hidden': '', 'disabled': null, 'data-disabled': null },
         },
       },
       steps: [
@@ -942,12 +1035,12 @@ export const cascaderSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '清空按钮：按下不把焦点从 trigger 挪走，清完值归零、焦点还给 trigger，按钮自己也就按不动了',
+      name: '清空按钮：按下不把焦点从 trigger 挪走，清完值归零、焦点还给 trigger，按钮自己随之收起',
       spec: { apg: `${APG_COMBOBOX}#roles_states_properties` },
       props: props({ defaultValue: ['zhejiang', 'hangzhou'], placeholder: '请选择' }),
       initial: {
         parts: {
-          'clear-trigger': { 'hidden': null, 'disabled': null, 'data-disabled': null, 'tabindex': '-1', 'aria-hidden': 'true' },
+          'clear-trigger': { 'hidden': null, 'disabled': null, 'data-disabled': null, 'tabindex': '-1', 'aria-hidden': null, 'aria-label': 'Clear' },
           'trigger': { 'data-placeholder': null },
           'value-text': { 'data-placeholder': null },
           'item': itemsSelected('hangzhou'),
@@ -976,8 +1069,8 @@ export const cascaderSuite: ConformanceSuite = {
               'item': itemsSelected(),
               'trigger': { 'data-placeholder': '' },
               'value-text': { 'data-placeholder': '' },
-              // 清完就按不动了
-              'clear-trigger': { 'hidden': '', 'disabled': '', 'data-disabled': '' },
+              // 清完就收起
+              'clear-trigger': { 'hidden': '', 'disabled': null, 'data-disabled': null },
             },
             events: [{ type: 'value-change', detail: { value: [] } }],
           },

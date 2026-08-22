@@ -22,6 +22,7 @@ const filtered = computed(() => {
     v-model:value="value"
     v-model:input-value="query"
     :collection="filtered"
+    clearable
     label="技术栈"
     empty="没有候选，按 Enter 直接用这串文本"
     allow-custom-value

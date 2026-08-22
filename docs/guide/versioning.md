@@ -220,7 +220,7 @@ brand  neutral  success  warning  danger  info
 | --- | --- |
 | `xh-form` | `setFieldValue` `setFieldError` `clearErrors` `submit` `reset` `getFieldId` `getFieldValue` `getFieldError` |
 | `xh-toaster` | `create` `updateToast` `dismiss` `dismissAll` `getToastsByPlacement` |
-| `xh-file-upload` | `openFilePicker` `setFiles` `addFiles` `deleteFile` `clearFiles` |
+| `xh-file-upload` | `openFilePicker` `setFiles` `addFiles` `deleteFile` `clear` |
 | `xh-virtualizer` | 3 个 |
 | `xh-log` | `scrollToBottom` |
 

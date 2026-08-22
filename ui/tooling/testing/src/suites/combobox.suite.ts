@@ -90,8 +90,8 @@ function tree(items: readonly FixtureNode[] = ITEMS, grouped = false): FixtureNo
         children: [
           // 必须是 input：WC 侧由 fixture 的 tag 决定，div 既不可聚焦也没有 value
           { part: 'input', tag: 'input' },
+          { part: 'clear-trigger', tag: 'button' },
           { part: 'trigger', tag: 'button', text: '▾' },
-          { part: 'clear-trigger', tag: 'button', text: '×' },
         ],
       },
       {
@@ -124,8 +124,8 @@ export const comboboxSuite: ConformanceSuite = {
           'label',
           'control',
           'input',
-          'trigger',
           'clear-trigger',
+          'trigger',
           'positioner',
           'content',
           'item[0]',
@@ -175,7 +175,8 @@ export const comboboxSuite: ConformanceSuite = {
           },
           // 两个按钮都退出 Tab 序列：能力在输入框上都够得着
           'trigger': { 'type': 'button', 'tabindex': '-1', 'aria-controls': '@part(content)', 'data-state': 'closed' },
-          'clear-trigger': { 'type': 'button', 'tabindex': '-1', 'aria-hidden': 'true', 'disabled': '', 'data-disabled': '' },
+          // 清空钮没值只收起，不灰留位；对读屏不隐藏，靠 aria-label 报名
+          'clear-trigger': { 'type': 'button', 'tabindex': '-1', 'aria-label': 'Clear', 'aria-hidden': null, 'hidden': '', 'disabled': null, 'data-disabled': null },
           'positioner': { 'data-state': 'closed', 'data-placement': 'bottom-start' },
           'content': {
             'role': 'listbox',
@@ -361,7 +362,7 @@ export const comboboxSuite: ConformanceSuite = {
               'item[2]': { 'aria-selected': 'true', 'data-state': 'checked' },
               'item-indicator[2]': { 'data-state': 'checked' },
               // 有东西可清了，清空按钮跟着亮起来
-              'clear-trigger': { 'hidden': null, 'disabled': null, 'data-disabled': null },
+              'clear-trigger': { hidden: null },
             },
             // 先值后开合
             events: [
@@ -638,7 +639,7 @@ export const comboboxSuite: ConformanceSuite = {
       initial: {
         parts: {
           'item[2]': { 'aria-selected': 'true', 'data-state': 'checked' },
-          'clear-trigger': { disabled: null },
+          'clear-trigger': { hidden: null },
         },
       },
       steps: [
@@ -663,7 +664,7 @@ export const comboboxSuite: ConformanceSuite = {
           expect: {
             parts: {
               'item[0]': { 'aria-selected': 'false', 'data-state': 'unchecked' },
-              'clear-trigger': { 'hidden': '', 'disabled': '', 'data-disabled': '' },
+              'clear-trigger': { 'hidden': '', 'disabled': null, 'data-disabled': null },
             },
             activeElement: { part: 'input', exact: true },
             events: [{ type: 'value-change', detail: { value: [] } }],
@@ -675,6 +676,16 @@ export const comboboxSuite: ConformanceSuite = {
           run: ({ doc }) => assertInputValue(doc, ''),
         },
       ],
+    },
+    {
+      name: '清空按钮的无障碍名走 translations.clearTrigger',
+      spec: { apg: APG },
+      props: { defaultValue: 'apple', translations: { clearTrigger: '清空' } },
+      initial: {
+        parts: {
+          'clear-trigger': { 'aria-label': '清空', 'hidden': null },
+        },
+      },
     },
     {
       name: '候选为空时 empty 节点显形',
@@ -722,7 +733,7 @@ export const comboboxSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '禁用：输入框与两个按钮都用原生 disabled，键盘展不开列表',
+      name: '禁用：输入框与下拉钮用原生 disabled、清空钮收起，键盘展不开列表',
       spec: { apg: APG },
       props: { disabled: true },
       initial: {
@@ -730,7 +741,7 @@ export const comboboxSuite: ConformanceSuite = {
           'root': { 'data-disabled': '' },
           'input': { 'disabled': '', 'data-disabled': '' },
           'trigger': { 'disabled': '', 'data-disabled': '' },
-          'clear-trigger': { hidden: '', disabled: '' },
+          'clear-trigger': { hidden: '', disabled: null },
         },
       },
       steps: [
@@ -752,7 +763,7 @@ export const comboboxSuite: ConformanceSuite = {
           'root': { 'data-readonly': '' },
           'input': { 'readonly': '', 'disabled': null, 'data-readonly': '' },
           // 只读时没东西可清
-          'clear-trigger': { hidden: '', disabled: '' },
+          'clear-trigger': { hidden: '', disabled: null },
         },
       },
       steps: [

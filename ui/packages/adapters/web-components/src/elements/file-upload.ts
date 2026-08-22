@@ -75,7 +75,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @csspart item-name - 文件名（元素代填）
  * @csspart item-size-text - 人读的文件大小（元素代填）
  * @csspart item-delete-trigger - 删掉这一条
- * @csspart clear-trigger - 清空整份列表；列表为空时带原生 disabled
+ * @csspart clear-trigger - 清空整份列表；列表为空时打 data-empty，按钮照常在位可聚焦
  */
 export class XhFileUploadElement extends XhElement {
   static override partContract = { anatomy: fileUploadAnatomy, meta: fileUploadMeta }
@@ -215,8 +215,9 @@ export class XhFileUploadElement extends XhElement {
     this.commands().deleteFile(file)
   }
 
-  clearFiles(): void {
-    this.commands().clearFiles()
+  /** 清空整份列表（本地与远程一起）。 */
+  clear(): void {
+    this.commands().clear()
   }
 
   /** 文本是否归元素填：节点非空即判为作者自定义渲染。首次见到时定死，之后不再回读——回读分不出内容是作者写的还是上一帧自己写的。 */

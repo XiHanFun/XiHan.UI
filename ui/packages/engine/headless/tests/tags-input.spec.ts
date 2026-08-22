@@ -435,13 +435,15 @@ describe('connectTagsInput 属性输出', () => {
     expect(n.preview.hasAttribute('hidden')).toBe(false)
   })
 
-  it('清空按钮：没东西可清时 disabled，有标签或有文本就亮', () => {
+  it('清空按钮：没东西可清时只打 hidden 收起，有标签或有文本就露出', () => {
     const empty = mount()
-    expect(empty.clearTrigger.hasAttribute('disabled')).toBe(true)
-    expect(empty.clearTrigger.getAttribute('data-disabled')).toBe('')
-    expect(mount({ defaultValue: ['a'] }).clearTrigger.hasAttribute('disabled')).toBe(false)
-    expect(mount({ defaultInputValue: 'a' }).clearTrigger.hasAttribute('disabled')).toBe(false)
-    expect(mount({ defaultValue: ['a'], readOnly: true }).clearTrigger.hasAttribute('disabled')).toBe(true)
+    expect(empty.clearTrigger.hasAttribute('hidden')).toBe(true)
+    expect(empty.clearTrigger.hasAttribute('disabled')).toBe(false)
+    expect(empty.clearTrigger.hasAttribute('data-disabled')).toBe(false)
+    expect(mount({ defaultValue: ['a'] }).clearTrigger.hasAttribute('hidden')).toBe(false)
+    expect(mount({ defaultInputValue: 'a' }).clearTrigger.hasAttribute('hidden')).toBe(false)
+    expect(mount({ defaultValue: ['a'], readOnly: true }).clearTrigger.hasAttribute('hidden')).toBe(true)
+    expect(mount({ defaultValue: ['a'], disabled: true }).clearTrigger.hasAttribute('hidden')).toBe(true)
   })
 
   it('外部把标签换掉后，锚点不再落在一个已经不存在的标签上', () => {
@@ -748,7 +750,7 @@ describe('删除按钮与清空按钮的焦点去处', () => {
     expect(h.inputValue()).toBe('')
     expect(h.input.value).toBe('')
     expect(document.activeElement).toBe(h.input)
-    expect(h.clearTrigger.hasAttribute('disabled')).toBe(true)
+    expect(h.clearTrigger.hasAttribute('hidden')).toBe(true)
   })
 })
 

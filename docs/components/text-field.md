@@ -147,11 +147,12 @@ input 部件写成 textarea 即多行宿主；autoSize 让高度跟内容走，�
 | `invalid` | `boolean` |  |  |
 | `name` | `string` |  | 表单字段名；给了才参与提交。 |
 | `maxLength` | `number` |  | 字符数上限。同时落成原生 maxlength 与机器侧的截断，两道都要。 |
-| `clearable` | `boolean` |  | 开启清空能力：清空按钮可用、Escape 接管。关掉时按钮带 hidden 收起。 |
+| `clearable` | `boolean` |  | 开启清空能力：有值时显出清空按钮、Escape 接管。关掉时按钮带 hidden 收起。 |
 | `autoSize` | `boolean \| TextFieldAutoSize` |  | 多行宿主的自动高度：跟内容长高；对象形态钉行数上下限，顶到 maxRows 后内部滚动。 |
 | `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定输入框的底与描边怎么画。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦强调用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定输入框与清空按钮的几何档位。 |
+| `translations` | `Partial<TextFieldTranslations>` |  | 读屏文案；缺省英文。 |
 | `onValueChange` | `(details: TextFieldValueChangeDetails) => void` |  |  |
 
 ## 事件
@@ -218,7 +219,7 @@ input 部件写成 textarea 即多行宿主；autoSize 让高度跟内容走，�
 | --- | --- | --- |
 | `input` | `aria-invalid` | 'true' \| 'false' |
 | `input` | `aria-labelledby` | `label` 部件的 id |
-| `clear-trigger` | `aria-hidden` | 'true' |
+| `clear-trigger` | `aria-label` | label.clearTrigger |
 
 ## 样式
 
@@ -244,13 +245,12 @@ input 部件写成 textarea 即多行宿主；autoSize 让高度跟内容走，�
 | `input` | `data-disabled` | ''（条件成立时才出现） |
 | `input` | `data-invalid` | ''（条件成立时才出现） |
 | `input` | `data-multiline` | ''（条件成立时才出现） |
-| `clear-trigger` | `data-disabled` | ''（条件成立时才出现） |
 
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-text-field-clear-bg` · `--xh-text-field-clear-bg-active` · `--xh-text-field-clear-bg-hover` · `--xh-text-field-clear-fg` · `--xh-text-field-clear-fg-hover` · `--xh-text-field-clear-font-size` · `--xh-text-field-clear-radius` · `--xh-text-field-clear-size` · `--xh-text-field-gap` · `--xh-text-field-icon-size` · `--xh-text-field-input-bg` · `--xh-text-field-input-bg-disabled` · `--xh-text-field-input-bg-readonly` · `--xh-text-field-input-border` · `--xh-text-field-input-border-at-limit` · `--xh-text-field-input-border-focus` · `--xh-text-field-input-border-hover` · `--xh-text-field-input-border-invalid` · `--xh-text-field-input-fg` · `--xh-text-field-input-font-size` · `--xh-text-field-input-h` · `--xh-text-field-input-min-w` · `--xh-text-field-input-px` · `--xh-text-field-input-radius` · `--xh-text-field-label-fg` · `--xh-text-field-label-fg-disabled` · `--xh-text-field-label-font-size` · `--xh-text-field-label-font-weight` · `--xh-text-field-placeholder-fg` · `--xh-text-field-textarea-py`
+`--xh-text-field-action-bg` · `--xh-text-field-action-bg-active` · `--xh-text-field-action-bg-hover` · `--xh-text-field-action-fg` · `--xh-text-field-action-fg-hover` · `--xh-text-field-action-font-size` · `--xh-text-field-action-radius` · `--xh-text-field-action-size` · `--xh-text-field-gap` · `--xh-text-field-icon-size` · `--xh-text-field-input-bg` · `--xh-text-field-input-bg-disabled` · `--xh-text-field-input-bg-readonly` · `--xh-text-field-input-border` · `--xh-text-field-input-border-at-limit` · `--xh-text-field-input-border-focus` · `--xh-text-field-input-border-hover` · `--xh-text-field-input-border-invalid` · `--xh-text-field-input-fg` · `--xh-text-field-input-font-size` · `--xh-text-field-input-h` · `--xh-text-field-input-min-w` · `--xh-text-field-input-px` · `--xh-text-field-input-radius` · `--xh-text-field-label-fg` · `--xh-text-field-label-fg-disabled` · `--xh-text-field-label-font-size` · `--xh-text-field-label-font-weight` · `--xh-text-field-placeholder-fg` · `--xh-text-field-textarea-py`
 
 ## 动效
 

@@ -1,8 +1,9 @@
-<!-- 外部写值与清空 | 值由宿主持有，按钮直接写值或清空；填齐与越界两个判据由组件给出，按钮照它们摆 -->
+<!-- 外部写值与清空 | 值由宿主持有，按钮直接写值；清空交给组件自带的清空钮，有值才出现；填齐与越界两个判据由组件给出 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import {
   XhButton,
+  XhDateFieldClearTrigger,
   XhDateFieldControl,
   XhDateFieldLabel,
   XhDateFieldRoot,
@@ -26,7 +27,7 @@ const nextWeek = shift(7);
 
 <template>
   <XhDateFieldRoot
-    v-slot="{ empty, complete, outOfRange, setValue, clear }"
+    v-slot="{ complete, outOfRange, setValue }"
     v-model:value="value"
     :min="today"
     locale="zh-CN"
@@ -39,16 +40,14 @@ const nextWeek = shift(7);
       <span>月</span>
       <XhDateFieldSegment :index="2" />
       <span>日</span>
+      <!-- 一段都没填时清空钮收起；填了任意一段就出现 -->
+      <XhDateFieldClearTrigger />
     </XhDateFieldControl>
 
     <div style="display: flex; gap: 8px">
       <XhButton size="sm" variant="outline" @click="setValue(today)">今天</XhButton>
       <XhButton size="sm" variant="outline" @click="setValue(nextWeek)">
         七天后
-      </XhButton>
-      <!-- 一段都没填时这颗按钮按不动 -->
-      <XhButton size="sm" variant="ghost" :disabled="empty" @click="clear()">
-        清空
       </XhButton>
     </div>
 

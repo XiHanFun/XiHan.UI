@@ -57,18 +57,31 @@
     flex: none;
     align-items: center;
     justify-content: center;
-    inline-size: var(--xh-dynamic-input-trigger-size, var(--xh-control-action-size));
-    block-size: var(--xh-dynamic-input-trigger-size, var(--xh-control-action-size));
     padding: 0;
     border: 0;
-    border-radius: var(--xh-dynamic-input-trigger-radius, var(--xh-shape-control));
     background: var(--xh-dynamic-input-trigger-bg, transparent);
     color: var(--xh-dynamic-input-trigger-fg, var(--xh-fg-muted));
     font-family: inherit;
     font-size: var(--xh-dynamic-input-trigger-font-size, var(--xh-text-secondary-size));
     line-height: var(--xh-leading-none);
     cursor: pointer;
-    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  /* 行级删除把手：命中区取行内动作按钮尺寸，圆角取控件圆角 */
+  [data-scope='dynamic-input'][data-part='remove-trigger'] {
+    inline-size: var(--xh-dynamic-input-trigger-size, var(--xh-control-action-size));
+    block-size: var(--xh-dynamic-input-trigger-size, var(--xh-control-action-size));
+    border-radius: var(--xh-dynamic-input-trigger-radius, var(--xh-shape-control));
+  }
+
+  [data-scope='dynamic-input'][data-part='move-up-trigger'],
+  [data-scope='dynamic-input'][data-part='move-down-trigger'] {
+    inline-size: var(--xh-dynamic-input-trigger-size, var(--xh-control-action-size));
+    block-size: var(--xh-dynamic-input-trigger-size, var(--xh-control-action-size));
+    border-radius: var(--xh-dynamic-input-trigger-radius, var(--xh-shape-control));
   }
 
   /* 不换序时连接层给换序把手写 hidden；上面那条 display 会把 UA 的 [hidden]{display:none}
@@ -87,10 +100,11 @@
     color: var(--xh-dynamic-input-trigger-fg-hover, var(--xh-fg-default));
   }
 
-  [data-scope='dynamic-input'][data-part='remove-trigger']:active:not([aria-disabled='true']),
-  [data-scope='dynamic-input'][data-part='move-up-trigger']:active:not([aria-disabled='true']),
-  [data-scope='dynamic-input'][data-part='move-down-trigger']:active:not([aria-disabled='true']) {
+  [data-scope='dynamic-input'][data-part='remove-trigger']:not([aria-disabled='true']):active,
+  [data-scope='dynamic-input'][data-part='move-up-trigger']:not([aria-disabled='true']):active,
+  [data-scope='dynamic-input'][data-part='move-down-trigger']:not([aria-disabled='true']):active {
     background: var(--xh-dynamic-input-trigger-bg-active, var(--xh-bg-subtle-active));
+    scale: var(--xh-motion-scale-press);
   }
 
   /* 删除把手悬停转危险色：它是这一行里唯一不可撤销的动作 */
@@ -147,7 +161,7 @@
     background: var(--xh-dynamic-input-add-bg-hover, var(--xh-bg-subtle-hover));
   }
 
-  [data-scope='dynamic-input'][data-part='add-trigger']:active:not([aria-disabled='true']) {
+  [data-scope='dynamic-input'][data-part='add-trigger']:not([aria-disabled='true']):active {
     background: var(--xh-dynamic-input-add-bg-active, var(--xh-bg-subtle-active));
   }
 

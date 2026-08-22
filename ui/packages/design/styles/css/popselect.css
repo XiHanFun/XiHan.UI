@@ -73,6 +73,8 @@
     --xh-icon-size: var(--xh-popselect-icon-size, var(--xh-glyph-size-text));
 
     display: inline-flex;
+    align-items: center;
+    gap: var(--xh-popselect-root-gap, var(--xh-space-1));
   }
 
   /* —— 尺寸 —— */
@@ -148,6 +150,57 @@
   /* 无选中：触发器上显示的是占位文字，画淡一档 */
   [data-scope='popselect'][data-part='trigger'][data-placeholder] {
     color: var(--xh-popselect-placeholder-fg, var(--xh-fg-subtle));
+  }
+
+  /* 清空钮：触发器旁的方形小钮，没值即 hidden 收起；图标盒与指示符同一把尺 */
+  [data-scope='popselect'][data-part='clear-trigger'] {
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    inline-size: var(--xh-popselect-action-size, var(--xh-control-action-size));
+    block-size: var(--xh-popselect-action-size, var(--xh-control-action-size));
+    padding: 0;
+    border: none;
+    border-radius: var(--xh-popselect-action-radius, var(--xh-shape-control));
+    background: none;
+    color: var(--xh-popselect-clear-fg, var(--xh-fg-subtle));
+    line-height: var(--xh-leading-none);
+    cursor: pointer;
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='popselect'][data-part='clear-trigger']:hover {
+    background: var(--xh-popselect-clear-bg-hover, var(--xh-bg-subtle-hover));
+    color: var(--xh-popselect-clear-fg-hover, var(--xh-fg-default));
+  }
+
+  [data-scope='popselect'][data-part='clear-trigger']:active {
+    background: var(--xh-popselect-clear-bg-active, var(--xh-bg-subtle-active));
+    scale: var(--xh-motion-scale-press);
+  }
+
+  [data-scope='popselect'][data-part='clear-trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-_popselect-ring);
+    outline-offset: var(--xh-ring-offset);
+  }
+
+  [data-scope='popselect'][data-part='clear-trigger'][hidden] {
+    display: none;
+  }
+
+  /* 没写内容就由皮肤画叉；作者往部件里塞了自己的图形，这条规则即不命中 */
+  [data-scope='popselect'][data-part='clear-trigger']:empty::before {
+    content: '';
+    display: inline-block;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-close) center / contain no-repeat;
   }
 
   [data-scope='popselect'][data-part='content'] {

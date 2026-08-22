@@ -4,6 +4,7 @@ import { dateFieldAnatomy, dateFieldKeyboard } from '@xihan-ui/headless'
 // 分段日期不在 APG 的模式清单里；每一段都是 role=spinbutton 的节点，规范面落在 spinbutton 上。
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/spinbutton/#keyboardinteraction'
 const SCOPE = '[data-scope="date-field"]'
+const CLEAR = `${SCOPE}[data-part="clear-trigger"]`
 // 作者写足六个段位节点：精度用不上的那几个由连接层收起，不卸载
 const SEGMENT_NODES = 6
 
@@ -72,7 +73,11 @@ export const dateFieldSuite: ConformanceSuite = {
       { part: 'label', tag: 'span', text: '截止日期' },
       {
         part: 'control',
-        children: Array.from({ length: SEGMENT_NODES }, (_, i) => segment(i)),
+        children: [
+          ...Array.from({ length: SEGMENT_NODES }, (_, i) => segment(i)),
+          // 清空钮排在段位之后：没值时收起，不卸载作者节点
+          { part: 'clear-trigger', tag: 'button', text: '清空' },
+        ],
       },
       { part: 'hidden-input', tag: 'input' },
     ],
@@ -88,6 +93,7 @@ export const dateFieldSuite: ConformanceSuite = {
           'label',
           'control',
           ...Array.from({ length: SEGMENT_NODES }, (_, i) => `segment[${i}]`),
+          'clear-trigger',
           'hidden-input',
         ],
         counts: { segment: SEGMENT_NODES },
@@ -122,6 +128,8 @@ export const dateFieldSuite: ConformanceSuite = {
           'segment[2]': { 'data-segment': 'day', 'tabindex': '-1', 'aria-valuemax': '31', 'aria-valuetext': 'dd' },
           // 精度用不上的段：收起，且不再自称 spinbutton
           'segment[3]': { 'hidden': '', 'role': null, 'data-segment': null, 'tabindex': null, 'aria-valuemin': null },
+          // 一段都没填：清空钮收起而不是卸载；不占 Tab 位但带名字、不对读屏隐藏、不灰
+          'clear-trigger': { 'hidden': '', 'type': 'button', 'tabindex': '-1', 'aria-hidden': null, 'aria-label': 'Clear', 'disabled': null, 'data-disabled': null },
           'hidden-input': { type: 'hidden', name: 'due' },
         },
       },
@@ -721,6 +729,144 @@ export const dateFieldSuite: ConformanceSuite = {
           run: ({ doc }) => expectTexts(doc, ['年', '月', '日'], '占位串逐段覆盖'),
         },
       ],
+    },
+    {
+      name: '有值时清空钮显出：点它清空全部段、派 value-change、焦点回到首段，随后收起',
+      spec: { apg: APG },
+      props: { locale: 'zh-CN', defaultValue: '2026-07-28', name: 'due' },
+      initial: {
+        parts: {
+          'root': { 'data-empty': null, 'data-complete': '' },
+          'clear-trigger': { 'hidden': null, 'aria-label': 'Clear', 'tabindex': '-1', 'disabled': null },
+        },
+      },
+      steps: [
+        {
+          kind: 'click',
+          part: 'clear-trigger',
+          expect: {
+            parts: {
+              'root': { 'data-empty': '', 'data-complete': null },
+              'clear-trigger': { 'hidden': '', 'disabled': null, 'data-disabled': null },
+              'segment[0]': { 'aria-valuenow': null, 'data-placeholder': '' },
+              'segment[1]': { 'aria-valuenow': null, 'data-placeholder': '' },
+              'segment[2]': { 'aria-valuenow': null, 'data-placeholder': '' },
+            },
+            events: [{ type: 'value-change', detail: { value: null } }],
+            activeElement: { part: 'segment[0]', exact: true },
+          },
+        },
+        {
+          kind: 'raw',
+          why: '段位的文字是文本节点，进不了归一化快照',
+          run: ({ doc }) => {
+            expectTexts(doc, ['yyyy', 'mm', 'dd'], '清空后三段都退回占位串')
+            expectHidden(doc, '', '清空后没有值可提交')
+          },
+        },
+        {
+          kind: 'raw',
+          why: '按钮已收起，click 步骤点不到；直接派 click 才碰得到处理器里的守卫',
+          run: ({ doc }) => {
+            doc.querySelector(CLEAR)!.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }))
+          },
+          expect: { events: [] },
+        },
+      ],
+    },
+    {
+      name: '只填了一段也能清：清空钮显出，点它整份退回空',
+      spec: { apg: APG },
+      props: { locale: 'zh-CN', name: 'due' },
+      steps: [
+        {
+          kind: 'focus',
+          part: 'segment[1]',
+        },
+        {
+          kind: 'key',
+          key: '7',
+          expect: {
+            parts: {
+              'root': { 'data-empty': null, 'data-complete': null },
+              'clear-trigger': { hidden: null },
+            },
+          },
+        },
+        {
+          kind: 'click',
+          part: 'clear-trigger',
+          expect: {
+            parts: {
+              'root': { 'data-empty': '' },
+              'clear-trigger': { hidden: '' },
+              'segment[1]': { 'aria-valuenow': null, 'data-placeholder': '' },
+            },
+            // 值原本就是 null，清空不会再派一次
+            events: [],
+            activeElement: { part: 'segment[0]', exact: true },
+          },
+        },
+      ],
+    },
+    {
+      name: '只读 / 禁用：有值也清不掉，清空钮收起',
+      spec: { apg: APG },
+      props: { locale: 'zh-CN', defaultValue: '2026-07-28', readOnly: true, name: 'due' },
+      initial: {
+        parts: {
+          'root': { 'data-empty': null, 'data-readonly': '' },
+          'clear-trigger': { 'hidden': '', 'disabled': null, 'data-disabled': null },
+        },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: '按钮已收起，click 步骤点不到；直接派 click 才碰得到处理器里的守卫',
+          run: ({ doc }) => {
+            doc.querySelector(CLEAR)!.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }))
+          },
+          expect: {
+            parts: { root: { 'data-empty': null, 'data-complete': '' } },
+            events: [],
+          },
+        },
+        {
+          kind: 'raw',
+          why: '隐藏输入的值是 property',
+          run: ({ doc }) => expectHidden(doc, '2026-07-28', '只读下值不许被清掉'),
+        },
+      ],
+    },
+    {
+      name: '禁用：清空钮收起，直接派 click 也推不动值',
+      spec: { apg: APG },
+      props: { locale: 'zh-CN', defaultValue: '2026-07-28', disabled: true, name: 'due' },
+      initial: {
+        parts: { 'clear-trigger': { hidden: '', disabled: null } },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: '按钮已收起，click 步骤点不到；直接派 click 才碰得到处理器里的守卫',
+          run: ({ doc }) => {
+            doc.querySelector(CLEAR)!.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }))
+          },
+          expect: {
+            parts: { root: { 'data-complete': '' } },
+            events: [],
+          },
+        },
+      ],
+    },
+    {
+      name: 'translations.clearTrigger 换掉清空钮的名字',
+      spec: { apg: APG },
+      props: { locale: 'zh-CN', defaultValue: '2026-07-28', translations: { clearTrigger: '清空日期' } },
+      initial: {
+        parts: { 'clear-trigger': { 'aria-label': '清空日期', 'hidden': null } },
+      },
+      steps: [],
     },
   ],
 }

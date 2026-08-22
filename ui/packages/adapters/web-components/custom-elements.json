@@ -672,6 +672,12 @@
               "name": "--xh-alert-border"
             },
             {
+              "name": "--xh-alert-close-bg-active"
+            },
+            {
+              "name": "--xh-alert-close-bg-hover"
+            },
+            {
               "name": "--xh-alert-close-fg"
             },
             {
@@ -3581,7 +3587,7 @@
               "name": "indicator"
             },
             {
-              "description": "清空按钮，须是原生 button；不占 Tab 位且对读屏隐藏",
+              "description": "清空按钮，须是原生 button；不占 Tab 位，可及名字取 translations.clearTrigger",
               "name": "clear-trigger"
             },
             {
@@ -6741,7 +6747,7 @@
               "name": "trigger"
             },
             {
-              "description": "清空按钮，须是原生 button；不占 Tab 位且对读屏隐藏",
+              "description": "清空按钮，须是原生 button；不占 Tab 位，读屏按 aria-label 找到它",
               "name": "clear-trigger"
             },
             {
@@ -6797,6 +6803,14 @@
               "privacy": "public",
               "type": {
                 "text": "ComboboxNode[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "ComboboxSchema['props']['translations'] | undefined"
               }
             },
             {
@@ -8670,7 +8684,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-date-field>` —— Light-DOM 行为宿主：作者写 root/label/control/segment（多个）/hidden-input\n角色节点，元素跑 date-field 机器并把 connect 产出打上去。\n\n每一段是一个 role=spinbutton 的可聚焦节点：上下键加减并在段区间里回绕、左右键与 Home/End 换段、\n数字键直填且敲满自动跳下一段、Backspace 清掉本段。\n\n是哪一段有两种写法：只声明下标（`index`，或按文档序），是哪一段由 locale（zh-CN 年月日、\nen-US 月日年）与段集算出来——同一份标记换个 locale 就换一副面孔；或按段名写死\n（`segment=\"quarter\"`），段集里没有这一块时那一格收起。用不上的段带 hidden 留在文档里，\n不卸载作者节点。\n\n段位没填齐时整份值是 null；填齐了才拼出 ISO 串，由 hidden-input 随表单提交。\n\n占位串与读屏名字是逐段的对象，属性表达不了，只能走 property\n（`el.placeholder = { year: '年' }`）。",
+          "description": "`<xh-date-field>` —— Light-DOM 行为宿主：作者写 root/label/control/segment（多个）/hidden-input\n角色节点，元素跑 date-field 机器并把 connect 产出打上去。\n\n每一段是一个 role=spinbutton 的可聚焦节点：上下键加减并在段区间里回绕、左右键与 Home/End 换段、\n数字键直填且敲满自动跳下一段、Backspace 清掉本段；可选的 clear-trigger 一键清空全部段。\n\n是哪一段有两种写法：只声明下标（`index`，或按文档序），是哪一段由 locale（zh-CN 年月日、\nen-US 月日年）与段集算出来——同一份标记换个 locale 就换一副面孔；或按段名写死\n（`segment=\"quarter\"`），段集里没有这一块时那一格收起。用不上的段带 hidden 留在文档里，\n不卸载作者节点。\n\n段位没填齐时整份值是 null；填齐了才拼出 ISO 串，由 hidden-input 随表单提交。\n\n占位串与读屏名字是逐段的对象，属性表达不了，只能走 property\n（`el.placeholder = { year: '年' }`）。",
           "name": "XhDateFieldElement",
           "cssParts": [
             {
@@ -8688,6 +8702,10 @@
             {
               "description": "一段一个的 spinbutton 节点。可自带 segment 属性按段名认领（segment=\"quarter\"）， 或自带 index 属性声明下标，两者都没写按文档序",
               "name": "segment"
+            },
+            {
+              "description": "清空钮，不占 Tab 位；没值或不可编辑时收起，点完焦点回到首段",
+              "name": "clear-trigger"
             },
             {
               "description": "type=hidden 的表单出口，值是 ISO 串",
@@ -8834,7 +8852,7 @@
               "name": "translations",
               "privacy": "public",
               "type": {
-                "text": "SegmentTexts | undefined"
+                "text": "DateFieldTranslations | undefined"
               }
             },
             {
@@ -9045,6 +9063,30 @@
           "customElement": true,
           "cssProperties": [
             {
+              "name": "--xh-date-field-action-bg"
+            },
+            {
+              "name": "--xh-date-field-action-bg-active"
+            },
+            {
+              "name": "--xh-date-field-action-bg-hover"
+            },
+            {
+              "name": "--xh-date-field-action-fg"
+            },
+            {
+              "name": "--xh-date-field-action-fg-hover"
+            },
+            {
+              "name": "--xh-date-field-action-font-size"
+            },
+            {
+              "name": "--xh-date-field-action-radius"
+            },
+            {
+              "name": "--xh-date-field-action-size"
+            },
+            {
               "name": "--xh-date-field-control-bg"
             },
             {
@@ -9167,7 +9209,7 @@
               "name": "trigger"
             },
             {
-              "description": "清空按钮，须是原生 button；不占 Tab 位且对读屏隐藏",
+              "description": "清空按钮，须是原生 button；不占 Tab 位，名字取 translations.clearTrigger",
               "name": "clear-trigger"
             },
             {
@@ -10745,6 +10787,18 @@
               "name": "--xh-dialog-bg"
             },
             {
+              "name": "--xh-dialog-close-bg-active"
+            },
+            {
+              "name": "--xh-dialog-close-bg-hover"
+            },
+            {
+              "name": "--xh-dialog-close-radius"
+            },
+            {
+              "name": "--xh-dialog-close-size"
+            },
+            {
               "name": "--xh-dialog-description-fg"
             },
             {
@@ -11380,6 +11434,18 @@
             },
             {
               "name": "--xh-drawer-bg"
+            },
+            {
+              "name": "--xh-drawer-close-bg-active"
+            },
+            {
+              "name": "--xh-drawer-close-bg-hover"
+            },
+            {
+              "name": "--xh-drawer-close-radius"
+            },
+            {
+              "name": "--xh-drawer-close-size"
             },
             {
               "name": "--xh-drawer-description-fg"
@@ -13197,7 +13263,7 @@
               "name": "item-delete-trigger"
             },
             {
-              "description": "清空整份列表；列表为空时带原生 disabled",
+              "description": "清空整份列表；列表为空时打 data-empty，按钮照常在位可聚焦",
               "name": "clear-trigger"
             }
           ],
@@ -13506,12 +13572,13 @@
             },
             {
               "kind": "method",
-              "name": "clearFiles",
+              "name": "clear",
               "return": {
                 "type": {
                   "text": "void"
                 }
-              }
+              },
+              "description": "清空整份列表（本地与远程一起）。"
             },
             {
               "kind": "field",
@@ -13754,6 +13821,9 @@
           "customElement": true,
           "cssProperties": [
             {
+              "name": "--xh-file-upload-clear-bg-active"
+            },
+            {
               "name": "--xh-file-upload-clear-bg-hover"
             },
             {
@@ -13776,6 +13846,9 @@
             },
             {
               "name": "--xh-file-upload-clear-radius"
+            },
+            {
+              "name": "--xh-file-upload-delete-bg-active"
             },
             {
               "name": "--xh-file-upload-delete-bg-hover"
@@ -14851,6 +14924,9 @@
               "name": "--xh-floating-panel-action-radius"
             },
             {
+              "name": "--xh-floating-panel-action-size"
+            },
+            {
               "name": "--xh-floating-panel-bg"
             },
             {
@@ -14861,6 +14937,12 @@
             },
             {
               "name": "--xh-floating-panel-border"
+            },
+            {
+              "name": "--xh-floating-panel-close-radius"
+            },
+            {
+              "name": "--xh-floating-panel-close-size"
             },
             {
               "name": "--xh-floating-panel-corner-size"
@@ -18462,6 +18544,18 @@
             },
             {
               "name": "--xh-image-viewer-chrome-bg"
+            },
+            {
+              "name": "--xh-image-viewer-close-bg-active"
+            },
+            {
+              "name": "--xh-image-viewer-close-bg-hover"
+            },
+            {
+              "name": "--xh-image-viewer-close-radius"
+            },
+            {
+              "name": "--xh-image-viewer-close-size"
             },
             {
               "name": "--xh-image-viewer-fg"
@@ -26165,6 +26259,18 @@
               "name": "--xh-popover-border"
             },
             {
+              "name": "--xh-popover-close-bg-active"
+            },
+            {
+              "name": "--xh-popover-close-bg-hover"
+            },
+            {
+              "name": "--xh-popover-close-radius"
+            },
+            {
+              "name": "--xh-popover-close-size"
+            },
+            {
               "name": "--xh-popover-description-fg"
             },
             {
@@ -26233,6 +26339,10 @@
             {
               "description": "触发按钮（aria-haspopup=listbox/aria-expanded/aria-controls 所在），同时是定位锚点，须是原生 button",
               "name": "trigger"
+            },
+            {
+              "description": "清空按钮（trigger 的兄弟节点，须是原生 button）：有选中值才显出，点按清空全部选中并把焦点送回 trigger",
+              "name": "clear-trigger"
             },
             {
               "description": "浮层定位容器，坐标由引擎写成内联样式",
@@ -26416,6 +26526,14 @@
                 "text": "Size | undefined"
               },
               "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "Partial<PopselectTranslations> | undefined"
+              }
             },
             {
               "kind": "field",
@@ -26774,6 +26892,24 @@
           "customElement": true,
           "cssProperties": [
             {
+              "name": "--xh-popselect-action-radius"
+            },
+            {
+              "name": "--xh-popselect-action-size"
+            },
+            {
+              "name": "--xh-popselect-clear-bg-active"
+            },
+            {
+              "name": "--xh-popselect-clear-bg-hover"
+            },
+            {
+              "name": "--xh-popselect-clear-fg"
+            },
+            {
+              "name": "--xh-popselect-clear-fg-hover"
+            },
+            {
               "name": "--xh-popselect-content-bg"
             },
             {
@@ -26841,6 +26977,9 @@
             },
             {
               "name": "--xh-popselect-placeholder-fg"
+            },
+            {
+              "name": "--xh-popselect-root-gap"
             },
             {
               "name": "--xh-popselect-trigger-bg"
@@ -29653,7 +29792,7 @@
               "name": "control"
             },
             {
-              "description": "清空按钮：trigger 的兄弟节点（放进 control 即内嵌形态），没选中或禁用时带 hidden；可及名走 translations.clear",
+              "description": "清空按钮：trigger 的兄弟节点（放进 control 即内嵌形态），不占 Tab 位；清不了（无值 / 禁用 / 只读）时带 hidden，点完焦点送回 trigger；可及名走 translations.clearTrigger",
               "name": "clear-trigger"
             },
             {
@@ -29759,6 +29898,15 @@
                 "text": "boolean | undefined"
               },
               "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "readOnly",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "read-only"
             },
             {
               "kind": "field",
@@ -29875,7 +30023,7 @@
               "type": {
                 "text": "SelectSchema['props']['translations'] | undefined"
               },
-              "description": "读屏文案（clear 等）；对象进不了属性，只作为 property 暴露。"
+              "description": "读屏文案（clearTrigger 等）；对象进不了属性，只作为 property 暴露。"
             },
             {
               "kind": "field",
@@ -30192,6 +30340,14 @@
               "type": {
                 "text": "boolean | undefined"
               },
+              "description": "只读：浮层照常展开、条目照常浏览，但选中值改不动、也清不掉",
+              "name": "read-only",
+              "fieldName": "readOnly"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
               "description": "校验错误态：trigger 标红并输出 aria-invalid",
               "name": "invalid",
               "fieldName": "invalid"
@@ -30301,19 +30457,28 @@
           "customElement": true,
           "cssProperties": [
             {
-              "name": "--xh-select-clear-bg-hover"
+              "name": "--xh-select-action-bg"
             },
             {
-              "name": "--xh-select-clear-fg"
+              "name": "--xh-select-action-bg-active"
             },
             {
-              "name": "--xh-select-clear-fg-hover"
+              "name": "--xh-select-action-bg-hover"
             },
             {
-              "name": "--xh-select-clear-font-size"
+              "name": "--xh-select-action-fg"
             },
             {
-              "name": "--xh-select-clear-size"
+              "name": "--xh-select-action-fg-hover"
+            },
+            {
+              "name": "--xh-select-action-font-size"
+            },
+            {
+              "name": "--xh-select-action-radius"
+            },
+            {
+              "name": "--xh-select-action-size"
             },
             {
               "name": "--xh-select-content-bg"
@@ -30344,6 +30509,9 @@
             },
             {
               "name": "--xh-select-content-shadow"
+            },
+            {
+              "name": "--xh-select-control-gap"
             },
             {
               "name": "--xh-select-footer-border"
@@ -30439,13 +30607,28 @@
               "name": "--xh-select-tag-radius"
             },
             {
+              "name": "--xh-select-tag-remove-bg-active"
+            },
+            {
+              "name": "--xh-select-tag-remove-bg-hover"
+            },
+            {
               "name": "--xh-select-tag-remove-fg"
             },
             {
               "name": "--xh-select-tag-remove-fg-hover"
             },
             {
+              "name": "--xh-select-tag-remove-radius"
+            },
+            {
+              "name": "--xh-select-tag-remove-size"
+            },
+            {
               "name": "--xh-select-trigger-bg"
+            },
+            {
+              "name": "--xh-select-trigger-bg-readonly"
             },
             {
               "name": "--xh-select-trigger-border"
@@ -31400,6 +31583,9 @@
             },
             {
               "name": "--xh-signature-pad-clear-bg"
+            },
+            {
+              "name": "--xh-signature-pad-clear-bg-active"
             },
             {
               "name": "--xh-signature-pad-clear-bg-disabled"
@@ -34953,6 +35139,12 @@
               "name": "--xh-tag-border-disabled"
             },
             {
+              "name": "--xh-tag-close-bg-active"
+            },
+            {
+              "name": "--xh-tag-close-bg-hover"
+            },
+            {
               "name": "--xh-tag-close-fg"
             },
             {
@@ -35045,7 +35237,7 @@
               "name": "item-input"
             },
             {
-              "description": "清空按钮；没东西可清时置灰",
+              "description": "清空按钮；没东西可清时收起（hidden）",
               "name": "clear-trigger"
             },
             {
@@ -35478,25 +35670,28 @@
           "customElement": true,
           "cssProperties": [
             {
-              "name": "--xh-tags-input-clear-bg"
+              "name": "--xh-tags-input-action-bg"
             },
             {
-              "name": "--xh-tags-input-clear-bg-active"
+              "name": "--xh-tags-input-action-bg-active"
             },
             {
-              "name": "--xh-tags-input-clear-bg-hover"
+              "name": "--xh-tags-input-action-bg-hover"
             },
             {
-              "name": "--xh-tags-input-clear-fg"
+              "name": "--xh-tags-input-action-fg"
             },
             {
-              "name": "--xh-tags-input-clear-fg-hover"
+              "name": "--xh-tags-input-action-fg-hover"
             },
             {
-              "name": "--xh-tags-input-clear-font-size"
+              "name": "--xh-tags-input-action-font-size"
             },
             {
-              "name": "--xh-tags-input-clear-size"
+              "name": "--xh-tags-input-action-radius"
+            },
+            {
+              "name": "--xh-tags-input-action-size"
             },
             {
               "name": "--xh-tags-input-control-bg"
@@ -35560,6 +35755,9 @@
             },
             {
               "name": "--xh-tags-input-delete-font-size"
+            },
+            {
+              "name": "--xh-tags-input-delete-radius"
             },
             {
               "name": "--xh-tags-input-delete-size"
@@ -35666,7 +35864,7 @@
               "name": "input"
             },
             {
-              "description": "清空按钮；未开 clearable 时收起，无值或不可编辑时置灰",
+              "description": "清空按钮，须是原生 button；不占 Tab 位，名字取 translations.clearTrigger；清不了时收起",
               "name": "clear-trigger"
             }
           ],
@@ -35818,6 +36016,15 @@
             },
             {
               "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "object"
+              },
+              "description": "读屏文案（只走 property）：clearTrigger 是清空按钮的名字"
+            },
+            {
+              "kind": "field",
               "name": "notify",
               "privacy": "private",
               "readonly": true
@@ -35944,7 +36151,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "开启清空：清空按钮显出并在有值时可用，Escape 接管",
+              "description": "开启清空：有值时清空按钮显出，Escape 接管",
               "name": "clearable",
               "fieldName": "clearable"
             },
@@ -35989,28 +36196,28 @@
           "customElement": true,
           "cssProperties": [
             {
-              "name": "--xh-text-field-clear-bg"
+              "name": "--xh-text-field-action-bg"
             },
             {
-              "name": "--xh-text-field-clear-bg-active"
+              "name": "--xh-text-field-action-bg-active"
             },
             {
-              "name": "--xh-text-field-clear-bg-hover"
+              "name": "--xh-text-field-action-bg-hover"
             },
             {
-              "name": "--xh-text-field-clear-fg"
+              "name": "--xh-text-field-action-fg"
             },
             {
-              "name": "--xh-text-field-clear-fg-hover"
+              "name": "--xh-text-field-action-fg-hover"
             },
             {
-              "name": "--xh-text-field-clear-font-size"
+              "name": "--xh-text-field-action-font-size"
             },
             {
-              "name": "--xh-text-field-clear-radius"
+              "name": "--xh-text-field-action-radius"
             },
             {
-              "name": "--xh-text-field-clear-size"
+              "name": "--xh-text-field-action-size"
             },
             {
               "name": "--xh-text-field-gap"
@@ -36345,7 +36552,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-time-field>` —— Light-DOM 行为宿主：作者写 root/label/control/segment（多个）/hidden-input\n角色节点，元素跑 time-field 机器并把 connect 产出打上去。\n\n每一段是一个 role=spinbutton 的展示节点：上下键加减、左右键换段、数字直输并自动跳段、\nBackspace 清段；12 小时制下多出一个上午/下午段，可用上下键翻面或直接按 a/p。\n整组只占一个 Tab 位（roving tabindex）。完整的 ISO 串另由 hidden-input 随表单提交。\n\n段上的文字由元素填（作者写不出\"此刻该显示几点\"）；作者自己写了内容的段一概不碰。",
+          "description": "`<xh-time-field>` —— Light-DOM 行为宿主：作者写 root/label/control/segment（多个）/clear-trigger/hidden-input\n角色节点，元素跑 time-field 机器并把 connect 产出打上去。\n\n每一段是一个 role=spinbutton 的展示节点：上下键加减、左右键换段、数字直输并自动跳段、\nBackspace 清段；12 小时制下多出一个上午/下午段，可用上下键翻面或直接按 a/p。\n整组只占一个 Tab 位（roving tabindex）。完整的 ISO 串另由 hidden-input 随表单提交。\n\n段上的文字由元素填（作者写不出\"此刻该显示几点\"）；作者自己写了内容的段一概不碰。",
           "name": "XhTimeFieldElement",
           "cssParts": [
             {
@@ -36363,6 +36570,10 @@
             {
               "description": "一段一个的 spinbutton，可自带 segment 属性声明身份，缺省按文档序",
               "name": "segment"
+            },
+            {
+              "description": "一键清空全部段的按钮；没值或改不动时收起，不占 Tab 位，点完焦点回到第一段",
+              "name": "clear-trigger"
             },
             {
               "description": "type=hidden 的表单出口，值是完整 ISO 串",
@@ -36745,6 +36956,30 @@
           "customElement": true,
           "cssProperties": [
             {
+              "name": "--xh-time-field-action-bg"
+            },
+            {
+              "name": "--xh-time-field-action-bg-active"
+            },
+            {
+              "name": "--xh-time-field-action-bg-hover"
+            },
+            {
+              "name": "--xh-time-field-action-fg"
+            },
+            {
+              "name": "--xh-time-field-action-fg-hover"
+            },
+            {
+              "name": "--xh-time-field-action-font-size"
+            },
+            {
+              "name": "--xh-time-field-action-radius"
+            },
+            {
+              "name": "--xh-time-field-action-size"
+            },
+            {
               "name": "--xh-time-field-control-bg"
             },
             {
@@ -36863,7 +37098,7 @@
               "name": "trigger"
             },
             {
-              "description": "清空按钮，须是原生 button；不占 Tab 位且对读屏隐藏",
+              "description": "清空按钮，须是原生 button；不占 Tab 位，可及名走 translations.clearTrigger；没值即收起",
               "name": "clear-trigger"
             },
             {
@@ -38709,6 +38944,9 @@
             },
             {
               "name": "--xh-toast-border"
+            },
+            {
+              "name": "--xh-toast-close-bg-active"
             },
             {
               "name": "--xh-toast-close-bg-hover"
@@ -40896,6 +41134,18 @@
               "name": "--xh-tour-border"
             },
             {
+              "name": "--xh-tour-close-bg-active"
+            },
+            {
+              "name": "--xh-tour-close-bg-hover"
+            },
+            {
+              "name": "--xh-tour-close-radius"
+            },
+            {
+              "name": "--xh-tour-close-size"
+            },
+            {
               "name": "--xh-tour-description-fg"
             },
             {
@@ -41507,7 +41757,7 @@
               "name": "indicator"
             },
             {
-              "description": "清空按钮，须是原生 button；不占 Tab 位且对读屏隐藏",
+              "description": "清空按钮，须是原生 button；不占 Tab 位，aria-label 取 translations.clearTrigger，无值时 hidden",
               "name": "clear-trigger"
             },
             {
