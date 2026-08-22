@@ -1,10 +1,11 @@
-import type { Placement, Scope } from '@xihan-ui/kernel'
+import type { Scope } from '@xihan-ui/kernel'
 import type { Params } from '@xihan-ui/machine'
 import type { ColorPickerChannel, ColorPickerHsva } from './color-picker.color'
 import type { ColorPickerPoint } from './color-picker.geometry'
 import type { ColorPickerDragTarget, ColorPickerSchema } from './color-picker.types'
 import { createDismissLayer, createFocusScope } from '@xihan-ui/behavior'
 import { resetDeclaredValue, setup } from '@xihan-ui/machine'
+import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import {
   COLOR_PICKER_FALLBACK,
   colorPickerApplyInput,
@@ -23,7 +24,7 @@ import { colorPickerPointRatio } from './color-picker.geometry'
 const { createMachine } = setup<ColorPickerSchema>()
 
 /** 未指定 placement 时的落位；定位引擎与 connect 共用这一个缺省。 */
-export const COLOR_PICKER_DEFAULT_PLACEMENT: Placement = 'bottom-start'
+export const COLOR_PICKER_DEFAULT_PLACEMENT = OVERLAY_PLACEMENT_LIST
 
 /** 屏幕取色接口的最小形状。DOM 类型库尚未收录它，这里只声明用得着的那一点。 */
 interface EyeDropperLike {
@@ -384,7 +385,7 @@ export const colorPickerMachine = createMachine({
             floating,
             {
               placement: prop('placement') ?? COLOR_PICKER_DEFAULT_PLACEMENT,
-              offset: prop('offset'),
+              offset: prop('offset') ?? OVERLAY_OFFSET,
               // positioner 渲染成 fixed，坐标系必须跟着走视口系
               strategy: 'fixed',
               // start / end 是逻辑对齐，RTL 下行内轴要翻过来

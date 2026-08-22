@@ -114,7 +114,7 @@
     "name": "web-components",
     "path": "packages/adapters/web-components/dist/index.js",
     "gzip": true,
-    "limit": "6.4 kB"
+    "limit": "6.6 kB"
   },
   {
     "name": "web-components/define",

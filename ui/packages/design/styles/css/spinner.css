@@ -37,7 +37,7 @@
     /* 一整圈是轨道色，只有起始边换成前景色，转起来才看得出方向 */
     border-block-start-color: var(--xh-spinner-fg, var(--xh-bg-brand));
     border-radius: var(--xh-spinner-radius, var(--xh-shape-pill));
-    animation: xh-spinner-rotate var(--xh-spinner-duration, calc(var(--xh-duration-slow) * 2)) linear infinite;
+    animation: xh-spinner-rotate var(--xh-spinner-duration, var(--xh-spin-duration)) linear infinite;
   }
 
   /* 三档直径对齐控件档位，缺省档写在上面的基础规则里 */
@@ -66,7 +66,8 @@
   }
 
   /* 减少动效：圆环停下并整圈换成虚线，静止的形状仍然读得出"这里还没好"；
-     "在等什么"由 role=status 上的名字与可见文案继续承担 */
+     "在等什么"由 role=status 上的名字与可见文案继续承担。
+     两组规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
   @media (prefers-reduced-motion: reduce) {
     [data-scope='spinner'][data-part='root']::before {
       border-style: dotted;
@@ -78,5 +79,15 @@
     [data-scope='spinner'][data-part='root'][data-tone]::before {
       border-color: var(--xh-spinner-fg, var(--xh-_tone, var(--xh-bg-brand)));
     }
+  }
+
+  :where([data-motion='reduce']) [data-scope='spinner'][data-part='root']::before {
+    border-style: dotted;
+    border-color: var(--xh-spinner-fg, var(--xh-bg-brand));
+    animation: none;
+  }
+
+  :where([data-motion='reduce']) [data-scope='spinner'][data-part='root'][data-tone]::before {
+    border-color: var(--xh-spinner-fg, var(--xh-_tone, var(--xh-bg-brand)));
   }
 }

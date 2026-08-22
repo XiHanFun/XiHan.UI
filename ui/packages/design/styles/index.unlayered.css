@@ -1281,7 +1281,7 @@
 
   position: fixed;
   /* 与抽屉同一档：面板要盖住吸顶栏，又该被随后打开的弹窗与浮层压住 */
-  z-index: var(--xh-layer-drawer);
+  z-index: var(--xh-floating-panel-layer, var(--xh-layer-drawer));
   display: block;
 }
 
@@ -2194,7 +2194,7 @@
 [data-scope='heatmap'][data-part='week-day-label'] {
   position: sticky;
   /* 层号收在 root 建的层叠上下文里，只跟组件内的兄弟比 */
-  z-index: var(--xh-heatmap-sticky-z, 1);
+  z-index: var(--xh-heatmap-sticky-layer, 1);
   inset-inline-start: 0;
   display: block;
   flex: 0 0 auto;
@@ -2314,7 +2314,7 @@
 /* 行名与日历的星期名同一个位置、同一件事：列多到放不下时钉在起始缘 */
 [data-scope='heatmap'][data-part='row-label'] {
   position: sticky;
-  z-index: var(--xh-heatmap-sticky-z, 1);
+  z-index: var(--xh-heatmap-sticky-layer, 1);
   inset-inline-start: 0;
   display: block;
   flex: 0 0 auto;
@@ -2358,7 +2358,7 @@
 
   position: absolute;
   /* 排在钉住的行首那一列之上：条从末缘往回长时会盖到那一列上，它不该把条切掉 */
-  z-index: var(--xh-heatmap-tooltip-z, 2);
+  z-index: var(--xh-heatmap-tooltip-layer, 2);
   display: block;
   inset-inline-start: var(--xh-_heatmap-tip-x);
   inset-block-start: var(--xh-_heatmap-tip-y);
@@ -3302,12 +3302,6 @@
   overflow-y: auto;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  [data-scope='layout'][data-part='sider'] {
-    transition: none;
-  }
-}
-
 /* styles/list.css */
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='list'] {
@@ -3675,6 +3669,7 @@
  * 减少动效：轨道停在起点不再走。一段自己动起来、不停到底的横移正是最容易引发不适的那一类，
  * 这里不能只把速度压到很慢——慢速横移仍然是横移。
  * 停下后窗口外那段就够不着了，故窗口同时改成可滚，内容仍然读得全。
+ * 两组规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion。
  */
 @media (prefers-reduced-motion: reduce) {
   [data-scope='marquee'][data-part='content'] {
@@ -3684,6 +3679,14 @@
   [data-scope='marquee'][data-part='root'] {
     overflow: auto;
   }
+}
+
+:where([data-motion='reduce']) [data-scope='marquee'][data-part='content'] {
+  animation: none;
+}
+
+:where([data-motion='reduce']) [data-scope='marquee'][data-part='root'] {
+  overflow: auto;
 }
 
 /* styles/masonry.css */
@@ -3787,7 +3790,7 @@
   --xh-_mention-available-h: 100vh;
 
   position: fixed;
-  z-index: var(--xh-layer-popover);
+  z-index: var(--xh-mention-layer, var(--xh-layer-popover));
   /* 空壳不吃指针，交互只发生在 content 上 */
   pointer-events: none;
 }
@@ -4527,7 +4530,7 @@ input[data-scope='mention'][data-part='input'] {
 /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
 [data-scope='popconfirm'][data-part='positioner'] {
   position: fixed;
-  z-index: var(--xh-layer-popover);
+  z-index: var(--xh-popconfirm-layer, var(--xh-layer-popover));
   /* 空壳不吃指针，交互只发生在 content 上 */
   pointer-events: none;
 }
@@ -4691,13 +4694,20 @@ input[data-scope='mention'][data-part='input'] {
   outline-offset: var(--xh-ring-offset);
 }
 
-/* 减少动效：圆环停下并整圈换成虚线，静止的形状仍然读得出"还没好" */
+/* 减少动效：圆环停下并整圈换成虚线，静止的形状仍然读得出"还没好"。
+   两条规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
 @media (prefers-reduced-motion: reduce) {
   [data-scope='popconfirm'][data-part='confirm-trigger'][data-loading]::before {
     border-style: dotted;
     border-color: currentColor;
     animation: none;
   }
+}
+
+:where([data-motion='reduce']) [data-scope='popconfirm'][data-part='confirm-trigger'][data-loading]::before {
+  border-style: dotted;
+  border-color: currentColor;
+  animation: none;
 }
 
 /* styles/popselect.css */
@@ -4738,7 +4748,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_popselect-available-h: 100vh;
 
   position: fixed;
-  z-index: var(--xh-layer-popover);
+  z-index: var(--xh-popselect-layer, var(--xh-layer-popover));
   /* 空壳不吃指针，交互只发生在 content 上 */
   pointer-events: none;
 }
@@ -6580,6 +6590,7 @@ input[data-scope='mention'][data-part='input'] {
   xh-popover,
   xh-popselect,
   xh-select,
+  xh-side-nav,
   xh-steps,
   xh-time-picker,
   xh-tooltip,
@@ -6988,7 +6999,7 @@ input[data-scope='mention'][data-part='input'] {
   );
   background-repeat: no-repeat;
   background-size: 200% 100%;
-  animation: xh-skeleton-shimmer var(--xh-skeleton-duration, calc(var(--xh-duration-slow) * 5)) var(--xh-ease-standard) infinite;
+  animation: xh-skeleton-shimmer var(--xh-skeleton-duration, var(--xh-shimmer-duration)) var(--xh-ease-standard) infinite;
 }
 
 /* 一行文字的高度取正文字号，圆角拉满，看起来就是一行还没排出来的字 */
@@ -7015,12 +7026,18 @@ input[data-scope='mention'][data-part='input'] {
  * 减少动效：撤掉微光那层，只留静态底色。
  * 骨架屏是自己冒出来、会一直循环到数据回来为止的动效，正是最容易引发不适的那一类；
  * 这里不能只把时长压到接近零——那样光带会停在某一帧上，留下一道说不清的渐变。
+ * 两条规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion。
  */
 @media (prefers-reduced-motion: reduce) {
   [data-scope='skeleton'][data-part='bone'] {
     background-image: none;
     animation: none;
   }
+}
+
+:where([data-motion='reduce']) [data-scope='skeleton'][data-part='bone'] {
+  background-image: none;
+  animation: none;
 }
 
 /* styles/spinner.css */
@@ -7059,7 +7076,7 @@ input[data-scope='mention'][data-part='input'] {
   /* 一整圈是轨道色，只有起始边换成前景色，转起来才看得出方向 */
   border-block-start-color: var(--xh-spinner-fg, var(--xh-bg-brand));
   border-radius: var(--xh-spinner-radius, var(--xh-shape-pill));
-  animation: xh-spinner-rotate var(--xh-spinner-duration, calc(var(--xh-duration-slow) * 2)) linear infinite;
+  animation: xh-spinner-rotate var(--xh-spinner-duration, var(--xh-spin-duration)) linear infinite;
 }
 
 /* 三档直径对齐控件档位，缺省档写在上面的基础规则里 */
@@ -7088,7 +7105,8 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 /* 减少动效：圆环停下并整圈换成虚线，静止的形状仍然读得出"这里还没好"；
-   "在等什么"由 role=status 上的名字与可见文案继续承担 */
+   "在等什么"由 role=status 上的名字与可见文案继续承担。
+   两组规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
 @media (prefers-reduced-motion: reduce) {
   [data-scope='spinner'][data-part='root']::before {
     border-style: dotted;
@@ -7100,6 +7118,16 @@ input[data-scope='mention'][data-part='input'] {
   [data-scope='spinner'][data-part='root'][data-tone]::before {
     border-color: var(--xh-spinner-fg, var(--xh-_tone, var(--xh-bg-brand)));
   }
+}
+
+:where([data-motion='reduce']) [data-scope='spinner'][data-part='root']::before {
+  border-style: dotted;
+  border-color: var(--xh-spinner-fg, var(--xh-bg-brand));
+  animation: none;
+}
+
+:where([data-motion='reduce']) [data-scope='spinner'][data-part='root'][data-tone]::before {
+  border-color: var(--xh-spinner-fg, var(--xh-_tone, var(--xh-bg-brand)));
 }
 
 /* styles/accordion.css */
@@ -7817,11 +7845,16 @@ input[data-scope='mention'][data-part='input'] {
   animation: xh-spin var(--xh-button-spin-duration, var(--xh-spin-duration)) linear infinite;
 }
 
-/* 减少动效：指示器停转，"还在忙"由按钮自身的挂起样式与指示器图标继续表达 */
+/* 减少动效：指示器停转，"还在忙"由按钮自身的挂起样式与指示器图标继续表达。
+   两条规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
 @media (prefers-reduced-motion: reduce) {
   [data-scope='button'][data-part='indicator'] {
     animation: none;
   }
+}
+
+:where([data-motion='reduce']) [data-scope='button'][data-part='indicator'] {
+  animation: none;
 }
 
 /* styles/calendar.css */
@@ -8480,11 +8513,16 @@ input[data-scope='mention'][data-part='input'] {
   background: var(--xh-carousel-indicator-bg-selected, var(--xh-bg-brand));
 }
 
-/* 减少动效：位移立刻到位。翻页本身照常发生，只是不再有滑动的过程 */
+/* 减少动效：位移立刻到位。翻页本身照常发生，只是不再有滑动的过程。
+   两条规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
 @media (prefers-reduced-motion: reduce) {
   [data-scope='carousel'][data-part='item-group'] {
     transition: none;
   }
+}
+
+:where([data-motion='reduce']) [data-scope='carousel'][data-part='item-group'] {
+  transition: none;
 }
 
 /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
@@ -8519,7 +8557,7 @@ input[data-scope='mention'][data-part='input'] {
 /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
 [data-scope='cascader'][data-part='positioner'] {
   position: fixed;
-  z-index: var(--xh-layer-popover);
+  z-index: var(--xh-cascader-layer, var(--xh-layer-popover));
   /* 空壳不吃指针，交互只发生在 content 里 */
   pointer-events: none;
 }
@@ -9953,7 +9991,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_color-picker-available-h: 100vh;
 
   position: fixed;
-  z-index: var(--xh-layer-popover);
+  z-index: var(--xh-color-picker-layer, var(--xh-layer-popover));
   /* 空壳不吃指针，交互只发生在 content 上 */
   pointer-events: none;
 }
@@ -10338,7 +10376,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_combobox-available-h: 100vh;
 
   position: fixed;
-  z-index: var(--xh-layer-popover);
+  z-index: var(--xh-combobox-layer, var(--xh-layer-popover));
   /* 空壳不吃指针，交互只发生在 content 与 empty 上 */
   pointer-events: none;
 }
@@ -10963,7 +11001,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_context-menu-available-h: 100vh;
 
   position: fixed;
-  z-index: var(--xh-layer-popover);
+  z-index: var(--xh-context-menu-layer, var(--xh-layer-popover));
   /* 空壳不吃指针，交互只发生在 content 上 */
   pointer-events: none;
 }
@@ -11534,7 +11572,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_date-picker-available-h: 100vh;
 
   position: fixed;
-  z-index: var(--xh-layer-popover);
+  z-index: var(--xh-date-picker-layer, var(--xh-layer-popover));
   /* 空壳不吃指针，交互只发生在 content 里 */
   pointer-events: none;
 }
@@ -12088,7 +12126,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='dialog'][data-part='backdrop'] {
   position: fixed;
   inset: 0;
-  z-index: var(--xh-layer-modal);
+  z-index: var(--xh-dialog-backdrop-layer, var(--xh-layer-modal));
   background: var(--xh-dialog-backdrop-bg, var(--xh-bg-overlay));
 }
 
@@ -12104,7 +12142,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='dialog'][data-part='positioner'] {
   position: fixed;
   inset: 0;
-  z-index: var(--xh-layer-modal);
+  z-index: var(--xh-dialog-layer, var(--xh-layer-modal));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -12419,7 +12457,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='drawer'][data-part='backdrop'] {
   position: fixed;
   inset: 0;
-  z-index: var(--xh-layer-drawer);
+  z-index: var(--xh-drawer-backdrop-layer, var(--xh-layer-drawer));
   background: var(--xh-drawer-backdrop-bg, var(--xh-bg-overlay));
 }
 
@@ -12446,7 +12484,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='drawer'][data-part='positioner'] {
   position: fixed;
   inset: 0;
-  z-index: var(--xh-layer-drawer);
+  z-index: var(--xh-drawer-layer, var(--xh-layer-drawer));
   pointer-events: none;
 }
 
@@ -12465,7 +12503,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_drawer-size: 20rem;
 
   position: fixed;
-  z-index: var(--xh-layer-drawer);
+  z-index: var(--xh-drawer-layer, var(--xh-layer-drawer));
   display: flex;
   flex-direction: column;
   gap: var(--xh-drawer-gap, var(--xh-stack-gap-md));
@@ -13628,7 +13666,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_hover-card-available-h: 100vh;
 
   position: fixed;
-  z-index: var(--xh-layer-popover);
+  z-index: var(--xh-hover-card-layer, var(--xh-layer-popover));
   /* 空壳不吃指针：trigger 与 content 之间那段间隙要能点得穿，
      指针穿行的判定全靠 content 自己的进出事件 */
   pointer-events: none;
@@ -13858,7 +13896,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='image-viewer'][data-part='backdrop'] {
   position: fixed;
   inset: 0;
-  z-index: var(--xh-layer-modal);
+  z-index: var(--xh-image-viewer-backdrop-layer, var(--xh-layer-modal));
   /* 看片要压住页面底色，遮罩比普通对话框更深 */
   background: var(--xh-image-viewer-backdrop-bg, color-mix(in oklab, var(--xh-color-neutral-950) 78%, transparent));
 }
@@ -13874,7 +13912,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='image-viewer'][data-part='positioner'] {
   position: fixed;
   inset: 0;
-  z-index: var(--xh-layer-modal);
+  z-index: var(--xh-image-viewer-layer, var(--xh-layer-modal));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -14044,12 +14082,6 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='image-viewer'] button[data-part]:disabled {
   opacity: var(--xh-state-disabled-opacity);
   cursor: not-allowed;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  [data-scope='image-viewer'][data-part='image'] {
-    transition: none;
-  }
 }
 
 /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
@@ -14413,12 +14445,18 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 /* 减少动效：宽度与淡出都立刻到位。进度本身照常推进，只是不再有过渡的过程——
-   一条按 200ms 一拍持续变宽的带子正是最容易引发不适的那种动效 */
+   一条按 200ms 一拍持续变宽的带子正是最容易引发不适的那种动效。
+   两条规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
 @media (prefers-reduced-motion: reduce) {
   [data-scope='loading-bar'][data-part='root'],
   [data-scope='loading-bar'][data-part='range'] {
     transition: none;
   }
+}
+
+:where([data-motion='reduce']) [data-scope='loading-bar'][data-part='root'],
+:where([data-motion='reduce']) [data-scope='loading-bar'][data-part='range'] {
+  transition: none;
 }
 
 /* styles/menu.css */
@@ -14459,7 +14497,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_menu-available-h: 100vh;
 
   position: fixed;
-  z-index: var(--xh-layer-popover);
+  z-index: var(--xh-menu-layer, var(--xh-layer-popover));
   /* 空壳不吃指针，交互只发生在 content 上 */
   pointer-events: none;
 }
@@ -14697,7 +14735,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_menubar-available-h: 100vh;
 
   position: fixed;
-  z-index: var(--xh-layer-popover);
+  z-index: var(--xh-menubar-layer, var(--xh-layer-popover));
   /* 空壳不吃指针，交互只发生在 content 上 */
   pointer-events: none;
 }
@@ -15101,7 +15139,7 @@ input[data-scope='mention'][data-part='input'] {
 /* 面板贴着自己那一项落位：横排从 trigger 底下长出来 */
 [data-scope='navigation-menu'][data-part='content'] {
   position: absolute;
-  z-index: var(--xh-layer-popover);
+  z-index: var(--xh-navigation-menu-layer, var(--xh-layer-popover));
   inset-block-start: calc(100% + var(--xh-navigation-menu-content-offset, var(--xh-space-1)));
   inset-inline-start: 0;
   display: flex;
@@ -15209,7 +15247,7 @@ input[data-scope='mention'][data-part='input'] {
 /* 共享面板外壳：只管落位与统一的面板外观，里面装哪一份内容归 content */
 [data-scope='navigation-menu'][data-part='viewport'] {
   position: absolute;
-  z-index: var(--xh-layer-popover);
+  z-index: var(--xh-navigation-menu-layer, var(--xh-layer-popover));
   inset-block-start: calc(100% + var(--xh-navigation-menu-content-offset, var(--xh-space-1)));
   inset-inline-start: 0;
   display: block;
@@ -15981,7 +16019,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_popover-available-h: 100vh;
 
   position: fixed;
-  z-index: var(--xh-layer-popover);
+  z-index: var(--xh-popover-layer, var(--xh-layer-popover));
   /* 空壳不吃指针，交互只发生在 content 上 */
   pointer-events: none;
 }
@@ -16258,10 +16296,11 @@ input[data-scope='mention'][data-part='input'] {
   position: absolute;
   inline-size: 40%;
   transition: none;
-  animation: xh-progress-indeterminate var(--xh-progress-indeterminate-duration, 1.2s) var(--xh-ease-standard) infinite;
+  animation: xh-progress-indeterminate var(--xh-progress-indeterminate-duration, calc(var(--xh-spin-duration) * 2)) var(--xh-ease-standard) infinite;
 }
 
-/* 减弱动效档：不来回扫，改成一条铺满的静态条——进度仍然未知，只是不再动 */
+/* 减弱动效档：不来回扫，改成一条铺满的静态条——进度仍然未知，只是不再动。
+   两条规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
 @media (prefers-reduced-motion: reduce) {
   [data-scope='progress'][data-part='range'][data-state='indeterminate'] {
     position: static;
@@ -16270,6 +16309,14 @@ input[data-scope='mention'][data-part='input'] {
     animation: none;
   }
 }
+
+:where([data-motion='reduce']) [data-scope='progress'][data-part='range'][data-state='indeterminate'] {
+  position: static;
+  inline-size: 100%;
+  opacity: 0.5;
+  animation: none;
+}
+
 /* 零进度：圆角端点会在长度为 0 处画出一个圆点，收掉它 */
 [data-scope='progress'][data-part='range'][data-empty] {
   visibility: hidden;
@@ -16885,7 +16932,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_select-available-h: 100vh;
 
   position: fixed;
-  z-index: var(--xh-layer-popover);
+  z-index: var(--xh-select-layer, var(--xh-layer-popover));
   /* 空壳不吃指针，交互只发生在 content 上 */
   pointer-events: none;
 }
@@ -17403,6 +17450,32 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 /* styles/side-nav.css */
+/* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
+   动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
+@keyframes xh-pop-in {
+  from {
+    opacity: 0;
+    scale: var(--xh-motion-scale-enter);
+  }
+
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+@keyframes xh-pop-out {
+  from {
+    opacity: 1;
+    scale: 1;
+  }
+
+  to {
+    opacity: 0;
+    scale: var(--xh-motion-scale-enter);
+  }
+}
+
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='side-nav'] {
   --xh-side-nav-skin: 1;
@@ -17560,6 +17633,16 @@ input[data-scope='mention'][data-part='input'] {
   visibility: hidden;
 }
 
+[data-scope='side-nav'][data-part='positioner'][data-state='open'] {
+  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+}
+
+/* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
+   免得动画结束到收起落下来之间闪一下原样 */
+[data-scope='side-nav'][data-part='positioner'][data-state='closed'] {
+  animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+}
+
 /* 折叠态的弹出面板：贴着触发按钮旁侧的浮层卡片。
    面板自己不吃子层缩进（padding 整圈盖掉），面板内的嵌套子层照常缩进 */
 [data-scope='side-nav'][data-part='branch-content'][data-popout] {
@@ -17585,12 +17668,6 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='side-nav'][data-part='branch-indicator'][data-state='open'] {
   rotate: 90deg;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  [data-scope='side-nav'][data-part='branch-indicator'] {
-    transition: none;
-  }
 }
 
 /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
@@ -18385,13 +18462,20 @@ input[data-scope='mention'][data-part='input'] {
   user-select: none;
 }
 
-/* 减少动效：圆环停下并整圈换成虚线，静止的形状仍然读得出"还没好" */
+/* 减少动效：圆环停下并整圈换成虚线，静止的形状仍然读得出"还没好"。
+   两条规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
 @media (prefers-reduced-motion: reduce) {
   [data-scope='switch'][data-part='thumb'][data-loading]::after {
     border-style: dotted;
     border-color: var(--xh-switch-loading-fg, var(--xh-bg-brand));
     animation: none;
   }
+}
+
+:where([data-motion='reduce']) [data-scope='switch'][data-part='thumb'][data-loading]::after {
+  border-style: dotted;
+  border-color: var(--xh-switch-loading-fg, var(--xh-bg-brand));
+  animation: none;
 }
 
 /* styles/table.css */
@@ -18403,12 +18487,6 @@ input[data-scope='mention'][data-part='input'] {
 
   to {
     opacity: 1;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  [data-scope='table'][data-part='loading-state'] {
-    animation-duration: 0.01ms !important;
   }
 }
 
@@ -18514,7 +18592,7 @@ input[data-scope='mention'][data-part='input'] {
    透明的表头会让底下滚过的行透出来 */
 [data-scope='table'][data-part='header'][data-sticky] {
   position: sticky;
-  z-index: var(--xh-table-sticky-header-z, var(--xh-layer-sticky));
+  z-index: var(--xh-table-sticky-header-layer, var(--xh-layer-sticky));
   inset-block-start: 0;
 }
 
@@ -18601,7 +18679,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='table'][data-part='column-header'][data-frozen],
 [data-scope='table'][data-part='cell'][data-frozen] {
   position: sticky;
-  z-index: var(--xh-table-sticky-column-z, 1);
+  z-index: var(--xh-table-sticky-column-layer, 1);
   background: inherit;
 }
 
@@ -18863,7 +18941,18 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='table'][data-part='loading-state'] {
-  animation: xh-table-loading-pulse var(--xh-duration-slow) var(--xh-ease-standard) infinite alternate;
+  animation: xh-table-loading-pulse calc(var(--xh-spin-duration) / 2) var(--xh-ease-standard) infinite alternate;
+}
+
+/* 减少动效：呼吸停下，加载态只留静止的文案。两条规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
+@media (prefers-reduced-motion: reduce) {
+  [data-scope='table'][data-part='loading-state'] {
+    animation: none;
+  }
+}
+
+:where([data-motion='reduce']) [data-scope='table'][data-part='loading-state'] {
+  animation: none;
 }
 
 /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
@@ -20075,7 +20164,7 @@ input[data-scope='mention'][data-part='input'] {
 /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
 [data-scope='time-picker'][data-part='positioner'] {
   position: fixed;
-  z-index: var(--xh-layer-popover);
+  z-index: var(--xh-time-picker-layer, var(--xh-layer-popover));
   /* 空壳不吃指针，交互只发生在 content 里 */
   pointer-events: none;
 }
@@ -20636,7 +20725,7 @@ input[data-scope='mention'][data-part='input'] {
 
   to {
     opacity: 0;
-    translate: 0 var(--xh-motion-distance-sm);
+    translate: 0 var(--xh-motion-distance-md);
     scale: var(--xh-motion-scale-enter);
   }
 }
@@ -20857,7 +20946,7 @@ input[data-scope='mention'][data-part='input'] {
   position: fixed;
   inset-block: 0;
   inset-inline: 0;
-  z-index: var(--xh-layer-toast);
+  z-index: var(--xh-toaster-layer, var(--xh-layer-toast));
   display: flex;
   flex-direction: column;
   /* 基线按默认落位 bottom-end 写，下面只覆盖跟它不同的那几个位 */
@@ -21345,7 +21434,7 @@ input[data-scope='mention'][data-part='input'] {
   position: fixed;
   inset-block-start: 0;
   inset-inline-start: 0;
-  z-index: var(--xh-layer-tooltip);
+  z-index: var(--xh-tooltip-layer, var(--xh-layer-tooltip));
   /* 浮层不承载交互：指针必须能穿过去点到底下的东西 */
   pointer-events: none;
 }
@@ -21442,29 +21531,27 @@ input[data-scope='mention'][data-part='input'] {
   }
 }
 
-/* 气泡贴着目标探出来：纯淡入分不清它是从哪个元素长出来的 */
-@keyframes xh-tour-content-in {
+@keyframes xh-pop-in {
   from {
     opacity: 0;
-    translate: 0 var(--xh-motion-distance-sm);
+    scale: var(--xh-motion-scale-enter);
   }
 
   to {
     opacity: 1;
-    translate: 0 0;
+    scale: 1;
   }
 }
 
-/* 退场原路收回去，与进场同一条轴 */
-@keyframes xh-tour-content-out {
+@keyframes xh-pop-out {
   from {
     opacity: 1;
-    translate: 0 0;
+    scale: 1;
   }
 
   to {
     opacity: 0;
-    translate: 0 var(--xh-motion-distance-sm);
+    scale: var(--xh-motion-scale-enter);
   }
 }
 
@@ -21478,6 +21565,19 @@ input[data-scope='mention'][data-part='input'] {
   to {
     opacity: 1;
     scale: 1;
+  }
+}
+
+/* 退场反向放大淡出，与进场对称 */
+@keyframes xh-tour-spotlight-out {
+  from {
+    opacity: 1;
+    scale: 1;
+  }
+
+  to {
+    opacity: 0;
+    scale: calc(2 - var(--xh-motion-scale-enter));
   }
 }
 
@@ -21499,7 +21599,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='tour'][data-part='backdrop'] {
   position: fixed;
   inset: 0;
-  z-index: var(--xh-tour-backdrop-z, var(--xh-layer-modal));
+  z-index: var(--xh-tour-backdrop-layer, var(--xh-layer-modal));
   background: var(--xh-tour-backdrop-bg, var(--xh-bg-overlay));
 }
 
@@ -21519,7 +21619,7 @@ input[data-scope='mention'][data-part='input'] {
    这里只管长相：一圈描边 + 一片铺满视口的投影当暗幕，中间那块因此是亮的——
    这就是"洞"。不吃指针：它盖在目标上面，吃了的话目标就再也点不动了 */
 [data-scope='tour'][data-part='spotlight'] {
-  z-index: var(--xh-tour-spotlight-z, var(--xh-layer-modal));
+  z-index: var(--xh-tour-spotlight-layer, var(--xh-layer-modal));
   pointer-events: none;
   border-radius: var(--xh-tour-spotlight-radius, var(--xh-shape-surface));
   box-shadow:
@@ -21541,6 +21641,11 @@ input[data-scope='mention'][data-part='input'] {
   animation: xh-tour-spotlight-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
 }
 
+/* 退场与气泡并行播，同一段时长；收起那一帧 hidden 由宿主押后到气泡的退场结束 */
+[data-scope='tour'][data-part='spotlight'][data-state='closed'] {
+  animation: xh-tour-spotlight-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+}
+
 /* 高亮框在场时遮罩让位：暗幕已经由那圈铺满视口的投影负责，
    两层叠加会把页面压得过暗，而且洞里也会跟着变暗——洞就白挖了。
    居中步的高亮框带 hidden，此时遮罩照常压暗（那一步本来就没有要突出的元素）。
@@ -21558,7 +21663,7 @@ input[data-scope='mention'][data-part='input'] {
      居中步与尚未落位时不额外限高 */
   --xh-_tour-available-h: 100vh;
 
-  z-index: var(--xh-tour-positioner-z, var(--xh-layer-popover));
+  z-index: var(--xh-tour-positioner-layer, var(--xh-layer-popover));
   pointer-events: none;
 }
 
@@ -21606,13 +21711,13 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='tour'][data-part='content'][data-state='open'] {
-  animation: xh-tour-content-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
 }
 
 /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
    免得动画结束到收起落下来之间闪一下原样 */
 [data-scope='tour'][data-part='content'][data-state='closed'] {
-  animation: xh-tour-content-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+  animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
 }
 
 [data-scope='tour'][data-part='title'] {
@@ -22534,7 +22639,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_tree-select-available-h: 100vh;
 
   position: fixed;
-  z-index: var(--xh-layer-popover);
+  z-index: var(--xh-tree-select-layer, var(--xh-layer-popover));
   /* 空壳不吃指针，交互只发生在 content 里 */
   pointer-events: none;
 }

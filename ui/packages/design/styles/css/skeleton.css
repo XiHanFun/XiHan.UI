@@ -46,7 +46,7 @@
     );
     background-repeat: no-repeat;
     background-size: 200% 100%;
-    animation: xh-skeleton-shimmer var(--xh-skeleton-duration, calc(var(--xh-duration-slow) * 5)) var(--xh-ease-standard) infinite;
+    animation: xh-skeleton-shimmer var(--xh-skeleton-duration, var(--xh-shimmer-duration)) var(--xh-ease-standard) infinite;
   }
 
   /* 一行文字的高度取正文字号，圆角拉满，看起来就是一行还没排出来的字 */
@@ -73,11 +73,17 @@
    * 减少动效：撤掉微光那层，只留静态底色。
    * 骨架屏是自己冒出来、会一直循环到数据回来为止的动效，正是最容易引发不适的那一类；
    * 这里不能只把时长压到接近零——那样光带会停在某一帧上，留下一道说不清的渐变。
+   * 两条规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion。
    */
   @media (prefers-reduced-motion: reduce) {
     [data-scope='skeleton'][data-part='bone'] {
       background-image: none;
       animation: none;
     }
+  }
+
+  :where([data-motion='reduce']) [data-scope='skeleton'][data-part='bone'] {
+    background-image: none;
+    animation: none;
   }
 }

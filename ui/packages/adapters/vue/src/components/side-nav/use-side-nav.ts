@@ -12,6 +12,8 @@ import { createVueIdGenerator } from '../../runtime/vue-id'
 
 export interface SideNavContext {
   api: ComputedRef<SideNavApi>
+  /** 运行时配置；服务端没有 DOM 时为 null。 */
+  config: RuntimeConfig | null
   /** 弹出面板的定位层搬到哪儿：全局配置的容器 > 运行时的浮层落点 > body。 */
   portalTarget: ComputedRef<string | Element>
 }
@@ -62,5 +64,5 @@ export function useSideNav(
   const api = computed(() => connectSideNav(service, vueNormalize))
   // 全局配置写了容器就用它，否则落到运行时那个单一浮层落点；没有 DOM 时才回到 body
   const portalTarget = computed<string | Element>(() => xhConfig.value.portalContainer?.() ?? runtimeConfig?.portalContainer() ?? 'body')
-  return { api, portalTarget }
+  return { api, config: runtimeConfig, portalTarget }
 }

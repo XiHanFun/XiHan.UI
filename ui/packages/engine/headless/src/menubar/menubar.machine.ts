@@ -1,4 +1,4 @@
-import type { Placement, PositionResult } from '@xihan-ui/kernel'
+import type { PositionResult } from '@xihan-ui/kernel'
 import type { MenubarFocusIntent, MenubarSchema } from './menubar.types'
 import {
   createDismissLayer,
@@ -10,12 +10,13 @@ import {
   queryItems,
 } from '@xihan-ui/behavior'
 import { setup } from '@xihan-ui/machine'
+import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { menubarItemQuery, menubarTriggerQuery } from './menubar.anatomy'
 
 const { createMachine } = setup<MenubarSchema>()
 
 /** 未指定 placement 时的默认落位。 */
-export const MENUBAR_DEFAULT_PLACEMENT: Placement = 'bottom-start'
+export const MENUBAR_DEFAULT_PLACEMENT = OVERLAY_PLACEMENT_LIST
 
 /**
  * 菜单栏：一排 trigger，同时只展开一张浮层菜单。
@@ -319,7 +320,7 @@ export const menubarMachine = createMachine({
             floating,
             {
               placement: prop('placement') ?? MENUBAR_DEFAULT_PLACEMENT,
-              offset: prop('offset'),
+              offset: prop('offset') ?? OVERLAY_OFFSET,
               // positioner 渲染成 fixed，坐标系必须跟着走视口系
               strategy: 'fixed',
               // start / end 是逻辑对齐，RTL 下行内轴要翻过来

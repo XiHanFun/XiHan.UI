@@ -5,8 +5,11 @@ import type { ListboxSchema } from '../listbox'
 import type { PopselectApi, PopselectItemProps, PopselectNodeMeta, PopselectService } from './popselect.types'
 import { focusItem, focusSafely, indexOfValue, isItemDisabled, ITEM_VALUE_ATTR, itemValue, matchTypeahead, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/behavior'
 import { contains, dataAttr } from '@xihan-ui/kernel'
-import { overlayPositioned } from '../shared/overlay'
+import { OVERLAY_PLACEMENT_ANCHORED, overlayPositioned } from '../shared/overlay'
 import { popselectAnatomy, popselectItemQuery, popselectItemText } from './popselect.anatomy'
+
+/** 没传 placement 时浮层交给定位引擎的落点。 */
+export const POPSELECT_DEFAULT_PLACEMENT = OVERLAY_PLACEMENT_ANCHORED
 
 const parts = popselectAnatomy.build()
 
@@ -59,7 +62,7 @@ export function connectPopselect<T extends PropTypes>(
   const stateAttr = open ? 'open' : 'closed'
   // 位置由引擎写进 popover 的 context，这里只读结果，不量 DOM、不调引擎
   const position = popover.context.get('position')
-  const placement = position?.placement ?? popover.prop('placement') ?? 'bottom'
+  const placement = position?.placement ?? popover.prop('placement') ?? POPSELECT_DEFAULT_PLACEMENT
   // 两台机器共用一个 scope，id 只派生一次
   const ids = popover.scope.ids('popselect', 'trigger', 'content')
 

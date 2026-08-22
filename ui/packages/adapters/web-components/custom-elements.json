@@ -4401,6 +4401,9 @@
               "name": "--xh-cascader-label-font-weight"
             },
             {
+              "name": "--xh-cascader-layer"
+            },
+            {
               "name": "--xh-cascader-placeholder-fg"
             },
             {
@@ -6617,6 +6620,9 @@
               "name": "--xh-color-picker-label-font-weight"
             },
             {
+              "name": "--xh-color-picker-layer"
+            },
+            {
               "name": "--xh-color-picker-max-h"
             },
             {
@@ -7546,6 +7552,9 @@
               "name": "--xh-combobox-label-font-weight"
             },
             {
+              "name": "--xh-combobox-layer"
+            },
+            {
               "name": "--xh-combobox-placeholder-fg"
             }
           ]
@@ -7858,7 +7867,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-config>` —— 配置作用域。包住一棵子树，里面的元素解析 locale / size / translations\n时先看最近的这一层，再往外层与全局那份回落。\n\n它不渲染任何东西、不接线任何角色节点：作者写的子节点原样留在 Light DOM 里，\n这个元素只是 DOM 树上的一个记号。皮肤里没有它的规则，布局上它是 display: contents。\n\n与 Vue 适配器的 `provideXhConfig` 是同一件事的两种写法：那边沿组件树找，这边沿 DOM 祖先链找。\n逐键合并，本层只覆盖自己写了的那几项——只想改文案的子树不会把外层的 locale 一并抹掉。\n\n`translations` 与 `scrollRoot` 是对象与函数，只能走 property；`locale` 与 `size` 两条属性都行。",
+          "description": "`<xh-config>` —— 配置作用域。包住一棵子树，里面的元素解析 locale / size / translations\n时先看最近的这一层，再往外层与全局那份回落。\n\n它不渲染任何东西、不接线任何角色节点：作者写的子节点原样留在 Light DOM 里，\n这个元素只是 DOM 树上的一个记号。皮肤里没有它的规则，布局上它是 display: contents。\n\n与 Vue 适配器的 `provideXhConfig` 是同一件事的两种写法：那边沿组件树找，这边沿 DOM 祖先链找。\n逐键合并，本层只覆盖自己写了的那几项——只想改文案的子树不会把外层的 locale 一并抹掉。\n\n`translations` 与 `scrollRoot` 是对象与函数，只能走 property；`locale` / `size` / `motion` 属性与 property 都行。\n`motion` 写了就调 setMotionOverride（应用级、不分子树）；CSS 侧的 data-motion 钩子由作者自己打。",
           "name": "XhConfigElement",
           "members": [
             {
@@ -7878,6 +7887,15 @@
                 "text": "Size | undefined"
               },
               "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "motion",
+              "privacy": "public",
+              "type": {
+                "text": "MotionPreference | undefined"
+              },
+              "attribute": "motion"
             },
             {
               "kind": "field",
@@ -7923,6 +7941,14 @@
               "description": "尺寸档的默认值，落到子树里每个声明了三轴 size 的组件上",
               "name": "size",
               "fieldName": "size"
+            },
+            {
+              "type": {
+                "text": "MotionPreference | undefined"
+              },
+              "description": "应用级动效偏好，写了就覆盖系统的 prefers-reduced-motion",
+              "name": "motion",
+              "fieldName": "motion"
             }
           ],
           "superclass": {
@@ -8452,6 +8478,9 @@
             },
             {
               "name": "--xh-context-menu-item-radius"
+            },
+            {
+              "name": "--xh-context-menu-layer"
             },
             {
               "name": "--xh-context-menu-max-h"
@@ -10223,6 +10252,9 @@
               "name": "--xh-date-picker-label-font-weight"
             },
             {
+              "name": "--xh-date-picker-layer"
+            },
+            {
               "name": "--xh-date-picker-max-h"
             },
             {
@@ -10784,6 +10816,9 @@
               "name": "--xh-dialog-backdrop-bg"
             },
             {
+              "name": "--xh-dialog-backdrop-layer"
+            },
+            {
               "name": "--xh-dialog-bg"
             },
             {
@@ -10809,6 +10844,9 @@
             },
             {
               "name": "--xh-dialog-icon-size"
+            },
+            {
+              "name": "--xh-dialog-layer"
             },
             {
               "name": "--xh-dialog-max-w"
@@ -11433,6 +11471,9 @@
               "name": "--xh-drawer-backdrop-bg"
             },
             {
+              "name": "--xh-drawer-backdrop-layer"
+            },
+            {
               "name": "--xh-drawer-bg"
             },
             {
@@ -11458,6 +11499,9 @@
             },
             {
               "name": "--xh-drawer-icon-size"
+            },
+            {
+              "name": "--xh-drawer-layer"
             },
             {
               "name": "--xh-drawer-px"
@@ -14972,6 +15016,9 @@
               "name": "--xh-floating-panel-icon-size"
             },
             {
+              "name": "--xh-floating-panel-layer"
+            },
+            {
               "name": "--xh-floating-panel-radius"
             },
             {
@@ -16325,7 +16372,7 @@
               "name": "--xh-heatmap-row-h"
             },
             {
-              "name": "--xh-heatmap-sticky-z"
+              "name": "--xh-heatmap-sticky-layer"
             },
             {
               "name": "--xh-heatmap-title-fg"
@@ -16338,6 +16385,9 @@
             },
             {
               "name": "--xh-heatmap-tooltip-font-size"
+            },
+            {
+              "name": "--xh-heatmap-tooltip-layer"
             },
             {
               "name": "--xh-heatmap-tooltip-max-w"
@@ -16353,9 +16403,6 @@
             },
             {
               "name": "--xh-heatmap-tooltip-shadow"
-            },
-            {
-              "name": "--xh-heatmap-tooltip-z"
             },
             {
               "name": "--xh-heatmap-week-day-skip"
@@ -17195,6 +17242,9 @@
             },
             {
               "name": "--xh-hover-card-gap"
+            },
+            {
+              "name": "--xh-hover-card-layer"
             },
             {
               "name": "--xh-hover-card-max-h"
@@ -18543,6 +18593,9 @@
               "name": "--xh-image-viewer-backdrop-bg"
             },
             {
+              "name": "--xh-image-viewer-backdrop-layer"
+            },
+            {
               "name": "--xh-image-viewer-chrome-bg"
             },
             {
@@ -18562,6 +18615,9 @@
             },
             {
               "name": "--xh-image-viewer-icon-size"
+            },
+            {
+              "name": "--xh-image-viewer-layer"
             }
           ]
         }
@@ -21790,6 +21846,9 @@
               "name": "--xh-mention-item-radius"
             },
             {
+              "name": "--xh-mention-layer"
+            },
+            {
               "name": "--xh-mention-placeholder-fg"
             }
           ]
@@ -22267,6 +22326,9 @@
             },
             {
               "name": "--xh-menu-item-radius"
+            },
+            {
+              "name": "--xh-menu-layer"
             },
             {
               "name": "--xh-menu-max-h"
@@ -22853,6 +22915,9 @@
               "name": "--xh-menubar-item-radius"
             },
             {
+              "name": "--xh-menubar-layer"
+            },
+            {
               "name": "--xh-menubar-menu-bg"
             },
             {
@@ -23316,6 +23381,9 @@
             },
             {
               "name": "--xh-navigation-menu-indicator-thickness"
+            },
+            {
+              "name": "--xh-navigation-menu-layer"
             },
             {
               "name": "--xh-navigation-menu-link-bg-hover"
@@ -25887,6 +25955,9 @@
               "name": "--xh-popconfirm-gap"
             },
             {
+              "name": "--xh-popconfirm-layer"
+            },
+            {
               "name": "--xh-popconfirm-loading-duration"
             },
             {
@@ -26281,6 +26352,9 @@
             },
             {
               "name": "--xh-popover-icon-size"
+            },
+            {
+              "name": "--xh-popover-layer"
             },
             {
               "name": "--xh-popover-max-h"
@@ -26974,6 +27048,9 @@
             },
             {
               "name": "--xh-popselect-item-radius"
+            },
+            {
+              "name": "--xh-popselect-layer"
             },
             {
               "name": "--xh-popselect-placeholder-fg"
@@ -30586,6 +30663,9 @@
               "name": "--xh-select-label-font-weight"
             },
             {
+              "name": "--xh-select-layer"
+            },
+            {
               "name": "--xh-select-placeholder-fg"
             },
             {
@@ -30995,6 +31075,14 @@
               },
               "privacy": "private",
               "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "exits",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new Map<HTMLElement, OverlayExit>()",
+              "description": "每个弹出面板的定位层一份退场闸门：退场动画播完才真收。"
             },
             {
               "kind": "field",
@@ -34517,10 +34605,10 @@
               "name": "--xh-table-state-py"
             },
             {
-              "name": "--xh-table-sticky-column-z"
+              "name": "--xh-table-sticky-column-layer"
             },
             {
-              "name": "--xh-table-sticky-header-z"
+              "name": "--xh-table-sticky-header-layer"
             },
             {
               "name": "--xh-table-sticky-inset"
@@ -37828,6 +37916,9 @@
               "name": "--xh-time-picker-label-font-weight"
             },
             {
+              "name": "--xh-time-picker-layer"
+            },
+            {
               "name": "--xh-time-picker-preset-bg-checked"
             },
             {
@@ -39363,6 +39454,9 @@
           "cssProperties": [
             {
               "name": "--xh-toaster-inset"
+            },
+            {
+              "name": "--xh-toaster-layer"
             }
           ]
         }
@@ -40567,6 +40661,9 @@
               "name": "--xh-tooltip-font-size"
             },
             {
+              "name": "--xh-tooltip-layer"
+            },
+            {
               "name": "--xh-tooltip-max-w"
             },
             {
@@ -40837,6 +40934,16 @@
               },
               "privacy": "private",
               "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "exit",
+              "type": {
+                "text": "OverlayExit | null"
+              },
+              "privacy": "private",
+              "default": "null",
+              "description": "退场闸门：收起从跟着 open 走改成跟着 presence 走，气泡的退场动画播完才真收。"
             },
             {
               "kind": "field",
@@ -41125,7 +41232,7 @@
               "name": "--xh-tour-backdrop-bg"
             },
             {
-              "name": "--xh-tour-backdrop-z"
+              "name": "--xh-tour-backdrop-layer"
             },
             {
               "name": "--xh-tour-bg"
@@ -41173,7 +41280,7 @@
               "name": "--xh-tour-next-fg"
             },
             {
-              "name": "--xh-tour-positioner-z"
+              "name": "--xh-tour-positioner-layer"
             },
             {
               "name": "--xh-tour-progress-fg"
@@ -41194,6 +41301,9 @@
               "name": "--xh-tour-shadow"
             },
             {
+              "name": "--xh-tour-spotlight-layer"
+            },
+            {
               "name": "--xh-tour-spotlight-radius"
             },
             {
@@ -41201,9 +41311,6 @@
             },
             {
               "name": "--xh-tour-spotlight-shroud"
-            },
-            {
-              "name": "--xh-tour-spotlight-z"
             },
             {
               "name": "--xh-tour-title-fg"
@@ -42494,6 +42601,9 @@
             },
             {
               "name": "--xh-tree-select-label-font-weight"
+            },
+            {
+              "name": "--xh-tree-select-layer"
             },
             {
               "name": "--xh-tree-select-placeholder-fg"

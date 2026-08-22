@@ -180,6 +180,7 @@
     --xh-motion-scale-press: 0.97;
     --xh-motion-scale-drag: 1.12;
     --xh-spin-duration: 640ms;
+    --xh-shimmer-duration: 1600ms;
     --xh-layer-sticky: var(--xh-z-sticky);
     --xh-layer-drawer: var(--xh-z-modal);
     --xh-layer-modal: var(--xh-z-modal);
@@ -407,7 +408,7 @@
     --xh-border-invalid: var(--xh-color-danger-400);
   }
 
-  /* 减弱动效：动效降级的唯一通道。排在全部取值块之后，同为零特指度时靠书写顺序压过基线。
+  /* 减弱动效：排在全部取值块之后，同为零特指度时靠书写顺序压过基线。
      皮肤不必各写各的 @media——只要幅度与时长都引这几个语义令牌，降级自动穿透 */
   @media (prefers-reduced-motion: reduce) {
     :where(:root) {
@@ -420,5 +421,17 @@
       --xh-motion-scale-press: 1;
       --xh-motion-scale-drag: 1;
     }
+  }
+
+  /* 减弱动效的 DOM 钩子：与上面的 @media 块同源同值。打在任意容器上即局部减弱，打在 html 上即全局 */
+  :where([data-motion='reduce']) {
+    --xh-motion-duration-enter: 1ms;
+    --xh-motion-duration-exit: 1ms;
+    --xh-motion-duration-micro: 1ms;
+    --xh-motion-distance-sm: 0px;
+    --xh-motion-distance-md: 0px;
+    --xh-motion-scale-enter: 1;
+    --xh-motion-scale-press: 1;
+    --xh-motion-scale-drag: 1;
   }
 }

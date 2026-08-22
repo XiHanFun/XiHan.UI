@@ -1,6 +1,7 @@
-// 缓动曲线单一真源：CSS 侧的 cubic-bezier 字符串，与 JS 侧同名的采样函数。
+// 缓动曲线：CSS 侧的 cubic-bezier 字符串，与 JS 侧同名的采样函数。
+// standard / easeIn / easeOut 三条与 tokens primitive 的 ease.standard / in / out 同值，真源是令牌，由门禁比对。
 
-/** 命名缓动的 cubic-bezier 字符串，供动效令牌与组件 CSS 引用。 */
+/** 命名缓动的 cubic-bezier 字符串，供 JS 动画引用。 */
 export const easing = {
   linear: 'linear',
   standard: 'cubic-bezier(0.2, 0, 0, 1)',

@@ -1,11 +1,13 @@
 import type { SideNavExpandedChangeDetails, SideNavNode, SideNavNodeProps, SideNavSchema, SideNavTranslations, SideNavValueChangeDetails } from '@xihan-ui/headless'
 import type { Cleanup, IdGenerator, Layer, PositionEnginePort, RuntimeConfig } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
+import type { OverlayExit } from '../overlay-exit'
 import { connectSideNav, sideNavAnatomy, sideNavMachine, sideNavMeta } from '@xihan-ui/headless'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/kernel'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
+import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
@@ -93,6 +95,8 @@ export class XhSideNavElement extends XhElement {
   private readonly navScope = createScope(null, this.idGen)
   private readonly positionEngine: PositionEnginePort = createPositionEngine()
   private config: RuntimeConfig | null = null
+  /** 每个弹出面板的定位层一份退场闸门：退场动画播完才真收。 */
+  private readonly exits = new Map<HTMLElement, OverlayExit>()
 
   private readonly ctrl = new MachineController<SideNavSchema>(
     this,
@@ -172,6 +176,12 @@ export class XhSideNavElement extends XhElement {
 
   override disconnectedCallback(): void {
     super.disconnectedCallback()
+    // 退场没播完就离场：立刻结清并收起
+    for (const [el, gate] of this.exits) {
+      gate.dispose()
+      this.setPartHidden(el, true)
+    }
+    this.exits.clear()
     // 层由弹出态的效应自己入栈出栈，断开时机器停机会一并撤掉，这里无需再管
     this.config = null // 重连时 ensureConfig 重建
   }
@@ -201,12 +211,41 @@ export class XhSideNavElement extends XhElement {
       this.spreader.spread(el, api.getBranchTextProps() as Record<string, unknown>)
     for (const el of this.getParts('link-text'))
       this.spreader.spread(el, api.getLinkTextProps() as Record<string, unknown>)
-    putAll('positioner', BRANCH_SELECTOR, node => api.getPopoutPositionerProps(node))
+    // 弹出面板的定位层常挂，退场动画挂在它身上：收起从跟着 open 走改成跟着 presence 走。
+    // 一个定位层一份闸门。必须排在 spread 之后——data-state 得先落进 DOM，探测器才读得到
+    const popoutVisible = new Map<HTMLElement, boolean>()
+    for (const el of this.getParts('positioner')) {
+      const props = api.getPopoutPositionerProps(this.nodeOf(el, BRANCH_SELECTOR)) as Record<string, unknown>
+      this.spreader.spread(el, props)
+      const open = props.hidden !== true
+      let gate = this.exits.get(el)
+      if (!gate) {
+        this.ensureConfig()
+        gate = createOverlayExit({
+          config: this.config!,
+          open,
+          onExitComplete: () => this.requestUpdate(),
+        })
+        this.exits.set(el, gate)
+      }
+      gate.track(el)
+      gate.update(open)
+      el.toggleAttribute('hidden', !gate.visible)
+      this.setPartHidden(el, !gate.visible)
+      popoutVisible.set(el, gate.visible)
+    }
     putAll('branch-content', BRANCH_SELECTOR, node => api.getBranchContentProps(node))
     putAll('link', '[data-xh-part="link"]', node => api.getLinkProps(node))
 
-    // Light DOM 子层常驻，WC 自管可见性：收起时隐藏 branch-content
-    for (const el of this.getParts('branch-content'))
-      this.setPartHidden(el, el.hasAttribute('hidden'))
+    // Light DOM 子层常驻，WC 自管可见性：收起时隐藏 branch-content；
+    // 弹出面板的收起跟着它定位层的闸门走
+    for (const el of this.getParts('branch-content')) {
+      const positioner = el.closest<HTMLElement>('[data-xh-part="positioner"]')
+      const gated = positioner ? popoutVisible.get(positioner) : undefined
+      const hidden = gated === undefined ? el.hasAttribute('hidden') : !gated
+      if (gated !== undefined)
+        el.toggleAttribute('hidden', hidden)
+      this.setPartHidden(el, hidden)
+    }
   }
 }

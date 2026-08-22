@@ -3,7 +3,10 @@ import type { Transition } from '@xihan-ui/machine'
 import type { TooltipSchema } from './tooltip.types'
 import { createDismissLayer } from '@xihan-ui/behavior'
 import { setTimeoutEffect, setup } from '@xihan-ui/machine'
-import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE } from '../shared/overlay'
+import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_OFFSET, OVERLAY_PLACEMENT_ANCHORED } from '../shared/overlay'
+
+/** 没传 placement 时浮层交给定位引擎的落点。 */
+export const TOOLTIP_DEFAULT_PLACEMENT = OVERLAY_PLACEMENT_ANCHORED
 
 const { createMachine } = setup<TooltipSchema>()
 
@@ -174,8 +177,8 @@ export const tooltipMachine = createMachine({
             anchor,
             floating,
             {
-              placement: prop('placement'),
-              offset: prop('offset'),
+              placement: prop('placement') ?? TOOLTIP_DEFAULT_PLACEMENT,
+              offset: prop('offset') ?? OVERLAY_OFFSET,
               // positioner 渲染成 fixed，坐标系必须跟着走视口系
               strategy: 'fixed',
               // start / end 是逻辑对齐，RTL 下行内轴要翻过来

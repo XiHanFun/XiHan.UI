@@ -1,7 +1,7 @@
 import type { Scope } from '@xihan-ui/kernel'
 import type { NumberAnimationSchema } from './number-animation.types'
 import { setup } from '@xihan-ui/machine'
-import { frameLoop, frameNow, getMotionOverride, isTweenDone, prefersReducedMotion, tweenValueAt } from '@xihan-ui/motion'
+import { frameLoop, frameNow, isTweenDone, resolveMotionPreference, tweenValueAt } from '@xihan-ui/motion'
 
 const { createMachine } = setup<NumberAnimationSchema>()
 
@@ -20,14 +20,10 @@ export function resolveNumberAnimationDuration(ms: number | undefined): number {
  *
  * 逐帧补间是 JS 动画，皮肤那条减弱动效通道压不到它——数字照样一路滚过去。
  *
- * 应用级 override 优先于系统设置；两者都问不出结果时照常跑动画。不走
- * resolveMotionPreference 的理由与 scrollBlockTo 那处相同：它在没有 matchMedia 的宿主上
- * 一律报 reduce，会让这些宿主上的数字动画整个不跑。
+ * 应用级 override 优先于系统设置；两者都问不出结果时照常跑动画。
  */
 function effectiveDuration(ms: number | undefined, scope: Scope): number {
-  const override = getMotionOverride()
-  const reduced = override != null ? override === 'reduce' : prefersReducedMotion(scope.getWin())
-  return reduced ? 0 : resolveNumberAnimationDuration(ms)
+  return resolveMotionPreference(scope.getWin()) === 'reduce' ? 0 : resolveNumberAnimationDuration(ms)
 }
 
 /** 端点归一：非有限数与缺省一律按 0，免得 NaN 一路写进文本。 */

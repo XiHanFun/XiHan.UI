@@ -2,6 +2,7 @@
 // 纯装饰（aria-hidden），读屏内容由标题与描述承担；配色取语气层继承下来的私有槽，
 // 随宿主 data-tone 自动换族。徽记里的图形取 --xh-glyph-mark-* 令牌，与皮肤的兜底字形同一套。
 import type { VNode } from 'vue'
+import { resolveMotionPreference } from '@xihan-ui/motion'
 import { h } from 'vue'
 
 /** 徽记的圆底取中号字形尺寸；里面的字形四边各让出一个 space-1。 */
@@ -76,7 +77,7 @@ function parseDuration(value: string): number {
  * 时长读 --xh-spin-duration 令牌；减弱动效时不转，静止的弧线仍读得出「还没好」。
  */
 function spin(el: HTMLElement): void {
-  if (typeof el.animate !== 'function' || matchMedia('(prefers-reduced-motion: reduce)').matches)
+  if (typeof el.animate !== 'function' || resolveMotionPreference(el.ownerDocument?.defaultView ?? undefined) === 'reduce')
     return
   const duration = parseDuration(getComputedStyle(el).getPropertyValue('--xh-spin-duration'))
   if (duration <= 0)

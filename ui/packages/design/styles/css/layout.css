@@ -167,10 +167,4 @@
     max-block-size: calc(var(--xh-layout-scrollport-h, 100dvh) - var(--xh-_layout-sider-offset));
     overflow-y: auto;
   }
-
-  @media (prefers-reduced-motion: reduce) {
-    [data-scope='layout'][data-part='sider'] {
-      transition: none;
-    }
-  }
 }

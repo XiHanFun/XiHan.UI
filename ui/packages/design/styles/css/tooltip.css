@@ -54,7 +54,7 @@
     position: fixed;
     inset-block-start: 0;
     inset-inline-start: 0;
-    z-index: var(--xh-layer-tooltip);
+    z-index: var(--xh-tooltip-layer, var(--xh-layer-tooltip));
     /* 浮层不承载交互：指针必须能穿过去点到底下的东西 */
     pointer-events: none;
   }

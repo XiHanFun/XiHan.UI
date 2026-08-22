@@ -31,7 +31,7 @@
   [data-scope='image-viewer'][data-part='backdrop'] {
     position: fixed;
     inset: 0;
-    z-index: var(--xh-layer-modal);
+    z-index: var(--xh-image-viewer-backdrop-layer, var(--xh-layer-modal));
     /* 看片要压住页面底色，遮罩比普通对话框更深 */
     background: var(--xh-image-viewer-backdrop-bg, color-mix(in oklab, var(--xh-color-neutral-950) 78%, transparent));
   }
@@ -47,7 +47,7 @@
   [data-scope='image-viewer'][data-part='positioner'] {
     position: fixed;
     inset: 0;
-    z-index: var(--xh-layer-modal);
+    z-index: var(--xh-image-viewer-layer, var(--xh-layer-modal));
     display: flex;
     align-items: center;
     justify-content: center;
@@ -217,12 +217,6 @@
   [data-scope='image-viewer'] button[data-part]:disabled {
     opacity: var(--xh-state-disabled-opacity);
     cursor: not-allowed;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    [data-scope='image-viewer'][data-part='image'] {
-      transition: none;
-    }
   }
 
   /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */

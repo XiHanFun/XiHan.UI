@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
 // 全局配置注入的取值优先级：实例 props > provideXhConfig > 组件内建默认。
+import { getMotionOverride, setMotionOverride } from '@xihan-ui/motion'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, defineComponent, h, nextTick, ref } from 'vue'
 import { provideXhConfig, XhBadge, XhBreadcrumbRoot, XhButton, XhEmptyStateRoot, XhResultRoot, XhSpinner, XhTime } from '../src'
@@ -21,6 +22,38 @@ function mount(setup: () => () => unknown): HTMLElement {
 afterEach(() => {
   for (const un of mounted) un()
   mounted = []
+  setMotionOverride(null)
+})
+
+describe('provideXhConfig · motion', () => {
+  it('写了 motion 就设应用级 override', () => {
+    mount(() => {
+      provideXhConfig({ motion: 'reduce' })
+      return () => h('div')
+    })
+    expect(getMotionOverride()).toBe('reduce')
+  })
+
+  it('没写 motion 不碰别处设好的 override', () => {
+    setMotionOverride('reduce')
+    mount(() => {
+      provideXhConfig({ locale: 'en' })
+      return () => h('div')
+    })
+    expect(getMotionOverride()).toBe('reduce')
+  })
+
+  it('配置是 ref 时改 motion 跟着变', async () => {
+    const config = ref<{ motion?: 'reduce' | 'no-preference' }>({ motion: 'reduce' })
+    mount(() => {
+      provideXhConfig(config)
+      return () => h('div')
+    })
+    expect(getMotionOverride()).toBe('reduce')
+    config.value = { motion: 'no-preference' }
+    await nextTick()
+    expect(getMotionOverride()).toBe('no-preference')
+  })
 })
 
 describe('provideXhConfig · translations', () => {

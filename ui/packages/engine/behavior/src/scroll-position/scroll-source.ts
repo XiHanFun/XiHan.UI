@@ -1,5 +1,5 @@
 import type { Scope } from '@xihan-ui/kernel'
-import { getMotionOverride, prefersReducedMotion } from '@xihan-ui/motion'
+import { resolveMotionPreference } from '@xihan-ui/motion'
 
 /** 一次量测：滚动量与可视区尺寸，单位 px。 */
 export interface ScrollMetrics {
@@ -71,17 +71,12 @@ export function scrollEventTarget(container: HTMLElement | null, scope: Scope): 
  * 整页平滑滚动是 CSS 之外的动效，媒体查询压不到它：减弱动效偏好只关掉动画与过渡，
  * scrollTo({ behavior: 'smooth' }) 照播不误，而长距离的自动滚动正是前庭失调最难受的一类。
  *
- * 应用级 override 优先于系统设置；两者都问不出结果时不降级。这里不走
- * resolveMotionPreference：它在没有 matchMedia 的宿主（SSR、jsdom）上一律报 reduce，
- * 那条保守回答是为 Web 动画准备的（免得去跑一段永远不动的动画），而滚动没有这个问题——
- * 照它办会让这些宿主上的平滑滚动整个消失。
+ * 应用级 override 优先于系统设置；两者都问不出结果时不降级。
  */
 export function resolveScrollBehavior(behavior: ScrollBehavior, scope: Scope): ScrollBehavior {
   if (behavior !== 'smooth')
     return behavior
-  const override = getMotionOverride()
-  const reduced = override != null ? override === 'reduce' : prefersReducedMotion(scope.getWin())
-  return reduced ? 'auto' : behavior
+  return resolveMotionPreference(scope.getWin()) === 'reduce' ? 'auto' : behavior
 }
 
 /** 把可视区沿块轴滚到某个位置；container 为 null 即滚整页。 */

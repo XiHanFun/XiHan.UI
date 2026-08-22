@@ -102,6 +102,24 @@ describe('tokens.css 产物', () => {
       expect(block.includes(`${name}:`), name).toBe(false)
   })
 
+  it('带上了 data-motion=reduce 钩子块，且与 @media 块逐条相同', () => {
+    const hookStart = css.indexOf(':where([data-motion=\'reduce\'])')
+    const mediaStart = css.indexOf('@media (prefers-reduced-motion: reduce)')
+    expect(hookStart).toBeGreaterThan(mediaStart)
+    const declsOf = (from: number): string[] => {
+      const body = css.slice(css.indexOf('{', from) + 1)
+      return body
+        .slice(0, body.indexOf('}'))
+        .split('\n')
+        .map(l => l.trim())
+        .filter(l => l.startsWith('--xh-'))
+    }
+    const mediaDecls = declsOf(css.indexOf(':where(:root)', mediaStart))
+    const hookDecls = declsOf(hookStart)
+    expect(hookDecls.length).toBe(reduce.length)
+    expect(hookDecls).toEqual(mediaDecls)
+  })
+
   it('层序声明仍然只有一条，且在任何 @layer 块之前', () => {
     const statements = css.match(/^@layer [^{]*;$/gm) ?? []
     expect(statements).toHaveLength(1)

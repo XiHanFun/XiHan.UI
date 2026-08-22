@@ -1,17 +1,17 @@
-import { closeReasonOf } from '../shared/close-reason'
-import type { Placement, PositionResult, VirtualAnchor } from '@xihan-ui/kernel'
+import type { PositionResult, VirtualAnchor } from '@xihan-ui/kernel'
 import type { ContextMenuFocusIntent, ContextMenuPoint, ContextMenuSchema } from './context-menu.types'
 import { createDismissLayer, createFocusScope, createTypeahead, itemValue, navigateItems, queryItems } from '@xihan-ui/behavior'
 import { DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/kernel'
 import { setTimeoutEffect, setup } from '@xihan-ui/machine'
-import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE } from '../shared/overlay'
+import { closeReasonOf } from '../shared/close-reason'
+import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { contextMenuAnatomy, contextMenuItemQuery } from './context-menu.anatomy'
 
 const { createMachine } = setup<ContextMenuSchema>()
 
 /** 未指定 placement 时的落位；定位引擎与 connect 共用这一个缺省。 */
-export const CONTEXT_MENU_DEFAULT_PLACEMENT: Placement = 'bottom-start'
-/** 菜单贴着光标。offset 不能留空交给引擎，引擎缺省是 8px。 */
+export const CONTEXT_MENU_DEFAULT_PLACEMENT = OVERLAY_PLACEMENT_LIST
+/** 与共享的 OVERLAY_OFFSET 不同：右键菜单的锚点就是指针位置本身，面板贴着光标长出来，不留间距。 */
 export const CONTEXT_MENU_DEFAULT_OFFSET = 0
 /** 触摸端长按多久算触发。 */
 export const CONTEXT_MENU_LONG_PRESS_DELAY = 700

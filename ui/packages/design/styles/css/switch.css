@@ -119,12 +119,19 @@
     user-select: none;
   }
 
-  /* 减少动效：圆环停下并整圈换成虚线，静止的形状仍然读得出"还没好" */
+  /* 减少动效：圆环停下并整圈换成虚线，静止的形状仍然读得出"还没好"。
+     两条规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
   @media (prefers-reduced-motion: reduce) {
     [data-scope='switch'][data-part='thumb'][data-loading]::after {
       border-style: dotted;
       border-color: var(--xh-switch-loading-fg, var(--xh-bg-brand));
       animation: none;
     }
+  }
+
+  :where([data-motion='reduce']) [data-scope='switch'][data-part='thumb'][data-loading]::after {
+    border-style: dotted;
+    border-color: var(--xh-switch-loading-fg, var(--xh-bg-brand));
+    animation: none;
   }
 }

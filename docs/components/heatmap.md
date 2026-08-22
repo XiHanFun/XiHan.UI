@@ -311,7 +311,7 @@ levels 决定分几档，图例与格子共用同一条色阶
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-heatmap-bg` · `--xh-heatmap-block-gap` · `--xh-heatmap-block-inner-gap` · `--xh-heatmap-cell-border` · `--xh-heatmap-cell-radius` · `--xh-heatmap-cell-size` · `--xh-heatmap-column-w` · `--xh-heatmap-empty` · `--xh-heatmap-fg` · `--xh-heatmap-font-size` · `--xh-heatmap-gap` · `--xh-heatmap-grid-gap` · `--xh-heatmap-gutter` · `--xh-heatmap-ink` · `--xh-heatmap-label-fg` · `--xh-heatmap-legend-gap` · `--xh-heatmap-py` · `--xh-heatmap-row-gap` · `--xh-heatmap-row-h` · `--xh-heatmap-sticky-z` · `--xh-heatmap-title-fg` · `--xh-heatmap-tooltip-bg` · `--xh-heatmap-tooltip-fg` · `--xh-heatmap-tooltip-font-size` · `--xh-heatmap-tooltip-max-w` · `--xh-heatmap-tooltip-px` · `--xh-heatmap-tooltip-py` · `--xh-heatmap-tooltip-radius` · `--xh-heatmap-tooltip-shadow` · `--xh-heatmap-tooltip-z` · `--xh-heatmap-week-day-skip`
+`--xh-heatmap-bg` · `--xh-heatmap-block-gap` · `--xh-heatmap-block-inner-gap` · `--xh-heatmap-cell-border` · `--xh-heatmap-cell-radius` · `--xh-heatmap-cell-size` · `--xh-heatmap-column-w` · `--xh-heatmap-empty` · `--xh-heatmap-fg` · `--xh-heatmap-font-size` · `--xh-heatmap-gap` · `--xh-heatmap-grid-gap` · `--xh-heatmap-gutter` · `--xh-heatmap-ink` · `--xh-heatmap-label-fg` · `--xh-heatmap-legend-gap` · `--xh-heatmap-py` · `--xh-heatmap-row-gap` · `--xh-heatmap-row-h` · `--xh-heatmap-sticky-layer` · `--xh-heatmap-title-fg` · `--xh-heatmap-tooltip-bg` · `--xh-heatmap-tooltip-fg` · `--xh-heatmap-tooltip-font-size` · `--xh-heatmap-tooltip-layer` · `--xh-heatmap-tooltip-max-w` · `--xh-heatmap-tooltip-px` · `--xh-heatmap-tooltip-py` · `--xh-heatmap-tooltip-radius` · `--xh-heatmap-tooltip-shadow` · `--xh-heatmap-week-day-skip`
 
 ## 动效
 

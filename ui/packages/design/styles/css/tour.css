@@ -21,29 +21,27 @@
     }
   }
 
-  /* 气泡贴着目标探出来：纯淡入分不清它是从哪个元素长出来的 */
-  @keyframes xh-tour-content-in {
+  @keyframes xh-pop-in {
     from {
       opacity: 0;
-      translate: 0 var(--xh-motion-distance-sm);
+      scale: var(--xh-motion-scale-enter);
     }
 
     to {
       opacity: 1;
-      translate: 0 0;
+      scale: 1;
     }
   }
 
-  /* 退场原路收回去，与进场同一条轴 */
-  @keyframes xh-tour-content-out {
+  @keyframes xh-pop-out {
     from {
       opacity: 1;
-      translate: 0 0;
+      scale: 1;
     }
 
     to {
       opacity: 0;
-      translate: 0 var(--xh-motion-distance-sm);
+      scale: var(--xh-motion-scale-enter);
     }
   }
 
@@ -57,6 +55,19 @@
     to {
       opacity: 1;
       scale: 1;
+    }
+  }
+
+  /* 退场反向放大淡出，与进场对称 */
+  @keyframes xh-tour-spotlight-out {
+    from {
+      opacity: 1;
+      scale: 1;
+    }
+
+    to {
+      opacity: 0;
+      scale: calc(2 - var(--xh-motion-scale-enter));
     }
   }
 }
@@ -80,7 +91,7 @@
   [data-scope='tour'][data-part='backdrop'] {
     position: fixed;
     inset: 0;
-    z-index: var(--xh-tour-backdrop-z, var(--xh-layer-modal));
+    z-index: var(--xh-tour-backdrop-layer, var(--xh-layer-modal));
     background: var(--xh-tour-backdrop-bg, var(--xh-bg-overlay));
   }
 
@@ -100,7 +111,7 @@
      这里只管长相：一圈描边 + 一片铺满视口的投影当暗幕，中间那块因此是亮的——
      这就是"洞"。不吃指针：它盖在目标上面，吃了的话目标就再也点不动了 */
   [data-scope='tour'][data-part='spotlight'] {
-    z-index: var(--xh-tour-spotlight-z, var(--xh-layer-modal));
+    z-index: var(--xh-tour-spotlight-layer, var(--xh-layer-modal));
     pointer-events: none;
     border-radius: var(--xh-tour-spotlight-radius, var(--xh-shape-surface));
     box-shadow:
@@ -122,6 +133,11 @@
     animation: xh-tour-spotlight-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
   }
 
+  /* 退场与气泡并行播，同一段时长；收起那一帧 hidden 由宿主押后到气泡的退场结束 */
+  [data-scope='tour'][data-part='spotlight'][data-state='closed'] {
+    animation: xh-tour-spotlight-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+  }
+
   /* 高亮框在场时遮罩让位：暗幕已经由那圈铺满视口的投影负责，
      两层叠加会把页面压得过暗，而且洞里也会跟着变暗——洞就白挖了。
      居中步的高亮框带 hidden，此时遮罩照常压暗（那一步本来就没有要突出的元素）。
@@ -139,7 +155,7 @@
        居中步与尚未落位时不额外限高 */
     --xh-_tour-available-h: 100vh;
 
-    z-index: var(--xh-tour-positioner-z, var(--xh-layer-popover));
+    z-index: var(--xh-tour-positioner-layer, var(--xh-layer-popover));
     pointer-events: none;
   }
 
@@ -187,13 +203,13 @@
   }
 
   [data-scope='tour'][data-part='content'][data-state='open'] {
-    animation: xh-tour-content-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+    animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
   }
 
   /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
      免得动画结束到收起落下来之间闪一下原样 */
   [data-scope='tour'][data-part='content'][data-state='closed'] {
-    animation: xh-tour-content-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+    animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
   [data-scope='tour'][data-part='title'] {

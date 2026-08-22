@@ -1,17 +1,17 @@
-import type { Placement, PositionResult, Scope } from '@xihan-ui/kernel'
+import type { PositionResult, Scope } from '@xihan-ui/kernel'
 import type { PropFn } from '@xihan-ui/machine'
 import type { TourSchema, TourSpotlightRect, TourStep } from './tour.types'
 import { canTakeFocus, createDismissLayer, createFocusScope } from '@xihan-ui/behavior'
 import { setup } from '@xihan-ui/machine'
-import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE } from '../shared/overlay'
+import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_PLACEMENT_ANCHORED } from '../shared/overlay'
 import { sameTourSpotlight, tourSpotlightBox } from './tour.spotlight'
 
 const { createMachine } = setup<TourSchema>()
 
 /** 未指定 placement 时的落位：气泡挂在目标下方。 */
-export const TOUR_DEFAULT_PLACEMENT: Placement = 'bottom'
+export const TOUR_DEFAULT_PLACEMENT = OVERLAY_PLACEMENT_ANCHORED
 
-/** 气泡与目标之间的缺省间距（px），要给高亮框的留白让出位置。 */
+/** 与共享的 OVERLAY_OFFSET 不同：气泡要给聚光灯的描边与留白让出位置，间距更大。 */
 export const TOUR_DEFAULT_OFFSET = 12
 
 /** 总步数。作者给什么都得先落成非负整数。 */

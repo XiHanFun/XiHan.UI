@@ -1,14 +1,12 @@
-import { overlayPositioned } from '../shared/overlay'
-import type { NormalizeProps, Placement, PropTypes } from '@xihan-ui/kernel'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { HoverCardApi, HoverCardSchema } from './hover-card.types'
 import { contains, dataAttr } from '@xihan-ui/kernel'
+import { overlayPositioned } from '../shared/overlay'
 import { hoverCardAnatomy } from './hover-card.anatomy'
+import { HOVER_CARD_DEFAULT_PLACEMENT } from './hover-card.machine'
 
 const parts = hoverCardAnatomy.build()
-
-/** 定位结果落地前的占位朝向。 */
-const DEFAULT_PLACEMENT: Placement = 'bottom'
 
 // 落定那一侧的可用高度。贴边时引擎会回报 0，直接写进 min() 会把面板压成零高，
 // 所以低于这个下限就当作没算出来：空串撤掉声明，退回皮肤 positioner 上那档 100vh
@@ -34,7 +32,7 @@ export function connectHoverCard<T extends PropTypes>(
   const position = context.get('position')
   // 箭头落点：引擎没算（没要箭头 / 尚未落位）时缺席，皮肤退回居中
   const arrowAt = position?.arrow
-  const placement = position?.placement ?? prop('placement') ?? DEFAULT_PLACEMENT
+  const placement = position?.placement ?? prop('placement') ?? HOVER_CARD_DEFAULT_PLACEMENT
 
   /**
    * 焦点是否仍落在卡片内（trigger 或 content 子树）。

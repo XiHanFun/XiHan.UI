@@ -9,12 +9,6 @@
       opacity: 1;
     }
   }
-
-  @media (prefers-reduced-motion: reduce) {
-    [data-scope='table'][data-part='loading-state'] {
-      animation-duration: 0.01ms !important;
-    }
-  }
 }
 
 @layer xihan.components {
@@ -120,7 +114,7 @@
      透明的表头会让底下滚过的行透出来 */
   [data-scope='table'][data-part='header'][data-sticky] {
     position: sticky;
-    z-index: var(--xh-table-sticky-header-z, var(--xh-layer-sticky));
+    z-index: var(--xh-table-sticky-header-layer, var(--xh-layer-sticky));
     inset-block-start: 0;
   }
 
@@ -207,7 +201,7 @@
   [data-scope='table'][data-part='column-header'][data-frozen],
   [data-scope='table'][data-part='cell'][data-frozen] {
     position: sticky;
-    z-index: var(--xh-table-sticky-column-z, 1);
+    z-index: var(--xh-table-sticky-column-layer, 1);
     background: inherit;
   }
 
@@ -469,7 +463,18 @@
   }
 
   [data-scope='table'][data-part='loading-state'] {
-    animation: xh-table-loading-pulse var(--xh-duration-slow) var(--xh-ease-standard) infinite alternate;
+    animation: xh-table-loading-pulse calc(var(--xh-spin-duration) / 2) var(--xh-ease-standard) infinite alternate;
+  }
+
+  /* 减少动效：呼吸停下，加载态只留静止的文案。两条规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope='table'][data-part='loading-state'] {
+      animation: none;
+    }
+  }
+
+  :where([data-motion='reduce']) [data-scope='table'][data-part='loading-state'] {
+    animation: none;
   }
 
   /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */

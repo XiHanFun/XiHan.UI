@@ -1,10 +1,13 @@
-import { overlayPositioned } from '../shared/overlay'
 import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { PopoverSchema } from '../popover'
 import type { PopconfirmApi, PopconfirmIntents } from './popconfirm.types'
 import { dataAttr } from '@xihan-ui/kernel'
+import { OVERLAY_PLACEMENT_ANCHORED, overlayPositioned } from '../shared/overlay'
 import { popconfirmAnatomy } from './popconfirm.anatomy'
+
+/** 没传 placement 时浮层交给定位引擎的落点。 */
+export const POPCONFIRM_DEFAULT_PLACEMENT = OVERLAY_PLACEMENT_ANCHORED
 
 const parts = popconfirmAnatomy.build()
 
@@ -26,7 +29,7 @@ export function connectPopconfirm<T extends PropTypes>(
   const stateAttr = open ? 'open' : 'closed'
   // 位置由引擎写进 context，这里只读结果，不量 DOM、不调引擎
   const position = context.get('position')
-  const placement = position?.placement ?? prop('placement') ?? 'bottom'
+  const placement = position?.placement ?? prop('placement') ?? POPCONFIRM_DEFAULT_PLACEMENT
 
   const setOpen = (next: boolean): void => {
     if (next !== open)

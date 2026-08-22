@@ -180,7 +180,7 @@
   [data-scope='drawer'][data-part='backdrop'] {
     position: fixed;
     inset: 0;
-    z-index: var(--xh-layer-drawer);
+    z-index: var(--xh-drawer-backdrop-layer, var(--xh-layer-drawer));
     background: var(--xh-drawer-backdrop-bg, var(--xh-bg-overlay));
   }
 
@@ -207,7 +207,7 @@
   [data-scope='drawer'][data-part='positioner'] {
     position: fixed;
     inset: 0;
-    z-index: var(--xh-layer-drawer);
+    z-index: var(--xh-drawer-layer, var(--xh-layer-drawer));
     pointer-events: none;
   }
 
@@ -226,7 +226,7 @@
     --xh-_drawer-size: 20rem;
 
     position: fixed;
-    z-index: var(--xh-layer-drawer);
+    z-index: var(--xh-drawer-layer, var(--xh-layer-drawer));
     display: flex;
     flex-direction: column;
     gap: var(--xh-drawer-gap, var(--xh-stack-gap-md));

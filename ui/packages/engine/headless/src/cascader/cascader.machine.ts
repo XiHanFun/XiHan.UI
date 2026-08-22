@@ -1,8 +1,9 @@
-import { closeReasonOf } from '../shared/close-reason'
-import type { Placement, PositionResult } from '@xihan-ui/kernel'
+import type { PositionResult } from '@xihan-ui/kernel'
 import type { CascaderFocusIntent, CascaderNodeMeta, CascaderSchema, CascaderValue } from './cascader.types'
 import { cascadeToggle, collapseChecked, createDismissLayer, createFocusScope, itemValue, queryItems } from '@xihan-ui/behavior'
 import { setup } from '@xihan-ui/machine'
+import { closeReasonOf } from '../shared/close-reason'
+import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { cascaderAnatomy, cascaderItemQuery } from './cascader.anatomy'
 import {
   cascaderBuildColumns,
@@ -17,7 +18,7 @@ import {
 const { createMachine } = setup<CascaderSchema>()
 
 /** 未指定 placement 时的落位，定位引擎与 connect 共用。 */
-export const CASCADER_DEFAULT_PLACEMENT: Placement = 'bottom-start'
+export const CASCADER_DEFAULT_PLACEMENT = OVERLAY_PLACEMENT_LIST
 
 /** 未指定 separator 时的路径连接符。 */
 export const CASCADER_DEFAULT_SEPARATOR = ' / '
@@ -380,7 +381,7 @@ export const cascaderMachine = createMachine({
             floating,
             {
               placement: prop('placement') ?? CASCADER_DEFAULT_PLACEMENT,
-              offset: prop('offset'),
+              offset: prop('offset') ?? OVERLAY_OFFSET,
               // positioner 渲染成 fixed，坐标系必须跟着走视口系
               strategy: 'fixed',
               // start / end 是逻辑对齐，RTL 下行内轴要翻过来

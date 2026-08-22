@@ -18,8 +18,10 @@ export interface TourContext {
   backdropRef: Ref<HTMLElement | null>
   positionerRef: Ref<HTMLElement | null>
   contentRef: Ref<HTMLElement | null>
-  /** 此刻该不该可见：收起那一帧押后到退场动画播完。 */
+  /** 此刻该不该可见：收起那一帧押后到退场动画播完；遮罩、高亮框与定位层跟它一起收。 */
   visible: Ref<boolean>
+  /** 作者是否要画遮罩。 */
+  showBackdrop: () => boolean
   /** 浮层搬到哪儿：全局配置的容器 > 运行时的浮层落点 > body。 */
   portalTarget: ComputedRef<string | Element>
 }
@@ -69,5 +71,7 @@ export function useTour(
   // 全局配置写了容器就用它，否则落到运行时那个单一浮层落点；没有 DOM 时才回到 body
   const portalTarget = computed<string | Element>(() => xhConfig.value.portalContainer?.() ?? config?.portalContainer() ?? 'body')
 
-  return { service, api, backdropRef, positionerRef, contentRef, visible, portalTarget }
+  const showBackdrop = (): boolean => props.showBackdrop ?? true
+
+  return { service, api, backdropRef, positionerRef, contentRef, visible, showBackdrop, portalTarget }
 }

@@ -26,6 +26,51 @@ const COMPOSED = {
 /** 皮肤里没有独立 positioner 规则的：定位由内联样式全权负责。 */
 const NO_SKIN_RULE = new Set(['tour'])
 
+/**
+ * 没有 positioner 部件、面板由皮肤 position: absolute 排布的浮层，连同理由。
+ * 按解剖发现不到它们，所以逐项核实登记理由仍成立：解剖没有 positioner、connect 不碰定位引擎、
+ * 皮肤 content 是 absolute 且层级走 --xh-layer-popover（直接引用或经 --xh-<名>-layer 槽兜底）。
+ */
+const SKIN_POSITIONED = {
+  'navigation-menu': '面板贴着自己那一项落在列表下方，由皮肤 position: absolute 排布，不需要 flip / shift',
+}
+
+/** 取出 [data-scope='<名>'][data-part='content'] 那条规则的声明块。 */
+function contentRule(css, name) {
+  const m = css.match(new RegExp(`\\[data-scope='${name}'\\]\\[data-part='content'\\]\\s*\\{([^}]*)\\}`))
+  return m ? m[1] : null
+}
+
+/** 登记为皮肤排布的浮层，三处事实都对得上才算成立。 */
+async function verifySkinPositioned(name) {
+  const anatomy = await read(`${HEADLESS}/${name}/${name}.anatomy.ts`)
+  const connect = await read(`${HEADLESS}/${name}/${name}.connect.ts`)
+  const css = await read(`packages/design/styles/css/${name}.css`)
+  const errs = []
+  if (anatomy == null)
+    errs.push('找不到解剖')
+  else if (anatomy.includes('\'positioner\''))
+    errs.push('解剖里已有 positioner 部件，它会被当作引擎浮层发现，不该再留在 SKIN_POSITIONED')
+  if (connect == null)
+    errs.push('找不到 connect')
+  else if (/overlayPositioned|computePosition/.test(connect))
+    errs.push('connect 已接定位引擎（overlayPositioned / computePosition），登记理由不再成立')
+  if (css == null) {
+    errs.push('找不到皮肤')
+  }
+  else {
+    const rule = contentRule(css, name)
+    const layer = new RegExp(`z-index:\\s*var\\((?:--xh-${name}-layer,\\s*var\\(--xh-layer-popover\\)|--xh-layer-popover)\\)`)
+    if (rule == null)
+      errs.push('皮肤里找不到 content 规则')
+    else if (!/position:\s*absolute/.test(rule))
+      errs.push('皮肤的 content 不是 position: absolute')
+    else if (!layer.test(rule))
+      errs.push(`皮肤的 content 层级没走 --xh-layer-popover（允许 var(--xh-${name}-layer, var(--xh-layer-popover)) 或 var(--xh-layer-popover)）`)
+  }
+  return errs
+}
+
 /** 有 positioner 部件的组件即浮层族。 */
 async function discoverFamilies() {
   const dirs = await readdir(HEADLESS, { withFileTypes: true })
@@ -68,6 +113,11 @@ for (const name of Object.keys(NOT_ENGINE_POSITIONED)) {
     problems.push(`${name}：登记在「不吃引擎坐标」里，但它已经没有 positioner 部件了`)
 }
 
+for (const name of Object.keys(SKIN_POSITIONED)) {
+  for (const err of await verifySkinPositioned(name))
+    problems.push(`${name}：登记在 SKIN_POSITIONED（${SKIN_POSITIONED[name]}），但 ${err}`)
+}
+
 for (const name of FAMILIES) {
   const machineOwner = COMPOSED[name] ?? name
   const machine = await read(`${HEADLESS}/${machineOwner}/${machineOwner}.machine.ts`)
@@ -104,4 +154,4 @@ if (problems.length) {
   process.exit(1)
 }
 
-console.log(`[check-overlay-strategy] 通过：${FAMILIES.length} 个浮层族的坐标系三处一致（另有 ${Object.keys(NOT_ENGINE_POSITIONED).length} 个不吃引擎坐标）`)
+console.log(`[check-overlay-strategy] 通过：${FAMILIES.length} 个浮层族的坐标系三处一致（另有 ${Object.keys(NOT_ENGINE_POSITIONED).length} 个不吃引擎坐标、${Object.keys(SKIN_POSITIONED).length} 个由皮肤排布）`)

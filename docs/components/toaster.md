@@ -169,7 +169,7 @@ createToastService 自带宿主与默认模板，模块作用域随处可调（�
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-toaster-inset`
+`--xh-toaster-inset` · `--xh-toaster-layer`
 
 ## RTL
 

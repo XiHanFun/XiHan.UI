@@ -62,7 +62,9 @@
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "vitest run"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@xihan-ui/motion": "workspace:^"
+  },
   "devDependencies": {
     "@xihan-ui/build": "workspace:*",
     "@xihan-ui/tsconfig": "workspace:*",

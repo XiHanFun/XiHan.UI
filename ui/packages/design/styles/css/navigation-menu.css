@@ -164,7 +164,7 @@
   /* 面板贴着自己那一项落位：横排从 trigger 底下长出来 */
   [data-scope='navigation-menu'][data-part='content'] {
     position: absolute;
-    z-index: var(--xh-layer-popover);
+    z-index: var(--xh-navigation-menu-layer, var(--xh-layer-popover));
     inset-block-start: calc(100% + var(--xh-navigation-menu-content-offset, var(--xh-space-1)));
     inset-inline-start: 0;
     display: flex;
@@ -272,7 +272,7 @@
   /* 共享面板外壳：只管落位与统一的面板外观，里面装哪一份内容归 content */
   [data-scope='navigation-menu'][data-part='viewport'] {
     position: absolute;
-    z-index: var(--xh-layer-popover);
+    z-index: var(--xh-navigation-menu-layer, var(--xh-layer-popover));
     inset-block-start: calc(100% + var(--xh-navigation-menu-content-offset, var(--xh-space-1)));
     inset-inline-start: 0;
     display: block;

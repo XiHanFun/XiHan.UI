@@ -45,8 +45,9 @@ describe('无 window 的宿主', () => {
     expect(prefersReducedMotion()).toBe(false)
   })
 
-  it('getMotionPreference 反过来按降级返回 reduce', () => {
-    expect(getMotionPreference()).toBe('reduce')
+  it('getMotionPreference 同样按不降级返回 no-preference', () => {
+    expect(getMotionPreference()).toBe('no-preference')
+    expect(resolveMotionPreference()).toBe('no-preference')
   })
 
   it('onReducedMotionChange 不抛，返回可安全调用的空退订', () => {

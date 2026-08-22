@@ -100,6 +100,8 @@ export const XhTourBackdrop = defineComponent({
     return () => h(Teleport, { to: ctx.portalTarget.value }, [
       h('div', {
         ...mergeProps(ctx.api.value.getBackdropProps() as Record<string, unknown>, attrs),
+        // 收起跟着退场闸门走：遮罩的淡出与气泡的退场并行播
+        hidden: (!ctx.visible.value || !ctx.showBackdrop()) || undefined,
         ref: (el: unknown) => { ctx.backdropRef.value = el as HTMLElement },
       }, slots.default?.()),
     ])
@@ -114,7 +116,11 @@ export const XhTourSpotlight = defineComponent({
     const ctx = useTourContext()
     // 高亮框与遮罩是同一层暗幕的两半，必须一起搬
     return () => h(Teleport, { to: ctx.portalTarget.value }, [
-      h('div', mergeProps(ctx.api.value.getSpotlightProps() as Record<string, unknown>, attrs)),
+      h('div', {
+        ...mergeProps(ctx.api.value.getSpotlightProps() as Record<string, unknown>, attrs),
+        // 收起跟着退场闸门走：高亮框的退场与气泡并行播；居中步照常不画
+        hidden: (!ctx.visible.value || !ctx.api.value.anchored) || undefined,
+      }),
     ])
   },
 })
@@ -129,6 +135,8 @@ export const XhTourPositioner = defineComponent({
     return () => h(Teleport, { to: ctx.portalTarget.value }, [
       h('div', {
         ...mergeProps(ctx.api.value.getPositionerProps() as Record<string, unknown>, attrs),
+        // 定位层收起跟着退场闸门走：它先 display:none 的话，里面气泡的退场一帧都播不出来
+        hidden: !ctx.visible.value || undefined,
         ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement },
       }, slots.default?.()),
     ])

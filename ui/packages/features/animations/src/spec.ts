@@ -1,9 +1,10 @@
 // 配方的归一化与换算：钳制越界值、把视觉帧摊成 Web Animations 的关键帧。
 
 import type { MotionFrame, MotionSpec } from './types'
+import { durations } from '@xihan-ui/motion'
 
 /** 时长缺省毫秒。 */
-export const DEFAULT_DURATION = 320
+export const DEFAULT_DURATION: number = durations.slow
 /** 单段配方的帧数上限。 */
 export const MAX_FRAMES = 60
 /** 时长上限毫秒。 */
