@@ -209,7 +209,7 @@
   }
 
   /* 落进已选区间的刻度点跟 range 同色 */
-  [data-scope='slider'][data-part='mark'][data-active] {
+  [data-scope='slider'][data-part='mark'][data-passed] {
     background: var(--xh-slider-mark-bg-active, var(--xh-_tone, var(--xh-bg-brand)));
   }
 
@@ -227,7 +227,7 @@
     user-select: none;
   }
 
-  [data-scope='slider'][data-part='mark-label'][data-active] {
+  [data-scope='slider'][data-part='mark-label'][data-passed] {
     color: var(--xh-slider-mark-label-fg-active, var(--xh-fg-default));
   }
 

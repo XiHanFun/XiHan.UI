@@ -109,9 +109,9 @@
     border-color: var(--xh-checkbox-group-indicator-border-hover, var(--xh-border-control-hover));
   }
 
-  /* 选中即填色：条目是二态，全选格三态里 all 与 some 都算"有值"，共用同一副填色 */
+  /* 选中即填色：条目是二态，全选格三态里 checked 与 indeterminate 都算"有值"，共用同一副填色 */
   [data-scope='checkbox-group'][data-part='indicator'][data-state='checked'],
-  [data-scope='checkbox-group'][data-part='trigger']:is([data-state='all'], [data-state='some'])::before {
+  [data-scope='checkbox-group'][data-part='trigger']:is([data-state='checked'], [data-state='indeterminate'])::before {
     border-color: var(--xh-checkbox-group-indicator-border-checked, var(--xh-bg-brand));
     background: var(--xh-checkbox-group-indicator-bg-checked, var(--xh-bg-brand));
   }
@@ -128,9 +128,9 @@
     mask: var(--xh-glyph-mark-check) center / contain no-repeat;
   }
 
-  /* 全选格的三态：all 打勾、some 打横杠、none 留空。
-     some 就是读屏听到的 aria-checked=mixed，两者同源，样式只认 data-state */
-  [data-scope='checkbox-group'][data-part='trigger'][data-state='all']::before {
+  /* 全选格的三态：checked 打勾、indeterminate 打横杠、unchecked 留空。
+     indeterminate 就是读屏听到的 aria-checked=mixed，两者同源，样式只认 data-state */
+  [data-scope='checkbox-group'][data-part='trigger'][data-state='checked']::before {
     content: '';
     display: inline-block;
     inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
@@ -141,7 +141,7 @@
     mask: var(--xh-glyph-mark-check) center / contain no-repeat;
   }
 
-  [data-scope='checkbox-group'][data-part='trigger'][data-state='some']::before {
+  [data-scope='checkbox-group'][data-part='trigger'][data-state='indeterminate']::before {
     content: '';
     display: inline-block;
     inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));

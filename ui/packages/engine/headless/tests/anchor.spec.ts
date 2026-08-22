@@ -281,10 +281,10 @@ describe('connectAnchor 静态输出', () => {
     const active = api.getLinkProps({ value: 'install' }) as Record<string, unknown>
     const other = api.getLinkProps({ value: 'intro' }) as Record<string, unknown>
     expect(active['aria-current']).toBe('location')
-    expect(active['data-active']).toBe('')
+    expect(active['data-current']).toBe('')
     // aria-current 的默认值就是 "false"，省略即"不是当前项"
     expect(other['aria-current']).toBeUndefined()
-    expect(other['data-active']).toBeUndefined()
+    expect(other['data-current']).toBeUndefined()
     expect(api.isActive('install')).toBe(true)
     expect(api.isActive('intro')).toBe(false)
   })

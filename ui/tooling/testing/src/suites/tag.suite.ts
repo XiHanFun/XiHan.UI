@@ -28,7 +28,7 @@ export const tagSuite: ConformanceSuite = {
         parts: {
           'root': {
             'role': null,
-            'data-state': 'visible',
+            'data-state': 'open',
             'data-variant': null,
             'data-tone': null,
             'data-size': null,
@@ -64,7 +64,7 @@ export const tagSuite: ConformanceSuite = {
       initial: {
         parts: {
           'close-trigger': { 'disabled': null, 'data-disabled': null, 'hidden': null },
-          'root': { 'data-state': 'visible', 'hidden': null },
+          'root': { 'data-state': 'open', 'hidden': null },
         },
       },
     },
@@ -77,7 +77,7 @@ export const tagSuite: ConformanceSuite = {
           kind: 'click',
           part: 'close-trigger',
           expect: {
-            parts: { root: { 'data-state': 'hidden', 'hidden': '' } },
+            parts: { root: { 'data-state': 'closed', 'hidden': '' } },
             events: [{ type: 'open-change', detail: { open: false } }],
           },
         },
@@ -99,7 +99,7 @@ export const tagSuite: ConformanceSuite = {
           kind: 'click',
           part: 'close-trigger',
           expect: {
-            parts: { root: { 'data-state': 'visible', 'hidden': null } },
+            parts: { root: { 'data-state': 'open', 'hidden': null } },
             events: [{ type: 'open-change', detail: { open: false } }],
           },
         },
@@ -108,7 +108,7 @@ export const tagSuite: ConformanceSuite = {
           kind: 'settle',
           until: { attr: { part: 'root', name: 'hidden', value: '' } },
           expect: {
-            parts: { root: { 'data-state': 'hidden', 'hidden': '' } },
+            parts: { root: { 'data-state': 'closed', 'hidden': '' } },
           },
         },
       ],
@@ -118,7 +118,7 @@ export const tagSuite: ConformanceSuite = {
       spec: { adr: 'controlled-uncontrolled' },
       props: { defaultOpen: false },
       initial: {
-        parts: { root: { 'data-state': 'hidden', 'hidden': '' } },
+        parts: { root: { 'data-state': 'closed', 'hidden': '' } },
       },
     },
     {
@@ -128,7 +128,7 @@ export const tagSuite: ConformanceSuite = {
       steps: [
         dispatchClickOnDisabled('tag', 'close-trigger', {
           parts: {
-            'root': { 'data-disabled': '', 'data-state': 'visible', 'hidden': null },
+            'root': { 'data-disabled': '', 'data-state': 'open', 'hidden': null },
             // 只是禁用而非不可关闭：叉仍占着位置，标签宽度不跳变
             'close-trigger': { 'disabled': '', 'data-disabled': '', 'hidden': null },
           },

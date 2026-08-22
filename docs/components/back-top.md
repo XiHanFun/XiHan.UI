@@ -88,6 +88,13 @@ tone 决定按钮用哪族颜色，size 换一档尺寸；translations 换掉读
 
 ## 状态
 
+对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+
+| 部件 | 取值 |
+| --- | --- |
+| `root` | 'visible' \| 'hidden' |
+| `trigger` | 'visible' \| 'hidden' |
+
 状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`hidden` · `visible`
@@ -135,9 +142,9 @@ tone 决定按钮用哪族颜色，size 换一档尺寸；translations 换掉读
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-size` | props.size |
+| `root` | `data-state` | 'visible' \| 'hidden' |
 | `root` | `data-tone` | props.tone |
-| `root` | `data-visible` | ''（条件成立时才出现） |
-| `trigger` | `data-visible` | ''（条件成立时才出现） |
+| `trigger` | `data-state` | 'visible' \| 'hidden' |
 
 ## CSS 变量
 

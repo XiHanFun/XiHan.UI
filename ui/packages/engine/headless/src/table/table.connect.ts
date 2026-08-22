@@ -459,7 +459,7 @@ export function connectTable<T extends PropTypes>(
     getSelectAllTriggerProps: () => normalize.element({
       ...parts['select-all-trigger'].attrs,
       'role': 'checkbox',
-      'aria-checked': selectionState === 'all' ? 'true' : selectionState === 'some' ? 'mixed' : 'false',
+      'aria-checked': selectionState === 'checked' ? 'true' : selectionState === 'indeterminate' ? 'mixed' : 'false',
       // 角色节点是普通元素而非原生控件，禁用后仍要能被聚焦
       'aria-disabled': canSelectAll ? 'false' : 'true',
       'tabindex': 0,

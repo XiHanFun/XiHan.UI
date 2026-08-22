@@ -30,17 +30,17 @@ const HIDDEN_INPUT_STYLE = {
   whiteSpace: 'nowrap',
 }
 
-/** 全选态：拿选中集合去比作者声明的全集；全集缺省时只答 none / some。 */
+/** 全选态：拿选中集合去比作者声明的全集；全集缺省时只答 unchecked / indeterminate。 */
 export function resolveCheckedState(
   value: readonly string[],
   itemValues: readonly string[],
 ): CheckboxGroupCheckedState {
   if (itemValues.length === 0)
-    return value.length > 0 ? 'some' : 'none'
+    return value.length > 0 ? 'indeterminate' : 'unchecked'
   const hit = itemValues.filter(v => value.includes(v)).length
   if (hit === 0)
-    return 'none'
-  return hit === itemValues.length ? 'all' : 'some'
+    return 'unchecked'
+  return hit === itemValues.length ? 'checked' : 'indeterminate'
 }
 
 export function connectCheckboxGroup<T extends PropTypes>(
@@ -195,7 +195,7 @@ export function connectCheckboxGroup<T extends PropTypes>(
       // 两段各自缺席时都是悬空 IDREF，按规则跳过
       'aria-labelledby': `${ids.label} ${ids.trigger}`,
       // 勾了一部分时输出 mixed
-      'aria-checked': checkedState === 'all' ? 'true' : checkedState === 'some' ? 'mixed' : 'false',
+      'aria-checked': checkedState === 'checked' ? 'true' : checkedState === 'indeterminate' ? 'mixed' : 'false',
       // 与条目同形：用 aria-disabled，禁用后仍可聚焦
       'aria-disabled': editable ? 'false' : 'true',
       'aria-readonly': readOnly ? 'true' : 'false',

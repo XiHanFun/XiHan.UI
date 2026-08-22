@@ -66,14 +66,14 @@ function thumbValue(): string | null {
 }
 
 describe('slider 刻度', () => {
-  it('刻度点按百分比定位，落进已选区间的带 data-active', async () => {
+  it('刻度点按百分比定位，落进已选区间的带 data-passed', async () => {
     await mountSlider({ defaultValue: [40] })
     const dots = [...document.querySelectorAll<HTMLElement>('[data-scope="slider"][data-part="mark"]')]
     expect(dots).toHaveLength(3)
     expect(dots[1]!.style.insetInlineStart).toBe('40%')
-    expect(dots[0]!.hasAttribute('data-active')).toBe(true)
-    expect(dots[1]!.hasAttribute('data-active')).toBe(true)
-    expect(dots[2]!.hasAttribute('data-active')).toBe(false)
+    expect(dots[0]!.hasAttribute('data-passed')).toBe(true)
+    expect(dots[1]!.hasAttribute('data-passed')).toBe(true)
+    expect(dots[2]!.hasAttribute('data-passed')).toBe(false)
   })
 
   it('点刻度文案：最近的滑块跳到这一档', async () => {

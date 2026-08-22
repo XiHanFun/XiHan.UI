@@ -57,7 +57,7 @@
   }
 
   /* 折起来时不换行：窄到放不下的那几个字直接被 overflow 裁掉，不会挤成一列竖排 */
-  [data-scope='layout'][data-part='sider'][data-state='collapsed'] {
+  [data-scope='layout'][data-part='sider'][data-collapsed] {
     inline-size: var(--xh-_layout-sider-collapsed-w);
     white-space: nowrap;
   }

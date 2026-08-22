@@ -248,7 +248,7 @@ export const transferSuite: ConformanceSuite = {
             'role': 'checkbox',
             'aria-checked': 'false',
             'aria-controls': '@part(list[0])',
-            'data-state': 'none',
+            'data-state': 'unchecked',
             'data-side': 'source',
             'disabled': null,
           },
@@ -399,8 +399,8 @@ export const transferSuite: ConformanceSuite = {
           expect: {
             parts: {
               'item': itemsOn(['durian'], ['apple', 'cherry']),
-              'select-all-trigger[0]': { 'aria-checked': 'true', 'data-state': 'all' },
-              'select-all-trigger[1]': { 'aria-checked': 'false', 'data-state': 'none' },
+              'select-all-trigger[0]': { 'aria-checked': 'true', 'data-state': 'checked' },
+              'select-all-trigger[1]': { 'aria-checked': 'false', 'data-state': 'unchecked' },
               'panel-count[0]': { 'data-checked-count': '2' },
             },
           },
@@ -424,7 +424,7 @@ export const transferSuite: ConformanceSuite = {
           kind: 'click',
           part: 'item[0]',
           expect: {
-            parts: { 'select-all-trigger[0]': { 'aria-checked': 'mixed', 'data-state': 'some' } },
+            parts: { 'select-all-trigger[0]': { 'aria-checked': 'mixed', 'data-state': 'indeterminate' } },
           },
         },
         {
@@ -433,7 +433,7 @@ export const transferSuite: ConformanceSuite = {
           expect: {
             parts: {
               'item': itemsOn([], ['apple', 'cherry', 'durian']),
-              'select-all-trigger[0]': { 'aria-checked': 'true', 'data-state': 'all' },
+              'select-all-trigger[0]': { 'aria-checked': 'true', 'data-state': 'checked' },
             },
           },
         },
@@ -443,7 +443,7 @@ export const transferSuite: ConformanceSuite = {
           expect: {
             parts: {
               'item': itemsOn([], []),
-              'select-all-trigger[0]': { 'aria-checked': 'false', 'data-state': 'none' },
+              'select-all-trigger[0]': { 'aria-checked': 'false', 'data-state': 'unchecked' },
             },
           },
         },
@@ -554,7 +554,7 @@ export const transferSuite: ConformanceSuite = {
             'item[0]': { 'hidden': '', 'aria-selected': 'false' },
             'item[2]': { hidden: null },
             'panel-count[0]': { 'data-count': '1', 'data-checked-count': '0' },
-            'select-all-trigger[0]': { 'aria-checked': 'false', 'data-state': 'none' },
+            'select-all-trigger[0]': { 'aria-checked': 'false', 'data-state': 'unchecked' },
             // 勾着的 apple 被筛掉了：此刻没有看得见的东西可搬
             'to-target-trigger': { disabled: '' },
             // 另一侧不受影响（item[4] 是右栏那份 apple，本来就不属于右侧）
@@ -570,7 +570,7 @@ export const transferSuite: ConformanceSuite = {
               'item[2]': { 'aria-selected': 'true', 'data-state': 'checked' },
               'item[0]': { 'hidden': '', 'aria-selected': 'false' },
               'panel-count[0]': { 'data-checked-count': '1' },
-              'select-all-trigger[0]': { 'aria-checked': 'true', 'data-state': 'all' },
+              'select-all-trigger[0]': { 'aria-checked': 'true', 'data-state': 'checked' },
               'to-target-trigger': { disabled: null },
             },
           },
@@ -595,7 +595,7 @@ export const transferSuite: ConformanceSuite = {
           parts: {
             'item[0]': { 'hidden': null, 'aria-selected': 'true', 'data-state': 'checked' },
             'panel-count[0]': { 'data-count': '3', 'data-checked-count': '1' },
-            'select-all-trigger[0]': { 'aria-checked': 'mixed', 'data-state': 'some' },
+            'select-all-trigger[0]': { 'aria-checked': 'mixed', 'data-state': 'indeterminate' },
           },
         }),
       ],

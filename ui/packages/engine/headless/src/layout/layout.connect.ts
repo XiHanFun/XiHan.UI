@@ -16,7 +16,6 @@ export function connectLayout<T extends PropTypes>(
   const collapsed = state.get() === 'collapsed'
   const placement = prop('siderPlacement') ?? 'start'
   const ids = scope.ids('layout', 'sider')
-  const stateAttr = collapsed ? 'collapsed' : 'expanded'
 
   // 两个固定开关各走各的：头钉住不牵连侧栏，侧栏钉住也不牵连头。
   // 标记同时落在根与对应那一段上：段上的给自己的钉法用，根上的给需要看见两个开关的排布规则用
@@ -55,7 +54,7 @@ export function connectLayout<T extends PropTypes>(
     getSiderProps: () => normalize.element({
       ...parts.sider.attrs,
       'id': ids.sider,
-      'data-state': stateAttr,
+      'data-collapsed': dataAttr(collapsed),
       'data-placement': placement,
       'data-fixed': dataAttr(siderFixed),
       'style': { inlineSize: siderWidth },
@@ -65,13 +64,13 @@ export function connectLayout<T extends PropTypes>(
 
     getFooterProps: () => normalize.element({ ...parts.footer.attrs }),
 
-    // 把手指名它开合的是哪一段：aria-controls 指向侧栏，aria-expanded 说的是侧栏展开与否
+    // 把手指名它开合的是哪一段：aria-controls 指向侧栏，aria-expanded 与 data-collapsed 说的都是侧栏的折叠态
     getSiderTriggerProps: () => normalize.button({
       ...parts['sider-trigger'].attrs,
       'type': 'button',
       'aria-controls': ids.sider,
       'aria-expanded': collapsed ? 'false' : 'true',
-      'data-state': stateAttr,
+      'data-collapsed': dataAttr(collapsed),
       'onClick': () => send({ type: 'SIDER.TOGGLE' }),
     }),
   }

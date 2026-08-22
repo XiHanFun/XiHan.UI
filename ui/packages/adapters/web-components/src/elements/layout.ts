@@ -30,10 +30,10 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @fires sider-collapsed-change - 折叠态变化；detail 为 `{ collapsed: boolean }`
  * @csspart root - 骨架根容器，承载 data-sider-placement / data-sider-collapsed / data-header-fixed / data-sider-fixed / data-bordered
  * @csspart header - 顶部横幅区，横贯整行；吸顶时带 data-fixed
- * @csspart sider - 侧栏，宽度随折叠态在两档之间切换；吸附时带 data-fixed
+ * @csspart sider - 侧栏，折叠时带 data-collapsed、宽度随之在两档之间切换；吸附时带 data-fixed
  * @csspart content - 主内容区
  * @csspart footer - 底部区，横贯整行
- * @csspart sider-trigger - 折叠把手（aria-expanded / aria-controls 所在）
+ * @csspart sider-trigger - 折叠把手（aria-expanded / aria-controls 所在，折叠时带 data-collapsed）
  */
 export class XhLayoutElement extends XhElement {
   // 把手写成非 button 时 Enter/Space 的激活会静默失效，登记进契约

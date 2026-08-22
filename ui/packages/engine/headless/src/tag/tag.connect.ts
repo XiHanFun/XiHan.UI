@@ -11,7 +11,7 @@ export function connectTag<T extends PropTypes>(
   normalize: NormalizeProps<T>,
 ): TagApi<T> {
   const { state, prop, send } = service
-  const open = state.get() === 'visible'
+  const open = state.get() === 'open'
   // 标签默认不给关闭钮：多数标签只是身份标记，摘不摘得掉由作者说了算
   const closable = prop('closable') ?? false
   const disabled = !!prop('disabled')
@@ -35,7 +35,7 @@ export function connectTag<T extends PropTypes>(
       'data-variant': prop('variant'),
       'data-tone': prop('tone'),
       'data-size': prop('size'),
-      'data-state': open ? 'visible' : 'hidden',
+      'data-state': open ? 'open' : 'closed',
       'data-disabled': dataAttr(disabled),
       'hidden': !open || undefined,
     }),

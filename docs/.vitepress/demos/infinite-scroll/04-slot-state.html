@@ -59,9 +59,9 @@
     }
   }
 
-  // 三段状态落在 root 的 data-state 上：idle 还在等、loading 正在取、paused 已关掉
+  // 三段状态由 root 的 data-loading / data-disabled 表达：都没有是在等、loading 正在取、disabled 已关掉
   function renderHint() {
-    const phase = root.dataset.state;
+    const phase = root.hasAttribute("data-disabled") ? "paused" : root.hasAttribute("data-loading") ? "loading" : "idle";
     if (phase === "loading") hint.textContent = "正在取下一页…";
     else if (phase === "paused") hint.textContent = "没有更多了";
     else hint.textContent = `继续往下滚（当前 ${phase}）`;
@@ -69,7 +69,7 @@
 
   new MutationObserver(renderHint).observe(root, {
     attributes: true,
-    attributeFilter: ["data-state"],
+    attributeFilter: ["data-loading", "data-disabled"],
   });
   renderHint();
 

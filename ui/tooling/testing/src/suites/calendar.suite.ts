@@ -183,7 +183,7 @@ export const calendarSuite: ConformanceSuite = {
           [`cell[${at(ANCHOR)}]`]: {
             'role': 'gridcell',
             'data-value': ANCHOR,
-            'data-focused': '',
+            'data-focus': '',
             'data-outside-month': null,
             // aria-selected 是 gridcell 的属性，选中态报在这一层
             'aria-selected': 'false',
@@ -196,7 +196,7 @@ export const calendarSuite: ConformanceSuite = {
             // role=button 不许带 aria-selected
             'aria-selected': null,
             'aria-disabled': 'false',
-            'data-focused': '',
+            'data-focus': '',
             'data-today': null,
             // roving tabindex：聚焦日那一格是整张网格唯一的 Tab 停靠点
             'tabindex': '0',
@@ -242,8 +242,8 @@ export const calendarSuite: ConformanceSuite = {
           expect: {
             activeElement: { part: `cell-trigger[${at('2024-02-16')}]`, exact: true },
             parts: {
-              [`cell-trigger[${at('2024-02-16')}]`]: { 'tabindex': '0', 'data-focused': '' },
-              [`cell-trigger[${at(ANCHOR)}]`]: { 'tabindex': '-1', 'data-focused': null },
+              [`cell-trigger[${at('2024-02-16')}]`]: { 'tabindex': '0', 'data-focus': '' },
+              [`cell-trigger[${at(ANCHOR)}]`]: { 'tabindex': '-1', 'data-focus': null },
             },
           },
         },
@@ -259,23 +259,23 @@ export const calendarSuite: ConformanceSuite = {
         {
           kind: 'key',
           key: 'ArrowRight',
-          expect: { parts: { [`cell-trigger[${at('2024-02-16')}]`]: { 'data-focused': '', 'tabindex': '0' } }, events: [] },
+          expect: { parts: { [`cell-trigger[${at('2024-02-16')}]`]: { 'data-focus': '', 'tabindex': '0' } }, events: [] },
         },
         {
           kind: 'key',
           key: 'ArrowDown',
-          expect: { parts: { [`cell-trigger[${at('2024-02-23')}]`]: { 'data-focused': '', 'tabindex': '0' } }, events: [] },
+          expect: { parts: { [`cell-trigger[${at('2024-02-23')}]`]: { 'data-focus': '', 'tabindex': '0' } }, events: [] },
         },
         {
           kind: 'key',
           key: 'ArrowUp',
-          expect: { parts: { [`cell-trigger[${at('2024-02-16')}]`]: { 'data-focused': '' } }, events: [] },
+          expect: { parts: { [`cell-trigger[${at('2024-02-16')}]`]: { 'data-focus': '' } }, events: [] },
         },
         {
           kind: 'key',
           key: 'ArrowLeft',
           expect: {
-            parts: { [`cell-trigger[${at(ANCHOR)}]`]: { 'data-focused': '' }, ...selection() },
+            parts: { [`cell-trigger[${at(ANCHOR)}]`]: { 'data-focus': '' }, ...selection() },
             // 方向键走了一圈，一天都不该被选中
             events: [],
           },
@@ -292,12 +292,12 @@ export const calendarSuite: ConformanceSuite = {
         {
           kind: 'key',
           key: 'Home',
-          expect: { parts: { [`cell-trigger[${at('2024-02-12')}]`]: { 'data-focused': '', 'tabindex': '0' } } },
+          expect: { parts: { [`cell-trigger[${at('2024-02-12')}]`]: { 'data-focus': '', 'tabindex': '0' } } },
         },
         {
           kind: 'key',
           key: 'End',
-          expect: { parts: { [`cell-trigger[${at('2024-02-18')}]`]: { 'data-focused': '', 'tabindex': '0' } } },
+          expect: { parts: { [`cell-trigger[${at('2024-02-18')}]`]: { 'data-focus': '', 'tabindex': '0' } } },
         },
       ],
     },
@@ -318,7 +318,7 @@ export const calendarSuite: ConformanceSuite = {
               'cell[0]': { 'data-value': '2024-01-29', 'data-outside-month': null },
               // 二月的日子成了邻月，连聚焦日那一格也不再认领 Tab 位（1 月 15 日没画出来）
               [`cell[${at('2024-02-01')}]`]: { 'data-outside-month': '' },
-              [`cell-trigger[${at(ANCHOR)}]`]: { 'tabindex': '-1', 'data-focused': null },
+              [`cell-trigger[${at(ANCHOR)}]`]: { 'tabindex': '-1', 'data-focus': null },
             },
           },
         },
@@ -334,7 +334,7 @@ export const calendarSuite: ConformanceSuite = {
           expect: {
             parts: {
               'cell[0]': { 'data-outside-month': '' },
-              [`cell-trigger[${at(ANCHOR)}]`]: { 'tabindex': '0', 'data-focused': '' },
+              [`cell-trigger[${at(ANCHOR)}]`]: { 'tabindex': '0', 'data-focus': '' },
             },
           },
         },
@@ -507,7 +507,7 @@ export const calendarSuite: ConformanceSuite = {
         {
           kind: 'key',
           key: 'ArrowRight',
-          expect: { parts: { [`cell-trigger[${at('2024-02-10')}]`]: { 'data-focused': '', 'tabindex': '0' } } },
+          expect: { parts: { [`cell-trigger[${at('2024-02-10')}]`]: { 'data-focus': '', 'tabindex': '0' } } },
         },
         {
           kind: 'key',
@@ -527,7 +527,7 @@ export const calendarSuite: ConformanceSuite = {
           part: `cell-trigger[${at('2024-02-16')}]`,
           expect: {
             // 值不动，但焦点锚点跟着点击走
-            parts: { ...selection(), [`cell-trigger[${at('2024-02-16')}]`]: { 'data-focused': '', 'tabindex': '0' } },
+            parts: { ...selection(), [`cell-trigger[${at('2024-02-16')}]`]: { 'data-focus': '', 'tabindex': '0' } },
             events: [],
           },
         },
@@ -554,7 +554,7 @@ export const calendarSuite: ConformanceSuite = {
         {
           kind: 'key',
           key: 'ArrowRight',
-          expect: { parts: { [`cell-trigger[${at(ANCHOR)}]`]: { 'data-focused': '' } }, events: [] },
+          expect: { parts: { [`cell-trigger[${at(ANCHOR)}]`]: { 'data-focus': '' } }, events: [] },
         },
         { kind: 'key', key: 'Enter', expect: { parts: selection(), events: [] } },
       ],

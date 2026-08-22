@@ -172,7 +172,7 @@ size 换条目的字号与左右内边距，不传 size 即默认档
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
 | `list` | `data-orientation` | props.orientation |
-| `link` | `data-active` | ''（条件成立时才出现） |
+| `link` | `data-current` | ''（条件成立时才出现） |
 | `indicator` | `data-orientation` | props.orientation |
 | `indicator` | `data-value` | context.get('value') |
 

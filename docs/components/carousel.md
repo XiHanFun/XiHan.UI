@@ -234,8 +234,8 @@ slidesPerMove 与 slidesPerPage 分开给：一屏露三张、一次只挪一张
 | `next-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `next-trigger` | `data-orientation` | props.orientation |
 | `indicator-group` | `data-orientation` | props.orientation |
+| `indicator` | `data-current` | ''（条件成立时才出现） |
 | `indicator` | `data-index` | String(index) |
-| `indicator` | `data-selected` | ''（条件成立时才出现） |
 
 ## CSS 变量
 

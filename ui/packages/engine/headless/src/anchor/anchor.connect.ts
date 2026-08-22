@@ -53,7 +53,7 @@ export function connectAnchor<T extends PropTypes>(
         'href': `#${link.value}`,
         // 页内位置用 location 而非 page
         'aria-current': active ? 'location' : undefined,
-        'data-active': dataAttr(active),
+        'data-current': dataAttr(active),
         'onClick': (event: MouseEvent) => {
           // 作者自己的处理器已拦下就不抢
           if (event.defaultPrevented)

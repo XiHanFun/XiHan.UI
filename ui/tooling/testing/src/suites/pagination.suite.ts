@@ -65,14 +65,14 @@ export const paginationSuite: ConformanceSuite = {
             'type': 'button',
             'aria-label': 'Page 1',
             'aria-current': 'page',
-            'data-selected': '',
+            'data-current': '',
             'data-value': '1',
             // 分页不做 roving tabindex：每个页码都该是一个 Tab 停靠点
             'tabindex': null,
             // 集合条目从不输出原生 disabled
             'disabled': null,
           },
-          'item[1]': { 'aria-current': null, 'data-selected': null, 'data-value': '2' },
+          'item[1]': { 'aria-current': null, 'data-current': null, 'data-value': '2' },
           'item[3]': { 'aria-current': null, 'data-value': '10' },
           // 省略号是纯视觉占位，读屏念 "…" 只会念出标点噪音
           'ellipsis': { 'aria-hidden': 'true', 'role': null },
@@ -105,8 +105,8 @@ export const paginationSuite: ConformanceSuite = {
           part: 'item[2]',
           expect: {
             parts: {
-              'item[0]': { 'aria-current': null, 'data-selected': null },
-              'item[2]': { 'aria-current': 'page', 'data-selected': '' },
+              'item[0]': { 'aria-current': null, 'data-current': null },
+              'item[2]': { 'aria-current': 'page', 'data-current': '' },
               'prev-trigger': { 'disabled': null, 'data-disabled': null },
             },
           },
@@ -133,7 +133,7 @@ export const paginationSuite: ConformanceSuite = {
       props: { count: 100, pageSize: 10, defaultPage: 10 },
       initial: {
         parts: {
-          'item[3]': { 'aria-current': 'page', 'data-selected': '' },
+          'item[3]': { 'aria-current': 'page', 'data-current': '' },
           'item[0]': { 'aria-current': null },
           'next-trigger': { 'disabled': '', 'data-disabled': '' },
           'prev-trigger': { disabled: null },
@@ -207,7 +207,7 @@ export const paginationSuite: ConformanceSuite = {
           props: { count: 25 },
           expect: {
             parts: {
-              'item[3]': { 'aria-current': null, 'data-selected': null },
+              'item[3]': { 'aria-current': null, 'data-current': null },
               'item[2]': { 'aria-current': 'page' },
               'next-trigger': { disabled: '' },
               'prev-trigger': { disabled: null },
@@ -226,7 +226,7 @@ export const paginationSuite: ConformanceSuite = {
           'prev-trigger': { disabled: '' },
           'next-trigger': { disabled: '' },
           // 一页都没有，"停在第 1 页"只是兜底读数，不该让某个页码冒充当前项
-          'item[0]': { 'aria-current': null, 'data-selected': null },
+          'item[0]': { 'aria-current': null, 'data-current': null },
         },
       },
     },

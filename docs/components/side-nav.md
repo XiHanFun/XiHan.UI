@@ -188,18 +188,18 @@ accordion 让同层只开一枝；collapsed 折叠成图标栏（内嵌展开整
 | `root` | `data-disabled` | ''（条件成立时才出现） |
 | `list` | `data-collapsed` | ''（条件成立时才出现） |
 | `group-label` | `data-collapsed` | ''（条件成立时才出现） |
-| `branch` | `data-active` | ''（条件成立时才出现） |
 | `branch` | `data-disabled` | ''（条件成立时才出现） |
+| `branch` | `data-in-path` | ''（条件成立时才出现） |
 | `branch` | `data-state` | 'open' \| 'closed' |
-| `branch-trigger` | `data-active` | ''（条件成立时才出现） |
 | `branch-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `branch-trigger` | `data-in-path` | ''（条件成立时才出现） |
 | `branch-trigger` | `data-state` | 'open' \| 'closed' |
 | `branch-trigger` | `data-value` | itemValue(el) |
 | `branch-indicator` | `data-state` | 'open' \| 'closed' |
 | `branch-content` | `data-popout` | '' |
 | `branch-content` | `data-state` | 'open' \| 'closed' |
+| `link` | `data-current` | ''（条件成立时才出现） |
 | `link` | `data-disabled` | ''（条件成立时才出现） |
-| `link` | `data-selected` | ''（条件成立时才出现） |
 | `link` | `data-value` | itemValue(el) |
 | `popout-positioner` | `data-placement` | popoutPosition?.placement |
 | `popout-positioner` | `data-positioned` | ''（条件成立时才出现） |

@@ -1263,7 +1263,7 @@ describe('标题钻取', () => {
     click(h.yearTrigger)
     // 落点还是 2026-02-18，而年格的值是 2026-01-01——两者不等，靠「归哪一格」才对得上
     expect(h.cell('2026-01-01').getAttribute('tabindex')).toBe('0')
-    expect(h.cell('2026-01-01').getAttribute('data-focused')).toBe('')
+    expect(h.cell('2026-01-01').getAttribute('data-focus')).toBe('')
     expect(h.cell('2027-01-01').getAttribute('tabindex')).toBe('-1')
   })
 

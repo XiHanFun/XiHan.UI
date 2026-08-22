@@ -241,7 +241,7 @@ export function connectCalendar<T extends PropTypes>(
     'data-disabled': dataAttr(state.disabled),
     'data-outside-month': dataAttr(state.outsideMonth),
     'data-today': dataAttr(state.isToday),
-    'data-focused': dataAttr(state.focused),
+    'data-focus': dataAttr(state.focused),
     'data-in-range': dataAttr(state.inRange),
     'data-range-start': dataAttr(state.rangeStart),
     'data-range-end': dataAttr(state.rangeEnd),

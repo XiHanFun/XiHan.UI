@@ -552,7 +552,7 @@ describe('列的展开与截断', () => {
     expect(h.activePath()).toEqual([])
     expect(h.shownColumns()).toEqual([0])
     expect(h.item('zhejiang').item.getAttribute('data-highlighted')).toBe('')
-    expect(h.item('zhejiang').item.getAttribute('data-active')).toBeNull()
+    expect(h.item('zhejiang').item.getAttribute('data-in-path')).toBeNull()
   })
 
   it('首个条目是叶子时只开根列', () => {
@@ -590,17 +590,17 @@ describe('列的展开与截断', () => {
     expect(h.item('zhejiang').item.getAttribute('data-branch')).toBe('')
   })
 
-  it('展开路径上的条目带 data-active，被砍掉的那些一并复位', () => {
+  it('展开路径上的条目带 data-in-path，被砍掉的那些一并复位', () => {
     const h = mount({ defaultOpen: true })
     click(h.item('zhejiang').item)
-    expect(h.item('zhejiang').item.getAttribute('data-active')).toBe('')
+    expect(h.item('zhejiang').item.getAttribute('data-in-path')).toBe('')
 
     click(h.item('jiangsu').item)
-    expect(h.item('zhejiang').item.getAttribute('data-active')).toBeNull()
-    expect(h.item('jiangsu').item.getAttribute('data-active')).toBe('')
+    expect(h.item('zhejiang').item.getAttribute('data-in-path')).toBeNull()
+    expect(h.item('jiangsu').item.getAttribute('data-in-path')).toBe('')
   })
 
-  it('条目不带 aria-expanded：option 不收这个属性，展开与否只留在 data-active 上', () => {
+  it('条目不带 aria-expanded：option 不收这个属性，展开与否只留在 data-in-path 上', () => {
     const h = mount({ defaultOpen: true })
     click(h.item('zhejiang').item)
     for (const value of ['zhejiang', 'taiwan', 'hangzhou'])

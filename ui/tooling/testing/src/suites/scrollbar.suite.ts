@@ -189,7 +189,7 @@ export const scrollbarSuite: ConformanceSuite = {
       props: { ...BASE, type: 'hover', hideDelay: 300 },
       steps: [
         layoutStep,
-        { ...pointerOnTarget('pointerenter'), expect: { parts: { root: { 'data-state': 'visible', 'data-hover': '' } } } },
+        { ...pointerOnTarget('pointerenter'), expect: { parts: { root: { 'data-state': 'visible' } } } },
         { ...pointerOnTarget('pointerleave'), expect: { parts: { root: { 'data-state': 'visible' } } } },
         { kind: 'settle', until: { attr: { part: 'root', name: 'data-state', value: 'hidden' } } },
       ],

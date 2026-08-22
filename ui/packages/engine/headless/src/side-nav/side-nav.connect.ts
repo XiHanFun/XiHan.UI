@@ -1,10 +1,10 @@
-import { overlayPositioned } from '../shared/overlay'
 import type { NavIntent } from '@xihan-ui/behavior'
 import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { SideNavApi, SideNavNode, SideNavSchema } from './side-nav.types'
 import { focusItem, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/behavior'
 import { dataAttr } from '@xihan-ui/kernel'
+import { overlayPositioned } from '../shared/overlay'
 import { flattenTree, indexTree } from '../tree'
 import { sideNavAnatomy, sideNavLinkQuery, sideNavTriggerQuery } from './side-nav.anatomy'
 
@@ -268,7 +268,7 @@ export function connectSideNav<T extends PropTypes>(
     getBranchProps: ({ value: v }) => normalize.element({
       ...parts.branch.attrs,
       'data-state': isExpanded(v) ? 'open' : 'closed',
-      'data-active': dataAttr(isActiveBranch(v)),
+      'data-in-path': dataAttr(isActiveBranch(v)),
       'data-disabled': dataAttr(isDisabled(v)),
     }),
 
@@ -285,7 +285,7 @@ export function connectSideNav<T extends PropTypes>(
         'aria-expanded': expandedAttr ? 'true' : 'false',
         'aria-controls': contentId(v),
         'data-state': expandedAttr ? 'open' : 'closed',
-        'data-active': dataAttr(isActiveBranch(v)),
+        'data-in-path': dataAttr(isActiveBranch(v)),
         'data-disabled': dataAttr(isDisabled(v)),
         'disabled': isDisabled(v) || undefined,
         'tabindex': anchor === v ? 0 : -1,
@@ -396,7 +396,7 @@ export function connectSideNav<T extends PropTypes>(
       'href': metaOf(v) ? (collectionHref(collection, v) ?? undefined) : undefined,
       // 选中的那条就是「当前页」，读屏与皮肤都认它
       'aria-current': isSelected(v) ? 'page' : undefined,
-      'data-selected': dataAttr(isSelected(v)),
+      'data-current': dataAttr(isSelected(v)),
       'data-disabled': dataAttr(isDisabled(v)),
       'aria-disabled': isDisabled(v) ? 'true' : undefined,
       'tabindex': anchor === v ? 0 : -1,

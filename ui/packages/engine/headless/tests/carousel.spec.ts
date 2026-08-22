@@ -597,13 +597,13 @@ describe('connectCarousel 属性', () => {
     const current = c.api().getIndicatorProps({ index: 2 }) as Dict
     const other = c.api().getIndicatorProps({ index: 3 }) as Dict
     expect(current['aria-current']).toBe('true')
-    expect(current['data-selected']).toBe('')
+    expect(current['data-current']).toBe('')
     expect(current.type).toBe('button')
     // 指示点不做 roving tabindex：每一颗都该是一个 Tab 停靠点
     expect(current.tabindex).toBeUndefined()
     // 省略等于"没说"，读屏就分不出"不是当前页"与"作者忘了标"
     expect(other['aria-current']).toBe('false')
-    expect(other['data-selected']).toBeUndefined()
+    expect(other['data-current']).toBeUndefined()
   })
 
   it('点指示点即跳页，越界的下标同样收口', () => {

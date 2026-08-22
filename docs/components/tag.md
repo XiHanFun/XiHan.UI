@@ -104,13 +104,13 @@ size 只改内边距、间距与字号，不写就是缺省档；关闭钮的命
 
 | 部件 | 取值 |
 | --- | --- |
-| `root` | 'visible' \| 'hidden' |
+| `root` | 'open' \| 'closed' |
 
 状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
-**状态**：`visible` · `hidden`
+**状态**：`open` · `closed`
 
-**事件**：`OPEN` · `CLOSE` · `CONTROLLED.VISIBLE` · `CONTROLLED.HIDDEN`
+**事件**：`OPEN` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSED`
 
 **判据**：`isOpenControlled`
 
@@ -156,7 +156,7 @@ size 只改内边距、间距与字号，不写就是缺省档；关闭钮的命
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
-| `root` | `data-state` | 'visible' \| 'hidden' |
+| `root` | `data-state` | 'open' \| 'closed' |
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
 | `close-trigger` | `data-disabled` | ''（条件成立时才出现） |

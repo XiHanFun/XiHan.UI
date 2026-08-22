@@ -145,7 +145,7 @@ function itemsShown(...values: readonly string[]): readonly AttrExpectation[] {
 
 /** 展开路径上的那一串条目（它们的子列开着）。 */
 function itemsActive(...values: readonly string[]): readonly AttrExpectation[] {
-  return ITEM_ORDER.map(v => ({ 'data-active': values.includes(v) ? '' : null }))
+  return ITEM_ORDER.map(v => ({ 'data-in-path': values.includes(v) ? '' : null }))
 }
 
 /** 三列各自的显隐；列数 = 展开路径走得通的段数 + 1。 */
@@ -256,13 +256,13 @@ export const cascaderSuite: ConformanceSuite = {
             'role': 'option',
             'aria-selected': 'false',
             'aria-disabled': 'false',
-            // 分支报「激活它会露出一个列表框」；option 不收 aria-expanded，展开与否只在 data-active 上
+            // 分支报「激活它会露出一个列表框」；option 不收 aria-expanded，展开与否只在 data-in-path 上
             'aria-haspopup': 'listbox',
             'aria-expanded': null,
             'data-value': 'zhejiang',
             'data-branch': '',
             'data-level': '0',
-            'data-active': null,
+            'data-in-path': null,
             'data-highlighted': null,
             'tabindex': '-1',
             // 集合条目不输出原生 disabled
@@ -309,8 +309,8 @@ export const cascaderSuite: ConformanceSuite = {
               // 展开路径为空，第 1 列没有父条目，名字退回组件标题
               'column[1]': { 'aria-labelledby': '@part(label) @part(value-text)' },
               // 指针打开不预落高亮：没有条目看着像被选中
-              'item[0]': { 'tabindex': '-1', 'data-highlighted': null, 'data-active': null },
-              'item[1]': { 'tabindex': '-1', 'data-highlighted': null, 'data-active': null },
+              'item[0]': { 'tabindex': '-1', 'data-highlighted': null, 'data-in-path': null },
+              'item[1]': { 'tabindex': '-1', 'data-highlighted': null, 'data-in-path': null },
               'item': itemsShown('zhejiang', 'jiangsu', 'taiwan', 'macau'),
             },
             events: [{ type: 'open-change', detail: { open: true } }],
@@ -330,7 +330,7 @@ export const cascaderSuite: ConformanceSuite = {
             activeElement: { part: 'item[0]', exact: true },
             parts: {
               'column[0]': { tabindex: '-1' },
-              'item[0]': { 'tabindex': '0', 'data-highlighted': '', 'data-active': null },
+              'item[0]': { 'tabindex': '0', 'data-highlighted': '', 'data-in-path': null },
               'column': columnsShown(1),
             },
             events: [],
@@ -355,7 +355,7 @@ export const cascaderSuite: ConformanceSuite = {
               // 第 1 列的名字改指展开它的那个条目
               'column[1]': { 'aria-labelledby': '@part(item[0])' },
               'item': itemsShown('zhejiang', 'jiangsu', 'taiwan', 'macau', 'hangzhou', 'ningbo', 'wenzhou'),
-              'item[0]': { 'data-active': '' },
+              'item[0]': { 'data-in-path': '' },
             },
             events: [],
           },
@@ -369,7 +369,7 @@ export const cascaderSuite: ConformanceSuite = {
               'column': columnsShown(3),
               'column[2]': { 'aria-labelledby': '@part(item[4])' },
               'item': itemsShown('zhejiang', 'jiangsu', 'taiwan', 'macau', 'hangzhou', 'ningbo', 'wenzhou', 'xihu', 'yuhang'),
-              'item[4]': { 'data-active': '' },
+              'item[4]': { 'data-in-path': '' },
             },
             // changeOnSelect 关着，分支不落值也不发事件
             events: [],
@@ -383,8 +383,8 @@ export const cascaderSuite: ConformanceSuite = {
             parts: {
               'column': columnsShown(3),
               'item': itemsShown('zhejiang', 'jiangsu', 'taiwan', 'macau', 'hangzhou', 'ningbo', 'wenzhou', 'jiangbei'),
-              'item[4]': { 'data-active': null },
-              'item[5]': { 'data-active': '' },
+              'item[4]': { 'data-in-path': null },
+              'item[5]': { 'data-in-path': '' },
             },
             events: [],
           },

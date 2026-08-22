@@ -130,7 +130,6 @@ export function connectScrollbar<T extends PropTypes>(
       'data-type': type,
       // 收起时留在 DOM 里，由皮肤按 data-state 淡出；不写 hidden，display:none 播不了退场
       'data-state': visible ? 'visible' : 'hidden',
-      'data-hover': dataAttr(hover),
       'data-scrolling': dataAttr(scrolling),
       'data-dragging': dataAttr(dragging),
       'data-disabled': dataAttr(disabled),

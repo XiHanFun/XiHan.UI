@@ -251,19 +251,19 @@ describe('三态推导', () => {
   const operable = ['apple', 'cherry', 'durian']
 
   it('全选 / 半选 / 空各归各位', () => {
-    expect(transferCheckState(operable, [])).toBe('none')
-    expect(transferCheckState(operable, ['cherry'])).toBe('some')
-    expect(transferCheckState(operable, ['apple', 'cherry', 'durian'])).toBe('all')
+    expect(transferCheckState(operable, [])).toBe('unchecked')
+    expect(transferCheckState(operable, ['cherry'])).toBe('indeterminate')
+    expect(transferCheckState(operable, ['apple', 'cherry', 'durian'])).toBe('checked')
   })
 
   it('勾中的禁用项不算进来：它不在可操作集合里', () => {
-    expect(transferCheckState(operable, ['banana'])).toBe('none')
-    expect(transferCheckState(operable, ['banana', 'apple', 'cherry', 'durian'])).toBe('all')
+    expect(transferCheckState(operable, ['banana'])).toBe('unchecked')
+    expect(transferCheckState(operable, ['banana', 'apple', 'cherry', 'durian'])).toBe('checked')
   })
 
   it('可操作集合为空时恒为 none，不硬凑一个 all', () => {
-    expect(transferCheckState([], [])).toBe('none')
-    expect(transferCheckState([], ['banana'])).toBe('none')
+    expect(transferCheckState([], [])).toBe('unchecked')
+    expect(transferCheckState([], ['banana'])).toBe('unchecked')
   })
 })
 
@@ -442,16 +442,16 @@ describe('连接层：全选格三态', () => {
     const h = mount()
     const trigger = h.side('source').selectAll
     expect(trigger.getAttribute('aria-checked')).toBe('false')
-    expect(trigger.getAttribute('data-state')).toBe('none')
+    expect(trigger.getAttribute('data-state')).toBe('unchecked')
 
     click(h.item('source', 'apple'))
     expect(trigger.getAttribute('aria-checked')).toBe('mixed')
-    expect(trigger.getAttribute('data-state')).toBe('some')
+    expect(trigger.getAttribute('data-state')).toBe('indeterminate')
 
     click(h.item('source', 'cherry'))
     click(h.item('source', 'durian'))
     expect(trigger.getAttribute('aria-checked')).toBe('true')
-    expect(trigger.getAttribute('data-state')).toBe('all')
+    expect(trigger.getAttribute('data-state')).toBe('checked')
   })
 
   it('点全选格勾中全部可操作条目（禁用项不进），再点一次取消', () => {

@@ -158,7 +158,6 @@ type 为 scroll 时滚动条停手后不立刻收起，hideDelay 决定还留多
 | `content` | `data-orientation` | props.orientation |
 | `scrollbar` | `data-dragging` | ''（条件成立时才出现） |
 | `scrollbar` | `data-gutter` | ''（条件成立时才出现） |
-| `scrollbar` | `data-hover` | ''（条件成立时才出现） |
 | `scrollbar` | `data-native` | ''（条件成立时才出现） |
 | `scrollbar` | `data-orientation` | axis |
 | `scrollbar` | `data-scrolling` | ''（条件成立时才出现） |

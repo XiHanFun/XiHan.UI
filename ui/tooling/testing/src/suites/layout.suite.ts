@@ -43,7 +43,7 @@ export const layoutSuite: ConformanceSuite = {
           },
           'sider': {
             'id': '@self',
-            'data-state': 'expanded',
+            'data-collapsed': null,
             'data-placement': 'start',
             'data-fixed': null,
           },
@@ -51,7 +51,7 @@ export const layoutSuite: ConformanceSuite = {
             'type': 'button',
             'aria-expanded': 'true',
             'aria-controls': '@part(sider)',
-            'data-state': 'expanded',
+            'data-collapsed': null,
           },
         },
       },
@@ -63,7 +63,7 @@ export const layoutSuite: ConformanceSuite = {
       steps: [nativeActivation('layout', 'sider-trigger')],
     },
     {
-      name: '点击把手折叠：aria-expanded=false，侧栏与把手转 collapsed，根上落 data-sider-collapsed',
+      name: '点击把手折叠：aria-expanded=false，侧栏与把手落 data-collapsed，根上落 data-sider-collapsed',
       spec: { apg: APG },
       steps: [
         {
@@ -72,8 +72,8 @@ export const layoutSuite: ConformanceSuite = {
           expect: {
             parts: {
               'root': { 'data-sider-collapsed': '' },
-              'sider': { 'data-state': 'collapsed' },
-              'sider-trigger': { 'aria-expanded': 'false', 'data-state': 'collapsed' },
+              'sider': { 'data-collapsed': '' },
+              'sider-trigger': { 'aria-expanded': 'false', 'data-collapsed': '' },
             },
           },
         },
@@ -83,7 +83,7 @@ export const layoutSuite: ConformanceSuite = {
           expect: {
             parts: {
               'root': { 'data-sider-collapsed': null },
-              'sider': { 'data-state': 'expanded' },
+              'sider': { 'data-collapsed': null },
               'sider-trigger': { 'aria-expanded': 'true' },
             },
           },
@@ -97,7 +97,7 @@ export const layoutSuite: ConformanceSuite = {
       initial: {
         parts: {
           'root': { 'data-sider-collapsed': '' },
-          'sider': { 'data-state': 'collapsed' },
+          'sider': { 'data-collapsed': '' },
           'sider-trigger': { 'aria-expanded': 'false' },
         },
       },
@@ -112,7 +112,7 @@ export const layoutSuite: ConformanceSuite = {
           part: 'sider-trigger',
           expect: {
             parts: {
-              'sider': { 'data-state': 'expanded' },
+              'sider': { 'data-collapsed': null },
               'sider-trigger': { 'aria-expanded': 'true' },
             },
           },
@@ -120,7 +120,7 @@ export const layoutSuite: ConformanceSuite = {
         { kind: 'setProps', props: { siderCollapsed: true } },
         {
           kind: 'settle',
-          until: { attr: { part: 'sider', name: 'data-state', value: 'collapsed' } },
+          until: { attr: { part: 'sider', name: 'data-collapsed', value: '' } },
           expect: {
             parts: {
               'root': { 'data-sider-collapsed': '' },
@@ -189,7 +189,7 @@ export const layoutSuite: ConformanceSuite = {
             parts: {
               root: { 'data-sider-collapsed': '', 'data-header-fixed': '', 'data-sider-fixed': '' },
               header: { 'data-fixed': '' },
-              sider: { 'data-state': 'collapsed', 'data-fixed': '' },
+              sider: { 'data-collapsed': '', 'data-fixed': '' },
             },
           },
         },

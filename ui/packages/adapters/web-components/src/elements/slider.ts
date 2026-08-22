@@ -63,7 +63,7 @@ const NUMBER_LIST_CONVERTER = {
  * @csspart track - 轨道本体，值与坐标的换算以它的矩形为准
  * @csspart range - 已选区间，起止由内联逻辑属性给出
  * @csspart marks - 刻度容器
- * @csspart mark - 刻度点（纯装饰），须自带 value 属性；落进已选区间带 data-active
+ * @csspart mark - 刻度点（纯装饰），须自带 value 属性；落进已选区间带 data-passed
  * @csspart mark-label - 刻度文案，须自带 value 属性；点按把最近的滑块跳到这一档
  * @csspart thumb - role=slider 的拇指，键盘交互全在它身上；多滑块须写 index 属性
  * @csspart hidden-input - 拇指内的表单影子（须是原生 input）

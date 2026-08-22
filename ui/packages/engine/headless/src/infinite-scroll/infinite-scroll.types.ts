@@ -1,7 +1,7 @@
 import type { PropTypes } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 
-/** 三段状态，同时是 data-state 的取值。 */
+/** 三段状态，经 api.phase 暴露；DOM 上由 data-loading / data-disabled 布尔属性表达。 */
 export type InfiniteScrollPhase = 'idle' | 'loading' | 'paused'
 
 /** 适配器在挂载前填入的 DOM 取值口。 */

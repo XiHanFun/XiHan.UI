@@ -2,32 +2,24 @@
   "$description": "DOM 状态属性的词汇真源。data-state 的取值按「族」登记：同一个族里的值互斥，一个部件在任一时刻只取其中一个；皮肤与 connect 里出现的 data-state 取值必须落在某个族里。aria 映射写明每个 ARIA 状态在 data 侧对应哪一个属性（及哪个族），connect 新发 ARIA 状态时照表配对。",
   "data-state": {
     "open": {
-      "$description": "开合：浮层、手风琴、树节点、折叠面板。配对 aria-expanded。",
+      "$description": "开合（有开合交互的）：浮层、手风琴、树节点、折叠面板、标签的关闭。配对 aria-expanded。",
       "values": ["open", "closed"]
     },
     "checked": {
-      "$description": "勾选：checkbox / radio / switch / 选项 / 行。配对 aria-checked（混合态 mixed ↔ indeterminate）。",
+      "$description": "勾选：checkbox / radio / switch / 选项 / 行，以及 checkbox-group / table 表头 / transfer 列头的组级汇总（部分勾选同样是 indeterminate）。配对 aria-checked（混合态 mixed ↔ indeterminate）。",
       "values": ["checked", "unchecked", "indeterminate"]
-    },
-    "selection-summary": {
-      "$description": "组级勾选汇总：checkbox-group / table 表头全选 / transfer 列头。",
-      "values": ["all", "some", "none"]
     },
     "pressed": {
       "$description": "按压开关：toggle / toggle-group 条目 / floating-panel 钉住。配对 aria-pressed。",
       "values": ["on", "off"]
     },
     "visibility": {
-      "$description": "显隐：toast、滚动条、密码明文、滚到顶/底按钮。",
+      "$description": "派生的显隐（没有开合交互、由别的状态算出来）：toast、滚动条、密码明文、回到顶部。",
       "values": ["visible", "hidden"]
     },
     "activation": {
       "$description": "激活：tabs 的页签与面板。配对 aria-selected。",
       "values": ["active", "inactive"]
-    },
-    "fold": {
-      "$description": "折叠：layout 侧栏。",
-      "values": ["collapsed", "expanded"]
     },
     "step": {
       "$description": "步骤：steps 的每一步（timer 走完也落 completed）。配对 aria-current=step。",
@@ -62,6 +54,23 @@
         "picking"
       ]
     }
+  },
+  "boolean": {
+    "$description": "布尔状态属性（有即真，缺席即假，一律经 dataAttr 发）。同一含义只用一个名字。",
+    "data-current": "导航族的当前项（锚点、面包屑、导航菜单、侧栏链接、轮播指示点、页码）。配对 aria-current。",
+    "data-in-path": "落在展开 / 选中路径上的祖先（级联的列项、侧栏的分支）。",
+    "data-passed": "刻度已被滑块越过（slider 的 mark）。",
+    "data-collapsed": "折叠（layout 侧栏、side-nav、splitter 面板）。",
+    "data-focus": "键盘焦点所在的条目 / 格子。",
+    "data-highlighted": "集合里被方向键锚定的条目（焦点仍在宿主上）。",
+    "data-selected": "集合里被选中的条目（treeitem / row / 日历格）；option 走 data-state=checked。"
+  },
+  "retired": {
+    "$description": "不再使用的属性名：connect 里发了即报。",
+    "data-active": "一名三义。当前项改 data-current，展开路径改 data-in-path，刻度已过改 data-passed",
+    "data-focused": "改 data-focus",
+    "data-hover": "皮肤走 :hover，不发属性",
+    "data-visible": "派生显隐改 data-state=visible|hidden"
   },
   "aria": {
     "aria-expanded": { "attr": "data-state", "family": "open" },

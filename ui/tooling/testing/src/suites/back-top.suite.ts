@@ -39,8 +39,8 @@ function step(top: number, visible: boolean): StepWithExpect {
     run: scrolledTo(top),
     expect: {
       parts: {
-        root: { 'data-visible': visible ? '' : null, 'hidden': visible ? null : '' },
-        trigger: { 'data-visible': visible ? '' : null },
+        root: { 'data-state': visible ? 'visible' : 'hidden', 'hidden': visible ? null : '' },
+        trigger: { 'data-state': visible ? 'visible' : 'hidden' },
       },
     },
   }
@@ -95,7 +95,7 @@ export const backTopSuite: ConformanceSuite = {
         counts: { root: 1, trigger: 1 },
         parts: {
           root: {
-            'data-visible': null,
+            'data-state': 'hidden',
             // 收起时整块让位：靠不透明度藏起来的按钮仍然可聚焦、仍然被读屏念到
             'hidden': '',
             'role': null,
@@ -107,7 +107,7 @@ export const backTopSuite: ConformanceSuite = {
             'type': 'button',
             // 按钮里通常只有一个图标，名字只能由组件给
             'aria-label': 'Back to top',
-            'data-visible': null,
+            'data-state': 'hidden',
             // 原生 button 自带 Tab 停靠，不该套 roving tabindex
             'tabindex': null,
           },

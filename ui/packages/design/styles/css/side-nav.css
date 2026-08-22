@@ -98,14 +98,14 @@
   }
 
   /* 选中的那条：品牌淡底 + 强调字 */
-  [data-scope='side-nav'][data-part='link'][data-selected] {
+  [data-scope='side-nav'][data-part='link'][data-current] {
     background: var(--xh-bg-brand-subtle);
     color: var(--xh-fg-brand);
     font-weight: var(--xh-font-weight-medium);
   }
 
   /* 选中项的祖先枝：只染字色，一路指到当前页 */
-  [data-scope='side-nav'][data-part='branch-trigger'][data-active] {
+  [data-scope='side-nav'][data-part='branch-trigger'][data-in-path] {
     color: var(--xh-fg-brand);
   }
 

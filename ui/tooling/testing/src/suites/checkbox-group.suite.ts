@@ -132,7 +132,7 @@ export const checkboxGroupSuite: ConformanceSuite = {
             'aria-checked': 'false',
             'aria-disabled': 'false',
             'aria-readonly': 'false',
-            'data-state': 'none',
+            'data-state': 'unchecked',
             'tabindex': '0',
             'disabled': null,
           },
@@ -450,7 +450,7 @@ export const checkboxGroupSuite: ConformanceSuite = {
                 { 'aria-checked': 'true', 'data-state': 'checked' },
               ],
               // 还差一个 b，因此仍是"半选"而不是"全选"
-              trigger: { 'aria-checked': 'mixed', 'data-state': 'some' },
+              trigger: { 'aria-checked': 'mixed', 'data-state': 'indeterminate' },
             },
             events: [{ type: 'value-change', detail: { value: ['a', 'c'] } }],
           },
@@ -466,7 +466,7 @@ export const checkboxGroupSuite: ConformanceSuite = {
                 { 'aria-checked': 'false' },
                 { 'aria-checked': 'false' },
               ],
-              trigger: { 'aria-checked': 'false', 'data-state': 'none' },
+              trigger: { 'aria-checked': 'false', 'data-state': 'unchecked' },
             },
             events: [{ type: 'value-change', detail: { value: [] } }],
           },
@@ -499,7 +499,7 @@ export const checkboxGroupSuite: ConformanceSuite = {
       fixture: allEnabled,
       props: { itemValues: ['a', 'b', 'c'], defaultValue: ['a'] },
       initial: {
-        parts: { trigger: { 'aria-checked': 'mixed', 'data-state': 'some' } },
+        parts: { trigger: { 'aria-checked': 'mixed', 'data-state': 'indeterminate' } },
       },
       steps: [
         {
@@ -508,7 +508,7 @@ export const checkboxGroupSuite: ConformanceSuite = {
           expect: {
             parts: {
               item: [{ 'aria-checked': 'true' }, { 'aria-checked': 'true' }, { 'aria-checked': 'true' }],
-              trigger: { 'aria-checked': 'true', 'data-state': 'all' },
+              trigger: { 'aria-checked': 'true', 'data-state': 'checked' },
             },
             events: [{ type: 'value-change', detail: { value: ['a', 'b', 'c'] } }],
           },
@@ -527,7 +527,7 @@ export const checkboxGroupSuite: ConformanceSuite = {
           expect: {
             parts: {
               item: [{ 'aria-checked': 'true' }, { 'aria-checked': 'true' }, { 'aria-checked': 'true' }],
-              trigger: { 'aria-checked': 'mixed', 'data-state': 'some' },
+              trigger: { 'aria-checked': 'mixed', 'data-state': 'indeterminate' },
             },
             events: [{ type: 'value-change', detail: { value: ['a', 'b', 'c'] } }],
           },

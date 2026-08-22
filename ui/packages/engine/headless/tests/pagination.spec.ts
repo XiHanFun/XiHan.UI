@@ -309,18 +309,18 @@ describe('connectPagination', () => {
     expect((a.getItemProps({ page: 1 }) as Props)['aria-current']).toBeUndefined()
   })
 
-  it('当前页 item 出 aria-current=page 与 data-selected，其余两者都不写', () => {
+  it('当前页 item 出 aria-current=page 与 data-current，其余两者都不写', () => {
     const s = makeService({ count: 100, pageSize: 10, defaultPage: 3 })
     const current = api(s).getItemProps({ page: 3 }) as Props
     const other = api(s).getItemProps({ page: 4 }) as Props
     expect(current['aria-current']).toBe('page')
-    expect(current['data-selected']).toBe('')
+    expect(current['data-current']).toBe('')
     expect(current['data-value']).toBe(3)
     expect(current.type).toBe('button')
     // 分页不做 roving tabindex：每个页码各占一个 Tab 位
     expect(current.tabindex).toBeUndefined()
     expect(other['aria-current']).toBeUndefined()
-    expect(other['data-selected']).toBeUndefined()
+    expect(other['data-current']).toBeUndefined()
   })
 
   it('点页码即跳页，越界的页码同样夹回来', () => {

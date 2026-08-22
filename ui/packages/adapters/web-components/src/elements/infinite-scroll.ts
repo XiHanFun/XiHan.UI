@@ -23,7 +23,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {boolean} disabled - 关掉，不再观察也不再触发
  * @attr {boolean} loading - 正在取数，其间不观察、不重复触发；取完由宿主写回 false
  * @fires load - 该取下一页了
- * @csspart root - 列表外壳，承载 data-state / data-loading / data-disabled 与 aria-busy
+ * @csspart root - 列表外壳，承载 data-loading / data-disabled 与 aria-busy
  * @csspart sentinel - 哨兵，摆在列表末尾；对读屏隐藏
  */
 export class XhInfiniteScrollElement extends XhElement {

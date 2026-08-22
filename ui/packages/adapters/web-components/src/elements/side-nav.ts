@@ -39,12 +39,12 @@ const GROUP_SELECTOR = '[data-xh-part="group"]'
  * @csspart group - role=group 分组，须自带 value 属性
  * @csspart group-label - 分组标题（aria-labelledby 目标）
  * @csspart branch - 分支行容器，须自带 value 属性；它裹着自己的 branch-content
- * @csspart branch-trigger - 展开/收起按钮（aria-expanded / aria-controls）
+ * @csspart branch-trigger - 展开/收起按钮（aria-expanded / aria-controls）；落在选中路径上输出 data-in-path
  * @csspart branch-text - 行文字载体，折叠成图标栏时隐藏
  * @csspart branch-indicator - 展开方向指示符（aria-hidden）
  * @csspart positioner - 折叠态弹出面板的定位层，坐标写在它身上；平铺态不用渲染
  * @csspart branch-content - 内嵌子层容器，收起时隐藏
- * @csspart link - 去处链接，须自带 value 属性；选中输出 aria-current="page"
+ * @csspart link - 去处链接，须自带 value 属性；选中输出 aria-current="page" 与 data-current
  * @csspart link-text - 链接文字载体，折叠成图标栏时隐藏
  */
 export class XhSideNavElement extends XhElement {

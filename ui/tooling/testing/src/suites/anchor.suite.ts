@@ -85,7 +85,7 @@ export const anchorSuite: ConformanceSuite = {
             'data-value': 'intro',
             // 省略 aria-current 即非当前项
             'aria-current': null,
-            'data-active': null,
+            'data-current': null,
           },
           'link[2]': { 'data-value': 'usage' },
           // 无激活项时指示条整条收起
@@ -99,10 +99,10 @@ export const anchorSuite: ConformanceSuite = {
       props: { defaultValue: 'install' },
       initial: {
         parts: {
-          'link[0]': { 'aria-current': null, 'data-active': null },
+          'link[0]': { 'aria-current': null, 'data-current': null },
           // 页内位置用 location，不用 page
-          'link[1]': { 'aria-current': 'location', 'data-active': '' },
-          'link[2]': { 'aria-current': null, 'data-active': null },
+          'link[1]': { 'aria-current': 'location', 'data-current': '' },
+          'link[2]': { 'aria-current': null, 'data-current': null },
         },
       },
     },
@@ -135,8 +135,8 @@ export const anchorSuite: ConformanceSuite = {
           part: 'link[2]',
           expect: {
             parts: {
-              'link[0]': { 'aria-current': null, 'data-active': null },
-              'link[2]': { 'aria-current': 'location', 'data-active': '' },
+              'link[0]': { 'aria-current': null, 'data-current': null },
+              'link[2]': { 'aria-current': 'location', 'data-current': '' },
             },
             events: [{ type: 'value-change', detail: { value: 'usage' } }],
           },
@@ -251,7 +251,7 @@ export const anchorSuite: ConformanceSuite = {
         counts: { root: 1, list: 1, item: 3, link: 3 },
         parts: {
           'link[1]': { 'aria-current': null },
-          'link[2]': { 'aria-current': 'location', 'data-active': '' },
+          'link[2]': { 'aria-current': 'location', 'data-current': '' },
         },
       },
     },

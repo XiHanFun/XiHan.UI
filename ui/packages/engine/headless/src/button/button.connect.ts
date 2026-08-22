@@ -13,7 +13,6 @@ export function connectButton<T extends PropTypes>(
   const disabled = !!props.disabled
   const loading = !!props.loading
   const interactive = !disabled && !loading
-  const state = loading ? 'loading' : disabled ? 'disabled' : undefined
 
   return {
     disabled,
@@ -24,7 +23,6 @@ export function connectButton<T extends PropTypes>(
       // 真 disabled 用原生（会丢焦点）；loading 用 aria-disabled + 拦截事件（保留焦点）
       'disabled': disabled || undefined,
       'aria-disabled': loading ? 'true' : undefined,
-      'data-state': state,
       'data-variant': props.variant,
       'data-tone': props.tone,
       'data-size': props.size,
