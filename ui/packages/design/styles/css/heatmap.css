@@ -22,7 +22,7 @@
        不压到相邻的格子上（外缘与相邻格相接） */
     --xh-_heatmap-gap: calc(var(--xh-ring-offset) + var(--xh-ring-width));
     --xh-_heatmap-gutter: var(--xh-heatmap-gutter, var(--xh-space-8));
-    --xh-_heatmap-font-size: var(--xh-font-size-xs);
+    --xh-_heatmap-font-size: var(--xh-text-caption-size);
     /* 星期名隔行画：第 0/2/4/6 行那个字的颜色。缺省透明——只是字不上色，
        盒子、底色与命中区都还在，钉住那一列的实色底不缺一块，七行的悬停行为也一致。
        改写这个槽为一个看得见的颜色（`var(--xh-heatmap-label-fg, var(--xh-fg-subtle))`）即七行全画。
@@ -330,10 +330,10 @@
     border-radius: var(--xh-heatmap-tooltip-radius, var(--xh-shape-control));
     background: var(--xh-heatmap-tooltip-bg, var(--xh-fg-default));
     color: var(--xh-heatmap-tooltip-fg, var(--xh-bg-surface));
-    font-size: var(--xh-heatmap-tooltip-font-size, var(--xh-font-size-xs));
+    font-size: var(--xh-heatmap-tooltip-font-size, var(--xh-text-caption-size));
     line-height: var(--xh-leading-normal);
     white-space: nowrap;
-    box-shadow: var(--xh-heatmap-tooltip-shadow, var(--xh-elevation-2));
+    box-shadow: var(--xh-heatmap-tooltip-shadow, var(--xh-elevation-floating));
     /* 详情条不接指针：压在格子上时指针要能穿过去，否则一进条里就算离开了格子，
        详情自己把自己收起来，来回闪 */
     pointer-events: none;

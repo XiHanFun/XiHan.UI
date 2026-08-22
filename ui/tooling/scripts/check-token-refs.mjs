@@ -31,6 +31,9 @@ for (const src of sources.values()) {
 const orphans = []
 const fallbacks = []
 const garbage = []
+const colors = []
+/** 允许颜色字面量的皮肤：取色器的色相带画的是光谱，不是设计色。 */
+const COLOR_LITERAL_OK = new Set(['color-picker.css'])
 for (const [file, src] of sources) {
   const lines = src.split(/\r?\n/)
   lines.forEach((line, i) => {
@@ -43,6 +46,9 @@ for (const [file, src] of sources) {
         continue
       orphans.push(`${file}:${i + 1}  ${name}`)
     }
+    // 颜色一律走令牌：皮肤里不许出现 hex / rgb / hsl / oklch 字面量。取色器的色相带是光谱本身，不是设计色，放行。
+    if (!COLOR_LITERAL_OK.has(file) && /#[0-9a-f]{3,8}\b|\b(?:rgba?|hsla?|oklch|oklab|lab|lch|color)\(/i.test(line))
+      colors.push(`${file}:${i + 1}  ${line.trim()}`)
     // 一轮扫齐两件事：全局令牌不许带字面量兜底，任何兜底里不许出现 $1 这类正则替换残留
     for (const m of line.matchAll(/var\(\s*(--xh-[a-z0-9_-]+)\s*,([^;()]*)\)/g)) {
       const [, name, fb] = m
@@ -54,6 +60,12 @@ for (const [file, src] of sources) {
   })
 }
 
+if (colors.length) {
+  console.error('[check-token-refs] ✗ 皮肤里写了颜色字面量：')
+  for (const c of colors)
+    console.error(`  ${c}`)
+  console.error('颜色只从令牌来；语法高亮走 --xh-syntax-*，主题明暗由令牌层切换。')
+}
 if (orphans.length) {
   console.error('[check-token-refs] ✗ 皮肤引用了未声明的全局令牌：')
   for (const o of orphans)
@@ -72,7 +84,7 @@ if (garbage.length) {
     console.error(`  ${g}`)
   console.error('多半是正则替换的残留（$1 这类捕获组引用）。它让整条声明在计算期失效，且不报任何错。')
 }
-if (orphans.length || fallbacks.length || garbage.length)
+if (orphans.length || fallbacks.length || garbage.length || colors.length)
   process.exit(1)
 
-console.log(`[check-token-refs] 通过：${files.length} 份皮肤的全局令牌都有声明、且都没有字面量兜底`)
+console.log(`[check-token-refs] 通过：${files.length} 份皮肤的全局令牌都有声明、没有字面量兜底、没有颜色字面量`)

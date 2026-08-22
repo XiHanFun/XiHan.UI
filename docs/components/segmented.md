@@ -212,7 +212,7 @@ size 换的是段的高度、内边距与字号，指示器跟着量出来的段
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-segmented-bg` · `--xh-segmented-bg-disabled` · `--xh-segmented-border` · `--xh-segmented-border-invalid` · `--xh-segmented-font-size` · `--xh-segmented-indicator-bg` · `--xh-segmented-indicator-radius` · `--xh-segmented-indicator-shadow` · `--xh-segmented-indicator-shadow-disabled` · `--xh-segmented-item-bg-hover` · `--xh-segmented-item-fg` · `--xh-segmented-item-fg-checked` · `--xh-segmented-item-fg-checked-disabled` · `--xh-segmented-item-fg-hover` · `--xh-segmented-item-font-weight` · `--xh-segmented-item-gap` · `--xh-segmented-item-h` · `--xh-segmented-item-press-scale` · `--xh-segmented-item-px` · `--xh-segmented-item-radius` · `--xh-segmented-radius` · `--xh-segmented-track-padding`
+`--xh-segmented-bg` · `--xh-segmented-bg-disabled` · `--xh-segmented-border` · `--xh-segmented-border-invalid` · `--xh-segmented-font-size` · `--xh-segmented-h` · `--xh-segmented-indicator-bg` · `--xh-segmented-indicator-radius` · `--xh-segmented-indicator-shadow` · `--xh-segmented-indicator-shadow-disabled` · `--xh-segmented-item-bg-hover` · `--xh-segmented-item-fg` · `--xh-segmented-item-fg-checked` · `--xh-segmented-item-fg-checked-disabled` · `--xh-segmented-item-fg-hover` · `--xh-segmented-item-font-weight` · `--xh-segmented-item-gap` · `--xh-segmented-item-h` · `--xh-segmented-item-press-scale` · `--xh-segmented-item-px` · `--xh-segmented-item-radius` · `--xh-segmented-radius` · `--xh-segmented-track-padding`
 
 ## 动效
 

@@ -24,13 +24,13 @@
   [data-scope='rating'][data-part='root'][data-size='sm'] {
     --xh-_rating-item-gap: var(--xh-control-gap-sm);
     --xh-_rating-item-size: var(--xh-font-size-xl);
-    --xh-_rating-font-size: var(--xh-font-size-sm);
+    --xh-_rating-font-size: var(--xh-control-font-sm);
   }
 
   [data-scope='rating'][data-part='root'][data-size='lg'] {
     --xh-_rating-item-gap: var(--xh-control-gap-lg);
     --xh-_rating-item-size: var(--xh-font-size-3xl);
-    --xh-_rating-font-size: var(--xh-font-size-lg);
+    --xh-_rating-font-size: var(--xh-control-font-lg);
   }
 
   /* 整体压暗只做一次，落在最外层：星星逐颗再叠 opacity 会越叠越黑 */

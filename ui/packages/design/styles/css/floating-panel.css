@@ -10,6 +10,9 @@
      皮肤只管层级、配色、圆角、阴影、把手的摆放与状态表现。 */
 
   [data-scope='floating-panel'][data-part='root'] {
+    /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+    --xh-icon-size: var(--xh-floating-panel-icon-size, var(--xh-glyph-size-text));
+
     /* 面板本身是 fixed 定位，root 只是作者那棵树里的容器，不参与排布 */
     display: contents;
   }
@@ -68,7 +71,7 @@
     border-radius: var(--xh-floating-panel-radius, var(--xh-shape-surface));
     background: var(--xh-floating-panel-bg, var(--xh-bg-surface));
     color: var(--xh-floating-panel-fg, var(--xh-fg-default));
-    box-shadow: var(--xh-floating-panel-shadow, var(--xh-elevation-3));
+    box-shadow: var(--xh-floating-panel-shadow, var(--xh-elevation-sheet));
   }
 
   [data-scope='floating-panel'][data-part='content'][hidden] {
@@ -265,8 +268,8 @@
     flex: 1 1 auto;
     display: block;
     overflow: auto;
-    padding-block: var(--xh-floating-panel-body-py, var(--xh-space-3));
-    padding-inline: var(--xh-floating-panel-body-px, var(--xh-space-3));
+    padding-block: var(--xh-floating-panel-body-py, var(--xh-surface-py-sm));
+    padding-inline: var(--xh-floating-panel-body-px, var(--xh-surface-px-sm));
   }
 
   /* 收拢时连接层给正文打 hidden，这里把 UA 的 [hidden] 还回来（上面那条 display 盖掉了它） */
@@ -278,8 +281,8 @@
   [data-scope='floating-panel'][data-part='close-trigger']:empty::before {
     content: '';
     display: inline-block;
-    inline-size: 1em;
-    block-size: 1em;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;

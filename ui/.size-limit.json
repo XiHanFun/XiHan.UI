@@ -21,7 +21,7 @@
     "name": "tokens/tokens.css",
     "path": "packages/design/tokens/tokens.css",
     "gzip": true,
-    "limit": "3 kB"
+    "limit": "3.6 kB"
   },
   {
     "name": "behavior",

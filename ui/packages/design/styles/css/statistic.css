@@ -6,9 +6,9 @@
 
   /* 三个尺寸档只换这几个私有槽，各段从 root 继承它们，换档不必给每个部件各写一条选择器 */
   [data-scope='statistic'][data-part='root'] {
-    --xh-_statistic-label-size: var(--xh-font-size-sm);
-    --xh-_statistic-value-size: var(--xh-font-size-2xl);
-    --xh-_statistic-affix-size: var(--xh-font-size-md);
+    --xh-_statistic-label-size: var(--xh-control-caption-md);
+    --xh-_statistic-value-size: var(--xh-text-heading-2-size);
+    --xh-_statistic-affix-size: var(--xh-control-font-md);
     --xh-_statistic-row-gap: var(--xh-space-1);
 
     /* 折行排布：标签独占一行，前缀、数值、后缀在下一行按基线对齐排在一起 */
@@ -28,16 +28,16 @@
 
   /* —— 尺寸 —— */
   [data-scope='statistic'][data-part='root'][data-size='sm'] {
-    --xh-_statistic-label-size: var(--xh-font-size-xs);
-    --xh-_statistic-value-size: var(--xh-font-size-xl);
-    --xh-_statistic-affix-size: var(--xh-font-size-sm);
+    --xh-_statistic-label-size: var(--xh-control-caption-sm);
+    --xh-_statistic-value-size: var(--xh-text-heading-3-size);
+    --xh-_statistic-affix-size: var(--xh-control-font-sm);
     --xh-_statistic-row-gap: var(--xh-space-0_5);
   }
 
   [data-scope='statistic'][data-part='root'][data-size='lg'] {
-    --xh-_statistic-label-size: var(--xh-font-size-md);
-    --xh-_statistic-value-size: var(--xh-font-size-3xl);
-    --xh-_statistic-affix-size: var(--xh-font-size-lg);
+    --xh-_statistic-label-size: var(--xh-control-caption-lg);
+    --xh-_statistic-value-size: var(--xh-text-heading-1-size);
+    --xh-_statistic-affix-size: var(--xh-control-font-lg);
     --xh-_statistic-row-gap: var(--xh-space-1_5);
   }
 

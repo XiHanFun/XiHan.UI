@@ -67,7 +67,7 @@
     color: var(--xh-form-summary-fg, var(--xh-fg-danger));
     font-size: var(--xh-form-summary-font-size, var(--xh-text-body-size));
     line-height: var(--xh-leading-normal);
-    box-shadow: var(--xh-form-summary-shadow, var(--xh-elevation-1));
+    box-shadow: var(--xh-form-summary-shadow, var(--xh-elevation-raised));
   }
 
   /* 漏了这条，摘要一旦出现过就再也撤不下去（上面那条 display 盖掉了 UA 的 [hidden] 规则） */
@@ -90,7 +90,7 @@
   [data-scope='form'][data-part='error-summary-item'] {
     display: block;
     color: inherit;
-    font-size: var(--xh-form-summary-item-font-size, var(--xh-font-size-sm));
+    font-size: var(--xh-form-summary-item-font-size, var(--xh-text-secondary-size));
     text-decoration: underline;
     text-underline-offset: 2px;
     cursor: pointer;

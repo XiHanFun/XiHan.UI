@@ -9,7 +9,7 @@
   [data-scope='avatar-group'][data-part='root'] {
     /* 私有槽位：整组共用的直径、字号与叠放量，换档只改这三个 */
     --xh-_avatar-group-size: var(--xh-avatar-group-size, var(--xh-control-h-md));
-    --xh-_avatar-group-font-size: var(--xh-avatar-group-font-size, var(--xh-font-size-sm));
+    --xh-_avatar-group-font-size: var(--xh-avatar-group-font-size, var(--xh-text-secondary-size));
     --xh-_avatar-group-overlap: var(--xh-avatar-group-overlap, var(--xh-space-2_5));
 
     /* 流给组内每一枚 */
@@ -31,13 +31,13 @@
      字号与叠放量跟着直径一起缩放，小头像里回退字放得下、大头像里压住的那段也按比例长 */
   [data-scope='avatar-group'][data-part='root'][data-size='sm'] {
     --xh-_avatar-group-size: var(--xh-avatar-group-size, var(--xh-control-h-sm));
-    --xh-_avatar-group-font-size: var(--xh-avatar-group-font-size, var(--xh-font-size-xs));
+    --xh-_avatar-group-font-size: var(--xh-avatar-group-font-size, var(--xh-control-caption-sm));
     --xh-_avatar-group-overlap: var(--xh-avatar-group-overlap, var(--xh-space-2));
   }
 
   [data-scope='avatar-group'][data-part='root'][data-size='lg'] {
     --xh-_avatar-group-size: var(--xh-avatar-group-size, var(--xh-control-h-lg));
-    --xh-_avatar-group-font-size: var(--xh-avatar-group-font-size, var(--xh-font-size-md));
+    --xh-_avatar-group-font-size: var(--xh-avatar-group-font-size, var(--xh-control-caption-lg));
     --xh-_avatar-group-overlap: var(--xh-avatar-group-overlap, var(--xh-space-3));
   }
 

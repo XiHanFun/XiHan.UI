@@ -43,6 +43,9 @@
      标签占满整行把后面的挤到下一行，触发器与清空按钮就并排落在同一行上。
      这样作者少写标签、少写清空按钮，剩下的部件也不会塌 */
   [data-scope='cascader'][data-part='root'] {
+    /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+    --xh-icon-size: var(--xh-cascader-icon-size, var(--xh-glyph-size-text));
+
     display: inline-flex;
     flex-wrap: wrap;
     align-items: center;
@@ -83,16 +86,16 @@
     --xh-_cascader-h: var(--xh-control-h-sm);
     --xh-_cascader-px: var(--xh-control-px-sm);
     --xh-_cascader-gap: var(--xh-control-gap-sm);
-    --xh-_cascader-font-size: var(--xh-font-size-sm);
-    --xh-_cascader-label-font-size: var(--xh-font-size-sm);
+    --xh-_cascader-font-size: var(--xh-control-font-sm);
+    --xh-_cascader-label-font-size: var(--xh-control-font-sm);
   }
 
   [data-scope='cascader']:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
     --xh-_cascader-h: var(--xh-control-h-lg);
     --xh-_cascader-px: var(--xh-control-px-lg);
     --xh-_cascader-gap: var(--xh-control-gap-lg);
-    --xh-_cascader-font-size: var(--xh-font-size-lg);
-    --xh-_cascader-label-font-size: var(--xh-font-size-lg);
+    --xh-_cascader-font-size: var(--xh-control-font-lg);
+    --xh-_cascader-label-font-size: var(--xh-control-font-lg);
   }
 
   [data-scope='cascader'][data-part='label'] {
@@ -117,7 +120,7 @@
     align-items: center;
     justify-content: space-between;
     gap: var(--xh-cascader-trigger-gap, var(--xh-_cascader-gap));
-    min-inline-size: var(--xh-cascader-trigger-min-w, 14rem);
+    min-inline-size: var(--xh-cascader-trigger-min-w, var(--xh-control-min-w));
     block-size: var(--xh-cascader-trigger-h, var(--xh-_cascader-h));
     padding-inline: var(--xh-cascader-trigger-px, var(--xh-_cascader-px));
     border: var(--xh-stroke-thin) solid var(--xh-cascader-trigger-border, var(--xh-_cascader-border));
@@ -144,6 +147,7 @@
   /* trigger 是整个控件唯一的 Tab 停靠点（展开后停靠点才移进列里），落焦必须看得见。
      聚焦环恒用固定环色，不随语气走 */
   [data-scope='cascader'][data-part='trigger']:focus-visible {
+    border-color: var(--xh-cascader-trigger-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
     outline-offset: var(--xh-ring-offset);
   }
@@ -205,8 +209,8 @@
   [data-scope='cascader'][data-part='indicator']:empty::before {
     content: '';
     display: inline-block;
-    inline-size: 1em;
-    block-size: 1em;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
@@ -235,7 +239,7 @@
     background: var(--xh-cascader-action-bg, transparent);
     color: var(--xh-cascader-action-fg, var(--xh-fg-muted));
     font-family: inherit;
-    font-size: var(--xh-cascader-action-font-size, var(--xh-font-size-sm));
+    font-size: var(--xh-cascader-action-font-size, var(--xh-text-secondary-size));
     line-height: var(--xh-leading-none);
     cursor: pointer;
     user-select: none;
@@ -280,7 +284,7 @@
     border-radius: var(--xh-cascader-content-radius, var(--xh-shape-surface));
     background: var(--xh-cascader-content-bg, var(--xh-bg-surface));
     color: var(--xh-cascader-content-fg, var(--xh-fg-default));
-    box-shadow: var(--xh-cascader-content-shadow, var(--xh-elevation-2));
+    box-shadow: var(--xh-cascader-content-shadow, var(--xh-elevation-floating));
     /* 列多到放不下时整体横向滚动；纵向溢出归每一列自己 */
     overflow-x: auto;
     pointer-events: auto;
@@ -451,8 +455,8 @@
   [data-scope='cascader'][data-part='item-indicator']:empty::before {
     content: '';
     display: inline-block;
-    inline-size: 1em;
-    block-size: 1em;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
@@ -472,8 +476,8 @@
   [data-scope='cascader'][data-part='item-indicator'][data-indeterminate]:not([data-state='checked']):empty::before {
     content: '';
     display: inline-block;
-    inline-size: 1em;
-    block-size: 1em;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
@@ -598,8 +602,8 @@
   [data-scope='cascader'][data-part='clear-trigger']:empty::before {
     content: '';
     display: inline-block;
-    inline-size: 1em;
-    block-size: 1em;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;

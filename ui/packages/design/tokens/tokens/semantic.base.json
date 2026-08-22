@@ -12,6 +12,22 @@
       "$type": "dimension",
       "$value": "40px"
     },
+    "box-sm": {
+      "$type": "dimension",
+      "$value": "32px"
+    },
+    "box-md": {
+      "$type": "dimension",
+      "$value": "40px"
+    },
+    "box-lg": {
+      "$type": "dimension",
+      "$value": "48px"
+    },
+    "min-w": {
+      "$type": "dimension",
+      "$value": "12rem"
+    },
     "px-sm": {
       "$type": "dimension",
       "$value": "{space.2}"
@@ -35,6 +51,31 @@
     "gap-lg": {
       "$type": "dimension",
       "$value": "{space.2}"
+    },
+    "font-sm": {
+      "$type": "dimension",
+      "$value": "{font-size.sm}"
+    },
+    "font-md": {
+      "$type": "dimension",
+      "$value": "{font-size.md}"
+    },
+    "font-lg": {
+      "$type": "dimension",
+      "$value": "{font-size.lg}"
+    },
+    "caption-sm": {
+      "$description": "控件里的次级文字（提示、计数、快捷键、清空钮、标签项）：比同档主文字低一级。",
+      "$type": "dimension",
+      "$value": "{font-size.xs}"
+    },
+    "caption-md": {
+      "$type": "dimension",
+      "$value": "{font-size.sm}"
+    },
+    "caption-lg": {
+      "$type": "dimension",
+      "$value": "{font-size.md}"
     },
     "action-size": {
       "$type": "dimension",
@@ -64,6 +105,10 @@
     }
   },
   "glyph": {
+    "size-text": {
+      "$type": "dimension",
+      "$value": "1em"
+    },
     "size-sm": {
       "$type": "dimension",
       "$value": "1rem"
@@ -242,25 +287,17 @@
     }
   },
   "elevation": {
-    "0": {
-      "$type": "shadow",
-      "$value": "none"
-    },
-    "1": {
+    "raised": {
       "$type": "shadow",
       "$value": "{shadow.sm}"
     },
-    "2": {
+    "floating": {
       "$type": "shadow",
       "$value": "{shadow.md}"
     },
-    "3": {
+    "sheet": {
       "$type": "shadow",
       "$value": "{shadow.lg}"
-    },
-    "4": {
-      "$type": "shadow",
-      "$value": "{shadow.xl}"
     }
   },
   "motion": {
@@ -299,6 +336,11 @@
     "scale-press": {
       "$type": "number",
       "$value": 0.97
+    },
+    "scale-drag": {
+      "$description": "拖拽中的拇指放大比例（滑杆、取色器）。",
+      "$type": "number",
+      "$value": 1.12
     }
   },
   "spin": {
@@ -344,6 +386,31 @@
     "gap-md": {
       "$type": "dimension",
       "$value": "{space.4}"
+    }
+  },
+  "track": {
+    "$description": "滑杆与进度条共用的轨道几何。",
+    "thickness": {
+      "$type": "dimension",
+      "$value": "6px"
+    },
+    "thumb-size": {
+      "$type": "dimension",
+      "$value": "18px"
+    }
+  },
+  "nav": {
+    "link-max-w": {
+      "$description": "导航链接（锚点、面包屑）超长时截断的最大宽度。",
+      "$type": "dimension",
+      "$value": "12rem"
+    }
+  },
+  "viewport": {
+    "max-h": {
+      "$description": "内嵌滚动面（表格、树、JSON 视图）的默认最大高度。",
+      "$type": "dimension",
+      "$value": "24rem"
     }
   },
   "overlay": {
@@ -401,6 +468,10 @@
       "$type": "number",
       "$value": "{font-weight.regular}"
     },
+    "secondary-size": {
+      "$type": "dimension",
+      "$value": "{font-size.sm}"
+    },
     "heading-3-size": {
       "$type": "dimension",
       "$value": "{font-size.xl}"
@@ -408,6 +479,58 @@
     "heading-3-weight": {
       "$type": "number",
       "$value": "{font-weight.semibold}"
+    },
+    "heading-1-size": {
+      "$type": "dimension",
+      "$value": "{font-size.3xl}"
+    },
+    "heading-1-weight": {
+      "$type": "number",
+      "$value": "{font-weight.semibold}"
+    },
+    "heading-2-size": {
+      "$type": "dimension",
+      "$value": "{font-size.2xl}"
+    },
+    "heading-2-weight": {
+      "$type": "number",
+      "$value": "{font-weight.semibold}"
+    },
+    "caption-size": {
+      "$type": "dimension",
+      "$value": "{font-size.xs}"
+    }
+  },
+  "switch": {
+    "track-h-sm": {
+      "$type": "dimension",
+      "$value": "18px"
+    },
+    "track-h-md": {
+      "$type": "dimension",
+      "$value": "22px"
+    },
+    "track-h-lg": {
+      "$type": "dimension",
+      "$value": "28px"
+    }
+  },
+  "surface": {
+    "py-sm": {
+      "$type": "dimension",
+      "$value": "{space.3}"
+    },
+    "px-sm": {
+      "$type": "dimension",
+      "$value": "{space.4}"
+    },
+    "py-md": {
+      "$type": "dimension",
+      "$value": "{section.py}"
+    },
+    "px-md": {
+      "$type": "dimension",
+      "$value": "{control.px-lg}"
     }
   }
 }

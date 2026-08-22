@@ -6,6 +6,9 @@
 
   /* 一行一条，纵向堆叠；新增把手跟在最后一行下面 */
   [data-scope='dynamic-input'][data-part='root'] {
+    /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+    --xh-icon-size: var(--xh-dynamic-input-icon-size, var(--xh-glyph-size-text));
+
     display: flex;
     flex-direction: column;
     gap: var(--xh-dynamic-input-gap, var(--xh-space-2));
@@ -62,7 +65,7 @@
     background: var(--xh-dynamic-input-trigger-bg, transparent);
     color: var(--xh-dynamic-input-trigger-fg, var(--xh-fg-muted));
     font-family: inherit;
-    font-size: var(--xh-dynamic-input-trigger-font-size, var(--xh-font-size-sm));
+    font-size: var(--xh-dynamic-input-trigger-font-size, var(--xh-text-secondary-size));
     line-height: var(--xh-leading-none);
     cursor: pointer;
     transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
@@ -164,8 +167,8 @@
   [data-scope='dynamic-input'][data-part='move-up-trigger']:empty::before {
     content: '';
     display: inline-block;
-    inline-size: 1em;
-    block-size: 1em;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-chevron-up) center / contain no-repeat;
@@ -175,8 +178,8 @@
   [data-scope='dynamic-input'][data-part='move-down-trigger']:empty::before {
     content: '';
     display: inline-block;
-    inline-size: 1em;
-    block-size: 1em;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
@@ -186,8 +189,8 @@
   [data-scope='dynamic-input'][data-part='remove-trigger']:empty::before {
     content: '';
     display: inline-block;
-    inline-size: 1em;
-    block-size: 1em;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;

@@ -13,8 +13,8 @@
   /* 私有槽位：组件令牌 → 中档字面量两级回退。轨道厚度与拇指直径同时被 control / track / thumb
      三个角色节点用到，收成两个槽位挂在 root 上，尺寸档只改这两处，靠继承发到子部件。 */
   [data-scope='slider'][data-part='root'] {
-    --xh-_thumb-size: var(--xh-slider-thumb-size, 18px);
-    --xh-_track-thickness: var(--xh-slider-track-thickness, 6px);
+    --xh-_thumb-size: var(--xh-slider-thumb-size, var(--xh-track-thumb-size));
+    --xh-_track-thickness: var(--xh-slider-track-thickness, var(--xh-track-thickness));
 
     display: flex;
     flex-direction: column;
@@ -130,7 +130,7 @@
     border: var(--xh-stroke-thick) solid var(--xh-slider-thumb-border, var(--xh-bg-surface));
     border-radius: var(--xh-slider-thumb-radius, var(--xh-shape-pill));
     background: var(--xh-slider-thumb-bg, var(--xh-_tone, var(--xh-bg-brand)));
-    box-shadow: var(--xh-slider-thumb-shadow, var(--xh-elevation-1));
+    box-shadow: var(--xh-slider-thumb-shadow, var(--xh-elevation-raised));
     cursor: grab;
     transition: scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
@@ -161,9 +161,9 @@
   /* 多拇指时只有手真正推着的那一个带 data-dragging，放大与光标因此不会全组一起变。
      放大用 scale 而不是改尺寸：变换绕自身中心发生，圆心不动，负外边距的算式也不用跟着改。 */
   [data-scope='slider'][data-part='thumb'][data-dragging] {
-    scale: var(--xh-slider-thumb-scale-dragging, 1.12);
+    scale: var(--xh-slider-thumb-scale-dragging, var(--xh-motion-scale-drag));
     cursor: grabbing;
-    box-shadow: var(--xh-slider-thumb-shadow-dragging, var(--xh-elevation-2));
+    box-shadow: var(--xh-slider-thumb-shadow-dragging, var(--xh-elevation-floating));
   }
 
   [data-scope='slider'][data-part='thumb'][data-invalid] {
@@ -218,7 +218,7 @@
     inset-block-start: 100%;
     margin-block-start: var(--xh-slider-mark-label-gap, var(--xh-space-1));
     color: var(--xh-slider-mark-label-fg, var(--xh-fg-subtle));
-    font-size: var(--xh-slider-mark-label-font-size, var(--xh-font-size-xs));
+    font-size: var(--xh-slider-mark-label-font-size, var(--xh-text-caption-size));
     line-height: var(--xh-leading-none);
     white-space: nowrap;
     translate: -50% 0;

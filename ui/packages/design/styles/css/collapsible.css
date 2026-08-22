@@ -19,14 +19,14 @@
     --xh-_collapsible-trigger-h: var(--xh-control-h-sm);
     --xh-_collapsible-trigger-px: var(--xh-control-px-sm);
     --xh-_collapsible-trigger-gap: var(--xh-control-gap-sm);
-    --xh-_collapsible-trigger-font-size: var(--xh-font-size-sm);
+    --xh-_collapsible-trigger-font-size: var(--xh-control-font-sm);
   }
 
   [data-scope='collapsible'][data-part='root'][data-size='lg'] {
     --xh-_collapsible-trigger-h: var(--xh-control-h-lg);
     --xh-_collapsible-trigger-px: var(--xh-control-px-lg);
     --xh-_collapsible-trigger-gap: var(--xh-control-gap-lg);
-    --xh-_collapsible-trigger-font-size: var(--xh-font-size-lg);
+    --xh-_collapsible-trigger-font-size: var(--xh-control-font-lg);
   }
 
   [data-scope='collapsible'][data-part='trigger'] {

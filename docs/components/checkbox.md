@@ -203,7 +203,7 @@ checked 只认布尔，在中间换一道，进出两头拿到的都是业务值
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-checkbox-bg` · `--xh-checkbox-bg-checked` · `--xh-checkbox-border` · `--xh-checkbox-border-checked` · `--xh-checkbox-border-invalid` · `--xh-checkbox-fg` · `--xh-checkbox-fg-invalid` · `--xh-checkbox-indicator-fg` · `--xh-checkbox-label-fg` · `--xh-checkbox-label-fg-disabled` · `--xh-checkbox-label-font-size` · `--xh-checkbox-label-gap`
+`--xh-checkbox-bg` · `--xh-checkbox-bg-checked` · `--xh-checkbox-border` · `--xh-checkbox-border-checked` · `--xh-checkbox-border-invalid` · `--xh-checkbox-fg` · `--xh-checkbox-fg-invalid` · `--xh-checkbox-icon-size` · `--xh-checkbox-indicator-fg` · `--xh-checkbox-label-fg` · `--xh-checkbox-label-fg-disabled` · `--xh-checkbox-label-font-size` · `--xh-checkbox-label-gap`
 
 ## 动效
 

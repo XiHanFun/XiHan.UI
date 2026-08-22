@@ -58,7 +58,7 @@
 [data-scope='avatar-group'][data-part='root'] {
   /* 私有槽位：整组共用的直径、字号与叠放量，换档只改这三个 */
   --xh-_avatar-group-size: var(--xh-avatar-group-size, var(--xh-control-h-md));
-  --xh-_avatar-group-font-size: var(--xh-avatar-group-font-size, var(--xh-font-size-sm));
+  --xh-_avatar-group-font-size: var(--xh-avatar-group-font-size, var(--xh-text-secondary-size));
   --xh-_avatar-group-overlap: var(--xh-avatar-group-overlap, var(--xh-space-2_5));
 
   /* 流给组内每一枚 */
@@ -80,13 +80,13 @@
    字号与叠放量跟着直径一起缩放，小头像里回退字放得下、大头像里压住的那段也按比例长 */
 [data-scope='avatar-group'][data-part='root'][data-size='sm'] {
   --xh-_avatar-group-size: var(--xh-avatar-group-size, var(--xh-control-h-sm));
-  --xh-_avatar-group-font-size: var(--xh-avatar-group-font-size, var(--xh-font-size-xs));
+  --xh-_avatar-group-font-size: var(--xh-avatar-group-font-size, var(--xh-control-caption-sm));
   --xh-_avatar-group-overlap: var(--xh-avatar-group-overlap, var(--xh-space-2));
 }
 
 [data-scope='avatar-group'][data-part='root'][data-size='lg'] {
   --xh-_avatar-group-size: var(--xh-avatar-group-size, var(--xh-control-h-lg));
-  --xh-_avatar-group-font-size: var(--xh-avatar-group-font-size, var(--xh-font-size-md));
+  --xh-_avatar-group-font-size: var(--xh-avatar-group-font-size, var(--xh-control-caption-lg));
   --xh-_avatar-group-overlap: var(--xh-avatar-group-overlap, var(--xh-space-3));
 }
 
@@ -143,6 +143,9 @@
 /* 定位壳：钉在视口的尾下角，用逻辑属性，RTL 下自动换到另一侧。
    不声明 display —— 收起态由连接层写 hidden，UA 的 [hidden]{display:none} 得压得住 */
 [data-scope='back-top'][data-part='root'] {
+  /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+  --xh-icon-size: var(--xh-back-top-icon-size, var(--xh-glyph-size-text));
+
   /* 尺寸档只换这一个私有槽，按钮从壳继承，换档不必给每个部件各写一条选择器 */
   --xh-_back-top-size: var(--xh-control-h-md);
 
@@ -175,7 +178,7 @@
   background: var(--xh-back-top-bg, var(--xh-bg-surface-raised));
   color: var(--xh-back-top-fg, var(--xh-_tone-fg, var(--xh-fg-default)));
   /* 浮在内容之上，靠投影与页面拉开层次 */
-  box-shadow: var(--xh-elevation-2);
+  box-shadow: var(--xh-elevation-sheet);
   cursor: pointer;
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
@@ -204,8 +207,8 @@
 [data-scope='back-top'][data-part='trigger']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-chevron-up) center / contain no-repeat;
@@ -250,21 +253,21 @@
   --xh-_button-group-h: var(--xh-control-h-sm);
   --xh-_button-group-px: var(--xh-control-px-sm);
   --xh-_button-group-gap: var(--xh-control-gap-sm);
-  --xh-_button-group-font-size: var(--xh-font-size-sm);
+  --xh-_button-group-font-size: var(--xh-control-font-sm);
 }
 
 [data-scope='button-group'][data-part='root'][data-size='md'] {
   --xh-_button-group-h: var(--xh-control-h-md);
   --xh-_button-group-px: var(--xh-control-px-md);
   --xh-_button-group-gap: var(--xh-control-gap-md);
-  --xh-_button-group-font-size: var(--xh-font-size-md);
+  --xh-_button-group-font-size: var(--xh-control-font-md);
 }
 
 [data-scope='button-group'][data-part='root'][data-size='lg'] {
   --xh-_button-group-h: var(--xh-control-h-lg);
   --xh-_button-group-px: var(--xh-control-px-lg);
   --xh-_button-group-gap: var(--xh-control-gap-lg);
-  --xh-_button-group-font-size: var(--xh-font-size-lg);
+  --xh-_button-group-font-size: var(--xh-control-font-lg);
 }
 
 /* —— 形态 —— */
@@ -435,7 +438,7 @@
   --xh-_descriptions-gap: var(--xh-space-2);
   --xh-_descriptions-py: var(--xh-space-1);
   --xh-_descriptions-px: var(--xh-space-2);
-  --xh-_descriptions-font-size: var(--xh-font-size-sm);
+  --xh-_descriptions-font-size: var(--xh-control-font-sm);
 }
 
 [data-scope='descriptions'][data-part='root'][data-size='lg'] {
@@ -444,7 +447,7 @@
   --xh-_descriptions-label-gap: var(--xh-space-3);
   --xh-_descriptions-py: var(--xh-space-3);
   --xh-_descriptions-px: var(--xh-space-4);
-  --xh-_descriptions-font-size: var(--xh-font-size-lg);
+  --xh-_descriptions-font-size: var(--xh-control-font-lg);
 }
 
 /* —— 每一格 —— */
@@ -664,6 +667,9 @@
 
 /* 一行一条，纵向堆叠；新增把手跟在最后一行下面 */
 [data-scope='dynamic-input'][data-part='root'] {
+  /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+  --xh-icon-size: var(--xh-dynamic-input-icon-size, var(--xh-glyph-size-text));
+
   display: flex;
   flex-direction: column;
   gap: var(--xh-dynamic-input-gap, var(--xh-space-2));
@@ -720,7 +726,7 @@
   background: var(--xh-dynamic-input-trigger-bg, transparent);
   color: var(--xh-dynamic-input-trigger-fg, var(--xh-fg-muted));
   font-family: inherit;
-  font-size: var(--xh-dynamic-input-trigger-font-size, var(--xh-font-size-sm));
+  font-size: var(--xh-dynamic-input-trigger-font-size, var(--xh-text-secondary-size));
   line-height: var(--xh-leading-none);
   cursor: pointer;
   transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
@@ -822,8 +828,8 @@
 [data-scope='dynamic-input'][data-part='move-up-trigger']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-chevron-up) center / contain no-repeat;
@@ -833,8 +839,8 @@
 [data-scope='dynamic-input'][data-part='move-down-trigger']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
@@ -844,8 +850,8 @@
 [data-scope='dynamic-input'][data-part='remove-trigger']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
@@ -951,7 +957,7 @@
 [data-scope='fieldset'][data-part='helper-text'] {
   margin: 0;
   color: var(--xh-fieldset-helper-fg, var(--xh-fg-muted));
-  font-size: var(--xh-fieldset-helper-font-size, var(--xh-font-size-sm));
+  font-size: var(--xh-fieldset-helper-font-size, var(--xh-text-secondary-size));
   line-height: var(--xh-leading-normal);
 }
 
@@ -963,7 +969,7 @@
 [data-scope='fieldset'][data-part='error-text'] {
   margin: 0;
   color: var(--xh-fieldset-error-fg, var(--xh-fg-danger));
-  font-size: var(--xh-fieldset-error-font-size, var(--xh-font-size-sm));
+  font-size: var(--xh-fieldset-error-font-size, var(--xh-text-secondary-size));
   line-height: var(--xh-leading-normal);
 }
 
@@ -1079,6 +1085,9 @@
    transform / filter / backdrop-filter / contain，包含块就被抢走，整组立刻贴错位置——
    所以别往覆盖钩子里加这几个属性。 */
 [data-scope='float-button'][data-part='root'] {
+  /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+  --xh-icon-size: var(--xh-float-button-icon-size, var(--xh-glyph-size-text));
+
   --xh-_float-button-offset: var(--xh-space-6);
   /* 触发器与展开的每一条动作共用这两个私有槽，换档只改这里 */
   --xh-_float-button-size: var(--xh-float-button-size, var(--xh-control-h-lg));
@@ -1136,7 +1145,7 @@
   background: var(--xh-float-button-bg, var(--xh-bg-surface-raised));
   color: var(--xh-float-button-fg, var(--xh-fg-default));
   /* 浮在内容之上，靠投影与页面拉开层次 */
-  box-shadow: var(--xh-elevation-3);
+  box-shadow: var(--xh-elevation-sheet);
   cursor: pointer;
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
@@ -1197,8 +1206,8 @@
 [data-scope='float-button'][data-part='trigger']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-plus) center / contain no-repeat;
@@ -1217,6 +1226,9 @@
    皮肤只管层级、配色、圆角、阴影、把手的摆放与状态表现。 */
 
 [data-scope='floating-panel'][data-part='root'] {
+  /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+  --xh-icon-size: var(--xh-floating-panel-icon-size, var(--xh-glyph-size-text));
+
   /* 面板本身是 fixed 定位，root 只是作者那棵树里的容器，不参与排布 */
   display: contents;
 }
@@ -1275,7 +1287,7 @@
   border-radius: var(--xh-floating-panel-radius, var(--xh-shape-surface));
   background: var(--xh-floating-panel-bg, var(--xh-bg-surface));
   color: var(--xh-floating-panel-fg, var(--xh-fg-default));
-  box-shadow: var(--xh-floating-panel-shadow, var(--xh-elevation-3));
+  box-shadow: var(--xh-floating-panel-shadow, var(--xh-elevation-sheet));
 }
 
 [data-scope='floating-panel'][data-part='content'][hidden] {
@@ -1472,8 +1484,8 @@
   flex: 1 1 auto;
   display: block;
   overflow: auto;
-  padding-block: var(--xh-floating-panel-body-py, var(--xh-space-3));
-  padding-inline: var(--xh-floating-panel-body-px, var(--xh-space-3));
+  padding-block: var(--xh-floating-panel-body-py, var(--xh-surface-py-sm));
+  padding-inline: var(--xh-floating-panel-body-px, var(--xh-surface-px-sm));
 }
 
 /* 收拢时连接层给正文打 hidden，这里把 UA 的 [hidden] 还回来（上面那条 display 盖掉了它） */
@@ -1485,8 +1497,8 @@
 [data-scope='floating-panel'][data-part='close-trigger']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
@@ -2017,7 +2029,7 @@
      不压到相邻的格子上（外缘与相邻格相接） */
   --xh-_heatmap-gap: calc(var(--xh-ring-offset) + var(--xh-ring-width));
   --xh-_heatmap-gutter: var(--xh-heatmap-gutter, var(--xh-space-8));
-  --xh-_heatmap-font-size: var(--xh-font-size-xs);
+  --xh-_heatmap-font-size: var(--xh-text-caption-size);
   /* 星期名隔行画：第 0/2/4/6 行那个字的颜色。缺省透明——只是字不上色，
      盒子、底色与命中区都还在，钉住那一列的实色底不缺一块，七行的悬停行为也一致。
      改写这个槽为一个看得见的颜色（`var(--xh-heatmap-label-fg, var(--xh-fg-subtle))`）即七行全画。
@@ -2325,10 +2337,10 @@
   border-radius: var(--xh-heatmap-tooltip-radius, var(--xh-shape-control));
   background: var(--xh-heatmap-tooltip-bg, var(--xh-fg-default));
   color: var(--xh-heatmap-tooltip-fg, var(--xh-bg-surface));
-  font-size: var(--xh-heatmap-tooltip-font-size, var(--xh-font-size-xs));
+  font-size: var(--xh-heatmap-tooltip-font-size, var(--xh-text-caption-size));
   line-height: var(--xh-leading-normal);
   white-space: nowrap;
-  box-shadow: var(--xh-heatmap-tooltip-shadow, var(--xh-elevation-2));
+  box-shadow: var(--xh-heatmap-tooltip-shadow, var(--xh-elevation-floating));
   /* 详情条不接指针：压在格子上时指针要能穿过去，否则一进条里就算离开了格子，
      详情自己把自己收起来，来回闪 */
   pointer-events: none;
@@ -2438,7 +2450,7 @@
 /* 一排键帽连着连接符。整块不换行：一组组合被折成两行就读不出是一组了 */
 [data-scope='hotkeys'][data-part='root'] {
   /* 尺寸档只换这两个私有槽，键帽从 root 继承它们，换档不必给每个部件各写一条选择器 */
-  --xh-_hotkeys-font-size: var(--xh-font-size-sm);
+  --xh-_hotkeys-font-size: var(--xh-text-secondary-size);
   --xh-_hotkeys-key-px: var(--xh-space-1);
 
   display: inline-flex;
@@ -2462,7 +2474,7 @@
   border: var(--xh-stroke-thin) solid var(--xh-hotkeys-key-border, var(--xh-border-subtle));
   border-radius: var(--xh-hotkeys-key-radius, var(--xh-shape-inset));
   background: var(--xh-hotkeys-key-bg, var(--xh-bg-surface));
-  box-shadow: var(--xh-hotkeys-key-shadow, var(--xh-elevation-1));
+  box-shadow: var(--xh-hotkeys-key-shadow, var(--xh-elevation-raised));
   color: var(--xh-hotkeys-key-fg, var(--xh-fg-default));
   /* kbd 的 UA 字体是等宽，但字号会被压小；两者都显式接过来，档位才归尺寸轴管 */
   font-family: var(--xh-hotkeys-key-font, var(--xh-font-family-mono));
@@ -2502,12 +2514,12 @@
 /* —— 尺寸 —— */
 /* 缺省的 md 档写在上面的基础规则里 */
 [data-scope='hotkeys'][data-part='root'][data-size='sm'] {
-  --xh-_hotkeys-font-size: var(--xh-font-size-xs);
+  --xh-_hotkeys-font-size: var(--xh-control-caption-sm);
   --xh-_hotkeys-key-px: var(--xh-space-0_5);
 }
 
 [data-scope='hotkeys'][data-part='root'][data-size='lg'] {
-  --xh-_hotkeys-font-size: var(--xh-font-size-md);
+  --xh-_hotkeys-font-size: var(--xh-control-caption-lg);
   --xh-_hotkeys-key-px: var(--xh-space-1_5);
 }
 
@@ -2853,22 +2865,20 @@
 }
 
 /* 缺省态（md 档）。等宽字体让层级缩进与值的长度对得齐。
-   逐类型配色：令牌集里没有 JSON 语法色这一类，就地声明成可覆盖的变量，
-   取值与代码块的记号色同源。每条先写浅色兜底再写 light-dark()：
-   不认后者的旧引擎由级联保留前一条，退化成单色。 */
+   逐类型配色走 --xh-syntax-* 语法令牌，与代码块的记号色同源、随主题明暗切换。 */
 [data-scope='json-viewer'][data-part='root'] {
-  --xh-_json-viewer-font-size: var(--xh-font-size-sm);
+  /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+  --xh-icon-size: var(--xh-json-viewer-icon-size, var(--xh-glyph-size-text));
+
+  --xh-_json-viewer-font-size: var(--xh-text-secondary-size);
   --xh-_json-viewer-row-py: var(--xh-space-0_5);
   --xh-_json-viewer-indent: var(--xh-space-4);
   --xh-json-viewer-key-fg: var(--xh-fg-brand-strong);
   --xh-json-viewer-punctuation-fg: var(--xh-fg-subtle);
   --xh-json-viewer-null-fg: var(--xh-fg-subtle);
-  --xh-json-viewer-string-fg: #0a7f5f;
-  --xh-json-viewer-string-fg: light-dark(#0a7f5f, #7ee2b8);
-  --xh-json-viewer-number-fg: #9a5b00;
-  --xh-json-viewer-number-fg: light-dark(#9a5b00, #f0b866);
-  --xh-json-viewer-boolean-fg: #8250df;
-  --xh-json-viewer-boolean-fg: light-dark(#8250df, #d2a8ff);
+  --xh-json-viewer-string-fg: var(--xh-syntax-string);
+  --xh-json-viewer-number-fg: var(--xh-syntax-number);
+  --xh-json-viewer-boolean-fg: var(--xh-syntax-keyword);
 
   display: block;
   color: var(--xh-json-viewer-fg, var(--xh-fg-default));
@@ -2884,13 +2894,13 @@
 
 /* 尺寸轴只换私有槽，部件从 root 继承 */
 [data-scope='json-viewer'][data-part='root'][data-size='sm'] {
-  --xh-_json-viewer-font-size: var(--xh-font-size-xs);
+  --xh-_json-viewer-font-size: var(--xh-control-caption-sm);
   --xh-_json-viewer-row-py: var(--xh-space-0);
   --xh-_json-viewer-indent: var(--xh-space-3);
 }
 
 [data-scope='json-viewer'][data-part='root'][data-size='lg'] {
-  --xh-_json-viewer-font-size: var(--xh-font-size-md);
+  --xh-_json-viewer-font-size: var(--xh-control-caption-lg);
   --xh-_json-viewer-row-py: var(--xh-space-1);
   --xh-_json-viewer-indent: var(--xh-space-5);
 }
@@ -2899,7 +2909,7 @@
 [data-scope='json-viewer'][data-part='tree'] {
   display: flex;
   flex-direction: column;
-  max-block-size: var(--xh-json-viewer-max-h, 26rem);
+  max-block-size: var(--xh-json-viewer-max-h, var(--xh-viewport-max-h));
   padding-block: var(--xh-json-viewer-py, var(--xh-space-2));
   padding-inline: var(--xh-json-viewer-px, var(--xh-space-2));
   border: var(--xh-stroke-thin) solid var(--xh-json-viewer-border, var(--xh-border-default));
@@ -3047,8 +3057,8 @@
 [data-scope='json-viewer'][data-part='branch-indicator']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
@@ -3073,7 +3083,7 @@
 [data-scope='json-viewer'][data-part='preview'] {
   flex: none;
   color: var(--xh-json-viewer-preview-fg, var(--xh-fg-muted));
-  font-size: var(--xh-json-viewer-preview-font-size, var(--xh-font-size-xs));
+  font-size: var(--xh-json-viewer-preview-font-size, var(--xh-text-caption-size));
   user-select: none;
 }
 
@@ -3165,7 +3175,7 @@
   padding: var(--xh-space-3) var(--xh-space-4);
   background: var(--xh-layout-footer-bg, var(--xh-bg-surface));
   color: var(--xh-fg-muted);
-  font-size: var(--xh-font-size-sm);
+  font-size: var(--xh-text-secondary-size);
 }
 
 /* —— 折叠把手 —— */
@@ -3180,7 +3190,7 @@
   border-radius: var(--xh-layout-sider-trigger-radius, var(--xh-shape-control));
   background: var(--xh-layout-sider-trigger-bg, transparent);
   color: var(--xh-layout-sider-trigger-fg, var(--xh-fg-default));
-  font-size: var(--xh-font-size-sm);
+  font-size: var(--xh-text-secondary-size);
   line-height: var(--xh-leading-none);
   cursor: pointer;
 }
@@ -3277,8 +3287,8 @@
   --xh-_list-item-py: var(--xh-list-item-py-md);
   --xh-_list-item-px: var(--xh-space-4);
   --xh-_list-item-gap: var(--xh-space-3);
-  --xh-_list-title-size: var(--xh-font-size-md);
-  --xh-_list-description-size: var(--xh-font-size-sm);
+  --xh-_list-title-size: var(--xh-control-font-md);
+  --xh-_list-description-size: var(--xh-control-caption-md);
 
   display: flex;
   flex-direction: column;
@@ -3299,15 +3309,15 @@
   --xh-_list-item-py: var(--xh-list-item-py-sm);
   --xh-_list-item-px: var(--xh-space-3);
   --xh-_list-item-gap: var(--xh-space-2);
-  --xh-_list-title-size: var(--xh-font-size-sm);
-  --xh-_list-description-size: var(--xh-font-size-xs);
+  --xh-_list-title-size: var(--xh-control-font-sm);
+  --xh-_list-description-size: var(--xh-control-caption-sm);
 }
 
 [data-scope='list'][data-part='root'][data-size='lg'] {
   --xh-_list-item-py: var(--xh-list-item-py-lg);
   --xh-_list-item-px: var(--xh-space-5);
   --xh-_list-item-gap: var(--xh-space-4);
-  --xh-_list-title-size: var(--xh-font-size-lg);
+  --xh-_list-title-size: var(--xh-control-font-lg);
 }
 
 /* —— 外框 —— */
@@ -3444,7 +3454,7 @@
   display: block;
   padding-inline: var(--xh-log-content-px, var(--xh-space-3));
   font-family: var(--xh-log-font, var(--xh-font-family-mono));
-  font-size: var(--xh-log-font-size, var(--xh-font-size-sm));
+  font-size: var(--xh-log-font-size, var(--xh-text-secondary-size));
 }
 
 [data-scope='log'][data-part='content'][hidden] {
@@ -3788,7 +3798,7 @@
   --xh-_mention-px: var(--xh-control-px-sm);
   --xh-_mention-py: var(--xh-space-1);
   --xh-_mention-gap: var(--xh-control-gap-sm);
-  --xh-_mention-font-size: var(--xh-font-size-sm);
+  --xh-_mention-font-size: var(--xh-control-font-sm);
 }
 
 [data-scope='mention']:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
@@ -3796,7 +3806,7 @@
   --xh-_mention-px: var(--xh-control-px-lg);
   --xh-_mention-py: var(--xh-space-3);
   --xh-_mention-gap: var(--xh-control-gap-lg);
-  --xh-_mention-font-size: var(--xh-font-size-lg);
+  --xh-_mention-font-size: var(--xh-control-font-lg);
 }
 
 /* —— 形态 —— */
@@ -3863,7 +3873,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='mention'][data-part='input']:focus-visible {
-  border-color: var(--xh-mention-input-border-focus, var(--xh-_mention-ring));
+  border-color: var(--xh-mention-input-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
   outline: var(--xh-ring-width) solid var(--xh-_mention-ring);
   outline-offset: var(--xh-ring-offset);
 }
@@ -3889,7 +3899,7 @@ input[data-scope='mention'][data-part='input'] {
   border-radius: var(--xh-mention-content-radius, var(--xh-shape-surface));
   background: var(--xh-mention-content-bg, var(--xh-bg-surface));
   color: var(--xh-mention-content-fg, var(--xh-fg-default));
-  box-shadow: var(--xh-mention-content-shadow, var(--xh-elevation-2));
+  box-shadow: var(--xh-mention-content-shadow, var(--xh-elevation-floating));
   overflow-y: auto;
   pointer-events: auto;
 }
@@ -4004,15 +4014,15 @@ input[data-scope='mention'][data-part='input'] {
 
 /* —— 尺寸 —— */
 [data-scope='number-animation'][data-part='root'][data-size='sm'] {
-  --xh-_number-animation-size: var(--xh-font-size-lg);
+  --xh-_number-animation-size: var(--xh-control-font-lg);
 }
 
 [data-scope='number-animation'][data-part='root'][data-size='md'] {
-  --xh-_number-animation-size: var(--xh-font-size-2xl);
+  --xh-_number-animation-size: var(--xh-text-heading-2-size);
 }
 
 [data-scope='number-animation'][data-part='root'][data-size='lg'] {
-  --xh-_number-animation-size: var(--xh-font-size-3xl);
+  --xh-_number-animation-size: var(--xh-text-heading-1-size);
 }
 
 /* styles/page-header.css */
@@ -4025,7 +4035,7 @@ input[data-scope='mention'][data-part='input'] {
   /* 尺寸档只换这三个私有槽，各段从根上继承它们，换档不必给每个部件各写一条选择器 */
   --xh-_page-header-py: var(--xh-space-4);
   --xh-_page-header-row-gap: var(--xh-space-2);
-  --xh-_page-header-title-size: var(--xh-font-size-xl);
+  --xh-_page-header-title-size: var(--xh-text-heading-3-size);
 
   /* 一行排不下就折行；返回位、标题、副标题排在同一行，操作贴到行尾，页脚整行另起 */
   display: flex;
@@ -4046,13 +4056,13 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='page-header'][data-part='root'][data-size='sm'] {
   --xh-_page-header-py: var(--xh-space-3);
   --xh-_page-header-row-gap: var(--xh-space-1);
-  --xh-_page-header-title-size: var(--xh-font-size-lg);
+  --xh-_page-header-title-size: var(--xh-control-font-lg);
 }
 
 [data-scope='page-header'][data-part='root'][data-size='lg'] {
   --xh-_page-header-py: var(--xh-space-6);
   --xh-_page-header-row-gap: var(--xh-space-3);
-  --xh-_page-header-title-size: var(--xh-font-size-2xl);
+  --xh-_page-header-title-size: var(--xh-text-heading-2-size);
 }
 
 /* —— 分隔线 —— */
@@ -4084,7 +4094,7 @@ input[data-scope='mention'][data-part='input'] {
   flex: 1 1 auto;
   min-inline-size: 0;
   color: var(--xh-page-header-subtitle-fg, var(--xh-fg-muted));
-  font-size: var(--xh-page-header-subtitle-font-size, var(--xh-font-size-sm));
+  font-size: var(--xh-page-header-subtitle-font-size, var(--xh-text-secondary-size));
   line-height: var(--xh-leading-normal);
 }
 
@@ -4101,7 +4111,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='page-header'][data-part='footer'] {
   flex: 1 0 100%;
   color: var(--xh-page-header-footer-fg, var(--xh-fg-muted));
-  font-size: var(--xh-page-header-footer-font-size, var(--xh-font-size-sm));
+  font-size: var(--xh-page-header-footer-font-size, var(--xh-text-secondary-size));
   line-height: var(--xh-leading-normal);
 }
 
@@ -4126,8 +4136,8 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_password-input-font-size: var(--xh-text-body-size);
   --xh-_password-input-label-font-size: var(--xh-text-label-size);
   /* 提示与切换钮里的字形都比正文小一档，三个尺寸档各自换过，不是一个恒等的中转 */
-  --xh-_password-input-hint-font-size: var(--xh-font-size-sm);
-  --xh-_password-input-trigger-font-size: var(--xh-font-size-sm);
+  --xh-_password-input-hint-font-size: var(--xh-text-secondary-size);
+  --xh-_password-input-trigger-font-size: var(--xh-text-secondary-size);
 
   /* 盒子的圆角与盒内分段的圆角：分段贴在描边里侧，圆角要减去描边自己占的那一道，
      写同一个值会让分段的底色顶到圆角外面去 */
@@ -4141,7 +4151,7 @@ input[data-scope='mention'][data-part='input'] {
 
   /* 聚焦这一处的两个取值。语气只改描边，环恒用 --xh-ring-focus：
      环要在各种底上都读得出来，跟着语气走会掉到 warning 那种够不着对比度的档上 */
-  --xh-_password-input-border-focus: var(--xh-border-control);
+  --xh-_password-input-border-focus: var(--xh-border-control-focus);
   --xh-_password-input-ring: var(--xh-ring-focus);
 
   display: inline-flex;
@@ -4160,20 +4170,20 @@ input[data-scope='mention'][data-part='input'] {
   --xh-icon-size: var(--xh-password-input-icon-size, var(--xh-glyph-size-sm));
   --xh-_password-input-h: var(--xh-control-h-sm);
   --xh-_password-input-px: var(--xh-control-px-sm);
-  --xh-_password-input-font-size: var(--xh-font-size-sm);
-  --xh-_password-input-label-font-size: var(--xh-font-size-sm);
-  --xh-_password-input-hint-font-size: var(--xh-font-size-xs);
-  --xh-_password-input-trigger-font-size: var(--xh-font-size-xs);
+  --xh-_password-input-font-size: var(--xh-control-font-sm);
+  --xh-_password-input-label-font-size: var(--xh-control-font-sm);
+  --xh-_password-input-hint-font-size: var(--xh-control-caption-sm);
+  --xh-_password-input-trigger-font-size: var(--xh-control-caption-sm);
 }
 
 [data-scope='password-input'][data-part='root'][data-size='lg'] {
   --xh-icon-size: var(--xh-password-input-icon-size, var(--xh-glyph-size-lg));
   --xh-_password-input-h: var(--xh-control-h-lg);
   --xh-_password-input-px: var(--xh-control-px-lg);
-  --xh-_password-input-font-size: var(--xh-font-size-lg);
-  --xh-_password-input-label-font-size: var(--xh-font-size-lg);
-  --xh-_password-input-hint-font-size: var(--xh-font-size-md);
-  --xh-_password-input-trigger-font-size: var(--xh-font-size-md);
+  --xh-_password-input-font-size: var(--xh-control-font-lg);
+  --xh-_password-input-label-font-size: var(--xh-control-font-lg);
+  --xh-_password-input-hint-font-size: var(--xh-control-caption-lg);
+  --xh-_password-input-trigger-font-size: var(--xh-control-caption-lg);
 }
 
 /* —— 形态 —— */
@@ -4233,6 +4243,7 @@ input[data-scope='mention'][data-part='input'] {
    :focus-within 而不是 :focus——盒里有两个 Tab 停靠点，输入框与切换钮各占一个 */
 [data-scope='password-input'][data-part='control'] {
   display: inline-flex;
+  min-inline-size: var(--xh-password-input-control-min-w, var(--xh-control-min-w));
   /* 居中而不是拉伸：提示是一行文字，被拉满整框高度后字会贴着框顶。
      要占满整框高度的只有 input 与切换钮，它们各自明写 */
   align-items: center;
@@ -4278,6 +4289,7 @@ input[data-scope='mention'][data-part='input'] {
 /* —— 输入框 —— */
 /* 不写 control 时它自己就是那个框：描边、圆角、底都长在它身上 */
 [data-scope='password-input'][data-part='input'] {
+  min-inline-size: var(--xh-password-input-input-min-w, var(--xh-control-min-w));
   block-size: var(--xh-password-input-input-h, var(--xh-_password-input-h));
   padding-inline: var(--xh-password-input-input-px, var(--xh-_password-input-px));
   padding-block: 0;
@@ -4512,7 +4524,7 @@ input[data-scope='mention'][data-part='input'] {
   border-radius: var(--xh-popconfirm-radius, var(--xh-shape-surface));
   background: var(--xh-popconfirm-bg, var(--xh-bg-surface));
   color: var(--xh-popconfirm-fg, var(--xh-fg-default));
-  box-shadow: var(--xh-popconfirm-shadow, var(--xh-elevation-2));
+  box-shadow: var(--xh-popconfirm-shadow, var(--xh-elevation-floating));
   pointer-events: auto;
 }
 
@@ -4578,7 +4590,7 @@ input[data-scope='mention'][data-part='input'] {
   padding-inline: var(--xh-control-px-sm);
   border: var(--xh-stroke-thin) solid transparent;
   border-radius: var(--xh-shape-control);
-  font-size: var(--xh-font-size-sm);
+  font-size: var(--xh-text-secondary-size);
   font-weight: var(--xh-text-label-weight);
   line-height: var(--xh-leading-none);
   white-space: nowrap;
@@ -4724,6 +4736,9 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='popselect'][data-part='root'] {
+  /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+  --xh-icon-size: var(--xh-popselect-icon-size, var(--xh-glyph-size-text));
+
   display: inline-flex;
 }
 
@@ -4733,14 +4748,14 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_popselect-h: var(--xh-control-h-sm);
   --xh-_popselect-px: var(--xh-control-px-sm);
   --xh-_popselect-gap: var(--xh-control-gap-sm);
-  --xh-_popselect-font-size: var(--xh-font-size-sm);
+  --xh-_popselect-font-size: var(--xh-control-font-sm);
 }
 
 [data-scope='popselect']:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
   --xh-_popselect-h: var(--xh-control-h-lg);
   --xh-_popselect-px: var(--xh-control-px-lg);
   --xh-_popselect-gap: var(--xh-control-gap-lg);
-  --xh-_popselect-font-size: var(--xh-font-size-lg);
+  --xh-_popselect-font-size: var(--xh-control-font-lg);
 }
 
 /* —— 形态 —— */
@@ -4813,7 +4828,7 @@ input[data-scope='mention'][data-part='input'] {
   border-radius: var(--xh-popselect-content-radius, var(--xh-shape-surface));
   background: var(--xh-popselect-content-bg, var(--xh-bg-surface));
   color: var(--xh-popselect-content-fg, var(--xh-fg-default));
-  box-shadow: var(--xh-popselect-content-shadow, var(--xh-elevation-2));
+  box-shadow: var(--xh-popselect-content-shadow, var(--xh-elevation-floating));
   overflow-y: auto;
   pointer-events: auto;
 }
@@ -4916,8 +4931,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='popselect'][data-part='item-indicator']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
@@ -5035,7 +5050,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_result-gap: var(--xh-stack-gap-md);
   --xh-_result-py: var(--xh-section-py);
   --xh-_result-icon-size: 3.5rem;
-  --xh-_result-title-size: var(--xh-font-size-xl);
+  --xh-_result-title-size: var(--xh-text-heading-3-size);
   /* 说明的读行宽度：整句话不收窄就会拉成一条难读的长行 */
   --xh-_result-measure: 32rem;
   /* 图标区的语气色，由 data-status 换掉；没写 status 就退成中性 */
@@ -5062,14 +5077,14 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_result-gap: var(--xh-space-3);
   --xh-_result-py: var(--xh-space-6);
   --xh-_result-icon-size: 2.5rem;
-  --xh-_result-title-size: var(--xh-font-size-lg);
+  --xh-_result-title-size: var(--xh-control-font-lg);
 }
 
 [data-scope='result'][data-part='root'][data-size='lg'] {
   --xh-_result-gap: var(--xh-space-6);
   --xh-_result-py: var(--xh-space-8);
   --xh-_result-icon-size: 4.5rem;
-  --xh-_result-title-size: var(--xh-font-size-2xl);
+  --xh-_result-title-size: var(--xh-text-heading-2-size);
 }
 
 /* —— 语气 —— */
@@ -5160,8 +5175,14 @@ input[data-scope='mention'][data-part='input'] {
   font-size: var(--xh-segmented-font-size, var(--xh-_segmented-font-size));
 }
 
+/* 横排时外盒整体就是一档控件高：段被 align-items: stretch 撑满轨道内侧，与同行控件齐平 */
 [data-scope='segmented'][data-part='root'][data-orientation='horizontal'] {
   flex-direction: row;
+  block-size: var(--xh-segmented-h, var(--xh-_segmented-h));
+}
+
+[data-scope='segmented'][data-part='root'][data-orientation='horizontal'] [data-scope='segmented'][data-part='item'] {
+  block-size: auto;
 }
 
 [data-scope='segmented'][data-part='root'][data-orientation='vertical'] {
@@ -5217,14 +5238,14 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_segmented-h: var(--xh-control-h-sm);
   --xh-_segmented-px: var(--xh-control-px-sm);
   --xh-_segmented-gap: var(--xh-control-gap-sm);
-  --xh-_segmented-font-size: var(--xh-font-size-sm);
+  --xh-_segmented-font-size: var(--xh-control-font-sm);
 }
 
 [data-scope='segmented'][data-part='root'][data-size='lg'] {
   --xh-_segmented-h: var(--xh-control-h-lg);
   --xh-_segmented-px: var(--xh-control-px-lg);
   --xh-_segmented-gap: var(--xh-control-gap-lg);
-  --xh-_segmented-font-size: var(--xh-font-size-lg);
+  --xh-_segmented-font-size: var(--xh-control-font-lg);
 }
 
 /* 段自己也定位，于是与绝对定位的指示器按文档序比高低：
@@ -5321,7 +5342,7 @@ input[data-scope='mention'][data-part='input'] {
   block-size: var(--xh-_segmented-indicator-h);
   border-radius: var(--xh-segmented-indicator-radius, var(--xh-shape-inset));
   background: var(--xh-segmented-indicator-bg, var(--xh-_segmented-indicator-bg));
-  box-shadow: var(--xh-segmented-indicator-shadow, var(--xh-elevation-1));
+  box-shadow: var(--xh-segmented-indicator-shadow, var(--xh-elevation-raised));
   /* 段压在它上面，点击一律交给段；作者把它写在段之后时也不至于吞掉点击 */
   pointer-events: none;
   /* 用标准曲线而不是进场那条：滑块是被推过去的，起步就该有速度，
@@ -5602,9 +5623,9 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 三个尺寸档只换这几个私有槽，各段从 root 继承它们，换档不必给每个部件各写一条选择器 */
 [data-scope='statistic'][data-part='root'] {
-  --xh-_statistic-label-size: var(--xh-font-size-sm);
-  --xh-_statistic-value-size: var(--xh-font-size-2xl);
-  --xh-_statistic-affix-size: var(--xh-font-size-md);
+  --xh-_statistic-label-size: var(--xh-control-caption-md);
+  --xh-_statistic-value-size: var(--xh-text-heading-2-size);
+  --xh-_statistic-affix-size: var(--xh-control-font-md);
   --xh-_statistic-row-gap: var(--xh-space-1);
 
   /* 折行排布：标签独占一行，前缀、数值、后缀在下一行按基线对齐排在一起 */
@@ -5624,16 +5645,16 @@ input[data-scope='mention'][data-part='input'] {
 
 /* —— 尺寸 —— */
 [data-scope='statistic'][data-part='root'][data-size='sm'] {
-  --xh-_statistic-label-size: var(--xh-font-size-xs);
-  --xh-_statistic-value-size: var(--xh-font-size-xl);
-  --xh-_statistic-affix-size: var(--xh-font-size-sm);
+  --xh-_statistic-label-size: var(--xh-control-caption-sm);
+  --xh-_statistic-value-size: var(--xh-text-heading-3-size);
+  --xh-_statistic-affix-size: var(--xh-control-font-sm);
   --xh-_statistic-row-gap: var(--xh-space-0_5);
 }
 
 [data-scope='statistic'][data-part='root'][data-size='lg'] {
-  --xh-_statistic-label-size: var(--xh-font-size-md);
-  --xh-_statistic-value-size: var(--xh-font-size-3xl);
-  --xh-_statistic-affix-size: var(--xh-font-size-lg);
+  --xh-_statistic-label-size: var(--xh-control-caption-lg);
+  --xh-_statistic-value-size: var(--xh-text-heading-1-size);
+  --xh-_statistic-affix-size: var(--xh-control-font-lg);
   --xh-_statistic-row-gap: var(--xh-space-1_5);
 }
 
@@ -5674,11 +5695,14 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 缺省态：md 档、无语气。三轴规则只在它之上叠加，不改这一条 */
 [data-scope='tag'][data-part='root'] {
+  /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+  --xh-icon-size: var(--xh-tag-icon-size, var(--xh-glyph-size-text));
+
   /* 尺寸档只换这四个私有槽，下面的声明从它们取值 */
   --xh-_tag-gap: var(--xh-space-1);
   --xh-_tag-px: var(--xh-space-2);
   --xh-_tag-py: var(--xh-space-0_5);
-  --xh-_tag-font-size: var(--xh-font-size-xs);
+  --xh-_tag-font-size: var(--xh-text-caption-size);
 
   display: inline-flex;
   align-items: center;
@@ -5804,7 +5828,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_tag-gap: var(--xh-space-1_5);
   --xh-_tag-px: var(--xh-space-3);
   --xh-_tag-py: var(--xh-space-1);
-  --xh-_tag-font-size: var(--xh-font-size-sm);
+  --xh-_tag-font-size: var(--xh-text-secondary-size);
 }
 
 /* —— 禁用 —— */
@@ -5824,8 +5848,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='tag'][data-part='close-trigger']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
@@ -5870,7 +5894,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_timeline-gutter: var(--xh-space-3);
   --xh-_timeline-item-gap: var(--xh-space-5);
   --xh-_timeline-title-font-size: var(--xh-text-label-size);
-  --xh-_timeline-caption-font-size: var(--xh-font-size-xs);
+  --xh-_timeline-caption-font-size: var(--xh-text-caption-size);
   /* 标题首行占多高。圆点按它居中下移，圆心才落在标题这一行的中线上 */
   --xh-_timeline-line-h: calc(
     var(--xh-timeline-title-font-size, var(--xh-_timeline-title-font-size)) * var(--xh-leading-tight)
@@ -5903,7 +5927,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_timeline-dot-size: 8px;
   --xh-_timeline-gutter: var(--xh-space-2);
   --xh-_timeline-item-gap: var(--xh-space-4);
-  --xh-_timeline-title-font-size: var(--xh-font-size-sm);
+  --xh-_timeline-title-font-size: var(--xh-control-font-sm);
   /* 字号档最小就是 xs，时刻文本不再往下走，故不重声明 caption */
 }
 
@@ -5911,8 +5935,8 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_timeline-dot-size: 12px;
   --xh-_timeline-gutter: var(--xh-space-4);
   --xh-_timeline-item-gap: var(--xh-space-6);
-  --xh-_timeline-title-font-size: var(--xh-font-size-lg);
-  --xh-_timeline-caption-font-size: var(--xh-font-size-sm);
+  --xh-_timeline-title-font-size: var(--xh-control-font-lg);
+  --xh-_timeline-caption-font-size: var(--xh-text-secondary-size);
 }
 
 /* —— 条目 —— */
@@ -6154,7 +6178,7 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 三个尺寸档只换这几个私有槽，各部件从 root 继承它们，换档不必给每个部件各写一条选择器 */
 [data-scope='timer'][data-part='root'] {
-  --xh-_timer-digit-size: var(--xh-font-size-2xl);
+  --xh-_timer-digit-size: var(--xh-text-heading-2-size);
   --xh-_timer-gap: var(--xh-space-3);
   --xh-_timer-control-h: var(--xh-control-h-md);
   --xh-_timer-control-px: var(--xh-control-px-md);
@@ -6173,7 +6197,7 @@ input[data-scope='mention'][data-part='input'] {
 
 /* —— 尺寸 —— */
 [data-scope='timer'][data-part='root'][data-size='sm'] {
-  --xh-_timer-digit-size: var(--xh-font-size-xl);
+  --xh-_timer-digit-size: var(--xh-text-heading-3-size);
   --xh-_timer-gap: var(--xh-space-2);
   --xh-_timer-control-h: var(--xh-control-h-sm);
   --xh-_timer-control-px: var(--xh-control-px-sm);
@@ -6181,7 +6205,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='timer'][data-part='root'][data-size='lg'] {
-  --xh-_timer-digit-size: var(--xh-font-size-3xl);
+  --xh-_timer-digit-size: var(--xh-text-heading-1-size);
   --xh-_timer-gap: var(--xh-space-4);
   --xh-_timer-control-h: var(--xh-control-h-lg);
   --xh-_timer-control-px: var(--xh-control-px-lg);
@@ -6252,6 +6276,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='timer'][data-part='control']:focus-visible {
+  border-color: var(--xh-timer-control-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
   outline-offset: var(--xh-ring-offset);
 }
@@ -6601,6 +6626,9 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='alert'][data-part='root'] {
+  /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+  --xh-icon-size: var(--xh-alert-icon-size, var(--xh-glyph-size-text));
+
   /* 强调色随语气走，底色/描边/图标色都由它推导出来，换语气不必逐条属性各写一遍。
      没写 data-tone 时 --xh-_tone 没被声明，退回原来的 info 蓝 */
   --xh-_alert-accent: var(--xh-_tone-soft, var(--xh-color-info-500));
@@ -6620,7 +6648,7 @@ input[data-scope='mention'][data-part='input'] {
   border-radius: var(--xh-alert-radius, var(--xh-shape-surface));
   background: var(--xh-alert-bg, var(--xh-_alert-tint));
   color: var(--xh-alert-fg, var(--xh-fg-default));
-  font-size: var(--xh-alert-font-size, var(--xh-font-size-md));
+  font-size: var(--xh-alert-font-size, var(--xh-text-body-size));
   line-height: var(--xh-alert-leading, var(--xh-leading-normal));
 }
 
@@ -6636,7 +6664,7 @@ input[data-scope='mention'][data-part='input'] {
   justify-content: center;
   flex: none;
   /* 与首行文字对齐：图标框高取一行正文的行高 */
-  block-size: calc(var(--xh-font-size-md) * var(--xh-leading-normal));
+  block-size: calc(var(--xh-text-body-size) * var(--xh-leading-normal));
   inline-size: var(--xh-alert-icon-size, var(--xh-control-indicator-size));
   color: var(--xh-alert-icon-fg, var(--xh-_alert-accent));
 }
@@ -6652,7 +6680,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='alert'][data-part='title'] {
   flex: 1 1 auto;
   color: var(--xh-alert-title-fg, var(--xh-fg-default));
-  font-size: var(--xh-alert-title-font-size, var(--xh-font-size-md));
+  font-size: var(--xh-alert-title-font-size, var(--xh-text-label-size));
   font-weight: var(--xh-alert-title-font-weight, var(--xh-font-weight-semibold));
   line-height: var(--xh-alert-title-leading, var(--xh-leading-tight));
 }
@@ -6660,7 +6688,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='alert'][data-part='description'] {
   flex: 1 1 100%;
   color: var(--xh-alert-description-fg, var(--xh-fg-muted));
-  font-size: var(--xh-alert-description-font-size, var(--xh-font-size-sm));
+  font-size: var(--xh-alert-description-font-size, var(--xh-text-secondary-size));
 }
 
 /* 没写标题时说明自己占满这一行，否则它会挤在标题旁边 */
@@ -6711,8 +6739,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='alert'][data-part='close-trigger']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
@@ -6731,7 +6759,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_empty-state-gap: var(--xh-stack-gap-md);
   --xh-_empty-state-py: var(--xh-section-py);
   --xh-_empty-state-icon-size: 2.5rem;
-  --xh-_empty-state-title-size: var(--xh-font-size-lg);
+  --xh-_empty-state-title-size: var(--xh-control-font-lg);
   /* 说明的读行宽度：整句话不收窄就会拉成一条难读的长行 */
   --xh-_empty-state-measure: 32rem;
 
@@ -6755,14 +6783,14 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_empty-state-gap: var(--xh-space-2);
   --xh-_empty-state-py: var(--xh-space-4);
   --xh-_empty-state-icon-size: 2rem;
-  --xh-_empty-state-title-size: var(--xh-font-size-md);
+  --xh-_empty-state-title-size: var(--xh-control-font-md);
 }
 
 [data-scope='empty-state'][data-part='root'][data-size='lg'] {
   --xh-_empty-state-gap: var(--xh-space-6);
   --xh-_empty-state-py: var(--xh-space-8);
   --xh-_empty-state-icon-size: 3.5rem;
-  --xh-_empty-state-title-size: var(--xh-font-size-xl);
+  --xh-_empty-state-title-size: var(--xh-text-heading-3-size);
 }
 
 [data-scope='empty-state'][data-part='icon'] {
@@ -6774,7 +6802,7 @@ input[data-scope='mention'][data-part='input'] {
   inline-size: var(--xh-empty-state-icon-size, var(--xh-_empty-state-icon-size));
   color: var(--xh-empty-state-icon-fg, var(--xh-fg-subtle));
   /* 图标常是一个字形，字号跟着图标框走，line-height 不再另占高度 */
-  font-size: var(--xh-empty-state-icon-font-size, var(--xh-font-size-3xl));
+  font-size: var(--xh-empty-state-icon-font-size, var(--xh-text-heading-1-size));
   line-height: var(--xh-leading-none);
 }
 
@@ -6943,7 +6971,7 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='spinner'][data-part='label'] {
   color: var(--xh-spinner-label-fg, var(--xh-fg-muted));
-  font-size: var(--xh-spinner-label-size, var(--xh-font-size-sm));
+  font-size: var(--xh-spinner-label-size, var(--xh-text-secondary-size));
   line-height: var(--xh-leading-none);
 }
 
@@ -6969,6 +6997,9 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='accordion'][data-part='root'] {
+  /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+  --xh-icon-size: var(--xh-accordion-icon-size, var(--xh-glyph-size-text));
+
   /* 尺寸档只换这四个私有槽，标题栏从 root 继承它们，换档不必给每个部件各写一条选择器 */
   --xh-_accordion-trigger-h: var(--xh-control-h-md);
   --xh-_accordion-trigger-px: var(--xh-control-px-md);
@@ -6995,18 +7026,18 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_accordion-trigger-h: var(--xh-control-h-sm);
   --xh-_accordion-trigger-px: var(--xh-control-px-sm);
   --xh-_accordion-trigger-gap: var(--xh-control-gap-sm);
-  --xh-_accordion-trigger-font-size: var(--xh-font-size-sm);
+  --xh-_accordion-trigger-font-size: var(--xh-control-font-sm);
 }
 
 [data-scope='accordion'][data-part='root'][data-size='lg'] {
   --xh-_accordion-trigger-h: var(--xh-control-h-lg);
   --xh-_accordion-trigger-px: var(--xh-control-px-lg);
   --xh-_accordion-trigger-gap: var(--xh-control-gap-lg);
-  --xh-_accordion-trigger-font-size: var(--xh-font-size-lg);
+  --xh-_accordion-trigger-font-size: var(--xh-control-font-lg);
 }
 
 [data-scope='accordion'][data-part='item'] {
-  border-block-end: 1px solid var(--xh-accordion-item-border, var(--xh-border-default));
+  border-block-end: var(--xh-stroke-thin) solid var(--xh-accordion-item-border, var(--xh-border-default));
   min-inline-size: 0;
 }
 
@@ -7065,8 +7096,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='accordion'][data-part='indicator']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
@@ -7147,12 +7178,12 @@ input[data-scope='mention'][data-part='input'] {
 /* —— 尺寸 —— */
 /* 缺省档写在上面的基础规则里；链接的内边距走控件内边距那把尺，缺省的 --xh-space-3 即它的中档 */
 [data-scope='anchor'][data-part='root'][data-size='sm'] {
-  --xh-_anchor-font-size: var(--xh-font-size-sm);
+  --xh-_anchor-font-size: var(--xh-control-font-sm);
   --xh-_anchor-link-px: var(--xh-control-px-sm);
 }
 
 [data-scope='anchor'][data-part='root'][data-size='lg'] {
-  --xh-_anchor-font-size: var(--xh-font-size-lg);
+  --xh-_anchor-font-size: var(--xh-control-font-lg);
   --xh-_anchor-link-px: var(--xh-control-px-lg);
 }
 
@@ -7199,7 +7230,7 @@ input[data-scope='mention'][data-part='input'] {
   display: inline-flex;
   align-items: center;
   /* 一节的标题可能很长，压不住会把整列撑开 */
-  max-inline-size: var(--xh-anchor-link-max-w, 14rem);
+  max-inline-size: var(--xh-anchor-link-max-w, var(--xh-nav-link-max-w));
   padding-block: var(--xh-anchor-link-py, var(--xh-space-1));
   padding-inline: var(--xh-anchor-link-px, var(--xh-_anchor-link-px));
   border-radius: var(--xh-anchor-link-radius, var(--xh-shape-control));
@@ -7281,7 +7312,7 @@ input[data-scope='mention'][data-part='input'] {
   border-radius: var(--xh-avatar-radius, var(--xh-shape-pill));
   background: var(--xh-avatar-bg, var(--xh-bg-subtle));
   color: var(--xh-avatar-fg, var(--xh-fg-muted));
-  font-size: var(--xh-avatar-font-size, var(--xh-font-size-sm));
+  font-size: var(--xh-avatar-font-size, var(--xh-text-secondary-size));
   font-weight: var(--xh-avatar-font-weight, var(--xh-font-weight-medium));
   line-height: var(--xh-leading-none);
   user-select: none;
@@ -7292,13 +7323,13 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='avatar'][data-part='root'][data-size='sm'] {
   inline-size: var(--xh-control-h-sm);
   block-size: var(--xh-control-h-sm);
-  font-size: var(--xh-font-size-xs);
+  font-size: var(--xh-control-caption-sm);
 }
 
 [data-scope='avatar'][data-part='root'][data-size='lg'] {
   inline-size: var(--xh-control-h-lg);
   block-size: var(--xh-control-h-lg);
-  font-size: var(--xh-font-size-md);
+  font-size: var(--xh-control-caption-lg);
 }
 
 /* 不声明 display，加载完成前的 hidden 直接交给浏览器的 [hidden] 规则收起 */
@@ -7339,7 +7370,7 @@ input[data-scope='mention'][data-part='input'] {
   border-radius: var(--xh-shape-pill);
   background: var(--xh-badge-bg, var(--xh-bg-subtle));
   color: var(--xh-badge-fg, var(--xh-fg-default));
-  font-size: var(--xh-badge-font-size, var(--xh-font-size-xs));
+  font-size: var(--xh-badge-font-size, var(--xh-text-caption-size));
   font-weight: var(--xh-badge-font-weight, var(--xh-font-weight-medium));
   line-height: var(--xh-leading-none);
   white-space: nowrap;
@@ -7389,7 +7420,7 @@ input[data-scope='mention'][data-part='input'] {
   gap: var(--xh-space-1_5);
   padding-inline: var(--xh-space-3);
   padding-block: var(--xh-space-1);
-  font-size: var(--xh-font-size-sm);
+  font-size: var(--xh-text-secondary-size);
 }
 
 /* styles/breadcrumb.css */
@@ -7401,6 +7432,9 @@ input[data-scope='mention'][data-part='input'] {
 /* 根节点是 nav 地标，不参与排版：整条路径的行为全在 list 上，
    这里不给 display，UA 的 [hidden]{display:none} 就仍然压得住 */
 [data-scope='breadcrumb'][data-part='root'] {
+  /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+  --xh-icon-size: var(--xh-breadcrumb-icon-size, var(--xh-glyph-size-text));
+
   /* 尺寸档只换这两个私有槽，列表与链接都从 root 继承它们，换档不必给每个部件各写一条选择器 */
   --xh-_breadcrumb-font-size: var(--xh-text-label-size);
   --xh-_breadcrumb-gap: var(--xh-space-2);
@@ -7417,12 +7451,12 @@ input[data-scope='mention'][data-part='input'] {
 /* 缺省档写在上面的基础规则里。间距量的是路径里文字与分隔符之间的距离，
    不在控件间距那把尺上（那把尺的大档与中档同值），三档一律取空间尺 */
 [data-scope='breadcrumb'][data-part='root'][data-size='sm'] {
-  --xh-_breadcrumb-font-size: var(--xh-font-size-sm);
+  --xh-_breadcrumb-font-size: var(--xh-control-font-sm);
   --xh-_breadcrumb-gap: var(--xh-space-1_5);
 }
 
 [data-scope='breadcrumb'][data-part='root'][data-size='lg'] {
-  --xh-_breadcrumb-font-size: var(--xh-font-size-lg);
+  --xh-_breadcrumb-font-size: var(--xh-control-font-lg);
   --xh-_breadcrumb-gap: var(--xh-space-3);
 }
 
@@ -7460,7 +7494,7 @@ input[data-scope='mention'][data-part='input'] {
   align-items: center;
   gap: var(--xh-breadcrumb-link-gap, var(--xh-space-1));
   /* 一层的名字可能很长（文档标题、订单号），压不住会把整条路径撑开 */
-  max-inline-size: var(--xh-breadcrumb-link-max-w, 12rem);
+  max-inline-size: var(--xh-breadcrumb-link-max-w, var(--xh-nav-link-max-w));
   padding-inline: var(--xh-breadcrumb-link-px, var(--xh-space-1));
   border-radius: var(--xh-breadcrumb-link-radius, var(--xh-shape-control));
   color: inherit;
@@ -7528,8 +7562,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='breadcrumb'][data-part='separator']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
@@ -7644,7 +7678,7 @@ input[data-scope='mention'][data-part='input'] {
 
   block-size: var(--xh-button-h, var(--xh-control-h-sm));
   padding-inline: var(--xh-button-px, var(--xh-control-px-sm));
-  font-size: var(--xh-button-font-size, var(--xh-font-size-sm));
+  font-size: var(--xh-button-font-size, var(--xh-control-font-sm));
 }
 
 [data-scope='button'][data-part='root'][data-size='lg'] {
@@ -7652,7 +7686,7 @@ input[data-scope='mention'][data-part='input'] {
 
   block-size: var(--xh-button-h, var(--xh-control-h-lg));
   padding-inline: var(--xh-button-px, var(--xh-control-px-lg));
-  font-size: var(--xh-button-font-size, var(--xh-font-size-lg));
+  font-size: var(--xh-button-font-size, var(--xh-control-font-lg));
 }
 
 /* 只有图标：左右内距清零，宽度靠比例跟住当前档的高度——换尺寸档时仍是正方形，
@@ -7685,6 +7719,9 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='calendar'][data-part='root'] {
+  /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+  --xh-icon-size: var(--xh-calendar-icon-size, var(--xh-glyph-size-text));
+
   display: flex;
   flex-direction: column;
   gap: var(--xh-calendar-gap, var(--xh-space-3));
@@ -7873,7 +7910,7 @@ input[data-scope='mention'][data-part='input'] {
   display: grid;
   place-items: center;
   color: var(--xh-calendar-week-number-fg, var(--xh-fg-subtle));
-  font-size: var(--xh-calendar-week-number-font-size, var(--xh-font-size-xs));
+  font-size: var(--xh-calendar-week-number-font-size, var(--xh-text-caption-size));
   font-variant-numeric: tabular-nums;
   user-select: none;
 }
@@ -7891,7 +7928,7 @@ input[data-scope='mention'][data-part='input'] {
   justify-content: center;
   block-size: var(--xh-calendar-week-day-h, var(--xh-control-h-sm));
   color: var(--xh-calendar-week-day-fg, var(--xh-fg-subtle));
-  font-size: var(--xh-calendar-week-day-font-size, var(--xh-font-size-xs));
+  font-size: var(--xh-calendar-week-day-font-size, var(--xh-text-caption-size));
   font-weight: var(--xh-calendar-week-day-font-weight, var(--xh-font-weight-medium));
   line-height: var(--xh-leading-none);
   user-select: none;
@@ -7997,8 +8034,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='calendar'][data-part='prev-trigger']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-chevron-left) center / contain no-repeat;
@@ -8008,8 +8045,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='calendar'][data-part='next-trigger']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
@@ -8045,7 +8082,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='card'][data-part='root'][data-variant='elevated'] {
-  box-shadow: var(--xh-elevation-2);
+  box-shadow: var(--xh-elevation-raised);
 }
 
 [data-scope='card'][data-part='root'][data-variant='ghost'] {
@@ -8065,7 +8102,7 @@ input[data-scope='mention'][data-part='input'] {
 @media (hover: hover) {
   [data-scope='card'][data-part='root'][data-hoverable]:hover {
     border-color: var(--xh-card-border, var(--xh-border-strong));
-    box-shadow: var(--xh-elevation-2);
+    box-shadow: var(--xh-elevation-raised);
   }
 }
 
@@ -8092,18 +8129,18 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='card'][data-part='title'] {
-  font-size: var(--xh-card-title-font-size, var(--xh-font-size-md));
+  font-size: var(--xh-card-title-font-size, var(--xh-text-label-size));
   font-weight: var(--xh-font-weight-medium);
   line-height: var(--xh-leading-tight);
 }
 
 [data-scope='card'][data-part='root'][data-size='lg'] [data-part='title'] {
-  font-size: var(--xh-card-title-font-size, var(--xh-font-size-lg));
+  font-size: var(--xh-card-title-font-size, var(--xh-control-font-lg));
 }
 
 [data-scope='card'][data-part='description'] {
   color: var(--xh-fg-muted);
-  font-size: var(--xh-font-size-sm);
+  font-size: var(--xh-text-secondary-size);
   line-height: var(--xh-leading-normal);
 }
 
@@ -8146,6 +8183,9 @@ input[data-scope='mention'][data-part='input'] {
 /* 根节点是 region 地标：把上一张 / 视口 / 下一张排成一行，指示点另起一行。
    两端按钮浮在视口上还是排在两侧由作者定，这里只给最朴素的一版排布 */
 [data-scope='carousel'][data-part='root'] {
+  /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+  --xh-icon-size: var(--xh-carousel-icon-size, var(--xh-glyph-size-text));
+
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -8339,8 +8379,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='carousel'][data-part='prev-trigger']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-chevron-left) center / contain no-repeat;
@@ -8350,8 +8390,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='carousel'][data-part='next-trigger']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
@@ -8403,6 +8443,9 @@ input[data-scope='mention'][data-part='input'] {
    标签占满整行把后面的挤到下一行，触发器与清空按钮就并排落在同一行上。
    这样作者少写标签、少写清空按钮，剩下的部件也不会塌 */
 [data-scope='cascader'][data-part='root'] {
+  /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+  --xh-icon-size: var(--xh-cascader-icon-size, var(--xh-glyph-size-text));
+
   display: inline-flex;
   flex-wrap: wrap;
   align-items: center;
@@ -8443,16 +8486,16 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_cascader-h: var(--xh-control-h-sm);
   --xh-_cascader-px: var(--xh-control-px-sm);
   --xh-_cascader-gap: var(--xh-control-gap-sm);
-  --xh-_cascader-font-size: var(--xh-font-size-sm);
-  --xh-_cascader-label-font-size: var(--xh-font-size-sm);
+  --xh-_cascader-font-size: var(--xh-control-font-sm);
+  --xh-_cascader-label-font-size: var(--xh-control-font-sm);
 }
 
 [data-scope='cascader']:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
   --xh-_cascader-h: var(--xh-control-h-lg);
   --xh-_cascader-px: var(--xh-control-px-lg);
   --xh-_cascader-gap: var(--xh-control-gap-lg);
-  --xh-_cascader-font-size: var(--xh-font-size-lg);
-  --xh-_cascader-label-font-size: var(--xh-font-size-lg);
+  --xh-_cascader-font-size: var(--xh-control-font-lg);
+  --xh-_cascader-label-font-size: var(--xh-control-font-lg);
 }
 
 [data-scope='cascader'][data-part='label'] {
@@ -8477,7 +8520,7 @@ input[data-scope='mention'][data-part='input'] {
   align-items: center;
   justify-content: space-between;
   gap: var(--xh-cascader-trigger-gap, var(--xh-_cascader-gap));
-  min-inline-size: var(--xh-cascader-trigger-min-w, 14rem);
+  min-inline-size: var(--xh-cascader-trigger-min-w, var(--xh-control-min-w));
   block-size: var(--xh-cascader-trigger-h, var(--xh-_cascader-h));
   padding-inline: var(--xh-cascader-trigger-px, var(--xh-_cascader-px));
   border: var(--xh-stroke-thin) solid var(--xh-cascader-trigger-border, var(--xh-_cascader-border));
@@ -8504,6 +8547,7 @@ input[data-scope='mention'][data-part='input'] {
 /* trigger 是整个控件唯一的 Tab 停靠点（展开后停靠点才移进列里），落焦必须看得见。
    聚焦环恒用固定环色，不随语气走 */
 [data-scope='cascader'][data-part='trigger']:focus-visible {
+  border-color: var(--xh-cascader-trigger-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
   outline-offset: var(--xh-ring-offset);
 }
@@ -8565,8 +8609,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='cascader'][data-part='indicator']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
@@ -8595,7 +8639,7 @@ input[data-scope='mention'][data-part='input'] {
   background: var(--xh-cascader-action-bg, transparent);
   color: var(--xh-cascader-action-fg, var(--xh-fg-muted));
   font-family: inherit;
-  font-size: var(--xh-cascader-action-font-size, var(--xh-font-size-sm));
+  font-size: var(--xh-cascader-action-font-size, var(--xh-text-secondary-size));
   line-height: var(--xh-leading-none);
   cursor: pointer;
   user-select: none;
@@ -8640,7 +8684,7 @@ input[data-scope='mention'][data-part='input'] {
   border-radius: var(--xh-cascader-content-radius, var(--xh-shape-surface));
   background: var(--xh-cascader-content-bg, var(--xh-bg-surface));
   color: var(--xh-cascader-content-fg, var(--xh-fg-default));
-  box-shadow: var(--xh-cascader-content-shadow, var(--xh-elevation-2));
+  box-shadow: var(--xh-cascader-content-shadow, var(--xh-elevation-floating));
   /* 列多到放不下时整体横向滚动；纵向溢出归每一列自己 */
   overflow-x: auto;
   pointer-events: auto;
@@ -8811,8 +8855,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='cascader'][data-part='item-indicator']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
@@ -8832,8 +8876,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='cascader'][data-part='item-indicator'][data-indeterminate]:not([data-state='checked']):empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
@@ -8958,8 +9002,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='cascader'][data-part='clear-trigger']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
@@ -8999,9 +9043,12 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='checkbox'][data-part='root'] {
+  /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+  --xh-icon-size: var(--xh-checkbox-icon-size, var(--xh-glyph-size-text));
+
   /* 尺寸档只换方框边长这一个私有槽，勾的字号按边长的比例跟着走；
      指示器从 root 继承这两个槽，换档不必给每个部件各写一条选择器 */
-  --xh-_checkbox-box: var(--xh-space-4);
+  --xh-_checkbox-box: var(--xh-control-indicator-size);
   --xh-_checkbox-glyph: calc(var(--xh-_checkbox-box) * 0.75);
 
   /* 选中态的底与描边随语气走。没写 data-tone 时 --xh-_tone 没被声明，退回原来的品牌色 */
@@ -9017,7 +9064,7 @@ input[data-scope='mention'][data-part='input'] {
   inline-size: var(--xh-_checkbox-box);
   block-size: var(--xh-_checkbox-box);
   padding: 0;
-  border: 1px solid var(--xh-checkbox-border, var(--xh-border-control));
+  border: var(--xh-stroke-thin) solid var(--xh-checkbox-border, var(--xh-border-control));
   border-radius: var(--xh-shape-inset);
   background: var(--xh-checkbox-bg, var(--xh-bg-canvas));
   color: var(--xh-checkbox-fg, var(--xh-_checkbox-on-accent));
@@ -9062,11 +9109,11 @@ input[data-scope='mention'][data-part='input'] {
 /* —— 尺寸 —— */
 /* 缺省档写在上面的基础规则里 */
 [data-scope='checkbox'][data-part='root'][data-size='sm'] {
-  --xh-_checkbox-box: var(--xh-space-3);
+  --xh-_checkbox-box: calc(var(--xh-control-indicator-size) - var(--xh-space-1));
 }
 
 [data-scope='checkbox'][data-part='root'][data-size='lg'] {
-  --xh-_checkbox-box: var(--xh-space-5);
+  --xh-_checkbox-box: calc(var(--xh-control-indicator-size) + var(--xh-space-1));
 }
 
 [data-scope='checkbox'][data-part='indicator'] {
@@ -9083,8 +9130,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='checkbox'][data-part='indicator']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
@@ -9140,6 +9187,9 @@ input[data-scope='mention'][data-part='input'] {
 /* 组容器：label、trigger、条目都是它的直接子节点，排布方式只能读 data-orientation——
    连接层明说了 role=group 不接受 aria-orientation，那个属性它根本没输出 */
 [data-scope='checkbox-group'][data-part='root'] {
+  /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+  --xh-icon-size: var(--xh-checkbox-group-icon-size, var(--xh-glyph-size-text));
+
   display: flex;
   gap: var(--xh-checkbox-group-gap, var(--xh-stack-gap-md));
 }
@@ -9195,7 +9245,6 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='checkbox-group'][data-part='item'][data-disabled] {
   color: var(--xh-checkbox-group-item-fg-disabled, var(--xh-fg-disabled));
   cursor: not-allowed;
-  opacity: var(--xh-state-disabled-opacity);
 }
 
 /* 只读整组都改不动，但不是禁用：颜色照常，只把"可点"这个暗示收回来。
@@ -9214,8 +9263,8 @@ input[data-scope='mention'][data-part='input'] {
   flex: none;
   align-items: center;
   justify-content: center;
-  inline-size: var(--xh-checkbox-group-indicator-size, 16px);
-  block-size: var(--xh-checkbox-group-indicator-size, 16px);
+  inline-size: var(--xh-checkbox-group-indicator-size, var(--xh-control-indicator-size));
+  block-size: var(--xh-checkbox-group-indicator-size, var(--xh-control-indicator-size));
   border: var(--xh-stroke-thin) solid var(--xh-checkbox-group-indicator-border, var(--xh-border-control));
   border-radius: var(--xh-checkbox-group-indicator-radius, var(--xh-shape-inset));
   background: var(--xh-checkbox-group-indicator-bg, var(--xh-bg-canvas));
@@ -9251,8 +9300,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='checkbox-group'][data-part='indicator'][data-state='checked']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
@@ -9264,8 +9313,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='checkbox-group'][data-part='trigger'][data-state='all']::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
@@ -9275,8 +9324,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='checkbox-group'][data-part='trigger'][data-state='some']::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
@@ -9317,7 +9366,6 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='checkbox-group'][data-part='trigger'][data-disabled] {
   color: var(--xh-checkbox-group-trigger-fg-disabled, var(--xh-fg-disabled));
   cursor: not-allowed;
-  opacity: var(--xh-state-disabled-opacity);
 }
 
 /* 只读与禁用会同时出现在 trigger 上（连接层两个属性各写各的），
@@ -9383,7 +9431,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='clipboard'][data-part='input'] {
-  min-inline-size: var(--xh-clipboard-input-min-w, 12rem);
+  min-inline-size: var(--xh-clipboard-input-min-w, var(--xh-control-min-w));
   block-size: var(--xh-clipboard-input-h, var(--xh-control-h-md));
   padding-inline: var(--xh-clipboard-input-px, var(--xh-control-px-md));
   padding-block: 0;
@@ -9402,6 +9450,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='clipboard'][data-part='input']:focus-visible {
+  border-color: var(--xh-clipboard-input-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
   outline-offset: var(--xh-ring-offset);
 }
@@ -9539,18 +9588,13 @@ input[data-scope='mention'][data-part='input'] {
   overflow-wrap: anywhere;
 }
 
-/* 语法配色。令牌集里没有语法色这一类，所以就地声明成可覆盖的变量：
-   注释与标点复用既有语义色，只有三种真需要色相的走 light-dark()。
-   每条先写浅色兜底再写 light-dark()：不认后者的旧引擎由级联保留前一条，退化成单色代码。 */
+/* 语法配色：注释与标点复用既有语义色，三种真需要色相的走 --xh-syntax-* 语法令牌（随主题明暗切换）。 */
 [data-scope='code-block'][data-part='root'] {
   --xh-code-block-comment-fg: var(--xh-fg-muted);
   --xh-code-block-punctuation-fg: var(--xh-fg-subtle);
-  --xh-code-block-string-fg: #0a7f5f;
-  --xh-code-block-string-fg: light-dark(#0a7f5f, #7ee2b8);
-  --xh-code-block-number-fg: #9a5b00;
-  --xh-code-block-number-fg: light-dark(#9a5b00, #f0b866);
-  --xh-code-block-keyword-fg: #8250df;
-  --xh-code-block-keyword-fg: light-dark(#8250df, #d2a8ff);
+  --xh-code-block-string-fg: var(--xh-syntax-string);
+  --xh-code-block-number-fg: var(--xh-syntax-number);
+  --xh-code-block-keyword-fg: var(--xh-syntax-keyword);
 }
 
 /* 记号本身不带任何布局，只上色：它是 <code> 里的行内片段，多一点盒模型都会破坏对齐 */
@@ -9597,14 +9641,14 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_collapsible-trigger-h: var(--xh-control-h-sm);
   --xh-_collapsible-trigger-px: var(--xh-control-px-sm);
   --xh-_collapsible-trigger-gap: var(--xh-control-gap-sm);
-  --xh-_collapsible-trigger-font-size: var(--xh-font-size-sm);
+  --xh-_collapsible-trigger-font-size: var(--xh-control-font-sm);
 }
 
 [data-scope='collapsible'][data-part='root'][data-size='lg'] {
   --xh-_collapsible-trigger-h: var(--xh-control-h-lg);
   --xh-_collapsible-trigger-px: var(--xh-control-px-lg);
   --xh-_collapsible-trigger-gap: var(--xh-control-gap-lg);
-  --xh-_collapsible-trigger-font-size: var(--xh-font-size-lg);
+  --xh-_collapsible-trigger-font-size: var(--xh-control-font-lg);
 }
 
 [data-scope='collapsible'][data-part='trigger'] {
@@ -9738,7 +9782,7 @@ input[data-scope='mention'][data-part='input'] {
   display: inline-flex;
   align-items: center;
   gap: var(--xh-color-picker-trigger-gap, var(--xh-control-gap-md));
-  min-inline-size: var(--xh-color-picker-trigger-min-w, 9rem);
+  min-inline-size: var(--xh-color-picker-trigger-min-w, var(--xh-control-min-w));
   block-size: var(--xh-color-picker-trigger-h, var(--xh-control-h-md));
   padding-inline: var(--xh-color-picker-trigger-px, var(--xh-control-px-md));
   border: var(--xh-stroke-thin) solid var(--xh-color-picker-trigger-border, var(--xh-border-control));
@@ -9757,6 +9801,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='color-picker'][data-part='trigger']:focus-visible {
+  border-color: var(--xh-color-picker-trigger-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
   outline-offset: var(--xh-ring-offset);
 }
@@ -9825,7 +9870,7 @@ input[data-scope='mention'][data-part='input'] {
   border-radius: var(--xh-color-picker-content-radius, var(--xh-shape-surface));
   background: var(--xh-color-picker-content-bg, var(--xh-bg-surface));
   color: var(--xh-color-picker-content-fg, var(--xh-fg-default));
-  box-shadow: var(--xh-color-picker-content-shadow, var(--xh-elevation-2));
+  box-shadow: var(--xh-color-picker-content-shadow, var(--xh-elevation-floating));
   pointer-events: auto;
 }
 
@@ -9900,7 +9945,7 @@ input[data-scope='mention'][data-part='input'] {
   border: var(--xh-stroke-thick) solid var(--xh-color-picker-thumb-border, var(--xh-color-neutral-0));
   border-radius: var(--xh-color-picker-thumb-radius, var(--xh-shape-pill));
   background: transparent;
-  box-shadow: var(--xh-color-picker-thumb-shadow, var(--xh-elevation-1));
+  box-shadow: var(--xh-color-picker-thumb-shadow, var(--xh-elevation-raised));
   cursor: grab;
   transition: scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
@@ -9926,7 +9971,7 @@ input[data-scope='mention'][data-part='input'] {
    放大用 scale 而不是改尺寸：变换绕自身中心发生，圆心不动，负外边距的算式不用跟着改 */
 [data-scope='color-picker'][data-part='area-thumb'][data-dragging],
 [data-scope='color-picker'][data-part='channel-slider-thumb'][data-dragging] {
-  scale: var(--xh-color-picker-thumb-scale-dragging, 1.15);
+  scale: var(--xh-color-picker-thumb-scale-dragging, var(--xh-motion-scale-drag));
   cursor: grabbing;
 }
 
@@ -10018,12 +10063,12 @@ input[data-scope='mention'][data-part='input'] {
   color: inherit;
   /* 表单控件不继承页面字体，只给字号会让输入框用 UA 默认字族，与周围文本对不上 */
   font-family: inherit;
-  font-size: var(--xh-color-picker-input-font-size, var(--xh-font-size-sm));
+  font-size: var(--xh-color-picker-input-font-size, var(--xh-text-secondary-size));
   text-align: center;
 }
 
 [data-scope='color-picker'][data-part='channel-input']:focus-visible {
-  border-color: var(--xh-color-picker-input-border-focus, var(--xh-ring-focus));
+  border-color: var(--xh-color-picker-input-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
   /* 往内收一道发丝：输入框贴着面板边排，环画在外沿会压到相邻通道 */
   outline-offset: calc(-1 * var(--xh-stroke-thin));
@@ -10057,7 +10102,7 @@ input[data-scope='mention'][data-part='input'] {
   background: var(--xh-color-picker-action-bg, transparent);
   color: var(--xh-color-picker-action-fg, var(--xh-fg-muted));
   font-family: inherit;
-  font-size: var(--xh-color-picker-action-font-size, var(--xh-font-size-sm));
+  font-size: var(--xh-color-picker-action-font-size, var(--xh-text-secondary-size));
   line-height: var(--xh-leading-none);
   cursor: pointer;
   user-select: none;
@@ -10220,6 +10265,9 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='combobox'][data-part='root'] {
+  /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+  --xh-icon-size: var(--xh-combobox-icon-size, var(--xh-glyph-size-text));
+
   display: inline-flex;
   flex-direction: column;
   gap: var(--xh-combobox-gap, var(--xh-stack-gap-md));
@@ -10236,16 +10284,16 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_combobox-h: var(--xh-control-h-sm);
   --xh-_combobox-px: var(--xh-control-px-sm);
   --xh-_combobox-gap: var(--xh-control-gap-sm);
-  --xh-_combobox-font-size: var(--xh-font-size-sm);
-  --xh-_combobox-label-font-size: var(--xh-font-size-sm);
+  --xh-_combobox-font-size: var(--xh-control-font-sm);
+  --xh-_combobox-label-font-size: var(--xh-control-font-sm);
 }
 
 [data-scope='combobox']:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
   --xh-_combobox-h: var(--xh-control-h-lg);
   --xh-_combobox-px: var(--xh-control-px-lg);
   --xh-_combobox-gap: var(--xh-control-gap-lg);
-  --xh-_combobox-font-size: var(--xh-font-size-lg);
-  --xh-_combobox-label-font-size: var(--xh-font-size-lg);
+  --xh-_combobox-font-size: var(--xh-control-font-lg);
+  --xh-_combobox-label-font-size: var(--xh-control-font-lg);
 }
 
 /* —— 形态 —— */
@@ -10288,7 +10336,7 @@ input[data-scope='mention'][data-part='input'] {
   display: inline-flex;
   align-items: center;
   gap: var(--xh-combobox-control-gap, var(--xh-_combobox-gap));
-  min-inline-size: var(--xh-combobox-control-min-w, var(--xh-overlay-min-w));
+  min-inline-size: var(--xh-combobox-control-min-w, var(--xh-control-min-w));
   block-size: var(--xh-combobox-control-h, var(--xh-_combobox-h));
   padding-inline: var(--xh-combobox-control-px, var(--xh-_combobox-px));
   border: var(--xh-stroke-thin) solid var(--xh-combobox-control-border, var(--xh-_combobox-control-border));
@@ -10311,7 +10359,7 @@ input[data-scope='mention'][data-part='input'] {
    环若长在里面那个透明的 input 身上，就会缩在文字区里、与框错开一圈。
    input 是这里唯一可聚焦的常规节点，:focus-within 与它的 :focus-visible 等价 */
 [data-scope='combobox'][data-part='control']:focus-within {
-  border-color: var(--xh-combobox-control-border-focus, var(--xh-_combobox-ring));
+  border-color: var(--xh-combobox-control-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
   outline: var(--xh-ring-width) solid var(--xh-_combobox-ring);
   outline-offset: var(--xh-ring-offset);
 }
@@ -10397,7 +10445,7 @@ input[data-scope='mention'][data-part='input'] {
   background: var(--xh-combobox-action-bg, transparent);
   color: var(--xh-combobox-action-fg, var(--xh-fg-muted));
   font-family: inherit;
-  font-size: var(--xh-combobox-action-font-size, var(--xh-font-size-sm));
+  font-size: var(--xh-combobox-action-font-size, var(--xh-text-secondary-size));
   line-height: var(--xh-leading-none);
   cursor: pointer;
   user-select: none;
@@ -10426,8 +10474,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='combobox'][data-part='trigger']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
@@ -10438,8 +10486,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='combobox'][data-part='clear-trigger']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
@@ -10481,7 +10529,7 @@ input[data-scope='mention'][data-part='input'] {
   display: flex;
   flex-direction: column;
   min-inline-size: var(--xh-combobox-content-min-w, var(--xh-overlay-min-w));
-  max-inline-size: var(--xh-combobox-content-max-w, 24rem);
+  max-inline-size: var(--xh-combobox-content-max-w, var(--xh-overlay-max-w-lg));
   max-block-size: min(var(--xh-combobox-content-max-h, var(--xh-overlay-max-h)), var(--xh-_combobox-available-h));
   padding-block: var(--xh-combobox-content-py, var(--xh-space-1));
   padding-inline: var(--xh-combobox-content-px, var(--xh-space-1));
@@ -10489,7 +10537,7 @@ input[data-scope='mention'][data-part='input'] {
   border-radius: var(--xh-combobox-content-radius, var(--xh-shape-surface));
   background: var(--xh-combobox-content-bg, var(--xh-bg-surface));
   color: var(--xh-combobox-content-fg, var(--xh-fg-default));
-  box-shadow: var(--xh-combobox-content-shadow, var(--xh-elevation-2));
+  box-shadow: var(--xh-combobox-content-shadow, var(--xh-elevation-floating));
   overflow-y: auto;
   pointer-events: auto;
 }
@@ -10536,7 +10584,7 @@ input[data-scope='mention'][data-part='input'] {
   padding-block: var(--xh-combobox-group-label-py, var(--xh-space-1));
   padding-inline: var(--xh-combobox-group-label-px, var(--xh-control-px-md));
   color: var(--xh-combobox-group-label-fg, var(--xh-fg-subtle));
-  font-size: var(--xh-combobox-group-label-font-size, var(--xh-font-size-xs));
+  font-size: var(--xh-combobox-group-label-font-size, var(--xh-text-caption-size));
   font-weight: var(--xh-combobox-group-label-font-weight, var(--xh-font-weight-medium));
   line-height: var(--xh-leading-none);
   user-select: none;
@@ -10625,8 +10673,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='combobox'][data-part='item-indicator']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
@@ -10653,7 +10701,7 @@ input[data-scope='mention'][data-part='input'] {
   color: var(--xh-combobox-empty-fg, var(--xh-fg-subtle));
   font-size: var(--xh-combobox-empty-font-size, var(--xh-_combobox-font-size));
   line-height: var(--xh-leading-none);
-  box-shadow: var(--xh-combobox-empty-shadow, var(--xh-elevation-2));
+  box-shadow: var(--xh-combobox-empty-shadow, var(--xh-elevation-floating));
   text-align: center;
   pointer-events: auto;
 }
@@ -10690,14 +10738,15 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 焦点环画在整个框上；用 focus-within 使焦点落在发送按钮时同样点亮 */
 [data-scope='composer'][data-part='root']:focus-within {
+  border-color: var(--xh-composer-root-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
   outline-offset: var(--xh-ring-offset);
 }
 
-/* 禁用态罩住整框，内部 textarea 与按钮另有原生 disabled 管交互 */
+/* 禁用态只换光标与底色；文字由 textarea 与按钮各自走 fg-disabled，整框不再压 opacity，两者叠起来会压到读不出 */
 [data-scope='composer'][data-part='root'][data-disabled] {
   cursor: not-allowed;
-  opacity: var(--xh-state-disabled-opacity);
+  background: var(--xh-composer-bg-disabled, var(--xh-bg-subtle));
 }
 
 /* 无边框透明底，融进 root 的框里；min-inline-size: 0 防止长内容把弹性子项撑出容器 */
@@ -10837,6 +10886,9 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 根只是把触发区与浮层圈在一起做作用域，不该在作者布局里多插一层盒子 */
 [data-scope='context-menu'][data-part='root'] {
+  /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+  --xh-icon-size: var(--xh-context-menu-icon-size, var(--xh-glyph-size-text));
+
   display: contents;
 }
 
@@ -10851,14 +10903,14 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_context-menu-item-py: var(--xh-space-1);
   --xh-_context-menu-item-px: var(--xh-control-px-sm);
   --xh-_context-menu-item-gap: var(--xh-control-gap-sm);
-  --xh-_context-menu-font-size: var(--xh-font-size-sm);
+  --xh-_context-menu-font-size: var(--xh-control-font-sm);
 }
 
 [data-scope='context-menu']:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
   --xh-_context-menu-item-py: var(--xh-space-2);
   --xh-_context-menu-item-px: var(--xh-control-px-lg);
   --xh-_context-menu-item-gap: var(--xh-control-gap-lg);
-  --xh-_context-menu-font-size: var(--xh-font-size-lg);
+  --xh-_context-menu-font-size: var(--xh-control-font-lg);
 }
 
 /* 触发区是作者自己的一块内容，尺寸与排布归他；这里只管交互观感：
@@ -10887,7 +10939,7 @@ input[data-scope='mention'][data-part='input'] {
   border-radius: var(--xh-context-menu-radius, var(--xh-shape-surface));
   background: var(--xh-context-menu-bg, var(--xh-bg-surface));
   color: var(--xh-context-menu-fg, var(--xh-fg-default));
-  box-shadow: var(--xh-context-menu-shadow, var(--xh-elevation-2));
+  box-shadow: var(--xh-context-menu-shadow, var(--xh-elevation-floating));
   /* 条目超过上限就在菜单内部滚。条目的焦点环是内收的，滚动容器裁在内边距缘上，环切不着 */
   overflow-y: auto;
   pointer-events: auto;
@@ -10938,7 +10990,7 @@ input[data-scope='mention'][data-part='input'] {
   padding-block: var(--xh-context-menu-group-label-py, var(--xh-space-1));
   padding-inline: var(--xh-context-menu-group-label-px, var(--xh-_context-menu-item-px));
   color: var(--xh-context-menu-group-label-fg, var(--xh-fg-subtle));
-  font-size: var(--xh-context-menu-group-label-font-size, var(--xh-font-size-xs));
+  font-size: var(--xh-context-menu-group-label-font-size, var(--xh-text-caption-size));
   font-weight: var(--xh-context-menu-group-label-font-weight, var(--xh-font-weight-medium));
   line-height: var(--xh-leading-none);
   user-select: none;
@@ -11063,8 +11115,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='context-menu'][data-part='item-indicator']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
@@ -11130,16 +11182,16 @@ input[data-scope='mention'][data-part='input'] {
   --xh-icon-size: var(--xh-date-field-icon-size, var(--xh-glyph-size-sm));
   --xh-_date-field-control-h: var(--xh-control-h-sm);
   --xh-_date-field-control-px: var(--xh-control-px-sm);
-  --xh-_date-field-font-size: var(--xh-font-size-sm);
-  --xh-_date-field-label-font-size: var(--xh-font-size-sm);
+  --xh-_date-field-font-size: var(--xh-control-font-sm);
+  --xh-_date-field-label-font-size: var(--xh-control-font-sm);
 }
 
 [data-scope='date-field'][data-part='root'][data-size='lg'] {
   --xh-icon-size: var(--xh-date-field-icon-size, var(--xh-glyph-size-lg));
   --xh-_date-field-control-h: var(--xh-control-h-lg);
   --xh-_date-field-control-px: var(--xh-control-px-lg);
-  --xh-_date-field-font-size: var(--xh-font-size-lg);
-  --xh-_date-field-label-font-size: var(--xh-font-size-lg);
+  --xh-_date-field-font-size: var(--xh-control-font-lg);
+  --xh-_date-field-label-font-size: var(--xh-control-font-lg);
 }
 
 /* —— 形态 —— */
@@ -11191,6 +11243,7 @@ input[data-scope='mention'][data-part='input'] {
    段与段之间的分隔符（'/'、'年'）由作者自己写在段之间，不在角色表里 */
 [data-scope='date-field'][data-part='control'] {
   display: inline-flex;
+  min-inline-size: var(--xh-date-field-control-min-w, var(--xh-control-min-w));
   align-items: center;
   block-size: var(--xh-date-field-control-h, var(--xh-_date-field-control-h));
   padding-inline: var(--xh-date-field-control-px, var(--xh-_date-field-control-px));
@@ -11218,7 +11271,7 @@ input[data-scope='mention'][data-part='input'] {
 /* 焦点落在某一段上，而边框长在 control 上：焦点环得由内向外借一层。
    control 自己不占 Tab 位，:focus-within 是它唯一能感知组内焦点的方式 */
 [data-scope='date-field'][data-part='control']:focus-within {
-  border-color: var(--xh-date-field-control-border-focus, var(--xh-_date-field-ring));
+  border-color: var(--xh-date-field-control-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
   outline: var(--xh-ring-width) solid var(--xh-_date-field-ring);
   outline-offset: var(--xh-ring-offset);
 }
@@ -11356,6 +11409,9 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 与文本框、分段日期同一套堆叠：标签一行、输入行一行 */
 [data-scope='date-picker'][data-part='root'] {
+  /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+  --xh-icon-size: var(--xh-date-picker-icon-size, var(--xh-glyph-size-text));
+
   display: inline-flex;
   flex-direction: column;
   gap: var(--xh-date-picker-gap, var(--xh-space-1));
@@ -11366,15 +11422,15 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='date-picker']:is([data-part='root'], [data-part='positioner'])[data-size='sm'] {
   --xh-_date-picker-control-h: var(--xh-control-h-sm);
   --xh-_date-picker-control-px: var(--xh-control-px-sm);
-  --xh-_date-picker-font-size: var(--xh-font-size-sm);
-  --xh-_date-picker-label-font-size: var(--xh-font-size-sm);
+  --xh-_date-picker-font-size: var(--xh-control-font-sm);
+  --xh-_date-picker-label-font-size: var(--xh-control-font-sm);
 }
 
 [data-scope='date-picker']:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
   --xh-_date-picker-control-h: var(--xh-control-h-lg);
   --xh-_date-picker-control-px: var(--xh-control-px-lg);
-  --xh-_date-picker-font-size: var(--xh-font-size-lg);
-  --xh-_date-picker-label-font-size: var(--xh-font-size-lg);
+  --xh-_date-picker-font-size: var(--xh-control-font-lg);
+  --xh-_date-picker-label-font-size: var(--xh-control-font-lg);
 }
 
 /* —— 形态 —— */
@@ -11430,7 +11486,7 @@ input[data-scope='mention'][data-part='input'] {
   display: inline-flex;
   align-items: center;
   gap: var(--xh-date-picker-control-gap, var(--xh-control-gap-md));
-  min-inline-size: var(--xh-date-picker-control-min-w, var(--xh-overlay-min-w));
+  min-inline-size: var(--xh-date-picker-control-min-w, var(--xh-control-min-w));
   block-size: var(--xh-date-picker-control-h, var(--xh-_date-picker-control-h));
   padding-inline: var(--xh-date-picker-control-px, var(--xh-_date-picker-control-px));
   padding-block: 0;
@@ -11453,7 +11509,7 @@ input[data-scope='mention'][data-part='input'] {
 /* 焦点落在某一段或某个按钮上，而边框长在 control 上：焦点环得由内向外借一层。
    control 自己不占 Tab 位，:focus-within 是它唯一能感知组内焦点的方式 */
 [data-scope='date-picker'][data-part='control']:focus-within {
-  border-color: var(--xh-date-picker-control-border-focus, var(--xh-_date-picker-ring));
+  border-color: var(--xh-date-picker-control-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
   outline: var(--xh-ring-width) solid var(--xh-_date-picker-ring);
   outline-offset: var(--xh-ring-offset);
 }
@@ -11515,7 +11571,7 @@ input[data-scope='mention'][data-part='input'] {
   background: var(--xh-date-picker-action-bg, transparent);
   color: var(--xh-date-picker-action-fg, var(--xh-fg-muted));
   font-family: inherit;
-  font-size: var(--xh-date-picker-action-font-size, var(--xh-font-size-sm));
+  font-size: var(--xh-date-picker-action-font-size, var(--xh-text-secondary-size));
   line-height: var(--xh-leading-none);
   cursor: pointer;
   user-select: none;
@@ -11575,7 +11631,7 @@ input[data-scope='mention'][data-part='input'] {
      这里只留可用高度这一道——视口真放不下时才让步 */
   max-block-size: var(--xh-date-picker-max-h, var(--xh-_date-picker-available-h));
   overflow-y: auto;
-  box-shadow: var(--xh-date-picker-content-shadow, var(--xh-elevation-2));
+  box-shadow: var(--xh-date-picker-content-shadow, var(--xh-elevation-floating));
   pointer-events: auto;
 }
 
@@ -11661,7 +11717,7 @@ input[data-scope='mention'][data-part='input'] {
   padding-block: var(--xh-space-1);
   padding-inline: var(--xh-space-3);
   border-radius: var(--xh-shape-control);
-  font-size: var(--xh-font-size-sm);
+  font-size: var(--xh-text-secondary-size);
   line-height: var(--xh-leading-normal);
   white-space: nowrap;
   cursor: pointer;
@@ -11710,7 +11766,7 @@ input[data-scope='mention'][data-part='input'] {
   padding-block: var(--xh-space-1);
   padding-inline: var(--xh-space-3);
   border-radius: var(--xh-shape-control);
-  font-size: var(--xh-font-size-sm);
+  font-size: var(--xh-text-secondary-size);
   line-height: var(--xh-leading-normal);
   text-align: center;
   cursor: pointer;
@@ -11744,7 +11800,7 @@ input[data-scope='mention'][data-part='input'] {
   border-radius: var(--xh-shape-control);
   background: var(--xh-date-picker-confirm-bg, var(--xh-_date-picker-accent));
   color: var(--xh-date-picker-confirm-fg, var(--xh-_date-picker-accent-fg));
-  font-size: var(--xh-font-size-sm);
+  font-size: var(--xh-text-secondary-size);
   cursor: pointer;
 }
 
@@ -11765,8 +11821,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='date-picker'][data-part='clear-trigger']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
@@ -11776,8 +11832,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='date-picker'][data-part='trigger']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
@@ -11897,6 +11953,9 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='dialog'][data-part='content'] {
+  /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+  --xh-icon-size: var(--xh-dialog-icon-size, var(--xh-glyph-size-text));
+
   /* 尺寸档只换这一个私有槽。它声明在 content 而不是别处：dialog 的解剖里没有 root，
      positioner 又不是必需部件，content 才是这层浮层恒在的最外层，且它会被 portal 到 body，
      选择器只认得它自己身上那一份 data-size。 */
@@ -11908,12 +11967,12 @@ input[data-scope='mention'][data-part='input'] {
   display: flex;
   flex-direction: column;
   gap: var(--xh-dialog-gap, var(--xh-stack-gap-md));
-  padding-block: var(--xh-dialog-py, var(--xh-section-py));
-  padding-inline: var(--xh-dialog-px, var(--xh-control-px-lg));
+  padding-block: var(--xh-dialog-py, var(--xh-surface-py-md));
+  padding-inline: var(--xh-dialog-px, var(--xh-surface-px-md));
   border-radius: var(--xh-dialog-radius, var(--xh-shape-surface));
   background: var(--xh-dialog-bg, var(--xh-bg-surface));
   color: var(--xh-dialog-fg, var(--xh-fg-default));
-  box-shadow: var(--xh-dialog-shadow, var(--xh-elevation-3));
+  box-shadow: var(--xh-dialog-shadow, var(--xh-elevation-sheet));
 }
 
 /* 这里刻意没有 [data-part='content'][hidden] { display: none }，与 drawer 一致：
@@ -11997,8 +12056,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='dialog'][data-part='close-trigger']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
@@ -12123,6 +12182,9 @@ input[data-scope='mention'][data-part='input'] {
 /* root 留在页面原地，只是 data-side / data-state 的落点，不该凭空多出一层盒子把
    trigger 从作者的 flex / grid 行里挤出去，故 display: contents。 */
 [data-scope='drawer'][data-part='root'] {
+  /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+  --xh-icon-size: var(--xh-drawer-icon-size, var(--xh-glyph-size-text));
+
   display: contents;
 }
 
@@ -12232,11 +12294,11 @@ input[data-scope='mention'][data-part='input'] {
   display: flex;
   flex-direction: column;
   gap: var(--xh-drawer-gap, var(--xh-stack-gap-md));
-  padding-block: var(--xh-drawer-py, var(--xh-section-py));
-  padding-inline: var(--xh-drawer-px, var(--xh-control-px-lg));
+  padding-block: var(--xh-drawer-py, var(--xh-surface-py-md));
+  padding-inline: var(--xh-drawer-px, var(--xh-surface-px-md));
   background: var(--xh-drawer-bg, var(--xh-bg-surface));
   color: var(--xh-drawer-fg, var(--xh-fg-default));
-  box-shadow: var(--xh-drawer-shadow, var(--xh-elevation-3));
+  box-shadow: var(--xh-drawer-shadow, var(--xh-elevation-sheet));
   overflow: auto;
   /* 尺寸是照视口那条边算出来的，padding 再往外顶就会把面板挤出屏幕、
      逼出一条横向滚动条。reset 层已有同款兜底，这里显式写一遍表明尺寸算法依赖它 */
@@ -12408,8 +12470,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='drawer'][data-part='close-trigger']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
@@ -12559,6 +12621,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='editable'][data-part='input']:focus-visible {
+  border-color: var(--xh-editable-input-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
   outline-offset: var(--xh-ring-offset);
 }
@@ -12607,7 +12670,7 @@ input[data-scope='mention'][data-part='input'] {
   background: var(--xh-editable-trigger-bg, var(--xh-bg-subtle));
   color: var(--xh-editable-trigger-fg, var(--xh-fg-default));
   font-family: inherit;
-  font-size: var(--xh-editable-trigger-font-size, var(--xh-font-size-sm));
+  font-size: var(--xh-editable-trigger-font-size, var(--xh-text-secondary-size));
   line-height: var(--xh-leading-none);
   white-space: nowrap;
   cursor: pointer;
@@ -12738,6 +12801,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='field'][data-part='control']:focus-visible {
+  border-color: var(--xh-field-control-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
   outline-offset: var(--xh-ring-offset);
 }
@@ -12756,7 +12820,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='field'][data-part='description'] {
   margin: 0;
   color: var(--xh-field-description-fg, var(--xh-fg-muted));
-  font-size: var(--xh-field-description-font-size, var(--xh-font-size-sm));
+  font-size: var(--xh-field-description-font-size, var(--xh-text-secondary-size));
   line-height: var(--xh-leading-normal);
 }
 
@@ -12768,7 +12832,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='field'][data-part='error-text'] {
   margin: 0;
   color: var(--xh-field-error-fg, var(--xh-fg-danger));
-  font-size: var(--xh-field-error-font-size, var(--xh-font-size-sm));
+  font-size: var(--xh-field-error-font-size, var(--xh-text-secondary-size));
   line-height: var(--xh-leading-normal);
 }
 
@@ -12779,6 +12843,9 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='file-upload'][data-part='root'] {
+  /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+  --xh-icon-size: var(--xh-file-upload-icon-size, var(--xh-glyph-size-text));
+
   display: flex;
   flex-direction: column;
   gap: var(--xh-file-upload-gap, var(--xh-space-3));
@@ -12989,7 +13056,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='file-upload'][data-part='item-size-text'] {
   flex: none;
   color: var(--xh-file-upload-size-fg, var(--xh-fg-subtle));
-  font-size: var(--xh-file-upload-size-font-size, var(--xh-font-size-xs));
+  font-size: var(--xh-file-upload-size-font-size, var(--xh-text-caption-size));
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
@@ -13051,7 +13118,7 @@ input[data-scope='mention'][data-part='input'] {
   background: transparent;
   color: var(--xh-file-upload-clear-fg, var(--xh-fg-muted));
   font-family: inherit;
-  font-size: var(--xh-file-upload-clear-font-size, var(--xh-font-size-xs));
+  font-size: var(--xh-file-upload-clear-font-size, var(--xh-text-caption-size));
   line-height: var(--xh-leading-none);
   cursor: pointer;
 }
@@ -13080,8 +13147,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='file-upload'][data-part='clear-trigger']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
@@ -13157,7 +13224,7 @@ input[data-scope='mention'][data-part='input'] {
   color: var(--xh-form-summary-fg, var(--xh-fg-danger));
   font-size: var(--xh-form-summary-font-size, var(--xh-text-body-size));
   line-height: var(--xh-leading-normal);
-  box-shadow: var(--xh-form-summary-shadow, var(--xh-elevation-1));
+  box-shadow: var(--xh-form-summary-shadow, var(--xh-elevation-raised));
 }
 
 /* 漏了这条，摘要一旦出现过就再也撤不下去（上面那条 display 盖掉了 UA 的 [hidden] 规则） */
@@ -13180,7 +13247,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='form'][data-part='error-summary-item'] {
   display: block;
   color: inherit;
-  font-size: var(--xh-form-summary-item-font-size, var(--xh-font-size-sm));
+  font-size: var(--xh-form-summary-item-font-size, var(--xh-text-secondary-size));
   text-decoration: underline;
   text-underline-offset: 2px;
   cursor: pointer;
@@ -13393,7 +13460,7 @@ input[data-scope='mention'][data-part='input'] {
   color: var(--xh-hover-card-fg, var(--xh-fg-default));
   font-size: var(--xh-hover-card-font-size, var(--xh-text-body-size));
   line-height: var(--xh-leading-normal);
-  box-shadow: var(--xh-hover-card-shadow, var(--xh-elevation-2));
+  box-shadow: var(--xh-hover-card-shadow, var(--xh-elevation-floating));
   pointer-events: auto;
 }
 
@@ -13545,7 +13612,7 @@ input[data-scope='mention'][data-part='input'] {
   /* 没给 ratio 时根盒子高度是 auto，回退内容自己撑出一个不塌的高度 */
   min-block-size: var(--xh-image-fallback-min-h, var(--xh-control-h-lg));
   color: var(--xh-image-fallback-fg, var(--xh-fg-muted));
-  font-size: var(--xh-image-fallback-font-size, var(--xh-font-size-sm));
+  font-size: var(--xh-image-fallback-font-size, var(--xh-text-secondary-size));
   line-height: var(--xh-leading-none);
   user-select: none;
 }
@@ -13609,6 +13676,9 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='image-viewer'][data-part='content'] {
+  /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+  --xh-icon-size: var(--xh-image-viewer-icon-size, var(--xh-glyph-size-text));
+
   position: relative;
   inline-size: 100%;
   block-size: 100%;
@@ -13701,7 +13771,7 @@ input[data-scope='mention'][data-part='input'] {
   inset-inline-start: 50%;
   translate: -50% 0;
   padding: var(--xh-space-1) var(--xh-space-3);
-  font-size: var(--xh-font-size-sm);
+  font-size: var(--xh-text-secondary-size);
 }
 
 [data-scope='image-viewer'][data-part='prev-trigger'],
@@ -13753,8 +13823,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='image-viewer'][data-part='zoom-in-trigger']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-zoom-in) center / contain no-repeat;
@@ -13764,8 +13834,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='image-viewer'][data-part='zoom-out-trigger']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-zoom-out) center / contain no-repeat;
@@ -13775,8 +13845,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='image-viewer'][data-part='rotate-left-trigger']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-rotate-left) center / contain no-repeat;
@@ -13786,8 +13856,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='image-viewer'][data-part='rotate-right-trigger']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-rotate-right) center / contain no-repeat;
@@ -13797,8 +13867,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='image-viewer'][data-part='flip-horizontal-trigger']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-flip-horizontal) center / contain no-repeat;
@@ -13808,8 +13878,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='image-viewer'][data-part='flip-vertical-trigger']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-flip-vertical) center / contain no-repeat;
@@ -13819,8 +13889,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='image-viewer'][data-part='prev-trigger']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-chevron-left) center / contain no-repeat;
@@ -13830,8 +13900,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='image-viewer'][data-part='next-trigger']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
@@ -13841,8 +13911,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='image-viewer'][data-part='close-trigger']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
@@ -13856,6 +13926,9 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='listbox'][data-part='root'] {
+  /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+  --xh-icon-size: var(--xh-listbox-icon-size, var(--xh-glyph-size-text));
+
   display: flex;
   flex-direction: column;
   gap: var(--xh-listbox-gap, var(--xh-space-2));
@@ -13932,7 +14005,7 @@ input[data-scope='mention'][data-part='input'] {
   padding-block: var(--xh-listbox-group-label-py, var(--xh-space-1));
   padding-inline: var(--xh-listbox-group-label-px, var(--xh-control-px-md));
   color: var(--xh-listbox-group-label-fg, var(--xh-fg-subtle));
-  font-size: var(--xh-listbox-group-label-font-size, var(--xh-font-size-xs));
+  font-size: var(--xh-listbox-group-label-font-size, var(--xh-text-caption-size));
   font-weight: var(--xh-listbox-group-label-font-weight, var(--xh-font-weight-medium));
   line-height: var(--xh-leading-none);
   user-select: none;
@@ -14028,8 +14101,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='listbox'][data-part='item-indicator']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
@@ -14188,7 +14261,7 @@ input[data-scope='mention'][data-part='input'] {
   border-radius: var(--xh-menu-radius, var(--xh-shape-surface));
   background: var(--xh-menu-bg, var(--xh-bg-surface));
   color: var(--xh-menu-fg, var(--xh-fg-default));
-  box-shadow: var(--xh-menu-shadow, var(--xh-elevation-2));
+  box-shadow: var(--xh-menu-shadow, var(--xh-elevation-floating));
   /* 条目超过上限就在菜单内部滚。条目的焦点环是内收的，滚动容器裁在内边距缘上，环切不着 */
   overflow-y: auto;
   pointer-events: auto;
@@ -14222,14 +14295,14 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_menu-item-py: var(--xh-space-1);
   --xh-_menu-item-px: var(--xh-control-px-sm);
   --xh-_menu-item-gap: var(--xh-control-gap-sm);
-  --xh-_menu-font-size: var(--xh-font-size-sm);
+  --xh-_menu-font-size: var(--xh-control-font-sm);
 }
 
 [data-scope='menu'][data-part='content'][data-size='lg'] {
   --xh-_menu-item-py: var(--xh-space-2);
   --xh-_menu-item-px: var(--xh-control-px-lg);
   --xh-_menu-item-gap: var(--xh-control-gap-lg);
-  --xh-_menu-font-size: var(--xh-font-size-lg);
+  --xh-_menu-font-size: var(--xh-control-font-lg);
 }
 
 [data-scope='menu'][data-part='item'] {
@@ -14304,6 +14377,9 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 一排 trigger。主轴跟着 data-orientation 走：菜单栏本身可以横排也可以竖排 */
 [data-scope='menubar'][data-part='root'] {
+  /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+  --xh-icon-size: var(--xh-menubar-icon-size, var(--xh-glyph-size-text));
+
   display: flex;
   align-items: center;
   gap: var(--xh-menubar-gap, var(--xh-space-1));
@@ -14422,7 +14498,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_menubar-trigger-px: var(--xh-space-1_5);
   --xh-_menubar-item-py: var(--xh-space-1);
   --xh-_menubar-item-px: var(--xh-control-px-sm);
-  --xh-_menubar-font-size: var(--xh-font-size-sm);
+  --xh-_menubar-font-size: var(--xh-control-font-sm);
 }
 
 [data-scope='menubar'][data-size='lg']:is([data-part='root'], [data-part='positioner']) {
@@ -14430,7 +14506,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_menubar-trigger-px: var(--xh-control-px-md);
   --xh-_menubar-item-py: var(--xh-space-2);
   --xh-_menubar-item-px: var(--xh-control-px-lg);
-  --xh-_menubar-font-size: var(--xh-font-size-lg);
+  --xh-_menubar-font-size: var(--xh-control-font-lg);
 }
 
 [data-scope='menubar'][data-part='content'] {
@@ -14447,7 +14523,7 @@ input[data-scope='mention'][data-part='input'] {
   border-radius: var(--xh-menubar-menu-radius, var(--xh-shape-surface));
   background: var(--xh-menubar-menu-bg, var(--xh-bg-surface));
   color: var(--xh-menubar-menu-fg, var(--xh-fg-default));
-  box-shadow: var(--xh-menubar-menu-shadow, var(--xh-elevation-2));
+  box-shadow: var(--xh-menubar-menu-shadow, var(--xh-elevation-floating));
   /* 条目超过上限就在菜单内部滚。条目的焦点环是内收的，滚动容器裁在内边距缘上，环切不着 */
   overflow-y: auto;
   pointer-events: auto;
@@ -14498,7 +14574,7 @@ input[data-scope='mention'][data-part='input'] {
   padding-block: var(--xh-menubar-group-label-py, var(--xh-space-1));
   padding-inline: var(--xh-menubar-group-label-px, var(--xh-_menubar-item-px));
   color: var(--xh-menubar-group-label-fg, var(--xh-fg-subtle));
-  font-size: var(--xh-menubar-group-label-font-size, var(--xh-font-size-xs));
+  font-size: var(--xh-menubar-group-label-font-size, var(--xh-text-caption-size));
   font-weight: var(--xh-menubar-group-label-font-weight, var(--xh-font-weight-medium));
   line-height: var(--xh-leading-none);
   user-select: none;
@@ -14595,8 +14671,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='menubar'][data-part='item-indicator']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
@@ -14669,7 +14745,8 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_navigation-menu-trigger-h: var(--xh-control-h-md);
   --xh-_navigation-menu-trigger-px: var(--xh-control-px-md);
   --xh-_navigation-menu-trigger-gap: var(--xh-control-gap-md);
-  --xh-_navigation-menu-link-p: var(--xh-space-2);
+  --xh-_navigation-menu-link-py: var(--xh-space-1_5);
+  --xh-_navigation-menu-link-px: var(--xh-control-px-md);
   --xh-_navigation-menu-link-font-size: var(--xh-text-body-size);
 
   /* 语气落在三处：条目的高亮底、展开着的 trigger 与当前链接的文字色、指示条。
@@ -14689,21 +14766,23 @@ input[data-scope='mention'][data-part='input'] {
 /* 缺省档写在上面的基础规则里。链接的内边距不在控件内边距那把尺上（它比控件矮一档），
    三档一律取空间尺，缺省档的取值原样保留 */
 [data-scope='navigation-menu'][data-part='root'][data-size='sm'] {
-  --xh-_navigation-menu-font-size: var(--xh-font-size-sm);
+  --xh-_navigation-menu-font-size: var(--xh-control-font-sm);
   --xh-_navigation-menu-trigger-h: var(--xh-control-h-sm);
   --xh-_navigation-menu-trigger-px: var(--xh-control-px-sm);
   --xh-_navigation-menu-trigger-gap: var(--xh-control-gap-sm);
-  --xh-_navigation-menu-link-p: var(--xh-space-1_5);
-  --xh-_navigation-menu-link-font-size: var(--xh-font-size-sm);
+  --xh-_navigation-menu-link-py: var(--xh-space-1);
+  --xh-_navigation-menu-link-px: var(--xh-control-px-sm);
+  --xh-_navigation-menu-link-font-size: var(--xh-control-font-sm);
 }
 
 [data-scope='navigation-menu'][data-part='root'][data-size='lg'] {
-  --xh-_navigation-menu-font-size: var(--xh-font-size-lg);
+  --xh-_navigation-menu-font-size: var(--xh-control-font-lg);
   --xh-_navigation-menu-trigger-h: var(--xh-control-h-lg);
   --xh-_navigation-menu-trigger-px: var(--xh-control-px-lg);
   --xh-_navigation-menu-trigger-gap: var(--xh-control-gap-lg);
-  --xh-_navigation-menu-link-p: var(--xh-space-3);
-  --xh-_navigation-menu-link-font-size: var(--xh-font-size-lg);
+  --xh-_navigation-menu-link-py: var(--xh-space-2);
+  --xh-_navigation-menu-link-px: var(--xh-control-px-lg);
+  --xh-_navigation-menu-link-font-size: var(--xh-control-font-lg);
 }
 
 /* 指示条的定位参照系（它是 absolute，量出来的偏移就是相对这里的）。
@@ -14796,11 +14875,11 @@ input[data-scope='mention'][data-part='input'] {
   flex-direction: column;
   gap: var(--xh-navigation-menu-content-gap, var(--xh-space-1));
   min-inline-size: var(--xh-navigation-menu-content-min-w, var(--xh-overlay-min-w));
-  padding: var(--xh-navigation-menu-content-p, var(--xh-space-2));
+  padding: var(--xh-navigation-menu-content-p, var(--xh-space-1));
   border: var(--xh-stroke-thin) solid var(--xh-navigation-menu-content-border, var(--xh-border-default));
   border-radius: var(--xh-navigation-menu-content-radius, var(--xh-shape-surface));
   background: var(--xh-navigation-menu-content-bg, var(--xh-bg-surface));
-  box-shadow: var(--xh-navigation-menu-content-shadow, var(--xh-elevation-2));
+  box-shadow: var(--xh-navigation-menu-content-shadow, var(--xh-elevation-floating));
 }
 
 /* display 会盖掉 hidden 属性的 UA 规则，收起态显式让位 */
@@ -14836,8 +14915,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='navigation-menu'][data-part='link'] {
   display: flex;
   align-items: center;
-  padding-block: var(--xh-navigation-menu-link-py, var(--xh-_navigation-menu-link-p));
-  padding-inline: var(--xh-navigation-menu-link-px, var(--xh-_navigation-menu-link-p));
+  padding-block: var(--xh-navigation-menu-link-py, var(--xh-_navigation-menu-link-py));
+  padding-inline: var(--xh-navigation-menu-link-px, var(--xh-_navigation-menu-link-px));
   border-radius: var(--xh-navigation-menu-link-radius, var(--xh-shape-control));
   color: var(--xh-navigation-menu-link-fg, var(--xh-fg-default));
   font-size: var(--xh-navigation-menu-link-font-size, var(--xh-_navigation-menu-link-font-size));
@@ -14905,7 +14984,7 @@ input[data-scope='mention'][data-part='input'] {
   border: var(--xh-stroke-thin) solid var(--xh-navigation-menu-content-border, var(--xh-border-default));
   border-radius: var(--xh-navigation-menu-content-radius, var(--xh-shape-surface));
   background: var(--xh-navigation-menu-content-bg, var(--xh-bg-surface));
-  box-shadow: var(--xh-navigation-menu-content-shadow, var(--xh-elevation-2));
+  box-shadow: var(--xh-navigation-menu-content-shadow, var(--xh-elevation-floating));
 }
 
 [data-scope='navigation-menu'][data-part='viewport'][hidden] {
@@ -14958,7 +15037,7 @@ input[data-scope='mention'][data-part='input'] {
   /* 语气只落在聚焦这一处：环与聚焦态描边。框里的数字不归它管。
      没写 data-tone 时 --xh-_tone 没被声明，退回原来的聚焦环色与常态描边 */
   --xh-_number-field-ring: var(--xh-ring-focus);
-  --xh-_number-field-border-focus: var(--xh-number-field-input-border, var(--xh-_tone, var(--xh-border-control)));
+  --xh-_number-field-border-focus: var(--xh-number-field-input-border, var(--xh-_tone, var(--xh-border-control-focus)));
 
   display: inline-flex;
   flex-direction: column;
@@ -14976,18 +15055,18 @@ input[data-scope='mention'][data-part='input'] {
   --xh-icon-size: var(--xh-number-field-icon-size, var(--xh-glyph-size-sm));
   --xh-_number-field-h: var(--xh-control-h-sm);
   --xh-_number-field-px: var(--xh-control-px-sm);
-  --xh-_number-field-font-size: var(--xh-font-size-sm);
-  --xh-_number-field-label-font-size: var(--xh-font-size-sm);
-  --xh-_number-field-trigger-font-size: var(--xh-font-size-sm);
+  --xh-_number-field-font-size: var(--xh-control-font-sm);
+  --xh-_number-field-label-font-size: var(--xh-control-font-sm);
+  --xh-_number-field-trigger-font-size: var(--xh-control-font-sm);
 }
 
 [data-scope='number-field'][data-part='root'][data-size='lg'] {
   --xh-icon-size: var(--xh-number-field-icon-size, var(--xh-glyph-size-lg));
   --xh-_number-field-h: var(--xh-control-h-lg);
   --xh-_number-field-px: var(--xh-control-px-lg);
-  --xh-_number-field-font-size: var(--xh-font-size-lg);
-  --xh-_number-field-label-font-size: var(--xh-font-size-lg);
-  --xh-_number-field-trigger-font-size: var(--xh-font-size-lg);
+  --xh-_number-field-font-size: var(--xh-control-font-lg);
+  --xh-_number-field-label-font-size: var(--xh-control-font-lg);
+  --xh-_number-field-trigger-font-size: var(--xh-control-font-lg);
 }
 
 /* —— 形态 —— */
@@ -15002,7 +15081,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_number-field-trigger-bg-active: var(--xh-bg-subtle-active);
   --xh-_number-field-trigger-border: var(--xh-border-control);
   --xh-_number-field-trigger-border-hover: var(--xh-border-control-hover);
-  --xh-_number-field-border-focus: var(--xh-number-field-input-border, var(--xh-_tone, var(--xh-border-control)));
+  --xh-_number-field-border-focus: var(--xh-number-field-input-border, var(--xh-_tone, var(--xh-border-control-focus)));
 }
 
 /* 填充式：底色顶替描边表达边界。描边只退成透明而不去掉，1px 的位置留着，
@@ -15016,7 +15095,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_number-field-trigger-bg-active: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
   --xh-_number-field-trigger-border: transparent;
   --xh-_number-field-trigger-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
-  --xh-_number-field-border-focus: var(--xh-_tone, var(--xh-border-control));
+  --xh-_number-field-border-focus: var(--xh-_tone, var(--xh-border-control-focus));
 }
 
 /* 无框：底与常态描边透明，悬停与聚焦浮出描边 */
@@ -15029,7 +15108,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_number-field-trigger-bg-active: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
   --xh-_number-field-trigger-border: transparent;
   --xh-_number-field-trigger-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
-  --xh-_number-field-border-focus: var(--xh-_tone, var(--xh-border-control));
+  --xh-_number-field-border-focus: var(--xh-_tone, var(--xh-border-control-focus));
 }
 
 [data-scope='number-field'][data-part='label'] {
@@ -15293,8 +15372,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='number-field'][data-part='increment-trigger']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-plus) center / contain no-repeat;
@@ -15304,8 +15383,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='number-field'][data-part='decrement-trigger']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
@@ -15348,13 +15427,13 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='pagination'][data-part='root'][data-size='sm'] {
   --xh-_pagination-item-size: var(--xh-control-h-sm);
   --xh-_pagination-item-px: var(--xh-space-1_5);
-  --xh-_pagination-font-size: var(--xh-font-size-sm);
+  --xh-_pagination-font-size: var(--xh-control-font-sm);
 }
 
 [data-scope='pagination'][data-part='root'][data-size='lg'] {
   --xh-_pagination-item-size: var(--xh-control-h-lg);
   --xh-_pagination-item-px: var(--xh-space-3);
-  --xh-_pagination-font-size: var(--xh-font-size-lg);
+  --xh-_pagination-font-size: var(--xh-control-font-lg);
 }
 
 [data-scope='pagination'][data-part='root'][hidden] {
@@ -15474,9 +15553,9 @@ input[data-scope='mention'][data-part='input'] {
 /* 与文本框、数字框同一套堆叠：标签一行、格子一行 */
 [data-scope='pin-input'][data-part='root'] {
   /* 尺寸档只换这四个私有槽，标题与格子都从 root 继承它们，换档不必给每个部件各写一条选择器 */
-  --xh-_pin-input-box-size: var(--xh-control-h-lg);
+  --xh-_pin-input-box-size: var(--xh-control-box-md);
   --xh-_pin-input-box-gap: var(--xh-space-2);
-  --xh-_pin-input-box-font-size: var(--xh-font-size-xl);
+  --xh-_pin-input-box-font-size: var(--xh-text-heading-3-size);
   --xh-_pin-input-label-font-size: var(--xh-text-label-size);
   /* 形态档只换这三个私有槽，缺省这一份就是描边式（描边 + 画布底） */
   --xh-_pin-input-box-bg: var(--xh-bg-canvas);
@@ -15521,18 +15600,18 @@ input[data-scope='mention'][data-part='input'] {
 
 /* —— 尺寸 —— */
 [data-scope='pin-input'][data-part='root'][data-size='sm'] {
-  --xh-_pin-input-box-size: var(--xh-control-h-md);
+  --xh-_pin-input-box-size: var(--xh-control-box-sm);
   --xh-_pin-input-box-gap: var(--xh-control-gap-sm);
-  --xh-_pin-input-box-font-size: var(--xh-font-size-lg);
-  --xh-_pin-input-label-font-size: var(--xh-font-size-sm);
+  --xh-_pin-input-box-font-size: var(--xh-control-font-lg);
+  --xh-_pin-input-label-font-size: var(--xh-control-font-sm);
 }
 
 /* 格子是正方形，缺省档已经占到控件高度表的顶档，lg 档由顶档加一格间距合成，不另立数值 */
 [data-scope='pin-input'][data-part='root'][data-size='lg'] {
-  --xh-_pin-input-box-size: calc(var(--xh-control-h-lg) + var(--xh-space-2));
+  --xh-_pin-input-box-size: var(--xh-control-box-lg);
   --xh-_pin-input-box-gap: var(--xh-control-gap-lg);
-  --xh-_pin-input-box-font-size: var(--xh-font-size-2xl);
-  --xh-_pin-input-label-font-size: var(--xh-font-size-lg);
+  --xh-_pin-input-box-font-size: var(--xh-text-heading-2-size);
+  --xh-_pin-input-label-font-size: var(--xh-control-font-lg);
 }
 
 [data-scope='pin-input'][data-part='label'] {
@@ -15588,7 +15667,7 @@ input[data-scope='mention'][data-part='input'] {
    :focus-visible 兜住机器状态还没回流的那一帧，两条同时写不冲突 */
 [data-scope='pin-input'][data-part='input'][data-focus],
 [data-scope='pin-input'][data-part='input']:focus-visible {
-  border-color: var(--xh-pin-input-box-border-focus, var(--xh-_pin-input-ring));
+  border-color: var(--xh-pin-input-box-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
   outline: var(--xh-ring-width) solid var(--xh-_pin-input-ring);
   outline-offset: var(--xh-ring-offset);
 }
@@ -15680,6 +15759,9 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='popover'][data-part='content'] {
+  /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+  --xh-icon-size: var(--xh-popover-icon-size, var(--xh-glyph-size-text));
+
   /* 尺寸档只换这两个私有槽。popover 没有 root 部件，size 落在浮层树最外层的 content 上。
      语气不接：面板是内容容器，语气该由里面的内容表达 */
   --xh-_popover-py: var(--xh-space-3);
@@ -15701,7 +15783,7 @@ input[data-scope='mention'][data-part='input'] {
   border-radius: var(--xh-popover-radius, var(--xh-shape-surface));
   background: var(--xh-popover-bg, var(--xh-bg-surface));
   color: var(--xh-popover-fg, var(--xh-fg-default));
-  box-shadow: var(--xh-popover-shadow, var(--xh-elevation-2));
+  box-shadow: var(--xh-popover-shadow, var(--xh-elevation-floating));
   pointer-events: auto;
 }
 
@@ -15803,8 +15885,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='popover'][data-part='close-trigger']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
@@ -15832,7 +15914,7 @@ input[data-scope='mention'][data-part='input'] {
 /* 私有槽位：组件令牌 → 中档字面量两级回退。厚度写在 root 上而不是 track 上，
    尺寸档才改得动一处就够，track 靠继承拿到值。 */
 [data-scope='progress'][data-part='root'] {
-  --xh-_thickness: var(--xh-progress-thickness, 6px);
+  --xh-_thickness: var(--xh-progress-thickness, var(--xh-track-thickness));
 
   display: inline-block;
   inline-size: 100%;
@@ -15977,12 +16059,12 @@ input[data-scope='mention'][data-part='input'] {
 /* —— 尺寸 —— */
 [data-scope='radio-group'][data-part='root'][data-size='sm'] {
   --xh-_radio-group-item-gap: var(--xh-control-gap-sm);
-  --xh-_radio-group-font-size: var(--xh-font-size-sm);
+  --xh-_radio-group-font-size: var(--xh-control-font-sm);
 }
 
 [data-scope='radio-group'][data-part='root'][data-size='lg'] {
   --xh-_radio-group-item-gap: var(--xh-control-gap-lg);
-  --xh-_radio-group-font-size: var(--xh-font-size-lg);
+  --xh-_radio-group-font-size: var(--xh-control-font-lg);
 }
 
 [data-scope='radio-group'][data-part='label'] {
@@ -16014,7 +16096,6 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='radio-group'][data-part='item'][data-disabled] {
   color: var(--xh-radio-group-item-fg-disabled, var(--xh-fg-disabled));
   cursor: not-allowed;
-  opacity: var(--xh-state-disabled-opacity);
 }
 
 [data-scope='radio-group'][data-part='indicator'] {
@@ -16087,13 +16168,13 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='rating'][data-part='root'][data-size='sm'] {
   --xh-_rating-item-gap: var(--xh-control-gap-sm);
   --xh-_rating-item-size: var(--xh-font-size-xl);
-  --xh-_rating-font-size: var(--xh-font-size-sm);
+  --xh-_rating-font-size: var(--xh-control-font-sm);
 }
 
 [data-scope='rating'][data-part='root'][data-size='lg'] {
   --xh-_rating-item-gap: var(--xh-control-gap-lg);
   --xh-_rating-item-size: var(--xh-font-size-3xl);
-  --xh-_rating-font-size: var(--xh-font-size-lg);
+  --xh-_rating-font-size: var(--xh-control-font-lg);
 }
 
 /* 整体压暗只做一次，落在最外层：星星逐颗再叠 opacity 会越叠越黑 */
@@ -16592,6 +16673,9 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='select'][data-part='root'] {
+  /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+  --xh-icon-size: var(--xh-select-icon-size, var(--xh-glyph-size-text));
+
   display: inline-flex;
   flex-direction: column;
   gap: var(--xh-select-gap, var(--xh-stack-gap-md));
@@ -16605,16 +16689,16 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_select-h: var(--xh-control-h-sm);
   --xh-_select-px: var(--xh-control-px-sm);
   --xh-_select-gap: var(--xh-control-gap-sm);
-  --xh-_select-font-size: var(--xh-font-size-sm);
-  --xh-_select-label-font-size: var(--xh-font-size-sm);
+  --xh-_select-font-size: var(--xh-control-font-sm);
+  --xh-_select-label-font-size: var(--xh-control-font-sm);
 }
 
 [data-scope='select']:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
   --xh-_select-h: var(--xh-control-h-lg);
   --xh-_select-px: var(--xh-control-px-lg);
   --xh-_select-gap: var(--xh-control-gap-lg);
-  --xh-_select-font-size: var(--xh-font-size-lg);
-  --xh-_select-label-font-size: var(--xh-font-size-lg);
+  --xh-_select-font-size: var(--xh-control-font-lg);
+  --xh-_select-label-font-size: var(--xh-control-font-lg);
 }
 
 /* —— 形态 —— */
@@ -16656,7 +16740,7 @@ input[data-scope='mention'][data-part='input'] {
   align-items: center;
   justify-content: space-between;
   gap: var(--xh-select-trigger-gap, var(--xh-_select-gap));
-  min-inline-size: var(--xh-select-trigger-min-w, 10rem);
+  min-inline-size: var(--xh-select-trigger-min-w, var(--xh-control-min-w));
   /* 多选会把 N 项的文本连成一串，框宽必须封顶；与浮层同一个上限，两半看着才是一件东西 */
   max-inline-size: var(--xh-select-trigger-max-w, var(--xh-overlay-max-w));
   block-size: var(--xh-select-trigger-h, var(--xh-_select-h));
@@ -16707,7 +16791,7 @@ input[data-scope='mention'][data-part='input'] {
   color: var(--xh-select-clear-fg, var(--xh-fg-subtle));
 
   /* 字号行高钉死：继承页面字号会让行框高过按钮，字形被基线顶离正中 */
-  font-size: var(--xh-select-clear-font-size, var(--xh-font-size-xs));
+  font-size: var(--xh-select-clear-font-size, var(--xh-text-caption-size));
   line-height: var(--xh-leading-none);
   cursor: pointer;
 }
@@ -16759,7 +16843,7 @@ input[data-scope='mention'][data-part='input'] {
   border-radius: var(--xh-select-tag-radius, var(--xh-shape-pill));
   background: var(--xh-select-tag-bg, var(--xh-bg-subtle));
   color: var(--xh-select-tag-fg, var(--xh-fg-default));
-  font-size: var(--xh-select-tag-font-size, var(--xh-font-size-xs));
+  font-size: var(--xh-select-tag-font-size, var(--xh-text-caption-size));
   line-height: var(--xh-leading-normal);
   white-space: nowrap;
 }
@@ -16799,6 +16883,11 @@ input[data-scope='mention'][data-part='input'] {
   outline-offset: var(--xh-ring-offset);
 }
 
+/* 聚焦态描边色与环共用一族语气色。这条排在上面的 invalid 之后，校验失败时要显式让开，描边保持红色 */
+[data-scope='select'][data-part='trigger']:focus-visible:not([data-invalid]) {
+  border-color: var(--xh-select-trigger-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
+}
+
 /* trigger 是单体控件，用原生 disabled（条目那边一律 aria-disabled） */
 [data-scope='select'][data-part='trigger']:disabled {
   color: var(--xh-fg-disabled);
@@ -16833,8 +16922,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='select'][data-part='indicator']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
@@ -16857,7 +16946,7 @@ input[data-scope='mention'][data-part='input'] {
   border-radius: var(--xh-select-content-radius, var(--xh-shape-surface));
   background: var(--xh-select-content-bg, var(--xh-bg-surface));
   color: var(--xh-select-content-fg, var(--xh-fg-default));
-  box-shadow: var(--xh-select-content-shadow, var(--xh-elevation-2));
+  box-shadow: var(--xh-select-content-shadow, var(--xh-elevation-floating));
   /* 条目的悬停底色是方角，滚到两端时会探出外壳的圆角 */
   overflow: hidden;
   pointer-events: auto;
@@ -16887,7 +16976,7 @@ input[data-scope='mention'][data-part='input'] {
   padding-inline: var(--xh-select-footer-px, var(--xh-space-2));
   border-block-start: var(--xh-stroke-thin) solid var(--xh-select-footer-border, var(--xh-border-subtle));
   color: var(--xh-select-footer-fg, var(--xh-fg-muted));
-  font-size: var(--xh-select-footer-font-size, var(--xh-font-size-sm));
+  font-size: var(--xh-select-footer-font-size, var(--xh-text-secondary-size));
 }
 
 /* 上面给了 display，UA 的 [hidden]{display:none} 已被盖掉，这里补回来 */
@@ -16994,8 +17083,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='select'][data-part='item-indicator']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
@@ -17015,8 +17104,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='select'][data-part='clear-trigger']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
@@ -17026,8 +17115,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='select'][data-part='tag-remove']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
@@ -17047,12 +17136,12 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='separator'][data-part='root'][data-orientation='horizontal'] {
   inline-size: 100%;
-  block-size: var(--xh-separator-thickness, 1px);
+  block-size: var(--xh-separator-thickness, var(--xh-stroke-thin));
 }
 
 [data-scope='separator'][data-part='root'][data-orientation='vertical'] {
   align-self: stretch;
-  inline-size: var(--xh-separator-thickness, 1px);
+  inline-size: var(--xh-separator-thickness, var(--xh-stroke-thin));
   block-size: 100%;
 }
 
@@ -17063,6 +17152,9 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='side-nav'][data-part='root'] {
+  /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+  --xh-icon-size: var(--xh-side-nav-icon-size, var(--xh-glyph-size-text));
+
   inline-size: var(--xh-side-nav-w, 240px);
   display: flex;
   flex-direction: column;
@@ -17105,7 +17197,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='side-nav'][data-part='group-label'] {
   padding-block: var(--xh-space-1);
   padding-inline: var(--xh-control-px-md);
-  font-size: var(--xh-font-size-xs);
+  font-size: var(--xh-text-caption-size);
   color: var(--xh-fg-subtle);
   user-select: none;
 }
@@ -17220,7 +17312,7 @@ input[data-scope='mention'][data-part='input'] {
   border: var(--xh-stroke-thin) solid var(--xh-side-nav-popout-border, var(--xh-border-default));
   border-radius: var(--xh-side-nav-popout-radius, var(--xh-shape-surface));
   background: var(--xh-side-nav-popout-bg, var(--xh-bg-surface));
-  box-shadow: var(--xh-side-nav-popout-shadow, var(--xh-elevation-2));
+  box-shadow: var(--xh-side-nav-popout-shadow, var(--xh-elevation-floating));
 
   /* 子导航条目数没有上限，矮视口下不限高就整块伸出视口且滚不到 */
   max-block-size: min(var(--xh-side-nav-popout-max-h, var(--xh-overlay-menu-max-h)), var(--xh-_side-nav-available-h));
@@ -17248,8 +17340,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='side-nav'][data-part='branch-indicator']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
@@ -17271,8 +17363,8 @@ input[data-scope='mention'][data-part='input'] {
 /* 私有槽位：组件令牌 → 中档字面量两级回退。轨道厚度与拇指直径同时被 control / track / thumb
    三个角色节点用到，收成两个槽位挂在 root 上，尺寸档只改这两处，靠继承发到子部件。 */
 [data-scope='slider'][data-part='root'] {
-  --xh-_thumb-size: var(--xh-slider-thumb-size, 18px);
-  --xh-_track-thickness: var(--xh-slider-track-thickness, 6px);
+  --xh-_thumb-size: var(--xh-slider-thumb-size, var(--xh-track-thumb-size));
+  --xh-_track-thickness: var(--xh-slider-track-thickness, var(--xh-track-thickness));
 
   display: flex;
   flex-direction: column;
@@ -17388,7 +17480,7 @@ input[data-scope='mention'][data-part='input'] {
   border: var(--xh-stroke-thick) solid var(--xh-slider-thumb-border, var(--xh-bg-surface));
   border-radius: var(--xh-slider-thumb-radius, var(--xh-shape-pill));
   background: var(--xh-slider-thumb-bg, var(--xh-_tone, var(--xh-bg-brand)));
-  box-shadow: var(--xh-slider-thumb-shadow, var(--xh-elevation-1));
+  box-shadow: var(--xh-slider-thumb-shadow, var(--xh-elevation-raised));
   cursor: grab;
   transition: scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
@@ -17419,9 +17511,9 @@ input[data-scope='mention'][data-part='input'] {
 /* 多拇指时只有手真正推着的那一个带 data-dragging，放大与光标因此不会全组一起变。
    放大用 scale 而不是改尺寸：变换绕自身中心发生，圆心不动，负外边距的算式也不用跟着改。 */
 [data-scope='slider'][data-part='thumb'][data-dragging] {
-  scale: var(--xh-slider-thumb-scale-dragging, 1.12);
+  scale: var(--xh-slider-thumb-scale-dragging, var(--xh-motion-scale-drag));
   cursor: grabbing;
-  box-shadow: var(--xh-slider-thumb-shadow-dragging, var(--xh-elevation-2));
+  box-shadow: var(--xh-slider-thumb-shadow-dragging, var(--xh-elevation-floating));
 }
 
 [data-scope='slider'][data-part='thumb'][data-invalid] {
@@ -17476,7 +17568,7 @@ input[data-scope='mention'][data-part='input'] {
   inset-block-start: 100%;
   margin-block-start: var(--xh-slider-mark-label-gap, var(--xh-space-1));
   color: var(--xh-slider-mark-label-fg, var(--xh-fg-subtle));
-  font-size: var(--xh-slider-mark-label-font-size, var(--xh-font-size-xs));
+  font-size: var(--xh-slider-mark-label-font-size, var(--xh-text-caption-size));
   line-height: var(--xh-leading-none);
   white-space: nowrap;
   translate: -50% 0;
@@ -17652,11 +17744,14 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='steps'][data-part='root'] {
+  /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+  --xh-icon-size: var(--xh-steps-icon-size, var(--xh-glyph-size-text));
+
   /* 尺寸档只换这三个私有槽，序号圆点、标题与说明都从 root 继承它们，
      换档不必给每个部件各写一条选择器 */
   --xh-_steps-indicator-size: var(--xh-control-h-sm);
   --xh-_steps-title-font-size: var(--xh-text-label-size);
-  --xh-_steps-caption-font-size: var(--xh-font-size-xs);
+  --xh-_steps-caption-font-size: var(--xh-text-caption-size);
 
   /* 语气落在走过与当前这两步的标记和连接线上：强调色画描边与填充，
      accent-text 是普通底上的强调文字（当前步的序号），on-accent 是实心底上的前景。
@@ -17684,14 +17779,14 @@ input[data-scope='mention'][data-part='input'] {
    两侧改从 space 档取，缺省档才留得住 */
 [data-scope='steps'][data-part='root'][data-size='sm'] {
   --xh-_steps-indicator-size: var(--xh-space-6);
-  --xh-_steps-title-font-size: var(--xh-font-size-sm);
+  --xh-_steps-title-font-size: var(--xh-control-font-sm);
   /* 字号档最小就是 xs，序号与说明不再往下走，故不重声明 caption */
 }
 
 [data-scope='steps'][data-part='root'][data-size='lg'] {
   --xh-_steps-indicator-size: var(--xh-space-8);
-  --xh-_steps-title-font-size: var(--xh-font-size-lg);
-  --xh-_steps-caption-font-size: var(--xh-font-size-sm);
+  --xh-_steps-title-font-size: var(--xh-control-font-lg);
+  --xh-_steps-caption-font-size: var(--xh-text-secondary-size);
 }
 
 [data-scope='steps'][data-part='list'] {
@@ -17906,8 +18001,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='steps'][data-part='indicator'][data-state='completed']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
@@ -17930,8 +18025,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='switch'][data-part='root'] {
   /* 尺寸档只换轨道高度这一个私有槽，其余几何都从它算出来：
      滑块边长 = 轨道高 − 两条留白，轨道宽 = 两倍轨道高 − 两条留白，滑块行程因此正好等于自身边长 */
-  --xh-_switch-track-h: var(--xh-font-size-2xl);
-  --xh-_switch-pad: 2px;
+  --xh-_switch-track-h: var(--xh-switch-track-h-md);
+  --xh-_switch-pad: var(--xh-space-0_5);
   --xh-_switch-thumb-size: calc(var(--xh-_switch-track-h) - var(--xh-_switch-pad) * 2);
 
   /* 选中态轨道色随语气走。没写 data-tone 时 --xh-_tone 没被声明，退回原来的品牌色 */
@@ -17972,11 +18067,11 @@ input[data-scope='mention'][data-part='input'] {
 /* —— 尺寸 —— */
 /* 缺省档写在上面的基础规则里 */
 [data-scope='switch'][data-part='root'][data-size='sm'] {
-  --xh-_switch-track-h: var(--xh-font-size-xl);
+  --xh-_switch-track-h: var(--xh-switch-track-h-sm);
 }
 
 [data-scope='switch'][data-part='root'][data-size='lg'] {
-  --xh-_switch-track-h: var(--xh-font-size-3xl);
+  --xh-_switch-track-h: var(--xh-switch-track-h-lg);
 }
 
 [data-scope='switch'][data-part='thumb'] {
@@ -17984,7 +18079,7 @@ input[data-scope='mention'][data-part='input'] {
   block-size: var(--xh-_switch-thumb-size);
   border-radius: var(--xh-shape-pill);
   background: var(--xh-switch-thumb, var(--xh-bg-canvas));
-  box-shadow: var(--xh-elevation-1);
+  box-shadow: var(--xh-elevation-raised);
   transition: translate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
@@ -18067,6 +18162,9 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 表格自己滚动：吸顶表头与横向吸附列都要一个确定的滚动容器才钉得住 */
 [data-scope='table'][data-part='root'] {
+  /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+  --xh-icon-size: var(--xh-table-icon-size, var(--xh-glyph-size-text));
+
   /* 密度档只换这两个私有槽：单元格与列标题从 root 继承前者，字号靠 font-size 本身继承下去，
      换档不必给每个部件各写一条选择器，列宽那套算法也一点不碰 */
   --xh-_table-cell-py: var(--xh-table-cell-py-md);
@@ -18075,7 +18173,7 @@ input[data-scope='mention'][data-part='input'] {
   display: flex;
   position: relative;
   flex-direction: column;
-  max-block-size: var(--xh-table-max-h, 24rem);
+  max-block-size: var(--xh-table-max-h, var(--xh-viewport-max-h));
   border: var(--xh-stroke-thin) solid var(--xh-table-border, var(--xh-border-default));
   border-radius: var(--xh-table-radius, var(--xh-shape-surface));
   background: var(--xh-table-bg, var(--xh-bg-surface));
@@ -18107,12 +18205,12 @@ input[data-scope='mention'][data-part='input'] {
 /* 中间档不写规则，缺省即中档 */
 [data-scope='table'][data-part='root'][data-size='sm'] {
   --xh-_table-cell-py: var(--xh-table-cell-py-sm);
-  --xh-_table-font-size: var(--xh-font-size-sm);
+  --xh-_table-font-size: var(--xh-control-font-sm);
 }
 
 [data-scope='table'][data-part='root'][data-size='lg'] {
   --xh-_table-cell-py: var(--xh-table-cell-py-lg);
-  --xh-_table-font-size: var(--xh-font-size-lg);
+  --xh-_table-font-size: var(--xh-control-font-lg);
 }
 
 [data-scope='table'][data-part='caption'] {
@@ -18414,8 +18512,8 @@ input[data-scope='mention'][data-part='input'] {
   color: var(--xh-table-sort-fg, var(--xh-fg-subtle));
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-sort) center / contain no-repeat;
@@ -18426,8 +18524,8 @@ input[data-scope='mention'][data-part='input'] {
   color: var(--xh-table-sort-fg-active, var(--xh-fg-default));
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-sort-asc) center / contain no-repeat;
@@ -18438,8 +18536,8 @@ input[data-scope='mention'][data-part='input'] {
   color: var(--xh-table-sort-fg-active, var(--xh-fg-default));
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-sort-desc) center / contain no-repeat;
@@ -18450,7 +18548,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='table'][data-part='sort-trigger'][data-sort-index]::before {
   order: 1;
   color: var(--xh-table-sort-fg-active, var(--xh-fg-default));
-  font-size: var(--xh-font-size-xs);
+  font-size: var(--xh-text-caption-size);
   content: attr(data-sort-index);
 }
 
@@ -18516,8 +18614,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='table'][data-part='row-select-trigger']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
@@ -18527,8 +18625,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='table'][data-part='expand-trigger']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
@@ -18552,7 +18650,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_tabs-list-gap: var(--xh-control-gap-md);
   --xh-_tabs-list-bg: transparent;
   --xh-_tabs-list-p: var(--xh-space-0);
-  --xh-_tabs-list-radius: var(--xh-radius-none);
+  --xh-_tabs-list-radius: 0;
   --xh-_tabs-list-border-width: var(--xh-stroke-thin);
   --xh-_tabs-trigger-border-width: 0;
   --xh-_tabs-trigger-border: transparent;
@@ -18581,13 +18679,13 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='tabs'][data-part='root'][data-size='sm'] {
   --xh-_tabs-trigger-h: var(--xh-control-h-sm);
   --xh-_tabs-trigger-px: var(--xh-control-px-sm);
-  --xh-_tabs-trigger-font-size: var(--xh-font-size-sm);
+  --xh-_tabs-trigger-font-size: var(--xh-control-font-sm);
 }
 
 [data-scope='tabs'][data-part='root'][data-size='lg'] {
   --xh-_tabs-trigger-h: var(--xh-control-h-lg);
   --xh-_tabs-trigger-px: var(--xh-control-px-lg);
-  --xh-_tabs-trigger-font-size: var(--xh-font-size-lg);
+  --xh-_tabs-trigger-font-size: var(--xh-control-font-lg);
 }
 
 /* —— 形态 —— */
@@ -18613,7 +18711,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_tabs-list-border-width: 0;
   --xh-_tabs-trigger-bg-active: var(--xh-_tone-subtle, var(--xh-bg-surface));
   --xh-_tabs-trigger-bg-active-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-surface));
-  --xh-_tabs-trigger-shadow-active: var(--xh-elevation-1);
+  --xh-_tabs-trigger-shadow-active: var(--xh-elevation-raised);
 }
 
 [data-scope='tabs'][data-part='list'] {
@@ -18715,7 +18813,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_tags-input-control-px: var(--xh-control-px-md);
   --xh-_tags-input-control-gap: var(--xh-control-gap-sm);
   --xh-_tags-input-input-font-size: var(--xh-text-body-size);
-  --xh-_tags-input-item-font-size: var(--xh-font-size-sm);
+  --xh-_tags-input-item-font-size: var(--xh-text-secondary-size);
   --xh-_tags-input-label-font-size: var(--xh-text-label-size);
   /* 形态档只换这三个私有槽，缺省这一份就是描边式（描边 + 画布底） */
   --xh-_tags-input-control-bg: var(--xh-bg-canvas);
@@ -18765,9 +18863,9 @@ input[data-scope='mention'][data-part='input'] {
   --xh-icon-size: var(--xh-tags-input-icon-size, var(--xh-glyph-size-sm));
   --xh-_tags-input-control-h: var(--xh-control-h-sm);
   --xh-_tags-input-control-px: var(--xh-control-px-sm);
-  --xh-_tags-input-input-font-size: var(--xh-font-size-sm);
-  --xh-_tags-input-item-font-size: var(--xh-font-size-xs);
-  --xh-_tags-input-label-font-size: var(--xh-font-size-sm);
+  --xh-_tags-input-input-font-size: var(--xh-control-font-sm);
+  --xh-_tags-input-item-font-size: var(--xh-control-caption-sm);
+  --xh-_tags-input-label-font-size: var(--xh-control-font-sm);
 }
 
 [data-scope='tags-input'][data-part='root'][data-size='lg'] {
@@ -18775,9 +18873,9 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_tags-input-control-h: var(--xh-control-h-lg);
   --xh-_tags-input-control-px: var(--xh-control-px-lg);
   --xh-_tags-input-control-gap: var(--xh-control-gap-lg);
-  --xh-_tags-input-input-font-size: var(--xh-font-size-lg);
-  --xh-_tags-input-item-font-size: var(--xh-font-size-md);
-  --xh-_tags-input-label-font-size: var(--xh-font-size-lg);
+  --xh-_tags-input-input-font-size: var(--xh-control-font-lg);
+  --xh-_tags-input-item-font-size: var(--xh-control-caption-lg);
+  --xh-_tags-input-label-font-size: var(--xh-control-font-lg);
 }
 
 [data-scope='tags-input'][data-part='label'] {
@@ -18822,6 +18920,7 @@ input[data-scope='mention'][data-part='input'] {
 /* 焦点环画在这个框上：用户眼里"被聚焦的控件"就是整个框，
    而真正持有焦点的是里面的 input（它自己那圈环因此让位，见下） */
 [data-scope='tags-input'][data-part='control']:focus-within {
+  border-color: var(--xh-tags-input-control-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
   outline: var(--xh-ring-width) solid var(--xh-_tags-input-ring);
   outline-offset: var(--xh-ring-offset);
 }
@@ -18958,7 +19057,7 @@ input[data-scope='mention'][data-part='input'] {
   background: var(--xh-tags-input-delete-bg, transparent);
   color: var(--xh-tags-input-delete-fg, var(--xh-fg-muted));
   font-family: inherit;
-  font-size: var(--xh-tags-input-delete-font-size, var(--xh-font-size-xs));
+  font-size: var(--xh-tags-input-delete-font-size, var(--xh-text-caption-size));
   line-height: var(--xh-leading-none);
   cursor: pointer;
   transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
@@ -19040,7 +19139,7 @@ input[data-scope='mention'][data-part='input'] {
   background: var(--xh-tags-input-clear-bg, transparent);
   color: var(--xh-tags-input-clear-fg, var(--xh-fg-muted));
   font-family: inherit;
-  font-size: var(--xh-tags-input-clear-font-size, var(--xh-font-size-sm));
+  font-size: var(--xh-tags-input-clear-font-size, var(--xh-text-secondary-size));
   line-height: var(--xh-leading-none);
   cursor: pointer;
   transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
@@ -19076,8 +19175,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='tags-input'][data-part='clear-trigger']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
@@ -19087,8 +19186,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='tags-input'][data-part='item-delete-trigger']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
@@ -19114,7 +19213,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_text-field-px: var(--xh-control-px-md);
   --xh-_text-field-font-size: var(--xh-text-body-size);
   --xh-_text-field-label-font-size: var(--xh-text-label-size);
-  --xh-_text-field-clear-font-size: var(--xh-font-size-sm);
+  --xh-_text-field-clear-font-size: var(--xh-text-secondary-size);
 
   /* 形态档只换这三个私有槽：底、常态描边、悬停描边 */
   --xh-_text-field-bg: var(--xh-bg-canvas);
@@ -19124,7 +19223,7 @@ input[data-scope='mention'][data-part='input'] {
   /* 语气只落在聚焦这一处：环与聚焦态描边。正文颜色不归它管。
      没写 data-tone 时 --xh-_tone 没被声明，退回原来的聚焦环色与常态描边 */
   --xh-_text-field-ring: var(--xh-ring-focus);
-  --xh-_text-field-border-focus: var(--xh-text-field-input-border, var(--xh-_tone, var(--xh-border-control)));
+  --xh-_text-field-border-focus: var(--xh-text-field-input-border, var(--xh-_tone, var(--xh-border-control-focus)));
 
   display: inline-flex;
   flex-direction: column;
@@ -19142,18 +19241,18 @@ input[data-scope='mention'][data-part='input'] {
   --xh-icon-size: var(--xh-text-field-icon-size, var(--xh-glyph-size-sm));
   --xh-_text-field-h: var(--xh-control-h-sm);
   --xh-_text-field-px: var(--xh-control-px-sm);
-  --xh-_text-field-font-size: var(--xh-font-size-sm);
-  --xh-_text-field-label-font-size: var(--xh-font-size-sm);
-  --xh-_text-field-clear-font-size: var(--xh-font-size-xs);
+  --xh-_text-field-font-size: var(--xh-control-font-sm);
+  --xh-_text-field-label-font-size: var(--xh-control-font-sm);
+  --xh-_text-field-clear-font-size: var(--xh-control-caption-sm);
 }
 
 [data-scope='text-field'][data-part='root'][data-size='lg'] {
   --xh-icon-size: var(--xh-text-field-icon-size, var(--xh-glyph-size-lg));
   --xh-_text-field-h: var(--xh-control-h-lg);
   --xh-_text-field-px: var(--xh-control-px-lg);
-  --xh-_text-field-font-size: var(--xh-font-size-lg);
-  --xh-_text-field-label-font-size: var(--xh-font-size-lg);
-  --xh-_text-field-clear-font-size: var(--xh-font-size-md);
+  --xh-_text-field-font-size: var(--xh-control-font-lg);
+  --xh-_text-field-label-font-size: var(--xh-control-font-lg);
+  --xh-_text-field-clear-font-size: var(--xh-control-caption-lg);
 }
 
 /* —— 形态 —— */
@@ -19163,7 +19262,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_text-field-bg: var(--xh-bg-canvas);
   --xh-_text-field-border: var(--xh-border-control);
   --xh-_text-field-border-hover: var(--xh-border-control-hover);
-  --xh-_text-field-border-focus: var(--xh-text-field-input-border, var(--xh-_tone, var(--xh-border-control)));
+  --xh-_text-field-border-focus: var(--xh-text-field-input-border, var(--xh-_tone, var(--xh-border-control-focus)));
 }
 
 /* 填充式：底色顶替描边表达边界。描边只退成透明而不去掉，1px 的位置留着，
@@ -19172,7 +19271,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_text-field-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   --xh-_text-field-border: transparent;
   --xh-_text-field-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
-  --xh-_text-field-border-focus: var(--xh-_tone, var(--xh-border-control));
+  --xh-_text-field-border-focus: var(--xh-_tone, var(--xh-border-control-focus));
 }
 
 /* 无框：底与常态描边透明，悬停与聚焦浮出描边 */
@@ -19180,7 +19279,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_text-field-bg: transparent;
   --xh-_text-field-border: transparent;
   --xh-_text-field-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
-  --xh-_text-field-border-focus: var(--xh-_tone, var(--xh-border-control));
+  --xh-_text-field-border-focus: var(--xh-_tone, var(--xh-border-control-focus));
 }
 
 [data-scope='text-field'][data-part='label'] {
@@ -19195,6 +19294,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='text-field'][data-part='input'] {
+  min-inline-size: var(--xh-text-field-input-min-w, var(--xh-control-min-w));
   block-size: var(--xh-text-field-input-h, var(--xh-_text-field-h));
   padding-inline: var(--xh-text-field-input-px, var(--xh-_text-field-px));
   padding-block: 0;
@@ -19320,8 +19420,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='text-field'][data-part='clear-trigger']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
@@ -19396,7 +19496,7 @@ input[data-scope='mention'][data-part='input'] {
   border-radius: var(--xh-thread-scroll-button-radius, var(--xh-shape-pill));
   background: var(--xh-thread-scroll-button-bg, var(--xh-bg-surface));
   color: var(--xh-thread-scroll-button-fg, var(--xh-fg-default));
-  box-shadow: var(--xh-thread-scroll-button-shadow, var(--xh-elevation-2));
+  box-shadow: var(--xh-thread-scroll-button-shadow, var(--xh-elevation-sheet));
   /* 按钮默认不继承页面字族，显式继承 */
   font-family: inherit;
   font-size: var(--xh-thread-scroll-button-font-size, var(--xh-text-label-size));
@@ -19475,16 +19575,16 @@ input[data-scope='mention'][data-part='input'] {
   --xh-icon-size: var(--xh-time-field-icon-size, var(--xh-glyph-size-sm));
   --xh-_time-field-control-h: var(--xh-control-h-sm);
   --xh-_time-field-control-px: var(--xh-control-px-sm);
-  --xh-_time-field-font-size: var(--xh-font-size-sm);
-  --xh-_time-field-label-font-size: var(--xh-font-size-sm);
+  --xh-_time-field-font-size: var(--xh-control-font-sm);
+  --xh-_time-field-label-font-size: var(--xh-control-font-sm);
 }
 
 [data-scope='time-field'][data-part='root'][data-size='lg'] {
   --xh-icon-size: var(--xh-time-field-icon-size, var(--xh-glyph-size-lg));
   --xh-_time-field-control-h: var(--xh-control-h-lg);
   --xh-_time-field-control-px: var(--xh-control-px-lg);
-  --xh-_time-field-font-size: var(--xh-font-size-lg);
-  --xh-_time-field-label-font-size: var(--xh-font-size-lg);
+  --xh-_time-field-font-size: var(--xh-control-font-lg);
+  --xh-_time-field-label-font-size: var(--xh-control-font-lg);
 }
 
 /* —— 形态 —— */
@@ -19533,6 +19633,7 @@ input[data-scope='mention'][data-part='input'] {
    段自己只管一小块可聚焦的高亮区 */
 [data-scope='time-field'][data-part='control'] {
   display: inline-flex;
+  min-inline-size: var(--xh-time-field-control-min-w, var(--xh-control-min-w));
   align-items: center;
   block-size: var(--xh-time-field-control-h, var(--xh-_time-field-control-h));
   padding-inline: var(--xh-time-field-control-px, var(--xh-_time-field-control-px));
@@ -19562,7 +19663,9 @@ input[data-scope='mention'][data-part='input'] {
 /* 焦点真正落在段上，但整块看起来才是一个控件：段内有焦点时整框亮起来。
    control 自己不占 Tab 位，所以这里写的是 focus-within 而不是 focus-visible */
 [data-scope='time-field'][data-part='control']:focus-within:not([data-disabled]) {
-  border-color: var(--xh-time-field-control-border-focus, var(--xh-_time-field-ring));
+  border-color: var(--xh-time-field-control-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
+  outline: var(--xh-ring-width) solid var(--xh-_time-field-ring);
+  outline-offset: var(--xh-ring-offset);
 }
 
 [data-scope='time-field'][data-part='control'][data-invalid] {
@@ -19697,6 +19800,9 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 与文本框、时间输入同一套堆叠：标签一行、控件一行 */
 [data-scope='time-picker'][data-part='root'] {
+  /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+  --xh-icon-size: var(--xh-time-picker-icon-size, var(--xh-glyph-size-text));
+
   display: inline-flex;
   flex-direction: column;
   gap: var(--xh-time-picker-gap, var(--xh-space-1));
@@ -19707,16 +19813,16 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='time-picker']:is([data-part='root'], [data-part='positioner'])[data-size='sm'] {
   --xh-_time-picker-control-h: var(--xh-control-h-sm);
   --xh-_time-picker-control-px: var(--xh-control-px-sm);
-  --xh-_time-picker-font-size: var(--xh-font-size-sm);
-  --xh-_time-picker-label-font-size: var(--xh-font-size-sm);
+  --xh-_time-picker-font-size: var(--xh-control-font-sm);
+  --xh-_time-picker-label-font-size: var(--xh-control-font-sm);
   --xh-_time-picker-item-px: var(--xh-control-px-sm);
 }
 
 [data-scope='time-picker']:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
   --xh-_time-picker-control-h: var(--xh-control-h-lg);
   --xh-_time-picker-control-px: var(--xh-control-px-lg);
-  --xh-_time-picker-font-size: var(--xh-font-size-lg);
-  --xh-_time-picker-label-font-size: var(--xh-font-size-lg);
+  --xh-_time-picker-font-size: var(--xh-control-font-lg);
+  --xh-_time-picker-label-font-size: var(--xh-control-font-lg);
   --xh-_time-picker-item-px: var(--xh-control-px-lg);
 }
 
@@ -19767,6 +19873,7 @@ input[data-scope='mention'][data-part='input'] {
 /* 画成一个框的是 control：几段文字、展开按钮、清空按钮要看起来是一体的，
    边框长在其中任何一个身上都会把另外几个割在框外 */
 [data-scope='time-picker'][data-part='control'] {
+  min-inline-size: var(--xh-time-picker-control-min-w, var(--xh-control-min-w));
   display: inline-flex;
   align-items: center;
   gap: var(--xh-time-picker-control-gap, var(--xh-control-gap-md));
@@ -19798,7 +19905,7 @@ input[data-scope='mention'][data-part='input'] {
 /* 焦点真正落在段或按钮上，但整块看起来才是一个控件：内部有焦点时整框亮起来。
    control 自己不占 Tab 位，所以这里写的是 focus-within 而不是 focus-visible */
 [data-scope='time-picker'][data-part='control']:focus-within:not([data-disabled]) {
-  border-color: var(--xh-time-picker-control-border-focus, var(--xh-_time-picker-ring));
+  border-color: var(--xh-time-picker-control-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
 }
 
 [data-scope='time-picker'][data-part='control'][data-invalid] {
@@ -19887,7 +19994,7 @@ input[data-scope='mention'][data-part='input'] {
   background: var(--xh-time-picker-action-bg, transparent);
   color: var(--xh-time-picker-action-fg, var(--xh-fg-muted));
   font-family: inherit;
-  font-size: var(--xh-time-picker-action-font-size, var(--xh-font-size-sm));
+  font-size: var(--xh-time-picker-action-font-size, var(--xh-text-secondary-size));
   line-height: var(--xh-leading-none);
   cursor: pointer;
   user-select: none;
@@ -19948,7 +20055,7 @@ input[data-scope='mention'][data-part='input'] {
   background: var(--xh-time-picker-content-bg, var(--xh-bg-surface));
   color: var(--xh-time-picker-content-fg, var(--xh-fg-default));
   font-variant-numeric: tabular-nums;
-  box-shadow: var(--xh-time-picker-content-shadow, var(--xh-elevation-2));
+  box-shadow: var(--xh-time-picker-content-shadow, var(--xh-elevation-floating));
   pointer-events: auto;
 }
 
@@ -19994,7 +20101,7 @@ input[data-scope='mention'][data-part='input'] {
   padding-block: var(--xh-time-picker-preset-py, var(--xh-space-1));
   padding-inline: var(--xh-time-picker-preset-px, var(--xh-space-3));
   border-radius: var(--xh-shape-control);
-  font-size: var(--xh-font-size-sm);
+  font-size: var(--xh-text-secondary-size);
   line-height: var(--xh-leading-normal);
   white-space: nowrap;
   cursor: pointer;
@@ -20139,8 +20246,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='time-picker'][data-part='clear-trigger']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
@@ -20150,8 +20257,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='time-picker'][data-part='trigger']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
@@ -20223,27 +20330,30 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='toast'][data-part='root'] {
+  /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+  --xh-icon-size: var(--xh-toast-icon-size, var(--xh-glyph-size-text));
+
   display: flex;
   flex-direction: column;
   gap: var(--xh-toast-gap, var(--xh-space-1));
-  inline-size: var(--xh-toast-w, 20rem);
+  inline-size: var(--xh-toast-w, var(--xh-overlay-max-w));
   /* 摞是整面视口宽的定位面且带内边距，取 100% 就等于自动让出两侧留白，
      窄屏上不必再算一遍 viewport 减法 */
   max-inline-size: 100%;
-  padding-block: var(--xh-toast-py, var(--xh-space-3));
-  padding-inline: var(--xh-toast-px, var(--xh-space-4));
+  padding-block: var(--xh-toast-py, var(--xh-surface-py-sm));
+  padding-inline: var(--xh-toast-px, var(--xh-surface-px-sm));
   border: var(--xh-stroke-thin) solid var(--xh-toast-border, var(--xh-border-default));
   /* 语气色条做成起始侧的粗边，而不是伪元素：圆角与阴影都不用再对第二遍。
      两条必须排在 border 简写之后，否则被简写重置回细边与常规描边色。
      颜色由 connect 从 type 派生的 data-tone 经语气层给出，作者写 --xh-toast-accent
      就能把某一条整体改色；两者都没有时退回原来的 info 蓝 */
-  border-inline-start-width: var(--xh-toast-accent-width, 4px);
+  border-inline-start-width: var(--xh-toast-accent-width, var(--xh-space-1));
   border-inline-start-color: var(--xh-toast-accent, var(--xh-_tone-soft, var(--xh-color-info-500)));
   border-radius: var(--xh-toast-radius, var(--xh-shape-surface));
   background: var(--xh-toast-bg, var(--xh-bg-surface-raised));
   color: var(--xh-toast-fg, var(--xh-fg-default));
-  box-shadow: var(--xh-toast-shadow, var(--xh-elevation-3));
-  font-size: var(--xh-toast-font-size, var(--xh-font-size-sm));
+  box-shadow: var(--xh-toast-shadow, var(--xh-elevation-sheet));
+  font-size: var(--xh-toast-font-size, var(--xh-text-secondary-size));
   line-height: var(--xh-toast-leading, var(--xh-leading-normal));
   /* 摞的定位面整面铺开且不吃指针，卡片必须自己吃回来：
      悬停按住计时、按钮可点、焦点进出，全指着这一条 */
@@ -20277,7 +20387,7 @@ input[data-scope='mention'][data-part='input'] {
   /* 作者可能把它写成 h2/p，外边距得先归零，否则卡片内的行距对不上 */
   margin: 0;
   color: var(--xh-toast-title-fg, var(--xh-fg-default));
-  font-size: var(--xh-toast-title-font-size, var(--xh-font-size-md));
+  font-size: var(--xh-toast-title-font-size, var(--xh-text-label-size));
   font-weight: var(--xh-toast-title-font-weight, var(--xh-font-weight-semibold));
   line-height: var(--xh-toast-title-leading, var(--xh-leading-tight));
 }
@@ -20285,7 +20395,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='toast'][data-part='description'] {
   margin: 0;
   color: var(--xh-toast-description-fg, var(--xh-fg-muted));
-  font-size: var(--xh-toast-description-font-size, var(--xh-font-size-sm));
+  font-size: var(--xh-toast-description-font-size, var(--xh-text-secondary-size));
 }
 
 /* 没给文案的那一个仍然要留在 DOM 里（aria-labelledby / aria-describedby 指着它），
@@ -20381,8 +20491,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='toast'][data-part='close-trigger']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
@@ -20562,13 +20672,13 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='toggle'][data-part='root'][data-size='sm'] {
   block-size: var(--xh-toggle-h, var(--xh-control-h-sm));
   padding-inline: var(--xh-toggle-px, var(--xh-control-px-sm));
-  font-size: var(--xh-toggle-font-size, var(--xh-font-size-sm));
+  font-size: var(--xh-toggle-font-size, var(--xh-control-font-sm));
 }
 
 [data-scope='toggle'][data-part='root'][data-size='lg'] {
   block-size: var(--xh-toggle-h, var(--xh-control-h-lg));
   padding-inline: var(--xh-toggle-px, var(--xh-control-px-lg));
-  font-size: var(--xh-toggle-font-size, var(--xh-font-size-lg));
+  font-size: var(--xh-toggle-font-size, var(--xh-control-font-lg));
 }
 
 /* styles/toggle-group.css */
@@ -20924,7 +21034,7 @@ input[data-scope='mention'][data-part='input'] {
      箭头是它的后代，语气槽一并继承 */
   --xh-_tooltip-py: var(--xh-space-1);
   --xh-_tooltip-px: var(--xh-space-2);
-  --xh-_tooltip-font-size: var(--xh-font-size-sm);
+  --xh-_tooltip-font-size: var(--xh-text-secondary-size);
 
   /* 与 positioner 相反：浮层本体要能接指针，指针停在提示上就不该收起
      （长文案需要停留细看）。positioner 仍是 none，空白区域照样点得穿。 */
@@ -20943,7 +21053,7 @@ input[data-scope='mention'][data-part='input'] {
   color: var(--xh-tooltip-fg, var(--xh-_tone-on, var(--xh-bg-surface)));
   font-size: var(--xh-tooltip-font-size, var(--xh-_tooltip-font-size));
   line-height: var(--xh-leading-normal);
-  box-shadow: var(--xh-tooltip-shadow, var(--xh-elevation-2));
+  box-shadow: var(--xh-tooltip-shadow, var(--xh-elevation-floating));
 }
 
 [data-scope='tooltip'][data-part='content'][data-state='open'] {
@@ -20962,13 +21072,13 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='tooltip'][data-part='content'][data-size='sm'] {
   --xh-_tooltip-py: var(--xh-space-0_5);
   --xh-_tooltip-px: var(--xh-space-1_5);
-  --xh-_tooltip-font-size: var(--xh-font-size-xs);
+  --xh-_tooltip-font-size: var(--xh-control-caption-sm);
 }
 
 [data-scope='tooltip'][data-part='content'][data-size='lg'] {
   --xh-_tooltip-py: var(--xh-space-1_5);
   --xh-_tooltip-px: var(--xh-space-2_5);
-  --xh-_tooltip-font-size: var(--xh-font-size-md);
+  --xh-_tooltip-font-size: var(--xh-control-caption-lg);
 }
 
 /* 箭头的底色与描边色，几何在 overlay-arrow.css。
@@ -21053,6 +21163,9 @@ input[data-scope='mention'][data-part='input'] {
 /* 根节点只是几个浮层的归属容器，不参与排版。
    这里不给 display，UA 的 [hidden]{display:none} 就仍然压得住 */
 [data-scope='tour'][data-part='root'] {
+  /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+  --xh-icon-size: var(--xh-tour-icon-size, var(--xh-glyph-size-text));
+
   color: var(--xh-tour-fg, var(--xh-fg-default));
 }
 
@@ -21145,15 +21258,15 @@ input[data-scope='mention'][data-part='input'] {
   gap: var(--xh-tour-gap, var(--xh-space-2));
   inline-size: max-content;
   max-inline-size: var(--xh-tour-max-w, 22rem);
-  padding-block: var(--xh-tour-py, var(--xh-space-4));
-  padding-inline: var(--xh-tour-px, var(--xh-control-px-lg));
+  padding-block: var(--xh-tour-py, var(--xh-surface-py-md));
+  padding-inline: var(--xh-tour-px, var(--xh-surface-px-md));
   /* 引导步骤的正文长度由作者定，矮视口下不限高气泡会整块伸出视口 */
   max-block-size: min(var(--xh-tour-max-h, var(--xh-overlay-max-h)), var(--xh-_tour-available-h));
   border: var(--xh-stroke-thin) solid var(--xh-tour-border, var(--xh-border-default));
   border-radius: var(--xh-tour-radius, var(--xh-shape-surface));
   background: var(--xh-tour-bg, var(--xh-bg-surface));
   color: var(--xh-tour-fg, var(--xh-fg-default));
-  box-shadow: var(--xh-tour-shadow, var(--xh-elevation-3));
+  box-shadow: var(--xh-tour-shadow, var(--xh-elevation-sheet));
   pointer-events: auto;
 }
 
@@ -21199,7 +21312,7 @@ input[data-scope='mention'][data-part='input'] {
 
 /* "第 m 步，共 n 步"：辅助信息，字号压一档，与按钮排在同一行的两端 */
 [data-scope='tour'][data-part='progress-text'] {
-  font-size: var(--xh-tour-progress-font-size, var(--xh-font-size-xs));
+  font-size: var(--xh-tour-progress-font-size, var(--xh-text-caption-size));
   color: var(--xh-tour-progress-fg, var(--xh-fg-subtle));
 }
 
@@ -21213,7 +21326,7 @@ input[data-scope='mention'][data-part='input'] {
   padding-inline: var(--xh-control-px-md);
   border: var(--xh-stroke-thin) solid transparent;
   border-radius: var(--xh-shape-control);
-  font-size: var(--xh-font-size-sm);
+  font-size: var(--xh-text-secondary-size);
   cursor: pointer;
 }
 
@@ -21311,8 +21424,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='tour'][data-part='close-trigger']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
@@ -21391,6 +21504,9 @@ input[data-scope='mention'][data-part='input'] {
    中间那栏没有对应的角色节点（anatomy 里两个按钮是 root 的直接子节点），
    所以只能按位置显式安放，不能靠自动流——自动流会把"往左搬"甩到右侧面板的位置上 */
 [data-scope='transfer'][data-part='root'] {
+  /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+  --xh-icon-size: var(--xh-transfer-icon-size, var(--xh-glyph-size-text));
+
   display: grid;
   grid-template-rows: 1fr 1fr;
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
@@ -21465,7 +21581,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='transfer'][data-part='panel-count'] {
   flex: none;
   color: var(--xh-transfer-count-fg, var(--xh-fg-subtle));
-  font-size: var(--xh-transfer-count-font-size, var(--xh-font-size-xs));
+  font-size: var(--xh-transfer-count-font-size, var(--xh-text-caption-size));
   line-height: var(--xh-leading-none);
   font-variant-numeric: tabular-nums;
 }
@@ -21603,8 +21719,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='transfer'][data-part='item-checkbox'][data-state='checked']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
@@ -21616,8 +21732,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='transfer'][data-part='select-all-trigger'][data-state='all']::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
@@ -21627,8 +21743,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='transfer'][data-part='select-all-trigger'][data-state='some']::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
@@ -21652,7 +21768,7 @@ input[data-scope='mention'][data-part='input'] {
   border-radius: var(--xh-transfer-select-all-radius, var(--xh-shape-control));
   background: none;
   color: var(--xh-transfer-select-all-fg, var(--xh-fg-muted));
-  font-size: var(--xh-transfer-select-all-font-size, var(--xh-font-size-xs));
+  font-size: var(--xh-transfer-select-all-font-size, var(--xh-text-caption-size));
   font-weight: var(--xh-font-weight-medium);
   line-height: var(--xh-leading-none);
   cursor: pointer;
@@ -21731,8 +21847,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='transfer'][data-part='to-source-trigger']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-chevron-left) center / contain no-repeat;
@@ -21742,8 +21858,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='transfer'][data-part='to-target-trigger']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
@@ -21757,6 +21873,9 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='tree'][data-part='root'] {
+  /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+  --xh-icon-size: var(--xh-tree-icon-size, var(--xh-glyph-size-text));
+
   display: flex;
   flex-direction: column;
   gap: var(--xh-tree-gap, var(--xh-space-2));
@@ -21782,7 +21901,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='tree'][data-part='tree'] {
   display: flex;
   flex-direction: column;
-  max-block-size: var(--xh-tree-max-h, 20rem);
+  max-block-size: var(--xh-tree-max-h, var(--xh-viewport-max-h));
   padding-block: var(--xh-tree-py, var(--xh-space-1));
   padding-inline: var(--xh-tree-px, var(--xh-space-1));
   border: var(--xh-stroke-thin) solid var(--xh-tree-border, var(--xh-border-default));
@@ -21886,8 +22005,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='tree'][data-part='branch-checkbox'][data-selected]:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
@@ -21898,8 +22017,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='tree'][data-part='branch-checkbox'][data-indeterminate]:not([data-selected]):empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
@@ -22024,8 +22143,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='tree'][data-part='branch-indicator']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
@@ -22035,8 +22154,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='tree'][data-part='item-indicator']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
@@ -22114,6 +22233,9 @@ input[data-scope='mention'][data-part='input'] {
    标签占满整行把后面的挤到下一行，触发器与清空按钮就并排落在同一行上。
    这样作者少写标签、少写清空按钮，剩下的部件也不会塌 */
 [data-scope='tree-select'][data-part='root'] {
+  /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+  --xh-icon-size: var(--xh-tree-select-icon-size, var(--xh-glyph-size-text));
+
   display: inline-flex;
   flex-wrap: wrap;
   align-items: center;
@@ -22154,16 +22276,16 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_tree-select-h: var(--xh-control-h-sm);
   --xh-_tree-select-px: var(--xh-control-px-sm);
   --xh-_tree-select-gap: var(--xh-control-gap-sm);
-  --xh-_tree-select-font-size: var(--xh-font-size-sm);
-  --xh-_tree-select-label-font-size: var(--xh-font-size-sm);
+  --xh-_tree-select-font-size: var(--xh-control-font-sm);
+  --xh-_tree-select-label-font-size: var(--xh-control-font-sm);
 }
 
 [data-scope='tree-select']:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
   --xh-_tree-select-h: var(--xh-control-h-lg);
   --xh-_tree-select-px: var(--xh-control-px-lg);
   --xh-_tree-select-gap: var(--xh-control-gap-lg);
-  --xh-_tree-select-font-size: var(--xh-font-size-lg);
-  --xh-_tree-select-label-font-size: var(--xh-font-size-lg);
+  --xh-_tree-select-font-size: var(--xh-control-font-lg);
+  --xh-_tree-select-label-font-size: var(--xh-control-font-lg);
 }
 
 [data-scope='tree-select'][data-part='label'] {
@@ -22188,7 +22310,7 @@ input[data-scope='mention'][data-part='input'] {
   align-items: center;
   justify-content: space-between;
   gap: var(--xh-tree-select-trigger-gap, var(--xh-_tree-select-gap));
-  min-inline-size: var(--xh-tree-select-trigger-min-w, 12rem);
+  min-inline-size: var(--xh-tree-select-trigger-min-w, var(--xh-control-min-w));
   block-size: var(--xh-tree-select-trigger-h, var(--xh-_tree-select-h));
   padding-inline: var(--xh-tree-select-trigger-px, var(--xh-_tree-select-px));
   border: var(--xh-stroke-thin) solid var(--xh-tree-select-trigger-border, var(--xh-_tree-select-border));
@@ -22214,6 +22336,7 @@ input[data-scope='mention'][data-part='input'] {
 
 /* trigger 是整个控件唯一的 Tab 停靠点（展开后停靠点才移进树里），落焦必须看得见 */
 [data-scope='tree-select'][data-part='trigger']:focus-visible {
+  border-color: var(--xh-tree-select-trigger-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
   outline-offset: var(--xh-ring-offset);
 }
@@ -22296,7 +22419,7 @@ input[data-scope='mention'][data-part='input'] {
   background: var(--xh-tree-select-action-bg, transparent);
   color: var(--xh-tree-select-action-fg, var(--xh-fg-muted));
   font-family: inherit;
-  font-size: var(--xh-tree-select-action-font-size, var(--xh-font-size-sm));
+  font-size: var(--xh-tree-select-action-font-size, var(--xh-text-secondary-size));
   line-height: var(--xh-leading-none);
   cursor: pointer;
   user-select: none;
@@ -22342,7 +22465,7 @@ input[data-scope='mention'][data-part='input'] {
   border-radius: var(--xh-tree-select-content-radius, var(--xh-shape-surface));
   background: var(--xh-tree-select-content-bg, var(--xh-bg-surface));
   color: var(--xh-tree-select-content-fg, var(--xh-fg-default));
-  box-shadow: var(--xh-tree-select-content-shadow, var(--xh-elevation-2));
+  box-shadow: var(--xh-tree-select-content-shadow, var(--xh-elevation-floating));
   /* 两轴一起给：深层节点靠缩进往行末推，横向溢出是常态，得够得着 */
   overflow: auto;
   pointer-events: auto;
@@ -22546,8 +22669,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='tree-select'][data-part='indicator']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
@@ -22557,8 +22680,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='tree-select'][data-part='item-indicator']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
@@ -22569,8 +22692,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='tree-select'][data-part='branch-indicator']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
@@ -22580,8 +22703,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='tree-select'][data-part='clear-trigger']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;

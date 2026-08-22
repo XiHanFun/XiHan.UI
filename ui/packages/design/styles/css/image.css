@@ -38,7 +38,7 @@
     /* 没给 ratio 时根盒子高度是 auto，回退内容自己撑出一个不塌的高度 */
     min-block-size: var(--xh-image-fallback-min-h, var(--xh-control-h-lg));
     color: var(--xh-image-fallback-fg, var(--xh-fg-muted));
-    font-size: var(--xh-image-fallback-font-size, var(--xh-font-size-sm));
+    font-size: var(--xh-image-fallback-font-size, var(--xh-text-secondary-size));
     line-height: var(--xh-leading-none);
     user-select: none;
   }

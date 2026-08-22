@@ -7,6 +7,9 @@
   /* 根节点是 nav 地标，不参与排版：整条路径的行为全在 list 上，
      这里不给 display，UA 的 [hidden]{display:none} 就仍然压得住 */
   [data-scope='breadcrumb'][data-part='root'] {
+    /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+    --xh-icon-size: var(--xh-breadcrumb-icon-size, var(--xh-glyph-size-text));
+
     /* 尺寸档只换这两个私有槽，列表与链接都从 root 继承它们，换档不必给每个部件各写一条选择器 */
     --xh-_breadcrumb-font-size: var(--xh-text-label-size);
     --xh-_breadcrumb-gap: var(--xh-space-2);
@@ -23,12 +26,12 @@
   /* 缺省档写在上面的基础规则里。间距量的是路径里文字与分隔符之间的距离，
      不在控件间距那把尺上（那把尺的大档与中档同值），三档一律取空间尺 */
   [data-scope='breadcrumb'][data-part='root'][data-size='sm'] {
-    --xh-_breadcrumb-font-size: var(--xh-font-size-sm);
+    --xh-_breadcrumb-font-size: var(--xh-control-font-sm);
     --xh-_breadcrumb-gap: var(--xh-space-1_5);
   }
 
   [data-scope='breadcrumb'][data-part='root'][data-size='lg'] {
-    --xh-_breadcrumb-font-size: var(--xh-font-size-lg);
+    --xh-_breadcrumb-font-size: var(--xh-control-font-lg);
     --xh-_breadcrumb-gap: var(--xh-space-3);
   }
 
@@ -66,7 +69,7 @@
     align-items: center;
     gap: var(--xh-breadcrumb-link-gap, var(--xh-space-1));
     /* 一层的名字可能很长（文档标题、订单号），压不住会把整条路径撑开 */
-    max-inline-size: var(--xh-breadcrumb-link-max-w, 12rem);
+    max-inline-size: var(--xh-breadcrumb-link-max-w, var(--xh-nav-link-max-w));
     padding-inline: var(--xh-breadcrumb-link-px, var(--xh-space-1));
     border-radius: var(--xh-breadcrumb-link-radius, var(--xh-shape-control));
     color: inherit;
@@ -134,8 +137,8 @@
   [data-scope='breadcrumb'][data-part='separator']:empty::before {
     content: '';
     display: inline-block;
-    inline-size: 1em;
-    block-size: 1em;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;

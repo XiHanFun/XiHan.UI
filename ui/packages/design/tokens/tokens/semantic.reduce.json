@@ -28,6 +28,10 @@
     "scale-press": {
       "$type": "number",
       "$value": 1
+    },
+    "scale-drag": {
+      "$type": "number",
+      "$value": 1
     }
   }
 }

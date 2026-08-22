@@ -74,7 +74,7 @@
     padding: var(--xh-space-3) var(--xh-space-4);
     background: var(--xh-layout-footer-bg, var(--xh-bg-surface));
     color: var(--xh-fg-muted);
-    font-size: var(--xh-font-size-sm);
+    font-size: var(--xh-text-secondary-size);
   }
 
   /* —— 折叠把手 —— */
@@ -89,7 +89,7 @@
     border-radius: var(--xh-layout-sider-trigger-radius, var(--xh-shape-control));
     background: var(--xh-layout-sider-trigger-bg, transparent);
     color: var(--xh-layout-sider-trigger-fg, var(--xh-fg-default));
-    font-size: var(--xh-font-size-sm);
+    font-size: var(--xh-text-secondary-size);
     line-height: var(--xh-leading-none);
     cursor: pointer;
   }

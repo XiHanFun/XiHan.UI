@@ -35,11 +35,22 @@
     "strong": { "$type": "color", "$value": "{color.neutral.600}" },
     "control": { "$type": "color", "$value": "{color.neutral.550}" },
     "control-hover": { "$type": "color", "$value": "{color.neutral.500}" },
+    "control-focus": { "$type": "color", "$value": "{border.control}" },
     "invalid": { "$type": "color", "$value": "{color.danger.500}" },
     "at-limit": { "$type": "color", "$value": "{color.warning.500}" }
   },
   "ring": {
     "focus": { "$type": "color", "$value": "{color.brand.400}" },
     "invalid": { "$type": "color", "$value": "{color.danger.400}" }
+  },
+  "syntax": {
+    "string": { "$type": "color", "$value": "oklch(0.85 0.12 165)" },
+    "number": { "$type": "color", "$value": "oklch(0.85 0.12 75)" },
+    "keyword": { "$type": "color", "$value": "oklch(0.82 0.14 300)" }
+  },
+  "elevation": {
+    "raised": { "$type": "shadow", "$value": "0 1px 2px 0 oklch(0 0 0 / 0.4)" },
+    "floating": { "$type": "shadow", "$value": "0 4px 8px -2px oklch(0 0 0 / 0.5), 0 2px 4px -2px oklch(0 0 0 / 0.4), 0 0 0 1px oklch(1 0 0 / 0.06)" },
+    "sheet": { "$type": "shadow", "$value": "0 12px 24px -6px oklch(0 0 0 / 0.6), 0 4px 8px -4px oklch(0 0 0 / 0.4), 0 0 0 1px oklch(1 0 0 / 0.08)" }
   }
 }

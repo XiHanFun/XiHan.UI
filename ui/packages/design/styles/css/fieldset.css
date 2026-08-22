@@ -51,7 +51,7 @@
   [data-scope='fieldset'][data-part='helper-text'] {
     margin: 0;
     color: var(--xh-fieldset-helper-fg, var(--xh-fg-muted));
-    font-size: var(--xh-fieldset-helper-font-size, var(--xh-font-size-sm));
+    font-size: var(--xh-fieldset-helper-font-size, var(--xh-text-secondary-size));
     line-height: var(--xh-leading-normal);
   }
 
@@ -63,7 +63,7 @@
   [data-scope='fieldset'][data-part='error-text'] {
     margin: 0;
     color: var(--xh-fieldset-error-fg, var(--xh-fg-danger));
-    font-size: var(--xh-fieldset-error-font-size, var(--xh-font-size-sm));
+    font-size: var(--xh-fieldset-error-font-size, var(--xh-text-secondary-size));
     line-height: var(--xh-leading-normal);
   }
 }

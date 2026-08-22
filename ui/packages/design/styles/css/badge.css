@@ -14,7 +14,7 @@
     border-radius: var(--xh-shape-pill);
     background: var(--xh-badge-bg, var(--xh-bg-subtle));
     color: var(--xh-badge-fg, var(--xh-fg-default));
-    font-size: var(--xh-badge-font-size, var(--xh-font-size-xs));
+    font-size: var(--xh-badge-font-size, var(--xh-text-caption-size));
     font-weight: var(--xh-badge-font-weight, var(--xh-font-weight-medium));
     line-height: var(--xh-leading-none);
     white-space: nowrap;
@@ -64,6 +64,6 @@
     gap: var(--xh-space-1_5);
     padding-inline: var(--xh-space-3);
     padding-block: var(--xh-space-1);
-    font-size: var(--xh-font-size-sm);
+    font-size: var(--xh-text-secondary-size);
   }
 }

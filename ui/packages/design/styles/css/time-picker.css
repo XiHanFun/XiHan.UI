@@ -42,6 +42,9 @@
 
   /* 与文本框、时间输入同一套堆叠：标签一行、控件一行 */
   [data-scope='time-picker'][data-part='root'] {
+    /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+    --xh-icon-size: var(--xh-time-picker-icon-size, var(--xh-glyph-size-text));
+
     display: inline-flex;
     flex-direction: column;
     gap: var(--xh-time-picker-gap, var(--xh-space-1));
@@ -52,16 +55,16 @@
   [data-scope='time-picker']:is([data-part='root'], [data-part='positioner'])[data-size='sm'] {
     --xh-_time-picker-control-h: var(--xh-control-h-sm);
     --xh-_time-picker-control-px: var(--xh-control-px-sm);
-    --xh-_time-picker-font-size: var(--xh-font-size-sm);
-    --xh-_time-picker-label-font-size: var(--xh-font-size-sm);
+    --xh-_time-picker-font-size: var(--xh-control-font-sm);
+    --xh-_time-picker-label-font-size: var(--xh-control-font-sm);
     --xh-_time-picker-item-px: var(--xh-control-px-sm);
   }
 
   [data-scope='time-picker']:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
     --xh-_time-picker-control-h: var(--xh-control-h-lg);
     --xh-_time-picker-control-px: var(--xh-control-px-lg);
-    --xh-_time-picker-font-size: var(--xh-font-size-lg);
-    --xh-_time-picker-label-font-size: var(--xh-font-size-lg);
+    --xh-_time-picker-font-size: var(--xh-control-font-lg);
+    --xh-_time-picker-label-font-size: var(--xh-control-font-lg);
     --xh-_time-picker-item-px: var(--xh-control-px-lg);
   }
 
@@ -112,6 +115,7 @@
   /* 画成一个框的是 control：几段文字、展开按钮、清空按钮要看起来是一体的，
      边框长在其中任何一个身上都会把另外几个割在框外 */
   [data-scope='time-picker'][data-part='control'] {
+    min-inline-size: var(--xh-time-picker-control-min-w, var(--xh-control-min-w));
     display: inline-flex;
     align-items: center;
     gap: var(--xh-time-picker-control-gap, var(--xh-control-gap-md));
@@ -143,7 +147,7 @@
   /* 焦点真正落在段或按钮上，但整块看起来才是一个控件：内部有焦点时整框亮起来。
      control 自己不占 Tab 位，所以这里写的是 focus-within 而不是 focus-visible */
   [data-scope='time-picker'][data-part='control']:focus-within:not([data-disabled]) {
-    border-color: var(--xh-time-picker-control-border-focus, var(--xh-_time-picker-ring));
+    border-color: var(--xh-time-picker-control-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
   }
 
   [data-scope='time-picker'][data-part='control'][data-invalid] {
@@ -232,7 +236,7 @@
     background: var(--xh-time-picker-action-bg, transparent);
     color: var(--xh-time-picker-action-fg, var(--xh-fg-muted));
     font-family: inherit;
-    font-size: var(--xh-time-picker-action-font-size, var(--xh-font-size-sm));
+    font-size: var(--xh-time-picker-action-font-size, var(--xh-text-secondary-size));
     line-height: var(--xh-leading-none);
     cursor: pointer;
     user-select: none;
@@ -293,7 +297,7 @@
     background: var(--xh-time-picker-content-bg, var(--xh-bg-surface));
     color: var(--xh-time-picker-content-fg, var(--xh-fg-default));
     font-variant-numeric: tabular-nums;
-    box-shadow: var(--xh-time-picker-content-shadow, var(--xh-elevation-2));
+    box-shadow: var(--xh-time-picker-content-shadow, var(--xh-elevation-floating));
     pointer-events: auto;
   }
 
@@ -339,7 +343,7 @@
     padding-block: var(--xh-time-picker-preset-py, var(--xh-space-1));
     padding-inline: var(--xh-time-picker-preset-px, var(--xh-space-3));
     border-radius: var(--xh-shape-control);
-    font-size: var(--xh-font-size-sm);
+    font-size: var(--xh-text-secondary-size);
     line-height: var(--xh-leading-normal);
     white-space: nowrap;
     cursor: pointer;
@@ -484,8 +488,8 @@
   [data-scope='time-picker'][data-part='clear-trigger']:empty::before {
     content: '';
     display: inline-block;
-    inline-size: 1em;
-    block-size: 1em;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
@@ -495,8 +499,8 @@
   [data-scope='time-picker'][data-part='trigger']:empty::before {
     content: '';
     display: inline-block;
-    inline-size: 1em;
-    block-size: 1em;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;

@@ -5,6 +5,9 @@
   }
 
   [data-scope='listbox'][data-part='root'] {
+    /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+    --xh-icon-size: var(--xh-listbox-icon-size, var(--xh-glyph-size-text));
+
     display: flex;
     flex-direction: column;
     gap: var(--xh-listbox-gap, var(--xh-space-2));
@@ -81,7 +84,7 @@
     padding-block: var(--xh-listbox-group-label-py, var(--xh-space-1));
     padding-inline: var(--xh-listbox-group-label-px, var(--xh-control-px-md));
     color: var(--xh-listbox-group-label-fg, var(--xh-fg-subtle));
-    font-size: var(--xh-listbox-group-label-font-size, var(--xh-font-size-xs));
+    font-size: var(--xh-listbox-group-label-font-size, var(--xh-text-caption-size));
     font-weight: var(--xh-listbox-group-label-font-weight, var(--xh-font-weight-medium));
     line-height: var(--xh-leading-none);
     user-select: none;
@@ -177,8 +180,8 @@
   [data-scope='listbox'][data-part='item-indicator']:empty::before {
     content: '';
     display: inline-block;
-    inline-size: 1em;
-    block-size: 1em;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;

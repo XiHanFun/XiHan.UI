@@ -44,12 +44,61 @@ for (const file of (await readdir(STYLES)).filter(f => f.endsWith('.css'))) {
   }
 }
 
-if (offenders.length) {
-  console.error('[check-focus-ring] 聚焦环里有没走令牌的字面量：')
-  for (const o of offenders) console.error(`  ${o}`)
-  console.error('  粗细用 --xh-ring-width，颜色用 --xh-ring-focus，偏移用 --xh-ring-offset；')
-  console.error('  确需往内收就写 calc(-1 * var(--xh-ring-offset))，并在注释里写明为什么。')
+// 第二件：带描边的输入类部件，聚焦时的描边色必须走 --xh-border-control-focus（语气槽优先）。
+// 描边一律不变只画环、或者描边跟着环色走、或者只画环不管描边——三派并存时，语气轴在
+// 「描边跟环色」那一派上整个失效（环与描边都被钉成品牌色）。统一成一派：
+// border-color: var(--xh-<c>-<part>-border-focus, var(--xh-_tone, var(--xh-border-control-focus)))，
+// 经私有槽中转也行，槽的赋值里得出现 --xh-border-control-focus。环与描边可以拆成两条聚焦规则写。
+/** 输入类部件：框本身可聚焦或 focus-within 的那一层。选择器族的 trigger 与 composer 的 root 也是输入框。 */
+const FOCUS_PARTS = new Set(['control', 'input', 'box', 'textarea'])
+const INPUT_LIKE = { 'select': 'trigger', 'tree-select': 'trigger', 'cascader': 'trigger', 'color-picker': 'trigger', 'composer': 'root' }
+const FOCUS_RULE = /\[data-scope='([a-z-]+)'\]\[data-part='([a-z-]+)'\](?:\[[^\]]+\])*:focus-(?:within|visible)(?::not\([^)]*\))?\s*\{([^{}]*)\}/g
+const borderFocus = []
+
+for (const file of (await readdir(STYLES)).filter(f => f.endsWith('.css'))) {
+  const src = (await readFile(join(STYLES, file), 'utf8')).replace(/\/\*[\s\S]*?\*\//g, '')
+  /** 部件 → 它所有聚焦块里的 border-color 取值。 */
+  const seen = new Map()
+  for (const m of src.matchAll(FOCUS_RULE)) {
+    const [, scope, part, body] = m
+    if (!(FOCUS_PARTS.has(part) || INPUT_LIKE[scope] === part))
+      continue
+    // 这个部件有没有描边：基础规则里写了 border 简写或 border-color
+    const base = new RegExp(`\\[data-scope='${scope}'\\]\\[data-part='${part}'\\]\\s*\\{([^{}]*)\\}`).exec(src)?.[1] ?? ''
+    if (!/(?:^|;|\s)border(?:-color)?:\s*(?!\s|0\b|none\b)/.test(base))
+      continue
+    if (!seen.has(part))
+      seen.set(part, [])
+    const decl = body.match(/border-color:([^;]+);/)?.[1]
+    if (decl)
+      seen.get(part).push(decl.trim())
+  }
+  for (const [part, decls] of seen) {
+    if (!decls.length) {
+      borderFocus.push(`${file}: [${part}] 聚焦块只画了环没写 border-color——带描边的部件聚焦时描边色要走 --xh-border-control-focus`)
+      continue
+    }
+    for (const decl of decls) {
+      const slot = decl.match(/var\((--xh-_[a-z0-9-]+)\)/)?.[1]
+      const viaSlot = slot && new RegExp(`${slot}:[^;]*--xh-border-control-focus`).test(src)
+      if (!/--xh-border-control-focus/.test(decl) && !viaSlot)
+        borderFocus.push(`${file}: [${part}] 聚焦块的 border-color: ${decl}——没走 --xh-border-control-focus`)
+    }
+  }
+}
+
+if (offenders.length || borderFocus.length) {
+  if (offenders.length) {
+    console.error('[check-focus-ring] 聚焦环里有没走令牌的字面量：')
+    for (const o of offenders) console.error(`  ${o}`)
+    console.error('  粗细用 --xh-ring-width，颜色用 --xh-ring-focus，偏移用 --xh-ring-offset；')
+    console.error('  确需往内收就写 calc(-1 * var(--xh-ring-offset))，并在注释里写明为什么。')
+  }
+  if (borderFocus.length) {
+    console.error('[check-focus-ring] 聚焦态描边色没统一：')
+    for (const o of borderFocus) console.error(`  ${o}`)
+  }
   process.exit(1)
 }
 
-console.log('[check-focus-ring] 通过：聚焦环的粗细、颜色与偏移全部走令牌')
+console.log('[check-focus-ring] 通过：聚焦环的粗细、颜色与偏移全部走令牌；带描边的输入部件聚焦时描边色都走 --xh-border-control-focus')

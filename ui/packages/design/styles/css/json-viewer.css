@@ -5,22 +5,20 @@
   }
 
   /* 缺省态（md 档）。等宽字体让层级缩进与值的长度对得齐。
-     逐类型配色：令牌集里没有 JSON 语法色这一类，就地声明成可覆盖的变量，
-     取值与代码块的记号色同源。每条先写浅色兜底再写 light-dark()：
-     不认后者的旧引擎由级联保留前一条，退化成单色。 */
+     逐类型配色走 --xh-syntax-* 语法令牌，与代码块的记号色同源、随主题明暗切换。 */
   [data-scope='json-viewer'][data-part='root'] {
-    --xh-_json-viewer-font-size: var(--xh-font-size-sm);
+    /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+    --xh-icon-size: var(--xh-json-viewer-icon-size, var(--xh-glyph-size-text));
+
+    --xh-_json-viewer-font-size: var(--xh-text-secondary-size);
     --xh-_json-viewer-row-py: var(--xh-space-0_5);
     --xh-_json-viewer-indent: var(--xh-space-4);
     --xh-json-viewer-key-fg: var(--xh-fg-brand-strong);
     --xh-json-viewer-punctuation-fg: var(--xh-fg-subtle);
     --xh-json-viewer-null-fg: var(--xh-fg-subtle);
-    --xh-json-viewer-string-fg: #0a7f5f;
-    --xh-json-viewer-string-fg: light-dark(#0a7f5f, #7ee2b8);
-    --xh-json-viewer-number-fg: #9a5b00;
-    --xh-json-viewer-number-fg: light-dark(#9a5b00, #f0b866);
-    --xh-json-viewer-boolean-fg: #8250df;
-    --xh-json-viewer-boolean-fg: light-dark(#8250df, #d2a8ff);
+    --xh-json-viewer-string-fg: var(--xh-syntax-string);
+    --xh-json-viewer-number-fg: var(--xh-syntax-number);
+    --xh-json-viewer-boolean-fg: var(--xh-syntax-keyword);
 
     display: block;
     color: var(--xh-json-viewer-fg, var(--xh-fg-default));
@@ -36,13 +34,13 @@
 
   /* 尺寸轴只换私有槽，部件从 root 继承 */
   [data-scope='json-viewer'][data-part='root'][data-size='sm'] {
-    --xh-_json-viewer-font-size: var(--xh-font-size-xs);
+    --xh-_json-viewer-font-size: var(--xh-control-caption-sm);
     --xh-_json-viewer-row-py: var(--xh-space-0);
     --xh-_json-viewer-indent: var(--xh-space-3);
   }
 
   [data-scope='json-viewer'][data-part='root'][data-size='lg'] {
-    --xh-_json-viewer-font-size: var(--xh-font-size-md);
+    --xh-_json-viewer-font-size: var(--xh-control-caption-lg);
     --xh-_json-viewer-row-py: var(--xh-space-1);
     --xh-_json-viewer-indent: var(--xh-space-5);
   }
@@ -51,7 +49,7 @@
   [data-scope='json-viewer'][data-part='tree'] {
     display: flex;
     flex-direction: column;
-    max-block-size: var(--xh-json-viewer-max-h, 26rem);
+    max-block-size: var(--xh-json-viewer-max-h, var(--xh-viewport-max-h));
     padding-block: var(--xh-json-viewer-py, var(--xh-space-2));
     padding-inline: var(--xh-json-viewer-px, var(--xh-space-2));
     border: var(--xh-stroke-thin) solid var(--xh-json-viewer-border, var(--xh-border-default));
@@ -199,8 +197,8 @@
   [data-scope='json-viewer'][data-part='branch-indicator']:empty::before {
     content: '';
     display: inline-block;
-    inline-size: 1em;
-    block-size: 1em;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
@@ -225,7 +223,7 @@
   [data-scope='json-viewer'][data-part='preview'] {
     flex: none;
     color: var(--xh-json-viewer-preview-fg, var(--xh-fg-muted));
-    font-size: var(--xh-json-viewer-preview-font-size, var(--xh-font-size-xs));
+    font-size: var(--xh-json-viewer-preview-font-size, var(--xh-text-caption-size));
     user-select: none;
   }
 

@@ -65,6 +65,7 @@
   }
 
   [data-scope='field'][data-part='control']:focus-visible {
+    border-color: var(--xh-field-control-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
     outline-offset: var(--xh-ring-offset);
   }
@@ -83,7 +84,7 @@
   [data-scope='field'][data-part='description'] {
     margin: 0;
     color: var(--xh-field-description-fg, var(--xh-fg-muted));
-    font-size: var(--xh-field-description-font-size, var(--xh-font-size-sm));
+    font-size: var(--xh-field-description-font-size, var(--xh-text-secondary-size));
     line-height: var(--xh-leading-normal);
   }
 
@@ -95,7 +96,7 @@
   [data-scope='field'][data-part='error-text'] {
     margin: 0;
     color: var(--xh-field-error-fg, var(--xh-fg-danger));
-    font-size: var(--xh-field-error-font-size, var(--xh-font-size-sm));
+    font-size: var(--xh-field-error-font-size, var(--xh-text-secondary-size));
     line-height: var(--xh-leading-normal);
   }
 }

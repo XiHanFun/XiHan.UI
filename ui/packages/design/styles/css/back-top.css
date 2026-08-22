@@ -7,6 +7,9 @@
   /* 定位壳：钉在视口的尾下角，用逻辑属性，RTL 下自动换到另一侧。
      不声明 display —— 收起态由连接层写 hidden，UA 的 [hidden]{display:none} 得压得住 */
   [data-scope='back-top'][data-part='root'] {
+    /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+    --xh-icon-size: var(--xh-back-top-icon-size, var(--xh-glyph-size-text));
+
     /* 尺寸档只换这一个私有槽，按钮从壳继承，换档不必给每个部件各写一条选择器 */
     --xh-_back-top-size: var(--xh-control-h-md);
 
@@ -39,7 +42,7 @@
     background: var(--xh-back-top-bg, var(--xh-bg-surface-raised));
     color: var(--xh-back-top-fg, var(--xh-_tone-fg, var(--xh-fg-default)));
     /* 浮在内容之上，靠投影与页面拉开层次 */
-    box-shadow: var(--xh-elevation-2);
+    box-shadow: var(--xh-elevation-sheet);
     cursor: pointer;
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
@@ -68,8 +71,8 @@
   [data-scope='back-top'][data-part='trigger']:empty::before {
     content: '';
     display: inline-block;
-    inline-size: 1em;
-    block-size: 1em;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-chevron-up) center / contain no-repeat;

@@ -56,7 +56,7 @@
     display: inline-flex;
     align-items: center;
     gap: var(--xh-color-picker-trigger-gap, var(--xh-control-gap-md));
-    min-inline-size: var(--xh-color-picker-trigger-min-w, 9rem);
+    min-inline-size: var(--xh-color-picker-trigger-min-w, var(--xh-control-min-w));
     block-size: var(--xh-color-picker-trigger-h, var(--xh-control-h-md));
     padding-inline: var(--xh-color-picker-trigger-px, var(--xh-control-px-md));
     border: var(--xh-stroke-thin) solid var(--xh-color-picker-trigger-border, var(--xh-border-control));
@@ -75,6 +75,7 @@
   }
 
   [data-scope='color-picker'][data-part='trigger']:focus-visible {
+    border-color: var(--xh-color-picker-trigger-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
     outline-offset: var(--xh-ring-offset);
   }
@@ -143,7 +144,7 @@
     border-radius: var(--xh-color-picker-content-radius, var(--xh-shape-surface));
     background: var(--xh-color-picker-content-bg, var(--xh-bg-surface));
     color: var(--xh-color-picker-content-fg, var(--xh-fg-default));
-    box-shadow: var(--xh-color-picker-content-shadow, var(--xh-elevation-2));
+    box-shadow: var(--xh-color-picker-content-shadow, var(--xh-elevation-floating));
     pointer-events: auto;
   }
 
@@ -218,7 +219,7 @@
     border: var(--xh-stroke-thick) solid var(--xh-color-picker-thumb-border, var(--xh-color-neutral-0));
     border-radius: var(--xh-color-picker-thumb-radius, var(--xh-shape-pill));
     background: transparent;
-    box-shadow: var(--xh-color-picker-thumb-shadow, var(--xh-elevation-1));
+    box-shadow: var(--xh-color-picker-thumb-shadow, var(--xh-elevation-raised));
     cursor: grab;
     transition: scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
@@ -244,7 +245,7 @@
      放大用 scale 而不是改尺寸：变换绕自身中心发生，圆心不动，负外边距的算式不用跟着改 */
   [data-scope='color-picker'][data-part='area-thumb'][data-dragging],
   [data-scope='color-picker'][data-part='channel-slider-thumb'][data-dragging] {
-    scale: var(--xh-color-picker-thumb-scale-dragging, 1.15);
+    scale: var(--xh-color-picker-thumb-scale-dragging, var(--xh-motion-scale-drag));
     cursor: grabbing;
   }
 
@@ -336,12 +337,12 @@
     color: inherit;
     /* 表单控件不继承页面字体，只给字号会让输入框用 UA 默认字族，与周围文本对不上 */
     font-family: inherit;
-    font-size: var(--xh-color-picker-input-font-size, var(--xh-font-size-sm));
+    font-size: var(--xh-color-picker-input-font-size, var(--xh-text-secondary-size));
     text-align: center;
   }
 
   [data-scope='color-picker'][data-part='channel-input']:focus-visible {
-    border-color: var(--xh-color-picker-input-border-focus, var(--xh-ring-focus));
+    border-color: var(--xh-color-picker-input-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
     /* 往内收一道发丝：输入框贴着面板边排，环画在外沿会压到相邻通道 */
     outline-offset: calc(-1 * var(--xh-stroke-thin));
@@ -375,7 +376,7 @@
     background: var(--xh-color-picker-action-bg, transparent);
     color: var(--xh-color-picker-action-fg, var(--xh-fg-muted));
     font-family: inherit;
-    font-size: var(--xh-color-picker-action-font-size, var(--xh-font-size-sm));
+    font-size: var(--xh-color-picker-action-font-size, var(--xh-text-secondary-size));
     line-height: var(--xh-leading-none);
     cursor: pointer;
     user-select: none;

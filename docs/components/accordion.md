@@ -216,7 +216,7 @@ indicator 是可选部件，不渲染它就没有默认字形；标记由作者�
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-accordion-content-fg` · `--xh-accordion-content-px` · `--xh-accordion-content-py` · `--xh-accordion-item-border` · `--xh-accordion-trigger-bg` · `--xh-accordion-trigger-bg-hover` · `--xh-accordion-trigger-fg` · `--xh-accordion-trigger-font-size` · `--xh-accordion-trigger-font-weight` · `--xh-accordion-trigger-gap` · `--xh-accordion-trigger-h` · `--xh-accordion-trigger-px` · `--xh-accordion-trigger-radius`
+`--xh-accordion-content-fg` · `--xh-accordion-content-px` · `--xh-accordion-content-py` · `--xh-accordion-icon-size` · `--xh-accordion-item-border` · `--xh-accordion-trigger-bg` · `--xh-accordion-trigger-bg-hover` · `--xh-accordion-trigger-fg` · `--xh-accordion-trigger-font-size` · `--xh-accordion-trigger-font-weight` · `--xh-accordion-trigger-gap` · `--xh-accordion-trigger-h` · `--xh-accordion-trigger-px` · `--xh-accordion-trigger-radius`
 
 ## 动效
 

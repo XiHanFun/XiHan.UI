@@ -5,11 +5,14 @@
   }
 
   [data-scope='steps'][data-part='root'] {
+    /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+    --xh-icon-size: var(--xh-steps-icon-size, var(--xh-glyph-size-text));
+
     /* 尺寸档只换这三个私有槽，序号圆点、标题与说明都从 root 继承它们，
        换档不必给每个部件各写一条选择器 */
     --xh-_steps-indicator-size: var(--xh-control-h-sm);
     --xh-_steps-title-font-size: var(--xh-text-label-size);
-    --xh-_steps-caption-font-size: var(--xh-font-size-xs);
+    --xh-_steps-caption-font-size: var(--xh-text-caption-size);
 
     /* 语气落在走过与当前这两步的标记和连接线上：强调色画描边与填充，
        accent-text 是普通底上的强调文字（当前步的序号），on-accent 是实心底上的前景。
@@ -37,14 +40,14 @@
      两侧改从 space 档取，缺省档才留得住 */
   [data-scope='steps'][data-part='root'][data-size='sm'] {
     --xh-_steps-indicator-size: var(--xh-space-6);
-    --xh-_steps-title-font-size: var(--xh-font-size-sm);
+    --xh-_steps-title-font-size: var(--xh-control-font-sm);
     /* 字号档最小就是 xs，序号与说明不再往下走，故不重声明 caption */
   }
 
   [data-scope='steps'][data-part='root'][data-size='lg'] {
     --xh-_steps-indicator-size: var(--xh-space-8);
-    --xh-_steps-title-font-size: var(--xh-font-size-lg);
-    --xh-_steps-caption-font-size: var(--xh-font-size-sm);
+    --xh-_steps-title-font-size: var(--xh-control-font-lg);
+    --xh-_steps-caption-font-size: var(--xh-text-secondary-size);
   }
 
   [data-scope='steps'][data-part='list'] {
@@ -259,8 +262,8 @@
   [data-scope='steps'][data-part='indicator'][data-state='completed']:empty::before {
     content: '';
     display: inline-block;
-    inline-size: 1em;
-    block-size: 1em;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;

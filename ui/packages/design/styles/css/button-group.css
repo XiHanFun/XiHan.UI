@@ -36,21 +36,21 @@
     --xh-_button-group-h: var(--xh-control-h-sm);
     --xh-_button-group-px: var(--xh-control-px-sm);
     --xh-_button-group-gap: var(--xh-control-gap-sm);
-    --xh-_button-group-font-size: var(--xh-font-size-sm);
+    --xh-_button-group-font-size: var(--xh-control-font-sm);
   }
 
   [data-scope='button-group'][data-part='root'][data-size='md'] {
     --xh-_button-group-h: var(--xh-control-h-md);
     --xh-_button-group-px: var(--xh-control-px-md);
     --xh-_button-group-gap: var(--xh-control-gap-md);
-    --xh-_button-group-font-size: var(--xh-font-size-md);
+    --xh-_button-group-font-size: var(--xh-control-font-md);
   }
 
   [data-scope='button-group'][data-part='root'][data-size='lg'] {
     --xh-_button-group-h: var(--xh-control-h-lg);
     --xh-_button-group-px: var(--xh-control-px-lg);
     --xh-_button-group-gap: var(--xh-control-gap-lg);
-    --xh-_button-group-font-size: var(--xh-font-size-lg);
+    --xh-_button-group-font-size: var(--xh-control-font-lg);
   }
 
   /* —— 形态 —— */

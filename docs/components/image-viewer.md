@@ -218,7 +218,7 @@ open 与 index 双受控；translations 换工具条的可及名与计数文案
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-image-viewer-backdrop-bg` · `--xh-image-viewer-chrome-bg` · `--xh-image-viewer-fg`
+`--xh-image-viewer-backdrop-bg` · `--xh-image-viewer-chrome-bg` · `--xh-image-viewer-fg` · `--xh-image-viewer-icon-size`
 
 ## 动效
 

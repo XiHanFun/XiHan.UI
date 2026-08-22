@@ -8,7 +8,7 @@
     /* 尺寸档只换这三个私有槽，各段从根上继承它们，换档不必给每个部件各写一条选择器 */
     --xh-_page-header-py: var(--xh-space-4);
     --xh-_page-header-row-gap: var(--xh-space-2);
-    --xh-_page-header-title-size: var(--xh-font-size-xl);
+    --xh-_page-header-title-size: var(--xh-text-heading-3-size);
 
     /* 一行排不下就折行；返回位、标题、副标题排在同一行，操作贴到行尾，页脚整行另起 */
     display: flex;
@@ -29,13 +29,13 @@
   [data-scope='page-header'][data-part='root'][data-size='sm'] {
     --xh-_page-header-py: var(--xh-space-3);
     --xh-_page-header-row-gap: var(--xh-space-1);
-    --xh-_page-header-title-size: var(--xh-font-size-lg);
+    --xh-_page-header-title-size: var(--xh-control-font-lg);
   }
 
   [data-scope='page-header'][data-part='root'][data-size='lg'] {
     --xh-_page-header-py: var(--xh-space-6);
     --xh-_page-header-row-gap: var(--xh-space-3);
-    --xh-_page-header-title-size: var(--xh-font-size-2xl);
+    --xh-_page-header-title-size: var(--xh-text-heading-2-size);
   }
 
   /* —— 分隔线 —— */
@@ -67,7 +67,7 @@
     flex: 1 1 auto;
     min-inline-size: 0;
     color: var(--xh-page-header-subtitle-fg, var(--xh-fg-muted));
-    font-size: var(--xh-page-header-subtitle-font-size, var(--xh-font-size-sm));
+    font-size: var(--xh-page-header-subtitle-font-size, var(--xh-text-secondary-size));
     line-height: var(--xh-leading-normal);
   }
 
@@ -84,7 +84,7 @@
   [data-scope='page-header'][data-part='footer'] {
     flex: 1 0 100%;
     color: var(--xh-page-header-footer-fg, var(--xh-fg-muted));
-    font-size: var(--xh-page-header-footer-font-size, var(--xh-font-size-sm));
+    font-size: var(--xh-page-header-footer-font-size, var(--xh-text-secondary-size));
     line-height: var(--xh-leading-normal);
   }
 }

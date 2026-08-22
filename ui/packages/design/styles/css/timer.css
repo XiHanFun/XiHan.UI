@@ -6,7 +6,7 @@
 
   /* 三个尺寸档只换这几个私有槽，各部件从 root 继承它们，换档不必给每个部件各写一条选择器 */
   [data-scope='timer'][data-part='root'] {
-    --xh-_timer-digit-size: var(--xh-font-size-2xl);
+    --xh-_timer-digit-size: var(--xh-text-heading-2-size);
     --xh-_timer-gap: var(--xh-space-3);
     --xh-_timer-control-h: var(--xh-control-h-md);
     --xh-_timer-control-px: var(--xh-control-px-md);
@@ -25,7 +25,7 @@
 
   /* —— 尺寸 —— */
   [data-scope='timer'][data-part='root'][data-size='sm'] {
-    --xh-_timer-digit-size: var(--xh-font-size-xl);
+    --xh-_timer-digit-size: var(--xh-text-heading-3-size);
     --xh-_timer-gap: var(--xh-space-2);
     --xh-_timer-control-h: var(--xh-control-h-sm);
     --xh-_timer-control-px: var(--xh-control-px-sm);
@@ -33,7 +33,7 @@
   }
 
   [data-scope='timer'][data-part='root'][data-size='lg'] {
-    --xh-_timer-digit-size: var(--xh-font-size-3xl);
+    --xh-_timer-digit-size: var(--xh-text-heading-1-size);
     --xh-_timer-gap: var(--xh-space-4);
     --xh-_timer-control-h: var(--xh-control-h-lg);
     --xh-_timer-control-px: var(--xh-control-px-lg);
@@ -104,6 +104,7 @@
   }
 
   [data-scope='timer'][data-part='control']:focus-visible {
+    border-color: var(--xh-timer-control-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
     outline-offset: var(--xh-ring-offset);
   }

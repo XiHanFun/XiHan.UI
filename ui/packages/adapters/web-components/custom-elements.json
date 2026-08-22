@@ -294,6 +294,9 @@
               "name": "--xh-accordion-content-py"
             },
             {
+              "name": "--xh-accordion-icon-size"
+            },
+            {
               "name": "--xh-accordion-item-border"
             },
             {
@@ -1578,6 +1581,9 @@
               "name": "--xh-back-top-fg"
             },
             {
+              "name": "--xh-back-top-icon-size"
+            },
+            {
               "name": "--xh-back-top-inset-block"
             },
             {
@@ -1955,6 +1961,9 @@
             },
             {
               "name": "--xh-breadcrumb-gap"
+            },
+            {
+              "name": "--xh-breadcrumb-icon-size"
             },
             {
               "name": "--xh-breadcrumb-leading"
@@ -2943,6 +2952,9 @@
               "name": "--xh-calendar-heading-trigger-radius"
             },
             {
+              "name": "--xh-calendar-icon-size"
+            },
+            {
               "name": "--xh-calendar-nav-bg"
             },
             {
@@ -3479,6 +3491,9 @@
             },
             {
               "name": "--xh-carousel-gap"
+            },
+            {
+              "name": "--xh-carousel-icon-size"
             },
             {
               "name": "--xh-carousel-indicator-bg"
@@ -4350,6 +4365,9 @@
               "name": "--xh-cascader-gap"
             },
             {
+              "name": "--xh-cascader-icon-size"
+            },
+            {
               "name": "--xh-cascader-indicator-fg"
             },
             {
@@ -4435,6 +4453,9 @@
             },
             {
               "name": "--xh-cascader-trigger-border"
+            },
+            {
+              "name": "--xh-cascader-trigger-border-focus"
             },
             {
               "name": "--xh-cascader-trigger-border-hover"
@@ -4817,6 +4838,9 @@
               "name": "--xh-checkbox-group-gap"
             },
             {
+              "name": "--xh-checkbox-group-icon-size"
+            },
+            {
               "name": "--xh-checkbox-group-indicator-bg"
             },
             {
@@ -5188,6 +5212,9 @@
               "name": "--xh-checkbox-fg-invalid"
             },
             {
+              "name": "--xh-checkbox-icon-size"
+            },
+            {
               "name": "--xh-checkbox-indicator-fg"
             },
             {
@@ -5373,6 +5400,9 @@
             },
             {
               "name": "--xh-clipboard-input-border"
+            },
+            {
+              "name": "--xh-clipboard-input-border-focus"
             },
             {
               "name": "--xh-clipboard-input-fg"
@@ -6635,6 +6665,9 @@
               "name": "--xh-color-picker-trigger-border"
             },
             {
+              "name": "--xh-color-picker-trigger-border-focus"
+            },
+            {
               "name": "--xh-color-picker-trigger-border-hover"
             },
             {
@@ -7448,6 +7481,9 @@
               "name": "--xh-combobox-group-label-py"
             },
             {
+              "name": "--xh-combobox-icon-size"
+            },
+            {
               "name": "--xh-combobox-input-font-size"
             },
             {
@@ -7723,6 +7759,9 @@
               "name": "--xh-composer-bg"
             },
             {
+              "name": "--xh-composer-bg-disabled"
+            },
+            {
               "name": "--xh-composer-border"
             },
             {
@@ -7742,6 +7781,9 @@
             },
             {
               "name": "--xh-composer-radius"
+            },
+            {
+              "name": "--xh-composer-root-border-focus"
             },
             {
               "name": "--xh-composer-send-bg"
@@ -8357,6 +8399,9 @@
             },
             {
               "name": "--xh-context-menu-group-label-py"
+            },
+            {
+              "name": "--xh-context-menu-icon-size"
             },
             {
               "name": "--xh-context-menu-item-active-font-weight"
@@ -9025,6 +9070,9 @@
             },
             {
               "name": "--xh-date-field-control-h"
+            },
+            {
+              "name": "--xh-date-field-control-min-w"
             },
             {
               "name": "--xh-date-field-control-px"
@@ -10118,6 +10166,9 @@
               "name": "--xh-date-picker-gap"
             },
             {
+              "name": "--xh-date-picker-icon-size"
+            },
+            {
               "name": "--xh-date-picker-label-fg"
             },
             {
@@ -10701,6 +10752,9 @@
             },
             {
               "name": "--xh-dialog-gap"
+            },
+            {
+              "name": "--xh-dialog-icon-size"
             },
             {
               "name": "--xh-dialog-max-w"
@@ -11337,6 +11391,9 @@
               "name": "--xh-drawer-gap"
             },
             {
+              "name": "--xh-drawer-icon-size"
+            },
+            {
               "name": "--xh-drawer-px"
             },
             {
@@ -11679,6 +11736,9 @@
             },
             {
               "name": "--xh-dynamic-input-gap"
+            },
+            {
+              "name": "--xh-dynamic-input-icon-size"
             },
             {
               "name": "--xh-dynamic-input-item-gap"
@@ -12189,6 +12249,9 @@
             },
             {
               "name": "--xh-editable-input-border"
+            },
+            {
+              "name": "--xh-editable-input-border-focus"
             },
             {
               "name": "--xh-editable-input-border-hover"
@@ -12820,6 +12883,9 @@
             },
             {
               "name": "--xh-field-control-border"
+            },
+            {
+              "name": "--xh-field-control-border-focus"
             },
             {
               "name": "--xh-field-control-border-invalid"
@@ -13772,6 +13838,9 @@
               "name": "--xh-file-upload-gap"
             },
             {
+              "name": "--xh-file-upload-icon-size"
+            },
+            {
               "name": "--xh-file-upload-item-bg"
             },
             {
@@ -14281,6 +14350,9 @@
             },
             {
               "name": "--xh-float-button-gap"
+            },
+            {
+              "name": "--xh-float-button-icon-size"
             },
             {
               "name": "--xh-float-button-layer"
@@ -14813,6 +14885,9 @@
             },
             {
               "name": "--xh-floating-panel-header-py"
+            },
+            {
+              "name": "--xh-floating-panel-icon-size"
             },
             {
               "name": "--xh-floating-panel-radius"
@@ -18390,6 +18465,9 @@
             },
             {
               "name": "--xh-image-viewer-fg"
+            },
+            {
+              "name": "--xh-image-viewer-icon-size"
             }
           ]
         }
@@ -19169,6 +19247,9 @@
             },
             {
               "name": "--xh-json-viewer-font-size"
+            },
+            {
+              "name": "--xh-json-viewer-icon-size"
             },
             {
               "name": "--xh-json-viewer-indent"
@@ -20130,6 +20211,9 @@
             },
             {
               "name": "--xh-listbox-group-label-py"
+            },
+            {
+              "name": "--xh-listbox-icon-size"
             },
             {
               "name": "--xh-listbox-item-bg-hover"
@@ -22642,6 +22726,9 @@
               "name": "--xh-menubar-group-label-py"
             },
             {
+              "name": "--xh-menubar-icon-size"
+            },
+            {
               "name": "--xh-menubar-item-bg-hover"
             },
             {
@@ -24801,6 +24888,9 @@
               "name": "--xh-password-input-control-h"
             },
             {
+              "name": "--xh-password-input-control-min-w"
+            },
+            {
               "name": "--xh-password-input-gap"
             },
             {
@@ -24847,6 +24937,9 @@
             },
             {
               "name": "--xh-password-input-input-h"
+            },
+            {
+              "name": "--xh-password-input-input-min-w"
             },
             {
               "name": "--xh-password-input-input-px"
@@ -26081,6 +26174,9 @@
               "name": "--xh-popover-gap"
             },
             {
+              "name": "--xh-popover-icon-size"
+            },
+            {
               "name": "--xh-popover-max-h"
             },
             {
@@ -26703,6 +26799,9 @@
             },
             {
               "name": "--xh-popselect-content-shadow"
+            },
+            {
+              "name": "--xh-popselect-icon-size"
             },
             {
               "name": "--xh-popselect-item-bg-hover"
@@ -29453,6 +29552,9 @@
               "name": "--xh-segmented-font-size"
             },
             {
+              "name": "--xh-segmented-h"
+            },
+            {
               "name": "--xh-segmented-indicator-bg"
             },
             {
@@ -30265,6 +30367,9 @@
               "name": "--xh-select-gap"
             },
             {
+              "name": "--xh-select-icon-size"
+            },
+            {
               "name": "--xh-select-indicator-fg"
             },
             {
@@ -30344,6 +30449,9 @@
             },
             {
               "name": "--xh-select-trigger-border"
+            },
+            {
+              "name": "--xh-select-trigger-border-focus"
             },
             {
               "name": "--xh-select-trigger-border-hover"
@@ -30913,6 +31021,9 @@
             },
             {
               "name": "--xh-side-nav-gap"
+            },
+            {
+              "name": "--xh-side-nav-icon-size"
             },
             {
               "name": "--xh-side-nav-indent"
@@ -33163,6 +33274,9 @@
               "name": "--xh-steps-gap"
             },
             {
+              "name": "--xh-steps-icon-size"
+            },
+            {
               "name": "--xh-steps-indicator-bg"
             },
             {
@@ -33561,6 +33675,15 @@
             },
             {
               "name": "--xh-switch-thumb"
+            },
+            {
+              "name": "--xh-switch-track-h-lg"
+            },
+            {
+              "name": "--xh-switch-track-h-md"
+            },
+            {
+              "name": "--xh-switch-track-h-sm"
             }
           ]
         }
@@ -34158,6 +34281,9 @@
             },
             {
               "name": "--xh-table-header-bg"
+            },
+            {
+              "name": "--xh-table-icon-size"
             },
             {
               "name": "--xh-table-max-h"
@@ -34848,6 +34974,9 @@
               "name": "--xh-tag-gap"
             },
             {
+              "name": "--xh-tag-icon-size"
+            },
+            {
               "name": "--xh-tag-px"
             },
             {
@@ -35385,6 +35514,9 @@
               "name": "--xh-tags-input-control-border-at-max"
             },
             {
+              "name": "--xh-tags-input-control-border-focus"
+            },
+            {
               "name": "--xh-tags-input-control-border-hover"
             },
             {
@@ -35918,6 +36050,9 @@
             },
             {
               "name": "--xh-text-field-input-h"
+            },
+            {
+              "name": "--xh-text-field-input-min-w"
             },
             {
               "name": "--xh-text-field-input-px"
@@ -36635,6 +36770,9 @@
             },
             {
               "name": "--xh-time-field-control-h"
+            },
+            {
+              "name": "--xh-time-field-control-min-w"
             },
             {
               "name": "--xh-time-field-control-px"
@@ -37395,6 +37533,9 @@
               "name": "--xh-time-picker-control-h"
             },
             {
+              "name": "--xh-time-picker-control-min-w"
+            },
+            {
               "name": "--xh-time-picker-control-px"
             },
             {
@@ -37405,6 +37546,9 @@
             },
             {
               "name": "--xh-time-picker-gap"
+            },
+            {
+              "name": "--xh-time-picker-icon-size"
             },
             {
               "name": "--xh-time-picker-item-bg-checked"
@@ -38196,6 +38340,9 @@
               "name": "--xh-timer-control-border-disabled"
             },
             {
+              "name": "--xh-timer-control-border-focus"
+            },
+            {
               "name": "--xh-timer-control-border-hover"
             },
             {
@@ -38592,6 +38739,9 @@
             },
             {
               "name": "--xh-toast-gap"
+            },
+            {
+              "name": "--xh-toast-icon-size"
             },
             {
               "name": "--xh-toast-leading"
@@ -40755,6 +40905,9 @@
               "name": "--xh-tour-gap"
             },
             {
+              "name": "--xh-tour-icon-size"
+            },
+            {
               "name": "--xh-tour-max-h"
             },
             {
@@ -41192,6 +41345,9 @@
             },
             {
               "name": "--xh-transfer-header-py"
+            },
+            {
+              "name": "--xh-transfer-icon-size"
             },
             {
               "name": "--xh-transfer-item-bg-hover"
@@ -42066,6 +42222,9 @@
               "name": "--xh-tree-select-gap"
             },
             {
+              "name": "--xh-tree-select-icon-size"
+            },
+            {
               "name": "--xh-tree-select-indent"
             },
             {
@@ -42130,6 +42289,9 @@
             },
             {
               "name": "--xh-tree-select-trigger-border"
+            },
+            {
+              "name": "--xh-tree-select-trigger-border-focus"
             },
             {
               "name": "--xh-tree-select-trigger-border-hover"
@@ -42574,6 +42736,9 @@
             },
             {
               "name": "--xh-tree-gap"
+            },
+            {
+              "name": "--xh-tree-icon-size"
             },
             {
               "name": "--xh-tree-indent"

@@ -27,12 +27,12 @@
   /* —— 尺寸 —— */
   [data-scope='radio-group'][data-part='root'][data-size='sm'] {
     --xh-_radio-group-item-gap: var(--xh-control-gap-sm);
-    --xh-_radio-group-font-size: var(--xh-font-size-sm);
+    --xh-_radio-group-font-size: var(--xh-control-font-sm);
   }
 
   [data-scope='radio-group'][data-part='root'][data-size='lg'] {
     --xh-_radio-group-item-gap: var(--xh-control-gap-lg);
-    --xh-_radio-group-font-size: var(--xh-font-size-lg);
+    --xh-_radio-group-font-size: var(--xh-control-font-lg);
   }
 
   [data-scope='radio-group'][data-part='label'] {
@@ -64,7 +64,6 @@
   [data-scope='radio-group'][data-part='item'][data-disabled] {
     color: var(--xh-radio-group-item-fg-disabled, var(--xh-fg-disabled));
     cursor: not-allowed;
-    opacity: var(--xh-state-disabled-opacity);
   }
 
   [data-scope='radio-group'][data-part='indicator'] {
