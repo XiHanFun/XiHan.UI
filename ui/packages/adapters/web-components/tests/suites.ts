@@ -125,10 +125,16 @@ const wcTooltipSuite: ConformanceSuite = {
 // 条目禁用同样改用 aria-disabled 声明；受控 open 与 switch 等同因排除。
 // select 的表单影子 select 在 Vue 侧由根部件自行装配、且排在 root 的第一个子节点；
 // WC 侧要作者手写这个空壳（元素只按当前值补选项），位置也得对齐，order 断言逐字比对。
+// 用例级 fixture 有两种：整棵重建（此时树里没有影子）与从默认树派生（此时影子已在树里）。
+// 后者再补一个就成了两份 hidden-select——元素只接线头一份，第二份是个裸 <select>，
+// 既没名字也没藏起来，读屏能走到它。补之前先看有没有，两种写法都只得到一份。
 function withHiddenSelect(node: FixtureNode): FixtureNode {
   if (node.part !== 'root')
     return node
-  return { ...node, children: [{ part: 'hidden-select', tag: 'select' }, ...(node.children ?? [])] }
+  const children = node.children ?? []
+  if (children.some(c => c.part === 'hidden-select'))
+    return node
+  return { ...node, children: [{ part: 'hidden-select', tag: 'select' }, ...children] }
 }
 
 // 条目禁用同样改用 aria-disabled 声明；受控 open 与 switch 等同因排除。
@@ -182,9 +188,14 @@ const wcRatingSuite = authorDisabled(ratingSuite)
 // checkbox-group 另有一处与 radio-group 相同的分歧：每个条目里那份随表单提交的隐藏
 // checkbox，Vue 版由 XhCheckboxGroupItem 自己装配，WC 版要作者手写；位置也得对齐到
 // 条目的第一个子节点，因为 order 断言是逐字比对的。
+// 与 withHiddenSelect 同因：从默认树派生的用例级 fixture 里影子已在，补之前先看有没有。
 function withHiddenInput(node: FixtureNode): FixtureNode {
-  if (node.part === 'item')
-    return { ...node, children: [{ part: 'hidden-input', tag: 'input' }, ...(node.children ?? [])] }
+  if (node.part === 'item') {
+    const children = node.children ?? []
+    if (children.some(c => c.part === 'hidden-input'))
+      return node
+    return { ...node, children: [{ part: 'hidden-input', tag: 'input' }, ...children] }
+  }
   if (!node.children)
     return node
   return { ...node, children: node.children.map(withHiddenInput) }

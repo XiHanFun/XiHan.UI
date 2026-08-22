@@ -328,8 +328,6 @@ export function connectCombobox<T extends PropTypes>(
       'disabled': !interactive || undefined,
       'aria-controls': ids.content,
       'data-state': stateAttr,
-      // 有值时清空钮会顶上来：皮肤据此让位，两个钮不并排堆在框里
-      'data-clearable': dataAttr(canClear),
       'data-disabled': dataAttr(!interactive),
       'onPointerDown': keepFocus,
       'onClick': () => {

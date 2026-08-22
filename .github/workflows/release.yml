@@ -64,6 +64,9 @@ jobs:
       # 这份产物」不是同一次构建。publint 与 attw 只在包已构建时才有意义，所以先 build
       - name: Build
         run: pnpm build
+      # 标签写的版本号必须与 changesets 的 pre 模式对得上，否则发出去的不是你以为的那个版本
+      - name: 标签与预发布模式对账
+        run: pnpm exec node tooling/scripts/check-release-tag.mjs
       - name: Publish artifacts (publint + attw)
         run: pnpm gate:publish
       # changeset publish 只发 npm 上还没有的版本，已发布的包跳过

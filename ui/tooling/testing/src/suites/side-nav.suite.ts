@@ -32,12 +32,17 @@ function props(extra: Readonly<Record<string, unknown>> = {}): Readonly<Record<s
   return { collection: COLLECTION, ...extra }
 }
 
+/** 叶子行：列表容器是 ul，链接得裹在 item（li）里才是它合法的直接子节点。 */
 function link(value: string, text: string): FixtureNode {
   return {
-    part: 'link',
-    tag: 'a',
-    attrs: { value },
-    children: [{ part: 'link-text', tag: 'span', text }],
+    part: 'item',
+    tag: 'li',
+    children: [{
+      part: 'link',
+      tag: 'a',
+      attrs: { value },
+      children: [{ part: 'link-text', tag: 'span', text }],
+    }],
   }
 }
 
@@ -288,6 +293,7 @@ export const sideNavSuite: ConformanceSuite = {
         order: [
           'root',
           'list',
+          'item[0]',
           'link[0]',
           'link-text[0]',
           'branch[0]',
@@ -295,8 +301,10 @@ export const sideNavSuite: ConformanceSuite = {
           'branch-text[0]',
           'branch-indicator[0]',
           'branch-content[0]',
+          'item[1]',
           'link[1]',
           'link-text[1]',
+          'item[2]',
           'link[2]',
           'link-text[2]',
           'branch[1]',
@@ -304,12 +312,14 @@ export const sideNavSuite: ConformanceSuite = {
           'branch-text[1]',
           'branch-indicator[1]',
           'branch-content[1]',
+          'item[3]',
           'link[3]',
           'link-text[3]',
         ],
         counts: {
           'root': 1,
           'list': 1,
+          'item': 4,
           'branch': 2,
           'branch-trigger': 2,
           'branch-text': 2,

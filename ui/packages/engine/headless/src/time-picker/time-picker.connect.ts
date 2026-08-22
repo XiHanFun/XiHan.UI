@@ -477,8 +477,6 @@ export function connectTimePicker<T extends PropTypes>(
       // 图标按钮自己没有文字，名字借标题；作者写了 aria-label 会盖过这条
       'aria-labelledby': ids.label,
       'data-state': stateAttr,
-      // 有值时清空钮会顶上来：皮肤据此让位，两个钮不并排堆在框里
-      'data-clearable': dataAttr(canClear),
       'data-disabled': dataAttr(disabled),
       // 原生 disabled 的按钮不派 click，但程序化派发的 click 照样送得到，故这里再守一次
       'onClick': (event: MouseEvent) => {

@@ -8,6 +8,7 @@ import {
   XhSideNavBranchIndicator,
   XhSideNavBranchText,
   XhSideNavBranchTrigger,
+  XhSideNavItem,
   XhSideNavLink,
   XhSideNavLinkText,
   XhSideNavList,
@@ -45,16 +46,20 @@ const value = ref<string | null>("user-list");
     style="border: 1px solid var(--xh-border-default); border-radius: 8px"
   >
     <XhSideNavList>
-      <XhSideNavLink value="dashboard"><XhSideNavLinkText>工作台</XhSideNavLinkText></XhSideNavLink>
+      <XhSideNavItem>
+        <XhSideNavLink value="dashboard"><XhSideNavLinkText>工作台</XhSideNavLinkText></XhSideNavLink>
+      </XhSideNavItem>
       <XhSideNavBranch v-for="branch in collection.filter((n) => n.children)" :key="branch.value" :value="branch.value">
         <XhSideNavBranchTrigger>
           <XhSideNavBranchText>{{ branch.label }}</XhSideNavBranchText>
           <XhSideNavBranchIndicator />
         </XhSideNavBranchTrigger>
         <XhSideNavBranchContent>
-          <XhSideNavLink v-for="leaf in branch.children" :key="leaf.value" :value="leaf.value">
-            <XhSideNavLinkText>{{ leaf.label }}</XhSideNavLinkText>
-          </XhSideNavLink>
+          <XhSideNavItem v-for="leaf in branch.children" :key="leaf.value">
+            <XhSideNavLink :value="leaf.value">
+              <XhSideNavLinkText>{{ leaf.label }}</XhSideNavLinkText>
+            </XhSideNavLink>
+          </XhSideNavItem>
         </XhSideNavBranchContent>
       </XhSideNavBranch>
     </XhSideNavList>

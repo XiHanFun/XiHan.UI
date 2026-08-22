@@ -158,6 +158,8 @@ export interface SideNavApi<T extends PropTypes = PropTypes> {
   collapse: (value: string) => void
   getRootProps: () => T['element']
   getListProps: () => T['element']
+  /** 叶子行的列表项容器：链接与分支一样是列表的一条，作者把 link 裹在它里面。 */
+  getItemProps: () => T['element']
   getGroupProps: (props: SideNavNodeProps) => T['element']
   getGroupLabelProps: (props: SideNavNodeProps) => T['element']
   getBranchProps: (props: SideNavNodeProps) => T['element']

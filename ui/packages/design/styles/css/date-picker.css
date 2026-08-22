@@ -43,6 +43,9 @@
     --xh-_date-picker-accent-hover: var(--xh-_tone-hover, var(--xh-bg-brand-hover));
     --xh-_date-picker-accent-fg: var(--xh-_tone-on, var(--xh-fg-on-brand));
     --xh-_date-picker-accent-subtle: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
+    /* 淡底上的字与实心底上的字是两档：--xh-_tone-fg 是语气层为淡底配的那一档，
+       没写 data-tone 时退到 fg-brand-strong——fg-brand（600）压在 brand-100 上只有 4.21 */
+    --xh-_date-picker-accent-subtle-fg: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
   }
 
   /* 与文本框、分段日期同一套堆叠：标签一行、输入行一行 */
@@ -218,11 +221,6 @@
     transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
-  /* 有值时清空钮顶上来，下拉钮让位：两个钮并排堆在框里，用户分不清点哪个。
-     让位而不是禁用——禁用的钮还占着位置，看着像坏了 */
-  [data-scope='date-picker'][data-part='trigger'][data-clearable] {
-    display: none;
-  }
 
   [data-scope='date-picker'][data-part='trigger'][hidden],
   [data-scope='date-picker'][data-part='clear-trigger'][hidden] {
@@ -381,7 +379,7 @@
 
   [data-scope='date-picker'][data-part='preset'][data-state='checked'] {
     background: var(--xh-date-picker-preset-bg-selected, var(--xh-_date-picker-accent-subtle));
-    color: var(--xh-date-picker-preset-fg-selected, var(--xh-fg-brand));
+    color: var(--xh-date-picker-preset-fg-selected, var(--xh-_date-picker-accent-subtle-fg));
     font-weight: var(--xh-font-weight-medium);
   }
 
@@ -431,7 +429,7 @@
 
   [data-scope='date-picker'][data-part='time-item'][data-state='checked'] {
     background: var(--xh-date-picker-time-item-bg-selected, var(--xh-_date-picker-accent-subtle));
-    color: var(--xh-date-picker-time-item-fg-selected, var(--xh-fg-brand));
+    color: var(--xh-date-picker-time-item-fg-selected, var(--xh-_date-picker-accent-subtle-fg));
     font-weight: var(--xh-font-weight-medium);
   }
 
