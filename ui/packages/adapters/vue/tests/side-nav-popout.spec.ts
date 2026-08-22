@@ -136,11 +136,11 @@ describe('side-nav 折叠态弹出', () => {
     const docs = positionerOf('docs')
     expect(docs.hasAttribute('data-positioned')).toBe(true)
 
-    // jsdom 不把样式表里的 animation 算进 getComputedStyle：给收起态的定位层伪造一支退场动画，退场闸门才申领得到租约
+    // jsdom 不把样式表里的 animation 算进 getComputedStyle：给收起态的面板伪造一支退场动画，退场闸门才申领得到租约
     const native = window.getComputedStyle
     const spy = vi.spyOn(window, 'getComputedStyle').mockImplementation((target, pseudo) => {
       const style = native.call(window, target, pseudo)
-      if (target.getAttribute('data-part') !== 'positioner' || target.getAttribute('data-state') !== 'closed')
+      if (target.getAttribute('data-part') !== 'branch-content' || target.getAttribute('data-state') !== 'closed')
         return style
       return new Proxy(style, {
         get(t, key) {
@@ -169,7 +169,7 @@ describe('side-nav 折叠态弹出', () => {
     // 退场播完才真收
     const end = new Event('animationend', { bubbles: true })
     Object.defineProperty(end, 'animationName', { value: 'xh-pop-out' })
-    docs.dispatchEvent(end)
+    panelOf('docs').dispatchEvent(end)
     await tick()
     expect(docs.hasAttribute('hidden')).toBe(true)
     expect(panelOf('docs').hasAttribute('hidden')).toBe(true)

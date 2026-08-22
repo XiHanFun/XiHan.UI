@@ -6,6 +6,7 @@ import {
   XhDateFieldLabel,
   XhDateFieldRoot,
   XhDateFieldSegment,
+  XhDateFieldSegmentGroup,
 } from "@xihan-ui/vue";
 
 // 宿主与后端约定的写法
@@ -24,12 +25,14 @@ const iso = computed<string | null>({
   <XhDateFieldRoot v-model:value="iso" locale="zh-CN">
     <XhDateFieldLabel>结算日期</XhDateFieldLabel>
     <XhDateFieldControl>
-      <XhDateFieldSegment :index="0" />
-      <span>年</span>
-      <XhDateFieldSegment :index="1" />
-      <span>月</span>
-      <XhDateFieldSegment :index="2" />
-      <span>日</span>
+      <XhDateFieldSegmentGroup>
+        <XhDateFieldSegment :index="0" />
+        <span>年</span>
+        <XhDateFieldSegment :index="1" />
+        <span>月</span>
+        <XhDateFieldSegment :index="2" />
+        <span>日</span>
+      </XhDateFieldSegmentGroup>
     </XhDateFieldControl>
     <!-- 不用内建的隐藏输入，自己写一份提交宿主格式 -->
     <input type="hidden" name="settle" :value="stored" />

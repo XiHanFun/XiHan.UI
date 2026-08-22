@@ -9,6 +9,7 @@ import {
   XhColorPickerChannelSliderThumb,
   XhColorPickerChannelSliderTrack,
   XhColorPickerContent,
+  XhColorPickerControl,
   XhColorPickerLabel,
   XhColorPickerPositioner,
   XhColorPickerRoot,
@@ -45,10 +46,12 @@ const modes = {
       :format="format"
     >
       <XhColorPickerLabel>强调色</XhColorPickerLabel>
-      <XhColorPickerTrigger>
-        <XhColorPickerSwatch />
-        <XhColorPickerValueText />
-      </XhColorPickerTrigger>
+      <XhColorPickerControl>
+        <XhColorPickerTrigger>
+          <XhColorPickerSwatch />
+          <XhColorPickerValueText />
+        </XhColorPickerTrigger>
+      </XhColorPickerControl>
       <XhColorPickerPositioner>
         <XhColorPickerContent>
           <XhColorPickerArea>

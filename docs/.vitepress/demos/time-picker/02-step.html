@@ -3,9 +3,11 @@
   <div data-xh-part="root">
     <label data-xh-part="label">预约时段</label>
     <div data-xh-part="control">
-      <span data-xh-part="input" segment="hour"></span>
-      <span>:</span>
-      <span data-xh-part="input" segment="minute"></span>
+      <div data-xh-part="segment-group">
+        <span data-xh-part="input" segment="hour"></span>
+        <span>:</span>
+        <span data-xh-part="input" segment="minute"></span>
+      </div>
       <button data-xh-part="clear-trigger"></button>
       <button data-xh-part="trigger"></button>
     </div>

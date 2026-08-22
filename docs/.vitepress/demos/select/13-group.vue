@@ -3,6 +3,7 @@
 import { ref } from "vue";
 import {
   XhSelectContent,
+  XhSelectControl,
   XhSelectIndicator,
   XhSelectItem,
   XhSelectItemIndicator,
@@ -40,10 +41,12 @@ const picked = ref<string[]>([]);
 <template>
   <XhSelectRoot v-model:value="picked" placeholder="请选择">
     <XhSelectLabel>食材</XhSelectLabel>
-    <XhSelectTrigger>
-      <XhSelectValueText />
-      <XhSelectIndicator />
-    </XhSelectTrigger>
+    <XhSelectControl>
+      <XhSelectTrigger>
+        <XhSelectValueText />
+        <XhSelectIndicator />
+      </XhSelectTrigger>
+    </XhSelectControl>
     <XhSelectPositioner>
       <XhSelectContent>
         <XhSelectList>

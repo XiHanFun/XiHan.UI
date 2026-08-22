@@ -12,10 +12,10 @@ import {
   XhDatePickerControl,
   XhDatePickerGrid,
   XhDatePickerGridBody,
-  XhDatePickerInput,
   XhDatePickerPositioner,
   XhDatePickerRoot,
   XhDatePickerSegment,
+  XhDatePickerSegmentGroup,
   XhDatePickerTimePanel,
   XhDatePickerTrigger,
   XhDatePickerWeekRow,
@@ -45,7 +45,7 @@ function mountPicker(props: Record<string, unknown> = {}): { change: ReturnType<
       h(XhDatePickerRoot, { 'showTime': true, 'onValue-change': change, ...props }, {
         default: ({ weeks }: { weeks: Array<Array<{ value: string, day: number }>> }) => [
           h(XhDatePickerControl, null, () => [
-            h(XhDatePickerInput, null, () => [
+            h(XhDatePickerSegmentGroup, null, () => [
               h(XhDatePickerSegment, { index: 0 }),
               h(XhDatePickerSegment, { index: 1 }),
               h(XhDatePickerSegment, { index: 2 }),

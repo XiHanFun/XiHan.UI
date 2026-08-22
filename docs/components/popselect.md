@@ -39,7 +39,7 @@ multiple 下落值是切换、浮层不收起，可以接着挑；收起交给 E
 
 ### 形态·语气·尺寸
 
-三个视觉轴只写在根上，触发器与浮层都从这里继承
+三个视觉轴只写在根上，盒与浮层都从这里继承
 
 <XhDemo src="popselect/04-appearance" />
 
@@ -51,7 +51,7 @@ multiple 下落值是切换、浮层不收起，可以接着挑；收起交给 E
 
 ### 清空按钮
 
-清空钮是触发器的兄弟节点：有选中才显出，点按清空全部选中、焦点送回触发器；焦点在触发器上按 Delete 清空全部、Backspace 多选去掉最后一个；可及名走 translations.clearTrigger
+清空钮与触发器一起收在盒里，是它的兄弟节点：有选中才显出，点按清空全部选中、焦点送回触发器；焦点在触发器上按 Delete 清空全部、Backspace 多选去掉最后一个；可及名走 translations.clearTrigger
 
 <XhDemo src="popselect/06-clear" />
 
@@ -60,7 +60,7 @@ multiple 下落值是切换、浮层不收起，可以接着挑；收起交给 E
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-popselect>` |
-| Vue 组件 | `XhPopselectClearTrigger` `XhPopselectContent` `XhPopselectItem` `XhPopselectItemIndicator` `XhPopselectItemText` `XhPopselectPositioner` `XhPopselectRoot` `XhPopselectTrigger` |
+| Vue 组件 | `XhPopselectClearTrigger` `XhPopselectContent` `XhPopselectControl` `XhPopselectItem` `XhPopselectItemIndicator` `XhPopselectItemText` `XhPopselectPositioner` `XhPopselectRoot` `XhPopselectTrigger` |
 | 组合式函数 | `usePopselect` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/popselect.css` |
@@ -69,7 +69,7 @@ multiple 下落值是切换、浮层不收起，可以接着挑；收起交给 E
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="popselect"`：`root` · **`trigger`** · `clear-trigger` · `positioner` · **`content`** · **`item`** · `item-text` · `item-indicator`
+`data-scope="popselect"`：`root` · `control` · **`trigger`** · `clear-trigger` · `positioner` · **`content`** · **`item`** · `item-text` · `item-indicator`
 
 ## Props
 
@@ -104,6 +104,7 @@ multiple 下落值是切换、浮层不收起，可以接着挑；收起交给 E
 | 部件 | 取值 |
 | --- | --- |
 | `root` | 'open' \| 'closed' |
+| `control` | 'open' \| 'closed' |
 | `trigger` | 'open' \| 'closed' |
 | `positioner` | 'open' \| 'closed' |
 | `content` | 'open' \| 'closed' |
@@ -127,6 +128,7 @@ multiple 下落值是切换、浮层不收起，可以接着挑；收起交给 E
 | `select` | `(value: string) => void` | 落值：单选替换并收起浮层，多选切换并保持展开。 |
 | `clear` | `() => void` | 清空选中集合；单选多选一视同仁。 |
 | `getRootProps` | `() => T['element']` |  |
+| `getControlProps` | `() => T['element']` |  |
 | `getTriggerProps` | `() => T['button']` |  |
 | `getClearTriggerProps` | `() => T['button']` |  |
 | `getPositionerProps` | `() => T['element']` |  |
@@ -187,6 +189,8 @@ multiple 下落值是切换、浮层不收起，可以接着挑；收起交给 E
 | `root` | `data-state` | 'open' \| 'closed' |
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
+| `control` | `data-disabled` | ''（条件成立时才出现） |
+| `control` | `data-state` | 'open' \| 'closed' |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `trigger` | `data-placeholder` | ''（条件成立时才出现） |
 | `trigger` | `data-state` | 'open' \| 'closed' |
@@ -204,7 +208,7 @@ multiple 下落值是切换、浮层不收起，可以接着挑；收起交给 E
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-popselect-action-radius` · `--xh-popselect-action-size` · `--xh-popselect-clear-bg-active` · `--xh-popselect-clear-bg-hover` · `--xh-popselect-clear-fg` · `--xh-popselect-clear-fg-hover` · `--xh-popselect-content-bg` · `--xh-popselect-content-border` · `--xh-popselect-content-fg` · `--xh-popselect-content-max-h` · `--xh-popselect-content-max-w` · `--xh-popselect-content-min-w` · `--xh-popselect-content-p` · `--xh-popselect-content-radius` · `--xh-popselect-content-shadow` · `--xh-popselect-icon-size` · `--xh-popselect-item-bg-hover` · `--xh-popselect-item-fg` · `--xh-popselect-item-fg-selected` · `--xh-popselect-item-font-size` · `--xh-popselect-item-font-weight-selected` · `--xh-popselect-item-gap` · `--xh-popselect-item-indicator-fg` · `--xh-popselect-item-indicator-size` · `--xh-popselect-item-leading` · `--xh-popselect-item-px` · `--xh-popselect-item-py` · `--xh-popselect-item-radius` · `--xh-popselect-layer` · `--xh-popselect-placeholder-fg` · `--xh-popselect-root-gap` · `--xh-popselect-trigger-bg` · `--xh-popselect-trigger-border` · `--xh-popselect-trigger-border-hover` · `--xh-popselect-trigger-fg` · `--xh-popselect-trigger-font-size` · `--xh-popselect-trigger-gap` · `--xh-popselect-trigger-h` · `--xh-popselect-trigger-px` · `--xh-popselect-trigger-radius`
+`--xh-popselect-action-radius` · `--xh-popselect-action-size` · `--xh-popselect-clear-bg-active` · `--xh-popselect-clear-bg-hover` · `--xh-popselect-clear-fg` · `--xh-popselect-clear-fg-hover` · `--xh-popselect-content-bg` · `--xh-popselect-content-border` · `--xh-popselect-content-fg` · `--xh-popselect-content-max-h` · `--xh-popselect-content-max-w` · `--xh-popselect-content-min-w` · `--xh-popselect-content-px` · `--xh-popselect-content-py` · `--xh-popselect-content-radius` · `--xh-popselect-content-shadow` · `--xh-popselect-control-bg` · `--xh-popselect-control-bg-disabled` · `--xh-popselect-control-border` · `--xh-popselect-control-border-focus` · `--xh-popselect-control-border-hover` · `--xh-popselect-control-gap` · `--xh-popselect-control-h` · `--xh-popselect-control-min-w` · `--xh-popselect-control-px` · `--xh-popselect-control-radius` · `--xh-popselect-icon-size` · `--xh-popselect-item-bg-hover` · `--xh-popselect-item-fg` · `--xh-popselect-item-fg-selected` · `--xh-popselect-item-font-size` · `--xh-popselect-item-font-weight-selected` · `--xh-popselect-item-gap` · `--xh-popselect-item-indicator-fg` · `--xh-popselect-item-indicator-size` · `--xh-popselect-item-leading` · `--xh-popselect-item-px` · `--xh-popselect-item-py` · `--xh-popselect-item-radius` · `--xh-popselect-layer` · `--xh-popselect-placeholder-fg` · `--xh-popselect-root-gap` · `--xh-popselect-trigger-fg` · `--xh-popselect-trigger-font-size` · `--xh-popselect-trigger-gap`
 
 ## 动效
 

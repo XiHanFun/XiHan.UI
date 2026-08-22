@@ -6,6 +6,7 @@ import {
   XhTimeFieldLabel,
   XhTimeFieldRoot,
   XhTimeFieldSegment,
+  XhTimeFieldSegmentGroup,
 } from "@xihan-ui/vue";
 
 const allowed = ["08:00", "12:00", "18:00"];
@@ -28,9 +29,11 @@ function snap(next: string) {
   <XhTimeFieldRoot :value="value" @update:value="value = snap($event)">
     <XhTimeFieldLabel>发车时刻</XhTimeFieldLabel>
     <XhTimeFieldControl>
-      <XhTimeFieldSegment segment="hour" />
-      <span>:</span>
-      <XhTimeFieldSegment segment="minute" />
+      <XhTimeFieldSegmentGroup>
+        <XhTimeFieldSegment segment="hour" />
+        <span>:</span>
+        <XhTimeFieldSegment segment="minute" />
+      </XhTimeFieldSegmentGroup>
     </XhTimeFieldControl>
   </XhTimeFieldRoot>
 

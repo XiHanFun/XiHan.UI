@@ -153,9 +153,9 @@ describe('委派给内嵌部件的角色节点', () => {
     const el = document.createElement('xh-date-picker') as Updatable
     const root = part('root')
     const control = part('control')
-    const input = part('input')
-    input.append(part('segment'), part('segment'), part('segment'))
-    control.append(input, part('clear-trigger', 'button'), part('trigger', 'button'))
+    const segmentGroup = part('segment-group')
+    segmentGroup.append(part('segment'), part('segment'), part('segment'))
+    control.append(segmentGroup, part('clear-trigger', 'button'), part('trigger', 'button'))
 
     const calendar = part('calendar')
     const header = part('header')

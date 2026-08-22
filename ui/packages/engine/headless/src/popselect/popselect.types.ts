@@ -77,6 +77,7 @@ export interface PopselectApi<T extends PropTypes = PropTypes> {
   /** 清空选中集合；单选多选一视同仁。 */
   clear: () => void
   getRootProps: () => T['element']
+  getControlProps: () => T['element']
   getTriggerProps: () => T['button']
   getClearTriggerProps: () => T['button']
   getPositionerProps: () => T['element']

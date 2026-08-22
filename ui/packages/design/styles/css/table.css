@@ -30,7 +30,7 @@
     display: flex;
     position: relative;
     flex-direction: column;
-    max-block-size: var(--xh-table-max-h, var(--xh-viewport-max-h));
+    max-block-size: var(--xh-table-max-h, var(--xh-viewport-h-lg));
     border: var(--xh-stroke-thin) solid var(--xh-table-border, var(--xh-border-default));
     border-radius: var(--xh-table-radius, var(--xh-shape-surface));
     background: var(--xh-table-bg, var(--xh-bg-surface));

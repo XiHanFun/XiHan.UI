@@ -7,6 +7,7 @@ import {
   XhTreeSelectBranchText,
   XhTreeSelectBranchTrigger,
   XhTreeSelectContent,
+  XhTreeSelectControl,
   XhTreeSelectIndicator,
   XhTreeSelectItem,
   XhTreeSelectItemIndicator,
@@ -46,17 +47,19 @@ const files = [
     style="max-inline-size: 320px"
   >
     <XhTreeSelectLabel>文档</XhTreeSelectLabel>
-    <XhTreeSelectTrigger>
-      <XhTreeSelectValueText />
-      <XhTreeSelectIndicator />
-    </XhTreeSelectTrigger>
+    <XhTreeSelectControl>
+      <XhTreeSelectTrigger>
+        <XhTreeSelectValueText />
+        <XhTreeSelectIndicator />
+      </XhTreeSelectTrigger>
+    </XhTreeSelectControl>
     <XhTreeSelectPositioner>
       <XhTreeSelectContent>
         <XhTreeSelectTree>
           <XhTreeSelectBranch v-for="dir in files" :key="dir.value" :value="dir.value">
             <XhTreeSelectBranchControl>
-              <XhTreeSelectBranchTrigger />
-              <XhTreeSelectBranchText>{{ dir.label }}</XhTreeSelectBranchText>
+  <XhTreeSelectBranchTrigger />
+  <XhTreeSelectBranchText>{{ dir.label }}</XhTreeSelectBranchText>
             </XhTreeSelectBranchControl>
             <XhTreeSelectBranchContent>
               <XhTreeSelectItem

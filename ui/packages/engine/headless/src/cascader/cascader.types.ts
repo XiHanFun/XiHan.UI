@@ -323,6 +323,7 @@ export interface CascaderApi<T extends PropTypes = PropTypes> {
   clear: () => void
   getRootProps: () => T['element']
   getLabelProps: () => T['element']
+  getControlProps: () => T['element']
   getTriggerProps: () => T['button']
   getValueTextProps: () => T['element']
   getIndicatorProps: () => T['element']

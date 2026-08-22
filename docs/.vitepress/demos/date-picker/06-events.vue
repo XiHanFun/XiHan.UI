@@ -13,7 +13,7 @@ import {
   XhDatePickerGridHead,
   XhDatePickerHeader,
   XhDatePickerHeading,
-  XhDatePickerInput,
+  XhDatePickerSegmentGroup,
   XhDatePickerLabel,
   XhDatePickerNextTrigger,
   XhDatePickerPositioner,
@@ -43,13 +43,13 @@ function onFocusedValueChange(details: { focusedValue: string }) {
   >
     <XhDatePickerLabel>排期</XhDatePickerLabel>
     <XhDatePickerControl>
-      <XhDatePickerInput>
+      <XhDatePickerSegmentGroup>
         <XhDatePickerSegment :index="0" />
         <span>-</span>
         <XhDatePickerSegment :index="1" />
         <span>-</span>
         <XhDatePickerSegment :index="2" />
-      </XhDatePickerInput>
+      </XhDatePickerSegmentGroup>
     </XhDatePickerControl>
     <XhDatePickerPositioner>
       <XhDatePickerContent>

@@ -1,11 +1,11 @@
-import type { MenuApi, MenuNode, MenuNodeMeta, MenuSchema } from '@xihan-ui/headless'
+import type { MenuApi, MenuGroupProps, MenuNode, MenuNodeMeta, MenuSchema } from '@xihan-ui/headless'
 import type { Direction, Placement, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { mergeProps } from '@xihan-ui/kernel'
-import { defineComponent, h, mergeProps as mergeVueProps, onBeforeUnmount, ref, Teleport, watch } from 'vue'
+import { computed, defineComponent, h, mergeProps as mergeVueProps, onBeforeUnmount, ref, Teleport, watch } from 'vue'
 import { mergeIntoChild } from '../../runtime/as-child'
-import { provideMenu, provideMenuChain, provideMenuSub, useMenuChain, useMenuContext, useMenuSubContext } from './context'
+import { provideMenu, provideMenuChain, provideMenuGroup, provideMenuSub, useMenuChain, useMenuContext, useMenuGroupContext, useMenuSubContext } from './context'
 import { useMenu } from './use-menu'
 
 type MenuProps = MenuSchema['props']
@@ -233,6 +233,28 @@ export const XhMenuSubTrigger = defineComponent({
         ctx.triggerRef.value = el as HTMLElement
       },
     }, slots.default?.())
+  },
+})
+
+export const XhMenuGroup = defineComponent({
+  name: 'XhMenuGroup',
+  props: {
+    value: { type: String, required: true },
+  },
+  setup(props, { slots }) {
+    const ctx = useMenuContext()
+    const group = computed<MenuGroupProps>(() => ({ value: props.value }))
+    provideMenuGroup({ group })
+    return () => h('div', ctx.api.value.getGroupProps(group.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
+export const XhMenuGroupLabel = defineComponent({
+  name: 'XhMenuGroupLabel',
+  setup(_, { slots }) {
+    const ctx = useMenuContext()
+    const { group } = useMenuGroupContext()
+    return () => h('span', ctx.api.value.getGroupLabelProps(group.value) as Record<string, unknown>, slots.default?.())
   },
 })
 

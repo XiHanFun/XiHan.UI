@@ -13,7 +13,7 @@ import {
   XhDatePickerGridHead,
   XhDatePickerHeader,
   XhDatePickerHeading,
-  XhDatePickerInput,
+  XhDatePickerSegmentGroup,
   XhDatePickerLabel,
   XhDatePickerNextTrigger,
   XhDatePickerPositioner,
@@ -46,13 +46,13 @@ const presets = computed(() => [
   >
     <XhDatePickerLabel>提醒日期</XhDatePickerLabel>
     <XhDatePickerControl>
-      <XhDatePickerInput>
+      <XhDatePickerSegmentGroup>
         <XhDatePickerSegment :index="0" />
         <span>-</span>
         <XhDatePickerSegment :index="1" />
         <span>-</span>
         <XhDatePickerSegment :index="2" />
-      </XhDatePickerInput>
+      </XhDatePickerSegmentGroup>
       <XhDatePickerClearTrigger />
     </XhDatePickerControl>
     <XhDatePickerPositioner>

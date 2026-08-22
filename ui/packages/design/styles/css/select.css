@@ -59,9 +59,9 @@
     --xh-_select-label-font-size: var(--xh-text-label-size);
 
     /* 形态档只换这三个槽：缺省即 outline（描边 + 画布底） */
-    --xh-_select-trigger-bg: var(--xh-bg-canvas);
-    --xh-_select-trigger-border: var(--xh-border-control);
-    --xh-_select-trigger-border-hover: var(--xh-border-control-hover);
+    --xh-_select-control-bg: var(--xh-bg-canvas);
+    --xh-_select-control-border: var(--xh-border-control);
+    --xh-_select-control-border-hover: var(--xh-border-control-hover);
 
     /* 聚焦环恒用固定环色；强调色随语气走，只落在勾选标记与选中文字上，正文文字色不动。
        没写 data-tone 时 --xh-_tone 没被声明，两处都退回原来的取值 */
@@ -71,12 +71,12 @@
   }
 
   [data-scope='select'][data-part='root'] {
-    /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
-    --xh-icon-size: var(--xh-select-icon-size, var(--xh-glyph-size-text));
+    /* 作者塞进指示符槽的图标跟着控件的尺寸档走；它自己写了 size 时仍以作者的为准 */
+    --xh-icon-size: var(--xh-select-icon-size, var(--xh-glyph-size-md));
 
     display: inline-flex;
     flex-direction: column;
-    gap: var(--xh-select-gap, var(--xh-stack-gap-md));
+    gap: var(--xh-select-gap, var(--xh-space-1));
     /* 隐藏 select 以此为定位基准：它必须留在布局里，原生校验提示要有处可贴 */
     position: relative;
   }
@@ -91,6 +91,15 @@
     --xh-_select-label-font-size: var(--xh-control-font-sm);
   }
 
+  /* 图标只跟着盒那一侧换档：浮层里的勾选标记有自己的指示符盒，换成整档图标会撑破它 */
+  [data-scope='select'][data-part='root'][data-size='sm'] {
+    --xh-icon-size: var(--xh-select-icon-size, var(--xh-glyph-size-sm));
+  }
+
+  [data-scope='select'][data-part='root'][data-size='lg'] {
+    --xh-icon-size: var(--xh-select-icon-size, var(--xh-glyph-size-lg));
+  }
+
   [data-scope='select']:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
     --xh-_select-h: var(--xh-control-h-lg);
     --xh-_select-px: var(--xh-control-px-lg);
@@ -103,27 +112,27 @@
   /* 输入类不做 solid：实心底压着可编辑的值，读起来像块不可点的色板。
      形态只决定描边与底色怎么用，用哪族颜色由 data-tone 决定 */
   [data-scope='select']:is([data-part='root'], [data-part='positioner'])[data-variant='outline'] {
-    --xh-_select-trigger-bg: var(--xh-bg-canvas);
-    --xh-_select-trigger-border: var(--xh-border-control);
-    --xh-_select-trigger-border-hover: var(--xh-border-control-hover);
+    --xh-_select-control-bg: var(--xh-bg-canvas);
+    --xh-_select-control-border: var(--xh-border-control);
+    --xh-_select-control-border-hover: var(--xh-border-control-hover);
   }
 
   /* 填充式：底色顶替描边，悬停时才浮出一道淡边 */
   [data-scope='select']:is([data-part='root'], [data-part='positioner'])[data-variant='subtle'] {
-    --xh-_select-trigger-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-    --xh-_select-trigger-border: transparent;
-    --xh-_select-trigger-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
+    --xh-_select-control-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+    --xh-_select-control-border: transparent;
+    --xh-_select-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   }
 
   /* 无框：底与常态描边透明，悬停浮出描边，聚焦由焦点环表达 */
   [data-scope='select']:is([data-part='root'], [data-part='positioner'])[data-variant='ghost'] {
-    --xh-_select-trigger-bg: transparent;
-    --xh-_select-trigger-border: transparent;
-    --xh-_select-trigger-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
+    --xh-_select-control-bg: transparent;
+    --xh-_select-control-border: transparent;
+    --xh-_select-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   }
 
   [data-scope='select'][data-part='label'] {
-    color: var(--xh-select-label-fg, var(--xh-fg-muted));
+    color: var(--xh-select-label-fg, var(--xh-fg-default));
     font-size: var(--xh-select-label-font-size, var(--xh-_select-label-font-size));
     font-weight: var(--xh-select-label-font-weight, var(--xh-text-label-weight));
     line-height: var(--xh-leading-none);
@@ -133,19 +142,68 @@
     color: var(--xh-fg-subtle);
   }
 
+  /* 盒：描边、底色、圆角、控件高度与行内内衬都长在这一层，触发器与清空按钮在里面并排。
+     聚焦环也画在它上面，焦点落在哪颗按钮上，看到的都是同一个框亮起来 */
+  [data-scope='select'][data-part='control'] {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--xh-select-control-gap, var(--xh-_select-gap));
+    block-size: var(--xh-select-control-h, var(--xh-_select-h));
+    padding-inline: var(--xh-select-control-px, var(--xh-_select-px));
+    min-inline-size: var(--xh-select-control-min-w, var(--xh-control-min-w));
+    /* 多选会把 N 项的文本连成一串，框宽必须封顶；与浮层同一个上限，两半看着才是一件东西 */
+    max-inline-size: var(--xh-select-control-max-w, var(--xh-overlay-max-w));
+    border: var(--xh-stroke-thin) solid var(--xh-select-control-border, var(--xh-_select-control-border));
+    border-radius: var(--xh-select-control-radius, var(--xh-shape-control));
+    background: var(--xh-select-control-bg, var(--xh-_select-control-bg));
+  }
+
+  /* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
+  [data-scope='select'][data-part='control']:hover:not([data-disabled], [data-invalid]) {
+    border-color: var(--xh-select-control-border-hover, var(--xh-_select-control-border-hover));
+  }
+
+  [data-scope='select'][data-part='control'][data-invalid] {
+    border-color: var(--xh-select-control-border-invalid, var(--xh-border-invalid));
+
+    /* 校验失败时环也跟着变红：两圈等宽相邻却一红一蓝，读的人不知道哪个才是当前状态 */
+    --xh-_select-ring: var(--xh-ring-invalid);
+  }
+
+  /* 焦点落在盒内任一颗按钮上都画同一圈环；禁用时按钮不可聚焦，守卫只是把这条说死 */
+  [data-scope='select'][data-part='control']:focus-within:not([data-disabled]) {
+    outline: var(--xh-ring-width) solid var(--xh-_select-ring);
+    outline-offset: var(--xh-ring-offset);
+  }
+
+  /* 聚焦态描边色与环共用一族语气色。校验失败时要显式让开，描边保持红色 */
+  [data-scope='select'][data-part='control']:focus-within:not([data-invalid]) {
+    border-color: var(--xh-select-control-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
+  }
+
+  /* 只读仍可聚焦、浮层仍展得开、条目仍能浏览，所以不置灰，只把底色压下去表示「改不动」 */
+  [data-scope='select'][data-part='control'][data-readonly] {
+    background: var(--xh-select-control-bg-readonly, var(--xh-bg-subtle));
+  }
+
+  [data-scope='select'][data-part='control'][data-disabled] {
+    background: var(--xh-select-control-bg-disabled, var(--xh-bg-subtle));
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  /* 触发器退化成盒里那颗可聚焦的按钮：描边、底色与内衬归盒，它只占满剩余一行 */
   [data-scope='select'][data-part='trigger'] {
     display: inline-flex;
+    flex: 1 1 auto;
     align-items: center;
     justify-content: space-between;
     gap: var(--xh-select-trigger-gap, var(--xh-_select-gap));
-    min-inline-size: var(--xh-select-trigger-min-w, var(--xh-control-min-w));
-    /* 多选会把 N 项的文本连成一串，框宽必须封顶；与浮层同一个上限，两半看着才是一件东西 */
-    max-inline-size: var(--xh-select-trigger-max-w, var(--xh-overlay-max-w));
-    block-size: var(--xh-select-trigger-h, var(--xh-_select-h));
-    padding-inline: var(--xh-select-trigger-px, var(--xh-_select-px));
-    border: var(--xh-stroke-thin) solid var(--xh-select-trigger-border, var(--xh-_select-trigger-border));
-    border-radius: var(--xh-select-trigger-radius, var(--xh-shape-control));
-    background: var(--xh-select-trigger-bg, var(--xh-_select-trigger-bg));
+    /* 弹性子项默认最小尺寸是内容尺寸，不归零则长值把盒撑破、省略号永远轮不到 */
+    min-inline-size: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
     color: var(--xh-select-trigger-fg, var(--xh-fg-default));
     font-size: var(--xh-select-trigger-font-size, var(--xh-_select-font-size));
     line-height: var(--xh-leading-none);
@@ -153,30 +211,7 @@
     cursor: pointer;
   }
 
-  /* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
-  [data-scope='select'][data-part='trigger']:hover:not(:disabled, [data-invalid]) {
-    border-color: var(--xh-select-trigger-border-hover, var(--xh-_select-trigger-border-hover));
-  }
-
-  [data-scope='select'][data-part='trigger'][data-invalid] {
-    border-color: var(--xh-select-trigger-border-invalid, var(--xh-border-invalid));
-
-    /* 校验失败时环也跟着变红：两圈等宽相邻却一红一蓝，读的人不知道哪个才是当前状态 */
-    --xh-_select-ring: var(--xh-ring-invalid);
-  }
-
-  /* 收纳容器：触发器与清空按钮在里面并排，触发器占满剩余一行 */
-  [data-scope='select'][data-part='control'] {
-    display: flex;
-    align-items: center;
-    gap: var(--xh-select-control-gap, var(--xh-space-1));
-  }
-
-  [data-scope='select'][data-part='control'] > [data-part='trigger'] {
-    flex: 1;
-  }
-
-  /* 清空按钮：trigger 的兄弟节点，贴在触发框旁边的小方钮，不撑高那一行；清不了时连接层给 hidden */
+  /* 清空按钮：盒里 trigger 的兄弟节点，排在触发器之后，与展开箭头一样宽；清不了时连接层给 hidden */
   [data-scope='select'][data-part='clear-trigger'] {
     display: inline-flex;
     flex: none;
@@ -278,19 +313,9 @@
     cursor: not-allowed;
   }
 
+  /* 环画在盒上，按钮自己不再画：两圈套着的环读起来像两个控件 */
   [data-scope='select'][data-part='trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-_select-ring);
-    outline-offset: var(--xh-ring-offset);
-  }
-
-  /* 聚焦态描边色与环共用一族语气色。这条排在上面的 invalid 之后，校验失败时要显式让开，描边保持红色 */
-  [data-scope='select'][data-part='trigger']:focus-visible:not([data-invalid]) {
-    border-color: var(--xh-select-trigger-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
-  }
-
-  /* 只读仍可聚焦、浮层仍展得开、条目仍能浏览，所以不置灰，只把底色压下去表示「改不动」 */
-  [data-scope='select'][data-part='trigger'][data-readonly] {
-    background: var(--xh-select-trigger-bg-readonly, var(--xh-bg-subtle));
+    outline: none;
   }
 
   /* trigger 是单体控件，用原生 disabled（条目那边一律 aria-disabled） */
@@ -299,7 +324,7 @@
     cursor: not-allowed;
   }
 
-  /* 框宽由 trigger 定，这里得允许自己被压缩：弹性子项默认最小尺寸是内容尺寸，
+  /* 盒宽由 control 定，这里得允许自己被压缩：弹性子项默认最小尺寸是内容尺寸，
      不归零则长值把行撑破、省略号永远轮不到 */
   [data-scope='select'][data-part='value-text'] {
     flex: 1;
@@ -319,11 +344,14 @@
     display: none;
   }
 
+  /* 展开箭头与清空钮同一把尺：两者互斥显示，换来换去不该让盒里的宽度跳一下 */
   [data-scope='select'][data-part='indicator'] {
     display: inline-flex;
     flex: none;
     align-items: center;
     justify-content: center;
+    inline-size: var(--xh-select-action-size, var(--xh-control-action-size));
+    block-size: var(--xh-select-action-size, var(--xh-control-action-size));
     color: var(--xh-select-indicator-fg, var(--xh-fg-muted));
     transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
@@ -349,9 +377,11 @@
   [data-scope='select'][data-part='content'] {
     display: flex;
     flex-direction: column;
-    min-inline-size: var(--xh-select-content-min-w, var(--xh-overlay-min-w));
+    min-inline-size: var(--xh-select-content-min-w, var(--xh-overlay-menu-min-w));
     max-inline-size: var(--xh-select-content-max-w, var(--xh-overlay-max-w));
-    max-block-size: min(var(--xh-select-content-max-h, var(--xh-overlay-max-h)), var(--xh-_select-available-h));
+    max-block-size: min(var(--xh-select-content-max-h, var(--xh-overlay-menu-max-h)), var(--xh-_select-available-h));
+    padding-block: var(--xh-select-content-py, var(--xh-space-1));
+    padding-inline: var(--xh-select-content-px, var(--xh-space-1));
     border: var(--xh-stroke-thin) solid var(--xh-select-content-border, var(--xh-border-default));
     border-radius: var(--xh-select-content-radius, var(--xh-shape-surface));
     background: var(--xh-select-content-bg, var(--xh-bg-surface));
@@ -362,7 +392,7 @@
     pointer-events: auto;
   }
 
-  /* 列表框本体：条目的内边距长在这一层，滚动也在这一层。
+  /* 列表框本体：只管滚动，留白归外壳。
      min-block-size: 0 是 flex 子项能真正滚动的前提——不给的话它按内容撑高，
      外壳的 max-block-size 就只会把溢出的部分裁掉而不是交给它滚 */
   [data-scope='select'][data-part='list'] {
@@ -370,8 +400,6 @@
     flex: 1 1 auto;
     flex-direction: column;
     min-block-size: 0;
-    padding-block: var(--xh-select-content-py, var(--xh-space-1));
-    padding-inline: var(--xh-select-content-px, var(--xh-space-1));
     overflow-y: auto;
   }
 

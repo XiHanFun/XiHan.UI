@@ -114,9 +114,10 @@
     cursor: pointer;
   }
 
-  [data-scope='side-nav'][data-part='branch-trigger']:hover,
-  [data-scope='side-nav'][data-part='link']:hover {
-    background: var(--xh-bg-subtle-hover);
+  /* 悬停与键盘锚点共用中性灰轻档：锚点只认连接层打的 data-highlighted，不读 :focus */
+  [data-scope='side-nav'][data-part='branch-trigger']:not([data-disabled]):is(:hover, [data-highlighted]),
+  [data-scope='side-nav'][data-part='link']:not([data-disabled]):is(:hover, [data-highlighted]) {
+    background: var(--xh-side-nav-row-bg-hover, var(--xh-bg-subtle));
   }
 
   [data-scope='side-nav'][data-part='branch-trigger']:focus-visible,
@@ -125,8 +126,9 @@
     outline-offset: var(--xh-ring-offset);
   }
 
-  /* 选中的那条：品牌淡底 + 强调字 */
-  [data-scope='side-nav'][data-part='link'][data-current] {
+  /* 选中的那条：品牌淡底 + 强调字。
+     守卫与轻档那条同特指度，写在其后才压得住——键盘走到当前页那一行时底色仍是品牌淡底 */
+  [data-scope='side-nav'][data-part='link']:not([data-disabled])[data-current] {
     background: var(--xh-bg-brand-subtle);
     color: var(--xh-fg-brand);
     font-weight: var(--xh-font-weight-medium);
@@ -184,16 +186,6 @@
     visibility: hidden;
   }
 
-  [data-scope='side-nav'][data-part='positioner'][data-state='open'] {
-    animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
-  }
-
-  /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
-     免得动画结束到收起落下来之间闪一下原样 */
-  [data-scope='side-nav'][data-part='positioner'][data-state='closed'] {
-    animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
-  }
-
   /* 折叠态的弹出面板：贴着触发按钮旁侧的浮层卡片。
      面板自己不吃子层缩进（padding 整圈盖掉），面板内的嵌套子层照常缩进 */
   [data-scope='side-nav'][data-part='branch-content'][data-popout] {
@@ -208,6 +200,16 @@
     /* 子导航条目数没有上限，矮视口下不限高就整块伸出视口且滚不到 */
     max-block-size: min(var(--xh-side-nav-popout-max-h, var(--xh-overlay-menu-max-h)), var(--xh-_side-nav-available-h));
     overflow-y: auto;
+  }
+
+  [data-scope='side-nav'][data-part='branch-content'][data-popout][data-state='open'] {
+    animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  }
+
+  /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
+     免得动画结束到收起落下来之间闪一下原样 */
+  [data-scope='side-nav'][data-part='branch-content'][data-popout][data-state='closed'] {
+    animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
   [data-scope='side-nav'][data-part='branch-indicator'] {

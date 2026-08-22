@@ -5,6 +5,7 @@ import {
   XhCascaderClearTrigger,
   XhCascaderColumn,
   XhCascaderContent,
+  XhCascaderControl,
   XhCascaderIndicator,
   XhCascaderItem,
   XhCascaderItemIndicator,
@@ -48,11 +49,13 @@ const path = ref<string[][]>([]);
     placeholder="选一个栏目"
   >
     <XhCascaderLabel>栏目</XhCascaderLabel>
-    <XhCascaderTrigger>
-      <XhCascaderValueText />
-      <XhCascaderIndicator />
-    </XhCascaderTrigger>
-    <XhCascaderClearTrigger />
+    <XhCascaderControl>
+      <XhCascaderTrigger>
+        <XhCascaderValueText />
+        <XhCascaderIndicator />
+      </XhCascaderTrigger>
+      <XhCascaderClearTrigger />
+    </XhCascaderControl>
     <XhCascaderPositioner>
       <XhCascaderContent>
         <XhCascaderColumn v-for="lv in levels" :key="lv.level" :level="lv.level">

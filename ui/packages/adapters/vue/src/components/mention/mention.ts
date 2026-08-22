@@ -30,6 +30,8 @@ export const XhMentionRoot = defineComponent({
     value: { type: String, default: undefined },
     defaultValue: { type: String, default: undefined },
     disabled: Boolean,
+    readOnly: Boolean,
+    invalid: Boolean,
     placeholder: { type: String, default: undefined },
     loop: { type: Boolean, default: undefined },
     placement: { type: String as PropType<Placement>, default: undefined },

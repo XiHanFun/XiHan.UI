@@ -3,6 +3,7 @@
 import { computed, ref } from "vue";
 import {
   XhPopselectContent,
+  XhPopselectControl,
   XhPopselectPositioner,
   XhPopselectRoot,
   XhPopselectTrigger,
@@ -25,7 +26,9 @@ const label = computed(
 
 <template>
   <XhPopselectRoot v-model:value="picked" :collection="fruits" placement="bottom-start">
-    <XhPopselectTrigger>{{ label }}</XhPopselectTrigger>
+    <XhPopselectControl>
+      <XhPopselectTrigger>{{ label }}</XhPopselectTrigger>
+    </XhPopselectControl>
     <XhPopselectPositioner>
       <XhPopselectContent />
     </XhPopselectPositioner>

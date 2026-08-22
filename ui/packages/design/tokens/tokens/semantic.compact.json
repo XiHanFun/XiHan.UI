@@ -33,6 +33,11 @@
     "cell-py-md": { "$type": "dimension", "$value": "{space.1_5}" },
     "cell-py-lg": { "$type": "dimension", "$value": "{space.2}" }
   },
+  "viewport": {
+    "h-sm": { "$type": "dimension", "$value": "10rem" },
+    "h-md": { "$type": "dimension", "$value": "14rem" },
+    "h-lg": { "$type": "dimension", "$value": "20rem" }
+  },
   "section": {
     "py": { "$type": "dimension", "$value": "{space.4}" }
   },

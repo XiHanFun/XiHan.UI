@@ -28,9 +28,9 @@ const items = [
 
 // 一档尺寸就是一组令牌：两栏间距、面板高度、表头、搜索框、条目、勾选格与搬运按钮
 const compact =
-  "--xh-transfer-gap: 8px; --xh-transfer-list-min-h: 5rem; --xh-transfer-list-max-h: 7rem; --xh-transfer-header-py: 2px; --xh-transfer-title-font-size: 12px; --xh-transfer-search-h: 26px; --xh-transfer-search-font-size: 12px; --xh-transfer-item-py: 1px; --xh-transfer-item-font-size: 12px; --xh-transfer-checkbox-size: 13px; --xh-transfer-checkbox-font-size: 10px; --xh-transfer-trigger-size: 22px; --xh-transfer-trigger-font-size: 12px";
+  "--xh-transfer-gap: 8px; --xh-transfer-list-h: 7rem; --xh-transfer-header-py: 2px; --xh-transfer-title-font-size: 12px; --xh-transfer-search-h: 26px; --xh-transfer-search-font-size: 12px; --xh-transfer-item-py: 1px; --xh-transfer-item-font-size: 12px; --xh-transfer-checkbox-size: 13px; --xh-transfer-checkbox-font-size: 10px; --xh-transfer-trigger-size: 22px; --xh-transfer-trigger-font-size: 12px";
 const roomy =
-  "--xh-transfer-gap: 20px; --xh-transfer-list-min-h: 10rem; --xh-transfer-list-max-h: 14rem; --xh-transfer-header-py: 10px; --xh-transfer-title-font-size: 16px; --xh-transfer-search-h: 40px; --xh-transfer-search-font-size: 16px; --xh-transfer-item-py: 6px; --xh-transfer-item-font-size: 16px; --xh-transfer-checkbox-size: 20px; --xh-transfer-checkbox-font-size: 14px; --xh-transfer-trigger-size: 36px; --xh-transfer-trigger-font-size: 16px";
+  "--xh-transfer-gap: 20px; --xh-transfer-list-h: 14rem; --xh-transfer-header-py: 10px; --xh-transfer-title-font-size: 16px; --xh-transfer-search-h: 40px; --xh-transfer-search-font-size: 16px; --xh-transfer-item-py: 6px; --xh-transfer-item-font-size: 16px; --xh-transfer-checkbox-size: 20px; --xh-transfer-checkbox-font-size: 14px; --xh-transfer-trigger-size: 36px; --xh-transfer-trigger-font-size: 16px";
 
 const tight = ref<string[]>(["read"]);
 const loose = ref<string[]>(["read"]);

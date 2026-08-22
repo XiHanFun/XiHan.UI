@@ -9,17 +9,17 @@ export interface DatePickerCellContext {
 }
 
 /** 分段容器自报组号，供组内的段位与隐藏输入认领起止两组之一。 */
-export interface DatePickerInputContext {
+export interface DatePickerSegmentGroupContext {
   /** 0 是起点那组，1 是区间终点那组。 */
   index: ComputedRef<0 | 1>
 }
 
 const KEY: InjectionKey<DatePickerContext> = Symbol('xh-date-picker')
 const CELL_KEY: InjectionKey<DatePickerCellContext> = Symbol('xh-date-picker-cell')
-const INPUT_KEY: InjectionKey<DatePickerInputContext> = Symbol('xh-date-picker-input')
+const SEGMENT_GROUP_KEY: InjectionKey<DatePickerSegmentGroupContext> = Symbol('xh-date-picker-segment-group')
 
 /** 没有分段容器时的组号，段位与隐藏输入落到起点那组。 */
-const START_GROUP: DatePickerInputContext = { index: computed<0 | 1>(() => 0) }
+const START_GROUP: DatePickerSegmentGroupContext = { index: computed<0 | 1>(() => 0) }
 
 export function provideDatePicker(ctx: DatePickerContext): void {
   provide(KEY, ctx)
@@ -43,10 +43,10 @@ export function useDatePickerCellContext(): DatePickerCellContext {
   return ctx
 }
 
-export function provideDatePickerInput(ctx: DatePickerInputContext): void {
-  provide(INPUT_KEY, ctx)
+export function provideDatePickerSegmentGroup(ctx: DatePickerSegmentGroupContext): void {
+  provide(SEGMENT_GROUP_KEY, ctx)
 }
 
-export function useDatePickerInputContext(): DatePickerInputContext {
-  return inject(INPUT_KEY, START_GROUP)
+export function useDatePickerSegmentGroupContext(): DatePickerSegmentGroupContext {
+  return inject(SEGMENT_GROUP_KEY, START_GROUP)
 }

@@ -80,7 +80,7 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，�
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-time-field>` |
-| Vue 组件 | `XhTimeFieldClearTrigger` `XhTimeFieldControl` `XhTimeFieldHiddenInput` `XhTimeFieldLabel` `XhTimeFieldRoot` `XhTimeFieldSegment` |
+| Vue 组件 | `XhTimeFieldClearTrigger` `XhTimeFieldControl` `XhTimeFieldHiddenInput` `XhTimeFieldLabel` `XhTimeFieldRoot` `XhTimeFieldSegment` `XhTimeFieldSegmentGroup` |
 | 组合式函数 | `useTimeField` |
 | 状态机 | `timeFieldMachine` |
 | 皮肤 | `@xihan-ui/styles/time-field.css` |
@@ -89,7 +89,7 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，�
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="time-field"`：**`root`** · `label` · **`control`** · **`segment`** · `clear-trigger` · `hidden-input`
+`data-scope="time-field"`：**`root`** · `label` · **`control`** · `segment-group` · **`segment`** · `clear-trigger` · `hidden-input`
 
 ## Props
 
@@ -163,6 +163,7 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，�
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['label']` |  |
 | `getControlProps` | `() => T['element']` |  |
+| `getSegmentGroupProps` | `() => T['element']` | 段位与分隔符的外壳：占满盒里剩下的宽度，把清空钮顶到框内末端。 |
 | `getSegmentProps` | `(props: TimeFieldSegmentProps) => T['element']` |  |
 | `getClearTriggerProps` | `() => T['button']` | 清空按钮：有值才显形，不占 Tab 位，点完焦点回到第一段。 |
 | `getHiddenInputProps` | `() => T['input']` | 表单出口：一份 type=hidden 的原生输入，随表单提交 ISO 串。 |
@@ -228,6 +229,9 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，�
 | `control` | `data-empty` | ''（条件成立时才出现） |
 | `control` | `data-invalid` | ''（条件成立时才出现） |
 | `control` | `data-readonly` | ''（条件成立时才出现） |
+| `segment-group` | `data-disabled` | ''（条件成立时才出现） |
+| `segment-group` | `data-invalid` | ''（条件成立时才出现） |
+| `segment-group` | `data-readonly` | ''（条件成立时才出现） |
 | `segment` | `data-disabled` | ''（条件成立时才出现） |
 | `segment` | `data-focus` | ''（条件成立时才出现） |
 | `segment` | `data-invalid` | ''（条件成立时才出现） |
@@ -238,7 +242,7 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，�
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-time-field-action-bg` · `--xh-time-field-action-bg-active` · `--xh-time-field-action-bg-hover` · `--xh-time-field-action-fg` · `--xh-time-field-action-fg-hover` · `--xh-time-field-action-font-size` · `--xh-time-field-action-radius` · `--xh-time-field-action-size` · `--xh-time-field-control-bg` · `--xh-time-field-control-bg-disabled` · `--xh-time-field-control-bg-readonly` · `--xh-time-field-control-border` · `--xh-time-field-control-border-focus` · `--xh-time-field-control-border-hover` · `--xh-time-field-control-border-invalid` · `--xh-time-field-control-fg` · `--xh-time-field-control-h` · `--xh-time-field-control-min-w` · `--xh-time-field-control-px` · `--xh-time-field-control-radius` · `--xh-time-field-font-size` · `--xh-time-field-gap` · `--xh-time-field-icon-size` · `--xh-time-field-label-fg` · `--xh-time-field-label-fg-disabled` · `--xh-time-field-label-font-size` · `--xh-time-field-label-font-weight` · `--xh-time-field-segment-bg-focus` · `--xh-time-field-segment-bg-hover` · `--xh-time-field-segment-fg-focus` · `--xh-time-field-segment-fg-placeholder` · `--xh-time-field-segment-px` · `--xh-time-field-segment-radius`
+`--xh-time-field-action-bg` · `--xh-time-field-action-bg-active` · `--xh-time-field-action-bg-hover` · `--xh-time-field-action-fg` · `--xh-time-field-action-fg-hover` · `--xh-time-field-action-font-size` · `--xh-time-field-action-radius` · `--xh-time-field-action-size` · `--xh-time-field-control-bg` · `--xh-time-field-control-bg-disabled` · `--xh-time-field-control-bg-readonly` · `--xh-time-field-control-border` · `--xh-time-field-control-border-focus` · `--xh-time-field-control-border-hover` · `--xh-time-field-control-border-invalid` · `--xh-time-field-control-fg` · `--xh-time-field-control-gap` · `--xh-time-field-control-h` · `--xh-time-field-control-min-w` · `--xh-time-field-control-px` · `--xh-time-field-control-radius` · `--xh-time-field-font-size` · `--xh-time-field-gap` · `--xh-time-field-icon-size` · `--xh-time-field-label-fg` · `--xh-time-field-label-fg-disabled` · `--xh-time-field-label-font-size` · `--xh-time-field-label-font-weight` · `--xh-time-field-placeholder-fg` · `--xh-time-field-segment-bg-focus` · `--xh-time-field-segment-bg-hover` · `--xh-time-field-segment-fg-focus` · `--xh-time-field-segment-px` · `--xh-time-field-segment-radius`
 
 ## 动效
 

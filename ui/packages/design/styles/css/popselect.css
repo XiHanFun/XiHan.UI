@@ -57,9 +57,9 @@
     --xh-_popselect-font-size: var(--xh-text-body-size);
 
     /* 形态档只换这三个槽：缺省即 outline（描边 + 画布底） */
-    --xh-_popselect-trigger-bg: var(--xh-bg-canvas);
-    --xh-_popselect-trigger-border: var(--xh-border-control);
-    --xh-_popselect-trigger-border-hover: var(--xh-border-control-hover);
+    --xh-_popselect-control-bg: var(--xh-bg-canvas);
+    --xh-_popselect-control-border: var(--xh-border-control);
+    --xh-_popselect-control-border-hover: var(--xh-border-control-hover);
 
     /* 聚焦环恒用固定环色；强调色随语气走，只落在勾选标记与选中文字上，正文文字色不动。
        没写 data-tone 时 --xh-_tone 没被声明，两处都退回原来的取值 */
@@ -69,12 +69,21 @@
   }
 
   [data-scope='popselect'][data-part='root'] {
-    /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
-    --xh-icon-size: var(--xh-popselect-icon-size, var(--xh-glyph-size-text));
+    /* 作者塞进指示符槽的图标跟着控件的尺寸档走；它自己写了 size 时仍以作者的为准 */
+    --xh-icon-size: var(--xh-popselect-icon-size, var(--xh-glyph-size-md));
 
     display: inline-flex;
     align-items: center;
     gap: var(--xh-popselect-root-gap, var(--xh-space-1));
+  }
+
+  /* 图标只跟着盒那一侧换档：浮层里的勾选标记有自己的指示符盒，换成整档图标会撑破它 */
+  [data-scope='popselect'][data-part='root'][data-size='sm'] {
+    --xh-icon-size: var(--xh-popselect-icon-size, var(--xh-glyph-size-sm));
+  }
+
+  [data-scope='popselect'][data-part='root'][data-size='lg'] {
+    --xh-icon-size: var(--xh-popselect-icon-size, var(--xh-glyph-size-lg));
   }
 
   /* —— 尺寸 —— */
@@ -96,35 +105,69 @@
   /* —— 形态 —— */
   /* 形态只决定描边与底色怎么用，用哪族颜色由 data-tone 决定 */
   [data-scope='popselect']:is([data-part='root'], [data-part='positioner'])[data-variant='outline'] {
-    --xh-_popselect-trigger-bg: var(--xh-bg-canvas);
-    --xh-_popselect-trigger-border: var(--xh-border-control);
-    --xh-_popselect-trigger-border-hover: var(--xh-border-control-hover);
+    --xh-_popselect-control-bg: var(--xh-bg-canvas);
+    --xh-_popselect-control-border: var(--xh-border-control);
+    --xh-_popselect-control-border-hover: var(--xh-border-control-hover);
   }
 
   /* 填充式：底色顶替描边，悬停时才浮出一道淡边 */
   [data-scope='popselect']:is([data-part='root'], [data-part='positioner'])[data-variant='subtle'] {
-    --xh-_popselect-trigger-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-    --xh-_popselect-trigger-border: transparent;
-    --xh-_popselect-trigger-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
+    --xh-_popselect-control-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+    --xh-_popselect-control-border: transparent;
+    --xh-_popselect-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   }
 
   /* 无框：底与常态描边透明，悬停浮出描边，聚焦由焦点环表达 */
   [data-scope='popselect']:is([data-part='root'], [data-part='positioner'])[data-variant='ghost'] {
-    --xh-_popselect-trigger-bg: transparent;
-    --xh-_popselect-trigger-border: transparent;
-    --xh-_popselect-trigger-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
+    --xh-_popselect-control-bg: transparent;
+    --xh-_popselect-control-border: transparent;
+    --xh-_popselect-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   }
 
+  /* 盒：描边、底色、圆角、控件高度与行内内衬都长在这一层，触发器与清空按钮在里面并排。
+     聚焦环也画在它上面，焦点落在哪颗按钮上，看到的都是同一个框亮起来 */
+  [data-scope='popselect'][data-part='control'] {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--xh-popselect-control-gap, var(--xh-_popselect-gap));
+    block-size: var(--xh-popselect-control-h, var(--xh-_popselect-h));
+    padding-inline: var(--xh-popselect-control-px, var(--xh-_popselect-px));
+    min-inline-size: var(--xh-popselect-control-min-w, var(--xh-control-min-w));
+    border: var(--xh-stroke-thin) solid var(--xh-popselect-control-border, var(--xh-_popselect-control-border));
+    border-radius: var(--xh-popselect-control-radius, var(--xh-shape-control));
+    background: var(--xh-popselect-control-bg, var(--xh-_popselect-control-bg));
+  }
+
+  [data-scope='popselect'][data-part='control']:hover:not([data-disabled]) {
+    border-color: var(--xh-popselect-control-border-hover, var(--xh-_popselect-control-border-hover));
+  }
+
+  /* 焦点落在盒内任一颗按钮上都画同一圈环；禁用时按钮不可聚焦，守卫只是把这条说死。
+     描边色与环共用一族语气色 */
+  [data-scope='popselect'][data-part='control']:focus-within:not([data-disabled]) {
+    border-color: var(--xh-popselect-control-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
+    outline: var(--xh-ring-width) solid var(--xh-_popselect-ring);
+    outline-offset: var(--xh-ring-offset);
+  }
+
+  [data-scope='popselect'][data-part='control'][data-disabled] {
+    background: var(--xh-popselect-control-bg-disabled, var(--xh-bg-subtle));
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  /* 触发器退化成盒里那颗可聚焦的按钮：描边、底色与内衬归盒，它只占满剩余一行 */
   [data-scope='popselect'][data-part='trigger'] {
     display: inline-flex;
+    flex: 1 1 auto;
     align-items: center;
     justify-content: space-between;
     gap: var(--xh-popselect-trigger-gap, var(--xh-_popselect-gap));
-    block-size: var(--xh-popselect-trigger-h, var(--xh-_popselect-h));
-    padding-inline: var(--xh-popselect-trigger-px, var(--xh-_popselect-px));
-    border: var(--xh-stroke-thin) solid var(--xh-popselect-trigger-border, var(--xh-_popselect-trigger-border));
-    border-radius: var(--xh-popselect-trigger-radius, var(--xh-shape-control));
-    background: var(--xh-popselect-trigger-bg, var(--xh-_popselect-trigger-bg));
+    /* 弹性子项默认最小尺寸是内容尺寸，不归零则长值把盒撑破 */
+    min-inline-size: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
     color: var(--xh-popselect-trigger-fg, var(--xh-fg-default));
     font-size: var(--xh-popselect-trigger-font-size, var(--xh-_popselect-font-size));
     line-height: var(--xh-leading-none);
@@ -132,13 +175,9 @@
     cursor: pointer;
   }
 
-  [data-scope='popselect'][data-part='trigger']:hover:not(:disabled) {
-    border-color: var(--xh-popselect-trigger-border-hover, var(--xh-_popselect-trigger-border-hover));
-  }
-
+  /* 环画在盒上，按钮自己不再画：两圈套着的环读起来像两个控件 */
   [data-scope='popselect'][data-part='trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-_popselect-ring);
-    outline-offset: var(--xh-ring-offset);
+    outline: none;
   }
 
   /* trigger 是单体控件，用原生 disabled（条目那边一律 aria-disabled） */
@@ -152,7 +191,7 @@
     color: var(--xh-popselect-placeholder-fg, var(--xh-fg-subtle));
   }
 
-  /* 清空钮：触发器旁的方形小钮，没值即 hidden 收起；图标盒与指示符同一把尺 */
+  /* 清空钮：盒里排在触发器之后的方形小钮，没值即 hidden 收起 */
   [data-scope='popselect'][data-part='clear-trigger'] {
     display: inline-grid;
     flex: none;
@@ -206,10 +245,11 @@
   [data-scope='popselect'][data-part='content'] {
     display: flex;
     flex-direction: column;
-    min-inline-size: var(--xh-popselect-content-min-w, var(--xh-overlay-min-w));
+    min-inline-size: var(--xh-popselect-content-min-w, var(--xh-overlay-menu-min-w));
     max-inline-size: var(--xh-popselect-content-max-w, var(--xh-overlay-max-w));
-    max-block-size: min(var(--xh-popselect-content-max-h, var(--xh-overlay-max-h)), var(--xh-_popselect-available-h));
-    padding: var(--xh-popselect-content-p, var(--xh-space-1));
+    max-block-size: min(var(--xh-popselect-content-max-h, var(--xh-overlay-menu-max-h)), var(--xh-_popselect-available-h));
+    padding-block: var(--xh-popselect-content-py, var(--xh-space-1));
+    padding-inline: var(--xh-popselect-content-px, var(--xh-space-1));
     border: var(--xh-stroke-thin) solid var(--xh-popselect-content-border, var(--xh-border-default));
     border-radius: var(--xh-popselect-content-radius, var(--xh-shape-surface));
     background: var(--xh-popselect-content-bg, var(--xh-bg-surface));

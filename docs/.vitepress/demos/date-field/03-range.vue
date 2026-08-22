@@ -5,6 +5,7 @@ import {
   XhDateFieldLabel,
   XhDateFieldRoot,
   XhDateFieldSegment,
+  XhDateFieldSegmentGroup,
 } from "@xihan-ui/vue";
 </script>
 
@@ -18,12 +19,14 @@ import {
     >
       <XhDateFieldLabel>在区间内（2020 – 2030）</XhDateFieldLabel>
       <XhDateFieldControl>
-        <XhDateFieldSegment :index="0" />
-        <span>年</span>
-        <XhDateFieldSegment :index="1" />
-        <span>月</span>
-        <XhDateFieldSegment :index="2" />
-        <span>日</span>
+        <XhDateFieldSegmentGroup>
+          <XhDateFieldSegment :index="0" />
+          <span>年</span>
+          <XhDateFieldSegment :index="1" />
+          <span>月</span>
+          <XhDateFieldSegment :index="2" />
+          <span>日</span>
+        </XhDateFieldSegmentGroup>
       </XhDateFieldControl>
     </XhDateFieldRoot>
 
@@ -31,12 +34,14 @@ import {
     <XhDateFieldRoot default-value="2019-05-01" locale="zh-CN" min="2020-01-01">
       <XhDateFieldLabel>越界（min 2020-01-01）</XhDateFieldLabel>
       <XhDateFieldControl>
-        <XhDateFieldSegment :index="0" />
-        <span>年</span>
-        <XhDateFieldSegment :index="1" />
-        <span>月</span>
-        <XhDateFieldSegment :index="2" />
-        <span>日</span>
+        <XhDateFieldSegmentGroup>
+          <XhDateFieldSegment :index="0" />
+          <span>年</span>
+          <XhDateFieldSegment :index="1" />
+          <span>月</span>
+          <XhDateFieldSegment :index="2" />
+          <span>日</span>
+        </XhDateFieldSegmentGroup>
       </XhDateFieldControl>
     </XhDateFieldRoot>
   </div>

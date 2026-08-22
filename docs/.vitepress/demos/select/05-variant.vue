@@ -1,4 +1,4 @@
-<!-- 形态 | variant 只改触发器的颜色槽位，浮层与键盘行为三档一致 -->
+<!-- 形态 | variant 只改盒的颜色槽位，浮层与键盘行为三档一致 -->
 <script setup lang="ts">
 import { XhSelectRoot } from "@xihan-ui/vue";
 

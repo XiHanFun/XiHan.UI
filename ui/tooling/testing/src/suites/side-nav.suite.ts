@@ -183,7 +183,7 @@ function fakePopOutAnimation(on: boolean): StepWithExpect {
       win.getComputedStyle = (el: Element, pseudo?: string | null): CSSStyleDeclaration => {
         const style = native.call(win, el, pseudo)
         const exiting = el.getAttribute('data-scope') === 'side-nav'
-          && el.getAttribute('data-part') === 'positioner'
+          && el.getAttribute('data-part') === 'branch-content'
           && el.getAttribute('data-state') === 'closed'
         if (!exiting)
           return style
@@ -208,7 +208,7 @@ function finishPopOutAnimation(index: number): StepWithExpect {
     kind: 'raw',
     why: '退场动画的结束信号由平台派发，无头 DOM 里只能手工派 animationend',
     run: async ({ doc, flush }) => {
-      const el = doc.querySelectorAll<HTMLElement>('[data-scope="side-nav"][data-part="positioner"]')[index]
+      const el = doc.querySelectorAll<HTMLElement>('[data-scope="side-nav"][data-part="branch-content"][data-popout]')[index]
       if (!el)
         throw new Error(`找不到第 ${index} 个 positioner`)
       const event = new Event('animationend', { bubbles: true })

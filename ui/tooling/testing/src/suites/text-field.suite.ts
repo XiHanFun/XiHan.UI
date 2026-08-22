@@ -62,8 +62,13 @@ export const textFieldSuite: ConformanceSuite = {
     children: [
       // 标签与输入框都写成原生 label / input：for 指向不可标注的元素时关联当场作废
       { part: 'label', tag: 'label', text: '昵称' },
-      { part: 'input', tag: 'input' },
-      { part: 'clear-trigger', tag: 'button', text: '×' },
+      {
+        part: 'control',
+        children: [
+          { part: 'input', tag: 'input' },
+          { part: 'clear-trigger', tag: 'button', text: '×' },
+        ],
+      },
     ],
   },
   cases: [
@@ -72,7 +77,7 @@ export const textFieldSuite: ConformanceSuite = {
       spec: { apg: APG },
       props: { placeholder: '请输入昵称', name: 'nickname' },
       initial: {
-        order: ['root', 'label', 'input', 'clear-trigger'],
+        order: ['root', 'label', 'control', 'input', 'clear-trigger'],
         parts: {
           'root': {
             'data-empty': '',

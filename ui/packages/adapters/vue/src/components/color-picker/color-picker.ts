@@ -93,6 +93,15 @@ export const XhColorPickerLabel = defineComponent({
   },
 })
 
+export const XhColorPickerControl = defineComponent({
+  name: 'XhColorPickerControl',
+  setup(_, { slots }) {
+    const ctx = useColorPickerContext()
+    // 描边、底色与聚焦环所在的那一层，触发按钮与尾部动作钮在里面并排
+    return () => h('div', ctx.api.value.getControlProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhColorPickerTrigger = defineComponent({
   name: 'XhColorPickerTrigger',
   setup(_, { slots }) {

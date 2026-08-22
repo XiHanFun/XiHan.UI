@@ -139,6 +139,14 @@ export const XhTimePickerControl = defineComponent({
   },
 })
 
+export const XhTimePickerSegmentGroup = defineComponent({
+  name: 'XhTimePickerSegmentGroup',
+  setup(_, { slots }) {
+    const ctx = useTimePickerContext()
+    return () => h('div', ctx.api.value.getSegmentGroupProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhTimePickerInput = defineComponent({
   name: 'XhTimePickerInput',
   props: {

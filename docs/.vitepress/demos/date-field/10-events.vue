@@ -6,6 +6,7 @@ import {
   XhDateFieldLabel,
   XhDateFieldRoot,
   XhDateFieldSegment,
+  XhDateFieldSegmentGroup,
 } from "@xihan-ui/vue";
 
 const log = ref<string[]>([]);
@@ -24,12 +25,14 @@ function onValueChange(details: { value: string | null }) {
   >
     <XhDateFieldLabel>改一改再看下面</XhDateFieldLabel>
     <XhDateFieldControl>
-      <XhDateFieldSegment :index="0" />
-      <span>年</span>
-      <XhDateFieldSegment :index="1" />
-      <span>月</span>
-      <XhDateFieldSegment :index="2" />
-      <span>日</span>
+      <XhDateFieldSegmentGroup>
+        <XhDateFieldSegment :index="0" />
+        <span>年</span>
+        <XhDateFieldSegment :index="1" />
+        <span>月</span>
+        <XhDateFieldSegment :index="2" />
+        <span>日</span>
+      </XhDateFieldSegmentGroup>
     </XhDateFieldControl>
   </XhDateFieldRoot>
 

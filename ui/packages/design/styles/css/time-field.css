@@ -12,6 +12,7 @@
     /* 尺寸档只换这四个私有槽，标题与控件都从 root 继承它们，换档不必给每个部件各写一条选择器 */
     --xh-_time-field-control-h: var(--xh-control-h-md);
     --xh-_time-field-control-px: var(--xh-control-px-md);
+    --xh-_time-field-gap: var(--xh-control-gap-md);
     --xh-_time-field-font-size: var(--xh-text-body-size);
     --xh-_time-field-label-font-size: var(--xh-text-label-size);
     /* 形态档只换这三个私有槽：底色与两档描边 */
@@ -33,6 +34,7 @@
     --xh-icon-size: var(--xh-time-field-icon-size, var(--xh-glyph-size-sm));
     --xh-_time-field-control-h: var(--xh-control-h-sm);
     --xh-_time-field-control-px: var(--xh-control-px-sm);
+    --xh-_time-field-gap: var(--xh-control-gap-sm);
     --xh-_time-field-font-size: var(--xh-control-font-sm);
     --xh-_time-field-label-font-size: var(--xh-control-font-sm);
   }
@@ -41,6 +43,7 @@
     --xh-icon-size: var(--xh-time-field-icon-size, var(--xh-glyph-size-lg));
     --xh-_time-field-control-h: var(--xh-control-h-lg);
     --xh-_time-field-control-px: var(--xh-control-px-lg);
+    --xh-_time-field-gap: var(--xh-control-gap-lg);
     --xh-_time-field-font-size: var(--xh-control-font-lg);
     --xh-_time-field-label-font-size: var(--xh-control-font-lg);
   }
@@ -77,9 +80,6 @@
     font-size: var(--xh-time-field-label-font-size, var(--xh-_time-field-label-font-size));
     font-weight: var(--xh-time-field-label-font-weight, var(--xh-text-label-weight));
     line-height: var(--xh-leading-none);
-    /* 点标题会把焦点送到第一段（段不是能被 for 指向的原生控件，这条由连接层接管），
-       指针得如实反映它可点 */
-    cursor: pointer;
   }
 
   [data-scope='time-field'][data-part='label'][data-disabled] {
@@ -93,6 +93,7 @@
     display: inline-flex;
     min-inline-size: var(--xh-time-field-control-min-w, var(--xh-control-min-w));
     align-items: center;
+    gap: var(--xh-time-field-control-gap, var(--xh-_time-field-gap));
     block-size: var(--xh-time-field-control-h, var(--xh-_time-field-control-h));
     padding-inline: var(--xh-time-field-control-px, var(--xh-_time-field-control-px));
     padding-block: 0;
@@ -145,11 +146,23 @@
     cursor: not-allowed;
   }
 
-  /* 段是一小块可聚焦区，紧挨着排；分隔符由作者写在段与段之间的普通节点里，
-     不在角色表内，所以间距只能长在段自己身上 */
+  /* 段位与作者写在段间的分隔符都在这一层里：它占满盒里剩下的宽度，
+     清空钮因此靠在框内末端 */
+  [data-scope='time-field'][data-part='segment-group'] {
+    display: inline-flex;
+    flex: 1 1 auto;
+    align-items: center;
+    min-inline-size: 0;
+  }
+
+  [data-scope='time-field'][data-part='segment-group'][hidden] {
+    display: none;
+  }
+
+  /* 段是一小块可聚焦区，紧挨着排；间距长在段自己身上 */
   [data-scope='time-field'][data-part='segment'] {
     display: inline-block;
-    padding-inline: var(--xh-time-field-segment-px, var(--xh-space-0_5));
+    padding-inline: var(--xh-time-field-segment-px, var(--xh-space-1));
     padding-block: 0;
     border-radius: var(--xh-time-field-segment-radius, var(--xh-shape-inset));
     color: inherit;
@@ -170,7 +183,7 @@
 
   /* 还没填的段压成弱色：一行里哪几段是占位符，一眼要看得出来 */
   [data-scope='time-field'][data-part='segment'][data-placeholder] {
-    color: var(--xh-time-field-segment-fg-placeholder, var(--xh-fg-subtle));
+    color: var(--xh-time-field-placeholder-fg, var(--xh-fg-subtle));
   }
 
   /* 一行段长得差不多，光有边框亮起来看不出正在改哪一段：当前段必须自己有底色。
@@ -198,7 +211,8 @@
     cursor: not-allowed;
   }
 
-  /* 清空按钮贴在框内末端：不占宽度也不撑高 control，有值时才显形 */
+  /* 清空按钮贴在框内末端：不占宽度也不撑高 control，有值时才显形。
+     靠段位外壳的 flex:1 顶到末端，自己不写 margin */
   [data-scope='time-field'][data-part='clear-trigger'] {
     display: inline-flex;
     flex: none;
@@ -207,7 +221,6 @@
     inline-size: var(--xh-time-field-action-size, var(--xh-control-action-size));
     block-size: var(--xh-time-field-action-size, var(--xh-control-action-size));
     padding: 0;
-    margin-inline-start: auto;
     border: 0;
     border-radius: var(--xh-time-field-action-radius, var(--xh-shape-control));
     background: var(--xh-time-field-action-bg, transparent);

@@ -1,7 +1,8 @@
-<!-- 宽度 | 触发器与浮层各有自己的宽度槽位，写在根部件上即可；装不下的文本在行内以省略号收口 -->
+<!-- 宽度 | 盒与浮层各有自己的宽度槽位，写在根部件上即可；装不下的文本在行内以省略号收口 -->
 <script setup lang="ts">
 import {
   XhSelectContent,
+  XhSelectControl,
   XhSelectIndicator,
   XhSelectItem,
   XhSelectItemIndicator,
@@ -25,10 +26,12 @@ const plans = [
   <div style="display: flex; flex-wrap: wrap; gap: 16px">
     <XhSelectRoot :default-value="['long']" placeholder="请选择">
       <XhSelectLabel>缺省宽度</XhSelectLabel>
-      <XhSelectTrigger>
-        <XhSelectValueText />
-        <XhSelectIndicator />
-      </XhSelectTrigger>
+      <XhSelectControl>
+        <XhSelectTrigger>
+          <XhSelectValueText />
+          <XhSelectIndicator />
+        </XhSelectTrigger>
+      </XhSelectControl>
       <XhSelectPositioner>
         <XhSelectContent>
           <XhSelectList>
@@ -44,13 +47,15 @@ const plans = [
     <XhSelectRoot
       :default-value="['long']"
       placeholder="请选择"
-      style="--xh-select-trigger-min-w: 15rem; --xh-select-content-min-w: 22rem"
+      style="--xh-select-control-min-w: 15rem; --xh-select-content-min-w: 22rem"
     >
       <XhSelectLabel>加宽</XhSelectLabel>
-      <XhSelectTrigger>
-        <XhSelectValueText />
-        <XhSelectIndicator />
-      </XhSelectTrigger>
+      <XhSelectControl>
+        <XhSelectTrigger>
+          <XhSelectValueText />
+          <XhSelectIndicator />
+        </XhSelectTrigger>
+      </XhSelectControl>
       <XhSelectPositioner>
         <XhSelectContent>
           <XhSelectList>

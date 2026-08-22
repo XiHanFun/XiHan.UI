@@ -118,7 +118,7 @@ export const XhSelectControl = defineComponent({
   name: 'XhSelectControl',
   setup(_, { slots }) {
     const ctx = useSelectContext()
-    // 触发器与清空按钮的收纳容器：两者在里面并排
+    // 盒：触发器与清空按钮在里面并排，描边、底色与聚焦环都长在它上面
     return () => h('div', ctx.api.value.getControlProps() as Record<string, unknown>, slots.default?.())
   },
 })
@@ -304,10 +304,10 @@ function renderDefaultTree(
   const trigger = h(XhSelectTrigger, null, () => [h(XhSelectValueText), h(XhSelectIndicator)])
   return [
     ...(label ? [h(XhSelectLabel, null, () => label)] : []),
-    // 清空钮是触发器的兄弟（按钮不能套按钮），两者收进 control 并排
-    clearable
-      ? h(XhSelectControl, null, () => [trigger, h(XhSelectClearTrigger)])
-      : trigger,
+    // control 是盒：描边、底色与聚焦环都长在它上面，触发器与清空钮在里面并排。
+    // 清空钮排在触发器之后（按钮不能套按钮），展开箭头是触发器里的指示符，
+    // 视觉上仍是「清空在左、箭头在右」
+    h(XhSelectControl, null, () => (clearable ? [trigger, h(XhSelectClearTrigger)] : [trigger])),
     h(XhSelectPositioner, null, () => [
       h(XhSelectContent, null, () => h(XhSelectList, null, () => collection.map(node =>
         h(XhSelectItem, { key: node.value, value: node.value }, () => [

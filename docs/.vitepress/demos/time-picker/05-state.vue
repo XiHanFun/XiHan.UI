@@ -5,6 +5,7 @@ import {
   XhTimePickerContent,
   XhTimePickerControl,
   XhTimePickerInput,
+  XhTimePickerSegmentGroup,
   XhTimePickerLabel,
   XhTimePickerItem,
   XhTimePickerPositioner,
@@ -30,9 +31,11 @@ const states = [
     >
       <XhTimePickerLabel>{{ s.label }}</XhTimePickerLabel>
       <XhTimePickerControl>
-        <XhTimePickerInput segment="hour" />
-        <span>:</span>
-        <XhTimePickerInput segment="minute" />
+        <XhTimePickerSegmentGroup>
+          <XhTimePickerInput segment="hour" />
+          <span>:</span>
+          <XhTimePickerInput segment="minute" />
+        </XhTimePickerSegmentGroup>
       </XhTimePickerControl>
       <XhTimePickerPositioner>
         <XhTimePickerContent>

@@ -85,6 +85,14 @@ export const XhTimeFieldControl = defineComponent({
   },
 })
 
+export const XhTimeFieldSegmentGroup = defineComponent({
+  name: 'XhTimeFieldSegmentGroup',
+  setup(_, { slots }) {
+    const ctx = useTimeFieldContext()
+    return () => h('div', ctx.api.value.getSegmentGroupProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhTimeFieldSegment = defineComponent({
   name: 'XhTimeFieldSegment',
   props: {

@@ -33,9 +33,6 @@
     /* 打开子菜单的触发条目走品牌淡底强档，随语气换色相；没写 data-tone 时退回品牌淡底。
        悬停与键盘焦点恒中性灰轻档、不接语气槽——两档同色相的话打开路径就认不出来了 */
     --xh-_context-menu-item-active-bg: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
-
-    /* 标记位强调色随语气走，没写 data-tone 时退回原来的取值 */
-    --xh-_context-menu-accent: var(--xh-_tone, var(--xh-fg-subtle));
   }
 
   /* 根只是把触发区与浮层圈在一起做作用域，不该在作者布局里多插一层盒子 */
@@ -189,6 +186,25 @@
     font-weight: var(--xh-context-menu-item-active-font-weight, var(--xh-font-weight-semibold));
   }
 
+  /* 带子菜单的条目行尾画右向小箭头：不点开也看得出还有下一级。
+     位置靠 margin 顶到行尾，图形取兜底字形令牌 */
+  [data-scope='context-menu'][data-part='item'][aria-haspopup='menu']::after {
+    content: '';
+    flex: none;
+    margin-inline-start: auto;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
+  }
+
+  /* rtl 下子菜单开在左侧，箭头跟着指向行进方向 */
+  [dir='rtl'] [data-scope='context-menu'][data-part='item'][aria-haspopup='menu']::after {
+    -webkit-mask-image: var(--xh-glyph-mark-chevron-left);
+    mask-image: var(--xh-glyph-mark-chevron-left);
+  }
+
   /* 键盘走到条目上要画环：轻档底色只有 1.1:1，够不上焦点指示器的对比度要求。
      指针悬停走的是程序化聚焦，鼠标模态下 :focus-visible 不匹配，不会误画 */
   [data-scope='context-menu'][data-part='item']:focus-visible {
@@ -225,7 +241,7 @@
     align-items: center;
     justify-content: center;
     inline-size: var(--xh-context-menu-item-indicator-size, var(--xh-control-indicator-size));
-    color: var(--xh-context-menu-item-indicator-fg, var(--xh-_context-menu-accent));
+    color: var(--xh-context-menu-item-indicator-fg, var(--xh-fg-brand));
   }
 
   [data-scope='context-menu'][data-part='item-indicator'][hidden] {

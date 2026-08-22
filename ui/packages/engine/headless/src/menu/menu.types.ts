@@ -62,6 +62,11 @@ export interface MenuItemProps {
   disabled?: boolean
 }
 
+/** 分组自报身份：分组标题的 id 由它派生，group 与 group-label 靠这一个值互相认领。 */
+export interface MenuGroupProps {
+  value: string
+}
+
 export interface MenuSchema extends MachineSchema {
   props: {
     /**
@@ -156,6 +161,8 @@ export interface MenuApi<T extends PropTypes = PropTypes> {
    */
   getSubmenuTriggerProps: (props: MenuItemProps) => T['element']
   getSeparatorProps: () => T['element']
+  getGroupProps: (props: MenuGroupProps) => T['element']
+  getGroupLabelProps: (props: MenuGroupProps) => T['element']
   getArrowProps: () => T['element']
 }
 

@@ -4,6 +4,7 @@ import {
   XhColorPickerArea,
   XhColorPickerAreaThumb,
   XhColorPickerContent,
+  XhColorPickerControl,
   XhColorPickerPositioner,
   XhColorPickerRoot,
   XhColorPickerSwatch,
@@ -17,9 +18,11 @@ const swatches = ["#00a98e", "#3b82f6", "#f59e0b", "#ef4444", "#8b5cf6"];
 
 <template>
   <XhColorPickerRoot default-value="#00a98e" :swatches="swatches">
-    <XhColorPickerTrigger>
-      <XhColorPickerSwatch />
-    </XhColorPickerTrigger>
+    <XhColorPickerControl>
+      <XhColorPickerTrigger>
+        <XhColorPickerSwatch />
+      </XhColorPickerTrigger>
+    </XhColorPickerControl>
     <XhColorPickerPositioner>
       <XhColorPickerContent>
         <XhColorPickerArea>

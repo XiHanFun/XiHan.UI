@@ -180,7 +180,7 @@
     flex-direction: column;
     gap: var(--xh-tour-gap, var(--xh-space-2));
     inline-size: max-content;
-    max-inline-size: var(--xh-tour-max-w, 22rem);
+    max-inline-size: var(--xh-tour-max-w, var(--xh-overlay-max-w-lg));
     padding-block: var(--xh-tour-py, var(--xh-surface-py-md));
     padding-inline: var(--xh-tour-px, var(--xh-surface-px-md));
     /* 引导步骤的正文长度由作者定，矮视口下不限高气泡会整块伸出视口 */

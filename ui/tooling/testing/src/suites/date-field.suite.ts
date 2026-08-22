@@ -74,8 +74,11 @@ export const dateFieldSuite: ConformanceSuite = {
       {
         part: 'control',
         children: [
-          ...Array.from({ length: SEGMENT_NODES }, (_, i) => segment(i)),
-          // 清空钮排在段位之后：没值时收起，不卸载作者节点
+          {
+            part: 'segment-group',
+            children: Array.from({ length: SEGMENT_NODES }, (_, i) => segment(i)),
+          },
+          // 清空钮排在段位外壳之后：没值时收起，不卸载作者节点
           { part: 'clear-trigger', tag: 'button', text: '清空' },
         ],
       },
@@ -92,6 +95,7 @@ export const dateFieldSuite: ConformanceSuite = {
           'root',
           'label',
           'control',
+          'segment-group',
           ...Array.from({ length: SEGMENT_NODES }, (_, i) => `segment[${i}]`),
           'clear-trigger',
           'hidden-input',

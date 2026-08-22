@@ -98,6 +98,7 @@ export {
   XhCascaderClearTrigger,
   XhCascaderColumn,
   XhCascaderContent,
+  XhCascaderControl,
   XhCascaderIndicator,
   XhCascaderInput,
   XhCascaderItem,
@@ -154,6 +155,7 @@ export {
   XhColorPickerChannelSliderThumb,
   XhColorPickerChannelSliderTrack,
   XhColorPickerContent,
+  XhColorPickerControl,
   XhColorPickerEyeDropperTrigger,
   XhColorPickerHiddenInput,
   XhColorPickerLabel,
@@ -225,6 +227,7 @@ export {
   XhDateFieldLabel,
   XhDateFieldRoot,
   XhDateFieldSegment,
+  XhDateFieldSegmentGroup,
 } from './components/date-field/date-field'
 export type { DateFieldRootSlotProps, DateFieldSegmentSlotProps } from './components/date-field/date-field'
 export { useDateField } from './components/date-field/use-date-field'
@@ -245,7 +248,6 @@ export {
   XhDatePickerHeadingMonthTrigger,
   XhDatePickerHeadingYearTrigger,
   XhDatePickerHiddenInput,
-  XhDatePickerInput,
   XhDatePickerLabel,
   XhDatePickerNextTrigger,
   XhDatePickerNextYearTrigger,
@@ -256,6 +258,7 @@ export {
   XhDatePickerPrevYearTrigger,
   XhDatePickerRoot,
   XhDatePickerSegment,
+  XhDatePickerSegmentGroup,
   XhDatePickerTimePanel,
   XhDatePickerTrigger,
   XhDatePickerWeekDay,
@@ -478,11 +481,13 @@ export { XhMentionContent, XhMentionInput, XhMentionItem, XhMentionItemText, XhM
 export type { MentionRootSlotProps } from './components/mention/mention'
 export { useMention } from './components/mention/use-mention'
 export type { MentionContext } from './components/mention/use-mention'
-export { provideMenu, provideMenuChain, provideMenuSub, useMenuChain, useMenuContext, useMenuSubContext } from './components/menu/context'
-export type { MenuChain, MenuSubHandle } from './components/menu/context'
+export { provideMenu, provideMenuChain, provideMenuGroup, provideMenuSub, useMenuChain, useMenuContext, useMenuGroupContext, useMenuSubContext } from './components/menu/context'
+export type { MenuChain, MenuGroupContext, MenuSubHandle } from './components/menu/context'
 export {
   XhMenuArrow,
   XhMenuContent,
+  XhMenuGroup,
+  XhMenuGroupLabel,
   XhMenuItem,
   XhMenuPositioner,
   XhMenuRoot,
@@ -586,7 +591,7 @@ export { usePopover } from './components/popover/use-popover'
 export type { PopoverContext } from './components/popover/use-popover'
 export { providePopselect, providePopselectItem, usePopselectContext, usePopselectItemContext } from './components/popselect/context'
 export type { PopselectItemContext } from './components/popselect/context'
-export { XhPopselectClearTrigger, XhPopselectContent, XhPopselectItem, XhPopselectItemIndicator, XhPopselectItemText, XhPopselectPositioner, XhPopselectRoot, XhPopselectTrigger } from './components/popselect/popselect'
+export { XhPopselectClearTrigger, XhPopselectContent, XhPopselectControl, XhPopselectItem, XhPopselectItemIndicator, XhPopselectItemText, XhPopselectPositioner, XhPopselectRoot, XhPopselectTrigger } from './components/popselect/popselect'
 export type { PopselectRootSlotProps } from './components/popselect/popselect'
 export { usePopselect } from './components/popselect/use-popselect'
 export type { PopselectContext } from './components/popselect/use-popselect'
@@ -778,6 +783,7 @@ export { useTagsInput } from './components/tags-input/use-tags-input'
 export type { TagsInputContext } from './components/tags-input/use-tags-input'
 export {
   XhTextFieldClearTrigger,
+  XhTextFieldControl,
   XhTextFieldInput,
   XhTextFieldLabel,
   XhTextFieldRoot,
@@ -802,6 +808,7 @@ export {
   XhTimeFieldLabel,
   XhTimeFieldRoot,
   XhTimeFieldSegment,
+  XhTimeFieldSegmentGroup,
 } from './components/time-field/time-field'
 export type { TimeFieldRootSlotProps } from './components/time-field/time-field'
 export { useTimeField } from './components/time-field/use-time-field'
@@ -819,6 +826,7 @@ export {
   XhTimePickerPreset,
   XhTimePickerPresets,
   XhTimePickerRoot,
+  XhTimePickerSegmentGroup,
   XhTimePickerTrigger,
 } from './components/time-picker/time-picker'
 export type { TimePickerColumnSlotProps, TimePickerPresetsSlotProps, TimePickerRootSlotProps } from './components/time-picker/time-picker'
@@ -924,6 +932,7 @@ export {
   XhTreeSelectBranchTrigger,
   XhTreeSelectClearTrigger,
   XhTreeSelectContent,
+  XhTreeSelectControl,
   XhTreeSelectHiddenInput,
   XhTreeSelectIndicator,
   XhTreeSelectItem,

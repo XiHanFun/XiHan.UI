@@ -8,6 +8,7 @@ import {
   XhTreeSelectBranchText,
   XhTreeSelectBranchTrigger,
   XhTreeSelectContent,
+  XhTreeSelectControl,
   XhTreeSelectIndicator,
   XhTreeSelectItem,
   XhTreeSelectItemIndicator,
@@ -98,10 +99,12 @@ function onOpenChange(details: { open: boolean }): void {
     @open-change="onOpenChange"
   >
     <XhTreeSelectLabel>投放城市</XhTreeSelectLabel>
-    <XhTreeSelectTrigger>
-      <XhTreeSelectValueText />
-      <XhTreeSelectIndicator />
-    </XhTreeSelectTrigger>
+    <XhTreeSelectControl>
+      <XhTreeSelectTrigger>
+        <XhTreeSelectValueText />
+        <XhTreeSelectIndicator />
+      </XhTreeSelectTrigger>
+    </XhTreeSelectControl>
     <XhTreeSelectPositioner>
       <XhTreeSelectContent>
         <!-- 浮层里的输入框不算点在外面，浮层不会因此收起 -->
@@ -119,8 +122,8 @@ function onOpenChange(details: { open: boolean }): void {
             :value="region.value"
           >
             <XhTreeSelectBranchControl>
-              <XhTreeSelectBranchTrigger />
-              <XhTreeSelectBranchText>{{ region.label }}</XhTreeSelectBranchText>
+  <XhTreeSelectBranchTrigger />
+  <XhTreeSelectBranchText>{{ region.label }}</XhTreeSelectBranchText>
             </XhTreeSelectBranchControl>
             <XhTreeSelectBranchContent>
               <XhTreeSelectItem

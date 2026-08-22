@@ -9,6 +9,7 @@ import {
   XhColorPickerChannelSliderThumb,
   XhColorPickerChannelSliderTrack,
   XhColorPickerContent,
+  XhColorPickerControl,
   XhColorPickerLabel,
   XhColorPickerPositioner,
   XhColorPickerRoot,
@@ -29,10 +30,12 @@ function onSubmit(event: Event) {
   <form style="display: grid; gap: 12px" @submit.prevent="onSubmit">
     <XhColorPickerRoot v-slot="{ value }" default-value="#00a98e">
       <XhColorPickerLabel>品牌色</XhColorPickerLabel>
-      <XhColorPickerTrigger>
-        <XhColorPickerSwatch />
-        <XhColorPickerValueText />
-      </XhColorPickerTrigger>
+      <XhColorPickerControl>
+        <XhColorPickerTrigger>
+          <XhColorPickerSwatch />
+          <XhColorPickerValueText />
+        </XhColorPickerTrigger>
+      </XhColorPickerControl>
       <input type="hidden" name="brandColor" :value="value" />
       <XhColorPickerPositioner>
         <XhColorPickerContent>

@@ -21,10 +21,10 @@ import { slotPaints } from '../../runtime/slot-content'
 import {
   provideDatePicker,
   provideDatePickerCell,
-  provideDatePickerInput,
+  provideDatePickerSegmentGroup,
   useDatePickerCellContext,
   useDatePickerContext,
-  useDatePickerInputContext,
+  useDatePickerSegmentGroupContext,
 } from './context'
 import { useDatePicker } from './use-date-picker'
 
@@ -197,8 +197,8 @@ export const XhDatePickerControl = defineComponent({
   },
 })
 
-export const XhDatePickerInput = defineComponent({
-  name: 'XhDatePickerInput',
+export const XhDatePickerSegmentGroup = defineComponent({
+  name: 'XhDatePickerSegmentGroup',
   props: {
     // 组号：0 起点、1 区间终点，兼收字符串以支持模板里写 index="1"
     index: { type: [Number, String] as PropType<number | string>, default: 0 },
@@ -207,11 +207,11 @@ export const XhDatePickerInput = defineComponent({
     const ctx = useDatePickerContext()
     const index = computed<0 | 1>(() => (Number(props.index) === 1 ? 1 : 0))
     // 组内的段位与隐藏输入据此认领起止
-    provideDatePickerInput({ index })
+    provideDatePickerSegmentGroup({ index })
     // role=group 的分段容器，也是换段时的查询边界
     return () => h(
       'div',
-      ctx.api.value.getInputProps({ index: index.value }) as Record<string, unknown>,
+      ctx.api.value.getSegmentGroupProps({ index: index.value }) as Record<string, unknown>,
       slots.default?.(),
     )
   },
@@ -230,7 +230,7 @@ export const XhDatePickerSegment = defineComponent({
   }>,
   setup(props, { slots }) {
     const ctx = useDatePickerContext()
-    const group = useDatePickerInputContext()
+    const group = useDatePickerSegmentGroupContext()
     return () => {
       const field = fieldOf(ctx.api.value, group.index.value)
       // 非区间模式下写在终点组里的段位无处落脚，不渲染
@@ -597,7 +597,7 @@ export const XhDatePickerHiddenInput = defineComponent({
   },
   setup(props) {
     const ctx = useDatePickerContext()
-    const group = useDatePickerInputContext()
+    const group = useDatePickerSegmentGroupContext()
     return () => {
       const index = props.index === undefined ? group.index.value : (Number(props.index) === 1 ? 1 : 0)
       const field = fieldOf(ctx.api.value, index)

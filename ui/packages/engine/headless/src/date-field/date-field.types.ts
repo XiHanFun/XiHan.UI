@@ -221,6 +221,8 @@ export interface DateFieldApi<T extends PropTypes = PropTypes> {
   getLabelProps: () => T['element']
   /** role=group 的分段容器。 */
   getControlProps: () => T['element']
+  /** 段位与分隔符的外壳：占满盒里剩下的宽度，把清空钮顶到框内末端。 */
+  getSegmentGroupProps: () => T['element']
   /** 作者的那一句声明落在哪一段上；段集里没有这一块（或下标越界）时缺席。文字由适配器照它渲染。 */
   segmentOf: (props: DateFieldSegmentProps) => DateFieldSegmentState | undefined
   getSegmentProps: (props: DateFieldSegmentProps) => T['element']

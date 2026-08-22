@@ -7,6 +7,7 @@ import {
   XhTimePickerContent,
   XhTimePickerControl,
   XhTimePickerInput,
+  XhTimePickerSegmentGroup,
   XhTimePickerItem,
   XhTimePickerLabel,
   XhTimePickerPositioner,
@@ -21,9 +22,11 @@ const value = ref("09:30");
   <XhTimePickerRoot v-model:value="value">
     <XhTimePickerLabel>会议开始</XhTimePickerLabel>
     <XhTimePickerControl>
-      <XhTimePickerInput segment="hour" />
-      <span>:</span>
-      <XhTimePickerInput segment="minute" />
+      <XhTimePickerSegmentGroup>
+        <XhTimePickerInput segment="hour" />
+        <span>:</span>
+        <XhTimePickerInput segment="minute" />
+      </XhTimePickerSegmentGroup>
       <XhTimePickerClearTrigger />
       <!-- 写上它多一个明写的入口；不写也照样能展开——点输入行即可，
            键盘则在段上按 Alt+ArrowDown -->

@@ -3,6 +3,7 @@ import { itemValue, queryItems } from '@xihan-ui/behavior'
 import { createAnatomy } from '@xihan-ui/kernel'
 
 // data-part 直接用 kebab-case，与 CSS 选择器一致。
+// segment-group 把全部段位与作者写的分隔符兜成一块，占满盒里剩下的宽度，尾部按钮靠在末端。
 // input 是多实例 part：时/分/秒/上下午各一个，段的身份由作者写在节点上，
 // 结构与语义同分段时间输入（每段一个 spinbutton、整组一个 Tab 位），逻辑走 time-field 的纯函数。
 // column 同样是多实例，每列是一个 listbox，option 是列里的选项；列间靠左右键换，列内靠上下键走。
@@ -11,6 +12,7 @@ export const timePickerAnatomy = createAnatomy('time-picker', [
   'root',
   'label',
   'control',
+  'segment-group',
   'input',
   'trigger',
   'clear-trigger',

@@ -103,8 +103,6 @@
     border-radius: var(--xh-hover-card-radius, var(--xh-shape-surface));
     background: var(--xh-hover-card-bg, var(--xh-bg-surface));
     color: var(--xh-hover-card-fg, var(--xh-fg-default));
-    font-size: var(--xh-hover-card-font-size, var(--xh-text-body-size));
-    line-height: var(--xh-leading-normal);
     box-shadow: var(--xh-hover-card-shadow, var(--xh-elevation-floating));
     pointer-events: auto;
   }

@@ -75,6 +75,15 @@ export const XhPopselectRoot = defineComponent({
   },
 })
 
+/** 盒：触发器与清空按钮在里面并排，描边、底色与聚焦环都长在它上面。 */
+export const XhPopselectControl = defineComponent({
+  name: 'XhPopselectControl',
+  setup(_, { slots }) {
+    const ctx = usePopselectContext()
+    return () => h('div', ctx.api.value.getControlProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhPopselectTrigger = defineComponent({
   name: 'XhPopselectTrigger',
   props: {
@@ -100,7 +109,7 @@ export const XhPopselectTrigger = defineComponent({
   },
 })
 
-/** 清空钮：trigger 的兄弟节点，有选中值才显出；没写内容时由皮肤画叉。 */
+/** 清空钮：盒里 trigger 的兄弟节点，有选中值才显出；没写内容时由皮肤画叉。 */
 export const XhPopselectClearTrigger = defineComponent({
   name: 'XhPopselectClearTrigger',
   setup(_, { slots }) {

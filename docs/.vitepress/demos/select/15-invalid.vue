@@ -1,8 +1,9 @@
-<!-- 校验状态 | 校验结论由宿主给出：invalid 让触发器标红并输出 aria-invalid，错误文案用 aria-describedby 挂到触发器上 -->
+<!-- 校验状态 | 校验结论由宿主给出：invalid 让盒标红并输出 aria-invalid，错误文案用 aria-describedby 挂到触发器上 -->
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import {
   XhSelectContent,
+  XhSelectControl,
   XhSelectIndicator,
   XhSelectItem,
   XhSelectItemIndicator,
@@ -28,10 +29,12 @@ const invalid = computed(() => picked.value.length === 0);
 <template>
   <XhSelectRoot v-model:value="picked" :invalid="invalid" placeholder="必须选一个">
     <XhSelectLabel>所属部门</XhSelectLabel>
-    <XhSelectTrigger :aria-describedby="invalid ? 'select-invalid-tip' : undefined">
-      <XhSelectValueText />
-      <XhSelectIndicator />
-    </XhSelectTrigger>
+    <XhSelectControl>
+      <XhSelectTrigger :aria-describedby="invalid ? 'select-invalid-tip' : undefined">
+        <XhSelectValueText />
+        <XhSelectIndicator />
+      </XhSelectTrigger>
+    </XhSelectControl>
     <XhSelectPositioner>
       <XhSelectContent>
         <XhSelectList>

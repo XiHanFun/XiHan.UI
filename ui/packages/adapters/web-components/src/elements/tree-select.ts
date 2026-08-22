@@ -70,6 +70,7 @@ const BRANCH_SELECTOR = '[data-xh-part="branch"]'
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @csspart root - 组件根容器（承载 data-state/data-disabled/data-readonly/data-invalid）
  * @csspart label - 标题（aria-labelledby 目标）
+ * @csspart control - 触发按钮与清空按钮的收纳容器：描边、底色与聚焦环都落在这一层
  * @csspart trigger - role=combobox 的触发按钮，同时是定位锚点，须是原生 button
  * @csspart value-text - 选中项文本的显示位；留空即由元素填入 displayText，作者写了内容则归作者
  * @csspart indicator - 展开指示符（aria-hidden，data-state 随开合）
@@ -297,6 +298,7 @@ export class XhTreeSelectElement extends XhElement {
     }
     put('root', api.getRootProps() as Record<string, unknown>)
     put('label', api.getLabelProps() as Record<string, unknown>)
+    put('control', api.getControlProps() as Record<string, unknown>)
     put('trigger', api.getTriggerProps() as Record<string, unknown>)
     put('indicator', api.getIndicatorProps() as Record<string, unknown>)
     put('clear-trigger', api.getClearTriggerProps() as Record<string, unknown>)

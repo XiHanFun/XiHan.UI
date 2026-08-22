@@ -1,7 +1,9 @@
 <!-- 基础用法 | 触发器旁弹出一个列表，选完即收起；条目按 value 标识身份，禁用的条目方向键会跳过 -->
 <xh-popselect id="popselect-basic" placement="bottom-start">
   <div data-xh-part="root">
-    <button data-xh-part="trigger">请选择水果</button>
+    <div data-xh-part="control">
+      <button data-xh-part="trigger">请选择水果</button>
+    </div>
     <div data-xh-part="positioner">
       <div data-xh-part="content">
         <div data-xh-part="item" value="apple">

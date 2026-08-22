@@ -71,7 +71,7 @@ export function connectDatePicker<T extends PropTypes>(
   const { state, prop, send, context, scope } = services.root
   const open = state.get() === 'open'
   // 两组段位容器各占一个 id：同一份 id 出现两次会被判成重复 id
-  const ids = scope.ids('date-picker', 'label', 'trigger', 'content', 'input', 'input-end')
+  const ids = scope.ids('date-picker', 'label', 'trigger', 'content', 'segment-group', 'segment-group-end')
 
   const value = context.get('value')
   // 空串是区间里空缺那一端的占位，算数的只有填了的
@@ -212,8 +212,8 @@ export function connectDatePicker<T extends PropTypes>(
    * 不走 queryItems：它按容器自己的 part 过滤归属，而段位属于分段输入那份解剖，会被全部滤掉。
    */
   const segmentsIn = (from: HTMLElement): HTMLElement[] => {
-    const host = from.closest<HTMLElement>(parts.input.selector)
-      ?? from.closest<HTMLElement>(parts.root.selector)?.querySelector<HTMLElement>(parts.input.selector)
+    const host = from.closest<HTMLElement>(parts['segment-group'].selector)
+      ?? from.closest<HTMLElement>(parts.root.selector)?.querySelector<HTMLElement>(parts['segment-group'].selector)
     return host ? [...host.querySelectorAll<HTMLElement>(SEGMENT_SELECTOR)] : []
   }
 
@@ -400,13 +400,13 @@ export function connectDatePicker<T extends PropTypes>(
     // 分段容器：role=group 把一排段位兜成整体。单值时名字由 label 提供，
     // 区间的两组各自报名字，否则读屏念出来的是同一个。
     // 它同时承担内嵌分段输入的 root/control 两个部件，不另挂分段输入的根节点
-    getInputProps: ({ index = 0 } = {}) => {
+    getSegmentGroupProps: ({ index = 0 } = {}) => {
       const end = index === 1
       const raw = end ? fieldEndRaw : fieldRaw
       const outOfRange = !!raw?.outOfRange
       return normalize.element({
-        ...parts.input.attrs,
-        'id': end ? ids['input-end'] : ids.input,
+        ...parts['segment-group'].attrs,
+        'id': end ? ids['segment-group-end'] : ids['segment-group'],
         'data-index': String(index),
         'role': 'group',
         'aria-labelledby': range ? undefined : ids.label,

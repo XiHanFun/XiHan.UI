@@ -5,6 +5,7 @@ import {
   XhButton,
   XhCascaderColumn,
   XhCascaderContent,
+  XhCascaderControl,
   XhCascaderIndicator,
   XhCascaderItem,
   XhCascaderItemIndicator,
@@ -47,10 +48,12 @@ const triggerEl = () => trigger.value?.$el as HTMLButtonElement | undefined;
     placeholder="请选择地区"
   >
     <XhCascaderLabel>收货地区</XhCascaderLabel>
-    <XhCascaderTrigger ref="trigger">
-      <XhCascaderValueText />
-      <XhCascaderIndicator />
-    </XhCascaderTrigger>
+    <XhCascaderControl>
+      <XhCascaderTrigger ref="trigger">
+        <XhCascaderValueText />
+        <XhCascaderIndicator />
+      </XhCascaderTrigger>
+    </XhCascaderControl>
     <XhCascaderPositioner>
       <XhCascaderContent>
         <XhCascaderColumn v-for="lv in levels" :key="lv.level" :level="lv.level">

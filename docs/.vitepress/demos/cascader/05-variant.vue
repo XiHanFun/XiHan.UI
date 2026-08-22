@@ -3,6 +3,7 @@
 import {
   XhCascaderColumn,
   XhCascaderContent,
+  XhCascaderControl,
   XhCascaderIndicator,
   XhCascaderItem,
   XhCascaderItemText,
@@ -43,10 +44,12 @@ const regions = [
       placeholder="请选择地区"
     >
       <XhCascaderLabel>{{ v }}</XhCascaderLabel>
-      <XhCascaderTrigger>
-        <XhCascaderValueText />
-        <XhCascaderIndicator />
-      </XhCascaderTrigger>
+      <XhCascaderControl>
+        <XhCascaderTrigger>
+          <XhCascaderValueText />
+          <XhCascaderIndicator />
+        </XhCascaderTrigger>
+      </XhCascaderControl>
       <XhCascaderPositioner>
         <XhCascaderContent>
           <XhCascaderColumn v-for="lv in levels" :key="lv.level" :level="lv.level">

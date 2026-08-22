@@ -7,6 +7,7 @@ import {
   XhTimeFieldLabel,
   XhTimeFieldRoot,
   XhTimeFieldSegment,
+  XhTimeFieldSegmentGroup,
 } from "@xihan-ui/vue";
 
 const value = ref("");
@@ -16,10 +17,12 @@ const value = ref("");
   <XhTimeFieldRoot v-model:value="value" name="start">
     <XhTimeFieldLabel>开始时间</XhTimeFieldLabel>
     <XhTimeFieldControl>
-      <!-- 段的身份由作者声明；中间的「:」是普通节点，换段时不会被当成一站 -->
-      <XhTimeFieldSegment segment="hour" />
-      <span>:</span>
-      <XhTimeFieldSegment segment="minute" />
+      <XhTimeFieldSegmentGroup>
+        <!-- 段的身份由作者声明；中间的「:」是普通节点，换段时不会被当成一站 -->
+        <XhTimeFieldSegment segment="hour" />
+        <span>:</span>
+        <XhTimeFieldSegment segment="minute" />
+      </XhTimeFieldSegmentGroup>
     </XhTimeFieldControl>
     <!-- 表单出口：缺段时它就是空的 -->
     <XhTimeFieldHiddenInput />

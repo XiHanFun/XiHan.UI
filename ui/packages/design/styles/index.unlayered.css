@@ -3872,6 +3872,7 @@
 [data-scope='mention'][data-part='input'] {
   display: block;
   inline-size: 100%;
+  min-inline-size: var(--xh-mention-input-min-w, var(--xh-control-min-w));
   /* 缺省宿主是 textarea：高度按行数撑，控件档只兜住底线 */
   min-block-size: var(--xh-mention-input-h, var(--xh-_mention-h));
   padding-block: var(--xh-mention-input-py, var(--xh-_mention-py));
@@ -3904,7 +3905,7 @@ input[data-scope='mention'][data-part='input'] {
   color: var(--xh-mention-placeholder-fg, var(--xh-fg-subtle));
 }
 
-[data-scope='mention'][data-part='input']:hover:not(:disabled) {
+[data-scope='mention'][data-part='input']:hover:not(:disabled, [data-invalid]) {
   border-color: var(--xh-mention-input-border-hover, var(--xh-_mention-input-border-hover));
 }
 
@@ -3912,6 +3913,18 @@ input[data-scope='mention'][data-part='input'] {
   border-color: var(--xh-mention-input-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
   outline: var(--xh-ring-width) solid var(--xh-_mention-ring);
   outline-offset: var(--xh-ring-offset);
+}
+
+[data-scope='mention'][data-part='input'][data-invalid] {
+  border-color: var(--xh-mention-input-border-invalid, var(--xh-border-invalid));
+
+  /* 校验失败时环也跟着变红：两圈等宽相邻却一红一蓝，读的人不知道哪个才是当前状态 */
+  --xh-_mention-ring: var(--xh-ring-invalid);
+}
+
+/* 只读仍可聚焦、可复制，所以不置灰，只把底色压下去表示"改不动" */
+[data-scope='mention'][data-part='input'][readonly] {
+  background: var(--xh-mention-input-bg-readonly, var(--xh-bg-subtle));
 }
 
 /* 输入框是单体表单控件，禁用走原生 disabled（候选那边一律 aria-disabled） */
@@ -4169,16 +4182,15 @@ input[data-scope='mention'][data-part='input'] {
      换档不必给每个部件各写一条选择器 */
   --xh-_password-input-h: var(--xh-control-h-md);
   --xh-_password-input-px: var(--xh-control-px-md);
+  --xh-_password-input-gap: var(--xh-control-gap-md);
   --xh-_password-input-font-size: var(--xh-text-body-size);
   --xh-_password-input-label-font-size: var(--xh-text-label-size);
   /* 提示与切换钮里的字形都比正文小一档，三个尺寸档各自换过，不是一个恒等的中转 */
   --xh-_password-input-hint-font-size: var(--xh-text-secondary-size);
   --xh-_password-input-trigger-font-size: var(--xh-text-secondary-size);
 
-  /* 盒子的圆角与盒内分段的圆角：分段贴在描边里侧，圆角要减去描边自己占的那一道，
-     写同一个值会让分段的底色顶到圆角外面去 */
+  /* 盒子的圆角 */
   --xh-_password-input-radius: var(--xh-password-input-input-radius, var(--xh-shape-control));
-  --xh-_password-input-seg-radius: calc(var(--xh-_password-input-radius) - var(--xh-stroke-thin));
 
   /* 形态档只换这三个私有槽：底、常态描边、悬停描边 */
   --xh-_password-input-bg: var(--xh-bg-canvas);
@@ -4206,6 +4218,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-icon-size: var(--xh-password-input-icon-size, var(--xh-glyph-size-sm));
   --xh-_password-input-h: var(--xh-control-h-sm);
   --xh-_password-input-px: var(--xh-control-px-sm);
+  --xh-_password-input-gap: var(--xh-control-gap-sm);
   --xh-_password-input-font-size: var(--xh-control-font-sm);
   --xh-_password-input-label-font-size: var(--xh-control-font-sm);
   --xh-_password-input-hint-font-size: var(--xh-control-caption-sm);
@@ -4216,6 +4229,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-icon-size: var(--xh-password-input-icon-size, var(--xh-glyph-size-lg));
   --xh-_password-input-h: var(--xh-control-h-lg);
   --xh-_password-input-px: var(--xh-control-px-lg);
+  --xh-_password-input-gap: var(--xh-control-gap-lg);
   --xh-_password-input-font-size: var(--xh-control-font-lg);
   --xh-_password-input-label-font-size: var(--xh-control-font-lg);
   --xh-_password-input-hint-font-size: var(--xh-control-caption-lg);
@@ -4280,10 +4294,11 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='password-input'][data-part='control'] {
   display: inline-flex;
   min-inline-size: var(--xh-password-input-control-min-w, var(--xh-control-min-w));
-  /* 居中而不是拉伸：提示是一行文字，被拉满整框高度后字会贴着框顶。
-     要占满整框高度的只有 input 与切换钮，它们各自明写 */
+  /* 居中而不是拉伸：提示是一行文字，被拉满整框高度后字会贴着框顶 */
   align-items: center;
+  gap: var(--xh-password-input-control-gap, var(--xh-_password-input-gap));
   block-size: var(--xh-password-input-control-h, var(--xh-_password-input-h));
+  padding-inline: var(--xh-password-input-control-px, var(--xh-_password-input-px));
   border: var(--xh-stroke-thin) solid var(--xh-password-input-control-border, var(--xh-_password-input-border));
   border-radius: var(--xh-_password-input-radius);
   background: var(--xh-password-input-control-bg, var(--xh-_password-input-bg));
@@ -4299,7 +4314,7 @@ input[data-scope='mention'][data-part='input'] {
   border-color: var(--xh-password-input-control-border-hover, var(--xh-_password-input-border-hover));
 }
 
-[data-scope='password-input'][data-part='control']:focus-within {
+[data-scope='password-input'][data-part='control']:focus-within:not([data-disabled]) {
   border-color: var(--xh-password-input-control-border-focus, var(--xh-_password-input-border-focus));
   outline: var(--xh-ring-width) solid var(--xh-_password-input-ring);
   outline-offset: var(--xh-ring-offset);
@@ -4319,6 +4334,7 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='password-input'][data-part='control'][data-disabled] {
   background: var(--xh-password-input-control-bg-disabled, var(--xh-bg-subtle));
+  color: var(--xh-fg-disabled);
   cursor: not-allowed;
 }
 
@@ -4377,6 +4393,7 @@ input[data-scope='mention'][data-part='input'] {
   flex: 1 1 auto;
   min-inline-size: 0;
   block-size: 100%;
+  padding-inline: 0;
   border: 0;
   border-radius: 0;
   background: transparent;
@@ -4401,17 +4418,17 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 /* —— 明暗切换钮 —— */
-/* 与框等高的方钮，常态只剩符号：自带一块底色会把一个盒子读成两块拼起来的 */
+/* 行内动作方钮，常态只剩符号：自带一块底色会把一个盒子读成两块拼起来的 */
 [data-scope='password-input'][data-part='visibility-trigger'] {
   display: inline-flex;
   flex: none;
   align-items: center;
   justify-content: center;
-  inline-size: var(--xh-password-input-trigger-size, var(--xh-_password-input-h));
-  block-size: var(--xh-password-input-trigger-size, var(--xh-_password-input-h));
+  inline-size: var(--xh-password-input-trigger-size, var(--xh-control-action-size));
+  block-size: var(--xh-password-input-trigger-size, var(--xh-control-action-size));
   padding: 0;
   border: 0;
-  border-radius: var(--xh-_password-input-seg-radius);
+  border-radius: var(--xh-password-input-trigger-radius, var(--xh-shape-control));
   background: var(--xh-password-input-trigger-bg, transparent);
   color: var(--xh-password-input-trigger-fg, var(--xh-fg-muted));
   font-family: inherit;
@@ -4420,6 +4437,8 @@ input[data-scope='mention'][data-part='input'] {
   cursor: pointer;
   user-select: none;
   transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+
+  --xh-_password-input-mark: var(--xh-glyph-mark-eye);
 }
 
 [data-scope='password-input'][data-part='visibility-trigger'][hidden] {
@@ -4449,6 +4468,23 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='password-input'][data-part='control'] [data-part='visibility-trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-_password-input-ring);
   outline-offset: calc(-1 * var(--xh-ring-offset));
+}
+
+/* 明暗两态各一枚字形：换的是这个槽，兜底盒的量法只写一遍 */
+[data-scope='password-input'][data-part='visibility-trigger'][data-state='visible'] {
+  --xh-_password-input-mark: var(--xh-glyph-mark-eye-off);
+}
+
+/* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这条即不命中 */
+[data-scope='password-input'][data-part='visibility-trigger']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-_password-input-mark) center / contain no-repeat;
+  mask: var(--xh-_password-input-mark) center / contain no-repeat;
 }
 
 [data-scope='password-input'][data-part='visibility-trigger']:disabled {
@@ -4767,9 +4803,9 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_popselect-font-size: var(--xh-text-body-size);
 
   /* 形态档只换这三个槽：缺省即 outline（描边 + 画布底） */
-  --xh-_popselect-trigger-bg: var(--xh-bg-canvas);
-  --xh-_popselect-trigger-border: var(--xh-border-control);
-  --xh-_popselect-trigger-border-hover: var(--xh-border-control-hover);
+  --xh-_popselect-control-bg: var(--xh-bg-canvas);
+  --xh-_popselect-control-border: var(--xh-border-control);
+  --xh-_popselect-control-border-hover: var(--xh-border-control-hover);
 
   /* 聚焦环恒用固定环色；强调色随语气走，只落在勾选标记与选中文字上，正文文字色不动。
      没写 data-tone 时 --xh-_tone 没被声明，两处都退回原来的取值 */
@@ -4779,12 +4815,21 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='popselect'][data-part='root'] {
-  /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
-  --xh-icon-size: var(--xh-popselect-icon-size, var(--xh-glyph-size-text));
+  /* 作者塞进指示符槽的图标跟着控件的尺寸档走；它自己写了 size 时仍以作者的为准 */
+  --xh-icon-size: var(--xh-popselect-icon-size, var(--xh-glyph-size-md));
 
   display: inline-flex;
   align-items: center;
   gap: var(--xh-popselect-root-gap, var(--xh-space-1));
+}
+
+/* 图标只跟着盒那一侧换档：浮层里的勾选标记有自己的指示符盒，换成整档图标会撑破它 */
+[data-scope='popselect'][data-part='root'][data-size='sm'] {
+  --xh-icon-size: var(--xh-popselect-icon-size, var(--xh-glyph-size-sm));
+}
+
+[data-scope='popselect'][data-part='root'][data-size='lg'] {
+  --xh-icon-size: var(--xh-popselect-icon-size, var(--xh-glyph-size-lg));
 }
 
 /* —— 尺寸 —— */
@@ -4806,35 +4851,69 @@ input[data-scope='mention'][data-part='input'] {
 /* —— 形态 —— */
 /* 形态只决定描边与底色怎么用，用哪族颜色由 data-tone 决定 */
 [data-scope='popselect']:is([data-part='root'], [data-part='positioner'])[data-variant='outline'] {
-  --xh-_popselect-trigger-bg: var(--xh-bg-canvas);
-  --xh-_popselect-trigger-border: var(--xh-border-control);
-  --xh-_popselect-trigger-border-hover: var(--xh-border-control-hover);
+  --xh-_popselect-control-bg: var(--xh-bg-canvas);
+  --xh-_popselect-control-border: var(--xh-border-control);
+  --xh-_popselect-control-border-hover: var(--xh-border-control-hover);
 }
 
 /* 填充式：底色顶替描边，悬停时才浮出一道淡边 */
 [data-scope='popselect']:is([data-part='root'], [data-part='positioner'])[data-variant='subtle'] {
-  --xh-_popselect-trigger-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-  --xh-_popselect-trigger-border: transparent;
-  --xh-_popselect-trigger-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
+  --xh-_popselect-control-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+  --xh-_popselect-control-border: transparent;
+  --xh-_popselect-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
 
 /* 无框：底与常态描边透明，悬停浮出描边，聚焦由焦点环表达 */
 [data-scope='popselect']:is([data-part='root'], [data-part='positioner'])[data-variant='ghost'] {
-  --xh-_popselect-trigger-bg: transparent;
-  --xh-_popselect-trigger-border: transparent;
-  --xh-_popselect-trigger-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
+  --xh-_popselect-control-bg: transparent;
+  --xh-_popselect-control-border: transparent;
+  --xh-_popselect-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
 
+/* 盒：描边、底色、圆角、控件高度与行内内衬都长在这一层，触发器与清空按钮在里面并排。
+   聚焦环也画在它上面，焦点落在哪颗按钮上，看到的都是同一个框亮起来 */
+[data-scope='popselect'][data-part='control'] {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--xh-popselect-control-gap, var(--xh-_popselect-gap));
+  block-size: var(--xh-popselect-control-h, var(--xh-_popselect-h));
+  padding-inline: var(--xh-popselect-control-px, var(--xh-_popselect-px));
+  min-inline-size: var(--xh-popselect-control-min-w, var(--xh-control-min-w));
+  border: var(--xh-stroke-thin) solid var(--xh-popselect-control-border, var(--xh-_popselect-control-border));
+  border-radius: var(--xh-popselect-control-radius, var(--xh-shape-control));
+  background: var(--xh-popselect-control-bg, var(--xh-_popselect-control-bg));
+}
+
+[data-scope='popselect'][data-part='control']:hover:not([data-disabled]) {
+  border-color: var(--xh-popselect-control-border-hover, var(--xh-_popselect-control-border-hover));
+}
+
+/* 焦点落在盒内任一颗按钮上都画同一圈环；禁用时按钮不可聚焦，守卫只是把这条说死。
+   描边色与环共用一族语气色 */
+[data-scope='popselect'][data-part='control']:focus-within:not([data-disabled]) {
+  border-color: var(--xh-popselect-control-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
+  outline: var(--xh-ring-width) solid var(--xh-_popselect-ring);
+  outline-offset: var(--xh-ring-offset);
+}
+
+[data-scope='popselect'][data-part='control'][data-disabled] {
+  background: var(--xh-popselect-control-bg-disabled, var(--xh-bg-subtle));
+  color: var(--xh-fg-disabled);
+  cursor: not-allowed;
+}
+
+/* 触发器退化成盒里那颗可聚焦的按钮：描边、底色与内衬归盒，它只占满剩余一行 */
 [data-scope='popselect'][data-part='trigger'] {
   display: inline-flex;
+  flex: 1 1 auto;
   align-items: center;
   justify-content: space-between;
   gap: var(--xh-popselect-trigger-gap, var(--xh-_popselect-gap));
-  block-size: var(--xh-popselect-trigger-h, var(--xh-_popselect-h));
-  padding-inline: var(--xh-popselect-trigger-px, var(--xh-_popselect-px));
-  border: var(--xh-stroke-thin) solid var(--xh-popselect-trigger-border, var(--xh-_popselect-trigger-border));
-  border-radius: var(--xh-popselect-trigger-radius, var(--xh-shape-control));
-  background: var(--xh-popselect-trigger-bg, var(--xh-_popselect-trigger-bg));
+  /* 弹性子项默认最小尺寸是内容尺寸，不归零则长值把盒撑破 */
+  min-inline-size: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
   color: var(--xh-popselect-trigger-fg, var(--xh-fg-default));
   font-size: var(--xh-popselect-trigger-font-size, var(--xh-_popselect-font-size));
   line-height: var(--xh-leading-none);
@@ -4842,13 +4921,9 @@ input[data-scope='mention'][data-part='input'] {
   cursor: pointer;
 }
 
-[data-scope='popselect'][data-part='trigger']:hover:not(:disabled) {
-  border-color: var(--xh-popselect-trigger-border-hover, var(--xh-_popselect-trigger-border-hover));
-}
-
+/* 环画在盒上，按钮自己不再画：两圈套着的环读起来像两个控件 */
 [data-scope='popselect'][data-part='trigger']:focus-visible {
-  outline: var(--xh-ring-width) solid var(--xh-_popselect-ring);
-  outline-offset: var(--xh-ring-offset);
+  outline: none;
 }
 
 /* trigger 是单体控件，用原生 disabled（条目那边一律 aria-disabled） */
@@ -4862,7 +4937,7 @@ input[data-scope='mention'][data-part='input'] {
   color: var(--xh-popselect-placeholder-fg, var(--xh-fg-subtle));
 }
 
-/* 清空钮：触发器旁的方形小钮，没值即 hidden 收起；图标盒与指示符同一把尺 */
+/* 清空钮：盒里排在触发器之后的方形小钮，没值即 hidden 收起 */
 [data-scope='popselect'][data-part='clear-trigger'] {
   display: inline-grid;
   flex: none;
@@ -4916,10 +4991,11 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='popselect'][data-part='content'] {
   display: flex;
   flex-direction: column;
-  min-inline-size: var(--xh-popselect-content-min-w, var(--xh-overlay-min-w));
+  min-inline-size: var(--xh-popselect-content-min-w, var(--xh-overlay-menu-min-w));
   max-inline-size: var(--xh-popselect-content-max-w, var(--xh-overlay-max-w));
-  max-block-size: min(var(--xh-popselect-content-max-h, var(--xh-overlay-max-h)), var(--xh-_popselect-available-h));
-  padding: var(--xh-popselect-content-p, var(--xh-space-1));
+  max-block-size: min(var(--xh-popselect-content-max-h, var(--xh-overlay-menu-max-h)), var(--xh-_popselect-available-h));
+  padding-block: var(--xh-popselect-content-py, var(--xh-space-1));
+  padding-inline: var(--xh-popselect-content-px, var(--xh-space-1));
   border: var(--xh-stroke-thin) solid var(--xh-popselect-content-border, var(--xh-border-default));
   border-radius: var(--xh-popselect-content-radius, var(--xh-shape-surface));
   background: var(--xh-popselect-content-bg, var(--xh-bg-surface));
@@ -8570,7 +8646,10 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 私有槽同时声明在根与 positioner 上：浮层被搬到 portal 落点，不是根的后代，继承不过去 */
 [data-scope='cascader']:is([data-part='root'], [data-part='positioner']) {
-  /* 尺寸档只换这几个私有槽，触发框与列里的条目都从这两处继承它们，换档不必给每个部件各写一条选择器 */
+  /* 作者塞进指示符槽的图标跟着尺寸档走，与皮肤画的兜底字形同一把尺 */
+  --xh-icon-size: var(--xh-cascader-icon-size, var(--xh-glyph-size-md));
+
+  /* 尺寸档只换这几个私有槽，盒与列里的条目都从这两处继承它们，换档不必给每个部件各写一条选择器 */
   --xh-_cascader-h: var(--xh-control-h-md);
   --xh-_cascader-px: var(--xh-control-px-md);
   --xh-_cascader-gap: var(--xh-control-gap-md);
@@ -8588,18 +8667,15 @@ input[data-scope='mention'][data-part='input'] {
 
   /* 展开路径的底色：随语气走淡底，没写 data-tone 时退回品牌淡底 */
   --xh-_cascader-active-bg: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
+
+  /* 聚焦环恒用固定环色；校验失败时换成告警环色 */
+  --xh-_cascader-ring: var(--xh-ring-focus);
 }
 
-/* 解剖里没有把「触发器 + 清空按钮」裹在一起的 control 部件，一行是靠 flex-wrap 分出来的：
-   标签占满整行把后面的挤到下一行，触发器与清空按钮就并排落在同一行上。
-   这样作者少写标签、少写清空按钮，剩下的部件也不会塌 */
+/* 标签一行、盒一行的两行堆叠 */
 [data-scope='cascader'][data-part='root'] {
-  /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
-  --xh-icon-size: var(--xh-cascader-icon-size, var(--xh-glyph-size-text));
-
   display: inline-flex;
-  flex-wrap: wrap;
-  align-items: center;
+  flex-direction: column;
   gap: var(--xh-cascader-gap, var(--xh-space-1));
 }
 
@@ -8634,6 +8710,7 @@ input[data-scope='mention'][data-part='input'] {
 /* —— 尺寸 —— */
 /* 缺省档写在上面的基础规则里 */
 [data-scope='cascader']:is([data-part='root'], [data-part='positioner'])[data-size='sm'] {
+  --xh-icon-size: var(--xh-cascader-icon-size, var(--xh-glyph-size-sm));
   --xh-_cascader-h: var(--xh-control-h-sm);
   --xh-_cascader-px: var(--xh-control-px-sm);
   --xh-_cascader-gap: var(--xh-control-gap-sm);
@@ -8642,6 +8719,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='cascader']:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
+  --xh-icon-size: var(--xh-cascader-icon-size, var(--xh-glyph-size-lg));
   --xh-_cascader-h: var(--xh-control-h-lg);
   --xh-_cascader-px: var(--xh-control-px-lg);
   --xh-_cascader-gap: var(--xh-control-gap-lg);
@@ -8650,9 +8728,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='cascader'][data-part='label'] {
-  /* 占满整行，把触发器那一行挤下去 */
-  flex-basis: 100%;
-  color: var(--xh-cascader-label-fg, var(--xh-fg-muted));
+  color: var(--xh-cascader-label-fg, var(--xh-fg-default));
   font-size: var(--xh-cascader-label-font-size, var(--xh-_cascader-label-font-size));
   font-weight: var(--xh-cascader-label-font-weight, var(--xh-text-label-weight));
   line-height: var(--xh-leading-none);
@@ -8663,65 +8739,88 @@ input[data-scope='mention'][data-part='input'] {
   color: var(--xh-fg-subtle);
 }
 
-/* 画成一个框的就是 trigger 自己：整条路径的回显与展开箭头都长在它里面，
-   清空按钮贴在框外与它并排 */
+/* 盒：描边、底色、控件高度与行内内衬都落在这一层，触发按钮与清空按钮在里面并排 */
+[data-scope='cascader'][data-part='control'] {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--xh-cascader-control-gap, var(--xh-_cascader-gap));
+  min-inline-size: var(--xh-cascader-control-min-w, var(--xh-control-min-w));
+  block-size: var(--xh-cascader-control-h, var(--xh-_cascader-h));
+  padding-inline: var(--xh-cascader-control-px, var(--xh-_cascader-px));
+  border: var(--xh-stroke-thin) solid var(--xh-cascader-control-border, var(--xh-_cascader-border));
+  border-radius: var(--xh-cascader-control-radius, var(--xh-shape-control));
+  background: var(--xh-cascader-control-bg, var(--xh-_cascader-bg));
+  color: var(--xh-cascader-control-fg, var(--xh-fg-default));
+  cursor: pointer;
+  transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+[data-scope='cascader'][data-part='control'][hidden] {
+  display: none;
+}
+
+/* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
+[data-scope='cascader'][data-part='control']:hover:not([data-disabled], [data-invalid]) {
+  border-color: var(--xh-cascader-control-border-hover, var(--xh-_cascader-border-hover));
+}
+
+/* Tab 停靠点是盒里的 trigger（展开后才移进列里），环画在盒上 */
+[data-scope='cascader'][data-part='control']:focus-within:not([data-disabled]) {
+  border-color: var(--xh-cascader-control-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
+  outline: var(--xh-ring-width) solid var(--xh-_cascader-ring);
+  outline-offset: var(--xh-ring-offset);
+}
+
+[data-scope='cascader'][data-part='control'][data-invalid] {
+  border-color: var(--xh-cascader-control-border-invalid, var(--xh-border-invalid));
+
+  /* 校验失败时环也跟着变红：两圈等宽相邻却一红一蓝，读的人不知道哪个才是当前状态 */
+  --xh-_cascader-ring: var(--xh-ring-invalid);
+}
+
+/* 只读仍可聚焦、浮层仍展得开、列仍能浏览，所以不置灰，只把底色压下去表示「改不动」 */
+[data-scope='cascader'][data-part='control'][data-readonly] {
+  background: var(--xh-cascader-control-bg-readonly, var(--xh-bg-subtle));
+}
+
+[data-scope='cascader'][data-part='control'][data-disabled] {
+  background: var(--xh-cascader-control-bg-disabled, var(--xh-bg-subtle));
+  color: var(--xh-fg-disabled);
+  cursor: not-allowed;
+}
+
+/* 盒内那颗可聚焦的按钮：不画描边不铺底也不自带高度，只占满剩余宽度、排布回显与箭头 */
 [data-scope='cascader'][data-part='trigger'] {
   display: inline-flex;
-  flex: 1;
+  flex: 1 1 auto;
   align-items: center;
   justify-content: space-between;
   gap: var(--xh-cascader-trigger-gap, var(--xh-_cascader-gap));
-  min-inline-size: var(--xh-cascader-trigger-min-w, var(--xh-control-min-w));
-  block-size: var(--xh-cascader-trigger-h, var(--xh-_cascader-h));
-  padding-inline: var(--xh-cascader-trigger-px, var(--xh-_cascader-px));
-  border: var(--xh-stroke-thin) solid var(--xh-cascader-trigger-border, var(--xh-_cascader-border));
-  border-radius: var(--xh-cascader-trigger-radius, var(--xh-shape-control));
-  background: var(--xh-cascader-trigger-bg, var(--xh-_cascader-bg));
+  min-inline-size: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
   color: var(--xh-cascader-trigger-fg, var(--xh-fg-default));
   font-family: inherit;
   font-size: var(--xh-cascader-trigger-font-size, var(--xh-_cascader-font-size));
   line-height: var(--xh-leading-none);
   text-align: start;
   cursor: pointer;
-  transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='cascader'][data-part='trigger'][hidden] {
   display: none;
 }
 
-/* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
-[data-scope='cascader'][data-part='trigger']:hover:not(:disabled, [data-invalid]) {
-  border-color: var(--xh-cascader-trigger-border-hover, var(--xh-_cascader-border-hover));
-}
-
-/* trigger 是整个控件唯一的 Tab 停靠点（展开后停靠点才移进列里），落焦必须看得见。
-   聚焦环恒用固定环色，不随语气走 */
-[data-scope='cascader'][data-part='trigger']:focus-visible {
-  border-color: var(--xh-cascader-trigger-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
-  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: var(--xh-ring-offset);
-}
-
-[data-scope='cascader'][data-part='trigger'][data-invalid] {
-  border-color: var(--xh-cascader-trigger-border-invalid, var(--xh-border-invalid));
-}
-
-/* 只读仍可聚焦、浮层仍展得开、列仍能浏览，所以不置灰，只把底色压下去表示「改不动」 */
-[data-scope='cascader'][data-part='trigger'][data-readonly] {
-  background: var(--xh-cascader-trigger-bg-readonly, var(--xh-bg-subtle));
-}
-
 /* trigger 是单体控件，用原生 disabled（列里的集合条目一律 aria-disabled，写 :disabled 永不命中） */
 [data-scope='cascader'][data-part='trigger']:disabled {
-  background: var(--xh-cascader-trigger-bg-disabled, var(--xh-bg-subtle));
   color: var(--xh-fg-disabled);
   cursor: not-allowed;
 }
 
-/* 路径连起来会很长，必须能截断；框宽由 trigger 定，这里得允许自己被压缩 */
+/* 路径连起来会很长，必须能截断；框宽由盒定，这里得允许自己被压缩 */
 [data-scope='cascader'][data-part='value-text'] {
-  flex: 1;
+  flex: 1 1 auto;
   min-inline-size: 0;
   overflow: hidden;
   white-space: nowrap;
@@ -8776,7 +8875,7 @@ input[data-scope='mention'][data-part='input'] {
   color: var(--xh-fg-disabled);
 }
 
-/* 贴在触发框旁边的小方钮，不撑高那一行 */
+/* 盒内靠右的小方钮，不撑高那一行 */
 [data-scope='cascader'][data-part='clear-trigger'] {
   display: inline-flex;
   flex: none;
@@ -8824,7 +8923,7 @@ input[data-scope='mention'][data-part='input'] {
   display: flex;
   flex-direction: row;
   align-items: stretch;
-  max-inline-size: var(--xh-cascader-content-max-w, 48rem);
+  max-inline-size: var(--xh-cascader-content-max-w, var(--xh-overlay-max-w-xl));
   border: var(--xh-stroke-thin) solid var(--xh-cascader-content-border, var(--xh-border-default));
   border-radius: var(--xh-cascader-content-radius, var(--xh-shape-surface));
   background: var(--xh-cascader-content-bg, var(--xh-bg-surface));
@@ -8863,7 +8962,7 @@ input[data-scope='mention'][data-part='input'] {
   flex: none;
   flex-direction: column;
   min-inline-size: var(--xh-cascader-column-min-w, 7rem);
-  block-size: var(--xh-cascader-column-h, 11.25rem);
+  block-size: var(--xh-cascader-column-h, var(--xh-viewport-h-sm));
   padding-block: var(--xh-cascader-column-py, var(--xh-space-1));
   padding-inline: var(--xh-cascader-column-px, var(--xh-space-1));
   overflow-y: auto;
@@ -8896,7 +8995,7 @@ input[data-scope='mention'][data-part='input'] {
   display: flex;
   align-items: center;
   gap: var(--xh-cascader-row-gap, var(--xh-_cascader-gap));
-  max-inline-size: var(--xh-cascader-row-max-w, 25rem);
+  max-inline-size: var(--xh-cascader-row-max-w, var(--xh-overlay-max-w));
   padding-block: var(--xh-cascader-row-py, var(--xh-space-1_5));
   padding-inline: var(--xh-cascader-row-px, var(--xh-control-px-md));
   border-radius: var(--xh-cascader-row-radius, var(--xh-shape-control));
@@ -9063,11 +9162,12 @@ input[data-scope='mention'][data-part='input'] {
   display: none;
 }
 
+/* 与列同高：搜索视图与浏览视图互换时浮层不改高度，候选多了在列表内自己滚 */
 [data-scope='cascader'][data-part='search-list'] {
   display: flex;
   flex-basis: 100%;
   flex-direction: column;
-  max-block-size: var(--xh-cascader-search-max-h, 11.25rem);
+  block-size: var(--xh-cascader-column-h, var(--xh-viewport-h-sm));
   padding: var(--xh-cascader-search-p, var(--xh-space-1));
   overflow-y: auto;
 }
@@ -9905,15 +10005,25 @@ input[data-scope='mention'][data-part='input'] {
    全都由连接层每帧写进内联样式。这份皮肤一个都不碰：内联优先级高于样式表，
    写了不但是死声明，还会跟连接层抢位置。皮肤只管尺寸、颜色、圆角与状态表现。 */
 
+/* 标签一行、盒一行的两行堆叠 */
 [data-scope='color-picker'][data-part='root'] {
+  /* 盒的度量与标签字号走私有槽中转，与同族的下拉选择一处对一处 */
+  --xh-_color-picker-h: var(--xh-control-h-md);
+  --xh-_color-picker-px: var(--xh-control-px-md);
+  --xh-_color-picker-gap: var(--xh-control-gap-md);
+  --xh-_color-picker-label-font-size: var(--xh-text-label-size);
+
+  /* 聚焦环恒用固定环色 */
+  --xh-_color-picker-ring: var(--xh-ring-focus);
+
   display: inline-flex;
   flex-direction: column;
-  gap: var(--xh-color-picker-gap, var(--xh-stack-gap-md));
+  gap: var(--xh-color-picker-gap, var(--xh-space-1));
 }
 
 [data-scope='color-picker'][data-part='label'] {
-  color: var(--xh-color-picker-label-fg, var(--xh-fg-muted));
-  font-size: var(--xh-color-picker-label-font-size, var(--xh-text-label-size));
+  color: var(--xh-color-picker-label-fg, var(--xh-fg-default));
+  font-size: var(--xh-color-picker-label-font-size, var(--xh-_color-picker-label-font-size));
   font-weight: var(--xh-color-picker-label-font-weight, var(--xh-text-label-weight));
   line-height: var(--xh-leading-none);
 }
@@ -9922,45 +10032,74 @@ input[data-scope='mention'][data-part='input'] {
   color: var(--xh-fg-subtle);
 }
 
-/* 画成一个框的是 trigger：里面的色块与值文本要看起来是一体的 */
-[data-scope='color-picker'][data-part='trigger'] {
+/* 盒：描边、底色、控件高度与行内内衬都落在这一层 */
+[data-scope='color-picker'][data-part='control'] {
   display: inline-flex;
   align-items: center;
-  gap: var(--xh-color-picker-trigger-gap, var(--xh-control-gap-md));
-  min-inline-size: var(--xh-color-picker-trigger-min-w, var(--xh-control-min-w));
-  block-size: var(--xh-color-picker-trigger-h, var(--xh-control-h-md));
-  padding-inline: var(--xh-color-picker-trigger-px, var(--xh-control-px-md));
-  border: var(--xh-stroke-thin) solid var(--xh-color-picker-trigger-border, var(--xh-border-control));
-  border-radius: var(--xh-color-picker-trigger-radius, var(--xh-shape-control));
-  background: var(--xh-color-picker-trigger-bg, var(--xh-bg-canvas));
-  color: var(--xh-color-picker-trigger-fg, var(--xh-fg-default));
-  font-family: inherit;
-  font-size: var(--xh-color-picker-trigger-font-size, var(--xh-text-body-size));
-  line-height: var(--xh-leading-none);
+  gap: var(--xh-color-picker-control-gap, var(--xh-_color-picker-gap));
+  min-inline-size: var(--xh-color-picker-control-min-w, var(--xh-control-min-w));
+  block-size: var(--xh-color-picker-control-h, var(--xh-_color-picker-h));
+  padding-inline: var(--xh-color-picker-control-px, var(--xh-_color-picker-px));
+  border: var(--xh-stroke-thin) solid var(--xh-color-picker-control-border, var(--xh-border-control));
+  border-radius: var(--xh-color-picker-control-radius, var(--xh-shape-control));
+  background: var(--xh-color-picker-control-bg, var(--xh-bg-canvas));
+  color: var(--xh-color-picker-control-fg, var(--xh-fg-default));
   cursor: pointer;
   transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
-[data-scope='color-picker'][data-part='trigger']:hover:not(:disabled) {
-  border-color: var(--xh-color-picker-trigger-border-hover, var(--xh-border-control-hover));
+[data-scope='color-picker'][data-part='control'][hidden] {
+  display: none;
 }
 
-[data-scope='color-picker'][data-part='trigger']:focus-visible {
-  border-color: var(--xh-color-picker-trigger-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
-  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+[data-scope='color-picker'][data-part='control']:hover:not([data-disabled]) {
+  border-color: var(--xh-color-picker-control-border-hover, var(--xh-border-control-hover));
+}
+
+/* Tab 停靠点是盒里的 trigger，环画在盒上 */
+[data-scope='color-picker'][data-part='control']:focus-within:not([data-disabled]) {
+  border-color: var(--xh-color-picker-control-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
+  outline: var(--xh-ring-width) solid var(--xh-_color-picker-ring);
   outline-offset: var(--xh-ring-offset);
 }
 
-/* 单体控件用原生 disabled（预设色板那些格子也是原生按钮，同一条规矩） */
-[data-scope='color-picker'][data-part='trigger']:disabled {
-  background: var(--xh-color-picker-trigger-bg-disabled, var(--xh-bg-subtle));
+[data-scope='color-picker'][data-part='control'][data-disabled] {
+  background: var(--xh-color-picker-control-bg-disabled, var(--xh-bg-subtle));
   color: var(--xh-fg-disabled);
   cursor: not-allowed;
 }
 
 /* 只读仍可聚焦、浮层照开，只是改不动：不置灰，只把底色压下去 */
-[data-scope='color-picker'][data-part='trigger'][data-readonly] {
-  background: var(--xh-color-picker-trigger-bg-readonly, var(--xh-bg-subtle));
+[data-scope='color-picker'][data-part='control'][data-readonly] {
+  background: var(--xh-color-picker-control-bg-readonly, var(--xh-bg-subtle));
+}
+
+/* 盒内那颗可聚焦的按钮：不画描边不铺底也不自带高度，只占满剩余宽度、排布色块与值文本 */
+[data-scope='color-picker'][data-part='trigger'] {
+  display: inline-flex;
+  flex: 1 1 auto;
+  align-items: center;
+  gap: var(--xh-color-picker-trigger-gap, var(--xh-_color-picker-gap));
+  min-inline-size: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--xh-color-picker-trigger-fg, var(--xh-fg-default));
+  font-family: inherit;
+  font-size: var(--xh-color-picker-trigger-font-size, var(--xh-text-body-size));
+  line-height: var(--xh-leading-none);
+  text-align: start;
+  cursor: pointer;
+}
+
+[data-scope='color-picker'][data-part='trigger'][hidden] {
+  display: none;
+}
+
+/* 单体控件用原生 disabled（预设色板那些格子也是原生按钮，同一条规矩） */
+[data-scope='color-picker'][data-part='trigger']:disabled {
+  color: var(--xh-fg-disabled);
+  cursor: not-allowed;
 }
 
 /* 当前颜色的色块。背景由连接层内联给（含透明度），这里只给形状与描边。
@@ -9975,9 +10114,11 @@ input[data-scope='mention'][data-part='input'] {
   border-radius: var(--xh-color-picker-swatch-radius, var(--xh-shape-inset));
 }
 
+/* 值串可能很长，必须能截断；框宽由盒定，这里得允许自己被压缩 */
 [data-scope='color-picker'][data-part='value-text'] {
   overflow: hidden;
-  flex: 1;
+  flex: 1 1 auto;
+  min-inline-size: 0;
   color: var(--xh-color-picker-value-fg, var(--xh-fg-default));
   font-size: var(--xh-color-picker-value-font-size, var(--xh-text-body-size));
   text-align: start;
@@ -10006,10 +10147,10 @@ input[data-scope='mention'][data-part='input'] {
   display: flex;
   flex-direction: column;
   gap: var(--xh-color-picker-content-gap, var(--xh-space-3));
-  inline-size: var(--xh-color-picker-content-w, 15rem);
-  padding: var(--xh-color-picker-content-p, var(--xh-space-3));
-  /* 取色区与滑轨都是定尺寸，套静态档会把它们压扁。只留可用高度这一道 */
-  max-block-size: var(--xh-color-picker-max-h, var(--xh-_color-picker-available-h));
+  inline-size: var(--xh-color-picker-content-w, var(--xh-overlay-min-w));
+  padding-block: var(--xh-color-picker-content-py, var(--xh-space-3));
+  padding-inline: var(--xh-color-picker-content-px, var(--xh-space-3));
+  max-block-size: min(var(--xh-color-picker-max-h, var(--xh-viewport-h-md)), var(--xh-_color-picker-available-h));
   overflow-y: auto;
   border: var(--xh-stroke-thin) solid var(--xh-color-picker-content-border, var(--xh-border-default));
   border-radius: var(--xh-color-picker-content-radius, var(--xh-shape-surface));
@@ -10239,8 +10380,8 @@ input[data-scope='mention'][data-part='input'] {
   flex: none;
   align-items: center;
   justify-content: center;
-  inline-size: var(--xh-color-picker-action-size, var(--xh-control-h-sm));
-  block-size: var(--xh-color-picker-action-size, var(--xh-control-h-sm));
+  inline-size: var(--xh-color-picker-action-size, var(--xh-control-action-size));
+  block-size: var(--xh-color-picker-action-size, var(--xh-control-action-size));
   padding: 0;
   border: var(--xh-stroke-thin) solid var(--xh-color-picker-action-border, var(--xh-border-control));
   border-radius: var(--xh-color-picker-action-radius, var(--xh-shape-control));
@@ -10397,6 +10538,9 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_combobox-font-size: var(--xh-text-body-size);
   --xh-_combobox-label-font-size: var(--xh-text-label-size);
 
+  /* 作者塞进指示符槽的图标跟着控件的尺寸档走；它自己写了 size 时仍以作者的为准 */
+  --xh-icon-size: var(--xh-combobox-icon-size, var(--xh-glyph-size-md));
+
   /* 形态档只换这三个槽：缺省即 outline（描边 + 画布底） */
   --xh-_combobox-control-bg: var(--xh-bg-canvas);
   --xh-_combobox-control-border: var(--xh-border-control);
@@ -10410,12 +10554,9 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='combobox'][data-part='root'] {
-  /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
-  --xh-icon-size: var(--xh-combobox-icon-size, var(--xh-glyph-size-text));
-
   display: inline-flex;
   flex-direction: column;
-  gap: var(--xh-combobox-gap, var(--xh-stack-gap-md));
+  gap: var(--xh-combobox-gap, var(--xh-space-1));
 }
 
 /* 只要声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
@@ -10431,6 +10572,8 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_combobox-gap: var(--xh-control-gap-sm);
   --xh-_combobox-font-size: var(--xh-control-font-sm);
   --xh-_combobox-label-font-size: var(--xh-control-font-sm);
+
+  --xh-icon-size: var(--xh-combobox-icon-size, var(--xh-glyph-size-sm));
 }
 
 [data-scope='combobox']:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
@@ -10439,6 +10582,8 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_combobox-gap: var(--xh-control-gap-lg);
   --xh-_combobox-font-size: var(--xh-control-font-lg);
   --xh-_combobox-label-font-size: var(--xh-control-font-lg);
+
+  --xh-icon-size: var(--xh-combobox-icon-size, var(--xh-glyph-size-lg));
 }
 
 /* —— 形态 —— */
@@ -10465,7 +10610,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='combobox'][data-part='label'] {
-  color: var(--xh-combobox-label-fg, var(--xh-fg-muted));
+  color: var(--xh-combobox-label-fg, var(--xh-fg-default));
   font-size: var(--xh-combobox-label-font-size, var(--xh-_combobox-label-font-size));
   font-weight: var(--xh-combobox-label-font-weight, var(--xh-text-label-weight));
   line-height: var(--xh-leading-none);
@@ -10503,7 +10648,7 @@ input[data-scope='mention'][data-part='input'] {
 /* 焦点环画在 control 上而不是 input 上：视觉上的「框」是 control，
    环若长在里面那个透明的 input 身上，就会缩在文字区里、与框错开一圈。
    input 是这里唯一可聚焦的常规节点，:focus-within 与它的 :focus-visible 等价 */
-[data-scope='combobox'][data-part='control']:focus-within {
+[data-scope='combobox'][data-part='control']:focus-within:not([data-disabled]) {
   border-color: var(--xh-combobox-control-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
   outline: var(--xh-ring-width) solid var(--xh-_combobox-ring);
   outline-offset: var(--xh-ring-offset);
@@ -10656,12 +10801,10 @@ input[data-scope='mention'][data-part='input'] {
   scale: var(--xh-motion-scale-press);
 }
 
-/* 两个按钮都退出了 Tab 序列（tabindex=-1），正常操作走不到这里；
-   留着是给程序化聚焦兜底，落焦时得看得见 */
+/* 两个按钮都在盒里，盒的 :focus-within 已经画了一圈；这里再画一圈就是框里套框 */
 [data-scope='combobox'][data-part='trigger']:focus-visible,
 [data-scope='combobox'][data-part='clear-trigger']:focus-visible {
-  outline: var(--xh-ring-width) solid var(--xh-_combobox-ring);
-  outline-offset: var(--xh-ring-offset);
+  outline: none;
 }
 
 [data-scope='combobox'][data-part='trigger']:disabled {
@@ -10674,7 +10817,7 @@ input[data-scope='mention'][data-part='input'] {
   display: flex;
   flex-direction: column;
   min-inline-size: var(--xh-combobox-content-min-w, var(--xh-overlay-min-w));
-  max-inline-size: var(--xh-combobox-content-max-w, var(--xh-overlay-max-w-lg));
+  max-inline-size: var(--xh-combobox-content-max-w, var(--xh-overlay-max-w));
   max-block-size: min(var(--xh-combobox-content-max-h, var(--xh-overlay-max-h)), var(--xh-_combobox-available-h));
   padding-block: var(--xh-combobox-content-py, var(--xh-space-1));
   padding-inline: var(--xh-combobox-content-px, var(--xh-space-1));
@@ -11025,9 +11168,6 @@ input[data-scope='mention'][data-part='input'] {
   /* 打开子菜单的触发条目走品牌淡底强档，随语气换色相；没写 data-tone 时退回品牌淡底。
      悬停与键盘焦点恒中性灰轻档、不接语气槽——两档同色相的话打开路径就认不出来了 */
   --xh-_context-menu-item-active-bg: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
-
-  /* 标记位强调色随语气走，没写 data-tone 时退回原来的取值 */
-  --xh-_context-menu-accent: var(--xh-_tone, var(--xh-fg-subtle));
 }
 
 /* 根只是把触发区与浮层圈在一起做作用域，不该在作者布局里多插一层盒子 */
@@ -11181,6 +11321,25 @@ input[data-scope='mention'][data-part='input'] {
   font-weight: var(--xh-context-menu-item-active-font-weight, var(--xh-font-weight-semibold));
 }
 
+/* 带子菜单的条目行尾画右向小箭头：不点开也看得出还有下一级。
+   位置靠 margin 顶到行尾，图形取兜底字形令牌 */
+[data-scope='context-menu'][data-part='item'][aria-haspopup='menu']::after {
+  content: '';
+  flex: none;
+  margin-inline-start: auto;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
+}
+
+/* rtl 下子菜单开在左侧，箭头跟着指向行进方向 */
+[dir='rtl'] [data-scope='context-menu'][data-part='item'][aria-haspopup='menu']::after {
+  -webkit-mask-image: var(--xh-glyph-mark-chevron-left);
+  mask-image: var(--xh-glyph-mark-chevron-left);
+}
+
 /* 键盘走到条目上要画环：轻档底色只有 1.1:1，够不上焦点指示器的对比度要求。
    指针悬停走的是程序化聚焦，鼠标模态下 :focus-visible 不匹配，不会误画 */
 [data-scope='context-menu'][data-part='item']:focus-visible {
@@ -11217,7 +11376,7 @@ input[data-scope='mention'][data-part='input'] {
   align-items: center;
   justify-content: center;
   inline-size: var(--xh-context-menu-item-indicator-size, var(--xh-control-indicator-size));
-  color: var(--xh-context-menu-item-indicator-fg, var(--xh-_context-menu-accent));
+  color: var(--xh-context-menu-item-indicator-fg, var(--xh-fg-brand));
 }
 
 [data-scope='context-menu'][data-part='item-indicator'][hidden] {
@@ -11305,6 +11464,7 @@ input[data-scope='mention'][data-part='input'] {
   /* 尺寸档只换这四个私有槽，标题与分段框都从 root 继承它们，换档不必给每个部件各写一条选择器 */
   --xh-_date-field-control-h: var(--xh-control-h-md);
   --xh-_date-field-control-px: var(--xh-control-px-md);
+  --xh-_date-field-gap: var(--xh-control-gap-md);
   --xh-_date-field-font-size: var(--xh-text-body-size);
   --xh-_date-field-label-font-size: var(--xh-text-label-size);
   /* 形态档只换这三个私有槽：底色与两档描边 */
@@ -11326,6 +11486,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-icon-size: var(--xh-date-field-icon-size, var(--xh-glyph-size-sm));
   --xh-_date-field-control-h: var(--xh-control-h-sm);
   --xh-_date-field-control-px: var(--xh-control-px-sm);
+  --xh-_date-field-gap: var(--xh-control-gap-sm);
   --xh-_date-field-font-size: var(--xh-control-font-sm);
   --xh-_date-field-label-font-size: var(--xh-control-font-sm);
 }
@@ -11334,6 +11495,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-icon-size: var(--xh-date-field-icon-size, var(--xh-glyph-size-lg));
   --xh-_date-field-control-h: var(--xh-control-h-lg);
   --xh-_date-field-control-px: var(--xh-control-px-lg);
+  --xh-_date-field-gap: var(--xh-control-gap-lg);
   --xh-_date-field-font-size: var(--xh-control-font-lg);
   --xh-_date-field-label-font-size: var(--xh-control-font-lg);
 }
@@ -11370,8 +11532,6 @@ input[data-scope='mention'][data-part='input'] {
   font-size: var(--xh-date-field-label-font-size, var(--xh-_date-field-label-font-size));
   font-weight: var(--xh-date-field-label-font-weight, var(--xh-text-label-weight));
   line-height: var(--xh-leading-none);
-  /* 点标题会把焦点送进首段，指针得说明这件事 */
-  cursor: default;
 }
 
 [data-scope='date-field'][data-part='label'][hidden] {
@@ -11383,12 +11543,12 @@ input[data-scope='mention'][data-part='input'] {
   cursor: not-allowed;
 }
 
-/* 分段框整体长得像一个输入框：边框与背景长在 control 上，各段只是里面的文字。
-   段与段之间的分隔符（'/'、'年'）由作者自己写在段之间，不在角色表里 */
+/* 分段框整体长得像一个输入框：边框与背景长在 control 上，各段只是里面的文字 */
 [data-scope='date-field'][data-part='control'] {
   display: inline-flex;
   min-inline-size: var(--xh-date-field-control-min-w, var(--xh-control-min-w));
   align-items: center;
+  gap: var(--xh-date-field-control-gap, var(--xh-_date-field-gap));
   block-size: var(--xh-date-field-control-h, var(--xh-_date-field-control-h));
   padding-inline: var(--xh-date-field-control-px, var(--xh-_date-field-control-px));
   padding-block: 0;
@@ -11414,7 +11574,7 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 焦点落在某一段上，而边框长在 control 上：焦点环得由内向外借一层。
    control 自己不占 Tab 位，:focus-within 是它唯一能感知组内焦点的方式 */
-[data-scope='date-field'][data-part='control']:focus-within {
+[data-scope='date-field'][data-part='control']:focus-within:not([data-disabled]) {
   border-color: var(--xh-date-field-control-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
   outline: var(--xh-ring-width) solid var(--xh-_date-field-ring);
   outline-offset: var(--xh-ring-offset);
@@ -11437,6 +11597,19 @@ input[data-scope='mention'][data-part='input'] {
   background: var(--xh-date-field-control-bg-disabled, var(--xh-bg-subtle));
   color: var(--xh-fg-disabled);
   cursor: not-allowed;
+}
+
+/* 段位与作者写在段间的分隔符（'/'、'年'）都在这一层里：它占满盒里剩下的宽度，
+   清空钮因此靠在框内末端 */
+[data-scope='date-field'][data-part='segment-group'] {
+  display: inline-flex;
+  flex: 1 1 auto;
+  align-items: center;
+  min-inline-size: 0;
+}
+
+[data-scope='date-field'][data-part='segment-group'][hidden] {
+  display: none;
 }
 
 /* 每一段是一块可聚焦的文字：宽度随内容走，两侧留一点让选中底色不贴着数字 */
@@ -11588,6 +11761,7 @@ input[data-scope='mention'][data-part='input'] {
      换档不必给每个部件各写一条选择器 */
   --xh-_date-picker-control-h: var(--xh-control-h-md);
   --xh-_date-picker-control-px: var(--xh-control-px-md);
+  --xh-_date-picker-gap: var(--xh-control-gap-md);
   --xh-_date-picker-font-size: var(--xh-text-body-size);
   --xh-_date-picker-label-font-size: var(--xh-text-label-size);
 
@@ -11608,7 +11782,7 @@ input[data-scope='mention'][data-part='input'] {
 /* 与文本框、分段日期同一套堆叠：标签一行、输入行一行 */
 [data-scope='date-picker'][data-part='root'] {
   /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
-  --xh-icon-size: var(--xh-date-picker-icon-size, var(--xh-glyph-size-text));
+  --xh-icon-size: var(--xh-date-picker-icon-size, var(--xh-glyph-size-md));
 
   display: inline-flex;
   flex-direction: column;
@@ -11618,15 +11792,19 @@ input[data-scope='mention'][data-part='input'] {
 /* —— 尺寸 —— */
 /* 缺省档写在上面的基础规则里 */
 [data-scope='date-picker']:is([data-part='root'], [data-part='positioner'])[data-size='sm'] {
+  --xh-icon-size: var(--xh-date-picker-icon-size, var(--xh-glyph-size-sm));
   --xh-_date-picker-control-h: var(--xh-control-h-sm);
   --xh-_date-picker-control-px: var(--xh-control-px-sm);
+  --xh-_date-picker-gap: var(--xh-control-gap-sm);
   --xh-_date-picker-font-size: var(--xh-control-font-sm);
   --xh-_date-picker-label-font-size: var(--xh-control-font-sm);
 }
 
 [data-scope='date-picker']:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
+  --xh-icon-size: var(--xh-date-picker-icon-size, var(--xh-glyph-size-lg));
   --xh-_date-picker-control-h: var(--xh-control-h-lg);
   --xh-_date-picker-control-px: var(--xh-control-px-lg);
+  --xh-_date-picker-gap: var(--xh-control-gap-lg);
   --xh-_date-picker-font-size: var(--xh-control-font-lg);
   --xh-_date-picker-label-font-size: var(--xh-control-font-lg);
 }
@@ -11665,8 +11843,6 @@ input[data-scope='mention'][data-part='input'] {
   font-size: var(--xh-date-picker-label-font-size, var(--xh-_date-picker-label-font-size));
   font-weight: var(--xh-date-picker-label-font-weight, var(--xh-text-label-weight));
   line-height: var(--xh-leading-none);
-  /* 点标题会把焦点送进首段，指针得说明这件事 */
-  cursor: default;
 }
 
 [data-scope='date-picker'][data-part='label'][hidden] {
@@ -11683,7 +11859,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='date-picker'][data-part='control'] {
   display: inline-flex;
   align-items: center;
-  gap: var(--xh-date-picker-control-gap, var(--xh-control-gap-md));
+  gap: var(--xh-date-picker-control-gap, var(--xh-_date-picker-gap));
   min-inline-size: var(--xh-date-picker-control-min-w, var(--xh-control-min-w));
   block-size: var(--xh-date-picker-control-h, var(--xh-_date-picker-control-h));
   padding-inline: var(--xh-date-picker-control-px, var(--xh-_date-picker-control-px));
@@ -11706,7 +11882,7 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 焦点落在某一段或某个按钮上，而边框长在 control 上：焦点环得由内向外借一层。
    control 自己不占 Tab 位，:focus-within 是它唯一能感知组内焦点的方式 */
-[data-scope='date-picker'][data-part='control']:focus-within {
+[data-scope='date-picker'][data-part='control']:focus-within:not([data-disabled]) {
   border-color: var(--xh-date-picker-control-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
   outline: var(--xh-ring-width) solid var(--xh-_date-picker-ring);
   outline-offset: var(--xh-ring-offset);
@@ -11730,11 +11906,11 @@ input[data-scope='mention'][data-part='input'] {
   cursor: not-allowed;
 }
 
-/* 分段容器：段位自己那身皮由 date-field 那份样式负责（它们戴的是那一份解剖的标记），
-   这里只管把一排段位横过来、占满输入行剩下的宽度 */
-[data-scope='date-picker'][data-part='input'] {
+/* 段位与作者写在段间的分隔符都在这一层里：段位自己那身皮由 date-field 那份样式负责
+   （它们戴的是那一份解剖的标记），这里只管把一排段位横过来、占满输入行剩下的宽度 */
+[data-scope='date-picker'][data-part='segment-group'] {
   display: inline-flex;
-  flex: 1;
+  flex: 1 1 auto;
   align-items: center;
   min-inline-size: 0;
   block-size: 100%;
@@ -11745,12 +11921,12 @@ input[data-scope='mention'][data-part='input'] {
   line-height: var(--xh-leading-none);
 }
 
-[data-scope='date-picker'][data-part='input'][hidden] {
+[data-scope='date-picker'][data-part='segment-group'][hidden] {
   display: none;
 }
 
 /* 容器自己不占 Tab 位、也不承载焦点，环由 control 画，这里不再套一圈 */
-[data-scope='date-picker'][data-part='input']:focus-visible {
+[data-scope='date-picker'][data-part='segment-group']:focus-visible {
   outline: none;
 }
 
@@ -11808,8 +11984,8 @@ input[data-scope='mention'][data-part='input'] {
   color: var(--xh-date-picker-action-fg-hover, var(--xh-fg-default));
 }
 
-/* trigger 在 Tab 序列里（清空按钮不在，它是 tabindex=-1 的兜底），落焦时必须看得见 */
-[data-scope='date-picker'][data-part='trigger']:focus-visible,
+/* 清空按钮不占 Tab 位（tabindex=-1），这条是给程序化聚焦兜底：落焦时得看得见。
+   展开钮是常规 Tab 停靠点，它落焦时环由盒的 :focus-within 画，这里不再套一圈 */
 [data-scope='date-picker'][data-part='clear-trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-_date-picker-ring);
   outline-offset: var(--xh-ring-offset);
@@ -11823,14 +11999,15 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='date-picker'][data-part='content'] {
   display: block;
-  padding: var(--xh-date-picker-content-p, var(--xh-space-3));
+  padding-block: var(--xh-date-picker-content-py, var(--xh-space-3));
+  padding-inline: var(--xh-date-picker-content-px, var(--xh-space-3));
   border: var(--xh-stroke-thin) solid var(--xh-date-picker-content-border, var(--xh-border-default));
   border-radius: var(--xh-date-picker-content-radius, var(--xh-shape-surface));
   background: var(--xh-date-picker-content-bg, var(--xh-bg-surface));
   color: var(--xh-date-picker-content-fg, var(--xh-fg-default));
-  /* 日历是定高结构：六行日期加表头本来就有固定高度，套上菜单那档 16rem 会当场压出滚动条。
-     这里只留可用高度这一道——视口真放不下时才让步 */
-  max-block-size: var(--xh-date-picker-max-h, var(--xh-_date-picker-available-h));
+  /* 日历是定高结构：六行日期加表头本来就有固定高度，上限走页内滚动面那一档；
+     可用高度是定位引擎算出的视口余量，视口真放不下时再收一截 */
+  max-block-size: min(var(--xh-date-picker-max-h, var(--xh-viewport-h-lg)), var(--xh-_date-picker-available-h));
   overflow-y: auto;
   box-shadow: var(--xh-date-picker-content-shadow, var(--xh-elevation-floating));
   pointer-events: auto;
@@ -11904,7 +12081,7 @@ input[data-scope='mention'][data-part='input'] {
   flex-direction: column;
   gap: var(--xh-date-picker-presets-gap, var(--xh-space-0_5));
   /* 选项多起来时这一列自己滚，不把整张面板撑高 */
-  max-block-size: var(--xh-date-picker-presets-h, var(--xh-date-picker-time-column-h, 14rem));
+  max-block-size: var(--xh-date-picker-presets-h, var(--xh-viewport-h-sm));
   padding: var(--xh-space-1);
   overflow-y: auto;
   border-inline-end: var(--xh-stroke-thin) solid var(--xh-date-picker-content-border, var(--xh-border-default));
@@ -11953,7 +12130,8 @@ input[data-scope='mention'][data-part='input'] {
   display: flex;
   flex-direction: column;
   gap: var(--xh-date-picker-time-column-gap, var(--xh-space-0_5));
-  max-block-size: var(--xh-date-picker-time-column-h, 14rem);
+  /* 几列并排：定高而不是随内容收，否则时列与分列的可选值一多一少就错位 */
+  block-size: var(--xh-date-picker-time-column-h, var(--xh-viewport-h-sm));
   padding: var(--xh-space-1);
   overflow-y: auto;
   border-inline-start: var(--xh-stroke-thin) solid var(--xh-date-picker-content-border, var(--xh-border-default));
@@ -13703,8 +13881,6 @@ input[data-scope='mention'][data-part='input'] {
   border-radius: var(--xh-hover-card-radius, var(--xh-shape-surface));
   background: var(--xh-hover-card-bg, var(--xh-bg-surface));
   color: var(--xh-hover-card-fg, var(--xh-fg-default));
-  font-size: var(--xh-hover-card-font-size, var(--xh-text-body-size));
-  line-height: var(--xh-leading-normal);
   box-shadow: var(--xh-hover-card-shadow, var(--xh-elevation-floating));
   pointer-events: auto;
 }
@@ -14222,7 +14398,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='listbox'][data-part='content'] {
   display: flex;
   flex-direction: column;
-  max-block-size: var(--xh-listbox-content-max-h, var(--xh-overlay-max-h));
+  max-block-size: var(--xh-listbox-content-max-h, var(--xh-viewport-h-md));
   padding-block: var(--xh-listbox-content-py, var(--xh-space-1));
   padding-inline: var(--xh-listbox-content-px, var(--xh-space-1));
   border: var(--xh-stroke-thin) solid var(--xh-listbox-content-border, var(--xh-border-default));
@@ -14509,7 +14685,23 @@ input[data-scope='mention'][data-part='input'] {
   visibility: hidden;
 }
 
+/* 触发器的长相归作者，皮肤只表达展开态。私有槽声明在它自己身上：
+   菜单没有 root 部件，触发器上头没有别的 menu 节点可以挂 */
+[data-scope='menu'][data-part='trigger'] {
+  /* 展开着的那张菜单的触发器走品牌淡底强档，随语气换色相；没写 data-tone 时退回品牌淡底 */
+  --xh-_menu-active-bg: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
+}
+
+/* 展开着的那一张是打开路径，走品牌淡底强档：哪一张开着必须一眼看得出来。
+   不加粗：加粗会推挤相邻内容 */
+[data-scope='menu'][data-part='trigger']:not([data-disabled])[data-state='open'] {
+  background: var(--xh-menu-trigger-bg-active, var(--xh-_menu-active-bg));
+}
+
 [data-scope='menu'][data-part='content'] {
+  /* 作者塞进条目里的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+  --xh-icon-size: var(--xh-menu-icon-size, var(--xh-glyph-size-text));
+
   /* 尺寸档只换这四个私有槽，条目从 content 继承它们，换档不必给每个部件各写一条选择器。
      菜单没有 root 部件（浮层树的最外层就是 content），三轴属性都落在这里 */
   --xh-_menu-item-py: var(--xh-space-1_5);
@@ -14623,6 +14815,51 @@ input[data-scope='mention'][data-part='input'] {
   cursor: not-allowed;
 }
 
+/* 带子菜单的条目行尾画右向小箭头：不点开也看得出还有下一级。
+   位置靠 margin 顶到行尾，图形取兜底字形令牌 */
+[data-scope='menu'][data-part='item'][aria-haspopup='menu']::after {
+  content: '';
+  flex: none;
+  margin-inline-start: auto;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
+}
+
+/* rtl 下子菜单开在左侧，箭头跟着指向行进方向 */
+[dir='rtl'] [data-scope='menu'][data-part='item'][aria-haspopup='menu']::after {
+  -webkit-mask-image: var(--xh-glyph-mark-chevron-left);
+  mask-image: var(--xh-glyph-mark-chevron-left);
+}
+
+[data-scope='menu'][data-part='group'] {
+  display: flex;
+  flex-direction: column;
+}
+
+[data-scope='menu'][data-part='group'][hidden] {
+  display: none;
+}
+
+/* 分组标题不是条目、进不了导航，画成小号次要文字，
+   内缩与条目对齐（同一个 padding-inline），标题与条目文字才在一条竖线上 */
+[data-scope='menu'][data-part='group-label'] {
+  display: block;
+  padding-block: var(--xh-menu-group-label-py, var(--xh-space-1));
+  padding-inline: var(--xh-menu-group-label-px, var(--xh-_menu-item-px));
+  color: var(--xh-menu-group-label-fg, var(--xh-fg-subtle));
+  font-size: var(--xh-menu-group-label-font-size, var(--xh-text-caption-size));
+  font-weight: var(--xh-menu-group-label-font-weight, var(--xh-font-weight-medium));
+  line-height: var(--xh-leading-none);
+  user-select: none;
+}
+
+[data-scope='menu'][data-part='group-label'][hidden] {
+  display: none;
+}
+
 [data-scope='menu'][data-part='separator'] {
   block-size: var(--xh-menu-separator-thickness, var(--xh-stroke-thin));
   margin-block: var(--xh-menu-separator-my, var(--xh-space-1));
@@ -14655,12 +14892,12 @@ input[data-scope='mention'][data-part='input'] {
 
   display: flex;
   align-items: center;
-  gap: var(--xh-menubar-gap, var(--xh-space-1));
-  padding-block: var(--xh-menubar-py, var(--xh-space-1));
-  padding-inline: var(--xh-menubar-px, var(--xh-space-1));
-  border-radius: var(--xh-menubar-radius, var(--xh-shape-control));
-  background: var(--xh-menubar-bg, transparent);
-  color: var(--xh-menubar-fg, var(--xh-fg-default));
+  gap: var(--xh-menubar-root-gap, var(--xh-space-1));
+  padding-block: var(--xh-menubar-root-py, var(--xh-space-1));
+  padding-inline: var(--xh-menubar-root-px, var(--xh-space-1));
+  border-radius: var(--xh-menubar-root-radius, var(--xh-shape-control));
+  background: var(--xh-menubar-root-bg, transparent);
+  color: var(--xh-menubar-root-fg, var(--xh-fg-default));
 }
 
 [data-scope='menubar'][data-part='root'][hidden] {
@@ -14748,7 +14985,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 /* —— 尺寸 —— */
-/* 尺寸档只换这五个私有槽，换档不必给每个部件各写一条选择器。
+/* 尺寸档只换这六个私有槽，换档不必给每个部件各写一条选择器。
    root 与 positioner 各起一头：trigger 从 root 继承，菜单里的条目从 positioner 继承——
    浮层搬去了 portal 落点，不再是 root 的后代。
    缺省档写在第一条：trigger 与条目的行内内缩都走 control-px 档（随密度轴）、纵向走 space 档，换档各挪一级 */
@@ -14757,12 +14994,16 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_menubar-trigger-px: var(--xh-control-px-md);
   --xh-_menubar-item-py: var(--xh-space-1_5);
   --xh-_menubar-item-px: var(--xh-control-px-md);
+  --xh-_menubar-item-gap: var(--xh-control-gap-md);
   --xh-_menubar-font-size: var(--xh-text-body-size);
 
   /* 展开着的那张菜单的 trigger 走品牌淡底强档，随语气换色相；没写 data-tone 时退回品牌淡底。
      悬停与键盘焦点恒中性灰轻档、不接语气槽——两档同色相的话哪张开着就认不出来了。
      聚焦环不在其列，它恒是 --xh-ring-focus */
   --xh-_menubar-active-bg: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
+
+  /* 打开子菜单的触发条目走品牌淡底强档，随语气换色相；没写 data-tone 时退回品牌淡底 */
+  --xh-_menubar-item-active-bg: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
 }
 
 [data-scope='menubar'][data-size='sm']:is([data-part='root'], [data-part='positioner']) {
@@ -14770,6 +15011,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_menubar-trigger-px: var(--xh-control-px-sm);
   --xh-_menubar-item-py: var(--xh-space-1);
   --xh-_menubar-item-px: var(--xh-control-px-sm);
+  --xh-_menubar-item-gap: var(--xh-control-gap-sm);
   --xh-_menubar-font-size: var(--xh-control-font-sm);
 }
 
@@ -14778,24 +15020,25 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_menubar-trigger-px: var(--xh-control-px-lg);
   --xh-_menubar-item-py: var(--xh-space-2);
   --xh-_menubar-item-px: var(--xh-control-px-lg);
+  --xh-_menubar-item-gap: var(--xh-control-gap-lg);
   --xh-_menubar-font-size: var(--xh-control-font-lg);
 }
 
 [data-scope='menubar'][data-part='content'] {
   display: flex;
   flex-direction: column;
-  min-inline-size: var(--xh-menubar-menu-min-w, var(--xh-overlay-menu-min-w));
-  max-inline-size: var(--xh-menubar-menu-max-w, var(--xh-overlay-max-w));
+  min-inline-size: var(--xh-menubar-min-w, var(--xh-overlay-menu-min-w));
+  max-inline-size: var(--xh-menubar-max-w, var(--xh-overlay-max-w));
   /* 两道上限取更小的那道：自己的高度上限，以及落定那一侧真正剩下的空间。
      列表族的 16rem 对命令菜单偏矮，这里另给一档 */
-  max-block-size: min(var(--xh-menubar-menu-max-h, var(--xh-overlay-menu-max-h)), var(--xh-_menubar-available-h));
-  padding-block: var(--xh-menubar-menu-py, var(--xh-space-1));
-  padding-inline: var(--xh-menubar-menu-px, var(--xh-space-1));
-  border: var(--xh-stroke-thin) solid var(--xh-menubar-menu-border, var(--xh-border-default));
-  border-radius: var(--xh-menubar-menu-radius, var(--xh-shape-surface));
-  background: var(--xh-menubar-menu-bg, var(--xh-bg-surface));
-  color: var(--xh-menubar-menu-fg, var(--xh-fg-default));
-  box-shadow: var(--xh-menubar-menu-shadow, var(--xh-elevation-floating));
+  max-block-size: min(var(--xh-menubar-max-h, var(--xh-overlay-menu-max-h)), var(--xh-_menubar-available-h));
+  padding-block: var(--xh-menubar-py, var(--xh-space-1));
+  padding-inline: var(--xh-menubar-px, var(--xh-space-1));
+  border: var(--xh-stroke-thin) solid var(--xh-menubar-border, var(--xh-border-default));
+  border-radius: var(--xh-menubar-radius, var(--xh-shape-surface));
+  background: var(--xh-menubar-bg, var(--xh-bg-surface));
+  color: var(--xh-menubar-fg, var(--xh-fg-default));
+  box-shadow: var(--xh-menubar-shadow, var(--xh-elevation-floating));
   /* 条目超过上限就在菜单内部滚。条目的焦点环是内收的，滚动容器裁在内边距缘上，环切不着 */
   overflow-y: auto;
   pointer-events: auto;
@@ -14859,7 +15102,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='menubar'][data-part='item'] {
   display: flex;
   align-items: center;
-  gap: var(--xh-menubar-item-gap, var(--xh-control-gap-md));
+  gap: var(--xh-menubar-item-gap, var(--xh-_menubar-item-gap));
   padding-block: var(--xh-menubar-item-py, var(--xh-_menubar-item-py));
   padding-inline: var(--xh-menubar-item-px, var(--xh-_menubar-item-px));
   border-radius: var(--xh-menubar-item-radius, var(--xh-shape-control));
@@ -14882,6 +15125,32 @@ input[data-scope='mention'][data-part='input'] {
 /* 悬停与键盘锚点共用中性灰轻档：锚点只认连接层打的 data-highlighted，不读 :focus */
 [data-scope='menubar'][data-part='item']:not([data-disabled]):is(:hover, [data-highlighted]) {
   background: var(--xh-menubar-item-bg-hover, var(--xh-bg-subtle));
+}
+
+/* 打开子菜单的触发条目是展开路径，走品牌淡底加粗强档。
+   必须排在轻档之后：悬停或焦点回到它身上时同特指度靠书写顺序压过轻档 */
+[data-scope='menubar'][data-part='item']:not([data-disabled])[data-state='open'] {
+  background: var(--xh-menubar-item-bg-active, var(--xh-_menubar-item-active-bg));
+  font-weight: var(--xh-menubar-item-active-font-weight, var(--xh-font-weight-semibold));
+}
+
+/* 带子菜单的条目行尾画右向小箭头：不点开也看得出还有下一级。
+   位置靠 margin 顶到行尾，图形取兜底字形令牌 */
+[data-scope='menubar'][data-part='item'][aria-haspopup='menu']::after {
+  content: '';
+  flex: none;
+  margin-inline-start: auto;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
+}
+
+/* rtl 下子菜单开在左侧，箭头跟着指向行进方向 */
+[dir='rtl'] [data-scope='menubar'][data-part='item'][aria-haspopup='menu']::after {
+  -webkit-mask-image: var(--xh-glyph-mark-chevron-left);
+  mask-image: var(--xh-glyph-mark-chevron-left);
 }
 
 /* 键盘落焦的条目画内收环；指针触发的聚焦不画 */
@@ -14918,7 +15187,7 @@ input[data-scope='mention'][data-part='input'] {
   align-items: center;
   justify-content: center;
   inline-size: var(--xh-menubar-item-indicator-size, var(--xh-control-indicator-size));
-  color: var(--xh-menubar-item-indicator-fg, var(--xh-fg-subtle));
+  color: var(--xh-menubar-item-indicator-fg, var(--xh-fg-brand));
 }
 
 [data-scope='menubar'][data-part='item-indicator'][hidden] {
@@ -15019,11 +15288,13 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_navigation-menu-link-px: var(--xh-control-px-md);
   --xh-_navigation-menu-link-font-size: var(--xh-text-body-size);
 
-  /* 语气落在三处：条目的高亮底、展开着的 trigger 与当前链接的文字色、指示条。
-     没写 data-tone 时这几个 --xh-_tone-* 都没被声明，各自退回原来的取值。
+  /* 悬停与键盘锚点恒中性灰轻档、不接语气槽——两档同色相的话打开路径就认不出来了 */
+  --xh-_navigation-menu-highlight-bg: var(--xh-bg-subtle);
+
+  /* 语气落在三处：展开着的 trigger 的底色、当前链接的文字色、指示条。
+     没写 data-tone 时这几个 --xh-_tone-* 都没被声明，各自退回品牌色。
      聚焦环不在其列，它恒是 --xh-ring-focus */
-  --xh-_navigation-menu-highlight-bg: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
-  --xh-_navigation-menu-open-fg: var(--xh-_tone-fg, var(--xh-fg-default));
+  --xh-_navigation-menu-active-bg: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
   --xh-_navigation-menu-current-fg: var(--xh-_tone-fg, var(--xh-fg-brand));
   --xh-_navigation-menu-accent: var(--xh-_tone, var(--xh-fg-brand));
 
@@ -15103,7 +15374,7 @@ input[data-scope='mention'][data-part='input'] {
   line-height: var(--xh-leading-none);
   white-space: nowrap;
   cursor: pointer;
-  transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='navigation-menu'][data-part='trigger'][hidden] {
@@ -15119,8 +15390,11 @@ input[data-scope='mention'][data-part='input'] {
   outline-offset: var(--xh-ring-offset);
 }
 
+/* 展开着的那一张是打开路径，走品牌淡底强档：哪一张开着必须一眼看得出来。
+   不加粗：横排的栏加粗会推挤相邻触发器。
+   必须排在轻档之后：指针回到它身上时同特指度靠书写顺序压过轻档 */
 [data-scope='navigation-menu'][data-part='trigger'][data-state='open'] {
-  color: var(--xh-navigation-menu-trigger-fg-open, var(--xh-_navigation-menu-open-fg));
+  background: var(--xh-navigation-menu-trigger-bg-active, var(--xh-_navigation-menu-active-bg));
 }
 
 /* 集合条目用 data-disabled，不用 :disabled：它带的是 aria-disabled，
@@ -15144,7 +15418,7 @@ input[data-scope='mention'][data-part='input'] {
   display: flex;
   flex-direction: column;
   gap: var(--xh-navigation-menu-content-gap, var(--xh-space-1));
-  min-inline-size: var(--xh-navigation-menu-content-min-w, var(--xh-overlay-min-w));
+  min-inline-size: var(--xh-navigation-menu-content-min-w, var(--xh-overlay-menu-min-w));
   padding: var(--xh-navigation-menu-content-p, var(--xh-space-1));
   border: var(--xh-stroke-thin) solid var(--xh-navigation-menu-content-border, var(--xh-border-default));
   border-radius: var(--xh-navigation-menu-content-radius, var(--xh-shape-surface));
@@ -15285,14 +15559,13 @@ input[data-scope='mention'][data-part='input'] {
      换档不必给每个部件各写一条选择器 */
   --xh-_number-field-h: var(--xh-control-h-md);
   --xh-_number-field-px: var(--xh-control-px-md);
+  --xh-_number-field-gap: var(--xh-control-gap-md);
   --xh-_number-field-font-size: var(--xh-text-body-size);
   --xh-_number-field-label-font-size: var(--xh-text-label-size);
   --xh-_number-field-trigger-font-size: var(--xh-text-body-size);
 
-  /* 盒子的圆角与盒内分段的圆角：分段贴在描边里侧，圆角要减去描边自己占的那一道，
-     写同一个值会让分段的底色顶到圆角外面去 */
+  /* 盒子的圆角 */
   --xh-_number-field-radius: var(--xh-number-field-input-radius, var(--xh-shape-control));
-  --xh-_number-field-seg-radius: calc(var(--xh-_number-field-radius) - var(--xh-stroke-thin));
 
   /* 形态档只换这几个私有槽：输入框的底与描边，加减钮的底与描边 */
   --xh-_number-field-bg: var(--xh-bg-canvas);
@@ -15325,6 +15598,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-icon-size: var(--xh-number-field-icon-size, var(--xh-glyph-size-sm));
   --xh-_number-field-h: var(--xh-control-h-sm);
   --xh-_number-field-px: var(--xh-control-px-sm);
+  --xh-_number-field-gap: var(--xh-control-gap-sm);
   --xh-_number-field-font-size: var(--xh-control-font-sm);
   --xh-_number-field-label-font-size: var(--xh-control-font-sm);
   --xh-_number-field-trigger-font-size: var(--xh-control-font-sm);
@@ -15334,6 +15608,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-icon-size: var(--xh-number-field-icon-size, var(--xh-glyph-size-lg));
   --xh-_number-field-h: var(--xh-control-h-lg);
   --xh-_number-field-px: var(--xh-control-px-lg);
+  --xh-_number-field-gap: var(--xh-control-gap-lg);
   --xh-_number-field-font-size: var(--xh-control-font-lg);
   --xh-_number-field-label-font-size: var(--xh-control-font-lg);
   --xh-_number-field-trigger-font-size: var(--xh-control-font-lg);
@@ -15400,10 +15675,12 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='number-field'][data-part='control'] {
   position: relative;
   display: inline-flex;
-  /* 居中而不是拉伸：作者插在框里的前后缀是一行文字，被拉满整框高度后字会贴着框顶。
-     要占满整框高度的只有 input 与加减钮，它们各自明写 */
+  /* 居中而不是拉伸：作者插在框里的前后缀是一行文字，被拉满整框高度后字会贴着框顶 */
   align-items: center;
+  gap: var(--xh-number-field-control-gap, var(--xh-_number-field-gap));
+  min-inline-size: var(--xh-number-field-control-min-w, var(--xh-control-min-w));
   block-size: var(--xh-number-field-control-h, var(--xh-_number-field-h));
+  padding-inline: var(--xh-number-field-control-px, var(--xh-_number-field-px));
   border: var(--xh-stroke-thin) solid var(--xh-number-field-input-border, var(--xh-_number-field-border));
   border-radius: var(--xh-_number-field-radius);
   background: var(--xh-number-field-input-bg, var(--xh-_number-field-bg));
@@ -15414,7 +15691,7 @@ input[data-scope='mention'][data-part='input'] {
   border-color: var(--xh-number-field-input-border-hover, var(--xh-_number-field-border-hover));
 }
 
-[data-scope='number-field'][data-part='control']:focus-within {
+[data-scope='number-field'][data-part='control']:focus-within:not([data-disabled]) {
   border-color: var(--xh-number-field-input-border-focus, var(--xh-_number-field-border-focus));
   outline: var(--xh-ring-width) solid var(--xh-_number-field-ring);
   outline-offset: var(--xh-ring-offset);
@@ -15434,17 +15711,18 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='number-field'][data-part='control'][data-disabled] {
   background: var(--xh-number-field-input-bg-disabled, var(--xh-bg-subtle));
   color: var(--xh-fg-disabled);
+  cursor: not-allowed;
 }
 
-/* 盒内 input：无边框无底无圆角，观感全归 control；两侧只需半档内边距。
-   数字居中排在两个按钮之间；给一个成型的默认宽度，作者不写 style 也是一枚齐整的步进器。
+/* 盒内 input：无边框无底无圆角，观感全归 control；行内内衬也归 control，
+   这里再留一份就是框内套了一圈空白。数字居中排在两个按钮之间；
    前后缀图标/文字直接流式排在 input 两侧，不用再绝对定位 */
 [data-scope='number-field'][data-part='control'] [data-part='input'] {
   flex: 1 1 auto;
   inline-size: var(--xh-number-field-input-w, 5em);
   min-inline-size: 0;
   block-size: 100%;
-  padding-inline: calc(var(--xh-number-field-input-px, var(--xh-_number-field-px)) / 2);
+  padding-inline: 0;
   border: 0;
   border-radius: 0;
   background: transparent;
@@ -15471,32 +15749,15 @@ input[data-scope='mention'][data-part='input'] {
   background: transparent;
 }
 
-/* 盒内按钮：与盒边齐平、竖向撑满，是盒子的两端而不是浮在盒里的独立方块。
-   底与描边都交还 control——按钮自带一块底色就会把一个盒子读成三块拼起来的；
+/* 盒内按钮：尺寸与圆角走基础规则那枚行内动作方钮，这里只把底与描边交还 control——
+   按钮自带一块底色就会把一个盒子读成三块拼起来的；
    常态只剩符号，符号取次级前景，悬停与按下才浮出底色 */
 [data-scope='number-field'][data-part='control'] [data-part='increment-trigger'],
 [data-scope='number-field'][data-part='control'] [data-part='decrement-trigger'] {
   margin: 0;
-  align-self: stretch;
-  inline-size: var(--xh-number-field-trigger-size, var(--xh-_number-field-h));
-  block-size: auto;
   border: 0;
-  border-radius: 0;
   background: transparent;
   color: var(--xh-number-field-trigger-fg, var(--xh-fg-muted));
-}
-
-/* 两端那一段取盒子的内圆角——盒子的圆角减去它自己那道描边；中间各段一律取直。
-   按位置认而不是按角色认：模板里三件的先后由作者定，减钮不一定就在最前面。
-   逻辑角，dir 翻转时跟着走 */
-[data-scope='number-field'][data-part='control'] > :first-child {
-  border-start-start-radius: var(--xh-_number-field-seg-radius);
-  border-end-start-radius: var(--xh-_number-field-seg-radius);
-}
-
-[data-scope='number-field'][data-part='control'] > :last-child {
-  border-start-end-radius: var(--xh-_number-field-seg-radius);
-  border-end-end-radius: var(--xh-_number-field-seg-radius);
 }
 
 /* 悬停只在分段自己身上浮出一块底色与更实的符号，盒子的描边纹丝不动 */
@@ -15585,8 +15846,8 @@ input[data-scope='mention'][data-part='input'] {
   flex: none;
   align-items: center;
   justify-content: center;
-  inline-size: var(--xh-number-field-trigger-size, var(--xh-_number-field-h));
-  block-size: var(--xh-number-field-trigger-size, var(--xh-_number-field-h));
+  inline-size: var(--xh-number-field-trigger-size, var(--xh-control-action-size));
+  block-size: var(--xh-number-field-trigger-size, var(--xh-control-action-size));
   padding: 0;
   border: var(--xh-stroke-thin) solid var(--xh-number-field-trigger-border, var(--xh-_number-field-trigger-border));
   border-radius: var(--xh-number-field-trigger-radius, var(--xh-shape-control));
@@ -16952,9 +17213,9 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_select-label-font-size: var(--xh-text-label-size);
 
   /* 形态档只换这三个槽：缺省即 outline（描边 + 画布底） */
-  --xh-_select-trigger-bg: var(--xh-bg-canvas);
-  --xh-_select-trigger-border: var(--xh-border-control);
-  --xh-_select-trigger-border-hover: var(--xh-border-control-hover);
+  --xh-_select-control-bg: var(--xh-bg-canvas);
+  --xh-_select-control-border: var(--xh-border-control);
+  --xh-_select-control-border-hover: var(--xh-border-control-hover);
 
   /* 聚焦环恒用固定环色；强调色随语气走，只落在勾选标记与选中文字上，正文文字色不动。
      没写 data-tone 时 --xh-_tone 没被声明，两处都退回原来的取值 */
@@ -16964,12 +17225,12 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='select'][data-part='root'] {
-  /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
-  --xh-icon-size: var(--xh-select-icon-size, var(--xh-glyph-size-text));
+  /* 作者塞进指示符槽的图标跟着控件的尺寸档走；它自己写了 size 时仍以作者的为准 */
+  --xh-icon-size: var(--xh-select-icon-size, var(--xh-glyph-size-md));
 
   display: inline-flex;
   flex-direction: column;
-  gap: var(--xh-select-gap, var(--xh-stack-gap-md));
+  gap: var(--xh-select-gap, var(--xh-space-1));
   /* 隐藏 select 以此为定位基准：它必须留在布局里，原生校验提示要有处可贴 */
   position: relative;
 }
@@ -16984,6 +17245,15 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_select-label-font-size: var(--xh-control-font-sm);
 }
 
+/* 图标只跟着盒那一侧换档：浮层里的勾选标记有自己的指示符盒，换成整档图标会撑破它 */
+[data-scope='select'][data-part='root'][data-size='sm'] {
+  --xh-icon-size: var(--xh-select-icon-size, var(--xh-glyph-size-sm));
+}
+
+[data-scope='select'][data-part='root'][data-size='lg'] {
+  --xh-icon-size: var(--xh-select-icon-size, var(--xh-glyph-size-lg));
+}
+
 [data-scope='select']:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
   --xh-_select-h: var(--xh-control-h-lg);
   --xh-_select-px: var(--xh-control-px-lg);
@@ -16996,27 +17266,27 @@ input[data-scope='mention'][data-part='input'] {
 /* 输入类不做 solid：实心底压着可编辑的值，读起来像块不可点的色板。
    形态只决定描边与底色怎么用，用哪族颜色由 data-tone 决定 */
 [data-scope='select']:is([data-part='root'], [data-part='positioner'])[data-variant='outline'] {
-  --xh-_select-trigger-bg: var(--xh-bg-canvas);
-  --xh-_select-trigger-border: var(--xh-border-control);
-  --xh-_select-trigger-border-hover: var(--xh-border-control-hover);
+  --xh-_select-control-bg: var(--xh-bg-canvas);
+  --xh-_select-control-border: var(--xh-border-control);
+  --xh-_select-control-border-hover: var(--xh-border-control-hover);
 }
 
 /* 填充式：底色顶替描边，悬停时才浮出一道淡边 */
 [data-scope='select']:is([data-part='root'], [data-part='positioner'])[data-variant='subtle'] {
-  --xh-_select-trigger-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-  --xh-_select-trigger-border: transparent;
-  --xh-_select-trigger-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
+  --xh-_select-control-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+  --xh-_select-control-border: transparent;
+  --xh-_select-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
 
 /* 无框：底与常态描边透明，悬停浮出描边，聚焦由焦点环表达 */
 [data-scope='select']:is([data-part='root'], [data-part='positioner'])[data-variant='ghost'] {
-  --xh-_select-trigger-bg: transparent;
-  --xh-_select-trigger-border: transparent;
-  --xh-_select-trigger-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
+  --xh-_select-control-bg: transparent;
+  --xh-_select-control-border: transparent;
+  --xh-_select-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
 
 [data-scope='select'][data-part='label'] {
-  color: var(--xh-select-label-fg, var(--xh-fg-muted));
+  color: var(--xh-select-label-fg, var(--xh-fg-default));
   font-size: var(--xh-select-label-font-size, var(--xh-_select-label-font-size));
   font-weight: var(--xh-select-label-font-weight, var(--xh-text-label-weight));
   line-height: var(--xh-leading-none);
@@ -17026,19 +17296,68 @@ input[data-scope='mention'][data-part='input'] {
   color: var(--xh-fg-subtle);
 }
 
+/* 盒：描边、底色、圆角、控件高度与行内内衬都长在这一层，触发器与清空按钮在里面并排。
+   聚焦环也画在它上面，焦点落在哪颗按钮上，看到的都是同一个框亮起来 */
+[data-scope='select'][data-part='control'] {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--xh-select-control-gap, var(--xh-_select-gap));
+  block-size: var(--xh-select-control-h, var(--xh-_select-h));
+  padding-inline: var(--xh-select-control-px, var(--xh-_select-px));
+  min-inline-size: var(--xh-select-control-min-w, var(--xh-control-min-w));
+  /* 多选会把 N 项的文本连成一串，框宽必须封顶；与浮层同一个上限，两半看着才是一件东西 */
+  max-inline-size: var(--xh-select-control-max-w, var(--xh-overlay-max-w));
+  border: var(--xh-stroke-thin) solid var(--xh-select-control-border, var(--xh-_select-control-border));
+  border-radius: var(--xh-select-control-radius, var(--xh-shape-control));
+  background: var(--xh-select-control-bg, var(--xh-_select-control-bg));
+}
+
+/* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
+[data-scope='select'][data-part='control']:hover:not([data-disabled], [data-invalid]) {
+  border-color: var(--xh-select-control-border-hover, var(--xh-_select-control-border-hover));
+}
+
+[data-scope='select'][data-part='control'][data-invalid] {
+  border-color: var(--xh-select-control-border-invalid, var(--xh-border-invalid));
+
+  /* 校验失败时环也跟着变红：两圈等宽相邻却一红一蓝，读的人不知道哪个才是当前状态 */
+  --xh-_select-ring: var(--xh-ring-invalid);
+}
+
+/* 焦点落在盒内任一颗按钮上都画同一圈环；禁用时按钮不可聚焦，守卫只是把这条说死 */
+[data-scope='select'][data-part='control']:focus-within:not([data-disabled]) {
+  outline: var(--xh-ring-width) solid var(--xh-_select-ring);
+  outline-offset: var(--xh-ring-offset);
+}
+
+/* 聚焦态描边色与环共用一族语气色。校验失败时要显式让开，描边保持红色 */
+[data-scope='select'][data-part='control']:focus-within:not([data-invalid]) {
+  border-color: var(--xh-select-control-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
+}
+
+/* 只读仍可聚焦、浮层仍展得开、条目仍能浏览，所以不置灰，只把底色压下去表示「改不动」 */
+[data-scope='select'][data-part='control'][data-readonly] {
+  background: var(--xh-select-control-bg-readonly, var(--xh-bg-subtle));
+}
+
+[data-scope='select'][data-part='control'][data-disabled] {
+  background: var(--xh-select-control-bg-disabled, var(--xh-bg-subtle));
+  color: var(--xh-fg-disabled);
+  cursor: not-allowed;
+}
+
+/* 触发器退化成盒里那颗可聚焦的按钮：描边、底色与内衬归盒，它只占满剩余一行 */
 [data-scope='select'][data-part='trigger'] {
   display: inline-flex;
+  flex: 1 1 auto;
   align-items: center;
   justify-content: space-between;
   gap: var(--xh-select-trigger-gap, var(--xh-_select-gap));
-  min-inline-size: var(--xh-select-trigger-min-w, var(--xh-control-min-w));
-  /* 多选会把 N 项的文本连成一串，框宽必须封顶；与浮层同一个上限，两半看着才是一件东西 */
-  max-inline-size: var(--xh-select-trigger-max-w, var(--xh-overlay-max-w));
-  block-size: var(--xh-select-trigger-h, var(--xh-_select-h));
-  padding-inline: var(--xh-select-trigger-px, var(--xh-_select-px));
-  border: var(--xh-stroke-thin) solid var(--xh-select-trigger-border, var(--xh-_select-trigger-border));
-  border-radius: var(--xh-select-trigger-radius, var(--xh-shape-control));
-  background: var(--xh-select-trigger-bg, var(--xh-_select-trigger-bg));
+  /* 弹性子项默认最小尺寸是内容尺寸，不归零则长值把盒撑破、省略号永远轮不到 */
+  min-inline-size: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
   color: var(--xh-select-trigger-fg, var(--xh-fg-default));
   font-size: var(--xh-select-trigger-font-size, var(--xh-_select-font-size));
   line-height: var(--xh-leading-none);
@@ -17046,30 +17365,7 @@ input[data-scope='mention'][data-part='input'] {
   cursor: pointer;
 }
 
-/* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
-[data-scope='select'][data-part='trigger']:hover:not(:disabled, [data-invalid]) {
-  border-color: var(--xh-select-trigger-border-hover, var(--xh-_select-trigger-border-hover));
-}
-
-[data-scope='select'][data-part='trigger'][data-invalid] {
-  border-color: var(--xh-select-trigger-border-invalid, var(--xh-border-invalid));
-
-  /* 校验失败时环也跟着变红：两圈等宽相邻却一红一蓝，读的人不知道哪个才是当前状态 */
-  --xh-_select-ring: var(--xh-ring-invalid);
-}
-
-/* 收纳容器：触发器与清空按钮在里面并排，触发器占满剩余一行 */
-[data-scope='select'][data-part='control'] {
-  display: flex;
-  align-items: center;
-  gap: var(--xh-select-control-gap, var(--xh-space-1));
-}
-
-[data-scope='select'][data-part='control'] > [data-part='trigger'] {
-  flex: 1;
-}
-
-/* 清空按钮：trigger 的兄弟节点，贴在触发框旁边的小方钮，不撑高那一行；清不了时连接层给 hidden */
+/* 清空按钮：盒里 trigger 的兄弟节点，排在触发器之后，与展开箭头一样宽；清不了时连接层给 hidden */
 [data-scope='select'][data-part='clear-trigger'] {
   display: inline-flex;
   flex: none;
@@ -17171,19 +17467,9 @@ input[data-scope='mention'][data-part='input'] {
   cursor: not-allowed;
 }
 
+/* 环画在盒上，按钮自己不再画：两圈套着的环读起来像两个控件 */
 [data-scope='select'][data-part='trigger']:focus-visible {
-  outline: var(--xh-ring-width) solid var(--xh-_select-ring);
-  outline-offset: var(--xh-ring-offset);
-}
-
-/* 聚焦态描边色与环共用一族语气色。这条排在上面的 invalid 之后，校验失败时要显式让开，描边保持红色 */
-[data-scope='select'][data-part='trigger']:focus-visible:not([data-invalid]) {
-  border-color: var(--xh-select-trigger-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
-}
-
-/* 只读仍可聚焦、浮层仍展得开、条目仍能浏览，所以不置灰，只把底色压下去表示「改不动」 */
-[data-scope='select'][data-part='trigger'][data-readonly] {
-  background: var(--xh-select-trigger-bg-readonly, var(--xh-bg-subtle));
+  outline: none;
 }
 
 /* trigger 是单体控件，用原生 disabled（条目那边一律 aria-disabled） */
@@ -17192,7 +17478,7 @@ input[data-scope='mention'][data-part='input'] {
   cursor: not-allowed;
 }
 
-/* 框宽由 trigger 定，这里得允许自己被压缩：弹性子项默认最小尺寸是内容尺寸，
+/* 盒宽由 control 定，这里得允许自己被压缩：弹性子项默认最小尺寸是内容尺寸，
    不归零则长值把行撑破、省略号永远轮不到 */
 [data-scope='select'][data-part='value-text'] {
   flex: 1;
@@ -17212,11 +17498,14 @@ input[data-scope='mention'][data-part='input'] {
   display: none;
 }
 
+/* 展开箭头与清空钮同一把尺：两者互斥显示，换来换去不该让盒里的宽度跳一下 */
 [data-scope='select'][data-part='indicator'] {
   display: inline-flex;
   flex: none;
   align-items: center;
   justify-content: center;
+  inline-size: var(--xh-select-action-size, var(--xh-control-action-size));
+  block-size: var(--xh-select-action-size, var(--xh-control-action-size));
   color: var(--xh-select-indicator-fg, var(--xh-fg-muted));
   transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
@@ -17242,9 +17531,11 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='select'][data-part='content'] {
   display: flex;
   flex-direction: column;
-  min-inline-size: var(--xh-select-content-min-w, var(--xh-overlay-min-w));
+  min-inline-size: var(--xh-select-content-min-w, var(--xh-overlay-menu-min-w));
   max-inline-size: var(--xh-select-content-max-w, var(--xh-overlay-max-w));
-  max-block-size: min(var(--xh-select-content-max-h, var(--xh-overlay-max-h)), var(--xh-_select-available-h));
+  max-block-size: min(var(--xh-select-content-max-h, var(--xh-overlay-menu-max-h)), var(--xh-_select-available-h));
+  padding-block: var(--xh-select-content-py, var(--xh-space-1));
+  padding-inline: var(--xh-select-content-px, var(--xh-space-1));
   border: var(--xh-stroke-thin) solid var(--xh-select-content-border, var(--xh-border-default));
   border-radius: var(--xh-select-content-radius, var(--xh-shape-surface));
   background: var(--xh-select-content-bg, var(--xh-bg-surface));
@@ -17255,7 +17546,7 @@ input[data-scope='mention'][data-part='input'] {
   pointer-events: auto;
 }
 
-/* 列表框本体：条目的内边距长在这一层，滚动也在这一层。
+/* 列表框本体：只管滚动，留白归外壳。
    min-block-size: 0 是 flex 子项能真正滚动的前提——不给的话它按内容撑高，
    外壳的 max-block-size 就只会把溢出的部分裁掉而不是交给它滚 */
 [data-scope='select'][data-part='list'] {
@@ -17263,8 +17554,6 @@ input[data-scope='mention'][data-part='input'] {
   flex: 1 1 auto;
   flex-direction: column;
   min-block-size: 0;
-  padding-block: var(--xh-select-content-py, var(--xh-space-1));
-  padding-inline: var(--xh-select-content-px, var(--xh-space-1));
   overflow-y: auto;
 }
 
@@ -17562,9 +17851,10 @@ input[data-scope='mention'][data-part='input'] {
   cursor: pointer;
 }
 
-[data-scope='side-nav'][data-part='branch-trigger']:hover,
-[data-scope='side-nav'][data-part='link']:hover {
-  background: var(--xh-bg-subtle-hover);
+/* 悬停与键盘锚点共用中性灰轻档：锚点只认连接层打的 data-highlighted，不读 :focus */
+[data-scope='side-nav'][data-part='branch-trigger']:not([data-disabled]):is(:hover, [data-highlighted]),
+[data-scope='side-nav'][data-part='link']:not([data-disabled]):is(:hover, [data-highlighted]) {
+  background: var(--xh-side-nav-row-bg-hover, var(--xh-bg-subtle));
 }
 
 [data-scope='side-nav'][data-part='branch-trigger']:focus-visible,
@@ -17573,8 +17863,9 @@ input[data-scope='mention'][data-part='input'] {
   outline-offset: var(--xh-ring-offset);
 }
 
-/* 选中的那条：品牌淡底 + 强调字 */
-[data-scope='side-nav'][data-part='link'][data-current] {
+/* 选中的那条：品牌淡底 + 强调字。
+   守卫与轻档那条同特指度，写在其后才压得住——键盘走到当前页那一行时底色仍是品牌淡底 */
+[data-scope='side-nav'][data-part='link']:not([data-disabled])[data-current] {
   background: var(--xh-bg-brand-subtle);
   color: var(--xh-fg-brand);
   font-weight: var(--xh-font-weight-medium);
@@ -17632,16 +17923,6 @@ input[data-scope='mention'][data-part='input'] {
   visibility: hidden;
 }
 
-[data-scope='side-nav'][data-part='positioner'][data-state='open'] {
-  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
-}
-
-/* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
-   免得动画结束到收起落下来之间闪一下原样 */
-[data-scope='side-nav'][data-part='positioner'][data-state='closed'] {
-  animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
-}
-
 /* 折叠态的弹出面板：贴着触发按钮旁侧的浮层卡片。
    面板自己不吃子层缩进（padding 整圈盖掉），面板内的嵌套子层照常缩进 */
 [data-scope='side-nav'][data-part='branch-content'][data-popout] {
@@ -17656,6 +17937,16 @@ input[data-scope='mention'][data-part='input'] {
   /* 子导航条目数没有上限，矮视口下不限高就整块伸出视口且滚不到 */
   max-block-size: min(var(--xh-side-nav-popout-max-h, var(--xh-overlay-menu-max-h)), var(--xh-_side-nav-available-h));
   overflow-y: auto;
+}
+
+[data-scope='side-nav'][data-part='branch-content'][data-popout][data-state='open'] {
+  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+}
+
+/* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
+   免得动画结束到收起落下来之间闪一下原样 */
+[data-scope='side-nav'][data-part='branch-content'][data-popout][data-state='closed'] {
+  animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
 }
 
 [data-scope='side-nav'][data-part='branch-indicator'] {
@@ -18509,7 +18800,7 @@ input[data-scope='mention'][data-part='input'] {
   display: flex;
   position: relative;
   flex-direction: column;
-  max-block-size: var(--xh-table-max-h, var(--xh-viewport-max-h));
+  max-block-size: var(--xh-table-max-h, var(--xh-viewport-h-lg));
   border: var(--xh-stroke-thin) solid var(--xh-table-border, var(--xh-border-default));
   border-radius: var(--xh-table-radius, var(--xh-shape-surface));
   background: var(--xh-table-bg, var(--xh-bg-surface));
@@ -19158,7 +19449,7 @@ input[data-scope='mention'][data-part='input'] {
      换档不必给每个部件各写一条选择器 */
   --xh-_tags-input-control-h: var(--xh-control-h-md);
   --xh-_tags-input-control-px: var(--xh-control-px-md);
-  --xh-_tags-input-control-gap: var(--xh-control-gap-sm);
+  --xh-_tags-input-control-gap: var(--xh-control-gap-md);
   --xh-_tags-input-input-font-size: var(--xh-text-body-size);
   --xh-_tags-input-item-font-size: var(--xh-text-secondary-size);
   --xh-_tags-input-label-font-size: var(--xh-text-label-size);
@@ -19210,6 +19501,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-icon-size: var(--xh-tags-input-icon-size, var(--xh-glyph-size-sm));
   --xh-_tags-input-control-h: var(--xh-control-h-sm);
   --xh-_tags-input-control-px: var(--xh-control-px-sm);
+  --xh-_tags-input-control-gap: var(--xh-control-gap-sm);
   --xh-_tags-input-input-font-size: var(--xh-control-font-sm);
   --xh-_tags-input-item-font-size: var(--xh-control-caption-sm);
   --xh-_tags-input-label-font-size: var(--xh-control-font-sm);
@@ -19243,6 +19535,7 @@ input[data-scope='mention'][data-part='input'] {
   flex-wrap: wrap;
   align-items: center;
   gap: var(--xh-tags-input-control-gap, var(--xh-_tags-input-control-gap));
+  min-inline-size: var(--xh-tags-input-control-min-w, var(--xh-control-min-w));
   min-block-size: var(--xh-tags-input-control-h, var(--xh-_tags-input-control-h));
   /* 纵向只留半档：标签行加上下内距要装进控件档的高度里 */
   padding-block: var(--xh-tags-input-control-py, var(--xh-space-0_5));
@@ -19266,7 +19559,7 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 焦点环画在这个框上：用户眼里"被聚焦的控件"就是整个框，
    而真正持有焦点的是里面的 input（它自己那圈环因此让位，见下） */
-[data-scope='tags-input'][data-part='control']:focus-within {
+[data-scope='tags-input'][data-part='control']:focus-within:not([data-disabled]) {
   border-color: var(--xh-tags-input-control-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
   outline: var(--xh-ring-width) solid var(--xh-_tags-input-ring);
   outline-offset: var(--xh-ring-offset);
@@ -19550,8 +19843,8 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 /* root 只负责纵向堆叠：标签一行、输入行一行。
-   输入框与清空按钮中间那层包裹是作者自己写的、不在角色表里，
-   所以尺寸与间距一律长在各自的角色节点上，不去假设那层存在 */
+   输入框与清空按钮收进 control 部件即得一体式：视觉盒画在 control 上，框内两件都退成透明分段。
+   不写 control 时退回两件并排的观感（下方 input 与清空按钮的基础规则原样生效） */
 [data-scope='text-field'][data-part='root'] {
   /* 作者塞进来的图标跟着控件的尺寸档走；它自己写了 size 时仍以作者的为准 */
   --xh-icon-size: var(--xh-text-field-icon-size, var(--xh-glyph-size-md));
@@ -19560,6 +19853,7 @@ input[data-scope='mention'][data-part='input'] {
      换档不必给每个部件各写一条选择器 */
   --xh-_text-field-h: var(--xh-control-h-md);
   --xh-_text-field-px: var(--xh-control-px-md);
+  --xh-_text-field-gap: var(--xh-control-gap-md);
   --xh-_text-field-font-size: var(--xh-text-body-size);
   --xh-_text-field-label-font-size: var(--xh-text-label-size);
   --xh-_text-field-action-font-size: var(--xh-text-secondary-size);
@@ -19590,6 +19884,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-icon-size: var(--xh-text-field-icon-size, var(--xh-glyph-size-sm));
   --xh-_text-field-h: var(--xh-control-h-sm);
   --xh-_text-field-px: var(--xh-control-px-sm);
+  --xh-_text-field-gap: var(--xh-control-gap-sm);
   --xh-_text-field-font-size: var(--xh-control-font-sm);
   --xh-_text-field-label-font-size: var(--xh-control-font-sm);
   --xh-_text-field-action-font-size: var(--xh-control-caption-sm);
@@ -19599,6 +19894,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-icon-size: var(--xh-text-field-icon-size, var(--xh-glyph-size-lg));
   --xh-_text-field-h: var(--xh-control-h-lg);
   --xh-_text-field-px: var(--xh-control-px-lg);
+  --xh-_text-field-gap: var(--xh-control-gap-lg);
   --xh-_text-field-font-size: var(--xh-control-font-lg);
   --xh-_text-field-label-font-size: var(--xh-control-font-lg);
   --xh-_text-field-action-font-size: var(--xh-control-caption-lg);
@@ -19640,6 +19936,101 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='text-field'][data-part='label'][data-disabled] {
   color: var(--xh-text-field-label-fg-disabled, var(--xh-fg-subtle));
+}
+
+/* —— 一体式 control：输入框与清空按钮同框 —— */
+/* control 是唯一的视觉盒：描边、底色、圆角、聚焦环全画在它身上，框内两件都退成透明分段。
+   :focus-within 而不是 :focus——持有焦点的是框里的输入框，被聚焦的"控件"在眼里是整个框 */
+[data-scope='text-field'][data-part='control'] {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--xh-text-field-control-gap, var(--xh-_text-field-gap));
+  min-inline-size: var(--xh-text-field-control-min-w, var(--xh-control-min-w));
+  block-size: var(--xh-text-field-control-h, var(--xh-_text-field-h));
+  padding-inline: var(--xh-text-field-control-px, var(--xh-_text-field-px));
+  border: var(--xh-stroke-thin) solid var(--xh-text-field-control-border, var(--xh-_text-field-border));
+  border-radius: var(--xh-text-field-control-radius, var(--xh-shape-control));
+  background: var(--xh-text-field-control-bg, var(--xh-_text-field-bg));
+  color: var(--xh-text-field-control-fg, var(--xh-fg-default));
+  transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+[data-scope='text-field'][data-part='control'][hidden] {
+  display: none;
+}
+
+/* hover 只在中性态换描边：invalid 与 at-limit 正拿边框颜色说事，
+   被 hover 盖掉那条信息就没了 */
+[data-scope='text-field'][data-part='control']:hover:not([data-disabled], [data-invalid], [data-at-limit]) {
+  border-color: var(--xh-text-field-control-border-hover, var(--xh-_text-field-border-hover));
+}
+
+[data-scope='text-field'][data-part='control']:focus-within:not([data-disabled]) {
+  border-color: var(--xh-text-field-control-border-focus, var(--xh-_text-field-border-focus));
+  outline: var(--xh-ring-width) solid var(--xh-_text-field-ring);
+  outline-offset: var(--xh-ring-offset);
+}
+
+/* 顶到字数上限：再敲进不去，边框先给个提示。放在 invalid 之前，
+   两者同时成立时按源序让 invalid 赢 */
+[data-scope='text-field'][data-part='control'][data-at-limit] {
+  border-color: var(--xh-text-field-control-border-at-limit, var(--xh-border-at-limit));
+}
+
+[data-scope='text-field'][data-part='control'][data-invalid] {
+  border-color: var(--xh-text-field-control-border-invalid, var(--xh-border-invalid));
+
+  /* 校验失败时环也跟着变红：两圈等宽相邻却一红一蓝，读的人不知道哪个才是当前状态 */
+  --xh-_text-field-ring: var(--xh-ring-invalid);
+}
+
+/* 只读仍可聚焦、可复制，所以不置灰，只把底色压下去表示"改不动" */
+[data-scope='text-field'][data-part='control'][data-readonly] {
+  background: var(--xh-text-field-control-bg-readonly, var(--xh-bg-subtle));
+}
+
+[data-scope='text-field'][data-part='control'][data-disabled] {
+  background: var(--xh-text-field-control-bg-disabled, var(--xh-bg-subtle));
+  color: var(--xh-fg-disabled);
+  cursor: not-allowed;
+}
+
+/* 盒内 input：无边框无底无圆角，观感全归 control；行内内衬也归 control，
+   这里再留一份就是框内套了一圈空白。它占满剩余宽度，把清空按钮顶到最右 */
+[data-scope='text-field'][data-part='control'] [data-part='input'] {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  block-size: 100%;
+  padding-inline: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+/* 盒内 input 不再自己画各态，全部交还 control。hover 这条带上与基础规则同样的
+   :not 条件：基础 hover 的特异度里有它们，不带就打不过 */
+[data-scope='text-field'][data-part='control'] [data-part='input']:hover:not(:disabled, [data-invalid], [data-at-limit]) {
+  border-color: transparent;
+}
+
+[data-scope='text-field'][data-part='control'] [data-part='input']:focus-visible {
+  border-color: transparent;
+  outline: none;
+}
+
+[data-scope='text-field'][data-part='control'] [data-part='input'][data-at-limit],
+[data-scope='text-field'][data-part='control'] [data-part='input'][data-invalid] {
+  border-color: transparent;
+}
+
+[data-scope='text-field'][data-part='control'] [data-part='input']:disabled,
+[data-scope='text-field'][data-part='control'] [data-part='input'][readonly] {
+  background: transparent;
+}
+
+/* 尾部动作钮不参与分宽，宽度由它自己的方钮尺寸决定 */
+[data-scope='text-field'][data-part='control'] [data-part='clear-trigger'] {
+  flex: none;
 }
 
 [data-scope='text-field'][data-part='input'] {
@@ -19897,6 +20288,7 @@ input[data-scope='mention'][data-part='input'] {
   /* 尺寸档只换这四个私有槽，标题与控件都从 root 继承它们，换档不必给每个部件各写一条选择器 */
   --xh-_time-field-control-h: var(--xh-control-h-md);
   --xh-_time-field-control-px: var(--xh-control-px-md);
+  --xh-_time-field-gap: var(--xh-control-gap-md);
   --xh-_time-field-font-size: var(--xh-text-body-size);
   --xh-_time-field-label-font-size: var(--xh-text-label-size);
   /* 形态档只换这三个私有槽：底色与两档描边 */
@@ -19918,6 +20310,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-icon-size: var(--xh-time-field-icon-size, var(--xh-glyph-size-sm));
   --xh-_time-field-control-h: var(--xh-control-h-sm);
   --xh-_time-field-control-px: var(--xh-control-px-sm);
+  --xh-_time-field-gap: var(--xh-control-gap-sm);
   --xh-_time-field-font-size: var(--xh-control-font-sm);
   --xh-_time-field-label-font-size: var(--xh-control-font-sm);
 }
@@ -19926,6 +20319,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-icon-size: var(--xh-time-field-icon-size, var(--xh-glyph-size-lg));
   --xh-_time-field-control-h: var(--xh-control-h-lg);
   --xh-_time-field-control-px: var(--xh-control-px-lg);
+  --xh-_time-field-gap: var(--xh-control-gap-lg);
   --xh-_time-field-font-size: var(--xh-control-font-lg);
   --xh-_time-field-label-font-size: var(--xh-control-font-lg);
 }
@@ -19962,9 +20356,6 @@ input[data-scope='mention'][data-part='input'] {
   font-size: var(--xh-time-field-label-font-size, var(--xh-_time-field-label-font-size));
   font-weight: var(--xh-time-field-label-font-weight, var(--xh-text-label-weight));
   line-height: var(--xh-leading-none);
-  /* 点标题会把焦点送到第一段（段不是能被 for 指向的原生控件，这条由连接层接管），
-     指针得如实反映它可点 */
-  cursor: pointer;
 }
 
 [data-scope='time-field'][data-part='label'][data-disabled] {
@@ -19978,6 +20369,7 @@ input[data-scope='mention'][data-part='input'] {
   display: inline-flex;
   min-inline-size: var(--xh-time-field-control-min-w, var(--xh-control-min-w));
   align-items: center;
+  gap: var(--xh-time-field-control-gap, var(--xh-_time-field-gap));
   block-size: var(--xh-time-field-control-h, var(--xh-_time-field-control-h));
   padding-inline: var(--xh-time-field-control-px, var(--xh-_time-field-control-px));
   padding-block: 0;
@@ -20030,11 +20422,23 @@ input[data-scope='mention'][data-part='input'] {
   cursor: not-allowed;
 }
 
-/* 段是一小块可聚焦区，紧挨着排；分隔符由作者写在段与段之间的普通节点里，
-   不在角色表内，所以间距只能长在段自己身上 */
+/* 段位与作者写在段间的分隔符都在这一层里：它占满盒里剩下的宽度，
+   清空钮因此靠在框内末端 */
+[data-scope='time-field'][data-part='segment-group'] {
+  display: inline-flex;
+  flex: 1 1 auto;
+  align-items: center;
+  min-inline-size: 0;
+}
+
+[data-scope='time-field'][data-part='segment-group'][hidden] {
+  display: none;
+}
+
+/* 段是一小块可聚焦区，紧挨着排；间距长在段自己身上 */
 [data-scope='time-field'][data-part='segment'] {
   display: inline-block;
-  padding-inline: var(--xh-time-field-segment-px, var(--xh-space-0_5));
+  padding-inline: var(--xh-time-field-segment-px, var(--xh-space-1));
   padding-block: 0;
   border-radius: var(--xh-time-field-segment-radius, var(--xh-shape-inset));
   color: inherit;
@@ -20055,7 +20459,7 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 还没填的段压成弱色：一行里哪几段是占位符，一眼要看得出来 */
 [data-scope='time-field'][data-part='segment'][data-placeholder] {
-  color: var(--xh-time-field-segment-fg-placeholder, var(--xh-fg-subtle));
+  color: var(--xh-time-field-placeholder-fg, var(--xh-fg-subtle));
 }
 
 /* 一行段长得差不多，光有边框亮起来看不出正在改哪一段：当前段必须自己有底色。
@@ -20083,7 +20487,8 @@ input[data-scope='mention'][data-part='input'] {
   cursor: not-allowed;
 }
 
-/* 清空按钮贴在框内末端：不占宽度也不撑高 control，有值时才显形 */
+/* 清空按钮贴在框内末端：不占宽度也不撑高 control，有值时才显形。
+   靠段位外壳的 flex:1 顶到末端，自己不写 margin */
 [data-scope='time-field'][data-part='clear-trigger'] {
   display: inline-flex;
   flex: none;
@@ -20092,7 +20497,6 @@ input[data-scope='mention'][data-part='input'] {
   inline-size: var(--xh-time-field-action-size, var(--xh-control-action-size));
   block-size: var(--xh-time-field-action-size, var(--xh-control-action-size));
   padding: 0;
-  margin-inline-start: auto;
   border: 0;
   border-radius: var(--xh-time-field-action-radius, var(--xh-shape-control));
   background: var(--xh-time-field-action-bg, transparent);
@@ -20181,6 +20585,7 @@ input[data-scope='mention'][data-part='input'] {
      换档不必给每个部件各写一条选择器 */
   --xh-_time-picker-control-h: var(--xh-control-h-md);
   --xh-_time-picker-control-px: var(--xh-control-px-md);
+  --xh-_time-picker-gap: var(--xh-control-gap-md);
   --xh-_time-picker-font-size: var(--xh-text-body-size);
   --xh-_time-picker-label-font-size: var(--xh-text-label-size);
   --xh-_time-picker-item-px: var(--xh-control-px-md);
@@ -20201,7 +20606,7 @@ input[data-scope='mention'][data-part='input'] {
 /* 与文本框、时间输入同一套堆叠：标签一行、控件一行 */
 [data-scope='time-picker'][data-part='root'] {
   /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
-  --xh-icon-size: var(--xh-time-picker-icon-size, var(--xh-glyph-size-text));
+  --xh-icon-size: var(--xh-time-picker-icon-size, var(--xh-glyph-size-md));
 
   display: inline-flex;
   flex-direction: column;
@@ -20211,16 +20616,20 @@ input[data-scope='mention'][data-part='input'] {
 /* —— 尺寸 —— */
 /* 缺省档写在上面的基础规则里 */
 [data-scope='time-picker']:is([data-part='root'], [data-part='positioner'])[data-size='sm'] {
+  --xh-icon-size: var(--xh-time-picker-icon-size, var(--xh-glyph-size-sm));
   --xh-_time-picker-control-h: var(--xh-control-h-sm);
   --xh-_time-picker-control-px: var(--xh-control-px-sm);
+  --xh-_time-picker-gap: var(--xh-control-gap-sm);
   --xh-_time-picker-font-size: var(--xh-control-font-sm);
   --xh-_time-picker-label-font-size: var(--xh-control-font-sm);
   --xh-_time-picker-item-px: var(--xh-control-px-sm);
 }
 
 [data-scope='time-picker']:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
+  --xh-icon-size: var(--xh-time-picker-icon-size, var(--xh-glyph-size-lg));
   --xh-_time-picker-control-h: var(--xh-control-h-lg);
   --xh-_time-picker-control-px: var(--xh-control-px-lg);
+  --xh-_time-picker-gap: var(--xh-control-gap-lg);
   --xh-_time-picker-font-size: var(--xh-control-font-lg);
   --xh-_time-picker-label-font-size: var(--xh-control-font-lg);
   --xh-_time-picker-item-px: var(--xh-control-px-lg);
@@ -20260,9 +20669,6 @@ input[data-scope='mention'][data-part='input'] {
   font-size: var(--xh-time-picker-label-font-size, var(--xh-_time-picker-label-font-size));
   font-weight: var(--xh-time-picker-label-font-weight, var(--xh-text-label-weight));
   line-height: var(--xh-leading-none);
-  /* 点标题会把焦点送到第一段（段不是能被 for 指向的原生控件，这条由连接层接管），
-     指针得如实反映它可点 */
-  cursor: pointer;
 }
 
 [data-scope='time-picker'][data-part='label'][data-disabled] {
@@ -20276,7 +20682,7 @@ input[data-scope='mention'][data-part='input'] {
   min-inline-size: var(--xh-time-picker-control-min-w, var(--xh-control-min-w));
   display: inline-flex;
   align-items: center;
-  gap: var(--xh-time-picker-control-gap, var(--xh-control-gap-md));
+  gap: var(--xh-time-picker-control-gap, var(--xh-_time-picker-gap));
   block-size: var(--xh-time-picker-control-h, var(--xh-_time-picker-control-h));
   padding-inline: var(--xh-time-picker-control-px, var(--xh-_time-picker-control-px));
   padding-block: 0;
@@ -20306,6 +20712,8 @@ input[data-scope='mention'][data-part='input'] {
    control 自己不占 Tab 位，所以这里写的是 focus-within 而不是 focus-visible */
 [data-scope='time-picker'][data-part='control']:focus-within:not([data-disabled]) {
   border-color: var(--xh-time-picker-control-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
+  outline: var(--xh-ring-width) solid var(--xh-_time-picker-ring);
+  outline-offset: var(--xh-ring-offset);
 }
 
 [data-scope='time-picker'][data-part='control'][data-invalid] {
@@ -20327,11 +20735,23 @@ input[data-scope='mention'][data-part='input'] {
   cursor: not-allowed;
 }
 
-/* 每一段是一小块可聚焦区，紧挨着排；分隔符由作者写在段与段之间的普通节点里，
-   不在角色表内，所以间距只能长在段自己身上 */
+/* 段位与作者写在段间的分隔符都在这一层里：它占满盒里剩下的宽度，
+   尾部按钮因此靠在框内末端 */
+[data-scope='time-picker'][data-part='segment-group'] {
+  display: inline-flex;
+  flex: 1 1 auto;
+  align-items: center;
+  min-inline-size: 0;
+}
+
+[data-scope='time-picker'][data-part='segment-group'][hidden] {
+  display: none;
+}
+
+/* 每一段是一小块可聚焦区，紧挨着排；间距长在段自己身上 */
 [data-scope='time-picker'][data-part='input'] {
   display: inline-block;
-  padding-inline: var(--xh-time-picker-segment-px, var(--xh-space-0_5));
+  padding-inline: var(--xh-time-picker-segment-px, var(--xh-space-1));
   padding-block: 0;
   border-radius: var(--xh-time-picker-segment-radius, var(--xh-shape-inset));
   color: inherit;
@@ -20352,7 +20772,7 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 还没填的段压成弱色：一行里哪几段是占位符，一眼要看得出来 */
 [data-scope='time-picker'][data-part='input'][data-placeholder] {
-  color: var(--xh-time-picker-segment-fg-placeholder, var(--xh-fg-subtle));
+  color: var(--xh-time-picker-placeholder-fg, var(--xh-fg-subtle));
 }
 
 /* 一行段长得差不多，光有边框亮起来看不出正在改哪一段：当前段必须自己有底色。
@@ -20414,11 +20834,6 @@ input[data-scope='mention'][data-part='input'] {
   display: none;
 }
 
-/* 触发器把整行推到最右：它与清空按钮之间不留缝，两者一起靠框内末端 */
-[data-scope='time-picker'][data-part='trigger'] {
-  margin-inline-start: auto;
-}
-
 [data-scope='time-picker'][data-part='trigger']:hover:not(:disabled),
 [data-scope='time-picker'][data-part='clear-trigger']:hover {
   background: var(--xh-time-picker-action-bg-hover, var(--xh-bg-subtle-hover));
@@ -20435,9 +20850,8 @@ input[data-scope='mention'][data-part='input'] {
   scale: var(--xh-motion-scale-press);
 }
 
-/* 触发器是常规 Tab 停靠点，落焦必须看得见；清空按钮退出了 Tab 序列，
-   这条是给程序化聚焦兜底 */
-[data-scope='time-picker'][data-part='trigger']:focus-visible,
+/* 清空按钮退出了 Tab 序列，这条是给程序化聚焦兜底；
+   展开钮是常规 Tab 停靠点，它落焦时环由盒的 :focus-within 画，这里不再套一圈 */
 [data-scope='time-picker'][data-part='clear-trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-_time-picker-ring);
   outline-offset: var(--xh-ring-offset);
@@ -20456,7 +20870,10 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='time-picker'][data-part='content'] {
   display: flex;
   align-items: stretch;
-  padding: var(--xh-time-picker-content-p, var(--xh-space-1));
+  padding-block: var(--xh-time-picker-content-py, var(--xh-space-1));
+  padding-inline: var(--xh-time-picker-content-px, var(--xh-space-1));
+  /* 列自己定高，面板整体不该再长过页内滚动面那一档 */
+  max-block-size: var(--xh-time-picker-content-max-h, var(--xh-viewport-h-lg));
   border: var(--xh-stroke-thin) solid var(--xh-time-picker-content-border, var(--xh-border-default));
   border-radius: var(--xh-time-picker-content-radius, var(--xh-shape-surface));
   background: var(--xh-time-picker-content-bg, var(--xh-bg-surface));
@@ -20493,7 +20910,7 @@ input[data-scope='mention'][data-part='input'] {
   flex: none;
   flex-direction: column;
   gap: var(--xh-time-picker-presets-gap, var(--xh-space-0_5));
-  max-block-size: var(--xh-time-picker-presets-h, var(--xh-time-picker-column-max-h, 12rem));
+  max-block-size: var(--xh-time-picker-presets-h, var(--xh-viewport-h-sm));
   padding-inline: var(--xh-time-picker-presets-px, var(--xh-space-1));
   overflow-y: auto;
   border-inline-end: var(--xh-stroke-thin) solid var(--xh-time-picker-column-divider, var(--xh-border-subtle));
@@ -20549,7 +20966,8 @@ input[data-scope='mention'][data-part='input'] {
   flex-direction: column;
   gap: var(--xh-time-picker-column-gap, var(--xh-space-0_5));
   min-inline-size: var(--xh-time-picker-column-min-w, 3.5rem);
-  max-block-size: var(--xh-time-picker-column-max-h, 12rem);
+  /* 几列并排：定高而不是随内容收，否则时列与分列的可选值一多一少就错位 */
+  block-size: var(--xh-time-picker-column-h, var(--xh-viewport-h-sm));
   padding-inline: var(--xh-time-picker-column-px, var(--xh-space-1));
   overflow-y: auto;
   /* 滚动容器在某些浏览器里会被自动塞进 Tab 序列，是否画环见下方按 tabindex 分档的两条 */
@@ -21689,7 +22107,7 @@ input[data-scope='mention'][data-part='input'] {
   flex-direction: column;
   gap: var(--xh-tour-gap, var(--xh-space-2));
   inline-size: max-content;
-  max-inline-size: var(--xh-tour-max-w, 22rem);
+  max-inline-size: var(--xh-tour-max-w, var(--xh-overlay-max-w-lg));
   padding-block: var(--xh-tour-py, var(--xh-surface-py-md));
   padding-inline: var(--xh-tour-px, var(--xh-surface-px-md));
   /* 引导步骤的正文长度由作者定，矮视口下不限高气泡会整块伸出视口 */
@@ -22057,12 +22475,14 @@ input[data-scope='mention'][data-part='input'] {
   cursor: not-allowed;
 }
 
+/* 两侧列表定高：高度只由这个槽给，与条目数无关。左右两块因此恒等高，
+   搬走条目、搜索筛掉条目、整侧搬空，面板都停在原地不缩。
+   flex-basis 取 auto 而不是 0，块尺寸才是这一栏真正的主轴基准 */
 [data-scope='transfer'][data-part='list'] {
   display: flex;
-  flex: 1;
+  flex: 1 1 auto;
   flex-direction: column;
-  min-block-size: var(--xh-transfer-list-min-h, 8rem);
-  max-block-size: var(--xh-transfer-list-max-h, 16rem);
+  block-size: var(--xh-transfer-list-h, var(--xh-viewport-h-md));
   padding-block: var(--xh-transfer-list-py, var(--xh-space-1));
   padding-inline: var(--xh-transfer-list-px, var(--xh-space-1));
   overflow: auto;
@@ -22341,7 +22761,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='tree'][data-part='tree'] {
   display: flex;
   flex-direction: column;
-  max-block-size: var(--xh-tree-max-h, var(--xh-viewport-max-h));
+  max-block-size: var(--xh-tree-max-h, var(--xh-viewport-h-lg));
   padding-block: var(--xh-tree-py, var(--xh-space-1));
   padding-inline: var(--xh-tree-px, var(--xh-space-1));
   border: var(--xh-stroke-thin) solid var(--xh-tree-border, var(--xh-border-default));
@@ -22652,7 +23072,10 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 私有槽同时声明在根与 positioner 上：浮层被搬到 portal 落点，不是根的后代，继承不过去 */
 [data-scope='tree-select']:is([data-part='root'], [data-part='positioner']) {
-  /* 尺寸档只换这几个私有槽，触发框与树里的行都从这两处继承它们，换档不必给每个部件各写一条选择器 */
+  /* 作者塞进指示符槽的图标跟着尺寸档走，与皮肤画的兜底字形同一把尺 */
+  --xh-icon-size: var(--xh-tree-select-icon-size, var(--xh-glyph-size-md));
+
+  /* 尺寸档只换这几个私有槽，盒与树里的行都从这两处继承它们，换档不必给每个部件各写一条选择器 */
   --xh-_tree-select-h: var(--xh-control-h-md);
   --xh-_tree-select-px: var(--xh-control-px-md);
   --xh-_tree-select-gap: var(--xh-control-gap-md);
@@ -22667,18 +23090,15 @@ input[data-scope='mention'][data-part='input'] {
 
   /* 选中行的文字色随语气走，没写 data-tone 时退回品牌强调色 */
   --xh-_tree-select-selected-fg: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
+
+  /* 聚焦环恒用固定环色；校验失败时换成告警环色 */
+  --xh-_tree-select-ring: var(--xh-ring-focus);
 }
 
-/* 解剖里没有把「触发器 + 清空按钮」裹在一起的 control 部件，一行是靠 flex-wrap 分出来的：
-   标签占满整行把后面的挤到下一行，触发器与清空按钮就并排落在同一行上。
-   这样作者少写标签、少写清空按钮，剩下的部件也不会塌 */
+/* 标签一行、盒一行的两行堆叠 */
 [data-scope='tree-select'][data-part='root'] {
-  /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
-  --xh-icon-size: var(--xh-tree-select-icon-size, var(--xh-glyph-size-text));
-
   display: inline-flex;
-  flex-wrap: wrap;
-  align-items: center;
+  flex-direction: column;
   gap: var(--xh-tree-select-gap, var(--xh-space-1));
 }
 
@@ -22713,6 +23133,7 @@ input[data-scope='mention'][data-part='input'] {
 /* —— 尺寸 —— */
 /* 缺省档写在上面的基础规则里 */
 [data-scope='tree-select']:is([data-part='root'], [data-part='positioner'])[data-size='sm'] {
+  --xh-icon-size: var(--xh-tree-select-icon-size, var(--xh-glyph-size-sm));
   --xh-_tree-select-h: var(--xh-control-h-sm);
   --xh-_tree-select-px: var(--xh-control-px-sm);
   --xh-_tree-select-gap: var(--xh-control-gap-sm);
@@ -22721,6 +23142,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='tree-select']:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
+  --xh-icon-size: var(--xh-tree-select-icon-size, var(--xh-glyph-size-lg));
   --xh-_tree-select-h: var(--xh-control-h-lg);
   --xh-_tree-select-px: var(--xh-control-px-lg);
   --xh-_tree-select-gap: var(--xh-control-gap-lg);
@@ -22729,9 +23151,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='tree-select'][data-part='label'] {
-  /* 占满整行，把触发器那一行挤下去 */
-  flex-basis: 100%;
-  color: var(--xh-tree-select-label-fg, var(--xh-fg-muted));
+  color: var(--xh-tree-select-label-fg, var(--xh-fg-default));
   font-size: var(--xh-tree-select-label-font-size, var(--xh-_tree-select-label-font-size));
   font-weight: var(--xh-tree-select-label-font-weight, var(--xh-text-label-weight));
   line-height: var(--xh-leading-none);
@@ -22742,64 +23162,88 @@ input[data-scope='mention'][data-part='input'] {
   color: var(--xh-fg-subtle);
 }
 
-/* 画成一个框的就是 trigger 自己（不像 combobox 那样另有 control）：
-   值回显与展开箭头都长在它里面，清空按钮贴在框外与它并排 */
+/* 盒：描边、底色、控件高度与行内内衬都落在这一层，触发按钮与清空按钮在里面并排 */
+[data-scope='tree-select'][data-part='control'] {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--xh-tree-select-control-gap, var(--xh-_tree-select-gap));
+  min-inline-size: var(--xh-tree-select-control-min-w, var(--xh-control-min-w));
+  block-size: var(--xh-tree-select-control-h, var(--xh-_tree-select-h));
+  padding-inline: var(--xh-tree-select-control-px, var(--xh-_tree-select-px));
+  border: var(--xh-stroke-thin) solid var(--xh-tree-select-control-border, var(--xh-_tree-select-border));
+  border-radius: var(--xh-tree-select-control-radius, var(--xh-shape-control));
+  background: var(--xh-tree-select-control-bg, var(--xh-_tree-select-bg));
+  color: var(--xh-tree-select-control-fg, var(--xh-fg-default));
+  cursor: pointer;
+  transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+[data-scope='tree-select'][data-part='control'][hidden] {
+  display: none;
+}
+
+/* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
+[data-scope='tree-select'][data-part='control']:hover:not([data-disabled], [data-invalid]) {
+  border-color: var(--xh-tree-select-control-border-hover, var(--xh-_tree-select-border-hover));
+}
+
+/* Tab 停靠点是盒里的 trigger（展开后才移进树里），环画在盒上 */
+[data-scope='tree-select'][data-part='control']:focus-within:not([data-disabled]) {
+  border-color: var(--xh-tree-select-control-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
+  outline: var(--xh-ring-width) solid var(--xh-_tree-select-ring);
+  outline-offset: var(--xh-ring-offset);
+}
+
+[data-scope='tree-select'][data-part='control'][data-invalid] {
+  border-color: var(--xh-tree-select-control-border-invalid, var(--xh-border-invalid));
+
+  /* 校验失败时环也跟着变红：两圈等宽相邻却一红一蓝，读的人不知道哪个才是当前状态 */
+  --xh-_tree-select-ring: var(--xh-ring-invalid);
+}
+
+/* 只读仍可聚焦、浮层仍展得开、树仍能浏览，所以不置灰，只把底色压下去表示「改不动」 */
+[data-scope='tree-select'][data-part='control'][data-readonly] {
+  background: var(--xh-tree-select-control-bg-readonly, var(--xh-bg-subtle));
+}
+
+[data-scope='tree-select'][data-part='control'][data-disabled] {
+  background: var(--xh-tree-select-control-bg-disabled, var(--xh-bg-subtle));
+  color: var(--xh-fg-disabled);
+  cursor: not-allowed;
+}
+
+/* 盒内那颗可聚焦的按钮：不画描边不铺底也不自带高度，只占满剩余宽度、排布回显与箭头 */
 [data-scope='tree-select'][data-part='trigger'] {
   display: inline-flex;
-  flex: 1;
+  flex: 1 1 auto;
   align-items: center;
   justify-content: space-between;
   gap: var(--xh-tree-select-trigger-gap, var(--xh-_tree-select-gap));
-  min-inline-size: var(--xh-tree-select-trigger-min-w, var(--xh-control-min-w));
-  block-size: var(--xh-tree-select-trigger-h, var(--xh-_tree-select-h));
-  padding-inline: var(--xh-tree-select-trigger-px, var(--xh-_tree-select-px));
-  border: var(--xh-stroke-thin) solid var(--xh-tree-select-trigger-border, var(--xh-_tree-select-border));
-  border-radius: var(--xh-tree-select-trigger-radius, var(--xh-shape-control));
-  background: var(--xh-tree-select-trigger-bg, var(--xh-_tree-select-bg));
+  min-inline-size: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
   color: var(--xh-tree-select-trigger-fg, var(--xh-fg-default));
   font-family: inherit;
   font-size: var(--xh-tree-select-trigger-font-size, var(--xh-_tree-select-font-size));
   line-height: var(--xh-leading-none);
   text-align: start;
   cursor: pointer;
-  transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='tree-select'][data-part='trigger'][hidden] {
   display: none;
 }
 
-/* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
-[data-scope='tree-select'][data-part='trigger']:hover:not(:disabled, [data-invalid]) {
-  border-color: var(--xh-tree-select-trigger-border-hover, var(--xh-_tree-select-border-hover));
-}
-
-/* trigger 是整个控件唯一的 Tab 停靠点（展开后停靠点才移进树里），落焦必须看得见 */
-[data-scope='tree-select'][data-part='trigger']:focus-visible {
-  border-color: var(--xh-tree-select-trigger-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
-  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: var(--xh-ring-offset);
-}
-
-[data-scope='tree-select'][data-part='trigger'][data-invalid] {
-  border-color: var(--xh-tree-select-trigger-border-invalid, var(--xh-border-invalid));
-}
-
-/* 只读仍可聚焦、浮层仍展得开、树仍能浏览，所以不置灰，只把底色压下去表示「改不动」 */
-[data-scope='tree-select'][data-part='trigger'][data-readonly] {
-  background: var(--xh-tree-select-trigger-bg-readonly, var(--xh-bg-subtle));
-}
-
 /* trigger 是单体控件，用原生 disabled（树里的集合条目一律 aria-disabled，写 :disabled 永不命中） */
 [data-scope='tree-select'][data-part='trigger']:disabled {
-  background: var(--xh-tree-select-trigger-bg-disabled, var(--xh-bg-subtle));
   color: var(--xh-fg-disabled);
   cursor: not-allowed;
 }
 
-/* 多选时值会连成很长一串，必须能截断；框宽由 trigger 定，这里得允许自己被压缩 */
+/* 多选时值会连成很长一串，必须能截断；框宽由盒定，这里得允许自己被压缩 */
 [data-scope='tree-select'][data-part='value-text'] {
-  flex: 1;
+  flex: 1 1 auto;
   min-inline-size: 0;
   overflow: hidden;
   /* 行高留出文字的上下伸展空间，本行那层 overflow:hidden 才不会把字削掉；
@@ -22845,7 +23289,7 @@ input[data-scope='mention'][data-part='input'] {
   color: var(--xh-fg-disabled);
 }
 
-/* 贴在触发框旁边的小方钮，不撑高那一行 */
+/* 盒内靠右的小方钮，不撑高那一行 */
 [data-scope='tree-select'][data-part='clear-trigger'] {
   display: inline-flex;
   flex: none;

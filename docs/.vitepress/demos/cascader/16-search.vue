@@ -4,6 +4,7 @@ import { ref } from "vue";
 import {
   XhCascaderColumn,
   XhCascaderContent,
+  XhCascaderControl,
   XhCascaderIndicator,
   XhCascaderInput,
   XhCascaderItem,
@@ -62,10 +63,12 @@ const area = ref<string[][]>([]);
     placeholder="试试输入「西湖」或「苏州」"
   >
     <XhCascaderLabel>收货地区</XhCascaderLabel>
-    <XhCascaderTrigger>
-      <XhCascaderValueText />
-      <XhCascaderIndicator />
-    </XhCascaderTrigger>
+    <XhCascaderControl>
+      <XhCascaderTrigger>
+        <XhCascaderValueText />
+        <XhCascaderIndicator />
+      </XhCascaderTrigger>
+    </XhCascaderControl>
     <XhCascaderPositioner>
       <XhCascaderContent>
         <XhCascaderInput placeholder="搜索地区" />

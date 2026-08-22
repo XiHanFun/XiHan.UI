@@ -23,6 +23,7 @@
        换档不必给每个部件各写一条选择器 */
     --xh-_time-picker-control-h: var(--xh-control-h-md);
     --xh-_time-picker-control-px: var(--xh-control-px-md);
+    --xh-_time-picker-gap: var(--xh-control-gap-md);
     --xh-_time-picker-font-size: var(--xh-text-body-size);
     --xh-_time-picker-label-font-size: var(--xh-text-label-size);
     --xh-_time-picker-item-px: var(--xh-control-px-md);
@@ -43,7 +44,7 @@
   /* 与文本框、时间输入同一套堆叠：标签一行、控件一行 */
   [data-scope='time-picker'][data-part='root'] {
     /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
-    --xh-icon-size: var(--xh-time-picker-icon-size, var(--xh-glyph-size-text));
+    --xh-icon-size: var(--xh-time-picker-icon-size, var(--xh-glyph-size-md));
 
     display: inline-flex;
     flex-direction: column;
@@ -53,16 +54,20 @@
   /* —— 尺寸 —— */
   /* 缺省档写在上面的基础规则里 */
   [data-scope='time-picker']:is([data-part='root'], [data-part='positioner'])[data-size='sm'] {
+    --xh-icon-size: var(--xh-time-picker-icon-size, var(--xh-glyph-size-sm));
     --xh-_time-picker-control-h: var(--xh-control-h-sm);
     --xh-_time-picker-control-px: var(--xh-control-px-sm);
+    --xh-_time-picker-gap: var(--xh-control-gap-sm);
     --xh-_time-picker-font-size: var(--xh-control-font-sm);
     --xh-_time-picker-label-font-size: var(--xh-control-font-sm);
     --xh-_time-picker-item-px: var(--xh-control-px-sm);
   }
 
   [data-scope='time-picker']:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
+    --xh-icon-size: var(--xh-time-picker-icon-size, var(--xh-glyph-size-lg));
     --xh-_time-picker-control-h: var(--xh-control-h-lg);
     --xh-_time-picker-control-px: var(--xh-control-px-lg);
+    --xh-_time-picker-gap: var(--xh-control-gap-lg);
     --xh-_time-picker-font-size: var(--xh-control-font-lg);
     --xh-_time-picker-label-font-size: var(--xh-control-font-lg);
     --xh-_time-picker-item-px: var(--xh-control-px-lg);
@@ -102,9 +107,6 @@
     font-size: var(--xh-time-picker-label-font-size, var(--xh-_time-picker-label-font-size));
     font-weight: var(--xh-time-picker-label-font-weight, var(--xh-text-label-weight));
     line-height: var(--xh-leading-none);
-    /* 点标题会把焦点送到第一段（段不是能被 for 指向的原生控件，这条由连接层接管），
-       指针得如实反映它可点 */
-    cursor: pointer;
   }
 
   [data-scope='time-picker'][data-part='label'][data-disabled] {
@@ -118,7 +120,7 @@
     min-inline-size: var(--xh-time-picker-control-min-w, var(--xh-control-min-w));
     display: inline-flex;
     align-items: center;
-    gap: var(--xh-time-picker-control-gap, var(--xh-control-gap-md));
+    gap: var(--xh-time-picker-control-gap, var(--xh-_time-picker-gap));
     block-size: var(--xh-time-picker-control-h, var(--xh-_time-picker-control-h));
     padding-inline: var(--xh-time-picker-control-px, var(--xh-_time-picker-control-px));
     padding-block: 0;
@@ -148,6 +150,8 @@
      control 自己不占 Tab 位，所以这里写的是 focus-within 而不是 focus-visible */
   [data-scope='time-picker'][data-part='control']:focus-within:not([data-disabled]) {
     border-color: var(--xh-time-picker-control-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
+    outline: var(--xh-ring-width) solid var(--xh-_time-picker-ring);
+    outline-offset: var(--xh-ring-offset);
   }
 
   [data-scope='time-picker'][data-part='control'][data-invalid] {
@@ -169,11 +173,23 @@
     cursor: not-allowed;
   }
 
-  /* 每一段是一小块可聚焦区，紧挨着排；分隔符由作者写在段与段之间的普通节点里，
-     不在角色表内，所以间距只能长在段自己身上 */
+  /* 段位与作者写在段间的分隔符都在这一层里：它占满盒里剩下的宽度，
+     尾部按钮因此靠在框内末端 */
+  [data-scope='time-picker'][data-part='segment-group'] {
+    display: inline-flex;
+    flex: 1 1 auto;
+    align-items: center;
+    min-inline-size: 0;
+  }
+
+  [data-scope='time-picker'][data-part='segment-group'][hidden] {
+    display: none;
+  }
+
+  /* 每一段是一小块可聚焦区，紧挨着排；间距长在段自己身上 */
   [data-scope='time-picker'][data-part='input'] {
     display: inline-block;
-    padding-inline: var(--xh-time-picker-segment-px, var(--xh-space-0_5));
+    padding-inline: var(--xh-time-picker-segment-px, var(--xh-space-1));
     padding-block: 0;
     border-radius: var(--xh-time-picker-segment-radius, var(--xh-shape-inset));
     color: inherit;
@@ -194,7 +210,7 @@
 
   /* 还没填的段压成弱色：一行里哪几段是占位符，一眼要看得出来 */
   [data-scope='time-picker'][data-part='input'][data-placeholder] {
-    color: var(--xh-time-picker-segment-fg-placeholder, var(--xh-fg-subtle));
+    color: var(--xh-time-picker-placeholder-fg, var(--xh-fg-subtle));
   }
 
   /* 一行段长得差不多，光有边框亮起来看不出正在改哪一段：当前段必须自己有底色。
@@ -256,11 +272,6 @@
     display: none;
   }
 
-  /* 触发器把整行推到最右：它与清空按钮之间不留缝，两者一起靠框内末端 */
-  [data-scope='time-picker'][data-part='trigger'] {
-    margin-inline-start: auto;
-  }
-
   [data-scope='time-picker'][data-part='trigger']:hover:not(:disabled),
   [data-scope='time-picker'][data-part='clear-trigger']:hover {
     background: var(--xh-time-picker-action-bg-hover, var(--xh-bg-subtle-hover));
@@ -277,9 +288,8 @@
     scale: var(--xh-motion-scale-press);
   }
 
-  /* 触发器是常规 Tab 停靠点，落焦必须看得见；清空按钮退出了 Tab 序列，
-     这条是给程序化聚焦兜底 */
-  [data-scope='time-picker'][data-part='trigger']:focus-visible,
+  /* 清空按钮退出了 Tab 序列，这条是给程序化聚焦兜底；
+     展开钮是常规 Tab 停靠点，它落焦时环由盒的 :focus-within 画，这里不再套一圈 */
   [data-scope='time-picker'][data-part='clear-trigger']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-_time-picker-ring);
     outline-offset: var(--xh-ring-offset);
@@ -298,7 +308,10 @@
   [data-scope='time-picker'][data-part='content'] {
     display: flex;
     align-items: stretch;
-    padding: var(--xh-time-picker-content-p, var(--xh-space-1));
+    padding-block: var(--xh-time-picker-content-py, var(--xh-space-1));
+    padding-inline: var(--xh-time-picker-content-px, var(--xh-space-1));
+    /* 列自己定高，面板整体不该再长过页内滚动面那一档 */
+    max-block-size: var(--xh-time-picker-content-max-h, var(--xh-viewport-h-lg));
     border: var(--xh-stroke-thin) solid var(--xh-time-picker-content-border, var(--xh-border-default));
     border-radius: var(--xh-time-picker-content-radius, var(--xh-shape-surface));
     background: var(--xh-time-picker-content-bg, var(--xh-bg-surface));
@@ -335,7 +348,7 @@
     flex: none;
     flex-direction: column;
     gap: var(--xh-time-picker-presets-gap, var(--xh-space-0_5));
-    max-block-size: var(--xh-time-picker-presets-h, var(--xh-time-picker-column-max-h, 12rem));
+    max-block-size: var(--xh-time-picker-presets-h, var(--xh-viewport-h-sm));
     padding-inline: var(--xh-time-picker-presets-px, var(--xh-space-1));
     overflow-y: auto;
     border-inline-end: var(--xh-stroke-thin) solid var(--xh-time-picker-column-divider, var(--xh-border-subtle));
@@ -391,7 +404,8 @@
     flex-direction: column;
     gap: var(--xh-time-picker-column-gap, var(--xh-space-0_5));
     min-inline-size: var(--xh-time-picker-column-min-w, 3.5rem);
-    max-block-size: var(--xh-time-picker-column-max-h, 12rem);
+    /* 几列并排：定高而不是随内容收，否则时列与分列的可选值一多一少就错位 */
+    block-size: var(--xh-time-picker-column-h, var(--xh-viewport-h-sm));
     padding-inline: var(--xh-time-picker-column-px, var(--xh-space-1));
     overflow-y: auto;
     /* 滚动容器在某些浏览器里会被自动塞进 Tab 序列，是否画环见下方按 tabindex 分档的两条 */

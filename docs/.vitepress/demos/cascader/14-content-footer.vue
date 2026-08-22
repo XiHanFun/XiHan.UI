@@ -5,6 +5,7 @@ import {
   XhButton,
   XhCascaderColumn,
   XhCascaderContent,
+  XhCascaderControl,
   XhCascaderIndicator,
   XhCascaderItem,
   XhCascaderItemIndicator,
@@ -48,10 +49,12 @@ const picked = ref<string[][]>([["fruit", "apple"]]);
     placeholder="可以多挑几条"
   >
     <XhCascaderLabel>采购清单</XhCascaderLabel>
-    <XhCascaderTrigger>
-      <XhCascaderValueText />
-      <XhCascaderIndicator />
-    </XhCascaderTrigger>
+    <XhCascaderControl>
+      <XhCascaderTrigger>
+        <XhCascaderValueText />
+        <XhCascaderIndicator />
+      </XhCascaderTrigger>
+    </XhCascaderControl>
     <XhCascaderPositioner>
       <!-- 浮层壳改成竖排：上半是并排的列，下半是横跨全宽的底栏 -->
       <XhCascaderContent style="flex-direction: column">

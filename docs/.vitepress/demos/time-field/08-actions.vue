@@ -8,6 +8,7 @@ import {
   XhTimeFieldLabel,
   XhTimeFieldRoot,
   XhTimeFieldSegment,
+  XhTimeFieldSegmentGroup,
 } from "@xihan-ui/vue";
 
 const value = ref("");
@@ -30,9 +31,11 @@ function now() {
   >
     <XhTimeFieldLabel>上门时间</XhTimeFieldLabel>
     <XhTimeFieldControl>
-      <XhTimeFieldSegment segment="hour" />
-      <span>:</span>
-      <XhTimeFieldSegment segment="minute" />
+      <XhTimeFieldSegmentGroup>
+        <XhTimeFieldSegment segment="hour" />
+        <span>:</span>
+        <XhTimeFieldSegment segment="minute" />
+      </XhTimeFieldSegmentGroup>
       <!-- 一段都没填时这颗按钮收起 -->
       <XhTimeFieldClearTrigger />
     </XhTimeFieldControl>

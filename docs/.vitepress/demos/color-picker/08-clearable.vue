@@ -9,6 +9,7 @@ import {
   XhColorPickerChannelSliderThumb,
   XhColorPickerChannelSliderTrack,
   XhColorPickerContent,
+  XhColorPickerControl,
   XhColorPickerLabel,
   XhColorPickerPositioner,
   XhColorPickerRoot,
@@ -48,11 +49,13 @@ const actions = {
   <div style="display: grid; gap: 12px">
     <XhColorPickerRoot v-slot="{ setOpen }" v-model:value="color">
       <XhColorPickerLabel>主题色</XhColorPickerLabel>
-      <XhColorPickerTrigger>
-        <XhColorPickerSwatch v-if="color" />
-        <span v-else :style="placeholder">∅</span>
-        <XhColorPickerValueText>{{ color || "未设置" }}</XhColorPickerValueText>
-      </XhColorPickerTrigger>
+      <XhColorPickerControl>
+        <XhColorPickerTrigger>
+          <XhColorPickerSwatch v-if="color" />
+          <span v-else :style="placeholder">∅</span>
+          <XhColorPickerValueText>{{ color || "未设置" }}</XhColorPickerValueText>
+        </XhColorPickerTrigger>
+      </XhColorPickerControl>
       <XhColorPickerPositioner>
         <XhColorPickerContent>
           <XhColorPickerArea>

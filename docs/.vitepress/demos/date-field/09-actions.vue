@@ -8,6 +8,7 @@ import {
   XhDateFieldLabel,
   XhDateFieldRoot,
   XhDateFieldSegment,
+  XhDateFieldSegmentGroup,
 } from "@xihan-ui/vue";
 
 const value = ref<string | null>(null);
@@ -34,12 +35,14 @@ const nextWeek = shift(7);
   >
     <XhDateFieldLabel>取件日期</XhDateFieldLabel>
     <XhDateFieldControl>
-      <XhDateFieldSegment :index="0" />
-      <span>年</span>
-      <XhDateFieldSegment :index="1" />
-      <span>月</span>
-      <XhDateFieldSegment :index="2" />
-      <span>日</span>
+      <XhDateFieldSegmentGroup>
+        <XhDateFieldSegment :index="0" />
+        <span>年</span>
+        <XhDateFieldSegment :index="1" />
+        <span>月</span>
+        <XhDateFieldSegment :index="2" />
+        <span>日</span>
+      </XhDateFieldSegmentGroup>
       <!-- 一段都没填时清空钮收起；填了任意一段就出现 -->
       <XhDateFieldClearTrigger />
     </XhDateFieldControl>

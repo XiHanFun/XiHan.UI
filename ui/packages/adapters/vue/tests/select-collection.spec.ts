@@ -6,6 +6,7 @@ import { defineComponent, h } from 'vue'
 import {
   provideXhConfig,
   XhSelectContent,
+  XhSelectControl,
   XhSelectIndicator,
   XhSelectItem,
   XhSelectItemIndicator,
@@ -61,7 +62,7 @@ function mountFromParts(value: string[], portal: HTMLElement = newPortal()) {
         placeholder: '请选择',
       }, () => [
         h(XhSelectLabel, () => '水果'),
-        h(XhSelectTrigger, () => [h(XhSelectValueText), h(XhSelectIndicator)]),
+        h(XhSelectControl, () => [h(XhSelectTrigger, () => [h(XhSelectValueText), h(XhSelectIndicator)])]),
         h(XhSelectPositioner, () => [
           h(XhSelectContent, () => h(XhSelectList, null, () => COLLECTION.map(node =>
             h(XhSelectItem, { key: node.value, value: node.value }, () => [
@@ -95,6 +96,7 @@ describe('select 的 collection', () => {
     expect(parts).toEqual([
       'hidden-select',
       'label',
+      'control',
       'trigger',
       'value-text',
       'indicator',

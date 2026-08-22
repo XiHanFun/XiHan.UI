@@ -56,7 +56,7 @@ function declaredSegment(el: HTMLElement, position: number): DateFieldSegmentPro
 }
 
 /**
- * `<xh-date-field>` —— Light-DOM 行为宿主：作者写 root/label/control/segment（多个）/hidden-input
+ * `<xh-date-field>` —— Light-DOM 行为宿主：作者写 root/label/control/segment-group/segment（多个）/hidden-input
  * 角色节点，元素跑 date-field 机器并把 connect 产出打上去。
  *
  * 每一段是一个 role=spinbutton 的可聚焦节点：上下键加减并在段区间里回绕、左右键与 Home/End 换段、
@@ -95,6 +95,7 @@ function declaredSegment(el: HTMLElement, position: number): DateFieldSegmentPro
  * @csspart root - 最外层，承载 data-disabled / data-invalid / data-complete / data-out-of-range
  * @csspart label - 标题；点它把焦点送进首段
  * @csspart control - role=group 的分段容器
+ * @csspart segment-group - 段位与分隔符的外壳，占满盒里剩下的宽度
  * @csspart segment - 一段一个的 spinbutton 节点。可自带 segment 属性按段名认领（segment="quarter"），
  *   或自带 index 属性声明下标，两者都没写按文档序
  * @csspart clear-trigger - 清空钮，不占 Tab 位；没值或不可编辑时收起，点完焦点回到首段
@@ -186,6 +187,7 @@ export class XhDateFieldElement extends XhElement {
     put('root', api.getRootProps() as Record<string, unknown>)
     put('label', api.getLabelProps() as Record<string, unknown>)
     put('control', api.getControlProps() as Record<string, unknown>)
+    put('segment-group', api.getSegmentGroupProps() as Record<string, unknown>)
     put('clear-trigger', api.getClearTriggerProps() as Record<string, unknown>)
     put('hidden-input', api.getHiddenInputProps() as Record<string, unknown>)
 

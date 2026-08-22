@@ -24,7 +24,7 @@ const VIEW = 240;
 const OVERSCAN = 6;
 
 const listStyle =
-  "--xh-transfer-list-min-h: 240px; --xh-transfer-list-max-h: 240px";
+  "--xh-transfer-list-h: 240px";
 
 interface PanelItem {
   value: string;

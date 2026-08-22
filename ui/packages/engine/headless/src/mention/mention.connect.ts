@@ -1,10 +1,10 @@
-import { overlayPositioned } from '../shared/overlay'
 import type { NavIntent } from '@xihan-ui/behavior'
 import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { MentionApi, MentionInputEl, MentionInputProps, MentionItemProps, MentionNodeMeta, MentionSchema } from './mention.types'
 import { isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, queryItems } from '@xihan-ui/behavior'
 import { contains, dataAttr, isComposingEvent } from '@xihan-ui/kernel'
+import { overlayPositioned } from '../shared/overlay'
 import { mentionAnatomy, mentionItemQuery, mentionItemText } from './mention.anatomy'
 import { MENTION_DEFAULT_PLACEMENT } from './mention.machine'
 
@@ -54,6 +54,8 @@ export function connectMention<T extends PropTypes>(
   // 高亮不承载焦点，只经 aria-activedescendant 上报；收起时为 null
   const highlighted = context.get('highlightedValue') ?? null
   const disabled = !!prop('disabled')
+  const readOnly = !!prop('readOnly')
+  const invalid = !!prop('invalid')
   const loop = prop('loop') ?? true
   const inputLabel = prop('translations')?.input
   const placeholder = prop('placeholder')
@@ -138,6 +140,8 @@ export function connectMention<T extends PropTypes>(
       'data-tone': prop('tone'),
       'data-size': prop('size'),
       'data-disabled': dataAttr(disabled),
+      'data-readonly': dataAttr(readOnly),
+      'data-invalid': dataAttr(invalid),
     }),
 
     /**
@@ -157,6 +161,9 @@ export function connectMention<T extends PropTypes>(
       'autocomplete': 'off',
       'value': value,
       'disabled': disabled || undefined,
+      'readonly': readOnly || undefined,
+      // 显式 true/false：省略是没说，显式 false 是明确说了不是
+      'aria-invalid': invalid ? 'true' : 'false',
       'aria-haspopup': 'listbox',
       // aria-expanded 不在 textbox 的支持属性里，多行宿主上整条缺席
       'aria-expanded': isMultilineHost(input) ? undefined : (open ? 'true' : 'false'),
@@ -166,6 +173,7 @@ export function connectMention<T extends PropTypes>(
       'aria-activedescendant': open && highlighted != null ? itemId(highlighted) : undefined,
       'data-state': stateAttr,
       'data-disabled': dataAttr(disabled),
+      'data-invalid': dataAttr(invalid),
       'onInput': (event: Event) => {
         const el = event.target as MentionInputEl
         send({ type: 'INPUT.CHANGE', value: el.value, caret: caretOf(el) })

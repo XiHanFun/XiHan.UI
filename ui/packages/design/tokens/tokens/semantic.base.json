@@ -206,6 +206,14 @@
       "$type": "icon",
       "$value": "triangle-alert"
     },
+    "mark-eye": {
+      "$type": "icon",
+      "$value": "eye"
+    },
+    "mark-eye-off": {
+      "$type": "icon",
+      "$value": "eye-off"
+    },
     "mark-zoom-in": {
       "$type": "icon",
       "$value": "zoom-in"
@@ -432,7 +440,22 @@
   },
   "viewport": {
     "max-h": {
-      "$description": "内嵌滚动面（表格、树、JSON 视图）的默认最大高度。",
+      "$description": "页内滚动面（表格、树、JSON 视图）的高度上限，内容不满时按内容收。与 h-lg 同值但语义不同：这条是上限，h-lg 是定高。",
+      "$type": "dimension",
+      "$value": "24rem"
+    },
+    "h-sm": {
+      "$description": "滚动面高度三档 · 小：级联列、时间列、预设列。",
+      "$type": "dimension",
+      "$value": "12rem"
+    },
+    "h-md": {
+      "$description": "滚动面高度三档 · 中：浮层列表、穿梭框两侧。",
+      "$type": "dimension",
+      "$value": "16rem"
+    },
+    "h-lg": {
+      "$description": "滚动面高度三档 · 大：页内的树、表格、JSON 视图。",
       "$type": "dimension",
       "$value": "24rem"
     }
@@ -465,6 +488,11 @@
     "max-w-lg": {
       "$type": "dimension",
       "$value": "24rem"
+    },
+    "max-w-xl": {
+      "$description": "横排多列浮层（级联面板）的最大宽度。",
+      "$type": "dimension",
+      "$value": "48rem"
     },
     "max-h": {
       "$type": "dimension",

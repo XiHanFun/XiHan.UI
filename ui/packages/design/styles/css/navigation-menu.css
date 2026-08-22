@@ -45,11 +45,13 @@
     --xh-_navigation-menu-link-px: var(--xh-control-px-md);
     --xh-_navigation-menu-link-font-size: var(--xh-text-body-size);
 
-    /* 语气落在三处：条目的高亮底、展开着的 trigger 与当前链接的文字色、指示条。
-       没写 data-tone 时这几个 --xh-_tone-* 都没被声明，各自退回原来的取值。
+    /* 悬停与键盘锚点恒中性灰轻档、不接语气槽——两档同色相的话打开路径就认不出来了 */
+    --xh-_navigation-menu-highlight-bg: var(--xh-bg-subtle);
+
+    /* 语气落在三处：展开着的 trigger 的底色、当前链接的文字色、指示条。
+       没写 data-tone 时这几个 --xh-_tone-* 都没被声明，各自退回品牌色。
        聚焦环不在其列，它恒是 --xh-ring-focus */
-    --xh-_navigation-menu-highlight-bg: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
-    --xh-_navigation-menu-open-fg: var(--xh-_tone-fg, var(--xh-fg-default));
+    --xh-_navigation-menu-active-bg: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
     --xh-_navigation-menu-current-fg: var(--xh-_tone-fg, var(--xh-fg-brand));
     --xh-_navigation-menu-accent: var(--xh-_tone, var(--xh-fg-brand));
 
@@ -129,7 +131,7 @@
     line-height: var(--xh-leading-none);
     white-space: nowrap;
     cursor: pointer;
-    transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='navigation-menu'][data-part='trigger'][hidden] {
@@ -145,8 +147,11 @@
     outline-offset: var(--xh-ring-offset);
   }
 
+  /* 展开着的那一张是打开路径，走品牌淡底强档：哪一张开着必须一眼看得出来。
+     不加粗：横排的栏加粗会推挤相邻触发器。
+     必须排在轻档之后：指针回到它身上时同特指度靠书写顺序压过轻档 */
   [data-scope='navigation-menu'][data-part='trigger'][data-state='open'] {
-    color: var(--xh-navigation-menu-trigger-fg-open, var(--xh-_navigation-menu-open-fg));
+    background: var(--xh-navigation-menu-trigger-bg-active, var(--xh-_navigation-menu-active-bg));
   }
 
   /* 集合条目用 data-disabled，不用 :disabled：它带的是 aria-disabled，
@@ -170,7 +175,7 @@
     display: flex;
     flex-direction: column;
     gap: var(--xh-navigation-menu-content-gap, var(--xh-space-1));
-    min-inline-size: var(--xh-navigation-menu-content-min-w, var(--xh-overlay-min-w));
+    min-inline-size: var(--xh-navigation-menu-content-min-w, var(--xh-overlay-menu-min-w));
     padding: var(--xh-navigation-menu-content-p, var(--xh-space-1));
     border: var(--xh-stroke-thin) solid var(--xh-navigation-menu-content-border, var(--xh-border-default));
     border-radius: var(--xh-navigation-menu-content-radius, var(--xh-shape-surface));

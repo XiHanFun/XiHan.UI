@@ -34,15 +34,25 @@
      全都由连接层每帧写进内联样式。这份皮肤一个都不碰：内联优先级高于样式表，
      写了不但是死声明，还会跟连接层抢位置。皮肤只管尺寸、颜色、圆角与状态表现。 */
 
+  /* 标签一行、盒一行的两行堆叠 */
   [data-scope='color-picker'][data-part='root'] {
+    /* 盒的度量与标签字号走私有槽中转，与同族的下拉选择一处对一处 */
+    --xh-_color-picker-h: var(--xh-control-h-md);
+    --xh-_color-picker-px: var(--xh-control-px-md);
+    --xh-_color-picker-gap: var(--xh-control-gap-md);
+    --xh-_color-picker-label-font-size: var(--xh-text-label-size);
+
+    /* 聚焦环恒用固定环色 */
+    --xh-_color-picker-ring: var(--xh-ring-focus);
+
     display: inline-flex;
     flex-direction: column;
-    gap: var(--xh-color-picker-gap, var(--xh-stack-gap-md));
+    gap: var(--xh-color-picker-gap, var(--xh-space-1));
   }
 
   [data-scope='color-picker'][data-part='label'] {
-    color: var(--xh-color-picker-label-fg, var(--xh-fg-muted));
-    font-size: var(--xh-color-picker-label-font-size, var(--xh-text-label-size));
+    color: var(--xh-color-picker-label-fg, var(--xh-fg-default));
+    font-size: var(--xh-color-picker-label-font-size, var(--xh-_color-picker-label-font-size));
     font-weight: var(--xh-color-picker-label-font-weight, var(--xh-text-label-weight));
     line-height: var(--xh-leading-none);
   }
@@ -51,45 +61,74 @@
     color: var(--xh-fg-subtle);
   }
 
-  /* 画成一个框的是 trigger：里面的色块与值文本要看起来是一体的 */
-  [data-scope='color-picker'][data-part='trigger'] {
+  /* 盒：描边、底色、控件高度与行内内衬都落在这一层 */
+  [data-scope='color-picker'][data-part='control'] {
     display: inline-flex;
     align-items: center;
-    gap: var(--xh-color-picker-trigger-gap, var(--xh-control-gap-md));
-    min-inline-size: var(--xh-color-picker-trigger-min-w, var(--xh-control-min-w));
-    block-size: var(--xh-color-picker-trigger-h, var(--xh-control-h-md));
-    padding-inline: var(--xh-color-picker-trigger-px, var(--xh-control-px-md));
-    border: var(--xh-stroke-thin) solid var(--xh-color-picker-trigger-border, var(--xh-border-control));
-    border-radius: var(--xh-color-picker-trigger-radius, var(--xh-shape-control));
-    background: var(--xh-color-picker-trigger-bg, var(--xh-bg-canvas));
-    color: var(--xh-color-picker-trigger-fg, var(--xh-fg-default));
-    font-family: inherit;
-    font-size: var(--xh-color-picker-trigger-font-size, var(--xh-text-body-size));
-    line-height: var(--xh-leading-none);
+    gap: var(--xh-color-picker-control-gap, var(--xh-_color-picker-gap));
+    min-inline-size: var(--xh-color-picker-control-min-w, var(--xh-control-min-w));
+    block-size: var(--xh-color-picker-control-h, var(--xh-_color-picker-h));
+    padding-inline: var(--xh-color-picker-control-px, var(--xh-_color-picker-px));
+    border: var(--xh-stroke-thin) solid var(--xh-color-picker-control-border, var(--xh-border-control));
+    border-radius: var(--xh-color-picker-control-radius, var(--xh-shape-control));
+    background: var(--xh-color-picker-control-bg, var(--xh-bg-canvas));
+    color: var(--xh-color-picker-control-fg, var(--xh-fg-default));
     cursor: pointer;
     transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
-  [data-scope='color-picker'][data-part='trigger']:hover:not(:disabled) {
-    border-color: var(--xh-color-picker-trigger-border-hover, var(--xh-border-control-hover));
+  [data-scope='color-picker'][data-part='control'][hidden] {
+    display: none;
   }
 
-  [data-scope='color-picker'][data-part='trigger']:focus-visible {
-    border-color: var(--xh-color-picker-trigger-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  [data-scope='color-picker'][data-part='control']:hover:not([data-disabled]) {
+    border-color: var(--xh-color-picker-control-border-hover, var(--xh-border-control-hover));
+  }
+
+  /* Tab 停靠点是盒里的 trigger，环画在盒上 */
+  [data-scope='color-picker'][data-part='control']:focus-within:not([data-disabled]) {
+    border-color: var(--xh-color-picker-control-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
+    outline: var(--xh-ring-width) solid var(--xh-_color-picker-ring);
     outline-offset: var(--xh-ring-offset);
   }
 
-  /* 单体控件用原生 disabled（预设色板那些格子也是原生按钮，同一条规矩） */
-  [data-scope='color-picker'][data-part='trigger']:disabled {
-    background: var(--xh-color-picker-trigger-bg-disabled, var(--xh-bg-subtle));
+  [data-scope='color-picker'][data-part='control'][data-disabled] {
+    background: var(--xh-color-picker-control-bg-disabled, var(--xh-bg-subtle));
     color: var(--xh-fg-disabled);
     cursor: not-allowed;
   }
 
   /* 只读仍可聚焦、浮层照开，只是改不动：不置灰，只把底色压下去 */
-  [data-scope='color-picker'][data-part='trigger'][data-readonly] {
-    background: var(--xh-color-picker-trigger-bg-readonly, var(--xh-bg-subtle));
+  [data-scope='color-picker'][data-part='control'][data-readonly] {
+    background: var(--xh-color-picker-control-bg-readonly, var(--xh-bg-subtle));
+  }
+
+  /* 盒内那颗可聚焦的按钮：不画描边不铺底也不自带高度，只占满剩余宽度、排布色块与值文本 */
+  [data-scope='color-picker'][data-part='trigger'] {
+    display: inline-flex;
+    flex: 1 1 auto;
+    align-items: center;
+    gap: var(--xh-color-picker-trigger-gap, var(--xh-_color-picker-gap));
+    min-inline-size: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--xh-color-picker-trigger-fg, var(--xh-fg-default));
+    font-family: inherit;
+    font-size: var(--xh-color-picker-trigger-font-size, var(--xh-text-body-size));
+    line-height: var(--xh-leading-none);
+    text-align: start;
+    cursor: pointer;
+  }
+
+  [data-scope='color-picker'][data-part='trigger'][hidden] {
+    display: none;
+  }
+
+  /* 单体控件用原生 disabled（预设色板那些格子也是原生按钮，同一条规矩） */
+  [data-scope='color-picker'][data-part='trigger']:disabled {
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
   }
 
   /* 当前颜色的色块。背景由连接层内联给（含透明度），这里只给形状与描边。
@@ -104,9 +143,11 @@
     border-radius: var(--xh-color-picker-swatch-radius, var(--xh-shape-inset));
   }
 
+  /* 值串可能很长，必须能截断；框宽由盒定，这里得允许自己被压缩 */
   [data-scope='color-picker'][data-part='value-text'] {
     overflow: hidden;
-    flex: 1;
+    flex: 1 1 auto;
+    min-inline-size: 0;
     color: var(--xh-color-picker-value-fg, var(--xh-fg-default));
     font-size: var(--xh-color-picker-value-font-size, var(--xh-text-body-size));
     text-align: start;
@@ -135,10 +176,10 @@
     display: flex;
     flex-direction: column;
     gap: var(--xh-color-picker-content-gap, var(--xh-space-3));
-    inline-size: var(--xh-color-picker-content-w, 15rem);
-    padding: var(--xh-color-picker-content-p, var(--xh-space-3));
-    /* 取色区与滑轨都是定尺寸，套静态档会把它们压扁。只留可用高度这一道 */
-    max-block-size: var(--xh-color-picker-max-h, var(--xh-_color-picker-available-h));
+    inline-size: var(--xh-color-picker-content-w, var(--xh-overlay-min-w));
+    padding-block: var(--xh-color-picker-content-py, var(--xh-space-3));
+    padding-inline: var(--xh-color-picker-content-px, var(--xh-space-3));
+    max-block-size: min(var(--xh-color-picker-max-h, var(--xh-viewport-h-md)), var(--xh-_color-picker-available-h));
     overflow-y: auto;
     border: var(--xh-stroke-thin) solid var(--xh-color-picker-content-border, var(--xh-border-default));
     border-radius: var(--xh-color-picker-content-radius, var(--xh-shape-surface));
@@ -368,8 +409,8 @@
     flex: none;
     align-items: center;
     justify-content: center;
-    inline-size: var(--xh-color-picker-action-size, var(--xh-control-h-sm));
-    block-size: var(--xh-color-picker-action-size, var(--xh-control-h-sm));
+    inline-size: var(--xh-color-picker-action-size, var(--xh-control-action-size));
+    block-size: var(--xh-color-picker-action-size, var(--xh-control-action-size));
     padding: 0;
     border: var(--xh-stroke-thin) solid var(--xh-color-picker-action-border, var(--xh-border-control));
     border-radius: var(--xh-color-picker-action-radius, var(--xh-shape-control));

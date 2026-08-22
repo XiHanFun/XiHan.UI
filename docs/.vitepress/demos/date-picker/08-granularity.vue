@@ -16,7 +16,7 @@ import {
   XhDatePickerHeading,
   XhDatePickerHeadingMonthTrigger,
   XhDatePickerHeadingYearTrigger,
-  XhDatePickerInput,
+  XhDatePickerSegmentGroup,
   XhDatePickerLabel,
   XhDatePickerNextTrigger,
   XhDatePickerNextYearTrigger,
@@ -62,14 +62,14 @@ const values = ref<Record<string, string[]>>({
     >
       <XhDatePickerLabel>{{ k.label }}</XhDatePickerLabel>
       <XhDatePickerControl>
-        <XhDatePickerInput>
+        <XhDatePickerSegmentGroup>
           <!-- 「-」与「周」是普通节点，与「年 / 月 / 日」一样由作者写在段位旁边 -->
           <template v-for="(seg, i) in segments" :key="seg.type">
             <span v-if="i > 0">-</span>
             <XhDatePickerSegment :index="i" />
             <span v-if="seg.type === 'week'">周</span>
           </template>
-        </XhDatePickerInput>
+        </XhDatePickerSegmentGroup>
         <XhDatePickerClearTrigger />
       </XhDatePickerControl>
       <XhDatePickerPositioner>

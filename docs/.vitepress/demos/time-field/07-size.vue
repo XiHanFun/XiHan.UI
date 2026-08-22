@@ -5,6 +5,7 @@ import {
   XhTimeFieldLabel,
   XhTimeFieldRoot,
   XhTimeFieldSegment,
+  XhTimeFieldSegmentGroup,
 } from "@xihan-ui/vue";
 
 const sizes = [
@@ -19,9 +20,11 @@ const sizes = [
     <XhTimeFieldRoot v-for="s in sizes" :key="s.label" :size="s.size" default-value="09:30">
       <XhTimeFieldLabel>{{ s.label }}</XhTimeFieldLabel>
       <XhTimeFieldControl>
-        <XhTimeFieldSegment segment="hour" />
-        <span>:</span>
-        <XhTimeFieldSegment segment="minute" />
+        <XhTimeFieldSegmentGroup>
+          <XhTimeFieldSegment segment="hour" />
+          <span>:</span>
+          <XhTimeFieldSegment segment="minute" />
+        </XhTimeFieldSegmentGroup>
       </XhTimeFieldControl>
     </XhTimeFieldRoot>
   </div>

@@ -5,8 +5,8 @@
   }
 
   /* root 只负责纵向堆叠：标签一行、输入行一行。
-     输入框与清空按钮中间那层包裹是作者自己写的、不在角色表里，
-     所以尺寸与间距一律长在各自的角色节点上，不去假设那层存在 */
+     输入框与清空按钮收进 control 部件即得一体式：视觉盒画在 control 上，框内两件都退成透明分段。
+     不写 control 时退回两件并排的观感（下方 input 与清空按钮的基础规则原样生效） */
   [data-scope='text-field'][data-part='root'] {
     /* 作者塞进来的图标跟着控件的尺寸档走；它自己写了 size 时仍以作者的为准 */
     --xh-icon-size: var(--xh-text-field-icon-size, var(--xh-glyph-size-md));
@@ -15,6 +15,7 @@
        换档不必给每个部件各写一条选择器 */
     --xh-_text-field-h: var(--xh-control-h-md);
     --xh-_text-field-px: var(--xh-control-px-md);
+    --xh-_text-field-gap: var(--xh-control-gap-md);
     --xh-_text-field-font-size: var(--xh-text-body-size);
     --xh-_text-field-label-font-size: var(--xh-text-label-size);
     --xh-_text-field-action-font-size: var(--xh-text-secondary-size);
@@ -45,6 +46,7 @@
     --xh-icon-size: var(--xh-text-field-icon-size, var(--xh-glyph-size-sm));
     --xh-_text-field-h: var(--xh-control-h-sm);
     --xh-_text-field-px: var(--xh-control-px-sm);
+    --xh-_text-field-gap: var(--xh-control-gap-sm);
     --xh-_text-field-font-size: var(--xh-control-font-sm);
     --xh-_text-field-label-font-size: var(--xh-control-font-sm);
     --xh-_text-field-action-font-size: var(--xh-control-caption-sm);
@@ -54,6 +56,7 @@
     --xh-icon-size: var(--xh-text-field-icon-size, var(--xh-glyph-size-lg));
     --xh-_text-field-h: var(--xh-control-h-lg);
     --xh-_text-field-px: var(--xh-control-px-lg);
+    --xh-_text-field-gap: var(--xh-control-gap-lg);
     --xh-_text-field-font-size: var(--xh-control-font-lg);
     --xh-_text-field-label-font-size: var(--xh-control-font-lg);
     --xh-_text-field-action-font-size: var(--xh-control-caption-lg);
@@ -95,6 +98,101 @@
 
   [data-scope='text-field'][data-part='label'][data-disabled] {
     color: var(--xh-text-field-label-fg-disabled, var(--xh-fg-subtle));
+  }
+
+  /* —— 一体式 control：输入框与清空按钮同框 —— */
+  /* control 是唯一的视觉盒：描边、底色、圆角、聚焦环全画在它身上，框内两件都退成透明分段。
+     :focus-within 而不是 :focus——持有焦点的是框里的输入框，被聚焦的"控件"在眼里是整个框 */
+  [data-scope='text-field'][data-part='control'] {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--xh-text-field-control-gap, var(--xh-_text-field-gap));
+    min-inline-size: var(--xh-text-field-control-min-w, var(--xh-control-min-w));
+    block-size: var(--xh-text-field-control-h, var(--xh-_text-field-h));
+    padding-inline: var(--xh-text-field-control-px, var(--xh-_text-field-px));
+    border: var(--xh-stroke-thin) solid var(--xh-text-field-control-border, var(--xh-_text-field-border));
+    border-radius: var(--xh-text-field-control-radius, var(--xh-shape-control));
+    background: var(--xh-text-field-control-bg, var(--xh-_text-field-bg));
+    color: var(--xh-text-field-control-fg, var(--xh-fg-default));
+    transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='text-field'][data-part='control'][hidden] {
+    display: none;
+  }
+
+  /* hover 只在中性态换描边：invalid 与 at-limit 正拿边框颜色说事，
+     被 hover 盖掉那条信息就没了 */
+  [data-scope='text-field'][data-part='control']:hover:not([data-disabled], [data-invalid], [data-at-limit]) {
+    border-color: var(--xh-text-field-control-border-hover, var(--xh-_text-field-border-hover));
+  }
+
+  [data-scope='text-field'][data-part='control']:focus-within:not([data-disabled]) {
+    border-color: var(--xh-text-field-control-border-focus, var(--xh-_text-field-border-focus));
+    outline: var(--xh-ring-width) solid var(--xh-_text-field-ring);
+    outline-offset: var(--xh-ring-offset);
+  }
+
+  /* 顶到字数上限：再敲进不去，边框先给个提示。放在 invalid 之前，
+     两者同时成立时按源序让 invalid 赢 */
+  [data-scope='text-field'][data-part='control'][data-at-limit] {
+    border-color: var(--xh-text-field-control-border-at-limit, var(--xh-border-at-limit));
+  }
+
+  [data-scope='text-field'][data-part='control'][data-invalid] {
+    border-color: var(--xh-text-field-control-border-invalid, var(--xh-border-invalid));
+
+    /* 校验失败时环也跟着变红：两圈等宽相邻却一红一蓝，读的人不知道哪个才是当前状态 */
+    --xh-_text-field-ring: var(--xh-ring-invalid);
+  }
+
+  /* 只读仍可聚焦、可复制，所以不置灰，只把底色压下去表示"改不动" */
+  [data-scope='text-field'][data-part='control'][data-readonly] {
+    background: var(--xh-text-field-control-bg-readonly, var(--xh-bg-subtle));
+  }
+
+  [data-scope='text-field'][data-part='control'][data-disabled] {
+    background: var(--xh-text-field-control-bg-disabled, var(--xh-bg-subtle));
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  /* 盒内 input：无边框无底无圆角，观感全归 control；行内内衬也归 control，
+     这里再留一份就是框内套了一圈空白。它占满剩余宽度，把清空按钮顶到最右 */
+  [data-scope='text-field'][data-part='control'] [data-part='input'] {
+    flex: 1 1 auto;
+    min-inline-size: 0;
+    block-size: 100%;
+    padding-inline: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+  }
+
+  /* 盒内 input 不再自己画各态，全部交还 control。hover 这条带上与基础规则同样的
+     :not 条件：基础 hover 的特异度里有它们，不带就打不过 */
+  [data-scope='text-field'][data-part='control'] [data-part='input']:hover:not(:disabled, [data-invalid], [data-at-limit]) {
+    border-color: transparent;
+  }
+
+  [data-scope='text-field'][data-part='control'] [data-part='input']:focus-visible {
+    border-color: transparent;
+    outline: none;
+  }
+
+  [data-scope='text-field'][data-part='control'] [data-part='input'][data-at-limit],
+  [data-scope='text-field'][data-part='control'] [data-part='input'][data-invalid] {
+    border-color: transparent;
+  }
+
+  [data-scope='text-field'][data-part='control'] [data-part='input']:disabled,
+  [data-scope='text-field'][data-part='control'] [data-part='input'][readonly] {
+    background: transparent;
+  }
+
+  /* 尾部动作钮不参与分宽，宽度由它自己的方钮尺寸决定 */
+  [data-scope='text-field'][data-part='control'] [data-part='clear-trigger'] {
+    flex: none;
   }
 
   [data-scope='text-field'][data-part='input'] {

@@ -68,13 +68,18 @@ function selectTree(disabled?: string): FixtureNode {
     part: 'root',
     children: [
       { part: 'label', text: '水果' },
-      // 必须是 button：WC 侧由 fixture 的 tag 决定，div 不可聚焦
+      // control 是盒，触发器与清空钮在里面并排；必须是 button：WC 侧由 fixture 的 tag 决定，div 不可聚焦
       {
-        part: 'trigger',
-        tag: 'button',
+        part: 'control',
         children: [
-          { part: 'value-text' },
-          { part: 'indicator' },
+          {
+            part: 'trigger',
+            tag: 'button',
+            children: [
+              { part: 'value-text' },
+              { part: 'indicator' },
+            ],
+          },
         ],
       },
       {
@@ -102,11 +107,11 @@ function selectTree(disabled?: string): FixtureNode {
   }
 }
 
-/** 带清空钮的变体：trigger 与 clear-trigger 一起收进 control（按钮不能套按钮，清空钮只能是 trigger 的兄弟）。 */
+/** 带清空钮的变体：清空钮排在盒里 trigger 之后（按钮不能套按钮，清空钮只能是 trigger 的兄弟）。 */
 function withClearTrigger(base: FixtureNode): FixtureNode {
   const children = (base.children ?? []).map(node =>
-    node.part === 'trigger'
-      ? { part: 'control', children: [node, { part: 'clear-trigger', tag: 'button' }] }
+    node.part === 'control'
+      ? { ...node, children: [...(node.children ?? []), { part: 'clear-trigger', tag: 'button' }] }
       : node,
   )
   return { ...base, children }
@@ -130,6 +135,7 @@ export const selectSuite: ConformanceSuite = {
           'root',
           'hidden-select',
           'label',
+          'control',
           'trigger',
           'value-text',
           'indicator',
@@ -150,6 +156,7 @@ export const selectSuite: ConformanceSuite = {
         counts: {
           'root': 1,
           'label': 1,
+          'control': 1,
           'trigger': 1,
           'value-text': 1,
           'indicator': 1,

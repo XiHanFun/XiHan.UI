@@ -6,6 +6,7 @@ import {
   XhTimeFieldLabel,
   XhTimeFieldRoot,
   XhTimeFieldSegment,
+  XhTimeFieldSegmentGroup,
 } from "@xihan-ui/vue";
 
 const value = ref("");
@@ -15,11 +16,13 @@ const value = ref("");
   <XhTimeFieldRoot v-model:value="value" granularity="second">
     <XhTimeFieldLabel>定时</XhTimeFieldLabel>
     <XhTimeFieldControl>
-      <XhTimeFieldSegment segment="hour" />
-      <span>:</span>
-      <XhTimeFieldSegment segment="minute" />
-      <span>:</span>
-      <XhTimeFieldSegment segment="second" />
+      <XhTimeFieldSegmentGroup>
+        <XhTimeFieldSegment segment="hour" />
+        <span>:</span>
+        <XhTimeFieldSegment segment="minute" />
+        <span>:</span>
+        <XhTimeFieldSegment segment="second" />
+      </XhTimeFieldSegmentGroup>
     </XhTimeFieldControl>
   </XhTimeFieldRoot>
 

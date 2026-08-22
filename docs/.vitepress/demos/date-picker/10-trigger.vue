@@ -13,7 +13,7 @@ import {
   XhDatePickerGridHead,
   XhDatePickerHeader,
   XhDatePickerHeading,
-  XhDatePickerInput,
+  XhDatePickerSegmentGroup,
   XhDatePickerLabel,
   XhDatePickerNextTrigger,
   XhDatePickerPositioner,
@@ -32,13 +32,13 @@ const value = ref<string[]>([]);
   <XhDatePickerRoot v-slot="{ weeks, weekDays }" v-model:value="value" locale="zh-CN">
     <XhDatePickerLabel>交付日期</XhDatePickerLabel>
     <XhDatePickerControl>
-      <XhDatePickerInput>
+      <XhDatePickerSegmentGroup>
         <XhDatePickerSegment :index="0" />
         <span>-</span>
         <XhDatePickerSegment :index="1" />
         <span>-</span>
         <XhDatePickerSegment :index="2" />
-      </XhDatePickerInput>
+      </XhDatePickerSegmentGroup>
       <XhDatePickerClearTrigger />
       <!-- 写上它多一个明写的入口；不写也照样能展开——点输入行即可，
            键盘则在段上按 Alt+ArrowDown -->

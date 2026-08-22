@@ -7,6 +7,7 @@ import {
   XhColorPickerChannelSliderThumb,
   XhColorPickerChannelSliderTrack,
   XhColorPickerContent,
+  XhColorPickerControl,
   XhColorPickerPositioner,
   XhColorPickerRoot,
   XhColorPickerSwatch,
@@ -17,10 +18,12 @@ import {
 
 <template>
   <XhColorPickerRoot default-value="#00a98e">
-    <XhColorPickerTrigger>
-      <XhColorPickerSwatch />
-      <XhColorPickerValueText />
-    </XhColorPickerTrigger>
+    <XhColorPickerControl>
+      <XhColorPickerTrigger>
+        <XhColorPickerSwatch />
+        <XhColorPickerValueText />
+      </XhColorPickerTrigger>
+    </XhColorPickerControl>
     <XhColorPickerPositioner>
       <XhColorPickerContent>
         <XhColorPickerArea>

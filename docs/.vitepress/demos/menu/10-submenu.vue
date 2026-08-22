@@ -1,9 +1,7 @@
 <!-- 二级子菜单 | XhMenuSub 内嵌一台子菜单：触发条目双重身份（父层方向键照常走、右方向键进子层、子层左方向键退回），悬停经安全三角斜穿不误收，任意层级选中都发根的 select 并整链关闭 -->
 <script setup lang="ts">
-import { ChevronRightIcon } from "@xihan-ui/icons";
 import { ref } from "vue";
 import {
-  XhIcon,
   XhMenuContent,
   XhMenuItem,
   XhMenuPositioner,
@@ -26,19 +24,13 @@ const picked = ref("（还没选）");
         <XhMenuItem value="rename">重命名</XhMenuItem>
         <XhMenuSeparator />
         <XhMenuSub value="share">
-          <XhMenuSubTrigger>
-            发送到…
-            <XhIcon :icon="ChevronRightIcon" style="margin-inline-start: auto" />
-          </XhMenuSubTrigger>
+          <XhMenuSubTrigger>发送到…</XhMenuSubTrigger>
           <XhMenuPositioner>
             <XhMenuContent>
               <XhMenuItem value="share-email">邮件</XhMenuItem>
               <XhMenuItem value="share-sms">短信</XhMenuItem>
               <XhMenuSub value="share-im">
-                <XhMenuSubTrigger>
-                  即时通讯…
-                  <XhIcon :icon="ChevronRightIcon" style="margin-inline-start: auto" />
-                </XhMenuSubTrigger>
+                <XhMenuSubTrigger>即时通讯…</XhMenuSubTrigger>
                 <XhMenuPositioner>
                   <XhMenuContent>
                     <XhMenuItem value="share-wecom">企业微信</XhMenuItem>

@@ -16,14 +16,13 @@
        换档不必给每个部件各写一条选择器 */
     --xh-_number-field-h: var(--xh-control-h-md);
     --xh-_number-field-px: var(--xh-control-px-md);
+    --xh-_number-field-gap: var(--xh-control-gap-md);
     --xh-_number-field-font-size: var(--xh-text-body-size);
     --xh-_number-field-label-font-size: var(--xh-text-label-size);
     --xh-_number-field-trigger-font-size: var(--xh-text-body-size);
 
-    /* 盒子的圆角与盒内分段的圆角：分段贴在描边里侧，圆角要减去描边自己占的那一道，
-       写同一个值会让分段的底色顶到圆角外面去 */
+    /* 盒子的圆角 */
     --xh-_number-field-radius: var(--xh-number-field-input-radius, var(--xh-shape-control));
-    --xh-_number-field-seg-radius: calc(var(--xh-_number-field-radius) - var(--xh-stroke-thin));
 
     /* 形态档只换这几个私有槽：输入框的底与描边，加减钮的底与描边 */
     --xh-_number-field-bg: var(--xh-bg-canvas);
@@ -56,6 +55,7 @@
     --xh-icon-size: var(--xh-number-field-icon-size, var(--xh-glyph-size-sm));
     --xh-_number-field-h: var(--xh-control-h-sm);
     --xh-_number-field-px: var(--xh-control-px-sm);
+    --xh-_number-field-gap: var(--xh-control-gap-sm);
     --xh-_number-field-font-size: var(--xh-control-font-sm);
     --xh-_number-field-label-font-size: var(--xh-control-font-sm);
     --xh-_number-field-trigger-font-size: var(--xh-control-font-sm);
@@ -65,6 +65,7 @@
     --xh-icon-size: var(--xh-number-field-icon-size, var(--xh-glyph-size-lg));
     --xh-_number-field-h: var(--xh-control-h-lg);
     --xh-_number-field-px: var(--xh-control-px-lg);
+    --xh-_number-field-gap: var(--xh-control-gap-lg);
     --xh-_number-field-font-size: var(--xh-control-font-lg);
     --xh-_number-field-label-font-size: var(--xh-control-font-lg);
     --xh-_number-field-trigger-font-size: var(--xh-control-font-lg);
@@ -131,10 +132,12 @@
   [data-scope='number-field'][data-part='control'] {
     position: relative;
     display: inline-flex;
-    /* 居中而不是拉伸：作者插在框里的前后缀是一行文字，被拉满整框高度后字会贴着框顶。
-       要占满整框高度的只有 input 与加减钮，它们各自明写 */
+    /* 居中而不是拉伸：作者插在框里的前后缀是一行文字，被拉满整框高度后字会贴着框顶 */
     align-items: center;
+    gap: var(--xh-number-field-control-gap, var(--xh-_number-field-gap));
+    min-inline-size: var(--xh-number-field-control-min-w, var(--xh-control-min-w));
     block-size: var(--xh-number-field-control-h, var(--xh-_number-field-h));
+    padding-inline: var(--xh-number-field-control-px, var(--xh-_number-field-px));
     border: var(--xh-stroke-thin) solid var(--xh-number-field-input-border, var(--xh-_number-field-border));
     border-radius: var(--xh-_number-field-radius);
     background: var(--xh-number-field-input-bg, var(--xh-_number-field-bg));
@@ -145,7 +148,7 @@
     border-color: var(--xh-number-field-input-border-hover, var(--xh-_number-field-border-hover));
   }
 
-  [data-scope='number-field'][data-part='control']:focus-within {
+  [data-scope='number-field'][data-part='control']:focus-within:not([data-disabled]) {
     border-color: var(--xh-number-field-input-border-focus, var(--xh-_number-field-border-focus));
     outline: var(--xh-ring-width) solid var(--xh-_number-field-ring);
     outline-offset: var(--xh-ring-offset);
@@ -165,17 +168,18 @@
   [data-scope='number-field'][data-part='control'][data-disabled] {
     background: var(--xh-number-field-input-bg-disabled, var(--xh-bg-subtle));
     color: var(--xh-fg-disabled);
+    cursor: not-allowed;
   }
 
-  /* 盒内 input：无边框无底无圆角，观感全归 control；两侧只需半档内边距。
-     数字居中排在两个按钮之间；给一个成型的默认宽度，作者不写 style 也是一枚齐整的步进器。
+  /* 盒内 input：无边框无底无圆角，观感全归 control；行内内衬也归 control，
+     这里再留一份就是框内套了一圈空白。数字居中排在两个按钮之间；
      前后缀图标/文字直接流式排在 input 两侧，不用再绝对定位 */
   [data-scope='number-field'][data-part='control'] [data-part='input'] {
     flex: 1 1 auto;
     inline-size: var(--xh-number-field-input-w, 5em);
     min-inline-size: 0;
     block-size: 100%;
-    padding-inline: calc(var(--xh-number-field-input-px, var(--xh-_number-field-px)) / 2);
+    padding-inline: 0;
     border: 0;
     border-radius: 0;
     background: transparent;
@@ -202,32 +206,15 @@
     background: transparent;
   }
 
-  /* 盒内按钮：与盒边齐平、竖向撑满，是盒子的两端而不是浮在盒里的独立方块。
-     底与描边都交还 control——按钮自带一块底色就会把一个盒子读成三块拼起来的；
+  /* 盒内按钮：尺寸与圆角走基础规则那枚行内动作方钮，这里只把底与描边交还 control——
+     按钮自带一块底色就会把一个盒子读成三块拼起来的；
      常态只剩符号，符号取次级前景，悬停与按下才浮出底色 */
   [data-scope='number-field'][data-part='control'] [data-part='increment-trigger'],
   [data-scope='number-field'][data-part='control'] [data-part='decrement-trigger'] {
     margin: 0;
-    align-self: stretch;
-    inline-size: var(--xh-number-field-trigger-size, var(--xh-_number-field-h));
-    block-size: auto;
     border: 0;
-    border-radius: 0;
     background: transparent;
     color: var(--xh-number-field-trigger-fg, var(--xh-fg-muted));
-  }
-
-  /* 两端那一段取盒子的内圆角——盒子的圆角减去它自己那道描边；中间各段一律取直。
-     按位置认而不是按角色认：模板里三件的先后由作者定，减钮不一定就在最前面。
-     逻辑角，dir 翻转时跟着走 */
-  [data-scope='number-field'][data-part='control'] > :first-child {
-    border-start-start-radius: var(--xh-_number-field-seg-radius);
-    border-end-start-radius: var(--xh-_number-field-seg-radius);
-  }
-
-  [data-scope='number-field'][data-part='control'] > :last-child {
-    border-start-end-radius: var(--xh-_number-field-seg-radius);
-    border-end-end-radius: var(--xh-_number-field-seg-radius);
   }
 
   /* 悬停只在分段自己身上浮出一块底色与更实的符号，盒子的描边纹丝不动 */
@@ -316,8 +303,8 @@
     flex: none;
     align-items: center;
     justify-content: center;
-    inline-size: var(--xh-number-field-trigger-size, var(--xh-_number-field-h));
-    block-size: var(--xh-number-field-trigger-size, var(--xh-_number-field-h));
+    inline-size: var(--xh-number-field-trigger-size, var(--xh-control-action-size));
+    block-size: var(--xh-number-field-trigger-size, var(--xh-control-action-size));
     padding: 0;
     border: var(--xh-stroke-thin) solid var(--xh-number-field-trigger-border, var(--xh-_number-field-trigger-border));
     border-radius: var(--xh-number-field-trigger-radius, var(--xh-shape-control));

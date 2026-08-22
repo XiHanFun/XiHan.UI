@@ -65,12 +65,17 @@ export const colorPickerSuite: ConformanceSuite = {
     children: [
       { part: 'label', tag: 'label', text: '主题色' },
       {
-        // 必须是 button：WC 侧由 fixture 的 tag 决定，div 不可聚焦
-        part: 'trigger',
-        tag: 'button',
+        part: 'control',
         children: [
-          { part: 'swatch', tag: 'span' },
-          { part: 'value-text', tag: 'span' },
+          {
+            // 必须是 button：WC 侧由 fixture 的 tag 决定，div 不可聚焦
+            part: 'trigger',
+            tag: 'button',
+            children: [
+              { part: 'swatch', tag: 'span' },
+              { part: 'value-text', tag: 'span' },
+            ],
+          },
         ],
       },
       {
@@ -107,6 +112,7 @@ export const colorPickerSuite: ConformanceSuite = {
         order: [
           'root',
           'label',
+          'control',
           'trigger',
           'swatch',
           'value-text',
@@ -129,6 +135,7 @@ export const colorPickerSuite: ConformanceSuite = {
         ],
         counts: {
           'root': 1,
+          'control': 1,
           'trigger': 1,
           'content': 1,
           'area': 1,

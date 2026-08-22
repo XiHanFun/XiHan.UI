@@ -1,4 +1,5 @@
-import type { InjectionKey } from 'vue'
+import type { MenuGroupProps } from '@xihan-ui/headless'
+import type { ComputedRef, InjectionKey } from 'vue'
 import type { MenuContext } from './use-menu'
 import { inject, provide } from 'vue'
 
@@ -12,6 +13,24 @@ export function useMenuContext(): MenuContext {
   const ctx = inject(KEY, null)
   if (!ctx)
     throw new Error('[xh] Menu 部件必须用在 XhMenuRoot 内')
+  return ctx
+}
+
+/** 分组自报的身份，供分组标题取到同一个值（标题的 id 由它派生）。 */
+export interface MenuGroupContext {
+  group: ComputedRef<MenuGroupProps>
+}
+
+const GROUP_KEY: InjectionKey<MenuGroupContext> = Symbol('xh-menu-group')
+
+export function provideMenuGroup(ctx: MenuGroupContext): void {
+  provide(GROUP_KEY, ctx)
+}
+
+export function useMenuGroupContext(): MenuGroupContext {
+  const ctx = inject(GROUP_KEY, null)
+  if (!ctx)
+    throw new Error('[xh] Menu 分组标题必须用在 XhMenuGroup 内')
   return ctx
 }
 

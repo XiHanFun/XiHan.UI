@@ -14,7 +14,7 @@ import {
   XhDatePickerHeader,
   XhDatePickerHeading,
   XhDatePickerHiddenInput,
-  XhDatePickerInput,
+  XhDatePickerSegmentGroup,
   XhDatePickerLabel,
   XhDatePickerNextTrigger,
   XhDatePickerPositioner,
@@ -37,14 +37,14 @@ const value = ref<string[]>([]);
   >
     <XhDatePickerLabel>交付日期</XhDatePickerLabel>
     <XhDatePickerControl>
-      <XhDatePickerInput>
+      <XhDatePickerSegmentGroup>
         <!-- 段位不写内容：显示什么由组件按当前值填 -->
         <XhDatePickerSegment :index="0" />
         <span>-</span>
         <XhDatePickerSegment :index="1" />
         <span>-</span>
         <XhDatePickerSegment :index="2" />
-      </XhDatePickerInput>
+      </XhDatePickerSegmentGroup>
       <XhDatePickerClearTrigger />
     </XhDatePickerControl>
     <!-- 表单出口：随表单提交的是 ISO 串 -->

@@ -3,7 +3,7 @@ import { createAnatomy } from '@xihan-ui/kernel'
 /**
  * data-part 用 kebab-case，与 CSS 选择器一致。
  *
- * input 与 calendar 是挂载点，内部分别是 DateField 的段位（data-scope="date-field"）
+ * segment-group 与 calendar 是挂载点，内部分别是 DateField 的段位（data-scope="date-field"）
  * 与 Calendar 的网格（data-scope="calendar"）。内嵌 DOM 须保留各自的 scope：
  * 日历翻月后的焦点归位按 calendar 的 cell-trigger 查活 DOM，改了 scope 就查不到。
  *
@@ -14,7 +14,7 @@ export const datePickerAnatomy = createAnatomy('date-picker', [
   'root',
   'label',
   'control',
-  'input',
+  'segment-group',
   'trigger',
   'clear-trigger',
   'positioner',

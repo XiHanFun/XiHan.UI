@@ -33,7 +33,7 @@
   [data-scope='tree'][data-part='tree'] {
     display: flex;
     flex-direction: column;
-    max-block-size: var(--xh-tree-max-h, var(--xh-viewport-max-h));
+    max-block-size: var(--xh-tree-max-h, var(--xh-viewport-h-lg));
     padding-block: var(--xh-tree-py, var(--xh-space-1));
     padding-inline: var(--xh-tree-px, var(--xh-space-1));
     border: var(--xh-stroke-thin) solid var(--xh-tree-border, var(--xh-border-default));

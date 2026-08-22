@@ -41,6 +41,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @prop {object} translations - 读屏文案（只走 property）：clearTrigger 是清空按钮的名字
  * @fires value-change - 值变化；detail 为 `{ value: string }`
  * @csspart root - 承载 data-disabled / data-readonly / data-invalid / data-empty / data-at-limit 的容器
+ * @csspart control - 视觉盒；写了它就由它画描边、底色与聚焦环，输入框与清空按钮排在它里面
  * @csspart label - 标题；`for` 恒写向 input，故须是原生 `<label>` 才点得动
  * @csspart input - 真正的输入框，须是原生 `<input>`；键盘交互全在它身上
  * @csspart clear-trigger - 清空按钮，须是原生 button；不占 Tab 位，名字取 translations.clearTrigger；清不了时收起
@@ -124,6 +125,7 @@ export class XhTextFieldElement extends XhElement {
     }
     put('root', api.getRootProps() as Record<string, unknown>)
     put('label', api.getLabelProps() as Record<string, unknown>)
+    put('control', api.getControlProps() as Record<string, unknown>)
     // 作者把 input 部件写成 <textarea> 即多行宿主：connect 撤掉 type、接上自动高度
     const inputEl = this.getPart('input')
     const host = inputEl?.tagName === 'TEXTAREA' ? 'textarea' as const : 'input' as const

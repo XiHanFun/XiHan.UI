@@ -1,8 +1,9 @@
-<!-- 形态·语气·尺寸 | 三个视觉轴只写在根上，触发器与浮层都从这里继承 -->
+<!-- 形态·语气·尺寸 | 三个视觉轴只写在根上，盒与浮层都从这里继承 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import {
   XhPopselectContent,
+  XhPopselectControl,
   XhPopselectPositioner,
   XhPopselectRoot,
   XhPopselectTrigger,
@@ -22,7 +23,9 @@ const ghost = ref<string[]>(["team"]);
 <template>
   <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center">
     <XhPopselectRoot v-model:value="outline" :collection="plans" variant="outline" size="sm">
-      <XhPopselectTrigger>outline · sm</XhPopselectTrigger>
+      <XhPopselectControl>
+        <XhPopselectTrigger>outline · sm</XhPopselectTrigger>
+      </XhPopselectControl>
       <XhPopselectPositioner>
         <XhPopselectContent />
       </XhPopselectPositioner>
@@ -35,7 +38,9 @@ const ghost = ref<string[]>(["team"]);
       tone="success"
       size="md"
     >
-      <XhPopselectTrigger>subtle · success</XhPopselectTrigger>
+      <XhPopselectControl>
+        <XhPopselectTrigger>subtle · success</XhPopselectTrigger>
+      </XhPopselectControl>
       <XhPopselectPositioner>
         <XhPopselectContent />
       </XhPopselectPositioner>
@@ -48,7 +53,9 @@ const ghost = ref<string[]>(["team"]);
       tone="danger"
       size="lg"
     >
-      <XhPopselectTrigger>ghost · danger · lg</XhPopselectTrigger>
+      <XhPopselectControl>
+        <XhPopselectTrigger>ghost · danger · lg</XhPopselectTrigger>
+      </XhPopselectControl>
       <XhPopselectPositioner>
         <XhPopselectContent />
       </XhPopselectPositioner>

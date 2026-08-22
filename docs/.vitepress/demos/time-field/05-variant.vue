@@ -5,6 +5,7 @@ import {
   XhTimeFieldLabel,
   XhTimeFieldRoot,
   XhTimeFieldSegment,
+  XhTimeFieldSegmentGroup,
 } from "@xihan-ui/vue";
 
 const variants = ["outline", "subtle", "ghost"] as const;
@@ -15,9 +16,11 @@ const variants = ["outline", "subtle", "ghost"] as const;
     <XhTimeFieldRoot v-for="v in variants" :key="v" :variant="v" default-value="09:30">
       <XhTimeFieldLabel>{{ v }}</XhTimeFieldLabel>
       <XhTimeFieldControl>
-        <XhTimeFieldSegment segment="hour" />
-        <span>:</span>
-        <XhTimeFieldSegment segment="minute" />
+        <XhTimeFieldSegmentGroup>
+          <XhTimeFieldSegment segment="hour" />
+          <span>:</span>
+          <XhTimeFieldSegment segment="minute" />
+        </XhTimeFieldSegmentGroup>
       </XhTimeFieldControl>
     </XhTimeFieldRoot>
   </div>

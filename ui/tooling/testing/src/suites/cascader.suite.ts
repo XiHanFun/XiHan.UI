@@ -79,14 +79,19 @@ const FIXTURE: FixtureNode = {
   children: [
     { part: 'label', tag: 'span', text: '归属地' },
     {
-      part: 'trigger',
-      tag: 'button',
+      part: 'control',
       children: [
-        { part: 'value-text', tag: 'span' },
-        { part: 'indicator', tag: 'span' },
+        {
+          part: 'trigger',
+          tag: 'button',
+          children: [
+            { part: 'value-text', tag: 'span' },
+            { part: 'indicator', tag: 'span' },
+          ],
+        },
+        { part: 'clear-trigger', tag: 'button' },
       ],
     },
-    { part: 'clear-trigger', tag: 'button' },
     {
       part: 'positioner',
       children: [
@@ -188,7 +193,7 @@ export const cascaderSuite: ConformanceSuite = {
       spec: { apg: `${APG_COMBOBOX}#roles_states_properties` },
       props: props({ placeholder: '请选择' }),
       initial: {
-        counts: { 'root': 1, 'label': 1, 'trigger': 1, 'value-text': 1, 'indicator': 1, 'clear-trigger': 1, 'positioner': 1, 'content': 1, 'column': 3, 'item': 12, 'item-text': 12, 'item-indicator': 12 },
+        counts: { 'root': 1, 'label': 1, 'control': 1, 'trigger': 1, 'value-text': 1, 'indicator': 1, 'clear-trigger': 1, 'positioner': 1, 'content': 1, 'column': 3, 'item': 12, 'item-text': 12, 'item-indicator': 12 },
         parts: {
           'root': {
             'data-state': 'closed',

@@ -48,7 +48,23 @@
     visibility: hidden;
   }
 
+  /* 触发器的长相归作者，皮肤只表达展开态。私有槽声明在它自己身上：
+     菜单没有 root 部件，触发器上头没有别的 menu 节点可以挂 */
+  [data-scope='menu'][data-part='trigger'] {
+    /* 展开着的那张菜单的触发器走品牌淡底强档，随语气换色相；没写 data-tone 时退回品牌淡底 */
+    --xh-_menu-active-bg: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
+  }
+
+  /* 展开着的那一张是打开路径，走品牌淡底强档：哪一张开着必须一眼看得出来。
+     不加粗：加粗会推挤相邻内容 */
+  [data-scope='menu'][data-part='trigger']:not([data-disabled])[data-state='open'] {
+    background: var(--xh-menu-trigger-bg-active, var(--xh-_menu-active-bg));
+  }
+
   [data-scope='menu'][data-part='content'] {
+    /* 作者塞进条目里的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+    --xh-icon-size: var(--xh-menu-icon-size, var(--xh-glyph-size-text));
+
     /* 尺寸档只换这四个私有槽，条目从 content 继承它们，换档不必给每个部件各写一条选择器。
        菜单没有 root 部件（浮层树的最外层就是 content），三轴属性都落在这里 */
     --xh-_menu-item-py: var(--xh-space-1_5);
@@ -160,6 +176,51 @@
   [data-scope='menu'][data-part='item'][data-disabled] {
     color: var(--xh-fg-disabled);
     cursor: not-allowed;
+  }
+
+  /* 带子菜单的条目行尾画右向小箭头：不点开也看得出还有下一级。
+     位置靠 margin 顶到行尾，图形取兜底字形令牌 */
+  [data-scope='menu'][data-part='item'][aria-haspopup='menu']::after {
+    content: '';
+    flex: none;
+    margin-inline-start: auto;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
+  }
+
+  /* rtl 下子菜单开在左侧，箭头跟着指向行进方向 */
+  [dir='rtl'] [data-scope='menu'][data-part='item'][aria-haspopup='menu']::after {
+    -webkit-mask-image: var(--xh-glyph-mark-chevron-left);
+    mask-image: var(--xh-glyph-mark-chevron-left);
+  }
+
+  [data-scope='menu'][data-part='group'] {
+    display: flex;
+    flex-direction: column;
+  }
+
+  [data-scope='menu'][data-part='group'][hidden] {
+    display: none;
+  }
+
+  /* 分组标题不是条目、进不了导航，画成小号次要文字，
+     内缩与条目对齐（同一个 padding-inline），标题与条目文字才在一条竖线上 */
+  [data-scope='menu'][data-part='group-label'] {
+    display: block;
+    padding-block: var(--xh-menu-group-label-py, var(--xh-space-1));
+    padding-inline: var(--xh-menu-group-label-px, var(--xh-_menu-item-px));
+    color: var(--xh-menu-group-label-fg, var(--xh-fg-subtle));
+    font-size: var(--xh-menu-group-label-font-size, var(--xh-text-caption-size));
+    font-weight: var(--xh-menu-group-label-font-weight, var(--xh-font-weight-medium));
+    line-height: var(--xh-leading-none);
+    user-select: none;
+  }
+
+  [data-scope='menu'][data-part='group-label'][hidden] {
+    display: none;
   }
 
   [data-scope='menu'][data-part='separator'] {

@@ -161,13 +161,13 @@ export const XhSideNavBranchContent = defineComponent({
   setup(_, { slots }) {
     const ctx = useSideNavContext()
     const node = useSideNavNodeContext()
-    // 一个弹出面板一份退场闸门：退场动画挂在定位层上，从它身上探测。
+    // 一个弹出面板一份退场闸门：退场动画挂在面板上，从它身上探测。
     // 开合判据直接取 connect 这一帧的产出，不另起一套
-    const positionerRef = ref<HTMLElement | null>(null)
+    const panelRef = ref<HTMLElement | null>(null)
     const visible = useOverlayExit({
       config: ctx.config,
       isOpen: () => (ctx.api.value.getPopoutPositionerProps({ value: node.value }) as Record<string, unknown>).hidden !== true,
-      contentRef: positionerRef,
+      contentRef: panelRef,
     })
     return () => {
       if (!ctx.api.value.isPopoutPanel(node.value)) {
@@ -180,12 +180,12 @@ export const XhSideNavBranchContent = defineComponent({
       const content = h('ul', {
         ...ctx.api.value.getBranchContentProps({ value: node.value }) as Record<string, unknown>,
         hidden,
+        ref: (el: unknown) => { panelRef.value = el as HTMLElement | null },
       }, slots.default?.())
       return h(Teleport, { to: ctx.portalTarget.value }, [
         h('div', {
           ...ctx.api.value.getPopoutPositionerProps({ value: node.value }) as Record<string, unknown>,
           hidden,
-          ref: (el: unknown) => { positionerRef.value = el as HTMLElement | null },
         }, [content]),
       ])
     }

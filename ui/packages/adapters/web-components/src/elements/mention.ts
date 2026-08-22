@@ -49,6 +49,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {string} value - 受控正文；缺省该属性即非受控
  * @attr {string} default-value - 非受控初始正文
  * @attr {boolean} disabled - 整个控件禁用：输入框用原生 disabled，候选一概不开
+ * @attr {boolean} read-only - 只读：仍可聚焦与复制，写不进，候选也不开
+ * @attr {boolean} invalid - 校验失败标注
  * @attr {string} placeholder - 输入框占位文字；不写就保留作者标在 input 部件上的那份
  * @attr {boolean} loop - 方向键走到尽头回绕，默认 true；写 loop="false" 关掉
  * @attr {string} placement - 首选放置位，默认 bottom-start；避让后的实际位写在 data-placement 上
@@ -80,6 +82,8 @@ export class XhMentionElement extends XhElement {
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
     disabled: { type: Boolean },
+    readOnly: { type: Boolean, attribute: 'read-only' },
+    invalid: { type: Boolean },
     placeholder: { converter: STRING_CONVERTER },
     loop: { converter: BOOLEAN_CONVERTER },
     placement: { converter: STRING_CONVERTER },
@@ -95,6 +99,8 @@ export class XhMentionElement extends XhElement {
   declare value?: string
   declare defaultValue?: string
   declare disabled?: boolean
+  declare readOnly?: boolean
+  declare invalid?: boolean
   declare placeholder?: string
   declare loop?: boolean
   declare placement?: Placement
@@ -143,6 +149,8 @@ export class XhMentionElement extends XhElement {
       value: this.value,
       defaultValue: this.defaultValue,
       disabled: this.disabled ?? false,
+      readOnly: this.readOnly ?? false,
+      invalid: this.invalid ?? false,
       placeholder: this.placeholder,
       loop: this.loop,
       placement: this.placement,

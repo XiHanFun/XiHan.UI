@@ -149,6 +149,14 @@ export function connectTimeField<T extends PropTypes>(
       'data-empty': dataAttr(empty),
     }),
 
+    // 段位与作者写在段间的分隔符都挂在这一层，它占满盒里剩下的宽度，清空钮因此靠在框内末端
+    getSegmentGroupProps: () => normalize.element({
+      ...parts['segment-group'].attrs,
+      'data-disabled': dataAttr(disabled),
+      'data-readonly': dataAttr(readOnly),
+      'data-invalid': dataAttr(flagged),
+    }),
+
     getSegmentProps: ({ segment }) => {
       // 这一段此刻参不参与显示；不参与的收起而不是卸载，granularity 改回去时要原地复现
       const active = segments.includes(segment)

@@ -96,10 +96,10 @@ export const mentionMachine = createMachine({
       invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
       invokeOnClose: ({ prop }) => prop('onOpenChange')?.({ open: false }),
 
-      // 禁用时正文一动不动：原生 disabled 已经挡住了打字，这条兜住程序化派进来的输入事件
+      // 禁用或只读时正文一动不动：原生属性已经挡住了打字，这条兜住程序化派进来的输入事件
       setValue: ({ context, prop, event }) => {
         const e = event.current()
-        if (e.type === 'INPUT.CHANGE' && !prop('disabled'))
+        if (e.type === 'INPUT.CHANGE' && !prop('disabled') && !prop('readOnly'))
           context.set('value', e.value)
       },
 
@@ -123,7 +123,7 @@ export const mentionMachine = createMachine({
         const e = event.current()
         if (e.type !== 'INPUT.CHANGE' && e.type !== 'CARET.SYNC')
           return
-        if (prop('disabled')) {
+        if (prop('disabled') || prop('readOnly')) {
           context.set('trigger', null)
           send({ type: 'CLOSE' })
           return

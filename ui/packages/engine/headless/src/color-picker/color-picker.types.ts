@@ -221,6 +221,7 @@ export interface ColorPickerApi<T extends PropTypes = PropTypes> {
   setValue: (next: string) => void
   getRootProps: () => T['element']
   getLabelProps: () => T['label']
+  getControlProps: () => T['element']
   getTriggerProps: () => T['button']
   getValueTextProps: () => T['element']
   getSwatchProps: () => T['element']

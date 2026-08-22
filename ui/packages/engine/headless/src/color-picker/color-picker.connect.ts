@@ -195,6 +195,12 @@ export function connectColorPicker<T extends PropTypes>(
       id: ids.label,
     }),
 
+    /** 触发按钮的收纳容器，也是描边、底色与聚焦环所在的那一层。 */
+    getControlProps: () => normalize.element({
+      ...parts.control.attrs,
+      ...stateAttrs(),
+    }),
+
     getTriggerProps: () => normalize.button({
       ...parts.trigger.attrs,
       ...stateAttrs(),

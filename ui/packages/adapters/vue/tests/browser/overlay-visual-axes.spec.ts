@@ -31,10 +31,10 @@ import {
   XhDatePickerConfirmTrigger,
   XhDatePickerContent,
   XhDatePickerControl,
-  XhDatePickerInput,
   XhDatePickerPositioner,
   XhDatePickerRoot,
   XhDatePickerSegment,
+  XhDatePickerSegmentGroup,
   XhMentionContent,
   XhMentionInput,
   XhMentionItem,
@@ -194,7 +194,7 @@ const CASES: Record<string, Case> = {
     toneProp: 'background-color',
     render: axes => h(XhDatePickerRoot, { ...axes, open: true, showTime: true }, () => [
       h(XhDatePickerControl, null, () => [
-        h(XhDatePickerInput, null, () => [h(XhDatePickerSegment, { index: 0 })]),
+        h(XhDatePickerSegmentGroup, null, () => [h(XhDatePickerSegment, { index: 0 })]),
       ]),
       h(XhDatePickerPositioner, null, () => [
         h(XhDatePickerContent, null, () => [h(XhDatePickerConfirmTrigger, null, () => '确定')]),

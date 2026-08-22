@@ -188,6 +188,14 @@ export function connectDateField<T extends PropTypes>(
       'data-invalid': dataAttr(invalid),
     }),
 
+    // 段位与作者写在段间的分隔符都挂在这一层，它占满盒里剩下的宽度，清空钮因此靠在框内末端
+    getSegmentGroupProps: () => normalize.element({
+      ...parts['segment-group'].attrs,
+      'data-disabled': dataAttr(disabled),
+      'data-readonly': dataAttr(readOnly),
+      'data-invalid': dataAttr(invalid || outOfRange),
+    }),
+
     segmentOf: props => segmentStates[indexOf(props)],
 
     getSegmentProps: (props) => {
