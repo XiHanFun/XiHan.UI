@@ -2,7 +2,7 @@
 // 若干组件的 fixture 与 Vue 侧不同构，需在此改写后再喂给运行方。
 // jsdom 一致性与浏览器无障碍扫描共用这一份，两边跑的是同一批组件。
 import type { ConformanceSuite, FixtureNode } from '@xihan-ui/testing'
-import { accordionSuite, affixSuite, alertSuite, anchorSuite, avatarGroupSuite, avatarSuite, backTopSuite, badgeSuite, breadcrumbSuite, buttonGroupSuite, buttonSuite, calendarSuite, cardSuite, carouselSuite, cascaderSuite, checkboxGroupSuite, checkboxSuite, clipboardSuite, codeBlockSuite, collapsibleSuite, colorPickerSuite, comboboxSuite, composerSuite, contextMenuSuite, countdownSuite, dateFieldSuite, datePickerSuite, descriptionsSuite, downloadTriggerSuite, dynamicInputSuite, editableSuite, ellipsisSuite, emptyStateSuite, fieldsetSuite, fieldSuite, fileUploadSuite, flexSuite, floatButtonSuite, floatingPanelSuite, formSuite, gradientTextSuite, gridSuite, heatmapSuite, highlightSuite, hotkeysSuite, hoverCardSuite, iconSuite, iconWrapperSuite, imageCropperSuite, imageSuite, infiniteScrollSuite, jsonViewerSuite, layoutSuite, listboxSuite, listSuite, loadingBarSuite, logSuite, marqueeSuite, masonrySuite, mentionSuite, menubarSuite, menuSuite, navigationMenuSuite, numberAnimationSuite, numberFieldSuite, pageHeaderSuite, paginationSuite, passwordInputSuite, pinInputSuite, popconfirmSuite, popoverSuite, popselectSuite, progressSuite, qrCodeSuite, radioGroupSuite, ratingSuite, resultSuite, scrollAreaSuite, scrollbarSuite, segmentedSuite, selectSuite, separatorSuite, signaturePadSuite, skeletonSuite, sliderSuite, spaceSuite, spinnerSuite, splitterSuite, statisticSuite, stepsSuite, switchSuite, tableSuite, tabsSuite, tagsInputSuite, tagSuite, textFieldSuite, threadSuite, timeFieldSuite, timelineSuite, timePickerSuite, timerSuite, timeSuite, toasterSuite, toastSuite, toggleGroupSuite, toggleSuite, toolbarSuite, tooltipSuite, tourSuite, transferSuite, treeSelectSuite, treeSuite, typographySuite, virtualizerSuite, watermarkSuite } from '@xihan-ui/testing'
+import { accordionSuite, affixSuite, alertSuite, anchorSuite, avatarGroupSuite, avatarSuite, backTopSuite, badgeSuite, breadcrumbSuite, buttonGroupSuite, buttonSuite, calendarSuite, cardSuite, carouselSuite, cascaderSuite, checkboxGroupSuite, checkboxSuite, clipboardSuite, codeBlockSuite, collapsibleSuite, colorPickerSuite, comboboxSuite, composerSuite, contextMenuSuite, countdownSuite, dateFieldSuite, datePickerSuite, descriptionsSuite, downloadTriggerSuite, dynamicInputSuite, editableSuite, ellipsisSuite, emptyStateSuite, fieldsetSuite, fieldSuite, fileUploadSuite, flexSuite, floatButtonSuite, floatingPanelSuite, formSuite, gradientTextSuite, gridSuite, heatmapSuite, highlightSuite, hotkeysSuite, hoverCardSuite, iconSuite, iconWrapperSuite, imageCropperSuite, imageSuite, infiniteScrollSuite, jsonViewerSuite, layoutSuite, listboxSuite, listSuite, loadingBarSuite, logSuite, marqueeSuite, masonrySuite, mentionSuite, menubarSuite, menuSuite, navigationMenuSuite, numberAnimationSuite, numberFieldSuite, pageHeaderSuite, paginationSuite, passwordInputSuite, pinInputSuite, popconfirmSuite, popoverSuite, popselectSuite, progressSuite, qrCodeSuite, radioGroupSuite, ratingSuite, resultSuite, scrollAreaSuite, scrollbarSuite, segmentedSuite, selectSuite, separatorSuite, sideNavSuite, signaturePadSuite, skeletonSuite, sliderSuite, spaceSuite, spinnerSuite, splitterSuite, statisticSuite, stepsSuite, switchSuite, tableSuite, tabsSuite, tagsInputSuite, tagSuite, textFieldSuite, threadSuite, timeFieldSuite, timelineSuite, timePickerSuite, timerSuite, timeSuite, toasterSuite, toastSuite, toggleGroupSuite, toggleSuite, toolbarSuite, tooltipSuite, tourSuite, transferSuite, treeSelectSuite, treeSuite, typographySuite, virtualizerSuite, watermarkSuite } from '@xihan-ui/testing'
 
 // switch 无 portal/presence 分歧，复用共享用例、只把 fixture 换成 WC 行为宿主形态
 // （用户显式写 root/thumb 角色节点，Vue 版 XhSwitch 是内部渲染 thumb）。
@@ -242,6 +242,36 @@ const wcMasonrySuite: ConformanceSuite = {
   },
 }
 
+// side-nav 折叠态弹出面板的定位层在 Vue 版由 branch-content 组件内部装配并搬到浮层落点，
+// WC 版要作者手写在顶层 branch 里、包着 branch-content；平铺态不渲染它（connect 会把它整层藏掉），
+// 面板内嵌套的分支也不要它。故只对 collapsed 且没关掉弹出的用例，把 list 直属分支的
+// branch-content 包进 positioner。
+function withPopoutPositioner(node: FixtureNode, parent?: FixtureNode): FixtureNode {
+  if (node.part === 'branch' && parent?.part === 'list' && node.children) {
+    return {
+      ...node,
+      children: node.children.map(c => (c.part === 'branch-content' ? { part: 'positioner', children: [c] } : c)),
+    }
+  }
+  if (!node.children)
+    return node
+  return { ...node, children: node.children.map(c => withPopoutPositioner(c, node)) }
+}
+
+function popoutCase(c: ConformanceSuite['cases'][number]): boolean {
+  return c.props?.collapsed === true && c.props.collapsedPopout !== false
+}
+
+const wcSideNavSuite: ConformanceSuite = {
+  ...sideNavSuite,
+  cases: sideNavSuite.cases.map((c) => {
+    if (!popoutCase(c))
+      return c
+    const derive = c.fixture
+    return { ...c, fixture: (base: FixtureNode) => withPopoutPositioner(derive ? derive(base) : base) }
+  }),
+}
+
 // 同一份规格喂给 WC 适配器实现，逐帧核对。separator/badge 无状态无受控，整份复用。
 // 三个集合类组件的受控值是字符串/数组（不像布尔那样表达不了 undefined），受控用例可原样跑。
 
@@ -367,4 +397,5 @@ export const wcSuites: readonly ConformanceSuite[]
     imageCropperSuite,
     signaturePadSuite,
     floatingPanelSuite,
+    wcSideNavSuite,
   ]
