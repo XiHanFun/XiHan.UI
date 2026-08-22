@@ -50,6 +50,7 @@ import { hoverCardSuite } from './hover-card.suite'
 import { iconWrapperSuite } from './icon-wrapper.suite'
 import { iconSuite } from './icon.suite'
 import { imageCropperSuite } from './image-cropper.suite'
+import { imageViewerSuite } from './image-viewer.suite'
 import { imageSuite } from './image.suite'
 import { infiniteScrollSuite } from './infinite-scroll.suite'
 import { jsonViewerSuite } from './json-viewer.suite'
@@ -83,6 +84,7 @@ import { scrollbarSuite } from './scrollbar.suite'
 import { segmentedSuite } from './segmented.suite'
 import { selectSuite } from './select.suite'
 import { separatorSuite } from './separator.suite'
+import { sideNavSuite } from './side-nav.suite'
 import { signaturePadSuite } from './signature-pad.suite'
 import { skeletonSuite } from './skeleton.suite'
 import { sliderSuite } from './slider.suite'
@@ -171,6 +173,7 @@ export const allSuites: readonly ConformanceSuite[] = [
   iconWrapperSuite,
   imageSuite,
   imageCropperSuite,
+  imageViewerSuite,
   infiniteScrollSuite,
   jsonViewerSuite,
   layoutSuite,
@@ -203,6 +206,7 @@ export const allSuites: readonly ConformanceSuite[] = [
   segmentedSuite,
   selectSuite,
   separatorSuite,
+  sideNavSuite,
   signaturePadSuite,
   skeletonSuite,
   sliderSuite,
