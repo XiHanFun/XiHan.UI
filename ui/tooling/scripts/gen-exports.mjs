@@ -30,6 +30,15 @@ if (dirs.length === 0) {
   process.exit(1)
 }
 
+/**
+ * 不由 dist 推导的子入口：样式表、清单文件这类手写条目。
+ * 名单之外出现「重算会丢掉」的条目就是真出了事（多半是 dist 里少了产物），照旧报错。
+ */
+const HANDWRITTEN = {
+  '@xihan-ui/tokens': ['./tokens.css', './tokens.json'],
+  '@xihan-ui/web-components': ['./custom-elements.json'],
+}
+
 const dropped = []
 let touched = 0
 for (const dir of dirs) {
@@ -37,7 +46,13 @@ for (const dir of dirs) {
   if (!(await exists(dist)))
     continue
   const files = await readdir(dist)
-  const subpaths = files.filter(f => f.endsWith('.js')).map(f => f.replace(/\.js$/, ''))
+  const typed = new Set(files.filter(f => f.endsWith('.d.ts')).map(f => f.replace(/\.d\.ts$/, '')))
+  // 只有同时产出 .js 与 .d.ts 的才是真入口；unbundle 切出来的内部 chunk 没有类型，
+  // 配上子路径等于承诺一个无类型的公开入口（publint 会红），一律不进 exports
+  const subpaths = files
+    .filter(f => f.endsWith('.js'))
+    .map(f => f.replace(/\.js$/, ''))
+    .filter(sub => typed.has(sub))
   if (subpaths.length === 0)
     continue
   const pkgJsonPath = join(dir, 'package.json')
@@ -50,10 +65,15 @@ for (const dir of dirs) {
   }
   // 手写的子入口（皮肤的逐组件 CSS 之类）在 dist 里没有对应的 .js，整表覆盖会把它们抹掉
   const lost = Object.keys(pkg.exports ?? {}).filter(k => !(k in exportsMap))
-  if (lost.length) {
-    dropped.push(`${pkg.name}：${lost.join(' ')}`)
+  const handwritten = HANDWRITTEN[pkg.name] ?? []
+  const unexpected = lost.filter(k => !handwritten.includes(k))
+  if (unexpected.length) {
+    dropped.push(`${pkg.name}：${unexpected.join(' ')}`)
     continue
   }
+  // 登记过的手写子入口按原样并回去，位置排在由 dist 推导的那些之后
+  for (const key of handwritten)
+    exportsMap[key] = pkg.exports[key]
   if (JSON.stringify(pkg.exports) === JSON.stringify(exportsMap))
     continue
   pkg.exports = exportsMap
@@ -68,4 +88,4 @@ if (dropped.length) {
   process.exit(1)
 }
 
-console.log(`[gen-exports] 更新 ${touched} 个包的 exports`)
+console.log(`[gen-exports] 更新 ${touched} 个包的 exports（手写子入口 ${Object.values(HANDWRITTEN).flat().length} 条按原样保留）`)

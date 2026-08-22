@@ -7,7 +7,7 @@ import { accordionSuite, affixSuite, alertSuite, anchorSuite, avatarGroupSuite, 
 // switch 无 portal/presence 分歧，复用共享用例、只把 fixture 换成 WC 行为宿主形态
 // （用户显式写 root/thumb 角色节点，Vue 版 XhSwitch 是内部渲染 thumb）。
 // 受控用例排除：HTML 布尔属性表达不了 undefined（checked=false 会被 harness 抹成缺省=非受控），
-// 与 WC dialog 受控 open 同因延后，待 controlled 属性机制（设计 §11.2.9b）。
+// 与 WC dialog 受控 open 同因延后，待受控属性机制落地。
 const wcSwitchSuite: ConformanceSuite = {
   ...switchSuite,
   fixture: { ...switchSuite.fixture, children: [{ part: 'thumb', tag: 'span' }] },

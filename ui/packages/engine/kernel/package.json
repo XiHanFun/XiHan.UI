@@ -70,10 +70,6 @@
       "types": "./dist/normalize-props.d.ts",
       "import": "./dist/normalize-props.js"
     },
-    "./package": {
-      "types": "./dist/package.d.ts",
-      "import": "./dist/package.js"
-    },
     "./runtime-config": {
       "types": "./dist/runtime-config.d.ts",
       "import": "./dist/runtime-config.js"

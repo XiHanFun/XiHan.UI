@@ -4,7 +4,6 @@
     "@xihan-ui/vue": [
       ".",
       "./backgrounds",
-      "./package",
       "./sound"
     ],
     "@xihan-ui/web-components": [
@@ -178,7 +177,6 @@
       "./merge-props",
       "./metadata",
       "./normalize-props",
-      "./package",
       "./runtime-config",
       "./scope",
       "./skin-check",
@@ -202,9 +200,7 @@
     ],
     "@xihan-ui/position": [
       ".",
-      "./compute",
-      "./dom",
-      "./observe"
+      "./compute"
     ],
     "@xihan-ui/animations": [
       "."
@@ -11112,9 +11108,9 @@
       "events": [
         "drag-end",
         "drag-start",
+        "name",
         "scroll-end",
-        "scroll-start",
-        "type"
+        "scroll-start"
       ]
     },
     "xh-segmented": {

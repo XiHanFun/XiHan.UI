@@ -20,6 +20,7 @@
     "gate:surface": "node tooling/scripts/check-public-surface.mjs",
     "gate:demos": "node tooling/scripts/check-wc-demos.mjs",
     "gate:docs": "node scripts/gen-component-docs.mjs --check",
+    "gate:exports": "node tooling/scripts/gen-exports.mjs && git diff --exit-code packages/*/*/package.json",
     "gate:publish": "node tooling/scripts/check-publish.mjs",
     "gate:styled": "pnpm --fail-if-no-match --filter @xihan-ui/styles gen && git diff --exit-code packages/design/styles/index.unlayered.css",
     "gate:tokens": "pnpm --fail-if-no-match --filter @xihan-ui/tokens gen && git diff --exit-code packages/design/tokens",

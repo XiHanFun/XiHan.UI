@@ -26,9 +26,9 @@ export const XhButton = defineComponent({
     loading: Boolean,
     iconOnly: Boolean,
     fullWidth: Boolean,
-    variant: String,
-    tone: String,
-    size: String,
+    variant: String as PropType<ButtonProps['variant']>,
+    tone: String as PropType<ButtonProps['tone']>,
+    size: String as PropType<ButtonProps['size']>,
   },
   setup(props, { slots }) {
     const attrs = useAttrs()

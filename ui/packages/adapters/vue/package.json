@@ -34,10 +34,6 @@
       "types": "./dist/backgrounds.d.ts",
       "import": "./dist/backgrounds.js"
     },
-    "./package": {
-      "types": "./dist/package.d.ts",
-      "import": "./dist/package.js"
-    },
     "./sound": {
       "types": "./dist/sound.d.ts",
       "import": "./dist/sound.js"
