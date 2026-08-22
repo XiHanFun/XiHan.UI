@@ -131,10 +131,15 @@ export const timePickerSuite: ConformanceSuite = {
       {
         part: 'control',
         children: [
-          segment('hour'),
-          segment('minute'),
-          segment('second'),
-          segment('dayPeriod'),
+          {
+            part: 'segment-group',
+            children: [
+              segment('hour'),
+              segment('minute'),
+              segment('second'),
+              segment('dayPeriod'),
+            ],
+          },
           // 必须是 button：WC 侧由 fixture 的 tag 决定，div 不可聚焦
           { part: 'trigger', tag: 'button', text: '选择' },
           { part: 'clear-trigger', tag: 'button', text: '清空' },
@@ -283,6 +288,7 @@ export const timePickerSuite: ConformanceSuite = {
           'root',
           'label',
           'control',
+          'segment-group',
           HOUR_SEG,
           MINUTE_SEG,
           SECOND_SEG,

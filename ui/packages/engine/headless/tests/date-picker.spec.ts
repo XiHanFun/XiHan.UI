@@ -244,7 +244,7 @@ function mount(initial: Partial<Props> = {}): Harness {
     spread(root, api.getRootProps() as Record<string, unknown>)
     spread(label, api.getLabelProps() as Record<string, unknown>)
     spread(control, api.getControlProps() as Record<string, unknown>)
-    spread(input, api.getInputProps() as Record<string, unknown>)
+    spread(input, api.getSegmentGroupProps() as Record<string, unknown>)
     spread(clear, api.getClearTriggerProps() as Record<string, unknown>)
     spread(trigger, api.getTriggerProps() as Record<string, unknown>)
     spread(hiddenInput, api.field.getHiddenInputProps() as Record<string, unknown>)
@@ -256,7 +256,7 @@ function mount(initial: Partial<Props> = {}): Harness {
     // 终点那一组：非区间模式连接层不露出它，节点也就不接线
     const fieldEnd = api.fieldEnd
     if (fieldEnd) {
-      spread(inputEnd, api.getInputProps({ index: 1 }) as Record<string, unknown>)
+      spread(inputEnd, api.getSegmentGroupProps({ index: 1 }) as Record<string, unknown>)
       spread(hiddenInputEnd, fieldEnd.getHiddenInputProps() as Record<string, unknown>)
       segmentEndEls.forEach((el, index) => {
         spread(el, fieldEnd.getSegmentProps({ index }) as Record<string, unknown>)
@@ -933,8 +933,8 @@ describe('内嵌日历原样复用，不重写一条', () => {
     expect(h.calendarEl.getAttribute('data-part')).toBe('calendar')
     expect(h.grid.getAttribute('data-scope')).toBe('calendar')
     expect(h.grid.getAttribute('role')).toBe('grid')
-    // 段位同理：input 是本组件的挂载点，里面是分段输入那一份解剖
-    expect(h.input.getAttribute('data-part')).toBe('input')
+    // 段位同理：segment-group 是本组件的挂载点，里面是分段输入那一份解剖
+    expect(h.input.getAttribute('data-part')).toBe('segment-group')
     expect(h.input.getAttribute('role')).toBe('group')
     expect(h.segments()[0]!.getAttribute('data-scope')).toBe('date-field')
   })

@@ -3581,6 +3581,10 @@
               "name": "label"
             },
             {
+              "description": "触发按钮与清空按钮的收纳容器：描边、底色与聚焦环都落在这一层",
+              "name": "control"
+            },
+            {
               "description": "role=combobox 的触发按钮，同时是定位锚点，须是原生 button",
               "name": "trigger"
             },
@@ -4365,6 +4369,45 @@
               "name": "--xh-cascader-content-shadow"
             },
             {
+              "name": "--xh-cascader-control-bg"
+            },
+            {
+              "name": "--xh-cascader-control-bg-disabled"
+            },
+            {
+              "name": "--xh-cascader-control-bg-readonly"
+            },
+            {
+              "name": "--xh-cascader-control-border"
+            },
+            {
+              "name": "--xh-cascader-control-border-focus"
+            },
+            {
+              "name": "--xh-cascader-control-border-hover"
+            },
+            {
+              "name": "--xh-cascader-control-border-invalid"
+            },
+            {
+              "name": "--xh-cascader-control-fg"
+            },
+            {
+              "name": "--xh-cascader-control-gap"
+            },
+            {
+              "name": "--xh-cascader-control-h"
+            },
+            {
+              "name": "--xh-cascader-control-min-w"
+            },
+            {
+              "name": "--xh-cascader-control-px"
+            },
+            {
+              "name": "--xh-cascader-control-radius"
+            },
+            {
               "name": "--xh-cascader-empty-fg"
             },
             {
@@ -4452,31 +4495,7 @@
               "name": "--xh-cascader-row-selected-font-weight"
             },
             {
-              "name": "--xh-cascader-search-max-h"
-            },
-            {
               "name": "--xh-cascader-search-p"
-            },
-            {
-              "name": "--xh-cascader-trigger-bg"
-            },
-            {
-              "name": "--xh-cascader-trigger-bg-disabled"
-            },
-            {
-              "name": "--xh-cascader-trigger-bg-readonly"
-            },
-            {
-              "name": "--xh-cascader-trigger-border"
-            },
-            {
-              "name": "--xh-cascader-trigger-border-focus"
-            },
-            {
-              "name": "--xh-cascader-trigger-border-hover"
-            },
-            {
-              "name": "--xh-cascader-trigger-border-invalid"
             },
             {
               "name": "--xh-cascader-trigger-fg"
@@ -4486,18 +4505,6 @@
             },
             {
               "name": "--xh-cascader-trigger-gap"
-            },
-            {
-              "name": "--xh-cascader-trigger-h"
-            },
-            {
-              "name": "--xh-cascader-trigger-min-w"
-            },
-            {
-              "name": "--xh-cascader-trigger-px"
-            },
-            {
-              "name": "--xh-cascader-trigger-radius"
             }
           ]
         }
@@ -6004,6 +6011,10 @@
               "name": "label"
             },
             {
+              "description": "触发按钮的收纳容器：描边、底色与聚焦环都落在这一层",
+              "name": "control"
+            },
+            {
               "description": "触发按钮，须是原生 button；同时是浮层的定位锚点",
               "name": "trigger"
             },
@@ -6572,7 +6583,10 @@
               "name": "--xh-color-picker-content-gap"
             },
             {
-              "name": "--xh-color-picker-content-p"
+              "name": "--xh-color-picker-content-px"
+            },
+            {
+              "name": "--xh-color-picker-content-py"
             },
             {
               "name": "--xh-color-picker-content-radius"
@@ -6582,6 +6596,42 @@
             },
             {
               "name": "--xh-color-picker-content-w"
+            },
+            {
+              "name": "--xh-color-picker-control-bg"
+            },
+            {
+              "name": "--xh-color-picker-control-bg-disabled"
+            },
+            {
+              "name": "--xh-color-picker-control-bg-readonly"
+            },
+            {
+              "name": "--xh-color-picker-control-border"
+            },
+            {
+              "name": "--xh-color-picker-control-border-focus"
+            },
+            {
+              "name": "--xh-color-picker-control-border-hover"
+            },
+            {
+              "name": "--xh-color-picker-control-fg"
+            },
+            {
+              "name": "--xh-color-picker-control-gap"
+            },
+            {
+              "name": "--xh-color-picker-control-h"
+            },
+            {
+              "name": "--xh-color-picker-control-min-w"
+            },
+            {
+              "name": "--xh-color-picker-control-px"
+            },
+            {
+              "name": "--xh-color-picker-control-radius"
             },
             {
               "name": "--xh-color-picker-gap"
@@ -6671,24 +6721,6 @@
               "name": "--xh-color-picker-track-thickness"
             },
             {
-              "name": "--xh-color-picker-trigger-bg"
-            },
-            {
-              "name": "--xh-color-picker-trigger-bg-disabled"
-            },
-            {
-              "name": "--xh-color-picker-trigger-bg-readonly"
-            },
-            {
-              "name": "--xh-color-picker-trigger-border"
-            },
-            {
-              "name": "--xh-color-picker-trigger-border-focus"
-            },
-            {
-              "name": "--xh-color-picker-trigger-border-hover"
-            },
-            {
               "name": "--xh-color-picker-trigger-fg"
             },
             {
@@ -6696,18 +6728,6 @@
             },
             {
               "name": "--xh-color-picker-trigger-gap"
-            },
-            {
-              "name": "--xh-color-picker-trigger-h"
-            },
-            {
-              "name": "--xh-color-picker-trigger-min-w"
-            },
-            {
-              "name": "--xh-color-picker-trigger-px"
-            },
-            {
-              "name": "--xh-color-picker-trigger-radius"
             },
             {
               "name": "--xh-color-picker-value-fg"
@@ -8719,7 +8739,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-date-field>` —— Light-DOM 行为宿主：作者写 root/label/control/segment（多个）/hidden-input\n角色节点，元素跑 date-field 机器并把 connect 产出打上去。\n\n每一段是一个 role=spinbutton 的可聚焦节点：上下键加减并在段区间里回绕、左右键与 Home/End 换段、\n数字键直填且敲满自动跳下一段、Backspace 清掉本段；可选的 clear-trigger 一键清空全部段。\n\n是哪一段有两种写法：只声明下标（`index`，或按文档序），是哪一段由 locale（zh-CN 年月日、\nen-US 月日年）与段集算出来——同一份标记换个 locale 就换一副面孔；或按段名写死\n（`segment=\"quarter\"`），段集里没有这一块时那一格收起。用不上的段带 hidden 留在文档里，\n不卸载作者节点。\n\n段位没填齐时整份值是 null；填齐了才拼出 ISO 串，由 hidden-input 随表单提交。\n\n占位串与读屏名字是逐段的对象，属性表达不了，只能走 property\n（`el.placeholder = { year: '年' }`）。",
+          "description": "`<xh-date-field>` —— Light-DOM 行为宿主：作者写 root/label/control/segment-group/segment（多个）/hidden-input\n角色节点，元素跑 date-field 机器并把 connect 产出打上去。\n\n每一段是一个 role=spinbutton 的可聚焦节点：上下键加减并在段区间里回绕、左右键与 Home/End 换段、\n数字键直填且敲满自动跳下一段、Backspace 清掉本段；可选的 clear-trigger 一键清空全部段。\n\n是哪一段有两种写法：只声明下标（`index`，或按文档序），是哪一段由 locale（zh-CN 年月日、\nen-US 月日年）与段集算出来——同一份标记换个 locale 就换一副面孔；或按段名写死\n（`segment=\"quarter\"`），段集里没有这一块时那一格收起。用不上的段带 hidden 留在文档里，\n不卸载作者节点。\n\n段位没填齐时整份值是 null；填齐了才拼出 ISO 串，由 hidden-input 随表单提交。\n\n占位串与读屏名字是逐段的对象，属性表达不了，只能走 property\n（`el.placeholder = { year: '年' }`）。",
           "name": "XhDateFieldElement",
           "cssParts": [
             {
@@ -8733,6 +8753,10 @@
             {
               "description": "role=group 的分段容器",
               "name": "control"
+            },
+            {
+              "description": "段位与分隔符的外壳，占满盒里剩下的宽度",
+              "name": "segment-group"
             },
             {
               "description": "一段一个的 spinbutton 节点。可自带 segment 属性按段名认领（segment=\"quarter\"）， 或自带 index 属性声明下标，两者都没写按文档序",
@@ -9146,6 +9170,9 @@
               "name": "--xh-date-field-control-fg"
             },
             {
+              "name": "--xh-date-field-control-gap"
+            },
+            {
               "name": "--xh-date-field-control-h"
             },
             {
@@ -9216,7 +9243,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-date-picker>` —— Light-DOM 行为宿主：作者写 root/label/control/input/segment/trigger/\nclear-trigger/positioner/content/calendar 角色节点，calendar 之内再照日历那套写\nheader/prev-trigger/next-trigger/heading/grid/grid-head/week-day/grid-body/week-row/cell/cell-trigger。\n\n本元素是编排机，只持有开合与「分段输入 ↔ 日历」之间的值同步；选日期、翻月、网格键盘导航\n委派给内嵌日历，分段输入委派给内嵌分段输入，两部件之内的 DOM 各戴各自的 data-scope。\n\n网格由作者渲染，元素不生成节点：读 `weeks` / `weekDays` / `headingLabel` 三个只读属性，\n听 `focused-value-change` 重画。日期身份取 cell 节点上的 `value`（ISO 串），\ncell-trigger 跟随所在 cell；表头列取 week-day 上的 `value`（列序 0-6）；\n段位可自带 `segment` 属性按段名认领（`segment=\"quarter\"`），或自带 `index` 属性声明下标，\n两者都没写按所在 input 之内的文档序。\n\n区间模式（selection-mode=\"range\"）下 input 写两个：文档序在前的是起点、在后的是终点，\n各自内部写一整套段位。段位与 hidden-input 按所在 input 归组，方向键不跨组；\nhidden-input 写在 input 之外（如与 control 平级）时按文档序对应起止两端。\n其余模式只认第一个 input。",
+          "description": "`<xh-date-picker>` —— Light-DOM 行为宿主：作者写 root/label/control/segment-group/segment/trigger/\nclear-trigger/positioner/content/calendar 角色节点，calendar 之内再照日历那套写\nheader/prev-trigger/next-trigger/heading/grid/grid-head/week-day/grid-body/week-row/cell/cell-trigger。\n\n本元素是编排机，只持有开合与「分段输入 ↔ 日历」之间的值同步；选日期、翻月、网格键盘导航\n委派给内嵌日历，分段输入委派给内嵌分段输入，两部件之内的 DOM 各戴各自的 data-scope。\n\n网格由作者渲染，元素不生成节点：读 `weeks` / `weekDays` / `headingLabel` 三个只读属性，\n听 `focused-value-change` 重画。日期身份取 cell 节点上的 `value`（ISO 串），\ncell-trigger 跟随所在 cell；表头列取 week-day 上的 `value`（列序 0-6）；\n段位可自带 `segment` 属性按段名认领（`segment=\"quarter\"`），或自带 `index` 属性声明下标，\n两者都没写按所在 segment-group 之内的文档序。\n\n区间模式（selection-mode=\"range\"）下 segment-group 写两个：文档序在前的是起点、在后的是终点，\n各自内部写一整套段位。段位与 hidden-input 按所在 segment-group 归组，方向键不跨组；\nhidden-input 写在 segment-group 之外（如与 control 平级）时按文档序对应起止两端。\n其余模式只认第一个 segment-group。",
           "name": "XhDatePickerElement",
           "cssParts": [
             {
@@ -9233,10 +9260,10 @@
             },
             {
               "description": "role=group 的分段容器，段位挂在它里面；区间模式下有起止两个，data-index 区分",
-              "name": "input"
+              "name": "segment-group"
             },
             {
-              "description": "一段一个的 spinbutton 节点（data-scope=\"date-field\"）。可自带 segment 属性按段名认领 （segment=\"quarter\"），或自带 index 属性声明下标（在所属 input 组内数），两者都没写按文档序",
+              "description": "一段一个的 spinbutton 节点（data-scope=\"date-field\"）。可自带 segment 属性按段名认领 （segment=\"quarter\"），或自带 index 属性声明下标（在所属 segment-group 组内数），两者都没写按文档序",
               "name": "segment"
             },
             {
@@ -9846,13 +9873,13 @@
               },
               "parameters": [
                 {
-                  "name": "inputs",
+                  "name": "groupsOfSegments",
                   "type": {
                     "text": "readonly HTMLElement[]"
                   }
                 }
               ],
-              "description": "把隐藏输入分到起止两端：写在某个 input 之内的归那一组，\n写在全部 input 之外的按自己的文档序对号入座。多出来的一律不接线。"
+              "description": "把隐藏输入分到起止两端：写在某个 segment-group 之内的归那一组，\n写在全部 segment-group 之外的按自己的文档序对号入座。多出来的一律不接线。"
             },
             {
               "kind": "method",
@@ -10189,7 +10216,10 @@
               "name": "--xh-date-picker-content-fg"
             },
             {
-              "name": "--xh-date-picker-content-p"
+              "name": "--xh-date-picker-content-px"
+            },
+            {
+              "name": "--xh-date-picker-content-py"
             },
             {
               "name": "--xh-date-picker-content-radius"
@@ -17253,9 +17283,6 @@
               "name": "--xh-hover-card-fg"
             },
             {
-              "name": "--xh-hover-card-font-size"
-            },
-            {
               "name": "--xh-hover-card-gap"
             },
             {
@@ -21425,6 +21452,24 @@
             },
             {
               "kind": "field",
+              "name": "readOnly",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "read-only"
+            },
+            {
+              "kind": "field",
+              "name": "invalid",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "invalid"
+            },
+            {
+              "kind": "field",
               "name": "placeholder",
               "privacy": "public",
               "type": {
@@ -21711,6 +21756,22 @@
             },
             {
               "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "只读：仍可聚焦与复制，写不进，候选也不开",
+              "name": "read-only",
+              "fieldName": "readOnly"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "校验失败标注",
+              "name": "invalid",
+              "fieldName": "invalid"
+            },
+            {
+              "type": {
                 "text": "string | undefined"
               },
               "description": "输入框占位文字；不写就保留作者标在 input 部件上的那份",
@@ -21810,6 +21871,9 @@
               "name": "--xh-mention-input-bg-disabled"
             },
             {
+              "name": "--xh-mention-input-bg-readonly"
+            },
+            {
               "name": "--xh-mention-input-border"
             },
             {
@@ -21819,6 +21883,9 @@
               "name": "--xh-mention-input-border-hover"
             },
             {
+              "name": "--xh-mention-input-border-invalid"
+            },
+            {
               "name": "--xh-mention-input-fg"
             },
             {
@@ -21826,6 +21893,9 @@
             },
             {
               "name": "--xh-mention-input-h"
+            },
+            {
+              "name": "--xh-mention-input-min-w"
             },
             {
               "name": "--xh-mention-input-px"
@@ -21886,7 +21956,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-menu>` —— Light-DOM 行为宿主：用户写 trigger/positioner/content/item/... 角色节点，\n元素跑 menu 机器并把 connect 产出打上去。浮层定位引擎在本元素里建好、经 refs 注入机器，\n锚点取 trigger、被定位的浮层取 positioner；机器只认端口，不认识具体引擎。\n条目身份取用户写在 item 上的 value 属性，禁用由部件自报（aria-disabled）。",
+          "description": "`<xh-menu>` —— Light-DOM 行为宿主：用户写 trigger/positioner/content/item/group/... 角色节点，\n元素跑 menu 机器并把 connect 产出打上去。浮层定位引擎在本元素里建好、经 refs 注入机器，\n锚点取 trigger、被定位的浮层取 positioner；机器只认端口，不认识具体引擎。\n条目身份取用户写在 item 上的 value 属性，禁用由部件自报（aria-disabled）。",
           "name": "XhMenuElement",
           "cssParts": [
             {
@@ -21908,6 +21978,14 @@
             {
               "description": "分隔线（role=separator，不入方向键导航）",
               "name": "separator"
+            },
+            {
+              "description": "role=group 分组容器，须自带 value 属性标识身份",
+              "name": "group"
+            },
+            {
+              "description": "分组标题（本组 aria-labelledby 的目标）",
+              "name": "group-label"
             },
             {
               "description": "指向锚点的箭头（aria-hidden，data-placement 随实际放置位翻转）",
@@ -22174,6 +22252,31 @@
             },
             {
               "kind": "method",
+              "name": "partsIn",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "HTMLElement[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "owner",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "name",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "落在某个角色节点子树里的同名部件。"
+            },
+            {
+              "kind": "method",
               "name": "wire",
               "privacy": "protected",
               "return": {
@@ -22313,6 +22416,24 @@
               "name": "--xh-menu-fg"
             },
             {
+              "name": "--xh-menu-group-label-fg"
+            },
+            {
+              "name": "--xh-menu-group-label-font-size"
+            },
+            {
+              "name": "--xh-menu-group-label-font-weight"
+            },
+            {
+              "name": "--xh-menu-group-label-px"
+            },
+            {
+              "name": "--xh-menu-group-label-py"
+            },
+            {
+              "name": "--xh-menu-icon-size"
+            },
+            {
               "name": "--xh-menu-item-active-font-weight"
             },
             {
@@ -22374,6 +22495,9 @@
             },
             {
               "name": "--xh-menu-shadow"
+            },
+            {
+              "name": "--xh-menu-trigger-bg-active"
             }
           ]
         }
@@ -22876,10 +23000,10 @@
               "name": "--xh-menubar-bg"
             },
             {
-              "name": "--xh-menubar-fg"
+              "name": "--xh-menubar-border"
             },
             {
-              "name": "--xh-menubar-gap"
+              "name": "--xh-menubar-fg"
             },
             {
               "name": "--xh-menubar-group-label-fg"
@@ -22898,6 +23022,12 @@
             },
             {
               "name": "--xh-menubar-icon-size"
+            },
+            {
+              "name": "--xh-menubar-item-active-font-weight"
+            },
+            {
+              "name": "--xh-menubar-item-bg-active"
             },
             {
               "name": "--xh-menubar-item-bg-hover"
@@ -22933,34 +23063,13 @@
               "name": "--xh-menubar-layer"
             },
             {
-              "name": "--xh-menubar-menu-bg"
+              "name": "--xh-menubar-max-h"
             },
             {
-              "name": "--xh-menubar-menu-border"
+              "name": "--xh-menubar-max-w"
             },
             {
-              "name": "--xh-menubar-menu-fg"
-            },
-            {
-              "name": "--xh-menubar-menu-max-h"
-            },
-            {
-              "name": "--xh-menubar-menu-max-w"
-            },
-            {
-              "name": "--xh-menubar-menu-min-w"
-            },
-            {
-              "name": "--xh-menubar-menu-px"
-            },
-            {
-              "name": "--xh-menubar-menu-py"
-            },
-            {
-              "name": "--xh-menubar-menu-radius"
-            },
-            {
-              "name": "--xh-menubar-menu-shadow"
+              "name": "--xh-menubar-min-w"
             },
             {
               "name": "--xh-menubar-px"
@@ -22972,6 +23081,24 @@
               "name": "--xh-menubar-radius"
             },
             {
+              "name": "--xh-menubar-root-bg"
+            },
+            {
+              "name": "--xh-menubar-root-fg"
+            },
+            {
+              "name": "--xh-menubar-root-gap"
+            },
+            {
+              "name": "--xh-menubar-root-px"
+            },
+            {
+              "name": "--xh-menubar-root-py"
+            },
+            {
+              "name": "--xh-menubar-root-radius"
+            },
+            {
               "name": "--xh-menubar-separator-color"
             },
             {
@@ -22979,6 +23106,9 @@
             },
             {
               "name": "--xh-menubar-separator-thickness"
+            },
+            {
+              "name": "--xh-menubar-shadow"
             },
             {
               "name": "--xh-menubar-trigger-bg-active"
@@ -23425,13 +23555,13 @@
               "name": "--xh-navigation-menu-link-radius"
             },
             {
+              "name": "--xh-navigation-menu-trigger-bg-active"
+            },
+            {
               "name": "--xh-navigation-menu-trigger-bg-hover"
             },
             {
               "name": "--xh-navigation-menu-trigger-fg"
-            },
-            {
-              "name": "--xh-navigation-menu-trigger-fg-open"
             },
             {
               "name": "--xh-navigation-menu-trigger-font-weight"
@@ -24115,7 +24245,16 @@
           "customElement": true,
           "cssProperties": [
             {
+              "name": "--xh-number-field-control-gap"
+            },
+            {
               "name": "--xh-number-field-control-h"
+            },
+            {
+              "name": "--xh-number-field-control-min-w"
+            },
+            {
+              "name": "--xh-number-field-control-px"
             },
             {
               "name": "--xh-number-field-gap"
@@ -25065,10 +25204,16 @@
               "name": "--xh-password-input-control-border-invalid"
             },
             {
+              "name": "--xh-password-input-control-gap"
+            },
+            {
               "name": "--xh-password-input-control-h"
             },
             {
               "name": "--xh-password-input-control-min-w"
+            },
+            {
+              "name": "--xh-password-input-control-px"
             },
             {
               "name": "--xh-password-input-gap"
@@ -25159,6 +25304,9 @@
             },
             {
               "name": "--xh-password-input-trigger-font-size"
+            },
+            {
+              "name": "--xh-password-input-trigger-radius"
             },
             {
               "name": "--xh-password-input-trigger-size"
@@ -26429,11 +26577,15 @@
               "name": "root"
             },
             {
+              "description": "盒：触发器与清空按钮在里面并排，描边、底色、控件高度与聚焦环都长在它上面",
+              "name": "control"
+            },
+            {
               "description": "触发按钮（aria-haspopup=listbox/aria-expanded/aria-controls 所在），同时是定位锚点，须是原生 button",
               "name": "trigger"
             },
             {
-              "description": "清空按钮（trigger 的兄弟节点，须是原生 button）：有选中值才显出，点按清空全部选中并把焦点送回 trigger",
+              "description": "清空按钮（盒里 trigger 的兄弟节点，须是原生 button）：有选中值才显出，点按清空全部选中并把焦点送回 trigger",
               "name": "clear-trigger"
             },
             {
@@ -27020,13 +27172,46 @@
               "name": "--xh-popselect-content-min-w"
             },
             {
-              "name": "--xh-popselect-content-p"
+              "name": "--xh-popselect-content-px"
+            },
+            {
+              "name": "--xh-popselect-content-py"
             },
             {
               "name": "--xh-popselect-content-radius"
             },
             {
               "name": "--xh-popselect-content-shadow"
+            },
+            {
+              "name": "--xh-popselect-control-bg"
+            },
+            {
+              "name": "--xh-popselect-control-bg-disabled"
+            },
+            {
+              "name": "--xh-popselect-control-border"
+            },
+            {
+              "name": "--xh-popselect-control-border-focus"
+            },
+            {
+              "name": "--xh-popselect-control-border-hover"
+            },
+            {
+              "name": "--xh-popselect-control-gap"
+            },
+            {
+              "name": "--xh-popselect-control-h"
+            },
+            {
+              "name": "--xh-popselect-control-min-w"
+            },
+            {
+              "name": "--xh-popselect-control-px"
+            },
+            {
+              "name": "--xh-popselect-control-radius"
             },
             {
               "name": "--xh-popselect-icon-size"
@@ -27077,15 +27262,6 @@
               "name": "--xh-popselect-root-gap"
             },
             {
-              "name": "--xh-popselect-trigger-bg"
-            },
-            {
-              "name": "--xh-popselect-trigger-border"
-            },
-            {
-              "name": "--xh-popselect-trigger-border-hover"
-            },
-            {
               "name": "--xh-popselect-trigger-fg"
             },
             {
@@ -27093,15 +27269,6 @@
             },
             {
               "name": "--xh-popselect-trigger-gap"
-            },
-            {
-              "name": "--xh-popselect-trigger-h"
-            },
-            {
-              "name": "--xh-popselect-trigger-px"
-            },
-            {
-              "name": "--xh-popselect-trigger-radius"
             }
           ]
         }
@@ -29883,11 +30050,11 @@
               "name": "indicator"
             },
             {
-              "description": "触发器与清空按钮的收纳容器兼定位基准；清空钮据此嵌进触发器右端、悬停时替换展开指示符",
+              "description": "盒：触发器与清空按钮在里面并排，描边、底色、控件高度与聚焦环都长在它上面",
               "name": "control"
             },
             {
-              "description": "清空按钮：trigger 的兄弟节点（放进 control 即内嵌形态），不占 Tab 位；清不了（无值 / 禁用 / 只读）时带 hidden，点完焦点送回 trigger；可及名走 translations.clearTrigger",
+              "description": "清空按钮：盒里 trigger 的兄弟节点，不占 Tab 位；清不了（无值 / 禁用 / 只读）时带 hidden，点完焦点送回 trigger；可及名走 translations.clearTrigger",
               "name": "clear-trigger"
             },
             {
@@ -30606,7 +30773,43 @@
               "name": "--xh-select-content-shadow"
             },
             {
+              "name": "--xh-select-control-bg"
+            },
+            {
+              "name": "--xh-select-control-bg-disabled"
+            },
+            {
+              "name": "--xh-select-control-bg-readonly"
+            },
+            {
+              "name": "--xh-select-control-border"
+            },
+            {
+              "name": "--xh-select-control-border-focus"
+            },
+            {
+              "name": "--xh-select-control-border-hover"
+            },
+            {
+              "name": "--xh-select-control-border-invalid"
+            },
+            {
               "name": "--xh-select-control-gap"
+            },
+            {
+              "name": "--xh-select-control-h"
+            },
+            {
+              "name": "--xh-select-control-max-w"
+            },
+            {
+              "name": "--xh-select-control-min-w"
+            },
+            {
+              "name": "--xh-select-control-px"
+            },
+            {
+              "name": "--xh-select-control-radius"
             },
             {
               "name": "--xh-select-footer-border"
@@ -30723,24 +30926,6 @@
               "name": "--xh-select-tag-remove-size"
             },
             {
-              "name": "--xh-select-trigger-bg"
-            },
-            {
-              "name": "--xh-select-trigger-bg-readonly"
-            },
-            {
-              "name": "--xh-select-trigger-border"
-            },
-            {
-              "name": "--xh-select-trigger-border-focus"
-            },
-            {
-              "name": "--xh-select-trigger-border-hover"
-            },
-            {
-              "name": "--xh-select-trigger-border-invalid"
-            },
-            {
               "name": "--xh-select-trigger-fg"
             },
             {
@@ -30748,21 +30933,6 @@
             },
             {
               "name": "--xh-select-trigger-gap"
-            },
-            {
-              "name": "--xh-select-trigger-h"
-            },
-            {
-              "name": "--xh-select-trigger-max-w"
-            },
-            {
-              "name": "--xh-select-trigger-min-w"
-            },
-            {
-              "name": "--xh-select-trigger-px"
-            },
-            {
-              "name": "--xh-select-trigger-radius"
             }
           ]
         }
@@ -31346,6 +31516,9 @@
             },
             {
               "name": "--xh-side-nav-popout-shadow"
+            },
+            {
+              "name": "--xh-side-nav-row-bg-hover"
             },
             {
               "name": "--xh-side-nav-w"
@@ -35836,6 +36009,9 @@
               "name": "--xh-tags-input-control-h"
             },
             {
+              "name": "--xh-tags-input-control-min-w"
+            },
+            {
               "name": "--xh-tags-input-control-px"
             },
             {
@@ -35963,6 +36139,10 @@
             {
               "description": "承载 data-disabled / data-readonly / data-invalid / data-empty / data-at-limit 的容器",
               "name": "root"
+            },
+            {
+              "description": "视觉盒；写了它就由它画描边、底色与聚焦环，输入框与清空按钮排在它里面",
+              "name": "control"
             },
             {
               "description": "标题；`for` 恒写向 input，故须是原生 `<label>` 才点得动",
@@ -36329,6 +36509,48 @@
               "name": "--xh-text-field-action-size"
             },
             {
+              "name": "--xh-text-field-control-bg"
+            },
+            {
+              "name": "--xh-text-field-control-bg-disabled"
+            },
+            {
+              "name": "--xh-text-field-control-bg-readonly"
+            },
+            {
+              "name": "--xh-text-field-control-border"
+            },
+            {
+              "name": "--xh-text-field-control-border-at-limit"
+            },
+            {
+              "name": "--xh-text-field-control-border-focus"
+            },
+            {
+              "name": "--xh-text-field-control-border-hover"
+            },
+            {
+              "name": "--xh-text-field-control-border-invalid"
+            },
+            {
+              "name": "--xh-text-field-control-fg"
+            },
+            {
+              "name": "--xh-text-field-control-gap"
+            },
+            {
+              "name": "--xh-text-field-control-h"
+            },
+            {
+              "name": "--xh-text-field-control-min-w"
+            },
+            {
+              "name": "--xh-text-field-control-px"
+            },
+            {
+              "name": "--xh-text-field-control-radius"
+            },
+            {
               "name": "--xh-text-field-gap"
             },
             {
@@ -36675,6 +36897,10 @@
             {
               "description": "role=group 的段容器，由 label 命名",
               "name": "control"
+            },
+            {
+              "description": "段位与分隔符的外壳，占满盒里剩下的宽度",
+              "name": "segment-group"
             },
             {
               "description": "一段一个的 spinbutton，可自带 segment 属性声明身份，缺省按文档序",
@@ -37113,6 +37339,9 @@
               "name": "--xh-time-field-control-fg"
             },
             {
+              "name": "--xh-time-field-control-gap"
+            },
+            {
               "name": "--xh-time-field-control-h"
             },
             {
@@ -37146,6 +37375,9 @@
               "name": "--xh-time-field-label-font-weight"
             },
             {
+              "name": "--xh-time-field-placeholder-fg"
+            },
+            {
               "name": "--xh-time-field-segment-bg-focus"
             },
             {
@@ -37153,9 +37385,6 @@
             },
             {
               "name": "--xh-time-field-segment-fg-focus"
-            },
-            {
-              "name": "--xh-time-field-segment-fg-placeholder"
             },
             {
               "name": "--xh-time-field-segment-px"
@@ -37197,6 +37426,10 @@
             {
               "description": "role=group 的输入行，同时是浮层的定位锚点",
               "name": "control"
+            },
+            {
+              "description": "段位与分隔符的外壳，占满盒里剩下的宽度",
+              "name": "segment-group"
             },
             {
               "description": "一段一个的 spinbutton，可自带 segment 属性声明身份，缺省按文档序",
@@ -37820,7 +38053,7 @@
               "name": "--xh-time-picker-column-gap"
             },
             {
-              "name": "--xh-time-picker-column-max-h"
+              "name": "--xh-time-picker-column-h"
             },
             {
               "name": "--xh-time-picker-column-min-w"
@@ -37838,7 +38071,13 @@
               "name": "--xh-time-picker-content-fg"
             },
             {
-              "name": "--xh-time-picker-content-p"
+              "name": "--xh-time-picker-content-max-h"
+            },
+            {
+              "name": "--xh-time-picker-content-px"
+            },
+            {
+              "name": "--xh-time-picker-content-py"
             },
             {
               "name": "--xh-time-picker-content-radius"
@@ -37940,6 +38179,9 @@
               "name": "--xh-time-picker-layer"
             },
             {
+              "name": "--xh-time-picker-placeholder-fg"
+            },
+            {
               "name": "--xh-time-picker-preset-bg-checked"
             },
             {
@@ -37977,9 +38219,6 @@
             },
             {
               "name": "--xh-time-picker-segment-fg-focus"
-            },
-            {
-              "name": "--xh-time-picker-segment-fg-placeholder"
             },
             {
               "name": "--xh-time-picker-segment-px"
@@ -41752,10 +41991,7 @@
               "name": "--xh-transfer-item-radius"
             },
             {
-              "name": "--xh-transfer-list-max-h"
-            },
-            {
-              "name": "--xh-transfer-list-min-h"
+              "name": "--xh-transfer-list-h"
             },
             {
               "name": "--xh-transfer-list-px"
@@ -41871,6 +42107,10 @@
             {
               "description": "标题（aria-labelledby 目标）",
               "name": "label"
+            },
+            {
+              "description": "触发按钮与清空按钮的收纳容器：描边、底色与聚焦环都落在这一层",
+              "name": "control"
             },
             {
               "description": "role=combobox 的触发按钮，同时是定位锚点，须是原生 button",
@@ -42597,6 +42837,45 @@
               "name": "--xh-tree-select-content-shadow"
             },
             {
+              "name": "--xh-tree-select-control-bg"
+            },
+            {
+              "name": "--xh-tree-select-control-bg-disabled"
+            },
+            {
+              "name": "--xh-tree-select-control-bg-readonly"
+            },
+            {
+              "name": "--xh-tree-select-control-border"
+            },
+            {
+              "name": "--xh-tree-select-control-border-focus"
+            },
+            {
+              "name": "--xh-tree-select-control-border-hover"
+            },
+            {
+              "name": "--xh-tree-select-control-border-invalid"
+            },
+            {
+              "name": "--xh-tree-select-control-fg"
+            },
+            {
+              "name": "--xh-tree-select-control-gap"
+            },
+            {
+              "name": "--xh-tree-select-control-h"
+            },
+            {
+              "name": "--xh-tree-select-control-min-w"
+            },
+            {
+              "name": "--xh-tree-select-control-px"
+            },
+            {
+              "name": "--xh-tree-select-control-radius"
+            },
+            {
               "name": "--xh-tree-select-gap"
             },
             {
@@ -42660,27 +42939,6 @@
               "name": "--xh-tree-select-row-selected-font-weight"
             },
             {
-              "name": "--xh-tree-select-trigger-bg"
-            },
-            {
-              "name": "--xh-tree-select-trigger-bg-disabled"
-            },
-            {
-              "name": "--xh-tree-select-trigger-bg-readonly"
-            },
-            {
-              "name": "--xh-tree-select-trigger-border"
-            },
-            {
-              "name": "--xh-tree-select-trigger-border-focus"
-            },
-            {
-              "name": "--xh-tree-select-trigger-border-hover"
-            },
-            {
-              "name": "--xh-tree-select-trigger-border-invalid"
-            },
-            {
               "name": "--xh-tree-select-trigger-fg"
             },
             {
@@ -42688,18 +42946,6 @@
             },
             {
               "name": "--xh-tree-select-trigger-gap"
-            },
-            {
-              "name": "--xh-tree-select-trigger-h"
-            },
-            {
-              "name": "--xh-tree-select-trigger-min-w"
-            },
-            {
-              "name": "--xh-tree-select-trigger-px"
-            },
-            {
-              "name": "--xh-tree-select-trigger-radius"
             },
             {
               "name": "--xh-tree-select-value-leading"

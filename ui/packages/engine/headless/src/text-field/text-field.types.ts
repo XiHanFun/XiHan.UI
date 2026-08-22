@@ -96,6 +96,8 @@ export interface TextFieldApi<T extends PropTypes = PropTypes> {
   /** 自动高度配置的原样透传；适配器在程序化写值后据此补量一次。 */
   autoSize: boolean | TextFieldAutoSize
   getRootProps: () => T['element']
+  /** 视觉盒；写了它就由它画描边与聚焦环，不写时输入框自己当盒。 */
+  getControlProps: () => T['element']
   getLabelProps: () => T['label']
   /** 传 as: 'textarea' 即多行宿主：撤掉 type、接上自动高度。 */
   getInputProps: (props?: TextFieldInputProps) => T['input']

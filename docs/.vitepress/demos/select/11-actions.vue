@@ -4,6 +4,7 @@ import { ref } from "vue";
 import {
   XhButton,
   XhSelectContent,
+  XhSelectControl,
   XhSelectIndicator,
   XhSelectItem,
   XhSelectItemIndicator,
@@ -31,10 +32,12 @@ const fruits = [
     placeholder="请选择"
   >
     <XhSelectLabel>水果</XhSelectLabel>
-    <XhSelectTrigger>
-      <XhSelectValueText />
-      <XhSelectIndicator />
-    </XhSelectTrigger>
+    <XhSelectControl>
+      <XhSelectTrigger>
+        <XhSelectValueText />
+        <XhSelectIndicator />
+      </XhSelectTrigger>
+    </XhSelectControl>
     <XhSelectPositioner>
       <XhSelectContent>
         <XhSelectList>

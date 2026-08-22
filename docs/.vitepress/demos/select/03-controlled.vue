@@ -3,6 +3,7 @@
 import { ref } from "vue";
 import {
   XhSelectContent,
+  XhSelectControl,
   XhSelectIndicator,
   XhSelectItem,
   XhSelectItemIndicator,
@@ -33,10 +34,12 @@ function onValueChange(details: { value: string[] }) {
 <template>
   <XhSelectRoot :value="value" placeholder="请选择" @value-change="onValueChange">
     <XhSelectLabel>水果</XhSelectLabel>
-    <XhSelectTrigger>
-      <XhSelectValueText />
-      <XhSelectIndicator />
-    </XhSelectTrigger>
+    <XhSelectControl>
+      <XhSelectTrigger>
+        <XhSelectValueText />
+        <XhSelectIndicator />
+      </XhSelectTrigger>
+    </XhSelectControl>
     <XhSelectPositioner>
       <XhSelectContent>
         <XhSelectList>

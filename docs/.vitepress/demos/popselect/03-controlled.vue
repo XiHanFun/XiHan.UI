@@ -4,6 +4,7 @@ import { computed, ref } from "vue";
 import {
   XhButton,
   XhPopselectContent,
+  XhPopselectControl,
   XhPopselectPositioner,
   XhPopselectRoot,
   XhPopselectTrigger,
@@ -27,7 +28,9 @@ const label = computed(() => levels.find((l) => l.value === picked.value[0])?.la
     :collection="levels"
     placement="bottom-start"
   >
-    <XhPopselectTrigger>优先级：{{ label }}</XhPopselectTrigger>
+    <XhPopselectControl>
+      <XhPopselectTrigger>优先级：{{ label }}</XhPopselectTrigger>
+    </XhPopselectControl>
     <XhPopselectPositioner>
       <XhPopselectContent />
     </XhPopselectPositioner>

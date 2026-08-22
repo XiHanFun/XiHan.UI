@@ -3,6 +3,7 @@
 import { ref } from "vue";
 import {
   XhSelectContent,
+  XhSelectControl,
   XhSelectIndicator,
   XhSelectItem,
   XhSelectItemIndicator,
@@ -39,16 +40,18 @@ const picked = ref<string[]>(["vue", "svelte", "solid"]);
     style="inline-size: 280px"
   >
     <XhSelectLabel>技术栈</XhSelectLabel>
-    <XhSelectTrigger>
-      <XhSelectValueText v-if="tags.length === 0" />
-      <span v-else style="display: inline-flex; align-items: center; gap: 4px">
-        <XhSelectTag v-for="t in tags" :key="t.value" :value="t.value">{{ t.label }}</XhSelectTag>
-        <span v-if="overflowCount > 0" style="color: var(--xh-fg-muted); font-size: 12px">
-          +{{ overflowCount }}
+    <XhSelectControl>
+      <XhSelectTrigger>
+        <XhSelectValueText v-if="tags.length === 0" />
+        <span v-else style="display: inline-flex; align-items: center; gap: 4px">
+          <XhSelectTag v-for="t in tags" :key="t.value" :value="t.value">{{ t.label }}</XhSelectTag>
+          <span v-if="overflowCount > 0" style="color: var(--xh-fg-muted); font-size: 12px">
+            +{{ overflowCount }}
+          </span>
         </span>
-      </span>
-      <XhSelectIndicator />
-    </XhSelectTrigger>
+        <XhSelectIndicator />
+      </XhSelectTrigger>
+    </XhSelectControl>
     <XhSelectPositioner>
       <XhSelectContent>
         <XhSelectList>

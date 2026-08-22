@@ -7,6 +7,7 @@ import {
   XhTimePickerContent,
   XhTimePickerControl,
   XhTimePickerInput,
+  XhTimePickerSegmentGroup,
   XhTimePickerLabel,
   XhTimePickerItem,
   XhTimePickerPositioner,
@@ -20,11 +21,13 @@ const value = ref("");
   <XhTimePickerRoot v-model:value="value" granularity="second">
     <XhTimePickerLabel>执行时刻</XhTimePickerLabel>
     <XhTimePickerControl>
-      <XhTimePickerInput segment="hour" />
-      <span>:</span>
-      <XhTimePickerInput segment="minute" />
-      <span>:</span>
-      <XhTimePickerInput segment="second" />
+      <XhTimePickerSegmentGroup>
+        <XhTimePickerInput segment="hour" />
+        <span>:</span>
+        <XhTimePickerInput segment="minute" />
+        <span>:</span>
+        <XhTimePickerInput segment="second" />
+      </XhTimePickerSegmentGroup>
       <XhTimePickerClearTrigger />
     </XhTimePickerControl>
     <XhTimePickerPositioner>

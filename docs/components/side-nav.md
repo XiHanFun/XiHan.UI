@@ -192,6 +192,7 @@ accordion 让同层只开一枝；collapsed 折叠成图标栏（内嵌展开整
 | `branch` | `data-in-path` | ''（条件成立时才出现） |
 | `branch` | `data-state` | 'open' \| 'closed' |
 | `branch-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `branch-trigger` | `data-highlighted` | ''（条件成立时才出现） |
 | `branch-trigger` | `data-in-path` | ''（条件成立时才出现） |
 | `branch-trigger` | `data-state` | 'open' \| 'closed' |
 | `branch-trigger` | `data-value` | itemValue(el) |
@@ -200,6 +201,7 @@ accordion 让同层只开一枝；collapsed 折叠成图标栏（内嵌展开整
 | `branch-content` | `data-state` | 'open' \| 'closed' |
 | `link` | `data-current` | ''（条件成立时才出现） |
 | `link` | `data-disabled` | ''（条件成立时才出现） |
+| `link` | `data-highlighted` | ''（条件成立时才出现） |
 | `link` | `data-value` | itemValue(el) |
 | `popout-positioner` | `data-placement` | placed?.placement |
 | `popout-positioner` | `data-positioned` | ''（条件成立时才出现） |
@@ -209,7 +211,7 @@ accordion 让同层只开一枝；collapsed 折叠成图标栏（内嵌展开整
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-side-nav-collapsed-w` · `--xh-side-nav-fg` · `--xh-side-nav-gap` · `--xh-side-nav-icon-size` · `--xh-side-nav-indent` · `--xh-side-nav-p` · `--xh-side-nav-popout-bg` · `--xh-side-nav-popout-border` · `--xh-side-nav-popout-layer` · `--xh-side-nav-popout-max-h` · `--xh-side-nav-popout-max-w` · `--xh-side-nav-popout-min-w` · `--xh-side-nav-popout-p` · `--xh-side-nav-popout-radius` · `--xh-side-nav-popout-shadow` · `--xh-side-nav-w`
+`--xh-side-nav-collapsed-w` · `--xh-side-nav-fg` · `--xh-side-nav-gap` · `--xh-side-nav-icon-size` · `--xh-side-nav-indent` · `--xh-side-nav-p` · `--xh-side-nav-popout-bg` · `--xh-side-nav-popout-border` · `--xh-side-nav-popout-layer` · `--xh-side-nav-popout-max-h` · `--xh-side-nav-popout-max-w` · `--xh-side-nav-popout-min-w` · `--xh-side-nav-popout-p` · `--xh-side-nav-popout-radius` · `--xh-side-nav-popout-shadow` · `--xh-side-nav-row-bg-hover` · `--xh-side-nav-w`
 
 ## 动效
 

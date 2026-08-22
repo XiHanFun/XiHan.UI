@@ -20,7 +20,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? un
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
- * `<xh-menu>` —— Light-DOM 行为宿主：用户写 trigger/positioner/content/item/... 角色节点，
+ * `<xh-menu>` —— Light-DOM 行为宿主：用户写 trigger/positioner/content/item/group/... 角色节点，
  * 元素跑 menu 机器并把 connect 产出打上去。浮层定位引擎在本元素里建好、经 refs 注入机器，
  * 锚点取 trigger、被定位的浮层取 positioner；机器只认端口，不认识具体引擎。
  * 条目身份取用户写在 item 上的 value 属性，禁用由部件自报（aria-disabled）。
@@ -41,6 +41,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart content - role=menu 容器（焦点域与消解层的根节点，键盘在此收口），收起时带 hidden
  * @csspart item - role=menuitem 条目，须自带 value 属性标识身份；禁用写 aria-disabled="true"
  * @csspart separator - 分隔线（role=separator，不入方向键导航）
+ * @csspart group - role=group 分组容器，须自带 value 属性标识身份
+ * @csspart group-label - 分组标题（本组 aria-labelledby 的目标）
  * @csspart arrow - 指向锚点的箭头（aria-hidden，data-placement 随实际放置位翻转）
  */
 export class XhMenuElement extends XhElement {
@@ -188,6 +190,11 @@ export class XhMenuElement extends XhElement {
       send({ type: 'ITEM.LOST' })
   }
 
+  /** 落在某个角色节点子树里的同名部件。 */
+  private partsIn(owner: HTMLElement, name: string): HTMLElement[] {
+    return this.getParts(name).filter(el => owner.contains(el))
+  }
+
   protected wire(): void {
     const api = connectMenu(this.ctrl.service, wcNormalize)
 
@@ -225,6 +232,14 @@ export class XhMenuElement extends XhElement {
     // 分隔线也是多实例 part，但不带身份、不入导航，属性对每个都一样
     for (const el of this.getParts('separator'))
       this.spreader.spread(el, api.getSeparatorProps() as Record<string, unknown>)
+
+    // 分组与它的标题靠同一个 value 互相认领，标题的 id 由 connect 据此派生
+    for (const el of this.getParts('group')) {
+      const group = { value: el.getAttribute('value') ?? '' }
+      this.spreader.spread(el, api.getGroupProps(group) as Record<string, unknown>)
+      for (const label of this.partsIn(el, 'group-label'))
+        this.spreader.spread(label, api.getGroupLabelProps(group) as Record<string, unknown>)
+    }
 
     // Light DOM content 常驻，WC 自管可见性。读 styles/css/menu.css 的结论：
     // content 是 display:flex，positioner 只声明 position/z-index/pointer-events、没有 display，

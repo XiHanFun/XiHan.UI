@@ -304,6 +304,8 @@ export interface TimePickerApi<T extends PropTypes = PropTypes> {
   getRootProps: () => T['element']
   getLabelProps: () => T['label']
   getControlProps: () => T['element']
+  /** 段位与分隔符的外壳：占满盒里剩下的宽度，把尾部按钮顶到框内末端。 */
+  getSegmentGroupProps: () => T['element']
   /** 分段输入：一段一个节点，与 TimeField 的段同构（role=spinbutton + roving tabindex）。 */
   getInputProps: (props: TimePickerInputProps) => T['element']
   getTriggerProps: () => T['button']

@@ -157,6 +157,15 @@ export const XhTreeSelectLabel = defineComponent({
   },
 })
 
+export const XhTreeSelectControl = defineComponent({
+  name: 'XhTreeSelectControl',
+  setup(_, { slots }) {
+    const ctx = useTreeSelectContext()
+    // 描边、底色与聚焦环所在的那一层，触发按钮与尾部动作钮在里面并排
+    return () => h('div', ctx.api.value.getControlProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhTreeSelectTrigger = defineComponent({
   name: 'XhTreeSelectTrigger',
   setup(_, { slots }) {
@@ -375,9 +384,11 @@ function renderDefaultTree(
 ): VNode[] {
   return [
     ...(label ? [h(XhTreeSelectLabel, null, () => label)] : []),
-    h(XhTreeSelectTrigger, null, () => [h(XhTreeSelectValueText), h(XhTreeSelectIndicator)]),
-    // 清空钮是触发器的兄弟（按钮不能套按钮）
-    ...(clearable ? [h(XhTreeSelectClearTrigger)] : []),
+    // 盒里放触发器；清空钮是触发器的兄弟（按钮不能套按钮）
+    h(XhTreeSelectControl, null, () => [
+      h(XhTreeSelectTrigger, null, () => [h(XhTreeSelectValueText), h(XhTreeSelectIndicator)]),
+      ...(clearable ? [h(XhTreeSelectClearTrigger)] : []),
+    ]),
     h(XhTreeSelectPositioner, null, () => [
       h(XhTreeSelectContent, null, () => h(XhTreeSelectTree, null, () => renderNodes(collection))),
     ]),

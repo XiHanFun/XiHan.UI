@@ -56,6 +56,7 @@ function declaredSegment(el: HTMLElement, position: number): TimeSegmentType {
  * @csspart root - 承载 data-disabled / data-readonly / data-invalid / data-empty / data-out-of-range 的容器
  * @csspart label - 标题；点它会把焦点送到第一段
  * @csspart control - role=group 的段容器，由 label 命名
+ * @csspart segment-group - 段位与分隔符的外壳，占满盒里剩下的宽度
  * @csspart segment - 一段一个的 spinbutton，可自带 segment 属性声明身份，缺省按文档序
  * @csspart clear-trigger - 一键清空全部段的按钮；没值或改不动时收起，不占 Tab 位，点完焦点回到第一段
  * @csspart hidden-input - type=hidden 的表单出口，值是完整 ISO 串
@@ -161,6 +162,7 @@ export class XhTimeFieldElement extends XhElement {
     put('root', api.getRootProps() as Record<string, unknown>)
     put('label', api.getLabelProps() as Record<string, unknown>)
     put('control', api.getControlProps() as Record<string, unknown>)
+    put('segment-group', api.getSegmentGroupProps() as Record<string, unknown>)
     put('clear-trigger', api.getClearTriggerProps() as Record<string, unknown>)
     put('hidden-input', api.getHiddenInputProps() as Record<string, unknown>)
 

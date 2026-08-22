@@ -199,6 +199,15 @@ export function connectTreeSelect<T extends PropTypes>(
       'data-disabled': dataAttr(disabled),
     }),
 
+    /** 触发按钮与清空按钮的收纳容器，也是描边、底色与聚焦环所在的那一层。 */
+    getControlProps: () => normalize.element({
+      ...parts.control.attrs,
+      'data-state': stateAttr,
+      'data-disabled': dataAttr(disabled),
+      'data-readonly': dataAttr(readOnly),
+      'data-invalid': dataAttr(invalid),
+    }),
+
     getTriggerProps: () => normalize.button({
       ...parts.trigger.attrs,
       'id': ids.trigger,

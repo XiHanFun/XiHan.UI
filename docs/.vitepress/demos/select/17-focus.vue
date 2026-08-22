@@ -4,6 +4,7 @@ import { ref } from "vue";
 import {
   XhButton,
   XhSelectContent,
+  XhSelectControl,
   XhSelectIndicator,
   XhSelectItem,
   XhSelectItemIndicator,
@@ -40,10 +41,12 @@ function blurTrigger(): void {
 <template>
   <XhSelectRoot v-model:value="picked" placeholder="请选择">
     <XhSelectLabel>优先级</XhSelectLabel>
-    <XhSelectTrigger ref="trigger">
-      <XhSelectValueText />
-      <XhSelectIndicator />
-    </XhSelectTrigger>
+    <XhSelectControl>
+      <XhSelectTrigger ref="trigger">
+        <XhSelectValueText />
+        <XhSelectIndicator />
+      </XhSelectTrigger>
+    </XhSelectControl>
     <XhSelectPositioner>
       <XhSelectContent>
         <XhSelectList>

@@ -5,6 +5,7 @@ import {
   XhCascaderClearTrigger,
   XhCascaderColumn,
   XhCascaderContent,
+  XhCascaderControl,
   XhCascaderIndicator,
   XhCascaderItem,
   XhCascaderItemIndicator,
@@ -85,13 +86,15 @@ const text = computed(() => value.value.map(labelOf).join("、"));
     cascade
   >
     <XhCascaderLabel>投放品类</XhCascaderLabel>
-    <XhCascaderTrigger>
-      <XhCascaderValueText>
-        {{ text || "请选择品类" }}
-      </XhCascaderValueText>
-      <XhCascaderIndicator />
-    </XhCascaderTrigger>
-    <XhCascaderClearTrigger />
+    <XhCascaderControl>
+      <XhCascaderTrigger>
+        <XhCascaderValueText>
+          {{ text || "请选择品类" }}
+        </XhCascaderValueText>
+        <XhCascaderIndicator />
+      </XhCascaderTrigger>
+      <XhCascaderClearTrigger />
+    </XhCascaderControl>
     <XhCascaderPositioner>
       <XhCascaderContent>
         <XhCascaderColumn v-for="lv in levels" :key="lv.level" :level="lv.level">

@@ -12,6 +12,7 @@
     /* 尺寸档只换这四个私有槽，标题与分段框都从 root 继承它们，换档不必给每个部件各写一条选择器 */
     --xh-_date-field-control-h: var(--xh-control-h-md);
     --xh-_date-field-control-px: var(--xh-control-px-md);
+    --xh-_date-field-gap: var(--xh-control-gap-md);
     --xh-_date-field-font-size: var(--xh-text-body-size);
     --xh-_date-field-label-font-size: var(--xh-text-label-size);
     /* 形态档只换这三个私有槽：底色与两档描边 */
@@ -33,6 +34,7 @@
     --xh-icon-size: var(--xh-date-field-icon-size, var(--xh-glyph-size-sm));
     --xh-_date-field-control-h: var(--xh-control-h-sm);
     --xh-_date-field-control-px: var(--xh-control-px-sm);
+    --xh-_date-field-gap: var(--xh-control-gap-sm);
     --xh-_date-field-font-size: var(--xh-control-font-sm);
     --xh-_date-field-label-font-size: var(--xh-control-font-sm);
   }
@@ -41,6 +43,7 @@
     --xh-icon-size: var(--xh-date-field-icon-size, var(--xh-glyph-size-lg));
     --xh-_date-field-control-h: var(--xh-control-h-lg);
     --xh-_date-field-control-px: var(--xh-control-px-lg);
+    --xh-_date-field-gap: var(--xh-control-gap-lg);
     --xh-_date-field-font-size: var(--xh-control-font-lg);
     --xh-_date-field-label-font-size: var(--xh-control-font-lg);
   }
@@ -77,8 +80,6 @@
     font-size: var(--xh-date-field-label-font-size, var(--xh-_date-field-label-font-size));
     font-weight: var(--xh-date-field-label-font-weight, var(--xh-text-label-weight));
     line-height: var(--xh-leading-none);
-    /* 点标题会把焦点送进首段，指针得说明这件事 */
-    cursor: default;
   }
 
   [data-scope='date-field'][data-part='label'][hidden] {
@@ -90,12 +91,12 @@
     cursor: not-allowed;
   }
 
-  /* 分段框整体长得像一个输入框：边框与背景长在 control 上，各段只是里面的文字。
-     段与段之间的分隔符（'/'、'年'）由作者自己写在段之间，不在角色表里 */
+  /* 分段框整体长得像一个输入框：边框与背景长在 control 上，各段只是里面的文字 */
   [data-scope='date-field'][data-part='control'] {
     display: inline-flex;
     min-inline-size: var(--xh-date-field-control-min-w, var(--xh-control-min-w));
     align-items: center;
+    gap: var(--xh-date-field-control-gap, var(--xh-_date-field-gap));
     block-size: var(--xh-date-field-control-h, var(--xh-_date-field-control-h));
     padding-inline: var(--xh-date-field-control-px, var(--xh-_date-field-control-px));
     padding-block: 0;
@@ -121,7 +122,7 @@
 
   /* 焦点落在某一段上，而边框长在 control 上：焦点环得由内向外借一层。
      control 自己不占 Tab 位，:focus-within 是它唯一能感知组内焦点的方式 */
-  [data-scope='date-field'][data-part='control']:focus-within {
+  [data-scope='date-field'][data-part='control']:focus-within:not([data-disabled]) {
     border-color: var(--xh-date-field-control-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
     outline: var(--xh-ring-width) solid var(--xh-_date-field-ring);
     outline-offset: var(--xh-ring-offset);
@@ -144,6 +145,19 @@
     background: var(--xh-date-field-control-bg-disabled, var(--xh-bg-subtle));
     color: var(--xh-fg-disabled);
     cursor: not-allowed;
+  }
+
+  /* 段位与作者写在段间的分隔符（'/'、'年'）都在这一层里：它占满盒里剩下的宽度，
+     清空钮因此靠在框内末端 */
+  [data-scope='date-field'][data-part='segment-group'] {
+    display: inline-flex;
+    flex: 1 1 auto;
+    align-items: center;
+    min-inline-size: 0;
+  }
+
+  [data-scope='date-field'][data-part='segment-group'][hidden] {
+    display: none;
   }
 
   /* 每一段是一块可聚焦的文字：宽度随内容走，两侧留一点让选中底色不贴着数字 */

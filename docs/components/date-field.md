@@ -104,7 +104,7 @@ segments 决定这份控件由哪几块组成；段位可按段名认领，不�
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-date-field>` |
-| Vue 组件 | `XhDateFieldClearTrigger` `XhDateFieldControl` `XhDateFieldHiddenInput` `XhDateFieldLabel` `XhDateFieldRoot` `XhDateFieldSegment` |
+| Vue 组件 | `XhDateFieldClearTrigger` `XhDateFieldControl` `XhDateFieldHiddenInput` `XhDateFieldLabel` `XhDateFieldRoot` `XhDateFieldSegment` `XhDateFieldSegmentGroup` |
 | 组合式函数 | `useDateField` |
 | 状态机 | `dateFieldMachine` |
 | 皮肤 | `@xihan-ui/styles/date-field.css` |
@@ -113,7 +113,7 @@ segments 决定这份控件由哪几块组成；段位可按段名认领，不�
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="date-field"`：**`root`** · `label` · **`control`** · **`segment`** · `clear-trigger` · `hidden-input`
+`data-scope="date-field"`：**`root`** · `label` · **`control`** · `segment-group` · **`segment`** · `clear-trigger` · `hidden-input`
 
 ## Props
 
@@ -190,6 +190,7 @@ segments 决定这份控件由哪几块组成；段位可按段名认领，不�
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['element']` | 标题不是原生 label（段位是 div，不可被 label 标注），点它由连接层代为把焦点送进首段。 |
 | `getControlProps` | `() => T['element']` | role=group 的分段容器。 |
+| `getSegmentGroupProps` | `() => T['element']` | 段位与分隔符的外壳：占满盒里剩下的宽度，把清空钮顶到框内末端。 |
 | `segmentOf` | `(props: DateFieldSegmentProps) => DateFieldSegmentState \| undefined` | 作者的那一句声明落在哪一段上；段集里没有这一块（或下标越界）时缺席。文字由适配器照它渲染。 |
 | `getSegmentProps` | `(props: DateFieldSegmentProps) => T['element']` |  |
 | `getClearTriggerProps` | `() => T['button']` | 清空钮：不占 Tab 位，没值或不可编辑时收起；点完焦点回到首段。 |
@@ -255,6 +256,9 @@ segments 决定这份控件由哪几块组成；段位可按段名认领，不�
 | `control` | `data-disabled` | ''（条件成立时才出现） |
 | `control` | `data-invalid` | ''（条件成立时才出现） |
 | `control` | `data-readonly` | ''（条件成立时才出现） |
+| `segment-group` | `data-disabled` | ''（条件成立时才出现） |
+| `segment-group` | `data-invalid` | ''（条件成立时才出现） |
+| `segment-group` | `data-readonly` | ''（条件成立时才出现） |
 | `segment` | `data-disabled` | ''（条件成立时才出现） |
 | `segment` | `data-focus` | ''（条件成立时才出现） |
 | `segment` | `data-index` | String(index) \| undefined |
@@ -267,7 +271,7 @@ segments 决定这份控件由哪几块组成；段位可按段名认领，不�
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-date-field-action-bg` · `--xh-date-field-action-bg-active` · `--xh-date-field-action-bg-hover` · `--xh-date-field-action-fg` · `--xh-date-field-action-fg-hover` · `--xh-date-field-action-font-size` · `--xh-date-field-action-radius` · `--xh-date-field-action-size` · `--xh-date-field-control-bg` · `--xh-date-field-control-bg-disabled` · `--xh-date-field-control-bg-readonly` · `--xh-date-field-control-border` · `--xh-date-field-control-border-focus` · `--xh-date-field-control-border-hover` · `--xh-date-field-control-border-invalid` · `--xh-date-field-control-fg` · `--xh-date-field-control-h` · `--xh-date-field-control-min-w` · `--xh-date-field-control-px` · `--xh-date-field-control-radius` · `--xh-date-field-font-size` · `--xh-date-field-gap` · `--xh-date-field-icon-size` · `--xh-date-field-label-fg` · `--xh-date-field-label-fg-disabled` · `--xh-date-field-label-font-size` · `--xh-date-field-label-font-weight` · `--xh-date-field-placeholder-fg` · `--xh-date-field-segment-bg-focus` · `--xh-date-field-segment-fg-focus` · `--xh-date-field-segment-px` · `--xh-date-field-segment-py` · `--xh-date-field-segment-radius`
+`--xh-date-field-action-bg` · `--xh-date-field-action-bg-active` · `--xh-date-field-action-bg-hover` · `--xh-date-field-action-fg` · `--xh-date-field-action-fg-hover` · `--xh-date-field-action-font-size` · `--xh-date-field-action-radius` · `--xh-date-field-action-size` · `--xh-date-field-control-bg` · `--xh-date-field-control-bg-disabled` · `--xh-date-field-control-bg-readonly` · `--xh-date-field-control-border` · `--xh-date-field-control-border-focus` · `--xh-date-field-control-border-hover` · `--xh-date-field-control-border-invalid` · `--xh-date-field-control-fg` · `--xh-date-field-control-gap` · `--xh-date-field-control-h` · `--xh-date-field-control-min-w` · `--xh-date-field-control-px` · `--xh-date-field-control-radius` · `--xh-date-field-font-size` · `--xh-date-field-gap` · `--xh-date-field-icon-size` · `--xh-date-field-label-fg` · `--xh-date-field-label-fg-disabled` · `--xh-date-field-label-font-size` · `--xh-date-field-label-font-weight` · `--xh-date-field-placeholder-fg` · `--xh-date-field-segment-bg-focus` · `--xh-date-field-segment-fg-focus` · `--xh-date-field-segment-px` · `--xh-date-field-segment-py` · `--xh-date-field-segment-radius`
 
 ## 动效
 

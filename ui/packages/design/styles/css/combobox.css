@@ -58,6 +58,9 @@
     --xh-_combobox-font-size: var(--xh-text-body-size);
     --xh-_combobox-label-font-size: var(--xh-text-label-size);
 
+    /* 作者塞进指示符槽的图标跟着控件的尺寸档走；它自己写了 size 时仍以作者的为准 */
+    --xh-icon-size: var(--xh-combobox-icon-size, var(--xh-glyph-size-md));
+
     /* 形态档只换这三个槽：缺省即 outline（描边 + 画布底） */
     --xh-_combobox-control-bg: var(--xh-bg-canvas);
     --xh-_combobox-control-border: var(--xh-border-control);
@@ -71,12 +74,9 @@
   }
 
   [data-scope='combobox'][data-part='root'] {
-    /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
-    --xh-icon-size: var(--xh-combobox-icon-size, var(--xh-glyph-size-text));
-
     display: inline-flex;
     flex-direction: column;
-    gap: var(--xh-combobox-gap, var(--xh-stack-gap-md));
+    gap: var(--xh-combobox-gap, var(--xh-space-1));
   }
 
   /* 只要声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
@@ -92,6 +92,8 @@
     --xh-_combobox-gap: var(--xh-control-gap-sm);
     --xh-_combobox-font-size: var(--xh-control-font-sm);
     --xh-_combobox-label-font-size: var(--xh-control-font-sm);
+
+    --xh-icon-size: var(--xh-combobox-icon-size, var(--xh-glyph-size-sm));
   }
 
   [data-scope='combobox']:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
@@ -100,6 +102,8 @@
     --xh-_combobox-gap: var(--xh-control-gap-lg);
     --xh-_combobox-font-size: var(--xh-control-font-lg);
     --xh-_combobox-label-font-size: var(--xh-control-font-lg);
+
+    --xh-icon-size: var(--xh-combobox-icon-size, var(--xh-glyph-size-lg));
   }
 
   /* —— 形态 —— */
@@ -126,7 +130,7 @@
   }
 
   [data-scope='combobox'][data-part='label'] {
-    color: var(--xh-combobox-label-fg, var(--xh-fg-muted));
+    color: var(--xh-combobox-label-fg, var(--xh-fg-default));
     font-size: var(--xh-combobox-label-font-size, var(--xh-_combobox-label-font-size));
     font-weight: var(--xh-combobox-label-font-weight, var(--xh-text-label-weight));
     line-height: var(--xh-leading-none);
@@ -164,7 +168,7 @@
   /* 焦点环画在 control 上而不是 input 上：视觉上的「框」是 control，
      环若长在里面那个透明的 input 身上，就会缩在文字区里、与框错开一圈。
      input 是这里唯一可聚焦的常规节点，:focus-within 与它的 :focus-visible 等价 */
-  [data-scope='combobox'][data-part='control']:focus-within {
+  [data-scope='combobox'][data-part='control']:focus-within:not([data-disabled]) {
     border-color: var(--xh-combobox-control-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
     outline: var(--xh-ring-width) solid var(--xh-_combobox-ring);
     outline-offset: var(--xh-ring-offset);
@@ -317,12 +321,10 @@
     scale: var(--xh-motion-scale-press);
   }
 
-  /* 两个按钮都退出了 Tab 序列（tabindex=-1），正常操作走不到这里；
-     留着是给程序化聚焦兜底，落焦时得看得见 */
+  /* 两个按钮都在盒里，盒的 :focus-within 已经画了一圈；这里再画一圈就是框里套框 */
   [data-scope='combobox'][data-part='trigger']:focus-visible,
   [data-scope='combobox'][data-part='clear-trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-_combobox-ring);
-    outline-offset: var(--xh-ring-offset);
+    outline: none;
   }
 
   [data-scope='combobox'][data-part='trigger']:disabled {
@@ -335,7 +337,7 @@
     display: flex;
     flex-direction: column;
     min-inline-size: var(--xh-combobox-content-min-w, var(--xh-overlay-min-w));
-    max-inline-size: var(--xh-combobox-content-max-w, var(--xh-overlay-max-w-lg));
+    max-inline-size: var(--xh-combobox-content-max-w, var(--xh-overlay-max-w));
     max-block-size: min(var(--xh-combobox-content-max-h, var(--xh-overlay-max-h)), var(--xh-_combobox-available-h));
     padding-block: var(--xh-combobox-content-py, var(--xh-space-1));
     padding-inline: var(--xh-combobox-content-px, var(--xh-space-1));

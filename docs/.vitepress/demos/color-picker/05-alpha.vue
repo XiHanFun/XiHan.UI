@@ -8,6 +8,7 @@ import {
   XhColorPickerChannelSliderThumb,
   XhColorPickerChannelSliderTrack,
   XhColorPickerContent,
+  XhColorPickerControl,
   XhColorPickerLabel,
   XhColorPickerPositioner,
   XhColorPickerRoot,
@@ -22,10 +23,12 @@ const overlay = ref("rgba(0, 169, 142, 0.6)");
 <template>
   <XhColorPickerRoot v-model:value="overlay" format="rgba" alpha>
     <XhColorPickerLabel>蒙版颜色</XhColorPickerLabel>
-    <XhColorPickerTrigger>
-      <XhColorPickerSwatch />
-      <XhColorPickerValueText />
-    </XhColorPickerTrigger>
+    <XhColorPickerControl>
+      <XhColorPickerTrigger>
+        <XhColorPickerSwatch />
+        <XhColorPickerValueText />
+      </XhColorPickerTrigger>
+    </XhColorPickerControl>
     <XhColorPickerPositioner>
       <XhColorPickerContent>
         <XhColorPickerArea>

@@ -6,6 +6,7 @@ import {
   XhDateFieldLabel,
   XhDateFieldRoot,
   XhDateFieldSegment,
+  XhDateFieldSegmentGroup,
 } from "@xihan-ui/vue";
 
 const value = ref<string | null>("2026-07-28");
@@ -47,17 +48,19 @@ function display(segment: Segment) {
   <XhDateFieldRoot v-model:value="value" locale="zh-CN">
     <XhDateFieldLabel>发布日期</XhDateFieldLabel>
     <XhDateFieldControl>
-      <XhDateFieldSegment v-slot="{ segment }" :index="0">
-        {{ display(segment) }}
-      </XhDateFieldSegment>
-      <span>年</span>
-      <XhDateFieldSegment v-slot="{ segment }" :index="1">
-        {{ display(segment) }}
-      </XhDateFieldSegment>
-      <XhDateFieldSegment v-slot="{ segment }" :index="2">
-        {{ display(segment) }}
-      </XhDateFieldSegment>
-      <span>日</span>
+      <XhDateFieldSegmentGroup>
+        <XhDateFieldSegment v-slot="{ segment }" :index="0">
+          {{ display(segment) }}
+        </XhDateFieldSegment>
+        <span>年</span>
+        <XhDateFieldSegment v-slot="{ segment }" :index="1">
+          {{ display(segment) }}
+        </XhDateFieldSegment>
+        <XhDateFieldSegment v-slot="{ segment }" :index="2">
+          {{ display(segment) }}
+        </XhDateFieldSegment>
+        <span>日</span>
+      </XhDateFieldSegmentGroup>
     </XhDateFieldControl>
   </XhDateFieldRoot>
 

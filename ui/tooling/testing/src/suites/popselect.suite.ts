@@ -23,10 +23,15 @@ function item(value: string, text: string): FixtureNode {
 const FIXTURE: FixtureNode = {
   part: 'root',
   children: [
+    // control 是盒，触发器与清空钮在里面并排；清空钮是 trigger 的兄弟节点（按钮不能套按钮）。
     // 必须是 button：WC 侧由 fixture 的 tag 决定，div 不可聚焦
-    { part: 'trigger', tag: 'button', text: '选择' },
-    // 清空钮是 trigger 的兄弟节点：按钮不能套按钮
-    { part: 'clear-trigger', tag: 'button' },
+    {
+      part: 'control',
+      children: [
+        { part: 'trigger', tag: 'button', text: '选择' },
+        { part: 'clear-trigger', tag: 'button' },
+      ],
+    },
     {
       part: 'positioner',
       children: [
@@ -67,6 +72,7 @@ export const popselectSuite: ConformanceSuite = {
       initial: {
         order: [
           'root',
+          'control',
           'trigger',
           'clear-trigger',
           'positioner',
@@ -83,6 +89,7 @@ export const popselectSuite: ConformanceSuite = {
         ],
         counts: {
           'root': 1,
+          'control': 1,
           'trigger': 1,
           'clear-trigger': 1,
           'positioner': 1,

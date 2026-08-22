@@ -6,6 +6,7 @@ import {
   XhAvatarImage,
   XhAvatarRoot,
   XhSelectContent,
+  XhSelectControl,
   XhSelectIndicator,
   XhSelectItem,
   XhSelectItemIndicator,
@@ -31,19 +32,21 @@ const current = computed(() => members.find((m) => m.value === picked.value[0]) 
 <template>
   <XhSelectRoot v-model:value="picked" placeholder="请选择成员">
     <XhSelectLabel>负责人</XhSelectLabel>
-    <XhSelectTrigger>
-      <XhSelectValueText>
-        <span v-if="current" style="display: inline-flex; align-items: center; gap: 8px">
-          <XhAvatarRoot size="sm">
-            <XhAvatarImage />
-            <XhAvatarFallback>{{ current.initial }}</XhAvatarFallback>
-          </XhAvatarRoot>
-          {{ current.name }}
-        </span>
-        <span v-else>请选择成员</span>
-      </XhSelectValueText>
-      <XhSelectIndicator />
-    </XhSelectTrigger>
+    <XhSelectControl>
+      <XhSelectTrigger>
+        <XhSelectValueText>
+          <span v-if="current" style="display: inline-flex; align-items: center; gap: 8px">
+            <XhAvatarRoot size="sm">
+              <XhAvatarImage />
+              <XhAvatarFallback>{{ current.initial }}</XhAvatarFallback>
+            </XhAvatarRoot>
+            {{ current.name }}
+          </span>
+          <span v-else>请选择成员</span>
+        </XhSelectValueText>
+        <XhSelectIndicator />
+      </XhSelectTrigger>
+    </XhSelectControl>
     <XhSelectPositioner>
       <XhSelectContent>
         <XhSelectList>

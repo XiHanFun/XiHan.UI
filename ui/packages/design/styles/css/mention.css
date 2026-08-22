@@ -120,6 +120,7 @@
   [data-scope='mention'][data-part='input'] {
     display: block;
     inline-size: 100%;
+    min-inline-size: var(--xh-mention-input-min-w, var(--xh-control-min-w));
     /* 缺省宿主是 textarea：高度按行数撑，控件档只兜住底线 */
     min-block-size: var(--xh-mention-input-h, var(--xh-_mention-h));
     padding-block: var(--xh-mention-input-py, var(--xh-_mention-py));
@@ -152,7 +153,7 @@
     color: var(--xh-mention-placeholder-fg, var(--xh-fg-subtle));
   }
 
-  [data-scope='mention'][data-part='input']:hover:not(:disabled) {
+  [data-scope='mention'][data-part='input']:hover:not(:disabled, [data-invalid]) {
     border-color: var(--xh-mention-input-border-hover, var(--xh-_mention-input-border-hover));
   }
 
@@ -160,6 +161,18 @@
     border-color: var(--xh-mention-input-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
     outline: var(--xh-ring-width) solid var(--xh-_mention-ring);
     outline-offset: var(--xh-ring-offset);
+  }
+
+  [data-scope='mention'][data-part='input'][data-invalid] {
+    border-color: var(--xh-mention-input-border-invalid, var(--xh-border-invalid));
+
+    /* 校验失败时环也跟着变红：两圈等宽相邻却一红一蓝，读的人不知道哪个才是当前状态 */
+    --xh-_mention-ring: var(--xh-ring-invalid);
+  }
+
+  /* 只读仍可聚焦、可复制，所以不置灰，只把底色压下去表示"改不动" */
+  [data-scope='mention'][data-part='input'][readonly] {
+    background: var(--xh-mention-input-bg-readonly, var(--xh-bg-subtle));
   }
 
   /* 输入框是单体表单控件，禁用走原生 disabled（候选那边一律 aria-disabled） */

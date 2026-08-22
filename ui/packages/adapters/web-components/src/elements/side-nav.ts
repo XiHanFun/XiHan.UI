@@ -211,8 +211,9 @@ export class XhSideNavElement extends XhElement {
       this.spreader.spread(el, api.getBranchTextProps() as Record<string, unknown>)
     for (const el of this.getParts('link-text'))
       this.spreader.spread(el, api.getLinkTextProps() as Record<string, unknown>)
-    // 弹出面板的定位层常挂，退场动画挂在它身上：收起从跟着 open 走改成跟着 presence 走。
-    // 一个定位层一份闸门。必须排在 spread 之后——data-state 得先落进 DOM，探测器才读得到
+    putAll('branch-content', BRANCH_SELECTOR, node => api.getBranchContentProps(node))
+    // 弹出面板的定位层常挂，退场动画挂在面板上：收起从跟着 open 走改成跟着 presence 走。
+    // 一个定位层一份闸门。必须排在两处 spread 之后——data-state 得先落进 DOM，探测器才读得到
     const popoutVisible = new Map<HTMLElement, boolean>()
     for (const el of this.getParts('positioner')) {
       const props = api.getPopoutPositionerProps(this.nodeOf(el, BRANCH_SELECTOR)) as Record<string, unknown>
@@ -228,13 +229,12 @@ export class XhSideNavElement extends XhElement {
         })
         this.exits.set(el, gate)
       }
-      gate.track(el)
+      gate.track(el.querySelector<HTMLElement>('[data-xh-part="branch-content"]'))
       gate.update(open)
       el.toggleAttribute('hidden', !gate.visible)
       this.setPartHidden(el, !gate.visible)
       popoutVisible.set(el, gate.visible)
     }
-    putAll('branch-content', BRANCH_SELECTOR, node => api.getBranchContentProps(node))
     putAll('link', '[data-xh-part="link"]', node => api.getLinkProps(node))
 
     // Light DOM 子层常驻，WC 自管可见性：收起时隐藏 branch-content；

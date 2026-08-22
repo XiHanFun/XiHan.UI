@@ -60,8 +60,9 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @fires value-change - 选中集合变化；detail 为 `{ value: string[] }`
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @csspart root - 组件根容器，承载 data-state 与三个视觉轴，浮层从这里继承私有槽
+ * @csspart control - 盒：触发器与清空按钮在里面并排，描边、底色、控件高度与聚焦环都长在它上面
  * @csspart trigger - 触发按钮（aria-haspopup=listbox/aria-expanded/aria-controls 所在），同时是定位锚点，须是原生 button
- * @csspart clear-trigger - 清空按钮（trigger 的兄弟节点，须是原生 button）：有选中值才显出，点按清空全部选中并把焦点送回 trigger
+ * @csspart clear-trigger - 清空按钮（盒里 trigger 的兄弟节点，须是原生 button）：有选中值才显出，点按清空全部选中并把焦点送回 trigger
  * @csspart positioner - 浮层定位容器，坐标由引擎写成内联样式
  * @csspart content - role=listbox 容器（焦点域与消解层的根节点，键盘在此收口），收起时带 hidden
  * @csspart item - role=option 条目，须自带 value 属性标识身份；禁用写 aria-disabled="true"
@@ -266,6 +267,7 @@ export class XhPopselectElement extends XhElement {
         this.spreader.spread(el, props)
     }
     put('root', api.getRootProps() as Record<string, unknown>)
+    put('control', api.getControlProps() as Record<string, unknown>)
     put('trigger', api.getTriggerProps() as Record<string, unknown>)
     put('clear-trigger', api.getClearTriggerProps() as Record<string, unknown>)
     // positioner 的 style 是对象（position/insetInlineStart/insetBlockStart），

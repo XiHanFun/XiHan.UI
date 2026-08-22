@@ -6,6 +6,7 @@ import {
   XhTimePickerContent,
   XhTimePickerControl,
   XhTimePickerInput,
+  XhTimePickerSegmentGroup,
   XhTimePickerItem,
   XhTimePickerLabel,
   XhTimePickerPositioner,
@@ -29,9 +30,11 @@ const presets = computed(() => [
   <XhTimePickerRoot v-model:value="value" :presets="presets" :step="15">
     <XhTimePickerLabel>提交时刻</XhTimePickerLabel>
     <XhTimePickerControl>
-      <XhTimePickerInput segment="hour" />
-      <span>:</span>
-      <XhTimePickerInput segment="minute" />
+      <XhTimePickerSegmentGroup>
+        <XhTimePickerInput segment="hour" />
+        <span>:</span>
+        <XhTimePickerInput segment="minute" />
+      </XhTimePickerSegmentGroup>
     </XhTimePickerControl>
     <XhTimePickerPositioner>
       <XhTimePickerContent>

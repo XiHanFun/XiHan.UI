@@ -5,6 +5,7 @@ import {
   XhCascaderClearTrigger,
   XhCascaderColumn,
   XhCascaderContent,
+  XhCascaderControl,
   XhCascaderIndicator,
   XhCascaderItem,
   XhCascaderItemIndicator,
@@ -49,11 +50,13 @@ const invalid = computed(() => dept.value.length === 0);
     placeholder="请选到具体的组"
   >
     <XhCascaderLabel>所属部门</XhCascaderLabel>
-    <XhCascaderTrigger>
-      <XhCascaderValueText />
-      <XhCascaderIndicator />
-    </XhCascaderTrigger>
-    <XhCascaderClearTrigger />
+    <XhCascaderControl>
+      <XhCascaderTrigger>
+        <XhCascaderValueText />
+        <XhCascaderIndicator />
+      </XhCascaderTrigger>
+      <XhCascaderClearTrigger />
+    </XhCascaderControl>
     <XhCascaderPositioner>
       <XhCascaderContent>
         <XhCascaderColumn v-for="lv in levels" :key="lv.level" :level="lv.level">

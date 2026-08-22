@@ -10,10 +10,12 @@
     <div data-xh-part="root">
       <label data-xh-part="label">结算季度</label>
       <div data-xh-part="control">
-        <!-- 按段名认领：写死这一格就是年、那一格就是季度，不必数下标 -->
-        <span data-xh-part="segment" segment="year"></span>
-        <span>-</span>
-        <span data-xh-part="segment" segment="quarter"></span>
+        <div data-xh-part="segment-group">
+          <!-- 按段名认领：写死这一格就是年、那一格就是季度，不必数下标 -->
+          <span data-xh-part="segment" segment="year"></span>
+          <span>-</span>
+          <span data-xh-part="segment" segment="quarter"></span>
+        </div>
       </div>
     </div>
   </xh-date-field>
@@ -28,9 +30,11 @@
     <div data-xh-part="root">
       <label data-xh-part="label">排期周</label>
       <div data-xh-part="control">
-        <span data-xh-part="segment" segment="year"></span>
-        <span>-</span>
-        <span data-xh-part="segment" segment="week"></span>
+        <div data-xh-part="segment-group">
+          <span data-xh-part="segment" segment="year"></span>
+          <span>-</span>
+          <span data-xh-part="segment" segment="week"></span>
+        </div>
         <!-- 「周」与「年 / 月 / 日」一样是普通节点，段位自己只出数字 -->
         <span>周</span>
       </div>
@@ -49,16 +53,18 @@
     <div data-xh-part="root">
       <label data-xh-part="label">开始时间</label>
       <div data-xh-part="control">
-        <span data-xh-part="segment" segment="year"></span>
-        <span>-</span>
-        <span data-xh-part="segment" segment="month"></span>
-        <span>-</span>
-        <span data-xh-part="segment" segment="day"></span>
-        <span>&nbsp;</span>
-        <!-- 段集里带上下午时，小时段收的是 12 时制的那个数；a / p 键直接指定 -->
-        <span data-xh-part="segment" segment="hour"></span>
-        <span>&nbsp;</span>
-        <span data-xh-part="segment" segment="dayPeriod"></span>
+        <div data-xh-part="segment-group">
+          <span data-xh-part="segment" segment="year"></span>
+          <span>-</span>
+          <span data-xh-part="segment" segment="month"></span>
+          <span>-</span>
+          <span data-xh-part="segment" segment="day"></span>
+          <span>&nbsp;</span>
+          <!-- 段集里带上下午时，小时段收的是 12 时制的那个数；a / p 键直接指定 -->
+          <span data-xh-part="segment" segment="hour"></span>
+          <span>&nbsp;</span>
+          <span data-xh-part="segment" segment="dayPeriod"></span>
+        </div>
       </div>
     </div>
   </xh-date-field>

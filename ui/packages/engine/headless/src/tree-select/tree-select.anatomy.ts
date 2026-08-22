@@ -7,6 +7,7 @@ import { createAnatomy } from '@xihan-ui/kernel'
 export const treeSelectAnatomy = createAnatomy('tree-select', [
   'root',
   'label',
+  'control',
   'trigger',
   'value-text',
   'indicator',

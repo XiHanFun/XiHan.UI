@@ -7,6 +7,7 @@ import {
   XhTreeSelectBranchText,
   XhTreeSelectBranchTrigger,
   XhTreeSelectContent,
+  XhTreeSelectControl,
   XhTreeSelectIndicator,
   XhTreeSelectItem,
   XhTreeSelectItemIndicator,
@@ -51,17 +52,19 @@ const sizes = [
       style="inline-size: 220px"
     >
       <XhTreeSelectLabel>{{ s.label }}</XhTreeSelectLabel>
-      <XhTreeSelectTrigger>
-        <XhTreeSelectValueText />
-        <XhTreeSelectIndicator />
-      </XhTreeSelectTrigger>
+      <XhTreeSelectControl>
+        <XhTreeSelectTrigger>
+          <XhTreeSelectValueText />
+          <XhTreeSelectIndicator />
+        </XhTreeSelectTrigger>
+      </XhTreeSelectControl>
       <XhTreeSelectPositioner>
         <XhTreeSelectContent>
           <XhTreeSelectTree>
             <XhTreeSelectBranch value="docs">
               <XhTreeSelectBranchControl>
-                <XhTreeSelectBranchTrigger />
-                <XhTreeSelectBranchText>docs</XhTreeSelectBranchText>
+  <XhTreeSelectBranchTrigger />
+  <XhTreeSelectBranchText>docs</XhTreeSelectBranchText>
               </XhTreeSelectBranchControl>
               <XhTreeSelectBranchContent>
                 <XhTreeSelectItem value="guide">

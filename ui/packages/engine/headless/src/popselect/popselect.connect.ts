@@ -204,6 +204,13 @@ export function connectPopselect<T extends PropTypes>(
       'data-disabled': dataAttr(disabled),
     }),
 
+    // 盒：描边、底色与聚焦环都落在它上面，样式要认的状态因此在这里发全
+    getControlProps: () => normalize.element({
+      ...parts.control.attrs,
+      'data-state': stateAttr,
+      'data-disabled': dataAttr(disabled),
+    }),
+
     getTriggerProps: () => normalize.button({
       ...parts.trigger.attrs,
       'id': ids.trigger,
@@ -247,7 +254,7 @@ export function connectPopselect<T extends PropTypes>(
       },
     }),
 
-    // 清空钮是 trigger 的兄弟节点（按钮不能套按钮）：不占 Tab 位，没值即收起，点完焦点送回 trigger
+    // 清空钮与 trigger 一起收在盒里，是它的兄弟节点（按钮不能套按钮）：不占 Tab 位，没值即收起，点完焦点送回 trigger
     getClearTriggerProps: () => normalize.button({
       ...parts['clear-trigger'].attrs,
       'type': 'button',

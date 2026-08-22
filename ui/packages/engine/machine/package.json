@@ -29,6 +29,42 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
+    "./create-machine": {
+      "types": "./dist/create-machine.d.ts",
+      "import": "./dist/create-machine.js"
+    },
+    "./delay": {
+      "types": "./dist/delay.d.ts",
+      "import": "./dist/delay.js"
+    },
+    "./errors": {
+      "types": "./dist/errors.d.ts",
+      "import": "./dist/errors.js"
+    },
+    "./form-reset": {
+      "types": "./dist/form-reset.d.ts",
+      "import": "./dist/form-reset.js"
+    },
+    "./guards": {
+      "types": "./dist/guards.d.ts",
+      "import": "./dist/guards.js"
+    },
+    "./service": {
+      "types": "./dist/service.d.ts",
+      "import": "./dist/service.js"
+    },
+    "./setup": {
+      "types": "./dist/setup.d.ts",
+      "import": "./dist/setup.js"
+    },
+    "./state": {
+      "types": "./dist/state.d.ts",
+      "import": "./dist/state.js"
+    },
+    "./transitions": {
+      "types": "./dist/transitions.d.ts",
+      "import": "./dist/transitions.js"
+    },
     "./vanilla": {
       "types": "./dist/vanilla.d.ts",
       "import": "./dist/vanilla.js"

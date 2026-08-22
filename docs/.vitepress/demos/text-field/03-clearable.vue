@@ -1,7 +1,8 @@
-<!-- 可清空与字数上限 | clearable 让清空按钮可用并把 Escape 接管过来，maxLength 同时落成原生 maxlength 与机器侧截断 -->
+<!-- 可清空与字数上限 | Control 把输入框与清空按钮圈进同一个框，clearable 让清空按钮可用并把 Escape 接管过来，maxLength 同时落成原生 maxlength 与机器侧截断 -->
 <script setup lang="ts">
 import {
   XhTextFieldClearTrigger,
+  XhTextFieldControl,
   XhTextFieldInput,
   XhTextFieldLabel,
   XhTextFieldRoot,
@@ -17,10 +18,10 @@ import {
     clearable
   >
     <XhTextFieldLabel>昵称</XhTextFieldLabel>
-    <div style="display: flex; gap: 4px">
-      <XhTextFieldInput style="inline-size: 200px" />
+    <XhTextFieldControl style="inline-size: 200px">
+      <XhTextFieldInput />
       <XhTextFieldClearTrigger />
-    </div>
+    </XhTextFieldControl>
     <span>{{ value.length }} / 10{{ atLimit ? "（已到上限）" : "" }}</span>
   </XhTextFieldRoot>
 </template>

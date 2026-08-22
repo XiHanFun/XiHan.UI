@@ -4,6 +4,7 @@ import { createAnatomy } from '@xihan-ui/kernel'
 export const cascaderAnatomy = createAnatomy('cascader', [
   'root',
   'label',
+  'control',
   'trigger',
   'value-text',
   'indicator',

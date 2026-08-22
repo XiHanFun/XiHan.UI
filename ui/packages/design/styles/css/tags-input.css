@@ -14,7 +14,7 @@
        换档不必给每个部件各写一条选择器 */
     --xh-_tags-input-control-h: var(--xh-control-h-md);
     --xh-_tags-input-control-px: var(--xh-control-px-md);
-    --xh-_tags-input-control-gap: var(--xh-control-gap-sm);
+    --xh-_tags-input-control-gap: var(--xh-control-gap-md);
     --xh-_tags-input-input-font-size: var(--xh-text-body-size);
     --xh-_tags-input-item-font-size: var(--xh-text-secondary-size);
     --xh-_tags-input-label-font-size: var(--xh-text-label-size);
@@ -66,6 +66,7 @@
     --xh-icon-size: var(--xh-tags-input-icon-size, var(--xh-glyph-size-sm));
     --xh-_tags-input-control-h: var(--xh-control-h-sm);
     --xh-_tags-input-control-px: var(--xh-control-px-sm);
+    --xh-_tags-input-control-gap: var(--xh-control-gap-sm);
     --xh-_tags-input-input-font-size: var(--xh-control-font-sm);
     --xh-_tags-input-item-font-size: var(--xh-control-caption-sm);
     --xh-_tags-input-label-font-size: var(--xh-control-font-sm);
@@ -99,6 +100,7 @@
     flex-wrap: wrap;
     align-items: center;
     gap: var(--xh-tags-input-control-gap, var(--xh-_tags-input-control-gap));
+    min-inline-size: var(--xh-tags-input-control-min-w, var(--xh-control-min-w));
     min-block-size: var(--xh-tags-input-control-h, var(--xh-_tags-input-control-h));
     /* 纵向只留半档：标签行加上下内距要装进控件档的高度里 */
     padding-block: var(--xh-tags-input-control-py, var(--xh-space-0_5));
@@ -122,7 +124,7 @@
 
   /* 焦点环画在这个框上：用户眼里"被聚焦的控件"就是整个框，
      而真正持有焦点的是里面的 input（它自己那圈环因此让位，见下） */
-  [data-scope='tags-input'][data-part='control']:focus-within {
+  [data-scope='tags-input'][data-part='control']:focus-within:not([data-disabled]) {
     border-color: var(--xh-tags-input-control-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
     outline: var(--xh-ring-width) solid var(--xh-_tags-input-ring);
     outline-offset: var(--xh-ring-offset);

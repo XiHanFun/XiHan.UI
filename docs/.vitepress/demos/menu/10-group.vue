@@ -5,6 +5,8 @@ import { ref } from "vue";
 import {
   XhIcon,
   XhMenuContent,
+  XhMenuGroup,
+  XhMenuGroupLabel,
   XhMenuItem,
   XhMenuPositioner,
   XhMenuRoot,
@@ -48,12 +50,6 @@ function onSelect(details: { value: string }): void {
     : [...panels.value, details.value];
 }
 
-const labelStyle = {
-  padding: "6px 8px",
-  fontSize: "12px",
-  color: "var(--xh-fg-muted)",
-};
-
 // 标记位恒占一格，勾不勾都不推动后面的文字
 const markStyle = {
   flex: "none",
@@ -69,13 +65,13 @@ const markStyle = {
         <XhMenuContent>
           <template v-for="(g, index) in groups" :key="g.value">
             <XhMenuSeparator v-if="index > 0" />
-            <div role="group" :aria-labelledby="`menu-group-${g.value}`">
-              <div :id="`menu-group-${g.value}`" :style="labelStyle">{{ g.label }}</div>
+            <XhMenuGroup :value="g.value">
+              <XhMenuGroupLabel>{{ g.label }}</XhMenuGroupLabel>
               <XhMenuItem v-for="item in g.items" :key="item.value" :value="item.value">
                 <span :style="markStyle"><XhIcon v-if="checked(g.value, item.value)" :icon="CheckIcon" /></span>
                 <span>{{ item.label }}</span>
               </XhMenuItem>
-            </div>
+            </XhMenuGroup>
           </template>
         </XhMenuContent>
       </XhMenuPositioner>

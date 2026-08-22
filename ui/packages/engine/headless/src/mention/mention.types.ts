@@ -118,6 +118,10 @@ export interface MentionSchema extends MachineSchema {
     defaultValue?: string
     /** 整个控件禁用：输入框用原生 disabled，候选一概不开。 */
     disabled?: boolean
+    /** 只读：正文仍可聚焦与复制，改不动，候选也不开。 */
+    readOnly?: boolean
+    /** 校验失败标注：描边与聚焦环换成失败色，同时经 aria-invalid 上报。 */
+    invalid?: boolean
     /** 输入框占位文字。不给就整条不输出，作者写在 input 部件上的那份因此留得住。 */
     placeholder?: string
     /** 方向键走到尽头是否回绕，默认 true。 */

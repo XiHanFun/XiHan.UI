@@ -3,12 +3,14 @@
   <div data-xh-part="root">
     <label data-xh-part="label">取件日期</label>
     <div data-xh-part="control">
-      <span data-xh-part="segment" index="0"></span>
-      <span>年</span>
-      <span data-xh-part="segment" index="1"></span>
-      <span>月</span>
-      <span data-xh-part="segment" index="2"></span>
-      <span>日</span>
+      <div data-xh-part="segment-group">
+        <span data-xh-part="segment" index="0"></span>
+        <span>年</span>
+        <span data-xh-part="segment" index="1"></span>
+        <span>月</span>
+        <span data-xh-part="segment" index="2"></span>
+        <span>日</span>
+      </div>
       <!-- 一段都没填时清空钮收起；填了任意一段就出现 -->
       <button data-xh-part="clear-trigger"></button>
     </div>

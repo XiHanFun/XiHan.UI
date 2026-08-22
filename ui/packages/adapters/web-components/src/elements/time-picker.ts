@@ -86,6 +86,7 @@ function declaredUnit(el: HTMLElement, position: number): TimePickerColumnUnit {
  * @csspart root - 组件根容器（承载 data-state/data-disabled/data-readonly/data-invalid/data-empty）
  * @csspart label - 标题；点它会把焦点送到第一段
  * @csspart control - role=group 的输入行，同时是浮层的定位锚点
+ * @csspart segment-group - 段位与分隔符的外壳，占满盒里剩下的宽度
  * @csspart input - 一段一个的 spinbutton，可自带 segment 属性声明身份，缺省按文档序
  * @csspart trigger - 展开/收起按钮，须是原生 button
  * @csspart clear-trigger - 清空按钮，须是原生 button；不占 Tab 位，可及名走 translations.clearTrigger；没值即收起
@@ -268,6 +269,7 @@ export class XhTimePickerElement extends XhElement {
     put('root', api.getRootProps() as Record<string, unknown>)
     put('label', api.getLabelProps() as Record<string, unknown>)
     put('control', api.getControlProps() as Record<string, unknown>)
+    put('segment-group', api.getSegmentGroupProps() as Record<string, unknown>)
     put('trigger', api.getTriggerProps() as Record<string, unknown>)
     put('clear-trigger', api.getClearTriggerProps() as Record<string, unknown>)
     // positioner 的 style 是对象，spreader 会逐条写成内联样式

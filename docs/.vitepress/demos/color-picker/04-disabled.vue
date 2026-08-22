@@ -4,6 +4,7 @@ import {
   XhColorPickerArea,
   XhColorPickerAreaThumb,
   XhColorPickerContent,
+  XhColorPickerControl,
   XhColorPickerPositioner,
   XhColorPickerRoot,
   XhColorPickerSwatch,
@@ -14,10 +15,12 @@ import {
 
 <template>
   <XhColorPickerRoot default-value="#9ca3af" disabled>
-    <XhColorPickerTrigger>
-      <XhColorPickerSwatch />
-      <XhColorPickerValueText />
-    </XhColorPickerTrigger>
+    <XhColorPickerControl>
+      <XhColorPickerTrigger>
+        <XhColorPickerSwatch />
+        <XhColorPickerValueText />
+      </XhColorPickerTrigger>
+    </XhColorPickerControl>
     <XhColorPickerPositioner>
       <XhColorPickerContent>
         <XhColorPickerArea>

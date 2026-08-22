@@ -101,6 +101,14 @@ export const XhDateFieldControl = defineComponent({
   },
 })
 
+export const XhDateFieldSegmentGroup = defineComponent({
+  name: 'XhDateFieldSegmentGroup',
+  setup(_, { slots }) {
+    const ctx = useDateFieldContext()
+    return () => h('div', ctx.api.value.getSegmentGroupProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhDateFieldSegment = defineComponent({
   name: 'XhDateFieldSegment',
   props: {

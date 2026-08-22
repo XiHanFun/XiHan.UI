@@ -286,6 +286,8 @@ export function connectSideNav<T extends PropTypes>(
         'aria-controls': contentId(v),
         'data-state': expandedAttr ? 'open' : 'closed',
         'data-in-path': dataAttr(isActiveBranch(v)),
+        // 方向键锚定的那一行：皮肤据此画高亮
+        'data-highlighted': dataAttr(focusedValue === v),
         'data-disabled': dataAttr(isDisabled(v)),
         'disabled': isDisabled(v) || undefined,
         'tabindex': anchor === v ? 0 : -1,
@@ -401,6 +403,8 @@ export function connectSideNav<T extends PropTypes>(
       // 选中的那条就是「当前页」，读屏与皮肤都认它
       'aria-current': isSelected(v) ? 'page' : undefined,
       'data-current': dataAttr(isSelected(v)),
+      // 方向键锚定的那一行：皮肤据此画高亮
+      'data-highlighted': dataAttr(focusedValue === v),
       'data-disabled': dataAttr(isDisabled(v)),
       'aria-disabled': isDisabled(v) ? 'true' : undefined,
       'tabindex': anchor === v ? 0 : -1,

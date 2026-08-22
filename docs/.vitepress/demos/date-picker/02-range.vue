@@ -14,7 +14,7 @@ import {
   XhDatePickerGridHead,
   XhDatePickerHeader,
   XhDatePickerHeading,
-  XhDatePickerInput,
+  XhDatePickerSegmentGroup,
   XhDatePickerLabel,
   XhDatePickerNextTrigger,
   XhDatePickerNextYearTrigger,
@@ -70,14 +70,14 @@ function text(v: string[]): string {
       <XhDatePickerLabel>{{ k.label }}</XhDatePickerLabel>
       <XhDatePickerControl>
         <!-- 组号定这组段位认领哪一端：0 起点、1 终点 -->
-        <XhDatePickerInput v-for="end in 2" :key="end" :index="end - 1">
+        <XhDatePickerSegmentGroup v-for="end in 2" :key="end" :index="end - 1">
           <!-- 铺哪几块由 view 推；「-」与「周」是普通节点，作者写在段位旁边 -->
           <template v-for="(seg, i) in end === 1 ? segments : endSegments" :key="seg.type">
             <span v-if="i > 0">-</span>
             <XhDatePickerSegment :index="i" />
             <span v-if="seg.type === 'week'">周</span>
           </template>
-        </XhDatePickerInput>
+        </XhDatePickerSegmentGroup>
         <XhDatePickerClearTrigger />
       </XhDatePickerControl>
       <XhDatePickerPositioner>

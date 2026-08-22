@@ -6,6 +6,7 @@ import {
   XhTimePickerContent,
   XhTimePickerControl,
   XhTimePickerInput,
+  XhTimePickerSegmentGroup,
   XhTimePickerLabel,
   XhTimePickerItem,
   XhTimePickerPositioner,
@@ -41,9 +42,11 @@ function snap(next: string) {
   >
     <XhTimePickerLabel>面谈时刻</XhTimePickerLabel>
     <XhTimePickerControl>
-      <XhTimePickerInput segment="hour" />
-      <span>:</span>
-      <XhTimePickerInput segment="minute" />
+      <XhTimePickerSegmentGroup>
+        <XhTimePickerInput segment="hour" />
+        <span>:</span>
+        <XhTimePickerInput segment="minute" />
+      </XhTimePickerSegmentGroup>
     </XhTimePickerControl>
     <XhTimePickerPositioner>
       <XhTimePickerContent>

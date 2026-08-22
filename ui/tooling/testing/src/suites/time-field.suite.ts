@@ -41,7 +41,13 @@ export const timeFieldSuite: ConformanceSuite = {
     part: 'root',
     children: [
       { part: 'label', tag: 'label', text: '开始时间' },
-      { part: 'control', children: [...SEGMENTS.map(s => segment(s)), { part: 'clear-trigger', tag: 'button' }] },
+      {
+        part: 'control',
+        children: [
+          { part: 'segment-group', children: SEGMENTS.map(s => segment(s)) },
+          { part: 'clear-trigger', tag: 'button' },
+        ],
+      },
       { part: 'hidden-input', tag: 'input' },
     ],
   },
@@ -51,7 +57,7 @@ export const timeFieldSuite: ConformanceSuite = {
       spec: { apg: APG },
       props: { name: 'start' },
       initial: {
-        order: ['root', 'label', 'control', HOUR, MINUTE, SECOND, DAY_PERIOD, 'clear-trigger', 'hidden-input'],
+        order: ['root', 'label', 'control', 'segment-group', HOUR, MINUTE, SECOND, DAY_PERIOD, 'clear-trigger', 'hidden-input'],
         counts: { segment: 4 },
         parts: {
           'root': {

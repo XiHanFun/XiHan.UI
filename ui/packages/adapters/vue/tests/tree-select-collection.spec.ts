@@ -12,6 +12,7 @@ import {
   XhTreeSelectBranchTrigger,
   XhTreeSelectClearTrigger,
   XhTreeSelectContent,
+  XhTreeSelectControl,
   XhTreeSelectIndicator,
   XhTreeSelectItem,
   XhTreeSelectItemIndicator,
@@ -77,8 +78,10 @@ function mountFromParts(value: string[], portal: HTMLElement = newPortal(), clea
         placeholder: '选一个文件',
       }, () => [
         h(XhTreeSelectLabel, () => '文档'),
-        h(XhTreeSelectTrigger, () => [h(XhTreeSelectValueText), h(XhTreeSelectIndicator)]),
-        ...(clearable ? [h(XhTreeSelectClearTrigger)] : []),
+        h(XhTreeSelectControl, () => [
+          h(XhTreeSelectTrigger, () => [h(XhTreeSelectValueText), h(XhTreeSelectIndicator)]),
+          ...(clearable ? [h(XhTreeSelectClearTrigger)] : []),
+        ]),
         h(XhTreeSelectPositioner, () => [
           h(XhTreeSelectContent, () => h(XhTreeSelectTree, null, () => [
             h(XhTreeSelectBranch, { value: 'docs' }, () => [
@@ -137,6 +140,7 @@ describe('tree-select 的 collection', () => {
     const w = mountFromCollection([], portal)
     expect(partsOf(w.element, portal)).toEqual([
       'label',
+      'control',
       'trigger',
       'value-text',
       'indicator',
@@ -216,7 +220,7 @@ describe('tree-select 的 collection', () => {
     const manualPortal = newPortal()
     const auto = mountFromCollection(['guide'], autoPortal, true)
     const manual = mountFromParts(['guide'], manualPortal, true)
-    expect(partsOf(auto.element).slice(0, 5)).toEqual(['label', 'trigger', 'value-text', 'indicator', 'clear-trigger'])
+    expect(partsOf(auto.element).slice(0, 6)).toEqual(['label', 'control', 'trigger', 'value-text', 'indicator', 'clear-trigger'])
     expect(skeleton(auto.element, autoPortal)).toEqual(skeleton(manual.element, manualPortal))
     auto.unmount()
     manual.unmount()

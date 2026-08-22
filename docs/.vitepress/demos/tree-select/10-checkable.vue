@@ -10,6 +10,7 @@ import {
   XhTreeSelectBranchText,
   XhTreeSelectBranchTrigger,
   XhTreeSelectContent,
+  XhTreeSelectControl,
   XhTreeSelectIndicator,
   XhTreeSelectItem,
   XhTreeSelectItemText,
@@ -69,11 +70,13 @@ const boxStyle = {
     style="max-inline-size: 340px"
   >
     <XhTreeSelectLabel>权限</XhTreeSelectLabel>
-    <XhTreeSelectTrigger>
-      <!-- parent 收敛下整组选满值就是组名，缺省显示文本直接可用 -->
-      <XhTreeSelectValueText />
-      <XhTreeSelectIndicator />
-    </XhTreeSelectTrigger>
+    <XhTreeSelectControl>
+      <XhTreeSelectTrigger>
+        <!-- parent 收敛下整组选满值就是组名，缺省显示文本直接可用 -->
+        <XhTreeSelectValueText />
+        <XhTreeSelectIndicator />
+      </XhTreeSelectTrigger>
+    </XhTreeSelectControl>
     <XhTreeSelectPositioner>
       <XhTreeSelectContent>
         <XhTreeSelectTree>
@@ -83,12 +86,12 @@ const boxStyle = {
             :value="group.value"
           >
             <XhTreeSelectBranchControl>
-              <XhTreeSelectBranchTrigger />
-              <span aria-hidden="true" :style="boxStyle">
-                <XhIcon v-if="isSelected(group.value)" :icon="CheckIcon" />
-                <XhIcon v-else-if="isIndeterminate(group.value)" :icon="MinusIcon" />
-              </span>
-              <XhTreeSelectBranchText>{{ group.label }}</XhTreeSelectBranchText>
+  <XhTreeSelectBranchTrigger />
+  <span aria-hidden="true" :style="boxStyle">
+    <XhIcon v-if="isSelected(group.value)" :icon="CheckIcon" />
+    <XhIcon v-else-if="isIndeterminate(group.value)" :icon="MinusIcon" />
+  </span>
+  <XhTreeSelectBranchText>{{ group.label }}</XhTreeSelectBranchText>
             </XhTreeSelectBranchControl>
             <XhTreeSelectBranchContent>
               <XhTreeSelectItem

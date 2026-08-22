@@ -13,7 +13,7 @@ import {
   XhDatePickerGridHead,
   XhDatePickerHeader,
   XhDatePickerHeading,
-  XhDatePickerInput,
+  XhDatePickerSegmentGroup,
   XhDatePickerLabel,
   XhDatePickerNextTrigger,
   XhDatePickerPositioner,
@@ -47,14 +47,14 @@ const sizes: Size[] = ["sm", "md", "lg"];
       >
         <XhDatePickerLabel>{{ v }}</XhDatePickerLabel>
         <XhDatePickerControl>
-          <XhDatePickerInput>
+          <XhDatePickerSegmentGroup>
             <!-- 段位不写内容：显示什么由组件按当前值填 -->
             <XhDatePickerSegment :index="0" />
             <span>-</span>
             <XhDatePickerSegment :index="1" />
             <span>-</span>
             <XhDatePickerSegment :index="2" />
-          </XhDatePickerInput>
+          </XhDatePickerSegmentGroup>
           <XhDatePickerClearTrigger />
         </XhDatePickerControl>
         <XhDatePickerPositioner>

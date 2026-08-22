@@ -62,6 +62,7 @@ const STRING_LIST_CONVERTER = {
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @csspart root - 组件根容器（承载 data-state/data-disabled/data-readonly）
  * @csspart label - 组标题（触发器 aria-labelledby 的目标之一）
+ * @csspart control - 触发按钮的收纳容器：描边、底色与聚焦环都落在这一层
  * @csspart trigger - 触发按钮，须是原生 button；同时是浮层的定位锚点
  * @csspart value-text - 当前值串的显示位；留空即由元素填入，作者写了内容则归作者
  * @csspart swatch - 当前颜色的色块（aria-hidden，背景由连接层写成内联样式）
@@ -237,6 +238,7 @@ export class XhColorPickerElement extends XhElement {
     }
     put('root', api.getRootProps() as Record<string, unknown>)
     put('label', api.getLabelProps() as Record<string, unknown>)
+    put('control', api.getControlProps() as Record<string, unknown>)
     put('trigger', api.getTriggerProps() as Record<string, unknown>)
     put('swatch', api.getSwatchProps() as Record<string, unknown>)
     // positioner 的 style 是对象（position/insetInlineStart/insetBlockStart），

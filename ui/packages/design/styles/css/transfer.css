@@ -123,12 +123,14 @@
     cursor: not-allowed;
   }
 
+  /* 两侧列表定高：高度只由这个槽给，与条目数无关。左右两块因此恒等高，
+     搬走条目、搜索筛掉条目、整侧搬空，面板都停在原地不缩。
+     flex-basis 取 auto 而不是 0，块尺寸才是这一栏真正的主轴基准 */
   [data-scope='transfer'][data-part='list'] {
     display: flex;
-    flex: 1;
+    flex: 1 1 auto;
     flex-direction: column;
-    min-block-size: var(--xh-transfer-list-min-h, 8rem);
-    max-block-size: var(--xh-transfer-list-max-h, 16rem);
+    block-size: var(--xh-transfer-list-h, var(--xh-viewport-h-md));
     padding-block: var(--xh-transfer-list-py, var(--xh-space-1));
     padding-inline: var(--xh-transfer-list-px, var(--xh-space-1));
     overflow: auto;

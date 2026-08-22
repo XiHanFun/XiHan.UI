@@ -61,6 +61,16 @@ export function connectTextField<T extends PropTypes>(
       'data-at-limit': dataAttr(atLimit),
     }),
 
+    // 视觉盒：写了这个节点就由它画描边、底色与聚焦环，输入框与清空按钮排在它里面；
+    // 不写时输入框自己当盒
+    getControlProps: () => normalize.element({
+      ...parts.control.attrs,
+      'data-disabled': dataAttr(disabled),
+      'data-readonly': dataAttr(readOnly),
+      'data-invalid': dataAttr(invalid),
+      'data-at-limit': dataAttr(atLimit),
+    }),
+
     getLabelProps: () => normalize.label({
       ...parts.label.attrs,
       'id': ids.label,

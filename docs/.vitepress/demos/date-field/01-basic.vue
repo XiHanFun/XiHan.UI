@@ -7,6 +7,7 @@ import {
   XhDateFieldLabel,
   XhDateFieldRoot,
   XhDateFieldSegment,
+  XhDateFieldSegmentGroup,
 } from "@xihan-ui/vue";
 
 const value = ref<string | null>(null);
@@ -16,13 +17,15 @@ const value = ref<string | null>(null);
   <XhDateFieldRoot v-model:value="value" locale="zh-CN" name="due">
     <XhDateFieldLabel>截止日期</XhDateFieldLabel>
     <XhDateFieldControl>
-      <!-- 段只声明下标，是年是月由 locale 算出；中间的「年 / 月 / 日」是普通节点 -->
-      <XhDateFieldSegment :index="0" />
-      <span>年</span>
-      <XhDateFieldSegment :index="1" />
-      <span>月</span>
-      <XhDateFieldSegment :index="2" />
-      <span>日</span>
+      <XhDateFieldSegmentGroup>
+        <!-- 段只声明下标，是年是月由 locale 算出；中间的「年 / 月 / 日」是普通节点 -->
+        <XhDateFieldSegment :index="0" />
+        <span>年</span>
+        <XhDateFieldSegment :index="1" />
+        <span>月</span>
+        <XhDateFieldSegment :index="2" />
+        <span>日</span>
+      </XhDateFieldSegmentGroup>
     </XhDateFieldControl>
     <!-- 表单出口：值是 ISO 串，没填齐时它就是空的 -->
     <XhDateFieldHiddenInput />

@@ -5,6 +5,7 @@ import {
   XhDateFieldLabel,
   XhDateFieldRoot,
   XhDateFieldSegment,
+  XhDateFieldSegmentGroup,
 } from "@xihan-ui/vue";
 
 const sizes = [
@@ -25,12 +26,14 @@ const sizes = [
     >
       <XhDateFieldLabel>{{ s.label }}</XhDateFieldLabel>
       <XhDateFieldControl>
-        <XhDateFieldSegment :index="0" />
-        <span>年</span>
-        <XhDateFieldSegment :index="1" />
-        <span>月</span>
-        <XhDateFieldSegment :index="2" />
-        <span>日</span>
+        <XhDateFieldSegmentGroup>
+          <XhDateFieldSegment :index="0" />
+          <span>年</span>
+          <XhDateFieldSegment :index="1" />
+          <span>月</span>
+          <XhDateFieldSegment :index="2" />
+          <span>日</span>
+        </XhDateFieldSegmentGroup>
       </XhDateFieldControl>
     </XhDateFieldRoot>
   </div>

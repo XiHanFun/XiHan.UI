@@ -8,6 +8,7 @@ import {
   XhTreeSelectBranchText,
   XhTreeSelectBranchTrigger,
   XhTreeSelectContent,
+  XhTreeSelectControl,
   XhTreeSelectIndicator,
   XhTreeSelectItem,
   XhTreeSelectItemIndicator,
@@ -75,10 +76,12 @@ function onExpandedChange(details: { value: string[] }): void {
     @expanded-change="onExpandedChange"
   >
     <XhTreeSelectLabel>投放城市</XhTreeSelectLabel>
-    <XhTreeSelectTrigger>
-      <XhTreeSelectValueText />
-      <XhTreeSelectIndicator />
-    </XhTreeSelectTrigger>
+    <XhTreeSelectControl>
+      <XhTreeSelectTrigger>
+        <XhTreeSelectValueText />
+        <XhTreeSelectIndicator />
+      </XhTreeSelectTrigger>
+    </XhTreeSelectControl>
     <XhTreeSelectPositioner>
       <XhTreeSelectContent>
         <XhTreeSelectTree>
@@ -88,8 +91,8 @@ function onExpandedChange(details: { value: string[] }): void {
             :value="region.value"
           >
             <XhTreeSelectBranchControl>
-              <XhTreeSelectBranchTrigger />
-              <XhTreeSelectBranchText>{{ region.label }}</XhTreeSelectBranchText>
+  <XhTreeSelectBranchTrigger />
+  <XhTreeSelectBranchText>{{ region.label }}</XhTreeSelectBranchText>
             </XhTreeSelectBranchControl>
             <XhTreeSelectBranchContent>
               <XhTreeSelectItem

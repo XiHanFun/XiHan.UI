@@ -7,6 +7,7 @@ import {
   XhDateFieldLabel,
   XhDateFieldRoot,
   XhDateFieldSegment,
+  XhDateFieldSegmentGroup,
 } from "@xihan-ui/vue";
 
 // 值的形态不变，仍是 ISO 日期串：季度取那一季的头一个月、周取那一周的周首日
@@ -24,10 +25,12 @@ const AT: DateSegmentSet = ["year", "month", "day", "hour", "dayPeriod"];
     <XhDateFieldRoot v-model:value="quarter" :segments="QUARTER" locale="zh-CN">
       <XhDateFieldLabel>结算季度</XhDateFieldLabel>
       <XhDateFieldControl>
-        <!-- 按段名认领：写死这一格就是年、那一格就是季度，不必数下标 -->
-        <XhDateFieldSegment segment="year" />
-        <span>-</span>
-        <XhDateFieldSegment segment="quarter" />
+        <XhDateFieldSegmentGroup>
+          <!-- 按段名认领：写死这一格就是年、那一格就是季度，不必数下标 -->
+          <XhDateFieldSegment segment="year" />
+          <span>-</span>
+          <XhDateFieldSegment segment="quarter" />
+        </XhDateFieldSegmentGroup>
       </XhDateFieldControl>
     </XhDateFieldRoot>
     <span style="font-size: 13px">{{ quarter ?? "（未填齐）" }}</span>
@@ -35,9 +38,11 @@ const AT: DateSegmentSet = ["year", "month", "day", "hour", "dayPeriod"];
     <XhDateFieldRoot v-model:value="week" :segments="WEEK" locale="zh-CN">
       <XhDateFieldLabel>排期周</XhDateFieldLabel>
       <XhDateFieldControl>
-        <XhDateFieldSegment segment="year" />
-        <span>-</span>
-        <XhDateFieldSegment segment="week" />
+        <XhDateFieldSegmentGroup>
+          <XhDateFieldSegment segment="year" />
+          <span>-</span>
+          <XhDateFieldSegment segment="week" />
+        </XhDateFieldSegmentGroup>
         <!-- 「周」与「年 / 月 / 日」一样是普通节点，段位自己只出数字 -->
         <span>周</span>
       </XhDateFieldControl>
@@ -47,16 +52,18 @@ const AT: DateSegmentSet = ["year", "month", "day", "hour", "dayPeriod"];
     <XhDateFieldRoot v-model:value="at" :segments="AT" locale="zh-CN">
       <XhDateFieldLabel>开始时间</XhDateFieldLabel>
       <XhDateFieldControl>
-        <XhDateFieldSegment segment="year" />
-        <span>-</span>
-        <XhDateFieldSegment segment="month" />
-        <span>-</span>
-        <XhDateFieldSegment segment="day" />
-        <span>&nbsp;</span>
-        <!-- 段集里带上下午时，小时段收的是 12 时制的那个数；a / p 键直接指定 -->
-        <XhDateFieldSegment segment="hour" />
-        <span>&nbsp;</span>
-        <XhDateFieldSegment segment="dayPeriod" />
+        <XhDateFieldSegmentGroup>
+          <XhDateFieldSegment segment="year" />
+          <span>-</span>
+          <XhDateFieldSegment segment="month" />
+          <span>-</span>
+          <XhDateFieldSegment segment="day" />
+          <span>&nbsp;</span>
+          <!-- 段集里带上下午时，小时段收的是 12 时制的那个数；a / p 键直接指定 -->
+          <XhDateFieldSegment segment="hour" />
+          <span>&nbsp;</span>
+          <XhDateFieldSegment segment="dayPeriod" />
+        </XhDateFieldSegmentGroup>
       </XhDateFieldControl>
     </XhDateFieldRoot>
     <span style="font-size: 13px">{{ at ?? "（未填齐）" }}</span>

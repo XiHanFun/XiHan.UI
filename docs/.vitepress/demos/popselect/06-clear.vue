@@ -1,9 +1,10 @@
-<!-- 清空按钮 | 清空钮是触发器的兄弟节点：有选中才显出，点按清空全部选中、焦点送回触发器；焦点在触发器上按 Delete 清空全部、Backspace 多选去掉最后一个；可及名走 translations.clearTrigger -->
+<!-- 清空按钮 | 清空钮与触发器一起收在盒里，是它的兄弟节点：有选中才显出，点按清空全部选中、焦点送回触发器；焦点在触发器上按 Delete 清空全部、Backspace 多选去掉最后一个；可及名走 translations.clearTrigger -->
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import {
   XhPopselectClearTrigger,
   XhPopselectContent,
+  XhPopselectControl,
   XhPopselectPositioner,
   XhPopselectRoot,
   XhPopselectTrigger,
@@ -32,8 +33,10 @@ const label = computed(() => {
     placement="bottom-start"
     :translations="{ clearTrigger: '清空所选' }"
   >
-    <XhPopselectTrigger>{{ label }}</XhPopselectTrigger>
-    <XhPopselectClearTrigger />
+    <XhPopselectControl>
+      <XhPopselectTrigger>{{ label }}</XhPopselectTrigger>
+      <XhPopselectClearTrigger />
+    </XhPopselectControl>
     <XhPopselectPositioner>
       <XhPopselectContent />
     </XhPopselectPositioner>

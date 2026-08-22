@@ -3,6 +3,7 @@
 import { ref } from "vue";
 import {
   XhSelectContent,
+  XhSelectControl,
   XhSelectIndicator,
   XhSelectItem,
   XhSelectItemIndicator,
@@ -45,10 +46,12 @@ function onOpenChange(details: { open: boolean }): void {
 <template>
   <XhSelectRoot v-model:value="value" placeholder="请选择" @open-change="onOpenChange">
     <XhSelectLabel>曲目</XhSelectLabel>
-    <XhSelectTrigger>
-      <XhSelectValueText />
-      <XhSelectIndicator />
-    </XhSelectTrigger>
+    <XhSelectControl>
+      <XhSelectTrigger>
+        <XhSelectValueText />
+        <XhSelectIndicator />
+      </XhSelectTrigger>
+    </XhSelectControl>
     <XhSelectPositioner>
       <XhSelectContent>
         <XhSelectList>

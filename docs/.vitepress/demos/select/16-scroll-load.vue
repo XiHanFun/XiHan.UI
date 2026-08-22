@@ -3,6 +3,7 @@
 import { ref } from "vue";
 import {
   XhSelectContent,
+  XhSelectControl,
   XhSelectIndicator,
   XhSelectItem,
   XhSelectItemIndicator,
@@ -50,10 +51,12 @@ function onScroll(event: Event): void {
 <template>
   <XhSelectRoot v-model:value="picked" placeholder="请选择">
     <XhSelectLabel>工单</XhSelectLabel>
-    <XhSelectTrigger>
-      <XhSelectValueText />
-      <XhSelectIndicator />
-    </XhSelectTrigger>
+    <XhSelectControl>
+      <XhSelectTrigger>
+        <XhSelectValueText />
+        <XhSelectIndicator />
+      </XhSelectTrigger>
+    </XhSelectControl>
     <XhSelectPositioner>
       <XhSelectContent @scroll="onScroll">
         <XhSelectList>

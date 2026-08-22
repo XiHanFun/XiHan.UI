@@ -7,6 +7,7 @@ import {
   XhColorPickerChannelSliderThumb,
   XhColorPickerChannelSliderTrack,
   XhColorPickerContent,
+  XhColorPickerControl,
   XhColorPickerLabel,
   XhColorPickerPositioner,
   XhColorPickerRoot,
@@ -31,10 +32,12 @@ const cases = [
       :default-value="item.value"
     >
       <XhColorPickerLabel>{{ item.format }}</XhColorPickerLabel>
-      <XhColorPickerTrigger>
-        <XhColorPickerSwatch />
-        <XhColorPickerValueText />
-      </XhColorPickerTrigger>
+      <XhColorPickerControl>
+        <XhColorPickerTrigger>
+          <XhColorPickerSwatch />
+          <XhColorPickerValueText />
+        </XhColorPickerTrigger>
+      </XhColorPickerControl>
       <XhColorPickerPositioner>
         <XhColorPickerContent>
           <XhColorPickerArea>

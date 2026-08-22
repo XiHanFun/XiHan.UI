@@ -29,7 +29,7 @@ const PRESETS = [
 const CALENDAR = '[data-scope="calendar"]'
 const FIELD = '[data-scope="date-field"]'
 /** 分段容器；区间模式下有两组，文档序即起止序。 */
-const INPUT = '[data-scope="date-picker"][data-part="input"]'
+const SEGMENT_GROUP = '[data-scope="date-picker"][data-part="segment-group"]'
 
 function cellTrigger(doc: Document, value: string): HTMLElement {
   const el = doc.querySelector<HTMLElement>(`${CALENDAR}[data-part="cell-trigger"][data-value="${value}"]`)
@@ -47,8 +47,8 @@ function gridCell(doc: Document, value: string): HTMLElement {
 }
 
 /** 第 group 组分段容器：0 是起点，1 是终点（只有区间模式有第二组）。 */
-function inputAt(doc: Document, group: number): HTMLElement {
-  const el = doc.querySelectorAll<HTMLElement>(INPUT)[group]
+function segmentGroupAt(doc: Document, group: number): HTMLElement {
+  const el = doc.querySelectorAll<HTMLElement>(SEGMENT_GROUP)[group]
   if (!el)
     throw new Error(`没有第 ${group} 组分段容器`)
   return el
@@ -56,7 +56,7 @@ function inputAt(doc: Document, group: number): HTMLElement {
 
 /** 某一组内部的段位，文档序。段位戴的是分段输入那份 scope。 */
 function segments(doc: Document, group = 0): HTMLElement[] {
-  return [...inputAt(doc, group).querySelectorAll<HTMLElement>(`${FIELD}[data-part="segment"]`)]
+  return [...segmentGroupAt(doc, group).querySelectorAll<HTMLElement>(`${FIELD}[data-part="segment"]`)]
 }
 
 function segmentTexts(doc: Document, group = 0): string[] {
@@ -121,7 +121,7 @@ function expectFocusedSegment(doc: Document, index: number, why: string, group =
 
 /**
  * 网格由作者按 weeks 渲染，日期身份写在 cell 上，cell-trigger 跟着所在的 cell 走。
- * 段位与格子分别落在 input / calendar 两个挂载点里，戴内嵌那两份解剖的 scope。
+ * 段位与格子分别落在 segment-group / calendar 两个挂载点里，戴内嵌那两份解剖的 scope。
  */
 const FIXTURE: FixtureNode = {
   part: 'root',
@@ -132,7 +132,7 @@ const FIXTURE: FixtureNode = {
       part: 'control',
       children: [
         {
-          part: 'input',
+          part: 'segment-group',
           children: Array.from({ length: SEGMENT_NODES }, (_, i) => ({
             part: 'segment',
             tag: 'div',
@@ -211,7 +211,7 @@ function rangeFixture(base: FixtureNode): FixtureNode {
         return [node]
       return [{
         ...node,
-        children: node.children?.flatMap(kid => (kid.part === 'input' ? pair(kid) : [kid])),
+        children: node.children?.flatMap(kid => (kid.part === 'segment-group' ? pair(kid) : [kid])),
       }]
     }),
   }
@@ -331,14 +331,14 @@ export const datePickerSuite: ConformanceSuite = {
           'root',
           'label',
           'control',
-          'input',
+          'segment-group',
           'clear-trigger',
           'trigger',
           'positioner',
           'content',
           'calendar',
         ],
-        counts: { root: 1, input: 1, content: 1, calendar: 1 },
+        counts: { 'root': 1, 'segment-group': 1, 'content': 1, 'calendar': 1 },
         parts: {
           'root': {
             'data-state': 'closed',
@@ -346,7 +346,7 @@ export const datePickerSuite: ConformanceSuite = {
             'data-readonly': null,
             'data-invalid': null,
           },
-          'input': {
+          'segment-group': {
             'role': 'group',
             'data-index': '0',
             // 单值只有一组：名字借标题，不另报 aria-label
@@ -712,8 +712,8 @@ export const datePickerSuite: ConformanceSuite = {
           expect: {
             parts: {
               'clear-trigger': { 'hidden': '', 'disabled': null, 'data-disabled': null },
-              'input[0]': { 'data-empty': '', 'data-complete': null },
-              'input[1]': { 'data-empty': '', 'data-complete': null },
+              'segment-group[0]': { 'data-empty': '', 'data-complete': null },
+              'segment-group[1]': { 'data-empty': '', 'data-complete': null },
             },
             events: [{ type: 'value-change', detail: { value: [] } }],
           },
@@ -741,24 +741,24 @@ export const datePickerSuite: ConformanceSuite = {
           'root',
           'label',
           'control',
-          'input[0]',
-          'input[1]',
+          'segment-group[0]',
+          'segment-group[1]',
           'clear-trigger',
           'trigger',
           'positioner',
           'content',
           'calendar',
         ],
-        counts: { input: 2 },
+        counts: { 'segment-group': 2 },
         parts: {
           // 两组都指向同一个标题的话，读屏念出来是同一个名字，分不出敲的是哪一端
-          'input[0]': {
+          'segment-group[0]': {
             'role': 'group',
             'data-index': '0',
             'aria-label': 'Start date',
             'aria-labelledby': null,
           },
-          'input[1]': {
+          'segment-group[1]': {
             'role': 'group',
             'data-index': '1',
             'aria-label': 'End date',
@@ -772,8 +772,8 @@ export const datePickerSuite: ConformanceSuite = {
           props: { translations: { startDate: '开始日期', endDate: '结束日期' } },
           expect: {
             parts: {
-              'input[0]': { 'aria-label': '开始日期' },
-              'input[1]': { 'aria-label': '结束日期' },
+              'segment-group[0]': { 'aria-label': '开始日期' },
+              'segment-group[1]': { 'aria-label': '结束日期' },
             },
           },
         },
@@ -790,7 +790,7 @@ export const datePickerSuite: ConformanceSuite = {
           expect: {
             parts: {
               'clear-trigger': { 'hidden': '', 'disabled': null, 'data-disabled': null },
-              'input': { 'data-empty': '', 'data-complete': null },
+              'segment-group': { 'data-empty': '', 'data-complete': null },
             },
             events: [{ type: 'value-change', detail: { value: [] } }],
           },
@@ -879,7 +879,7 @@ export const datePickerSuite: ConformanceSuite = {
       initial: {
         parts: {
           'root': { 'data-disabled': '' },
-          'input': { 'aria-disabled': 'true', 'data-disabled': '' },
+          'segment-group': { 'aria-disabled': 'true', 'data-disabled': '' },
           'trigger': { disabled: '' },
           'clear-trigger': { hidden: '', disabled: null },
         },
@@ -924,7 +924,7 @@ export const datePickerSuite: ConformanceSuite = {
       name: 'invalid / required：一路传到段位',
       spec: { apg: APG },
       props: { ...BASE_PROPS, invalid: true, required: true },
-      initial: { parts: { root: { 'data-invalid': '' }, input: { 'data-invalid': '' } } },
+      initial: { parts: { 'root': { 'data-invalid': '' }, 'segment-group': { 'data-invalid': '' } } },
       steps: [
         {
           kind: 'raw',

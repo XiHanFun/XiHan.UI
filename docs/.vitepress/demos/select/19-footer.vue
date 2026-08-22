@@ -4,6 +4,7 @@ import { ref } from "vue";
 import {
   XhButton,
   XhSelectContent,
+  XhSelectControl,
   XhSelectFooter,
   XhSelectIndicator,
   XhSelectItem,
@@ -34,10 +35,12 @@ function addOne() {
 <template>
   <XhSelectRoot v-model:value="picked" placeholder="请选择">
     <XhSelectLabel>水果</XhSelectLabel>
-    <XhSelectTrigger>
-      <XhSelectValueText />
-      <XhSelectIndicator />
-    </XhSelectTrigger>
+    <XhSelectControl>
+      <XhSelectTrigger>
+        <XhSelectValueText />
+        <XhSelectIndicator />
+      </XhSelectTrigger>
+    </XhSelectControl>
     <XhSelectPositioner>
       <XhSelectContent>
         <!-- 条目住在 list 里：role=listbox 只许拥有 option -->

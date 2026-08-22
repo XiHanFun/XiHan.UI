@@ -68,7 +68,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
 }
 
 /**
- * `<xh-date-picker>` —— Light-DOM 行为宿主：作者写 root/label/control/input/segment/trigger/
+ * `<xh-date-picker>` —— Light-DOM 行为宿主：作者写 root/label/control/segment-group/segment/trigger/
  * clear-trigger/positioner/content/calendar 角色节点，calendar 之内再照日历那套写
  * header/prev-trigger/next-trigger/heading/grid/grid-head/week-day/grid-body/week-row/cell/cell-trigger。
  *
@@ -79,12 +79,12 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * 听 `focused-value-change` 重画。日期身份取 cell 节点上的 `value`（ISO 串），
  * cell-trigger 跟随所在 cell；表头列取 week-day 上的 `value`（列序 0-6）；
  * 段位可自带 `segment` 属性按段名认领（`segment="quarter"`），或自带 `index` 属性声明下标，
- * 两者都没写按所在 input 之内的文档序。
+ * 两者都没写按所在 segment-group 之内的文档序。
  *
- * 区间模式（selection-mode="range"）下 input 写两个：文档序在前的是起点、在后的是终点，
- * 各自内部写一整套段位。段位与 hidden-input 按所在 input 归组，方向键不跨组；
- * hidden-input 写在 input 之外（如与 control 平级）时按文档序对应起止两端。
- * 其余模式只认第一个 input。
+ * 区间模式（selection-mode="range"）下 segment-group 写两个：文档序在前的是起点、在后的是终点，
+ * 各自内部写一整套段位。段位与 hidden-input 按所在 segment-group 归组，方向键不跨组；
+ * hidden-input 写在 segment-group 之外（如与 control 平级）时按文档序对应起止两端。
+ * 其余模式只认第一个 segment-group。
  *
  * @customElement xh-date-picker
  * @attr {string} value - 受控选中值（单选简写，ISO 串）；缺省该属性即非受控，区间/多选请用 property 传数组
@@ -120,9 +120,9 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @csspart root - 组件根容器（承载 data-state/data-disabled/data-readonly/data-invalid）
  * @csspart label - 标题；点它把焦点送进首段。刻意不是原生 label（段位是 div，标不了）
  * @csspart control - 输入行容器，同时是浮层的定位锚点
- * @csspart input - role=group 的分段容器，段位挂在它里面；区间模式下有起止两个，data-index 区分
+ * @csspart segment-group - role=group 的分段容器，段位挂在它里面；区间模式下有起止两个，data-index 区分
  * @csspart segment - 一段一个的 spinbutton 节点（data-scope="date-field"）。可自带 segment 属性按段名认领
- *   （segment="quarter"），或自带 index 属性声明下标（在所属 input 组内数），两者都没写按文档序
+ *   （segment="quarter"），或自带 index 属性声明下标（在所属 segment-group 组内数），两者都没写按文档序
  * @csspart trigger - 展开日历的按钮，须是原生 button
  * @csspart clear-trigger - 清空按钮，须是原生 button；不占 Tab 位，名字取 translations.clearTrigger
  * @csspart positioner - 浮层定位容器，坐标由引擎写成内联样式
@@ -399,13 +399,13 @@ export class XhDatePickerElement extends XhElement {
   }
 
   /**
-   * 把隐藏输入分到起止两端：写在某个 input 之内的归那一组，
-   * 写在全部 input 之外的按自己的文档序对号入座。多出来的一律不接线。
+   * 把隐藏输入分到起止两端：写在某个 segment-group 之内的归那一组，
+   * 写在全部 segment-group 之外的按自己的文档序对号入座。多出来的一律不接线。
    */
-  private hiddenInputGroups(inputs: readonly HTMLElement[]): HTMLElement[][] {
+  private hiddenInputGroups(groupsOfSegments: readonly HTMLElement[]): HTMLElement[][] {
     const groups: HTMLElement[][] = [[], []]
     this.getParts('hidden-input').forEach((el, position) => {
-      const owned = inputs.findIndex(input => input.contains(el))
+      const owned = groupsOfSegments.findIndex(group => group.contains(el))
       groups[owned >= 0 ? owned : position]?.push(el)
     })
     return groups
@@ -461,19 +461,19 @@ export class XhDatePickerElement extends XhElement {
       }) as Record<string, unknown>)
     }
 
-    // 起止两组各自成组：段位与隐藏输入按所属 input 归组，跨组不共用下标。
-    // input 可缺省，作者没写就拿宿主自身当归组容器，段位全归起点那一组
-    const inputs = this.getParts('input')
-    const owners = [inputs[0] ?? (this as unknown as HTMLElement), inputs[1]]
-    const hiddenInputs = this.hiddenInputGroups(inputs)
+    // 起止两组各自成组：段位与隐藏输入按所属 segment-group 归组，跨组不共用下标。
+    // segment-group 可缺省，作者没写就拿宿主自身当归组容器，段位全归起点那一组
+    const segmentGroups = this.getParts('segment-group')
+    const owners = [segmentGroups[0] ?? (this as unknown as HTMLElement), segmentGroups[1]]
+    const hiddenInputs = this.hiddenInputGroups(segmentGroups)
     for (const index of [0, 1] as const) {
-      // 非区间模式没有终点那一组，作者多写的 input、段位与隐藏输入一概不接线
+      // 非区间模式没有终点那一组，作者多写的 segment-group、段位与隐藏输入一概不接线
       const field = index === 0 ? api.field : api.fieldEnd
       if (!field)
         continue
-      const input = inputs[index]
-      if (input)
-        this.spreader.spread(input, api.getInputProps({ index }) as Record<string, unknown>)
+      const segmentGroup = segmentGroups[index]
+      if (segmentGroup)
+        this.spreader.spread(segmentGroup, api.getSegmentGroupProps({ index }) as Record<string, unknown>)
       const owner = owners[index]
       if (owner)
         this.wireSegments(owner, field)

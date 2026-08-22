@@ -27,6 +27,7 @@
        换档不必给每个部件各写一条选择器 */
     --xh-_date-picker-control-h: var(--xh-control-h-md);
     --xh-_date-picker-control-px: var(--xh-control-px-md);
+    --xh-_date-picker-gap: var(--xh-control-gap-md);
     --xh-_date-picker-font-size: var(--xh-text-body-size);
     --xh-_date-picker-label-font-size: var(--xh-text-label-size);
 
@@ -47,7 +48,7 @@
   /* 与文本框、分段日期同一套堆叠：标签一行、输入行一行 */
   [data-scope='date-picker'][data-part='root'] {
     /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
-    --xh-icon-size: var(--xh-date-picker-icon-size, var(--xh-glyph-size-text));
+    --xh-icon-size: var(--xh-date-picker-icon-size, var(--xh-glyph-size-md));
 
     display: inline-flex;
     flex-direction: column;
@@ -57,15 +58,19 @@
   /* —— 尺寸 —— */
   /* 缺省档写在上面的基础规则里 */
   [data-scope='date-picker']:is([data-part='root'], [data-part='positioner'])[data-size='sm'] {
+    --xh-icon-size: var(--xh-date-picker-icon-size, var(--xh-glyph-size-sm));
     --xh-_date-picker-control-h: var(--xh-control-h-sm);
     --xh-_date-picker-control-px: var(--xh-control-px-sm);
+    --xh-_date-picker-gap: var(--xh-control-gap-sm);
     --xh-_date-picker-font-size: var(--xh-control-font-sm);
     --xh-_date-picker-label-font-size: var(--xh-control-font-sm);
   }
 
   [data-scope='date-picker']:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
+    --xh-icon-size: var(--xh-date-picker-icon-size, var(--xh-glyph-size-lg));
     --xh-_date-picker-control-h: var(--xh-control-h-lg);
     --xh-_date-picker-control-px: var(--xh-control-px-lg);
+    --xh-_date-picker-gap: var(--xh-control-gap-lg);
     --xh-_date-picker-font-size: var(--xh-control-font-lg);
     --xh-_date-picker-label-font-size: var(--xh-control-font-lg);
   }
@@ -104,8 +109,6 @@
     font-size: var(--xh-date-picker-label-font-size, var(--xh-_date-picker-label-font-size));
     font-weight: var(--xh-date-picker-label-font-weight, var(--xh-text-label-weight));
     line-height: var(--xh-leading-none);
-    /* 点标题会把焦点送进首段，指针得说明这件事 */
-    cursor: default;
   }
 
   [data-scope='date-picker'][data-part='label'][hidden] {
@@ -122,7 +125,7 @@
   [data-scope='date-picker'][data-part='control'] {
     display: inline-flex;
     align-items: center;
-    gap: var(--xh-date-picker-control-gap, var(--xh-control-gap-md));
+    gap: var(--xh-date-picker-control-gap, var(--xh-_date-picker-gap));
     min-inline-size: var(--xh-date-picker-control-min-w, var(--xh-control-min-w));
     block-size: var(--xh-date-picker-control-h, var(--xh-_date-picker-control-h));
     padding-inline: var(--xh-date-picker-control-px, var(--xh-_date-picker-control-px));
@@ -145,7 +148,7 @@
 
   /* 焦点落在某一段或某个按钮上，而边框长在 control 上：焦点环得由内向外借一层。
      control 自己不占 Tab 位，:focus-within 是它唯一能感知组内焦点的方式 */
-  [data-scope='date-picker'][data-part='control']:focus-within {
+  [data-scope='date-picker'][data-part='control']:focus-within:not([data-disabled]) {
     border-color: var(--xh-date-picker-control-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
     outline: var(--xh-ring-width) solid var(--xh-_date-picker-ring);
     outline-offset: var(--xh-ring-offset);
@@ -169,11 +172,11 @@
     cursor: not-allowed;
   }
 
-  /* 分段容器：段位自己那身皮由 date-field 那份样式负责（它们戴的是那一份解剖的标记），
-     这里只管把一排段位横过来、占满输入行剩下的宽度 */
-  [data-scope='date-picker'][data-part='input'] {
+  /* 段位与作者写在段间的分隔符都在这一层里：段位自己那身皮由 date-field 那份样式负责
+     （它们戴的是那一份解剖的标记），这里只管把一排段位横过来、占满输入行剩下的宽度 */
+  [data-scope='date-picker'][data-part='segment-group'] {
     display: inline-flex;
-    flex: 1;
+    flex: 1 1 auto;
     align-items: center;
     min-inline-size: 0;
     block-size: 100%;
@@ -184,12 +187,12 @@
     line-height: var(--xh-leading-none);
   }
 
-  [data-scope='date-picker'][data-part='input'][hidden] {
+  [data-scope='date-picker'][data-part='segment-group'][hidden] {
     display: none;
   }
 
   /* 容器自己不占 Tab 位、也不承载焦点，环由 control 画，这里不再套一圈 */
-  [data-scope='date-picker'][data-part='input']:focus-visible {
+  [data-scope='date-picker'][data-part='segment-group']:focus-visible {
     outline: none;
   }
 
@@ -247,8 +250,8 @@
     color: var(--xh-date-picker-action-fg-hover, var(--xh-fg-default));
   }
 
-  /* trigger 在 Tab 序列里（清空按钮不在，它是 tabindex=-1 的兜底），落焦时必须看得见 */
-  [data-scope='date-picker'][data-part='trigger']:focus-visible,
+  /* 清空按钮不占 Tab 位（tabindex=-1），这条是给程序化聚焦兜底：落焦时得看得见。
+     展开钮是常规 Tab 停靠点，它落焦时环由盒的 :focus-within 画，这里不再套一圈 */
   [data-scope='date-picker'][data-part='clear-trigger']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-_date-picker-ring);
     outline-offset: var(--xh-ring-offset);
@@ -262,14 +265,15 @@
 
   [data-scope='date-picker'][data-part='content'] {
     display: block;
-    padding: var(--xh-date-picker-content-p, var(--xh-space-3));
+    padding-block: var(--xh-date-picker-content-py, var(--xh-space-3));
+    padding-inline: var(--xh-date-picker-content-px, var(--xh-space-3));
     border: var(--xh-stroke-thin) solid var(--xh-date-picker-content-border, var(--xh-border-default));
     border-radius: var(--xh-date-picker-content-radius, var(--xh-shape-surface));
     background: var(--xh-date-picker-content-bg, var(--xh-bg-surface));
     color: var(--xh-date-picker-content-fg, var(--xh-fg-default));
-    /* 日历是定高结构：六行日期加表头本来就有固定高度，套上菜单那档 16rem 会当场压出滚动条。
-       这里只留可用高度这一道——视口真放不下时才让步 */
-    max-block-size: var(--xh-date-picker-max-h, var(--xh-_date-picker-available-h));
+    /* 日历是定高结构：六行日期加表头本来就有固定高度，上限走页内滚动面那一档；
+       可用高度是定位引擎算出的视口余量，视口真放不下时再收一截 */
+    max-block-size: min(var(--xh-date-picker-max-h, var(--xh-viewport-h-lg)), var(--xh-_date-picker-available-h));
     overflow-y: auto;
     box-shadow: var(--xh-date-picker-content-shadow, var(--xh-elevation-floating));
     pointer-events: auto;
@@ -343,7 +347,7 @@
     flex-direction: column;
     gap: var(--xh-date-picker-presets-gap, var(--xh-space-0_5));
     /* 选项多起来时这一列自己滚，不把整张面板撑高 */
-    max-block-size: var(--xh-date-picker-presets-h, var(--xh-date-picker-time-column-h, 14rem));
+    max-block-size: var(--xh-date-picker-presets-h, var(--xh-viewport-h-sm));
     padding: var(--xh-space-1);
     overflow-y: auto;
     border-inline-end: var(--xh-stroke-thin) solid var(--xh-date-picker-content-border, var(--xh-border-default));
@@ -392,7 +396,8 @@
     display: flex;
     flex-direction: column;
     gap: var(--xh-date-picker-time-column-gap, var(--xh-space-0_5));
-    max-block-size: var(--xh-date-picker-time-column-h, 14rem);
+    /* 几列并排：定高而不是随内容收，否则时列与分列的可选值一多一少就错位 */
+    block-size: var(--xh-date-picker-time-column-h, var(--xh-viewport-h-sm));
     padding: var(--xh-space-1);
     overflow-y: auto;
     border-inline-start: var(--xh-stroke-thin) solid var(--xh-date-picker-content-border, var(--xh-border-default));

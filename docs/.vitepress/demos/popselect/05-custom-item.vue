@@ -3,6 +3,7 @@
 import { computed, ref } from "vue";
 import {
   XhPopselectContent,
+  XhPopselectControl,
   XhPopselectItem,
   XhPopselectItemIndicator,
   XhPopselectItemText,
@@ -23,7 +24,9 @@ const label = computed(() => members.find((m) => m.value === picked.value[0])?.l
 
 <template>
   <XhPopselectRoot v-model:value="picked" :collection="members" placement="bottom-start">
-    <XhPopselectTrigger>指派给：{{ label }}</XhPopselectTrigger>
+    <XhPopselectControl>
+      <XhPopselectTrigger>指派给：{{ label }}</XhPopselectTrigger>
+    </XhPopselectControl>
     <XhPopselectPositioner>
       <XhPopselectContent>
         <XhPopselectItem v-for="m in members" :key="m.value" :value="m.value">

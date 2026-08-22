@@ -4,12 +4,14 @@
     <div data-xh-part="root">
       <label data-xh-part="label">会议时间</label>
       <div data-xh-part="control">
-        <span data-xh-part="segment" segment="hour"></span>
-        <span>:</span>
-        <span data-xh-part="segment" segment="minute"></span>
-        <span>&nbsp;</span>
-        <!-- 在这一段上按 a / p 直接指定上下午，翻面只改值不改数字 -->
-        <span data-xh-part="segment" segment="dayPeriod"></span>
+        <div data-xh-part="segment-group">
+          <span data-xh-part="segment" segment="hour"></span>
+          <span>:</span>
+          <span data-xh-part="segment" segment="minute"></span>
+          <span>&nbsp;</span>
+          <!-- 在这一段上按 a / p 直接指定上下午，翻面只改值不改数字 -->
+          <span data-xh-part="segment" segment="dayPeriod"></span>
+        </div>
       </div>
     </div>
   </xh-time-field>

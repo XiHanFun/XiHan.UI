@@ -9,6 +9,7 @@ import {
   XhTreeSelectBranchTrigger,
   XhTreeSelectClearTrigger,
   XhTreeSelectContent,
+  XhTreeSelectControl,
   XhTreeSelectIndicator,
   XhTreeSelectItem,
   XhTreeSelectItemIndicator,
@@ -54,18 +55,20 @@ const expanded = ref<string[]>(["docs"]);
     style="max-inline-size: 320px"
   >
     <XhTreeSelectLabel>文档</XhTreeSelectLabel>
-    <XhTreeSelectTrigger>
-      <XhTreeSelectValueText />
-      <XhTreeSelectIndicator />
-    </XhTreeSelectTrigger>
-    <XhTreeSelectClearTrigger />
+    <XhTreeSelectControl>
+      <XhTreeSelectTrigger>
+        <XhTreeSelectValueText />
+        <XhTreeSelectIndicator />
+      </XhTreeSelectTrigger>
+      <XhTreeSelectClearTrigger />
+    </XhTreeSelectControl>
     <XhTreeSelectPositioner>
       <XhTreeSelectContent>
         <XhTreeSelectTree>
           <XhTreeSelectBranch value="docs">
             <XhTreeSelectBranchControl>
-              <XhTreeSelectBranchTrigger />
-              <XhTreeSelectBranchText>docs</XhTreeSelectBranchText>
+  <XhTreeSelectBranchTrigger />
+  <XhTreeSelectBranchText>docs</XhTreeSelectBranchText>
             </XhTreeSelectBranchControl>
             <XhTreeSelectBranchContent>
               <XhTreeSelectItem value="guide">
@@ -78,8 +81,8 @@ const expanded = ref<string[]>(["docs"]);
               </XhTreeSelectItem>
               <XhTreeSelectBranch value="i18n">
                 <XhTreeSelectBranchControl>
-                  <XhTreeSelectBranchTrigger />
-                  <XhTreeSelectBranchText>i18n</XhTreeSelectBranchText>
+  <XhTreeSelectBranchTrigger />
+  <XhTreeSelectBranchText>i18n</XhTreeSelectBranchText>
                 </XhTreeSelectBranchControl>
                 <XhTreeSelectBranchContent>
                   <XhTreeSelectItem value="zh">

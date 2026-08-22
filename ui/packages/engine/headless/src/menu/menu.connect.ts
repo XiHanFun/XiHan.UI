@@ -55,6 +55,9 @@ export function connectMenu<T extends PropTypes>(
   const itemDisabled = (item: MenuItemProps): boolean =>
     item.disabled ?? metaOf.get(item.value)?.disabled ?? false
 
+  const groupLabelId = (group: string): string =>
+    scope.partId(menuAnatomy.name, `group-label:${group}`)
+
   const setOpen = (next: boolean): void => {
     if (next !== open)
       send(next ? { type: 'OPEN', focus: 'first' } : { type: 'CLOSE' })
@@ -257,6 +260,16 @@ export function connectMenu<T extends PropTypes>(
       ...parts.separator.attrs,
       'role': 'separator',
       'aria-orientation': 'horizontal',
+    }),
+    getGroupProps: group => normalize.element({
+      ...parts.group.attrs,
+      'role': 'group',
+      // 分组标题不是条目，只能靠 aria-labelledby 挂上来
+      'aria-labelledby': groupLabelId(group.value),
+    }),
+    getGroupLabelProps: group => normalize.element({
+      ...parts['group-label'].attrs,
+      id: groupLabelId(group.value),
     }),
     getArrowProps: () => normalize.element({
       ...parts.arrow.attrs,

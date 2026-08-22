@@ -147,6 +147,8 @@ export interface TimeFieldApi<T extends PropTypes = PropTypes> {
   getRootProps: () => T['element']
   getLabelProps: () => T['label']
   getControlProps: () => T['element']
+  /** 段位与分隔符的外壳：占满盒里剩下的宽度，把清空钮顶到框内末端。 */
+  getSegmentGroupProps: () => T['element']
   getSegmentProps: (props: TimeFieldSegmentProps) => T['element']
   /** 清空按钮：有值才显形，不占 Tab 位，点完焦点回到第一段。 */
   getClearTriggerProps: () => T['button']

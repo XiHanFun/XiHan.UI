@@ -5,6 +5,7 @@ import {
   XhTimeFieldLabel,
   XhTimeFieldRoot,
   XhTimeFieldSegment,
+  XhTimeFieldSegmentGroup,
 } from "@xihan-ui/vue";
 </script>
 
@@ -13,18 +14,22 @@ import {
     <XhTimeFieldRoot default-value="13:45" disabled>
       <XhTimeFieldLabel>禁用</XhTimeFieldLabel>
       <XhTimeFieldControl>
-        <XhTimeFieldSegment segment="hour" />
-        <span>:</span>
-        <XhTimeFieldSegment segment="minute" />
+        <XhTimeFieldSegmentGroup>
+          <XhTimeFieldSegment segment="hour" />
+          <span>:</span>
+          <XhTimeFieldSegment segment="minute" />
+        </XhTimeFieldSegmentGroup>
       </XhTimeFieldControl>
     </XhTimeFieldRoot>
 
     <XhTimeFieldRoot default-value="08:00" min="09:00" max="18:00">
       <XhTimeFieldLabel>越界（09:00 – 18:00）</XhTimeFieldLabel>
       <XhTimeFieldControl>
-        <XhTimeFieldSegment segment="hour" />
-        <span>:</span>
-        <XhTimeFieldSegment segment="minute" />
+        <XhTimeFieldSegmentGroup>
+          <XhTimeFieldSegment segment="hour" />
+          <span>:</span>
+          <XhTimeFieldSegment segment="minute" />
+        </XhTimeFieldSegmentGroup>
       </XhTimeFieldControl>
     </XhTimeFieldRoot>
   </div>

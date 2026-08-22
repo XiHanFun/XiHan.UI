@@ -5,6 +5,7 @@ import {
   XhTimeFieldLabel,
   XhTimeFieldRoot,
   XhTimeFieldSegment,
+  XhTimeFieldSegmentGroup,
 } from "@xihan-ui/vue";
 
 const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as const;
@@ -15,9 +16,11 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
     <XhTimeFieldRoot v-for="t in tones" :key="t" variant="subtle" :tone="t" default-value="09:30">
       <XhTimeFieldLabel>{{ t }}</XhTimeFieldLabel>
       <XhTimeFieldControl>
-        <XhTimeFieldSegment segment="hour" />
-        <span>:</span>
-        <XhTimeFieldSegment segment="minute" />
+        <XhTimeFieldSegmentGroup>
+          <XhTimeFieldSegment segment="hour" />
+          <span>:</span>
+          <XhTimeFieldSegment segment="minute" />
+        </XhTimeFieldSegmentGroup>
       </XhTimeFieldControl>
     </XhTimeFieldRoot>
   </div>

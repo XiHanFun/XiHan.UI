@@ -19,7 +19,10 @@
 
   /* 私有槽同时声明在根与 positioner 上：浮层被搬到 portal 落点，不是根的后代，继承不过去 */
   [data-scope='cascader']:is([data-part='root'], [data-part='positioner']) {
-    /* 尺寸档只换这几个私有槽，触发框与列里的条目都从这两处继承它们，换档不必给每个部件各写一条选择器 */
+    /* 作者塞进指示符槽的图标跟着尺寸档走，与皮肤画的兜底字形同一把尺 */
+    --xh-icon-size: var(--xh-cascader-icon-size, var(--xh-glyph-size-md));
+
+    /* 尺寸档只换这几个私有槽，盒与列里的条目都从这两处继承它们，换档不必给每个部件各写一条选择器 */
     --xh-_cascader-h: var(--xh-control-h-md);
     --xh-_cascader-px: var(--xh-control-px-md);
     --xh-_cascader-gap: var(--xh-control-gap-md);
@@ -37,18 +40,15 @@
 
     /* 展开路径的底色：随语气走淡底，没写 data-tone 时退回品牌淡底 */
     --xh-_cascader-active-bg: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
+
+    /* 聚焦环恒用固定环色；校验失败时换成告警环色 */
+    --xh-_cascader-ring: var(--xh-ring-focus);
   }
 
-  /* 解剖里没有把「触发器 + 清空按钮」裹在一起的 control 部件，一行是靠 flex-wrap 分出来的：
-     标签占满整行把后面的挤到下一行，触发器与清空按钮就并排落在同一行上。
-     这样作者少写标签、少写清空按钮，剩下的部件也不会塌 */
+  /* 标签一行、盒一行的两行堆叠 */
   [data-scope='cascader'][data-part='root'] {
-    /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
-    --xh-icon-size: var(--xh-cascader-icon-size, var(--xh-glyph-size-text));
-
     display: inline-flex;
-    flex-wrap: wrap;
-    align-items: center;
+    flex-direction: column;
     gap: var(--xh-cascader-gap, var(--xh-space-1));
   }
 
@@ -83,6 +83,7 @@
   /* —— 尺寸 —— */
   /* 缺省档写在上面的基础规则里 */
   [data-scope='cascader']:is([data-part='root'], [data-part='positioner'])[data-size='sm'] {
+    --xh-icon-size: var(--xh-cascader-icon-size, var(--xh-glyph-size-sm));
     --xh-_cascader-h: var(--xh-control-h-sm);
     --xh-_cascader-px: var(--xh-control-px-sm);
     --xh-_cascader-gap: var(--xh-control-gap-sm);
@@ -91,6 +92,7 @@
   }
 
   [data-scope='cascader']:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
+    --xh-icon-size: var(--xh-cascader-icon-size, var(--xh-glyph-size-lg));
     --xh-_cascader-h: var(--xh-control-h-lg);
     --xh-_cascader-px: var(--xh-control-px-lg);
     --xh-_cascader-gap: var(--xh-control-gap-lg);
@@ -99,9 +101,7 @@
   }
 
   [data-scope='cascader'][data-part='label'] {
-    /* 占满整行，把触发器那一行挤下去 */
-    flex-basis: 100%;
-    color: var(--xh-cascader-label-fg, var(--xh-fg-muted));
+    color: var(--xh-cascader-label-fg, var(--xh-fg-default));
     font-size: var(--xh-cascader-label-font-size, var(--xh-_cascader-label-font-size));
     font-weight: var(--xh-cascader-label-font-weight, var(--xh-text-label-weight));
     line-height: var(--xh-leading-none);
@@ -112,65 +112,88 @@
     color: var(--xh-fg-subtle);
   }
 
-  /* 画成一个框的就是 trigger 自己：整条路径的回显与展开箭头都长在它里面，
-     清空按钮贴在框外与它并排 */
+  /* 盒：描边、底色、控件高度与行内内衬都落在这一层，触发按钮与清空按钮在里面并排 */
+  [data-scope='cascader'][data-part='control'] {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--xh-cascader-control-gap, var(--xh-_cascader-gap));
+    min-inline-size: var(--xh-cascader-control-min-w, var(--xh-control-min-w));
+    block-size: var(--xh-cascader-control-h, var(--xh-_cascader-h));
+    padding-inline: var(--xh-cascader-control-px, var(--xh-_cascader-px));
+    border: var(--xh-stroke-thin) solid var(--xh-cascader-control-border, var(--xh-_cascader-border));
+    border-radius: var(--xh-cascader-control-radius, var(--xh-shape-control));
+    background: var(--xh-cascader-control-bg, var(--xh-_cascader-bg));
+    color: var(--xh-cascader-control-fg, var(--xh-fg-default));
+    cursor: pointer;
+    transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='cascader'][data-part='control'][hidden] {
+    display: none;
+  }
+
+  /* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
+  [data-scope='cascader'][data-part='control']:hover:not([data-disabled], [data-invalid]) {
+    border-color: var(--xh-cascader-control-border-hover, var(--xh-_cascader-border-hover));
+  }
+
+  /* Tab 停靠点是盒里的 trigger（展开后才移进列里），环画在盒上 */
+  [data-scope='cascader'][data-part='control']:focus-within:not([data-disabled]) {
+    border-color: var(--xh-cascader-control-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
+    outline: var(--xh-ring-width) solid var(--xh-_cascader-ring);
+    outline-offset: var(--xh-ring-offset);
+  }
+
+  [data-scope='cascader'][data-part='control'][data-invalid] {
+    border-color: var(--xh-cascader-control-border-invalid, var(--xh-border-invalid));
+
+    /* 校验失败时环也跟着变红：两圈等宽相邻却一红一蓝，读的人不知道哪个才是当前状态 */
+    --xh-_cascader-ring: var(--xh-ring-invalid);
+  }
+
+  /* 只读仍可聚焦、浮层仍展得开、列仍能浏览，所以不置灰，只把底色压下去表示「改不动」 */
+  [data-scope='cascader'][data-part='control'][data-readonly] {
+    background: var(--xh-cascader-control-bg-readonly, var(--xh-bg-subtle));
+  }
+
+  [data-scope='cascader'][data-part='control'][data-disabled] {
+    background: var(--xh-cascader-control-bg-disabled, var(--xh-bg-subtle));
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  /* 盒内那颗可聚焦的按钮：不画描边不铺底也不自带高度，只占满剩余宽度、排布回显与箭头 */
   [data-scope='cascader'][data-part='trigger'] {
     display: inline-flex;
-    flex: 1;
+    flex: 1 1 auto;
     align-items: center;
     justify-content: space-between;
     gap: var(--xh-cascader-trigger-gap, var(--xh-_cascader-gap));
-    min-inline-size: var(--xh-cascader-trigger-min-w, var(--xh-control-min-w));
-    block-size: var(--xh-cascader-trigger-h, var(--xh-_cascader-h));
-    padding-inline: var(--xh-cascader-trigger-px, var(--xh-_cascader-px));
-    border: var(--xh-stroke-thin) solid var(--xh-cascader-trigger-border, var(--xh-_cascader-border));
-    border-radius: var(--xh-cascader-trigger-radius, var(--xh-shape-control));
-    background: var(--xh-cascader-trigger-bg, var(--xh-_cascader-bg));
+    min-inline-size: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
     color: var(--xh-cascader-trigger-fg, var(--xh-fg-default));
     font-family: inherit;
     font-size: var(--xh-cascader-trigger-font-size, var(--xh-_cascader-font-size));
     line-height: var(--xh-leading-none);
     text-align: start;
     cursor: pointer;
-    transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='cascader'][data-part='trigger'][hidden] {
     display: none;
   }
 
-  /* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
-  [data-scope='cascader'][data-part='trigger']:hover:not(:disabled, [data-invalid]) {
-    border-color: var(--xh-cascader-trigger-border-hover, var(--xh-_cascader-border-hover));
-  }
-
-  /* trigger 是整个控件唯一的 Tab 停靠点（展开后停靠点才移进列里），落焦必须看得见。
-     聚焦环恒用固定环色，不随语气走 */
-  [data-scope='cascader'][data-part='trigger']:focus-visible {
-    border-color: var(--xh-cascader-trigger-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
-  }
-
-  [data-scope='cascader'][data-part='trigger'][data-invalid] {
-    border-color: var(--xh-cascader-trigger-border-invalid, var(--xh-border-invalid));
-  }
-
-  /* 只读仍可聚焦、浮层仍展得开、列仍能浏览，所以不置灰，只把底色压下去表示「改不动」 */
-  [data-scope='cascader'][data-part='trigger'][data-readonly] {
-    background: var(--xh-cascader-trigger-bg-readonly, var(--xh-bg-subtle));
-  }
-
   /* trigger 是单体控件，用原生 disabled（列里的集合条目一律 aria-disabled，写 :disabled 永不命中） */
   [data-scope='cascader'][data-part='trigger']:disabled {
-    background: var(--xh-cascader-trigger-bg-disabled, var(--xh-bg-subtle));
     color: var(--xh-fg-disabled);
     cursor: not-allowed;
   }
 
-  /* 路径连起来会很长，必须能截断；框宽由 trigger 定，这里得允许自己被压缩 */
+  /* 路径连起来会很长，必须能截断；框宽由盒定，这里得允许自己被压缩 */
   [data-scope='cascader'][data-part='value-text'] {
-    flex: 1;
+    flex: 1 1 auto;
     min-inline-size: 0;
     overflow: hidden;
     white-space: nowrap;
@@ -225,7 +248,7 @@
     color: var(--xh-fg-disabled);
   }
 
-  /* 贴在触发框旁边的小方钮，不撑高那一行 */
+  /* 盒内靠右的小方钮，不撑高那一行 */
   [data-scope='cascader'][data-part='clear-trigger'] {
     display: inline-flex;
     flex: none;
@@ -273,7 +296,7 @@
     display: flex;
     flex-direction: row;
     align-items: stretch;
-    max-inline-size: var(--xh-cascader-content-max-w, 48rem);
+    max-inline-size: var(--xh-cascader-content-max-w, var(--xh-overlay-max-w-xl));
     border: var(--xh-stroke-thin) solid var(--xh-cascader-content-border, var(--xh-border-default));
     border-radius: var(--xh-cascader-content-radius, var(--xh-shape-surface));
     background: var(--xh-cascader-content-bg, var(--xh-bg-surface));
@@ -312,7 +335,7 @@
     flex: none;
     flex-direction: column;
     min-inline-size: var(--xh-cascader-column-min-w, 7rem);
-    block-size: var(--xh-cascader-column-h, 11.25rem);
+    block-size: var(--xh-cascader-column-h, var(--xh-viewport-h-sm));
     padding-block: var(--xh-cascader-column-py, var(--xh-space-1));
     padding-inline: var(--xh-cascader-column-px, var(--xh-space-1));
     overflow-y: auto;
@@ -345,7 +368,7 @@
     display: flex;
     align-items: center;
     gap: var(--xh-cascader-row-gap, var(--xh-_cascader-gap));
-    max-inline-size: var(--xh-cascader-row-max-w, 25rem);
+    max-inline-size: var(--xh-cascader-row-max-w, var(--xh-overlay-max-w));
     padding-block: var(--xh-cascader-row-py, var(--xh-space-1_5));
     padding-inline: var(--xh-cascader-row-px, var(--xh-control-px-md));
     border-radius: var(--xh-cascader-row-radius, var(--xh-shape-control));
@@ -512,11 +535,12 @@
     display: none;
   }
 
+  /* 与列同高：搜索视图与浏览视图互换时浮层不改高度，候选多了在列表内自己滚 */
   [data-scope='cascader'][data-part='search-list'] {
     display: flex;
     flex-basis: 100%;
     flex-direction: column;
-    max-block-size: var(--xh-cascader-search-max-h, 11.25rem);
+    block-size: var(--xh-cascader-column-h, var(--xh-viewport-h-sm));
     padding: var(--xh-cascader-search-p, var(--xh-space-1));
     overflow-y: auto;
   }

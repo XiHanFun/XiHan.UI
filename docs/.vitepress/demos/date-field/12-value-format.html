@@ -4,12 +4,14 @@
     <div data-xh-part="root">
       <label data-xh-part="label">结算日期</label>
       <div data-xh-part="control">
-        <span data-xh-part="segment" index="0"></span>
-        <span>年</span>
-        <span data-xh-part="segment" index="1"></span>
-        <span>月</span>
-        <span data-xh-part="segment" index="2"></span>
-        <span>日</span>
+        <div data-xh-part="segment-group">
+          <span data-xh-part="segment" index="0"></span>
+          <span>年</span>
+          <span data-xh-part="segment" index="1"></span>
+          <span>月</span>
+          <span data-xh-part="segment" index="2"></span>
+          <span>日</span>
+        </div>
       </div>
       <!-- 不用内建的隐藏输入，自己写一份提交宿主格式 -->
       <input type="hidden" name="settle" value="2026/07/28" />

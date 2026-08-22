@@ -8,6 +8,7 @@ import {
   XhColorPickerChannelSliderThumb,
   XhColorPickerChannelSliderTrack,
   XhColorPickerContent,
+  XhColorPickerControl,
   XhColorPickerPositioner,
   XhColorPickerRoot,
   XhColorPickerSwatch,
@@ -19,9 +20,11 @@ const color = ref("#3b82f6");
 
 <template>
   <XhColorPickerRoot v-model:value="color">
-    <XhColorPickerTrigger>
-      <XhColorPickerSwatch />
-    </XhColorPickerTrigger>
+    <XhColorPickerControl>
+      <XhColorPickerTrigger>
+        <XhColorPickerSwatch />
+      </XhColorPickerTrigger>
+    </XhColorPickerControl>
     <XhColorPickerPositioner>
       <XhColorPickerContent>
         <XhColorPickerArea>

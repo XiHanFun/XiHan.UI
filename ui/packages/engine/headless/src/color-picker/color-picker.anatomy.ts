@@ -3,6 +3,7 @@ import { createAnatomy } from '@xihan-ui/kernel'
 export const colorPickerAnatomy = createAnatomy('color-picker', [
   'root',
   'label',
+  'control',
   'trigger',
   'value-text',
   'swatch',

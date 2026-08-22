@@ -1,4 +1,4 @@
-<!-- 可清空与字数上限 | clearable 让清空按钮可用并把 Escape 接管过来，maxLength 同时落成原生 maxlength 与机器侧截断 -->
+<!-- 可清空与字数上限 | Control 把输入框与清空按钮圈进同一个框，clearable 让清空按钮可用并把 Escape 接管过来，maxLength 同时落成原生 maxlength 与机器侧截断 -->
 <xh-text-field
   id="text-field-clearable"
   default-value="曦寒"
@@ -8,8 +8,8 @@
 >
   <div data-xh-part="root">
     <label data-xh-part="label">昵称</label>
-    <div style="display: flex; gap: 4px">
-      <input data-xh-part="input" style="inline-size: 200px" />
+    <div data-xh-part="control" style="inline-size: 200px">
+      <input data-xh-part="input" />
       <button data-xh-part="clear-trigger"></button>
     </div>
     <span id="text-field-clearable-count">2 / 10</span>

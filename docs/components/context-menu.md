@@ -250,7 +250,7 @@ XhContextMenuSub 在右键菜单里嵌一台子菜单：触发条目双重身份
 
 ## RTL
 
-皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。
 
 ## 组合
 

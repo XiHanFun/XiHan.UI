@@ -4,6 +4,7 @@ import { nextTick, ref } from "vue";
 import {
   XhCascaderColumn,
   XhCascaderContent,
+  XhCascaderControl,
   XhCascaderIndicator,
   XhCascaderItem,
   XhCascaderItemIndicator,
@@ -127,10 +128,12 @@ const shelf = ref<string[][]>([]);
       @open-change="onOpenChange"
     >
       <XhCascaderLabel>货位（每仓 1000 条）</XhCascaderLabel>
-      <XhCascaderTrigger>
-        <XhCascaderValueText />
-        <XhCascaderIndicator />
-      </XhCascaderTrigger>
+      <XhCascaderControl>
+        <XhCascaderTrigger>
+          <XhCascaderValueText />
+          <XhCascaderIndicator />
+        </XhCascaderTrigger>
+      </XhCascaderControl>
       <XhCascaderPositioner>
         <XhCascaderContent @keydown="syncFocus">
           <XhCascaderColumn

@@ -8,6 +8,7 @@ import {
   XhTimePickerControl,
   XhTimePickerHiddenInput,
   XhTimePickerInput,
+  XhTimePickerSegmentGroup,
   XhTimePickerLabel,
   XhTimePickerItem,
   XhTimePickerPositioner,
@@ -21,10 +22,12 @@ const value = ref("");
   <XhTimePickerRoot v-model:value="value" name="start">
     <XhTimePickerLabel>会议开始</XhTimePickerLabel>
     <XhTimePickerControl>
-      <!-- 段不写内容：显示什么由组件按当前值填，空段是占位串 -->
-      <XhTimePickerInput segment="hour" />
-      <span>:</span>
-      <XhTimePickerInput segment="minute" />
+      <XhTimePickerSegmentGroup>
+        <!-- 段不写内容：显示什么由组件按当前值填，空段是占位串 -->
+        <XhTimePickerInput segment="hour" />
+        <span>:</span>
+        <XhTimePickerInput segment="minute" />
+      </XhTimePickerSegmentGroup>
       <XhTimePickerClearTrigger />
     </XhTimePickerControl>
     <!-- 表单出口：随表单提交的是完整 ISO 串 -->

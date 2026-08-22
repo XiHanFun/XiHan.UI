@@ -13,7 +13,7 @@ import {
   XhDatePickerGridHead,
   XhDatePickerHeader,
   XhDatePickerHeading,
-  XhDatePickerInput,
+  XhDatePickerSegmentGroup,
   XhDatePickerLabel,
   XhDatePickerNextTrigger,
   XhDatePickerPositioner,
@@ -32,13 +32,13 @@ const stamp = ref<string[]>([]);
   <XhDatePickerRoot v-slot="{ weeks, weekDays }" v-model:value="stamp" show-time locale="zh-CN">
     <XhDatePickerLabel>会议开始</XhDatePickerLabel>
     <XhDatePickerControl>
-      <XhDatePickerInput>
+      <XhDatePickerSegmentGroup>
         <XhDatePickerSegment :index="0" />
         <span>-</span>
         <XhDatePickerSegment :index="1" />
         <span>-</span>
         <XhDatePickerSegment :index="2" />
-      </XhDatePickerInput>
+      </XhDatePickerSegmentGroup>
     </XhDatePickerControl>
     <XhDatePickerPositioner>
       <XhDatePickerContent>

@@ -34,7 +34,7 @@
   [data-scope='listbox'][data-part='content'] {
     display: flex;
     flex-direction: column;
-    max-block-size: var(--xh-listbox-content-max-h, var(--xh-overlay-max-h));
+    max-block-size: var(--xh-listbox-content-max-h, var(--xh-viewport-h-md));
     padding-block: var(--xh-listbox-content-py, var(--xh-space-1));
     padding-inline: var(--xh-listbox-content-px, var(--xh-space-1));
     border: var(--xh-stroke-thin) solid var(--xh-listbox-content-border, var(--xh-border-default));

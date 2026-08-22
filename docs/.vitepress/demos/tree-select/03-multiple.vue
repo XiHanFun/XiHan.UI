@@ -8,6 +8,7 @@ import {
   XhTreeSelectBranchText,
   XhTreeSelectBranchTrigger,
   XhTreeSelectContent,
+  XhTreeSelectControl,
   XhTreeSelectHiddenInput,
   XhTreeSelectIndicator,
   XhTreeSelectItem,
@@ -47,17 +48,19 @@ const picked = ref<string[]>(["index"]);
     style="max-inline-size: 320px"
   >
     <XhTreeSelectLabel>提交范围</XhTreeSelectLabel>
-    <XhTreeSelectTrigger>
-      <XhTreeSelectValueText />
-      <XhTreeSelectIndicator />
-    </XhTreeSelectTrigger>
+    <XhTreeSelectControl>
+      <XhTreeSelectTrigger>
+        <XhTreeSelectValueText />
+        <XhTreeSelectIndicator />
+      </XhTreeSelectTrigger>
+    </XhTreeSelectControl>
     <XhTreeSelectPositioner>
       <XhTreeSelectContent>
         <XhTreeSelectTree>
           <XhTreeSelectBranch value="src">
             <XhTreeSelectBranchControl>
-              <XhTreeSelectBranchTrigger />
-              <XhTreeSelectBranchText>src</XhTreeSelectBranchText>
+  <XhTreeSelectBranchTrigger />
+  <XhTreeSelectBranchText>src</XhTreeSelectBranchText>
             </XhTreeSelectBranchControl>
             <XhTreeSelectBranchContent>
               <XhTreeSelectItem value="index">

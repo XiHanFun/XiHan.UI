@@ -8,6 +8,7 @@ import {
   XhColorPickerChannelSliderThumb,
   XhColorPickerChannelSliderTrack,
   XhColorPickerContent,
+  XhColorPickerControl,
   XhColorPickerEyeDropperTrigger,
   XhColorPickerLabel,
   XhColorPickerPositioner,
@@ -32,10 +33,12 @@ const translations = {
 <template>
   <XhColorPickerRoot default-value="#3b82f6" :translations="translations">
     <XhColorPickerLabel>品牌色</XhColorPickerLabel>
-    <XhColorPickerTrigger>
-      <XhColorPickerSwatch />
-      <XhColorPickerValueText />
-    </XhColorPickerTrigger>
+    <XhColorPickerControl>
+      <XhColorPickerTrigger>
+        <XhColorPickerSwatch />
+        <XhColorPickerValueText />
+      </XhColorPickerTrigger>
+    </XhColorPickerControl>
     <XhColorPickerPositioner>
       <XhColorPickerContent>
         <XhColorPickerArea>

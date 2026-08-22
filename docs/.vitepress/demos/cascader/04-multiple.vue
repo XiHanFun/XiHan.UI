@@ -5,6 +5,7 @@ import {
   XhCascaderClearTrigger,
   XhCascaderColumn,
   XhCascaderContent,
+  XhCascaderControl,
   XhCascaderIndicator,
   XhCascaderItem,
   XhCascaderItemIndicator,
@@ -47,11 +48,13 @@ const picked = ref<string[][]>([["fruit", "apple"]]);
     placeholder="可以多挑几条"
   >
     <XhCascaderLabel>采购清单</XhCascaderLabel>
-    <XhCascaderTrigger>
-      <XhCascaderValueText />
-      <XhCascaderIndicator />
-    </XhCascaderTrigger>
-    <XhCascaderClearTrigger />
+    <XhCascaderControl>
+      <XhCascaderTrigger>
+        <XhCascaderValueText />
+        <XhCascaderIndicator />
+      </XhCascaderTrigger>
+      <XhCascaderClearTrigger />
+    </XhCascaderControl>
     <XhCascaderPositioner>
       <XhCascaderContent>
         <XhCascaderColumn v-for="lv in levels" :key="lv.level" :level="lv.level">

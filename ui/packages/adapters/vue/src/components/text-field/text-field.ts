@@ -71,6 +71,15 @@ export const XhTextFieldLabel = defineComponent({
   },
 })
 
+export const XhTextFieldControl = defineComponent({
+  name: 'XhTextFieldControl',
+  setup(_, { slots }) {
+    const ctx = useTextFieldContext()
+    // 视觉盒：输入框与清空按钮都放进来，皮肤把描边、底色、聚焦环画在它身上
+    return () => h('div', ctx.api.value.getControlProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhTextFieldInput = defineComponent({
   name: 'XhTextFieldInput',
   props: {

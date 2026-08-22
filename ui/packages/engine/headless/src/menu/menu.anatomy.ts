@@ -8,6 +8,8 @@ export const menuAnatomy = createAnatomy('menu', [
   'content',
   'item',
   'separator',
+  'group',
+  'group-label',
   'arrow',
 ])
 

@@ -124,7 +124,7 @@ searchable 让搜索框可用：输入后整条路径连缀过滤，候选列表
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-cascader>` |
-| Vue 组件 | `XhCascaderClearTrigger` `XhCascaderColumn` `XhCascaderContent` `XhCascaderIndicator` `XhCascaderInput` `XhCascaderItem` `XhCascaderItemIndicator` `XhCascaderItemText` `XhCascaderLabel` `XhCascaderPositioner` `XhCascaderRoot` `XhCascaderSearchList` `XhCascaderTrigger` `XhCascaderValueText` |
+| Vue 组件 | `XhCascaderClearTrigger` `XhCascaderColumn` `XhCascaderContent` `XhCascaderControl` `XhCascaderIndicator` `XhCascaderInput` `XhCascaderItem` `XhCascaderItemIndicator` `XhCascaderItemText` `XhCascaderLabel` `XhCascaderPositioner` `XhCascaderRoot` `XhCascaderSearchList` `XhCascaderTrigger` `XhCascaderValueText` |
 | 组合式函数 | `useCascader` |
 | 状态机 | `cascaderMachine` |
 | 皮肤 | `@xihan-ui/styles/cascader.css` |
@@ -133,7 +133,7 @@ searchable 让搜索框可用：输入后整条路径连缀过滤，候选列表
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="cascader"`：`root` · `label` · **`trigger`** · `value-text` · `indicator` · `clear-trigger` · `positioner` · **`content`** · `input` · `search-list` · `search-item` · **`column`** · **`item`** · `item-text` · `item-indicator` · `empty`
+`data-scope="cascader"`：`root` · `label` · `control` · **`trigger`** · `value-text` · `indicator` · `clear-trigger` · `positioner` · **`content`** · `input` · `search-list` · `search-item` · **`column`** · **`item`** · `item-text` · `item-indicator` · `empty`
 
 ## Props
 
@@ -191,6 +191,7 @@ searchable 让搜索框可用：输入后整条路径连缀过滤，候选列表
 | 部件 | 取值 |
 | --- | --- |
 | `root` | 'open' \| 'closed' |
+| `control` | 'open' \| 'closed' |
 | `trigger` | 'open' \| 'closed' |
 | `indicator` | 'open' \| 'closed' |
 | `positioner` | 'open' \| 'closed' |
@@ -244,6 +245,7 @@ searchable 让搜索框可用：输入后整条路径连缀过滤，候选列表
 | `clear` | `() => void` |  |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['element']` |  |
+| `getControlProps` | `() => T['element']` |  |
 | `getTriggerProps` | `() => T['button']` |  |
 | `getValueTextProps` | `() => T['element']` |  |
 | `getIndicatorProps` | `() => T['element']` |  |
@@ -333,6 +335,10 @@ searchable 让搜索框可用：输入后整条路径连缀过滤，候选列表
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
+| `control` | `data-disabled` | ''（条件成立时才出现） |
+| `control` | `data-invalid` | ''（条件成立时才出现） |
+| `control` | `data-readonly` | ''（条件成立时才出现） |
+| `control` | `data-state` | 'open' \| 'closed' |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `trigger` | `data-invalid` | ''（条件成立时才出现） |
 | `trigger` | `data-placeholder` | ''（条件成立时才出现） |
@@ -367,7 +373,7 @@ searchable 让搜索框可用：输入后整条路径连缀过滤，候选列表
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-cascader-action-bg` · `--xh-cascader-action-bg-active` · `--xh-cascader-action-bg-hover` · `--xh-cascader-action-fg` · `--xh-cascader-action-fg-hover` · `--xh-cascader-action-font-size` · `--xh-cascader-action-radius` · `--xh-cascader-action-size` · `--xh-cascader-branch-arrow-fg` · `--xh-cascader-branch-arrow-size` · `--xh-cascader-column-divider` · `--xh-cascader-column-h` · `--xh-cascader-column-min-w` · `--xh-cascader-column-px` · `--xh-cascader-column-py` · `--xh-cascader-content-bg` · `--xh-cascader-content-border` · `--xh-cascader-content-fg` · `--xh-cascader-content-max-w` · `--xh-cascader-content-radius` · `--xh-cascader-content-shadow` · `--xh-cascader-empty-fg` · `--xh-cascader-empty-min-h` · `--xh-cascader-empty-p` · `--xh-cascader-gap` · `--xh-cascader-icon-size` · `--xh-cascader-indicator-fg` · `--xh-cascader-input-font-size` · `--xh-cascader-input-px` · `--xh-cascader-input-py` · `--xh-cascader-item-indicator-fg` · `--xh-cascader-item-indicator-size` · `--xh-cascader-label-fg` · `--xh-cascader-label-font-size` · `--xh-cascader-label-font-weight` · `--xh-cascader-layer` · `--xh-cascader-placeholder-fg` · `--xh-cascader-row-active-font-weight` · `--xh-cascader-row-bg-active` · `--xh-cascader-row-bg-hover` · `--xh-cascader-row-fg` · `--xh-cascader-row-fg-selected` · `--xh-cascader-row-font-size` · `--xh-cascader-row-gap` · `--xh-cascader-row-leading` · `--xh-cascader-row-max-w` · `--xh-cascader-row-px` · `--xh-cascader-row-py` · `--xh-cascader-row-radius` · `--xh-cascader-row-selected-font-weight` · `--xh-cascader-search-max-h` · `--xh-cascader-search-p` · `--xh-cascader-trigger-bg` · `--xh-cascader-trigger-bg-disabled` · `--xh-cascader-trigger-bg-readonly` · `--xh-cascader-trigger-border` · `--xh-cascader-trigger-border-focus` · `--xh-cascader-trigger-border-hover` · `--xh-cascader-trigger-border-invalid` · `--xh-cascader-trigger-fg` · `--xh-cascader-trigger-font-size` · `--xh-cascader-trigger-gap` · `--xh-cascader-trigger-h` · `--xh-cascader-trigger-min-w` · `--xh-cascader-trigger-px` · `--xh-cascader-trigger-radius`
+`--xh-cascader-action-bg` · `--xh-cascader-action-bg-active` · `--xh-cascader-action-bg-hover` · `--xh-cascader-action-fg` · `--xh-cascader-action-fg-hover` · `--xh-cascader-action-font-size` · `--xh-cascader-action-radius` · `--xh-cascader-action-size` · `--xh-cascader-branch-arrow-fg` · `--xh-cascader-branch-arrow-size` · `--xh-cascader-column-divider` · `--xh-cascader-column-h` · `--xh-cascader-column-min-w` · `--xh-cascader-column-px` · `--xh-cascader-column-py` · `--xh-cascader-content-bg` · `--xh-cascader-content-border` · `--xh-cascader-content-fg` · `--xh-cascader-content-max-w` · `--xh-cascader-content-radius` · `--xh-cascader-content-shadow` · `--xh-cascader-control-bg` · `--xh-cascader-control-bg-disabled` · `--xh-cascader-control-bg-readonly` · `--xh-cascader-control-border` · `--xh-cascader-control-border-focus` · `--xh-cascader-control-border-hover` · `--xh-cascader-control-border-invalid` · `--xh-cascader-control-fg` · `--xh-cascader-control-gap` · `--xh-cascader-control-h` · `--xh-cascader-control-min-w` · `--xh-cascader-control-px` · `--xh-cascader-control-radius` · `--xh-cascader-empty-fg` · `--xh-cascader-empty-min-h` · `--xh-cascader-empty-p` · `--xh-cascader-gap` · `--xh-cascader-icon-size` · `--xh-cascader-indicator-fg` · `--xh-cascader-input-font-size` · `--xh-cascader-input-px` · `--xh-cascader-input-py` · `--xh-cascader-item-indicator-fg` · `--xh-cascader-item-indicator-size` · `--xh-cascader-label-fg` · `--xh-cascader-label-font-size` · `--xh-cascader-label-font-weight` · `--xh-cascader-layer` · `--xh-cascader-placeholder-fg` · `--xh-cascader-row-active-font-weight` · `--xh-cascader-row-bg-active` · `--xh-cascader-row-bg-hover` · `--xh-cascader-row-fg` · `--xh-cascader-row-fg-selected` · `--xh-cascader-row-font-size` · `--xh-cascader-row-gap` · `--xh-cascader-row-leading` · `--xh-cascader-row-max-w` · `--xh-cascader-row-px` · `--xh-cascader-row-py` · `--xh-cascader-row-radius` · `--xh-cascader-row-selected-font-weight` · `--xh-cascader-search-p` · `--xh-cascader-trigger-fg` · `--xh-cascader-trigger-font-size` · `--xh-cascader-trigger-gap`
 
 ## 动效
 

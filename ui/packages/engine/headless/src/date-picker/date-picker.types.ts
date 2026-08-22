@@ -57,7 +57,7 @@ export interface DatePickerPresetProps {
 }
 
 /** 分段容器自报家门：区间模式下 0 是起点那组、1 是终点那组。 */
-export interface DatePickerInputProps {
+export interface DatePickerSegmentGroupProps {
   /** 默认 0。 */
   index?: 0 | 1
 }
@@ -351,7 +351,7 @@ export interface DatePickerApi<T extends PropTypes = PropTypes> {
   getLabelProps: () => T['element']
   getControlProps: () => T['element']
   /** role=group 的分段容器，段位挂在它里面。区间模式下 index 选起止两组，不传即起点。 */
-  getInputProps: (props?: DatePickerInputProps) => T['element']
+  getSegmentGroupProps: (props?: DatePickerSegmentGroupProps) => T['element']
   getTriggerProps: () => T['button']
   getClearTriggerProps: () => T['button']
   getPositionerProps: () => T['element']

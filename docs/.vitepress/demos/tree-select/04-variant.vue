@@ -7,6 +7,7 @@ import {
   XhTreeSelectBranchText,
   XhTreeSelectBranchTrigger,
   XhTreeSelectContent,
+  XhTreeSelectControl,
   XhTreeSelectIndicator,
   XhTreeSelectItem,
   XhTreeSelectItemIndicator,
@@ -46,17 +47,19 @@ const variants = ["outline", "subtle", "ghost"] as const;
       style="inline-size: 220px"
     >
       <XhTreeSelectLabel>{{ v }}</XhTreeSelectLabel>
-      <XhTreeSelectTrigger>
-        <XhTreeSelectValueText />
-        <XhTreeSelectIndicator />
-      </XhTreeSelectTrigger>
+      <XhTreeSelectControl>
+        <XhTreeSelectTrigger>
+          <XhTreeSelectValueText />
+          <XhTreeSelectIndicator />
+        </XhTreeSelectTrigger>
+      </XhTreeSelectControl>
       <XhTreeSelectPositioner>
         <XhTreeSelectContent>
           <XhTreeSelectTree>
             <XhTreeSelectBranch value="docs">
               <XhTreeSelectBranchControl>
-                <XhTreeSelectBranchTrigger />
-                <XhTreeSelectBranchText>docs</XhTreeSelectBranchText>
+  <XhTreeSelectBranchTrigger />
+  <XhTreeSelectBranchText>docs</XhTreeSelectBranchText>
               </XhTreeSelectBranchControl>
               <XhTreeSelectBranchContent>
                 <XhTreeSelectItem value="guide">

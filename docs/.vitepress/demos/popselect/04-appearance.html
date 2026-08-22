@@ -1,8 +1,10 @@
-<!-- 形态·语气·尺寸 | 三个视觉轴只写在根上，触发器与浮层都从这里继承 -->
+<!-- 形态·语气·尺寸 | 三个视觉轴只写在根上，盒与浮层都从这里继承 -->
 <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center">
   <xh-popselect variant="outline" size="sm" default-value="free">
     <div data-xh-part="root">
-      <button data-xh-part="trigger">outline · sm</button>
+      <div data-xh-part="control">
+        <button data-xh-part="trigger">outline · sm</button>
+      </div>
       <div data-xh-part="positioner">
         <div data-xh-part="content">
           <div data-xh-part="item" value="free">
@@ -24,7 +26,9 @@
 
   <xh-popselect variant="subtle" tone="success" size="md" default-value="pro">
     <div data-xh-part="root">
-      <button data-xh-part="trigger">subtle · success</button>
+      <div data-xh-part="control">
+        <button data-xh-part="trigger">subtle · success</button>
+      </div>
       <div data-xh-part="positioner">
         <div data-xh-part="content">
           <div data-xh-part="item" value="free">
@@ -46,7 +50,9 @@
 
   <xh-popselect variant="ghost" tone="danger" size="lg" default-value="team">
     <div data-xh-part="root">
-      <button data-xh-part="trigger">ghost · danger · lg</button>
+      <div data-xh-part="control">
+        <button data-xh-part="trigger">ghost · danger · lg</button>
+      </div>
       <div data-xh-part="positioner">
         <div data-xh-part="content">
           <div data-xh-part="item" value="free">
