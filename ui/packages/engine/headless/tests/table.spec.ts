@@ -617,6 +617,18 @@ describe('connectTable 属性输出', () => {
     expect(el.getAttribute('aria-colspan')).toBe('3')
   })
 
+  it('表头格与表体格暴露同一份列身份：使用者按列写的样式两侧同时命中', () => {
+    const h = mount()
+    for (const id of ['select', 'name']) {
+      const head = document.createElement('div')
+      const cell = document.createElement('div')
+      spread(head, h.api().getColumnHeaderProps({ value: id }) as Record<string, unknown>)
+      spread(cell, h.api().getCellProps({ value: id }) as Record<string, unknown>)
+      expect(cell.getAttribute('data-value')).toBe(id)
+      expect(cell.getAttribute('data-value')).toBe(head.getAttribute('data-value'))
+    }
+  })
+
   it('脚注声明后进行号空间：总数多一行，脚注行号排在最后', () => {
     const h = mount({ footer: true })
     expect(h.root.getAttribute('aria-rowcount')).toBe('6')

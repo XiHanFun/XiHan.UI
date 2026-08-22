@@ -58,6 +58,10 @@
       "types": "./dist/id-generator.d.ts",
       "import": "./dist/id-generator.js"
     },
+    "./locale": {
+      "types": "./dist/locale.d.ts",
+      "import": "./dist/locale.js"
+    },
     "./merge-props": {
       "types": "./dist/merge-props.d.ts",
       "import": "./dist/merge-props.js"
