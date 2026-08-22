@@ -16,7 +16,7 @@ export function connectTree<T extends PropTypes>(
   const { context, prop, send, refs, scope } = service
   const collection = prop('collection') ?? []
   const expandedValue = context.get('expandedValue')
-  const selectedValue = context.get('selectedValue')
+  const selection = context.get('selection')
   const treeDisabled = !!prop('disabled')
   const dir = prop('dir') ?? 'ltr'
   // 树不回绕：上键停在首行、下键停在末行
@@ -41,15 +41,15 @@ export function connectTree<T extends PropTypes>(
   const isExpanded = (value: string): boolean => expandedValue.includes(value)
   // 级联模式下选中态从值集聚合得出：父随子勾、部分勾中半选
   const cascade = mode === 'multiple' && !!prop('cascade')
-  const cascaded = cascade ? cascadeState(collection, selectedValue) : null
-  const isSelected = (value: string): boolean => (cascaded ? cascaded.checked.has(value) : selectedValue.includes(value))
+  const cascaded = cascade ? cascadeState(collection, selection) : null
+  const isSelected = (value: string): boolean => (cascaded ? cascaded.checked.has(value) : selection.includes(value))
   const isIndeterminate = (value: string): boolean => cascaded?.indeterminate.has(value) ?? false
   // 整棵树禁用向下传导到每个节点；节点也能在 collection 里单独禁用
   const isDisabled = (value: string): boolean => treeDisabled || !!metaOf(value)?.disabled
 
   // roving tabindex 的唯一锚点：焦点在树内跟焦点走，否则落在首个可见的选中节点上。
   // 取可见序而非选中集合的第一个，后者可能藏在收起的分支里、hidden 不可聚焦。
-  const anchor = focusedValue ?? rows.find(row => selectedValue.includes(row.value))?.value ?? null
+  const anchor = focusedValue ?? rows.find(row => selection.includes(row.value))?.value ?? null
 
   /** 节点（item 与 branch）共用的 ARIA 与身份属性。 */
   const nodeAttrs = (value: string): Record<string, string | number | undefined> => {
@@ -162,7 +162,7 @@ export function connectTree<T extends PropTypes>(
     collection,
     visibleNodes: rows,
     expandedValue,
-    selectedValue,
+    selection,
     focusedValue,
     selectionMode: mode,
     disabled: treeDisabled,
@@ -170,7 +170,7 @@ export function connectTree<T extends PropTypes>(
     isSelected,
     isIndeterminate,
     setExpandedValue: next => send({ type: 'EXPANDED.SET', value: next }),
-    setSelectedValue: next => send({ type: 'SELECTED.SET', value: next }),
+    setSelection: next => send({ type: 'SELECTION.SET', value: next }),
     expand: value => send({ type: 'BRANCH.EXPAND', value }),
     collapse: value => send({ type: 'BRANCH.COLLAPSE', value }),
     select: value => send({ type: 'NODE.SELECT', value }),

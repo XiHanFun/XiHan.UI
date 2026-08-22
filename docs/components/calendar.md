@@ -16,6 +16,7 @@
 - 星期名由作者自己渲染，组件一个节点都不替你生成。
 - `isDateUnavailable` 与 `min` / `max` 都只挡落值不挡聚焦——键盘用户仍能走到不可选的日子上，读屏会念出它不可选。
 - 支持区间选择、整周选择、固定六行与多月并排。
+- 周首日、月份名与星期名跟着 `locale` 走：`en-US` 周日起、`zh-CN` 周一起。不给 `locale` 就跟宿主浏览器语言，读不到才落 `en-US`——要固定成一种排法就把 `locale` 显式传上去。
 
 ## 示例
 
@@ -71,7 +72,7 @@ cell-trigger 的内容全由作者写，日号之外还能塞自己的标记
 | `min` | `string` |  | 可选范围下界（含当天），ISO 串。界外的日子转 aria-disabled，但仍可聚焦。 |
 | `max` | `string` |  | 可选范围上界（含当天），ISO 串。 |
 | `isDateUnavailable` | `(value: string) => boolean` |  | 作者给的不可用判定，收 ISO 串。返回真的日子与界外日子同等对待。 |
-| `locale` | `string` |  | 决定周首日与月份/星期几的文案，默认 zh-CN。 |
+| `locale` | `string` |  | 决定周首日与月份/星期几的文案，不给按宿主语言，宿主也没有时按 en-US。 |
 | `timeZone` | `string` |  | 判定「今天」与格式化文案用的时区，默认取宿主本地时区。 |
 | `disabled` | `boolean` |  | 整张日历禁用：翻月按钮转原生 disabled，格子全转 aria-disabled，键盘与点击都不改值。 |
 | `readOnly` | `boolean` |  | 只读：翻月与移动焦点照常，只是选不动值。 |

@@ -14,7 +14,7 @@
 
 ## 特性
 
-- 段序随 `locale` 变，不是写死的年月日。
+- 段序随 `locale` 变，不是写死的年月日。不给 `locale` 就跟宿主浏览器语言，读不到才落 `en-US`（月日年）。
 - `min` / `max` 收窄各段的加减范围；越界的初值只做标注、不被改写。
 - `granularity` 决定精确到日还是到分。
 - 段位文本、对外值的写法与段位的拼装都可以换。
@@ -123,7 +123,7 @@ segments 决定这份控件由哪几块组成；段位可按段名认领，不�
 | `defaultValue` | `string \| null` |  | 非受控初值，同样是 ISO 串。 |
 | `min` | `string` |  | 下界，ISO 串。参与各段区间的收窄，并决定 outOfRange。 |
 | `max` | `string` |  | 上界，ISO 串。 |
-| `locale` | `string` |  | BCP 47 语言标记，决定年月日三段的先后。不给按 en-US（月日年）排。 |
+| `locale` | `string` |  | BCP 47 语言标记，决定年月日三段的先后。不给按宿主语言，宿主也没有时按 en-US（月日年）排。 |
 | `timeZone` | `string` |  | IANA 时区名，只用来取「今天」：空段上按上下键时从今天的对应位起步。 |
 | `granularity` | `DateGranularity` |  | 精度，默认 day（只有年月日三段）。给了 segments 时它不再作数。 |
 | `segments` | `DateSegmentSet` |  | 段集：这份控件由哪几块组成，给了就以它为准，granularity 让路。写 `['year', 'quarter']` 得到「2026 Q2」、`['year', 'week']` 得到「2026 33」。归一后为空（如 `[]`）视同没给。 值仍是 ISO 日期（时间）串，故段集里必须有 year，否则段位编辑得动但拼不出值。 |

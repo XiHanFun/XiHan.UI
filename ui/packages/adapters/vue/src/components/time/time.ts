@@ -1,4 +1,4 @@
-import type { TimeLocale, TimeProps, TimeType, TimeValue } from '@xihan-ui/headless'
+import type { TimeProps, TimeType, TimeValue } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
 import { connectTime } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'
@@ -19,7 +19,7 @@ export const XhTime = defineComponent({
     value: { type: [String, Number, Date] as PropType<TimeValue>, default: undefined },
     type: { type: String as PropType<TimeType>, default: undefined },
     format: { type: String, default: undefined },
-    locale: { type: String as PropType<TimeLocale>, default: undefined },
+    locale: { type: String, default: undefined },
     now: { type: [String, Number, Date] as PropType<TimeValue>, default: undefined },
   },
   setup(props, { slots }) {

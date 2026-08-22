@@ -124,7 +124,7 @@ export interface CalendarSchema extends MachineSchema {
     max?: string
     /** 作者给的不可用判定，收 ISO 串。返回真的日子与界外日子同等对待。 */
     isDateUnavailable?: (value: string) => boolean
-    /** 决定周首日与月份/星期几的文案，默认 zh-CN。 */
+    /** 决定周首日与月份/星期几的文案，不给按宿主语言，宿主也没有时按 en-US。 */
     locale?: string
     /** 判定「今天」与格式化文案用的时区，默认取宿主本地时区。 */
     timeZone?: string

@@ -4,11 +4,13 @@
 import type { ToasterSchema, ToasterTranslations, ToastOptions, ToastPlacement, ToastRecord, ToastTranslations, ToastType } from '@xihan-ui/headless'
 import type { App, VNode } from 'vue'
 import type { ToasterContext } from '../components/toaster/use-toaster'
+import type { XhConfig } from '../config/config'
 import { createApp, defineComponent, Fragment, h } from 'vue'
 import { XhToastCloseTrigger, XhToastDescription, XhToastRoot, XhToastTitle } from '../components/toast/toast'
 import { provideToaster } from '../components/toaster/context'
 import { XhToasterGroup } from '../components/toaster/toaster'
 import { useToaster } from '../components/toaster/use-toaster'
+import { provideXhConfig } from '../config/config'
 import { typeBadge } from './glyph'
 
 export interface ToastServiceOptions {
@@ -23,6 +25,11 @@ export interface ToastServiceOptions {
   translations?: Partial<ToasterTranslations>
   /** toast 部件的文案（关闭钮的读屏名等）。 */
   toastTranslations?: Partial<ToastTranslations>
+  /**
+   * 喂给通知子树的全局配置（locale / translations / size / portalContainer）。
+   * 本服务自带宿主应用，接不到组件树里的 provideXhConfig，要让它跟应用同语言就从这里给。
+   */
+  config?: XhConfig
   /** 宿主容器；不给就在 body 下新建一个。 */
   target?: HTMLElement
 }
@@ -78,7 +85,7 @@ export function createToastService(options: ToastServiceOptions = {}): ToastServ
   if (typeof document === 'undefined')
     throw new Error('createToastService 需要 document；SSR 里请等到客户端再创建')
 
-  const { target, toastTranslations, ...toasterProps } = options
+  const { target, toastTranslations, config, ...toasterProps } = options
   const holder = target ?? document.createElement('div')
   if (!target)
     document.body.appendChild(holder)
@@ -88,6 +95,8 @@ export function createToastService(options: ToastServiceOptions = {}): ToastServ
   const Host = defineComponent({
     name: 'XhToastServiceHost',
     setup() {
+      if (config)
+        provideXhConfig(config)
       const inner = useToaster({ placement: 'top', max: 5, ...toasterProps } as ToasterSchema['props'])
       provideToaster(inner)
       ctx = inner

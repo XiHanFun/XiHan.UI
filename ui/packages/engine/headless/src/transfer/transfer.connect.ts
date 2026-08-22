@@ -37,7 +37,7 @@ export function connectTransfer<T extends PropTypes>(
   const { context, prop, send, scope } = service
   const collection = prop('collection') ?? []
   const value = context.get('value')
-  const selected = context.get('selected')
+  const selection = context.get('selection')
   const disabled = !!prop('disabled')
   const oneWay = !!prop('oneWay')
   const searchable = !!prop('searchable')
@@ -57,8 +57,8 @@ export function connectTransfer<T extends PropTypes>(
   // connect 在 render 期求值，此时 DOM 尚不存在，不得读 DOM
   const visible = bySide(side => transferVisibleItems(collection, value, side, queries[side], filter))
   const operable = bySide(side => transferOperableValues(visible[side]))
-  const checked = bySide(side => transferCheckedValues(operable[side], selected))
-  const checkStates = bySide<TransferCheckState>(side => transferCheckState(operable[side], selected))
+  const checked = bySide(side => transferCheckedValues(operable[side], selection))
+  const checkStates = bySide<TransferCheckState>(side => transferCheckState(operable[side], selection))
 
   const selectable = bySide(side => transferIsCheckable(side, oneWay))
   const editable = bySide(side => !disabled && selectable[side])
@@ -73,9 +73,9 @@ export function connectTransfer<T extends PropTypes>(
 
   /** roving tabindex 的锚点。 */
   const anchor = bySide<string | null>(side =>
-    focusedValue[side] ?? visible[side].find(item => selected.includes(item.value))?.value ?? null)
+    focusedValue[side] ?? visible[side].find(item => selection.includes(item.value))?.value ?? null)
 
-  const isChecked = (v: string): boolean => selected.includes(v)
+  const isChecked = (v: string): boolean => selection.includes(v)
   const sideOf = (v: string): TransferSide => transferSideOf(value, v)
   const isItemLocked = (v: string): boolean => disabled || !!index.get(v)?.disabled
 
@@ -161,7 +161,7 @@ export function connectTransfer<T extends PropTypes>(
   return {
     collection,
     value,
-    selected,
+    selection,
     disabled,
     oneWay,
     searchable,
@@ -173,7 +173,7 @@ export function connectTransfer<T extends PropTypes>(
     isChecked,
     sideOf,
     setValue: next => send({ type: 'VALUE.SET', value: next }),
-    setSelected: next => send({ type: 'SELECTED.SET', selected: next }),
+    setSelection: next => send({ type: 'SELECTION.SET', value: next }),
     setQuery: (side, next) => send({ type: 'SEARCH.SET', side, query: next }),
     toggle: v => send({ type: 'ITEM.TOGGLE', value: v }),
     toggleAll: side => send({ type: 'SIDE.TOGGLE_ALL', side }),

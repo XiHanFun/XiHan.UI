@@ -188,7 +188,7 @@ function mount(initial: Partial<Props> = {}): Harness {
     },
     render,
     expanded: () => service.context.get('expandedValue'),
-    selected: () => service.context.get('selectedValue'),
+    selected: () => service.context.get('selection'),
   }
 }
 
@@ -329,48 +329,48 @@ describe('treeMachine 展开与选中', () => {
   })
 
   it('单选：选中即替换，同一个再选一次仍选中（点两下不该把树点空）', () => {
-    const h = mount({ defaultSelectedValue: ['license'] })
+    const h = mount({ defaultSelection: ['license'] })
     h.api().select('docs')
     expect(h.selected()).toEqual(['docs'])
     h.api().select('docs')
     expect(h.selected()).toEqual(['docs'])
     // 公开 API 造不出 UI 造不出的选中集合
-    h.api().setSelectedValue(['docs', 'license'])
+    h.api().setSelection(['docs', 'license'])
     expect(h.selected()).toEqual(['docs'])
   })
 
-  it('复选：select 切换增删，setSelectedValue 去重', () => {
+  it('复选：select 切换增删，setSelection 去重', () => {
     const h = mount({ selectionMode: 'multiple' })
     h.api().select('docs')
     h.api().select('license')
     expect(h.selected()).toEqual(['docs', 'license'])
     h.api().select('docs')
     expect(h.selected()).toEqual(['license'])
-    h.api().setSelectedValue(['docs', 'docs', 'license'])
+    h.api().setSelection(['docs', 'docs', 'license'])
     expect(h.selected()).toEqual(['docs', 'license'])
   })
 
   it('受控：内部值纹丝不动，回调照发；宿主写回后才生效', () => {
     const onExpandedChange = vi.fn()
     const onSelectionChange = vi.fn()
-    const h = mount({ expandedValue: ['src'], selectedValue: ['license'], onExpandedChange, onSelectionChange })
+    const h = mount({ expandedValue: ['src'], selection: ['license'], onExpandedChange, onSelectionChange })
     h.api().collapse('src')
     h.api().select('docs')
     expect(h.expanded()).toEqual(['src'])
     expect(h.selected()).toEqual(['license'])
     expect(onExpandedChange).toHaveBeenCalledWith({ value: [] })
     expect(onSelectionChange).toHaveBeenCalledWith({ value: ['docs'] })
-    h.setProps({ expandedValue: [], selectedValue: ['docs'] })
+    h.setProps({ expandedValue: [], selection: ['docs'] })
     expect(h.expanded()).toEqual([])
     expect(h.selected()).toEqual(['docs'])
   })
 
   it('同一份集合重复写入不重复通知：数组按元素比，不看引用', () => {
     const onSelectionChange = vi.fn()
-    const h = mount({ selectionMode: 'multiple', defaultSelectedValue: ['docs'], onSelectionChange })
-    h.api().setSelectedValue(['docs'])
+    const h = mount({ selectionMode: 'multiple', defaultSelection: ['docs'], onSelectionChange })
+    h.api().setSelection(['docs'])
     expect(onSelectionChange).not.toHaveBeenCalled()
-    h.api().setSelectedValue(['docs', 'license'])
+    h.api().setSelection(['docs', 'license'])
     expect(onSelectionChange).toHaveBeenCalledTimes(1)
   })
 })
@@ -412,7 +412,7 @@ describe('connectTree 属性输出', () => {
   })
 
   it('选中与禁用两态都显式给出，且绝不输出原生 disabled', () => {
-    const h = mount({ defaultExpandedValue: ['src'], defaultSelectedValue: ['index'] })
+    const h = mount({ defaultExpandedValue: ['src'], defaultSelection: ['index'] })
     const index = h.item('index').item
     const readme = h.item('readme').item
     expect(index.getAttribute('aria-selected')).toBe('true')
@@ -465,7 +465,7 @@ describe('roving tabindex', () => {
   })
 
   it('有选中值时锚点节点认领 Tab 位；焦点进树后容器让位，只剩节点这一个停靠点', () => {
-    const h = mount({ defaultSelectedValue: ['license'] })
+    const h = mount({ defaultSelection: ['license'] })
     expect(h.item('license').item.getAttribute('tabindex')).toBe('0')
     h.treeEl.focus()
     // 焦点落在选中节点上，不是首行
@@ -477,7 +477,7 @@ describe('roving tabindex', () => {
   it('选中值藏在收起的分支里：它不可聚焦，容器必须继续兜底', () => {
     // 判据若只看"选中集合非空"，锚点会落在一个 hidden 的节点上：
     // 它认领了 tabindex=0 而实际不可聚焦，容器又让了位 → 整棵树零个停靠点
-    const h = mount({ defaultSelectedValue: ['dom'] })
+    const h = mount({ defaultSelection: ['dom'] })
     expect(h.item('dom').item.getAttribute('tabindex')).toBe('-1')
     expect(h.treeEl.getAttribute('tabindex')).toBe('0')
     // 没有任何节点认领 Tab 位，全靠容器兜着
@@ -488,7 +488,7 @@ describe('roving tabindex', () => {
   })
 
   it('选中值不在树里时容器仍兜底：否则整棵树一个 Tab 停靠点都没有', () => {
-    const h = mount({ selectedValue: ['ghost'] })
+    const h = mount({ selection: ['ghost'] })
     expect(h.treeEl.getAttribute('tabindex')).toBe('0')
     expect(tabStops()).toEqual(['tree'])
   })
@@ -793,7 +793,7 @@ describe('确认键与点击', () => {
   })
 
   it('禁用节点点不动', () => {
-    const h = mount({ defaultExpandedValue: ['src'], defaultSelectedValue: ['index'] })
+    const h = mount({ defaultExpandedValue: ['src'], defaultSelection: ['index'] })
     click(h.item('readme').item)
     expect(h.selected()).toEqual(['index'])
   })

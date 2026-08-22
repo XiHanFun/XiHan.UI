@@ -11,7 +11,7 @@ export interface DynamicInputValueChangeDetails {
  * 新增把手不在此列：它没有行号可带，名字取它自己的内容。
  */
 export interface DynamicInputTranslations {
-  removeTrigger: (index: number, count: number) => string
+  deleteItem: (index: number, count: number) => string
   moveUpTrigger: (index: number, count: number) => string
   moveDownTrigger: (index: number, count: number) => string
 }
@@ -130,7 +130,7 @@ export interface DynamicInputApi<T extends PropTypes = PropTypes> {
   getItemContentProps: (item: DynamicInputItemProps) => T['element']
   getItemActionProps: (item: DynamicInputItemProps) => T['element']
   getAddTriggerProps: () => T['button']
-  getRemoveTriggerProps: (item: DynamicInputItemProps) => T['button']
+  getItemDeleteTriggerProps: (item: DynamicInputItemProps) => T['button']
   getMoveUpTriggerProps: (item: DynamicInputItemProps) => T['button']
   getMoveDownTriggerProps: (item: DynamicInputItemProps) => T['button']
 }

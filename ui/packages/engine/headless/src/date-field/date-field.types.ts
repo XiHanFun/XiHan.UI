@@ -106,7 +106,7 @@ export interface DateFieldSchema extends MachineSchema {
     min?: string
     /** 上界，ISO 串。 */
     max?: string
-    /** BCP 47 语言标记，决定年月日三段的先后。不给按 en-US（月日年）排。 */
+    /** BCP 47 语言标记，决定年月日三段的先后。不给按宿主语言，宿主也没有时按 en-US（月日年）排。 */
     locale?: string
     /** IANA 时区名，只用来取「今天」：空段上按上下键时从今天的对应位起步。 */
     timeZone?: string

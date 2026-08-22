@@ -2814,7 +2814,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "决定周首日与文案，默认 zh-CN",
+              "description": "决定周首日与文案；不给按宿主语言，宿主也没有时按 en-US",
               "name": "locale",
               "fieldName": "locale"
             },
@@ -9021,7 +9021,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "BCP 47 语言标记，决定年月日三段的先后，默认 en-US",
+              "description": "BCP 47 语言标记，决定年月日三段的先后；不给按宿主语言，宿主也没有时按 en-US",
               "name": "locale",
               "fieldName": "locale"
             },
@@ -10000,7 +10000,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "决定周首日、月份文案与段位先后，默认 zh-CN（段序默认 en-US 由分段输入自定）",
+              "description": "决定周首日、月份文案与段位先后；不给按宿主语言，宿主也没有时按 en-US",
               "name": "locale",
               "fieldName": "locale"
             },
@@ -11622,7 +11622,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-dynamic-input>` —— Light-DOM 行为宿主：作者写 root/item/item-content/item-action 与\nadd-trigger、remove-trigger、move-up-trigger、move-down-trigger 角色节点，\n元素跑 dynamic-input 机器并把 connect 产出打上去。\n\n值是宿主自己的数据数组，元素只管增删与换序这套动作，行里放什么控件由作者写进 item-content。\n行节点由作者按当前值渲染（一行一个 item，身份取节点上的 index 属性，缺省按文档序），\n值变了要由作者那一侧增删行节点，改完 MutationObserver 会自动重新接线。\n\n数据数组、造行工厂与读屏文案都表达不成属性，三者只作为 property 暴露。",
+          "description": "`<xh-dynamic-input>` —— Light-DOM 行为宿主：作者写 root/item/item-content/item-action 与\nadd-trigger、item-delete-trigger、move-up-trigger、move-down-trigger 角色节点，\n元素跑 dynamic-input 机器并把 connect 产出打上去。\n\n值是宿主自己的数据数组，元素只管增删与换序这套动作，行里放什么控件由作者写进 item-content。\n行节点由作者按当前值渲染（一行一个 item，身份取节点上的 index 属性，缺省按文档序），\n值变了要由作者那一侧增删行节点，改完 MutationObserver 会自动重新接线。\n\n数据数组、造行工厂与读屏文案都表达不成属性，三者只作为 property 暴露。",
           "name": "XhDynamicInputElement",
           "cssParts": [
             {
@@ -11647,7 +11647,7 @@
             },
             {
               "description": "删除把手，须是原生 `<button>`；到下限转 aria-disabled；自带 aria-label",
-              "name": "remove-trigger"
+              "name": "item-delete-trigger"
             },
             {
               "description": "上移把手，须是原生 `<button>`；首行转 aria-disabled；自带 aria-label",
@@ -11890,6 +11890,9 @@
               "name": "--xh-dynamic-input-icon-size"
             },
             {
+              "name": "--xh-dynamic-input-item-delete-fg-hover"
+            },
+            {
               "name": "--xh-dynamic-input-item-gap"
             },
             {
@@ -11897,9 +11900,6 @@
             },
             {
               "name": "--xh-dynamic-input-item-radius"
-            },
-            {
-              "name": "--xh-dynamic-input-remove-fg-hover"
             },
             {
               "name": "--xh-dynamic-input-trigger-bg"
@@ -16315,7 +16315,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "月份名与星期名的书写 locale，缺省 zh-CN",
+              "description": "月份名与星期名的书写 locale；不给按宿主语言，宿主也没有时按 en-US",
               "name": "locale",
               "fieldName": "locale"
             },
@@ -30059,12 +30059,12 @@
               "name": "clear-trigger"
             },
             {
-              "description": "多选标签，须自带 value 属性标识选中值；放触发器里是纯展示，放外面配 tag-remove 可删",
+              "description": "多选标签，须自带 value 属性标识选中值；放触发器里是纯展示，放外面配 item-delete-trigger 可删",
               "name": "tag"
             },
             {
-              "description": "标签删除按钮，须放在 tag 里；点按摘掉所在标签的选中值，可及名走 translations.removeTag",
-              "name": "tag-remove"
+              "description": "标签删除按钮，须放在 tag 里；点按摘掉所在标签的选中值，可及名走 translations.deleteItem",
+              "name": "item-delete-trigger"
             },
             {
               "description": "浮层定位容器，坐标由引擎写成内联样式",
@@ -30843,6 +30843,24 @@
               "name": "--xh-select-item-bg-hover"
             },
             {
+              "name": "--xh-select-item-delete-bg-active"
+            },
+            {
+              "name": "--xh-select-item-delete-bg-hover"
+            },
+            {
+              "name": "--xh-select-item-delete-fg"
+            },
+            {
+              "name": "--xh-select-item-delete-fg-hover"
+            },
+            {
+              "name": "--xh-select-item-delete-radius"
+            },
+            {
+              "name": "--xh-select-item-delete-size"
+            },
+            {
               "name": "--xh-select-item-fg"
             },
             {
@@ -30907,24 +30925,6 @@
             },
             {
               "name": "--xh-select-tag-radius"
-            },
-            {
-              "name": "--xh-select-tag-remove-bg-active"
-            },
-            {
-              "name": "--xh-select-tag-remove-bg-hover"
-            },
-            {
-              "name": "--xh-select-tag-remove-fg"
-            },
-            {
-              "name": "--xh-select-tag-remove-fg-hover"
-            },
-            {
-              "name": "--xh-select-tag-remove-radius"
-            },
-            {
-              "name": "--xh-select-tag-remove-size"
             },
             {
               "name": "--xh-select-trigger-fg"
@@ -38301,7 +38301,7 @@
               "name": "locale",
               "privacy": "public",
               "type": {
-                "text": "TimeLocale | undefined"
+                "text": "string | undefined"
               },
               "attribute": "locale"
             },
@@ -38386,9 +38386,9 @@
             },
             {
               "type": {
-                "text": "TimeLocale | undefined"
+                "text": "string | undefined"
               },
-              "description": "用词，缺省 zh-CN；只换给人看的文本",
+              "description": "BCP 47 语言标记，zh 开头用中文用词、其余英文；不给按宿主语言，宿主也没有时按 en-US。只换给人看的文本",
               "name": "locale",
               "fieldName": "locale"
             },
@@ -41606,7 +41606,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-transfer>` —— Light-DOM 行为宿主：作者写\nroot/source-panel/target-panel/panel-header/panel-title/panel-count/search/list/item/...\n角色节点，元素跑 transfer 机器并把 connect 产出打上去。\n\n条目全集由 `collection` 属性（property）给出，它是标签与禁用的唯一事实源；\n**两侧面板各挂一份全集**，不属于本侧、或被搜索筛掉的那一份由元素打上 hidden，\n节点不卸载。条目身份取节点上的 `value` 属性，归哪一侧则取它落在哪个面板里。\n\n过滤由本元素做，不是作者做：搜索串住在机器里，作者最多给一个 `filter` 谓词。\n\n导航与勾选在事件那一刻按 data-scope+data-part 查活 DOM，依赖 connect 回写的 data-value，\n因此 wire 必须先于交互跑过（基类 updated 已保证）。\n\n集合类输入（collection / value / selected / filter）都表达不成属性，只能走 property：\n`el.collection = [...]`、`el.value = ['a']`。",
+          "description": "`<xh-transfer>` —— Light-DOM 行为宿主：作者写\nroot/source-panel/target-panel/panel-header/panel-title/panel-count/search/list/item/...\n角色节点，元素跑 transfer 机器并把 connect 产出打上去。\n\n条目全集由 `collection` 属性（property）给出，它是标签与禁用的唯一事实源；\n**两侧面板各挂一份全集**，不属于本侧、或被搜索筛掉的那一份由元素打上 hidden，\n节点不卸载。条目身份取节点上的 `value` 属性，归哪一侧则取它落在哪个面板里。\n\n过滤由本元素做，不是作者做：搜索串住在机器里，作者最多给一个 `filter` 谓词。\n\n导航与勾选在事件那一刻按 data-scope+data-part 查活 DOM，依赖 connect 回写的 data-value，\n因此 wire 必须先于交互跑过（基类 updated 已保证）。\n\n集合类输入（collection / value / selection / filter）都表达不成属性，只能走 property：\n`el.collection = [...]`、`el.value = ['a']`。",
           "name": "XhTransferElement",
           "cssParts": [
             {
@@ -41702,7 +41702,7 @@
             },
             {
               "kind": "field",
-              "name": "selected",
+              "name": "selection",
               "privacy": "public",
               "type": {
                 "text": "string[] | undefined"
@@ -41710,7 +41710,7 @@
             },
             {
               "kind": "field",
-              "name": "defaultSelected",
+              "name": "defaultSelection",
               "privacy": "public",
               "type": {
                 "text": "string[] | undefined"
@@ -41777,7 +41777,7 @@
             },
             {
               "kind": "field",
-              "name": "notifySelected",
+              "name": "notifySelection",
               "privacy": "private",
               "readonly": true
             },
@@ -41861,7 +41861,7 @@
               }
             },
             {
-              "description": "勾选集合变化；detail 为 `{ selected: string[] }`",
+              "description": "勾选集合变化；detail 为 `{ value: string[] }`",
               "name": "selection-change",
               "type": {
                 "text": "TransferSelectionChangeDetails"
@@ -43071,7 +43071,7 @@
             },
             {
               "kind": "field",
-              "name": "selectedValue",
+              "name": "selection",
               "privacy": "public",
               "type": {
                 "text": "string[] | undefined"
@@ -43079,7 +43079,7 @@
             },
             {
               "kind": "field",
-              "name": "defaultSelectedValue",
+              "name": "defaultSelection",
               "privacy": "public",
               "type": {
                 "text": "string[] | undefined"

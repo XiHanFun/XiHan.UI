@@ -18,7 +18,7 @@ function row(index: number): FixtureNode {
         children: [
           { part: 'move-up-trigger', tag: 'button', text: '↑' },
           { part: 'move-down-trigger', tag: 'button', text: '↓' },
-          { part: 'remove-trigger', tag: 'button' },
+          { part: 'item-delete-trigger', tag: 'button' },
         ],
       },
     ],
@@ -35,7 +35,7 @@ function rowOrder(index: number): string[] {
     `item-action[${index}]`,
     `move-up-trigger[${index}]`,
     `move-down-trigger[${index}]`,
-    `remove-trigger[${index}]`,
+    `item-delete-trigger[${index}]`,
   ]
 }
 
@@ -70,7 +70,7 @@ export const dynamicInputSuite: ConformanceSuite = {
           // 换序没开：两个把手收起，且明确报"按不动"
           'move-up-trigger[1]': { 'hidden': '', 'aria-disabled': 'true' },
           'move-down-trigger[1]': { 'hidden': '', 'aria-disabled': 'true' },
-          'remove-trigger[1]': {
+          'item-delete-trigger[1]': {
             'type': 'button',
             'hidden': null,
             'data-index': '1',
@@ -97,7 +97,7 @@ export const dynamicInputSuite: ConformanceSuite = {
           'item-action': ROWS,
           'move-up-trigger': ROWS,
           'move-down-trigger': ROWS,
-          'remove-trigger': ROWS,
+          'item-delete-trigger': ROWS,
           'add-trigger': 1,
         },
       },
@@ -181,14 +181,14 @@ export const dynamicInputSuite: ConformanceSuite = {
       initial: {
         parts: {
           'root': { 'data-at-min': '' },
-          'remove-trigger[0]': { 'aria-disabled': 'true', 'disabled': null, 'data-disabled': '' },
+          'item-delete-trigger[0]': { 'aria-disabled': 'true', 'disabled': null, 'data-disabled': '' },
         },
       },
       steps: [
         {
           kind: 'click',
-          part: 'remove-trigger[0]',
-          expect: { events: [], activeElement: { part: 'remove-trigger[0]', exact: true } },
+          part: 'item-delete-trigger[0]',
+          expect: { events: [], activeElement: { part: 'item-delete-trigger[0]', exact: true } },
         },
       ],
     },
@@ -199,14 +199,14 @@ export const dynamicInputSuite: ConformanceSuite = {
       steps: [
         {
           kind: 'click',
-          part: 'remove-trigger[2]',
+          part: 'item-delete-trigger[2]',
           expect: { events: [{ type: 'value-change', detail: { value: ['甲', '乙'] } }] },
         },
         {
           // 被点的那个把手随行离场，不接住的话焦点会掉到 body 上
           kind: 'settle',
-          until: { activeElement: 'remove-trigger[1]' },
-          expect: { activeElement: { part: 'remove-trigger[1]', exact: true } },
+          until: { activeElement: 'item-delete-trigger[1]' },
+          expect: { activeElement: { part: 'item-delete-trigger[1]', exact: true } },
         },
       ],
     },
@@ -218,7 +218,7 @@ export const dynamicInputSuite: ConformanceSuite = {
       steps: [
         {
           kind: 'click',
-          part: 'remove-trigger',
+          part: 'item-delete-trigger',
           expect: { events: [{ type: 'value-change', detail: { value: [] } }] },
         },
         {
@@ -272,18 +272,18 @@ export const dynamicInputSuite: ConformanceSuite = {
       steps: [
         {
           kind: 'click',
-          part: 'remove-trigger[0]',
+          part: 'item-delete-trigger[0]',
           expect: {
             events: [{ type: 'value-change', detail: { value: ['乙', '丙'] } }],
             // 名字里的总行数还是 3：宿主没写回，组件就没有自作主张
-            parts: { 'remove-trigger[0]': { 'aria-label': 'Remove row 1 of 3' } },
+            parts: { 'item-delete-trigger[0]': { 'aria-label': 'Remove row 1 of 3' } },
           },
         },
         {
           kind: 'setProps',
           props: { value: ['乙', '丙'] },
           expect: {
-            parts: { 'remove-trigger[0]': { 'aria-label': 'Remove row 1 of 2' } },
+            parts: { 'item-delete-trigger[0]': { 'aria-label': 'Remove row 1 of 2' } },
           },
         },
       ],
@@ -297,13 +297,13 @@ export const dynamicInputSuite: ConformanceSuite = {
           'root': { 'data-disabled': '' },
           'item[0]': { 'data-disabled': '' },
           'add-trigger': { 'aria-disabled': 'true', 'disabled': null },
-          'remove-trigger[0]': { 'aria-disabled': 'true', 'disabled': null },
+          'item-delete-trigger[0]': { 'aria-disabled': 'true', 'disabled': null },
           'move-down-trigger[0]': { 'aria-disabled': 'true', 'disabled': null },
         },
       },
       steps: [
         { kind: 'click', part: 'add-trigger', expect: { events: [] } },
-        { kind: 'click', part: 'remove-trigger[0]', expect: { events: [] } },
+        { kind: 'click', part: 'item-delete-trigger[0]', expect: { events: [] } },
         { kind: 'click', part: 'move-down-trigger[0]', expect: { events: [] } },
       ],
     },
@@ -314,14 +314,14 @@ export const dynamicInputSuite: ConformanceSuite = {
         defaultValue: ['甲', '乙', '丙'],
         movable: true,
         translations: {
-          removeTrigger: (index: number, count: number) => `删除第 ${index} 行，共 ${count} 行`,
+          deleteItem: (index: number, count: number) => `删除第 ${index} 行，共 ${count} 行`,
           moveUpTrigger: (index: number) => `把第 ${index} 行往上挪`,
           moveDownTrigger: (index: number) => `把第 ${index} 行往下挪`,
         },
       },
       initial: {
         parts: {
-          'remove-trigger[1]': { 'aria-label': '删除第 2 行，共 3 行' },
+          'item-delete-trigger[1]': { 'aria-label': '删除第 2 行，共 3 行' },
           'move-up-trigger[1]': { 'aria-label': '把第 2 行往上挪' },
           'move-down-trigger[1]': { 'aria-label': '把第 2 行往下挪' },
         },

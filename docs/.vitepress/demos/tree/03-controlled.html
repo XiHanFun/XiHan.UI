@@ -1,4 +1,4 @@
-<!-- 受控 | 传了 expandedValue / selectedValue 就由宿主说了算，组件只发事件不落内部值，宿主写回它才动 -->
+<!-- 受控 | 传了 expandedValue / selection 就由宿主说了算，组件只发事件不落内部值，宿主写回它才动 -->
 <div style="width: 100%; max-width: 320px; display: grid; gap: 12px">
   <div style="display: flex; gap: 8px">
     <xh-button id="tree-controlled-expand" size="sm">
@@ -77,7 +77,7 @@
   }
 
   function setSelected(value) {
-    tree.selectedValue = value;
+    tree.selection = value;
     selectedOut.textContent = value.join("、") || "（无）";
   }
 

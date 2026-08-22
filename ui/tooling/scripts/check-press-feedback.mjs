@@ -24,7 +24,7 @@ const PRESSABLE = {
   'time-picker': ['clear-trigger'],
   'text-field': ['clear-trigger'],
   'tags-input': ['clear-trigger', 'item-delete-trigger'],
-  'select': ['clear-trigger', 'tag-remove'],
+  'select': ['clear-trigger', 'item-delete-trigger'],
   'popselect': ['clear-trigger'],
   'date-field': ['clear-trigger'],
   'time-field': ['clear-trigger'],
@@ -39,7 +39,7 @@ const PRESSABLE = {
   'floating-panel': ['close-trigger'],
   'image-viewer': ['close-trigger'],
   'tag': ['close-trigger'],
-  'dynamic-input': ['remove-trigger'],
+  'dynamic-input': ['item-delete-trigger'],
 }
 
 const problems = []

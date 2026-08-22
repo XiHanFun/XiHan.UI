@@ -142,7 +142,7 @@ describe('connectTime', () => {
   it('戳与文本取自同一个墙钟', () => {
     const it0 = api({ value: '2026-08-11T09:30:05' })
     expect(it0.stamp).toBe('2026-08-11T09:30:05')
-    expect(it0.text).toBe('2026-08-11 09:30:05')
+    expect(it0.text).toBe('08/11/2026 09:30:05')
   })
 
   it('自定义格式串只改文本，戳不跟着变', () => {
@@ -154,12 +154,12 @@ describe('connectTime', () => {
   it('相对说法落在档位里就立 relative，超出档位退回绝对日期', () => {
     const inRange = api({ value: '2026-08-11T09:00:00', type: 'relative', now: '2026-08-11T09:30:00' })
     expect(inRange.relative).toBe(true)
-    expect(inRange.text).toBe('30 分钟前')
+    expect(inRange.text).toBe('30 minutes ago')
     expect((inRange.getRootProps() as Dict)['data-relative']).toBe('')
 
     const tooFar = api({ value: '2026-01-01T00:00:00', type: 'relative', now: '2026-08-11T09:30:00' })
     expect(tooFar.relative).toBe(false)
-    expect(tooFar.text).toBe('2026-01-01')
+    expect(tooFar.text).toBe('01/01/2026')
     expect((tooFar.getRootProps() as Dict)['data-relative']).toBeUndefined()
   })
 
@@ -169,8 +169,8 @@ describe('connectTime', () => {
   })
 
   it('locale 只换用词，戳恒是同一种写法', () => {
-    const zh = api({ value: '2026-08-11T09:30:05', type: 'date' })
-    const en = api({ value: '2026-08-11T09:30:05', type: 'date', locale: 'en' })
+    const zh = api({ value: '2026-08-11T09:30:05', type: 'date', locale: 'zh-CN' })
+    const en = api({ value: '2026-08-11T09:30:05', type: 'date' })
     expect(zh.text).toBe('2026-08-11')
     expect(en.text).toBe('08/11/2026')
     expect(en.stamp).toBe(zh.stamp)

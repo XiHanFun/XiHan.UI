@@ -52,7 +52,7 @@ describe('勾选把手', () => {
   })
 
   it('勾选态与半选态都落到把手上——半选此前发了却没人画', () => {
-    const { api } = tree({ defaultSelectedValue: ['a.ts'] })
+    const { api } = tree({ defaultSelection: ['a.ts'] })
     const leaf = api().getItemCheckboxProps({ value: 'a.ts' }) as Record<string, unknown>
     const branch = api().getBranchCheckboxProps({ value: 'src' }) as Record<string, unknown>
     expect(leaf['data-selected']).toBe('')

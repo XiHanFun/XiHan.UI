@@ -67,7 +67,7 @@ export function connectFileUpload<T extends PropTypes>(
   const translations = prop('translations')
   const label = {
     dropzone: translations?.dropzone ?? 'Drop files here',
-    deleteFile: translations?.deleteFile ?? ((file: FileUploadFile) => `Delete ${file.name}`),
+    deleteItem: translations?.deleteItem ?? ((file: FileUploadFile) => `Delete ${file.name}`),
     clearTrigger: translations?.clearTrigger ?? 'Clear all files',
   }
 
@@ -262,7 +262,7 @@ export function connectFileUpload<T extends PropTypes>(
       ...parts['item-delete-trigger'].attrs,
       'type': 'button',
       // 名字带上文件名，否则多条删除按钮的可访问名完全相同
-      'aria-label': label.deleteFile(file),
+      'aria-label': label.deleteItem(file),
       'disabled': disabled || undefined,
       'data-disabled': dataAttr(disabled),
       'onClick': (event: MouseEvent) => {

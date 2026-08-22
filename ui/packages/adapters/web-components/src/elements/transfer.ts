@@ -48,7 +48,7 @@ function stripNativeDisabled(el: HTMLElement): void {
  * 导航与勾选在事件那一刻按 data-scope+data-part 查活 DOM，依赖 connect 回写的 data-value，
  * 因此 wire 必须先于交互跑过（基类 updated 已保证）。
  *
- * 集合类输入（collection / value / selected / filter）都表达不成属性，只能走 property：
+ * 集合类输入（collection / value / selection / filter）都表达不成属性，只能走 property：
  * `el.collection = [...]`、`el.value = ['a']`。
  *
  * @customElement xh-transfer
@@ -58,7 +58,7 @@ function stripNativeDisabled(el: HTMLElement): void {
  * @attr {boolean} loop - 列表内方向键走到尽头回绕，默认 true；写 loop="false" 关掉
  * @attr {'ltr'|'rtl'} dir - 文字方向，决定列表内哪个横向方向键是"搬向对面"，默认 ltr
  * @fires value-change - 落在右侧的值变化；detail 为 `{ value: string[] }`
- * @fires selection-change - 勾选集合变化；detail 为 `{ selected: string[] }`
+ * @fires selection-change - 勾选集合变化；detail 为 `{ value: string[] }`
  * @csspart root - 组件根容器（承载 data-disabled/data-one-way）
  * @csspart source-panel - 左侧面板容器，其内的角色节点一律归左侧
  * @csspart target-panel - 右侧面板容器，其内的角色节点一律归右侧
@@ -84,8 +84,8 @@ export class XhTransferElement extends XhElement {
     collection: { attribute: false },
     value: { attribute: false },
     defaultValue: { attribute: false },
-    selected: { attribute: false },
-    defaultSelected: { attribute: false },
+    selection: { attribute: false },
+    defaultSelection: { attribute: false },
     filter: { attribute: false },
     searchable: { type: Boolean },
     disabled: { type: Boolean },
@@ -97,8 +97,8 @@ export class XhTransferElement extends XhElement {
   declare collection?: TransferItem[]
   declare value?: string[]
   declare defaultValue?: string[]
-  declare selected?: string[]
-  declare defaultSelected?: string[]
+  declare selection?: string[]
+  declare defaultSelection?: string[]
   declare filter?: TransferFilter
   declare searchable?: boolean
   declare disabled?: boolean
@@ -110,7 +110,7 @@ export class XhTransferElement extends XhElement {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
   }
 
-  private readonly notifySelected = (details: TransferSelectionChangeDetails): void => {
+  private readonly notifySelection = (details: TransferSelectionChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('selection-change', { detail: details, bubbles: true, composed: true }))
   }
 
@@ -123,8 +123,8 @@ export class XhTransferElement extends XhElement {
       collection: this.collection,
       value: this.value,
       defaultValue: this.defaultValue,
-      selected: this.selected,
-      defaultSelected: this.defaultSelected,
+      selection: this.selection,
+      defaultSelection: this.defaultSelection,
       filter: this.filter,
       searchable: this.searchable ?? false,
       disabled: this.disabled ?? false,
@@ -132,7 +132,7 @@ export class XhTransferElement extends XhElement {
       loop: this.loop,
       dir: this.direction,
       onValueChange: this.notifyValue,
-      onSelectionChange: this.notifySelected,
+      onSelectionChange: this.notifySelection,
     }
   }
 

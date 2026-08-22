@@ -70,7 +70,7 @@ function ancestorValue(el: HTMLElement, part: string): string | undefined {
  * @attr {string} end-date - 区间终点（含）
  * @attr {number} levels - 档数，缺省 5；给了 thresholds 则档数由它定
  * @attr {number} first-day-of-week - 周首日，0 = 星期日，缺省 1
- * @attr {string} locale - 月份名与星期名的书写 locale，缺省 zh-CN
+ * @attr {string} locale - 月份名与星期名的书写 locale；不给按宿主语言，宿主也没有时按 en-US
  * @attr {'ltr'|'rtl'} dir - 文字方向；只作显式覆盖，不写时方向从 DOM 现读
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'green'|'blue'|'orange'|'purple'|'red'|'gray'} palette - 色板，直接点名色阶满档的颜色；同时写了 tone 时听它的

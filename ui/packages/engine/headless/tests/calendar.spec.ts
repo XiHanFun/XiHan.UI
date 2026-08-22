@@ -366,7 +366,7 @@ describe('大步翻与周选预览', () => {
 
     const year = mount({ defaultFocusedValue: '2026-08-17', view: 'year' })
     year.api().goToNextYear()
-    expect(year.api().panels[0]!.headingLabel).toBe('2120年-2129年')
+    expect(year.api().panels[0]!.headingLabel).toBe('2120-2129')
   })
 
   it('大步翻的边界按大步算，与上下一页各判各的', () => {
@@ -465,9 +465,9 @@ describe('面板粒度：月 / 季度 / 年 / 周', () => {
 
   it('年视图翻一页走十年', () => {
     const h = mount({ defaultFocusedValue: '2026-08-17', view: 'year' })
-    expect(h.api().panels[0]!.headingLabel).toBe('2020年-2029年')
+    expect(h.api().panels[0]!.headingLabel).toBe('2020-2029')
     h.api().goToNextMonth()
-    expect(h.api().panels[0]!.headingLabel).toBe('2030年-2039年')
+    expect(h.api().panels[0]!.headingLabel).toBe('2030-2039')
   })
 
   it('周选：一次点落起点周，两次点落「起点周 → 终点周」的外缘', () => {
@@ -636,9 +636,9 @@ describe('connectCalendar 属性输出', () => {
 
   it('邻月的日子照样是真格子，只是标出 data-outside-month', () => {
     const h = mount({ defaultFocusedValue: '2024-02-15' })
-    expect(h.cell('2024-01-29').getAttribute('data-outside-month')).toBe('')
+    expect(h.cell('2024-01-28').getAttribute('data-outside-month')).toBe('')
     expect(h.cell('2024-02-01').hasAttribute('data-outside-month')).toBe(false)
-    expect(h.cell('2024-03-03').getAttribute('data-outside-month')).toBe('')
+    expect(h.cell('2024-03-02').getAttribute('data-outside-month')).toBe('')
   })
 
   it('格子的可及名字是完整日期，不是光秃秃一个数字', () => {

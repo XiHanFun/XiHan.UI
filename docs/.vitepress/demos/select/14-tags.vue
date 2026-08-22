@@ -1,4 +1,4 @@
-<!-- 多选标签 | 内建标签形态：api 的 tags 受 maxTagCount 截断、余数在 overflowCount；触发器里 XhSelectTag 纯展示，触发器外配 XhSelectTagRemove 即可删 -->
+<!-- 多选标签 | 内建标签形态：api 的 tags 受 maxTagCount 截断、余数在 overflowCount；触发器里 XhSelectTag 纯展示，触发器外配 XhSelectItemDeleteTrigger 即可删 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import {
@@ -6,6 +6,7 @@ import {
   XhSelectControl,
   XhSelectIndicator,
   XhSelectItem,
+  XhSelectItemDeleteTrigger,
   XhSelectItemIndicator,
   XhSelectItemText,
   XhSelectLabel,
@@ -13,7 +14,6 @@ import {
   XhSelectPositioner,
   XhSelectRoot,
   XhSelectTag,
-  XhSelectTagRemove,
   XhSelectTrigger,
   XhSelectValueText,
 } from "@xihan-ui/vue";
@@ -66,7 +66,7 @@ const picked = ref<string[]>(["vue", "svelte", "solid"]);
     <div style="display: flex; flex-wrap: wrap; gap: 4px; margin-block-start: 6px">
       <XhSelectTag v-for="v in picked" :key="v" :value="v">
         {{ options.find((o) => o.value === v)?.label ?? v }}
-        <XhSelectTagRemove />
+        <XhSelectItemDeleteTrigger />
       </XhSelectTag>
     </div>
   </XhSelectRoot>

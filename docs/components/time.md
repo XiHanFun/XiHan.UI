@@ -16,7 +16,7 @@
 
 - `type` 切绝对与相对；相对分四档（分 / 小时 / 天），超过三十天退回绝对日期。
 - `format` 自定义格式串，只改看到的文本，`datetime` 属性不跟着变。
-- `locale` 只换用词。
+- `locale` 只换用词与缺省格式串：`zh` 开头用中文那套，其余英文。不给就跟宿主浏览器语言，读不到才落 `en-US`。
 
 ## 示例
 
@@ -40,7 +40,7 @@ date 只到日、datetime 到秒、relative 说成「几分钟前」；datetime 
 
 ### 相对时间
 
-刚刚 / n 分钟前 / n 小时前 / n 天前 四档，超过三十天退回绝对日期；locale 只换用词
+just now / n minutes ago 四档，超过三十天退回绝对日期；locale 只换用词，不给则跟随浏览器语言
 
 <XhDemo src="time/04-relative" />
 
@@ -64,7 +64,7 @@ date 只到日、datetime 到秒、relative 说成「几分钟前」；datetime 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `format` | `string` |  | 自定义格式串，记号是 YYYY / YY / MM / M / DD / D / HH / H / mm / m / ss / s。 给了就顶掉该 locale 的缺省格式串；relative 型下只在退回绝对日期时用得上。 |
-| `locale` | `TimeLocale` |  | 用词：zh-CN 或 en，缺省 zh-CN。它只换给人看的文本，datetime 恒是同一种写法。 |
+| `locale` | `string` |  | BCP 47 语言标记，决定用词与缺省格式串：zh 开头用中文那套，其余一律英文。 不给按宿主语言，宿主也没有时按 en-US。它只换给人看的文本，datetime 恒是同一种写法。 |
 | `now` | `TimeValue` |  | 算相对说法时的参照时刻，缺省取当前时刻。给定后整个组件的产出完全由入参决定。 |
 | `type` | `TimeType` |  | 呈现方式：date 只到日、datetime 到秒、relative 说成「几分钟前」，缺省 datetime。 |
 | `value` | `TimeValue` |  | 要显示的时刻。只写年月日的串按本地零点解读。 |

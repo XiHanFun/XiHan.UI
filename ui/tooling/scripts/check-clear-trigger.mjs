@@ -22,8 +22,8 @@ const STANDALONE = ['file-upload', 'signature-pad']
 /** ③ 浮层角落关闭钮；值是尺寸基准的例外（全屏看片的 chrome 钮按触控靶走 lg）。 */
 const CLOSE = { 'dialog': null, 'drawer': null, 'popover': null, 'tour': null, 'toast': null, 'alert': null, 'floating-panel': null, 'image-viewer': '--xh-control-h-lg' }
 /** ④ 标签内移除钮（组件 → 部件）与行级删除钮。 */
-const CHIP_REMOVE = { 'tag': 'close-trigger', 'tags-input': 'item-delete-trigger', 'select': 'tag-remove' }
-const ROW_DELETE = { 'file-upload': 'item-delete-trigger', 'dynamic-input': 'remove-trigger' }
+const CHIP_REMOVE = { 'tag': 'close-trigger', 'tags-input': 'item-delete-trigger', 'select': 'item-delete-trigger' }
+const ROW_DELETE = { 'file-upload': 'item-delete-trigger', 'dynamic-input': 'item-delete-trigger' }
 
 const problems = []
 

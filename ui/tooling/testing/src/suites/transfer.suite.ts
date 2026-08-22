@@ -299,7 +299,7 @@ export const transferSuite: ConformanceSuite = {
     {
       name: '焦点进入列表落在本侧勾中项上，不是落在首项',
       spec: { apg: `${APG}#keyboardinteraction` },
-      props: { ...BASE, defaultSelected: ['cherry'] },
+      props: { ...BASE, defaultSelection: ['cherry'] },
       initial: {
         // 焦点还在列表外：锚点条目认领 Tab 位
         parts: { 'item[0]': { tabindex: '-1' }, 'item[2]': { tabindex: '0' } },
@@ -362,7 +362,7 @@ export const transferSuite: ConformanceSuite = {
       name: 'Shift+方向键扩选：移动焦点并切换落点，往回走即把刚扩进来的摘掉',
       spec: { apg: `${APG}#keyboardinteraction` },
       covers: ['transfer.kbd.extend'],
-      props: { ...BASE, defaultSelected: ['apple'] },
+      props: { ...BASE, defaultSelection: ['apple'] },
       steps: [
         { kind: 'focus', part: 'list[0]', expect: { activeElement: { part: 'item[0]', exact: true } } },
         {
@@ -635,7 +635,7 @@ export const transferSuite: ConformanceSuite = {
     {
       name: '整体禁用：三类按钮都是原生禁用，条目全转 aria-disabled，键盘与点击都改不了任何集合',
       spec: { apg: APG },
-      props: { ...BASE, disabled: true, defaultValue: ['durian'], defaultSelected: ['apple'] },
+      props: { ...BASE, disabled: true, defaultValue: ['durian'], defaultSelection: ['apple'] },
       initial: {
         parts: {
           'root': { 'data-disabled': '' },

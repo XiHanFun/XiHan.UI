@@ -26,14 +26,14 @@ type TransferProps = TransferSchema['props']
 /** 默认插槽的载荷：目标侧的值与两侧的勾选、两侧当下可见的条目，以及勾选、写值与搬运的动作。 */
 export interface TransferRootSlotProps {
   value: string[]
-  selected: string[]
+  selection: string[]
   sourceItems: readonly TransferItem[]
   targetItems: readonly TransferItem[]
   canMove: (to: TransferSide) => boolean
   checkState: (side: TransferSide) => TransferCheckState
   isChecked: (value: string) => boolean
   setValue: (next: string[]) => void
-  setSelected: (next: string[]) => void
+  setSelection: (next: string[]) => void
   toggle: (value: string) => void
   toggleAll: (side: TransferSide) => void
   move: (to: TransferSide) => void
@@ -59,8 +59,8 @@ export const XhTransferRoot = defineComponent({
     collection: { type: Array as PropType<TransferItem[]>, default: undefined },
     value: { type: Array as PropType<string[]>, default: undefined },
     defaultValue: { type: Array as PropType<string[]>, default: undefined },
-    selected: { type: Array as PropType<string[]>, default: undefined },
-    defaultSelected: { type: Array as PropType<string[]>, default: undefined },
+    selection: { type: Array as PropType<string[]>, default: undefined },
+    defaultSelection: { type: Array as PropType<string[]>, default: undefined },
     searchable: Boolean,
     filter: { type: Function as PropType<TransferFilter>, default: undefined },
     disabled: Boolean,
@@ -73,7 +73,7 @@ export const XhTransferRoot = defineComponent({
     'value-change': (_details: PayloadOf<TransferProps, 'onValueChange'>) => true,
     'selection-change': (_details: PayloadOf<TransferProps, 'onSelectionChange'>) => true,
     'update:value': (_value: PayloadOf<TransferProps, 'onValueChange'>['value']) => true,
-    'update:selected': (_selected: PayloadOf<TransferProps, 'onSelectionChange'>['selected']) => true,
+    'update:selection': (_value: PayloadOf<TransferProps, 'onSelectionChange'>['value']) => true,
   },
   slots: Object as SlotsType<{
     default?: (props: TransferRootSlotProps) => VNode[]
@@ -83,25 +83,25 @@ export const XhTransferRoot = defineComponent({
       emit('value-change', details)
       emit('update:value', details.value)
     }
-    const notifySelected: TransferProps['onSelectionChange'] = (details) => {
+    const notifySelection: TransferProps['onSelectionChange'] = (details) => {
       emit('selection-change', details)
-      emit('update:selected', details.selected)
+      emit('update:selection', details.value)
     }
     const ctx = useTransfer(props as TransferProps, {
       onValueChange: notifyValue,
-      onSelectionChange: notifySelected,
+      onSelectionChange: notifySelection,
     })
     provideTransfer(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       value: ctx.api.value.value,
-      selected: ctx.api.value.selected,
+      selection: ctx.api.value.selection,
       sourceItems: ctx.api.value.visibleItems('source'),
       targetItems: ctx.api.value.visibleItems('target'),
       canMove: ctx.api.value.canMove,
       checkState: ctx.api.value.checkState,
       isChecked: ctx.api.value.isChecked,
       setValue: ctx.api.value.setValue,
-      setSelected: ctx.api.value.setSelected,
+      setSelection: ctx.api.value.setSelection,
       toggle: ctx.api.value.toggle,
       toggleAll: ctx.api.value.toggleAll,
       move: ctx.api.value.move,

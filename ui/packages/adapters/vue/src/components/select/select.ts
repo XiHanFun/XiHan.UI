@@ -177,12 +177,12 @@ export const XhSelectTag = defineComponent({
   },
 })
 
-export const XhSelectTagRemove = defineComponent({
-  name: 'XhSelectTagRemove',
+export const XhSelectItemDeleteTrigger = defineComponent({
+  name: 'XhSelectItemDeleteTrigger',
   setup(_, { slots }) {
     const ctx = useSelectContext()
     const tag = useSelectTagContext()
-    return () => h('button', ctx.api.value.getTagRemoveProps({ value: tag.value() }) as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getItemDeleteTriggerProps({ value: tag.value() }) as Record<string, unknown>, slots.default?.())
   },
 })
 

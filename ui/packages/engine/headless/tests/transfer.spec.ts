@@ -84,7 +84,7 @@ interface Harness {
   toSource: HTMLButtonElement
   setProps: (next: Partial<Props>) => void
   value: () => string[]
-  selected: () => string[]
+  selection: () => string[]
 }
 
 function mount(initial: Partial<Props> = {}): Harness {
@@ -167,7 +167,7 @@ function mount(initial: Partial<Props> = {}): Harness {
       render()
     },
     value: () => service.context.get('value'),
-    selected: () => service.context.get('selected'),
+    selection: () => service.context.get('selection'),
   }
 }
 
@@ -290,31 +290,31 @@ describe('全选与勾选切换', () => {
 
 describe('搬运后的集合与勾选集', () => {
   it('往右搬：进 value，并从勾选集合里退出', () => {
-    expect(transferMove({ value: [], selected: ['apple', 'cherry'], moving: ['apple'], to: 'target' }))
-      .toEqual({ value: ['apple'], selected: ['cherry'] })
+    expect(transferMove({ value: [], selection: ['apple', 'cherry'], moving: ['apple'], to: 'target' }))
+      .toEqual({ value: ['apple'], selection: ['cherry'] })
   })
 
   it('往左搬：退出 value，勾选同样清掉', () => {
-    expect(transferMove({ value: ['apple', 'cherry'], selected: ['apple'], moving: ['apple'], to: 'source' }))
-      .toEqual({ value: ['cherry'], selected: [] })
+    expect(transferMove({ value: ['apple', 'cherry'], selection: ['apple'], moving: ['apple'], to: 'source' }))
+      .toEqual({ value: ['cherry'], selection: [] })
   })
 
   it('已经在目的地的值不会重复进集合', () => {
-    expect(transferMove({ value: ['apple'], selected: [], moving: ['apple', 'apple', 'cherry'], to: 'target' }).value)
+    expect(transferMove({ value: ['apple'], selection: [], moving: ['apple', 'apple', 'cherry'], to: 'target' }).value)
       .toEqual(['apple', 'cherry'])
   })
 
   it('没勾中任何东西时是恒等变换', () => {
-    const before = { value: ['apple'], selected: ['cherry'] }
+    const before = { value: ['apple'], selection: ['cherry'] }
     expect(transferMove({ ...before, moving: [], to: 'target' })).toEqual(before)
   })
 
   it('oneWay 把往回搬整个封死，往右照常', () => {
-    const state = { value: ['apple', 'cherry'], selected: ['apple'] }
+    const state = { value: ['apple', 'cherry'], selection: ['apple'] }
     expect(transferMove({ ...state, moving: ['apple'], to: 'source', oneWay: true }))
-      .toEqual({ value: ['apple', 'cherry'], selected: ['apple'] })
-    expect(transferMove({ value: [], selected: ['apple'], moving: ['apple'], to: 'target', oneWay: true }))
-      .toEqual({ value: ['apple'], selected: [] })
+      .toEqual({ value: ['apple', 'cherry'], selection: ['apple'] })
+    expect(transferMove({ value: [], selection: ['apple'], moving: ['apple'], to: 'target', oneWay: true }))
+      .toEqual({ value: ['apple'], selection: [] })
   })
 
   it('oneWay 下右侧不接受勾选，左侧照常', () => {
@@ -353,7 +353,7 @@ describe('连接层：初始形态', () => {
   })
 
   it('计数只出数字：可见数与勾中数各一个属性', () => {
-    const h = mount({ defaultValue: ['cherry'], defaultSelected: ['apple'] })
+    const h = mount({ defaultValue: ['cherry'], defaultSelection: ['apple'] })
     expect(h.side('source').count.getAttribute('data-count')).toBe('3')
     expect(h.side('source').count.getAttribute('data-checked-count')).toBe('1')
     expect(h.side('target').count.getAttribute('data-count')).toBe('1')
@@ -383,14 +383,14 @@ describe('连接层：勾选与搬运', () => {
     const h = mount({ onValueChange, onSelectionChange })
 
     click(h.item('source', 'apple'))
-    expect(h.selected()).toEqual(['apple'])
+    expect(h.selection()).toEqual(['apple'])
     expect(h.item('source', 'apple').getAttribute('aria-selected')).toBe('true')
     expect(h.toTarget.disabled).toBe(false)
-    expect(onSelectionChange).toHaveBeenLastCalledWith({ selected: ['apple'] })
+    expect(onSelectionChange).toHaveBeenLastCalledWith({ value: ['apple'] })
 
     click(h.toTarget)
     expect(h.value()).toEqual(['apple'])
-    expect(h.selected()).toEqual([])
+    expect(h.selection()).toEqual([])
     expect(shownOn(h, 'source')).toEqual(['banana', 'cherry', 'durian'])
     expect(shownOn(h, 'target')).toEqual(['apple'])
     expect(h.toTarget.disabled).toBe(true)
@@ -400,18 +400,18 @@ describe('连接层：勾选与搬运', () => {
   it('禁用条目勾不动：点它、以及直接送事件都改不了勾选集合', () => {
     const h = mount()
     click(h.item('source', 'banana'))
-    expect(h.selected()).toEqual([])
+    expect(h.selection()).toEqual([])
     // 程序化入口同样过不去：守卫落在动作里，不是只落在 DOM 上
     h.api().toggle('banana')
-    expect(h.selected()).toEqual([])
+    expect(h.selection()).toEqual([])
   })
 
   it('隐去的那一份点不动：它不属于本侧', () => {
     const h = mount({ defaultValue: ['cherry'] })
     click(h.item('source', 'cherry'))
-    expect(h.selected()).toEqual([])
+    expect(h.selection()).toEqual([])
     click(h.item('target', 'cherry'))
-    expect(h.selected()).toEqual(['cherry'])
+    expect(h.selection()).toEqual(['cherry'])
   })
 
   it('往回搬：右侧勾中的回到左侧', () => {
@@ -420,7 +420,7 @@ describe('连接层：勾选与搬运', () => {
     expect(h.toSource.disabled).toBe(false)
     click(h.toSource)
     expect(h.value()).toEqual(['apple'])
-    expect(h.selected()).toEqual([])
+    expect(h.selection()).toEqual([])
     expect(shownOn(h, 'source')).toEqual(['banana', 'cherry', 'durian'])
   })
 
@@ -430,10 +430,10 @@ describe('连接层：勾选与搬运', () => {
     click(h.item('source', 'cherry'))
     typeIn(h.side('source').search, 'ch')
     // apple 被筛掉了，勾还在但不参与这一次搬运
-    expect(h.selected()).toEqual(['apple', 'cherry'])
+    expect(h.selection()).toEqual(['apple', 'cherry'])
     click(h.toTarget)
     expect(h.value()).toEqual(['cherry'])
-    expect(h.selected()).toEqual(['apple'])
+    expect(h.selection()).toEqual(['apple'])
   })
 })
 
@@ -457,15 +457,15 @@ describe('连接层：全选格三态', () => {
   it('点全选格勾中全部可操作条目（禁用项不进），再点一次取消', () => {
     const h = mount()
     click(h.side('source').selectAll)
-    expect(h.selected()).toEqual(['apple', 'cherry', 'durian'])
+    expect(h.selection()).toEqual(['apple', 'cherry', 'durian'])
     click(h.side('source').selectAll)
-    expect(h.selected()).toEqual([])
+    expect(h.selection()).toEqual([])
   })
 
   it('全选只动本侧：另一侧的勾选纹丝不动', () => {
-    const h = mount({ defaultValue: ['cherry'], defaultSelected: ['cherry'] })
+    const h = mount({ defaultValue: ['cherry'], defaultSelection: ['cherry'] })
     click(h.side('source').selectAll)
-    expect(h.selected()).toEqual(['cherry', 'apple', 'durian'])
+    expect(h.selection()).toEqual(['cherry', 'apple', 'durian'])
     expect(h.side('target').selectAll.getAttribute('aria-checked')).toBe('true')
   })
 
@@ -477,7 +477,7 @@ describe('连接层：全选格三态', () => {
     expect(h.side('source').selectAll.disabled).toBe(true)
     // 禁用的表单控件上 el.click() 会被激活行为短路，直接派事件才验得到守卫
     h.side('source').selectAll.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }))
-    expect(h.selected()).toEqual([])
+    expect(h.selection()).toEqual([])
   })
 })
 
@@ -495,7 +495,7 @@ describe('连接层：roving tabindex 与焦点', () => {
   })
 
   it('焦点进入落在勾中项上，不是落在首项', () => {
-    const h = mount({ defaultSelected: ['cherry'] })
+    const h = mount({ defaultSelection: ['cherry'] })
     expect(h.item('source', 'cherry').getAttribute('tabindex')).toBe('0')
     h.side('source').list.focus()
     expect(focusedValue()).toBe('cherry')
@@ -514,7 +514,7 @@ describe('连接层：roving tabindex 与焦点', () => {
     expect(focusedValue()).toBe('durian')
     press(active(), 'Home')
     expect(focusedValue()).toBe('apple')
-    expect(h.selected()).toEqual([])
+    expect(h.selection()).toEqual([])
   })
 
   it('方向键不跨侧：左栏走到尽头也不会跑到右栏去', () => {
@@ -531,40 +531,40 @@ describe('连接层：roving tabindex 与焦点', () => {
     const h = mount()
     h.side('source').list.focus()
     press(active(), ' ')
-    expect(h.selected()).toEqual(['apple'])
+    expect(h.selection()).toEqual(['apple'])
     press(active(), ' ')
-    expect(h.selected()).toEqual([])
+    expect(h.selection()).toEqual([])
     h.item('source', 'banana').focus()
     press(active(), 'Enter')
-    expect(h.selected()).toEqual([])
+    expect(h.selection()).toEqual([])
   })
 
   it('shift+方向键扩选：移动焦点并切换落点，往回走即摘掉', () => {
-    const h = mount({ defaultSelected: ['apple'] })
+    const h = mount({ defaultSelection: ['apple'] })
     h.side('source').list.focus()
     expect(focusedValue()).toBe('apple')
     press(active(), 'ArrowDown', { shiftKey: true })
     expect(focusedValue()).toBe('cherry')
-    expect(h.selected()).toEqual(['apple', 'cherry'])
+    expect(h.selection()).toEqual(['apple', 'cherry'])
     press(active(), 'ArrowUp', { shiftKey: true })
     expect(focusedValue()).toBe('apple')
-    expect(h.selected()).toEqual(['cherry'])
+    expect(h.selection()).toEqual(['cherry'])
   })
 
   it('ctrl+A 全选本侧可操作条目，再按一次取消', () => {
     const h = mount()
     h.side('source').list.focus()
     press(active(), 'a', { ctrlKey: true })
-    expect(h.selected()).toEqual(['apple', 'cherry', 'durian'])
+    expect(h.selection()).toEqual(['apple', 'cherry', 'durian'])
     press(active(), 'a', { ctrlKey: true })
-    expect(h.selected()).toEqual([])
+    expect(h.selection()).toEqual([])
   })
 
   it('持有焦点的条目被搬走后锚点自动作废，这一侧退回容器兜底', () => {
     const h = mount()
     h.side('source').list.focus()
     press(active(), ' ')
-    expect(h.selected()).toEqual(['apple'])
+    expect(h.selection()).toEqual(['apple'])
     // 直接送事件搬运：不经触发节点，焦点不被安排，锚点得靠投影自己作废
     h.api().move('target')
     expect(h.value()).toEqual(['apple'])
@@ -637,10 +637,10 @@ describe('连接层：oneWay', () => {
     expect(h.side('source').collection.get('apple')!.checkbox.hasAttribute('hidden')).toBe(false)
 
     click(h.item('target', 'cherry'))
-    expect(h.selected()).toEqual([])
+    expect(h.selection()).toEqual([])
     // 程序化入口同样封死
     h.api().toggle('cherry')
-    expect(h.selected()).toEqual([])
+    expect(h.selection()).toEqual([])
     h.api().move('source')
     expect(h.value()).toEqual(['cherry'])
   })
@@ -678,7 +678,7 @@ describe('连接层：搜索', () => {
     click(h.item('source', 'apple'))
     typeIn(h.side('source').search, 'ch')
     // 勾还在集合里，但节点已隐去：一个看不见的节点声称"已选中"只会骗读屏
-    expect(h.selected()).toEqual(['apple'])
+    expect(h.selection()).toEqual(['apple'])
     expect(h.item('source', 'apple').getAttribute('aria-selected')).toBe('false')
     expect(h.side('source').selectAll.getAttribute('aria-checked')).toBe('false')
     typeIn(h.side('source').search, '')
@@ -703,7 +703,7 @@ describe('连接层：搜索', () => {
 
 describe('连接层：整体禁用与受控', () => {
   it('整体禁用：三个按钮都是原生禁用，条目转 aria-disabled 且勾不动', () => {
-    const h = mount({ disabled: true, defaultSelected: ['apple'], defaultValue: ['cherry'] })
+    const h = mount({ disabled: true, defaultSelection: ['apple'], defaultValue: ['cherry'] })
     expect(h.toTarget.disabled).toBe(true)
     expect(h.toSource.disabled).toBe(true)
     expect(h.side('source').selectAll.disabled).toBe(true)
@@ -711,7 +711,7 @@ describe('连接层：整体禁用与受控', () => {
     expect(h.side('source').list.getAttribute('aria-disabled')).toBe('true')
     expect(h.item('source', 'durian').getAttribute('aria-disabled')).toBe('true')
     click(h.item('source', 'durian'))
-    expect(h.selected()).toEqual(['apple'])
+    expect(h.selection()).toEqual(['apple'])
     // 直接派事件绕过原生禁用的短路，验的是连接层与动作里的守卫
     h.toTarget.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }))
     expect(h.value()).toEqual(['cherry'])
@@ -728,11 +728,11 @@ describe('连接层：整体禁用与受控', () => {
     expect(shownOn(h, 'target')).toEqual(['apple', 'cherry'])
   })
 
-  it('受控 selected：同样只发意图', () => {
+  it('受控 selection：同样只发意图', () => {
     const onSelectionChange = vi.fn()
-    const h = mount({ selected: [], onSelectionChange })
+    const h = mount({ selection: [], onSelectionChange })
     click(h.item('source', 'apple'))
-    expect(onSelectionChange).toHaveBeenLastCalledWith({ selected: ['apple'] })
+    expect(onSelectionChange).toHaveBeenLastCalledWith({ value: ['apple'] })
     expect(h.item('source', 'apple').getAttribute('aria-selected')).toBe('false')
   })
 })

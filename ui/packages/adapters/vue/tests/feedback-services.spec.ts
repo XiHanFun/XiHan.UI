@@ -79,7 +79,7 @@ describe('createToastService', () => {
 describe('createDialogService', () => {
   function okButton(): HTMLButtonElement {
     const buttons = [...document.querySelectorAll<HTMLButtonElement>('[data-scope="dialog"] ~ * button, body button')]
-    const target = buttons.find(b => b.textContent!.includes('确定'))
+    const target = buttons.find(b => b.textContent!.includes('OK'))
     if (!target)
       throw new Error('找不到确认钮')
     return target
@@ -87,7 +87,7 @@ describe('createDialogService', () => {
 
   function cancelButton(): HTMLButtonElement {
     const buttons = [...document.querySelectorAll<HTMLButtonElement>('body button')]
-    const target = buttons.find(b => b.textContent!.includes('取消'))
+    const target = buttons.find(b => b.textContent!.includes('Cancel'))
     if (!target)
       throw new Error('找不到取消钮')
     return target
@@ -166,7 +166,7 @@ describe('createDialogService', () => {
     const modal = createDialogService()
     const done = modal.error({ title: '同步失败', content: '稍后重试。' })
     await tick()
-    expect([...document.querySelectorAll('body button')].some(b => b.textContent!.includes('取消'))).toBe(false)
+    expect([...document.querySelectorAll('body button')].some(b => b.textContent!.includes('Cancel'))).toBe(false)
     okButton().click()
     await tick()
     await expect(done).resolves.toBeUndefined()

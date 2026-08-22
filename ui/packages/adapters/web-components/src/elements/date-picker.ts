@@ -93,7 +93,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @attr {boolean} default-open - 非受控初始为展开
  * @attr {string} min - 可选范围下界（含当天），日历与分段输入共用
  * @attr {string} max - 可选范围上界（含当天）
- * @attr {string} locale - 决定周首日、月份文案与段位先后，默认 zh-CN（段序默认 en-US 由分段输入自定）
+ * @attr {string} locale - 决定周首日、月份文案与段位先后；不给按宿主语言，宿主也没有时按 en-US
  * @attr {string} time-zone - 判定"今天"与格式化用的时区，默认宿主本地时区
  * @attr {'single'|'multiple'|'range'} selection-mode - 选择模式，默认 single
  * @attr {'day'|'month'|'quarter'|'year'} view - 挑的粒度，默认 day；输入行铺哪几段也跟着它走

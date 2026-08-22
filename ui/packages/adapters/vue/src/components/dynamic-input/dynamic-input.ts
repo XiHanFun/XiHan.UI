@@ -114,12 +114,12 @@ export const XhDynamicInputAddTrigger = defineComponent({
   },
 })
 
-export const XhDynamicInputRemoveTrigger = defineComponent({
-  name: 'XhDynamicInputRemoveTrigger',
+export const XhDynamicInputItemDeleteTrigger = defineComponent({
+  name: 'XhDynamicInputItemDeleteTrigger',
   setup(_, { slots }) {
     const ctx = useDynamicInputContext()
     const { item } = useDynamicInputItemContext()
-    return () => h('button', ctx.api.value.getRemoveTriggerProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getItemDeleteTriggerProps(item.value) as Record<string, unknown>, slots.default?.())
   },
 })
 

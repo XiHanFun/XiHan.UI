@@ -123,7 +123,10 @@ export interface DatePickerSchema extends MachineSchema {
     min?: string
     /** 可选范围上界（含当天），ISO 串。 */
     max?: string
-    /** 决定周首日、月份文案与段位先后（zh-CN 年月日、en-US 月日年）。 */
+    /**
+     * 决定周首日、月份文案与段位先后（zh-CN 年月日、en-US 月日年）。
+     * 不给按宿主语言，宿主也没有时按 en-US。
+     */
     locale?: string
     /** 判定「今天」与格式化文案用的时区，默认取宿主本地时区。 */
     timeZone?: string

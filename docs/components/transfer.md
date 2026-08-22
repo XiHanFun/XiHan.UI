@@ -91,8 +91,8 @@ oneWay 把往回搬那条路整个封死，右侧不再接受勾选，往回的�
 | `collection` | `TransferItem[]` |  | 条目全集，元信息的唯一事实源。缺省为空。 |
 | `value` | `string[]` |  | 落在 target 侧的值。给定即受控：cell 直读 prop，写只发 onValueChange 不落内部值。 |
 | `defaultValue` | `string[]` |  |  |
-| `selected` | `string[]` |  | 两侧合起来被勾中的值（用于搬运）。给定即受控，语义同上。 |
-| `defaultSelected` | `string[]` |  |  |
+| `selection` | `string[]` |  | 两侧合起来被勾中的值（用于搬运）。给定即受控，语义同上。 |
+| `defaultSelection` | `string[]` |  |  |
 | `searchable` | `boolean` |  | 每侧带一个搜索框；关掉时搜索框仍在 DOM 里但带 hidden，且搜索串一律按空处理。 |
 | `filter` | `TransferFilter` |  | 自定义匹配规则；缺省是标签大小写不敏感包含。 |
 | `disabled` | `boolean` |  | 整个控件禁用：条目转 aria-disabled，三个按钮与搜索框用原生 disabled。 |
@@ -109,7 +109,7 @@ oneWay 把往回搬那条路整个封死，右侧不再接受勾选，往回的�
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `TransferValueChangeDetails` | 落在右侧的值变化；detail 为 `{ value: string[] }` |
-| `selection-change` | `TransferSelectionChangeDetails` | 勾选集合变化；detail 为 `{ selected: string[] }` |
+| `selection-change` | `TransferSelectionChangeDetails` | 勾选集合变化；detail 为 `{ value: string[] }` |
 
 ## 插槽
 
@@ -131,7 +131,7 @@ oneWay 把往回搬那条路整个封死，右侧不再接受勾选，往回的�
 
 **状态**：`idle`
 
-**事件**：`VALUE.SET` · `SELECTED.SET` · `ITEM.TOGGLE` · `SIDE.TOGGLE_ALL` · `ITEMS.MOVE` · `SEARCH.SET` · `ITEM.FOCUS` · `LIST.BLUR`
+**事件**：`VALUE.SET` · `SELECTION.SET` · `ITEM.TOGGLE` · `SIDE.TOGGLE_ALL` · `ITEMS.MOVE` · `SEARCH.SET` · `ITEM.FOCUS` · `LIST.BLUR`
 
 ## connect API
 
@@ -141,7 +141,7 @@ oneWay 把往回搬那条路整个封死，右侧不再接受勾选，往回的�
 | --- | --- | --- |
 | `collection` | `readonly TransferItem[]` | 条目全集（作者给的那份，原样透出）。 |
 | `value` | `string[]` | 落在 target 侧的值。 |
-| `selected` | `string[]` | 两侧合起来被勾中的值。 |
+| `selection` | `string[]` | 两侧合起来被勾中的值。 |
 | `disabled` | `boolean` |  |
 | `oneWay` | `boolean` |  |
 | `searchable` | `boolean` |  |
@@ -153,7 +153,7 @@ oneWay 把往回搬那条路整个封死，右侧不再接受勾选，往回的�
 | `isChecked` | `(value: string) => boolean` |  |
 | `sideOf` | `(value: string) => TransferSide` |  |
 | `setValue` | `(next: string[]) => void` |  |
-| `setSelected` | `(next: string[]) => void` |  |
+| `setSelection` | `(next: string[]) => void` |  |
 | `setQuery` | `(side: TransferSide, query: string) => void` |  |
 | `toggle` | `(value: string) => void` |  |
 | `toggleAll` | `(side: TransferSide) => void` |  |

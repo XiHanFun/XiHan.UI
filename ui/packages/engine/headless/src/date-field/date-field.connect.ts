@@ -11,7 +11,7 @@ import type {
 } from './date-field.types'
 import { getLocalTimeZone, parseDateTime } from '@internationalized/date'
 import { focusSafely, navIntentFromKey, queryItems, readDirection, stepIndex } from '@xihan-ui/behavior'
-import { dataAttr } from '@xihan-ui/kernel'
+import { dataAttr, resolveLocale } from '@xihan-ui/kernel'
 import { dateFieldAnatomy } from './date-field.anatomy'
 import { isMetaSegment } from './date-field.blocks'
 import {
@@ -19,7 +19,6 @@ import {
   compareDateSegments,
   DATE_FIELD_CLEAR_LABEL,
   DATE_FIELD_GRANULARITY,
-  DATE_FIELD_LOCALE,
   DATE_SEGMENT_LABEL,
   DATE_SEGMENT_PLACEHOLDER,
   dateSegmentRange,
@@ -43,7 +42,7 @@ export function connectDateField<T extends PropTypes>(
 ): DateFieldApi<T> {
   const { context, prop, send, scope } = service
 
-  const locale = prop('locale') ?? DATE_FIELD_LOCALE
+  const locale = resolveLocale(prop('locale'), scope)
   const granularity = prop('granularity') ?? DATE_FIELD_GRANULARITY
   const timeZone = prop('timeZone') ?? getLocalTimeZone()
   const disabled = !!prop('disabled')

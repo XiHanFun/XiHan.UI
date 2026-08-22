@@ -1,7 +1,7 @@
 import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { TimeType } from './time.format'
 import type { TimeApi, TimeProps, TimeState } from './time.types'
-import { dataAttr } from '@xihan-ui/kernel'
+import { dataAttr, resolveLocale } from '@xihan-ui/kernel'
 import { timeAnatomy } from './time.anatomy'
 import { formatRelativeTime, formatTimePattern, timeMachineStamp, timeWords, toTimeDate } from './time.format'
 
@@ -35,7 +35,9 @@ export function connectTime<T extends PropTypes>(
   normalize: NormalizeProps<T>,
 ): TimeApi<T> {
   const type = props.type ?? DEFAULT_TYPE
-  const words = timeWords(props.locale)
+  // 无状态机也就没有 scope，宿主语言只能问全局；SSR 期问不到，落到 en-US
+  const locale = resolveLocale(props.locale)
+  const words = timeWords(locale)
 
   const provided = isProvided(props.value)
   const date = provided ? toTimeDate(props.value) : undefined
@@ -47,7 +49,7 @@ export function connectTime<T extends PropTypes>(
   let relative = false
   if (date) {
     if (type === 'relative') {
-      const phrase = formatRelativeTime(date, toTimeDate(props.now) ?? new Date(), props.locale)
+      const phrase = formatRelativeTime(date, toTimeDate(props.now) ?? new Date(), locale)
       relative = phrase !== undefined
       // 退回绝对日期时的格式串：作者给了就用作者的
       text = phrase ?? formatTimePattern(date, props.format ?? words.date)

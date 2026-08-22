@@ -43,7 +43,7 @@ function declaredIndex(el: Element | null | undefined, fallback = 0): number {
  * @attr {string} default-focused-value - 非受控初始聚焦日；缺省时退回首个选中值，再退回今天
  * @attr {string} min - 可选范围下界（含当天），界外的日子转 aria-disabled 但仍可聚焦
  * @attr {string} max - 可选范围上界（含当天）
- * @attr {string} locale - 决定周首日与文案，默认 zh-CN
+ * @attr {string} locale - 决定周首日与文案；不给按宿主语言，宿主也没有时按 en-US
  * @attr {string} time-zone - 判定今天与格式化用的时区，默认宿主本地时区
  * @attr {boolean} disabled - 整张禁用：翻月按钮转原生 disabled，格子全转 aria-disabled
  * @attr {boolean} read-only - 只读：翻月与移动焦点照常，只是选不动值

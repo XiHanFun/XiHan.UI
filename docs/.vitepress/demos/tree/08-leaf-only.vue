@@ -47,7 +47,7 @@ function onSelectionChange(details: { value: string[] }): void {
   <div style="width: 100%; max-width: 320px; display: grid; gap: 12px">
     <XhTreeRoot
       :collection="collection"
-      :selected-value="selected"
+      :selection="selected"
       :default-expanded-value="['src']"
       selection-mode="multiple"
       @selection-change="onSelectionChange"

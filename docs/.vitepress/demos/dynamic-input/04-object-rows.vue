@@ -6,9 +6,9 @@ import {
   XhDynamicInputItem,
   XhDynamicInputItemAction,
   XhDynamicInputItemContent,
+  XhDynamicInputItemDeleteTrigger,
   XhDynamicInputMoveDownTrigger,
   XhDynamicInputMoveUpTrigger,
-  XhDynamicInputRemoveTrigger,
   XhDynamicInputRoot,
 } from "@xihan-ui/vue";
 
@@ -55,7 +55,7 @@ function patch(index: number, key: keyof Header, next: string) {
       <XhDynamicInputItemAction>
         <XhDynamicInputMoveUpTrigger />
         <XhDynamicInputMoveDownTrigger />
-        <XhDynamicInputRemoveTrigger />
+        <XhDynamicInputItemDeleteTrigger />
       </XhDynamicInputItemAction>
     </XhDynamicInputItem>
     <XhDynamicInputAddTrigger>+ 添加请求头</XhDynamicInputAddTrigger>

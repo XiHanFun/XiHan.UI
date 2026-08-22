@@ -76,8 +76,8 @@ export function connectHeatmap<T extends PropTypes>(
   service: Service<HeatmapSchema>,
   normalize: NormalizeProps<T>,
 ): HeatmapApi<T> {
-  const { context, prop, send } = service
-  const options = heatmapGridOptions(prop)
+  const { context, prop, send, scope } = service
+  const options = heatmapGridOptions(prop, scope)
   const variant = prop('variant') ?? 'calendar'
 
   // 只建当前形态那一张网格。日历网格在其余形态下仍给一张空的：

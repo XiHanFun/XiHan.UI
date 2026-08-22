@@ -34,7 +34,7 @@ export function connectDynamicInput<T extends PropTypes>(
   // 新增把手装的是一句话，名字取它自己的内容，这里不覆盖
   const translations = prop('translations')
   const label = {
-    removeTrigger: translations?.removeTrigger ?? ((index: number, total: number) => `Remove row ${index} of ${total}`),
+    deleteItem: translations?.deleteItem ?? ((index: number, total: number) => `Remove row ${index} of ${total}`),
     moveUpTrigger: translations?.moveUpTrigger ?? ((index: number, total: number) => `Move row ${index} of ${total} up`),
     moveDownTrigger: translations?.moveDownTrigger ?? ((index: number, total: number) => `Move row ${index} of ${total} down`),
   }
@@ -161,14 +161,14 @@ export function connectDynamicInput<T extends PropTypes>(
       },
     }),
 
-    getRemoveTriggerProps: item => normalize.button({
-      ...parts['remove-trigger'].attrs,
+    getItemDeleteTriggerProps: item => normalize.button({
+      ...parts['item-delete-trigger'].attrs,
       ...itemAttrs(item),
       'type': 'button',
       // 删完由机器按这个 id 把焦点接到接位的那一行上
-      'id': dynamicInputTriggerId(scope, 'remove-trigger', item.index),
+      'id': dynamicInputTriggerId(scope, 'item-delete-trigger', item.index),
       // 把手里通常只有一个叉，不给名字读屏念不出删的是第几行
-      'aria-label': label.removeTrigger(item.index + 1, count),
+      'aria-label': label.deleteItem(item.index + 1, count),
       // 同新增把手：到下限用 aria-disabled，原生 disabled 不派 click
       'aria-disabled': canRemove(item.index) ? 'false' : 'true',
       'data-disabled': dataAttr(!canRemove(item.index)),

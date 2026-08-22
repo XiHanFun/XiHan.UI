@@ -107,9 +107,9 @@ export const treeMachine = createMachine({
       isEqual: sameValues,
       onChange: value => prop('onExpandedChange')?.({ value }),
     })),
-    selectedValue: cell<string[]>(() => ({
-      value: prop('selectedValue'),
-      defaultValue: prop('defaultSelectedValue') ?? [],
+    selection: cell<string[]>(() => ({
+      value: prop('selection'),
+      defaultValue: prop('defaultSelection') ?? [],
       isEqual: sameValues,
       onChange: value => prop('onSelectionChange')?.({ value }),
     })),
@@ -128,7 +128,7 @@ export const treeMachine = createMachine({
         'BRANCH.EXPAND': { actions: ['expandBranch'] },
         'BRANCH.COLLAPSE': { actions: ['collapseBranch'] },
         'BRANCH.TOGGLE': { actions: ['toggleBranch'] },
-        'SELECTED.SET': { actions: ['setSelected'] },
+        'SELECTION.SET': { actions: ['setSelection'] },
         'NODE.SELECT': { actions: ['selectNode'] },
         'NODE.FOCUS': { actions: ['setFocusedValue'] },
         'TREE.BLUR': { actions: ['clearFocusedValue'] },
@@ -168,31 +168,31 @@ export const treeMachine = createMachine({
           current.includes(e.value) ? current.filter(v => v !== e.value) : [...current, e.value],
         )
       },
-      setSelected: ({ context, prop, event }) => {
+      setSelection: ({ context, prop, event }) => {
         const e = event.current()
-        if (e.type !== 'SELECTED.SET')
+        if (e.type !== 'SELECTION.SET')
           return
-        context.set('selectedValue', normalizeSelection(e.value, treeSelectionMode(prop('selectionMode'))))
+        context.set('selection', normalizeSelection(e.value, treeSelectionMode(prop('selectionMode'))))
       },
       selectNode: ({ context, prop, event }) => {
         const e = event.current()
         if (e.type !== 'NODE.SELECT')
           return
-        const current = context.get('selectedValue')
+        const current = context.get('selection')
         // 单选没有取消选中这回事，点两下不会把树点空
         if (treeSelectionMode(prop('selectionMode')) === 'single') {
-          context.set('selectedValue', [e.value])
+          context.set('selection', [e.value])
           return
         }
         // 级联：整枝传导后按收敛策略落对外值；朴素切换只动被点的那一个
         if (prop('cascade')) {
           const roots = prop('collection') ?? []
           const state = cascadeToggle(roots, current, e.value)
-          context.set('selectedValue', collapseChecked(roots, state.checked, prop('checkedStrategy') ?? 'child'))
+          context.set('selection', collapseChecked(roots, state.checked, prop('checkedStrategy') ?? 'child'))
           return
         }
         context.set(
-          'selectedValue',
+          'selection',
           current.includes(e.value) ? current.filter(v => v !== e.value) : [...current, e.value],
         )
       },

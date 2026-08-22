@@ -1,7 +1,7 @@
 export { timeAnatomy } from './time.anatomy'
 export { connectTime } from './time.connect'
 export { formatRelativeTime, formatTimePattern, TIME_RELATIVE_LIMIT, timeMachineStamp, toTimeDate } from './time.format'
-export type { TimeLocale, TimeType, TimeValue } from './time.format'
+export type { TimeType, TimeValue } from './time.format'
 export { timeKeyboard } from './time.keyboard'
 export { timeMeta } from './time.meta'
 export type { TimeApi, TimeProps, TimeState, TimeTranslations } from './time.types'

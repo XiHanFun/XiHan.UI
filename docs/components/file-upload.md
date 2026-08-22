@@ -221,7 +221,7 @@ remote-files 装编辑表单里已存在的附件：与本地文件同列渲染�
 | `item-group` | `role` | 'list' |
 | `item` | `role` | 'listitem' |
 | `item-preview` | `aria-hidden` | 'true' |
-| `item-delete-trigger` | `aria-label` | label.deleteFile(file) |
+| `item-delete-trigger` | `aria-label` | label.deleteItem(file) |
 | `clear-trigger` | `aria-label` | label.clearTrigger |
 
 ## 样式

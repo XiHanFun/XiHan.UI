@@ -52,8 +52,8 @@ function mountTree(opts: { checkedStrategy?: 'all' | 'parent' | 'child', default
         'cascade': true,
         'checkedStrategy': opts.checkedStrategy,
         'defaultExpandedValue': ['east'],
-        'selectedValue': selected.value,
-        'onUpdate:selectedValue': (v: string[]) => {
+        'selection': selected.value,
+        'onUpdate:selection': (v: string[]) => {
           selected.value = v
         },
       }, () => [

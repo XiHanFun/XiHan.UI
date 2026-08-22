@@ -1,4 +1,4 @@
-<!-- 受控 | 传了 expandedValue / selectedValue 就由宿主说了算，组件只发事件不落内部值，宿主写回它才动 -->
+<!-- 受控 | 传了 expandedValue / selection 就由宿主说了算，组件只发事件不落内部值，宿主写回它才动 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import {
@@ -54,7 +54,7 @@ function onSelectionChange(details: { value: string[] }) {
     <XhTreeRoot
       :collection="collection"
       :expanded-value="expanded"
-      :selected-value="selected"
+      :selection="selected"
       @expanded-change="onExpandedChange"
       @selection-change="onSelectionChange"
     >

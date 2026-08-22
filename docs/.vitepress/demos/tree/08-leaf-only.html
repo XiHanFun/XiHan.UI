@@ -78,10 +78,10 @@
   );
 
   // 分支的值在写回时滤掉，选中集合里只留叶子
-  tree.selectedValue = [];
+  tree.selection = [];
   tree.addEventListener("selection-change", (event) => {
     const value = event.detail.value.filter((one) => leaves.has(one));
-    tree.selectedValue = value;
+    tree.selection = value;
     readout.textContent = value.join("、") || "（无）";
   });
 </script>

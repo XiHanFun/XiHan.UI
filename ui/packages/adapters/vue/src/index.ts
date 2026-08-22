@@ -299,7 +299,7 @@ export { useDrawer } from './components/drawer/use-drawer'
 export type { DrawerContext } from './components/drawer/use-drawer'
 export { provideDynamicInput, provideDynamicInputItem, useDynamicInputContext, useDynamicInputItemContext } from './components/dynamic-input/context'
 export type { DynamicInputItemContext } from './components/dynamic-input/context'
-export { XhDynamicInputAddTrigger, XhDynamicInputItem, XhDynamicInputItemAction, XhDynamicInputItemContent, XhDynamicInputMoveDownTrigger, XhDynamicInputMoveUpTrigger, XhDynamicInputRemoveTrigger, XhDynamicInputRoot } from './components/dynamic-input/dynamic-input'
+export { XhDynamicInputAddTrigger, XhDynamicInputItem, XhDynamicInputItemAction, XhDynamicInputItemContent, XhDynamicInputItemDeleteTrigger, XhDynamicInputMoveDownTrigger, XhDynamicInputMoveUpTrigger, XhDynamicInputRoot } from './components/dynamic-input/dynamic-input'
 export type { DynamicInputRootSlotProps } from './components/dynamic-input/dynamic-input'
 export { useDynamicInput } from './components/dynamic-input/use-dynamic-input'
 export type { DynamicInputContext } from './components/dynamic-input/use-dynamic-input'
@@ -650,6 +650,7 @@ export {
   XhSelectFooter,
   XhSelectIndicator,
   XhSelectItem,
+  XhSelectItemDeleteTrigger,
   XhSelectItemIndicator,
   XhSelectItemText,
   XhSelectLabel,
@@ -657,7 +658,6 @@ export {
   XhSelectPositioner,
   XhSelectRoot,
   XhSelectTag,
-  XhSelectTagRemove,
   XhSelectTrigger,
   XhSelectValueText,
 } from './components/select/select'

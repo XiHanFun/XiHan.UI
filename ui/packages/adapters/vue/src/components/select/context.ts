@@ -33,7 +33,7 @@ export function useSelectItemContext(): SelectItemContext {
   return ctx
 }
 
-/** 标签自报的值，供 tag-remove 复用同一份声明。 */
+/** 标签自报的值，供 item-delete-trigger 复用同一份声明。 */
 export interface SelectTagContext {
   value: () => string
 }

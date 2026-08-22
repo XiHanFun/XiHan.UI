@@ -14,7 +14,7 @@ export type TreeRootSlotProps = Pick<
   TreeApi,
   | 'visibleNodes'
   | 'expandedValue'
-  | 'selectedValue'
+  | 'selection'
   | 'focusedValue'
   | 'isExpanded'
   | 'isSelected'
@@ -53,8 +53,8 @@ export const XhTreeRoot = defineComponent({
     collection: { type: Array as PropType<TreeNode[]>, default: undefined },
     expandedValue: { type: Array as PropType<string[]>, default: undefined },
     defaultExpandedValue: { type: Array as PropType<string[]>, default: undefined },
-    selectedValue: { type: Array as PropType<string[]>, default: undefined },
-    defaultSelectedValue: { type: Array as PropType<string[]>, default: undefined },
+    selection: { type: Array as PropType<string[]>, default: undefined },
+    defaultSelection: { type: Array as PropType<string[]>, default: undefined },
     selectionMode: { type: String as PropType<TreeSelectionMode>, default: undefined },
     cascade: Boolean,
     checkedStrategy: { type: String as PropType<TreeProps['checkedStrategy']>, default: undefined },
@@ -69,7 +69,7 @@ export const XhTreeRoot = defineComponent({
     'expanded-change': (_details: PayloadOf<TreeProps, 'onExpandedChange'>) => true,
     'update:expandedValue': (_value: PayloadOf<TreeProps, 'onExpandedChange'>['value']) => true,
     'selection-change': (_details: PayloadOf<TreeProps, 'onSelectionChange'>) => true,
-    'update:selectedValue': (_value: PayloadOf<TreeProps, 'onSelectionChange'>['value']) => true,
+    'update:selection': (_value: PayloadOf<TreeProps, 'onSelectionChange'>['value']) => true,
   },
   slots: Object as SlotsType<{
     default?: (props: TreeRootSlotProps) => VNode[]
@@ -81,14 +81,14 @@ export const XhTreeRoot = defineComponent({
     }
     const onSelectionChange: TreeProps['onSelectionChange'] = (details) => {
       emit('selection-change', details)
-      emit('update:selectedValue', details.value)
+      emit('update:selection', details.value)
     }
     const ctx = useTree(props as TreeProps, onExpandedChange, onSelectionChange)
     provideTree(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       visibleNodes: ctx.api.value.visibleNodes,
       expandedValue: ctx.api.value.expandedValue,
-      selectedValue: ctx.api.value.selectedValue,
+      selection: ctx.api.value.selection,
       focusedValue: ctx.api.value.focusedValue,
       isExpanded: ctx.api.value.isExpanded,
       isSelected: ctx.api.value.isSelected,

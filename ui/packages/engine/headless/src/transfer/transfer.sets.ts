@@ -48,18 +48,18 @@ export function transferOperableValues(visible: readonly TransferItem[]): string
 }
 
 /** 可操作条目里被勾中的那些，顺序随可操作集合。 */
-export function transferCheckedValues(operable: readonly string[], selected: readonly string[]): string[] {
-  return operable.filter(v => selected.includes(v))
+export function transferCheckedValues(operable: readonly string[], selection: readonly string[]): string[] {
+  return operable.filter(v => selection.includes(v))
 }
 
 /** 一侧的整体勾选态。可操作集合为空时恒为 unchecked。 */
 export function transferCheckState(
   operable: readonly string[],
-  selected: readonly string[],
+  selection: readonly string[],
 ): TransferCheckState {
   if (operable.length === 0)
     return 'unchecked'
-  const hit = transferCheckedValues(operable, selected).length
+  const hit = transferCheckedValues(operable, selection).length
   if (hit === 0)
     return 'unchecked'
   return hit === operable.length ? 'checked' : 'indeterminate'
@@ -71,26 +71,26 @@ export function transferCheckState(
  */
 export function transferToggleAll(
   operable: readonly string[],
-  selected: readonly string[],
+  selection: readonly string[],
 ): string[] {
   if (operable.length === 0)
-    return [...selected]
-  const all = operable.every(v => selected.includes(v))
+    return [...selection]
+  const all = operable.every(v => selection.includes(v))
   if (all)
-    return selected.filter(v => !operable.includes(v))
-  return [...selected, ...operable.filter(v => !selected.includes(v))]
+    return selection.filter(v => !operable.includes(v))
+  return [...selection, ...operable.filter(v => !selection.includes(v))]
 }
 
 /** 翻转单个值的勾选态。新值按点击先后追加，不按全集顺序重排。 */
-export function transferToggleValue(selected: readonly string[], value: string): string[] {
-  return selected.includes(value) ? selected.filter(v => v !== value) : [...selected, value]
+export function transferToggleValue(selection: readonly string[], value: string): string[] {
+  return selection.includes(value) ? selection.filter(v => v !== value) : [...selection, value]
 }
 
 export interface TransferMoveInput {
   /** 当前 target 侧集合。 */
   value: readonly string[]
   /** 当前勾选集合。 */
-  selected: readonly string[]
+  selection: readonly string[]
   /** 这一次要搬走的值（调用方已按"可操作且勾中"算好）。 */
   moving: readonly string[]
   /** 搬到哪一侧。 */
@@ -100,7 +100,7 @@ export interface TransferMoveInput {
 
 export interface TransferMoveResult {
   value: string[]
-  selected: string[]
+  selection: string[]
 }
 
 /**
@@ -108,13 +108,13 @@ export interface TransferMoveResult {
  * oneWay 在这里再挡一道：程序化入口与合成事件绕得过 DOM 上的禁用。
  */
 export function transferMove(input: TransferMoveInput): TransferMoveResult {
-  const { value, selected, moving, to, oneWay = false } = input
+  const { value, selection, moving, to, oneWay = false } = input
   if (to === 'source' && oneWay)
-    return { value: [...value], selected: [...selected] }
+    return { value: [...value], selection: [...selection] }
 
   const move = new Set(moving)
   const nextValue = to === 'target'
     ? [...value, ...[...move].filter(v => !value.includes(v))]
     : value.filter(v => !move.has(v))
-  return { value: nextValue, selected: selected.filter(v => !move.has(v)) }
+  return { value: nextValue, selection: selection.filter(v => !move.has(v)) }
 }
