@@ -98,7 +98,7 @@ export interface FileUploadTranslations {
   /** 投放区的兜底可及名字：作者写了 label 部件时以 label 为准。 */
   dropzone: string
   /** 单条删除按钮的可及名字；只写一个"删除"读屏分不出删的是哪一条。 */
-  deleteFile: (file: FileUploadFile) => string
+  deleteItem: (file: FileUploadFile) => string
   /** 清空按钮的可及名字。 */
   clearTrigger: string
 }

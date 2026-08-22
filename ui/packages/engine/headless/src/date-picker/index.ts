@@ -8,6 +8,7 @@ export {
   datePickerFieldEndProps,
   datePickerFieldProps,
   datePickerFocusedValue,
+  datePickerLocale,
   datePickerMachine,
   datePickerSegmentSet,
   datePickerShowTime,

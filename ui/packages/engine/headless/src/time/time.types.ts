@@ -1,5 +1,5 @@
 import type { PropTypes } from '@xihan-ui/kernel'
-import type { TimeLocale, TimeType, TimeValue } from './time.format'
+import type { TimeType, TimeValue } from './time.format'
 
 /** 根的三态：拿到了一个认得出的时刻 / 没给时刻 / 给了但认不出。 */
 export type TimeState = 'ready' | 'empty' | 'invalid'
@@ -14,8 +14,11 @@ export interface TimeProps {
    * 给了就顶掉该 locale 的缺省格式串；relative 型下只在退回绝对日期时用得上。
    */
   format?: string
-  /** 用词：zh-CN 或 en，缺省 zh-CN。它只换给人看的文本，datetime 恒是同一种写法。 */
-  locale?: TimeLocale
+  /**
+   * BCP 47 语言标记，决定用词与缺省格式串：zh 开头用中文那套，其余一律英文。
+   * 不给按宿主语言，宿主也没有时按 en-US。它只换给人看的文本，datetime 恒是同一种写法。
+   */
+  locale?: string
   /** 算相对说法时的参照时刻，缺省取当前时刻。给定后整个组件的产出完全由入参决定。 */
   now?: TimeValue
 }

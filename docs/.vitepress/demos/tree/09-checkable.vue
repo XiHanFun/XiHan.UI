@@ -42,7 +42,7 @@ const selected = ref<string[]>(["hz"]);
 <template>
   <div style="display: grid; gap: 8px; justify-items: start">
     <XhTreeRoot
-      v-model:selected-value="selected"
+      v-model:selection="selected"
       :collection="collection"
       :default-expanded-value="['east', 'north']"
       selection-mode="multiple"

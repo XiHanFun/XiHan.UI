@@ -711,7 +711,7 @@
 }
 
 /* —— 行内三个把手 —— */
-[data-scope='dynamic-input'][data-part='remove-trigger'],
+[data-scope='dynamic-input'][data-part='item-delete-trigger'],
 [data-scope='dynamic-input'][data-part='move-up-trigger'],
 [data-scope='dynamic-input'][data-part='move-down-trigger'] {
   display: inline-flex;
@@ -732,7 +732,7 @@
 }
 
 /* 行级删除把手：命中区取行内动作按钮尺寸，圆角取控件圆角 */
-[data-scope='dynamic-input'][data-part='remove-trigger'] {
+[data-scope='dynamic-input'][data-part='item-delete-trigger'] {
   inline-size: var(--xh-dynamic-input-trigger-size, var(--xh-control-action-size));
   block-size: var(--xh-dynamic-input-trigger-size, var(--xh-control-action-size));
   border-radius: var(--xh-dynamic-input-trigger-radius, var(--xh-shape-control));
@@ -747,21 +747,21 @@
 
 /* 不换序时连接层给换序把手写 hidden；上面那条 display 会把 UA 的 [hidden]{display:none}
    盖掉，少了这条把手还留在原地。删除把手同样声明了 display，作者自己收起它时要的是同一条 */
-[data-scope='dynamic-input'][data-part='remove-trigger'][hidden],
+[data-scope='dynamic-input'][data-part='item-delete-trigger'][hidden],
 [data-scope='dynamic-input'][data-part='move-up-trigger'][hidden],
 [data-scope='dynamic-input'][data-part='move-down-trigger'][hidden] {
   display: none;
 }
 
 /* 按不动的把手不给悬停与按下反馈：它仍然可聚焦、可点，反馈会让人以为点得动 */
-[data-scope='dynamic-input'][data-part='remove-trigger']:hover:not([aria-disabled='true']),
+[data-scope='dynamic-input'][data-part='item-delete-trigger']:hover:not([aria-disabled='true']),
 [data-scope='dynamic-input'][data-part='move-up-trigger']:hover:not([aria-disabled='true']),
 [data-scope='dynamic-input'][data-part='move-down-trigger']:hover:not([aria-disabled='true']) {
   background: var(--xh-dynamic-input-trigger-bg-hover, var(--xh-bg-subtle-hover));
   color: var(--xh-dynamic-input-trigger-fg-hover, var(--xh-fg-default));
 }
 
-[data-scope='dynamic-input'][data-part='remove-trigger']:not([aria-disabled='true']):active,
+[data-scope='dynamic-input'][data-part='item-delete-trigger']:not([aria-disabled='true']):active,
 [data-scope='dynamic-input'][data-part='move-up-trigger']:not([aria-disabled='true']):active,
 [data-scope='dynamic-input'][data-part='move-down-trigger']:not([aria-disabled='true']):active {
   background: var(--xh-dynamic-input-trigger-bg-active, var(--xh-bg-subtle-active));
@@ -769,11 +769,11 @@
 }
 
 /* 删除把手悬停转危险色：它是这一行里唯一不可撤销的动作 */
-[data-scope='dynamic-input'][data-part='remove-trigger']:hover:not([aria-disabled='true']) {
-  color: var(--xh-dynamic-input-remove-fg-hover, var(--xh-fg-danger-hover));
+[data-scope='dynamic-input'][data-part='item-delete-trigger']:hover:not([aria-disabled='true']) {
+  color: var(--xh-dynamic-input-item-delete-fg-hover, var(--xh-fg-danger-hover));
 }
 
-[data-scope='dynamic-input'][data-part='remove-trigger']:focus-visible,
+[data-scope='dynamic-input'][data-part='item-delete-trigger']:focus-visible,
 [data-scope='dynamic-input'][data-part='move-up-trigger']:focus-visible,
 [data-scope='dynamic-input'][data-part='move-down-trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
@@ -782,7 +782,7 @@
 
 /* 到上下限、或整份禁用时用 aria-disabled 表达（原生 disabled 不派 click，禁用守卫走不到），
    所以样式也得认这个属性，写 :disabled 永远不命中 */
-[data-scope='dynamic-input'][data-part='remove-trigger'][aria-disabled='true'],
+[data-scope='dynamic-input'][data-part='item-delete-trigger'][aria-disabled='true'],
 [data-scope='dynamic-input'][data-part='move-up-trigger'][aria-disabled='true'],
 [data-scope='dynamic-input'][data-part='move-down-trigger'][aria-disabled='true'] {
   background: transparent;
@@ -861,7 +861,7 @@
   mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
 }
 
-[data-scope='dynamic-input'][data-part='remove-trigger']:empty::before {
+[data-scope='dynamic-input'][data-part='item-delete-trigger']:empty::before {
   content: '';
   display: inline-block;
   inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
@@ -17399,7 +17399,7 @@ input[data-scope='mention'][data-part='input'] {
   outline-offset: var(--xh-ring-offset);
 }
 
-/* 多选标签：淡底小药丸；放触发器里是纯展示，放外面配 tag-remove 可删 */
+/* 多选标签：淡底小药丸；放触发器里是纯展示，放外面配 item-delete-trigger 可删 */
 [data-scope='select'][data-part='tag'] {
   display: inline-flex;
   align-items: center;
@@ -17419,41 +17419,41 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 /* 标签内的删除钮：与指示符同尺寸的小钮，贴着标签文字 */
-[data-scope='select'][data-part='tag-remove'] {
+[data-scope='select'][data-part='item-delete-trigger'] {
   display: inline-grid;
   place-items: center;
-  inline-size: var(--xh-select-tag-remove-size, var(--xh-control-indicator-size));
-  block-size: var(--xh-select-tag-remove-size, var(--xh-control-indicator-size));
+  inline-size: var(--xh-select-item-delete-size, var(--xh-control-indicator-size));
+  block-size: var(--xh-select-item-delete-size, var(--xh-control-indicator-size));
   padding: 0;
   border: none;
-  border-radius: var(--xh-select-tag-remove-radius, var(--xh-shape-inset));
+  border-radius: var(--xh-select-item-delete-radius, var(--xh-shape-inset));
   background: none;
-  color: var(--xh-select-tag-remove-fg, var(--xh-fg-subtle));
+  color: var(--xh-select-item-delete-fg, var(--xh-fg-subtle));
   font-size: inherit;
   cursor: pointer;
   transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
-[data-scope='select'][data-part='tag-remove'][hidden] {
+[data-scope='select'][data-part='item-delete-trigger'][hidden] {
   display: none;
 }
 
-[data-scope='select'][data-part='tag-remove']:hover {
-  background: var(--xh-select-tag-remove-bg-hover, var(--xh-bg-subtle-hover));
-  color: var(--xh-select-tag-remove-fg-hover, var(--xh-fg-default));
+[data-scope='select'][data-part='item-delete-trigger']:hover {
+  background: var(--xh-select-item-delete-bg-hover, var(--xh-bg-subtle-hover));
+  color: var(--xh-select-item-delete-fg-hover, var(--xh-fg-default));
 }
 
-[data-scope='select'][data-part='tag-remove']:active {
-  background: var(--xh-select-tag-remove-bg-active, var(--xh-bg-subtle-active));
+[data-scope='select'][data-part='item-delete-trigger']:active {
+  background: var(--xh-select-item-delete-bg-active, var(--xh-bg-subtle-active));
   scale: var(--xh-motion-scale-press);
 }
 
-[data-scope='select'][data-part='tag-remove']:focus-visible {
+[data-scope='select'][data-part='item-delete-trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-_select-ring);
   outline-offset: var(--xh-ring-offset);
 }
 
-[data-scope='select'][data-part='tag-remove'][data-disabled] {
+[data-scope='select'][data-part='item-delete-trigger'][data-disabled] {
   color: var(--xh-fg-disabled);
   cursor: not-allowed;
 }
@@ -17695,7 +17695,7 @@ input[data-scope='mention'][data-part='input'] {
   mask: var(--xh-glyph-mark-close) center / contain no-repeat;
 }
 
-[data-scope='select'][data-part='tag-remove']:empty::before {
+[data-scope='select'][data-part='item-delete-trigger']:empty::before {
   content: '';
   display: inline-block;
   inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));

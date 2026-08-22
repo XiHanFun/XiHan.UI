@@ -36,7 +36,7 @@ function onReject(details: { files: { file: File; reasons: string[] }[] }) {
 
 // 单条删除按钮的可及名字带上文件名，读屏才分得出删的是哪一条
 const translations = {
-  deleteFile: (file: File) => `删除 ${file.name}`,
+  deleteItem: (file: File) => `删除 ${file.name}`,
   clearTrigger: "清空全部",
 };
 </script>

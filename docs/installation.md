@@ -133,8 +133,8 @@ import { XhDialogContent, XhDialogRoot, XhDialogTitle, XhDialogTrigger } from '@
 包声明了 `sideEffects: false`，打包器会摇掉没用到的组件。库包**不提供**每个组件独立的子路径导出，按需靠的是 tree-shaking，不是手写路径。
 
 ::: tip 中文项目还差一步
-组件的内建文案（关闭钮的读屏名、分页的翻页说明这类）默认是英文，日期时间系组件另收一个 `locale`。
-在根组件里 `provideXhConfig({ locale: 'zh-CN', translations: { … } })` 全局配一次即可，不必逐实例传
+组件的内建文案（关闭钮的读屏名、分页的翻页说明这类）默认是英文；日期时间系组件另收一个 `locale`，不给它就跟着浏览器语言走、读不到才落 `en-US`。
+要把两样都钉死成中文，在根组件里 `provideXhConfig({ locale: 'zh-CN', translations: { … } })` 全局配一次即可，不必逐实例传
 `:translations`——文档站的示例都是孤立片段，所以逐个传，真实应用不该那么写。见[国际化](./guide/i18n)。
 :::
 

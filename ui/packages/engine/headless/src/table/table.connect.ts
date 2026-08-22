@@ -444,6 +444,9 @@ export function connectTable<T extends PropTypes>(
       const colSpan = cell.colSpan != null && cell.colSpan > 1 ? cell.colSpan : undefined
       return normalize.element({
         ...parts.cell.attrs,
+        // 列身份与表头格发同一份：少了它，使用者按列写的样式只命中表头，
+        // 同一列在表头与表体分到的余量就不一样，列边界跟着错开
+        [ITEM_VALUE_ATTR]: cell.value,
         'role': 'gridcell',
         'aria-colindex': columnIndex.get(cell.value),
         'aria-colspan': colSpan,

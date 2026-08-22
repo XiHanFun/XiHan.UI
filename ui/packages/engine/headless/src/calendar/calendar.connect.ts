@@ -5,13 +5,12 @@ import type { CalendarView } from './calendar.grid'
 import type { CalendarApi, CalendarCellProps, CalendarPanel, CalendarSchema } from './calendar.types'
 import { DateFormatter, endOfMonth, getLocalTimeZone, startOfMonth, today } from '@internationalized/date'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
-import { dataAttr } from '@xihan-ui/kernel'
+import { dataAttr, resolveLocale } from '@xihan-ui/kernel'
 import { calendarAnatomy } from './calendar.anatomy'
 import {
   buildMonthGrid,
   buildPeriodGrid,
   buildWeekDays,
-  CALENDAR_LOCALE,
   calendarDrillAnchor,
   calendarHeadingPieces,
   calendarNavFromKey,
@@ -47,7 +46,7 @@ export function connectCalendar<T extends PropTypes>(
 ): CalendarApi<T> {
   const { context, prop, send, scope } = service
 
-  const locale = prop('locale') ?? CALENDAR_LOCALE
+  const locale = resolveLocale(prop('locale'), scope)
   const timeZone = prop('timeZone') ?? getLocalTimeZone()
   const mode = prop('selectionMode') ?? 'single'
   const calendarDisabled = !!prop('disabled')
@@ -115,8 +114,8 @@ export function connectCalendar<T extends PropTypes>(
         month: g.month,
         startValue: g.monthStart,
         weeks: g.weeks,
-        // 每行取行首那天算周序号：ISO 周一起算，行首正是周一（zh-CN）
-        weekNumbers: g.weeks.map(row => isoWeekNumber(row[0]!.value)),
+        // 每行取行中那天算周序号：行首日随 locale 变（周日或周一），行中那天恒落在这一行覆盖的那个 ISO 周里
+        weekNumbers: g.weeks.map(row => isoWeekNumber(row[3]!.value)),
         cells: [],
         headingLabel: headingFormatter.format(start.toDate(timeZone)),
         headingYear: pieces.year,

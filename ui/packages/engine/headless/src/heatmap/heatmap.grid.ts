@@ -18,17 +18,20 @@ export const HEATMAP_WEEK_LENGTH = 7
 /** 缺省档数：0 档表示当天没有数据，其余四档按最大值均分。 */
 export const HEATMAP_LEVELS = 5
 
-/** 缺省 locale，决定月份名与星期名怎么写。 */
-export const HEATMAP_LOCALE = 'zh-CN'
+/**
+ * 这些纯函数没拿到 locale 时用的兜底，决定月份名与星期名怎么写。
+ * 连接层不走这里：它先按宿主语言解析，解析不出才落到同一个值。
+ */
+export const HEATMAP_LOCALE = 'en-US'
 
 /** 缺省周首日，1 = 星期一（网格的第一行）。 */
 export const HEATMAP_FIRST_DAY_OF_WEEK = 1
 
 /**
- * 色阶对照条两端的缺省文字。
- * 它是写进界面的可见文本，与月份名、星期名同类，因此按缺省 locale 写而不是英文。
+ * 色阶对照条两端的缺省文字。它是写进界面的可见文本，与其余内建文案同一口径写英文，
+ * 换语言经 translations 的 legendLow / legendHigh。
  */
-export const HEATMAP_LEGEND_TEXT: { low: string, high: string } = { low: '少', high: '多' }
+export const HEATMAP_LEGEND_TEXT: { low: string, high: string } = { low: 'Less', high: 'More' }
 
 /** 三种形态：连续周列的日历、按自然月分块的月历、行列由作者给的矩阵。 */
 export type HeatmapVariant = 'calendar' | 'month' | 'matrix'

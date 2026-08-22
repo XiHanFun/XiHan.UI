@@ -252,10 +252,10 @@ export function connectSelect<T extends PropTypes>(
       'data-value': v,
       'data-disabled': dataAttr(disabled),
     }),
-    getTagRemoveProps: ({ value: v }) => normalize.button({
-      ...parts['tag-remove'].attrs,
+    getItemDeleteTriggerProps: ({ value: v }) => normalize.button({
+      ...parts['item-delete-trigger'].attrs,
       'type': 'button',
-      'aria-label': (prop('translations')?.removeTag ?? 'Remove {label}').replace('{label}', tagLabel(v)),
+      'aria-label': (prop('translations')?.deleteItem ?? ((label: string) => `Delete ${label}`))(tagLabel(v)),
       'data-disabled': dataAttr(disabled),
       'onClick': () => {
         if (interactive)

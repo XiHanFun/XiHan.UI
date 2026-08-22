@@ -43,7 +43,7 @@ export function connectTagsInput<T extends PropTypes>(
 
   const translations = prop('translations')
   const label = {
-    deleteTagTrigger: translations?.deleteTagTrigger ?? ((tag: string) => `Delete ${tag}`),
+    deleteItem: translations?.deleteItem ?? ((tag: string) => `Delete ${tag}`),
     editTagInput: translations?.editTagInput ?? ((tag: string) => `Edit ${tag}`),
     clearTrigger: translations?.clearTrigger ?? 'Clear',
   }
@@ -327,7 +327,7 @@ export function connectTagsInput<T extends PropTypes>(
       ...parts['item-delete-trigger'].attrs,
       'type': 'button',
       // 按钮里通常只有一个叉，不给名字读屏念不出删的是哪一个
-      'aria-label': label.deleteTagTrigger(item.value),
+      'aria-label': label.deleteItem(item.value),
       // 不占 Tab 位：标签一多每个都占停靠点会让 Tab 没法用，键盘那一路走方向键与 Backspace/Delete
       'tabindex': -1,
       // 单体按钮用原生 disabled：改不动的时候不该能被激活

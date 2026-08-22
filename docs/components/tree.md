@@ -36,7 +36,7 @@ selectionMode 默认 single，改成 multiple 后点击与确认键都变成切�
 
 ### 受控
 
-传了 expandedValue / selectedValue 就由宿主说了算，组件只发事件不落内部值，宿主写回它才动
+传了 expandedValue / selection 就由宿主说了算，组件只发事件不落内部值，宿主写回它才动
 
 <XhDemo src="tree/03-controlled" />
 
@@ -105,8 +105,8 @@ selection-mode="multiple" 加 cascade 内建父子传导：点分支整枝勾上
 | `collection` | `TreeNode[]` |  | 树数据，层级元信息的唯一事实源。缺省为空树。 |
 | `expandedValue` | `string[]` |  | 展开集合。给定即受控：cell 直读 prop，写只发 onExpandedChange 不落内部值。 |
 | `defaultExpandedValue` | `string[]` |  |  |
-| `selectedValue` | `string[]` |  | 选中集合。给定即受控，语义同上。 |
-| `defaultSelectedValue` | `string[]` |  |  |
+| `selection` | `string[]` |  | 选中集合。给定即受控，语义同上。 |
+| `defaultSelection` | `string[]` |  |  |
 | `selectionMode` | `TreeSelectionMode` |  | 默认 single。 |
 | `cascade` | `boolean` |  | multiple 下父子级联勾选：点分支整枝传导、子全勾父勾、部分勾中半选， 禁用子树整棵冻结。默认 false（朴素切换）；single 下无效。 |
 | `checkedStrategy` | `CascadeStrategy` |  | 级联下对外值的收敛策略，默认 child（只收叶）；parent = 最高整枝，all = 全部勾中节点。 |
@@ -141,7 +141,7 @@ selection-mode="multiple" 加 cascade 内建父子传导：点分支整枝勾上
 
 **状态**：`idle`
 
-**事件**：`EXPANDED.SET` · `BRANCH.EXPAND` · `BRANCH.COLLAPSE` · `BRANCH.TOGGLE` · `SELECTED.SET` · `NODE.SELECT` · `NODE.FOCUS` · `TREE.BLUR`
+**事件**：`EXPANDED.SET` · `BRANCH.EXPAND` · `BRANCH.COLLAPSE` · `BRANCH.TOGGLE` · `SELECTION.SET` · `NODE.SELECT` · `NODE.FOCUS` · `TREE.BLUR`
 
 ## connect API
 
@@ -152,7 +152,7 @@ selection-mode="multiple" 加 cascade 内建父子传导：点分支整枝勾上
 | `collection` | `readonly TreeNode[]` | 作者给的原始树数据。 |
 | `visibleNodes` | `readonly TreeVisibleNode[]` | 当前可见行序列（收起分支的子树不在其中）。 方向键、Home/End 与连打检索都在它上面走，不是在原始树上走。 |
 | `expandedValue` | `string[]` |  |
-| `selectedValue` | `string[]` |  |
+| `selection` | `string[]` |  |
 | `focusedValue` | `string \| null` | 焦点锚点；焦点不在树内、或它已被收起而不可见时为 null。 |
 | `selectionMode` | `TreeSelectionMode` |  |
 | `disabled` | `boolean` |  |
@@ -160,7 +160,7 @@ selection-mode="multiple" 加 cascade 内建父子传导：点分支整枝勾上
 | `isSelected` | `(value: string) => boolean` |  |
 | `isIndeterminate` | `(value: string) => boolean` | 级联模式下该分支是否半选（有效叶后代有勾有不勾）；非级联恒 false。 |
 | `setExpandedValue` | `(next: string[]) => void` |  |
-| `setSelectedValue` | `(next: string[]) => void` |  |
+| `setSelection` | `(next: string[]) => void` |  |
 | `expand` | `(value: string) => void` |  |
 | `collapse` | `(value: string) => void` |  |
 | `select` | `(value: string) => void` | 单选替换、复选切换，与点击同一语义。 |

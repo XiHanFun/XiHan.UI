@@ -99,8 +99,8 @@ export interface HeatmapLegendLabelProps {
 
 /**
  * 文案。
- * 只念给读屏的那几条默认英文，与其余组件同一口径；
- * 写进界面的可见文字（对照条两端的那两个字）跟月份名、星期名一样，按缺省 locale（zh-CN）写。
+ * 内建文案一律英文，与其余组件同一口径：
+ * 只念给读屏的那几条如此，写进界面的可见文字（对照条两端的那两个字）也如此。
  *
  * 两条名字不收在这里，因为它们念的就是坐标轴上那几个词，与轴上写的必须逐字一致：
  * 星期行的可及名字（`星期一` 这种）与月块的可及名字（`一月` 这种）都由 `locale` 定，
@@ -115,9 +115,9 @@ export interface HeatmapTranslations {
   matrixCellLabel: (details: HeatmapCellDetails) => string
   /** 对照条整体的可及名字：一排色块自己说不出这是干什么用的。 */
   legendLabel: string
-  /** 对照条起点那一端的可见文字，缺省「少」。 */
+  /** 对照条起点那一端的可见文字，缺省 Less。 */
   legendLow: string
-  /** 对照条终点那一端的可见文字，缺省「多」。 */
+  /** 对照条终点那一端的可见文字，缺省 More。 */
   legendHigh: string
 }
 
@@ -141,7 +141,7 @@ export interface HeatmapSchema extends MachineSchema {
     thresholds?: number[]
     /** 周首日，0 = 星期日，缺省 1。 */
     firstDayOfWeek?: number
-    /** 月份名与星期名的书写 locale，缺省 zh-CN。 */
+    /** 月份名与星期名的书写 locale，不给按宿主语言，宿主也没有时按 en-US。 */
     locale?: string
     /**
      * 文字方向。只作显式覆盖：不写时方向从 DOM 现读，

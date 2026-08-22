@@ -58,7 +58,7 @@ function sameValues(a: string[], b: string[] | undefined): boolean {
   return !!b && a.length === b.length && a.every((v, i) => v === b[i])
 }
 
-/** 整个控件禁用时用户改不动任何东西；程序化入口（VALUE.SET / SELECTED.SET）不受此限。 */
+/** 整个控件禁用时用户改不动任何东西；程序化入口（VALUE.SET / SELECTION.SET）不受此限。 */
 function locked(prop: PropFn<TransferSchema>): boolean {
   return !!prop('disabled')
 }
@@ -68,7 +68,7 @@ function setFocused(context: ContextFacade<TransferSchema>, side: TransferSide, 
   context.set(transferFocusKey(side), value)
 }
 
-// value（右侧集合）、selected（勾选集合）与两侧搜索串都住在 context 的 cell 里，
+// value（右侧集合）、selection（勾选集合）与两侧搜索串都住在 context 的 cell 里，
 // 受控/非受控在 cell 收口，不需要影子事件与受控守卫。
 export const transferMachine = createMachine({
   name: 'transfer',
@@ -79,11 +79,11 @@ export const transferMachine = createMachine({
       isEqual: sameValues,
       onChange: value => prop('onValueChange')?.({ value }),
     })),
-    selected: cell<string[]>(() => ({
-      value: prop('selected'),
-      defaultValue: prop('defaultSelected') ?? [],
+    selection: cell<string[]>(() => ({
+      value: prop('selection'),
+      defaultValue: prop('defaultSelection') ?? [],
       isEqual: sameValues,
-      onChange: selected => prop('onSelectionChange')?.({ selected }),
+      onChange: value => prop('onSelectionChange')?.({ value }),
     })),
     // 搜索串与焦点锚点都不受控、不对外通知：前者只影响看得见什么，后者只服务 roving tabindex
     sourceQuery: cell<string>(() => ({ defaultValue: '' })),
@@ -97,7 +97,7 @@ export const transferMachine = createMachine({
       // 省略 target：只跑 actions，不换状态
       on: {
         'VALUE.SET': { actions: ['setValue'] },
-        'SELECTED.SET': { actions: ['setSelected'] },
+        'SELECTION.SET': { actions: ['setSelection'] },
         'ITEM.TOGGLE': { actions: ['toggleItem'] },
         'SIDE.TOGGLE_ALL': { actions: ['toggleAll'] },
         'ITEMS.MOVE': { actions: ['moveItems'] },
@@ -116,11 +116,11 @@ export const transferMachine = createMachine({
         context.set('value', unique(e.value))
       },
 
-      setSelected: ({ context, event }) => {
+      setSelection: ({ context, event }) => {
         const e = event.current()
-        if (e.type !== 'SELECTED.SET')
+        if (e.type !== 'SELECTION.SET')
           return
-        context.set('selected', unique(e.selected))
+        context.set('selection', unique(e.value))
       },
 
       /**
@@ -136,7 +136,7 @@ export const transferMachine = createMachine({
           return
         if (!operableOn({ prop, context }, side).includes(e.value))
           return
-        context.set('selected', transferToggleValue(context.get('selected'), e.value))
+        context.set('selection', transferToggleValue(context.get('selection'), e.value))
       },
 
       toggleAll: ({ prop, context, event }) => {
@@ -145,7 +145,7 @@ export const transferMachine = createMachine({
           return
         if (!transferIsCheckable(e.side, prop('oneWay')))
           return
-        context.set('selected', transferToggleAll(operableOn({ prop, context }, e.side), context.get('selected')))
+        context.set('selection', transferToggleAll(operableOn({ prop, context }, e.side), context.get('selection')))
       },
 
       /**
@@ -157,17 +157,17 @@ export const transferMachine = createMachine({
         if (e.type !== 'ITEMS.MOVE' || locked(prop))
           return
         const from = transferOppositeSide(e.to)
-        const selected = context.get('selected')
-        const moving = transferCheckedValues(operableOn({ prop, context }, from), selected)
+        const selection = context.get('selection')
+        const moving = transferCheckedValues(operableOn({ prop, context }, from), selection)
         const next = transferMove({
           value: context.get('value'),
-          selected,
+          selection,
           moving,
           to: e.to,
           oneWay: prop('oneWay'),
         })
         context.set('value', next.value)
-        context.set('selected', next.selected)
+        context.set('selection', next.selection)
       },
 
       setQuery: ({ context, event }) => {

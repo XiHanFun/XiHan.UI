@@ -20,7 +20,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
 
 /**
  * `<xh-dynamic-input>` —— Light-DOM 行为宿主：作者写 root/item/item-content/item-action 与
- * add-trigger、remove-trigger、move-up-trigger、move-down-trigger 角色节点，
+ * add-trigger、item-delete-trigger、move-up-trigger、move-down-trigger 角色节点，
  * 元素跑 dynamic-input 机器并把 connect 产出打上去。
  *
  * 值是宿主自己的数据数组，元素只管增删与换序这套动作，行里放什么控件由作者写进 item-content。
@@ -40,7 +40,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @csspart item-content - 一行里放作者自己控件的位置
  * @csspart item-action - 一行里放把手的位置
  * @csspart add-trigger - 新增把手，须是原生 `<button>`；到上限转 aria-disabled 但仍可聚焦；名字取自身内容
- * @csspart remove-trigger - 删除把手，须是原生 `<button>`；到下限转 aria-disabled；自带 aria-label
+ * @csspart item-delete-trigger - 删除把手，须是原生 `<button>`；到下限转 aria-disabled；自带 aria-label
  * @csspart move-up-trigger - 上移把手，须是原生 `<button>`；首行转 aria-disabled；自带 aria-label
  * @csspart move-down-trigger - 下移把手，须是原生 `<button>`；末行转 aria-disabled；自带 aria-label
  */
@@ -115,8 +115,8 @@ export class XhDynamicInputElement extends XhElement {
         this.spreader.spread(content, api.getItemContentProps(item) as Record<string, unknown>)
       for (const action of this.partsIn(el, 'item-action'))
         this.spreader.spread(action, api.getItemActionProps(item) as Record<string, unknown>)
-      for (const trigger of this.partsIn(el, 'remove-trigger'))
-        this.spreader.spread(trigger, api.getRemoveTriggerProps(item) as Record<string, unknown>)
+      for (const trigger of this.partsIn(el, 'item-delete-trigger'))
+        this.spreader.spread(trigger, api.getItemDeleteTriggerProps(item) as Record<string, unknown>)
       // 不换序时把这对把手收起。只写 hidden 属性是不够的：作者层给这个 part 声明的任何一条
       // display 都会盖过 UA 的 [hidden]{display:none}，只有内联 style.display 压得住
       for (const trigger of this.partsIn(el, 'move-up-trigger')) {

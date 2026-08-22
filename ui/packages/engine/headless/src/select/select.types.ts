@@ -55,8 +55,8 @@ export interface SelectNode {
 export interface SelectTranslations {
   /** 清空按钮的可及名。 */
   clearTrigger: string
-  /** 标签删除按钮的可及名模板，{label} 现场代入。 */
-  removeTag: string
+  /** 标签删除按钮的可及名，接收标签文本。 */
+  deleteItem: (label: string) => string
   /** 列表框容器的兜底名字，作者两个名字部件（label / value-text）都没渲染时才出面。 */
   content: string
 }
@@ -235,10 +235,10 @@ export interface SelectApi<T extends PropTypes = PropTypes> {
   getIndicatorProps: () => T['element']
   /** 清空按钮：不占 Tab 位；清不了时整个藏掉；点按清空全部选中、不展开浮层，焦点送回 trigger。 */
   getClearTriggerProps: () => T['button']
-  /** 标签：一个选中值一枚；放触发器里就是纯展示，放外面配 tag-remove 可删。 */
+  /** 标签：一个选中值一枚；放触发器里就是纯展示，放外面配 item-delete-trigger 可删。 */
   getTagProps: (props: SelectTagProps) => T['element']
   /** 标签删除按钮：点按摘掉所在标签的选中值；须放在 tag 部件里。 */
-  getTagRemoveProps: (props: SelectTagProps) => T['button']
+  getItemDeleteTriggerProps: (props: SelectTagProps) => T['button']
   getPositionerProps: () => T['element']
   /** 浮层外壳：描边、底色、阴影与键盘收口都在它身上。 */
   getContentProps: () => T['element']

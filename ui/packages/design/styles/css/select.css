@@ -254,7 +254,7 @@
     outline-offset: var(--xh-ring-offset);
   }
 
-  /* 多选标签：淡底小药丸；放触发器里是纯展示，放外面配 tag-remove 可删 */
+  /* 多选标签：淡底小药丸；放触发器里是纯展示，放外面配 item-delete-trigger 可删 */
   [data-scope='select'][data-part='tag'] {
     display: inline-flex;
     align-items: center;
@@ -274,41 +274,41 @@
   }
 
   /* 标签内的删除钮：与指示符同尺寸的小钮，贴着标签文字 */
-  [data-scope='select'][data-part='tag-remove'] {
+  [data-scope='select'][data-part='item-delete-trigger'] {
     display: inline-grid;
     place-items: center;
-    inline-size: var(--xh-select-tag-remove-size, var(--xh-control-indicator-size));
-    block-size: var(--xh-select-tag-remove-size, var(--xh-control-indicator-size));
+    inline-size: var(--xh-select-item-delete-size, var(--xh-control-indicator-size));
+    block-size: var(--xh-select-item-delete-size, var(--xh-control-indicator-size));
     padding: 0;
     border: none;
-    border-radius: var(--xh-select-tag-remove-radius, var(--xh-shape-inset));
+    border-radius: var(--xh-select-item-delete-radius, var(--xh-shape-inset));
     background: none;
-    color: var(--xh-select-tag-remove-fg, var(--xh-fg-subtle));
+    color: var(--xh-select-item-delete-fg, var(--xh-fg-subtle));
     font-size: inherit;
     cursor: pointer;
     transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
-  [data-scope='select'][data-part='tag-remove'][hidden] {
+  [data-scope='select'][data-part='item-delete-trigger'][hidden] {
     display: none;
   }
 
-  [data-scope='select'][data-part='tag-remove']:hover {
-    background: var(--xh-select-tag-remove-bg-hover, var(--xh-bg-subtle-hover));
-    color: var(--xh-select-tag-remove-fg-hover, var(--xh-fg-default));
+  [data-scope='select'][data-part='item-delete-trigger']:hover {
+    background: var(--xh-select-item-delete-bg-hover, var(--xh-bg-subtle-hover));
+    color: var(--xh-select-item-delete-fg-hover, var(--xh-fg-default));
   }
 
-  [data-scope='select'][data-part='tag-remove']:active {
-    background: var(--xh-select-tag-remove-bg-active, var(--xh-bg-subtle-active));
+  [data-scope='select'][data-part='item-delete-trigger']:active {
+    background: var(--xh-select-item-delete-bg-active, var(--xh-bg-subtle-active));
     scale: var(--xh-motion-scale-press);
   }
 
-  [data-scope='select'][data-part='tag-remove']:focus-visible {
+  [data-scope='select'][data-part='item-delete-trigger']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-_select-ring);
     outline-offset: var(--xh-ring-offset);
   }
 
-  [data-scope='select'][data-part='tag-remove'][data-disabled] {
+  [data-scope='select'][data-part='item-delete-trigger'][data-disabled] {
     color: var(--xh-fg-disabled);
     cursor: not-allowed;
   }
@@ -550,7 +550,7 @@
     mask: var(--xh-glyph-mark-close) center / contain no-repeat;
   }
 
-  [data-scope='select'][data-part='tag-remove']:empty::before {
+  [data-scope='select'][data-part='item-delete-trigger']:empty::before {
     content: '';
     display: inline-block;
     inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));

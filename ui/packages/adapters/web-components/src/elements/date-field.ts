@@ -77,7 +77,7 @@ function declaredSegment(el: HTMLElement, position: number): DateFieldSegmentPro
  * @attr {string} default-value - 非受控初值，同样是 ISO 串
  * @attr {string} min - 下界 ISO 串，参与各段区间的收窄
  * @attr {string} max - 上界 ISO 串
- * @attr {string} locale - BCP 47 语言标记，决定年月日三段的先后，默认 en-US
+ * @attr {string} locale - BCP 47 语言标记，决定年月日三段的先后；不给按宿主语言，宿主也没有时按 en-US
  * @attr {string} time-zone - IANA 时区名，只用来取"今天"（空段按上下键时的起点）
  * @attr {'day'|'hour'|'minute'|'second'} granularity - 精度，决定一共几段，默认 day
  * @attr {string} segments - 段集，逗号分隔的段名（`year,quarter`）；给了它 granularity 让路。

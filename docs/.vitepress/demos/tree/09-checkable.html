@@ -79,9 +79,9 @@
     (event) => (tree.expandedValue = event.detail.value),
   );
 
-  tree.selectedValue = ["hz"];
+  tree.selection = ["hz"];
   tree.addEventListener("selection-change", (event) => {
-    tree.selectedValue = event.detail.value;
+    tree.selection = event.detail.value;
     readout.textContent = event.detail.value.join("、") || "（无）";
   });
 </script>

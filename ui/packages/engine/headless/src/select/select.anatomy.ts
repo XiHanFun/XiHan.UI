@@ -11,7 +11,7 @@ export const selectAnatomy = createAnatomy('select', [
   'indicator',
   'clear-trigger',
   'tag',
-  'tag-remove',
+  'item-delete-trigger',
   'positioner',
   'content',
   'list',

@@ -102,7 +102,7 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 
 ### 多选标签
 
-内建标签形态：api 的 tags 受 maxTagCount 截断、余数在 overflowCount；触发器里 XhSelectTag 纯展示，触发器外配 XhSelectTagRemove 即可删
+内建标签形态：api 的 tags 受 maxTagCount 截断、余数在 overflowCount；触发器里 XhSelectTag 纯展示，触发器外配 XhSelectItemDeleteTrigger 即可删
 
 <XhDemo src="select/14-tags" />
 
@@ -141,7 +141,7 @@ footer 是 list 的兄弟：不随条目滚走，也不会被方向键与连打�
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-select>` |
-| Vue 组件 | `XhSelectClearTrigger` `XhSelectContent` `XhSelectControl` `XhSelectFooter` `XhSelectIndicator` `XhSelectItem` `XhSelectItemIndicator` `XhSelectItemText` `XhSelectLabel` `XhSelectList` `XhSelectPositioner` `XhSelectRoot` `XhSelectTag` `XhSelectTagRemove` `XhSelectTrigger` `XhSelectValueText` |
+| Vue 组件 | `XhSelectClearTrigger` `XhSelectContent` `XhSelectControl` `XhSelectFooter` `XhSelectIndicator` `XhSelectItem` `XhSelectItemDeleteTrigger` `XhSelectItemIndicator` `XhSelectItemText` `XhSelectLabel` `XhSelectList` `XhSelectPositioner` `XhSelectRoot` `XhSelectTag` `XhSelectTrigger` `XhSelectValueText` |
 | 组合式函数 | `useSelect` |
 | 状态机 | `selectMachine` |
 | 皮肤 | `@xihan-ui/styles/select.css` |
@@ -150,7 +150,7 @@ footer 是 list 的兄弟：不随条目滚走，也不会被方向键与连打�
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="select"`：`root` · `label` · `control` · **`trigger`** · `value-text` · `indicator` · `clear-trigger` · `tag` · `tag-remove` · `positioner` · **`content`** · **`list`** · `footer` · **`item`** · `item-text` · `item-indicator` · `hidden-select`
+`data-scope="select"`：`root` · `label` · `control` · **`trigger`** · `value-text` · `indicator` · `clear-trigger` · `tag` · `item-delete-trigger` · `positioner` · **`content`** · **`list`** · `footer` · **`item`** · `item-text` · `item-indicator` · `hidden-select`
 
 ## Props
 
@@ -251,8 +251,8 @@ footer 是 list 的兄弟：不随条目滚走，也不会被方向键与连打�
 | `getValueTextProps` | `() => T['element']` |  |
 | `getIndicatorProps` | `() => T['element']` |  |
 | `getClearTriggerProps` | `() => T['button']` | 清空按钮：不占 Tab 位；清不了时整个藏掉；点按清空全部选中、不展开浮层，焦点送回 trigger。 |
-| `getTagProps` | `(props: SelectTagProps) => T['element']` | 标签：一个选中值一枚；放触发器里就是纯展示，放外面配 tag-remove 可删。 |
-| `getTagRemoveProps` | `(props: SelectTagProps) => T['button']` | 标签删除按钮：点按摘掉所在标签的选中值；须放在 tag 部件里。 |
+| `getTagProps` | `(props: SelectTagProps) => T['element']` | 标签：一个选中值一枚；放触发器里就是纯展示，放外面配 item-delete-trigger 可删。 |
+| `getItemDeleteTriggerProps` | `(props: SelectTagProps) => T['button']` | 标签删除按钮：点按摘掉所在标签的选中值；须放在 tag 部件里。 |
 | `getPositionerProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` | 浮层外壳：描边、底色、阴影与键盘收口都在它身上。 |
 | `getListProps` | `() => T['element']` | 列表框本体，滚动在这一层；role=listbox 与条目的拥有关系都归它。 |
@@ -299,7 +299,7 @@ footer 是 list 的兄弟：不随条目滚走，也不会被方向键与连打�
 | `trigger` | `role` | 'combobox' |
 | `indicator` | `aria-hidden` | 'true' |
 | `clear-trigger` | `aria-label` | props.translations.clearTrigger |
-| `tag-remove` | `aria-label` | (prop('translations')?.removeTag ?? 'Remove {label}')… |
+| `item-delete-trigger` | `aria-label` | (prop('translations')?.deleteItem ?? ((label: string)… |
 | `list` | `aria-label` | props.translations.content |
 | `list` | `aria-labelledby` | `label` 部件的 id `value-text` 部件的 id |
 | `list` | `aria-multiselectable` | 'true' \| 'false' |
@@ -344,7 +344,7 @@ footer 是 list 的兄弟：不随条目滚走，也不会被方向键与连打�
 | `indicator` | `data-state` | 'open' \| 'closed' |
 | `tag` | `data-disabled` | ''（条件成立时才出现） |
 | `tag` | `data-value` | v |
-| `tag-remove` | `data-disabled` | ''（条件成立时才出现） |
+| `item-delete-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `positioner` | `data-hidden` | ''（条件成立时才出现） |
 | `positioner` | `data-placement` | 定位引擎算出的实际落位 |
 | `positioner` | `data-positioned` | ''（条件成立时才出现） |
@@ -362,7 +362,7 @@ footer 是 list 的兄弟：不随条目滚走，也不会被方向键与连打�
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-select-action-bg` · `--xh-select-action-bg-active` · `--xh-select-action-bg-hover` · `--xh-select-action-fg` · `--xh-select-action-fg-hover` · `--xh-select-action-font-size` · `--xh-select-action-radius` · `--xh-select-action-size` · `--xh-select-content-bg` · `--xh-select-content-border` · `--xh-select-content-fg` · `--xh-select-content-max-h` · `--xh-select-content-max-w` · `--xh-select-content-min-w` · `--xh-select-content-px` · `--xh-select-content-py` · `--xh-select-content-radius` · `--xh-select-content-shadow` · `--xh-select-control-bg` · `--xh-select-control-bg-disabled` · `--xh-select-control-bg-readonly` · `--xh-select-control-border` · `--xh-select-control-border-focus` · `--xh-select-control-border-hover` · `--xh-select-control-border-invalid` · `--xh-select-control-gap` · `--xh-select-control-h` · `--xh-select-control-max-w` · `--xh-select-control-min-w` · `--xh-select-control-px` · `--xh-select-control-radius` · `--xh-select-footer-border` · `--xh-select-footer-fg` · `--xh-select-footer-font-size` · `--xh-select-footer-gap` · `--xh-select-footer-px` · `--xh-select-footer-py` · `--xh-select-gap` · `--xh-select-icon-size` · `--xh-select-indicator-fg` · `--xh-select-item-bg-hover` · `--xh-select-item-fg` · `--xh-select-item-fg-selected` · `--xh-select-item-font-size` · `--xh-select-item-font-weight-selected` · `--xh-select-item-gap` · `--xh-select-item-indicator-fg` · `--xh-select-item-indicator-size` · `--xh-select-item-leading` · `--xh-select-item-px` · `--xh-select-item-py` · `--xh-select-item-radius` · `--xh-select-label-fg` · `--xh-select-label-font-size` · `--xh-select-label-font-weight` · `--xh-select-layer` · `--xh-select-placeholder-fg` · `--xh-select-tag-bg` · `--xh-select-tag-fg` · `--xh-select-tag-font-size` · `--xh-select-tag-gap` · `--xh-select-tag-px` · `--xh-select-tag-radius` · `--xh-select-tag-remove-bg-active` · `--xh-select-tag-remove-bg-hover` · `--xh-select-tag-remove-fg` · `--xh-select-tag-remove-fg-hover` · `--xh-select-tag-remove-radius` · `--xh-select-tag-remove-size` · `--xh-select-trigger-fg` · `--xh-select-trigger-font-size` · `--xh-select-trigger-gap`
+`--xh-select-action-bg` · `--xh-select-action-bg-active` · `--xh-select-action-bg-hover` · `--xh-select-action-fg` · `--xh-select-action-fg-hover` · `--xh-select-action-font-size` · `--xh-select-action-radius` · `--xh-select-action-size` · `--xh-select-content-bg` · `--xh-select-content-border` · `--xh-select-content-fg` · `--xh-select-content-max-h` · `--xh-select-content-max-w` · `--xh-select-content-min-w` · `--xh-select-content-px` · `--xh-select-content-py` · `--xh-select-content-radius` · `--xh-select-content-shadow` · `--xh-select-control-bg` · `--xh-select-control-bg-disabled` · `--xh-select-control-bg-readonly` · `--xh-select-control-border` · `--xh-select-control-border-focus` · `--xh-select-control-border-hover` · `--xh-select-control-border-invalid` · `--xh-select-control-gap` · `--xh-select-control-h` · `--xh-select-control-max-w` · `--xh-select-control-min-w` · `--xh-select-control-px` · `--xh-select-control-radius` · `--xh-select-footer-border` · `--xh-select-footer-fg` · `--xh-select-footer-font-size` · `--xh-select-footer-gap` · `--xh-select-footer-px` · `--xh-select-footer-py` · `--xh-select-gap` · `--xh-select-icon-size` · `--xh-select-indicator-fg` · `--xh-select-item-bg-hover` · `--xh-select-item-delete-bg-active` · `--xh-select-item-delete-bg-hover` · `--xh-select-item-delete-fg` · `--xh-select-item-delete-fg-hover` · `--xh-select-item-delete-radius` · `--xh-select-item-delete-size` · `--xh-select-item-fg` · `--xh-select-item-fg-selected` · `--xh-select-item-font-size` · `--xh-select-item-font-weight-selected` · `--xh-select-item-gap` · `--xh-select-item-indicator-fg` · `--xh-select-item-indicator-size` · `--xh-select-item-leading` · `--xh-select-item-px` · `--xh-select-item-py` · `--xh-select-item-radius` · `--xh-select-label-fg` · `--xh-select-label-font-size` · `--xh-select-label-font-weight` · `--xh-select-layer` · `--xh-select-placeholder-fg` · `--xh-select-tag-bg` · `--xh-select-tag-fg` · `--xh-select-tag-font-size` · `--xh-select-tag-gap` · `--xh-select-tag-px` · `--xh-select-tag-radius` · `--xh-select-trigger-fg` · `--xh-select-trigger-font-size` · `--xh-select-trigger-gap`
 
 ## 动效
 

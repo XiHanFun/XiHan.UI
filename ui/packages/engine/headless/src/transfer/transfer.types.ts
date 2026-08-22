@@ -3,7 +3,7 @@ import type { MachineSchema } from '@xihan-ui/machine'
 
 /**
  * 哪一侧。source 是还没选进来的，target 是已经选进来的；
- * value 这个 prop 说的就是 target 侧那一批，与两侧的勾选（selected）是两回事。
+ * value 这个 prop 说的就是 target 侧那一批，与两侧的勾选（selection）是两回事。
  */
 export type TransferSide = 'source' | 'target'
 
@@ -12,7 +12,7 @@ export type TransferCheckState = 'checked' | 'indeterminate' | 'unchecked'
 
 /**
  * 条目全集里的一条，是元信息的唯一事实源：标签与禁用都从这里读，作者的标记只管长相。
- * value 必须全集唯一：它同时是 DOM 身份（data-value）、value / selected 集合的元素，
+ * value 必须全集唯一：它同时是 DOM 身份（data-value）、value / selection 集合的元素，
  * 以及连接层按值找节点的键。
  */
 export interface TransferItem {
@@ -37,7 +37,7 @@ export interface TransferValueChangeDetails {
 
 export interface TransferSelectionChangeDetails {
   /** 两侧合起来被勾中的值（一个值只可能在一侧，因此一个扁平集合就够了）。 */
-  selected: string[]
+  value: string[]
 }
 
 /** 面板级部件自报身份：它归哪一侧。两侧共用一套 part 名，靠这个值分开。 */
@@ -65,8 +65,8 @@ export interface TransferSchema extends MachineSchema {
     value?: string[]
     defaultValue?: string[]
     /** 两侧合起来被勾中的值（用于搬运）。给定即受控，语义同上。 */
-    selected?: string[]
-    defaultSelected?: string[]
+    selection?: string[]
+    defaultSelection?: string[]
     /** 每侧带一个搜索框；关掉时搜索框仍在 DOM 里但带 hidden，且搜索串一律按空处理。 */
     searchable?: boolean
     /** 自定义匹配规则；缺省是标签大小写不敏感包含。 */
@@ -85,8 +85,8 @@ export interface TransferSchema extends MachineSchema {
   context: {
     /** target 侧的值，恒为数组。受控（value 给定）时 cell 直读 prop。 */
     value: string[]
-    /** 被勾中的值，恒为数组。受控（selected 给定）时 cell 直读 prop。 */
-    selected: string[]
+    /** 被勾中的值，恒为数组。受控（selection 给定）时 cell 直读 prop。 */
+    selection: string[]
     /** 两侧各自的搜索串。不受控、不对外通知：它只影响"看得见什么"。 */
     sourceQuery: string
     targetQuery: string
@@ -105,7 +105,7 @@ export interface TransferSchema extends MachineSchema {
     /** 整体改写 target 侧集合（外部 setValue 走它）。 */
     | { type: 'VALUE.SET', value: string[] }
     /** 整体改写勾选集合。 */
-    | { type: 'SELECTED.SET', selected: string[] }
+    | { type: 'SELECTION.SET', value: string[] }
     /** 切换一个条目的勾选态。 */
     | { type: 'ITEM.TOGGLE', value: string }
     /** 全选/取消全选某一侧（只动该侧可见且未禁用的那些）。 */
@@ -120,7 +120,7 @@ export interface TransferSchema extends MachineSchema {
   guard: never
   action:
     | 'setValue'
-    | 'setSelected'
+    | 'setSelection'
     | 'toggleItem'
     | 'toggleAll'
     | 'moveItems'
@@ -136,7 +136,7 @@ export interface TransferApi<T extends PropTypes = PropTypes> {
   /** 落在 target 侧的值。 */
   value: string[]
   /** 两侧合起来被勾中的值。 */
-  selected: string[]
+  selection: string[]
   disabled: boolean
   oneWay: boolean
   searchable: boolean
@@ -151,7 +151,7 @@ export interface TransferApi<T extends PropTypes = PropTypes> {
   isChecked: (value: string) => boolean
   sideOf: (value: string) => TransferSide
   setValue: (next: string[]) => void
-  setSelected: (next: string[]) => void
+  setSelection: (next: string[]) => void
   setQuery: (side: TransferSide, query: string) => void
   toggle: (value: string) => void
   toggleAll: (side: TransferSide) => void

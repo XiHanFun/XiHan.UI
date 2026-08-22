@@ -5,6 +5,7 @@ import type { DateFieldSchema, DateGranularity, DateSegmentSet } from '../date-f
 import type { DatePickerSchema, DatePickerValueSource } from './date-picker.types'
 import { getLocalTimeZone, today } from '@internationalized/date'
 import { createDismissLayer, createFocusScope, itemValue } from '@xihan-ui/behavior'
+import { resolveLocale } from '@xihan-ui/kernel'
 import { resetDeclaredValue, setup } from '@xihan-ui/machine'
 import { calendarAnatomy, calendarWeekRange } from '../calendar'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
@@ -124,6 +125,11 @@ export function datePickerFocusedValue(service: Service<DatePickerSchema>): stri
     ?? today(timeZoneOf(service)).toString()
 }
 
+/** 这台编排机此刻用的语言标记：作者给的优先，没给按宿主语言，宿主也没有时按 en-US。 */
+export function datePickerLocale(service: Service<DatePickerSchema>): string {
+  return resolveLocale(service.prop('locale'), service.scope)
+}
+
 /** showTime 生效（只支持单选，其余模式维持纯日期值）。 */
 export function datePickerShowTime(service: Service<DatePickerSchema>): boolean {
   return !!service.prop('showTime') && (service.prop('selectionMode') ?? 'single') === 'single'
@@ -197,7 +203,7 @@ function datePickerFieldPropsAt(
    * 不归一的话终点那一组每敲一位都会退回去：段位是受控的，它拿自己算出来的串与宿主写回的
    * 那一份对账，对不上就判成「这次改动没被接受」而整份回滚——于是第二位数字永远接不上。
    */
-  const weekStart = (iso: string): string => calendarWeekRange(iso, prop('locale'))[0]
+  const weekStart = (iso: string): string => calendarWeekRange(iso, datePickerLocale(service))[0]
   return {
     // showTime 下值带时间段，段位只认日期段
     value: rawValue == null
@@ -222,7 +228,7 @@ function datePickerFieldPropsAt(
       // 周选：段位交出来的是那一周的周首日，终点这一端要摊到周末日上——
       // 不摊，选出来的就不是「第 33 周到第 37 周」而是「某天到某天」
       const byWeek = value != null && weekSelection
-        ? calendarWeekRange(value, prop('locale'))[index]
+        ? calendarWeekRange(value, datePickerLocale(service))[index]
         : value
       // 改日保时：段位敲的是日期段，原来的时间段接回去
       const merged = byWeek != null && withTime

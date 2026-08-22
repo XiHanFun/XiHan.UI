@@ -71,25 +71,25 @@ export const timeSuite: ConformanceSuite = {
     {
       name: '缺省 datetime 型：戳到秒，显示的也是同一个墙钟',
       spec: { apg: HTML },
-      props: { value: AT },
+      props: { value: AT, locale: 'en-US' },
       initial: {
         parts: { root: { 'data-type': 'datetime', 'data-state': 'ready' } },
       },
       steps: [
         { kind: 'raw', why: WHY, run: expectStamp('2026-08-11T09:30:05') },
-        { kind: 'raw', why: WHY, run: expectText('2026-08-11 09:30:05') },
+        { kind: 'raw', why: WHY, run: expectText('08/11/2026 09:30:05') },
       ],
     },
     {
       name: 'date 型：戳跟着收到日期精度，不留一个显示不出来的时分秒',
       spec: { apg: HTML },
-      props: { value: AT, type: 'date' },
+      props: { value: AT, type: 'date', locale: 'en-US' },
       initial: {
         parts: { root: { 'data-type': 'date', 'data-state': 'ready' } },
       },
       steps: [
         { kind: 'raw', why: WHY, run: expectStamp('2026-08-11') },
-        { kind: 'raw', why: WHY, run: expectText('2026-08-11') },
+        { kind: 'raw', why: WHY, run: expectText('08/11/2026') },
       ],
     },
     {
@@ -104,34 +104,34 @@ export const timeSuite: ConformanceSuite = {
     {
       name: '相对说法落在档位里：立 data-relative，戳仍是那个确切时刻',
       spec: { apg: HTML },
-      props: { value: '2026-08-11T09:00:00', type: 'relative', now: '2026-08-11T09:30:00' },
+      props: { value: '2026-08-11T09:00:00', type: 'relative', now: '2026-08-11T09:30:00', locale: 'en-US' },
       initial: {
         parts: { root: { 'data-type': 'relative', 'data-state': 'ready', 'data-relative': '' } },
       },
       steps: [
         { kind: 'raw', why: WHY, run: expectStamp('2026-08-11T09:00:00') },
-        { kind: 'raw', why: WHY, run: expectText('30 分钟前') },
+        { kind: 'raw', why: WHY, run: expectText('30 minutes ago') },
       ],
     },
     {
       name: '相对说法超出档位：退回绝对日期，data-relative 不写',
       spec: { apg: HTML },
-      props: { value: '2026-01-01T00:00:00', type: 'relative', now: '2026-08-11T09:30:00' },
+      props: { value: '2026-01-01T00:00:00', type: 'relative', now: '2026-08-11T09:30:00', locale: 'en-US' },
       initial: {
         parts: { root: { 'data-type': 'relative', 'data-state': 'ready', 'data-relative': null } },
       },
       steps: [
         { kind: 'raw', why: WHY, run: expectStamp('2026-01-01T00:00:00') },
-        { kind: 'raw', why: WHY, run: expectText('2026-01-01') },
+        { kind: 'raw', why: WHY, run: expectText('01/01/2026') },
       ],
     },
     {
       name: 'locale 只换用词，戳恒是同一种写法',
       spec: { apg: HTML },
-      props: { value: '2026-08-11T09:00:00', type: 'relative', now: '2026-08-11T09:30:00', locale: 'en' },
+      props: { value: '2026-08-11T09:00:00', type: 'relative', now: '2026-08-11T09:30:00', locale: 'zh-CN' },
       steps: [
         { kind: 'raw', why: WHY, run: expectStamp('2026-08-11T09:00:00') },
-        { kind: 'raw', why: WHY, run: expectText('30 minutes ago') },
+        { kind: 'raw', why: WHY, run: expectText('30 分钟前') },
       ],
     },
     {

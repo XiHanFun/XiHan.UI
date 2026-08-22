@@ -1,6 +1,8 @@
+import type { Scope } from '@xihan-ui/kernel'
 import type { PropFn } from '@xihan-ui/machine'
 import type { HeatmapCellRef, HeatmapGridOptions, HeatmapTipRect } from './heatmap.grid'
 import type { HeatmapSchema } from './heatmap.types'
+import { resolveLocale } from '@xihan-ui/kernel'
 import { setup } from '@xihan-ui/machine'
 import { heatmapCellKey, heatmapDetailsOf, sameHeatmapCell, sameHeatmapTip } from './heatmap.grid'
 
@@ -9,8 +11,9 @@ const { createMachine } = setup<HeatmapSchema>()
 /**
  * 从 props 里取出建网格要用的那几项。
  * 连接层与机器都得算同一张网格，取值收在这一处，两边就不会各算各的。
+ * locale 在这里就按解析链定死，缺省不再由建网格的纯函数各自兜。
  */
-export function heatmapGridOptions(prop: PropFn<HeatmapSchema>): HeatmapGridOptions {
+export function heatmapGridOptions(prop: PropFn<HeatmapSchema>, scope?: Scope): HeatmapGridOptions {
   return {
     variant: prop('variant'),
     startDate: prop('startDate'),
@@ -21,7 +24,7 @@ export function heatmapGridOptions(prop: PropFn<HeatmapSchema>): HeatmapGridOpti
     levels: prop('levels'),
     thresholds: prop('thresholds'),
     firstDayOfWeek: prop('firstDayOfWeek'),
-    locale: prop('locale'),
+    locale: resolveLocale(prop('locale'), scope),
   }
 }
 

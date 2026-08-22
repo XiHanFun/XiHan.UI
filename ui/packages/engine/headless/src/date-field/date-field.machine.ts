@@ -8,6 +8,7 @@ import type {
   DateSegmentType,
 } from './date-field.types'
 import { CalendarDate, getLocalTimeZone, parseDateTime, Time, today } from '@internationalized/date'
+import { resolveLocale } from '@xihan-ui/kernel'
 import { resetDeclaredValue, setup } from '@xihan-ui/machine'
 import { dayPeriodLabel } from '../shared/day-period'
 import {
@@ -23,7 +24,10 @@ import {
 
 const { createMachine } = setup<DateFieldSchema>()
 
-/** 不给 locale 时的排法；写死而不跟运行时走，否则同一份代码在不同机器上段序不同。 */
+/**
+ * 这些纯函数没拿到 locale 时用的兜底，决定年月日三段的先后。
+ * 连接层与机器不走这里：它们先按宿主语言解析，解析不出才落到同一个值。
+ */
 export const DATE_FIELD_LOCALE = 'en-US'
 
 /** 不给 granularity 时只有年月日三段。 */
@@ -509,7 +513,7 @@ function granularityOf(params: Params<DateFieldSchema>): DateGranularity {
 }
 
 function localeOf(params: Params<DateFieldSchema>): string {
-  return params.prop('locale') ?? DATE_FIELD_LOCALE
+  return resolveLocale(params.prop('locale'), params.scope)
 }
 
 /** 这份控件此刻的段位口径。值往返、区间与参照日都从它分岔。 */

@@ -20,7 +20,7 @@ export type TagsInputBlurBehavior = 'add' | 'clear'
 /** 读屏用的文案，默认英文。 */
 export interface TagsInputTranslations {
   /** 删除按钮的 aria-label：按钮里通常只有一个叉，读屏念不出删的是哪一个标签。 */
-  deleteTagTrigger: (value: string) => string
+  deleteItem: (value: string) => string
   /** 就地编辑框的 aria-label：它没有可见标题，不给名字读屏只会念"编辑框"。 */
   editTagInput: (value: string) => string
   clearTrigger: string

@@ -62,12 +62,10 @@ combobox 早就叫 `empty`。独立的 `empty-state` 组件本身不动。
 - WC 的 `::part(empty-state)` → `::part(empty)`。
 
 **transfer 的 `onSelectedChange` 改叫 `onSelectionChange`。** table 与 tree 都叫
-`onSelectionChange`。受控的 `selected` prop 与载荷字段 `{ selected }` 不动——那是「被勾中的值」，
-与回调名说的不是一回事。
+`onSelectionChange`。
 
 - `TransferSelectedChangeDetails` → `TransferSelectionChangeDetails`。
 - Vue 事件 `@selected-change` → `@selection-change`；WC 的 `selected-change` 事件同改。
-- `v-model:selected` 不变。
 
 **`size` 不再一名两用。** 三轴里的 `size` 是语气枚举，而 qr-code 的 `size` 是像素数值、
 splitter 的 `size` 是百分比数组——两者占着同一个名字却是完全不同的类型，使用者写
@@ -80,6 +78,31 @@ splitter 的 `size` 是百分比数组——两者占着同一个名字却是完
   `{ size }` → `{ sizes }`、机器事件 `SIZE.SET` → `SIZES.SET`、Vue 的 `v-model:size` →
   `v-model:sizes`、WC 属性 `size` → `sizes`。标量的不动：每块面板的 `collapsedSize`、
   `BOUNDARY.SET` 的 `size`、`setPanelSize`、`SplitterPanelState.size`。
+
+**「移除列表里的一项」统一叫 `item-delete-trigger`。** 同一个动作四个组件三个名字：tags-input
+与 file-upload 已经是 `item-delete-trigger`，select 叫 `tag-remove`、dynamic-input 叫
+`remove-trigger`。tag 的 `close-trigger` 不动——它关的是标签自身，不是列表里的一项。
+
+迁移点：
+
+- select：`data-part='tag-remove'` → `'item-delete-trigger'`；皮肤覆盖槽
+  `--xh-select-tag-remove-*` → `--xh-select-item-delete-*`（6 个）；
+  `SelectApi.getTagRemoveProps` → `getItemDeleteTriggerProps`；Vue 组件 `XhSelectTagRemove` →
+  `XhSelectItemDeleteTrigger`；WC 的 `::part(tag-remove)` → `::part(item-delete-trigger)`。
+- dynamic-input：`data-part='remove-trigger'` → `'item-delete-trigger'`；皮肤覆盖槽
+  `--xh-dynamic-input-remove-fg-hover` → `--xh-dynamic-input-item-delete-fg-hover`；
+  `DynamicInputApi.getRemoveTriggerProps` → `getItemDeleteTriggerProps`；Vue 组件
+  `XhDynamicInputRemoveTrigger` → `XhDynamicInputItemDeleteTrigger`；WC 的
+  `::part(remove-trigger)` → `::part(item-delete-trigger)`。
+
+**这枚按钮的文案键统一叫 `deleteItem`。** 四个组件的签名各不相同，统一的是命名形态。
+
+- select：`SelectTranslations.removeTag: string` → `deleteItem: (label: string) => string`，
+  由定值串改成接收标签文本的函数，缺省 `Delete ${label}`。
+- tags-input：`deleteTagTrigger` → `deleteItem`。
+- file-upload：`deleteFile` → `deleteItem`；`FileUploadApi.deleteFile` 方法与 `FILE.DELETE`
+  事件名不动——那是动作不是文案。
+- dynamic-input：`removeTrigger` → `deleteItem`。
 
 **没有合并的一处，记在这里免得后人重新翻案。** 就绪度审计说 pin-input 的 `onValueComplete`、
 editable 的 `onValueCommit`、slider 的 `onValueChangeEnd` 是「三个名字表达同一语义」，

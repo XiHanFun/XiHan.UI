@@ -56,8 +56,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart indicator - 展开指示符（aria-hidden，data-state 随开合）
  * @csspart control - 盒：触发器与清空按钮在里面并排，描边、底色、控件高度与聚焦环都长在它上面
  * @csspart clear-trigger - 清空按钮：盒里 trigger 的兄弟节点，不占 Tab 位；清不了（无值 / 禁用 / 只读）时带 hidden，点完焦点送回 trigger；可及名走 translations.clearTrigger
- * @csspart tag - 多选标签，须自带 value 属性标识选中值；放触发器里是纯展示，放外面配 tag-remove 可删
- * @csspart tag-remove - 标签删除按钮，须放在 tag 里；点按摘掉所在标签的选中值，可及名走 translations.removeTag
+ * @csspart tag - 多选标签，须自带 value 属性标识选中值；放触发器里是纯展示，放外面配 item-delete-trigger 可删
+ * @csspart item-delete-trigger - 标签删除按钮，须放在 tag 里；点按摘掉所在标签的选中值，可及名走 translations.deleteItem
  * @csspart positioner - 浮层定位容器，坐标由引擎写成内联样式
  * @csspart content - 浮层外壳（焦点域与消解层的根节点，键盘在此收口），收起时带 hidden
  * @csspart list - role=listbox 本体，条目放在它里面；滚动也在这一层
@@ -303,9 +303,9 @@ export class XhSelectElement extends XhElement {
     // 标签是多实例 part：身份取自己（或所在 tag）的 value 属性
     for (const el of this.getParts('tag'))
       this.spreader.spread(el, api.getTagProps({ value: el.getAttribute('value') ?? '' }) as Record<string, unknown>)
-    for (const el of this.getParts('tag-remove')) {
+    for (const el of this.getParts('item-delete-trigger')) {
       const owner = el.closest<HTMLElement>('[data-xh-part="tag"]')
-      this.spreader.spread(el, api.getTagRemoveProps({ value: owner?.getAttribute('value') ?? '' }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getItemDeleteTriggerProps({ value: owner?.getAttribute('value') ?? '' }) as Record<string, unknown>)
     }
     // positioner 的 style 是对象，spreader 会逐条写成内联样式
     put('positioner', api.getPositionerProps() as Record<string, unknown>)

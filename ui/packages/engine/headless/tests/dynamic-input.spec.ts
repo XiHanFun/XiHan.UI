@@ -48,7 +48,7 @@ function mountTriggers(service: Svc, rows: number) {
   }
   return {
     add: make(dynamicInputTriggerId(service.scope, 'add-trigger')),
-    remove: Array.from({ length: rows }, (_, i) => make(dynamicInputTriggerId(service.scope, 'remove-trigger', i))),
+    remove: Array.from({ length: rows }, (_, i) => make(dynamicInputTriggerId(service.scope, 'item-delete-trigger', i))),
     moveUp: Array.from({ length: rows }, (_, i) => make(dynamicInputTriggerId(service.scope, 'move-up-trigger', i))),
     moveDown: Array.from({ length: rows }, (_, i) => make(dynamicInputTriggerId(service.scope, 'move-down-trigger', i))),
   }

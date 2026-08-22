@@ -285,7 +285,7 @@ export const treeSuite: ConformanceSuite = {
     {
       name: '焦点进入树落在选中节点上，不是落在首行',
       spec: { apg: `${APG}#keyboardinteraction` },
-      props: props({ defaultSelectedValue: ['license'] }),
+      props: props({ defaultSelection: ['license'] }),
       initial: {
         // 焦点还在树外：锚点节点认领 Tab 位
         parts: { 'item[3]': { tabindex: '0' }, 'branch[0]': { tabindex: '-1' } },
@@ -297,7 +297,7 @@ export const treeSuite: ConformanceSuite = {
     {
       name: '选中值藏在收起的分支里：它不可聚焦，容器必须继续兜底',
       spec: { apg: APG },
-      props: props({ defaultSelectedValue: ['dom'] }),
+      props: props({ defaultSelection: ['dom'] }),
       initial: {
         // 锚点落在 hidden 节点上时它认领了 tabindex=0 却聚不了焦，容器须兜底
         parts: { 'item[1]': { tabindex: '-1' }, 'tree': { tabindex: '0' } },
@@ -535,7 +535,7 @@ export const treeSuite: ConformanceSuite = {
     {
       name: '禁用节点点不动',
       spec: { apg: APG },
-      props: props({ defaultExpandedValue: ['src'], defaultSelectedValue: ['index'] }),
+      props: props({ defaultExpandedValue: ['src'], defaultSelection: ['index'] }),
       steps: [
         // 节点用 aria-disabled 表达禁用，click 不被短路，事件派得出去才碰得到 connect 的守卫
         { kind: 'click', part: 'item[2]', expect: { parts: { item: itemsSelected('index') } } },
@@ -544,7 +544,7 @@ export const treeSuite: ConformanceSuite = {
     {
       name: '整棵树禁用：所有节点转 aria-disabled，键盘与点击都改不了展开与选中，焦点也落不进节点',
       spec: { apg: APG },
-      props: props({ disabled: true, defaultExpandedValue: ['src'], defaultSelectedValue: ['index'] }),
+      props: props({ disabled: true, defaultExpandedValue: ['src'], defaultSelection: ['index'] }),
       initial: {
         parts: {
           'root': { 'data-disabled': '' },
@@ -565,9 +565,9 @@ export const treeSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '受控 expandedValue / selectedValue：宿主不写回则纹丝不动',
+      name: '受控 expandedValue / selection：宿主不写回则纹丝不动',
       spec: { apg: APG },
-      props: props({ expandedValue: [], selectedValue: [] }),
+      props: props({ expandedValue: [], selection: [] }),
       steps: [
         {
           kind: 'click',
@@ -576,7 +576,7 @@ export const treeSuite: ConformanceSuite = {
         },
         {
           kind: 'setProps',
-          props: { expandedValue: ['src'], selectedValue: ['src'] },
+          props: { expandedValue: ['src'], selection: ['src'] },
           expect: {
             parts: { 'branch': branchesExpanded('src'), 'branch-content': contentsShown('src') },
           },

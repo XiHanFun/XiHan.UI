@@ -55,7 +55,7 @@ movable 开了才出上下把手；挪完焦点跟着这一行走，键盘可以
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-dynamic-input>` |
-| Vue 组件 | `XhDynamicInputAddTrigger` `XhDynamicInputItem` `XhDynamicInputItemAction` `XhDynamicInputItemContent` `XhDynamicInputMoveDownTrigger` `XhDynamicInputMoveUpTrigger` `XhDynamicInputRemoveTrigger` `XhDynamicInputRoot` |
+| Vue 组件 | `XhDynamicInputAddTrigger` `XhDynamicInputItem` `XhDynamicInputItemAction` `XhDynamicInputItemContent` `XhDynamicInputItemDeleteTrigger` `XhDynamicInputMoveDownTrigger` `XhDynamicInputMoveUpTrigger` `XhDynamicInputRoot` |
 | 组合式函数 | `useDynamicInput` |
 | 状态机 | `dynamicInputMachine` |
 | 皮肤 | `@xihan-ui/styles/dynamic-input.css` |
@@ -64,7 +64,7 @@ movable 开了才出上下把手；挪完焦点跟着这一行走，键盘可以
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="dynamic-input"`：**`root`** · `item` · `item-content` · `item-action` · `add-trigger` · `remove-trigger` · `move-up-trigger` · `move-down-trigger`
+`data-scope="dynamic-input"`：**`root`** · `item` · `item-content` · `item-action` · `add-trigger` · `item-delete-trigger` · `move-up-trigger` · `move-down-trigger`
 
 ## Props
 
@@ -132,7 +132,7 @@ movable 开了才出上下把手；挪完焦点跟着这一行走，键盘可以
 | `getItemContentProps` | `(item: DynamicInputItemProps) => T['element']` |  |
 | `getItemActionProps` | `(item: DynamicInputItemProps) => T['element']` |  |
 | `getAddTriggerProps` | `() => T['button']` |  |
-| `getRemoveTriggerProps` | `(item: DynamicInputItemProps) => T['button']` |  |
+| `getItemDeleteTriggerProps` | `(item: DynamicInputItemProps) => T['button']` |  |
 | `getMoveUpTriggerProps` | `(item: DynamicInputItemProps) => T['button']` |  |
 | `getMoveDownTriggerProps` | `(item: DynamicInputItemProps) => T['button']` |  |
 
@@ -149,8 +149,8 @@ movable 开了才出上下把手；挪完焦点跟着这一行走，键盘可以
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `add-trigger` | `aria-disabled` | 'false' \| 'true' |
-| `remove-trigger` | `aria-disabled` | 'false' \| 'true' |
-| `remove-trigger` | `aria-label` | label.removeTrigger(item.index + 1, count) |
+| `item-delete-trigger` | `aria-disabled` | 'false' \| 'true' |
+| `item-delete-trigger` | `aria-label` | label.deleteItem(item.index + 1, count) |
 
 ## 样式
 
@@ -170,13 +170,13 @@ movable 开了才出上下把手；挪完焦点跟着这一行走，键盘可以
 | `item` | `data-first` | ''（条件成立时才出现） |
 | `item` | `data-last` | ''（条件成立时才出现） |
 | `add-trigger` | `data-disabled` | ''（条件成立时才出现） |
-| `remove-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `item-delete-trigger` | `data-disabled` | ''（条件成立时才出现） |
 
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-dynamic-input-action-gap` · `--xh-dynamic-input-add-bg` · `--xh-dynamic-input-add-bg-active` · `--xh-dynamic-input-add-bg-hover` · `--xh-dynamic-input-add-border` · `--xh-dynamic-input-add-border-disabled` · `--xh-dynamic-input-add-border-hover` · `--xh-dynamic-input-add-fg` · `--xh-dynamic-input-add-font-size` · `--xh-dynamic-input-add-height` · `--xh-dynamic-input-add-px` · `--xh-dynamic-input-add-radius` · `--xh-dynamic-input-content-gap` · `--xh-dynamic-input-gap` · `--xh-dynamic-input-icon-size` · `--xh-dynamic-input-item-gap` · `--xh-dynamic-input-item-padding` · `--xh-dynamic-input-item-radius` · `--xh-dynamic-input-remove-fg-hover` · `--xh-dynamic-input-trigger-bg` · `--xh-dynamic-input-trigger-bg-active` · `--xh-dynamic-input-trigger-bg-hover` · `--xh-dynamic-input-trigger-fg` · `--xh-dynamic-input-trigger-fg-hover` · `--xh-dynamic-input-trigger-font-size` · `--xh-dynamic-input-trigger-radius` · `--xh-dynamic-input-trigger-size`
+`--xh-dynamic-input-action-gap` · `--xh-dynamic-input-add-bg` · `--xh-dynamic-input-add-bg-active` · `--xh-dynamic-input-add-bg-hover` · `--xh-dynamic-input-add-border` · `--xh-dynamic-input-add-border-disabled` · `--xh-dynamic-input-add-border-hover` · `--xh-dynamic-input-add-fg` · `--xh-dynamic-input-add-font-size` · `--xh-dynamic-input-add-height` · `--xh-dynamic-input-add-px` · `--xh-dynamic-input-add-radius` · `--xh-dynamic-input-content-gap` · `--xh-dynamic-input-gap` · `--xh-dynamic-input-icon-size` · `--xh-dynamic-input-item-delete-fg-hover` · `--xh-dynamic-input-item-gap` · `--xh-dynamic-input-item-padding` · `--xh-dynamic-input-item-radius` · `--xh-dynamic-input-trigger-bg` · `--xh-dynamic-input-trigger-bg-active` · `--xh-dynamic-input-trigger-bg-hover` · `--xh-dynamic-input-trigger-fg` · `--xh-dynamic-input-trigger-fg-hover` · `--xh-dynamic-input-trigger-font-size` · `--xh-dynamic-input-trigger-radius` · `--xh-dynamic-input-trigger-size`
 
 ## 动效
 

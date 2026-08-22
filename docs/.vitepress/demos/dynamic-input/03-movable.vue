@@ -6,9 +6,9 @@ import {
   XhDynamicInputItem,
   XhDynamicInputItemAction,
   XhDynamicInputItemContent,
+  XhDynamicInputItemDeleteTrigger,
   XhDynamicInputMoveDownTrigger,
   XhDynamicInputMoveUpTrigger,
-  XhDynamicInputRemoveTrigger,
   XhDynamicInputRoot,
 } from "@xihan-ui/vue";
 
@@ -40,7 +40,7 @@ function setAt(index: number, next: string) {
       <XhDynamicInputItemAction>
         <XhDynamicInputMoveUpTrigger />
         <XhDynamicInputMoveDownTrigger />
-        <XhDynamicInputRemoveTrigger />
+        <XhDynamicInputItemDeleteTrigger />
       </XhDynamicInputItemAction>
     </XhDynamicInputItem>
     <XhDynamicInputAddTrigger>+ 添加一步</XhDynamicInputAddTrigger>

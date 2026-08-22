@@ -93,8 +93,8 @@ export interface TreeSchema extends MachineSchema {
     expandedValue?: string[]
     defaultExpandedValue?: string[]
     /** 选中集合。给定即受控，语义同上。 */
-    selectedValue?: string[]
-    defaultSelectedValue?: string[]
+    selection?: string[]
+    defaultSelection?: string[]
     /** 默认 single。 */
     selectionMode?: TreeSelectionMode
     /**
@@ -121,7 +121,7 @@ export interface TreeSchema extends MachineSchema {
     /** 展开集合，恒为数组。受控（expandedValue 给定）时 cell 直读 prop。 */
     expandedValue: string[]
     /** 选中集合，恒为数组。单选时长度 ≤ 1，形状不随模式变。 */
-    selectedValue: string[]
+    selection: string[]
     /** 焦点位于树内时的瞬态锚点，焦点离开即清空。 */
     focusedValue: string | null
   }
@@ -136,7 +136,7 @@ export interface TreeSchema extends MachineSchema {
     | { type: 'BRANCH.COLLAPSE', value: string }
     | { type: 'BRANCH.TOGGLE', value: string }
     /** 整体改写选中集合。 */
-    | { type: 'SELECTED.SET', value: string[] }
+    | { type: 'SELECTION.SET', value: string[] }
     /** 单选替换、复选切换，由 selectionMode 决定。 */
     | { type: 'NODE.SELECT', value: string }
     | { type: 'NODE.FOCUS', value: string }
@@ -149,7 +149,7 @@ export interface TreeSchema extends MachineSchema {
     | 'expandBranch'
     | 'collapseBranch'
     | 'toggleBranch'
-    | 'setSelected'
+    | 'setSelection'
     | 'selectNode'
     | 'setFocusedValue'
     | 'clearFocusedValue'
@@ -165,7 +165,7 @@ export interface TreeApi<T extends PropTypes = PropTypes> {
    */
   visibleNodes: readonly TreeVisibleNode[]
   expandedValue: string[]
-  selectedValue: string[]
+  selection: string[]
   /** 焦点锚点；焦点不在树内、或它已被收起而不可见时为 null。 */
   focusedValue: string | null
   selectionMode: TreeSelectionMode
@@ -175,7 +175,7 @@ export interface TreeApi<T extends PropTypes = PropTypes> {
   /** 级联模式下该分支是否半选（有效叶后代有勾有不勾）；非级联恒 false。 */
   isIndeterminate: (value: string) => boolean
   setExpandedValue: (next: string[]) => void
-  setSelectedValue: (next: string[]) => void
+  setSelection: (next: string[]) => void
   expand: (value: string) => void
   collapse: (value: string) => void
   /** 单选替换、复选切换，与点击同一语义。 */

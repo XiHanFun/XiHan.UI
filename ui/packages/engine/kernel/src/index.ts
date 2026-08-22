@@ -51,6 +51,8 @@ export { contains, isDocument, isElement, isFunction, isHTMLElement, isShadowRoo
 export type { IdGenerator } from './id-generator'
 
 export { createCounterIdGenerator } from './id-generator'
+// locale 解析链
+export { hostLocale, resolveLocale, XH_FALLBACK_LOCALE } from './locale'
 export { mergeProps } from './merge-props'
 // 框架元数据在 ./metadata 子路径:与 Framework 的独立 Metadata 包同理,主入口只留
 // 结构原语与 VERSION(见 .size-limit.json 里 kernel 主入口 3.3 kB 的棘轮)

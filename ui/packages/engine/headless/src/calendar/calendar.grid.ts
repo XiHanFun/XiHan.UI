@@ -12,8 +12,11 @@ import {
 // 一张日期矩阵、一排星期几表头、一个方向键落点。日期运算全部委托给
 // @internationalized/date 的不可变值对象。
 
-/** 默认 locale。周首日（周日还是周一）就是由它决定的。 */
-export const CALENDAR_LOCALE = 'zh-CN'
+/**
+ * 这些纯函数没拿到 locale 时用的兜底。周首日（周日还是周一）由它决定。
+ * 连接层不走这里：它先按宿主语言解析，解析不出才落到同一个值。
+ */
+export const CALENDAR_LOCALE = 'en-US'
 /** 一周恒七天：矩阵的列数。 */
 export const CALENDAR_WEEK_LENGTH = 7
 /** fixedWeeks 打开后固定渲染的周行数；六行能装下任何公历月份。 */
@@ -43,7 +46,7 @@ export interface CalendarMonthGrid {
 }
 
 export interface CalendarMonthGridOptions {
-  /** 决定周首日，默认 zh-CN（周一起）。 */
+  /** 决定周首日，不给按 CALENDAR_LOCALE（en-US，周日起）。 */
   locale?: string
   /** 恒补满六行，默认按当月实际占用的周数（4-6 行）。 */
   fixedWeeks?: boolean

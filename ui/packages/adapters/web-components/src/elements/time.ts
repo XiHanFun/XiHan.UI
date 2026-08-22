@@ -1,4 +1,4 @@
-import type { TimeLocale, TimeProps, TimeType, TimeValue } from '@xihan-ui/headless'
+import type { TimeProps, TimeType, TimeValue } from '@xihan-ui/headless'
 import { connectTime, timeAnatomy, timeMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -22,7 +22,7 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @attr {string} value - 要显示的时刻；只写年月日的串按本地零点解读
  * @attr {'date'|'datetime'|'relative'} type - 呈现方式，缺省 datetime
  * @attr {string} format - 自定义格式串，记号是 YYYY / YY / MM / M / DD / D / HH / H / mm / m / ss / s
- * @attr {'zh-CN'|'en'} locale - 用词，缺省 zh-CN；只换给人看的文本
+ * @attr {string} locale - BCP 47 语言标记，zh 开头用中文用词、其余英文；不给按宿主语言，宿主也没有时按 en-US。只换给人看的文本
  * @attr {string} now - 算相对说法时的参照时刻，缺省取当前时刻
  * @csspart root - 那个 `<time>`，承载 datetime / data-type / data-state / data-relative
  */
@@ -46,7 +46,7 @@ export class XhTimeElement extends XhElement {
   declare value?: TimeValue
   declare type?: TimeType
   declare format?: string
-  declare locale?: TimeLocale
+  declare locale?: string
   declare now?: TimeValue
 
   /** 上一次铺进 root 的那份文本。 */

@@ -108,7 +108,7 @@ variant 决定描边与底怎么画、tone 决定用哪族颜色、size 换几�
 | `defaultOpen` | `boolean` |  |  |
 | `min` | `string` |  | 可选范围下界（含当天），ISO 串。日历与分段输入共用这一条。 |
 | `max` | `string` |  | 可选范围上界（含当天），ISO 串。 |
-| `locale` | `string` |  | 决定周首日、月份文案与段位先后（zh-CN 年月日、en-US 月日年）。 |
+| `locale` | `string` |  | 决定周首日、月份文案与段位先后（zh-CN 年月日、en-US 月日年）。 不给按宿主语言，宿主也没有时按 en-US。 |
 | `timeZone` | `string` |  | 判定「今天」与格式化文案用的时区，默认取宿主本地时区。 |
 | `selectionMode` | `CalendarSelectionMode` |  | 选择模式，默认 single；区间模式下两端都落定才算选完。 |
 | `isDateUnavailable` | `(value: string) => boolean` |  | 不可用判定，收 ISO 串。界外与它判真的日子同等对待。 |

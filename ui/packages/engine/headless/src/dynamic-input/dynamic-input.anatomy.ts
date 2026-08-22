@@ -9,7 +9,7 @@ export const dynamicInputAnatomy = createAnatomy('dynamic-input', [
   'item-content',
   'item-action',
   'add-trigger',
-  'remove-trigger',
+  'item-delete-trigger',
   'move-up-trigger',
   'move-down-trigger',
 ])

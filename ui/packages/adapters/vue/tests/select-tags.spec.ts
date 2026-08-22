@@ -1,17 +1,17 @@
 // @vitest-environment jsdom
 // select 多选标签形态：api 的 tags 受 maxTagCount 截断、余数进 overflowCount；
-// XhSelectTagRemove 点按摘掉所在标签的选中值，禁用时不动。
+// XhSelectItemDeleteTrigger 点按摘掉所在标签的选中值，禁用时不动。
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createApp, h, nextTick } from 'vue'
 import {
   XhSelectContent,
   XhSelectItem,
+  XhSelectItemDeleteTrigger,
   XhSelectItemText,
   XhSelectList,
   XhSelectPositioner,
   XhSelectRoot,
   XhSelectTag,
-  XhSelectTagRemove,
   XhSelectTrigger,
 } from '../src'
 
@@ -55,7 +55,7 @@ function mountSelect(props: Record<string, unknown> = {}): { change: ReturnType<
             h(XhSelectTrigger),
             ...bag.tags.map(t => h(XhSelectTag, { key: t.value, value: t.value }, () => [
               t.label,
-              h(XhSelectTagRemove, () => '✕'),
+              h(XhSelectItemDeleteTrigger, () => '✕'),
             ])),
             h(XhSelectPositioner, null, () => [
               h(XhSelectContent, null, () => h(XhSelectList, null, () => COLLECTION.map(o =>
@@ -89,10 +89,10 @@ describe('select 多选标签', () => {
     expect(m.bag().overflowCount).toBe(1)
   })
 
-  it('点删除钮摘掉那个值；可及名走 removeTag 模板', async () => {
-    const m = mountSelect({ defaultValue: ['a', 'b'], translations: { removeTag: '移除{label}' } })
+  it('点删除钮摘掉那个值；可及名走 deleteItem', async () => {
+    const m = mountSelect({ defaultValue: ['a', 'b'], translations: { deleteItem: (label: string) => `移除${label}` } })
     await tick()
-    const remove = tagEl('a').querySelector<HTMLElement>('[data-part="tag-remove"]')!
+    const remove = tagEl('a').querySelector<HTMLElement>('[data-part="item-delete-trigger"]')!
     expect(remove.getAttribute('aria-label')).toBe('移除甲')
     remove.click()
     await tick()
@@ -102,7 +102,7 @@ describe('select 多选标签', () => {
   it('禁用时删除钮不动', async () => {
     const m = mountSelect({ defaultValue: ['a'], disabled: true })
     await tick()
-    tagEl('a').querySelector<HTMLElement>('[data-part="tag-remove"]')!.click()
+    tagEl('a').querySelector<HTMLElement>('[data-part="item-delete-trigger"]')!.click()
     await tick()
     expect(m.change).not.toHaveBeenCalled()
   })
@@ -110,7 +110,7 @@ describe('select 多选标签', () => {
   it('只读时删除钮同样不动', async () => {
     const m = mountSelect({ defaultValue: ['a'], readOnly: true })
     await tick()
-    tagEl('a').querySelector<HTMLElement>('[data-part="tag-remove"]')!.click()
+    tagEl('a').querySelector<HTMLElement>('[data-part="item-delete-trigger"]')!.click()
     await tick()
     expect(m.change).not.toHaveBeenCalled()
   })

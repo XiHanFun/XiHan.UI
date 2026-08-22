@@ -7,9 +7,6 @@
 /** 三种呈现方式：只到日、到秒、以及相对现在的说法。 */
 export type TimeType = 'date' | 'datetime' | 'relative'
 
-/** 内置的两套用词。 */
-export type TimeLocale = 'zh-CN' | 'en'
-
 /** 可以当时刻用的三种写法。 */
 export type TimeValue = Date | number | string
 
@@ -41,9 +38,9 @@ const EN: TimeWords = {
   days: n => `${n} day${n === 1 ? '' : 's'} ago`,
 }
 
-/** 取一套用词；认不出的 locale 退回 zh-CN 那套。 */
-export function timeWords(locale: TimeLocale | undefined): TimeWords {
-  return locale === 'en' ? EN : ZH
+/** 取一套用词：zh 开头的语言标记用中文那套，其余（含没给）一律英文。 */
+export function timeWords(locale: string | undefined): TimeWords {
+  return locale !== undefined && locale.toLowerCase().startsWith('zh') ? ZH : EN
 }
 
 const SECOND = 1000
@@ -131,7 +128,7 @@ export function formatTimePattern(date: Date, pattern: string): string {
  * 领先参照时刻一分钟以内仍算「刚刚」，收住两台机器之间那点钟差；
  * 更远的未来落不进任何一档，同样返回 undefined。
  */
-export function formatRelativeTime(date: Date, now: Date, locale: TimeLocale | undefined): string | undefined {
+export function formatRelativeTime(date: Date, now: Date, locale: string | undefined): string | undefined {
   const elapsed = now.getTime() - date.getTime()
   if (elapsed < -MINUTE || elapsed >= TIME_RELATIVE_LIMIT)
     return undefined

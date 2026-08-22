@@ -4,9 +4,11 @@
 // 失败保持打开以便重试或取消。
 import type { Tone } from '@xihan-ui/kernel'
 import type { App } from 'vue'
+import type { XhConfig } from '../config/config'
 import { createApp, defineComponent, h, reactive } from 'vue'
 import { XhButton, XhButtonIndicator, XhButtonLabel } from '../components/button'
 import { XhDialogContent, XhDialogDescription, XhDialogRoot, XhDialogTitle } from '../components/dialog/dialog'
+import { provideXhConfig } from '../config/config'
 import { spinArc, typeBadge } from './glyph'
 
 export interface ConfirmOptions {
@@ -26,8 +28,15 @@ export interface ConfirmOptions {
 export type AlertOptions = Omit<ConfirmOptions, 'tone' | 'badge'>
 
 export interface DialogServiceOptions {
+  /** 确认钮文案，缺省 OK。 */
   okText?: string
+  /** 取消钮文案，缺省 Cancel。 */
   cancelText?: string
+  /**
+   * 喂给对话框子树的全局配置（locale / translations / size / portalContainer）。
+   * 本服务自带宿主应用，接不到组件树里的 provideXhConfig，要让它跟应用同语言就从这里给。
+   */
+  config?: XhConfig
   /** 宿主容器；不给就在 body 下新建一个。 */
   target?: HTMLElement
 }
@@ -64,7 +73,7 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
   if (typeof document === 'undefined')
     throw new Error('createDialogService 需要 document；SSR 里请等到客户端再创建')
 
-  const defaults = { okText: options.okText ?? '确定', cancelText: options.cancelText ?? '取消' }
+  const defaults = { okText: options.okText ?? 'OK', cancelText: options.cancelText ?? 'Cancel' }
   const holder = options.target ?? document.createElement('div')
   if (!options.target)
     document.body.appendChild(holder)
@@ -152,6 +161,8 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
   const Host = defineComponent({
     name: 'XhDialogServiceHost',
     setup() {
+      if (options.config)
+        provideXhConfig(options.config)
       return () => {
         const spec = state.current
         return h(XhDialogRoot, {

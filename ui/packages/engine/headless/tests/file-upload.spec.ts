@@ -532,7 +532,7 @@ describe('connectFileUpload 属性输出', () => {
       defaultFiles: [makeFile('a.txt')],
       translations: {
         dropzone: '把文件拖到这里',
-        deleteFile: file => `移除 ${file.name}`,
+        deleteItem: file => `移除 ${file.name}`,
         clearTrigger: '全部移除',
       },
     })

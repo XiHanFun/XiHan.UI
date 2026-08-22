@@ -65,8 +65,8 @@ export class XhTreeElement extends XhElement {
     collection: { attribute: false },
     expandedValue: { attribute: false },
     defaultExpandedValue: { attribute: false },
-    selectedValue: { attribute: false },
-    defaultSelectedValue: { attribute: false },
+    selection: { attribute: false },
+    defaultSelection: { attribute: false },
     selectionMode: { converter: STRING_CONVERTER, attribute: 'selection-mode' },
     cascade: { type: Boolean },
     checkedStrategy: { converter: STRING_CONVERTER, attribute: 'checked-strategy' },
@@ -80,8 +80,8 @@ export class XhTreeElement extends XhElement {
   declare collection?: TreeNode[]
   declare expandedValue?: string[]
   declare defaultExpandedValue?: string[]
-  declare selectedValue?: string[]
-  declare defaultSelectedValue?: string[]
+  declare selection?: string[]
+  declare defaultSelection?: string[]
   declare selectionMode?: TreeSelectionMode
   declare cascade?: boolean
   declare checkedStrategy?: TreeSchema['props']['checkedStrategy']
@@ -109,8 +109,8 @@ export class XhTreeElement extends XhElement {
       expandedValue: this.expandedValue,
       // 机器自己兜 undefined，这里不补 []：props 每次读都新建数组会造成无谓的引用变动
       defaultExpandedValue: this.defaultExpandedValue,
-      selectedValue: this.selectedValue,
-      defaultSelectedValue: this.defaultSelectedValue,
+      selection: this.selection,
+      defaultSelection: this.defaultSelection,
       selectionMode: this.selectionMode,
       cascade: this.cascade,
       checkedStrategy: this.checkedStrategy,

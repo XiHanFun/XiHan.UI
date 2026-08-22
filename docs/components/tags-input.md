@@ -230,7 +230,7 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 | `control` | `role` | 'group' |
 | `input` | `aria-invalid` | 'true' \| 'false' |
 | `input` | `aria-labelledby` | `label` 部件的 id |
-| `item-delete-trigger` | `aria-label` | label.deleteTagTrigger(item.value) |
+| `item-delete-trigger` | `aria-label` | label.deleteItem(item.value) |
 | `item-input` | `aria-label` | label.editTagInput(item.value) |
 | `clear-trigger` | `aria-label` | label.clearTrigger |
 

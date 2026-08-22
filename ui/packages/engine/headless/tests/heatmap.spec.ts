@@ -993,7 +993,7 @@ describe('connectHeatmap 月历形态', () => {
     const api = apiOf(mountMonth(RANGE_MONTH).service)
     const block = api.getMonthBlockProps({ value: '2024-01' }) as Record<string, unknown>
     expect(block.role).toBe('rowgroup')
-    expect(String(block['aria-label'])).toContain('1')
+    expect(String(block['aria-label'])).toContain('January')
     const axis = api.getRowProps({}) as Record<string, unknown>
     expect(axis['aria-hidden']).toBe(true)
     expect(axis.role).toBeUndefined()
@@ -1261,9 +1261,9 @@ describe('connectHeatmap 悬停详情', () => {
 })
 
 describe('色阶对照条的文案', () => {
-  it('两端各给一个字，缺省是「少」「多」，对照条自己带名字', () => {
+  it('两端各给一个词，缺省是 Less 与 More，对照条自己带名字', () => {
     const api = apiOf(mount(RANGE).service)
-    expect(api.legendText).toEqual({ low: '少', high: '多' })
+    expect(api.legendText).toEqual({ low: 'Less', high: 'More' })
     const legend = api.getLegendProps() as Record<string, unknown>
     expect(legend.role).toBe('group')
     expect(legend['aria-label']).toBe('Activity level')
@@ -1309,6 +1309,7 @@ describe('星期名隔行画之后每一行自己报星期几', () => {
   it('行的名字不进 translations：它念的就是坐标轴上那个词，只由 locale 定', () => {
     const api = apiOf(mount({
       ...RANGE,
+      locale: 'zh-CN',
       translations: { gridLabel: 'Grid', cellLabel: () => 'Cell', legendLabel: 'Legend' },
     }).service)
     expect((api.getRowProps({ weekDay: 0 }) as Record<string, unknown>)['aria-label']).toBe('星期一')

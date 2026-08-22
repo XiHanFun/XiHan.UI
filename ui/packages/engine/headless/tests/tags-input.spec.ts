@@ -420,7 +420,7 @@ describe('connectTagsInput 属性输出', () => {
   it('translations 覆盖默认英文文案', () => {
     const h = mount({
       defaultValue: ['vue'],
-      translations: { deleteTagTrigger: v => `删除 ${v}`, clearTrigger: '全部清空' },
+      translations: { deleteItem: v => `删除 ${v}`, clearTrigger: '全部清空' },
     })
     expect(h.nodes('vue').del.getAttribute('aria-label')).toBe('删除 vue')
     expect(h.clearTrigger.getAttribute('aria-label')).toBe('全部清空')

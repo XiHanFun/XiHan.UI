@@ -146,7 +146,7 @@ export const dynamicInputMachine = createMachine({
         // 删掉的那个把手随行离场，焦点接给接位的那一行；整份删空了就交回新增把手
         restoreFocus(params, rest.length === 0
           ? { part: 'add-trigger' }
-          : { part: 'remove-trigger', index: Math.min(e.index, rest.length - 1) })
+          : { part: 'item-delete-trigger', index: Math.min(e.index, rest.length - 1) })
       },
 
       moveItem: (params) => {

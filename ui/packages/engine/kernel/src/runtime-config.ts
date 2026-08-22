@@ -6,6 +6,7 @@ import type { Direction } from './types'
 import { resolveMotionPreference } from '@xihan-ui/motion'
 import { isSSR } from './guards'
 import { createCounterIdGenerator } from './id-generator'
+import { resolveLocale } from './locale'
 import { createScope } from './scope'
 import { getLayerRegistry } from './structure/layer-registry'
 import { ensurePortalRoot } from './structure/portal-root'
@@ -36,7 +37,7 @@ export function createRuntimeConfig(partial: Partial<RuntimeConfig> = {}): Runti
     idGenerator,
     layerRegistry,
     dir: partial.dir ?? 'ltr',
-    locale: partial.locale ?? 'zh-CN',
+    locale: resolveLocale(partial.locale, scope),
     portalContainer: partial.portalContainer ?? (doc ? () => ensurePortalRoot(doc) : () => null),
     scrollRoot: partial.scrollRoot ?? (() => null),
     reducedMotion:
