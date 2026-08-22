@@ -38,7 +38,7 @@
     /* 语气只落在聚焦这一处：环与聚焦态描边。框里的数字不归它管。
        没写 data-tone 时 --xh-_tone 没被声明，退回原来的聚焦环色与常态描边 */
     --xh-_number-field-ring: var(--xh-ring-focus);
-    --xh-_number-field-border-focus: var(--xh-number-field-input-border, var(--xh-_tone, var(--xh-border-control)));
+    --xh-_number-field-border-focus: var(--xh-number-field-input-border, var(--xh-_tone, var(--xh-border-control-focus)));
 
     display: inline-flex;
     flex-direction: column;
@@ -56,18 +56,18 @@
     --xh-icon-size: var(--xh-number-field-icon-size, var(--xh-glyph-size-sm));
     --xh-_number-field-h: var(--xh-control-h-sm);
     --xh-_number-field-px: var(--xh-control-px-sm);
-    --xh-_number-field-font-size: var(--xh-font-size-sm);
-    --xh-_number-field-label-font-size: var(--xh-font-size-sm);
-    --xh-_number-field-trigger-font-size: var(--xh-font-size-sm);
+    --xh-_number-field-font-size: var(--xh-control-font-sm);
+    --xh-_number-field-label-font-size: var(--xh-control-font-sm);
+    --xh-_number-field-trigger-font-size: var(--xh-control-font-sm);
   }
 
   [data-scope='number-field'][data-part='root'][data-size='lg'] {
     --xh-icon-size: var(--xh-number-field-icon-size, var(--xh-glyph-size-lg));
     --xh-_number-field-h: var(--xh-control-h-lg);
     --xh-_number-field-px: var(--xh-control-px-lg);
-    --xh-_number-field-font-size: var(--xh-font-size-lg);
-    --xh-_number-field-label-font-size: var(--xh-font-size-lg);
-    --xh-_number-field-trigger-font-size: var(--xh-font-size-lg);
+    --xh-_number-field-font-size: var(--xh-control-font-lg);
+    --xh-_number-field-label-font-size: var(--xh-control-font-lg);
+    --xh-_number-field-trigger-font-size: var(--xh-control-font-lg);
   }
 
   /* —— 形态 —— */
@@ -82,7 +82,7 @@
     --xh-_number-field-trigger-bg-active: var(--xh-bg-subtle-active);
     --xh-_number-field-trigger-border: var(--xh-border-control);
     --xh-_number-field-trigger-border-hover: var(--xh-border-control-hover);
-    --xh-_number-field-border-focus: var(--xh-number-field-input-border, var(--xh-_tone, var(--xh-border-control)));
+    --xh-_number-field-border-focus: var(--xh-number-field-input-border, var(--xh-_tone, var(--xh-border-control-focus)));
   }
 
   /* 填充式：底色顶替描边表达边界。描边只退成透明而不去掉，1px 的位置留着，
@@ -96,7 +96,7 @@
     --xh-_number-field-trigger-bg-active: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
     --xh-_number-field-trigger-border: transparent;
     --xh-_number-field-trigger-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
-    --xh-_number-field-border-focus: var(--xh-_tone, var(--xh-border-control));
+    --xh-_number-field-border-focus: var(--xh-_tone, var(--xh-border-control-focus));
   }
 
   /* 无框：底与常态描边透明，悬停与聚焦浮出描边 */
@@ -109,7 +109,7 @@
     --xh-_number-field-trigger-bg-active: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
     --xh-_number-field-trigger-border: transparent;
     --xh-_number-field-trigger-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
-    --xh-_number-field-border-focus: var(--xh-_tone, var(--xh-border-control));
+    --xh-_number-field-border-focus: var(--xh-_tone, var(--xh-border-control-focus));
   }
 
   [data-scope='number-field'][data-part='label'] {
@@ -373,8 +373,8 @@
   [data-scope='number-field'][data-part='increment-trigger']:empty::before {
     content: '';
     display: inline-block;
-    inline-size: 1em;
-    block-size: 1em;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-plus) center / contain no-repeat;
@@ -384,8 +384,8 @@
   [data-scope='number-field'][data-part='decrement-trigger']:empty::before {
     content: '';
     display: inline-block;
-    inline-size: 1em;
-    block-size: 1em;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-minus) center / contain no-repeat;

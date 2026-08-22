@@ -33,16 +33,16 @@
     --xh-icon-size: var(--xh-time-field-icon-size, var(--xh-glyph-size-sm));
     --xh-_time-field-control-h: var(--xh-control-h-sm);
     --xh-_time-field-control-px: var(--xh-control-px-sm);
-    --xh-_time-field-font-size: var(--xh-font-size-sm);
-    --xh-_time-field-label-font-size: var(--xh-font-size-sm);
+    --xh-_time-field-font-size: var(--xh-control-font-sm);
+    --xh-_time-field-label-font-size: var(--xh-control-font-sm);
   }
 
   [data-scope='time-field'][data-part='root'][data-size='lg'] {
     --xh-icon-size: var(--xh-time-field-icon-size, var(--xh-glyph-size-lg));
     --xh-_time-field-control-h: var(--xh-control-h-lg);
     --xh-_time-field-control-px: var(--xh-control-px-lg);
-    --xh-_time-field-font-size: var(--xh-font-size-lg);
-    --xh-_time-field-label-font-size: var(--xh-font-size-lg);
+    --xh-_time-field-font-size: var(--xh-control-font-lg);
+    --xh-_time-field-label-font-size: var(--xh-control-font-lg);
   }
 
   /* —— 形态 —— */
@@ -91,6 +91,7 @@
      段自己只管一小块可聚焦的高亮区 */
   [data-scope='time-field'][data-part='control'] {
     display: inline-flex;
+    min-inline-size: var(--xh-time-field-control-min-w, var(--xh-control-min-w));
     align-items: center;
     block-size: var(--xh-time-field-control-h, var(--xh-_time-field-control-h));
     padding-inline: var(--xh-time-field-control-px, var(--xh-_time-field-control-px));
@@ -120,7 +121,9 @@
   /* 焦点真正落在段上，但整块看起来才是一个控件：段内有焦点时整框亮起来。
      control 自己不占 Tab 位，所以这里写的是 focus-within 而不是 focus-visible */
   [data-scope='time-field'][data-part='control']:focus-within:not([data-disabled]) {
-    border-color: var(--xh-time-field-control-border-focus, var(--xh-_time-field-ring));
+    border-color: var(--xh-time-field-control-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
+    outline: var(--xh-ring-width) solid var(--xh-_time-field-ring);
+    outline-offset: var(--xh-ring-offset);
   }
 
   [data-scope='time-field'][data-part='control'][data-invalid] {

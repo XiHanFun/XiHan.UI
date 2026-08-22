@@ -10,6 +10,9 @@
      中间那栏没有对应的角色节点（anatomy 里两个按钮是 root 的直接子节点），
      所以只能按位置显式安放，不能靠自动流——自动流会把"往左搬"甩到右侧面板的位置上 */
   [data-scope='transfer'][data-part='root'] {
+    /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+    --xh-icon-size: var(--xh-transfer-icon-size, var(--xh-glyph-size-text));
+
     display: grid;
     grid-template-rows: 1fr 1fr;
     grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
@@ -84,7 +87,7 @@
   [data-scope='transfer'][data-part='panel-count'] {
     flex: none;
     color: var(--xh-transfer-count-fg, var(--xh-fg-subtle));
-    font-size: var(--xh-transfer-count-font-size, var(--xh-font-size-xs));
+    font-size: var(--xh-transfer-count-font-size, var(--xh-text-caption-size));
     line-height: var(--xh-leading-none);
     font-variant-numeric: tabular-nums;
   }
@@ -222,8 +225,8 @@
   [data-scope='transfer'][data-part='item-checkbox'][data-state='checked']:empty::before {
     content: '';
     display: inline-block;
-    inline-size: 1em;
-    block-size: 1em;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
@@ -235,8 +238,8 @@
   [data-scope='transfer'][data-part='select-all-trigger'][data-state='all']::before {
     content: '';
     display: inline-block;
-    inline-size: 1em;
-    block-size: 1em;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
@@ -246,8 +249,8 @@
   [data-scope='transfer'][data-part='select-all-trigger'][data-state='some']::before {
     content: '';
     display: inline-block;
-    inline-size: 1em;
-    block-size: 1em;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
@@ -271,7 +274,7 @@
     border-radius: var(--xh-transfer-select-all-radius, var(--xh-shape-control));
     background: none;
     color: var(--xh-transfer-select-all-fg, var(--xh-fg-muted));
-    font-size: var(--xh-transfer-select-all-font-size, var(--xh-font-size-xs));
+    font-size: var(--xh-transfer-select-all-font-size, var(--xh-text-caption-size));
     font-weight: var(--xh-font-weight-medium);
     line-height: var(--xh-leading-none);
     cursor: pointer;
@@ -350,8 +353,8 @@
   [data-scope='transfer'][data-part='to-source-trigger']:empty::before {
     content: '';
     display: inline-block;
-    inline-size: 1em;
-    block-size: 1em;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-chevron-left) center / contain no-repeat;
@@ -361,8 +364,8 @@
   [data-scope='transfer'][data-part='to-target-trigger']:empty::before {
     content: '';
     display: inline-block;
-    inline-size: 1em;
-    block-size: 1em;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;

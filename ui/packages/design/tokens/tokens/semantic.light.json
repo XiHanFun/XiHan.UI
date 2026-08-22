@@ -35,11 +35,17 @@
     "strong": { "$type": "color", "$value": "{color.neutral.300}" },
     "control": { "$type": "color", "$value": "{color.neutral.450}" },
     "control-hover": { "$type": "color", "$value": "{color.neutral.500}" },
+    "control-focus": { "$type": "color", "$value": "{border.control}" },
     "invalid": { "$type": "color", "$value": "{color.danger.600}" },
     "at-limit": { "$type": "color", "$value": "{color.warning.600}" }
   },
   "ring": {
     "focus": { "$type": "color", "$value": "{color.brand.500}" },
     "invalid": { "$type": "color", "$value": "{color.danger.500}" }
+  },
+  "syntax": {
+    "string": { "$type": "color", "$value": "oklch(0.52 0.13 165)" },
+    "number": { "$type": "color", "$value": "oklch(0.5 0.13 70)" },
+    "keyword": { "$type": "color", "$value": "oklch(0.5 0.2 300)" }
   }
 }

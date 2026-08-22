@@ -133,7 +133,7 @@ size 换整条路径的字号与各层之间的间距，不传 size 即默认档
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-breadcrumb-current-fg` · `--xh-breadcrumb-current-font-weight` · `--xh-breadcrumb-ellipsis-size` · `--xh-breadcrumb-fg` · `--xh-breadcrumb-font-size` · `--xh-breadcrumb-gap` · `--xh-breadcrumb-leading` · `--xh-breadcrumb-link-bg-hover` · `--xh-breadcrumb-link-fg-hover` · `--xh-breadcrumb-link-gap` · `--xh-breadcrumb-link-max-w` · `--xh-breadcrumb-link-px` · `--xh-breadcrumb-link-radius` · `--xh-breadcrumb-separator-fg` · `--xh-breadcrumb-separator-size`
+`--xh-breadcrumb-current-fg` · `--xh-breadcrumb-current-font-weight` · `--xh-breadcrumb-ellipsis-size` · `--xh-breadcrumb-fg` · `--xh-breadcrumb-font-size` · `--xh-breadcrumb-gap` · `--xh-breadcrumb-icon-size` · `--xh-breadcrumb-leading` · `--xh-breadcrumb-link-bg-hover` · `--xh-breadcrumb-link-fg-hover` · `--xh-breadcrumb-link-gap` · `--xh-breadcrumb-link-max-w` · `--xh-breadcrumb-link-px` · `--xh-breadcrumb-link-radius` · `--xh-breadcrumb-separator-fg` · `--xh-breadcrumb-separator-size`
 
 ## 动效
 

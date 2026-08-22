@@ -7,9 +7,9 @@
   /* 与文本框、数字框同一套堆叠：标签一行、格子一行 */
   [data-scope='pin-input'][data-part='root'] {
     /* 尺寸档只换这四个私有槽，标题与格子都从 root 继承它们，换档不必给每个部件各写一条选择器 */
-    --xh-_pin-input-box-size: var(--xh-control-h-lg);
+    --xh-_pin-input-box-size: var(--xh-control-box-md);
     --xh-_pin-input-box-gap: var(--xh-space-2);
-    --xh-_pin-input-box-font-size: var(--xh-font-size-xl);
+    --xh-_pin-input-box-font-size: var(--xh-text-heading-3-size);
     --xh-_pin-input-label-font-size: var(--xh-text-label-size);
     /* 形态档只换这三个私有槽，缺省这一份就是描边式（描边 + 画布底） */
     --xh-_pin-input-box-bg: var(--xh-bg-canvas);
@@ -54,18 +54,18 @@
 
   /* —— 尺寸 —— */
   [data-scope='pin-input'][data-part='root'][data-size='sm'] {
-    --xh-_pin-input-box-size: var(--xh-control-h-md);
+    --xh-_pin-input-box-size: var(--xh-control-box-sm);
     --xh-_pin-input-box-gap: var(--xh-control-gap-sm);
-    --xh-_pin-input-box-font-size: var(--xh-font-size-lg);
-    --xh-_pin-input-label-font-size: var(--xh-font-size-sm);
+    --xh-_pin-input-box-font-size: var(--xh-control-font-lg);
+    --xh-_pin-input-label-font-size: var(--xh-control-font-sm);
   }
 
   /* 格子是正方形，缺省档已经占到控件高度表的顶档，lg 档由顶档加一格间距合成，不另立数值 */
   [data-scope='pin-input'][data-part='root'][data-size='lg'] {
-    --xh-_pin-input-box-size: calc(var(--xh-control-h-lg) + var(--xh-space-2));
+    --xh-_pin-input-box-size: var(--xh-control-box-lg);
     --xh-_pin-input-box-gap: var(--xh-control-gap-lg);
-    --xh-_pin-input-box-font-size: var(--xh-font-size-2xl);
-    --xh-_pin-input-label-font-size: var(--xh-font-size-lg);
+    --xh-_pin-input-box-font-size: var(--xh-text-heading-2-size);
+    --xh-_pin-input-label-font-size: var(--xh-control-font-lg);
   }
 
   [data-scope='pin-input'][data-part='label'] {
@@ -121,7 +121,7 @@
      :focus-visible 兜住机器状态还没回流的那一帧，两条同时写不冲突 */
   [data-scope='pin-input'][data-part='input'][data-focus],
   [data-scope='pin-input'][data-part='input']:focus-visible {
-    border-color: var(--xh-pin-input-box-border-focus, var(--xh-_pin-input-ring));
+    border-color: var(--xh-pin-input-box-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
     outline: var(--xh-ring-width) solid var(--xh-_pin-input-ring);
     outline-offset: var(--xh-ring-offset);
   }

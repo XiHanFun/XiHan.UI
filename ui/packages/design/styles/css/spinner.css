@@ -61,7 +61,7 @@
 
   [data-scope='spinner'][data-part='label'] {
     color: var(--xh-spinner-label-fg, var(--xh-fg-muted));
-    font-size: var(--xh-spinner-label-size, var(--xh-font-size-sm));
+    font-size: var(--xh-spinner-label-size, var(--xh-text-secondary-size));
     line-height: var(--xh-leading-none);
   }
 

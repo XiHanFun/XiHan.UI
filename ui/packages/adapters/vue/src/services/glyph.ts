@@ -4,13 +4,17 @@
 import type { VNode } from 'vue'
 import { h } from 'vue'
 
+/** 徽记的圆底取中号字形尺寸；里面的字形四边各让出一个 space-1。 */
+const BADGE_SIZE = 'var(--xh-glyph-size-md)'
+const MARK_SIZE = 'calc(var(--xh-glyph-size-md) - 2 * var(--xh-space-1))'
+
 const BADGE_STYLE = {
   display: 'grid',
   placeItems: 'center',
   flex: 'none',
-  inlineSize: '20px',
-  blockSize: '20px',
-  borderRadius: '999px',
+  inlineSize: BADGE_SIZE,
+  blockSize: BADGE_SIZE,
+  borderRadius: 'var(--xh-shape-pill)',
   background: 'var(--xh-_tone-subtle, var(--xh-bg-muted))',
   color: 'var(--xh-_tone-fg, var(--xh-fg-default))',
 } as const
@@ -27,8 +31,8 @@ function markStyle(token: string): Record<string, string> {
   const image = `var(${token})`
   return {
     display: 'block',
-    inlineSize: '12px',
-    blockSize: '12px',
+    inlineSize: MARK_SIZE,
+    blockSize: MARK_SIZE,
     backgroundColor: 'currentColor',
     WebkitMask: `${image} center / contain no-repeat`,
     mask: `${image} center / contain no-repeat`,
@@ -58,12 +62,38 @@ export function spinArc(size = '1em'): VNode {
   ])
 }
 
+/** 解析 CSS 时长（"640ms" / "0.8s"）为毫秒，解析不出来给 0。 */
+function parseDuration(value: string): number {
+  const n = Number.parseFloat(value)
+  if (!Number.isFinite(n))
+    return 0
+  return /s\s*$/.test(value) && !/ms\s*$/.test(value) ? n * 1000 : n
+}
+
+/**
+ * 让徽记转起来。动画用 Web Animations 而不是 CSS 动画名：模板是内联样式渲染的，
+ * 不归任何一份皮肤管，引用皮肤里的 @keyframes 名字时那份皮肤不一定在场。
+ * 时长读 --xh-spin-duration 令牌；减弱动效时不转，静止的弧线仍读得出「还没好」。
+ */
+function spin(el: HTMLElement): void {
+  if (typeof el.animate !== 'function' || matchMedia('(prefers-reduced-motion: reduce)').matches)
+    return
+  const duration = parseDuration(getComputedStyle(el).getPropertyValue('--xh-spin-duration'))
+  if (duration <= 0)
+    return
+  el.animate([{ rotate: '0deg' }, { rotate: '360deg' }], { duration, iterations: Number.POSITIVE_INFINITY, easing: 'linear' })
+}
+
 /** 类型徽记：圆底 + 字形；loading 给转圈弧线。 */
 export function typeBadge(type: string | undefined): VNode | null {
   if (!type)
     return null
   if (type === 'loading') {
-    return h('span', { 'style': { ...BADGE_STYLE, animation: 'xh-spin 0.8s linear infinite' }, 'aria-hidden': 'true' }, [spinArc('12px')])
+    return h('span', {
+      'style': BADGE_STYLE,
+      'aria-hidden': 'true',
+      'onVnodeMounted': vnode => spin(vnode.el as HTMLElement),
+    }, [spinArc(MARK_SIZE)])
   }
   const mark = GLYPH_MARK[type]
   if (!mark)

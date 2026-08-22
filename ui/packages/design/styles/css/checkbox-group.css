@@ -7,6 +7,9 @@
   /* 组容器：label、trigger、条目都是它的直接子节点，排布方式只能读 data-orientation——
      连接层明说了 role=group 不接受 aria-orientation，那个属性它根本没输出 */
   [data-scope='checkbox-group'][data-part='root'] {
+    /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+    --xh-icon-size: var(--xh-checkbox-group-icon-size, var(--xh-glyph-size-text));
+
     display: flex;
     gap: var(--xh-checkbox-group-gap, var(--xh-stack-gap-md));
   }
@@ -62,7 +65,6 @@
   [data-scope='checkbox-group'][data-part='item'][data-disabled] {
     color: var(--xh-checkbox-group-item-fg-disabled, var(--xh-fg-disabled));
     cursor: not-allowed;
-    opacity: var(--xh-state-disabled-opacity);
   }
 
   /* 只读整组都改不动，但不是禁用：颜色照常，只把"可点"这个暗示收回来。
@@ -81,8 +83,8 @@
     flex: none;
     align-items: center;
     justify-content: center;
-    inline-size: var(--xh-checkbox-group-indicator-size, 16px);
-    block-size: var(--xh-checkbox-group-indicator-size, 16px);
+    inline-size: var(--xh-checkbox-group-indicator-size, var(--xh-control-indicator-size));
+    block-size: var(--xh-checkbox-group-indicator-size, var(--xh-control-indicator-size));
     border: var(--xh-stroke-thin) solid var(--xh-checkbox-group-indicator-border, var(--xh-border-control));
     border-radius: var(--xh-checkbox-group-indicator-radius, var(--xh-shape-inset));
     background: var(--xh-checkbox-group-indicator-bg, var(--xh-bg-canvas));
@@ -118,8 +120,8 @@
   [data-scope='checkbox-group'][data-part='indicator'][data-state='checked']:empty::before {
     content: '';
     display: inline-block;
-    inline-size: 1em;
-    block-size: 1em;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
@@ -131,8 +133,8 @@
   [data-scope='checkbox-group'][data-part='trigger'][data-state='all']::before {
     content: '';
     display: inline-block;
-    inline-size: 1em;
-    block-size: 1em;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
@@ -142,8 +144,8 @@
   [data-scope='checkbox-group'][data-part='trigger'][data-state='some']::before {
     content: '';
     display: inline-block;
-    inline-size: 1em;
-    block-size: 1em;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
@@ -184,7 +186,6 @@
   [data-scope='checkbox-group'][data-part='trigger'][data-disabled] {
     color: var(--xh-checkbox-group-trigger-fg-disabled, var(--xh-fg-disabled));
     cursor: not-allowed;
-    opacity: var(--xh-state-disabled-opacity);
   }
 
   /* 只读与禁用会同时出现在 trigger 上（连接层两个属性各写各的），

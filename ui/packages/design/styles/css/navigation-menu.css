@@ -41,7 +41,8 @@
     --xh-_navigation-menu-trigger-h: var(--xh-control-h-md);
     --xh-_navigation-menu-trigger-px: var(--xh-control-px-md);
     --xh-_navigation-menu-trigger-gap: var(--xh-control-gap-md);
-    --xh-_navigation-menu-link-p: var(--xh-space-2);
+    --xh-_navigation-menu-link-py: var(--xh-space-1_5);
+    --xh-_navigation-menu-link-px: var(--xh-control-px-md);
     --xh-_navigation-menu-link-font-size: var(--xh-text-body-size);
 
     /* 语气落在三处：条目的高亮底、展开着的 trigger 与当前链接的文字色、指示条。
@@ -61,21 +62,23 @@
   /* 缺省档写在上面的基础规则里。链接的内边距不在控件内边距那把尺上（它比控件矮一档），
      三档一律取空间尺，缺省档的取值原样保留 */
   [data-scope='navigation-menu'][data-part='root'][data-size='sm'] {
-    --xh-_navigation-menu-font-size: var(--xh-font-size-sm);
+    --xh-_navigation-menu-font-size: var(--xh-control-font-sm);
     --xh-_navigation-menu-trigger-h: var(--xh-control-h-sm);
     --xh-_navigation-menu-trigger-px: var(--xh-control-px-sm);
     --xh-_navigation-menu-trigger-gap: var(--xh-control-gap-sm);
-    --xh-_navigation-menu-link-p: var(--xh-space-1_5);
-    --xh-_navigation-menu-link-font-size: var(--xh-font-size-sm);
+    --xh-_navigation-menu-link-py: var(--xh-space-1);
+    --xh-_navigation-menu-link-px: var(--xh-control-px-sm);
+    --xh-_navigation-menu-link-font-size: var(--xh-control-font-sm);
   }
 
   [data-scope='navigation-menu'][data-part='root'][data-size='lg'] {
-    --xh-_navigation-menu-font-size: var(--xh-font-size-lg);
+    --xh-_navigation-menu-font-size: var(--xh-control-font-lg);
     --xh-_navigation-menu-trigger-h: var(--xh-control-h-lg);
     --xh-_navigation-menu-trigger-px: var(--xh-control-px-lg);
     --xh-_navigation-menu-trigger-gap: var(--xh-control-gap-lg);
-    --xh-_navigation-menu-link-p: var(--xh-space-3);
-    --xh-_navigation-menu-link-font-size: var(--xh-font-size-lg);
+    --xh-_navigation-menu-link-py: var(--xh-space-2);
+    --xh-_navigation-menu-link-px: var(--xh-control-px-lg);
+    --xh-_navigation-menu-link-font-size: var(--xh-control-font-lg);
   }
 
   /* 指示条的定位参照系（它是 absolute，量出来的偏移就是相对这里的）。
@@ -168,11 +171,11 @@
     flex-direction: column;
     gap: var(--xh-navigation-menu-content-gap, var(--xh-space-1));
     min-inline-size: var(--xh-navigation-menu-content-min-w, var(--xh-overlay-min-w));
-    padding: var(--xh-navigation-menu-content-p, var(--xh-space-2));
+    padding: var(--xh-navigation-menu-content-p, var(--xh-space-1));
     border: var(--xh-stroke-thin) solid var(--xh-navigation-menu-content-border, var(--xh-border-default));
     border-radius: var(--xh-navigation-menu-content-radius, var(--xh-shape-surface));
     background: var(--xh-navigation-menu-content-bg, var(--xh-bg-surface));
-    box-shadow: var(--xh-navigation-menu-content-shadow, var(--xh-elevation-2));
+    box-shadow: var(--xh-navigation-menu-content-shadow, var(--xh-elevation-floating));
   }
 
   /* display 会盖掉 hidden 属性的 UA 规则，收起态显式让位 */
@@ -208,8 +211,8 @@
   [data-scope='navigation-menu'][data-part='link'] {
     display: flex;
     align-items: center;
-    padding-block: var(--xh-navigation-menu-link-py, var(--xh-_navigation-menu-link-p));
-    padding-inline: var(--xh-navigation-menu-link-px, var(--xh-_navigation-menu-link-p));
+    padding-block: var(--xh-navigation-menu-link-py, var(--xh-_navigation-menu-link-py));
+    padding-inline: var(--xh-navigation-menu-link-px, var(--xh-_navigation-menu-link-px));
     border-radius: var(--xh-navigation-menu-link-radius, var(--xh-shape-control));
     color: var(--xh-navigation-menu-link-fg, var(--xh-fg-default));
     font-size: var(--xh-navigation-menu-link-font-size, var(--xh-_navigation-menu-link-font-size));
@@ -277,7 +280,7 @@
     border: var(--xh-stroke-thin) solid var(--xh-navigation-menu-content-border, var(--xh-border-default));
     border-radius: var(--xh-navigation-menu-content-radius, var(--xh-shape-surface));
     background: var(--xh-navigation-menu-content-bg, var(--xh-bg-surface));
-    box-shadow: var(--xh-navigation-menu-content-shadow, var(--xh-elevation-2));
+    box-shadow: var(--xh-navigation-menu-content-shadow, var(--xh-elevation-floating));
   }
 
   [data-scope='navigation-menu'][data-part='viewport'][hidden] {

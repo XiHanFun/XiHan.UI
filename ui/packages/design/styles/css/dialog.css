@@ -89,6 +89,9 @@
   }
 
   [data-scope='dialog'][data-part='content'] {
+    /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+    --xh-icon-size: var(--xh-dialog-icon-size, var(--xh-glyph-size-text));
+
     /* 尺寸档只换这一个私有槽。它声明在 content 而不是别处：dialog 的解剖里没有 root，
        positioner 又不是必需部件，content 才是这层浮层恒在的最外层，且它会被 portal 到 body，
        选择器只认得它自己身上那一份 data-size。 */
@@ -100,12 +103,12 @@
     display: flex;
     flex-direction: column;
     gap: var(--xh-dialog-gap, var(--xh-stack-gap-md));
-    padding-block: var(--xh-dialog-py, var(--xh-section-py));
-    padding-inline: var(--xh-dialog-px, var(--xh-control-px-lg));
+    padding-block: var(--xh-dialog-py, var(--xh-surface-py-md));
+    padding-inline: var(--xh-dialog-px, var(--xh-surface-px-md));
     border-radius: var(--xh-dialog-radius, var(--xh-shape-surface));
     background: var(--xh-dialog-bg, var(--xh-bg-surface));
     color: var(--xh-dialog-fg, var(--xh-fg-default));
-    box-shadow: var(--xh-dialog-shadow, var(--xh-elevation-3));
+    box-shadow: var(--xh-dialog-shadow, var(--xh-elevation-sheet));
   }
 
   /* 这里刻意没有 [data-part='content'][hidden] { display: none }，与 drawer 一致：
@@ -189,8 +192,8 @@
   [data-scope='dialog'][data-part='close-trigger']:empty::before {
     content: '';
     display: inline-block;
-    inline-size: 1em;
-    block-size: 1em;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;

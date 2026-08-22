@@ -15,7 +15,7 @@
     --xh-_tabs-list-gap: var(--xh-control-gap-md);
     --xh-_tabs-list-bg: transparent;
     --xh-_tabs-list-p: var(--xh-space-0);
-    --xh-_tabs-list-radius: var(--xh-radius-none);
+    --xh-_tabs-list-radius: 0;
     --xh-_tabs-list-border-width: var(--xh-stroke-thin);
     --xh-_tabs-trigger-border-width: 0;
     --xh-_tabs-trigger-border: transparent;
@@ -44,13 +44,13 @@
   [data-scope='tabs'][data-part='root'][data-size='sm'] {
     --xh-_tabs-trigger-h: var(--xh-control-h-sm);
     --xh-_tabs-trigger-px: var(--xh-control-px-sm);
-    --xh-_tabs-trigger-font-size: var(--xh-font-size-sm);
+    --xh-_tabs-trigger-font-size: var(--xh-control-font-sm);
   }
 
   [data-scope='tabs'][data-part='root'][data-size='lg'] {
     --xh-_tabs-trigger-h: var(--xh-control-h-lg);
     --xh-_tabs-trigger-px: var(--xh-control-px-lg);
-    --xh-_tabs-trigger-font-size: var(--xh-font-size-lg);
+    --xh-_tabs-trigger-font-size: var(--xh-control-font-lg);
   }
 
   /* —— 形态 —— */
@@ -76,7 +76,7 @@
     --xh-_tabs-list-border-width: 0;
     --xh-_tabs-trigger-bg-active: var(--xh-_tone-subtle, var(--xh-bg-surface));
     --xh-_tabs-trigger-bg-active-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-surface));
-    --xh-_tabs-trigger-shadow-active: var(--xh-elevation-1);
+    --xh-_tabs-trigger-shadow-active: var(--xh-elevation-raised);
   }
 
   [data-scope='tabs'][data-part='list'] {

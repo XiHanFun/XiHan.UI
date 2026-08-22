@@ -25,6 +25,9 @@
 
   /* 表格自己滚动：吸顶表头与横向吸附列都要一个确定的滚动容器才钉得住 */
   [data-scope='table'][data-part='root'] {
+    /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+    --xh-icon-size: var(--xh-table-icon-size, var(--xh-glyph-size-text));
+
     /* 密度档只换这两个私有槽：单元格与列标题从 root 继承前者，字号靠 font-size 本身继承下去，
        换档不必给每个部件各写一条选择器，列宽那套算法也一点不碰 */
     --xh-_table-cell-py: var(--xh-table-cell-py-md);
@@ -33,7 +36,7 @@
     display: flex;
     position: relative;
     flex-direction: column;
-    max-block-size: var(--xh-table-max-h, 24rem);
+    max-block-size: var(--xh-table-max-h, var(--xh-viewport-max-h));
     border: var(--xh-stroke-thin) solid var(--xh-table-border, var(--xh-border-default));
     border-radius: var(--xh-table-radius, var(--xh-shape-surface));
     background: var(--xh-table-bg, var(--xh-bg-surface));
@@ -65,12 +68,12 @@
   /* 中间档不写规则，缺省即中档 */
   [data-scope='table'][data-part='root'][data-size='sm'] {
     --xh-_table-cell-py: var(--xh-table-cell-py-sm);
-    --xh-_table-font-size: var(--xh-font-size-sm);
+    --xh-_table-font-size: var(--xh-control-font-sm);
   }
 
   [data-scope='table'][data-part='root'][data-size='lg'] {
     --xh-_table-cell-py: var(--xh-table-cell-py-lg);
-    --xh-_table-font-size: var(--xh-font-size-lg);
+    --xh-_table-font-size: var(--xh-control-font-lg);
   }
 
   [data-scope='table'][data-part='caption'] {
@@ -372,8 +375,8 @@
     color: var(--xh-table-sort-fg, var(--xh-fg-subtle));
     content: '';
     display: inline-block;
-    inline-size: 1em;
-    block-size: 1em;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-sort) center / contain no-repeat;
@@ -384,8 +387,8 @@
     color: var(--xh-table-sort-fg-active, var(--xh-fg-default));
     content: '';
     display: inline-block;
-    inline-size: 1em;
-    block-size: 1em;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-sort-asc) center / contain no-repeat;
@@ -396,8 +399,8 @@
     color: var(--xh-table-sort-fg-active, var(--xh-fg-default));
     content: '';
     display: inline-block;
-    inline-size: 1em;
-    block-size: 1em;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-sort-desc) center / contain no-repeat;
@@ -408,7 +411,7 @@
   [data-scope='table'][data-part='sort-trigger'][data-sort-index]::before {
     order: 1;
     color: var(--xh-table-sort-fg-active, var(--xh-fg-default));
-    font-size: var(--xh-font-size-xs);
+    font-size: var(--xh-text-caption-size);
     content: attr(data-sort-index);
   }
 
@@ -474,8 +477,8 @@
   [data-scope='table'][data-part='row-select-trigger']:empty::before {
     content: '';
     display: inline-block;
-    inline-size: 1em;
-    block-size: 1em;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
@@ -485,8 +488,8 @@
   [data-scope='table'][data-part='expand-trigger']:empty::before {
     content: '';
     display: inline-block;
-    inline-size: 1em;
-    block-size: 1em;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;

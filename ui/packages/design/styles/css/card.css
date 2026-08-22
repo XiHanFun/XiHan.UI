@@ -27,7 +27,7 @@
   }
 
   [data-scope='card'][data-part='root'][data-variant='elevated'] {
-    box-shadow: var(--xh-elevation-2);
+    box-shadow: var(--xh-elevation-raised);
   }
 
   [data-scope='card'][data-part='root'][data-variant='ghost'] {
@@ -47,7 +47,7 @@
   @media (hover: hover) {
     [data-scope='card'][data-part='root'][data-hoverable]:hover {
       border-color: var(--xh-card-border, var(--xh-border-strong));
-      box-shadow: var(--xh-elevation-2);
+      box-shadow: var(--xh-elevation-raised);
     }
   }
 
@@ -74,18 +74,18 @@
   }
 
   [data-scope='card'][data-part='title'] {
-    font-size: var(--xh-card-title-font-size, var(--xh-font-size-md));
+    font-size: var(--xh-card-title-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-font-weight-medium);
     line-height: var(--xh-leading-tight);
   }
 
   [data-scope='card'][data-part='root'][data-size='lg'] [data-part='title'] {
-    font-size: var(--xh-card-title-font-size, var(--xh-font-size-lg));
+    font-size: var(--xh-card-title-font-size, var(--xh-control-font-lg));
   }
 
   [data-scope='card'][data-part='description'] {
     color: var(--xh-fg-muted);
-    font-size: var(--xh-font-size-sm);
+    font-size: var(--xh-text-secondary-size);
     line-height: var(--xh-leading-normal);
   }
 

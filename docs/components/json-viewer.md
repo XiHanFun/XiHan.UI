@@ -202,7 +202,7 @@ size 三档只换字号与层级缩进，行的结构与配色都不变
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-json-viewer-bg` · `--xh-json-viewer-boolean-fg` · `--xh-json-viewer-border` · `--xh-json-viewer-fg` · `--xh-json-viewer-font` · `--xh-json-viewer-font-size` · `--xh-json-viewer-indent` · `--xh-json-viewer-indicator-fg` · `--xh-json-viewer-indicator-size` · `--xh-json-viewer-key-fg` · `--xh-json-viewer-key-font-weight` · `--xh-json-viewer-max-h` · `--xh-json-viewer-null-fg` · `--xh-json-viewer-number-fg` · `--xh-json-viewer-preview-fg` · `--xh-json-viewer-preview-font-size` · `--xh-json-viewer-punctuation-fg` · `--xh-json-viewer-px` · `--xh-json-viewer-py` · `--xh-json-viewer-radius` · `--xh-json-viewer-row-bg-hover` · `--xh-json-viewer-row-gap` · `--xh-json-viewer-row-px` · `--xh-json-viewer-row-py` · `--xh-json-viewer-row-radius` · `--xh-json-viewer-string-fg`
+`--xh-json-viewer-bg` · `--xh-json-viewer-boolean-fg` · `--xh-json-viewer-border` · `--xh-json-viewer-fg` · `--xh-json-viewer-font` · `--xh-json-viewer-font-size` · `--xh-json-viewer-icon-size` · `--xh-json-viewer-indent` · `--xh-json-viewer-indicator-fg` · `--xh-json-viewer-indicator-size` · `--xh-json-viewer-key-fg` · `--xh-json-viewer-key-font-weight` · `--xh-json-viewer-max-h` · `--xh-json-viewer-null-fg` · `--xh-json-viewer-number-fg` · `--xh-json-viewer-preview-fg` · `--xh-json-viewer-preview-font-size` · `--xh-json-viewer-punctuation-fg` · `--xh-json-viewer-px` · `--xh-json-viewer-py` · `--xh-json-viewer-radius` · `--xh-json-viewer-row-bg-hover` · `--xh-json-viewer-row-gap` · `--xh-json-viewer-row-px` · `--xh-json-viewer-row-py` · `--xh-json-viewer-row-radius` · `--xh-json-viewer-string-fg`
 
 ## 动效
 

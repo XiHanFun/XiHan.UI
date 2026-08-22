@@ -151,7 +151,7 @@ Field 的 disabled 只把 data-disabled 铺到各部件上；真正改不动还�
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-field-control-bg` · `--xh-field-control-bg-disabled` · `--xh-field-control-border` · `--xh-field-control-border-invalid` · `--xh-field-control-fg` · `--xh-field-control-font-size` · `--xh-field-control-h` · `--xh-field-control-px` · `--xh-field-control-radius` · `--xh-field-description-fg` · `--xh-field-description-fg-disabled` · `--xh-field-description-font-size` · `--xh-field-error-fg` · `--xh-field-error-font-size` · `--xh-field-gap` · `--xh-field-label-fg` · `--xh-field-label-fg-disabled` · `--xh-field-label-font-size` · `--xh-field-label-font-weight` · `--xh-field-label-gap` · `--xh-field-label-star`
+`--xh-field-control-bg` · `--xh-field-control-bg-disabled` · `--xh-field-control-border` · `--xh-field-control-border-focus` · `--xh-field-control-border-invalid` · `--xh-field-control-fg` · `--xh-field-control-font-size` · `--xh-field-control-h` · `--xh-field-control-px` · `--xh-field-control-radius` · `--xh-field-description-fg` · `--xh-field-description-fg-disabled` · `--xh-field-description-font-size` · `--xh-field-error-fg` · `--xh-field-error-font-size` · `--xh-field-gap` · `--xh-field-label-fg` · `--xh-field-label-fg-disabled` · `--xh-field-label-font-size` · `--xh-field-label-font-weight` · `--xh-field-label-gap` · `--xh-field-label-star`
 
 ## RTL
 

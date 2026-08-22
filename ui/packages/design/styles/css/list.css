@@ -10,8 +10,8 @@
     --xh-_list-item-py: var(--xh-list-item-py-md);
     --xh-_list-item-px: var(--xh-space-4);
     --xh-_list-item-gap: var(--xh-space-3);
-    --xh-_list-title-size: var(--xh-font-size-md);
-    --xh-_list-description-size: var(--xh-font-size-sm);
+    --xh-_list-title-size: var(--xh-control-font-md);
+    --xh-_list-description-size: var(--xh-control-caption-md);
 
     display: flex;
     flex-direction: column;
@@ -32,15 +32,15 @@
     --xh-_list-item-py: var(--xh-list-item-py-sm);
     --xh-_list-item-px: var(--xh-space-3);
     --xh-_list-item-gap: var(--xh-space-2);
-    --xh-_list-title-size: var(--xh-font-size-sm);
-    --xh-_list-description-size: var(--xh-font-size-xs);
+    --xh-_list-title-size: var(--xh-control-font-sm);
+    --xh-_list-description-size: var(--xh-control-caption-sm);
   }
 
   [data-scope='list'][data-part='root'][data-size='lg'] {
     --xh-_list-item-py: var(--xh-list-item-py-lg);
     --xh-_list-item-px: var(--xh-space-5);
     --xh-_list-item-gap: var(--xh-space-4);
-    --xh-_list-title-size: var(--xh-font-size-lg);
+    --xh-_list-title-size: var(--xh-control-font-lg);
   }
 
   /* —— 外框 —— */

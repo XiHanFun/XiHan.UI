@@ -6,6 +6,9 @@
 
   /* 一排 trigger。主轴跟着 data-orientation 走：菜单栏本身可以横排也可以竖排 */
   [data-scope='menubar'][data-part='root'] {
+    /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+    --xh-icon-size: var(--xh-menubar-icon-size, var(--xh-glyph-size-text));
+
     display: flex;
     align-items: center;
     gap: var(--xh-menubar-gap, var(--xh-space-1));
@@ -124,7 +127,7 @@
     --xh-_menubar-trigger-px: var(--xh-space-1_5);
     --xh-_menubar-item-py: var(--xh-space-1);
     --xh-_menubar-item-px: var(--xh-control-px-sm);
-    --xh-_menubar-font-size: var(--xh-font-size-sm);
+    --xh-_menubar-font-size: var(--xh-control-font-sm);
   }
 
   [data-scope='menubar'][data-size='lg']:is([data-part='root'], [data-part='positioner']) {
@@ -132,7 +135,7 @@
     --xh-_menubar-trigger-px: var(--xh-control-px-md);
     --xh-_menubar-item-py: var(--xh-space-2);
     --xh-_menubar-item-px: var(--xh-control-px-lg);
-    --xh-_menubar-font-size: var(--xh-font-size-lg);
+    --xh-_menubar-font-size: var(--xh-control-font-lg);
   }
 
   [data-scope='menubar'][data-part='content'] {
@@ -149,7 +152,7 @@
     border-radius: var(--xh-menubar-menu-radius, var(--xh-shape-surface));
     background: var(--xh-menubar-menu-bg, var(--xh-bg-surface));
     color: var(--xh-menubar-menu-fg, var(--xh-fg-default));
-    box-shadow: var(--xh-menubar-menu-shadow, var(--xh-elevation-2));
+    box-shadow: var(--xh-menubar-menu-shadow, var(--xh-elevation-floating));
     /* 条目超过上限就在菜单内部滚。条目的焦点环是内收的，滚动容器裁在内边距缘上，环切不着 */
     overflow-y: auto;
     pointer-events: auto;
@@ -200,7 +203,7 @@
     padding-block: var(--xh-menubar-group-label-py, var(--xh-space-1));
     padding-inline: var(--xh-menubar-group-label-px, var(--xh-_menubar-item-px));
     color: var(--xh-menubar-group-label-fg, var(--xh-fg-subtle));
-    font-size: var(--xh-menubar-group-label-font-size, var(--xh-font-size-xs));
+    font-size: var(--xh-menubar-group-label-font-size, var(--xh-text-caption-size));
     font-weight: var(--xh-menubar-group-label-font-weight, var(--xh-font-weight-medium));
     line-height: var(--xh-leading-none);
     user-select: none;
@@ -297,8 +300,8 @@
   [data-scope='menubar'][data-part='item-indicator']:empty::before {
     content: '';
     display: inline-block;
-    inline-size: 1em;
-    block-size: 1em;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;

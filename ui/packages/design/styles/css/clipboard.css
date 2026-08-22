@@ -39,7 +39,7 @@
   }
 
   [data-scope='clipboard'][data-part='input'] {
-    min-inline-size: var(--xh-clipboard-input-min-w, 12rem);
+    min-inline-size: var(--xh-clipboard-input-min-w, var(--xh-control-min-w));
     block-size: var(--xh-clipboard-input-h, var(--xh-control-h-md));
     padding-inline: var(--xh-clipboard-input-px, var(--xh-control-px-md));
     padding-block: 0;
@@ -58,6 +58,7 @@
   }
 
   [data-scope='clipboard'][data-part='input']:focus-visible {
+    border-color: var(--xh-clipboard-input-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
     outline-offset: var(--xh-ring-offset);
   }

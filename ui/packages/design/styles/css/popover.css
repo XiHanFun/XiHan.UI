@@ -50,6 +50,9 @@
   }
 
   [data-scope='popover'][data-part='content'] {
+    /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+    --xh-icon-size: var(--xh-popover-icon-size, var(--xh-glyph-size-text));
+
     /* 尺寸档只换这两个私有槽。popover 没有 root 部件，size 落在浮层树最外层的 content 上。
        语气不接：面板是内容容器，语气该由里面的内容表达 */
     --xh-_popover-py: var(--xh-space-3);
@@ -71,7 +74,7 @@
     border-radius: var(--xh-popover-radius, var(--xh-shape-surface));
     background: var(--xh-popover-bg, var(--xh-bg-surface));
     color: var(--xh-popover-fg, var(--xh-fg-default));
-    box-shadow: var(--xh-popover-shadow, var(--xh-elevation-2));
+    box-shadow: var(--xh-popover-shadow, var(--xh-elevation-floating));
     pointer-events: auto;
   }
 
@@ -173,8 +176,8 @@
   [data-scope='popover'][data-part='close-trigger']:empty::before {
     content: '';
     display: inline-block;
-    inline-size: 1em;
-    block-size: 1em;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;

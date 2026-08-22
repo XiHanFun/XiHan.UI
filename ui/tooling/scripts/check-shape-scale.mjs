@@ -32,7 +32,8 @@ for (const file of fs.readdirSync(cssDir).filter(f => f.endsWith('.css')).sort()
   const text = fs.readFileSync(path.join(cssDir, file), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '')
   for (const line of text.split('\n')) {
     // 冒号后不写 \s*：它与 [^;]+ 能吃同一批字符，不匹配时会逐位回溯。值交给 trim 归一
-    const m = line.match(/^\s*border(?:-\w+)?-radius:([^;]+);/)
+    // 三种写法都扫：简写、border-<side>-radius 与逻辑角长属性、私有槽赋值——原语先灌进私有槽再消费同样是下探
+    const m = line.match(/^\s*(?:border(?:-[\w-]+)?-radius|--xh-_[\w-]*radius[\w-]*):([^;]+);/)
     if (!m)
       continue
     checked++

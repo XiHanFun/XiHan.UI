@@ -5,6 +5,9 @@
   }
 
   [data-scope='calendar'][data-part='root'] {
+    /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+    --xh-icon-size: var(--xh-calendar-icon-size, var(--xh-glyph-size-text));
+
     display: flex;
     flex-direction: column;
     gap: var(--xh-calendar-gap, var(--xh-space-3));
@@ -193,7 +196,7 @@
     display: grid;
     place-items: center;
     color: var(--xh-calendar-week-number-fg, var(--xh-fg-subtle));
-    font-size: var(--xh-calendar-week-number-font-size, var(--xh-font-size-xs));
+    font-size: var(--xh-calendar-week-number-font-size, var(--xh-text-caption-size));
     font-variant-numeric: tabular-nums;
     user-select: none;
   }
@@ -211,7 +214,7 @@
     justify-content: center;
     block-size: var(--xh-calendar-week-day-h, var(--xh-control-h-sm));
     color: var(--xh-calendar-week-day-fg, var(--xh-fg-subtle));
-    font-size: var(--xh-calendar-week-day-font-size, var(--xh-font-size-xs));
+    font-size: var(--xh-calendar-week-day-font-size, var(--xh-text-caption-size));
     font-weight: var(--xh-calendar-week-day-font-weight, var(--xh-font-weight-medium));
     line-height: var(--xh-leading-none);
     user-select: none;
@@ -317,8 +320,8 @@
   [data-scope='calendar'][data-part='prev-trigger']:empty::before {
     content: '';
     display: inline-block;
-    inline-size: 1em;
-    block-size: 1em;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-chevron-left) center / contain no-repeat;
@@ -328,8 +331,8 @@
   [data-scope='calendar'][data-part='next-trigger']:empty::before {
     content: '';
     display: inline-block;
-    inline-size: 1em;
-    block-size: 1em;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;

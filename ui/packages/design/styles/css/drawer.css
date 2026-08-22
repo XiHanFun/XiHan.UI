@@ -118,6 +118,9 @@
   /* root 留在页面原地，只是 data-side / data-state 的落点，不该凭空多出一层盒子把
      trigger 从作者的 flex / grid 行里挤出去，故 display: contents。 */
   [data-scope='drawer'][data-part='root'] {
+    /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+    --xh-icon-size: var(--xh-drawer-icon-size, var(--xh-glyph-size-text));
+
     display: contents;
   }
 
@@ -227,11 +230,11 @@
     display: flex;
     flex-direction: column;
     gap: var(--xh-drawer-gap, var(--xh-stack-gap-md));
-    padding-block: var(--xh-drawer-py, var(--xh-section-py));
-    padding-inline: var(--xh-drawer-px, var(--xh-control-px-lg));
+    padding-block: var(--xh-drawer-py, var(--xh-surface-py-md));
+    padding-inline: var(--xh-drawer-px, var(--xh-surface-px-md));
     background: var(--xh-drawer-bg, var(--xh-bg-surface));
     color: var(--xh-drawer-fg, var(--xh-fg-default));
-    box-shadow: var(--xh-drawer-shadow, var(--xh-elevation-3));
+    box-shadow: var(--xh-drawer-shadow, var(--xh-elevation-sheet));
     overflow: auto;
     /* 尺寸是照视口那条边算出来的，padding 再往外顶就会把面板挤出屏幕、
        逼出一条横向滚动条。reset 层已有同款兜底，这里显式写一遍表明尺寸算法依赖它 */
@@ -403,8 +406,8 @@
   [data-scope='drawer'][data-part='close-trigger']:empty::before {
     content: '';
     display: inline-block;
-    inline-size: 1em;
-    block-size: 1em;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;

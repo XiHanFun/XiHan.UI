@@ -5,9 +5,12 @@
   }
 
   [data-scope='checkbox'][data-part='root'] {
+    /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+    --xh-icon-size: var(--xh-checkbox-icon-size, var(--xh-glyph-size-text));
+
     /* 尺寸档只换方框边长这一个私有槽，勾的字号按边长的比例跟着走；
        指示器从 root 继承这两个槽，换档不必给每个部件各写一条选择器 */
-    --xh-_checkbox-box: var(--xh-space-4);
+    --xh-_checkbox-box: var(--xh-control-indicator-size);
     --xh-_checkbox-glyph: calc(var(--xh-_checkbox-box) * 0.75);
 
     /* 选中态的底与描边随语气走。没写 data-tone 时 --xh-_tone 没被声明，退回原来的品牌色 */
@@ -23,7 +26,7 @@
     inline-size: var(--xh-_checkbox-box);
     block-size: var(--xh-_checkbox-box);
     padding: 0;
-    border: 1px solid var(--xh-checkbox-border, var(--xh-border-control));
+    border: var(--xh-stroke-thin) solid var(--xh-checkbox-border, var(--xh-border-control));
     border-radius: var(--xh-shape-inset);
     background: var(--xh-checkbox-bg, var(--xh-bg-canvas));
     color: var(--xh-checkbox-fg, var(--xh-_checkbox-on-accent));
@@ -68,11 +71,11 @@
   /* —— 尺寸 —— */
   /* 缺省档写在上面的基础规则里 */
   [data-scope='checkbox'][data-part='root'][data-size='sm'] {
-    --xh-_checkbox-box: var(--xh-space-3);
+    --xh-_checkbox-box: calc(var(--xh-control-indicator-size) - var(--xh-space-1));
   }
 
   [data-scope='checkbox'][data-part='root'][data-size='lg'] {
-    --xh-_checkbox-box: var(--xh-space-5);
+    --xh-_checkbox-box: calc(var(--xh-control-indicator-size) + var(--xh-space-1));
   }
 
   [data-scope='checkbox'][data-part='indicator'] {
@@ -89,8 +92,8 @@
   [data-scope='checkbox'][data-part='indicator']:empty::before {
     content: '';
     display: inline-block;
-    inline-size: 1em;
-    block-size: 1em;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;

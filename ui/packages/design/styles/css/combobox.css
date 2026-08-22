@@ -71,6 +71,9 @@
   }
 
   [data-scope='combobox'][data-part='root'] {
+    /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+    --xh-icon-size: var(--xh-combobox-icon-size, var(--xh-glyph-size-text));
+
     display: inline-flex;
     flex-direction: column;
     gap: var(--xh-combobox-gap, var(--xh-stack-gap-md));
@@ -87,16 +90,16 @@
     --xh-_combobox-h: var(--xh-control-h-sm);
     --xh-_combobox-px: var(--xh-control-px-sm);
     --xh-_combobox-gap: var(--xh-control-gap-sm);
-    --xh-_combobox-font-size: var(--xh-font-size-sm);
-    --xh-_combobox-label-font-size: var(--xh-font-size-sm);
+    --xh-_combobox-font-size: var(--xh-control-font-sm);
+    --xh-_combobox-label-font-size: var(--xh-control-font-sm);
   }
 
   [data-scope='combobox']:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
     --xh-_combobox-h: var(--xh-control-h-lg);
     --xh-_combobox-px: var(--xh-control-px-lg);
     --xh-_combobox-gap: var(--xh-control-gap-lg);
-    --xh-_combobox-font-size: var(--xh-font-size-lg);
-    --xh-_combobox-label-font-size: var(--xh-font-size-lg);
+    --xh-_combobox-font-size: var(--xh-control-font-lg);
+    --xh-_combobox-label-font-size: var(--xh-control-font-lg);
   }
 
   /* —— 形态 —— */
@@ -139,7 +142,7 @@
     display: inline-flex;
     align-items: center;
     gap: var(--xh-combobox-control-gap, var(--xh-_combobox-gap));
-    min-inline-size: var(--xh-combobox-control-min-w, var(--xh-overlay-min-w));
+    min-inline-size: var(--xh-combobox-control-min-w, var(--xh-control-min-w));
     block-size: var(--xh-combobox-control-h, var(--xh-_combobox-h));
     padding-inline: var(--xh-combobox-control-px, var(--xh-_combobox-px));
     border: var(--xh-stroke-thin) solid var(--xh-combobox-control-border, var(--xh-_combobox-control-border));
@@ -162,7 +165,7 @@
      环若长在里面那个透明的 input 身上，就会缩在文字区里、与框错开一圈。
      input 是这里唯一可聚焦的常规节点，:focus-within 与它的 :focus-visible 等价 */
   [data-scope='combobox'][data-part='control']:focus-within {
-    border-color: var(--xh-combobox-control-border-focus, var(--xh-_combobox-ring));
+    border-color: var(--xh-combobox-control-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
     outline: var(--xh-ring-width) solid var(--xh-_combobox-ring);
     outline-offset: var(--xh-ring-offset);
   }
@@ -248,7 +251,7 @@
     background: var(--xh-combobox-action-bg, transparent);
     color: var(--xh-combobox-action-fg, var(--xh-fg-muted));
     font-family: inherit;
-    font-size: var(--xh-combobox-action-font-size, var(--xh-font-size-sm));
+    font-size: var(--xh-combobox-action-font-size, var(--xh-text-secondary-size));
     line-height: var(--xh-leading-none);
     cursor: pointer;
     user-select: none;
@@ -277,8 +280,8 @@
   [data-scope='combobox'][data-part='trigger']:empty::before {
     content: '';
     display: inline-block;
-    inline-size: 1em;
-    block-size: 1em;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
@@ -289,8 +292,8 @@
   [data-scope='combobox'][data-part='clear-trigger']:empty::before {
     content: '';
     display: inline-block;
-    inline-size: 1em;
-    block-size: 1em;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
@@ -332,7 +335,7 @@
     display: flex;
     flex-direction: column;
     min-inline-size: var(--xh-combobox-content-min-w, var(--xh-overlay-min-w));
-    max-inline-size: var(--xh-combobox-content-max-w, 24rem);
+    max-inline-size: var(--xh-combobox-content-max-w, var(--xh-overlay-max-w-lg));
     max-block-size: min(var(--xh-combobox-content-max-h, var(--xh-overlay-max-h)), var(--xh-_combobox-available-h));
     padding-block: var(--xh-combobox-content-py, var(--xh-space-1));
     padding-inline: var(--xh-combobox-content-px, var(--xh-space-1));
@@ -340,7 +343,7 @@
     border-radius: var(--xh-combobox-content-radius, var(--xh-shape-surface));
     background: var(--xh-combobox-content-bg, var(--xh-bg-surface));
     color: var(--xh-combobox-content-fg, var(--xh-fg-default));
-    box-shadow: var(--xh-combobox-content-shadow, var(--xh-elevation-2));
+    box-shadow: var(--xh-combobox-content-shadow, var(--xh-elevation-floating));
     overflow-y: auto;
     pointer-events: auto;
   }
@@ -387,7 +390,7 @@
     padding-block: var(--xh-combobox-group-label-py, var(--xh-space-1));
     padding-inline: var(--xh-combobox-group-label-px, var(--xh-control-px-md));
     color: var(--xh-combobox-group-label-fg, var(--xh-fg-subtle));
-    font-size: var(--xh-combobox-group-label-font-size, var(--xh-font-size-xs));
+    font-size: var(--xh-combobox-group-label-font-size, var(--xh-text-caption-size));
     font-weight: var(--xh-combobox-group-label-font-weight, var(--xh-font-weight-medium));
     line-height: var(--xh-leading-none);
     user-select: none;
@@ -476,8 +479,8 @@
   [data-scope='combobox'][data-part='item-indicator']:empty::before {
     content: '';
     display: inline-block;
-    inline-size: 1em;
-    block-size: 1em;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
@@ -504,7 +507,7 @@
     color: var(--xh-combobox-empty-fg, var(--xh-fg-subtle));
     font-size: var(--xh-combobox-empty-font-size, var(--xh-_combobox-font-size));
     line-height: var(--xh-leading-none);
-    box-shadow: var(--xh-combobox-empty-shadow, var(--xh-elevation-2));
+    box-shadow: var(--xh-combobox-empty-shadow, var(--xh-elevation-floating));
     text-align: center;
     pointer-events: auto;
   }

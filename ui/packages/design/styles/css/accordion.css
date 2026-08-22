@@ -5,6 +5,9 @@
   }
 
   [data-scope='accordion'][data-part='root'] {
+    /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+    --xh-icon-size: var(--xh-accordion-icon-size, var(--xh-glyph-size-text));
+
     /* 尺寸档只换这四个私有槽，标题栏从 root 继承它们，换档不必给每个部件各写一条选择器 */
     --xh-_accordion-trigger-h: var(--xh-control-h-md);
     --xh-_accordion-trigger-px: var(--xh-control-px-md);
@@ -31,18 +34,18 @@
     --xh-_accordion-trigger-h: var(--xh-control-h-sm);
     --xh-_accordion-trigger-px: var(--xh-control-px-sm);
     --xh-_accordion-trigger-gap: var(--xh-control-gap-sm);
-    --xh-_accordion-trigger-font-size: var(--xh-font-size-sm);
+    --xh-_accordion-trigger-font-size: var(--xh-control-font-sm);
   }
 
   [data-scope='accordion'][data-part='root'][data-size='lg'] {
     --xh-_accordion-trigger-h: var(--xh-control-h-lg);
     --xh-_accordion-trigger-px: var(--xh-control-px-lg);
     --xh-_accordion-trigger-gap: var(--xh-control-gap-lg);
-    --xh-_accordion-trigger-font-size: var(--xh-font-size-lg);
+    --xh-_accordion-trigger-font-size: var(--xh-control-font-lg);
   }
 
   [data-scope='accordion'][data-part='item'] {
-    border-block-end: 1px solid var(--xh-accordion-item-border, var(--xh-border-default));
+    border-block-end: var(--xh-stroke-thin) solid var(--xh-accordion-item-border, var(--xh-border-default));
     min-inline-size: 0;
   }
 
@@ -101,8 +104,8 @@
   [data-scope='accordion'][data-part='indicator']:empty::before {
     content: '';
     display: inline-block;
-    inline-size: 1em;
-    block-size: 1em;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;

@@ -24,14 +24,14 @@
 
   /* —— 尺寸 —— */
   [data-scope='number-animation'][data-part='root'][data-size='sm'] {
-    --xh-_number-animation-size: var(--xh-font-size-lg);
+    --xh-_number-animation-size: var(--xh-control-font-lg);
   }
 
   [data-scope='number-animation'][data-part='root'][data-size='md'] {
-    --xh-_number-animation-size: var(--xh-font-size-2xl);
+    --xh-_number-animation-size: var(--xh-text-heading-2-size);
   }
 
   [data-scope='number-animation'][data-part='root'][data-size='lg'] {
-    --xh-_number-animation-size: var(--xh-font-size-3xl);
+    --xh-_number-animation-size: var(--xh-text-heading-1-size);
   }
 }

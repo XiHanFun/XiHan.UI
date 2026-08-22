@@ -97,12 +97,12 @@
   [data-scope='toggle'][data-part='root'][data-size='sm'] {
     block-size: var(--xh-toggle-h, var(--xh-control-h-sm));
     padding-inline: var(--xh-toggle-px, var(--xh-control-px-sm));
-    font-size: var(--xh-toggle-font-size, var(--xh-font-size-sm));
+    font-size: var(--xh-toggle-font-size, var(--xh-control-font-sm));
   }
 
   [data-scope='toggle'][data-part='root'][data-size='lg'] {
     block-size: var(--xh-toggle-h, var(--xh-control-h-lg));
     padding-inline: var(--xh-toggle-px, var(--xh-control-px-lg));
-    font-size: var(--xh-toggle-font-size, var(--xh-font-size-lg));
+    font-size: var(--xh-toggle-font-size, var(--xh-control-font-lg));
   }
 }

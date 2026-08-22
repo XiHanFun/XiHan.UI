@@ -10,7 +10,7 @@
     --xh-_empty-state-gap: var(--xh-stack-gap-md);
     --xh-_empty-state-py: var(--xh-section-py);
     --xh-_empty-state-icon-size: 2.5rem;
-    --xh-_empty-state-title-size: var(--xh-font-size-lg);
+    --xh-_empty-state-title-size: var(--xh-control-font-lg);
     /* 说明的读行宽度：整句话不收窄就会拉成一条难读的长行 */
     --xh-_empty-state-measure: 32rem;
 
@@ -34,14 +34,14 @@
     --xh-_empty-state-gap: var(--xh-space-2);
     --xh-_empty-state-py: var(--xh-space-4);
     --xh-_empty-state-icon-size: 2rem;
-    --xh-_empty-state-title-size: var(--xh-font-size-md);
+    --xh-_empty-state-title-size: var(--xh-control-font-md);
   }
 
   [data-scope='empty-state'][data-part='root'][data-size='lg'] {
     --xh-_empty-state-gap: var(--xh-space-6);
     --xh-_empty-state-py: var(--xh-space-8);
     --xh-_empty-state-icon-size: 3.5rem;
-    --xh-_empty-state-title-size: var(--xh-font-size-xl);
+    --xh-_empty-state-title-size: var(--xh-text-heading-3-size);
   }
 
   [data-scope='empty-state'][data-part='icon'] {
@@ -53,7 +53,7 @@
     inline-size: var(--xh-empty-state-icon-size, var(--xh-_empty-state-icon-size));
     color: var(--xh-empty-state-icon-fg, var(--xh-fg-subtle));
     /* 图标常是一个字形，字号跟着图标框走，line-height 不再另占高度 */
-    font-size: var(--xh-empty-state-icon-font-size, var(--xh-font-size-3xl));
+    font-size: var(--xh-empty-state-icon-font-size, var(--xh-text-heading-1-size));
     line-height: var(--xh-leading-none);
   }
 

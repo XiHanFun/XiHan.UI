@@ -241,7 +241,7 @@ slidesPerMove 与 slidesPerPage 分开给：一屏露三张、一次只挪一张
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-carousel-duration` · `--xh-carousel-ease` · `--xh-carousel-gap` · `--xh-carousel-indicator-bg` · `--xh-carousel-indicator-bg-hover` · `--xh-carousel-indicator-bg-selected` · `--xh-carousel-indicator-gap` · `--xh-carousel-indicator-radius` · `--xh-carousel-indicator-size` · `--xh-carousel-trigger-bg` · `--xh-carousel-trigger-bg-active` · `--xh-carousel-trigger-bg-hover` · `--xh-carousel-trigger-border` · `--xh-carousel-trigger-fg` · `--xh-carousel-trigger-radius` · `--xh-carousel-trigger-size` · `--xh-carousel-viewport-radius`
+`--xh-carousel-duration` · `--xh-carousel-ease` · `--xh-carousel-gap` · `--xh-carousel-icon-size` · `--xh-carousel-indicator-bg` · `--xh-carousel-indicator-bg-hover` · `--xh-carousel-indicator-bg-selected` · `--xh-carousel-indicator-gap` · `--xh-carousel-indicator-radius` · `--xh-carousel-indicator-size` · `--xh-carousel-trigger-bg` · `--xh-carousel-trigger-bg-active` · `--xh-carousel-trigger-bg-hover` · `--xh-carousel-trigger-border` · `--xh-carousel-trigger-fg` · `--xh-carousel-trigger-radius` · `--xh-carousel-trigger-size` · `--xh-carousel-viewport-radius`
 
 ## 动效
 

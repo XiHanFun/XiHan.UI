@@ -5,6 +5,9 @@
   }
 
   [data-scope='tree'][data-part='root'] {
+    /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+    --xh-icon-size: var(--xh-tree-icon-size, var(--xh-glyph-size-text));
+
     display: flex;
     flex-direction: column;
     gap: var(--xh-tree-gap, var(--xh-space-2));
@@ -30,7 +33,7 @@
   [data-scope='tree'][data-part='tree'] {
     display: flex;
     flex-direction: column;
-    max-block-size: var(--xh-tree-max-h, 20rem);
+    max-block-size: var(--xh-tree-max-h, var(--xh-viewport-max-h));
     padding-block: var(--xh-tree-py, var(--xh-space-1));
     padding-inline: var(--xh-tree-px, var(--xh-space-1));
     border: var(--xh-stroke-thin) solid var(--xh-tree-border, var(--xh-border-default));
@@ -134,8 +137,8 @@
   [data-scope='tree'][data-part='branch-checkbox'][data-selected]:empty::before {
     content: '';
     display: inline-block;
-    inline-size: 1em;
-    block-size: 1em;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
@@ -146,8 +149,8 @@
   [data-scope='tree'][data-part='branch-checkbox'][data-indeterminate]:not([data-selected]):empty::before {
     content: '';
     display: inline-block;
-    inline-size: 1em;
-    block-size: 1em;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
@@ -272,8 +275,8 @@
   [data-scope='tree'][data-part='branch-indicator']:empty::before {
     content: '';
     display: inline-block;
-    inline-size: 1em;
-    block-size: 1em;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
@@ -283,8 +286,8 @@
   [data-scope='tree'][data-part='item-indicator']:empty::before {
     content: '';
     display: inline-block;
-    inline-size: 1em;
-    block-size: 1em;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;

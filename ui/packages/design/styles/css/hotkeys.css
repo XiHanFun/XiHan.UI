@@ -7,7 +7,7 @@
   /* 一排键帽连着连接符。整块不换行：一组组合被折成两行就读不出是一组了 */
   [data-scope='hotkeys'][data-part='root'] {
     /* 尺寸档只换这两个私有槽，键帽从 root 继承它们，换档不必给每个部件各写一条选择器 */
-    --xh-_hotkeys-font-size: var(--xh-font-size-sm);
+    --xh-_hotkeys-font-size: var(--xh-text-secondary-size);
     --xh-_hotkeys-key-px: var(--xh-space-1);
 
     display: inline-flex;
@@ -31,7 +31,7 @@
     border: var(--xh-stroke-thin) solid var(--xh-hotkeys-key-border, var(--xh-border-subtle));
     border-radius: var(--xh-hotkeys-key-radius, var(--xh-shape-inset));
     background: var(--xh-hotkeys-key-bg, var(--xh-bg-surface));
-    box-shadow: var(--xh-hotkeys-key-shadow, var(--xh-elevation-1));
+    box-shadow: var(--xh-hotkeys-key-shadow, var(--xh-elevation-raised));
     color: var(--xh-hotkeys-key-fg, var(--xh-fg-default));
     /* kbd 的 UA 字体是等宽，但字号会被压小；两者都显式接过来，档位才归尺寸轴管 */
     font-family: var(--xh-hotkeys-key-font, var(--xh-font-family-mono));
@@ -71,12 +71,12 @@
   /* —— 尺寸 —— */
   /* 缺省的 md 档写在上面的基础规则里 */
   [data-scope='hotkeys'][data-part='root'][data-size='sm'] {
-    --xh-_hotkeys-font-size: var(--xh-font-size-xs);
+    --xh-_hotkeys-font-size: var(--xh-control-caption-sm);
     --xh-_hotkeys-key-px: var(--xh-space-0_5);
   }
 
   [data-scope='hotkeys'][data-part='root'][data-size='lg'] {
-    --xh-_hotkeys-font-size: var(--xh-font-size-md);
+    --xh-_hotkeys-font-size: var(--xh-control-caption-lg);
     --xh-_hotkeys-key-px: var(--xh-space-1_5);
   }
 

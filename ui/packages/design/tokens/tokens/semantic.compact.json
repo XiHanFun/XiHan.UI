@@ -4,6 +4,9 @@
     "h-sm": { "$type": "dimension", "$value": "24px" },
     "h-md": { "$type": "dimension", "$value": "28px" },
     "h-lg": { "$type": "dimension", "$value": "36px" },
+    "box-sm": { "$type": "dimension", "$value": "28px" },
+    "box-md": { "$type": "dimension", "$value": "36px" },
+    "box-lg": { "$type": "dimension", "$value": "44px" },
     "px-sm": { "$type": "dimension", "$value": "{space.1_5}" },
     "px-md": { "$type": "dimension", "$value": "{space.2}" },
     "px-lg": { "$type": "dimension", "$value": "{space.3}" },
@@ -11,6 +14,11 @@
     "gap-lg": { "$type": "dimension", "$value": "{space.1_5}" },
     "action-size": { "$type": "dimension", "$value": "1.25rem" },
     "indicator-size": { "$type": "dimension", "$value": "0.875rem" }
+  },
+  "switch": {
+    "track-h-sm": { "$type": "dimension", "$value": "16px" },
+    "track-h-md": { "$type": "dimension", "$value": "20px" },
+    "track-h-lg": { "$type": "dimension", "$value": "24px" }
   },
   "field": {
     "py": { "$type": "dimension", "$value": "{space.1_5}" }

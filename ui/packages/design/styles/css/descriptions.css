@@ -58,7 +58,7 @@
     --xh-_descriptions-gap: var(--xh-space-2);
     --xh-_descriptions-py: var(--xh-space-1);
     --xh-_descriptions-px: var(--xh-space-2);
-    --xh-_descriptions-font-size: var(--xh-font-size-sm);
+    --xh-_descriptions-font-size: var(--xh-control-font-sm);
   }
 
   [data-scope='descriptions'][data-part='root'][data-size='lg'] {
@@ -67,7 +67,7 @@
     --xh-_descriptions-label-gap: var(--xh-space-3);
     --xh-_descriptions-py: var(--xh-space-3);
     --xh-_descriptions-px: var(--xh-space-4);
-    --xh-_descriptions-font-size: var(--xh-font-size-lg);
+    --xh-_descriptions-font-size: var(--xh-control-font-lg);
   }
 
   /* —— 每一格 —— */

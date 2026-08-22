@@ -46,6 +46,9 @@
 
   /* 与文本框、分段日期同一套堆叠：标签一行、输入行一行 */
   [data-scope='date-picker'][data-part='root'] {
+    /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+    --xh-icon-size: var(--xh-date-picker-icon-size, var(--xh-glyph-size-text));
+
     display: inline-flex;
     flex-direction: column;
     gap: var(--xh-date-picker-gap, var(--xh-space-1));
@@ -56,15 +59,15 @@
   [data-scope='date-picker']:is([data-part='root'], [data-part='positioner'])[data-size='sm'] {
     --xh-_date-picker-control-h: var(--xh-control-h-sm);
     --xh-_date-picker-control-px: var(--xh-control-px-sm);
-    --xh-_date-picker-font-size: var(--xh-font-size-sm);
-    --xh-_date-picker-label-font-size: var(--xh-font-size-sm);
+    --xh-_date-picker-font-size: var(--xh-control-font-sm);
+    --xh-_date-picker-label-font-size: var(--xh-control-font-sm);
   }
 
   [data-scope='date-picker']:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
     --xh-_date-picker-control-h: var(--xh-control-h-lg);
     --xh-_date-picker-control-px: var(--xh-control-px-lg);
-    --xh-_date-picker-font-size: var(--xh-font-size-lg);
-    --xh-_date-picker-label-font-size: var(--xh-font-size-lg);
+    --xh-_date-picker-font-size: var(--xh-control-font-lg);
+    --xh-_date-picker-label-font-size: var(--xh-control-font-lg);
   }
 
   /* —— 形态 —— */
@@ -120,7 +123,7 @@
     display: inline-flex;
     align-items: center;
     gap: var(--xh-date-picker-control-gap, var(--xh-control-gap-md));
-    min-inline-size: var(--xh-date-picker-control-min-w, var(--xh-overlay-min-w));
+    min-inline-size: var(--xh-date-picker-control-min-w, var(--xh-control-min-w));
     block-size: var(--xh-date-picker-control-h, var(--xh-_date-picker-control-h));
     padding-inline: var(--xh-date-picker-control-px, var(--xh-_date-picker-control-px));
     padding-block: 0;
@@ -143,7 +146,7 @@
   /* 焦点落在某一段或某个按钮上，而边框长在 control 上：焦点环得由内向外借一层。
      control 自己不占 Tab 位，:focus-within 是它唯一能感知组内焦点的方式 */
   [data-scope='date-picker'][data-part='control']:focus-within {
-    border-color: var(--xh-date-picker-control-border-focus, var(--xh-_date-picker-ring));
+    border-color: var(--xh-date-picker-control-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
     outline: var(--xh-ring-width) solid var(--xh-_date-picker-ring);
     outline-offset: var(--xh-ring-offset);
   }
@@ -205,7 +208,7 @@
     background: var(--xh-date-picker-action-bg, transparent);
     color: var(--xh-date-picker-action-fg, var(--xh-fg-muted));
     font-family: inherit;
-    font-size: var(--xh-date-picker-action-font-size, var(--xh-font-size-sm));
+    font-size: var(--xh-date-picker-action-font-size, var(--xh-text-secondary-size));
     line-height: var(--xh-leading-none);
     cursor: pointer;
     user-select: none;
@@ -265,7 +268,7 @@
        这里只留可用高度这一道——视口真放不下时才让步 */
     max-block-size: var(--xh-date-picker-max-h, var(--xh-_date-picker-available-h));
     overflow-y: auto;
-    box-shadow: var(--xh-date-picker-content-shadow, var(--xh-elevation-2));
+    box-shadow: var(--xh-date-picker-content-shadow, var(--xh-elevation-floating));
     pointer-events: auto;
   }
 
@@ -351,7 +354,7 @@
     padding-block: var(--xh-space-1);
     padding-inline: var(--xh-space-3);
     border-radius: var(--xh-shape-control);
-    font-size: var(--xh-font-size-sm);
+    font-size: var(--xh-text-secondary-size);
     line-height: var(--xh-leading-normal);
     white-space: nowrap;
     cursor: pointer;
@@ -400,7 +403,7 @@
     padding-block: var(--xh-space-1);
     padding-inline: var(--xh-space-3);
     border-radius: var(--xh-shape-control);
-    font-size: var(--xh-font-size-sm);
+    font-size: var(--xh-text-secondary-size);
     line-height: var(--xh-leading-normal);
     text-align: center;
     cursor: pointer;
@@ -434,7 +437,7 @@
     border-radius: var(--xh-shape-control);
     background: var(--xh-date-picker-confirm-bg, var(--xh-_date-picker-accent));
     color: var(--xh-date-picker-confirm-fg, var(--xh-_date-picker-accent-fg));
-    font-size: var(--xh-font-size-sm);
+    font-size: var(--xh-text-secondary-size);
     cursor: pointer;
   }
 
@@ -455,8 +458,8 @@
   [data-scope='date-picker'][data-part='clear-trigger']:empty::before {
     content: '';
     display: inline-block;
-    inline-size: 1em;
-    block-size: 1em;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
@@ -466,8 +469,8 @@
   [data-scope='date-picker'][data-part='trigger']:empty::before {
     content: '';
     display: inline-block;
-    inline-size: 1em;
-    block-size: 1em;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;

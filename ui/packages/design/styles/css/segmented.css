@@ -26,8 +26,14 @@
     font-size: var(--xh-segmented-font-size, var(--xh-_segmented-font-size));
   }
 
+  /* 横排时外盒整体就是一档控件高：段被 align-items: stretch 撑满轨道内侧，与同行控件齐平 */
   [data-scope='segmented'][data-part='root'][data-orientation='horizontal'] {
     flex-direction: row;
+    block-size: var(--xh-segmented-h, var(--xh-_segmented-h));
+  }
+
+  [data-scope='segmented'][data-part='root'][data-orientation='horizontal'] [data-scope='segmented'][data-part='item'] {
+    block-size: auto;
   }
 
   [data-scope='segmented'][data-part='root'][data-orientation='vertical'] {
@@ -83,14 +89,14 @@
     --xh-_segmented-h: var(--xh-control-h-sm);
     --xh-_segmented-px: var(--xh-control-px-sm);
     --xh-_segmented-gap: var(--xh-control-gap-sm);
-    --xh-_segmented-font-size: var(--xh-font-size-sm);
+    --xh-_segmented-font-size: var(--xh-control-font-sm);
   }
 
   [data-scope='segmented'][data-part='root'][data-size='lg'] {
     --xh-_segmented-h: var(--xh-control-h-lg);
     --xh-_segmented-px: var(--xh-control-px-lg);
     --xh-_segmented-gap: var(--xh-control-gap-lg);
-    --xh-_segmented-font-size: var(--xh-font-size-lg);
+    --xh-_segmented-font-size: var(--xh-control-font-lg);
   }
 
   /* 段自己也定位，于是与绝对定位的指示器按文档序比高低：
@@ -187,7 +193,7 @@
     block-size: var(--xh-_segmented-indicator-h);
     border-radius: var(--xh-segmented-indicator-radius, var(--xh-shape-inset));
     background: var(--xh-segmented-indicator-bg, var(--xh-_segmented-indicator-bg));
-    box-shadow: var(--xh-segmented-indicator-shadow, var(--xh-elevation-1));
+    box-shadow: var(--xh-segmented-indicator-shadow, var(--xh-elevation-raised));
     /* 段压在它上面，点击一律交给段；作者把它写在段之后时也不至于吞掉点击 */
     pointer-events: none;
     /* 用标准曲线而不是进场那条：滑块是被推过去的，起步就该有速度，

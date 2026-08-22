@@ -7,6 +7,9 @@
   /* 根节点是 region 地标：把上一张 / 视口 / 下一张排成一行，指示点另起一行。
      两端按钮浮在视口上还是排在两侧由作者定，这里只给最朴素的一版排布 */
   [data-scope='carousel'][data-part='root'] {
+    /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+    --xh-icon-size: var(--xh-carousel-icon-size, var(--xh-glyph-size-text));
+
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -200,8 +203,8 @@
   [data-scope='carousel'][data-part='prev-trigger']:empty::before {
     content: '';
     display: inline-block;
-    inline-size: 1em;
-    block-size: 1em;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-chevron-left) center / contain no-repeat;
@@ -211,8 +214,8 @@
   [data-scope='carousel'][data-part='next-trigger']:empty::before {
     content: '';
     display: inline-block;
-    inline-size: 1em;
-    block-size: 1em;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;

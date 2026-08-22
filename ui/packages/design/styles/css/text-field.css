@@ -17,7 +17,7 @@
     --xh-_text-field-px: var(--xh-control-px-md);
     --xh-_text-field-font-size: var(--xh-text-body-size);
     --xh-_text-field-label-font-size: var(--xh-text-label-size);
-    --xh-_text-field-clear-font-size: var(--xh-font-size-sm);
+    --xh-_text-field-clear-font-size: var(--xh-text-secondary-size);
 
     /* 形态档只换这三个私有槽：底、常态描边、悬停描边 */
     --xh-_text-field-bg: var(--xh-bg-canvas);
@@ -27,7 +27,7 @@
     /* 语气只落在聚焦这一处：环与聚焦态描边。正文颜色不归它管。
        没写 data-tone 时 --xh-_tone 没被声明，退回原来的聚焦环色与常态描边 */
     --xh-_text-field-ring: var(--xh-ring-focus);
-    --xh-_text-field-border-focus: var(--xh-text-field-input-border, var(--xh-_tone, var(--xh-border-control)));
+    --xh-_text-field-border-focus: var(--xh-text-field-input-border, var(--xh-_tone, var(--xh-border-control-focus)));
 
     display: inline-flex;
     flex-direction: column;
@@ -45,18 +45,18 @@
     --xh-icon-size: var(--xh-text-field-icon-size, var(--xh-glyph-size-sm));
     --xh-_text-field-h: var(--xh-control-h-sm);
     --xh-_text-field-px: var(--xh-control-px-sm);
-    --xh-_text-field-font-size: var(--xh-font-size-sm);
-    --xh-_text-field-label-font-size: var(--xh-font-size-sm);
-    --xh-_text-field-clear-font-size: var(--xh-font-size-xs);
+    --xh-_text-field-font-size: var(--xh-control-font-sm);
+    --xh-_text-field-label-font-size: var(--xh-control-font-sm);
+    --xh-_text-field-clear-font-size: var(--xh-control-caption-sm);
   }
 
   [data-scope='text-field'][data-part='root'][data-size='lg'] {
     --xh-icon-size: var(--xh-text-field-icon-size, var(--xh-glyph-size-lg));
     --xh-_text-field-h: var(--xh-control-h-lg);
     --xh-_text-field-px: var(--xh-control-px-lg);
-    --xh-_text-field-font-size: var(--xh-font-size-lg);
-    --xh-_text-field-label-font-size: var(--xh-font-size-lg);
-    --xh-_text-field-clear-font-size: var(--xh-font-size-md);
+    --xh-_text-field-font-size: var(--xh-control-font-lg);
+    --xh-_text-field-label-font-size: var(--xh-control-font-lg);
+    --xh-_text-field-clear-font-size: var(--xh-control-caption-lg);
   }
 
   /* —— 形态 —— */
@@ -66,7 +66,7 @@
     --xh-_text-field-bg: var(--xh-bg-canvas);
     --xh-_text-field-border: var(--xh-border-control);
     --xh-_text-field-border-hover: var(--xh-border-control-hover);
-    --xh-_text-field-border-focus: var(--xh-text-field-input-border, var(--xh-_tone, var(--xh-border-control)));
+    --xh-_text-field-border-focus: var(--xh-text-field-input-border, var(--xh-_tone, var(--xh-border-control-focus)));
   }
 
   /* 填充式：底色顶替描边表达边界。描边只退成透明而不去掉，1px 的位置留着，
@@ -75,7 +75,7 @@
     --xh-_text-field-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
     --xh-_text-field-border: transparent;
     --xh-_text-field-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
-    --xh-_text-field-border-focus: var(--xh-_tone, var(--xh-border-control));
+    --xh-_text-field-border-focus: var(--xh-_tone, var(--xh-border-control-focus));
   }
 
   /* 无框：底与常态描边透明，悬停与聚焦浮出描边 */
@@ -83,7 +83,7 @@
     --xh-_text-field-bg: transparent;
     --xh-_text-field-border: transparent;
     --xh-_text-field-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
-    --xh-_text-field-border-focus: var(--xh-_tone, var(--xh-border-control));
+    --xh-_text-field-border-focus: var(--xh-_tone, var(--xh-border-control-focus));
   }
 
   [data-scope='text-field'][data-part='label'] {
@@ -98,6 +98,7 @@
   }
 
   [data-scope='text-field'][data-part='input'] {
+    min-inline-size: var(--xh-text-field-input-min-w, var(--xh-control-min-w));
     block-size: var(--xh-text-field-input-h, var(--xh-_text-field-h));
     padding-inline: var(--xh-text-field-input-px, var(--xh-_text-field-px));
     padding-block: 0;
@@ -223,8 +224,8 @@
   [data-scope='text-field'][data-part='clear-trigger']:empty::before {
     content: '';
     display: inline-block;
-    inline-size: 1em;
-    block-size: 1em;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;

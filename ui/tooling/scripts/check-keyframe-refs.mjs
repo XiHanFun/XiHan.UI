@@ -10,6 +10,8 @@ import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
 const STYLES_DIR = 'packages/design/styles/css'
+/** 适配器源码：内联样式里不许引用动画名，它们不归任何一份皮肤管，名字在不在场没人保证。 */
+const ADAPTER_DIRS = ['packages/adapters/vue/src', 'packages/adapters/web-components/src']
 
 /** 去掉块注释：注释里提到的动画名不是引用。 */
 function stripComments(css) {
@@ -120,7 +122,30 @@ for (const [name, list] of defsByName) {
   }
 }
 
-const problems = [...undefinedRefs, ...crossFile, ...drifted, ...unlayered]
+/** 递归列出目录下的源码文件。 */
+async function walk(dir) {
+  const out = []
+  for (const entry of await readdir(dir, { withFileTypes: true })) {
+    const path = join(dir, entry.name)
+    if (entry.isDirectory())
+      out.push(...await walk(path))
+    else if (/\.(?:ts|vue)$/.test(entry.name) && !/\.(?:test|spec)\./.test(entry.name))
+      out.push(path)
+  }
+  return out
+}
+
+/** 适配器里写进内联样式的动画名：模板不附属于任何皮肤，引用名字的那份皮肤不一定在场。 */
+const inlined = []
+for (const dir of ADAPTER_DIRS) {
+  for (const path of await walk(dir)) {
+    const src = stripComments(await readFile(path, 'utf8')).replace(/(^|[^:])\/\/.*$/gm, '$1')
+    for (const m of src.matchAll(/animation(?:Name|-name)?['"]?\s*[:=]\s*[`'"][^`'"]*?(?<![-\w])(xh-[a-z0-9-]+)/g))
+      inlined.push(`${path.replace(/\\/g, '/')} 在内联样式里引用了动画名 ${m[1]}——适配器代码不附属于任何皮肤，改用 Web Animations 或由皮肤按 data 属性播`)
+  }
+}
+
+const problems = [...undefinedRefs, ...crossFile, ...drifted, ...unlayered, ...inlined]
 if (problems.length > 0) {
   console.error('[check-keyframe-refs] 动画名的引用与定义对不上：')
   for (const p of problems) console.error(`  ${p}`)

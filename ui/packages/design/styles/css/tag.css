@@ -6,11 +6,14 @@
 
   /* 缺省态：md 档、无语气。三轴规则只在它之上叠加，不改这一条 */
   [data-scope='tag'][data-part='root'] {
+    /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+    --xh-icon-size: var(--xh-tag-icon-size, var(--xh-glyph-size-text));
+
     /* 尺寸档只换这四个私有槽，下面的声明从它们取值 */
     --xh-_tag-gap: var(--xh-space-1);
     --xh-_tag-px: var(--xh-space-2);
     --xh-_tag-py: var(--xh-space-0_5);
-    --xh-_tag-font-size: var(--xh-font-size-xs);
+    --xh-_tag-font-size: var(--xh-text-caption-size);
 
     display: inline-flex;
     align-items: center;
@@ -136,7 +139,7 @@
     --xh-_tag-gap: var(--xh-space-1_5);
     --xh-_tag-px: var(--xh-space-3);
     --xh-_tag-py: var(--xh-space-1);
-    --xh-_tag-font-size: var(--xh-font-size-sm);
+    --xh-_tag-font-size: var(--xh-text-secondary-size);
   }
 
   /* —— 禁用 —— */
@@ -156,8 +159,8 @@
   [data-scope='tag'][data-part='close-trigger']:empty::before {
     content: '';
     display: inline-block;
-    inline-size: 1em;
-    block-size: 1em;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;

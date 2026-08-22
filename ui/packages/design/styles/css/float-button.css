@@ -10,6 +10,9 @@
      transform / filter / backdrop-filter / contain，包含块就被抢走，整组立刻贴错位置——
      所以别往覆盖钩子里加这几个属性。 */
   [data-scope='float-button'][data-part='root'] {
+    /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+    --xh-icon-size: var(--xh-float-button-icon-size, var(--xh-glyph-size-text));
+
     --xh-_float-button-offset: var(--xh-space-6);
     /* 触发器与展开的每一条动作共用这两个私有槽，换档只改这里 */
     --xh-_float-button-size: var(--xh-float-button-size, var(--xh-control-h-lg));
@@ -67,7 +70,7 @@
     background: var(--xh-float-button-bg, var(--xh-bg-surface-raised));
     color: var(--xh-float-button-fg, var(--xh-fg-default));
     /* 浮在内容之上，靠投影与页面拉开层次 */
-    box-shadow: var(--xh-elevation-3);
+    box-shadow: var(--xh-elevation-sheet);
     cursor: pointer;
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
@@ -128,8 +131,8 @@
   [data-scope='float-button'][data-part='trigger']:empty::before {
     content: '';
     display: inline-block;
-    inline-size: 1em;
-    block-size: 1em;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-plus) center / contain no-repeat;

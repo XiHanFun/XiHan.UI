@@ -16,7 +16,7 @@
     --xh-_tags-input-control-px: var(--xh-control-px-md);
     --xh-_tags-input-control-gap: var(--xh-control-gap-sm);
     --xh-_tags-input-input-font-size: var(--xh-text-body-size);
-    --xh-_tags-input-item-font-size: var(--xh-font-size-sm);
+    --xh-_tags-input-item-font-size: var(--xh-text-secondary-size);
     --xh-_tags-input-label-font-size: var(--xh-text-label-size);
     /* 形态档只换这三个私有槽，缺省这一份就是描边式（描边 + 画布底） */
     --xh-_tags-input-control-bg: var(--xh-bg-canvas);
@@ -66,9 +66,9 @@
     --xh-icon-size: var(--xh-tags-input-icon-size, var(--xh-glyph-size-sm));
     --xh-_tags-input-control-h: var(--xh-control-h-sm);
     --xh-_tags-input-control-px: var(--xh-control-px-sm);
-    --xh-_tags-input-input-font-size: var(--xh-font-size-sm);
-    --xh-_tags-input-item-font-size: var(--xh-font-size-xs);
-    --xh-_tags-input-label-font-size: var(--xh-font-size-sm);
+    --xh-_tags-input-input-font-size: var(--xh-control-font-sm);
+    --xh-_tags-input-item-font-size: var(--xh-control-caption-sm);
+    --xh-_tags-input-label-font-size: var(--xh-control-font-sm);
   }
 
   [data-scope='tags-input'][data-part='root'][data-size='lg'] {
@@ -76,9 +76,9 @@
     --xh-_tags-input-control-h: var(--xh-control-h-lg);
     --xh-_tags-input-control-px: var(--xh-control-px-lg);
     --xh-_tags-input-control-gap: var(--xh-control-gap-lg);
-    --xh-_tags-input-input-font-size: var(--xh-font-size-lg);
-    --xh-_tags-input-item-font-size: var(--xh-font-size-md);
-    --xh-_tags-input-label-font-size: var(--xh-font-size-lg);
+    --xh-_tags-input-input-font-size: var(--xh-control-font-lg);
+    --xh-_tags-input-item-font-size: var(--xh-control-caption-lg);
+    --xh-_tags-input-label-font-size: var(--xh-control-font-lg);
   }
 
   [data-scope='tags-input'][data-part='label'] {
@@ -123,6 +123,7 @@
   /* 焦点环画在这个框上：用户眼里"被聚焦的控件"就是整个框，
      而真正持有焦点的是里面的 input（它自己那圈环因此让位，见下） */
   [data-scope='tags-input'][data-part='control']:focus-within {
+    border-color: var(--xh-tags-input-control-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
     outline: var(--xh-ring-width) solid var(--xh-_tags-input-ring);
     outline-offset: var(--xh-ring-offset);
   }
@@ -259,7 +260,7 @@
     background: var(--xh-tags-input-delete-bg, transparent);
     color: var(--xh-tags-input-delete-fg, var(--xh-fg-muted));
     font-family: inherit;
-    font-size: var(--xh-tags-input-delete-font-size, var(--xh-font-size-xs));
+    font-size: var(--xh-tags-input-delete-font-size, var(--xh-text-caption-size));
     line-height: var(--xh-leading-none);
     cursor: pointer;
     transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
@@ -341,7 +342,7 @@
     background: var(--xh-tags-input-clear-bg, transparent);
     color: var(--xh-tags-input-clear-fg, var(--xh-fg-muted));
     font-family: inherit;
-    font-size: var(--xh-tags-input-clear-font-size, var(--xh-font-size-sm));
+    font-size: var(--xh-tags-input-clear-font-size, var(--xh-text-secondary-size));
     line-height: var(--xh-leading-none);
     cursor: pointer;
     transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
@@ -377,8 +378,8 @@
   [data-scope='tags-input'][data-part='clear-trigger']:empty::before {
     content: '';
     display: inline-block;
-    inline-size: 1em;
-    block-size: 1em;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
@@ -388,8 +389,8 @@
   [data-scope='tags-input'][data-part='item-delete-trigger']:empty::before {
     content: '';
     display: inline-block;
-    inline-size: 1em;
-    block-size: 1em;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;

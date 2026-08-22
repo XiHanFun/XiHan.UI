@@ -24,12 +24,12 @@
   /* —— 尺寸 —— */
   /* 缺省档写在上面的基础规则里；链接的内边距走控件内边距那把尺，缺省的 --xh-space-3 即它的中档 */
   [data-scope='anchor'][data-part='root'][data-size='sm'] {
-    --xh-_anchor-font-size: var(--xh-font-size-sm);
+    --xh-_anchor-font-size: var(--xh-control-font-sm);
     --xh-_anchor-link-px: var(--xh-control-px-sm);
   }
 
   [data-scope='anchor'][data-part='root'][data-size='lg'] {
-    --xh-_anchor-font-size: var(--xh-font-size-lg);
+    --xh-_anchor-font-size: var(--xh-control-font-lg);
     --xh-_anchor-link-px: var(--xh-control-px-lg);
   }
 
@@ -76,7 +76,7 @@
     display: inline-flex;
     align-items: center;
     /* 一节的标题可能很长，压不住会把整列撑开 */
-    max-inline-size: var(--xh-anchor-link-max-w, 14rem);
+    max-inline-size: var(--xh-anchor-link-max-w, var(--xh-nav-link-max-w));
     padding-block: var(--xh-anchor-link-py, var(--xh-space-1));
     padding-inline: var(--xh-anchor-link-px, var(--xh-_anchor-link-px));
     border-radius: var(--xh-anchor-link-radius, var(--xh-shape-control));

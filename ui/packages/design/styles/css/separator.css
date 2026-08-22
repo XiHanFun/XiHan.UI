@@ -11,12 +11,12 @@
 
   [data-scope='separator'][data-part='root'][data-orientation='horizontal'] {
     inline-size: 100%;
-    block-size: var(--xh-separator-thickness, 1px);
+    block-size: var(--xh-separator-thickness, var(--xh-stroke-thin));
   }
 
   [data-scope='separator'][data-part='root'][data-orientation='vertical'] {
     align-self: stretch;
-    inline-size: var(--xh-separator-thickness, 1px);
+    inline-size: var(--xh-separator-thickness, var(--xh-stroke-thin));
     block-size: 100%;
   }
 }

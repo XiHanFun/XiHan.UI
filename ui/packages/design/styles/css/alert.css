@@ -5,6 +5,9 @@
   }
 
   [data-scope='alert'][data-part='root'] {
+    /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+    --xh-icon-size: var(--xh-alert-icon-size, var(--xh-glyph-size-text));
+
     /* 强调色随语气走，底色/描边/图标色都由它推导出来，换语气不必逐条属性各写一遍。
        没写 data-tone 时 --xh-_tone 没被声明，退回原来的 info 蓝 */
     --xh-_alert-accent: var(--xh-_tone-soft, var(--xh-color-info-500));
@@ -24,7 +27,7 @@
     border-radius: var(--xh-alert-radius, var(--xh-shape-surface));
     background: var(--xh-alert-bg, var(--xh-_alert-tint));
     color: var(--xh-alert-fg, var(--xh-fg-default));
-    font-size: var(--xh-alert-font-size, var(--xh-font-size-md));
+    font-size: var(--xh-alert-font-size, var(--xh-text-body-size));
     line-height: var(--xh-alert-leading, var(--xh-leading-normal));
   }
 
@@ -40,7 +43,7 @@
     justify-content: center;
     flex: none;
     /* 与首行文字对齐：图标框高取一行正文的行高 */
-    block-size: calc(var(--xh-font-size-md) * var(--xh-leading-normal));
+    block-size: calc(var(--xh-text-body-size) * var(--xh-leading-normal));
     inline-size: var(--xh-alert-icon-size, var(--xh-control-indicator-size));
     color: var(--xh-alert-icon-fg, var(--xh-_alert-accent));
   }
@@ -56,7 +59,7 @@
   [data-scope='alert'][data-part='title'] {
     flex: 1 1 auto;
     color: var(--xh-alert-title-fg, var(--xh-fg-default));
-    font-size: var(--xh-alert-title-font-size, var(--xh-font-size-md));
+    font-size: var(--xh-alert-title-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-alert-title-font-weight, var(--xh-font-weight-semibold));
     line-height: var(--xh-alert-title-leading, var(--xh-leading-tight));
   }
@@ -64,7 +67,7 @@
   [data-scope='alert'][data-part='description'] {
     flex: 1 1 100%;
     color: var(--xh-alert-description-fg, var(--xh-fg-muted));
-    font-size: var(--xh-alert-description-font-size, var(--xh-font-size-sm));
+    font-size: var(--xh-alert-description-font-size, var(--xh-text-secondary-size));
   }
 
   /* 没写标题时说明自己占满这一行，否则它会挤在标题旁边 */
@@ -115,8 +118,8 @@
   [data-scope='alert'][data-part='close-trigger']:empty::before {
     content: '';
     display: inline-block;
-    inline-size: 1em;
-    block-size: 1em;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;

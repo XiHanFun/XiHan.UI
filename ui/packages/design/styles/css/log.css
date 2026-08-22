@@ -55,7 +55,7 @@
     display: block;
     padding-inline: var(--xh-log-content-px, var(--xh-space-3));
     font-family: var(--xh-log-font, var(--xh-font-family-mono));
-    font-size: var(--xh-log-font-size, var(--xh-font-size-sm));
+    font-size: var(--xh-log-font-size, var(--xh-text-secondary-size));
   }
 
   [data-scope='log'][data-part='content'][hidden] {

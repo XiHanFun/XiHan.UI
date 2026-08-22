@@ -16,7 +16,7 @@
     border-radius: var(--xh-avatar-radius, var(--xh-shape-pill));
     background: var(--xh-avatar-bg, var(--xh-bg-subtle));
     color: var(--xh-avatar-fg, var(--xh-fg-muted));
-    font-size: var(--xh-avatar-font-size, var(--xh-font-size-sm));
+    font-size: var(--xh-avatar-font-size, var(--xh-text-secondary-size));
     font-weight: var(--xh-avatar-font-weight, var(--xh-font-weight-medium));
     line-height: var(--xh-leading-none);
     user-select: none;
@@ -27,13 +27,13 @@
   [data-scope='avatar'][data-part='root'][data-size='sm'] {
     inline-size: var(--xh-control-h-sm);
     block-size: var(--xh-control-h-sm);
-    font-size: var(--xh-font-size-xs);
+    font-size: var(--xh-control-caption-sm);
   }
 
   [data-scope='avatar'][data-part='root'][data-size='lg'] {
     inline-size: var(--xh-control-h-lg);
     block-size: var(--xh-control-h-lg);
-    font-size: var(--xh-font-size-md);
+    font-size: var(--xh-control-caption-lg);
   }
 
   /* 不声明 display，加载完成前的 hidden 直接交给浏览器的 [hidden] 规则收起 */
