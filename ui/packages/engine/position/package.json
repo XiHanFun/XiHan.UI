@@ -33,14 +33,6 @@
     "./compute": {
       "types": "./dist/compute.d.ts",
       "import": "./dist/compute.js"
-    },
-    "./dom": {
-      "types": "./dist/dom.d.ts",
-      "import": "./dist/dom.js"
-    },
-    "./observe": {
-      "types": "./dist/observe.d.ts",
-      "import": "./dist/observe.js"
     }
   },
   "main": "./dist/index.js",

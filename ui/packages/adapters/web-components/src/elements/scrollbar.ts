@@ -110,15 +110,16 @@ export class XhScrollbarElement extends XhElement {
       forceVisible: this.forceVisible ?? false,
       dir: this.direction,
       translations: this.translations,
-      onScrollStart: details => this.emit('scroll-start', details),
-      onScrollEnd: details => this.emit('scroll-end', details),
-      onDragStart: details => this.emit('drag-start', details),
-      onDragEnd: details => this.emit('drag-end', details),
+      onScrollStart: details => this.fire('scroll-start', details),
+      onScrollEnd: details => this.fire('scroll-end', details),
+      onDragStart: details => this.fire('drag-start', details),
+      onDragEnd: details => this.fire('drag-end', details),
     }
   }
 
-  private emit(type: string, detail: unknown): void {
-    this.dispatchEvent(new CustomEvent(type, { detail, bubbles: true, composed: true }))
+  /** 事件名逐个写在调用点：形参名会被清单分析器当成事件名，凑出一个永不派发的条目。 */
+  private fire(name: 'scroll-start' | 'scroll-end' | 'drag-start' | 'drag-end', detail: unknown): void {
+    this.dispatchEvent(new CustomEvent(name, { detail, bubbles: true, composed: true }))
   }
 
   /**

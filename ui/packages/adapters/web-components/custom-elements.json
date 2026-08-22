@@ -29275,7 +29275,7 @@
             },
             {
               "kind": "method",
-              "name": "emit",
+              "name": "fire",
               "privacy": "private",
               "return": {
                 "type": {
@@ -29284,9 +29284,9 @@
               },
               "parameters": [
                 {
-                  "name": "type",
+                  "name": "name",
                   "type": {
-                    "text": "string"
+                    "text": "'scroll-start' | 'scroll-end' | 'drag-start' | 'drag-end'"
                   }
                 },
                 {
@@ -29295,7 +29295,8 @@
                     "text": "unknown"
                   }
                 }
-              ]
+              ],
+              "description": "事件名逐个写在调用点：形参名会被清单分析器当成事件名，凑出一个永不派发的条目。"
             },
             {
               "kind": "method",
@@ -29339,7 +29340,7 @@
           ],
           "events": [
             {
-              "name": "type",
+              "name": "name",
               "type": {
                 "text": "CustomEvent"
               }
