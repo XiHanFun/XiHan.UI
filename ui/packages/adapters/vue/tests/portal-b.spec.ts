@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 // positioner 部件搬到 portal 落点：宿主祖先建了层叠上下文也压不住浮层。
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, defineComponent, h, nextTick } from 'vue'
 import {
   provideXhConfig,
@@ -31,16 +31,10 @@ const CUSTOM_ID = 'xh-portal-b'
 
 let mounted: Array<() => void> = []
 
-beforeEach(() => {
-  // jsdom 无 matchMedia，桩掉供 RuntimeConfig.reducedMotion 使用
-  vi.stubGlobal('matchMedia', (q: string) => ({ matches: false, media: q, addEventListener: () => {}, removeEventListener: () => {} }))
-})
-
 afterEach(() => {
   for (const un of mounted) un()
   mounted = []
   document.body.innerHTML = ''
-  vi.unstubAllGlobals()
 })
 
 /** 挂一棵作者写的树，返回它的宿主节点；container 给了就按应用级配置指定落点。 */

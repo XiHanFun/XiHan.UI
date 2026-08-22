@@ -7,7 +7,7 @@ import type { DrawerSchema, DrawerSide } from '../src/drawer'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, normalizeProps } from '@xihan-ui/kernel'
 import { createService } from '@xihan-ui/machine'
 import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it } from 'vitest'
 import { connectDrawer, drawerMachine } from '../src/drawer'
 
 function makeService(props: DrawerSchema['props'] = {}): Service<DrawerSchema> {
@@ -220,13 +220,8 @@ const microtask = (): Promise<void> => Promise.resolve()
 const frame = (): Promise<void> => new Promise(resolve => requestAnimationFrame(() => resolve()))
 
 describe('drawerMachine 展开期副作用', () => {
-  beforeEach(() => {
-    vi.stubGlobal('matchMedia', (q: string) => ({ matches: false, media: q, addEventListener: () => {}, removeEventListener: () => {} }))
-  })
-
   afterEach(() => {
     document.body.innerHTML = ''
-    vi.unstubAllGlobals()
   })
 
   it('层只在展开期间入栈，关上即出栈', () => {

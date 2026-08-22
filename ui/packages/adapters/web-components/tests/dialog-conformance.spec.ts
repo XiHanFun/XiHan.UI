@@ -1,18 +1,13 @@
 // @vitest-environment jsdom
 import { runConformance } from '@xihan-ui/testing'
-import { afterEach, beforeEach, describe, it, vi } from 'vitest'
+import { afterEach, describe, it } from 'vitest'
 import { createWcHarness } from './harness'
 import { wcDialogSuite } from './wc-dialog.suite'
 import { wcDrawerSuite } from './wc-drawer.suite'
 import { wcImageViewerSuite } from './wc-image-viewer.suite'
 
-beforeEach(() => {
-  vi.stubGlobal('matchMedia', (q: string) => ({ matches: false, media: q, addEventListener: () => {}, removeEventListener: () => {} }))
-})
-
 afterEach(() => {
   document.body.innerHTML = ''
-  vi.unstubAllGlobals()
 })
 
 // dialog / drawer / image-viewer 的 presence 模型与 Vue 不同（Light DOM 下 content 常驻、靠 data-state 收起），

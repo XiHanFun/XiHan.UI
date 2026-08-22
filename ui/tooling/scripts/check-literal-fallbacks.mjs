@@ -2,7 +2,7 @@
 // 门禁：使用者槽的字面量兜底若与某个令牌的最终值相等，必须改成引那个令牌。
 //
 // var(--xh-checkbox-size, 16px) 在今天与 --xh-control-indicator-size 同值，可令牌一换档
-// （compact 收到 0.875rem）那一处就不跟，同一页上的两个方框从此两个尺寸。同值兜底等于
+// （compact 收到 14px）那一处就不跟，同一页上的两个方框从此两个尺寸。同值兜底等于
 // 把令牌的值抄了一份进皮肤，令牌再也管不到它。
 //
 // 做法：读 tokens.css，顺着 var() 引用把每个令牌解到最终字面值（取各轴的基线块，覆盖块不参与）；
@@ -24,18 +24,15 @@ const ALLOWED = new Map([
   ['1', '倍数或比例 1（line-height、opacity、scale），不是 leading.none'],
   ['100%', '填满父盒，不是尺寸阶梯里的值'],
   ['cascader.css:--xh-cascader-content-max-w=48rem', '级联面板横向铺开的上限，与对话框大档同宽只是巧合'],
-  ['code-block.css:--xh-code-block-line-height=1.5rem', '代码块按绝对行距排版，与 1.5rem 的字形档无关'],
-  ['color-picker.css:--xh-color-picker-thumb-size=14px', '取色器拇指几何，与 14px 的字号档无关'],
+  ['color-picker.css:--xh-color-picker-swatch-size=18px', '色板色块的几何，与 18px 的滑杆拇指同值是巧合'],
+  ['color-picker.css:--xh-color-picker-thumb-size=14px', '取色器拇指几何，与 14px 的滚动条厚度档无关'],
   ['color-picker.css:--xh-color-picker-track-thickness=8px', '色相带比滑杆轨道厚一档，与 space-2 同值是巧合'],
-  ['color-picker.css:--xh-color-picker-swatch-item-size=1.25rem', '色板格是色块不是字形，与 glyph-size-md 同值是巧合'],
-  ['layout.css:--xh-layout-header-h=3.5rem', '布局头高，与 3.5rem 的字形档无关'],
-  ['log.css:--xh-log-line-height=1.25rem', '须与连接层内联的行高逐字一致，rows 算高度依赖它'],
   ['marquee.css:--xh-marquee-span=600', '跑马灯单程像素长度的无单位数，不是字重'],
   ['marquee.css:--xh-marquee-block-size=10rem', '纵向跑马灯的视口高度，与菜单最小宽同值是巧合'],
   ['progress.css:--xh-progress-size=10rem', '环形进度大档直径，与菜单最小宽同值是巧合'],
+  ['side-nav.css:--xh-side-nav-collapsed-w=56px', '侧栏折叠后的栏宽，与 56px 的字形档无关'],
   ['slider.css:--xh-slider-vertical-length=10rem', '纵向滑杆默认长度，与菜单最小宽同值是巧合'],
   ['time-picker.css:--xh-time-picker-column-max-h=12rem', '时间列视口高度，与 12rem 的最小宽令牌无关'],
-  ['time-picker.css:--xh-time-picker-column-min-w=3.5rem', '两位数字加内距的列宽，与 3.5rem 的字形档无关'],
   ['transfer.css:--xh-transfer-list-max-h=16rem', '穿梭框是内嵌列表不是浮层，与 overlay 的 16rem 同值是巧合'],
 ])
 

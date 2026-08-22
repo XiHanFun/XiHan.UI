@@ -1,3 +1,4 @@
+import type { PositionResult } from '@xihan-ui/kernel'
 import type { SideNavNode, SideNavSchema } from './side-nav.types'
 import { createDismissLayer, createFocusScope, navigateItems, trackHoverIntent } from '@xihan-ui/behavior'
 import { setup } from '@xihan-ui/machine'
@@ -34,6 +35,18 @@ export function accordionSiblings(
   })
 }
 
+/** 清掉某一枝名下的旧坐标：那是上一次弹出留下的，页面滚过就不作数了。 */
+function clearPlacement(
+  context: { get: (k: 'popoutPlacements') => Record<string, PositionResult>, set: (k: 'popoutPlacements', v: Record<string, PositionResult>) => void },
+  value: string,
+): void {
+  const placements = context.get('popoutPlacements')
+  if (!(value in placements))
+    return
+  const { [value]: _dropped, ...rest } = placements
+  context.set('popoutPlacements', rest)
+}
+
 /** 弹出面板里的行集合：分支按钮与链接按文档序混排。 */
 function popoutRows(content: HTMLElement): HTMLElement[] {
   return [...content.querySelectorAll<HTMLElement>(
@@ -62,7 +75,8 @@ export const sideNavMachine = createMachine({
     }),
     focusedValue: cell<string | null>(() => ({ defaultValue: null })),
     popoutValue: cell<string | null>(() => ({ defaultValue: null })),
-    popoutPosition: cell<SideNavSchema['context']['popoutPosition']>(() => ({ defaultValue: null })),
+    // 逐分支的最后一次定位：收起中的那枝靠它留在原地播完退场
+    popoutPlacements: cell<Record<string, PositionResult>>(() => ({ defaultValue: {} })),
     popoutIntent: cell<'first' | 'none'>(() => ({ defaultValue: 'none' })),
     popoutReturnFocus: cell<boolean>(() => ({ defaultValue: false })),
   }),
@@ -173,10 +187,11 @@ export const sideNavMachine = createMachine({
         const e = event.current()
         if (e.type !== 'POPOUT.OPEN')
           return
-        // 展开时旧坐标当场作废：留着它面板会先在旧位置画一帧再跳走；
+        // 展开时只清这一枝名下的旧坐标：留着它面板会先在旧位置画一帧再跳走；
+        // 别枝名下的那份不动，换枝时上一枝靠它留在原地播完退场。
         // 已开着的同值重开只更新落焦端，坐标照旧
         if (state.get() !== 'popout' || context.get('popoutValue') !== e.value)
-          context.set('popoutPosition', null)
+          clearPlacement(context, e.value)
         context.set('popoutValue', e.value)
         context.set('popoutIntent', e.focus ?? 'none')
       },
@@ -219,7 +234,12 @@ export const sideNavMachine = createMachine({
               // 落定那一侧的可用空间，connect 转成内联自定义属性给皮肤限高
               size: true,
             },
-            result => context.set('popoutPosition', result),
+            // 记到正弹出的那一枝名下
+            (result) => {
+              const owner = context.get('popoutValue')
+              if (owner != null)
+                context.set('popoutPlacements', { ...context.get('popoutPlacements'), [owner]: result })
+            },
           )
         })
         return () => {

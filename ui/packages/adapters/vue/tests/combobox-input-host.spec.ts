@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import type { ComboboxNode } from '@xihan-ui/headless'
 import { mount } from '@vue/test-utils'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it } from 'vitest'
 import { defineComponent, h, nextTick } from 'vue'
 import {
   XhComboboxContent,
@@ -21,13 +21,8 @@ const COLLECTION: ComboboxNode[] = [
   { value: 'banana', label: '香蕉' },
 ]
 
-beforeEach(() => {
-  vi.stubGlobal('matchMedia', (q: string) => ({ matches: false, media: q, addEventListener: () => {}, removeEventListener: () => {} }))
-})
-
 afterEach(() => {
   document.body.innerHTML = ''
-  vi.unstubAllGlobals()
 })
 
 function mountWith(as?: 'input' | 'textarea') {

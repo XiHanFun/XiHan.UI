@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "xihan-ui-docs",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--dir", "../docs", "exec", "vitepress", "dev", "--port", "5175"],
+      "port": 5175
+    }
+  ]
+}

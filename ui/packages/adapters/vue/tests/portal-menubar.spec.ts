@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 // menubar 的每张菜单各有一个 positioner，全都搬到默认那个 portal 落点。
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, defineComponent, h, nextTick } from 'vue'
 import {
   XhMenubarContent,
@@ -18,16 +18,10 @@ const MENUS = ['file', 'edit', 'view']
 
 let unmount: (() => void) | null = null
 
-beforeEach(() => {
-  // jsdom 无 matchMedia，桩掉供 RuntimeConfig.reducedMotion 使用
-  vi.stubGlobal('matchMedia', (q: string) => ({ matches: false, media: q, addEventListener: () => {}, removeEventListener: () => {} }))
-})
-
 afterEach(() => {
   unmount?.()
   unmount = null
   document.body.innerHTML = ''
-  vi.unstubAllGlobals()
 })
 
 /** 挂一条三张菜单的菜单栏，返回作者那棵树的宿主节点。 */

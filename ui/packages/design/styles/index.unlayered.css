@@ -9969,8 +9969,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='color-picker'][data-part='swatch'] {
   display: inline-block;
   flex: none;
-  inline-size: var(--xh-color-picker-swatch-size, 1.125rem);
-  block-size: var(--xh-color-picker-swatch-size, 1.125rem);
+  inline-size: var(--xh-color-picker-swatch-size, 18px);
+  block-size: var(--xh-color-picker-swatch-size, 18px);
   border: var(--xh-stroke-thin) solid var(--xh-color-picker-swatch-border, var(--xh-border-default));
   border-radius: var(--xh-color-picker-swatch-radius, var(--xh-shape-inset));
 }
@@ -10239,8 +10239,8 @@ input[data-scope='mention'][data-part='input'] {
   flex: none;
   align-items: center;
   justify-content: center;
-  inline-size: var(--xh-color-picker-action-size, 1.75rem);
-  block-size: var(--xh-color-picker-action-size, 1.75rem);
+  inline-size: var(--xh-color-picker-action-size, var(--xh-control-h-sm));
+  block-size: var(--xh-color-picker-action-size, var(--xh-control-h-sm));
   padding: 0;
   border: var(--xh-stroke-thin) solid var(--xh-color-picker-action-border, var(--xh-border-control));
   border-radius: var(--xh-color-picker-action-radius, var(--xh-shape-control));

@@ -92,6 +92,12 @@ multiple 加 cascade 内建父子传导：点分支整枝勾上、子全勾父�
 
 <XhDemo src="tree-select/12-file-picker" />
 
+### 只交数据自动渲染
+
+Vue 不写默认插槽时按 collection 铺开整套部件：带 children 的节点落成 branch、其余落成 item，文本与禁用都查数据；label 给标题，clearable 带上清空钮（手写部件不看它），产出的 DOM 与手写全套部件完全一致；Web Components 没有自动铺树，节点部件照常手写、只报 value
+
+<XhDemo src="tree-select/13-collection" />
+
 ## 产物
 
 | 层 | 值 |
@@ -156,6 +162,7 @@ multiple 加 cascade 内建父子传导：点分支整枝勾上、子全勾父�
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhTreeSelectRoot` | `default` | `TreeSelectRootSlotProps` |  |
+| `XhTreeSelectRoot` | `label` | — |  |
 
 ## 状态
 

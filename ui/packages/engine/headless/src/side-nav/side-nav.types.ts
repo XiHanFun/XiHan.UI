@@ -87,8 +87,8 @@ export interface SideNavSchema extends MachineSchema {
     focusedValue: string | null
     /** 折叠态下正弹出子级面板的顶层分支；没弹出为 null。 */
     popoutValue: string | null
-    /** 弹出面板的定位结果，由定位效应回填。 */
-    popoutPosition: PositionResult | null
+    /** 逐分支的弹出面板定位结果，由定位效应回填到正弹出的那一枝名下；收起中的那枝靠它留在原地播退场。 */
+    popoutPlacements: Record<string, PositionResult>
     /** 本次弹出的落焦端：'first' 进面板第一行，'none' 不落焦（指针路径）。 */
     popoutIntent: 'first' | 'none'
     /** 弹出关闭时是否把焦点归还触发按钮；悬停离开与层外交互不归还。 */

@@ -11,19 +11,16 @@
 //   ① 机器（COMPOSED 的查被复用的那台）传 size: true
 //   ② <名>.connect.ts 发 --xh-_<名>-available-h
 //   ③ <名>.css 里该槽既有兜底声明、又被 min( 消费
-import { readdir, readFile } from 'node:fs/promises'
-
-const HEADLESS = 'packages/engine/headless/src'
-const SKINS = 'packages/design/styles/css'
-
-/** 不吃引擎坐标的 positioner：连坐标都不问引擎要，更谈不上可用高度。 */
-const NOT_ENGINE_POSITIONED = new Set(['dialog', 'drawer', 'image-viewer'])
-
-/** 没有自己机器、跑别人机器的：size 开关在被复用的那台上。 */
-const COMPOSED = {
-  popconfirm: 'popover',
-  popselect: 'popover',
-}
+import {
+  COMPOSED,
+  discoverFamilies,
+  HEADLESS,
+  read,
+  SIZE_NOT_ENGINE_POSITIONED,
+  SKIN_POSITIONED,
+  SKINS,
+  verifySkinPositioned,
+} from './lib/overlay-families.mjs'
 
 /**
  * 不接可用高度通道的浮层，连同理由。
@@ -35,74 +32,6 @@ const SIZE_EXEMPT = {
   'popconfirm': '定长栅格，没有可滚的正文部件，高度上界由一句说明文案决定',
   'tooltip': 'role=tooltip 不可聚焦，内部滚动区键盘用户够不到，加滚动是制造无障碍陷阱',
   'floating-panel': '尺寸是用户自己拖出来的，由 minSize/maxSize 夹取，不从锚点下的可用空间推',
-}
-
-/**
- * 没有 positioner 部件、面板由皮肤 position: absolute 排布的浮层，连同理由。
- * 不问引擎要坐标也就没有可用高度可接；按解剖发现不到它们，所以逐项核实登记理由仍成立：
- * 解剖没有 positioner、connect 不碰定位引擎、皮肤 content 是 absolute 且层级走 --xh-layer-popover。
- */
-const SKIN_POSITIONED = {
-  'navigation-menu': '面板贴着自己那一项落在列表下方，由皮肤 position: absolute 排布，不需要 flip / shift',
-}
-
-/** 取出 [data-scope='<名>'][data-part='content'] 那条规则的声明块。 */
-function contentRule(css, name) {
-  const m = css.match(new RegExp(`\\[data-scope='${name}'\\]\\[data-part='content'\\]\\s*\\{([^}]*)\\}`))
-  return m ? m[1] : null
-}
-
-/** 登记为皮肤排布的浮层，三处事实都对得上才算成立。 */
-async function verifySkinPositioned(name) {
-  const anatomy = await read(`${HEADLESS}/${name}/${name}.anatomy.ts`)
-  const connect = await read(`${HEADLESS}/${name}/${name}.connect.ts`)
-  const css = await read(`${SKINS}/${name}.css`)
-  const errs = []
-  if (anatomy == null)
-    errs.push('找不到解剖')
-  else if (anatomy.includes('\'positioner\''))
-    errs.push('解剖里已有 positioner 部件，它会被当作引擎浮层发现，不该再留在 SKIN_POSITIONED')
-  if (connect == null)
-    errs.push('找不到 connect')
-  else if (/overlayPositioned|computePosition/.test(connect))
-    errs.push('connect 已接定位引擎（overlayPositioned / computePosition），登记理由不再成立')
-  if (css == null) {
-    errs.push('找不到皮肤')
-  }
-  else {
-    const rule = contentRule(css, name)
-    const layer = new RegExp(`z-index:\\s*var\\((?:--xh-${name}-layer,\\s*var\\(--xh-layer-popover\\)|--xh-layer-popover)\\)`)
-    if (rule == null)
-      errs.push('皮肤里找不到 content 规则')
-    else if (!/position:\s*absolute/.test(rule))
-      errs.push('皮肤的 content 不是 position: absolute')
-    else if (!layer.test(rule))
-      errs.push(`皮肤的 content 层级没走 --xh-layer-popover（允许 var(--xh-${name}-layer, var(--xh-layer-popover)) 或 var(--xh-layer-popover)）`)
-  }
-  return errs
-}
-
-async function read(path) {
-  try {
-    return await readFile(path, 'utf8')
-  }
-  catch {
-    return null
-  }
-}
-
-/** 有 positioner 部件的组件即浮层族。 */
-async function discoverFamilies() {
-  const dirs = await readdir(HEADLESS, { withFileTypes: true })
-  const found = []
-  for (const d of dirs) {
-    if (!d.isDirectory())
-      continue
-    const anatomy = await read(`${HEADLESS}/${d.name}/${d.name}.anatomy.ts`)
-    if (anatomy?.includes('\'positioner\''))
-      found.push(d.name)
-  }
-  return found.sort()
 }
 
 /** 一个组件的三段各自成立与否。 */
@@ -132,7 +61,7 @@ for (const name of Object.keys(SKIN_POSITIONED)) {
 }
 
 for (const name of families) {
-  if (NOT_ENGINE_POSITIONED.has(name))
+  if (SIZE_NOT_ENGINE_POSITIONED.has(name))
     continue
   const w = await wiringOf(name)
   const any = w.machine || w.connect || w.skinDeclares || w.skinConsumes
@@ -181,4 +110,4 @@ if (problems.length) {
 }
 
 const exempt = Object.keys(SIZE_EXEMPT).length
-console.log(`[check-overlay-size] 通过：${wired.length} 个浮层的可用高度三段齐（另有 ${exempt} 个按名单不接、${NOT_ENGINE_POSITIONED.size} 个不吃引擎坐标、${Object.keys(SKIN_POSITIONED).length} 个由皮肤排布）`)
+console.log(`[check-overlay-size] 通过：${wired.length} 个浮层的可用高度三段齐（另有 ${exempt} 个按名单不接、${SIZE_NOT_ENGINE_POSITIONED.size} 个不吃引擎坐标、${Object.keys(SKIN_POSITIONED).length} 个由皮肤排布）`)

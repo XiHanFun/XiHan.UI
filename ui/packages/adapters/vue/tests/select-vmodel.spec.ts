@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import type { SelectValueChangeDetails } from '@xihan-ui/headless'
 import { mount } from '@vue/test-utils'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it } from 'vitest'
 import { defineComponent, h, nextTick } from 'vue'
 import {
   XhSelectContent,
@@ -17,14 +17,8 @@ import {
 const VALUES = ['apple', 'banana', 'cherry'] as const
 const TEXT: Record<string, string> = { apple: 'Apple', banana: 'Banana', cherry: 'Cherry' }
 
-beforeEach(() => {
-  // jsdom 无 matchMedia，桩掉供 RuntimeConfig.reducedMotion 使用
-  vi.stubGlobal('matchMedia', (q: string) => ({ matches: false, media: q, addEventListener: () => {}, removeEventListener: () => {} }))
-})
-
 afterEach(() => {
   document.body.innerHTML = ''
-  vi.unstubAllGlobals()
 })
 
 interface MountedSelect {

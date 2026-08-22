@@ -2,7 +2,7 @@
 import type { NavigationMenuNode, NavigationMenuNodeMeta } from '@xihan-ui/headless'
 import type { VNode } from 'vue'
 import { mount } from '@vue/test-utils'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it } from 'vitest'
 import { defineComponent, h } from 'vue'
 import {
   XhNavigationMenuContent,
@@ -35,14 +35,8 @@ function panelLinks(node: NavigationMenuNodeMeta): VNode[] {
   )
 }
 
-beforeEach(() => {
-  // jsdom 无 matchMedia，桩掉供 RuntimeConfig.reducedMotion 使用
-  vi.stubGlobal('matchMedia', (q: string) => ({ matches: false, media: q, addEventListener: () => {}, removeEventListener: () => {} }))
-})
-
 afterEach(() => {
   document.body.innerHTML = ''
-  vi.unstubAllGlobals()
 })
 
 /** 只交数据，结构由组件铺开 */

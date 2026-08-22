@@ -34,11 +34,11 @@ pnpm add @xihan-ui/tokens
 
 判据只有一条：用户把浏览器根字号从 16 调到 20，这个量该不该跟着变大。一段文字的读行宽该变（rem），一条 1px 描边和一个 32px 高的按钮不该变（px）。`em` 只给「跟着当前字号走」的字形档（`glyph.size-text`、`glyph.baseline-shift`）。断点 `breakpoint.*` 写 px：媒体查询里的 rem 按初始根字号算，两种写法等价，取可读的那种。
 
-现状与口径不一致、暂未改值的：
+按口径已对齐的三组值（根字号 16 时像素不变）：
 
-- `font-size.*` 七档全是 px（12 / 13 / 14 / 16 / 18 / 22 / 28）——字号按口径该是 rem。
-- `glyph.size-sm/md/lg/xl/2xl/3xl/4xl` 是 rem——字形尺寸按口径该是 px。
-- `control.action-size`（1.5rem）与 `control.indicator-size`（1rem）是 rem——单行控件里的动作钮与指示器是控件几何，按口径该是 px。
+- `font-size.*` 七档是 rem（0.75 / 0.8125 / 0.875 / 1 / 1.125 / 1.375 / 1.75），对应 12 / 13 / 14 / 16 / 18 / 22 / 28px。
+- `glyph.size-sm/md/lg` 是 px（16 / 20 / 24），与单行控件三档对齐；`glyph.size-xl/2xl/3xl/4xl` 是 px（32 / 40 / 56 / 72）。`glyph.size-text` 仍是 `1em`。
+- `control.action-size`（24px，compact 20px）与 `control.indicator-size`（16px，compact 14px）是 px：单行控件里的动作钮与指示器是控件几何。
 
 ## 单行控件本体的槽一律叫 control
 

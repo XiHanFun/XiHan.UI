@@ -159,6 +159,66 @@ function singleSideNavTabStop(): StepWithExpect {
   }
 }
 
+/** 原生的 getComputedStyle，伪造退场动画期间暂存，结束后放回。 */
+let nativeComputedStyle: Window['getComputedStyle'] | null = null
+
+/**
+ * 给收起态的定位层伪造一支退场动画：无头 DOM 不把样式表里的 animation 算进
+ * getComputedStyle，退场闸门那条路走不到；这里让它读到 xh-pop-out 并申领租约。
+ */
+function fakePopOutAnimation(on: boolean): StepWithExpect {
+  return {
+    kind: 'raw',
+    why: '无头 DOM 里 animationName 恒为空串，退场闸门申领不了租约；换枝时旧面板留位的事实只能靠伪造的退场动画验',
+    run: ({ doc }) => {
+      const win = doc.defaultView!
+      if (!on) {
+        if (nativeComputedStyle)
+          win.getComputedStyle = nativeComputedStyle
+        nativeComputedStyle = null
+        return
+      }
+      const native = win.getComputedStyle
+      nativeComputedStyle = native
+      win.getComputedStyle = (el: Element, pseudo?: string | null): CSSStyleDeclaration => {
+        const style = native.call(win, el, pseudo)
+        const exiting = el.getAttribute('data-scope') === 'side-nav'
+          && el.getAttribute('data-part') === 'positioner'
+          && el.getAttribute('data-state') === 'closed'
+        if (!exiting)
+          return style
+        return new Proxy(style, {
+          get(target, key) {
+            if (key === 'animationName')
+              return 'xh-pop-out'
+            if (key === 'display')
+              return 'block'
+            const value = Reflect.get(target, key)
+            return typeof value === 'function' ? value.bind(target) : value
+          },
+        })
+      }
+    },
+  }
+}
+
+/** 让第 index 个定位层的伪造退场动画结束：派一次自己的 animationend。 */
+function finishPopOutAnimation(index: number): StepWithExpect {
+  return {
+    kind: 'raw',
+    why: '退场动画的结束信号由平台派发，无头 DOM 里只能手工派 animationend',
+    run: async ({ doc, flush }) => {
+      const el = doc.querySelectorAll<HTMLElement>('[data-scope="side-nav"][data-part="positioner"]')[index]
+      if (!el)
+        throw new Error(`找不到第 ${index} 个 positioner`)
+      const event = new Event('animationend', { bubbles: true })
+      Object.defineProperty(event, 'animationName', { value: 'xh-pop-out' })
+      el.dispatchEvent(event)
+      await flush()
+    },
+  }
+}
+
 export const sideNavSuite: ConformanceSuite = {
   component: 'side-nav',
   anatomy: sideNavAnatomy,
@@ -636,6 +696,35 @@ export const sideNavSuite: ConformanceSuite = {
           kind: 'settle',
           until: { attr: { part: 'positioner[1]', name: 'hidden', value: '' } },
           expect: popoutOpen(1, false),
+        },
+      ],
+    },
+    {
+      name: '折叠态换枝：旧面板 data-state=closed 且留在原位直到退场播完，新面板同时 open',
+      spec: { apg: APG },
+      props: props({ collapsed: true }),
+      steps: [
+        fakePopOutAnimation(true),
+        { kind: 'click', part: 'branch-trigger[0]', expect: popoutOpen(0, true) },
+        {
+          kind: 'click',
+          part: 'branch-trigger[1]',
+          expect: {
+            parts: {
+              // 旧面板：已是收起态但还没藏，坐标仍是它自己名下那份
+              'positioner[0]': { 'data-state': 'closed', 'hidden': null, 'data-positioned': '' },
+              'branch-content[0]': { 'data-popout': '', 'data-state': 'closed', 'hidden': null },
+              'branch-trigger[0]': { 'aria-expanded': 'false', 'data-state': 'closed' },
+              ...popoutOpen(1, true).parts,
+            },
+          },
+        },
+        finishPopOutAnimation(0),
+        fakePopOutAnimation(false),
+        {
+          kind: 'settle',
+          until: { attr: { part: 'positioner[0]', name: 'hidden', value: '' } },
+          expect: { parts: { ...popoutOpen(0, false).parts, ...popoutOpen(1, true).parts } },
         },
       ],
     },

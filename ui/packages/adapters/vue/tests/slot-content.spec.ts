@@ -4,7 +4,7 @@ import type { NavigationMenuNode, TabsNode } from '@xihan-ui/headless'
 // 这里盯的是判错的那一档——`v-if` 为假时假分支留下的注释节点占着数组的位置，只看长度就会当成有内容。
 import type { IconRecord } from '@xihan-ui/kernel'
 import { mount } from '@vue/test-utils'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it } from 'vitest'
 import { createCommentVNode, createTextVNode, defineComponent, Fragment, h } from 'vue'
 import { XhIcon, XhNavigationMenuRoot, XhQrCode, XhQrCodeLogo, XhTabsRoot } from '../src'
 import { slotPaints } from '../src/runtime/slot-content'
@@ -28,14 +28,8 @@ const TABS: TabsNode[] = [
 /** 作者自己画的那一笔，与记录里的图元用不同的 d，好分清渲染的是哪一份 */
 const AUTHORED_PATH = 'M0 0h24'
 
-beforeEach(() => {
-  // jsdom 无 matchMedia，桩掉供 RuntimeConfig.reducedMotion 使用
-  vi.stubGlobal('matchMedia', (q: string) => ({ matches: false, media: q, addEventListener: () => {}, removeEventListener: () => {} }))
-})
-
 afterEach(() => {
   document.body.innerHTML = ''
-  vi.unstubAllGlobals()
 })
 
 /**

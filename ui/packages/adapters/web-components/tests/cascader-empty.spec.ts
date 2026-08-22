@@ -4,7 +4,7 @@
 // WC 是 Light DOM、解剖归作者，两端因此曾经分叉：同一份标记在 Vue 上有 empty、在 WC 上没有，
 // 逐帧比对整套红。这里钉住 WC 侧的补节点行为，以及「作者写了就不抢」这条边界。
 import type { CascaderNode } from '@xihan-ui/headless'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
 import { defineXhElements } from '../src/define'
 
 defineXhElements()
@@ -13,7 +13,6 @@ interface Updatable extends HTMLElement { updateComplete: Promise<unknown> }
 
 beforeEach(() => {
   document.body.innerHTML = ''
-  vi.stubGlobal('matchMedia', (q: string) => ({ matches: false, media: q, addEventListener: () => {}, removeEventListener: () => {} }))
 })
 
 async function settle(el: Updatable): Promise<void> {

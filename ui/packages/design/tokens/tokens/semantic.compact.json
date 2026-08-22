@@ -12,8 +12,8 @@
     "px-lg": { "$type": "dimension", "$value": "{space.3}" },
     "gap-md": { "$type": "dimension", "$value": "{space.1_5}" },
     "gap-lg": { "$type": "dimension", "$value": "{space.2}" },
-    "action-size": { "$type": "dimension", "$value": "1.25rem" },
-    "indicator-size": { "$type": "dimension", "$value": "0.875rem" }
+    "action-size": { "$type": "dimension", "$value": "20px" },
+    "indicator-size": { "$type": "dimension", "$value": "14px" }
   },
   "switch": {
     "track-h-sm": { "$type": "dimension", "$value": "16px" },

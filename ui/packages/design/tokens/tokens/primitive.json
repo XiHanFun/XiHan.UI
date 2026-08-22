@@ -249,31 +249,31 @@
   "font-size": {
     "xs": {
       "$type": "dimension",
-      "$value": "12px"
+      "$value": "0.75rem"
     },
     "sm": {
       "$type": "dimension",
-      "$value": "13px"
+      "$value": "0.8125rem"
     },
     "md": {
       "$type": "dimension",
-      "$value": "14px"
+      "$value": "0.875rem"
     },
     "lg": {
       "$type": "dimension",
-      "$value": "16px"
+      "$value": "1rem"
     },
     "xl": {
       "$type": "dimension",
-      "$value": "18px"
+      "$value": "1.125rem"
     },
     "2xl": {
       "$type": "dimension",
-      "$value": "22px"
+      "$value": "1.375rem"
     },
     "3xl": {
       "$type": "dimension",
-      "$value": "28px"
+      "$value": "1.75rem"
     }
   },
   "font-weight": {

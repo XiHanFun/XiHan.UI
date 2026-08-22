@@ -7,10 +7,10 @@ import { normalizeProps } from '@xihan-ui/kernel'
 import { createService } from '@xihan-ui/machine'
 import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
 import { describe, expect, it } from 'vitest'
-import { connectSelect, selectMachine } from '../src/select'
 import { connectHoverCard, hoverCardMachine } from '../src/hover-card'
-import { connectTour, tourMachine } from '../src/tour'
+import { connectSelect, selectMachine } from '../src/select'
 import { connectSideNav, sideNavMachine } from '../src/side-nav'
+import { connectTour, tourMachine } from '../src/tour'
 
 function select(props: Partial<SelectSchema['props']>) {
   const runtime = createVanillaRuntime()
@@ -70,7 +70,7 @@ describe('side-nav 弹出面板的定位层', () => {
   it('坐标落在定位层上，面板自己不再写 fixed', () => {
     const { service, api } = sideNav({ collection, collapsed: true })
     service.send({ type: 'POPOUT.OPEN', value: 'docs', focus: 'none' })
-    service.context.set('popoutPosition', { x: 56, y: 12, placement: 'right-start' })
+    service.context.set('popoutPlacements', { docs: { x: 56, y: 12, placement: 'right-start' } })
 
     const positioner = api().getPopoutPositionerProps({ value: 'docs' }) as Record<string, unknown>
     const style = positioner.style as Record<string, string>
@@ -88,7 +88,7 @@ describe('side-nav 弹出面板的定位层', () => {
   it('可用高度写成私有槽，交给面板限高', () => {
     const { service, api } = sideNav({ collection, collapsed: true })
     service.send({ type: 'POPOUT.OPEN', value: 'docs', focus: 'none' })
-    service.context.set('popoutPosition', { x: 56, y: 12, placement: 'right-start', availableHeight: 320 })
+    service.context.set('popoutPlacements', { docs: { x: 56, y: 12, placement: 'right-start', availableHeight: 320 } })
     const style = (api().getPopoutPositionerProps({ value: 'docs' }) as Record<string, unknown>).style as Record<string, string>
     expect(style['--xh-_side-nav-available-h']).toBe('320px')
   })
@@ -96,7 +96,7 @@ describe('side-nav 弹出面板的定位层', () => {
   it('贴边时引擎回报 0，当作没算出来——写进 min() 会把面板压成零高', () => {
     const { service, api } = sideNav({ collection, collapsed: true })
     service.send({ type: 'POPOUT.OPEN', value: 'docs', focus: 'none' })
-    service.context.set('popoutPosition', { x: 56, y: 12, placement: 'right-start', availableHeight: 0 })
+    service.context.set('popoutPlacements', { docs: { x: 56, y: 12, placement: 'right-start', availableHeight: 0 } })
     const style = (api().getPopoutPositionerProps({ value: 'docs' }) as Record<string, unknown>).style as Record<string, string>
     expect(style['--xh-_side-nav-available-h']).toBe('')
   })
@@ -104,7 +104,7 @@ describe('side-nav 弹出面板的定位层', () => {
   it('小到放不下几个条目也退回皮肤那档，不给一条缝', () => {
     const { service, api } = sideNav({ collection, collapsed: true })
     service.send({ type: 'POPOUT.OPEN', value: 'docs', focus: 'none' })
-    service.context.set('popoutPosition', { x: 56, y: 12, placement: 'right-start', availableHeight: 40 })
+    service.context.set('popoutPlacements', { docs: { x: 56, y: 12, placement: 'right-start', availableHeight: 40 } })
     const style = (api().getPopoutPositionerProps({ value: 'docs' }) as Record<string, unknown>).style as Record<string, string>
     expect(style['--xh-_side-nav-available-h']).toBe('')
   })
@@ -190,23 +190,28 @@ describe('side-nav 换枝不闪旧位置', () => {
     { value: 'blog', label: 'Blog', children: [{ value: 'news', label: 'News' }] },
   ]
 
-  it('换枝时旧坐标作废，新面板藏到拿到新坐标为止', () => {
+  it('换枝时新面板藏到拿到新坐标为止，旧面板的坐标留着播退场', () => {
     const { service, api } = sideNav({ collection, collapsed: true })
     service.send({ type: 'POPOUT.OPEN', value: 'docs', focus: 'none' })
-    service.context.set('popoutPosition', { x: 56, y: 12, placement: 'right-start' })
+    service.context.set('popoutPlacements', { docs: { x: 56, y: 12, placement: 'right-start' } })
 
     service.send({ type: 'POPOUT.OPEN', value: 'blog', focus: 'none' })
     const positioner = api().getPopoutPositionerProps({ value: 'blog' }) as Record<string, unknown>
     // 坐标已作废：落位信号撤掉，皮肤基线据此藏着——否则它会在 docs 那一枝的位置画一帧
     expect(positioner['data-positioned']).toBeUndefined()
-    // 收起那一枝即时藏，不存在原地退场
-    expect((api().getPopoutPositionerProps({ value: 'docs' }) as Record<string, unknown>).hidden).toBe(true)
+    // 旧枝名下的账不动：它收起中，靠这份坐标留在原地播完退场
+    const previous = api().getPopoutPositionerProps({ value: 'docs' }) as Record<string, unknown>
+    expect(previous['data-state']).toBe('closed')
+    expect(previous['data-positioned']).toBe('')
+    expect((previous.style as Record<string, string>).left).toBe('56px')
+    // 连接层给的 hidden 仍跟着展开态走，押后到退场结束是适配器闸门的事
+    expect(previous.hidden).toBe(true)
   })
 
   it('重开同一枝不作废——坐标还是它自己的', () => {
     const { service, api } = sideNav({ collection, collapsed: true })
     service.send({ type: 'POPOUT.OPEN', value: 'docs', focus: 'none' })
-    service.context.set('popoutPosition', { x: 56, y: 12, placement: 'right-start' })
+    service.context.set('popoutPlacements', { docs: { x: 56, y: 12, placement: 'right-start' } })
     service.send({ type: 'POPOUT.OPEN', value: 'docs', focus: 'none' })
     const positioner = api().getPopoutPositionerProps({ value: 'docs' }) as Record<string, unknown>
     expect(positioner['data-positioned']).toBe('')
