@@ -3,7 +3,9 @@
   "layers": {
     "engine/kernel": {
       "level": 1,
-      "canDependOn": []
+      "canDependOn": [
+        "engine/motion"
+      ]
     },
     "engine/machine": {
       "level": 1,
@@ -57,7 +59,8 @@
       "level": 3,
       "canDependOn": [
         "engine/kernel",
-        "engine/behavior"
+        "engine/behavior",
+        "engine/motion"
       ]
     },
     "adapters/vue": {

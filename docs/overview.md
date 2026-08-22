@@ -21,19 +21,23 @@ XiHan.UI 是一个 pnpm + turbo 的 monorepo。它的组织方式只服务于一
 
 | 层 | 包 | 可依赖 |
 | --- | --- | --- |
-| 1 | `kernel` | —（零运行时依赖） |
-| 1 | `machine` | `kernel`（零运行时依赖） |
+| 1 | `kernel` | — |
+| 1 | `machine` | `kernel` |
+| 1 | `motion` | — |
 | 1 | `tokens` | — |
 | 1 | `icons` | — |
-| 2 | `behavior` | `kernel` `machine` |
+| 2 | `behavior` | `kernel` `machine` `motion` |
 | 2 | `position` | `kernel` |
 | 2 | `code-highlight` | `kernel` |
 | 2 | `chat-stream` | `kernel` |
 | 2 | `markdown` | `kernel` |
-| 3 | `headless` | `kernel` `machine` `behavior` `tokens` |
+| 2 | `sound` | `kernel` |
+| 2 | `animations` | `kernel` `motion` |
+| 3 | `headless` | `kernel` `machine` `behavior` `tokens` `motion` |
 | 3 | `styles` | —（纯 CSS，不得依赖任何 JS 包） |
 | 3 | `backgrounds` | `kernel` `behavior` |
-| 4 | `vue` / `web-components` | `kernel` `machine` `behavior` `headless` `position` `code-highlight` `tokens` `backgrounds` |
+| 4 | `vue` | `kernel` `machine` `behavior` `headless` `position` `code-highlight` `tokens` `backgrounds` `sound` `motion` |
+| 4 | `web-components` | `kernel` `machine` `behavior` `headless` `position` `code-highlight` `tokens` `backgrounds` `motion` |
 
 除分层外还有三条硬规则，同样由门禁执行：
 
@@ -87,7 +91,7 @@ service.send({ type: 'TRIGGER.CLICK' })            （machine）
 
 | 包 | 职责 |
 | --- | --- |
-| `@xihan-ui/headless` | 104 个组件的解剖 + 状态机 + `connect`，无样式、无框架 |
+| `@xihan-ui/headless` | 119 个组件的解剖 + 状态机 + `connect`，无样式、无框架 |
 | `@xihan-ui/vue` | Vue 3 适配器 |
 | `@xihan-ui/web-components` | Web Components 适配器，自研响应式基类 |
 
@@ -115,24 +119,23 @@ service.send({ type: 'TRIGGER.CLICK' })            （machine）
 ## 目录结构
 
 ```
-ui/
-├── packages/            # 对外发布的库包，按角色分四组
-│   ├── adapters/        # vue · web-components——你选一个
-│   ├── design/          # tokens · styles · icons——外观
-│   ├── features/        # markdown · chat-stream · backgrounds · sound · animations——按需自选
-│   └── engine/          # kernel · machine · motion · behavior · position · code-highlight · headless
-├── tooling/             # 内部构建与质量工具
-│   ├── build/           # 打包配置与 exports 回写
-│   ├── eslint-config/   # lint 规则 + 分层拓扑事实源
-│   ├── stylelint-config/
-│   ├── testing/         # 一致性 / 无障碍 / 定位三套判据的运行时
-│   └── scripts/         # 门禁脚本
-└── apps/
-    ├── playground-vue   # Vue 适配器演示
-    └── playground-wc    # Web Components 适配器演示
+XiHan.UI/
+├── ui/                      # 组件库工作区（pnpm workspace）
+│   ├── packages/            # 对外发布的库包，按角色分四组
+│   │   ├── adapters/        # vue · web-components——你选一个
+│   │   ├── design/          # tokens · styles · icons——外观
+│   │   ├── features/        # markdown · chat-stream · backgrounds · sound · animations——按需自选
+│   │   └── engine/          # kernel · machine · motion · behavior · position · code-highlight · headless
+│   └── tooling/             # 内部构建与质量工具
+│       ├── build/           # 打包配置与 exports 回写
+│       ├── eslint-config/   # lint 规则 + 分层拓扑事实源
+│       ├── stylelint-config/
+│       ├── testing/         # 一致性 / 无障碍 / 定位三套判据的运行时
+│       └── scripts/         # 门禁脚本
+└── docs/                    # 文档站（VitePress），按 link: 指回上面的库包
 ```
 
-两个 playground 覆盖同一批组件，是对照两套适配器行为的主要手段。
+文档站每个组件页的示例渲染的是真实组件，且 Vue 与自定义元素两套写法并排，是对照两套适配器行为的主要手段；示例源文件在 `docs/.vitepress/demos/<组件>/` 下。
 
 ## 技术选型
 

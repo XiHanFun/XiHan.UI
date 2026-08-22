@@ -54,6 +54,8 @@ jobs:
       - name: Size limit
         run: pnpm size
       # cjs-resolves-to-esm 是 ESM-only 的刻意选择，node10 / node16-from-ESM / bundler 三列均绿
+      - name: 子路径导出与 dist 对得上
+        run: pnpm gate:exports
       - name: Publish artifacts (publint + attw)
         run: pnpm gate:publish
       - name: Commit message

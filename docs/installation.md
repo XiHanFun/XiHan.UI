@@ -26,15 +26,15 @@ pnpm add @xihan-ui/backgrounds
 
 `@xihan-ui/styles` 不是必需的：组件不依赖默认皮肤，只拿令牌自己写样式是完全可行的一条路，见下文「样式的三种接法」。
 
-适配器的引擎侧依赖（`kernel` / `machine` / `behavior` / `headless` / `position` / `code-highlight`）写在 `dependencies` 里，装适配器就一并带进来，不用单独列。`@xihan-ui/vue` 的 peer 依赖是 `vue@^3.5.0`，由你的项目提供。
+适配器的引擎侧依赖（`kernel` / `machine` / `motion` / `behavior` / `headless` / `position` / `code-highlight`）写在 `dependencies` 里，装适配器就一并带进来，不用单独列。`@xihan-ui/vue` 的 peer 依赖是 `vue@^3.5.0`，由你的项目提供。
 
 除了从 npm 装，还有两条本地路径：
 
-1. **克隆仓库直接开发**——playground 里 104 个组件都能跑；
+1. **克隆仓库直接开发**——构建库包后把文档站跑起来，119 个组件的示例都是真实组件；
 2. **本地构建后链接进你的项目**——想跟着仓库最新改动走的话走这条。
 
 ::: warning
-`@xihan-ui/icons` 只收录自研的一等图标集，当前 45 枚，覆盖的是组件与常见界面用得上的那批，不追求成套。
+`@xihan-ui/icons` 只收录自研的一等图标集，当前 184 枚，覆盖的是组件与常见界面用得上的那批，不追求成套。
 要整套图标请自行准备，或用 `XhIcon` 接任何图标源——它收的是 `IconRecord` 纯数据，任何来源都能转过来。
 :::
 
@@ -53,12 +53,18 @@ pnpm add @xihan-ui/backgrounds
 git clone https://github.com/XiHanFun/XiHan.UI.git
 cd XiHan.UI/ui
 pnpm install --frozen-lockfile
+pnpm build
+```
+
+看组件在浏览器里跑起来，走文档站：它按 `link:` 指向本仓的库包，示例渲染的是真实组件，Vue 与自定义元素两套写法并排，所以要先 `pnpm build`。
+
+```bash
+cd ../docs
+pnpm install
 pnpm dev
 ```
 
-`pnpm dev` 会同时起两个 playground：`apps/playground-vue`（Vue 适配器）与 `apps/playground-wc`（自定义元素）。两者覆盖同一批组件，可以并排对照。
-
-常用命令：
+回到 `ui/` 的常用命令：
 
 ```bash
 pnpm build        # 全部库包出 dist
@@ -67,7 +73,7 @@ pnpm lint         # oxlint + eslint + stylelint
 pnpm test         # 单元测试与跨适配器一致性测试（jsdom）
 pnpm test:browser # 真实 Chromium 里的无障碍扫描与浮层定位契约
 pnpm boundaries   # 分层依赖门禁
-pnpm gate         # 二十一项结构门禁
+pnpm gate         # 56 项结构门禁
 pnpm size         # 产物体积棘轮
 ```
 
@@ -97,7 +103,7 @@ cd XiHan.UI/ui && pnpm build
 }
 ```
 
-`@xihan-ui/vue` 会顺着 `dependencies` 把 `kernel` / `machine` / `behavior` / `headless` / `position` / `code-highlight` 一并带进来，这几个不用单独链接。`vue` 本身是它的 peer 依赖，由你的项目提供。
+`@xihan-ui/vue` 会顺着 `dependencies` 把 `kernel` / `machine` / `motion` / `behavior` / `headless` / `position` / `code-highlight` 一并带进来，这几个不用单独链接。`vue` 本身是它的 peer 依赖，由你的项目提供。
 
 ## 接入 Vue 项目
 
@@ -182,7 +188,7 @@ import '@xihan-ui/tokens/tokens.css'
    自己另起一套排序（按字母、按目录读取序）今天可能看不出差别，将来加进一条跨组件规则就会与全量引入的人渲染不同。
    要按需，就把 `index.css` 的 `@import` 清单过滤一遍，别自己排。
 
-全量是 51 kB gzip（含令牌与 109 份皮肤）。没有明确的体积压力就用第一种。
+全量是 125 份皮肤加令牌，压缩后约 66 kB gzip。没有明确的体积压力就用第一种。
 :::
 
 ### 开发模式下查漏引

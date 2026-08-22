@@ -15,7 +15,7 @@
 <p>
   <img alt="Vue" src="https://img.shields.io/badge/Vue-3.5-4FC08D?style=flat-square&logo=vuedotjs&logoColor=white" />
   <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-6.0-3178C6?style=flat-square&logo=typescript&logoColor=white" />
-  <img alt="Components" src="https://img.shields.io/badge/Components-104-1f6feb?style=flat-square" />
+  <img alt="Components" src="https://img.shields.io/badge/Components-119-1f6feb?style=flat-square" />
   <a href="https://www.npmjs.com/package/@xihan-ui/vue"><img alt="npm" src="https://img.shields.io/npm/v/@xihan-ui/vue?style=flat-square&logo=npm&logoColor=white" /></a>
   <a href="./LICENSE"><img alt="License" src="https://img.shields.io/github/license/XiHanFun/XiHan.UI?style=flat-square&color=green" /></a>
 </p>
@@ -28,7 +28,7 @@
 
 </div>
 
-> **实验性项目**：104 个组件的无头内核、双适配器与默认皮肤均已实现，npm 上是 `1.0.0-alpha.2` **预发布版**，不承诺语义化版本、接口仍会变，请勿在生产环境依赖。
+> **实验性项目**：119 个组件的无头内核、双适配器与默认皮肤均已实现，npm 上是 `1.0.0-alpha.2` **预发布版**，不承诺语义化版本、接口仍会变，请勿在生产环境依赖。
 
 ## 简介
 
@@ -37,7 +37,7 @@ XiHan.UI 以框架无关的 Headless Core 为核心：一个组件的状态、�
 ## 特性
 
 - **框架无关** - 状态与无障碍逻辑住在无头内核，Vue 与 Web Components 两端行为一致
-- **104 个组件** - 覆盖通用、数据录入、数据展示、导航、反馈与浮层、AI 对话、布局七组
+- **119 个组件** - 覆盖通用、数据录入、数据展示、导航、反馈与浮层、AI 对话、布局七组
 - **近乎零依赖** - 运行时第三方依赖只有 `@internationalized/date`；浮层定位、虚拟滚动、代码着色、流式 Markdown 均为自研
 - **构建期样式** - 令牌从 DTCG 源产出 CSS 变量，皮肤按 `@layer` 分层，运行时不做 CSS-in-JS
 - **主题可切** - 明暗、品牌、密度、对比度、书写方向五个维度独立切换
@@ -116,7 +116,6 @@ defineXhElements()
 ```bash
 cd ui
 pnpm install --frozen-lockfile
-pnpm dev          # 启动 playground（Vue 与 Web Components 各一个）
 pnpm test         # 单元测试与跨适配器一致性测试
 pnpm test:browser # 真实 Chromium 里的无障碍扫描与浮层定位契约
 pnpm build
@@ -124,13 +123,21 @@ pnpm build
 
 首次跑浏览器态测试前需 `pnpm exec playwright install chromium`。
 
-改动需通过十二道门禁，CI 与本地同一套命令：`pnpm lint`、`pnpm typecheck`、`pnpm boundaries`、`pnpm gate`、`pnpm test`、`pnpm build`、`pnpm size` 等。包一览、分层拓扑与命名约定见 [ui/README_cn.md](./ui/README_cn.md)。
+要在本地看组件跑起来，先 `cd ui && pnpm build`，再起文档站——每个组件页的示例引的都是真实组件，Vue 与 Web Components 两套写法并排：
+
+```bash
+cd docs
+pnpm install
+pnpm dev
+```
+
+改动需通过 CI 全套门禁，CI 与本地同一套命令：`pnpm lint`、`pnpm typecheck`、`pnpm boundaries`、`pnpm gate`（一条命令跑 56 项结构检查）、`pnpm test`、`pnpm build`、`pnpm size` 等。包一览、分层拓扑与命名约定见 [ui/README_cn.md](./ui/README_cn.md)。
 
 ## 现状与边界
 
-已经能用的：104 个组件的内核与双适配器、默认皮肤、设计令牌与主题运行时、跨适配器一致性套件、真实 Chromium 里的无障碍扫描与浮层定位契约、文档站。
+已经能用的：119 个组件的内核与双适配器、默认皮肤、设计令牌与主题运行时、跨适配器一致性套件、真实 Chromium 里的无障碍扫描与浮层定位契约、文档站。
 
-还没做的：组件文案国际化（内置英文，可经 `translations` 逐条覆盖）、令牌浏览器、AI 组件族的 MarkdownStream / Reasoning 与 ToolCall 折叠 / 工具审批、企业业务组件。
+还没做的：内建语言包（组件文案只内建英文，中文等要自备 `translations`，全局注入口已就绪）、令牌浏览器、AI 组件族的 MarkdownStream / Reasoning 与 ToolCall 折叠 / 工具审批、企业业务组件。
 
 ## 相关项目
 

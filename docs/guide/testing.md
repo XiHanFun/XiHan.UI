@@ -79,7 +79,7 @@ interface DomSnapshot {
 
 ## 结构门禁
 
-`pnpm gate` 跑二十一项结构检查，它们查的是**判据查不到的东西**——静默失效、悬空承诺、没被命名的决策：
+`pnpm gate` 跑 56 项结构检查，它们查的是**判据查不到的东西**——静默失效、悬空承诺、没被命名的决策：
 
 | 门禁 | 拦什么 |
 | --- | --- |
@@ -97,7 +97,7 @@ interface DomSnapshot {
 | `check-package-roles` | 包所在的角色组与它 `package.json` 里的依赖声明对不上 |
 | `check-public-surface` | 公开面基线里有而当前没有的名字——被删了或改名了 |
 
-另有分层依赖检查与五项单独的门禁：
+另有分层依赖检查与八项单独的门禁：
 
 ```bash
 pnpm boundaries   # 分层依赖 + 禁循环 + styles 不依赖 JS + 库包不引第三方
@@ -105,6 +105,9 @@ pnpm gate:tokens  # 重跑令牌生成后比对，改源忘了跑生成会被拦
 pnpm gate:styled  # 重新生成皮肤的无层版产物后比对
 pnpm gate:cem     # 重新生成自定义元素清单后比对
 pnpm gate:docs    # 重新生成组件文档页后比对
+pnpm gate:exports # 重新生成子路径导出后比对 package.json
+pnpm gate:surface # 公开面基线：基线里有而当前没有的名字判失败
+pnpm gate:demos   # 真实 Chromium 里跑文档站的自定义元素示例
 pnpm gate:publish # 逐包跑 publint 与 attw，校验 exports 条件与类型解析
 ```
 
@@ -116,7 +119,7 @@ pnpm gate:publish # 逐包跑 publint 与 attw，校验 exports 条件与类型�
 pnpm size
 ```
 
-18 条产物各有上限（gzip 后），涨过线就红。预算一律按实测留一成余量。几个参考值：`kernel` 3.3 kB、`machine` 5.5 kB、`position` 2.6 kB、`tokens/tokens.css` 3 kB、`headless` 169 kB、`web-components/define` 184 kB。
+26 条产物各有上限（gzip 后），涨过线就红。预算一律按实测留一成余量。几个参考值：`kernel` 3.9 kB、`machine` 5.5 kB、`position` 3 kB、`tokens/tokens.css` 3.6 kB、`headless` 215 kB、`web-components/define` 242 kB。
 
 ## 相关
 
