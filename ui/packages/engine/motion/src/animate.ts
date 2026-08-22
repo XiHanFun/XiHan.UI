@@ -1,6 +1,7 @@
 // Web Animations 的薄封装：统一收口减弱动效降级、宿主缺失降级与结束时的结算方式。
 
 import type { EasingName } from './easing'
+import { durations } from './durations'
 import { easing } from './easing'
 import { resolveMotionPreference } from './reduced-motion'
 
@@ -8,7 +9,7 @@ import { resolveMotionPreference } from './reduced-motion'
 export type AnimationStatus = 'finished' | 'cancelled'
 
 export interface AnimateOptions {
-  /** 时长毫秒，缺省 200。 */
+  /** 时长毫秒，缺省 durations.normal。 */
   duration?: number
   /** 缓动名或任意 CSS 缓动串，缺省 standard。 */
   easing?: EasingName | (string & {})
@@ -89,7 +90,7 @@ export function animate(
   }
 
   const animation = element.animate(keyframes, {
-    duration: options.duration ?? 200,
+    duration: options.duration ?? durations.normal,
     easing: resolveEasingString(options.easing),
     delay: options.delay ?? 0,
     iterations: options.iterations ?? 1,

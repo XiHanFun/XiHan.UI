@@ -68,7 +68,7 @@
     --xh-_hover-card-available-h: 100vh;
 
     position: fixed;
-    z-index: var(--xh-layer-popover);
+    z-index: var(--xh-hover-card-layer, var(--xh-layer-popover));
     /* 空壳不吃指针：trigger 与 content 之间那段间隙要能点得穿，
        指针穿行的判定全靠 content 自己的进出事件 */
     pointer-events: none;

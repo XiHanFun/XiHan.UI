@@ -1,6 +1,7 @@
 import type { SideNavNode, SideNavSchema } from './side-nav.types'
 import { createDismissLayer, createFocusScope, navigateItems, trackHoverIntent } from '@xihan-ui/behavior'
 import { setup } from '@xihan-ui/machine'
+import { OVERLAY_OFFSET } from '../shared/overlay'
 import { indexTree } from '../tree'
 
 const { createMachine } = setup<SideNavSchema>()
@@ -98,13 +99,13 @@ export const sideNavMachine = createMachine({
       on: {
         'VALUE.SET': { guard: 'canChange', actions: ['setValue'] },
         // 面板里选中叶子：落值并收面板，焦点归还触发按钮
-        'LINK.SELECT': { guard: 'canChange', target: 'idle', actions: ['selectLink', 'setPopoutReturnFocus', 'clearPopout'] },
+        'LINK.SELECT': { guard: 'canChange', target: 'idle', actions: ['selectLink', 'setPopoutReturnFocus'] },
         'EXPANDED.SET': { guard: 'canChange', actions: ['setExpanded'] },
         'NODE.FOCUS': { actions: ['setFocusedValue'] },
         'FOCUS.CLEAR': { actions: ['clearFocusedValue'] },
         // 同值重开只更新落焦端；换分支由连接层先发 CLOSE 再发 OPEN，效应随状态重挂换锚
         'POPOUT.OPEN': { guard: 'canPopout', actions: ['setPopout'] },
-        'POPOUT.CLOSE': { target: 'idle', actions: ['setPopoutReturnFocus', 'clearPopout'] },
+        'POPOUT.CLOSE': { target: 'idle', actions: ['setPopoutReturnFocus'] },
       },
     },
   },
@@ -168,20 +169,16 @@ export const sideNavMachine = createMachine({
           context.set('focusedValue', e.value)
       },
       clearFocusedValue: ({ context }) => context.set('focusedValue', null),
-      setPopout: ({ context, event }) => {
+      setPopout: ({ context, event, state }) => {
         const e = event.current()
         if (e.type !== 'POPOUT.OPEN')
           return
-        // 换枝时旧坐标当场作废：留着它新面板会在旧分支的位置画一帧再跳走
-        if (context.get('popoutValue') !== e.value)
+        // 展开时旧坐标当场作废：留着它面板会先在旧位置画一帧再跳走；
+        // 已开着的同值重开只更新落焦端，坐标照旧
+        if (state.get() !== 'popout' || context.get('popoutValue') !== e.value)
           context.set('popoutPosition', null)
         context.set('popoutValue', e.value)
         context.set('popoutIntent', e.focus ?? 'none')
-      },
-      // popoutValue 不在这儿清：效应拆除（焦点归还、层出栈）还要靠它找到触发按钮与面板，
-      // 显示层一律经状态位取值，idle 下残留的值不外露
-      clearPopout: ({ context }) => {
-        context.set('popoutPosition', null)
       },
       // Escape、面板内选中与键盘收回归还焦点；悬停离开与层外交互不归还
       setPopoutReturnFocus: ({ context, event }) => {
@@ -216,6 +213,7 @@ export const sideNavMachine = createMachine({
             floating,
             {
               placement: prop('dir') === 'rtl' ? 'left-start' : 'right-start',
+              offset: OVERLAY_OFFSET,
               strategy: 'fixed',
               dir: prop('dir'),
               // 落定那一侧的可用空间，connect 转成内联自定义属性给皮肤限高

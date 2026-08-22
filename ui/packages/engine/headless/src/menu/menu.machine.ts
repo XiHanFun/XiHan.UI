@@ -1,15 +1,15 @@
-import { closeReasonOf } from '../shared/close-reason'
 import type { Placement, PositionResult } from '@xihan-ui/kernel'
 import type { MenuFocusIntent, MenuSchema } from './menu.types'
 import { createDismissLayer, createFocusScope, itemValue, navigateItems, queryItems, trackHoverIntent } from '@xihan-ui/behavior'
 import { setup } from '@xihan-ui/machine'
-import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE } from '../shared/overlay'
+import { closeReasonOf } from '../shared/close-reason'
+import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { menuItemQuery } from './menu.anatomy'
 
 const { createMachine } = setup<MenuSchema>()
 
 /** 未指定 placement 时的默认落位。 */
-export const MENU_DEFAULT_PLACEMENT: Placement = 'bottom-start'
+export const MENU_DEFAULT_PLACEMENT = OVERLAY_PLACEMENT_LIST
 
 /** 子菜单贴着触发条目的侧向展开，其余菜单从触发器下方展开。 */
 export function menuFallbackPlacement(submenu: boolean | undefined, dir: string | undefined): Placement {
@@ -201,7 +201,7 @@ export const menuMachine = createMachine({
             floating,
             {
               placement: prop('placement') ?? menuFallbackPlacement(prop('submenu'), prop('dir')),
-              offset: prop('offset'),
+              offset: prop('offset') ?? OVERLAY_OFFSET,
               // positioner 渲染成 fixed，坐标系必须跟着走视口系
               strategy: 'fixed',
               // start / end 是逻辑对齐，RTL 下行内轴要翻过来

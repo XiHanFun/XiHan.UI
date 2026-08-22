@@ -1,14 +1,15 @@
-import type { Placement, PositionResult } from '@xihan-ui/kernel'
+import type { PositionResult } from '@xihan-ui/kernel'
 import type { SelectFocusIntent, SelectSchema } from './select.types'
 import { createDismissLayer, createFocusScope, createTypeahead, isItemDisabled, itemValue, navigateItems, queryItems } from '@xihan-ui/behavior'
 import { resetDeclaredValue, setup } from '@xihan-ui/machine'
 import { closeReasonOf } from '../shared/close-reason'
+import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { selectItemQuery, selectItemText } from './select.anatomy'
 
 const { createMachine } = setup<SelectSchema>()
 
 /** 未指定 placement 时的落位；定位引擎与 connect 共用这一个缺省。 */
-export const SELECT_DEFAULT_PLACEMENT: Placement = 'bottom-start'
+export const SELECT_DEFAULT_PLACEMENT = OVERLAY_PLACEMENT_LIST
 
 // 对外允许裸串与 null 两种单选简写，内部一律按数组处理；undefined 要原样透传给 cell 判非受控
 function toValues(input: string | string[] | null | undefined): string[] | undefined {
@@ -314,7 +315,7 @@ export const selectMachine = createMachine({
             floating,
             {
               placement: prop('placement') ?? SELECT_DEFAULT_PLACEMENT,
-              offset: prop('offset'),
+              offset: prop('offset') ?? OVERLAY_OFFSET,
               // positioner 渲染成 fixed，坐标系必须跟着走视口系
               strategy: 'fixed',
               // start / end 是逻辑对齐，RTL 下行内轴要翻过来

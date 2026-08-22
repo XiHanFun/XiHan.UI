@@ -1,14 +1,15 @@
-import type { Placement, PositionResult } from '@xihan-ui/kernel'
+import type { PositionResult } from '@xihan-ui/kernel'
 import type { MentionSchema, MentionTrigger } from './mention.types'
 import { createDismissLayer, itemValue, navigateItems, queryItems } from '@xihan-ui/behavior'
 import { setup } from '@xihan-ui/machine'
+import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { mentionItemQuery } from './mention.anatomy'
 import { findMentionTrigger, insertMention, normalizeMentionPrefixes } from './mention.trigger'
 
 const { createMachine } = setup<MentionSchema>()
 
 /** 未指定 placement 时的落位；定位引擎与 connect 共用这一个缺省。 */
-export const MENTION_DEFAULT_PLACEMENT: Placement = 'bottom-start'
+export const MENTION_DEFAULT_PLACEMENT = OVERLAY_PLACEMENT_LIST
 
 /** 触发按字段比。引用比会让每次重算都算成变化，onQueryChange 因此空转。 */
 function sameTrigger(a: MentionTrigger | null, b: MentionTrigger | null | undefined): boolean {
@@ -266,7 +267,7 @@ export const mentionMachine = createMachine({
             floating,
             {
               placement: prop('placement') ?? MENTION_DEFAULT_PLACEMENT,
-              offset: prop('offset'),
+              offset: prop('offset') ?? OVERLAY_OFFSET,
               // positioner 渲染成 fixed，坐标系必须跟着走视口系
               strategy: 'fixed',
               // start / end 是逻辑对齐，RTL 下行内轴要翻过来

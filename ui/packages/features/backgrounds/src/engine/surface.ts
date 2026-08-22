@@ -19,8 +19,8 @@ import type {
   UniformMap,
 } from '../types'
 import type { GlProgram } from './program'
-import { onReducedMotionChange, prefersReducedMotion } from '@xihan-ui/behavior'
 import { DIAGNOSTIC_CODES, isSSR, reportDiagnostic } from '@xihan-ui/kernel'
+import { onMotionPreferenceChange, resolveMotionPreference } from '@xihan-ui/motion'
 import { resolveEffect } from '../effects/registry'
 import { num, resolveParams } from '../params'
 import { createRng, lerpArrays, resample, scatterShell } from '../sources/cloud'
@@ -200,7 +200,7 @@ export function createBackgroundSurface(
   let pointerTarget = 0
 
   const respectReducedMotion = options.respectReducedMotion !== false
-  let reduced = respectReducedMotion && prefersReducedMotion()
+  let reduced = respectReducedMotion && resolveMotionPreference() === 'reduce'
 
   function buildPrograms(): void {
     backgroundProgram?.dispose()
@@ -462,8 +462,8 @@ export function createBackgroundSurface(
   }
 
   const stopReducedMotion = respectReducedMotion
-    ? onReducedMotionChange((value) => {
-        reduced = value
+    ? onMotionPreferenceChange((value) => {
+        reduced = value === 'reduce'
         dirty = true
       })
     : (): void => {}

@@ -6,6 +6,7 @@
 // provideXhConfig 对齐（那边是组件树，这边是 DOM 树）。
 import type { XhConfigBase, XhTranslationOverrides } from '@xihan-ui/headless'
 import { mergeXhConfig as mergeBase, withXhConfigBase } from '@xihan-ui/headless'
+import { setMotionOverride } from '@xihan-ui/motion'
 
 export type { XhTranslationOverrides }
 
@@ -23,7 +24,14 @@ export function notifyXhConfigChange(): void {
 /** 覆写全局配置。整份替换，不做深合并——想改一处就把整份拿去改。 */
 export function setXhConfig(next: XhConfig): void {
   current = next
+  applyMotionOverride(next)
   notifyXhConfigChange()
+}
+
+/** 配置里写了 motion 才调 setMotionOverride；缺席不碰——别的地方设的 override 不在这里清。 */
+export function applyMotionOverride(config: XhConfig): void {
+  if (config.motion !== undefined)
+    setMotionOverride(config.motion)
 }
 
 export function getXhConfig(): Readonly<XhConfig> {

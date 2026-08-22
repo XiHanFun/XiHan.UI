@@ -9,11 +9,13 @@ import type {
 } from '@xihan-ui/headless'
 import type { Cleanup, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
+import type { OverlayExit } from '../overlay-exit'
 import { connectTour, tourAnatomy, tourMachine, tourMeta } from '@xihan-ui/headless'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/kernel'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
+import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
@@ -101,6 +103,8 @@ export class XhTourElement extends XhElement {
   private config: RuntimeConfig | null = null
   private contentNode: HTMLElement | null = null
   private backdropNode: HTMLElement | null = null
+  /** 退场闸门：收起从跟着 open 走改成跟着 presence 走，气泡的退场动画播完才真收。 */
+  private exit: OverlayExit | null = null
   /** 哪些文本节点归元素填：作者自己写了内容的一概不碰。 */
   private readonly ownsText = new WeakMap<HTMLElement, boolean>()
 
@@ -248,20 +252,50 @@ export class XhTourElement extends XhElement {
     this.fillText(this.getPart('description'), api.currentStep?.description)
     this.fillText(this.getPart('progress-text'), api.progressText)
 
-    // Light DOM 常驻，WC 自管可见性：connect 已经给这几个角色发了 hidden，但样式表里
-    // 只要给它们声明过 display（本仓的 tour.css 给 positioner/content/spotlight 都声明了），
+    // Light DOM 常驻，WC 自管可见性：样式表里只要给这几个角色声明过 display，
     // author 层就会盖掉 UA 的 [hidden]{display:none}。宿主不能指望作者装的是哪一份样式，
     // 只有内联 style.display 压得住；展开时还回作者原本写的内联值。
+    // 收起跟着退场闸门走：presence 读 content 的 animationName 决定要不要多留一会儿，
+    // 遮罩、高亮框与定位层与气泡一起收——定位层先 display:none 的话里面的退场一帧都播不出来。
+    // 必须排在 put('content') 之后——data-state 得先落进 DOM，探测器才读得到退场那支动画
+    this.ensureConfig()
+    this.exit ??= createOverlayExit({
+      config: this.config!,
+      open: api.open,
+      onExitComplete: () => this.requestUpdate(),
+    })
+    this.exit.track(this.contentNode)
+    this.exit.update(api.open)
+    const visible = this.exit.visible
+    const hiddenOf: Record<string, boolean> = {
+      backdrop: !visible || !(this.showBackdrop ?? true),
+      spotlight: !visible || !api.anchored,
+      positioner: !visible,
+      content: !visible,
+      arrow: !visible || !api.anchored,
+    }
     for (const name of ['backdrop', 'spotlight', 'positioner', 'content', 'arrow']) {
       const el = this.getPart(name)
-      if (el)
-        this.setPartHidden(el, el.hasAttribute('hidden'))
+      if (!el)
+        continue
+      const hidden = hiddenOf[name]!
+      el.toggleAttribute('hidden', hidden)
+      this.setPartHidden(el, hidden)
     }
   }
 
   override disconnectedCallback(): void {
     super.disconnectedCallback()
     // 层由展开态的效应自己入栈出栈，断开时机器停机会一并撤掉，这里无需再管
+    // 退场没播完就离场：立刻结清并收起，否则作者的节点会带着已被撤掉的 data-state 留在页面上
+    this.exit?.dispose()
+    this.exit = null
+    if (this.ctrl.service.state.get() !== 'open') {
+      for (const name of ['backdrop', 'spotlight', 'positioner', 'content', 'arrow']) {
+        const el = this.getPart(name)
+        this.setPartHidden(el, true)
+      }
+    }
     this.config = null // 重连时 ensureConfig 重建
   }
 }

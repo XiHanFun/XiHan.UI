@@ -61,11 +61,17 @@
   }
 
   /* 减少动效：宽度与淡出都立刻到位。进度本身照常推进，只是不再有过渡的过程——
-     一条按 200ms 一拍持续变宽的带子正是最容易引发不适的那种动效 */
+     一条按 200ms 一拍持续变宽的带子正是最容易引发不适的那种动效。
+     两条规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
   @media (prefers-reduced-motion: reduce) {
     [data-scope='loading-bar'][data-part='root'],
     [data-scope='loading-bar'][data-part='range'] {
       transition: none;
     }
+  }
+
+  :where([data-motion='reduce']) [data-scope='loading-bar'][data-part='root'],
+  :where([data-motion='reduce']) [data-scope='loading-bar'][data-part='range'] {
+    transition: none;
   }
 }

@@ -3,6 +3,7 @@ import type { Scope } from './scope'
 import type { LayerRegistry } from './structure/layer-registry'
 // RuntimeConfig：环境包，由适配器解析后以纯对象传入。
 import type { Direction } from './types'
+import { resolveMotionPreference } from '@xihan-ui/motion'
 import { isSSR } from './guards'
 import { createCounterIdGenerator } from './id-generator'
 import { createScope } from './scope'
@@ -16,7 +17,7 @@ export interface RuntimeConfig {
   readonly idGenerator: IdGenerator
   /** Portal 容器解析器；默认返回 body 末尾的 portal 落点，返回 null 表示用 top layer、不搬运。 */
   readonly portalContainer: () => Element | null
-  /** 读 prefers-reduced-motion，供 Presence 短路。 */
+  /** 是否减弱动效：应用级 override 优先，其次系统 prefers-reduced-motion；供 Presence 短路。 */
   readonly reducedMotion: () => boolean
   readonly layerRegistry: LayerRegistry
   /** 滚动根解析器；返回 null 表示交给滚动锁自行探测。 */
@@ -40,7 +41,7 @@ export function createRuntimeConfig(partial: Partial<RuntimeConfig> = {}): Runti
     scrollRoot: partial.scrollRoot ?? (() => null),
     reducedMotion:
       partial.reducedMotion
-      ?? (() => !isSSR() && window.matchMedia('(prefers-reduced-motion: reduce)').matches),
+      ?? (() => !isSSR() && resolveMotionPreference(window) === 'reduce'),
   }
 }
 

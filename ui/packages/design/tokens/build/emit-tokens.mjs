@@ -131,12 +131,17 @@ ${await declarations(lightMore)}
 ${await declarations(darkMore)}
   }
 
-  /* 减弱动效：动效降级的唯一通道。排在全部取值块之后，同为零特指度时靠书写顺序压过基线。
+  /* 减弱动效：排在全部取值块之后，同为零特指度时靠书写顺序压过基线。
      皮肤不必各写各的 @media——只要幅度与时长都引这几个语义令牌，降级自动穿透 */
   @media (prefers-reduced-motion: reduce) {
     :where(:root) {
 ${await declarations(reduce, '      ')}
     }
+  }
+
+  /* 减弱动效的 DOM 钩子：与上面的 @media 块同源同值。打在任意容器上即局部减弱，打在 html 上即全局 */
+  :where([data-motion='reduce']) {
+${await declarations(reduce)}
   }
 }
 `

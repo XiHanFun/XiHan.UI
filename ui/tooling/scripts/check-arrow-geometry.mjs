@@ -7,12 +7,47 @@
 //
 // 摘边框那几条与各皮肤的 border 简写等特异性，靠源序定胜负：共享皮肤排到前面去，
 // 六族浮层的箭头会整片留着四条边。
+//
+// 箭头交给定位引擎的量是 JS 手写字面量，皮肤画的尺寸来自令牌：两边各改各的不会有任何判据报错，
+// 只是钳位偏了——箭头在两端极限位置压进圆角或探出浮层。这里把令牌解到像素，
+// 与 JS 常量对账：交叉轴宽度 = 边长·√2，端距 = 圆角 --xh-shape-surface。
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
 const STYLES = 'packages/design/styles/css'
 const INDEX = 'packages/design/styles/index.css'
 const SHARED = 'overlay-arrow.css'
+const TOKENS = 'packages/design/tokens/tokens.json'
+const OVERLAY_TS = 'packages/engine/headless/src/shared/overlay.ts'
+
+/** 顺着 var() 引用把令牌解到字面量像素数，解不到像素就返回 null。 */
+function resolvePx(tokens, name, depth = 0) {
+  const value = tokens[name]
+  if (value == null || depth > 16)
+    return null
+  const ref = value.trim().match(/^var\((--[\w-]+)\)$/)
+  if (ref)
+    return resolvePx(tokens, ref[1], depth + 1)
+  const px = value.trim().match(/^(-?\d+(?:\.\d+)?)px$/)
+  return px ? Number(px[1]) : null
+}
+
+/** 读 overlay.ts 里某个 export const 的初始化表达式并求值（表达式只含数字与 Math）。 */
+function evalConst(source, name) {
+  const m = source.match(new RegExp(`export const ${name}\\s*=\\s*([^\\n]+?)\\s*$`, 'm'))
+  if (!m)
+    return null
+  const expr = m[1].replace(/;?\s*$/, '')
+  if (/[^\w\s.*/+\-()]/.test(expr))
+    return null
+  try {
+    // eslint-disable-next-line no-new-func
+    return new Function('Math', `return (${expr})`)(Math)
+  }
+  catch {
+    return null
+  }
+}
 
 /** 消费引擎逻辑量的那一条，逐条写明理由。 */
 const ALLOW = [
@@ -98,6 +133,42 @@ else {
   }
 }
 
+// 令牌像素 ↔ JS 常量对账
+const tokens = JSON.parse(await readFile(TOKENS, 'utf8'))
+const overlayTs = await readFile(OVERLAY_TS, 'utf8')
+const arrowPx = resolvePx(tokens, '--xh-overlay-arrow-size')
+const radiusPx = resolvePx(tokens, '--xh-shape-surface')
+const jsSize = evalConst(overlayTs, 'OVERLAY_ARROW_SIZE')
+const jsPadding = evalConst(overlayTs, 'OVERLAY_ARROW_PADDING')
+
+if (arrowPx == null)
+  errors.push(`${TOKENS} 的 --xh-overlay-arrow-size 解不到像素字面量`)
+if (radiusPx == null)
+  errors.push(`${TOKENS} 的 --xh-shape-surface 解不到像素字面量`)
+if (jsSize == null)
+  errors.push(`${OVERLAY_TS} 的 OVERLAY_ARROW_SIZE 读不到或求不出值`)
+if (jsPadding == null)
+  errors.push(`${OVERLAY_TS} 的 OVERLAY_ARROW_PADDING 读不到或求不出值`)
+if (arrowPx != null && jsSize != null && Math.abs(jsSize - arrowPx * Math.SQRT2) >= 0.01)
+  errors.push(`OVERLAY_ARROW_SIZE = ${jsSize}，但 --xh-overlay-arrow-size = ${arrowPx}px，对角线应为 ${arrowPx}·√2 = ${(arrowPx * Math.SQRT2).toFixed(4)}`)
+if (radiusPx != null && jsPadding != null && jsPadding !== radiusPx)
+  errors.push(`OVERLAY_ARROW_PADDING = ${jsPadding}，但 --xh-shape-surface = ${radiusPx}px，端距要等于圆角`)
+
+// 共享皮肤的方块要吃统一尺寸槽并转 45°，否则 JS 按对角线算的钳位对不上画出来的形状
+const sharedCss = await readFile(join(STYLES, SHARED), 'utf8')
+const arrowRule = rulesOf(sharedCss).find(r => r.selector === '[data-part=\'arrow\']')
+if (!arrowRule) {
+  errors.push(`${SHARED} 里找不到 [data-part='arrow'] 规则`)
+}
+else {
+  for (const prop of ['inline-size', 'block-size']) {
+    if (!new RegExp(`^[^\\S\\n]*${prop}[^\\S\\n]*:[^\\S\\n]*var\\(--xh-_overlay-arrow-size\\)`, 'm').test(arrowRule.body))
+      errors.push(`${SHARED}:${arrowRule.line}  [data-part='arrow'] 的 ${prop} 没消费 var(--xh-_overlay-arrow-size)`)
+  }
+  if (!/^[^\S\n]*rotate[^\S\n]*:[^\S\n]*45deg/m.test(arrowRule.body))
+    errors.push(`${SHARED}:${arrowRule.line}  [data-part='arrow'] 没有 rotate: 45deg`)
+}
+
 if (errors.length > 0) {
   console.error('[check-arrow-geometry] ✗')
   for (const error of errors)
@@ -105,4 +176,4 @@ if (errors.length > 0) {
   process.exit(1)
 }
 
-console.log(`[check-arrow-geometry] 通过：${scanned} 条箭头规则贴边与摘边框都走物理属性（白名单 ${ALLOW.length} 条），共享皮肤排在浮层皮肤之后`)
+console.log(`[check-arrow-geometry] 通过：${scanned} 条箭头规则贴边与摘边框都走物理属性（白名单 ${ALLOW.length} 条），共享皮肤排在浮层皮肤之后；JS 常量与令牌对账：size ${jsSize.toFixed(4)} = ${arrowPx}px·√2，padding ${jsPadding} = ${radiusPx}px 圆角`)

@@ -30,7 +30,7 @@
     position: fixed;
     inset-block: 0;
     inset-inline: 0;
-    z-index: var(--xh-layer-toast);
+    z-index: var(--xh-toaster-layer, var(--xh-layer-toast));
     display: flex;
     flex-direction: column;
     /* 基线按默认落位 bottom-end 写，下面只覆盖跟它不同的那几个位 */

@@ -192,11 +192,16 @@
     background: var(--xh-carousel-indicator-bg-selected, var(--xh-bg-brand));
   }
 
-  /* 减少动效：位移立刻到位。翻页本身照常发生，只是不再有滑动的过程 */
+  /* 减少动效：位移立刻到位。翻页本身照常发生，只是不再有滑动的过程。
+     两条规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
   @media (prefers-reduced-motion: reduce) {
     [data-scope='carousel'][data-part='item-group'] {
       transition: none;
     }
+  }
+
+  :where([data-motion='reduce']) [data-scope='carousel'][data-part='item-group'] {
+    transition: none;
   }
 
   /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */

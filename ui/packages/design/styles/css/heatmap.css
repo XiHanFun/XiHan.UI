@@ -154,7 +154,7 @@
   [data-scope='heatmap'][data-part='week-day-label'] {
     position: sticky;
     /* 层号收在 root 建的层叠上下文里，只跟组件内的兄弟比 */
-    z-index: var(--xh-heatmap-sticky-z, 1);
+    z-index: var(--xh-heatmap-sticky-layer, 1);
     inset-inline-start: 0;
     display: block;
     flex: 0 0 auto;
@@ -274,7 +274,7 @@
   /* 行名与日历的星期名同一个位置、同一件事：列多到放不下时钉在起始缘 */
   [data-scope='heatmap'][data-part='row-label'] {
     position: sticky;
-    z-index: var(--xh-heatmap-sticky-z, 1);
+    z-index: var(--xh-heatmap-sticky-layer, 1);
     inset-inline-start: 0;
     display: block;
     flex: 0 0 auto;
@@ -318,7 +318,7 @@
 
     position: absolute;
     /* 排在钉住的行首那一列之上：条从末缘往回长时会盖到那一列上，它不该把条切掉 */
-    z-index: var(--xh-heatmap-tooltip-z, 2);
+    z-index: var(--xh-heatmap-tooltip-layer, 2);
     display: block;
     inset-inline-start: var(--xh-_heatmap-tip-x);
     inset-block-start: var(--xh-_heatmap-tip-y);

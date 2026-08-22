@@ -1,6 +1,6 @@
 export { popoverAnatomy } from './popover.anatomy'
 export { connectPopover } from './popover.connect'
 export { popoverKeyboard } from './popover.keyboard'
-export { popoverMachine } from './popover.machine'
+export { POPOVER_DEFAULT_PLACEMENT, popoverMachine } from './popover.machine'
 export { popoverMeta } from './popover.meta'
 export type { PopoverApi, PopoverOpenChangeDetails, PopoverRefs, PopoverSchema, PopoverTranslations } from './popover.types'

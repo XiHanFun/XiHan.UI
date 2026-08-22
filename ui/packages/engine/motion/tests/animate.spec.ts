@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { animate } from '../src/animate'
+import { durations } from '../src/durations'
 import { easing } from '../src/easing'
 import { setMotionOverride } from '../src/reduced-motion'
 
@@ -151,7 +152,7 @@ describe('走 Web Animations', () => {
 
     expect(stub.calls).toHaveLength(1)
     expect(stub.calls[0][1]).toEqual({
-      duration: 200,
+      duration: durations.normal,
       easing: easing.standard,
       delay: 0,
       iterations: 1,

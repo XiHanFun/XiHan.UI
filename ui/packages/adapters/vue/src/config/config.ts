@@ -4,7 +4,8 @@
 import type { XhConfigBase, XhTranslationOverrides } from '@xihan-ui/headless'
 import type { ComputedRef, InjectionKey, MaybeRefOrGetter } from 'vue'
 import { componentTranslations, mergeXhConfig as mergeBase, SIZE_IS_NOT_AXIS } from '@xihan-ui/headless'
-import { computed, inject, provide, toValue } from 'vue'
+import { setMotionOverride } from '@xihan-ui/motion'
+import { computed, inject, provide, toValue, watch } from 'vue'
 
 export type { XhTranslationOverrides }
 
@@ -34,12 +35,28 @@ export function mergeXhConfig(base: XhConfig | undefined, over: XhConfig): XhCon
  * 嵌套注入按键合并，不整份遮蔽：内层只写了 translations 时，外层的 locale 仍然生效。
  */
 export function provideXhConfig(config: MaybeRefOrGetter<XhConfig>): void {
+  applyMotionOverride(config)
   const parent = inject(KEY, undefined)
   if (!parent) {
     provide(KEY, config)
     return
   }
   provide(KEY, () => mergeXhConfig(toValue(parent), toValue(config)))
+}
+
+/**
+ * 这一层写了 motion 才调 setMotionOverride；缺席不碰——别的地方设的 override 不在这里清。
+ * 配置是 ref/getter 时跟着它变。
+ */
+function applyMotionOverride(config: MaybeRefOrGetter<XhConfig>): void {
+  watch(
+    () => toValue(config).motion,
+    (motion) => {
+      if (motion !== undefined)
+        setMotionOverride(motion)
+    },
+    { immediate: true },
+  )
 }
 
 /** 读当前作用域的全局配置（已与外层合并）；没注入时得到空对象。 */

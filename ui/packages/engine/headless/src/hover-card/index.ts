@@ -1,6 +1,6 @@
 export { hoverCardAnatomy } from './hover-card.anatomy'
 export { connectHoverCard } from './hover-card.connect'
 export { hoverCardKeyboard } from './hover-card.keyboard'
-export { hoverCardMachine } from './hover-card.machine'
+export { HOVER_CARD_DEFAULT_PLACEMENT, hoverCardMachine } from './hover-card.machine'
 export { hoverCardMeta } from './hover-card.meta'
 export type { HoverCardApi, HoverCardOpenChangeDetails, HoverCardRefs, HoverCardSchema, HoverCardTranslations } from './hover-card.types'

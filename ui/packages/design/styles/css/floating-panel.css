@@ -51,7 +51,7 @@
 
     position: fixed;
     /* 与抽屉同一档：面板要盖住吸顶栏，又该被随后打开的弹窗与浮层压住 */
-    z-index: var(--xh-layer-drawer);
+    z-index: var(--xh-floating-panel-layer, var(--xh-layer-drawer));
     display: block;
   }
 

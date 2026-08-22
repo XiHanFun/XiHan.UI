@@ -1,9 +1,10 @@
-import { overlayPositioned } from '../shared/overlay'
 import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { PopoverApi, PopoverSchema } from './popover.types'
 import { dataAttr } from '@xihan-ui/kernel'
+import { overlayPositioned } from '../shared/overlay'
 import { popoverAnatomy } from './popover.anatomy'
+import { POPOVER_DEFAULT_PLACEMENT } from './popover.machine'
 
 const parts = popoverAnatomy.build()
 
@@ -31,7 +32,7 @@ export function connectPopover<T extends PropTypes>(
   const position = context.get('position')
   // 箭头落点：引擎没算（没要箭头 / 尚未落位）时缺席，皮肤退回居中
   const arrowAt = position?.arrow
-  const placement = position?.placement ?? prop('placement') ?? 'bottom'
+  const placement = position?.placement ?? prop('placement') ?? POPOVER_DEFAULT_PLACEMENT
 
   const setOpen = (next: boolean): void => {
     if (next !== open)

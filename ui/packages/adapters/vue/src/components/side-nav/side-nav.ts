@@ -1,8 +1,9 @@
 import type { SideNavApi, SideNavNode, SideNavSchema } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { defineComponent, h, Teleport } from 'vue'
+import { defineComponent, h, ref, Teleport } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { useOverlayExit } from '../../runtime/use-overlay-exit'
 import { provideSideNav, provideSideNavNode, useSideNavContext, useSideNavNodeContext } from './context'
 import { useSideNav } from './use-side-nav'
 
@@ -160,14 +161,32 @@ export const XhSideNavBranchContent = defineComponent({
   setup(_, { slots }) {
     const ctx = useSideNavContext()
     const node = useSideNavNodeContext()
+    // 一个弹出面板一份退场闸门：退场动画挂在定位层上，从它身上探测。
+    // 开合判据直接取 connect 这一帧的产出，不另起一套
+    const positionerRef = ref<HTMLElement | null>(null)
+    const visible = useOverlayExit({
+      config: ctx.config,
+      isOpen: () => (ctx.api.value.getPopoutPositionerProps({ value: node.value }) as Record<string, unknown>).hidden !== true,
+      contentRef: positionerRef,
+    })
     return () => {
-      const content = h('ul', ctx.api.value.getBranchContentProps({ value: node.value }) as Record<string, unknown>, slots.default?.())
-      // 平铺分支没有定位层，原地渲染
-      if (!ctx.api.value.isPopoutPanel(node.value))
-        return content
-      // 折叠态的弹出面板：定位层搬到浮层落点，逃开祖先的层叠上下文
+      if (!ctx.api.value.isPopoutPanel(node.value)) {
+        // 平铺分支没有定位层，原地渲染
+        return h('ul', ctx.api.value.getBranchContentProps({ value: node.value }) as Record<string, unknown>, slots.default?.())
+      }
+      // 折叠态的弹出面板：定位层搬到浮层落点，逃开祖先的层叠上下文。
+      // 收起跟着退场闸门走：定位层与面板的 hidden 都押后到退场动画播完
+      const hidden = !visible.value || undefined
+      const content = h('ul', {
+        ...ctx.api.value.getBranchContentProps({ value: node.value }) as Record<string, unknown>,
+        hidden,
+      }, slots.default?.())
       return h(Teleport, { to: ctx.portalTarget.value }, [
-        h('div', ctx.api.value.getPopoutPositionerProps({ value: node.value }) as Record<string, unknown>, [content]),
+        h('div', {
+          ...ctx.api.value.getPopoutPositionerProps({ value: node.value }) as Record<string, unknown>,
+          hidden,
+          ref: (el: unknown) => { positionerRef.value = el as HTMLElement | null },
+        }, [content]),
       ])
     }
   },

@@ -1,3 +1,31 @@
+@layer xihan.motion {
+  /* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
+     动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
+  @keyframes xh-pop-in {
+    from {
+      opacity: 0;
+      scale: var(--xh-motion-scale-enter);
+    }
+
+    to {
+      opacity: 1;
+      scale: 1;
+    }
+  }
+
+  @keyframes xh-pop-out {
+    from {
+      opacity: 1;
+      scale: 1;
+    }
+
+    to {
+      opacity: 0;
+      scale: var(--xh-motion-scale-enter);
+    }
+  }
+}
+
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
   [data-scope='side-nav'] {
@@ -156,6 +184,16 @@
     visibility: hidden;
   }
 
+  [data-scope='side-nav'][data-part='positioner'][data-state='open'] {
+    animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  }
+
+  /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
+     免得动画结束到收起落下来之间闪一下原样 */
+  [data-scope='side-nav'][data-part='positioner'][data-state='closed'] {
+    animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+  }
+
   /* 折叠态的弹出面板：贴着触发按钮旁侧的浮层卡片。
      面板自己不吃子层缩进（padding 整圈盖掉），面板内的嵌套子层照常缩进 */
   [data-scope='side-nav'][data-part='branch-content'][data-popout] {
@@ -181,12 +219,6 @@
 
   [data-scope='side-nav'][data-part='branch-indicator'][data-state='open'] {
     rotate: 90deg;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    [data-scope='side-nav'][data-part='branch-indicator'] {
-      transition: none;
-    }
   }
 
   /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */

@@ -120,10 +120,11 @@
     position: absolute;
     inline-size: 40%;
     transition: none;
-    animation: xh-progress-indeterminate var(--xh-progress-indeterminate-duration, 1.2s) var(--xh-ease-standard) infinite;
+    animation: xh-progress-indeterminate var(--xh-progress-indeterminate-duration, calc(var(--xh-spin-duration) * 2)) var(--xh-ease-standard) infinite;
   }
 
-  /* 减弱动效档：不来回扫，改成一条铺满的静态条——进度仍然未知，只是不再动 */
+  /* 减弱动效档：不来回扫，改成一条铺满的静态条——进度仍然未知，只是不再动。
+     两条规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
   @media (prefers-reduced-motion: reduce) {
     [data-scope='progress'][data-part='range'][data-state='indeterminate'] {
       position: static;
@@ -132,6 +133,14 @@
       animation: none;
     }
   }
+
+  :where([data-motion='reduce']) [data-scope='progress'][data-part='range'][data-state='indeterminate'] {
+    position: static;
+    inline-size: 100%;
+    opacity: 0.5;
+    animation: none;
+  }
+
   /* 零进度：圆角端点会在长度为 0 处画出一个圆点，收掉它 */
   [data-scope='progress'][data-part='range'][data-empty] {
     visibility: hidden;

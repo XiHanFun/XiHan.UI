@@ -130,10 +130,15 @@
     animation: xh-spin var(--xh-button-spin-duration, var(--xh-spin-duration)) linear infinite;
   }
 
-  /* 减少动效：指示器停转，"还在忙"由按钮自身的挂起样式与指示器图标继续表达 */
+  /* 减少动效：指示器停转，"还在忙"由按钮自身的挂起样式与指示器图标继续表达。
+     两条规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
   @media (prefers-reduced-motion: reduce) {
     [data-scope='button'][data-part='indicator'] {
       animation: none;
     }
+  }
+
+  :where([data-motion='reduce']) [data-scope='button'][data-part='indicator'] {
+    animation: none;
   }
 }

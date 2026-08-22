@@ -604,19 +604,22 @@ export const sideNavSuite: ConformanceSuite = {
       props: props({ collapsed: true }),
       steps: [
         { kind: 'click', part: 'branch-trigger[0]', expect: popoutOpen(0, true) },
-        // 换枝：先关旧的再开新的
+        // 换枝：先关旧的再开新的；收起押后到退场结束，等定位层真的藏起
+        { kind: 'click', part: 'branch-trigger[1]', expect: popoutOpen(1, true) },
         {
-          kind: 'click',
-          part: 'branch-trigger[1]',
+          kind: 'settle',
+          until: { attr: { part: 'positioner[0]', name: 'hidden', value: '' } },
           expect: { parts: { ...popoutOpen(0, false).parts, ...popoutOpen(1, true).parts } },
         },
         {
           kind: 'click',
           part: 'link[3]',
-          expect: {
-            ...popoutOpen(1, false),
-            events: [{ type: 'value-change', detail: { value: 'order-list' } }],
-          },
+          expect: { events: [{ type: 'value-change', detail: { value: 'order-list' } }] },
+        },
+        {
+          kind: 'settle',
+          until: { attr: { part: 'positioner[1]', name: 'hidden', value: '' } },
+          expect: popoutOpen(1, false),
         },
         {
           kind: 'settle',
@@ -628,7 +631,12 @@ export const sideNavSuite: ConformanceSuite = {
         },
         // 再点一次收回
         { kind: 'click', part: 'branch-trigger[1]', expect: popoutOpen(1, true) },
-        { kind: 'click', part: 'branch-trigger[1]', expect: popoutOpen(1, false) },
+        { kind: 'click', part: 'branch-trigger[1]' },
+        {
+          kind: 'settle',
+          until: { attr: { part: 'positioner[1]', name: 'hidden', value: '' } },
+          expect: popoutOpen(1, false),
+        },
       ],
     },
     {

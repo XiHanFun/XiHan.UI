@@ -213,11 +213,11 @@ steps 是唯一事实源，组件只按下标取用；每步的 target 是一个
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-tour-arrow-size` · `--xh-tour-backdrop-bg` · `--xh-tour-backdrop-z` · `--xh-tour-bg` · `--xh-tour-border` · `--xh-tour-close-bg-active` · `--xh-tour-close-bg-hover` · `--xh-tour-close-radius` · `--xh-tour-close-size` · `--xh-tour-description-fg` · `--xh-tour-fg` · `--xh-tour-gap` · `--xh-tour-icon-size` · `--xh-tour-max-h` · `--xh-tour-max-w` · `--xh-tour-next-bg` · `--xh-tour-next-bg-hover` · `--xh-tour-next-fg` · `--xh-tour-positioner-z` · `--xh-tour-progress-fg` · `--xh-tour-progress-font-size` · `--xh-tour-px` · `--xh-tour-py` · `--xh-tour-radius` · `--xh-tour-shadow` · `--xh-tour-spotlight-radius` · `--xh-tour-spotlight-ring` · `--xh-tour-spotlight-shroud` · `--xh-tour-spotlight-z` · `--xh-tour-title-fg` · `--xh-tour-title-font-size` · `--xh-tour-title-font-weight`
+`--xh-tour-arrow-size` · `--xh-tour-backdrop-bg` · `--xh-tour-backdrop-layer` · `--xh-tour-bg` · `--xh-tour-border` · `--xh-tour-close-bg-active` · `--xh-tour-close-bg-hover` · `--xh-tour-close-radius` · `--xh-tour-close-size` · `--xh-tour-description-fg` · `--xh-tour-fg` · `--xh-tour-gap` · `--xh-tour-icon-size` · `--xh-tour-max-h` · `--xh-tour-max-w` · `--xh-tour-next-bg` · `--xh-tour-next-bg-hover` · `--xh-tour-next-fg` · `--xh-tour-positioner-layer` · `--xh-tour-progress-fg` · `--xh-tour-progress-font-size` · `--xh-tour-px` · `--xh-tour-py` · `--xh-tour-radius` · `--xh-tour-shadow` · `--xh-tour-spotlight-layer` · `--xh-tour-spotlight-radius` · `--xh-tour-spotlight-ring` · `--xh-tour-spotlight-shroud` · `--xh-tour-title-fg` · `--xh-tour-title-font-size` · `--xh-tour-title-font-weight`
 
 ## 动效
 
-关键帧 `xh-fade-in` · `xh-fade-out` · `xh-tour-content-in` · `xh-tour-content-out` · `xh-tour-spotlight-in` 随皮肤自带，不引用别处文件里的名字；状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-fade-in` · `xh-fade-out` · `xh-pop-in` · `xh-pop-out` · `xh-tour-spotlight-in` · `xh-tour-spotlight-out` 随皮肤自带，不引用别处文件里的名字；状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

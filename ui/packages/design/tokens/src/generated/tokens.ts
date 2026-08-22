@@ -173,6 +173,7 @@ export const tokens = {
   "--xh-motion-scale-press": "0.97",
   "--xh-motion-scale-drag": "1.12",
   "--xh-spin-duration": "640ms",
+  "--xh-shimmer-duration": "1600ms",
   "--xh-layer-sticky": "var(--xh-z-sticky)",
   "--xh-layer-drawer": "var(--xh-z-modal)",
   "--xh-layer-modal": "var(--xh-z-modal)",

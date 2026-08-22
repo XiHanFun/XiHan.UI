@@ -1,4 +1,5 @@
 import type { Size } from '@xihan-ui/kernel'
+import type { MotionPreference } from '@xihan-ui/motion'
 import type { XhTranslationOverrides } from './translations'
 
 /**
@@ -19,6 +20,11 @@ export interface XhConfigBase {
    * 宿主把滚动搬进内容容器（body 本身不滚）时必须给，否则模态浮层背后照样能滚。
    */
   scrollRoot?: () => HTMLElement | null
+  /**
+   * 应用级动效偏好，写了就调 setMotionOverride 覆盖系统设置（JS 动画与退场租约都读它）。
+   * 它不碰 DOM：CSS 侧的令牌降级由作者自己把 data-motion="reduce" 打到容器或 html 上。
+   */
+  motion?: MotionPreference
 }
 
 /**

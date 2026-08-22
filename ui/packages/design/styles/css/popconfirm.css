@@ -48,7 +48,7 @@
   /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
   [data-scope='popconfirm'][data-part='positioner'] {
     position: fixed;
-    z-index: var(--xh-layer-popover);
+    z-index: var(--xh-popconfirm-layer, var(--xh-layer-popover));
     /* 空壳不吃指针，交互只发生在 content 上 */
     pointer-events: none;
   }
@@ -212,12 +212,19 @@
     outline-offset: var(--xh-ring-offset);
   }
 
-  /* 减少动效：圆环停下并整圈换成虚线，静止的形状仍然读得出"还没好" */
+  /* 减少动效：圆环停下并整圈换成虚线，静止的形状仍然读得出"还没好"。
+     两条规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
   @media (prefers-reduced-motion: reduce) {
     [data-scope='popconfirm'][data-part='confirm-trigger'][data-loading]::before {
       border-style: dotted;
       border-color: currentColor;
       animation: none;
     }
+  }
+
+  :where([data-motion='reduce']) [data-scope='popconfirm'][data-part='confirm-trigger'][data-loading]::before {
+    border-style: dotted;
+    border-color: currentColor;
+    animation: none;
   }
 }

@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+import { getMotionOverride, setMotionOverride } from '@xihan-ui/motion'
 import { afterEach, describe, expect, it } from 'vitest'
 import { getXhConfig, setXhConfig, withXhConfig } from '../src/config'
 import { defineXhElements } from '../src/define'
@@ -19,7 +20,29 @@ async function mount(html: string): Promise<Updatable> {
 
 afterEach(() => {
   setXhConfig({})
+  setMotionOverride(null)
   document.body.innerHTML = ''
+})
+
+describe('motion', () => {
+  it('setXhConfig 写了 motion 就设应用级 override', () => {
+    setXhConfig({ motion: 'reduce' })
+    expect(getMotionOverride()).toBe('reduce')
+  })
+
+  it('setXhConfig 没写 motion 不碰别处设好的 override', () => {
+    setMotionOverride('reduce')
+    setXhConfig({ locale: 'en-US' })
+    expect(getMotionOverride()).toBe('reduce')
+  })
+
+  it('<xh-config motion> 属性与 property 都能设，改了跟着变', async () => {
+    const scope = await mount('<xh-config motion="reduce"></xh-config>') as Updatable & { motion?: string }
+    expect(getMotionOverride()).toBe('reduce')
+    scope.motion = 'no-preference'
+    await scope.updateComplete
+    expect(getMotionOverride()).toBe('no-preference')
+  })
 })
 
 describe('全局配置', () => {

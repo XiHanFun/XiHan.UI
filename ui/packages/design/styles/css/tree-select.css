@@ -38,7 +38,7 @@
     --xh-_tree-select-available-h: 100vh;
 
     position: fixed;
-    z-index: var(--xh-layer-popover);
+    z-index: var(--xh-tree-select-layer, var(--xh-layer-popover));
     /* 空壳不吃指针，交互只发生在 content 里 */
     pointer-events: none;
   }

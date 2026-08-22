@@ -218,13 +218,13 @@ open 与 index 双受控；translations 换工具条的可及名与计数文案
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-image-viewer-backdrop-bg` · `--xh-image-viewer-chrome-bg` · `--xh-image-viewer-close-bg-active` · `--xh-image-viewer-close-bg-hover` · `--xh-image-viewer-close-radius` · `--xh-image-viewer-close-size` · `--xh-image-viewer-fg` · `--xh-image-viewer-icon-size`
+`--xh-image-viewer-backdrop-bg` · `--xh-image-viewer-backdrop-layer` · `--xh-image-viewer-chrome-bg` · `--xh-image-viewer-close-bg-active` · `--xh-image-viewer-close-bg-hover` · `--xh-image-viewer-close-radius` · `--xh-image-viewer-close-size` · `--xh-image-viewer-fg` · `--xh-image-viewer-icon-size` · `--xh-image-viewer-layer`
 
 ## 动效
 
 关键帧 `xh-fade-in` · `xh-fade-out` 随皮肤自带，不引用别处文件里的名字；状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
-`prefers-reduced-motion: reduce` 下本组件另有降级规则。
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
 ## RTL
 

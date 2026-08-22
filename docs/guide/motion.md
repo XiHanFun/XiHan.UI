@@ -1,12 +1,12 @@
 # 动效原语
 
-`@xihan-ui/motion` 是动效的地基层：缓动曲线的单一真源、不持有计时器的纯补间、逐帧循环、减弱动效偏好，以及解析解弹簧与 Web Animations 的薄封装。零第三方依赖，`import` 无副作用，SSR 安全。
+`@xihan-ui/motion` 是动效的地基层：缓动曲线与时长常量、不持有计时器的纯补间、逐帧循环、减弱动效偏好，以及解析解弹簧与 Web Animations 的薄封装。零第三方依赖，`import` 无副作用，SSR 安全。
 
 装了任意一个适配器就自动拿到它——`headless` 的数字动画与倒计时、`behavior` 的缓动表都从这里取。要自己写动画的话，它也可以单独装。
 
 ## 缓动
 
-CSS 侧的字符串与 JS 侧的采样函数在这里是同一份来源。
+CSS 侧的字符串与 JS 侧的采样函数在这里是同一份来源；取值的真源是令牌层的 `ease.standard / in / out` 与 `duration.fast / normal / slow`（`@xihan-ui/tokens` 的 primitive），这里的 `standard` / `easeIn` / `easeOut` 与 `durations` 三值逐字等于它们，由门禁 `check-motion-source` 比对。
 
 ```ts
 import { cubicBezier, easing, resolveEasing } from '@xihan-ui/motion'
@@ -20,6 +20,8 @@ resolveEasing(t => t * t)(0.5) // 0.25
 ```
 
 八条命名缓动：`linear` `standard` `emphasized` `decelerate` `accelerate` `easeIn` `easeOut` `easeInOut`。
+
+三档时长（毫秒）：`durations.fast` 120、`durations.normal` 200、`durations.slow` 320。`animate()` 缺省取 `durations.normal`，`@xihan-ui/animations` 的配方缺省取 `durations.slow`。
 
 `resolveEasing` 认不出的写法退回线性——写法可能来自 DOM 特性或后端配置，那是一个任意字符串，不该让一段动画整个不动。`cubicBezier` 用牛顿迭代反解参数，导数过小时退回二分。
 
@@ -94,12 +96,18 @@ const off = onMotionPreferenceChange(preference => console.log(preference))
 
 订阅只在最终值真的变了才回调：override 压住期间系统翻转不会触发，交还系统那一刻才浮现。
 
-两个探测函数的空环境语义是相反的，这是有意的：
+没有 `matchMedia` 的宿主（SSR、jsdom）一律按「不减弱」：`prefersReducedMotion()` 返回 `false`，`getMotionPreference()` 返回 `'no-preference'`。
 
-| | 无 `matchMedia` 的宿主 | 谁在用 |
-| --- | --- | --- |
-| `prefersReducedMotion()` | `false`，不降级 | CSS 驱动的路径，服务端本来就不播动画 |
-| `getMotionPreference()` | `'reduce'`，降级 | JS 动画，没有可推进的帧就别假装在动 |
+这是仓内唯一的探测通道：`@xihan-ui/kernel` 的 `RuntimeConfig.reducedMotion`（退场租约、贴底滚动）、`headless` 的数字动画、`behavior` 的平滑滚动、反馈服务的加载弧线与 `backgrounds` 的画面都经 `resolveMotionPreference` 读，应用级 override 一处设、处处生效。门禁 `check-reduced-motion-channel` 守着：除 motion 包自身外，源码里不许再出现 `matchMedia('(prefers-reduced-motion')`。
+
+### 减弱动效的两步
+
+JS 与 CSS 是两条线，应用要减弱动效得各走一步：
+
+1. **JS 侧**：在全局配置里写 `motion: 'reduce'`（Vue `provideXhConfig({ motion: 'reduce' })`，WC `setXhConfig({ motion: 'reduce' })` 或 `<xh-config motion="reduce">`），适配器收到就调 `setMotionOverride`；不经配置直接调 `setMotionOverride('reduce')` 也一样。配置里没写这个字段就不碰 override。
+2. **CSS 侧**：把 `data-motion="reduce"` 打到容器上。`tokens.css` 在 `@media (prefers-reduced-motion: reduce)` 之外还生成一份 `:where([data-motion='reduce'])` 块，重映射同一批 `--xh-motion-*` 语义令牌（时长 1ms、位移 0、缩放 1）。打在 `<html>` 上即全局，打在某个容器上即局部。
+
+配置不绑 DOM 节点，所以第二步由作者自己打；系统开了 prefers-reduced-motion 时两条线都自动降级，不必做任何事。
 
 ## 播一段
 

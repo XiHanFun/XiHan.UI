@@ -247,7 +247,7 @@ XhMenuSub 内嵌一台子菜单：触发条目双重身份（父层方向键照�
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-menu-arrow-size` · `--xh-menu-bg` · `--xh-menu-border` · `--xh-menu-fg` · `--xh-menu-item-active-font-weight` · `--xh-menu-item-bg-active` · `--xh-menu-item-bg-hover` · `--xh-menu-item-fg` · `--xh-menu-item-font-size` · `--xh-menu-item-gap` · `--xh-menu-item-leading` · `--xh-menu-item-px` · `--xh-menu-item-py` · `--xh-menu-item-radius` · `--xh-menu-max-h` · `--xh-menu-max-w` · `--xh-menu-min-w` · `--xh-menu-px` · `--xh-menu-py` · `--xh-menu-radius` · `--xh-menu-separator-color` · `--xh-menu-separator-my` · `--xh-menu-separator-thickness` · `--xh-menu-shadow`
+`--xh-menu-arrow-size` · `--xh-menu-bg` · `--xh-menu-border` · `--xh-menu-fg` · `--xh-menu-item-active-font-weight` · `--xh-menu-item-bg-active` · `--xh-menu-item-bg-hover` · `--xh-menu-item-fg` · `--xh-menu-item-font-size` · `--xh-menu-item-gap` · `--xh-menu-item-leading` · `--xh-menu-item-px` · `--xh-menu-item-py` · `--xh-menu-item-radius` · `--xh-menu-layer` · `--xh-menu-max-h` · `--xh-menu-max-w` · `--xh-menu-min-w` · `--xh-menu-px` · `--xh-menu-py` · `--xh-menu-radius` · `--xh-menu-separator-color` · `--xh-menu-separator-my` · `--xh-menu-separator-thickness` · `--xh-menu-shadow`
 
 ## 动效
 

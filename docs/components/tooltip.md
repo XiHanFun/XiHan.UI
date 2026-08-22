@@ -192,7 +192,7 @@ disabled 只关掉提示本身，被包裹的触发器照样可点、可聚焦
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-tooltip-arrow-size` · `--xh-tooltip-bg` · `--xh-tooltip-fg` · `--xh-tooltip-font-size` · `--xh-tooltip-max-w` · `--xh-tooltip-px` · `--xh-tooltip-py` · `--xh-tooltip-radius` · `--xh-tooltip-shadow` · `--xh-tooltip-trigger-gap`
+`--xh-tooltip-arrow-size` · `--xh-tooltip-bg` · `--xh-tooltip-fg` · `--xh-tooltip-font-size` · `--xh-tooltip-layer` · `--xh-tooltip-max-w` · `--xh-tooltip-px` · `--xh-tooltip-py` · `--xh-tooltip-radius` · `--xh-tooltip-shadow` · `--xh-tooltip-trigger-gap`
 
 ## 动效
 

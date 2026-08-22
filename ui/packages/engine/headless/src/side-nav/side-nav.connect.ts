@@ -348,7 +348,8 @@ export function connectSideNav<T extends PropTypes>(
         // 落位才露：展开或换枝后坐标已清，引擎量完之前藏着
         'data-positioned': dataAttr(overlayPositioned(popoutPosition)),
         'hidden': !open || undefined,
-        'style': open
+        // 收起后坐标留到下一次展开才作废：退场动画在原位播
+        'style': popoutPosition
           ? {
               position: 'fixed',
               left: `${popoutPosition?.x ?? 0}px`,

@@ -1,12 +1,17 @@
 #!/usr/bin/env node
-// 门禁：皮肤里的层号只能来自层序令牌 --xh-layer-*，组件内部的相对堆叠除外。
+// 门禁：皮肤里的层号只能来自层序令牌 --xh-layer-*，组件内部的相对堆叠除外；
+// 浮层的定位层 / 遮罩层还必须先经一个组件覆盖槽再落到层序令牌，槽名后缀统一 -layer。
 //
 // 裸层号绕开了层序这一处事实源：两个组件各写各的数字，谁盖谁只由数值大小决定，
 // 而层序令牌一改，写死的那个不跟着走。
+// 定位层 / 遮罩层直引层序令牌则是另一种写死：使用者要把某个浮层单独抬高或压低，
+// 只能改全局层序令牌，一改所有同角色的浮层一起动。每个浮层自己的覆盖槽
+// `--xh-<组件>-…-layer` 把这个口子留出来，默认值才落到 `--xh-layer-<角色>`。
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
 const STYLES_DIR = 'packages/design/styles/css'
+const HEADLESS = 'packages/engine/headless/src'
 
 /**
  * 层号只在组件自己的堆叠上下文里比大小、不参与全局层序的皮肤，连同理由。
@@ -26,42 +31,133 @@ const IN_COMPONENT_STACKING = {
 /** 组件内堆叠允许的层号档位。 */
 const SMALL = new Set(['0', '1', '2'])
 
+/** 解剖里带这些部件的族，对应部件规则里的 z-index 必须走组件覆盖槽。 */
+const LAYERED_PARTS = ['positioner', 'backdrop']
+
+async function read(path) {
+  try {
+    return await readFile(path, 'utf8')
+  }
+  catch {
+    return null
+  }
+}
+
+/** 读每个浮层族解剖里登记的定位层 / 遮罩层部件。 */
+async function collectLayeredParts() {
+  const result = new Map()
+  for (const d of await readdir(HEADLESS, { withFileTypes: true })) {
+    if (!d.isDirectory())
+      continue
+    const anatomy = await read(`${HEADLESS}/${d.name}/${d.name}.anatomy.ts`)
+    if (!anatomy)
+      continue
+    const parts = LAYERED_PARTS.filter(p => anatomy.includes(`'${p}'`))
+    if (parts.length)
+      result.set(d.name, parts)
+  }
+  return result
+}
+
+/**
+ * 逐行扫描时维护当前所在规则的选择器栈：遇到 `{` 把它前面的选择器文本压栈，
+ * 遇到 `}` 弹栈。z-index 声明落在哪个选择器下，就看栈里的文本。
+ */
+function* declarations(src) {
+  const stack = []
+  let pending = ''
+  const lines = src.split(/\r?\n/)
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i]
+    let rest = line
+    while (rest.length) {
+      const open = rest.indexOf('{')
+      const close = rest.indexOf('}')
+      if (open !== -1 && (close === -1 || open < close)) {
+        stack.push((pending + rest.slice(0, open)).trim())
+        pending = ''
+        rest = rest.slice(open + 1)
+        continue
+      }
+      if (close !== -1) {
+        const before = rest.slice(0, close)
+        const m = before.match(/(?<!-)\bz-index\s*:\s*([^;}]+)/)
+        if (m)
+          yield { line: i + 1, value: m[1].trim(), selectors: stack.slice() }
+        stack.pop()
+        pending = ''
+        rest = rest.slice(close + 1)
+        continue
+      }
+      const m = rest.match(/(?<!-)\bz-index\s*:\s*([^;}]+)/)
+      if (m)
+        yield { line: i + 1, value: m[1].trim(), selectors: stack.slice() }
+      else if (!/;\s*$/.test(rest) && rest.trim())
+        pending += `${rest} `
+      rest = ''
+    }
+  }
+}
+
+const layeredParts = await collectLayeredParts()
 const files = (await readdir(STYLES_DIR)).filter(f => f.endsWith('.css'))
 const problems = []
 const usedWhitelist = new Set()
 let tokenised = 0
+let slotted = 0
 
 for (const file of files) {
-  const src = (await readFile(join(STYLES_DIR, file), 'utf8')).replace(/\/\*[\s\S]*?\*\//g, '')
+  const comp = file.replace(/\.css$/, '')
+  // 去掉注释但保留它占的行数，报错行号才对得上源文件
+  const src = (await readFile(join(STYLES_DIR, file), 'utf8')).replace(/\/\*[\s\S]*?\*\//g, c => c.replace(/[^\n]/g, ''))
+
   src.split(/\r?\n/).forEach((line, i) => {
-    const m = line.match(/(?<!-)\bz-index\s*:\s*([^;}]+)/)
-    if (!m)
-      return
-    const value = m[1].trim()
-    const at = `${file}:${i + 1}  z-index: ${value}`
+    for (const m of line.matchAll(/--xh-[a-z0-9-]+-z(?=\s*[,)])/g))
+      problems.push(`${file}:${i + 1}  ${m[0]}  —— 层号槽名后缀统一 -layer，把 -z 改成 -layer`)
+  })
+
+  const parts = layeredParts.get(comp) ?? []
+
+  for (const { line, value, selectors } of declarations(src)) {
+    const at = `${file}:${line}  z-index: ${value}`
+    const scope = selectors.join(' ')
+    const part = parts.find(p => new RegExp(`\\[data-part=['"]${p}['"]\\]`).test(scope))
+    if (part) {
+      const slot = value.match(/^var\(\s*(--xh-[a-z0-9-]+)\s*,\s*var\(\s*--xh-layer-[a-z-]+\s*\)\s*\)$/)
+      if (!slot) {
+        problems.push(`${at}  —— ${part} 的层号要写成 var(--xh-${comp}-…-layer, var(--xh-layer-<角色>))，直引层序令牌没给使用者留覆盖槽`)
+        continue
+      }
+      if (!slot[1].startsWith(`--xh-${comp}-`) || !slot[1].endsWith('-layer')) {
+        problems.push(`${at}  —— ${part} 的覆盖槽要叫 --xh-${comp}-…-layer`)
+        continue
+      }
+      slotted++
+      continue
+    }
     if (/var\(\s*--xh-layer-/.test(value)) {
       tokenised++
-      return
+      continue
     }
     const numbers = value.match(/\d+/g) ?? []
     if (numbers.length === 0) {
       problems.push(`${at}  —— 既没引层序令牌，也不是层号`)
-      return
+      continue
     }
     if (numbers.some(n => n.length >= 3)) {
       problems.push(`${at}  —— 三位数层号一律走 --xh-layer-*`)
-      return
+      continue
     }
     if (!numbers.every(n => SMALL.has(n))) {
       problems.push(`${at}  —— 只有 0/1/2 算组件内堆叠，别的层号走 --xh-layer-*`)
-      return
+      continue
     }
     if (!(file in IN_COMPONENT_STACKING)) {
       problems.push(`${at}  —— 要么引 --xh-layer-*，要么把这份皮肤登进组件内堆叠名单并写明理由`)
-      return
+      continue
     }
     usedWhitelist.add(file)
-  })
+  }
 }
 
 for (const file of Object.keys(IN_COMPONENT_STACKING)) {
@@ -72,11 +168,11 @@ for (const file of Object.keys(IN_COMPONENT_STACKING)) {
 }
 
 if (problems.length) {
-  console.error('[check-raw-zindex] ✗ 皮肤里的层号没走层序令牌：')
+  console.error('[check-raw-zindex] ✗ 皮肤里的层号没走层序令牌 / 覆盖槽：')
   for (const p of problems)
     console.error(`  ${p}`)
-  console.error('层序只有 --xh-layer-* 一处事实源，写死的数字改令牌时不会跟着走。')
+  console.error('层序只有 --xh-layer-* 一处事实源；浮层的定位层 / 遮罩层再经 --xh-<组件>-…-layer 槽留给使用者单独调。')
   process.exit(1)
 }
 
-console.log(`[check-raw-zindex] 通过：${files.length} 份皮肤 · ${tokenised} 处层号走层序令牌（另有 ${usedWhitelist.size} 份皮肤只做组件内堆叠）`)
+console.log(`[check-raw-zindex] 通过：${files.length} 份皮肤 · ${layeredParts.size} 个浮层族的定位层 / 遮罩层 ${slotted} 处层号走覆盖槽 · 另 ${tokenised} 处层号走层序令牌（${usedWhitelist.size} 份皮肤只做组件内堆叠）`)

@@ -1,4 +1,4 @@
-import type { Placement, PositionResult } from '@xihan-ui/kernel'
+import type { PositionResult } from '@xihan-ui/kernel'
 import type { Params } from '@xihan-ui/machine'
 import type { TimeDraft, TimeGranularity, TimeHourCycle, TimeSegmentType } from '../time-field'
 import type {
@@ -10,6 +10,7 @@ import type {
 } from './time-picker.types'
 import { createDismissLayer, createFocusScope } from '@xihan-ui/behavior'
 import { resetDeclaredValue, setup } from '@xihan-ui/machine'
+import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import {
   appendSegmentDigit,
   clearTimeSegment,
@@ -36,7 +37,7 @@ const { createMachine, guards } = setup<TimePickerSchema>()
 const { and } = guards
 
 /** 未指定 placement 时的落位；定位引擎与 connect 共用这一个缺省。 */
-export const TIME_PICKER_DEFAULT_PLACEMENT: Placement = 'bottom-start'
+export const TIME_PICKER_DEFAULT_PLACEMENT = OVERLAY_PLACEMENT_LIST
 
 /** 未指定 step 时的分列步进：逐分钟。 */
 export const TIME_PICKER_STEP = 1
@@ -526,7 +527,7 @@ export const timePickerMachine = createMachine({
             floating,
             {
               placement: prop('placement') ?? TIME_PICKER_DEFAULT_PLACEMENT,
-              offset: prop('offset'),
+              offset: prop('offset') ?? OVERLAY_OFFSET,
               // positioner 渲染成 fixed，坐标系必须跟着走视口系
               strategy: 'fixed',
               // start / end 是逻辑对齐，RTL 下行内轴要翻过来

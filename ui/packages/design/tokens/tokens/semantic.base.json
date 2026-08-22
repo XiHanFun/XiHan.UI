@@ -350,6 +350,13 @@
       "$value": "640ms"
     }
   },
+  "shimmer": {
+    "$description": "骨架屏微光扫过一遍的周期。减弱动效由皮肤停掉动画。",
+    "duration": {
+      "$type": "duration",
+      "$value": "1600ms"
+    }
+  },
   "layer": {
     "sticky": {
       "$type": "number",

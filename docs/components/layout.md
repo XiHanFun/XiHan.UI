@@ -175,7 +175,7 @@ header-fixed 让头钉在滚动容器上沿，sider-fixed 让侧栏跟着钉住�
 
 状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
-`prefers-reduced-motion: reduce` 下本组件另有降级规则。
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
 ## RTL
 

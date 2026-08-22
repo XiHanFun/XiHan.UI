@@ -25,13 +25,10 @@ export function onReducedMotionChange(fn: (reduced: boolean) => void, win: Windo
 let override: MotionPreference | null = null
 const overrideListeners = new Set<() => void>()
 
-/**
- * 系统偏好。无 matchMedia 的宿主返回 `'reduce'`——JS 动画在这种宿主里没有可推进的帧，
- * 报告成不降级会让调用方去跑一段永远不动的动画。
- */
+/** 系统偏好。无 matchMedia 的宿主返回 `'no-preference'`（不降级），与 prefersReducedMotion 同向。 */
 export function getMotionPreference(win: Window | undefined = globalThis.window): MotionPreference {
   if (typeof win?.matchMedia !== 'function')
-    return 'reduce'
+    return 'no-preference'
   return win.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'reduce' : 'no-preference'
 }
 

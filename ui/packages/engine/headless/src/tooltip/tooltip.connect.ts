@@ -1,14 +1,12 @@
-import { overlayPositioned } from '../shared/overlay'
-import type { NormalizeProps, Placement, PropTypes } from '@xihan-ui/kernel'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { TooltipApi, TooltipSchema } from './tooltip.types'
 import { dataAttr } from '@xihan-ui/kernel'
+import { overlayPositioned } from '../shared/overlay'
 import { tooltipAnatomy } from './tooltip.anatomy'
+import { TOOLTIP_DEFAULT_PLACEMENT } from './tooltip.machine'
 
 const parts = tooltipAnatomy.build()
-
-/** 定位结果落地前的占位朝向，与定位引擎的默认值一致。 */
-const DEFAULT_PLACEMENT: Placement = 'bottom'
 
 export function connectTooltip<T extends PropTypes>(
   service: Service<TooltipSchema>,
@@ -24,7 +22,7 @@ export function connectTooltip<T extends PropTypes>(
   const stateAttr = open ? 'open' : 'closed'
   // 定位结果由 trackPosition 效应写进 context，这里只读结果，不查 DOM、不调引擎
   const position = context.get('position')
-  const placement = position?.placement ?? prop('placement') ?? DEFAULT_PLACEMENT
+  const placement = position?.placement ?? prop('placement') ?? TOOLTIP_DEFAULT_PLACEMENT
   // 箭头落点：引擎没算（尚未落位）时缺席，皮肤退回居中
   const arrowAt = position?.arrow
 
