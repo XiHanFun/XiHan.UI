@@ -23,7 +23,6 @@ export function connectInfiniteScroll<T extends PropTypes>(
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
-      'data-state': phase,
       'data-loading': dataAttr(loading),
       'data-disabled': dataAttr(disabled),
       // 取数期间这块内容正在变，读屏据此推迟播报
@@ -34,7 +33,6 @@ export function connectInfiniteScroll<T extends PropTypes>(
     getSentinelProps: () => normalize.element({
       ...parts.sentinel.attrs,
       'aria-hidden': 'true',
-      'data-state': phase,
     }),
   }
 }

@@ -73,21 +73,21 @@ describe('纯函数：值集合的增删', () => {
 })
 
 describe('纯函数：全选态', () => {
-  it('比对作者声明的全集，分得出 none / some / all', () => {
+  it('比对作者声明的全集，分得出 unchecked / indeterminate / checked', () => {
     const all = ['a', 'b', 'c']
-    expect(resolveCheckedState([], all)).toBe('none')
-    expect(resolveCheckedState(['a'], all)).toBe('some')
-    expect(resolveCheckedState(['a', 'b'], all)).toBe('some')
-    expect(resolveCheckedState(['c', 'a', 'b'], all)).toBe('all')
+    expect(resolveCheckedState([], all)).toBe('unchecked')
+    expect(resolveCheckedState(['a'], all)).toBe('indeterminate')
+    expect(resolveCheckedState(['a', 'b'], all)).toBe('indeterminate')
+    expect(resolveCheckedState(['c', 'a', 'b'], all)).toBe('checked')
   })
 
   it('选中集合里混进全集之外的值，不影响 all 的判定', () => {
-    expect(resolveCheckedState(['a', 'b', 'c', 'x'], ['a', 'b', 'c'])).toBe('all')
+    expect(resolveCheckedState(['a', 'b', 'c', 'x'], ['a', 'b', 'c'])).toBe('checked')
   })
 
-  it('全集缺省时只答 none / some，绝不谎报 all', () => {
-    expect(resolveCheckedState([], [])).toBe('none')
-    expect(resolveCheckedState(['a'], [])).toBe('some')
+  it('全集缺省时只答 unchecked / indeterminate，绝不谎报 checked', () => {
+    expect(resolveCheckedState([], [])).toBe('unchecked')
+    expect(resolveCheckedState(['a'], [])).toBe('indeterminate')
   })
 })
 
@@ -300,8 +300,8 @@ describe('connectCheckboxGroup：全选/半选的 trigger', () => {
 
   it('data-state 与 api.checkedState 同源', () => {
     const s = makeService({ itemValues: ALL, defaultValue: ['a', 'b'] })
-    expect(api(s).checkedState).toBe('some')
-    expect((api(s).getTriggerProps() as Record<string, unknown>)['data-state']).toBe('some')
+    expect(api(s).checkedState).toBe('indeterminate')
+    expect((api(s).getTriggerProps() as Record<string, unknown>)['data-state']).toBe('indeterminate')
   })
 
   it('可及名两段：组标题在前，全选格自己的文本在后（自指那段落在它自己的 id 上）', () => {
@@ -363,13 +363,13 @@ describe('connectCheckboxGroup：trigger 在真实 DOM 上的全选', () => {
     trigger.click()
     expect(s.context.get('value')).toEqual(['a', 'c'])
     // 禁用项没被勾上，因此全集视角下仍是"半选"
-    expect(api(s).checkedState).toBe('some')
+    expect(api(s).checkedState).toBe('indeterminate')
   })
 
   it('可用条目已全选时，再点一次整批取消，禁用项的已选状态保留', () => {
     const s = makeService({ itemValues: ['a', 'b', 'c'], defaultValue: ['b', 'a', 'c'] })
     const { trigger } = mountGroup(s, DECLS)
-    expect(api(s).checkedState).toBe('all')
+    expect(api(s).checkedState).toBe('checked')
     trigger.click()
     expect(s.context.get('value')).toEqual(['b'])
   })

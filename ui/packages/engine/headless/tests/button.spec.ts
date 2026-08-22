@@ -21,15 +21,15 @@ describe('connectButton', () => {
     const root = connectButton({ disabled: true }, normalizeProps).getRootProps() as Record<string, unknown>
     expect(root.disabled).toBe(true)
     expect(root['aria-disabled']).toBeUndefined()
-    expect(root['data-state']).toBe('disabled')
+    expect(root['data-disabled']).toBe('')
   })
 
-  it('loading 用 aria-disabled（保留焦点）+ data-state', () => {
+  it('loading 用 aria-disabled（保留焦点）+ data-loading', () => {
     const api = connectButton({ loading: true }, normalizeProps)
     const root = api.getRootProps() as Record<string, unknown>
     expect(root.disabled).toBeUndefined()
     expect(root['aria-disabled']).toBe('true')
-    expect(root['data-state']).toBe('loading')
+    expect(root['data-loading']).toBe('')
     expect(api.loading).toBe(true)
   })
 

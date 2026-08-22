@@ -37,13 +37,13 @@ export interface TagSchema extends MachineSchema {
   context: Record<string, never>
   computed: Record<string, never>
   refs: Record<string, never>
-  state: 'visible' | 'hidden'
+  state: 'open' | 'closed'
   event:
     | { type: 'OPEN' }
     | { type: 'CLOSE' }
     // 受控回写：宿主改 open 后由 watch 派发，无条件跳转、不再通知
-    | { type: 'CONTROLLED.VISIBLE' }
-    | { type: 'CONTROLLED.HIDDEN' }
+    | { type: 'CONTROLLED.OPEN' }
+    | { type: 'CONTROLLED.CLOSED' }
   tag: never
   guard: 'isOpenControlled'
   action: 'invokeOnOpen' | 'invokeOnClose' | 'syncOpen'

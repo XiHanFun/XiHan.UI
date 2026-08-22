@@ -214,7 +214,7 @@
 
   /* 勾中即填色。全选格三态里 all 与 some 都算"有值"，与条目共用同一副填色 */
   [data-scope='transfer'][data-part='item-checkbox'][data-state='checked'],
-  [data-scope='transfer'][data-part='select-all-trigger']:is([data-state='all'], [data-state='some'])::before {
+  [data-scope='transfer'][data-part='select-all-trigger']:is([data-state='checked'], [data-state='indeterminate'])::before {
     border-color: var(--xh-transfer-checkbox-border-checked, var(--xh-bg-brand));
     background: var(--xh-transfer-checkbox-bg-checked, var(--xh-bg-brand));
   }
@@ -235,7 +235,7 @@
 
   /* 全选格的三态：all 打勾、some 打横杠、none 留空。
      some 就是读屏听到的 aria-checked=mixed，两者同源，样式只认 data-state */
-  [data-scope='transfer'][data-part='select-all-trigger'][data-state='all']::before {
+  [data-scope='transfer'][data-part='select-all-trigger'][data-state='checked']::before {
     content: '';
     display: inline-block;
     inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
@@ -246,7 +246,7 @@
     mask: var(--xh-glyph-mark-check) center / contain no-repeat;
   }
 
-  [data-scope='transfer'][data-part='select-all-trigger'][data-state='some']::before {
+  [data-scope='transfer'][data-part='select-all-trigger'][data-state='indeterminate']::before {
     content: '';
     display: inline-block;
     inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));

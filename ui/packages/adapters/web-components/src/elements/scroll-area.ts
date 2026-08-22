@@ -38,7 +38,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart root - 组件根容器（承载 data-orientation / data-type / data-dragging），定位上下文
  * @csspart viewport - 真正 overflow:auto 的那层，带 tabindex=0 让键盘用户落得进来；承载 data-lane-vertical / data-lane-horizontal
  * @csspart content - 内容包裹层，横向溢出靠它撑出宽度
- * @csspart scrollbar - 某条轴的滚动条挂载点，须用 orientation 属性写明轴向；同时是那条 scrollbar 的根，承载 data-state / data-hover / data-gutter / data-native
+ * @csspart scrollbar - 某条轴的滚动条挂载点，须用 orientation 属性写明轴向；同时是那条 scrollbar 的根，承载 data-state / data-gutter / data-native
  * @csspart track - 轨道（data-scope="scrollbar"），点空白处把滑块中心挪过去
  * @csspart thumb - 滑块（data-scope="scrollbar"），位置与长度由内联逻辑属性给出；按住可拖
  * @csspart corner - 交叉口补丁（data-scope="scrollbar"），写在竖条的挂载点里；只有两条都在场时显形

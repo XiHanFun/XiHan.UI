@@ -28,7 +28,7 @@
 
 ### 全选与半选
 
-trigger 是第三态复选框，只有把全部条目的值交给 itemValues 才分得清 all 与 some
+trigger 是第三态复选框，只有把全部条目的值交给 itemValues 才分得清 checked 与 indeterminate
 
 <XhDemo src="checkbox-group/02-select-all" />
 
@@ -91,7 +91,7 @@ orientation 只出 data-orientation 交给皮肤排版，role=group 不接受 ar
 | `collection` | `CheckboxGroupNode[]` |  | 条目数据，显示文本与禁用的事实源。给了它，条目部件只需报 value。 缺省即回到「文本与禁用都写在条目部件上」的老路。 |
 | `value` | `string[]` |  | 选中值集合。给定即受控：cell 直读 prop，写只发 onValueChange 不落内部值。 |
 | `defaultValue` | `string[]` |  |  |
-| `itemValues` | `string[]` |  | 组内全部条目的值，按书写顺序声明；不给时 checkedState 退化成 none / some 两态。 |
+| `itemValues` | `string[]` |  | 组内全部条目的值，按书写顺序声明；不给时 checkedState 退化成 unchecked / indeterminate 两态。 |
 | `disabled` | `boolean` |  | 整组禁用：每一项都跟着禁用，且隐藏输入不参与提交。 |
 | `readOnly` | `boolean` |  | 只读：仍可聚焦与朗读，但用户改不动。 |
 | `invalid` | `boolean` |  | 校验失败标注，落到每个条目的 aria-invalid 上。 |

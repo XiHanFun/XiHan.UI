@@ -52,17 +52,17 @@ export function transferCheckedValues(operable: readonly string[], selected: rea
   return operable.filter(v => selected.includes(v))
 }
 
-/** 一侧的整体勾选态。可操作集合为空时恒为 none。 */
+/** 一侧的整体勾选态。可操作集合为空时恒为 unchecked。 */
 export function transferCheckState(
   operable: readonly string[],
   selected: readonly string[],
 ): TransferCheckState {
   if (operable.length === 0)
-    return 'none'
+    return 'unchecked'
   const hit = transferCheckedValues(operable, selected).length
   if (hit === 0)
-    return 'none'
-  return hit === operable.length ? 'all' : 'some'
+    return 'unchecked'
+  return hit === operable.length ? 'checked' : 'indeterminate'
 }
 
 /**

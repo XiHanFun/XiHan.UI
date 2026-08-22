@@ -2872,7 +2872,7 @@
 
 /*
  * 列表外壳这一层刻意不给盒模型：滚的是页面还是作者自己的 overflow 容器、列表长什么样，
- * 都归作者的布局管，组件只往它身上挂 data-state / data-loading / data-disabled 供作者取用。
+ * 都归作者的布局管，组件只往它身上挂 data-loading / data-disabled 供作者取用。
  * 一旦声明 display，UA 的 [hidden]{display:none} 就压不住了，故连 display 也不写。
  *
  * 哨兵是纯机制，不是可见元素：给它一条最细的高度让它有个能被观察到的盒子，
@@ -3191,7 +3191,7 @@
 }
 
 /* 折起来时不换行：窄到放不下的那几个字直接被 overflow 裁掉，不会挤成一列竖排 */
-[data-scope='layout'][data-part='sider'][data-state='collapsed'] {
+[data-scope='layout'][data-part='sider'][data-collapsed] {
   inline-size: var(--xh-_layout-sider-collapsed-w);
   white-space: nowrap;
 }
@@ -7369,7 +7369,7 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 当前那一节：颜色与字重都跟着变，不只靠指示条——
    指示条是可选部件，作者不渲染它时"当前在哪"仍然要看得出来 */
-[data-scope='anchor'][data-part='link'][data-active] {
+[data-scope='anchor'][data-part='link'][data-current] {
   color: var(--xh-anchor-link-fg-active, var(--xh-_anchor-accent-text));
   font-weight: var(--xh-anchor-link-font-weight-active, var(--xh-font-weight-medium));
 }
@@ -8470,13 +8470,13 @@ input[data-scope='mention'][data-part='input'] {
   display: none;
 }
 
-[data-scope='carousel'][data-part='indicator']:hover:not([data-selected]) {
+[data-scope='carousel'][data-part='indicator']:hover:not([data-current]) {
   background: var(--xh-carousel-indicator-bg-hover, var(--xh-fg-subtle));
 }
 
-/* 当前页：data-selected 与 aria-current='true' 由连接层成对给出，
+/* 当前页：data-current 与 aria-current='true' 由连接层成对给出，
    样式挂在 data 钩子上，无障碍语义留给 aria，两边各司其职 */
-[data-scope='carousel'][data-part='indicator'][data-selected] {
+[data-scope='carousel'][data-part='indicator'][data-current] {
   background: var(--xh-carousel-indicator-bg-selected, var(--xh-bg-brand));
 }
 
@@ -8887,7 +8887,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 /* 必须排在轻档之后：锚点走到路径上时同特指度靠书写顺序压过轻档 */
-[data-scope='cascader'][data-part='item']:not([data-disabled])[data-active] {
+[data-scope='cascader'][data-part='item']:not([data-disabled])[data-in-path] {
   background: var(--xh-cascader-row-bg-active, var(--xh-_cascader-active-bg));
   font-weight: var(--xh-cascader-row-active-font-weight, var(--xh-font-weight-semibold));
 }
@@ -9395,9 +9395,9 @@ input[data-scope='mention'][data-part='input'] {
   border-color: var(--xh-checkbox-group-indicator-border-hover, var(--xh-border-control-hover));
 }
 
-/* 选中即填色：条目是二态，全选格三态里 all 与 some 都算"有值"，共用同一副填色 */
+/* 选中即填色：条目是二态，全选格三态里 checked 与 indeterminate 都算"有值"，共用同一副填色 */
 [data-scope='checkbox-group'][data-part='indicator'][data-state='checked'],
-[data-scope='checkbox-group'][data-part='trigger']:is([data-state='all'], [data-state='some'])::before {
+[data-scope='checkbox-group'][data-part='trigger']:is([data-state='checked'], [data-state='indeterminate'])::before {
   border-color: var(--xh-checkbox-group-indicator-border-checked, var(--xh-bg-brand));
   background: var(--xh-checkbox-group-indicator-bg-checked, var(--xh-bg-brand));
 }
@@ -9414,9 +9414,9 @@ input[data-scope='mention'][data-part='input'] {
   mask: var(--xh-glyph-mark-check) center / contain no-repeat;
 }
 
-/* 全选格的三态：all 打勾、some 打横杠、none 留空。
-   some 就是读屏听到的 aria-checked=mixed，两者同源，样式只认 data-state */
-[data-scope='checkbox-group'][data-part='trigger'][data-state='all']::before {
+/* 全选格的三态：checked 打勾、indeterminate 打横杠、unchecked 留空。
+   indeterminate 就是读屏听到的 aria-checked=mixed，两者同源，样式只认 data-state */
+[data-scope='checkbox-group'][data-part='trigger'][data-state='checked']::before {
   content: '';
   display: inline-block;
   inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
@@ -9427,7 +9427,7 @@ input[data-scope='mention'][data-part='input'] {
   mask: var(--xh-glyph-mark-check) center / contain no-repeat;
 }
 
-[data-scope='checkbox-group'][data-part='trigger'][data-state='some']::before {
+[data-scope='checkbox-group'][data-part='trigger'][data-state='indeterminate']::before {
   content: '';
   display: inline-block;
   inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
@@ -15724,13 +15724,13 @@ input[data-scope='mention'][data-part='input'] {
    页码条目从不禁用（连接层只给上一页/下一页发原生 disabled），故这边不必再排除 :disabled */
 [data-scope='pagination'][data-part='prev-trigger']:hover:not(:disabled),
 [data-scope='pagination'][data-part='next-trigger']:hover:not(:disabled),
-[data-scope='pagination'][data-part='item']:not([data-selected]):hover {
+[data-scope='pagination'][data-part='item']:not([data-current]):hover {
   background: var(--xh-pagination-item-bg-hover, var(--xh-bg-subtle-hover));
 }
 
 [data-scope='pagination'][data-part='prev-trigger']:active:not(:disabled),
 [data-scope='pagination'][data-part='next-trigger']:active:not(:disabled),
-[data-scope='pagination'][data-part='item']:not([data-selected]):active {
+[data-scope='pagination'][data-part='item']:not([data-current]):active {
   background: var(--xh-pagination-item-bg-active, var(--xh-bg-subtle-active));
 }
 
@@ -15750,21 +15750,21 @@ input[data-scope='mention'][data-part='input'] {
   cursor: not-allowed;
 }
 
-/* 当前页：data-selected 与 aria-current='page' 由连接层成对给出，
+/* 当前页：data-current 与 aria-current='page' 由连接层成对给出，
    样式挂在 data 钩子上，无障碍语义留给 aria，两边各司其职。
    只换底色不加粗——字重一变字形就变宽，页码格子会跟着长一点，正是这里要避免的抖动 */
-[data-scope='pagination'][data-part='item'][data-selected] {
+[data-scope='pagination'][data-part='item'][data-current] {
   border-color: var(--xh-pagination-item-border-selected, var(--xh-_pagination-selected-bg));
   background: var(--xh-pagination-item-bg-selected, var(--xh-_pagination-selected-bg));
   color: var(--xh-pagination-item-fg-selected, var(--xh-_pagination-selected-fg));
 }
 
-[data-scope='pagination'][data-part='item'][data-selected]:hover {
+[data-scope='pagination'][data-part='item'][data-current]:hover {
   border-color: var(--xh-pagination-item-border-selected-hover, var(--xh-_pagination-selected-bg-hover));
   background: var(--xh-pagination-item-bg-selected-hover, var(--xh-_pagination-selected-bg-hover));
 }
 
-[data-scope='pagination'][data-part='item'][data-selected]:active {
+[data-scope='pagination'][data-part='item'][data-current]:active {
   border-color: var(--xh-pagination-item-border-selected-active, var(--xh-_pagination-selected-bg-active));
   background: var(--xh-pagination-item-bg-selected-active, var(--xh-_pagination-selected-bg-active));
 }
@@ -17502,14 +17502,14 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 /* 选中的那条：品牌淡底 + 强调字 */
-[data-scope='side-nav'][data-part='link'][data-selected] {
+[data-scope='side-nav'][data-part='link'][data-current] {
   background: var(--xh-bg-brand-subtle);
   color: var(--xh-fg-brand);
   font-weight: var(--xh-font-weight-medium);
 }
 
 /* 选中项的祖先枝：只染字色，一路指到当前页 */
-[data-scope='side-nav'][data-part='branch-trigger'][data-active] {
+[data-scope='side-nav'][data-part='branch-trigger'][data-in-path] {
   color: var(--xh-fg-brand);
 }
 
@@ -17816,7 +17816,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 /* 落进已选区间的刻度点跟 range 同色 */
-[data-scope='slider'][data-part='mark'][data-active] {
+[data-scope='slider'][data-part='mark'][data-passed] {
   background: var(--xh-slider-mark-bg-active, var(--xh-_tone, var(--xh-bg-brand)));
 }
 
@@ -17834,7 +17834,7 @@ input[data-scope='mention'][data-part='input'] {
   user-select: none;
 }
 
-[data-scope='slider'][data-part='mark-label'][data-active] {
+[data-scope='slider'][data-part='mark-label'][data-passed] {
   color: var(--xh-slider-mark-label-fg-active, var(--xh-fg-default));
 }
 
@@ -18672,25 +18672,25 @@ input[data-scope='mention'][data-part='input'] {
   visibility: visible;
 }
 
-[data-scope='table'][data-part='select-all-trigger']:is([data-state='all'], [data-state='some']),
+[data-scope='table'][data-part='select-all-trigger']:is([data-state='checked'], [data-state='indeterminate']),
 [data-scope='table'][data-part='row-select-trigger'][data-selected] {
   border-color: var(--xh-table-trigger-border-checked, var(--xh-table-trigger-bg-checked, var(--xh-bg-brand)));
   background: var(--xh-table-trigger-bg-checked, var(--xh-bg-brand));
 }
 
 /* 未选中时勾不出现，但盒子还在：它是边框画出来的空框 */
-[data-scope='table'][data-part='select-all-trigger'][data-state='none'],
+[data-scope='table'][data-part='select-all-trigger'][data-state='unchecked'],
 [data-scope='table'][data-part='row-select-trigger']:not([data-selected]) {
   color: transparent;
 }
 
 /* 半选画一条横杠盖住勾：aria-checked=mixed 在视觉上也得与"全选"分得开 */
-[data-scope='table'][data-part='select-all-trigger'][data-state='some'] {
+[data-scope='table'][data-part='select-all-trigger'][data-state='indeterminate'] {
   position: relative;
   color: transparent;
 }
 
-[data-scope='table'][data-part='select-all-trigger'][data-state='some']::after {
+[data-scope='table'][data-part='select-all-trigger'][data-state='indeterminate']::after {
   position: absolute;
   inline-size: 60%;
   block-size: var(--xh-stroke-thick);
@@ -22042,7 +22042,7 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 勾中即填色。全选格三态里 all 与 some 都算"有值"，与条目共用同一副填色 */
 [data-scope='transfer'][data-part='item-checkbox'][data-state='checked'],
-[data-scope='transfer'][data-part='select-all-trigger']:is([data-state='all'], [data-state='some'])::before {
+[data-scope='transfer'][data-part='select-all-trigger']:is([data-state='checked'], [data-state='indeterminate'])::before {
   border-color: var(--xh-transfer-checkbox-border-checked, var(--xh-bg-brand));
   background: var(--xh-transfer-checkbox-bg-checked, var(--xh-bg-brand));
 }
@@ -22063,7 +22063,7 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 全选格的三态：all 打勾、some 打横杠、none 留空。
    some 就是读屏听到的 aria-checked=mixed，两者同源，样式只认 data-state */
-[data-scope='transfer'][data-part='select-all-trigger'][data-state='all']::before {
+[data-scope='transfer'][data-part='select-all-trigger'][data-state='checked']::before {
   content: '';
   display: inline-block;
   inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
@@ -22074,7 +22074,7 @@ input[data-scope='mention'][data-part='input'] {
   mask: var(--xh-glyph-mark-check) center / contain no-repeat;
 }
 
-[data-scope='transfer'][data-part='select-all-trigger'][data-state='some']::before {
+[data-scope='transfer'][data-part='select-all-trigger'][data-state='indeterminate']::before {
   content: '';
   display: inline-block;
   inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));

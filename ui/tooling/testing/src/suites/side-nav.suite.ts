@@ -101,13 +101,13 @@ function contentsShown(...values: readonly string[]): readonly AttrExpectation[]
 function linksSelected(...values: readonly string[]): readonly AttrExpectation[] {
   return ['home', 'user-list', 'user-role', 'order-list'].map(v => ({
     'aria-current': values.includes(v) ? 'page' : null,
-    'data-selected': values.includes(v) ? '' : null,
+    'data-current': values.includes(v) ? '' : null,
   }))
 }
 
-/** 选中项的祖先分支点亮 data-active。 */
+/** 选中项的祖先分支点亮 data-in-path。 */
 function triggersActive(...values: readonly string[]): readonly AttrExpectation[] {
-  return ['user', 'order'].map(v => ({ 'data-active': values.includes(v) ? '' : null }))
+  return ['user', 'order'].map(v => ({ 'data-in-path': values.includes(v) ? '' : null }))
 }
 
 /** 折叠态弹出面板的开合期望：定位层、面板与触发按钮三处同步。 */
@@ -262,7 +262,7 @@ export const sideNavSuite: ConformanceSuite = {
         parts: {
           'root': { 'role': 'navigation', 'aria-label': 'Sidebar', 'data-collapsed': null, 'data-disabled': null, 'dir': null },
           'list': { 'data-collapsed': null },
-          'branch[0]': { 'data-state': 'closed', 'data-active': null, 'data-disabled': null },
+          'branch[0]': { 'data-state': 'closed', 'data-in-path': null, 'data-disabled': null },
           'branch-trigger[0]': {
             'type': 'button',
             'id': '@self',
@@ -270,7 +270,7 @@ export const sideNavSuite: ConformanceSuite = {
             'aria-expanded': 'false',
             'aria-controls': '@part(branch-content[0])',
             'data-state': 'closed',
-            'data-active': null,
+            'data-in-path': null,
             'data-disabled': null,
             'disabled': null,
             'tabindex': '-1',
@@ -281,7 +281,7 @@ export const sideNavSuite: ConformanceSuite = {
           'link[0]': {
             'data-value': 'home',
             'aria-current': null,
-            'data-selected': null,
+            'data-current': null,
             'data-disabled': null,
             'aria-disabled': null,
             'tabindex': '0',

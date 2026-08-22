@@ -217,13 +217,13 @@ export function connectSlider<T extends PropTypes>(
     getMarkProps: ({ value: v }) => normalize.element({
       ...parts.mark.attrs,
       'aria-hidden': 'true',
-      'data-active': dataAttr(markActive(v)),
+      'data-passed': dataAttr(markActive(v)),
       'style': axisStyle(valueToPercent(v, min, max)),
     }),
 
     getMarkLabelProps: ({ value: v }) => normalize.element({
       ...parts['mark-label'].attrs,
-      'data-active': dataAttr(markActive(v)),
+      'data-passed': dataAttr(markActive(v)),
       'style': axisStyle(valueToPercent(v, min, max)),
       // 点文案把最近的滑块跳到这一档；禁用/只读由机器守卫拦
       'onClick': () => jumpToMark(v),

@@ -8,7 +8,7 @@ import type { MachineSchema } from '@xihan-ui/machine'
 export type TransferSide = 'source' | 'target'
 
 /** 一侧的整体勾选态：全选 / 半选 / 一个没勾。select-all-trigger 的 aria-checked 由它翻译。 */
-export type TransferCheckState = 'all' | 'some' | 'none'
+export type TransferCheckState = 'checked' | 'indeterminate' | 'unchecked'
 
 /**
  * 条目全集里的一条，是元信息的唯一事实源：标签与禁用都从这里读，作者的标记只管长相。

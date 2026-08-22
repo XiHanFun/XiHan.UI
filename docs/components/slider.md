@@ -225,8 +225,8 @@ thumb 自己是定位上下文，气泡挂在它上方就跟着走位；dragging
 | `root` | `data-tone` | props.tone |
 | `thumb` | `data-dragging` | ''（条件成立时才出现） |
 | `thumb` | `data-index` | String(thumb.index) |
-| `mark` | `data-active` | ''（条件成立时才出现） |
-| `mark-label` | `data-active` | ''（条件成立时才出现） |
+| `mark` | `data-passed` | ''（条件成立时才出现） |
+| `mark-label` | `data-passed` | ''（条件成立时才出现） |
 | `hidden-input` | `data-index` | String(thumb.index) |
 
 ## CSS 变量

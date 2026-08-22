@@ -71,20 +71,20 @@ export function tableRowSelected(selection: TableSelection, id: string): boolean
 
 /**
  * 全选把手的三态。ids 是可选行全集。
- * 一行可选的都没有时恒为 none，此时 'all' 也无从落地。
+ * 一行可选的都没有时恒为 unchecked，此时 'all' 也无从落地。
  */
 export function tableSelectionState(
   selection: TableSelection,
   ids: readonly string[],
 ): TableSelectionState {
   if (ids.length === 0)
-    return 'none'
+    return 'unchecked'
   if (selection === 'all')
-    return 'all'
+    return 'checked'
   const hit = ids.filter(id => selection.includes(id)).length
   if (hit === 0)
-    return 'none'
-  return hit === ids.length ? 'all' : 'some'
+    return 'unchecked'
+  return hit === ids.length ? 'checked' : 'indeterminate'
 }
 
 /**

@@ -23,7 +23,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires visible-change - 露面与否变化；detail 为 `{ visible: boolean }`
- * @csspart root - 定位壳，承载 data-visible / data-tone / data-size；收起时带 hidden
+ * @csspart root - 定位壳，承载 data-state（visible / hidden）/ data-tone / data-size；收起时带 hidden
  * @csspart trigger - 按钮，须写成 `<button>`；可及名字由 translations.trigger 给
  */
 export class XhBackTopElement extends XhElement {

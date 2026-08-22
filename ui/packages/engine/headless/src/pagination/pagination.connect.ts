@@ -84,15 +84,15 @@ export function connectPagination<T extends PropTypes>(
 
     getItemProps: (item) => {
       // 总页数为 0 时谁都不是当前页，此时的页码 1 只是兜底读数
-      const selected = totalPages > 0 && item.page === page
+      const current = totalPages > 0 && item.page === page
       return normalize.button({
         ...parts.item.attrs,
         [ITEM_VALUE_ATTR]: item.page,
         'type': 'button',
         'aria-label': label.item(item.page),
         // aria-current 不是布尔属性，规范里默认值就是 "false"，省略即"不是当前项"
-        'aria-current': selected ? 'page' : undefined,
-        'data-selected': dataAttr(selected),
+        'aria-current': current ? 'page' : undefined,
+        'data-current': dataAttr(current),
         // 不写 tabindex：分页是一组各自独立的按钮，每个页码都是一个 Tab 停靠点
         'onClick': () => setPage(item.page),
       })

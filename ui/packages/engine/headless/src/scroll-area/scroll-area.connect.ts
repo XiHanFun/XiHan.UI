@@ -130,7 +130,6 @@ export function connectScrollArea<T extends PropTypes>(
         'data-orientation': axis,
         'data-type': type,
         'data-state': shown ? 'visible' : 'hidden',
-        'data-hover': dataAttr(bar.hover),
         'data-scrolling': dataAttr(bar.scrolling),
         'data-dragging': dataAttr(bar.dragging),
         'data-native': dataAttr(bar.native),

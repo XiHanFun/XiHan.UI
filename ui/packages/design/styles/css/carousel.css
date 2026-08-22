@@ -182,13 +182,13 @@
     display: none;
   }
 
-  [data-scope='carousel'][data-part='indicator']:hover:not([data-selected]) {
+  [data-scope='carousel'][data-part='indicator']:hover:not([data-current]) {
     background: var(--xh-carousel-indicator-bg-hover, var(--xh-fg-subtle));
   }
 
-  /* 当前页：data-selected 与 aria-current='true' 由连接层成对给出，
+  /* 当前页：data-current 与 aria-current='true' 由连接层成对给出，
      样式挂在 data 钩子上，无障碍语义留给 aria，两边各司其职 */
-  [data-scope='carousel'][data-part='indicator'][data-selected] {
+  [data-scope='carousel'][data-part='indicator'][data-current] {
     background: var(--xh-carousel-indicator-bg-selected, var(--xh-bg-brand));
   }
 

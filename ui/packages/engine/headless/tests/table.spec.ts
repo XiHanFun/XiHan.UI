@@ -321,18 +321,18 @@ describe('选择集合的三态推导', () => {
 
   it('三态：空 / 部分 / 全部', () => {
     const ids = ['a', 'b', 'd']
-    expect(tableSelectionState([], ids)).toBe('none')
-    expect(tableSelectionState(['a'], ids)).toBe('some')
-    expect(tableSelectionState(['a', 'b'], ids)).toBe('some')
-    expect(tableSelectionState(['a', 'b', 'd'], ids)).toBe('all')
+    expect(tableSelectionState([], ids)).toBe('unchecked')
+    expect(tableSelectionState(['a'], ids)).toBe('indeterminate')
+    expect(tableSelectionState(['a', 'b'], ids)).toBe('indeterminate')
+    expect(tableSelectionState(['a', 'b', 'd'], ids)).toBe('checked')
     // 禁用行被选中不影响三态：它压根不在分母里
-    expect(tableSelectionState(['c'], ids)).toBe('none')
+    expect(tableSelectionState(['c'], ids)).toBe('unchecked')
   })
 
   it('裸 all 恒为全选；一行可选的都没有时恒为空态', () => {
-    expect(tableSelectionState('all', ['a'])).toBe('all')
-    expect(tableSelectionState('all', [])).toBe('none')
-    expect(tableSelectionState(['a'], [])).toBe('none')
+    expect(tableSelectionState('all', ['a'])).toBe('checked')
+    expect(tableSelectionState('all', [])).toBe('unchecked')
+    expect(tableSelectionState(['a'], [])).toBe('unchecked')
   })
 
   it('单行选中判定认得裸 all', () => {
@@ -752,17 +752,17 @@ describe('connectTable 属性输出', () => {
     const h = mount({ selectionMode: 'multiple' })
     expect(h.selectAll.getAttribute('role')).toBe('checkbox')
     expect(h.selectAll.getAttribute('aria-checked')).toBe('false')
-    expect(h.selectAll.getAttribute('data-state')).toBe('none')
+    expect(h.selectAll.getAttribute('data-state')).toBe('unchecked')
     expect(h.selectAll.getAttribute('tabindex')).toBe('0')
     expect(h.selectAll.getAttribute('aria-disabled')).toBe('false')
 
     h.api().selectRow('a')
     expect(h.selectAll.getAttribute('aria-checked')).toBe('mixed')
-    expect(h.selectAll.getAttribute('data-state')).toBe('some')
+    expect(h.selectAll.getAttribute('data-state')).toBe('indeterminate')
 
     h.api().toggleSelectAll()
     expect(h.selectAll.getAttribute('aria-checked')).toBe('true')
-    expect(h.selectAll.getAttribute('data-state')).toBe('all')
+    expect(h.selectAll.getAttribute('data-state')).toBe('checked')
   })
 
   it('单选与 none 下全选把手转 aria-disabled 且点不动', () => {

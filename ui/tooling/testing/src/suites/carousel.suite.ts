@@ -208,13 +208,13 @@ export const carouselSuite: ConformanceSuite = {
             'type': 'button',
             'aria-label': 'Go to slide 1',
             'aria-current': 'true',
-            'data-selected': '',
+            'data-current': '',
             'data-index': '0',
             // 指示点不做 roving tabindex：每一颗都该是一个 Tab 停靠点
             'tabindex': null,
           },
           // 省略等于"没说"，读屏就分不出"不是当前页"与"作者忘了标"
-          'indicator[1]': { 'aria-current': 'false', 'data-selected': null },
+          'indicator[1]': { 'aria-current': 'false', 'data-current': null },
         },
       },
       steps: [expectTrack('translateX(0%)')],
@@ -231,8 +231,8 @@ export const carouselSuite: ConformanceSuite = {
             parts: {
               'item[0]': { 'data-inview': null },
               'item[1]': { 'data-inview': '' },
-              'indicator[0]': { 'aria-current': 'false', 'data-selected': null },
-              'indicator[1]': { 'aria-current': 'true', 'data-selected': '' },
+              'indicator[0]': { 'aria-current': 'false', 'data-current': null },
+              'indicator[1]': { 'aria-current': 'true', 'data-current': '' },
               'prev-trigger': { 'disabled': null, 'data-disabled': null },
             },
           },

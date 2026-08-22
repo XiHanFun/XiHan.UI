@@ -29,9 +29,9 @@ function press(props: { onClick?: unknown }): void {
 
 describe('tagMachine 起步状态', () => {
   it('什么都不给即显示；defaultOpen=false 起步收起；open 压过 defaultOpen', () => {
-    expect(makeTag().state()).toBe('visible')
-    expect(makeTag({ defaultOpen: false }).state()).toBe('hidden')
-    expect(makeTag({ open: false, defaultOpen: true }).state()).toBe('hidden')
+    expect(makeTag().state()).toBe('open')
+    expect(makeTag({ defaultOpen: false }).state()).toBe('closed')
+    expect(makeTag({ open: false, defaultOpen: true }).state()).toBe('closed')
   })
 })
 
@@ -41,14 +41,14 @@ describe('tagMachine 非受控', () => {
     const t = makeTag({ closable: true, onOpenChange: d => seen.push(d) })
 
     press(t.api().getCloseTriggerProps())
-    expect(t.state()).toBe('hidden')
+    expect(t.state()).toBe('closed')
     expect(seen).toEqual([{ open: false }])
 
     t.api().setOpen(false)
     expect(seen).toEqual([{ open: false }])
 
     t.api().setOpen(true)
-    expect(t.state()).toBe('visible')
+    expect(t.state()).toBe('open')
     expect(seen).toEqual([{ open: false }, { open: true }])
   })
 })
@@ -59,11 +59,11 @@ describe('tagMachine 受控', () => {
     const t = makeTag({ closable: true, open: true, onOpenChange: d => seen.push(d) })
 
     press(t.api().getCloseTriggerProps())
-    expect(t.state()).toBe('visible')
+    expect(t.state()).toBe('open')
     expect(seen).toEqual([{ open: false }])
 
     t.setProps({ open: false })
-    expect(t.state()).toBe('hidden')
+    expect(t.state()).toBe('closed')
     // 回写不再通知第二遍
     expect(seen).toEqual([{ open: false }])
   })
@@ -71,7 +71,7 @@ describe('tagMachine 受控', () => {
   it('open 变回 undefined 即转非受控，不强制收起', () => {
     const t = makeTag({ open: true })
     t.setProps({ open: undefined })
-    expect(t.state()).toBe('visible')
+    expect(t.state()).toBe('open')
   })
 })
 
@@ -100,14 +100,14 @@ describe('connectTag 三轴', () => {
 })
 
 describe('connectTag 显隐', () => {
-  it('收起态给 root 打 hidden 与 data-state=hidden，展开态两者都不留假值', () => {
+  it('收起态给 root 打 hidden 与 data-state=closed，展开态两者都不留假值', () => {
     const t = makeTag({ closable: true })
     expect(t.api().getRootProps().hidden).toBeUndefined()
-    expect(t.api().getRootProps()['data-state']).toBe('visible')
+    expect(t.api().getRootProps()['data-state']).toBe('open')
 
     t.api().setOpen(false)
     expect(t.api().getRootProps().hidden).toBe(true)
-    expect(t.api().getRootProps()['data-state']).toBe('hidden')
+    expect(t.api().getRootProps()['data-state']).toBe('closed')
   })
 })
 
@@ -129,7 +129,7 @@ describe('connectTag 关闭钮', () => {
     expect(close.type).toBe('button')
 
     press(close)
-    expect(t.state()).toBe('visible')
+    expect(t.state()).toBe('open')
     expect(seen).toEqual([])
   })
 
@@ -145,7 +145,7 @@ describe('connectTag 关闭钮', () => {
     expect(t.api().getRootProps()['data-disabled']).toBe('')
 
     press(close)
-    expect(t.state()).toBe('visible')
+    expect(t.state()).toBe('open')
     expect(seen).toEqual([])
   })
 

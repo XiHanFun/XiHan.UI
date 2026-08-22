@@ -375,7 +375,7 @@
   }
 
   /* 必须排在轻档之后：锚点走到路径上时同特指度靠书写顺序压过轻档 */
-  [data-scope='cascader'][data-part='item']:not([data-disabled])[data-active] {
+  [data-scope='cascader'][data-part='item']:not([data-disabled])[data-in-path] {
     background: var(--xh-cascader-row-bg-active, var(--xh-_cascader-active-bg));
     font-weight: var(--xh-cascader-row-active-font-weight, var(--xh-font-weight-semibold));
   }

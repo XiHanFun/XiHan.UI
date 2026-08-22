@@ -147,7 +147,7 @@ export function connectCascader<T extends PropTypes>(
       // 焦点所在与选中互相独立
       'data-highlighted': dataAttr(!!focusedMeta && focusedMeta.value === v),
       // 落在展开路径上
-      'data-active': dataAttr(isActive(v)),
+      'data-in-path': dataAttr(isActive(v)),
     }
   }
 

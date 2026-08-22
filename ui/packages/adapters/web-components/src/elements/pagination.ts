@@ -39,7 +39,7 @@ function itemPage(el: HTMLElement): number {
  * @csspart root - nav 地标，承载 aria-label 与 data-empty
  * @csspart prev-trigger - 上一页；首页时转原生 disabled
  * @csspart next-trigger - 下一页；末页时转原生 disabled
- * @csspart item - 页码按钮，须自带 value 属性；当前页带 aria-current="page" 与 data-selected
+ * @csspart item - 页码按钮，须自带 value 属性；当前页带 aria-current="page" 与 data-current
  * @csspart ellipsis - 折叠掉的那几页的占位，对读屏隐藏
  */
 export class XhPaginationElement extends XhElement {

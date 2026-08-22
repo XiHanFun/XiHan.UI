@@ -7,26 +7,26 @@ const { createMachine } = setup<TagSchema>()
 export const tagMachine = createMachine({
   name: 'tag',
   // 标签是内容流里常驻的一块，没给任何显隐声明就是显示
-  initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen') ?? true) ? 'visible' : 'hidden'),
+  initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen') ?? true) ? 'open' : 'closed'),
   watch: ({ track, prop, action }) => track([() => prop('open')], () => action(['syncOpen'])),
   states: {
-    hidden: {
+    closed: {
       on: {
         // 受控命中 → 只发意图；非受控 → 落 target 并一并通知
         'OPEN': [
           { guard: 'isOpenControlled', actions: ['invokeOnOpen'] },
-          { target: 'visible', actions: ['invokeOnOpen'] },
+          { target: 'open', actions: ['invokeOnOpen'] },
         ],
-        'CONTROLLED.VISIBLE': { target: 'visible' },
+        'CONTROLLED.OPEN': { target: 'open' },
       },
     },
-    visible: {
+    open: {
       on: {
         'CLOSE': [
           { guard: 'isOpenControlled', actions: ['invokeOnClose'] },
-          { target: 'hidden', actions: ['invokeOnClose'] },
+          { target: 'closed', actions: ['invokeOnClose'] },
         ],
-        'CONTROLLED.HIDDEN': { target: 'hidden' },
+        'CONTROLLED.CLOSED': { target: 'closed' },
       },
     },
   },
@@ -42,7 +42,7 @@ export const tagMachine = createMachine({
         const open = prop('open')
         if (open === undefined)
           return
-        send(open ? { type: 'CONTROLLED.VISIBLE' } : { type: 'CONTROLLED.HIDDEN' })
+        send(open ? { type: 'CONTROLLED.OPEN' } : { type: 'CONTROLLED.CLOSED' })
       },
     },
   },

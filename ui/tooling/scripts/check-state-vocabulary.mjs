@@ -4,7 +4,7 @@
 // 皮肤层完全靠 data-* 选中状态，所以这些属性名与取值形态是对外契约的一部分：
 // 拼成 data-isOpen、或者布尔属性时有时无地写成空串，使用者那条全局规则就会漏掉一半组件。
 //
-// 四条判据，都是当前已清零、纯防回归的：
+// 七条判据：
 // ① 属性名形态：一律小写连字符，不许驼峰或下划线。
 // ② 布尔类状态一律走 dataAttr(...)：它把 false 编成 undefined（属性缺席）、true 编成空串，
 //    手写的 `cond ? '' : undefined` 与它等价但绕开了单一出口，改语义时会漏掉。
@@ -95,6 +95,7 @@ for (const entry of entries) {
     }
 
     const posix = path.replaceAll('\\', '/')
+    connectSources.push([posix, source])
     // 先收本文件里由 dataAttr 赋值的常量，值经它中转时仍算布尔形态
     const boolConsts = new Set([...source.matchAll(RE_BOOL_CONST)].map(m => m[1]))
     for (const match of source.matchAll(RE_KEY_VALUE)) {
@@ -138,6 +139,31 @@ for (const [family, def] of Object.entries(vocab['data-state'])) {
 for (const [aria, map] of Object.entries(vocab.aria)) {
   if (map.family !== null && !vocab['data-state'][map.family])
     problems.push(`state-vocabulary.json 里 ${aria} 指向的族 ${map.family} 不存在`)
+}
+
+// ⑥ 发了 aria-current 的节点，data 侧配对的是 data-current（steps 例外：它的 data-state 走 step 族）
+// ⑦ 有开合交互（api 上有 setOpen）的组件，data-state 走 open / closed，不借派生显隐的 visible / hidden
+for (const [path, source] of connectSources) {
+  for (const getter of source.split(/\n\s{4}(?=get[A-Z]\w*Props\s*[:(])/)) {
+    if (!/['"]aria-current['"]\s*:/.test(getter))
+      continue
+    if (/\/steps\//.test(path))
+      continue
+    if (!/['"]data-current['"]\s*:/.test(getter))
+      problems.push(`${path} 里发 aria-current 的节点没配 data-current——当前项在 data 侧只用这一个名字`)
+    if (/['"]data-(?:selected|active)['"]\s*:/.test(getter))
+      problems.push(`${path} 里发 aria-current 的节点还在发 data-selected / data-active——当前项改 data-current`)
+  }
+  if (/\bsetOpen\b/.test(source) && /['"]data-state['"]\s*:[^,\n]*['"](?:visible|hidden)['"]/.test(source))
+    problems.push(`${path} 有开合交互（setOpen）却把 data-state 发成 visible / hidden——改 open / closed`)
+}
+
+// ⑤ 退役的属性名不许再发
+for (const [path, source] of connectSources) {
+  for (const match of source.matchAll(RE_DATA_KEY)) {
+    if (match[1] in vocab.retired)
+      problems.push(`${path}:${lineOf(source, match.index)} 发了已退役的 ${match[1]}——${vocab.retired[match[1]]}`)
+  }
 }
 
 for (const [path, source] of connectSources) {

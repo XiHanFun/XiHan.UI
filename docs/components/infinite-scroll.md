@@ -86,13 +86,6 @@ phase / loading / disabled 由组件交给宿主，加载提示与结束语都�
 
 ## 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
-
-| 部件 | 取值 |
-| --- | --- |
-| `root` | state.get() |
-| `sentinel` | state.get() |
-
 状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **事件**：`SENTINEL.ENTER` · `MODE.SYNC`
@@ -138,8 +131,6 @@ phase / loading / disabled 由组件交给宿主，加载提示与结束语都�
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
 | `root` | `data-loading` | ''（条件成立时才出现） |
-| `root` | `data-state` | state.get() |
-| `sentinel` | `data-state` | state.get() |
 
 ## CSS 变量
 

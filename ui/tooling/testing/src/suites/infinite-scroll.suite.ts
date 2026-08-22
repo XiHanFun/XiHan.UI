@@ -133,7 +133,7 @@ function observerWiringCase(): ConformanceCase {
           restore?.()
           restore = undefined
         },
-        expect: { parts: { root: { 'data-state': 'loading' } } },
+        expect: { parts: { root: { 'data-loading': '' } } },
       },
     ],
   }
@@ -153,7 +153,6 @@ export const infiniteScrollSuite: ConformanceSuite = {
         counts: { root: 1, sentinel: 1 },
         parts: {
           root: {
-            'data-state': 'idle',
             'data-loading': null,
             'data-disabled': null,
             // 没在取数就不该说自己忙
@@ -161,7 +160,7 @@ export const infiniteScrollSuite: ConformanceSuite = {
             'role': null,
           },
           // 哨兵是纯机制，没有可读内容
-          sentinel: { 'aria-hidden': 'true', 'data-state': 'idle' },
+          sentinel: { 'aria-hidden': 'true', 'data-loading': null, 'data-disabled': null },
         },
         activeElement: null,
       },
@@ -173,12 +172,11 @@ export const infiniteScrollSuite: ConformanceSuite = {
       initial: {
         parts: {
           root: {
-            'data-state': 'loading',
             'data-loading': '',
             'aria-busy': 'true',
             'data-disabled': null,
           },
-          sentinel: { 'data-state': 'loading' },
+          sentinel: { 'data-loading': null },
         },
       },
     },
@@ -189,7 +187,6 @@ export const infiniteScrollSuite: ConformanceSuite = {
       initial: {
         parts: {
           root: {
-            'data-state': 'paused',
             'data-disabled': '',
             'data-loading': null,
             // 停住了就不忙了
@@ -208,15 +205,14 @@ export const infiniteScrollSuite: ConformanceSuite = {
           props: { loading: false },
           expect: {
             parts: {
-              root: { 'data-state': 'idle', 'data-loading': null, 'aria-busy': null },
-              sentinel: { 'data-state': 'idle' },
+              root: { 'data-loading': null, 'aria-busy': null },
             },
           },
         },
         {
           kind: 'setProps',
           props: { loading: true },
-          expect: { parts: { root: { 'data-state': 'loading', 'data-loading': '' } } },
+          expect: { parts: { root: { 'data-loading': '' } } },
         },
       ],
     },
@@ -228,7 +224,7 @@ export const infiniteScrollSuite: ConformanceSuite = {
         {
           kind: 'setProps',
           props: { disabled: false },
-          expect: { parts: { root: { 'data-state': 'idle', 'data-disabled': null } } },
+          expect: { parts: { root: { 'data-disabled': null, 'data-loading': null } } },
         },
       ],
     },

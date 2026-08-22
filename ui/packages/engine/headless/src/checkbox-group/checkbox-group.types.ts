@@ -7,11 +7,11 @@ export interface CheckboxGroupValueChangeDetails {
 
 /**
  * 全选态，用于驱动一个 indeterminate 的父复选框。
- * - all  组内声明的条目全部选中
- * - some 选中了一部分（对应 aria-checked="mixed"）
- * - none 一个都没选中
+ * - checked       组内声明的条目全部选中
+ * - indeterminate 选中了一部分（对应 aria-checked="mixed"）
+ * - unchecked     一个都没选中
  */
-export type CheckboxGroupCheckedState = 'all' | 'some' | 'none'
+export type CheckboxGroupCheckedState = 'checked' | 'unchecked' | 'indeterminate'
 
 /** 条目数据。给了 collection，显示文本与禁用就以它为准。 */
 export interface CheckboxGroupNode {
@@ -50,7 +50,7 @@ export interface CheckboxGroupSchema extends MachineSchema {
     /** 选中值集合。给定即受控：cell 直读 prop，写只发 onValueChange 不落内部值。 */
     value?: string[]
     defaultValue?: string[]
-    /** 组内全部条目的值，按书写顺序声明；不给时 checkedState 退化成 none / some 两态。 */
+    /** 组内全部条目的值，按书写顺序声明；不给时 checkedState 退化成 unchecked / indeterminate 两态。 */
     itemValues?: string[]
     /** 整组禁用：每一项都跟着禁用，且隐藏输入不参与提交。 */
     disabled?: boolean

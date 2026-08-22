@@ -104,13 +104,6 @@ header-fixed 让头钉在滚动容器上沿，sider-fixed 让侧栏跟着钉住�
 
 ## 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
-
-| 部件 | 取值 |
-| --- | --- |
-| `sider` | 'collapsed' \| 'expanded' |
-| `sider-trigger` | 'collapsed' \| 'expanded' |
-
 状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`expanded` · `collapsed`
@@ -167,10 +160,10 @@ header-fixed 让头钉在滚动容器上沿，sider-fixed 让侧栏跟着钉住�
 | `root` | `data-sider-fixed` | ''（条件成立时才出现） |
 | `root` | `data-sider-placement` | props.siderPlacement |
 | `header` | `data-fixed` | ''（条件成立时才出现） |
+| `sider` | `data-collapsed` | ''（条件成立时才出现） |
 | `sider` | `data-fixed` | ''（条件成立时才出现） |
 | `sider` | `data-placement` | props.siderPlacement |
-| `sider` | `data-state` | 'collapsed' \| 'expanded' |
-| `sider-trigger` | `data-state` | 'collapsed' \| 'expanded' |
+| `sider-trigger` | `data-collapsed` | ''（条件成立时才出现） |
 
 ## CSS 变量
 

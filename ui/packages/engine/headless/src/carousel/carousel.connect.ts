@@ -264,7 +264,7 @@ export function connectCarousel<T extends PropTypes>(
         // 非当前页也显式写 'false'，不省略
         'aria-current': current ? 'true' : 'false',
         'data-index': String(index),
-        'data-selected': dataAttr(current),
+        'data-current': dataAttr(current),
         // 指示点各占一个 Tab 位，不做 roving tabindex
         'onClick': () => setPage(index),
       })

@@ -200,7 +200,7 @@ pageSize 归宿主持有；换档后总页数重算，越界的当前页被夹�
 | `root` | `data-tone` | props.tone |
 | `prev-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `next-trigger` | `data-disabled` | ''（条件成立时才出现） |
-| `item` | `data-selected` | ''（条件成立时才出现） |
+| `item` | `data-current` | ''（条件成立时才出现） |
 
 ## CSS 变量
 

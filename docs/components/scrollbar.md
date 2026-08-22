@@ -190,7 +190,6 @@ auto 溢出就露、always 恒露、scroll 滚动时露、hover 指针进入才�
 | `root` | `data-disabled` | ''（条件成立时才出现） |
 | `root` | `data-dragging` | ''（条件成立时才出现） |
 | `root` | `data-gutter` | ''（条件成立时才出现） |
-| `root` | `data-hover` | ''（条件成立时才出现） |
 | `root` | `data-native` | ''（条件成立时才出现） |
 | `root` | `data-orientation` | props.orientation |
 | `root` | `data-scrolling` | ''（条件成立时才出现） |

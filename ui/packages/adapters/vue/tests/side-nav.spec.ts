@@ -132,15 +132,15 @@ describe('side-nav', () => {
     expect(t.expanded()).toEqual(['order'])
   })
 
-  it('点叶子落选中：aria-current=page + 祖先枝 data-active', async () => {
+  it('点叶子落选中：aria-current=page + 祖先枝 data-in-path', async () => {
     const t = mountNav({ defaultExpandedValue: ['user'] })
     await tick()
     el('link', 'user-list').click()
     await tick()
     expect(t.value()).toBe('user-list')
     expect(el('link', 'user-list').getAttribute('aria-current')).toBe('page')
-    expect(el('branch-trigger', 'user').hasAttribute('data-active')).toBe(true)
-    expect(el('branch-trigger', 'order').hasAttribute('data-active')).toBe(false)
+    expect(el('branch-trigger', 'user').hasAttribute('data-in-path')).toBe(true)
+    expect(el('branch-trigger', 'order').hasAttribute('data-in-path')).toBe(false)
   })
 
   it('链接渲染 collection 里的 href', async () => {

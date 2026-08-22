@@ -31,7 +31,6 @@ export const buttonSuite: ConformanceSuite = {
             'type': 'button',
             'disabled': null,
             'aria-disabled': null,
-            'data-state': null,
             'data-disabled': null,
             'data-loading': null,
           },
@@ -47,7 +46,7 @@ export const buttonSuite: ConformanceSuite = {
       },
     },
     {
-      name: 'disabled：原生 disabled + data-state=disabled，不上 aria-disabled',
+      name: 'disabled：原生 disabled + data-disabled，不上 aria-disabled',
       spec: { apg: `${APG}#keyboardinteraction` },
       props: { disabled: true },
       initial: {
@@ -55,7 +54,6 @@ export const buttonSuite: ConformanceSuite = {
           root: {
             'disabled': '',
             'data-disabled': '',
-            'data-state': 'disabled',
             'aria-disabled': null,
             'data-loading': null,
           },
@@ -63,7 +61,7 @@ export const buttonSuite: ConformanceSuite = {
       },
     },
     {
-      name: 'loading：aria-disabled=true + data-state=loading，不上原生 disabled（保留焦点）',
+      name: 'loading：aria-disabled=true + data-loading，不上原生 disabled（保留焦点）',
       spec: { apg: APG },
       props: { loading: true },
       initial: {
@@ -71,7 +69,6 @@ export const buttonSuite: ConformanceSuite = {
           root: {
             'aria-disabled': 'true',
             'data-loading': '',
-            'data-state': 'loading',
             'disabled': null,
           },
         },

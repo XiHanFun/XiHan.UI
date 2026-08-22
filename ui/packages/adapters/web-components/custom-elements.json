@@ -1396,7 +1396,7 @@
           "name": "XhBackTopElement",
           "cssParts": [
             {
-              "description": "定位壳，承载 data-visible / data-tone / data-size；收起时带 hidden",
+              "description": "定位壳，承载 data-state（visible / hidden）/ data-tone / data-size；收起时带 hidden",
               "name": "root"
             },
             {
@@ -18782,7 +18782,7 @@
           "name": "XhInfiniteScrollElement",
           "cssParts": [
             {
-              "description": "列表外壳，承载 data-state / data-loading / data-disabled 与 aria-busy",
+              "description": "列表外壳，承载 data-loading / data-disabled 与 aria-busy",
               "name": "root"
             },
             {
@@ -19437,7 +19437,7 @@
               "name": "header"
             },
             {
-              "description": "侧栏，宽度随折叠态在两档之间切换；吸附时带 data-fixed",
+              "description": "侧栏，折叠时带 data-collapsed、宽度随之在两档之间切换；吸附时带 data-fixed",
               "name": "sider"
             },
             {
@@ -19449,7 +19449,7 @@
               "name": "footer"
             },
             {
-              "description": "折叠把手（aria-expanded / aria-controls 所在）",
+              "description": "折叠把手（aria-expanded / aria-controls 所在，折叠时带 data-collapsed）",
               "name": "sider-trigger"
             }
           ],
@@ -24317,7 +24317,7 @@
               "name": "next-trigger"
             },
             {
-              "description": "页码按钮，须自带 value 属性；当前页带 aria-current=\"page\" 与 data-selected",
+              "description": "页码按钮，须自带 value 属性；当前页带 aria-current=\"page\" 与 data-current",
               "name": "item"
             },
             {
@@ -28548,7 +28548,7 @@
               "name": "content"
             },
             {
-              "description": "某条轴的滚动条挂载点，须用 orientation 属性写明轴向；同时是那条 scrollbar 的根，承载 data-state / data-hover / data-gutter / data-native",
+              "description": "某条轴的滚动条挂载点，须用 orientation 属性写明轴向；同时是那条 scrollbar 的根，承载 data-state / data-gutter / data-native",
               "name": "scrollbar"
             },
             {
@@ -28843,7 +28843,7 @@
           "name": "XhScrollbarElement",
           "cssParts": [
             {
-              "description": "定位盒与指针热区，承载 data-orientation / data-type / data-state / data-hover / data-scrolling / data-dragging / data-size / data-gutter / data-native；收起走 data-state=hidden 由皮肤淡出",
+              "description": "定位盒与指针热区，承载 data-orientation / data-type / data-state / data-scrolling / data-dragging / data-size / data-gutter / data-native；收起走 data-state=hidden 由皮肤淡出",
               "name": "root"
             },
             {
@@ -30808,7 +30808,7 @@
               "name": "branch"
             },
             {
-              "description": "展开/收起按钮（aria-expanded / aria-controls）",
+              "description": "展开/收起按钮（aria-expanded / aria-controls）；落在选中路径上输出 data-in-path",
               "name": "branch-trigger"
             },
             {
@@ -30828,7 +30828,7 @@
               "name": "branch-content"
             },
             {
-              "description": "去处链接，须自带 value 属性；选中输出 aria-current=\"page\"",
+              "description": "去处链接，须自带 value 属性；选中输出 aria-current=\"page\" 与 data-current",
               "name": "link"
             },
             {
@@ -31815,7 +31815,7 @@
               "name": "marks"
             },
             {
-              "description": "刻度点（纯装饰），须自带 value 属性；落进已选区间带 data-active",
+              "description": "刻度点（纯装饰），须自带 value 属性；落进已选区间带 data-passed",
               "name": "mark"
             },
             {

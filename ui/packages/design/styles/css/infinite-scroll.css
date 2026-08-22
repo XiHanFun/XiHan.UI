@@ -6,7 +6,7 @@
 
   /*
    * 列表外壳这一层刻意不给盒模型：滚的是页面还是作者自己的 overflow 容器、列表长什么样，
-   * 都归作者的布局管，组件只往它身上挂 data-state / data-loading / data-disabled 供作者取用。
+   * 都归作者的布局管，组件只往它身上挂 data-loading / data-disabled 供作者取用。
    * 一旦声明 display，UA 的 [hidden]{display:none} 就压不住了，故连 display 也不写。
    *
    * 哨兵是纯机制，不是可见元素：给它一条最细的高度让它有个能被观察到的盒子，

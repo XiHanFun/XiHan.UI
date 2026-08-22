@@ -43,7 +43,7 @@
 </xh-carousel>
 
 <script type="module">
-  // 当前页写在指示点的 data-selected 上，露在外面的那几张带 data-inview，回显直接读它们
+  // 当前页写在指示点的 data-current 上，露在外面的那几张带 data-inview，回显直接读它们
   const carousel = document.getElementById("carousel-per-move");
   const root = carousel.querySelector('[data-xh-part="root"]');
   const readout = document.getElementById("carousel-per-move-readout");
@@ -51,7 +51,7 @@
   const items = [...carousel.querySelectorAll('[data-xh-part="item"]')];
 
   function render() {
-    const page = indicators.findIndex((el) => el.hasAttribute("data-selected"));
+    const page = indicators.findIndex((el) => el.hasAttribute("data-current"));
     const inView = items.filter((el) => el.hasAttribute("data-inview"));
     if (page < 0 || inView.length === 0) {
       return;
@@ -64,7 +64,7 @@
   new MutationObserver(render).observe(root, {
     attributes: true,
     subtree: true,
-    attributeFilter: ["data-selected", "data-inview"],
+    attributeFilter: ["data-current", "data-inview"],
   });
 
   render();

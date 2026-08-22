@@ -255,12 +255,12 @@ export const scrollAreaSuite: ConformanceSuite = {
         },
         {
           ...pointerOnViewport('pointerenter'),
-          expect: { parts: { 'scrollbar[0]': { 'data-state': 'visible', 'data-hover': '', 'data-gutter': '' } } },
+          expect: { parts: { 'scrollbar[0]': { 'data-state': 'visible', 'data-gutter': '' } } },
         },
         {
           // 离开的那一刻滑块必须还露着
           ...pointerOnViewport('pointerleave'),
-          expect: { parts: { 'scrollbar[0]': { 'data-state': 'visible', 'data-hover': null } } },
+          expect: { parts: { 'scrollbar[0]': { 'data-state': 'visible' } } },
         },
         {
           kind: 'settle',

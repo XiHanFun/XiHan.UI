@@ -327,7 +327,7 @@ export const tableSuite: ConformanceSuite = {
             // 默认 none：全选把手仍可聚焦
             'aria-disabled': 'true',
             'tabindex': '0',
-            'data-state': 'none',
+            'data-state': 'unchecked',
           },
           // 行内两个把手退出可及树与 Tab 序列
           'row-select-trigger[0]': { 'aria-hidden': 'true', 'tabindex': '-1' },
@@ -622,7 +622,7 @@ export const tableSuite: ConformanceSuite = {
       initial: {
         parts: {
           'root': { 'aria-multiselectable': 'true' },
-          'select-all-trigger': { 'aria-checked': 'false', 'aria-disabled': 'false', 'data-state': 'none' },
+          'select-all-trigger': { 'aria-checked': 'false', 'aria-disabled': 'false', 'data-state': 'unchecked' },
         },
       },
       steps: [
@@ -632,7 +632,7 @@ export const tableSuite: ConformanceSuite = {
           expect: {
             parts: {
               'row': rowsSelected('a'),
-              'select-all-trigger': { 'aria-checked': 'mixed', 'data-state': 'some' },
+              'select-all-trigger': { 'aria-checked': 'mixed', 'data-state': 'indeterminate' },
             },
           },
         },
@@ -643,7 +643,7 @@ export const tableSuite: ConformanceSuite = {
             // c 禁用选不上；全选把手的基数只算可选行，仍报全选
             parts: {
               'row': rowsSelected('a', 'b', 'd'),
-              'select-all-trigger': { 'aria-checked': 'true', 'data-state': 'all' },
+              'select-all-trigger': { 'aria-checked': 'true', 'data-state': 'checked' },
             },
           },
         },
@@ -653,7 +653,7 @@ export const tableSuite: ConformanceSuite = {
           expect: {
             parts: {
               'row': rowsSelected(),
-              'select-all-trigger': { 'aria-checked': 'false', 'data-state': 'none' },
+              'select-all-trigger': { 'aria-checked': 'false', 'data-state': 'unchecked' },
             },
           },
         },

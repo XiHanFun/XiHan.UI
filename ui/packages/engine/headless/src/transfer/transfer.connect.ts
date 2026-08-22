@@ -336,7 +336,7 @@ export function connectTransfer<T extends PropTypes>(
         ...parts['select-all-trigger'].attrs,
         'type': 'button',
         'role': 'checkbox',
-        'aria-checked': state === 'all' ? 'true' : state === 'some' ? 'mixed' : 'false',
+        'aria-checked': state === 'checked' ? 'true' : state === 'indeterminate' ? 'mixed' : 'false',
         'aria-controls': listId[panel.side],
         'disabled': off || undefined,
         'data-side': panel.side,

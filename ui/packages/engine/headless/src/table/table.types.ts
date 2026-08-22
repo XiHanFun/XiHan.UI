@@ -34,7 +34,7 @@ export interface TableSortDescriptor {
 export type TableSelection = string[] | 'all'
 
 /** 全选把手的三态。some 对应 aria-checked='mixed'。 */
-export type TableSelectionState = 'none' | 'some' | 'all'
+export type TableSelectionState = 'unchecked' | 'indeterminate' | 'checked'
 
 /**
  * 列定义。列号（aria-colindex）与列总数（aria-colcount）的唯一事实源，不从 DOM 反推。

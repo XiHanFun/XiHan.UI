@@ -117,14 +117,6 @@ tone 决定用哪族颜色，与 variant 正交：四种形态 × 六种语气�
 | `type` | `'button' \| 'submit' \| 'reset'` |  |  |
 | `variant` | `ActionVariant` |  | 形态：solid / subtle / outline / ghost，决定颜色怎么用 |
 
-## 状态
-
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
-
-| 部件 | 取值 |
-| --- | --- |
-| `root` | 'loading' \| 'disabled' \| undefined |
-
 ## connect API
 
 `connect` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
@@ -173,7 +165,6 @@ tone 决定用哪族颜色，与 variant 正交：四种形态 × 六种语气�
 | `root` | `data-icon-only` | ''（条件成立时才出现） |
 | `root` | `data-loading` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
-| `root` | `data-state` | 'loading' \| 'disabled' \| undefined |
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
 

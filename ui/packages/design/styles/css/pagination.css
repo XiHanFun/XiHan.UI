@@ -98,13 +98,13 @@
      页码条目从不禁用（连接层只给上一页/下一页发原生 disabled），故这边不必再排除 :disabled */
   [data-scope='pagination'][data-part='prev-trigger']:hover:not(:disabled),
   [data-scope='pagination'][data-part='next-trigger']:hover:not(:disabled),
-  [data-scope='pagination'][data-part='item']:not([data-selected]):hover {
+  [data-scope='pagination'][data-part='item']:not([data-current]):hover {
     background: var(--xh-pagination-item-bg-hover, var(--xh-bg-subtle-hover));
   }
 
   [data-scope='pagination'][data-part='prev-trigger']:active:not(:disabled),
   [data-scope='pagination'][data-part='next-trigger']:active:not(:disabled),
-  [data-scope='pagination'][data-part='item']:not([data-selected]):active {
+  [data-scope='pagination'][data-part='item']:not([data-current]):active {
     background: var(--xh-pagination-item-bg-active, var(--xh-bg-subtle-active));
   }
 
@@ -124,21 +124,21 @@
     cursor: not-allowed;
   }
 
-  /* 当前页：data-selected 与 aria-current='page' 由连接层成对给出，
+  /* 当前页：data-current 与 aria-current='page' 由连接层成对给出，
      样式挂在 data 钩子上，无障碍语义留给 aria，两边各司其职。
      只换底色不加粗——字重一变字形就变宽，页码格子会跟着长一点，正是这里要避免的抖动 */
-  [data-scope='pagination'][data-part='item'][data-selected] {
+  [data-scope='pagination'][data-part='item'][data-current] {
     border-color: var(--xh-pagination-item-border-selected, var(--xh-_pagination-selected-bg));
     background: var(--xh-pagination-item-bg-selected, var(--xh-_pagination-selected-bg));
     color: var(--xh-pagination-item-fg-selected, var(--xh-_pagination-selected-fg));
   }
 
-  [data-scope='pagination'][data-part='item'][data-selected]:hover {
+  [data-scope='pagination'][data-part='item'][data-current]:hover {
     border-color: var(--xh-pagination-item-border-selected-hover, var(--xh-_pagination-selected-bg-hover));
     background: var(--xh-pagination-item-bg-selected-hover, var(--xh-_pagination-selected-bg-hover));
   }
 
-  [data-scope='pagination'][data-part='item'][data-selected]:active {
+  [data-scope='pagination'][data-part='item'][data-current]:active {
     border-color: var(--xh-pagination-item-border-selected-active, var(--xh-_pagination-selected-bg-active));
     background: var(--xh-pagination-item-bg-selected-active, var(--xh-_pagination-selected-bg-active));
   }
