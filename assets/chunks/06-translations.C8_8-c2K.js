@@ -1,0 +1,56 @@
+const n=`<!-- 文案本地化 | 把手与几个按钮只有图标，可及名一律走 translations -->
+<xh-floating-panel
+  id="floating-panel-translations"
+  default-position="360,340"
+  style="display: contents"
+>
+  <div data-xh-part="root">
+    <button data-xh-part="trigger">打开面板</button>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <div data-xh-part="header">
+          <h2 data-xh-part="title">中文面板</h2>
+          <button data-xh-part="drag-trigger"></button>
+          <button data-xh-part="stage-trigger" stage="minimized">—</button>
+          <button data-xh-part="close-trigger"></button>
+        </div>
+        <div data-xh-part="body">
+          <p style="margin: 0">
+            这几处名字只出现在读屏里，界面上一个字都看不见。
+          </p>
+        </div>
+        <div data-xh-part="resize-trigger" edge="se"></div>
+      </div>
+    </div>
+  </div>
+</xh-floating-panel>
+
+<script type="module">
+  // 八个把手与三个形态钮的名字带参数：读屏得念得出按的是哪一个
+  const EDGE_LABEL = {
+    n: "上边",
+    e: "右边",
+    s: "下边",
+    w: "左边",
+    ne: "右上角",
+    se: "右下角",
+    sw: "左下角",
+    nw: "左上角",
+  };
+
+  const STAGE_LABEL = {
+    default: "还原面板",
+    minimized: "收起面板",
+    maximized: "最大化面板",
+  };
+
+  // 文案是对象，只走 property
+  document.getElementById("floating-panel-translations").translations = {
+    dragTrigger: "移动面板",
+    resizeTrigger: (edge) => \`拖动\${EDGE_LABEL[edge]}改变大小\`,
+    resizeValueText: (size) => \`宽 \${size.width}、高 \${size.height} 像素\`,
+    stageTrigger: (stage) => STAGE_LABEL[stage],
+    close: "关闭面板",
+  };
+<\/script>
+`;export{n as default};

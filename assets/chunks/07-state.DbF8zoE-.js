@@ -1,0 +1,131 @@
+const a=`<!-- 禁用、只读与校验失败 | disabled 连键盘入口都没有；readOnly 照常展开浏览但值改不动也清不掉；invalid 只报校验态，交互一切照旧 -->
+<div id="tree-select-state" style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start">
+  <xh-tree-select disabled default-value="guide" placeholder="选一个文件">
+    <div data-xh-part="root" style="inline-size: 220px">
+      <span data-xh-part="label">禁用</span>
+      <button data-xh-part="trigger">
+        <span data-xh-part="value-text"></span>
+        <span data-xh-part="indicator"></span>
+      </button>
+      <div data-xh-part="positioner">
+        <div data-xh-part="content">
+          <div data-xh-part="tree">
+            <div data-xh-part="branch" value="docs">
+              <div data-xh-part="branch-control">
+                <span data-xh-part="branch-trigger"></span>
+                <span data-xh-part="branch-text">docs</span>
+              </div>
+              <div data-xh-part="branch-content">
+                <div data-xh-part="item" value="guide">
+                  <span data-xh-part="item-indicator"></span>
+                  <span data-xh-part="item-text">guide.md</span>
+                </div>
+                <div data-xh-part="item" value="api">
+                  <span data-xh-part="item-indicator"></span>
+                  <span data-xh-part="item-text">api.md</span>
+                </div>
+              </div>
+            </div>
+            <div data-xh-part="item" value="readme">
+              <span data-xh-part="item-indicator"></span>
+              <span data-xh-part="item-text">README.md</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </xh-tree-select>
+
+  <xh-tree-select read-only default-value="guide" placeholder="选一个文件">
+    <div data-xh-part="root" style="inline-size: 220px">
+      <span data-xh-part="label">只读</span>
+      <button data-xh-part="trigger">
+        <span data-xh-part="value-text"></span>
+        <span data-xh-part="indicator"></span>
+      </button>
+      <div data-xh-part="positioner">
+        <div data-xh-part="content">
+          <div data-xh-part="tree">
+            <div data-xh-part="branch" value="docs">
+              <div data-xh-part="branch-control">
+                <span data-xh-part="branch-trigger"></span>
+                <span data-xh-part="branch-text">docs</span>
+              </div>
+              <div data-xh-part="branch-content">
+                <div data-xh-part="item" value="guide">
+                  <span data-xh-part="item-indicator"></span>
+                  <span data-xh-part="item-text">guide.md</span>
+                </div>
+                <div data-xh-part="item" value="api">
+                  <span data-xh-part="item-indicator"></span>
+                  <span data-xh-part="item-text">api.md</span>
+                </div>
+              </div>
+            </div>
+            <div data-xh-part="item" value="readme">
+              <span data-xh-part="item-indicator"></span>
+              <span data-xh-part="item-text">README.md</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </xh-tree-select>
+
+  <xh-tree-select invalid default-value="guide" placeholder="选一个文件">
+    <div data-xh-part="root" style="inline-size: 220px">
+      <span data-xh-part="label">校验失败</span>
+      <button data-xh-part="trigger">
+        <span data-xh-part="value-text"></span>
+        <span data-xh-part="indicator"></span>
+      </button>
+      <div data-xh-part="positioner">
+        <div data-xh-part="content">
+          <div data-xh-part="tree">
+            <div data-xh-part="branch" value="docs">
+              <div data-xh-part="branch-control">
+                <span data-xh-part="branch-trigger"></span>
+                <span data-xh-part="branch-text">docs</span>
+              </div>
+              <div data-xh-part="branch-content">
+                <div data-xh-part="item" value="guide">
+                  <span data-xh-part="item-indicator"></span>
+                  <span data-xh-part="item-text">guide.md</span>
+                </div>
+                <div data-xh-part="item" value="api">
+                  <span data-xh-part="item-indicator"></span>
+                  <span data-xh-part="item-text">api.md</span>
+                </div>
+              </div>
+            </div>
+            <div data-xh-part="item" value="readme">
+              <span data-xh-part="item-indicator"></span>
+              <span data-xh-part="item-text">README.md</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </xh-tree-select>
+</div>
+
+<script type="module">
+  // 三份控件共用同一份树数据与同一套展开写回
+  const files = [
+    {
+      value: "docs",
+      label: "docs",
+      children: [
+        { value: "guide", label: "guide.md" },
+        { value: "api", label: "api.md" },
+      ],
+    },
+    { value: "readme", label: "README.md" },
+  ];
+  for (const el of document.getElementById("tree-select-state").children) {
+    el.collection = files;
+    el.expandedValue = ["docs"];
+    el.addEventListener("expanded-change", (event) => (el.expandedValue = event.detail.value));
+  }
+<\/script>
+`;export{a as default};

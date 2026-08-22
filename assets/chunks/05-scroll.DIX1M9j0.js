@@ -1,0 +1,58 @@
+const n=`<!-- 内容滚动 | 标题与底部操作留在原处，只有中间那块长文在自己的框里滚 -->
+<xh-dialog id="dialog-scroll">
+  <button data-xh-part="trigger">阅读服务条款</button>
+  <div data-xh-part="backdrop"></div>
+  <div data-xh-part="positioner">
+    <div data-xh-part="content">
+      <h2 data-xh-part="title">服务条款</h2>
+      <p data-xh-part="description">
+        content 是纵向排布的，给中间这块限高并开滚动，头尾就不跟着走。
+      </p>
+      <div
+        style="
+          max-block-size: 180px;
+          overflow: auto;
+          padding: 8px 12px;
+          border: 1px solid var(--xh-border-subtle);
+          border-radius: 8px;
+        "
+      >
+        <p style="margin: 0 0 8px">第 1 条 条款正文</p>
+        <p style="margin: 0 0 8px">第 2 条 条款正文</p>
+        <p style="margin: 0 0 8px">第 3 条 条款正文</p>
+        <p style="margin: 0 0 8px">第 4 条 条款正文</p>
+        <p style="margin: 0 0 8px">第 5 条 条款正文</p>
+        <p style="margin: 0 0 8px">第 6 条 条款正文</p>
+        <p style="margin: 0 0 8px">第 7 条 条款正文</p>
+        <p style="margin: 0 0 8px">第 8 条 条款正文</p>
+        <p style="margin: 0 0 8px">第 9 条 条款正文</p>
+        <p style="margin: 0 0 8px">第 10 条 条款正文</p>
+        <p style="margin: 0 0 8px">第 11 条 条款正文</p>
+        <p style="margin: 0 0 8px">第 12 条 条款正文</p>
+        <p style="margin: 0 0 8px">第 13 条 条款正文</p>
+        <p style="margin: 0 0 8px">第 14 条 条款正文</p>
+        <p style="margin: 0 0 8px">第 15 条 条款正文</p>
+        <p style="margin: 0 0 8px">第 16 条 条款正文</p>
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 8px">
+        <xh-button variant="ghost">
+          <button data-xh-part="root" data-dismiss>再看看</button>
+        </xh-button>
+        <xh-button variant="solid">
+          <button data-xh-part="root" data-dismiss>同意</button>
+        </xh-button>
+      </div>
+      <button data-xh-part="close-trigger" aria-label="关闭"></button>
+    </div>
+  </div>
+</xh-dialog>
+
+<script type="module">
+  // 底部两个按钮把关闭转交给已接线的关闭部件
+  const dialog = document.getElementById("dialog-scroll");
+  const close = dialog.querySelector('[data-xh-part="close-trigger"]');
+  for (const button of dialog.querySelectorAll("[data-dismiss]")) {
+    button.addEventListener("click", () => close.click());
+  }
+<\/script>
+`;export{n as default};

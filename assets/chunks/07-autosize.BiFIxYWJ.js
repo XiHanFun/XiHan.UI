@@ -1,4 +1,0 @@
-import{X as a,a as p,b as s}from"./composer.B5mu36PE.js";import{d as m,o as n,c as l,E as t,w as e,k as o,a as i}from"./framework.CyyS6Zdm.js";import"./config.DiqeDKhp.js";import"./normalize-props.DWkyZsBF.js";import"./normalize-props.C19uE7bg.js";import"./use-machine.BbNi2UIp.js";import"./metadata.Br3NDosU.js";import"./codes.Dy1diSKF.js";import"./scope.DqcRO85P.js";import"./guards.DhltL50U.js";import"./vue-id.C-p5FNt2.js";import"./composer.machine.CltLAbiX.js";import"./attrs.BPPH_QIK.js";const d={style:{width:"100%",display:"grid",gap:"12px"}},u=`第一行
-第二行
-第三行
-再多敲几行，框会继续往下长`,N=m({__name:"07-autosize",setup(f){return(_,r)=>(n(),l("div",d,[t(o(s),null,{default:e(()=>[t(o(a),{placeholder:"按 Shift+Enter 换行试试",rows:"1"}),t(o(p),null,{default:e(()=>[...r[0]||(r[0]=[i("发送",-1)])]),_:1})]),_:1}),t(o(s),{"default-value":u},{default:e(()=>[t(o(a),{rows:"1"}),t(o(p),null,{default:e(()=>[...r[1]||(r[1]=[i("发送",-1)])]),_:1})]),_:1})]))}});export{N as default};

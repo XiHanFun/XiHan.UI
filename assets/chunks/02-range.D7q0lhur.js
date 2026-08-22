@@ -1,0 +1,88 @@
+const e=`<!-- 区间选择 | selection-mode=range：第一下落起点、第二下落终点，中间铺一条连续底色 -->
+<div id="calendar-range-mount"></div>
+<span style="font-size: 13px">区间：<span id="calendar-range-value">（未选）</span></span>
+
+<!-- 结构先收在模板里：必需的格子要在元素接线前就位，所以网格填好了才入页 -->
+<template id="calendar-range-template">
+  <xh-calendar locale="zh-CN" selection-mode="range" fixed-weeks>
+    <div data-xh-part="root" style="max-inline-size: 280px">
+      <div data-xh-part="header">
+        <button data-xh-part="prev-trigger" aria-label="上个月"></button>
+        <div data-xh-part="heading"></div>
+        <button data-xh-part="next-trigger" aria-label="下个月"></button>
+      </div>
+      <div data-xh-part="grid">
+        <div data-xh-part="grid-head">
+          <div data-xh-part="week-row"></div>
+        </div>
+        <div data-xh-part="grid-body"></div>
+      </div>
+    </div>
+  </xh-calendar>
+</template>
+
+<script type="module">
+  const fragment = document
+    .getElementById("calendar-range-template")
+    .content.cloneNode(true);
+  const calendar = fragment.querySelector("xh-calendar");
+  const heading = fragment.querySelector('[data-xh-part="heading"]');
+  const head = fragment.querySelector('[data-xh-part="grid-head"] [data-xh-part="week-row"]');
+  const body = fragment.querySelector('[data-xh-part="grid-body"]');
+  const readout = document.getElementById("calendar-range-value");
+
+  // 已经画出来的是哪个月
+  let month = "";
+
+  // 表头七列只跟 locale 走，画一次就够
+  function paintHead() {
+    head.replaceChildren(
+      ...calendar.weekDays.map((day) => {
+        const cell = document.createElement("span");
+        cell.dataset.xhPart = "week-day";
+        cell.setAttribute("value", day.value);
+        cell.textContent = day.label;
+        return cell;
+      }),
+    );
+  }
+
+  // 换了月才重画格子：同月内移动焦点时格子原样留着，区间底色由元素自己写
+  function paintBody() {
+    const first = calendar.weeks[0][0].value;
+    if (first === month) {
+      return;
+    }
+    month = first;
+    heading.textContent = calendar.headingLabel;
+    body.replaceChildren(
+      ...calendar.weeks.map((week) => {
+        const row = document.createElement("div");
+        row.dataset.xhPart = "week-row";
+        for (const day of week) {
+          const cell = document.createElement("div");
+          cell.dataset.xhPart = "cell";
+          cell.setAttribute("value", day.value);
+          const trigger = document.createElement("div");
+          trigger.dataset.xhPart = "cell-trigger";
+          trigger.textContent = day.day;
+          cell.append(trigger);
+          row.append(cell);
+        }
+        return row;
+      }),
+    );
+  }
+
+  document.getElementById("calendar-range-mount").append(fragment);
+  paintHead();
+  paintBody();
+
+  calendar.addEventListener("focused-value-change", paintBody);
+  calendar.addEventListener("value-change", (event) => {
+    // 挑到一半时集合里只有起点一个值
+    const [start, end] = event.detail.value;
+    readout.textContent = start ? \`\${start} → \${end ?? "待定"}\` : "（未选）";
+  });
+<\/script>
+`;export{e as default};

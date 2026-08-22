@@ -1,0 +1,72 @@
+const t=`<!-- 一次挪一张 | slidesPerMove 与 slidesPerPage 分开给：一屏露三张、一次只挪一张，页数按剩下的张数重新算 -->
+<xh-carousel
+  id="carousel-per-move"
+  slide-count="6"
+  slides-per-page="3"
+  slides-per-move="1"
+  spacing="10px"
+>
+  <div data-xh-part="root" style="inline-size: 100%">
+    <button data-xh-part="prev-trigger"></button>
+    <div data-xh-part="viewport" style="block-size: 110px">
+      <div data-xh-part="item-group">
+        <div data-xh-part="item" index="0">
+          <div style="display: grid; place-items: center; block-size: 100%">A</div>
+        </div>
+        <div data-xh-part="item" index="1">
+          <div style="display: grid; place-items: center; block-size: 100%">B</div>
+        </div>
+        <div data-xh-part="item" index="2">
+          <div style="display: grid; place-items: center; block-size: 100%">C</div>
+        </div>
+        <div data-xh-part="item" index="3">
+          <div style="display: grid; place-items: center; block-size: 100%">D</div>
+        </div>
+        <div data-xh-part="item" index="4">
+          <div style="display: grid; place-items: center; block-size: 100%">E</div>
+        </div>
+        <div data-xh-part="item" index="5">
+          <div style="display: grid; place-items: center; block-size: 100%">F</div>
+        </div>
+      </div>
+    </div>
+    <button data-xh-part="next-trigger"></button>
+    <!-- 六张里一屏露三张、一次挪一张，落点共四个 -->
+    <div data-xh-part="indicator-group">
+      <button data-xh-part="indicator" index="0"></button>
+      <button data-xh-part="indicator" index="1"></button>
+      <button data-xh-part="indicator" index="2"></button>
+      <button data-xh-part="indicator" index="3"></button>
+    </div>
+    <span id="carousel-per-move-readout" style="flex-basis: 100%"></span>
+  </div>
+</xh-carousel>
+
+<script type="module">
+  // 当前页写在指示点的 data-current 上，露在外面的那几张带 data-inview，回显直接读它们
+  const carousel = document.getElementById("carousel-per-move");
+  const root = carousel.querySelector('[data-xh-part="root"]');
+  const readout = document.getElementById("carousel-per-move-readout");
+  const indicators = [...carousel.querySelectorAll('[data-xh-part="indicator"]')];
+  const items = [...carousel.querySelectorAll('[data-xh-part="item"]')];
+
+  function render() {
+    const page = indicators.findIndex((el) => el.hasAttribute("data-current"));
+    const inView = items.filter((el) => el.hasAttribute("data-inview"));
+    if (page < 0 || inView.length === 0) {
+      return;
+    }
+    const first = Number(inView[0].dataset.index) + 1;
+    const last = Number(inView[inView.length - 1].dataset.index) + 1;
+    readout.textContent = \`第 \${page + 1} / \${indicators.length} 页 · 眼下露的是第 \${first} 到 \${last} 张\`;
+  }
+
+  new MutationObserver(render).observe(root, {
+    attributes: true,
+    subtree: true,
+    attributeFilter: ["data-current", "data-inview"],
+  });
+
+  render();
+<\/script>
+`;export{t as default};

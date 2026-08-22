@@ -1,0 +1,157 @@
+const a=`<!-- 级联勾选与回显策略 | multiple 加 cascade 内建父子传导：点分支整枝勾上、子全勾父勾、部分勾中半选；对外值按 checked-strategy 收敛（默认只收叶），半选标记由条目自报的半选态出面 -->
+<style>
+  #cascader-cascade-check [data-half] {
+    display: none;
+  }
+  /* 条目半选时才画这道横杠，标记随 data-indeterminate 出面 */
+  #cascader-cascade-check
+    [data-xh-part="item"][data-indeterminate]
+    [data-half] {
+    display: inline;
+    flex: none;
+    color: var(--xh-fg-subtle);
+  }
+</style>
+
+<xh-cascader id="cascader-cascade-check" multiple cascade>
+  <div data-xh-part="root">
+    <span data-xh-part="label">投放品类</span>
+    <button data-xh-part="trigger">
+      <span data-xh-part="value-text">iOS</span>
+      <span data-xh-part="indicator"></span>
+    </button>
+    <button data-xh-part="clear-trigger"></button>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <div data-xh-part="column" level="0">
+          <div data-xh-part="item" value="digital">
+            <span data-xh-part="item-text">数码</span>
+            <span data-half aria-hidden="true">－</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="home">
+            <span data-xh-part="item-text">家居</span>
+            <span data-half aria-hidden="true">－</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+        </div>
+        <div data-xh-part="column" level="1">
+          <div data-xh-part="item" value="phone">
+            <span data-xh-part="item-text">手机</span>
+            <span data-half aria-hidden="true">－</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="laptop">
+            <span data-xh-part="item-text">笔记本</span>
+            <span data-half aria-hidden="true">－</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="kitchen">
+            <span data-xh-part="item-text">厨房</span>
+            <span data-half aria-hidden="true">－</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+        </div>
+        <div data-xh-part="column" level="2">
+          <div data-xh-part="item" value="ios">
+            <span data-xh-part="item-text">iOS</span>
+            <span data-half aria-hidden="true">－</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="android">
+            <span data-xh-part="item-text">Android</span>
+            <span data-half aria-hidden="true">－</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="light">
+            <span data-xh-part="item-text">轻薄本</span>
+            <span data-half aria-hidden="true">－</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="game">
+            <span data-xh-part="item-text">游戏本</span>
+            <span data-half aria-hidden="true">－</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="pot">
+            <span data-xh-part="item-text">锅具</span>
+            <span data-half aria-hidden="true">－</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="knife">
+            <span data-xh-part="item-text">刀具</span>
+            <span data-half aria-hidden="true">－</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</xh-cascader>
+<p>选中值（默认只收叶）：<span id="cascader-cascade-check-value">iOS</span></p>
+
+<script type="module">
+  const cascader = document.getElementById("cascader-cascade-check");
+  const catalog = [
+    {
+      value: "digital",
+      label: "数码",
+      children: [
+        {
+          value: "phone",
+          label: "手机",
+          children: [
+            { value: "ios", label: "iOS" },
+            { value: "android", label: "Android" },
+          ],
+        },
+        {
+          value: "laptop",
+          label: "笔记本",
+          children: [
+            { value: "light", label: "轻薄本" },
+            { value: "game", label: "游戏本" },
+          ],
+        },
+      ],
+    },
+    {
+      value: "home",
+      label: "家居",
+      children: [
+        {
+          value: "kitchen",
+          label: "厨房",
+          children: [
+            { value: "pot", label: "锅具" },
+            { value: "knife", label: "刀具" },
+          ],
+        },
+      ],
+    },
+  ];
+  cascader.collection = catalog;
+  cascader.value = [["digital", "phone", "ios"]];
+
+  // 回显只取整条路径末段的显示名
+  function labelOf(path) {
+    let nodes = catalog;
+    let hit;
+    for (const segment of path) {
+      hit = nodes?.find((node) => node.value === segment);
+      nodes = hit?.children;
+    }
+    return hit?.label ?? path[path.length - 1];
+  }
+
+  // 触发框里写了内容就归作者，元素不再代填，改由这里同步
+  const valueText = cascader.querySelector('[data-xh-part="value-text"]');
+  const readout = document.getElementById("cascader-cascade-check-value");
+  cascader.addEventListener("value-change", (event) => {
+    cascader.value = event.detail.value;
+    const text = event.detail.value.map(labelOf).join("、");
+    valueText.textContent = text || "请选择品类";
+    readout.textContent = text || "（未选）";
+  });
+<\/script>
+`;export{a as default};

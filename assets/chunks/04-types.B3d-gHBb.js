@@ -1,0 +1,46 @@
+const e=`<!-- 四种露面时机 | auto 溢出就露、always 恒露、scroll 滚动时露、hover 指针进入才露；收起都是淡出 -->
+<div id="scrollbar-types" style="display: flex; flex-wrap: wrap; gap: 16px"></div>
+
+<script type="module">
+  const host = document.getElementById("scrollbar-types");
+  for (const type of ["auto", "always", "scroll", "hover"]) {
+    const column = document.createElement("div");
+    column.style.display = "flex";
+    column.style.flexDirection = "column";
+    column.style.gap = "6px";
+
+    const caption = document.createElement("span");
+    caption.style.fontSize = "13px";
+    caption.style.color = "var(--xh-fg-muted)";
+    caption.textContent = \`type="\${type}"\`;
+
+    const frame = document.createElement("div");
+    frame.style.position = "relative";
+    frame.style.inlineSize = "150px";
+
+    const box = document.createElement("div");
+    box.id = \`scrollbar-types-\${type}\`;
+    box.style.cssText =
+      "block-size: 140px; overflow: auto; scrollbar-width: none; border: 1px solid var(--xh-border-default); border-radius: var(--xh-shape-surface); padding: 8px";
+    box.replaceChildren(
+      ...Array.from({ length: 30 }, (_, i) => {
+        const line = document.createElement("div");
+        line.style.paddingBlock = "2px";
+        line.textContent = \`第 \${i + 1} 行\`;
+        return line;
+      }),
+    );
+
+    const bar = document.createElement("xh-scrollbar");
+    bar.setAttribute("controls", box.id);
+    bar.setAttribute("type", type);
+    bar.setAttribute("hide-delay", "400");
+    bar.innerHTML =
+      '<div data-xh-part="root"><div data-xh-part="track"><div data-xh-part="thumb"></div></div></div>';
+
+    frame.append(box, bar);
+    column.append(caption, frame);
+    host.append(column);
+  }
+<\/script>
+`;export{e as default};

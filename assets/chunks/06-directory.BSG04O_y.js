@@ -1,0 +1,42 @@
+const t=`<!-- 选整个目录 | directory 让隐藏输入改收目录，选中目录下的文件一次性全进来，数量上限要跟着放开 -->
+<xh-file-upload id="file-upload-directory" directory max-files="Infinity">
+  <div data-xh-part="root" style="inline-size: 100%; max-inline-size: 480px">
+    <label data-xh-part="label">整个目录</label>
+    <div data-xh-part="dropzone">
+      <span>挑一个目录，里面的文件全收</span>
+    </div>
+    <div>
+      <button data-xh-part="trigger">选择目录</button>
+    </div>
+    <input data-xh-part="hidden-input" />
+    <span id="file-upload-directory-count"></span>
+    <div
+      data-xh-part="item-group"
+      style="max-block-size: 220px; overflow: auto"
+    ></div>
+  </div>
+</xh-file-upload>
+
+<script type="module">
+  const upload = document.getElementById("file-upload-directory");
+  const group = upload.querySelector('[data-xh-part="item-group"]');
+  const count = document.getElementById("file-upload-directory-count");
+
+  // 条目节点由作者渲染，元素随后按文档序接上去
+  upload.addEventListener("files-change", (event) => {
+    const files = event.detail.files;
+    count.textContent = files.length ? \`共 \${files.length} 个文件\` : "";
+    group.replaceChildren(
+      ...files.map(() => {
+        const item = document.createElement("div");
+        item.dataset.xhPart = "item";
+        item.innerHTML =
+          '<span data-xh-part="item-name"></span>' +
+          '<span data-xh-part="item-size-text"></span>' +
+          '<button data-xh-part="item-delete-trigger"></button>';
+        return item;
+      })
+    );
+  });
+<\/script>
+`;export{t as default};

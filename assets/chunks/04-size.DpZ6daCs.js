@@ -1,0 +1,66 @@
+const t=`<!-- 尺寸 | size 落成 content 的 data-size，只改面板的最大宽度；三档各自一个对话框，点开才看得出宽窄 -->
+<div id="dialog-size" style="display: flex; flex-wrap: wrap; gap: 12px">
+  <xh-dialog size="sm">
+    <button data-xh-part="trigger">sm 窄</button>
+    <div data-xh-part="backdrop"></div>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <h2 data-xh-part="title">sm 窄对话框</h2>
+        <p data-xh-part="description">内边距与字号三档一致，只有宽度上限不同。</p>
+        <div style="display: flex; justify-content: flex-end">
+          <xh-button variant="solid">
+            <button data-xh-part="root" data-dismiss>知道了</button>
+          </xh-button>
+        </div>
+        <button data-xh-part="close-trigger" aria-label="关闭"></button>
+      </div>
+    </div>
+  </xh-dialog>
+
+  <!-- 中间档不写 size，缺省即中档 -->
+  <xh-dialog>
+    <button data-xh-part="trigger">缺省</button>
+    <div data-xh-part="backdrop"></div>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <h2 data-xh-part="title">缺省对话框</h2>
+        <p data-xh-part="description">内边距与字号三档一致，只有宽度上限不同。</p>
+        <div style="display: flex; justify-content: flex-end">
+          <xh-button variant="solid">
+            <button data-xh-part="root" data-dismiss>知道了</button>
+          </xh-button>
+        </div>
+        <button data-xh-part="close-trigger" aria-label="关闭"></button>
+      </div>
+    </div>
+  </xh-dialog>
+
+  <xh-dialog size="lg">
+    <button data-xh-part="trigger">lg 宽</button>
+    <div data-xh-part="backdrop"></div>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <h2 data-xh-part="title">lg 宽对话框</h2>
+        <p data-xh-part="description">内边距与字号三档一致，只有宽度上限不同。</p>
+        <div style="display: flex; justify-content: flex-end">
+          <xh-button variant="solid">
+            <button data-xh-part="root" data-dismiss>知道了</button>
+          </xh-button>
+        </div>
+        <button data-xh-part="close-trigger" aria-label="关闭"></button>
+      </div>
+    </div>
+  </xh-dialog>
+</div>
+
+<script type="module">
+  // 每个对话框里的按钮把关闭转交给自己那份关闭部件
+  const stage = document.getElementById("dialog-size");
+  for (const dialog of stage.querySelectorAll("xh-dialog")) {
+    const close = dialog.querySelector('[data-xh-part="close-trigger"]');
+    for (const button of dialog.querySelectorAll("[data-dismiss]")) {
+      button.addEventListener("click", () => close.click());
+    }
+  }
+<\/script>
+`;export{t as default};

@@ -1,0 +1,42 @@
+const t=`<!-- 确认气泡 | 标题、说明与两颗按钮拼成一次就地确认；两颗按钮按下后都只是把浮层收起 -->
+<div style="display: flex; align-items: center; gap: 16px">
+  <xh-popover id="popover-confirm" placement="top" size="sm">
+    <button data-xh-part="trigger">删除这条记录</button>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <h3 data-xh-part="title">删除后不可恢复</h3>
+        <p data-xh-part="description">这条记录连同它的附件一起清掉。</p>
+        <div style="display: flex; justify-content: flex-end; gap: 8px">
+          <xh-button size="sm" variant="ghost">
+            <button data-xh-part="root" data-dismiss>取消</button>
+          </xh-button>
+          <xh-button size="sm" variant="solid" tone="danger">
+            <button data-xh-part="root" data-dismiss data-confirm>删除</button>
+          </xh-button>
+        </div>
+        <button data-xh-part="close-trigger"></button>
+        <div data-xh-part="arrow"></div>
+      </div>
+    </div>
+  </xh-popover>
+  <span id="popover-confirm-state">记录还在</span>
+</div>
+
+<script type="module">
+  const popover = document.getElementById("popover-confirm");
+  // 文案是对象，只走 property
+  popover.translations = { close: "关闭" };
+
+  // 两颗按钮把收起转交给已接线的关闭部件
+  const close = popover.querySelector('[data-xh-part="close-trigger"]');
+  for (const button of popover.querySelectorAll("[data-dismiss]")) {
+    button.addEventListener("click", () => close.click());
+  }
+
+  // 只有「删除」那颗改后面那行文字
+  const state = document.getElementById("popover-confirm-state");
+  popover.querySelector("[data-confirm]").addEventListener("click", () => {
+    state.textContent = "记录已删除";
+  });
+<\/script>
+`;export{t as default};

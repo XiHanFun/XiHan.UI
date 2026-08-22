@@ -1,0 +1,66 @@
+const e=`<!-- 受控与文案 | open 与 index 双受控；translations 换工具条的可及名与计数文案 -->
+<xh-image-viewer id="image-viewer-controlled" open="false" index="1">
+  <div style="display: flex; align-items: center; gap: 8px">
+    <xh-button variant="solid">
+      <button data-xh-part="root" id="image-viewer-controlled-open">从第 2 张看起</button>
+    </xh-button>
+    <span>
+      open：<span id="image-viewer-controlled-open-state">false</span>，index：<span
+        id="image-viewer-controlled-index-state"
+        >1</span
+      >
+    </span>
+  </div>
+  <div data-xh-part="backdrop"></div>
+  <div data-xh-part="positioner">
+    <div data-xh-part="content">
+      <div data-xh-part="viewport">
+        <img data-xh-part="image" />
+      </div>
+      <div data-xh-part="counter"></div>
+      <button data-xh-part="prev-trigger"></button>
+      <button data-xh-part="next-trigger"></button>
+      <button data-xh-part="close-trigger"></button>
+    </div>
+  </div>
+</xh-image-viewer>
+
+<script type="module">
+  // 内联的示例图，省得示例依赖外部资源；文案是对象，与图片清单一样只走属性
+  const viewer = document.getElementById("image-viewer-controlled");
+  viewer.items = [
+    {
+      src: "data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2016%209%22%3E%3Crect%20width=%2216%22%20height=%229%22%20fill=%22%23475569%22/%3E%3Cpath%20d=%22M0%209%206%203%2016%209z%22%20fill=%22%2394a3b8%22/%3E%3C/svg%3E",
+      alt: "雪山",
+    },
+    {
+      src: "data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2016%209%22%3E%3Crect%20width=%2216%22%20height=%229%22%20fill=%22%237c3aed%22/%3E%3Cpath%20d=%22M0%209%206%203%2016%209z%22%20fill=%22%23c4b5fd%22/%3E%3C/svg%3E",
+      alt: "暮色",
+    },
+  ];
+  viewer.translations = {
+    close: "关闭",
+    prev: "上一张",
+    next: "下一张",
+    counter: (i, n) => \`第 \${i} 张，共 \${n} 张\`,
+  };
+
+  const openState = document.getElementById("image-viewer-controlled-open-state");
+  const indexState = document.getElementById("image-viewer-controlled-index-state");
+  const openButton = document.getElementById("image-viewer-controlled-open");
+
+  viewer.addEventListener("open-change", (event) => {
+    viewer.open = event.detail.open;
+    openState.textContent = String(event.detail.open);
+  });
+  viewer.addEventListener("index-change", (event) => {
+    viewer.index = event.detail.index;
+    indexState.textContent = String(event.detail.index);
+    openButton.textContent = \`从第 \${event.detail.index + 1} 张看起\`;
+  });
+  openButton.addEventListener("click", () => {
+    viewer.open = true;
+    openState.textContent = "true";
+  });
+<\/script>
+`;export{e as default};

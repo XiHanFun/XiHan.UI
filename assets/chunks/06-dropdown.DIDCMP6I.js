@@ -1,0 +1,42 @@
+const t=`<!-- 层级下拉 | 某一层要换去处时，把菜单整套放进 item 里；面包屑只管这一层的排版 -->
+<xh-breadcrumb>
+  <nav data-xh-part="root">
+    <ol data-xh-part="list">
+      <li data-xh-part="item">
+        <a data-xh-part="link" href="#/">工作台</a>
+      </li>
+      <li data-xh-part="separator">/</li>
+      <li data-xh-part="item">
+        <!-- 这一层不是链接而是一组可切换的去处 -->
+        <xh-menu id="breadcrumb-menu">
+          <button data-xh-part="trigger">
+            <span id="breadcrumb-menu-label">后台</span>
+            <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9L12 15L18 9"/></svg>
+          </button>
+          <div data-xh-part="positioner">
+            <div data-xh-part="content">
+              <div data-xh-part="item" value="web">官网</div>
+              <div data-xh-part="item" value="admin">后台</div>
+              <div data-xh-part="item" value="mobile">移动端</div>
+            </div>
+          </div>
+        </xh-menu>
+      </li>
+      <li data-xh-part="separator">/</li>
+      <li data-xh-part="item">
+        <a data-xh-part="link" href="#/settings" current>设置</a>
+      </li>
+    </ol>
+  </nav>
+</xh-breadcrumb>
+
+<script type="module">
+  // 选中的那一项的文字回填到触发钮上
+  const menu = document.getElementById("breadcrumb-menu");
+  const label = document.getElementById("breadcrumb-menu-label");
+  menu.addEventListener("select", (event) => {
+    const picked = menu.querySelector(\`[data-xh-part="item"][value="\${event.detail.value}"]\`);
+    label.textContent = picked.textContent.trim();
+  });
+<\/script>
+`;export{t as default};

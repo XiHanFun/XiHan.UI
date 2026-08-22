@@ -1,0 +1,198 @@
+const a=`<!-- 语气 | tone 决定条目高亮与标记位用哪族颜色；高亮静止态看不出来，右键弹出后悬停条目、或用方向键把焦点移上去才显现 -->
+<!-- 六块各自独立的触发区，逐块右键对比条目高亮底色 -->
+<div
+  style="
+    inline-size: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+  "
+>
+  <xh-context-menu tone="brand">
+    <div data-xh-part="root">
+      <div
+        data-xh-part="trigger"
+        style="
+          display: grid;
+          place-items: center;
+          min-block-size: 76px;
+          border: 1px dashed var(--xh-border-default);
+          border-radius: 8px;
+        "
+      >
+        <span>brand</span>
+      </div>
+      <div data-xh-part="positioner">
+        <div data-xh-part="content">
+          <div data-xh-part="item" value="star">
+            <span data-xh-part="item-indicator"></span>
+            <span data-xh-part="item-text">标记</span>
+          </div>
+          <div data-xh-part="item" value="rename">
+            <span data-xh-part="item-text">重命名</span>
+          </div>
+          <div data-xh-part="separator"></div>
+          <div data-xh-part="item" value="delete">
+            <span data-xh-part="item-text">删除</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </xh-context-menu>
+  <xh-context-menu tone="neutral">
+    <div data-xh-part="root">
+      <div
+        data-xh-part="trigger"
+        style="
+          display: grid;
+          place-items: center;
+          min-block-size: 76px;
+          border: 1px dashed var(--xh-border-default);
+          border-radius: 8px;
+        "
+      >
+        <span>neutral</span>
+      </div>
+      <div data-xh-part="positioner">
+        <div data-xh-part="content">
+          <div data-xh-part="item" value="star">
+            <span data-xh-part="item-indicator"></span>
+            <span data-xh-part="item-text">标记</span>
+          </div>
+          <div data-xh-part="item" value="rename">
+            <span data-xh-part="item-text">重命名</span>
+          </div>
+          <div data-xh-part="separator"></div>
+          <div data-xh-part="item" value="delete">
+            <span data-xh-part="item-text">删除</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </xh-context-menu>
+  <xh-context-menu tone="success">
+    <div data-xh-part="root">
+      <div
+        data-xh-part="trigger"
+        style="
+          display: grid;
+          place-items: center;
+          min-block-size: 76px;
+          border: 1px dashed var(--xh-border-default);
+          border-radius: 8px;
+        "
+      >
+        <span>success</span>
+      </div>
+      <div data-xh-part="positioner">
+        <div data-xh-part="content">
+          <div data-xh-part="item" value="star">
+            <span data-xh-part="item-indicator"></span>
+            <span data-xh-part="item-text">标记</span>
+          </div>
+          <div data-xh-part="item" value="rename">
+            <span data-xh-part="item-text">重命名</span>
+          </div>
+          <div data-xh-part="separator"></div>
+          <div data-xh-part="item" value="delete">
+            <span data-xh-part="item-text">删除</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </xh-context-menu>
+  <xh-context-menu tone="warning">
+    <div data-xh-part="root">
+      <div
+        data-xh-part="trigger"
+        style="
+          display: grid;
+          place-items: center;
+          min-block-size: 76px;
+          border: 1px dashed var(--xh-border-default);
+          border-radius: 8px;
+        "
+      >
+        <span>warning</span>
+      </div>
+      <div data-xh-part="positioner">
+        <div data-xh-part="content">
+          <div data-xh-part="item" value="star">
+            <span data-xh-part="item-indicator"></span>
+            <span data-xh-part="item-text">标记</span>
+          </div>
+          <div data-xh-part="item" value="rename">
+            <span data-xh-part="item-text">重命名</span>
+          </div>
+          <div data-xh-part="separator"></div>
+          <div data-xh-part="item" value="delete">
+            <span data-xh-part="item-text">删除</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </xh-context-menu>
+  <xh-context-menu tone="danger">
+    <div data-xh-part="root">
+      <div
+        data-xh-part="trigger"
+        style="
+          display: grid;
+          place-items: center;
+          min-block-size: 76px;
+          border: 1px dashed var(--xh-border-default);
+          border-radius: 8px;
+        "
+      >
+        <span>danger</span>
+      </div>
+      <div data-xh-part="positioner">
+        <div data-xh-part="content">
+          <div data-xh-part="item" value="star">
+            <span data-xh-part="item-indicator"></span>
+            <span data-xh-part="item-text">标记</span>
+          </div>
+          <div data-xh-part="item" value="rename">
+            <span data-xh-part="item-text">重命名</span>
+          </div>
+          <div data-xh-part="separator"></div>
+          <div data-xh-part="item" value="delete">
+            <span data-xh-part="item-text">删除</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </xh-context-menu>
+  <xh-context-menu tone="info">
+    <div data-xh-part="root">
+      <div
+        data-xh-part="trigger"
+        style="
+          display: grid;
+          place-items: center;
+          min-block-size: 76px;
+          border: 1px dashed var(--xh-border-default);
+          border-radius: 8px;
+        "
+      >
+        <span>info</span>
+      </div>
+      <div data-xh-part="positioner">
+        <div data-xh-part="content">
+          <div data-xh-part="item" value="star">
+            <span data-xh-part="item-indicator"></span>
+            <span data-xh-part="item-text">标记</span>
+          </div>
+          <div data-xh-part="item" value="rename">
+            <span data-xh-part="item-text">重命名</span>
+          </div>
+          <div data-xh-part="separator"></div>
+          <div data-xh-part="item" value="delete">
+            <span data-xh-part="item-text">删除</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </xh-context-menu>
+</div>
+`;export{a as default};

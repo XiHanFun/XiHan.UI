@@ -1,0 +1,73 @@
+const t=`<!-- 可关闭 | closable 给出关闭钮；open 受控时去留由宿主决定，可访问名逐枚带上标签文字，摘掉一枚后焦点交给下一枚 -->
+<div
+  id="tag-closable"
+  style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px"
+>
+  <xh-tag variant="subtle" tone="brand" closable open>
+    <span data-xh-part="root">
+      <span data-xh-part="label">设计</span>
+      <button data-xh-part="close-trigger"></button>
+    </span>
+  </xh-tag>
+
+  <xh-tag variant="subtle" tone="brand" closable open>
+    <span data-xh-part="root">
+      <span data-xh-part="label">前端</span>
+      <button data-xh-part="close-trigger"></button>
+    </span>
+  </xh-tag>
+
+  <xh-tag variant="subtle" tone="brand" closable open>
+    <span data-xh-part="root">
+      <span data-xh-part="label">无头内核</span>
+      <button data-xh-part="close-trigger"></button>
+    </span>
+  </xh-tag>
+
+  <xh-tag variant="subtle" tone="brand" closable open>
+    <span data-xh-part="root">
+      <span data-xh-part="label">可访问性</span>
+      <button data-xh-part="close-trigger"></button>
+    </span>
+  </xh-tag>
+
+  <xh-button id="tag-closable-reset" size="sm" variant="ghost" style="display: none">
+    <button data-xh-part="root">还原</button>
+  </xh-button>
+</div>
+
+<script type="module">
+  // open 受控：标签不自己收起，收起意图经事件回来，由宿主把这一枚摘掉
+  const scope = document.getElementById("tag-closable");
+  const reset = document.getElementById("tag-closable-reset");
+  const tags = [...scope.querySelectorAll("xh-tag")];
+
+  // 关闭钮里只有一个叉，逐枚把标签文字写进可访问名
+  for (const tag of tags) {
+    const text = tag.querySelector('[data-xh-part="label"]').textContent;
+    tag.translations = { close: \`移除 \${text}\` };
+  }
+
+  scope.addEventListener("open-change", (event) => {
+    const removed = event.target;
+    const index = tags.indexOf(removed);
+    removed.style.display = "none";
+    reset.style.display = "";
+
+    // 被摘掉的那一枚带着焦点一起消失，接不住就掉回页面开头：
+    // 交给它后面第一枚还在的标签，后面没有了就交给剩下的最后一枚，一枚不剩交给"还原"钮
+    const rest = tags.filter((tag) => tag.style.display !== "none");
+    const following = rest.find((tag) => tags.indexOf(tag) > index);
+    const target = following ?? rest[rest.length - 1];
+    const button =
+      target?.querySelector('[data-xh-part="close-trigger"]') ??
+      reset.querySelector("button");
+    button?.focus();
+  });
+
+  reset.addEventListener("click", () => {
+    for (const tag of tags) tag.style.display = "";
+    reset.style.display = "none";
+  });
+<\/script>
+`;export{t as default};

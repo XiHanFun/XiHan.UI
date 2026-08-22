@@ -1,0 +1,76 @@
+const n=`<!-- 图标与自定义排版 | 卡片里排什么由作者定：图标与标题排成一行，标题、描述两个部件的内容都归作者写 -->
+<div style="display: grid; gap: 12px; justify-items: start">
+  <xh-toast type="success" duration="0" closable="false">
+    <div data-xh-part="root">
+      <div style="display: flex; align-items: center; gap: 8px">
+        <!-- 图标只是装饰，读屏念标题就够了 -->
+        <span
+          aria-hidden="true"
+          style="
+            display: grid;
+            place-items: center;
+            flex: none;
+            inline-size: 20px;
+            block-size: 20px;
+            border-radius: 999px;
+            background: var(--xh-bg-muted);
+            font-size: 12px;
+            line-height: 1;
+          "
+          ><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5L9.5 18L20 6"/></svg></span
+        >
+        <div data-xh-part="title">发布成功</div>
+      </div>
+      <div data-xh-part="description">文档已对所有人可见</div>
+    </div>
+  </xh-toast>
+
+  <xh-toast type="warning" duration="0" closable="false">
+    <div data-xh-part="root">
+      <div style="display: flex; align-items: center; gap: 8px">
+        <span
+          aria-hidden="true"
+          style="
+            display: grid;
+            place-items: center;
+            flex: none;
+            inline-size: 20px;
+            block-size: 20px;
+            border-radius: 999px;
+            background: var(--xh-bg-muted);
+            font-size: 12px;
+            line-height: 1;
+          "
+          ><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4L21 20H3Z"/><path d="M12 10V14"/><path d="M12 17.5h.01"/></svg></span
+        >
+        <div data-xh-part="title">配额即将用尽</div>
+      </div>
+      <div data-xh-part="description">本月还剩 8% 额度</div>
+    </div>
+  </xh-toast>
+
+  <xh-toast type="error" duration="0" closable="false">
+    <div data-xh-part="root">
+      <div style="display: flex; align-items: center; gap: 8px">
+        <span
+          aria-hidden="true"
+          style="
+            display: grid;
+            place-items: center;
+            flex: none;
+            inline-size: 20px;
+            block-size: 20px;
+            border-radius: 999px;
+            background: var(--xh-bg-muted);
+            font-size: 12px;
+            line-height: 1;
+          "
+          ><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6L18 18"/><path d="M18 6L6 18"/></svg></span
+        >
+        <div data-xh-part="title">同步失败</div>
+      </div>
+      <div data-xh-part="description">网络中断，稍后自动重试</div>
+    </div>
+  </xh-toast>
+</div>
+`;export{n as default};

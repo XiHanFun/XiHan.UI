@@ -1,0 +1,48 @@
+const e=`<!-- 挂自绘滚动条 | 滚动容器是视口，给它一个 id 交给滚动条即可；虚拟滚动只管渲哪几条，滚动条只管画滚动位置 -->
+<xh-virtualizer id="virtualizer-scrollbar" count="10000" estimate-size="36">
+  <div data-xh-part="root" style="block-size: 260px; inline-size: 100%; max-inline-size: 420px">
+    <!-- 视口给个 id，滚动条按 controls 找到它；挂上后原生滚动条自动藏起来 -->
+    <div data-xh-part="viewport" id="virtualizer-scrollbar-viewport">
+      <div data-xh-part="content"></div>
+    </div>
+    <xh-scrollbar controls="virtualizer-scrollbar-viewport" type="always">
+      <div data-xh-part="root">
+        <div data-xh-part="track">
+          <div data-xh-part="thumb"></div>
+        </div>
+      </div>
+    </xh-scrollbar>
+  </div>
+</xh-virtualizer>
+
+<script type="module">
+  // 条目节点由作者渲：该渲的建出来，走掉的摘掉
+  const host = document.getElementById("virtualizer-scrollbar");
+  const content = host.querySelector('[data-xh-part="content"]');
+  const nodes = new Map();
+
+  function render(items) {
+    const live = new Set();
+    for (const item of items) {
+      live.add(item.index);
+      if (nodes.has(item.index)) continue;
+      const el = document.createElement("div");
+      el.dataset.xhPart = "item";
+      el.setAttribute("value", String(item.index));
+      el.style.cssText =
+        "display: flex; align-items: center; height: 36px; padding-inline: 12px; border-block-end: 1px solid var(--xh-border-subtle)";
+      el.textContent = \`第 \${item.index + 1} 条\`;
+      nodes.set(item.index, el);
+      content.append(el);
+    }
+    for (const [index, el] of nodes) {
+      if (live.has(index)) continue;
+      el.remove();
+      nodes.delete(index);
+    }
+  }
+
+  render(host.virtualItems);
+  host.addEventListener("change", (event) => render(event.detail.virtualItems));
+<\/script>
+`;export{e as default};

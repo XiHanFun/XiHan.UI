@@ -1,0 +1,66 @@
+const e=`<!-- 宿主自定的准入 | 组件只管 accept 与大小数量这几条通用规则，别的规矩由宿主在受控列表里再筛一道：这里同名文件只留最先来的那份 -->
+<xh-file-upload id="file-upload-rule" max-files="6">
+  <div data-xh-part="root" style="inline-size: 100%; max-inline-size: 480px">
+    <label data-xh-part="label">去重后的附件</label>
+    <div data-xh-part="dropzone">
+      <span>同名文件只留最先来的那份</span>
+    </div>
+    <div>
+      <button data-xh-part="trigger">选择文件</button>
+    </div>
+    <input data-xh-part="hidden-input" />
+    <div data-xh-part="item-group"></div>
+  </div>
+</xh-file-upload>
+
+<span id="file-upload-rule-accepted"></span>
+<span id="file-upload-rule-dropped"></span>
+
+<script type="module">
+  const upload = document.getElementById("file-upload-rule");
+  const group = upload.querySelector('[data-xh-part="item-group"]');
+  const accepted = document.getElementById("file-upload-rule-accepted");
+  const dropped = document.getElementById("file-upload-rule-dropped");
+
+  upload.files = [];
+
+  function render(files) {
+    group.replaceChildren(
+      ...files.map(() => {
+        const item = document.createElement("div");
+        item.dataset.xhPart = "item";
+        item.innerHTML =
+          '<span data-xh-part="item-name"></span>' +
+          '<span data-xh-part="item-size-text"></span>' +
+          '<button data-xh-part="item-delete-trigger"></button>';
+        return item;
+      })
+    );
+  }
+
+  // 组件报来的是变化之后的完整列表，宿主按自己的规矩决定最终留下哪些
+  upload.addEventListener("files-change", (event) => {
+    const seen = new Set();
+    const kept = [];
+    const names = [];
+    for (const file of event.detail.files) {
+      if (seen.has(file.name)) {
+        names.push(file.name);
+        continue;
+      }
+      seen.add(file.name);
+      kept.push(file);
+    }
+    upload.files = kept;
+    dropped.textContent = names.length ? \`同名挡下：\${names.join("、")}\` : "";
+    render(kept);
+  });
+
+  // 这一批组件收下了谁
+  upload.addEventListener("file-accept", (event) => {
+    accepted.textContent = \`这一批收下：\${event.detail.files
+      .map((file) => file.name)
+      .join("、")}\`;
+  });
+<\/script>
+`;export{e as default};

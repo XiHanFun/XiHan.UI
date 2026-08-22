@@ -1,0 +1,75 @@
+const e=`<!-- 入库前统一改写 | 给了 value 就由宿主说了算：组件只发变更意图，写回什么形状在这里定 -->
+<xh-tags-input
+  id="tags-input-normalize"
+  value="#vue"
+  placeholder="打 Vue 回车，落进去的是 #vue"
+  style="max-inline-size: 420px"
+>
+  <div data-xh-part="root">
+    <label data-xh-part="label">话题</label>
+    <div data-xh-part="control">
+      <div data-xh-part="item" value="#vue">
+        <div data-xh-part="item-preview">
+          <span data-xh-part="item-text">#vue</span>
+          <button data-xh-part="item-delete-trigger"></button>
+        </div>
+      </div>
+      <input data-xh-part="input" />
+    </div>
+  </div>
+</xh-tags-input>
+<p>当前：<span id="tags-input-normalize-value">#vue</span></p>
+
+<script type="module">
+  const root = document.getElementById("tags-input-normalize");
+  const control = root.querySelector('[data-xh-part="control"]');
+  const input = control.querySelector('[data-xh-part="input"]');
+  const readout = document.getElementById("tags-input-normalize-value");
+
+  // 一个标签一个节点：外壳带 value 标识身份，里面是文本与删除按钮
+  function createTag(value) {
+    const item = document.createElement("div");
+    item.dataset.xhPart = "item";
+    item.setAttribute("value", value);
+    const preview = document.createElement("div");
+    preview.dataset.xhPart = "item-preview";
+    const text = document.createElement("span");
+    text.dataset.xhPart = "item-text";
+    text.textContent = value;
+    const remove = document.createElement("button");
+    remove.dataset.xhPart = "item-delete-trigger";
+    preview.append(text, remove);
+    item.append(preview);
+    return item;
+  }
+
+  // 按当前值增删标签节点，已经在的那份原地留着
+  function renderTags(values) {
+    const alive = new Map();
+    for (const el of control.querySelectorAll('[data-xh-part="item"]')) {
+      alive.set(el.getAttribute("value"), el);
+    }
+    for (const [value, el] of alive) {
+      if (!values.includes(value)) el.remove();
+    }
+    for (const value of values) {
+      if (!alive.has(value)) control.insertBefore(createTag(value), input);
+    }
+  }
+
+  // 统一成小写并补上井号，重复的那一份丢掉
+  root.addEventListener("value-change", (event) => {
+    const next = [];
+    for (const raw of event.detail.value) {
+      const tag = raw.trim().toLowerCase();
+      const normalized = tag.startsWith("#") ? tag : \`#\${tag}\`;
+      if (normalized !== "#" && !next.includes(normalized)) {
+        next.push(normalized);
+      }
+    }
+    root.value = next;
+    renderTags(next);
+    readout.textContent = next.join("、") || "（无）";
+  });
+<\/script>
+`;export{e as default};

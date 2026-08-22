@@ -1,0 +1,183 @@
+const n=`<!-- 浮层内关键词过滤 | 输入框是树的兄弟节点，树的键盘处理器挂在 tree 上，打字不会被连打检索收走；换掉 collection 可见行与方向键顺序跟着重算 -->
+<xh-tree-select id="tree-select-filter" placeholder="选一个城市">
+  <div data-xh-part="root" style="max-inline-size: 320px">
+    <span data-xh-part="label">投放城市</span>
+    <button data-xh-part="trigger">
+      <span data-xh-part="value-text"></span>
+      <span data-xh-part="indicator"></span>
+    </button>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <!-- 浮层里的输入框不算点在外面，浮层不会因此收起 -->
+        <input
+          id="tree-select-filter-keyword"
+          type="search"
+          aria-label="城市关键词"
+          placeholder="输入关键词"
+          style="inline-size: 100%; margin-block-end: 6px"
+        />
+        <div data-xh-part="tree">
+          <div data-xh-part="branch" value="east">
+            <div data-xh-part="branch-control">
+              <span data-xh-part="branch-trigger"></span>
+              <span data-xh-part="branch-text">华东</span>
+            </div>
+            <div data-xh-part="branch-content">
+              <div data-xh-part="item" value="sh">
+                <span data-xh-part="item-indicator"></span>
+                <span data-xh-part="item-text">上海</span>
+              </div>
+              <div data-xh-part="item" value="hz">
+                <span data-xh-part="item-indicator"></span>
+                <span data-xh-part="item-text">杭州</span>
+              </div>
+              <div data-xh-part="item" value="nj">
+                <span data-xh-part="item-indicator"></span>
+                <span data-xh-part="item-text">南京</span>
+              </div>
+            </div>
+          </div>
+          <div data-xh-part="branch" value="north">
+            <div data-xh-part="branch-control">
+              <span data-xh-part="branch-trigger"></span>
+              <span data-xh-part="branch-text">华北</span>
+            </div>
+            <div data-xh-part="branch-content">
+              <div data-xh-part="item" value="bj">
+                <span data-xh-part="item-indicator"></span>
+                <span data-xh-part="item-text">北京</span>
+              </div>
+              <div data-xh-part="item" value="tj">
+                <span data-xh-part="item-indicator"></span>
+                <span data-xh-part="item-text">天津</span>
+              </div>
+            </div>
+          </div>
+          <div data-xh-part="branch" value="south">
+            <div data-xh-part="branch-control">
+              <span data-xh-part="branch-trigger"></span>
+              <span data-xh-part="branch-text">华南</span>
+            </div>
+            <div data-xh-part="branch-content">
+              <div data-xh-part="item" value="gz">
+                <span data-xh-part="item-indicator"></span>
+                <span data-xh-part="item-text">广州</span>
+              </div>
+              <div data-xh-part="item" value="sz">
+                <span data-xh-part="item-indicator"></span>
+                <span data-xh-part="item-text">深圳</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p id="tree-select-filter-empty" style="margin: 0; padding: 4px; display: none"></p>
+      </div>
+    </div>
+  </div>
+</xh-tree-select>
+
+<script type="module">
+  const treeSelect = document.getElementById("tree-select-filter");
+  const keyword = document.getElementById("tree-select-filter-keyword");
+  const empty = document.getElementById("tree-select-filter-empty");
+  const tree = treeSelect.querySelector('[data-xh-part="tree"]');
+
+  const source = [
+    {
+      value: "east",
+      label: "华东",
+      children: [
+        { value: "sh", label: "上海" },
+        { value: "hz", label: "杭州" },
+        { value: "nj", label: "南京" },
+      ],
+    },
+    {
+      value: "north",
+      label: "华北",
+      children: [
+        { value: "bj", label: "北京" },
+        { value: "tj", label: "天津" },
+      ],
+    },
+    {
+      value: "south",
+      label: "华南",
+      children: [
+        { value: "gz", label: "广州" },
+        { value: "sz", label: "深圳" },
+      ],
+    },
+  ];
+
+  treeSelect.collection = source;
+  treeSelect.expandedValue = [];
+  treeSelect.addEventListener(
+    "expanded-change",
+    (event) => (treeSelect.expandedValue = event.detail.value),
+  );
+
+  function part(tag, name, text) {
+    const node = document.createElement(tag);
+    node.dataset.xhPart = name;
+    if (text !== undefined) node.textContent = text;
+    return node;
+  }
+
+  // 树数据换了，标记跟着重铺
+  function renderTree(regions) {
+    tree.replaceChildren(
+      ...regions.map((region) => {
+        const branch = part("div", "branch");
+        branch.setAttribute("value", region.value);
+        const control = part("div", "branch-control");
+        control.append(part("span", "branch-trigger"), part("span", "branch-text", region.label));
+        const content = part("div", "branch-content");
+        content.append(
+          ...region.children.map((city) => {
+            const item = part("div", "item");
+            item.setAttribute("value", city.value);
+            item.append(part("span", "item-indicator"), part("span", "item-text", city.label));
+            return item;
+          }),
+        );
+        branch.append(control, content);
+        return branch;
+      }),
+    );
+  }
+
+  // 分区名命中就整枝留下，否则只留命中的城市；一个都不剩的分区整枝去掉
+  function filter(key) {
+    if (!key) return source;
+    return source
+      .map((region) => ({
+        ...region,
+        children: region.label.includes(key)
+          ? region.children
+          : region.children.filter((city) => city.label.includes(key)),
+      }))
+      .filter((region) => region.children.length > 0);
+  }
+
+  keyword.addEventListener("input", () => {
+    const key = keyword.value.trim();
+    const regions = filter(key);
+    treeSelect.collection = regions;
+    renderTree(regions);
+    treeSelect.expandedValue = key ? regions.map((region) => region.value) : [];
+    empty.textContent = \`没有匹配「\${key}」的城市\`;
+    empty.style.display = regions.length ? "none" : "block";
+  });
+
+  // 收起浮层顺手把关键词清掉，下次展开还是整棵树
+  treeSelect.addEventListener("open-change", (event) => {
+    if (event.detail.open) return;
+    keyword.value = "";
+    treeSelect.collection = source;
+    renderTree(source);
+    treeSelect.expandedValue = [];
+    empty.style.display = "none";
+  });
+<\/script>
+`;export{n as default};

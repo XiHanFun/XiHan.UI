@@ -1,0 +1,37 @@
+const t=`<!-- 八个改尺把手 | 四条边加四个角；min-size 与 max-size 在拖、推、setSize 三处同时生效 -->
+<xh-floating-panel
+  default-position="240,220"
+  default-size="320,200"
+  min-size="240,160"
+  max-size="520,420"
+  style="display: contents"
+>
+  <div data-xh-part="root">
+    <button data-xh-part="trigger">打开面板</button>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <div data-xh-part="header">
+          <h2 data-xh-part="title">图层属性</h2>
+          <button data-xh-part="drag-trigger"></button>
+          <button data-xh-part="close-trigger"></button>
+        </div>
+        <div data-xh-part="body">
+          <p style="margin: 0">
+            往任一边拖到底就停在 240×160；把手聚焦后方向键推 10px、Shift 推
+            50px。
+          </p>
+        </div>
+        <!-- 边先角后：角上的把手要盖在两条边的交叠处 -->
+        <div data-xh-part="resize-trigger" edge="n"></div>
+        <div data-xh-part="resize-trigger" edge="e"></div>
+        <div data-xh-part="resize-trigger" edge="s"></div>
+        <div data-xh-part="resize-trigger" edge="w"></div>
+        <div data-xh-part="resize-trigger" edge="ne"></div>
+        <div data-xh-part="resize-trigger" edge="se"></div>
+        <div data-xh-part="resize-trigger" edge="sw"></div>
+        <div data-xh-part="resize-trigger" edge="nw"></div>
+      </div>
+    </div>
+  </div>
+</xh-floating-panel>
+`;export{t as default};

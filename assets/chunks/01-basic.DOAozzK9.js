@@ -1,0 +1,34 @@
+const t=`<!-- 基础用法 | 张数由 slideCount 声明而不是从 DOM 数，页数与指示点数量都由它算出来 -->
+<xh-carousel slide-count="3">
+  <div data-xh-part="root" style="inline-size: 100%">
+    <button data-xh-part="prev-trigger"></button>
+    <!-- 视口只负责裁切，高度由页面给：不给高度就没有可裁的窗口 -->
+    <div data-xh-part="viewport" style="block-size: 140px">
+      <div data-xh-part="item-group">
+        <div data-xh-part="item" index="0">
+          <div style="display: grid; place-items: center; block-size: 100%">
+            第一张
+          </div>
+        </div>
+        <div data-xh-part="item" index="1">
+          <div style="display: grid; place-items: center; block-size: 100%">
+            第二张
+          </div>
+        </div>
+        <div data-xh-part="item" index="2">
+          <div style="display: grid; place-items: center; block-size: 100%">
+            第三张
+          </div>
+        </div>
+      </div>
+    </div>
+    <button data-xh-part="next-trigger"></button>
+    <div data-xh-part="indicator-group">
+      <!-- 指示点一页一个，一屏一张时页数就是张数 -->
+      <button data-xh-part="indicator" index="0"></button>
+      <button data-xh-part="indicator" index="1"></button>
+      <button data-xh-part="indicator" index="2"></button>
+    </div>
+  </div>
+</xh-carousel>
+`;export{t as default};

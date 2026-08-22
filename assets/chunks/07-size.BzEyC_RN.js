@@ -1,0 +1,77 @@
+const t=`<!-- 尺寸 | 控件高度、胶囊与输入文字一起换档，不传 size 即默认档 -->
+<div style="display: flex; flex-direction: column; gap: 20px; max-inline-size: 420px">
+  <xh-tags-input
+    size="sm"
+    default-value="Vue,TypeScript"
+    placeholder="回车落一个"
+  >
+    <div data-xh-part="root">
+      <label data-xh-part="label">小</label>
+      <div data-xh-part="control">
+        <div data-xh-part="item" value="Vue">
+          <div data-xh-part="item-preview">
+            <span data-xh-part="item-text">Vue</span>
+            <button data-xh-part="item-delete-trigger"></button>
+          </div>
+        </div>
+        <div data-xh-part="item" value="TypeScript">
+          <div data-xh-part="item-preview">
+            <span data-xh-part="item-text">TypeScript</span>
+            <button data-xh-part="item-delete-trigger"></button>
+          </div>
+        </div>
+        <input data-xh-part="input" />
+      </div>
+    </div>
+  </xh-tags-input>
+
+  <xh-tags-input
+    default-value="Vue,TypeScript"
+    placeholder="回车落一个"
+  >
+    <div data-xh-part="root">
+      <label data-xh-part="label">默认</label>
+      <div data-xh-part="control">
+        <div data-xh-part="item" value="Vue">
+          <div data-xh-part="item-preview">
+            <span data-xh-part="item-text">Vue</span>
+            <button data-xh-part="item-delete-trigger"></button>
+          </div>
+        </div>
+        <div data-xh-part="item" value="TypeScript">
+          <div data-xh-part="item-preview">
+            <span data-xh-part="item-text">TypeScript</span>
+            <button data-xh-part="item-delete-trigger"></button>
+          </div>
+        </div>
+        <input data-xh-part="input" />
+      </div>
+    </div>
+  </xh-tags-input>
+
+  <xh-tags-input
+    size="lg"
+    default-value="Vue,TypeScript"
+    placeholder="回车落一个"
+  >
+    <div data-xh-part="root">
+      <label data-xh-part="label">大</label>
+      <div data-xh-part="control">
+        <div data-xh-part="item" value="Vue">
+          <div data-xh-part="item-preview">
+            <span data-xh-part="item-text">Vue</span>
+            <button data-xh-part="item-delete-trigger"></button>
+          </div>
+        </div>
+        <div data-xh-part="item" value="TypeScript">
+          <div data-xh-part="item-preview">
+            <span data-xh-part="item-text">TypeScript</span>
+            <button data-xh-part="item-delete-trigger"></button>
+          </div>
+        </div>
+        <input data-xh-part="input" />
+      </div>
+    </div>
+  </xh-tags-input>
+</div>
+`;export{t as default};

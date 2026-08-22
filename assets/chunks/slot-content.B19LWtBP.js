@@ -1,0 +1,1 @@
+import{aE as a,aF as i,F as e}from"./framework.Dep_XxFZ.js";function f(t){return(t==null?void 0:t.some(r=>r.type===a?!1:r.type===i?String(r.children??"").trim()!=="":r.type===e?Array.isArray(r.children)&&f(r.children):!0))??!1}export{f as s};
