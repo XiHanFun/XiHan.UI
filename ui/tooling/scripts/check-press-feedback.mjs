@@ -13,14 +13,38 @@ import { readFile } from 'node:fs/promises'
 
 const SKINS = 'packages/design/styles/css'
 
-/** 该有按压反馈的控件，连同它的部件名。 */
+/** 该有按压反馈的控件，连同它的部件名（一个组件可以登记多个部件）。 */
 const PRESSABLE = {
-  segmented: 'item',
+  'segmented': ['item'],
+  // 清空 / 关闭 / 移除按钮四类（契约见 check-clear-trigger）
+  'cascader': ['clear-trigger'],
+  'tree-select': ['clear-trigger'],
+  'combobox': ['clear-trigger'],
+  'date-picker': ['clear-trigger'],
+  'time-picker': ['clear-trigger'],
+  'text-field': ['clear-trigger'],
+  'tags-input': ['clear-trigger', 'item-delete-trigger'],
+  'select': ['clear-trigger', 'tag-remove'],
+  'popselect': ['clear-trigger'],
+  'date-field': ['clear-trigger'],
+  'time-field': ['clear-trigger'],
+  'file-upload': ['clear-trigger', 'item-delete-trigger'],
+  'signature-pad': ['clear-trigger'],
+  'dialog': ['close-trigger'],
+  'drawer': ['close-trigger'],
+  'popover': ['close-trigger'],
+  'tour': ['close-trigger'],
+  'toast': ['close-trigger'],
+  'alert': ['close-trigger'],
+  'floating-panel': ['close-trigger'],
+  'image-viewer': ['close-trigger'],
+  'tag': ['close-trigger'],
+  'dynamic-input': ['remove-trigger'],
 }
 
 const problems = []
 
-for (const [name, part] of Object.entries(PRESSABLE)) {
+for (const [name, parts] of Object.entries(PRESSABLE)) {
   let css
   try {
     css = await readFile(`${SKINS}/${name}.css`, 'utf8')
@@ -29,13 +53,17 @@ for (const [name, part] of Object.entries(PRESSABLE)) {
     problems.push(`${name}.css 读不到——组件改名了就把 PRESSABLE 里那条一起改`)
     continue
   }
+  for (const part of parts)
+    checkPart(name, part, css)
+}
 
+function checkPart(name, part, css) {
   // :active 规则要落在该部件上，且缩放量走令牌
-  const active = new RegExp(`\\[data-part='${part}'\\][^{]*:active\\s*\\{([^}]*)\\}`)
+  const active = new RegExp(`\\[data-part='${part}'\\][^{]*:active(?::not\\([^)]*\\))?\\s*\\{([^}]*)\\}`)
   const match = css.match(active)
   if (!match) {
     problems.push(`${name} 的 ${part} 没有 :active 规则——按下去到松手之间没有任何变化`)
-    continue
+    return
   }
   if (!match[1].includes('--xh-motion-scale-press')) {
     problems.push(
@@ -56,4 +84,4 @@ if (problems.length) {
   process.exit(1)
 }
 
-console.log(`[check-press-feedback] 通过：${Object.keys(PRESSABLE).length} 个控件按下去都有回应，缩放量都走令牌`)
+console.log(`[check-press-feedback] 通过：${Object.values(PRESSABLE).flat().length} 个部件按下去都有回应，缩放量都走令牌`)

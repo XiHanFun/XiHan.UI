@@ -75,7 +75,7 @@ const ITEM_SELECTOR = '[data-xh-part="item"]'
  * @csspart trigger - role=combobox 的触发按钮，同时是定位锚点，须是原生 button
  * @csspart value-text - 整条路径的显示位；留空即由元素填入，作者写了内容则归作者
  * @csspart indicator - 展开指示符（aria-hidden，data-state 随开合）
- * @csspart clear-trigger - 清空按钮，须是原生 button；不占 Tab 位且对读屏隐藏
+ * @csspart clear-trigger - 清空按钮，须是原生 button；不占 Tab 位，可及名字取 translations.clearTrigger
  * @csspart positioner - 浮层定位容器，坐标由引擎写成内联样式
  * @csspart content - 浮层壳（焦点域与消解层的根节点），键盘在此收口，收起时带 hidden；根列没有条目时带 data-empty
  * @csspart input - 搜索框（content 顶部）；没开 searchable 时带 hidden。上下键走候选、Enter 选中、Escape 先清词

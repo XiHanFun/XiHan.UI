@@ -873,7 +873,7 @@ describe('禁用 / 只读 / 越界 / 清空', () => {
     expect(h.value()).toBe('09:30')
     h.option('hour', '11').click()
     expect(h.value()).toBe('09:30')
-    expect(h.clear.disabled).toBe(true)
+    expect(h.clear.hidden).toBe(true)
     expect(h.segment('hour').getAttribute('aria-readonly')).toBe('true')
   })
 
@@ -896,17 +896,29 @@ describe('禁用 / 只读 / 越界 / 清空', () => {
 
   it('清空按钮：填了一半也能按，按完段回到占位符', () => {
     const h = open()
-    expect(h.clear.disabled).toBe(true)
+    // 没值就整个收起，不再额外打 disabled / data-disabled
+    expect(h.clear.hidden).toBe(true)
+    expect(h.clear.disabled).toBe(false)
+    expect(h.clear.hasAttribute('data-disabled')).toBe(false)
     const hour = h.segment('hour')
     hour.focus()
     pressKey(hour, '9')
     expect(h.value()).toBe('')
-    expect(h.clear.disabled).toBe(false)
+    expect(h.clear.hidden).toBe(false)
     h.clear.click()
     expect(h.segment('hour').textContent).toBe('--')
-    expect(h.clear.disabled).toBe(true)
-    // 这个按钮对读屏隐身也不占 Tab 位，清完得把焦点送回首段
+    expect(h.clear.hidden).toBe(true)
+    // 这个按钮不占 Tab 位，清完得把焦点送回首段
     expect(document.activeElement).toBe(h.segment('hour'))
+  })
+
+  it('清空按钮：不对读屏隐身，名字走 translations.clearTrigger，缺省 Clear', () => {
+    const h = open({ defaultValue: '09:30' })
+    expect(h.clear.hasAttribute('aria-hidden')).toBe(false)
+    expect(h.clear.getAttribute('aria-label')).toBe('Clear')
+    expect(h.clear.getAttribute('tabindex')).toBe('-1')
+    h.setProps({ translations: { clearTrigger: '清空时间' } })
+    expect(h.clear.getAttribute('aria-label')).toBe('清空时间')
   })
 
   it('group 只带全局属性，只读与必填落在段上', () => {
@@ -967,7 +979,7 @@ describe('快捷选项', () => {
     expect(h.value()).toBe('09:07')
   })
 
-  it('Tab 落点落在命中且按得下的那条上', () => {
+  it('tab 落点落在命中且按得下的那条上', () => {
     const h = mount({ presets: [{ value: '09:00', label: '上班', disabled: true }, { value: '18:00', label: '下班' }] })
     const tabs = h.api().presets.map(p => (h.api().getPresetProps({ value: p.value }) as { tabindex: number }).tabindex)
     expect(tabs).toEqual([-1, 0])

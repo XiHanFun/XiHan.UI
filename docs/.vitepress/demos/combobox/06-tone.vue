@@ -19,6 +19,7 @@ const fruits = [
       variant="subtle"
       :tone="t"
       :collection="fruits"
+      clearable
       :label="t"
       open-on-click
       placeholder="选择水果"

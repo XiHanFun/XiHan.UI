@@ -39,6 +39,8 @@ export interface PopselectProps {
   tone?: Tone
   /** 尺寸：sm / md / lg，决定触发器高度、内边距与字号档位。 */
   size?: Size
+  /** 读屏用的文案；缺省走英文兜底。 */
+  translations?: Partial<PopselectTranslations>
 }
 
 /**
@@ -65,13 +67,18 @@ export interface PopselectApi<T extends PropTypes = PropTypes> {
   /** 焦点锚点；焦点不在列表内时为 null。 */
   focusedValue: string | null
   disabled: boolean
+  /** 有选中值且未禁用：清空钮据此显隐，键盘清空也只在此时生效。 */
+  canClear: boolean
   isSelected: (value: string) => boolean
   setOpen: (next: boolean) => void
   setValue: (next: string[]) => void
   /** 落值：单选替换并收起浮层，多选切换并保持展开。 */
   select: (value: string) => void
+  /** 清空选中集合；单选多选一视同仁。 */
+  clear: () => void
   getRootProps: () => T['element']
   getTriggerProps: () => T['button']
+  getClearTriggerProps: () => T['button']
   getPositionerProps: () => T['element']
   getContentProps: () => T['element']
   getItemProps: (props: PopselectItemProps) => T['element']
@@ -79,5 +86,8 @@ export interface PopselectApi<T extends PropTypes = PropTypes> {
   getItemIndicatorProps: (props: PopselectItemProps) => T['element']
 }
 
-/** 读屏用的文案。本组件目前没有需要外露的文案，位先留着。 */
-export interface PopselectTranslations {}
+/** 读屏用的文案。 */
+export interface PopselectTranslations {
+  /** 清空钮的可及名，缺省 'Clear'。 */
+  clearTrigger: string
+}

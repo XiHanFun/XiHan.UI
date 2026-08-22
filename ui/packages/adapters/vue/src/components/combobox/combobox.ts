@@ -44,6 +44,9 @@ export const XhComboboxRoot = defineComponent({
     invalid: Boolean,
     loop: { type: Boolean, default: undefined },
     placeholder: { type: String, default: undefined },
+    /** 自动铺开时是否渲染清空钮；手写部件模式不看它，写了节点即可清 */
+    clearable: Boolean,
+    translations: { type: Object as PropType<ComboboxProps['translations']>, default: undefined },
     allowCustomValue: Boolean,
     openOnClick: Boolean,
     inputBehavior: { type: String as PropType<ComboboxInputBehavior>, default: undefined },
@@ -114,6 +117,7 @@ export const XhComboboxRoot = defineComponent({
               slots.label?.() ?? (props.label != null ? [props.label] : null),
               slots.empty?.() ?? (props.empty != null ? [props.empty] : null),
               slots.item,
+              props.clearable,
             )
           : [],
     )
@@ -291,14 +295,15 @@ function renderDefaultTree(
   collection: readonly ComboboxNodeMeta[],
   label: (VNode | string)[] | null,
   empty: (VNode | string)[] | null,
-  itemSlot?: (node: ComboboxNodeMeta) => VNode[],
+  itemSlot: ((node: ComboboxNodeMeta) => VNode[]) | undefined,
+  clearable: boolean,
 ): VNode[] {
   return [
     ...(label ? [h(XhComboboxLabel, null, () => label)] : []),
     h(XhComboboxControl, null, () => [
       h(XhComboboxInput),
+      ...(clearable ? [h(XhComboboxClearTrigger)] : []),
       h(XhComboboxTrigger),
-      h(XhComboboxClearTrigger),
     ]),
     h(XhComboboxPositioner, null, () => [
       h(XhComboboxContent, null, () => collection.map(node =>

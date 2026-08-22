@@ -256,14 +256,16 @@
     block-size: var(--xh-tags-input-delete-size, var(--xh-control-indicator-size));
     padding: 0;
     border: 0;
-    border-radius: var(--xh-shape-pill);
+    border-radius: var(--xh-tags-input-delete-radius, var(--xh-shape-inset));
     background: var(--xh-tags-input-delete-bg, transparent);
     color: var(--xh-tags-input-delete-fg, var(--xh-fg-muted));
     font-family: inherit;
     font-size: var(--xh-tags-input-delete-font-size, var(--xh-text-caption-size));
     line-height: var(--xh-leading-none);
     cursor: pointer;
-    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='tags-input'][data-part='item-delete-trigger'][hidden] {
@@ -282,6 +284,7 @@
 
   [data-scope='tags-input'][data-part='item-delete-trigger']:active:not(:disabled) {
     background: var(--xh-tags-input-delete-bg-active, var(--xh-bg-subtle-active));
+    scale: var(--xh-motion-scale-press);
   }
 
   /* 按钮不占 Tab 位（tabindex=-1），正常操作走不到这里；
@@ -328,50 +331,49 @@
     cursor: not-allowed;
   }
 
-  /* 清空按钮贴在框的末端，与输入框同一行，尺寸取控件指示件档（随密度收） */
+  /* 清空按钮贴在框的末端，与输入框同一行，尺寸取控件动作钮档（随密度收） */
   [data-scope='tags-input'][data-part='clear-trigger'] {
     display: inline-flex;
     flex: none;
     align-items: center;
     justify-content: center;
-    inline-size: var(--xh-tags-input-clear-size, var(--xh-control-indicator-size));
-    block-size: var(--xh-tags-input-clear-size, var(--xh-control-indicator-size));
+    inline-size: var(--xh-tags-input-action-size, var(--xh-control-action-size));
+    block-size: var(--xh-tags-input-action-size, var(--xh-control-action-size));
     padding: 0;
     border: 0;
-    border-radius: var(--xh-shape-pill);
-    background: var(--xh-tags-input-clear-bg, transparent);
-    color: var(--xh-tags-input-clear-fg, var(--xh-fg-muted));
+    border-radius: var(--xh-tags-input-action-radius, var(--xh-shape-control));
+    background: var(--xh-tags-input-action-bg, transparent);
+    color: var(--xh-tags-input-action-fg, var(--xh-fg-muted));
     font-family: inherit;
-    font-size: var(--xh-tags-input-clear-font-size, var(--xh-text-secondary-size));
+    font-size: var(--xh-tags-input-action-font-size, var(--xh-text-secondary-size));
     line-height: var(--xh-leading-none);
     cursor: pointer;
-    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
+  /* 没值可清时连接层只打 hidden；上面那条 display 会盖掉 UA 规则，少了这条按钮就一直杵着 */
   [data-scope='tags-input'][data-part='clear-trigger'][hidden] {
     display: none;
   }
 
-  [data-scope='tags-input'][data-part='clear-trigger']:hover:not(:disabled) {
-    background: var(--xh-tags-input-clear-bg-hover, var(--xh-bg-subtle-hover));
-    color: var(--xh-tags-input-clear-fg-hover, var(--xh-fg-default));
+  [data-scope='tags-input'][data-part='clear-trigger']:hover {
+    background: var(--xh-tags-input-action-bg-hover, var(--xh-bg-subtle-hover));
+    color: var(--xh-tags-input-action-fg-hover, var(--xh-fg-default));
   }
 
-  [data-scope='tags-input'][data-part='clear-trigger']:active:not(:disabled) {
-    background: var(--xh-tags-input-clear-bg-active, var(--xh-bg-subtle-active));
+  [data-scope='tags-input'][data-part='clear-trigger']:active {
+    background: var(--xh-tags-input-action-bg-active, var(--xh-bg-subtle-active));
+    scale: var(--xh-motion-scale-press);
   }
 
+  /* 按钮不占 Tab 位（tabindex=-1），正常操作走不到这里；
+     留着焦点环是给程序化聚焦兜底——清完把焦点交回输入框之前，它确实短暂持有过焦点 */
   [data-scope='tags-input'][data-part='clear-trigger']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-_tags-input-ring);
-    /* 比默认档窄一道：它长在胶囊里，按默认偏移画会压到相邻胶囊 */
+    /* 比默认档窄一道：它长在框的末端，按默认偏移画会压到相邻胶囊 */
     outline-offset: var(--xh-stroke-thin);
-  }
-
-  /* 没东西可清、只读或禁用时按钮转灰但不收起：位置留着，加进第一个标签就亮 */
-  [data-scope='tags-input'][data-part='clear-trigger']:disabled {
-    background: transparent;
-    color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
   /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */

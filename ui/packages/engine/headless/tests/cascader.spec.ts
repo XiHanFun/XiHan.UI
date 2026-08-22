@@ -905,7 +905,8 @@ describe('禁用、只读与清空', () => {
     click(h.trigger)
     expect(h.state()).toBe('closed')
     expect(h.item('macau').item.getAttribute('aria-disabled')).toBe('true')
-    expect(h.clear.hasAttribute('disabled')).toBe(true)
+    expect(h.clear.hasAttribute('hidden')).toBe(true)
+    expect(h.clear.hasAttribute('disabled')).toBe(false)
   })
 
   it('只读：浮层照常展开、列照常浏览，但选中值改不动、也清不掉', () => {
@@ -915,15 +916,24 @@ describe('禁用、只读与清空', () => {
     expect(h.trigger.getAttribute('aria-readonly')).toBe('true')
     click(h.item('taiwan').item)
     expect(h.value()).toEqual([['macau']])
-    expect(h.clear.hasAttribute('disabled')).toBe(true)
+    expect(h.clear.hasAttribute('hidden')).toBe(true)
+    expect(h.clear.hasAttribute('disabled')).toBe(false)
+    // 只读时键盘清空也走不通
+    press(h.trigger, 'Delete')
+    press(h.trigger, 'Backspace')
+    expect(h.value()).toEqual([['macau']])
     // 浏览不受影响
     press(active(), 'ArrowRight')
     expect(h.shownColumns()).toEqual([0])
   })
 
-  it('清空按钮：按下不把焦点从 trigger 挪走，清完值归零、按钮自己也就按不动了', () => {
+  it('清空按钮：按下不把焦点从 trigger 挪走，清完值归零、按钮自己随之收起', () => {
     const h = mount({ defaultValue: ['zhejiang', 'hangzhou'], placeholder: '请选择' })
+    expect(h.clear.hasAttribute('hidden')).toBe(false)
     expect(h.clear.hasAttribute('disabled')).toBe(false)
+    expect(h.clear.hasAttribute('aria-hidden')).toBe(false)
+    expect(h.clear.getAttribute('aria-label')).toBe('Clear')
+    expect(h.clear.getAttribute('tabindex')).toBe('-1')
     const down = new MouseEvent('pointerdown', { bubbles: true, cancelable: true, button: 0 })
     h.clear.dispatchEvent(down)
     expect(down.defaultPrevented).toBe(true)
@@ -931,8 +941,39 @@ describe('禁用、只读与清空', () => {
     click(h.clear)
     expect(h.value()).toEqual([])
     expect(h.valueText.textContent).toBe('请选择')
-    expect(h.clear.hasAttribute('disabled')).toBe(true)
+    expect(h.clear.hasAttribute('hidden')).toBe(true)
+    expect(h.clear.hasAttribute('disabled')).toBe(false)
     expect(document.activeElement).toBe(h.trigger)
+  })
+
+  it('delete 在 trigger 上清空全部，浮层不展开', () => {
+    const h = mount({ multiple: true, defaultValue: [['macau'], ['taiwan']] })
+    h.trigger.focus()
+    const event = press(h.trigger, 'Delete')
+    expect(event.defaultPrevented).toBe(true)
+    expect(h.value()).toEqual([])
+    expect(h.state()).toBe('closed')
+    expect(h.clear.hasAttribute('hidden')).toBe(true)
+  })
+
+  it('backspace 在 trigger 上：单选清空，多选去掉最后一个', () => {
+    const multi = mount({ multiple: true, defaultValue: [['macau'], ['taiwan']] })
+    press(multi.trigger, 'Backspace')
+    expect(multi.value()).toEqual([['macau']])
+    press(multi.trigger, 'Backspace')
+    expect(multi.value()).toEqual([])
+    expect(multi.state()).toBe('closed')
+
+    const single = mount({ defaultValue: ['zhejiang', 'hangzhou'] })
+    press(single.trigger, 'Backspace')
+    expect(single.value()).toEqual([])
+  })
+
+  it('无值时 Delete / Backspace 在 trigger 上不吞键', () => {
+    const h = mount()
+    expect(press(h.trigger, 'Delete').defaultPrevented).toBe(false)
+    expect(press(h.trigger, 'Backspace').defaultPrevented).toBe(false)
+    expect(h.state()).toBe('closed')
   })
 })
 
@@ -1040,8 +1081,9 @@ describe('空态占位', () => {
 
   it('文案默认英文，translations 逐键覆盖', () => {
     const h = mount()
-    expect(h.api().translations).toEqual({ empty: 'No data', noMatch: 'No matches', column: 'Options' })
-    h.setProps({ translations: { empty: '暂无数据' } })
-    expect(h.api().translations).toEqual({ empty: '暂无数据', noMatch: 'No matches', column: 'Options' })
+    expect(h.api().translations).toEqual({ empty: 'No data', noMatch: 'No matches', column: 'Options', clearTrigger: 'Clear' })
+    h.setProps({ translations: { empty: '暂无数据', clearTrigger: '清空' } })
+    expect(h.api().translations).toEqual({ empty: '暂无数据', noMatch: 'No matches', column: 'Options', clearTrigger: '清空' })
+    expect(h.clear.getAttribute('aria-label')).toBe('清空')
   })
 })

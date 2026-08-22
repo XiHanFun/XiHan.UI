@@ -5,6 +5,7 @@ import { createAnatomy } from '@xihan-ui/kernel'
 export const popselectAnatomy = createAnatomy('popselect', [
   'root',
   'trigger',
+  'clear-trigger',
   'positioner',
   'content',
   'item',

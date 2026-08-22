@@ -504,14 +504,11 @@ export function connectTimePicker<T extends PropTypes>(
     getClearTriggerProps: () => normalize.button({
       ...parts['clear-trigger'].attrs,
       'type': 'button',
-      // 不占 Tab 位、不暴露给读屏：键盘用户在段上按退格即可清
+      // 不占 Tab 位：键盘用户在段上按退格即可清；读屏仍能摸到它，名字走文案键
       'tabindex': -1,
-      'aria-hidden': true,
-      // 没值就整个收起，不是禁用：清空钮与下拉钮并排时，一个灰着一个亮着，
-      // 用户分不清哪个能点。有值才出现，出现即可用
+      'aria-label': prop('translations')?.clearTrigger ?? 'Clear',
+      // 没值就整个收起，不是禁用：有值才出现，出现即可用
       'hidden': !canClear || undefined,
-      'disabled': !canClear || undefined,
-      'data-disabled': dataAttr(!canClear),
       // 不拦的话浏览器会把焦点挪到这个按钮上，清完焦点就落在一个隐身节点里
       'onPointerDown': (event: PointerEvent) => {
         if (event.button === 0)

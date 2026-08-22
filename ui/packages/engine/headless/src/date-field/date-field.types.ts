@@ -212,7 +212,10 @@ export interface DateFieldApi<T extends PropTypes = PropTypes> {
   granularity: DateGranularity
   /** 直接写整份值；传 null 等于清空。 */
   setValue: (next: string | null) => void
+  /** 清空全部段位；disabled / readOnly 下不动。 */
   clear: () => void
+  /** 清空钮此刻是否可用：有段填了值、且可编辑。 */
+  canClear: boolean
   getRootProps: () => T['element']
   /** 标题不是原生 label（段位是 div，不可被 label 标注），点它由连接层代为把焦点送进首段。 */
   getLabelProps: () => T['element']
@@ -221,9 +224,14 @@ export interface DateFieldApi<T extends PropTypes = PropTypes> {
   /** 作者的那一句声明落在哪一段上；段集里没有这一块（或下标越界）时缺席。文字由适配器照它渲染。 */
   segmentOf: (props: DateFieldSegmentProps) => DateFieldSegmentState | undefined
   getSegmentProps: (props: DateFieldSegmentProps) => T['element']
+  /** 清空钮：不占 Tab 位，没值或不可编辑时收起；点完焦点回到首段。 */
+  getClearTriggerProps: () => T['button']
   /** 表单出口：一份 type=hidden 的原生输入，值是 ISO 串。 */
   getHiddenInputProps: () => T['input']
 }
 
-/** 读屏用的文案：逐段的名字。段是 spinbutton，没有名字读屏只念得出一串数字。 */
-export type DateFieldTranslations = { readonly [K in DateSegmentType]?: string }
+/** 读屏用的文案：逐段的名字（段是 spinbutton，没有名字读屏只念得出一串数字），以及清空钮的名字。 */
+export type DateFieldTranslations = { readonly [K in DateSegmentType]?: string } & {
+  /** 清空钮的 aria-label，缺省 'Clear'。 */
+  readonly clearTrigger?: string
+}

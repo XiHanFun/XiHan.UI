@@ -1,6 +1,6 @@
 import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
-import type { TextFieldApi, TextFieldSchema } from './text-field.types'
+import type { TextFieldApi, TextFieldSchema, TextFieldTranslations } from './text-field.types'
 import { dataAttr, isComposingEvent } from '@xihan-ui/kernel'
 import { textFieldAnatomy } from './text-field.anatomy'
 import { autoSizeTextarea } from './text-field.autosize'
@@ -8,12 +8,19 @@ import { isAtLimit } from './text-field.machine'
 
 const parts = textFieldAnatomy.build()
 
+function resolveTranslations(input: Partial<TextFieldTranslations> | undefined): TextFieldTranslations {
+  return {
+    clearTrigger: input?.clearTrigger ?? 'Clear',
+  }
+}
+
 export function connectTextField<T extends PropTypes>(
   service: Service<TextFieldSchema>,
   normalize: NormalizeProps<T>,
 ): TextFieldApi<T> {
   const { prop, send, context, scope } = service
   const ids = scope.ids('text-field', 'label', 'input')
+  const label = resolveTranslations(prop('translations'))
 
   const value = context.get('value')
   const empty = value === ''
@@ -111,13 +118,11 @@ export function connectTextField<T extends PropTypes>(
     getClearTriggerProps: () => normalize.button({
       ...parts['clear-trigger'].attrs,
       'type': 'button',
-      // 不占 Tab 位、不暴露给读屏：键盘用户走 Escape，按钮只是指针用户的快捷方式
+      // 不占 Tab 位（键盘用户走 Escape），但读屏按虚拟光标仍找得到它
       'tabindex': -1,
-      'aria-hidden': true,
-      // 没开 clearable 时按钮收起而不是卸载，节点是作者写的
-      'hidden': !clearable || undefined,
-      'disabled': !canClear || undefined,
-      'data-disabled': dataAttr(!canClear),
+      'aria-label': label.clearTrigger,
+      // 没开 clearable 或此刻清不了时按钮收起而不是卸载，节点是作者写的
+      'hidden': !canClear || undefined,
       'onPointerDown': (event: PointerEvent) => {
         // 只认主键，右键留给上下文菜单
         if (event.button !== 0)
@@ -126,8 +131,11 @@ export function connectTextField<T extends PropTypes>(
         event.preventDefault()
       },
       'onClick': () => {
-        if (canClear)
-          send({ type: 'VALUE.CLEAR' })
+        if (!canClear)
+          return
+        send({ type: 'VALUE.CLEAR' })
+        // 清完把焦点送回输入框，接着打字不用再点一次
+        scope.getById(ids.input)?.focus()
       },
     }),
   }

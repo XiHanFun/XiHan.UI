@@ -52,9 +52,9 @@
     align-items: center;
     justify-content: center;
     flex: none;
-    /* 命中区取行内动作按钮的标准尺寸，不随标签档位缩小：叉本来就是最难点中的那一个 */
-    block-size: var(--xh-tag-close-size, var(--xh-control-action-size));
-    inline-size: var(--xh-tag-close-size, var(--xh-control-action-size));
+    /* 命中区取标签内移除钮的指示符尺寸，不随标签档位缩小 */
+    block-size: var(--xh-tag-close-size, var(--xh-control-indicator-size));
+    inline-size: var(--xh-tag-close-size, var(--xh-control-indicator-size));
     /* 命中区比字形大一圈，往内收一格才不会在标签右缘留出一块空白 */
     margin-inline-end: calc(-1 * var(--xh-space-1));
     border: 0;
@@ -66,6 +66,9 @@
     font: inherit;
     line-height: var(--xh-leading-none);
     cursor: pointer;
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* closable=false 时连接层同时给了 hidden 与 disabled，这条是它真正收起的那一半 */
@@ -73,9 +76,14 @@
     display: none;
   }
 
-  /* 悬停只加一层同色薄底，实心与淡底两种形态上都成立 */
   [data-scope='tag'][data-part='close-trigger']:hover:not(:disabled) {
-    background: color-mix(in oklab, currentColor 14%, transparent);
+    /* 底色从当前前景色调出来：标签的实心 / 淡底 / 描边各形态下都压得住 */
+    background: var(--xh-tag-close-bg-hover, color-mix(in oklab, currentColor 14%, transparent));
+  }
+
+  [data-scope='tag'][data-part='close-trigger']:not(:disabled):active {
+    background: var(--xh-tag-close-bg-active, color-mix(in oklab, currentColor 22%, transparent));
+    scale: var(--xh-motion-scale-press);
   }
 
   [data-scope='tag'][data-part='close-trigger']:disabled {

@@ -255,7 +255,7 @@
     line-height: var(--xh-leading-none);
     cursor: pointer;
     user-select: none;
-    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 有值时清空钮顶上来，下拉钮让位：两个钮并排堆在框里，用户分不清点哪个。
@@ -314,6 +314,7 @@
   [data-scope='combobox'][data-part='trigger']:active:not(:disabled),
   [data-scope='combobox'][data-part='clear-trigger']:active:not(:disabled) {
     background: var(--xh-combobox-action-bg-active, var(--xh-bg-subtle-active));
+    scale: var(--xh-motion-scale-press);
   }
 
   /* 两个按钮都退出了 Tab 序列（tabindex=-1），正常操作走不到这里；
@@ -324,8 +325,7 @@
     outline-offset: var(--xh-ring-offset);
   }
 
-  [data-scope='combobox'][data-part='trigger']:disabled,
-  [data-scope='combobox'][data-part='clear-trigger']:disabled {
+  [data-scope='combobox'][data-part='trigger']:disabled {
     background: var(--xh-combobox-action-bg, transparent);
     color: var(--xh-fg-disabled);
     cursor: not-allowed;

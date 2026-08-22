@@ -25,7 +25,7 @@ export type FileUploadRootSlotProps = Pick<
   | 'setFiles'
   | 'addFiles'
   | 'deleteFile'
-  | 'clearFiles'
+  | 'clear'
   | 'openFilePicker'
 >
 
@@ -95,7 +95,7 @@ export const XhFileUploadRoot = defineComponent({
       setFiles: ctx.api.value.setFiles,
       addFiles: ctx.api.value.addFiles,
       deleteFile: ctx.api.value.deleteFile,
-      clearFiles: ctx.api.value.clearFiles,
+      clear: ctx.api.value.clear,
       openFilePicker: ctx.api.value.openFilePicker,
     }))
   },

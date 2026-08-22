@@ -219,6 +219,7 @@ export type { ContextMenuContext } from './components/context-menu/use-context-m
 export { XhCountdown } from './components/countdown/countdown'
 export type { CountdownSlotProps } from './components/countdown/countdown'
 export {
+  XhDateFieldClearTrigger,
   XhDateFieldControl,
   XhDateFieldHiddenInput,
   XhDateFieldLabel,
@@ -585,7 +586,7 @@ export { usePopover } from './components/popover/use-popover'
 export type { PopoverContext } from './components/popover/use-popover'
 export { providePopselect, providePopselectItem, usePopselectContext, usePopselectItemContext } from './components/popselect/context'
 export type { PopselectItemContext } from './components/popselect/context'
-export { XhPopselectContent, XhPopselectItem, XhPopselectItemIndicator, XhPopselectItemText, XhPopselectPositioner, XhPopselectRoot, XhPopselectTrigger } from './components/popselect/popselect'
+export { XhPopselectClearTrigger, XhPopselectContent, XhPopselectItem, XhPopselectItemIndicator, XhPopselectItemText, XhPopselectPositioner, XhPopselectRoot, XhPopselectTrigger } from './components/popselect/popselect'
 export type { PopselectRootSlotProps } from './components/popselect/popselect'
 export { usePopselect } from './components/popselect/use-popselect'
 export type { PopselectContext } from './components/popselect/use-popselect'
@@ -795,6 +796,7 @@ export type { ThreadRootSlotProps } from './components/thread/thread'
 export { useThread } from './components/thread/use-thread'
 export type { ThreadContext } from './components/thread/use-thread'
 export {
+  XhTimeFieldClearTrigger,
   XhTimeFieldControl,
   XhTimeFieldHiddenInput,
   XhTimeFieldLabel,

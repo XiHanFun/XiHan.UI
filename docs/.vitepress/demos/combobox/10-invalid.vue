@@ -24,6 +24,7 @@ const invalid = computed(() => value.value.length === 0);
     v-model:value="value"
     v-model:input-value="query"
     :collection="filtered"
+    clearable
     :invalid="invalid"
     label="常驻城市"
     empty="无匹配城市"

@@ -172,6 +172,10 @@
     font: inherit;
     line-height: var(--xh-leading-none);
     cursor: pointer;
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* closable=false 时连接层同时给了 hidden 与 disabled，这条是它真正收起的那一半：
@@ -181,8 +185,13 @@
   }
 
   [data-scope='toast'][data-part='close-trigger']:hover:not(:disabled) {
-    background: var(--xh-toast-close-bg-hover, var(--xh-bg-subtle));
+    background: var(--xh-toast-close-bg-hover, var(--xh-bg-subtle-hover));
     color: var(--xh-toast-close-fg-hover, var(--xh-fg-default));
+  }
+
+  [data-scope='toast'][data-part='close-trigger']:active {
+    background: var(--xh-toast-close-bg-active, var(--xh-bg-subtle-active));
+    scale: var(--xh-motion-scale-press);
   }
 
   /* 单体控件用原生 disabled。常规路径下它与 hidden 同时出现看不见，

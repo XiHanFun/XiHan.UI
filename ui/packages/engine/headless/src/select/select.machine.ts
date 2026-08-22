@@ -1,8 +1,8 @@
-import { closeReasonOf } from '../shared/close-reason'
 import type { Placement, PositionResult } from '@xihan-ui/kernel'
 import type { SelectFocusIntent, SelectSchema } from './select.types'
 import { createDismissLayer, createFocusScope, createTypeahead, isItemDisabled, itemValue, navigateItems, queryItems } from '@xihan-ui/behavior'
 import { resetDeclaredValue, setup } from '@xihan-ui/machine'
+import { closeReasonOf } from '../shared/close-reason'
 import { selectItemQuery, selectItemText } from './select.anatomy'
 
 const { createMachine } = setup<SelectSchema>()
@@ -73,10 +73,17 @@ export const selectMachine = createMachine({
     track([context.dep('value')], () => action(['syncValueText']))
     track([() => prop('multiple')], () => action(['normalizeValue']))
   },
-  // 只改值不动开合，收起态连打与外部 setValue 两个状态都认
+  // 只改值不动开合，收起态连打与外部 setValue 两个状态都认；只读时值改不动
   on: {
     'FORM.RESET': { actions: ['resetToDefault'] },
-    'VALUE.SET': { actions: ['setValue', 'syncValueText'] },
+    'VALUE.SET': [
+      { guard: 'isReadOnly' },
+      { actions: ['setValue', 'syncValueText'] },
+    ],
+    'VALUE.CLEAR': [
+      { guard: 'isReadOnly' },
+      { actions: ['clearValue', 'syncValueText'] },
+    ],
   },
   states: {
     closed: {
@@ -111,8 +118,9 @@ export const selectMachine = createMachine({
           { target: 'closed', actions: ['setReturnFocus', 'invokeOnClose'] },
         ],
         // 单选选中即关闭：先落值（cell 随即发出 onValueChange），再走与 CLOSE 相同的收口。
-        // 多选只增删集合、留在展开态，让作者接着点下一项。
+        // 多选只增删集合、留在展开态，让作者接着点下一项。只读时条目点不动、浮层也不收。
         'ITEM.SELECT': [
+          { guard: 'isReadOnly' },
           { guard: 'isMultiple', actions: ['setValue', 'syncValueText'] },
           { guard: 'isOpenControlled', actions: ['setValue', 'syncValueText', 'setReturnFocus', 'invokeOnClose'] },
           { target: 'closed', actions: ['setValue', 'syncValueText', 'setReturnFocus', 'invokeOnClose'] },
@@ -129,6 +137,7 @@ export const selectMachine = createMachine({
     guards: {
       isOpenControlled: ({ prop }) => prop('open') !== undefined,
       isMultiple: ({ prop }) => !!prop('multiple'),
+      isReadOnly: ({ prop }) => !!prop('readOnly'),
     },
     actions: {
       resetToDefault: (params) => {
@@ -156,6 +165,7 @@ export const selectMachine = createMachine({
         }
         context.set('value', [e.value])
       },
+      clearValue: ({ context }) => context.set('value', []),
       // 多选关掉时把集合截回单选的不变量，顺带把这次收缩通知出去
       normalizeValue: ({ context, prop }) => {
         const current = context.get('value')

@@ -165,70 +165,58 @@
     --xh-_select-ring: var(--xh-ring-invalid);
   }
 
-  /* 收纳容器：触发器与清空按钮的定位基准，触发器在里面占满一行 */
+  /* 收纳容器：触发器与清空按钮在里面并排，触发器占满剩余一行 */
   [data-scope='select'][data-part='control'] {
-    position: relative;
     display: flex;
     align-items: center;
+    gap: var(--xh-select-control-gap, var(--xh-space-1));
   }
 
   [data-scope='select'][data-part='control'] > [data-part='trigger'] {
     flex: 1;
   }
 
-  /* 清空按钮：trigger 的兄弟节点，幽灵小圆钮；没选中或禁用时连接层给 hidden */
+  /* 清空按钮：trigger 的兄弟节点，贴在触发框旁边的小方钮，不撑高那一行；清不了时连接层给 hidden */
   [data-scope='select'][data-part='clear-trigger'] {
-    display: inline-grid;
-    place-items: center;
-    inline-size: var(--xh-select-clear-size, var(--xh-control-indicator-size));
-    block-size: var(--xh-select-clear-size, var(--xh-control-indicator-size));
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--xh-select-action-size, var(--xh-control-action-size));
+    block-size: var(--xh-select-action-size, var(--xh-control-action-size));
     padding: 0;
-    border: none;
-    border-radius: var(--xh-shape-pill);
-    background: none;
-    color: var(--xh-select-clear-fg, var(--xh-fg-subtle));
+    border: 0;
+    border-radius: var(--xh-select-action-radius, var(--xh-shape-control));
+    background: var(--xh-select-action-bg, transparent);
+    color: var(--xh-select-action-fg, var(--xh-fg-muted));
+    font-family: inherit;
 
     /* 字号行高钉死：继承页面字号会让行框高过按钮，字形被基线顶离正中 */
-    font-size: var(--xh-select-clear-font-size, var(--xh-text-caption-size));
+    font-size: var(--xh-select-action-font-size, var(--xh-text-secondary-size));
     line-height: var(--xh-leading-none);
     cursor: pointer;
-  }
-
-  [data-scope='select'][data-part='clear-trigger']:hover {
-    background: var(--xh-select-clear-bg-hover, var(--xh-bg-subtle-hover));
-    color: var(--xh-select-clear-fg-hover, var(--xh-fg-default));
-  }
-
-  [data-scope='select'][data-part='clear-trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-_select-ring);
-    outline-offset: var(--xh-ring-offset);
+    user-select: none;
+    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='select'][data-part='clear-trigger'][hidden] {
     display: none;
   }
 
-  /* 进了 control 就嵌进触发器右端（与展开指示符同位），纵向钉在正中；平时不占位也不接指针 */
-  [data-scope='select'][data-part='control'] [data-part='clear-trigger'] {
-    position: absolute;
-    inset-block-start: 50%;
-    inset-inline-end: var(--xh-select-trigger-px, var(--xh-_select-px));
-    translate: 0 -50%;
-    opacity: 0;
-    pointer-events: none;
+  [data-scope='select'][data-part='clear-trigger']:hover {
+    background: var(--xh-select-action-bg-hover, var(--xh-bg-subtle-hover));
+    color: var(--xh-select-action-fg-hover, var(--xh-fg-default));
   }
 
-  /* 悬停或键盘聚到清空钮上时显形 */
-  [data-scope='select'][data-part='control']:hover [data-part='clear-trigger']:not([hidden]),
-  [data-scope='select'][data-part='control'] [data-part='clear-trigger']:focus-visible {
-    opacity: 1;
-    pointer-events: auto;
+  [data-scope='select'][data-part='clear-trigger']:active {
+    background: var(--xh-select-action-bg-active, var(--xh-bg-subtle-active));
+    scale: var(--xh-motion-scale-press);
   }
 
-  /* 清空钮显形期间展开指示符让位，两个图标不叠在一起 */
-  [data-scope='select'][data-part='control']:hover:has([data-part='clear-trigger']:not([hidden])) [data-part='indicator'],
-  [data-scope='select'][data-part='control']:has([data-part='clear-trigger']:focus-visible) [data-part='indicator'] {
-    opacity: 0;
+  /* 清空按钮退出了 Tab 序列（tabindex=-1），正常操作走不到这里；留着是给程序化聚焦兜底，落焦时得看得见 */
+  [data-scope='select'][data-part='clear-trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-_select-ring);
+    outline-offset: var(--xh-ring-offset);
   }
 
   /* 多选标签：淡底小药丸；放触发器里是纯展示，放外面配 tag-remove 可删 */
@@ -250,20 +238,34 @@
     color: var(--xh-fg-disabled);
   }
 
+  /* 标签内的删除钮：与指示符同尺寸的小钮，贴着标签文字 */
   [data-scope='select'][data-part='tag-remove'] {
     display: inline-grid;
     place-items: center;
+    inline-size: var(--xh-select-tag-remove-size, var(--xh-control-indicator-size));
+    block-size: var(--xh-select-tag-remove-size, var(--xh-control-indicator-size));
     padding: 0;
     border: none;
-    border-radius: var(--xh-shape-pill);
+    border-radius: var(--xh-select-tag-remove-radius, var(--xh-shape-inset));
     background: none;
     color: var(--xh-select-tag-remove-fg, var(--xh-fg-subtle));
     font-size: inherit;
     cursor: pointer;
+    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='select'][data-part='tag-remove'][hidden] {
+    display: none;
   }
 
   [data-scope='select'][data-part='tag-remove']:hover {
+    background: var(--xh-select-tag-remove-bg-hover, var(--xh-bg-subtle-hover));
     color: var(--xh-select-tag-remove-fg-hover, var(--xh-fg-default));
+  }
+
+  [data-scope='select'][data-part='tag-remove']:active {
+    background: var(--xh-select-tag-remove-bg-active, var(--xh-bg-subtle-active));
+    scale: var(--xh-motion-scale-press);
   }
 
   [data-scope='select'][data-part='tag-remove']:focus-visible {
@@ -286,6 +288,11 @@
     border-color: var(--xh-select-trigger-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
   }
 
+  /* 只读仍可聚焦、浮层仍展得开、条目仍能浏览，所以不置灰，只把底色压下去表示「改不动」 */
+  [data-scope='select'][data-part='trigger'][data-readonly] {
+    background: var(--xh-select-trigger-bg-readonly, var(--xh-bg-subtle));
+  }
+
   /* trigger 是单体控件，用原生 disabled（条目那边一律 aria-disabled） */
   [data-scope='select'][data-part='trigger']:disabled {
     color: var(--xh-fg-disabled);
@@ -305,6 +312,11 @@
   /* 无选中：显示的是 placeholder，画淡一档 */
   [data-scope='select'][data-part='value-text'][data-placeholder] {
     color: var(--xh-select-placeholder-fg, var(--xh-fg-subtle));
+  }
+
+  /* 有值时清空钮顶上来，箭头让位：两个图标并排堆着，用户分不清点哪个 */
+  [data-scope='select'][data-part='indicator'][data-clearable] {
+    display: none;
   }
 
   [data-scope='select'][data-part='indicator'] {

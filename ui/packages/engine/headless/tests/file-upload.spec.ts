@@ -490,13 +490,23 @@ describe('connectFileUpload 属性输出', () => {
     expect(m.root.getAttribute('data-disabled')).toBe('')
   })
 
-  it('清空按钮在列表为空时带原生 disabled，有文件即解开', () => {
+  it('清空按钮在列表为空时不禁用、只打 data-empty，有文件即摘掉', () => {
     const m = open({ maxFiles: 3 })
-    expect(m.clear.hasAttribute('disabled')).toBe(true)
+    expect(m.clear.hasAttribute('disabled')).toBe(false)
+    expect(m.clear.hasAttribute('data-disabled')).toBe(false)
+    expect(m.clear.getAttribute('data-empty')).toBe('')
     expect(m.root.getAttribute('data-empty')).toBe('')
     pick(m, [makeFile('a.txt')])
     expect(m.clear.hasAttribute('disabled')).toBe(false)
+    expect(m.clear.getAttribute('data-empty')).toBeNull()
     expect(m.root.getAttribute('data-empty')).toBeNull()
+  })
+
+  it('空列表下点清空按钮是空操作，按钮仍在位', () => {
+    const m = open({ maxFiles: 3 })
+    m.clear.click()
+    expect(m.api().empty).toBe(true)
+    expect(m.clear.getAttribute('data-empty')).toBe('')
   })
 
   it('条目把文件名与字节数挂成属性，预览按类型分档，删除按钮的名字带上文件名', () => {
@@ -523,7 +533,7 @@ describe('connectFileUpload 属性输出', () => {
       translations: {
         dropzone: '把文件拖到这里',
         deleteFile: file => `移除 ${file.name}`,
-        clearFiles: '全部移除',
+        clearTrigger: '全部移除',
       },
     })
     expect(m.dropzone.getAttribute('aria-label')).toBe('把文件拖到这里')
@@ -628,7 +638,7 @@ describe('connectFileUpload 选择与删除', () => {
     expect(names(m)).toEqual(['a.txt', 'b.txt'])
     m.api().deleteFile(a)
     expect(names(m)).toEqual(['b.txt'])
-    m.api().clearFiles()
+    m.api().clear()
     expect(m.api().empty).toBe(true)
   })
 })

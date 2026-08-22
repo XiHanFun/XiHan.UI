@@ -141,6 +141,7 @@ invalid 让输入行报 aria-invalid、描边转告警色；选出值后判定�
 | `invalid` | `boolean` |  | 校验失败：输入框报 aria-invalid，各角色节点带 data-invalid。 |
 | `loop` | `boolean` |  | 方向键走到尽头是否回绕，默认 true。 |
 | `placeholder` | `string` |  | 输入框占位文字。 |
+| `translations` | `Partial<ComboboxTranslations>` |  | 读屏文案；不给的键走英文缺省。 |
 | `allowCustomValue` | `boolean` |  | 允许提交候选列表里没有的值（回车与失焦时把输入串本身收成选中值）。 |
 | `openOnClick` | `boolean` |  | 点输入框即展开，默认 false（只有触发按钮与方向键展开）。 |
 | `inputBehavior` | `ComboboxInputBehavior` |  | 输入行为，默认 none。 |
@@ -272,7 +273,7 @@ invalid 让输入行报 aria-invalid、描边转告警色；选出值后判定�
 | `input` | `aria-labelledby` | `label` 部件的 id |
 | `input` | `role` | undefined \| 'combobox' |
 | `trigger` | `aria-controls` | `content` 部件的 id |
-| `clear-trigger` | `aria-hidden` | 'true' |
+| `clear-trigger` | `aria-label` | props.translations.clearTrigger |
 | `content` | `aria-labelledby` | `label` 部件的 id |
 | `content` | `aria-multiselectable` | 'true' \| 'false' |
 | `content` | `role` | 'listbox' |
@@ -314,7 +315,6 @@ invalid 让输入行报 aria-invalid、描边转告警色；选出值后判定�
 | `trigger` | `data-clearable` | ''（条件成立时才出现） |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `trigger` | `data-state` | 'open' \| 'closed' |
-| `clear-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `positioner` | `data-hidden` | ''（条件成立时才出现） |
 | `positioner` | `data-placement` | 定位引擎算出的实际落位 |
 | `positioner` | `data-positioned` | ''（条件成立时才出现） |

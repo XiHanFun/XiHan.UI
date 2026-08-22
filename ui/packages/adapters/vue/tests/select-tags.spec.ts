@@ -106,4 +106,12 @@ describe('select 多选标签', () => {
     await tick()
     expect(m.change).not.toHaveBeenCalled()
   })
+
+  it('只读时删除钮同样不动', async () => {
+    const m = mountSelect({ defaultValue: ['a'], readOnly: true })
+    await tick()
+    tagEl('a').querySelector<HTMLElement>('[data-part="tag-remove"]')!.click()
+    await tick()
+    expect(m.change).not.toHaveBeenCalled()
+  })
 })

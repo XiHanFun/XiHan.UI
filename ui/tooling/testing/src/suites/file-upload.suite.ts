@@ -115,10 +115,10 @@ export const fileUploadSuite: ConformanceSuite = {
   fixture: BASE,
   cases: [
     {
-      name: '初始：投放区是可聚焦的按钮，标题点得开选择框，空列表下清空按钮不可用',
+      name: '初始：投放区是可聚焦的按钮，标题点得开选择框，空列表下清空按钮在位且只打 data-empty',
       spec: { apg: `${APG}#wai-aria-roles-states-and-properties` },
       // Tab 位的形状就长在这几条 tabindex/disabled 断言里：
-      // 投放区占一位、trigger 占一位、藏起来的输入退出序列、空列表下清空按钮也退出
+      // 投放区占一位、trigger 占一位、清空按钮占一位、藏起来的输入退出序列
       covers: ['file-upload.kbd.tab', 'file-upload.kbd.open-trigger', 'file-upload.kbd.clear'],
       initial: {
         order: ['root', 'label', 'dropzone', 'trigger', 'hidden-input', 'item-group', 'clear-trigger'],
@@ -160,8 +160,8 @@ export const fileUploadSuite: ConformanceSuite = {
             disabled: null,
           },
           'item-group': { 'role': 'list', 'data-empty': '' },
-          // 没什么可清就该点不动，且一并退出 Tab 序列
-          'clear-trigger': { 'type': 'button', 'disabled': '', 'data-disabled': '' },
+          // 空列表下按钮照常在位可聚焦，只打 data-empty 交给皮肤压淡
+          'clear-trigger': { 'type': 'button', 'disabled': null, 'data-disabled': null, 'data-empty': '' },
         },
       },
       steps: [
@@ -218,7 +218,7 @@ export const fileUploadSuite: ConformanceSuite = {
           // 每条的删除按钮长得一模一样，不带文件名读屏念出来是一串"删除、删除"
           'item-delete-trigger[0]': { 'type': 'button', 'aria-label': 'Delete photo.png', 'disabled': null },
           'item-delete-trigger[1]': { 'type': 'button', 'aria-label': 'Delete notes.txt' },
-          'clear-trigger': { disabled: null },
+          'clear-trigger': { 'disabled': null, 'data-empty': null },
         },
       },
       steps: [nativeActivation('file-upload', 'item-delete-trigger')],
@@ -252,11 +252,10 @@ export const fileUploadSuite: ConformanceSuite = {
           part: 'item-delete-trigger[0]',
           expect: {
             counts: { item: 0 },
-            parts: { 'root': { 'data-empty': '' }, 'item-group': { 'data-empty': '' }, 'clear-trigger': { disabled: '' } },
+            parts: { 'root': { 'data-empty': '' }, 'item-group': { 'data-empty': '' }, 'clear-trigger': { 'disabled': null, 'data-empty': '' } },
           },
         },
-        // 删空同样落投放区。不能退到 clear-trigger——它这一刻带原生 disabled，
-        // 禁用元素持不住焦点
+        // 删空同样落投放区，清空按钮不是归还目标
         {
           kind: 'settle',
           until: { activeElement: 'dropzone' },
@@ -275,9 +274,13 @@ export const fileUploadSuite: ConformanceSuite = {
           part: 'clear-trigger',
           expect: {
             counts: { item: 0 },
-            parts: { 'root': { 'data-empty': '' }, 'clear-trigger': { disabled: '' } },
+            parts: { 'root': { 'data-empty': '' }, 'clear-trigger': { 'disabled': null, 'data-empty': '' } },
           },
         },
+        // 清空后按钮仍在位，焦点留在它身上不掉回 body
+        { kind: 'settle', until: { activeElement: 'clear-trigger' }, expect: { activeElement: 'clear-trigger' } },
+        // 空列表下再点一次是空操作
+        { kind: 'click', part: 'clear-trigger', expect: { counts: { item: 0 }, parts: { 'clear-trigger': { 'data-empty': '' } } } },
       ],
     },
     {
@@ -410,7 +413,7 @@ export const fileUploadSuite: ConformanceSuite = {
           'dropzone': { 'aria-disabled': 'true', 'tabindex': '-1', 'data-disabled': '' },
           'trigger': { 'disabled': '', 'data-disabled': '' },
           'hidden-input': { disabled: '' },
-          'clear-trigger': { disabled: '' },
+          'clear-trigger': { 'disabled': '', 'data-disabled': '' },
         },
       },
       steps: [

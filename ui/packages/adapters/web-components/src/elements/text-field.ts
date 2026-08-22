@@ -33,16 +33,17 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {boolean} invalid - 校验失败标注
  * @attr {string} name - 表单字段名；给了才参与提交
  * @attr {number} max-length - 字符数上限；同时落成原生 maxlength 与机器侧截断
- * @attr {boolean} clearable - 开启清空：清空按钮显出并在有值时可用，Escape 接管
+ * @attr {boolean} clearable - 开启清空：有值时清空按钮显出，Escape 接管
  * @attr {boolean} auto-size - 多行宿主（input 部件写成 textarea）的自动高度；行数界限对象经 autoSize property 赋
  * @attr {'outline'|'subtle'|'ghost'} variant - 视觉变体
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
+ * @prop {object} translations - 读屏文案（只走 property）：clearTrigger 是清空按钮的名字
  * @fires value-change - 值变化；detail 为 `{ value: string }`
  * @csspart root - 承载 data-disabled / data-readonly / data-invalid / data-empty / data-at-limit 的容器
  * @csspart label - 标题；`for` 恒写向 input，故须是原生 `<label>` 才点得动
  * @csspart input - 真正的输入框，须是原生 `<input>`；键盘交互全在它身上
- * @csspart clear-trigger - 清空按钮；未开 clearable 时收起，无值或不可编辑时置灰
+ * @csspart clear-trigger - 清空按钮，须是原生 button；不占 Tab 位，名字取 translations.clearTrigger；清不了时收起
  */
 export class XhTextFieldElement extends XhElement {
   static override partContract = { anatomy: textFieldAnatomy, meta: textFieldMeta }
@@ -64,6 +65,7 @@ export class XhTextFieldElement extends XhElement {
     variant: { converter: STRING_CONVERTER },
     tone: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
+    translations: { attribute: false },
   }
 
   declare value?: string
@@ -82,6 +84,7 @@ export class XhTextFieldElement extends XhElement {
   declare variant?: ControlVariant
   declare tone?: Tone
   declare size?: Size
+  declare translations?: TextFieldSchema['props']['translations']
 
   private readonly notify = (details: TextFieldValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
@@ -106,6 +109,7 @@ export class XhTextFieldElement extends XhElement {
       variant: this.variant,
       tone: this.tone,
       size: this.size,
+      translations: this.translations,
       onValueChange: this.notify,
     }
   }
@@ -133,6 +137,6 @@ export class XhTextFieldElement extends XhElement {
 
     // 收起清空按钮只写 hidden 属性是不够的：作者层给这个 part 声明的任何一条 display
     // 都会盖过 UA 的 [hidden]{display:none}，只有内联 style.display 压得住
-    this.setPartHidden(this.getPart('clear-trigger'), !api.clearable)
+    this.setPartHidden(this.getPart('clear-trigger'), !api.canClear)
   }
 }

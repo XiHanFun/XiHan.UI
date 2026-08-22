@@ -44,6 +44,7 @@ function resolveTranslations(input: Partial<DatePickerTranslations> | undefined)
     startDate: input?.startDate ?? 'Start date',
     endDate: input?.endDate ?? 'End date',
     presets: input?.presets ?? 'Shortcuts',
+    clearTrigger: input?.clearTrigger ?? 'Clear',
   }
 }
 
@@ -232,9 +233,14 @@ export function connectDatePicker<T extends PropTypes>(
     }))
   }
 
-  const focusFirstSegment = (from: HTMLElement): void => {
+  /** 同一份分段输入里第一个没被 granularity 收起的段位。 */
+  const firstSegmentIn = (from: HTMLElement): HTMLElement | undefined => {
     const nodes = segmentsIn(from)
-    focusSegmentAt(nodes, stepIndex(nodes.length, -1, 'first', { skip: i => isSpare(nodes[i]!) }))
+    return nodes[stepIndex(nodes.length, -1, 'first', { skip: i => isSpare(nodes[i]!) })]
+  }
+
+  const focusFirstSegment = (from: HTMLElement): void => {
+    focusSafely(firstSegmentIn(from))
   }
 
   /**
@@ -458,14 +464,11 @@ export function connectDatePicker<T extends PropTypes>(
     getClearTriggerProps: () => normalize.button({
       ...parts['clear-trigger'].attrs,
       'type': 'button',
-      // 不进 Tab 序列也不报给读屏：段位上按退格即可清值
+      // 不进 Tab 序列：段位上按退格即可清值；读屏仍能按名字找到它
       'tabindex': -1,
-      'aria-hidden': true,
-      // 没值就整个收起，不是禁用：清空钮与下拉钮并排时，一个灰着一个亮着，
-      // 用户分不清哪个能点。有值才出现，出现即可用
+      'aria-label': label.clearTrigger,
+      // 没值就整个收起：有值才出现，出现即可用
       'hidden': !canClear || undefined,
-      'disabled': !canClear || undefined,
-      'data-disabled': dataAttr(!canClear),
       // 不拦的话浏览器会把焦点挪到这个按钮上，清完焦点就落在一个隐身节点里
       'onPointerDown': (event: PointerEvent) => {
         if (event.button === 0)

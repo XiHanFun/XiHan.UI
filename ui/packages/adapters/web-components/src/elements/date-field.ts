@@ -1,4 +1,4 @@
-import type { DateFieldSchema, DateFieldSegmentProps, DateFieldValueChangeDetails, DateGranularity, DateSegmentSet, DateSegmentType } from '@xihan-ui/headless'
+import type { DateFieldSchema, DateFieldSegmentProps, DateFieldTranslations, DateFieldValueChangeDetails, DateGranularity, DateSegmentSet, DateSegmentType } from '@xihan-ui/headless'
 import type { ControlVariant, Size, Tone } from '@xihan-ui/kernel'
 import { connectDateField, dateFieldAnatomy, dateFieldMachine, dateFieldMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
@@ -60,7 +60,7 @@ function declaredSegment(el: HTMLElement, position: number): DateFieldSegmentPro
  * 角色节点，元素跑 date-field 机器并把 connect 产出打上去。
  *
  * 每一段是一个 role=spinbutton 的可聚焦节点：上下键加减并在段区间里回绕、左右键与 Home/End 换段、
- * 数字键直填且敲满自动跳下一段、Backspace 清掉本段。
+ * 数字键直填且敲满自动跳下一段、Backspace 清掉本段；可选的 clear-trigger 一键清空全部段。
  *
  * 是哪一段有两种写法：只声明下标（`index`，或按文档序），是哪一段由 locale（zh-CN 年月日、
  * en-US 月日年）与段集算出来——同一份标记换个 locale 就换一副面孔；或按段名写死
@@ -97,6 +97,7 @@ function declaredSegment(el: HTMLElement, position: number): DateFieldSegmentPro
  * @csspart control - role=group 的分段容器
  * @csspart segment - 一段一个的 spinbutton 节点。可自带 segment 属性按段名认领（segment="quarter"），
  *   或自带 index 属性声明下标，两者都没写按文档序
+ * @csspart clear-trigger - 清空钮，不占 Tab 位；没值或不可编辑时收起，点完焦点回到首段
  * @csspart hidden-input - type=hidden 的表单出口，值是 ISO 串
  */
 export class XhDateFieldElement extends XhElement {
@@ -138,7 +139,7 @@ export class XhDateFieldElement extends XhElement {
   declare required?: boolean
   declare name?: string
   declare placeholder?: SegmentTexts
-  declare translations?: SegmentTexts
+  declare translations?: DateFieldTranslations
   declare variant?: ControlVariant
   declare tone?: Tone
   declare size?: Size
@@ -185,6 +186,7 @@ export class XhDateFieldElement extends XhElement {
     put('root', api.getRootProps() as Record<string, unknown>)
     put('label', api.getLabelProps() as Record<string, unknown>)
     put('control', api.getControlProps() as Record<string, unknown>)
+    put('clear-trigger', api.getClearTriggerProps() as Record<string, unknown>)
     put('hidden-input', api.getHiddenInputProps() as Record<string, unknown>)
 
     // 段位是多实例 part，逐个打。打上去的 data-scope/data-part 正是换段在事件那一刻

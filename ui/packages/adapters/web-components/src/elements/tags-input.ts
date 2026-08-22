@@ -64,7 +64,7 @@ const ARRAY_CONVERTER = {
  * @csspart item-text - 标签文本
  * @csspart item-delete-trigger - 删除按钮，须是原生 `<button>`；不占 Tab 位，自带 aria-label
  * @csspart item-input - 就地编辑框，须是原生 `<input>`；不编辑时收起
- * @csspart clear-trigger - 清空按钮；没东西可清时置灰
+ * @csspart clear-trigger - 清空按钮；没东西可清时收起（hidden）
  * @csspart hidden-input - type=hidden 的表单出口，值是按 delimiter 拼好的整串
  */
 export class XhTagsInputElement extends XhElement {

@@ -107,6 +107,8 @@ export interface ListboxSchema extends MachineSchema {
   event:
     /** 整体改写选中集合，不动区间起点。 */
     | { type: 'VALUE.SET', value: string[] }
+    /** 清空选中集合，不动区间起点。 */
+    | { type: 'VALUE.CLEAR' }
     /** 只留这一个，并记为区间起点。 */
     | { type: 'ITEM.SELECT', value: string }
     /** 切换这一个的选中态，并记为区间起点。 */
@@ -117,7 +119,7 @@ export interface ListboxSchema extends MachineSchema {
     | { type: 'LIST.BLUR' }
   tag: never
   guard: never
-  action: 'setValue' | 'selectItem' | 'toggleItem' | 'setFocusedValue' | 'clearFocusedValue'
+  action: 'setValue' | 'clearValue' | 'selectItem' | 'toggleItem' | 'setFocusedValue' | 'clearFocusedValue'
   effect: never
 }
 

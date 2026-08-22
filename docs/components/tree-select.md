@@ -236,6 +236,8 @@ multiple 加 cascade 内建父子传导：点分支整枝勾上、子全勾父�
 | `Enter` / `Space` | closed, focus in trigger | 展开浮层并把焦点落到选中节点（无选中或它藏在收起的分支里则落首个可用行） |
 | `ArrowDown` | closed, focus in trigger | 展开浮层并把焦点落到选中节点的下一个可用行 |
 | `ArrowUp` | closed, focus in trigger | 展开浮层并把焦点落到选中节点的上一个可用行 |
+| `Delete` | focus in trigger, 有值且未禁用/只读 | 清空全部选中值，焦点留在 trigger |
+| `Backspace` | focus in trigger, 有值且未禁用/只读 | 单选清空；多选去掉最后一个选中值 |
 | `ArrowDown` | open, focus in content | 焦点移到下一个可见行（禁用行跳过；loop 默认关，末行不回绕） |
 | `ArrowUp` | open, focus in content | 焦点移到上一个可见行（禁用行跳过；loop 默认关，首行不回绕） |
 | `Home` | open, focus in content | 焦点移到首个可见行 |
@@ -262,7 +264,7 @@ multiple 加 cascade 内建父子传导：点分支整枝勾上、子全勾父�
 | `trigger` | `aria-readonly` | 'true' \| 'false' |
 | `trigger` | `role` | 'combobox' |
 | `indicator` | `aria-hidden` | 'true' |
-| `clear-trigger` | `aria-hidden` | 'true' |
+| `clear-trigger` | `aria-label` | props.translations.clearTrigger |
 | `tree` | `aria-disabled` | 'true' \| 'false' |
 | `tree` | `aria-label` | props.translations.tree |
 | `tree` | `aria-labelledby` | `label` 部件的 id `value-text` 部件的 id |
@@ -303,7 +305,6 @@ multiple 加 cascade 内建父子传导：点分支整枝勾上、子全勾父�
 | `indicator` | `data-clearable` | ''（条件成立时才出现） |
 | `indicator` | `data-disabled` | ''（条件成立时才出现） |
 | `indicator` | `data-state` | 'open' \| 'closed' |
-| `clear-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `positioner` | `data-hidden` | ''（条件成立时才出现） |
 | `positioner` | `data-placement` | 定位引擎算出的实际落位 |
 | `positioner` | `data-positioned` | ''（条件成立时才出现） |

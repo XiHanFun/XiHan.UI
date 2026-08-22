@@ -33,6 +33,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {boolean} open - 受控开合；缺省该属性即非受控
  * @attr {boolean} default-open - 非受控初始为展开
  * @attr {boolean} disabled - 整个控件禁用：trigger 用原生 disabled，表单影子不参与提交
+ * @attr {boolean} read-only - 只读：浮层照常展开、条目照常浏览，但选中值改不动、也清不掉
  * @attr {boolean} invalid - 校验错误态：trigger 标红并输出 aria-invalid
  * @attr {number} max-tag-count - 多选标签最多摆几个，其余折进 api 的 overflowCount；缺省全摆
  * @attr {boolean} required - 原生表单校验：无选中值时提交被拦下；多选下的门槛是至少选中一项
@@ -54,7 +55,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart value-text - 选中项文本的显示位；留空即由元素填入 displayText，作者写了内容则归作者
  * @csspart indicator - 展开指示符（aria-hidden，data-state 随开合）
  * @csspart control - 触发器与清空按钮的收纳容器兼定位基准；清空钮据此嵌进触发器右端、悬停时替换展开指示符
- * @csspart clear-trigger - 清空按钮：trigger 的兄弟节点（放进 control 即内嵌形态），没选中或禁用时带 hidden；可及名走 translations.clear
+ * @csspart clear-trigger - 清空按钮：trigger 的兄弟节点（放进 control 即内嵌形态），不占 Tab 位；清不了（无值 / 禁用 / 只读）时带 hidden，点完焦点送回 trigger；可及名走 translations.clearTrigger
  * @csspart tag - 多选标签，须自带 value 属性标识选中值；放触发器里是纯展示，放外面配 tag-remove 可删
  * @csspart tag-remove - 标签删除按钮，须放在 tag 里；点按摘掉所在标签的选中值，可及名走 translations.removeTag
  * @csspart positioner - 浮层定位容器，坐标由引擎写成内联样式
@@ -79,6 +80,7 @@ export class XhSelectElement extends XhElement {
     open: { converter: BOOLEAN_CONVERTER },
     defaultOpen: { type: Boolean, attribute: 'default-open' },
     disabled: { type: Boolean },
+    readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     invalid: { type: Boolean },
     required: { type: Boolean },
     name: { converter: STRING_CONVERTER },
@@ -102,6 +104,7 @@ export class XhSelectElement extends XhElement {
   declare open?: boolean
   declare defaultOpen?: boolean
   declare disabled?: boolean
+  declare readOnly?: boolean
   declare invalid?: boolean
   declare required?: boolean
   declare name?: string
@@ -114,7 +117,7 @@ export class XhSelectElement extends XhElement {
   declare variant?: ControlVariant
   declare tone?: Tone
   declare size?: Size
-  /** 读屏文案（clear 等）；对象进不了属性，只作为 property 暴露。 */
+  /** 读屏文案（clearTrigger 等）；对象进不了属性，只作为 property 暴露。 */
   declare translations?: SelectSchema['props']['translations']
   declare maxTagCount?: number
 
@@ -156,6 +159,7 @@ export class XhSelectElement extends XhElement {
       open: this.open,
       defaultOpen: this.defaultOpen ?? false,
       disabled: this.disabled ?? false,
+      readOnly: this.readOnly ?? false,
       invalid: this.invalid ?? false,
       required: this.required ?? false,
       name: this.name,

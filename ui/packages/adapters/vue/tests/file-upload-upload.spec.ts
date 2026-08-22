@@ -13,7 +13,7 @@ interface UploadScope {
   startUpload: (file: File) => void
   addFiles: (files: File[]) => void
   deleteFile: (file: FileUploadFile) => void
-  clearFiles: () => void
+  clear: () => void
 }
 
 async function tick(): Promise<void> {
@@ -233,11 +233,11 @@ describe('file-upload 远程附件', () => {
     expect(rejected.mock.calls[0]![0].files[0].reasons).toContain('too-many-files')
   })
 
-  it('clearFiles 连远程一起清', async () => {
+  it('clear 连远程一起清', async () => {
     const t = mountUpload({ defaultRemoteFiles: [REMOTE] })
     t.scope().addFiles([makeFile()])
     await tick()
-    t.scope().clearFiles()
+    t.scope().clear()
     await tick()
     expect(t.scope().allFiles).toHaveLength(0)
   })

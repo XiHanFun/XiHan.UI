@@ -196,6 +196,60 @@
     color: var(--xh-date-field-segment-fg-focus, var(--xh-_date-field-segment-fg));
   }
 
+  /* 清空钮排在段位之后、与框等高的一颗小方钮：没值或不可编辑时连接层给 hidden 收起 */
+  [data-scope='date-field'][data-part='clear-trigger'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--xh-date-field-action-size, var(--xh-control-action-size));
+    block-size: var(--xh-date-field-action-size, var(--xh-control-action-size));
+    padding: 0;
+    border: 0;
+    border-radius: var(--xh-date-field-action-radius, var(--xh-shape-control));
+    background: var(--xh-date-field-action-bg, transparent);
+    color: var(--xh-date-field-action-fg, var(--xh-fg-muted));
+    font-family: inherit;
+    font-size: var(--xh-date-field-action-font-size, var(--xh-text-secondary-size));
+    line-height: var(--xh-leading-none);
+    cursor: pointer;
+    user-select: none;
+    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  /* 上面给了 display，UA 的 [hidden]{display:none} 已被盖掉，这里补回来 */
+  [data-scope='date-field'][data-part='clear-trigger'][hidden] {
+    display: none;
+  }
+
+  [data-scope='date-field'][data-part='clear-trigger']:hover {
+    background: var(--xh-date-field-action-bg-hover, var(--xh-bg-subtle-hover));
+    color: var(--xh-date-field-action-fg-hover, var(--xh-fg-default));
+  }
+
+  [data-scope='date-field'][data-part='clear-trigger']:active {
+    background: var(--xh-date-field-action-bg-active, var(--xh-bg-subtle-active));
+    scale: var(--xh-motion-scale-press);
+  }
+
+  /* 按钮不占 Tab 位（tabindex=-1），留给程序化聚焦兜底，落焦时得看得见 */
+  [data-scope='date-field'][data-part='clear-trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-_date-field-ring);
+    outline-offset: var(--xh-ring-offset);
+  }
+
+  /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这条即不命中 */
+  [data-scope='date-field'][data-part='clear-trigger']:empty::before {
+    content: '';
+    display: inline-block;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+  }
+
   /* 连接层把它写成 type=hidden，UA 自己就不渲染；这里的视觉隐藏是给元素升级前那一瞬兜底
      （作者手写的是一个普通 input，升级完成前它是可见的文本框）。
      刻意不写 display：写了反而会盖掉 UA 对 type=hidden 的收起，把它显出来 */

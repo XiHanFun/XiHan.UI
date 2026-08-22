@@ -44,7 +44,7 @@ export interface TextFieldSchema extends MachineSchema {
     name?: string
     /** 字符数上限。同时落成原生 maxlength 与机器侧的截断，两道都要。 */
     maxLength?: number
-    /** 开启清空能力：清空按钮可用、Escape 接管。关掉时按钮带 hidden 收起。 */
+    /** 开启清空能力：有值时显出清空按钮、Escape 接管。关掉时按钮带 hidden 收起。 */
     clearable?: boolean
     /** 多行宿主的自动高度：跟内容长高；对象形态钉行数上下限，顶到 maxRows 后内部滚动。 */
     autoSize?: boolean | TextFieldAutoSize
@@ -54,6 +54,8 @@ export interface TextFieldSchema extends MachineSchema {
     tone?: Tone
     /** 尺寸：sm / md / lg，决定输入框与清空按钮的几何档位。 */
     size?: Size
+    /** 读屏文案；缺省英文。 */
+    translations?: Partial<TextFieldTranslations>
     onValueChange?: (details: TextFieldValueChangeDetails) => void
   }
   context: {
@@ -100,5 +102,8 @@ export interface TextFieldApi<T extends PropTypes = PropTypes> {
   getClearTriggerProps: () => T['button']
 }
 
-/** 读屏用的文案。本组件目前没有需要外露的文案，位先留着。 */
-export interface TextFieldTranslations {}
+/** 读屏用的文案，默认英文。 */
+export interface TextFieldTranslations {
+  /** 清空按钮的名字。 */
+  clearTrigger: string
+}

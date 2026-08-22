@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 import type { TextFieldSchema, TextFieldValueChangeDetails } from '../src/text-field/index'
 import { normalizeProps } from '@xihan-ui/kernel'
 import { createService } from '@xihan-ui/machine'
@@ -260,20 +261,28 @@ describe('connectTextField 输入与清空', () => {
     expect(s.value()).toBe('x')
   })
 
-  it('clear-trigger：未开 clearable 时收起且置灰，对读屏隐藏、不占 Tab 位', () => {
+  it('clear-trigger：未开 clearable 时收起；不占 Tab 位但带名字、不对读屏隐藏', () => {
     const trigger = makeService({ defaultValue: 'x' }).api().getClearTriggerProps() as Dict
     expect(trigger.type).toBe('button')
     expect(trigger.hidden).toBe(true)
-    expect(trigger.disabled).toBe(true)
-    expect(trigger['data-disabled']).toBe('')
-    expect(trigger['aria-hidden']).toBe(true)
+    expect(trigger.disabled).toBeUndefined()
+    expect(trigger['data-disabled']).toBeUndefined()
+    expect(trigger['aria-hidden']).toBeUndefined()
+    expect(trigger['aria-label']).toBe('Clear')
     expect(trigger.tabindex).toBe(-1)
   })
 
-  it('clear-trigger：开了 clearable 但值为空时可见而不可用，有值才放行', () => {
-    const empty = makeService({ clearable: true }).api().getClearTriggerProps() as Dict
-    expect(empty.hidden).toBeUndefined()
-    expect(empty.disabled).toBe(true)
+  it('clear-trigger：aria-label 取 translations.clearTrigger', () => {
+    const trigger = makeService({ translations: { clearTrigger: '清空' } }).api().getClearTriggerProps() as Dict
+    expect(trigger['aria-label']).toBe('清空')
+  })
+
+  it('clear-trigger：开了 clearable 但清不了（空值 / 只读 / 禁用）时收起，有值才显出', () => {
+    for (const props of [{ clearable: true }, { defaultValue: 'x', clearable: true, readOnly: true }, { defaultValue: 'x', clearable: true, disabled: true }] as Props[]) {
+      const trigger = makeService(props).api().getClearTriggerProps() as Dict
+      expect(trigger.hidden).toBe(true)
+      expect(trigger.disabled).toBeUndefined()
+    }
 
     const filled = makeService({ defaultValue: 'x', clearable: true }).api()
     const trigger = filled.getClearTriggerProps() as Dict
@@ -288,10 +297,25 @@ describe('connectTextField 输入与清空', () => {
     fire(s.api().getClearTriggerProps() as Dict, 'onClick', {})
     expect(s.value()).toBe('')
 
-    // 禁用按钮上浏览器根本不派 click，只能直接调处理器才碰得到这层判断
+    // 收起的按钮点不到，只能直接调处理器才碰得到这层判断
     const readOnly = makeService({ defaultValue: 'x', clearable: true, readOnly: true })
     fire(readOnly.api().getClearTriggerProps() as Dict, 'onClick', {})
     expect(readOnly.value()).toBe('x')
+  })
+
+  it('点 clear-trigger 清完把焦点送回 input', () => {
+    const s = makeService({ defaultValue: 'x', clearable: true })
+    const input = document.createElement('input')
+    input.id = (s.api().getInputProps() as Dict).id as string
+    document.body.appendChild(input)
+    try {
+      fire(s.api().getClearTriggerProps() as Dict, 'onClick', {})
+      expect(s.value()).toBe('')
+      expect(document.activeElement).toBe(input)
+    }
+    finally {
+      input.remove()
+    }
   })
 
   it('按下 clear-trigger 时拦住焦点转移，右键不拦', () => {

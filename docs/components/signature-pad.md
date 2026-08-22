@@ -211,7 +211,7 @@ drawing 调笔宽与压感：thinning 越大，划得越快笔画越细，simula
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-signature-pad-aspect-ratio` · `--xh-signature-pad-bg` · `--xh-signature-pad-bg-disabled` · `--xh-signature-pad-border` · `--xh-signature-pad-border-drawing` · `--xh-signature-pad-clear-bg` · `--xh-signature-pad-clear-bg-disabled` · `--xh-signature-pad-clear-bg-hover` · `--xh-signature-pad-clear-border` · `--xh-signature-pad-clear-fg` · `--xh-signature-pad-clear-gap` · `--xh-signature-pad-clear-h` · `--xh-signature-pad-clear-px` · `--xh-signature-pad-clear-radius` · `--xh-signature-pad-gap` · `--xh-signature-pad-guide-stroke` · `--xh-signature-pad-ink` · `--xh-signature-pad-label-fg` · `--xh-signature-pad-label-font-size` · `--xh-signature-pad-label-font-weight` · `--xh-signature-pad-radius` · `--xh-signature-pad-status-fg` · `--xh-signature-pad-status-font-size`
+`--xh-signature-pad-aspect-ratio` · `--xh-signature-pad-bg` · `--xh-signature-pad-bg-disabled` · `--xh-signature-pad-border` · `--xh-signature-pad-border-drawing` · `--xh-signature-pad-clear-bg` · `--xh-signature-pad-clear-bg-active` · `--xh-signature-pad-clear-bg-disabled` · `--xh-signature-pad-clear-bg-hover` · `--xh-signature-pad-clear-border` · `--xh-signature-pad-clear-fg` · `--xh-signature-pad-clear-gap` · `--xh-signature-pad-clear-h` · `--xh-signature-pad-clear-px` · `--xh-signature-pad-clear-radius` · `--xh-signature-pad-gap` · `--xh-signature-pad-guide-stroke` · `--xh-signature-pad-ink` · `--xh-signature-pad-label-fg` · `--xh-signature-pad-label-font-size` · `--xh-signature-pad-label-font-weight` · `--xh-signature-pad-radius` · `--xh-signature-pad-status-fg` · `--xh-signature-pad-status-font-size`
 
 ## 动效
 

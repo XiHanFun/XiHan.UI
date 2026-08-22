@@ -56,6 +56,8 @@ export function connectTimeField<T extends PropTypes>(
   const draft = resolveTimeDraft(value, context.get('draft'))
   const segments = timeSegments(granularity, hourCycle)
   const empty = value === ''
+  // 清空按钮只在有东西可清、且改得动的时候显形
+  const canClear = editable && !empty
   const outOfRange = isTimeOutOfRange(value, prop('min'), prop('max'))
   // 越界与显式 invalid 在读屏那里是同一件事：这份输入现在不合法
   const flagged = invalid || outOfRange
@@ -86,6 +88,12 @@ export function connectTimeField<T extends PropTypes>(
     focusSafely(next)
   }
 
+  /** 把焦点送到第一段：从组件内任一节点往上找到 root，再往下取第一个未收起的段。 */
+  const focusFirstSegment = (from: HTMLElement): void => {
+    const root = from.closest<HTMLElement>(parts.root.selector)
+    focusSafely(queryItems(root, SEGMENT_QUERY).find(el => !el.hasAttribute('hidden')))
+  }
+
   return {
     value,
     empty,
@@ -93,6 +101,7 @@ export function connectTimeField<T extends PropTypes>(
     disabled,
     readOnly,
     invalid,
+    canClear,
     hourCycle,
     granularity,
     segments,
@@ -121,9 +130,7 @@ export function connectTimeField<T extends PropTypes>(
       'onClick': (event: MouseEvent) => {
         if (disabled)
           return
-        const root = (event.currentTarget as HTMLElement).closest<HTMLElement>(parts.root.selector)
-        const first = queryItems(root, SEGMENT_QUERY).find(el => !el.hasAttribute('hidden'))
-        focusSafely(first)
+        focusFirstSegment(event.currentTarget as HTMLElement)
       },
     }),
 
@@ -239,6 +246,28 @@ export function connectTimeField<T extends PropTypes>(
         },
       })
     },
+
+    getClearTriggerProps: () => normalize.button({
+      ...parts['clear-trigger'].attrs,
+      'type': 'button',
+      // 不占 Tab 位：键盘用户在段上按退格即可清；读屏仍能摸到它，名字走文案键
+      'tabindex': -1,
+      'aria-label': prop('translations')?.clearTrigger ?? 'Clear',
+      // 没值就整个收起，不是禁用：有值才出现，出现即可用
+      'hidden': !canClear || undefined,
+      // 不拦的话浏览器会把焦点挪到这个按钮上，清完焦点就落在一个隐身节点里
+      'onPointerDown': (event: PointerEvent) => {
+        if (event.button === 0)
+          event.preventDefault()
+      },
+      'onClick': (event: MouseEvent) => {
+        if (!canClear)
+          return
+        send({ type: 'VALUE.CLEAR' })
+        // pointerdown 已拦掉默认聚焦，键盘/程序化激活这一路则要主动把焦点送回第一段
+        focusFirstSegment(event.currentTarget as HTMLElement)
+      },
+    }),
 
     getHiddenInputProps: () => normalize.input({
       ...parts['hidden-input'].attrs,

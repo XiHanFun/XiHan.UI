@@ -1,4 +1,3 @@
-import { overlayPositioned } from '../shared/overlay'
 import type { NavIntent } from '@xihan-ui/behavior'
 import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
@@ -6,6 +5,7 @@ import type { ListboxSchema } from '../listbox'
 import type { PopselectApi, PopselectItemProps, PopselectNodeMeta, PopselectService } from './popselect.types'
 import { focusItem, focusSafely, indexOfValue, isItemDisabled, ITEM_VALUE_ATTR, itemValue, matchTypeahead, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/behavior'
 import { contains, dataAttr } from '@xihan-ui/kernel'
+import { overlayPositioned } from '../shared/overlay'
 import { popselectAnatomy, popselectItemQuery, popselectItemText } from './popselect.anatomy'
 
 const parts = popselectAnatomy.build()
@@ -80,6 +80,8 @@ export function connectPopselect<T extends PropTypes>(
   const metaOf = new Map(collection.map(meta => [meta.value, meta]))
 
   const isSelected = (v: string): boolean => value.includes(v)
+  // 有值且未禁用才清得掉：清空钮据此显隐，键盘清空同判据
+  const canClear = value.length > 0 && !disabled
   /** 条目禁用：整个控件禁用一票通过，其次看部件上写的，再没有就回 collection 里查。 */
   const itemDisabled = (item: PopselectItemProps): boolean =>
     disabled || (item.disabled ?? metaOf.get(item.value)?.disabled ?? false)
@@ -141,6 +143,27 @@ export function connectPopselect<T extends PropTypes>(
       popover.send({ type: 'CLOSE', src: 'selection' })
   }
 
+  /** 清空选中集合。 */
+  const clear = (): void => {
+    if (canClear)
+      listbox.send({ type: 'VALUE.CLEAR' })
+  }
+
+  /**
+   * 触发器上的键盘清空：Delete 清空全部；Backspace 单选清空、多选只去掉最后一个。
+   * 处理了返回 true，调用方据此跳过后面的开合逻辑。
+   */
+  const clearByKey = (event: KeyboardEvent): boolean => {
+    if (!canClear || (event.key !== 'Delete' && event.key !== 'Backspace'))
+      return false
+    event.preventDefault()
+    if (event.key === 'Backspace' && multiple && value.length > 1)
+      listbox.send({ type: 'VALUE.SET', value: value.slice(0, -1) })
+    else
+      listbox.send({ type: 'VALUE.CLEAR' })
+    return true
+  }
+
   /** 确认键：作用于焦点所在的非禁用条目。 */
   const commit = (content: HTMLElement): void => {
     if (focusedValue == null)
@@ -158,6 +181,7 @@ export function connectPopselect<T extends PropTypes>(
     multiple,
     focusedValue,
     disabled,
+    canClear,
     isSelected,
     setOpen: (next) => {
       if (next !== open)
@@ -165,6 +189,7 @@ export function connectPopselect<T extends PropTypes>(
     },
     setValue: next => listbox.send({ type: 'VALUE.SET', value: next }),
     select: pick,
+    clear,
 
     // 三个视觉轴打在根与 positioner 上：触发器与条目各从就近的那一处继承私有槽，其余子部件不重复标注
     getRootProps: () => normalize.element({
@@ -200,6 +225,9 @@ export function connectPopselect<T extends PropTypes>(
         keyActivated.delete(event.currentTarget as Element)
       },
       'onKeyDown': (event: KeyboardEvent) => {
+        // Delete / Backspace 清值，不碰开合
+        if (clearByKey(event))
+          return
         // 收起态的上下键直接展开；Enter / Space 由原生按钮激活翻成 click，这里只记下入口是键盘
         if (open)
           return
@@ -212,6 +240,26 @@ export function connectPopselect<T extends PropTypes>(
         }
         if (event.key === 'Enter' || event.key === ' ')
           keyActivated.add(event.currentTarget as Element)
+      },
+    }),
+
+    // 清空钮是 trigger 的兄弟节点（按钮不能套按钮）：不占 Tab 位，没值即收起，点完焦点送回 trigger
+    getClearTriggerProps: () => normalize.button({
+      ...parts['clear-trigger'].attrs,
+      'type': 'button',
+      'tabindex': -1,
+      'aria-label': props.translations?.clearTrigger ?? 'Clear',
+      'hidden': !canClear || undefined,
+      // 按下不夺焦：焦点留在 trigger 上，清完也不用再搬回来
+      'onPointerDown': (event: PointerEvent) => {
+        if (event.button === 0)
+          event.preventDefault()
+      },
+      'onClick': () => {
+        if (!canClear)
+          return
+        listbox.send({ type: 'VALUE.CLEAR' })
+        popover.refs.get('getAnchorEl')?.()?.focus()
       },
     }),
 

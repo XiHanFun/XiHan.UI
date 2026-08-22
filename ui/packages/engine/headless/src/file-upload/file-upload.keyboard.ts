@@ -35,8 +35,8 @@ export const fileUploadKeyboard: KeyboardTable = {
     {
       id: 'file-upload.kbd.clear',
       keys: ['Enter', 'Space'],
-      when: 'focus on clear-trigger，且列表非空',
-      does: '清空整份列表；列表为空时该按钮带原生 disabled，键盘根本到不了它',
+      when: 'focus on clear-trigger',
+      does: '清空整份列表（原生 button 的默认激活）；列表为空时按钮照常在位、可聚焦，激活是空操作',
     },
   ],
 }

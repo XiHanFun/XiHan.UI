@@ -73,7 +73,7 @@ const BRANCH_SELECTOR = '[data-xh-part="branch"]'
  * @csspart trigger - role=combobox 的触发按钮，同时是定位锚点，须是原生 button
  * @csspart value-text - 选中项文本的显示位；留空即由元素填入 displayText，作者写了内容则归作者
  * @csspart indicator - 展开指示符（aria-hidden，data-state 随开合）
- * @csspart clear-trigger - 清空按钮，须是原生 button；不占 Tab 位且对读屏隐藏
+ * @csspart clear-trigger - 清空按钮，须是原生 button；不占 Tab 位，aria-label 取 translations.clearTrigger，无值时 hidden
  * @csspart positioner - 浮层定位容器，坐标由引擎写成内联样式
  * @csspart content - 浮层壳（焦点域与消解层的根节点，键盘在此收口），收起时带 hidden
  * @csspart tree - role=tree 容器，没有锚点时的 Tab 兜底位与落焦点

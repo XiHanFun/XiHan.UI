@@ -10,6 +10,8 @@ export const selectKeyboard: KeyboardTable = {
     { id: 'select.kbd.open-next', keys: ['ArrowDown'], when: 'closed, focus in trigger', does: '展开列表并把高亮落到选中项的下一个可用条目' },
     { id: 'select.kbd.open-prev', keys: ['ArrowUp'], when: 'closed, focus in trigger', does: '展开列表并把高亮落到选中项的上一个可用条目' },
     { id: 'select.kbd.trigger-typeahead', keys: ['单个可打印字符'], when: 'closed, focus in trigger', does: '连打检索命中的条目直接成为选中值（多选是加进集合，已在集合里则不动），列表不展开' },
+    { id: 'select.kbd.clear', keys: ['Delete'], when: 'closed, focus in trigger, 有选中值且未禁用、未只读', does: '清空全部选中，列表不展开' },
+    { id: 'select.kbd.backspace', keys: ['Backspace'], when: 'closed, focus in trigger, 有选中值且未禁用、未只读', does: '单选清空；多选去掉最后一个选中值，列表不展开' },
     { id: 'select.kbd.next', keys: ['ArrowDown'], when: 'open, focus in content', does: '高亮移到下一个条目（禁用项跳过、尽头按 loop 回绕）' },
     { id: 'select.kbd.prev', keys: ['ArrowUp'], when: 'open, focus in content', does: '高亮移到上一个条目（禁用项跳过、尽头按 loop 回绕）' },
     { id: 'select.kbd.first', keys: ['Home'], when: 'open, focus in content', does: '高亮移到首个可用条目' },

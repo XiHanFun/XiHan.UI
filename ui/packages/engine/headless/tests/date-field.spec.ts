@@ -71,6 +71,7 @@ interface Mounted {
   label: HTMLElement
   control: HTMLElement
   seg: HTMLElement[]
+  clear: HTMLButtonElement
   hidden: HTMLInputElement
   api: () => ReturnType<typeof connectDateField>
   setProps: (next: Props) => void
@@ -97,6 +98,8 @@ function mount(initial: Props = {}): Mounted {
     control.appendChild(el)
     seg.push(el)
   }
+  const clear = document.createElement('button')
+  control.appendChild(clear)
   const hidden = document.createElement('input')
   root.appendChild(hidden)
 
@@ -120,6 +123,7 @@ function mount(initial: Props = {}): Mounted {
       // 段位的文字由适配器写（WC 侧 wire 里写 textContent，Vue 侧渲染文本子节点）
       el.textContent = api.segments[index]?.text ?? ''
     })
+    applyProps(clear, api.getClearTriggerProps() as Record<string, unknown>, bound(clear))
     applyProps(hidden, api.getHiddenInputProps() as Record<string, unknown>, bound(hidden))
   }
   runtime.subscribe(render)
@@ -130,6 +134,7 @@ function mount(initial: Props = {}): Mounted {
     label,
     control,
     seg,
+    clear,
     hidden,
     api: () => connectDateField(service, normalizeProps),
     setProps: next => props.set({ ...props.get(), ...next }),
@@ -514,6 +519,8 @@ describe('dateFieldMachine', () => {
       s.send({ type: 'SEGMENT.STEP', segment: 'month', delta: 1 })
       s.send({ type: 'SEGMENT.TYPE', segment: 'day', digit: '1' })
       s.send({ type: 'SEGMENT.CLEAR', segment: 'year' })
+      // 整份清空与段级清空同一条守卫
+      s.send({ type: 'VALUE.CLEAR' })
       expect(s.context.get('value')).toBe('2026-07-28')
     }
   })
@@ -858,6 +865,83 @@ describe('connectDateField 受控与命令式出口', () => {
     expect(texts(m).slice(0, 3)).toEqual(['yyyy', 'mm', 'dd'])
     expect(m.api().value).toBeNull()
     expect(m.api().empty).toBe(true)
+  })
+})
+
+describe('connectDateField 清空钮', () => {
+  function click(el: HTMLElement): MouseEvent {
+    const event = new MouseEvent('click', { bubbles: true, cancelable: true })
+    el.dispatchEvent(event)
+    return event
+  }
+
+  it('不占 Tab 位、带名字、不对读屏隐藏；没值时收起而不是禁用', () => {
+    const m = open({ locale: 'zh-CN' })
+    expect(m.clear.getAttribute('type')).toBe('button')
+    expect(m.clear.getAttribute('tabindex')).toBe('-1')
+    expect(m.clear.getAttribute('aria-label')).toBe('Clear')
+    expect(m.clear.hasAttribute('aria-hidden')).toBe(false)
+    expect(m.clear.hasAttribute('hidden')).toBe(true)
+    expect(m.clear.hasAttribute('disabled')).toBe(false)
+    expect(m.api().canClear).toBe(false)
+  })
+
+  it('translations.clearTrigger 换掉名字', () => {
+    const m = open({ locale: 'zh-CN', translations: { clearTrigger: '清空日期' } })
+    expect(m.clear.getAttribute('aria-label')).toBe('清空日期')
+  })
+
+  it('填了哪怕一段就显出；点它清空全部段、焦点回到首段、随后收起', () => {
+    const onValueChange = vi.fn()
+    const m = open({ locale: 'zh-CN', defaultValue: '2026-07-28', onValueChange })
+    expect(m.clear.hasAttribute('hidden')).toBe(false)
+    expect(m.api().canClear).toBe(true)
+    m.seg[2]!.focus()
+    click(m.clear)
+    expect(texts(m).slice(0, 3)).toEqual(['yyyy', 'mm', 'dd'])
+    expect(m.api().value).toBeNull()
+    expect(m.api().empty).toBe(true)
+    expect(m.hidden.value).toBe('')
+    expect(onValueChange).toHaveBeenCalledWith({ value: null })
+    expect(focusedIndex(m)).toBe(0)
+    expect(m.clear.hasAttribute('hidden')).toBe(true)
+  })
+
+  it('只填了一段也能清', () => {
+    const m = open({ locale: 'zh-CN' })
+    typeDigits(m, 1, '7')
+    expect(m.api().empty).toBe(false)
+    expect(m.clear.hasAttribute('hidden')).toBe(false)
+    click(m.clear)
+    expect(m.api().empty).toBe(true)
+    expect(m.clear.hasAttribute('hidden')).toBe(true)
+  })
+
+  it('pointerdown 主键被拦下，焦点留在段位上；右键放行', () => {
+    const m = open({ locale: 'zh-CN', defaultValue: '2026-07-28' })
+    const primary = new PointerEvent('pointerdown', { button: 0, bubbles: true, cancelable: true })
+    m.clear.dispatchEvent(primary)
+    expect(primary.defaultPrevented).toBe(true)
+    const secondary = new PointerEvent('pointerdown', { button: 2, bubbles: true, cancelable: true })
+    m.clear.dispatchEvent(secondary)
+    expect(secondary.defaultPrevented).toBe(false)
+  })
+
+  it('只读 / 禁用：收起，直接派 click 也清不掉', () => {
+    for (const props of [{ readOnly: true }, { disabled: true }]) {
+      const m = open({ locale: 'zh-CN', defaultValue: '2026-07-28', ...props })
+      expect(m.clear.hasAttribute('hidden')).toBe(true)
+      expect(m.api().canClear).toBe(false)
+      click(m.clear)
+      expect(m.api().value).toBe('2026-07-28')
+      expect(m.hidden.value).toBe('2026-07-28')
+    }
+  })
+
+  it('api.clear 与清空钮同一条守卫：只读下清不掉', () => {
+    const m = open({ locale: 'zh-CN', defaultValue: '2026-07-28', readOnly: true })
+    m.api().clear()
+    expect(m.api().value).toBe('2026-07-28')
   })
 })
 

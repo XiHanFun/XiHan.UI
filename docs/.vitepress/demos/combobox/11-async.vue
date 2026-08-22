@@ -42,6 +42,7 @@ function onSearch(details: { inputValue: string }): void {
   <XhComboboxRoot
     v-model:value="value"
     :collection="options"
+    clearable
     label="城市"
     :empty="loading ? '查询中…' : '无匹配城市'"
     placeholder="输入城市名查询"

@@ -243,20 +243,21 @@
     line-height: var(--xh-leading-none);
     cursor: pointer;
     user-select: none;
-    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='cascader'][data-part='clear-trigger'][hidden] {
     display: none;
   }
 
-  [data-scope='cascader'][data-part='clear-trigger']:hover:not(:disabled) {
+  [data-scope='cascader'][data-part='clear-trigger']:hover {
     background: var(--xh-cascader-action-bg-hover, var(--xh-bg-subtle-hover));
     color: var(--xh-cascader-action-fg-hover, var(--xh-fg-default));
   }
 
-  [data-scope='cascader'][data-part='clear-trigger']:active:not(:disabled) {
+  [data-scope='cascader'][data-part='clear-trigger']:active {
     background: var(--xh-cascader-action-bg-active, var(--xh-bg-subtle-active));
+    scale: var(--xh-motion-scale-press);
   }
 
   /* 清空按钮退出了 Tab 序列（tabindex=-1），正常操作走不到这里；
@@ -264,13 +265,6 @@
   [data-scope='cascader'][data-part='clear-trigger']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
     outline-offset: var(--xh-ring-offset);
-  }
-
-  /* 无选中、只读、整控件禁用三种情况下都按不动，用的是原生 disabled */
-  [data-scope='cascader'][data-part='clear-trigger']:disabled {
-    background: var(--xh-cascader-action-bg, transparent);
-    color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
   /* 级联的骨架就在这一条上：列沿书写方向并排，一层一列。

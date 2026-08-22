@@ -124,7 +124,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @csspart segment - 一段一个的 spinbutton 节点（data-scope="date-field"）。可自带 segment 属性按段名认领
  *   （segment="quarter"），或自带 index 属性声明下标（在所属 input 组内数），两者都没写按文档序
  * @csspart trigger - 展开日历的按钮，须是原生 button
- * @csspart clear-trigger - 清空按钮，须是原生 button；不占 Tab 位且对读屏隐藏
+ * @csspart clear-trigger - 清空按钮，须是原生 button；不占 Tab 位，名字取 translations.clearTrigger
  * @csspart positioner - 浮层定位容器，坐标由引擎写成内联样式
  * @csspart content - role=dialog 浮层（消解层的根节点），收起时带 hidden
  * @csspart presets - 快捷选项列（role=listbox）；没给 presets 时带 hidden

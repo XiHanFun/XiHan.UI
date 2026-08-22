@@ -22,6 +22,7 @@ const fruits = [
       :key="s.label"
       :size="s.size"
       :collection="fruits"
+      clearable
       :label="s.label"
       open-on-click
       placeholder="选择水果"

@@ -89,11 +89,19 @@
     font-size: var(--xh-text-label-size);
     line-height: var(--xh-leading-none);
     cursor: pointer;
-    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='signature-pad'][data-part='clear-trigger']:hover {
     background: var(--xh-signature-pad-clear-bg-hover, var(--xh-bg-subtle-hover));
+  }
+
+  /* 按下：换到按压档底色并轻微下压，松手弹回；禁用钮不压 */
+  [data-scope='signature-pad'][data-part='clear-trigger']:not(:disabled):active {
+    background: var(--xh-signature-pad-clear-bg-active, var(--xh-bg-subtle-active));
+    scale: var(--xh-motion-scale-press);
   }
 
   [data-scope='signature-pad'][data-part='clear-trigger']:focus-visible {

@@ -12,7 +12,7 @@ type TimeFieldProps = TimeFieldSchema['props']
 /** 默认插槽的载荷：当前值、值状态标志、参与显示的段与写值方法。 */
 export type TimeFieldRootSlotProps = Pick<
   TimeFieldApi,
-  'value' | 'empty' | 'outOfRange' | 'segments' | 'focusedSegment' | 'hourCycle' | 'granularity' | 'setValue' | 'clear'
+  'value' | 'empty' | 'outOfRange' | 'canClear' | 'segments' | 'focusedSegment' | 'hourCycle' | 'granularity' | 'setValue' | 'clear'
 >
 
 export const XhTimeFieldRoot = defineComponent({
@@ -57,6 +57,7 @@ export const XhTimeFieldRoot = defineComponent({
       value: ctx.api.value.value,
       empty: ctx.api.value.empty,
       outOfRange: ctx.api.value.outOfRange,
+      canClear: ctx.api.value.canClear,
       segments: ctx.api.value.segments,
       focusedSegment: ctx.api.value.focusedSegment,
       hourCycle: ctx.api.value.hourCycle,
@@ -98,6 +99,15 @@ export const XhTimeFieldSegment = defineComponent({
       ctx.api.value.getSegmentProps({ segment: props.segment }) as Record<string, unknown>,
       slots.default?.() ?? ctx.api.value.getSegmentText({ segment: props.segment }),
     )
+  },
+})
+
+export const XhTimeFieldClearTrigger = defineComponent({
+  name: 'XhTimeFieldClearTrigger',
+  setup(_, { slots }) {
+    const ctx = useTimeFieldContext()
+    // 没写内容时由皮肤画兜底字形
+    return () => h('button', ctx.api.value.getClearTriggerProps() as Record<string, unknown>, slots.default?.())
   },
 })
 

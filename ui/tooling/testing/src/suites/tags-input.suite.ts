@@ -88,7 +88,7 @@ function tag(value: string): FixtureNode {
         tag: 'span',
         children: [
           { part: 'item-text', tag: 'span', text: value },
-          { part: 'item-delete-trigger', tag: 'button', text: '×' },
+          { part: 'item-delete-trigger', tag: 'button' },
         ],
       },
       { part: 'item-input', tag: 'input' },
@@ -119,7 +119,7 @@ const FIXTURE: FixtureNode = {
       part: 'control',
       children: [
         { part: 'input', tag: 'input' },
-        { part: 'clear-trigger', tag: 'button', text: '⨯' },
+        { part: 'clear-trigger', tag: 'button' },
       ],
     },
     { part: 'hidden-input', tag: 'input' },
@@ -176,7 +176,7 @@ export const tagsInputSuite: ConformanceSuite = {
             'name': null,
           },
           // 没东西可清时按钮置灰而不是收起：位置留着，加进第一个标签就亮
-          'clear-trigger': { 'type': 'button', 'tabindex': '-1', 'disabled': '', 'data-disabled': '', 'hidden': '' },
+          'clear-trigger': { 'type': 'button', 'tabindex': '-1', 'hidden': '', 'disabled': null, 'data-disabled': null },
           'hidden-input': { type: 'hidden', name: null, disabled: null },
         },
       },
@@ -418,7 +418,7 @@ export const tagsInputSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '清空按钮：标签与输入文本一起清掉，随后转为置灰',
+      name: '清空按钮：标签与输入文本一起清掉，随后收起',
       spec: { apg: APG },
       fixture: withTags('vue', 'react'),
       props: { defaultValue: ['vue', 'react'] },
@@ -432,7 +432,7 @@ export const tagsInputSuite: ConformanceSuite = {
             activeElement: { part: 'input', exact: true },
             parts: {
               'root': { 'data-empty': '' },
-              'clear-trigger': { 'hidden': '', 'disabled': '', 'data-disabled': '' },
+              'clear-trigger': { 'hidden': '', 'disabled': null, 'data-disabled': null },
             },
             events: [{ type: 'value-change', detail: { value: [] } }],
           },
@@ -619,7 +619,7 @@ export const tagsInputSuite: ConformanceSuite = {
           'control': { 'aria-disabled': 'true', 'data-disabled': '' },
           'input': { disabled: '' },
           'item-delete-trigger': [{ disabled: '' }],
-          'clear-trigger': { hidden: '', disabled: '' },
+          'clear-trigger': { hidden: '', disabled: null },
           // 禁用的控件不该提交出值
           'hidden-input': { disabled: '' },
         },

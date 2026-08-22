@@ -13,6 +13,8 @@ export const treeSelectKeyboard: KeyboardTable = {
     { id: 'tree-select.kbd.open', keys: ['Enter', 'Space'], when: 'closed, focus in trigger', does: '展开浮层并把焦点落到选中节点（无选中或它藏在收起的分支里则落首个可用行）' },
     { id: 'tree-select.kbd.open-next', keys: ['ArrowDown'], when: 'closed, focus in trigger', does: '展开浮层并把焦点落到选中节点的下一个可用行' },
     { id: 'tree-select.kbd.open-prev', keys: ['ArrowUp'], when: 'closed, focus in trigger', does: '展开浮层并把焦点落到选中节点的上一个可用行' },
+    { id: 'tree-select.kbd.clear', keys: ['Delete'], when: 'focus in trigger, 有值且未禁用/只读', does: '清空全部选中值，焦点留在 trigger' },
+    { id: 'tree-select.kbd.clear-last', keys: ['Backspace'], when: 'focus in trigger, 有值且未禁用/只读', does: '单选清空；多选去掉最后一个选中值' },
     { id: 'tree-select.kbd.next', keys: ['ArrowDown'], when: 'open, focus in content', does: '焦点移到下一个可见行（禁用行跳过；loop 默认关，末行不回绕）' },
     { id: 'tree-select.kbd.prev', keys: ['ArrowUp'], when: 'open, focus in content', does: '焦点移到上一个可见行（禁用行跳过；loop 默认关，首行不回绕）' },
     { id: 'tree-select.kbd.first', keys: ['Home'], when: 'open, focus in content', does: '焦点移到首个可见行' },

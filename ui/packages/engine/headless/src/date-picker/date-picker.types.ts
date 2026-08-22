@@ -19,6 +19,8 @@ export interface DatePickerTranslations {
   endDate: string
   /** 快捷选项那一列的名字。 */
   presets: string
+  /** 清空按钮的名字。 */
+  clearTrigger: string
 }
 
 /**

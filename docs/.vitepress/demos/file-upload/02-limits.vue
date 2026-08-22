@@ -37,7 +37,7 @@ function onReject(details: { files: { file: File; reasons: string[] }[] }) {
 // 单条删除按钮的可及名字带上文件名，读屏才分得出删的是哪一条
 const translations = {
   deleteFile: (file: File) => `删除 ${file.name}`,
-  clearFiles: "清空全部",
+  clearTrigger: "清空全部",
 };
 </script>
 
@@ -68,7 +68,7 @@ const translations = {
           <XhFileUploadItemDeleteTrigger />
         </XhFileUploadItem>
       </XhFileUploadItemGroup>
-      <!-- 列表为空时清空按钮带原生 disabled，Tab 停都停不上去 -->
+      <!-- 列表为空时清空按钮照常在位可聚焦，只打 data-empty 由皮肤压淡 -->
       <XhFileUploadClearTrigger>清空</XhFileUploadClearTrigger>
     </XhFileUploadRoot>
     <span v-if="rejected">被拒：{{ rejected }}</span>

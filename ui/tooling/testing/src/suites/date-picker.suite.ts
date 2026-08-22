@@ -366,10 +366,12 @@ export const datePickerSuite: ConformanceSuite = {
             'disabled': null,
           },
           'clear-trigger': {
-            // 有值时可按；不占 Tab 位也不报给读屏
+            // 有值时可按；不占 Tab 位但带名字
             'type': 'button',
             'tabindex': '-1',
-            'aria-hidden': 'true',
+            'aria-hidden': null,
+            'aria-label': 'Clear',
+            'hidden': null,
             'disabled': null,
           },
           'content': {
@@ -709,7 +711,7 @@ export const datePickerSuite: ConformanceSuite = {
           part: 'clear-trigger',
           expect: {
             parts: {
-              'clear-trigger': { 'hidden': '', 'disabled': '', 'data-disabled': '' },
+              'clear-trigger': { 'hidden': '', 'disabled': null, 'data-disabled': null },
               'input[0]': { 'data-empty': '', 'data-complete': null },
               'input[1]': { 'data-empty': '', 'data-complete': null },
             },
@@ -787,7 +789,7 @@ export const datePickerSuite: ConformanceSuite = {
           part: 'clear-trigger',
           expect: {
             parts: {
-              'clear-trigger': { 'hidden': '', 'disabled': '', 'data-disabled': '' },
+              'clear-trigger': { 'hidden': '', 'disabled': null, 'data-disabled': null },
               'input': { 'data-empty': '', 'data-complete': null },
             },
             events: [{ type: 'value-change', detail: { value: [] } }],
@@ -879,7 +881,7 @@ export const datePickerSuite: ConformanceSuite = {
           'root': { 'data-disabled': '' },
           'input': { 'aria-disabled': 'true', 'data-disabled': '' },
           'trigger': { disabled: '' },
-          'clear-trigger': { hidden: '', disabled: '' },
+          'clear-trigger': { hidden: '', disabled: null },
         },
       },
       steps: [

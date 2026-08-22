@@ -27,6 +27,10 @@ export const XhSelectRoot = defineComponent({
     open: { type: Boolean, default: undefined },
     defaultOpen: Boolean,
     disabled: Boolean,
+    /** 只读：浮层照常展开与浏览，但选中值改不动、也清不掉。 */
+    readOnly: { type: Boolean, default: undefined },
+    /** 自动渲染树里是否带清空按钮；手写部件不看它，写了节点即可清。 */
+    clearable: Boolean,
     invalid: { type: Boolean, default: undefined },
     required: Boolean,
     name: { type: String, default: undefined },
@@ -94,6 +98,7 @@ export const XhSelectRoot = defineComponent({
           ? renderDefaultTree(
               ctx.api.value.collection,
               slots.label?.() ?? (props.label != null ? [props.label] : null),
+              props.clearable,
               slots.item,
             )
           : []),
@@ -113,7 +118,7 @@ export const XhSelectControl = defineComponent({
   name: 'XhSelectControl',
   setup(_, { slots }) {
     const ctx = useSelectContext()
-    // 触发器与清空按钮的收纳容器：清空钮据此嵌进触发器右端
+    // 触发器与清空按钮的收纳容器：两者在里面并排
     return () => h('div', ctx.api.value.getControlProps() as Record<string, unknown>, slots.default?.())
   },
 })
@@ -154,7 +159,7 @@ export const XhSelectClearTrigger = defineComponent({
   name: 'XhSelectClearTrigger',
   setup(_, { slots }) {
     const ctx = useSelectContext()
-    // 节点常挂，没选中或禁用时靠 hidden 藏掉
+    // 节点常挂，清不了时靠 hidden 藏掉
     return () => h('button', ctx.api.value.getClearTriggerProps() as Record<string, unknown>, slots.default?.())
   },
 })
@@ -293,11 +298,16 @@ export const XhSelectItemIndicator = defineComponent({
 function renderDefaultTree(
   collection: readonly SelectNodeMeta[],
   label: (VNode | string)[] | null,
+  clearable: boolean,
   itemSlot?: (node: SelectNodeMeta) => VNode[],
 ): VNode[] {
+  const trigger = h(XhSelectTrigger, null, () => [h(XhSelectValueText), h(XhSelectIndicator)])
   return [
     ...(label ? [h(XhSelectLabel, null, () => label)] : []),
-    h(XhSelectTrigger, null, () => [h(XhSelectValueText), h(XhSelectIndicator)]),
+    // 清空钮是触发器的兄弟（按钮不能套按钮），两者收进 control 并排
+    clearable
+      ? h(XhSelectControl, null, () => [trigger, h(XhSelectClearTrigger)])
+      : trigger,
     h(XhSelectPositioner, null, () => [
       h(XhSelectContent, null, () => h(XhSelectList, null, () => collection.map(node =>
         h(XhSelectItem, { key: node.value, value: node.value }, () => [

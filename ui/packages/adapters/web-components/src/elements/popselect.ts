@@ -5,6 +5,7 @@ import type {
   PopoverSchema,
   PopselectItemProps,
   PopselectNode,
+  PopselectTranslations,
 } from '@xihan-ui/headless'
 import type { Cleanup, ControlVariant, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
@@ -60,6 +61,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @csspart root - 组件根容器，承载 data-state 与三个视觉轴，浮层从这里继承私有槽
  * @csspart trigger - 触发按钮（aria-haspopup=listbox/aria-expanded/aria-controls 所在），同时是定位锚点，须是原生 button
+ * @csspart clear-trigger - 清空按钮（trigger 的兄弟节点，须是原生 button）：有选中值才显出，点按清空全部选中并把焦点送回 trigger
  * @csspart positioner - 浮层定位容器，坐标由引擎写成内联样式
  * @csspart content - role=listbox 容器（焦点域与消解层的根节点，键盘在此收口），收起时带 hidden
  * @csspart item - role=option 条目，须自带 value 属性标识身份；禁用写 aria-disabled="true"
@@ -91,6 +93,8 @@ export class XhPopselectElement extends XhElement {
     variant: { converter: STRING_CONVERTER },
     tone: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
+    // 文案对象只走 property
+    translations: { attribute: false },
   }
 
   declare collection?: PopselectNode[]
@@ -110,6 +114,7 @@ export class XhPopselectElement extends XhElement {
   declare variant?: ControlVariant
   declare tone?: Tone
   declare size?: Size
+  declare translations?: Partial<PopselectTranslations>
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   // 两台机器共用一个 scope：trigger 与 content 的 id 由它派生，aria-controls 才指得准
@@ -252,7 +257,7 @@ export class XhPopselectElement extends XhElement {
     const api = connectPopselect({
       popover: this.popoverCtrl.service,
       listbox: this.listboxCtrl.service,
-      props: { variant: this.variant, tone: this.tone, size: this.size },
+      props: { variant: this.variant, tone: this.tone, size: this.size, translations: this.translations },
     }, wcNormalize)
 
     const put = (name: string, props: Record<string, unknown>): void => {
@@ -262,6 +267,7 @@ export class XhPopselectElement extends XhElement {
     }
     put('root', api.getRootProps() as Record<string, unknown>)
     put('trigger', api.getTriggerProps() as Record<string, unknown>)
+    put('clear-trigger', api.getClearTriggerProps() as Record<string, unknown>)
     // positioner 的 style 是对象（position/insetInlineStart/insetBlockStart），
     // spreader 见对象 style 会逐条写内联样式，直接 spread 即可
     put('positioner', api.getPositionerProps() as Record<string, unknown>)

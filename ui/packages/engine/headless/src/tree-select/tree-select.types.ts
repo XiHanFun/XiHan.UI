@@ -61,6 +61,8 @@ export interface TreeSelectNodeProps {
 export interface TreeSelectTranslations {
   /** 树容器的兜底名字，作者两个名字部件（label / value-text）都没渲染时才出面。 */
   tree: string
+  /** 清空按钮的可及名字，缺省 'Clear'。 */
+  clearTrigger: string
 }
 
 export interface TreeSelectSchema extends MachineSchema {

@@ -320,7 +320,7 @@ export interface TimePickerApi<T extends PropTypes = PropTypes> {
   getHiddenInputProps: () => T['input']
 }
 
-/** 读屏用的文案。本组件目前没有需要外露的文案，位先留着。 */
+/** 读屏用的文案。 */
 export interface TimePickerTranslations {
   /** 小时段的可及名。 */
   hour: string
@@ -332,4 +332,6 @@ export interface TimePickerTranslations {
   dayPeriod: string
   /** 快捷选项那一列的名字。 */
   presets: string
+  /** 清空按钮的可及名。 */
+  clearTrigger: string
 }

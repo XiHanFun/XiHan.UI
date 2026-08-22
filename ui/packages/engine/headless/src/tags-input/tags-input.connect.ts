@@ -45,7 +45,7 @@ export function connectTagsInput<T extends PropTypes>(
   const label = {
     deleteTagTrigger: translations?.deleteTagTrigger ?? ((tag: string) => `Delete ${tag}`),
     editTagInput: translations?.editTagInput ?? ((tag: string) => `Edit ${tag}`),
-    clearTrigger: translations?.clearTrigger ?? 'Clear all',
+    clearTrigger: translations?.clearTrigger ?? 'Clear',
   }
 
   // 宿主整份换掉 value 时锚点可能悬空：读侧一律夹回集合内
@@ -397,11 +397,8 @@ export function connectTagsInput<T extends PropTypes>(
       'aria-label': label.clearTrigger,
       // 不占 Tab 位，键盘用户走 Backspace 逐个删
       'tabindex': -1,
-      // 没值就整个收起，不是禁用：清空钮与下拉钮并排时，一个灰着一个亮着，
-      // 用户分不清哪个能点。有值才出现，出现即可用
+      // 没值、只读或禁用就整个收起，不灰留位：有值才出现，出现即可用
       'hidden': !canClear || undefined,
-      'disabled': !canClear || undefined,
-      'data-disabled': dataAttr(!canClear),
       'onPointerDown': (event: PointerEvent) => {
         if (event.button !== 0)
           return
@@ -412,7 +409,7 @@ export function connectTagsInput<T extends PropTypes>(
         if (!canClear)
           return
         const el = event.currentTarget as HTMLElement
-        // 清完这个按钮会转成 disabled，禁用元素持不住焦点，须先把焦点交回输入框
+        // 清完这个按钮会收起，收起的元素持不住焦点，须先把焦点交回输入框
         const restore = holdsFocus(el) ? inputOf(el) : null
         send({ type: 'VALUE.CLEAR' })
         restore?.focus()

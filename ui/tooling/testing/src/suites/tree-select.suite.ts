@@ -268,13 +268,15 @@ export const treeSelectSuite: ConformanceSuite = {
           },
           'value-text': { 'id': '@self', 'data-placeholder': '', 'data-disabled': null },
           'indicator': { 'aria-hidden': 'true', 'data-state': 'closed' },
-          // 清空按钮不进 Tab 序列与可及树，无选中时用原生 disabled
+          // 清空按钮不进 Tab 序列，但读屏按 aria-label 找得到它；无选中时整个收起
           'clear-trigger': {
             'type': 'button',
             'tabindex': '-1',
-            'aria-hidden': 'true',
-            'disabled': '',
-            'data-disabled': '',
+            'aria-hidden': null,
+            'aria-label': 'Clear',
+            'hidden': '',
+            'disabled': null,
+            'data-disabled': null,
           },
           'positioner': { 'data-state': 'closed', 'data-placement': 'bottom-start', 'data-hidden': null },
           'content': {
@@ -944,7 +946,7 @@ export const treeSelectSuite: ConformanceSuite = {
           'item[0]': { 'aria-disabled': 'true', 'data-disabled': '', 'disabled': null },
           // 禁用的控件不该提交出值
           'hidden-input': { disabled: '' },
-          'clear-trigger': { hidden: '', disabled: '' },
+          'clear-trigger': { hidden: '', disabled: null },
         },
       },
       steps: [
@@ -984,7 +986,7 @@ export const treeSelectSuite: ConformanceSuite = {
           'root': { 'data-readonly': '', 'data-disabled': null },
           // 只读仍可聚焦、仍能展开，禁用则没有键盘入口
           'trigger': { 'disabled': null, 'aria-readonly': 'true', 'data-readonly': '' },
-          'clear-trigger': { 'hidden': '', 'disabled': '', 'data-disabled': '' },
+          'clear-trigger': { 'hidden': '', 'disabled': null, 'data-disabled': null },
         },
       },
       steps: [
@@ -1023,12 +1025,12 @@ export const treeSelectSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '清空按钮：按下不把焦点从 trigger 挪走，清完值归零、焦点还给 trigger，按钮自己也就按不动了',
+      name: '清空按钮：按下不把焦点从 trigger 挪走，清完值归零、焦点还给 trigger，按钮自己随即收起',
       spec: { apg: `${APG_COMBOBOX}#roles_states_properties` },
       props: props({ defaultValue: 'license', placeholder: '请选择', name: 'dir' }),
       initial: {
         parts: {
-          'clear-trigger': { 'hidden': null, 'disabled': null, 'data-disabled': null, 'tabindex': '-1', 'aria-hidden': 'true' },
+          'clear-trigger': { 'hidden': null, 'disabled': null, 'data-disabled': null, 'tabindex': '-1', 'aria-hidden': null, 'aria-label': 'Clear' },
           'trigger': { 'data-placeholder': null },
           'value-text': { 'data-placeholder': null },
           'item': itemsSelected('license'),
@@ -1057,8 +1059,8 @@ export const treeSelectSuite: ConformanceSuite = {
               'item': itemsSelected(),
               'trigger': { 'data-placeholder': '' },
               'value-text': { 'data-placeholder': '' },
-              // 清完就按不动了
-              'clear-trigger': { 'hidden': '', 'disabled': '', 'data-disabled': '' },
+              // 清完就收起，不灰留位
+              'clear-trigger': { 'hidden': '', 'disabled': null, 'data-disabled': null },
             },
             events: [{ type: 'value-change', detail: { value: [] } }],
           },
@@ -1071,6 +1073,95 @@ export const treeSelectSuite: ConformanceSuite = {
             assertHiddenInput(doc, 'dir', '')
           },
         },
+      ],
+    },
+    {
+      name: '清空按钮的可及名字取 translations.clearTrigger',
+      spec: { apg: `${APG_COMBOBOX}#roles_states_properties` },
+      props: props({ defaultValue: 'license', translations: { clearTrigger: '清空' } }),
+      initial: { parts: { 'clear-trigger': { 'aria-label': '清空', 'hidden': null } } },
+    },
+    {
+      name: 'Delete 在 trigger 上清空全部选中值，焦点留在 trigger、浮层不展开',
+      spec: { apg: `${APG_COMBOBOX}#keyboardinteraction` },
+      props: props({ multiple: true, defaultValue: ['index', 'license'], name: 'dir' }),
+      covers: ['tree-select.kbd.clear'],
+      steps: [
+        { kind: 'focus', part: 'trigger' },
+        {
+          kind: 'key',
+          key: 'Delete',
+          expect: {
+            activeElement: 'trigger',
+            parts: {
+              'item': itemsSelected(),
+              'trigger': { 'data-placeholder': '', 'aria-expanded': 'false' },
+              'content': { hidden: '' },
+              'clear-trigger': { hidden: '' },
+            },
+            events: [{ type: 'value-change', detail: { value: [] } }],
+          },
+        },
+        {
+          kind: 'raw',
+          why: '表单值不进属性快照，只能直接读 DOM',
+          run: ({ doc }) => assertHiddenInput(doc, 'dir', ''),
+        },
+        // 没值了再按不吞键、不发事件
+        { kind: 'key', key: 'Delete', expect: { parts: { item: itemsSelected() }, events: [] } },
+      ],
+    },
+    {
+      name: 'Backspace 在 trigger 上：多选去掉最后一个选中值，单选直接清空',
+      spec: { apg: `${APG_COMBOBOX}#keyboardinteraction` },
+      props: props({ multiple: true, defaultValue: ['index', 'license'] }),
+      covers: ['tree-select.kbd.clear-last'],
+      steps: [
+        { kind: 'focus', part: 'trigger' },
+        {
+          kind: 'key',
+          key: 'Backspace',
+          expect: {
+            activeElement: 'trigger',
+            parts: { 'item': itemsSelected('index'), 'clear-trigger': { hidden: null } },
+            events: [{ type: 'value-change', detail: { value: ['index'] } }],
+          },
+        },
+        {
+          kind: 'key',
+          key: 'Backspace',
+          expect: {
+            parts: { 'item': itemsSelected(), 'clear-trigger': { hidden: '' }, 'trigger': { 'data-placeholder': '' } },
+            events: [{ type: 'value-change', detail: { value: [] } }],
+          },
+        },
+      ],
+    },
+    {
+      name: 'Backspace 单选：一下清空',
+      spec: { apg: `${APG_COMBOBOX}#keyboardinteraction` },
+      props: props({ defaultValue: 'license' }),
+      covers: ['tree-select.kbd.clear-last'],
+      steps: [
+        { kind: 'focus', part: 'trigger' },
+        {
+          kind: 'key',
+          key: 'Backspace',
+          expect: {
+            parts: { 'item': itemsSelected(), 'clear-trigger': { hidden: '' } },
+            events: [{ type: 'value-change', detail: { value: [] } }],
+          },
+        },
+      ],
+    },
+    {
+      name: '只读与禁用下 Delete / Backspace 不清值',
+      spec: { apg: `${APG_COMBOBOX}#keyboardinteraction` },
+      props: props({ readOnly: true, defaultValue: 'license' }),
+      steps: [
+        { kind: 'focus', part: 'trigger' },
+        { kind: 'key', key: 'Delete', expect: { parts: { item: itemsSelected('license') }, events: [] } },
+        { kind: 'key', key: 'Backspace', expect: { parts: { item: itemsSelected('license') }, events: [] } },
       ],
     },
     {

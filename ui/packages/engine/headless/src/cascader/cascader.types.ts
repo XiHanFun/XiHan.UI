@@ -94,6 +94,8 @@ export interface CascaderTranslations {
   noMatch: string
   /** 没有父条目可指的列（根列与收起的那几列）的兜底名字，两个名字部件都没渲染时才出面。 */
   column: string
+  /** 清空按钮的可及名字。 */
+  clearTrigger: string
 }
 
 // 适配器在挂载前填入 DOM 环境、定位引擎与元素 getter；缺省时副作用短路，机器状态照常转移。

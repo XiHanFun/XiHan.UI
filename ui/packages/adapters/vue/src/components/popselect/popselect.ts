@@ -1,4 +1,4 @@
-import type { PopselectApi, PopselectItemProps, PopselectNode, PopselectNodeMeta } from '@xihan-ui/headless'
+import type { PopselectApi, PopselectItemProps, PopselectNode, PopselectNodeMeta, PopselectTranslations } from '@xihan-ui/headless'
 import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
@@ -11,7 +11,7 @@ import { usePopselect } from './use-popselect'
 /** 默认插槽的载荷：浮层开合、选中集合与条目数据，以及改动它们的方法。 */
 export type PopselectRootSlotProps = Pick<
   PopselectApi,
-  'open' | 'value' | 'collection' | 'focusedValue' | 'isSelected' | 'setOpen' | 'setValue' | 'select'
+  'open' | 'value' | 'collection' | 'focusedValue' | 'canClear' | 'isSelected' | 'setOpen' | 'setValue' | 'select' | 'clear'
 >
 
 export const XhPopselectRoot = defineComponent({
@@ -35,6 +35,7 @@ export const XhPopselectRoot = defineComponent({
     variant: { type: String as PropType<ControlVariant>, default: undefined },
     tone: { type: String as PropType<Tone>, default: undefined },
     size: { type: String as PropType<Size>, default: undefined },
+    translations: { type: Object as PropType<Partial<PopselectTranslations>>, default: undefined },
   },
   // *-change 携带 details 对象，update:* 携带裸值；回传的选中值恒为数组，单选时长度 ≤ 1
   emits: {
@@ -64,10 +65,12 @@ export const XhPopselectRoot = defineComponent({
       value: ctx.api.value.value,
       collection: ctx.api.value.collection,
       focusedValue: ctx.api.value.focusedValue,
+      canClear: ctx.api.value.canClear,
       isSelected: ctx.api.value.isSelected,
       setOpen: ctx.api.value.setOpen,
       setValue: ctx.api.value.setValue,
       select: ctx.api.value.select,
+      clear: ctx.api.value.clear,
     }))
   },
 })
@@ -94,6 +97,15 @@ export const XhPopselectTrigger = defineComponent({
       }
       return h('button', attrs, children)
     }
+  },
+})
+
+/** 清空钮：trigger 的兄弟节点，有选中值才显出；没写内容时由皮肤画叉。 */
+export const XhPopselectClearTrigger = defineComponent({
+  name: 'XhPopselectClearTrigger',
+  setup(_, { slots }) {
+    const ctx = usePopselectContext()
+    return () => h('button', ctx.api.value.getClearTriggerProps() as Record<string, unknown>, slots.default?.())
   },
 })
 

@@ -23,6 +23,7 @@ const filtered = computed(() => {
     v-model:value="value"
     v-model:input-value="query"
     :collection="filtered"
+    clearable
     label="常去城市"
     empty="无匹配城市"
     multiple

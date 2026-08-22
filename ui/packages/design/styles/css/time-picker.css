@@ -240,7 +240,9 @@
     line-height: var(--xh-leading-none);
     cursor: pointer;
     user-select: none;
-    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 有值时清空钮顶上来，下拉钮让位：两个钮并排堆在框里，用户分不清点哪个。
@@ -260,14 +262,19 @@
   }
 
   [data-scope='time-picker'][data-part='trigger']:hover:not(:disabled),
-  [data-scope='time-picker'][data-part='clear-trigger']:hover:not(:disabled) {
+  [data-scope='time-picker'][data-part='clear-trigger']:hover {
     background: var(--xh-time-picker-action-bg-hover, var(--xh-bg-subtle-hover));
     color: var(--xh-time-picker-action-fg-hover, var(--xh-fg-default));
   }
 
-  [data-scope='time-picker'][data-part='trigger']:active:not(:disabled),
-  [data-scope='time-picker'][data-part='clear-trigger']:active:not(:disabled) {
+  [data-scope='time-picker'][data-part='trigger']:active:not(:disabled) {
     background: var(--xh-time-picker-action-bg-active, var(--xh-bg-subtle-active));
+  }
+
+  /* 清空钮按下时换底并微缩，给指针一个按到了的反馈 */
+  [data-scope='time-picker'][data-part='clear-trigger']:active {
+    background: var(--xh-time-picker-action-bg-active, var(--xh-bg-subtle-active));
+    scale: var(--xh-motion-scale-press);
   }
 
   /* 触发器是常规 Tab 停靠点，落焦必须看得见；清空按钮退出了 Tab 序列，
@@ -278,9 +285,9 @@
     outline-offset: var(--xh-ring-offset);
   }
 
-  /* 两个按钮都是单体控件，禁用走原生 :disabled（列里的格一律 data-disabled） */
-  [data-scope='time-picker'][data-part='trigger']:disabled,
-  [data-scope='time-picker'][data-part='clear-trigger']:disabled {
+  /* 下拉钮是单体控件，禁用走原生 :disabled（列里的格一律 data-disabled）；
+     清空钮没值即收起，不做灰态 */
+  [data-scope='time-picker'][data-part='trigger']:disabled {
     background: var(--xh-time-picker-action-bg, transparent);
     color: var(--xh-fg-disabled);
     cursor: not-allowed;

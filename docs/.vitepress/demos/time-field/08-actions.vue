@@ -1,8 +1,9 @@
-<!-- 外部写值与清空 | 值由宿主持有，按钮直接写值或清空；空与越界两个判据由组件给出，按钮照它们摆 -->
+<!-- 外部写值与清空 | 值由宿主持有，按钮直接写值；框内自带清空钮，有值才显形，点完焦点回到第一段 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import {
   XhButton,
+  XhTimeFieldClearTrigger,
   XhTimeFieldControl,
   XhTimeFieldLabel,
   XhTimeFieldRoot,
@@ -22,7 +23,7 @@ function now() {
 
 <template>
   <XhTimeFieldRoot
-    v-slot="{ empty, outOfRange, setValue, clear }"
+    v-slot="{ empty, outOfRange, setValue }"
     v-model:value="value"
     min="09:00"
     max="18:00"
@@ -32,16 +33,14 @@ function now() {
       <XhTimeFieldSegment segment="hour" />
       <span>:</span>
       <XhTimeFieldSegment segment="minute" />
+      <!-- 一段都没填时这颗按钮收起 -->
+      <XhTimeFieldClearTrigger />
     </XhTimeFieldControl>
 
     <div style="display: flex; gap: 8px">
       <XhButton size="sm" variant="outline" @click="setValue(now())">此刻</XhButton>
       <XhButton size="sm" variant="outline" @click="setValue('09:00')">
         开门时间
-      </XhButton>
-      <!-- 一段都没填时这颗按钮按不动 -->
-      <XhButton size="sm" variant="ghost" :disabled="empty" @click="clear()">
-        清空
       </XhButton>
     </div>
 

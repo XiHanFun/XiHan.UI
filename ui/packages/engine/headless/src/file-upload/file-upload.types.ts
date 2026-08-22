@@ -99,7 +99,8 @@ export interface FileUploadTranslations {
   dropzone: string
   /** 单条删除按钮的可及名字；只写一个"删除"读屏分不出删的是哪一条。 */
   deleteFile: (file: FileUploadFile) => string
-  clearFiles: string
+  /** 清空按钮的可及名字。 */
+  clearTrigger: string
 }
 
 /**
@@ -218,7 +219,7 @@ export interface FileUploadApi<T extends PropTypes = PropTypes> {
   dragging: boolean
   disabled: boolean
   invalid: boolean
-  /** 一个文件都没有。清空按钮据此禁用，空列表据此显示占位。 */
+  /** 一个文件都没有。清空按钮据此打 data-empty，空列表据此显示占位。 */
   empty: boolean
   /** 生效的数量上限（已按缺省与非法值归一）。 */
   maxFiles: number
@@ -235,7 +236,8 @@ export interface FileUploadApi<T extends PropTypes = PropTypes> {
   addFiles: (files: File[]) => void
   /** 本地文件按引用剔除（传输中会中止），远程附件按 id 剔除。 */
   deleteFile: (file: FileUploadFile) => void
-  clearFiles: () => void
+  /** 清空整份列表（本地与远程一起）。 */
+  clear: () => void
   openFilePicker: () => void
   getRootProps: () => T['element']
   getLabelProps: () => T['label']

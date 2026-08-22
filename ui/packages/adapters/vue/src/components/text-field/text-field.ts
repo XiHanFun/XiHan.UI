@@ -34,6 +34,7 @@ export const XhTextFieldRoot = defineComponent({
     variant: { type: String as PropType<ControlVariant>, default: undefined },
     tone: { type: String as PropType<Tone>, default: undefined },
     size: { type: String as PropType<Size>, default: undefined },
+    translations: { type: Object as PropType<TextFieldProps['translations']>, default: undefined },
   },
   // value-change 携带 { value }，update:value 携带裸串
   emits: {

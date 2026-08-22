@@ -15,7 +15,7 @@ export const alertSuite: ConformanceSuite = {
       { part: 'icon', tag: 'span', text: 'i' },
       { part: 'title', text: '连接已断开' },
       { part: 'description', text: '正在尝试重连' },
-      { part: 'close-trigger', tag: 'button', text: '×' },
+      { part: 'close-trigger', tag: 'button' },
     ],
   },
   cases: [

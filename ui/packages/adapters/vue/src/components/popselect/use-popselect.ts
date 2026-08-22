@@ -3,6 +3,7 @@ import type {
   PopoverSchema,
   PopselectApi,
   PopselectNode,
+  PopselectTranslations,
 } from '@xihan-ui/headless'
 import type { Cleanup, ControlVariant, Direction, Layer, Placement, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
@@ -36,6 +37,7 @@ export interface PopselectRootProps {
   variant?: ControlVariant
   tone?: Tone
   size?: Size
+  translations?: Partial<PopselectTranslations>
 }
 
 export interface PopselectContext {
@@ -125,7 +127,7 @@ export function usePopselect(props: PopselectRootProps, notify: PopselectNotifie
   const api = computed(() => connectPopselect({
     popover,
     listbox,
-    props: { variant: props.variant, tone: props.tone, size: props.size },
+    props: { variant: props.variant, tone: props.tone, size: props.size, translations: props.translations },
   }, vueNormalize))
 
   // 退场闸门：收起从跟着 open 走，改成跟着 presence 走

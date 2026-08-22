@@ -222,14 +222,27 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    inline-size: var(--xh-control-action-size);
-    block-size: var(--xh-control-action-size);
     border: 0;
-    border-radius: var(--xh-floating-panel-action-radius, var(--xh-shape-inset));
     background: transparent;
     color: var(--xh-floating-panel-action-fg, var(--xh-fg-muted));
     cursor: pointer;
-    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  /* 两颗钮同高同圆角，尺寸与圆角槽按各自角色命名 */
+  [data-scope='floating-panel'][data-part='stage-trigger'] {
+    inline-size: var(--xh-floating-panel-action-size, var(--xh-control-h-sm));
+    block-size: var(--xh-floating-panel-action-size, var(--xh-control-h-sm));
+    border-radius: var(--xh-floating-panel-action-radius, var(--xh-shape-control));
+  }
+
+  [data-scope='floating-panel'][data-part='close-trigger'] {
+    inline-size: var(--xh-floating-panel-close-size, var(--xh-control-h-sm));
+    block-size: var(--xh-floating-panel-close-size, var(--xh-control-h-sm));
+    border-radius: var(--xh-floating-panel-close-radius, var(--xh-shape-control));
   }
 
   [data-scope='floating-panel'][data-part='stage-trigger'][hidden],
@@ -241,6 +254,12 @@
   [data-scope='floating-panel'][data-part='close-trigger']:hover {
     background: var(--xh-floating-panel-action-bg-hover, var(--xh-bg-subtle-hover));
     color: var(--xh-floating-panel-action-fg-hover, var(--xh-fg-default));
+  }
+
+  [data-scope='floating-panel'][data-part='stage-trigger']:active,
+  [data-scope='floating-panel'][data-part='close-trigger']:active {
+    background: var(--xh-floating-panel-action-bg-active, var(--xh-bg-subtle-active));
+    scale: var(--xh-motion-scale-press);
   }
 
   /* 当前形态的那个按钮压着不放，用户一眼看得出面板正处于哪一档。
