@@ -4,6 +4,27 @@
 
 配套的层栈与背景失活在 `@xihan-ui/kernel` 里（它们是结构原语，比行为更底层）。
 
+## 在 Vue 里用
+
+原语都是框架无关的：收一份配置与几个元素 getter，返回一个要自己释放的句柄。接进 Vue 无非是把释放挂到作用域结束，这层包装收在 `@xihan-ui/vue/behavior`：
+
+```ts
+import { useHoverIntent, useScrollLock } from '@xihan-ui/vue/behavior'
+
+useScrollLock(() => open.value, config)
+
+useHoverIntent({
+  getTriggerEl: () => triggerRef.value,
+  getContentEl: () => (open.value ? contentRef.value : null),
+  onOpenIntent: () => (open.value = true),
+  onCloseIntent: () => (open.value = false),
+})
+```
+
+另有 `useScrollTracker` / `useStickToBottom` / `useTypeahead`，形状同上。
+
+**需要层栈仪式的那几个不在这里**——消隐层、焦点域、背景失活要按顺序接四五个东西，接错的表现是「点子菜单父层跟着关」这类不报错的怪症。那种场景请直接用库里现成的浮层组件；真要自建，照下面几节的顺序接。
+
 ## 层栈
 
 浮层不是一个个孤立的东西，它们叠成一摞。`LayerRegistry` 是这摞的账本：
@@ -79,15 +100,23 @@ const scope = createFocusScope({
 ```ts
 import { acquireScrollLock } from '@xihan-ui/behavior'
 
-const lock = acquireScrollLock({
-  config,
-  shards: () => [scrollableInsideOverlay], // 白名单：这些子树内仍可滚
-})
-lock.addShard(anotherEl) // 运行期追加
+const lock = acquireScrollLock({ config })
 lock.dispose()
 ```
 
-锁是**引用计数**的：叠了三层浮层就加了三次，全部释放才真正解锁并还原滚动位置。分片（shard）机制用于「浮层内部自己要能滚」的场景。
+锁是**引用计数**的：叠了三层浮层就加了三次，全部释放才真正解锁并还原滚动位置。
+
+**锁哪个元素**由 `config.scrollRoot?.()` 决定。没注入就先看整页，再往下探测真正在滚的那个容器——宿主把滚动搬进了内容容器（`body` 自己不滚）时必须注入，否则锁到的是不滚的那个，浮层背后照样能滚。
+
+加锁期间让出来的滚动条宽度写在文档根的 `--xh-scroll-lock-gutter` 上，供 `fixed` 定位的元素让位：
+
+```css
+.my-fixed-header {
+  padding-inline-end: var(--xh-scroll-lock-gutter, 0px);
+}
+```
+
+浮层内部自己要能滚的场景不靠白名单：锁改的是滚动容器本身，浮层是 portal 出去的独立子树，它内部的滚动不受影响。
 
 ## 背景失活
 

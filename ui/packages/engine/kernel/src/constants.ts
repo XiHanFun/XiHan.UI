@@ -15,7 +15,6 @@ export const DATA_LAYER = 'data-xh-layer'
 export const DATA_LAYER_BRANCH = 'data-xh-layer-branch'
 export const DATA_COLLECTION_ITEM = 'data-xh-collection-item'
 export const DATA_FOCUS_GUARD = 'data-xh-focus-guard'
-export const DATA_SCROLL_SHARD = 'data-xh-scroll-shard'
 /** 带此属性的元素及其后代不被 hideOutside 施加 inert，其祖先只递归不整块罩住。 */
 export const DATA_INERT_EXEMPT = 'data-xh-inert-exempt'
 

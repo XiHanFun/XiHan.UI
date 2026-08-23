@@ -102,6 +102,15 @@
     ]
   },
   {
+    "name": "vue/behavior",
+    "path": "packages/adapters/vue/dist/behavior.js",
+    "gzip": true,
+    "limit": "3.8 kB",
+    "ignore": [
+      "vue"
+    ]
+  },
+  {
     "name": "vue/sound",
     "path": "packages/adapters/vue/dist/sound.js",
     "gzip": true,
