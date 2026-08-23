@@ -1,9 +1,10 @@
 # Changesets · 发布流程
 
-版本与发布由 [changesets](https://github.com/changesets/changesets) 驱动。**14 个公开包**
-（kernel / machine / behavior / tokens / headless / styles / vue / web-components / chat-stream /
-markdown / position / code-highlight / backgrounds / icons）
-经 `fixed` 组**锁步同版**；私有包（testing / playground-* / tooling-*）不发布、不计版。
+版本与发布由 [changesets](https://github.com/changesets/changesets) 驱动。**17 个公开包**
+（kernel / machine / behavior / motion / tokens / headless / styles / vue / web-components / chat-stream /
+markdown / position / code-highlight / backgrounds / sound / icons / animations）
+经 `fixed` 组**锁步同版**；私有包（testing / build / scripts / tsconfig / eslint-config /
+stylelint-config）不发布、不计版。
 
 新增一个对外发布的包时，除了建包本身，还要把它加进 `.changeset/config.json` 的 `fixed` 组——
 漏了它就会自己走一套版本号，与其余包脱节。

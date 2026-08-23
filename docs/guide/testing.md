@@ -119,7 +119,7 @@ pnpm gate:publish # 逐包跑 publint 与 attw，校验 exports 条件与类型�
 pnpm size
 ```
 
-26 条产物各有上限（gzip 后），涨过线就红。预算一律按实测留一成余量。几个参考值：`kernel` 3.9 kB、`machine` 5.5 kB、`position` 3 kB、`tokens/tokens.css` 3.6 kB、`headless` 215 kB、`web-components/define` 242 kB。
+26 条产物各有上限（gzip 后），涨过线就红。预算一律按实测留一成余量。逐条限额的真源是 `ui/.size-limit.json`，要看具体数字请翻那一份，这里不抄。
 
 ## 相关
 

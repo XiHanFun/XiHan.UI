@@ -1,7 +1,7 @@
 import { version } from '../package.json'
 // 框架元数据:名称、版本、版权与运行时信息的单一事实源。
 //
-// 版本从 package.json 派生(17 包锁步,kernel 的版本就是整套库的版本,改版本只改
+// 版本从 package.json 派生(库包锁步同版,kernel 的版本就是整套库的版本,改版本只改
 // package.json 一处),运行时信息(dev/prod 模式、SSR、适配器宿主)由调用方登记。
 // getSummary() / getDetails() 返回格式化文本,print 版只在 dev 出声,生产静默。
 import { reportDiagnostic } from './diagnostics/channel'
@@ -33,7 +33,7 @@ function parseVersion(raw: string): VersionInfo {
   }
 }
 
-/** 框架版本:从 kernel 的 package.json 派生,17 包锁步下即整套库的版本。 */
+/** 框架版本:从 kernel 的 package.json 派生,库包锁步同版下即整套库的版本。 */
 export const XIHAN_UI_VERSION: Readonly<VersionInfo> = parseVersion(version)
 
 /** 框架元数据:静态常量集中维护,展示与消费都从这一份读。 */
@@ -139,7 +139,7 @@ export function registerRuntimeHost(name: string, version: string): void {
 }
 
 /**
- * 锁步版本一致性检查:17 包同版本是硬承诺(见 docs/guide/versioning.md),混装会
+ * 锁步版本一致性检查:全部库包同版本是硬承诺(见 docs/guide/versioning.md),混装会
  * 类型对不上甚至运行时挂掉。适配器 dev 启动时拿自身版本与 kernel 比对,不一致经
  * 诊断通道发一条 warn;版本信息归元数据管,所以与 Framework 一样住在这个模块里。
  */
@@ -149,7 +149,7 @@ export function checkLockstepVersion(name: string, version: string, kernelVersio
   reportDiagnostic({
     code: DIAGNOSTIC_CODES.versionMismatch,
     level: 'warn',
-    message: `${name} ${version} 与 kernel ${kernelVersion} 版本不一致——17 个包锁步发版,混装会类型对不上甚至运行时挂掉,请统一到同一版本`,
+    message: `${name} ${version} 与 kernel ${kernelVersion} 版本不一致——全部库包锁步发版,混装会类型对不上甚至运行时挂掉,请统一到同一版本`,
     detail: { name, version, kernelVersion },
   })
 }

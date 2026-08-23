@@ -72,17 +72,19 @@ body:
         - 设计令牌 / 主题（tokens）
         - 交互行为（behavior）
         - 浮层定位（position）
+        - 动效引擎（motion）
         - 代码着色（code-highlight）
         - 流式 Markdown（markdown）
         - AI 协议内核（chat-stream）
         - 背景层（backgrounds）
+        - 动效预设（animations）
+        - 音效（sound）
         - 无头组件内核（headless）
         - 默认皮肤（styles）
         - Vue 适配器（vue）
         - Web Components 适配器（web-components）
         - 图标（icons）
         - 构建 / 工程（tooling / turbo / vite）
-        - 演示应用（playground-vue / playground-wc）
         - 文档
         - 其他 / 不确定
     validations:
@@ -102,7 +104,7 @@ body:
     attributes:
       label: 版本
       description: 出现问题的 npm 包版本或 commit
-      placeholder: 1.0.0-alpha.0
+      placeholder: 1.0.0-alpha.3
     validations:
       required: true
 

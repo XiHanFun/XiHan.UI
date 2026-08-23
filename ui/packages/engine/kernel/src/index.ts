@@ -1,6 +1,6 @@
 // @xihan-ui/kernel —— Foundation 原语（框架无关，零运行时依赖）。
 
-// 版本号:适配器做运行期锁步检查用(17 包同版本是硬承诺,混装会静默失效)
+// 版本号:适配器做运行期锁步检查用(全部库包同版本是硬承诺,混装会静默失效)
 export { version as VERSION } from '../package.json'
 // 组件解剖
 export type { Anatomy, AnatomyPart } from './anatomy'
