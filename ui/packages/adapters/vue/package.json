@@ -34,6 +34,10 @@
       "types": "./dist/backgrounds.d.ts",
       "import": "./dist/backgrounds.js"
     },
+    "./behavior": {
+      "types": "./dist/behavior.d.ts",
+      "import": "./dist/behavior.js"
+    },
     "./sound": {
       "types": "./dist/sound.d.ts",
       "import": "./dist/sound.js"

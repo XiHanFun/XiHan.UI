@@ -50,14 +50,14 @@ XiHan.UI 的公开面横跨五种介质，因为「丢掉自带皮肤自己写�
 
 ## 一、JS / TS 导出面
 
-17 个包中 16 个出 JS（`@xihan-ui/styles` 只出 CSS），共 52 个带类型的入口。
+17 个包中 16 个出 JS（`@xihan-ui/styles` 只出 CSS），共 53 个带类型的入口。
 
 ### 受约束
 
 | 类别 | 数量 | 说明 |
 | --- | --- | --- |
 | 包名 | 17 | 把代码从一个包挪到另一个包 = major |
-| `exports` 子路径 | 52 个 JS 入口 | 如 `@xihan-ui/vue/backgrounds`、`@xihan-ui/web-components/define`、`@xihan-ui/kernel/deprecations`。没有 `./*` 通配，深路径引用（`.../dist/xxx.js`）被 Node 与打包器一并挡住，那些路径不是 API |
+| `exports` 子路径 | 53 个 JS 入口 | 如 `@xihan-ui/vue/backgrounds`、`@xihan-ui/web-components/define`、`@xihan-ui/kernel/deprecations`。没有 `./*` 通配，深路径引用（`.../dist/xxx.js`）被 Node 与打包器一并挡住，那些路径不是 API |
 | Vue 组件导出 `Xh*` | 719（119 个家族） | `XhButton`、`XhSelectRoot`、`XhSelectItemIndicator` |
 | Vue 组合式函数 `use<家族>` | 86 | `useSelect`、`useCombobox`。这是「不用我的部件、自己写标记」的唯一入口 |
 | Vue 指令 | 2 | `vBackground`（`@xihan-ui/vue/backgrounds`）、`vSound`（`@xihan-ui/vue/sound`），两个子入口各依赖一个可选 peer |
@@ -414,10 +414,10 @@ Web Components 侧不构成额外约束：全部 Light DOM，不用 shadow DOM�
 ### 已经焊死的
 
 **六种介质的「改名 = major」现在有门禁兜着。** `pnpm gate:surface` 跑的 `check-public-surface`
-拿一份入库的基线（`ui/tooling/public-surface.json`，9117 个名字）比对当前状态：
+拿一份入库的基线（`ui/tooling/public-surface.json`，9122 个名字）比对当前状态：
 **基线里有而当前没有，就是删了或改名了，构建失败**。新增一律放行，因为那是 minor。
 
-覆盖：包名与 183 条子入口、4237 个导出名、119 个 `data-scope` 与 736 条部件配对、
+覆盖：包名与 183 条子入口、4242 个导出名、119 个 `data-scope` 与 736 条部件配对、
 119 个组件的 1251 个 prop 名、156 种 `data-*`、20 个 `data-state` 取值、270 个令牌、
 5 个 `@layer` 名、2467 个组件覆盖槽、120 个自定义元素及其 attribute 与事件。
 

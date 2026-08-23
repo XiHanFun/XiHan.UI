@@ -54,7 +54,7 @@ pnpm typecheck
 pnpm lint
 pnpm boundaries   # 分层依赖门禁（dependency-cruiser）
 pnpm build
-pnpm size         # 体积棘轮：先构建，再核对 .size-limit.json 里的 26 条产物限额
+pnpm size         # 体积棘轮：先构建，再核对 .size-limit.json 里的 27 条产物限额
 ```
 
 ## 约定
