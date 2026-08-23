@@ -1,0 +1,64 @@
+const a=`<!-- 分列步长 | step=15 只裁浮层里的可选值（分列剩四格），段位上手打的分数不受它限制 -->
+<xh-time-picker id="time-picker-step" step="15" default-value="09:30">
+  <div data-xh-part="root">
+    <label data-xh-part="label">预约时段</label>
+    <div data-xh-part="control">
+      <div data-xh-part="segment-group">
+        <span data-xh-part="input" segment="hour"></span>
+        <span>:</span>
+        <span data-xh-part="input" segment="minute"></span>
+      </div>
+      <button data-xh-part="clear-trigger"></button>
+      <button data-xh-part="trigger"></button>
+    </div>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <!-- 时列 24 格装不下，方向键走到列尾它自己滚起来，滚的是那一列不是整个面板 -->
+        <div data-xh-part="column" unit="hour">
+          <div data-xh-part="item" value="00"></div>
+          <div data-xh-part="item" value="01"></div>
+          <div data-xh-part="item" value="02"></div>
+          <div data-xh-part="item" value="03"></div>
+          <div data-xh-part="item" value="04"></div>
+          <div data-xh-part="item" value="05"></div>
+          <div data-xh-part="item" value="06"></div>
+          <div data-xh-part="item" value="07"></div>
+          <div data-xh-part="item" value="08"></div>
+          <div data-xh-part="item" value="09"></div>
+          <div data-xh-part="item" value="10"></div>
+          <div data-xh-part="item" value="11"></div>
+          <div data-xh-part="item" value="12"></div>
+          <div data-xh-part="item" value="13"></div>
+          <div data-xh-part="item" value="14"></div>
+          <div data-xh-part="item" value="15"></div>
+          <div data-xh-part="item" value="16"></div>
+          <div data-xh-part="item" value="17"></div>
+          <div data-xh-part="item" value="18"></div>
+          <div data-xh-part="item" value="19"></div>
+          <div data-xh-part="item" value="20"></div>
+          <div data-xh-part="item" value="21"></div>
+          <div data-xh-part="item" value="22"></div>
+          <div data-xh-part="item" value="23"></div>
+        </div>
+        <div data-xh-part="column" unit="minute">
+          <div data-xh-part="item" value="00"></div>
+          <div data-xh-part="item" value="15"></div>
+          <div data-xh-part="item" value="30"></div>
+          <div data-xh-part="item" value="45"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</xh-time-picker>
+
+<span style="font-size: 13px">当前值：<span id="time-picker-step-value">09:30</span></span>
+
+<script type="module">
+  // 当前值回显在旁边那行文字里
+  const picker = document.getElementById("time-picker-step");
+  const readout = document.getElementById("time-picker-step-value");
+  picker.addEventListener("value-change", (event) => {
+    readout.textContent = event.detail.value || "（空）";
+  });
+<\/script>
+`;export{a as default};

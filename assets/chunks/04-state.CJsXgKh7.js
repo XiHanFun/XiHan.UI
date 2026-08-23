@@ -1,0 +1,108 @@
+const t=`<!-- 禁用 / 只读 / 校验失败 | 禁用整条退出 Tab 序，只读仍能展开翻月只是落不了值，invalid 只改标注 -->
+<div
+  id="date-picker-state-mount"
+  style="display: grid; gap: 16px; justify-items: start"
+></div>
+
+<template id="date-picker-state-template">
+  <xh-date-picker locale="zh-CN" default-value="2026-07-28">
+    <div data-xh-part="root">
+      <span data-xh-part="label"></span>
+      <div data-xh-part="control">
+        <div data-xh-part="segment-group">
+          <span data-xh-part="segment"></span>
+          <span>-</span>
+          <span data-xh-part="segment"></span>
+          <span>-</span>
+          <span data-xh-part="segment"></span>
+        </div>
+      </div>
+      <div data-xh-part="positioner">
+        <div data-xh-part="content">
+          <div data-xh-part="calendar">
+            <div data-xh-part="header">
+              <button data-xh-part="prev-trigger" aria-label="上个月"></button>
+              <div data-xh-part="heading"></div>
+              <button data-xh-part="next-trigger" aria-label="下个月"></button>
+            </div>
+            <div data-xh-part="grid">
+              <div data-xh-part="grid-head">
+                <div data-xh-part="week-row"></div>
+              </div>
+              <div data-xh-part="grid-body"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </xh-date-picker>
+</template>
+
+<script type="module">
+  const mount = document.getElementById("date-picker-state-mount");
+  const template = document.getElementById("date-picker-state-template");
+
+  const states = [
+    { label: "禁用", attribute: "disabled" },
+    { label: "只读", attribute: "read-only" },
+    { label: "校验失败", attribute: "invalid" },
+  ];
+
+  // 一张网格的画法：表头画一次，格子换了月才重画
+  function painter(picker, heading, head, body) {
+    let month = "";
+    head.replaceChildren(
+      ...picker.weekDays.map((day) => {
+        const cell = document.createElement("span");
+        cell.dataset.xhPart = "week-day";
+        cell.setAttribute("value", day.value);
+        cell.textContent = day.label;
+        return cell;
+      }),
+    );
+    return function paint() {
+      const first = picker.weeks[0][0].value;
+      if (first === month) {
+        return;
+      }
+      month = first;
+      heading.textContent = picker.headingLabel;
+      body.replaceChildren(
+        ...picker.weeks.map((week) => {
+          const row = document.createElement("div");
+          row.dataset.xhPart = "week-row";
+          for (const day of week) {
+            const cell = document.createElement("div");
+            cell.dataset.xhPart = "cell";
+            cell.setAttribute("value", day.value);
+            const trigger = document.createElement("div");
+            trigger.dataset.xhPart = "cell-trigger";
+            trigger.textContent = day.day;
+            cell.append(trigger);
+            row.append(cell);
+          }
+          return row;
+        }),
+      );
+    };
+  }
+
+  for (const state of states) {
+    const fragment = template.content.cloneNode(true);
+    const picker = fragment.querySelector("xh-date-picker");
+    // 属性在入页前写好：状态在建机器那一刻就得在
+    picker.setAttribute(state.attribute, "");
+    fragment.querySelector('[data-xh-part="label"]').textContent = state.label;
+    const heading = fragment.querySelector('[data-xh-part="heading"]');
+    const head = fragment.querySelector(
+      '[data-xh-part="grid-head"] [data-xh-part="week-row"]',
+    );
+    const body = fragment.querySelector('[data-xh-part="grid-body"]');
+
+    mount.append(fragment);
+    const paint = painter(picker, heading, head, body);
+    paint();
+    picker.addEventListener("focused-value-change", paint);
+  }
+<\/script>
+`;export{t as default};

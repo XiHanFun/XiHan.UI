@@ -1,0 +1,40 @@
+const n=`<!-- 数值输入与屏幕取色 | 四个数值框各管一路，回车才收下，收不下的留着草稿并标红；宿主环境没有取色接口时那个按钮自己禁用 -->
+<xh-color-picker id="color-picker-inputs" default-value="#3b82f6">
+  <div data-xh-part="root">
+    <label data-xh-part="label">品牌色</label>
+    <div data-xh-part="control">
+      <button data-xh-part="trigger">
+        <span data-xh-part="swatch"></span>
+        <span data-xh-part="value-text"></span>
+      </button>
+    </div>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <div data-xh-part="area">
+          <div data-xh-part="area-thumb"></div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px">
+          <button data-xh-part="eye-dropper-trigger">◎</button>
+          <div data-xh-part="channel-slider" channel="hue" style="flex: 1">
+            <div data-xh-part="channel-slider-track"></div>
+            <div data-xh-part="channel-slider-thumb"></div>
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 6px">
+          <input data-xh-part="channel-input" channel="hex" />
+          <input data-xh-part="channel-input" channel="r" />
+          <input data-xh-part="channel-input" channel="g" />
+          <input data-xh-part="channel-input" channel="b" />
+        </div>
+      </div>
+    </div>
+  </div>
+</xh-color-picker>
+
+<script type="module">
+  // 取色按钮里只有一个符号，读屏念的名字从这里来
+  document.getElementById("color-picker-inputs").translations = {
+    eyeDropperTrigger: "从屏幕上取色",
+  };
+<\/script>
+`;export{n as default};

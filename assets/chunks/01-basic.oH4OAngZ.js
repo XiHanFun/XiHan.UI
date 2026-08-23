@@ -1,0 +1,52 @@
+const t=`<!-- 基础用法 | 触发器旁弹出一个列表，选完即收起；条目按 value 标识身份，禁用的条目方向键会跳过 -->
+<xh-popselect id="popselect-basic" placement="bottom-start">
+  <div data-xh-part="root">
+    <div data-xh-part="control">
+      <button data-xh-part="trigger">请选择水果</button>
+    </div>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <div data-xh-part="item" value="apple">
+          <span data-xh-part="item-text">苹果</span>
+          <span data-xh-part="item-indicator"></span>
+        </div>
+        <div data-xh-part="item" value="banana">
+          <span data-xh-part="item-text">香蕉</span>
+          <span data-xh-part="item-indicator"></span>
+        </div>
+        <div data-xh-part="item" value="blueberry">
+          <span data-xh-part="item-text">蓝莓</span>
+          <span data-xh-part="item-indicator"></span>
+        </div>
+        <div data-xh-part="item" value="cherry" aria-disabled="true">
+          <span data-xh-part="item-text">樱桃（缺货）</span>
+          <span data-xh-part="item-indicator"></span>
+        </div>
+        <div data-xh-part="item" value="durian">
+          <span data-xh-part="item-text">榴莲</span>
+          <span data-xh-part="item-indicator"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</xh-popselect>
+<p>当前值：<span id="popselect-basic-value">（未选）</span></p>
+
+<script type="module">
+  // 触发器文字与下面那行都跟着选中值走
+  const popselect = document.getElementById("popselect-basic");
+  const readout = document.getElementById("popselect-basic-value");
+  const trigger = popselect.querySelector('[data-xh-part="trigger"]');
+
+  function labelOf(value) {
+    const item = popselect.querySelector(\`[data-xh-part="item"][value="\${value}"]\`);
+    return item.querySelector('[data-xh-part="item-text"]').textContent;
+  }
+
+  popselect.addEventListener("value-change", (event) => {
+    const picked = event.detail.value;
+    trigger.textContent = picked.length ? labelOf(picked[0]) : "请选择水果";
+    readout.textContent = picked.length ? picked.join("、") : "（未选）";
+  });
+<\/script>
+`;export{t as default};

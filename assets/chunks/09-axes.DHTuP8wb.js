@@ -1,0 +1,115 @@
+const e=`<!-- 三轴 | variant 决定描边与底怎么画、tone 决定用哪族颜色、size 换几何档；三者只落在 root，浮层里的日历一并跟着换 -->
+<div
+  id="date-picker-axes-mount"
+  style="display: flex; flex-direction: column; gap: 20px"
+></div>
+
+<template id="date-picker-axes-template">
+  <xh-date-picker locale="zh-CN">
+    <div data-xh-part="root">
+      <span data-xh-part="label"></span>
+      <div data-xh-part="control">
+        <div data-xh-part="segment-group">
+          <!-- 段位不写内容：显示什么由组件按当前值填 -->
+          <span data-xh-part="segment"></span>
+          <span>-</span>
+          <span data-xh-part="segment"></span>
+          <span>-</span>
+          <span data-xh-part="segment"></span>
+        </div>
+        <button data-xh-part="clear-trigger"></button>
+      </div>
+      <div data-xh-part="positioner">
+        <div data-xh-part="content">
+          <div data-xh-part="calendar">
+            <div data-xh-part="header">
+              <button data-xh-part="prev-trigger" aria-label="上个月"></button>
+              <div data-xh-part="heading"></div>
+              <button data-xh-part="next-trigger" aria-label="下个月"></button>
+            </div>
+            <div data-xh-part="grid">
+              <div data-xh-part="grid-head">
+                <div data-xh-part="week-row"></div>
+              </div>
+              <div data-xh-part="grid-body"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </xh-date-picker>
+</template>
+
+<script type="module">
+  const mount = document.getElementById("date-picker-axes-mount");
+  const template = document.getElementById("date-picker-axes-template");
+
+  const rows = [
+    { axis: "variant", values: ["outline", "subtle", "ghost"] },
+    { axis: "tone", values: ["brand", "success", "danger"] },
+    { axis: "size", values: ["sm", "md", "lg"] },
+  ];
+
+  // 一张网格的画法：表头画一次，格子换了月才重画
+  function painter(picker, heading, head, body) {
+    let month = "";
+    head.replaceChildren(
+      ...picker.weekDays.map((day) => {
+        const cell = document.createElement("span");
+        cell.dataset.xhPart = "week-day";
+        cell.setAttribute("value", day.value);
+        cell.textContent = day.label;
+        return cell;
+      }),
+    );
+    return function paint() {
+      const first = picker.weeks[0][0].value;
+      if (first === month) {
+        return;
+      }
+      month = first;
+      heading.textContent = picker.headingLabel;
+      body.replaceChildren(
+        ...picker.weeks.map((week) => {
+          const row = document.createElement("div");
+          row.dataset.xhPart = "week-row";
+          for (const day of week) {
+            const cell = document.createElement("div");
+            cell.dataset.xhPart = "cell";
+            cell.setAttribute("value", day.value);
+            const trigger = document.createElement("div");
+            trigger.dataset.xhPart = "cell-trigger";
+            trigger.textContent = day.day;
+            cell.append(trigger);
+            row.append(cell);
+          }
+          return row;
+        }),
+      );
+    };
+  }
+
+  for (const row of rows) {
+    const line = document.createElement("div");
+    line.style.cssText = "display: flex; flex-wrap: wrap; gap: 16px";
+    mount.append(line);
+
+    for (const value of row.values) {
+      const fragment = template.content.cloneNode(true);
+      const picker = fragment.querySelector("xh-date-picker");
+      picker.setAttribute(row.axis, value);
+      fragment.querySelector('[data-xh-part="label"]').textContent = value;
+      const heading = fragment.querySelector('[data-xh-part="heading"]');
+      const head = fragment.querySelector(
+        '[data-xh-part="grid-head"] [data-xh-part="week-row"]',
+      );
+      const body = fragment.querySelector('[data-xh-part="grid-body"]');
+
+      line.append(fragment);
+      const paint = painter(picker, heading, head, body);
+      paint();
+      picker.addEventListener("focused-value-change", paint);
+    }
+  }
+<\/script>
+`;export{e as default};

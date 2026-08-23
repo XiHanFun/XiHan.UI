@@ -1,0 +1,98 @@
+const n=`<!-- 命令式聚焦与展开 | trigger 部件就是原生按钮，拿到它即可 focus / blur；开合交给宿主写 open -->
+<xh-cascader id="cascader-imperative-focus" open="false" placeholder="请选择地区">
+  <div data-xh-part="root">
+    <span data-xh-part="label">收货地区</span>
+    <div data-xh-part="control">
+      <button data-xh-part="trigger">
+        <span data-xh-part="value-text"></span>
+        <span data-xh-part="indicator"></span>
+      </button>
+    </div>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <div data-xh-part="column" level="0">
+          <div data-xh-part="item" value="zhejiang">
+            <span data-xh-part="item-text">浙江</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="jiangsu">
+            <span data-xh-part="item-text">江苏</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+        </div>
+        <div data-xh-part="column" level="1">
+          <div data-xh-part="item" value="hangzhou">
+            <span data-xh-part="item-text">杭州</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="ningbo">
+            <span data-xh-part="item-text">宁波</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="nanjing">
+            <span data-xh-part="item-text">南京</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="display: flex; gap: 8px; margin-block-start: 12px">
+      <xh-button size="sm" variant="outline">
+        <button data-xh-part="root" id="cascader-imperative-focus-focus">
+          聚焦
+        </button>
+      </xh-button>
+      <xh-button size="sm" variant="outline">
+        <button data-xh-part="root" id="cascader-imperative-focus-blur">
+          失焦
+        </button>
+      </xh-button>
+      <xh-button size="sm" variant="outline">
+        <button data-xh-part="root" id="cascader-imperative-focus-toggle">
+          展开
+        </button>
+      </xh-button>
+    </div>
+  </div>
+</xh-cascader>
+
+<script type="module">
+  const cascader = document.getElementById("cascader-imperative-focus");
+  cascader.collection = [
+    {
+      value: "zhejiang",
+      label: "浙江",
+      children: [
+        { value: "hangzhou", label: "杭州" },
+        { value: "ningbo", label: "宁波" },
+      ],
+    },
+    {
+      value: "jiangsu",
+      label: "江苏",
+      children: [{ value: "nanjing", label: "南京" }],
+    },
+  ];
+
+  // trigger 部件就是那个原生按钮
+  const trigger = cascader.querySelector('[data-xh-part="trigger"]');
+  const toggle = document.getElementById("cascader-imperative-focus-toggle");
+
+  document
+    .getElementById("cascader-imperative-focus-focus")
+    .addEventListener("click", () => trigger.focus());
+  document
+    .getElementById("cascader-imperative-focus-blur")
+    .addEventListener("click", () => trigger.blur());
+
+  // 开合受控：按钮改写 open，组件发的意图由宿主写回
+  toggle.addEventListener("click", () => {
+    cascader.open = !cascader.open;
+    toggle.textContent = cascader.open ? "收起" : "展开";
+  });
+  cascader.addEventListener("open-change", (event) => {
+    cascader.open = event.detail.open;
+    toggle.textContent = event.detail.open ? "收起" : "展开";
+  });
+<\/script>
+`;export{n as default};

@@ -1,0 +1,29 @@
+const t=`<!-- 预设色板 | swatches 给出常用色，选中即写回 value -->
+<!-- 色板写成逗号分隔的一串 -->
+<xh-color-picker
+  default-value="#00a98e"
+  swatches="#00a98e,#3b82f6,#f59e0b,#ef4444,#8b5cf6"
+>
+  <div data-xh-part="root">
+    <div data-xh-part="control">
+      <button data-xh-part="trigger">
+        <span data-xh-part="swatch"></span>
+      </button>
+    </div>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <div data-xh-part="area">
+          <div data-xh-part="area-thumb"></div>
+        </div>
+        <div data-xh-part="swatch-group">
+          <button data-xh-part="swatch-item" value="#00a98e"></button>
+          <button data-xh-part="swatch-item" value="#3b82f6"></button>
+          <button data-xh-part="swatch-item" value="#f59e0b"></button>
+          <button data-xh-part="swatch-item" value="#ef4444"></button>
+          <button data-xh-part="swatch-item" value="#8b5cf6"></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</xh-color-picker>
+`;export{t as default};

@@ -1,0 +1,1 @@
+import{a as i}from"./guards.DhltL50U.js";function o(n){var r;if(i())return;const t=(r=((n==null?void 0:n.getWin())??window).navigator)==null?void 0:r.language;return typeof t=="string"&&t!==""?t:void 0}function e(n,t){return n??o(t)??"en-US"}export{e as r};

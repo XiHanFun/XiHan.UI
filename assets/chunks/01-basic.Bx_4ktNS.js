@@ -1,0 +1,49 @@
+const a=`<!-- 基础用法 | 选中值恒是数组，条目按 value 标识身份；禁用的条目方向键会跳过 -->
+<xh-select id="select-basic" placeholder="请选择">
+  <div data-xh-part="root">
+    <span data-xh-part="label">水果</span>
+    <div data-xh-part="control">
+      <button data-xh-part="trigger">
+        <span data-xh-part="value-text"></span>
+        <span data-xh-part="indicator"></span>
+      </button>
+    </div>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <div data-xh-part="list">
+          <div data-xh-part="item" value="apple">
+            <span data-xh-part="item-text">苹果</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="banana">
+            <span data-xh-part="item-text">香蕉</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="blueberry">
+            <span data-xh-part="item-text">蓝莓</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="cherry" aria-disabled="true">
+            <span data-xh-part="item-text">樱桃（缺货）</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="durian">
+            <span data-xh-part="item-text">榴莲</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</xh-select>
+<p>当前值：<span id="select-basic-value">（未选）</span></p>
+
+<script type="module">
+  // 选中值回显在下面那行文字里
+  const select = document.getElementById("select-basic");
+  const readout = document.getElementById("select-basic-value");
+  select.addEventListener("value-change", (event) => {
+    readout.textContent = event.detail.value.join("、") || "（未选）";
+  });
+<\/script>
+`;export{a as default};

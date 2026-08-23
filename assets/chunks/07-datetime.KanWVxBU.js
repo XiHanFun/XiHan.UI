@@ -1,0 +1,129 @@
+const t=`<!-- 日期加时间 | show-time 让值升格为一体化 datetime：日历右侧多出时/分两列，选完日子不收起、时间列点选写值、确认钮收口 -->
+<div id="date-picker-datetime-mount"></div>
+<p>已选：<span id="date-picker-datetime-value">（未选）</span></p>
+
+<template id="date-picker-datetime-template">
+  <xh-date-picker locale="zh-CN" show-time>
+    <div data-xh-part="root">
+      <span data-xh-part="label">会议开始</span>
+      <div data-xh-part="control">
+        <div data-xh-part="segment-group">
+          <span data-xh-part="segment"></span>
+          <span>-</span>
+          <span data-xh-part="segment"></span>
+          <span>-</span>
+          <span data-xh-part="segment"></span>
+        </div>
+      </div>
+      <div data-xh-part="positioner">
+        <div data-xh-part="content">
+          <div style="display: flex; align-items: stretch">
+            <div data-xh-part="calendar">
+              <div data-xh-part="header">
+                <button data-xh-part="prev-trigger" aria-label="上个月"></button>
+                <div data-xh-part="heading"></div>
+                <button data-xh-part="next-trigger" aria-label="下个月"></button>
+              </div>
+              <div data-xh-part="grid">
+                <div data-xh-part="grid-head">
+                  <div data-xh-part="week-row"></div>
+                </div>
+                <div data-xh-part="grid-body"></div>
+              </div>
+            </div>
+            <!-- 时间列由作者铺：列自报 unit，选项自报两位补零的 value -->
+            <div data-xh-part="time-column" unit="hour"></div>
+            <div data-xh-part="time-column" unit="minute"></div>
+          </div>
+          <div style="display: flex; justify-content: flex-end; margin-block-start: 8px">
+            <button data-xh-part="confirm-trigger">确定</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </xh-date-picker>
+</template>
+
+<script type="module">
+  const fragment = document
+    .getElementById("date-picker-datetime-template")
+    .content.cloneNode(true);
+  const picker = fragment.querySelector("xh-date-picker");
+  const heading = fragment.querySelector('[data-xh-part="heading"]');
+  const head = fragment.querySelector(
+    '[data-xh-part="grid-head"] [data-xh-part="week-row"]',
+  );
+  const body = fragment.querySelector('[data-xh-part="grid-body"]');
+  const readout = document.getElementById("date-picker-datetime-value");
+
+  let month = "";
+
+  function paintHead() {
+    head.replaceChildren(
+      ...picker.weekDays.map((day) => {
+        const cell = document.createElement("span");
+        cell.dataset.xhPart = "week-day";
+        cell.setAttribute("value", day.value);
+        cell.textContent = day.label;
+        return cell;
+      }),
+    );
+  }
+
+  function paintBody() {
+    const first = picker.weeks[0][0].value;
+    if (first === month) {
+      return;
+    }
+    month = first;
+    heading.textContent = picker.headingLabel;
+    body.replaceChildren(
+      ...picker.weeks.map((week) => {
+        const row = document.createElement("div");
+        row.dataset.xhPart = "week-row";
+        for (const day of week) {
+          const cell = document.createElement("div");
+          cell.dataset.xhPart = "cell";
+          cell.setAttribute("value", day.value);
+          const trigger = document.createElement("div");
+          trigger.dataset.xhPart = "cell-trigger";
+          trigger.textContent = day.day;
+          cell.append(trigger);
+          row.append(cell);
+        }
+        return row;
+      }),
+    );
+  }
+
+  // 时列 24 项、分列 60 项，缺省精度到分
+  function paintTimeColumn(unit, count) {
+    const column = fragment.querySelector(
+      \`[data-xh-part="time-column"][unit="\${unit}"]\`,
+    );
+    const options = [];
+    for (let i = 0; i < count; i++) {
+      const value = \`\${i}\`.padStart(2, "0");
+      const item = document.createElement("div");
+      item.dataset.xhPart = "time-item";
+      item.setAttribute("value", value);
+      item.textContent = value;
+      options.push(item);
+    }
+    column.replaceChildren(...options);
+  }
+
+  // 时间列先填好再入页，接线那一刻选项已经在了
+  paintTimeColumn("hour", 24);
+  paintTimeColumn("minute", 60);
+
+  document.getElementById("date-picker-datetime-mount").append(fragment);
+  paintHead();
+  paintBody();
+
+  picker.addEventListener("focused-value-change", paintBody);
+  picker.addEventListener("value-change", (event) => {
+    readout.textContent = event.detail.value[0] ?? "（未选）";
+  });
+<\/script>
+`;export{t as default};

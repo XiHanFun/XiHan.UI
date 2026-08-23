@@ -1,0 +1,88 @@
+const a=`<!-- 级联勾选 | selection-mode="multiple" 加 cascade 内建父子传导：点分支整枝勾上、子全勾父勾、部分勾中半选；勾选框是行里的一段标记，勾选态与半选态都由组件报出 -->
+<div style="display: grid; gap: 8px; justify-items: start">
+  <xh-tree id="tree-checkable" selection-mode="multiple" cascade>
+    <div data-xh-part="root">
+      <span data-xh-part="label">投放城市</span>
+      <div data-xh-part="tree">
+        <div data-xh-part="branch" value="east">
+          <div data-xh-part="branch-control">
+            <span data-xh-part="branch-trigger"></span>
+            <span data-xh-part="branch-checkbox"></span>
+            <span data-xh-part="branch-text">华东</span>
+          </div>
+          <div data-xh-part="branch-content">
+            <div data-xh-part="item" value="sh">
+              <span data-xh-part="item-checkbox"></span>
+              <span data-xh-part="item-text">上海</span>
+            </div>
+            <div data-xh-part="item" value="hz">
+              <span data-xh-part="item-checkbox"></span>
+              <span data-xh-part="item-text">杭州</span>
+            </div>
+            <div data-xh-part="item" value="nj">
+              <span data-xh-part="item-checkbox"></span>
+              <span data-xh-part="item-text">南京</span>
+            </div>
+          </div>
+        </div>
+
+        <div data-xh-part="branch" value="north">
+          <div data-xh-part="branch-control">
+            <span data-xh-part="branch-trigger"></span>
+            <span data-xh-part="branch-checkbox"></span>
+            <span data-xh-part="branch-text">华北</span>
+          </div>
+          <div data-xh-part="branch-content">
+            <div data-xh-part="item" value="bj">
+              <span data-xh-part="item-checkbox"></span>
+              <span data-xh-part="item-text">北京</span>
+            </div>
+            <div data-xh-part="item" value="tj">
+              <span data-xh-part="item-checkbox"></span>
+              <span data-xh-part="item-text">天津</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </xh-tree>
+  <p>选中值（默认只收叶）：<span id="tree-checkable-value">hz</span></p>
+</div>
+
+<script type="module">
+  const tree = document.getElementById("tree-checkable");
+  const readout = document.getElementById("tree-checkable-value");
+
+  tree.collection = [
+    {
+      value: "east",
+      label: "华东",
+      children: [
+        { value: "sh", label: "上海" },
+        { value: "hz", label: "杭州" },
+        { value: "nj", label: "南京" },
+      ],
+    },
+    {
+      value: "north",
+      label: "华北",
+      children: [
+        { value: "bj", label: "北京" },
+        { value: "tj", label: "天津" },
+      ],
+    },
+  ];
+
+  tree.expandedValue = ["east", "north"];
+  tree.addEventListener(
+    "expanded-change",
+    (event) => (tree.expandedValue = event.detail.value),
+  );
+
+  tree.selection = ["hz"];
+  tree.addEventListener("selection-change", (event) => {
+    tree.selection = event.detail.value;
+    readout.textContent = event.detail.value.join("、") || "（无）";
+  });
+<\/script>
+`;export{a as default};

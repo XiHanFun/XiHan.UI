@@ -1,0 +1,40 @@
+const n=`<!-- 精确到分 | granularity=minute 在年月日后面接出时、分两段，值随之带上 T 与时间位 -->
+<div style="display: grid; gap: 8px; justify-items: start">
+  <xh-date-field
+    id="date-field-datetime"
+    locale="zh-CN"
+    granularity="minute"
+    default-value="2026-07-28T13:45"
+  >
+    <div data-xh-part="root">
+      <label data-xh-part="label">发布时间</label>
+      <div data-xh-part="control">
+        <div data-xh-part="segment-group">
+          <!-- 段序仍由 locale 排：前三段是年月日，时分按精度追加在后面 -->
+          <span data-xh-part="segment" index="0"></span>
+          <span>年</span>
+          <span data-xh-part="segment" index="1"></span>
+          <span>月</span>
+          <span data-xh-part="segment" index="2"></span>
+          <span>日</span>
+          <span>&nbsp;</span>
+          <span data-xh-part="segment" index="3"></span>
+          <span>:</span>
+          <span data-xh-part="segment" index="4"></span>
+        </div>
+      </div>
+    </div>
+  </xh-date-field>
+
+  <span style="font-size: 13px">当前值：<span id="date-field-datetime-readout">2026-07-28T13:45</span></span>
+</div>
+
+<script type="module">
+  // 值变化回显在下面那行文字里
+  const field = document.getElementById("date-field-datetime");
+  const readout = document.getElementById("date-field-datetime-readout");
+  field.addEventListener("value-change", (event) => {
+    readout.textContent = event.detail.value ?? "（未填齐）";
+  });
+<\/script>
+`;export{n as default};

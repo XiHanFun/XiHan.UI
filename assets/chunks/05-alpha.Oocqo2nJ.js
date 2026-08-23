@@ -1,0 +1,38 @@
+const a=`<!-- 透明度 | alpha 打开后多一条透明度滑杆，值串跟着带上透明度；关掉时透明度恒是不透明，那条滑杆整条不可用 -->
+<xh-color-picker id="color-picker-alpha" format="rgba" alpha>
+  <div data-xh-part="root">
+    <label data-xh-part="label">蒙版颜色</label>
+    <div data-xh-part="control">
+      <button data-xh-part="trigger">
+        <span data-xh-part="swatch"></span>
+        <span data-xh-part="value-text"></span>
+      </button>
+    </div>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <div data-xh-part="area">
+          <div data-xh-part="area-thumb"></div>
+        </div>
+        <div data-xh-part="channel-slider" channel="hue">
+          <div data-xh-part="channel-slider-track"></div>
+          <div data-xh-part="channel-slider-thumb"></div>
+        </div>
+        <div data-xh-part="channel-slider" channel="alpha">
+          <div data-xh-part="channel-slider-track"></div>
+          <div data-xh-part="channel-slider-thumb"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</xh-color-picker>
+
+<script type="module">
+  // 值由宿主握着：变更经事件回来，写回去才生效
+  const picker = document.getElementById("color-picker-alpha");
+
+  picker.value = "rgba(0, 169, 142, 0.6)";
+  picker.addEventListener("value-change", (event) => {
+    picker.value = event.detail.value;
+  });
+<\/script>
+`;export{a as default};

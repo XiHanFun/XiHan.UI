@@ -1,0 +1,87 @@
+const n=`<!-- 多选 | selectionMode 默认 single，改成 multiple 后点击与确认键都变成切换，选中集合形状不变仍是数组 -->
+<div style="width: 100%; max-width: 320px; display: grid; gap: 12px">
+  <xh-tree id="tree-multiple" selection-mode="multiple">
+    <div data-xh-part="root">
+      <span data-xh-part="label">投放城市</span>
+      <div data-xh-part="tree">
+        <div data-xh-part="branch" value="cn">
+          <div data-xh-part="branch-control">
+            <span data-xh-part="branch-trigger"></span>
+            <span data-xh-part="branch-text">华东</span>
+          </div>
+          <div data-xh-part="branch-content">
+            <div data-xh-part="item" value="sh">
+              <span data-xh-part="item-indicator"></span>
+              <span data-xh-part="item-text">上海</span>
+            </div>
+            <div data-xh-part="item" value="hz">
+              <span data-xh-part="item-indicator"></span>
+              <span data-xh-part="item-text">杭州</span>
+            </div>
+            <div data-xh-part="item" value="nj">
+              <span data-xh-part="item-indicator"></span>
+              <span data-xh-part="item-text">南京</span>
+            </div>
+          </div>
+        </div>
+
+        <div data-xh-part="branch" value="north">
+          <div data-xh-part="branch-control">
+            <span data-xh-part="branch-trigger"></span>
+            <span data-xh-part="branch-text">华北</span>
+          </div>
+          <div data-xh-part="branch-content">
+            <div data-xh-part="item" value="bj">
+              <span data-xh-part="item-indicator"></span>
+              <span data-xh-part="item-text">北京</span>
+            </div>
+            <div data-xh-part="item" value="tj">
+              <span data-xh-part="item-indicator"></span>
+              <span data-xh-part="item-text">天津</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </xh-tree>
+  <span>选中：<span id="tree-multiple-value">hz</span></span>
+</div>
+
+<script type="module">
+  const tree = document.getElementById("tree-multiple");
+  const readout = document.getElementById("tree-multiple-value");
+
+  tree.collection = [
+    {
+      value: "cn",
+      label: "华东",
+      children: [
+        { value: "sh", label: "上海" },
+        { value: "hz", label: "杭州" },
+        { value: "nj", label: "南京" },
+      ],
+    },
+    {
+      value: "north",
+      label: "华北",
+      children: [
+        { value: "bj", label: "北京" },
+        { value: "tj", label: "天津" },
+      ],
+    },
+  ];
+
+  // 展开集合与选中集合都是数组，只走属性；宿主写回它们才动
+  tree.expandedValue = ["cn", "north"];
+  tree.addEventListener(
+    "expanded-change",
+    (event) => (tree.expandedValue = event.detail.value),
+  );
+
+  tree.selection = ["hz"];
+  tree.addEventListener("selection-change", (event) => {
+    tree.selection = event.detail.value;
+    readout.textContent = event.detail.value.join("、") || "（无）";
+  });
+<\/script>
+`;export{n as default};

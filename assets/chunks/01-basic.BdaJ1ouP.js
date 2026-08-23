@@ -1,0 +1,58 @@
+const n=`<!-- 基础用法 | 加一行、删一行归组件管；行里放什么控件归作者，写在 item-content 里 -->
+<xh-dynamic-input id="dynamic-input-basic">
+  <div data-xh-part="root" style="max-inline-size: 420px">
+    <button data-xh-part="add-trigger">+ 添加链接</button>
+    <p id="dynamic-input-basic-count">共 0 条</p>
+  </div>
+</xh-dynamic-input>
+
+<!-- 一行的骨架，脚本按当前值克隆出行来 -->
+<template id="dynamic-input-basic-row">
+  <div data-xh-part="item">
+    <div data-xh-part="item-content">
+      <input style="inline-size: 100%" placeholder="填一个链接" />
+    </div>
+    <div data-xh-part="item-action">
+      <button data-xh-part="item-delete-trigger"></button>
+    </div>
+  </div>
+</template>
+
+<script type="module">
+  const host = document.getElementById("dynamic-input-basic");
+  const root = host.querySelector('[data-xh-part="root"]');
+  const addTrigger = host.querySelector('[data-xh-part="add-trigger"]');
+  const template = document.getElementById("dynamic-input-basic-row");
+  const count = document.getElementById("dynamic-input-basic-count");
+
+  let links = ["https://xihan.fun", ""];
+
+  // 行由作者按当前值铺：清掉旧行，再逐条克隆骨架插到新增把手前面
+  function render() {
+    for (const row of root.querySelectorAll('[data-xh-part="item"]')) row.remove();
+    links.forEach((value, index) => {
+      const row = template.content.firstElementChild.cloneNode(true);
+      const input = row.querySelector("input");
+      input.value = value;
+      // 行里的控件是作者自己的，值也由作者自己写回
+      input.addEventListener("input", () => {
+        links = links.map((item, i) => (i === index ? input.value : item));
+        host.value = links;
+      });
+      root.insertBefore(row, addTrigger);
+    });
+    count.textContent = \`共 \${links.length} 条\`;
+  }
+
+  host.createItem = () => "";
+  host.value = links;
+  // 值给了即受控，增删只发通知，改动由宿主自己写回
+  host.addEventListener("value-change", (event) => {
+    links = event.detail.value;
+    host.value = links;
+    render();
+  });
+
+  render();
+<\/script>
+`;export{n as default};

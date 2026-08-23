@@ -1,0 +1,30 @@
+const t=`<!-- 基础用法 | 默认 24 小时制，上下键在段区间里回绕，缺一段整份值就退回空串 -->
+<div style="display: grid; gap: 8px; justify-items: start">
+  <xh-time-field id="time-field-basic" name="start">
+    <div data-xh-part="root">
+      <label data-xh-part="label">开始时间</label>
+      <div data-xh-part="control">
+        <div data-xh-part="segment-group">
+          <!-- 段的身份由作者声明；中间的「:」是普通节点，换段时不会被当成一站 -->
+          <span data-xh-part="segment" segment="hour"></span>
+          <span>:</span>
+          <span data-xh-part="segment" segment="minute"></span>
+        </div>
+      </div>
+      <!-- 表单出口：缺段时它就是空的 -->
+      <input data-xh-part="hidden-input" />
+    </div>
+  </xh-time-field>
+
+  <span style="font-size: 13px">当前值：<span id="time-field-basic-readout">（未填齐）</span></span>
+</div>
+
+<script type="module">
+  // 值变化回显在下面那行文字里
+  const field = document.getElementById("time-field-basic");
+  const readout = document.getElementById("time-field-basic-readout");
+  field.addEventListener("value-change", (event) => {
+    readout.textContent = event.detail.value || "（未填齐）";
+  });
+<\/script>
+`;export{t as default};
