@@ -19,7 +19,7 @@
 | [文本省略](./ellipsis) | `ellipsis` | 1 | 2 | 4 |
 | [浮动按钮](./float-button) | `float-button` | 3 | 3 | 4 |
 | [渐变文字](./gradient-text) | `gradient-text` | 1 | 0 | 4 |
-| [快捷键](./hotkeys) | `hotkeys` | 3 | 2 | 5 |
+| [快捷键](./hotkeys) | `hotkeys` | 3 | 2 | 6 |
 | [图标](./icon) | `icon` | 2 | 0 | 6 |
 | [图标块](./icon-wrapper) | `icon-wrapper` | 1 | 0 | 4 |
 | [切换按钮](./toggle) | `toggle` | 1 | 1 | 9 |
@@ -81,7 +81,7 @@
 | [日期选择器](./date-picker) | `date-picker` | 14 | 9 | 10 |
 | [动态录入](./dynamic-input) | `dynamic-input` | 8 | 0 | 5 |
 | [就地编辑](./editable) | `editable` | 9 | 3 | 6 |
-| [表单字段](./field) | `field` | 5 | 0 | 6 |
+| [表单字段](./field) | `field` | 5 | 0 | 7 |
 | [字段集](./fieldset) | `fieldset` | 4 | 0 | 5 |
 | [文件上传](./file-upload) | `file-upload` | 12 | 5 | 11 |
 | [表单](./form) | `form` | 6 | 0 | 13 |

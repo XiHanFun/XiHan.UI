@@ -59,12 +59,19 @@ enabled 关掉后组合不再触发，键帽也转成不可用的样子
 
 <XhDemo src="hotkeys/05-toggle" />
 
+### 只注册不显示
+
+全局快捷键用 useHotkeys；键帽要不要出是另一件事，组件本身就是它的消费者
+
+<XhDemo src="hotkeys/06-register-only" />
+
 ## 产物
 
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-hotkeys>` |
 | Vue 组件 | `XhHotkeys` |
+| 组合式函数 | `useHotkeys` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/hotkeys.css` |
 
@@ -97,7 +104,7 @@ enabled 关掉后组合不再触发，键帽也转成不可用的样子
 
 ## connect API
 
-`connect` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`useHotkeys` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |

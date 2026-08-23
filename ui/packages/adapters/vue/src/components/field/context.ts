@@ -8,6 +8,11 @@ export function provideField(ctx: FieldContext): void {
   provide(KEY, ctx)
 }
 
+/** 字段外调用时返回 null，供薄封装在字段内外都能安全使用。 */
+export function useOptionalFieldContext(): FieldContext | null {
+  return inject(KEY, null)
+}
+
 export function useFieldContext(): FieldContext {
   const ctx = inject(KEY, null)
   if (!ctx)

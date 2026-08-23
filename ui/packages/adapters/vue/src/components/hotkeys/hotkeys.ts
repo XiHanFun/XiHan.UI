@@ -2,16 +2,17 @@ import type { HotkeysPlatform, HotkeysProps, HotkeysTarget, HotkeysTranslations 
 import type { Size } from '@xihan-ui/kernel'
 import type { PropType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { connectHotkeys, detectHotkeysPlatform } from '@xihan-ui/headless'
-import { computed, defineComponent, h, onBeforeUnmount, onMounted, ref, watchEffect } from 'vue'
+import { defineComponent, h, ref } from 'vue'
 import { withXhConfig } from '../../config/config'
-import { vueNormalize } from '../../runtime/normalize-props'
+import { useHotkeys } from './use-hotkeys'
 
 /**
  * 把一组键铺成一排键帽，并按 target 指定的节点接住这次组合。
  *
  * 内容整份由 keys 与平台算出，组件不收默认插槽——键帽上写什么、连接符出不出，
  * 两个平台的答案不一样，内容另有来源就对不上了。
+ *
+ * 注册与渲染是两件事：只要注册不要键帽就直接用 useHotkeys。
  */
 export const XhHotkeys = defineComponent({
   name: 'XhHotkeys',
@@ -31,43 +32,18 @@ export const XhHotkeys = defineComponent({
   },
   setup(props, { emit }) {
     const rootEl = ref<HTMLElement | null>(null)
-    // 平台要等挂载后才测得出来；测出来之前按 connect 的缺省（非 Mac）出
-    const detected = ref<HotkeysPlatform>('auto')
-    onMounted(() => {
-      detected.value = detectHotkeysPlatform()
-    })
-
     const merged = withXhConfig('hotkeys', props)
-    const api = computed(() => connectHotkeys({
+
+    const { api } = useHotkeys(() => ({
       keys: props.keys,
-      // 作者显式写了平台就以他为准，写 auto 或没写才用实测值
-      platform: props.platform && props.platform !== 'auto' ? props.platform : detected.value,
+      platform: props.platform,
       target: props.target,
       preventDefault: props.preventDefault,
       enabled: props.enabled,
       size: props.size,
       translations: merged.translations,
       onHotKey: details => emit('hot-key', details),
-    }, vueNormalize))
-
-    // 每次都现取 api：监听节点可以不变，接不接这次按键的判据却随 props 走
-    const onKeyDown = (event: Event): void => api.value.handleKeyDown(event as KeyboardEvent)
-    let bound: EventTarget | null = null
-    const unbind = (): void => {
-      bound?.removeEventListener('keydown', onKeyDown)
-      bound = null
-    }
-    // 监听装在文档或组件所在的那一层父节点上，后者把组合限制在一块面板里
-    watchEffect(() => {
-      const el = rootEl.value
-      const next = el === null ? null : (api.value.target === 'parent' ? el.parentElement : el.ownerDocument)
-      if (next === bound)
-        return
-      unbind()
-      bound = next
-      bound?.addEventListener('keydown', onKeyDown)
-    })
-    onBeforeUnmount(unbind)
+    }), rootEl)
 
     return () => {
       const current = api.value
