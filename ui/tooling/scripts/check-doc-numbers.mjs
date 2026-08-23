@@ -151,6 +151,13 @@ const truth = {
       return cem.modules.flatMap(m => m.declarations ?? []).filter(d => d.tagName).length
     },
   },
+  当前版本: {
+    how: 'packages/adapters/vue/package.json 的 version（17 个库包由 changesets 的 fixed 组锁步同版）',
+    async value() {
+      const raw = await read('packages/adapters/vue/package.json')
+      return JSON.parse(raw).version
+    },
+  },
   公开包数: {
     how: 'packages/*/* 里 private 不为 true 的 package.json 数',
     async value() {
@@ -317,6 +324,22 @@ function parseCount(text) {
 }
 
 const TABLE = [
+  // 发版当天最容易漏的一批：正文里「当前版本是 X」的陈述
+  ['README.md', /npm 上是 `([\w.-]+)` \*\*预发布版\*\*/, '当前版本'],
+  ['README.md', /当前版本 `([\w.-]+)`（`latest`/, '当前版本'],
+  ['docs/index.md', /库包已发布到 npm，当前版本 `([\w.-]+)`/, '当前版本'],
+  ['docs/introduction.md', /已发布到 npm，当前版本 `([\w.-]+)`/, '当前版本'],
+  ['docs/installation.md', /都已发布到 npm，当前版本 `([\w.-]+)`/, '当前版本'],
+  ['docs/faq.md', /库包已发布到 npm，当前版本 `([\w.-]+)`/, '当前版本'],
+  ['docs/faq.md', /两个 dist-tag 都指向 `([\w.-]+)`/, '当前版本'],
+  ['docs/changelog.md', /锁步同版，当前版本 `([\w.-]+)`/, '当前版本'],
+  // 文档站是私有包，但版本号一直照着库包写；不登记就会像此前那样停在 alpha.1
+  ['docs/package.json', /"version": "([\w.-]+)"/, '当前版本'],
+  ['docs/guide/metadata.md', /XiHan\.UI 曦寒视图 v([\w.-]+)/, '当前版本'],
+  ['docs/guide/metadata.md', /宿主：vue v([\w.-]+)/, '当前版本'],
+  ['docs/npm-package-dependency.md', /^\| `@xihan-ui\/[\w-]+` \| `([\w.-]+)`/m, '当前版本'],
+  ['docs/npm-package-dependency.md', /个包都已发布到 npm，版本 `([\w.-]+)`/, '当前版本'],
+  ['docs/npm-package-dependency.md', /发布时展开为 `\^([\w.-]+)` 区间/, '当前版本'],
   ['README.md', /Components-(\d+)-1f6feb/, '组件数'],
   ['README.md', /\*\*实验性项目\*\*：(\d+) 个组件/, '组件数'],
   ['README.md', /- \*\*(\d+) 个组件\*\* - 覆盖/, '组件数'],
@@ -419,7 +442,7 @@ for (const [file, pattern, key] of TABLE) {
   const actual = await entry.value()
   for (const hit of hits) {
     checked++
-    const written = parseCount(hit[1])
+    const written = typeof actual === 'string' ? hit[1] : parseCount(hit[1])
     if (written !== actual)
       problems.push(`${file}:${lineOf(source, hit.index)}  文档写 ${hit[1]}，实际 ${actual}（${entry.how}）`)
   }
