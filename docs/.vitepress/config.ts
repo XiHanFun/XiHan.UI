@@ -3,8 +3,8 @@ import { DefaultTheme, HeadConfig, defineConfig } from "vitepress";
 
 const require = createRequire(import.meta.url);
 
-// 导航末项显示的版本号取自本站 package.json，发版时只改那一处
-const { version } = require("../package.json");
+// 导航末项显示的版本号直接取自库包，changesets 一改就跟着走
+const { version } = require("../../ui/packages/adapters/vue/package.json");
 
 // 组件页由 ui/scripts/gen-component-docs.mjs 生成，侧栏读同一份清单，增删组件不用改这里
 const componentManifest: {
