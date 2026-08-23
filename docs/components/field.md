@@ -56,6 +56,12 @@ Field 的 disabled 只把 data-disabled 铺到各部件上；真正改不动还�
 
 <XhDemo src="field/06-warning" />
 
+### 控件在薄封装里
+
+封装的根不是可聚焦元素时，关掉 asChild、让封装内部用 useFieldControl 自取
+
+<XhDemo src="field/07-wrapper" />
+
 ## 产物
 
 | 层 | 值 |

@@ -61,7 +61,7 @@ export const XhFieldLabel = defineComponent({
 export type FieldControlSlotProps = Record<string, unknown>
 
 /** 去掉角色标记，只留接线属性（id 与 aria-*）。 */
-function wiringOnly(controlProps: Record<string, unknown>): Record<string, unknown> {
+export function wiringOnly(controlProps: Record<string, unknown>): Record<string, unknown> {
   const rest: Record<string, unknown> = {}
   for (const [key, value] of Object.entries(controlProps)) {
     if (key !== 'data-scope' && key !== 'data-part')
@@ -72,18 +72,27 @@ function wiringOnly(controlProps: Record<string, unknown>): Record<string, unkno
 
 export const XhFieldControl = defineComponent({
   name: 'XhFieldControl',
+  props: {
+    /**
+     * 把接线属性合到唯一的子节点上，缺省开。
+     *
+     * 子节点是薄封装（根不是可聚焦元素）时关掉它：属性只经插槽载荷交出去，
+     * 由封装内部调 useFieldControl 绑到真控件上。
+     */
+    asChild: { type: Boolean, default: true },
+  },
   slots: Object as SlotsType<{
     default?: (props: FieldControlSlotProps) => VNode[]
   }>,
-  setup(_, { slots }) {
+  setup(props, { slots }) {
     const ctx = useFieldContext()
     return () => {
       const controlProps = ctx.api.value.getControlProps() as Record<string, unknown>
       // control props 经 slot props 交给作者，控件节点由作者渲染
       const children = slots.default?.(controlProps) ?? []
       const nodes = attributable(children)
-      // 多个节点视为作者已用 slot props 自行接线
-      if (nodes.length !== 1)
+      // 关了 asChild、或不止一个节点：都视为作者已用 slot props 自行接线
+      if (!props.asChild || nodes.length !== 1)
         return children
       const node = nodes[0]!
       // 单个节点合并属性；它自带角色标记时不覆盖，只落接线属性

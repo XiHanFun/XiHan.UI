@@ -322,7 +322,9 @@ export type { EllipsisSlotProps } from './components/ellipsis/ellipsis'
 export { useEllipsis } from './components/ellipsis/use-ellipsis'
 export type { EllipsisContext } from './components/ellipsis/use-ellipsis'
 export { XhEmptyStateAction, XhEmptyStateDescription, XhEmptyStateIcon, XhEmptyStateRoot, XhEmptyStateTitle } from './components/empty-state/empty-state'
+export { provideField, useFieldContext, useOptionalFieldContext } from './components/field/context'
 export { XhFieldControl, XhFieldDescription, XhFieldErrorText, XhFieldLabel, XhFieldRoot } from './components/field/field'
+export { useFieldControl } from './components/field/use-field-control'
 export type { FieldControlSlotProps } from './components/field/field'
 export { useField } from './components/field/use-field'
 export type { FieldContext } from './components/field/use-field'
@@ -380,6 +382,8 @@ export { useHeatmap } from './components/heatmap/use-heatmap'
 export type { HeatmapContext } from './components/heatmap/use-heatmap'
 export { XhHighlight } from './components/highlight/highlight'
 export { XhHotkeys } from './components/hotkeys/hotkeys'
+export { useHotkeys } from './components/hotkeys/use-hotkeys'
+export type { HotkeysHandle, UseHotkeysOptions } from './components/hotkeys/use-hotkeys'
 export {
   XhHoverCardArrow,
   XhHoverCardContent,

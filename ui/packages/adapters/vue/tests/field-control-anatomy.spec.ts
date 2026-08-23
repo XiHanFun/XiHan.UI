@@ -2,8 +2,8 @@
 // XhFieldControl 合并属性时的角色标记归属：子节点是裸控件就把 field/control 标上去，
 // 子节点自带角色标记（组件根、或写了 data-scope 的元素）则只落 id 与 aria-*。
 import { afterEach, describe, expect, it } from 'vitest'
-import { createApp, h } from 'vue'
-import { XhFieldControl, XhFieldLabel, XhFieldRoot, XhSwitch } from '../src'
+import { createApp, defineComponent, h } from 'vue'
+import { useFieldControl, XhFieldControl, XhFieldLabel, XhFieldRoot, XhSwitch } from '../src'
 
 let cleanup: Array<() => void> = []
 
@@ -13,14 +13,14 @@ afterEach(() => {
   document.body.innerHTML = ''
 })
 
-function mountField(child: () => unknown): HTMLElement {
+function mountField(child: () => unknown, controlProps?: Record<string, unknown>): HTMLElement {
   const host = document.createElement('div')
   document.body.appendChild(host)
   const app = createApp({
     setup: () => () =>
       h(XhFieldRoot, null, () => [
         h(XhFieldLabel, () => '开关'),
-        h(XhFieldControl, () => [child()]),
+        h(XhFieldControl, controlProps ?? null, () => [child()]),
       ]),
   })
   app.mount(host)
@@ -58,5 +58,34 @@ describe('field control 的角色标记', () => {
 
     expect(node.getAttribute('data-part')).toBe('canvas')
     expect(node.id).not.toBe('')
+  })
+})
+
+describe('控件藏在薄封装里', () => {
+  // 根是 div、真控件在里面：正是默认路径接不准的那种封装
+  const Wrapper = defineComponent({
+    name: 'TestWrapper',
+    setup() {
+      const controlProps = useFieldControl()
+      return () => h('div', { class: 'wrapper' }, [h('input', controlProps.value)])
+    },
+  })
+
+  it('asChild 关掉后接线不落在封装根上', () => {
+    const host = mountField(() => h(Wrapper), { asChild: false })
+    const root = host.querySelector('.wrapper')!
+
+    expect(root.getAttribute('id')).toBeNull()
+    expect(root.getAttribute('aria-labelledby')).toBeNull()
+  })
+
+  it('封装内部取到接线后 label 的 for 指得到真控件', () => {
+    const host = mountField(() => h(Wrapper), { asChild: false })
+    const input = host.querySelector('input')!
+    const label = host.querySelector('label')!
+
+    expect(input.id).not.toBe('')
+    expect(label.getAttribute('for')).toBe(input.id)
+    expect(input.getAttribute('aria-labelledby')).toBe(label.id)
   })
 })

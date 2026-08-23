@@ -74,6 +74,39 @@ checkbox 与 switch 的根是 `<button>`，而 HTML 的内容模型禁止 button
 不在任何表单里、无 DOM 的服务端、作者没写影子输入——三种情形都不需要特别处理：归属判定不命中、
 服务端根本不挂副作用、锚点是组件根节点而不是影子输入。
 
+## 控件在薄封装里
+
+`XhFieldControl` 默认把接线属性（`id` 与各条 `aria-*`）合到它唯一的子节点上。子节点是个组件时，合的是**组件的根**——而薄封装的根往往是 `div`。
+
+标签的 `for` 只对可标注元素生效（`input` / `select` / `textarea` / `button` 等），指到 `div` 上什么也不会发生：点标题聚不了焦，读屏也报不出名字。**这种失效不报错**。
+
+两种写法：
+
+**一、控件的根就是可聚焦元素**——什么都不用做，默认路径正确：
+
+```vue
+<XhFieldControl>
+  <input type="email" />
+</XhFieldControl>
+```
+
+**二、控件藏在封装里**——关掉 `asChild`，让封装内部自取：
+
+```vue
+<XhFieldControl :as-child="false">
+  <MyInput />
+</XhFieldControl>
+```
+
+```ts
+// MyInput 内部
+import { useFieldControl } from '@xihan-ui/vue'
+
+const controlProps = useFieldControl()
+// 绑到真正可聚焦的那个节点上
+```
+
+`useFieldControl` 在字段外调用返回空对象，封装照样能单独用。不关 `asChild` 的话属性会被合两遍——一遍在封装根、一遍在真控件，页面上会出现两个相同的 `id`。
 ## 哪些组件参与
 
 24 个：checkbox、checkbox-group、color-picker、combobox、date-field、date-picker、editable、
