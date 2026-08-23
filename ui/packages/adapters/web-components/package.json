@@ -1,7 +1,7 @@
 {
   "name": "@xihan-ui/web-components",
   "type": "module",
-  "version": "1.0.0-alpha.2",
+  "version": "1.0.0-alpha.3",
   "description": "XiHan.UI Web Components adapter — Light-DOM behavior hosts on XhReactiveElement.",
   "author": {
     "name": "XiHanFun",
