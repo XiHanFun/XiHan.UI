@@ -1,5 +1,90 @@
 # @xihan-ui/behavior
 
+## 1.0.0-alpha.3
+
+### Minor Changes
+
+- 8d35702: 动效与浮层口径收口（`开发设计/UI.MotionOverlay.Contract.md`）。
+
+  **减弱动效只剩一条通道。** 此前 kernel 的 `RuntimeConfig.reducedMotion` 只读系统 matchMedia、motion 包的 `setMotionOverride` 只有 animate / 滚动 / 数字动画在听，presence 与 stick-to-bottom 感知不到应用级覆盖；无 matchMedia 的宿主两包还给出相反答案（kernel 直接抛 TypeError、motion 报 reduce）。现在 kernel 依赖 motion，`reducedMotion` 缺省即 `resolveMotionPreference() === 'reduce'`（覆盖 ?? 系统偏好），没有 matchMedia 一律不减弱；glyph 转圈、backgrounds、滚动、数字动画全部走同一函数。CSS 侧 `tokens.css` 新增 `:where([data-motion='reduce'])` 块，与 `@media (prefers-reduced-motion: reduce)` 同源生成、逐条相同——作者把 `data-motion="reduce"` 打在任意容器即局部减弱。全局配置加 `motion?: 'reduce' | 'no-preference'`，Vue `provideXhConfig` / WC `<xh-config motion>` 收到即调 `setMotionOverride`。
+
+  **缓动与时长的真源是令牌。** motion 包新增 `durations = { fast, normal, slow }`，`animate()` 缺省与 `@xihan-ui/animations` 的缺省时长都引它；`check-motion-source` 比对 primitive.json 与 easing.ts / durations.ts，值不等即红；`check-reduced-motion-channel` 禁止 motion 包之外再出现 `matchMedia('(prefers-reduced-motion')`。
+
+  **皮肤的 reduce 块归口。** 只在两种情况自写：无限循环动画要整个停掉、有使用者时长槽的过渡要兜住穿透。image-viewer / side-nav / layout 三份纯重复令牌层的块删掉；table 的 `0.01ms !important` 改 `animation: none`；保留的 10 份每块配一份等价的 `[data-motion='reduce']` 规则。animation / transition 不再直引 `--xh-duration-*` 原语：spinner 走 `--xh-spin-duration`，skeleton 走新令牌 `--xh-shimmer-duration`（1600ms）。`check-infinite-motion` / `check-motion-primitives` 守住。
+
+  **浮层的 placement / offset 默认值只有两种语义。** `OVERLAY_PLACEMENT_ANCHORED = 'bottom'`（气泡类）与 `OVERLAY_PLACEMENT_LIST = 'bottom-start'`（列表类）、`OVERLAY_OFFSET = 8` 从 headless 共享导出，各组件的 `<C>_DEFAULT_PLACEMENT` 改为引用它们（tooltip / hover-card / popover / popconfirm / popselect 新增导出常量），所有机器显式传 offset，不再隐式靠引擎兜底；`check-overlay-defaults` 守住。
+
+  **层级覆盖槽齐全、后缀统一。** 22 个浮层族的 positioner / backdrop、toaster、navigation-menu 面板都有了 `--xh-<c>-layer` 槽（缺省仍是 `--xh-layer-*`）；tour / table / heatmap 的 `-z` 后缀槽改名 `-layer`（7 个，公开面变更，基线已推）。
+
+  **进退场对称。** toast 退场位移从 distance-sm 改 distance-md（与进场、与 dialog 一致）；tour 的气泡改用 pop 族，聚光灯补退场；side-nav 折叠态弹出面板补进退场并在 Vue / WC 接上退场租约。
+
+  **navigation-menu 的定位登记变成可验证的。** 三道浮层门禁此前按「anatomy 有 positioner」发现族，它从没被检查过；现在 `SKIN_POSITIONED` 名单要求它没有 positioner、不接引擎、面板由皮肤 absolute 排布，任一条不成立即红。`check-arrow-geometry` 增比对 JS 箭头常量（8·√2 / 8）与令牌（8px 边长 / 8px 圆角）。
+
+- 516bd46: 浮层搬进单一落点，层号与背景失活跟着改口。
+
+  ## 浮层不再原地渲染
+
+  此前 20 个带 positioner 的浮层里只有 dialog / drawer / image-viewer 搬走，其余 16 个
+  留在触发器旁边。坐标一直是对的（定位引擎特意处理了「祖先抢走包含块」），坏的是层叠序：
+  宿主应用的祖先只要建了层叠上下文——`transform` / `translate` / `scale` / `filter` /
+  `backdrop-filter` / `opacity` 小于 1 / `contain` / `will-change` / `position: sticky` /
+  定位元素带 `z-index` / `isolation`——浮层的层号就退化成那个上下文里的局部序号，被任何
+  上层兄弟盖住。这是库无法从自身约束的：宿主怎么写 DOM 不归库管。
+
+  kernel 新增 `ensurePortalRoot(doc)`，在 body 末尾维护单一 `#xh-portal-root`，
+  `RuntimeConfig.portalContainer` 的默认值指向它。Vue 侧 19 个浮层的 positioner
+  （tour 连同 backdrop 与 spotlight）一律 Teleport 过去。落点自身一条样式都不写——
+  子元素全是 `position: fixed`，不占布局，而任何 `position` / `transform` / `contain` /
+  `isolation` 都会平白建出新的层叠上下文，正是要躲的东西。
+
+  WC 适配器是 Light DOM，解剖契约就是「作者写在哪就在哪」，搬不动。改为在浮层展开时
+  沿祖先链探一次层叠上下文，命中就投一条诊断，指名是哪个祖先的哪条属性。
+
+  **破坏性**：浮层的 DOM 位置变了。按 `wrapper.querySelector` 之类以挂载根为基准取浮层
+  节点的代码要改从 `document` 取。
+
+  ## 遮罩式浮层并到同一档层号
+
+  `--xh-z-drawer` 删除，`--xh-layer-drawer` 与 `--xh-layer-modal` 解析到同一个值。
+
+  原先抽屉 1000 低于对话框 1100，而两者都在同一个栈上下文里，纯靠数字定序：从对话框里
+  拉出抽屉时，抽屉连同自己的遮罩一起沉在对话框遮罩底下，用户只看到画面又暗一层、什么都
+  没出现，而焦点已经陷进看不见的面板。反方向是对的，所以这是只在一个方向上炸的组合。
+  并档之后先后交给 portal 顺序决定，与对话框套对话框的现有行为一致。
+
+  **破坏性**：`--xh-z-drawer` 这个名字没有了。改用 `--xh-layer-drawer`。
+
+  ## 背景失活改走祖先链
+
+  `hideOutside` 此前只遍历 body 直接子元素，判据是「这个子元素包含 target 就整块放行」。
+  WC 适配器的浮层长在作者写它的位置，应用只要有一层根容器（`#app` 之类）就会因包含浮层
+  被整块豁免——模态对话框身后的整个应用对读屏依然完全可遍历，不认外点关闭的
+  `alertdialog` 更是完全可点。改成沿每个 target 到 body 的祖先链逐层罩住其余兄弟。
+
+  `data-xh-inert-exempt` 的语义随之扩大：带标记的元素及其后代不被罩住，**其祖先只递归、
+  不整块罩住**。通知队列因此在任意嵌套深度都能保持可点，外点判定也一并豁免（点通知不再
+  把模态关掉）。
+
+  ## 其余
+  - `--xh-editable-preview-line-height` 删除，改用 `--xh-editable-preview-min-h`：预览态
+    原先拿行高冒充高度，实测比同组件的编辑态高 2px，切换时跳一下。
+  - tooltip 与 navigation-menu 入层栈，Escape 不再连它们下面的对话框一起关掉。
+  - 定位引擎新增 size 中间件，回报可用空间与锚点宽度；菜单族补上高度上限与内部滚动。
+  - 包含块判定补齐 `translate` / `rotate` / `scale` 独立属性与 `backdrop-filter`。
+  - 滚动锁补滚动条补偿与滚动根探测。
+
+### Patch Changes
+
+- Updated dependencies [d0202b2]
+- Updated dependencies [7da1272]
+- Updated dependencies [ed01a81]
+- Updated dependencies [a321a50]
+- Updated dependencies [8d35702]
+- Updated dependencies [516bd46]
+- Updated dependencies [9548330]
+  - @xihan-ui/kernel@1.0.0-alpha.3
+  - @xihan-ui/motion@1.0.0-alpha.3
+
 ## 1.0.0-alpha.2
 
 ### Minor Changes

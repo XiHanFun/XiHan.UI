@@ -1,5 +1,18 @@
 # @xihan-ui/code-highlight
 
+## 1.0.0-alpha.3
+
+### Patch Changes
+
+- Updated dependencies [d0202b2]
+- Updated dependencies [7da1272]
+- Updated dependencies [ed01a81]
+- Updated dependencies [a321a50]
+- Updated dependencies [8d35702]
+- Updated dependencies [516bd46]
+- Updated dependencies [9548330]
+  - @xihan-ui/kernel@1.0.0-alpha.3
+
 ## 1.0.0-alpha.2
 
 ### Patch Changes
