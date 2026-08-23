@@ -6,26 +6,26 @@ XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（�
 
 | 包 | 版本 | 依赖 | peer 依赖 | 层 |
 | --- | --- | --- | --- | --- |
-| `@xihan-ui/kernel` | `1.0.0-alpha.2` | `motion` | — | 1 |
-| `@xihan-ui/machine` | `1.0.0-alpha.2` | `kernel` | — | 1 |
-| `@xihan-ui/tokens` | `1.0.0-alpha.2` | — | — | 1 |
-| `@xihan-ui/icons` | `1.0.0-alpha.2` | — | — | 1 |
-| `@xihan-ui/motion` | `1.0.0-alpha.2` | — | — | 1 |
-| `@xihan-ui/behavior` | `1.0.0-alpha.2` | `kernel` `motion` | — | 2 |
-| `@xihan-ui/position` | `1.0.0-alpha.2` | `kernel` | — | 2 |
-| `@xihan-ui/code-highlight` | `1.0.0-alpha.2` | `kernel` | — | 2 |
-| `@xihan-ui/chat-stream` | `1.0.0-alpha.2` | `kernel` | — | 2 |
-| `@xihan-ui/markdown` | `1.0.0-alpha.2` | — | — | 2 |
-| `@xihan-ui/sound` | `1.0.0-alpha.2` | `kernel` | — | 2 |
-| `@xihan-ui/animations` | `1.0.0-alpha.2` | `kernel` `motion` | — | 2 |
-| `@xihan-ui/headless` | `1.0.0-alpha.2` | `kernel` `machine` `behavior` `motion` + `@internationalized/date` | — | 3 |
-| `@xihan-ui/styles` | `1.0.0-alpha.2` | `tokens`（只取其 CSS 产物） | — | 3 |
-| `@xihan-ui/backgrounds` | `1.0.0-alpha.2` | `kernel` `behavior` `motion` | — | 3 |
-| `@xihan-ui/vue` | `1.0.0-alpha.2` | `kernel` `machine` `behavior` `motion` `headless` `position` `code-highlight` | `vue`、`backgrounds`（可选）、`sound`（可选） | 4 |
-| `@xihan-ui/web-components` | `1.0.0-alpha.2` | `kernel` `machine` `behavior` `motion` `headless` `position` `code-highlight` | `backgrounds`（可选） | 4 |
+| `@xihan-ui/kernel` | `1.0.0-alpha.3` | `motion` | — | 1 |
+| `@xihan-ui/machine` | `1.0.0-alpha.3` | `kernel` | — | 1 |
+| `@xihan-ui/tokens` | `1.0.0-alpha.3` | — | — | 1 |
+| `@xihan-ui/icons` | `1.0.0-alpha.3` | — | — | 1 |
+| `@xihan-ui/motion` | `1.0.0-alpha.3` | — | — | 1 |
+| `@xihan-ui/behavior` | `1.0.0-alpha.3` | `kernel` `motion` | — | 2 |
+| `@xihan-ui/position` | `1.0.0-alpha.3` | `kernel` | — | 2 |
+| `@xihan-ui/code-highlight` | `1.0.0-alpha.3` | `kernel` | — | 2 |
+| `@xihan-ui/chat-stream` | `1.0.0-alpha.3` | `kernel` | — | 2 |
+| `@xihan-ui/markdown` | `1.0.0-alpha.3` | — | — | 2 |
+| `@xihan-ui/sound` | `1.0.0-alpha.3` | `kernel` | — | 2 |
+| `@xihan-ui/animations` | `1.0.0-alpha.3` | `kernel` `motion` | — | 2 |
+| `@xihan-ui/headless` | `1.0.0-alpha.3` | `kernel` `machine` `behavior` `motion` + `@internationalized/date` | — | 3 |
+| `@xihan-ui/styles` | `1.0.0-alpha.3` | `tokens`（只取其 CSS 产物） | — | 3 |
+| `@xihan-ui/backgrounds` | `1.0.0-alpha.3` | `kernel` `behavior` `motion` | — | 3 |
+| `@xihan-ui/vue` | `1.0.0-alpha.3` | `kernel` `machine` `behavior` `motion` `headless` `position` `code-highlight` | `vue`、`backgrounds`（可选）、`sound`（可选） | 4 |
+| `@xihan-ui/web-components` | `1.0.0-alpha.3` | `kernel` `machine` `behavior` `motion` `headless` `position` `code-highlight` | `backgrounds`（可选） | 4 |
 
 ::: warning 版本状态
-17 个包都已发布到 npm，版本 `1.0.0-alpha.2`，`latest` 与 `alpha` 两个 dist-tag 都指向它。这是 **alpha 预发布**：不承诺语义化版本，接口还会变，不要用于生产。
+17 个包都已发布到 npm，版本 `1.0.0-alpha.3`，`latest` 与 `alpha` 两个 dist-tag 都指向它。这是 **alpha 预发布**：不承诺语义化版本，接口还会变，不要用于生产。
 
 发布走 changesets，所有库包同属一个 fixed 版本组，一起升到同一个版本号。
 :::
@@ -101,7 +101,7 @@ XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（�
 
 ## 版本约定
 
-- 内部运行时依赖一律 `workspace:^`（发布时展开为 `^1.0.0-alpha.2` 区间），内部开发期依赖用 `workspace:*`；
+- 内部运行时依赖一律 `workspace:^`（发布时展开为 `^1.0.0-alpha.3` 区间），内部开发期依赖用 `workspace:*`；
 - 第三方版本只从 workspace catalog 取，包内写 `catalog:`，**不得内联版本号**（`check-exact-pins` 门禁）；
 - 升级只改 `pnpm-workspace.yaml` 的 catalog 一处。
 

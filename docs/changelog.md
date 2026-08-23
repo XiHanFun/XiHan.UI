@@ -3,10 +3,52 @@
 本文件记录 XiHan.UI 各版本的变更。每条标注 **新增 / 修复 / 优化 / 调整 / 移除** 类别。
 
 ::: warning 当前是 alpha 预发布
-现在的 XiHan.UI 是 2026-07-25 起从零重写的框架无关设计系统运行时，17 个公开包（`@xihan-ui/*`）由 changesets 的 `fixed` 组锁步同版，当前版本 `1.0.0-alpha.2`，**已发布到 npm**（`latest` 与 `alpha` 两个 dist-tag 都指向它）。它是预发布：不承诺语义化版本，接口还会变，不要用于生产。
+现在的 XiHan.UI 是 2026-07-25 起从零重写的框架无关设计系统运行时，17 个公开包（`@xihan-ui/*`）由 changesets 的 `fixed` 组锁步同版，当前版本 `1.0.0-alpha.3`，**已发布到 npm**（`latest` 与 `alpha` 两个 dist-tag 都指向它）。它是预发布：不承诺语义化版本，接口还会变，不要用于生产。
 
 npm 上的 `xihan-ui` 是重写前的旧实现，最后一版 `0.9.8` 发布于 2025-05-25，六个版本已全部在 npm 上标记弃用。两者不是同一套东西，旧包不会再有更新。
 :::
+
+## 1.0.0-alpha.3（2026-08-23 发布）
+
+40 份变更集，17 个公开包锁步同版。这一版的主线是**一致性收口**：把「同一件事在不同组件里有几种做法」逐条查出来、裁一种、再写成门禁钉住。结构门禁从 21 道增到 57 道。
+
+### 新增
+
+- **新增** `scrollbar` 组件：自绘滚动条可以挂在任意一个滚动容器上，不必是本组件的后代
+- **新增** `date-picker` / `time-picker` 的快捷选项（`presets`）：给数据就在浮层里多排一列，自成一套 listbox 键盘
+- **新增** 日历的多面板、按月 / 季度 / 年 / 周挑、快速翻年、周选整周预览；周序号成为一等部件 `week-number`
+- **新增** select 浮层的底部操作区，「新建」「全选」这类按钮有了位置
+- **新增** 热力图的 `palette` 色板轴（六色），与语气轴各管各的
+- **新增** number-field 的 `parse` / `format` 与可选 `control` 部件；pin-input 的 `pattern`
+- **新增** 全局配置做成真正的 ConfigProvider：全局默认 + 局部覆盖，两个适配器一份语义
+
+### 调整
+
+- **调整** **浮层搬进单一落点**：19 个浮层的 positioner 一律 Teleport 到 `#xh-portal-root`。宿主祖先只要建了层叠上下文，原地渲染的浮层层号就退化成局部序号——这是库无法从自身约束的。**按 `wrapper.querySelector` 取浮层节点的代码要改从 `document` 取**
+- **调整** **盒的定义统一**：有 `control` 部件就是盒，`trigger` 退化成盒内的 `flex: 1` 按钮。此前 16 个输入 / 选择控件有三种盒，盒是 `<button>` 的那五家没法把清空钮放进框里
+- **调整** **清空 / 关闭 / 移除按钮收成四类契约**：焦点模型、空态、尺寸、圆角、互斥、文案键、键盘路径逐条统一；select / cascader / tree-select / popselect 补上了此前完全缺席的键盘清空
+- **调整** **状态属性收成一套词汇**：当前项一律 `data-current`，`data-active` 的一名三义拆成 `data-in-path` 与 `data-passed`，组级混合态归 `checked | unchecked | indeterminate`
+- **调整** **默认语言跟随运行时**：日期系兜底从写死 `zh-CN` 改成「显式 locale → 全局配置 → 宿主语言 → `en-US`」。**默认周首日随之从周一变成周日**，要固定就显式传 `locale` 或 `firstDayOfWeek`
+- **调整** 「移除这一枚 chip / 这一行」统一叫 `item-delete-trigger`，四个文案键归成 `deleteItem`
+- **调整** 选择态一族（table / tree / transfer）的选中集合统一叫 `selection`，载荷键统一 `{ value }`
+- **调整** 兜底字形改用真图标（`--xh-glyph-mark-*` 二十个令牌），不再是跨系统长相各异的 Unicode 字符
+- **调整** 减弱动效只剩一条通道，CSS 侧新增 `[data-motion='reduce']` 钩子；缓动与时长的真源是令牌
+- **调整** 并排成对的面板定高——穿梭框搬走条目后整体不再变矮
+- **调整** 菜单族三家（menu / menubar / context-menu）逐条同值：menubar 此前根本没有「子菜单触发项展开态」这条规则
+
+### 修复
+
+- **修复** side-nav 折叠成图标栏后，行按钮与链接**没有可及名**——读屏用户完全不知道每一项是什么（真机 axe 扫出，critical）
+- **修复** date-picker / time-picker / combobox 有值时下拉钮被藏掉：鼠标用户没有打开入口，Escape 收起时焦点掉到 `body`
+- **修复** 日历周序号在周日起算时整列少 1（ISO 周里周日属于上一周）
+- **修复** `TimeProps.locale` 的窄联合与全局 BCP 47 locale 对不上，配 `de-DE` 会拿到中文用词
+- **修复** 4 条子路径导出的类型文件根本不存在，`publint` / `attw` 判红——发布链路当场卡住
+
+### 优化
+
+- **优化** 无障碍：真机 axe 覆盖到 dialog / drawer / image-viewer 三个模态，全部通过
+- **优化** 新增 37 道门禁，其中 `check-doc-numbers` 把「文档里写死的数字」变成可判的——README 与文档站的组件数、令牌数、门禁道数不会再各说各话
+- **优化** 版本策略页按实测重算：`data-state` 取值清单删掉 4 个库里已不存在的，WC 命令式方法从 22 条改成 29 条
 
 ## 1.0.0-alpha.2（2026-08-16 发布）
 
