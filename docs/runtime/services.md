@@ -1,6 +1,6 @@
 # 命令式服务
 
-有些东西写成模板反而绕：删除前问一句、保存完提示一下——这些没有"挂在哪"的问题，就该一次调用弹出来。库提供两个服务工厂：对话框与轻提示。
+有些东西写成模板反而绕：删除前问一句、保存完提示一下——这些没有"挂在哪"的问题，就该一次调用弹出来。库提供三个服务工厂：对话框、轻提示与顶部进度条。
 
 两者都自己建宿主容器、自己管挂载与卸载，**用完记得 `dispose()`**。
 
@@ -28,6 +28,8 @@ dialog.dispose()
 | --- | --- | --- |
 | `confirm(options)` | `Promise<boolean>` | 确认走完 `onOk` 后 resolve `true`；取消或 Escape resolve `false` |
 | `info` / `success` / `warning` / `error` | `Promise<void>` | 单按钮告知框，没有取消钮，徽记由预设档自己定 |
+| `prompt(options)` | `Promise<T | null>` | 取值型弹窗：确认后带回一份值，取消 resolve `null` |
+| `setConfig(next)` | — | 换一份全局配置源 |
 | `dispose()` | — | 卸载宿主应用并移除容器 |
 
 `ConfirmOptions` 的字段：`title`（必填）、`content`、`tone`（确认钮语气，危险操作传 `danger`）、`badge`（标题旁的类型徽记）、`okText` / `cancelText`、`onOk`。
@@ -43,6 +45,38 @@ await dialog.confirm({
 })
 ```
 
+### 正文不止能放一句话
+
+`content` 收串也收渲染函数。给串走 `XhDialogDescription`（读屏的 `aria-describedby` 接在它上面），给函数则整块摊在正文位：
+
+```ts
+await dialog.confirm({
+  title: '导入这份数据？',
+  content: () => h(XhAlertRoot, { tone: 'warning' }, () => '已存在的记录会被覆盖'),
+})
+```
+
+不收裸 VNode：服务宿主是常驻的，忙态一翻就整棵重渲，同一个 VNode 实例被复用时的行为未定义。
+
+### 要填东西的弹窗
+
+`prompt` 管的是「弹窗里填点什么，填完把值带回来」。每次打开建一份初值，`body` 与 `onOk` 拿的是同一份可写代理：
+
+```ts
+const next = await dialog.prompt({
+  title: '改邮箱',
+  initialValue: { email: '', password: '' },
+  body: value => [
+    h(XhTextFieldRoot, { value: value.email, 'onUpdate:value': (v: string) => (value.email = v) }, () => h(XhTextFieldInput)),
+    h(XhTextFieldRoot, { type: 'password', value: value.password, 'onUpdate:value': (v: string) => (value.password = v) }, () => h(XhTextFieldInput)),
+  ],
+  initialFocus: '[data-scope=text-field][data-part=input]',
+  onOk: value => value.email.includes('@'),   // 返回 false 表示校验没过，弹窗不关
+})
+// next 是 { email, password } 的普通对象快照；取消 / Escape 得到 null
+```
+
+`prompt` 的 `onOk` 返回 `false` 表示不放行。`confirm` 的 `onOk` 不吃这条——它的返回值不参与判定，只有拒绝才拦住关闭。
 ### 同一时刻只有一个
 
 后来的排队顺次弹出，避开多层模态叠加。关到再开之间留了退场窗口，动效走完才放下一个。
@@ -84,6 +118,52 @@ catch {
 
 服务档的默认落位是 `top`，每个位置默认最多同时留 5 条，超出的排队。单条可以用 `options.placement` 覆盖。
 
+## 顶部进度条服务
+
+路由守卫与请求拦截器都在组件树之外，要的正是命令式入口：
+
+```ts
+import { createLoadingBarService } from '@xihan-ui/vue'
+
+const bar = createLoadingBarService()
+
+router.beforeEach(() => { bar.start() })
+router.afterEach(() => { bar.finish() })
+
+http.interceptors.request.use((cfg) => { bar.start(); return cfg })
+http.interceptors.response.use(
+  (res) => { bar.finish(); return res },
+  (err) => { bar.error(); return Promise.reject(err) },
+)
+```
+
+| 方法 | 说明 |
+| --- | --- |
+| `start()` | 在途计数 +1；从 0 起跳即开始爬升 |
+| `finish()` | 在途计数 −1（夹到 0，多调不会变负）；归零才收 |
+| `error()` | 强制归零并以 `errorTone`（缺省 `danger`）收 |
+| `finishAll()` | 不管还剩几笔在途一律收掉 |
+| `set(value)` | 切成确定进度；再 `start()` 回到不确定 |
+| `setConfig(next)` | 换一份全局配置源 |
+| `dispose()` | 卸载宿主应用并移除容器 |
+
+**在途计数是这层壳的要点**。写成布尔开关的话，三个并发请求里第一个回来就把条子收了，剩下两个还在跑——进度条比请求先结束。
+## 切语言要跟得上
+
+三个服务都自建宿主应用，接不到组件树里的 `provideXhConfig`，所以配置要从 `config` 选项给。**传 ref 或 getter**，不要传一次性的对象——传对象的话文案只在建服务那一刻求值一次，之后应用切了语言，服务子树里的按钮与读屏名不跟；队列里排着的对话框还会跨过这次切换。
+
+```ts
+const dialog = createDialogService({
+  config: () => ({ locale: app.locale.value, translations: myOverrides[app.locale.value] }),
+  okText: () => t('common.ok'),
+  cancelText: () => t('common.cancel'),
+})
+
+// 没有响应式源时也可以命令式推
+dialog.setConfig({ locale: 'en-US' })
+```
+
+取值优先级：**调用点 > 服务选项 > `config.translations.<组件>` > 组件内建默认**。
 ## 什么时候不要用服务
 
 - **确认可以撤销的操作**：直接做，然后发一条带"撤销"按钮的轻提示。事前确认对用户是一道额外的关，撤销才是真的兜底。
