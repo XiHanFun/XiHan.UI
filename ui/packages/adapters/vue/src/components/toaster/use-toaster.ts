@@ -1,7 +1,7 @@
 import type { ToasterApi, ToasterSchema, ToastOptions } from '@xihan-ui/headless'
-import type { ComputedRef } from 'vue'
+import type { ComputedRef, MaybeRefOrGetter } from 'vue'
 import { connectToaster, toasterMachine } from '@xihan-ui/headless'
-import { computed } from 'vue'
+import { computed, toValue } from 'vue'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'
 
@@ -14,11 +14,12 @@ export interface ToasterContext {
   dismissAll: () => void
 }
 
+/** props 收 ref/getter 时每帧现取，文案之类的量可以运行期换。 */
 export function useToaster(
-  props: ToasterSchema['props'],
+  props: MaybeRefOrGetter<ToasterSchema['props']>,
   onToastsChange?: ToasterSchema['props']['onToastsChange'],
 ): ToasterContext {
-  const service = useMachine(toasterMachine, () => ({ ...props, onToastsChange }))
+  const service = useMachine(toasterMachine, () => ({ ...toValue(props), onToastsChange }))
   const api = computed(() => connectToaster(service, vueNormalize))
   // 四个命令在顶层摊平，函数身份稳定，可解构后随时调用且不读取队列
   return {
