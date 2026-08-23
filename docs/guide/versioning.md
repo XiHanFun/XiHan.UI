@@ -50,14 +50,14 @@ XiHan.UI 的公开面横跨五种介质，因为「丢掉自带皮肤自己写�
 
 ## 一、JS / TS 导出面
 
-17 个包中 16 个出 JS（`@xihan-ui/styles` 只出 CSS），共 51 个带类型的入口。
+17 个包中 16 个出 JS（`@xihan-ui/styles` 只出 CSS），共 52 个带类型的入口。
 
 ### 受约束
 
 | 类别 | 数量 | 说明 |
 | --- | --- | --- |
 | 包名 | 17 | 把代码从一个包挪到另一个包 = major |
-| `exports` 子路径 | 51 个 JS 入口 | 如 `@xihan-ui/vue/backgrounds`、`@xihan-ui/web-components/define`、`@xihan-ui/kernel/deprecations`。没有 `./*` 通配，深路径引用（`.../dist/xxx.js`）被 Node 与打包器一并挡住，那些路径不是 API |
+| `exports` 子路径 | 52 个 JS 入口 | 如 `@xihan-ui/vue/backgrounds`、`@xihan-ui/web-components/define`、`@xihan-ui/kernel/deprecations`。没有 `./*` 通配，深路径引用（`.../dist/xxx.js`）被 Node 与打包器一并挡住，那些路径不是 API |
 | Vue 组件导出 `Xh*` | 719（119 个家族） | `XhButton`、`XhSelectRoot`、`XhSelectItemIndicator` |
 | Vue 组合式函数 `use<家族>` | 86 | `useSelect`、`useCombobox`。这是「不用我的部件、自己写标记」的唯一入口 |
 | Vue 指令 | 2 | `vBackground`（`@xihan-ui/vue/backgrounds`）、`vSound`（`@xihan-ui/vue/sound`），两个子入口各依赖一个可选 peer |
@@ -104,9 +104,9 @@ XiHan.UI 的公开面横跨五种介质，因为「丢掉自带皮肤自己写�
 | 类别 | 数量 | 档位 |
 | --- | --- | --- |
 | `data-scope` 取值（组件身份） | 119 | **受约束**（新增第 120 个组件是 minor） |
-| `data-part` 取值（部件名） | 199 个不同名字 / 735 条「组件 × 部件」配对 | **受约束** |
-| `data-xh-part`（WC 作者书写的角色声明） | 属性名 1 个，取值即上面 199 个 | **受约束** |
-| `meta.requiredParts`（必备部件） | 249 条 | **只增不减**，方向见下 |
+| `data-part` 取值（部件名） | 197 个不同名字 / 736 条「组件 × 部件」配对 | **受约束** |
+| `data-xh-part`（WC 作者书写的角色声明） | 属性名 1 个，取值即上面 197 个 | **受约束** |
+| `meta.requiredParts`（必备部件） | 250 条 | **只增不减**，方向见下 |
 
 `data-scope` 的取值与三处完全同名，不做任何转换：headless 目录名、自定义元素标签 `xh-<scope>`、皮肤文件 `<scope>.css`。改一个就是四处同时破坏。
 
@@ -125,7 +125,7 @@ XiHan.UI 的公开面横跨五种介质，因为「丢掉自带皮肤自己写�
 
 ## 三、`data-*` 状态属性
 
-`connect` 一共产出 154 个不同的 `data-*` 属性名、710 条「组件 × 属性」配对。分两类。
+`connect` 一共产出 154 个不同的 `data-*` 属性名、707 条「组件 × 属性」配对。分两类。
 
 ### 受约束
 
@@ -219,7 +219,7 @@ brand  neutral  success  warning  danger  info
 | `CustomEvent` 名 | 68 个名字 / 150 条「元素 × 事件」 | **受约束** |
 | 事件传播语义 | `bubbles: true, composed: true`（141 处中 140 处） | **受约束**——把冒泡改掉会让祖先节点上的事件委托静默失效。唯一的例外是 `xh-composer` 的 `submit`：与原生表单提交同名，刻意不冒泡，免得被祖先 `<form>` 当成自己的提交 |
 | 事件 `detail` 形状 | 136 个 `*Details` 类型 | **受约束**，等同于 headless 的同名类型 |
-| `attribute: false` 的 JS 字段 | 139 条（涉及 54 个字段名） | **受约束**。`collection`、`translations`、`validate`、`filter` 这类只能用 JS 赋值，HTML 里表达不出来——**不是每个 property 都有对应 attribute** |
+| `attribute: false` 的 JS 字段 | 139 条（涉及 50 个字段名） | **受约束**。`collection`、`translations`、`validate`、`filter` 这类只能用 JS 赋值，HTML 里表达不出来——**不是每个 property 都有对应 attribute** |
 | 命令式方法 | 29（分布在 8 个元素） | **受约束**，含参数与返回类型 |
 
 命令式方法全清单：
@@ -414,11 +414,11 @@ Web Components 侧不构成额外约束：全部 Light DOM，不用 shadow DOM�
 ### 已经焊死的
 
 **六种介质的「改名 = major」现在有门禁兜着。** `pnpm gate:surface` 跑的 `check-public-surface`
-拿一份入库的基线（`ui/tooling/public-surface.json`，9110 个名字）比对当前状态：
+拿一份入库的基线（`ui/tooling/public-surface.json`，9117 个名字）比对当前状态：
 **基线里有而当前没有，就是删了或改名了，构建失败**。新增一律放行，因为那是 minor。
 
-覆盖：包名与 182 条子入口、4233 个导出名、119 个 `data-scope` 与 735 条部件配对、
-119 个组件的 1251 个 prop 名、154 种 `data-*`、20 个 `data-state` 取值、270 个令牌、
+覆盖：包名与 183 条子入口、4237 个导出名、119 个 `data-scope` 与 736 条部件配对、
+119 个组件的 1251 个 prop 名、156 种 `data-*`、20 个 `data-state` 取值、270 个令牌、
 5 个 `@layer` 名、2467 个组件覆盖槽、120 个自定义元素及其 attribute 与事件。
 
 prop 名那一维是后补的：在它进来之前，改一个 prop 名（实测 `transfer` 的 `items` 改

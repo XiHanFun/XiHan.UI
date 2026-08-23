@@ -3,7 +3,7 @@ shellEmulator: true
 trustPolicy: no-downgrade
 
 # XiHan.UI monorepo 工作区
-# 三段 glob：库包（按角色分组，两级）/ 工程工具 / 应用
+# 两段 glob：库包（按角色分组，两级）/ 工程工具
 packages:
   - 'packages/*/*'
   - 'tooling/*'

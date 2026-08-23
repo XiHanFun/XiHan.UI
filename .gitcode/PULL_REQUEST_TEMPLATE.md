@@ -26,8 +26,8 @@
 
 ## 影响范围
 
-<!-- 包 / 领域：kernel / machine / tokens / behavior / position / code-highlight / markdown / chat-stream / backgrounds /
-     headless / styles / vue / web-components / icons / tooling（构建工程）/ playground-*（演示应用）/ 文档 -->
+<!-- 包 / 领域：kernel / machine / tokens / behavior / position / motion / code-highlight / markdown / chat-stream /
+     backgrounds / animations / sound / headless / styles / vue / web-components / icons / tooling（构建工程）/ 文档 -->
 <!-- 相关组件 / 包名：如 @xihan-ui/vue 的 XhButton -->
 
 ## 自测清单
