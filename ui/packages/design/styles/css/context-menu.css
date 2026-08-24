@@ -247,7 +247,7 @@
     align-items: center;
     justify-content: center;
     inline-size: var(--xh-context-menu-item-indicator-size, var(--xh-control-indicator-size));
-    color: var(--xh-context-menu-item-indicator-fg, var(--xh-fg-brand));
+    color: var(--xh-context-menu-item-indicator-fg, var(--xh-_tone, var(--xh-fg-brand)));
   }
 
   [data-scope='context-menu'][data-part='item-indicator'][hidden] {
