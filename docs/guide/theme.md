@@ -31,7 +31,7 @@ primitive  ──►  semantic  ──►  组件私有槽
 --xh-border-subtle: var(--xh-color-neutral-200);
 --xh-control-h-md: 32px;
 --xh-shape-control: var(--xh-radius-md);
---xh-elevation-2: var(--xh-shadow-md);
+--xh-elevation-floating: var(--xh-shadow-md);
 --xh-motion-duration-enter: var(--xh-duration-normal);
 --xh-layer-modal: var(--xh-z-modal);
 --xh-overlay-max-w: 20rem;
