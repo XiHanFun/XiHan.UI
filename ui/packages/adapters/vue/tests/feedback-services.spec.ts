@@ -1,9 +1,9 @@
 // @vitest-environment jsdom
-// 命令式反馈服务：不在组件树内、模块作用域直接调用，是这两个服务存在的意义，
+// 命令式反馈服务：不在组件树内、模块作用域直接调用，是这几个服务存在的意义，
 // 所有用例都不挂宿主组件。
 import { afterEach, describe, expect, it } from 'vitest'
 import { nextTick } from 'vue'
-import { createDialogService, createToastService } from '../src'
+import { createDialogService, createLoadingBarService, createToastService } from '../src'
 
 async function tick(): Promise<void> {
   await nextTick()
@@ -181,5 +181,74 @@ describe('createDialogService', () => {
     modal.dispose()
     await expect(a).resolves.toBe(false)
     await expect(b).resolves.toBe(false)
+  })
+})
+
+describe('createLoadingBarService', () => {
+  function bar(): HTMLElement | null {
+    return document.querySelector('[data-scope="loading-bar"][data-part="root"]')
+  }
+
+  it('建出来即挂上三层部件', async () => {
+    const loading = createLoadingBarService()
+    await tick()
+    expect(bar()).not.toBeNull()
+    expect(document.querySelector('[data-scope="loading-bar"][data-part="track"]')).not.toBeNull()
+    expect(document.querySelector('[data-scope="loading-bar"][data-part="range"]')).not.toBeNull()
+    loading.dispose()
+  })
+
+  it('在途计数：两笔只收一笔时条子不收', async () => {
+    const loading = createLoadingBarService()
+    await tick()
+    expect(bar()!.getAttribute('data-state')).toBe('idle')
+
+    loading.start()
+    loading.start()
+    await tick()
+    expect(bar()!.getAttribute('data-state')).toBe('loading')
+
+    // 收掉一笔还剩一笔在途：仍是 loading，不能提前进收尾
+    loading.finish()
+    await tick()
+    expect(bar()!.getAttribute('data-state')).toBe('loading')
+
+    // 归零才收尾
+    loading.finish()
+    await tick()
+    expect(bar()!.getAttribute('data-state')).not.toBe('loading')
+    loading.dispose()
+  })
+
+  it('finishAll 不管还剩几笔一律收掉', async () => {
+    const loading = createLoadingBarService()
+    loading.start()
+    loading.start()
+    loading.start()
+    await tick()
+    loading.finishAll()
+    await tick()
+    expect(bar()!.getAttribute('data-state')).not.toBe('loading')
+    loading.dispose()
+  })
+
+  it('error 换成危险语气收尾，与正常收尾分得开', async () => {
+    const loading = createLoadingBarService()
+    loading.start()
+    await tick()
+    expect(bar()!.getAttribute('data-tone')).toBe('brand')
+
+    loading.error()
+    await tick()
+    expect(bar()!.getAttribute('data-tone')).toBe('danger')
+    loading.dispose()
+  })
+
+  it('dispose 清场', async () => {
+    const loading = createLoadingBarService()
+    loading.start()
+    await tick()
+    loading.dispose()
+    expect(document.querySelectorAll('[data-scope="loading-bar"]').length).toBe(0)
   })
 })
