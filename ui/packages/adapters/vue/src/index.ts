@@ -804,6 +804,7 @@ export {
   XhThreadViewport,
 } from './components/thread/thread'
 export type { ThreadRootSlotProps } from './components/thread/thread'
+export { provideThread, useThreadContext } from './components/thread/context'
 export { useThread } from './components/thread/use-thread'
 export type { ThreadContext } from './components/thread/use-thread'
 export {
