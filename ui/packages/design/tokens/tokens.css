@@ -36,11 +36,14 @@
     --xh-color-success-500: oklch(0.723 0.171 149);
     --xh-color-success-600: oklch(0.648 0.165 149);
     --xh-color-success-700: oklch(0.51 0.15 149);
+    --xh-color-warning-400: oklch(0.86 0.14 86);
     --xh-color-warning-500: oklch(0.795 0.161 86);
     --xh-color-warning-600: oklch(0.705 0.16 70);
     --xh-color-warning-700: oklch(0.62 0.15 70);
+    --xh-color-warning-800: oklch(0.55 0.14 70);
     --xh-color-info-500: oklch(0.685 0.156 237);
     --xh-color-info-600: oklch(0.62 0.16 237);
+    --xh-color-info-700: oklch(0.53 0.15 237);
     --xh-color-purple-600: oklch(0.577 0.213 302);
     --xh-space-0: 0px;
     --xh-space-1: 4px;
@@ -265,9 +268,14 @@
     --xh-table-cell-py-sm: var(--xh-space-0_5);
     --xh-table-cell-py-md: var(--xh-space-1_5);
     --xh-table-cell-py-lg: var(--xh-space-2);
+    --xh-viewport-max-h: 20rem;
     --xh-viewport-h-sm: 10rem;
     --xh-viewport-h-md: 14rem;
     --xh-viewport-h-lg: 20rem;
+    --xh-overlay-menu-max-h: 17rem;
+    --xh-overlay-max-h: 14rem;
+    --xh-surface-py-sm: var(--xh-space-2);
+    --xh-surface-px-sm: var(--xh-space-3);
     --xh-section-py: var(--xh-space-4);
     --xh-stack-gap-md: var(--xh-space-3);
   }
@@ -422,6 +430,7 @@
     --xh-border-control: var(--xh-color-neutral-600);
     --xh-border-control-hover: var(--xh-color-neutral-700);
     --xh-border-invalid: var(--xh-color-danger-700);
+    --xh-border-at-limit: var(--xh-color-warning-800);
   }
 
   :where([data-theme='dark'][data-contrast='more']) {
@@ -431,6 +440,7 @@
     --xh-border-control: var(--xh-color-neutral-400);
     --xh-border-control-hover: var(--xh-color-neutral-300);
     --xh-border-invalid: var(--xh-color-danger-400);
+    --xh-border-at-limit: var(--xh-color-warning-400);
   }
 
   /* 减弱动效：排在全部取值块之后，同为零特指度时靠书写顺序压过基线。

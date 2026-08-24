@@ -1,11 +1,12 @@
 {
-  "$description": "深色 · 高对比档（data-contrast='more'）。判据同浅色档：每条边界对 bg.canvas 与 bg.surface 都不低于 4.5:1。深色下更浅即更高对比，所以取值往色阶的亮端走。",
+  "$description": "深色 · 高对比档（data-contrast='more'）。判据同浅色档：每条边界对 bg.canvas 与 bg.surface 都不低于 4.5:1，且每条都要比常规档更重。深色下更浅即更高对比，所以取值往色阶的亮端走。",
   "border": {
     "default": { "$type": "color", "$value": "{color.neutral.400}" },
     "subtle": { "$type": "color", "$value": "{color.neutral.450}" },
     "strong": { "$type": "color", "$value": "{color.neutral.300}" },
     "control": { "$type": "color", "$value": "{color.neutral.400}" },
     "control-hover": { "$type": "color", "$value": "{color.neutral.300}" },
-    "invalid": { "$type": "color", "$value": "{color.danger.400}" }
+    "invalid": { "$type": "color", "$value": "{color.danger.400}" },
+    "at-limit": { "$type": "color", "$value": "{color.warning.400}" }
   }
 }
