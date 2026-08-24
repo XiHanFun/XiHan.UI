@@ -53,6 +53,8 @@
     /* 尺寸档只换这五个私有槽，输入框与候选都从这两处继承它们，换档不必给每个部件各写一条选择器 */
     --xh-_mention-h: var(--xh-control-h-md);
     --xh-_mention-px: var(--xh-control-px-md);
+    --xh-_mention-item-py: var(--xh-list-option-py-md);
+    --xh-_mention-item-px: var(--xh-control-px-md);
     --xh-_mention-py: var(--xh-field-py);
     --xh-_mention-gap: var(--xh-control-gap-md);
     --xh-_mention-font-size: var(--xh-control-font-md);
@@ -80,6 +82,8 @@
   [data-scope='mention']:is([data-part='root'], [data-part='positioner'])[data-size='sm'] {
     --xh-_mention-h: var(--xh-control-h-sm);
     --xh-_mention-px: var(--xh-control-px-sm);
+    --xh-_mention-item-py: var(--xh-list-option-py-sm);
+    --xh-_mention-item-px: var(--xh-control-px-sm);
     --xh-_mention-py: var(--xh-space-1);
     --xh-_mention-gap: var(--xh-control-gap-sm);
     --xh-_mention-font-size: var(--xh-control-font-sm);
@@ -88,6 +92,8 @@
   [data-scope='mention']:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
     --xh-_mention-h: var(--xh-control-h-lg);
     --xh-_mention-px: var(--xh-control-px-lg);
+    --xh-_mention-item-py: var(--xh-list-option-py-lg);
+    --xh-_mention-item-px: var(--xh-control-px-lg);
     --xh-_mention-py: var(--xh-space-3);
     --xh-_mention-gap: var(--xh-control-gap-lg);
     --xh-_mention-font-size: var(--xh-control-font-lg);
@@ -233,8 +239,8 @@
     display: flex;
     align-items: center;
     gap: var(--xh-mention-item-gap, var(--xh-_mention-gap));
-    padding-block: var(--xh-mention-item-py, var(--xh-space-1_5));
-    padding-inline: var(--xh-mention-item-px, var(--xh-control-px-md));
+    padding-block: var(--xh-mention-item-py, var(--xh-_mention-item-py));
+    padding-inline: var(--xh-mention-item-px, var(--xh-_mention-item-px));
     border-radius: var(--xh-mention-item-radius, var(--xh-shape-control));
     color: var(--xh-mention-item-fg, var(--xh-fg-default));
     font-size: var(--xh-mention-item-font-size, var(--xh-_mention-font-size));

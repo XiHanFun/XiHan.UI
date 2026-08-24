@@ -54,6 +54,8 @@
        换档不必给每个部件各写一条选择器 */
     --xh-_combobox-h: var(--xh-control-h-md);
     --xh-_combobox-px: var(--xh-control-px-md);
+    --xh-_combobox-item-py: var(--xh-list-option-py-md);
+    --xh-_combobox-item-px: var(--xh-control-px-md);
     --xh-_combobox-gap: var(--xh-control-gap-md);
     --xh-_combobox-font-size: var(--xh-control-font-md);
     --xh-_combobox-label-font-size: var(--xh-control-font-md);
@@ -89,6 +91,8 @@
   [data-scope='combobox']:is([data-part='root'], [data-part='positioner'])[data-size='sm'] {
     --xh-_combobox-h: var(--xh-control-h-sm);
     --xh-_combobox-px: var(--xh-control-px-sm);
+    --xh-_combobox-item-py: var(--xh-list-option-py-sm);
+    --xh-_combobox-item-px: var(--xh-control-px-sm);
     --xh-_combobox-gap: var(--xh-control-gap-sm);
     --xh-_combobox-font-size: var(--xh-control-font-sm);
     --xh-_combobox-label-font-size: var(--xh-control-font-sm);
@@ -99,6 +103,8 @@
   [data-scope='combobox']:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
     --xh-_combobox-h: var(--xh-control-h-lg);
     --xh-_combobox-px: var(--xh-control-px-lg);
+    --xh-_combobox-item-py: var(--xh-list-option-py-lg);
+    --xh-_combobox-item-px: var(--xh-control-px-lg);
     --xh-_combobox-gap: var(--xh-control-gap-lg);
     --xh-_combobox-font-size: var(--xh-control-font-lg);
     --xh-_combobox-label-font-size: var(--xh-control-font-lg);
@@ -401,8 +407,8 @@
     display: flex;
     align-items: center;
     gap: var(--xh-combobox-item-gap, var(--xh-_combobox-gap));
-    padding-block: var(--xh-combobox-item-py, var(--xh-space-1_5));
-    padding-inline: var(--xh-combobox-item-px, var(--xh-control-px-md));
+    padding-block: var(--xh-combobox-item-py, var(--xh-_combobox-item-py));
+    padding-inline: var(--xh-combobox-item-px, var(--xh-_combobox-item-px));
     border-radius: var(--xh-combobox-item-radius, var(--xh-shape-control));
     color: var(--xh-combobox-item-fg, var(--xh-fg-default));
     font-size: var(--xh-combobox-item-font-size, var(--xh-_combobox-font-size));

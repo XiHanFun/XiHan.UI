@@ -54,6 +54,8 @@
        换档不必给每个部件各写一条选择器 */
     --xh-_select-h: var(--xh-control-h-md);
     --xh-_select-px: var(--xh-control-px-md);
+    --xh-_select-item-py: var(--xh-list-option-py-md);
+    --xh-_select-item-px: var(--xh-control-px-md);
     --xh-_select-gap: var(--xh-control-gap-md);
     --xh-_select-font-size: var(--xh-control-font-md);
     --xh-_select-label-font-size: var(--xh-control-font-md);
@@ -86,6 +88,8 @@
   [data-scope='select']:is([data-part='root'], [data-part='positioner'])[data-size='sm'] {
     --xh-_select-h: var(--xh-control-h-sm);
     --xh-_select-px: var(--xh-control-px-sm);
+    --xh-_select-item-py: var(--xh-list-option-py-sm);
+    --xh-_select-item-px: var(--xh-control-px-sm);
     --xh-_select-gap: var(--xh-control-gap-sm);
     --xh-_select-font-size: var(--xh-control-font-sm);
     --xh-_select-label-font-size: var(--xh-control-font-sm);
@@ -103,6 +107,8 @@
   [data-scope='select']:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
     --xh-_select-h: var(--xh-control-h-lg);
     --xh-_select-px: var(--xh-control-px-lg);
+    --xh-_select-item-py: var(--xh-list-option-py-lg);
+    --xh-_select-item-px: var(--xh-control-px-lg);
     --xh-_select-gap: var(--xh-control-gap-lg);
     --xh-_select-font-size: var(--xh-control-font-lg);
     --xh-_select-label-font-size: var(--xh-control-font-lg);
@@ -453,8 +459,8 @@
     display: flex;
     align-items: center;
     gap: var(--xh-select-item-gap, var(--xh-_select-gap));
-    padding-block: var(--xh-select-item-py, var(--xh-space-1_5));
-    padding-inline: var(--xh-select-item-px, var(--xh-control-px-md));
+    padding-block: var(--xh-select-item-py, var(--xh-_select-item-py));
+    padding-inline: var(--xh-select-item-px, var(--xh-_select-item-px));
     border-radius: var(--xh-select-item-radius, var(--xh-shape-control));
     color: var(--xh-select-item-fg, var(--xh-fg-default));
     font-size: var(--xh-select-item-font-size, var(--xh-_select-font-size));

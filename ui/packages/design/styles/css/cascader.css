@@ -25,6 +25,8 @@
     /* 尺寸档只换这几个私有槽，盒与列里的条目都从这两处继承它们，换档不必给每个部件各写一条选择器 */
     --xh-_cascader-h: var(--xh-control-h-md);
     --xh-_cascader-px: var(--xh-control-px-md);
+    --xh-_cascader-row-py: var(--xh-list-option-py-md);
+    --xh-_cascader-row-px: var(--xh-control-px-md);
     --xh-_cascader-gap: var(--xh-control-gap-md);
     --xh-_cascader-font-size: var(--xh-control-font-md);
     --xh-_cascader-label-font-size: var(--xh-control-font-md);
@@ -86,6 +88,8 @@
     --xh-icon-size: var(--xh-cascader-icon-size, var(--xh-glyph-size-sm));
     --xh-_cascader-h: var(--xh-control-h-sm);
     --xh-_cascader-px: var(--xh-control-px-sm);
+    --xh-_cascader-row-py: var(--xh-list-option-py-sm);
+    --xh-_cascader-row-px: var(--xh-control-px-sm);
     --xh-_cascader-gap: var(--xh-control-gap-sm);
     --xh-_cascader-font-size: var(--xh-control-font-sm);
     --xh-_cascader-label-font-size: var(--xh-control-font-sm);
@@ -95,6 +99,8 @@
     --xh-icon-size: var(--xh-cascader-icon-size, var(--xh-glyph-size-lg));
     --xh-_cascader-h: var(--xh-control-h-lg);
     --xh-_cascader-px: var(--xh-control-px-lg);
+    --xh-_cascader-row-py: var(--xh-list-option-py-lg);
+    --xh-_cascader-row-px: var(--xh-control-px-lg);
     --xh-_cascader-gap: var(--xh-control-gap-lg);
     --xh-_cascader-font-size: var(--xh-control-font-lg);
     --xh-_cascader-label-font-size: var(--xh-control-font-lg);
@@ -369,8 +375,8 @@
     align-items: center;
     gap: var(--xh-cascader-row-gap, var(--xh-_cascader-gap));
     max-inline-size: var(--xh-cascader-row-max-w, var(--xh-overlay-max-w));
-    padding-block: var(--xh-cascader-row-py, var(--xh-space-1_5));
-    padding-inline: var(--xh-cascader-row-px, var(--xh-control-px-md));
+    padding-block: var(--xh-cascader-row-py, var(--xh-_cascader-row-py));
+    padding-inline: var(--xh-cascader-row-px, var(--xh-_cascader-row-px));
     border-radius: var(--xh-cascader-row-radius, var(--xh-shape-control));
     color: var(--xh-cascader-row-fg, var(--xh-fg-default));
     font-size: var(--xh-cascader-row-font-size, var(--xh-_cascader-font-size));
@@ -561,8 +567,8 @@
 
   /* 候选与列内条目同一套行度量，虚拟高亮与悬停同用轻档 */
   [data-scope='cascader'][data-part='search-item'] {
-    padding-block: var(--xh-cascader-row-py, var(--xh-space-1_5));
-    padding-inline: var(--xh-cascader-row-px, var(--xh-control-px-md));
+    padding-block: var(--xh-cascader-row-py, var(--xh-_cascader-row-py));
+    padding-inline: var(--xh-cascader-row-px, var(--xh-_cascader-row-px));
     overflow: hidden;
     border-radius: var(--xh-cascader-row-radius, var(--xh-shape-control));
     color: var(--xh-cascader-row-fg, var(--xh-fg-default));
