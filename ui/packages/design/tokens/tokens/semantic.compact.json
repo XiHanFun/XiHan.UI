@@ -34,9 +34,18 @@
     "cell-py-lg": { "$type": "dimension", "$value": "{space.2}" }
   },
   "viewport": {
+    "max-h": { "$type": "dimension", "$value": "20rem" },
     "h-sm": { "$type": "dimension", "$value": "10rem" },
     "h-md": { "$type": "dimension", "$value": "14rem" },
     "h-lg": { "$type": "dimension", "$value": "20rem" }
+  },
+  "overlay": {
+    "menu-max-h": { "$type": "dimension", "$value": "17rem" },
+    "max-h": { "$type": "dimension", "$value": "14rem" }
+  },
+  "surface": {
+    "py-sm": { "$type": "dimension", "$value": "{space.2}" },
+    "px-sm": { "$type": "dimension", "$value": "{space.3}" }
   },
   "section": {
     "py": { "$type": "dimension", "$value": "{space.4}" }

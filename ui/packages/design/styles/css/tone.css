@@ -22,6 +22,7 @@
  * brand 是例外：那一族的色相归使用者，所以它的底与前景走 --xh-bg-brand / --xh-fg-on-brand
  * 这两个语义令牌。缺省主题下它们就解析成 brand-600 与 neutral-0，与其余五族同值；
  * 改写过品牌色的使用者只改这两个令牌，实心底与它上面的字就一起跟着走。
+ * 底与前景既然随主题翻，brand 的 shift 也必须随主题翻，见文件末尾那条深色覆盖。
  */
 @layer xihan.components {
   [data-tone] {
@@ -108,5 +109,13 @@
 
   :is([data-theme='dark'] *, [data-theme='dark'])[data-tone='neutral'] {
     --xh-_tone-border-control: var(--xh-color-neutral-550);
+  }
+
+  /* brand 的底与前景走语义令牌、随主题翻，所以它的 shift 也必须跟着翻，
+     否则深色下前景是深字而 shift 仍往深处挪，悬停与按下反而压低对比度
+     （实测 5.29 → 4.25 → 3.49，而不写 tone 的品牌链是 5.29 → 7.33 → 10.85）。
+     其余五族的底是固定原语、不随主题翻，shift 也就不必翻 */
+  :is([data-theme='dark'] *, [data-theme='dark'])[data-tone='brand'] {
+    --xh-_tone-shift: var(--xh-color-neutral-0);
   }
 }
