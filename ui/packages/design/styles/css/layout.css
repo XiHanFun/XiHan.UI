@@ -40,9 +40,9 @@
     display: flex;
     grid-area: header;
     align-items: center;
-    gap: var(--xh-space-3);
+    gap: var(--xh-layout-header-gap, var(--xh-space-3));
     block-size: var(--xh-_layout-header-h);
-    padding-inline: var(--xh-space-4);
+    padding-inline: var(--xh-layout-header-px, var(--xh-space-4));
     background: var(--xh-layout-header-bg, var(--xh-bg-surface));
   }
 
@@ -51,7 +51,7 @@
     grid-area: sider;
     inline-size: var(--xh-_layout-sider-w);
     overflow: hidden;
-    padding: var(--xh-space-3);
+    padding: var(--xh-layout-sider-padding, var(--xh-space-3));
     background: var(--xh-layout-sider-bg, var(--xh-bg-subtle));
     transition: inline-size var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
   }
@@ -66,12 +66,12 @@
     grid-area: content;
     /* 内容列已是 minmax(0, 1fr)，这里再声明一次，宽表格与长串文本才撑不破列 */
     min-inline-size: 0;
-    padding: var(--xh-space-4);
+    padding: var(--xh-layout-content-padding, var(--xh-space-4));
   }
 
   [data-scope='layout'][data-part='footer'] {
     grid-area: footer;
-    padding: var(--xh-space-3) var(--xh-space-4);
+    padding: var(--xh-layout-footer-padding, var(--xh-space-3) var(--xh-space-4));
     background: var(--xh-layout-footer-bg, var(--xh-bg-surface));
     color: var(--xh-fg-muted);
     font-size: var(--xh-text-secondary-size);
@@ -82,9 +82,9 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: var(--xh-control-gap-sm);
+    gap: var(--xh-layout-sider-trigger-gap, var(--xh-control-gap-sm));
     block-size: var(--xh-control-h-sm);
-    padding-inline: var(--xh-control-px-sm);
+    padding-inline: var(--xh-layout-sider-trigger-px, var(--xh-control-px-sm));
     border: 0;
     border-radius: var(--xh-layout-sider-trigger-radius, var(--xh-shape-control));
     background: var(--xh-layout-sider-trigger-bg, transparent);
