@@ -257,4 +257,15 @@
     -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
     mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
   }
+
+  /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
+     写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
+  [data-scope='side-nav'][data-part='root'][hidden],
+  [data-scope='side-nav'][data-part='group'][hidden],
+  [data-scope='side-nav'][data-part='branch'][hidden],
+  [data-scope='side-nav'][data-part='item'][hidden],
+  [data-scope='side-nav'][data-part='link'][hidden],
+  [data-scope='side-nav'][data-part='branch-indicator'][hidden] {
+    display: none;
+  }
 }

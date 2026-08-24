@@ -374,4 +374,14 @@
   [data-scope='popselect'][data-part='item-indicator'][data-state='checked'] {
     visibility: visible;
   }
+
+  /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
+     写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
+  [data-scope='popselect'][data-part='root'][hidden],
+  [data-scope='popselect'][data-part='control'][hidden],
+  [data-scope='popselect'][data-part='trigger'][hidden],
+  [data-scope='popselect'][data-part='item'][hidden],
+  [data-scope='popselect'][data-part='item-indicator'][hidden] {
+    display: none;
+  }
 }

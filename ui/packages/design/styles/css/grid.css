@@ -430,4 +430,10 @@
   [data-scope='grid'][data-part='item'][data-offset='11'] {
     --xh-_grid-start: 12;
   }
+
+  /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
+     写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
+  [data-scope='grid'][data-part='root'][hidden] {
+    display: none;
+  }
 }

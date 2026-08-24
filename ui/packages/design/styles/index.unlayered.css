@@ -215,6 +215,12 @@
   mask: var(--xh-glyph-mark-chevron-up) center / contain no-repeat;
 }
 
+/* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
+   写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
+[data-scope='back-top'][data-part='trigger'][hidden] {
+  display: none;
+}
+
 /* styles/button-group.css */
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='button-group'] {
@@ -583,6 +589,12 @@
   border-block-start-width: 0;
 }
 
+/* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
+   写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
+[data-scope='descriptions'][data-part='item'][hidden] {
+  display: none;
+}
+
 /* styles/download-trigger.css */
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='download-trigger'] {
@@ -872,6 +884,13 @@
   mask: var(--xh-glyph-mark-close) center / contain no-repeat;
 }
 
+/* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
+   写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
+[data-scope='dynamic-input'][data-part='item-content'][hidden],
+[data-scope='dynamic-input'][data-part='item-action'][hidden] {
+  display: none;
+}
+
 /* styles/ellipsis.css */
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='ellipsis'] {
@@ -916,6 +935,12 @@
 [data-scope='ellipsis'][data-part='root'][data-expandable]:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
   outline-offset: var(--xh-ring-offset);
+}
+
+/* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
+   写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
+[data-scope='ellipsis'][data-part='root'][hidden] {
+  display: none;
 }
 
 /* styles/fieldset.css */
@@ -1087,6 +1112,12 @@
   gap: var(--xh-flex-gap, var(--xh-layout-gap-xl));
 }
 
+/* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
+   写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
+[data-scope='flex'][data-part='root'][hidden] {
+  display: none;
+}
+
 /* styles/float-button.css */
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='float-button'] {
@@ -1226,6 +1257,13 @@
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-plus) center / contain no-repeat;
   mask: var(--xh-glyph-mark-plus) center / contain no-repeat;
+}
+
+/* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
+   写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
+[data-scope='float-button'][data-part='root'][hidden],
+[data-scope='float-button'][data-part='trigger'][hidden] {
+  display: none;
 }
 
 /* styles/floating-panel.css */
@@ -2042,6 +2080,12 @@
 
 [data-scope='grid'][data-part='item'][data-offset='11'] {
   --xh-_grid-start: 12;
+}
+
+/* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
+   写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
+[data-scope='grid'][data-part='root'][hidden] {
+  display: none;
 }
 
 /* styles/heatmap.css */
@@ -3308,6 +3352,14 @@
   overflow-y: auto;
 }
 
+/* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
+   写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
+[data-scope='layout'][data-part='root'][hidden],
+[data-scope='layout'][data-part='header'][hidden],
+[data-scope='layout'][data-part='sider-trigger'][hidden] {
+  display: none;
+}
+
 /* styles/list.css */
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='list'] {
@@ -3428,6 +3480,15 @@
   align-items: center;
   gap: var(--xh-list-action-gap, var(--xh-space-2));
   margin-inline-start: auto;
+}
+
+/* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
+   写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
+[data-scope='list'][data-part='item'][hidden],
+[data-scope='list'][data-part='item-media'][hidden],
+[data-scope='list'][data-part='item-content'][hidden],
+[data-scope='list'][data-part='item-action'][hidden] {
+  display: none;
 }
 
 /* styles/log.css */
@@ -4176,6 +4237,13 @@ input[data-scope='mention'][data-part='input'] {
   line-height: var(--xh-leading-normal);
 }
 
+/* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
+   写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
+[data-scope='page-header'][data-part='back-trigger'][hidden],
+[data-scope='page-header'][data-part='extra'][hidden] {
+  display: none;
+}
+
 /* styles/password-input.css */
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='password-input'] {
@@ -4758,6 +4826,13 @@ input[data-scope='mention'][data-part='input'] {
   animation: none;
 }
 
+/* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
+   写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
+[data-scope='popconfirm'][data-part='root'][hidden],
+[data-scope='popconfirm'][data-part='cancel-trigger'][hidden] {
+  display: none;
+}
+
 /* styles/popselect.css */
 /* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
    动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
@@ -5133,6 +5208,16 @@ input[data-scope='mention'][data-part='input'] {
   visibility: visible;
 }
 
+/* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
+   写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
+[data-scope='popselect'][data-part='root'][hidden],
+[data-scope='popselect'][data-part='control'][hidden],
+[data-scope='popselect'][data-part='trigger'][hidden],
+[data-scope='popselect'][data-part='item'][hidden],
+[data-scope='popselect'][data-part='item-indicator'][hidden] {
+  display: none;
+}
+
 /* styles/qr-code.css */
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='qr-code'] {
@@ -5338,6 +5423,13 @@ input[data-scope='mention'][data-part='input'] {
   align-items: center;
   justify-content: center;
   gap: var(--xh-result-action-gap, var(--xh-space-2));
+}
+
+/* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
+   写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
+[data-scope='result'][data-part='icon'][hidden],
+[data-scope='result'][data-part='action'][hidden] {
+  display: none;
 }
 
 /* styles/segmented.css */
@@ -6974,6 +7066,12 @@ input[data-scope='mention'][data-part='input'] {
   mask: var(--xh-glyph-mark-close) center / contain no-repeat;
 }
 
+/* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
+   写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
+[data-scope='alert'][data-part='icon'][hidden] {
+  display: none;
+}
+
 /* styles/empty-state.css */
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='empty-state'] {
@@ -7058,6 +7156,13 @@ input[data-scope='mention'][data-part='input'] {
   align-items: center;
   justify-content: center;
   gap: var(--xh-empty-state-action-gap, var(--xh-space-2));
+}
+
+/* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
+   写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
+[data-scope='empty-state'][data-part='icon'][hidden],
+[data-scope='empty-state'][data-part='action'][hidden] {
+  display: none;
 }
 
 /* styles/skeleton.css */
@@ -7415,6 +7520,14 @@ input[data-scope='mention'][data-part='input'] {
   }
 }
 
+/* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
+   写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
+[data-scope='accordion'][data-part='root'][hidden],
+[data-scope='accordion'][data-part='trigger'][hidden],
+[data-scope='accordion'][data-part='indicator'][hidden] {
+  display: none;
+}
+
 /* styles/anchor.css */
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='anchor'] {
@@ -7614,6 +7727,12 @@ input[data-scope='mention'][data-part='input'] {
 
 /* display 会盖掉 hidden 属性的 UA 规则，加载完成后显式让位给图片 */
 [data-scope='avatar'][data-part='fallback'][hidden] {
+  display: none;
+}
+
+/* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
+   写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
+[data-scope='avatar'][data-part='root'][hidden] {
   display: none;
 }
 
@@ -7986,6 +8105,12 @@ input[data-scope='mention'][data-part='input'] {
 
 :where([data-motion='reduce']) [data-scope='button'][data-part='indicator'] {
   animation: none;
+}
+
+/* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
+   写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
+[data-scope='button'][data-part='root'][hidden] {
+  display: none;
 }
 
 /* styles/calendar.css */
@@ -8448,6 +8573,15 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='card'][data-part='root'][data-segmented] [data-part='header'] {
   padding-block-end: var(--xh-_card-pad);
+}
+
+/* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
+   写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
+[data-scope='card'][data-part='root'][hidden],
+[data-scope='card'][data-part='cover'][hidden],
+[data-scope='card'][data-part='header'][hidden],
+[data-scope='card'][data-part='footer'][hidden] {
+  display: none;
 }
 
 /* styles/carousel.css */
@@ -9481,6 +9615,14 @@ input[data-scope='mention'][data-part='input'] {
   user-select: none;
 }
 
+/* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
+   写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
+[data-scope='checkbox'][data-part='root'][hidden],
+[data-scope='checkbox'][data-part='indicator'][hidden],
+[data-scope='checkbox'][data-part='label'][hidden] {
+  display: none;
+}
+
 /* styles/checkbox-group.css */
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='checkbox-group'] {
@@ -10055,6 +10197,12 @@ input[data-scope='mention'][data-part='input'] {
     grid-template-rows: 0fr;
     padding-block: 0;
   }
+}
+
+/* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
+   写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
+[data-scope='collapsible'][data-part='trigger'][hidden] {
+  display: none;
 }
 
 /* styles/color-picker.css */
@@ -12561,6 +12709,12 @@ input[data-scope='mention'][data-part='input'] {
   mask: var(--xh-glyph-mark-close) center / contain no-repeat;
 }
 
+/* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
+   写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
+[data-scope='dialog'][data-part='positioner'][hidden] {
+  display: none;
+}
+
 /* styles/drawer.css */
 /* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
    动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
@@ -13351,6 +13505,13 @@ input[data-scope='mention'][data-part='input'] {
   color: var(--xh-field-error-fg, var(--xh-fg-danger));
   font-size: var(--xh-field-error-font-size, var(--xh-text-secondary-size));
   line-height: var(--xh-leading-normal);
+}
+
+/* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
+   写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
+[data-scope='field'][data-part='root'][hidden],
+[data-scope='form'][data-part='root'][hidden] {
+  display: none;
 }
 
 /* styles/file-upload.css */
@@ -14478,6 +14639,15 @@ input[data-scope='mention'][data-part='input'] {
   mask: var(--xh-glyph-mark-close) center / contain no-repeat;
 }
 
+/* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
+   写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
+[data-scope='image-viewer'][data-part='positioner'][hidden],
+[data-scope='image-viewer'][data-part='viewport'][hidden],
+[data-scope='image-viewer'][data-part='toolbar'][hidden],
+[data-scope='image-viewer'][data-part='next-trigger'][hidden] {
+  display: none;
+}
+
 /* styles/listbox.css */
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='listbox'] {
@@ -14994,6 +15164,12 @@ input[data-scope='mention'][data-part='input'] {
 
   background: var(--xh-menu-bg, var(--xh-bg-surface));
   border: var(--xh-stroke-thin) solid var(--xh-menu-border, var(--xh-border-default));
+}
+
+/* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
+   写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
+[data-scope='menu'][data-part='item'][hidden] {
+  display: none;
 }
 
 /* styles/menubar.css */
@@ -16045,6 +16221,12 @@ input[data-scope='mention'][data-part='input'] {
   mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
 }
 
+/* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
+   写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
+[data-scope='number-field'][data-part='control'][hidden] {
+  display: none;
+}
+
 /* styles/pagination.css */
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='pagination'] {
@@ -16705,6 +16887,12 @@ input[data-scope='mention'][data-part='input'] {
   visibility: hidden;
 }
 
+/* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
+   写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
+[data-scope='progress'][data-part='root'][hidden] {
+  display: none;
+}
+
 /* styles/radio-group.css */
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='radio-group'] {
@@ -16818,6 +17006,14 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='radio-group'][data-part='item-text'] {
   color: inherit;
   user-select: none;
+}
+
+/* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
+   写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
+[data-scope='radio-group'][data-part='root'][hidden],
+[data-scope='radio-group'][data-part='item'][hidden],
+[data-scope='radio-group'][data-part='indicator'][hidden] {
+  display: none;
 }
 
 /* styles/rating.css */
@@ -17847,6 +18043,19 @@ input[data-scope='mention'][data-part='input'] {
   mask: var(--xh-glyph-mark-close) center / contain no-repeat;
 }
 
+/* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
+   写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
+[data-scope='select'][data-part='root'][hidden],
+[data-scope='select'][data-part='control'][hidden],
+[data-scope='select'][data-part='trigger'][hidden],
+[data-scope='select'][data-part='tag'][hidden],
+[data-scope='select'][data-part='indicator'][hidden],
+[data-scope='select'][data-part='list'][hidden],
+[data-scope='select'][data-part='item'][hidden],
+[data-scope='select'][data-part='item-indicator'][hidden] {
+  display: none;
+}
+
 /* styles/separator.css */
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='separator'] {
@@ -18125,6 +18334,17 @@ input[data-scope='mention'][data-part='input'] {
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
   mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
+}
+
+/* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
+   写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
+[data-scope='side-nav'][data-part='root'][hidden],
+[data-scope='side-nav'][data-part='group'][hidden],
+[data-scope='side-nav'][data-part='branch'][hidden],
+[data-scope='side-nav'][data-part='item'][hidden],
+[data-scope='side-nav'][data-part='link'][hidden],
+[data-scope='side-nav'][data-part='branch-indicator'][hidden] {
+  display: none;
 }
 
 /* styles/slider.css */
@@ -18927,6 +19147,13 @@ input[data-scope='mention'][data-part='input'] {
   animation: none;
 }
 
+/* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
+   写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
+[data-scope='switch'][data-part='root'][hidden],
+[data-scope='switch'][data-part='label'][hidden] {
+  display: none;
+}
+
 /* styles/table.css */
 /* 加载态自己冒出来，用户没按任何键：一段极轻的呼吸就够，别抢走正在读表的注意力 */
 @keyframes xh-table-loading-pulse {
@@ -19590,6 +19817,14 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='tabs'][data-part='content']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
   outline-offset: var(--xh-ring-offset);
+}
+
+/* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
+   写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
+[data-scope='tabs'][data-part='root'][hidden],
+[data-scope='tabs'][data-part='list'][hidden],
+[data-scope='tabs'][data-part='trigger'][hidden] {
+  display: none;
 }
 
 /* styles/tags-input.css */
@@ -21668,6 +21903,12 @@ input[data-scope='mention'][data-part='input'] {
   font-size: var(--xh-toggle-font-size, var(--xh-control-font-lg));
 }
 
+/* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
+   写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
+[data-scope='toggle'][data-part='root'][hidden] {
+  display: none;
+}
+
 /* styles/toggle-group.css */
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='toggle-group'] {
@@ -22100,6 +22341,12 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_overlay-arrow-y: var(--xh-_tooltip-arrow-y);
 
   background: var(--xh-tooltip-bg, var(--xh-_tone, var(--xh-fg-default)));
+}
+
+/* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
+   写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
+[data-scope='tooltip'][data-part='trigger'][hidden] {
+  display: none;
 }
 
 /* styles/tour.css */
@@ -23224,6 +23471,12 @@ input[data-scope='mention'][data-part='input'] {
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
   mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+}
+
+/* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
+   写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
+[data-scope='tree'][data-part='branch-checkbox'][hidden] {
+  display: none;
 }
 
 /* styles/tree-select.css */
