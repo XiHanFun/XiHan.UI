@@ -232,6 +232,9 @@ export function connectFileUpload<T extends PropTypes>(
       'data-file-size': isRemote(file) ? (file.size == null ? undefined : String(file.size)) : String(file.size),
       'data-remote': dataAttr(isRemote(file)),
       // 传输快照落成属性供皮肤与选择器用；纯选择器（无 upload）不输出
+      // 相位走 data-state（值都在词汇表的 phase 族里）；data-status 再发一个大版本，
+      // 下个大版本移除——它此后只属于 result 的「结果种类」那一轴
+      'data-state': uploadOf(file)?.status,
       'data-status': uploadOf(file)?.status,
       'data-disabled': dataAttr(disabled),
     }),

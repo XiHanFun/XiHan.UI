@@ -21,6 +21,9 @@ export function connectImage<T extends PropTypes>(
     showFallback,
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
+      // 相位走 data-state（值都在词汇表的 phase 族里）；data-status 再发一个大版本，
+      // 下个大版本移除——它此后只属于 result 的「结果种类」那一轴
+      'data-state': status,
       'data-status': status,
     }),
     // 无障碍语义交给原生 img
@@ -28,6 +31,9 @@ export function connectImage<T extends PropTypes>(
       ...parts.image.attrs,
       'src': prop('src'),
       'alt': prop('alt'),
+      // 相位走 data-state（值都在词汇表的 phase 族里）；data-status 再发一个大版本，
+      // 下个大版本移除——它此后只属于 result 的「结果种类」那一轴
+      'data-state': status,
       'data-status': status,
       'hidden': !loaded || undefined,
       'onLoad': () => send({ type: 'IMAGE.LOAD' }),
@@ -35,6 +41,9 @@ export function connectImage<T extends PropTypes>(
     }),
     getFallbackProps: () => normalize.element({
       ...parts.fallback.attrs,
+      // 相位走 data-state（值都在词汇表的 phase 族里）；data-status 再发一个大版本，
+      // 下个大版本移除——它此后只属于 result 的「结果种类」那一轴
+      'data-state': status,
       'data-status': status,
       'hidden': !showFallback || undefined,
     }),

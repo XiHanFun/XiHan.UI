@@ -175,6 +175,42 @@ for (const [path, source] of connectSources) {
   }
 }
 
+// ⑥ data-status 只属于「结果种类」那一轴。
+//
+// 它曾经同时承载两件事：result 的结果种类（404 / success / …）与另外五家的生命周期相位
+// （loading / streaming / …）。于是使用者写 [data-status='error'] 会同时命中两义。
+// 相位已经改发 data-state，那五家的 data-status 只是过渡期的兼容位，登记在
+// deprecatedDual 里；名单之外谁再发 data-status 就得先说清自己是不是结果种类。
+{
+  const axis = vocab['data-status']
+  const allowed = new Set(axis.values)
+  const dual = new Set(axis.deprecatedDual.components)
+  const emitters = new Set()
+  for (const [path, source] of connectSources) {
+    if (!/'data-status'\s*:/.test(source))
+      continue
+    const comp = path.split('/').at(-2)
+    emitters.add(comp)
+    if (dual.has(comp))
+      continue
+    // 非过渡名单里的，值必须落在结果种类那一档；取值经变量中转的静态看不出来，只查字面量
+    for (const match of source.matchAll(/'data-status'\s*:\s*([^,\n]+)/g)) {
+      for (const [, value] of match[1].matchAll(/'([a-z0-9-]+)'/g)) {
+        if (!allowed.has(value))
+          problems.push(`${path} 给 data-status 发了 ${value}——这一轴只表达结果种类，相位走 data-state`)
+      }
+    }
+  }
+  for (const comp of dual) {
+    if (!emitters.has(comp))
+      problems.push(`state-vocabulary.json 的 deprecatedDual 里登着 ${comp}，但它已经不发 data-status 了——过渡期结束，把这条删掉`)
+    // 过渡期的那几家必须两条都发，只留旧的等于没迁
+    const entry = [...connectSources].find(([path]) => path.split('/').at(-2) === comp)
+    if (entry && !/'data-state'\s*:/.test(entry[1]))
+      problems.push(`${comp} 登在 deprecatedDual 里却只发 data-status、不发 data-state——迁移没做完`)
+  }
+}
+
 const skinFiles = (await readdir(STYLES_DIR)).filter(f => f.endsWith('.css'))
 const consumed = new Set()
 for (const file of skinFiles) {
