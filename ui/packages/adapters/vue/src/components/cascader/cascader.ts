@@ -12,6 +12,7 @@ import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui
 import type { PropType, Ref, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import type { CascaderContext } from './use-cascader'
+import { useFieldStateWiring } from '../field/use-field-control'
 import { computed, defineComponent, h, mergeProps, onBeforeUnmount, ref, Teleport, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { provideCascader, provideCascaderItem, useCascaderContext, useCascaderItemContext } from './context'
@@ -170,10 +171,13 @@ export const XhCascaderControl = defineComponent({
 export const XhCascaderTrigger = defineComponent({
   name: 'XhCascaderTrigger',
   setup(_, { slots }) {
+    // 字段的说明与校验状态要落在真控件上，不能停在封装根的 div 上
+    const fieldWiring = useFieldStateWiring()
     const ctx = useCascaderContext()
     return () => h('button', {
       ...ctx.api.value.getTriggerProps() as Record<string, unknown>,
       ref: (el: unknown) => { ctx.triggerRef.value = el as HTMLElement },
+      ...fieldWiring.value,
     }, slots.default?.())
   },
 })

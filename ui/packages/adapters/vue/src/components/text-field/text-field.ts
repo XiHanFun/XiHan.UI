@@ -2,6 +2,7 @@ import type { TextFieldApi, TextFieldInputHost, TextFieldSchema, TextFieldType }
 import type { ControlVariant, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import { useFieldStateWiring } from '../field/use-field-control'
 import { autoSizeTextarea } from '@xihan-ui/headless'
 import { defineComponent, h, onMounted, ref, watch } from 'vue'
 import { provideTextField, useTextFieldContext } from './context'
@@ -87,6 +88,8 @@ export const XhTextFieldInput = defineComponent({
     as: { type: String as PropType<TextFieldInputHost>, default: 'input' },
   },
   setup(props) {
+    // 字段的说明与校验状态要落在真控件上，不能停在封装根的 div 上
+    const fieldWiring = useFieldStateWiring()
     const ctx = useTextFieldContext()
     const el = ref<HTMLTextAreaElement | null>(null)
     // 程序化写值（setValue / 表单重置 / 受控回写）不触发 input 事件，量高在渲染后补一次
@@ -104,6 +107,7 @@ export const XhTextFieldInput = defineComponent({
       ref: (node: unknown) => {
         el.value = props.as === 'textarea' ? node as HTMLTextAreaElement : null
       },
+      ...fieldWiring.value,
     })
   },
 })
