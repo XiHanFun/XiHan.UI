@@ -10,19 +10,21 @@ import { XhElement } from '../element-base'
  * 根上不写 role：容器只做排布，里面装的是列表还是一组按钮由作者自己声明。
  *
  * @customElement xh-flex
- * @attr {'row'|'column'} direction - 主轴方向，缺省 row
+ * @attr {'horizontal'|'vertical'} orientation - 主轴方向，缺省 horizontal
+ * @attr {'row'|'column'} direction - 主轴方向的旧写法，两个都写时以 orientation 为准
  * @attr {'start'|'center'|'end'|'stretch'|'baseline'} align - 交叉轴对齐
  * @attr {'start'|'center'|'end'|'between'|'around'|'evenly'} justify - 主轴分布
  * @attr {'xs'|'sm'|'md'|'lg'|'xl'} gap - 子项间距档位，逐档对应一个间距令牌
  * @attr {boolean} wrap - 一行放不下时折行
  * @attr {boolean} inline - 容器按行内盒排版，宽度收到内容
- * @csspart root - 排布容器，承载 data-direction / data-align / data-justify / data-gap / data-wrap / data-inline
+ * @csspart root - 排布容器，承载 data-orientation / data-align / data-justify / data-gap / data-wrap / data-inline
  */
 export class XhFlexElement extends XhElement {
   static override partContract = { anatomy: flexAnatomy, meta: flexMeta }
 
   // 属性缺席翻成 undefined，缺省值由 connect 决定
   static override properties = {
+    orientation: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
     direction: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
     align: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
     justify: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
@@ -31,6 +33,7 @@ export class XhFlexElement extends XhElement {
     inline: { type: Boolean },
   }
 
+  declare orientation?: string
   declare direction?: string
   declare align?: string
   declare justify?: string
@@ -41,6 +44,7 @@ export class XhFlexElement extends XhElement {
   protected wire(): void {
     // 读响应式 property，不回读 DOM 特性
     const api = connectFlex({
+      orientation: this.orientation as FlexProps['orientation'],
       direction: this.direction as FlexProps['direction'],
       align: this.align as FlexProps['align'],
       justify: this.justify as FlexProps['justify'],

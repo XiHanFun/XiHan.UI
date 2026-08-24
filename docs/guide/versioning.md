@@ -214,7 +214,7 @@ brand  neutral  success  warning  danger  info
 | --- | --- | --- |
 | 自定义元素标签 `xh-*` | 121（`defineXhElements()` 注册 120 + `xh-background`） | **受约束** |
 | 注册函数 | 2（`defineXhElements`、`defineXhBackground`） | **受约束** |
-| observed attribute | 977 条声明 / 306 个不同名字 | **受约束**（具体元素上的具体属性名） |
+| observed attribute | 979 条声明 / 306 个不同名字 | **受约束**（具体元素上的具体属性名） |
 | attribute 名词汇表本身 | 306 | **只增不减**（新组件复用 `size` / `tone` / `dir` 不算破坏） |
 | `CustomEvent` 名 | 68 个名字 / 150 条「元素 × 事件」 | **受约束** |
 | 事件传播语义 | `bubbles: true, composed: true`（141 处中 140 处） | **受约束**——把冒泡改掉会让祖先节点上的事件委托静默失效。唯一的例外是 `xh-composer` 的 `submit`：与原生表单提交同名，刻意不冒泡，免得被祖先 `<form>` 当成自己的提交 |

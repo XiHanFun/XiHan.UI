@@ -15,7 +15,8 @@ export function connectSpace<T extends PropTypes>(
   return {
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
-      'data-orientation': props.direction ?? 'horizontal',
+      // 新旧两个 prop 同指一件事：orientation 优先，没写才回落到 direction
+      'data-orientation': props.orientation ?? props.direction ?? 'horizontal',
       'data-gap': props.gap ?? 'md',
       'data-align': props.align,
       'data-justify': props.justify,

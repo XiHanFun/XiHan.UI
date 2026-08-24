@@ -17,11 +17,11 @@
   }
 
   /* —— 方向 —— */
-  [data-scope='flex'][data-part='root'][data-direction='row'] {
+  [data-scope='flex'][data-part='root'][data-orientation='horizontal'] {
     flex-direction: row;
   }
 
-  [data-scope='flex'][data-part='root'][data-direction='column'] {
+  [data-scope='flex'][data-part='root'][data-orientation='vertical'] {
     flex-direction: column;
   }
 
