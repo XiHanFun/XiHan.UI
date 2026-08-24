@@ -177,7 +177,7 @@ variant="dashboard" 在环上留一个缺口，gapDegree 与 gapPosition 决定�
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-progress-indeterminate-duration` · `--xh-progress-label-fg` · `--xh-progress-label-font-size` · `--xh-progress-linecap` · `--xh-progress-range` · `--xh-progress-size` · `--xh-progress-thickness` · `--xh-progress-track`
+`--xh-progress-indeterminate-duration` · `--xh-progress-label-fg` · `--xh-progress-label-font-size` · `--xh-progress-linecap` · `--xh-progress-range` · `--xh-progress-range-radius` · `--xh-progress-size` · `--xh-progress-thickness` · `--xh-progress-track` · `--xh-progress-track-radius`
 
 ## 动效
 

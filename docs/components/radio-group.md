@@ -181,7 +181,7 @@ size 改条目间距与字号，不写即缺省中档
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-radio-group-gap` · `--xh-radio-group-indicator-bg` · `--xh-radio-group-indicator-border` · `--xh-radio-group-indicator-border-checked` · `--xh-radio-group-indicator-border-invalid` · `--xh-radio-group-indicator-dot` · `--xh-radio-group-indicator-size` · `--xh-radio-group-item-fg` · `--xh-radio-group-item-fg-disabled` · `--xh-radio-group-item-font-size` · `--xh-radio-group-item-gap` · `--xh-radio-group-item-radius` · `--xh-radio-group-label-fg` · `--xh-radio-group-label-font-size` · `--xh-radio-group-label-font-weight`
+`--xh-radio-group-gap` · `--xh-radio-group-indicator-bg` · `--xh-radio-group-indicator-border` · `--xh-radio-group-indicator-border-checked` · `--xh-radio-group-indicator-border-invalid` · `--xh-radio-group-indicator-dot` · `--xh-radio-group-indicator-radius` · `--xh-radio-group-indicator-size` · `--xh-radio-group-item-fg` · `--xh-radio-group-item-fg-disabled` · `--xh-radio-group-item-font-size` · `--xh-radio-group-item-gap` · `--xh-radio-group-item-radius` · `--xh-radio-group-label-fg` · `--xh-radio-group-label-font-size` · `--xh-radio-group-label-font-weight`
 
 ## 动效
 

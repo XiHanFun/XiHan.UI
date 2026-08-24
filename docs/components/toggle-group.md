@@ -91,6 +91,7 @@ multiple 换的是整套 ARIA：root 退回 group、条目退回原生按钮 + a
 | `multiple` | `boolean` |  | 允许多项同时选中；false 时选中一项即挤掉其余。 |
 | `disabled` | `boolean` |  | 整组禁用：条目全部 aria-disabled，点击与方向键都不生效。 |
 | `disallowEmpty` | `boolean` |  | 不许把值清空：单选模式下点当前选中项不再取消它，多选模式下摘不掉最后一个。 默认 false（可以点成无选中）。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `orientation` | `Orientation` |  | 视觉排布，默认 horizontal。方向键接受的轴与它无关（四个方向键恒响应）。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr；只改写左右方向键的语义，上下键与之无关。 |
 | `loop` | `boolean` |  | 方向键走到尽头是否回绕，默认 true。 |
@@ -173,6 +174,7 @@ multiple 换的是整套 ARIA：root 退回 group、条目退回原生按钮 + a
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
 | `root` | `data-orientation` | props.orientation |
+| `root` | `data-size` | props.size |
 | `item` | `data-disabled` | ''（条件成立时才出现） |
 | `item` | `data-state` | 'on' \| 'off' |
 

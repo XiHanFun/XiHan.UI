@@ -169,7 +169,7 @@ header-fixed 让头钉在滚动容器上沿，sider-fixed 让侧栏跟着钉住�
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-layout-bg` · `--xh-layout-border` · `--xh-layout-fg` · `--xh-layout-footer-bg` · `--xh-layout-header-bg` · `--xh-layout-header-h` · `--xh-layout-header-layer` · `--xh-layout-scrollport-h` · `--xh-layout-sider-bg` · `--xh-layout-sider-collapsed-width` · `--xh-layout-sider-trigger-bg` · `--xh-layout-sider-trigger-bg-hover` · `--xh-layout-sider-trigger-fg` · `--xh-layout-sider-trigger-radius` · `--xh-layout-sider-width`
+`--xh-layout-bg` · `--xh-layout-border` · `--xh-layout-content-padding` · `--xh-layout-fg` · `--xh-layout-footer-bg` · `--xh-layout-footer-padding` · `--xh-layout-header-bg` · `--xh-layout-header-gap` · `--xh-layout-header-h` · `--xh-layout-header-layer` · `--xh-layout-header-px` · `--xh-layout-scrollport-h` · `--xh-layout-sider-bg` · `--xh-layout-sider-collapsed-width` · `--xh-layout-sider-padding` · `--xh-layout-sider-trigger-bg` · `--xh-layout-sider-trigger-bg-hover` · `--xh-layout-sider-trigger-fg` · `--xh-layout-sider-trigger-gap` · `--xh-layout-sider-trigger-px` · `--xh-layout-sider-trigger-radius` · `--xh-layout-sider-width`
 
 ## 动效
 

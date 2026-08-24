@@ -138,7 +138,7 @@ data 给函数就是点了才算：它可以返回 Promise，这段时间状态�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-busy` | 'true' \| 'false' |
+| `root` | `aria-busy` | 'true' \| undefined |
 
 - 触发器是原生 `<button type="button">`，Enter 与 Space 的激活由平台负责。
 - 取数在途时按钮不变成禁用，只挂 `aria-busy="true"`：禁用会把焦点从按钮上弹走，键盘用户等回来时不知道自己在哪。

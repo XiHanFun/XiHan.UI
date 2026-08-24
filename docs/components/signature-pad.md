@@ -109,12 +109,6 @@ drawing 调笔宽与压感：thinning 越大，划得越快笔画越细，simula
 
 ## 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
-
-| 部件 | 取值 |
-| --- | --- |
-| `status` | 'empty' \| 'signed' |
-
 状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`drawing` · `idle`
@@ -204,7 +198,6 @@ drawing 调笔宽与压感：thinning 越大，划得越快笔画越细，simula
 | `clear-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `clear-trigger` | `data-empty` | ''（条件成立时才出现） |
 | `status` | `data-empty` | ''（条件成立时才出现） |
-| `status` | `data-state` | 'empty' \| 'signed' |
 | `hidden-input` | `data-disabled` | ''（条件成立时才出现） |
 
 ## CSS 变量

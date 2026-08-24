@@ -147,7 +147,7 @@ size 只改内边距与字号，不写就是缺省档
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-badge-bg` · `--xh-badge-dot-size` · `--xh-badge-fg` · `--xh-badge-font-size` · `--xh-badge-font-weight`
+`--xh-badge-bg` · `--xh-badge-dot-size` · `--xh-badge-fg` · `--xh-badge-font-size` · `--xh-badge-font-weight` · `--xh-badge-gap` · `--xh-badge-px` · `--xh-badge-py` · `--xh-badge-radius`
 
 ## RTL
 

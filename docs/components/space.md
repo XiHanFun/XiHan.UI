@@ -134,7 +134,7 @@ align 改交叉轴对齐，wrap 让放不下的子项换行、行间距同样吃
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-space-1` · `--xh-space-2` · `--xh-space-3` · `--xh-space-4` · `--xh-space-6` · `--xh-space-gap`
+`--xh-space-gap`
 
 ## RTL
 

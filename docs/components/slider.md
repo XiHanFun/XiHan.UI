@@ -233,7 +233,7 @@ thumb 自己是定位上下文，气泡挂在它上方就跟着走位；dragging
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-slider-gap` · `--xh-slider-label-fg` · `--xh-slider-label-font-size` · `--xh-slider-label-font-weight` · `--xh-slider-mark-bg` · `--xh-slider-mark-bg-active` · `--xh-slider-mark-label-fg` · `--xh-slider-mark-label-fg-active` · `--xh-slider-mark-label-font-size` · `--xh-slider-mark-label-gap` · `--xh-slider-mark-size` · `--xh-slider-range-bg` · `--xh-slider-range-bg-invalid` · `--xh-slider-range-radius` · `--xh-slider-thumb-bg` · `--xh-slider-thumb-bg-invalid` · `--xh-slider-thumb-border` · `--xh-slider-thumb-radius` · `--xh-slider-thumb-scale-dragging` · `--xh-slider-thumb-shadow` · `--xh-slider-thumb-shadow-dragging` · `--xh-slider-thumb-size` · `--xh-slider-track-bg` · `--xh-slider-track-radius` · `--xh-slider-track-thickness` · `--xh-slider-vertical-length`
+`--xh-slider-gap` · `--xh-slider-label-fg` · `--xh-slider-label-font-size` · `--xh-slider-label-font-weight` · `--xh-slider-mark-bg` · `--xh-slider-mark-bg-active` · `--xh-slider-mark-label-fg` · `--xh-slider-mark-label-fg-active` · `--xh-slider-mark-label-font-size` · `--xh-slider-mark-label-gap` · `--xh-slider-mark-radius` · `--xh-slider-mark-size` · `--xh-slider-range-bg` · `--xh-slider-range-bg-invalid` · `--xh-slider-range-radius` · `--xh-slider-thumb-bg` · `--xh-slider-thumb-bg-invalid` · `--xh-slider-thumb-border` · `--xh-slider-thumb-radius` · `--xh-slider-thumb-scale-dragging` · `--xh-slider-thumb-shadow` · `--xh-slider-thumb-shadow-dragging` · `--xh-slider-thumb-size` · `--xh-slider-track-bg` · `--xh-slider-track-radius` · `--xh-slider-track-thickness` · `--xh-slider-vertical-length`
 
 ## 动效
 
