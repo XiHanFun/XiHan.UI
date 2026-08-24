@@ -14,6 +14,7 @@ import { createVueIdGenerator } from '../../runtime/vue-id'
 export interface TimePickerContext {
   api: ComputedRef<TimePickerApi>
   controlRef: Ref<HTMLElement | null>
+  triggerRef: Ref<HTMLElement | null>
   positionerRef: Ref<HTMLElement | null>
   contentRef: Ref<HTMLElement | null>
   /** 此刻该不该渲染：退场动画播完之前仍为真。 */
@@ -28,6 +29,7 @@ export function useTimePicker(
 ): TimePickerContext {
   const xhConfig = useXhConfig()
   const controlRef = ref<HTMLElement | null>(null)
+  const triggerRef = ref<HTMLElement | null>(null)
   const positionerRef = ref<HTMLElement | null>(null)
   const contentRef = ref<HTMLElement | null>(null)
 
@@ -58,6 +60,7 @@ export function useTimePicker(
     service.refs.set('registerLayer', registerLayer)
     service.refs.set('position', createPositionEngine())
     service.refs.set('getAnchorEl', () => controlRef.value)
+    service.refs.set('getTriggerEl', () => triggerRef.value)
     service.refs.set('getFloatingEl', () => positionerRef.value)
     service.refs.set('getContentEl', () => contentRef.value)
   }
@@ -68,5 +71,5 @@ export function useTimePicker(
   // 全局配置写了容器就用它，否则落到运行时那个单一浮层落点；没有 DOM 时才回到 body
   const portalTarget = computed<string | Element>(() => xhConfig.value.portalContainer?.() ?? config?.portalContainer() ?? 'body')
 
-  return { visible, api, controlRef, positionerRef, contentRef, portalTarget }
+  return { visible, api, controlRef, triggerRef, positionerRef, contentRef, portalTarget }
 }

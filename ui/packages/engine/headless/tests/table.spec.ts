@@ -578,7 +578,7 @@ describe('connectTable 属性输出', () => {
     expect(h.root.getAttribute('aria-rowcount')).toBe('5')
     expect(h.root.getAttribute('aria-colcount')).toBe('3')
     expect(h.root.getAttribute('aria-multiselectable')).toBe('true')
-    expect(h.root.getAttribute('aria-busy')).toBe('false')
+    expect(h.root.getAttribute('aria-busy')).toBeNull()
     expect(h.root.getAttribute('aria-labelledby')).toBe(h.caption.id)
     expect(mount().root.getAttribute('aria-multiselectable')).toBe('false')
   })
@@ -812,7 +812,7 @@ describe('connectTable 属性输出', () => {
     expect(empty.loadingState.hasAttribute('hidden')).toBe(true)
     expect(empty.root.getAttribute('data-empty')).toBe('')
     expect(empty.root.getAttribute('aria-rowcount')).toBe('1')
-    expect(empty.root.getAttribute('aria-busy')).toBe('false')
+    expect(empty.root.getAttribute('aria-busy')).toBeNull()
 
     document.body.innerHTML = ''
     const busy = mount({ rows: [], loading: true })

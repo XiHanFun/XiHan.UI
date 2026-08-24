@@ -234,7 +234,7 @@ export const tableSuite: ConformanceSuite = {
             'aria-colcount': '3',
             // 显式 false，不省略
             'aria-multiselectable': 'false',
-            'aria-busy': 'false',
+            'aria-busy': null,
             'data-empty': null,
             'data-loading': null,
           },
@@ -703,7 +703,7 @@ export const tableSuite: ConformanceSuite = {
       initial: {
         parts: {
           // 一行都没有，也就没有可展开的行：平表格报 grid
-          'root': { 'role': 'grid', 'data-empty': '', 'aria-busy': 'false', 'aria-rowcount': '2' },
+          'root': { 'role': 'grid', 'data-empty': '', 'aria-busy': null, 'aria-rowcount': '2' },
           'body': { 'data-empty': '' },
           'empty': { hidden: null },
           'loading-state': { hidden: '' },

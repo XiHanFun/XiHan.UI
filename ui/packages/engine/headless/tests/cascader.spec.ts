@@ -1081,9 +1081,9 @@ describe('空态占位', () => {
 
   it('文案默认英文，translations 逐键覆盖', () => {
     const h = mount()
-    expect(h.api().translations).toEqual({ empty: 'No data', noMatch: 'No matches', column: 'Options', clearTrigger: 'Clear' })
+    expect(h.api().translations).toEqual({ empty: 'No data', noMatch: 'No matches', column: 'Options', searchList: 'Search results', clearTrigger: 'Clear' })
     h.setProps({ translations: { empty: '暂无数据', clearTrigger: '清空' } })
-    expect(h.api().translations).toEqual({ empty: '暂无数据', noMatch: 'No matches', column: 'Options', clearTrigger: '清空' })
+    expect(h.api().translations).toEqual({ empty: '暂无数据', noMatch: 'No matches', column: 'Options', searchList: 'Search results', clearTrigger: '清空' })
     expect(h.clear.getAttribute('aria-label')).toBe('清空')
   })
 })

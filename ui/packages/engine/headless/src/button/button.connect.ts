@@ -31,6 +31,9 @@ export function connectButton<T extends PropTypes>(
       // 真 disabled 用原生（会丢焦点）；loading 用 aria-disabled + 拦截事件（保留焦点）
       'disabled': disabled || undefined,
       'aria-disabled': loading ? 'true' : undefined,
+      // 在途要报 busy：aria-disabled 说的是「现在按不动」，aria-busy 说的是「这块还在更新」，
+      // 两件事都成立。同族的 switch / popconfirm / table 都发这一条
+      'aria-busy': loading ? 'true' : undefined,
       'data-variant': props.variant,
       'data-tone': props.tone,
       'data-size': props.size,

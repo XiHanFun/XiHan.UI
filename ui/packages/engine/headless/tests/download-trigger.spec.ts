@@ -321,7 +321,7 @@ describe('connectDownloadTrigger 属性表', () => {
     expect(props.type).toBe('button')
     expect(props['data-scope']).toBe('download-trigger')
     expect(props['data-part']).toBe('root')
-    expect(props['aria-busy']).toBe('false')
+    expect(props['aria-busy']).toBeUndefined()
     expect(props['data-state']).toBe('idle')
     expect(props['data-disabled']).toBeUndefined()
     expect(props.disabled).toBeUndefined()
