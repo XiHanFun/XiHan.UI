@@ -8,7 +8,7 @@
     /* 尺寸档只换这三个私有槽，标签从 root 继承它们，换档不必给每个部件各写一条选择器 */
     --xh-_tabs-trigger-h: var(--xh-control-h-md);
     --xh-_tabs-trigger-px: var(--xh-control-px-md);
-    --xh-_tabs-trigger-font-size: var(--xh-text-label-size);
+    --xh-_tabs-trigger-font-size: var(--xh-control-font-md);
 
     /* 形态档只换这几个私有槽：列表的底、内边距、基线，与标签的描边、选中底、选中态那道指示。
        缺省档（line）是一条基线加一行标签，选中只换文字色——这里的取值即现状 */

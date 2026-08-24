@@ -58,7 +58,7 @@
 [data-scope='avatar-group'][data-part='root'] {
   /* 私有槽位：整组共用的直径、字号与叠放量，换档只改这三个 */
   --xh-_avatar-group-size: var(--xh-avatar-group-size, var(--xh-control-h-md));
-  --xh-_avatar-group-font-size: var(--xh-avatar-group-font-size, var(--xh-text-secondary-size));
+  --xh-_avatar-group-font-size: var(--xh-avatar-group-font-size, var(--xh-control-caption-md));
   --xh-_avatar-group-overlap: var(--xh-avatar-group-overlap, var(--xh-space-2_5));
 
   /* 流给组内每一枚 */
@@ -392,7 +392,7 @@
   --xh-_descriptions-label-gap: var(--xh-space-2);
   --xh-_descriptions-py: var(--xh-space-2);
   --xh-_descriptions-px: var(--xh-space-3);
-  --xh-_descriptions-font-size: var(--xh-text-body-size);
+  --xh-_descriptions-font-size: var(--xh-control-font-md);
   /* 标签在左时那一列的宽度：收到最长的那个标签 */
   --xh-_descriptions-label-w: max-content;
 
@@ -1068,23 +1068,23 @@
 /* —— 间距档位 —— */
 /* 每一档指向一个间距令牌，折行时行与行之间也吃这份间距 */
 [data-scope='flex'][data-part='root'][data-gap='xs'] {
-  gap: var(--xh-flex-gap, var(--xh-space-1));
+  gap: var(--xh-flex-gap, var(--xh-layout-gap-xs));
 }
 
 [data-scope='flex'][data-part='root'][data-gap='sm'] {
-  gap: var(--xh-flex-gap, var(--xh-space-2));
+  gap: var(--xh-flex-gap, var(--xh-layout-gap-sm));
 }
 
 [data-scope='flex'][data-part='root'][data-gap='md'] {
-  gap: var(--xh-flex-gap, var(--xh-space-3));
+  gap: var(--xh-flex-gap, var(--xh-layout-gap-md));
 }
 
 [data-scope='flex'][data-part='root'][data-gap='lg'] {
-  gap: var(--xh-flex-gap, var(--xh-space-4));
+  gap: var(--xh-flex-gap, var(--xh-layout-gap-lg));
 }
 
 [data-scope='flex'][data-part='root'][data-gap='xl'] {
-  gap: var(--xh-flex-gap, var(--xh-space-6));
+  gap: var(--xh-flex-gap, var(--xh-layout-gap-xl));
 }
 
 /* styles/float-button.css */
@@ -1876,23 +1876,23 @@
 /* —— 间距档位 —— */
 /* 每一档指向一个间距令牌，行与行之间也吃这同一份间距 */
 [data-scope='grid'][data-part='root'][data-gap='xs'] {
-  gap: var(--xh-grid-gap, var(--xh-space-1));
+  gap: var(--xh-grid-gap, var(--xh-layout-gap-xs));
 }
 
 [data-scope='grid'][data-part='root'][data-gap='sm'] {
-  gap: var(--xh-grid-gap, var(--xh-space-2));
+  gap: var(--xh-grid-gap, var(--xh-layout-gap-sm));
 }
 
 [data-scope='grid'][data-part='root'][data-gap='md'] {
-  gap: var(--xh-grid-gap, var(--xh-space-3));
+  gap: var(--xh-grid-gap, var(--xh-layout-gap-md));
 }
 
 [data-scope='grid'][data-part='root'][data-gap='lg'] {
-  gap: var(--xh-grid-gap, var(--xh-space-4));
+  gap: var(--xh-grid-gap, var(--xh-layout-gap-lg));
 }
 
 [data-scope='grid'][data-part='root'][data-gap='xl'] {
-  gap: var(--xh-grid-gap, var(--xh-space-6));
+  gap: var(--xh-grid-gap, var(--xh-layout-gap-xl));
 }
 
 /* —— 块向对齐 —— */
@@ -2483,7 +2483,7 @@
 /* 一排键帽连着连接符。整块不换行：一组组合被折成两行就读不出是一组了 */
 [data-scope='hotkeys'][data-part='root'] {
   /* 尺寸档只换这两个私有槽，键帽从 root 继承它们，换档不必给每个部件各写一条选择器 */
-  --xh-_hotkeys-font-size: var(--xh-text-secondary-size);
+  --xh-_hotkeys-font-size: var(--xh-control-caption-md);
   --xh-_hotkeys-key-px: var(--xh-space-1);
 
   display: inline-flex;
@@ -2903,7 +2903,7 @@
   /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
   --xh-icon-size: var(--xh-json-viewer-icon-size, var(--xh-glyph-size-text));
 
-  --xh-_json-viewer-font-size: var(--xh-text-secondary-size);
+  --xh-_json-viewer-font-size: var(--xh-control-caption-md);
   --xh-_json-viewer-row-py: var(--xh-space-0_5);
   --xh-_json-viewer-indent: var(--xh-space-4);
   --xh-json-viewer-key-fg: var(--xh-fg-brand-strong);
@@ -3733,23 +3733,23 @@
 /* —— 间距档位 —— */
 /* 每一档指向一个间距令牌，列之间与列内项之间吃同一份间距 */
 [data-scope='masonry'][data-part='root'][data-gap='xs'] {
-  --xh-_masonry-gap: var(--xh-masonry-gap, var(--xh-space-1));
+  --xh-_masonry-gap: var(--xh-masonry-gap, var(--xh-layout-gap-xs));
 }
 
 [data-scope='masonry'][data-part='root'][data-gap='sm'] {
-  --xh-_masonry-gap: var(--xh-masonry-gap, var(--xh-space-2));
+  --xh-_masonry-gap: var(--xh-masonry-gap, var(--xh-layout-gap-sm));
 }
 
 [data-scope='masonry'][data-part='root'][data-gap='md'] {
-  --xh-_masonry-gap: var(--xh-masonry-gap, var(--xh-space-3));
+  --xh-_masonry-gap: var(--xh-masonry-gap, var(--xh-layout-gap-md));
 }
 
 [data-scope='masonry'][data-part='root'][data-gap='lg'] {
-  --xh-_masonry-gap: var(--xh-masonry-gap, var(--xh-space-4));
+  --xh-_masonry-gap: var(--xh-masonry-gap, var(--xh-layout-gap-lg));
 }
 
 [data-scope='masonry'][data-part='root'][data-gap='xl'] {
-  --xh-_masonry-gap: var(--xh-masonry-gap, var(--xh-space-6));
+  --xh-_masonry-gap: var(--xh-masonry-gap, var(--xh-layout-gap-xl));
 }
 
 /* styles/mention.css */
@@ -3807,7 +3807,7 @@
   --xh-_mention-px: var(--xh-control-px-md);
   --xh-_mention-py: var(--xh-field-py);
   --xh-_mention-gap: var(--xh-control-gap-md);
-  --xh-_mention-font-size: var(--xh-text-body-size);
+  --xh-_mention-font-size: var(--xh-control-font-md);
 
   /* 形态档只换这三个槽：缺省即 outline（描边 + 画布底） */
   --xh-_mention-input-bg: var(--xh-bg-canvas);
@@ -4183,11 +4183,11 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_password-input-h: var(--xh-control-h-md);
   --xh-_password-input-px: var(--xh-control-px-md);
   --xh-_password-input-gap: var(--xh-control-gap-md);
-  --xh-_password-input-font-size: var(--xh-text-body-size);
-  --xh-_password-input-label-font-size: var(--xh-text-label-size);
+  --xh-_password-input-font-size: var(--xh-control-font-md);
+  --xh-_password-input-label-font-size: var(--xh-control-font-md);
   /* 提示与切换钮里的字形都比正文小一档，三个尺寸档各自换过，不是一个恒等的中转 */
-  --xh-_password-input-hint-font-size: var(--xh-text-secondary-size);
-  --xh-_password-input-trigger-font-size: var(--xh-text-secondary-size);
+  --xh-_password-input-hint-font-size: var(--xh-control-caption-md);
+  --xh-_password-input-trigger-font-size: var(--xh-control-caption-md);
 
   /* 盒子的圆角 */
   --xh-_password-input-radius: var(--xh-password-input-input-radius, var(--xh-shape-control));
@@ -4800,7 +4800,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_popselect-h: var(--xh-control-h-md);
   --xh-_popselect-px: var(--xh-control-px-md);
   --xh-_popselect-gap: var(--xh-control-gap-md);
-  --xh-_popselect-font-size: var(--xh-text-body-size);
+  --xh-_popselect-font-size: var(--xh-control-font-md);
 
   /* 形态档只换这三个槽：缺省即 outline（描边 + 画布底） */
   --xh-_popselect-control-bg: var(--xh-bg-canvas);
@@ -5220,7 +5220,7 @@ input[data-scope='mention'][data-part='input'] {
   /* 三个尺寸档只换这几个私有槽，图标与标题都从 root 继承它们，
      换档不必给每个部件各写一条选择器 */
   --xh-_result-gap: var(--xh-stack-gap-md);
-  --xh-_result-py: var(--xh-section-py);
+  --xh-_result-py: var(--xh-section-py-md);
   --xh-_result-icon-size: var(--xh-glyph-size-3xl);
   --xh-_result-title-size: var(--xh-text-heading-3-size);
   /* 说明的读行宽度：整句话不收窄就会拉成一条难读的长行 */
@@ -5246,15 +5246,15 @@ input[data-scope='mention'][data-part='input'] {
 
 /* —— 尺寸 —— */
 [data-scope='result'][data-part='root'][data-size='sm'] {
-  --xh-_result-gap: var(--xh-space-3);
-  --xh-_result-py: var(--xh-space-6);
+  --xh-_result-gap: var(--xh-stack-gap-sm);
+  --xh-_result-py: var(--xh-section-py-sm);
   --xh-_result-icon-size: var(--xh-glyph-size-2xl);
   --xh-_result-title-size: var(--xh-control-font-lg);
 }
 
 [data-scope='result'][data-part='root'][data-size='lg'] {
-  --xh-_result-gap: var(--xh-space-6);
-  --xh-_result-py: var(--xh-space-8);
+  --xh-_result-gap: var(--xh-stack-gap-lg);
+  --xh-_result-py: var(--xh-section-py-lg);
   --xh-_result-icon-size: var(--xh-glyph-size-4xl);
   --xh-_result-title-size: var(--xh-text-heading-2-size);
 }
@@ -5332,7 +5332,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_segmented-h: var(--xh-control-h-md);
   --xh-_segmented-px: var(--xh-control-px-md);
   --xh-_segmented-gap: var(--xh-control-gap-md);
-  --xh-_segmented-font-size: var(--xh-text-label-size);
+  --xh-_segmented-font-size: var(--xh-control-font-md);
   /* 指示器底色与选中段的文字色；没写 data-tone 时就是这里的取值 */
   --xh-_segmented-indicator-bg: var(--xh-bg-surface);
   --xh-_segmented-fg-selected: var(--xh-fg-default);
@@ -5688,7 +5688,7 @@ input[data-scope='mention'][data-part='input'] {
   display: flex;
   flex-wrap: nowrap;
   /* 不写档位也按 md 留白，这是与裸弹性容器的分野；使用者槽位排在档位之前，写死一个值即盖过所有档 */
-  gap: var(--xh-space-gap, var(--xh-space-3));
+  gap: var(--xh-space-gap, var(--xh-layout-gap-md));
 }
 
 /* 声明了 display 就盖掉了 UA 的 [hidden] 规则，这里还回去 */
@@ -5776,23 +5776,23 @@ input[data-scope='mention'][data-part='input'] {
 /* —— 间距档位 —— */
 /* 每一档指向一个间距令牌，折行时行与行之间也吃这份间距 */
 [data-scope='space'][data-part='root'][data-gap='xs'] {
-  gap: var(--xh-space-gap, var(--xh-space-1));
+  gap: var(--xh-space-gap, var(--xh-layout-gap-xs));
 }
 
 [data-scope='space'][data-part='root'][data-gap='sm'] {
-  gap: var(--xh-space-gap, var(--xh-space-2));
+  gap: var(--xh-space-gap, var(--xh-layout-gap-sm));
 }
 
 [data-scope='space'][data-part='root'][data-gap='md'] {
-  gap: var(--xh-space-gap, var(--xh-space-3));
+  gap: var(--xh-space-gap, var(--xh-layout-gap-md));
 }
 
 [data-scope='space'][data-part='root'][data-gap='lg'] {
-  gap: var(--xh-space-gap, var(--xh-space-4));
+  gap: var(--xh-space-gap, var(--xh-layout-gap-lg));
 }
 
 [data-scope='space'][data-part='root'][data-gap='xl'] {
-  gap: var(--xh-space-gap, var(--xh-space-6));
+  gap: var(--xh-space-gap, var(--xh-layout-gap-xl));
 }
 
 /* styles/statistic.css */
@@ -6081,7 +6081,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_timeline-dot-size: var(--xh-space-2_5);
   --xh-_timeline-gutter: var(--xh-space-3);
   --xh-_timeline-item-gap: var(--xh-space-5);
-  --xh-_timeline-title-font-size: var(--xh-text-label-size);
+  --xh-_timeline-title-font-size: var(--xh-control-font-md);
   --xh-_timeline-caption-font-size: var(--xh-text-caption-size);
   /* 标题首行占多高。圆点按它居中下移，圆心才落在标题这一行的中线上 */
   --xh-_timeline-line-h: calc(
@@ -6965,7 +6965,7 @@ input[data-scope='mention'][data-part='input'] {
   /* 三个尺寸档只换这几个私有槽，图标与标题都从 root 继承它们，
      换档不必给每个部件各写一条选择器 */
   --xh-_empty-state-gap: var(--xh-stack-gap-md);
-  --xh-_empty-state-py: var(--xh-section-py);
+  --xh-_empty-state-py: var(--xh-section-py-md);
   --xh-_empty-state-icon-size: var(--xh-glyph-size-2xl);
   --xh-_empty-state-title-size: var(--xh-control-font-lg);
   /* 说明的读行宽度：整句话不收窄就会拉成一条难读的长行 */
@@ -6988,15 +6988,15 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='empty-state'][data-part='root'][data-size='sm'] {
-  --xh-_empty-state-gap: var(--xh-space-2);
-  --xh-_empty-state-py: var(--xh-space-4);
+  --xh-_empty-state-gap: var(--xh-stack-gap-sm);
+  --xh-_empty-state-py: var(--xh-section-py-sm);
   --xh-_empty-state-icon-size: var(--xh-glyph-size-xl);
   --xh-_empty-state-title-size: var(--xh-control-font-md);
 }
 
 [data-scope='empty-state'][data-part='root'][data-size='lg'] {
-  --xh-_empty-state-gap: var(--xh-space-6);
-  --xh-_empty-state-py: var(--xh-space-8);
+  --xh-_empty-state-gap: var(--xh-stack-gap-lg);
+  --xh-_empty-state-py: var(--xh-section-py-lg);
   --xh-_empty-state-icon-size: var(--xh-glyph-size-3xl);
   --xh-_empty-state-title-size: var(--xh-text-heading-3-size);
 }
@@ -7230,7 +7230,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_accordion-trigger-h: var(--xh-control-h-md);
   --xh-_accordion-trigger-px: var(--xh-control-px-md);
   --xh-_accordion-trigger-gap: var(--xh-control-gap-md);
-  --xh-_accordion-trigger-font-size: var(--xh-text-label-size);
+  --xh-_accordion-trigger-font-size: var(--xh-control-font-md);
 
   /* 语气落在展开着的标题上，指示器写在标题里、跟着继承这个色，不另立规则。
      没写 data-tone 时 --xh-_tone-fg 没被声明，退回原来的前景色。
@@ -7388,7 +7388,7 @@ input[data-scope='mention'][data-part='input'] {
    这里不给 display，UA 的 [hidden]{display:none} 就仍然压得住 */
 [data-scope='anchor'][data-part='root'] {
   /* 尺寸档只换这两个私有槽，链接从 root 继承它们，换档不必给每个部件各写一条选择器 */
-  --xh-_anchor-font-size: var(--xh-text-label-size);
+  --xh-_anchor-font-size: var(--xh-control-font-md);
   --xh-_anchor-link-px: var(--xh-control-px-md);
   /* 当前那一节的指示条与文字随语气走。没写 data-tone 时这两个槽都没被声明，退回原来的品牌色。
      指示条是装饰性的色条，取柔和档；文字要压在普通背景上读，取语气的文字档。
@@ -7662,7 +7662,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-icon-size: var(--xh-breadcrumb-icon-size, var(--xh-glyph-size-text));
 
   /* 尺寸档只换这两个私有槽，列表与链接都从 root 继承它们，换档不必给每个部件各写一条选择器 */
-  --xh-_breadcrumb-font-size: var(--xh-text-label-size);
+  --xh-_breadcrumb-font-size: var(--xh-control-font-md);
   --xh-_breadcrumb-gap: var(--xh-space-2);
   /* 当前项与链接悬停的强调色随语气走。没写 data-tone 时 --xh-_tone-fg 没被声明，
      退回原来的前景色。聚焦环不在其列，它恒是 --xh-ring-focus */
@@ -8662,8 +8662,8 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_cascader-h: var(--xh-control-h-md);
   --xh-_cascader-px: var(--xh-control-px-md);
   --xh-_cascader-gap: var(--xh-control-gap-md);
-  --xh-_cascader-font-size: var(--xh-text-body-size);
-  --xh-_cascader-label-font-size: var(--xh-text-label-size);
+  --xh-_cascader-font-size: var(--xh-control-font-md);
+  --xh-_cascader-label-font-size: var(--xh-control-font-md);
 
   /* 形态档只换触发框的描边与底色这三个槽，浮层与列不跟着变：
      变的是「这是个输入位」的表达方式，不是弹出内容的表达方式 */
@@ -9914,7 +9914,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_collapsible-trigger-h: var(--xh-control-h-md);
   --xh-_collapsible-trigger-px: var(--xh-control-px-md);
   --xh-_collapsible-trigger-gap: var(--xh-control-gap-md);
-  --xh-_collapsible-trigger-font-size: var(--xh-text-label-size);
+  --xh-_collapsible-trigger-font-size: var(--xh-control-font-md);
 }
 
 /* —— 尺寸 —— */
@@ -10572,8 +10572,8 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_combobox-h: var(--xh-control-h-md);
   --xh-_combobox-px: var(--xh-control-px-md);
   --xh-_combobox-gap: var(--xh-control-gap-md);
-  --xh-_combobox-font-size: var(--xh-text-body-size);
-  --xh-_combobox-label-font-size: var(--xh-text-label-size);
+  --xh-_combobox-font-size: var(--xh-control-font-md);
+  --xh-_combobox-label-font-size: var(--xh-control-font-md);
 
   /* 作者塞进指示符槽的图标跟着控件的尺寸档走；它自己写了 size 时仍以作者的为准 */
   --xh-icon-size: var(--xh-combobox-icon-size, var(--xh-glyph-size-md));
@@ -11194,7 +11194,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_context-menu-item-py: var(--xh-space-1_5);
   --xh-_context-menu-item-px: var(--xh-control-px-md);
   --xh-_context-menu-item-gap: var(--xh-control-gap-md);
-  --xh-_context-menu-font-size: var(--xh-text-body-size);
+  --xh-_context-menu-font-size: var(--xh-control-font-md);
 
   /* 打开子菜单的触发条目走品牌淡底强档，随语气换色相；没写 data-tone 时退回品牌淡底。
      悬停与键盘焦点恒中性灰轻档、不接语气槽——两档同色相的话打开路径就认不出来了 */
@@ -11496,8 +11496,8 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_date-field-control-h: var(--xh-control-h-md);
   --xh-_date-field-control-px: var(--xh-control-px-md);
   --xh-_date-field-gap: var(--xh-control-gap-md);
-  --xh-_date-field-font-size: var(--xh-text-body-size);
-  --xh-_date-field-label-font-size: var(--xh-text-label-size);
+  --xh-_date-field-font-size: var(--xh-control-font-md);
+  --xh-_date-field-label-font-size: var(--xh-control-font-md);
   /* 形态档只换这三个私有槽：底色与两档描边 */
   --xh-_date-field-control-bg: var(--xh-bg-canvas);
   --xh-_date-field-control-border: var(--xh-border-control);
@@ -11793,8 +11793,8 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_date-picker-control-h: var(--xh-control-h-md);
   --xh-_date-picker-control-px: var(--xh-control-px-md);
   --xh-_date-picker-gap: var(--xh-control-gap-md);
-  --xh-_date-picker-font-size: var(--xh-text-body-size);
-  --xh-_date-picker-label-font-size: var(--xh-text-label-size);
+  --xh-_date-picker-font-size: var(--xh-control-font-md);
+  --xh-_date-picker-label-font-size: var(--xh-control-font-md);
 
   /* 形态档只换这三个私有槽：底色与两档描边 */
   --xh-_date-picker-control-bg: var(--xh-bg-canvas);
@@ -14735,7 +14735,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_menu-item-py: var(--xh-space-1_5);
   --xh-_menu-item-px: var(--xh-control-px-md);
   --xh-_menu-item-gap: var(--xh-control-gap-md);
-  --xh-_menu-font-size: var(--xh-text-body-size);
+  --xh-_menu-font-size: var(--xh-control-font-md);
 
   /* 打开子菜单的触发条目走品牌淡底强档，随语气换色相；没写 data-tone 时退回品牌淡底。
      悬停与键盘焦点恒中性灰轻档、不接语气槽——两档同色相的话打开路径就认不出来了 */
@@ -15023,7 +15023,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_menubar-item-py: var(--xh-space-1_5);
   --xh-_menubar-item-px: var(--xh-control-px-md);
   --xh-_menubar-item-gap: var(--xh-control-gap-md);
-  --xh-_menubar-font-size: var(--xh-text-body-size);
+  --xh-_menubar-font-size: var(--xh-control-font-md);
 
   /* 展开着的那张菜单的 trigger 走品牌淡底强档，随语气换色相；没写 data-tone 时退回品牌淡底。
      悬停与键盘焦点恒中性灰轻档、不接语气槽——两档同色相的话哪张开着就认不出来了。
@@ -15308,13 +15308,13 @@ input[data-scope='mention'][data-part='input'] {
   /* 尺寸档只换这五个私有槽，trigger 与面板里的链接都从 root 继承它们，
      换档不必给每个部件各写一条选择器。面板与共享外壳都是 root 的后代，一并继承。
      trigger 写的是 font: inherit，字号跟着 root 这一档走，不另立槽 */
-  --xh-_navigation-menu-font-size: var(--xh-text-label-size);
+  --xh-_navigation-menu-font-size: var(--xh-control-font-md);
   --xh-_navigation-menu-trigger-h: var(--xh-control-h-md);
   --xh-_navigation-menu-trigger-px: var(--xh-control-px-md);
   --xh-_navigation-menu-trigger-gap: var(--xh-control-gap-md);
   --xh-_navigation-menu-link-py: var(--xh-space-1_5);
   --xh-_navigation-menu-link-px: var(--xh-control-px-md);
-  --xh-_navigation-menu-link-font-size: var(--xh-text-body-size);
+  --xh-_navigation-menu-link-font-size: var(--xh-control-font-md);
 
   /* 悬停与键盘锚点恒中性灰轻档、不接语气槽——两档同色相的话打开路径就认不出来了 */
   --xh-_navigation-menu-highlight-bg: var(--xh-bg-subtle);
@@ -15588,9 +15588,9 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_number-field-h: var(--xh-control-h-md);
   --xh-_number-field-px: var(--xh-control-px-md);
   --xh-_number-field-gap: var(--xh-control-gap-md);
-  --xh-_number-field-font-size: var(--xh-text-body-size);
-  --xh-_number-field-label-font-size: var(--xh-text-label-size);
-  --xh-_number-field-trigger-font-size: var(--xh-text-body-size);
+  --xh-_number-field-font-size: var(--xh-control-font-md);
+  --xh-_number-field-label-font-size: var(--xh-control-font-md);
+  --xh-_number-field-trigger-font-size: var(--xh-control-font-md);
 
   /* 盒子的圆角 */
   --xh-_number-field-radius: var(--xh-number-field-input-radius, var(--xh-shape-control));
@@ -15964,7 +15964,7 @@ input[data-scope='mention'][data-part='input'] {
      换档不必给每个部件各写一条选择器 */
   --xh-_pagination-item-size: var(--xh-control-h-md);
   --xh-_pagination-item-px: var(--xh-control-px-md);
-  --xh-_pagination-font-size: var(--xh-text-label-size);
+  --xh-_pagination-font-size: var(--xh-control-font-md);
 
   /* 当前页的选中态随语气走。没写 data-tone 时这几个 --xh-_tone-* 都没被声明，
      退回原来的品牌底与其配色。聚焦环不在其列，它恒是 --xh-ring-focus */
@@ -16113,9 +16113,9 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='pin-input'][data-part='root'] {
   /* 尺寸档只换这四个私有槽，标题与格子都从 root 继承它们，换档不必给每个部件各写一条选择器 */
   --xh-_pin-input-box-size: var(--xh-control-box-md);
-  --xh-_pin-input-box-gap: var(--xh-space-2);
+  --xh-_pin-input-box-gap: var(--xh-control-gap-md);
   --xh-_pin-input-box-font-size: var(--xh-text-heading-3-size);
-  --xh-_pin-input-label-font-size: var(--xh-text-label-size);
+  --xh-_pin-input-label-font-size: var(--xh-control-font-md);
   /* 形态档只换这三个私有槽，缺省这一份就是描边式（描边 + 画布底） */
   --xh-_pin-input-box-bg: var(--xh-bg-canvas);
   --xh-_pin-input-box-border: var(--xh-border-control);
@@ -16619,7 +16619,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='radio-group'][data-part='root'] {
   /* 尺寸档只换这两个私有槽，标题与条目都从 root 继承它们，换档不必给每个部件各写一条选择器 */
   --xh-_radio-group-item-gap: var(--xh-control-gap-md);
-  --xh-_radio-group-font-size: var(--xh-text-label-size);
+  --xh-_radio-group-font-size: var(--xh-control-font-md);
   /* 选中色随语气走。没写 data-tone 时 --xh-_tone 没被声明，退回原来的品牌色 */
   --xh-_radio-group-accent: var(--xh-_tone, var(--xh-bg-brand));
 
@@ -16732,9 +16732,9 @@ input[data-scope='mention'][data-part='input'] {
    根上不留基准它就会贴到更外层的定位祖先上，原生校验提示跟着飘到页面别处。 */
 [data-scope='rating'][data-part='root'] {
   /* 尺寸档只换这三个私有槽，标题与星星都从 root 继承它们，换档不必给每个部件各写一条选择器 */
-  --xh-_rating-item-gap: var(--xh-space-1);
+  --xh-_rating-item-gap: var(--xh-control-gap-md);
   --xh-_rating-item-size: var(--xh-font-size-2xl);
-  --xh-_rating-font-size: var(--xh-text-label-size);
+  --xh-_rating-font-size: var(--xh-control-font-md);
   /* 点亮色随语气走。没写 data-tone 时 --xh-_tone 没被声明，退回原来的警示色 */
   --xh-_rating-accent: var(--xh-_tone, var(--xh-color-warning-500));
 
@@ -17237,8 +17237,8 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_select-h: var(--xh-control-h-md);
   --xh-_select-px: var(--xh-control-px-md);
   --xh-_select-gap: var(--xh-control-gap-md);
-  --xh-_select-font-size: var(--xh-text-body-size);
-  --xh-_select-label-font-size: var(--xh-text-label-size);
+  --xh-_select-font-size: var(--xh-control-font-md);
+  --xh-_select-label-font-size: var(--xh-control-font-md);
 
   /* 形态档只换这三个槽：缺省即 outline（描边 + 画布底） */
   --xh-_select-control-bg: var(--xh-bg-canvas);
@@ -18424,8 +18424,8 @@ input[data-scope='mention'][data-part='input'] {
 
   /* 尺寸档只换这三个私有槽，序号圆点、标题与说明都从 root 继承它们，
      换档不必给每个部件各写一条选择器 */
-  --xh-_steps-indicator-size: var(--xh-control-h-sm);
-  --xh-_steps-title-font-size: var(--xh-text-label-size);
+  --xh-_steps-indicator-size: var(--xh-space-7);
+  --xh-_steps-title-font-size: var(--xh-control-font-md);
   --xh-_steps-caption-font-size: var(--xh-text-caption-size);
 
   /* 语气落在走过与当前这两步的标记和连接线上：强调色画描边与填充，
@@ -18846,7 +18846,7 @@ input[data-scope='mention'][data-part='input'] {
   /* 密度档只换这两个私有槽：单元格与列标题从 root 继承前者，字号靠 font-size 本身继承下去，
      换档不必给每个部件各写一条选择器，列宽那套算法也一点不碰 */
   --xh-_table-cell-py: var(--xh-table-cell-py-md);
-  --xh-_table-font-size: var(--xh-text-body-size);
+  --xh-_table-font-size: var(--xh-control-font-md);
 
   display: flex;
   position: relative;
@@ -19332,7 +19332,7 @@ input[data-scope='mention'][data-part='input'] {
   /* 尺寸档只换这三个私有槽，标签从 root 继承它们，换档不必给每个部件各写一条选择器 */
   --xh-_tabs-trigger-h: var(--xh-control-h-md);
   --xh-_tabs-trigger-px: var(--xh-control-px-md);
-  --xh-_tabs-trigger-font-size: var(--xh-text-label-size);
+  --xh-_tabs-trigger-font-size: var(--xh-control-font-md);
 
   /* 形态档只换这几个私有槽：列表的底、内边距、基线，与标签的描边、选中底、选中态那道指示。
      缺省档（line）是一条基线加一行标签，选中只换文字色——这里的取值即现状 */
@@ -19501,9 +19501,9 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_tags-input-control-h: var(--xh-control-h-md);
   --xh-_tags-input-control-px: var(--xh-control-px-md);
   --xh-_tags-input-control-gap: var(--xh-control-gap-md);
-  --xh-_tags-input-input-font-size: var(--xh-text-body-size);
-  --xh-_tags-input-item-font-size: var(--xh-text-secondary-size);
-  --xh-_tags-input-label-font-size: var(--xh-text-label-size);
+  --xh-_tags-input-input-font-size: var(--xh-control-font-md);
+  --xh-_tags-input-item-font-size: var(--xh-control-caption-md);
+  --xh-_tags-input-label-font-size: var(--xh-control-font-md);
   /* 形态档只换这三个私有槽，缺省这一份就是描边式（描边 + 画布底） */
   --xh-_tags-input-control-bg: var(--xh-bg-canvas);
   --xh-_tags-input-control-border: var(--xh-border-control);
@@ -19905,9 +19905,9 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_text-field-h: var(--xh-control-h-md);
   --xh-_text-field-px: var(--xh-control-px-md);
   --xh-_text-field-gap: var(--xh-control-gap-md);
-  --xh-_text-field-font-size: var(--xh-text-body-size);
-  --xh-_text-field-label-font-size: var(--xh-text-label-size);
-  --xh-_text-field-action-font-size: var(--xh-text-secondary-size);
+  --xh-_text-field-font-size: var(--xh-control-font-md);
+  --xh-_text-field-label-font-size: var(--xh-control-font-md);
+  --xh-_text-field-action-font-size: var(--xh-control-caption-md);
 
   /* 形态档只换这三个私有槽：底、常态描边、悬停描边 */
   --xh-_text-field-bg: var(--xh-bg-canvas);
@@ -20340,8 +20340,8 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_time-field-control-h: var(--xh-control-h-md);
   --xh-_time-field-control-px: var(--xh-control-px-md);
   --xh-_time-field-gap: var(--xh-control-gap-md);
-  --xh-_time-field-font-size: var(--xh-text-body-size);
-  --xh-_time-field-label-font-size: var(--xh-text-label-size);
+  --xh-_time-field-font-size: var(--xh-control-font-md);
+  --xh-_time-field-label-font-size: var(--xh-control-font-md);
   /* 形态档只换这三个私有槽：底色与两档描边 */
   --xh-_time-field-control-bg: var(--xh-bg-canvas);
   --xh-_time-field-control-border: var(--xh-border-control);
@@ -20637,8 +20637,8 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_time-picker-control-h: var(--xh-control-h-md);
   --xh-_time-picker-control-px: var(--xh-control-px-md);
   --xh-_time-picker-gap: var(--xh-control-gap-md);
-  --xh-_time-picker-font-size: var(--xh-text-body-size);
-  --xh-_time-picker-label-font-size: var(--xh-text-label-size);
+  --xh-_time-picker-font-size: var(--xh-control-font-md);
+  --xh-_time-picker-label-font-size: var(--xh-control-font-md);
   --xh-_time-picker-item-px: var(--xh-control-px-md);
 
   /* 形态档只换这三个私有槽：底色与两档描边 */
@@ -21913,7 +21913,7 @@ input[data-scope='mention'][data-part='input'] {
      箭头是它的后代，语气槽一并继承 */
   --xh-_tooltip-py: var(--xh-space-1);
   --xh-_tooltip-px: var(--xh-space-2);
-  --xh-_tooltip-font-size: var(--xh-text-secondary-size);
+  --xh-_tooltip-font-size: var(--xh-control-caption-md);
 
   /* 与 positioner 相反：浮层本体要能接指针，指针停在提示上就不该收起
      （长文案需要停留细看）。positioner 仍是 none，空白区域照样点得穿。 */
@@ -23147,8 +23147,8 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_tree-select-h: var(--xh-control-h-md);
   --xh-_tree-select-px: var(--xh-control-px-md);
   --xh-_tree-select-gap: var(--xh-control-gap-md);
-  --xh-_tree-select-font-size: var(--xh-text-body-size);
-  --xh-_tree-select-label-font-size: var(--xh-text-label-size);
+  --xh-_tree-select-font-size: var(--xh-control-font-md);
+  --xh-_tree-select-label-font-size: var(--xh-control-font-md);
 
   /* 形态档只换触发框的描边与底色这三个槽，浮层与树不跟着变：
      变的是「这是个输入位」的表达方式，不是弹出内容的表达方式 */

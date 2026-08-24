@@ -11,7 +11,7 @@
     --xh-icon-size: var(--xh-breadcrumb-icon-size, var(--xh-glyph-size-text));
 
     /* 尺寸档只换这两个私有槽，列表与链接都从 root 继承它们，换档不必给每个部件各写一条选择器 */
-    --xh-_breadcrumb-font-size: var(--xh-text-label-size);
+    --xh-_breadcrumb-font-size: var(--xh-control-font-md);
     --xh-_breadcrumb-gap: var(--xh-space-2);
     /* 当前项与链接悬停的强调色随语气走。没写 data-tone 时 --xh-_tone-fg 没被声明，
        退回原来的前景色。聚焦环不在其列，它恒是 --xh-ring-focus */

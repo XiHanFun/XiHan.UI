@@ -24,8 +24,8 @@
     --xh-_time-picker-control-h: var(--xh-control-h-md);
     --xh-_time-picker-control-px: var(--xh-control-px-md);
     --xh-_time-picker-gap: var(--xh-control-gap-md);
-    --xh-_time-picker-font-size: var(--xh-text-body-size);
-    --xh-_time-picker-label-font-size: var(--xh-text-label-size);
+    --xh-_time-picker-font-size: var(--xh-control-font-md);
+    --xh-_time-picker-label-font-size: var(--xh-control-font-md);
     --xh-_time-picker-item-px: var(--xh-control-px-md);
 
     /* 形态档只换这三个私有槽：底色与两档描边 */

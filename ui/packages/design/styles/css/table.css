@@ -25,7 +25,7 @@
     /* 密度档只换这两个私有槽：单元格与列标题从 root 继承前者，字号靠 font-size 本身继承下去，
        换档不必给每个部件各写一条选择器，列宽那套算法也一点不碰 */
     --xh-_table-cell-py: var(--xh-table-cell-py-md);
-    --xh-_table-font-size: var(--xh-text-body-size);
+    --xh-_table-font-size: var(--xh-control-font-md);
 
     display: flex;
     position: relative;

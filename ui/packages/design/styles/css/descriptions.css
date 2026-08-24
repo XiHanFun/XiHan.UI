@@ -12,7 +12,7 @@
     --xh-_descriptions-label-gap: var(--xh-space-2);
     --xh-_descriptions-py: var(--xh-space-2);
     --xh-_descriptions-px: var(--xh-space-3);
-    --xh-_descriptions-font-size: var(--xh-text-body-size);
+    --xh-_descriptions-font-size: var(--xh-control-font-md);
     /* 标签在左时那一列的宽度：收到最长的那个标签 */
     --xh-_descriptions-label-w: max-content;
 

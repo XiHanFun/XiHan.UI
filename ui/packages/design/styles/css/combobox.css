@@ -55,8 +55,8 @@
     --xh-_combobox-h: var(--xh-control-h-md);
     --xh-_combobox-px: var(--xh-control-px-md);
     --xh-_combobox-gap: var(--xh-control-gap-md);
-    --xh-_combobox-font-size: var(--xh-text-body-size);
-    --xh-_combobox-label-font-size: var(--xh-text-label-size);
+    --xh-_combobox-font-size: var(--xh-control-font-md);
+    --xh-_combobox-label-font-size: var(--xh-control-font-md);
 
     /* 作者塞进指示符槽的图标跟着控件的尺寸档走；它自己写了 size 时仍以作者的为准 */
     --xh-icon-size: var(--xh-combobox-icon-size, var(--xh-glyph-size-md));

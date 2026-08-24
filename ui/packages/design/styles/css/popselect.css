@@ -54,7 +54,7 @@
     --xh-_popselect-h: var(--xh-control-h-md);
     --xh-_popselect-px: var(--xh-control-px-md);
     --xh-_popselect-gap: var(--xh-control-gap-md);
-    --xh-_popselect-font-size: var(--xh-text-body-size);
+    --xh-_popselect-font-size: var(--xh-control-font-md);
 
     /* 形态档只换这三个槽：缺省即 outline（描边 + 画布底） */
     --xh-_popselect-control-bg: var(--xh-bg-canvas);

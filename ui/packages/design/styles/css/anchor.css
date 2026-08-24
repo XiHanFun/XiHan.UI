@@ -8,7 +8,7 @@
      这里不给 display，UA 的 [hidden]{display:none} 就仍然压得住 */
   [data-scope='anchor'][data-part='root'] {
     /* 尺寸档只换这两个私有槽，链接从 root 继承它们，换档不必给每个部件各写一条选择器 */
-    --xh-_anchor-font-size: var(--xh-text-label-size);
+    --xh-_anchor-font-size: var(--xh-control-font-md);
     --xh-_anchor-link-px: var(--xh-control-px-md);
     /* 当前那一节的指示条与文字随语气走。没写 data-tone 时这两个槽都没被声明，退回原来的品牌色。
        指示条是装饰性的色条，取柔和档；文字要压在普通背景上读，取语气的文字档。

@@ -11,7 +11,7 @@
     --xh-_segmented-h: var(--xh-control-h-md);
     --xh-_segmented-px: var(--xh-control-px-md);
     --xh-_segmented-gap: var(--xh-control-gap-md);
-    --xh-_segmented-font-size: var(--xh-text-label-size);
+    --xh-_segmented-font-size: var(--xh-control-font-md);
     /* 指示器底色与选中段的文字色；没写 data-tone 时就是这里的取值 */
     --xh-_segmented-indicator-bg: var(--xh-bg-surface);
     --xh-_segmented-fg-selected: var(--xh-fg-default);

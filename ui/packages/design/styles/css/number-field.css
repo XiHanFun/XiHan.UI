@@ -17,9 +17,9 @@
     --xh-_number-field-h: var(--xh-control-h-md);
     --xh-_number-field-px: var(--xh-control-px-md);
     --xh-_number-field-gap: var(--xh-control-gap-md);
-    --xh-_number-field-font-size: var(--xh-text-body-size);
-    --xh-_number-field-label-font-size: var(--xh-text-label-size);
-    --xh-_number-field-trigger-font-size: var(--xh-text-body-size);
+    --xh-_number-field-font-size: var(--xh-control-font-md);
+    --xh-_number-field-label-font-size: var(--xh-control-font-md);
+    --xh-_number-field-trigger-font-size: var(--xh-control-font-md);
 
     /* 盒子的圆角 */
     --xh-_number-field-radius: var(--xh-number-field-input-radius, var(--xh-shape-control));

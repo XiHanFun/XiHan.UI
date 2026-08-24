@@ -8,9 +8,9 @@
      根上不留基准它就会贴到更外层的定位祖先上，原生校验提示跟着飘到页面别处。 */
   [data-scope='rating'][data-part='root'] {
     /* 尺寸档只换这三个私有槽，标题与星星都从 root 继承它们，换档不必给每个部件各写一条选择器 */
-    --xh-_rating-item-gap: var(--xh-space-1);
+    --xh-_rating-item-gap: var(--xh-control-gap-md);
     --xh-_rating-item-size: var(--xh-font-size-2xl);
-    --xh-_rating-font-size: var(--xh-text-label-size);
+    --xh-_rating-font-size: var(--xh-control-font-md);
     /* 点亮色随语气走。没写 data-tone 时 --xh-_tone 没被声明，退回原来的警示色 */
     --xh-_rating-accent: var(--xh-_tone, var(--xh-color-warning-500));
 
