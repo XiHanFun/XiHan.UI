@@ -356,6 +356,9 @@ export function connectSideNav<T extends PropTypes>(
         'data-placement': placed?.placement ?? (dir === 'rtl' ? 'left-start' : 'right-start'),
         // 落位才露：展开或换枝后这一枝的坐标已清，引擎量完之前藏着
         'data-positioned': dataAttr(overlayPositioned(placed)),
+        // 锚点被滚出可视区时引擎置 hidden，样式据此收起浮层。
+        // 这条与皮肤的 [data-hidden] 规则是一对：少了它，锚点滚出视区后面板会继续悬在原坐标
+        'data-hidden': dataAttr(placed?.hidden),
         'hidden': !open || undefined,
         // 收起后坐标留到这一枝下一次展开才作废：退场动画在原位播
         'style': placed

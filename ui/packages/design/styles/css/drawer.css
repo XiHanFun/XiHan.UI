@@ -190,11 +190,14 @@
     background: var(--xh-drawer-backdrop-bg, var(--xh-bg-overlay));
   }
 
-  /* 挂在局部容器里：遮罩与定位层从视口坐标换成容器坐标，只罩住那个容器。
+  /* 挂在局部容器里：遮罩、定位层与面板一起从视口坐标换成容器坐标，只罩住那个容器。
      作者要给那个容器加 position（relative 之类），否则 absolute 会往上找到别的定位祖先——
-     这一条写进了示例与 props 说明 */
+     这一条写进了示例与 props 说明。
+     content 必须一起换：它的贴边是 inset-block/inline 参照包含块算的，留在 fixed 上就会
+     照旧贴视口边，遮罩缩进容器、面板却跑到屏幕边上——与 contained 的承诺正好相反 */
   [data-scope='drawer'][data-part='backdrop'][data-contained],
-  [data-scope='drawer'][data-part='positioner'][data-contained] {
+  [data-scope='drawer'][data-part='positioner'][data-contained],
+  [data-scope='drawer'][data-part='content'][data-contained] {
     position: absolute;
   }
 
@@ -220,8 +223,9 @@
   /* 贴边写在 content 自己身上，而不是交给 positioner：
      positioner 在抽屉里不是必需部件，最小合规结构只有 root + content，
      贴边若挂在 positioner 上，那种结构下面板会直接塌回文档流。
-     content 是 fixed，包住它的 positioner 没有 transform / filter，
-     不构成固定定位的包含块，两种结构下参照的都是视口，位置一致。 */
+     非 contained 时 content 是 fixed，包住它的 positioner 没有 transform / filter，
+     不构成固定定位的包含块，两种结构下参照的都是视口，位置一致；
+     contained 时上面那条把它一并换成 absolute，参照的就是作者那个容器。 */
   [data-scope='drawer'][data-part='content'] {
     /* 位移方向的私有槽位：默认按 LTR，RTL 在下面整体翻符号 */
     --xh-_drawer-shift-inline: 100%;

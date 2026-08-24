@@ -74,6 +74,28 @@ for (const name of FAMILIES) {
   }
 }
 
+// connect 在某个部件上发了 data-contained，皮肤就得给那个部件换坐标系。
+// 只换一半是最坏的情形：遮罩缩进了容器、面板照旧贴视口边，而两头单看都像是对的。
+for (const name of discovered) {
+  const connect = await read(`${HEADLESS}/${name}/${name}.connect.ts`)
+  const skin = await read(`packages/design/styles/css/${name}.css`)
+  if (!connect?.includes('\'data-contained\''))
+    continue
+  const sent = new Set()
+  // 逐个 getXxxProps 块看它有没有发这个属性，块名即部件名
+  for (const [, part, body] of connect.matchAll(/get([A-Z][A-Za-z]*)Props\s*:[\s\S]*?(?=\n\s{4}get[A-Z][A-Za-z]*Props\s*:|\n\s{2}\}\s*$)/g).map(m => [m[0], m[1], m[0]])) {
+    if (body.includes('\'data-contained\''))
+      sent.add(part.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase())
+  }
+  for (const part of sent) {
+    if (part === 'root')
+      continue
+    const rule = new RegExp(`data-part='${part}'\\]\\[data-contained\\]`)
+    if (!rule.test(skin ?? ''))
+      problems.push(`${name}：connect 给 ${part} 发了 data-contained，皮肤却没有对应规则——那个部件的坐标系没跟着换`)
+  }
+}
+
 if (problems.length) {
   console.error('[check-overlay-strategy] ✗ 浮层坐标系三处不同步：')
   for (const p of problems)
