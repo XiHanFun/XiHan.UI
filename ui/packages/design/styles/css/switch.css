@@ -30,7 +30,7 @@
     block-size: var(--xh-_switch-track-h);
     padding: var(--xh-_switch-pad);
     border: 0;
-    border-radius: var(--xh-shape-pill);
+    border-radius: var(--xh-switch-radius, var(--xh-shape-pill));
     background: var(--xh-switch-bg, var(--xh-bg-subtle-active));
     cursor: pointer;
     transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
@@ -68,7 +68,7 @@
   [data-scope='switch'][data-part='thumb'] {
     inline-size: var(--xh-_switch-thumb-size);
     block-size: var(--xh-_switch-thumb-size);
-    border-radius: var(--xh-shape-pill);
+    border-radius: var(--xh-switch-thumb-radius, var(--xh-shape-pill));
     background: var(--xh-switch-thumb, var(--xh-bg-canvas));
     box-shadow: var(--xh-switch-thumb-shadow, var(--xh-elevation-raised));
     transition: translate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);

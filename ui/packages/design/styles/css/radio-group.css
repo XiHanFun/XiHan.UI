@@ -77,7 +77,7 @@
     inline-size: var(--xh-radio-group-indicator-size, var(--xh-_radio-group-indicator));
     block-size: var(--xh-radio-group-indicator-size, var(--xh-_radio-group-indicator));
     border: var(--xh-stroke-thin) solid var(--xh-radio-group-indicator-border, var(--xh-border-control));
-    border-radius: var(--xh-shape-pill);
+    border-radius: var(--xh-radio-group-indicator-radius, var(--xh-shape-pill));
     background: var(--xh-radio-group-indicator-bg, var(--xh-bg-canvas));
     transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }

@@ -203,7 +203,7 @@
     inset-block-start: 50%;
     inline-size: var(--xh-slider-mark-size, var(--xh-space-1));
     block-size: var(--xh-slider-mark-size, var(--xh-space-1));
-    border-radius: var(--xh-shape-pill);
+    border-radius: var(--xh-slider-mark-radius, var(--xh-shape-pill));
     background: var(--xh-slider-mark-bg, var(--xh-border-strong));
     translate: -50% -50%;
   }

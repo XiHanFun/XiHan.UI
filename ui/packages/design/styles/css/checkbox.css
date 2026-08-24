@@ -27,7 +27,7 @@
     block-size: var(--xh-_checkbox-box);
     padding: 0;
     border: var(--xh-stroke-thin) solid var(--xh-checkbox-border, var(--xh-border-control));
-    border-radius: var(--xh-shape-inset);
+    border-radius: var(--xh-checkbox-radius, var(--xh-shape-inset));
     background: var(--xh-checkbox-bg, var(--xh-bg-canvas));
     color: var(--xh-checkbox-fg, var(--xh-_checkbox-on-accent));
     cursor: pointer;

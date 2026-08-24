@@ -112,7 +112,7 @@
     min-block-size: var(--xh-control-h-md);
     padding-inline: var(--xh-control-px-md);
     border: none;
-    border-radius: var(--xh-shape-control);
+    border-radius: var(--xh-side-nav-link-radius, var(--xh-shape-control));
     background: none;
     color: inherit;
     font-size: var(--xh-text-body-size);

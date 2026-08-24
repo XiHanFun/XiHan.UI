@@ -114,7 +114,7 @@
     background: var(--xh-image-viewer-chrome-bg, color-mix(in oklab, var(--xh-color-neutral-950) 55%, transparent));
     color: inherit;
     border: none;
-    border-radius: var(--xh-shape-pill);
+    border-radius: var(--xh-image-viewer-overlay-radius, var(--xh-shape-pill));
   }
 
   [data-scope='image-viewer'][data-part='toolbar'] {
@@ -137,7 +137,7 @@
     block-size: var(--xh-control-action-size);
     background: none;
     border: none;
-    border-radius: var(--xh-shape-control);
+    border-radius: var(--xh-image-viewer-toolbar-radius, var(--xh-shape-control));
     color: inherit;
     font-size: var(--xh-glyph-size-sm);
     cursor: pointer;
