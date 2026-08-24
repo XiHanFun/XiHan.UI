@@ -123,7 +123,10 @@
     --xh-control-caption-md: var(--xh-font-size-sm);
     --xh-control-caption-lg: var(--xh-font-size-md);
     --xh-control-action-size: 24px;
-    --xh-control-indicator-size: 16px;
+    --xh-control-indicator-size: var(--xh-control-indicator-md);
+    --xh-control-indicator-sm: 12px;
+    --xh-control-indicator-md: 16px;
+    --xh-control-indicator-lg: 20px;
     --xh-scrollbar-thickness-sm: 6px;
     --xh-scrollbar-thickness-md: 10px;
     --xh-scrollbar-thickness-lg: 14px;
@@ -274,7 +277,9 @@
     --xh-control-gap-md: var(--xh-space-1_5);
     --xh-control-gap-lg: var(--xh-space-2);
     --xh-control-action-size: 20px;
-    --xh-control-indicator-size: 14px;
+    --xh-control-indicator-sm: 10px;
+    --xh-control-indicator-md: 14px;
+    --xh-control-indicator-lg: 18px;
     --xh-switch-track-h-sm: 16px;
     --xh-switch-track-h-md: 20px;
     --xh-switch-track-h-lg: 24px;

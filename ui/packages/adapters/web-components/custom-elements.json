@@ -6177,6 +6177,15 @@
             },
             {
               "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "Size | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
               "name": "direction",
               "privacy": "public",
               "type": {
@@ -6490,6 +6499,14 @@
               "description": "预设色板，逗号分隔（如 \"#ff0000,#00ff00\"）",
               "name": "swatches",
               "fieldName": "swatches"
+            },
+            {
+              "type": {
+                "text": "Size | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
             },
             {
               "type": {
@@ -19975,6 +19992,15 @@
               "name": "--xh-list-item-px"
             },
             {
+              "name": "--xh-list-item-px-lg"
+            },
+            {
+              "name": "--xh-list-item-px-md"
+            },
+            {
+              "name": "--xh-list-item-px-sm"
+            },
+            {
               "name": "--xh-list-item-py"
             },
             {
@@ -32798,21 +32824,6 @@
           "customElement": true,
           "cssProperties": [
             {
-              "name": "--xh-space-1"
-            },
-            {
-              "name": "--xh-space-2"
-            },
-            {
-              "name": "--xh-space-3"
-            },
-            {
-              "name": "--xh-space-4"
-            },
-            {
-              "name": "--xh-space-6"
-            },
-            {
               "name": "--xh-space-gap"
             }
           ]
@@ -39820,6 +39831,15 @@
             },
             {
               "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "Size | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
               "name": "orientation",
               "privacy": "public",
               "type": {
@@ -39998,6 +40018,14 @@
               "description": "不许把值点空（最后一个选中项摘不掉）",
               "name": "disallow-empty",
               "fieldName": "disallowEmpty"
+            },
+            {
+              "type": {
+                "text": "Size | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
             },
             {
               "type": {

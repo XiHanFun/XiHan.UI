@@ -137,7 +137,7 @@ XiHan.UI 的公开面横跨五种介质，因为「丢掉自带皮肤自己写�
 | `data-name` | 表单字段名（`form`） |
 | `data-index` | 条目序号（0 基） |
 
-**样式钩子**——自带皮肤自己就消费了 119 个属性名 / 505 条「皮肤 × 属性」配对（不含解剖的 `data-scope` / `data-part`），第三方皮肤照着抄的就是这一组：
+**样式钩子**——自带皮肤自己就消费了 119 个属性名 / 507 条「皮肤 × 属性」配对（不含解剖的 `data-scope` / `data-part`），第三方皮肤照着抄的就是这一组：
 
 | 属性 | 选中它的皮肤份数 |
 | --- | --- |
@@ -203,7 +203,7 @@ brand  neutral  success  warning  danger  info
 | `index.unlayered.css` 的内部结构 | — | 它是生成的扁平镜像，**不带 `@layer`**。走这个入口就没有 `xihan.overrides` 这个覆盖槽位，层名承诺不适用 |
 
 ::: warning 命名前缀不能反推归属
-`--xh-field-py` 长得像 `field` 组件的覆盖槽，实际是全局语义令牌，而且 `field.css` 自己都不用它。同理 `--xh-text-*`（13 个全局文本令牌）与 `text-field` 的 44 条组件槽同前缀，`--xh-color-*`（41 个原语调色板令牌）与 `color-picker` 的 68 条组件槽同前缀。判断一条属性属于哪一档，看它在不在上表列的那 290 个全局令牌里，不要按前缀猜。
+`--xh-field-py` 长得像 `field` 组件的覆盖槽，实际是全局语义令牌，而且 `field.css` 自己都不用它。同理 `--xh-text-*`（13 个全局文本令牌）与 `text-field` 的 44 条组件槽同前缀，`--xh-color-*`（41 个原语调色板令牌）与 `color-picker` 的 68 条组件槽同前缀。判断一条属性属于哪一档，看它在不在上表列的那 293 个全局令牌里，不要按前缀猜。
 :::
 
 ---
@@ -214,7 +214,7 @@ brand  neutral  success  warning  danger  info
 | --- | --- | --- |
 | 自定义元素标签 `xh-*` | 121（`defineXhElements()` 注册 120 + `xh-background`） | **受约束** |
 | 注册函数 | 2（`defineXhElements`、`defineXhBackground`） | **受约束** |
-| observed attribute | 974 条声明 / 306 个不同名字 | **受约束**（具体元素上的具体属性名） |
+| observed attribute | 976 条声明 / 306 个不同名字 | **受约束**（具体元素上的具体属性名） |
 | attribute 名词汇表本身 | 306 | **只增不减**（新组件复用 `size` / `tone` / `dir` 不算破坏） |
 | `CustomEvent` 名 | 68 个名字 / 150 条「元素 × 事件」 | **受约束** |
 | 事件传播语义 | `bubbles: true, composed: true`（141 处中 140 处） | **受约束**——把冒泡改掉会让祖先节点上的事件委托静默失效。唯一的例外是 `xh-composer` 的 `submit`：与原生表单提交同名，刻意不冒泡，免得被祖先 `<form>` 当成自己的提交 |
@@ -389,7 +389,7 @@ Web Components 侧不构成额外约束：全部 Light DOM，不用 shadow DOM�
 | `@xihan-ui/web-components` | 121 个自定义元素 |
 | `@xihan-ui/headless` | `connect*` / `*Machine` / 各类公开类型；内部算子在排除清单里 |
 | `@xihan-ui/styles` | 119 份组件皮肤、5 个层名 |
-| `@xihan-ui/tokens` | 290 个令牌名，外加 `./runtime` 的主题控制器与种子色 API |
+| `@xihan-ui/tokens` | 293 个令牌名，外加 `./runtime` 的主题控制器与种子色 API |
 | `@xihan-ui/icons` | 图标集 |
 | `@xihan-ui/kernel` | 只有被适配器与 headless 公开消费的那部分（`createAnatomy`、`createNormalizer`、归一化规则） |
 | `@xihan-ui/machine` | 同上 |
@@ -414,11 +414,11 @@ Web Components 侧不构成额外约束：全部 Light DOM，不用 shadow DOM�
 ### 已经焊死的
 
 **六种介质的「改名 = major」现在有门禁兜着。** `pnpm gate:surface` 跑的 `check-public-surface`
-拿一份入库的基线（`ui/tooling/public-surface.json`，9153 个名字）比对当前状态：
+拿一份入库的基线（`ui/tooling/public-surface.json`，9158 个名字）比对当前状态：
 **基线里有而当前没有，就是删了或改名了，构建失败**。新增一律放行，因为那是 minor。
 
 覆盖：包名与 184 条子入口、4253 个导出名、119 个 `data-scope` 与 736 条部件配对、
-119 个组件的 1251 个 prop 名、156 种 `data-*`、20 个 `data-state` 取值、290 个令牌、
+119 个组件的 1253 个 prop 名、156 种 `data-*`、20 个 `data-state` 取值、293 个令牌、
 5 个 `@layer` 名、2467 个组件覆盖槽、120 个自定义元素及其 attribute 与事件。
 
 prop 名那一维是后补的：在它进来之前，改一个 prop 名（实测 `transfer` 的 `items` 改

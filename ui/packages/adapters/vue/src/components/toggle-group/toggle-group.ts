@@ -1,5 +1,5 @@
 import type { ToggleGroupNode, ToggleGroupNodeMeta, ToggleGroupSchema, ToggleGroupValue } from '@xihan-ui/headless'
-import type { Direction, Orientation } from '@xihan-ui/kernel'
+import type { Direction, Orientation, Size } from '@xihan-ui/kernel'
 import type { PropType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
@@ -18,6 +18,7 @@ export const XhToggleGroupRoot = defineComponent({
     multiple: { type: Boolean, default: undefined },
     disabled: { type: Boolean, default: undefined },
     disallowEmpty: { type: Boolean, default: undefined },
+    size: { type: String as PropType<Size>, default: undefined },
     orientation: { type: String as PropType<Orientation>, default: undefined },
     dir: { type: String as PropType<Direction>, default: undefined },
     loop: { type: Boolean, default: undefined },

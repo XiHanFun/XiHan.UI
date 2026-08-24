@@ -1,4 +1,4 @@
-import type { Cleanup, Direction, Layer, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig } from '@xihan-ui/kernel'
+import type { Cleanup, Direction, Layer, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 import type {
   ColorPickerAnchor,
@@ -102,6 +102,8 @@ export interface ColorPickerSchema extends MachineSchema {
     name?: string
     /** 带透明度，默认关。关掉时值串恒不透明，透明度那条滑杆与输入框整条禁用。 */
     alpha?: boolean
+    /** 尺寸：sm / md / lg。 */
+    size?: Size
     /** 文字方向。只改写横轴（取色区的饱和度、通道滑杆）上左右两键与指针的语义。 */
     dir?: Direction
     placement?: Placement
