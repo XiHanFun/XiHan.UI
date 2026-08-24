@@ -79,22 +79,22 @@
   /* —— 间距档位 —— */
   /* 每一档指向一个间距令牌，折行时行与行之间也吃这份间距 */
   [data-scope='flex'][data-part='root'][data-gap='xs'] {
-    gap: var(--xh-flex-gap, var(--xh-space-1));
+    gap: var(--xh-flex-gap, var(--xh-layout-gap-xs));
   }
 
   [data-scope='flex'][data-part='root'][data-gap='sm'] {
-    gap: var(--xh-flex-gap, var(--xh-space-2));
+    gap: var(--xh-flex-gap, var(--xh-layout-gap-sm));
   }
 
   [data-scope='flex'][data-part='root'][data-gap='md'] {
-    gap: var(--xh-flex-gap, var(--xh-space-3));
+    gap: var(--xh-flex-gap, var(--xh-layout-gap-md));
   }
 
   [data-scope='flex'][data-part='root'][data-gap='lg'] {
-    gap: var(--xh-flex-gap, var(--xh-space-4));
+    gap: var(--xh-flex-gap, var(--xh-layout-gap-lg));
   }
 
   [data-scope='flex'][data-part='root'][data-gap='xl'] {
-    gap: var(--xh-flex-gap, var(--xh-space-6));
+    gap: var(--xh-flex-gap, var(--xh-layout-gap-xl));
   }
 }

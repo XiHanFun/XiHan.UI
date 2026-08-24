@@ -212,6 +212,10 @@
       "$type": "dimension",
       "$value": "24px"
     },
+    "7": {
+      "$type": "dimension",
+      "$value": "28px"
+    },
     "8": {
       "$type": "dimension",
       "$value": "32px"

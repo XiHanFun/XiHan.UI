@@ -37,13 +37,13 @@
     /* 尺寸档只换这五个私有槽，trigger 与面板里的链接都从 root 继承它们，
        换档不必给每个部件各写一条选择器。面板与共享外壳都是 root 的后代，一并继承。
        trigger 写的是 font: inherit，字号跟着 root 这一档走，不另立槽 */
-    --xh-_navigation-menu-font-size: var(--xh-text-label-size);
+    --xh-_navigation-menu-font-size: var(--xh-control-font-md);
     --xh-_navigation-menu-trigger-h: var(--xh-control-h-md);
     --xh-_navigation-menu-trigger-px: var(--xh-control-px-md);
     --xh-_navigation-menu-trigger-gap: var(--xh-control-gap-md);
     --xh-_navigation-menu-link-py: var(--xh-space-1_5);
     --xh-_navigation-menu-link-px: var(--xh-control-px-md);
-    --xh-_navigation-menu-link-font-size: var(--xh-text-body-size);
+    --xh-_navigation-menu-link-font-size: var(--xh-control-font-md);
 
     /* 悬停与键盘锚点恒中性灰轻档、不接语气槽——两档同色相的话打开路径就认不出来了 */
     --xh-_navigation-menu-highlight-bg: var(--xh-bg-subtle);

@@ -55,8 +55,8 @@
     --xh-_select-h: var(--xh-control-h-md);
     --xh-_select-px: var(--xh-control-px-md);
     --xh-_select-gap: var(--xh-control-gap-md);
-    --xh-_select-font-size: var(--xh-text-body-size);
-    --xh-_select-label-font-size: var(--xh-text-label-size);
+    --xh-_select-font-size: var(--xh-control-font-md);
+    --xh-_select-label-font-size: var(--xh-control-font-md);
 
     /* 形态档只换这三个槽：缺省即 outline（描边 + 画布底） */
     --xh-_select-control-bg: var(--xh-bg-canvas);

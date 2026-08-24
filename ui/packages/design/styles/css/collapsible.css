@@ -10,7 +10,7 @@
     --xh-_collapsible-trigger-h: var(--xh-control-h-md);
     --xh-_collapsible-trigger-px: var(--xh-control-px-md);
     --xh-_collapsible-trigger-gap: var(--xh-control-gap-md);
-    --xh-_collapsible-trigger-font-size: var(--xh-text-label-size);
+    --xh-_collapsible-trigger-font-size: var(--xh-control-font-md);
   }
 
   /* —— 尺寸 —— */

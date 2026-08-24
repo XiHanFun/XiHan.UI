@@ -10,7 +10,7 @@
     --xh-_timeline-dot-size: var(--xh-space-2_5);
     --xh-_timeline-gutter: var(--xh-space-3);
     --xh-_timeline-item-gap: var(--xh-space-5);
-    --xh-_timeline-title-font-size: var(--xh-text-label-size);
+    --xh-_timeline-title-font-size: var(--xh-control-font-md);
     --xh-_timeline-caption-font-size: var(--xh-text-caption-size);
     /* 标题首行占多高。圆点按它居中下移，圆心才落在标题这一行的中线上 */
     --xh-_timeline-line-h: calc(

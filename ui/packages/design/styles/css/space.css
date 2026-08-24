@@ -8,7 +8,7 @@
     display: flex;
     flex-wrap: nowrap;
     /* 不写档位也按 md 留白，这是与裸弹性容器的分野；使用者槽位排在档位之前，写死一个值即盖过所有档 */
-    gap: var(--xh-space-gap, var(--xh-space-3));
+    gap: var(--xh-space-gap, var(--xh-layout-gap-md));
   }
 
   /* 声明了 display 就盖掉了 UA 的 [hidden] 规则，这里还回去 */
@@ -96,22 +96,22 @@
   /* —— 间距档位 —— */
   /* 每一档指向一个间距令牌，折行时行与行之间也吃这份间距 */
   [data-scope='space'][data-part='root'][data-gap='xs'] {
-    gap: var(--xh-space-gap, var(--xh-space-1));
+    gap: var(--xh-space-gap, var(--xh-layout-gap-xs));
   }
 
   [data-scope='space'][data-part='root'][data-gap='sm'] {
-    gap: var(--xh-space-gap, var(--xh-space-2));
+    gap: var(--xh-space-gap, var(--xh-layout-gap-sm));
   }
 
   [data-scope='space'][data-part='root'][data-gap='md'] {
-    gap: var(--xh-space-gap, var(--xh-space-3));
+    gap: var(--xh-space-gap, var(--xh-layout-gap-md));
   }
 
   [data-scope='space'][data-part='root'][data-gap='lg'] {
-    gap: var(--xh-space-gap, var(--xh-space-4));
+    gap: var(--xh-space-gap, var(--xh-layout-gap-lg));
   }
 
   [data-scope='space'][data-part='root'][data-gap='xl'] {
-    gap: var(--xh-space-gap, var(--xh-space-6));
+    gap: var(--xh-space-gap, var(--xh-layout-gap-xl));
   }
 }

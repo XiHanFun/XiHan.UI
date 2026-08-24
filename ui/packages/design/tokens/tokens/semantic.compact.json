@@ -48,9 +48,19 @@
     "px-sm": { "$type": "dimension", "$value": "{space.3}" }
   },
   "section": {
-    "py": { "$type": "dimension", "$value": "{space.4}" }
+    "py-sm": { "$type": "dimension", "$value": "{space.3}" },
+    "py-md": { "$type": "dimension", "$value": "{space.4}" },
+    "py-lg": { "$type": "dimension", "$value": "{space.6}" }
   },
   "stack": {
-    "gap-md": { "$type": "dimension", "$value": "{space.3}" }
+    "gap-sm": { "$type": "dimension", "$value": "{space.1_5}" },
+    "gap-md": { "$type": "dimension", "$value": "{space.3}" },
+    "gap-lg": { "$type": "dimension", "$value": "{space.5}" }
+  },
+  "layout": {
+    "gap-sm": { "$type": "dimension", "$value": "{space.1_5}" },
+    "gap-md": { "$type": "dimension", "$value": "{space.2_5}" },
+    "gap-lg": { "$type": "dimension", "$value": "{space.3}" },
+    "gap-xl": { "$type": "dimension", "$value": "{space.5}" }
   }
 }

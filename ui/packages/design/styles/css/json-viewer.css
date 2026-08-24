@@ -10,7 +10,7 @@
     /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
     --xh-icon-size: var(--xh-json-viewer-icon-size, var(--xh-glyph-size-text));
 
-    --xh-_json-viewer-font-size: var(--xh-text-secondary-size);
+    --xh-_json-viewer-font-size: var(--xh-control-caption-md);
     --xh-_json-viewer-row-py: var(--xh-space-0_5);
     --xh-_json-viewer-indent: var(--xh-space-4);
     --xh-json-viewer-key-fg: var(--xh-fg-brand-strong);

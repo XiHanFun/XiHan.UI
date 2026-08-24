@@ -269,23 +269,23 @@
   /* —— 间距档位 —— */
   /* 每一档指向一个间距令牌，行与行之间也吃这同一份间距 */
   [data-scope='grid'][data-part='root'][data-gap='xs'] {
-    gap: var(--xh-grid-gap, var(--xh-space-1));
+    gap: var(--xh-grid-gap, var(--xh-layout-gap-xs));
   }
 
   [data-scope='grid'][data-part='root'][data-gap='sm'] {
-    gap: var(--xh-grid-gap, var(--xh-space-2));
+    gap: var(--xh-grid-gap, var(--xh-layout-gap-sm));
   }
 
   [data-scope='grid'][data-part='root'][data-gap='md'] {
-    gap: var(--xh-grid-gap, var(--xh-space-3));
+    gap: var(--xh-grid-gap, var(--xh-layout-gap-md));
   }
 
   [data-scope='grid'][data-part='root'][data-gap='lg'] {
-    gap: var(--xh-grid-gap, var(--xh-space-4));
+    gap: var(--xh-grid-gap, var(--xh-layout-gap-lg));
   }
 
   [data-scope='grid'][data-part='root'][data-gap='xl'] {
-    gap: var(--xh-grid-gap, var(--xh-space-6));
+    gap: var(--xh-grid-gap, var(--xh-layout-gap-xl));
   }
 
   /* —— 块向对齐 —— */

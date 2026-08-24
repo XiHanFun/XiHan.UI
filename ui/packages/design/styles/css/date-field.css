@@ -13,8 +13,8 @@
     --xh-_date-field-control-h: var(--xh-control-h-md);
     --xh-_date-field-control-px: var(--xh-control-px-md);
     --xh-_date-field-gap: var(--xh-control-gap-md);
-    --xh-_date-field-font-size: var(--xh-text-body-size);
-    --xh-_date-field-label-font-size: var(--xh-text-label-size);
+    --xh-_date-field-font-size: var(--xh-control-font-md);
+    --xh-_date-field-label-font-size: var(--xh-control-font-md);
     /* 形态档只换这三个私有槽：底色与两档描边 */
     --xh-_date-field-control-bg: var(--xh-bg-canvas);
     --xh-_date-field-control-border: var(--xh-border-control);

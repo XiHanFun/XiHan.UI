@@ -10,8 +10,8 @@
 
     /* 尺寸档只换这三个私有槽，序号圆点、标题与说明都从 root 继承它们，
        换档不必给每个部件各写一条选择器 */
-    --xh-_steps-indicator-size: var(--xh-control-h-sm);
-    --xh-_steps-title-font-size: var(--xh-text-label-size);
+    --xh-_steps-indicator-size: var(--xh-space-7);
+    --xh-_steps-title-font-size: var(--xh-control-font-md);
     --xh-_steps-caption-font-size: var(--xh-text-caption-size);
 
     /* 语气落在走过与当前这两步的标记和连接线上：强调色画描边与填充，

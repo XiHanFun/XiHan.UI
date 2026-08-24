@@ -8,9 +8,9 @@
   [data-scope='pin-input'][data-part='root'] {
     /* 尺寸档只换这四个私有槽，标题与格子都从 root 继承它们，换档不必给每个部件各写一条选择器 */
     --xh-_pin-input-box-size: var(--xh-control-box-md);
-    --xh-_pin-input-box-gap: var(--xh-space-2);
+    --xh-_pin-input-box-gap: var(--xh-control-gap-md);
     --xh-_pin-input-box-font-size: var(--xh-text-heading-3-size);
-    --xh-_pin-input-label-font-size: var(--xh-text-label-size);
+    --xh-_pin-input-label-font-size: var(--xh-control-font-md);
     /* 形态档只换这三个私有槽，缺省这一份就是描边式（描边 + 画布底） */
     --xh-_pin-input-box-bg: var(--xh-bg-canvas);
     --xh-_pin-input-box-border: var(--xh-border-control);

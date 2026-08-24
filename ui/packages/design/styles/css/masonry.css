@@ -42,22 +42,22 @@
   /* —— 间距档位 —— */
   /* 每一档指向一个间距令牌，列之间与列内项之间吃同一份间距 */
   [data-scope='masonry'][data-part='root'][data-gap='xs'] {
-    --xh-_masonry-gap: var(--xh-masonry-gap, var(--xh-space-1));
+    --xh-_masonry-gap: var(--xh-masonry-gap, var(--xh-layout-gap-xs));
   }
 
   [data-scope='masonry'][data-part='root'][data-gap='sm'] {
-    --xh-_masonry-gap: var(--xh-masonry-gap, var(--xh-space-2));
+    --xh-_masonry-gap: var(--xh-masonry-gap, var(--xh-layout-gap-sm));
   }
 
   [data-scope='masonry'][data-part='root'][data-gap='md'] {
-    --xh-_masonry-gap: var(--xh-masonry-gap, var(--xh-space-3));
+    --xh-_masonry-gap: var(--xh-masonry-gap, var(--xh-layout-gap-md));
   }
 
   [data-scope='masonry'][data-part='root'][data-gap='lg'] {
-    --xh-_masonry-gap: var(--xh-masonry-gap, var(--xh-space-4));
+    --xh-_masonry-gap: var(--xh-masonry-gap, var(--xh-layout-gap-lg));
   }
 
   [data-scope='masonry'][data-part='root'][data-gap='xl'] {
-    --xh-_masonry-gap: var(--xh-masonry-gap, var(--xh-space-6));
+    --xh-_masonry-gap: var(--xh-masonry-gap, var(--xh-layout-gap-xl));
   }
 }

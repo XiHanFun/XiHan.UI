@@ -70,7 +70,7 @@
     --xh-_menu-item-py: var(--xh-space-1_5);
     --xh-_menu-item-px: var(--xh-control-px-md);
     --xh-_menu-item-gap: var(--xh-control-gap-md);
-    --xh-_menu-font-size: var(--xh-text-body-size);
+    --xh-_menu-font-size: var(--xh-control-font-md);
 
     /* 打开子菜单的触发条目走品牌淡底强档，随语气换色相；没写 data-tone 时退回品牌淡底。
        悬停与键盘焦点恒中性灰轻档、不接语气槽——两档同色相的话打开路径就认不出来了 */

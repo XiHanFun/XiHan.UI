@@ -9,7 +9,7 @@
   [data-scope='avatar-group'][data-part='root'] {
     /* 私有槽位：整组共用的直径、字号与叠放量，换档只改这三个 */
     --xh-_avatar-group-size: var(--xh-avatar-group-size, var(--xh-control-h-md));
-    --xh-_avatar-group-font-size: var(--xh-avatar-group-font-size, var(--xh-text-secondary-size));
+    --xh-_avatar-group-font-size: var(--xh-avatar-group-font-size, var(--xh-control-caption-md));
     --xh-_avatar-group-overlap: var(--xh-avatar-group-overlap, var(--xh-space-2_5));
 
     /* 流给组内每一枚 */

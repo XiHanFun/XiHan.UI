@@ -409,15 +409,61 @@
     }
   },
   "section": {
+    "$description": "展示型版面（空状态、结果页）的纵向内衬三档。",
     "py": {
+      "$description": "中档的别名，给不分档的使用者。",
+      "$type": "dimension",
+      "$value": "{section.py-md}"
+    },
+    "py-sm": {
+      "$type": "dimension",
+      "$value": "{space.4}"
+    },
+    "py-md": {
       "$type": "dimension",
       "$value": "{space.5}"
+    },
+    "py-lg": {
+      "$type": "dimension",
+      "$value": "{space.8}"
     }
   },
   "stack": {
+    "$description": "组件把自己堆叠的几块隔开时用的间隙三档。作者在布局原语上挑的间隙是另一把尺，见 layout.gap。",
+    "gap-sm": {
+      "$type": "dimension",
+      "$value": "{space.2}"
+    },
     "gap-md": {
       "$type": "dimension",
       "$value": "{space.4}"
+    },
+    "gap-lg": {
+      "$type": "dimension",
+      "$value": "{space.6}"
+    }
+  },
+  "layout": {
+    "$description": "布局原语（flex / grid / space / masonry）上作者挑的间隙五档。与 stack.gap 分开：那把尺是组件内部的堆叠间隙、只有三档，这把是作者面向版面挑的密度、五档。",
+    "gap-xs": {
+      "$type": "dimension",
+      "$value": "{space.1}"
+    },
+    "gap-sm": {
+      "$type": "dimension",
+      "$value": "{space.2}"
+    },
+    "gap-md": {
+      "$type": "dimension",
+      "$value": "{space.3}"
+    },
+    "gap-lg": {
+      "$type": "dimension",
+      "$value": "{space.4}"
+    },
+    "gap-xl": {
+      "$type": "dimension",
+      "$value": "{space.6}"
     }
   },
   "track": {

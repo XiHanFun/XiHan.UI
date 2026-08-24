@@ -57,8 +57,8 @@
     --xh-_tree-select-h: var(--xh-control-h-md);
     --xh-_tree-select-px: var(--xh-control-px-md);
     --xh-_tree-select-gap: var(--xh-control-gap-md);
-    --xh-_tree-select-font-size: var(--xh-text-body-size);
-    --xh-_tree-select-label-font-size: var(--xh-text-label-size);
+    --xh-_tree-select-font-size: var(--xh-control-font-md);
+    --xh-_tree-select-label-font-size: var(--xh-control-font-md);
 
     /* 形态档只换触发框的描边与底色这三个槽，浮层与树不跟着变：
        变的是「这是个输入位」的表达方式，不是弹出内容的表达方式 */

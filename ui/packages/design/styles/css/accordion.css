@@ -12,7 +12,7 @@
     --xh-_accordion-trigger-h: var(--xh-control-h-md);
     --xh-_accordion-trigger-px: var(--xh-control-px-md);
     --xh-_accordion-trigger-gap: var(--xh-control-gap-md);
-    --xh-_accordion-trigger-font-size: var(--xh-text-label-size);
+    --xh-_accordion-trigger-font-size: var(--xh-control-font-md);
 
     /* 语气落在展开着的标题上，指示器写在标题里、跟着继承这个色，不另立规则。
        没写 data-tone 时 --xh-_tone-fg 没被声明，退回原来的前景色。

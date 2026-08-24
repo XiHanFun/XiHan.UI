@@ -12,7 +12,7 @@
        换档不必给每个部件各写一条选择器 */
     --xh-_pagination-item-size: var(--xh-control-h-md);
     --xh-_pagination-item-px: var(--xh-control-px-md);
-    --xh-_pagination-font-size: var(--xh-text-label-size);
+    --xh-_pagination-font-size: var(--xh-control-font-md);
 
     /* 当前页的选中态随语气走。没写 data-tone 时这几个 --xh-_tone-* 都没被声明，
        退回原来的品牌底与其配色。聚焦环不在其列，它恒是 --xh-ring-focus */
