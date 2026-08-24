@@ -143,7 +143,7 @@
     block-size: var(--xh-control-h-sm);
     padding-inline: var(--xh-control-px-sm);
     border: var(--xh-stroke-thin) solid transparent;
-    border-radius: var(--xh-shape-control);
+    border-radius: var(--xh-popconfirm-action-radius, var(--xh-shape-control));
     font-size: var(--xh-text-secondary-size);
     font-weight: var(--xh-text-label-weight);
     line-height: var(--xh-leading-none);

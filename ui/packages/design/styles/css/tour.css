@@ -254,7 +254,7 @@
     block-size: var(--xh-control-h-sm);
     padding-inline: var(--xh-control-px-md);
     border: var(--xh-stroke-thin) solid transparent;
-    border-radius: var(--xh-shape-control);
+    border-radius: var(--xh-tour-action-radius, var(--xh-shape-control));
     font-size: var(--xh-text-secondary-size);
     cursor: pointer;
   }

@@ -4673,7 +4673,7 @@ input[data-scope='mention'][data-part='input'] {
   block-size: var(--xh-control-h-sm);
   padding-inline: var(--xh-control-px-sm);
   border: var(--xh-stroke-thin) solid transparent;
-  border-radius: var(--xh-shape-control);
+  border-radius: var(--xh-popconfirm-action-radius, var(--xh-shape-control));
   font-size: var(--xh-text-secondary-size);
   font-weight: var(--xh-text-label-weight);
   line-height: var(--xh-leading-none);
@@ -6184,7 +6184,7 @@ input[data-scope='mention'][data-part='input'] {
   justify-content: center;
   inline-size: var(--xh-timeline-indicator-size, var(--xh-_timeline-dot-size));
   block-size: var(--xh-timeline-indicator-size, var(--xh-_timeline-dot-size));
-  border-radius: var(--xh-shape-pill);
+  border-radius: var(--xh-timeline-indicator-radius, var(--xh-shape-pill));
   /* 使用者令牌排在语气之前；两者都没有时退回一个中性的实心点 */
   background: var(--xh-timeline-indicator-bg, var(--xh-_tone-soft, var(--xh-fg-muted)));
   color: var(--xh-timeline-indicator-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
@@ -6212,7 +6212,7 @@ input[data-scope='mention'][data-part='input'] {
 
 /* —— 连线 —— */
 [data-scope='timeline'][data-part='connector'] {
-  border-radius: var(--xh-shape-pill);
+  border-radius: var(--xh-timeline-connector-radius, var(--xh-shape-pill));
   background: var(--xh-timeline-connector-bg, var(--xh-border-default));
 }
 
@@ -7617,7 +7617,7 @@ input[data-scope='mention'][data-part='input'] {
   padding-inline: var(--xh-space-2);
   padding-block: var(--xh-space-0_5);
   border: var(--xh-stroke-thin) solid transparent;
-  border-radius: var(--xh-shape-pill);
+  border-radius: var(--xh-badge-radius, var(--xh-shape-pill));
   background: var(--xh-badge-bg, var(--xh-bg-subtle));
   color: var(--xh-badge-fg, var(--xh-fg-default));
   font-size: var(--xh-badge-font-size, var(--xh-text-caption-size));
@@ -9349,7 +9349,7 @@ input[data-scope='mention'][data-part='input'] {
   block-size: var(--xh-_checkbox-box);
   padding: 0;
   border: var(--xh-stroke-thin) solid var(--xh-checkbox-border, var(--xh-border-control));
-  border-radius: var(--xh-shape-inset);
+  border-radius: var(--xh-checkbox-radius, var(--xh-shape-inset));
   background: var(--xh-checkbox-bg, var(--xh-bg-canvas));
   color: var(--xh-checkbox-fg, var(--xh-_checkbox-on-accent));
   cursor: pointer;
@@ -12184,7 +12184,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='date-picker'][data-part='preset'] {
   padding-block: var(--xh-space-1);
   padding-inline: var(--xh-space-3);
-  border-radius: var(--xh-shape-control);
+  border-radius: var(--xh-date-picker-preset-radius, var(--xh-shape-control));
   font-size: var(--xh-text-secondary-size);
   line-height: var(--xh-leading-normal);
   white-space: nowrap;
@@ -12234,7 +12234,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='date-picker'][data-part='time-item'] {
   padding-block: var(--xh-space-1);
   padding-inline: var(--xh-space-3);
-  border-radius: var(--xh-shape-control);
+  border-radius: var(--xh-date-picker-time-item-radius, var(--xh-shape-control));
   font-size: var(--xh-text-secondary-size);
   line-height: var(--xh-leading-normal);
   text-align: center;
@@ -12266,7 +12266,7 @@ input[data-scope='mention'][data-part='input'] {
   block-size: var(--xh-control-h-sm);
   padding-inline: var(--xh-control-px-sm);
   border: none;
-  border-radius: var(--xh-shape-control);
+  border-radius: var(--xh-date-picker-confirm-trigger-radius, var(--xh-shape-control));
   background: var(--xh-date-picker-confirm-bg, var(--xh-_date-picker-accent));
   color: var(--xh-date-picker-confirm-fg, var(--xh-_date-picker-accent-fg));
   font-size: var(--xh-text-secondary-size);
@@ -14253,7 +14253,7 @@ input[data-scope='mention'][data-part='input'] {
   background: var(--xh-image-viewer-chrome-bg, color-mix(in oklab, var(--xh-color-neutral-950) 55%, transparent));
   color: inherit;
   border: none;
-  border-radius: var(--xh-shape-pill);
+  border-radius: var(--xh-image-viewer-overlay-radius, var(--xh-shape-pill));
 }
 
 [data-scope='image-viewer'][data-part='toolbar'] {
@@ -14276,7 +14276,7 @@ input[data-scope='mention'][data-part='input'] {
   block-size: var(--xh-control-action-size);
   background: none;
   border: none;
-  border-radius: var(--xh-shape-control);
+  border-radius: var(--xh-image-viewer-toolbar-radius, var(--xh-shape-control));
   color: inherit;
   font-size: var(--xh-glyph-size-sm);
   cursor: pointer;
@@ -16569,7 +16569,7 @@ input[data-scope='mention'][data-part='input'] {
   overflow: hidden;
   inline-size: 100%;
   block-size: var(--xh-_thickness);
-  border-radius: var(--xh-shape-pill);
+  border-radius: var(--xh-progress-track-radius, var(--xh-shape-pill));
   background: var(--xh-progress-track, var(--xh-bg-subtle-active));
 }
 
@@ -16577,7 +16577,7 @@ input[data-scope='mention'][data-part='input'] {
    轨道不跟着换族：只有已完成的那段换色，底槽保持中性才读得出"完成了多少"。 */
 [data-scope='progress'][data-part='range'] {
   block-size: 100%;
-  border-radius: var(--xh-shape-pill);
+  border-radius: var(--xh-progress-range-radius, var(--xh-shape-pill));
   background: var(--xh-progress-range, var(--xh-_tone, var(--xh-bg-brand)));
   transition: inline-size var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
@@ -16763,7 +16763,7 @@ input[data-scope='mention'][data-part='input'] {
   inline-size: var(--xh-radio-group-indicator-size, var(--xh-_radio-group-indicator));
   block-size: var(--xh-radio-group-indicator-size, var(--xh-_radio-group-indicator));
   border: var(--xh-stroke-thin) solid var(--xh-radio-group-indicator-border, var(--xh-border-control));
-  border-radius: var(--xh-shape-pill);
+  border-radius: var(--xh-radio-group-indicator-radius, var(--xh-shape-pill));
   background: var(--xh-radio-group-indicator-bg, var(--xh-bg-canvas));
   transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
@@ -17960,7 +17960,7 @@ input[data-scope='mention'][data-part='input'] {
   min-block-size: var(--xh-control-h-md);
   padding-inline: var(--xh-control-px-md);
   border: none;
-  border-radius: var(--xh-shape-control);
+  border-radius: var(--xh-side-nav-link-radius, var(--xh-shape-control));
   background: none;
   color: inherit;
   font-size: var(--xh-text-body-size);
@@ -18311,7 +18311,7 @@ input[data-scope='mention'][data-part='input'] {
   inset-block-start: 50%;
   inline-size: var(--xh-slider-mark-size, var(--xh-space-1));
   block-size: var(--xh-slider-mark-size, var(--xh-space-1));
-  border-radius: var(--xh-shape-pill);
+  border-radius: var(--xh-slider-mark-radius, var(--xh-shape-pill));
   background: var(--xh-slider-mark-bg, var(--xh-border-strong));
   translate: -50% -50%;
 }
@@ -18651,7 +18651,7 @@ input[data-scope='mention'][data-part='input'] {
   inline-size: var(--xh-steps-indicator-size, var(--xh-_steps-indicator-size));
   block-size: var(--xh-steps-indicator-size, var(--xh-_steps-indicator-size));
   border: var(--xh-stroke-thin) solid var(--xh-steps-indicator-border, var(--xh-border-strong));
-  border-radius: var(--xh-shape-pill);
+  border-radius: var(--xh-steps-indicator-radius, var(--xh-shape-pill));
   background: var(--xh-steps-indicator-bg, transparent);
   color: var(--xh-steps-indicator-fg, var(--xh-fg-muted));
   font-size: var(--xh-steps-indicator-font-size, var(--xh-_steps-caption-font-size));
@@ -18719,7 +18719,7 @@ input[data-scope='mention'][data-part='input'] {
   flex: 1;
   min-inline-size: var(--xh-steps-separator-min-length, var(--xh-space-4));
   block-size: var(--xh-steps-separator-thickness, var(--xh-stroke-thick));
-  border-radius: var(--xh-shape-pill);
+  border-radius: var(--xh-steps-separator-radius, var(--xh-shape-pill));
   background: var(--xh-steps-separator-bg, var(--xh-border-default));
   transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
@@ -18799,7 +18799,7 @@ input[data-scope='mention'][data-part='input'] {
   block-size: var(--xh-_switch-track-h);
   padding: var(--xh-_switch-pad);
   border: 0;
-  border-radius: var(--xh-shape-pill);
+  border-radius: var(--xh-switch-radius, var(--xh-shape-pill));
   background: var(--xh-switch-bg, var(--xh-bg-subtle-active));
   cursor: pointer;
   transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
@@ -18837,7 +18837,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='switch'][data-part='thumb'] {
   inline-size: var(--xh-_switch-thumb-size);
   block-size: var(--xh-_switch-thumb-size);
-  border-radius: var(--xh-shape-pill);
+  border-radius: var(--xh-switch-thumb-radius, var(--xh-shape-pill));
   background: var(--xh-switch-thumb, var(--xh-bg-canvas));
   box-shadow: var(--xh-switch-thumb-shadow, var(--xh-elevation-raised));
   transition: translate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
@@ -19188,7 +19188,8 @@ input[data-scope='mention'][data-part='input'] {
   color: transparent;
 }
 
-/* 半选画一条横杠盖住勾：aria-checked=mixed 在视觉上也得与"全选"分得开 */
+/* 半选换一枚横杠字形盖住勾：aria-checked=mixed 在视觉上也得与"全选"分得开。
+   横杠与勾同走字形令牌，作者换掉标记时两态一起换 */
 [data-scope='table'][data-part='select-all-trigger'][data-state='indeterminate'] {
   position: relative;
   color: transparent;
@@ -19196,11 +19197,12 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='table'][data-part='select-all-trigger'][data-state='indeterminate']::after {
   position: absolute;
-  inline-size: 60%;
-  block-size: var(--xh-stroke-thick);
-  border-radius: var(--xh-shape-pill);
-  background: var(--xh-table-trigger-fg, var(--xh-fg-on-brand));
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  background-color: var(--xh-table-trigger-fg, var(--xh-fg-on-brand));
   content: '';
+  -webkit-mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
 }
 
 [data-scope='table'][data-part='select-all-trigger'][data-disabled],
@@ -21052,7 +21054,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='time-picker'][data-part='preset'] {
   padding-block: var(--xh-time-picker-preset-py, var(--xh-space-1));
   padding-inline: var(--xh-time-picker-preset-px, var(--xh-space-3));
-  border-radius: var(--xh-shape-control);
+  border-radius: var(--xh-time-picker-preset-radius, var(--xh-shape-control));
   font-size: var(--xh-text-secondary-size);
   line-height: var(--xh-leading-normal);
   white-space: nowrap;
@@ -22331,7 +22333,7 @@ input[data-scope='mention'][data-part='input'] {
   block-size: var(--xh-control-h-sm);
   padding-inline: var(--xh-control-px-md);
   border: var(--xh-stroke-thin) solid transparent;
-  border-radius: var(--xh-shape-control);
+  border-radius: var(--xh-tour-action-radius, var(--xh-shape-control));
   font-size: var(--xh-text-secondary-size);
   cursor: pointer;
 }

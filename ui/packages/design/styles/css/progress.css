@@ -31,7 +31,7 @@
     overflow: hidden;
     inline-size: 100%;
     block-size: var(--xh-_thickness);
-    border-radius: var(--xh-shape-pill);
+    border-radius: var(--xh-progress-track-radius, var(--xh-shape-pill));
     background: var(--xh-progress-track, var(--xh-bg-subtle-active));
   }
 
@@ -39,7 +39,7 @@
      轨道不跟着换族：只有已完成的那段换色，底槽保持中性才读得出"完成了多少"。 */
   [data-scope='progress'][data-part='range'] {
     block-size: 100%;
-    border-radius: var(--xh-shape-pill);
+    border-radius: var(--xh-progress-range-radius, var(--xh-shape-pill));
     background: var(--xh-progress-range, var(--xh-_tone, var(--xh-bg-brand)));
     transition: inline-size var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }

@@ -154,7 +154,7 @@
     inline-size: var(--xh-steps-indicator-size, var(--xh-_steps-indicator-size));
     block-size: var(--xh-steps-indicator-size, var(--xh-_steps-indicator-size));
     border: var(--xh-stroke-thin) solid var(--xh-steps-indicator-border, var(--xh-border-strong));
-    border-radius: var(--xh-shape-pill);
+    border-radius: var(--xh-steps-indicator-radius, var(--xh-shape-pill));
     background: var(--xh-steps-indicator-bg, transparent);
     color: var(--xh-steps-indicator-fg, var(--xh-fg-muted));
     font-size: var(--xh-steps-indicator-font-size, var(--xh-_steps-caption-font-size));
@@ -222,7 +222,7 @@
     flex: 1;
     min-inline-size: var(--xh-steps-separator-min-length, var(--xh-space-4));
     block-size: var(--xh-steps-separator-thickness, var(--xh-stroke-thick));
-    border-radius: var(--xh-shape-pill);
+    border-radius: var(--xh-steps-separator-radius, var(--xh-shape-pill));
     background: var(--xh-steps-separator-bg, var(--xh-border-default));
     transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }

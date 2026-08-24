@@ -284,7 +284,8 @@
     color: transparent;
   }
 
-  /* 半选画一条横杠盖住勾：aria-checked=mixed 在视觉上也得与"全选"分得开 */
+  /* 半选换一枚横杠字形盖住勾：aria-checked=mixed 在视觉上也得与"全选"分得开。
+     横杠与勾同走字形令牌，作者换掉标记时两态一起换 */
   [data-scope='table'][data-part='select-all-trigger'][data-state='indeterminate'] {
     position: relative;
     color: transparent;
@@ -292,11 +293,12 @@
 
   [data-scope='table'][data-part='select-all-trigger'][data-state='indeterminate']::after {
     position: absolute;
-    inline-size: 60%;
-    block-size: var(--xh-stroke-thick);
-    border-radius: var(--xh-shape-pill);
-    background: var(--xh-table-trigger-fg, var(--xh-fg-on-brand));
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    background-color: var(--xh-table-trigger-fg, var(--xh-fg-on-brand));
     content: '';
+    -webkit-mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
   }
 
   [data-scope='table'][data-part='select-all-trigger'][data-disabled],

@@ -357,7 +357,7 @@
   [data-scope='time-picker'][data-part='preset'] {
     padding-block: var(--xh-time-picker-preset-py, var(--xh-space-1));
     padding-inline: var(--xh-time-picker-preset-px, var(--xh-space-3));
-    border-radius: var(--xh-shape-control);
+    border-radius: var(--xh-time-picker-preset-radius, var(--xh-shape-control));
     font-size: var(--xh-text-secondary-size);
     line-height: var(--xh-leading-normal);
     white-space: nowrap;

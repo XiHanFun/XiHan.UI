@@ -23,13 +23,26 @@ const cssDir = path.resolve(
 /** primitive 的圆角档，只该由语义层引用，皮肤不许直接点名。 */
 const PRIMITIVE = /var\(\s*--xh-radius-[\w-]+/
 
+/**
+ * 圆角可以没有使用者覆盖槽的地方：形状本身就是这个部件的身份，换掉它就不是那个东西了。
+ * 键写成「组件:部件[::伪元素]」。
+ */
+const NO_SLOT = {
+  'radio-group:indicator::before': '单选圆点，圆是它的身份',
+  'popconfirm:confirm-trigger::before': '转圈的加载环',
+  'switch:thumb::after': '转圈的加载环',
+}
+
 const offenders = []
+const slotless = []
+const noSlotSeen = new Set()
 let scanned = 0
 let checked = 0
 
 for (const file of fs.readdirSync(cssDir).filter(f => f.endsWith('.css')).sort()) {
   scanned++
-  const text = fs.readFileSync(path.join(cssDir, file), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '')
+  const comp = file.replace(/\.css$/, '')
+  const text = fs.readFileSync(path.join(cssDir, file), 'utf8').replace(/\/\*[\s\S]*?\*\//g, m => m.replace(/[^\n]/g, ' '))
   for (const line of text.split('\n')) {
     // 冒号后不写 \s*：它与 [^;]+ 能吃同一批字符，不匹配时会逐位回溯。值交给 trim 归一
     // 三种写法都扫：简写、border-<side>-radius 与逻辑角长属性、私有槽赋值——原语先灌进私有槽再消费同样是下探
@@ -40,6 +53,29 @@ for (const file of fs.readdirSync(cssDir).filter(f => f.endsWith('.css')).sort()
     if (PRIMITIVE.test(m[1].trim()))
       offenders.push(`${file}: ${line.trim()}`)
   }
+
+  // 第二条判据：取语义档的圆角必须留一个使用者覆盖槽，同角色的部件在别处都有
+  for (const [, selector, body] of text.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
+    for (const [, prop, value] of body.matchAll(/(border(?:-[\w-]+)?-radius)\s*:\s*([^;]+);/g)) {
+      const v = value.trim()
+      // 私有槽赋值、inherit、显式取直角都不在此列——它们不是「可换的形状」
+      if (!v.startsWith('var(--xh-shape-'))
+        continue
+      const parts = [...selector.matchAll(/data-part='([a-z-]+)'/g)].map(x => x[1])
+      const pseudo = /::(before|after)/.exec(selector)?.[1]
+      const key = `${comp}:${parts.at(-1) ?? '?'}${pseudo ? `::${pseudo}` : ''}`
+      if (key in NO_SLOT) {
+        noSlotSeen.add(key)
+        continue
+      }
+      slotless.push(`${file}  ${selector.replace(/\s+/g, ' ').trim().slice(0, 80)}  ${prop}: ${v}`)
+    }
+  }
+}
+
+for (const key of Object.keys(NO_SLOT)) {
+  if (!noSlotSeen.has(key))
+    slotless.push(`${key}  登记在 NO_SLOT 里却没被扫到——名单过期了`)
 }
 
 if (offenders.length > 0) {
@@ -49,4 +85,12 @@ if (offenders.length > 0) {
   process.exit(1)
 }
 
-console.log(`[check-shape-scale] 通过：${scanned} 份皮肤 · ${checked} 处圆角声明全部走语义档`)
+if (slotless.length > 0) {
+  console.error('[check-shape-scale] ✗ 圆角没有使用者覆盖槽，同角色的部件在别的组件里都有：')
+  for (const s of slotless)
+    console.error(`  ${s}`)
+  console.error('\n写成 var(--xh-<组件>-<部件>-radius, var(--xh-shape-…))；形状即身份的（圆点、加载环）登记进 NO_SLOT。')
+  process.exit(1)
+}
+
+console.log(`[check-shape-scale] 通过：${scanned} 份皮肤 · ${checked} 处圆角声明全部走语义档，取语义档的都留了覆盖槽（形状即身份的 ${noSlotSeen.size} 处）`)
