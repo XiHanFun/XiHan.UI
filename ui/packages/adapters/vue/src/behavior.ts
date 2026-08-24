@@ -79,8 +79,22 @@ export function useScrollTracker(options: ScrollTrackerOptions): Ref<ScrollMetri
   return metrics
 }
 
-/** 内容增长时保持贴底，用户往上滚过就松手不再跟。返回当前的贴底状态。 */
-export function useStickToBottom(options: StickToBottomOptions): Ref<StickToBottomState | null> {
+export interface StickToBottom {
+  /** 当前贴底状态，随原语的回调更新。 */
+  state: Ref<StickToBottomState | null>
+  /** 滚到底部并恢复粘附，默认 'smooth'，reducedMotion 为真时强制 'instant'。 */
+  scrollToBottom: (behavior?: 'smooth' | 'instant') => void
+  /** 重新读取 scrollEl / contentEl，节点变了就解绑重绑。 */
+  retarget: () => void
+}
+
+/**
+ * 内容增长时保持贴底，用户往上滚过就松手不再跟。
+ *
+ * 两个 getter 里读的是 ref 时自动重绑：原语在建好那一刻就绑一次，
+ * 而 setup 阶段模板 ref 还是 null，不重绑等于没挂上。
+ */
+export function useStickToBottom(options: StickToBottomOptions): StickToBottom {
   const state = ref<StickToBottomState | null>(null)
   const handle = createStickToBottom({
     ...options,
@@ -89,8 +103,9 @@ export function useStickToBottom(options: StickToBottomOptions): Ref<StickToBott
       options.onChange?.(next)
     },
   })
+  watch([() => options.scrollEl(), () => options.contentEl()], () => handle.retarget())
   onScopeDispose(() => handle.dispose())
-  return state
+  return { state, scrollToBottom: handle.scrollToBottom, retarget: handle.retarget }
 }
 
 /** 连续敲字母跳到匹配项的缓冲，超时自动清空。 */

@@ -21,7 +21,19 @@ useHoverIntent({
 })
 ```
 
-另有 `useScrollTracker` / `useStickToBottom` / `useTypeahead`，形状同上。
+另有 `useScrollTracker` / `useStickToBottom` / `useTypeahead`，接法同上。`useStickToBottom` 除状态外还交出句柄上的两个动作——「回到底部」按钮要的就是前者：
+
+```ts
+const { state, scrollToBottom } = useStickToBottom({
+  config,
+  scrollEl: () => viewportRef.value,
+  contentEl: () => contentRef.value,
+})
+
+// state.value?.atBottom 为假时露出「回到底部」，点了调 scrollToBottom()
+```
+
+两个 getter 里读的是 ref 就不必自己 `retarget`：节点换了这层包装会重绑。
 
 **需要层栈仪式的那几个不在这里**——消隐层、焦点域、背景失活要按顺序接四五个东西，接错的表现是「点子菜单父层跟着关」这类不报错的怪症。那种场景请直接用库里现成的浮层组件；真要自建，照下面几节的顺序接。
 
