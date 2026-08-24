@@ -55,6 +55,14 @@
       ]
     }
   },
+  "data-status": {
+    "$description": "结果种类——不是相位。result 报的是这一页在说哪一类结果（找不到 / 没权限 / 服务器错 / 成功 / 警告 / 出错 / 提示），它没有生命周期，也不会随时间往前走。相位一律走 data-state 的 phase 族。",
+    "values": ["404", "403", "500", "success", "warning", "error", "info"],
+    "deprecatedDual": {
+      "$description": "这几家的相位已经改发 data-state，data-status 只是过渡期的兼容位，下个大版本移除。在此之前 [data-status='error'] 仍会同时命中它们与 result 的结果种类——这正是要收掉它的原因。",
+      "components": ["avatar", "image", "thread", "composer", "file-upload"]
+    }
+  },
   "boolean": {
     "$description": "布尔状态属性（有即真，缺席即假，一律经 dataAttr 发）。同一含义只用一个名字。",
     "data-current": "导航族的当前项（锚点、面包屑、导航菜单、侧栏链接、轮播指示点、页码）。配对 aria-current。",

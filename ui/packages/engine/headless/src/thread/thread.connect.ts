@@ -32,6 +32,9 @@ export function connectThread<T extends PropTypes>(
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
+      // 相位走 data-state（值都在词汇表的 phase 族里）；data-status 再发一个大版本，
+      // 下个大版本移除——它此后只属于 result 的「结果种类」那一轴
+      'data-state': status,
       'data-status': status,
     }),
 
@@ -43,6 +46,9 @@ export function connectThread<T extends PropTypes>(
       'aria-live': 'off',
       'aria-label': label.log,
       'tabindex': 0,
+      // 相位走 data-state（值都在词汇表的 phase 族里）；data-status 再发一个大版本，
+      // 下个大版本移除——它此后只属于 result 的「结果种类」那一轴
+      'data-state': status,
       'data-status': status,
     }),
 
