@@ -5,6 +5,7 @@ import type { LoadingBarTranslations } from '@xihan-ui/headless'
 import type { Tone } from '@xihan-ui/kernel'
 import type { App, MaybeRefOrGetter } from 'vue'
 import type { XhConfig } from '../config/config'
+import { ensurePortalRoot } from '@xihan-ui/kernel'
 import { createApp, defineComponent, h, reactive, toValue } from 'vue'
 import { XhLoadingBarRange, XhLoadingBarRoot, XhLoadingBarTrack } from '../components/loading-bar/loading-bar'
 import { createServiceConfig } from './service-config'
@@ -55,7 +56,7 @@ export function createLoadingBarService(options: LoadingBarServiceOptions = {}):
   const { target, config, tone = 'brand', errorTone = 'danger', translations, ...barProps } = options
   const holder = target ?? document.createElement('div')
   if (!target)
-    document.body.appendChild(holder)
+    ensurePortalRoot(document).appendChild(holder)
 
   const configSource = createServiceConfig(config)
 

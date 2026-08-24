@@ -5,6 +5,7 @@
 import type { Tone } from '@xihan-ui/kernel'
 import type { App, MaybeRefOrGetter, VNodeChild } from 'vue'
 import type { XhConfig } from '../config/config'
+import { ensurePortalRoot } from '@xihan-ui/kernel'
 import { createApp, defineComponent, h, reactive, shallowRef, toRaw, toValue } from 'vue'
 import { XhButton, XhButtonIndicator, XhButtonLabel } from '../components/button'
 import { XhDialogContent, XhDialogDescription, XhDialogRoot, XhDialogTitle } from '../components/dialog/dialog'
@@ -109,7 +110,7 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
   const configSource = createServiceConfig(options.config)
   const holder = options.target ?? document.createElement('div')
   if (!options.target)
-    document.body.appendChild(holder)
+    ensurePortalRoot(document).appendChild(holder)
 
   // 当前项单独放 shallowRef：进 reactive 会把 Spec 里那几个 MaybeRefOrGetter 的 Ref 分支解包掉
   const current = shallowRef<Spec | null>(null)

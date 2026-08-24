@@ -9116,8 +9116,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='cascader'][data-part='item'][data-branch]::after {
   content: '';
   flex: none;
-  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  inline-size: var(--xh-cascader-branch-arrow-size, var(--xh-icon-size, var(--xh-glyph-size-text)));
+  block-size: var(--xh-cascader-branch-arrow-size, var(--xh-icon-size, var(--xh-glyph-size-text)));
   background-color: var(--xh-cascader-branch-arrow-fg, var(--xh-fg-subtle));
   -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
   mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
