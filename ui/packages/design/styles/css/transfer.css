@@ -222,8 +222,7 @@
   }
 
   /* 没写内容就由皮肤画勾；作者往格子里塞了自己的图形，这条规则即不命中。
-     底下两处（全选格的两态）不带这条守卫：那里的 ::before 是方框本身，
-     而触发器里装的是全选那行文字，:empty 恒不命中，加了勾号会整个消失 */
+     底下两处（全选格的两态）不带这条守卫：触发器里装的是全选那行文字，:empty 恒不命中 */
   [data-scope='transfer'][data-part='item-checkbox'][data-state='checked']:empty::before {
     content: '';
     display: inline-block;
@@ -236,25 +235,47 @@
   }
 
   /* 全选格的三态：all 打勾、some 打横杠、none 留空。
-     some 就是读屏听到的 aria-checked=mixed，两者同源，样式只认 data-state */
-  [data-scope='transfer'][data-part='select-all-trigger'][data-state='checked']::before {
+     some 就是读屏听到的 aria-checked=mixed，两者同源，样式只认 data-state。
+
+     字形走 ::after 而不是画方框的那颗 ::before：mask 会把所在元素的描边与底色一并裁成
+     字形的轮廓，写在 ::before 上就等于把方框本身裁没了，只剩一枚白勾。条目那一侧是
+     真实节点当方框、它的 ::before 当字形的两层结构，这里没有第二个节点，只能用
+     第二个伪元素补上那一层。
+     方框是行首那颗 ::before、宽度即勾选格尺寸，所以字形按「盒与字形的宽度差之半」
+     内推即落在圆心；纵向靠 inset-block: 0 + margin-block: auto 居中。
+     font-size 与 ::before 同值，--xh-icon-size 的 1em 兜底才和条目那侧量得一样大 */
+  [data-scope='transfer'][data-part='select-all-trigger'][data-state='checked']::after {
     content: '';
-    display: inline-block;
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    margin-block: auto;
+    margin-inline-start: calc(
+      (var(--xh-transfer-checkbox-size, var(--xh-control-indicator-size)) - var(--xh-icon-size, var(--xh-glyph-size-text))) /
+        2
+    );
     inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-    vertical-align: var(--xh-glyph-baseline-shift);
-    background-color: currentColor;
+    background-color: var(--xh-transfer-checkbox-fg, var(--xh-fg-on-brand));
+    font-size: var(--xh-transfer-checkbox-font-size, calc(var(--xh-control-indicator-size) * 0.75));
     -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
     mask: var(--xh-glyph-mark-check) center / contain no-repeat;
   }
 
-  [data-scope='transfer'][data-part='select-all-trigger'][data-state='indeterminate']::before {
+  [data-scope='transfer'][data-part='select-all-trigger'][data-state='indeterminate']::after {
     content: '';
-    display: inline-block;
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    margin-block: auto;
+    margin-inline-start: calc(
+      (var(--xh-transfer-checkbox-size, var(--xh-control-indicator-size)) - var(--xh-icon-size, var(--xh-glyph-size-text))) /
+        2
+    );
     inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-    vertical-align: var(--xh-glyph-baseline-shift);
-    background-color: currentColor;
+    background-color: var(--xh-transfer-checkbox-fg, var(--xh-fg-on-brand));
+    font-size: var(--xh-transfer-checkbox-font-size, calc(var(--xh-control-indicator-size) * 0.75));
     -webkit-mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
     mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
   }
@@ -266,7 +287,9 @@
 
   /* 全选格是原生按钮（三态经 aria-checked 上报，激活由平台负责），
      禁用因此写 :disabled，不写 data-disabled */
+  /* position 是给叠在方框上的那颗字形 ::after 当定位基准 */
   [data-scope='transfer'][data-part='select-all-trigger'] {
+    position: relative;
     display: inline-flex;
     flex: none;
     gap: var(--xh-transfer-select-all-gap, var(--xh-control-gap-sm));
