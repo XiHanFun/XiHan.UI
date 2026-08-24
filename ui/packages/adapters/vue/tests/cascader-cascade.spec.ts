@@ -112,11 +112,11 @@ describe('cascader cascade', () => {
     expect(t.value().map(p => p.join('/'))).toEqual(['digital'])
   })
 
-  it('部分勾中：分支条目 aria-checked=mixed + data-indeterminate', async () => {
+  it('部分勾中：分支条目 aria-checked=mixed + data-state=indeterminate', async () => {
     mountCascader({ defaultValue: [['digital', 'phone', 'ios']] })
     await tick()
     expect(itemEl('digital').getAttribute('aria-checked')).toBe('mixed')
-    expect(itemEl('digital').hasAttribute('data-indeterminate')).toBe(true)
+    expect(itemEl('digital').getAttribute('data-state')).toBe('indeterminate')
     expect(itemEl('digital').getAttribute('aria-selected')).toBe('false')
   })
 

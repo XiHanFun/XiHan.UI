@@ -140,9 +140,10 @@ export function connectCascader<T extends PropTypes>(
   const itemState = (v: string): Record<string, string | undefined> => {
     const meta = metaOf(v)
     return {
-      // 与其余 role=option 组件同一套选中编码
-      'data-state': isSelected(v) ? 'checked' : 'unchecked',
-      'data-indeterminate': dataAttr(isIndeterminate(v)),
+      // 与其余 role=option 组件同一套选中编码。半选并在这一族里，不另发布尔：
+      // 级联算出来的 checked 与 indeterminate 互斥（全中即 checked、部分中才 indeterminate），
+      // 拆成两个属性只会逼皮肤把两套词汇拼进一条选择器
+      'data-state': isIndeterminate(v) ? 'indeterminate' : isSelected(v) ? 'checked' : 'unchecked',
       'data-disabled': dataAttr(!!meta && isDisabled(meta)),
       // 焦点所在与选中互相独立
       'data-highlighted': dataAttr(!!focusedMeta && focusedMeta.value === v),

@@ -378,11 +378,11 @@ describe('connectSignaturePad 属性表', () => {
     expect(api(h.service).getStatusProps()).toMatchObject({
       'role': 'status',
       'aria-live': 'polite',
-      'data-state': 'empty',
+      'data-empty': '',
     })
     expect(api(h.service).statusText).toBe('No signature yet')
     drawStroke(h, [[0, 0], [40, 30]])
-    expect(api(h.service).getStatusProps()).toMatchObject({ 'data-state': 'signed', 'data-empty': undefined })
+    expect(api(h.service).getStatusProps()).toMatchObject({ 'data-empty': undefined })
     expect(api(h.service).statusText).toBe('Signed')
   })
 

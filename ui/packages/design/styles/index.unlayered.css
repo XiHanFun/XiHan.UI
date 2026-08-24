@@ -9168,11 +9168,11 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 级联勾选的半选态只在皮肤自绘（:empty）时露面画横杠：
    作者塞了自己的选中图形时，半选放出来会顶着一个语义相反的勾，表达交还作者 */
-[data-scope='cascader'][data-part='item-indicator'][data-indeterminate]:empty {
+[data-scope='cascader'][data-part='item-indicator'][data-state='indeterminate']:empty {
   visibility: visible;
 }
 
-[data-scope='cascader'][data-part='item-indicator'][data-indeterminate]:not([data-state='checked']):empty::before {
+[data-scope='cascader'][data-part='item-indicator'][data-state='indeterminate']:empty::before {
   content: '';
   display: inline-block;
   inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
