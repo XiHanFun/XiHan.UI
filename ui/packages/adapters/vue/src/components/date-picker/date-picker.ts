@@ -18,7 +18,7 @@ import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h, mergeProps, Teleport } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { slotPaints } from '../../runtime/slot-content'
-import { useFieldStateWiring } from '../field/use-field-control'
+import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import {
   provideDatePicker,
   provideDatePickerCell,
@@ -265,8 +265,10 @@ export const XhDatePickerTrigger = defineComponent({
   setup(_, { slots }) {
     // 字段的说明与校验状态要落在真控件上，不能停在封装根的 div 上
     const fieldWiring = useFieldStateWiring()
+    // 字段的标签也得并进名字链：控件自带的那条指的是它自己那个没渲染的 label 部件
+    const fieldLabel = useFieldLabelWiring()
     const ctx = useDatePickerContext()
-    return () => h('button', { ...ctx.api.value.getTriggerProps() as Record<string, unknown>, ...fieldWiring.value }, slots.default?.())
+    return () => h('button', fieldLabel.value({ ...ctx.api.value.getTriggerProps() as Record<string, unknown>, ...fieldWiring.value }), slots.default?.())
   },
 })
 

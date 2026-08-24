@@ -107,6 +107,11 @@ const controlProps = useFieldControl()
 ```
 
 `useFieldControl` 在字段外调用返回空对象，封装照样能单独用。不关 `asChild` 的话属性会被合两遍——一遍在封装根、一遍在真控件，页面上会出现两个相同的 `id`。
+
+**库自己的控件不用管这一层。** select、text-field、date-picker 这些封装内部已经把两份接线取到了真正可聚焦的那个部件上：说明与校验状态一份，字段的标签一份。直接套进 `XhFieldControl` 就行，`asChild` 保持默认。
+
+标签那份是**并进**不是覆盖——字段的标签排在最前，控件自己那截（下拉的当前值这类）跟在后面，两边都念得到。控件自带的 `aria-labelledby` 指的是它自己的 `label` 部件，用字段的标签时那个部件根本没渲染，只留它就是一条悬空引用：按 accname 规则跳过，名字又回退不到 `for`（`for` 指的是封装根那个 `div`），焦点所在的控件于是一个名字都没有。
+
 ## 哪些组件参与
 
 24 个：checkbox、checkbox-group、color-picker、combobox、date-field、date-picker、editable、

@@ -27,6 +27,7 @@ export function connectField<T extends PropTypes>(
     disabled,
     readOnly,
     controlId,
+    labelId: ids.label,
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'data-disabled': dataAttr(disabled),

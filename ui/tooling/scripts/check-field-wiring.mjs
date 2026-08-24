@@ -36,6 +36,7 @@ const NOT_SINGLE_CONTROL = {
 
 const problems = []
 let wired = 0
+let named = 0
 const exemptSeen = new Set()
 
 for (const entry of await readdir(HEADLESS, { withFileTypes: true })) {
@@ -69,6 +70,13 @@ for (const entry of await readdir(HEADLESS, { withFileTypes: true })) {
     wired += 1
   else
     problems.push(`${name}：带 invalid 轴的单一控件封装没有调 useFieldStateWiring()——套进表单字段后，说明与错误文本读屏念不出来`)
+
+  // 名字是另一半：控件自带的 aria-labelledby 指的是它自己那个没渲染的 label 部件，
+  // 不把字段的标签并进去，焦点所在的控件一个名字都没有
+  if (vue.includes('useFieldLabelWiring('))
+    named += 1
+  else
+    problems.push(`${name}：带 invalid 轴的单一控件封装没有调 useFieldLabelWiring()——套进表单字段后，字段的标签念不到焦点所在的控件上`)
 }
 
 for (const name of Object.keys(NOT_SINGLE_CONTROL)) {
@@ -80,8 +88,8 @@ if (problems.length) {
   console.error('[check-field-wiring] ✗ 字段接线没落到真控件上：')
   for (const problem of problems)
     console.error(`  ${problem}`)
-  console.error('\n在那个真正可聚焦的部件组件里 const fieldWiring = useFieldStateWiring()，并把它合进渲染属性。')
+  console.error('\n在那个真正可聚焦的部件组件里取两份接线：const fieldWiring = useFieldStateWiring() 合进渲染属性，\nconst fieldLabel = useFieldLabelWiring() 把整份属性包起来。')
   process.exit(1)
 }
 
-console.log(`[check-field-wiring] 通过：${wired} 个单一控件封装都把字段状态接到了真控件上（分组 / 分段 / 图形控件 ${exemptSeen.size} 个不在此列）`)
+console.log(`[check-field-wiring] 通过：${wired} 个单一控件封装把字段状态、${named} 个把字段标签接到了真控件上（分组 / 分段 / 图形控件 ${exemptSeen.size} 个不在此列）`)
