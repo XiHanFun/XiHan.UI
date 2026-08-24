@@ -2,6 +2,7 @@ import type { TagsInputApi, TagsInputBlurBehavior, TagsInputItemProps, TagsInput
 import type { ControlVariant, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import { useFieldStateWiring } from '../field/use-field-control'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { provideTagsInput, provideTagsInputItem, useTagsInputContext, useTagsInputItemContext } from './context'
@@ -117,8 +118,10 @@ export const XhTagsInputControl = defineComponent({
 export const XhTagsInputInput = defineComponent({
   name: 'XhTagsInputInput',
   setup() {
+    // 字段的说明与校验状态要落在真控件上，不能停在封装根的 div 上
+    const fieldWiring = useFieldStateWiring()
     const ctx = useTagsInputContext()
-    return () => h('input', ctx.api.value.getInputProps() as Record<string, unknown>)
+    return () => h('input', { ...ctx.api.value.getInputProps() as Record<string, unknown>, ...fieldWiring.value })
   },
 })
 

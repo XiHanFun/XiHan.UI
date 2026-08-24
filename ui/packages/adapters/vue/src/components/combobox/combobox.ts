@@ -2,6 +2,7 @@ import type { ComboboxApi, ComboboxInputBehavior, ComboboxInputEl, ComboboxInput
 import type { ControlVariant, Placement, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import { useFieldStateWiring } from '../field/use-field-control'
 import { computed, defineComponent, h, mergeProps, onMounted, onUnmounted, onUpdated, Teleport, watch } from 'vue'
 import {
   provideCombobox,
@@ -154,10 +155,13 @@ export const XhComboboxInput = defineComponent({
     as: { type: String as PropType<ComboboxInputHost>, default: 'input' },
   },
   setup(props) {
+    // 字段的说明与校验状态要落在真控件上，不能停在封装根的 div 上
+    const fieldWiring = useFieldStateWiring()
     const ctx = useComboboxContext()
     return () => h(props.as, {
       ...ctx.api.value.getInputProps({ as: props.as }) as Record<string, unknown>,
       ref: (el: unknown) => { ctx.inputRef.value = el as ComboboxInputEl },
+      ...fieldWiring.value,
     })
   },
 })

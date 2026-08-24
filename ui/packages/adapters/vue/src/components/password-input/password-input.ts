@@ -2,6 +2,7 @@ import type { PasswordInputApi, PasswordInputSchema, PasswordInputTranslations }
 import type { ControlVariant, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import { useFieldStateWiring } from '../field/use-field-control'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { providePasswordInput, usePasswordInputContext } from './context'
@@ -93,9 +94,11 @@ export const XhPasswordInputControl = defineComponent({
 export const XhPasswordInputInput = defineComponent({
   name: 'XhPasswordInputInput',
   setup() {
+    // 字段的说明与校验状态要落在真控件上，不能停在封装根的 div 上
+    const fieldWiring = useFieldStateWiring()
     const ctx = usePasswordInputContext()
     // 原生 <input>：光标、选区与撤销都归浏览器，label 的 for 也指着它
-    return () => h('input', ctx.api.value.getInputProps() as Record<string, unknown>)
+    return () => h('input', { ...ctx.api.value.getInputProps() as Record<string, unknown>, ...fieldWiring.value })
   },
 })
 

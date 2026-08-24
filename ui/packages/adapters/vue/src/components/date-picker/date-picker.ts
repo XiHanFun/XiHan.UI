@@ -15,6 +15,7 @@ import type {
 import type { ControlVariant, Placement, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import { useFieldStateWiring } from '../field/use-field-control'
 import { computed, defineComponent, h, mergeProps, Teleport } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { slotPaints } from '../../runtime/slot-content'
@@ -262,8 +263,10 @@ export const XhDatePickerClearTrigger = defineComponent({
 export const XhDatePickerTrigger = defineComponent({
   name: 'XhDatePickerTrigger',
   setup(_, { slots }) {
+    // 字段的说明与校验状态要落在真控件上，不能停在封装根的 div 上
+    const fieldWiring = useFieldStateWiring()
     const ctx = useDatePickerContext()
-    return () => h('button', ctx.api.value.getTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', { ...ctx.api.value.getTriggerProps() as Record<string, unknown>, ...fieldWiring.value }, slots.default?.())
   },
 })
 

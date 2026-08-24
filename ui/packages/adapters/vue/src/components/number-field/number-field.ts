@@ -2,6 +2,7 @@ import type { NumberFieldApi, NumberFieldSchema } from '@xihan-ui/headless'
 import type { ControlVariant, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import { useFieldStateWiring } from '../field/use-field-control'
 import { defineComponent, h } from 'vue'
 import { provideNumberField, useNumberFieldContext } from './context'
 import { useNumberField } from './use-number-field'
@@ -85,8 +86,10 @@ export const XhNumberFieldControl = defineComponent({
 export const XhNumberFieldInput = defineComponent({
   name: 'XhNumberFieldInput',
   setup() {
+    // 字段的说明与校验状态要落在真控件上，不能停在封装根的 div 上
+    const fieldWiring = useFieldStateWiring()
     const ctx = useNumberFieldContext()
-    return () => h('input', ctx.api.value.getInputProps() as Record<string, unknown>)
+    return () => h('input', { ...ctx.api.value.getInputProps() as Record<string, unknown>, ...fieldWiring.value })
   },
 })
 

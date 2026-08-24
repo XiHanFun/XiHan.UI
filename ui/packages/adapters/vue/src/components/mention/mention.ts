@@ -2,6 +2,7 @@ import type { MentionApi, MentionInputEl, MentionInputHost, MentionItemProps, Me
 import type { ControlVariant, Placement, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import { useFieldStateWiring } from '../field/use-field-control'
 import { computed, defineComponent, h, mergeProps, onMounted, onUnmounted, onUpdated, Teleport, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { provideMention, provideMentionItem, useMentionContext, useMentionItemContext } from './context'
@@ -105,10 +106,13 @@ export const XhMentionInput = defineComponent({
     as: { type: String as PropType<MentionInputHost>, default: 'textarea' },
   },
   setup(props) {
+    // 字段的说明与校验状态要落在真控件上，不能停在封装根的 div 上
+    const fieldWiring = useFieldStateWiring()
     const ctx = useMentionContext()
     return () => h(props.as, {
       ...ctx.api.value.getInputProps({ as: props.as }) as Record<string, unknown>,
       ref: (el: unknown) => { ctx.inputRef.value = el as MentionInputEl },
+      ...fieldWiring.value,
     })
   },
 })
