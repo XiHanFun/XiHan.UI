@@ -1,4 +1,5 @@
 import type { AdapterEvent, AdapterHarness, Fixture, FixtureNode } from '@xihan-ui/testing'
+import { attachHost } from '@xihan-ui/testing'
 import { defineXhElements } from '../src/define'
 
 // jsdom 环境注册一次（惰性 define）
@@ -132,7 +133,7 @@ export function createWcHarness(): AdapterHarness {
       el.appendChild(renderNode(fixture.tree, document))
       applyInputs(el, fixture.props as Record<string, unknown>)
       for (const t of PUBLIC_EVENTS) el.addEventListener(t, onEvent)
-      document.body.appendChild(el)
+      attachHost(el)
       await el.updateComplete
       host = el
       return { root: el }
