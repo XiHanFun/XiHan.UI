@@ -405,6 +405,7 @@
       "StatisticContext",
       "StepsContext",
       "StepsRootSlotProps",
+      "StickToBottom",
       "SwitchContext",
       "TableContext",
       "TableRootSlotProps",
@@ -1220,6 +1221,7 @@
       "provideSideNav",
       "provideSideNavNode",
       "provideStatistic",
+      "provideThread",
       "provideTimeline",
       "provideTimelineItem",
       "provideTypography",
@@ -1263,6 +1265,7 @@
       "useField",
       "useFieldContext",
       "useFieldControl",
+      "useFieldLabelWiring",
       "useFieldStateWiring",
       "useFieldset",
       "useFieldsetContext",
@@ -1353,6 +1356,7 @@
       "useTagsInput",
       "useTextField",
       "useThread",
+      "useThreadContext",
       "useTimeField",
       "useTimePicker",
       "useTimelineContext",
@@ -2381,6 +2385,7 @@
       "JsonViewerSchema",
       "JsonViewerTranslations",
       "JsonViewerValueType",
+      "JsonViewerView",
       "JsonViewerWalkOptions",
       "KeyboardRow",
       "KeyboardTable",
@@ -3511,6 +3516,7 @@
       "isoWeeksInYear",
       "jsonChildPath",
       "jsonExpandedPathsToDepth",
+      "jsonText",
       "jsonValueText",
       "jsonValueType",
       "jsonViewerAnatomy",
@@ -4956,6 +4962,7 @@
       "item-value",
       "preview",
       "root",
+      "text",
       "tree"
     ],
     "layout": [
@@ -5966,6 +5973,7 @@
       "gap",
       "inline",
       "justify",
+      "orientation",
       "wrap"
     ],
     "float-button": [
@@ -6148,7 +6156,8 @@
       "size",
       "sortKeys",
       "translations",
-      "value"
+      "value",
+      "view"
     ],
     "layout": [
       "bordered",
@@ -6589,6 +6598,7 @@
       "gap",
       "inline",
       "justify",
+      "orientation",
       "wrap"
     ],
     "spinner": [
@@ -8580,6 +8590,7 @@
     "--xh-json-viewer-row-px",
     "--xh-json-viewer-row-py",
     "--xh-json-viewer-row-radius",
+    "--xh-json-viewer-text-fg",
     "--xh-layout-bg",
     "--xh-layout-border",
     "--xh-layout-content-padding",
@@ -10579,6 +10590,7 @@
         "gap",
         "inline",
         "justify",
+        "orientation",
         "wrap"
       ],
       "events": []
@@ -10796,7 +10808,8 @@
         "max-string-length",
         "size",
         "sort-keys",
-        "value"
+        "value",
+        "view"
       ],
       "events": [
         "expanded-change"
@@ -11352,6 +11365,7 @@
         "gap",
         "inline",
         "justify",
+        "orientation",
         "wrap"
       ],
       "events": []

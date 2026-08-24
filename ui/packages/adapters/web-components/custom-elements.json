@@ -14213,7 +14213,7 @@
           "name": "XhFlexElement",
           "cssParts": [
             {
-              "description": "排布容器，承载 data-direction / data-align / data-justify / data-gap / data-wrap / data-inline",
+              "description": "排布容器，承载 data-orientation / data-align / data-justify / data-gap / data-wrap / data-inline",
               "name": "root"
             }
           ],
@@ -14226,6 +14226,15 @@
               },
               "static": true,
               "default": "{ anatomy: flexAnatomy, meta: flexMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "orientation",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "orientation"
             },
             {
               "kind": "field",
@@ -14297,7 +14306,15 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "主轴方向，缺省 row",
+              "description": "主轴方向，缺省 horizontal",
+              "name": "orientation",
+              "fieldName": "orientation"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "主轴方向的旧写法，两个都写时以 orientation 为准",
               "name": "direction",
               "fieldName": "direction"
             },
@@ -32886,6 +32903,15 @@
             },
             {
               "kind": "field",
+              "name": "orientation",
+              "privacy": "public",
+              "type": {
+                "text": "SpaceProps['orientation'] | undefined"
+              },
+              "attribute": "orientation"
+            },
+            {
+              "kind": "field",
               "name": "direction",
               "privacy": "public",
               "type": {
@@ -32952,9 +32978,17 @@
           "attributes": [
             {
               "type": {
-                "text": "SpaceProps['direction'] | undefined"
+                "text": "SpaceProps['orientation'] | undefined"
               },
               "description": "排布方向，缺省 horizontal",
+              "name": "orientation",
+              "fieldName": "orientation"
+            },
+            {
+              "type": {
+                "text": "SpaceProps['direction'] | undefined"
+              },
+              "description": "排布方向的旧写法，两个都写时以 orientation 为准",
               "name": "direction",
               "fieldName": "direction"
             },

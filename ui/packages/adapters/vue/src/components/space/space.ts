@@ -60,6 +60,7 @@ export const XhSpace = defineComponent({
   name: 'XhSpace',
   // 有 connect 兜底的 prop 一律 default: undefined
   props: {
+    orientation: { type: String as PropType<SpaceProps['orientation']>, default: undefined },
     direction: { type: String as PropType<SpaceProps['direction']>, default: undefined },
     gap: { type: String as PropType<SpaceProps['gap']>, default: undefined },
     align: { type: String as PropType<SpaceProps['align']>, default: undefined },
