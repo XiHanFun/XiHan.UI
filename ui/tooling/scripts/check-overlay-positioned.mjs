@@ -26,6 +26,16 @@ for (const name of families) {
       + `皮肤基线把定位层默认藏着，这个浮层永远不会显示`,
     )
   }
+  // 落位信号有两个：data-positioned 管「量完没有」，data-hidden 管「锚点还在不在视区里」。
+  // 皮肤写了 [data-hidden] 规则、connect 却不发，那条规则永远不命中——
+  // 锚点被滚出视区后浮层会继续悬在原坐标，而两头各看各的都像是对的。
+  const skin = await read(`packages/design/styles/css/${name}.css`)
+  const skinReads = skin?.includes('[data-hidden]')
+  const connectSends = connect?.includes('\'data-hidden\'')
+  if (skinReads && !connectSends)
+    problems.push(`${name} 的皮肤有 [data-hidden] 规则，connect 却从不发这个属性——锚点滚出视区后浮层不收`)
+  if (connectSends && !skinReads)
+    problems.push(`${name} 的 connect 发了 data-hidden，皮肤却没有对应规则——发了没人接`)
 }
 
 if (problems.length) {
