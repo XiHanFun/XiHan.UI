@@ -2,6 +2,7 @@
 // create/success 等命令在任意模块作用域可调（请求拦截器、store），
 // 不要求调用点在组件树内。组件树内的组合用法仍走 XhToasterRoot。
 import type { ToasterSchema, ToasterTranslations, ToastOptions, ToastPlacement, ToastRecord, ToastTranslations, ToastType } from '@xihan-ui/headless'
+import { ensurePortalRoot } from '@xihan-ui/kernel'
 import type { App, MaybeRefOrGetter, VNode } from 'vue'
 import type { ToasterContext } from '../components/toaster/use-toaster'
 import type { XhConfig } from '../config/config'
@@ -92,7 +93,7 @@ export function createToastService(options: ToastServiceOptions = {}): ToastServ
   const configSource = createServiceConfig(config)
   const holder = target ?? document.createElement('div')
   if (!target)
-    document.body.appendChild(holder)
+    ensurePortalRoot(document).appendChild(holder)
 
   let ctx: ToasterContext | null = null
 

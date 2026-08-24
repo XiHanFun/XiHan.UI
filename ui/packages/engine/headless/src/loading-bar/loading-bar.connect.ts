@@ -1,7 +1,7 @@
 import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { LoadingBarApi, LoadingBarSchema } from './loading-bar.types'
-import { dataAttr } from '@xihan-ui/kernel'
+import { DATA_INERT_EXEMPT, dataAttr } from '@xihan-ui/kernel'
 import { loadingBarAnatomy } from './loading-bar.anatomy'
 import { LOADING_BAR_HEIGHT } from './loading-bar.machine'
 import { clampLoadingBarValue, isLoadingBarDeterminate, LOADING_BAR_MAX } from './loading-bar.trickle'
@@ -45,6 +45,9 @@ export function connectLoadingBar<T extends PropTypes>(
       'data-state': phase,
       'data-tone': prop('tone'),
       'data-indeterminate': dataAttr(!determinate),
+      // 模态浮层给背景施加 inert 时跳过这棵子树：进度条是全局的，
+      // 对话框开着时它照旧要可见、role=progressbar 也要留在无障碍树里
+      [DATA_INERT_EXEMPT]: '',
       // 收起时留着节点，只加 hidden
       'hidden': !visible || undefined,
       // 厚度由连接层写内联样式
