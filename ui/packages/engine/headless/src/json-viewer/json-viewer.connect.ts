@@ -5,7 +5,7 @@ import type { JsonViewerApi, JsonViewerNode, JsonViewerSchema } from './json-vie
 import { focusItem, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems, readDirection } from '@xihan-ui/behavior'
 import { contains, dataAttr } from '@xihan-ui/kernel'
 import { jsonViewerAnatomy, jsonViewerBranchQuery, jsonViewerItemQuery } from './json-viewer.anatomy'
-import { flattenJson, jsonSeedExpanded } from './json-viewer.machine'
+import { flattenJson, jsonSeedExpanded, jsonText } from './json-viewer.machine'
 
 const parts = jsonViewerAnatomy.build()
 
@@ -30,6 +30,7 @@ export function connectJsonViewer<T extends PropTypes>(
   const translations = prop('translations')
   const label = {
     tree: translations?.tree ?? 'JSON',
+    text: translations?.text ?? 'JSON source',
     root: translations?.root ?? 'root',
     objectPreview: translations?.objectPreview ?? ((count: number) => `{…} ${count}`),
     arrayPreview: translations?.arrayPreview ?? ((count: number) => `[…] ${count}`),
@@ -45,6 +46,10 @@ export function connectJsonViewer<T extends PropTypes>(
   // 锚点跨 Tab 往返留着（回来落回上次那一行），高亮只跟当下的焦点走
   const isFocusWithin = context.get('focusWithin')
   const highlighted = isFocusWithin ? anchor : null
+
+  const view = prop('view') ?? 'tree'
+  // 键序与环路记号跟树同源，两档切过去内容对得上
+  const text = jsonText(prop('value'), !!prop('sortKeys'))
 
   const isExpanded = (value: string): boolean => expandedValue.includes(value)
   const nodeOf = (value: string): JsonViewerNode | undefined => byPath.get(value)
@@ -132,6 +137,8 @@ export function connectJsonViewer<T extends PropTypes>(
 
   return {
     visibleNodes: rows,
+    view,
+    text,
     expandedValue,
     focusedValue: anchor,
     isFocusWithin,
@@ -146,6 +153,16 @@ export function connectJsonViewer<T extends PropTypes>(
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'data-size': prop('size'),
+      'data-view': view,
+    }),
+
+    // 原文档：一整块可框选的文本。这一档没有行、没有展开态，键盘只需要能滚，
+    // 所以进 Tab 序列但不接任何按键处理器
+    getTextProps: () => normalize.element({
+      ...parts.text.attrs,
+      'role': 'region',
+      'aria-label': label.text,
+      'tabindex': 0,
     }),
 
     // 键盘全在 tree 上收口：行只管声明自己，一次冒泡一个处理器

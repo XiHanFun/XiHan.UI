@@ -3001,6 +3001,34 @@
   overflow: auto;
 }
 
+/* 原文档：与树档共用同一套边框、内衬与高度令牌，两档切过去盒子不跳。
+   整块可框选——这一档存在的理由就是把与后端一字不差的那份原文交到手上 */
+[data-scope='json-viewer'][data-part='text'] {
+  margin: 0;
+  max-block-size: var(--xh-json-viewer-max-h, var(--xh-viewport-max-h));
+  padding-block: var(--xh-json-viewer-py, var(--xh-space-2));
+  padding-inline: var(--xh-json-viewer-px, var(--xh-space-2));
+  border: var(--xh-stroke-thin) solid var(--xh-json-viewer-border, var(--xh-border-default));
+  border-radius: var(--xh-json-viewer-radius, var(--xh-shape-surface));
+  background: var(--xh-json-viewer-bg, var(--xh-bg-surface));
+  color: var(--xh-json-viewer-text-fg, var(--xh-fg-default));
+  font-family: var(--xh-json-viewer-font, var(--xh-font-family-mono));
+  /* 缩进靠空格，行不折：折行会把层级读乱，横向给滚动条 */
+  white-space: pre;
+  tab-size: 2;
+  overflow: auto;
+  user-select: text;
+}
+
+[data-scope='json-viewer'][data-part='text'][hidden] {
+  display: none;
+}
+
+/* 这一档没有行可落焦，环画在整块上 */
+[data-scope='json-viewer'][data-part='text']:focus-visible {
+  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline-offset: calc(-1 * var(--xh-ring-width));
+}
 [data-scope='json-viewer'][data-part='tree'][hidden] {
   display: none;
 }

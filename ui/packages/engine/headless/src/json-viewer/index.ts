@@ -6,6 +6,7 @@ export {
   JSON_VIEWER_ROOT_PATH,
   jsonChildPath,
   jsonExpandedPathsToDepth,
+  jsonText,
   jsonValueText,
   jsonValueType,
   jsonViewerMachine,
@@ -20,5 +21,6 @@ export type {
   JsonViewerSchema,
   JsonViewerTranslations,
   JsonViewerValueType,
+  JsonViewerView,
   JsonViewerWalkOptions,
 } from './json-viewer.types'
