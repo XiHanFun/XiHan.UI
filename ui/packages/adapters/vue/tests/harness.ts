@@ -1,5 +1,6 @@
 import type { AdapterEvent, AdapterHarness, Fixture, FixtureNode } from '@xihan-ui/testing'
 import type { App, Component, VNode } from 'vue'
+import { attachHost } from '@xihan-ui/testing'
 import { createApp, h, nextTick, reactive } from 'vue'
 import * as X from '../src'
 
@@ -98,7 +99,7 @@ export function createVueHarness(): AdapterHarness {
     adapterName: 'vue',
     async mount(fixture: Fixture) {
       host = document.createElement('div')
-      document.body.appendChild(host)
+      attachHost(host)
       for (const k of Object.keys(props)) delete props[k]
       Object.assign(props, fixture.props)
       const Root = resolveRoot(fixture.component)
