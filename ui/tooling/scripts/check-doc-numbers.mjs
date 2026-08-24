@@ -190,6 +190,18 @@ const truth = {
       return (await readdir(SKIN_CSS)).filter(f => f.endsWith('.css')).length
     },
   },
+  吃控件最小宽度令牌的皮肤数: {
+    how: 'packages/design/styles/css 下引用 --xh-control-min-w 的 .css 文件数',
+    async value() {
+      const files = (await readdir(SKIN_CSS)).filter(f => f.endsWith('.css'))
+      let hit = 0
+      for (const file of files) {
+        if ((await readFile(join(SKIN_CSS, file), 'utf8')).includes('var(--xh-control-min-w)'))
+          hit += 1
+      }
+      return hit
+    },
+  },
   组件皮肤份数: {
     how: '皮肤文件名与组件目录名对得上的那些',
     async value() {
@@ -915,6 +927,7 @@ const TABLE = [
   ['docs/guide/testing.md', /^(\d+) 条产物各有上限/m, '体积预算条数'],
   ['docs/guide/forms.md', /^(\d+) 个：checkbox、/m, '表单字段组件数'],
   ['docs/guide/position.md', /\| (\d+) 种：四个方向/, 'placement取值数'],
+  ['docs/guide/styling.md', /^(\d+) 份皮肤吃这条令牌/m, '吃控件最小宽度令牌的皮肤数'],
   ['docs/guide/styling.md', /派生 (\d+) 档原语/, '品牌原语档数'],
   ['docs/guide/backgrounds.md', /^(\d+) 个：`aurora`/m, '内置背景效果数'],
   ['docs/guide/backgrounds.md', /这 (\d+) 个\*\*不自动注册\*\*/, '内置背景效果数'],
