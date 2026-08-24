@@ -312,7 +312,7 @@
     align-items: center;
     justify-content: center;
     inline-size: var(--xh-menubar-item-indicator-size, var(--xh-control-indicator-size));
-    color: var(--xh-menubar-item-indicator-fg, var(--xh-fg-brand));
+    color: var(--xh-menubar-item-indicator-fg, var(--xh-_tone, var(--xh-fg-brand)));
   }
 
   [data-scope='menubar'][data-part='item-indicator'][hidden] {
