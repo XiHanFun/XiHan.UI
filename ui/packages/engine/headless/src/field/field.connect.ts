@@ -1,5 +1,6 @@
 import type { NormalizeProps, PropTypes, Scope } from '@xihan-ui/kernel'
 import type { FieldApi, FieldProps } from './field.types'
+import { getTabbables } from '@xihan-ui/behavior'
 import { dataAttr } from '@xihan-ui/kernel'
 import { fieldAnatomy } from './field.anatomy'
 
@@ -42,6 +43,14 @@ export function connectField<T extends PropTypes>(
       'for': controlId,
       'data-disabled': dataAttr(disabled),
       'data-readonly': dataAttr(readOnly),
+      // for 只对可标注元素生效，而作者把 control 标在 div 上是常态（包一层再放真控件）。
+      // 那种情形下点标题聚不了焦，且不报错——替它把焦点送给里面第一个可 tab 的节点。
+      // 控件根本身就是真控件时这里查的是它的子节点，查不到东西，浏览器的 for 照旧管用。
+      'onClick': () => {
+        const control = scope.getById(controlId)
+        if (control)
+          getTabbables(control)[0]?.focus()
+      },
     }),
     getControlProps: () => normalize.element({
       ...parts.control.attrs,
