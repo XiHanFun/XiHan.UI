@@ -16,17 +16,51 @@ const ADAPTERS = 'packages/adapters'
 /** 会承载设计量的属性名（驼峰，内联样式的写法）。 */
 const DESIGN_PROPS = new RegExp(
   `^(?:${[
-    'inlineSize', 'blockSize', 'width', 'height', 'minInlineSize', 'maxInlineSize', 'minBlockSize', 'maxBlockSize',
-    'padding[A-Za-z]*', 'margin[A-Za-z]*', 'gap', 'rowGap', 'columnGap', 'inset[A-Za-z]*', 'top', 'right', 'bottom', 'left',
-    'borderRadius', 'border[A-Za-z]*Radius', 'borderWidth', 'border[A-Za-z]*Width', 'outlineWidth', 'outlineOffset',
-    'color', 'background[A-Za-z]*', 'borderColor', 'border[A-Za-z]*Color', 'outlineColor', 'fill', 'stroke', 'boxShadow',
-    'fontSize', 'lineHeight', 'letterSpacing', 'fontWeight', 'fontFamily',
-    'transitionDuration', 'animationDuration', 'transitionDelay', 'animationDelay', 'transition', 'animation',
+    'inlineSize',
+    'blockSize',
+    'width',
+    'height',
+    'minInlineSize',
+    'maxInlineSize',
+    'minBlockSize',
+    'maxBlockSize',
+    'padding[A-Za-z]*',
+    'margin[A-Za-z]*',
+    'gap',
+    'rowGap',
+    'columnGap',
+    'inset[A-Za-z]*',
+    'top',
+    'right',
+    'bottom',
+    'left',
+    'border[A-Za-z]*Radius',
+    'border[A-Za-z]*Width',
+    'outlineWidth',
+    'outlineOffset',
+    'color',
+    'background[A-Za-z]*',
+    'border[A-Za-z]*Color',
+    'outlineColor',
+    'fill',
+    'stroke',
+    'boxShadow',
+    'fontSize',
+    'lineHeight',
+    'letterSpacing',
+    'fontWeight',
+    'fontFamily',
+    'transitionDuration',
+    'animationDuration',
+    'transitionDelay',
+    'animationDelay',
+    'transition',
+    'animation',
   ].join('|')})$`,
 )
 
 /** 设计字面量：带单位的长度、颜色、时长。 */
-const LITERAL = /(?:^|[\s(,])(?:-?\d*\.?\d+(?:px|rem|em|vh|vw|ch|ex|s|ms|deg)|#[0-9a-f]{3,8}\b|\b(?:rgb|rgba|hsl|hsla|oklch|oklab)\()/i
+const LITERAL = /(?:^|[\s(,])(?:-?(?:\d+(?:\.\d+)?|\.\d+)(?:px|rem|em|vh|vw|ch|ex|s|ms|deg)|#[0-9a-f]{3,8}|(?:rgb|rgba|hsl|hsla|oklch|oklab)\()/i
 
 async function* walk(dir) {
   for (const entry of await readdir(dir, { withFileTypes: true })) {
@@ -51,7 +85,7 @@ for await (const file of walk(ADAPTERS)) {
     if (line.trim().startsWith('//'))
       return
     // 对象字面量里的 `prop: '值'`／`prop: "值"`／`prop: \`值\``；第 2 组是引号本身，值在第 3 组
-    for (const [, prop, , value] of line.matchAll(/([A-Za-z][A-Za-z]*)\s*:\s*(['"`])((?:(?!\2).)*)\2/g)) {
+    for (const [, prop, , value] of line.matchAll(/([A-Z]+)\s*:\s*(['"`])((?:(?!\2).)*)\2/gi)) {
       if (!DESIGN_PROPS.test(prop))
         continue
       checked += 1

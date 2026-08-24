@@ -32,7 +32,8 @@ function block(marker) {
       break
   }
   const map = new Map()
-  for (const [, name, value] of tokensCss.slice(open, end).matchAll(/(--xh-[\w-]+)\s*:\s*([^;]+);/g))
+  // 冒号后不写 \s*：它与 [^;]+ 能吃同一批字符，不匹配时会逐位回溯。值交给 trim 归一
+  for (const [, name, value] of tokensCss.slice(open, end).matchAll(/(--xh-[\w-]+)\s*:([^;]+);/g))
     map.set(name, value.trim())
   return map
 }
@@ -57,7 +58,7 @@ function resolve(value, table, depth = 0) {
   const rem = /^(-?[\d.]+)rem$/.exec(v)
   if (rem)
     return Number.parseFloat(rem[1]) * ROOT_FONT_SIZE
-  const ref = /^var\((--xh-[\w-]+)(?:,\s*([\s\S]+))?\)$/.exec(v)
+  const ref = /^var\((--xh-[\w-]+)(?:,([\s\S]+))?\)$/.exec(v)
   if (ref) {
     const named = table.get(ref[1])
     if (named !== undefined)
@@ -96,7 +97,7 @@ for (const file of (await readdir(STYLES_DIR)).filter(f => f.endsWith('.css')).s
     if (sized && line.includes('{'))
       tier = sized[1]
     depth += (line.match(/\{/g) ?? []).length - (line.match(/\}/g) ?? []).length
-    const decl = /^\s*(--xh-_[\w-]+)\s*:\s*([^;]+);/.exec(line)
+    const decl = /^\s*(--xh-_[\w-]+)\s*:([^;]+);/.exec(line)
     if (decl) {
       if (!slots.has(decl[1]))
         slots.set(decl[1], {})

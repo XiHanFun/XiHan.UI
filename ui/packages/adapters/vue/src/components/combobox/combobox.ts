@@ -2,8 +2,8 @@ import type { ComboboxApi, ComboboxInputBehavior, ComboboxInputEl, ComboboxInput
 import type { ControlVariant, Placement, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { useFieldStateWiring } from '../field/use-field-control'
 import { computed, defineComponent, h, mergeProps, onMounted, onUnmounted, onUpdated, Teleport, watch } from 'vue'
+import { useFieldStateWiring } from '../field/use-field-control'
 import {
   provideCombobox,
   provideComboboxItem,

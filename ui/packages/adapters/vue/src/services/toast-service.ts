@@ -2,10 +2,10 @@
 // create/success 等命令在任意模块作用域可调（请求拦截器、store），
 // 不要求调用点在组件树内。组件树内的组合用法仍走 XhToasterRoot。
 import type { ToasterSchema, ToasterTranslations, ToastOptions, ToastPlacement, ToastRecord, ToastTranslations, ToastType } from '@xihan-ui/headless'
-import { ensurePortalRoot } from '@xihan-ui/kernel'
 import type { App, MaybeRefOrGetter, VNode } from 'vue'
 import type { ToasterContext } from '../components/toaster/use-toaster'
 import type { XhConfig } from '../config/config'
+import { ensurePortalRoot } from '@xihan-ui/kernel'
 import { computed, createApp, defineComponent, Fragment, h, toValue } from 'vue'
 import { XhToastCloseTrigger, XhToastDescription, XhToastRoot, XhToastTitle } from '../components/toast/toast'
 import { provideToaster } from '../components/toaster/context'

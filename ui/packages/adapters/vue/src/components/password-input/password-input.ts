@@ -2,9 +2,9 @@ import type { PasswordInputApi, PasswordInputSchema, PasswordInputTranslations }
 import type { ControlVariant, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { useFieldStateWiring } from '../field/use-field-control'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { useFieldStateWiring } from '../field/use-field-control'
 import { providePasswordInput, usePasswordInputContext } from './context'
 import { usePasswordInput } from './use-password-input'
 

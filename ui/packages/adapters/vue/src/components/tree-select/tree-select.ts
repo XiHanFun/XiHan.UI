@@ -3,9 +3,9 @@ import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui
 import type { PropType, Ref, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import type { TreeSelectContext } from './use-tree-select'
-import { useFieldStateWiring } from '../field/use-field-control'
 import { computed, defineComponent, h, mergeProps, onBeforeUnmount, ref, Teleport, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { useFieldStateWiring } from '../field/use-field-control'
 import { provideTreeSelect, provideTreeSelectNode, useTreeSelectContext, useTreeSelectNodeContext } from './context'
 import { useTreeSelect } from './use-tree-select'
 

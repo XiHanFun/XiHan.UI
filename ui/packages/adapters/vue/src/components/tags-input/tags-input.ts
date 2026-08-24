@@ -2,9 +2,9 @@ import type { TagsInputApi, TagsInputBlurBehavior, TagsInputItemProps, TagsInput
 import type { ControlVariant, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { useFieldStateWiring } from '../field/use-field-control'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { useFieldStateWiring } from '../field/use-field-control'
 import { provideTagsInput, provideTagsInputItem, useTagsInputContext, useTagsInputItemContext } from './context'
 import { useTagsInput } from './use-tags-input'
 

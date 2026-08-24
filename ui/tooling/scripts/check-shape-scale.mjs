@@ -56,7 +56,8 @@ for (const file of fs.readdirSync(cssDir).filter(f => f.endsWith('.css')).sort()
 
   // 第二条判据：取语义档的圆角必须留一个使用者覆盖槽，同角色的部件在别处都有
   for (const [, selector, body] of text.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
-    for (const [, prop, value] of body.matchAll(/(border(?:-[\w-]+)?-radius)\s*:\s*([^;]+);/g)) {
+    // 冒号后不写 \s*：它与 [^;]+ 能吃同一批字符，不匹配时会逐位回溯。值交给 trim 归一
+    for (const [, prop, value] of body.matchAll(/(border(?:-[\w-]+)?-radius)\s*:([^;]+);/g)) {
       const v = value.trim()
       // 私有槽赋值、inherit、显式取直角都不在此列——它们不是「可换的形状」
       if (!v.startsWith('var(--xh-shape-'))
