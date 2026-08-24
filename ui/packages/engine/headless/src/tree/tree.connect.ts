@@ -104,6 +104,10 @@ export function connectTree<T extends PropTypes>(
       .filter((el): el is HTMLElement => el != null)
   }
 
+  /** 把手所在的那一行：叶子是 item，分支是 branch，两类都自报 data-value。 */
+  const rowElOf = (el: HTMLElement): HTMLElement | null =>
+    el.closest<HTMLElement>(`${parts.item.selector}, ${parts.branch.selector}`)
+
   /** 节点级处理器拿不到 branch 容器，只能就地往上找最近的那个（嵌套分支各认各的）。 */
   const branchElOf = (el: HTMLElement): HTMLElement | null => el.closest<HTMLElement>(parts.branch.selector)
 
@@ -362,11 +366,22 @@ export function connectTree<T extends PropTypes>(
       // 勾选态由所在的 treeitem 用 aria-selected / aria-checked 报，把手自己不重复一遍
       'aria-hidden': true,
       'tabindex': -1,
+      // 拦掉指针的默认聚焦：本部件对读屏隐藏，焦点落上去即是 aria-hidden 违规。
+      // 焦点归属在 mousedown 的默认动作里定，onClick 再接管已经晚一拍
+      'onPointerDown': (event: PointerEvent) => {
+        if (event.button === 0)
+          event.preventDefault()
+      },
+      // 拦掉指针的默认聚焦：本部件对读屏隐藏，焦点落上去即是 aria-hidden 违规。
+      // 焦点归属在 mousedown 的默认动作里定，onClick 再接管已经晚一拍
       'onClick': (event: MouseEvent) => {
         // 把手长在条目里面，不掐断冒泡会再跑一遍点行
         event.stopPropagation()
         if (isDisabled(node.value))
           return
+        // 指针聚焦被上面拦掉了，焦点得由把手交给所在的那一行：
+        // 不接管则 roving tabindex 的锚点跟不上，treeitem 的 onFocus 也不触发
+        focusValue(rowElOf(event.currentTarget as HTMLElement))
         send({ type: 'NODE.SELECT', value: node.value })
       },
     }),
@@ -376,11 +391,19 @@ export function connectTree<T extends PropTypes>(
       ...branchState(node.value),
       'aria-hidden': true,
       'tabindex': -1,
+      // 拦掉指针的默认聚焦：本部件对读屏隐藏，焦点落上去即是 aria-hidden 违规。
+      // 焦点归属在 mousedown 的默认动作里定，onClick 再接管已经晚一拍
+      'onPointerDown': (event: PointerEvent) => {
+        if (event.button === 0)
+          event.preventDefault()
+      },
       'onClick': (event: MouseEvent) => {
         // 不掐断冒泡会顺带把这一枝展开或收起
         event.stopPropagation()
         if (isDisabled(node.value))
           return
+        // 同 item-checkbox：指针聚焦被拦掉后由把手把焦点交给所在的那一行
+        focusValue(rowElOf(event.currentTarget as HTMLElement))
         send({ type: 'NODE.SELECT', value: node.value })
       },
     }),
@@ -408,6 +431,12 @@ export function connectTree<T extends PropTypes>(
       // tabindex=-1 让它退出 Tab 序列，否则每条分支多占一个 Tab 位会让 roving tabindex 失效
       'aria-hidden': true,
       'tabindex': -1,
+      // 拦掉指针的默认聚焦：本部件对读屏隐藏，焦点落上去即是 aria-hidden 违规。
+      // 焦点归属在 mousedown 的默认动作里定，onClick 再接管已经晚一拍
+      'onPointerDown': (event: PointerEvent) => {
+        if (event.button === 0)
+          event.preventDefault()
+      },
       'onClick': (event: MouseEvent) => {
         // 箭头长在 branch-control 里面，不掐断冒泡会再跑一遍点行，展开态被切两回
         event.stopPropagation()
