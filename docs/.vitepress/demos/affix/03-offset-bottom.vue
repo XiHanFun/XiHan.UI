@@ -27,7 +27,7 @@ const scrollEl = ref<HTMLElement | null>(null);
           padding: 8px 12px;
           border-radius: 6px;
           background: var(--xh-bg-surface-raised);
-          box-shadow: var(--xh-elevation-2);
+          box-shadow: var(--xh-elevation-floating);
         "
       >
         <span>共 42 项</span>
