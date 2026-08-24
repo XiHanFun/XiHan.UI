@@ -123,6 +123,7 @@ export class XhJsonViewerElement extends XhElement {
     maxStringLength: { converter: NUMBER_CONVERTER, attribute: 'max-string-length' },
     maxItems: { converter: NUMBER_CONVERTER, attribute: 'max-items' },
     sortKeys: { converter: BOOLEAN_CONVERTER, attribute: 'sort-keys' },
+    view: { attribute: 'view' },
     loop: { converter: BOOLEAN_CONVERTER },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     size: { converter: STRING_CONVERTER },
@@ -136,6 +137,7 @@ export class XhJsonViewerElement extends XhElement {
   declare maxStringLength?: number
   declare maxItems?: number
   declare sortKeys?: boolean
+  declare view?: 'tree' | 'text'
   declare loop?: boolean
   declare direction?: Direction
   declare size?: Size
@@ -158,6 +160,7 @@ export class XhJsonViewerElement extends XhElement {
       maxItems: this.maxItems,
       // 布尔一律原样透传：属性不在即 undefined，把缺省交回 connect
       sortKeys: this.sortKeys,
+      view: this.view,
       loop: this.loop,
       dir: this.direction,
       size: this.size,
@@ -168,6 +171,7 @@ export class XhJsonViewerElement extends XhElement {
 
   /** 树容器与每一行都归本元素建，按路径留着复用。 */
   private treeEl: HTMLElement | undefined
+  private textEl: HTMLElement | undefined
   private readonly rows = new Map<string, JsonRow>()
 
   /**
@@ -278,6 +282,18 @@ export class XhJsonViewerElement extends XhElement {
 
     const api = connectJsonViewer(this.ctrl.service, wcNormalize)
     this.spreader.spread(root, api.getRootProps() as Record<string, unknown>)
+
+    // 原文档不铺行：root 里换成一个 pre，整块可框选可复制
+    if (api.view === 'text') {
+      const pre = this.textEl ?? (this.textEl = this.ownerDocument.createElement('pre'))
+      if (root.firstChild !== pre || pre.nextSibling !== null)
+        root.replaceChildren(pre)
+      this.spreader.spread(pre, api.getTextProps() as Record<string, unknown>)
+      setText(pre, api.text)
+      // 换回树档时缓存的行要重铺，这里先清空
+      this.rows.clear()
+      return
+    }
 
     const tree = this.treeEl ?? (this.treeEl = this.ownerDocument.createElement('div'))
     // root 里只留树容器：Vue 侧的 Root 同样只渲染这一个子节点，两端铺出同一棵 DOM。

@@ -1,4 +1,4 @@
-import type { JsonViewerApi, JsonViewerNode, JsonViewerSchema, JsonViewerTranslations } from '@xihan-ui/headless'
+import type { JsonViewerApi, JsonViewerNode, JsonViewerSchema, JsonViewerTranslations, JsonViewerView } from '@xihan-ui/headless'
 import type { Direction, Size } from '@xihan-ui/kernel'
 import type { PropType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
@@ -75,6 +75,7 @@ export const XhJsonViewerRoot = defineComponent({
   props: {
     // 任意形状都收，类型检查交给使用方
     value: { type: null as unknown as PropType<unknown>, default: undefined },
+    view: { type: String as PropType<JsonViewerView>, default: undefined },
     expandedValue: { type: Array as PropType<string[]>, default: undefined },
     defaultExpandedValue: { type: Array as PropType<string[]>, default: undefined },
     defaultExpandedDepth: { type: Number, default: undefined },
@@ -100,6 +101,12 @@ export const XhJsonViewerRoot = defineComponent({
     // 行是按数据摊出来的，作者写不出也不必写：整棵树由组件自己铺
     return () => {
       const api = ctx.api.value
+      // 原文档不铺行：整块文本交给 pre，框选与复制才拿得到与后端一字不差的那份
+      if (api.view === 'text')
+        return h('div', api.getRootProps() as Record<string, unknown>, [
+          h('pre', api.getTextProps() as Record<string, unknown>, api.text),
+        ])
+
       const children = groupByParent(api.visibleNodes)
       return h('div', api.getRootProps() as Record<string, unknown>, [
         h('div', api.getTreeProps() as Record<string, unknown>, renderRows(api, children, null)),

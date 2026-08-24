@@ -98,6 +98,45 @@ function jsonEntries(
 }
 
 /**
+ * 把值序列化成缩进过的 JSON 原文，供原文档视图直接显示。
+ *
+ * 不走 JSON.stringify 的 replacer：环路防护要与树一致取祖先链而不是见过的全部对象，
+ * 而 replacer 只拿得到「见过」这一档，会把两条不相干分支共享的同一个对象误判成环。
+ * 键序同样复用 jsonEntries，两个视图切过去不会换顺序。
+ */
+export function jsonText(value: unknown, sortKeys: boolean, indent = 2): string {
+  const pad = (level: number): string => ' '.repeat(indent * level)
+
+  const write = (raw: unknown, level: number, ancestors: ReadonlySet<object>): string => {
+    const type = jsonValueType(raw)
+    if (!isContainer(raw)) {
+      const literal = typeof raw === 'bigint' ? raw.toString() : JSON.stringify(raw)
+      // undefined / 函数 / symbol 在 JSON 里没有写法：退回树上那份文本并按字符串写出，整份仍解析得动
+      return literal ?? JSON.stringify(jsonValueText(raw))
+    }
+    if (ancestors.has(raw))
+      return '"[Circular]"'
+
+    const entries = jsonEntries(raw, type, sortKeys)
+    const [open, close] = type === 'array' ? ['[', ']'] : ['{', '}']
+    if (entries.length === 0)
+      return `${open}${close}`
+
+    const nested = new Set(ancestors)
+    nested.add(raw)
+    const body = entries
+      .map((entry) => {
+        const head = type === 'array' ? '' : `${JSON.stringify(entry.key)}: `
+        return `${pad(level + 1)}${head}${write(entry.value, level + 1, nested)}`
+      })
+      .join(`,\n`)
+    return `${open}\n${body}\n${pad(level)}${close}`
+  }
+
+  return write(value, 0, new Set())
+}
+
+/**
  * 深度优先摊一遍值，按 shouldDescend 决定要不要往某个分支里走。
  * 环路防护取祖先链而不是见过的全部对象：同一个对象出现在两条不相干的分支里只是共享引用，
  * 照样该摊开；出现在自己的祖先链上才会无限递归。

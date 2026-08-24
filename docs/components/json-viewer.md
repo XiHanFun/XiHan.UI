@@ -70,6 +70,12 @@ size 三档只换字号与层级缩进，行的结构与配色都不变
 
 <XhDemo src="json-viewer/07-size" />
 
+### 原文视图
+
+view="text" 直接出缩进过的 JSON 原文：整块可框选可复制，且不受 maxStringLength / maxItems 折减
+
+<XhDemo src="json-viewer/08-text" />
+
 ## 产物
 
 | 层 | 值 |
@@ -84,13 +90,14 @@ size 三档只换字号与层级缩进，行的结构与配色都不变
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="json-viewer"`：**`root`** · `tree` · `item` · `item-key` · `item-value` · `branch` · `branch-control` · `branch-trigger` · `branch-indicator` · `branch-text` · `branch-content` · `preview`
+`data-scope="json-viewer"`：**`root`** · `tree` · `item` · `item-key` · `item-value` · `branch` · `branch-control` · `branch-trigger` · `branch-indicator` · `branch-text` · `branch-content` · `preview` · `text`
 
 ## Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `value` | `unknown` |  | 要展示的值，任意形状。缺省即空视图（一行也不摊）。 |
+| `view` | `JsonViewerView` |  | 展示形态，默认 tree。 text 档直接出 JSON 原文：整块可框选可复制，且不受 maxStringLength / maxItems 折减—— 要的就是与后端下发的那份一字不差。展开集合与键盘导航在这一档上不起作用。 |
 | `expandedValue` | `string[]` |  | 展开集合（元素是行路径）。给定即受控：cell 直读 prop，写只发 onExpandedChange 不落内部值。 |
 | `defaultExpandedValue` | `string[]` |  | 非受控初值；不给就按 defaultExpandedDepth 现算。 |
 | `defaultExpandedDepth` | `number` |  | 初始展开到第几层（层级号不超过它的分支全部展开），默认 1，即只展开根行。 |
@@ -136,8 +143,11 @@ size 三档只换字号与层级缩进，行的结构与配色都不变
 | `expand` | `(value: string) => void` |  |
 | `collapse` | `(value: string) => void` |  |
 | `toggle` | `(value: string) => void` |  |
+| `view` | `JsonViewerView` | 当前生效的展示形态。 |
+| `text` | `string` | 缩进过的 JSON 原文；键序与环路记号与树档一致。text 档之外也取得到，方便作者做「复制原文」。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getTreeProps` | `() => T['element']` |  |
+| `getTextProps` | `() => T['element']` |  |
 | `getItemProps` | `(props: JsonViewerNodeProps) => T['element']` |  |
 | `getItemKeyProps` | `(props: JsonViewerNodeProps) => T['element']` |  |
 | `getItemValueProps` | `(props: JsonViewerNodeProps) => T['element']` |  |
@@ -179,6 +189,8 @@ size 三档只换字号与层级缩进，行的结构与配色都不变
 | `branch-indicator` | `aria-hidden` | 'true' |
 | `branch-content` | `role` | 'group' |
 | `preview` | `aria-hidden` | 'true' |
+| `text` | `aria-label` | label.text |
+| `text` | `role` | 'region' |
 
 - 树是 `role=tree`，每一行是 `role=treeitem`，层级三件套（`aria-level` / `aria-posinset` / `aria-setsize`）取自摊平结果。
 - 整棵树只占一个 Tab 位：第一次进来落在首行，之后 Tab 出去再回来落回上次停留的那一行；组内靠上下键走。
@@ -197,12 +209,13 @@ size 三档只换字号与层级缩进，行的结构与配色都不变
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-size` | props.size |
+| `root` | `data-view` | props.view |
 
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-json-viewer-bg` · `--xh-json-viewer-boolean-fg` · `--xh-json-viewer-border` · `--xh-json-viewer-fg` · `--xh-json-viewer-font` · `--xh-json-viewer-font-size` · `--xh-json-viewer-icon-size` · `--xh-json-viewer-indent` · `--xh-json-viewer-indicator-fg` · `--xh-json-viewer-indicator-size` · `--xh-json-viewer-key-fg` · `--xh-json-viewer-key-font-weight` · `--xh-json-viewer-max-h` · `--xh-json-viewer-null-fg` · `--xh-json-viewer-number-fg` · `--xh-json-viewer-preview-fg` · `--xh-json-viewer-preview-font-size` · `--xh-json-viewer-punctuation-fg` · `--xh-json-viewer-px` · `--xh-json-viewer-py` · `--xh-json-viewer-radius` · `--xh-json-viewer-row-bg-hover` · `--xh-json-viewer-row-gap` · `--xh-json-viewer-row-px` · `--xh-json-viewer-row-py` · `--xh-json-viewer-row-radius` · `--xh-json-viewer-string-fg`
+`--xh-json-viewer-bg` · `--xh-json-viewer-boolean-fg` · `--xh-json-viewer-border` · `--xh-json-viewer-fg` · `--xh-json-viewer-font` · `--xh-json-viewer-font-size` · `--xh-json-viewer-icon-size` · `--xh-json-viewer-indent` · `--xh-json-viewer-indicator-fg` · `--xh-json-viewer-indicator-size` · `--xh-json-viewer-key-fg` · `--xh-json-viewer-key-font-weight` · `--xh-json-viewer-max-h` · `--xh-json-viewer-null-fg` · `--xh-json-viewer-number-fg` · `--xh-json-viewer-preview-fg` · `--xh-json-viewer-preview-font-size` · `--xh-json-viewer-punctuation-fg` · `--xh-json-viewer-px` · `--xh-json-viewer-py` · `--xh-json-viewer-radius` · `--xh-json-viewer-row-bg-hover` · `--xh-json-viewer-row-gap` · `--xh-json-viewer-row-px` · `--xh-json-viewer-row-py` · `--xh-json-viewer-row-radius` · `--xh-json-viewer-string-fg` · `--xh-json-viewer-text-fg`
 
 ## 动效
 

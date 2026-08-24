@@ -19288,6 +19288,15 @@
             },
             {
               "kind": "field",
+              "name": "view",
+              "privacy": "public",
+              "type": {
+                "text": "'tree' | 'text' | undefined"
+              },
+              "attribute": "view"
+            },
+            {
+              "kind": "field",
               "name": "loop",
               "privacy": "public",
               "type": {
@@ -19352,6 +19361,14 @@
               },
               "privacy": "private",
               "description": "树容器与每一行都归本元素建，按路径留着复用。"
+            },
+            {
+              "kind": "field",
+              "name": "textEl",
+              "type": {
+                "text": "HTMLElement | undefined"
+              },
+              "privacy": "private"
             },
             {
               "kind": "field",
@@ -19529,6 +19546,13 @@
               "description": "尺寸",
               "name": "size",
               "fieldName": "size"
+            },
+            {
+              "name": "view",
+              "type": {
+                "text": "'tree' | 'text' | undefined"
+              },
+              "fieldName": "view"
             }
           ],
           "superclass": {
@@ -19618,6 +19642,9 @@
             },
             {
               "name": "--xh-json-viewer-string-fg"
+            },
+            {
+              "name": "--xh-json-viewer-text-fg"
             }
           ]
         }

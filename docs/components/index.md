@@ -128,7 +128,7 @@
 | [图片](./image) | `image` | 3 | 0 | 8 |
 | [图片预览](./image-viewer) | `image-viewer` | 18 | 8 | 3 |
 | [无限滚动](./infinite-scroll) | `infinite-scroll` | 2 | 0 | 4 |
-| [JSON 视图](./json-viewer) | `json-viewer` | 12 | 9 | 7 |
+| [JSON 视图](./json-viewer) | `json-viewer` | 13 | 9 | 8 |
 | [列表](./list) | `list` | 7 | 0 | 5 |
 | [日志](./log) | `log` | 4 | 1 | 5 |
 | [跑马灯](./marquee) | `marquee` | 2 | 0 | 4 |
