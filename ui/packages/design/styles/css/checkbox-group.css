@@ -129,25 +129,51 @@
   }
 
   /* 全选格的三态：checked 打勾、indeterminate 打横杠、unchecked 留空。
-     indeterminate 就是读屏听到的 aria-checked=mixed，两者同源，样式只认 data-state */
-  [data-scope='checkbox-group'][data-part='trigger'][data-state='checked']::before {
+     indeterminate 就是读屏听到的 aria-checked=mixed，两者同源，样式只认 data-state。
+
+     字形走 ::after 而不是画方框的那颗 ::before：mask 会把所在元素的描边与底色一并裁成
+     字形的轮廓，写在 ::before 上就等于把方框本身裁没了，只剩一枚白勾。条目那一侧是
+     真实节点当方框、它的 ::before 当字形的两层结构，这里 anatomy 到 trigger 为止、
+     没有第二个节点，只能用第二个伪元素补上那一层。
+     方框是行首那颗 ::before、宽度即指示符尺寸，所以字形按「盒与字形的宽度差之半」
+     内推即落在圆心；纵向靠 inset-block: 0 + margin-block: auto 居中。
+     font-size 与 ::before 同值，--xh-icon-size 的 1em 兜底才和条目那侧量得一样大 */
+  [data-scope='checkbox-group'][data-part='trigger'][data-state='checked']::after {
     content: '';
-    display: inline-block;
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    margin-block: auto;
+    margin-inline-start: calc(
+      (
+        var(--xh-checkbox-group-indicator-size, var(--xh-control-indicator-size)) -
+          var(--xh-icon-size, var(--xh-glyph-size-text))
+      ) / 2
+    );
     inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-    vertical-align: var(--xh-glyph-baseline-shift);
-    background-color: currentColor;
+    background-color: var(--xh-checkbox-group-indicator-fg, var(--xh-fg-on-brand));
+    font-size: var(--xh-checkbox-group-indicator-font-size, calc(var(--xh-control-indicator-size) * 0.75));
     -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
     mask: var(--xh-glyph-mark-check) center / contain no-repeat;
   }
 
-  [data-scope='checkbox-group'][data-part='trigger'][data-state='indeterminate']::before {
+  [data-scope='checkbox-group'][data-part='trigger'][data-state='indeterminate']::after {
     content: '';
-    display: inline-block;
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    margin-block: auto;
+    margin-inline-start: calc(
+      (
+        var(--xh-checkbox-group-indicator-size, var(--xh-control-indicator-size)) -
+          var(--xh-icon-size, var(--xh-glyph-size-text))
+      ) / 2
+    );
     inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-    vertical-align: var(--xh-glyph-baseline-shift);
-    background-color: currentColor;
+    background-color: var(--xh-checkbox-group-indicator-fg, var(--xh-fg-on-brand));
+    font-size: var(--xh-checkbox-group-indicator-font-size, calc(var(--xh-control-indicator-size) * 0.75));
     -webkit-mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
     mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
   }
@@ -164,8 +190,10 @@
   }
 
   /* 全选格与条目同形，但字重加一档，读起来才不像又一个普通选项。
-     它是普通元素而非原生控件（三态只有非原生控件表达得出），禁用态同样只能读 data-disabled */
+     它是普通元素而非原生控件（三态只有非原生控件表达得出），禁用态同样只能读 data-disabled。
+     position 是给叠在方框上的那颗字形 ::after 当定位基准 */
   [data-scope='checkbox-group'][data-part='trigger'] {
+    position: relative;
     display: inline-flex;
     align-items: center;
     gap: var(--xh-checkbox-group-trigger-gap, var(--xh-control-gap-md));
