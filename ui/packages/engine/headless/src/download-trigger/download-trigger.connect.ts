@@ -34,7 +34,7 @@ export function connectDownloadTrigger<T extends PropTypes>(
       // 单体原生控件用原生 disabled：它本就不该被聚焦，也不该派 click
       'disabled': disabled || undefined,
       // 取数在途时按钮仍可聚焦、仍留在原位，只把"正在忙"如实报给读屏
-      'aria-busy': preparing ? 'true' : 'false',
+      'aria-busy': preparing ? 'true' : undefined,
       'data-state': status,
       'data-disabled': dataAttr(disabled),
       'onClick': () => {

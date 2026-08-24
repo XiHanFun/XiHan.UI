@@ -233,6 +233,7 @@ export class XhTimePickerElement extends XhElement {
     svc.refs.set('registerLayer', this.registerLayer)
     svc.refs.set('position', this.positionEngine)
     svc.refs.set('getAnchorEl', () => this.getPart('control'))
+    svc.refs.set('getTriggerEl', () => this.getPart('trigger'))
     svc.refs.set('getFloatingEl', () => this.getPart('positioner'))
     svc.refs.set('getContentEl', () => this.getPart('content'))
   }

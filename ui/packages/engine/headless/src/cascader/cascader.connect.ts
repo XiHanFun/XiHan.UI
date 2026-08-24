@@ -176,6 +176,7 @@ export function connectCascader<T extends PropTypes>(
     empty: prop('translations')?.empty ?? 'No data',
     noMatch: prop('translations')?.noMatch ?? 'No matches',
     column: prop('translations')?.column ?? 'Options',
+    searchList: prop('translations')?.searchList ?? 'Search results',
     clearTrigger: prop('translations')?.clearTrigger ?? 'Clear',
   }
 
@@ -504,6 +505,10 @@ export function connectCascader<T extends PropTypes>(
       ...parts['search-list'].attrs,
       'id': ids['search-list'],
       'role': 'listbox',
+      // role=listbox 必须有可及名字，而这里没有可指的标题部件，只能自带一句
+      'aria-label': translations.searchList,
+      // 显式输出复选与否，省略时读屏无从区分（与下面的 column 同一条家规）
+      'aria-multiselectable': multiple ? 'true' : 'false',
       'hidden': !searching || undefined,
       // 无候选：皮肤据此收掉列表自身的占位，空态由 empty 部件出面
       'data-empty': dataAttr(searchResults.length === 0),

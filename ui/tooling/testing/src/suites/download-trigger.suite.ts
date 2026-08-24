@@ -35,7 +35,7 @@ export const downloadTriggerSuite: ConformanceSuite = {
       steps: [nativeActivation('download-trigger', 'root')],
     },
     {
-      name: '闲置态：单一 root，type=button、data-state=idle、aria-busy=false，不输出禁用标记',
+      name: '闲置态：单一 root，type=button、data-state=idle、不报 aria-busy，不输出禁用标记',
       spec: { apg: APG },
       props: { data: 'a,b\n1,2', fileName: 'report.csv' },
       initial: {
@@ -44,7 +44,7 @@ export const downloadTriggerSuite: ConformanceSuite = {
         parts: {
           root: {
             'type': 'button',
-            'aria-busy': 'false',
+            'aria-busy': null,
             'data-state': 'idle',
             'data-disabled': null,
             'disabled': null,
@@ -97,7 +97,7 @@ export const downloadTriggerSuite: ConformanceSuite = {
           kind: 'settle',
           until: { attr: { part: 'root', name: 'data-state', value: 'idle' } },
           expect: {
-            parts: { root: { 'data-state': 'idle', 'aria-busy': 'false' } },
+            parts: { root: { 'data-state': 'idle', 'aria-busy': null } },
             // 失败必须说出来：这两个事件是本组件对外的全部产出
             events: [{ type: 'download-error' }],
           },
@@ -114,7 +114,7 @@ export const downloadTriggerSuite: ConformanceSuite = {
             'disabled': '',
             'data-disabled': '',
             'data-state': 'idle',
-            'aria-busy': 'false',
+            'aria-busy': null,
             'aria-disabled': null,
           },
         },

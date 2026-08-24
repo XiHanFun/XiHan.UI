@@ -94,6 +94,8 @@ export interface CascaderTranslations {
   noMatch: string
   /** 没有父条目可指的列（根列与收起的那几列）的兜底名字，两个名字部件都没渲染时才出面。 */
   column: string
+  /** 搜索结果列表的可及名字：它没有可指的标题部件，只能自带一句。 */
+  searchList: string
   /** 清空按钮的可及名字。 */
   clearTrigger: string
 }

@@ -258,7 +258,7 @@ export function connectTable<T extends PropTypes>(
       // 复选与否必须显式说，省略只是没说
       'aria-multiselectable': mode === 'multiple' ? 'true' : 'false',
       // 加载态的播报归它：两个状态节点自己不带 role，见 getLoadingStateProps
-      'aria-busy': loading ? 'true' : 'false',
+      'aria-busy': loading ? 'true' : undefined,
       'data-size': prop('size'),
       'data-loading': dataAttr(loading),
       'data-empty': dataAttr(isEmpty),

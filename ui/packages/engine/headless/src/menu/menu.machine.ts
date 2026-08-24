@@ -256,6 +256,9 @@ export const menuMachine = createMachine({
             return queryItems(content, menuItemQuery).find(el => itemValue(el) === anchor) ?? null
           },
           restoreFocus: () => context.get('returnFocus'),
+          // 归还落点显式给触发器：指针打开那一刻焦点未必真在它身上（Safari 点按不给按钮焦点），
+          // 靠焦点域的创建前快照会把 Escape 之后的 Tab 起点丢到 body 上
+          restoreTarget: () => refs.get('getAnchorEl')(),
         })
 
         // 逆序拆：先撤订阅，最后移出层栈

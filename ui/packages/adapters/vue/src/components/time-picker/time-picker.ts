@@ -168,7 +168,11 @@ export const XhTimePickerTrigger = defineComponent({
   name: 'XhTimePickerTrigger',
   setup(_, { slots }) {
     const ctx = useTimePickerContext()
-    return () => h('button', ctx.api.value.getTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', {
+      ...ctx.api.value.getTriggerProps() as Record<string, unknown>,
+      // 归还焦点要落到它身上：锚点取的是整个输入行，那一层不可聚焦
+      ref: (el: unknown) => { ctx.triggerRef.value = el as HTMLElement },
+    }, slots.default?.())
   },
 })
 

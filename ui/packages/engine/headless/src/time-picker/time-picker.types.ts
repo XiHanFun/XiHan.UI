@@ -55,6 +55,8 @@ export interface TimePickerRefs {
   position: PositionEnginePort | null
   /** 定位锚点，取整个输入行（control），浮层因此与输入框对齐而不是只贴着某一段。 */
   getAnchorEl: () => HTMLElement | null
+  /** 盒内那颗可聚焦的触发钮。锚点取的是整个输入行（不可聚焦），归还焦点得落到它身上。 */
+  getTriggerEl: () => HTMLElement | null
   /** 被定位的浮层容器，通常是 positioner。 */
   getFloatingEl: () => HTMLElement | null
   /** 焦点域容器、消解层节点，同时是列与选项的查询容器。 */

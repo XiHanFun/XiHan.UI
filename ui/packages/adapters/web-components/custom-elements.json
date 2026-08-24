@@ -4366,6 +4366,9 @@
               "name": "--xh-cascader-branch-arrow-fg"
             },
             {
+              "name": "--xh-cascader-branch-arrow-size"
+            },
+            {
               "name": "--xh-cascader-column-divider"
             },
             {
