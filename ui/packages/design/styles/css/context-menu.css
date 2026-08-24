@@ -43,6 +43,12 @@
     display: contents;
   }
 
+  /* 浮层被搬到 portal 落点，继承不到 root 上的槽：这把尺在被搬走的那一侧再声明一次，
+     关闭钮与条目里作者塞的图标才和皮肤画的兜底字形一样大 */
+  [data-scope='context-menu'][data-part='content'] {
+    --xh-icon-size: var(--xh-context-menu-icon-size, var(--xh-glyph-size-text));
+  }
+
   [data-scope='context-menu'][data-part='root'][hidden] {
     display: none;
   }
