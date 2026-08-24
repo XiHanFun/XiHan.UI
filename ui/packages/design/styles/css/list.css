@@ -70,7 +70,7 @@
   }
 
   [data-scope='list'][data-part='root'][data-hoverable] > [data-scope='list'][data-part='item'] {
-    transition: background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 悬停换底色：只在能用指针的设备上生效，触摸端不留一个按不掉的悬停态 */

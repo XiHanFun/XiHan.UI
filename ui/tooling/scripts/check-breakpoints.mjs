@@ -46,6 +46,30 @@ for (const file of await readdir(STYLES)) {
   }
 }
 
+// 瀑布流的列数按容器宽度换档，比的是数字而不是媒体查询，所以在 JS 里复制了一份断点值。
+// 它是全仓唯一一处这样的复制，皮肤侧的扫描看不到它——源码里自己写着「改令牌必须同步改这四个数」，
+// 那就把这句话变成可执行的。
+const MASONRY = 'packages/engine/headless/src/masonry/masonry.layout.ts'
+const masonry = await readFile(MASONRY, 'utf8')
+const table = /const BREAKPOINTS[^=]*=\s*\{([^}]*)\}/.exec(masonry)?.[1]
+if (!table) {
+  offenders.push(`${MASONRY}: 找不到 BREAKPOINTS 表——常量改名了就把本门禁一起改`)
+}
+else {
+  const byName = new Map([...declared].map(([value, name]) => [name, value]))
+  let paired = 0
+  for (const [, name, value] of table.matchAll(/(\w+)\s*:\s*(\d+)/g)) {
+    paired += 1
+    const expected = byName.get(name)
+    if (expected === undefined)
+      offenders.push(`${MASONRY}: ${name} 不是令牌里的档位`)
+    else if (expected !== `${value}px`)
+      offenders.push(`${MASONRY}: ${name}=${value} 与令牌的 ${expected} 对不上`)
+  }
+  if (paired !== byName.size)
+    offenders.push(`${MASONRY}: 表里有 ${paired} 档，令牌里有 ${byName.size} 档`)
+}
+
 if (offenders.length) {
   console.error('[check-breakpoints] 皮肤里的断点值不在令牌清单里：')
   for (const o of offenders) console.error(`  ${o}`)
