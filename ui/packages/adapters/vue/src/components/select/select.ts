@@ -1,9 +1,9 @@
 import type { SelectApi, SelectItemProps, SelectNode, SelectNodeMeta, SelectOpenChangeDetails, SelectSchema, SelectValueChangeDetails } from '@xihan-ui/headless'
 import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
-import { useFieldStateWiring } from '../field/use-field-control'
 import { computed, defineComponent, h, mergeProps, onBeforeUnmount, ref, Teleport, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { useFieldStateWiring } from '../field/use-field-control'
 import { provideSelect, provideSelectItem, provideSelectTag, useSelectContext, useSelectItemContext, useSelectTagContext } from './context'
 import { useSelect } from './use-select'
 

@@ -2,9 +2,9 @@ import type { MentionApi, MentionInputEl, MentionInputHost, MentionItemProps, Me
 import type { ControlVariant, Placement, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { useFieldStateWiring } from '../field/use-field-control'
 import { computed, defineComponent, h, mergeProps, onMounted, onUnmounted, onUpdated, Teleport, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { useFieldStateWiring } from '../field/use-field-control'
 import { provideMention, provideMentionItem, useMentionContext, useMentionItemContext } from './context'
 import { useMention } from './use-mention'
 

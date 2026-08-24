@@ -2,9 +2,9 @@ import type { TextFieldApi, TextFieldInputHost, TextFieldSchema, TextFieldType }
 import type { ControlVariant, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { useFieldStateWiring } from '../field/use-field-control'
 import { autoSizeTextarea } from '@xihan-ui/headless'
 import { defineComponent, h, onMounted, ref, watch } from 'vue'
+import { useFieldStateWiring } from '../field/use-field-control'
 import { provideTextField, useTextFieldContext } from './context'
 import { useTextField } from './use-text-field'
 

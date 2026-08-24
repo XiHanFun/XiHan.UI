@@ -38,7 +38,8 @@ for (const file of (await readdir(STYLES_DIR)).filter(f => f.endsWith('.css')).s
   const comp = file.replace(/\.css$/, '')
   for (const [, selector, body] of src.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
     const parts = [...selector.matchAll(/data-part='([a-z-]+)'/g)].map(x => x[1])
-    for (const [, prop, value] of body.matchAll(/([a-z-]+)\s*:\s*([^;]+);/g)) {
+    // 冒号后不写 \s*：它与 [^;]+ 能吃同一批字符，不匹配时会逐位回溯。值交给 trim 归一
+    for (const [, prop, value] of body.matchAll(/([a-z-]+)\s*:([^;]+);/g)) {
       const suffix = SUFFIX[prop]
       if (!suffix)
         continue
