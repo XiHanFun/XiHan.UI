@@ -188,7 +188,10 @@ export const XhBackground = defineComponent({
       sync()
       return h(
         props.as,
-        { 'ref': mount, 'data-scope': 'background', 'data-part': 'root' },
+        // 不发 data-scope：这个宿主不归任何皮肤管，几何全在 features/backgrounds 的内联样式里，
+        // 指令用法（v-background 挂在作者自己的元素上）更是连这层壳都没有。
+        // 发了 scope 而没有对应皮肤，开发模式的皮肤在场探测会给出一条永远修不掉的警告
+        { ref: mount },
         slots.default?.(),
       )
     }
