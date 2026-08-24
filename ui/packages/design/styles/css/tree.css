@@ -78,7 +78,7 @@
     display: flex;
     align-items: center;
     gap: var(--xh-tree-row-gap, var(--xh-control-gap-md));
-    padding-block: var(--xh-tree-row-py, var(--xh-space-1_5));
+    padding-block: var(--xh-tree-row-py, var(--xh-list-option-py-md));
     padding-inline: var(--xh-tree-row-px, var(--xh-control-px-md));
     border-radius: var(--xh-tree-row-radius, var(--xh-shape-control));
     color: var(--xh-tree-row-fg, var(--xh-fg-default));

@@ -111,7 +111,7 @@
   [data-scope='menubar']:is([data-part='root'], [data-part='positioner']) {
     --xh-_menubar-trigger-py: var(--xh-space-1);
     --xh-_menubar-trigger-px: var(--xh-control-px-md);
-    --xh-_menubar-item-py: var(--xh-space-1_5);
+    --xh-_menubar-item-py: var(--xh-list-option-py-md);
     --xh-_menubar-item-px: var(--xh-control-px-md);
     --xh-_menubar-item-gap: var(--xh-control-gap-md);
     --xh-_menubar-font-size: var(--xh-control-font-md);
@@ -128,7 +128,7 @@
   [data-scope='menubar'][data-size='sm']:is([data-part='root'], [data-part='positioner']) {
     --xh-_menubar-trigger-py: var(--xh-space-0_5);
     --xh-_menubar-trigger-px: var(--xh-control-px-sm);
-    --xh-_menubar-item-py: var(--xh-space-1);
+    --xh-_menubar-item-py: var(--xh-list-option-py-sm);
     --xh-_menubar-item-px: var(--xh-control-px-sm);
     --xh-_menubar-item-gap: var(--xh-control-gap-sm);
     --xh-_menubar-font-size: var(--xh-control-font-sm);
@@ -137,7 +137,7 @@
   [data-scope='menubar'][data-size='lg']:is([data-part='root'], [data-part='positioner']) {
     --xh-_menubar-trigger-py: var(--xh-space-2);
     --xh-_menubar-trigger-px: var(--xh-control-px-lg);
-    --xh-_menubar-item-py: var(--xh-space-2);
+    --xh-_menubar-item-py: var(--xh-list-option-py-lg);
     --xh-_menubar-item-px: var(--xh-control-px-lg);
     --xh-_menubar-item-gap: var(--xh-control-gap-lg);
     --xh-_menubar-font-size: var(--xh-control-font-lg);

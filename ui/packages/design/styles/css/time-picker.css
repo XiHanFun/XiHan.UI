@@ -432,7 +432,7 @@
     flex: none;
     align-items: center;
     justify-content: center;
-    padding-block: var(--xh-time-picker-item-py, var(--xh-space-1_5));
+    padding-block: var(--xh-time-picker-item-py, var(--xh-list-option-py-md));
     padding-inline: var(--xh-time-picker-item-px, var(--xh-_time-picker-item-px));
     border-radius: var(--xh-time-picker-item-radius, var(--xh-shape-control));
     color: var(--xh-time-picker-item-fg, var(--xh-fg-default));

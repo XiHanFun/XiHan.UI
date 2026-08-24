@@ -250,6 +250,7 @@
     }
   },
   "list": {
+    "$description": "条目内衬两把尺：item-* 给页内的列表行（宽），option-* 给浮层里的条目（窄）——菜单项、下拉选项、树行、时间列。两者差一倍，硬凑到一把尺上会让下拉选项变得像列表行那么高。",
     "item-py-sm": {
       "$type": "dimension",
       "$value": "{space.2}"
@@ -261,6 +262,30 @@
     "item-py-lg": {
       "$type": "dimension",
       "$value": "{space.4}"
+    },
+    "item-px-sm": {
+      "$type": "dimension",
+      "$value": "{space.3}"
+    },
+    "item-px-md": {
+      "$type": "dimension",
+      "$value": "{space.4}"
+    },
+    "item-px-lg": {
+      "$type": "dimension",
+      "$value": "{space.5}"
+    },
+    "option-py-sm": {
+      "$type": "dimension",
+      "$value": "{space.1}"
+    },
+    "option-py-md": {
+      "$type": "dimension",
+      "$value": "{space.1_5}"
+    },
+    "option-py-lg": {
+      "$type": "dimension",
+      "$value": "{space.2}"
     }
   },
   "table": {

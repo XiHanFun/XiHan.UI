@@ -26,7 +26,13 @@
   "list": {
     "item-py-sm": { "$type": "dimension", "$value": "{space.1_5}" },
     "item-py-md": { "$type": "dimension", "$value": "{space.2}" },
-    "item-py-lg": { "$type": "dimension", "$value": "{space.3}" }
+    "item-py-lg": { "$type": "dimension", "$value": "{space.3}" },
+    "item-px-sm": { "$type": "dimension", "$value": "{space.2}" },
+    "item-px-md": { "$type": "dimension", "$value": "{space.3}" },
+    "item-px-lg": { "$type": "dimension", "$value": "{space.4}" },
+    "option-py-sm": { "$type": "dimension", "$value": "{space.0_5}" },
+    "option-py-md": { "$type": "dimension", "$value": "{space.1}" },
+    "option-py-lg": { "$type": "dimension", "$value": "{space.1_5}" }
   },
   "table": {
     "cell-py-sm": { "$type": "dimension", "$value": "{space.0_5}" },
