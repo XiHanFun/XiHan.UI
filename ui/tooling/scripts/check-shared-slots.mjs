@@ -11,6 +11,51 @@ const STYLES_DIR = 'packages/design/styles/css'
 /** 不必令牌化的默认值：它们是 CSS 本身的语义，不是设计档位。 */
 const NOT_A_SCALE = new Set(['transparent', 'none', 'auto', 'inherit', 'currentColor', '0', '1', '100%'])
 
+/**
+ * 括号配平地读出每一处 `var(名字, 默认值)`。
+ *
+ * 早先这里用的是 `var\(\s*(--xh-[\w-]+)\s*,([^;()]*)\)`——默认值类里排除了括号，
+ * 于是任何**带括号的默认值**整条匹配不上：`calc(...)`、`0 1px 2px oklch(...)` 这类
+ * 阴影与算式全都看不见，而它们恰恰是最容易在几个组件之间抄来抄去的那一类。
+ */
+function readSlots(text) {
+  const out = []
+  for (let i = text.indexOf('var('); i >= 0; i = text.indexOf('var(', i + 1)) {
+    let depth = 0
+    let end = i + 3
+    for (; end < text.length && depth >= 0; end++) {
+      if (text[end] === '(')
+        depth++
+      else if (text[end] === ')' && --depth === 0)
+        break
+    }
+    if (end >= text.length)
+      continue
+    const inner = text.slice(i + 4, end)
+    let nested = 0
+    let comma = -1
+    for (let k = 0; k < inner.length; k++) {
+      if (inner[k] === '(') {
+        nested++
+      }
+      else if (inner[k] === ')') {
+        nested--
+      }
+      else if (inner[k] === ',' && nested === 0) {
+        comma = k
+        break
+      }
+    }
+    if (comma < 0)
+      continue
+    const name = inner.slice(0, comma).trim()
+    if (!name.startsWith('--xh-'))
+      continue
+    out.push({ name, fallback: inner.slice(comma + 1).trim() })
+  }
+  return out
+}
+
 const files = (await readdir(STYLES_DIR)).filter(f => f.endsWith('.css'))
 
 /** key = 「槽位后缀 = 字面量」，value = 用到它的组件集合。 */
@@ -19,9 +64,8 @@ const groups = new Map()
 for (const file of files) {
   const comp = file.replace(/\.css$/, '')
   const src = await readFile(join(STYLES_DIR, file), 'utf8')
-  for (const m of src.matchAll(/var\(\s*(--xh-[a-z0-9_-]+)\s*,([^;()]*)\)/g)) {
-    const [, name, raw] = m
-    const fallback = raw.trim()
+  for (const { name, fallback } of readSlots(src)) {
+    // 默认值本身是另一个令牌时不算「没被命名的决策」——它已经指到语义层了
     if (fallback.startsWith('var(') || NOT_A_SCALE.has(fallback))
       continue
     const prefix = `--xh-${comp}-`
@@ -49,6 +93,10 @@ for (const [key, comps] of groups) {
 const DISTINCT = {
   'column-min-w': '级联的列是一列选项文字，时间选择器的列是两位数字',
   'line-height': 'code-block 的行距与连接层虚拟行高绑死，log 是紧排的日志行',
+  // 同名不同面：看图的关闭钮压在暗遮罩上，只能往固定的深色兑；标签的移除钮在标签里面，
+  // 实心 / 淡底 / 描边三种形态下底色各不相同，只有从 currentColor 兑才三种都压得住
+  'close-bg-hover': 'image-viewer 的关闭钮压在暗遮罩上，tag 的移除钮压在标签自己的底上',
+  'close-bg-active': '同 close-bg-hover',
 }
 const divergent = [...bySuffix].filter(([suffix, byComp]) => !(suffix in DISTINCT) && byComp.size >= 2 && new Set(byComp.values()).size >= 2)
 for (const suffix of Object.keys(DISTINCT)) {

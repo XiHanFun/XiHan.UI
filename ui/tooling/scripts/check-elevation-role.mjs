@@ -18,10 +18,51 @@ const ROLE = /--xh-elevation-(raised|floating|sheet)\b/
 /** 使用者槽包着角色令牌：var(--xh-<组件>-…, var(--xh-elevation-<role>)) */
 const SLOTTED = /^var\(--xh-[a-z][a-z0-9-]*,\s*var\(--xh-elevation-(?:raised|floating|sheet)\)\)$/
 /** 锚定浮层与遮罩面的内容部件该落在哪一档；不在表里的部件只要求走角色令牌。 */
+/**
+ * 哪个组件的哪个部件该是哪一档。
+ *
+ * 从前这里只登记组件名，"哪个部件算面"交给一句
+ * `[data-part='(content|positioner|root|panel)']` 的正则去猜——猜漏的（side-nav 的
+ * branch-content、heatmap 的 tooltip、thread 的 scroll-button）就整个不受管，
+ * 而登记了却早已没有任何海拔的（image-viewer）也没人发现。
+ * 改成逐部件登记，两个方向都查得出来：登了没有即死登记，有了没登即漏管。
+ */
 const EXPECTED = {
-  floating: new Set(['select', 'combobox', 'cascader', 'tree-select', 'mention', 'popselect', 'menu', 'menubar', 'context-menu', 'popover', 'popconfirm', 'hover-card', 'tooltip', 'time-picker', 'date-picker', 'color-picker', 'navigation-menu', 'side-nav', 'heatmap']),
-  sheet: new Set(['dialog', 'drawer', 'toast', 'tour', 'floating-panel', 'float-button', 'back-top', 'image-viewer']),
+  floating: {
+    'cascader': ['content'],
+    'color-picker': ['content'],
+    'combobox': ['content', 'empty'],
+    'context-menu': ['content'],
+    'date-picker': ['content'],
+    'heatmap': ['tooltip'],
+    'hover-card': ['content'],
+    'mention': ['content'],
+    'menu': ['content'],
+    'menubar': ['content'],
+    'navigation-menu': ['content', 'viewport'],
+    'popconfirm': ['content'],
+    'popover': ['content'],
+    'popselect': ['content'],
+    'select': ['content'],
+    'side-nav': ['branch-content'],
+    'time-picker': ['content'],
+    'tooltip': ['content'],
+    'tree-select': ['content'],
+  },
+  sheet: {
+    'back-top': ['trigger'],
+    'dialog': ['content'],
+    'drawer': ['content'],
+    'float-button': ['trigger'],
+    'floating-panel': ['content'],
+    'thread': ['scroll-button'],
+    'toast': ['root'],
+    'tour': ['content'],
+  },
 }
+
+/** 见到的 `角色/组件/部件`，用于反查死登记。 */
+const seenRoles = new Set()
 
 const files = (await readdir(STYLES_DIR)).filter(f => f.endsWith('.css')).sort()
 const problems = []
@@ -48,10 +89,34 @@ for (const file of files) {
       }
       if (decl[1] === 'box-shadow' && !SLOTTED.test(value))
         problems.push(`${file}  ${selector.slice(0, 60)}  box-shadow: ${value.slice(0, 60)}  —— 没给使用者留 --xh-<组件>-…-shadow 槽`)
-      const want = EXPECTED.floating.has(comp) ? 'floating' : EXPECTED.sheet.has(comp) ? 'sheet' : null
-      const isSurface = /\[data-part='(?:content|positioner|root|panel)'\]/.test(selector)
-      if (want && isSurface && role !== want)
-        problems.push(`${file}  ${selector.slice(0, 60)}  用了 ${role}，这类面该是 ${want}`)
+      // 这条规则落在哪个部件上：取选择器里最后一个 data-part，那才是被样式作用的那个
+      const part = [...selector.matchAll(/\[data-part='([a-z0-9-]+)'\]/g)].map(m => m[1]).at(-1)
+      if (!part)
+        continue
+      seenRoles.add(`${role}/${comp}/${part}`)
+      const want = EXPECTED.floating[comp]?.includes(part)
+        ? 'floating'
+        : EXPECTED.sheet[comp]?.includes(part) ? 'sheet' : null
+      if (want && role !== want)
+        problems.push(`${file}  ${selector.slice(0, 60)}  用了 ${role}，这个面该是 ${want}`)
+      // 登记过这个组件、这次却落在没登记的部件上：要么补登，要么那一处不该用面档
+      const registered = EXPECTED.floating[comp] ?? EXPECTED.sheet[comp]
+      if (!want && registered && role !== 'raised') {
+        problems.push(
+          `${file}  ${selector.slice(0, 60)}  ${comp} 的 ${part} 用了 ${role} 却没登记——`
+          + `补进 EXPECTED，或改用 raised（它不是一个面）`,
+        )
+      }
+    }
+  }
+}
+
+// 死登记反查：登了却一处也没出现
+for (const [role, byComp] of Object.entries(EXPECTED)) {
+  for (const [comp, parts] of Object.entries(byComp)) {
+    for (const part of parts) {
+      if (!seenRoles.has(`${role}/${comp}/${part}`))
+        problems.push(`EXPECTED.${role} 里登着 ${comp} 的 ${part}，但那里根本没有这一档海拔——名单过期`)
     }
   }
 }

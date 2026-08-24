@@ -7,6 +7,10 @@
   /* 一排叠放的头像：后一枚压在前一枚上。
      组内共用的直径与字号在容器上写一次，沿继承流给每一枚；自己写了档位的那一枚仍按自己的档走 */
   [data-scope='avatar-group'][data-part='root'] {
+    /* 组件内那几档层号只在自己人之间排序：建一个层叠上下文把它们关起来，
+       既不让页面上的层号插进来，也不让它们漏出去压住别人 */
+    isolation: isolate;
+
     /* 私有槽位：整组共用的直径、字号与叠放量，换档只改这三个 */
     --xh-_avatar-group-size: var(--xh-avatar-group-size, var(--xh-control-h-md));
     --xh-_avatar-group-font-size: var(--xh-avatar-group-font-size, var(--xh-control-caption-md));

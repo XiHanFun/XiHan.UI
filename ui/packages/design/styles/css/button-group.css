@@ -8,6 +8,10 @@
      排布只能读 data-orientation——role=group 不收 aria-orientation，连接层根本不输出它。
      圆角槽位在容器上先收成 0，组内每段都取得到，两端的圆角再逐段补回来 */
   [data-scope='button-group'][data-part='root'] {
+    /* 组件内那几档层号只在自己人之间排序：建一个层叠上下文把它们关起来，
+       既不让页面上的层号插进来，也不让它们漏出去压住别人 */
+    isolation: isolate;
+
     --xh-button-radius: 0;
 
     display: inline-flex;

@@ -63,7 +63,15 @@ for (const name of FAMILIES) {
   if (connect && !connect.includes('position: \'fixed\''))
     problems.push(`${name}：connect 的 positioner 没产出 position: 'fixed'`)
 
-  if (css && !NO_SKIN_RULE.has(name)) {
+  if (css && name in NO_SKIN_RULE) {
+    // 登记说「皮肤不管定位」，那就核一遍：positioner 上一条 position 都不许有。
+    // 有了也是死声明（内联赢），但会让读代码的人以为坐标系是它说的那个
+    const declared = [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)]
+      .filter(([, selector, body]) => selector.includes('data-part=\'positioner\']') && /(?:^|;|\s)position\s*:/.test(body))
+    if (declared.length)
+      problems.push(`${name}：登记为「定位全交内联」（${NO_SKIN_RULE[name]}），皮肤却在 positioner 上声明了 position`)
+  }
+  else if (css) {
     const rule = positionerRule(css)
     if (rule == null)
       problems.push(`${name}：皮肤里找不到 positioner 规则`)
