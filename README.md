@@ -131,7 +131,7 @@ pnpm install
 pnpm dev
 ```
 
-改动需通过 CI 全套门禁，CI 与本地同一套命令：`pnpm lint`、`pnpm typecheck`、`pnpm boundaries`、`pnpm gate`（一条命令跑 60 项结构检查）、`pnpm test`、`pnpm build`、`pnpm size` 等。包一览、分层拓扑与命名约定见 [ui/README_cn.md](./ui/README_cn.md)。
+改动需通过 CI 全套门禁，CI 与本地同一套命令：`pnpm lint`、`pnpm typecheck`、`pnpm boundaries`、`pnpm gate`（一条命令跑 61 项结构检查）、`pnpm test`、`pnpm build`、`pnpm size` 等。包一览、分层拓扑与命名约定见 [ui/README_cn.md](./ui/README_cn.md)。
 
 ## 现状与边界
 

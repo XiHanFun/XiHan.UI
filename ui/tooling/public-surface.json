@@ -9963,6 +9963,7 @@
     "--xh-tree-select-value-leading",
     "--xh-typography-block-gap",
     "--xh-typography-code-bg",
+    "--xh-typography-code-font",
     "--xh-typography-code-font-size",
     "--xh-typography-code-px",
     "--xh-typography-code-py",

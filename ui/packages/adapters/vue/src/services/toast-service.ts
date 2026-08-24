@@ -75,7 +75,7 @@ function defaultToast(
         onUnmounted(id)
     },
   }, () => [
-    h('div', { style: { display: 'flex', alignItems: 'center', gap: 'var(--xh-space-2)' } }, [
+    h('div', { style: { display: 'flex', alignItems: 'center', gap: 'var(--xh-control-gap-md)' } }, [
       typeBadge(toast.type),
       h(XhToastTitle),
     ]),

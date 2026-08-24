@@ -22,6 +22,8 @@
     font-size: var(--xh-badge-font-size, var(--xh-text-caption-size));
     font-weight: var(--xh-badge-font-weight, var(--xh-font-weight-medium));
     line-height: var(--xh-leading-none);
+    /* 出的是计数，数字必须等宽：不然 9 跳到 10 时整个药丸的宽度会抖一下 */
+    font-variant-numeric: tabular-nums;
     white-space: nowrap;
   }
 
