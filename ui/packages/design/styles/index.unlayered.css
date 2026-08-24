@@ -6625,7 +6625,7 @@ input[data-scope='mention'][data-part='input'] {
   padding-inline: var(--xh-typography-code-px, var(--xh-space-1));
   border-radius: var(--xh-typography-code-radius, var(--xh-shape-inset));
   background: var(--xh-typography-code-bg, var(--xh-bg-subtle));
-  font-family: var(--xh-font-family-mono);
+  font-family: var(--xh-typography-code-font, var(--xh-font-family-mono));
   font-size: var(--xh-typography-code-font-size, var(--xh-_typography-code-size));
 }
 
@@ -7628,6 +7628,8 @@ input[data-scope='mention'][data-part='input'] {
   font-size: var(--xh-badge-font-size, var(--xh-text-caption-size));
   font-weight: var(--xh-badge-font-weight, var(--xh-font-weight-medium));
   line-height: var(--xh-leading-none);
+  /* 出的是计数，数字必须等宽：不然 9 跳到 10 时整个药丸的宽度会抖一下 */
+  font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
 

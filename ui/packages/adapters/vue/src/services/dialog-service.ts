@@ -214,7 +214,7 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
           'initialFocus': spec?.initialFocus,
         }, () => spec
           ? h(XhDialogContent, null, () => [
-              h('div', { 'style': { display: 'flex', alignItems: 'center', gap: 'var(--xh-space-2)' }, 'data-tone': spec.badge ? toneOfBadge(spec.badge) : undefined }, [
+              h('div', { 'style': { display: 'flex', alignItems: 'center', gap: 'var(--xh-control-gap-md)' }, 'data-tone': spec.badge ? toneOfBadge(spec.badge) : undefined }, [
                 spec.badge ? typeBadge(spec.badge) : null,
                 h(XhDialogTitle, () => spec.title),
               ]),
@@ -223,7 +223,7 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
                 ? h(XhDialogDescription, () => spec.content as string)
                 : typeof spec.content === 'function' ? spec.content() : null,
               spec.body && spec.value ? spec.body(spec.value) : null,
-              h('div', { style: { display: 'flex', justifyContent: 'flex-end', gap: 'var(--xh-space-2)' } }, [
+              h('div', { style: { display: 'flex', justifyContent: 'flex-end', gap: 'var(--xh-control-gap-md)' } }, [
                 spec.showCancel
                   ? h(XhButton, { variant: 'ghost', disabled: state.busy, onClick: () => close(false) }, () => toValue(spec.cancelText))
                   : null,

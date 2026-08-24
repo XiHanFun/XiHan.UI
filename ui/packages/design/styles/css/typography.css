@@ -125,7 +125,7 @@
     padding-inline: var(--xh-typography-code-px, var(--xh-space-1));
     border-radius: var(--xh-typography-code-radius, var(--xh-shape-inset));
     background: var(--xh-typography-code-bg, var(--xh-bg-subtle));
-    font-family: var(--xh-font-family-mono);
+    font-family: var(--xh-typography-code-font, var(--xh-font-family-mono));
     font-size: var(--xh-typography-code-font-size, var(--xh-_typography-code-size));
   }
 
