@@ -117,6 +117,8 @@ stick-change 报到底，宿主据此去取下一页；先往上滚一段再滚�
 
 | 部件 | 取值 |
 | --- | --- |
+| `root` | props.status |
+| `viewport` | props.status |
 | `scroll-button` | 'visible' \| 'hidden' |
 
 状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
@@ -175,7 +177,9 @@ stick-change 报到底，宿主据此去取下一页；先往上滚一段再滚�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `root` | `data-state` | props.status |
 | `root` | `data-status` | props.status |
+| `viewport` | `data-state` | props.status |
 | `viewport` | `data-status` | props.status |
 | `scroll-button` | `data-state` | 'visible' \| 'hidden' |
 

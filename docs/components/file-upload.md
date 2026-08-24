@@ -153,6 +153,12 @@ remote-files 装编辑表单里已存在的附件：与本地文件同列渲染�
 
 ## 状态
 
+对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+
+| 部件 | 取值 |
+| --- | --- |
+| `item` | uploadOf(file)?.status |
+
 状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle` · `dragging`
@@ -249,6 +255,7 @@ remote-files 装编辑表单里已存在的附件：与本地文件同列渲染�
 | `item` | `data-file-name` | file.name |
 | `item` | `data-file-size` | undefined \| String(file.size) \| String(file.size) |
 | `item` | `data-remote` | ''（条件成立时才出现） |
+| `item` | `data-state` | uploadOf(file)?.status |
 | `item` | `data-status` | uploadOf(file)?.status |
 | `item-name` | `data-disabled` | ''（条件成立时才出现） |
 | `item-size-text` | `data-disabled` | ''（条件成立时才出现） |

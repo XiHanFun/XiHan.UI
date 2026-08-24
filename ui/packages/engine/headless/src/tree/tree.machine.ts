@@ -4,9 +4,14 @@ import { setup } from '@xihan-ui/machine'
 
 const { createMachine } = setup<TreeSchema>()
 
-/** 生效的选择模式。 */
-export function treeSelectionMode(mode: TreeSelectionMode | undefined): TreeSelectionMode {
-  return mode ?? 'single'
+/**
+ * 生效的选择模式。
+ *
+ * 两个来源：新的 `multiple` 布尔与旧的 `selectionMode` 枚举。两者同时给时以 selectionMode
+ * 为准——与 listbox 同一条规矩，也让过渡期里旧代码的行为一点不变。
+ */
+export function treeSelectionMode(mode: TreeSelectionMode | undefined, multiple?: boolean): TreeSelectionMode {
+  return mode ?? (multiple ? 'multiple' : 'single')
 }
 
 /**
@@ -172,7 +177,7 @@ export const treeMachine = createMachine({
         const e = event.current()
         if (e.type !== 'SELECTION.SET')
           return
-        context.set('selection', normalizeSelection(e.value, treeSelectionMode(prop('selectionMode'))))
+        context.set('selection', normalizeSelection(e.value, treeSelectionMode(prop('selectionMode'), prop('multiple'))))
       },
       selectNode: ({ context, prop, event }) => {
         const e = event.current()
@@ -180,7 +185,7 @@ export const treeMachine = createMachine({
           return
         const current = context.get('selection')
         // 单选没有取消选中这回事，点两下不会把树点空
-        if (treeSelectionMode(prop('selectionMode')) === 'single') {
+        if (treeSelectionMode(prop('selectionMode'), prop('multiple')) === 'single') {
           context.set('selection', [e.value])
           return
         }

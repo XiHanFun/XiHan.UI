@@ -55,6 +55,7 @@ export const XhTreeRoot = defineComponent({
     defaultExpandedValue: { type: Array as PropType<string[]>, default: undefined },
     selection: { type: Array as PropType<string[]>, default: undefined },
     defaultSelection: { type: Array as PropType<string[]>, default: undefined },
+    multiple: { type: Boolean, default: undefined },
     selectionMode: { type: String as PropType<TreeSelectionMode>, default: undefined },
     cascade: Boolean,
     checkedStrategy: { type: String as PropType<TreeProps['checkedStrategy']>, default: undefined },

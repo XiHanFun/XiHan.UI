@@ -29,7 +29,8 @@ const BRANCH_SELECTOR = '[data-xh-part="branch"]'
  * 树数据与展开/选中集合都是数组，属性表达不了，只能走 property（`el.collection = [...]`）。
  *
  * @customElement xh-tree
- * @attr {'single'|'multiple'} selection-mode - 选择模式，默认 single
+ * @attr {boolean} multiple - 复选，默认关闭
+ * @attr {'single'|'multiple'} selection-mode - 选择模式的旧写法，默认 single；与 multiple 同时给时以它为准
  * @attr {boolean} cascade - multiple 下父子级联勾选（整枝传导/半选/禁用冻结），默认 false
  * @attr {string} checked-strategy - 级联下对外值的收敛策略：child（默认）/ parent / all
  * @attr {boolean} expand-on-click - 点分支行顺带展开/收起，默认开；写 expand-on-click="false" 关掉
@@ -67,6 +68,7 @@ export class XhTreeElement extends XhElement {
     defaultExpandedValue: { attribute: false },
     selection: { attribute: false },
     defaultSelection: { attribute: false },
+    multiple: { converter: BOOLEAN_CONVERTER },
     selectionMode: { converter: STRING_CONVERTER, attribute: 'selection-mode' },
     cascade: { type: Boolean },
     checkedStrategy: { converter: STRING_CONVERTER, attribute: 'checked-strategy' },
@@ -82,6 +84,7 @@ export class XhTreeElement extends XhElement {
   declare defaultExpandedValue?: string[]
   declare selection?: string[]
   declare defaultSelection?: string[]
+  declare multiple?: boolean
   declare selectionMode?: TreeSelectionMode
   declare cascade?: boolean
   declare checkedStrategy?: TreeSchema['props']['checkedStrategy']
@@ -111,6 +114,7 @@ export class XhTreeElement extends XhElement {
       defaultExpandedValue: this.defaultExpandedValue,
       selection: this.selection,
       defaultSelection: this.defaultSelection,
+      multiple: this.multiple,
       selectionMode: this.selectionMode,
       cascade: this.cascade,
       checkedStrategy: this.checkedStrategy,
