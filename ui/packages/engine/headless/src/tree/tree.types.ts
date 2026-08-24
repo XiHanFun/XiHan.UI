@@ -1,5 +1,5 @@
 import type { CascadeStrategy, Typeahead } from '@xihan-ui/behavior'
-import type { Direction, PropTypes } from '@xihan-ui/kernel'
+import type { Direction, Orientation, PropTypes } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 
 /**
@@ -91,6 +91,13 @@ export interface TreeSchema extends MachineSchema {
   props: {
     /** 树数据，层级元信息的唯一事实源。缺省为空树。 */
     collection?: TreeNode[]
+    /**
+     * 子层的排布方向，默认 vertical（每行一个）。horizontal 让同一层的节点并排铺开。
+     *
+     * 只管排布，不动键盘：方向键在树上是层级操作（左右收展、上下走可见行），
+     * 这是 treeview 的规范语义，不随排布方向改写。
+     */
+    orientation?: Orientation
     /** 展开集合。给定即受控：cell 直读 prop，写只发 onExpandedChange 不落内部值。 */
     expandedValue?: string[]
     defaultExpandedValue?: string[]

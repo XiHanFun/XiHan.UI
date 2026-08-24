@@ -43380,6 +43380,15 @@
             },
             {
               "kind": "field",
+              "name": "orientation",
+              "privacy": "public",
+              "type": {
+                "text": "Orientation | undefined"
+              },
+              "attribute": "orientation"
+            },
+            {
+              "kind": "field",
               "name": "selectionMode",
               "privacy": "public",
               "type": {
@@ -43558,6 +43567,14 @@
               "description": "复选，默认关闭",
               "name": "multiple",
               "fieldName": "multiple"
+            },
+            {
+              "type": {
+                "text": "Orientation | undefined"
+              },
+              "description": "子层排布方向，默认 vertical；horizontal 让同一层的节点并排铺开",
+              "name": "orientation",
+              "fieldName": "orientation"
             },
             {
               "type": {

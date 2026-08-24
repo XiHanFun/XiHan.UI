@@ -82,6 +82,12 @@ selection-mode="multiple" 加 cascade 内建父子传导：点分支整枝勾上
 
 <XhDemo src="tree/10-drag-move" />
 
+### 子层横排
+
+orientation="horizontal" 把同一层的节点并排铺开，缩进仍标层级；方向键不跟着改：左右是收展、上下走可见行，这是 treeview 的规范语义
+
+<XhDemo src="tree/11-orientation" />
+
 ## 产物
 
 | 层 | 值 |
@@ -103,6 +109,7 @@ selection-mode="multiple" 加 cascade 内建父子传导：点分支整枝勾上
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `collection` | `TreeNode[]` |  | 树数据，层级元信息的唯一事实源。缺省为空树。 |
+| `orientation` | `Orientation` |  | 子层的排布方向，默认 vertical（每行一个）。horizontal 让同一层的节点并排铺开。 只管排布，不动键盘：方向键在树上是层级操作（左右收展、上下走可见行）， 这是 treeview 的规范语义，不随排布方向改写。 |
 | `expandedValue` | `string[]` |  | 展开集合。给定即受控：cell 直读 prop，写只发 onExpandedChange 不落内部值。 |
 | `defaultExpandedValue` | `string[]` |  |  |
 | `selection` | `string[]` |  | 选中集合。给定即受控，语义同上。 |
@@ -207,6 +214,7 @@ selection-mode="multiple" 加 cascade 内建父子传导：点分支整枝勾上
 | `tree` | `aria-disabled` | 'true' \| 'false' |
 | `tree` | `aria-labelledby` | `label` 部件的 id |
 | `tree` | `aria-multiselectable` | 'true' \| 'false' |
+| `tree` | `aria-orientation` | props.orientation |
 | `tree` | `role` | 'tree' |
 | `item-checkbox` | `aria-hidden` | 'true' |
 | `item-indicator` | `aria-hidden` | 'true' |
@@ -228,8 +236,11 @@ selection-mode="multiple" 加 cascade 内建父子传导：点分支整枝勾上
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-orientation` | props.orientation |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
 | `tree` | `data-disabled` | ''（条件成立时才出现） |
+| `tree` | `data-orientation` | props.orientation |
+| `branch-content` | `data-orientation` | props.orientation |
 
 ## CSS 变量
 

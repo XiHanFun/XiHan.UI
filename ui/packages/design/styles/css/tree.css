@@ -96,7 +96,7 @@
   /* 分支行的首格是展开箭头，叶子行没有这一格。作者摆了 item-indicator 时由它顶着，
      没摆（如勾选档首位直接是 item-checkbox）就由行盒自己补出来，
      否则叶子会比同级分支往行首缩一格，层级关系读不出来 */
-  [data-scope='tree'][data-part='item']:not(
+  [data-orientation='vertical'] [data-scope='tree'][data-part='item']:not(
       :has(> [data-scope='tree'][data-part='item-indicator'])
     ) {
     padding-inline-start: calc(
@@ -276,6 +276,21 @@
     display: flex;
     flex-direction: column;
     padding-inline-start: var(--xh-tree-indent, var(--xh-space-4));
+  }
+
+  /* 横排：同一层的节点并排铺开。缩进照旧由子层容器自己顶——那是这一层相对上一层的位置，
+     与层内怎么排无关。行宽在横排下不该再吃满整行，改由内容撑 */
+  [data-scope='tree'][data-part='tree'][data-orientation='horizontal'],
+  [data-scope='tree'][data-part='branch-content'][data-orientation='horizontal'] {
+    flex-direction: row;
+    align-items: start;
+    gap: var(--xh-tree-row-gap, var(--xh-control-gap-md));
+  }
+
+  /* 横排的一层里节点是并排的，行盒不能再各自吃满一行 */
+  [data-orientation='horizontal'] > [data-scope='tree'][data-part='item'],
+  [data-orientation='horizontal'] > [data-scope='tree'][data-part='branch'] {
+    flex: none;
   }
 
   /* 收起态的唯一开关：display 会盖掉 hidden 属性的 UA 规则，漏了这条整棵子树就收不起来 */

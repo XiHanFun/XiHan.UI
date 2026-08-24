@@ -19,6 +19,7 @@ export function connectTree<T extends PropTypes>(
   const selection = context.get('selection')
   const treeDisabled = !!prop('disabled')
   const dir = prop('dir') ?? 'ltr'
+  const orientation = prop('orientation') ?? 'vertical'
   // 树不回绕：上键停在首行、下键停在末行
   const loop = prop('loop') ?? false
   const typeaheadOn = prop('typeahead') ?? true
@@ -182,6 +183,7 @@ export function connectTree<T extends PropTypes>(
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
+      'data-orientation': orientation,
       'data-disabled': dataAttr(treeDisabled),
     }),
 
@@ -197,9 +199,11 @@ export function connectTree<T extends PropTypes>(
       'id': ids.tree,
       'role': 'tree',
       'aria-labelledby': ids.label,
+      'aria-orientation': orientation,
       // 复选与否必须显式说，省略只是没说
       'aria-multiselectable': multiselectable ? 'true' : 'false',
       'aria-disabled': treeDisabled ? 'true' : 'false',
+      'data-orientation': orientation,
       // 焦点在树外时容器兜底进 Tab 序列，由 onFocus 转投给节点。
       // 判据用 focusedValue 而非 anchor：anchor 可能指向已删掉、已隐藏或不在树里的值，那时无人认领 tabindex=0
       'tabindex': focusedValue == null ? 0 : -1,
@@ -467,9 +471,11 @@ export function connectTree<T extends PropTypes>(
       ...parts['branch-content'].attrs,
       ...branchState(node.value),
       // 子层是 treeitem 的下一级分组，role=group 是 tree 结构的必需环节
-      role: 'group',
+      'role': 'group',
+      // group 不收 aria-orientation，排布方向只以 data 形式交给皮肤
+      'data-orientation': orientation,
       // 收起只加 hidden，不卸载作者节点，子树里的输入框与滚动位置得留着
-      hidden: !isExpanded(node.value) || undefined,
+      'hidden': !isExpanded(node.value) || undefined,
     }),
   }
 }
