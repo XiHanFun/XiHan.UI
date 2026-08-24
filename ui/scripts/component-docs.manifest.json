@@ -46,6 +46,10 @@
           "name": "图标块"
         },
         {
+          "id": "scrollbar",
+          "name": "滚动条"
+        },
+        {
           "id": "toggle",
           "name": "切换按钮"
         },
@@ -87,10 +91,6 @@
         {
           "id": "scroll-area",
           "name": "滚动区域"
-        },
-        {
-          "id": "scrollbar",
-          "name": "滚动条"
         },
         {
           "id": "separator",
@@ -330,10 +330,6 @@
           "name": "头像组"
         },
         {
-          "id": "badge",
-          "name": "徽标"
-        },
-        {
           "id": "calendar",
           "name": "日历"
         },
@@ -451,6 +447,10 @@
         {
           "id": "alert",
           "name": "警告提示"
+        },
+        {
+          "id": "badge",
+          "name": "徽标"
         },
         {
           "id": "loading-bar",

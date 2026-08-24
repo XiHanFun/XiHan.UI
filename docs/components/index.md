@@ -22,6 +22,7 @@
 | [快捷键](./hotkeys) | `hotkeys` | 3 | 2 | 6 |
 | [图标](./icon) | `icon` | 2 | 0 | 6 |
 | [图标块](./icon-wrapper) | `icon-wrapper` | 1 | 0 | 4 |
+| [滚动条](./scrollbar) | `scrollbar` | 4 | 7 | 4 |
 | [切换按钮](./toggle) | `toggle` | 1 | 1 | 9 |
 | [切换按钮组](./toggle-group) | `toggle-group` | 2 | 6 | 7 |
 | [排印](./typography) | `typography` | 5 | 0 | 5 |
@@ -38,7 +39,6 @@
 | [布局](./layout) | `layout` | 6 | 1 | 7 |
 | [瀑布流](./masonry) | `masonry` | 3 | 0 | 5 |
 | [滚动区域](./scroll-area) | `scroll-area` | 4 | 5 | 5 |
-| [滚动条](./scrollbar) | `scrollbar` | 4 | 7 | 4 |
 | [分隔线](./separator) | `separator` | 1 | 0 | 4 |
 | [间距](./space) | `space` | 2 | 0 | 5 |
 | [分栏](./splitter) | `splitter` | 3 | 7 | 6 |
@@ -114,7 +114,6 @@
 | [手风琴](./accordion) | `accordion` | 6 | 6 | 11 |
 | [头像](./avatar) | `avatar` | 3 | 0 | 10 |
 | [头像组](./avatar-group) | `avatar-group` | 2 | 0 | 4 |
-| [徽标](./badge) | `badge` | 1 | 0 | 8 |
 | [日历](./calendar) | `calendar` | 17 | 12 | 4 |
 | [卡片](./card) | `card` | 7 | 0 | 5 |
 | [走马灯](./carousel) | `carousel` | 8 | 10 | 9 |
@@ -150,6 +149,7 @@
 | 组件 | 标识 | 部件数 | 键盘条目 | 示例 |
 | --- | --- | --- | --- | --- |
 | [警告提示](./alert) | `alert` | 5 | 1 | 5 |
+| [徽标](./badge) | `badge` | 1 | 0 | 8 |
 | [加载条](./loading-bar) | `loading-bar` | 3 | 0 | 6 |
 | [进度条](./progress) | `progress` | 5 | 0 | 10 |
 | [结果页](./result) | `result` | 5 | 0 | 5 |
