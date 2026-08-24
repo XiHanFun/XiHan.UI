@@ -31,8 +31,9 @@
     display: none;
   }
 
-  /* 冲到 100 之后进入淡出：机器会在淡出窗口走完之前一直停在 finishing，
-     这段过渡才有时间跑完；窗口与时长两处默认值都是 200ms，改一处记得对齐另一处 */
+  /* 冲到 100 之后进入淡出：机器会在淡出窗口走完之前一直停在 finishing，这段过渡才有时间跑完。
+     窗口（machine 的 LOADING_BAR_FADE_DURATION，200ms）比过渡本身（motion-duration-exit，120ms）
+     宽出一截是有意的余量；两者不是同一个数，改窗口时只要保证它仍不短于过渡 */
   [data-scope='loading-bar'][data-part='root'][data-state='finishing'] {
     opacity: 0;
   }

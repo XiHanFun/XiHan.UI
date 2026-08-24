@@ -132,7 +132,9 @@
     background: var(--xh-slider-thumb-bg, var(--xh-_tone, var(--xh-bg-brand)));
     box-shadow: var(--xh-slider-thumb-shadow, var(--xh-elevation-raised));
     cursor: grab;
-    transition: scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition:
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 内联样式把 inset-inline-start 定在值所在的比例上，那是拇指的**起始边**不是圆心；

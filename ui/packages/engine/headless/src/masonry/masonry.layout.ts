@@ -7,8 +7,8 @@ const DEFAULT_COLUMNS = 3
  * 四档断点的像素宽度，与断点令牌 --xh-breakpoint-sm/-md/-lg/-xl 同值。
  *
  * 列数由脚本定，量的是容器宽度而不是视口宽度，所以换档只能在这里比数字，没有对应的媒体查询。
- * 这份常量是全仓唯一一处在 JS 里复制断点值的地方，皮肤侧的断点门禁看不到它：
- * 改动 --xh-breakpoint-sm/-md/-lg/-xl 必须同步改这四个数，否则脚本换档与皮肤断点会各走各的。
+ * 这份常量是全仓唯一一处在 JS 里复制断点值的地方。check-breakpoints 会把它与
+ * --xh-breakpoint-sm/-md/-lg/-xl 逐档对账，改了令牌不同步这里即构建失败。
  */
 const BREAKPOINTS: Readonly<Record<MasonryBreakpoint, number>> = { sm: 640, md: 768, lg: 1024, xl: 1280 }
 
