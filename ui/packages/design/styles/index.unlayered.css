@@ -56,6 +56,10 @@
 /* 一排叠放的头像：后一枚压在前一枚上。
    组内共用的直径与字号在容器上写一次，沿继承流给每一枚；自己写了档位的那一枚仍按自己的档走 */
 [data-scope='avatar-group'][data-part='root'] {
+  /* 组件内那几档层号只在自己人之间排序：建一个层叠上下文把它们关起来，
+     既不让页面上的层号插进来，也不让它们漏出去压住别人 */
+  isolation: isolate;
+
   /* 私有槽位：整组共用的直径、字号与叠放量，换档只改这三个 */
   --xh-_avatar-group-size: var(--xh-avatar-group-size, var(--xh-control-h-md));
   --xh-_avatar-group-font-size: var(--xh-avatar-group-font-size, var(--xh-control-caption-md));
@@ -231,6 +235,10 @@
    排布只能读 data-orientation——role=group 不收 aria-orientation，连接层根本不输出它。
    圆角槽位在容器上先收成 0，组内每段都取得到，两端的圆角再逐段补回来 */
 [data-scope='button-group'][data-part='root'] {
+  /* 组件内那几档层号只在自己人之间排序：建一个层叠上下文把它们关起来，
+     既不让页面上的层号插进来，也不让它们漏出去压住别人 */
+  isolation: isolate;
+
   --xh-button-radius: 0;
 
   display: inline-flex;
@@ -14402,6 +14410,10 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='image-viewer'][data-part='content'] {
+  /* 组件内那几档层号只在自己人之间排序：建一个层叠上下文把它们关起来，
+     既不让页面上的层号插进来，也不让它们漏出去压住别人 */
+  isolation: isolate;
+
   /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
   --xh-icon-size: var(--xh-image-viewer-icon-size, var(--xh-glyph-size-text));
 
@@ -19201,6 +19213,10 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 表格自己滚动：吸顶表头与横向吸附列都要一个确定的滚动容器才钉得住 */
 [data-scope='table'][data-part='root'] {
+  /* 组件内那几档层号只在自己人之间排序：建一个层叠上下文把它们关起来，
+     既不让页面上的层号插进来，也不让它们漏出去压住别人 */
+  isolation: isolate;
+
   /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
   --xh-icon-size: var(--xh-table-icon-size, var(--xh-glyph-size-text));
 
@@ -20593,6 +20609,10 @@ input[data-scope='mention'][data-part='input'] {
 /* 自建定位上下文，作为绝对定位的回到底部按钮的参照系；
    block-size: 100% 让高度由外部决定，使滚动发生在内部。 */
 [data-scope='thread'][data-part='root'] {
+  /* 组件内那几档层号只在自己人之间排序：建一个层叠上下文把它们关起来，
+     既不让页面上的层号插进来，也不让它们漏出去压住别人 */
+  isolation: isolate;
+
   position: relative;
   display: flex;
   flex-direction: column;
@@ -21946,6 +21966,10 @@ input[data-scope='mention'][data-part='input'] {
 /* 分段控件：段与段之间不留缝，靠共边连成一体，所以 root 不设 gap。
    排布只能读 data-orientation——aria-orientation 在多选模式下连接层根本不输出（role=group 不收） */
 [data-scope='toggle-group'][data-part='root'] {
+  /* 组件内那几档层号只在自己人之间排序：建一个层叠上下文把它们关起来，
+     既不让页面上的层号插进来，也不让它们漏出去压住别人 */
+  isolation: isolate;
+
   /* 段的度量与字号走私有槽中转，与同族的分段控件一处对一处 */
   --xh-_toggle-group-h: var(--xh-control-h-md);
   --xh-_toggle-group-px: var(--xh-control-px-md);

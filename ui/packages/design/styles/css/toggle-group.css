@@ -7,6 +7,10 @@
   /* 分段控件：段与段之间不留缝，靠共边连成一体，所以 root 不设 gap。
      排布只能读 data-orientation——aria-orientation 在多选模式下连接层根本不输出（role=group 不收） */
   [data-scope='toggle-group'][data-part='root'] {
+    /* 组件内那几档层号只在自己人之间排序：建一个层叠上下文把它们关起来，
+       既不让页面上的层号插进来，也不让它们漏出去压住别人 */
+    isolation: isolate;
+
     /* 段的度量与字号走私有槽中转，与同族的分段控件一处对一处 */
     --xh-_toggle-group-h: var(--xh-control-h-md);
     --xh-_toggle-group-px: var(--xh-control-px-md);

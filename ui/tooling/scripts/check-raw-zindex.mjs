@@ -17,15 +17,22 @@ const HEADLESS = 'packages/engine/headless/src'
  * 层号只在组件自己的堆叠上下文里比大小、不参与全局层序的皮肤，连同理由。
  * 名单之外的皮肤一律只许引层序令牌。
  */
+/**
+ * 组件内堆叠名单：登记「这份皮肤的裸层号只在自己内部排序」。
+ *
+ * 每条都要写明**由哪个部件把这层排序关起来**（isolatedBy）——不写就只是一句自述，
+ * 没人核得出真假。判据是那个部件的规则里有 `isolation: isolate`：它建一个层叠上下文，
+ * 于是组件内的 0/1/2 既不会被外面的层号插进来，也不会漏到外面去压住别人。
+ */
 const IN_COMPONENT_STACKING = {
-  'avatar-group.css': '头像相互压边，靠悬停项抬一层盖住相邻头像',
-  'button-group.css': '相邻段的边框重叠，靠悬停段抬一层盖住邻段边框',
-  'heatmap.css': '行首那一列钉住时抬到格子之上，详情条再抬一层压住它，收在 root 自建的层叠上下文里',
-  'image-viewer.css': '工具条压在图上，浮层内部的两层',
-  'table.css': '粘性列抬到普通单元格之上，表内的列间层序',
-  'thread.css': '回到底部的按钮压在消息之上，不依赖源序',
-  'toggle-group.css': '条目的边框重叠与选中态抬升，组内三档',
-  'watermark.css': '水印压在内容之上，容器内的两层',
+  'avatar-group.css': { reason: '头像相互压边，靠悬停项抬一层盖住相邻头像', isolatedBy: 'root' },
+  'button-group.css': { reason: '相邻段的边框重叠，靠悬停段抬一层盖住邻段边框', isolatedBy: 'root' },
+  'heatmap.css': { reason: '行首那一列钉住时抬到格子之上，详情条再抬一层压住它', isolatedBy: 'root' },
+  'image-viewer.css': { reason: '工具条与关闭钮压在图上，浮层内部的两层', isolatedBy: 'content' },
+  'table.css': { reason: '粘性列抬到普通单元格之上，表内的列间层序', isolatedBy: 'root' },
+  'thread.css': { reason: '回到底部的按钮压在消息之上，不依赖源序', isolatedBy: 'root' },
+  'toggle-group.css': { reason: '条目的边框重叠与选中态抬升，组内三档', isolatedBy: 'root' },
+  'watermark.css': { reason: '水印压在内容之上，容器内的两层', isolatedBy: 'root' },
 }
 
 /** 组件内堆叠允许的层号档位。 */
@@ -106,10 +113,14 @@ const usedWhitelist = new Set()
 let tokenised = 0
 let slotted = 0
 
+/** 文件名 → 去注释后的源码，名单核实那一段复用。 */
+const sources = new Map()
+
 for (const file of files) {
   const comp = file.replace(/\.css$/, '')
   // 去掉注释但保留它占的行数，报错行号才对得上源文件
   const src = (await readFile(join(STYLES_DIR, file), 'utf8')).replace(/\/\*[\s\S]*?\*\//g, c => c.replace(/[^\n]/g, ''))
+  sources.set(file, src)
 
   src.split(/\r?\n/).forEach((line, i) => {
     for (const m of line.matchAll(/--xh-[a-z0-9-]+-z(?=\s*[,)])/g))
@@ -160,11 +171,26 @@ for (const file of files) {
   }
 }
 
-for (const file of Object.keys(IN_COMPONENT_STACKING)) {
-  if (!files.includes(file))
+for (const [file, entry] of Object.entries(IN_COMPONENT_STACKING)) {
+  if (!files.includes(file)) {
     problems.push(`${file}：登在组件内堆叠名单里，但这份皮肤已经不在了`)
-  else if (!usedWhitelist.has(file))
+    continue
+  }
+  if (!usedWhitelist.has(file)) {
     problems.push(`${file}：登在组件内堆叠名单里，但它已经没有裸层号了，删掉这条`)
+    continue
+  }
+  // 登记里那句「关在自己的层叠上下文里」要能核得出来
+  const scope = file.replace(/\.css$/, '')
+  const src = sources.get(file) ?? ''
+  const isolates = [...src.matchAll(/([^{}]+)\{([^{}]*)\}/g)].some(([, selector, body]) =>
+    selector.includes(`[data-part='${entry.isolatedBy}']`) && /isolation:\s*isolate/.test(body))
+  if (!isolates) {
+    problems.push(
+      `${file}：登记说层号关在 ${scope} 的 ${entry.isolatedBy} 里，但那个部件没有 isolation: isolate——`
+      + `组件内的 0/1/2 于是与页面上其它层号混在同一个上下文里排序`,
+    )
+  }
 }
 
 if (problems.length) {

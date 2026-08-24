@@ -35,10 +35,17 @@ export const COMPOSED = {
 }
 
 /**
- * 皮肤里没有独立 positioner 规则的：定位由内联样式全权负责。
+ * 皮肤不给 positioner 定坐标系的：定位模式与坐标全部由连接层写进内联 style。
+ *
+ * 从前这里是一个只有名字的 Set——「皮肤不管定位」是一句自述，没人核得出真假，
+ * 后来有人在那份皮肤里补一条 position: absolute 也不会有任何提示（内联赢，那条是死声明，
+ * 却会让读代码的人以为坐标系是 absolute）。改成带理由的对象，并由门禁反过来核实：
+ * 登记了就**不许**在 positioner 上声明 position。
  * 只有 check-overlay-strategy 用。
  */
-export const NO_SKIN_RULE = new Set(['tour'])
+export const NO_SKIN_RULE = {
+  tour: '坐标与定位模式全由连接层写进内联 style，皮肤这一层只管层号、指针与居中步的铺满',
+}
 
 /**
  * 没有 positioner 部件、面板由皮肤 position: absolute 排布的浮层，连同理由。

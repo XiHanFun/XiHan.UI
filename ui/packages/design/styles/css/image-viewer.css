@@ -54,6 +54,10 @@
   }
 
   [data-scope='image-viewer'][data-part='content'] {
+    /* 组件内那几档层号只在自己人之间排序：建一个层叠上下文把它们关起来，
+       既不让页面上的层号插进来，也不让它们漏出去压住别人 */
+    isolation: isolate;
+
     /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
     --xh-icon-size: var(--xh-image-viewer-icon-size, var(--xh-glyph-size-text));
 
