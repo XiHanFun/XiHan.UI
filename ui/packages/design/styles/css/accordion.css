@@ -45,8 +45,23 @@
   }
 
   [data-scope='accordion'][data-part='item'] {
-    border-block-end: var(--xh-stroke-thin) solid var(--xh-accordion-item-border, var(--xh-border-default));
     min-inline-size: 0;
+  }
+
+  /* 分隔线画在后一条的起始边，条与条之间才只有一条，末条也不会留一条悬空线
+     （根没有外框接住它）。只认自己的直接子条目：套在条目里的另一份手风琴由它自己的根管。
+     横排时换成行内轴那一侧 */
+  [data-scope='accordion'][data-part='root']
+    > [data-scope='accordion'][data-part='item']
+    + [data-scope='accordion'][data-part='item'] {
+    border-block-start: var(--xh-stroke-thin) solid var(--xh-accordion-item-border, var(--xh-border-subtle));
+  }
+
+  [data-scope='accordion'][data-part='root'][data-orientation='horizontal']
+    > [data-scope='accordion'][data-part='item']
+    + [data-scope='accordion'][data-part='item'] {
+    border-block-start: 0;
+    border-inline-start: var(--xh-stroke-thin) solid var(--xh-accordion-item-border, var(--xh-border-subtle));
   }
 
   [data-scope='accordion'][data-part='header'] {

@@ -34,9 +34,33 @@ const garbage = []
 const colors = []
 /** 允许颜色字面量的皮肤：取色器的色相带画的是光谱，不是设计色。 */
 const COLOR_LITERAL_OK = new Set(['color-picker.css'])
+
+/**
+ * 角色错位：底色令牌（--xh-bg-*）写进了文字色。
+ *
+ * 两族在浅色主题下常常撞值（bg.brand 与 fg.brand 都是 brand-600），所以写错了也看不出来；
+ * 深色下才分开——bg.brand 走到 brand-500(4.76)、fg.brand 走到 brand-400(6.59)，
+ * 拿底色当字色的那几处就在深色下擦着 AA 线过。
+ *
+ * 只管文字色：SVG 的 fill / stroke 与描边式图形（进度环、加载圈）是「形状即填色」，本来就该取 bg 族。
+ * 反白浮层同理正当：它把「面的颜色」当字色使。
+ */
+const FOREGROUND_PROP = /^\s*(?:color|-webkit-text-fill-color)\s*:/
+const BG_AS_FOREGROUND_OK = {
+  'heatmap.css': '提示气泡是反白的实心面，字色取的就是面色',
+  'tooltip.css': '同上：一行字的反色气泡',
+}
+const roleSwaps = []
+const roleOkSeen = new Set()
 for (const [file, src] of sources) {
   const lines = src.split(/\r?\n/)
   lines.forEach((line, i) => {
+    if (FOREGROUND_PROP.test(line) && /var\(\s*--xh-bg-/.test(line)) {
+      if (file in BG_AS_FOREGROUND_OK)
+        roleOkSeen.add(file)
+      else
+        roleSwaps.push(`${file}:${i + 1}  ${line.trim()}`)
+    }
     for (const m of line.matchAll(/var\(\s*(--xh-[a-z0-9_-]+)/g)) {
       const name = m[1]
       if (declared.has(name) || isComponentSlot(name, declaredInStyles))
@@ -84,7 +108,17 @@ if (garbage.length) {
     console.error(`  ${g}`)
   console.error('多半是正则替换的残留（$1 这类捕获组引用）。它让整条声明在计算期失效，且不报任何错。')
 }
-if (orphans.length || fallbacks.length || garbage.length || colors.length)
+for (const file of Object.keys(BG_AS_FOREGROUND_OK)) {
+  if (!roleOkSeen.has(file))
+    roleSwaps.push(`${file}  登记在 BG_AS_FOREGROUND_OK 里却没被扫到——名单过期了`)
+}
+if (roleSwaps.length) {
+  console.error('[check-token-refs] ✗ 底色令牌写进了前景属性：')
+  for (const r of roleSwaps)
+    console.error(`  ${r}`)
+  console.error('前景取 --xh-fg-*。两族在浅色下常撞值，深色下才分开，所以写错了肉眼看不出来。')
+}
+if (orphans.length || fallbacks.length || garbage.length || colors.length || roleSwaps.length)
   process.exit(1)
 
-console.log(`[check-token-refs] 通过：${files.length} 份皮肤的全局令牌都有声明、没有字面量兜底、没有颜色字面量`)
+console.log(`[check-token-refs] 通过：${files.length} 份皮肤的全局令牌都有声明、没有字面量兜底、没有颜色字面量、没有把底色写进前景（反白浮层 ${roleOkSeen.size} 处除外）`)

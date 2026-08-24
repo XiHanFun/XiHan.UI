@@ -466,7 +466,7 @@
     align-items: center;
     justify-content: center;
     inline-size: var(--xh-cascader-item-indicator-size, var(--xh-control-indicator-size));
-    color: var(--xh-cascader-item-indicator-fg, var(--xh-_tone, var(--xh-bg-brand)));
+    color: var(--xh-cascader-item-indicator-fg, var(--xh-_tone, var(--xh-fg-brand)));
     visibility: hidden;
   }
 
@@ -523,7 +523,7 @@
     padding-block: var(--xh-cascader-input-py, var(--xh-space-2));
     padding-inline: var(--xh-cascader-input-px, var(--xh-control-px-md));
     border: none;
-    border-block-end: var(--xh-stroke-thin) solid var(--xh-cascader-content-border, var(--xh-border-default));
+    border-block-end: var(--xh-stroke-thin) solid var(--xh-cascader-search-divider, var(--xh-border-subtle));
     border-start-start-radius: inherit;
     border-start-end-radius: inherit;
     background: none;

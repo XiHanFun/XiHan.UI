@@ -117,9 +117,9 @@
     > [data-scope='descriptions'][data-part='item'] {
     padding-block: var(--xh-descriptions-item-py, var(--xh-_descriptions-py));
     padding-inline: var(--xh-descriptions-item-px, var(--xh-_descriptions-px));
-    border-block-start: var(--xh-stroke-thin) solid var(--xh-descriptions-border, var(--xh-border-subtle));
+    border-block-start: var(--xh-stroke-thin) solid var(--xh-descriptions-divider, var(--xh-border-subtle));
     /* 每行一组时左边没有邻居，宽度按列数补回来 */
-    border-inline-start: 0 solid var(--xh-descriptions-border, var(--xh-border-subtle));
+    border-inline-start: 0 solid var(--xh-descriptions-divider, var(--xh-border-subtle));
   }
 
   [data-scope='descriptions'][data-part='root'][data-bordered]

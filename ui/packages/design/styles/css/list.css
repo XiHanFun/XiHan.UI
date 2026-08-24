@@ -66,7 +66,7 @@
   [data-scope='list'][data-part='root'][data-split]
     > [data-scope='list'][data-part='item']
     + [data-scope='list'][data-part='item'] {
-    border-block-start: var(--xh-stroke-thin) solid var(--xh-list-border, var(--xh-border-subtle));
+    border-block-start: var(--xh-stroke-thin) solid var(--xh-list-divider, var(--xh-border-subtle));
   }
 
   [data-scope='list'][data-part='root'][data-hoverable] > [data-scope='list'][data-part='item'] {

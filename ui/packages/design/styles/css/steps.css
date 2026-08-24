@@ -153,7 +153,7 @@
     justify-content: center;
     inline-size: var(--xh-steps-indicator-size, var(--xh-_steps-indicator-size));
     block-size: var(--xh-steps-indicator-size, var(--xh-_steps-indicator-size));
-    border: var(--xh-stroke-thin) solid var(--xh-steps-indicator-border, var(--xh-border-strong));
+    border: var(--xh-stroke-thin) solid var(--xh-steps-indicator-border, var(--xh-border-control));
     border-radius: var(--xh-steps-indicator-radius, var(--xh-shape-pill));
     background: var(--xh-steps-indicator-bg, transparent);
     color: var(--xh-steps-indicator-fg, var(--xh-fg-muted));
@@ -186,7 +186,7 @@
   }
 
   [data-scope='steps'][data-part='item'][data-disabled] [data-scope='steps'][data-part='indicator'] {
-    border-color: var(--xh-steps-indicator-border-disabled, var(--xh-fg-disabled));
+    border-color: var(--xh-steps-indicator-border-disabled, var(--xh-border-subtle));
     color: var(--xh-steps-indicator-fg-disabled, var(--xh-fg-disabled));
   }
 

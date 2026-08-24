@@ -348,7 +348,7 @@
     max-block-size: var(--xh-date-picker-presets-h, var(--xh-viewport-h-sm));
     padding: var(--xh-date-picker-presets-padding, var(--xh-space-1));
     overflow-y: auto;
-    border-inline-end: var(--xh-stroke-thin) solid var(--xh-date-picker-content-border, var(--xh-border-default));
+    border-inline-end: var(--xh-stroke-thin) solid var(--xh-date-picker-column-divider, var(--xh-border-subtle));
   }
 
   [data-scope='date-picker'][data-part='presets'][hidden] {
@@ -398,7 +398,7 @@
     block-size: var(--xh-date-picker-time-column-h, var(--xh-viewport-h-sm));
     padding: var(--xh-date-picker-time-column-padding, var(--xh-space-1));
     overflow-y: auto;
-    border-inline-start: var(--xh-stroke-thin) solid var(--xh-date-picker-content-border, var(--xh-border-default));
+    border-inline-start: var(--xh-stroke-thin) solid var(--xh-date-picker-column-divider, var(--xh-border-subtle));
   }
 
   [data-scope='date-picker'][data-part='time-column'][hidden] {

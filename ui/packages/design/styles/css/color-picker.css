@@ -473,7 +473,7 @@
     inline-size: var(--xh-color-picker-swatch-item-size, 1.25rem);
     block-size: var(--xh-color-picker-swatch-item-size, 1.25rem);
     padding: 0;
-    border: var(--xh-stroke-thin) solid var(--xh-color-picker-swatch-border, var(--xh-border-control));
+    border: var(--xh-stroke-thin) solid var(--xh-color-picker-swatch-border, var(--xh-border-default));
     border-radius: var(--xh-color-picker-swatch-radius, var(--xh-shape-inset));
     cursor: pointer;
   }
