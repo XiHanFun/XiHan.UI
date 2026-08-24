@@ -1263,6 +1263,7 @@
       "useField",
       "useFieldContext",
       "useFieldControl",
+      "useFieldStateWiring",
       "useFieldset",
       "useFieldsetContext",
       "useFileUpload",

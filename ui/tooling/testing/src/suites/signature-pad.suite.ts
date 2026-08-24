@@ -191,7 +191,7 @@ export const signaturePadSuite: ConformanceSuite = {
           'status': {
             'role': 'status',
             'aria-live': 'polite',
-            'data-state': 'empty',
+            'data-empty': '',
           },
           'hidden-input': {
             'name': null,
@@ -285,7 +285,7 @@ export const signaturePadSuite: ConformanceSuite = {
         penMove(60, 40),
         penUp({
           parts: {
-            status: { 'data-state': 'signed', 'data-empty': null },
+            status: { 'data-empty': null },
           },
         }),
         assertStatusText('Signed'),
@@ -294,7 +294,7 @@ export const signaturePadSuite: ConformanceSuite = {
           part: 'clear-trigger',
           expect: {
             parts: {
-              status: { 'data-state': 'empty', 'data-empty': '' },
+              status: { 'data-empty': '' },
             },
           },
         },

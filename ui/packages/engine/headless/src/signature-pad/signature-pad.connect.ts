@@ -150,7 +150,8 @@ export function connectSignaturePad<T extends PropTypes>(
       'aria-live': 'polite',
       // 整句重念，只念变动的词读不出上下文
       'aria-atomic': 'true',
-      'data-state': empty ? 'empty' : 'signed',
+      // 空与否只发这一条布尔：另外四个部件也发它，同一个事实在同一个节点上再编码一遍
+      // 只会让使用者的全局规则写歪一半（'signed' 至今零消费）
       'data-empty': dataAttr(empty),
     }),
 
