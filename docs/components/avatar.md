@@ -114,6 +114,14 @@ status-change 在状态落位时通知，过渡态 idle 不通知；没给地址
 
 ## 状态
 
+对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+
+| 部件 | 取值 |
+| --- | --- |
+| `root` | state.get() |
+| `image` | state.get() |
+| `fallback` | state.get() |
+
 状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **事件**：`SRC.CHANGE` · `IMAGE.LOAD` · `IMAGE.ERROR`
@@ -149,8 +157,11 @@ status-change 在状态落位时通知，过渡态 idle 不通知；没给地址
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-size` | props.size |
+| `root` | `data-state` | state.get() |
 | `root` | `data-status` | state.get() |
+| `image` | `data-state` | state.get() |
 | `image` | `data-status` | state.get() |
+| `fallback` | `data-state` | state.get() |
 | `fallback` | `data-status` | state.get() |
 
 ## CSS 变量

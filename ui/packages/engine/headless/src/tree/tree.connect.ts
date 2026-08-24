@@ -23,7 +23,7 @@ export function connectTree<T extends PropTypes>(
   const loop = prop('loop') ?? false
   const typeaheadOn = prop('typeahead') ?? true
   const expandOnClick = prop('expandOnClick') ?? true
-  const mode = treeSelectionMode(prop('selectionMode'))
+  const mode = treeSelectionMode(prop('selectionMode'), prop('multiple'))
   const multiselectable = mode === 'multiple'
   const ids = scope.ids('tree', 'label', 'tree')
 
@@ -168,6 +168,7 @@ export function connectTree<T extends PropTypes>(
     expandedValue,
     selection,
     focusedValue,
+    multiple: mode === 'multiple',
     selectionMode: mode,
     disabled: treeDisabled,
     isExpanded,

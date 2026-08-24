@@ -16,6 +16,8 @@ export type TreeFocusModel = 'roving-tabindex'
  * 选择模式：
  * - single：一次只中一个，点击与确认键都是「替换」；
  * - multiple：复选，点击与确认键都是「切换」，tree 带 aria-multiselectable=true。
+ *
+ * @deprecated 只有两个取值，与布尔等价。用 `multiple`——同族的 tree-select 与另外六家都用它。
  */
 export type TreeSelectionMode = 'single' | 'multiple'
 
@@ -95,7 +97,14 @@ export interface TreeSchema extends MachineSchema {
     /** 选中集合。给定即受控，语义同上。 */
     selection?: string[]
     defaultSelection?: string[]
-    /** 默认 single。 */
+    /** 复选：点击与确认键都是「切换」，tree 带 aria-multiselectable=true。默认 false（单选）。 */
+    multiple?: boolean
+    /**
+     * 选择模式的旧写法，默认 single。
+     *
+     * @deprecated 用 `multiple`。两者同时给时以 selectionMode 为准（与 listbox 同一条规矩），
+     * 旧代码的行为因此一点不变。
+     */
     selectionMode?: TreeSelectionMode
     /**
      * multiple 下父子级联勾选：点分支整枝传导、子全勾父勾、部分勾中半选，
@@ -168,6 +177,9 @@ export interface TreeApi<T extends PropTypes = PropTypes> {
   selection: string[]
   /** 焦点锚点；焦点不在树内、或它已被收起而不可见时为 null。 */
   focusedValue: string | null
+  /** 生效的是不是复选。 */
+  multiple: boolean
+  /** @deprecated 读 `multiple`。 */
   selectionMode: TreeSelectionMode
   disabled: boolean
   isExpanded: (value: string) => boolean

@@ -43371,6 +43371,15 @@
             },
             {
               "kind": "field",
+              "name": "multiple",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "multiple"
+            },
+            {
+              "kind": "field",
               "name": "selectionMode",
               "privacy": "public",
               "type": {
@@ -43544,9 +43553,17 @@
           "attributes": [
             {
               "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "复选，默认关闭",
+              "name": "multiple",
+              "fieldName": "multiple"
+            },
+            {
+              "type": {
                 "text": "TreeSelectionMode | undefined"
               },
-              "description": "选择模式，默认 single",
+              "description": "选择模式的旧写法，默认 single；与 multiple 同时给时以它为准",
               "name": "selection-mode",
               "fieldName": "selectionMode"
             },

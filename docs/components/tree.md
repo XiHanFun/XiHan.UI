@@ -107,7 +107,8 @@ selection-mode="multiple" 加 cascade 内建父子传导：点分支整枝勾上
 | `defaultExpandedValue` | `string[]` |  |  |
 | `selection` | `string[]` |  | 选中集合。给定即受控，语义同上。 |
 | `defaultSelection` | `string[]` |  |  |
-| `selectionMode` | `TreeSelectionMode` |  | 默认 single。 |
+| `multiple` | `boolean` |  | 复选：点击与确认键都是「切换」，tree 带 aria-multiselectable=true。默认 false（单选）。 |
+| `selectionMode` | `TreeSelectionMode` |  | 选择模式的旧写法，默认 single。 @deprecated 用 `multiple`。两者同时给时以 selectionMode 为准（与 listbox 同一条规矩）， 旧代码的行为因此一点不变。 |
 | `cascade` | `boolean` |  | multiple 下父子级联勾选：点分支整枝传导、子全勾父勾、部分勾中半选， 禁用子树整棵冻结。默认 false（朴素切换）；single 下无效。 |
 | `checkedStrategy` | `CascadeStrategy` |  | 级联下对外值的收敛策略，默认 child（只收叶）；parent = 最高整枝，all = 全部勾中节点。 |
 | `expandOnClick` | `boolean` |  | 点分支行是否顺带展开/收起，默认 true。关掉后只有 branch-trigger 与左右方向键能改展开态。 |
@@ -154,7 +155,8 @@ selection-mode="multiple" 加 cascade 内建父子传导：点分支整枝勾上
 | `expandedValue` | `string[]` |  |
 | `selection` | `string[]` |  |
 | `focusedValue` | `string \| null` | 焦点锚点；焦点不在树内、或它已被收起而不可见时为 null。 |
-| `selectionMode` | `TreeSelectionMode` |  |
+| `multiple` | `boolean` | 生效的是不是复选。 |
+| `selectionMode` | `TreeSelectionMode` | @deprecated 读 `multiple`。 |
 | `disabled` | `boolean` |  |
 | `isExpanded` | `(value: string) => boolean` |  |
 | `isSelected` | `(value: string) => boolean` |  |

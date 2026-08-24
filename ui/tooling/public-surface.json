@@ -6930,6 +6930,7 @@
       "expandOnClick",
       "expandedValue",
       "loop",
+      "multiple",
       "onExpandedChange",
       "onSelectionChange",
       "selection",
@@ -11780,6 +11781,7 @@
         "disabled",
         "expand-on-click",
         "loop",
+        "multiple",
         "selection-mode",
         "typeahead"
       ],
