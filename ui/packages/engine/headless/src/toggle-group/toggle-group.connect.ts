@@ -99,6 +99,7 @@ export function connectToggleGroup<T extends PropTypes>(
       // aria-orientation 只有 radiogroup 收，role=group 给了是无效 ARIA；
       // 排布信息一律走 data-orientation
       'aria-orientation': multiple ? undefined : orientation,
+      'data-size': prop('size'),
       'data-orientation': orientation,
       'data-disabled': dataAttr(groupDisabled),
       'tabindex': rootTabIndex(),

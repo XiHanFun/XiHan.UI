@@ -7,8 +7,30 @@
   /* 分段控件：段与段之间不留缝，靠共边连成一体，所以 root 不设 gap。
      排布只能读 data-orientation——aria-orientation 在多选模式下连接层根本不输出（role=group 不收） */
   [data-scope='toggle-group'][data-part='root'] {
+    /* 段的度量与字号走私有槽中转，与同族的分段控件一处对一处 */
+    --xh-_toggle-group-h: var(--xh-control-h-md);
+    --xh-_toggle-group-px: var(--xh-control-px-md);
+    --xh-_toggle-group-gap: var(--xh-control-gap-md);
+    --xh-_toggle-group-font-size: var(--xh-control-font-md);
+
     display: inline-flex;
     align-items: stretch;
+  }
+
+  /* —— 尺寸 —— */
+  /* 缺省档写在上面的基础规则里 */
+  [data-scope='toggle-group'][data-part='root'][data-size='sm'] {
+    --xh-_toggle-group-h: var(--xh-control-h-sm);
+    --xh-_toggle-group-px: var(--xh-control-px-sm);
+    --xh-_toggle-group-gap: var(--xh-control-gap-sm);
+    --xh-_toggle-group-font-size: var(--xh-control-font-sm);
+  }
+
+  [data-scope='toggle-group'][data-part='root'][data-size='lg'] {
+    --xh-_toggle-group-h: var(--xh-control-h-lg);
+    --xh-_toggle-group-px: var(--xh-control-px-lg);
+    --xh-_toggle-group-gap: var(--xh-control-gap-lg);
+    --xh-_toggle-group-font-size: var(--xh-control-font-lg);
   }
 
   [data-scope='toggle-group'][data-part='root'][data-orientation='horizontal'] {
@@ -45,15 +67,15 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: var(--xh-toggle-group-item-gap, var(--xh-control-gap-md));
-    block-size: var(--xh-toggle-group-item-h, var(--xh-control-h-md));
-    padding-inline: var(--xh-toggle-group-item-px, var(--xh-control-px-md));
+    gap: var(--xh-toggle-group-item-gap, var(--xh-_toggle-group-gap));
+    block-size: var(--xh-toggle-group-item-h, var(--xh-_toggle-group-h));
+    padding-inline: var(--xh-toggle-group-item-px, var(--xh-_toggle-group-px));
     border: var(--xh-stroke-thin) solid var(--xh-_border);
     /* 中间段一律直角，圆角只由首末两端补回来 */
     border-radius: 0;
     background: var(--xh-_bg);
     color: var(--xh-_fg);
-    font-size: var(--xh-toggle-group-item-font-size, var(--xh-text-label-size));
+    font-size: var(--xh-toggle-group-item-font-size, var(--xh-_toggle-group-font-size));
     font-weight: var(--xh-toggle-group-item-font-weight, var(--xh-text-label-weight));
     line-height: var(--xh-leading-none);
     white-space: nowrap;

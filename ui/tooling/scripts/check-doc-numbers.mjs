@@ -478,15 +478,15 @@ const truth = {
     },
   },
   指示器尺寸: {
-    how: 'semantic.base.json 的 control.indicator-size 去掉 px',
+    how: 'semantic.base.json 的 control.indicator-md 去掉 px（indicator-size 现在是它的别名）',
     async value() {
-      return Number.parseFloat((await tokenSet('semantic.base')).control['indicator-size'].$value)
+      return Number.parseFloat((await tokenSet('semantic.base')).control['indicator-md'].$value)
     },
   },
   紧凑指示器尺寸: {
-    how: 'semantic.compact.json 的 control.indicator-size 去掉 px',
+    how: 'semantic.compact.json 的 control.indicator-md 去掉 px',
     async value() {
-      return Number.parseFloat((await tokenSet('semantic.compact')).control['indicator-size'].$value)
+      return Number.parseFloat((await tokenSet('semantic.compact')).control['indicator-md'].$value)
     },
   },
   图标白名单标签表: {

@@ -185,6 +185,7 @@ export function connectColorPicker<T extends PropTypes>(
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
+      'data-size': prop('size'),
       ...stateAttrs(),
     }),
 
@@ -239,6 +240,8 @@ export function connectColorPicker<T extends PropTypes>(
       ...parts.positioner.attrs,
       // 定位层被搬到 portal 落点，继承不到作者子树上的方向；作者没给就不写，交给落点处的继承
       'dir': prop('dir'),
+      // 视觉轴在浮层这一侧再打一次：positioner 被搬到 portal 落点，继承不到根上的私有槽
+      'data-size': prop('size'),
       'data-state': stateAttr,
       'data-placement': placement,
       // 锚点被滚出可视区时引擎会置 hidden，样式据此收起浮层

@@ -1,4 +1,4 @@
-import type { Direction, Orientation, PropTypes } from '@xihan-ui/kernel'
+import type { Direction, Orientation, PropTypes, Size } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 
 /**
@@ -58,6 +58,8 @@ export interface ToggleGroupSchema extends MachineSchema {
      * 默认 false（可以点成无选中）。
      */
     disallowEmpty?: boolean
+    /** 尺寸：sm / md / lg。 */
+    size?: Size
     /** 视觉排布，默认 horizontal。方向键接受的轴与它无关（四个方向键恒响应）。 */
     orientation?: Orientation
     /** 文字方向，默认 ltr；只改写左右方向键的语义，上下键与之无关。 */

@@ -6,7 +6,7 @@ import type {
   ColorPickerTranslations,
   ColorPickerValueChangeDetails,
 } from '@xihan-ui/headless'
-import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig } from '@xihan-ui/kernel'
+import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Size } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { OverlayExit } from '../overlay-exit'
 import { colorPickerAnatomy, colorPickerMachine, colorPickerMeta, colorPickerToChannel, colorPickerToInputChannel, connectColorPicker } from '@xihan-ui/headless'
@@ -54,6 +54,7 @@ const STRING_LIST_CONVERTER = {
  * @attr {boolean} read-only - 只读：浮层照开，进去只是改不动
  * @attr {boolean} alpha - 带透明度，默认关；关掉时透明度那条滑杆与输入框整条禁用
  * @attr {string} swatches - 预设色板，逗号分隔（如 "#ff0000,#00ff00"）
+ * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @attr {'ltr'|'rtl'} dir - 文字方向，只改写横轴上左右两键与指针的语义，默认 ltr
  * @attr {string} placement - 首选放置位，默认 bottom-start；避让后的实际位写在 data-placement 上
  * @attr {number} offset - 浮层与锚点的间距（px）
@@ -95,6 +96,7 @@ export class XhColorPickerElement extends XhElement {
     alpha: { converter: BOOLEAN_CONVERTER },
     swatches: { converter: STRING_LIST_CONVERTER },
     name: { converter: STRING_CONVERTER },
+    size: { converter: STRING_CONVERTER },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     placement: { converter: STRING_CONVERTER },
     offset: { converter: NUMBER_CONVERTER },
@@ -112,6 +114,7 @@ export class XhColorPickerElement extends XhElement {
   declare alpha?: boolean
   declare swatches?: string[]
   declare name?: string
+  declare size?: Size
   declare direction?: Direction
   declare placement?: Placement
   declare offset?: number
@@ -151,6 +154,7 @@ export class XhColorPickerElement extends XhElement {
       alpha: this.alpha ?? false,
       swatches: this.swatches,
       name: this.name,
+      size: this.size,
       dir: this.direction,
       placement: this.placement,
       offset: this.offset,

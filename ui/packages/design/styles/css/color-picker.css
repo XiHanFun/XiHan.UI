@@ -40,7 +40,7 @@
     --xh-_color-picker-h: var(--xh-control-h-md);
     --xh-_color-picker-px: var(--xh-control-px-md);
     --xh-_color-picker-gap: var(--xh-control-gap-md);
-    --xh-_color-picker-label-font-size: var(--xh-text-label-size);
+    --xh-_color-picker-label-font-size: var(--xh-control-font-md);
 
     /* 聚焦环恒用固定环色 */
     --xh-_color-picker-ring: var(--xh-ring-focus);
@@ -48,6 +48,23 @@
     display: inline-flex;
     flex-direction: column;
     gap: var(--xh-color-picker-gap, var(--xh-space-1));
+  }
+
+  /* —— 尺寸 —— */
+  /* 缺省档写在上面的基础规则里。浮层那一侧也要挂：positioner 被搬到 portal 落点，
+     继承不到根上的私有槽，所以两个部件一起收 */
+  [data-scope='color-picker']:is([data-part='root'], [data-part='positioner'])[data-size='sm'] {
+    --xh-_color-picker-h: var(--xh-control-h-sm);
+    --xh-_color-picker-px: var(--xh-control-px-sm);
+    --xh-_color-picker-gap: var(--xh-control-gap-sm);
+    --xh-_color-picker-label-font-size: var(--xh-control-font-sm);
+  }
+
+  [data-scope='color-picker']:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
+    --xh-_color-picker-h: var(--xh-control-h-lg);
+    --xh-_color-picker-px: var(--xh-control-px-lg);
+    --xh-_color-picker-gap: var(--xh-control-gap-lg);
+    --xh-_color-picker-label-font-size: var(--xh-control-font-lg);
   }
 
   [data-scope='color-picker'][data-part='label'] {

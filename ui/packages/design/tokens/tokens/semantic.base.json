@@ -82,8 +82,21 @@
       "$value": "24px"
     },
     "indicator-size": {
+      "$description": "中档的别名，给不分档的指示符（多数控件的勾选格、指示点只有一档）。",
+      "$type": "dimension",
+      "$value": "{control.indicator-md}"
+    },
+    "indicator-sm": {
+      "$type": "dimension",
+      "$value": "12px"
+    },
+    "indicator-md": {
       "$type": "dimension",
       "$value": "16px"
+    },
+    "indicator-lg": {
+      "$type": "dimension",
+      "$value": "20px"
     }
   },
   "scrollbar": {

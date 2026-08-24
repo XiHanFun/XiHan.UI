@@ -14,14 +14,22 @@ import {
   verifySkinPositioned,
 } from './lib/overlay-families.mjs'
 
-/** 取出 [data-part='positioner'] 那条规则的声明块。 */
+/**
+ * 取出给 positioner 定坐标系的那条规则的声明块。
+ *
+ * 不能取「第一条提到 positioner 的规则」：皮肤里还有
+ * `:is([data-part='root'], [data-part='positioner'])[data-size='sm']` 这类
+ * 只发私有槽、不管定位的合并块，它们可能排在真正那条前面。
+ * 判据取「选择器点到 positioner 且声明里真的写了 position」的第一条。
+ */
 function positionerRule(css) {
-  const at = css.indexOf('data-part=\'positioner\']')
-  if (at === -1)
-    return null
-  const open = css.indexOf('{', at)
-  const close = css.indexOf('}', open)
-  return open === -1 || close === -1 ? null : css.slice(open, close)
+  for (const [, selector, body] of css.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
+    if (!selector.includes('data-part=\'positioner\']'))
+      continue
+    if (/(?:^|;|\s)position\s*:/.test(body))
+      return body
+  }
+  return null
 }
 
 const problems = []

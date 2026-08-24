@@ -6,7 +6,7 @@ import type {
   ColorPickerSchema,
   ColorPickerTranslations,
 } from '@xihan-ui/headless'
-import type { Direction, Placement } from '@xihan-ui/kernel'
+import type { Direction, Placement, Size } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { colorPickerToChannel, colorPickerToInputChannel } from '@xihan-ui/headless'
@@ -42,6 +42,7 @@ export const XhColorPickerRoot = defineComponent({
     alpha: Boolean,
     swatches: { type: Array as PropType<string[]>, default: undefined },
     name: { type: String, default: undefined },
+    size: { type: String as PropType<Size>, default: undefined },
     dir: { type: String as PropType<Direction>, default: undefined },
     placement: { type: String as PropType<Placement>, default: undefined },
     offset: { type: Number, default: undefined },

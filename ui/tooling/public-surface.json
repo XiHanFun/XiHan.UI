@@ -5708,6 +5708,7 @@
       "open",
       "placement",
       "readOnly",
+      "size",
       "swatches",
       "translations",
       "value"
@@ -6849,6 +6850,7 @@
       "onValueChange",
       "orientation",
       "rovingFocus",
+      "size",
       "value"
     ],
     "toolbar": [
@@ -7238,7 +7240,10 @@
     "--xh-control-h-lg",
     "--xh-control-h-md",
     "--xh-control-h-sm",
+    "--xh-control-indicator-lg",
+    "--xh-control-indicator-md",
     "--xh-control-indicator-size",
+    "--xh-control-indicator-sm",
     "--xh-control-min-w",
     "--xh-control-px-lg",
     "--xh-control-px-md",
@@ -10201,6 +10206,7 @@
         "open",
         "placement",
         "read-only",
+        "size",
         "swatches",
         "value"
       ],
@@ -11577,6 +11583,7 @@
         "multiple",
         "orientation",
         "roving-focus",
+        "size",
         "value"
       ],
       "events": [
