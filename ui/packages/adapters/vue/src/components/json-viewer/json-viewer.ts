@@ -74,7 +74,7 @@ export const XhJsonViewerRoot = defineComponent({
   // 有 connect 兜底的 prop 一律 default: undefined
   props: {
     // 任意形状都收，类型检查交给使用方
-    value: { type: null as unknown as PropType<unknown>, default: undefined },
+    value: { type: null as unknown as PropType<unknown>, default: undefined as unknown },
     view: { type: String as PropType<JsonViewerView>, default: undefined },
     expandedValue: { type: Array as PropType<string[]>, default: undefined },
     defaultExpandedValue: { type: Array as PropType<string[]>, default: undefined },
