@@ -63,7 +63,10 @@ function profileOf(quality: BackgroundQuality): QualityProfile {
 const CLOUD_ATTRIBUTES = ['a_from', 'a_to', 'a_colorFrom', 'a_colorTo', 'a_meta'] as const
 const CLOUD_STRIDES = [3, 3, 3, 3, 2] as const
 
-const CANVAS_CSS = 'position:absolute;inset:0;display:block;width:100%;height:100%;pointer-events:none'
+// z-index:-1 是「浮在效果之上」那句承诺的落点：画布是宿主的最后一个子节点，
+// 不给层号就按绘制顺序压在常规流内容之上。负层号把它排到内容之前、宿主自身背景之后，
+// 再配上宿主的 isolation:isolate，这个负层号也逃不到宿主外面去。
+const CANVAS_CSS = 'position:absolute;inset:0;display:block;width:100%;height:100%;pointer-events:none;z-index:-1'
 
 /**
  * 把画布挂到宿主上，并保证宿主是它的定位祖先。返回撤销观察的函数。
@@ -89,6 +92,8 @@ function attachCanvas(host: HTMLElement, canvas: HTMLCanvasElement): () => void 
       if (computed === '' || computed === 'static')
         host.style.position = 'relative'
     }
+    // 负层号的画布必须关在宿主里，否则它会钻到宿主自己的背景之下、甚至更外层去
+    host.style.isolation = 'isolate'
     host.appendChild(canvas)
     attached = true
     return true
@@ -104,6 +109,7 @@ function attachCanvas(host: HTMLElement, canvas: HTMLCanvasElement): () => void 
   // 没有 ResizeObserver 就没有第二次机会，退回「先写下兜底定位」
   if (typeof view?.ResizeObserver !== 'function') {
     host.style.position = 'relative'
+    host.style.isolation = 'isolate'
     host.appendChild(canvas)
     attached = true
     return (): void => {}
