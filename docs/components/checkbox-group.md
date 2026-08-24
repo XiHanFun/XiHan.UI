@@ -217,6 +217,10 @@ orientation 只出 data-orientation 交给皮肤排版，role=group 不接受 ar
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+
 ## 组合
 
 - 外面套[表单字段](./field)。

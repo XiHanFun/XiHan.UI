@@ -272,7 +272,7 @@ rows 按契约就是一条已摊平的可见行序列：层级三件套逐行自
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-busy` | 'true' \| 'false' |
+| `root` | `aria-busy` | 'true' \| undefined |
 | `root` | `aria-colcount` | columns.length \|\| undefined |
 | `root` | `aria-labelledby` | `caption` 部件的 id |
 | `root` | `aria-multiselectable` | 'true' \| 'false' |

@@ -98,7 +98,7 @@ size 换的是每格的内边距、组与组的间距与整体字号，不传 si
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-descriptions-bg` · `--xh-descriptions-border` · `--xh-descriptions-fg` · `--xh-descriptions-font-size` · `--xh-descriptions-gap` · `--xh-descriptions-item-px` · `--xh-descriptions-item-py` · `--xh-descriptions-label-fg` · `--xh-descriptions-label-font-weight` · `--xh-descriptions-label-gap` · `--xh-descriptions-label-w` · `--xh-descriptions-pair-gap` · `--xh-descriptions-radius` · `--xh-descriptions-value-fg`
+`--xh-descriptions-bg` · `--xh-descriptions-border` · `--xh-descriptions-divider` · `--xh-descriptions-fg` · `--xh-descriptions-font-size` · `--xh-descriptions-gap` · `--xh-descriptions-item-px` · `--xh-descriptions-item-py` · `--xh-descriptions-label-fg` · `--xh-descriptions-label-font-weight` · `--xh-descriptions-label-gap` · `--xh-descriptions-label-w` · `--xh-descriptions-pair-gap` · `--xh-descriptions-radius` · `--xh-descriptions-value-fg`
 
 ## RTL
 

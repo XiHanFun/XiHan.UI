@@ -147,6 +147,7 @@ tone 决定用哪族颜色，与 variant 正交：四种形态 × 六种语气�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `root` | `aria-busy` | 'true' \| undefined |
 | `root` | `aria-disabled` | 'true' \| undefined |
 | `indicator` | `aria-hidden` | 'true' |
 | `prefix` | `aria-hidden` | 'true' |

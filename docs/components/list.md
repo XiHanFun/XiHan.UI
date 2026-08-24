@@ -101,7 +101,7 @@ size 换的是条目的内边距、图文间距与两行文字的字号，不传
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-list-action-gap` · `--xh-list-bg` · `--xh-list-border` · `--xh-list-content-gap` · `--xh-list-description-fg` · `--xh-list-description-font-size` · `--xh-list-fg` · `--xh-list-item-bg-hover` · `--xh-list-item-gap` · `--xh-list-item-px` · `--xh-list-item-py` · `--xh-list-item-py-lg` · `--xh-list-item-py-md` · `--xh-list-item-py-sm` · `--xh-list-radius` · `--xh-list-title-fg` · `--xh-list-title-font-size` · `--xh-list-title-font-weight`
+`--xh-list-action-gap` · `--xh-list-bg` · `--xh-list-border` · `--xh-list-content-gap` · `--xh-list-description-fg` · `--xh-list-description-font-size` · `--xh-list-divider` · `--xh-list-fg` · `--xh-list-item-bg-hover` · `--xh-list-item-gap` · `--xh-list-item-px` · `--xh-list-item-px-lg` · `--xh-list-item-px-md` · `--xh-list-item-px-sm` · `--xh-list-item-py` · `--xh-list-item-py-lg` · `--xh-list-item-py-md` · `--xh-list-item-py-sm` · `--xh-list-radius` · `--xh-list-title-fg` · `--xh-list-title-font-size` · `--xh-list-title-font-weight`
 
 ## 动效
 

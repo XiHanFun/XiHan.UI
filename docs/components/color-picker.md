@@ -109,6 +109,7 @@ format 只管对外的序列化：换过之后把当前值原样写回一次，�
 | `swatches` | `string[]` |  | 预设色板。作者据此渲染 swatch-item，组件只负责标出哪一格正被选中。 |
 | `name` | `string` |  | 表单字段名；给了表单影子才带 name 并参与提交。 |
 | `alpha` | `boolean` |  | 带透明度，默认关。关掉时值串恒不透明，透明度那条滑杆与输入框整条禁用。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `dir` | `Direction` |  | 文字方向。只改写横轴（取色区的饱和度、通道滑杆）上左右两键与指针的语义。 |
 | `placement` | `Placement` |  |  |
 | `offset` | `number` |  |  |
@@ -256,10 +257,12 @@ format 只管对外的序列化：换过之后把当前值原样写回一次，�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `root` | `data-size` | props.size |
 | `swatch` | `data-value` | context.get('value') |
 | `positioner` | `data-hidden` | ''（条件成立时才出现） |
 | `positioner` | `data-placement` | 定位引擎算出的实际落位 |
 | `positioner` | `data-positioned` | ''（条件成立时才出现） |
+| `positioner` | `data-size` | props.size |
 | `positioner` | `data-state` | 'open' \| 'closed' |
 | `content` | `data-placement` | 定位引擎算出的实际落位 |
 | `area` | `data-dragging` | ''（条件成立时才出现） |
