@@ -15,7 +15,7 @@ import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h, mergeProps, Teleport } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { slotPaints } from '../../runtime/slot-content'
-import { useFieldStateWiring } from '../field/use-field-control'
+import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import {
   provideTimePicker,
   provideTimePickerColumn,
@@ -170,13 +170,15 @@ export const XhTimePickerTrigger = defineComponent({
   setup(_, { slots }) {
     // 字段的说明与校验状态要落在真控件上，不能停在封装根的 div 上
     const fieldWiring = useFieldStateWiring()
+    // 字段的标签也得并进名字链：控件自带的那条指的是它自己那个没渲染的 label 部件
+    const fieldLabel = useFieldLabelWiring()
     const ctx = useTimePickerContext()
-    return () => h('button', {
+    return () => h('button', fieldLabel.value({
       ...ctx.api.value.getTriggerProps() as Record<string, unknown>,
       // 归还焦点要落到它身上：锚点取的是整个输入行，那一层不可聚焦
       ref: (el: unknown) => { ctx.triggerRef.value = el as HTMLElement },
       ...fieldWiring.value,
-    }, slots.default?.())
+    }), slots.default?.())
   },
 })
 

@@ -327,7 +327,7 @@ export { XhFieldControl, XhFieldDescription, XhFieldErrorText, XhFieldLabel, XhF
 export type { FieldControlSlotProps } from './components/field/field'
 export { useField } from './components/field/use-field'
 export type { FieldContext } from './components/field/use-field'
-export { useFieldControl, useFieldStateWiring } from './components/field/use-field-control'
+export { useFieldControl, useFieldLabelWiring, useFieldStateWiring } from './components/field/use-field-control'
 export { useFieldsetContext } from './components/fieldset/context'
 export { XhFieldsetErrorText, XhFieldsetHelperText, XhFieldsetLegend, XhFieldsetRoot } from './components/fieldset/fieldset'
 export { useFieldset } from './components/fieldset/use-fieldset'

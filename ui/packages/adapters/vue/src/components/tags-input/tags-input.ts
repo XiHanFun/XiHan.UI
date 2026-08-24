@@ -4,7 +4,7 @@ import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
-import { useFieldStateWiring } from '../field/use-field-control'
+import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { provideTagsInput, provideTagsInputItem, useTagsInputContext, useTagsInputItemContext } from './context'
 import { useTagsInput } from './use-tags-input'
 
@@ -120,8 +120,10 @@ export const XhTagsInputInput = defineComponent({
   setup() {
     // 字段的说明与校验状态要落在真控件上，不能停在封装根的 div 上
     const fieldWiring = useFieldStateWiring()
+    // 字段的标签也得并进名字链：控件自带的那条指的是它自己那个没渲染的 label 部件
+    const fieldLabel = useFieldLabelWiring()
     const ctx = useTagsInputContext()
-    return () => h('input', { ...ctx.api.value.getInputProps() as Record<string, unknown>, ...fieldWiring.value })
+    return () => h('input', fieldLabel.value({ ...ctx.api.value.getInputProps() as Record<string, unknown>, ...fieldWiring.value }))
   },
 })
 

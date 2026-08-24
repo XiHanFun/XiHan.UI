@@ -108,6 +108,7 @@ Field 的 disabled 只把 data-disabled 铺到各部件上；真正改不动还�
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
 | `controlId` | `string` | 控件实际使用的 id，label 的 for 与它一致。 |
+| `labelId` | `string` | 标签节点的 id。复合控件把它并进自己的名字链，字段的标签才念得到。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['label']` |  |
 | `getControlProps` | `() => T['element']` | 控件本身由作者渲染，这里只产出要合并上去的属性。 |

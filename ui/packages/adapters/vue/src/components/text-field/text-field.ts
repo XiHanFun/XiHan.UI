@@ -4,7 +4,7 @@ import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { autoSizeTextarea } from '@xihan-ui/headless'
 import { defineComponent, h, onMounted, ref, watch } from 'vue'
-import { useFieldStateWiring } from '../field/use-field-control'
+import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { provideTextField, useTextFieldContext } from './context'
 import { useTextField } from './use-text-field'
 
@@ -90,6 +90,8 @@ export const XhTextFieldInput = defineComponent({
   setup(props) {
     // 字段的说明与校验状态要落在真控件上，不能停在封装根的 div 上
     const fieldWiring = useFieldStateWiring()
+    // 字段的标签也得并进名字链：控件自带的那条指的是它自己那个没渲染的 label 部件
+    const fieldLabel = useFieldLabelWiring()
     const ctx = useTextFieldContext()
     const el = ref<HTMLTextAreaElement | null>(null)
     // 程序化写值（setValue / 表单重置 / 受控回写）不触发 input 事件，量高在渲染后补一次
@@ -102,13 +104,13 @@ export const XhTextFieldInput = defineComponent({
         autoSizeTextarea(el.value, ctx.api.value.autoSize)
     })
     // 自己渲染宿主节点，label 的 for 指向它
-    return () => h(props.as, {
+    return () => h(props.as, fieldLabel.value({
       ...ctx.api.value.getInputProps({ as: props.as }) as Record<string, unknown>,
       ref: (node: unknown) => {
         el.value = props.as === 'textarea' ? node as HTMLTextAreaElement : null
       },
       ...fieldWiring.value,
-    })
+    }))
   },
 })
 

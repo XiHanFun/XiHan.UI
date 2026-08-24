@@ -3,7 +3,7 @@ import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui
 import type { PropType, SlotsType, VNode } from 'vue'
 import { computed, defineComponent, h, mergeProps, onBeforeUnmount, ref, Teleport, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
-import { useFieldStateWiring } from '../field/use-field-control'
+import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { provideSelect, provideSelectItem, provideSelectTag, useSelectContext, useSelectItemContext, useSelectTagContext } from './context'
 import { useSelect } from './use-select'
 
@@ -129,12 +129,14 @@ export const XhSelectTrigger = defineComponent({
   setup(_, { slots }) {
     // 字段的说明与校验状态要落在真控件上，不能停在封装根的 div 上
     const fieldWiring = useFieldStateWiring()
+    // 字段的标签也得并进名字链：控件自带的那条指的是它自己那个没渲染的 label 部件
+    const fieldLabel = useFieldLabelWiring()
     const ctx = useSelectContext()
-    return () => h('button', {
+    return () => h('button', fieldLabel.value({
       ...ctx.api.value.getTriggerProps() as Record<string, unknown>,
       ref: (el: unknown) => { ctx.triggerRef.value = el as HTMLElement },
       ...fieldWiring.value,
-    }, slots.default?.())
+    }), slots.default?.())
   },
 })
 

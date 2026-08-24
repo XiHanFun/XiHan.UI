@@ -48,3 +48,30 @@ export function useFieldStateWiring(): ComputedRef<Record<string, unknown>> {
     return wiring
   })
 }
+
+/**
+ * 把字段标签的 id 并进这份属性里的名字链，供库自己的薄封装包在渲染属性外面。
+ *
+ * 复合控件的可聚焦部件自带 aria-labelledby，指的是它自己的 label 部件。套进字段时
+ * 作者用的是字段的标签、组件那个 label 部件根本没渲染，这条引用于是指向一个不存在的
+ * 节点——按 accname 规则悬空 IDREF 直接跳过，而名字也回退不到 label 的 for：for 指的
+ * 是封装根那个 div，只对可标注元素生效。结果是焦点所在的那个控件一个名字都没有。
+ *
+ * 字段的标签排在最前，控件自己的那截（值文本这类）跟在后面，两边都念得到。
+ * 不在字段里时属性原样返回。
+ */
+export function useFieldLabelWiring(): ComputedRef<(props: Record<string, unknown>) => Record<string, unknown>> {
+  const ctx = useOptionalFieldContext()
+  return computed(() => {
+    const labelId = ctx?.api.value.labelId
+    return (props: Record<string, unknown>) => {
+      if (!labelId)
+        return props
+      const own = props['aria-labelledby']
+      return {
+        ...props,
+        'aria-labelledby': typeof own === 'string' && own ? `${labelId} ${own}` : labelId,
+      }
+    }
+  })
+}
