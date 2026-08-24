@@ -168,7 +168,7 @@
     align-items: center;
     justify-content: center;
     inline-size: var(--xh-listbox-item-indicator-size, var(--xh-control-indicator-size));
-    color: var(--xh-listbox-item-indicator-fg, var(--xh-bg-brand));
+    color: var(--xh-listbox-item-indicator-fg, var(--xh-fg-brand));
     visibility: hidden;
   }
 

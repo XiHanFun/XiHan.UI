@@ -68,7 +68,7 @@
     /* 聚焦环恒用固定环色；强调色随语气走，只落在勾选标记与选中文字上，正文文字色不动。
        没写 data-tone 时 --xh-_tone 没被声明，两处都退回原来的取值 */
     --xh-_select-ring: var(--xh-ring-focus);
-    --xh-_select-accent: var(--xh-_tone, var(--xh-bg-brand));
+    --xh-_select-accent: var(--xh-_tone, var(--xh-fg-brand));
     --xh-_select-item-selected-fg: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
   }
 

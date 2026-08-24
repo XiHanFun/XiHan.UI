@@ -458,7 +458,7 @@
     align-items: center;
     justify-content: center;
     inline-size: var(--xh-tree-select-indicator-size, var(--xh-control-indicator-size));
-    color: var(--xh-tree-select-item-indicator-fg, var(--xh-_tone, var(--xh-bg-brand)));
+    color: var(--xh-tree-select-item-indicator-fg, var(--xh-_tone, var(--xh-fg-brand)));
     visibility: hidden;
   }
 

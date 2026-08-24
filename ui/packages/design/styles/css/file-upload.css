@@ -193,7 +193,7 @@
      只挑图标色不换底色：底色一换，一列文件里图片那几行会跳出来抢戏。
      取语义 token 而不是品牌色阶原值，深色主题才跟着走 */
   [data-scope='file-upload'][data-part='item-preview'][data-file-type^='image/'] {
-    color: var(--xh-file-upload-preview-fg-image, var(--xh-bg-brand));
+    color: var(--xh-file-upload-preview-fg-image, var(--xh-fg-brand));
   }
 
   /* 塞进来的真缩略图撑满这个方框，长宽比不对就裁掉，不许把格子顶变形 */

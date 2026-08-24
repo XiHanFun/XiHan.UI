@@ -497,9 +497,9 @@
   > [data-scope='descriptions'][data-part='item'] {
   padding-block: var(--xh-descriptions-item-py, var(--xh-_descriptions-py));
   padding-inline: var(--xh-descriptions-item-px, var(--xh-_descriptions-px));
-  border-block-start: var(--xh-stroke-thin) solid var(--xh-descriptions-border, var(--xh-border-subtle));
+  border-block-start: var(--xh-stroke-thin) solid var(--xh-descriptions-divider, var(--xh-border-subtle));
   /* 每行一组时左边没有邻居，宽度按列数补回来 */
-  border-inline-start: 0 solid var(--xh-descriptions-border, var(--xh-border-subtle));
+  border-inline-start: 0 solid var(--xh-descriptions-divider, var(--xh-border-subtle));
 }
 
 [data-scope='descriptions'][data-part='root'][data-bordered]
@@ -3376,7 +3376,7 @@
 [data-scope='list'][data-part='root'][data-split]
   > [data-scope='list'][data-part='item']
   + [data-scope='list'][data-part='item'] {
-  border-block-start: var(--xh-stroke-thin) solid var(--xh-list-border, var(--xh-border-subtle));
+  border-block-start: var(--xh-stroke-thin) solid var(--xh-list-divider, var(--xh-border-subtle));
 }
 
 [data-scope='list'][data-part='root'][data-hoverable] > [data-scope='list'][data-part='item'] {
@@ -4824,7 +4824,7 @@ input[data-scope='mention'][data-part='input'] {
   /* 聚焦环恒用固定环色；强调色随语气走，只落在勾选标记与选中文字上，正文文字色不动。
      没写 data-tone 时 --xh-_tone 没被声明，两处都退回原来的取值 */
   --xh-_popselect-ring: var(--xh-ring-focus);
-  --xh-_popselect-accent: var(--xh-_tone, var(--xh-bg-brand));
+  --xh-_popselect-accent: var(--xh-_tone, var(--xh-fg-brand));
   --xh-_popselect-item-selected-fg: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
 }
 
@@ -6848,13 +6848,11 @@ input[data-scope='mention'][data-part='input'] {
   /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
   --xh-icon-size: var(--xh-alert-icon-size, var(--xh-glyph-size-text));
 
-  /* 强调色随语气走，底色/描边/图标色都由它推导出来，换语气不必逐条属性各写一遍。
-     没写 data-tone 时 --xh-_tone 没被声明，退回原来的 info 蓝 */
-  --xh-_alert-accent: var(--xh-_tone-soft, var(--xh-color-info-500));
-  /* 底色与描边由语气色兑进当前表面色得到：表面色本身跟着深浅模式翻，
-     兑出来的淡底也就跟着翻，不必为深色再写一套选择器 */
-  --xh-_alert-tint: color-mix(in oklab, var(--xh-_alert-accent) 12%, var(--xh-bg-surface));
-  --xh-_alert-edge: color-mix(in oklab, var(--xh-_alert-accent) 32%, var(--xh-bg-surface));
+  /* 底色、描边、图标色一律取语气层派生好的槽：连接层给 alert 兜了 tone=info 的缺省，
+     data-tone 恒在，语气层的槽也就恒被声明。此前这里自己又兑了一遍（12% / 32%），
+     与语气层的公式差一档，图标压上去只有 1.79–2.47 */
+  --xh-_alert-tint: var(--xh-_tone-subtle);
+  --xh-_alert-edge: var(--xh-_tone-border);
 
   display: flex;
   /* 说明用 flex: 1 1 100% 独占一行，容器不换行的话它只会挤在标题旁边 */
@@ -6884,8 +6882,8 @@ input[data-scope='mention'][data-part='input'] {
   flex: none;
   /* 与首行文字对齐：图标框高取一行正文的行高 */
   block-size: calc(var(--xh-text-body-size) * var(--xh-leading-normal));
-  inline-size: var(--xh-alert-icon-size, var(--xh-control-indicator-size));
-  color: var(--xh-alert-icon-fg, var(--xh-_alert-accent));
+  inline-size: var(--xh-alert-icon-box, var(--xh-control-indicator-size));
+  color: var(--xh-alert-icon-fg, var(--xh-_tone-fg));
 }
 
 /* 标题与说明摞成一列，占满 root 剩下的横向空间，
@@ -7287,8 +7285,23 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='accordion'][data-part='item'] {
-  border-block-end: var(--xh-stroke-thin) solid var(--xh-accordion-item-border, var(--xh-border-default));
   min-inline-size: 0;
+}
+
+/* 分隔线画在后一条的起始边，条与条之间才只有一条，末条也不会留一条悬空线
+   （根没有外框接住它）。只认自己的直接子条目：套在条目里的另一份手风琴由它自己的根管。
+   横排时换成行内轴那一侧 */
+[data-scope='accordion'][data-part='root']
+  > [data-scope='accordion'][data-part='item']
+  + [data-scope='accordion'][data-part='item'] {
+  border-block-start: var(--xh-stroke-thin) solid var(--xh-accordion-item-border, var(--xh-border-subtle));
+}
+
+[data-scope='accordion'][data-part='root'][data-orientation='horizontal']
+  > [data-scope='accordion'][data-part='item']
+  + [data-scope='accordion'][data-part='item'] {
+  border-block-start: 0;
+  border-inline-start: var(--xh-stroke-thin) solid var(--xh-accordion-item-border, var(--xh-border-subtle));
 }
 
 [data-scope='accordion'][data-part='header'] {
@@ -8429,7 +8442,7 @@ input[data-scope='mention'][data-part='input'] {
 /* 分隔线画在下一段的上边，段与段之间才只有一条 */
 [data-scope='card'][data-part='root'][data-segmented] [data-part='body'],
 [data-scope='card'][data-part='root'][data-segmented] [data-part='footer'] {
-  border-block-start: var(--xh-stroke-thin) solid var(--xh-card-border, var(--xh-border-subtle));
+  border-block-start: var(--xh-stroke-thin) solid var(--xh-card-divider, var(--xh-border-subtle));
   padding-block-start: var(--xh-_card-pad);
 }
 
@@ -9134,7 +9147,7 @@ input[data-scope='mention'][data-part='input'] {
   align-items: center;
   justify-content: center;
   inline-size: var(--xh-cascader-item-indicator-size, var(--xh-control-indicator-size));
-  color: var(--xh-cascader-item-indicator-fg, var(--xh-_tone, var(--xh-bg-brand)));
+  color: var(--xh-cascader-item-indicator-fg, var(--xh-_tone, var(--xh-fg-brand)));
   visibility: hidden;
 }
 
@@ -9191,7 +9204,7 @@ input[data-scope='mention'][data-part='input'] {
   padding-block: var(--xh-cascader-input-py, var(--xh-space-2));
   padding-inline: var(--xh-cascader-input-px, var(--xh-control-px-md));
   border: none;
-  border-block-end: var(--xh-stroke-thin) solid var(--xh-cascader-content-border, var(--xh-border-default));
+  border-block-end: var(--xh-stroke-thin) solid var(--xh-cascader-search-divider, var(--xh-border-subtle));
   border-start-start-radius: inherit;
   border-start-end-radius: inherit;
   background: none;
@@ -10522,7 +10535,7 @@ input[data-scope='mention'][data-part='input'] {
   inline-size: var(--xh-color-picker-swatch-item-size, 1.25rem);
   block-size: var(--xh-color-picker-swatch-item-size, 1.25rem);
   padding: 0;
-  border: var(--xh-stroke-thin) solid var(--xh-color-picker-swatch-border, var(--xh-border-control));
+  border: var(--xh-stroke-thin) solid var(--xh-color-picker-swatch-border, var(--xh-border-default));
   border-radius: var(--xh-color-picker-swatch-radius, var(--xh-shape-inset));
   cursor: pointer;
 }
@@ -10646,7 +10659,7 @@ input[data-scope='mention'][data-part='input'] {
   /* 聚焦环恒用固定环色；强调色随语气走，只落在勾选标记与选中文字上，正文文字色不动。
      没写 data-tone 时 --xh-_tone 没被声明，两处都退回原来的取值 */
   --xh-_combobox-ring: var(--xh-ring-focus);
-  --xh-_combobox-accent: var(--xh-_tone, var(--xh-bg-brand));
+  --xh-_combobox-accent: var(--xh-_tone, var(--xh-fg-brand));
   --xh-_combobox-item-selected-fg: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
 }
 
@@ -12182,7 +12195,7 @@ input[data-scope='mention'][data-part='input'] {
   max-block-size: var(--xh-date-picker-presets-h, var(--xh-viewport-h-sm));
   padding: var(--xh-date-picker-presets-padding, var(--xh-space-1));
   overflow-y: auto;
-  border-inline-end: var(--xh-stroke-thin) solid var(--xh-date-picker-content-border, var(--xh-border-default));
+  border-inline-end: var(--xh-stroke-thin) solid var(--xh-date-picker-column-divider, var(--xh-border-subtle));
 }
 
 [data-scope='date-picker'][data-part='presets'][hidden] {
@@ -12232,7 +12245,7 @@ input[data-scope='mention'][data-part='input'] {
   block-size: var(--xh-date-picker-time-column-h, var(--xh-viewport-h-sm));
   padding: var(--xh-date-picker-time-column-padding, var(--xh-space-1));
   overflow-y: auto;
-  border-inline-start: var(--xh-stroke-thin) solid var(--xh-date-picker-content-border, var(--xh-border-default));
+  border-inline-start: var(--xh-stroke-thin) solid var(--xh-date-picker-column-divider, var(--xh-border-subtle));
 }
 
 [data-scope='date-picker'][data-part='time-column'][hidden] {
@@ -13536,7 +13549,7 @@ input[data-scope='mention'][data-part='input'] {
    只挑图标色不换底色：底色一换，一列文件里图片那几行会跳出来抢戏。
    取语义 token 而不是品牌色阶原值，深色主题才跟着走 */
 [data-scope='file-upload'][data-part='item-preview'][data-file-type^='image/'] {
-  color: var(--xh-file-upload-preview-fg-image, var(--xh-bg-brand));
+  color: var(--xh-file-upload-preview-fg-image, var(--xh-fg-brand));
 }
 
 /* 塞进来的真缩略图撑满这个方框，长宽比不对就裁掉，不许把格子顶变形 */
@@ -14636,7 +14649,7 @@ input[data-scope='mention'][data-part='input'] {
   align-items: center;
   justify-content: center;
   inline-size: var(--xh-listbox-item-indicator-size, var(--xh-control-indicator-size));
-  color: var(--xh-listbox-item-indicator-fg, var(--xh-bg-brand));
+  color: var(--xh-listbox-item-indicator-fg, var(--xh-fg-brand));
   visibility: hidden;
 }
 
@@ -17335,7 +17348,7 @@ input[data-scope='mention'][data-part='input'] {
   /* 聚焦环恒用固定环色；强调色随语气走，只落在勾选标记与选中文字上，正文文字色不动。
      没写 data-tone 时 --xh-_tone 没被声明，两处都退回原来的取值 */
   --xh-_select-ring: var(--xh-ring-focus);
-  --xh-_select-accent: var(--xh-_tone, var(--xh-bg-brand));
+  --xh-_select-accent: var(--xh-_tone, var(--xh-fg-brand));
   --xh-_select-item-selected-fg: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
 }
 
@@ -18658,7 +18671,7 @@ input[data-scope='mention'][data-part='input'] {
   justify-content: center;
   inline-size: var(--xh-steps-indicator-size, var(--xh-_steps-indicator-size));
   block-size: var(--xh-steps-indicator-size, var(--xh-_steps-indicator-size));
-  border: var(--xh-stroke-thin) solid var(--xh-steps-indicator-border, var(--xh-border-strong));
+  border: var(--xh-stroke-thin) solid var(--xh-steps-indicator-border, var(--xh-border-control));
   border-radius: var(--xh-steps-indicator-radius, var(--xh-shape-pill));
   background: var(--xh-steps-indicator-bg, transparent);
   color: var(--xh-steps-indicator-fg, var(--xh-fg-muted));
@@ -18691,7 +18704,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='steps'][data-part='item'][data-disabled] [data-scope='steps'][data-part='indicator'] {
-  border-color: var(--xh-steps-indicator-border-disabled, var(--xh-fg-disabled));
+  border-color: var(--xh-steps-indicator-border-disabled, var(--xh-border-subtle));
   color: var(--xh-steps-indicator-fg-disabled, var(--xh-fg-disabled));
 }
 
@@ -23118,7 +23131,7 @@ input[data-scope='mention'][data-part='input'] {
   align-items: center;
   justify-content: center;
   inline-size: var(--xh-tree-indicator-size, var(--xh-control-indicator-size));
-  color: var(--xh-tree-indicator-fg, var(--xh-bg-brand));
+  color: var(--xh-tree-indicator-fg, var(--xh-fg-brand));
   visibility: hidden;
 }
 
@@ -23669,7 +23682,7 @@ input[data-scope='mention'][data-part='input'] {
   align-items: center;
   justify-content: center;
   inline-size: var(--xh-tree-select-indicator-size, var(--xh-control-indicator-size));
-  color: var(--xh-tree-select-item-indicator-fg, var(--xh-_tone, var(--xh-bg-brand)));
+  color: var(--xh-tree-select-item-indicator-fg, var(--xh-_tone, var(--xh-fg-brand)));
   visibility: hidden;
 }
 

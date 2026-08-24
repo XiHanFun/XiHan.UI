@@ -8,13 +8,11 @@
     /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
     --xh-icon-size: var(--xh-alert-icon-size, var(--xh-glyph-size-text));
 
-    /* 强调色随语气走，底色/描边/图标色都由它推导出来，换语气不必逐条属性各写一遍。
-       没写 data-tone 时 --xh-_tone 没被声明，退回原来的 info 蓝 */
-    --xh-_alert-accent: var(--xh-_tone-soft, var(--xh-color-info-500));
-    /* 底色与描边由语气色兑进当前表面色得到：表面色本身跟着深浅模式翻，
-       兑出来的淡底也就跟着翻，不必为深色再写一套选择器 */
-    --xh-_alert-tint: color-mix(in oklab, var(--xh-_alert-accent) 12%, var(--xh-bg-surface));
-    --xh-_alert-edge: color-mix(in oklab, var(--xh-_alert-accent) 32%, var(--xh-bg-surface));
+    /* 底色、描边、图标色一律取语气层派生好的槽：连接层给 alert 兜了 tone=info 的缺省，
+       data-tone 恒在，语气层的槽也就恒被声明。此前这里自己又兑了一遍（12% / 32%），
+       与语气层的公式差一档，图标压上去只有 1.79–2.47 */
+    --xh-_alert-tint: var(--xh-_tone-subtle);
+    --xh-_alert-edge: var(--xh-_tone-border);
 
     display: flex;
     /* 说明用 flex: 1 1 100% 独占一行，容器不换行的话它只会挤在标题旁边 */
@@ -44,8 +42,8 @@
     flex: none;
     /* 与首行文字对齐：图标框高取一行正文的行高 */
     block-size: calc(var(--xh-text-body-size) * var(--xh-leading-normal));
-    inline-size: var(--xh-alert-icon-size, var(--xh-control-indicator-size));
-    color: var(--xh-alert-icon-fg, var(--xh-_alert-accent));
+    inline-size: var(--xh-alert-icon-box, var(--xh-control-indicator-size));
+    color: var(--xh-alert-icon-fg, var(--xh-_tone-fg));
   }
 
   /* 标题与说明摞成一列，占满 root 剩下的横向空间，
