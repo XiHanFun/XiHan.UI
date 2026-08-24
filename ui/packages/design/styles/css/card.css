@@ -67,10 +67,10 @@
   [data-scope='card'][data-part='header'] {
     display: flex;
     flex-direction: column;
-    gap: var(--xh-space-1);
+    gap: var(--xh-card-header-gap, var(--xh-space-1));
     padding: var(--xh-_card-pad);
     /* 头下面若还有别的段，间距由那一段自己的内边距接上，这里不重复留白 */
-    padding-block-end: var(--xh-space-2);
+    padding-block-end: var(--xh-card-header-pb, var(--xh-space-2));
   }
 
   [data-scope='card'][data-part='title'] {
@@ -96,15 +96,15 @@
 
   /* 头与身相邻时，头已经收窄了下边距，身不必再从顶上留一份 */
   [data-scope='card'][data-part='header'] + [data-part='body'] {
-    padding-block-start: var(--xh-space-2);
+    padding-block-start: var(--xh-card-body-pt, var(--xh-space-2));
   }
 
   [data-scope='card'][data-part='footer'] {
     display: flex;
     align-items: center;
-    gap: var(--xh-space-2);
+    gap: var(--xh-card-footer-gap, var(--xh-space-2));
     padding: var(--xh-_card-pad);
-    padding-block-start: var(--xh-space-2);
+    padding-block-start: var(--xh-card-footer-pt, var(--xh-space-2));
   }
 
   /* —— 分段 —— */

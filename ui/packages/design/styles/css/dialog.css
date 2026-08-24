@@ -81,7 +81,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: var(--xh-space-4);
+    padding: var(--xh-dialog-positioner-padding, var(--xh-space-4));
   }
 
   [data-scope='dialog'][data-part='positioner'][data-position='top'] {

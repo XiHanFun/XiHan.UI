@@ -5,11 +5,16 @@
   }
 
   [data-scope='badge'][data-part='root'] {
+    /* 档位经私有槽中转，与孪生的 tag 一处对一处 */
+    --xh-_badge-gap: var(--xh-space-1);
+    --xh-_badge-px: var(--xh-space-2);
+    --xh-_badge-py: var(--xh-space-0_5);
+
     display: inline-flex;
     align-items: center;
-    gap: var(--xh-space-1);
-    padding-inline: var(--xh-space-2);
-    padding-block: var(--xh-space-0_5);
+    gap: var(--xh-badge-gap, var(--xh-_badge-gap));
+    padding-inline: var(--xh-badge-px, var(--xh-_badge-px));
+    padding-block: var(--xh-badge-py, var(--xh-_badge-py));
     border: var(--xh-stroke-thin) solid transparent;
     border-radius: var(--xh-badge-radius, var(--xh-shape-pill));
     background: var(--xh-badge-bg, var(--xh-bg-subtle));
@@ -55,15 +60,16 @@
   /* —— 尺寸 —— */
   /* 徽标是随文排的药丸，不占控件行高，档位走间距与字号而不是 control-h */
   [data-scope='badge'][data-part='root'][data-size='sm'] {
-    gap: var(--xh-space-0_5);
-    padding-inline: var(--xh-space-1_5);
-    padding-block: var(--xh-space-0);
+    --xh-_badge-gap: var(--xh-space-0_5);
+    --xh-_badge-px: var(--xh-space-1_5);
+    --xh-_badge-py: var(--xh-space-0);
   }
 
   [data-scope='badge'][data-part='root'][data-size='lg'] {
-    gap: var(--xh-space-1_5);
-    padding-inline: var(--xh-space-3);
-    padding-block: var(--xh-space-1);
-    font-size: var(--xh-text-secondary-size);
+    --xh-_badge-gap: var(--xh-space-1_5);
+    --xh-_badge-px: var(--xh-space-3);
+    --xh-_badge-py: var(--xh-space-1);
+
+    font-size: var(--xh-badge-font-size, var(--xh-text-secondary-size));
   }
 }

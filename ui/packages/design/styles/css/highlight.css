@@ -13,7 +13,7 @@
   /* 浏览器给 mark 的默认底色是一个固定的亮黄，暗色主题下压在深底上刺眼、
      配的黑字也不随主题走；这里整份换成随主题走的品牌淡底 */
   [data-scope='highlight'][data-part='mark'] {
-    padding-inline: var(--xh-space-0_5);
+    padding-inline: var(--xh-highlight-mark-px, var(--xh-space-0_5));
     border-radius: var(--xh-highlight-radius, var(--xh-shape-inset));
     background: var(--xh-highlight-bg, var(--xh-bg-brand-subtle));
     color: var(--xh-highlight-fg, var(--xh-fg-brand-strong));

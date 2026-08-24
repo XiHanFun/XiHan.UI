@@ -171,7 +171,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: var(--xh-space-4);
+    padding: var(--xh-tour-positioner-padding, var(--xh-space-4));
   }
 
   /* 必须排在 data-position='center' 之后：两条选择器的特指度相同（都是三个属性），
@@ -252,7 +252,7 @@
     align-items: center;
     justify-content: center;
     block-size: var(--xh-control-h-sm);
-    padding-inline: var(--xh-control-px-md);
+    padding-inline: var(--xh-tour-skip-trigger-px, var(--xh-control-px-md));
     border: var(--xh-stroke-thin) solid transparent;
     border-radius: var(--xh-tour-action-radius, var(--xh-shape-control));
     font-size: var(--xh-text-secondary-size);

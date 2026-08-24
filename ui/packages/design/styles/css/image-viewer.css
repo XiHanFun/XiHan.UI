@@ -123,8 +123,8 @@
     translate: -50% 0;
     display: flex;
     align-items: center;
-    gap: var(--xh-space-1);
-    padding: var(--xh-space-1_5) var(--xh-space-3);
+    gap: var(--xh-image-viewer-toolbar-gap, var(--xh-space-1));
+    padding: var(--xh-image-viewer-toolbar-padding, var(--xh-space-1_5) var(--xh-space-3));
   }
 
   /* 工具条里的按钮：底色交给工具条，本体只管命中区 */
@@ -147,7 +147,7 @@
     inset-block-start: var(--xh-space-6);
     inset-inline-start: 50%;
     translate: -50% 0;
-    padding: var(--xh-space-1) var(--xh-space-3);
+    padding: var(--xh-image-viewer-counter-padding, var(--xh-space-1) var(--xh-space-3));
     font-size: var(--xh-text-secondary-size);
   }
 
