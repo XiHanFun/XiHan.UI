@@ -75,6 +75,9 @@
     align-items: center;
     justify-content: center;
     flex: none;
+    /* 作者塞进图标槽的 XhIcon 与皮肤画的字形同一把尺，都按展示档的图标框量 */
+    --xh-icon-size: var(--xh-result-icon-size, var(--xh-_result-icon-size));
+
     block-size: var(--xh-result-icon-size, var(--xh-_result-icon-size));
     inline-size: var(--xh-result-icon-size, var(--xh-_result-icon-size));
     color: var(--xh-result-icon-fg, var(--xh-_result-accent));

@@ -104,7 +104,9 @@
     display: none;
   }
 
-  /* 半选画一条横杠盖住勾：aria-checked=mixed 在视觉上也得与「全选」分得开 */
+  /* 半选换一枚横杠字形盖住勾：aria-checked=mixed 在视觉上也得与「全选」分得开。
+     横杠与勾同走字形令牌，作者换掉标记时两态一起换；此前这条是手画的几何盒
+     （60% × stroke-thick），同一页上会出现两种横杠 */
   [data-scope='checkbox'][data-part='indicator'][data-state='indeterminate'] {
     position: relative;
     color: transparent;
@@ -112,11 +114,12 @@
 
   [data-scope='checkbox'][data-part='indicator'][data-state='indeterminate']::after {
     position: absolute;
-    inline-size: 60%;
-    block-size: var(--xh-stroke-thick);
-    border-radius: var(--xh-shape-pill);
-    background: var(--xh-checkbox-indicator-fg, var(--xh-_checkbox-on-accent));
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    background-color: var(--xh-checkbox-indicator-fg, var(--xh-_checkbox-on-accent));
     content: '';
+    -webkit-mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
   }
 
   /* —— 带文字的整行：<label> 包住控件与文字，与 checkbox-group 的条目同一副样子 —— */

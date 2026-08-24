@@ -49,11 +49,14 @@
     align-items: center;
     justify-content: center;
     flex: none;
+    /* 作者塞进图标槽的 XhIcon 与皮肤画的字形同一把尺，都按展示档的图标框量 */
+    --xh-icon-size: var(--xh-empty-state-icon-size, var(--xh-_empty-state-icon-size));
+
     block-size: var(--xh-empty-state-icon-size, var(--xh-_empty-state-icon-size));
     inline-size: var(--xh-empty-state-icon-size, var(--xh-_empty-state-icon-size));
     color: var(--xh-empty-state-icon-fg, var(--xh-fg-subtle));
     /* 图标常是一个字形，字号跟着图标框走，line-height 不再另占高度 */
-    font-size: var(--xh-empty-state-icon-font-size, var(--xh-text-heading-1-size));
+    font-size: var(--xh-empty-state-icon-font-size, var(--xh-_empty-state-icon-size));
     line-height: var(--xh-leading-none);
   }
 
