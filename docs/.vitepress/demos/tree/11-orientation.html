@@ -1,0 +1,92 @@
+<!-- 子层横排 | orientation="horizontal" 把同一层的节点并排铺开，缩进仍标层级；方向键不跟着改：左右是收展、上下走可见行，这是 treeview 的规范语义 -->
+<div style="width: 100%; display: grid; gap: 12px; justify-items: start">
+  <label style="display: inline-flex; gap: 6px; align-items: center">
+    <input id="tree-orientation-toggle" type="checkbox" checked />
+    子层横排
+  </label>
+
+  <xh-tree id="tree-orientation" orientation="horizontal">
+    <div data-xh-part="root">
+      <span data-xh-part="label">设计令牌</span>
+      <div data-xh-part="tree">
+        <div data-xh-part="branch" value="color">
+          <div data-xh-part="branch-control">
+            <span data-xh-part="branch-trigger"></span>
+            <span data-xh-part="branch-text">主色</span>
+          </div>
+          <div data-xh-part="branch-content">
+            <div data-xh-part="item" value="brand">
+              <span data-xh-part="item-indicator"></span>
+              <span data-xh-part="item-text">品牌</span>
+            </div>
+            <div data-xh-part="item" value="accent">
+              <span data-xh-part="item-indicator"></span>
+              <span data-xh-part="item-text">强调</span>
+            </div>
+            <div data-xh-part="item" value="neutral">
+              <span data-xh-part="item-indicator"></span>
+              <span data-xh-part="item-text">中性</span>
+            </div>
+          </div>
+        </div>
+
+        <div data-xh-part="branch" value="size">
+          <div data-xh-part="branch-control">
+            <span data-xh-part="branch-trigger"></span>
+            <span data-xh-part="branch-text">尺寸</span>
+          </div>
+          <div data-xh-part="branch-content">
+            <div data-xh-part="item" value="sm">
+              <span data-xh-part="item-indicator"></span>
+              <span data-xh-part="item-text">小</span>
+            </div>
+            <div data-xh-part="item" value="md">
+              <span data-xh-part="item-indicator"></span>
+              <span data-xh-part="item-text">中</span>
+            </div>
+            <div data-xh-part="item" value="lg">
+              <span data-xh-part="item-indicator"></span>
+              <span data-xh-part="item-text">大</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </xh-tree>
+</div>
+
+<script type="module">
+  const tree = document.getElementById("tree-orientation");
+  const toggle = document.getElementById("tree-orientation-toggle");
+
+  tree.collection = [
+    {
+      value: "color",
+      label: "主色",
+      children: [
+        { value: "brand", label: "品牌" },
+        { value: "accent", label: "强调" },
+        { value: "neutral", label: "中性" },
+      ],
+    },
+    {
+      value: "size",
+      label: "尺寸",
+      children: [
+        { value: "sm", label: "小" },
+        { value: "md", label: "中" },
+        { value: "lg", label: "大" },
+      ],
+    },
+  ];
+
+  tree.expandedValue = ["color", "size"];
+  tree.addEventListener(
+    "expanded-change",
+    (event) => (tree.expandedValue = event.detail.value),
+  );
+
+  toggle.addEventListener("change", () => {
+    tree.setAttribute("orientation", toggle.checked ? "horizontal" : "vertical");
+  });
+</script>

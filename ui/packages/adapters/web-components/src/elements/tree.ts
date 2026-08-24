@@ -1,5 +1,5 @@
 import type { TreeExpandedChangeDetails, TreeNode, TreeNodeProps, TreeSchema, TreeSelectionChangeDetails, TreeSelectionMode } from '@xihan-ui/headless'
-import type { Direction } from '@xihan-ui/kernel'
+import type { Direction, Orientation } from '@xihan-ui/kernel'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
 import { connectTree, treeAnatomy, treeMachine, treeMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
@@ -30,6 +30,7 @@ const BRANCH_SELECTOR = '[data-xh-part="branch"]'
  *
  * @customElement xh-tree
  * @attr {boolean} multiple - 复选，默认关闭
+ * @attr {'horizontal'|'vertical'} orientation - 子层排布方向，默认 vertical；horizontal 让同一层的节点并排铺开
  * @attr {'single'|'multiple'} selection-mode - 选择模式的旧写法，默认 single；与 multiple 同时给时以它为准
  * @attr {boolean} cascade - multiple 下父子级联勾选（整枝传导/半选/禁用冻结），默认 false
  * @attr {string} checked-strategy - 级联下对外值的收敛策略：child（默认）/ parent / all
@@ -69,6 +70,7 @@ export class XhTreeElement extends XhElement {
     selection: { attribute: false },
     defaultSelection: { attribute: false },
     multiple: { converter: BOOLEAN_CONVERTER },
+    orientation: { converter: STRING_CONVERTER },
     selectionMode: { converter: STRING_CONVERTER, attribute: 'selection-mode' },
     cascade: { type: Boolean },
     checkedStrategy: { converter: STRING_CONVERTER, attribute: 'checked-strategy' },
@@ -85,6 +87,7 @@ export class XhTreeElement extends XhElement {
   declare selection?: string[]
   declare defaultSelection?: string[]
   declare multiple?: boolean
+  declare orientation?: Orientation
   declare selectionMode?: TreeSelectionMode
   declare cascade?: boolean
   declare checkedStrategy?: TreeSchema['props']['checkedStrategy']
