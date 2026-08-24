@@ -118,4 +118,13 @@
   [data-scope='card'][data-part='root'][data-segmented] [data-part='header'] {
     padding-block-end: var(--xh-_card-pad);
   }
+
+  /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
+     写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
+  [data-scope='card'][data-part='root'][hidden],
+  [data-scope='card'][data-part='cover'][hidden],
+  [data-scope='card'][data-part='header'][hidden],
+  [data-scope='card'][data-part='footer'][hidden] {
+    display: none;
+  }
 }

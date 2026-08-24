@@ -167,4 +167,12 @@
     max-block-size: calc(var(--xh-layout-scrollport-h, 100dvh) - var(--xh-_layout-sider-offset));
     overflow-y: auto;
   }
+
+  /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
+     写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
+  [data-scope='layout'][data-part='root'][hidden],
+  [data-scope='layout'][data-part='header'][hidden],
+  [data-scope='layout'][data-part='sider-trigger'][hidden] {
+    display: none;
+  }
 }
