@@ -429,22 +429,17 @@
     cursor: not-allowed;
   }
 
-  /* 分支条目行尾画右向小箭头：不点开也看得出还有下一级。
-     全边框描好后抹掉块末与行首两边，剩下的直角旋成箭头；位置由 item-text 的 flex:1 顶到行尾 */
+  /* 分支条目行尾画右向小箭头：不点开也看得出还有下一级。位置由 item-text 的 flex:1 顶到行尾。
+     与菜单族的子菜单箭头同走字形令牌——此前这里是「描全边框再抹掉两条、把剩下的直角旋 45 度」，
+     作者换掉标记时换不动它，RTL 还得再翻一次旋转角 */
   [data-scope='cascader'][data-part='item'][data-branch]::after {
     content: '';
     flex: none;
-    inline-size: var(--xh-cascader-branch-arrow-size, var(--xh-space-1_5));
-    block-size: var(--xh-cascader-branch-arrow-size, var(--xh-space-1_5));
-    border: var(--xh-glyph-stroke-light) solid var(--xh-cascader-branch-arrow-fg, var(--xh-fg-subtle));
-    border-block-end: 0;
-    border-inline-start: 0;
-    rotate: 45deg;
-  }
-
-  /* rtl 下剩下的是块首与行末（物理左上）两边，反向旋 45 度才指向行进方向 */
-  [dir='rtl'] [data-scope='cascader'][data-part='item'][data-branch]::after {
-    rotate: -45deg;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    background-color: var(--xh-cascader-branch-arrow-fg, var(--xh-fg-subtle));
+    -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
   }
 
   [data-scope='cascader'][data-part='item'][data-branch][data-disabled]::after {
