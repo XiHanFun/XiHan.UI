@@ -57,24 +57,24 @@ describe('wC 元素的 property 写法与 attribute 等价', () => {
     expect(root.getAttribute('role')).toBe('none')
   })
 
-  it('xh-badge：给 variant 赋值（property）生效', async () => {
-    const el = mount('<xh-badge variant="solid"><span data-xh-part="root">徽标</span></xh-badge>')
+  it('xh-badge：给 placement 赋值（property）生效', async () => {
+    const el = mount('<xh-badge placement="top-start"><span data-xh-part="root">头像</span></xh-badge>')
     await settle(el)
     const root = el.querySelector('[data-xh-part="root"]')!
-    expect(root.getAttribute('data-variant')).toBe('solid')
+    expect(root.getAttribute('data-placement')).toBe('top-start')
 
-    ;(el as unknown as { variant: string }).variant = 'outline'
+    ;(el as unknown as { placement: string }).placement = 'bottom-end'
     await settle(el)
-    expect(root.getAttribute('data-variant')).toBe('outline')
+    expect(root.getAttribute('data-placement')).toBe('bottom-end')
   })
 
   it('xh-badge：先写 property 再写同值 attribute，不会被吞掉', async () => {
-    const el = mount('<xh-badge><span data-xh-part="root">徽标</span></xh-badge>')
+    const el = mount('<xh-badge><span data-xh-part="root">头像</span></xh-badge>')
     await settle(el)
-    ;(el as unknown as { variant: string }).variant = 'subtle'
+    ;(el as unknown as { placement: string }).placement = 'bottom-start'
     await settle(el)
-    el.setAttribute('variant', 'subtle')
+    el.setAttribute('placement', 'bottom-start')
     await settle(el)
-    expect(el.querySelector('[data-xh-part="root"]')!.getAttribute('data-variant')).toBe('subtle')
+    expect(el.querySelector('[data-xh-part="root"]')!.getAttribute('data-placement')).toBe('bottom-start')
   })
 })

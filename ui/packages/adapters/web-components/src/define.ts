@@ -69,6 +69,7 @@ import { XhMentionElement } from './elements/mention'
 import { XhMenuElement } from './elements/menu'
 import { XhMenubarElement } from './elements/menubar'
 import { XhNavigationMenuElement } from './elements/navigation-menu'
+import { XhNotificationElement, XhNotificationItemElement } from './elements/notification'
 import { XhNumberAnimationElement } from './elements/number-animation'
 import { XhNumberFieldElement } from './elements/number-field'
 import { XhPageHeaderElement } from './elements/page-header'
@@ -110,7 +111,6 @@ import { XhTimePickerElement } from './elements/time-picker'
 import { XhTimelineElement } from './elements/timeline'
 import { XhTimerElement } from './elements/timer'
 import { XhToastElement } from './elements/toast'
-import { XhToasterElement } from './elements/toaster'
 import { XhToggleElement } from './elements/toggle'
 import { XhToggleGroupElement } from './elements/toggle-group'
 import { XhToolbarElement } from './elements/toolbar'
@@ -205,6 +205,8 @@ export function defineXhElements(): void {
   defineElement('xh-menu', XhMenuElement, VERSION)
   defineElement('xh-menubar', XhMenubarElement, VERSION)
   defineElement('xh-navigation-menu', XhNavigationMenuElement, VERSION)
+  defineElement('xh-notification', XhNotificationElement, VERSION)
+  defineElement('xh-notification-item', XhNotificationItemElement, VERSION)
   defineElement('xh-pagination', XhPaginationElement, VERSION)
   defineElement('xh-pin-input', XhPinInputElement, VERSION)
   defineElement('xh-popover', XhPopoverElement, VERSION)
@@ -234,7 +236,6 @@ export function defineXhElements(): void {
   defineElement('xh-timeline', XhTimelineElement, VERSION)
   defineElement('xh-timer', XhTimerElement, VERSION)
   defineElement('xh-toast', XhToastElement, VERSION)
-  defineElement('xh-toaster', XhToasterElement, VERSION)
   defineElement('xh-toggle', XhToggleElement, VERSION)
   defineElement('xh-toggle-group', XhToggleGroupElement, VERSION)
   defineElement('xh-toolbar', XhToolbarElement, VERSION)
@@ -306,6 +307,8 @@ export {
   XhMenubarElement,
   XhMenuElement,
   XhNavigationMenuElement,
+  XhNotificationElement,
+  XhNotificationItemElement,
   XhNumberFieldElement,
   XhPaginationElement,
   XhPasswordInputElement,
@@ -338,7 +341,6 @@ export {
   XhTimePickerElement,
   XhTimerElement,
   XhToastElement,
-  XhToasterElement,
   XhToggleElement,
   XhToggleGroupElement,
   XhToolbarElement,

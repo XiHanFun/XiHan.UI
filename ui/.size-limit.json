@@ -21,7 +21,7 @@
     "name": "tokens/tokens.css",
     "path": "packages/design/tokens/tokens.css",
     "gzip": true,
-    "limit": "3.6 kB"
+    "limit": "3.9 kB"
   },
   {
     "name": "behavior",
@@ -81,13 +81,13 @@
     "name": "headless",
     "path": "packages/engine/headless/dist/index.js",
     "gzip": true,
-    "limit": "215 kB"
+    "limit": "220.5 kB"
   },
   {
     "name": "vue",
     "path": "packages/adapters/vue/dist/index.js",
     "gzip": true,
-    "limit": "252 kB",
+    "limit": "257.4 kB",
     "ignore": [
       "vue"
     ]
@@ -129,7 +129,7 @@
     "name": "web-components/define",
     "path": "packages/adapters/web-components/dist/define.js",
     "gzip": true,
-    "limit": "242 kB"
+    "limit": "247 kB"
   },
   {
     "name": "web-components/backgrounds",
@@ -141,7 +141,7 @@
     "name": "styles",
     "path": "packages/design/styles/css/*.css",
     "gzip": true,
-    "limit": "120 kB"
+    "limit": "122.8 kB"
   },
   {
     "name": "icons：只用 CheckIcon",
@@ -161,7 +161,7 @@
     "path": "packages/adapters/vue/dist/index.js",
     "import": "{ XhBadge }",
     "gzip": true,
-    "limit": "1 kB",
+    "limit": "1.2 kB",
     "ignore": [
       "vue"
     ]

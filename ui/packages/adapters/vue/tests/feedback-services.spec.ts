@@ -3,7 +3,7 @@
 // 所有用例都不挂宿主组件。
 import { afterEach, describe, expect, it } from 'vitest'
 import { nextTick } from 'vue'
-import { createDialogService, createLoadingBarService, createToastService } from '../src'
+import { createDialogService, createLoadingBarService, createNotificationService, createToastService } from '../src'
 
 async function tick(): Promise<void> {
   await nextTick()
@@ -42,27 +42,41 @@ describe('createToastService', () => {
     toast.dispose()
   })
 
-  it('description 与 dismissAll', async () => {
+  it('dismissAll 一次收走所有条目', async () => {
     const toast = createToastService()
-    toast.create({ title: '同步失败', description: '网络中断，稍后自动重试', type: 'error' })
+    toast.error('同步失败')
     toast.info('另一条')
     await tick()
-    expect(document.body.textContent).toContain('网络中断，稍后自动重试')
+    expect(document.body.textContent).toContain('同步失败')
+    expect(document.body.textContent).toContain('另一条')
     toast.dismissAll()
     await wait(600)
     expect(document.body.textContent ?? '').not.toContain('同步失败')
+    expect(document.body.textContent ?? '').not.toContain('另一条')
     toast.dispose()
   })
 
-  it('落位可配且单条可覆盖', async () => {
+  it('落位是整个服务的口径，不逐条各去一处', async () => {
     const toast = createToastService({ placement: 'bottom-end' })
-    toast.create({ title: '默认位', type: 'info' })
-    toast.create({ title: '覆盖位', type: 'info', placement: 'top' })
+    toast.info('一条')
+    toast.info('两条')
     await tick()
-    const groups = [...document.querySelectorAll('[data-scope="toaster"][data-part="group"]')]
-    const placements = groups.map(g => g.getAttribute('data-placement'))
-    expect(placements).toContain('bottom-end')
-    expect(placements).toContain('top')
+    const groups = [...document.querySelectorAll('[data-scope="toast"][data-part="group"]')]
+    // 一个服务只有一摞：条目落在哪儿由服务档一次定好
+    expect(groups.length).toBe(1)
+    expect(groups[0]!.getAttribute('data-placement')).toBe('bottom-end')
+    expect(groups[0]!.getAttribute('data-count')).toBe('2')
+    toast.dispose()
+  })
+
+  it('max：超出上限挤掉最旧的那条', async () => {
+    const toast = createToastService({ max: 2 })
+    toast.info('第一条')
+    toast.info('第二条')
+    toast.info('第三条')
+    await tick()
+    expect(document.body.textContent ?? '').not.toContain('第一条')
+    expect(document.body.textContent).toContain('第三条')
     toast.dispose()
   })
 
@@ -71,8 +85,51 @@ describe('createToastService', () => {
     toast.success('一条')
     await tick()
     toast.dispose()
-    expect(document.querySelectorAll('[data-scope="toaster"]').length).toBe(0)
+    expect(document.querySelectorAll('[data-scope="toast"]').length).toBe(0)
     expect(() => toast.success('再来')).toThrow('已卸载')
+  })
+})
+
+describe('createNotificationService', () => {
+  it('模块作用域一行调用即渲染出通知，标题与正文两层都在', async () => {
+    const notify = createNotificationService()
+    notify.info('有新的审批', { description: '张三提交了一份请假单' })
+    await tick()
+    expect(document.body.textContent).toContain('有新的审批')
+    expect(document.body.textContent).toContain('张三提交了一份请假单')
+    notify.dispose()
+  })
+
+  it('逐条落位：单条写了 placement 就自己去那一摞', async () => {
+    const notify = createNotificationService({ placement: 'bottom-end' })
+    notify.info('默认位')
+    notify.info('覆盖位', { placement: 'top' })
+    await tick()
+    const placements = [...document.querySelectorAll('[data-scope="notification"][data-part="group"]')]
+      .map(g => g.getAttribute('data-placement'))
+    expect(placements).toContain('bottom-end')
+    expect(placements).toContain('top')
+    notify.dispose()
+  })
+
+  it('同 id 就地改写：处理中转已完成不新弹一条', async () => {
+    const notify = createNotificationService()
+    const id = notify.info('导出中', { duration: 0 })
+    await tick()
+    notify.update(id, { type: 'success', title: '导出完成' })
+    await tick()
+    expect(document.body.textContent).toContain('导出完成')
+    expect(document.body.textContent ?? '').not.toContain('导出中')
+    notify.dispose()
+  })
+
+  it('dispose 移除宿主容器', async () => {
+    const notify = createNotificationService()
+    notify.info('一条')
+    await tick()
+    notify.dispose()
+    expect(document.querySelectorAll('[data-scope="notification"]').length).toBe(0)
+    expect(() => notify.info('再来')).toThrow('已卸载')
   })
 })
 

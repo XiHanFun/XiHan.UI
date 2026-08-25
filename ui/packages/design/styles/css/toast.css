@@ -1,8 +1,8 @@
 @layer xihan.motion {
   /*
-   * 九个位共用同一条进出场，位移不跟着落位走：要按位置分方向，就得从 toaster 的
-   * data-placement 反向选到卡片上，等于把一个组件的动效写进另一个组件的选择器里，
-   * 两边任意一侧改名都会静默失效。竖向一小段位移在九个位上都说得通。
+   * 九个位共用同一条进出场，位移不跟着落位走：要按位置分方向就得从摞的
+   * data-placement 反向选到卡片上，落位一改名整条动效静默失效。
+   * 竖向一小段位移在九个位上都说得通。
    */
   @keyframes xh-toast-in {
     from {
@@ -37,6 +37,54 @@
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
   [data-scope='toast'] {
     --xh-toast-skin: 1;
+  }
+
+  /*
+   * 一摞 = 一整面视口大小的定位面：贴边靠 padding，落位靠 justify/align 表达。
+   * 不用四角 inset 逐个摆，是因为 column flex 的 align-items 走的是行内轴，
+   * RTL 下 start/end 自动跟着翻；写死 inset-inline-start 的话居中那三个位
+   * 还得再配一次 translate，方向一变就错。
+   * 摞由全局服务渲染，没有对应的容器组件——一次操作的反馈落在哪儿是整个服务的口径。
+   */
+  [data-scope='toast'][data-part='group'] {
+    position: fixed;
+    inset-block: 0;
+    inset-inline: 0;
+    z-index: var(--xh-toast-layer, var(--xh-layer-toast));
+    display: flex;
+    flex-direction: column;
+    /* 基线按默认落位 top 写，下面只覆盖跟它不同的那几个位 */
+    justify-content: flex-start;
+    align-items: center;
+    padding-block: var(--xh-toast-inset, var(--xh-space-6));
+    padding-inline: var(--xh-toast-inset, var(--xh-space-6));
+    /* 摞内间距由服务写进内联 style，这里绝不重复写：
+       写了也会被内联盖掉，只会让人误以为间距归样式层管 */
+    /* 整面铺开就等于罩住了整块视口。面本身不吃指针，只有卡片吃（见下），
+       否则底下的页面就再也点不动了 */
+    pointer-events: none;
+  }
+
+  [data-scope='toast'][data-part='group'][hidden] {
+    display: none;
+  }
+
+  /* 块轴落位：^= 一次吃掉某一行的三个位（top / top-start / top-end） */
+  [data-scope='toast'][data-part='group'][data-placement^='middle'] {
+    justify-content: center;
+  }
+
+  [data-scope='toast'][data-part='group'][data-placement^='bottom'] {
+    justify-content: flex-end;
+  }
+
+  /* 行内轴落位：不带后缀的 top / middle / bottom 用基线的居中 */
+  [data-scope='toast'][data-part='group'][data-placement$='-start'] {
+    align-items: flex-start;
+  }
+
+  [data-scope='toast'][data-part='group'][data-placement$='-end'] {
+    align-items: flex-end;
   }
 
   [data-scope='toast'][data-part='root'] {
@@ -102,21 +150,13 @@
     line-height: var(--xh-toast-title-leading, var(--xh-leading-tight));
   }
 
-  [data-scope='toast'][data-part='description'] {
-    margin: 0;
-    color: var(--xh-toast-description-fg, var(--xh-fg-muted));
-    font-size: var(--xh-toast-description-font-size, var(--xh-text-secondary-size));
-  }
-
-  /* 没给文案的那一个仍然要留在 DOM 里（aria-labelledby / aria-describedby 指着它），
+  /* 没给文案时仍然要留在 DOM 里（aria-labelledby 指着它），
      但空盒子会照吃一份 gap，卡片看着就多出一截莫名的留白 */
-  [data-scope='toast'][data-part='title']:empty,
-  [data-scope='toast'][data-part='description']:empty {
+  [data-scope='toast'][data-part='title']:empty {
     display: none;
   }
 
-  [data-scope='toast'][data-part='title'][hidden],
-  [data-scope='toast'][data-part='description'][hidden] {
+  [data-scope='toast'][data-part='title'][hidden] {
     display: none;
   }
 

@@ -1,4 +1,4 @@
-<!-- 基础用法 | 单独一条通知：title 与 description 两个部件留空时由属性上的文案填入；duration 给 0 即不自动消失 -->
+<!-- 基础用法 | 一条卡片一句话：title 部件留空时由属性上的文案填入；duration 给 0 即不自动消失 -->
 <div style="display: grid; gap: 12px; justify-items: start">
   <div id="toast-basic-slot"></div>
   <xh-button id="toast-basic-again" size="sm" variant="outline">
@@ -7,10 +7,9 @@
 </div>
 
 <template id="toast-basic-template">
-  <xh-toast title="草稿已保存" description="内容已同步到云端" duration="0">
+  <xh-toast title="草稿已保存" duration="0">
     <div data-xh-part="root">
       <div data-xh-part="title"></div>
-      <div data-xh-part="description"></div>
       <button data-xh-part="close-trigger"></button>
     </div>
   </xh-toast>

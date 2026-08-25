@@ -77,7 +77,7 @@ XiHan.UI 的公开面横跨五种介质，因为「丢掉自带皮肤自己写�
 | 类别 | 数量 | 说明 |
 | --- | --- | --- |
 | Vue 上下文类型 `*Context` / `*Callbacks` | 108 | 用于给透传的 `api` 标注类型。**只保证可读，不保证可构造**——往里加可选字段不算破坏，所以别写 `const c: SelectContext = { … }` 这种字面量赋值 |
-| `custom-elements.json`（CEM） | 1 份 / 120 个元素 | 已经进过清单的 `tagName` / `attribute` / `event` 条目不会消失；`cssProperties`（皮肤覆盖槽）与 `events` 的 `type`（detail 类型）由 `scripts/enrich-cem.mjs` 从皮肤与元素源码生成，`gate:cem` 校验同步。字段结构细节仍不承诺，补充算 minor |
+| `custom-elements.json`（CEM） | 1 份 / 121 个元素 | 已经进过清单的 `tagName` / `attribute` / `event` 条目不会消失；`cssProperties`（皮肤覆盖槽）与 `events` 的 `type`（detail 类型）由 `scripts/enrich-cem.mjs` 从皮肤与元素源码生成，`gate:cem` 校验同步。字段结构细节仍不承诺，补充算 minor |
 
 ### 排除
 
@@ -137,7 +137,7 @@ XiHan.UI 的公开面横跨五种介质，因为「丢掉自带皮肤自己写�
 | `data-name` | 表单字段名（`form`） |
 | `data-index` | 条目序号（0 基） |
 
-**样式钩子**——自带皮肤自己就消费了 119 个属性名 / 509 条「皮肤 × 属性」配对（不含解剖的 `data-scope` / `data-part`），第三方皮肤照着抄的就是这一组：
+**样式钩子**——自带皮肤自己就消费了 119 个属性名 / 512 条「皮肤 × 属性」配对（不含解剖的 `data-scope` / `data-part`），第三方皮肤照着抄的就是这一组：
 
 | 属性 | 选中它的皮肤份数 |
 | --- | --- |
@@ -212,14 +212,14 @@ brand  neutral  success  warning  danger  info
 
 | 类别 | 数量 | 档位 |
 | --- | --- | --- |
-| 自定义元素标签 `xh-*` | 121（`defineXhElements()` 注册 120 + `xh-background`） | **受约束** |
+| 自定义元素标签 `xh-*` | 122（`defineXhElements()` 注册 121 + `xh-background`） | **受约束** |
 | 注册函数 | 2（`defineXhElements`、`defineXhBackground`） | **受约束** |
-| observed attribute | 988 条声明 / 308 个不同名字 | **受约束**（具体元素上的具体属性名） |
+| observed attribute | 995 条声明 / 308 个不同名字 | **受约束**（具体元素上的具体属性名） |
 | attribute 名词汇表本身 | 308 | **只增不减**（新组件复用 `size` / `tone` / `dir` 不算破坏） |
-| `CustomEvent` 名 | 70 个名字 / 152 条「元素 × 事件」 | **受约束** |
-| 事件传播语义 | `bubbles: true, composed: true`（143 处中 142 处） | **受约束**——把冒泡改掉会让祖先节点上的事件委托静默失效。唯一的例外是 `xh-composer` 的 `submit`：与原生表单提交同名，刻意不冒泡，免得被祖先 `<form>` 当成自己的提交 |
+| `CustomEvent` 名 | 70 个名字 / 154 条「元素 × 事件」 | **受约束** |
+| 事件传播语义 | `bubbles: true, composed: true`（145 处中 144 处） | **受约束**——把冒泡改掉会让祖先节点上的事件委托静默失效。唯一的例外是 `xh-composer` 的 `submit`：与原生表单提交同名，刻意不冒泡，免得被祖先 `<form>` 当成自己的提交 |
 | 事件 `detail` 形状 | 138 个 `*Details` 类型 | **受约束**，等同于 headless 的同名类型 |
-| `attribute: false` 的 JS 字段 | 143 条（涉及 54 个字段名） | **受约束**。`collection`、`translations`、`validate`、`filter` 这类只能用 JS 赋值，HTML 里表达不出来——**不是每个 property 都有对应 attribute** |
+| `attribute: false` 的 JS 字段 | 144 条（涉及 53 个字段名） | **受约束**。`collection`、`translations`、`validate`、`filter` 这类只能用 JS 赋值，HTML 里表达不出来——**不是每个 property 都有对应 attribute** |
 | 命令式方法 | 29（分布在 8 个元素） | **受约束**，含参数与返回类型 |
 
 命令式方法全清单：
@@ -227,7 +227,7 @@ brand  neutral  success  warning  danger  info
 | 元素 | 方法 |
 | --- | --- |
 | `xh-form` | `setFieldValue` `setFieldError` `clearErrors` `submit` `reset` `getFieldId` `getFieldValue` `getFieldError` |
-| `xh-toaster` | `create` `updateToast` `dismiss` `dismissAll` `getToastsByPlacement` |
+| `xh-notification` | `create` `updateItem` `dismiss` `dismissAll` `getItemsByPlacement` |
 | `xh-file-upload` | `openFilePicker` `setFiles` `addFiles` `deleteFile` `clear` |
 | `xh-timer` | `start` `pause` `resume` `reset` |
 | `xh-virtualizer` | `scrollToIndex` `measureElement` `measure` |
@@ -241,7 +241,7 @@ brand  neutral  success  warning  danger  info
 
 几条与包结构有关的事实，也在承诺内：
 
-- 元素在 `@xihan-ui/web-components/define`，不在包主入口。`defineXhElements()` 是全有全无——调它就注册全部 120 个元素，没有逐个的 `defineXhButton()`。（补细粒度 define 是 minor；补完之后 `defineXhElements` 的「全量」语义就成了承诺。）
+- 元素在 `@xihan-ui/web-components/define`，不在包主入口。`defineXhElements()` 是全有全无——调它就注册全部 121 个元素，没有逐个的 `defineXhButton()`。（补细粒度 define 是 minor；补完之后 `defineXhElements` 的「全量」语义就成了承诺。）
 - `xh-background` 单独在 `@xihan-ui/web-components/backgrounds`，因为它依赖可选 peer。把它挪进 `./define` 会强制所有人装 WebGL 引擎，属于破坏性变更。
 - 元素全部是 **Light DOM**，没有 shadow root，`::part()` 永远不生效。CEM 里的 `cssParts` 条目在本包读作 `data-xh-part`，不是 shadow part。
 
@@ -293,7 +293,7 @@ brand  neutral  success  warning  danger  info
 | 把 `read-only` 改写成 `readonly` | 把某个 `attribute: false` 的字段反向暴露成 attribute |
 | 事件名 `value-change` 改成 `change` | 新增事件名 |
 | 把某个事件的 `bubbles` 改成 `false` | 补 `HTMLElementEventMap` 类型增强 |
-| `xh-toaster.create()` 从返回 `string` 改成返回对象 | 给 `xh-form` 新增一个方法 |
+| `xh-notification.create()` 从返回 `string` 改成返回对象 | 给 `xh-form` 新增一个方法 |
 | 把某个可选 part 提升为 `requiredParts` | 新增一个可选 part |
 
 ### 支持面

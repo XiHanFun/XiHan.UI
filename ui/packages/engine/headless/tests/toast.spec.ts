@@ -215,11 +215,12 @@ describe('connectToast', () => {
     expect(error['aria-live']).toBe('assertive')
   })
 
-  it('aria-labelledby / aria-describedby 指向 title 与 description 部件', () => {
+  it('aria-labelledby 指向 title 部件；轻提示只有一层文本', () => {
+    // 两层文本是 notification 的活：轻提示把结果用一句话说清楚就够了
     const api = makeToast({ duration: 0 }).api()
     const root = api.getRootProps() as Record<string, unknown>
     expect(root['aria-labelledby']).toBe((api.getTitleProps() as Record<string, unknown>).id)
-    expect(root['aria-describedby']).toBe((api.getDescriptionProps() as Record<string, unknown>).id)
+    expect(root['aria-describedby']).toBeUndefined()
   })
 
   it('data-paused 随暂停出现与消失；unmounted 时 root 带 hidden', () => {

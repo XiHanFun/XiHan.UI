@@ -94,6 +94,7 @@
 @import './css/menu.css';
 @import './css/menubar.css';
 @import './css/navigation-menu.css';
+@import './css/notification.css';
 @import './css/number-field.css';
 @import './css/pagination.css';
 @import './css/pin-input.css';
@@ -118,7 +119,6 @@
 @import './css/time-field.css';
 @import './css/time-picker.css';
 @import './css/toast.css';
-@import './css/toaster.css';
 @import './css/toggle.css';
 @import './css/toggle-group.css';
 @import './css/toolbar.css';

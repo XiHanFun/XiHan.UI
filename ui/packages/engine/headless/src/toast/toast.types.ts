@@ -1,7 +1,7 @@
 import type { PropTypes } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 
-/** 通知的语气。loading 例外：它表达"事情还没完"，不自动消失。 */
+/** 轻提示的语气。loading 例外：它表达"事情还没完"，不自动消失。 */
 export type ToastType = 'info' | 'success' | 'warning' | 'error' | 'loading'
 
 /**
@@ -12,6 +12,28 @@ export type ToastStatus = 'visible' | 'dismissing' | 'unmounted'
 
 /** 暂停来源。可同时有多个按住计时，最后一个松开才继续走。 */
 export type ToastPauseSource = 'pointer' | 'focus' | 'page-idle' | 'api'
+
+/** 那一摞落在视口的哪一格。第一段是纵向、第二段是横向（start/end 跟随文字方向）。 */
+export type ToastPlacement
+  = | 'top-start' | 'top' | 'top-end'
+    | 'middle-start' | 'middle' | 'middle-end'
+    | 'bottom-start' | 'bottom' | 'bottom-end'
+
+/**
+ * 服务档队列里存的一条，只放可搬运的纯数据（无回调、无 DOM）。
+ * 没有 placement：一次操作的反馈该落在哪儿是整个服务的口径，不该逐条各去一处。
+ */
+export interface ToastRecord {
+  id: string
+  title?: string
+  type?: ToastType
+  duration?: number
+  removeDelay?: number
+  closable?: boolean
+}
+
+/** create 的入参：id 可省，省了就现生成一个并由 create 返回。 */
+export type ToastOptions = Omit<ToastRecord, 'id'> & { id?: string }
 
 export interface ToastStatusChangeDetails {
   /** 队列身份；未指定 id 时回落到实例 scope id。 */
@@ -29,11 +51,14 @@ export interface ToastTranslations {
 
 export interface ToastSchema extends MachineSchema {
   props: {
-    /** 队列身份。toaster 用它做 create/update/dismiss 的寻址键。 */
+    /** 队列身份。服务档用它做 create/update/dismiss 的寻址键。 */
     id?: string
     /** 标题文本；作者没在 title 部件里写内容时由适配器填入。 */
     title?: string
-    /** 补充说明；作者没在 description 部件里写内容时由适配器填入。 */
+    /**
+     * 补充说明。轻提示自己不出这一层——两层文本是 notification 的活；
+     * 这条 prop 留着是因为 notification 的单条卡片复用同一台机器。
+     */
     description?: string
     /** 语气，默认 info。error 走 alert + assertive，loading 不自动消失。 */
     type?: ToastType
@@ -43,7 +68,7 @@ export interface ToastSchema extends MachineSchema {
     removeDelay?: number
     /** 是否显示可用的关闭按钮，默认 true。 */
     closable?: boolean
-    /** 页面切到后台时暂停计时，默认 false。由 toaster 统一下发。 */
+    /** 页面切到后台时暂停计时，默认 false。由服务档统一下发。 */
     pauseOnPageIdle?: boolean
     translations?: Partial<ToastTranslations>
     /** 生命周期落位时通知：dismissing 与 unmounted 各一次。宿主据此把条目移出队列。 */
@@ -92,7 +117,6 @@ export interface ToastApi<T extends PropTypes = PropTypes> {
   status: ToastStatus
   type: ToastType
   title: string | undefined
-  description: string | undefined
   /** 计时被按住中。样式层据此暂停进度条动画。 */
   paused: boolean
   closable: boolean
@@ -103,7 +127,6 @@ export interface ToastApi<T extends PropTypes = PropTypes> {
   resume: () => void
   getRootProps: () => T['element']
   getTitleProps: () => T['element']
-  getDescriptionProps: () => T['element']
   getActionTriggerProps: () => T['button']
   getCloseTriggerProps: () => T['button']
 }

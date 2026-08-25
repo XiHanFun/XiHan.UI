@@ -21,7 +21,6 @@ export const XhToastRoot = defineComponent({
     // 队列身份，不是 DOM id；不给则回落到实例的 scope id
     id: { type: String, default: undefined },
     title: { type: String, default: undefined },
-    description: { type: String, default: undefined },
     type: { type: String as PropType<ToastType>, default: undefined },
     duration: { type: Number, default: undefined },
     removeDelay: { type: Number, default: undefined },
@@ -68,18 +67,6 @@ export const XhToastTitle = defineComponent({
       'div',
       ctx.api.value.getTitleProps() as Record<string, unknown>,
       slots.default ? slots.default() : ctx.api.value.title,
-    )
-  },
-})
-
-export const XhToastDescription = defineComponent({
-  name: 'XhToastDescription',
-  setup(_, { slots }) {
-    const ctx = useToastContext()
-    return () => h(
-      'div',
-      ctx.api.value.getDescriptionProps() as Record<string, unknown>,
-      slots.default ? slots.default() : ctx.api.value.description,
     )
   },
 })

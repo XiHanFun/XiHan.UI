@@ -377,10 +377,10 @@ const truth = {
     },
   },
   轻提示同屏上限: {
-    how: 'vue 的 toast-service.ts 里喂给 useToaster 的 max 缺省值',
+    how: 'vue 的 toast-service.ts 里私有队列的 max 缺省值',
     async value() {
       const src = await read('packages/adapters/vue/src/services/toast-service.ts')
-      return Number(src.match(/\bmax:\s*(\d+)/)[1])
+      return Number(src.match(/\bmax = (\d+)/)[1])
     },
   },
   自定义元素数加一: {

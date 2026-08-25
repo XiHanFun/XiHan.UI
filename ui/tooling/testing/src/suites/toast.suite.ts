@@ -35,19 +35,18 @@ export const toastSuite: ConformanceSuite = {
     part: 'root',
     children: [
       { part: 'title', text: '已保存' },
-      { part: 'description', text: '草稿已同步到云端' },
       { part: 'action-trigger', tag: 'button', text: '撤销' },
       { part: 'close-trigger', tag: 'button', text: '关闭' },
     ],
   },
   cases: [
     {
-      name: '默认：root 是 status + polite，整条一起念，名字与描述都接到位',
+      name: '默认：root 是 status + polite，整条一起念，名字接到位',
       spec: { apg: `${APG}#roles_states_properties` },
       // duration=0 即关掉自动消失：这条用例要的是一个不会自己走掉的稳定初始帧
       props: { duration: 0 },
       initial: {
-        order: ['root', 'title', 'description', 'action-trigger', 'close-trigger'],
+        order: ['root', 'title', 'action-trigger', 'close-trigger'],
         parts: {
           'root': {
             'role': 'status',
@@ -55,7 +54,6 @@ export const toastSuite: ConformanceSuite = {
             // 只念变化的那一小块，用户会听到半截话
             'aria-atomic': 'true',
             'aria-labelledby': '@part(title)',
-            'aria-describedby': '@part(description)',
             'data-type': 'info',
             // 配色走全库共用的语气层，由 type 派生
             'data-tone': 'info',
@@ -64,7 +62,6 @@ export const toastSuite: ConformanceSuite = {
             'hidden': null,
           },
           'title': { id: '@self' },
-          'description': { id: '@self' },
           'action-trigger': { type: 'button' },
           'close-trigger': {
             'type': 'button',
@@ -123,7 +120,7 @@ export const toastSuite: ConformanceSuite = {
           until: { attr: { part: 'root', name: 'data-state', value: 'unmounted' } },
           expect: {
             // 收起而不是卸载：作者写在里面的节点归作者
-            counts: { 'root': 1, 'title': 1, 'description': 1, 'action-trigger': 1, 'close-trigger': 1 },
+            counts: { 'root': 1, 'title': 1, 'action-trigger': 1, 'close-trigger': 1 },
             parts: { root: { 'data-state': 'unmounted', 'hidden': '' } },
             events: [{ type: 'status-change', detail: { id: 't1', status: 'unmounted' } }],
           },
@@ -287,28 +284,24 @@ export const toastSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '作者没写文案时由适配器填入 title / description',
+      name: '作者没写文案时由适配器填入 title',
       spec: { apg: APG },
-      // 两个部件都空着：队列里的条目是纯数据，文案来自那边
+      // 部件空着：队列里的条目是纯数据，文案来自那边
       fixture: () => ({
         part: 'root',
         children: [
           { part: 'title' },
-          { part: 'description' },
         ],
       }),
-      props: { duration: 0, title: '已保存', description: '草稿已同步到云端' },
+      props: { duration: 0, title: '已保存' },
       steps: [
         {
           kind: 'raw',
           why: '文字不是属性，进不了归一化快照（快照只收结构与 aria-/data- 属性）',
           run: ({ doc }) => {
             const title = partEl(doc, 'title').textContent?.trim()
-            const description = partEl(doc, 'description').textContent?.trim()
             if (title !== '已保存')
               throw new Error(`title 部件应填入标题文案，实际 "${title}"`)
-            if (description !== '草稿已同步到云端')
-              throw new Error(`description 部件应填入说明文案，实际 "${description}"`)
           },
         },
       ],

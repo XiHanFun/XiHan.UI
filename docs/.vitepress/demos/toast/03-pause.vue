@@ -4,7 +4,6 @@ import { ref } from "vue";
 import {
   XhButton,
   XhToastCloseTrigger,
-  XhToastDescription,
   XhToastRoot,
   XhToastTitle,
 } from "@xihan-ui/vue";
@@ -18,12 +17,10 @@ const seq = ref(0);
       :key="seq"
       v-slot="{ status, paused }"
       title="6 秒后自动收走"
-      description="把鼠标停在这张卡片上，计时会被按住"
       :duration="6000"
       :translations="{ close: '关闭' }"
     >
       <XhToastTitle />
-      <XhToastDescription />
       <span style="font-size: 12px; opacity: 0.75">
         状态：{{ status }} · {{ paused ? "计时已按住" : "计时在走" }}
       </span>
