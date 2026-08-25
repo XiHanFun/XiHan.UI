@@ -34807,6 +34807,32 @@
             },
             {
               "kind": "field",
+              "name": "prefixColumns",
+              "privacy": "public",
+              "type": {
+                "text": "TableColumnKind[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "page",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "page"
+            },
+            {
+              "kind": "field",
+              "name": "pageSize",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "page-size"
+            },
+            {
+              "kind": "field",
               "name": "loading",
               "privacy": "public",
               "type": {
@@ -35151,6 +35177,20 @@
               "description": "密度：只换单元格的纵向内边距与字号，列宽不受影响",
               "name": "size",
               "fieldName": "size"
+            },
+            {
+              "name": "page",
+              "type": {
+                "text": "number | undefined"
+              },
+              "fieldName": "page"
+            },
+            {
+              "name": "page-size",
+              "type": {
+                "text": "number | undefined"
+              },
+              "fieldName": "pageSize"
             }
           ],
           "superclass": {

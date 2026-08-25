@@ -1,7 +1,7 @@
 import type { NavIntent } from '@xihan-ui/behavior'
 import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
-import type { TableApi, TableColumnDef, TableSchema, TableVisibleRow } from './table.types'
+import type { TableApi, TableColumn, TableColumnDef, TableSchema, TableVisibleRow } from './table.types'
 import {
   focusItem,
   isItemDisabled,
@@ -24,6 +24,17 @@ import { tableSortDirectionOf, tableSortIndexOf } from './table.sort'
 
 const parts = tableAnatomy.build()
 
+/**
+ * 前缀列的 id。两侧下划线是为了与作者自己的列 id 分开——
+ * 撞上了会让列号索引取到错的那一列，而两边单看都对。
+ */
+export const PREFIX_COLUMN_ID = {
+  index: '__index__',
+  select: '__select__',
+  expand: '__expand__',
+  data: '',
+} as const
+
 /** 表头恒占行号空间的第 1 行，数据行因此从第 2 行起算。 */
 const HEADER_ROW_COUNT = 1
 
@@ -39,8 +50,13 @@ export function connectTable<T extends PropTypes>(
   normalize: NormalizeProps<T>,
 ): TableApi<T> {
   const { context, prop, send, scope } = service
-  const columns = prop('columns') ?? []
+  const authorColumns = prop('columns') ?? []
   const rows = prop('rows') ?? []
+  // 前缀列插在最前面并占住列号：不占的话右侧所有列的 aria-colindex 会整体串位
+  const columns: TableColumn[] = [
+    ...(prop('prefixColumns') ?? []).map(kind => ({ id: PREFIX_COLUMN_ID[kind], kind })),
+    ...authorColumns.map(column => ({ ...column, kind: 'data' as const })),
+  ]
   const sort = context.get('sort')
   const selection = context.get('selection')
   const expandedValue = context.get('expanded')
@@ -53,6 +69,9 @@ export function connectTable<T extends PropTypes>(
   // 表格不回绕：上键停在首行、下键停在末行
   const loop = prop('loop') ?? false
   const ids = scope.ids('table', 'caption')
+
+  // 有 parentId 即树形：子行与详情行是两套互斥的展开语义
+  const nested = rows.some(row => row.parentId != null)
 
   // 摊平与索引都是 (rows, 展开集合) 的纯函数；connect 在 Vue 的 render 期求值，此时 DOM 尚不存在。
   const visibleRows = flattenTableRows(rows, expandedValue)
@@ -72,11 +91,19 @@ export function connectTable<T extends PropTypes>(
     }
   }
 
-  // 行能展开出另一行，这正是 treegrid 与 grid 的分界；一行都展不开的表格是平的，仍报 grid
-  const hierarchical = rows.some(row => row.expandable)
+  // 行能展开出另一行，这正是 treegrid 与 grid 的分界；一行都展不开的表格是平的，仍报 grid。
+  // 子行与详情行都算「展得开」
+  const hierarchical = rows.some(row => row.expandable) || nested
   // 层级序号：数据行都是第一层，序号按可见的数据行排
   const rowPosition = new Map<string, number>()
   dataRows.forEach((row, i) => rowPosition.set(row.id, i + 1))
+  // 树形的大纲编号（1 / 1.1 / 1.2）。平表不填，序号走分页全局序号那一支——
+  // 平表的「第几条」应当跨页连续，而大纲编号是页内的层级位置，两者不是一回事
+  const rowOutline = new Map<string, string>()
+  if (nested) {
+    for (const row of dataRows)
+      rowOutline.set(row.id, row.outline)
+  }
   const rowSetSize = dataRows.length
 
   const columnIndex = new Map<string, number>()
@@ -88,6 +115,24 @@ export function connectTable<T extends PropTypes>(
     columnIndexDefs.set(column.id, column)
     columnIndex.set(column.id, i + 1)
   })
+
+  /**
+   * 这一行显示什么序号。
+   *
+   * 平表用分页全局序号，翻到第二页不会又从 1 开始；page / pageSize 都不给时
+   * 退回可见序。树形的大纲编号另行接管（见 rowOutline）。
+   */
+  const pageNo = Math.max(1, Math.trunc(prop('page') ?? 1))
+  const perPage = Math.max(0, Math.trunc(prop('pageSize') ?? 0))
+  const rowNumber = (rowId: string): string => {
+    const outline = rowOutline.get(rowId)
+    if (outline)
+      return outline
+    const seq = rowPosition.get(rowId)
+    if (seq == null)
+      return ''
+    return String((pageNo - 1) * perPage + seq)
+  }
 
   const selectableIds = tableSelectableRowIds(rows)
   const selectionState = tableSelectionState(selection, selectableIds)
@@ -219,6 +264,7 @@ export function connectTable<T extends PropTypes>(
 
   return {
     columns,
+    rowNumber,
     rows,
     visibleRows,
     sort,
@@ -400,9 +446,10 @@ export function connectTable<T extends PropTypes>(
         'aria-expanded': meta?.expandable ? (meta.expanded ? 'true' : 'false') : undefined,
         'aria-controls': meta?.expandable ? detailId(row.value) : undefined,
         // treegrid 的层级不体现在 DOM 嵌套上，只能逐行报出来：数据行都在第一层
-        'aria-level': hierarchical ? 1 : undefined,
-        'aria-posinset': hierarchical ? rowPosition.get(row.value) : undefined,
-        'aria-setsize': hierarchical ? rowSetSize : undefined,
+        'aria-level': hierarchical ? (metaIndex.get(row.value)?.level ?? 1) : undefined,
+        // 层级三件套按摊平结果给：写死 1 的话树形表格所有行都报第一层
+        'aria-posinset': hierarchical ? (metaIndex.get(row.value)?.posInSet ?? rowPosition.get(row.value)) : undefined,
+        'aria-setsize': hierarchical ? (metaIndex.get(row.value)?.setSize ?? rowSetSize) : undefined,
         // 集合条目一律 aria-disabled，不用原生 disabled：原生 disabled 不可聚焦、不派 click
         'aria-disabled': isRowDisabled(row.value) ? 'true' : 'false',
         // 行级 roving tabindex：整张表只有锚点行留在 Tab 序列内
@@ -545,7 +592,8 @@ export function connectTable<T extends PropTypes>(
         // 详情行占一个真实行号：展开一行会把它后面所有行整体后移一位
         'aria-rowindex': detailRowIndex.get(row.value),
         // 详情行是所属数据行的下一层，且那一层只有它自己
-        'aria-level': hierarchical ? 2 : undefined,
+        // 详情行恒是它所属数据行的下一层，独占一格
+        'aria-level': hierarchical ? (metaIndex.get(row.value)?.level ?? 1) + 1 : undefined,
         'aria-posinset': hierarchical ? 1 : undefined,
         'aria-setsize': hierarchical ? 1 : undefined,
         'data-state': meta?.expanded ? 'open' : 'closed',
