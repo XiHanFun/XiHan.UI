@@ -149,7 +149,7 @@
 | 组件 | 标识 | 部件数 | 键盘条目 | 示例 |
 | --- | --- | --- | --- | --- |
 | [警告提示](./alert) | `alert` | 5 | 1 | 5 |
-| [徽标](./badge) | `badge` | 1 | 0 | 8 |
+| [徽标](./badge) | `badge` | 2 | 0 | 3 |
 | [加载条](./loading-bar) | `loading-bar` | 3 | 0 | 6 |
 | [进度条](./progress) | `progress` | 5 | 0 | 10 |
 | [结果页](./result) | `result` | 5 | 0 | 5 |

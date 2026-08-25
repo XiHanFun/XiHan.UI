@@ -36,7 +36,7 @@ export type { BackTopRootSlotProps } from './components/back-top/back-top'
 export { provideBackTop, useBackTopContext } from './components/back-top/context'
 export { useBackTop } from './components/back-top/use-back-top'
 export type { BackTopContext } from './components/back-top/use-back-top'
-export { XhBadge } from './components/badge/badge'
+export { XhBadge, XhBadgeIndicator, XhBadgeRoot } from './components/badge/badge'
 export {
   XhBreadcrumbEllipsis,
   XhBreadcrumbItem,

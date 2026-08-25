@@ -1630,12 +1630,16 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-badge>` —— 徽标展示宿主，无状态机，外观来自 variant 属性。",
+          "description": "`<xh-badge>` —— 角标宿主，无状态机。\n\n被标记的东西写进 root，角标本身写进 indicator；角标是挂在别的元素角上的一枚标记，\n行内的状态药丸请用 `<xh-tag>`。",
           "name": "XhBadgeElement",
           "cssParts": [
             {
-              "description": "承载 data-scope/data-part/data-* 的展示节点",
+              "description": "锚点：被标记的那个东西放进它里面",
               "name": "root"
+            },
+            {
+              "description": "角标本身，绝对定位在 root 的某个角上",
+              "name": "indicator"
             }
           ],
           "members": [
@@ -1650,12 +1654,12 @@
             },
             {
               "kind": "field",
-              "name": "variant",
+              "name": "placement",
               "privacy": "public",
               "type": {
-                "text": "BadgeVariant | undefined"
+                "text": "BadgePlacement | undefined"
               },
-              "attribute": "variant"
+              "attribute": "placement"
             },
             {
               "kind": "field",
@@ -1734,11 +1738,11 @@
           "attributes": [
             {
               "type": {
-                "text": "BadgeVariant | undefined"
+                "text": "BadgePlacement | undefined"
               },
-              "description": "视觉变体",
-              "name": "variant",
-              "fieldName": "variant"
+              "description": "挂在哪个角上，默认 top-end",
+              "name": "placement",
+              "fieldName": "placement"
             },
             {
               "type": {
@@ -1792,7 +1796,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "读屏怎么念这枚徽标，例如「3 条未读」",
+              "description": "读屏怎么念这枚角标，例如「3 条未读」",
               "name": "label",
               "fieldName": "label"
             }
@@ -1820,16 +1824,16 @@
               "name": "--xh-badge-font-weight"
             },
             {
-              "name": "--xh-badge-gap"
+              "name": "--xh-badge-min-size"
             },
             {
               "name": "--xh-badge-px"
             },
             {
-              "name": "--xh-badge-py"
+              "name": "--xh-badge-radius"
             },
             {
-              "name": "--xh-badge-radius"
+              "name": "--xh-badge-ring"
             }
           ]
         }

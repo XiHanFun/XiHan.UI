@@ -27,60 +27,30 @@
 
 ## 示例
 
-### 变体
+### 计数角标
 
-badge 没有状态机，connect 直接由 props 算属性
+被标记的东西写进默认插槽，角标自己贴到它的角上；计数、上限截断与 0 值收起都归角标算
 
 <XhDemo src="badge/01-basic" />
 
-### 用作状态标记
+### 圆点与落点
 
-徽标不接收焦点、也不进 Tab 序列，状态语义靠文字本身表达
+dot 只表示「有」不表示「有几个」；placement 决定挂在哪个角，rtl 下 end 自动落到左边
 
-<XhDemo src="badge/02-status" />
+<XhDemo src="badge/02-dot" />
 
-### 形态
+### 语气与尺寸
 
-variant 决定颜色怎么用：实心填底、淡色填底、只描边
+tone 决定用哪族颜色——角标现实里主要是未读红点与在线/离线点；size 换的是圆点直径、两位数时的最小宽度与字号
 
-<XhDemo src="badge/03-variant" />
-
-### 语气
-
-tone 决定用哪族颜色，与 variant 正交；这里固定 solid 形态只看语气的差别
-
-<XhDemo src="badge/04-tone" />
-
-### 尺寸
-
-size 只改内边距与字号，不写就是缺省档
-
-<XhDemo src="badge/05-size" />
-
-### 带图元的标签
-
-根是 inline-flex 且自带间距，图标或头像直接写进内容里跟文字并排
-
-<XhDemo src="badge/06-with-glyph" />
-
-### 自定义配色
-
-不写 variant 时底色与文字色取自组件令牌；描边这一条直接写 border-color
-
-<XhDemo src="badge/07-custom-color" />
-
-### 挂成角标
-
-外层套一层定位上下文，徽标就落到子元素的角上。计数、上限截断、0 值收起、圆点都归徽标自己算，宿主只管定位
-
-<XhDemo src="badge/08-anchor" />
+<XhDemo src="badge/03-tone-size" />
 
 ## 产物
 
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-badge>` |
-| Vue 组件 | `XhBadge` |
+| Vue 组件 | `XhBadge` `XhBadgeIndicator` `XhBadgeRoot` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/badge.css` |
 
@@ -88,20 +58,29 @@ size 只改内边距与字号，不写就是缺省档
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="badge"`：**`root`**
+`data-scope="badge"`：**`root`** · `indicator`
 
 ## Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `count` | `number` |  | 计数。给了它徽标就自己出数字，超过 max 写成「max+」。 与默认插槽二选一：插槽有内容时以插槽为准。 |
+| `count` | `number` |  | 计数。给了它角标就自己出数字，超过 max 写成「max+」。 与 indicator 的默认插槽二选一：插槽有内容时以插槽为准。 |
 | `dot` | `boolean` |  | 只出一个点，不出数字。给了它 count 只用来决定显不显示。 |
-| `label` | `string` |  | 读屏怎么念这枚徽标。 角标挂在按钮、头像上时，光念数字听不出这是什么，得由宿主给出「3 条未读」这样的整句。 |
-| `max` | `number` |  | 计数上限，默认 99：再多也只写 99+，免得徽标被撑变形。 |
+| `label` | `string` |  | 读屏怎么念这枚角标。 角标挂在按钮、头像上时，光念数字听不出这是什么，得由宿主给出「3 条未读」这样的整句。 |
+| `max` | `number` |  | 计数上限，默认 99：再多也只写 99+，免得角标被撑变形。 |
+| `placement` | `BadgePlacement` |  | 挂在哪个角上，默认 top-end（右上角；rtl 下自动落到左上）。 |
 | `showZero` | `boolean` |  | 计数为 0 时是否照样显示，默认不显示——没有未读就不该有角标。 |
-| `size` | `Size` |  | 尺寸：sm / md / lg |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色 |
-| `variant` | `BadgeVariant` |  |  |
+| `size` | `Size` |  | 尺寸：sm / md / lg。换的是圆点直径、两位数时的最小宽度与字号。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 角标现实里主要用 danger（未读小红点）与 success / neutral（在线 / 离线点）。 |
+
+## 插槽
+
+作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhBadge` | `default` | — |  |
+| `XhBadgeIndicator` | `default` | `{ text: string }` |  |
 
 ## connect API
 
@@ -111,7 +90,8 @@ size 只改内边距与字号，不写就是缺省档
 | --- | --- | --- |
 | `visible` | `boolean` | 此刻该不该渲染：计数为 0 且没开 showZero 时为假。 |
 | `text` | `string` | 算好的显示文本：超过 max 的写成「99+」；dot 模式与无 count 时为空串。 |
-| `getRootProps` | `() => T['element']` |  |
+| `getRootProps` | `() => T['element']` | 锚点：被标记的那个东西（按钮、头像、标签页）放进它里面。 |
+| `getIndicatorProps` | `() => T['element']` | 角标本身，绝对定位在 root 的某个角上。 |
 
 ## 键盘
 
@@ -125,8 +105,8 @@ size 只改内边距与字号，不写就是缺省档
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-label` | props.label |
-| `root` | `role` | 'status' \| undefined |
+| `indicator` | `aria-label` | props.label |
+| `indicator` | `role` | 'status' \| undefined |
 
 ## 样式
 
@@ -138,20 +118,21 @@ size 只改内边距与字号，不写就是缺省档
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `data-dot` | ''（条件成立时才出现） |
-| `root` | `data-size` | props.size |
-| `root` | `data-tone` | props.tone |
-| `root` | `data-variant` | props.variant |
+| `root` | `data-placement` | props.placement |
+| `indicator` | `data-dot` | ''（条件成立时才出现） |
+| `indicator` | `data-placement` | props.placement |
+| `indicator` | `data-size` | props.size |
+| `indicator` | `data-tone` | props.tone |
 
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-badge-bg` · `--xh-badge-dot-size` · `--xh-badge-fg` · `--xh-badge-font-size` · `--xh-badge-font-weight` · `--xh-badge-gap` · `--xh-badge-px` · `--xh-badge-py` · `--xh-badge-radius`
+`--xh-badge-bg` · `--xh-badge-dot-size` · `--xh-badge-fg` · `--xh-badge-font-size` · `--xh-badge-font-weight` · `--xh-badge-min-size` · `--xh-badge-px` · `--xh-badge-radius` · `--xh-badge-ring`
 
 ## RTL
 
-皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。
 
 ## 组合
 

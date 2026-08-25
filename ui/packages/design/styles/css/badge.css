@@ -4,74 +4,122 @@
     --xh-badge-skin: 1;
   }
 
+  /* 锚点：被标记的那个东西（按钮、头像、标签页）放进它里面。
+     角标绝对定位在它的角上，所以这一层必须建定位上下文，且不能自己撑出尺寸 */
   [data-scope='badge'][data-part='root'] {
-    /* 档位经私有槽中转，与孪生的 tag 一处对一处 */
-    --xh-_badge-gap: var(--xh-space-1);
-    --xh-_badge-px: var(--xh-space-2);
-    --xh-_badge-py: var(--xh-space-0_5);
-
+    position: relative;
     display: inline-flex;
-    align-items: center;
-    gap: var(--xh-badge-gap, var(--xh-_badge-gap));
-    padding-inline: var(--xh-badge-px, var(--xh-_badge-px));
-    padding-block: var(--xh-badge-py, var(--xh-_badge-py));
-    border: var(--xh-stroke-thin) solid transparent;
-    border-radius: var(--xh-badge-radius, var(--xh-shape-pill));
-    background: var(--xh-badge-bg, var(--xh-bg-subtle));
-    color: var(--xh-badge-fg, var(--xh-fg-default));
-    font-size: var(--xh-badge-font-size, var(--xh-text-caption-size));
-    font-weight: var(--xh-badge-font-weight, var(--xh-font-weight-medium));
-    line-height: var(--xh-leading-none);
-    /* 出的是计数，数字必须等宽：不然 9 跳到 10 时整个药丸的宽度会抖一下 */
-    font-variant-numeric: tabular-nums;
-    white-space: nowrap;
+    /* 角标探出宿主边界是常态，不能被裁掉 */
+    overflow: visible;
+    vertical-align: middle;
   }
 
-  /* 声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
-     计数为 0 且没开 showZero 时连接层会发 hidden */
+  /* 锚点也可能被作者整块收起 */
   [data-scope='badge'][data-part='root'][hidden] {
     display: none;
   }
 
+  /* 角标本身。档位换的是圆点直径、两位数时的最小宽度与字号——
+     不是药丸那套内衬与行高：那是 tag 的活 */
+  [data-scope='badge'][data-part='indicator'] {
+    --xh-_badge-dot: var(--xh-space-2);
+    --xh-_badge-min: var(--xh-space-4);
+    --xh-_badge-px: var(--xh-space-1);
+    --xh-_badge-font: var(--xh-text-secondary-size);
+
+    /* 不设 z-index：角标在 DOM 序里排在宿主之后，本来就压在上面 */
+    position: absolute;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    min-inline-size: var(--xh-badge-min-size, var(--xh-_badge-min));
+    block-size: var(--xh-badge-min-size, var(--xh-_badge-min));
+    padding-inline: var(--xh-badge-px, var(--xh-_badge-px));
+    border: var(--xh-stroke-thin) solid var(--xh-badge-ring, var(--xh-bg-surface));
+    border-radius: var(--xh-badge-radius, var(--xh-shape-pill));
+    /* 角标默认就是实心的：贴在别的东西上，淡底与描边都看不清 */
+    background: var(--xh-badge-bg, var(--xh-_tone, var(--xh-bg-brand)));
+    color: var(--xh-badge-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
+    font-size: var(--xh-badge-font-size, var(--xh-_badge-font));
+    font-weight: var(--xh-badge-font-weight, var(--xh-font-weight-medium));
+    line-height: var(--xh-leading-none);
+    /* 出的是计数，数字必须等宽：不然 9 跳到 10 时角标的宽度会抖一下 */
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+
+  /* 声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
+     计数为 0 且没开 showZero 时连接层会发 hidden */
+  [data-scope='badge'][data-part='indicator'][hidden] {
+    display: none;
+  }
+
   /* 圆点形态：只表示「有」，不表示「有几个」——收掉内边距与文字盒 */
-  [data-scope='badge'][data-part='root'][data-dot] {
-    inline-size: var(--xh-badge-dot-size, var(--xh-space-2));
-    block-size: var(--xh-badge-dot-size, var(--xh-space-2));
+  [data-scope='badge'][data-part='indicator'][data-dot] {
+    min-inline-size: var(--xh-badge-dot-size, var(--xh-_badge-dot));
+    inline-size: var(--xh-badge-dot-size, var(--xh-_badge-dot));
+    block-size: var(--xh-badge-dot-size, var(--xh-_badge-dot));
     padding: 0;
     font-size: 0;
   }
 
-  /* —— 变体 —— */
-  /* 形态只决定颜色怎么用；用哪族颜色由 data-tone 决定，没写 tone 就沿用原来的品牌/中性配色 */
-  [data-scope='badge'][data-part='root'][data-variant='solid'] {
-    background: var(--xh-_tone, var(--xh-bg-brand));
-    color: var(--xh-_tone-on, var(--xh-fg-on-brand));
+  /* —— 落点 —— */
+  /* 用 inset 的逻辑属性写，rtl 下 end 自动落到左边；translate 让角标压住宿主的角 */
+  [data-scope='badge'][data-part='indicator'][data-placement='top-end'] {
+    inset-block-start: 0;
+    inset-inline-end: 0;
+    translate: 50% -50%;
   }
 
-  [data-scope='badge'][data-part='root'][data-variant='subtle'] {
-    background: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-    color: var(--xh-_tone-fg, var(--xh-fg-default));
+  [data-scope='badge'][data-part='indicator'][data-placement='top-start'] {
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    translate: -50% -50%;
   }
 
-  [data-scope='badge'][data-part='root'][data-variant='outline'] {
-    border-color: var(--xh-_tone-border, var(--xh-border-default));
-    background: transparent;
-    color: var(--xh-_tone-fg, var(--xh-fg-default));
+  [data-scope='badge'][data-part='indicator'][data-placement='bottom-end'] {
+    inset-block-end: 0;
+    inset-inline-end: 0;
+    translate: 50% 50%;
+  }
+
+  [data-scope='badge'][data-part='indicator'][data-placement='bottom-start'] {
+    inset-block-end: 0;
+    inset-inline-start: 0;
+    translate: -50% 50%;
+  }
+
+  /* rtl 下 translate 的行内轴要跟着翻，否则角标会往宿主外面跑 */
+  [dir='rtl'] [data-scope='badge'][data-part='indicator'][data-placement='top-end'] {
+    translate: -50% -50%;
+  }
+
+  [dir='rtl'] [data-scope='badge'][data-part='indicator'][data-placement='top-start'] {
+    translate: 50% -50%;
+  }
+
+  [dir='rtl'] [data-scope='badge'][data-part='indicator'][data-placement='bottom-end'] {
+    translate: -50% 50%;
+  }
+
+  [dir='rtl'] [data-scope='badge'][data-part='indicator'][data-placement='bottom-start'] {
+    translate: 50% 50%;
   }
 
   /* —— 尺寸 —— */
-  /* 徽标是随文排的药丸，不占控件行高，档位走间距与字号而不是 control-h */
-  [data-scope='badge'][data-part='root'][data-size='sm'] {
-    --xh-_badge-gap: var(--xh-space-0_5);
-    --xh-_badge-px: var(--xh-space-1_5);
-    --xh-_badge-py: var(--xh-space-0);
+  [data-scope='badge'][data-part='indicator'][data-size='sm'] {
+    --xh-_badge-dot: var(--xh-space-1_5);
+    --xh-_badge-min: var(--xh-space-3);
+    --xh-_badge-px: var(--xh-space-0_5);
+    --xh-_badge-font: var(--xh-text-caption-size);
   }
 
-  [data-scope='badge'][data-part='root'][data-size='lg'] {
-    --xh-_badge-gap: var(--xh-space-1_5);
-    --xh-_badge-px: var(--xh-space-3);
-    --xh-_badge-py: var(--xh-space-1);
-
-    font-size: var(--xh-badge-font-size, var(--xh-text-secondary-size));
+  [data-scope='badge'][data-part='indicator'][data-size='lg'] {
+    --xh-_badge-dot: var(--xh-space-2_5);
+    --xh-_badge-min: var(--xh-space-5);
+    --xh-_badge-px: var(--xh-space-1_5);
+    --xh-_badge-font: var(--xh-text-body-size);
   }
 }
