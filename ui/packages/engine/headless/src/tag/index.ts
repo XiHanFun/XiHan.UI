@@ -1,5 +1,5 @@
 export { tagAnatomy } from './tag.anatomy'
-export { connectTag } from './tag.connect'
+export { connectStaticTag, connectTag } from './tag.connect'
 export { tagKeyboard } from './tag.keyboard'
 export { tagMachine } from './tag.machine'
 export { tagMeta } from './tag.meta'
