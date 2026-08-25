@@ -13,6 +13,7 @@ import {
 } from '@xihan-ui/behavior'
 import { contains, dataAttr, warn } from '@xihan-ui/kernel'
 import { tableAnatomy, tableRowQuery } from './table.anatomy'
+import { resolveTableColumns } from './table.columns'
 import { tableSelectionMode } from './table.machine'
 import {
   flattenTableRows,
@@ -23,17 +24,6 @@ import {
 import { tableSortDirectionOf, tableSortIndexOf } from './table.sort'
 
 const parts = tableAnatomy.build()
-
-/**
- * 前缀列的 id。两侧下划线是为了与作者自己的列 id 分开——
- * 撞上了会让列号索引取到错的那一列，而两边单看都对。
- */
-export const PREFIX_COLUMN_ID = {
-  index: '__index__',
-  select: '__select__',
-  expand: '__expand__',
-  data: '',
-} as const
 
 /** 表头恒占行号空间的第 1 行，数据行因此从第 2 行起算。 */
 const HEADER_ROW_COUNT = 1
@@ -52,11 +42,14 @@ export function connectTable<T extends PropTypes>(
   const { context, prop, send, scope } = service
   const authorColumns = prop('columns') ?? []
   const rows = prop('rows') ?? []
-  // 前缀列插在最前面并占住列号：不占的话右侧所有列的 aria-colindex 会整体串位
-  const columns: TableColumn[] = [
-    ...(prop('prefixColumns') ?? []).map(kind => ({ id: PREFIX_COLUMN_ID[kind], kind })),
-    ...authorColumns.map(column => ({ ...column, kind: 'data' as const })),
-  ]
+  // 前缀列插在最前面并占住列号：不占的话右侧所有列的 aria-colindex 会整体串位。
+  // 数据列按列偏好排过序、藏过、覆盖过宽与冻结
+  const columnPreference = context.get('columnPreference')
+  const columns: TableColumn[] = resolveTableColumns(
+    authorColumns,
+    prop('prefixColumns') ?? [],
+    columnPreference,
+  )
   const sort = context.get('sort')
   const selection = context.get('selection')
   const expandedValue = context.get('expanded')
@@ -264,6 +257,11 @@ export function connectTable<T extends PropTypes>(
 
   return {
     columns,
+    columnPreference,
+    setColumnHidden: (columnId, hidden) => send({ type: 'COLUMN_PREF.PATCH', columnId, hidden }),
+    moveColumn: (columnId, toIndex) => send({ type: 'COLUMN_PREF.PATCH', columnId, toIndex }),
+    setColumnWidth: (columnId, width) => send({ type: 'COLUMN_PREF.PATCH', columnId, width }),
+    setColumnPreference: next => send({ type: 'COLUMN_PREF.SET', value: next }),
     rowNumber,
     rows,
     visibleRows,

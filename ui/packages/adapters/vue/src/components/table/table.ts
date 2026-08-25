@@ -2,6 +2,7 @@ import type {
   TableApi,
   TableColumnDef,
   TableColumnKind,
+  TableColumnPreference,
   TableColumnProps,
   TableRowDef,
   TableRowProps,
@@ -56,6 +57,11 @@ function reportRowFocus(ctx: TableContext, el: Ref<HTMLElement | null>, value: (
 export type TableRootSlotProps = Pick<
   TableApi,
   | 'columns'
+  | 'columnPreference'
+  | 'setColumnHidden'
+  | 'moveColumn'
+  | 'setColumnWidth'
+  | 'setColumnPreference'
   | 'rowNumber'
   | 'visibleRows'
   | 'sort'
@@ -89,6 +95,9 @@ export const XhTableRoot = defineComponent({
     /** 要哪几列前缀列（序号 / 多选 / 展开），按给定顺序插在最前面并占住列号。 */
     prefixColumns: { type: Array as PropType<TableColumnKind[]>, default: undefined },
     /** 当前页码与每页条数：只用来算序号，不参与切片。 */
+    /** 列偏好：给定即受控。持久化归使用者，库只负责把它算进生效列。 */
+    columnPreference: { type: Object as PropType<TableColumnPreference>, default: undefined },
+    defaultColumnPreference: { type: Object as PropType<TableColumnPreference>, default: undefined },
     page: { type: Number, default: undefined },
     pageSize: { type: Number, default: undefined },
     expanded: { type: Array as PropType<string[]>, default: undefined },
@@ -106,6 +115,8 @@ export const XhTableRoot = defineComponent({
   },
   // *-change 携带 { value }，update:* 携带裸值以支持 v-model
   emits: {
+    'column-preference-change': (_details: { value: TableColumnPreference }) => true,
+    'update:columnPreference': (_value: TableColumnPreference) => true,
     'sort-change': (_details: PayloadOf<TableProps, 'onSortChange'>) => true,
     'update:sort': (_sort: PayloadOf<TableProps, 'onSortChange'>['value']) => true,
     'selection-change': (_details: PayloadOf<TableProps, 'onSelectionChange'>) => true,
@@ -117,6 +128,10 @@ export const XhTableRoot = defineComponent({
     default?: (props: TableRootSlotProps) => VNode[]
   }>,
   setup(props, { slots, emit }) {
+    const onColumnPreferenceChange: TableProps['onColumnPreferenceChange'] = (details) => {
+      emit('column-preference-change', details)
+      emit('update:columnPreference', details.value)
+    }
     const onSortChange: TableProps['onSortChange'] = (details) => {
       emit('sort-change', details)
       emit('update:sort', details.value)
@@ -129,10 +144,15 @@ export const XhTableRoot = defineComponent({
       emit('expanded-change', details)
       emit('update:expanded', details.value)
     }
-    const ctx = useTable(props as TableProps, onSortChange, onSelectionChange, onExpandedChange)
+    const ctx = useTable(props as TableProps, onSortChange, onSelectionChange, onExpandedChange, onColumnPreferenceChange)
     provideTable(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       columns: ctx.api.value.columns,
+      columnPreference: ctx.api.value.columnPreference,
+      setColumnHidden: ctx.api.value.setColumnHidden,
+      moveColumn: ctx.api.value.moveColumn,
+      setColumnWidth: ctx.api.value.setColumnWidth,
+      setColumnPreference: ctx.api.value.setColumnPreference,
       rowNumber: ctx.api.value.rowNumber,
       visibleRows: ctx.api.value.visibleRows,
       sort: ctx.api.value.sort,

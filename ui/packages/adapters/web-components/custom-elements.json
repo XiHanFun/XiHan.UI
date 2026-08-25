@@ -34810,7 +34810,25 @@
               "name": "prefixColumns",
               "privacy": "public",
               "type": {
-                "text": "TableColumnKind[] | undefined"
+                "text": "TableColumnKind[]"
+              },
+              "description": "要哪几列前缀列，按给定顺序插在最前面"
+            },
+            {
+              "kind": "field",
+              "name": "columnPreference",
+              "privacy": "public",
+              "type": {
+                "text": "TableColumnPreference"
+              },
+              "description": "列偏好（显隐/顺序/宽/冻结），给定即受控"
+            },
+            {
+              "kind": "field",
+              "name": "defaultColumnPreference",
+              "privacy": "public",
+              "type": {
+                "text": "TableColumnPreference | undefined"
               }
             },
             {
@@ -34920,6 +34938,12 @@
                 "text": "Size | undefined"
               },
               "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "notifyColumnPreference",
+              "privacy": "private",
+              "readonly": true
             },
             {
               "kind": "field",
@@ -35073,6 +35097,10 @@
               "type": {
                 "text": "TableSortChangeDetails"
               }
+            },
+            {
+              "description": "列偏好变化；detail 为 `{ value: TableColumnPreference }`",
+              "name": "column-preference-change"
             },
             {
               "description": "选中集合变化；detail 为 `{ value: string[] | 'all' }`",

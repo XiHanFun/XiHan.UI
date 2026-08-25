@@ -48,6 +48,32 @@ export type TableSelectionState = 'unchecked' | 'indeterminate' | 'checked'
  */
 export type TableColumnKind = 'index' | 'select' | 'expand' | 'data'
 
+/**
+ * 列偏好：一份可序列化的状态，说的是「这张表这次要怎么显示列」。
+ *
+ * 库只负责把它算进生效列，**存到哪儿归使用者**——存 localStorage、存后端、
+ * 跟着用户设置同步，都是应用的事，把存储通道焊进组件库只会让它绑死一种后端。
+ *
+ * 只作用于作者定义的那些列；前缀列是结构性的，由 `prefixColumns` 说了算。
+ */
+export interface TableColumnPreference {
+  /**
+   * 列序。列在这里的按此顺序排在前面，没列到的按原顺序跟在后面——
+   * 只想把某一列挪到最前时不必把全表列一遍。
+   */
+  order?: string[]
+  /** 藏起来的列。藏掉的列整个不进网格，列号也跟着重排（隐藏列不占列号）。 */
+  hidden?: string[]
+  /** 列宽覆盖，按列 id 取，盖过 `TableColumnDef.width`。 */
+  widths?: Record<string, number | string>
+  /** 冻结覆盖，盖过 `TableColumnDef.sticky`。 */
+  sticky?: Record<string, boolean | 'start' | 'end'>
+}
+
+export interface TableColumnPreferenceChangeDetails {
+  value: TableColumnPreference
+}
+
 /** 生效的列：作者定义的那些，加上库插在最前面的前缀列。 */
 export interface TableColumn extends TableColumnDef {
   kind: TableColumnKind
@@ -180,6 +206,12 @@ export interface TableSchema extends MachineSchema {
      */
     prefixColumns?: TableColumnKind[]
     /**
+     * 列偏好。给定即受控：内部不自改，写只发 onColumnPreferenceChange。
+     * 持久化归使用者——库只负责把它算进生效列。
+     */
+    columnPreference?: TableColumnPreference
+    defaultColumnPreference?: TableColumnPreference
+    /**
      * 当前页码与每页条数，只用来算序号，不参与切片——切片归调用方
      * （或分页组件的 `api.slice`）。都不给时序号退回可见序。
      */
@@ -205,6 +237,7 @@ export interface TableSchema extends MachineSchema {
     dir?: Direction
     /** 密度：sm / md / lg。只换单元格的纵向内边距与字号，列宽算法不受影响。 */
     size?: Size
+    onColumnPreferenceChange?: (details: TableColumnPreferenceChangeDetails) => void
     onSortChange?: (details: TableSortChangeDetails) => void
     onSelectionChange?: (details: TableSelectionChangeDetails) => void
     onExpandedChange?: (details: TableExpandedChangeDetails) => void
@@ -218,16 +251,22 @@ export interface TableSchema extends MachineSchema {
     expanded: string[]
     /** 焦点位于表体时的瞬态锚点，焦点离开即清空。 */
     focusedRow: string | null
+    /** 列偏好。受控（columnPreference 给定）时 cell 直读 prop。 */
+    columnPreference: TableColumnPreference
   }
   computed: Record<string, never>
   refs: Record<string, never>
-  /** 排序、选中与展开都不编码进状态，机器只有一个状态。 */
+  /** 排序、选中、展开与列偏好都不编码进状态，机器只有一个状态。 */
   state: 'idle'
   event:
     /** 整体改写排序链（外部 setSort 走它）。 */
     | { type: 'SORT.SET', value: TableSortDescriptor[] }
     /** 点一次排序把手：append 为真表示追加到链尾而不是替换整条链。 */
     | { type: 'SORT.TOGGLE', value: string, append: boolean }
+    /** 整体改写列偏好；value 缺席即清空，回到作者定义的原样。 */
+    | { type: 'COLUMN_PREF.SET', value?: TableColumnPreference }
+    /** 改一列的显隐 / 位置 / 宽。 */
+    | { type: 'COLUMN_PREF.PATCH', columnId: string, hidden?: boolean, toIndex?: number, width?: number | string }
     /** 整体改写选中集合。 */
     | { type: 'SELECTION.SET', value: TableSelection }
     /** 切换单行选中（单选替换、复选增删）。 */
@@ -245,6 +284,8 @@ export interface TableSchema extends MachineSchema {
   tag: never
   guard: never
   action:
+    | 'setColumnPreference'
+    | 'patchColumnPreference'
     | 'setSort'
     | 'toggleSort'
     | 'setSelection'
@@ -310,9 +351,19 @@ export interface TableApi<T extends PropTypes = PropTypes> {
   getFooterRowProps: () => T['element']
   /**
    * 这一行显示什么序号。平表是分页全局序号，树形是大纲编号。
-   * 不出序号列时仍可调用——它是纯计算，不看 showIndex。
+   * 不出序号列时仍可调用——它是纯计算，不看要不要那一列。
    */
   rowNumber: (rowId: string) => string
+  /** 当下的列偏好。原样交出去即可存盘。 */
+  columnPreference: TableColumnPreference
+  /** 藏起 / 放出一列。 */
+  setColumnHidden: (columnId: string, hidden: boolean) => void
+  /** 把一列挪到第几位（只在作者定义的那些列之间算，0 起算）。 */
+  moveColumn: (columnId: string, toIndex: number) => void
+  /** 改一列的宽。 */
+  setColumnWidth: (columnId: string, width: number | string) => void
+  /** 整份偏好换掉；不给即清空，回到作者定义的原样。 */
+  setColumnPreference: (next?: TableColumnPreference) => void
   getRowProps: (props: TableRowProps) => T['element']
   getColumnHeaderProps: (props: TableColumnProps) => T['element']
   getCellProps: (props: TableCellProps) => T['element']
