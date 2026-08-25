@@ -29,6 +29,10 @@ export interface ToastRecord {
   type?: ToastType
   duration?: number
   removeDelay?: number
+  /**
+   * 出不出关闭按钮。不写时由服务档的默认模板判断：到点自己走的不出，
+   * 走不掉的（loading、duration 给 0）才出——那种条子没有叉就没有出口。
+   */
   closable?: boolean
 }
 

@@ -1,4 +1,4 @@
-<!-- 基础用法 | 一条卡片一句话：title 部件留空时由属性上的文案填入；duration 给 0 即不自动消失 -->
+<!-- 基础用法 | 一条一句话：title 部件留空时由属性上的文案填入；duration 给 0 即不自动消失 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import {

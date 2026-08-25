@@ -6878,8 +6878,8 @@ input[data-scope='mention'][data-part='input'] {
      而不是让 --xh-_tone 悬空——悬空会让下面每条 color-mix 变成计算期无效，
      用它的声明会整条失效，且 var() 兜底也救不回来（槽位是「已声明但无效」）。 */
   --xh-_tone: var(--xh-color-neutral-600);
-  /* 装饰性强调（色条、图标这类）用 500 档：600 是给实心底与文字用的强调档，
-     压在细长的色条上偏重。alert 与 toast 原本就用 500，接语气层不该改变它们的观感 */
+  /* 装饰性强调（色条、指示条这类）用 500 档：600 是给实心底与文字用的强调档，
+     压在细长的色条上偏重。要读得清的状态图标不在此列，那些走 --xh-_tone-fg */
   --xh-_tone-soft: var(--xh-color-neutral-500);
   --xh-_tone-on: var(--xh-color-neutral-0);
   --xh-_tone-shift: var(--xh-color-neutral-950);
@@ -22127,45 +22127,47 @@ input[data-scope='mention'][data-part='input'] {
   align-items: flex-end;
 }
 
+/*
+ * 一条轻提示是「一句话 + 一枚状态字形」，横排一行、贴着文字收缩。
+ * 语气由淡底、描边与字形三者一起承载，正文留中性——正文也跟着兑成语气色的话，
+ * 绿字压在绿底上，对比度是整条里最差的那一处。
+ */
 [data-scope='toast'][data-part='root'] {
-  /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
-  --xh-icon-size: var(--xh-toast-icon-size, var(--xh-glyph-size-text));
+  /* 状态字形按控件指示符那一档走，与 alert 的图标框同一把尺 */
+  --xh-icon-size: var(--xh-toast-icon-size, var(--xh-control-indicator-size));
+
+  /* 底与描边取语气层派生好的槽，不在这儿自己再兑一遍：
+     兑法差一档，字形压上去的对比度就跟着差一档（alert 踩过这个坑） */
+  --xh-_toast-tint: var(--xh-_tone-subtle);
+  --xh-_toast-edge: var(--xh-_tone-border);
 
   display: flex;
-  flex-direction: column;
-  gap: var(--xh-toast-gap, var(--xh-space-1));
-  inline-size: var(--xh-toast-w, var(--xh-overlay-max-w));
+  align-items: center;
+  gap: var(--xh-toast-gap, var(--xh-control-gap-md));
+  /* 收缩包裹：一句「已保存」撑成定宽方块，右边那片空白会让它读起来像一张公告卡 */
+  inline-size: var(--xh-toast-w, auto);
   /* 摞是整面视口宽的定位面且带内边距，取 100% 就等于自动让出两侧留白，
-     窄屏上不必再算一遍 viewport 减法 */
-  max-inline-size: 100%;
-  padding-block: var(--xh-toast-py, var(--xh-surface-py-sm));
+     窄屏上不必再算一遍 viewport 减法；再叠一道绝对上限，免得一条长文案铺成横幅 */
+  max-inline-size: min(var(--xh-overlay-max-w-xl), 100%);
+  /* 纵内衬取控件档而不是面档：面档（12px）叠上 21px 行盒与两道细边就是 47px 高，
+     那是卡片的体量；控件档（8px）落在 39px，与短消息该有的高度一致
+     （带叉 42px、带操作钮 46px，那两档本就不是默认排版） */
+  padding-block: var(--xh-toast-py, var(--xh-field-py));
   padding-inline: var(--xh-toast-px, var(--xh-surface-px-sm));
-  border: var(--xh-stroke-thin) solid var(--xh-toast-border, var(--xh-border-default));
-  /* 语气色条做成起始侧的粗边，而不是伪元素：圆角与阴影都不用再对第二遍。
-     两条必须排在 border 简写之后，否则被简写重置回细边与常规描边色。
-     颜色由 connect 从 type 派生的 data-tone 经语气层给出，作者写 --xh-toast-accent
-     就能把某一条整体改色；两者都没有时退回原来的 info 蓝 */
-  border-inline-start-width: var(--xh-toast-accent-width, var(--xh-space-1));
-  border-inline-start-color: var(--xh-toast-accent, var(--xh-_tone-soft, var(--xh-color-info-500)));
+  border: var(--xh-stroke-thin) solid var(--xh-toast-border, var(--xh-_toast-edge));
   border-radius: var(--xh-toast-radius, var(--xh-shape-surface));
-  background: var(--xh-toast-bg, var(--xh-bg-surface-raised));
+  background: var(--xh-toast-bg, var(--xh-_toast-tint));
   color: var(--xh-toast-fg, var(--xh-fg-default));
   box-shadow: var(--xh-toast-shadow, var(--xh-elevation-sheet));
-  font-size: var(--xh-toast-font-size, var(--xh-text-secondary-size));
-  line-height: var(--xh-toast-leading, var(--xh-leading-normal));
-  /* 摞的定位面整面铺开且不吃指针，卡片必须自己吃回来：
+  font-size: var(--xh-toast-font-size, var(--xh-text-body-size));
+  line-height: var(--xh-toast-leading, var(--xh-text-body-leading));
+  /* 摞的定位面整面铺开且不吃指针，条子必须自己吃回来：
      悬停按住计时、按钮可点、焦点进出，全指着这一条 */
   pointer-events: auto;
 }
 
-/* loading 说的是「事情还没完」，不是好消息也不是坏消息，走中性灰。
-   它不是语气：连接层给它派生的 neutral 档是 500，而这里要的是 fg-muted（600） */
-[data-scope='toast'][data-part='root'][data-type='loading'] {
-  border-inline-start-color: var(--xh-toast-accent, var(--xh-fg-muted));
-}
-
 /* 退场窗口走完连接层给的是 hidden 属性，而上面声明了 display——
-   漏掉这条，已经"卸载"的通知会一直杵在屏幕上，且再也没人来收 */
+   漏掉这条，已经"卸载"的提示会一直杵在屏幕上，且再也没人来收 */
 [data-scope='toast'][data-part='root'][hidden] {
   display: none;
 }
@@ -22182,12 +22184,18 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='toast'][data-part='title'] {
-  /* 作者可能把它写成 h2/p，外边距得先归零，否则卡片内的行距对不上 */
+  /* 作者可能把它写成 h2/p，外边距得先归零，否则条子内的行距对不上 */
   margin: 0;
+  /* 吃掉剩余宽度，把操作钮与叉推到行尾；min-inline-size 让它在撞上宽度上限时能换行，
+     flex 项的 min-width 默认是 auto，不归零的话长文案会把条子顶出上限 */
+  flex: 1 1 auto;
+  min-inline-size: 0;
   color: var(--xh-toast-title-fg, var(--xh-fg-default));
-  font-size: var(--xh-toast-title-font-size, var(--xh-text-label-size));
-  font-weight: var(--xh-toast-title-font-weight, var(--xh-font-weight-semibold));
-  line-height: var(--xh-toast-title-leading, var(--xh-leading-tight));
+  /* 与条子同字号同行高、不加粗：加粗是"这是标题、下面还有正文"的信号，
+     而轻提示没有正文——那一层是 notification 的 */
+  font-size: var(--xh-toast-title-font-size, var(--xh-text-body-size));
+  font-weight: var(--xh-toast-title-font-weight, var(--xh-text-body-weight));
+  line-height: var(--xh-toast-title-leading, var(--xh-text-body-leading));
 }
 
 /* 没给文案时仍然要留在 DOM 里（aria-labelledby 指着它），
@@ -22201,8 +22209,8 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='toast'][data-part='action-trigger'] {
-  /* 作为卡片直接子元素时不跟着拉满整行；被作者包进一行里时它只影响交叉轴，无副作用 */
-  align-self: flex-start;
+  /* 条子是单行 flex，按钮不参与伸缩：文案长了该换行的是文字，不是把按钮压扁 */
+  flex: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -22237,14 +22245,16 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='toast'][data-part='close-trigger'] {
-  align-self: flex-start;
-  /* 和操作按钮同处一行时把叉推到行尾；单独作为卡片子元素时则贴到行内末侧 */
+  flex: none;
+  /* 推到行内末侧；和操作按钮同处一行时排在它后面 */
   margin-inline-start: auto;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  block-size: var(--xh-toast-close-size, var(--xh-control-h-sm));
-  inline-size: var(--xh-toast-close-size, var(--xh-control-h-sm));
+  /* 行级动作钮那一档（24px），不是浮层角落钮的 28px：
+     后者比一行正文的行盒还高，单它就把整条顶高一截 */
+  block-size: var(--xh-toast-close-size, var(--xh-control-action-size));
+  inline-size: var(--xh-toast-close-size, var(--xh-control-action-size));
   border: 0;
   border-radius: var(--xh-toast-close-radius, var(--xh-shape-control));
   background: transparent;

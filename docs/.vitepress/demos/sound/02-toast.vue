@@ -24,7 +24,7 @@ function upload(): void {
     <XhButton variant="solid" @click="upload()">上传（静默转成功才响）</XhButton>
     <XhButton variant="outline" @click="use().success('已保存')">success</XhButton>
     <XhButton variant="outline" @click="use().warning('磁盘快满了')">warning</XhButton>
-    <XhButton variant="outline" @click="use().error('同步失败', { description: '网络中断，稍后自动重试' })">
+    <XhButton variant="outline" @click="use().error('同步失败，稍后自动重试')">
       error
     </XhButton>
   </div>

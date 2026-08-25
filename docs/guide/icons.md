@@ -26,7 +26,7 @@ import { ArrowDownIcon } from '@xihan-ui/icons'
 | `--xh-glyph-mark-close` | `x` | 清空钮、关闭钮、标签与文件条目的删除钮 |
 | `--xh-glyph-mark-chevron-down` · `-up` · `-left` · `-right` | `chevron-*` | 展开箭头、树与侧栏的分支把手、轮播与穿梭框的翻页、回到顶部 |
 | `--xh-glyph-mark-sort` · `-sort-asc` · `-sort-desc` | `arrow-up-down` / `arrow-up` / `arrow-down` | table 的排序方向 |
-| `--xh-glyph-mark-info` · `-warning` | `info` / `triangle-alert` | 命令式 toast / dialog 的类型徽记 |
+| `--xh-glyph-mark-info` · `-warning` | `info` / `triangle-alert` | 命令式 dialog / notification 的类型徽记，以及 toast 的状态字形 |
 | `--xh-glyph-mark-zoom-in` · `-zoom-out` · `-rotate-left` · `-rotate-right` · `-flip-horizontal` · `-flip-vertical` | 同名图标 | image-viewer 的工具条 |
 | `--xh-glyph-mark-required` | `'*'` | field · fieldset 的必填星号（这是文字，不是图标） |
 

@@ -40555,12 +40555,6 @@
           "customElement": true,
           "cssProperties": [
             {
-              "name": "--xh-toast-accent"
-            },
-            {
-              "name": "--xh-toast-accent-width"
-            },
-            {
               "name": "--xh-toast-action-bg"
             },
             {

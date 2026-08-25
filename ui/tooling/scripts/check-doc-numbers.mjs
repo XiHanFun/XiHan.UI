@@ -951,7 +951,7 @@ const TABLE = [
   ['docs/runtime/markdown.md', /当前对官方 \d+ 条用例的一致率是 (\d+)\//, 'CommonMark通过数'],
   ['docs/runtime/markdown.md', /摘掉之后的一致率是 \d+\/(\d+)/, '摘掉HTML两节的用例数'],
   ['docs/runtime/markdown.md', /摘掉之后的一致率是 (\d+)\//, '摘掉HTML两节的通过数'],
-  ['docs/runtime/services.md', /每个位置默认最多同时留 (\d+) 条/, '轻提示同屏上限'],
+  ['docs/runtime/services.md', /最多同时留 (\d+) 条/, '轻提示同屏上限'],
 
   // 包 README——npm 把它们当落地页，改数字的人一般只翻文档站，这一片最容易停在旧值
   ['ui/packages/README.md', /`headless` 的 (\d+) 个/, '组件数'],
