@@ -12,7 +12,7 @@
     // 包管理
     "package.json": "pnpm-lock.yaml,pnpm-workspace.yaml,.gitattributes,.gitignore,.npmrc",
     // 开发规范
-    ".eslintrc.mjs": ".eslintrc.*,eslint.config.*,eslint.config.mjs,.prettierrc.*,prettier.config.*,prettier.config.mjs,.stylelintrc.*,stylelint.config.*,stylelint.config.mjs,.commitlintrc.*,commitlint.config.*,commitlint.config.mjs,.editorconfig,lint-staged.config.*",
+    ".eslintrc.mjs": ".eslintrc.*,eslint.config.*,eslint.config.mjs,.stylelintrc.*,stylelint.config.*,stylelint.config.mjs,.commitlintrc.*,commitlint.config.*,commitlint.config.mjs,.editorconfig,lint-staged.config.*",
     // 类型定义
     "tsconfig.json": "tsconfig.*.json",
     // 开发环境

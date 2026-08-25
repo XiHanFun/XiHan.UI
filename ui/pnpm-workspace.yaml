@@ -43,7 +43,6 @@ catalog:
   eslint: ^10.7.0
   oxlint: ^1.75.0
   dependency-cruiser: ^18.1.0
-  prettier: ^3.9.0
   # —— 测试 ——
   vitest: ^4.1.10
   '@vitest/coverage-v8': ^4.1.10
