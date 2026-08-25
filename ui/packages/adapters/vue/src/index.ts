@@ -534,6 +534,19 @@ export {
 } from './components/navigation-menu/navigation-menu'
 export { useNavigationMenu } from './components/navigation-menu/use-navigation-menu'
 export type { NavigationMenuContext } from './components/navigation-menu/use-navigation-menu'
+export { provideNotification, provideNotificationItem, useNotificationContext, useNotificationContextOptional, useNotificationItemContext } from './components/notification/context'
+export {
+  XhNotificationGroup,
+  XhNotificationItem,
+  XhNotificationItemActionTrigger,
+  XhNotificationItemCloseTrigger,
+  XhNotificationItemDescription,
+  XhNotificationItemTitle,
+  XhNotificationRoot,
+} from './components/notification/notification'
+export type { NotificationGroupSlotProps, NotificationRootSlotProps } from './components/notification/notification'
+export { useNotification, useNotificationItem } from './components/notification/use-notification'
+export type { NotificationContext, NotificationItemContext } from './components/notification/use-notification'
 export { XhNumberAnimation } from './components/number-animation/number-animation'
 export type { NumberAnimationSlotProps } from './components/number-animation/number-animation'
 export {
@@ -853,20 +866,12 @@ export type { TimerContext } from './components/timer/use-timer'
 export {
   XhToastActionTrigger,
   XhToastCloseTrigger,
-  XhToastDescription,
   XhToastRoot,
   XhToastTitle,
 } from './components/toast/toast'
 export type { ToastRootSlotProps } from './components/toast/toast'
 export { useToast } from './components/toast/use-toast'
 export type { ToastContext } from './components/toast/use-toast'
-export {
-  XhToasterGroup,
-  XhToasterRoot,
-} from './components/toaster/toaster'
-export type { ToasterGroupSlotProps, ToasterRootSlotProps } from './components/toaster/toaster'
-export { useToaster } from './components/toaster/use-toaster'
-export type { ToasterContext } from './components/toaster/use-toaster'
 export {
   XhToggleGroupItem,
   XhToggleGroupRoot,
@@ -1002,6 +1007,8 @@ export { createDialogService } from './services/dialog-service'
 export type { AlertOptions, ConfirmOptions, DialogBody, DialogService, DialogServiceOptions, PromptOptions } from './services/dialog-service'
 export { createLoadingBarService } from './services/loading-bar-service'
 export type { LoadingBarService, LoadingBarServiceOptions } from './services/loading-bar-service'
+export { createNotificationService } from './services/notification-service'
+export type { NotificationMessageOptions, NotificationService, NotificationServiceOptions } from './services/notification-service'
 export { createToastService } from './services/toast-service'
 export type { ToastMessageOptions, ToastService, ToastServiceOptions } from './services/toast-service'
 // 使用者写 upload 实现与远程附件时要用的形状，从 headless 转发，docs 与应用不必另装依赖

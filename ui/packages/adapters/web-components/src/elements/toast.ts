@@ -14,7 +14,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
- * `<xh-toast>` —— Light-DOM 行为宿主：作者写 root/title/description/action-trigger/close-trigger
+ * `<xh-toast>` —— Light-DOM 行为宿主：作者写 root/title/action-trigger/close-trigger
  * 角色节点，元素跑 toast 机器并把 connect 产出打上去。
  *
  * root 承载 role 与 aria-live：默认 status + polite（排队等读屏的空隙），
@@ -22,12 +22,11 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * 或焦点落进通知内部都会把倒计时按住，离开才接着走剩下的那一段。
  *
  * 退场窗口走完只把 root 收起、不删节点：作者写在里面的内容归作者，
- * 什么时候把这条从队列里删掉是 `<xh-toaster>` 的事（它收本元素冒泡上去的 status-change）。
+ * 什么时候把这条从队列里删掉是全局服务的事（它收本元素冒泡上去的 status-change）。
  *
  * @customElement xh-toast
- * @attr {string} id - 队列身份，`<xh-toaster>` 按它寻址；不给就用实例自己的 scope id
+ * @attr {string} id - 队列身份，全局服务按它寻址；不给就用实例自己的 scope id
  * @attr {string} title - 标题文案；作者没在 title 部件里写内容时由元素填入
- * @attr {string} description - 补充说明；作者没在 description 部件里写内容时由元素填入
  * @attr {'info'|'success'|'warning'|'error'|'loading'} type - 语气，默认 info；loading 不自动消失
  * @attr {number} duration - 停留毫秒，默认 5000；<=0 即关掉自动消失
  * @attr {number} remove-delay - 退场窗口毫秒，默认 200，留给退场动画
@@ -37,7 +36,6 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @fires action - 操作按钮被按下；detail 为 `{ id: string }`
  * @csspart root - role=status（error 时 alert）的容器，承载 data-type / data-tone / data-state / data-paused
  * @csspart title - 标题，aria-labelledby 的目标
- * @csspart description - 补充说明，aria-describedby 的目标
  * @csspart action-trigger - 操作按钮：先发 action 再进入退场
  * @csspart close-trigger - 关闭按钮；closable=false 时转原生 disabled 并收起
  */
@@ -50,7 +48,6 @@ export class XhToastElement extends XhElement {
   static override properties = {
     toastId: { converter: STRING_CONVERTER, attribute: 'id' },
     titleText: { converter: STRING_CONVERTER, attribute: 'title' },
-    description: { converter: STRING_CONVERTER },
     type: { converter: STRING_CONVERTER },
     duration: { converter: NUMBER_CONVERTER },
     removeDelay: { converter: NUMBER_CONVERTER, attribute: 'remove-delay' },
@@ -62,7 +59,6 @@ export class XhToastElement extends XhElement {
 
   declare toastId?: string
   declare titleText?: string
-  declare description?: string
   declare type?: ToastType
   declare duration?: number
   declare removeDelay?: number
@@ -71,7 +67,7 @@ export class XhToastElement extends XhElement {
   declare translations?: Partial<ToastTranslations>
 
   private readonly notifyStatus = (details: ToastStatusChangeDetails): void => {
-    // 必须冒泡：外层 `<xh-toaster>` 就靠这条事件知道该把记录删掉了
+    // 必须冒泡：外层的队列宿主就靠这条事件知道该把记录删掉了
     this.dispatchEvent(new CustomEvent('status-change', { detail: details, bubbles: true, composed: true }))
   }
 
@@ -87,7 +83,6 @@ export class XhToastElement extends XhElement {
     return {
       id: this.toastId,
       title: this.titleText,
-      description: this.description,
       type: this.type,
       duration: this.duration,
       removeDelay: this.removeDelay,
@@ -137,12 +132,10 @@ export class XhToastElement extends XhElement {
     }
     put('root', api.getRootProps() as Record<string, unknown>)
     put('title', api.getTitleProps() as Record<string, unknown>)
-    put('description', api.getDescriptionProps() as Record<string, unknown>)
     put('action-trigger', api.getActionTriggerProps() as Record<string, unknown>)
     put('close-trigger', api.getCloseTriggerProps() as Record<string, unknown>)
 
     this.fillText(this.getPart('title'), api.title)
-    this.fillText(this.getPart('description'), api.description)
 
     // connect 已经置了 hidden，但作者层给 [data-part=root] 写的任何一条 display
     // 都盖得过 UA 的 [hidden]{display:none}；内联 style.display 优先级更高，压得住。

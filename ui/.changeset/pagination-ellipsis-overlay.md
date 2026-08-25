@@ -31,6 +31,7 @@
 - 悬停摊开（`openDelay` / `closeDelay`），**点一下也摊开**——纯悬停会把键盘用户挡在外面。
   Escape 与点外面都能收起（走消解层）。
 - 至多两个省略位，用 `side`（`'start' | 'end'`）区分；同时只开一个，一份定位层就够。
+  Web Components 侧由作者在节点上写 `side="end"`，与页码按钮自报 `value` 同一套写法。
 - 浮层 portal 到统一落点，三视觉轴在 `positioner` 上重打一遍。
 
 **破坏性**：`getEllipsisProps()` 改为收 `{ side }`；省略位从 `<span>` 变 `<button>`、

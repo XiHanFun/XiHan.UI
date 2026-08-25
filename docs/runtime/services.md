@@ -116,7 +116,33 @@ catch {
 }
 ```
 
-服务档的默认落位是 `top`，每个位置默认最多同时留 5 条，超出的排队。单条可以用 `options.placement` 覆盖。
+服务档的默认落位是 `top`，最多同时留 5 条，超出的挤掉最旧的。落位是整个服务的口径——
+一次操作的反馈不该逐条各去一处，写在 `createToastService({ placement })` 里一次定好。
+
+## 通知服务
+
+```ts
+import { createNotificationService } from '@xihan-ui/vue'
+
+const notify = createNotificationService({ placement: 'bottom-end', max: 5 })
+
+notify.info('有新的审批', { description: '张三提交了一份请假单' })
+notify.error('同步失败', { description: '网络中断，稍后自动重试', duration: 0 })
+```
+
+| 方法 | 返回 | 说明 |
+| --- | --- | --- |
+| `create(options)` | `string`（id） | 入队；**同 id 已存在则就地改写** |
+| `update(id, options)` | — | 改写已在显示的那一条 |
+| `dismiss(id)` / `dismissAll()` | — | 手动收走 |
+| `info` / `success` / `warning` / `error` | `string`（id） | 类型糖，第一参是标题，正文写在 `options.description` |
+| `dispose()` | — | 卸载宿主应用并移除容器 |
+
+与轻提示的两处不同：条目有标题与正文两层，且**单条可以用 `options.placement` 覆盖落位**——
+消息各有轻重，逐条决定去哪一格是说得通的。`duration: 0` 即常驻不消失，让用户自己收走。
+
+队列要长在页面结构里（通知中心那一栏自己排版）时改用组件形态的
+[通知](../components/notification)，两者不共享队列。
 
 ## 顶部进度条服务
 
@@ -167,23 +193,23 @@ dialog.setConfig({ locale: 'en-US' })
 ## 什么时候不要用服务
 
 - **确认可以撤销的操作**：直接做，然后发一条带"撤销"按钮的轻提示。事前确认对用户是一道额外的关，撤销才是真的兜底。
-- **提示内容较长或需要用户处理**：轻提示会自己消失，用[警告提示](../components/alert)让它常驻。
+- **提示内容较长或需要用户处理**：轻提示会自己消失，用[警告提示](../components/alert)让它常驻，或用[通知](../components/notification)分标题与正文两层。
 - **对话框里要放表单**：用组件形态的[对话框](../components/dialog)，服务档只出标题、正文与按钮行。
 
 ## 一个应用建几个
 
 各建一个，挂在应用启动处，全局共用。每个页面各建一个会挂出多个宿主容器，几摞提示互相盖。
 
-服务不走 provide/inject，所以在组件外（路由守卫、拦截器、store）也能调——这正是命令式的意义。但也因此**它拿不到 [全局配置](./config) 注入的文案**：服务的文案在 `createDialogService` / `createToastService` 的入参里单独给。
+服务不走 provide/inject，所以在组件外（路由守卫、拦截器、store）也能调——这正是命令式的意义。但也因此**它拿不到 [全局配置](./config) 注入的文案**：服务的文案在 `createDialogService` / `createToastService` / `createNotificationService` 的入参里单独给。
 
 ## 与别的库的对应关系
 
 | 别的库 | 这里 |
 | --- | --- |
 | Element Plus `ElMessageBox.confirm` | `dialog.confirm` |
-| Element Plus `ElMessage` / `ElNotification` | `toast.*` |
-| Ant Design `Modal.confirm` / `message` / `notification` | `dialog.confirm` / `toast.*` |
+| Element Plus `ElMessage` / `ElNotification` | `toast.*` / [通知](../components/notification) |
+| Ant Design `Modal.confirm` / `message` / `notification` | `dialog.confirm` / `toast.*` / [通知](../components/notification) |
 | Naive UI `useDialog` / `useMessage` | `createDialogService` / `createToastService` |
 | Semi Design `Modal.confirm` / `Toast` | `dialog.confirm` / `toast.*` |
 
-**没有"通知"这一档单独的 API。** 带标题、描述与操作区的通知就是[轻提示](../components/toast)本身——它有 `title` / `description` / `action-trigger` 四个部件，落位由[轻提示容器](../components/toaster)的 `placement` 决定。换个落位与皮肤就是通知，不需要第二套。
+**轻提示与通知的分工是「谁发起的」。** 轻提示是用户刚才那次操作的结果，一句话、自己消失；[通知](../components/notification)是系统或他人主动推来的消息，有标题与正文两层、可以常驻。两者都有服务档（`createToastService` / `createNotificationService`），队列各归各的；通知另有组件形态 `XhNotificationRoot`，队列要长在页面结构里（通知中心那一栏自己排版）时用它。轻提示没有容器组件——反馈落在哪儿是整个服务的口径。

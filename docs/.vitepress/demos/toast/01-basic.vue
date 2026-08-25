@@ -1,10 +1,9 @@
-<!-- 基础用法 | 单独一条通知：title 与 description 两个部件留空时由属性上的文案填入；duration 给 0 即不自动消失 -->
+<!-- 基础用法 | 一条卡片一句话：title 部件留空时由属性上的文案填入；duration 给 0 即不自动消失 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import {
   XhButton,
   XhToastCloseTrigger,
-  XhToastDescription,
   XhToastRoot,
   XhToastTitle,
 } from "@xihan-ui/vue";
@@ -18,12 +17,10 @@ const seq = ref(0);
     <XhToastRoot
       :key="seq"
       title="草稿已保存"
-      description="内容已同步到云端"
       :duration="0"
       :translations="{ close: '关闭' }"
     >
       <XhToastTitle />
-      <XhToastDescription />
       <XhToastCloseTrigger />
     </XhToastRoot>
     <XhButton size="sm" variant="outline" @click="seq++">再挂一条</XhButton>

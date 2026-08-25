@@ -1,32 +1,12 @@
-<!-- 图标与自定义排版 | 卡片里排什么由作者定：图标与标题排成一行，标题、描述两个部件的内容都归作者写 -->
+<!-- 图标与自定义排版 | 卡片里排什么由作者定：图标与标题排成一行，标题部件的内容归作者写 -->
 <script setup lang="ts">
 import { CheckIcon, TriangleAlertIcon, XIcon } from "@xihan-ui/icons";
-import {
-  XhIcon,
-  XhToastDescription,
-  XhToastRoot,
-  XhToastTitle,
-} from "@xihan-ui/vue";
+import { XhIcon, XhToastRoot, XhToastTitle } from "@xihan-ui/vue";
 
 const items = [
-  {
-    type: "success",
-    glyph: CheckIcon,
-    title: "发布成功",
-    description: "文档已对所有人可见",
-  },
-  {
-    type: "warning",
-    glyph: TriangleAlertIcon,
-    title: "配额即将用尽",
-    description: "本月还剩 8% 额度",
-  },
-  {
-    type: "error",
-    glyph: XIcon,
-    title: "同步失败",
-    description: "网络中断，稍后自动重试",
-  },
+  { type: "success", glyph: CheckIcon, title: "发布成功" },
+  { type: "warning", glyph: TriangleAlertIcon, title: "配额即将用尽" },
+  { type: "error", glyph: XIcon, title: "同步失败" },
 ] as const;
 
 // 图标只是装饰，读屏念标题就够了
@@ -56,7 +36,6 @@ const glyphStyle = {
         <span aria-hidden="true" :style="glyphStyle"><XhIcon :icon="item.glyph" /></span>
         <XhToastTitle>{{ item.title }}</XhToastTitle>
       </div>
-      <XhToastDescription>{{ item.description }}</XhToastDescription>
     </XhToastRoot>
   </div>
 </template>

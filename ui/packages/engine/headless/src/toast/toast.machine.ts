@@ -1,5 +1,5 @@
 import type { Scope } from '@xihan-ui/kernel'
-import type { ToastPauseSource, ToastSchema, ToastType } from './toast.types'
+import type { ToastPauseSource, ToastPlacement, ToastSchema, ToastType } from './toast.types'
 import { setTimeoutEffect, setup } from '@xihan-ui/machine'
 
 const { createMachine } = setup<ToastSchema>()
@@ -8,6 +8,10 @@ const { createMachine } = setup<ToastSchema>()
 export const TOAST_DURATION = 5000
 /** 默认退场窗口毫秒：进入 dismissing 后停留这么久再转 unmounted。 */
 export const TOAST_REMOVE_DELAY = 200
+/** 那一摞默认落在哪儿。轻提示习惯在顶部：视线正好在刚才操作的地方上方。 */
+export const TOAST_PLACEMENT: ToastPlacement = 'top'
+/** 摞内默认间距（px）。 */
+export const TOAST_GAP = 16
 
 /**
  * 队列身份：没给 id 就用实例 scope id 兜底。

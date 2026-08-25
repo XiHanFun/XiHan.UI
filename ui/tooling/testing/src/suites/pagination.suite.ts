@@ -29,7 +29,7 @@ export const paginationSuite: ConformanceSuite = {
       { part: 'item', tag: 'button', attrs: { value: '1' }, text: '1' },
       { part: 'item', tag: 'button', attrs: { value: '2' }, text: '2' },
       { part: 'item', tag: 'button', attrs: { value: '3' }, text: '3' },
-      { part: 'ellipsis', tag: 'button', attrs: { 'data-side': 'end' }, text: '…' },
+      { part: 'ellipsis', tag: 'button', attrs: { side: 'end' }, text: '…' },
       { part: 'item', tag: 'button', attrs: { value: '10' }, text: '10' },
       { part: 'next-trigger', tag: 'button', text: '下一页' },
       {

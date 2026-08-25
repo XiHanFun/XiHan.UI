@@ -65,6 +65,7 @@ import { mentionSuite } from './mention.suite'
 import { menuSuite } from './menu.suite'
 import { menubarSuite } from './menubar.suite'
 import { navigationMenuSuite } from './navigation-menu.suite'
+import { notificationSuite } from './notification.suite'
 import { numberAnimationSuite } from './number-animation.suite'
 import { numberFieldSuite } from './number-field.suite'
 import { pageHeaderSuite } from './page-header.suite'
@@ -106,7 +107,6 @@ import { timeSuite } from './time.suite'
 import { timelineSuite } from './timeline.suite'
 import { timerSuite } from './timer.suite'
 import { toastSuite } from './toast.suite'
-import { toasterSuite } from './toaster.suite'
 import { toggleGroupSuite } from './toggle-group.suite'
 import { toggleSuite } from './toggle.suite'
 import { toolbarSuite } from './toolbar.suite'
@@ -228,7 +228,7 @@ export const allSuites: readonly ConformanceSuite[] = [
   timelineSuite,
   timerSuite,
   toastSuite,
-  toasterSuite,
+  notificationSuite,
   toggleSuite,
   toggleGroupSuite,
   toolbarSuite,

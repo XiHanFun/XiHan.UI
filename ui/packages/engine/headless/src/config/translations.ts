@@ -68,6 +68,7 @@ import type { MentionTranslations } from '../mention/mention.types'
 import type { MenuTranslations } from '../menu/menu.types'
 import type { MenubarTranslations } from '../menubar/menubar.types'
 import type { NavigationMenuTranslations } from '../navigation-menu/navigation-menu.types'
+import type { NotificationTranslations } from '../notification/notification.types'
 import type { NumberAnimationTranslations } from '../number-animation/number-animation.types'
 import type { NumberFieldTranslations } from '../number-field/number-field.types'
 import type { PageHeaderTranslations } from '../page-header/page-header.types'
@@ -109,7 +110,6 @@ import type { TimeTranslations } from '../time/time.types'
 import type { TimelineTranslations } from '../timeline/timeline.types'
 import type { TimerTranslations } from '../timer/timer.types'
 import type { ToastTranslations } from '../toast/toast.types'
-import type { ToasterTranslations } from '../toaster/toaster.types'
 import type { ToggleGroupTranslations } from '../toggle-group/toggle-group.types'
 import type { ToggleTranslations } from '../toggle/toggle.types'
 import type { ToolbarTranslations } from '../toolbar/toolbar.types'
@@ -231,7 +231,7 @@ export interface XhTranslationOverrides {
   'timeline'?: Partial<TimelineTranslations>
   'timer'?: Partial<TimerTranslations>
   'toast'?: Partial<ToastTranslations>
-  'toaster'?: Partial<ToasterTranslations>
+  'notification'?: Partial<NotificationTranslations>
   'toggle'?: Partial<ToggleTranslations>
   'toggle-group'?: Partial<ToggleGroupTranslations>
   'toolbar'?: Partial<ToolbarTranslations>

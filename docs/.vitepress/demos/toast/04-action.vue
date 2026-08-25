@@ -5,7 +5,6 @@ import {
   XhButton,
   XhToastActionTrigger,
   XhToastCloseTrigger,
-  XhToastDescription,
   XhToastRoot,
   XhToastTitle,
 } from "@xihan-ui/vue";
@@ -24,13 +23,11 @@ function onAction(details: { id: string }): void {
       :key="seq"
       id="toast-demo-action"
       title="已删除 1 个文件"
-      description="30 秒内可以撤销"
       :duration="0"
       :translations="{ close: '关闭' }"
       @action="onAction"
     >
       <XhToastTitle />
-      <XhToastDescription />
       <div style="display: flex; align-items: center; gap: 8px">
         <XhToastActionTrigger>撤销</XhToastActionTrigger>
         <XhToastCloseTrigger />

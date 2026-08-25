@@ -23791,6 +23791,753 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/notification.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-notification>` —— Light-DOM 行为宿主：作者写 root 与若干 group 角色节点，\n元素跑 notification 机器并把 connect 产出打上去。每个 group 用 `placement` 属性声明自己是哪个位置，\n不写就落在队列的 placement 上。\n\n单条通知的节点由作者按队列渲染（读 `items` 或听 `items-change`），元素不替作者生成：\n生成节点就等于收走模板控制权，图标、进度条、i18n 文案都再塞不进来。\n每条渲染成一个 `<xh-notification-item>`，它走完退场会冒泡一条 status-change，本元素据此把记录删掉。",
+          "name": "XhNotificationElement",
+          "cssParts": [
+            {
+              "description": "role=region 的地标容器，承载 data-count / data-empty",
+              "name": "root"
+            },
+            {
+              "description": "某一个位置上的那一摞，可自带 placement 属性；承载 data-placement / data-count / data-empty 与间距",
+              "name": "group"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: notificationAnatomy, meta: notificationMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "items",
+              "privacy": "public",
+              "type": {
+                "text": "NotificationRecord[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "defaultItems",
+              "privacy": "public",
+              "type": {
+                "text": "NotificationRecord[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "placement",
+              "privacy": "public",
+              "type": {
+                "text": "NotificationPlacement | undefined"
+              },
+              "attribute": "placement"
+            },
+            {
+              "kind": "field",
+              "name": "max",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "max"
+            },
+            {
+              "kind": "field",
+              "name": "gap",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "gap"
+            },
+            {
+              "kind": "field",
+              "name": "duration",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "duration"
+            },
+            {
+              "kind": "field",
+              "name": "removeDelay",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "remove-delay"
+            },
+            {
+              "kind": "field",
+              "name": "pauseOnPageIdle",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "pause-on-page-idle"
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "Partial<NotificationTranslations> | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "notify",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<NotificationSchema>(this, notificationMachine, () => this.machineProps())"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<NotificationSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "commands",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "NotificationApi"
+                }
+              },
+              "description": "命令式入口共用的取法。机器要到进文档（hostConnected）才建：\n还没进文档就发通知是调用方的时序问题，明说好过把这条通知静默丢掉。"
+            },
+            {
+              "kind": "method",
+              "name": "create",
+              "return": {
+                "type": {
+                  "text": "string"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "options",
+                  "default": "{}",
+                  "type": {
+                    "text": "NotificationOptions"
+                  }
+                }
+              ],
+              "description": "入队并返回 id；同 id 已存在则就地改写，位置不动（处理中转已完成走的就是这条）。"
+            },
+            {
+              "kind": "method",
+              "name": "updateItem",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "id",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "options",
+                  "type": {
+                    "text": "Partial<NotificationOptions>"
+                  }
+                }
+              ],
+              "description": "刻意不叫 `update`：那是 Lit 自己的渲染生命周期钩子，占用它会让宿主每次重渲\n都拐进这里来（还带着一个 changedProperties 当 id），组件当场不工作。\nVue 侧没有这层基类，composable 上仍叫 `update`。"
+            },
+            {
+              "kind": "method",
+              "name": "dismiss",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "id",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "dismissAll",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "visibleNotifications",
+              "type": {
+                "text": "ResolvedNotification[]"
+              },
+              "description": "max 之内、按加入先后排列的可见条目，已补齐默认值，可直接摊给 `<xh-notification-item>`。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "placements",
+              "type": {
+                "text": "NotificationPlacement[]"
+              },
+              "description": "当前有条目的位置，按九宫格固定顺序。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "count",
+              "type": {
+                "text": "number"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "getItemsByPlacement",
+              "return": {
+                "type": {
+                  "text": "ResolvedNotification[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "placement",
+                  "type": {
+                    "text": "NotificationPlacement"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "onItemStatus",
+              "privacy": "private",
+              "readonly": true,
+              "description": "单条通知走完退场会冒泡上来：记录该从队列里删掉了。\n认元素名而不是只认事件名——avatar 之类的部件也派 status-change，且完全可能就摆在通知内部。"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "队列变化；detail 为 `{ items: NotificationRecord[] }`",
+              "name": "items-change",
+              "type": {
+                "text": "NotificationItemsChangeDetails"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "NotificationPlacement | undefined"
+              },
+              "description": "默认落位，默认 bottom-end",
+              "name": "placement",
+              "fieldName": "placement"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "每个位置最多同时留几条，超出挤掉最旧的；不给即不限",
+              "name": "max",
+              "fieldName": "max"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "同一摞内的间距（px），默认 16",
+              "name": "gap",
+              "fieldName": "gap"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "单条没写 duration 时的默认停留毫秒",
+              "name": "duration",
+              "fieldName": "duration"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "单条没写 remove-delay 时的默认退场窗口毫秒",
+              "name": "remove-delay",
+              "fieldName": "removeDelay"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "页面切到后台时按住计时，逐条下发",
+              "name": "pause-on-page-idle",
+              "fieldName": "pauseOnPageIdle"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-notification",
+          "customElement": true,
+          "cssProperties": [
+            {
+              "name": "--xh-notification-accent"
+            },
+            {
+              "name": "--xh-notification-accent-width"
+            },
+            {
+              "name": "--xh-notification-action-bg"
+            },
+            {
+              "name": "--xh-notification-action-bg-active"
+            },
+            {
+              "name": "--xh-notification-action-bg-hover"
+            },
+            {
+              "name": "--xh-notification-action-border"
+            },
+            {
+              "name": "--xh-notification-action-fg"
+            },
+            {
+              "name": "--xh-notification-action-font-weight"
+            },
+            {
+              "name": "--xh-notification-action-h"
+            },
+            {
+              "name": "--xh-notification-action-px"
+            },
+            {
+              "name": "--xh-notification-action-radius"
+            },
+            {
+              "name": "--xh-notification-bg"
+            },
+            {
+              "name": "--xh-notification-border"
+            },
+            {
+              "name": "--xh-notification-close-bg-active"
+            },
+            {
+              "name": "--xh-notification-close-bg-hover"
+            },
+            {
+              "name": "--xh-notification-close-fg"
+            },
+            {
+              "name": "--xh-notification-close-fg-hover"
+            },
+            {
+              "name": "--xh-notification-close-radius"
+            },
+            {
+              "name": "--xh-notification-close-size"
+            },
+            {
+              "name": "--xh-notification-description-fg"
+            },
+            {
+              "name": "--xh-notification-description-font-size"
+            },
+            {
+              "name": "--xh-notification-fg"
+            },
+            {
+              "name": "--xh-notification-font-size"
+            },
+            {
+              "name": "--xh-notification-gap"
+            },
+            {
+              "name": "--xh-notification-icon-size"
+            },
+            {
+              "name": "--xh-notification-inset"
+            },
+            {
+              "name": "--xh-notification-layer"
+            },
+            {
+              "name": "--xh-notification-leading"
+            },
+            {
+              "name": "--xh-notification-px"
+            },
+            {
+              "name": "--xh-notification-py"
+            },
+            {
+              "name": "--xh-notification-radius"
+            },
+            {
+              "name": "--xh-notification-shadow"
+            },
+            {
+              "name": "--xh-notification-title-fg"
+            },
+            {
+              "name": "--xh-notification-title-font-size"
+            },
+            {
+              "name": "--xh-notification-title-font-weight"
+            },
+            {
+              "name": "--xh-notification-title-leading"
+            },
+            {
+              "name": "--xh-notification-w"
+            }
+          ]
+        },
+        {
+          "kind": "class",
+          "description": "`<xh-notification-item>` —— 单条通知卡片：作者写 item/item-title/item-description/\nitem-action-trigger/item-close-trigger 角色节点，元素跑生命周期机器并把 connect 产出打上去。\n\nitem 承载 role 与 aria-live：默认 status + polite（排队等读屏的空隙），\ntype=\"error\" 换成 alert + assertive（打断当前朗读）。指针停在卡片上、\n或焦点落进卡片内部都会把倒计时按住，离开才接着走剩下的那一段。\n\n退场窗口走完只把卡片收起、不删节点：作者写在里面的内容归作者，\n什么时候把这条从队列里删掉是 `<xh-notification>` 的事（它收本元素冒泡上去的 status-change）。",
+          "name": "XhNotificationItemElement",
+          "cssParts": [
+            {
+              "description": "role=status（error 时 alert）的卡片，承载 data-type / data-tone / data-state / data-paused",
+              "name": "item"
+            },
+            {
+              "description": "标题，aria-labelledby 的目标",
+              "name": "item-title"
+            },
+            {
+              "description": "补充说明，aria-describedby 的目标",
+              "name": "item-description"
+            },
+            {
+              "description": "操作按钮：先发 action 再进入退场",
+              "name": "item-action-trigger"
+            },
+            {
+              "description": "关闭按钮；closable=false 时转原生 disabled 并收起",
+              "name": "item-close-trigger"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "static": true,
+              "default": "{ anatomy: notificationAnatomy, meta: { component: 'notification', requiredParts: ['item'] } }",
+              "type": {
+                "text": "object"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "itemId",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "id"
+            },
+            {
+              "kind": "field",
+              "name": "titleText",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "title"
+            },
+            {
+              "kind": "field",
+              "name": "description",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "description"
+            },
+            {
+              "kind": "field",
+              "name": "type",
+              "privacy": "public",
+              "type": {
+                "text": "NotificationType | undefined"
+              },
+              "attribute": "type"
+            },
+            {
+              "kind": "field",
+              "name": "duration",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "duration"
+            },
+            {
+              "kind": "field",
+              "name": "removeDelay",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "remove-delay"
+            },
+            {
+              "kind": "field",
+              "name": "closable",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "closable"
+            },
+            {
+              "kind": "field",
+              "name": "pauseOnPageIdle",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "pause-on-page-idle"
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "Partial<ToastTranslations> | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "notifyStatus",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyAction",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<ToastSchema>(this, toastMachine, () => this.machineProps())"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<ToastSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "authorOwnsText",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new WeakMap<HTMLElement, boolean>()",
+              "description": "这个部件的文字归不归作者：头一回见到它时定案，之后不再改口。"
+            },
+            {
+              "kind": "method",
+              "name": "fillText",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "el",
+                  "type": {
+                    "text": "HTMLElement | null"
+                  }
+                },
+                {
+                  "name": "text",
+                  "type": {
+                    "text": "string | undefined"
+                  }
+                }
+              ],
+              "description": "作者没往部件里写内容时，用 props 上的文案填进去。\n\n归属只判一次：判完本轮就会把文字写进去，再回读分不清是作者写的还是自己写的，\n从那以后 title 属性改了也再刷不动（Vue 侧是响应式渲染，会跟着改，两侧就此分叉）。"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "生命周期落位；detail 为 `{ id: string, status: 'dismissing'|'unmounted' }`",
+              "name": "status-change",
+              "type": {
+                "text": "ToastStatusChangeDetails"
+              }
+            },
+            {
+              "description": "操作按钮被按下；detail 为 `{ id: string }`",
+              "name": "action",
+              "type": {
+                "text": "ToastActionDetails"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "队列身份，`<xh-notification>` 按它寻址；不给就用实例自己的 scope id",
+              "name": "id",
+              "fieldName": "itemId"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "标题文案；作者没在 item-title 部件里写内容时由元素填入",
+              "name": "title",
+              "fieldName": "titleText"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "补充说明；作者没在 item-description 部件里写内容时由元素填入",
+              "name": "description",
+              "fieldName": "description"
+            },
+            {
+              "type": {
+                "text": "NotificationType | undefined"
+              },
+              "description": "语气，默认 info；loading 不自动消失",
+              "name": "type",
+              "fieldName": "type"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "停留毫秒，默认 5000；<=0 即关掉自动消失",
+              "name": "duration",
+              "fieldName": "duration"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "退场窗口毫秒，默认 200，留给退场动画",
+              "name": "remove-delay",
+              "fieldName": "removeDelay"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "是否给可用的关闭按钮，默认 true；写 closable=\"false\" 关掉",
+              "name": "closable",
+              "fieldName": "closable"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "页面切到后台时按住计时，默认关",
+              "name": "pause-on-page-idle",
+              "fieldName": "pauseOnPageIdle"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-notification-item",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhNotificationElement",
+          "declaration": {
+            "name": "XhNotificationElement",
+            "module": "src/elements/notification.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "XhNotificationItemElement",
+          "declaration": {
+            "name": "XhNotificationItemElement",
+            "module": "src/elements/notification.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/number-animation.ts",
       "declarations": [
         {
@@ -24743,7 +25490,7 @@
               "name": "item"
             },
             {
-              "description": "折叠掉的那几页的占位，对读屏隐藏",
+              "description": "折进去那几页的入口，须自带 side 属性（start / end）；承载 data-side 与 aria-expanded",
               "name": "ellipsis"
             }
           ],
@@ -39552,7 +40299,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-toast>` —— Light-DOM 行为宿主：作者写 root/title/description/action-trigger/close-trigger\n角色节点，元素跑 toast 机器并把 connect 产出打上去。\n\nroot 承载 role 与 aria-live：默认 status + polite（排队等读屏的空隙），\ntype=\"error\" 换成 alert + assertive（打断当前朗读）。指针停在通知上、\n或焦点落进通知内部都会把倒计时按住，离开才接着走剩下的那一段。\n\n退场窗口走完只把 root 收起、不删节点：作者写在里面的内容归作者，\n什么时候把这条从队列里删掉是 `<xh-toaster>` 的事（它收本元素冒泡上去的 status-change）。",
+          "description": "`<xh-toast>` —— Light-DOM 行为宿主：作者写 root/title/action-trigger/close-trigger\n角色节点，元素跑 toast 机器并把 connect 产出打上去。\n\nroot 承载 role 与 aria-live：默认 status + polite（排队等读屏的空隙），\ntype=\"error\" 换成 alert + assertive（打断当前朗读）。指针停在通知上、\n或焦点落进通知内部都会把倒计时按住，离开才接着走剩下的那一段。\n\n退场窗口走完只把 root 收起、不删节点：作者写在里面的内容归作者，\n什么时候把这条从队列里删掉是全局服务的事（它收本元素冒泡上去的 status-change）。",
           "name": "XhToastElement",
           "cssParts": [
             {
@@ -39562,10 +40309,6 @@
             {
               "description": "标题，aria-labelledby 的目标",
               "name": "title"
-            },
-            {
-              "description": "补充说明，aria-describedby 的目标",
-              "name": "description"
             },
             {
               "description": "操作按钮：先发 action 再进入退场",
@@ -39603,15 +40346,6 @@
                 "text": "string | undefined"
               },
               "attribute": "title"
-            },
-            {
-              "kind": "field",
-              "name": "description",
-              "privacy": "public",
-              "type": {
-                "text": "string | undefined"
-              },
-              "attribute": "description"
             },
             {
               "kind": "field",
@@ -39760,7 +40494,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "队列身份，`<xh-toaster>` 按它寻址；不给就用实例自己的 scope id",
+              "description": "队列身份，全局服务按它寻址；不给就用实例自己的 scope id",
               "name": "id",
               "fieldName": "toastId"
             },
@@ -39771,14 +40505,6 @@
               "description": "标题文案；作者没在 title 部件里写内容时由元素填入",
               "name": "title",
               "fieldName": "titleText"
-            },
-            {
-              "type": {
-                "text": "string | undefined"
-              },
-              "description": "补充说明；作者没在 description 部件里写内容时由元素填入",
-              "name": "description",
-              "fieldName": "description"
             },
             {
               "type": {
@@ -39886,12 +40612,6 @@
               "name": "--xh-toast-close-size"
             },
             {
-              "name": "--xh-toast-description-fg"
-            },
-            {
-              "name": "--xh-toast-description-font-size"
-            },
-            {
               "name": "--xh-toast-fg"
             },
             {
@@ -39902,6 +40622,12 @@
             },
             {
               "name": "--xh-toast-icon-size"
+            },
+            {
+              "name": "--xh-toast-inset"
+            },
+            {
+              "name": "--xh-toast-layer"
             },
             {
               "name": "--xh-toast-leading"
@@ -39943,362 +40669,6 @@
           "declaration": {
             "name": "XhToastElement",
             "module": "src/elements/toast.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/elements/toaster.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "`<xh-toaster>` —— Light-DOM 行为宿主：作者写 root 与若干 group 角色节点，\n元素跑 toaster 机器并把 connect 产出打上去。每个 group 用 `placement` 属性声明自己是哪个位置，\n不写就落在 toaster 的 placement 上。\n\n单条通知的节点由作者按队列渲染（读 `visibleToasts` 或听 `toasts-change`），元素不替作者生成：\n生成节点就等于收走模板控制权，图标、进度条、i18n 文案都再塞不进来。\n每条渲染成一个 `<xh-toast>`，它走完退场会冒泡一条 status-change，本元素据此把记录删掉。",
-          "name": "XhToasterElement",
-          "cssParts": [
-            {
-              "description": "role=region 的地标容器，承载 data-count / data-empty",
-              "name": "root"
-            },
-            {
-              "description": "某一个位置上的那一摞，可自带 placement 属性；承载 data-placement / data-count / data-empty 与间距",
-              "name": "group"
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "partContract",
-              "type": {
-                "text": "object"
-              },
-              "static": true,
-              "default": "{ anatomy: toasterAnatomy, meta: toasterMeta }"
-            },
-            {
-              "kind": "field",
-              "name": "toasts",
-              "privacy": "public",
-              "type": {
-                "text": "ToastRecord[] | undefined"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "defaultToasts",
-              "privacy": "public",
-              "type": {
-                "text": "ToastRecord[] | undefined"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "placement",
-              "privacy": "public",
-              "type": {
-                "text": "ToastPlacement | undefined"
-              },
-              "attribute": "placement"
-            },
-            {
-              "kind": "field",
-              "name": "max",
-              "privacy": "public",
-              "type": {
-                "text": "number | undefined"
-              },
-              "attribute": "max"
-            },
-            {
-              "kind": "field",
-              "name": "gap",
-              "privacy": "public",
-              "type": {
-                "text": "number | undefined"
-              },
-              "attribute": "gap"
-            },
-            {
-              "kind": "field",
-              "name": "duration",
-              "privacy": "public",
-              "type": {
-                "text": "number | undefined"
-              },
-              "attribute": "duration"
-            },
-            {
-              "kind": "field",
-              "name": "removeDelay",
-              "privacy": "public",
-              "type": {
-                "text": "number | undefined"
-              },
-              "attribute": "remove-delay"
-            },
-            {
-              "kind": "field",
-              "name": "pauseOnPageIdle",
-              "privacy": "public",
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "attribute": "pause-on-page-idle"
-            },
-            {
-              "kind": "field",
-              "name": "translations",
-              "privacy": "public",
-              "type": {
-                "text": "Partial<ToasterTranslations> | undefined"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "notify",
-              "privacy": "private",
-              "readonly": true
-            },
-            {
-              "kind": "field",
-              "name": "ctrl",
-              "privacy": "private",
-              "readonly": true,
-              "default": "new MachineController<ToasterSchema>(this, toasterMachine, () => this.machineProps())"
-            },
-            {
-              "kind": "method",
-              "name": "machineProps",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "Partial<ToasterSchema['props']>"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "commands",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "ToasterApi"
-                }
-              },
-              "description": "命令式入口共用的取法。机器要到进文档（hostConnected）才建：\n还没进文档就发通知是调用方的时序问题，明说好过把这条通知静默丢掉。"
-            },
-            {
-              "kind": "method",
-              "name": "create",
-              "return": {
-                "type": {
-                  "text": "string"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "options",
-                  "default": "{}",
-                  "type": {
-                    "text": "ToastOptions"
-                  }
-                }
-              ],
-              "description": "入队并返回 id；同 id 已存在则就地改写，位置不动（loading 转 success 走的就是这条）。"
-            },
-            {
-              "kind": "method",
-              "name": "updateToast",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "id",
-                  "type": {
-                    "text": "string"
-                  }
-                },
-                {
-                  "name": "options",
-                  "type": {
-                    "text": "Partial<ToastOptions>"
-                  }
-                }
-              ],
-              "description": "刻意不叫 `update`：那是 Lit 自己的渲染生命周期钩子，占用它会让宿主每次重渲\n都拐进这里来（还带着一个 changedProperties 当 id），组件当场不工作。\nVue 侧没有这层基类，composable 上仍叫 `update`。"
-            },
-            {
-              "kind": "method",
-              "name": "dismiss",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "id",
-                  "type": {
-                    "text": "string"
-                  }
-                }
-              ]
-            },
-            {
-              "kind": "method",
-              "name": "dismissAll",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "field",
-              "name": "visibleToasts",
-              "type": {
-                "text": "ResolvedToast[]"
-              },
-              "description": "max 之内、按加入先后排列的可见条目，已补齐默认值，可直接摊给 `<xh-toast>`。",
-              "readonly": true
-            },
-            {
-              "kind": "field",
-              "name": "placements",
-              "type": {
-                "text": "ToastPlacement[]"
-              },
-              "description": "当前有条目的位置，按九宫格固定顺序。",
-              "readonly": true
-            },
-            {
-              "kind": "field",
-              "name": "count",
-              "type": {
-                "text": "number"
-              },
-              "readonly": true
-            },
-            {
-              "kind": "method",
-              "name": "getToastsByPlacement",
-              "return": {
-                "type": {
-                  "text": "ResolvedToast[]"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "placement",
-                  "type": {
-                    "text": "ToastPlacement"
-                  }
-                }
-              ]
-            },
-            {
-              "kind": "field",
-              "name": "onToastStatus",
-              "privacy": "private",
-              "readonly": true,
-              "description": "单条通知走完退场会冒泡上来：记录该从队列里删掉了。\n认元素名而不是只认事件名——avatar 之类的部件也派 status-change，且完全可能就摆在通知内部。"
-            },
-            {
-              "kind": "method",
-              "name": "wire",
-              "privacy": "protected",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            }
-          ],
-          "events": [
-            {
-              "description": "队列变化；detail 为 `{ toasts: ToastRecord[] }`",
-              "name": "toasts-change",
-              "type": {
-                "text": "ToasterToastsChangeDetails"
-              }
-            }
-          ],
-          "attributes": [
-            {
-              "type": {
-                "text": "ToastPlacement | undefined"
-              },
-              "description": "默认落位，默认 bottom-end",
-              "name": "placement",
-              "fieldName": "placement"
-            },
-            {
-              "type": {
-                "text": "number | undefined"
-              },
-              "description": "每个位置最多同时留几条，超出挤掉最旧的；不给即不限",
-              "name": "max",
-              "fieldName": "max"
-            },
-            {
-              "type": {
-                "text": "number | undefined"
-              },
-              "description": "同一摞内的间距（px），默认 16",
-              "name": "gap",
-              "fieldName": "gap"
-            },
-            {
-              "type": {
-                "text": "number | undefined"
-              },
-              "description": "单条没写 duration 时的默认停留毫秒",
-              "name": "duration",
-              "fieldName": "duration"
-            },
-            {
-              "type": {
-                "text": "number | undefined"
-              },
-              "description": "单条没写 remove-delay 时的默认退场窗口毫秒",
-              "name": "remove-delay",
-              "fieldName": "removeDelay"
-            },
-            {
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "description": "页面切到后台时按住计时，逐条下发",
-              "name": "pause-on-page-idle",
-              "fieldName": "pauseOnPageIdle"
-            }
-          ],
-          "superclass": {
-            "name": "XhElement",
-            "module": "/src/element-base"
-          },
-          "tagName": "xh-toaster",
-          "customElement": true,
-          "cssProperties": [
-            {
-              "name": "--xh-toaster-inset"
-            },
-            {
-              "name": "--xh-toaster-layer"
-            }
-          ]
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "XhToasterElement",
-          "declaration": {
-            "name": "XhToasterElement",
-            "module": "src/elements/toaster.ts"
           }
         }
       ]

@@ -52,7 +52,7 @@ function itemPage(el: HTMLElement): number {
  * @csspart prev-trigger - 上一页；首页时转原生 disabled
  * @csspart next-trigger - 下一页；末页时转原生 disabled
  * @csspart item - 页码按钮，须自带 value 属性；当前页带 aria-current="page" 与 data-current
- * @csspart ellipsis - 折叠掉的那几页的占位，对读屏隐藏
+ * @csspart ellipsis - 折进去那几页的入口，须自带 side 属性（start / end）；承载 data-side 与 aria-expanded
  */
 export class XhPaginationElement extends XhElement {
   static override partContract = { anatomy: paginationAnatomy, meta: paginationMeta }
@@ -212,9 +212,11 @@ export class XhPaginationElement extends XhElement {
       this.spreader.spread(el, props as Record<string, unknown>)
     }
 
-    // 省略位逐个打：身份取作者写的 data-side，缺省当 start
+    // 省略位逐个打：身份取作者写的 side，缺省当 start。
+    // 读的是作者写的 side 而不是元素自己回写的 data-side：后者是本元素的产出，
+    // 拿产出当输入等于让第一帧（还没写过）与之后各帧的身份不一样
     for (const el of this.getParts('ellipsis')) {
-      const side = (el.getAttribute('data-side') === 'end' ? 'end' : 'start') as PaginationEllipsisSide
+      const side = (el.getAttribute('side') === 'end' ? 'end' : 'start') as PaginationEllipsisSide
       this.spreader.spread(el, api.getEllipsisProps({ side }) as Record<string, unknown>)
     }
 

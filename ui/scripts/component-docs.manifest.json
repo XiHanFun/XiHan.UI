@@ -473,12 +473,12 @@
           "name": "加载指示器"
         },
         {
-          "id": "toast",
-          "name": "轻提示"
+          "id": "notification",
+          "name": "通知"
         },
         {
-          "id": "toaster",
-          "name": "轻提示容器"
+          "id": "toast",
+          "name": "轻提示"
         }
       ]
     },

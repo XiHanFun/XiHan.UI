@@ -138,7 +138,7 @@ describe('<xh-config> 作用域', () => {
 
   it('不跑机器的元素也吃这一层的尺寸档，改了跟着变', async () => {
     const host = await mountTree(`<xh-config id="scope" size="lg">
-      <xh-badge><span data-xh-part="root">新</span></xh-badge>
+      <xh-tag><span data-xh-part="root"><span data-xh-part="label">新</span></span></xh-tag>
       <xh-button><button data-xh-part="root">去</button></xh-button>
     </xh-config>`)
     const roots = () => [...host.querySelectorAll('[data-xh-part="root"]')].map(el => el.getAttribute('data-size'))
@@ -146,7 +146,7 @@ describe('<xh-config> 作用域', () => {
 
     const scope = host.querySelector('#scope') as HTMLElement
     scope.setAttribute('size', 'sm')
-    for (const el of host.querySelectorAll('xh-badge, xh-button')) {
+    for (const el of host.querySelectorAll('xh-tag, xh-button')) {
       await (el as Updatable).updateComplete
       await (el as Updatable).updateComplete
     }
