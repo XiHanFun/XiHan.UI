@@ -22,8 +22,10 @@
   /* 角标本身。档位换的是圆点直径、两位数时的最小宽度与字号——
      不是药丸那套内衬与行高：那是 tag 的活 */
   [data-scope='badge'][data-part='indicator'] {
+    /* 每一档的盒都要大于字号：两位数在等高的盒里会被撑破。
+       字号刻度最小就是 12px，所以往上抬盒子而不是往下压字 */
     --xh-_badge-dot: var(--xh-space-2);
-    --xh-_badge-min: var(--xh-space-4);
+    --xh-_badge-min: var(--xh-space-5);
     --xh-_badge-px: var(--xh-space-1);
     --xh-_badge-font: var(--xh-text-secondary-size);
 
@@ -111,14 +113,14 @@
   /* —— 尺寸 —— */
   [data-scope='badge'][data-part='indicator'][data-size='sm'] {
     --xh-_badge-dot: var(--xh-space-1_5);
-    --xh-_badge-min: var(--xh-space-3);
+    --xh-_badge-min: var(--xh-space-4);
     --xh-_badge-px: var(--xh-space-0_5);
     --xh-_badge-font: var(--xh-text-caption-size);
   }
 
   [data-scope='badge'][data-part='indicator'][data-size='lg'] {
     --xh-_badge-dot: var(--xh-space-2_5);
-    --xh-_badge-min: var(--xh-space-5);
+    --xh-_badge-min: var(--xh-space-6);
     --xh-_badge-px: var(--xh-space-1_5);
     --xh-_badge-font: var(--xh-text-body-size);
   }
