@@ -10,6 +10,7 @@ import { createApp, defineComponent, h, reactive, shallowRef, toRaw, toValue } f
 import { XhButton, XhButtonIndicator, XhButtonLabel } from '../components/button'
 import { XhDialogContent, XhDialogDescription, XhDialogRoot, XhDialogTitle } from '../components/dialog/dialog'
 import { spinArc, typeBadge } from './glyph'
+import { mountServiceHost } from './mount-host'
 import { createServiceConfig } from './service-config'
 
 /**
@@ -244,7 +245,7 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
   }
 
   const app: App = createApp(Host)
-  app.mount(holder)
+  const mounted = mountServiceHost(app, holder, 'dialog')
 
   const alert = (badge: NonNullable<Spec['badge']>, tone: Tone) => async (opts: AlertOptions): Promise<void> => {
     await request({
@@ -300,7 +301,8 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
       settle(false)
       for (const spec of queue.splice(0))
         spec.resolve(false)
-      app.unmount()
+      if (mounted)
+        app.unmount()
       if (!options.target)
         holder.remove()
     },
