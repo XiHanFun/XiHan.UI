@@ -8,6 +8,7 @@ import type { XhConfig } from '../config/config'
 import { ensurePortalRoot } from '@xihan-ui/kernel'
 import { createApp, defineComponent, h, reactive, toValue } from 'vue'
 import { XhLoadingBarRange, XhLoadingBarRoot, XhLoadingBarTrack } from '../components/loading-bar/loading-bar'
+import { mountServiceHost } from './mount-host'
 import { createServiceConfig } from './service-config'
 
 export interface LoadingBarServiceOptions {
@@ -87,9 +88,9 @@ export function createLoadingBarService(options: LoadingBarServiceOptions = {}):
   })
 
   const app: App = createApp(Host)
-  app.mount(holder)
+  const mounted = mountServiceHost(app, holder, 'loading-bar')
 
-  const settle = (nextTone: Tone) => {
+  const settle = (nextTone: Tone): void => {
     state.pending = 0
     state.tone = nextTone
     state.value = undefined
@@ -113,7 +114,8 @@ export function createLoadingBarService(options: LoadingBarServiceOptions = {}):
     },
     setConfig: next => configSource.set(next),
     dispose: () => {
-      app.unmount()
+      if (mounted)
+        app.unmount()
       if (!target)
         holder.remove()
     },

@@ -12,6 +12,7 @@ import { provideToaster } from '../components/toaster/context'
 import { XhToasterGroup } from '../components/toaster/toaster'
 import { useToaster } from '../components/toaster/use-toaster'
 import { typeBadge } from './glyph'
+import { mountServiceHost } from './mount-host'
 import { createServiceConfig } from './service-config'
 
 export interface ToastServiceOptions {
@@ -118,7 +119,7 @@ export function createToastService(options: ToastServiceOptions = {}): ToastServ
   })
 
   const app: App = createApp(Host)
-  app.mount(holder)
+  const mounted = mountServiceHost(app, holder, 'toast')
 
   const use = (): ToasterContext => {
     if (!ctx)
@@ -140,7 +141,8 @@ export function createToastService(options: ToastServiceOptions = {}): ToastServ
     loading: sugar('loading'),
     setConfig: next => configSource.set(next),
     dispose: () => {
-      app.unmount()
+      if (mounted)
+        app.unmount()
       ctx = null
       if (!target)
         holder.remove()
