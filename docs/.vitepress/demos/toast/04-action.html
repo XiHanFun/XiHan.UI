@@ -36,7 +36,7 @@
     slot.replaceChildren(node);
   }
 
-  // action 带的是这条通知的身份，从容器上接冒泡上来的那一份
+  // action 带的是这条轻提示的身份，从容器上接冒泡上来的那一份
   slot.addEventListener("action", (event) => {
     log.textContent = `撤销了：${event.detail.id}`;
   });

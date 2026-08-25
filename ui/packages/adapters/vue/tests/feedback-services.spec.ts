@@ -90,6 +90,75 @@ describe('createToastService', () => {
   })
 })
 
+describe('createToastService 的默认模板', () => {
+  function toastRoot(): HTMLElement {
+    const el = document.querySelector<HTMLElement>('[data-scope="toast"][data-part="root"]')
+    if (!el)
+      throw new Error('没渲染出条子')
+    return el
+  }
+
+  const closeOf = (): HTMLElement | null =>
+    document.querySelector<HTMLElement>('[data-scope="toast"][data-part="close-trigger"]')
+
+  it('到点自己走的不出叉：一枚状态字形加一句话，两个节点平铺', async () => {
+    const toast = createToastService()
+    toast.success('已保存')
+    await tick()
+    const root = toastRoot()
+    expect(closeOf()).toBeNull()
+    // 字形在前、标题在后，中间不再套一层行容器
+    expect(root.children.length).toBe(2)
+    expect(root.children[0]!.getAttribute('aria-hidden')).toBe('true')
+    expect(root.children[1]!.getAttribute('data-part')).toBe('title')
+    toast.dispose()
+  })
+
+  it('走不掉的反过来默认出叉：没有它就一个可点的节点都没有', async () => {
+    const toast = createToastService()
+    toast.error('导出失败', { duration: 0 })
+    await tick()
+    expect(closeOf()).not.toBeNull()
+    toast.dispose()
+  })
+
+  it('loading 同样出叉，且 closable 能显式改口', async () => {
+    const toast = createToastService()
+    toast.loading('上传中')
+    await tick()
+    expect(closeOf()).not.toBeNull()
+    toast.dismissAll()
+    await tick()
+
+    toast.error('这条不许关', { duration: 0, closable: false })
+    await tick()
+    expect(closeOf()).toBeNull()
+    toast.dispose()
+  })
+
+  it('没写 type 也有状态字形：底色按 info 兑，字形不能缺席', async () => {
+    const toast = createToastService()
+    toast.create({ title: '无类型' })
+    await tick()
+    const root = toastRoot()
+    expect(root.getAttribute('data-tone')).toBe('info')
+    expect(root.children[0]!.getAttribute('aria-hidden')).toBe('true')
+    toast.dispose()
+  })
+
+  it('loading 改写成 success 时换掉字形节点，转圈不会留在勾号上', async () => {
+    const toast = createToastService()
+    const id = toast.loading('上传中')
+    await tick()
+    const spinning = toastRoot().children[0]!
+    toast.update(id, { type: 'success', title: '上传完成' })
+    await tick()
+    // 两支带着不同的 key，复用同一个元素的话挂在它上面的无限旋转没人收
+    expect(toastRoot().children[0]).not.toBe(spinning)
+    toast.dispose()
+  })
+})
+
 describe('createNotificationService', () => {
   it('模块作用域一行调用即渲染出通知，标题与正文两层都在', async () => {
     const notify = createNotificationService()

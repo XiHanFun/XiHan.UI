@@ -7,11 +7,11 @@
 import type { ToastOptions, ToastPlacement, ToastRecord, ToastTranslations, ToastType } from '@xihan-ui/headless'
 import type { App, MaybeRefOrGetter, VNode } from 'vue'
 import type { XhConfig } from '../config/config'
-import { TOAST_GAP, TOAST_PLACEMENT, toastAnatomy } from '@xihan-ui/headless'
+import { TOAST_DURATION, TOAST_GAP, TOAST_PLACEMENT, toastAnatomy } from '@xihan-ui/headless'
 import { DATA_INERT_EXEMPT, ensurePortalRoot } from '@xihan-ui/kernel'
 import { createApp, defineComponent, Fragment, h, shallowRef, toValue } from 'vue'
 import { XhToastCloseTrigger, XhToastRoot, XhToastTitle } from '../components/toast/toast'
-import { typeBadge } from './glyph'
+import { typeGlyph } from './glyph'
 import { mountServiceHost } from './mount-host'
 import { createServiceConfig } from './service-config'
 
@@ -50,7 +50,7 @@ export interface ToastService {
   /** 入队并返回 id；同 id 已存在则就地改写。 */
   create: (options?: ToastOptions) => string
   update: (id: string, options: Partial<ToastOptions>) => void
-  /** 立刻从队列里删掉。卡片自己的关闭按钮走的是退场窗口，有退场动画。 */
+  /** 立刻从队列里删掉。条子自己的关闭按钮走的是退场窗口，有退场动画。 */
   dismiss: (id: string) => void
   dismissAll: () => void
   info: (message: string, options?: ToastMessageOptions) => string
@@ -65,20 +65,37 @@ export interface ToastService {
   dispose: () => void
 }
 
+/**
+ * 这一条会不会自己走掉。loading 一直挂着，duration <= 0 与非有限值也是。
+ * 走不掉的必须留个出口，否则界面上一个可点、可聚焦的节点都没有。
+ */
+function selfDismissing(toast: ToastRecord, defaults: ToastDefaults): boolean {
+  if (toast.type === 'loading')
+    return false
+  const duration = toast.duration ?? defaults.duration ?? TOAST_DURATION
+  return Number.isFinite(duration) && duration > 0
+}
+
 function defaultToast(
   toast: ToastRecord,
   defaults: ToastDefaults,
   translations: Partial<ToastTranslations> | undefined,
   onUnmounted: (id: string) => void,
 ): VNode {
+  // 到点自己走的默认不出叉，多一颗叉就多一个「要不要点」的判断；
+  // 走不掉的反过来默认给叉。两者都能用 closable 显式改口
+  const closable = toast.closable ?? !selfDismissing(toast, defaults)
+  // 语气跟着 connect 的缺省走（type 缺席即 info），字形不能在这儿另算一份——
+  // 算差了就成了「整条蓝淡底、却没有字形」的半截态
+  const type = toast.type ?? 'info'
   return h(XhToastRoot, {
     id: toast.id,
     title: toast.title,
-    type: toast.type,
+    type,
     // 单条 > 服务档 > 机器内建默认
     duration: toast.duration ?? defaults.duration,
     removeDelay: toast.removeDelay ?? defaults.removeDelay,
-    closable: toast.closable,
+    closable,
     pauseOnPageIdle: defaults.pauseOnPageIdle,
     translations,
     onStatusChange: ({ id, status }: { id: string, status: string }) => {
@@ -86,11 +103,10 @@ function defaultToast(
         onUnmounted(id)
     },
   }, () => [
-    h('div', { style: { display: 'flex', alignItems: 'center', gap: 'var(--xh-control-gap-md)' } }, [
-      typeBadge(toast.type),
-      h(XhToastTitle),
-    ]),
-    toast.closable !== false ? h(XhToastCloseTrigger) : null,
+    // 三个节点平铺，不再套一层行容器：横排是皮肤的事，模板套一层只会与它打架
+    typeGlyph(type),
+    h(XhToastTitle),
+    closable ? h(XhToastCloseTrigger) : null,
   ])
 }
 

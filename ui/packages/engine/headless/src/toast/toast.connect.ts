@@ -69,7 +69,7 @@ export function connectToast<T extends PropTypes>(
       'data-paused': dataAttr(paused),
       // 退场窗口走完只收起、不卸载，何时把这条从队列里删掉是宿主的决定
       'hidden': unmounted || undefined,
-      // 指针停在通知上就把计时按住；pointerenter / pointerleave 不冒泡，只认本条通知这块区域。
+      // 指针停在条子上就把计时按住；pointerenter / pointerleave 不冒泡，只认本条这块区域。
       'onPointerEnter': () => send({ type: 'TOAST.PAUSE', src: 'pointer' }),
       'onPointerLeave': () => send({ type: 'TOAST.RESUME', src: 'pointer' }),
       'onFocusIn': () => send({ type: 'TOAST.PAUSE', src: 'focus' }),

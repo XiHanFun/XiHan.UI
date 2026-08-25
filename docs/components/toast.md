@@ -1,6 +1,6 @@
 # 轻提示 <Badge type="info" text="toast" />
 
-一条会自己消失的短反馈。
+一条会自己消失的短反馈：一枚状态字形加一句话，横排一行、贴着文字收缩。
 
 ## 何时使用
 
@@ -16,25 +16,27 @@
 
 - `duration` 决定停留时长，指针悬停或页面失焦时计时暂停。
 - 可以带一个操作按钮（撤销、查看详情）。
-- `type` 决定语气，排版与图标可自定。
+- `type` 决定语气：淡底、描边与状态字形一起换族，正文留中性。
+- 组件档 `closable` 缺省为真，叉写不写由作者定；全局服务的默认模板反过来——
+  到点自己走的不出叉，走不掉的（`loading`、`duration` 给 0）才出。
 
 ## 示例
 
 ### 基础用法
 
-一条卡片一句话：title 部件留空时由属性上的文案填入；duration 给 0 即不自动消失
+一条一句话：title 部件留空时由属性上的文案填入；duration 给 0 即不自动消失
 
 <XhDemo src="toast/01-basic" />
 
 ### 语气
 
-type 落成 data-type，皮肤据此换色条；error 走 alert + assertive，loading 表示事情还没完、不自动消失
+type 落成 data-type，淡底、描边与字形一起换族，正文留中性；error 走 alert + assertive，loading 表示事情还没完、不自动消失
 
 <XhDemo src="toast/02-type" />
 
 ### 计时与暂停
 
-duration 走完自动退场；指针停在卡片上或焦点进到卡片里都会把计时按住，离开才接着走剩下那一段
+duration 走完自动退场；指针停在条子上或焦点进到条子里都会把计时按住，离开才接着走剩下那一段
 
 <XhDemo src="toast/03-pause" />
 
@@ -44,9 +46,9 @@ action-trigger 按下时先发 action 事件，再让这条进入退场；closab
 
 <XhDemo src="toast/04-action" />
 
-### 图标与自定义排版
+### 自定义排版
 
-卡片里排什么由作者定：图标与标题排成一行，标题部件的内容归作者写
+条子本身就是一行 flex，摆什么、摆在哪一侧都归作者；组件只管盒子、计时与退场
 
 <XhDemo src="toast/05-icon" />
 
@@ -183,7 +185,7 @@ action-trigger 按下时先发 action 事件，再让这条进入退场；closab
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-toast-accent` · `--xh-toast-accent-width` · `--xh-toast-action-bg` · `--xh-toast-action-bg-active` · `--xh-toast-action-bg-hover` · `--xh-toast-action-border` · `--xh-toast-action-fg` · `--xh-toast-action-font-weight` · `--xh-toast-action-h` · `--xh-toast-action-px` · `--xh-toast-action-radius` · `--xh-toast-bg` · `--xh-toast-border` · `--xh-toast-close-bg-active` · `--xh-toast-close-bg-hover` · `--xh-toast-close-fg` · `--xh-toast-close-fg-hover` · `--xh-toast-close-radius` · `--xh-toast-close-size` · `--xh-toast-fg` · `--xh-toast-font-size` · `--xh-toast-gap` · `--xh-toast-icon-size` · `--xh-toast-inset` · `--xh-toast-layer` · `--xh-toast-leading` · `--xh-toast-px` · `--xh-toast-py` · `--xh-toast-radius` · `--xh-toast-shadow` · `--xh-toast-title-fg` · `--xh-toast-title-font-size` · `--xh-toast-title-font-weight` · `--xh-toast-title-leading` · `--xh-toast-w`
+`--xh-toast-action-bg` · `--xh-toast-action-bg-active` · `--xh-toast-action-bg-hover` · `--xh-toast-action-border` · `--xh-toast-action-fg` · `--xh-toast-action-font-weight` · `--xh-toast-action-h` · `--xh-toast-action-px` · `--xh-toast-action-radius` · `--xh-toast-bg` · `--xh-toast-border` · `--xh-toast-close-bg-active` · `--xh-toast-close-bg-hover` · `--xh-toast-close-fg` · `--xh-toast-close-fg-hover` · `--xh-toast-close-radius` · `--xh-toast-close-size` · `--xh-toast-fg` · `--xh-toast-font-size` · `--xh-toast-gap` · `--xh-toast-icon-size` · `--xh-toast-inset` · `--xh-toast-layer` · `--xh-toast-leading` · `--xh-toast-px` · `--xh-toast-py` · `--xh-toast-radius` · `--xh-toast-shadow` · `--xh-toast-title-fg` · `--xh-toast-title-font-size` · `--xh-toast-title-font-weight` · `--xh-toast-title-leading` · `--xh-toast-w`
 
 ## 动效
 
