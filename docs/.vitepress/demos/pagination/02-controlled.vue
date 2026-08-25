@@ -25,12 +25,12 @@ const page = ref(1);
       <li v-for="row in slice(rows)" :key="row">{{ row }}</li>
     </ul>
 
-    <XhPaginationPrevTrigger>上一页</XhPaginationPrevTrigger>
+    <XhPaginationPrevTrigger />
     <template v-for="(p, i) in pages" :key="`${p}-${i}`">
       <XhPaginationEllipsis v-if="p === 'ellipsis'">…</XhPaginationEllipsis>
       <XhPaginationItem v-else :value="p">{{ p }}</XhPaginationItem>
     </template>
-    <XhPaginationNextTrigger>下一页</XhPaginationNextTrigger>
+    <XhPaginationNextTrigger />
     <span style="flex-basis: 100%">
       第 {{ pageRange.start }}-{{ pageRange.end }} 条，共 {{ count }} 条
     </span>

@@ -52,12 +52,12 @@ const pageSize = computed(() => Number(picked.value[0] ?? "10"));
       :default-page="8"
       style="inline-size: 100%"
     >
-      <XhPaginationPrevTrigger>上一页</XhPaginationPrevTrigger>
+      <XhPaginationPrevTrigger />
       <template v-for="(p, i) in pages" :key="`${p}-${i}`">
         <XhPaginationEllipsis v-if="p === 'ellipsis'">…</XhPaginationEllipsis>
         <XhPaginationItem v-else :value="p">{{ p }}</XhPaginationItem>
       </template>
-      <XhPaginationNextTrigger>下一页</XhPaginationNextTrigger>
+      <XhPaginationNextTrigger />
       <span style="flex-basis: 100%">
         第 {{ pageRange.start }}-{{ pageRange.end }} 条，共 {{ count }} 条
       </span>

@@ -18,8 +18,8 @@ const page = ref(2);
     :page-size="10"
     style="inline-size: 100%"
   >
-    <XhPaginationPrevTrigger>上一页</XhPaginationPrevTrigger>
+    <XhPaginationPrevTrigger />
     <span>{{ current }} / {{ totalPages }}</span>
-    <XhPaginationNextTrigger>下一页</XhPaginationNextTrigger>
+    <XhPaginationNextTrigger />
   </XhPaginationRoot>
 </template>
