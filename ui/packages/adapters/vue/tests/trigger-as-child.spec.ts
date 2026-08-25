@@ -3,6 +3,7 @@ import { onDiagnostic, resetDiagnostics } from '@xihan-ui/kernel'
 // 触发器的 asChild：借用作者的节点当触发器，不再自己渲染 <button> 包裹。
 // 元素子节点整套属性都拿；组件子节点保留自己的解剖标记只拿接线属性；
 // 子节点数不对退回默认渲染并报诊断；定位锚点拿到的是真实元素。
+// 两个触发器叠在同一颗按钮上（气泡 + 浮层）也是一种合法用法，靠属性直通把两套接线合上去。
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createApp, defineComponent, h, nextTick } from 'vue'
 import {
@@ -15,6 +16,10 @@ import {
   XhPopconfirmPositioner,
   XhPopconfirmRoot,
   XhPopconfirmTrigger,
+  XhPopoverContent,
+  XhPopoverPositioner,
+  XhPopoverRoot,
+  XhPopoverTrigger,
   XhTooltipContent,
   XhTooltipPositioner,
   XhTooltipRoot,
@@ -116,6 +121,35 @@ describe('触发器 asChild', () => {
     await tick()
     // 能开出来说明 triggerRef 拿到了真实元素（组件实例是定不了位的）
     expect(document.querySelector('[data-scope="tooltip"][data-part="content"]')).not.toBeNull()
+  })
+
+  it('两个触发器叠在同一颗按钮上：两台机器各自都开得出来', async () => {
+    // 外层气泡走 asChild，把自己的接线合到内层浮层触发器上；
+    // 内层照常渲染 <button>，直通属性由 Vue 合进去。整棵树只该有这一颗按钮。
+    mount(() => h(XhPopoverRoot, null, () => [
+      h(XhTooltipRoot, null, () => [
+        h(XhTooltipTrigger, { asChild: true }, () => h(XhPopoverTrigger, { class: 'bell' }, () => '铃铛')),
+        h(XhTooltipPositioner, null, () => h(XhTooltipContent, () => '通知')),
+      ]),
+      h(XhPopoverPositioner, null, () => h(XhPopoverContent, () => '面板')),
+    ]))
+    await tick()
+
+    expect(document.querySelectorAll('button')).toHaveLength(1)
+    const trigger = el('button')
+    // 解剖标记归内层那个部件，作者写的 class 也在
+    expect(trigger.dataset.scope).toBe('popover')
+    expect(trigger.classList.contains('bell')).toBe(true)
+
+    // 悬停开气泡
+    trigger.dispatchEvent(new PointerEvent('pointerenter', { bubbles: true }))
+    await tick()
+    expect(document.querySelector('[data-scope="tooltip"][data-part="content"]')).not.toBeNull()
+
+    // 点击开浮层——两套事件都挂在同一颗按钮上，谁也没把谁挤掉
+    trigger.click()
+    await tick()
+    expect(document.querySelector('[data-scope="popover"][data-part="content"]')).not.toBeNull()
   })
 
   it('子节点不是恰好一个：报诊断并退回默认的 button 渲染', async () => {
