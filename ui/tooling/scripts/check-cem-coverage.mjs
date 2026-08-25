@@ -24,7 +24,8 @@ const manifest = JSON.parse(await readFile(MANIFEST, 'utf8'))
 const declared = new Map()
 for (const module of manifest.modules ?? []) {
   for (const declaration of module.declarations ?? []) {
-    if (declaration.tagName) declared.set(declaration.tagName, module.path)
+    if (declaration.tagName)
+      declared.set(declaration.tagName, module.path)
   }
 }
 

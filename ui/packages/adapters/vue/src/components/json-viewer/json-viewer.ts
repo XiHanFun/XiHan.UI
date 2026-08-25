@@ -102,10 +102,11 @@ export const XhJsonViewerRoot = defineComponent({
     return () => {
       const api = ctx.api.value
       // 原文档不铺行：整块文本交给 pre，框选与复制才拿得到与后端一字不差的那份
-      if (api.view === 'text')
+      if (api.view === 'text') {
         return h('div', api.getRootProps() as Record<string, unknown>, [
           h('pre', api.getTextProps() as Record<string, unknown>, api.text),
         ])
+      }
 
       const children = groupByParent(api.visibleNodes)
       return h('div', api.getRootProps() as Record<string, unknown>, [

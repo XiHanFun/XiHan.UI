@@ -39,7 +39,7 @@ export function useScrollLock(
   config: MaybeRefOrGetter<RuntimeConfig>,
 ): void {
   let handle: { dispose: () => void } | null = null
-  const release = () => {
+  const release = (): void => {
     handle?.dispose()
     handle = null
   }

@@ -1,8 +1,8 @@
-import { closeReasonOf } from '../shared/close-reason'
 import type { DrawerSchema } from './drawer.types'
 import { acquireScrollLock, createDismissLayer, createFocusScope } from '@xihan-ui/behavior'
 import { hideOutside } from '@xihan-ui/kernel'
 import { setup } from '@xihan-ui/machine'
+import { closeReasonOf } from '../shared/close-reason'
 
 const { createMachine } = setup<DrawerSchema>()
 

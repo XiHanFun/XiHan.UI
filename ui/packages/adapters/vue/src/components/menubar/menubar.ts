@@ -7,6 +7,8 @@ import { createRuntimeConfig } from '@xihan-ui/kernel'
 import { computed, defineComponent, h, mergeProps, onBeforeUnmount, ref, Teleport, watch } from 'vue'
 import { mergeIntoChild } from '../../runtime/as-child'
 import { useOverlayExit } from '../../runtime/use-overlay-exit'
+import { provideMenu, provideMenuChain, useMenuContext } from '../menu/context'
+import { useMenu } from '../menu/use-menu'
 import {
   provideMenubar,
   provideMenubarChain,
@@ -21,8 +23,6 @@ import {
   useMenubarMenuContext,
   useMenubarSubContext,
 } from './context'
-import { provideMenu, provideMenuChain, useMenuContext } from '../menu/context'
-import { useMenu } from '../menu/use-menu'
 import { useMenubar } from './use-menubar'
 
 type MenubarProps = MenubarSchema['props']

@@ -13,7 +13,7 @@ describe('布尔属性归一化', () => {
   })
 
   it('不动其余属性的取值', () => {
-    const out = vueNormalize.element({ hidden: true, 'data-state': 'closed' }) as Record<string, unknown>
+    const out = vueNormalize.element({ 'hidden': true, 'data-state': 'closed' }) as Record<string, unknown>
     expect(out.hidden).toBe(true)
     expect(out['data-state']).toBe('closed')
   })

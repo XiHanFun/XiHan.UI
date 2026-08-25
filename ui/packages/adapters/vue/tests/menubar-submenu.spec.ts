@@ -4,9 +4,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createApp, h, nextTick } from 'vue'
 import {
-  XhMenuContent,
-  XhMenuItem,
-  XhMenuPositioner,
   XhMenubarContent,
   XhMenubarItem,
   XhMenubarPositioner,
@@ -14,6 +11,9 @@ import {
   XhMenubarSub,
   XhMenubarSubTrigger,
   XhMenubarTrigger,
+  XhMenuContent,
+  XhMenuItem,
+  XhMenuPositioner,
 } from '../src'
 
 async function tick(): Promise<void> {

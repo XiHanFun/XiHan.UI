@@ -2,9 +2,9 @@
 
 export { cascadeState, cascadeToggle, collapseChecked } from './collection/cascade'
 export type { CascadeNodeLike, CascadeState, CascadeStrategy } from './collection/cascade'
+export { readDirection } from './collection/direction'
 export { anchorItem, declaredItemDisabled, focusItem, indexOfValue, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, queryItems } from './collection/items'
 export type { ItemQuery, NavigateOptions } from './collection/items'
-export { readDirection } from './collection/direction'
 export { navIntentFromKey, stepIndex } from './collection/navigate'
 export type { NavAxis, NavIntent, NavKeyOptions, StepOptions } from './collection/navigate'
 export { createTypeahead, matchTypeahead } from './collection/typeahead'

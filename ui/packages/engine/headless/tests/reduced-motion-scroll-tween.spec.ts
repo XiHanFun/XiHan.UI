@@ -2,8 +2,8 @@
 // JS 驱动的两类动效（整页平滑滚动、数值逐帧补间）要自己查减弱动效偏好：
 // 皮肤那条 reduce 通道只关得掉 CSS 动画与过渡，压不到 scrollTo 与 requestAnimationFrame。
 import { resolveScrollBehavior } from '@xihan-ui/behavior'
-import { setMotionOverride } from '@xihan-ui/motion'
 import { createCounterIdGenerator, createScope } from '@xihan-ui/kernel'
+import { setMotionOverride } from '@xihan-ui/motion'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 /** 装一个 matchMedia 替身，只对减弱动效那条查询作答。 */
