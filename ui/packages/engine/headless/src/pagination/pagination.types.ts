@@ -1,6 +1,6 @@
-import type { Direction, PropTypes, Size, Tone } from '@xihan-ui/kernel'
+import type { Cleanup, Direction, Layer, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
-import type { PaginationEntryRange, PaginationPage } from './pagination.range'
+import type { PaginationEllipsisSide, PaginationEntryRange, PaginationPage, PaginationPageItem } from './pagination.range'
 
 export interface PaginationPageSizeChangeDetails {
   /** 变化后的每页条数。 */
@@ -21,6 +21,11 @@ export interface PaginationItemProps {
   page: number
 }
 
+/** 省略位属性：哪一侧的省略位，由作者在部件上声明。至多两个，用它区分。 */
+export interface PaginationEllipsisProps {
+  side: PaginationEllipsisSide
+}
+
 /** 读屏用的文案。默认英文，与 dialog / popover 的 translations 同一套写法。 */
 export interface PaginationTranslations {
   /** 根节点的 aria-label，用于区分同页的多个 nav 地标。 */
@@ -29,6 +34,8 @@ export interface PaginationTranslations {
   nextTrigger: string
   /** 页码按钮的 aria-label。 */
   item: (page: number) => string
+  /** 省略位的 aria-label：它是个可展开的按钮，得说清展开出来是什么。 */
+  ellipsis: (count: number) => string
 }
 
 export interface PaginationSchema extends MachineSchema {
@@ -50,6 +57,14 @@ export interface PaginationSchema extends MachineSchema {
     /** 文字方向，只作用于排版；上一页/下一页的语义不随之翻转，"上一页"永远是 page - 1。 */
     dir?: Direction
     translations?: Partial<PaginationTranslations>
+    /** 省略位展开后的落点，默认 bottom-start（列表类浮层）。 */
+    placement?: Placement
+    /** 浮层与省略位之间的间距（px），默认 8。 */
+    offset?: number
+    /** 指针停在省略位多久才展开（ms），默认 200。 */
+    openDelay?: number
+    /** 指针离开后多久收起（ms），默认 300：留出斜着划进浮层的时间。 */
+    closeDelay?: number
     /** 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 */
     tone?: Tone
     /** 尺寸：sm / md / lg。 */
@@ -64,20 +79,42 @@ export interface PaginationSchema extends MachineSchema {
     page: number
     /** 每页条数。受控（pageSize 给定）时同上。 */
     pageSize: number
+    /** 此刻摊开的是哪一侧的省略位；没摊开为 null。 */
+    openEllipsis: PaginationEllipsisSide | null
+    /** 定位结果，由 trackPosition 回填。 */
+    position: PositionResult | null
   }
   computed: Record<string, never>
-  refs: Record<string, never>
-  /** 只有一个状态：页码住在 context 的 cell 里，机器只是它的写入口。 */
-  state: 'idle'
+  refs: {
+    config: RuntimeConfig | null
+    registerLayer: (() => { layer: Layer, dispose: Cleanup }) | null
+    position: PositionEnginePort | null
+    getAnchorEl: () => HTMLElement | null
+    getFloatingEl: () => HTMLElement | null
+    getContentEl: () => HTMLElement | null
+  }
+  /**
+   * 翻页本身没有状态，这几个态说的是省略位的浮层：
+   * 停够时长才展开（opening），离开后留一段时间再收（visible.closing）。
+   */
+  state: 'closed' | 'opening' | 'visible' | 'visible.open' | 'visible.closing'
   event:
     | { type: 'PAGE.SET', page: number }
     | { type: 'PAGE_SIZE.SET', pageSize: number }
     | { type: 'PAGE.PREV' }
     | { type: 'PAGE.NEXT' }
+    /** 指针进入某个省略位或已摊开的浮层。 */
+    | { type: 'ELLIPSIS.ENTER', side?: PaginationEllipsisSide }
+    | { type: 'ELLIPSIS.LEAVE' }
+    /** 点省略位：已摊开的同一侧收起，否则立即摊开，不走延时。 */
+    | { type: 'ELLIPSIS.TOGGLE', side: PaginationEllipsisSide }
+    | { type: 'ELLIPSIS.CLOSE' }
+    | { type: 'after.openDelay' }
+    | { type: 'after.closeDelay' }
   tag: never
-  guard: never
-  action: 'setPage' | 'setPageSize' | 'goPrev' | 'goNext'
-  effect: never
+  action: 'setPage' | 'setPageSize' | 'goPrev' | 'goNext' | 'openEllipsis' | 'clearEllipsis'
+  guard: 'isSameEllipsis'
+  effect: 'waitForOpenDelay' | 'waitForCloseDelay' | 'trackPosition' | 'trackLayer'
 }
 
 export interface PaginationApi<T extends PropTypes = PropTypes> {
@@ -90,6 +127,10 @@ export interface PaginationApi<T extends PropTypes = PropTypes> {
   totalPages: number
   /** 页码序列，作者照着渲染 item 与 ellipsis。 */
   pages: PaginationPage[]
+  /** 同一串序列，但省略位带着被折叠的那几页——摊开省略号要靠它。 */
+  pageItems: PaginationPageItem[]
+  /** 此刻摊开的是哪一侧的省略位；没摊开为 null。 */
+  openEllipsis: PaginationEllipsisSide | null
   /** 当前页对应的条目区间，1 基闭区间；无数据时是 { start: 0, end: 0 }。 */
   pageRange: PaginationEntryRange
   /** 上一页页码；已在首页（或无数据）时为 null。 */
@@ -107,5 +148,10 @@ export interface PaginationApi<T extends PropTypes = PropTypes> {
   getPrevTriggerProps: () => T['button']
   getNextTriggerProps: () => T['button']
   getItemProps: (props: PaginationItemProps) => T['button']
-  getEllipsisProps: () => T['element']
+  /** 省略位：可展开的按钮，摊开后列出被折叠的页码。 */
+  getEllipsisProps: (props: PaginationEllipsisProps) => T['button']
+  getPositionerProps: () => T['element']
+  getContentProps: () => T['element']
+  /** 收起摊开的省略位。 */
+  closeEllipsis: () => void
 }

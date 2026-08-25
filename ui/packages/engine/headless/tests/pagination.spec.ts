@@ -331,10 +331,49 @@ describe('connectPagination', () => {
     expect(api(s).page).toBe(10)
   })
 
-  it('省略号对读屏隐藏', () => {
-    const el = api(makeService({ count: 100 })).getEllipsisProps() as Props
+  it('省略位是可展开的按钮，不再对读屏隐藏', () => {
+    // 折进去那几页除了它没有别的入口，藏起来等于把它们从读屏用户那里删掉
+    const el = api(makeService({ count: 2000, defaultPage: 100 })).getEllipsisProps({ side: 'end' }) as Props
     expect(el['data-part']).toBe('ellipsis')
-    expect(el['aria-hidden']).toBe(true)
+    expect(el['aria-hidden']).toBeUndefined()
+    expect(el.type).toBe('button')
+    expect(el['aria-expanded']).toBe('false')
+    expect(el['aria-haspopup']).toBe('true')
+    expect(el['data-side']).toBe('end')
+  })
+
+  it('pageItems 带出被折叠的是哪几页，两侧各一段', () => {
+    // 200 页停在第 100 页：首页与窗口之间折一段，窗口与末页之间折一段
+    const items = api(makeService({ count: 2000, pageSize: 10, defaultPage: 100 })).pageItems
+    const gaps = items.filter(item => item.type === 'ellipsis')
+    expect(gaps.map(g => g.type === 'ellipsis' ? g.side : null)).toEqual(['start', 'end'])
+
+    const head = gaps[0]
+    const tail = gaps[1]
+    if (head?.type !== 'ellipsis' || tail?.type !== 'ellipsis')
+      throw new Error('省略位形状不对')
+    // 首页与末页本身留在序列里，折的是它们与窗口之间那段
+    expect(head.pages[0]).toBe(2)
+    expect(head.pages.at(-1)).toBe(98)
+    expect(tail.pages[0]).toBe(102)
+    expect(tail.pages.at(-1)).toBe(199)
+  })
+
+  it('pages 与 pageItems 同源：两串逐项对得上', () => {
+    // 各算一遍必然漂移，pages 由 pageItems 派生
+    for (const page of [1, 5, 100, 199, 200]) {
+      const svc = makeService({ count: 2000, pageSize: 10, defaultPage: page })
+      const a = api(svc)
+      expect(a.pages).toEqual(
+        a.pageItems.map(item => (item.type === 'page' ? item.value : 'ellipsis')),
+      )
+    }
+  })
+
+  it('装得下就不折：没有省略位时 pageItems 全是页码', () => {
+    const items = api(makeService({ count: 30, pageSize: 10 })).pageItems
+    expect(items.every(item => item.type === 'page')).toBe(true)
+    expect(items).toHaveLength(3)
   })
 
   it('pageRange 与 slice 走同一份页码，末页不满时按实际条数收口', () => {

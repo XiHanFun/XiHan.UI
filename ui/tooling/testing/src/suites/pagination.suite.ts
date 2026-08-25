@@ -29,9 +29,14 @@ export const paginationSuite: ConformanceSuite = {
       { part: 'item', tag: 'button', attrs: { value: '1' }, text: '1' },
       { part: 'item', tag: 'button', attrs: { value: '2' }, text: '2' },
       { part: 'item', tag: 'button', attrs: { value: '3' }, text: '3' },
-      { part: 'ellipsis', tag: 'span', text: '…' },
+      { part: 'ellipsis', tag: 'button', attrs: { 'data-side': 'end' }, text: '…' },
       { part: 'item', tag: 'button', attrs: { value: '10' }, text: '10' },
       { part: 'next-trigger', tag: 'button', text: '下一页' },
+      {
+        part: 'positioner',
+        tag: 'div',
+        children: [{ part: 'content', tag: 'div' }],
+      },
     ],
   },
   cases: [
@@ -40,8 +45,8 @@ export const paginationSuite: ConformanceSuite = {
       spec: { apg: APG, adr: ARIA_CURRENT },
       props: { count: 100, pageSize: 10 },
       initial: {
-        order: ['root', 'prev-trigger', 'item[0]', 'item[1]', 'item[2]', 'ellipsis', 'item[3]', 'next-trigger'],
-        counts: { 'root': 1, 'prev-trigger': 1, 'item': 4, 'ellipsis': 1, 'next-trigger': 1 },
+        order: ['root', 'prev-trigger', 'item[0]', 'item[1]', 'item[2]', 'ellipsis', 'item[3]', 'next-trigger', 'positioner', 'content'],
+        counts: { 'root': 1, 'prev-trigger': 1, 'item': 4, 'ellipsis': 1, 'next-trigger': 1, 'positioner': 1, 'content': 1 },
         parts: {
           'root': {
             'aria-label': 'Pagination',
@@ -74,8 +79,9 @@ export const paginationSuite: ConformanceSuite = {
           },
           'item[1]': { 'aria-current': null, 'data-current': null, 'data-value': '2' },
           'item[3]': { 'aria-current': null, 'data-value': '10' },
-          // 省略号是纯视觉占位，读屏念 "…" 只会念出标点噪音
-          'ellipsis': { 'aria-hidden': 'true', 'role': null },
+          // 省略位是可展开的按钮：折进去那几页得有路走到，不能对读屏藏起来。
+          // 名字来自 translations，读屏念的是「还有几页」而不是 "…" 这个标点
+          'ellipsis': { 'aria-hidden': null, 'aria-expanded': 'false', 'aria-haspopup': 'true' },
         },
       },
     },
@@ -249,6 +255,51 @@ export const paginationSuite: ConformanceSuite = {
         nativeActivation('pagination', 'item'),
         nativeActivation('pagination', 'prev-trigger'),
         nativeActivation('pagination', 'next-trigger'),
+      ],
+    },
+    {
+      name: '省略位是可展开的按钮：点一下摊开被折叠的页码，再点收起',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      covers: ['pagination.kbd.ellipsis'],
+      props: { count: 200, pageSize: 10, defaultPage: 1 },
+      initial: {
+        parts: {
+          // 纯 hover 会把键盘用户挡在外面，而折进去那几页除了它没有别的入口
+          ellipsis: { 'aria-expanded': 'false', 'aria-haspopup': 'true', 'data-state': 'closed' },
+        },
+      },
+      steps: [
+        {
+          kind: 'click',
+          part: 'ellipsis',
+          expect: { parts: { ellipsis: { 'aria-expanded': 'true', 'data-state': 'open' } } },
+        },
+        {
+          kind: 'click',
+          part: 'ellipsis',
+          expect: { parts: { ellipsis: { 'aria-expanded': 'false', 'data-state': 'closed' } } },
+        },
+      ],
+    },
+    {
+      name: '摊开后 Escape 收起：走的是消解层，点面板外面同样收起',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      covers: ['pagination.kbd.ellipsis-escape'],
+      props: { count: 200, pageSize: 10, defaultPage: 1 },
+      steps: [
+        {
+          kind: 'click',
+          part: 'ellipsis',
+          expect: { parts: { ellipsis: { 'aria-expanded': 'true' } } },
+        },
+        {
+          kind: 'raw',
+          why: 'Escape 由消解层在 document 上收，不是部件自己的 keydown——逐部件的属性期望表达不了这条链路',
+          run: ({ doc }) => {
+            doc.dispatchEvent(new (doc.defaultView!).KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))
+          },
+          expect: { parts: { ellipsis: { 'aria-expanded': 'false' } } },
+        },
       ],
     },
     {

@@ -1,3 +1,30 @@
+@layer xihan.motion {
+  /* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
+     动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
+  @keyframes xh-pop-in {
+    from {
+      opacity: 0;
+      scale: var(--xh-motion-scale-enter);
+    }
+
+    to {
+      opacity: 1;
+      scale: 1;
+    }
+  }
+  @keyframes xh-pop-out {
+    from {
+      opacity: 1;
+      scale: 1;
+    }
+
+    to {
+      opacity: 0;
+      scale: var(--xh-motion-scale-enter);
+    }
+  }
+}
+
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
   [data-scope='pagination'] {
@@ -153,6 +180,61 @@
     cursor: default;
     pointer-events: none;
   }
+  /* 摊开省略位的定位层。三处坐标系必须同为 fixed：机器交给引擎的 strategy、
+     连接层的内联 position、这里 —— 差一处就会算在错的坐标系里 */
+  [data-scope='pagination'][data-part='positioner'] {
+    /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，面板继承它限高；
+       引擎没算（尚未落位 / 无引擎 / 贴边归零）时不额外限高 */
+    --xh-_pagination-available-h: 100vh;
+
+    position: fixed;
+    z-index: var(--xh-pagination-layer, var(--xh-layer-popover));
+    /* 空壳不吃指针：省略位与面板之间那段间隙要能点得穿 */
+    pointer-events: none;
+  }
+
+  /* 锚点被滚出可视区：整个浮层随之收起 */
+  [data-scope='pagination'][data-part='positioner'][data-hidden] {
+    visibility: hidden;
+  }
+
+  /* 摊开的页码面板：一串页码格子，横着排、必要时折行 */
+  [data-scope='pagination'][data-part='content'] {
+    /* 浮层被搬到 portal 落点，继承不到 root 上那把尺，这里再声明一遍 */
+    --xh-icon-size: var(--xh-pagination-icon-size, var(--xh-glyph-size-text));
+
+    display: flex;
+    flex-flow: row wrap;
+    gap: var(--xh-pagination-gap, var(--xh-space-1));
+    /* 页码不可预知有多少：不限高就整块伸出视口且滚不到 */
+    max-inline-size: var(--xh-pagination-content-max-w, var(--xh-overlay-max-w));
+    max-block-size: min(
+      var(--xh-pagination-content-max-h, var(--xh-overlay-max-h)),
+      var(--xh-_pagination-available-h)
+    );
+    overflow-y: auto;
+    padding: var(--xh-pagination-content-p, var(--xh-space-1));
+    border: var(--xh-stroke-thin) solid var(--xh-pagination-content-border, var(--xh-border-default));
+    border-radius: var(--xh-pagination-content-radius, var(--xh-shape-surface));
+    background: var(--xh-pagination-content-bg, var(--xh-bg-surface));
+    box-shadow: var(--xh-pagination-content-shadow, var(--xh-elevation-floating));
+    /* 定位层不吃指针，面板本体必须吃：里面的页码要点得到 */
+    pointer-events: auto;
+  }
+
+  [data-scope='pagination'][data-part='content'][data-state='open'] {
+    animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  }
+
+  /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
+     免得动画结束到真收起之间闪一下原样 */
+  [data-scope='pagination'][data-part='content'][data-state='closed'] {
+    animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+  }
+
+  /* 这里刻意没有 [data-part='content'][hidden] { display: none }：
+     补了退场就一帧都播不出来，真正的收起由适配器落成内联 display */
+
   /* 没写内容就由皮肤画兜底字形：上一页/下一页默认就是两枚箭头，
      作者往部件里塞了自己的图形或文字，这两条即不命中 */
   [data-scope='pagination'][data-part='prev-trigger']:empty::before {
