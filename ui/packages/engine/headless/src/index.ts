@@ -204,7 +204,7 @@ export { connectTable, flattenTableRows, tableAnatomy, tableKeyboard, tableMachi
 export type { TableApi, TableCellProps, TableColumnDef, TableColumnProps, TableExpandedChangeDetails, TableFocusModel, TableRowDef, TableRowProps, TableSchema, TableSelection, TableSelectionChangeDetails, TableSelectionMode, TableSelectionState, TableSortChangeDetails, TableSortDescriptor, TableSortDirection, TableToggleSortOptions, TableTranslations, TableVisibleRow } from './table'
 export { connectTabs, tabsAnatomy, tabsKeyboard, tabsMachine, tabsMeta } from './tabs'
 export type { TabsActivationMode, TabsApi, TabsContentProps, TabsNode, TabsNodeMeta, TabsSchema, TabsTranslations, TabsTriggerProps, TabsValueChangeDetails, TabsVariant } from './tabs'
-export { connectTag, tagAnatomy, tagKeyboard, tagMachine, tagMeta } from './tag'
+export { connectStaticTag, connectTag, tagAnatomy, tagKeyboard, tagMachine, tagMeta } from './tag'
 export type { TagApi, TagOpenChangeDetails, TagSchema, TagTranslations, TagVariant } from './tag'
 export { appendTags, connectTagsInput, isAtMax, isOverflow, normalizeTag, normalizeTags, sameTags, splitTags, TAGS_INPUT_DELIMITER, tagsDelimiter, tagsInputAnatomy, tagsInputEditInputId, tagsInputKeyboard, tagsInputMachine, tagsInputMeta } from './tags-input'
 export type { TagsAppendOptions, TagsAppendResult, TagsInputApi, TagsInputBlurBehavior, TagsInputInputValueChangeDetails, TagsInputItemProps, TagsInputSchema, TagsInputTranslations, TagsInputValueChangeDetails } from './tags-input'
