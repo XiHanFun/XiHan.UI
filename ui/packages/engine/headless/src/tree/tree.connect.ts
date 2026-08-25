@@ -1,5 +1,5 @@
 import type { NavIntent } from '@xihan-ui/behavior'
-import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
+import type { NormalizeProps, Orientation, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { TreeApi, TreeNodeMeta, TreeSchema, TreeVisibleNode } from './tree.types'
 import { cascadeState, focusItem, indexOfValue, isItemDisabled, ITEM_VALUE_ATTR, itemValue, matchTypeahead, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/behavior'
@@ -19,7 +19,12 @@ export function connectTree<T extends PropTypes>(
   const selection = context.get('selection')
   const treeDisabled = !!prop('disabled')
   const dir = prop('dir') ?? 'ltr'
-  const orientation = prop('orientation') ?? 'vertical'
+  // 排布方向逐层解析：给字面值就整棵树一个样，给函数则由每个分支答自己那层
+  const orientationProp = prop('orientation')
+  const orientationOf = (node: TreeNodeMeta | null): Orientation =>
+    (typeof orientationProp === 'function' ? orientationProp(node) : orientationProp) ?? 'vertical'
+  // 根层没有分支节点
+  const rootOrientation = orientationOf(null)
   // 树不回绕：上键停在首行、下键停在末行
   const loop = prop('loop') ?? false
   const typeaheadOn = prop('typeahead') ?? true
@@ -183,7 +188,7 @@ export function connectTree<T extends PropTypes>(
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
-      'data-orientation': orientation,
+      'data-orientation': rootOrientation,
       'data-disabled': dataAttr(treeDisabled),
     }),
 
@@ -199,11 +204,11 @@ export function connectTree<T extends PropTypes>(
       'id': ids.tree,
       'role': 'tree',
       'aria-labelledby': ids.label,
-      'aria-orientation': orientation,
+      'aria-orientation': rootOrientation,
       // 复选与否必须显式说，省略只是没说
       'aria-multiselectable': multiselectable ? 'true' : 'false',
       'aria-disabled': treeDisabled ? 'true' : 'false',
-      'data-orientation': orientation,
+      'data-orientation': rootOrientation,
       // 焦点在树外时容器兜底进 Tab 序列，由 onFocus 转投给节点。
       // 判据用 focusedValue 而非 anchor：anchor 可能指向已删掉、已隐藏或不在树里的值，那时无人认领 tabindex=0
       'tabindex': focusedValue == null ? 0 : -1,
@@ -472,8 +477,9 @@ export function connectTree<T extends PropTypes>(
       ...branchState(node.value),
       // 子层是 treeitem 的下一级分组，role=group 是 tree 结构的必需环节
       'role': 'group',
-      // group 不收 aria-orientation，排布方向只以 data 形式交给皮肤
-      'data-orientation': orientation,
+      // group 不收 aria-orientation，排布方向只以 data 形式交给皮肤。
+      // 这一层由分支自己答：菜单授权那类树里目录竖排、按钮横排就靠它
+      'data-orientation': orientationOf(metaOf(node.value) ?? null),
       // 收起只加 hidden，不卸载作者节点，子树里的输入框与滚动位置得留着
       'hidden': !isExpanded(node.value) || undefined,
     }),

@@ -1,52 +1,67 @@
-<!-- 子层横排 | orientation="horizontal" 把同一层的节点并排铺开，缩进仍标层级；方向键不跟着改：左右是收展、上下走可见行，这是 treeview 的规范语义 -->
+<!-- 逐层排布 | orientation 收函数即按层判定：收到的是分支节点，答的是它那层子节点怎么排；目录与菜单竖排、按钮横排，一行铺开就选完，省掉纵向翻找 -->
 <div style="width: 100%; display: grid; gap: 12px; justify-items: start">
   <label style="display: inline-flex; gap: 6px; align-items: center">
-    <input id="tree-orientation-toggle" type="checkbox" checked />
-    子层横排
+    <input id="tree-orientation-flat" type="checkbox" />
+    整棵树横排（对照）
   </label>
 
-  <xh-tree id="tree-orientation" orientation="horizontal">
+  <xh-tree id="tree-orientation" selection-mode="multiple" cascade>
     <div data-xh-part="root">
-      <span data-xh-part="label">设计令牌</span>
+      <span data-xh-part="label">菜单授权</span>
       <div data-xh-part="tree">
-        <div data-xh-part="branch" value="color">
+        <div data-xh-part="branch" value="system">
           <div data-xh-part="branch-control">
             <span data-xh-part="branch-trigger"></span>
-            <span data-xh-part="branch-text">主色</span>
+            <span data-xh-part="branch-checkbox"></span>
+            <span data-xh-part="branch-text">系统管理</span>
           </div>
           <div data-xh-part="branch-content">
-            <div data-xh-part="item" value="brand">
-              <span data-xh-part="item-indicator"></span>
-              <span data-xh-part="item-text">品牌</span>
+            <div data-xh-part="branch" value="user">
+              <div data-xh-part="branch-control">
+                <span data-xh-part="branch-trigger"></span>
+                <span data-xh-part="branch-checkbox"></span>
+                <span data-xh-part="branch-text">用户管理</span>
+              </div>
+              <div data-xh-part="branch-content">
+                <div data-xh-part="item" value="user:add">
+                  <span data-xh-part="item-checkbox"></span>
+                  <span data-xh-part="item-text">新增</span>
+                </div>
+                <div data-xh-part="item" value="user:edit">
+                  <span data-xh-part="item-checkbox"></span>
+                  <span data-xh-part="item-text">编辑</span>
+                </div>
+                <div data-xh-part="item" value="user:del">
+                  <span data-xh-part="item-checkbox"></span>
+                  <span data-xh-part="item-text">删除</span>
+                </div>
+                <div data-xh-part="item" value="user:export">
+                  <span data-xh-part="item-checkbox"></span>
+                  <span data-xh-part="item-text">导出</span>
+                </div>
+              </div>
             </div>
-            <div data-xh-part="item" value="accent">
-              <span data-xh-part="item-indicator"></span>
-              <span data-xh-part="item-text">强调</span>
-            </div>
-            <div data-xh-part="item" value="neutral">
-              <span data-xh-part="item-indicator"></span>
-              <span data-xh-part="item-text">中性</span>
-            </div>
-          </div>
-        </div>
 
-        <div data-xh-part="branch" value="size">
-          <div data-xh-part="branch-control">
-            <span data-xh-part="branch-trigger"></span>
-            <span data-xh-part="branch-text">尺寸</span>
-          </div>
-          <div data-xh-part="branch-content">
-            <div data-xh-part="item" value="sm">
-              <span data-xh-part="item-indicator"></span>
-              <span data-xh-part="item-text">小</span>
-            </div>
-            <div data-xh-part="item" value="md">
-              <span data-xh-part="item-indicator"></span>
-              <span data-xh-part="item-text">中</span>
-            </div>
-            <div data-xh-part="item" value="lg">
-              <span data-xh-part="item-indicator"></span>
-              <span data-xh-part="item-text">大</span>
+            <div data-xh-part="branch" value="role">
+              <div data-xh-part="branch-control">
+                <span data-xh-part="branch-trigger"></span>
+                <span data-xh-part="branch-checkbox"></span>
+                <span data-xh-part="branch-text">角色管理</span>
+              </div>
+              <div data-xh-part="branch-content">
+                <div data-xh-part="item" value="role:add">
+                  <span data-xh-part="item-checkbox"></span>
+                  <span data-xh-part="item-text">新增</span>
+                </div>
+                <div data-xh-part="item" value="role:grant">
+                  <span data-xh-part="item-checkbox"></span>
+                  <span data-xh-part="item-text">授权</span>
+                </div>
+                <div data-xh-part="item" value="role:del">
+                  <span data-xh-part="item-checkbox"></span>
+                  <span data-xh-part="item-text">删除</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -57,36 +72,53 @@
 
 <script type="module">
   const tree = document.getElementById("tree-orientation");
-  const toggle = document.getElementById("tree-orientation-toggle");
+  const flat = document.getElementById("tree-orientation-flat");
 
   tree.collection = [
     {
-      value: "color",
-      label: "主色",
+      value: "system",
+      label: "系统管理",
       children: [
-        { value: "brand", label: "品牌" },
-        { value: "accent", label: "强调" },
-        { value: "neutral", label: "中性" },
-      ],
-    },
-    {
-      value: "size",
-      label: "尺寸",
-      children: [
-        { value: "sm", label: "小" },
-        { value: "md", label: "中" },
-        { value: "lg", label: "大" },
+        {
+          value: "user",
+          label: "用户管理",
+          children: [
+            { value: "user:add", label: "新增" },
+            { value: "user:edit", label: "编辑" },
+            { value: "user:del", label: "删除" },
+            { value: "user:export", label: "导出" },
+          ],
+        },
+        {
+          value: "role",
+          label: "角色管理",
+          children: [
+            { value: "role:add", label: "新增" },
+            { value: "role:grant", label: "授权" },
+            { value: "role:del", label: "删除" },
+          ],
+        },
       ],
     },
   ];
 
-  tree.expandedValue = ["color", "size"];
+  tree.expandedValue = ["system", "user", "role"];
   tree.addEventListener(
     "expanded-change",
     (event) => (tree.expandedValue = event.detail.value),
   );
 
-  toggle.addEventListener("change", () => {
-    tree.setAttribute("orientation", toggle.checked ? "horizontal" : "vertical");
+  tree.selection = ["user:add"];
+  tree.addEventListener(
+    "selection-change",
+    (event) => (tree.selection = event.detail.value),
+  );
+
+  // 菜单那一层（level 2）的子节点横排，其余竖排。函数走同名 property，不走属性
+  const byLevel = (node) => (node?.level === 2 ? "horizontal" : "vertical");
+  tree.orientation = byLevel;
+
+  flat.addEventListener("change", () => {
+    tree.orientation = flat.checked ? "horizontal" : byLevel;
   });
 </script>

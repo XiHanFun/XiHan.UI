@@ -43416,7 +43416,7 @@
               "name": "orientation",
               "privacy": "public",
               "type": {
-                "text": "Orientation | undefined"
+                "text": "Orientation | TreeOrientationResolver | undefined"
               },
               "attribute": "orientation"
             },
@@ -43603,9 +43603,9 @@
             },
             {
               "type": {
-                "text": "Orientation | undefined"
+                "text": "Orientation | TreeOrientationResolver | undefined"
               },
-              "description": "子层排布方向，默认 vertical；horizontal 让同一层的节点并排铺开",
+              "description": "子层排布方向，默认 vertical；horizontal 让同一层的节点并排铺开。逐层判定改用同名 property 传函数",
               "name": "orientation",
               "fieldName": "orientation"
             },
