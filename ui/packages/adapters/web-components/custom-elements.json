@@ -43413,12 +43413,12 @@
             },
             {
               "kind": "field",
-              "name": "orientation",
+              "name": "leafOrientation",
               "privacy": "public",
               "type": {
-                "text": "Orientation | TreeOrientationResolver | undefined"
+                "text": "Orientation | undefined"
               },
-              "attribute": "orientation"
+              "attribute": "leaf-orientation"
             },
             {
               "kind": "field",
@@ -43603,11 +43603,11 @@
             },
             {
               "type": {
-                "text": "Orientation | TreeOrientationResolver | undefined"
+                "text": "Orientation | undefined"
               },
-              "description": "子层排布方向，默认 vertical；horizontal 让同一层的节点并排铺开。逐层判定改用同名 property 传函数",
-              "name": "orientation",
-              "fieldName": "orientation"
+              "description": "末端那一层怎么排，默认 vertical；horizontal 让子节点全是叶子的那层并排铺开",
+              "name": "leaf-orientation",
+              "fieldName": "leafOrientation"
             },
             {
               "type": {
@@ -43740,6 +43740,9 @@
             },
             {
               "name": "--xh-tree-label-font-weight"
+            },
+            {
+              "name": "--xh-tree-leaf-row-gap"
             },
             {
               "name": "--xh-tree-max-h"

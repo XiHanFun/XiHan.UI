@@ -278,18 +278,17 @@
     padding-inline-start: var(--xh-tree-indent, var(--xh-space-4));
   }
 
-  /* 横排：同一层的节点并排铺开。缩进照旧由子层容器自己顶——那是这一层相对上一层的位置，
-     与层内怎么排无关。行宽在横排下不该再吃满整行，改由内容撑 */
-  [data-scope='tree'][data-part='tree'][data-orientation='horizontal'],
+  /* 末端那一层横排：子节点并排铺开、必要时折行。缩进照旧由子层容器自己顶——
+     那是这一层相对上一层的位置，与层内怎么排无关 */
   [data-scope='tree'][data-part='branch-content'][data-orientation='horizontal'] {
-    flex-direction: row;
-    align-items: start;
-    gap: var(--xh-tree-row-gap, var(--xh-control-gap-md));
+    flex-flow: row wrap;
+    align-items: center;
+    column-gap: var(--xh-tree-leaf-row-gap, var(--xh-space-3));
   }
 
-  /* 横排的一层里节点是并排的，行盒不能再各自吃满一行 */
-  [data-orientation='horizontal'] > [data-scope='tree'][data-part='item'],
-  [data-orientation='horizontal'] > [data-scope='tree'][data-part='branch'] {
+  /* 横排的一层里节点并排，行盒不能再各自吃满一行。
+     这一层按定义全是叶子，不会出现分支 */
+  [data-orientation='horizontal'] > [data-scope='tree'][data-part='item'] {
     flex: none;
   }
 

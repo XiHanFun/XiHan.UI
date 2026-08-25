@@ -82,9 +82,9 @@ selection-mode="multiple" 加 cascade 内建父子传导：点分支整枝勾上
 
 <XhDemo src="tree/10-drag-move" />
 
-### 逐层排布
+### 末端横排
 
-orientation 收函数即按层判定：收到的是分支节点，答的是它那层子节点怎么排；目录与菜单竖排、按钮横排，一行铺开就选完，省掉纵向翻找
+leaf-orientation="horizontal" 只作用于子节点全是叶子的那层：菜单授权里按钮一行铺开就选完，目录与菜单这些中间层恒竖排，层级得靠竖排读出来
 
 <XhDemo src="tree/11-orientation" />
 
@@ -109,7 +109,7 @@ orientation 收函数即按层判定：收到的是分支节点，答的是它�
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `collection` | `TreeNode[]` |  | 树数据，层级元信息的唯一事实源。缺省为空树。 |
-| `orientation` | `Orientation \| TreeOrientationResolver` |  | 子层的排布方向，默认 vertical（每行一个）。horizontal 让同一层的节点并排铺开。 给函数即逐层判定：收到的是分支节点，答的是它那层子节点怎么排，根层收到 null。 目录与菜单竖排、按钮横排就写成 `node =&gt; node?.level === 2 ? 'horizontal' : 'vertical'`。 只管排布，不动键盘：方向键在树上是层级操作（左右收展、上下走可见行）， 这是 treeview 的规范语义，不随排布方向改写。 |
+| `leafOrientation` | `Orientation` |  | 末端那一层怎么排，默认 vertical（每行一个）。horizontal 让它们并排铺开。 只作用于「子节点全是叶子」的那一层——菜单授权里就是按钮那层： 一个菜单下十几个按钮，横排一行铺完，省掉纵向翻找。中间层与整棵树恒是竖排， 它们承载的是层级本身，横过来层级就读没了。 只管排布，不动键盘：方向键在树上是层级操作（左右收展、上下走可见行）， 这是 treeview 的规范语义，不随排布方向改写。 |
 | `expandedValue` | `string[]` |  | 展开集合。给定即受控：cell 直读 prop，写只发 onExpandedChange 不落内部值。 |
 | `defaultExpandedValue` | `string[]` |  |  |
 | `selection` | `string[]` |  | 选中集合。给定即受控，语义同上。 |
@@ -214,7 +214,7 @@ orientation 收函数即按层判定：收到的是分支节点，答的是它�
 | `tree` | `aria-disabled` | 'true' \| 'false' |
 | `tree` | `aria-labelledby` | `label` 部件的 id |
 | `tree` | `aria-multiselectable` | 'true' \| 'false' |
-| `tree` | `aria-orientation` | orientationProp(node) \| props.orientation |
+| `tree` | `aria-orientation` | 'vertical' |
 | `tree` | `role` | 'tree' |
 | `item-checkbox` | `aria-hidden` | 'true' |
 | `item-indicator` | `aria-hidden` | 'true' |
@@ -236,17 +236,17 @@ orientation 收函数即按层判定：收到的是分支节点，答的是它�
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
-| `root` | `data-orientation` | orientationProp(node) \| props.orientation |
+| `root` | `data-orientation` | 'vertical' |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
 | `tree` | `data-disabled` | ''（条件成立时才出现） |
-| `tree` | `data-orientation` | orientationProp(node) \| props.orientation |
-| `branch-content` | `data-orientation` | orientationProp(node) \| props.orientation |
+| `tree` | `data-orientation` | 'vertical' |
+| `branch-content` | `data-orientation` | props.leafOrientation \| 'vertical' |
 
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-tree-bg` · `--xh-tree-border` · `--xh-tree-branch-indicator-fg` · `--xh-tree-checkbox-bg` · `--xh-tree-checkbox-bg-checked` · `--xh-tree-checkbox-border` · `--xh-tree-checkbox-border-checked` · `--xh-tree-checkbox-border-disabled` · `--xh-tree-checkbox-fg` · `--xh-tree-checkbox-radius` · `--xh-tree-checkbox-size` · `--xh-tree-fg` · `--xh-tree-gap` · `--xh-tree-icon-size` · `--xh-tree-indent` · `--xh-tree-indicator-fg` · `--xh-tree-indicator-size` · `--xh-tree-label-fg` · `--xh-tree-label-font-size` · `--xh-tree-label-font-weight` · `--xh-tree-max-h` · `--xh-tree-px` · `--xh-tree-py` · `--xh-tree-radius` · `--xh-tree-row-bg-hover` · `--xh-tree-row-fg` · `--xh-tree-row-fg-selected` · `--xh-tree-row-font-size` · `--xh-tree-row-gap` · `--xh-tree-row-leading` · `--xh-tree-row-px` · `--xh-tree-row-py` · `--xh-tree-row-radius` · `--xh-tree-row-selected-font-weight`
+`--xh-tree-bg` · `--xh-tree-border` · `--xh-tree-branch-indicator-fg` · `--xh-tree-checkbox-bg` · `--xh-tree-checkbox-bg-checked` · `--xh-tree-checkbox-border` · `--xh-tree-checkbox-border-checked` · `--xh-tree-checkbox-border-disabled` · `--xh-tree-checkbox-fg` · `--xh-tree-checkbox-radius` · `--xh-tree-checkbox-size` · `--xh-tree-fg` · `--xh-tree-gap` · `--xh-tree-icon-size` · `--xh-tree-indent` · `--xh-tree-indicator-fg` · `--xh-tree-indicator-size` · `--xh-tree-label-fg` · `--xh-tree-label-font-size` · `--xh-tree-label-font-weight` · `--xh-tree-leaf-row-gap` · `--xh-tree-max-h` · `--xh-tree-px` · `--xh-tree-py` · `--xh-tree-radius` · `--xh-tree-row-bg-hover` · `--xh-tree-row-fg` · `--xh-tree-row-fg-selected` · `--xh-tree-row-font-size` · `--xh-tree-row-gap` · `--xh-tree-row-leading` · `--xh-tree-row-px` · `--xh-tree-row-py` · `--xh-tree-row-radius` · `--xh-tree-row-selected-font-weight`
 
 ## 动效
 

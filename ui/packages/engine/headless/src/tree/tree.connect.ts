@@ -1,13 +1,35 @@
 import type { NavIntent } from '@xihan-ui/behavior'
-import type { NormalizeProps, Orientation, PropTypes } from '@xihan-ui/kernel'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
-import type { TreeApi, TreeNodeMeta, TreeSchema, TreeVisibleNode } from './tree.types'
+import type { TreeApi, TreeNode, TreeNodeMeta, TreeSchema, TreeVisibleNode } from './tree.types'
 import { cascadeState, focusItem, indexOfValue, isItemDisabled, ITEM_VALUE_ATTR, itemValue, matchTypeahead, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/behavior'
 import { contains, dataAttr } from '@xihan-ui/kernel'
 import { treeAnatomy, treeBranchQuery, treeItemQuery } from './tree.anatomy'
 import { flattenTree, indexTree, treeSelectionMode } from './tree.machine'
 
 const parts = treeAnatomy.build()
+
+/**
+ * 子节点全是叶子的那些分支——横排只开给它们。
+ *
+ * 判据是「这一层不再往下分」而不是「深度等于几」：同一棵树里各枝深浅不一，
+ * 按深度判会把浅枝的中间层也横过来。
+ */
+function collectLeafOnlyBranches(nodes: TreeNode[]): Set<string> {
+  const out = new Set<string>()
+  const walk = (list: TreeNode[]): void => {
+    for (const node of list) {
+      if (!node.children)
+        continue
+      if (node.children.length > 0 && node.children.every(child => !child.children))
+        out.add(node.value)
+      walk(node.children)
+    }
+  }
+  walk(nodes)
+  return out
+}
+
 
 export function connectTree<T extends PropTypes>(
   service: Service<TreeSchema>,
@@ -19,12 +41,8 @@ export function connectTree<T extends PropTypes>(
   const selection = context.get('selection')
   const treeDisabled = !!prop('disabled')
   const dir = prop('dir') ?? 'ltr'
-  // 排布方向逐层解析：给字面值就整棵树一个样，给函数则由每个分支答自己那层
-  const orientationProp = prop('orientation')
-  const orientationOf = (node: TreeNodeMeta | null): Orientation =>
-    (typeof orientationProp === 'function' ? orientationProp(node) : orientationProp) ?? 'vertical'
-  // 根层没有分支节点
-  const rootOrientation = orientationOf(null)
+  // 横排只开给末端那一层；其余一律竖排，层级得靠竖排读出来
+  const leafOrientation = prop('leafOrientation') ?? 'vertical'
   // 树不回绕：上键停在首行、下键停在末行
   const loop = prop('loop') ?? false
   const typeaheadOn = prop('typeahead') ?? true
@@ -36,6 +54,7 @@ export function connectTree<T extends PropTypes>(
   // 摊平与索引都是 (collection, 展开集合) 的纯函数；connect 在 Vue 的 render 期求值，此时 DOM 尚不存在。
   const rows = flattenTree(collection, expandedValue)
   const metaIndex = indexTree(collection)
+  const leafOnlyBranches = collectLeafOnlyBranches(collection)
   const visible = new Map(rows.map(row => [row.value, row]))
 
   // 焦点锚点投影成可见的：祖先分支收起后节点仍在 DOM 里但 hidden、不可聚焦，
@@ -188,7 +207,7 @@ export function connectTree<T extends PropTypes>(
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
-      'data-orientation': rootOrientation,
+      'data-orientation': 'vertical',
       'data-disabled': dataAttr(treeDisabled),
     }),
 
@@ -204,11 +223,11 @@ export function connectTree<T extends PropTypes>(
       'id': ids.tree,
       'role': 'tree',
       'aria-labelledby': ids.label,
-      'aria-orientation': rootOrientation,
+      'aria-orientation': 'vertical',
       // 复选与否必须显式说，省略只是没说
       'aria-multiselectable': multiselectable ? 'true' : 'false',
       'aria-disabled': treeDisabled ? 'true' : 'false',
-      'data-orientation': rootOrientation,
+      'data-orientation': 'vertical',
       // 焦点在树外时容器兜底进 Tab 序列，由 onFocus 转投给节点。
       // 判据用 focusedValue 而非 anchor：anchor 可能指向已删掉、已隐藏或不在树里的值，那时无人认领 tabindex=0
       'tabindex': focusedValue == null ? 0 : -1,
@@ -478,8 +497,8 @@ export function connectTree<T extends PropTypes>(
       // 子层是 treeitem 的下一级分组，role=group 是 tree 结构的必需环节
       'role': 'group',
       // group 不收 aria-orientation，排布方向只以 data 形式交给皮肤。
-      // 这一层由分支自己答：菜单授权那类树里目录竖排、按钮横排就靠它
-      'data-orientation': orientationOf(metaOf(node.value) ?? null),
+      // 只有子节点全是叶子的那一层才吃 leafOrientation，中间层恒竖排
+      'data-orientation': leafOnlyBranches.has(node.value) ? leafOrientation : 'vertical',
       // 收起只加 hidden，不卸载作者节点，子树里的输入框与滚动位置得留着
       'hidden': !isExpanded(node.value) || undefined,
     }),
