@@ -12,8 +12,9 @@ export interface PaginationContext {
 export function usePagination(
   props: PaginationSchema['props'],
   onPageChange?: PaginationSchema['props']['onPageChange'],
+  onPageSizeChange?: PaginationSchema['props']['onPageSizeChange'],
 ): PaginationContext {
-  const service = useMachine(paginationMachine, () => ({ ...props, onPageChange }))
+  const service = useMachine(paginationMachine, () => ({ ...props, onPageChange, onPageSizeChange }))
   const api = computed(() => connectPagination(service, vueNormalize))
   return { api }
 }

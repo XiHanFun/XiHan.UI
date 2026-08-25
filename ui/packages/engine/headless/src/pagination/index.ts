@@ -20,6 +20,7 @@ export type {
   PaginationApi,
   PaginationItemProps,
   PaginationPageChangeDetails,
+  PaginationPageSizeChangeDetails,
   PaginationSchema,
   PaginationTranslations,
 } from './pagination.types'

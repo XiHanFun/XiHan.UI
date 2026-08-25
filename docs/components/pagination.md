@@ -72,7 +72,7 @@ size 一档换掉页码格子的高度、内边距与字号，上一页 / 下一
 
 ### 每页条数
 
-pageSize 归宿主持有；换档后总页数重算，越界的当前页被夹回末页
+档位住在分页里：default-page-size 非受控、page-size-options 给档位表；换档时页码跟着换算，改档前第一条仍留在页内
 
 <XhDemo src="pagination/09-page-size" />
 
@@ -103,7 +103,9 @@ pageSize 归宿主持有；换档后总页数重算，越界的当前页被夹�
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `count` | `number` |  | 总条数（不是总页数）。总页数由它与 pageSize 算出。 |
-| `pageSize` | `number` |  | 每页条数，默认 10；小于 1 的值一律按 1 处理。 |
+| `pageSize` | `number` |  | 每页条数，默认 10；小于 1 的值一律按 1 处理。给定即受控，语义同 page。 |
+| `defaultPageSize` | `number` |  | 非受控初始每页条数，默认 10。 |
+| `pageSizeOptions` | `number[]` |  | 可选的每页条数档位，默认 [10, 20, 50, 100]。只做取值来源，不决定长相。 |
 | `page` | `number` |  | 当前页。给定即受控：内部不再自改，只发 onPageChange。 |
 | `defaultPage` | `number` |  | 非受控初始页，默认 1。 |
 | `siblingCount` | `number` |  | 当前页两侧各显示几页，默认 1。 |
@@ -112,6 +114,7 @@ pageSize 归宿主持有；换档后总页数重算，越界的当前页被夹�
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `onPageChange` | `(details: PaginationPageChangeDetails) => void` |  | 页码变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
+| `onPageSizeChange` | `(details: PaginationPageSizeChangeDetails) => void` |  | 每页条数变化意图回调，语义同上；一并给出换算后的页码。 |
 
 ## 事件
 
@@ -135,7 +138,7 @@ pageSize 归宿主持有；换档后总页数重算，越界的当前页被夹�
 
 **状态**：`idle`
 
-**事件**：`PAGE.SET` · `PAGE.PREV` · `PAGE.NEXT`
+**事件**：`PAGE.SET` · `PAGE_SIZE.SET` · `PAGE.PREV` · `PAGE.NEXT`
 
 ## connect API
 
@@ -145,6 +148,7 @@ pageSize 归宿主持有；换档后总页数重算，越界的当前页被夹�
 | --- | --- | --- |
 | `page` | `number` | 当前页，恒在 [1, max(totalPages, 1)] 内。 |
 | `pageSize` | `number` |  |
+| `pageSizeOptions` | `number[]` | 可选的每页条数档位，缺省 [10, 20, 50, 100]；已按升序去重并夹到至少 1。 |
 | `count` | `number` |  |
 | `totalPages` | `number` |  |
 | `pages` | `PaginationPage[]` | 页码序列，作者照着渲染 item 与 ellipsis。 |
@@ -154,6 +158,7 @@ pageSize 归宿主持有；换档后总页数重算，越界的当前页被夹�
 | `setPage` | `(page: number) => void` | 页码会被夹进合法区间，越界入参不会写出越界的页。 |
 | `goToPrevPage` | `() => void` |  |
 | `goToNextPage` | `() => void` |  |
+| `setPageSize` | `(pageSize: number) => void` | 换每页条数：页码跟着换算，让改档前第一条仍留在页内。 |
 | `slice` | `<V>(data: readonly V[]) => V[]` | 按当前页从整份数据里切出这一页。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getPrevTriggerProps` | `() => T['button']` |  |

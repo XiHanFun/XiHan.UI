@@ -1,4 +1,4 @@
-import type { PaginationApi, PaginationSchema, PaginationTranslations } from '@xihan-ui/headless'
+import type { PaginationApi, PaginationPageSizeChangeDetails, PaginationSchema, PaginationTranslations } from '@xihan-ui/headless'
 import type { Direction, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
@@ -14,6 +14,7 @@ export type PaginationRootSlotProps = Pick<
   PaginationApi,
   | 'page'
   | 'pageSize'
+  | 'pageSizeOptions'
   | 'count'
   | 'totalPages'
   | 'pages'
@@ -23,6 +24,7 @@ export type PaginationRootSlotProps = Pick<
   | 'setPage'
   | 'goToPrevPage'
   | 'goToNextPage'
+  | 'setPageSize'
   | 'slice'
 >
 
@@ -32,6 +34,8 @@ export const XhPaginationRoot = defineComponent({
   props: {
     count: { type: Number, default: undefined },
     pageSize: { type: Number, default: undefined },
+    defaultPageSize: { type: Number, default: undefined },
+    pageSizeOptions: { type: Array as PropType<number[]>, default: undefined },
     page: { type: Number, default: undefined },
     defaultPage: { type: Number, default: undefined },
     siblingCount: { type: Number, default: undefined },
@@ -40,10 +44,13 @@ export const XhPaginationRoot = defineComponent({
     tone: { type: String as PropType<Tone>, default: undefined },
     size: { type: String as PropType<Size>, default: undefined },
   },
-  // page-change 携带 { page, pageSize }，update:page 携带裸页码
+  // page-change 携带 { page, pageSize }，update:page 携带裸页码；
+  // 换档同时改页码，两个 update 都发，v-model:page 与 v-model:page-size 才不会各说各话
   emits: {
     'page-change': (_details: PayloadOf<PaginationProps, 'onPageChange'>) => true,
     'update:page': (_page: PayloadOf<PaginationProps, 'onPageChange'>['page']) => true,
+    'page-size-change': (_details: PaginationPageSizeChangeDetails) => true,
+    'update:pageSize': (_pageSize: PaginationPageSizeChangeDetails['pageSize']) => true,
   },
   slots: Object as SlotsType<{
     default?: (props: PaginationRootSlotProps) => VNode[]
@@ -53,12 +60,18 @@ export const XhPaginationRoot = defineComponent({
       emit('page-change', details)
       emit('update:page', details.page)
     }
-    const ctx = usePagination(withXhConfig('pagination', props) as PaginationProps, notify)
+    const notifyPageSize: PaginationProps['onPageSizeChange'] = (details) => {
+      emit('page-size-change', details)
+      emit('update:pageSize', details.pageSize)
+      emit('update:page', details.page)
+    }
+    const ctx = usePagination(withXhConfig('pagination', props) as PaginationProps, notify, notifyPageSize)
     providePagination(ctx)
     // 根节点渲染为 nav 地标
     return () => h('nav', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       page: ctx.api.value.page,
       pageSize: ctx.api.value.pageSize,
+      pageSizeOptions: ctx.api.value.pageSizeOptions,
       count: ctx.api.value.count,
       totalPages: ctx.api.value.totalPages,
       pages: ctx.api.value.pages,
@@ -68,6 +81,7 @@ export const XhPaginationRoot = defineComponent({
       setPage: ctx.api.value.setPage,
       goToPrevPage: ctx.api.value.goToPrevPage,
       goToNextPage: ctx.api.value.goToNextPage,
+      setPageSize: ctx.api.value.setPageSize,
       slice: ctx.api.value.slice,
     }))
   },

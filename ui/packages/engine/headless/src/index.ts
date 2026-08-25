@@ -144,7 +144,7 @@ export type { NumberFieldApi, NumberFieldSchema, NumberFieldTranslations, Number
 export { connectPageHeader, pageHeaderAnatomy, pageHeaderKeyboard, pageHeaderMeta } from './page-header'
 export type { PageHeaderApi, PageHeaderProps, PageHeaderTranslations } from './page-header'
 export { buildPageSequence, clampPage, connectPagination, normalizeCount, normalizePageSize, pageRangeOf, PAGINATION_PAGE_SIZE, PAGINATION_SIBLING_COUNT, paginationAnatomy, paginationKeyboard, paginationMachine, paginationMeta, totalPagesOf } from './pagination'
-export type { PaginationApi, PaginationEntryRange, PaginationItemProps, PaginationPage, PaginationPageChangeDetails, PaginationSchema, PaginationTranslations } from './pagination'
+export type { PaginationApi, PaginationEntryRange, PaginationItemProps, PaginationPage, PaginationPageChangeDetails, PaginationPageSizeChangeDetails, PaginationSchema, PaginationTranslations } from './pagination'
 export { connectPasswordInput, passwordInputAnatomy, passwordInputInputId, passwordInputKeyboard, passwordInputMachine, passwordInputMeta } from './password-input'
 export type { PasswordInputApi, PasswordInputSchema, PasswordInputTranslations, PasswordInputType, PasswordInputValueChangeDetails, PasswordInputVisibilityChangeDetails } from './password-input'
 export { connectPinInput, isPinComplete, padPinValue, PIN_INPUT_LENGTH, pinInputAnatomy, pinInputKeyboard, pinInputMachine, pinInputMeta, pinLength, samePinValue, sanitizePin } from './pin-input'
