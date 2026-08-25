@@ -2,7 +2,7 @@ import type { InjectionKey } from 'vue'
 import type { SkeletonContext } from './use-skeleton'
 import { inject, provide } from 'vue'
 
-const KEY: InjectionKey<SkeletonContext> = Symbol('xh-skeleton')
+const KEY: InjectionKey<SkeletonContext> = Symbol.for('xh-skeleton')
 
 export function provideSkeleton(ctx: SkeletonContext): void {
   provide(KEY, ctx)

@@ -8,8 +8,8 @@ export interface RadioGroupItemContext {
   item: ComputedRef<RadioGroupItemProps>
 }
 
-const KEY: InjectionKey<RadioGroupContext> = Symbol('xh-radio-group')
-const ITEM_KEY: InjectionKey<RadioGroupItemContext> = Symbol('xh-radio-group-item')
+const KEY: InjectionKey<RadioGroupContext> = Symbol.for('xh-radio-group')
+const ITEM_KEY: InjectionKey<RadioGroupItemContext> = Symbol.for('xh-radio-group-item')
 
 export function provideRadioGroup(ctx: RadioGroupContext): void {
   provide(KEY, ctx)

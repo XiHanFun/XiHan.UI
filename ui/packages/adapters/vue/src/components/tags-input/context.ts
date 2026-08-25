@@ -8,8 +8,8 @@ export interface TagsInputItemContext {
   item: ComputedRef<TagsInputItemProps>
 }
 
-const KEY: InjectionKey<TagsInputContext> = Symbol('xh-tags-input')
-const ITEM_KEY: InjectionKey<TagsInputItemContext> = Symbol('xh-tags-input-item')
+const KEY: InjectionKey<TagsInputContext> = Symbol.for('xh-tags-input')
+const ITEM_KEY: InjectionKey<TagsInputItemContext> = Symbol.for('xh-tags-input-item')
 
 export function provideTagsInput(ctx: TagsInputContext): void {
   provide(KEY, ctx)

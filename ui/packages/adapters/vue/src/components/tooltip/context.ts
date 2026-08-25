@@ -2,7 +2,7 @@ import type { InjectionKey } from 'vue'
 import type { TooltipContext } from './use-tooltip'
 import { inject, provide } from 'vue'
 
-const KEY: InjectionKey<TooltipContext> = Symbol('xh-tooltip')
+const KEY: InjectionKey<TooltipContext> = Symbol.for('xh-tooltip')
 
 export function provideTooltip(ctx: TooltipContext): void {
   provide(KEY, ctx)

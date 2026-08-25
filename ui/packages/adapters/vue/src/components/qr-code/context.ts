@@ -6,7 +6,7 @@ export interface QrCodeContext {
   api: ComputedRef<QrCodeApi>
 }
 
-const KEY: InjectionKey<QrCodeContext> = Symbol('xh-qr-code')
+const KEY: InjectionKey<QrCodeContext> = Symbol.for('xh-qr-code')
 
 export function provideQrCode(ctx: QrCodeContext): void {
   provide(KEY, ctx)

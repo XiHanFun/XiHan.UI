@@ -2,7 +2,7 @@ import type { InjectionKey } from 'vue'
 import type { LogContext } from './use-log'
 import { inject, provide } from 'vue'
 
-const KEY: InjectionKey<LogContext> = Symbol('xh-log')
+const KEY: InjectionKey<LogContext> = Symbol.for('xh-log')
 
 export function provideLog(ctx: LogContext): void {
   provide(KEY, ctx)

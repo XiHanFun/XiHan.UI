@@ -6,7 +6,7 @@ export interface TypographyContext {
   api: ComputedRef<TypographyApi>
 }
 
-const KEY: InjectionKey<TypographyContext> = Symbol('xh-typography')
+const KEY: InjectionKey<TypographyContext> = Symbol.for('xh-typography')
 
 export function provideTypography(ctx: TypographyContext): void {
   provide(KEY, ctx)

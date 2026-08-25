@@ -2,7 +2,7 @@ import type { InjectionKey } from 'vue'
 import type { AnchorContext } from './use-anchor'
 import { inject, provide } from 'vue'
 
-const KEY: InjectionKey<AnchorContext> = Symbol('xh-anchor')
+const KEY: InjectionKey<AnchorContext> = Symbol.for('xh-anchor')
 
 export function provideAnchor(ctx: AnchorContext): void {
   provide(KEY, ctx)

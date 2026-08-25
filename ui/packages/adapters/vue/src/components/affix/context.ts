@@ -2,7 +2,7 @@ import type { InjectionKey } from 'vue'
 import type { AffixContext } from './use-affix'
 import { inject, provide } from 'vue'
 
-const KEY: InjectionKey<AffixContext> = Symbol('xh-affix')
+const KEY: InjectionKey<AffixContext> = Symbol.for('xh-affix')
 
 export function provideAffix(ctx: AffixContext): void {
   provide(KEY, ctx)

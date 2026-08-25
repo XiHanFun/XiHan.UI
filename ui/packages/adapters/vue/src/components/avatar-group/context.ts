@@ -6,7 +6,7 @@ export interface AvatarGroupContext {
   api: ComputedRef<AvatarGroupApi>
 }
 
-const KEY: InjectionKey<AvatarGroupContext> = Symbol('xh-avatar-group')
+const KEY: InjectionKey<AvatarGroupContext> = Symbol.for('xh-avatar-group')
 
 export function provideAvatarGroup(ctx: AvatarGroupContext): void {
   provide(KEY, ctx)

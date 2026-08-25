@@ -2,7 +2,7 @@ import type { InjectionKey } from 'vue'
 import type { EmptyStateContext } from './use-empty-state'
 import { inject, provide } from 'vue'
 
-const KEY: InjectionKey<EmptyStateContext> = Symbol('xh-empty-state')
+const KEY: InjectionKey<EmptyStateContext> = Symbol.for('xh-empty-state')
 
 export function provideEmptyState(ctx: EmptyStateContext): void {
   provide(KEY, ctx)

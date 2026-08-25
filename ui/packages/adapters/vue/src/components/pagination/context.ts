@@ -2,7 +2,7 @@ import type { InjectionKey } from 'vue'
 import type { PaginationContext } from './use-pagination'
 import { inject, provide } from 'vue'
 
-const KEY: InjectionKey<PaginationContext> = Symbol('xh-pagination')
+const KEY: InjectionKey<PaginationContext> = Symbol.for('xh-pagination')
 
 export function providePagination(ctx: PaginationContext): void {
   provide(KEY, ctx)

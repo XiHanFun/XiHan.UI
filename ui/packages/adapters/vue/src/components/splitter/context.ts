@@ -2,7 +2,7 @@ import type { InjectionKey } from 'vue'
 import type { SplitterContext } from './use-splitter'
 import { inject, provide } from 'vue'
 
-const KEY: InjectionKey<SplitterContext> = Symbol('xh-splitter')
+const KEY: InjectionKey<SplitterContext> = Symbol.for('xh-splitter')
 
 export function provideSplitter(ctx: SplitterContext): void {
   provide(KEY, ctx)

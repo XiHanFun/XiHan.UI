@@ -8,8 +8,8 @@ export interface TreeNodeContext {
   node: ComputedRef<TreeNodeProps>
 }
 
-const KEY: InjectionKey<TreeContext> = Symbol('xh-tree')
-const NODE_KEY: InjectionKey<TreeNodeContext> = Symbol('xh-tree-node')
+const KEY: InjectionKey<TreeContext> = Symbol.for('xh-tree')
+const NODE_KEY: InjectionKey<TreeNodeContext> = Symbol.for('xh-tree-node')
 
 export function provideTree(ctx: TreeContext): void {
   provide(KEY, ctx)

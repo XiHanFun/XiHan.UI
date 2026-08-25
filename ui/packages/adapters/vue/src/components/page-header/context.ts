@@ -6,7 +6,7 @@ export interface PageHeaderContext {
   api: ComputedRef<PageHeaderApi>
 }
 
-const KEY: InjectionKey<PageHeaderContext> = Symbol('xh-page-header')
+const KEY: InjectionKey<PageHeaderContext> = Symbol.for('xh-page-header')
 
 export function providePageHeader(ctx: PageHeaderContext): void {
   provide(KEY, ctx)

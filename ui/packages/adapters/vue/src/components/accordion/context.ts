@@ -3,9 +3,9 @@ import type { InjectionKey } from 'vue'
 import type { AccordionContext } from './use-accordion'
 import { inject, provide } from 'vue'
 
-const KEY: InjectionKey<AccordionContext> = Symbol('xh-accordion')
+const KEY: InjectionKey<AccordionContext> = Symbol.for('xh-accordion')
 /** 条目身份下传给 header/trigger/content，用 getter 以跟随 value/disabled 变更。 */
-const ITEM_KEY: InjectionKey<() => AccordionItemProps> = Symbol('xh-accordion-item')
+const ITEM_KEY: InjectionKey<() => AccordionItemProps> = Symbol.for('xh-accordion-item')
 
 export function provideAccordion(ctx: AccordionContext): void {
   provide(KEY, ctx)

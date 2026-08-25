@@ -2,7 +2,7 @@ import type { InjectionKey } from 'vue'
 import type { NumberFieldContext } from './use-number-field'
 import { inject, provide } from 'vue'
 
-const KEY: InjectionKey<NumberFieldContext> = Symbol('xh-number-field')
+const KEY: InjectionKey<NumberFieldContext> = Symbol.for('xh-number-field')
 
 export function provideNumberField(ctx: NumberFieldContext): void {
   provide(KEY, ctx)

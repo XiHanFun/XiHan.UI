@@ -8,8 +8,8 @@ export interface PopselectItemContext {
   item: ComputedRef<PopselectItemProps>
 }
 
-const KEY: InjectionKey<PopselectContext> = Symbol('xh-popselect')
-const ITEM_KEY: InjectionKey<PopselectItemContext> = Symbol('xh-popselect-item')
+const KEY: InjectionKey<PopselectContext> = Symbol.for('xh-popselect')
+const ITEM_KEY: InjectionKey<PopselectItemContext> = Symbol.for('xh-popselect-item')
 
 export function providePopselect(ctx: PopselectContext): void {
   provide(KEY, ctx)

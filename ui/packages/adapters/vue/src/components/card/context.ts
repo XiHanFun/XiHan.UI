@@ -6,7 +6,7 @@ export interface CardContext {
   api: ComputedRef<CardApi>
 }
 
-const KEY: InjectionKey<CardContext> = Symbol('xh-card')
+const KEY: InjectionKey<CardContext> = Symbol.for('xh-card')
 
 export function provideCard(ctx: CardContext): void {
   provide(KEY, ctx)

@@ -6,7 +6,7 @@ export interface WatermarkContext {
   api: ComputedRef<WatermarkApi>
 }
 
-const KEY: InjectionKey<WatermarkContext> = Symbol('xh-watermark')
+const KEY: InjectionKey<WatermarkContext> = Symbol.for('xh-watermark')
 
 export function provideWatermark(ctx: WatermarkContext): void {
   provide(KEY, ctx)

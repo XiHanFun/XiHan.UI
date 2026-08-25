@@ -2,7 +2,7 @@ import type { InjectionKey } from 'vue'
 import type { ScrollbarContext } from './use-scrollbar'
 import { inject, provide } from 'vue'
 
-const KEY: InjectionKey<ScrollbarContext> = Symbol('xh-scrollbar')
+const KEY: InjectionKey<ScrollbarContext> = Symbol.for('xh-scrollbar')
 
 export function provideScrollbar(ctx: ScrollbarContext): void {
   provide(KEY, ctx)

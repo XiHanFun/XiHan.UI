@@ -2,7 +2,7 @@ import type { InjectionKey } from 'vue'
 import type { BackTopContext } from './use-back-top'
 import { inject, provide } from 'vue'
 
-const KEY: InjectionKey<BackTopContext> = Symbol('xh-back-top')
+const KEY: InjectionKey<BackTopContext> = Symbol.for('xh-back-top')
 
 export function provideBackTop(ctx: BackTopContext): void {
   provide(KEY, ctx)

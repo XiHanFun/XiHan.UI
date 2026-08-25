@@ -2,7 +2,7 @@ import type { InjectionKey } from 'vue'
 import type { HoverCardContext } from './use-hover-card'
 import { inject, provide } from 'vue'
 
-const KEY: InjectionKey<HoverCardContext> = Symbol('xh-hover-card')
+const KEY: InjectionKey<HoverCardContext> = Symbol.for('xh-hover-card')
 
 export function provideHoverCard(ctx: HoverCardContext): void {
   provide(KEY, ctx)

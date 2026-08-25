@@ -16,10 +16,10 @@ export interface TableColumnContext {
   column: ComputedRef<TableColumnProps>
 }
 
-const KEY: InjectionKey<TableContext> = Symbol('xh-table')
-const SECTION_KEY: InjectionKey<TableSection> = Symbol('xh-table-section')
-const ROW_KEY: InjectionKey<TableRowContext> = Symbol('xh-table-row')
-const COLUMN_KEY: InjectionKey<TableColumnContext> = Symbol('xh-table-column')
+const KEY: InjectionKey<TableContext> = Symbol.for('xh-table')
+const SECTION_KEY: InjectionKey<TableSection> = Symbol.for('xh-table-section')
+const ROW_KEY: InjectionKey<TableRowContext> = Symbol.for('xh-table-row')
+const COLUMN_KEY: InjectionKey<TableColumnContext> = Symbol.for('xh-table-column')
 
 export function provideTable(ctx: TableContext): void {
   provide(KEY, ctx)

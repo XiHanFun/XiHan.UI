@@ -8,8 +8,8 @@ export interface CheckboxGroupItemContext {
   item: ComputedRef<CheckboxGroupItemProps>
 }
 
-const KEY: InjectionKey<CheckboxGroupContext> = Symbol('xh-checkbox-group')
-const ITEM_KEY: InjectionKey<CheckboxGroupItemContext> = Symbol('xh-checkbox-group-item')
+const KEY: InjectionKey<CheckboxGroupContext> = Symbol.for('xh-checkbox-group')
+const ITEM_KEY: InjectionKey<CheckboxGroupItemContext> = Symbol.for('xh-checkbox-group-item')
 
 export function provideCheckboxGroup(ctx: CheckboxGroupContext): void {
   provide(KEY, ctx)

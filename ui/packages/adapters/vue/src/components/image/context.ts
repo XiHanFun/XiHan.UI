@@ -2,7 +2,7 @@ import type { InjectionKey } from 'vue'
 import type { ImageContext } from './use-image'
 import { inject, provide } from 'vue'
 
-const KEY: InjectionKey<ImageContext> = Symbol('xh-image')
+const KEY: InjectionKey<ImageContext> = Symbol.for('xh-image')
 
 export function provideImage(ctx: ImageContext): void {
   provide(KEY, ctx)

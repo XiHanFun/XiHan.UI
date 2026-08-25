@@ -8,8 +8,8 @@ export interface MentionItemContext {
   item: ComputedRef<MentionItemProps>
 }
 
-const KEY: InjectionKey<MentionContext> = Symbol('xh-mention')
-const ITEM_KEY: InjectionKey<MentionItemContext> = Symbol('xh-mention-item')
+const KEY: InjectionKey<MentionContext> = Symbol.for('xh-mention')
+const ITEM_KEY: InjectionKey<MentionItemContext> = Symbol.for('xh-mention-item')
 
 export function provideMention(ctx: MentionContext): void {
   provide(KEY, ctx)

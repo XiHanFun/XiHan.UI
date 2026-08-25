@@ -6,7 +6,7 @@ export interface ListContext {
   api: ComputedRef<ListApi>
 }
 
-const KEY: InjectionKey<ListContext> = Symbol('xh-list')
+const KEY: InjectionKey<ListContext> = Symbol.for('xh-list')
 
 export function provideList(ctx: ListContext): void {
   provide(KEY, ctx)

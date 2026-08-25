@@ -13,9 +13,9 @@ export interface ListboxItemGroupContext {
   group: ComputedRef<ListboxItemGroupProps>
 }
 
-const KEY: InjectionKey<ListboxContext> = Symbol('xh-listbox')
-const ITEM_KEY: InjectionKey<ListboxItemContext> = Symbol('xh-listbox-item')
-const GROUP_KEY: InjectionKey<ListboxItemGroupContext> = Symbol('xh-listbox-item-group')
+const KEY: InjectionKey<ListboxContext> = Symbol.for('xh-listbox')
+const ITEM_KEY: InjectionKey<ListboxItemContext> = Symbol.for('xh-listbox-item')
+const GROUP_KEY: InjectionKey<ListboxItemGroupContext> = Symbol.for('xh-listbox-item-group')
 
 export function provideListbox(ctx: ListboxContext): void {
   provide(KEY, ctx)

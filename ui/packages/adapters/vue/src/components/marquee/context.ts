@@ -6,7 +6,7 @@ export interface MarqueeContext {
   api: ComputedRef<MarqueeApi>
 }
 
-const KEY: InjectionKey<MarqueeContext> = Symbol('xh-marquee')
+const KEY: InjectionKey<MarqueeContext> = Symbol.for('xh-marquee')
 
 export function provideMarquee(ctx: MarqueeContext): void {
   provide(KEY, ctx)

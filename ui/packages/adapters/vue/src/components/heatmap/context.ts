@@ -2,13 +2,13 @@ import type { ComputedRef, InjectionKey } from 'vue'
 import type { HeatmapContext } from './use-heatmap'
 import { inject, provide } from 'vue'
 
-const KEY: InjectionKey<HeatmapContext> = Symbol('xh-heatmap')
+const KEY: InjectionKey<HeatmapContext> = Symbol.for('xh-heatmap')
 
 /** 月块把自己的月份身份传给块内的行：一行由「哪个月 + 月内第几周」定位。 */
-const MONTH_KEY: InjectionKey<ComputedRef<string>> = Symbol('xh-heatmap-month')
+const MONTH_KEY: InjectionKey<ComputedRef<string>> = Symbol.for('xh-heatmap-month')
 
 /** 行把自己的行身份传给行里的格子：矩阵的一格由「哪一行 + 哪一列」定位。 */
-const ROW_KEY: InjectionKey<ComputedRef<string | undefined>> = Symbol('xh-heatmap-row')
+const ROW_KEY: InjectionKey<ComputedRef<string | undefined>> = Symbol.for('xh-heatmap-row')
 
 export function provideHeatmap(ctx: HeatmapContext): void {
   provide(KEY, ctx)

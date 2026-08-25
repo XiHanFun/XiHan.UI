@@ -2,7 +2,7 @@ import type { InjectionKey } from 'vue'
 import type { InfiniteScrollContext } from './use-infinite-scroll'
 import { inject, provide } from 'vue'
 
-const KEY: InjectionKey<InfiniteScrollContext> = Symbol('xh-infinite-scroll')
+const KEY: InjectionKey<InfiniteScrollContext> = Symbol.for('xh-infinite-scroll')
 
 export function provideInfiniteScroll(ctx: InfiniteScrollContext): void {
   provide(KEY, ctx)

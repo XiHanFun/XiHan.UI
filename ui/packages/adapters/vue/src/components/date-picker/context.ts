@@ -14,9 +14,9 @@ export interface DatePickerSegmentGroupContext {
   index: ComputedRef<0 | 1>
 }
 
-const KEY: InjectionKey<DatePickerContext> = Symbol('xh-date-picker')
-const CELL_KEY: InjectionKey<DatePickerCellContext> = Symbol('xh-date-picker-cell')
-const SEGMENT_GROUP_KEY: InjectionKey<DatePickerSegmentGroupContext> = Symbol('xh-date-picker-segment-group')
+const KEY: InjectionKey<DatePickerContext> = Symbol.for('xh-date-picker')
+const CELL_KEY: InjectionKey<DatePickerCellContext> = Symbol.for('xh-date-picker-cell')
+const SEGMENT_GROUP_KEY: InjectionKey<DatePickerSegmentGroupContext> = Symbol.for('xh-date-picker-segment-group')
 
 /** 没有分段容器时的组号，段位与隐藏输入落到起点那组。 */
 const START_GROUP: DatePickerSegmentGroupContext = { index: computed<0 | 1>(() => 0) }

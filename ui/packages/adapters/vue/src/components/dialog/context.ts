@@ -2,7 +2,7 @@ import type { InjectionKey } from 'vue'
 import type { DialogContext } from './use-dialog'
 import { inject, provide } from 'vue'
 
-const KEY: InjectionKey<DialogContext> = Symbol('xh-dialog')
+const KEY: InjectionKey<DialogContext> = Symbol.for('xh-dialog')
 
 export function provideDialog(ctx: DialogContext): void {
   provide(KEY, ctx)

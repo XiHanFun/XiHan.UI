@@ -13,9 +13,9 @@ export interface TransferItemContext {
   item: ComputedRef<TransferItemProps>
 }
 
-const KEY: InjectionKey<TransferContext> = Symbol('xh-transfer')
-const PANEL_KEY: InjectionKey<TransferPanelContext> = Symbol('xh-transfer-panel')
-const ITEM_KEY: InjectionKey<TransferItemContext> = Symbol('xh-transfer-item')
+const KEY: InjectionKey<TransferContext> = Symbol.for('xh-transfer')
+const PANEL_KEY: InjectionKey<TransferPanelContext> = Symbol.for('xh-transfer-panel')
+const ITEM_KEY: InjectionKey<TransferItemContext> = Symbol.for('xh-transfer-item')
 
 export function provideTransfer(ctx: TransferContext): void {
   provide(KEY, ctx)

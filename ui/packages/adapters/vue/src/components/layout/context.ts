@@ -2,7 +2,7 @@ import type { InjectionKey } from 'vue'
 import type { LayoutContext } from './use-layout'
 import { inject, provide } from 'vue'
 
-const KEY: InjectionKey<LayoutContext> = Symbol('xh-layout')
+const KEY: InjectionKey<LayoutContext> = Symbol.for('xh-layout')
 
 export function provideLayout(ctx: LayoutContext): void {
   provide(KEY, ctx)

@@ -2,7 +2,7 @@ import type { InjectionKey } from 'vue'
 import type { ToggleGroupContext } from './use-toggle-group'
 import { inject, provide } from 'vue'
 
-const KEY: InjectionKey<ToggleGroupContext> = Symbol('xh-toggle-group')
+const KEY: InjectionKey<ToggleGroupContext> = Symbol.for('xh-toggle-group')
 
 export function provideToggleGroup(ctx: ToggleGroupContext): void {
   provide(KEY, ctx)

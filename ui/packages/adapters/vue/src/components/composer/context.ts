@@ -2,7 +2,7 @@ import type { InjectionKey } from 'vue'
 import type { ComposerContext } from './use-composer'
 import { inject, provide } from 'vue'
 
-const KEY: InjectionKey<ComposerContext> = Symbol('xh-composer')
+const KEY: InjectionKey<ComposerContext> = Symbol.for('xh-composer')
 
 export function provideComposer(ctx: ComposerContext): void {
   provide(KEY, ctx)

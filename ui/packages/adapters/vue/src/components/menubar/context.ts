@@ -18,10 +18,10 @@ export interface MenubarGroupContext {
   group: ComputedRef<MenubarGroupProps>
 }
 
-const KEY: InjectionKey<MenubarContext> = Symbol('xh-menubar')
-const MENU_KEY: InjectionKey<MenubarMenuContext> = Symbol('xh-menubar-menu')
-const ITEM_KEY: InjectionKey<MenubarItemContext> = Symbol('xh-menubar-item')
-const GROUP_KEY: InjectionKey<MenubarGroupContext> = Symbol('xh-menubar-group')
+const KEY: InjectionKey<MenubarContext> = Symbol.for('xh-menubar')
+const MENU_KEY: InjectionKey<MenubarMenuContext> = Symbol.for('xh-menubar-menu')
+const ITEM_KEY: InjectionKey<MenubarItemContext> = Symbol.for('xh-menubar-item')
+const GROUP_KEY: InjectionKey<MenubarGroupContext> = Symbol.for('xh-menubar-group')
 
 export function provideMenubar(ctx: MenubarContext): void {
   provide(KEY, ctx)
@@ -70,7 +70,7 @@ export interface MenubarChain {
   notifySelect: (details: MenubarSelectDetails) => void
 }
 
-const CHAIN_KEY: InjectionKey<MenubarChain> = Symbol('xh-menubar-chain')
+const CHAIN_KEY: InjectionKey<MenubarChain> = Symbol.for('xh-menubar-chain')
 
 export function provideMenubarChain(chain: MenubarChain): void {
   provide(CHAIN_KEY, chain)
@@ -90,7 +90,7 @@ export interface MenubarSubHandle {
   disabled?: boolean
 }
 
-const SUB_KEY: InjectionKey<MenubarSubHandle> = Symbol('xh-menubar-sub')
+const SUB_KEY: InjectionKey<MenubarSubHandle> = Symbol.for('xh-menubar-sub')
 
 export function provideMenubarSub(handle: MenubarSubHandle): void {
   provide(SUB_KEY, handle)

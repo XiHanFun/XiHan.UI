@@ -8,8 +8,8 @@ export interface ColorPickerChannelContext {
   channel: ComputedRef<ColorPickerChannel>
 }
 
-const KEY: InjectionKey<ColorPickerContext> = Symbol('xh-color-picker')
-const CHANNEL_KEY: InjectionKey<ColorPickerChannelContext> = Symbol('xh-color-picker-channel')
+const KEY: InjectionKey<ColorPickerContext> = Symbol.for('xh-color-picker')
+const CHANNEL_KEY: InjectionKey<ColorPickerChannelContext> = Symbol.for('xh-color-picker-channel')
 
 export function provideColorPicker(ctx: ColorPickerContext): void {
   provide(KEY, ctx)

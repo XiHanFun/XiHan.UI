@@ -6,7 +6,7 @@ export interface StatisticContext {
   api: ComputedRef<StatisticApi>
 }
 
-const KEY: InjectionKey<StatisticContext> = Symbol('xh-statistic')
+const KEY: InjectionKey<StatisticContext> = Symbol.for('xh-statistic')
 
 export function provideStatistic(ctx: StatisticContext): void {
   provide(KEY, ctx)

@@ -2,7 +2,7 @@ import type { InjectionKey } from 'vue'
 import type { ImageViewerContext } from './use-image-viewer'
 import { inject, provide } from 'vue'
 
-const KEY: InjectionKey<ImageViewerContext> = Symbol('xh-image-viewer')
+const KEY: InjectionKey<ImageViewerContext> = Symbol.for('xh-image-viewer')
 
 export function provideImageViewer(ctx: ImageViewerContext): void {
   provide(KEY, ctx)

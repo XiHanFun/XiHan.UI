@@ -2,7 +2,7 @@ import type { InjectionKey } from 'vue'
 import type { SpinnerContext } from './use-spinner'
 import { inject, provide } from 'vue'
 
-const KEY: InjectionKey<SpinnerContext> = Symbol('xh-spinner')
+const KEY: InjectionKey<SpinnerContext> = Symbol.for('xh-spinner')
 
 export function provideSpinner(ctx: SpinnerContext): void {
   provide(KEY, ctx)

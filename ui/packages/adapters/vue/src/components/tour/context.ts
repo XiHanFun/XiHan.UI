@@ -2,7 +2,7 @@ import type { InjectionKey } from 'vue'
 import type { TourContext } from './use-tour'
 import { inject, provide } from 'vue'
 
-const KEY: InjectionKey<TourContext> = Symbol('xh-tour')
+const KEY: InjectionKey<TourContext> = Symbol.for('xh-tour')
 
 export function provideTour(ctx: TourContext): void {
   provide(KEY, ctx)
