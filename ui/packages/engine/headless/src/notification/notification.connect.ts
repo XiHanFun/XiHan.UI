@@ -60,9 +60,6 @@ export function connectNotification<T extends PropTypes>(
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
-      // 地标而不是 live region：每条通知自己就是 status / alert，再套一层会宣读两遍
-      'role': 'region',
-      'aria-label': prop('translations')?.region ?? 'Notifications',
       'data-count': list.length,
       'data-empty': dataAttr(list.length === 0),
       // 模态浮层给背景施加 inert 时跳过这棵子树，通知照旧可点、读屏也读得到
@@ -74,6 +71,11 @@ export function connectNotification<T extends PropTypes>(
       const group = byPlacement(placement)
       return normalize.element({
         ...parts.group.attrs,
+        // 地标挂在这一摞上，不挂 root：root 是 display:contents 的作用域包装，
+        // 没有盒子、量出来 0×0，跳过去落不到任何看得见的地方。
+        // 不是 live region——每条通知自己就是 status / alert，再套一层会宣读两遍
+        'role': 'region',
+        'aria-label': prop('translations')?.region ?? 'Notifications',
         'data-placement': placement,
         'data-count': group.length,
         'data-empty': dataAttr(group.length === 0),
@@ -109,7 +111,7 @@ function toneOf(type: ToastType): string {
 /**
  * 单条通知卡片。
  *
- * 计时、暂停与退场复用 toast 那台机器——那是「会自己消失的卡片」这一通用行为，
+ * 计时、暂停与退场复用 toast 那台机器——那是「到点自己走的一条消息」这一通用行为，
  * 与「这条消息是主动推来的还是操作反馈」无关，没有理由抄第二份。
  */
 export function connectNotificationItem<T extends PropTypes>(
@@ -168,6 +170,12 @@ export function connectNotificationItem<T extends PropTypes>(
           return
         send({ type: 'TOAST.RESUME', src: 'focus' })
       },
+    }),
+
+    getItemIndicatorProps: () => normalize.element({
+      ...parts['item-indicator'].attrs,
+      // 纯装饰：这条是成功还是出错，标题里已经说了
+      'aria-hidden': true,
     }),
 
     getItemTitleProps: () => normalize.element({

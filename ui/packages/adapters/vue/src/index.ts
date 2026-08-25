@@ -541,6 +541,7 @@ export {
   XhNotificationItemActionTrigger,
   XhNotificationItemCloseTrigger,
   XhNotificationItemDescription,
+  XhNotificationItemIndicator,
   XhNotificationItemTitle,
   XhNotificationRoot,
 } from './components/notification/notification'

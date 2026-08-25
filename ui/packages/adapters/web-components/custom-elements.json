@@ -24126,12 +24126,6 @@
           "customElement": true,
           "cssProperties": [
             {
-              "name": "--xh-notification-accent"
-            },
-            {
-              "name": "--xh-notification-accent-width"
-            },
-            {
               "name": "--xh-notification-action-bg"
             },
             {
@@ -24177,6 +24171,9 @@
               "name": "--xh-notification-close-fg-hover"
             },
             {
+              "name": "--xh-notification-close-inset"
+            },
+            {
               "name": "--xh-notification-close-radius"
             },
             {
@@ -24201,6 +24198,12 @@
               "name": "--xh-notification-icon-size"
             },
             {
+              "name": "--xh-notification-indicator-fg"
+            },
+            {
+              "name": "--xh-notification-indicator-size"
+            },
+            {
               "name": "--xh-notification-inset"
             },
             {
@@ -24217,6 +24220,9 @@
             },
             {
               "name": "--xh-notification-radius"
+            },
+            {
+              "name": "--xh-notification-row-gap"
             },
             {
               "name": "--xh-notification-shadow"
@@ -24240,12 +24246,16 @@
         },
         {
           "kind": "class",
-          "description": "`<xh-notification-item>` —— 单条通知卡片：作者写 item/item-title/item-description/\nitem-action-trigger/item-close-trigger 角色节点，元素跑生命周期机器并把 connect 产出打上去。\n\nitem 承载 role 与 aria-live：默认 status + polite（排队等读屏的空隙），\ntype=\"error\" 换成 alert + assertive（打断当前朗读）。指针停在卡片上、\n或焦点落进卡片内部都会把倒计时按住，离开才接着走剩下的那一段。\n\n退场窗口走完只把卡片收起、不删节点：作者写在里面的内容归作者，\n什么时候把这条从队列里删掉是 `<xh-notification>` 的事（它收本元素冒泡上去的 status-change）。",
+          "description": "`<xh-notification-item>` —— 单条通知卡片：作者写 item/item-indicator/item-title/\nitem-description/item-action-trigger/item-close-trigger 角色节点，\n元素跑生命周期机器并把 connect 产出打上去。\n\nitem 承载 role 与 aria-live：默认 status + polite（排队等读屏的空隙），\ntype=\"error\" 换成 alert + assertive（打断当前朗读）。指针停在卡片上、\n或焦点落进卡片内部都会把倒计时按住，离开才接着走剩下的那一段。\n\n退场窗口走完只把卡片收起、不删节点：作者写在里面的内容归作者，\n什么时候把这条从队列里删掉是 `<xh-notification>` 的事（它收本元素冒泡上去的 status-change）。",
           "name": "XhNotificationItemElement",
           "cssParts": [
             {
               "description": "role=status（error 时 alert）的卡片，承载 data-type / data-tone / data-state / data-paused",
               "name": "item"
+            },
+            {
+              "description": "类型指示符；留空即由皮肤按 data-type 画一枚兜底字形",
+              "name": "item-indicator"
             },
             {
               "description": "标题，aria-labelledby 的目标",

@@ -20,11 +20,13 @@ function makeNotification(initial: Props = {}) {
 
 describe('notification 的 inert 豁免标记', () => {
   it('root 与 group 都带 data-xh-inert-exempt', () => {
-    const t = makeNotification({ defaultToasts: [{ id: 'a' }] })
+    const t = makeNotification({ defaultItems: [{ id: 'a' }] })
     try {
       const api = t.api()
       expect(api.getRootProps()[DATA_INERT_EXEMPT]).toBe('')
       expect(api.getGroupProps()[DATA_INERT_EXEMPT]).toBe('')
+      // 属性名写错过一次（defaultToasts），队列恒空时这条用例其实什么都没验
+      expect(api.count).toBe(1)
     }
     finally {
       t.stop()

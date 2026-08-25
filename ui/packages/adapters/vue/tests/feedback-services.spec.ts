@@ -205,6 +205,72 @@ describe('createNotificationService', () => {
   })
 })
 
+describe('createNotificationService 的默认模板', () => {
+  function card(): HTMLElement {
+    const el = document.querySelector<HTMLElement>('[data-scope="notification"][data-part="item"]')
+    if (!el)
+      throw new Error('没渲染出卡片')
+    return el
+  }
+
+  const partOf = (name: string): HTMLElement | null =>
+    document.querySelector<HTMLElement>(`[data-scope="notification"][data-part="${name}"]`)
+
+  it('四个节点平铺，不再套一层行容器', async () => {
+    const notify = createNotificationService()
+    notify.info('有新的审批', { description: '张三提交了一份请假单' })
+    await tick()
+    const parts = [...card().children].map(c => c.getAttribute('data-part'))
+    expect(parts).toEqual(['item-indicator', 'item-title', 'item-description', 'item-close-trigger'])
+    notify.dispose()
+  })
+
+  it('没写 type 也有指示符，语气落 info', async () => {
+    const notify = createNotificationService()
+    notify.create({ title: '无类型' })
+    await tick()
+    expect(card().getAttribute('data-tone')).toBe('info')
+    expect(partOf('item-indicator')?.getAttribute('aria-hidden')).toBe('true')
+    notify.dispose()
+  })
+
+  it('不给正文也恒渲染那个部件：aria-describedby 不能指着一个不存在的 id', async () => {
+    const notify = createNotificationService()
+    notify.info('只有标题')
+    await tick()
+    const description = partOf('item-description')
+    expect(description).not.toBeNull()
+    expect(card().getAttribute('aria-describedby')).toBe(description!.id)
+    notify.dispose()
+  })
+
+  it('默认出叉，走不掉的那种也出；closable 能显式关掉', async () => {
+    const notify = createNotificationService()
+    notify.info('一条')
+    await tick()
+    expect(partOf('item-close-trigger')).not.toBeNull()
+    notify.dismissAll()
+    await tick()
+
+    notify.error('这条不许关', { duration: 0, closable: false })
+    await tick()
+    expect(partOf('item-close-trigger')).toBeNull()
+    notify.dispose()
+  })
+
+  it('loading 改写成 success：语气与类型都跟着换，皮肤据此换字形', async () => {
+    const notify = createNotificationService()
+    const id = notify.create({ title: '导出中', type: 'loading', duration: 0 })
+    await tick()
+    expect(card().getAttribute('data-type')).toBe('loading')
+    notify.update(id, { type: 'success', title: '导出完成' })
+    await tick()
+    expect(card().getAttribute('data-type')).toBe('success')
+    expect(card().getAttribute('data-tone')).toBe('success')
+    notify.dispose()
+  })
+})
+
 describe('createDialogService', () => {
   function okButton(): HTMLButtonElement {
     const buttons = [...document.querySelectorAll<HTMLButtonElement>('[data-scope="dialog"] ~ * button, body button')]

@@ -155,7 +155,7 @@
 | [结果页](./result) | `result` | 5 | 0 | 5 |
 | [骨架屏](./skeleton) | `skeleton` | 2 | 0 | 4 |
 | [加载指示器](./spinner) | `spinner` | 2 | 0 | 6 |
-| [通知](./notification) | `notification` | 7 | 0 | 6 |
+| [通知](./notification) | `notification` | 8 | 0 | 6 |
 | [轻提示](./toast) | `toast` | 5 | 2 | 6 |
 
 ## 浮层

@@ -8,6 +8,7 @@ import {
   XhNotificationGroup,
   XhNotificationRoot,
   XhNotificationItem,
+  XhNotificationItemIndicator,
   XhNotificationItemTitle,
 } from "@xihan-ui/vue";
 
@@ -51,6 +52,7 @@ function nextTitle(): string {
             ({ id, status }) => status === 'unmounted' && dismiss(id)
           "
         >
+          <XhNotificationItemIndicator />
           <XhNotificationItemTitle />
           <XhNotificationItemDescription />
           <XhNotificationItemCloseTrigger />

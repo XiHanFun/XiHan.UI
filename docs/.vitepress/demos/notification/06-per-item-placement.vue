@@ -7,6 +7,7 @@ import {
   XhNotificationGroup,
   XhNotificationRoot,
   XhNotificationItem,
+  XhNotificationItemIndicator,
   XhNotificationItemTitle,
 } from "@xihan-ui/vue";
 
@@ -58,6 +59,7 @@ function pop(create: Create, placement: string, label: string): void {
             ({ id, status }) => status === 'unmounted' && dismiss(id)
           "
         >
+          <XhNotificationItemIndicator />
           <XhNotificationItemTitle />
           <XhNotificationItemDescription />
           <XhNotificationItemCloseTrigger />

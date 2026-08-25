@@ -8,6 +8,7 @@ import {
   XhNotificationGroup,
   XhNotificationRoot,
   XhNotificationItem,
+  XhNotificationItemIndicator,
   XhNotificationItemTitle,
 } from "@xihan-ui/vue";
 
@@ -71,6 +72,7 @@ function settle(
           :translations="itemTranslations"
           @status-change="(details) => settle(details, dismiss)"
         >
+          <XhNotificationItemIndicator />
           <XhNotificationItemTitle />
           <XhNotificationItemDescription />
           <XhNotificationItemCloseTrigger />

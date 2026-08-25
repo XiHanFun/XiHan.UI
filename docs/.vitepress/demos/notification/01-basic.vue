@@ -7,6 +7,7 @@ import {
   XhNotificationGroup,
   XhNotificationRoot,
   XhNotificationItem,
+  XhNotificationItemIndicator,
   XhNotificationItemTitle,
 } from "@xihan-ui/vue";
 
@@ -51,6 +52,7 @@ const itemTranslations = { close: "关闭" };
             ({ id, status }) => status === 'unmounted' && dismiss(id)
           "
         >
+          <XhNotificationItemIndicator />
           <XhNotificationItemTitle />
           <XhNotificationItemDescription />
           <XhNotificationItemCloseTrigger />

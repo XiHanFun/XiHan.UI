@@ -22,10 +22,10 @@ import {
   XhNotificationItem,
   XhNotificationItemCloseTrigger,
   XhNotificationItemDescription,
+  XhNotificationItemIndicator,
   XhNotificationItemTitle,
 } from '../components/notification/notification'
 import { useNotification } from '../components/notification/use-notification'
-import { typeBadge } from './glyph'
 import { mountServiceHost } from './mount-host'
 import { createServiceConfig } from './service-config'
 
@@ -92,11 +92,12 @@ function defaultCard(
         onUnmounted(id)
     },
   }, () => [
-    h('div', { style: { display: 'flex', alignItems: 'center', gap: 'var(--xh-control-gap-md)' } }, [
-      typeBadge(item.type),
-      h(XhNotificationItemTitle),
-    ]),
-    item.description ? h(XhNotificationItemDescription) : null,
+    // 四个节点平铺：两列网格与右上角那颗叉都归皮肤，模板套一层行容器只会与它打架。
+    // 指示符与说明都恒渲染——皮肤的 :empty 规则负责把空盒收走，
+    // 而 aria-describedby 无条件指着说明那一个，节点缺席就成了悬空引用
+    h(XhNotificationItemIndicator),
+    h(XhNotificationItemTitle),
+    h(XhNotificationItemDescription),
     item.closable !== false ? h(XhNotificationItemCloseTrigger) : null,
   ])
 }

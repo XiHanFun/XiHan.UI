@@ -24,7 +24,9 @@ const STANDALONE = ['file-upload', 'signature-pad']
  * image-viewer：全屏看片的 chrome 钮按触控靶走 lg。
  * toast：那颗叉排在单行短消息里，不在面板角上——28px 比一行正文的行盒还高，走行级动作钮那一档。
  */
-const CLOSE = { 'dialog': null, 'drawer': null, 'popover': null, 'tour': null, 'toast': '--xh-control-action-size', 'alert': null, 'floating-panel': null, 'image-viewer': '--xh-control-h-lg' }
+const CLOSE = { 'dialog': null, 'drawer': null, 'popover': null, 'tour': null, 'toast': '--xh-control-action-size', 'alert': null, 'floating-panel': null, 'image-viewer': '--xh-control-h-lg', 'notification': null }
+/** 部件名与 close-trigger 不同的，逐条登记（通知的叉在卡片那一层，叫 item-close-trigger）。 */
+const CLOSE_PART = { notification: 'item-close-trigger' }
 /** ④ 标签内移除钮（组件 → 部件）与行级删除钮。 */
 const CHIP_REMOVE = { 'tag': 'close-trigger', 'tags-input': 'item-delete-trigger', 'select': 'item-delete-trigger' }
 const ROW_DELETE = { 'file-upload': 'item-delete-trigger', 'dynamic-input': 'item-delete-trigger' }
@@ -174,7 +176,7 @@ for (const [c, sizeException] of Object.entries(CLOSE)) {
   const css = await skin(c)
   if (!css)
     continue
-  await checkButtonSkin(c, 'close-trigger', {
+  await checkButtonSkin(c, CLOSE_PART[c] ?? 'close-trigger', {
     sizeSlot: `--xh-${c}-close-size`,
     sizeToken: sizeException ?? '--xh-control-h-sm',
     radiusSlot: `--xh-${c}-close-radius`,

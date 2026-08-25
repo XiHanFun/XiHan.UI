@@ -20,7 +20,13 @@ export const notificationSuite: ConformanceSuite = {
   component: 'notification',
   anatomy: notificationAnatomy,
   keyboard: notificationKeyboard,
-  // 两个位各一摞。单条卡片不在这份 fixture 里——它由作者按队列渲染进对应的那一摞，
+  // 两个位各一摞，卡片不在这份 fixture 里，也塞不进来：
+  // 卡片在 WC 侧是另一个自定义元素（<xh-notification-item>），而一致性夹具只挂一个宿主，
+  // item 起的那几个角色节点在这棵树里永远接不到线；Vue 侧的 group 又是按队列渲染子节点的，
+  // 空队列一张不出，与 WC 的静态树逐帧比对当场分叉。
+  // 卡片那一帧改由两个适配器各自的用例守：
+  // packages/adapters/vue/tests/feedback-services.spec.ts 与
+  // packages/adapters/web-components/tests/notification-item.spec.ts。
   // 生命周期（计时、暂停、退场）与 toast 同一台机器，那份行为在 toast 的用例里
   fixture: {
     part: 'root',
@@ -31,21 +37,22 @@ export const notificationSuite: ConformanceSuite = {
   },
   cases: [
     {
-      name: '空队列：root 是地标不是 live region，两摞都报空',
+      name: '空队列：那一摞是地标不是 live region，两摞都报空',
       spec: { apg: `${APG}#roles_states_properties` },
       initial: {
-        order: ['root', 'group[0]', 'group[1]'],
         counts: { root: 1, group: 2 },
         parts: {
+          // root 是 display:contents 的作用域包装，量出来 0×0，地标挂在它身上跳过去落不到地方
+          'root': { 'role': null, 'data-count': '0', 'data-empty': '' },
           // 每条通知自己就是 status / alert，外面再套一层 live region 会让读屏念两遍
-          'root': {
+          'group[0]': {
             'role': 'region',
             'aria-label': 'Notifications',
+            'data-placement': 'top',
             'data-count': '0',
             'data-empty': '',
           },
-          'group[0]': { 'data-placement': 'top', 'data-count': '0', 'data-empty': '' },
-          'group[1]': { 'data-placement': 'bottom-end', 'data-count': '0', 'data-empty': '' },
+          'group[1]': { 'role': 'region', 'data-placement': 'bottom-end', 'data-count': '0', 'data-empty': '' },
         },
       },
     },
@@ -139,7 +146,7 @@ export const notificationSuite: ConformanceSuite = {
       spec: { apg: `${APG}#roles_states_properties` },
       props: { translations: { region: '通知中心' } },
       initial: {
-        parts: { root: { 'aria-label': '通知中心' } },
+        parts: { 'group[0]': { 'aria-label': '通知中心' } },
       },
     },
     {
