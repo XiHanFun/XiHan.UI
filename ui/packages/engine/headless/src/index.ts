@@ -240,7 +240,7 @@ export { connectTransfer, transferAnatomy, transferCheckedValues, transferCheckS
 export type { TransferApi, TransferCheckState, TransferFilter, TransferItem, TransferItemProps, TransferMoveInput, TransferMoveResult, TransferPanelProps, TransferSchema, TransferSelectionChangeDetails, TransferSide, TransferTranslations, TransferValueChangeDetails } from './transfer'
 
 export { connectTree, flattenTree, indexTree, treeAnatomy, treeBranchQuery, treeItemQuery, treeKeyboard, treeMachine, treeMeta, treeSelectionMode } from './tree'
-export type { TreeApi, TreeExpandedChangeDetails, TreeFocusModel, TreeNode, TreeNodeMeta, TreeNodeProps, TreeOrientationResolver, TreeRefs, TreeSchema, TreeSelectionChangeDetails, TreeSelectionMode, TreeTranslations, TreeVisibleNode } from './tree'
+export type { TreeApi, TreeExpandedChangeDetails, TreeFocusModel, TreeNode, TreeNodeMeta, TreeNodeProps, TreeRefs, TreeSchema, TreeSelectionChangeDetails, TreeSelectionMode, TreeTranslations, TreeVisibleNode } from './tree'
 export { connectTreeSelect, findTreeSelectNodeEl, TREE_SELECT_DEFAULT_PLACEMENT, treeSelectAnatomy, treeSelectBranchQuery, treeSelectItemQuery, treeSelectKeyboard, treeSelectMachine, treeSelectMeta, treeSelectNodeEls } from './tree-select'
 export type { TreeSelectApi, TreeSelectExpandedChangeDetails, TreeSelectFocusIntent, TreeSelectNodeProps, TreeSelectOpenChangeDetails, TreeSelectRefs, TreeSelectSchema, TreeSelectTranslations, TreeSelectValueChangeDetails } from './tree-select'
 export type { HeadlessComponent, NormalizeProps, PropTypes } from './types'
