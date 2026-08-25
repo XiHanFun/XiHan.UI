@@ -1,4 +1,5 @@
 export { tableAnatomy, tableRowQuery } from './table.anatomy'
+export { orderColumnIds, PREFIX_COLUMN_ID, resolveTableColumns } from './table.columns'
 export { connectTable } from './table.connect'
 export { tableKeyboard } from './table.keyboard'
 export { tableMachine, tableSelectionMode } from './table.machine'
@@ -19,4 +20,4 @@ export {
   tableToggleSort,
 } from './table.sort'
 export type { TableToggleSortOptions } from './table.sort'
-export type { TableApi, TableCellProps, TableColumn, TableColumnDef, TableColumnKind, TableColumnProps, TableExpandedChangeDetails, TableFocusModel, TableRowDef, TableRowProps, TableSchema, TableSelection, TableSelectionChangeDetails, TableSelectionMode, TableSelectionState, TableSortChangeDetails, TableSortDescriptor, TableSortDirection, TableTranslations, TableVisibleRow } from './table.types'
+export type { TableApi, TableCellProps, TableColumn, TableColumnDef, TableColumnKind, TableColumnPreference, TableColumnPreferenceChangeDetails, TableColumnProps, TableExpandedChangeDetails, TableFocusModel, TableRowDef, TableRowProps, TableSchema, TableSelection, TableSelectionChangeDetails, TableSelectionMode, TableSelectionState, TableSortChangeDetails, TableSortDescriptor, TableSortDirection, TableTranslations, TableVisibleRow } from './table.types'

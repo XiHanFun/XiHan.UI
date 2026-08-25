@@ -159,6 +159,8 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 | `defaultExpanded` | `string[]` |  |  |
 | `selectionMode` | `TableSelectionMode` |  | 默认 none：不声明则没有选择机制，行也不报 aria-selected。 |
 | `prefixColumns` | `TableColumnKind[]` |  | 要哪几列前缀列，按给定顺序插在最前面，默认一列都不插。 它们由库插入并**占住列号**——不占的话右侧所有列的 aria-colindex 会整体串位， 而这正是使用者手工往 columns 里塞假列的原因。作者照 `api.columns` 渲染即可， 每一项都自报 `kind`。 |
+| `columnPreference` | `TableColumnPreference` |  | 列偏好。给定即受控：内部不自改，写只发 onColumnPreferenceChange。 持久化归使用者——库只负责把它算进生效列。 |
+| `defaultColumnPreference` | `TableColumnPreference` |  |  |
 | `page` | `number` |  | 当前页码与每页条数，只用来算序号，不参与切片——切片归调用方 （或分页组件的 `api.slice`）。都不给时序号退回可见序。 |
 | `pageSize` | `number` |  |  |
 | `loading` | `boolean` |  | 数据在路上：root 报 aria-busy，表体为空时加载态节点显形。 |
@@ -171,6 +173,7 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 | `loop` | `boolean` |  | 上下键走到首尾是否回绕，默认 false。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr；只对调左右方向键的「展开/收起」语义。 |
 | `size` | `Size` |  | 密度：sm / md / lg。只换单元格的纵向内边距与字号，列宽算法不受影响。 |
+| `onColumnPreferenceChange` | `(details: TableColumnPreferenceChangeDetails) => void` |  |  |
 | `onSortChange` | `(details: TableSortChangeDetails) => void` |  |  |
 | `onSelectionChange` | `(details: TableSelectionChangeDetails) => void` |  |  |
 | `onExpandedChange` | `(details: TableExpandedChangeDetails) => void` |  |  |
@@ -182,6 +185,7 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `sort-change` | `TableSortChangeDetails` | 排序链变化；detail 为 `{ value: { id, direction }[] }` |
+| `column-preference-change` | `` | 列偏好变化；detail 为 `{ value: TableColumnPreference }` |
 | `selection-change` | `TableSelectionChangeDetails` | 选中集合变化；detail 为 `{ value: string[] \| 'all' }` |
 | `expanded-change` | `TableExpandedChangeDetails` | 展开集合变化；detail 为 `{ value: string[] }` |
 
@@ -206,7 +210,7 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 
 **状态**：`idle`
 
-**事件**：`SORT.SET` · `SORT.TOGGLE` · `SELECTION.SET` · `ROW.SELECT` · `SELECTION.ALL_TOGGLE` · `EXPANDED.SET` · `ROW.EXPAND` · `ROW.COLLAPSE` · `ROW.EXPAND_TOGGLE` · `ROW.FOCUS` · `TABLE.BLUR`
+**事件**：`SORT.SET` · `SORT.TOGGLE` · `COLUMN_PREF.SET` · `COLUMN_PREF.PATCH` · `SELECTION.SET` · `ROW.SELECT` · `SELECTION.ALL_TOGGLE` · `EXPANDED.SET` · `ROW.EXPAND` · `ROW.COLLAPSE` · `ROW.EXPAND_TOGGLE` · `ROW.FOCUS` · `TABLE.BLUR`
 
 ## connect API
 
@@ -247,7 +251,12 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 | `getFooterProps` | `() => T['element']` |  |
 | `getHeaderRowProps` | `() => T['element']` | 表头那一行：恒占行号空间的第 1 行。 |
 | `getFooterRowProps` | `() => T['element']` | 脚注那一行：占行号空间的最后一行。 |
-| `rowNumber` | `(rowId: string) => string` | 这一行显示什么序号。平表是分页全局序号，树形是大纲编号。 不出序号列时仍可调用——它是纯计算，不看 showIndex。 |
+| `rowNumber` | `(rowId: string) => string` | 这一行显示什么序号。平表是分页全局序号，树形是大纲编号。 不出序号列时仍可调用——它是纯计算，不看要不要那一列。 |
+| `columnPreference` | `TableColumnPreference` | 当下的列偏好。原样交出去即可存盘。 |
+| `setColumnHidden` | `(columnId: string, hidden: boolean) => void` | 藏起 / 放出一列。 |
+| `moveColumn` | `(columnId: string, toIndex: number) => void` | 把一列挪到第几位（只在作者定义的那些列之间算，0 起算）。 |
+| `setColumnWidth` | `(columnId: string, width: number \| string) => void` | 改一列的宽。 |
+| `setColumnPreference` | `(next?: TableColumnPreference) => void` | 整份偏好换掉；不给即清空，回到作者定义的原样。 |
 | `getRowProps` | `(props: TableRowProps) => T['element']` |  |
 | `getColumnHeaderProps` | `(props: TableColumnProps) => T['element']` |  |
 | `getCellProps` | `(props: TableCellProps) => T['element']` |  |

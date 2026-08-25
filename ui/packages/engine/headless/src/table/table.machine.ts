@@ -1,4 +1,5 @@
 import type {
+  TableColumnPreference,
   TableRowDef,
   TableSchema,
   TableSelection,
@@ -6,6 +7,7 @@ import type {
   TableSortDescriptor,
 } from './table.types'
 import { setup } from '@xihan-ui/machine'
+import { orderColumnIds } from './table.columns'
 import { tableSelectableRowIds, tableToggleRowSelection, tableToggleSelectAll } from './table.rows'
 import { tableNormalizeSort, tableToggleSort } from './table.sort'
 
@@ -86,12 +88,19 @@ export const tableMachine = createMachine({
     })),
     // 焦点锚点不受控、不对外通知：它只服务行级 roving tabindex 与方向键起点
     focusedRow: cell<string | null>(() => ({ defaultValue: null })),
+    columnPreference: cell<TableColumnPreference>(() => ({
+      value: prop('columnPreference'),
+      defaultValue: prop('defaultColumnPreference') ?? {},
+      onChange: value => prop('onColumnPreferenceChange')?.({ value }),
+    })),
   }),
   initialState: () => 'idle',
   states: {
     idle: {
       // 省略 target：只跑 actions，不换状态
       on: {
+        'COLUMN_PREF.SET': { actions: ['setColumnPreference'] },
+        'COLUMN_PREF.PATCH': { actions: ['patchColumnPreference'] },
         'SORT.SET': { actions: ['setSort'] },
         'SORT.TOGGLE': { actions: ['toggleSort'] },
         'SELECTION.SET': { actions: ['setSelection'] },
@@ -108,6 +117,51 @@ export const tableMachine = createMachine({
   },
   implementations: {
     actions: {
+      setColumnPreference: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'COLUMN_PREF.SET')
+          context.set('columnPreference', e.value ?? {})
+      },
+      /**
+       * 逐列增改。三件事互不相干，各自缺席即不动那一项。
+       *
+       * order 每次都写成一份完整列序而不是「只记挪动过的那几个」：
+       * 只记一部分的话，作者改了 columns 的原始顺序之后，两份顺序拼起来的结果
+       * 依赖于合并算法的细节，谁也说不清最终是什么样。
+       */
+      patchColumnPreference: ({ context, prop, event }) => {
+        const e = event.current()
+        if (e.type !== 'COLUMN_PREF.PATCH')
+          return
+        const current = context.get('columnPreference')
+        const next: TableColumnPreference = { ...current }
+
+        if (e.hidden !== undefined) {
+          const hidden = new Set(current.hidden ?? [])
+          if (e.hidden)
+            hidden.add(e.columnId)
+          else
+            hidden.delete(e.columnId)
+          next.hidden = [...hidden]
+        }
+
+        if (e.width !== undefined)
+          next.widths = { ...current.widths, [e.columnId]: e.width }
+
+        if (e.toIndex !== undefined) {
+          // 基线取「当下的列序」：没有偏好时就是作者给的原顺序
+          const ids = (prop('columns') ?? []).map(column => column.id)
+          const ordered = orderColumnIds(ids, current.order)
+          const from = ordered.indexOf(e.columnId)
+          if (from >= 0) {
+            ordered.splice(from, 1)
+            ordered.splice(Math.max(0, Math.min(e.toIndex, ordered.length)), 0, e.columnId)
+            next.order = ordered
+          }
+        }
+
+        context.set('columnPreference', next)
+      },
       setSort: ({ context, event }) => {
         const e = event.current()
         if (e.type !== 'SORT.SET')

@@ -1,6 +1,7 @@
 import type {
   TableColumnDef,
   TableColumnKind,
+  TableColumnPreference,
   TableColumnProps,
   TableExpandedChangeDetails,
   TableRowDef,
@@ -59,6 +60,9 @@ const FOOTER_SELECTOR = '[data-xh-part="footer"]'
  * @attr {'ltr'|'rtl'} dir - 文字方向，只对调左右方向键的展开/收起语义，默认 ltr
  * @attr {'sm'|'md'|'lg'} size - 密度：只换单元格的纵向内边距与字号，列宽不受影响
  * @fires sort-change - 排序链变化；detail 为 `{ value: { id, direction }[] }`
+ * @fires column-preference-change - 列偏好变化；detail 为 `{ value: TableColumnPreference }`
+ * @prop {TableColumnPreference} columnPreference - 列偏好（显隐/顺序/宽/冻结），给定即受控
+ * @prop {TableColumnKind[]} prefixColumns - 要哪几列前缀列，按给定顺序插在最前面
  * @fires selection-change - 选中集合变化；detail 为 `{ value: string[] | 'all' }`
  * @fires expanded-change - 展开集合变化；detail 为 `{ value: string[] }`
  * @csspart root - role=grid 容器（rows 里有可展开的行时为 treegrid），报行列总数与多选声明
@@ -94,6 +98,9 @@ export class XhTableElement extends XhElement {
     selectionMode: { converter: STRING_CONVERTER, attribute: 'selection-mode' },
     // 前缀列是数组，走不了属性；只作为 property 暴露
     prefixColumns: { attribute: false },
+    // 列偏好是对象，走不了属性；只作为 property 暴露
+    columnPreference: { attribute: false },
+    defaultColumnPreference: { attribute: false },
     page: { converter: NUMBER_CONVERTER },
     pageSize: { converter: NUMBER_CONVERTER, attribute: 'page-size' },
     loading: { type: Boolean },
@@ -118,6 +125,8 @@ export class XhTableElement extends XhElement {
   declare defaultExpanded?: string[]
   declare selectionMode?: TableSelectionMode
   declare prefixColumns?: TableColumnKind[]
+  declare columnPreference?: TableColumnPreference
+  declare defaultColumnPreference?: TableColumnPreference
   declare page?: number
   declare pageSize?: number
   declare loading?: boolean
@@ -130,6 +139,10 @@ export class XhTableElement extends XhElement {
   declare loop?: boolean
   declare direction?: Direction
   declare size?: Size
+
+  private readonly notifyColumnPreference = (details: { value: TableColumnPreference }): void => {
+    this.dispatchEvent(new CustomEvent('column-preference-change', { detail: details, bubbles: true, composed: true }))
+  }
 
   private readonly notifySort = (details: TableSortChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('sort-change', { detail: details, bubbles: true, composed: true }))
@@ -159,6 +172,9 @@ export class XhTableElement extends XhElement {
       defaultExpanded: this.defaultExpanded,
       selectionMode: this.selectionMode,
       prefixColumns: this.prefixColumns,
+      columnPreference: this.columnPreference,
+      defaultColumnPreference: this.defaultColumnPreference,
+      onColumnPreferenceChange: this.notifyColumnPreference,
       page: this.page,
       pageSize: this.pageSize,
       loading: this.loading ?? false,
