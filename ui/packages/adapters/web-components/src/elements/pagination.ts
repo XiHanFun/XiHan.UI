@@ -219,6 +219,7 @@ export class XhPaginationElement extends XhElement {
     }
 
     // positioner 的 style 是坐标对象，spreader 会逐条写成内联样式
+    put('page-size-select', api.getPageSizeSelectProps() as Record<string, unknown>)
     put('positioner', api.getPositionerProps() as Record<string, unknown>)
     put('content', api.getContentProps() as Record<string, unknown>)
 

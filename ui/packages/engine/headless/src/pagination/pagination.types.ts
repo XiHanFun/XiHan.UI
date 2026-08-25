@@ -36,6 +36,10 @@ export interface PaginationTranslations {
   item: (page: number) => string
   /** 省略位的 aria-label：它是个可展开的按钮，得说清展开出来是什么。 */
   ellipsis: (count: number) => string
+  /** 每页条数控制器的 aria-label。 */
+  pageSizeSelect: string
+  /** 每一档的显示文字，如「10 条/页」。 */
+  pageSizeOption: (size: number) => string
 }
 
 export interface PaginationSchema extends MachineSchema {
@@ -150,6 +154,8 @@ export interface PaginationApi<T extends PropTypes = PropTypes> {
   getItemProps: (props: PaginationItemProps) => T['button']
   /** 省略位：可展开的按钮，摊开后列出被折叠的页码。 */
   getEllipsisProps: (props: PaginationEllipsisProps) => T['button']
+  /** 每页条数控制器：绑到一个原生 select 上，档位由作者按 pageSizeOptions 渲染成 option。 */
+  getPageSizeSelectProps: () => T['select']
   getPositionerProps: () => T['element']
   getContentProps: () => T['element']
   /** 收起摊开的省略位。 */

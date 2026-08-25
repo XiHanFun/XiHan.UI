@@ -44,6 +44,8 @@ export function connectPagination<T extends PropTypes>(
     nextTrigger: translations?.nextTrigger ?? 'Next page',
     item: translations?.item ?? ((value: number) => `Page ${value}`),
     ellipsis: translations?.ellipsis ?? ((n: number) => `${n} more pages`),
+    pageSizeSelect: translations?.pageSizeSelect ?? 'Items per page',
+    pageSizeOption: translations?.pageSizeOption ?? ((size: number) => `${size} / page`),
   }
 
   const setPage = (next: number): void => {
@@ -155,6 +157,26 @@ export function connectPagination<T extends PropTypes>(
       'onPointerenter': () => send({ type: 'ELLIPSIS.ENTER', side: props.side }),
       'onPointerleave': () => send({ type: 'ELLIPSIS.LEAVE' }),
       'onClick': () => send({ type: 'ELLIPSIS.TOGGLE', side: props.side }),
+    }),
+
+    /**
+     * 每页条数控制器。用原生 select 而不是再造一个浮层：档位就那么几档，
+     * 浮层带不来什么，却要多接一层定位、消解与键盘。
+     */
+    getPageSizeSelectProps: () => normalize.select({
+      ...parts['page-size-select'].attrs,
+      'aria-label': label.pageSizeSelect,
+      'value': String(pageSize),
+      'onChange': (event: Event) => {
+        const el = event.target as HTMLSelectElement
+        const next = Number(el.value)
+        if (Number.isFinite(next))
+          send({ type: 'PAGE_SIZE.SET', pageSize: next })
+        // 受控时宿主可能不写回：DOM 的选中项已被用户改掉，而 vdom 那边没有变化就不会
+        // 打补丁，控件于是显示着一个并没生效的档位。这里同步回填一次；真写回了的话，
+        // 随后那次渲染会再把它设成新值，两者不冲突
+        el.value = String(pageSize)
+      },
     }),
 
     getPositionerProps: () => normalize.element({

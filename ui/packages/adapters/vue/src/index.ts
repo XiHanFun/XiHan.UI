@@ -555,6 +555,7 @@ export {
   XhPaginationEllipsis,
   XhPaginationItem,
   XhPaginationNextTrigger,
+  XhPaginationPageSizeSelect,
   XhPaginationPositioner,
   XhPaginationPrevTrigger,
   XhPaginationRoot,

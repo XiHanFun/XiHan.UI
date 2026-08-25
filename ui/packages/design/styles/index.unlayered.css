@@ -16448,6 +16448,41 @@ input[data-scope='mention'][data-part='input'] {
   cursor: default;
   pointer-events: none;
 }
+/* 每页条数控制器：原生 select，抹掉系统外观后与页码格子共用同一副骨架。
+   箭头用背景图而非伪元素——原生 select 不生成 ::before */
+[data-scope='pagination'][data-part='page-size-select'] {
+  flex: none;
+  block-size: var(--xh-pagination-item-h, var(--xh-_pagination-item-size));
+  padding-inline: var(--xh-pagination-item-px, var(--xh-_pagination-item-px));
+  /* 右侧让开箭头 */
+  padding-inline-end: calc(
+    var(--xh-pagination-item-px, var(--xh-_pagination-item-px)) +
+      var(--xh-icon-size, var(--xh-glyph-size-text)) + var(--xh-space-1)
+  );
+  border: var(--xh-stroke-thin) solid var(--xh-pagination-page-size-border, var(--xh-border-default));
+  border-radius: var(--xh-pagination-item-radius, var(--xh-shape-control));
+  background: var(--xh-pagination-page-size-bg, var(--xh-bg-surface));
+  color: var(--xh-pagination-item-fg, var(--xh-fg-default));
+  font-size: var(--xh-pagination-font-size, var(--xh-_pagination-font-size));
+  line-height: var(--xh-leading-none);
+  appearance: none;
+  cursor: pointer;
+}
+
+[data-scope='pagination'][data-part='page-size-select']:hover:not(:disabled) {
+  border-color: var(--xh-pagination-page-size-border-hover, var(--xh-border-strong));
+}
+
+[data-scope='pagination'][data-part='page-size-select']:focus-visible {
+  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline-offset: var(--xh-ring-offset);
+}
+
+[data-scope='pagination'][data-part='page-size-select']:disabled {
+  color: var(--xh-fg-disabled);
+  cursor: not-allowed;
+}
+
 /* 摊开省略位的定位层。三处坐标系必须同为 fixed：机器交给引擎的 strategy、
    连接层的内联 position、这里 —— 差一处就会算在错的坐标系里 */
 [data-scope='pagination'][data-part='positioner'] {
