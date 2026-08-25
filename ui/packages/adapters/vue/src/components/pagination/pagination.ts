@@ -145,6 +145,29 @@ export const XhPaginationEllipsis = defineComponent({
   },
 })
 
+export const XhPaginationPageSizeSelect = defineComponent({
+  name: 'XhPaginationPageSizeSelect',
+  slots: Object as SlotsType<{
+    default?: (props: { options: number[], label: (size: number) => string }) => VNode[]
+  }>,
+  setup(_, { slots }) {
+    const ctx = usePaginationContext()
+    // 档位由作者渲染成 option：原生 select 的子节点不是角色节点，用不着再立一个部件
+    return () => h(
+      'select',
+      ctx.api.value.getPageSizeSelectProps() as Record<string, unknown>,
+      slots.default
+        ? slots.default({
+            options: ctx.api.value.pageSizeOptions,
+            label: (size: number) => String(size),
+          })
+        : ctx.api.value.pageSizeOptions.map(size =>
+            h('option', { key: size, value: String(size) }, String(size)),
+          ),
+    )
+  },
+})
+
 export const XhPaginationPositioner = defineComponent({
   name: 'XhPaginationPositioner',
   // 根是 Teleport，Vue 不会把直通属性合上去，作者写的 class 与 style 得自己接住落到 positioner 上

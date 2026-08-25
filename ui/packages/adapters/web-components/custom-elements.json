@@ -25232,6 +25232,15 @@
             },
             {
               "name": "--xh-pagination-layer"
+            },
+            {
+              "name": "--xh-pagination-page-size-bg"
+            },
+            {
+              "name": "--xh-pagination-page-size-border"
+            },
+            {
+              "name": "--xh-pagination-page-size-border-hover"
             }
           ]
         }
