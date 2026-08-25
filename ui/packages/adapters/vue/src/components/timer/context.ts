@@ -2,7 +2,7 @@ import type { InjectionKey } from 'vue'
 import type { TimerContext } from './use-timer'
 import { inject, provide } from 'vue'
 
-const KEY: InjectionKey<TimerContext> = Symbol('xh-timer')
+const KEY: InjectionKey<TimerContext> = Symbol.for('xh-timer')
 
 export function provideTimer(ctx: TimerContext): void {
   provide(KEY, ctx)

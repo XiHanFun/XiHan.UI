@@ -2,7 +2,7 @@ import type { InjectionKey } from 'vue'
 import type { TagContext } from './use-tag'
 import { inject, provide } from 'vue'
 
-const KEY: InjectionKey<TagContext> = Symbol('xh-tag')
+const KEY: InjectionKey<TagContext> = Symbol.for('xh-tag')
 
 export function provideTag(ctx: TagContext): void {
   provide(KEY, ctx)

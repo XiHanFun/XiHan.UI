@@ -2,7 +2,7 @@ import type { InjectionKey } from 'vue'
 import type { ToasterContext } from './use-toaster'
 import { inject, provide } from 'vue'
 
-const KEY: InjectionKey<ToasterContext> = Symbol('xh-toaster')
+const KEY: InjectionKey<ToasterContext> = Symbol.for('xh-toaster')
 
 export function provideToaster(ctx: ToasterContext): void {
   provide(KEY, ctx)

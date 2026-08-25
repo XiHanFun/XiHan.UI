@@ -2,7 +2,7 @@ import type { InjectionKey } from 'vue'
 import type { FormContext } from './use-form'
 import { inject, provide } from 'vue'
 
-const KEY: InjectionKey<FormContext> = Symbol('xh-form')
+const KEY: InjectionKey<FormContext> = Symbol.for('xh-form')
 
 export function provideForm(ctx: FormContext): void {
   provide(KEY, ctx)
@@ -25,7 +25,7 @@ export interface FormFieldHandle {
   name: () => string
 }
 
-const FIELD_KEY: InjectionKey<FormFieldHandle> = Symbol('xh-form-field')
+const FIELD_KEY: InjectionKey<FormFieldHandle> = Symbol.for('xh-form-field')
 
 export function provideFormField(handle: FormFieldHandle): void {
   provide(FIELD_KEY, handle)

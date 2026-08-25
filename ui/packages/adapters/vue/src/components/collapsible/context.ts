@@ -2,7 +2,7 @@ import type { InjectionKey } from 'vue'
 import type { CollapsibleContext } from './use-collapsible'
 import { inject, provide } from 'vue'
 
-const KEY: InjectionKey<CollapsibleContext> = Symbol('xh-collapsible')
+const KEY: InjectionKey<CollapsibleContext> = Symbol.for('xh-collapsible')
 
 export function provideCollapsible(ctx: CollapsibleContext): void {
   provide(KEY, ctx)

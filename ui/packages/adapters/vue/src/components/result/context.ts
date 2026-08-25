@@ -6,7 +6,7 @@ export interface ResultContext {
   api: ComputedRef<ResultApi>
 }
 
-const KEY: InjectionKey<ResultContext> = Symbol('xh-result')
+const KEY: InjectionKey<ResultContext> = Symbol.for('xh-result')
 
 export function provideResult(ctx: ResultContext): void {
   provide(KEY, ctx)

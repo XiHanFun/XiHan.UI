@@ -2,7 +2,7 @@ import type { InjectionKey } from 'vue'
 import type { SignaturePadContext } from './use-signature-pad'
 import { inject, provide } from 'vue'
 
-const KEY: InjectionKey<SignaturePadContext> = Symbol('xh-signature-pad')
+const KEY: InjectionKey<SignaturePadContext> = Symbol.for('xh-signature-pad')
 
 export function provideSignaturePad(ctx: SignaturePadContext): void {
   provide(KEY, ctx)

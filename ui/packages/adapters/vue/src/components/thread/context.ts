@@ -2,7 +2,7 @@ import type { InjectionKey } from 'vue'
 import type { ThreadContext } from './use-thread'
 import { inject, provide } from 'vue'
 
-const KEY: InjectionKey<ThreadContext> = Symbol('xh-thread')
+const KEY: InjectionKey<ThreadContext> = Symbol.for('xh-thread')
 
 export function provideThread(ctx: ThreadContext): void {
   provide(KEY, ctx)

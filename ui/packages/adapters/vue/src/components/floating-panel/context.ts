@@ -2,7 +2,7 @@ import type { InjectionKey } from 'vue'
 import type { FloatingPanelContext } from './use-floating-panel'
 import { inject, provide } from 'vue'
 
-const KEY: InjectionKey<FloatingPanelContext> = Symbol('xh-floating-panel')
+const KEY: InjectionKey<FloatingPanelContext> = Symbol.for('xh-floating-panel')
 
 export function provideFloatingPanel(ctx: FloatingPanelContext): void {
   provide(KEY, ctx)

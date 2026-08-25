@@ -2,7 +2,7 @@ import type { InjectionKey } from 'vue'
 import type { FloatButtonContext } from './use-float-button'
 import { inject, provide } from 'vue'
 
-const KEY: InjectionKey<FloatButtonContext> = Symbol('xh-float-button')
+const KEY: InjectionKey<FloatButtonContext> = Symbol.for('xh-float-button')
 
 export function provideFloatButton(ctx: FloatButtonContext): void {
   provide(KEY, ctx)

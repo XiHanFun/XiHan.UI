@@ -8,8 +8,8 @@ export interface CalendarCellContext {
   cell: ComputedRef<CalendarCellProps>
 }
 
-const KEY: InjectionKey<CalendarContext> = Symbol('xh-calendar')
-const CELL_KEY: InjectionKey<CalendarCellContext> = Symbol('xh-calendar-cell')
+const KEY: InjectionKey<CalendarContext> = Symbol.for('xh-calendar')
+const CELL_KEY: InjectionKey<CalendarCellContext> = Symbol.for('xh-calendar-cell')
 
 export function provideCalendar(ctx: CalendarContext): void {
   provide(KEY, ctx)

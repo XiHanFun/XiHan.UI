@@ -2,7 +2,7 @@ import type { InjectionKey } from 'vue'
 import type { PopconfirmContext } from './use-popconfirm'
 import { inject, provide } from 'vue'
 
-const KEY: InjectionKey<PopconfirmContext> = Symbol('xh-popconfirm')
+const KEY: InjectionKey<PopconfirmContext> = Symbol.for('xh-popconfirm')
 
 export function providePopconfirm(ctx: PopconfirmContext): void {
   provide(KEY, ctx)

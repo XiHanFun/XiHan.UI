@@ -2,7 +2,7 @@ import type { InjectionKey } from 'vue'
 import type { CarouselContext } from './use-carousel'
 import { inject, provide } from 'vue'
 
-const KEY: InjectionKey<CarouselContext> = Symbol('xh-carousel')
+const KEY: InjectionKey<CarouselContext> = Symbol.for('xh-carousel')
 
 export function provideCarousel(ctx: CarouselContext): void {
   provide(KEY, ctx)

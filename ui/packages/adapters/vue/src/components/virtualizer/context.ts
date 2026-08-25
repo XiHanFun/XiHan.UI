@@ -2,7 +2,7 @@ import type { InjectionKey } from 'vue'
 import type { VirtualizerContext } from './use-virtualizer'
 import { inject, provide } from 'vue'
 
-const KEY: InjectionKey<VirtualizerContext> = Symbol('xh-virtualizer')
+const KEY: InjectionKey<VirtualizerContext> = Symbol.for('xh-virtualizer')
 
 export function provideVirtualizer(ctx: VirtualizerContext): void {
   provide(KEY, ctx)

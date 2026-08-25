@@ -2,7 +2,7 @@ import type { InjectionKey } from 'vue'
 import type { DrawerContext } from './use-drawer'
 import { inject, provide } from 'vue'
 
-const KEY: InjectionKey<DrawerContext> = Symbol('xh-drawer')
+const KEY: InjectionKey<DrawerContext> = Symbol.for('xh-drawer')
 
 export function provideDrawer(ctx: DrawerContext): void {
   provide(KEY, ctx)

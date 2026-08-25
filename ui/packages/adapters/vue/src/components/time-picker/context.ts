@@ -8,8 +8,8 @@ export interface TimePickerColumnContext {
   unit: ComputedRef<TimePickerColumnUnit>
 }
 
-const KEY: InjectionKey<TimePickerContext> = Symbol('xh-time-picker')
-const COLUMN_KEY: InjectionKey<TimePickerColumnContext> = Symbol('xh-time-picker-column')
+const KEY: InjectionKey<TimePickerContext> = Symbol.for('xh-time-picker')
+const COLUMN_KEY: InjectionKey<TimePickerColumnContext> = Symbol.for('xh-time-picker-column')
 
 export function provideTimePicker(ctx: TimePickerContext): void {
   provide(KEY, ctx)

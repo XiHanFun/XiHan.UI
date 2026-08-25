@@ -6,7 +6,7 @@ export interface DescriptionsContext {
   api: ComputedRef<DescriptionsApi>
 }
 
-const KEY: InjectionKey<DescriptionsContext> = Symbol('xh-descriptions')
+const KEY: InjectionKey<DescriptionsContext> = Symbol.for('xh-descriptions')
 
 export function provideDescriptions(ctx: DescriptionsContext): void {
   provide(KEY, ctx)

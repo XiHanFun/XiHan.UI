@@ -2,7 +2,7 @@ import type { InjectionKey } from 'vue'
 import type { BreadcrumbContext } from './use-breadcrumb'
 import { inject, provide } from 'vue'
 
-const KEY: InjectionKey<BreadcrumbContext> = Symbol('xh-breadcrumb')
+const KEY: InjectionKey<BreadcrumbContext> = Symbol.for('xh-breadcrumb')
 
 export function provideBreadcrumb(ctx: BreadcrumbContext): void {
   provide(KEY, ctx)

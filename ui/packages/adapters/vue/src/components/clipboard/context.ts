@@ -2,7 +2,7 @@ import type { InjectionKey } from 'vue'
 import type { ClipboardContext } from './use-clipboard'
 import { inject, provide } from 'vue'
 
-const KEY: InjectionKey<ClipboardContext> = Symbol('xh-clipboard')
+const KEY: InjectionKey<ClipboardContext> = Symbol.for('xh-clipboard')
 
 export function provideClipboard(ctx: ClipboardContext): void {
   provide(KEY, ctx)

@@ -17,7 +17,7 @@ export interface XhConfig extends XhConfigBase {
   portalContainer?: () => Element | null
 }
 
-const KEY: InjectionKey<MaybeRefOrGetter<XhConfig>> = Symbol('xh-config')
+const KEY: InjectionKey<MaybeRefOrGetter<XhConfig>> = Symbol.for('xh-config')
 
 /**
  * 本层与外层逐键合并。

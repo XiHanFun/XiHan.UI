@@ -2,7 +2,7 @@ import type { InjectionKey } from 'vue'
 import type { TextFieldContext } from './use-text-field'
 import { inject, provide } from 'vue'
 
-const KEY: InjectionKey<TextFieldContext> = Symbol('xh-text-field')
+const KEY: InjectionKey<TextFieldContext> = Symbol.for('xh-text-field')
 
 export function provideTextField(ctx: TextFieldContext): void {
   provide(KEY, ctx)

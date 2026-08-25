@@ -8,8 +8,8 @@ export interface SegmentedItemContext {
   item: ComputedRef<SegmentedItemProps>
 }
 
-const KEY: InjectionKey<SegmentedContext> = Symbol('xh-segmented')
-const ITEM_KEY: InjectionKey<SegmentedItemContext> = Symbol('xh-segmented-item')
+const KEY: InjectionKey<SegmentedContext> = Symbol.for('xh-segmented')
+const ITEM_KEY: InjectionKey<SegmentedItemContext> = Symbol.for('xh-segmented-item')
 
 export function provideSegmented(ctx: SegmentedContext): void {
   provide(KEY, ctx)

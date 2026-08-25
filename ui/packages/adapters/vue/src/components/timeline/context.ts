@@ -6,9 +6,9 @@ export interface TimelineContext {
   api: ComputedRef<TimelineApi>
 }
 
-const KEY: InjectionKey<TimelineContext> = Symbol('xh-timeline')
+const KEY: InjectionKey<TimelineContext> = Symbol.for('xh-timeline')
 /** 条目的语气下传给圆点，用 getter 以跟随 tone 变更。 */
-const ITEM_KEY: InjectionKey<() => TimelineItemProps> = Symbol('xh-timeline-item')
+const ITEM_KEY: InjectionKey<() => TimelineItemProps> = Symbol.for('xh-timeline-item')
 
 export function provideTimeline(ctx: TimelineContext): void {
   provide(KEY, ctx)

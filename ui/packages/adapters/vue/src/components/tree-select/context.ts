@@ -8,8 +8,8 @@ export interface TreeSelectNodeContext {
   node: ComputedRef<TreeSelectNodeProps>
 }
 
-const KEY: InjectionKey<TreeSelectContext> = Symbol('xh-tree-select')
-const NODE_KEY: InjectionKey<TreeSelectNodeContext> = Symbol('xh-tree-select-node')
+const KEY: InjectionKey<TreeSelectContext> = Symbol.for('xh-tree-select')
+const NODE_KEY: InjectionKey<TreeSelectNodeContext> = Symbol.for('xh-tree-select-node')
 
 export function provideTreeSelect(ctx: TreeSelectContext): void {
   provide(KEY, ctx)

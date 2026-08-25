@@ -2,7 +2,7 @@ import type { InjectionKey } from 'vue'
 import type { FieldsetContext } from './use-fieldset'
 import { inject, provide } from 'vue'
 
-const KEY: InjectionKey<FieldsetContext> = Symbol('xh-fieldset')
+const KEY: InjectionKey<FieldsetContext> = Symbol.for('xh-fieldset')
 
 export function provideFieldset(ctx: FieldsetContext): void {
   provide(KEY, ctx)

@@ -13,9 +13,9 @@ export interface ComboboxItemGroupContext {
   group: ComputedRef<ComboboxItemGroupProps>
 }
 
-const KEY: InjectionKey<ComboboxContext> = Symbol('xh-combobox')
-const ITEM_KEY: InjectionKey<ComboboxItemContext> = Symbol('xh-combobox-item')
-const GROUP_KEY: InjectionKey<ComboboxItemGroupContext> = Symbol('xh-combobox-item-group')
+const KEY: InjectionKey<ComboboxContext> = Symbol.for('xh-combobox')
+const ITEM_KEY: InjectionKey<ComboboxItemContext> = Symbol.for('xh-combobox-item')
+const GROUP_KEY: InjectionKey<ComboboxItemGroupContext> = Symbol.for('xh-combobox-item-group')
 
 export function provideCombobox(ctx: ComboboxContext): void {
   provide(KEY, ctx)

@@ -6,7 +6,7 @@ export interface SpaceContext {
   api: ComputedRef<SpaceApi>
 }
 
-const KEY: InjectionKey<SpaceContext> = Symbol('xh-space')
+const KEY: InjectionKey<SpaceContext> = Symbol.for('xh-space')
 
 export function provideSpace(ctx: SpaceContext): void {
   provide(KEY, ctx)

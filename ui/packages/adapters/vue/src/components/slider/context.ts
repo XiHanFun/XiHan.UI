@@ -7,8 +7,8 @@ export interface SliderThumbContext {
   index: ComputedRef<number>
 }
 
-const KEY: InjectionKey<SliderContext> = Symbol('xh-slider')
-const THUMB_KEY: InjectionKey<SliderThumbContext> = Symbol('xh-slider-thumb')
+const KEY: InjectionKey<SliderContext> = Symbol.for('xh-slider')
+const THUMB_KEY: InjectionKey<SliderThumbContext> = Symbol.for('xh-slider-thumb')
 
 export function provideSlider(ctx: SliderContext): void {
   provide(KEY, ctx)

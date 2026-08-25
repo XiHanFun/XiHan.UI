@@ -8,8 +8,8 @@ export interface SelectItemContext {
   item: ComputedRef<SelectItemProps>
 }
 
-const KEY: InjectionKey<SelectContext> = Symbol('xh-select')
-const ITEM_KEY: InjectionKey<SelectItemContext> = Symbol('xh-select-item')
+const KEY: InjectionKey<SelectContext> = Symbol.for('xh-select')
+const ITEM_KEY: InjectionKey<SelectItemContext> = Symbol.for('xh-select-item')
 
 export function provideSelect(ctx: SelectContext): void {
   provide(KEY, ctx)
@@ -38,7 +38,7 @@ export interface SelectTagContext {
   value: () => string
 }
 
-const TAG_KEY: InjectionKey<SelectTagContext> = Symbol('xh-select-tag')
+const TAG_KEY: InjectionKey<SelectTagContext> = Symbol.for('xh-select-tag')
 
 export function provideSelectTag(ctx: SelectTagContext): void {
   provide(TAG_KEY, ctx)

@@ -2,7 +2,7 @@ import type { InjectionKey } from 'vue'
 import type { ImageCropperContext } from './use-image-cropper'
 import { inject, provide } from 'vue'
 
-const KEY: InjectionKey<ImageCropperContext> = Symbol('xh-image-cropper')
+const KEY: InjectionKey<ImageCropperContext> = Symbol.for('xh-image-cropper')
 
 export function provideImageCropper(ctx: ImageCropperContext): void {
   provide(KEY, ctx)

@@ -2,7 +2,7 @@ import type { InjectionKey } from 'vue'
 import type { ToolbarContext } from './use-toolbar'
 import { inject, provide } from 'vue'
 
-const KEY: InjectionKey<ToolbarContext> = Symbol('xh-toolbar')
+const KEY: InjectionKey<ToolbarContext> = Symbol.for('xh-toolbar')
 
 export function provideToolbar(ctx: ToolbarContext): void {
   provide(KEY, ctx)

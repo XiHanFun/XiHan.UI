@@ -2,7 +2,7 @@ import type { InjectionKey } from 'vue'
 import type { RatingContext } from './use-rating'
 import { inject, provide } from 'vue'
 
-const KEY: InjectionKey<RatingContext> = Symbol('xh-rating')
+const KEY: InjectionKey<RatingContext> = Symbol.for('xh-rating')
 
 export function provideRating(ctx: RatingContext): void {
   provide(KEY, ctx)

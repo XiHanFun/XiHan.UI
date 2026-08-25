@@ -6,7 +6,7 @@ export interface GridContext {
   api: ComputedRef<GridApi>
 }
 
-const KEY: InjectionKey<GridContext> = Symbol('xh-grid')
+const KEY: InjectionKey<GridContext> = Symbol.for('xh-grid')
 
 export function provideGrid(ctx: GridContext): void {
   provide(KEY, ctx)

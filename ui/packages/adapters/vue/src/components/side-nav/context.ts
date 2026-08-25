@@ -2,7 +2,7 @@ import type { InjectionKey } from 'vue'
 import type { SideNavContext } from './use-side-nav'
 import { inject, provide } from 'vue'
 
-const KEY: InjectionKey<SideNavContext> = Symbol('xh-side-nav')
+const KEY: InjectionKey<SideNavContext> = Symbol.for('xh-side-nav')
 
 export function provideSideNav(ctx: SideNavContext): void {
   provide(KEY, ctx)
@@ -16,7 +16,7 @@ export function useSideNavContext(): SideNavContext {
 }
 
 /** 分支上下文：子部件从中取所属分支的 value，不必逐个再声明。 */
-const NODE_KEY: InjectionKey<{ value: string }> = Symbol('xh-side-nav-node')
+const NODE_KEY: InjectionKey<{ value: string }> = Symbol.for('xh-side-nav-node')
 
 export function provideSideNavNode(node: { value: string }): void {
   provide(NODE_KEY, node)

@@ -2,7 +2,7 @@ import type { InjectionKey } from 'vue'
 import type { AvatarContext } from './use-avatar'
 import { inject, provide } from 'vue'
 
-const KEY: InjectionKey<AvatarContext> = Symbol('xh-avatar')
+const KEY: InjectionKey<AvatarContext> = Symbol.for('xh-avatar')
 
 export function provideAvatar(ctx: AvatarContext): void {
   provide(KEY, ctx)

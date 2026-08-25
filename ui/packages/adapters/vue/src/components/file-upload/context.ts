@@ -8,8 +8,8 @@ export interface FileUploadItemContext {
   item: ComputedRef<FileUploadItemProps>
 }
 
-const KEY: InjectionKey<FileUploadContext> = Symbol('xh-file-upload')
-const ITEM_KEY: InjectionKey<FileUploadItemContext> = Symbol('xh-file-upload-item')
+const KEY: InjectionKey<FileUploadContext> = Symbol.for('xh-file-upload')
+const ITEM_KEY: InjectionKey<FileUploadItemContext> = Symbol.for('xh-file-upload-item')
 
 export function provideFileUpload(ctx: FileUploadContext): void {
   provide(KEY, ctx)

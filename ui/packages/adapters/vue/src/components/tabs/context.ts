@@ -2,7 +2,7 @@ import type { InjectionKey } from 'vue'
 import type { TabsContext } from './use-tabs'
 import { inject, provide } from 'vue'
 
-const KEY: InjectionKey<TabsContext> = Symbol('xh-tabs')
+const KEY: InjectionKey<TabsContext> = Symbol.for('xh-tabs')
 
 export function provideTabs(ctx: TabsContext): void {
   provide(KEY, ctx)

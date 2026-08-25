@@ -2,7 +2,7 @@ import type { InjectionKey } from 'vue'
 import type { AlertContext } from './use-alert'
 import { inject, provide } from 'vue'
 
-const KEY: InjectionKey<AlertContext> = Symbol('xh-alert')
+const KEY: InjectionKey<AlertContext> = Symbol.for('xh-alert')
 
 export function provideAlert(ctx: AlertContext): void {
   provide(KEY, ctx)

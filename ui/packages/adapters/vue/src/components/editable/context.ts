@@ -2,7 +2,7 @@ import type { InjectionKey } from 'vue'
 import type { EditableContext } from './use-editable'
 import { inject, provide } from 'vue'
 
-const KEY: InjectionKey<EditableContext> = Symbol('xh-editable')
+const KEY: InjectionKey<EditableContext> = Symbol.for('xh-editable')
 
 export function provideEditable(ctx: EditableContext): void {
   provide(KEY, ctx)

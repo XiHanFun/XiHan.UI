@@ -8,8 +8,8 @@ export interface DynamicInputItemContext {
   item: ComputedRef<DynamicInputItemProps>
 }
 
-const KEY: InjectionKey<DynamicInputContext> = Symbol('xh-dynamic-input')
-const ITEM_KEY: InjectionKey<DynamicInputItemContext> = Symbol('xh-dynamic-input-item')
+const KEY: InjectionKey<DynamicInputContext> = Symbol.for('xh-dynamic-input')
+const ITEM_KEY: InjectionKey<DynamicInputItemContext> = Symbol.for('xh-dynamic-input-item')
 
 export function provideDynamicInput(ctx: DynamicInputContext): void {
   provide(KEY, ctx)

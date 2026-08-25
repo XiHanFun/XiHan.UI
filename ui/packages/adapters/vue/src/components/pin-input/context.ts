@@ -2,7 +2,7 @@ import type { InjectionKey } from 'vue'
 import type { PinInputContext } from './use-pin-input'
 import { inject, provide } from 'vue'
 
-const KEY: InjectionKey<PinInputContext> = Symbol('xh-pin-input')
+const KEY: InjectionKey<PinInputContext> = Symbol.for('xh-pin-input')
 
 export function providePinInput(ctx: PinInputContext): void {
   provide(KEY, ctx)

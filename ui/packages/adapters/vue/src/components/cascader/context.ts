@@ -8,8 +8,8 @@ export interface CascaderItemContext {
   item: ComputedRef<CascaderItemProps>
 }
 
-const KEY: InjectionKey<CascaderContext> = Symbol('xh-cascader')
-const ITEM_KEY: InjectionKey<CascaderItemContext> = Symbol('xh-cascader-item')
+const KEY: InjectionKey<CascaderContext> = Symbol.for('xh-cascader')
+const ITEM_KEY: InjectionKey<CascaderItemContext> = Symbol.for('xh-cascader-item')
 
 export function provideCascader(ctx: CascaderContext): void {
   provide(KEY, ctx)

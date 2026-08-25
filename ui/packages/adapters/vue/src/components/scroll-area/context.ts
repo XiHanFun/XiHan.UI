@@ -8,8 +8,8 @@ export interface ScrollAreaScrollbarContext {
   scrollbar: ComputedRef<ScrollAreaScrollbarProps>
 }
 
-const KEY: InjectionKey<ScrollAreaContext> = Symbol('xh-scroll-area')
-const SCROLLBAR_KEY: InjectionKey<ScrollAreaScrollbarContext> = Symbol('xh-scroll-area-scrollbar')
+const KEY: InjectionKey<ScrollAreaContext> = Symbol.for('xh-scroll-area')
+const SCROLLBAR_KEY: InjectionKey<ScrollAreaScrollbarContext> = Symbol.for('xh-scroll-area-scrollbar')
 
 export function provideScrollArea(ctx: ScrollAreaContext): void {
   provide(KEY, ctx)

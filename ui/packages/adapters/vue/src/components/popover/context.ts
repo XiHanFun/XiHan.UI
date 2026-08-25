@@ -2,7 +2,7 @@ import type { InjectionKey } from 'vue'
 import type { PopoverContext } from './use-popover'
 import { inject, provide } from 'vue'
 
-const KEY: InjectionKey<PopoverContext> = Symbol('xh-popover')
+const KEY: InjectionKey<PopoverContext> = Symbol.for('xh-popover')
 
 export function providePopover(ctx: PopoverContext): void {
   provide(KEY, ctx)

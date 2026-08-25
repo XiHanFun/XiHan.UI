@@ -2,7 +2,7 @@ import type { InjectionKey } from 'vue'
 import type { DateFieldContext } from './use-date-field'
 import { inject, provide } from 'vue'
 
-const KEY: InjectionKey<DateFieldContext> = Symbol('xh-date-field')
+const KEY: InjectionKey<DateFieldContext> = Symbol.for('xh-date-field')
 
 export function provideDateField(ctx: DateFieldContext): void {
   provide(KEY, ctx)

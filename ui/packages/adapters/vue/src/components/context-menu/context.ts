@@ -13,9 +13,9 @@ export interface ContextMenuGroupContext {
   group: ComputedRef<ContextMenuGroupProps>
 }
 
-const KEY: InjectionKey<ContextMenuContext> = Symbol('xh-context-menu')
-const ITEM_KEY: InjectionKey<ContextMenuItemContext> = Symbol('xh-context-menu-item')
-const GROUP_KEY: InjectionKey<ContextMenuGroupContext> = Symbol('xh-context-menu-group')
+const KEY: InjectionKey<ContextMenuContext> = Symbol.for('xh-context-menu')
+const ITEM_KEY: InjectionKey<ContextMenuItemContext> = Symbol.for('xh-context-menu-item')
+const GROUP_KEY: InjectionKey<ContextMenuGroupContext> = Symbol.for('xh-context-menu-group')
 
 export function provideContextMenu(ctx: ContextMenuContext): void {
   provide(KEY, ctx)
@@ -55,7 +55,7 @@ export interface ContextMenuChain {
   notifySelect: (details: { value: string }) => void
 }
 
-const CHAIN_KEY: InjectionKey<ContextMenuChain> = Symbol('xh-context-menu-chain')
+const CHAIN_KEY: InjectionKey<ContextMenuChain> = Symbol.for('xh-context-menu-chain')
 
 export function provideContextMenuChain(chain: ContextMenuChain): void {
   provide(CHAIN_KEY, chain)
@@ -75,7 +75,7 @@ export interface ContextMenuSubHandle {
   disabled?: boolean
 }
 
-const SUB_KEY: InjectionKey<ContextMenuSubHandle> = Symbol('xh-context-menu-sub')
+const SUB_KEY: InjectionKey<ContextMenuSubHandle> = Symbol.for('xh-context-menu-sub')
 
 export function provideContextMenuSub(handle: ContextMenuSubHandle): void {
   provide(SUB_KEY, handle)

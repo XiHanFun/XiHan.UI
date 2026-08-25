@@ -3,7 +3,7 @@ import type { ComputedRef, InjectionKey } from 'vue'
 import type { MenuContext } from './use-menu'
 import { inject, provide } from 'vue'
 
-const KEY: InjectionKey<MenuContext> = Symbol('xh-menu')
+const KEY: InjectionKey<MenuContext> = Symbol.for('xh-menu')
 
 export function provideMenu(ctx: MenuContext): void {
   provide(KEY, ctx)
@@ -21,7 +21,7 @@ export interface MenuGroupContext {
   group: ComputedRef<MenuGroupProps>
 }
 
-const GROUP_KEY: InjectionKey<MenuGroupContext> = Symbol('xh-menu-group')
+const GROUP_KEY: InjectionKey<MenuGroupContext> = Symbol.for('xh-menu-group')
 
 export function provideMenuGroup(ctx: MenuGroupContext): void {
   provide(GROUP_KEY, ctx)
@@ -39,7 +39,7 @@ export interface MenuChain {
   notifySelect: (details: { value: string }) => void
 }
 
-const CHAIN_KEY: InjectionKey<MenuChain> = Symbol('xh-menu-chain')
+const CHAIN_KEY: InjectionKey<MenuChain> = Symbol.for('xh-menu-chain')
 
 export function provideMenuChain(chain: MenuChain): void {
   provide(CHAIN_KEY, chain)
@@ -59,7 +59,7 @@ export interface MenuSubHandle {
   disabled?: boolean
 }
 
-const SUB_KEY: InjectionKey<MenuSubHandle> = Symbol('xh-menu-sub')
+const SUB_KEY: InjectionKey<MenuSubHandle> = Symbol.for('xh-menu-sub')
 
 export function provideMenuSub(handle: MenuSubHandle): void {
   provide(SUB_KEY, handle)

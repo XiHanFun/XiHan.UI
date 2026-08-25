@@ -2,7 +2,7 @@ import type { InjectionKey } from 'vue'
 import type { PasswordInputContext } from './use-password-input'
 import { inject, provide } from 'vue'
 
-const KEY: InjectionKey<PasswordInputContext> = Symbol('xh-password-input')
+const KEY: InjectionKey<PasswordInputContext> = Symbol.for('xh-password-input')
 
 export function providePasswordInput(ctx: PasswordInputContext): void {
   provide(KEY, ctx)
