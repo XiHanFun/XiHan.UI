@@ -8,6 +8,7 @@ export {
 } from './pagination.machine'
 export { paginationMeta } from './pagination.meta'
 export {
+  buildPageItems,
   buildPageSequence,
   clampPage,
   normalizeCount,
@@ -15,9 +16,10 @@ export {
   pageRangeOf,
   totalPagesOf,
 } from './pagination.range'
-export type { PaginationEntryRange, PaginationPage } from './pagination.range'
+export type { PaginationEllipsisSide, PaginationEntryRange, PaginationPage, PaginationPageItem } from './pagination.range'
 export type {
   PaginationApi,
+  PaginationEllipsisProps,
   PaginationItemProps,
   PaginationPageChangeDetails,
   PaginationPageSizeChangeDetails,

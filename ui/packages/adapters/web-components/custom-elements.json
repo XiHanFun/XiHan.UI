@@ -24853,7 +24853,92 @@
             },
             {
               "kind": "field",
+              "name": "placement",
+              "privacy": "public",
+              "type": {
+                "text": "Placement | undefined"
+              },
+              "attribute": "placement"
+            },
+            {
+              "kind": "field",
+              "name": "offset",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "offset"
+            },
+            {
+              "kind": "field",
+              "name": "openDelay",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "open-delay"
+            },
+            {
+              "kind": "field",
+              "name": "closeDelay",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "close-delay"
+            },
+            {
+              "kind": "field",
+              "name": "idGen",
+              "type": {
+                "text": "IdGenerator"
+              },
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "paginationScope",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "positionEngine",
+              "type": {
+                "text": "PositionEnginePort"
+              },
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "config",
+              "type": {
+                "text": "RuntimeConfig | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "exit",
+              "type": {
+                "text": "OverlayExit | null"
+              },
+              "privacy": "private",
+              "default": "null",
+              "description": "退场闸门：收起从跟着展开态走改成跟着 presence 走，退场动画播完才真收。"
+            },
+            {
+              "kind": "field",
               "name": "notify",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyPageSize",
               "privacy": "private",
               "readonly": true
             },
@@ -24862,7 +24947,60 @@
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
-              "default": "new MachineController<PaginationSchema>(this, paginationMachine, () => this.machineProps())"
+              "default": "new MachineController<PaginationSchema>( this, paginationMachine, () => this.machineProps(), { scope: this.paginationScope, onBuilt: svc => this.injectRefs(svc) }, )"
+            },
+            {
+              "kind": "method",
+              "name": "ensureConfig",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "openEllipsisEl",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "HTMLElement | null"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "side",
+                  "type": {
+                    "text": "PaginationEllipsisSide | null"
+                  }
+                }
+              ],
+              "description": "此刻摊开的是哪个省略位的节点——它是定位锚点。"
+            },
+            {
+              "kind": "field",
+              "name": "registerLayer",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "injectRefs",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "svc",
+                  "type": {
+                    "text": "Service<PaginationSchema>"
+                  }
+                }
+              ]
             },
             {
               "kind": "method",
@@ -24965,6 +25103,38 @@
             },
             {
               "type": {
+                "text": "Placement | undefined"
+              },
+              "description": "省略位摊开后的落点，默认 bottom-start",
+              "name": "placement",
+              "fieldName": "placement"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "浮层与省略位之间的间距（px），默认 8",
+              "name": "offset",
+              "fieldName": "offset"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "指针停在省略位多久才摊开（ms），默认 200",
+              "name": "open-delay",
+              "fieldName": "openDelay"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "指针离开后多久收起（ms），默认 300",
+              "name": "close-delay",
+              "fieldName": "closeDelay"
+            },
+            {
+              "type": {
                 "text": "number | undefined"
               },
               "description": "非受控初始每页条数，默认 10",
@@ -24979,6 +25149,27 @@
           "tagName": "xh-pagination",
           "customElement": true,
           "cssProperties": [
+            {
+              "name": "--xh-pagination-content-bg"
+            },
+            {
+              "name": "--xh-pagination-content-border"
+            },
+            {
+              "name": "--xh-pagination-content-max-h"
+            },
+            {
+              "name": "--xh-pagination-content-max-w"
+            },
+            {
+              "name": "--xh-pagination-content-p"
+            },
+            {
+              "name": "--xh-pagination-content-radius"
+            },
+            {
+              "name": "--xh-pagination-content-shadow"
+            },
             {
               "name": "--xh-pagination-ellipsis-fg"
             },
@@ -25038,6 +25229,9 @@
             },
             {
               "name": "--xh-pagination-item-radius"
+            },
+            {
+              "name": "--xh-pagination-layer"
             }
           ]
         }

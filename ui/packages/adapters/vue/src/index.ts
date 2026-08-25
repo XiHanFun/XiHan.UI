@@ -551,9 +551,11 @@ export { providePageHeader, usePageHeaderContext } from './components/page-heade
 export type { PageHeaderContext } from './components/page-header/context'
 export { XhPageHeaderBackTrigger, XhPageHeaderExtra, XhPageHeaderFooter, XhPageHeaderRoot, XhPageHeaderSubtitle, XhPageHeaderTitle } from './components/page-header/page-header'
 export {
+  XhPaginationContent,
   XhPaginationEllipsis,
   XhPaginationItem,
   XhPaginationNextTrigger,
+  XhPaginationPositioner,
   XhPaginationPrevTrigger,
   XhPaginationRoot,
 } from './components/pagination/pagination'
@@ -796,6 +798,7 @@ export {
 export type { TextFieldRootSlotProps } from './components/text-field/text-field'
 export { useTextField } from './components/text-field/use-text-field'
 export type { TextFieldContext } from './components/text-field/use-text-field'
+export { provideThread, useThreadContext } from './components/thread/context'
 export {
   XhThreadContent,
   XhThreadLiveRegion,
@@ -804,7 +807,6 @@ export {
   XhThreadViewport,
 } from './components/thread/thread'
 export type { ThreadRootSlotProps } from './components/thread/thread'
-export { provideThread, useThreadContext } from './components/thread/context'
 export { useThread } from './components/thread/use-thread'
 export type { ThreadContext } from './components/thread/use-thread'
 export {

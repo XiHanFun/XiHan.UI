@@ -3,6 +3,19 @@
 /** 页码序列里的一项：页码本身，或一段被折叠掉的页。 */
 export type PaginationPage = number | 'ellipsis'
 
+/**
+ * 页码序列里的一项，带上被折叠掉的是哪几页。
+ *
+ * `pages` 序列只说「这里折了一段」，说不出折的是哪几页；省略号要能摊开就得知道。
+ * 至多两个省略位：首页与窗口之间一个（side='start'）、窗口与末页之间一个（side='end'）。
+ */
+export type PaginationPageItem
+  = | { type: 'page', value: number }
+    | { type: 'ellipsis', side: PaginationEllipsisSide, pages: number[] }
+
+/** 省略位在序列里的哪一侧。至多两个，用它区分。 */
+export type PaginationEllipsisSide = 'start' | 'end'
+
 /** 当前页对应的条目区间，1 基闭区间；无数据时两端都是 0（作者据此显示"暂无数据"）。 */
 export interface PaginationEntryRange {
   start: number
@@ -76,26 +89,37 @@ export function pageRangeOf(
   return { start, end: Math.min(current * size, total) }
 }
 
-/** 首页与窗口之间的填充：只隔一两页时直接列出页码，否则出省略号。 */
-function headOf(start: number): PaginationPage[] {
+function pageItems(values: number[]): PaginationPageItem[] {
+  return values.map(value => ({ type: 'page', value }))
+}
+
+/** 首页与窗口之间的填充：只隔一两页时直接列出页码，否则折成一个省略位。 */
+function headOf(start: number): PaginationPageItem[] {
   if (start <= BOUNDARY_COUNT)
     return []
   if (start <= BOUNDARY_COUNT + 2)
-    return range(1, start - 1)
-  return [1, 'ellipsis']
+    return pageItems(range(1, start - 1))
+  // 折掉的是首页与窗口之间那段
+  return [
+    { type: 'page', value: 1 },
+    { type: 'ellipsis', side: 'start', pages: range(BOUNDARY_COUNT + 1, start - 1) },
+  ]
 }
 
 /** 窗口与末页之间的填充，规则与 headOf 对称。 */
-function tailOf(end: number, totalPages: number): PaginationPage[] {
+function tailOf(end: number, totalPages: number): PaginationPageItem[] {
   if (end >= totalPages - BOUNDARY_COUNT + 1)
     return []
   if (end >= totalPages - BOUNDARY_COUNT - 1)
-    return range(end + 1, totalPages)
-  return ['ellipsis', totalPages]
+    return pageItems(range(end + 1, totalPages))
+  return [
+    { type: 'ellipsis', side: 'end', pages: range(end + 1, totalPages - BOUNDARY_COUNT) },
+    { type: 'page', value: totalPages },
+  ]
 }
 
 /**
- * 页码序列：`[1, 'ellipsis', 4, 5, 6, 'ellipsis', 20]` 这样一串，作者照着渲染即可。
+ * 页码条目序列：页码与省略位交替，省略位自带被折叠的那几页。
  *
  * 两条不变量：
  * 1. 总页数多到需要折叠时，序列长度恒为 `siblingCount * 2 + 5`
@@ -106,7 +130,7 @@ function tailOf(end: number, totalPages: number): PaginationPage[] {
  * @param totalPages 总页数，0 表示无数据
  * @param siblingCount 当前页两侧各显示几页，默认 1
  */
-export function buildPageSequence(page: number, totalPages: number, siblingCount = 1): PaginationPage[] {
+export function buildPageItems(page: number, totalPages: number, siblingCount = 1): PaginationPageItem[] {
   const total = normalizeCount(totalPages)
   if (total === 0)
     return []
@@ -117,7 +141,7 @@ export function buildPageSequence(page: number, totalPages: number, siblingCount
 
   // 装得下就全列出来，不出省略号
   if (total <= slots)
-    return range(1, total)
+    return pageItems(range(1, total))
 
   const windowSize = siblings * 2 + 1
   let start: number
@@ -137,5 +161,15 @@ export function buildPageSequence(page: number, totalPages: number, siblingCount
     end = current + siblings
   }
 
-  return [...headOf(start), ...range(start, end), ...tailOf(end, total)]
+  return [...headOf(start), ...pageItems(range(start, end)), ...tailOf(end, total)]
+}
+
+/**
+ * 页码序列：`[1, 'ellipsis', 4, 5, 6, 'ellipsis', 20]` 这样一串。
+ *
+ * 由 buildPageItems 派生，两者的窗口数学只有一份——各算一遍必然漂移。
+ */
+export function buildPageSequence(page: number, totalPages: number, siblingCount = 1): PaginationPage[] {
+  return buildPageItems(page, totalPages, siblingCount)
+    .map(item => (item.type === 'page' ? item.value : 'ellipsis'))
 }

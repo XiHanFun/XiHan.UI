@@ -82,12 +82,18 @@ size 一档换掉页码格子的高度、内边距与字号，上一页 / 下一
 
 <XhDemo src="pagination/10-disabled" />
 
+### 摊开省略号
+
+折进去的那几页悬停即摊开，点一下也摊开——纯悬停会把键盘用户挡在外面，而这几页除了这里没有别的入口；Escape 或点外面收起
+
+<XhDemo src="pagination/11-ellipsis-expand" />
+
 ## 产物
 
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-pagination>` |
-| Vue 组件 | `XhPaginationEllipsis` `XhPaginationItem` `XhPaginationNextTrigger` `XhPaginationPrevTrigger` `XhPaginationRoot` |
+| Vue 组件 | `XhPaginationContent` `XhPaginationEllipsis` `XhPaginationItem` `XhPaginationNextTrigger` `XhPaginationPositioner` `XhPaginationPrevTrigger` `XhPaginationRoot` |
 | 组合式函数 | `usePagination` |
 | 状态机 | `paginationMachine` |
 | 皮肤 | `@xihan-ui/styles/pagination.css` |
@@ -96,7 +102,7 @@ size 一档换掉页码格子的高度、内边距与字号，上一页 / 下一
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="pagination"`：**`root`** · `prev-trigger` · `next-trigger` · **`item`** · `ellipsis`
+`data-scope="pagination"`：**`root`** · `prev-trigger` · `next-trigger` · **`item`** · `ellipsis` · `positioner` · `content`
 
 ## Props
 
@@ -111,6 +117,10 @@ size 一档换掉页码格子的高度、内边距与字号，上一页 / 下一
 | `siblingCount` | `number` |  | 当前页两侧各显示几页，默认 1。 |
 | `dir` | `Direction` |  | 文字方向，只作用于排版；上一页/下一页的语义不随之翻转，"上一页"永远是 page - 1。 |
 | `translations` | `Partial<PaginationTranslations>` |  |  |
+| `placement` | `Placement` |  | 省略位展开后的落点，默认 bottom-start（列表类浮层）。 |
+| `offset` | `number` |  | 浮层与省略位之间的间距（px），默认 8。 |
+| `openDelay` | `number` |  | 指针停在省略位多久才展开（ms），默认 200。 |
+| `closeDelay` | `number` |  | 指针离开后多久收起（ms），默认 300：留出斜着划进浮层的时间。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `onPageChange` | `(details: PaginationPageChangeDetails) => void` |  | 页码变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
@@ -131,15 +141,26 @@ size 一档换掉页码格子的高度、内边距与字号，上一页 / 下一
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
+| `XhPaginationContent` | `default` | `{ pages: number[] }` |  |
 | `XhPaginationRoot` | `default` | `PaginationRootSlotProps` |  |
 
 ## 状态
 
+对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+
+| 部件 | 取值 |
+| --- | --- |
+| `ellipsis` | 'open' \| 'closed' |
+| `positioner` | 'open' \| 'closed' |
+| `content` | 'open' \| 'closed' |
+
 状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
-**状态**：`idle`
+**状态**：`closed` · `opening` · `visible` · `visible.open` · `visible.closing`
 
-**事件**：`PAGE.SET` · `PAGE_SIZE.SET` · `PAGE.PREV` · `PAGE.NEXT`
+**事件**：`PAGE.SET` · `PAGE_SIZE.SET` · `PAGE.PREV` · `PAGE.NEXT` · `ELLIPSIS.ENTER` · `ELLIPSIS.LEAVE` · `ELLIPSIS.TOGGLE` · `ELLIPSIS.CLOSE` · `after.openDelay` · `after.closeDelay`
+
+**判据**：`isSameEllipsis`
 
 ## connect API
 
@@ -153,6 +174,8 @@ size 一档换掉页码格子的高度、内边距与字号，上一页 / 下一
 | `count` | `number` |  |
 | `totalPages` | `number` |  |
 | `pages` | `PaginationPage[]` | 页码序列，作者照着渲染 item 与 ellipsis。 |
+| `pageItems` | `PaginationPageItem[]` | 同一串序列，但省略位带着被折叠的那几页——摊开省略号要靠它。 |
+| `openEllipsis` | `PaginationEllipsisSide \| null` | 此刻摊开的是哪一侧的省略位；没摊开为 null。 |
 | `pageRange` | `PaginationEntryRange` | 当前页对应的条目区间，1 基闭区间；无数据时是 { start: 0, end: 0 }。 |
 | `previousPage` | `number \| null` | 上一页页码；已在首页（或无数据）时为 null。 |
 | `nextPage` | `number \| null` |  |
@@ -165,7 +188,10 @@ size 一档换掉页码格子的高度、内边距与字号，上一页 / 下一
 | `getPrevTriggerProps` | `() => T['button']` |  |
 | `getNextTriggerProps` | `() => T['button']` |  |
 | `getItemProps` | `(props: PaginationItemProps) => T['button']` |  |
-| `getEllipsisProps` | `() => T['element']` |  |
+| `getEllipsisProps` | `(props: PaginationEllipsisProps) => T['button']` | 省略位：可展开的按钮，摊开后列出被折叠的页码。 |
+| `getPositionerProps` | `() => T['element']` |  |
+| `getContentProps` | `() => T['element']` |  |
+| `closeEllipsis` | `() => void` | 收起摊开的省略位。 |
 
 ## 键盘
 
@@ -176,6 +202,8 @@ size 一档换掉页码格子的高度、内边距与字号，上一页 / 下一
 | `Enter` / `Space` | focus in item | 跳到该页码（原生按钮激活，平台把按键翻成 click） |
 | `Enter` / `Space` | focus in prev-trigger, 非首页 | 回上一页；首页时按钮是原生 disabled，焦点根本落不上去 |
 | `Enter` / `Space` | focus in next-trigger, 非末页 | 进下一页；末页时按钮是原生 disabled |
+| `Enter` / `Space` | focus in ellipsis | 摊开被折叠的那几页；再按一次收起。纯悬停会把键盘用户挡在外面，而那几页除了这里没有别的入口 |
+| `Escape` | ellipsis 已摊开 | 收起摊开的页码面板（走消解层，点面板外面同样收起） |
 | `Tab` / `Shift+Tab` | focus in root | 逐个走过每个可用按钮——分页不做 roving tabindex，用户要能 Tab 到某一页再确认；禁用的首尾按钮自动脱序 |
 
 ## 无障碍
@@ -189,11 +217,16 @@ size 一档换掉页码格子的高度、内边距与字号，上一页 / 下一
 | `next-trigger` | `aria-label` | label.nextTrigger |
 | `item` | `aria-current` | 'page' \| undefined |
 | `item` | `aria-label` | label.item(item.page) |
-| `ellipsis` | `aria-hidden` | 'true' |
+| `ellipsis` | `aria-controls` | `content` 部件的 id \| undefined |
+| `ellipsis` | `aria-expanded` | 'true' \| 'false' |
+| `ellipsis` | `aria-haspopup` | 'true' |
+| `ellipsis` | `aria-label` | label.ellipsis( (items.find(item =&gt; item.type === 'el… |
+| `content` | `aria-label` | label.ellipsis(folded.length) |
+| `content` | `role` | 'group' |
 
 ## 样式
 
-默认皮肤 `@xihan-ui/styles/pagination.css` 按部件选择：`[data-scope="pagination"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+默认皮肤 `@xihan-ui/styles/pagination.css` 按部件选择：`[data-scope="pagination"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
 
 ## 数据属性
 
@@ -207,16 +240,27 @@ size 一档换掉页码格子的高度、内边距与字号，上一页 / 下一
 | `prev-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `next-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `item` | `data-current` | ''（条件成立时才出现） |
+| `ellipsis` | `data-side` | props.side |
+| `ellipsis` | `data-state` | 'open' \| 'closed' |
+| `positioner` | `data-hidden` | ''（条件成立时才出现） |
+| `positioner` | `data-placement` | 定位引擎算出的实际落位 |
+| `positioner` | `data-positioned` | ''（条件成立时才出现） |
+| `positioner` | `data-size` | props.size |
+| `positioner` | `data-state` | 'open' \| 'closed' |
+| `positioner` | `data-tone` | props.tone |
+| `content` | `data-placement` | 定位引擎算出的实际落位 |
+| `content` | `data-size` | props.size |
+| `content` | `data-state` | 'open' \| 'closed' |
 
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-pagination-ellipsis-fg` · `--xh-pagination-font-size` · `--xh-pagination-gap` · `--xh-pagination-icon-size` · `--xh-pagination-item-bg` · `--xh-pagination-item-bg-active` · `--xh-pagination-item-bg-hover` · `--xh-pagination-item-bg-selected` · `--xh-pagination-item-bg-selected-active` · `--xh-pagination-item-bg-selected-hover` · `--xh-pagination-item-border-selected` · `--xh-pagination-item-border-selected-active` · `--xh-pagination-item-border-selected-hover` · `--xh-pagination-item-fg` · `--xh-pagination-item-fg-selected` · `--xh-pagination-item-font-weight` · `--xh-pagination-item-h` · `--xh-pagination-item-min-size` · `--xh-pagination-item-px` · `--xh-pagination-item-radius`
+`--xh-pagination-content-bg` · `--xh-pagination-content-border` · `--xh-pagination-content-max-h` · `--xh-pagination-content-max-w` · `--xh-pagination-content-p` · `--xh-pagination-content-radius` · `--xh-pagination-content-shadow` · `--xh-pagination-ellipsis-fg` · `--xh-pagination-font-size` · `--xh-pagination-gap` · `--xh-pagination-icon-size` · `--xh-pagination-item-bg` · `--xh-pagination-item-bg-active` · `--xh-pagination-item-bg-hover` · `--xh-pagination-item-bg-selected` · `--xh-pagination-item-bg-selected-active` · `--xh-pagination-item-bg-selected-hover` · `--xh-pagination-item-border-selected` · `--xh-pagination-item-border-selected-active` · `--xh-pagination-item-border-selected-hover` · `--xh-pagination-item-fg` · `--xh-pagination-item-fg-selected` · `--xh-pagination-item-font-weight` · `--xh-pagination-item-h` · `--xh-pagination-item-min-size` · `--xh-pagination-item-px` · `--xh-pagination-item-radius` · `--xh-pagination-layer`
 
 ## 动效
 
-状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-pop-in` · `xh-pop-out` 随皮肤自带，不引用别处文件里的名字；状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

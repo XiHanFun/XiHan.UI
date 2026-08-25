@@ -58,7 +58,7 @@
 | [菜单栏](./menubar) | `menubar` | 10 | 15 | 10 |
 | [导航菜单](./navigation-menu) | `navigation-menu` | 8 | 7 | 10 |
 | [页头](./page-header) | `page-header` | 6 | 0 | 5 |
-| [分页](./pagination) | `pagination` | 5 | 4 | 10 |
+| [分页](./pagination) | `pagination` | 7 | 6 | 11 |
 | [分段控制器](./segmented) | `segmented` | 5 | 6 | 8 |
 | [侧栏导航](./side-nav) | `side-nav` | 13 | 10 | 2 |
 | [步骤条](./steps) | `steps` | 9 | 6 | 8 |

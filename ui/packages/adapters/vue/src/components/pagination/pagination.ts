@@ -1,8 +1,8 @@
-import type { PaginationApi, PaginationPageSizeChangeDetails, PaginationSchema, PaginationTranslations } from '@xihan-ui/headless'
+import type { PaginationApi, PaginationEllipsisSide, PaginationPageSizeChangeDetails, PaginationSchema, PaginationTranslations } from '@xihan-ui/headless'
 import type { Direction, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { defineComponent, h } from 'vue'
+import { defineComponent, h, mergeProps, Teleport } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { providePagination, usePaginationContext } from './context'
 import { usePagination } from './use-pagination'
@@ -15,6 +15,8 @@ export type PaginationRootSlotProps = Pick<
   | 'page'
   | 'pageSize'
   | 'pageSizeOptions'
+  | 'pageItems'
+  | 'openEllipsis'
   | 'count'
   | 'totalPages'
   | 'pages'
@@ -75,6 +77,8 @@ export const XhPaginationRoot = defineComponent({
       count: ctx.api.value.count,
       totalPages: ctx.api.value.totalPages,
       pages: ctx.api.value.pages,
+      pageItems: ctx.api.value.pageItems,
+      openEllipsis: ctx.api.value.openEllipsis,
       pageRange: ctx.api.value.pageRange,
       previousPage: ctx.api.value.previousPage,
       nextPage: ctx.api.value.nextPage,
@@ -121,8 +125,61 @@ export const XhPaginationItem = defineComponent({
 
 export const XhPaginationEllipsis = defineComponent({
   name: 'XhPaginationEllipsis',
+  props: {
+    /** 这是哪一侧的省略位：首页与窗口之间是 start，窗口与末页之间是 end。 */
+    side: { type: String as PropType<PaginationEllipsisSide>, default: 'start' },
+  },
+  setup(props, { slots }) {
+    const ctx = usePaginationContext()
+    // 摊开的那一个是定位锚点；两个省略位共用一份定位层，谁开着谁认领
+    return () => {
+      const open = ctx.api.value.openEllipsis === props.side
+      return h('button', {
+        ...ctx.api.value.getEllipsisProps({ side: props.side }) as Record<string, unknown>,
+        ref: (el: unknown) => {
+          if (open)
+            ctx.ellipsisRef.value = el as HTMLElement
+        },
+      }, slots.default?.())
+    }
+  },
+})
+
+export const XhPaginationPositioner = defineComponent({
+  name: 'XhPaginationPositioner',
+  // 根是 Teleport，Vue 不会把直通属性合上去，作者写的 class 与 style 得自己接住落到 positioner 上
+  inheritAttrs: false,
+  setup(_, { slots, attrs }) {
+    const ctx = usePaginationContext()
+    // 搬到 portal 落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层
+    return () => h(Teleport, { to: ctx.portalTarget.value }, [
+      h('div', {
+        ...mergeProps(ctx.api.value.getPositionerProps() as Record<string, unknown>, attrs),
+        ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement },
+      }, slots.default?.()),
+    ])
+  },
+})
+
+export const XhPaginationContent = defineComponent({
+  name: 'XhPaginationContent',
+  slots: Object as SlotsType<{
+    default?: (props: { pages: number[] }) => VNode[]
+  }>,
   setup(_, { slots }) {
     const ctx = usePaginationContext()
-    return () => h('span', ctx.api.value.getEllipsisProps() as Record<string, unknown>, slots.default?.())
+    return () => {
+      const open = ctx.api.value.openEllipsis
+      const folded = ctx.api.value.pageItems.find(
+        item => item.type === 'ellipsis' && item.side === open,
+      )
+      return h('div', {
+        ...ctx.api.value.getContentProps() as Record<string, unknown>,
+        // 收起跟着退场闸门走：皮肤刻意没给 content 补 [hidden]{display:none}
+        // （补了退场就一帧都播不出来），真正的收起落成内联 display
+        style: ctx.visible.value ? undefined : { display: 'none' },
+        ref: (el: unknown) => { ctx.contentRef.value = el as HTMLElement },
+      }, slots.default?.({ pages: folded?.type === 'ellipsis' ? folded.pages : [] }))
+    }
   },
 })

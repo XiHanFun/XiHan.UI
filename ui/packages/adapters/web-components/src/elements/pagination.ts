@@ -1,8 +1,13 @@
-import type { PaginationPageChangeDetails, PaginationSchema, PaginationTranslations } from '@xihan-ui/headless'
-import type { Direction, Size, Tone } from '@xihan-ui/kernel'
+import type { PaginationEllipsisSide, PaginationPageChangeDetails, PaginationSchema, PaginationTranslations } from '@xihan-ui/headless'
+import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
+import type { Service } from '@xihan-ui/machine'
+import type { OverlayExit } from '../overlay-exit'
 import { connectPagination, paginationAnatomy, paginationMachine, paginationMeta } from '@xihan-ui/headless'
+import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/kernel'
+import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
+import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
 
 // 数值属性统一走这个转换器：属性缺席即 undefined，缺省值的唯一事实源留在 connect。
@@ -37,6 +42,10 @@ function itemPage(el: HTMLElement): number {
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires page-change - 页码变化；detail 为 `{ page: number, pageSize: number }`
  * @fires page-size-change - 每页条数变化；detail 为 `{ pageSize: number, page: number }`，页码是换算后的
+ * @attr {string} placement - 省略位摊开后的落点，默认 bottom-start
+ * @attr {number} offset - 浮层与省略位之间的间距（px），默认 8
+ * @attr {number} open-delay - 指针停在省略位多久才摊开（ms），默认 200
+ * @attr {number} close-delay - 指针离开后多久收起（ms），默认 300
  * @attr {number} default-page-size - 非受控初始每页条数，默认 10
  * @prop {number[]} pageSizeOptions - 可选的每页条数档位，默认 [10, 20, 50, 100]
  * @csspart root - nav 地标，承载 aria-label 与 data-empty
@@ -64,6 +73,10 @@ export class XhPaginationElement extends XhElement {
     size: { converter: STRING_CONVERTER },
     // 文案是对象，走不了属性；只作为 property 暴露，与 Vue 侧的 translations prop 对齐
     translations: { attribute: false },
+    placement: { converter: STRING_CONVERTER },
+    offset: { converter: NUMBER_CONVERTER },
+    openDelay: { converter: NUMBER_CONVERTER, attribute: 'open-delay' },
+    closeDelay: { converter: NUMBER_CONVERTER, attribute: 'close-delay' },
   }
 
   declare count?: number
@@ -77,13 +90,85 @@ export class XhPaginationElement extends XhElement {
   declare tone?: Tone
   declare size?: Size
   declare translations?: Partial<PaginationTranslations>
+  declare placement?: Placement
+  declare offset?: number
+  declare openDelay?: number
+  declare closeDelay?: number
+
+  private readonly idGen: IdGenerator = createCounterIdGenerator()
+  private readonly paginationScope = createScope(null, this.idGen)
+  private readonly positionEngine: PositionEnginePort = createPositionEngine()
+  private config: RuntimeConfig | null = null
+  /** 退场闸门：收起从跟着展开态走改成跟着 presence 走，退场动画播完才真收。 */
+  private exit: OverlayExit | null = null
 
   private readonly notify = (details: PaginationPageChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('page-change', { detail: details, bubbles: true, composed: true }))
   }
 
-  // pagination 机器无副作用：不需要 config/layer/refs，controller 只带 props。
-  private readonly ctrl = new MachineController<PaginationSchema>(this, paginationMachine, () => this.machineProps())
+  private readonly notifyPageSize = (details: { pageSize: number, page: number }): void => {
+    this.dispatchEvent(new CustomEvent('page-size-change', { detail: details, bubbles: true, composed: true }))
+  }
+
+  private readonly ctrl = new MachineController<PaginationSchema>(
+    this,
+    paginationMachine,
+    () => this.machineProps(),
+    { scope: this.paginationScope, onBuilt: svc => this.injectRefs(svc) },
+  )
+
+  private ensureConfig(): void {
+    if (this.config)
+      return
+    this.config = createRuntimeConfig({ scope: this.paginationScope, idGenerator: this.idGen })
+  }
+
+  /** 此刻摊开的是哪个省略位的节点——它是定位锚点。 */
+  private openEllipsisEl(side: PaginationEllipsisSide | null): HTMLElement | null {
+    if (!side)
+      return null
+    for (const el of this.getParts('ellipsis')) {
+      if (el.getAttribute('data-side') === side)
+        return el as HTMLElement
+    }
+    return null
+  }
+
+  // 只交注册函数、不在连接期注册：层的入栈出栈跟着可见态走（机器的 trackLayer 效应负责）。
+  // 连接期就注册会让层与开合无关地常驻栈里，把同页其它层的 Escape 堵死。
+  private readonly registerLayer = (): { layer: Layer, dispose: Cleanup } => {
+    this.ensureConfig()
+    return this.config!.layerRegistry.register({
+      kind: 'popover',
+      node: () => this.getPart('content'),
+      // 省略位记为本层分支：指针按在它上面算层内交互
+      branches: () => [...this.getParts('ellipsis')],
+      isModal: () => false,
+      setModal: () => {},
+      surfaces: () => [],
+    })
+  }
+
+  // onBuilt 在 ctrl 构造期就跑（此刻 this.ctrl 尚未赋值），故 service 由参数传入。
+  // 每次(重)建机器后都要重注：refs 属于机器实例，重连时的新机器不会继承旧的。
+  private injectRefs(svc: Service<PaginationSchema>): void {
+    this.ensureConfig()
+    svc.refs.set('config', this.config)
+    svc.refs.set('registerLayer', this.registerLayer)
+    svc.refs.set('position', this.positionEngine)
+    svc.refs.set('getAnchorEl', () => this.openEllipsisEl(svc.context.get('openEllipsis')))
+    svc.refs.set('getFloatingEl', () => this.getPart('positioner'))
+    svc.refs.set('getContentEl', () => this.getPart('content'))
+  }
+
+  /**
+   * 角色节点提前发现一次：常规发现要等首次 updated，那一刻 partMap 还空着，
+   * 引擎挂不上，浮层会停在容器左上角。
+   */
+  override connectedCallback(): void {
+    this.refreshParts()
+    super.connectedCallback()
+  }
 
   private machineProps(): Partial<PaginationSchema['props']> {
     return {
@@ -98,7 +183,12 @@ export class XhPaginationElement extends XhElement {
       tone: this.tone,
       size: this.size,
       translations: this.translations,
+      placement: this.placement,
+      offset: this.offset,
+      openDelay: this.openDelay,
+      closeDelay: this.closeDelay,
       onPageChange: this.notify,
+      onPageSizeChange: this.notifyPageSize,
     }
   }
 
@@ -122,7 +212,38 @@ export class XhPaginationElement extends XhElement {
       this.spreader.spread(el, props as Record<string, unknown>)
     }
 
-    for (const el of this.getParts('ellipsis'))
-      this.spreader.spread(el, api.getEllipsisProps() as Record<string, unknown>)
+    // 省略位逐个打：身份取作者写的 data-side，缺省当 start
+    for (const el of this.getParts('ellipsis')) {
+      const side = (el.getAttribute('data-side') === 'end' ? 'end' : 'start') as PaginationEllipsisSide
+      this.spreader.spread(el, api.getEllipsisProps({ side }) as Record<string, unknown>)
+    }
+
+    // positioner 的 style 是坐标对象，spreader 会逐条写成内联样式
+    put('positioner', api.getPositionerProps() as Record<string, unknown>)
+    put('content', api.getContentProps() as Record<string, unknown>)
+
+    // Light DOM 的 content 常驻，可见性由宿主自管：皮肤给 content 设了 display，
+    // 会盖过 UA 的 [hidden]{display:none}；换别家样式同理，只有内联 style 压得住。
+    // 必须排在 put('content') 之后——data-state 得先落进 DOM，探测器才读得到退场那支动画
+    const content = this.getPart('content')
+    this.ensureConfig()
+    this.exit ??= createOverlayExit({
+      config: this.config!,
+      open: api.openEllipsis != null,
+      onExitComplete: () => this.requestUpdate(),
+    })
+    this.exit.track(content)
+    this.exit.update(api.openEllipsis != null)
+    this.setPartHidden(content, !this.exit.visible)
+  }
+
+  override disconnectedCallback(): void {
+    super.disconnectedCallback()
+    // 退场没播完就离场：立刻结清并收起，否则作者的节点会带着已被撤掉的 data-state 留在页面上
+    this.exit?.dispose()
+    this.exit = null
+    this.setPartHidden(this.getPart('content'), true)
+    // 层由可见态的效应自己入栈出栈，断开时机器停机会一并撤掉，这里无需再管
+    this.config = null // 重连时 ensureConfig 重建
   }
 }
