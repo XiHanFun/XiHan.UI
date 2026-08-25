@@ -132,6 +132,15 @@ export const XhNotificationItem = defineComponent({
   },
 })
 
+/** 类型指示符。作者不写内容时由皮肤按 data-type 画一枚兜底字形。 */
+export const XhNotificationItemIndicator = defineComponent({
+  name: 'XhNotificationItemIndicator',
+  setup(_, { slots }) {
+    const ctx = useNotificationItemContext()
+    return () => h('span', ctx.api.value.getItemIndicatorProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhNotificationItemTitle = defineComponent({
   name: 'XhNotificationItemTitle',
   setup(_, { slots }) {

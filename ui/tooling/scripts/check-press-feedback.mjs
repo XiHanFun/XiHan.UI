@@ -32,6 +32,7 @@ const PRESSABLE = {
   'signature-pad': ['clear-trigger'],
   'dialog': ['close-trigger'],
   'drawer': ['close-trigger'],
+  'notification': ['item-close-trigger'],
   'popover': ['close-trigger'],
   'tour': ['close-trigger'],
   'toast': ['close-trigger'],

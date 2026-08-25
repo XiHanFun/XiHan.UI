@@ -15951,6 +15951,14 @@ input[data-scope='mention'][data-part='input'] {
   }
 }
 
+/* loading 那枚字形自己转。逐皮肤自带一份：跨皮肤共用动画名，
+   引用方那份皮肤不在场时动画就静默不跑 */
+@keyframes xh-notification-spin {
+  to {
+    rotate: 360deg;
+  }
+}
+
 @keyframes xh-notification-out {
   from {
     opacity: 1;
@@ -15970,9 +15978,9 @@ input[data-scope='mention'][data-part='input'] {
   --xh-notification-skin: 1;
 }
 
-/* 地标容器不占布局：通知落在哪儿由九个 group 各自的 fixed 说了算，
-   root 只是给读屏一个可跳转的落点。它若留下一个块盒，写在页面中段的用法
-   （按钮和队列摆在一起）就会凭空多出一行空白。
+/* 作用域包装不占布局：通知落在哪儿由九个 group 各自的 fixed 说了算，
+   root 只是把队列的作用域圈起来（地标挂在那一摞上，不在这里）。
+   它若留下一个块盒，写在页面中段的用法（按钮和队列摆在一起）就会凭空多出一行空白。
    另一件必须提防的事：fixed 认的是视口，祖先上一旦出现
    transform / filter / backdrop-filter / contain，包含块就被抢走，整摞通知立刻贴错位置——
    所以这里连 position 都不碰，也别往覆盖钩子里加这几个属性。 */
@@ -16038,41 +16046,45 @@ input[data-scope='mention'][data-part='input'] {
   align-items: flex-end;
 }
 
+/*
+ * 一张通知卡：左列一枚类型字形，右列「标题 + 说明 + 操作」竖着排，叉钉在右上角。
+ * 用网格而不是竖排 flex：叉要脱离文档流钉到角上，正文要在字形右边成一列——
+ * 竖排 flex 里这两件事都做不到（叉会变成第三行）。
+ * 底与描边一律中性，语气只由左列那枚字形承载：整片兑色是轻提示那条的做法，
+ * 一张有标题有正文的卡片全片染色会把两层文字都压在同一片语气色上。
+ */
 [data-scope='notification'][data-part='item'] {
-  /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
-  --xh-icon-size: var(--xh-notification-icon-size, var(--xh-glyph-size-text));
+  /* 叉与操作钮的兜底字形按控件指示符那一档走；左列那枚类型字形另有自己的尺寸 */
+  --xh-icon-size: var(--xh-notification-icon-size, var(--xh-control-indicator-size));
 
-  display: flex;
-  flex-direction: column;
-  gap: var(--xh-notification-gap, var(--xh-space-1));
-  inline-size: var(--xh-notification-w, var(--xh-overlay-max-w));
+  position: relative;
+  display: grid;
+  /* 左列宽度由字形自己决定，作者不放指示符时它就是 0，正文自然贴到左内衬 */
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  column-gap: var(--xh-notification-gap, var(--xh-space-3));
+  row-gap: var(--xh-notification-row-gap, var(--xh-space-2));
+  inline-size: var(--xh-notification-w, var(--xh-overlay-max-w-lg));
   /* 摞是整面视口宽的定位面且带内边距，取 100% 就等于自动让出两侧留白，
      窄屏上不必再算一遍 viewport 减法 */
   max-inline-size: 100%;
-  padding-block: var(--xh-notification-py, var(--xh-surface-py-sm));
-  padding-inline: var(--xh-notification-px, var(--xh-surface-px-sm));
+  padding-block: var(--xh-notification-py, var(--xh-space-4));
+  padding-inline: var(--xh-notification-px, var(--xh-space-4));
   border: var(--xh-stroke-thin) solid var(--xh-notification-border, var(--xh-border-default));
-  /* 语气色条做成起始侧的粗边，而不是伪元素：圆角与阴影都不用再对第二遍。
-     两条必须排在 border 简写之后，否则被简写重置回细边与常规描边色。
-     颜色由 connect 从 type 派生的 data-tone 经语气层给出，作者写 --xh-notification-accent
-     就能把某一条整体改色；两者都没有时退回原来的 info 蓝 */
-  border-inline-start-width: var(--xh-notification-accent-width, var(--xh-space-1));
-  border-inline-start-color: var(--xh-notification-accent, var(--xh-_tone-soft, var(--xh-color-info-500)));
   border-radius: var(--xh-notification-radius, var(--xh-shape-surface));
   background: var(--xh-notification-bg, var(--xh-bg-surface-raised));
   color: var(--xh-notification-fg, var(--xh-fg-default));
   box-shadow: var(--xh-notification-shadow, var(--xh-elevation-sheet));
-  font-size: var(--xh-notification-font-size, var(--xh-text-secondary-size));
-  line-height: var(--xh-notification-leading, var(--xh-leading-normal));
+  font-size: var(--xh-notification-font-size, var(--xh-text-body-size));
+  line-height: var(--xh-notification-leading, var(--xh-text-body-leading));
   /* 摞的定位面整面铺开且不吃指针，卡片必须自己吃回来：
      悬停按住计时、按钮可点、焦点进出，全指着这一条 */
   pointer-events: auto;
 }
 
-/* loading 说的是「事情还没完」，不是好消息也不是坏消息，走中性灰。
-   它不是语气：连接层给它派生的 neutral 档是 500，而这里要的是 fg-muted（600） */
-[data-scope='notification'][data-part='item'][data-type='loading'] {
-  border-inline-start-color: var(--xh-notification-accent, var(--xh-fg-muted));
+/* 除指示符外一律落第二列：作者往卡片里塞的任何东西都跟着正文走 */
+[data-scope='notification'][data-part='item'] > *:not([data-part='item-indicator']) {
+  grid-column: 2;
 }
 
 /* 退场窗口走完连接层给的是 hidden 属性，而上面声明了 display——
@@ -16092,6 +16104,77 @@ input[data-scope='mention'][data-part='input'] {
   animation: xh-notification-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
 }
 
+/* 独占第一列第一行，并与标题首行顶对齐：盒高取一行标题的行高，
+   字形在盒里居中，标题字号改了也不会错位 */
+[data-scope='notification'][data-part='item-indicator'] {
+  --xh-icon-size: var(--xh-notification-indicator-size, var(--xh-glyph-size-md));
+
+  grid-column: 1;
+  grid-row: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  block-size: calc(var(--xh-notification-title-font-size, var(--xh-text-label-size)) * var(--xh-leading-tight));
+  inline-size: var(--xh-notification-indicator-size, var(--xh-glyph-size-md));
+  color: var(--xh-notification-indicator-fg, var(--xh-_tone-fg));
+}
+
+[data-scope='notification'][data-part='item-indicator'][hidden] {
+  display: none;
+}
+
+/* 作者没往指示符里写内容就由皮肤画兜底字形，按语气各画一枚；
+   塞了自己的图形这几条即不命中 */
+[data-scope='notification'][data-part='item-indicator']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-info) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-info) center / contain no-repeat;
+}
+
+[data-scope='notification'][data-part='item'][data-type='success'] [data-part='item-indicator']:empty::before {
+  -webkit-mask-image: var(--xh-glyph-mark-check);
+  mask-image: var(--xh-glyph-mark-check);
+}
+
+[data-scope='notification'][data-part='item'][data-type='warning'] [data-part='item-indicator']:empty::before {
+  -webkit-mask-image: var(--xh-glyph-mark-warning);
+  mask-image: var(--xh-glyph-mark-warning);
+}
+
+[data-scope='notification'][data-part='item'][data-type='error'] [data-part='item-indicator']:empty::before {
+  -webkit-mask-image: var(--xh-glyph-mark-close);
+  mask-image: var(--xh-glyph-mark-close);
+}
+
+/* loading 说的是「事情还没完」，不是好消息也不是坏消息：走中性前景档而不是语气色 */
+[data-scope='notification'][data-part='item'][data-type='loading'] [data-part='item-indicator'] {
+  color: var(--xh-notification-indicator-fg, var(--xh-fg-muted));
+}
+
+[data-scope='notification'][data-part='item'][data-type='loading'] [data-part='item-indicator']:empty::before {
+  -webkit-mask-image: var(--xh-glyph-mark-rotate-right);
+  mask-image: var(--xh-glyph-mark-rotate-right);
+  animation: xh-notification-spin var(--xh-spin-duration) linear infinite;
+}
+
+/* 减少动效：转圈停下，静止的箭头仍然读得出「还没好」；
+   "在等什么"由卡片上的 role=status 与可见文案继续承担。
+   两组规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
+@media (prefers-reduced-motion: reduce) {
+  [data-scope='notification'][data-part='item'][data-type='loading'] [data-part='item-indicator']:empty::before {
+    animation: none;
+  }
+}
+
+:where([data-motion='reduce']) [data-scope='notification'][data-part='item'][data-type='loading'] [data-part='item-indicator']:empty::before {
+  animation: none;
+}
+
 [data-scope='notification'][data-part='item-title'] {
   /* 作者可能把它写成 h2/p，外边距得先归零，否则卡片内的行距对不上 */
   margin: 0;
@@ -16099,6 +16182,11 @@ input[data-scope='mention'][data-part='input'] {
   font-size: var(--xh-notification-title-font-size, var(--xh-text-label-size));
   font-weight: var(--xh-notification-title-font-weight, var(--xh-font-weight-semibold));
   line-height: var(--xh-notification-title-leading, var(--xh-leading-tight));
+}
+
+/* 叉钉在右上角，标题得给它让位；说明与操作在第二行往下，不受影响 */
+[data-scope='notification'][data-part='item']:has([data-part='item-close-trigger']) [data-part='item-title'] {
+  padding-inline-end: calc(var(--xh-notification-close-size, var(--xh-control-h-sm)) + var(--xh-space-2));
 }
 
 [data-scope='notification'][data-part='item-description'] {
@@ -16120,8 +16208,8 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='notification'][data-part='item-action-trigger'] {
-  /* 作为卡片直接子元素时不跟着拉满整行；被作者包进一行里时它只影响交叉轴，无副作用 */
-  align-self: flex-start;
+  /* 网格列默认拉满，按钮要贴着起始侧收成自己的宽度 */
+  justify-self: start;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -16155,10 +16243,11 @@ input[data-scope='mention'][data-part='input'] {
   outline-offset: var(--xh-ring-offset);
 }
 
+/* 钉在右上角的内衬处，不参与网格排布——留在流里它会变成正文下面的第三行 */
 [data-scope='notification'][data-part='item-close-trigger'] {
-  align-self: flex-start;
-  /* 和操作按钮同处一行时把叉推到行尾；单独作为卡片子元素时则贴到行内末侧 */
-  margin-inline-start: auto;
+  position: absolute;
+  inset-block-start: var(--xh-notification-close-inset, var(--xh-space-3));
+  inset-inline-end: var(--xh-notification-close-inset, var(--xh-space-3));
   display: inline-flex;
   align-items: center;
   justify-content: center;

@@ -7,6 +7,7 @@ import {
   XhNotificationGroup,
   XhNotificationRoot,
   XhNotificationItem,
+  XhNotificationItemIndicator,
   XhNotificationItemTitle,
 } from "@xihan-ui/vue";
 
@@ -56,6 +57,7 @@ function startUpload(create: Create, update: Update): void {
             ({ id, status }) => status === 'unmounted' && dismiss(id)
           "
         >
+          <XhNotificationItemIndicator />
           <XhNotificationItemTitle />
           <XhNotificationItemDescription />
           <XhNotificationItemCloseTrigger />

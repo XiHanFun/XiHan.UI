@@ -55,6 +55,7 @@ const EXPECTED = {
     'drawer': ['content'],
     'float-button': ['trigger'],
     'floating-panel': ['content'],
+    'notification': ['item'],
     'thread': ['scroll-button'],
     'toast': ['root'],
     'tour': ['content'],

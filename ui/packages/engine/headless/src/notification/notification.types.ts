@@ -3,7 +3,7 @@ import type { MachineSchema } from '@xihan-ui/machine'
 import type { ToastStatus, ToastType } from '../toast'
 
 /**
- * 语气与生命周期与轻提示同一套词汇：两者都是「会自己消失的卡片」。
+ * 语气与生命周期与轻提示同一套词汇：两者都是「到点自己走的一条消息」。
  * 这里另起一份名字，是为了用 notification 的作者不必在类型里读到 Toast。
  */
 export type NotificationType = ToastType
@@ -118,7 +118,7 @@ export interface NotificationApi<T extends PropTypes = PropTypes> {
 /**
  * 单条通知卡片的 API。
  *
- * 计时、暂停与退场复用 toast 那台机器——那是「会自己消失的卡片」这一通用行为，
+ * 计时、暂停与退场复用 toast 那台机器——那是「到点自己走的一条消息」这一通用行为，
  * 与「这条消息是主动推来的还是操作反馈」无关。
  */
 export interface NotificationItemApi<T extends PropTypes = PropTypes> {
@@ -136,6 +136,7 @@ export interface NotificationItemApi<T extends PropTypes = PropTypes> {
   pause: () => void
   resume: () => void
   getItemProps: () => T['element']
+  getItemIndicatorProps: () => T['element']
   getItemTitleProps: () => T['element']
   getItemDescriptionProps: () => T['element']
   getItemActionTriggerProps: () => T['button']

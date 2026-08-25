@@ -65,7 +65,7 @@ create 返回的就是队列身份 id，存下来随时 dismiss 掉那一条；d
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-notification>` |
-| Vue 组件 | `XhNotificationGroup` `XhNotificationItem` `XhNotificationItemActionTrigger` `XhNotificationItemCloseTrigger` `XhNotificationItemDescription` `XhNotificationItemTitle` `XhNotificationRoot` |
+| Vue 组件 | `XhNotificationGroup` `XhNotificationItem` `XhNotificationItemActionTrigger` `XhNotificationItemCloseTrigger` `XhNotificationItemDescription` `XhNotificationItemIndicator` `XhNotificationItemTitle` `XhNotificationRoot` |
 | 组合式函数 | `useNotification` |
 | 状态机 | `notificationMachine` |
 | 皮肤 | `@xihan-ui/styles/notification.css` |
@@ -74,7 +74,7 @@ create 返回的就是队列身份 id，存下来随时 dismiss 掉那一条；d
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="notification"`：**`root`** · **`group`** · `item` · `item-title` · `item-description` · `item-action-trigger` · `item-close-trigger`
+`data-scope="notification"`：**`root`** · **`group`** · `item` · `item-indicator` · `item-title` · `item-description` · `item-action-trigger` · `item-close-trigger`
 
 ## Props
 
@@ -152,13 +152,14 @@ create 返回的就是队列身份 id，存下来随时 dismiss 掉那一条；d
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-label` | props.translations.region |
-| `root` | `role` | 'region' |
+| `group` | `aria-label` | props.translations.region |
+| `group` | `role` | 'region' |
 | `item` | `aria-atomic` | 'true' |
 | `item` | `aria-describedby` | `description` 部件的 id |
 | `item` | `aria-labelledby` | `title` 部件的 id |
 | `item` | `aria-live` | 'assertive' \| 'polite' |
 | `item` | `role` | 'alert' \| 'status' |
+| `item-indicator` | `aria-hidden` | 'true' |
 | `item-close-trigger` | `aria-label` | props.translations.close |
 
 ## 样式
@@ -186,13 +187,13 @@ create 返回的就是队列身份 id，存下来随时 dismiss 掉那一条；d
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-notification-accent` · `--xh-notification-accent-width` · `--xh-notification-action-bg` · `--xh-notification-action-bg-active` · `--xh-notification-action-bg-hover` · `--xh-notification-action-border` · `--xh-notification-action-fg` · `--xh-notification-action-font-weight` · `--xh-notification-action-h` · `--xh-notification-action-px` · `--xh-notification-action-radius` · `--xh-notification-bg` · `--xh-notification-border` · `--xh-notification-close-bg-active` · `--xh-notification-close-bg-hover` · `--xh-notification-close-fg` · `--xh-notification-close-fg-hover` · `--xh-notification-close-radius` · `--xh-notification-close-size` · `--xh-notification-description-fg` · `--xh-notification-description-font-size` · `--xh-notification-fg` · `--xh-notification-font-size` · `--xh-notification-gap` · `--xh-notification-icon-size` · `--xh-notification-inset` · `--xh-notification-layer` · `--xh-notification-leading` · `--xh-notification-px` · `--xh-notification-py` · `--xh-notification-radius` · `--xh-notification-shadow` · `--xh-notification-title-fg` · `--xh-notification-title-font-size` · `--xh-notification-title-font-weight` · `--xh-notification-title-leading` · `--xh-notification-w`
+`--xh-notification-action-bg` · `--xh-notification-action-bg-active` · `--xh-notification-action-bg-hover` · `--xh-notification-action-border` · `--xh-notification-action-fg` · `--xh-notification-action-font-weight` · `--xh-notification-action-h` · `--xh-notification-action-px` · `--xh-notification-action-radius` · `--xh-notification-bg` · `--xh-notification-border` · `--xh-notification-close-bg-active` · `--xh-notification-close-bg-hover` · `--xh-notification-close-fg` · `--xh-notification-close-fg-hover` · `--xh-notification-close-inset` · `--xh-notification-close-radius` · `--xh-notification-close-size` · `--xh-notification-description-fg` · `--xh-notification-description-font-size` · `--xh-notification-fg` · `--xh-notification-font-size` · `--xh-notification-gap` · `--xh-notification-icon-size` · `--xh-notification-indicator-fg` · `--xh-notification-indicator-size` · `--xh-notification-inset` · `--xh-notification-layer` · `--xh-notification-leading` · `--xh-notification-px` · `--xh-notification-py` · `--xh-notification-radius` · `--xh-notification-row-gap` · `--xh-notification-shadow` · `--xh-notification-title-fg` · `--xh-notification-title-font-size` · `--xh-notification-title-font-weight` · `--xh-notification-title-leading` · `--xh-notification-w`
 
 ## 动效
 
-关键帧 `xh-notification-in` · `xh-notification-out` 随皮肤自带，不引用别处文件里的名字；状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-notification-in` · `xh-notification-out` · `xh-notification-spin` 随皮肤自带，不引用别处文件里的名字；状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
-系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+`prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
 ## RTL
 

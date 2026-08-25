@@ -209,8 +209,9 @@ export class XhNotificationElement extends XhElement {
 const ITEM_CONTRACT = { anatomy: notificationAnatomy, meta: { component: 'notification', requiredParts: ['item'] } }
 
 /**
- * `<xh-notification-item>` —— 单条通知卡片：作者写 item/item-title/item-description/
- * item-action-trigger/item-close-trigger 角色节点，元素跑生命周期机器并把 connect 产出打上去。
+ * `<xh-notification-item>` —— 单条通知卡片：作者写 item/item-indicator/item-title/
+ * item-description/item-action-trigger/item-close-trigger 角色节点，
+ * 元素跑生命周期机器并把 connect 产出打上去。
  *
  * item 承载 role 与 aria-live：默认 status + polite（排队等读屏的空隙），
  * type="error" 换成 alert + assertive（打断当前朗读）。指针停在卡片上、
@@ -231,6 +232,7 @@ const ITEM_CONTRACT = { anatomy: notificationAnatomy, meta: { component: 'notifi
  * @fires status-change - 生命周期落位；detail 为 `{ id: string, status: 'dismissing'|'unmounted' }`
  * @fires action - 操作按钮被按下；detail 为 `{ id: string }`
  * @csspart item - role=status（error 时 alert）的卡片，承载 data-type / data-tone / data-state / data-paused
+ * @csspart item-indicator - 类型指示符；留空即由皮肤按 data-type 画一枚兜底字形
  * @csspart item-title - 标题，aria-labelledby 的目标
  * @csspart item-description - 补充说明，aria-describedby 的目标
  * @csspart item-action-trigger - 操作按钮：先发 action 再进入退场
@@ -330,6 +332,7 @@ export class XhNotificationItemElement extends XhElement {
         this.spreader.spread(el, props)
     }
     put('item', api.getItemProps() as Record<string, unknown>)
+    put('item-indicator', api.getItemIndicatorProps() as Record<string, unknown>)
     put('item-title', api.getItemTitleProps() as Record<string, unknown>)
     put('item-description', api.getItemDescriptionProps() as Record<string, unknown>)
     put('item-action-trigger', api.getItemActionTriggerProps() as Record<string, unknown>)
