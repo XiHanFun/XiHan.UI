@@ -183,7 +183,7 @@ export const toastSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '指针停在通知上：计时按住，移开后接着走剩下那一段而不是从头重来',
+      name: '指针停在条子上：计时按住，移开后接着走剩下那一段而不是从头重来',
       spec: { apg: APG },
       // removeDelay 给得很大：退场后稳稳停在 dismissing，末帧不会随抖动在两个状态之间摇摆
       props: { id: 't1', duration: 500, removeDelay: 5000 },
@@ -204,7 +204,7 @@ export const toastSuite: ConformanceSuite = {
             await sleep(400)
             expectState(doc, 'visible', '暂停期间不该消耗预算')
             if (root.getAttribute('data-paused') !== '')
-              throw new Error('指针停在通知上时应当标出 data-paused')
+              throw new Error('指针停在条子上时应当标出 data-paused')
 
             root.dispatchEvent(new Event('pointerleave'))
 
@@ -221,7 +221,7 @@ export const toastSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '焦点落进通知内部也按住计时，焦点离场才放开',
+      name: '焦点落进条子内部也按住计时，焦点离场才放开',
       spec: { apg: APG },
       // duration=0 时没有计时器，但暂停来源照样记账
       props: { duration: 0 },

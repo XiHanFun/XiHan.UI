@@ -49,8 +49,10 @@ export interface NotificationItemsChangeDetails {
 }
 
 export interface NotificationTranslations {
-  /** 地标容器的名字，读屏按它宣读这块区域。 */
+  /** 那一摞的名字，读屏按它宣读这块区域。 */
   region: string
+  /** 卡片上那颗叉的读屏名。卡片复用 toast 那台机器，但文案归通知自己的桶。 */
+  close: string
 }
 
 export interface NotificationGroupProps {

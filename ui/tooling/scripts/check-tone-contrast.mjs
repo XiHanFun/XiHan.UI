@@ -27,9 +27,7 @@ const THEMES = ['light', 'dark']
  * 明知不达标且不改颜色的配对。键为 `${theme}/${tone}/${pair}`，值为理由。
  * 聚焦环不随语气走（warning 本体压白底只有 2.70）所以这里只查 --xh-ring-focus 一条，不查各族。
  */
-const KNOWN = new Map([
-  ['dark/neutral/subtle', '中性语气的主色是固定原语 neutral-600、不随主题翻；深色下往 neutral-50 兑 72% 后压在 12% 淡底上只有 4.08。中性淡底是次要操作的观感档，与其它五族共用一条兑色公式，不为它单独改原语明度'],
-])
+const KNOWN = new Map([])
 
 // —— 解析 —— //
 
@@ -260,6 +258,17 @@ for (const theme of THEMES) {
     const at = name => evaluate(`var(${name})`, scope)
     assert(`${theme}/${tone}/solid`, '实心底 vs on 字', at('--xh-_tone-on'), at('--xh-_tone'), 4.5)
     assert(`${theme}/${tone}/subtle`, '淡底 vs fg 字', at('--xh-_tone-fg'), at('--xh-_tone-subtle'), 4.5)
+    // 淡底的两个交互态跟静态档同样要读得清：悬停与按下时字色不变，底却更深一档
+    assert(`${theme}/${tone}/subtle-hover`, '淡底悬停 vs fg 字', at('--xh-_tone-fg'), at('--xh-_tone-subtle-hover'), 4.5)
+    assert(`${theme}/${tone}/subtle-active`, '淡底按下 vs fg 字', at('--xh-_tone-fg'), at('--xh-_tone-subtle-active'), 4.5)
+    // 语气文字也常常直接压在面上（alert 的说明、通知的字形、表格里的状态列）
+    assert(`${theme}/${tone}/on-surface`, '面 vs fg 字', at('--xh-_tone-fg'), evaluate('var(--xh-bg-surface)', scope), 4.5)
+    assert(`${theme}/${tone}/on-raised`, '抬起的面 vs fg 字', at('--xh-_tone-fg'), evaluate('var(--xh-bg-surface-raised)', scope), 4.5)
+    // 实心底的两个交互态：底更深，on 字不变
+    assert(`${theme}/${tone}/solid-hover`, '实心底悬停 vs on 字', at('--xh-_tone-on'), at('--xh-_tone-hover'), 4.5)
+    assert(`${theme}/${tone}/solid-active`, '实心底按下 vs on 字', at('--xh-_tone-on'), at('--xh-_tone-active'), 4.5)
+    // 可操作区的边界要 3:1，这一档是专门为它兜过底的
+    assert(`${theme}/${tone}/border-control`, '控件边界 vs 面', at('--xh-_tone-border-control'), evaluate('var(--xh-bg-surface)', scope), 3)
   }
 }
 

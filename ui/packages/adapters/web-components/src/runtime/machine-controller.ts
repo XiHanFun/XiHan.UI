@@ -12,6 +12,12 @@ export interface MachineControllerOptions<T extends MachineSchema> {
   scope?: Scope
   /** 每次建机器后回调，用于注入 refs。 */
   onBuilt?: (service: Service<T>) => void
+  /**
+   * 全局配置从哪个桶里取，默认取机器名。
+   * 只有「跑别人机器」的元素需要写它——比如通知的卡片跑的是 toast 那台机器，
+   * 文案却该跟着通知走。
+   */
+  configName?: string
 }
 
 // 一台机器一个 controller：hostConnected 建机器并 mount、hostUpdate 跑 trackers、hostDisconnected unmount。
@@ -31,7 +37,8 @@ export class MachineController<T extends MachineSchema> implements ReactiveContr
   ) {
     // 全局配置在这一处并进来：所有跑机器的元素都从这里取 props，不必逐个接线。
     // 传宿主元素而不是只看全局那份：配置沿 DOM 祖先链解析，作者用 <xh-config> 包住一棵子树即可局部覆盖
-    this.props = () => withXhConfig(machine.name, props(), host instanceof Element ? host : null)
+    const bucket = this.opts.configName ?? machine.name
+    this.props = () => withXhConfig(bucket, props(), host instanceof Element ? host : null)
     host.addController(this)
     // 延到 hostConnected 再 build，构造期 attribute 尚未反射到 reactive property。
   }

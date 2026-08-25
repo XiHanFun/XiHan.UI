@@ -18,8 +18,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * 角色节点，元素跑 toast 机器并把 connect 产出打上去。
  *
  * root 承载 role 与 aria-live：默认 status + polite（排队等读屏的空隙），
- * type="error" 换成 alert + assertive（打断当前朗读）。指针停在通知上、
- * 或焦点落进通知内部都会把倒计时按住，离开才接着走剩下的那一段。
+ * type="error" 换成 alert + assertive（打断当前朗读）。指针停在条子上、
+ * 或焦点落进条子内部都会把倒计时按住，离开才接着走剩下的那一段。
  *
  * 退场窗口走完只把 root 收起、不删节点：作者写在里面的内容归作者，
  * 什么时候把这条从队列里删掉是全局服务的事（它收本元素冒泡上去的 status-change）。

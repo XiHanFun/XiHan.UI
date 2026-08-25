@@ -11,7 +11,6 @@ import type {
   NotificationPlacement,
   NotificationTranslations,
   ResolvedNotification,
-  ToastTranslations,
 } from '@xihan-ui/headless'
 import type { App, MaybeRefOrGetter, VNode } from 'vue'
 import type { NotificationContext } from '../components/notification/use-notification'
@@ -39,10 +38,8 @@ export interface NotificationServiceOptions {
   duration?: number
   removeDelay?: number
   pauseOnPageIdle?: boolean
-  /** 队列容器的文案（地标的读屏名）。 */
+  /** 通知的文案：那一摞的读屏名与卡片上那颗叉的读屏名，一个桶装完。 */
   translations?: MaybeRefOrGetter<Partial<NotificationTranslations>>
-  /** 卡片的文案（关闭钮的读屏名等）。 */
-  itemTranslations?: MaybeRefOrGetter<Partial<ToastTranslations>>
   /**
    * 喂给通知子树的全局配置（locale / translations / size / portalContainer）。
    * 本服务自带宿主应用，接不到组件树里的 provideXhConfig，要让它跟应用同语言就从这里给；
@@ -74,7 +71,7 @@ export interface NotificationService {
 
 function defaultCard(
   item: ResolvedNotification,
-  translations: Partial<ToastTranslations> | undefined,
+  translations: Partial<NotificationTranslations> | undefined,
   onUnmounted: (id: string) => void,
 ): VNode {
   return h(XhNotificationItem, {
@@ -106,7 +103,7 @@ export function createNotificationService(options: NotificationServiceOptions = 
   if (typeof document === 'undefined')
     throw new Error('createNotificationService 需要 document；SSR 里请等到客户端再创建')
 
-  const { target, itemTranslations, config, ...queueProps } = options
+  const { target, config, ...queueProps } = options
   const configSource = createServiceConfig(config)
   const holder = target ?? document.createElement('div')
   if (!target)
@@ -132,7 +129,7 @@ export function createNotificationService(options: NotificationServiceOptions = 
             { key: placement, ...value.getGroupProps({ placement }) as Record<string, unknown> },
             // 按队列身份 id 给 key，避免节点被就地复用
             value.getItemsByPlacement(placement).map(item => h(Fragment, { key: item.id }, [
-              defaultCard(item, toValue(itemTranslations), inner.dismiss),
+              defaultCard(item, toValue(queueProps.translations), inner.dismiss),
             ])),
           )))
       }

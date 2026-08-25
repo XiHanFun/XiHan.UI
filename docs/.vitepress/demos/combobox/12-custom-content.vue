@@ -2,7 +2,6 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import {
-  XhBadge,
   XhComboboxClearTrigger,
   XhComboboxContent,
   XhComboboxControl,
@@ -15,6 +14,8 @@ import {
   XhComboboxPositioner,
   XhComboboxRoot,
   XhComboboxTrigger,
+  XhTagLabel,
+  XhTagRoot,
 } from "@xihan-ui/vue";
 
 const mailboxes = [
@@ -50,7 +51,9 @@ const filtered = computed(() => {
           <XhComboboxItemText>
             <span style="display: inline-flex; align-items: center; gap: 8px">
               {{ m.label }}
-              <XhBadge variant="subtle" :tone="m.tone" size="sm">{{ m.note }}</XhBadge>
+              <XhTagRoot variant="subtle" :tone="m.tone" size="sm">
+                <XhTagLabel>{{ m.note }}</XhTagLabel>
+              </XhTagRoot>
             </span>
           </XhComboboxItemText>
           <XhComboboxItemIndicator />

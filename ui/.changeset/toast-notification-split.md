@@ -19,6 +19,7 @@
   <XhNotificationGroup>
     <template #default="{ item }">
       <XhNotificationItem :id="item.id" :title="item.title" :description="item.description">
+        <XhNotificationItemIndicator />
         <XhNotificationItemTitle />
         <XhNotificationItemDescription />
         <XhNotificationItemCloseTrigger />
@@ -28,7 +29,7 @@
 </XhNotificationRoot>
 ```
 
-队列与卡片是同一个组件的两层：`root`（地标）/ `group`（某个位置上的那一摞）/ `item` 起是单条卡片。
+队列与卡片是同一个组件的两层：`root`（队列的作用域包装）/ `group`（某个位置上的那一摞，也是 `role=region` 的地标）/ `item` 起是单条卡片。
 九宫格落位、`max` 上限、同 id 就地改写、逐条计时与暂停都在这里。
 Web Components 侧是 `<xh-notification>` 与 `<xh-notification-item>`。
 

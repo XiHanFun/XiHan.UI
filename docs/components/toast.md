@@ -133,7 +133,7 @@ action-trigger 按下时先发 action 事件，再让这条进入退场；closab
 | `status` | `ToastStatus` |  |
 | `type` | `ToastType` |  |
 | `title` | `string \| undefined` |  |
-| `paused` | `boolean` | 计时被按住中。样式层据此暂停进度条动画。 |
+| `paused` | `boolean` | 计时被按住中。倒计时的可见反馈由使用者自己渲染，这个标记是留给他的钩子——自带皮肤不画。 |
 | `closable` | `boolean` |  |
 | `remaining` | `number` | 剩余毫秒；不自动消失时为 Infinity。 |
 | `dismiss` | `() => void` |  |

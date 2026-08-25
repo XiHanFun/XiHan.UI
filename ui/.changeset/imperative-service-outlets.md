@@ -14,6 +14,5 @@
 
 **配置源与文案改成可运行期换**。三个服务的 `config` 从 `XhConfig` 放宽成 `MaybeRefOrGetter<XhConfig>`，句柄上多一个 `setConfig`；`okText` / `cancelText` / `translations` 一并放宽。此前文案只在创建服务那一刻求值一次，应用切语言后服务子树里的按钮与读屏名不跟——队列里的对话框还会跨过一次切换。取值优先级：调用点 > 服务选项 > `config.translations.<组件>` > 组件内建。
 
-`useToaster` 的 props 同步放宽成 `MaybeRefOrGetter`（现有传普通对象的调用点不受影响）。
 
 顺带修正 `docs/guide/versioning.md` 里两个失准的样式钩子计数（114 → 119、500 → 505）。
