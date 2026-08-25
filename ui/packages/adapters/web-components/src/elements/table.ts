@@ -1,5 +1,6 @@
 import type {
   TableColumnDef,
+  TableColumnKind,
   TableColumnProps,
   TableExpandedChangeDetails,
   TableRowDef,
@@ -20,6 +21,8 @@ import { MachineController } from '../runtime/machine-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
+// 数值属性：属性缺席即 undefined，缺省值的唯一事实源留在 connect
+const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 // 三态布尔：缺席=undefined（走缺省）、在场=true、显式写 "false"=false。
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
@@ -89,6 +92,10 @@ export class XhTableElement extends XhElement {
     expanded: { attribute: false },
     defaultExpanded: { attribute: false },
     selectionMode: { converter: STRING_CONVERTER, attribute: 'selection-mode' },
+    // 前缀列是数组，走不了属性；只作为 property 暴露
+    prefixColumns: { attribute: false },
+    page: { converter: NUMBER_CONVERTER },
+    pageSize: { converter: NUMBER_CONVERTER, attribute: 'page-size' },
     loading: { type: Boolean },
     empty: { converter: BOOLEAN_CONVERTER },
     stickyHeader: { type: Boolean, attribute: 'sticky-header' },
@@ -110,6 +117,9 @@ export class XhTableElement extends XhElement {
   declare expanded?: string[]
   declare defaultExpanded?: string[]
   declare selectionMode?: TableSelectionMode
+  declare prefixColumns?: TableColumnKind[]
+  declare page?: number
+  declare pageSize?: number
   declare loading?: boolean
   declare empty?: boolean
   declare stickyHeader?: boolean
@@ -148,6 +158,9 @@ export class XhTableElement extends XhElement {
       expanded: this.expanded,
       defaultExpanded: this.defaultExpanded,
       selectionMode: this.selectionMode,
+      prefixColumns: this.prefixColumns,
+      page: this.page,
+      pageSize: this.pageSize,
       loading: this.loading ?? false,
       empty: this.empty,
       stickyHeader: this.stickyHeader ?? false,

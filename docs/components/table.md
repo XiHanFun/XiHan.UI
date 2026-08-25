@@ -123,6 +123,12 @@ rows 按契约就是一条已摊平的可见行序列：层级三件套逐行自
 
 <XhDemo src="table/17-scroll-area" />
 
+### 前缀列与分页序号
+
+prefix-columns 让库把序号/多选列插在最前面并占住列号；序号是分页全局序号，翻到第二页不会又从 1 开始
+
+<XhDemo src="table/18-prefix-columns" />
+
 ## 产物
 
 | 层 | 值 |
@@ -152,6 +158,9 @@ rows 按契约就是一条已摊平的可见行序列：层级三件套逐行自
 | `expanded` | `string[]` |  | 展开集合。给定即受控，语义同上。 |
 | `defaultExpanded` | `string[]` |  |  |
 | `selectionMode` | `TableSelectionMode` |  | 默认 none：不声明则没有选择机制，行也不报 aria-selected。 |
+| `prefixColumns` | `TableColumnKind[]` |  | 要哪几列前缀列，按给定顺序插在最前面，默认一列都不插。 它们由库插入并**占住列号**——不占的话右侧所有列的 aria-colindex 会整体串位， 而这正是使用者手工往 columns 里塞假列的原因。作者照 `api.columns` 渲染即可， 每一项都自报 `kind`。 |
+| `page` | `number` |  | 当前页码与每页条数，只用来算序号，不参与切片——切片归调用方 （或分页组件的 `api.slice`）。都不给时序号退回可见序。 |
+| `pageSize` | `number` |  |  |
 | `loading` | `boolean` |  | 数据在路上：root 报 aria-busy，表体为空时加载态节点显形。 |
 | `empty` | `boolean` |  | 显式声明表体为空；缺省按 rows 是否为空推导。 |
 | `stickyHeader` | `boolean` |  | 表头吸顶：只落 data-sticky（布尔），钉住的实现归皮肤。列冻结走 data-frozen，两者不同名。 |
@@ -205,7 +214,7 @@ rows 按契约就是一条已摊平的可见行序列：层级三件套逐行自
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `columns` | `readonly TableColumnDef[]` | 作者给的列定义。 |
+| `columns` | `readonly TableColumn[]` | 生效的列：前缀列在前、数据列在后，各自自报 kind。 列号、渲染顺序都以它为准；不要前缀列时它与作者给的那份一模一样。 |
 | `rows` | `readonly TableRowDef[]` | 作者给的行定义。 |
 | `visibleRows` | `readonly TableVisibleRow[]` | 展开摊平后的可见行序列（详情行插在它所属数据行之后）。 |
 | `sort` | `TableSortDescriptor[]` |  |
@@ -238,6 +247,7 @@ rows 按契约就是一条已摊平的可见行序列：层级三件套逐行自
 | `getFooterProps` | `() => T['element']` |  |
 | `getHeaderRowProps` | `() => T['element']` | 表头那一行：恒占行号空间的第 1 行。 |
 | `getFooterRowProps` | `() => T['element']` | 脚注那一行：占行号空间的最后一行。 |
+| `rowNumber` | `(rowId: string) => string` | 这一行显示什么序号。平表是分页全局序号，树形是大纲编号。 不出序号列时仍可调用——它是纯计算，不看 showIndex。 |
 | `getRowProps` | `(props: TableRowProps) => T['element']` |  |
 | `getColumnHeaderProps` | `(props: TableColumnProps) => T['element']` |  |
 | `getCellProps` | `(props: TableCellProps) => T['element']` |  |
@@ -284,11 +294,11 @@ rows 按契约就是一条已摊平的可见行序列：层级三件套逐行自
 | `row` | `aria-controls` | `detail` 部件的 id \| undefined |
 | `row` | `aria-disabled` | 'true' \| 'false' |
 | `row` | `aria-expanded` | 'true' \| 'false' \| undefined |
-| `row` | `aria-level` | 1 \| undefined |
-| `row` | `aria-posinset` | rowPosition.get(row.value) \| undefined |
+| `row` | `aria-level` | metaIndex.get(row.value)?.level \| undefined |
+| `row` | `aria-posinset` | metaIndex.get(row.value)?.posInSet \| undefined |
 | `row` | `aria-rowindex` | dataRowIndex.get(row.value) |
 | `row` | `aria-selected` | 'true' \| 'false' \| undefined |
-| `row` | `aria-setsize` | dataRows.length \| undefined |
+| `row` | `aria-setsize` | metaIndex.get(row.value)?.setSize \| undefined |
 | `row` | `role` | 'row' |
 | `column-header` | `aria-colindex` | columnIndex.get(column.value) |
 | `column-header` | `aria-sort` | 'ascending' \| 'descending' \| 'none' \| undefined |
@@ -303,7 +313,7 @@ rows 按契约就是一条已摊平的可见行序列：层级三件套逐行自
 | `sort-trigger` | `aria-disabled` | 'false' \| 'true' |
 | `sort-trigger` | `role` | 'button' |
 | `expand-trigger` | `aria-hidden` | 'true' |
-| `expanded-row` | `aria-level` | 2 \| undefined |
+| `expanded-row` | `aria-level` | (metaIndex.get(row.value)?.level ?? 1) + 1 \| undefined |
 | `expanded-row` | `aria-posinset` | 1 \| undefined |
 | `expanded-row` | `aria-rowindex` | detailRowIndex.get(row.value) |
 | `expanded-row` | `aria-setsize` | 1 \| undefined |

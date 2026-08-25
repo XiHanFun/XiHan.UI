@@ -22,19 +22,82 @@ export function flattenTableRows(
   expandedValue: readonly string[],
 ): TableVisibleRow[] {
   const expanded = new Set(expandedValue)
+
+  // 先按定义序建父子。id 重复只认先出现的那一行，否则两行会在 DOM 上抢同一个 data-value
   const seen = new Set<string>()
-  const out: TableVisibleRow[] = []
+  const unique: TableRowDef[] = []
   for (const row of rows) {
     if (seen.has(row.id))
       continue
     seen.add(row.id)
-    const expandable = !!row.expandable
-    const isExpanded = expandable && expanded.has(row.id)
-    const disabled = !!row.disabled
-    out.push({ id: row.id, kind: 'data', disabled, expandable, expanded: isExpanded, index: out.length })
-    if (isExpanded)
-      out.push({ id: row.id, kind: 'expanded', disabled, expandable, expanded: true, index: out.length })
+    unique.push(row)
   }
+
+  const childrenOf = new Map<string, TableRowDef[]>()
+  const roots: TableRowDef[] = []
+  for (const row of unique) {
+    // 父行不存在时按根行处理：吞掉这一行会让数据凭空少一条，比排错位置更难查
+    const parent = row.parentId != null && seen.has(row.parentId) ? row.parentId : null
+    if (parent == null) {
+      roots.push(row)
+      continue
+    }
+    const list = childrenOf.get(parent)
+    if (list)
+      list.push(row)
+    else
+      childrenOf.set(parent, [row])
+  }
+
+  const out: TableVisibleRow[] = []
+
+  const walk = (list: readonly TableRowDef[], level: number, prefix: string): void => {
+    list.forEach((row, i) => {
+      const kids = childrenOf.get(row.id)
+      const hasKids = !!kids && kids.length > 0
+      // 有子行的行以子行为展开对象；没有子行的才看 expandable（详情行）
+      const expandable = hasKids || !!row.expandable
+      const isExpanded = expandable && expanded.has(row.id)
+      const disabled = !!row.disabled
+      // 编号取定义序里的下标，不取可见序：收起某一枝时仍在场的行编号一个都不变
+      const outline = prefix ? `${prefix}.${i + 1}` : String(i + 1)
+
+      out.push({
+        id: row.id,
+        kind: 'data',
+        disabled,
+        expandable,
+        expanded: isExpanded,
+        index: out.length,
+        level,
+        posInSet: i + 1,
+        setSize: list.length,
+        outline,
+      })
+
+      if (!isExpanded)
+        return
+      if (hasKids) {
+        walk(kids, level + 1, outline)
+        return
+      }
+      // 一行不可能既展开出子行、又展开出一块详情，两者互斥
+      out.push({
+        id: row.id,
+        kind: 'expanded',
+        disabled,
+        expandable,
+        expanded: true,
+        index: out.length,
+        level: level + 1,
+        posInSet: 1,
+        setSize: 1,
+        outline,
+      })
+    })
+  }
+
+  walk(roots, 1, '')
   return out
 }
 

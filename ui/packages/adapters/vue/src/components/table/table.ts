@@ -1,6 +1,7 @@
 import type {
   TableApi,
   TableColumnDef,
+  TableColumnKind,
   TableColumnProps,
   TableRowDef,
   TableRowProps,
@@ -54,6 +55,8 @@ function reportRowFocus(ctx: TableContext, el: Ref<HTMLElement | null>, value: (
 /** 默认插槽的载荷：可见行与排序、选中、展开三态，以及逐行查询与改写它们的句柄。 */
 export type TableRootSlotProps = Pick<
   TableApi,
+  | 'columns'
+  | 'rowNumber'
   | 'visibleRows'
   | 'sort'
   | 'selection'
@@ -83,6 +86,11 @@ export const XhTableRoot = defineComponent({
     selection: { type: [Array, String] as PropType<TableSelection>, default: undefined },
     defaultSelection: { type: [Array, String] as PropType<TableSelection>, default: undefined },
     selectionMode: { type: String as PropType<TableSelectionMode>, default: undefined },
+    /** 要哪几列前缀列（序号 / 多选 / 展开），按给定顺序插在最前面并占住列号。 */
+    prefixColumns: { type: Array as PropType<TableColumnKind[]>, default: undefined },
+    /** 当前页码与每页条数：只用来算序号，不参与切片。 */
+    page: { type: Number, default: undefined },
+    pageSize: { type: Number, default: undefined },
     expanded: { type: Array as PropType<string[]>, default: undefined },
     defaultExpanded: { type: Array as PropType<string[]>, default: undefined },
     loading: Boolean,
@@ -124,6 +132,8 @@ export const XhTableRoot = defineComponent({
     const ctx = useTable(props as TableProps, onSortChange, onSelectionChange, onExpandedChange)
     provideTable(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
+      columns: ctx.api.value.columns,
+      rowNumber: ctx.api.value.rowNumber,
       visibleRows: ctx.api.value.visibleRows,
       sort: ctx.api.value.sort,
       selection: ctx.api.value.selection,

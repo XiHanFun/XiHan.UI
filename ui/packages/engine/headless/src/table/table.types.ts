@@ -40,6 +40,19 @@ export type TableSelectionState = 'unchecked' | 'indeterminate' | 'checked'
  * 列定义。列号（aria-colindex）与列总数（aria-colcount）的唯一事实源，不从 DOM 反推。
  * 选择列、展开列这类只有把手的列也必须在此声明一条，否则右侧所有列的列号串位。
  */
+/**
+ * 一列是干什么的。data 是作者定义的数据列，其余三种由库按需插在最前面。
+ *
+ * 它们必须占列号空间：不占的话右侧所有列的 aria-colindex 会整体串位，
+ * 而这正是使用者手工往 columns 里塞假列的原因。
+ */
+export type TableColumnKind = 'index' | 'select' | 'expand' | 'data'
+
+/** 生效的列：作者定义的那些，加上库插在最前面的前缀列。 */
+export interface TableColumn extends TableColumnDef {
+  kind: TableColumnKind
+}
+
 export interface TableColumnDef {
   /** 全表唯一：既是 DOM 身份（data-value），也是排序链与列号索引的键。 */
   id: string
@@ -72,6 +85,13 @@ export interface TableRowDef {
    * 只要有一行给了，root 就从 role=grid 换成 role=treegrid。
    */
   expandable?: boolean
+  /**
+   * 父行 id。给了它这一行就是那一行的子行，收起父行时它跟着藏起来。
+   *
+   * 有子行的行**不再产出详情行**：一行不可能同时既展开出子行、又展开出一块详情。
+   * 指向不存在的父行时按根行处理，不吞掉这一行。
+   */
+  parentId?: string
 }
 
 /** 可见行序列的元素。展开摊平的产物，数据行与详情行都在其中。 */
@@ -86,6 +106,19 @@ export interface TableVisibleRow {
   expanded: boolean
   /** 可见序，0 起算。连接层加上表头偏移即 aria-rowindex。 */
   index: number
+  /** 层级，1 起算，直接落 aria-level。平表恒为 1。 */
+  level: number
+  /** 同层内序号，1 起算，直接落 aria-posinset。 */
+  posInSet: number
+  /** 同层总数，直接落 aria-setsize。 */
+  setSize: number
+  /**
+   * 大纲编号，如 `1.2.3`。
+   *
+   * 取的是「在父的 children 里的下标」而不是可见序：收起某一枝时，
+   * 仍在场的行编号一个都不变。取可见序的话收起一枝，其后所有行的号会整体前移。
+   */
+  outline: string
 }
 
 export interface TableSortChangeDetails {
@@ -138,6 +171,20 @@ export interface TableSchema extends MachineSchema {
     defaultExpanded?: string[]
     /** 默认 none：不声明则没有选择机制，行也不报 aria-selected。 */
     selectionMode?: TableSelectionMode
+    /**
+     * 要哪几列前缀列，按给定顺序插在最前面，默认一列都不插。
+     *
+     * 它们由库插入并**占住列号**——不占的话右侧所有列的 aria-colindex 会整体串位，
+     * 而这正是使用者手工往 columns 里塞假列的原因。作者照 `api.columns` 渲染即可，
+     * 每一项都自报 `kind`。
+     */
+    prefixColumns?: TableColumnKind[]
+    /**
+     * 当前页码与每页条数，只用来算序号，不参与切片——切片归调用方
+     * （或分页组件的 `api.slice`）。都不给时序号退回可见序。
+     */
+    page?: number
+    pageSize?: number
     /** 数据在路上：root 报 aria-busy，表体为空时加载态节点显形。 */
     loading?: boolean
     /** 显式声明表体为空；缺省按 rows 是否为空推导。 */
@@ -213,8 +260,11 @@ export interface TableSchema extends MachineSchema {
 }
 
 export interface TableApi<T extends PropTypes = PropTypes> {
-  /** 作者给的列定义。 */
-  columns: readonly TableColumnDef[]
+  /**
+   * 生效的列：前缀列在前、数据列在后，各自自报 kind。
+   * 列号、渲染顺序都以它为准；不要前缀列时它与作者给的那份一模一样。
+   */
+  columns: readonly TableColumn[]
   /** 作者给的行定义。 */
   rows: readonly TableRowDef[]
   /** 展开摊平后的可见行序列（详情行插在它所属数据行之后）。 */
@@ -258,6 +308,11 @@ export interface TableApi<T extends PropTypes = PropTypes> {
   getHeaderRowProps: () => T['element']
   /** 脚注那一行：占行号空间的最后一行。 */
   getFooterRowProps: () => T['element']
+  /**
+   * 这一行显示什么序号。平表是分页全局序号，树形是大纲编号。
+   * 不出序号列时仍可调用——它是纯计算，不看 showIndex。
+   */
+  rowNumber: (rowId: string) => string
   getRowProps: (props: TableRowProps) => T['element']
   getColumnHeaderProps: (props: TableColumnProps) => T['element']
   getCellProps: (props: TableCellProps) => T['element']
