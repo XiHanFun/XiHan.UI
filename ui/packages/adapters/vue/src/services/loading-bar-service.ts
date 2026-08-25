@@ -5,9 +5,11 @@ import type { LoadingBarTranslations } from '@xihan-ui/headless'
 import type { Tone } from '@xihan-ui/kernel'
 import type { App, MaybeRefOrGetter } from 'vue'
 import type { XhConfig } from '../config/config'
+import { connectLoadingBar, loadingBarMachine } from '@xihan-ui/headless'
 import { ensurePortalRoot } from '@xihan-ui/kernel'
-import { createApp, defineComponent, h, reactive, toValue } from 'vue'
-import { XhLoadingBarRange, XhLoadingBarRoot, XhLoadingBarTrack } from '../components/loading-bar/loading-bar'
+import { computed, createApp, defineComponent, h, reactive, toValue } from 'vue'
+import { vueNormalize } from '../runtime/normalize-props'
+import { useMachine } from '../runtime/use-machine'
 import { mountServiceHost } from './mount-host'
 import { createServiceConfig } from './service-config'
 
@@ -73,17 +75,22 @@ export function createLoadingBarService(options: LoadingBarServiceOptions = {}):
     name: 'XhLoadingBarServiceHost',
     setup() {
       configSource.provide()
-      return () => h(
-        XhLoadingBarRoot,
-        {
-          ...barProps,
-          loading: state.pending > 0,
-          tone: state.tone,
-          value: state.value,
-          translations: toValue(translations),
-        },
-        () => h(XhLoadingBarTrack, null, () => h(XhLoadingBarRange)),
-      )
+      // 直接从 api 渲染那三层，不走部件组件：这棵子树固定且全归服务自己拥有，
+      // 经上下文传 api 什么也没换来，却把「跨模块 provide/inject 必须对得上」
+      // 加成了一条本可以没有的前提
+      const service = useMachine(loadingBarMachine, () => ({
+        ...barProps,
+        loading: state.pending > 0,
+        tone: state.tone,
+        value: state.value,
+        translations: toValue(translations),
+      }))
+      const api = computed(() => connectLoadingBar(service, vueNormalize))
+      return () => h('div', api.value.getRootProps() as Record<string, unknown>, [
+        h('div', api.value.getTrackProps() as Record<string, unknown>, [
+          h('div', api.value.getRangeProps() as Record<string, unknown>),
+        ]),
+      ])
     },
   })
 
@@ -91,18 +98,25 @@ export function createLoadingBarService(options: LoadingBarServiceOptions = {}):
   const mounted = mountServiceHost(app, holder, 'loading-bar')
 
   const settle = (nextTone: Tone): void => {
+    if (!mounted)
+      return
     state.pending = 0
     state.tone = nextTone
     state.value = undefined
   }
 
   return {
+    // 宿主没挂起来时整体惰化：状态一动不动，残骸也就不会被叫醒
     start: () => {
+      if (!mounted)
+        return
       state.tone = tone
       state.value = undefined
       state.pending += 1
     },
     finish: () => {
+      if (!mounted)
+        return
       state.pending = Math.max(0, state.pending - 1)
       if (state.pending === 0)
         state.value = undefined
@@ -110,6 +124,8 @@ export function createLoadingBarService(options: LoadingBarServiceOptions = {}):
     error: () => settle(errorTone),
     finishAll: () => settle(tone),
     set: (value) => {
+      if (!mounted)
+        return
       state.value = value
     },
     setConfig: next => configSource.set(next),
