@@ -56,8 +56,8 @@ export const XhTreeRoot = defineComponent({
     selection: { type: Array as PropType<string[]>, default: undefined },
     defaultSelection: { type: Array as PropType<string[]>, default: undefined },
     multiple: { type: Boolean, default: undefined },
-    /** 子层排布方向，默认 vertical；horizontal 让同一层的节点并排铺开。 */
-    orientation: { type: String as PropType<TreeProps['orientation']>, default: undefined },
+    /** 子层排布方向，默认 vertical。给函数即逐层判定：分支答自己那层子节点怎么排。 */
+    orientation: { type: [String, Function] as PropType<TreeProps['orientation']>, default: undefined },
     selectionMode: { type: String as PropType<TreeSelectionMode>, default: undefined },
     cascade: Boolean,
     checkedStrategy: { type: String as PropType<TreeProps['checkedStrategy']>, default: undefined },

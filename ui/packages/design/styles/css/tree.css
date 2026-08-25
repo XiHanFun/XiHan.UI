@@ -96,7 +96,7 @@
   /* 分支行的首格是展开箭头，叶子行没有这一格。作者摆了 item-indicator 时由它顶着，
      没摆（如勾选档首位直接是 item-checkbox）就由行盒自己补出来，
      否则叶子会比同级分支往行首缩一格，层级关系读不出来 */
-  [data-orientation='vertical'] [data-scope='tree'][data-part='item']:not(
+  [data-orientation='vertical'] > [data-scope='tree'][data-part='item']:not(
       :has(> [data-scope='tree'][data-part='item-indicator'])
     ) {
     padding-inline-start: calc(

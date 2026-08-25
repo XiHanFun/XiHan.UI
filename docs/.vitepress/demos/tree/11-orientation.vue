@@ -1,14 +1,16 @@
-<!-- 子层横排 | orientation="horizontal" 把同一层的节点并排铺开，缩进仍标层级；方向键不跟着改：左右是收展、上下走可见行，这是 treeview 的规范语义 -->
+<!-- 逐层排布 | orientation 收函数即按层判定：收到的是分支节点，答的是它那层子节点怎么排；目录与菜单竖排、按钮横排，一行铺开就选完，省掉纵向翻找 -->
 <script setup lang="ts">
+import type { TreeNodeMeta } from "@xihan-ui/vue";
 import { ref } from "vue";
 import {
   XhTreeBranch,
+  XhTreeBranchCheckbox,
   XhTreeBranchContent,
   XhTreeBranchControl,
   XhTreeBranchText,
   XhTreeBranchTrigger,
   XhTreeItem,
-  XhTreeItemIndicator,
+  XhTreeItemCheckbox,
   XhTreeItemText,
   XhTreeLabel,
   XhTreeRoot,
@@ -17,52 +19,78 @@ import {
 
 const collection = [
   {
-    value: "color",
-    label: "主色",
+    value: "system",
+    label: "系统管理",
     children: [
-      { value: "brand", label: "品牌" },
-      { value: "accent", label: "强调" },
-      { value: "neutral", label: "中性" },
-    ],
-  },
-  {
-    value: "size",
-    label: "尺寸",
-    children: [
-      { value: "sm", label: "小" },
-      { value: "md", label: "中" },
-      { value: "lg", label: "大" },
+      {
+        value: "user",
+        label: "用户管理",
+        children: [
+          { value: "user:add", label: "新增" },
+          { value: "user:edit", label: "编辑" },
+          { value: "user:del", label: "删除" },
+          { value: "user:export", label: "导出" },
+        ],
+      },
+      {
+        value: "role",
+        label: "角色管理",
+        children: [
+          { value: "role:add", label: "新增" },
+          { value: "role:grant", label: "授权" },
+          { value: "role:del", label: "删除" },
+        ],
+      },
     ],
   },
 ];
 
-const orientation = ref<"horizontal" | "vertical">("horizontal");
+// 菜单那一层（level 2）的子节点横排，其余竖排
+function byLevel(node: TreeNodeMeta | null) {
+  return node?.level === 2 ? "horizontal" : "vertical";
+}
+
+const flat = ref(false);
+const selection = ref<string[]>(["user:add"]);
 </script>
 
 <template>
   <div style="width: 100%; display: grid; gap: 12px; justify-items: start">
     <label style="display: inline-flex; gap: 6px; align-items: center">
-      <input v-model="orientation" type="checkbox" true-value="horizontal" false-value="vertical" />
-      子层横排
+      <input v-model="flat" type="checkbox" />
+      整棵树横排（对照）
     </label>
 
     <XhTreeRoot
+      v-model:selection="selection"
       :collection="collection"
-      :orientation="orientation"
-      :default-expanded-value="['color', 'size']"
+      :orientation="flat ? 'horizontal' : byLevel"
+      :default-expanded-value="['system', 'user', 'role']"
+      selection-mode="multiple"
+      cascade
     >
-      <XhTreeLabel>设计令牌</XhTreeLabel>
+      <XhTreeLabel>菜单授权</XhTreeLabel>
       <XhTreeTree>
-        <XhTreeBranch v-for="group in collection" :key="group.value" :value="group.value">
+        <XhTreeBranch v-for="dir in collection" :key="dir.value" :value="dir.value">
           <XhTreeBranchControl>
             <XhTreeBranchTrigger />
-            <XhTreeBranchText>{{ group.label }}</XhTreeBranchText>
+            <XhTreeBranchCheckbox />
+            <XhTreeBranchText>{{ dir.label }}</XhTreeBranchText>
           </XhTreeBranchControl>
           <XhTreeBranchContent>
-            <XhTreeItem v-for="token in group.children" :key="token.value" :value="token.value">
-              <XhTreeItemIndicator />
-              <XhTreeItemText>{{ token.label }}</XhTreeItemText>
-            </XhTreeItem>
+            <XhTreeBranch v-for="menu in dir.children" :key="menu.value" :value="menu.value">
+              <XhTreeBranchControl>
+                <XhTreeBranchTrigger />
+                <XhTreeBranchCheckbox />
+                <XhTreeBranchText>{{ menu.label }}</XhTreeBranchText>
+              </XhTreeBranchControl>
+              <XhTreeBranchContent>
+                <XhTreeItem v-for="btn in menu.children" :key="btn.value" :value="btn.value">
+                  <XhTreeItemCheckbox />
+                  <XhTreeItemText>{{ btn.label }}</XhTreeItemText>
+                </XhTreeItem>
+              </XhTreeBranchContent>
+            </XhTreeBranch>
           </XhTreeBranchContent>
         </XhTreeBranch>
       </XhTreeTree>

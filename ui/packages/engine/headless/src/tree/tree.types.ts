@@ -38,6 +38,12 @@ export interface TreeNode {
   children?: TreeNode[]
 }
 
+/**
+ * 按节点判定排布方向：收到的是**分支节点**，答的是它那层子节点怎么排。
+ * 根层没有分支节点，收到的是 null。答 undefined 即退回 vertical。
+ */
+export type TreeOrientationResolver = (node: TreeNodeMeta | null) => Orientation | undefined
+
 /** 单个节点的层级元信息，由 collection 摊平/索引得出，不含展开态。 */
 export interface TreeNodeMeta {
   value: string
@@ -94,10 +100,13 @@ export interface TreeSchema extends MachineSchema {
     /**
      * 子层的排布方向，默认 vertical（每行一个）。horizontal 让同一层的节点并排铺开。
      *
+     * 给函数即逐层判定：收到的是分支节点，答的是它那层子节点怎么排，根层收到 null。
+     * 目录与菜单竖排、按钮横排就写成 `node => node?.level === 2 ? 'horizontal' : 'vertical'`。
+     *
      * 只管排布，不动键盘：方向键在树上是层级操作（左右收展、上下走可见行），
      * 这是 treeview 的规范语义，不随排布方向改写。
      */
-    orientation?: Orientation
+    orientation?: Orientation | TreeOrientationResolver
     /** 展开集合。给定即受控：cell 直读 prop，写只发 onExpandedChange 不落内部值。 */
     expandedValue?: string[]
     defaultExpandedValue?: string[]

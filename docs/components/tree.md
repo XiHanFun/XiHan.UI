@@ -82,9 +82,9 @@ selection-mode="multiple" 加 cascade 内建父子传导：点分支整枝勾上
 
 <XhDemo src="tree/10-drag-move" />
 
-### 子层横排
+### 逐层排布
 
-orientation="horizontal" 把同一层的节点并排铺开，缩进仍标层级；方向键不跟着改：左右是收展、上下走可见行，这是 treeview 的规范语义
+orientation 收函数即按层判定：收到的是分支节点，答的是它那层子节点怎么排；目录与菜单竖排、按钮横排，一行铺开就选完，省掉纵向翻找
 
 <XhDemo src="tree/11-orientation" />
 
@@ -109,7 +109,7 @@ orientation="horizontal" 把同一层的节点并排铺开，缩进仍标层级�
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `collection` | `TreeNode[]` |  | 树数据，层级元信息的唯一事实源。缺省为空树。 |
-| `orientation` | `Orientation` |  | 子层的排布方向，默认 vertical（每行一个）。horizontal 让同一层的节点并排铺开。 只管排布，不动键盘：方向键在树上是层级操作（左右收展、上下走可见行）， 这是 treeview 的规范语义，不随排布方向改写。 |
+| `orientation` | `Orientation \| TreeOrientationResolver` |  | 子层的排布方向，默认 vertical（每行一个）。horizontal 让同一层的节点并排铺开。 给函数即逐层判定：收到的是分支节点，答的是它那层子节点怎么排，根层收到 null。 目录与菜单竖排、按钮横排就写成 `node =&gt; node?.level === 2 ? 'horizontal' : 'vertical'`。 只管排布，不动键盘：方向键在树上是层级操作（左右收展、上下走可见行）， 这是 treeview 的规范语义，不随排布方向改写。 |
 | `expandedValue` | `string[]` |  | 展开集合。给定即受控：cell 直读 prop，写只发 onExpandedChange 不落内部值。 |
 | `defaultExpandedValue` | `string[]` |  |  |
 | `selection` | `string[]` |  | 选中集合。给定即受控，语义同上。 |
@@ -214,7 +214,7 @@ orientation="horizontal" 把同一层的节点并排铺开，缩进仍标层级�
 | `tree` | `aria-disabled` | 'true' \| 'false' |
 | `tree` | `aria-labelledby` | `label` 部件的 id |
 | `tree` | `aria-multiselectable` | 'true' \| 'false' |
-| `tree` | `aria-orientation` | props.orientation |
+| `tree` | `aria-orientation` | orientationProp(node) \| props.orientation |
 | `tree` | `role` | 'tree' |
 | `item-checkbox` | `aria-hidden` | 'true' |
 | `item-indicator` | `aria-hidden` | 'true' |
@@ -236,11 +236,11 @@ orientation="horizontal" 把同一层的节点并排铺开，缩进仍标层级�
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
-| `root` | `data-orientation` | props.orientation |
+| `root` | `data-orientation` | orientationProp(node) \| props.orientation |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
 | `tree` | `data-disabled` | ''（条件成立时才出现） |
-| `tree` | `data-orientation` | props.orientation |
-| `branch-content` | `data-orientation` | props.orientation |
+| `tree` | `data-orientation` | orientationProp(node) \| props.orientation |
+| `branch-content` | `data-orientation` | orientationProp(node) \| props.orientation |
 
 ## CSS 变量
 

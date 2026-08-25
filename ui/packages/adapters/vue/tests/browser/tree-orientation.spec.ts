@@ -42,7 +42,9 @@ afterEach(() => {
   host = null
 })
 
-async function mountTree(orientation?: 'horizontal' | 'vertical') {
+type OrientationProp = 'horizontal' | 'vertical' | ((node: { level: number } | null) => 'horizontal' | 'vertical' | undefined)
+
+async function mountTree(orientation?: OrientationProp) {
   host = document.createElement('div')
   document.body.append(host)
   app = createApp({
