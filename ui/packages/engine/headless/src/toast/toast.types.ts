@@ -121,7 +121,7 @@ export interface ToastApi<T extends PropTypes = PropTypes> {
   status: ToastStatus
   type: ToastType
   title: string | undefined
-  /** 计时被按住中。样式层据此暂停进度条动画。 */
+  /** 计时被按住中。倒计时的可见反馈由使用者自己渲染，这个标记是留给他的钩子——自带皮肤不画。 */
   paused: boolean
   closable: boolean
   /** 剩余毫秒；不自动消失时为 Infinity。 */

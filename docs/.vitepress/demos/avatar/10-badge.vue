@@ -1,4 +1,4 @@
-<!-- 挂状态点与角标 | 根自己就是定位上下文，角标直接写进默认插槽；要挂到圆外就把根的裁剪打开，图片的圆角取自自身，不靠根裁 -->
+<!-- 挂状态点与角标 | 状态点自己绝对定位在根里；计数角标反过来——把头像写进角标的默认插槽，贴角与偏移都归角标算 -->
 <script setup lang="ts">
 import { XhAvatarFallback, XhAvatarImage, XhAvatarRoot, XhBadge } from "@xihan-ui/vue";
 </script>
@@ -24,19 +24,13 @@ import { XhAvatarFallback, XhAvatarImage, XhAvatarRoot, XhBadge } from "@xihan-u
       />
     </XhAvatarRoot>
 
-    <!-- 计数挂到圆外：根的裁剪打开，徽标绝对定位到右上角 -->
-    <XhAvatarRoot size="lg" src="/images/logo.png" alt="曦寒" style="overflow: visible">
-      <XhAvatarImage />
-      <XhAvatarFallback>曦</XhAvatarFallback>
-      <XhBadge
-        variant="solid"
-        tone="danger"
-        size="sm"
-        style="position: absolute; inset-block-start: -4px; inset-inline-end: -10px"
-      >
-        12
-      </XhBadge>
-    </XhAvatarRoot>
+    <!-- 计数角标：被标记的头像写进默认插槽，贴哪个角、偏多少都归角标 -->
+    <XhBadge :count="12" tone="danger" size="sm" label="12 条未读">
+      <XhAvatarRoot size="lg" src="/images/logo.png" alt="曦寒">
+        <XhAvatarImage />
+        <XhAvatarFallback>曦</XhAvatarFallback>
+      </XhAvatarRoot>
+    </XhBadge>
 
     <!-- 落回退态时一样成立；点描一圈底色，压在头像边上也分得开 -->
     <XhAvatarRoot size="lg" style="overflow: visible">

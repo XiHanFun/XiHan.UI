@@ -11,7 +11,6 @@ import type {
   ToastActionDetails,
   ToastSchema,
   ToastStatusChangeDetails,
-  ToastTranslations,
 } from '@xihan-ui/headless'
 import {
   connectNotification,
@@ -61,8 +60,8 @@ function groupPlacement(el: HTMLElement): NotificationPlacement | undefined {
  * @attr {number} remove-delay - 单条没写 remove-delay 时的默认退场窗口毫秒
  * @attr {boolean} pause-on-page-idle - 页面切到后台时按住计时，逐条下发
  * @fires items-change - 队列变化；detail 为 `{ items: NotificationRecord[] }`
- * @csspart root - role=region 的地标容器，承载 data-count / data-empty
- * @csspart group - 某一个位置上的那一摞，可自带 placement 属性；承载 data-placement / data-count / data-empty 与间距
+ * @csspart root - 队列的作用域包装（display: contents，不占布局），承载 data-count / data-empty
+ * @csspart group - role=region 的地标，某一个位置上的那一摞；可自带 placement 属性，承载 data-placement / data-count / data-empty 与间距
  */
 export class XhNotificationElement extends XhElement {
   static override partContract = { anatomy: notificationAnatomy, meta: notificationMeta }
@@ -265,7 +264,7 @@ export class XhNotificationItemElement extends XhElement {
   declare removeDelay?: number
   declare closable?: boolean
   declare pauseOnPageIdle?: boolean
-  declare translations?: Partial<ToastTranslations>
+  declare translations?: Partial<NotificationTranslations>
 
   private readonly notifyStatus = (details: ToastStatusChangeDetails): void => {
     // 必须冒泡：外层 `<xh-notification>` 就靠这条事件知道该把记录删掉了
@@ -277,7 +276,9 @@ export class XhNotificationItemElement extends XhElement {
   }
 
   // 计时器与 visibilitychange 都由机器自己经 scope 拿，不需要 config/layer/定位引擎。
-  private readonly ctrl = new MachineController<ToastSchema>(this, toastMachine, () => this.machineProps())
+  // 跑的是 toast 那台机器，文案桶却要跟着通知走：不写 configName 的话，
+  // 改这颗叉的读屏名会连所有轻提示一起改
+  private readonly ctrl = new MachineController<ToastSchema>(this, toastMachine, () => this.machineProps(), { configName: 'notification' })
 
   private machineProps(): Partial<ToastSchema['props']> {
     return {

@@ -6894,8 +6894,10 @@ input[data-scope='mention'][data-part='input'] {
   /* 控件的可操作区边界要 3:1，兑了底色的 --xh-_tone-border 六族全在 1.44–2.18，够不着。
      这一支直接取主色本体；两族在各自的底上仍不够，在下面按主题单独兜 */
   --xh-_tone-border-control: var(--xh-_tone);
-  /* 在普通背景上表达该语气的文字色：往前景色兑，浅色态变深、深色态变浅 */
-  --xh-_tone-fg: color-mix(in oklab, var(--xh-_tone) 72%, var(--xh-fg-default));
+  /* 在普通背景上表达该语气的文字色：往前景色兑，浅色态变深、深色态变浅。
+     兑到 60% 是实测出来的：这一档要同时压得住淡底的静态/悬停/按下三态、面与抬起的面
+     共五种底，72% 时六族里有三族够不到 4.5（最低 3.66），60% 全部达标且留有余量 */
+  --xh-_tone-fg: color-mix(in oklab, var(--xh-_tone) 60%, var(--xh-fg-default));
 }
 
 [data-tone='brand'] {
@@ -22132,7 +22134,7 @@ input[data-scope='mention'][data-part='input'] {
 /* styles/toast.css */
 /*
  * 九个位共用同一条进出场，位移不跟着落位走：要按位置分方向就得从摞的
- * data-placement 反向选到卡片上，落位一改名整条动效静默失效。
+ * data-placement 反向选到条子上，落位一改名整条动效静默失效。
  * 竖向一小段位移在九个位上都说得通。
  */
 @keyframes xh-toast-in {
@@ -22189,7 +22191,7 @@ input[data-scope='mention'][data-part='input'] {
   padding-inline: var(--xh-toast-inset, var(--xh-space-6));
   /* 摞内间距由服务写进内联 style，这里绝不重复写：
      写了也会被内联盖掉，只会让人误以为间距归样式层管 */
-  /* 整面铺开就等于罩住了整块视口。面本身不吃指针，只有卡片吃（见下），
+  /* 整面铺开就等于罩住了整块视口。面本身不吃指针，只有条子吃（见下），
      否则底下的页面就再也点不动了 */
   pointer-events: none;
 }
@@ -22267,7 +22269,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 /* forwards 不能省：退场窗口（removeDelay 默认 200ms）比退场动画长，
-   不定住末帧的话动画跑完会弹回全不透明，卡片在被收起前先闪一下 */
+   不定住末帧的话动画跑完会弹回全不透明，条子在被收起前先闪一下 */
 [data-scope='toast'][data-part='root'][data-state='dismissing'] {
   animation: xh-toast-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
 }
@@ -22288,7 +22290,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 /* 没给文案时仍然要留在 DOM 里（aria-labelledby 指着它），
-   但空盒子会照吃一份 gap，卡片看着就多出一截莫名的留白 */
+   但空盒子会照吃一份 gap，条子看着就多出一截莫名的留白 */
 [data-scope='toast'][data-part='title']:empty {
   display: none;
 }
@@ -22309,7 +22311,7 @@ input[data-scope='mention'][data-part='input'] {
   border-radius: var(--xh-toast-action-radius, var(--xh-shape-control));
   background: var(--xh-toast-action-bg, var(--xh-bg-subtle));
   color: var(--xh-toast-action-fg, var(--xh-fg-default));
-  /* 按钮不继承字族字号，不接回来的话卡片里会突然冒出一段系统 UI 字体 */
+  /* 按钮不继承字族字号，不接回来的话条子里会突然冒出一段系统 UI 字体 */
   font: inherit;
   font-weight: var(--xh-toast-action-font-weight, var(--xh-font-weight-medium));
   line-height: var(--xh-leading-none);

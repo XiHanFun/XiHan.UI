@@ -46,8 +46,10 @@
     /* 控件的可操作区边界要 3:1，兑了底色的 --xh-_tone-border 六族全在 1.44–2.18，够不着。
        这一支直接取主色本体；两族在各自的底上仍不够，在下面按主题单独兜 */
     --xh-_tone-border-control: var(--xh-_tone);
-    /* 在普通背景上表达该语气的文字色：往前景色兑，浅色态变深、深色态变浅 */
-    --xh-_tone-fg: color-mix(in oklab, var(--xh-_tone) 72%, var(--xh-fg-default));
+    /* 在普通背景上表达该语气的文字色：往前景色兑，浅色态变深、深色态变浅。
+       兑到 60% 是实测出来的：这一档要同时压得住淡底的静态/悬停/按下三态、面与抬起的面
+       共五种底，72% 时六族里有三族够不到 4.5（最低 3.66），60% 全部达标且留有余量 */
+    --xh-_tone-fg: color-mix(in oklab, var(--xh-_tone) 60%, var(--xh-fg-default));
   }
 
   [data-tone='brand'] {

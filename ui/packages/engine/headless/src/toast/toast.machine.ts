@@ -15,7 +15,7 @@ export const TOAST_GAP = 16
 
 /**
  * 队列身份：没给 id 就用实例 scope id 兜底。
- * status-change 的 detail 里恒带 id，宿主靠它分辨是哪条通知走完了。
+ * status-change 的 detail 里恒带 id，宿主靠它分辨是哪一条走完了。
  */
 export function resolveToastId(id: string | undefined, scope: Scope): string {
   return id ?? scope.id

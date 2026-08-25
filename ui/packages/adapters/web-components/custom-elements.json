@@ -23799,11 +23799,11 @@
           "name": "XhNotificationElement",
           "cssParts": [
             {
-              "description": "role=region 的地标容器，承载 data-count / data-empty",
+              "description": "队列的作用域包装（display: contents，不占布局），承载 data-count / data-empty",
               "name": "root"
             },
             {
-              "description": "某一个位置上的那一摞，可自带 placement 属性；承载 data-placement / data-count / data-empty 与间距",
+              "description": "role=region 的地标，某一个位置上的那一摞；可自带 placement 属性，承载 data-placement / data-count / data-empty 与间距",
               "name": "group"
             }
           ],
@@ -24361,7 +24361,7 @@
               "name": "translations",
               "privacy": "public",
               "type": {
-                "text": "Partial<ToastTranslations> | undefined"
+                "text": "Partial<NotificationTranslations> | undefined"
               }
             },
             {
@@ -24381,7 +24381,7 @@
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
-              "default": "new MachineController<ToastSchema>(this, toastMachine, () => this.machineProps())"
+              "default": "new MachineController<ToastSchema>(this, toastMachine, () => this.machineProps(), { configName: 'notification' })"
             },
             {
               "kind": "method",
@@ -40309,7 +40309,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-toast>` —— Light-DOM 行为宿主：作者写 root/title/action-trigger/close-trigger\n角色节点，元素跑 toast 机器并把 connect 产出打上去。\n\nroot 承载 role 与 aria-live：默认 status + polite（排队等读屏的空隙），\ntype=\"error\" 换成 alert + assertive（打断当前朗读）。指针停在通知上、\n或焦点落进通知内部都会把倒计时按住，离开才接着走剩下的那一段。\n\n退场窗口走完只把 root 收起、不删节点：作者写在里面的内容归作者，\n什么时候把这条从队列里删掉是全局服务的事（它收本元素冒泡上去的 status-change）。",
+          "description": "`<xh-toast>` —— Light-DOM 行为宿主：作者写 root/title/action-trigger/close-trigger\n角色节点，元素跑 toast 机器并把 connect 产出打上去。\n\nroot 承载 role 与 aria-live：默认 status + polite（排队等读屏的空隙），\ntype=\"error\" 换成 alert + assertive（打断当前朗读）。指针停在条子上、\n或焦点落进条子内部都会把倒计时按住，离开才接着走剩下的那一段。\n\n退场窗口走完只把 root 收起、不删节点：作者写在里面的内容归作者，\n什么时候把这条从队列里删掉是全局服务的事（它收本元素冒泡上去的 status-change）。",
           "name": "XhToastElement",
           "cssParts": [
             {

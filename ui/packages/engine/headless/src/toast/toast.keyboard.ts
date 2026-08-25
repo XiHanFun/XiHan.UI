@@ -1,6 +1,6 @@
 import type { KeyboardTable } from '../spec/types'
 
-// 通知本身不抢焦点、也不是层，因此没有 Escape 这类全局键；
+// 轻提示本身不抢焦点、也不是层，因此没有 Escape 这类全局键；
 // 键盘可达的只有它内部那两个原生按钮，激活由平台负责。
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/alert/'
 

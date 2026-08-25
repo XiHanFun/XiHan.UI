@@ -1,4 +1,4 @@
-// 反馈服务默认模板用的装饰图形：类型徽记与加载弧线。
+// 反馈服务默认模板用的装饰图形：裸字形（typeGlyph）、圆底徽记（typeBadge）与加载弧线。
 // 纯装饰（aria-hidden），读屏内容由标题与描述承担；配色取语气层继承下来的私有槽，
 // 随宿主 data-tone 自动换族。徽记里的图形取 --xh-glyph-mark-* 令牌，与皮肤的兜底字形同一套。
 import type { VNode } from 'vue'
@@ -102,7 +102,7 @@ function spin(el: HTMLElement): void {
 /**
  * 状态字形：不带圆底的一枚字形，尺寸随宿主的 --xh-icon-size，颜色随语气。
  *
- * 与 typeBadge 的分工是体量：圆底徽记是给卡片与对话框那种有余裕的版面用的，
+ * 与 typeBadge 的分工是体量：圆底徽记是给对话框那种有余裕的版面用的（眼下只剩它在用），
  * 排在一行短消息里会把行高顶起来，也让一句话的反馈看着像一则公告。
  */
 export function typeGlyph(type: string | undefined): VNode | null {

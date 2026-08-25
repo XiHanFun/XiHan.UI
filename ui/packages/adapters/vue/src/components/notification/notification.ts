@@ -1,4 +1,4 @@
-import type { NotificationItemApi, NotificationOptions, NotificationPlacement, NotificationRecord, NotificationSchema, NotificationTranslations, ResolvedNotification, ToastSchema, ToastTranslations, ToastType } from '@xihan-ui/headless'
+import type { NotificationItemApi, NotificationOptions, NotificationPlacement, NotificationRecord, NotificationSchema, NotificationTranslations, ResolvedNotification, ToastSchema, ToastType } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, Fragment, h } from 'vue'
@@ -108,7 +108,7 @@ export const XhNotificationItem = defineComponent({
     removeDelay: { type: Number, default: undefined },
     closable: { type: Boolean, default: undefined },
     pauseOnPageIdle: { type: Boolean, default: undefined },
-    translations: { type: Object as PropType<Partial<ToastTranslations>>, default: undefined },
+    translations: { type: Object as PropType<Partial<NotificationTranslations>>, default: undefined },
   },
   emits: {
     'status-change': (_details: PayloadOf<ToastSchema['props'], 'onStatusChange'>) => true,
@@ -118,8 +118,10 @@ export const XhNotificationItem = defineComponent({
     default?: (props: { item: NotificationItemApi }) => VNode[]
   }>,
   setup(props, { slots, emit }) {
+    // 桶名写 notification 而不是 toast：卡片跑的虽然是 toast 那台机器，
+    // 但它的文案该跟着通知走——写 toast 的话，改这颗叉的读屏名会连所有轻提示一起改
     const ctx = useNotificationItem(
-      withXhConfig('toast', props) as ToastSchema['props'],
+      withXhConfig('notification', props) as ToastSchema['props'],
       details => emit('status-change', details),
       () => emit('action'),
     )

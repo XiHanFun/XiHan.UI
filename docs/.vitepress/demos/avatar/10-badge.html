@@ -1,4 +1,4 @@
-<!-- 挂状态点与角标 | 根自己就是定位上下文，角标直接写进默认插槽；要挂到圆外就把根的裁剪打开，图片的圆角取自自身，不靠根裁 -->
+<!-- 挂状态点与角标 | 状态点自己绝对定位在根里；计数角标反过来——把头像写进角标的默认插槽，贴角与偏移都归角标算 -->
 <div style="display: flex; align-items: center; gap: 24px">
   <!-- 状态点落在圆内，裁剪不用动 -->
   <xh-avatar size="lg" src="/images/logo.png" alt="曦寒">
@@ -21,20 +21,18 @@
     </span>
   </xh-avatar>
 
-  <!-- 计数挂到圆外：根的裁剪打开，徽标绝对定位到右上角 -->
-  <xh-avatar size="lg" src="/images/logo.png" alt="曦寒">
-    <span data-xh-part="root" style="overflow: visible">
-      <img data-xh-part="image" />
-      <span data-xh-part="fallback">曦</span>
-      <xh-badge variant="solid" tone="danger" size="sm">
-        <span
-          data-xh-part="root"
-          style="position: absolute; inset-block-start: -4px; inset-inline-end: -10px"
-          >12</span
-        >
-      </xh-badge>
+  <!-- 计数角标：被标记的头像写进默认插槽，贴哪个角、偏多少都归角标 -->
+  <xh-badge count="12" tone="danger" size="sm" label="12 条未读">
+    <span data-xh-part="root">
+      <xh-avatar size="lg" src="/images/logo.png" alt="曦寒">
+        <span data-xh-part="root">
+          <img data-xh-part="image" />
+          <span data-xh-part="fallback">曦</span>
+        </span>
+      </xh-avatar>
+      <span data-xh-part="indicator"></span>
     </span>
-  </xh-avatar>
+  </xh-badge>
 
   <!-- 落回退态时一样成立；点描一圈底色，压在头像边上也分得开 -->
   <xh-avatar size="lg">
