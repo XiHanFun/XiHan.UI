@@ -2219,10 +2219,11 @@
   gap: var(--xh-heatmap-grid-gap, var(--xh-_heatmap-gap));
 }
 
-/* 网格自己只在没有格子可落焦点时才占 Tab 位，那几帧里也该看得出焦点在哪 */
+/* 网格自己只在没有格子可落焦点时才占 Tab 位，那几帧里也该看得出焦点在哪。
+   环往内收：网格铺满 root，root 那层 overflow-x: auto 会把画在外沿的环裁掉 */
 [data-scope='heatmap'][data-part='grid']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: var(--xh-ring-offset);
+  outline-offset: calc(-1 * var(--xh-ring-width));
 }
 
 [data-scope='heatmap'][data-part='row'] {
@@ -2762,9 +2763,10 @@
   cursor: not-allowed;
 }
 
+/* 环往内收：裁切框长在视口里，视口那层 overflow: hidden 会把画在外沿的环裁掉 */
 [data-scope='image-cropper'][data-part='crop-area']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: var(--xh-ring-offset);
+  outline-offset: calc(-1 * var(--xh-ring-width));
 }
 
 /* 三分构图参考线：两条竖线、两条横线，落点写死在三分处，不占节点、不吃指针。
@@ -2827,9 +2829,10 @@
   content: '';
 }
 
+/* 与裁切框同一口径：把手也在视口的 overflow: hidden 里，环画在外沿会被裁掉 */
 [data-scope='image-cropper'][data-part='crop-handle']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: var(--xh-ring-offset);
+  outline-offset: calc(-1 * var(--xh-ring-width));
 }
 
 [data-scope='image-cropper'][data-part='crop-handle'][data-resizing] {
@@ -20081,10 +20084,12 @@ input[data-scope='mention'][data-part='input'] {
   cursor: not-allowed;
 }
 
-/* 全选把手是表头里独立的 Tab 停靠点，环得画在它自己身上 */
+/* 全选把手是表头里独立的 Tab 停靠点，环得画在它自己身上。
+   往内收，与行、排序把手同一口径：把手长在列头里，列头与根都收 overflow，
+   环画在外沿会被裁掉 */
 [data-scope='table'][data-part='select-all-trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: var(--xh-ring-offset);
+  outline-offset: calc(-1 * var(--xh-ring-width));
 }
 
 /* 行选择把手不占 Tab 位（键盘那一路走 Space），只服务指针 */
@@ -23687,9 +23692,11 @@ input[data-scope='mention'][data-part='input'] {
   cursor: pointer;
 }
 
+/* 往内收，与搜索框、条目同一口径：全选格长在面板里，面板收 overflow，
+   环画在外沿会被裁掉 */
 [data-scope='transfer'][data-part='select-all-trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: var(--xh-ring-offset);
+  outline-offset: calc(-1 * var(--xh-ring-width));
 }
 
 [data-scope='transfer'][data-part='select-all-trigger']:disabled {

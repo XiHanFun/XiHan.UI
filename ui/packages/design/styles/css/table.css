@@ -313,10 +313,12 @@
     cursor: not-allowed;
   }
 
-  /* 全选把手是表头里独立的 Tab 停靠点，环得画在它自己身上 */
+  /* 全选把手是表头里独立的 Tab 停靠点，环得画在它自己身上。
+     往内收，与行、排序把手同一口径：把手长在列头里，列头与根都收 overflow，
+     环画在外沿会被裁掉 */
   [data-scope='table'][data-part='select-all-trigger']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
+    outline-offset: calc(-1 * var(--xh-ring-width));
   }
 
   /* 行选择把手不占 Tab 位（键盘那一路走 Space），只服务指针 */
