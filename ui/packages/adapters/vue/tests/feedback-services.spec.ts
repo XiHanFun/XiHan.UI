@@ -166,6 +166,9 @@ describe('createNotificationService', () => {
     await tick()
     expect(document.body.textContent).toContain('有新的审批')
     expect(document.body.textContent).toContain('张三提交了一份请假单')
+    // 部件名钉住：使用者的皮肤按它选（如给正文加 white-space: pre-line 排多行结果）
+    const description = document.querySelector('[data-scope="notification"][data-part="item-description"]')
+    expect(description?.textContent).toBe('张三提交了一份请假单')
     notify.dispose()
   })
 
