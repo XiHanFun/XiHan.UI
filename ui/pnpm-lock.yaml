@@ -66,9 +66,6 @@ catalogs:
     playwright:
       specifier: ^1.62.0
       version: 1.62.0
-    prettier:
-      specifier: ^3.9.0
-      version: 3.9.6
     publint:
       specifier: ^0.3.21
       version: 0.3.22
@@ -137,9 +134,6 @@ importers:
       oxlint:
         specifier: 'catalog:'
         version: 1.75.0
-      prettier:
-        specifier: 'catalog:'
-        version: 3.9.6
       publint:
         specifier: 'catalog:'
         version: 0.3.22
@@ -4237,11 +4231,6 @@ packages:
   prettier@2.7.1:
     resolution: {integrity: sha512-ujppO+MkdPqoVINuDFDRLClm7D78qbDt0/NR+wp5FqEZOoTNAjPHWj17QRhu7geIHJfcNhRk1XVQmF8Bp3ye+g==}
     engines: {node: '>=10.13.0'}
-    hasBin: true
-
-  prettier@3.9.6:
-    resolution: {integrity: sha512-OpN0zzVdiaiAhxpuuj5efpIS4sY9j7bY6uR5mnj5yPzGkdkjNKSJeUThPb60Jw29QuAZgA4o+/iB49kFiaBX6g==}
-    engines: {node: '>=14'}
     hasBin: true
 
   prompts@2.4.2:
@@ -8662,8 +8651,6 @@ snapshots:
   prelude-ls@1.2.1: {}
 
   prettier@2.7.1: {}
-
-  prettier@3.9.6: {}
 
   prompts@2.4.2:
     dependencies:
