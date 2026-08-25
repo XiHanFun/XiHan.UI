@@ -30,9 +30,6 @@
        而不是让 --xh-_tone 悬空——悬空会让下面每条 color-mix 变成计算期无效，
        用它的声明会整条失效，且 var() 兜底也救不回来（槽位是「已声明但无效」）。 */
     --xh-_tone: var(--xh-color-neutral-600);
-    /* 装饰性强调（色条、指示条这类）用 500 档：600 是给实心底与文字用的强调档，
-       压在细长的色条上偏重。要读得清的状态图标不在此列，那些走 --xh-_tone-fg */
-    --xh-_tone-soft: var(--xh-color-neutral-500);
     --xh-_tone-on: var(--xh-color-neutral-0);
     --xh-_tone-shift: var(--xh-color-neutral-950);
 
@@ -46,6 +43,10 @@
     /* 控件的可操作区边界要 3:1，兑了底色的 --xh-_tone-border 六族全在 1.44–2.18，够不着。
        这一支直接取主色本体；两族在各自的底上仍不够，在下面按主题单独兜 */
     --xh-_tone-border-control: var(--xh-_tone);
+    /* 装饰性强调（色条、指示条、锚点高亮这类）是非文字图形，同样要 3:1，
+       要求与可操作区边界一模一样，就直接跟着那一支走，连它按主题兜的两族一并继承。
+       要读得清的状态文字不在此列，那些走 --xh-_tone-fg */
+    --xh-_tone-soft: var(--xh-_tone-border-control);
     /* 在普通背景上表达该语气的文字色：往前景色兑，浅色态变深、深色态变浅。
        兑到 60% 是实测出来的：这一档要同时压得住淡底的静态/悬停/按下三态、面与抬起的面
        共五种底，72% 时六族里有三族够不到 4.5（最低 3.66），60% 全部达标且留有余量 */
@@ -54,7 +55,6 @@
 
   [data-tone='brand'] {
     --xh-_tone: var(--xh-bg-brand);
-    --xh-_tone-soft: var(--xh-color-brand-500);
     --xh-_tone-on: var(--xh-fg-on-brand);
     --xh-_tone-shift: var(--xh-color-neutral-950);
   }
@@ -67,28 +67,24 @@
 
   [data-tone='danger'] {
     --xh-_tone: var(--xh-color-danger-600);
-    --xh-_tone-soft: var(--xh-color-danger-500);
     --xh-_tone-on: var(--xh-color-neutral-0);
     --xh-_tone-shift: var(--xh-color-neutral-950);
   }
 
   [data-tone='success'] {
     --xh-_tone: var(--xh-color-success-600);
-    --xh-_tone-soft: var(--xh-color-success-500);
     --xh-_tone-on: var(--xh-color-neutral-950);
     --xh-_tone-shift: var(--xh-color-neutral-0);
   }
 
   [data-tone='warning'] {
     --xh-_tone: var(--xh-color-warning-600);
-    --xh-_tone-soft: var(--xh-color-warning-500);
     --xh-_tone-on: var(--xh-color-neutral-950);
     --xh-_tone-shift: var(--xh-color-neutral-0);
   }
 
   [data-tone='info'] {
     --xh-_tone: var(--xh-color-info-600);
-    --xh-_tone-soft: var(--xh-color-info-500);
     --xh-_tone-on: var(--xh-color-neutral-950);
     --xh-_tone-shift: var(--xh-color-neutral-0);
   }
