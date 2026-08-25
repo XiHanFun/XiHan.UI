@@ -135,8 +135,8 @@ describe('provideXhConfig · size', () => {
         h('div', { id: 'own' }, [h(XhBadge, { size: 'sm' }, () => '9')]),
       ]
     })
-    expect(host.querySelector('#global [data-scope="badge"]')?.getAttribute('data-size')).toBe('lg')
-    expect(host.querySelector('#own [data-scope="badge"]')?.getAttribute('data-size')).toBe('sm')
+    expect(host.querySelector('#global [data-scope="badge"][data-part="indicator"]')?.getAttribute('data-size')).toBe('lg')
+    expect(host.querySelector('#own [data-scope="badge"][data-part="indicator"]')?.getAttribute('data-size')).toBe('sm')
   })
 
   it('不跑机器的组件也吃全局尺寸档，全局值是 ref 时切换即重渲', async () => {
