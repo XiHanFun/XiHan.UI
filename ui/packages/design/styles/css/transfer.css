@@ -305,9 +305,11 @@
     cursor: pointer;
   }
 
+  /* 往内收，与搜索框、条目同一口径：全选格长在面板里，面板收 overflow，
+     环画在外沿会被裁掉 */
   [data-scope='transfer'][data-part='select-all-trigger']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
+    outline-offset: calc(-1 * var(--xh-ring-width));
   }
 
   [data-scope='transfer'][data-part='select-all-trigger']:disabled {
