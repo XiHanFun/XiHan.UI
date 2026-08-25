@@ -97,20 +97,22 @@ async function readTree(dir, ext) {
 }
 
 /** 两级 packages 目录下 private 不为 true 的 package.json。 */
-const publicPackages = () => once('pkgs', async () => {
-  const out = []
-  for (const group of (await readdir(join(uiRoot, 'packages'), { withFileTypes: true })).filter(d => d.isDirectory())) {
-    for (const pkg of await readdir(join(uiRoot, 'packages', group.name))) {
-      try {
-        const json = JSON.parse(await read(`packages/${group.name}/${pkg}/package.json`))
-        if (!json.private)
-          out.push(json)
+function publicPackages() {
+  return once('pkgs', async () => {
+    const out = []
+    for (const group of (await readdir(join(uiRoot, 'packages'), { withFileTypes: true })).filter(d => d.isDirectory())) {
+      for (const pkg of await readdir(join(uiRoot, 'packages', group.name))) {
+        try {
+          const json = JSON.parse(await read(`packages/${group.name}/${pkg}/package.json`))
+          if (!json.private)
+            out.push(json)
+        }
+        catch {}
       }
-      catch {}
     }
-  }
-  return out
-})
+    return out
+  })
+}
 
 /** 公开面基线（tooling/public-surface.json）。 */
 const surface = () => once('surface', async () => JSON.parse(await read('tooling/public-surface.json')))
@@ -119,10 +121,12 @@ const surface = () => once('surface', async () => JSON.parse(await read('tooling
 const sumLists = map => Object.values(map).reduce((n, v) => n + v.length, 0)
 
 /** custom-elements.json 里带 tagName 的元素声明。 */
-const cemElements = () => once('cem', async () => {
-  const cem = JSON.parse(await read('packages/adapters/web-components/custom-elements.json'))
-  return cem.modules.flatMap(m => m.declarations ?? []).filter(d => d.tagName)
-})
+function cemElements() {
+  return once('cem', async () => {
+    const cem = JSON.parse(await read('packages/adapters/web-components/custom-elements.json'))
+    return cem.modules.flatMap(m => m.declarations ?? []).filter(d => d.tagName)
+  })
+}
 
 /** CommonMark 逐节基线：{ 节名: { pass, total } }。 */
 const cmBaseline = () => once('cm', async () => JSON.parse(await read('packages/features/markdown/tests/commonmark-baseline.json')))

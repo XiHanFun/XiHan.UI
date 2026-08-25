@@ -30,7 +30,6 @@ function collectLeafOnlyBranches(nodes: TreeNode[]): Set<string> {
   return out
 }
 
-
 export function connectTree<T extends PropTypes>(
   service: Service<TreeSchema>,
   normalize: NormalizeProps<T>,

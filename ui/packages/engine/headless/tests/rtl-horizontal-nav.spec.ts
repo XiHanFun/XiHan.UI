@@ -45,7 +45,7 @@ describe('横向导航的左右键随方向翻转', () => {
     expect(navIntentFromKey('ArrowLeft', { axis: 'horizontal', dir })).toBe('next')
   })
 
-  it('Home/End 不随方向翻转：它们指的是序列两端，不是屏幕两侧', () => {
+  it('home/End 不随方向翻转：它们指的是序列两端，不是屏幕两侧', () => {
     const rtl = readDirection(elementIn('rtl'))
     expect(navIntentFromKey('Home', { axis: 'horizontal', dir: rtl })).toBe('first')
     expect(navIntentFromKey('End', { axis: 'horizontal', dir: rtl })).toBe('last')

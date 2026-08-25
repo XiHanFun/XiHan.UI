@@ -6,8 +6,8 @@ import { normalizeProps } from '@xihan-ui/kernel'
 import { createService } from '@xihan-ui/machine'
 import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
 import { describe, expect, it } from 'vitest'
-import { connectImageViewer, imageViewerMachine } from '../src/image-viewer'
 import { connectButton } from '../src/button'
+import { connectImageViewer, imageViewerMachine } from '../src/image-viewer'
 import { connectProgress } from '../src/progress'
 import { connectTextField, textFieldMachine } from '../src/text-field'
 import { connectTimeField, timeFieldMachine } from '../src/time-field'
@@ -35,7 +35,7 @@ function keyEvent(key: string) {
   }
 }
 
-describe('TextField 的输入类型出口', () => {
+describe('textField 的输入类型出口', () => {
   it('缺省仍是 text', () => {
     const input = textField({})().getInputProps({}) as Record<string, unknown>
     expect(input.type).toBe('text')
@@ -52,7 +52,7 @@ describe('TextField 的输入类型出口', () => {
   })
 })
 
-describe('Progress 的不确定态', () => {
+describe('progress 的不确定态', () => {
   it('不确定时不发 aria-valuenow：ARIA 以该属性缺席表达进度未知', () => {
     const root = connectProgress({ indeterminate: true, value: 30 }, normalizeProps).getRootProps() as Record<string, unknown>
     expect(root['aria-valuenow']).toBeUndefined()
@@ -73,10 +73,10 @@ describe('Progress 的不确定态', () => {
   })
 })
 
-describe('ImageViewer 的两端直达', () => {
+describe('imageViewer 的两端直达', () => {
   const items = [{ src: 'a' }, { src: 'b' }, { src: 'c' }]
 
-  it('End 跳到最后一张', () => {
+  it('end 跳到最后一张', () => {
     const get = imageViewer({ items, defaultOpen: true })
     const { event, wasPrevented } = keyEvent('End')
     ;((get().getContentProps() as Record<string, unknown>).onKeydown as (e: KeyboardEvent) => void)(event)
@@ -84,7 +84,7 @@ describe('ImageViewer 的两端直达', () => {
     expect(wasPrevented()).toBe(true)
   })
 
-  it('Home 跳回第一张', () => {
+  it('home 跳回第一张', () => {
     const get = imageViewer({ items, defaultOpen: true, defaultIndex: 2 })
     ;((get().getContentProps() as Record<string, unknown>).onKeydown as (e: KeyboardEvent) => void)(keyEvent('Home').event)
     expect(get().index).toBe(0)
@@ -97,7 +97,7 @@ describe('ImageViewer 的两端直达', () => {
   })
 })
 
-describe('Button 的图标态与撑满态', () => {
+describe('button 的图标态与撑满态', () => {
   it('iconOnly 落成 data 标记，交给皮肤清内距并把宽度跟住高度', () => {
     const root = connectButton({ iconOnly: true }, normalizeProps).getRootProps() as Record<string, unknown>
     expect(root['data-icon-only']).toBe('')
@@ -142,7 +142,7 @@ describe('时间分段的读屏名可本地化', () => {
   })
 })
 
-describe('TimePicker 的逐值可选性', () => {
+describe('timePicker 的逐值可选性', () => {
   function picker(props: Record<string, unknown>) {
     const runtime = createVanillaRuntime()
     const service = createService(timePickerMachine, { props: () => ({ defaultOpen: true, ...props }), runtime })

@@ -27,7 +27,7 @@ function lastReason(fn: ReturnType<typeof vi.fn>): unknown {
 }
 
 describe('关闭原因交到使用者手上', () => {
-  it('Escape 关的报 esc——消解层回报 escape-key，机器翻成 src 再翻成原因', () => {
+  it('escape 关的报 esc——消解层回报 escape-key，机器翻成 src 再翻成原因', () => {
     const { service, onOpenChange } = popover()
     service.send({ type: 'CLOSE', src: 'esc' })
     expect(lastReason(onOpenChange)).toBe('esc')
@@ -79,7 +79,7 @@ describe('对话框的关闭原因', () => {
     return (calls.at(-1)?.[0] as { reason?: string } | undefined)?.reason
   }
 
-  it('Escape 关的报 esc', () => {
+  it('escape 关的报 esc', () => {
     const { service, onOpenChange } = dialog()
     service.send({ type: 'CLOSE', src: 'esc' })
     expect(lastCloseReason(onOpenChange)).toBe('esc')

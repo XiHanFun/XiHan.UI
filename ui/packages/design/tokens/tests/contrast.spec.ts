@@ -297,7 +297,8 @@ describe('校验失败的聚焦环', () => {
 
     it(`${theme}：与常规聚焦环取值不同，否则这条规则等于没写`, () => {
       expect(contrast(theme, 'ring.invalid', 'bg.canvas'))
-        .not.toBe(contrast(theme, 'ring.focus', 'bg.canvas'))
+        .not
+        .toBe(contrast(theme, 'ring.focus', 'bg.canvas'))
     })
   }
 })

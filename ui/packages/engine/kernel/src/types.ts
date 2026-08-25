@@ -35,21 +35,21 @@ export type MaybeBooleanish = boolean | undefined
  * 关闭按钮与 Tab 各自带 src），此前只用来决定要不要归还焦点，没有交到使用者手上。
  * 拿它可以区分「用户主动取消」与「选完自动收起」，前者常常要回滚草稿。
  */
-export type OverlayCloseReason =
+export type OverlayCloseReason
   /** Escape 键。 */
-  | 'esc'
+  = | 'esc'
   /** 关闭按钮。 */
-  | 'close-trigger'
+    | 'close-trigger'
   /** 点在浮层之外。 */
-  | 'interact-outside'
+    | 'interact-outside'
   /** 焦点被 Tab 带离。 */
-  | 'tab'
+    | 'tab'
   /** 选中了某一项后自动收起。 */
-  | 'selection'
+    | 'selection'
   /** 指针移开（悬停型浮层）。 */
-  | 'hover'
+    | 'hover'
   /** 代码调用，非用户操作。 */
-  | 'programmatic'
+    | 'programmatic'
 
 // —— 三条视觉轴 ——
 //

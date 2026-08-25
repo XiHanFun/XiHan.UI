@@ -1,10 +1,10 @@
 import type { PartContract } from './dom/part-contract'
 import type { Spreader } from './dom/spread'
+import { onXhConfigChange, withXhConfig } from './config'
 import { validatePartContract } from './dom/part-contract'
 import { containsPart, discoverParts } from './dom/parts'
 import { createSpreader } from './dom/spread'
 import { reportStackingTrap } from './dom/stacking-context'
-import { onXhConfigChange, withXhConfig } from './config'
 import { XhReactiveElement } from './reactive'
 
 let instanceSeq = 0

@@ -5,7 +5,7 @@
 // 三是换档时的页码换算：改档前第一条要仍留在页内，而不是被夹到别处。
 import type { App } from 'vue'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { createApp, h, nextTick, ref } from 'vue'
+import { createApp, h, nextTick } from 'vue'
 import { XhPaginationRoot } from '../src'
 
 let app: App | null = null

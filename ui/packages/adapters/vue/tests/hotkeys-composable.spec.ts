@@ -2,7 +2,7 @@
 // useHotkeys 的三条：不渲染任何节点也能注册、监听挂在指定节点上且换节点会重绑、
 // 作用域销毁后不再响应。三条锁的都是不报错的失败模式。
 import { afterEach, describe, expect, it } from 'vitest'
-import { createApp, h, ref } from 'vue'
+import { createApp, ref } from 'vue'
 import { useHotkeys } from '../src'
 
 let cleanup: Array<() => void> = []

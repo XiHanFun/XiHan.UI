@@ -1,3 +1,4 @@
+import { onDiagnostic, resetDiagnostics } from '@xihan-ui/kernel'
 // @vitest-environment jsdom
 // 命令式服务的宿主挂不起来时，不许把调用方一起拖下水。
 //
@@ -5,7 +6,6 @@
 // 「提示没弹出来」而是整次导航失败、整站白屏——而报错指向的是浮层部件，
 // 与真正的原因隔着十万八千里。一条轻提示、一根进度条都不该有这个权力。
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { onDiagnostic, resetDiagnostics } from '@xihan-ui/kernel'
 import { mountServiceHost } from '../src/services/mount-host'
 
 afterEach(() => {
