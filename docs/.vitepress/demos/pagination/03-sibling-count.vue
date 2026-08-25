@@ -18,11 +18,11 @@ import {
     :sibling-count="2"
     style="inline-size: 100%"
   >
-    <XhPaginationPrevTrigger>上一页</XhPaginationPrevTrigger>
+    <XhPaginationPrevTrigger />
     <template v-for="(p, i) in pages" :key="`${p}-${i}`">
       <XhPaginationEllipsis v-if="p === 'ellipsis'">…</XhPaginationEllipsis>
       <XhPaginationItem v-else :value="p">{{ p }}</XhPaginationItem>
     </template>
-    <XhPaginationNextTrigger>下一页</XhPaginationNextTrigger>
+    <XhPaginationNextTrigger />
   </XhPaginationRoot>
 </template>
