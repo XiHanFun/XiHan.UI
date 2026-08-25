@@ -24773,6 +24773,24 @@
             },
             {
               "kind": "field",
+              "name": "defaultPageSize",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "default-page-size"
+            },
+            {
+              "kind": "field",
+              "name": "pageSizeOptions",
+              "privacy": "public",
+              "type": {
+                "text": "number[]"
+              },
+              "description": "可选的每页条数档位，默认 [10, 20, 50, 100]"
+            },
+            {
+              "kind": "field",
               "name": "page",
               "privacy": "public",
               "type": {
@@ -24874,6 +24892,10 @@
               "type": {
                 "text": "PaginationPageChangeDetails"
               }
+            },
+            {
+              "description": "每页条数变化；detail 为 `{ pageSize: number, page: number }`，页码是换算后的",
+              "name": "page-size-change"
             }
           ],
           "attributes": [
@@ -24940,6 +24962,14 @@
               "description": "尺寸",
               "name": "size",
               "fieldName": "size"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "非受控初始每页条数，默认 10",
+              "name": "default-page-size",
+              "fieldName": "defaultPageSize"
             }
           ],
           "superclass": {
@@ -24957,6 +24987,9 @@
             },
             {
               "name": "--xh-pagination-gap"
+            },
+            {
+              "name": "--xh-pagination-icon-size"
             },
             {
               "name": "--xh-pagination-item-bg"

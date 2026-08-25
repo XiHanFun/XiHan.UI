@@ -36,6 +36,9 @@ function itemPage(el: HTMLElement): number {
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires page-change - 页码变化；detail 为 `{ page: number, pageSize: number }`
+ * @fires page-size-change - 每页条数变化；detail 为 `{ pageSize: number, page: number }`，页码是换算后的
+ * @attr {number} default-page-size - 非受控初始每页条数，默认 10
+ * @prop {number[]} pageSizeOptions - 可选的每页条数档位，默认 [10, 20, 50, 100]
  * @csspart root - nav 地标，承载 aria-label 与 data-empty
  * @csspart prev-trigger - 上一页；首页时转原生 disabled
  * @csspart next-trigger - 下一页；末页时转原生 disabled
@@ -51,6 +54,8 @@ export class XhPaginationElement extends XhElement {
   static override properties = {
     count: { converter: NUMBER_CONVERTER },
     pageSize: { converter: NUMBER_CONVERTER, attribute: 'page-size' },
+    defaultPageSize: { converter: NUMBER_CONVERTER, attribute: 'default-page-size' },
+    pageSizeOptions: { attribute: false },
     page: { converter: NUMBER_CONVERTER },
     defaultPage: { converter: NUMBER_CONVERTER, attribute: 'default-page' },
     siblingCount: { converter: NUMBER_CONVERTER, attribute: 'sibling-count' },
@@ -63,6 +68,8 @@ export class XhPaginationElement extends XhElement {
 
   declare count?: number
   declare pageSize?: number
+  declare defaultPageSize?: number
+  declare pageSizeOptions?: number[]
   declare page?: number
   declare defaultPage?: number
   declare siblingCount?: number
@@ -82,6 +89,8 @@ export class XhPaginationElement extends XhElement {
     return {
       count: this.count,
       pageSize: this.pageSize,
+      defaultPageSize: this.defaultPageSize,
+      pageSizeOptions: this.pageSizeOptions,
       page: this.page,
       defaultPage: this.defaultPage,
       siblingCount: this.siblingCount,

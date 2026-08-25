@@ -32,6 +32,18 @@ export function normalizePageSize(value: number | undefined): number {
   return Math.max(1, Math.trunc(value))
 }
 
+/**
+ * 换每页条数时的新页码：让改档前第一条仍留在视野里。
+ *
+ * 直接夹取会把人甩到别处——10 条一页看到第 5 页（第 41 条起），换成 50 条一页后
+ * 夹取给出第 2 页（第 51 条起），刚在看的那条反而不见了。按第一条换算给出第 1 页，
+ * 第 41 条仍在页内。结果天然落在 [1, 总页数] 内，不必再夹一次。
+ */
+export function pageForResize(page: number, oldSize: number, newSize: number): number {
+  const first = (Math.max(1, Math.trunc(page)) - 1) * normalizePageSize(oldSize)
+  return Math.floor(first / normalizePageSize(newSize)) + 1
+}
+
 /** 总页数。无数据时是 0 页，而不是 1 页空页。 */
 export function totalPagesOf(count: number | undefined, pageSize: number | undefined): number {
   const total = normalizeCount(count)

@@ -4,7 +4,7 @@ import type { PaginationApi, PaginationSchema } from './pagination.types'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
 import { dataAttr } from '@xihan-ui/kernel'
 import { paginationAnatomy } from './pagination.anatomy'
-import { PAGINATION_PAGE_SIZE, PAGINATION_SIBLING_COUNT } from './pagination.machine'
+import { PAGINATION_PAGE_SIZE_OPTIONS, PAGINATION_SIBLING_COUNT } from './pagination.machine'
 import { buildPageSequence, clampPage, normalizeCount, normalizePageSize, pageRangeOf, totalPagesOf } from './pagination.range'
 
 const parts = paginationAnatomy.build()
@@ -16,7 +16,7 @@ export function connectPagination<T extends PropTypes>(
   const { context, prop, send } = service
 
   const count = normalizeCount(prop('count'))
-  const pageSize = normalizePageSize(prop('pageSize') ?? PAGINATION_PAGE_SIZE)
+  const pageSize = normalizePageSize(context.get('pageSize'))
   const totalPages = totalPagesOf(count, pageSize)
   // 显示用的页码一律夹过：count 变小后内部值可能停在已不存在的页上
   const page = clampPage(context.get('page'), totalPages)
@@ -37,9 +37,14 @@ export function connectPagination<T extends PropTypes>(
     send({ type: 'PAGE.SET', page: next })
   }
 
+  // 档位表只做取值来源，不决定长相：升序去重、每档至少 1
+  const pageSizeOptions = [...new Set((prop('pageSizeOptions') ?? PAGINATION_PAGE_SIZE_OPTIONS).map(normalizePageSize))]
+    .sort((a, b) => a - b)
+
   return {
     page,
     pageSize,
+    pageSizeOptions,
     count,
     totalPages,
     pages: buildPageSequence(page, totalPages, siblingCount),
@@ -49,6 +54,7 @@ export function connectPagination<T extends PropTypes>(
     setPage,
     goToPrevPage: () => send({ type: 'PAGE.PREV' }),
     goToNextPage: () => send({ type: 'PAGE.NEXT' }),
+    setPageSize: next => send({ type: 'PAGE_SIZE.SET', pageSize: next }),
     slice: data => data.slice((page - 1) * pageSize, page * pageSize),
 
     // 根节点是 nav 地标，aria-label 用于区分同页的多个分页器

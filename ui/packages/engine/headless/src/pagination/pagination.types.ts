@@ -2,6 +2,13 @@ import type { Direction, PropTypes, Size, Tone } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 import type { PaginationEntryRange, PaginationPage } from './pagination.range'
 
+export interface PaginationPageSizeChangeDetails {
+  /** 变化后的每页条数。 */
+  pageSize: number
+  /** 换算后的页码：改档前第一条仍留在页内。 */
+  page: number
+}
+
 export interface PaginationPageChangeDetails {
   /** 变化后的页码，恒在 [1, totalPages] 内。 */
   page: number
@@ -28,8 +35,12 @@ export interface PaginationSchema extends MachineSchema {
   props: {
     /** 总条数（不是总页数）。总页数由它与 pageSize 算出。 */
     count?: number
-    /** 每页条数，默认 10；小于 1 的值一律按 1 处理。 */
+    /** 每页条数，默认 10；小于 1 的值一律按 1 处理。给定即受控，语义同 page。 */
     pageSize?: number
+    /** 非受控初始每页条数，默认 10。 */
+    defaultPageSize?: number
+    /** 可选的每页条数档位，默认 [10, 20, 50, 100]。只做取值来源，不决定长相。 */
+    pageSizeOptions?: number[]
     /** 当前页。给定即受控：内部不再自改，只发 onPageChange。 */
     page?: number
     /** 非受控初始页，默认 1。 */
@@ -45,10 +56,14 @@ export interface PaginationSchema extends MachineSchema {
     size?: Size
     /** 页码变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 */
     onPageChange?: (details: PaginationPageChangeDetails) => void
+    /** 每页条数变化意图回调，语义同上；一并给出换算后的页码。 */
+    onPageSizeChange?: (details: PaginationPageSizeChangeDetails) => void
   }
   context: {
     /** 当前页。受控（page 给定）时 cell 直读 prop，写只发 onPageChange 不改内部值。 */
     page: number
+    /** 每页条数。受控（pageSize 给定）时同上。 */
+    pageSize: number
   }
   computed: Record<string, never>
   refs: Record<string, never>
@@ -56,11 +71,12 @@ export interface PaginationSchema extends MachineSchema {
   state: 'idle'
   event:
     | { type: 'PAGE.SET', page: number }
+    | { type: 'PAGE_SIZE.SET', pageSize: number }
     | { type: 'PAGE.PREV' }
     | { type: 'PAGE.NEXT' }
   tag: never
   guard: never
-  action: 'setPage' | 'goPrev' | 'goNext'
+  action: 'setPage' | 'setPageSize' | 'goPrev' | 'goNext'
   effect: never
 }
 
@@ -68,6 +84,8 @@ export interface PaginationApi<T extends PropTypes = PropTypes> {
   /** 当前页，恒在 [1, max(totalPages, 1)] 内。 */
   page: number
   pageSize: number
+  /** 可选的每页条数档位，缺省 [10, 20, 50, 100]；已按升序去重并夹到至少 1。 */
+  pageSizeOptions: number[]
   count: number
   totalPages: number
   /** 页码序列，作者照着渲染 item 与 ellipsis。 */
@@ -81,6 +99,8 @@ export interface PaginationApi<T extends PropTypes = PropTypes> {
   setPage: (page: number) => void
   goToPrevPage: () => void
   goToNextPage: () => void
+  /** 换每页条数：页码跟着换算，让改档前第一条仍留在页内。 */
+  setPageSize: (pageSize: number) => void
   /** 按当前页从整份数据里切出这一页。 */
   slice: <V>(data: readonly V[]) => V[]
   getRootProps: () => T['element']
