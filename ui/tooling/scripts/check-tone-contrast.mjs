@@ -6,6 +6,7 @@
 // 改令牌时没人会复算；这条门禁把它们落成断言：
 //   实心底 --xh-_tone        vs 实心底上的字 --xh-_tone-on   ≥ 4.5（AA 正文）
 //   淡底   --xh-_tone-subtle  vs 淡底上的字   --xh-_tone-fg   ≥ 4.5（AA 正文）
+//   装饰档 --xh-_tone-soft    vs 画布         --xh-bg-canvas  ≥ 3  （非文字图形）
 //   聚焦环 --xh-ring-focus    vs 画布         --xh-bg-canvas  ≥ 3  （非文字 UI 部件）
 // 浅色与深色两档各算一遍，六族语气逐族算。
 //
@@ -269,6 +270,8 @@ for (const theme of THEMES) {
     assert(`${theme}/${tone}/solid-active`, '实心底按下 vs on 字', at('--xh-_tone-on'), at('--xh-_tone-active'), 4.5)
     // 可操作区的边界要 3:1，这一档是专门为它兜过底的
     assert(`${theme}/${tone}/border-control`, '控件边界 vs 面', at('--xh-_tone-border-control'), evaluate('var(--xh-bg-surface)', scope), 3)
+    // 装饰档画的是色条、指示条这类非文字图形，压在画布上同样要 3:1
+    assert(`${theme}/${tone}/soft`, '装饰档 vs 画布', at('--xh-_tone-soft'), canvas, 3)
   }
 }
 
