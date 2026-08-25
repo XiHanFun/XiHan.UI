@@ -18249,8 +18249,6 @@ input[data-scope='mention'][data-part='input'] {
   block-size: var(--xh-select-control-h, var(--xh-_select-h));
   padding-inline: var(--xh-select-control-px, var(--xh-_select-px));
   min-inline-size: var(--xh-select-control-min-w, var(--xh-control-min-w));
-  /* 多选会把 N 项的文本连成一串，框宽必须封顶；与浮层同一个上限，两半看着才是一件东西 */
-  max-inline-size: var(--xh-select-control-max-w, var(--xh-overlay-max-w));
   border: var(--xh-stroke-thin) solid var(--xh-select-control-border, var(--xh-_select-control-border));
   border-radius: var(--xh-select-control-radius, var(--xh-shape-control));
   background: var(--xh-select-control-bg, var(--xh-_select-control-bg));

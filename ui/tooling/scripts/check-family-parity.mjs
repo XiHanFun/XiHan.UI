@@ -50,7 +50,8 @@ const FAMILIES = [
     name: '下拉族',
     members: ['select', 'cascader', 'tree-select', 'popselect', 'color-picker'],
     parts: [
-      { part: 'control', state: '', props: ['display', 'align-items', 'block-size', 'padding-inline', 'min-inline-size'] },
+      // 盒宽的上下限一起管：只有一家给盒封顶，同一行栅格里它就比邻座窄一截
+      { part: 'control', state: '', props: ['display', 'align-items', 'block-size', 'padding-inline', 'min-inline-size', 'max-inline-size'] },
       { part: 'trigger', state: '', props: ['flex', 'border', 'background', 'padding'] },
     ],
   },
