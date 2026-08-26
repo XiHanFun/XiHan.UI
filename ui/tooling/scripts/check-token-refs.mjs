@@ -54,6 +54,8 @@ const roleSwaps = []
 const roleOkSeen = new Set()
 for (const [file, src] of sources) {
   const lines = src.split(/\r?\n/)
+  // 注释内容抹成空格、换行留着：颜色字面量那一条只看代码，行号仍与原文对得上
+  const blanked = src.replace(/\/\*[\s\S]*?\*\//g, m => m.replace(/[^\n]/g, ' ')).split('\n')
   lines.forEach((line, i) => {
     if (FOREGROUND_PROP.test(line) && /var\(\s*--xh-bg-/.test(line)) {
       if (file in BG_AS_FOREGROUND_OK)
@@ -71,8 +73,16 @@ for (const [file, src] of sources) {
       orphans.push(`${file}:${i + 1}  ${name}`)
     }
     // 颜色一律走令牌：皮肤里不许出现 hex / rgb / hsl / oklch 字面量。取色器的色相带是光谱本身，不是设计色，放行。
-    if (!COLOR_LITERAL_OK.has(file) && /#[0-9a-f]{3,8}\b|\b(?:rgba?|hsla?|oklch|oklab|lab|lch|color)\(/i.test(line))
+    // 三类不算画出来的颜色：注释里提到的（皮肤常写「这条为什么这么算」的说明）、
+    // @supports 的条件（特性探测，不落到任何元素上）、
+    // 以及相对颜色语法 `fn(from var(--xh-…) …)`（源色本身就是令牌，算数的还是那个令牌）。
+    const bare = blanked[i]
+    const isFeatureProbe = /^\s*@supports\b/.test(bare)
+    const isTokenDerived = /\b(?:color|oklch|oklab|lab|lch|hsla?|rgba?)\(\s*from\s+var\(\s*--xh-/i.test(bare)
+    if (!COLOR_LITERAL_OK.has(file) && !isFeatureProbe && !isTokenDerived
+      && /#[0-9a-f]{3,8}\b|\b(?:rgba?|hsla?|oklch|oklab|lab|lch|color)\(/i.test(bare)) {
       colors.push(`${file}:${i + 1}  ${line.trim()}`)
+    }
     // 一轮扫齐两件事：全局令牌不许带字面量兜底，任何兜底里不许出现 $1 这类正则替换残留
     for (const m of line.matchAll(/var\(\s*(--xh-[a-z0-9_-]+)\s*,([^;()]*)\)/g)) {
       const [, name, fb] = m
