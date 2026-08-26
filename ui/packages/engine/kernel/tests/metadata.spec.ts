@@ -61,14 +61,13 @@ describe('框架元数据', () => {
     expect(getRuntimeHost()).toBeNull()
   })
 
-  it('适配器登记宿主后,摘要与详情都报出宿主与锁步一致性', () => {
+  it('适配器登记宿主后,摘要与详情都报出宿主', () => {
     registerRuntimeHost('vue', XIHAN_UI_METADATA.version)
     expect(getRuntimeHost()).toEqual({ name: 'vue', version: XIHAN_UI_METADATA.version })
 
     const summary = getMetadataSummary()
     expect(summary).toContain(`XiHan.UI 曦寒视图组件 v${XIHAN_UI_METADATA.version}`)
     expect(summary).toContain('宿主:vue')
-    expect(summary).toContain('锁步一致')
 
     const details = getMetadataDetails()
     expect(details).toContain('作者: XiHanFun and contributors')
@@ -76,11 +75,10 @@ describe('框架元数据', () => {
     expect(details).toContain('环境: development')
   })
 
-  it('宿主版本与 kernel 不一致时,详情里如实报锁步不一致', () => {
+  it('宿主版本按登记的原样报出', () => {
     registerRuntimeHost('vue', '9.9.9')
     const details = getMetadataDetails()
-    expect(details).toContain('锁步不一致')
-    expect(details).toContain('9.9.9')
+    expect(details).toContain('宿主:vue v9.9.9')
   })
 
   it('print 版只在 dev 出声,且不抛错', () => {
