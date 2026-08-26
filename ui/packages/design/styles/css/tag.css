@@ -130,8 +130,10 @@
     color: var(--xh-tag-fg, var(--xh-fg-default));
   }
 
+  /* 描边档的边就是这枚标签的全部轮廓，走「可操作区边界」那一支：
+     兑了底色的 --xh-_tone-border 六族都在 1.44-2.18，当轮廓看不清 */
   [data-scope='tag'][data-part='root'][data-variant='outline'][data-tone] {
-    border-color: var(--xh-tag-border, var(--xh-_tone-border, var(--xh-border-default)));
+    border-color: var(--xh-tag-border, var(--xh-_tone-border-control, var(--xh-border-default)));
     color: var(--xh-tag-fg, var(--xh-_tone-fg, var(--xh-fg-default)));
   }
 
