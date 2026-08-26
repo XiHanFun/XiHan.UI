@@ -224,9 +224,10 @@
     display: none;
   }
 
-  /* 格子是区间底色的画布：连续背景铺在这一层，圆角的选中片留给 trigger。
+  /* 格子是区间底色的画布：底色由格子的 ::before 铺出来，圆角的选中片留给 trigger。
      铺在 trigger 上会被格间空隙切断，区间看起来就是一串断开的圆点 */
   [data-scope='calendar'][data-part='cell'] {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -237,22 +238,46 @@
     display: none;
   }
 
-  [data-scope='calendar'][data-part='cell'][data-in-range] {
+  /* 区间底色：横向铺满格子，相邻两格接成一条；纵向收在格子内衬里，行与行之间留出空当 */
+  [data-scope='calendar'][data-part='cell'][data-in-range]::before {
+    content: '';
+    position: absolute;
+    inset-block: var(--xh-calendar-cell-gap, var(--xh-space-0_5));
+    inset-inline: 0;
     background: var(--xh-calendar-range-bg, var(--xh-bg-brand-subtle));
   }
 
-  /* 区间两端各自收圆：中间那些格子保持直角，底色才连成一条 */
-  [data-scope='calendar'][data-part='cell'][data-range-start] {
+  /* 两端那一格只铺半格，另外半格由选中片占满：区间收在圆点上而不是收在格子边上。
+     起止落在同一格时两条一起生效，底色宽度归零，只剩那枚圆点 */
+  [data-scope='calendar'][data-part='cell'][data-in-range][data-range-start]::before {
+    inset-inline-start: 50%;
+  }
+
+  [data-scope='calendar'][data-part='cell'][data-in-range][data-range-end]::before {
+    inset-inline-end: 50%;
+  }
+
+  /* 行首与行尾收圆：区间跨周时每一行各是一条两头圆的横杠。
+     摆了周序号格的行里，行首那一格排在它后面 */
+  [data-scope='calendar'][data-part='week-row'] > [data-part='cell'][data-in-range]:first-child::before,
+  [data-scope='calendar'][data-part='week-row'] > [data-part='week-number'] + [data-part='cell'][data-in-range]::before {
     border-start-start-radius: var(--xh-calendar-cell-radius, var(--xh-shape-pill));
     border-end-start-radius: var(--xh-calendar-cell-radius, var(--xh-shape-pill));
   }
 
-  [data-scope='calendar'][data-part='cell'][data-range-end] {
+  [data-scope='calendar'][data-part='week-row'] > [data-part='cell'][data-in-range]:last-child::before {
     border-start-end-radius: var(--xh-calendar-cell-radius, var(--xh-shape-pill));
     border-end-end-radius: var(--xh-calendar-cell-radius, var(--xh-shape-pill));
   }
 
+  /* 粗粒度的格子之间有间隙，底色本就接不成一条，每一格各自收圆 */
+  [data-scope='calendar'][data-part='grid']:is([data-view='month'], [data-view='quarter'], [data-view='year']) > [data-part='cell'][data-in-range]::before {
+    border-radius: var(--xh-calendar-cell-radius, var(--xh-shape-pill));
+  }
+
   [data-scope='calendar'][data-part='cell-trigger'] {
+    /* 区间底色是格子上绝对定位的伪元素，选中片得定位才排在它之后 */
+    position: relative;
     display: flex;
     flex: 1;
     align-items: center;
@@ -296,6 +321,7 @@
     color: var(--xh-calendar-cell-fg-selected, var(--xh-fg-on-brand));
     font-weight: var(--xh-font-weight-medium);
   }
+
 
   /* 不可用走 aria-disabled 而非原生 disabled：格子仍要可聚焦（它还得当方向键的起点），
      所以只能靠 data-disabled 表达，写 :disabled 永远不命中 */

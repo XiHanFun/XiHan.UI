@@ -326,6 +326,11 @@
     border-inline-start: var(--xh-stroke-thin) solid var(--xh-date-picker-panel-divider, var(--xh-border-subtle));
   }
 
+  /* 快捷选项列与它旁边那张日历之间留出同样的空当，两道分隔线左右对称 */
+  [data-scope='date-picker'][data-part='presets'] + [data-scope='date-picker'][data-part='calendar'] {
+    padding-inline-start: var(--xh-date-picker-panel-gap, var(--xh-space-3));
+  }
+
   [data-scope='date-picker'][data-part='calendar'] {
     display: flex;
     flex-direction: column;
@@ -342,10 +347,12 @@
   [data-scope='date-picker'][data-part='presets'] {
     display: flex;
     flex: none;
+    /* 这一列的高度由并排的日历给：不写就按内容收，右侧那道分隔线只画到最后一条选项 */
+    align-self: stretch;
     flex-direction: column;
     gap: var(--xh-date-picker-presets-gap, var(--xh-space-0_5));
     /* 选项多起来时这一列自己滚，不把整张面板撑高 */
-    max-block-size: var(--xh-date-picker-presets-h, var(--xh-viewport-h-sm));
+    max-block-size: var(--xh-date-picker-presets-h, var(--xh-viewport-h-lg));
     padding: var(--xh-date-picker-presets-padding, var(--xh-space-1));
     overflow-y: auto;
     border-inline-end: var(--xh-stroke-thin) solid var(--xh-date-picker-column-divider, var(--xh-border-subtle));

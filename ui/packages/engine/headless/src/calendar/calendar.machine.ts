@@ -125,6 +125,8 @@ export const calendarMachine = createMachine({
   // 作者换了要挑的粒度（日历从按天挑改成按月挑），人钻到哪一层就得跟着回到那一档
   watch: ({ track, prop, action }) => {
     track([() => prop('view')], () => action(['syncActiveView']))
+    // 值被宿主整份改写（快捷选项、清空、setValue）：挑到一半的那个起点作废
+    track([() => prop('value')], () => action(['dropStaleRangeAnchor']))
   },
   states: {
     idle: {
@@ -243,6 +245,14 @@ export const calendarMachine = createMachine({
       /** 作者换了 view：钻到哪一层的记录随之作废，回到新的那一档。 */
       syncActiveView: ({ context, prop }) => {
         context.set('activeView', prop('view') ?? 'day')
+      },
+
+      // 起点还在挑时选中集合恒只有一个值；不是这个形态就说明值已由别处整份写过，起点跟着作废
+      dropStaleRangeAnchor: ({ context }) => {
+        if (context.get('rangeAnchor') == null || context.get('value').length === 1)
+          return
+        context.set('rangeAnchor', null)
+        context.set('hoveredValue', null)
       },
 
       setHoveredValue: ({ context, event }) => {

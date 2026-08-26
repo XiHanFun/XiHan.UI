@@ -9602,6 +9602,15 @@
             },
             {
               "kind": "field",
+              "name": "fixedWeeks",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "fixed-weeks"
+            },
+            {
+              "kind": "field",
               "name": "disabled",
               "privacy": "public",
               "type": {
@@ -10129,9 +10138,17 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "并排展示几页",
+              "description": "并排展示几页；缺省单选 1，区间按两端定，同一页放得下就 1",
               "name": "visible-count",
               "fieldName": "visibleCount"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "日历恒渲染六行，默认开；写 fixed-weeks=\"false\" 关掉",
+              "name": "fixed-weeks",
+              "fieldName": "fixedWeeks"
             },
             {
               "type": {

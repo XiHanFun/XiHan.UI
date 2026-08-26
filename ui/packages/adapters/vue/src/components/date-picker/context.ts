@@ -14,12 +14,21 @@ export interface DatePickerSegmentGroupContext {
   index: ComputedRef<0 | 1>
 }
 
+/** 日历自报面板号，供面板内的标题、网格与格子认领自己属于并排的第几张。 */
+export interface DatePickerPanelContext {
+  index: ComputedRef<number>
+}
+
 const KEY: InjectionKey<DatePickerContext> = Symbol.for('xh-date-picker')
 const CELL_KEY: InjectionKey<DatePickerCellContext> = Symbol.for('xh-date-picker-cell')
 const SEGMENT_GROUP_KEY: InjectionKey<DatePickerSegmentGroupContext> = Symbol.for('xh-date-picker-segment-group')
+const PANEL_KEY: InjectionKey<DatePickerPanelContext> = Symbol.for('xh-date-picker-panel')
 
 /** 没有分段容器时的组号，段位与隐藏输入落到起点那组。 */
 const START_GROUP: DatePickerSegmentGroupContext = { index: computed<0 | 1>(() => 0) }
+
+/** 日历没自报面板号时的落点，与单面板时一致。 */
+const FIRST_PANEL: DatePickerPanelContext = { index: computed(() => 0) }
 
 export function provideDatePicker(ctx: DatePickerContext): void {
   provide(KEY, ctx)
@@ -49,4 +58,12 @@ export function provideDatePickerSegmentGroup(ctx: DatePickerSegmentGroupContext
 
 export function useDatePickerSegmentGroupContext(): DatePickerSegmentGroupContext {
   return inject(SEGMENT_GROUP_KEY, START_GROUP)
+}
+
+export function provideDatePickerPanel(ctx: DatePickerPanelContext): void {
+  provide(PANEL_KEY, ctx)
+}
+
+export function useDatePickerPanelContext(): DatePickerPanelContext {
+  return inject(PANEL_KEY, FIRST_PANEL)
 }

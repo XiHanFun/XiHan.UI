@@ -215,22 +215,51 @@ export function connectCalendar<T extends PropTypes>(
    */
   const focusedCell = calendarPeriodOf(focusedValue, view)
 
+  /**
+   * 每一天归哪张面板：各面板只认领落在自己那一页里的格子。
+   *
+   * 并排两张面板时同一天会各出现一次（7 月 31 日既在七月的末行、也在八月的首行），
+   * 认领不到的那一张只把它当页外的格子显示，区间与选中都不画，读屏也只念一次。
+   */
+  const ownerOf = new Map<string, number>()
+  for (const panel of panels) {
+    if (panel.weeks.length > 0) {
+      for (const row of panel.weeks) {
+        for (const day of row) {
+          if (day.inMonth)
+            ownerOf.set(day.value, panel.index)
+        }
+      }
+      continue
+    }
+    for (const cell of panel.cells) {
+      if (cell.inView)
+        ownerOf.set(cell.value, panel.index)
+    }
+  }
+
   const cellState = (item: CalendarCellProps): CellState => {
     const date = parseCalendarDate(item.value)
-    const inRange = !!(rangeEnds && date
+    const panel = panelOf(item)
+    // 认领这一天的是并排的另一张面板：这一张只显示日号
+    const ownedElsewhere = (ownerOf.get(item.value) ?? panel.index) !== panel.index
+    const inRange = !ownedElsewhere && !!(rangeEnds && date
       && date.compare(rangeEnds[0]) >= 0 && date.compare(rangeEnds[1]) <= 0)
     return {
       date,
-      selected: isSelected(item.value),
+      selected: !ownedElsewhere && isSelected(item.value),
       disabled: isUnavailable(item.value),
-      // 邻月的日子照样可点可聚焦，标出来供皮肤区分
-      outsideMonth: !date || date.year !== panelOf(item).year || date.month !== panelOf(item).month,
+      // 页外的格子照样可点可聚焦，标出来供皮肤区分。日视图按「是不是本月」判；
+      // 粗粒度视图的格子值是那一段的第一天，与面板起点比月份恒不相等，改用网格自报的 inView
+      outsideMonth: view === 'day'
+        ? (!date || date.year !== panel.year || date.month !== panel.month)
+        : panel.cells.some(cell => cell.value === item.value && !cell.inView),
       isToday: item.value === todayValue,
       focused: item.value === focusedCell,
       inRange,
       // 两端也算 in-range
-      rangeStart: !!(rangeEnds && date && date.compare(rangeEnds[0]) === 0),
-      rangeEnd: !!(rangeEnds && date && date.compare(rangeEnds[1]) === 0),
+      rangeStart: !ownedElsewhere && !!(rangeEnds && date && date.compare(rangeEnds[0]) === 0),
+      rangeEnd: !ownedElsewhere && !!(rangeEnds && date && date.compare(rangeEnds[1]) === 0),
     }
   }
 

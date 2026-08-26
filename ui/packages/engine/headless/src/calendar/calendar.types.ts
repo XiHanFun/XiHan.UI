@@ -213,7 +213,7 @@ export interface CalendarSchema extends MachineSchema {
     | { type: 'HOVER.CLEAR' }
   tag: never
   guard: never
-  action: 'setValue' | 'selectCell' | 'setFocusedValue' | 'setActiveView' | 'syncActiveView' | 'pageVisibleStart' | 'setHoveredValue' | 'clearHoveredValue' | 'focusVisibleCell'
+  action: 'setValue' | 'selectCell' | 'setFocusedValue' | 'setActiveView' | 'syncActiveView' | 'dropStaleRangeAnchor' | 'pageVisibleStart' | 'setHoveredValue' | 'clearHoveredValue' | 'focusVisibleCell'
   effect: 'trackLiveness'
 }
 

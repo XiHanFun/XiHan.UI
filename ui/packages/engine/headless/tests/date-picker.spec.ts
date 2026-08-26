@@ -862,16 +862,75 @@ describe('浮层：焦点、消解与归还', () => {
   })
 })
 
-describe('区间默认两个面板', () => {
-  it('单选一个面板，区间两个——起止常跨月，一个面板要来回翻页', () => {
+describe('值被整份改写后区间不再跟着鼠标走', () => {
+  it('点了起点再整份写值（快捷选项 / 清空 / setValue）：那个起点作废，指针扫过不再铺预览带', () => {
+    const h = mount({
+      defaultOpen: true,
+      selectionMode: 'range',
+      presets: [{ value: '2026-08-01/2026-08-31', label: '整月' }],
+    })
+    // 先落一个起点，区间进入「挑到一半」
+    click(h.cell('2026-08-10'))
+    expect(h.api().value).toEqual(['2026-08-10'])
+
+    // 整份写进去，与点快捷选项同一条路
+    h.api().setValue(['2026-08-01', '2026-08-31'])
+    expect(h.api().value).toEqual(['2026-08-01', '2026-08-31'])
+
+    // 指针扫过 7/20：区间仍是 7/01–7/31，不是从 7/15 铺到 7/20
+    h.cell('2026-08-20').dispatchEvent(new Event('pointerenter'))
+    expect(h.gridcell('2026-08-05').hasAttribute('data-in-range')).toBe(true)
+    expect(h.gridcell('2026-08-25').hasAttribute('data-in-range')).toBe(true)
+    expect(h.gridcell('2026-08-01').getAttribute('data-range-start')).toBe('')
+    expect(h.gridcell('2026-08-31').getAttribute('data-range-end')).toBe('')
+  })
+
+  it('作废之后再点一格，是重新起一段而不是接着旧起点收口', () => {
+    const h = mount({ defaultOpen: true, selectionMode: 'range' })
+    click(h.cell('2026-08-10'))
+    h.api().setValue([])
+    click(h.cell('2026-08-20'))
+    expect(h.api().value).toEqual(['2026-08-20'])
+  })
+})
+
+describe('区间铺几个面板按两端现算', () => {
+  it('单选一个面板；区间没选完按两个铺——另一端常在下一页', () => {
     expect(mount({ defaultFocusedValue: '2026-08-17' }).api().calendar.panels).toHaveLength(1)
     const range = mount({ selectionMode: 'range', defaultFocusedValue: '2026-08-17' }).api()
     expect(range.calendar.panels.map(p => [p.year, p.month])).toEqual([[2026, 8], [2026, 9]])
   })
 
+  it('两端落在同一个月里只铺一页，跨月才铺两页', () => {
+    const sameMonth = mount({ selectionMode: 'range', defaultValue: ['2026-07-01', '2026-07-31'] }).api()
+    expect(sameMonth.calendar.panels.map(p => [p.year, p.month])).toEqual([[2026, 7]])
+
+    const crossMonth = mount({ selectionMode: 'range', defaultValue: ['2026-07-01', '2026-08-05'] }).api()
+    expect(crossMonth.calendar.panels.map(p => [p.year, p.month])).toEqual([[2026, 7], [2026, 8]])
+  })
+
+  it('只落了一端仍按两页铺', () => {
+    expect(mount({ selectionMode: 'range', defaultValue: ['2026-07-01'] }).api().calendar.panels).toHaveLength(2)
+  })
+
+  it('粗粒度的一页是一年：同一年里的两个月只铺一页', () => {
+    const sameYear = mount({ selectionMode: 'range', view: 'month', defaultValue: ['2026-02-01', '2026-11-01'] }).api()
+    expect(sameYear.calendar.panels).toHaveLength(1)
+    const crossYear = mount({ selectionMode: 'range', view: 'month', defaultValue: ['2026-02-01', '2027-03-01'] }).api()
+    expect(crossYear.calendar.panels).toHaveLength(2)
+  })
+
   it('visibleCount 显式给了以它为准，两种模式都听它的', () => {
     expect(mount({ visibleCount: 3, defaultFocusedValue: '2026-08-17' }).api().calendar.panels).toHaveLength(3)
     expect(mount({ selectionMode: 'range', visibleCount: 1, defaultFocusedValue: '2026-08-17' }).api().calendar.panels).toHaveLength(1)
+    expect(mount({ selectionMode: 'range', visibleCount: 2, defaultValue: ['2026-07-01', '2026-07-31'] }).api().calendar.panels).toHaveLength(2)
+  })
+
+  it('恒六行：五行月与六行月的网格一样高，关掉才按实际周数收', () => {
+    // 2026 年 7 月是五行月，8 月是六行月
+    expect(mount({ defaultValue: '2026-07-15' }).api().calendar.panels[0]!.weeks).toHaveLength(6)
+    expect(mount({ defaultValue: '2026-08-15' }).api().calendar.panels[0]!.weeks).toHaveLength(6)
+    expect(mount({ fixedWeeks: false, defaultValue: '2026-07-15' }).api().calendar.panels[0]!.weeks).toHaveLength(5)
   })
 })
 

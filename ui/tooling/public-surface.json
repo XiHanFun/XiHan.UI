@@ -5868,6 +5868,7 @@
       "dir",
       "disabled",
       "endName",
+      "fixedWeeks",
       "invalid",
       "isDateUnavailable",
       "locale",
