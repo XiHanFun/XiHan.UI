@@ -337,6 +337,7 @@
   [data-scope='combobox'][data-part='content'] {
     display: flex;
     flex-direction: column;
+    gap: var(--xh-combobox-content-gap, var(--xh-list-option-gap));
     min-inline-size: var(--xh-combobox-content-min-w, var(--xh-overlay-min-w));
     max-inline-size: var(--xh-combobox-content-max-w, var(--xh-overlay-max-w));
     max-block-size: min(var(--xh-combobox-content-max-h, var(--xh-overlay-max-h)), var(--xh-_combobox-available-h));
@@ -376,6 +377,7 @@
   [data-scope='combobox'][data-part='item-group'] {
     display: flex;
     flex-direction: column;
+    gap: var(--xh-combobox-item-group-gap, var(--xh-list-option-gap));
   }
 
   [data-scope='combobox'][data-part='item-group'][hidden] {
@@ -384,7 +386,7 @@
 
   /* 组间留白只加在后继分组上：首组顶上已经有 content 的内边距，再加一层会显得头重 */
   [data-scope='combobox'][data-part='item-group'] + [data-scope='combobox'][data-part='item-group'] {
-    margin-block-start: var(--xh-combobox-group-gap, var(--xh-space-2));
+    margin-block-start: var(--xh-combobox-group-gap, var(--xh-space-1_5));
   }
 
   /* 分组标题不是候选、进不了导航，画成小号次要文字，内缩与候选对齐（同一个 padding-inline） */

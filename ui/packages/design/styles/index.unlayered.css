@@ -4051,6 +4051,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='mention'][data-part='content'] {
   display: flex;
   flex-direction: column;
+  gap: var(--xh-mention-content-gap, var(--xh-list-option-gap));
   min-inline-size: var(--xh-mention-content-min-w, var(--xh-overlay-min-w));
   max-inline-size: var(--xh-mention-content-max-w, var(--xh-overlay-max-w));
   max-block-size: min(var(--xh-mention-content-max-h, var(--xh-overlay-max-h)), var(--xh-_mention-available-h));
@@ -5123,6 +5124,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='popselect'][data-part='content'] {
   display: flex;
   flex-direction: column;
+  gap: var(--xh-popselect-content-gap, var(--xh-list-option-gap));
   min-inline-size: var(--xh-popselect-content-min-w, var(--xh-overlay-menu-min-w));
   max-inline-size: var(--xh-popselect-content-max-w, var(--xh-overlay-max-w));
   max-block-size: min(var(--xh-popselect-content-max-h, var(--xh-overlay-menu-max-h)), var(--xh-_popselect-available-h));
@@ -9243,6 +9245,7 @@ input[data-scope='mention'][data-part='input'] {
   display: flex;
   flex: none;
   flex-direction: column;
+  gap: var(--xh-cascader-column-gap, var(--xh-list-option-gap));
   min-inline-size: var(--xh-cascader-column-min-w, 7rem);
   block-size: var(--xh-cascader-column-h, var(--xh-viewport-h-sm));
   padding-block: var(--xh-cascader-column-py, var(--xh-space-1));
@@ -9444,6 +9447,7 @@ input[data-scope='mention'][data-part='input'] {
   display: flex;
   flex-basis: 100%;
   flex-direction: column;
+  gap: var(--xh-cascader-search-list-gap, var(--xh-list-option-gap));
   block-size: var(--xh-cascader-column-h, var(--xh-viewport-h-sm));
   padding: var(--xh-cascader-search-p, var(--xh-space-1));
   overflow-y: auto;
@@ -11155,6 +11159,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='combobox'][data-part='content'] {
   display: flex;
   flex-direction: column;
+  gap: var(--xh-combobox-content-gap, var(--xh-list-option-gap));
   min-inline-size: var(--xh-combobox-content-min-w, var(--xh-overlay-min-w));
   max-inline-size: var(--xh-combobox-content-max-w, var(--xh-overlay-max-w));
   max-block-size: min(var(--xh-combobox-content-max-h, var(--xh-overlay-max-h)), var(--xh-_combobox-available-h));
@@ -11194,6 +11199,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='combobox'][data-part='item-group'] {
   display: flex;
   flex-direction: column;
+  gap: var(--xh-combobox-item-group-gap, var(--xh-list-option-gap));
 }
 
 [data-scope='combobox'][data-part='item-group'][hidden] {
@@ -11202,7 +11208,7 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 组间留白只加在后继分组上：首组顶上已经有 content 的内边距，再加一层会显得头重 */
 [data-scope='combobox'][data-part='item-group'] + [data-scope='combobox'][data-part='item-group'] {
-  margin-block-start: var(--xh-combobox-group-gap, var(--xh-space-2));
+  margin-block-start: var(--xh-combobox-group-gap, var(--xh-space-1_5));
 }
 
 /* 分组标题不是候选、进不了导航，画成小号次要文字，内缩与候选对齐（同一个 padding-inline） */
@@ -11559,6 +11565,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='context-menu'][data-part='content'] {
   display: flex;
   flex-direction: column;
+  gap: var(--xh-context-menu-content-gap, var(--xh-list-option-gap));
   min-inline-size: var(--xh-context-menu-min-w, var(--xh-overlay-menu-min-w));
   max-inline-size: var(--xh-context-menu-max-w, var(--xh-overlay-max-w));
   /* 两道上限取更小的那道：自己的高度上限，以及落定那一侧真正剩下的空间。
@@ -11608,6 +11615,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='context-menu'][data-part='group'] {
   display: flex;
   flex-direction: column;
+  gap: var(--xh-context-menu-group-gap, var(--xh-list-option-gap));
 }
 
 [data-scope='context-menu'][data-part='group'][hidden] {
@@ -11734,7 +11742,7 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='context-menu'][data-part='separator'] {
   block-size: var(--xh-context-menu-separator-thickness, var(--xh-stroke-thin));
-  margin-block: var(--xh-context-menu-separator-my, var(--xh-space-1));
+  margin-block: var(--xh-context-menu-separator-my, var(--xh-space-0_5));
   background: var(--xh-context-menu-separator-color, var(--xh-border-default));
 }
 
@@ -14776,6 +14784,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='listbox'][data-part='content'] {
   display: flex;
   flex-direction: column;
+  gap: var(--xh-listbox-content-gap, var(--xh-list-option-gap));
   max-block-size: var(--xh-listbox-content-max-h, var(--xh-viewport-h-md));
   padding-block: var(--xh-listbox-content-py, var(--xh-space-1));
   padding-inline: var(--xh-listbox-content-px, var(--xh-space-1));
@@ -14808,6 +14817,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='listbox'][data-part='item-group'] {
   display: flex;
   flex-direction: column;
+  gap: var(--xh-listbox-item-group-gap, var(--xh-list-option-gap));
 }
 
 [data-scope='listbox'][data-part='item-group'][hidden] {
@@ -14816,7 +14826,7 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 组间留白只加在后继分组上：首组顶上已经有 content 的内边距，再加一层会显得头重 */
 [data-scope='listbox'][data-part='item-group'] + [data-scope='listbox'][data-part='item-group'] {
-  margin-block-start: var(--xh-listbox-group-gap, var(--xh-space-2));
+  margin-block-start: var(--xh-listbox-group-gap, var(--xh-space-1_5));
 }
 
 /* 分组标题不是选项、进不了导航，画成小号次要文字，
@@ -15094,6 +15104,7 @@ input[data-scope='mention'][data-part='input'] {
 
   display: flex;
   flex-direction: column;
+  gap: var(--xh-menu-content-gap, var(--xh-list-option-gap));
   min-inline-size: var(--xh-menu-min-w, var(--xh-overlay-menu-min-w));
   max-inline-size: var(--xh-menu-max-w, var(--xh-overlay-max-w));
   /* 两道上限取更小的那道：自己的高度上限，以及落定那一侧真正剩下的空间。
@@ -15216,6 +15227,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='menu'][data-part='group'] {
   display: flex;
   flex-direction: column;
+  gap: var(--xh-menu-group-gap, var(--xh-list-option-gap));
 }
 
 [data-scope='menu'][data-part='group'][hidden] {
@@ -15241,7 +15253,7 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='menu'][data-part='separator'] {
   block-size: var(--xh-menu-separator-thickness, var(--xh-stroke-thin));
-  margin-block: var(--xh-menu-separator-my, var(--xh-space-1));
+  margin-block: var(--xh-menu-separator-my, var(--xh-space-0_5));
   background: var(--xh-menu-separator-color, var(--xh-border-default));
 }
 
@@ -15418,6 +15430,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='menubar'][data-part='content'] {
   display: flex;
   flex-direction: column;
+  gap: var(--xh-menubar-content-gap, var(--xh-list-option-gap));
   min-inline-size: var(--xh-menubar-min-w, var(--xh-overlay-menu-min-w));
   max-inline-size: var(--xh-menubar-max-w, var(--xh-overlay-max-w));
   /* 两道上限取更小的那道：自己的高度上限，以及落定那一侧真正剩下的空间。
@@ -15467,6 +15480,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='menubar'][data-part='group'] {
   display: flex;
   flex-direction: column;
+  gap: var(--xh-menubar-group-gap, var(--xh-list-option-gap));
 }
 
 [data-scope='menubar'][data-part='group'][hidden] {
@@ -15593,7 +15607,7 @@ input[data-scope='mention'][data-part='input'] {
    不给 display，因此 UA 的 [hidden]{display:none} 自己就压得住 */
 [data-scope='menubar'][data-part='separator'] {
   block-size: var(--xh-menubar-separator-thickness, var(--xh-stroke-thin));
-  margin-block: var(--xh-menubar-separator-my, var(--xh-space-1));
+  margin-block: var(--xh-menubar-separator-my, var(--xh-space-0_5));
   background: var(--xh-menubar-separator-color, var(--xh-border-default));
 }
 
@@ -18498,6 +18512,7 @@ input[data-scope='mention'][data-part='input'] {
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;
+  gap: var(--xh-select-list-gap, var(--xh-list-option-gap));
   min-block-size: 0;
   overflow-y: auto;
 }
@@ -21924,7 +21939,7 @@ input[data-scope='mention'][data-part='input'] {
   display: flex;
   flex: none;
   flex-direction: column;
-  gap: var(--xh-time-picker-presets-gap, var(--xh-space-0_5));
+  gap: var(--xh-time-picker-presets-gap, var(--xh-list-option-gap));
   max-block-size: var(--xh-time-picker-presets-h, var(--xh-viewport-h-sm));
   padding-inline: var(--xh-time-picker-presets-px, var(--xh-space-1));
   overflow-y: auto;
@@ -21979,7 +21994,7 @@ input[data-scope='mention'][data-part='input'] {
   display: flex;
   flex: none;
   flex-direction: column;
-  gap: var(--xh-time-picker-column-gap, var(--xh-space-0_5));
+  gap: var(--xh-time-picker-column-gap, var(--xh-list-option-gap));
   min-inline-size: var(--xh-time-picker-column-min-w, 3.5rem);
   /* 几列并排：定高而不是随内容收，否则时列与分列的可选值一多一少就错位 */
   block-size: var(--xh-time-picker-column-h, var(--xh-viewport-h-sm));
@@ -23517,6 +23532,7 @@ input[data-scope='mention'][data-part='input'] {
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;
+  gap: var(--xh-transfer-list-gap, var(--xh-list-option-gap));
   block-size: var(--xh-transfer-list-h, var(--xh-viewport-h-md));
   padding-block: var(--xh-transfer-list-py, var(--xh-space-1));
   padding-inline: var(--xh-transfer-list-px, var(--xh-space-1));
@@ -23821,6 +23837,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='tree'][data-part='tree'] {
   display: flex;
   flex-direction: column;
+  gap: var(--xh-tree-tree-gap, var(--xh-list-option-gap));
   max-block-size: var(--xh-tree-max-h, var(--xh-viewport-h-lg));
   padding-block: var(--xh-tree-py, var(--xh-space-1));
   padding-inline: var(--xh-tree-px, var(--xh-space-1));
@@ -23842,8 +23859,15 @@ input[data-scope='mention'][data-part='input'] {
   outline: none;
 }
 
-/* 分支只是"这一行 + 它的子层"的外壳，不自带行距与内边距：
-   真正长成一行的是 branch-control，子层缩进归 branch-content */
+/* 分支只是"这一行 + 它的子层"的外壳，不自带内边距：
+   真正长成一行的是 branch-control，子层缩进归 branch-content。
+   行距由这里出：分支自己那一行与它展开的子层之间，同样按条目间距断开 */
+[data-scope='tree'][data-part='branch'] {
+  display: flex;
+  flex-direction: column;
+  gap: var(--xh-tree-branch-gap, var(--xh-list-option-gap));
+}
+
 [data-scope='tree'][data-part='branch'][hidden] {
   display: none;
 }
@@ -24063,6 +24087,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='tree'][data-part='branch-content'] {
   display: flex;
   flex-direction: column;
+  gap: var(--xh-tree-branch-content-gap, var(--xh-list-option-gap));
   padding-inline-start: var(--xh-tree-indent, var(--xh-space-4));
 }
 
@@ -24072,6 +24097,7 @@ input[data-scope='mention'][data-part='input'] {
   flex-flow: row wrap;
   align-items: center;
   column-gap: var(--xh-tree-leaf-row-gap, var(--xh-space-3));
+  row-gap: var(--xh-tree-branch-content-gap, var(--xh-list-option-gap));
 }
 
 /* 横排的一层里节点并排，行盒不能再各自吃满一行 */
@@ -24472,6 +24498,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='tree-select'][data-part='tree'] {
   display: flex;
   flex-direction: column;
+  gap: var(--xh-tree-select-tree-gap, var(--xh-list-option-gap));
 }
 
 [data-scope='tree-select'][data-part='tree'][hidden] {
@@ -24487,6 +24514,20 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='tree-select'][data-part='tree']:not([tabindex='0']):focus-visible {
   outline: none;
+}
+
+/* 分支是"这一行 + 它的子层"的外壳，不自带内边距：真正长成一行的是 branch-control，
+   子层缩进归 branch-content。行距由这里出：分支自己那一行与它展开的子层之间，
+   同样按条目间距断开 */
+[data-scope='tree-select'][data-part='branch'] {
+  display: flex;
+  flex-direction: column;
+  gap: var(--xh-tree-select-branch-gap, var(--xh-list-option-gap));
+}
+
+/* display 盖掉了 UA 的 [hidden]{display:none}，收起时要显式让位 */
+[data-scope='tree-select'][data-part='branch'][hidden] {
+  display: none;
 }
 
 /* 焦点落在 branch 上（它才是 treeitem），但环画在它自己那一行上：
@@ -24633,6 +24674,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='tree-select'][data-part='branch-content'] {
   display: flex;
   flex-direction: column;
+  gap: var(--xh-tree-select-branch-content-gap, var(--xh-list-option-gap));
   padding-inline-start: var(--xh-tree-select-indent, var(--xh-space-4));
 }
 

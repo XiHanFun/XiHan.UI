@@ -340,6 +340,7 @@
     display: flex;
     flex: none;
     flex-direction: column;
+    gap: var(--xh-cascader-column-gap, var(--xh-list-option-gap));
     min-inline-size: var(--xh-cascader-column-min-w, 7rem);
     block-size: var(--xh-cascader-column-h, var(--xh-viewport-h-sm));
     padding-block: var(--xh-cascader-column-py, var(--xh-space-1));
@@ -541,6 +542,7 @@
     display: flex;
     flex-basis: 100%;
     flex-direction: column;
+    gap: var(--xh-cascader-search-list-gap, var(--xh-list-option-gap));
     block-size: var(--xh-cascader-column-h, var(--xh-viewport-h-sm));
     padding: var(--xh-cascader-search-p, var(--xh-space-1));
     overflow-y: auto;

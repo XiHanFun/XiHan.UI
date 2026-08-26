@@ -251,6 +251,7 @@
   [data-scope='popselect'][data-part='content'] {
     display: flex;
     flex-direction: column;
+    gap: var(--xh-popselect-content-gap, var(--xh-list-option-gap));
     min-inline-size: var(--xh-popselect-content-min-w, var(--xh-overlay-menu-min-w));
     max-inline-size: var(--xh-popselect-content-max-w, var(--xh-overlay-max-w));
     max-block-size: min(var(--xh-popselect-content-max-h, var(--xh-overlay-menu-max-h)), var(--xh-_popselect-available-h));
