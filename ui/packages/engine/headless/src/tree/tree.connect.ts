@@ -1,5 +1,5 @@
 import type { NavIntent } from '@xihan-ui/behavior'
-import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
+import type { NormalizeProps, Orientation, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { TreeApi, TreeNode, TreeNodeMeta, TreeSchema, TreeVisibleNode } from './tree.types'
 import { cascadeState, focusItem, indexOfValue, isItemDisabled, ITEM_VALUE_ATTR, itemValue, matchTypeahead, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/behavior'
@@ -23,6 +23,24 @@ function collectLeafOnlyBranches(nodes: TreeNode[]): Set<string> {
         continue
       if (node.children.length > 0 && node.children.every(child => !child.children))
         out.add(node.value)
+      walk(node.children)
+    }
+  }
+  walk(nodes)
+  return out
+}
+
+/**
+ * 作者在节点上标的「我这一层子节点怎么排」，按 value 建表供 branch-content 查。
+ */
+function collectChildrenOrientations(nodes: TreeNode[]): Map<string, Orientation> {
+  const out = new Map<string, Orientation>()
+  const walk = (list: TreeNode[]): void => {
+    for (const node of list) {
+      if (!node.children)
+        continue
+      if (node.childrenOrientation)
+        out.set(node.value, node.childrenOrientation)
       walk(node.children)
     }
   }
@@ -54,6 +72,7 @@ export function connectTree<T extends PropTypes>(
   const rows = flattenTree(collection, expandedValue)
   const metaIndex = indexTree(collection)
   const leafOnlyBranches = collectLeafOnlyBranches(collection)
+  const childrenOrientations = collectChildrenOrientations(collection)
   const visible = new Map(rows.map(row => [row.value, row]))
 
   // 焦点锚点投影成可见的：祖先分支收起后节点仍在 DOM 里但 hidden、不可聚焦，
@@ -70,6 +89,11 @@ export function connectTree<T extends PropTypes>(
   const isIndeterminate = (value: string): boolean => cascaded?.indeterminate.has(value) ?? false
   // 整棵树禁用向下传导到每个节点；节点也能在 collection 里单独禁用
   const isDisabled = (value: string): boolean => treeDisabled || !!metaOf(value)?.disabled
+
+  // 分支的子层怎么排：节点上标了 childrenOrientation 就以它为准；没标才退回结构判据——
+  // 只有子节点全是叶子的那一层才吃 leafOrientation，中间层恒竖排
+  const branchOrientation = (value: string): 'horizontal' | 'vertical' =>
+    childrenOrientations.get(value) ?? (leafOnlyBranches.has(value) ? leafOrientation : 'vertical')
 
   // roving tabindex 的唯一锚点：焦点在树内跟焦点走，否则落在首个可见的选中节点上。
   // 取可见序而非选中集合的第一个，后者可能藏在收起的分支里、hidden 不可聚焦。
@@ -495,9 +519,8 @@ export function connectTree<T extends PropTypes>(
       ...branchState(node.value),
       // 子层是 treeitem 的下一级分组，role=group 是 tree 结构的必需环节
       'role': 'group',
-      // group 不收 aria-orientation，排布方向只以 data 形式交给皮肤。
-      // 只有子节点全是叶子的那一层才吃 leafOrientation，中间层恒竖排
-      'data-orientation': leafOnlyBranches.has(node.value) ? leafOrientation : 'vertical',
+      // group 不收 aria-orientation，排布方向只以 data 形式交给皮肤
+      'data-orientation': branchOrientation(node.value),
       // 收起只加 hidden，不卸载作者节点，子树里的输入框与滚动位置得留着
       'hidden': !isExpanded(node.value) || undefined,
     }),

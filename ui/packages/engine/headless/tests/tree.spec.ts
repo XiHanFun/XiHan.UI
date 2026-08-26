@@ -457,6 +457,64 @@ describe('connectTree 属性输出', () => {
   })
 })
 
+/**
+ * 排布方向的两条来源：节点上的 childrenOrientation，与树级 leafOrientation 加结构判据。
+ * 两条给的答案在这棵树上处处相反，谁说了算一看便知。
+ */
+const MARKED: TreeNode[] = [
+  {
+    value: 'system',
+    label: 'System',
+    // 子节点全是分支，结构判据判它竖排
+    childrenOrientation: 'horizontal',
+    children: [
+      {
+        value: 'user',
+        label: 'User',
+        children: [
+          { value: 'user:add', label: 'Add' },
+          { value: 'user:del', label: 'Del' },
+        ],
+      },
+      {
+        value: 'role',
+        label: 'Role',
+        // 子节点全是叶子，结构判据判它跟树级走
+        childrenOrientation: 'vertical',
+        children: [
+          { value: 'role:grant', label: 'Grant' },
+          { value: 'role:revoke', label: 'Revoke' },
+        ],
+      },
+    ],
+  },
+]
+
+describe('子层排布方向', () => {
+  const orientationOf = (h: Harness, value: string): string | null =>
+    h.branch(value).content.getAttribute('data-orientation')
+
+  it('节点标记优先于结构判据', () => {
+    const h = mount({ collection: MARKED })
+    expect(orientationOf(h, 'system')).toBe('horizontal')
+    // 没标的分支照旧走结构判据加树级值
+    expect(orientationOf(h, 'user')).toBe('vertical')
+  })
+
+  it('标记 vertical 压得过树级 horizontal', () => {
+    const h = mount({ collection: MARKED, leafOrientation: 'horizontal' })
+    expect(orientationOf(h, 'role')).toBe('vertical')
+    // 同一层里没标的那个仍吃树级值
+    expect(orientationOf(h, 'user')).toBe('horizontal')
+  })
+
+  it('根层不受节点标记影响，恒竖排', () => {
+    const h = mount({ collection: MARKED, leafOrientation: 'horizontal' })
+    expect(h.treeEl.getAttribute('data-orientation')).toBe('vertical')
+    expect(h.root.getAttribute('data-orientation')).toBe('vertical')
+  })
+})
+
 describe('roving tabindex', () => {
   it('焦点在树外：容器兜底占 Tab 位，节点全部退出', () => {
     const h = mount()

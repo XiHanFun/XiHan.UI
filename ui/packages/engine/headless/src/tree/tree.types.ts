@@ -36,6 +36,14 @@ export interface TreeNode {
    * 子节点。给了数组即判定为分支，空数组也算：暂时没有子项的目录仍要报 aria-expanded。
    */
   children?: TreeNode[]
+  /**
+   * 这一层子节点怎么排，由作者在数据上标。给了就以它为准，`vertical` 也压得过树级的
+   * `leafOrientation`；不给才退回 `leafOrientation` 加「子节点全是叶子」的结构判据。
+   *
+   * 标在哪一层，横排就只落在哪一层：菜单授权里标在按钮的父菜单上，别的目录不受牵连，
+   * 也不随子节点增减漂移。只管排布，不动键盘。
+   */
+  childrenOrientation?: Orientation
 }
 
 /** 单个节点的层级元信息，由 collection 摊平/索引得出，不含展开态。 */
@@ -97,6 +105,9 @@ export interface TreeSchema extends MachineSchema {
      * 只作用于「子节点全是叶子」的那一层——菜单授权里就是按钮那层：
      * 一个菜单下十几个按钮，横排一行铺完，省掉纵向翻找。中间层与整棵树恒是竖排，
      * 它们承载的是层级本身，横过来层级就读没了。
+     *
+     * 这是结构判据，逐层自动认。要精确指定哪一层横排，在节点上标
+     * `childrenOrientation`，它比本项优先。
      *
      * 只管排布，不动键盘：方向键在树上是层级操作（左右收展、上下走可见行），
      * 这是 treeview 的规范语义，不随排布方向改写。
