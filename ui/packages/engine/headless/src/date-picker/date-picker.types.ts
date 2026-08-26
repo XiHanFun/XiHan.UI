@@ -182,6 +182,11 @@ export interface DatePickerSchema extends MachineSchema {
     visibleCount?: number
     /** 日历恒渲染六行，默认开。关掉后网格按当月实际周数收，翻页时浮层高度会跟着变。 */
     fixedWeeks?: boolean
+    /**
+     * 初始聚焦日，ISO 串；它同时决定展开时先落在哪一页。
+     * 不给就退回首个选中值，再退回今天。表单重置回到这一份。
+     */
+    defaultFocusedValue?: string
     /** 形态：outline / subtle / ghost，决定输入行的描边与底色怎么用。 */
     variant?: ControlVariant
     /** 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中强调用哪族颜色。 */
