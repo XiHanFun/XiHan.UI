@@ -5,6 +5,7 @@
 // success / warning / info 不到 4.5 所以配深字」这类实测数字。数字只在注释里就只是一句话，
 // 改令牌时没人会复算；这条门禁把它们落成断言：
 //   实心底 --xh-_tone        vs 实心底上的字 --xh-_tone-on   ≥ 4.5（AA 正文）
+//     —— 这一对验两遍：@supports 里按相对亮度现推的那一档，与它外面各族写死的兜底档
 //   淡底   --xh-_tone-subtle  vs 淡底上的字   --xh-_tone-fg   ≥ 4.5（AA 正文）
 //   装饰档 --xh-_tone-soft    vs 画布         --xh-bg-canvas  ≥ 3  （非文字图形）
 //   聚焦环 --xh-ring-focus    vs 画布         --xh-bg-canvas  ≥ 3  （非文字 UI 部件）
@@ -31,6 +32,39 @@ const THEMES = ['light', 'dark']
 const KNOWN = new Map([])
 
 // —— 解析 —— //
+
+/**
+ * 把 @supports 块摘出来：块内是够得着新特性时生效的增强档，块外是兜底档。
+ * 两档都要各自成立，所以分开解析、分别断言。
+ */
+function splitSupports(src) {
+  const bare = src.replace(/\/\*[\s\S]*?\*\//g, '')
+  const guarded = []
+  let rest = ''
+  let i = 0
+  while (i < bare.length) {
+    const at = bare.indexOf('@supports', i)
+    if (at === -1) {
+      rest += bare.slice(i)
+      break
+    }
+    rest += bare.slice(i, at)
+    const open = bare.indexOf('{', at)
+    if (open === -1)
+      throw new Error('@supports 没有块')
+    let depth = 0
+    let j = open
+    for (; j < bare.length; j++) {
+      if (bare[j] === '{')
+        depth++
+      else if (bare[j] === '}' && --depth === 0)
+        break
+    }
+    guarded.push(bare.slice(open + 1, j))
+    i = j + 1
+  }
+  return { guarded: guarded.join('\n'), rest }
+}
 
 /** 把一段 CSS 拆成 { selector, decls } 数组，只认 `--xh-*: value;` 声明。 */
 function parseBlocks(src) {
@@ -88,6 +122,17 @@ function loadTones(blocks) {
     for (const [k, v] of decls) target.set(k, v)
   }
   return { base, perTone, darkOverride }
+}
+
+/** @supports 块里落在 [data-tone] 上的声明，即现推那一档。 */
+function loadDerived(blocks) {
+  const derived = new Map()
+  for (const { selector, decls } of blocks) {
+    if (selector !== '[data-tone]')
+      continue
+    for (const [k, v] of decls) derived.set(k, v)
+  }
+  return derived
 }
 
 // —— 求值 —— //
@@ -173,7 +218,55 @@ function evaluate(expr, scope, trail = []) {
       b: A.color.b * wa + B.color.b * wb,
     }
   }
+  if (expr.startsWith('color(')) {
+    const m = inner(expr, 5).trim().match(/^from\s+(var\([^)]*\)|[\w-]+)\s+srgb-linear\s+([\s\S]+)$/)
+    if (!m)
+      throw new Error(`只认 color(from … srgb-linear …) 这一种写法：${expr}`)
+    // alpha 走 `/ a` 后缀，与三个通道分开；tone.css 里恒写 1
+    const [channelPart, alphaPart] = m[2].split('/')
+    if (alphaPart !== undefined && alphaPart.trim() !== '1')
+      throw new Error(`只认 alpha 为 1 的写法：${expr}`)
+    const channels = topLevelParts(channelPart)
+    if (channels.length !== 3 || new Set(channels).size !== 1)
+      throw new Error(`三个通道必须是同一个式子：${expr}`)
+    // 与 tone.css 里那两条逐字对上。Y 是 WCAG 相对亮度：
+    //   clamp(0, (阈值 - Y) * 系数, 1)   低于阈值取 1（白）——前景那一支
+    //   clamp(0, (Y - 阈值) * 系数, 1)   高于阈值取 1（白）——挪动方向那一支，取前景的反面
+    const recipe = channels[0].replace(/\s+/g, '')
+    const below = recipe.match(/^clamp\(0,\(([\d.]+)-\(0\.2126\*r\+0\.7152\*g\+0\.0722\*b\)\)\*(?:[\d.e+]+|infinity),1\)$/)
+    const above = recipe.match(/^clamp\(0,\(\(0\.2126\*r\+0\.7152\*g\+0\.0722\*b\)-([\d.]+)\)\*(?:[\d.e+]+|infinity),1\)$/)
+    if (!below && !above)
+      throw new Error(`择色式子的形态对不上，改了式子要同步改本脚本：${channels[0]}`)
+    const y = luminance(evaluate(m[1], scope, trail))
+    const threshold = Number((below ?? above)[1])
+    const white = below ? y < threshold : y > threshold
+    // 通道同为 0 即纯黑、同为 1 即纯白（oklab 里 a=b=0、L 取 0 或 1）
+    return white ? { L: 1, a: 0, b: 0 } : { L: 0, a: 0, b: 0 }
+  }
   throw new Error(`不认识的颜色表达式：${expr}`)
+}
+
+/** 按顶层空白拆分；括号里的空白与逗号不拆。 */
+function topLevelParts(s) {
+  const out = []
+  let depth = 0
+  let cur = ''
+  for (const ch of s) {
+    if (ch === '(')
+      depth++
+    if (ch === ')')
+      depth--
+    if (depth === 0 && /\s/.test(ch)) {
+      if (cur)
+        out.push(cur)
+      cur = ''
+      continue
+    }
+    cur += ch
+  }
+  if (cur)
+    out.push(cur)
+  return out
 }
 
 // —— 色彩数学 —— //
@@ -216,7 +309,9 @@ function hex(oklab) {
 // —— 断言 —— //
 
 const themes = loadThemes(parseBlocks(await readFile(TOKENS, 'utf8')))
-const tones = loadTones(parseBlocks(await readFile(TONE, 'utf8')))
+const toneSrc = splitSupports(await readFile(TONE, 'utf8'))
+const tones = loadTones(parseBlocks(toneSrc.rest))
+const derived = loadDerived(parseBlocks(toneSrc.guarded))
 
 const failures = []
 const knownSeen = new Set()
@@ -257,7 +352,10 @@ for (const theme of THEMES) {
       tokens,
     ]
     const at = name => evaluate(`var(${name})`, scope)
-    assert(`${theme}/${tone}/solid`, '实心底 vs on 字', at('--xh-_tone-on'), at('--xh-_tone'), 4.5)
+    // 现推那一档压在兜底档之上，两档各验一遍：够得着新特性与够不着的引擎都要成立
+    const atDerived = name => evaluate(`var(${name})`, [derived, ...scope])
+    assert(`${theme}/${tone}/solid`, '实心底 vs on 字（现推）', atDerived('--xh-_tone-on'), at('--xh-_tone'), 4.5)
+    assert(`${theme}/${tone}/solid-fallback`, '实心底 vs on 字（兜底）', at('--xh-_tone-on'), at('--xh-_tone'), 4.5)
     assert(`${theme}/${tone}/subtle`, '淡底 vs fg 字', at('--xh-_tone-fg'), at('--xh-_tone-subtle'), 4.5)
     // 淡底的两个交互态跟静态档同样要读得清：悬停与按下时字色不变，底却更深一档
     assert(`${theme}/${tone}/subtle-hover`, '淡底悬停 vs fg 字', at('--xh-_tone-fg'), at('--xh-_tone-subtle-hover'), 4.5)
@@ -266,8 +364,10 @@ for (const theme of THEMES) {
     assert(`${theme}/${tone}/on-surface`, '面 vs fg 字', at('--xh-_tone-fg'), evaluate('var(--xh-bg-surface)', scope), 4.5)
     assert(`${theme}/${tone}/on-raised`, '抬起的面 vs fg 字', at('--xh-_tone-fg'), evaluate('var(--xh-bg-surface-raised)', scope), 4.5)
     // 实心底的两个交互态：底更深，on 字不变
-    assert(`${theme}/${tone}/solid-hover`, '实心底悬停 vs on 字', at('--xh-_tone-on'), at('--xh-_tone-hover'), 4.5)
-    assert(`${theme}/${tone}/solid-active`, '实心底按下 vs on 字', at('--xh-_tone-on'), at('--xh-_tone-active'), 4.5)
+    assert(`${theme}/${tone}/solid-hover`, '实心底悬停 vs on 字（现推）', atDerived('--xh-_tone-on'), at('--xh-_tone-hover'), 4.5)
+    assert(`${theme}/${tone}/solid-active`, '实心底按下 vs on 字（现推）', atDerived('--xh-_tone-on'), at('--xh-_tone-active'), 4.5)
+    assert(`${theme}/${tone}/solid-hover-fallback`, '实心底悬停 vs on 字（兜底）', at('--xh-_tone-on'), at('--xh-_tone-hover'), 4.5)
+    assert(`${theme}/${tone}/solid-active-fallback`, '实心底按下 vs on 字（兜底）', at('--xh-_tone-on'), at('--xh-_tone-active'), 4.5)
     // 可操作区的边界要 3:1，这一档是专门为它兜过底的
     assert(`${theme}/${tone}/border-control`, '控件边界 vs 面', at('--xh-_tone-border-control'), evaluate('var(--xh-bg-surface)', scope), 3)
     // 装饰档画的是色条、指示条这类非文字图形，压在画布上同样要 3:1

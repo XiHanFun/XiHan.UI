@@ -8,6 +8,9 @@
 //   拒绝名单    → 高于地板且无从兜底的特性,出现即失败(@container 会把底线从 2023-03 抬到 2023-09)
 //   级联兜底    → 允许的增强特性(light-dark / 动态视口单位)必须同级联兜底:同一规则块内,
 //                 同一属性先写一条旧引擎认的取值,再写新特性,旧引擎丢弃后一条、保留前一条
+//   守卫兜底    → 另一类增强的旧写法与新写法不能落在同一条声明上(整块规则要么全生效要么全丢弃),
+//                 那就必须把它包进测同一个特性的 @supports 块里,块外留一份旧写法;
+//                 块外出现即失败
 //   白名单      → field-sizing 的退化路径是 textarea 的 rows 属性(HTML 侧),CSS 里没有可机械
 //                 验证的兜底,按文件白名单放行,新用法必须来这条名单面前说清退化路径
 //
@@ -36,6 +39,39 @@ const CASCADE = [
   { name: 'light-dark()', marker: /light-dark\(/, fallbackOf: value => !value.includes('light-dark('), hint: '同一属性先写一条普通颜色声明,再写 light-dark() 那条' },
   { name: '动态视口单位 svh/lvh/dvh', marker: /(?:^|[^a-z-])(?:svh|lvh|dvh)\b/, fallbackOf: value => /(?:^|[^a-z-])vh\b/.test(value), hint: '同一属性先写 vh 声明,再写动态视口单位那条' },
 ]
+
+// —— 受 @supports 守卫的增强:每一处都必须落在测同一个特性的 @supports 块里 ——
+const GUARDED = [
+  {
+    name: '相对颜色语法 color(from …)',
+    re: /\b(?:color|oklch|oklab|lch|lab|hsl|hwb|rgb)\(\s*from\s/g,
+    reason: 'Chrome 119 / Firefox 128 / Safari 16.4 起,高于底线',
+    hint: '包进 @supports (color: color(from red srgb-linear r g b)),块外留一份写死的旧值',
+  },
+]
+
+/** 条件里测了同一个特性的 @supports 块覆盖的字符区间。 */
+function supportsRanges(css, re) {
+  const probe = new RegExp(re.source, re.flags.replace('g', ''))
+  const ranges = []
+  for (let i = css.indexOf('@supports'); i !== -1; i = css.indexOf('@supports', i + 1)) {
+    const open = css.indexOf('{', i)
+    if (open === -1)
+      break
+    if (!probe.test(css.slice(i, open)))
+      continue
+    let depth = 0
+    let j = open
+    for (; j < css.length; j++) {
+      if (css[j] === '{')
+        depth++
+      else if (css[j] === '}' && --depth === 0)
+        break
+    }
+    ranges.push([i, j])
+  }
+  return ranges
+}
 
 // —— 白名单:退化路径在 CSS 外,逐文件放行 ——
 const ALLOWLIST = new Map([
@@ -109,6 +145,15 @@ for (const file of files) {
     }
   }
 
+  // 受守卫的增强:块外出现即失败
+  for (const item of GUARDED) {
+    const ranges = supportsRanges(noComments, item.re)
+    for (const m of noComments.matchAll(item.re)) {
+      if (!ranges.some(([a, b]) => m.index >= a && m.index < b))
+        errors.push(`${file}:用了「${item.name}」却没被 @supports 守卫——${item.reason},${item.hint}`)
+    }
+  }
+
   // field-sizing 只允许出现在白名单文件里
   if (/field-sizing/.test(noComments) && !ALLOWLIST.has(file))
     errors.push(`${file}:用了 field-sizing,但不在白名单里——先说明退化路径再放进 ALLOWLIST`)
@@ -127,4 +172,4 @@ if (errors.length > 0) {
   process.exit(1)
 }
 
-console.log(`[check-css-floor] 通过:${files.length} 份皮肤没有抬底线的特性,增强特性都带级联兜底(白名单 ${ALLOWLIST.size} 条)`)
+console.log(`[check-css-floor] 通过:${files.length} 份皮肤没有抬底线的特性,增强特性都带级联兜底或 @supports 守卫(守卫 ${GUARDED.length} 档 · 白名单 ${ALLOWLIST.size} 条)`)
