@@ -219,7 +219,7 @@ function evaluate(expr, scope, trail = []) {
     }
   }
   if (expr.startsWith('color(')) {
-    const m = inner(expr, 5).trim().match(/^from\s+(var\([^)]*\)|[\w-]+)\s+srgb-linear\s+([\s\S]+)$/)
+    const m = inner(expr, 5).trim().match(/^from\s+(var\([^)]*\)|[\w-]+)\s+srgb-linear\s+(\S[\s\S]*)$/)
     if (!m)
       throw new Error(`只认 color(from … srgb-linear …) 这一种写法：${expr}`)
     // alpha 走 `/ a` 后缀，与三个通道分开；tone.css 里恒写 1
