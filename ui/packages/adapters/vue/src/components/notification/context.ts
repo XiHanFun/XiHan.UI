@@ -1,6 +1,19 @@
-import type { InjectionKey } from 'vue'
-import type { NotificationContext, NotificationItemContext } from './use-notification'
+import type { NotificationApi, NotificationItemApi, NotificationOptions } from '@xihan-ui/headless'
+import type { ComputedRef, InjectionKey } from 'vue'
 import { inject, provide } from 'vue'
+
+export interface NotificationContext {
+  api: ComputedRef<NotificationApi>
+  /** 入队并返回 id；同 id 已存在则就地改写，位置不动。 */
+  create: (options?: NotificationOptions) => string
+  update: (id: string, options: Partial<NotificationOptions>) => void
+  dismiss: (id: string) => void
+  dismissAll: () => void
+}
+
+export interface NotificationItemContext {
+  api: ComputedRef<NotificationItemApi>
+}
 
 const KEY: InjectionKey<NotificationContext> = Symbol.for('xh-notification')
 const ITEM_KEY: InjectionKey<NotificationItemContext> = Symbol.for('xh-notification-item')
