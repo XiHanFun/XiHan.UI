@@ -1,4 +1,4 @@
-<!-- 末端横排 | leaf-orientation="horizontal" 只作用于子节点全是叶子的那层：菜单授权里按钮一行铺开就选完，目录与菜单这些中间层恒竖排，层级得靠竖排读出来 -->
+<!-- 末端横排 | leaf-orientation 按结构判据横排「子节点全是叶子」的那层；要指定哪一层横排就在节点上标 childrenOrientation，它比树级值优先，标 vertical 也压得住 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import {
@@ -22,6 +22,7 @@ const collection = [
     label: "系统管理",
     children: [
       {
+        // 没标：跟着树级开关走
         value: "user",
         label: "用户管理",
         children: [
@@ -32,12 +33,24 @@ const collection = [
         ],
       },
       {
+        // 标了横排：开关拨到竖排也照横
         value: "role",
         label: "角色管理",
+        childrenOrientation: "horizontal" as const,
         children: [
           { value: "role:add", label: "新增" },
           { value: "role:grant", label: "授权" },
           { value: "role:del", label: "删除" },
+        ],
+      },
+      {
+        // 标了竖排：按住树级的横排
+        value: "log",
+        label: "日志管理",
+        childrenOrientation: "vertical" as const,
+        children: [
+          { value: "log:view", label: "查看" },
+          { value: "log:export", label: "导出" },
         ],
       },
     ],
@@ -59,7 +72,7 @@ const selection = ref<string[]>(["user:add"]);
       v-model:selection="selection"
       :collection="collection"
       :leaf-orientation="wide ? 'horizontal' : 'vertical'"
-      :default-expanded-value="['system', 'user', 'role']"
+      :default-expanded-value="['system', 'user', 'role', 'log']"
       selection-mode="multiple"
       cascade
     >

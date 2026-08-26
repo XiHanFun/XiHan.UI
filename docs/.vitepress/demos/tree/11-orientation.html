@@ -1,4 +1,4 @@
-<!-- 末端横排 | leaf-orientation="horizontal" 只作用于子节点全是叶子的那层：菜单授权里按钮一行铺开就选完，目录与菜单这些中间层恒竖排，层级得靠竖排读出来 -->
+<!-- 末端横排 | leaf-orientation 按结构判据横排「子节点全是叶子」的那层；要指定哪一层横排就在节点上标 childrenOrientation，它比树级值优先，标 vertical 也压得住 -->
 <div style="width: 100%; display: grid; gap: 12px; justify-items: start">
   <label style="display: inline-flex; gap: 6px; align-items: center">
     <input id="tree-orientation-wide" type="checkbox" checked />
@@ -63,6 +63,24 @@
                 </div>
               </div>
             </div>
+
+            <div data-xh-part="branch" value="log">
+              <div data-xh-part="branch-control">
+                <span data-xh-part="branch-trigger"></span>
+                <span data-xh-part="branch-checkbox"></span>
+                <span data-xh-part="branch-text">日志管理</span>
+              </div>
+              <div data-xh-part="branch-content">
+                <div data-xh-part="item" value="log:view">
+                  <span data-xh-part="item-checkbox"></span>
+                  <span data-xh-part="item-text">查看</span>
+                </div>
+                <div data-xh-part="item" value="log:export">
+                  <span data-xh-part="item-checkbox"></span>
+                  <span data-xh-part="item-text">导出</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -80,6 +98,7 @@
       label: "系统管理",
       children: [
         {
+          // 没标：跟着树级开关走
           value: "user",
           label: "用户管理",
           children: [
@@ -90,19 +109,31 @@
           ],
         },
         {
+          // 标了横排：开关拨到竖排也照横
           value: "role",
           label: "角色管理",
+          childrenOrientation: "horizontal",
           children: [
             { value: "role:add", label: "新增" },
             { value: "role:grant", label: "授权" },
             { value: "role:del", label: "删除" },
           ],
         },
+        {
+          // 标了竖排：按住树级的横排
+          value: "log",
+          label: "日志管理",
+          childrenOrientation: "vertical",
+          children: [
+            { value: "log:view", label: "查看" },
+            { value: "log:export", label: "导出" },
+          ],
+        },
       ],
     },
   ];
 
-  tree.expandedValue = ["system", "user", "role"];
+  tree.expandedValue = ["system", "user", "role", "log"];
   tree.addEventListener(
     "expanded-change",
     (event) => (tree.expandedValue = event.detail.value),

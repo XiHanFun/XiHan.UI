@@ -19,6 +19,9 @@
 - `cascade` 与 `checkedStrategy` 决定勾父带不带子、以及回显给哪一层。
 - 支持只让叶子进选中集合、关键词过滤、子节点异步加载、拖放换父。
 - `expandOnClick` 决定点整行是否展开。
+- `leafOrientation` 按结构判据横排：子节点全是叶子的那层跟着它走，其余恒竖排。
+- 节点上标 `childrenOrientation: 'horizontal' | 'vertical'` 指定「我这一层子节点怎么排」，
+  比 `leafOrientation` 优先；标 `vertical` 能把树级的 `horizontal` 按回竖排。根层不受影响，恒竖排。
 
 ## 组合
 
@@ -28,6 +31,8 @@
 
 - 大树一定要虚拟化或按需加载，一次展开全部会卡住。
 - 级联勾选的策略要与后端约定一致。
+- 只想让某一层横排就标 `childrenOrientation`，别开树级 `leafOrientation`：
+  后者认结构，别处凑巧「子节点全是叶子」的层也会跟着横过来，还会随数据增减变来变去。
 
 ## 反模式
 

@@ -24074,8 +24074,7 @@ input[data-scope='mention'][data-part='input'] {
   column-gap: var(--xh-tree-leaf-row-gap, var(--xh-space-3));
 }
 
-/* 横排的一层里节点并排，行盒不能再各自吃满一行。
-   这一层按定义全是叶子，不会出现分支 */
+/* 横排的一层里节点并排，行盒不能再各自吃满一行 */
 [data-orientation='horizontal'] > [data-scope='tree'][data-part='item'] {
   flex: none;
 }
