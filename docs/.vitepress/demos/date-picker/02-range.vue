@@ -1,4 +1,4 @@
-<!-- 区间选择 | 五种粒度都能挑区间：默认并排两个连续页，翻页整窗一起走；« » 走大步 -->
+<!-- 区间选择 | 五种粒度都能挑区间：两端跨页才并排两页，同一页放得下就一页；翻页整窗一起走，« » 走大步 -->
 <script setup lang="ts">
 import type { CalendarView } from "@xihan-ui/headless";
 import { ref } from "vue";
@@ -82,14 +82,15 @@ function text(v: string[]): string {
       </XhDatePickerControl>
       <XhDatePickerPositioner>
         <XhDatePickerContent>
-          <XhDatePickerCalendar v-for="panel in panels" :key="panel.index">
+          <!-- 面板号写在日历上，面板内的标题、网格与格子跟着它走 -->
+          <XhDatePickerCalendar v-for="panel in panels" :key="panel.index" :index="panel.index">
             <XhDatePickerHeader>
               <!-- 往前只在最左那张、往后只在最右那张：整窗一起走 -->
               <XhDatePickerPrevYearTrigger v-if="panel.index === 0" aria-label="快退">
                 «
               </XhDatePickerPrevYearTrigger>
               <XhDatePickerPrevTrigger v-if="panel.index === 0" aria-label="上一页" />
-              <XhDatePickerHeading :index="panel.index" />
+              <XhDatePickerHeading />
               <XhDatePickerNextTrigger v-if="panel.index === panels.length - 1" aria-label="下一页" />
               <XhDatePickerNextYearTrigger
                 v-if="panel.index === panels.length - 1"
@@ -98,7 +99,7 @@ function text(v: string[]): string {
                 »
               </XhDatePickerNextYearTrigger>
             </XhDatePickerHeader>
-            <XhDatePickerGrid :index="panel.index">
+            <XhDatePickerGrid>
               <template v-if="panel.weeks.length > 0">
                 <XhDatePickerGridHead>
                   <XhDatePickerWeekRow>
@@ -116,7 +117,6 @@ function text(v: string[]): string {
                       v-for="day in week"
                       :key="day.value"
                       :value="day.value"
-                      :index="panel.index"
                     >
                       <XhDatePickerCellTrigger>{{ day.day }}</XhDatePickerCellTrigger>
                     </XhDatePickerCell>
@@ -128,7 +128,6 @@ function text(v: string[]): string {
                 v-else
                 :key="cell.value"
                 :value="cell.value"
-                :index="panel.index"
               >
                 <XhDatePickerCellTrigger>{{ cell.label }}</XhDatePickerCellTrigger>
               </XhDatePickerCell>

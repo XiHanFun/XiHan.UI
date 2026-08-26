@@ -585,6 +585,37 @@ describe('多面板', () => {
     expect(inMar['data-outside-month']).toBeUndefined()
   })
 
+  it('同一天在两个面板里只画一次：区间与选中都归认领它的那张面板', () => {
+    // 2024-03-01 既在 2 月网格的末行，也在 3 月网格里；区间 2/20 → 3/05 覆盖它
+    const api = mount({
+      defaultFocusedValue: '2024-02-15',
+      visibleCount: 2,
+      selectionMode: 'range',
+      defaultValue: ['2024-02-20', '2024-03-05'],
+    }).api()
+    const inFeb = api.getCellProps({ value: '2024-03-01', index: 0 }) as Record<string, unknown>
+    const inMar = api.getCellProps({ value: '2024-03-01', index: 1 }) as Record<string, unknown>
+    expect(inFeb['data-in-range']).toBeUndefined()
+    expect(inMar['data-in-range']).toBe('')
+
+    // 区间终点 3/05 只在三月那张面板上是端点
+    const endInFeb = api.getCellProps({ value: '2024-03-05', index: 0 }) as Record<string, unknown>
+    const endInMar = api.getCellProps({ value: '2024-03-05', index: 1 }) as Record<string, unknown>
+    expect(endInFeb['data-range-end']).toBeUndefined()
+    expect(endInFeb['data-selected']).toBeUndefined()
+    expect(endInFeb['aria-selected']).toBe('false')
+    expect(endInMar['data-range-end']).toBe('')
+    expect(endInMar['data-selected']).toBe('')
+    expect(endInMar['aria-selected']).toBe('true')
+  })
+
+  it('单面板下没有另一张面板认领，落在邻月格的选中日照画', () => {
+    const api = mount({ defaultFocusedValue: '2024-02-15', defaultValue: '2024-03-01' }).api()
+    const cell = api.getCellProps({ value: '2024-03-01' }) as Record<string, unknown>
+    expect(cell['data-outside-month']).toBe('')
+    expect(cell['data-selected']).toBe('')
+  })
+
   it('每个面板的网格各由自己那行标题命名', () => {
     const api = mount({ defaultFocusedValue: '2024-02-15', visibleCount: 2 }).api()
     const g0 = api.getGridProps({ index: 0 }) as Record<string, unknown>

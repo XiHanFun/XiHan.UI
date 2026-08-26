@@ -176,10 +176,12 @@ export interface DatePickerSchema extends MachineSchema {
      */
     presets?: DatePickerPreset[]
     /**
-     * 并排展示几个连续月，默认单选 1、区间 2。
-     * 区间的起止常跨月，一个面板要来回翻页才挑得完,两个并排才顺手。
+     * 并排展示几个连续月。单选恒 1；区间按已选的两端定：同一页里放得下就 1，跨页才 2。
+     * 还只落了一端时按 2 算——另一端常在下一页，一张面板得来回翻。
      */
     visibleCount?: number
+    /** 日历恒渲染六行，默认开。关掉后网格按当月实际周数收，翻页时浮层高度会跟着变。 */
+    fixedWeeks?: boolean
     /** 形态：outline / subtle / ghost，决定输入行的描边与底色怎么用。 */
     variant?: ControlVariant
     /** 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中强调用哪族颜色。 */
