@@ -184,8 +184,7 @@ export function getRuntimeInfo(): RuntimeInfo {
 function hostLine(): string {
   if (runtimeHost === null)
     return '宿主:未登记(适配器尚未启动)'
-  const lockstep = runtimeHost.version === XIHAN_UI_METADATA.version ? '锁步一致' : `锁步不一致(${runtimeHost.version} ≠ ${XIHAN_UI_METADATA.version})`
-  return `宿主:${runtimeHost.name} v${runtimeHost.version} · ${lockstep}`
+  return `宿主:${runtimeHost.name} v${runtimeHost.version}`
 }
 
 /** 框架信息摘要:名称、版本、描述、寄语与宿主,一段话。 */

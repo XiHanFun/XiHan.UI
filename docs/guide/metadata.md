@@ -57,7 +57,7 @@ const summary = getMetadataSummary()
 // 迁般故事终成忆，谨此葳蕤换思短。
 //               —— 致她
 //
-// 宿主：vue v1.0.0-preview.0 · 锁步一致
+// 宿主：vue v1.0.0-preview.0
 
 const details = getMetadataDetails() // 摘要之外再补作者 / 组织 / 仓库 / 文档 / 许可证 / 环境
 
@@ -65,8 +65,6 @@ const details = getMetadataDetails() // 摘要之外再补作者 / 组织 / 仓�
 printMetadataSummary()
 printMetadataDetails()
 ```
-
-宿主行如实报锁步一致性：宿主版本与 kernel 版本不同时显示「锁步不一致」并列出两边版本号。
 
 ### 启动横幅：引用即打印
 
@@ -90,7 +88,7 @@ XiHan.UI 曦寒视图 v1.0.0-preview.0
 迁般故事终成忆，谨此葳蕤换思短。
               —— 致她
 
-宿主：vue v1.0.0-preview.0 · 锁步一致
+宿主：vue v1.0.0-preview.0
 ```
 
 不想要时关掉（只影响之后的启动，手动 print 不受影响）：
