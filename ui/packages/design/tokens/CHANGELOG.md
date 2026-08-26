@@ -1,5 +1,54 @@
 # @xihan-ui/tokens
 
+## 1.0.0-preview.0
+
+### Minor Changes
+
+- 9ea57f6: 颜色能力收成一处：亮度、对比度、择色、混色与深浅，从 `@xihan-ui/tokens` 导出。
+
+  这套数学此前在四个地方各写了一份：`runtime/brand.ts` 的私有换算、令牌层的对比度用例、语气对比度门禁，以及消费方自己的主题钩子。四份互不知道对方存在，判据也就各走各的——消费方那份把「白字还是深字」的交叉点写成了相对亮度 0.55，而正确的交叉点是 0.179，等于恒选白字。
+
+  新增 `runtime/color.ts`，`brand.ts` 改成建在它之上（`deriveBrandScale` 的产出逐值不变）：
+
+  - `relativeLuminance` / `contrastRatio` / `meetsContrast` / `CONTRAST_MIN`
+  - `pickOnColor`：压在某个底色上读得清的那一档。判据是 WCAG 相对亮度而不是 OKLCH 的 L——后者不含通道权重，同一个 L 上黄与蓝的实际亮度差得很远，按 L 分派会挑错边
+  - `pickAwayColor`：交互态该往哪一侧挪，恒取前景的反面
+  - `ON_COLOR_CROSSOVER`：白字与黑字对比度相等的那一点，`√0.0525 − 0.05 ≈ 0.179`，解析解
+  - `mixColors`：与 CSS 的 `color-mix(in oklab, …)` 同一条路（在 oklab 里插值，不走 oklch 的极坐标）
+  - `lighten` / `darken` / `withAlpha`
+  - 换算与色域那几样一并转正：`parseColorToOklch`、`formatOklch`、`clampChroma`、`inSrgbGamut` 等
+
+  CSS 那侧做不成同样的共享槽：相对颜色语法的 `r` / `g` / `b` 只在色函数被解析时存在，而自定义属性是之后才替换的——把配方放进槽再 `var()` 进通道位，两种形态都实测失败（整条无效，六族退化成同一个颜色）。所以配方仍写在使用处（`tone.css`），由 `check-tone-contrast` 逐字对账它的形态，`check-css-floor` 管住「必须包 @supports」，令牌包的 `color.spec.ts` 再把那条配方里的交叉点与通道权重读出来与本模块对账——三道合起来保证两边算的是同一件事。
+
+- ec93d6b: 浮层里的条目之间加 2px 行距，新增语义令牌 `--xh-list-option-gap` 统一这把尺。
+
+  **下拉里选中项与悬停项贴成一整块。** a11 的选中蓝底与 b22 的悬停灰底之间没有一丝缝，
+  两块底色首尾相接，读起来像一条被涂了两截颜色的长条而不是两个条目。
+
+  **库内自己就有三种方言**：浮层选项列（time-picker / date-picker 的时间列与预设列）已经是
+  2px，页面导航列（side-nav / navigation-menu）是 4px，下拉、菜单、树这一族是 0。补上 2px
+  是把这一族拉回库内既有的口径。
+
+  `list` 组的描述原文写着「option-\* 给浮层里的条目——菜单项、下拉选项、树行、时间列」，
+  新令牌落在这一组：`--xh-list-option-gap: 2px`。compact 档不覆盖，2px 已是最小档。
+
+  22 个条目的直接父容器接上这把尺：select 的 `list`；combobox / listbox 的 `content` 与
+  `item-group`；popselect 与 mention 的 `content`；menu / menubar / context-menu 的 `content`
+  与 `group`；cascader 的 `column` 与 `search-list`；tree 与 tree-select 的 `tree`、
+  `branch-content`、`branch`；transfer 的 `list`。装 list 加 footer 的外壳（select /
+  tree-select 的 `content`）不接——它不是条目的父层。json-viewer 也不接，只读数据视图与
+  table、log 同为紧排一档。
+
+  `tree` 与 `tree-select` 的 `branch` 此前是块盒，为接这把尺改成纵向 flex，tree-select 同时
+  补上此前缺的 `[hidden]` 兜底。
+
+  节奏顺手收一级，加了 gap 之后总量不变：combobox 与 listbox 的组间距 8px → 6px，
+  menu / menubar / context-menu 的分隔线外边距 4px → 2px。time-picker 那两处等值的
+  `--xh-space-0_5` 改指新令牌，视觉不变。
+
+  这把尺打在容器上，所以分组标题与它下面第一条之间同样多出 2px——分组标题是 `group`
+  的第一个子元素，与条目同属一层 flex 子项。
+
 ## 1.0.0-alpha.3
 
 ### Major Changes
@@ -50,6 +99,7 @@
   把模态关掉）。
 
   ## 其余
+
   - `--xh-editable-preview-line-height` 删除，改用 `--xh-editable-preview-min-h`：预览态
     原先拿行高冒充高度，实测比同组件的编辑态高 2px，切换时跳一下。
   - tooltip 与 navigation-menu 入层栈，Escape 不再连它们下面的对话框一起关掉。

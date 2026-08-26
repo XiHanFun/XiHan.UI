@@ -8,7 +8,7 @@ Framework-agnostic component library. State machines and accessibility live in a
 
 119 components, each shipping a headless core, a Vue component, a custom element, and a default skin.
 
-> **Experimental.** Published to npm as `1.0.0-alpha.3` — a pre-release: no semver guarantees, the API can still change. The documentation site is live at https://ui.docs.xihanfun.com. Accessibility is scanned in real Chromium; the backlog is down to two recorded entries (the shared table’s `tag` disabled-state contrast and the WC-side `steps` required-children), plus one replay exemption for `breadcrumb`. Do not depend on it in production.
+> **Preview.** Published to npm as `1.0.0-preview.0` — a pre-release: no semver guarantees, the API can still change. The documentation site is live at https://ui.docs.xihanfun.com. Accessibility is scanned in real Chromium; the backlog is down to two recorded entries (the shared table’s `tag` disabled-state contrast and the WC-side `steps` required-children), plus one replay exemption for `breadcrumb`. Do not depend on it in production.
 
 ## Packages
 

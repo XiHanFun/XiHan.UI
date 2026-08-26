@@ -28,8 +28,6 @@
 
 </div>
 
-> **实验性项目**：119 个组件的无头内核、双适配器与默认皮肤均已实现，npm 上是 `1.0.0-alpha.3` **预发布版**，不承诺语义化版本、接口仍会变，请勿在生产环境依赖。
-
 ## 简介
 
 XiHan.UI 以框架无关的 Headless Core 为核心：一个组件的状态、交互与无障碍逻辑沉在无头内核里，各框架只写一层薄适配器。同一份 `connect()` 产出在 Vue 与 Web Components 两端跑同一套一致性测试，逐帧比对归一化后的 DOM，以此证明「框架无关」不是口号。属于曦寒懿（XiHanFun）开源生态的组件层，拥有底座、组件、应用的完整生态。
@@ -46,7 +44,7 @@ XiHan.UI 以框架无关的 Headless Core 为核心：一个组件的状态、�
 
 ## 安装
 
-17 个公开包均已发布至 npm，当前版本 `1.0.0-alpha.3`（`latest` 与 `alpha` 两个 tag 同指这一版）。
+17 个公开包均已发布至 npm，当前版本 `1.0.0-preview.0`（`preview` tag 指向这一版）。
 
 ```bash
 pnpm add @xihan-ui/vue @xihan-ui/tokens @xihan-ui/styles

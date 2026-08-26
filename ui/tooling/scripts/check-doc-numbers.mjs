@@ -870,23 +870,17 @@ function parseCount(text) {
 
 const TABLE = [
   // 发版当天最容易漏的一批：正文里「当前版本是 X」的陈述
-  ['README.md', /npm 上是 `([\w.-]+)` \*\*预发布版\*\*/, '当前版本'],
-  ['README.md', /当前版本 `([\w.-]+)`（`latest`/, '当前版本'],
-  ['docs/index.md', /库包已发布到 npm，当前版本 `([\w.-]+)`/, '当前版本'],
-  ['docs/introduction.md', /已发布到 npm，当前版本 `([\w.-]+)`/, '当前版本'],
+  ['README.md', /当前版本 `([\w.-]+)`（`preview`/, '当前版本'],
   ['docs/installation.md', /都已发布到 npm，当前版本 `([\w.-]+)`/, '当前版本'],
   ['docs/faq.md', /库包已发布到 npm，当前版本 `([\w.-]+)`/, '当前版本'],
-  ['docs/faq.md', /两个 dist-tag 都指向 `([\w.-]+)`/, '当前版本'],
-  ['docs/changelog.md', /锁步同版，当前版本 `([\w.-]+)`/, '当前版本'],
+  ['docs/faq.md', /`preview` dist-tag 指向 `([\w.-]+)`/, '当前版本'],
   // 文档站是私有包，但版本号一直照着库包写；不登记就会像此前那样停在 alpha.1
   ['docs/package.json', /"version": "([\w.-]+)"/, '当前版本'],
   ['docs/guide/metadata.md', /XiHan\.UI 曦寒视图 v([\w.-]+)/, '当前版本'],
   ['docs/guide/metadata.md', /宿主：vue v([\w.-]+)/, '当前版本'],
   ['docs/npm-package-dependency.md', /^\| `@xihan-ui\/[\w-]+` \| `([\w.-]+)`/m, '当前版本'],
-  ['docs/npm-package-dependency.md', /个包都已发布到 npm，版本 `([\w.-]+)`/, '当前版本'],
   ['docs/npm-package-dependency.md', /发布时展开为 `\^([\w.-]+)` 区间/, '当前版本'],
   ['README.md', /Components-(\d+)-1f6feb/, '组件数'],
-  ['README.md', /\*\*实验性项目\*\*：(\d+) 个组件/, '组件数'],
   ['README.md', /- \*\*(\d+) 个组件\*\* - 覆盖/, '组件数'],
   ['README.md', /已经能用的：(\d+) 个组件/, '组件数'],
   ['README.md', /^(\d+) 个公开包均已发布至 npm/m, '公开包数'],
@@ -945,7 +939,6 @@ const TABLE = [
   ['docs/adapters/web-components.md', /注册全部 (\d+) 个 xh-\* 元素/, '自定义元素数'],
   ['docs/adapters/web-components.md', /（CEM 格式），(\d+) 个元素的标签名/, 'CEM元素数'],
 
-  ['docs/npm-package-dependency.md', /^(\d+) 个包都已发布到 npm/m, '公开包数'],
   ['docs/npm-package-dependency.md', /每份皮肤一条 CSS，共 (\d+) 条/, '皮肤份数'],
   ['docs/npm-package-dependency.md', /（(\d+) 份组件皮肤/, '组件皮肤份数'],
   ['docs/npm-package-dependency.md', /\+ (\d+) 份共享层）/, '共享皮肤份数'],
@@ -1013,7 +1006,7 @@ const TABLE = [
   ['ui/README.md', /CommonMark subset, \d+\/(\d+)/, 'CommonMark用例总数'],
   ['ui/README.md', /Requires Node ≥ (\d+) and pnpm ≥ \d+/, '开发期Node主版本下限'],
   ['ui/README.md', /Requires Node ≥ \d+ and pnpm ≥ (\d+)/, '开发期pnpm主版本下限'],
-  ['ui/README_cn.md', /npm 上是 `([\w.-]+)` 预发布版/, '当前版本'],
+  ['ui/README_cn.md', /npm 上是 `([\w.-]+)` 预览版/, '当前版本'],
   ['ui/README_cn.md', /存量违规登记表只剩([\d一二三四五六七八九十两]+)条/, 'a11y存量违规条数'],
   ['ui/README_cn.md', /另有([\d一二三四五六七八九十两]+)条 breadcrumb 的步骤重放豁免/, 'a11y重放豁免条数'],
   ['ui/README_cn.md', /一致率 (\d+)\/\d+）/, 'CommonMark通过数'],
@@ -1048,7 +1041,6 @@ const TABLE = [
   ['docs/guide/versioning.md', /\| `meta\.requiredParts`（必备部件） \| (\d+) 条/, 'requiredParts条数'],
 
   // 「17 个公开包」散落处。changelog 只锚这一句，底下的历史条目不碰
-  ['docs/changelog.md', /(\d+) 个公开包（`@xihan-ui\/\*`）由 changesets/, '公开包数'],
   ['docs/guide/versioning.md', /^## (\d+) 个包必须同版本安装/m, '公开包数'],
   ['docs/guide/versioning.md', /^(\d+) 个包锁步发布/m, '公开包数'],
   ['docs/guide/versioning.md', /全部 (\d+) 个包一起发同一个号/, '公开包数'],
@@ -1098,8 +1090,6 @@ const TABLE = [
   ['docs/faq.md', /无障碍存量违规还剩([\d一二三四五六七八九十两]+)条登记在案/, 'a11y存量违规条数'],
   ['docs/faq.md', /另有([\d一二三四五六七八九十两]+)条 breadcrumb 的步骤重放豁免/, 'a11y重放豁免条数'],
   ['docs/faq.md', /另有 breadcrumb ([\d一二三四五六七八九十两]+)条步骤重放豁免/, 'a11y重放豁免条数'],
-  ['docs/introduction.md', /登记表里只剩([\d一二三四五六七八九十两]+)条/, 'a11y存量违规条数'],
-  ['docs/introduction.md', /另有([\d一二三四五六七八九十两]+)条 breadcrumb 的步骤重放豁免/, 'a11y重放豁免条数'],
   ['docs/guide/a11y.md', /当前共([\d一二三四五六七八九十两]+)条/, 'a11y存量违规条数'],
   ['docs/guide/a11y.md', /只剩([\d一二三四五六七八九十两]+)个组件在真机里推不到用例终态/, 'a11y重放豁免条数'],
 ]

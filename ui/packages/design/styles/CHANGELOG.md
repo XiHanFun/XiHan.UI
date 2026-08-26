@@ -1,5 +1,461 @@
 # @xihan-ui/styles
 
+## 1.0.0-preview.0
+
+### Major Changes
+
+- bc7eeed: 徽标收窄成「只做角标」，并补齐角标该有的能力。
+
+  原先 badge 与 tag 是一对孪生：`variant` 三形态、`size` 三档、默认插槽放任意内容，
+  连档位取值都逐个相同。两个组件做同一件事，使用者只能靠猜。
+
+  现在 badge 只做一件事——挂在别的元素角上的一枚标记：
+
+  ```vue
+  <XhBadge :count="5" tone="danger" label="5 条未读">
+    <XhButton>收件箱</XhButton>
+  </XhBadge>
+  ```
+
+  - 解剖从单层 `root` 变成 `root`（锚点）+ `indicator`（角标），定位归组件自己管，
+    不再要宿主手写 `position: relative` 与负偏移。
+  - 新增 `placement`：`top-end`（默认）/ `top-start` / `bottom-end` / `bottom-start`，
+    用逻辑属性写，rtl 下自动落到另一侧。
+  - `size` 换的是圆点直径、两位数时的最小宽度与字号，不再是药丸那套内衬与行高。
+  - Vue 侧另出 `XhBadgeRoot` / `XhBadgeIndicator`，要往角标里塞自定义内容时用它们。
+
+  **破坏性**：删掉 `variant`；行内的状态药丸请改用 `tag`（`XhTagRoot` + `XhTagLabel`）。
+  `data-size` 与 `data-tone` 从 `root` 挪到 `indicator`。
+
+- 3c033ca: 通知按卡片重排：左侧类型字形、右上角关闭钮、两列网格。
+
+  它的皮肤是从旧的 toast 卡片逐字搬来的，搬完没人按「通知该长什么样」审过一遍，
+  于是留下三处硬伤：
+
+  - **叉掉到了卡片左下方**。`item` 是竖排 flex，而叉上写着
+    `align-self: flex-start` + `margin-inline-start: auto`——交叉轴上的 auto 外边距
+    会让对齐属性整条失效（flexbox §9.6），`align-self` 那行一点作用都没有，
+    叉成了正文下面的第三行。实测它落在距卡片顶 55px 处，卡片因此高出一截。
+    三家参考实现（Ant Design / Element Plus / Naive UI）都是绝对定位钉在右上角内衬处。
+  - **组件路径下一个类型指示物都没有**。徽记只由服务档的默认模板画，
+    12 份示例与所有 Web Components 使用者拿到的卡片，语气全靠起始侧那条 4px 色条承载，
+    而它压在卡片底上只有 1.9–2.8:1，`loading` 与 `info` 除颜色外完全同形。
+  - **字号比轻提示还小一档**（13px），标题与说明只差 7.7%，两层文字挤成一片。
+
+  现在：
+
+  - 新增 `item-indicator` 部件。作者留空即由皮肤按 `data-type` 画一枚兜底字形
+    （info / success / warning / error 各一枚，`loading` 给转圈），
+    颜色取 `--xh-_tone-fg`——与 alert 的状态图标同档，压在卡片底上十二组最低 4.08:1。
+  - **两列网格**：左列字形、右列标题与说明；叉绝对定位钉在右上角，标题自动让位
+    （写法照 dialog / drawer）。起始侧那条语气色条随之删除——三家都没有，
+    语气改由字形承载。
+  - 卡片宽 320 → 384px（`--xh-overlay-max-w-lg`，与 Ant Design 同值），
+    内衬四边 16px，字号回到正文档 14px。
+  - 服务档的默认模板改成四个节点平铺（不再套一层皮肤够不着的行容器），
+    说明部件恒渲染——`aria-describedby` 是无条件发的，节点缺席就成了悬空引用。
+  - 地标 `role="region"` 从 `root` 搬到 `group`。root 是 `display: contents` 的作用域包装，
+    量出来 0×0，地标挂在它身上跳过去落不到任何看得见的地方；那一摞才是真盒子。
+
+  顺带补上三处从来没有门禁看管的地方：`check-elevation-role`、`check-press-feedback`、
+  `check-clear-trigger` 三份名单都没登记过 notification，眼下合规纯属巧合。
+
+  **破坏性**：删掉 `--xh-notification-accent` 与 `--xh-notification-accent-width`
+  两个覆盖槽（色条没了）。另有几个槽的默认值变了：`--xh-notification-w`（20rem → 24rem）、
+  `--xh-notification-py` / `-px`（12/16 → 16/16）、`--xh-notification-font-size`（13 → 14）、
+  `--xh-notification-gap` 的语义从「行距」改为「图标与正文的列距」（行距另开
+  `--xh-notification-row-gap`）。地标从 root 挪到 group，按 `root[role=region]` 写过
+  自动化断言的要跟着改。
+
+- 1590d92: Select 的盒不再自带宽度上限，框宽交回布局；视觉行为变更。
+
+  `[data-part='control']` 上原有一条 `max-inline-size`，兜底取 `--xh-overlay-max-w`（20rem / 320px）。
+  浮层的宽度预算被搬到了在流内排布的表单控件上：格子一旦宽过 320px，select 就停在 320px 不再跟着长——
+  两列栅格的弹窗里，左边的 select 比右边的数字输入框窄一截。硬上限也不是必需的：`value-text` 与
+  `trigger` 各有 `min-inline-size: 0` 配省略号，长值撑不破盒。
+
+  同族的 cascader / tree-select / popselect / color-picker，以及 text-field / number-field，
+  control 上都没有上限，select 是唯一一家。这条删掉之后全族同形。
+
+  破坏性变更：**覆盖槽 `--xh-select-control-max-w` 随之移除**。此前写过
+  `--xh-select-control-max-w: 24rem` 的，改在自己的布局层给 select 的根或所在格子写宽度
+  （`inline-size` / `max-inline-size`），效果一致且对同族其余控件通用。
+
+  `check-family-parity` 的下拉族 control 名单补上 `max-inline-size`：往后任何一家单独给盒封顶都会被拦下。
+  公开面基线（`tooling/public-surface.json`）需随本次改动跑一次 `pnpm surface:update`。
+
+- f4d3708: 轻提示改成短消息的样子：顶部居中、宽度包着内容、一行图标加一句话。
+
+  上一版把 toast 从通知卡片收窄成操作反馈时只动了结构，皮肤还是照着卡片那份抄的——
+  定宽 320px、竖排、起始侧一条 4px 语气色条、行尾一颗叉。一句「已保存」于是撑成一个
+  方块，右边留着一大片空白，看着仍然像一则公告。
+
+  现在它是这样：
+
+  ```
+  ┌──────────────────┐
+  │  ✓  已保存        │   ← 贴着文字收缩，顶部居中
+  └──────────────────┘
+  ```
+
+  - **收缩包裹**：`inline-size` 的默认值从 `--xh-overlay-max-w` 改成 `auto`，
+    上限压在 `min(48rem, 100%)`，长文案在上限处换行、仍然居中。
+  - **单行横排**：`flex-direction` 去掉，`align-items: center`；标题吃掉剩余宽度，
+    操作钮与叉自动落到行尾（两者不再 `align-self: flex-start`）。
+  - **矮一档**：纵内衬从面档（12px）换成控件档 `--xh-field-py`（8px），条子高 39px，
+    与 Element Plus message 的 39px 齐平、比 Ant Design message 的 40px 矮 1px。
+  - **语气走淡底**：底与描边取语气层的 `--xh-_tone-subtle` / `--xh-_tone-border`
+    （与 alert 同一套口径），正文留中性——正文也跟着兑成语气色的话，绿字压绿底是整条里
+    对比度最差的一处。起始侧那条 4px 色条随之删除。
+  - **字号回到正文档**：13px → 14px；标题不再加粗、不再换行高，一句话的反馈没有主次之分。
+  - **状态字形不带圆底**：服务档的默认模板改用新的 `typeGlyph`（16px 裸字形，颜色取
+    `--xh-_tone-fg`，与 alert 的状态图标同档），圆底徽记 `typeBadge` 留给对话框那种有余裕的版面（通知的类型字形由皮肤在 `item-indicator` 上画）。
+  - **到点自己走的不出关闭按钮**：`createToastService` 的默认模板据此分两档——
+    会自己消失的不出叉（三家参考实现都是这样），`loading` 与 `duration <= 0` 这种走不掉的
+    反过来默认出叉，否则界面上一个可点、可聚焦的节点都没有。两档都能用 `closable` 显式改口。
+
+  **破坏性**：删掉 `--xh-toast-accent` 与 `--xh-toast-accent-width` 两个覆盖槽（色条没了）。
+  另有四个槽的默认值变了：`--xh-toast-w`（20rem → auto）、`--xh-toast-bg`
+  （`--xh-bg-surface-raised` → 语气淡底）、`--xh-toast-border`（中性 → 语气描边）、
+  `--xh-toast-title-font-weight`（semibold → regular）；`--xh-toast-close-size` 的默认值
+  从 `--xh-control-h-sm`（28px）降到 `--xh-control-action-size`（24px）。
+  靠「轻提示是 320px 定宽」做过对齐、或依赖默认那颗叉关闭常驻提示的用法要跟着改。
+
+- 5a1aedd: 轻提示与通知分家：新增 notification，toast 收窄成操作反馈，toaster 删除。
+
+  原先 toast 一个组件担了两件事——「用户刚点了一下，告诉他结果」和「系统主动推来一条消息」。
+  两者的信息量、停留时长、落位习惯、谁触发都不一样，混在一起的结果是标题加正文两层文本、
+  九宫格落位、堆叠上限这些只有后者需要的东西全压在轻提示上，而轻提示自己反倒要靠一个
+  额外的容器组件才能用起来。
+
+  **通知（新增）**
+
+  ```vue
+  <XhNotificationRoot v-slot="{ create, dismiss }">
+    <XhNotificationGroup>
+      <template #default="{ item }">
+        <XhNotificationItem :id="item.id" :title="item.title" :description="item.description">
+          <XhNotificationItemIndicator />
+          <XhNotificationItemTitle />
+          <XhNotificationItemDescription />
+          <XhNotificationItemCloseTrigger />
+        </XhNotificationItem>
+      </template>
+    </XhNotificationGroup>
+  </XhNotificationRoot>
+  ```
+
+  队列与卡片是同一个组件的两层：`root`（队列的作用域包装）/ `group`（某个位置上的那一摞，也是 `role=region` 的地标）/ `item` 起是单条卡片。
+  九宫格落位、`max` 上限、同 id 就地改写、逐条计时与暂停都在这里。
+  Web Components 侧是 `<xh-notification>` 与 `<xh-notification-item>`。
+
+  单条卡片的生命周期复用 toast 那台机器——「会自己消失的卡片」这一行为与消息来源无关。
+
+  通知另有命令式的 `createNotificationService`：推送连接的回调、后台任务的收尾、
+  拦截器里的一条系统消息，调用点都在组件之外，让它们各自去找一份队列上下文并不现实。
+  队列要长在页面结构里（通知中心那一栏自己排版）时用组件形态，两者不共享队列。
+
+  **轻提示（收窄）**
+
+  - 解剖去掉 `description`：一次操作的结果一句话说得完，说不完的那是通知。
+  - 新增 `group` 部件：同时在场的几条叠成一摞。这一摞由全局服务渲染，没有对应的容器组件——
+    反馈落在哪儿是整个服务的口径，不该让每个业务页面各挂一份容器再各自决定。
+  - `createToastService` 的队列改为服务内部私有，`info` / `success` / `warning` / `error` /
+    `loading` / `create` / `update` / `dismiss` / `dismissAll` 签名不变，调用点零改动。
+    服务选项新增 `placement`（默认 `top`）、`max`（默认 5）、`gap`。
+
+  **破坏性**
+
+  - 删除 toaster：`XhToasterRoot` / `XhToasterGroup` / `useToaster` / `<xh-toaster>` /
+    `connectToaster` / `toasterMachine` / `toasterAnatomy` / `@xihan-ui/styles/toaster.css` 等
+    一并移除。组件树内的通知队列改用 notification，命令式轻提示继续用 `createToastService`。
+  - toast 删掉 `description` 部件与 `getDescriptionProps`；`<xh-toast>` 的 `description` 属性同时移除。
+    机器上的 `description` prop 保留——notification 的卡片复用同一台机器。
+  - `ToastOptions` / `ToastRecord` 不再带 `placement`：轻提示的落位归服务，不逐条各去一处。
+  - 覆盖槽 `--xh-toaster-inset` / `--xh-toaster-layer` 改名为 `--xh-notification-inset` /
+    `--xh-notification-layer`；`--xh-toast-description-*` 随部件一起移除。
+
+### Minor Changes
+
+- 7f8021e: 日期区间的框选改成逐行横杠，面板数按区间跨不跨页现算，面板号写在日历上一处即可。
+
+  **区间底色画成了一整块实心方块。** 底色铺在格子的背景上，格子上下的内衬也算背景区，
+  而行与行之间没有间距——七月一整月被选中时，五行底色首尾相接连成一个大方块，
+  两端那两枚圆点像是被按在方块上，看不出区间是一天一天连起来的。
+
+  底色改由格子的 `::before` 铺：横向铺满格子，相邻两格接成一条；纵向收在格子内衬里，
+  行与行之间留出 4px 空当。每一行的行首与行尾各自收圆，跨周的区间于是是一行一条两头圆的横杠。
+  摆了周序号格的行里，行首那一格排在周序号后面，圆角跟着落到它身上。
+
+  **两端那一格只铺半格**，另外半格由选中圆片占满：区间收在圆点上而不是收在格子边上。
+  起止落在同一天时两条一起生效，底色宽度归零，只剩那枚圆点。
+
+  **邻月的日子不再吃区间底色与选中圆片。** 并排两张面板里同一天会各出现一次
+  （7 月 31 日既在七月的末行、也在八月的首行），两张都画就成了两个端点、两段底色。
+  邻月的日子回到「压暗的数字」这一档。
+
+  **粗粒度视图的邻月判定修正。** 月/季度/年三档里格子的值是那一段的第一天，与面板起点比月份恒不相等，
+  于是除首格外整页都被判成邻月、整页压暗。这三档改用网格自报的 `inView`。
+
+  **区间默认铺几个面板改成现算**：已选的两端落在同一页里就一张，跨页才并排两张；
+  只落了一端（还在挑）时仍按两张算。日历同时恒渲染六行（新 prop `fixedWeeks`，默认开），
+  并排的两张面板等高，翻页时浮层高度也不再跟着月份变。
+
+  **面板号写在 `XhDatePickerCalendar` 上一处即可**：新增 `index` prop，面板内的
+  `Heading` / `HeadingYearTrigger` / `HeadingMonthTrigger` / `Grid` / `Cell` 不写就跟着它走，
+  自己写了仍按自己写的算。此前这五个部件各要写一遍，漏掉任何一个都会静默落到面板 0——
+  两张面板显示同一个月份、第二张面板的邻月判定整片错位，都是这么来的。五个 prop 一并兼收字符串。
+
+  **快捷选项列的高度由并排的日历给。** 此前这一列按内容收、上限写死一档，
+  右侧那道分隔线只画到最后一条选项，比日历矮一截；它与旁边那张日历之间也补上了与两张日历之间同样的空当。
+
+- 689ed0f: 13 个宿主的滚动层自带自绘滚动条：滚动时或指针在这一片时露出、静止后收起，浮在内容之上不占宽度。
+
+  **哪些宿主**：12 个浮层族的 `content`（cascader / color-picker / combobox / context-menu / date-picker / hover-card / mention / menu / pagination / popover / popselect / tree-select）与 json-viewer 的 `tree`、`text`，共 14 个滚动容器。条子由库自己建，作者一个部件都不用写：它是滚动层的兄弟，绝对定位贴在组件既有的壳上（浮层族是 `positioner`，json-viewer 是 `root`）。轴按各自的溢出方向摆——cascader 只摆横的，tree-select 与 json-viewer 竖横都摆、两条都溢出时各让出交叉口那一格，其余只摆竖的。
+
+  挂上条子的容器带 `data-xh-scrollbar`（挂在它身上的条数），皮肤据此把原生条藏成零宽：容器的可用宽度一点不减，也不再需要为原生条留空道。露面时机、尺寸档、拖动、触屏交给原生滚动这些全是 `scrollbar` 那一套，与手写 `<XhScrollbar>` / `<xh-scrollbar>` 挂上去的完全一致，缺省档是 `scroll-hover`。
+
+  **json-viewer 换档跟随**：树档与原文档互斥，换档时条子跟到此刻在场的那个容器，节点不重建（换档不会把滚动条闪一下）。
+
+  **按在 `positioner` 上不再消解浮层**：条子住在 `positioner` 里、是 `content` 的兄弟，浮层的层分支因此把 `positioner` 一并记上——不记的话按住条子拖动那一下会被判成层外交互，面板当场收起。副作用是 `positioner` 的其他子节点也算进了层内：吃指针的只有 combobox 的 `empty` 空态占位，按它不再关闭候选面板（此前会关）。其余 11 个浮层的 `positioner` 除了条子没有吃指针的子节点（`positioner` 自身是 `pointer-events: none`），按在面板之外仍照旧消解。
+
+  **皮肤侧要跟着改的**：自带皮肤给这 13 个壳补了 `--xh-scrollbar-track-bg: transparent`（浮在内容上的条子不该有实色轨道），json-viewer 的 `root` 补了 `position: relative`（条子贴它的内边距盒）。第三方皮肤若整份接管这些 part，同样要给壳一个定位上下文，并把轨道底色关掉。滚动条自身的 `root` 补了 `pointer-events: auto`，抵消 `positioner` 那句 `none`。
+
+- 843e17a: json-viewer 补原文视图：`view="text"` 直接出缩进过的 JSON 原文。
+
+  树档是拿来"翻"的——折叠、逐层看结构；而"核对这份报文与后端下发的是不是一字不差"、
+  "把它整段拷走"这两件事树档做不到：值受 `maxStringLength` 截断、成员受 `maxItems` 折减，
+  分支摘要与把手还带 `user-select: none`，框选拿到的不是原文。原文档就是补这一件事，
+  因此它刻意不吃那两个折减选项。
+
+  `api.text` 在两档下都取得到，作者要做"复制原文"按钮时不必自己再序列化一遍。
+  序列化与树同源：同一个 `jsonEntries` 排键（`sortKeys` 一样生效）、同一条祖先链判环
+  （环落成 `"[Circular]"`，两条不相干分支共享同一个对象照样摊开），
+  `bigint` / `undefined` / 函数这些 JSON 没有写法的值退回树上那份文本并按字符串写出，
+  整份始终解析得动。
+
+  新增 headless 出口 `jsonText` 与类型 `JsonViewerView`，解剖新增 `text` 部件。
+  皮肤与树档共用同一套边框、内衬与高度令牌，两档切过去盒子不跳。
+
+- ec93d6b: 浮层里的条目之间加 2px 行距，新增语义令牌 `--xh-list-option-gap` 统一这把尺。
+
+  **下拉里选中项与悬停项贴成一整块。** a11 的选中蓝底与 b22 的悬停灰底之间没有一丝缝，
+  两块底色首尾相接，读起来像一条被涂了两截颜色的长条而不是两个条目。
+
+  **库内自己就有三种方言**：浮层选项列（time-picker / date-picker 的时间列与预设列）已经是
+  2px，页面导航列（side-nav / navigation-menu）是 4px，下拉、菜单、树这一族是 0。补上 2px
+  是把这一族拉回库内既有的口径。
+
+  `list` 组的描述原文写着「option-\* 给浮层里的条目——菜单项、下拉选项、树行、时间列」，
+  新令牌落在这一组：`--xh-list-option-gap: 2px`。compact 档不覆盖，2px 已是最小档。
+
+  22 个条目的直接父容器接上这把尺：select 的 `list`；combobox / listbox 的 `content` 与
+  `item-group`；popselect 与 mention 的 `content`；menu / menubar / context-menu 的 `content`
+  与 `group`；cascader 的 `column` 与 `search-list`；tree 与 tree-select 的 `tree`、
+  `branch-content`、`branch`；transfer 的 `list`。装 list 加 footer 的外壳（select /
+  tree-select 的 `content`）不接——它不是条目的父层。json-viewer 也不接，只读数据视图与
+  table、log 同为紧排一档。
+
+  `tree` 与 `tree-select` 的 `branch` 此前是块盒，为接这把尺改成纵向 flex，tree-select 同时
+  补上此前缺的 `[hidden]` 兜底。
+
+  节奏顺手收一级，加了 gap 之后总量不变：combobox 与 listbox 的组间距 8px → 6px，
+  menu / menubar / context-menu 的分隔线外边距 4px → 2px。time-picker 那两处等值的
+  `--xh-space-0_5` 改指新令牌，视觉不变。
+
+  这把尺打在容器上，所以分组标题与它下面第一条之间同样多出 2px——分组标题是 `group`
+  的第一个子元素，与条目同属一层 flex 子项。
+
+- 8fc5f05: 上一页 / 下一页默认就是两枚箭头。
+
+  原先库里一个字都不产出，可见内容全靠作者往插槽里塞——于是每份示例都手写了
+  「上一页 / 下一页」四个字，翻译、宽度与图标风格全归使用者自己操心。
+
+  皮肤补上兜底字形：两个把手为空时各画一枚 chevron，走既有的 `--xh-glyph-mark-*` 令牌
+  （mask + currentColor，跟着语气、悬停与禁用一起变色）。rtl 下两枚对调，指向行进方向。
+  作者往部件里塞了自己的图形或文字，`:empty` 即不命中，原样让位。
+
+  读屏名字一如既往来自 `translations.prevTrigger / nextTrigger`，不受影响——
+  去掉的只是可见文字，不是可及名字。
+
+- 1a36b7e: 省略号能摊开了：折进去的那几页现在有路走到。
+
+  原先省略位是 `aria-hidden` + `pointer-events: none` 的死占位，而 `pages` 序列
+  只说「这里折了一段」，说不出折的是哪几页——那几页除了手打跳页输入框没有任何入口。
+
+  分页因此升级成浮层族，新增 `positioner` 与 `content` 两个部件：
+
+  ```vue
+  <XhPaginationRoot v-slot="{ pageItems }" :count="2000" :page-size="10">
+    <template v-for="item in pageItems">
+      <XhPaginationEllipsis v-if="item.type === 'ellipsis'" :side="item.side" />
+      <XhPaginationItem v-else :value="item.value">{{ item.value }}</XhPaginationItem>
+    </template>
+    <XhPaginationPositioner>
+      <XhPaginationContent v-slot="{ pages }">
+        <XhPaginationItem v-for="p in pages" :key="p" :value="p">{{ p }}</XhPaginationItem>
+      </XhPaginationContent>
+    </XhPaginationPositioner>
+  </XhPaginationRoot>
+  ```
+
+  - 新增 `api.pageItems`：与 `pages` 同一串序列，但省略位带着被折叠的那几页。
+    `pages` 由它派生，两者的窗口数学只有一份。旧的 `pages` 写法一行不用改。
+  - 悬停摊开（`openDelay` / `closeDelay`），**点一下也摊开**——纯悬停会把键盘用户挡在外面。
+    Escape 与点外面都能收起（走消解层）。
+  - 至多两个省略位，用 `side`（`'start' | 'end'`）区分；同时只开一个，一份定位层就够。
+    Web Components 侧由作者在节点上写 `side="end"`，与页码按钮自报 `value` 同一套写法。
+  - 浮层 portal 到统一落点，三视觉轴在 `positioner` 上重打一遍。
+
+  **破坏性**：`getEllipsisProps()` 改为收 `{ side }`；省略位从 `<span>` 变 `<button>`、
+  不再带 `aria-hidden`。
+
+- 911d0b7: 每页条数控制器随分页一起给了。
+
+  ```vue
+  <XhPaginationPageSizeSelect v-slot="{ options }">
+    <option v-for="o in options" :key="o" :value="String(o)">{{ o }} 条 / 页</option>
+  </XhPaginationPageSizeSelect>
+  ```
+
+  用**原生 `<select>`** 而不是再造一个浮层：档位就那么几档，浮层带不来什么，
+  却要多接一层定位、消解与键盘；原生控件在 Web Components 侧也一样能用，键盘天然可达。
+  不给插槽时按 `pageSizeOptions` 渲染默认档位。
+
+  受控时会把 DOM 的选中项同步回填：宿主不写回的话，用户改过的原生 select 与真正生效的
+  档位会对不上，而 vdom 那边没有变化就不会打补丁——这一条两个适配器共用。
+
+- abe790b: 滚动条新增 `scroll-hover` 档，并把它定为缺省档。
+
+  **新增 `'scroll-hover'`**：滚动时露出，指针进入滚动容器或滚动条时也露出；指针占着容器时滚动只重画滑块、不起收起倒计时，指针离开或停手满 `hideDelay` 才收起。它是 `hover` 与 `scroll` 两档显形条件的并集，与那两档一样浮在内容之上——`data-lane-*` 的判据只认 `auto` / `always`，视口宽度一点不减（横条同理不占高度）。
+
+  **缺省档由 `'hover'` 改为 `'scroll-hover'`**：`scrollbar` 与 `scroll-area` 不写 `type` 时都走新档。显形集合是原缺省档的严格超集，没有一条本来看得见的滚动条会消失；占道与否、触屏交给原生滚动那一路都不变。
+
+  **需要跟着改的代码**：对 `ScrollbarType` 做穷尽 `switch` / 映射表的地方要补 `'scroll-hover'` 分支；读 `ScrollbarApi.type` 或 `data-type` 并按值分派的代码会收到这个新值。
+
+  状态机的两个判据改了名：`isHoverType` → `showsOnHover`、`isScrollType` → `showsOnScroll`（原名在新档下会读成谎话）。判据名只在机器内部与文档的「状态机」小节露面，不进公开 API。
+
+  日志的视口那条 `scrollbar-gutter` 收窄到「还在用原生条」的情形：带 `data-xh-scrollbar` 的容器原生条已被藏成零宽，空道对它没有布局作用。没挂自绘条时空道照留，原生滚动条出现与消失仍不推动文字。
+
+- 918b870: 实心底上的前景色与交互态挪动方向改由语气色现推，换肤下配对自动成立。
+
+  `--xh-_tone-on` 此前按语气族写死：brand / neutral / danger 配白字，success / warning / info 配深字。这个分派是按本仓这套 600 档实测出来的，但 `--xh-_tone` 是可换肤的——使用者把各族的 600 改写成自己的调色板，配对的前提就没了，而门禁只验本仓的色，失配一路绿灯。
+
+  改成从 `--xh-_tone` 现推：把语气色转成线性 sRGB 分量、按 WCAG 的权重算出相对亮度，低于 0.179 配白字、高于配深字。0.179 是白字与黑字对比度相等的那一点，解析解，不是估的。
+
+  `--xh-_tone-shift`（交互态往哪个方向挪）一并现推，取前景的反面。只推前景不推方向会出净回归：静态态救回来了，悬停与按下却把底往前景那一侧挪——某消费方调色板上实测 danger 静态 4.70 而悬停掉到 3.78、按下 3.18。
+
+  用相对颜色语法 `color(from … srgb-linear …)`，高于本仓的浏览器地板（Chrome 119 / Firefox 128 / Safari 16.4 起），所以整块包在 `@supports` 里，逐族写死的那一份留着当兜底；探针按实际用到的整个形态测，只测得起半截语法的引擎不会落进坏值。alpha 显式写 1，不然会连语气色的透明度一起继承。
+
+  某消费方调色板上的实测（浅色 / 深色，静态 · 悬停 · 按下）：
+
+  改前 info 3.94 · danger 4.47 不达标
+  改后 六族最低 4.70，全部达标
+
+  本仓自己这套色只升不降：success 6.51→6.90、warning 7.36→7.80、info 5.71→6.05、深色 brand 5.32→5.64。
+
+  三条门禁跟着改：
+
+  - `check-tone-contrast` 此前只验写死的那一份。现在把 `@supports` 块单独解析，现推档与兜底档**各验一遍**（158 组配对，原 122 组），并按 tone.css 里那两条式子的形态逐字对账——式子改了形态对不上就失败。
+  - `check-css-floor` 新增「受 `@supports` 守卫的增强」这一档并登记相对颜色语法：块外出现即失败。此前它对这条语法是静默的，等于谁都能悄悄抬底线。
+  - `check-token-refs` 不再把注释里提到的颜色、`@supports` 的探测条件、以及 `fn(from var(--xh-…) …)` 当成颜色字面量——前两者不落到任何元素上，后者的源色本身就是令牌。
+
+- a69cead: 树补一条 `leafOrientation`：末端那一层可以横排。
+
+  只作用于「子节点全是叶子」的那一层——菜单授权里就是按钮那层。一个菜单下十几个按钮，
+  横排一行铺完，省掉大量纵向翻找：
+
+  ```vue
+  <XhTreeRoot :collection="menus" leaf-orientation="horizontal" />
+  ```
+
+  **中间层与整棵树恒是竖排，不提供开关。** 它们承载的是层级本身，横过来层级就读没了。
+  判据是「这一层不再往下分」而不是「深度等于几」：同一棵树里各枝深浅不一，
+  按深度判会把浅枝的中间层也横过来。
+
+  **方向键不跟着改。** 树上左右是层级操作（收起 / 展开、回父层 / 进子层）、上下走可见行，
+  这是 treeview 的规范语义，横排只是排布。
+
+  顺带修一处：叶子行在竖排下会自己补出「箭头那一格」与同级分支对齐，横排下补出来的
+  是节点之间的空隙而不是层级，那条规则因此按行盒**所在的那层容器**判定方向。
+
+### Patch Changes
+
+- 33af800: 角标的三档尺寸：每一档的盒都抬到大于字号。
+
+  原先 sm 档的盒高与字号都是 12px，两位数会把角标撑破。字号刻度最小就是 12px
+  （`--xh-font-size-xs`），所以往上抬盒子而不是往下压字：盒 16 / 20 / 24，
+  字 12 / 13 / 14，圆点 6 / 8 / 10，三条阶梯各自严格递增。
+
+- 9294172: 日历的「大步翻」两颗钮不再被无条件收掉，« » 与 ‹ › 同一副长相。
+
+  四条规则的选择器列表里，限定只跟在后两条上：`[data-part='prev-year-trigger'], [data-part='prev-trigger'][hidden], [data-part='next-year-trigger'], [data-part='next-trigger'][hidden]` —— 年那两颗是裸的，于是无条件命中 `display: none`，翻年的钮从来就没画出来过。行为层一直是通的（`canGoPrevYear` / `stepYear` / `getPrevYearTriggerProps` 都在），只是看不见也点不着。
+
+  同样的漏写还在悬停、禁用、聚焦环三条上：那三条把月钮的状态样式无条件加在了年钮身上。四条一并补齐限定。
+
+  新增 `tests/browser/calendar-nav-skin.spec.ts` 钉住：四颗翻页钮都画得出来、同一副尺寸，打上 `hidden` 才收起，禁用态四颗同一副长相。这类「被一条 display 悄悄收掉」只有在真实浏览器里按级联算才验得出来。
+
+- 8a44b64: 四处被祖先 `overflow` 裁掉的聚焦环改成往内收。
+
+  `outline` + 正的 `outline-offset` 把环画在元素盒外面，祖先只要是
+  `overflow: hidden / auto / scroll`，环就会被裁掉一截——键盘用户看到的是
+  三条边或者两侧缺口的半圈蓝环。四处改为 `outline-offset: calc(-1 * var(--xh-ring-width))`，
+  环整圈落在盒内：
+
+  - image-cropper 的 `crop-area` 与 `crop-handle`：两者都长在 `viewport` 里，
+    那层 `overflow: hidden` 同时还替暗遮罩（`box-shadow: 0 0 0 9999px`）收边。
+  - heatmap 的 `grid`：`root` 为一整年五十几列备了 `overflow-x: auto`。
+  - table 与 transfer 的 `select-all-trigger`：同文件的邻居
+    （table 的 `row` / `sort-trigger`、transfer 的 `search` / `item`）本就是内收写法，
+    这两处是仅剩的外扩。
+
+  `--xh-ring-offset` 令牌本身不动：库里另有 9 条规则写着
+  `calc(-1 * var(--xh-ring-offset))`，翻令牌的符号会把它们一起翻成外扩。
+
+- ed51531: 菜单族的勾选标记跟着语气走。
+
+  `context-menu` 与 `menubar` 都有 `tone` 轴、也都在根上发 `data-tone`，但 `item-indicator`
+  的颜色写死在 `--xh-fg-brand`：把菜单标成 `tone="danger"`，整条菜单换了族，勾选标记还是品牌蓝。
+  同族的 `select` / `popselect` / `combobox` / `cascader` / `tree-select` 五家早就是跟着语气走的，
+  只有这两家掉队。
+
+  两家的颜色链改成 `var(--xh-<组件>-item-indicator-fg, var(--xh-_tone, var(--xh-fg-brand)))`：
+  写了语气跟语气，没写落回 `--xh-fg-brand`——**没写 `tone` 的用法一个像素都不变**。
+  `listbox` 不动，它没有语气轴，链尾就是全部。
+
+- 3ed6b9f: 描边档的标签改用「可操作区边界」那一档语气色，轮廓看得清了。
+
+  `outline` 的边就是这枚标签的全部轮廓——它没有底色，边没了就只剩一行字。此前取的是 `--xh-_tone-border`（语气色兑四成面色），而 tone.css 自己就注明这一支六族都落在 1.44–2.18，当轮廓根本分不出边界。
+
+  改取 `--xh-_tone-border-control`：那一支是为「可操作区边界要 3:1」准备的，取的是语气本体。在某消费方的调色板上实测，边相对面从 1.59–1.76 抬到 4.56–7.83（浅色）、2.13–3.42（深色），文字那一档没动（5.14–9.35）。
+
+  `--xh-tag-border` 这个使用者槽仍排在最前，要另配一档边照旧写它。
+
+- 87f5b73: 装饰档 `--xh-_tone-soft` 从 500 提到与控件边界同一档
+
+  色条、指示条、锚点高亮这些用装饰档画的东西是非文字图形，按 WCAG 1.4.11 要 3:1。
+  500 档压在浅色画布上，success 2.29、warning 1.92、info 2.75 都够不到。
+
+  `--xh-_tone-border-control` 早就为同一个阈值兜过底（warning 在浅色下取 700、
+  neutral 在深色下取 550），要求完全一样，装饰档就直接跟着那一支走，六族十二组全部达标。
+  `check-tone-contrast` 补上这条断言，覆盖从 110 组扩到 122 组。
+
+  观感上所有色条、时间线指示点、锚点高亮会比原来重一档。
+
+- b6fb182: 叶子行补上箭头那一格的缩进，不再比同级分支往行首缩。
+
+  分支行的首格是展开箭头，叶子行没有这一格。作者摆了 `item-indicator` 时由它顶着，
+  可勾选档的首位直接是 `item-checkbox`——没有东西占位，叶子的文字就比所在分支的文字
+  往行首缩了一个间隙，第三级与第二级挤在同一条竖线上，层级关系读不出来。
+
+  行盒改为在没有 `item-indicator` 时自己补出这一格（`:has()` 判定，摆了指示符的那档
+  不受影响、不会被重复缩进）。宽度取的是箭头与指示符共用的那两个令牌，
+  覆盖 `--xh-tree-indicator-size` / `--xh-tree-row-gap` 时跟着走。
+
+- Updated dependencies [9ea57f6]
+- Updated dependencies [ec93d6b]
+  - @xihan-ui/tokens@1.0.0-preview.0
+
 ## 1.0.0-alpha.3
 
 ### Major Changes
@@ -50,6 +506,7 @@
   把模态关掉）。
 
   ## 其余
+
   - `--xh-editable-preview-line-height` 删除，改用 `--xh-editable-preview-min-h`：预览态
     原先拿行高冒充高度，实测比同组件的编辑态高 2px，切换时跳一下。
   - tooltip 与 navigation-menu 入层栈，Escape 不再连它们下面的对话框一起关掉。

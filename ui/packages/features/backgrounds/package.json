@@ -1,7 +1,7 @@
 {
   "name": "@xihan-ui/backgrounds",
   "type": "module",
-  "version": "1.0.0-alpha.3",
+  "version": "1.0.0-preview.0",
   "description": "XiHan.UI visual layer — WebGL2 background effects and data-driven particle clouds, framework agnostic.",
   "author": {
     "name": "XiHanFun",

@@ -60,7 +60,3 @@ features:
     link: /guide/ai
     linkText: "了解 AI 对话内核"
 ---
-
-::: warning 实验阶段
-库包已发布到 npm，当前版本 `1.0.0-alpha.3`。这是预发布版本：不承诺语义化版本，接口仍会调整，**请勿在生产环境依赖**。当前进度与边界见[组件库简介](/introduction)。
-:::

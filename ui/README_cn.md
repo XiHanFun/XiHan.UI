@@ -8,7 +8,7 @@
 
 119 个组件，每个都有 headless 内核、Vue 组件、自定义元素与默认皮肤。
 
-> **实验阶段**：npm 上是 `1.0.0-alpha.3` 预发布版，不承诺语义化版本、接口仍会变；文档站已上线（https://ui.docs.xihanfun.com）。无障碍扫描跑在真实 Chromium 上，存量违规登记表只剩两条（共用表里 tag 的禁用态对比度、WC 侧 steps 的必需子节点），另有一条 breadcrumb 的步骤重放豁免。请勿在生产环境依赖。
+> **预览阶段**：npm 上是 `1.0.0-preview.0` 预览版，不承诺语义化版本、接口仍会变；文档站已上线（https://ui.docs.xihanfun.com）。无障碍扫描跑在真实 Chromium 上，存量违规登记表只剩两条（共用表里 tag 的禁用态对比度、WC 侧 steps 的必需子节点），另有一条 breadcrumb 的步骤重放豁免。请勿在生产环境依赖。
 
 ## 包一览
 

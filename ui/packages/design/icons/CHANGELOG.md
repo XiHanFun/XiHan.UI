@@ -1,5 +1,7 @@
 # @xihan-ui/icons
 
+## 1.0.0-preview.0
+
 ## 1.0.0-alpha.3
 
 ### Minor Changes

@@ -1,7 +1,7 @@
 {
   "name": "@xihan-ui/kernel",
   "type": "module",
-  "version": "1.0.0-alpha.3",
+  "version": "1.0.0-preview.0",
   "description": "XiHan.UI Foundation primitives — framework-agnostic, zero runtime dependencies.",
   "author": {
     "name": "XiHanFun",
