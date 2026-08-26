@@ -1,5 +1,383 @@
 # @xihan-ui/web-components
 
+## 1.0.0-preview.0
+
+### Major Changes
+
+- bc7eeed: 徽标收窄成「只做角标」，并补齐角标该有的能力。
+
+  原先 badge 与 tag 是一对孪生：`variant` 三形态、`size` 三档、默认插槽放任意内容，
+  连档位取值都逐个相同。两个组件做同一件事，使用者只能靠猜。
+
+  现在 badge 只做一件事——挂在别的元素角上的一枚标记：
+
+  ```vue
+  <XhBadge :count="5" tone="danger" label="5 条未读">
+    <XhButton>收件箱</XhButton>
+  </XhBadge>
+  ```
+
+  - 解剖从单层 `root` 变成 `root`（锚点）+ `indicator`（角标），定位归组件自己管，
+    不再要宿主手写 `position: relative` 与负偏移。
+  - 新增 `placement`：`top-end`（默认）/ `top-start` / `bottom-end` / `bottom-start`，
+    用逻辑属性写，rtl 下自动落到另一侧。
+  - `size` 换的是圆点直径、两位数时的最小宽度与字号，不再是药丸那套内衬与行高。
+  - Vue 侧另出 `XhBadgeRoot` / `XhBadgeIndicator`，要往角标里塞自定义内容时用它们。
+
+  **破坏性**：删掉 `variant`；行内的状态药丸请改用 `tag`（`XhTagRoot` + `XhTagLabel`）。
+  `data-size` 与 `data-tone` 从 `root` 挪到 `indicator`。
+
+- 5a1aedd: 轻提示与通知分家：新增 notification，toast 收窄成操作反馈，toaster 删除。
+
+  原先 toast 一个组件担了两件事——「用户刚点了一下，告诉他结果」和「系统主动推来一条消息」。
+  两者的信息量、停留时长、落位习惯、谁触发都不一样，混在一起的结果是标题加正文两层文本、
+  九宫格落位、堆叠上限这些只有后者需要的东西全压在轻提示上，而轻提示自己反倒要靠一个
+  额外的容器组件才能用起来。
+
+  **通知（新增）**
+
+  ```vue
+  <XhNotificationRoot v-slot="{ create, dismiss }">
+    <XhNotificationGroup>
+      <template #default="{ item }">
+        <XhNotificationItem :id="item.id" :title="item.title" :description="item.description">
+          <XhNotificationItemIndicator />
+          <XhNotificationItemTitle />
+          <XhNotificationItemDescription />
+          <XhNotificationItemCloseTrigger />
+        </XhNotificationItem>
+      </template>
+    </XhNotificationGroup>
+  </XhNotificationRoot>
+  ```
+
+  队列与卡片是同一个组件的两层：`root`（队列的作用域包装）/ `group`（某个位置上的那一摞，也是 `role=region` 的地标）/ `item` 起是单条卡片。
+  九宫格落位、`max` 上限、同 id 就地改写、逐条计时与暂停都在这里。
+  Web Components 侧是 `<xh-notification>` 与 `<xh-notification-item>`。
+
+  单条卡片的生命周期复用 toast 那台机器——「会自己消失的卡片」这一行为与消息来源无关。
+
+  通知另有命令式的 `createNotificationService`：推送连接的回调、后台任务的收尾、
+  拦截器里的一条系统消息，调用点都在组件之外，让它们各自去找一份队列上下文并不现实。
+  队列要长在页面结构里（通知中心那一栏自己排版）时用组件形态，两者不共享队列。
+
+  **轻提示（收窄）**
+
+  - 解剖去掉 `description`：一次操作的结果一句话说得完，说不完的那是通知。
+  - 新增 `group` 部件：同时在场的几条叠成一摞。这一摞由全局服务渲染，没有对应的容器组件——
+    反馈落在哪儿是整个服务的口径，不该让每个业务页面各挂一份容器再各自决定。
+  - `createToastService` 的队列改为服务内部私有，`info` / `success` / `warning` / `error` /
+    `loading` / `create` / `update` / `dismiss` / `dismissAll` 签名不变，调用点零改动。
+    服务选项新增 `placement`（默认 `top`）、`max`（默认 5）、`gap`。
+
+  **破坏性**
+
+  - 删除 toaster：`XhToasterRoot` / `XhToasterGroup` / `useToaster` / `<xh-toaster>` /
+    `connectToaster` / `toasterMachine` / `toasterAnatomy` / `@xihan-ui/styles/toaster.css` 等
+    一并移除。组件树内的通知队列改用 notification，命令式轻提示继续用 `createToastService`。
+  - toast 删掉 `description` 部件与 `getDescriptionProps`；`<xh-toast>` 的 `description` 属性同时移除。
+    机器上的 `description` prop 保留——notification 的卡片复用同一台机器。
+  - `ToastOptions` / `ToastRecord` 不再带 `placement`：轻提示的落位归服务，不逐条各去一处。
+  - 覆盖槽 `--xh-toaster-inset` / `--xh-toaster-layer` 改名为 `--xh-notification-inset` /
+    `--xh-notification-layer`；`--xh-toast-description-*` 随部件一起移除。
+
+### Minor Changes
+
+- f1b2c16: date-picker 补上 `defaultFocusedValue`，决定展开时先落在哪一页。
+
+  日历一直有这个 prop，date-picker 没往外露：它的聚焦日单元格默认值写死为 `null`，只能退回首个选中值、再退回今天。没有初始值又想让面板先停在某个月（报表默认看上个月、排期表默认看下个月）此前没有出口。
+
+  补上之后三路收口不变：写过的聚焦日 → `defaultFocusedValue` → 首个选中值 → 今天。表单重置回到 `defaultFocusedValue`，与其余 `default*` 一致。Web Components 那侧是 `default-focused-value`。
+
+  顺带说明一处已有的误用：`defaultFocusedValue` 此前不是 date-picker 的 prop，测试里写了也不生效，那几条其实是靠「今天」恰好落在同一个月才通过的。现在它们真的按写的那一天算。
+
+- 7f8021e: 日期区间的框选改成逐行横杠，面板数按区间跨不跨页现算，面板号写在日历上一处即可。
+
+  **区间底色画成了一整块实心方块。** 底色铺在格子的背景上，格子上下的内衬也算背景区，
+  而行与行之间没有间距——七月一整月被选中时，五行底色首尾相接连成一个大方块，
+  两端那两枚圆点像是被按在方块上，看不出区间是一天一天连起来的。
+
+  底色改由格子的 `::before` 铺：横向铺满格子，相邻两格接成一条；纵向收在格子内衬里，
+  行与行之间留出 4px 空当。每一行的行首与行尾各自收圆，跨周的区间于是是一行一条两头圆的横杠。
+  摆了周序号格的行里，行首那一格排在周序号后面，圆角跟着落到它身上。
+
+  **两端那一格只铺半格**，另外半格由选中圆片占满：区间收在圆点上而不是收在格子边上。
+  起止落在同一天时两条一起生效，底色宽度归零，只剩那枚圆点。
+
+  **邻月的日子不再吃区间底色与选中圆片。** 并排两张面板里同一天会各出现一次
+  （7 月 31 日既在七月的末行、也在八月的首行），两张都画就成了两个端点、两段底色。
+  邻月的日子回到「压暗的数字」这一档。
+
+  **粗粒度视图的邻月判定修正。** 月/季度/年三档里格子的值是那一段的第一天，与面板起点比月份恒不相等，
+  于是除首格外整页都被判成邻月、整页压暗。这三档改用网格自报的 `inView`。
+
+  **区间默认铺几个面板改成现算**：已选的两端落在同一页里就一张，跨页才并排两张；
+  只落了一端（还在挑）时仍按两张算。日历同时恒渲染六行（新 prop `fixedWeeks`，默认开），
+  并排的两张面板等高，翻页时浮层高度也不再跟着月份变。
+
+  **面板号写在 `XhDatePickerCalendar` 上一处即可**：新增 `index` prop，面板内的
+  `Heading` / `HeadingYearTrigger` / `HeadingMonthTrigger` / `Grid` / `Cell` 不写就跟着它走，
+  自己写了仍按自己写的算。此前这五个部件各要写一遍，漏掉任何一个都会静默落到面板 0——
+  两张面板显示同一个月份、第二张面板的邻月判定整片错位，都是这么来的。五个 prop 一并兼收字符串。
+
+  **快捷选项列的高度由并排的日历给。** 此前这一列按内容收、上限写死一档，
+  右侧那道分隔线只画到最后一条选项，比日历矮一截；它与旁边那张日历之间也补上了与两张日历之间同样的空当。
+
+- 689ed0f: 13 个宿主的滚动层自带自绘滚动条：滚动时或指针在这一片时露出、静止后收起，浮在内容之上不占宽度。
+
+  **哪些宿主**：12 个浮层族的 `content`（cascader / color-picker / combobox / context-menu / date-picker / hover-card / mention / menu / pagination / popover / popselect / tree-select）与 json-viewer 的 `tree`、`text`，共 14 个滚动容器。条子由库自己建，作者一个部件都不用写：它是滚动层的兄弟，绝对定位贴在组件既有的壳上（浮层族是 `positioner`，json-viewer 是 `root`）。轴按各自的溢出方向摆——cascader 只摆横的，tree-select 与 json-viewer 竖横都摆、两条都溢出时各让出交叉口那一格，其余只摆竖的。
+
+  挂上条子的容器带 `data-xh-scrollbar`（挂在它身上的条数），皮肤据此把原生条藏成零宽：容器的可用宽度一点不减，也不再需要为原生条留空道。露面时机、尺寸档、拖动、触屏交给原生滚动这些全是 `scrollbar` 那一套，与手写 `<XhScrollbar>` / `<xh-scrollbar>` 挂上去的完全一致，缺省档是 `scroll-hover`。
+
+  **json-viewer 换档跟随**：树档与原文档互斥，换档时条子跟到此刻在场的那个容器，节点不重建（换档不会把滚动条闪一下）。
+
+  **按在 `positioner` 上不再消解浮层**：条子住在 `positioner` 里、是 `content` 的兄弟，浮层的层分支因此把 `positioner` 一并记上——不记的话按住条子拖动那一下会被判成层外交互，面板当场收起。副作用是 `positioner` 的其他子节点也算进了层内：吃指针的只有 combobox 的 `empty` 空态占位，按它不再关闭候选面板（此前会关）。其余 11 个浮层的 `positioner` 除了条子没有吃指针的子节点（`positioner` 自身是 `pointer-events: none`），按在面板之外仍照旧消解。
+
+  **皮肤侧要跟着改的**：自带皮肤给这 13 个壳补了 `--xh-scrollbar-track-bg: transparent`（浮在内容上的条子不该有实色轨道），json-viewer 的 `root` 补了 `position: relative`（条子贴它的内边距盒）。第三方皮肤若整份接管这些 part，同样要给壳一个定位上下文，并把轨道底色关掉。滚动条自身的 `root` 补了 `pointer-events: auto`，抵消 `positioner` 那句 `none`。
+
+- 843e17a: json-viewer 补原文视图：`view="text"` 直接出缩进过的 JSON 原文。
+
+  树档是拿来"翻"的——折叠、逐层看结构；而"核对这份报文与后端下发的是不是一字不差"、
+  "把它整段拷走"这两件事树档做不到：值受 `maxStringLength` 截断、成员受 `maxItems` 折减，
+  分支摘要与把手还带 `user-select: none`，框选拿到的不是原文。原文档就是补这一件事，
+  因此它刻意不吃那两个折减选项。
+
+  `api.text` 在两档下都取得到，作者要做"复制原文"按钮时不必自己再序列化一遍。
+  序列化与树同源：同一个 `jsonEntries` 排键（`sortKeys` 一样生效）、同一条祖先链判环
+  （环落成 `"[Circular]"`，两条不相干分支共享同一个对象照样摊开），
+  `bigint` / `undefined` / 函数这些 JSON 没有写法的值退回树上那份文本并按字符串写出，
+  整份始终解析得动。
+
+  新增 headless 出口 `jsonText` 与类型 `JsonViewerView`，解剖新增 `text` 部件。
+  皮肤与树档共用同一套边框、内衬与高度令牌，两档切过去盒子不跳。
+
+- 3c033ca: 通知按卡片重排：左侧类型字形、右上角关闭钮、两列网格。
+
+  它的皮肤是从旧的 toast 卡片逐字搬来的，搬完没人按「通知该长什么样」审过一遍，
+  于是留下三处硬伤：
+
+  - **叉掉到了卡片左下方**。`item` 是竖排 flex，而叉上写着
+    `align-self: flex-start` + `margin-inline-start: auto`——交叉轴上的 auto 外边距
+    会让对齐属性整条失效（flexbox §9.6），`align-self` 那行一点作用都没有，
+    叉成了正文下面的第三行。实测它落在距卡片顶 55px 处，卡片因此高出一截。
+    三家参考实现（Ant Design / Element Plus / Naive UI）都是绝对定位钉在右上角内衬处。
+  - **组件路径下一个类型指示物都没有**。徽记只由服务档的默认模板画，
+    12 份示例与所有 Web Components 使用者拿到的卡片，语气全靠起始侧那条 4px 色条承载，
+    而它压在卡片底上只有 1.9–2.8:1，`loading` 与 `info` 除颜色外完全同形。
+  - **字号比轻提示还小一档**（13px），标题与说明只差 7.7%，两层文字挤成一片。
+
+  现在：
+
+  - 新增 `item-indicator` 部件。作者留空即由皮肤按 `data-type` 画一枚兜底字形
+    （info / success / warning / error 各一枚，`loading` 给转圈），
+    颜色取 `--xh-_tone-fg`——与 alert 的状态图标同档，压在卡片底上十二组最低 4.08:1。
+  - **两列网格**：左列字形、右列标题与说明；叉绝对定位钉在右上角，标题自动让位
+    （写法照 dialog / drawer）。起始侧那条语气色条随之删除——三家都没有，
+    语气改由字形承载。
+  - 卡片宽 320 → 384px（`--xh-overlay-max-w-lg`，与 Ant Design 同值），
+    内衬四边 16px，字号回到正文档 14px。
+  - 服务档的默认模板改成四个节点平铺（不再套一层皮肤够不着的行容器），
+    说明部件恒渲染——`aria-describedby` 是无条件发的，节点缺席就成了悬空引用。
+  - 地标 `role="region"` 从 `root` 搬到 `group`。root 是 `display: contents` 的作用域包装，
+    量出来 0×0，地标挂在它身上跳过去落不到任何看得见的地方；那一摞才是真盒子。
+
+  顺带补上三处从来没有门禁看管的地方：`check-elevation-role`、`check-press-feedback`、
+  `check-clear-trigger` 三份名单都没登记过 notification，眼下合规纯属巧合。
+
+  **破坏性**：删掉 `--xh-notification-accent` 与 `--xh-notification-accent-width`
+  两个覆盖槽（色条没了）。另有几个槽的默认值变了：`--xh-notification-w`（20rem → 24rem）、
+  `--xh-notification-py` / `-px`（12/16 → 16/16）、`--xh-notification-font-size`（13 → 14）、
+  `--xh-notification-gap` 的语义从「行距」改为「图标与正文的列距」（行距另开
+  `--xh-notification-row-gap`）。地标从 root 挪到 group，按 `root[role=region]` 写过
+  自动化断言的要跟着改。
+
+- 1a36b7e: 省略号能摊开了：折进去的那几页现在有路走到。
+
+  原先省略位是 `aria-hidden` + `pointer-events: none` 的死占位，而 `pages` 序列
+  只说「这里折了一段」，说不出折的是哪几页——那几页除了手打跳页输入框没有任何入口。
+
+  分页因此升级成浮层族，新增 `positioner` 与 `content` 两个部件：
+
+  ```vue
+  <XhPaginationRoot v-slot="{ pageItems }" :count="2000" :page-size="10">
+    <template v-for="item in pageItems">
+      <XhPaginationEllipsis v-if="item.type === 'ellipsis'" :side="item.side" />
+      <XhPaginationItem v-else :value="item.value">{{ item.value }}</XhPaginationItem>
+    </template>
+    <XhPaginationPositioner>
+      <XhPaginationContent v-slot="{ pages }">
+        <XhPaginationItem v-for="p in pages" :key="p" :value="p">{{ p }}</XhPaginationItem>
+      </XhPaginationContent>
+    </XhPaginationPositioner>
+  </XhPaginationRoot>
+  ```
+
+  - 新增 `api.pageItems`：与 `pages` 同一串序列，但省略位带着被折叠的那几页。
+    `pages` 由它派生，两者的窗口数学只有一份。旧的 `pages` 写法一行不用改。
+  - 悬停摊开（`openDelay` / `closeDelay`），**点一下也摊开**——纯悬停会把键盘用户挡在外面。
+    Escape 与点外面都能收起（走消解层）。
+  - 至多两个省略位，用 `side`（`'start' | 'end'`）区分；同时只开一个，一份定位层就够。
+    Web Components 侧由作者在节点上写 `side="end"`，与页码按钮自报 `value` 同一套写法。
+  - 浮层 portal 到统一落点，三视觉轴在 `positioner` 上重打一遍。
+
+  **破坏性**：`getEllipsisProps()` 改为收 `{ side }`；省略位从 `<span>` 变 `<button>`、
+  不再带 `aria-hidden`。
+
+- 911d0b7: 每页条数控制器随分页一起给了。
+
+  ```vue
+  <XhPaginationPageSizeSelect v-slot="{ options }">
+    <option v-for="o in options" :key="o" :value="String(o)">{{ o }} 条 / 页</option>
+  </XhPaginationPageSizeSelect>
+  ```
+
+  用**原生 `<select>`** 而不是再造一个浮层：档位就那么几档，浮层带不来什么，
+  却要多接一层定位、消解与键盘；原生控件在 Web Components 侧也一样能用，键盘天然可达。
+  不给插槽时按 `pageSizeOptions` 渲染默认档位。
+
+  受控时会把 DOM 的选中项同步回填：宿主不写回的话，用户改过的原生 select 与真正生效的
+  档位会对不上，而 vdom 那边没有变化就不会打补丁——这一条两个适配器共用。
+
+- 720cf75: 每页条数从只读 prop 升成真状态。
+
+  原先 `pageSize` 只是个 prop：组件读它算总页数，改档只能由宿主自己写回，
+  换档后当前页越界还得宿主自己夹。现在它住进 cell，与 `page` 同一套受控/非受控语义：
+
+  - `pageSize` 给定即受控——**与升级前一字不差**，现有写法一行不用改；
+  - 只给 `defaultPageSize` 则由组件自持；
+  - 新增 `pageSizeOptions`（缺省 `[10, 20, 50, 100]`，升序去重、每档至少 1）、
+    `onPageSizeChange`、`api.setPageSize()`。
+
+  **换档时页码跟着换算，而不是夹取。** 10 条一页看到第 5 页（第 41 条起），换成 50 条一页时
+  夹取会给出第 2 页（第 51 条起）——刚在看的那条反而不见了。改为按改档前第一条换算，
+  给出第 1 页，第 41 条仍在页内。换算结果天然落在合法区间，不必再夹一次。
+
+  `onPageChange` 报出的 `pageSize` 现在取自当下的档位；非受控改档后它跟着变，
+  不再是 prop 上那个陈旧值。
+
+- abe790b: 滚动条新增 `scroll-hover` 档，并把它定为缺省档。
+
+  **新增 `'scroll-hover'`**：滚动时露出，指针进入滚动容器或滚动条时也露出；指针占着容器时滚动只重画滑块、不起收起倒计时，指针离开或停手满 `hideDelay` 才收起。它是 `hover` 与 `scroll` 两档显形条件的并集，与那两档一样浮在内容之上——`data-lane-*` 的判据只认 `auto` / `always`，视口宽度一点不减（横条同理不占高度）。
+
+  **缺省档由 `'hover'` 改为 `'scroll-hover'`**：`scrollbar` 与 `scroll-area` 不写 `type` 时都走新档。显形集合是原缺省档的严格超集，没有一条本来看得见的滚动条会消失；占道与否、触屏交给原生滚动那一路都不变。
+
+  **需要跟着改的代码**：对 `ScrollbarType` 做穷尽 `switch` / 映射表的地方要补 `'scroll-hover'` 分支；读 `ScrollbarApi.type` 或 `data-type` 并按值分派的代码会收到这个新值。
+
+  状态机的两个判据改了名：`isHoverType` → `showsOnHover`、`isScrollType` → `showsOnScroll`（原名在新档下会读成谎话）。判据名只在机器内部与文档的「状态机」小节露面，不进公开 API。
+
+  日志的视口那条 `scrollbar-gutter` 收窄到「还在用原生条」的情形：带 `data-xh-scrollbar` 的容器原生条已被藏成零宽，空道对它没有布局作用。没挂自绘条时空道照留，原生滚动条出现与消失仍不推动文字。
+
+- f942e75: 表格补列偏好：一份可序列化的状态 + 几个写入口。
+
+  ```ts
+  interface TableColumnPreference {
+    order?: string[]; // 列序
+    hidden?: string[]; // 藏起来的列
+    widths?: Record<string, number | string>; // 列宽覆盖
+    sticky?: Record<string, boolean | "start" | "end">; // 冻结覆盖
+  }
+  ```
+
+  `columnPreference` 给定即受控，`defaultColumnPreference` 非受控，
+  变更走 `onColumnPreferenceChange`。写入口四个：`setColumnHidden` / `moveColumn` /
+  `setColumnWidth` / `setColumnPreference`。
+
+  **存到哪儿归使用者**——存 localStorage、存后端、跟着用户设置同步，都是应用的事；
+  把存储通道焊进组件库只会让它绑死一种后端。库只负责把偏好算进生效列。
+
+  三条语义值得单说：
+
+  - `order` 只列一部分也成立：列到的排在前面，没列到的按原顺序跟在后面，
+    于是「把某一列挪到最前」不必把全表列一遍。
+  - 隐藏列**不占列号**，其余列跟着重排——让它继续占，读屏会报出一个数不到的格子。
+  - 前缀列不受偏好摆布：它们是结构性的，由 `prefixColumns` 说了算。
+
+- 9b8a795: 表格补前缀列、树形子行与行号。
+
+  **前缀列**：`prefixColumns: ['index', 'select', 'expand']` 按给定顺序插在最前面，
+  并**占住列号**——不占的话右侧所有列的 `aria-colindex` 会整体串位，而这正是使用者
+  手工往 `columns` 里塞假列的原因。作者照 `api.columns` 渲染即可，每一项自报 `kind`。
+  默认一列都不插，现有用法一行不用改。
+
+  **树形子行**：`TableRowDef.parentId` 指父行。有子行的行不再产出详情行——
+  一行不可能同时既展开出子行、又展开出一块详情。`aria-level` / `aria-posinset` /
+  `aria-setsize` 从写死的 1 与 2 改成按真实层级给。
+
+  **行号** `api.rowNumber(rowId)`：
+
+  - 平表是**分页全局序号** `(page - 1) * pageSize + 可见序`，翻到第二页不会又从 1 开始；
+    `page` / `pageSize` 只用来算序号，不参与切片（切片归调用方或分页组件的 `api.slice`）。
+  - 树形是**大纲编号**（`1` / `1.1` / `1.2`），取的是「在父的 children 里的下标」
+    而不是可见序：**收起某一枝时，仍在场的行编号一个都不变**。取可见序的话收起一枝，
+    其后所有行的号会整体前移，用户看到的是「序号跳了」。
+
+- a69cead: 树补一条 `leafOrientation`：末端那一层可以横排。
+
+  只作用于「子节点全是叶子」的那一层——菜单授权里就是按钮那层。一个菜单下十几个按钮，
+  横排一行铺完，省掉大量纵向翻找：
+
+  ```vue
+  <XhTreeRoot :collection="menus" leaf-orientation="horizontal" />
+  ```
+
+  **中间层与整棵树恒是竖排，不提供开关。** 它们承载的是层级本身，横过来层级就读没了。
+  判据是「这一层不再往下分」而不是「深度等于几」：同一棵树里各枝深浅不一，
+  按深度判会把浅枝的中间层也横过来。
+
+  **方向键不跟着改。** 树上左右是层级操作（收起 / 展开、回父层 / 进子层）、上下走可见行，
+  这是 treeview 的规范语义，横排只是排布。
+
+  顺带修一处：叶子行在竖排下会自己补出「箭头那一格」与同级分支对齐，横排下补出来的
+  是节点之间的空隙而不是层级，那条规则因此按行盒**所在的那层容器**判定方向。
+
+- e7d404a: 树补 `multiple` 布尔，`selectionMode` 转为它的旧写法。
+
+  `TreeSelectionMode` 只有 `single | multiple` 两个取值，与一个布尔完全等价；而同族的
+  `tree-select` 与另外六家（accordion / cascader / combobox / listbox / select / toggle-group）
+  表达同一件事时用的都是 `multiple?: boolean`。同一个概念，树上要写
+  `selection-mode="multiple"`、下拉树上要写 `multiple`——记不住是必然的。
+
+  树现在也收 `multiple`（Vue 的 prop、自定义元素的 `multiple` 属性、api 上的 `multiple` 布尔）。
+  `selectionMode` 保留一个大版本，标为 deprecated；**两者同时给时以 `selectionMode` 为准**，
+  与 listbox 的规矩一致——所以已经在用 `selectionMode` 的代码行为一点不变，不必赶着改。
+
+  `listbox` 的 `selectionMode` 不动：它有 `single | multiple | extended` 三个取值，
+  不是布尔能表达的。`calendar` / `date-picker` 的同名 prop 同理。
+
+### Patch Changes
+
+- Updated dependencies [bc7eeed]
+- Updated dependencies [e73b671]
+- Updated dependencies [6456704]
+- Updated dependencies [f1b2c16]
+- Updated dependencies [7f8021e]
+- Updated dependencies [378d511]
+- Updated dependencies [82afde0]
+- Updated dependencies [56310b8]
+- Updated dependencies [843e17a]
+- Updated dependencies [3c033ca]
+- Updated dependencies [1a36b7e]
+- Updated dependencies [911d0b7]
+- Updated dependencies [720cf75]
+- Updated dependencies [abe790b]
+- Updated dependencies [fb97d76]
+- Updated dependencies [f942e75]
+- Updated dependencies [9b8a795]
+- Updated dependencies [902cc49]
+- Updated dependencies [5a1aedd]
+- Updated dependencies [0148cf7]
+- Updated dependencies [1126110]
+- Updated dependencies [a69cead]
+- Updated dependencies [e7d404a]
+  - @xihan-ui/headless@1.0.0-preview.0
+  - @xihan-ui/kernel@1.0.0-preview.0
+  - @xihan-ui/machine@1.0.0-preview.0
+  - @xihan-ui/behavior@1.0.0-preview.0
+  - @xihan-ui/motion@1.0.0-preview.0
+  - @xihan-ui/code-highlight@1.0.0-preview.0
+  - @xihan-ui/position@1.0.0-preview.0
+  - @xihan-ui/backgrounds@1.0.0-preview.0
+
 ## 1.0.0-alpha.3
 
 ### Major Changes
@@ -255,6 +633,7 @@
   把模态关掉）。
 
   ## 其余
+
   - `--xh-editable-preview-line-height` 删除，改用 `--xh-editable-preview-min-h`：预览态
     原先拿行高冒充高度，实测比同组件的编辑态高 2px，切换时跳一下。
   - tooltip 与 navigation-menu 入层栈，Escape 不再连它们下面的对话框一起关掉。

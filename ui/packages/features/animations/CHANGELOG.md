@@ -1,5 +1,13 @@
 # @xihan-ui/animations
 
+## 1.0.0-preview.0
+
+### Patch Changes
+
+- Updated dependencies [e73b671]
+  - @xihan-ui/kernel@1.0.0-preview.0
+  - @xihan-ui/motion@1.0.0-preview.0
+
 ## 1.0.0-alpha.3
 
 ### Patch Changes

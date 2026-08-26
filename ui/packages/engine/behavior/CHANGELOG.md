@@ -1,5 +1,13 @@
 # @xihan-ui/behavior
 
+## 1.0.0-preview.0
+
+### Patch Changes
+
+- Updated dependencies [e73b671]
+  - @xihan-ui/kernel@1.0.0-preview.0
+  - @xihan-ui/motion@1.0.0-preview.0
+
 ## 1.0.0-alpha.3
 
 ### Minor Changes
@@ -66,6 +74,7 @@
   把模态关掉）。
 
   ## 其余
+
   - `--xh-editable-preview-line-height` 删除，改用 `--xh-editable-preview-min-h`：预览态
     原先拿行高冒充高度，实测比同组件的编辑态高 2px，切换时跳一下。
   - tooltip 与 navigation-menu 入层栈，Escape 不再连它们下面的对话框一起关掉。

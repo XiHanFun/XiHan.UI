@@ -104,7 +104,7 @@ body:
     attributes:
       label: 版本
       description: 出现问题的 npm 包版本或 commit
-      placeholder: 1.0.0-alpha.3
+      placeholder: 1.0.0-preview.0
     validations:
       required: true
 
