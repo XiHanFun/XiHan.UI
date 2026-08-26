@@ -19,6 +19,7 @@ import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
+import { ScrollbarsController } from '../runtime/scrollbars-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定
 // （value 尤其：落成 null 就分不出「非受控」与「受控且当前无选中」）。
@@ -148,6 +149,12 @@ export class XhPopselectElement extends XhElement {
     { scope: this.popselectScope },
   )
 
+  /** 候选列表的自绘条：与 content 同级挂在已经 fixed 的 positioner 上 */
+  private readonly bars = new ScrollbarsController(this, {
+    shell: () => this.getPart('positioner'),
+    scrollable: () => this.getPart('content'),
+  })
+
   /** 作者声明的条目禁用，只认首见那一份；没写即 undefined，交给 collection 定夺 */
   private readonly declaredDisabled = createDeclaredDisabled()
 
@@ -194,7 +201,8 @@ export class XhPopselectElement extends XhElement {
       node: () => this.getPart('content'),
       // trigger 记为本层分支：点它算层内交互，开合交给 trigger 自己切换。
       // 否则同一次点击先被判为层外交互关一次、再被 click 打开一次，浮层等于关不掉。
-      branches: () => [this.getPart('trigger')].filter(Boolean) as Element[],
+      // 浮层壳一并记上：候选列表之外还浮着自绘滚动条，按住它拖动不该把列表消解掉
+      branches: () => [this.getPart('trigger'), this.getPart('positioner')].filter(Boolean) as Element[],
       isModal: () => false,
       setModal: () => {},
       // 列表不带遮罩，没有「点它就该关本层」的表面
@@ -300,6 +308,8 @@ export class XhPopselectElement extends XhElement {
     this.exit.track(content)
     this.exit.update(api.open)
     this.setPartHidden(content, !this.exit.visible)
+
+    this.bars.wire()
   }
 
   override disconnectedCallback(): void {

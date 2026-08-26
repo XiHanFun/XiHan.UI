@@ -51,8 +51,9 @@ export function useMention(
     const registerLayer = (): { layer: Layer, dispose: Cleanup } => config!.layerRegistry.register({
       kind: 'popover',
       node: () => contentRef.value,
-      // 输入框记为本层分支：在正文里打字、点击都算层内交互，不该把浮层点没
-      branches: () => [inputRef.value].filter(Boolean) as Element[],
+      // 输入框记为本层分支：在正文里打字、点击都算层内交互，不该把浮层点没。
+      // 浮层壳一并记上：候选列表之外还浮着自绘滚动条，按住它拖动不该把列表消解掉
+      branches: () => [inputRef.value, positionerRef.value].filter(Boolean) as Element[],
       isModal: () => false,
       setModal: () => {},
       surfaces: () => [],

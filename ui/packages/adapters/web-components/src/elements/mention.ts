@@ -21,6 +21,7 @@ import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
+import { ScrollbarsController } from '../runtime/scrollbars-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
@@ -139,6 +140,12 @@ export class XhMentionElement extends XhElement {
     { scope: this.mentionScope, onBuilt: svc => this.injectRefs(svc) },
   )
 
+  /** 候选列表的自绘条：与 content 同级挂在已经 fixed 的 positioner 上 */
+  private readonly bars = new ScrollbarsController(this, {
+    shell: () => this.getPart('positioner'),
+    scrollable: () => this.getPart('content'),
+  })
+
   /** 作者声明的条目禁用，只认首见那一份；给了 collection 时用它，否则现读 */
   private readonly declaredDisabled = createDeclaredDisabled()
 
@@ -178,8 +185,9 @@ export class XhMentionElement extends XhElement {
     return this.config!.layerRegistry.register({
       kind: 'popover',
       node: () => this.getPart('content'),
-      // 输入框记为本层分支：在正文里打字、点击都算层内交互，不该把浮层点没
-      branches: () => [this.getPart('input')].filter(Boolean) as Element[],
+      // 输入框记为本层分支：在正文里打字、点击都算层内交互，不该把浮层点没。
+      // 浮层壳一并记上：候选列表之外还浮着自绘滚动条，按住它拖动不该把列表消解掉
+      branches: () => [this.getPart('input'), this.getPart('positioner')].filter(Boolean) as Element[],
       isModal: () => false,
       setModal: () => {},
       // 浮层不带遮罩，无可点关闭的表面
@@ -261,6 +269,8 @@ export class XhMentionElement extends XhElement {
     // 每次接线完上报一次候选集合，让机器重算候选条数与悬空高亮
     if (this.ctrl.service.getStatus() === 'Started')
       this.ctrl.service.send({ type: 'ITEMS.SYNC' })
+
+    this.bars.wire()
   }
 
   override disconnectedCallback(): void {

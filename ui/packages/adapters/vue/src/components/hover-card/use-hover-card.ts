@@ -51,8 +51,9 @@ export function useHoverCard(
     const registerLayer = (): { layer: Layer, dispose: Cleanup } => config!.layerRegistry.register({
       kind: 'popover',
       node: () => contentRef.value,
-      // trigger 记为本层分支，指针按在它上面算层内交互
-      branches: () => [triggerRef.value].filter(Boolean) as Element[],
+      // trigger 记为本层分支，指针按在它上面算层内交互；
+      // 浮层壳一并记上：卡片之外还浮着自绘滚动条，按住它拖动不该把卡片消解掉
+      branches: () => [triggerRef.value, positionerRef.value].filter(Boolean) as Element[],
       // 悬停卡片非模态：不陷焦点、不锁滚动、无遮罩
       isModal: () => false,
       setModal: () => {},

@@ -18,7 +18,7 @@
       "outputs": ["coverage/**"]
     },
     "@xihan-ui/styles#build": {
-      "inputs": ["index.css", "styles/**", "build/**", "package.json"],
+      "inputs": ["index.css", "css/**", "build/**", "package.json"],
       "outputs": []
     },
     "@xihan-ui/testing#test": {

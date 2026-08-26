@@ -20,6 +20,11 @@
     --xh-json-viewer-number-fg: var(--xh-syntax-number);
     --xh-json-viewer-boolean-fg: var(--xh-syntax-keyword);
 
+    /* 两档的自绘条浮在内容之上：轨道不上底色，实色轨道会沿容器边缘糊出一条灰带 */
+    --xh-scrollbar-track-bg: transparent;
+
+    /* 自绘条绝对定位贴这一层的内边距盒，它得是定位盒 */
+    position: relative;
     display: block;
     color: var(--xh-json-viewer-fg, var(--xh-fg-default));
     font-family: var(--xh-json-viewer-font, var(--xh-font-family-mono));

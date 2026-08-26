@@ -48,8 +48,9 @@ export function useMenu(
     const registerLayer = (): { layer: Layer, dispose: Cleanup } => config!.layerRegistry.register({
       kind: 'popover',
       node: () => contentRef.value,
-      // trigger 记为本层分支，点它算层内交互
-      branches: () => [triggerRef.value].filter(Boolean) as Element[],
+      // trigger 记为本层分支，点它算层内交互；
+      // 浮层壳一并记上：条目列表之外还浮着自绘滚动条，按住它拖动不该把菜单消解掉
+      branches: () => [triggerRef.value, positionerRef.value].filter(Boolean) as Element[],
       isModal: () => false,
       setModal: () => {},
       surfaces: () => [],

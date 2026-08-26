@@ -105,8 +105,9 @@ export function usePopselect(props: PopselectRootProps, notify: PopselectNotifie
     const registerLayer = (): { layer: Layer, dispose: Cleanup } => config!.layerRegistry.register({
       kind: 'popover',
       node: () => contentRef.value,
-      // trigger 记为本层分支，点它算层内交互
-      branches: () => [triggerRef.value].filter(Boolean) as Element[],
+      // trigger 记为本层分支，点它算层内交互；
+      // 浮层壳一并记上：候选列表之外还浮着自绘滚动条，按住它拖动不该把列表消解掉
+      branches: () => [triggerRef.value, positionerRef.value].filter(Boolean) as Element[],
       isModal: () => false,
       setModal: () => {},
       // 列表不带遮罩，没有「点它就该关本层」的表面

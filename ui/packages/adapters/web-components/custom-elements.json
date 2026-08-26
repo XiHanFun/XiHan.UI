@@ -3979,6 +3979,14 @@
               "default": "new MachineController<CascaderSchema>( this, cascaderMachine, () => this.machineProps(), { scope: this.cascaderScope, onBuilt: svc => this.injectRefs(svc) }, )"
             },
             {
+              "kind": "field",
+              "name": "bars",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), axes: ['horizontal'], props: () => ({ dir: this.direction }), })",
+              "description": "列区的自绘条：与 content 同级挂在已经 fixed 的 positioner 上。\n只摆横的——列多到放不下时整体横向滚动，纵向溢出归每一列自己；\n横条的正负按排版方向算，而组件不读计算样式，把作者写的那份显式交过去。"
+            },
+            {
               "kind": "method",
               "name": "machineProps",
               "privacy": "private",
@@ -6331,6 +6339,14 @@
               "default": "new MachineController<ColorPickerSchema>( this, colorPickerMachine, () => this.machineProps(), { scope: this.pickerScope, onBuilt: svc => this.injectRefs(svc) }, )"
             },
             {
+              "kind": "field",
+              "name": "bars",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), })",
+              "description": "面板的自绘条：与 content 同级挂在已经 fixed 的 positioner 上"
+            },
+            {
               "kind": "method",
               "name": "machineProps",
               "privacy": "private",
@@ -7167,6 +7183,14 @@
               "privacy": "private",
               "readonly": true,
               "default": "new MachineController<ComboboxSchema>( this, comboboxMachine, () => this.machineProps(), { scope: this.comboboxScope, onBuilt: svc => this.injectRefs(svc) }, )"
+            },
+            {
+              "kind": "field",
+              "name": "bars",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), })",
+              "description": "候选列表的自绘条：与 content 同级挂在已经 fixed 的 positioner 上"
             },
             {
               "kind": "field",
@@ -8303,6 +8327,14 @@
               "privacy": "private",
               "readonly": true,
               "default": "new MachineController<ContextMenuSchema>( this, contextMenuMachine, () => this.machineProps(), { scope: this.menuScope, onBuilt: svc => this.injectRefs(svc) }, )"
+            },
+            {
+              "kind": "field",
+              "name": "bars",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), })",
+              "description": "条目列表的自绘条：与 content 同级挂在已经 fixed 的 positioner 上"
             },
             {
               "kind": "field",
@@ -9854,6 +9886,14 @@
               "privacy": "private",
               "readonly": true,
               "default": "new MachineController<DateFieldSchema>( this, dateFieldMachine, () => datePickerFieldEndProps(this.rootCtrl.service), { scope: this.pickerScope }, )"
+            },
+            {
+              "kind": "field",
+              "name": "bars",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), })",
+              "description": "浮层面板的自绘条：与 content 同级挂在已经 fixed 的 positioner 上"
             },
             {
               "kind": "method",
@@ -17300,6 +17340,14 @@
               "default": "new MachineController<HoverCardSchema>( this, hoverCardMachine, () => this.machineProps(), { scope: this.hoverCardScope, onBuilt: svc => this.injectRefs(svc) }, )"
             },
             {
+              "kind": "field",
+              "name": "bars",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), })",
+              "description": "卡片内容的自绘条：与 content 同级挂在已经 fixed 的 positioner 上"
+            },
+            {
               "kind": "method",
               "name": "machineProps",
               "privacy": "private",
@@ -19417,6 +19465,24 @@
               "default": "new MachineController<JsonViewerSchema>(this, jsonViewerMachine, () => this.machineProps())"
             },
             {
+              "kind": "field",
+              "name": "bars",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new ScrollbarsController(this, { shell: () => this.getPart('root'), scrollable: () => scrollLayerOf(this.getPart('root')), axes: ['vertical', 'horizontal'], props: () => ({ dir: this.direction }), })",
+              "description": "两档的自绘条：与滚动层同级挂在根上。两档互斥，交此刻在场的那个——\n两个容器都归本元素建，身上没有 data-xh-part，从 root 里现查。\n两条轴都摆：深层缩进往行首方向推、长字符串往行尾伸。"
+            },
+            {
+              "kind": "field",
+              "name": "wiredLayer",
+              "type": {
+                "text": "HTMLElement | null"
+              },
+              "privacy": "private",
+              "default": "null",
+              "description": "条子上一轮接的是哪一档的容器。"
+            },
+            {
               "kind": "method",
               "name": "machineProps",
               "privacy": "private",
@@ -19544,6 +19610,48 @@
                   "text": "void"
                 }
               }
+            },
+            {
+              "kind": "method",
+              "name": "syncBars",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "把条子接到此刻在场的那一档容器上。\n机器的追踪器在本轮渲染之前就跑完了，这一轮换掉的容器它看不见；\n换了档就再催一轮，下一轮的追踪器才把滚动监听与容器标记挪过去。"
+            },
+            {
+              "kind": "method",
+              "name": "adopt",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "root",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "keep",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "drop",
+                  "type": {
+                    "text": "HTMLElement | undefined"
+                  }
+                }
+              ],
+              "description": "root 里只留这一档的容器：摘走另一档，作者写在里面的东西也一并清掉。\n自绘条同样挂在 root 上，按 scope 认出来留着——整份 replaceChildren 会把条子一起抹掉。\n已经就位的节点一个都不碰：移动一个节点等于把它摘下来再插回去，焦点在树里会掉回 body。"
             }
           ],
           "events": [
@@ -21862,6 +21970,14 @@
             },
             {
               "kind": "field",
+              "name": "bars",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), })",
+              "description": "候选列表的自绘条：与 content 同级挂在已经 fixed 的 positioner 上"
+            },
+            {
+              "kind": "field",
               "name": "declaredDisabled",
               "privacy": "private",
               "readonly": true,
@@ -22437,6 +22553,14 @@
               "privacy": "private",
               "readonly": true,
               "default": "new MachineController<MenuSchema>( this, menuMachine, () => this.machineProps(), { scope: this.menuScope, onBuilt: svc => this.injectRefs(svc) }, )"
+            },
+            {
+              "kind": "field",
+              "name": "bars",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), })",
+              "description": "条目列表的自绘条：与 content 同级挂在已经 fixed 的 positioner 上"
             },
             {
               "kind": "field",
@@ -25784,6 +25908,14 @@
               "default": "new MachineController<PaginationSchema>( this, paginationMachine, () => this.machineProps(), { scope: this.paginationScope, onBuilt: svc => this.injectRefs(svc) }, )"
             },
             {
+              "kind": "field",
+              "name": "bars",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), })",
+              "description": "折叠页码列表的自绘条：与 content 同级挂在已经 fixed 的 positioner 上"
+            },
+            {
               "kind": "method",
               "name": "ensureConfig",
               "privacy": "private",
@@ -27619,6 +27751,14 @@
               "default": "new MachineController<PopoverSchema>( this, popoverMachine, () => this.machineProps(), { scope: this.popoverScope, onBuilt: svc => this.injectRefs(svc) }, )"
             },
             {
+              "kind": "field",
+              "name": "bars",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), })",
+              "description": "面板内容的自绘条：与 content 同级挂在已经 fixed 的 positioner 上"
+            },
+            {
               "kind": "method",
               "name": "machineProps",
               "privacy": "private",
@@ -28116,6 +28256,14 @@
               "privacy": "private",
               "readonly": true,
               "default": "new MachineController<ListboxSchema>( this, listboxMachine, () => this.listboxProps(), { scope: this.popselectScope }, )"
+            },
+            {
+              "kind": "field",
+              "name": "bars",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), })",
+              "description": "候选列表的自绘条：与 content 同级挂在已经 fixed 的 positioner 上"
             },
             {
               "kind": "field",
@@ -43520,6 +43668,14 @@
               "privacy": "private",
               "readonly": true,
               "default": "new MachineController<TreeSelectSchema>( this, treeSelectMachine, () => this.machineProps(), { scope: this.treeSelectScope, onBuilt: svc => this.injectRefs(svc) }, )"
+            },
+            {
+              "kind": "field",
+              "name": "bars",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), axes: ['vertical', 'horizontal'], props: () => ({ dir: this.direction }), })",
+              "description": "树的自绘条：与 content 同级挂在已经 fixed 的 positioner 上。\n两条轴都摆——深层节点靠缩进往行末推，横向溢出与纵向一样是常态；\n横条的正负按排版方向算，而组件不读计算样式，把作者写的那份显式交过去。"
             },
             {
               "kind": "method",

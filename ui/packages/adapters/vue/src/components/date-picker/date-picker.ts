@@ -18,6 +18,7 @@ import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h, mergeProps, Teleport } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { slotPaints } from '../../runtime/slot-content'
+import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import {
   provideDatePicker,
@@ -298,12 +299,14 @@ export const XhDatePickerPositioner = defineComponent({
   inheritAttrs: false,
   setup(_, { slots, attrs }) {
     const ctx = useDatePickerContext()
+    // 浮层面板的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner
+    const bars = useScrollbars({ scrollable: () => ctx.contentRef.value })
     // 搬到 portal 落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层
     return () => h(Teleport, { to: ctx.portalTarget.value }, [
       h('div', {
         ...mergeProps(ctx.api.value.getPositionerProps() as Record<string, unknown>, attrs),
         ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement },
-      }, slots.default?.()),
+      }, [...(slots.default?.() ?? []), ...bars.render()]),
     ])
   },
 })

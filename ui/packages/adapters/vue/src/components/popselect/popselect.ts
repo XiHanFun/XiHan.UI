@@ -5,6 +5,7 @@ import type { PayloadOf } from '../../runtime/payload'
 import type { PopselectNotifiers, PopselectRootProps } from './use-popselect'
 import { computed, defineComponent, h, mergeProps, onBeforeUnmount, ref, Teleport, watch } from 'vue'
 import { mergeIntoChild } from '../../runtime/as-child'
+import { useScrollbars } from '../../runtime/use-scrollbars'
 import { providePopselect, providePopselectItem, usePopselectContext, usePopselectItemContext } from './context'
 import { usePopselect } from './use-popselect'
 
@@ -124,12 +125,14 @@ export const XhPopselectPositioner = defineComponent({
   inheritAttrs: false,
   setup(_, { slots, attrs }) {
     const ctx = usePopselectContext()
+    // 候选列表的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner
+    const bars = useScrollbars({ scrollable: () => ctx.contentRef.value })
     // 定位层搬到 portal 落点，逃开祖先的层叠上下文
     return () => h(Teleport, { to: ctx.portalTarget.value }, [
       h('div', {
         ...mergeProps(ctx.api.value.getPositionerProps() as Record<string, unknown>, attrs),
         ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement },
-      }, slots.default?.()),
+      }, [...(slots.default?.() ?? []), ...bars.render()]),
     ])
   },
 })

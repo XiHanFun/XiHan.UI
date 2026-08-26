@@ -14,6 +14,7 @@ import type { PayloadOf } from '../../runtime/payload'
 import type { CascaderContext } from './use-cascader'
 import { computed, defineComponent, h, mergeProps, onBeforeUnmount, ref, Teleport, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { provideCascader, provideCascaderItem, useCascaderContext, useCascaderItemContext } from './context'
 import { useCascader } from './use-cascader'
@@ -219,12 +220,20 @@ export const XhCascaderPositioner = defineComponent({
   inheritAttrs: false,
   setup(_, { slots, attrs }) {
     const ctx = useCascaderContext()
+    // 列区的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner。
+    // 只摆横的：列多到放不下时整体横向滚动，纵向溢出归每一列自己。
+    // 横条的正负按排版方向算，而组件不读计算样式，把 positioner 上那份显式交过去
+    const bars = useScrollbars({
+      scrollable: () => ctx.contentRef.value,
+      axes: ['horizontal'],
+      props: () => ({ dir: (ctx.api.value.getPositionerProps() as { dir?: Direction }).dir }),
+    })
     // 搬到 portal 落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层
     return () => h(Teleport, { to: ctx.portalTarget.value }, [
       h('div', {
         ...mergeProps(ctx.api.value.getPositionerProps() as Record<string, unknown>, attrs),
         ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement },
-      }, slots.default?.()),
+      }, [...(slots.default?.() ?? []), ...bars.render()]),
     ])
   },
 })

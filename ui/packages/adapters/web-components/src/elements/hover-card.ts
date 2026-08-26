@@ -9,6 +9,7 @@ import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
+import { ScrollbarsController } from '../runtime/scrollbars-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
@@ -96,6 +97,12 @@ export class XhHoverCardElement extends XhElement {
     { scope: this.hoverCardScope, onBuilt: svc => this.injectRefs(svc) },
   )
 
+  /** 卡片内容的自绘条：与 content 同级挂在已经 fixed 的 positioner 上 */
+  private readonly bars = new ScrollbarsController(this, {
+    shell: () => this.getPart('positioner'),
+    scrollable: () => this.getPart('content'),
+  })
+
   private machineProps(): Partial<HoverCardSchema['props']> {
     return {
       open: this.open,
@@ -124,8 +131,9 @@ export class XhHoverCardElement extends XhElement {
     return this.config!.layerRegistry.register({
       kind: 'popover',
       node: () => this.getPart('content'),
-      // trigger 记为本层分支：指针按在它上面算层内交互，不该把刚悬停出来的卡片关掉
-      branches: () => [this.getPart('trigger')].filter(Boolean) as Element[],
+      // trigger 记为本层分支：指针按在它上面算层内交互，不该把刚悬停出来的卡片关掉。
+      // 浮层壳一并记上：卡片之外还浮着自绘滚动条，按住它拖动不该把卡片消解掉
+      branches: () => [this.getPart('trigger'), this.getPart('positioner')].filter(Boolean) as Element[],
       // 悬停卡片从不模态：不陷焦点、不锁滚动、没有自带遮罩
       isModal: () => false,
       setModal: () => {},
@@ -187,6 +195,8 @@ export class XhHoverCardElement extends XhElement {
     this.exit.track(content)
     this.exit.update(api.open)
     this.setPartHidden(content, !this.exit.visible)
+
+    this.bars.wire()
   }
 
   override disconnectedCallback(): void {

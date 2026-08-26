@@ -11,6 +11,7 @@ import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
+import { ScrollbarsController } from '../runtime/scrollbars-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
@@ -112,6 +113,12 @@ export class XhContextMenuElement extends XhElement {
     { scope: this.menuScope, onBuilt: svc => this.injectRefs(svc) },
   )
 
+  /** 条目列表的自绘条：与 content 同级挂在已经 fixed 的 positioner 上 */
+  private readonly bars = new ScrollbarsController(this, {
+    shell: () => this.getPart('positioner'),
+    scrollable: () => this.getPart('content'),
+  })
+
   /** 作者声明的条目禁用，只认首见那一份；给了 collection 时用它，否则现读 */
   private readonly declaredDisabled = createDeclaredDisabled()
 
@@ -149,7 +156,8 @@ export class XhContextMenuElement extends XhElement {
       node: () => this.getPart('content'),
       // 触发区记为本层分支：展开着再右键要能就地换坐标，先被判成层外交互关一次就白闪了。
       // 代价是"左键点在触发区内也该关"落不到消解层头上，那条由 connect 在 pointerdown 上自己收口。
-      branches: () => [this.getPart('trigger')].filter(Boolean) as Element[],
+      // 浮层壳一并记上：条目列表之外还浮着自绘滚动条，按住它拖动不该把菜单消解掉
+      branches: () => [this.getPart('trigger'), this.getPart('positioner')].filter(Boolean) as Element[],
       isModal: () => false,
       setModal: () => {},
       // 右键菜单不带遮罩，没有"点它就该关本层"的表面
@@ -263,6 +271,8 @@ export class XhContextMenuElement extends XhElement {
     this.exit.track(content)
     this.exit.update(api.open)
     this.setPartHidden(content, !this.exit.visible)
+
+    this.bars.wire()
   }
 
   override disconnectedCallback(): void {

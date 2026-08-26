@@ -4,6 +4,7 @@ import { connectJsonViewer, jsonViewerAnatomy, jsonViewerMachine, jsonViewerMeta
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
+import { ScrollbarsController } from '../runtime/scrollbars-controller'
 
 // 属性缺席翻成 undefined，缺省值由 connect 决定；Lit 自带转换器会把缺席落成 null/false，表达不了「未指定」。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
@@ -71,6 +72,11 @@ function reconcile(container: HTMLElement, wanted: readonly HTMLElement[]): void
 function setText(el: HTMLElement, text: string): void {
   if (el.textContent !== text)
     el.textContent = text
+}
+
+/** 此刻在场的那一档滚动层：树档是 tree，原文档是 text，两者都是 root 的直接子节点。 */
+function scrollLayerOf(root: HTMLElement | null): HTMLElement | null {
+  return root?.querySelector<HTMLElement>(':scope > [data-part="tree"], :scope > [data-part="text"]') ?? null
 }
 
 /**
@@ -149,6 +155,21 @@ export class XhJsonViewerElement extends XhElement {
 
   // json-viewer 机器无副作用：不需要 config/layer/refs，controller 只带 props。
   private readonly ctrl = new MachineController<JsonViewerSchema>(this, jsonViewerMachine, () => this.machineProps())
+
+  /**
+   * 两档的自绘条：与滚动层同级挂在根上。两档互斥，交此刻在场的那个——
+   * 两个容器都归本元素建，身上没有 data-xh-part，从 root 里现查。
+   * 两条轴都摆：深层缩进往行首方向推、长字符串往行尾伸。
+   */
+  private readonly bars = new ScrollbarsController(this, {
+    shell: () => this.getPart('root'),
+    scrollable: () => scrollLayerOf(this.getPart('root')),
+    axes: ['vertical', 'horizontal'],
+    props: () => ({ dir: this.direction }),
+  })
+
+  /** 条子上一轮接的是哪一档的容器。 */
+  private wiredLayer: HTMLElement | null = null
 
   private machineProps(): Partial<JsonViewerSchema['props']> {
     return {
@@ -286,20 +307,17 @@ export class XhJsonViewerElement extends XhElement {
     // 原文档不铺行：root 里换成一个 pre，整块可框选可复制
     if (api.view === 'text') {
       const pre = this.textEl ?? (this.textEl = this.ownerDocument.createElement('pre'))
-      if (root.firstChild !== pre || pre.nextSibling !== null)
-        root.replaceChildren(pre)
+      this.adopt(root, pre, this.treeEl)
       this.spreader.spread(pre, api.getTextProps() as Record<string, unknown>)
       setText(pre, api.text)
       // 换回树档时缓存的行要重铺，这里先清空
       this.rows.clear()
+      this.syncBars()
       return
     }
 
     const tree = this.treeEl ?? (this.treeEl = this.ownerDocument.createElement('div'))
-    // root 里只留树容器：Vue 侧的 Root 同样只渲染这一个子节点，两端铺出同一棵 DOM。
-    // 已经就位就一个节点都不碰——replaceChildren 是一次真的移除再插入，焦点在树里会掉回 body
-    if (root.firstChild !== tree || tree.nextSibling !== null)
-      root.replaceChildren(tree)
+    this.adopt(root, tree, this.textEl)
     this.spreader.spread(tree, api.getTreeProps() as Record<string, unknown>)
 
     const children = groupByParent(api.visibleNodes)
@@ -310,5 +328,36 @@ export class XhJsonViewerElement extends XhElement {
       if (!alive.has(key))
         this.rows.delete(key)
     }
+
+    this.syncBars()
+  }
+
+  /**
+   * 把条子接到此刻在场的那一档容器上。
+   * 机器的追踪器在本轮渲染之前就跑完了，这一轮换掉的容器它看不见；
+   * 换了档就再催一轮，下一轮的追踪器才把滚动监听与容器标记挪过去。
+   */
+  private syncBars(): void {
+    this.bars.wire()
+    const layer = scrollLayerOf(this.getPart('root'))
+    if (layer === this.wiredLayer)
+      return
+    this.wiredLayer = layer
+    this.requestUpdate()
+  }
+
+  /**
+   * root 里只留这一档的容器：摘走另一档，作者写在里面的东西也一并清掉。
+   * 自绘条同样挂在 root 上，按 scope 认出来留着——整份 replaceChildren 会把条子一起抹掉。
+   * 已经就位的节点一个都不碰：移动一个节点等于把它摘下来再插回去，焦点在树里会掉回 body。
+   */
+  private adopt(root: HTMLElement, keep: HTMLElement, drop: HTMLElement | undefined): void {
+    drop?.remove()
+    for (const child of [...root.children]) {
+      if (child !== keep && child.getAttribute('data-scope') !== 'scrollbar')
+        child.remove()
+    }
+    if (root.firstChild !== keep)
+      root.insertBefore(keep, root.firstChild)
   }
 }

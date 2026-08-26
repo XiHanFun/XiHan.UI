@@ -24,14 +24,18 @@
 
   /* 滚动容器，粘底读的是它的 scrollTop / clientHeight / scrollHeight。
      min-block-size: 0 让弹性子项能被压缩从而触发溢出；
-     overscroll-behavior: contain 阻止滚动量传给页面；
-     scrollbar-gutter: stable 避免滚动条出现与消失时推动文字。 */
+     overscroll-behavior: contain 阻止滚动量传给页面。 */
   [data-scope='thread'][data-part='viewport'] {
     flex: 1;
     min-block-size: 0;
     /* 逻辑属性 overflow-block 尚无可用实现，写物理轴 */
     overflow-y: auto;
     overscroll-behavior: contain;
+  }
+
+  /* 还在用原生滚动条的视口留一条空道，滚动条出现与消失时不推动文字。
+     带 data-xh-scrollbar 的容器已经把原生条藏成零宽，这条空道对它没有布局作用，排除掉 */
+  [data-scope='thread'][data-part='viewport']:not([data-xh-scrollbar]) {
     scrollbar-gutter: stable;
   }
 

@@ -49,8 +49,9 @@ export function useTreeSelect(
     const registerLayer = (): { layer: Layer, dispose: Cleanup } => config!.layerRegistry.register({
       kind: 'popover',
       node: () => contentRef.value,
-      // trigger 记为本层分支，点它算层内交互，开合由 trigger 自己切换
-      branches: () => [triggerRef.value].filter(Boolean) as Element[],
+      // trigger 记为本层分支，点它算层内交互，开合由 trigger 自己切换；
+      // 浮层壳一并记上：content 之外还浮着自绘滚动条，按住它拖动不该把浮层消解掉
+      branches: () => [triggerRef.value, positionerRef.value].filter(Boolean) as Element[],
       isModal: () => false,
       setModal: () => {},
       surfaces: () => [],
