@@ -384,7 +384,8 @@ export function connectPopselect<T extends PropTypes>(
         focusSafely(el)
         listbox.send({ type: 'ITEM.FOCUS', value: item.value })
       },
-      // 指针离开且没落到别的可用条目上：收掉高亮、焦点还给 content，hover 不留漆。
+      // 指针离开浮层：收掉高亮、焦点还给 content，hover 不留漆。
+      // 判据是「还在不在 content 里」——条目之间有间距时，指针落在缝上，relatedTarget 是 content 本身。
       // 触摸 tap 序列里的 leave 不作数
       'onPointerLeave': (event: PointerEvent) => {
         const el = event.currentTarget as HTMLElement
@@ -392,10 +393,10 @@ export function connectPopselect<T extends PropTypes>(
           return
         if (focusedValue !== item.value)
           return
-        const to = (event.relatedTarget as HTMLElement | null)?.closest<HTMLElement>(parts.item.selector)
-        if (to && !to.hasAttribute('data-disabled'))
+        const content = el.closest<HTMLElement>(parts.content.selector)
+        if (contains(content, event.relatedTarget as Node | null))
           return
-        el.closest<HTMLElement>(parts.content.selector)?.focus()
+        content?.focus()
         listbox.send({ type: 'FOCUS.CLEAR' })
       },
     }),

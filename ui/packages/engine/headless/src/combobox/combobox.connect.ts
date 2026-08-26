@@ -441,15 +441,16 @@ export function connectCombobox<T extends PropTypes>(
           send({ type: 'ITEM.HIGHLIGHT', value: item.value })
         }
       },
-      // 指针离开且没落到别的可用条目上：收掉高亮，hover 不留漆。
+      // 指针离开候选浮层：收掉高亮，hover 不留漆。
+      // 判据是「还在不在 content 里」——条目之间有间距时，指针落在缝上，relatedTarget 是 content 本身。
       // 触摸 tap 序列里的 leave 不作数；打字建立的高亮被指针路过不受影响
       'onPointerLeave': (event: PointerEvent) => {
-        if (event.pointerType === 'touch' || !pointerHot.delete(event.currentTarget as Element))
+        const el = event.currentTarget as HTMLElement
+        if (event.pointerType === 'touch' || !pointerHot.delete(el))
           return
         if (!interactive || highlighted !== item.value)
           return
-        const to = (event.relatedTarget as HTMLElement | null)?.closest<HTMLElement>(parts.item.selector)
-        if (to && !to.hasAttribute('data-disabled'))
+        if (contains(el.closest<HTMLElement>(parts.content.selector), event.relatedTarget as Node | null))
           return
         send({ type: 'HIGHLIGHT.CLEAR' })
       },
