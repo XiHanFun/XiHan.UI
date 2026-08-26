@@ -535,6 +535,7 @@ export {
 export { useNavigationMenu } from './components/navigation-menu/use-navigation-menu'
 export type { NavigationMenuContext } from './components/navigation-menu/use-navigation-menu'
 export { provideNotification, provideNotificationItem, useNotificationContext, useNotificationContextOptional, useNotificationItemContext } from './components/notification/context'
+export type { NotificationContext, NotificationItemContext } from './components/notification/context'
 export {
   XhNotificationGroup,
   XhNotificationItem,
@@ -547,7 +548,6 @@ export {
 } from './components/notification/notification'
 export type { NotificationGroupSlotProps, NotificationRootSlotProps } from './components/notification/notification'
 export { useNotification, useNotificationItem } from './components/notification/use-notification'
-export type { NotificationContext, NotificationItemContext } from './components/notification/use-notification'
 export { XhNumberAnimation } from './components/number-animation/number-animation'
 export type { NumberAnimationSlotProps } from './components/number-animation/number-animation'
 export {

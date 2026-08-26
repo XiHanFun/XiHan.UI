@@ -1,29 +1,11 @@
-import type {
-  NotificationApi,
-  NotificationItemApi,
-  NotificationOptions,
-  NotificationSchema,
-  ToastSchema,
-} from '@xihan-ui/headless'
-import type { ComputedRef, MaybeRefOrGetter } from 'vue'
+import type { NotificationSchema, ToastSchema } from '@xihan-ui/headless'
+import type { MaybeRefOrGetter } from 'vue'
+import type { NotificationContext, NotificationItemContext } from './context'
 import { connectNotification, connectNotificationItem, notificationMachine, toastMachine } from '@xihan-ui/headless'
 import { computed, toValue } from 'vue'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'
 import { useNotificationContextOptional } from './context'
-
-export interface NotificationContext {
-  api: ComputedRef<NotificationApi>
-  /** 入队并返回 id；同 id 已存在则就地改写，位置不动。 */
-  create: (options?: NotificationOptions) => string
-  update: (id: string, options: Partial<NotificationOptions>) => void
-  dismiss: (id: string) => void
-  dismissAll: () => void
-}
-
-export interface NotificationItemContext {
-  api: ComputedRef<NotificationItemApi>
-}
 
 /** props 收 ref/getter 时每帧现取，文案之类的量可以运行期换。 */
 export function useNotification(

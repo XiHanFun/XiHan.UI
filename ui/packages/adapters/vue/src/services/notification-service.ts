@@ -13,7 +13,7 @@ import type {
   ResolvedNotification,
 } from '@xihan-ui/headless'
 import type { App, MaybeRefOrGetter, VNode } from 'vue'
-import type { NotificationContext } from '../components/notification/use-notification'
+import type { NotificationContext } from '../components/notification/context'
 import type { XhConfig } from '../config/config'
 import { ensurePortalRoot } from '@xihan-ui/kernel'
 import { computed, createApp, defineComponent, Fragment, h, toValue } from 'vue'
