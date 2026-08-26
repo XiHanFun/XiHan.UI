@@ -3,7 +3,7 @@ import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { SelectApi, SelectItemProps, SelectNodeMeta, SelectSchema } from './select.types'
 import { focusItem, focusSafely, indexOfValue, isItemDisabled, ITEM_VALUE_ATTR, itemValue, matchTypeahead, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/behavior'
-import { dataAttr } from '@xihan-ui/kernel'
+import { contains, dataAttr } from '@xihan-ui/kernel'
 import { overlayPositioned } from '../shared/overlay'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { selectAnatomy, selectItemQuery, selectItemText } from './select.anatomy'
@@ -407,7 +407,9 @@ export function connectSelect<T extends PropTypes>(
         focusSafely(el)
         send({ type: 'ITEM.HIGHLIGHT', value: item.value })
       },
-      // 指针离开且没落到别的可用条目上：收掉高亮、焦点还给 content，hover 不留漆。
+      // 指针离开列表层：收掉高亮、焦点还给列表，hover 不留漆。
+      // 判据是「还在不在 list 里」——条目之间有间距时，指针落在缝上，relatedTarget 是 list 本身；
+      // footer 是 list 的兄弟，指针挪到那儿仍按离开处理。
       // 触摸 tap 序列里的 leave 不作数
       'onPointerLeave': (event: PointerEvent) => {
         const el = event.currentTarget as HTMLElement
@@ -415,11 +417,12 @@ export function connectSelect<T extends PropTypes>(
           return
         if (highlighted !== item.value)
           return
-        const to = (event.relatedTarget as HTMLElement | null)?.closest<HTMLElement>(parts.item.selector)
-        if (to && !to.hasAttribute('data-disabled'))
+        // list 认领着 listbox 的 id
+        const list = el.ownerDocument.getElementById(ids.content)
+        if (contains(list, event.relatedTarget as Node | null))
           return
         send({ type: 'HIGHLIGHT.CLEAR' })
-        el.ownerDocument.getElementById(ids.content)?.focus()
+        list?.focus()
       },
     }),
     getItemTextProps: item => normalize.element({
