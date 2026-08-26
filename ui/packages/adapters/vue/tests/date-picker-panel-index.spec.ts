@@ -1,5 +1,7 @@
 // @vitest-environment jsdom
 // 面板号写在日历上一处：面板内的标题、网格与格子跟着它走，自己写了仍按自己写的算。
+// 一律用 defaultOpen 挂：展开态初值为真时，浮层的焦点域在编排机挂载那一刻就把焦点
+// 送进格子，而日历那台机器排在它后面才挂载——这几条同时钉住那一下不再抛。
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick } from 'vue'
 import {
@@ -15,7 +17,6 @@ import {
   XhDatePickerRoot,
   XhDatePickerSegment,
   XhDatePickerSegmentGroup,
-  XhDatePickerTrigger,
   XhDatePickerWeekRow,
 } from '../src'
 
@@ -50,13 +51,13 @@ async function mountPicker(props: Record<string, unknown> = {}): Promise<void> {
         locale: 'zh-CN',
         timeZone: 'UTC',
         selectionMode: 'range',
+        defaultOpen: true,
         defaultValue: ['2026-07-01', '2026-08-05'],
         ...props,
       }, {
         default: ({ panels }: { panels: Panel[] }) => [
           h(XhDatePickerControl, null, () => [
             h(XhDatePickerSegmentGroup, null, () => [h(XhDatePickerSegment, { index: 0 })]),
-            h(XhDatePickerTrigger),
           ]),
           h(XhDatePickerPositioner, null, () => [
             h(XhDatePickerContent, null, () => panels.map(panel =>
@@ -78,13 +79,6 @@ async function mountPicker(props: Record<string, unknown> = {}): Promise<void> {
   })
   app.mount(host)
   cleanup.push(() => app.unmount())
-  await tick()
-  await open()
-}
-
-/** 点开浮层：机器在这一拍之后才把焦点送进日历 */
-async function open(): Promise<void> {
-  document.querySelector<HTMLElement>('[data-scope="date-picker"][data-part="trigger"]')?.click()
   await tick()
 }
 
@@ -133,12 +127,12 @@ describe('双面板的面板号写在日历上', () => {
           locale: 'zh-CN',
           timeZone: 'UTC',
           selectionMode: 'range',
+          defaultOpen: true,
           defaultValue: ['2026-07-01', '2026-08-05'],
         }, {
           default: ({ panels }: { panels: Panel[] }) => [
             h(XhDatePickerControl, null, () => [
               h(XhDatePickerSegmentGroup, null, () => [h(XhDatePickerSegment, { index: 0 })]),
-              h(XhDatePickerTrigger),
             ]),
             h(XhDatePickerPositioner, null, () => [
               h(XhDatePickerContent, null, () => panels.map(panel =>
@@ -154,7 +148,6 @@ describe('双面板的面板号写在日历上', () => {
     app.mount(host)
     cleanup.push(() => app.unmount())
     await tick()
-    await open()
     expect(headings()).toEqual(['2026年8月', '2026年8月'])
   })
 })

@@ -303,7 +303,18 @@ export function connectCalendar<T extends PropTypes>(
     return i === 0 ? ids.heading : `${ids.heading}-${i}`
   }
 
-  const focusAt = (next: string): void => send({ type: 'FOCUS.SET', value: next })
+  /**
+   * 格子拿到焦点时把聚焦日记下来。
+   *
+   * 机器还没挂载就直接丢掉：内嵌进 date-picker 且展开态初值为真时，浮层的焦点域在
+   * 编排机挂载那一刻就把焦点送进了格子，而日历这台机器排在它后面才挂载。那一下的落点
+   * 本就是按 props 算出来的聚焦日，记不记都一样。
+   */
+  const focusAt = (next: string): void => {
+    if (service.getStatus() === 'NotStarted')
+      return
+    send({ type: 'FOCUS.SET', value: next })
+  }
   /**
    * 网格内的用户操作（方向键、翻页键、点格子）专用：连带把 DOM 焦点搬到落点那一格。
    * 点击也走这一路，否则翻月重画后原节点被换掉、焦点掉回 body。
