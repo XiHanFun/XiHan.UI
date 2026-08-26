@@ -48,7 +48,7 @@ labels: bug
 
 ## 版本
 
-<!-- 出现问题的 npm 包版本或 commit，如 1.0.0-preview.0 -->
+<!-- 出现问题的 npm 包版本或 commit，例如 1.2.3 或 a1b2c3d -->
 
 ## 运行环境
 

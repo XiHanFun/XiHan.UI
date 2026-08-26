@@ -51,13 +51,13 @@ getRuntimeInfo()
 import { getMetadataSummary, getMetadataDetails, printMetadataSummary } from '@xihan-ui/kernel/metadata'
 
 const summary = getMetadataSummary()
-// XiHan.UI 曦寒视图 v1.0.0-preview.0
+// XiHan.UI 曦寒视图 v<当前版本>
 // 框架无关的组件库：状态机与无障碍住在 headless 内核，每个框架只配一个薄适配器。
 // 碧落降恩承淑颜，共挚崎缘挽曦寒。
 // 迁般故事终成忆，谨此葳蕤换思短。
 //               —— 致她
 //
-// 宿主：vue v1.0.0-preview.0
+// 宿主：vue v<当前版本>
 
 const details = getMetadataDetails() // 摘要之外再补作者 / 组织 / 仓库 / 文档 / 许可证 / 环境
 
@@ -82,13 +82,13 @@ printMetadataDetails()
  /   |_/ // __  / ___ |/ /|  /
 /_/|_/___/_/ /_/_/  |_/_/ |_/
 
-XiHan.UI 曦寒视图 v1.0.0-preview.0
+XiHan.UI 曦寒视图 v<当前版本>
 框架无关的组件库：状态机与无障碍住在 headless 内核，每个框架只配一个薄适配器。
 碧落降恩承淑颜，共挚崎缘挽曦寒。
 迁般故事终成忆，谨此葳蕤换思短。
               —— 致她
 
-宿主：vue v1.0.0-preview.0
+宿主：vue v<当前版本>
 ```
 
 不想要时关掉（只影响之后的启动，手动 print 不受影响）：

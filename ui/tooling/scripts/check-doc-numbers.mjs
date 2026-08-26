@@ -234,13 +234,6 @@ const truth = {
       return cem.modules.flatMap(m => m.declarations ?? []).filter(d => d.tagName).length
     },
   },
-  当前版本: {
-    how: 'packages/adapters/vue/package.json 的 version（17 个库包由 changesets 的 fixed 组锁步同版）',
-    async value() {
-      const raw = await read('packages/adapters/vue/package.json')
-      return JSON.parse(raw).version
-    },
-  },
   公开包数: {
     how: 'packages/*/* 里 private 不为 true 的 package.json 数',
     async value() {
@@ -870,16 +863,7 @@ function parseCount(text) {
 
 const TABLE = [
   // 发版当天最容易漏的一批：正文里「当前版本是 X」的陈述
-  ['README.md', /当前版本 `([\w.-]+)`（`preview`/, '当前版本'],
-  ['docs/installation.md', /都已发布到 npm，当前版本 `([\w.-]+)`/, '当前版本'],
-  ['docs/faq.md', /库包已发布到 npm，当前版本 `([\w.-]+)`/, '当前版本'],
-  ['docs/faq.md', /`preview` dist-tag 指向 `([\w.-]+)`/, '当前版本'],
   // 文档站是私有包，但版本号一直照着库包写；不登记就会像此前那样停在 alpha.1
-  ['docs/package.json', /"version": "([\w.-]+)"/, '当前版本'],
-  ['docs/guide/metadata.md', /XiHan\.UI 曦寒视图 v([\w.-]+)/, '当前版本'],
-  ['docs/guide/metadata.md', /宿主：vue v([\w.-]+)/, '当前版本'],
-  ['docs/npm-package-dependency.md', /^\| `@xihan-ui\/[\w-]+` \| `([\w.-]+)`/m, '当前版本'],
-  ['docs/npm-package-dependency.md', /发布时展开为 `\^([\w.-]+)` 区间/, '当前版本'],
   ['README.md', /Components-(\d+)-1f6feb/, '组件数'],
   ['README.md', /- \*\*(\d+) 个组件\*\* - 覆盖/, '组件数'],
   ['README.md', /已经能用的：(\d+) 个组件/, '组件数'],
@@ -999,14 +983,12 @@ const TABLE = [
   ['ui/packages/features/markdown/README.md', /CommonMark ([\d.]+)）/, 'CommonMark规范版本'],
 
   // 仓库两份 README 的开头段：版本号、无障碍存量、一致率、本地开发的 Node/pnpm 下限
-  ['ui/README.md', /Published to npm as `([\w.-]+)`/, '当前版本'],
   ['ui/README.md', /backlog is down to (\w+) recorded entries/, 'a11y存量违规条数'],
   ['ui/README.md', /plus (\w+) replay exemption/, 'a11y重放豁免条数'],
   ['ui/README.md', /CommonMark subset, (\d+)\/\d+/, 'CommonMark通过数'],
   ['ui/README.md', /CommonMark subset, \d+\/(\d+)/, 'CommonMark用例总数'],
   ['ui/README.md', /Requires Node ≥ (\d+) and pnpm ≥ \d+/, '开发期Node主版本下限'],
   ['ui/README.md', /Requires Node ≥ \d+ and pnpm ≥ (\d+)/, '开发期pnpm主版本下限'],
-  ['ui/README_cn.md', /npm 上是 `([\w.-]+)` 预览版/, '当前版本'],
   ['ui/README_cn.md', /存量违规登记表只剩([\d一二三四五六七八九十两]+)条/, 'a11y存量违规条数'],
   ['ui/README_cn.md', /另有([\d一二三四五六七八九十两]+)条 breadcrumb 的步骤重放豁免/, 'a11y重放豁免条数'],
   ['ui/README_cn.md', /一致率 (\d+)\/\d+）/, 'CommonMark通过数'],

@@ -4,25 +4,25 @@ XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（�
 
 ## 全部库包
 
-| 包 | 版本 | 依赖 | peer 依赖 | 层 |
-| --- | --- | --- | --- | --- |
-| `@xihan-ui/kernel` | `1.0.0-preview.0` | `motion` | — | 1 |
-| `@xihan-ui/machine` | `1.0.0-preview.0` | `kernel` | — | 1 |
-| `@xihan-ui/tokens` | `1.0.0-preview.0` | — | — | 1 |
-| `@xihan-ui/icons` | `1.0.0-preview.0` | — | — | 1 |
-| `@xihan-ui/motion` | `1.0.0-preview.0` | — | — | 1 |
-| `@xihan-ui/behavior` | `1.0.0-preview.0` | `kernel` `motion` | — | 2 |
-| `@xihan-ui/position` | `1.0.0-preview.0` | `kernel` | — | 2 |
-| `@xihan-ui/code-highlight` | `1.0.0-preview.0` | `kernel` | — | 2 |
-| `@xihan-ui/chat-stream` | `1.0.0-preview.0` | `kernel` | — | 2 |
-| `@xihan-ui/markdown` | `1.0.0-preview.0` | — | — | 2 |
-| `@xihan-ui/sound` | `1.0.0-preview.0` | `kernel` | — | 2 |
-| `@xihan-ui/animations` | `1.0.0-preview.0` | `kernel` `motion` | — | 2 |
-| `@xihan-ui/headless` | `1.0.0-preview.0` | `kernel` `machine` `behavior` `motion` + `@internationalized/date` | — | 3 |
-| `@xihan-ui/styles` | `1.0.0-preview.0` | `tokens`（只取其 CSS 产物） | — | 3 |
-| `@xihan-ui/backgrounds` | `1.0.0-preview.0` | `kernel` `behavior` `motion` | — | 3 |
-| `@xihan-ui/vue` | `1.0.0-preview.0` | `kernel` `machine` `behavior` `motion` `headless` `position` `code-highlight` | `vue`、`backgrounds`（可选）、`sound`（可选） | 4 |
-| `@xihan-ui/web-components` | `1.0.0-preview.0` | `kernel` `machine` `behavior` `motion` `headless` `position` `code-highlight` | `backgrounds`（可选） | 4 |
+| 包 | 依赖 | peer 依赖 | 层 |
+| --- | --- | --- | --- |
+| `@xihan-ui/kernel` | `motion` | — | 1 |
+| `@xihan-ui/machine` | `kernel` | — | 1 |
+| `@xihan-ui/tokens` | — | — | 1 |
+| `@xihan-ui/icons` | — | — | 1 |
+| `@xihan-ui/motion` | — | — | 1 |
+| `@xihan-ui/behavior` | `kernel` `motion` | — | 2 |
+| `@xihan-ui/position` | `kernel` | — | 2 |
+| `@xihan-ui/code-highlight` | `kernel` | — | 2 |
+| `@xihan-ui/chat-stream` | `kernel` | — | 2 |
+| `@xihan-ui/markdown` | — | — | 2 |
+| `@xihan-ui/sound` | `kernel` | — | 2 |
+| `@xihan-ui/animations` | `kernel` `motion` | — | 2 |
+| `@xihan-ui/headless` | `kernel` `machine` `behavior` `motion` + `@internationalized/date` | — | 3 |
+| `@xihan-ui/styles` | `tokens`（只取其 CSS 产物） | — | 3 |
+| `@xihan-ui/backgrounds` | `kernel` `behavior` `motion` | — | 3 |
+| `@xihan-ui/vue` | `kernel` `machine` `behavior` `motion` `headless` `position` `code-highlight` | `vue`、`backgrounds`（可选）、`sound`（可选） | 4 |
+| `@xihan-ui/web-components` | `kernel` `machine` `behavior` `motion` `headless` `position` `code-highlight` | `backgrounds`（可选） | 4 |
 
 发布走 changesets，所有库包同属一个 fixed 版本组，一起升到同一个版本号。
 
@@ -97,7 +97,7 @@ XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（�
 
 ## 版本约定
 
-- 内部运行时依赖一律 `workspace:^`（发布时展开为 `^1.0.0-preview.0` 区间），内部开发期依赖用 `workspace:*`；
+- 内部运行时依赖一律 `workspace:^`（发布时展开为当前锁步版本的 `^` 区间），内部开发期依赖用 `workspace:*`；
 - 第三方版本只从 workspace catalog 取，包内写 `catalog:`，**不得内联版本号**（`check-exact-pins` 门禁）；
 - 升级只改 `pnpm-workspace.yaml` 的 catalog 一处。
 
