@@ -102,6 +102,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @prop {DatePickerPreset[]} presets - 快捷选项（数组只走 property）：给了就在浮层里多出一列
  * @attr {number} visible-count - 并排展示几页；缺省单选 1，区间按两端定，同一页放得下就 1
  * @attr {boolean} fixed-weeks - 日历恒渲染六行，默认开；写 fixed-weeks="false" 关掉
+ * @attr {string} default-focused-value - 初始聚焦日，同时决定展开时先落在哪一页
  * @attr {boolean} disabled - 整个控件禁用：trigger 转原生 disabled，段位退出 Tab 序
  * @attr {boolean} read-only - 只读：浮层照常展开、日历照常浏览，但选中值改不动
  * @attr {boolean} invalid - 校验失败标注
@@ -179,6 +180,7 @@ export class XhDatePickerElement extends XhElement {
     presets: { attribute: false },
     visibleCount: { converter: NUMBER_CONVERTER, attribute: 'visible-count' },
     fixedWeeks: { converter: BOOLEAN_CONVERTER, attribute: 'fixed-weeks' },
+    defaultFocusedValue: { converter: STRING_CONVERTER, attribute: 'default-focused-value' },
     disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     invalid: { converter: BOOLEAN_CONVERTER },
@@ -215,6 +217,7 @@ export class XhDatePickerElement extends XhElement {
   declare presets?: DatePickerPreset[]
   declare visibleCount?: number
   declare fixedWeeks?: boolean
+  declare defaultFocusedValue?: string
   declare disabled?: boolean
   declare readOnly?: boolean
   declare invalid?: boolean
@@ -321,6 +324,7 @@ export class XhDatePickerElement extends XhElement {
       presets: this.presets,
       visibleCount: this.visibleCount,
       fixedWeeks: this.fixedWeeks,
+      defaultFocusedValue: this.defaultFocusedValue,
       isDateUnavailable: this.isDateUnavailable,
       disabled: this.disabled ?? false,
       readOnly: this.readOnly ?? false,

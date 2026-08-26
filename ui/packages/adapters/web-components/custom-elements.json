@@ -9611,6 +9611,15 @@
             },
             {
               "kind": "field",
+              "name": "defaultFocusedValue",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "default-focused-value"
+            },
+            {
+              "kind": "field",
               "name": "disabled",
               "privacy": "public",
               "type": {
@@ -10149,6 +10158,14 @@
               "description": "日历恒渲染六行，默认开；写 fixed-weeks=\"false\" 关掉",
               "name": "fixed-weeks",
               "fieldName": "fixedWeeks"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "初始聚焦日，同时决定展开时先落在哪一页",
+              "name": "default-focused-value",
+              "fieldName": "defaultFocusedValue"
             },
             {
               "type": {

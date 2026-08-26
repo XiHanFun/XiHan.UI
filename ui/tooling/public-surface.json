@@ -5863,6 +5863,7 @@
     "date-picker": [
       "activeView",
       "closeOnSelect",
+      "defaultFocusedValue",
       "defaultOpen",
       "defaultValue",
       "dir",
@@ -10546,6 +10547,7 @@
         "default-value",
         "disabled",
         "end-name",
+        "fixed-weeks",
         "invalid",
         "locale",
         "max",

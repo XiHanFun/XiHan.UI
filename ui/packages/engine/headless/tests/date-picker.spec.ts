@@ -862,6 +862,24 @@ describe('浮层：焦点、消解与归还', () => {
   })
 })
 
+describe('defaultFocusedValue 决定先落在哪一页', () => {
+  it('没选值时按它铺，不再落到今天那一页', () => {
+    const h = mount({ defaultFocusedValue: '2026-11-05' })
+    expect(h.api().calendar.panels[0]!.month).toBe(11)
+    expect(h.api().focusedValue).toBe('2026-11-05')
+  })
+
+  it('给了初始选中值就以它为准，聚焦日仍从 defaultFocusedValue 起步', () => {
+    const h = mount({ defaultFocusedValue: '2026-11-05', defaultValue: '2026-03-09' })
+    expect(h.api().value).toEqual(['2026-03-09'])
+    expect(h.api().calendar.panels[0]!.month).toBe(11)
+  })
+
+  it('不给就退回首个选中值', () => {
+    expect(mount({ defaultValue: '2026-03-09' }).api().calendar.panels[0]!.month).toBe(3)
+  })
+})
+
 describe('值被整份改写后区间不再跟着鼠标走', () => {
   it('点了起点再整份写值（快捷选项 / 清空 / setValue）：那个起点作废，指针扫过不再铺预览带', () => {
     const h = mount({

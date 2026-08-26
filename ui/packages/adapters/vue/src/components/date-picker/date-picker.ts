@@ -116,6 +116,8 @@ export const XhDatePickerRoot = defineComponent({
     visibleCount: { type: Number, default: undefined },
     /** 日历恒渲染六行，默认开。关掉后翻页时浮层高度会跟着月份变。 */
     fixedWeeks: { type: Boolean, default: undefined },
+    /** 初始聚焦日，同时决定展开时先落在哪一页；不给就退回首个选中值，再退回今天。 */
+    defaultFocusedValue: { type: String, default: undefined },
     /** 快捷选项；给了就在浮层里多出一列，日子要在自己的 computed 里算好再传。 */
     presets: { type: Array as PropType<DatePickerPreset[]>, default: undefined },
     isDateUnavailable: { type: Function as PropType<(value: string) => boolean>, default: undefined },

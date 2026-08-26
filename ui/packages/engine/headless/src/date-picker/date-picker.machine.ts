@@ -306,7 +306,7 @@ export const datePickerMachine = createMachine({
     })),
     // 聚焦日不受控，onFocusedValueChange 只作对外重画通知
     focusedValue: cell<string | null>(() => ({
-      defaultValue: null,
+      defaultValue: prop('defaultFocusedValue') ?? null,
       onChange: (focusedValue) => {
         if (focusedValue != null)
           prop('onFocusedValueChange')?.({ focusedValue })
