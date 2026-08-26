@@ -1,10 +1,10 @@
-<!-- 四种露面时机 | auto 溢出就露、always 恒露、scroll 滚动时露、hover 指针进入才露；收起都是淡出 -->
+<!-- 五种露面时机 | 缺省的 scroll-hover 滚动或指针进来都露、auto 溢出就露、always 恒露、scroll 只认滚动、hover 只认指针；收起都是淡出 -->
 <script setup lang="ts">
 import type { ScrollbarType } from "@xihan-ui/headless";
 import { XhScrollbarRoot, XhScrollbarThumb, XhScrollbarTrack } from "@xihan-ui/vue";
 import { ref } from "vue";
 
-const types: ScrollbarType[] = ["auto", "always", "scroll", "hover"];
+const types: ScrollbarType[] = ["scroll-hover", "auto", "always", "scroll", "hover"];
 const boxes = ref<Record<string, HTMLElement | null>>({});
 const lines = Array.from({ length: 30 }, (_, i) => `第 ${i + 1} 行`);
 </script>

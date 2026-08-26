@@ -15,7 +15,8 @@
 ## 特性
 
 - 挂在作者给的滚动容器上，与它是不是本组件的后代无关；挂上后容器带 `data-xh-scrollbar`，原生滚动条的外观自动藏起来。
-- 四种露面时机（`auto` / `always` / `scroll` / `hover`），带收起延时；露出与收起都淡变。
+- 五种露面时机（`scroll-hover` / `auto` / `always` / `scroll` / `hover`），带收起延时；露出与收起都淡变。
+- 缺省档 `scroll-hover` 浮在内容之上，滚动时与指针进来时露出，两样都停下后收起，全程不占布局宽度（横条不占高度）。
 - 拖滑块、点轨道跳转、RTL 双向换算、滑块像素下限都在库里。
 - `focusable` 打开后滑块进 Tab 序并报 `role="scrollbar"`，方向键与翻页键可用。
 - 触屏（粗指针）上默认交给原生滚动，`forceVisible` 打开才画。
@@ -40,9 +41,9 @@ focusable 让滑块进 Tab 序并报 role=scrollbar，方向键与翻页键可�
 
 <XhDemo src="scrollbar/03-both-axes" />
 
-### 四种露面时机
+### 五种露面时机
 
-auto 溢出就露、always 恒露、scroll 滚动时露、hover 指针进入才露；收起都是淡出
+缺省的 scroll-hover 滚动或指针进来都露、auto 溢出就露、always 恒露、scroll 只认滚动、hover 只认指针；收起都是淡出
 
 <XhDemo src="scrollbar/04-types" />
 
@@ -67,8 +68,8 @@ auto 溢出就露、always 恒露、scroll 滚动时露、hover 指针进入才�
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `orientation` | `Orientation` |  | 这条滚动条管哪条轴，默认 vertical。 |
-| `type` | `ScrollbarType` |  | 露面的时机，默认 hover。 |
-| `hideDelay` | `number` |  | 收起前的等待毫秒（type 为 scroll / hover 时生效），默认 600。 |
+| `type` | `ScrollbarType` |  | 露面的时机，默认 scroll-hover。 |
+| `hideDelay` | `number` |  | 收起前的等待毫秒（type 为 scroll / hover / scroll-hover 时生效），默认 600。 |
 | `minThumbSize` | `number` |  | 滑块最短多少像素，默认 20。长文档里的滑块再短也按得住。 |
 | `step` | `number` |  | 方向键一步滚多少像素，默认 40。翻页键按视口长度走，不看这个值。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，换的是滚动条厚度。 |
@@ -119,7 +120,7 @@ auto 溢出就露、always 恒露、scroll 滚动时露、hover 指针进入才�
 
 **事件**：`MEASURE` · `SCROLL` · `SCROLL.IDLE` · `POINTER.ENTER` · `POINTER.LEAVE` · `DRAG.START` · `DRAG.MOVE` · `DRAG.END` · `TRACK.CLICK` · `STEP` · `SCROLL.TO` · `after.hideDelay`
 
-**判据**：`isHoverType` · `isScrollType` · `staysVisible` · `canInteract`
+**判据**：`showsOnHover` · `showsOnScroll` · `staysVisible` · `canInteract`
 
 ## connect API
 
@@ -224,7 +225,7 @@ auto 溢出就露、always 恒露、scroll 滚动时露、hover 指针进入才�
 ## 组合
 
 - [滚动区域](./scroll-area)就是视口加两条本组件的组装：它的轨道、滑块与交叉口戴的正是本组件的 scope。
-- [表格](./table)放进滚动区即可滚；[虚拟滚动](./virtualizer)的视口给个 id，用 `controls` 挂上即可。
+- [表格](./table)放进滚动区即可滚；[虚拟滚动](./virtualizer)与[日志](./log)的视口给个 id，用 `controls` 挂上即可。
 - 两条轴各摆一个，都打开 `gutter` 让出交叉口，`corner` 写在其中一条里补上那一格。
 
 ## 最佳实践

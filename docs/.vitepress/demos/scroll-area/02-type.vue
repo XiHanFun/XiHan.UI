@@ -1,4 +1,4 @@
-<!-- 显隐时机 | type 决定滚动条什么时候露面：hover 指针进来才露，always 恒露，scroll 滚动时露、停手后收起 -->
+<!-- 显隐时机 | type 决定滚动条什么时候露面：缺省的 scroll-hover 滚动或指针进来都露，hover 只认指针，always 恒露占一条道 -->
 <script setup lang="ts">
 import {
   XhScrollAreaContent,
@@ -9,7 +9,7 @@ import {
   XhScrollAreaViewport,
 } from "@xihan-ui/vue";
 
-const types = ["hover", "always", "scroll"] as const;
+const types = ["scroll-hover", "hover", "always", "scroll"] as const;
 const lines = Array.from({ length: 20 }, (_, i) => `第 ${i + 1} 行`);
 </script>
 

@@ -204,6 +204,15 @@ describe('占道、让位与交叉口', () => {
     expect(lanes(hover)).toEqual([undefined, undefined])
   })
 
+  it('缺省档浮在内容上：视口一条道都不让，宽度一点不减', async () => {
+    const r = rig()
+    await settle()
+    const vp = r.api().getViewportProps() as Dict
+    expect(r.api().type).toBe('scroll-hover')
+    expect(vp['data-lane-vertical']).toBeUndefined()
+    expect(vp['data-lane-horizontal']).toBeUndefined()
+  })
+
   it('auto：只有溢出的那条轴占道', async () => {
     const r = rig({ type: 'auto' }, { clientH: 100, clientW: 100, scrollH: 400, scrollW: 100 })
     await settle()

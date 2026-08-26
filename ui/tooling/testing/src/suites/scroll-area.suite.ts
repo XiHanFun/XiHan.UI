@@ -201,11 +201,11 @@ export const scrollAreaSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '默认（hover）：挂载时收着，两条滚动条 data-state=hidden 由皮肤淡出，交叉口带 hidden',
+      name: '默认（scroll-hover）：挂载时收着，两条滚动条 data-state=hidden 由皮肤淡出，交叉口带 hidden',
       spec: { apg: WCAG },
       initial: {
         parts: {
-          'root': { 'data-type': 'hover' },
+          'root': { 'data-type': 'scroll-hover' },
           'viewport': { 'data-lane-vertical': null, 'data-lane-horizontal': null },
           'scrollbar[0]': { 'data-state': 'hidden', 'data-gutter': null },
           'scrollbar[1]': { 'data-state': 'hidden' },
@@ -278,6 +278,31 @@ export const scrollAreaSuite: ConformanceSuite = {
           // layout 末尾那次 scroll 就是第一下滚动：成段标记打上了，但不露面
           ...layoutStep,
           expect: { parts: { 'scrollbar[0]': { 'data-state': 'hidden', 'data-scrolling': '' } } },
+        },
+      ],
+    },
+    {
+      name: 'scroll-hover：滚动时露出但不占道，指针进来也露出',
+      spec: { apg: WCAG },
+      props: { type: 'scroll-hover', hideDelay: 300 },
+      steps: [
+        {
+          // layout 末尾那次滚动就让它露了面；浮在内容上，视口一条道都不让
+          ...layoutStep,
+          expect: {
+            parts: {
+              'viewport': { 'data-lane-vertical': null, 'data-lane-horizontal': null },
+              'scrollbar[0]': { 'data-state': 'visible' },
+            },
+          },
+        },
+        {
+          kind: 'settle',
+          until: { attr: { part: 'scrollbar[0]', name: 'data-state', value: 'hidden' } },
+        },
+        {
+          ...pointerOnViewport('pointerenter'),
+          expect: { parts: { 'scrollbar[0]': { 'data-state': 'visible' } } },
         },
       ],
     },

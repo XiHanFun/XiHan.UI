@@ -17,7 +17,8 @@
 
 - 它是视口加两条[滚动条](./scrollbar)的组装：`scrollbar` 挂载点同时是那条滚动条的根，里面照滚动条的写法摆轨道、滑块与交叉口；显隐、拖动、几何全是滚动条那一套。
 - `root` 要有确定高度，视口才量得出溢出。
-- `type` 决定滚动条什么时候露面：`hover` 指针进来才露，`auto` 溢出就露，`always` 恒露，`scroll` 滚动时露、停手后收起。
+- `type` 决定滚动条什么时候露面：缺省的 `scroll-hover` 滚动时或指针进来时露、都停下后收起，`hover` 只认指针，`scroll` 只认滚动，`auto` 溢出就露，`always` 恒露。
+- 只有 `auto` 与 `always` 在视口里占一条道；`scroll-hover` / `hover` / `scroll` 三档浮在内容之上，视口宽度一点不减。
 - `orientation` 关掉的那条轴滚动条恒不显形，视口那一向也不再滚，不留滚不回来的暗格。
 - `dir` 必须显式给：组件不读计算样式，看不见从 RTL 祖先继承来的方向。
 
@@ -31,7 +32,7 @@ root 要有确定高度，视口才量得出溢出；滚动走的是浏览器原
 
 ### 显隐时机
 
-type 决定滚动条什么时候露面：hover 指针进来才露，always 恒露，scroll 滚动时露、停手后收起
+type 决定滚动条什么时候露面：缺省的 scroll-hover 滚动或指针进来都露，hover 只认指针，always 恒露占一条道
 
 <XhDemo src="scroll-area/02-type" />
 
@@ -75,10 +76,10 @@ type 为 scroll 时滚动条停手后不立刻收起，hideDelay 决定还留多
 | --- | --- | --- | --- |
 | `dir` | `Direction` |  | 排版方向，默认随文档。只影响横轴：RTL 下滚动量的正负、指针位移的方向都要翻一次。 必须显式给：组件不读计算样式，看不见从 RTL 祖先继承来的方向。 |
 | `forceVisible` | `boolean` |  | 触屏（粗指针）上也画自绘滚动条，默认 false：缺省交给原生滚动。 |
-| `hideDelay` | `number` |  | 收起前的等待毫秒（type 为 scroll / hover 时生效），默认 600。 |
+| `hideDelay` | `number` |  | 收起前的等待毫秒（type 为 scroll / hover / scroll-hover 时生效），默认 600。 |
 | `orientation` | `ScrollAreaOrientation` |  | 哪几条轴归本组件管，默认 both。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，换的是滚动条厚度。 |
-| `type` | `ScrollbarType` |  | 滚动条露面的时机，默认 hover。 |
+| `type` | `ScrollbarType` |  | 滚动条露面的时机，默认 scroll-hover。 |
 
 ## 插槽
 

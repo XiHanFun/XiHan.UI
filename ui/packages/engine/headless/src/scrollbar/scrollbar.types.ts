@@ -7,9 +7,11 @@ import type { ScrollAxisMetrics } from '../shared/scroll-geometry'
  * - auto 溢出就一直露着；
  * - always 恒露，即便内容不溢出；
  * - scroll 滚动时露出，停手 hideDelay 毫秒后收起；
- * - hover 指针进入滚动容器或滚动条时露出，离开后 hideDelay 毫秒收起。
+ * - hover 指针进入滚动容器或滚动条时露出，离开后 hideDelay 毫秒收起；
+ * - scroll-hover 滚动时与指针进入时都露出，指针在容器里滚动不起倒计时，
+ *   指针离开或停手 hideDelay 毫秒后收起。
  */
-export type ScrollbarType = 'auto' | 'always' | 'scroll' | 'hover'
+export type ScrollbarType = 'auto' | 'always' | 'scroll' | 'hover' | 'scroll-hover'
 
 /** 指针位置，只取两个坐标。 */
 export interface ScrollbarPoint {
@@ -55,9 +57,9 @@ export interface ScrollbarSchema extends MachineSchema {
   props: {
     /** 这条滚动条管哪条轴，默认 vertical。 */
     orientation?: Orientation
-    /** 露面的时机，默认 hover。 */
+    /** 露面的时机，默认 scroll-hover。 */
     type?: ScrollbarType
-    /** 收起前的等待毫秒（type 为 scroll / hover 时生效），默认 600。 */
+    /** 收起前的等待毫秒（type 为 scroll / hover / scroll-hover 时生效），默认 600。 */
     hideDelay?: number
     /** 滑块最短多少像素，默认 20。长文档里的滑块再短也按得住。 */
     minThumbSize?: number
@@ -120,7 +122,8 @@ export interface ScrollbarSchema extends MachineSchema {
   computed: Record<string, never>
   refs: ScrollbarRefs
   /**
-   * 只有 hover / scroll 两种 type 会在这四个状态间走动，auto / always 的可见性由 connect 直接按 type 判。
+   * 只有 hover / scroll / scroll-hover 三种 type 会在这四个状态间走动，
+   * auto / always 的可见性由 connect 直接按 type 判。
    * hidden 收着；visible 露着且没有倒计时；hiding 露着且倒计时在跑；dragging 手正按在滑块上。
    */
   state: 'hidden' | 'visible' | 'hiding' | 'dragging'
@@ -145,7 +148,7 @@ export interface ScrollbarSchema extends MachineSchema {
     | { type: 'SCROLL.TO', offset: number }
     | { type: 'after.hideDelay' }
   tag: never
-  guard: 'isHoverType' | 'isScrollType' | 'staysVisible' | 'canInteract'
+  guard: 'showsOnHover' | 'showsOnScroll' | 'staysVisible' | 'canInteract'
   action:
     | 'measure'
     | 'measureSoon'

@@ -10543,6 +10543,7 @@
       "attributes": [
         "active-view",
         "close-on-select",
+        "default-focused-value",
         "default-open",
         "default-value",
         "disabled",

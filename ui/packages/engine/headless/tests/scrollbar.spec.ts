@@ -292,6 +292,97 @@ describe('显隐时机', () => {
     await settle()
     expect(r.api().visible).toBe(false)
   })
+
+  it('scroll：指针在容器里滚动照样起倒计时', async () => {
+    vi.useFakeTimers()
+    const r = rig({ type: 'scroll', hideDelay: 100 })
+    await settle()
+    r.scrollable.dispatchEvent(new PointerEvent('pointerenter'))
+    expect(r.api().visible).toBe(false)
+    scrollTo(r, 30)
+    expect(r.service.state.get()).toBe('hiding')
+    vi.advanceTimersByTime(120)
+    expect(r.api().visible).toBe(false)
+  })
+})
+
+describe('滚动时或悬停时露面（scroll-hover）', () => {
+  it('未指定 type 时就是这一档', async () => {
+    const r = rig()
+    await settle()
+    expect(r.api().type).toBe('scroll-hover')
+  })
+
+  it('挂载时收着：起点落在 hidden，不闪一下', async () => {
+    const r = rig({ type: 'scroll-hover' })
+    await settle()
+    expect(r.service.state.get()).toBe('hidden')
+    expect(r.api().visible).toBe(false)
+  })
+
+  it('收着时滚动：露出来并开始倒计时，停手够久收起', async () => {
+    vi.useFakeTimers()
+    const r = rig({ type: 'scroll-hover', hideDelay: 100 })
+    await settle()
+    scrollTo(r, 30)
+    expect(r.api().visible).toBe(true)
+    expect(r.service.state.get()).toBe('hiding')
+    vi.advanceTimersByTime(120)
+    expect(r.api().visible).toBe(false)
+  })
+
+  it('倒计时途中又滚了：计时推倒重来，连续滚动不会滚到一半自己收起', async () => {
+    vi.useFakeTimers()
+    const r = rig({ type: 'scroll-hover', hideDelay: 100 })
+    await settle()
+    scrollTo(r, 30)
+    vi.advanceTimersByTime(80)
+    expect(r.api().visible).toBe(true)
+    scrollTo(r, 60)
+    // 不重挂计时器的话这一刻已经过了首次排期的 100ms
+    vi.advanceTimersByTime(80)
+    expect(r.api().visible).toBe(true)
+    vi.advanceTimersByTime(40)
+    expect(r.api().visible).toBe(false)
+  })
+
+  it('指针占着容器时滚动：留在 visible，不当着指针的面收起', async () => {
+    vi.useFakeTimers()
+    const r = rig({ type: 'scroll-hover', hideDelay: 100 })
+    await settle()
+    r.scrollable.dispatchEvent(new PointerEvent('pointerenter'))
+    expect(r.service.state.get()).toBe('visible')
+    scrollTo(r, 30)
+    expect(r.service.state.get()).toBe('visible')
+    vi.advanceTimersByTime(500)
+    expect(r.api().visible).toBe(true)
+  })
+
+  it('指针离开：开始倒计时，到点收起', async () => {
+    vi.useFakeTimers()
+    const r = rig({ type: 'scroll-hover', hideDelay: 100 })
+    await settle()
+    r.scrollable.dispatchEvent(new PointerEvent('pointerenter'))
+    r.scrollable.dispatchEvent(new PointerEvent('pointerleave'))
+    expect(r.service.state.get()).toBe('hiding')
+    expect(r.api().visible).toBe(true)
+    vi.advanceTimersByTime(120)
+    expect(r.api().visible).toBe(false)
+  })
+
+  it('松开滑块时指针还在容器里：回到 visible 不倒计时', async () => {
+    vi.useFakeTimers()
+    const r = rig({ type: 'scroll-hover', hideDelay: 100 })
+    await settle()
+    r.scrollable.dispatchEvent(new PointerEvent('pointerenter'))
+    ;(r.api().getThumbProps() as Dict & { onPointerDown: (e: PointerEvent) => void })
+      .onPointerDown(pointer('pointerdown', { clientY: 0 }))
+    expect(r.api().dragging).toBe(true)
+    document.dispatchEvent(pointer('pointerup'))
+    expect(r.service.state.get()).toBe('visible')
+    vi.advanceTimersByTime(500)
+    expect(r.api().visible).toBe(true)
+  })
 })
 
 describe('成段的滚动通知', () => {

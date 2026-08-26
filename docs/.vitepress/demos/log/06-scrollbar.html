@@ -1,0 +1,41 @@
+<!-- 换成自绘滚动条 | 视口给个 id，用滚动条的 controls 挂上去；条子浮在内容之上，不占宽度也不留空道 -->
+<xh-log rows="8" style="inline-size: 100%">
+  <div data-xh-part="root">
+    <div data-xh-part="viewport" id="log-wc-scrollbar-viewport">
+      <div data-xh-part="content">
+        <div data-xh-part="line">12:00:00  http     GET  /api/orders/8800   200   10ms</div>
+        <div data-xh-part="line">12:00:01  http     GET  /api/orders/8801   200   11ms</div>
+        <div data-xh-part="line">12:00:02  http     GET  /api/orders/8802   200   12ms</div>
+        <div data-xh-part="line">12:00:03  http     GET  /api/orders/8803   200   13ms</div>
+        <div data-xh-part="line">12:00:04  http     GET  /api/orders/8804   200   14ms</div>
+        <div data-xh-part="line">12:00:05  http     GET  /api/orders/8805   200   15ms</div>
+        <div data-xh-part="line">12:00:06  http     GET  /api/orders/8806   200   16ms</div>
+        <div data-xh-part="line">12:00:07  http     GET  /api/orders/8807   200   17ms</div>
+        <div data-xh-part="line">12:00:08  http     GET  /api/orders/8808   200   18ms</div>
+        <div data-xh-part="line">12:00:09  http     GET  /api/orders/8809   200   19ms</div>
+        <div data-xh-part="line">12:01:10  http     GET  /api/orders/8810   200   20ms</div>
+        <div data-xh-part="line">12:01:11  http     GET  /api/orders/8811   200   21ms</div>
+        <div data-xh-part="line">12:01:12  http     GET  /api/orders/8812   200   22ms</div>
+        <div data-xh-part="line">12:01:13  http     GET  /api/orders/8813   200   23ms</div>
+        <div data-xh-part="line">12:01:14  http     GET  /api/orders/8814   200   24ms</div>
+        <div data-xh-part="line">12:01:15  http     GET  /api/orders/8815   200   25ms</div>
+        <div data-xh-part="line">12:01:16  http     GET  /api/orders/8816   200   26ms</div>
+        <div data-xh-part="line">12:01:17  http     GET  /api/orders/8817   200   27ms</div>
+        <div data-xh-part="line">12:01:18  http     GET  /api/orders/8818   200   28ms</div>
+        <div data-xh-part="line">12:01:19  http     GET  /api/orders/8819   200   29ms</div>
+        <div data-xh-part="line">12:02:20  http     GET  /api/orders/8820   200   30ms</div>
+        <div data-xh-part="line">12:02:21  http     GET  /api/orders/8821   200   31ms</div>
+        <div data-xh-part="line">12:02:22  http     GET  /api/orders/8822   200   32ms</div>
+        <div data-xh-part="line">12:02:23  http     GET  /api/orders/8823   200   33ms</div>
+      </div>
+    </div>
+    <!-- 嵌套的 xh-* 子树不参与外层的角色节点发现，这一条只归自己的元素管 -->
+    <xh-scrollbar controls="log-wc-scrollbar-viewport">
+      <div data-xh-part="root">
+        <div data-xh-part="track">
+          <div data-xh-part="thumb"></div>
+        </div>
+      </div>
+    </xh-scrollbar>
+  </div>
+</xh-log>
