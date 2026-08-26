@@ -1,0 +1,79 @@
+const t=`<!-- 基础用法 | create 入队并返回 id，队列里的每条由作者渲染成一条通知；退场窗口走完只收起不删，宿主在 status-change 里把它移出队列 -->
+<xh-notification id="notification-basic">
+  <div data-xh-part="root">
+    <xh-button variant="solid" data-create="save">
+      <button data-xh-part="root">弹一条</button>
+    </xh-button>
+    <xh-button variant="outline" data-create="error">
+      <button data-xh-part="root">弹一条 error</button>
+    </xh-button>
+    <span>队列：<span id="notification-basic-count">0</span> 条</span>
+
+    <div data-xh-part="group"></div>
+  </div>
+</xh-notification>
+
+<!-- 单条通知的节点归作者，元素不替作者生成，模板照队列克隆 -->
+<template id="notification-basic-template">
+  <xh-notification-item>
+    <div data-xh-part="item">
+      <span data-xh-part="item-indicator"></span>
+      <div data-xh-part="item-title"></div>
+      <div data-xh-part="item-description"></div>
+      <button data-xh-part="item-close-trigger"></button>
+    </div>
+  </xh-notification-item>
+</template>
+
+<script type="module">
+  const notification = document.getElementById("notification-basic");
+  const group = notification.querySelector('[data-xh-part="group"]');
+  const template = document.getElementById("notification-basic-template");
+  const count = document.getElementById("notification-basic-count");
+  const translations = { close: "关闭" };
+
+  // 队列变了就把这一摞重铺一遍：没了的摘掉，新来的克隆一条，剩下的把文案摊上去
+  function render() {
+    const list = notification.visibleNotifications;
+    const alive = new Set(list.map((item) => item.id));
+    for (const node of [...group.children]) {
+      if (!alive.has(node.itemId)) {
+        node.remove();
+      }
+    }
+    for (const item of list) {
+      let node = [...group.children].find((el) => el.itemId === item.id);
+      if (!node) {
+        node = document.importNode(template.content.firstElementChild, true);
+        node.itemId = item.id;
+        node.translations = translations;
+        group.append(node);
+      }
+      node.titleText = item.title;
+      node.description = item.description;
+      node.type = item.type;
+      node.duration = item.duration;
+      node.removeDelay = item.removeDelay;
+      node.closable = item.closable;
+    }
+    count.textContent = String(notification.count);
+  }
+
+  notification.addEventListener("items-change", render);
+
+  const messages = {
+    save: { title: "草稿已保存", description: "内容已同步到云端" },
+    error: {
+      type: "error",
+      title: "同步失败",
+      description: "网络中断，稍后自动重试",
+    },
+  };
+
+  for (const button of notification.querySelectorAll("[data-create]")) {
+    button.addEventListener("click", () =>
+      notification.create(messages[button.dataset.create])
+    );
+  }
+<\/script>
+`;export{t as default};

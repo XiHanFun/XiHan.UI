@@ -1,0 +1,17 @@
+const e=`<!-- 原文视图 | view="text" 直接出缩进过的 JSON 原文：整块可框选可复制，且不受 maxStringLength / maxItems 折减 -->
+<xh-json-viewer id="json-text" view="text" default-expanded-depth="2">
+  <div data-xh-part="root" style="inline-size: 100%; max-inline-size: 420px"></div>
+</xh-json-viewer>
+
+<script type="module">
+  document.getElementById("json-text").value = {
+    orderNo: "SO-2026-0825-0417",
+    amount: 12.5,
+    items: [
+      { sku: "A-1001", qty: 2 },
+      { sku: "B-2003", qty: 1 },
+    ],
+    remark: "跨境订单，需人工复核收件地址与税号",
+  };
+<\/script>
+`;export{e as default};
