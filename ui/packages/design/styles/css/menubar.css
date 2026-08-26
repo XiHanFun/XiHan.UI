@@ -152,6 +152,7 @@
   [data-scope='menubar'][data-part='content'] {
     display: flex;
     flex-direction: column;
+    gap: var(--xh-menubar-content-gap, var(--xh-list-option-gap));
     min-inline-size: var(--xh-menubar-min-w, var(--xh-overlay-menu-min-w));
     max-inline-size: var(--xh-menubar-max-w, var(--xh-overlay-max-w));
     /* 两道上限取更小的那道：自己的高度上限，以及落定那一侧真正剩下的空间。
@@ -201,6 +202,7 @@
   [data-scope='menubar'][data-part='group'] {
     display: flex;
     flex-direction: column;
+    gap: var(--xh-menubar-group-gap, var(--xh-list-option-gap));
   }
 
   [data-scope='menubar'][data-part='group'][hidden] {
@@ -327,7 +329,7 @@
      不给 display，因此 UA 的 [hidden]{display:none} 自己就压得住 */
   [data-scope='menubar'][data-part='separator'] {
     block-size: var(--xh-menubar-separator-thickness, var(--xh-stroke-thin));
-    margin-block: var(--xh-menubar-separator-my, var(--xh-space-1));
+    margin-block: var(--xh-menubar-separator-my, var(--xh-space-0_5));
     background: var(--xh-menubar-separator-color, var(--xh-border-default));
   }
 

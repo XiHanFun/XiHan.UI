@@ -299,6 +299,10 @@
     "option-py-lg": {
       "$type": "dimension",
       "$value": "{space.2}"
+    },
+    "option-gap": {
+      "$type": "dimension",
+      "$value": "{space.0_5}"
     }
   },
   "table": {

@@ -342,7 +342,7 @@
     display: flex;
     flex: none;
     flex-direction: column;
-    gap: var(--xh-time-picker-presets-gap, var(--xh-space-0_5));
+    gap: var(--xh-time-picker-presets-gap, var(--xh-list-option-gap));
     max-block-size: var(--xh-time-picker-presets-h, var(--xh-viewport-h-sm));
     padding-inline: var(--xh-time-picker-presets-px, var(--xh-space-1));
     overflow-y: auto;
@@ -397,7 +397,7 @@
     display: flex;
     flex: none;
     flex-direction: column;
-    gap: var(--xh-time-picker-column-gap, var(--xh-space-0_5));
+    gap: var(--xh-time-picker-column-gap, var(--xh-list-option-gap));
     min-inline-size: var(--xh-time-picker-column-min-w, 3.5rem);
     /* 几列并排：定高而不是随内容收，否则时列与分列的可选值一多一少就错位 */
     block-size: var(--xh-time-picker-column-h, var(--xh-viewport-h-sm));

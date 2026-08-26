@@ -358,6 +358,7 @@
   [data-scope='tree-select'][data-part='tree'] {
     display: flex;
     flex-direction: column;
+    gap: var(--xh-tree-select-tree-gap, var(--xh-list-option-gap));
   }
 
   [data-scope='tree-select'][data-part='tree'][hidden] {
@@ -373,6 +374,20 @@
 
   [data-scope='tree-select'][data-part='tree']:not([tabindex='0']):focus-visible {
     outline: none;
+  }
+
+  /* 分支是"这一行 + 它的子层"的外壳，不自带内边距：真正长成一行的是 branch-control，
+     子层缩进归 branch-content。行距由这里出：分支自己那一行与它展开的子层之间，
+     同样按条目间距断开 */
+  [data-scope='tree-select'][data-part='branch'] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-tree-select-branch-gap, var(--xh-list-option-gap));
+  }
+
+  /* display 盖掉了 UA 的 [hidden]{display:none}，收起时要显式让位 */
+  [data-scope='tree-select'][data-part='branch'][hidden] {
+    display: none;
   }
 
   /* 焦点落在 branch 上（它才是 treeitem），但环画在它自己那一行上：
@@ -519,6 +534,7 @@
   [data-scope='tree-select'][data-part='branch-content'] {
     display: flex;
     flex-direction: column;
+    gap: var(--xh-tree-select-branch-content-gap, var(--xh-list-option-gap));
     padding-inline-start: var(--xh-tree-select-indent, var(--xh-space-4));
   }
 

@@ -85,6 +85,7 @@
   [data-scope='context-menu'][data-part='content'] {
     display: flex;
     flex-direction: column;
+    gap: var(--xh-context-menu-content-gap, var(--xh-list-option-gap));
     min-inline-size: var(--xh-context-menu-min-w, var(--xh-overlay-menu-min-w));
     max-inline-size: var(--xh-context-menu-max-w, var(--xh-overlay-max-w));
     /* 两道上限取更小的那道：自己的高度上限，以及落定那一侧真正剩下的空间。
@@ -134,6 +135,7 @@
   [data-scope='context-menu'][data-part='group'] {
     display: flex;
     flex-direction: column;
+    gap: var(--xh-context-menu-group-gap, var(--xh-list-option-gap));
   }
 
   [data-scope='context-menu'][data-part='group'][hidden] {
@@ -260,7 +262,7 @@
 
   [data-scope='context-menu'][data-part='separator'] {
     block-size: var(--xh-context-menu-separator-thickness, var(--xh-stroke-thin));
-    margin-block: var(--xh-context-menu-separator-my, var(--xh-space-1));
+    margin-block: var(--xh-context-menu-separator-my, var(--xh-space-0_5));
     background: var(--xh-context-menu-separator-color, var(--xh-border-default));
   }
 

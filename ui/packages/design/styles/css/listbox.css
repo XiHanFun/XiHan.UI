@@ -34,6 +34,7 @@
   [data-scope='listbox'][data-part='content'] {
     display: flex;
     flex-direction: column;
+    gap: var(--xh-listbox-content-gap, var(--xh-list-option-gap));
     max-block-size: var(--xh-listbox-content-max-h, var(--xh-viewport-h-md));
     padding-block: var(--xh-listbox-content-py, var(--xh-space-1));
     padding-inline: var(--xh-listbox-content-px, var(--xh-space-1));
@@ -66,6 +67,7 @@
   [data-scope='listbox'][data-part='item-group'] {
     display: flex;
     flex-direction: column;
+    gap: var(--xh-listbox-item-group-gap, var(--xh-list-option-gap));
   }
 
   [data-scope='listbox'][data-part='item-group'][hidden] {
@@ -74,7 +76,7 @@
 
   /* 组间留白只加在后继分组上：首组顶上已经有 content 的内边距，再加一层会显得头重 */
   [data-scope='listbox'][data-part='item-group'] + [data-scope='listbox'][data-part='item-group'] {
-    margin-block-start: var(--xh-listbox-group-gap, var(--xh-space-2));
+    margin-block-start: var(--xh-listbox-group-gap, var(--xh-space-1_5));
   }
 
   /* 分组标题不是选项、进不了导航，画成小号次要文字，

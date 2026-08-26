@@ -4376,6 +4376,9 @@
               "name": "--xh-cascader-column-divider"
             },
             {
+              "name": "--xh-cascader-column-gap"
+            },
+            {
               "name": "--xh-cascader-column-h"
             },
             {
@@ -4533,6 +4536,9 @@
             },
             {
               "name": "--xh-cascader-search-divider"
+            },
+            {
+              "name": "--xh-cascader-search-list-gap"
             },
             {
               "name": "--xh-cascader-search-p"
@@ -7482,6 +7488,9 @@
               "name": "--xh-combobox-content-fg"
             },
             {
+              "name": "--xh-combobox-content-gap"
+            },
+            {
               "name": "--xh-combobox-content-max-h"
             },
             {
@@ -7612,6 +7621,9 @@
             },
             {
               "name": "--xh-combobox-item-gap"
+            },
+            {
+              "name": "--xh-combobox-item-group-gap"
             },
             {
               "name": "--xh-combobox-item-indicator-fg"
@@ -8512,7 +8524,13 @@
               "name": "--xh-context-menu-border"
             },
             {
+              "name": "--xh-context-menu-content-gap"
+            },
+            {
               "name": "--xh-context-menu-fg"
+            },
+            {
+              "name": "--xh-context-menu-group-gap"
             },
             {
               "name": "--xh-context-menu-group-label-fg"
@@ -20569,6 +20587,9 @@
               "name": "--xh-listbox-content-fg"
             },
             {
+              "name": "--xh-listbox-content-gap"
+            },
+            {
               "name": "--xh-listbox-content-max-h"
             },
             {
@@ -20621,6 +20642,9 @@
             },
             {
               "name": "--xh-listbox-item-gap"
+            },
+            {
+              "name": "--xh-listbox-item-group-gap"
             },
             {
               "name": "--xh-listbox-item-indicator-fg"
@@ -22041,6 +22065,9 @@
               "name": "--xh-mention-content-fg"
             },
             {
+              "name": "--xh-mention-content-gap"
+            },
+            {
               "name": "--xh-mention-content-max-h"
             },
             {
@@ -22610,7 +22637,13 @@
               "name": "--xh-menu-border"
             },
             {
+              "name": "--xh-menu-content-gap"
+            },
+            {
               "name": "--xh-menu-fg"
+            },
+            {
+              "name": "--xh-menu-group-gap"
             },
             {
               "name": "--xh-menu-group-label-fg"
@@ -23200,7 +23233,13 @@
               "name": "--xh-menubar-border"
             },
             {
+              "name": "--xh-menubar-content-gap"
+            },
+            {
               "name": "--xh-menubar-fg"
+            },
+            {
+              "name": "--xh-menubar-group-gap"
             },
             {
               "name": "--xh-menubar-group-label-fg"
@@ -28359,6 +28398,9 @@
               "name": "--xh-popselect-content-fg"
             },
             {
+              "name": "--xh-popselect-content-gap"
+            },
+            {
               "name": "--xh-popselect-content-max-h"
             },
             {
@@ -32106,6 +32148,9 @@
             },
             {
               "name": "--xh-select-layer"
+            },
+            {
+              "name": "--xh-select-list-gap"
             },
             {
               "name": "--xh-select-placeholder-fg"
@@ -42959,6 +43004,9 @@
               "name": "--xh-transfer-item-radius"
             },
             {
+              "name": "--xh-transfer-list-gap"
+            },
+            {
               "name": "--xh-transfer-list-h"
             },
             {
@@ -43772,6 +43820,12 @@
               "name": "--xh-tree-select-action-size"
             },
             {
+              "name": "--xh-tree-select-branch-content-gap"
+            },
+            {
+              "name": "--xh-tree-select-branch-gap"
+            },
+            {
               "name": "--xh-tree-select-branch-indicator-fg"
             },
             {
@@ -43905,6 +43959,9 @@
             },
             {
               "name": "--xh-tree-select-row-selected-font-weight"
+            },
+            {
+              "name": "--xh-tree-select-tree-gap"
             },
             {
               "name": "--xh-tree-select-trigger-fg"
@@ -44334,6 +44391,12 @@
               "name": "--xh-tree-border"
             },
             {
+              "name": "--xh-tree-branch-content-gap"
+            },
+            {
+              "name": "--xh-tree-branch-gap"
+            },
+            {
               "name": "--xh-tree-branch-indicator-fg"
             },
             {
@@ -44431,6 +44494,9 @@
             },
             {
               "name": "--xh-tree-row-selected-font-weight"
+            },
+            {
+              "name": "--xh-tree-tree-gap"
             }
           ]
         }

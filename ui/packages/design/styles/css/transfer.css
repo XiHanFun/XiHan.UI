@@ -130,6 +130,7 @@
     display: flex;
     flex: 1 1 auto;
     flex-direction: column;
+    gap: var(--xh-transfer-list-gap, var(--xh-list-option-gap));
     block-size: var(--xh-transfer-list-h, var(--xh-viewport-h-md));
     padding-block: var(--xh-transfer-list-py, var(--xh-space-1));
     padding-inline: var(--xh-transfer-list-px, var(--xh-space-1));
