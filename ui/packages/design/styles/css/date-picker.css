@@ -350,7 +350,7 @@
     /* 这一列的高度由并排的日历给：不写就按内容收，右侧那道分隔线只画到最后一条选项 */
     align-self: stretch;
     flex-direction: column;
-    gap: var(--xh-date-picker-presets-gap, var(--xh-space-0_5));
+    gap: var(--xh-date-picker-presets-gap, var(--xh-list-option-gap));
     /* 选项多起来时这一列自己滚，不把整张面板撑高 */
     max-block-size: var(--xh-date-picker-presets-h, var(--xh-viewport-h-lg));
     padding: var(--xh-date-picker-presets-padding, var(--xh-space-1));
@@ -400,7 +400,7 @@
   [data-scope='date-picker'][data-part='time-column'] {
     display: flex;
     flex-direction: column;
-    gap: var(--xh-date-picker-time-column-gap, var(--xh-space-0_5));
+    gap: var(--xh-date-picker-time-column-gap, var(--xh-list-option-gap));
     /* 几列并排：定高而不是随内容收，否则时列与分列的可选值一多一少就错位 */
     block-size: var(--xh-date-picker-time-column-h, var(--xh-viewport-h-sm));
     padding: var(--xh-date-picker-time-column-padding, var(--xh-space-1));
