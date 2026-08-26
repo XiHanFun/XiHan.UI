@@ -41,7 +41,9 @@ describe('xh-json-viewer', () => {
     await el.updateComplete
     const root = part(el, 'root')!
     expect(root.querySelector('#stale')).toBeNull()
-    expect(root.children).toHaveLength(1)
+    // 自绘条也挂在 root 上、不带 data-xh-part；这一档的容器只留树这一个
+    const owned = [...root.children].filter(child => child.getAttribute('data-scope') !== 'scrollbar')
+    expect(owned).toHaveLength(1)
     expect(root.firstElementChild!.getAttribute('data-part')).toBe('tree')
   })
 

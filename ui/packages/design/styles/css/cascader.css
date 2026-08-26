@@ -6,6 +6,9 @@
 
   /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
   [data-scope='cascader'][data-part='positioner'] {
+    /* 列区的自绘条浮在内容之上：轨道不上底色，实色轨道会在列区下缘糊出一条灰带 */
+    --xh-scrollbar-track-bg: transparent;
+
     position: fixed;
     z-index: var(--xh-cascader-layer, var(--xh-layer-popover));
     /* 空壳不吃指针，交互只发生在 content 里 */

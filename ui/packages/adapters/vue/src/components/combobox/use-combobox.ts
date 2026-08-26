@@ -53,8 +53,9 @@ export function useCombobox(
     const registerLayer = (): { layer: Layer, dispose: Cleanup } => config!.layerRegistry.register({
       kind: 'popover',
       node: () => contentRef.value,
-      // 整个输入行记为本层分支，点输入框或触发按钮算层内交互
-      branches: () => [controlRef.value].filter(Boolean) as Element[],
+      // 整个输入行记为本层分支，点输入框或触发按钮算层内交互；
+      // 浮层壳一并记上：候选列表之外还浮着自绘滚动条，按住它拖动不该把列表消解掉
+      branches: () => [controlRef.value, positionerRef.value].filter(Boolean) as Element[],
       isModal: () => false,
       setModal: () => {},
       surfaces: () => [],

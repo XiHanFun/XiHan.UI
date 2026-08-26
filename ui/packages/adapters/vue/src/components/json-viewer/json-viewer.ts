@@ -2,8 +2,9 @@ import type { JsonViewerApi, JsonViewerNode, JsonViewerSchema, JsonViewerTransla
 import type { Direction, Size } from '@xihan-ui/kernel'
 import type { PropType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { defineComponent, h } from 'vue'
+import { defineComponent, h, ref } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useJsonViewer } from './use-json-viewer'
 
 type JsonViewerProps = JsonViewerSchema['props']
@@ -98,19 +99,38 @@ export const XhJsonViewerRoot = defineComponent({
       emit('update:expandedValue', details.value)
     }
     const ctx = useJsonViewer(withXhConfig('json-viewer', props) as JsonViewerProps, notify)
+    // 此刻在场的那个滚动层：两档互斥，树档是 tree、原文档是 pre。
+    // 两档共用同一个函数 ref：换档时新旧 vnode 的 ref 是同一个，
+    // Vue 就不再先把旧节点那份置空——两档各拿一个 ref 的话，
+    // 中间会空出一拍，条子在那一拍里找不到容器、投一条诊断。
+    // 只记在场的那个：拆卸时那次空调用不往下传
+    const layerRef = ref<HTMLElement | null>(null)
+    const keepLayer = (el: unknown): void => {
+      if (el)
+        layerRef.value = el as HTMLElement
+    }
+    // 两档的自绘条：与滚动层同级、绝对定位不占布局，壳是这层根。
+    // 两条轴都摆——深层缩进往行首方向推、长字符串往行尾伸
+    const bars = useScrollbars({
+      scrollable: () => layerRef.value,
+      axes: ['vertical', 'horizontal'],
+      props: () => ({ dir: props.dir }),
+    })
     // 行是按数据摊出来的，作者写不出也不必写：整棵树由组件自己铺
     return () => {
       const api = ctx.api.value
       // 原文档不铺行：整块文本交给 pre，框选与复制才拿得到与后端一字不差的那份
       if (api.view === 'text') {
         return h('div', api.getRootProps() as Record<string, unknown>, [
-          h('pre', api.getTextProps() as Record<string, unknown>, api.text),
+          h('pre', { ...api.getTextProps() as Record<string, unknown>, ref: keepLayer }, api.text),
+          ...bars.render(),
         ])
       }
 
       const children = groupByParent(api.visibleNodes)
       return h('div', api.getRootProps() as Record<string, unknown>, [
-        h('div', api.getTreeProps() as Record<string, unknown>, renderRows(api, children, null)),
+        h('div', { ...api.getTreeProps() as Record<string, unknown>, ref: keepLayer }, renderRows(api, children, null)),
+        ...bars.render(),
       ])
     }
   },

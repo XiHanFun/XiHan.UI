@@ -4,6 +4,7 @@ import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h, mergeProps, onMounted, onUnmounted, onUpdated, Teleport, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { provideMention, provideMentionItem, useMentionContext, useMentionItemContext } from './context'
 import { useMention } from './use-mention'
@@ -125,12 +126,14 @@ export const XhMentionPositioner = defineComponent({
   inheritAttrs: false,
   setup(_, { slots, attrs }) {
     const ctx = useMentionContext()
+    // 候选列表的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner
+    const bars = useScrollbars({ scrollable: () => ctx.contentRef.value })
     // 定位层搬到 portal 落点，逃开祖先的层叠上下文
     return () => h(Teleport, { to: ctx.portalTarget.value }, [
       h('div', {
         ...mergeProps(ctx.api.value.getPositionerProps() as Record<string, unknown>, attrs),
         ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement },
-      }, slots.default?.()),
+      }, [...(slots.default?.() ?? []), ...bars.render()]),
     ])
   },
 })

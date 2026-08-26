@@ -53,8 +53,9 @@ export function usePagination(
     const registerLayer = (): { layer: Layer, dispose: Cleanup } => config!.layerRegistry.register({
       kind: 'popover',
       node: () => contentRef.value,
-      // 省略位记为本层分支：指针按在它上面算层内交互，不该判成点了外面
-      branches: () => [ellipsisRef.value].filter(Boolean) as Element[],
+      // 省略位记为本层分支：指针按在它上面算层内交互，不该判成点了外面。
+      // 浮层壳一并记上：页码列表之外还浮着自绘滚动条，按住它拖动不该把列表消解掉
+      branches: () => [ellipsisRef.value, positionerRef.value].filter(Boolean) as Element[],
       // 摊开的页码是非模态的：不陷焦点、不锁滚动、无遮罩
       isModal: () => false,
       setModal: () => {},

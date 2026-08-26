@@ -17,6 +17,7 @@ import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
+import { ScrollbarsController } from '../runtime/scrollbars-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定；Lit 自带转换器把缺席落成 null/false，
 // value 落成 null 就分不出"非受控"与"受控且当前无选中"。
@@ -174,6 +175,18 @@ export class XhTreeSelectElement extends XhElement {
     { scope: this.treeSelectScope, onBuilt: svc => this.injectRefs(svc) },
   )
 
+  /**
+   * 树的自绘条：与 content 同级挂在已经 fixed 的 positioner 上。
+   * 两条轴都摆——深层节点靠缩进往行末推，横向溢出与纵向一样是常态；
+   * 横条的正负按排版方向算，而组件不读计算样式，把作者写的那份显式交过去。
+   */
+  private readonly bars = new ScrollbarsController(this, {
+    shell: () => this.getPart('positioner'),
+    scrollable: () => this.getPart('content'),
+    axes: ['vertical', 'horizontal'],
+    props: () => ({ dir: this.direction }),
+  })
+
   private machineProps(): Partial<TreeSelectSchema['props']> {
     return {
       collection: this.collection,
@@ -219,7 +232,8 @@ export class XhTreeSelectElement extends XhElement {
       kind: 'popover',
       node: () => this.getPart('content'),
       // trigger 记为本层分支：点它算层内交互，开合交给 trigger 自己切换。
-      branches: () => [this.getPart('trigger')].filter(Boolean) as Element[],
+      // 浮层壳一并记上：content 之外还浮着自绘滚动条，按住它拖动不该把浮层消解掉
+      branches: () => [this.getPart('trigger'), this.getPart('positioner')].filter(Boolean) as Element[],
       isModal: () => false,
       setModal: () => {},
       // 浮层不带遮罩，无可点关闭的表面
@@ -346,6 +360,8 @@ export class XhTreeSelectElement extends XhElement {
     this.setPartHidden(this.getPart('content'), !this.exit.visible)
     for (const el of this.getParts('branch-content'))
       this.setPartHidden(el, !api.isExpanded(this.nodeOf(el, BRANCH_SELECTOR).value))
+
+    this.bars.wire()
   }
 
   override disconnectedCallback(): void {

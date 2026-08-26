@@ -27,6 +27,7 @@ import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
+import { ScrollbarsController } from '../runtime/scrollbars-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
@@ -297,6 +298,12 @@ export class XhDatePickerElement extends XhElement {
     { scope: this.pickerScope },
   )
 
+  /** 浮层面板的自绘条：与 content 同级挂在已经 fixed 的 positioner 上 */
+  private readonly bars = new ScrollbarsController(this, {
+    shell: () => this.getPart('positioner'),
+    scrollable: () => this.getPart('content'),
+  })
+
   private services(): DatePickerServices {
     return {
       root: this.rootCtrl.service,
@@ -361,7 +368,8 @@ export class XhDatePickerElement extends XhElement {
       kind: 'popover',
       node: () => this.getPart('content'),
       // 整个输入行记为本层分支：点 trigger 或段位算层内交互，开合交给它们自己切换。
-      branches: () => [this.getPart('control')].filter(Boolean) as Element[],
+      // 浮层壳一并记上：content 之外还浮着自绘滚动条，按住它拖动不该把浮层消解掉
+      branches: () => [this.getPart('control'), this.getPart('positioner')].filter(Boolean) as Element[],
       isModal: () => false,
       setModal: () => {},
       // 浮层不带遮罩，无可点关闭的表面
@@ -570,6 +578,8 @@ export class XhDatePickerElement extends XhElement {
     this.exit.track(this.getPart('content'))
     this.exit.update(api.open)
     this.setPartHidden(this.getPart('content'), !this.exit.visible)
+
+    this.bars.wire()
   }
 
   override disconnectedCallback(): void {

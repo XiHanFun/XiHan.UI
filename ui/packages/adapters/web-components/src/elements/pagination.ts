@@ -9,6 +9,7 @@ import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
+import { ScrollbarsController } from '../runtime/scrollbars-controller'
 
 // 数值属性统一走这个转换器：属性缺席即 undefined，缺省值的唯一事实源留在 connect。
 // 空串也当缺席：`page=""` 经 Number() 会变成 0，那是个不存在的页。
@@ -117,6 +118,12 @@ export class XhPaginationElement extends XhElement {
     { scope: this.paginationScope, onBuilt: svc => this.injectRefs(svc) },
   )
 
+  /** 折叠页码列表的自绘条：与 content 同级挂在已经 fixed 的 positioner 上 */
+  private readonly bars = new ScrollbarsController(this, {
+    shell: () => this.getPart('positioner'),
+    scrollable: () => this.getPart('content'),
+  })
+
   private ensureConfig(): void {
     if (this.config)
       return
@@ -141,8 +148,9 @@ export class XhPaginationElement extends XhElement {
     return this.config!.layerRegistry.register({
       kind: 'popover',
       node: () => this.getPart('content'),
-      // 省略位记为本层分支：指针按在它上面算层内交互
-      branches: () => [...this.getParts('ellipsis')],
+      // 省略位记为本层分支：指针按在它上面算层内交互。
+      // 浮层壳一并记上：页码列表之外还浮着自绘滚动条，按住它拖动不该把列表消解掉
+      branches: () => [...this.getParts('ellipsis'), this.getPart('positioner')].filter(Boolean) as Element[],
       isModal: () => false,
       setModal: () => {},
       surfaces: () => [],
@@ -238,6 +246,8 @@ export class XhPaginationElement extends XhElement {
     this.exit.track(content)
     this.exit.update(api.openEllipsis != null)
     this.setPartHidden(content, !this.exit.visible)
+
+    this.bars.wire()
   }
 
   override disconnectedCallback(): void {

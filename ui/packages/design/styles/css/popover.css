@@ -38,6 +38,9 @@
        引擎没算（尚未落位 / 无引擎 / 贴边归零）时不额外限高 */
     --xh-_popover-available-h: 100vh;
 
+    /* 面板内容的自绘条浮在内容之上：轨道不上底色，实色轨道会在面板右缘糊一条竖灰带 */
+    --xh-scrollbar-track-bg: transparent;
+
     position: fixed;
     z-index: var(--xh-popover-layer, var(--xh-layer-popover));
     /* 空壳不吃指针，交互只发生在 content 上 */

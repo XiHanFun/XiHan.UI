@@ -2974,6 +2974,11 @@
   --xh-json-viewer-number-fg: var(--xh-syntax-number);
   --xh-json-viewer-boolean-fg: var(--xh-syntax-keyword);
 
+  /* 两档的自绘条浮在内容之上：轨道不上底色，实色轨道会沿容器边缘糊出一条灰带 */
+  --xh-scrollbar-track-bg: transparent;
+
+  /* 自绘条绝对定位贴这一层的内边距盒，它得是定位盒 */
+  position: relative;
   display: block;
   color: var(--xh-json-viewer-fg, var(--xh-fg-default));
   font-family: var(--xh-json-viewer-font, var(--xh-font-family-mono));
@@ -3898,6 +3903,9 @@
   /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，内容层继承它限高；
      引擎没算（尚未落位 / 无引擎）时不额外限高 */
   --xh-_mention-available-h: 100vh;
+
+  /* 候选列表的自绘条浮在内容之上：轨道不上底色，实色轨道会在列表右缘糊一条竖灰带 */
+  --xh-scrollbar-track-bg: transparent;
 
   position: fixed;
   z-index: var(--xh-mention-layer, var(--xh-layer-popover));
@@ -4913,6 +4921,9 @@ input[data-scope='mention'][data-part='input'] {
   /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，内容层继承它限高；
      引擎没算（尚未落位 / 无引擎 / 贴边归零）时退回自己那档静态上限 */
   --xh-_popselect-available-h: 100vh;
+
+  /* 候选列表的自绘条浮在内容之上：轨道不上底色，实色轨道会在列表右缘糊一条竖灰带 */
+  --xh-scrollbar-track-bg: transparent;
 
   position: fixed;
   z-index: var(--xh-popselect-layer, var(--xh-layer-popover));
@@ -8965,6 +8976,9 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
 [data-scope='cascader'][data-part='positioner'] {
+  /* 列区的自绘条浮在内容之上：轨道不上底色，实色轨道会在列区下缘糊出一条灰带 */
+  --xh-scrollbar-track-bg: transparent;
+
   position: fixed;
   z-index: var(--xh-cascader-layer, var(--xh-layer-popover));
   /* 空壳不吃指针，交互只发生在 content 里 */
@@ -10529,6 +10543,9 @@ input[data-scope='mention'][data-part='input'] {
      引擎没算（尚未落位 / 无引擎 / 贴边归零）时不额外限高 */
   --xh-_color-picker-available-h: 100vh;
 
+  /* 面板的自绘条浮在内容之上：轨道不上底色，实色轨道会在面板右缘糊出一条竖灰带 */
+  --xh-scrollbar-track-bg: transparent;
+
   position: fixed;
   z-index: var(--xh-color-picker-layer, var(--xh-layer-popover));
   /* 空壳不吃指针，交互只发生在 content 上 */
@@ -10913,6 +10930,9 @@ input[data-scope='mention'][data-part='input'] {
   /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，内容层继承它限高；
      引擎没算（尚未落位 / 无引擎）时不额外限高 */
   --xh-_combobox-available-h: 100vh;
+
+  /* 候选列表的自绘条浮在内容之上：轨道不上底色，实色轨道会在列表右缘糊一条竖灰带 */
+  --xh-scrollbar-track-bg: transparent;
 
   position: fixed;
   z-index: var(--xh-combobox-layer, var(--xh-layer-popover));
@@ -11544,6 +11564,9 @@ input[data-scope='mention'][data-part='input'] {
      引擎没算（尚未落位 / 无引擎）时不额外限高 */
   --xh-_context-menu-available-h: 100vh;
 
+  /* 条目列表的自绘条浮在内容之上：轨道不上底色，实色轨道会在菜单右缘糊一条竖灰带 */
+  --xh-scrollbar-track-bg: transparent;
+
   position: fixed;
   z-index: var(--xh-context-menu-layer, var(--xh-layer-popover));
   /* 空壳不吃指针，交互只发生在 content 上 */
@@ -12150,6 +12173,9 @@ input[data-scope='mention'][data-part='input'] {
   /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，内容层继承它限高；
      引擎没算（尚未落位 / 无引擎 / 贴边归零）时不额外限高 */
   --xh-_date-picker-available-h: 100vh;
+
+  /* 面板的自绘条浮在内容之上：轨道不上底色，实色轨道会在面板右缘糊出一条竖灰带 */
+  --xh-scrollbar-track-bg: transparent;
 
   position: fixed;
   z-index: var(--xh-date-picker-layer, var(--xh-layer-popover));
@@ -14279,6 +14305,9 @@ input[data-scope='mention'][data-part='input'] {
      引擎没算（尚未落位 / 无引擎 / 贴边归零）时不额外限高 */
   --xh-_hover-card-available-h: 100vh;
 
+  /* 卡片内容的自绘条浮在内容之上：轨道不上底色，实色轨道会在卡片右缘糊一条竖灰带 */
+  --xh-scrollbar-track-bg: transparent;
+
   position: fixed;
   z-index: var(--xh-hover-card-layer, var(--xh-layer-popover));
   /* 空壳不吃指针：trigger 与 content 之间那段间隙要能点得穿，
@@ -15123,6 +15152,9 @@ input[data-scope='mention'][data-part='input'] {
   /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，content 继承它限高；
      引擎没算（尚未落位 / 无引擎）时不额外限高 */
   --xh-_menu-available-h: 100vh;
+
+  /* 条目列表的自绘条浮在内容之上：轨道不上底色，实色轨道会在菜单右缘糊一条竖灰带 */
+  --xh-scrollbar-track-bg: transparent;
 
   position: fixed;
   z-index: var(--xh-menu-layer, var(--xh-layer-popover));
@@ -16991,6 +17023,9 @@ input[data-scope='mention'][data-part='input'] {
      引擎没算（尚未落位 / 无引擎 / 贴边归零）时不额外限高 */
   --xh-_pagination-available-h: 100vh;
 
+  /* 页码面板的自绘条浮在内容之上：轨道不上底色，实色轨道会在面板右缘糊一条竖灰带 */
+  --xh-scrollbar-track-bg: transparent;
+
   position: fixed;
   z-index: var(--xh-pagination-layer, var(--xh-layer-popover));
   /* 空壳不吃指针：省略位与面板之间那段间隙要能点得穿 */
@@ -17276,6 +17311,9 @@ input[data-scope='mention'][data-part='input'] {
   /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，内容层继承它限高；
      引擎没算（尚未落位 / 无引擎 / 贴边归零）时不额外限高 */
   --xh-_popover-available-h: 100vh;
+
+  /* 面板内容的自绘条浮在内容之上：轨道不上底色，实色轨道会在面板右缘糊一条竖灰带 */
+  --xh-scrollbar-track-bg: transparent;
 
   position: fixed;
   z-index: var(--xh-popover-layer, var(--xh-layer-popover));
@@ -18032,6 +18070,9 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_scrollbar-thickness: var(--xh-scrollbar-thickness-md);
 
   position: absolute;
+  /* 浮层的 positioner 一律 pointer-events: none，条子作为它的子节点会继承到，拖不动也点不着；
+     收起态那条规则优先级更高，仍旧穿透 */
+  pointer-events: auto;
   /* touch-action 关掉浏览器自己的手势：不关的话手指一按滑块页面就跟着滚，
      指针随即被系统收走（pointercancel），拖到一半的滑块停在原地。
      user-select 同理——拖动时选中页面文字会让滑块"粘"住。 */
@@ -21281,14 +21322,18 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 滚动容器，粘底读的是它的 scrollTop / clientHeight / scrollHeight。
    min-block-size: 0 让弹性子项能被压缩从而触发溢出；
-   overscroll-behavior: contain 阻止滚动量传给页面；
-   scrollbar-gutter: stable 避免滚动条出现与消失时推动文字。 */
+   overscroll-behavior: contain 阻止滚动量传给页面。 */
 [data-scope='thread'][data-part='viewport'] {
   flex: 1;
   min-block-size: 0;
   /* 逻辑属性 overflow-block 尚无可用实现，写物理轴 */
   overflow-y: auto;
   overscroll-behavior: contain;
+}
+
+/* 还在用原生滚动条的视口留一条空道，滚动条出现与消失时不推动文字。
+   带 data-xh-scrollbar 的容器已经把原生条藏成零宽，这条空道对它没有布局作用，排除掉 */
+[data-scope='thread'][data-part='viewport']:not([data-xh-scrollbar]) {
   scrollbar-gutter: stable;
 }
 
@@ -24237,6 +24282,9 @@ input[data-scope='mention'][data-part='input'] {
   /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，内容层继承它限高；
      引擎没算（尚未落位 / 无引擎）时不额外限高 */
   --xh-_tree-select-available-h: 100vh;
+
+  /* 树的自绘条浮在内容之上：轨道不上底色，实色轨道会沿内容边缘糊出一条灰带 */
+  --xh-scrollbar-track-bg: transparent;
 
   position: fixed;
   z-index: var(--xh-tree-select-layer, var(--xh-layer-popover));

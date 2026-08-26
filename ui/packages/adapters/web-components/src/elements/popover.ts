@@ -9,6 +9,7 @@ import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
+import { ScrollbarsController } from '../runtime/scrollbars-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
@@ -86,6 +87,12 @@ export class XhPopoverElement extends XhElement {
     { scope: this.popoverScope, onBuilt: svc => this.injectRefs(svc) },
   )
 
+  /** 面板内容的自绘条：与 content 同级挂在已经 fixed 的 positioner 上 */
+  private readonly bars = new ScrollbarsController(this, {
+    shell: () => this.getPart('positioner'),
+    scrollable: () => this.getPart('content'),
+  })
+
   private machineProps(): Partial<PopoverSchema['props']> {
     return {
       open: this.open,
@@ -116,7 +123,8 @@ export class XhPopoverElement extends XhElement {
       node: () => this.getPart('content'),
       // trigger 记为本层分支：点它算层内交互，开合交给 trigger 自己切换。
       // 否则同一次点击先被判为层外交互关一次、再被 click 打开一次，浮层等于关不掉。
-      branches: () => [this.getPart('trigger')].filter(Boolean) as Element[],
+      // 浮层壳一并记上：面板之外还浮着自绘滚动条，按住它拖动不该把面板消解掉
+      branches: () => [this.getPart('trigger'), this.getPart('positioner')].filter(Boolean) as Element[],
       isModal: () => this.modal ?? false,
       setModal: () => {},
       // 非模态浮层不自带遮罩，没有"点它就该关本层"的表面
@@ -183,6 +191,8 @@ export class XhPopoverElement extends XhElement {
     this.exit.update(api.open)
     if (content)
       this.setPartHidden(content, !this.exit.visible)
+
+    this.bars.wire()
   }
 
   override disconnectedCallback(): void {
