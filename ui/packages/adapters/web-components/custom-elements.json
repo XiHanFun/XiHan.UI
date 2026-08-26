@@ -30312,7 +30312,7 @@
               "type": {
                 "text": "ScrollbarType | undefined"
               },
-              "description": "滚动条露面的时机，默认 hover",
+              "description": "滚动条露面的时机，默认 scroll-hover",
               "name": "type",
               "fieldName": "type"
             },
@@ -30320,7 +30320,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "收起前的等待毫秒（type 为 scroll / hover 时生效），默认 600",
+              "description": "收起前的等待毫秒（type 为 scroll / hover / scroll-hover 时生效），默认 600",
               "name": "hide-delay",
               "fieldName": "hideDelay"
             },
@@ -30664,7 +30664,7 @@
               "type": {
                 "text": "ScrollbarType | undefined"
               },
-              "description": "露面的时机，默认 hover",
+              "description": "露面的时机，默认 scroll-hover",
               "name": "type",
               "fieldName": "type"
             },
@@ -30672,7 +30672,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "收起前的等待毫秒（type 为 scroll / hover 时生效），默认 600",
+              "description": "收起前的等待毫秒（type 为 scroll / hover / scroll-hover 时生效），默认 600",
               "name": "hide-delay",
               "fieldName": "hideDelay"
             },

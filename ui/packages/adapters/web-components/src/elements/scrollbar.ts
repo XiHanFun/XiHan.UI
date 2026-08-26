@@ -30,8 +30,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @customElement xh-scrollbar
  * @attr {string} controls - 滚动容器的 id；没设 scrollable 属性时按它查节点，focusable 时同时落到 aria-controls
  * @attr {'horizontal'|'vertical'} orientation - 这条滚动条管哪条轴，默认 vertical
- * @attr {'auto'|'always'|'scroll'|'hover'} type - 露面的时机，默认 hover
- * @attr {number} hide-delay - 收起前的等待毫秒（type 为 scroll / hover 时生效），默认 600
+ * @attr {'auto'|'always'|'scroll'|'hover'|'scroll-hover'} type - 露面的时机，默认 scroll-hover
+ * @attr {number} hide-delay - 收起前的等待毫秒（type 为 scroll / hover / scroll-hover 时生效），默认 600
  * @attr {number} min-thumb-size - 滑块最短多少像素，默认 20
  * @attr {number} step - 方向键一步滚多少像素，默认 40
  * @attr {'sm'|'md'|'lg'} size - 尺寸档，换的是滚动条厚度

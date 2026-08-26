@@ -22,7 +22,22 @@ const { createMachine } = setup<ScrollbarSchema>()
 export const SCROLLBAR_HIDE_DELAY = 600
 
 /** 未指定 type 时的露面时机。 */
-export const SCROLLBAR_DEFAULT_TYPE: ScrollbarType = 'hover'
+export const SCROLLBAR_DEFAULT_TYPE: ScrollbarType = 'scroll-hover'
+
+/** 这一档在指针进入滚动容器或滚动条时露面。 */
+function showsOnHover(type: ScrollbarType): boolean {
+  return type === 'hover' || type === 'scroll-hover'
+}
+
+/** 这一档在滚动时露面。 */
+function showsOnScroll(type: ScrollbarType): boolean {
+  return type === 'scroll' || type === 'scroll-hover'
+}
+
+/** 这一档的显隐不看状态机，由 connect 直接按 type 判。 */
+function alwaysDecided(type: ScrollbarType): boolean {
+  return type === 'auto' || type === 'always'
+}
 
 /** 方向键一步默认滚多少像素。 */
 export const SCROLLBAR_STEP = 40
@@ -126,11 +141,11 @@ function detailsOf(p: MeasureParams): { offset: number, max: number } {
 
 // 指针进出在四个状态里的分工不同，逐个声明。
 const ENTER_SHOWS: Array<Transition<ScrollbarSchema>> = [
-  { guard: 'isHoverType', target: 'visible', actions: ['markPointerInside', 'measureSoon'] },
+  { guard: 'showsOnHover', target: 'visible', actions: ['markPointerInside', 'measureSoon'] },
   { actions: ['markPointerInside'] },
 ]
 const SCROLL_KEEPS_ALIVE: Array<Transition<ScrollbarSchema>> = [
-  { guard: 'isScrollType', target: 'hiding', actions: ['measure', 'markScrolling'] },
+  { guard: 'showsOnScroll', target: 'hiding', actions: ['measure', 'markScrolling'] },
   { actions: ['measure', 'markScrolling'] },
 ]
 
@@ -151,11 +166,8 @@ export const scrollbarMachine = createMachine({
     getTrackEl: () => null,
     getRootEl: () => null,
   }),
-  // auto / always 的可见性不看状态，起点落在 visible
-  initialState: ({ prop }) => {
-    const type = prop('type') ?? SCROLLBAR_DEFAULT_TYPE
-    return type === 'hover' || type === 'scroll' ? 'hidden' : 'visible'
-  },
+  // auto / always 的可见性不看状态，起点落在 visible；其余几档从收着起步，不然挂载那一帧会闪一下
+  initialState: ({ prop }) => (alwaysDecided(prop('type') ?? SCROLLBAR_DEFAULT_TYPE) ? 'visible' : 'hidden'),
   // 尺寸监听、首帧测量与指针类型探测全程挂着
   effects: ['trackScrollable', 'trackPointerType'],
   on: {
@@ -180,10 +192,14 @@ export const scrollbarMachine = createMachine({
       on: {
         'POINTER.ENTER': { actions: ['markPointerInside'] },
         'POINTER.LEAVE': [
-          { guard: 'isHoverType', target: 'hiding', actions: ['clearPointerInside'] },
+          { guard: 'showsOnHover', target: 'hiding', actions: ['clearPointerInside'] },
           { actions: ['clearPointerInside'] },
         ],
-        'SCROLL': SCROLL_KEEPS_ALIVE,
+        // 指针占着这块地方时滚动只记账，留在 visible：起了倒计时会当着指针的面收起
+        'SCROLL': [
+          { guard: 'staysVisible', actions: ['measure', 'markScrolling'] },
+          ...SCROLL_KEEPS_ALIVE,
+        ],
         'DRAG.START': { guard: 'canInteract', target: 'dragging', actions: ['startDrag'] },
       },
     },
@@ -197,7 +213,7 @@ export const scrollbarMachine = createMachine({
         'POINTER.LEAVE': { actions: ['clearPointerInside'] },
         // reenter 强制重挂计时器，把倒计时推倒重来
         'SCROLL': [
-          { guard: 'isScrollType', target: 'hiding', reenter: true, actions: ['measure', 'markScrolling'] },
+          { guard: 'showsOnScroll', target: 'hiding', reenter: true, actions: ['measure', 'markScrolling'] },
           { actions: ['measure', 'markScrolling'] },
         ],
         'DRAG.START': { guard: 'canInteract', target: 'dragging', actions: ['startDrag'] },
@@ -221,14 +237,14 @@ export const scrollbarMachine = createMachine({
   },
   implementations: {
     guards: {
-      isHoverType: ({ prop }) => (prop('type') ?? SCROLLBAR_DEFAULT_TYPE) === 'hover',
-      isScrollType: ({ prop }) => (prop('type') ?? SCROLLBAR_DEFAULT_TYPE) === 'scroll',
+      showsOnHover: ({ prop }) => showsOnHover(prop('type') ?? SCROLLBAR_DEFAULT_TYPE),
+      showsOnScroll: ({ prop }) => showsOnScroll(prop('type') ?? SCROLLBAR_DEFAULT_TYPE),
       canInteract: ({ prop }) => !prop('disabled'),
       staysVisible: ({ prop, context }) => {
         const type = prop('type') ?? SCROLLBAR_DEFAULT_TYPE
-        if (type === 'auto' || type === 'always')
+        if (alwaysDecided(type))
           return true
-        return type === 'hover' && context.get('pointerInside')
+        return showsOnHover(type) && context.get('pointerInside')
       },
     },
     actions: {

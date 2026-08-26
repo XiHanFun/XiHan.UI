@@ -168,12 +168,32 @@ export const scrollbarSuite: ConformanceSuite = {
       },
     },
     {
-      name: '默认（hover）：挂载时收着，data-state=hidden 由皮肤淡出',
+      name: '默认（scroll-hover）：挂载时收着，data-state=hidden 由皮肤淡出',
       spec: { apg: WCAG },
       props: BASE,
       initial: {
-        parts: { root: { 'data-type': 'hover', 'data-state': 'hidden' } },
+        parts: { root: { 'data-type': 'scroll-hover', 'data-state': 'hidden' } },
       },
+    },
+    {
+      name: 'scroll-hover：滚动就露出，停手满 hideDelay 后收起',
+      spec: { apg: WCAG },
+      props: { ...BASE, type: 'scroll-hover', hideDelay: 300 },
+      steps: [
+        // layout 末尾那一下滚动就是第一次滚动
+        { ...layoutStep, expect: { parts: { root: { 'data-state': 'visible' } } } },
+        { kind: 'settle', until: { attr: { part: 'root', name: 'data-state', value: 'hidden' } } },
+      ],
+    },
+    {
+      name: 'scroll-hover：指针进滚动容器也露出，占着的时候不收起',
+      spec: { apg: WCAG },
+      props: { ...BASE, type: 'scroll-hover', hideDelay: 300 },
+      steps: [
+        layoutStep,
+        { ...pointerOnTarget('pointerenter'), expect: { parts: { root: { 'data-state': 'visible' } } } },
+        { ...scrollTo(150), expect: { parts: { root: { 'data-state': 'visible' } } } },
+      ],
     },
     {
       name: 'type=auto：量到溢出就露着',

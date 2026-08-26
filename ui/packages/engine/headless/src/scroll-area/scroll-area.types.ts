@@ -10,9 +10,9 @@ export type ScrollAreaOrientation = Orientation | 'both'
  * 键盘与尺寸测量全在 scrollbar 那两台机器里，这里按轴各跑一台。
  */
 export interface ScrollAreaProps {
-  /** 滚动条露面的时机，默认 hover。 */
+  /** 滚动条露面的时机，默认 scroll-hover。 */
   type?: ScrollbarType
-  /** 收起前的等待毫秒（type 为 scroll / hover 时生效），默认 600。 */
+  /** 收起前的等待毫秒（type 为 scroll / hover / scroll-hover 时生效），默认 600。 */
   hideDelay?: number
   /** 哪几条轴归本组件管，默认 both。 */
   orientation?: ScrollAreaOrientation

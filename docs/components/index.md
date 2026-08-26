@@ -129,7 +129,7 @@
 | [无限滚动](./infinite-scroll) | `infinite-scroll` | 2 | 0 | 4 |
 | [JSON 视图](./json-viewer) | `json-viewer` | 13 | 9 | 8 |
 | [列表](./list) | `list` | 7 | 0 | 5 |
-| [日志](./log) | `log` | 4 | 1 | 5 |
+| [日志](./log) | `log` | 4 | 1 | 6 |
 | [跑马灯](./marquee) | `marquee` | 2 | 0 | 4 |
 | [数值动画](./number-animation) | `number-animation` | 1 | 0 | 4 |
 | [二维码](./qr-code) | `qr-code` | 2 | 0 | 8 |

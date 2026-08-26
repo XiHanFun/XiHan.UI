@@ -29,8 +29,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * 轨道与滑块按所在滚动条的轴向取几何，不必另写。这是挂载时的静态声明：运行期要换轴，换节点。
  *
  * @customElement xh-scroll-area
- * @attr {'auto'|'always'|'scroll'|'hover'} type - 滚动条露面的时机，默认 hover
- * @attr {number} hide-delay - 收起前的等待毫秒（type 为 scroll / hover 时生效），默认 600
+ * @attr {'auto'|'always'|'scroll'|'hover'|'scroll-hover'} type - 滚动条露面的时机，默认 scroll-hover
+ * @attr {number} hide-delay - 收起前的等待毫秒（type 为 scroll / hover / scroll-hover 时生效），默认 600
  * @attr {'horizontal'|'vertical'|'both'} orientation - 哪几条轴归本组件管，默认 both
  * @attr {'sm'|'md'|'lg'} size - 尺寸档，换的是滚动条厚度
  * @attr {'ltr'|'rtl'} dir - 排版方向，只改写横轴的滚动量正负与指针位移方向

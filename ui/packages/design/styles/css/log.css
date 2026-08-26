@@ -28,14 +28,18 @@
      flex-basis 取 auto，连接层写的按行数高度才算数，同时外层给了高度时还能撑满；
      min-block-size: 0 让它在弹性父级里能被压缩从而真的溢出；
      两个轴都 auto：长行不折，横向也要能滚；
-     overscroll-behavior: contain 阻止滚动量传给页面；
-     scrollbar-gutter: stable 避免滚动条出现与消失时推动文字。 */
+     overscroll-behavior: contain 阻止滚动量传给页面。 */
   [data-scope='log'][data-part='viewport'] {
     flex: 1 1 auto;
     min-block-size: 0;
     block-size: calc(var(--xh-_log-line-h) * var(--xh-log-rows, 16));
     overflow: auto;
     overscroll-behavior: contain;
+  }
+
+  /* 还在用原生滚动条的视口留一条空道，滚动条出现与消失时不推动文字。
+     带 data-xh-scrollbar 的容器已经把原生条藏成零宽，这条空道对它没有布局作用，排除掉 */
+  [data-scope='log'][data-part='viewport']:not([data-xh-scrollbar]) {
     scrollbar-gutter: stable;
   }
 
