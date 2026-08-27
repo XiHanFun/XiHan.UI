@@ -13,6 +13,7 @@ const PUBLIC_EVENTS = {
   'download-error': 'onDownloadError',
   'open-change': 'onOpenChange',
   'pressed-change': 'onPressedChange',
+  'row-move': 'onRowMove',
   'select': 'onSelect',
   'sort': 'onSort',
   'status-change': 'onStatusChange',

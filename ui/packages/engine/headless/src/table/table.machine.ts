@@ -1,4 +1,5 @@
 import type { DragAnnounceKind } from '../shared/drag'
+import type { TableRowReorderReason } from './table.drag'
 import type {
   TableColumnPreference,
   TableDropTarget,
@@ -10,11 +11,11 @@ import type {
 } from './table.types'
 import { applySelection } from '@xihan-ui/behavior'
 import { setup } from '@xihan-ui/machine'
-import { clampSize, createPointerSession, resolveSessionDoc } from '@xihan-ui/pointer'
+import { clampSize, createPointerSession, resolveSessionDoc, shouldActivate } from '@xihan-ui/pointer'
 import { dragAnnouncement, hitAlong, insertionIndex } from '../shared/drag'
 import { orderColumnIds, resolveTableColumns } from './table.columns'
-import { draggableColumnIds, toColumnPreferenceIndex } from './table.drag'
-import { tableSelectableRowIds, tableSelectionIds, tableToggleRowSelection, tableToggleSelectAll } from './table.rows'
+import { draggableColumnIds, moveRowIds, toColumnPreferenceIndex } from './table.drag'
+import { flattenTableRows, tableSelectableRowIds, tableSelectionIds, tableToggleRowSelection, tableToggleSelectAll } from './table.rows'
 import { tableNormalizeSort, tableToggleSort } from './table.sort'
 
 /** 拖动改列宽时的缺省下限（px）。列定义可用 minWidth 覆盖。 */
@@ -106,12 +107,15 @@ export const tableMachine = createMachine({
     })),
     resizingColumn: cell<string | null>(() => ({ defaultValue: null })),
     draggingColumn: cell<string | null>(() => ({ defaultValue: null })),
+    draggingRow: cell<string | null>(() => ({ defaultValue: null })),
+    rowReorderBlocked: cell<TableRowReorderReason | null>(() => ({ defaultValue: null })),
     dropTarget: cell<TableDropTarget | null>(() => ({ defaultValue: null })),
     announcement: cell<string>(() => ({ defaultValue: '' })),
   }),
   refs: () => ({
     resize: null,
     columnDrag: null,
+    rowDrag: null,
   }),
   initialState: () => 'idle',
   states: {
@@ -137,6 +141,20 @@ export const tableMachine = createMachine({
         // 键盘换位同理不进拖动态：按一下就是一次已过守卫的完整提交
         'COLUMN.MOVE_BY': { actions: ['moveColumnBy'] },
         'COLUMN_DRAG.START': { target: 'columnDragging', actions: ['startColumnDrag'] },
+        'ROW.MOVE_BY': { actions: ['moveRowBy'] },
+        'ROW.REORDER_BLOCKED': { actions: ['blockRowReorder'] },
+        'ROW_DRAG.START': { target: 'rowDragging', actions: ['startRowDrag'] },
+      },
+    },
+    // 按下即进这个状态，但「按住」还不是拖动：激活之前 draggingRow 恒是 null，
+    // 界面上一点变化都没有。这么挂是为了让指针会话与长按计时器一次挂好，
+    // 激活时不必拆了重挂
+    rowDragging: {
+      effects: ['trackRowDragPointer'],
+      on: {
+        'ROW_DRAG.MOVE': { actions: ['trackRowDrag'] },
+        'ROW_DRAG.END': { target: 'idle', actions: ['endRowDrag'] },
+        'ROW_DRAG.CANCEL': { target: 'idle', actions: ['cancelRowDrag'] },
       },
     },
     columnDragging: {
@@ -166,6 +184,17 @@ export const tableMachine = createMachine({
           doc: resolveSessionDoc(scope.getDoc().documentElement),
           onMove: ({ point }) => send({ type: 'COLUMN_RESIZE.MOVE', clientX: point.clientX }),
           onEnd: ({ reason }) => send({ type: reason === 'pointercancel' ? 'COLUMN_RESIZE.CANCEL' : 'COLUMN_RESIZE.END' }),
+        })
+        return () => session.dispose()
+      },
+
+      /** 换行位跟手。整行可拖，按下即挂会话——激活与否由动作层判。 */
+      trackRowDragPointer: ({ refs, scope, send }) => {
+        const session = createPointerSession({
+          doc: resolveSessionDoc(scope.getDoc().documentElement),
+          pointerId: refs.get('rowDrag')?.pointerId,
+          onMove: ({ point }) => send({ type: 'ROW_DRAG.MOVE', clientY: point.clientY }),
+          onEnd: ({ reason }) => send({ type: reason === 'pointercancel' ? 'ROW_DRAG.CANCEL' : 'ROW_DRAG.END' }),
         })
         return () => session.dispose()
       },
@@ -269,6 +298,73 @@ export const tableMachine = createMachine({
         clearColumnDrag(context, refs)
         if (session)
           announceColumnDrag(context, prop, 'canceled', session.columnId)
+      },
+
+      startRowDrag: ({ context, refs, event }) => {
+        const e = event.current()
+        if (e.type !== 'ROW_DRAG.START')
+          return
+        refs.set('rowDrag', {
+          rowId: e.rowId,
+          rects: e.rects,
+          originY: e.originY,
+          pointerId: e.pointerId,
+          activated: false,
+        })
+        // 按下还不算拖：这三样要等激活之后才写，在那之前界面上一点变化都没有
+        context.set('draggingRow', null)
+        context.set('dropTarget', null)
+        context.set('announcement', '')
+      },
+
+      trackRowDrag: ({ context, refs, event }) => {
+        const e = event.current()
+        const session = refs.get('rowDrag')
+        if (e.type !== 'ROW_DRAG.MOVE' || !session)
+          return
+        if (!session.activated) {
+          if (!shouldActivate({ x: 0, y: e.clientY - session.originY }))
+            return
+          refs.set('rowDrag', { ...session, activated: true })
+          context.set('draggingRow', session.rowId)
+        }
+        const hit = hitAlong(refs.get('rowDrag')?.rects ?? [], e.clientY)
+        // 落在自己身上不算落点：那不是一次移动，指示线该消失
+        context.set('dropTarget', hit && hit.targetValue !== session.rowId ? hit : null)
+      },
+
+      endRowDrag: ({ context, prop, refs, send }) => {
+        const session = refs.get('rowDrag')
+        const target = context.get('dropTarget')
+        clearRowDrag(context, refs)
+        // 没激活过就只是按了一下：不是拖动，什么都不做也不播报
+        if (!session?.activated)
+          return
+        if (!target) {
+          announceRowMove(context, prop, 'rejected', session.rowId)
+          return
+        }
+        commitRowMove(context, prop, send, session.rowId, target, 'dropped')
+      },
+
+      cancelRowDrag: ({ context, prop, refs }) => {
+        const session = refs.get('rowDrag')
+        clearRowDrag(context, refs)
+        if (session?.activated)
+          announceRowMove(context, prop, 'canceled', session.rowId)
+      },
+
+      blockRowReorder: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'ROW.REORDER_BLOCKED')
+          context.set('rowReorderBlocked', e.reason)
+      },
+
+      moveRowBy: ({ context, prop, event, send }) => {
+        const e = event.current()
+        if (e.type !== 'ROW.MOVE_BY')
+          return
+        commitRowMove(context, prop, send, e.rowId, e.target, 'moved')
       },
 
       moveColumnBy: ({ context, prop, event, send }) => {
@@ -492,6 +588,12 @@ export const TABLE_COLUMN_STEP = 8
 /** Shift + 方向键的步长（px）。 */
 export const TABLE_COLUMN_LARGE_STEP = 40
 
+/** 行拖拽那一路的最小接口。 */
+interface RowDragContext {
+  get: (k: 'expanded') => string[]
+  set: (k: 'announcement', v: string) => void
+}
+
 /** 播报与落点两处都要写 announcement，抽一个最小接口，别把整个 service 拖进来。 */
 interface ColumnDragContext {
   get: (k: 'columnPreference') => TableColumnPreference
@@ -569,5 +671,67 @@ function clearColumnDrag(
 ): void {
   refs.set('columnDrag', null)
   context.set('draggingColumn', null)
+  context.set('dropTarget', null)
+}
+
+/** 可见数据行的 id 序列。落点、位置播报与键盘命令三处都以它为准。 */
+function visibleRowIds(
+  context: { get: (k: 'expanded') => string[] },
+  prop: <K extends keyof TableSchema['props']>(k: K) => TableSchema['props'][K],
+): string[] {
+  return flattenTableRows(prop('rows') ?? [], context.get('expanded'))
+    .filter(row => row.kind === 'data')
+    .map(row => row.id)
+}
+
+/** 播报一句。位置说的是可见数据行里的第几行。 */
+function announceRowMove(
+  context: RowDragContext,
+  prop: <K extends keyof TableSchema['props']>(k: K) => TableSchema['props'][K],
+  kind: DragAnnounceKind,
+  rowId: string,
+  position?: number,
+): void {
+  const ids = visibleRowIds(context, prop)
+  context.set('announcement', dragAnnouncement(kind, {
+    value: rowId,
+    position: position ?? ids.indexOf(rowId) + 1,
+    total: ids.length,
+    translations: prop('translations'),
+  }))
+}
+
+/**
+ * 把落点折算成一次行序改写，报给宿主并播报改完之后的位置。
+ *
+ * 行序不进机器：rows 是 prop，库没有一份自己的行序可写。这里只发意图，
+ * 写回归宿主——它本来就是那份数组的主人。
+ */
+function commitRowMove(
+  context: RowDragContext,
+  prop: <K extends keyof TableSchema['props']>(k: K) => TableSchema['props'][K],
+  send: (event: { type: 'ROW.FOCUS', value: string }) => void,
+  rowId: string,
+  target: TableDropTarget,
+  kind: DragAnnounceKind,
+): void {
+  const moved = moveRowIds(visibleRowIds(context, prop), rowId, target)
+  if (!moved) {
+    announceRowMove(context, prop, 'rejected', rowId)
+    return
+  }
+  prop('onRowMove')?.({ id: rowId, from: moved.from, to: moved.to, ids: moved.ids })
+  // 焦点锚点跟着搬走的那一行，键盘连着挪几格才不会挪一次就丢了起点
+  send({ type: 'ROW.FOCUS', value: rowId })
+  announceRowMove(context, prop, kind, rowId, moved.to + 1)
+}
+
+/** 收尾：拖动态的三样一起清干净，别留半截。 */
+function clearRowDrag(
+  context: { set: (k: 'draggingRow' | 'dropTarget', v: null) => void },
+  refs: { set: (k: 'rowDrag', v: null) => void },
+): void {
+  refs.set('rowDrag', null)
+  context.set('draggingRow', null)
   context.set('dropTarget', null)
 }

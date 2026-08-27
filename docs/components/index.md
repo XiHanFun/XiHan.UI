@@ -136,7 +136,7 @@
 | [数值动画](./number-animation) | `number-animation` | 1 | 0 | 4 |
 | [二维码](./qr-code) | `qr-code` | 2 | 0 | 8 |
 | [统计数值](./statistic) | `statistic` | 5 | 0 | 5 |
-| [表格](./table) | `table` | 18 | 15 | 20 |
+| [表格](./table) | `table` | 18 | 16 | 21 |
 | [标签](./tag) | `tag` | 3 | 1 | 6 |
 | [时间](./time) | `time` | 1 | 0 | 4 |
 | [时间线](./timeline) | `timeline` | 8 | 0 | 5 |

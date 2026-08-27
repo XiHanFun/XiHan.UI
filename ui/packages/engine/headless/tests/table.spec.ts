@@ -1186,3 +1186,50 @@ describe('范围选与全选快捷键', () => {
     expect(h.selection()).toEqual(['a', 'b'])
   })
 })
+
+describe('键盘：落在可编辑单元格里的按键不归表格管', () => {
+  /** 往某一行的格子里塞一个输入框，模拟可编辑单元格。 */
+  function editableIn(h: ReturnType<typeof mount>, id: string): HTMLInputElement {
+    const input = document.createElement('input')
+    h.row(id).row.append(input)
+    return input
+  }
+
+  it('在可编辑单元格里打空格是打字，不是切换这一行的选中', () => {
+    const h = mount({ selectionMode: 'multiple' })
+    // 先让焦点落过行：focusedRow 留着，这正是这个坑的前提
+    h.row('a').row.focus()
+    const input = editableIn(h, 'a')
+    input.focus()
+
+    expect(press(input, ' ').defaultPrevented).toBe(false)
+    expect(h.selection()).toEqual([])
+  })
+
+  it('在可编辑单元格里按 Ctrl+A 是全选文本，不是全选行', () => {
+    const h = mount({ selectionMode: 'multiple' })
+    h.row('a').row.focus()
+    const input = editableIn(h, 'a')
+    input.focus()
+
+    expect(press(input, 'a', { ctrlKey: true }).defaultPrevented).toBe(false)
+    expect(h.selection()).toEqual([])
+  })
+
+  it('在可编辑单元格里按方向键是移动光标，不是换行', () => {
+    const h = mount({ selectionMode: 'multiple' })
+    h.row('a').row.focus()
+    const input = editableIn(h, 'a')
+    input.focus()
+
+    expect(press(input, 'ArrowDown').defaultPrevented).toBe(false)
+    expect(document.activeElement).toBe(input)
+  })
+
+  it('输入法组合中的按键是给候选框的', () => {
+    const h = mount({ selectionMode: 'multiple' })
+    h.row('a').row.focus()
+    expect(press(active(), ' ', { isComposing: true } as KeyboardEventInit).defaultPrevented).toBe(false)
+    expect(h.selection()).toEqual([])
+  })
+})

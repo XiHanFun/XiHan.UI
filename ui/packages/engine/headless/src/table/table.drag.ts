@@ -111,3 +111,103 @@ export function columnMoveIntentFromKey(
       return null
   }
 }
+
+/**
+ * 行拖不动的原因，null 表示能拖。
+ *
+ * 三条都是「拖了也没意义」而不是「拖了会崩」：
+ * - `sorted`：排序链非空时顺序由排序键决定，拖出来的新序下一帧就被覆盖；
+ * - `hierarchical`：树形行的「换父」两个下标说不出来，那是 tree 承担的语义；
+ * - `virtualized`：只渲窗口内那一段时，窗口外的行不在 DOM 里，落点算不出来。
+ */
+export type TableRowReorderReason = 'sorted' | 'hierarchical' | 'virtualized'
+
+export function rowReorderReason(
+  sortLength: number,
+  hierarchical: boolean,
+  measuredRows?: number,
+  dataRows?: number,
+): TableRowReorderReason | null {
+  if (sortLength > 0)
+    return 'sorted'
+  if (hierarchical)
+    return 'hierarchical'
+  // 量到的行数与数据行数对不上 = 宿主只渲了一段。两者都给了才判，渲染前无从得知
+  if (measuredRows != null && dataRows != null && measuredRows !== dataRows)
+    return 'virtualized'
+  return null
+}
+
+/** 量出来的一条：行身份、它在纵轴上的位置，以及它是数据行还是详情行。 */
+export interface MeasuredRow {
+  value: string
+  kind: 'data' | 'expanded'
+  start: number
+  size: number
+}
+
+/**
+ * 把量到的行并成「行组」：一个数据行连同紧跟它的详情行算作一整块。
+ *
+ * 落点判定按整块算，否则拖过一个展开着的行时，指针明明还在这一块里，
+ * 落点却因为跨进了详情行那一段而反复跳。
+ *
+ * 详情行紧跟所属数据行是摊平的契约（见 flattenTableRows），这里按 DOM 顺序认：
+ * 遇到详情行就并进上一个数据行。孤立的详情行（前面没有数据行）直接丢掉。
+ */
+export function rowGroupRects(measured: readonly MeasuredRow[]): DragRect[] {
+  const out: DragRect[] = []
+  for (const row of measured) {
+    if (row.kind === 'data') {
+      out.push({ value: row.value, start: row.start, size: row.size })
+      continue
+    }
+    const last = out[out.length - 1]
+    if (!last)
+      continue
+    const end = Math.max(last.start + last.size, row.start + row.size)
+    const start = Math.min(last.start, row.start)
+    out[out.length - 1] = { value: last.value, start, size: end - start }
+  }
+  return out
+}
+
+/** 键盘命令：把这一行在可见数据行里挪一格。 */
+export function rowMoveCommand(
+  ids: readonly string[],
+  rowId: string,
+  intent: 'prev' | 'next',
+): DropTarget | null {
+  const at = ids.indexOf(rowId)
+  if (at < 0 || ids.length < 2)
+    return null
+  const neighbour = intent === 'prev' ? ids[at - 1] : ids[at + 1]
+  return neighbour == null
+    ? null
+    : { targetValue: neighbour, position: intent === 'prev' ? 'before' : 'after' }
+}
+
+/** Alt + 上下键 → 命令。纵轴与文字方向无关，不翻。 */
+export function rowMoveIntentFromKey(key: string): 'prev' | 'next' | null {
+  if (key === 'ArrowUp')
+    return 'prev'
+  if (key === 'ArrowDown')
+    return 'next'
+  return null
+}
+
+/** 搬完之后的整份行序，可直接拿去写回数据源。 */
+export function moveRowIds(
+  ids: readonly string[],
+  rowId: string,
+  target: DropTarget,
+): { from: number, to: number, ids: string[] } | null {
+  const from = ids.indexOf(rowId)
+  const to = insertionIndex(ids, rowId, target)
+  if (from < 0 || to == null)
+    return null
+  const next = [...ids]
+  const removed = next.splice(from, 1)
+  next.splice(to, 0, ...removed)
+  return { from, to, ids: next }
+}

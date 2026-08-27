@@ -79,6 +79,7 @@ export type TableRootSlotProps = Pick<
   | 'selectRow'
   | 'toggleSelectAll'
   | 'toggleExpandRow'
+  | 'rowReorderDisabledReason'
 >
 
 export const XhTableRoot = defineComponent({
@@ -109,6 +110,8 @@ export const XhTableRoot = defineComponent({
     borderless: Boolean,
     ruled: Boolean,
     footer: Boolean,
+    /** 行可以拖着换位。整行都是拖动源，不另出把手。 */
+    rowReorderable: Boolean,
     loop: { type: Boolean, default: undefined },
     dir: { type: String as PropType<Direction>, default: undefined },
     size: { type: String as PropType<Size>, default: undefined },
@@ -123,6 +126,8 @@ export const XhTableRoot = defineComponent({
     'update:selection': (_selection: PayloadOf<TableProps, 'onSelectionChange'>['value']) => true,
     'expanded-change': (_details: PayloadOf<TableProps, 'onExpandedChange'>) => true,
     'update:expanded': (_expanded: PayloadOf<TableProps, 'onExpandedChange'>['value']) => true,
+    // 行换位是通知，行序的真源在使用者的数据里，故没有配对的 update:*
+    'row-move': (_details: PayloadOf<TableProps, 'onRowMove'>) => true,
   },
   slots: Object as SlotsType<{
     default?: (props: TableRootSlotProps) => VNode[]
@@ -144,7 +149,10 @@ export const XhTableRoot = defineComponent({
       emit('expanded-change', details)
       emit('update:expanded', details.value)
     }
-    const ctx = useTable(props as TableProps, onSortChange, onSelectionChange, onExpandedChange, onColumnPreferenceChange)
+    const onRowMove: TableProps['onRowMove'] = (details) => {
+      emit('row-move', details)
+    }
+    const ctx = useTable(props as TableProps, onSortChange, onSelectionChange, onExpandedChange, onColumnPreferenceChange, onRowMove)
     provideTable(ctx)
     // 播报区由根组件自己渲，作者插不进 root 的兄弟位。它不能进 root：
     // root 是 role=grid，塞活动区域进去是 aria-required-children（critical）
@@ -173,6 +181,7 @@ export const XhTableRoot = defineComponent({
         selectRow: ctx.api.value.selectRow,
         toggleSelectAll: ctx.api.value.toggleSelectAll,
         toggleExpandRow: ctx.api.value.toggleExpandRow,
+        rowReorderDisabledReason: ctx.api.value.rowReorderDisabledReason,
       })),
       h(
         'div',

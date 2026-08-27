@@ -514,6 +514,54 @@
     user-select: none;
   }
 
+  /* —— 行拖拽排序 —— */
+  /* 整行都是拖动源，不出把手，光标换成抓手告诉人这一行按得动 */
+  [data-scope='table'][data-part='row'][data-row-draggable] {
+    cursor: grab;
+  }
+
+  /* 被拖的行整行压暗，与被拖的列同一档透明度。这里只动 opacity、cursor 与 user-select，
+     一个 transform 都不写：斑马纹按 nth-of-type 算、行间线按兄弟选择器算，两者认的都是 DOM 位置，
+     跟手让位会让它们在拖动全程与行错开。位置的事全交给落点指示线。
+     也不写 touch-action：拖行只认鼠标与笔，触屏那一按压根不开拖 */
+  [data-scope='table'][data-part='row'][data-dragging] {
+    opacity: var(--xh-table-dragging-opacity, 0.6);
+    cursor: grabbing;
+    user-select: none;
+  }
+
+  /* 详情行与它的数据行是同一块，一起压暗 */
+  [data-scope='table'][data-part='expanded-row'][data-dragging] {
+    opacity: var(--xh-table-dragging-opacity, 0.6);
+  }
+
+  /* 落点指示线：拖到哪一行的哪一侧，横线就画在那一行的那条边上。
+     定位上下文只给带 data-drop 的那一行：缺了它伪元素会一路上溯到表格根，线飞到整张表的左上角；
+     写到所有行上则是给每一行都多担一份，而落点同一时刻只有一个 */
+  [data-scope='table'][data-part='row'][data-drop] {
+    position: relative;
+  }
+
+  /* 线贯穿整行宽度，并且要压在单元格之上：行是 flex 容器，横向吸附的格子带着层号，
+     伪元素不抬到它上面就会被盖住 */
+  [data-scope='table'][data-part='row'][data-drop]::after {
+    content: '';
+    position: absolute;
+    z-index: calc(var(--xh-table-sticky-column-layer, 1) + 1);
+    inset-inline: 0;
+    block-size: var(--xh-table-drop-line, var(--xh-stroke-thick));
+    background: var(--xh-table-drop-fg, var(--xh-border-control-focus));
+  }
+
+  /* 线整条画在行内，不压着边。压着边画的话，首行那条上沿线会被表格根的圆角与滚动裁掉半条 */
+  [data-scope='table'][data-part='row'][data-drop='before']::after {
+    inset-block-start: 0;
+  }
+
+  [data-scope='table'][data-part='row'][data-drop='after']::after {
+    inset-block-end: 0;
+  }
+
   /* 活动区域只说给读屏听，不占版面。声明与 shared/visually-hidden.ts 逐条同值。 */
   [data-scope='table'][data-part='live-region'] {
     position: absolute;
