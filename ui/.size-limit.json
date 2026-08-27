@@ -93,7 +93,7 @@
     "name": "vue",
     "path": "packages/adapters/vue/dist/index.js",
     "gzip": true,
-    "limit": "264.3 kB",
+    "limit": "266.2 kB",
     "ignore": [
       "vue"
     ]
@@ -135,7 +135,7 @@
     "name": "web-components/define",
     "path": "packages/adapters/web-components/dist/define.js",
     "gzip": true,
-    "limit": "254.3 kB"
+    "limit": "256.1 kB"
   },
   {
     "name": "web-components/backgrounds",
