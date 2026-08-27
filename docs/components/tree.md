@@ -91,6 +91,12 @@ leaf-orientation 按结构判据横排「子节点全是叶子」的那层；要
 
 <XhDemo src="tree/11-orientation" />
 
+### 范围选
+
+按住 Shift 点某一项，选中锚点到它那一段；按可见序取，折叠起来的子节点选不进去
+
+<XhDemo src="tree/12-range-selection" />
+
 ## 产物
 
 | 层 | 值 |
