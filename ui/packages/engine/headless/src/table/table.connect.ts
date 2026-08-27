@@ -35,6 +35,41 @@ function columnSize(width: string | number | undefined): string | undefined {
   return typeof width === 'number' ? `${width}px` : width
 }
 
+/**
+ * 列宽的内联样式。
+ *
+ * 单元格默认是 `flex: 1 1 auto`，只给一列写死宽度会让其余列重新分配剩余空间——
+ * 拖一列、整排跟着动。因此**被用户改过的列要钉死**：flex 不再参与分配，
+ * 那一列就只听内联宽度的。
+ *
+ * 只钉偏好里的列。作者在 `columns` 里写的 `width` 保持原样可伸缩，既有表格不受影响。
+ */
+function columnSizeStyle(width: string | number | undefined, pinned: boolean): Record<string, unknown> {
+  const size = columnSize(width)
+  if (!size)
+    return {}
+  return pinned ? { inlineSize: size, flexGrow: 0, flexShrink: 0 } : { inlineSize: size }
+}
+
+/**
+ * 量出这一行里全部列此刻的宽度。
+ *
+ * 从表头格往上找到它所在的那一行再往下查，而不是从 root 查：详情行与脚注行里也有格子，
+ * 以行为界才只拿到列标题这一排。
+ */
+function measureColumns(header: HTMLElement): Record<string, number> {
+  const row = header.closest<HTMLElement>('[data-scope="table"][data-part="row"]') ?? header.parentElement
+  const out: Record<string, number> = {}
+  if (!row)
+    return out
+  for (const el of row.querySelectorAll<HTMLElement>('[data-scope="table"][data-part="column-header"]')) {
+    const id = el.getAttribute(ITEM_VALUE_ATTR)
+    if (id)
+      out[id] = el.getBoundingClientRect().width
+  }
+  return out
+}
+
 /** 这一列眼下的 px 宽度。偏好里的覆盖优先，两者都不是数字就返回 null。 */
 function columnNumericWidth(
   override: string | number | undefined,
@@ -80,6 +115,8 @@ export function connectTable<T extends PropTypes>(
   const translations = prop('translations')
   const numericWidth = (id: string, def: TableColumnDef | undefined): number | null =>
     columnNumericWidth(context.get('columnPreference').widths?.[id], def?.width)
+  /** 这一列的宽度是不是用户改出来的。 */
+  const hasWidthOverride = (id: string): boolean => context.get('columnPreference').widths?.[id] != null
   const label = {
     columnResize: translations?.columnResize ?? ((columnLabel: string) => `Resize column ${columnLabel}`),
   }
@@ -486,7 +523,7 @@ export function connectTable<T extends PropTypes>(
       const def = columnOf(column.value)
       const sortable = !!def?.sortable
       const direction = sortDirection(column.value)
-      const size = columnSize(def?.width)
+      const sizeStyle = columnSizeStyle(def?.width, hasWidthOverride(column.value))
       const sticky = stickyAttrs(def)
       return normalize.element({
         ...parts['column-header'].attrs,
@@ -501,13 +538,13 @@ export function connectTable<T extends PropTypes>(
         'data-sortable': dataAttr(sortable),
         ...sticky,
         // 列宽由连接层写进内联 inline-size：那条轴归它，皮肤不再声明；吸附偏移与它同住一个 style
-        ...(size ? { style: { ...sticky.style as Record<string, unknown>, inlineSize: size } } : {}),
+        ...(Object.keys(sizeStyle).length ? { style: { ...sticky.style as Record<string, unknown>, ...sizeStyle } } : {}),
       })
     },
 
     getCellProps: (cell) => {
       const def = columnOf(cell.value)
-      const size = columnSize(def?.width)
+      const sizeStyle = columnSizeStyle(def?.width, hasWidthOverride(cell.value))
       const sticky = stickyAttrs(def)
       // 跨列数只在真的跨了列时报，1 是默认值
       const colSpan = cell.colSpan != null && cell.colSpan > 1 ? cell.colSpan : undefined
@@ -523,7 +560,7 @@ export function connectTable<T extends PropTypes>(
         'data-selected': cell.row != null ? dataAttr(isSelected(cell.row)) : undefined,
         'data-disabled': cell.row != null ? dataAttr(isRowDisabled(cell.row)) : undefined,
         ...sticky,
-        ...(size ? { style: { ...sticky.style as Record<string, unknown>, inlineSize: size } } : {}),
+        ...(Object.keys(sizeStyle).length ? { style: { ...sticky.style as Record<string, unknown>, ...sizeStyle } } : {}),
       })
     },
 
@@ -608,6 +645,7 @@ export function connectTable<T extends PropTypes>(
             columnId: column.value,
             startWidth: header.getBoundingClientRect().width,
             originX: event.clientX,
+            snapshot: measureColumns(header),
           })
         },
         'onKeyDown': (event: KeyboardEvent) => {

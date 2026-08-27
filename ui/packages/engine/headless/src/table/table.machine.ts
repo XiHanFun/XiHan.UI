@@ -153,6 +153,20 @@ export const tableMachine = createMachine({
         if (e.type !== 'COLUMN_RESIZE.START')
           return
         refs.set('resize', { columnId: e.columnId, startWidth: e.startWidth, originX: e.originX })
+        // 先把全部列此刻的宽度钉成基线。单元格默认按 flex 分配剩余空间，
+        // 只钉一列会让其余列跟着重排——拖一列、整排都在动。
+        // 已经有覆盖的列不碰：那是用户先前调过的，比这一刻量到的更权威
+        const current = context.get('columnPreference')
+        const widths = { ...current.widths }
+        let added = false
+        for (const [id, width] of Object.entries(e.snapshot)) {
+          if (widths[id] == null && Number.isFinite(width)) {
+            widths[id] = width
+            added = true
+          }
+        }
+        if (added)
+          context.set('columnPreference', { ...current, widths })
         context.set('resizingColumn', e.columnId)
       },
 

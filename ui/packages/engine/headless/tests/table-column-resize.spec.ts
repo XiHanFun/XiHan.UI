@@ -64,7 +64,7 @@ function mount(initial: Partial<Props> = {}) {
 
 type Harness = ReturnType<typeof mount>
 
-/** 在把手上按下。连接层要从它往上找表头格来量宽度，因此得挂在真实节点上。 */
+/** 在把手上按下。连接层要从它往上找表头格与同排的其余列，因此得挂在真实节点上。 */
 function press(h: Harness, id: string, clientX: number): void {
   const props = h.api().getColumnResizeTriggerProps({ value: id }) as Dict
   ;(props.onPointerDown as (e: PointerEvent) => void)({
@@ -312,5 +312,43 @@ describe('列宽 · 可聚焦的分隔条要报数值', () => {
     const props = h.api().getColumnResizeTriggerProps({ value: 'fixed' }) as Dict
     expect(props['aria-valuemin']).toBeUndefined()
     expect(props['aria-valuemax']).toBeUndefined()
+  })
+})
+
+describe('列宽 · 按下时把全部列钉住', () => {
+  it('按下就把同排各列此刻的宽度写成基线——不然改一列会让其余列重排', () => {
+    const h = mount()
+    press(h, 'name', 500)
+    // 三列都进了偏好，各自是量到的宽度
+    expect(h.widths()).toEqual({ name: 200, size: 120, fixed: 100 })
+    release()
+  })
+
+  it('已经调过的列不被这份快照盖掉——那是用户先前定的，比这一刻量到的权威', () => {
+    const h = mount()
+    key(h, 'size', 'ArrowRight')
+    expect(h.widths().size).toBe(120 + TABLE_COLUMN_STEP)
+    press(h, 'name', 500)
+    expect(h.widths().size).toBe(120 + TABLE_COLUMN_STEP)
+    release()
+  })
+
+  it('改过的列钉死 flex，没改过的保持可伸缩', () => {
+    const h = mount()
+    const before = h.api().getColumnHeaderProps({ value: 'name' }) as Dict
+    // 还没人改过：只写宽度，不碰 flex
+    expect((before.style as Dict).flexGrow).toBeUndefined()
+
+    key(h, 'name', 'ArrowRight')
+    const after = h.api().getColumnHeaderProps({ value: 'name' }) as Dict
+    expect((after.style as Dict).flexGrow).toBe(0)
+    expect((after.style as Dict).flexShrink).toBe(0)
+  })
+
+  it('单元格跟表头格一样钉', () => {
+    const h = mount()
+    key(h, 'name', 'ArrowRight')
+    const cell = h.api().getCellProps({ value: 'name', row: 'a' }) as Dict
+    expect((cell.style as Dict).flexGrow).toBe(0)
   })
 })
