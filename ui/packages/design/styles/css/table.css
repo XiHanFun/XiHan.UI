@@ -193,8 +193,6 @@
   }
 
   [data-scope='table'][data-part='column-header'] {
-    /* 定位上下文：改宽把手绝对定位在这一格的接缝上 */
-    position: relative;
     color: var(--xh-table-column-fg, var(--xh-fg-muted));
     font-weight: var(--xh-table-column-font-weight, var(--xh-text-label-weight));
     text-align: start;
@@ -377,12 +375,13 @@
   /* 列宽把手贴在表头格的行尾侧。它压在相邻两列的接缝上，因此往外挪半个身位，
      两边各留出一点可抓的余量——贴着边只有一两个像素能按到。 */
   [data-scope='table'][data-part='column-resize-trigger'] {
-    position: absolute;
-    inset-block: 0;
-    inset-inline-end: calc(var(--xh-table-resize-width, var(--xh-space-2)) / -2);
-    z-index: 1;
     display: inline-flex;
+    flex: none;
+    align-self: stretch;
     inline-size: var(--xh-table-resize-width, var(--xh-space-2));
+    /* 推到行尾侧。把手在标记里是表头格的最后一个孩子，auto 外边距把它顶到那一头，
+       不必给每个表头格加定位上下文——那条会落到所有既有表格上 */
+    margin-inline-start: auto;
     align-items: center;
     justify-content: center;
     cursor: col-resize;
