@@ -1,0 +1,103 @@
+@layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='sortable'] {
+    --xh-sortable-skin: 1;
+  }
+
+  /* 分工：**每一项的位移**由连接层每帧写进内联 transform（让位与跟手都在那儿算）。
+     这份皮肤一条都不碰 transform——内联优先级更高，写了不但是死声明，
+     还会在拖动的每一帧跟连接层抢位置。皮肤只管排布方向、间距、光标与状态表现。 */
+
+  [data-scope='sortable'][data-part='root'] {
+    display: flex;
+    gap: var(--xh-sortable-gap, var(--xh-space-2));
+  }
+
+  [data-scope='sortable'][data-part='root'][data-orientation='vertical'] {
+    flex-direction: column;
+  }
+
+  [data-scope='sortable'][data-part='root'][data-orientation='horizontal'] {
+    flex-direction: row;
+  }
+
+  /* 换行网格：主轴横排、允许折行，落点按最近中心判，与单轴那两档是不同的判据 */
+  [data-scope='sortable'][data-part='root'][data-orientation='both'] {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  [data-scope='sortable'][data-part='item'] {
+    display: flex;
+    align-items: center;
+    gap: var(--xh-sortable-item-gap, var(--xh-space-2));
+    border-radius: var(--xh-sortable-item-radius, var(--xh-shape-control));
+    background: var(--xh-sortable-item-bg, var(--xh-bg-surface));
+  }
+
+  /* 让位期间关掉过渡，跟手的那一项才不会慢半拍粘在指针后面。
+     其余项反过来要过渡：它们是被让开的，瞬移会看不出发生了什么。 */
+  [data-scope='sortable'][data-part='root'][data-dragging] [data-part='item']:not([data-dragging]) {
+    transition: transform var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='sortable'][data-part='item'][data-dragging] {
+    /* 拖起来的那一项浮在上面。层级由连接层写内联，这里只管观感 */
+    box-shadow: var(--xh-sortable-item-shadow-dragging, var(--xh-elevation-raised));
+    opacity: var(--xh-sortable-item-opacity-dragging, 0.9);
+  }
+
+  [data-scope='sortable'][data-part='item-handle'] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    inline-size: var(--xh-sortable-handle-size, var(--xh-control-action-size));
+    block-size: var(--xh-sortable-handle-size, var(--xh-control-action-size));
+    padding: 0;
+    border: 0;
+    border-radius: var(--xh-sortable-handle-radius, var(--xh-shape-control));
+    background: transparent;
+    color: var(--xh-sortable-handle-fg, var(--xh-fg-muted));
+    cursor: grab;
+  }
+
+  [data-scope='sortable'][data-part='item-handle']:hover {
+    background: var(--xh-sortable-handle-bg-hover, var(--xh-bg-subtle-hover));
+    color: var(--xh-sortable-handle-fg-hover, var(--xh-fg-default));
+  }
+
+  [data-scope='sortable'][data-part='item-handle'][data-dragging] {
+    cursor: grabbing;
+  }
+
+  [data-scope='sortable'][data-part='item-handle']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: var(--xh-ring-offset);
+  }
+
+  [data-scope='sortable'][data-part='item-handle'][aria-disabled='true'] {
+    cursor: not-allowed;
+    color: var(--xh-sortable-handle-fg-disabled, var(--xh-fg-disabled));
+  }
+
+  /* 活动区域只说给读屏听，不占版面。声明与 shared/visually-hidden.ts 逐条同值。 */
+  [data-scope='sortable'][data-part='live-region'] {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+  /* 给了 display 的角色节点必须补这条：display 声明会盖掉 UA 的 [hidden]{display:none}，
+     不补的话作者给节点加 hidden 后它照样显示 */
+  [data-scope='sortable'][data-part='root'][hidden],
+  [data-scope='sortable'][data-part='item'][hidden],
+  [data-scope='sortable'][data-part='item-handle'][hidden] {
+    display: none;
+  }
+}

@@ -89,6 +89,7 @@ import { sideNavSuite } from './side-nav.suite'
 import { signaturePadSuite } from './signature-pad.suite'
 import { skeletonSuite } from './skeleton.suite'
 import { sliderSuite } from './slider.suite'
+import { sortableSuite } from './sortable.suite'
 import { spaceSuite } from './space.suite'
 import { spinnerSuite } from './spinner.suite'
 import { splitterSuite } from './splitter.suite'
@@ -212,6 +213,7 @@ export const allSuites: readonly ConformanceSuite[] = [
   sliderSuite,
   spaceSuite,
   spinnerSuite,
+  sortableSuite,
   splitterSuite,
   statisticSuite,
   stepsSuite,

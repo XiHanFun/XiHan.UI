@@ -92,6 +92,7 @@ import type { SideNavTranslations } from '../side-nav/side-nav.types'
 import type { SignaturePadTranslations } from '../signature-pad/signature-pad.types'
 import type { SkeletonTranslations } from '../skeleton/skeleton.types'
 import type { SliderTranslations } from '../slider/slider.types'
+import type { SortableTranslations } from '../sortable/sortable.types'
 import type { SpaceTranslations } from '../space/space.types'
 import type { SpinnerTranslations } from '../spinner/spinner.types'
 import type { SplitterTranslations } from '../splitter/splitter.types'
@@ -215,6 +216,7 @@ export interface XhTranslationOverrides {
   'slider'?: Partial<SliderTranslations>
   'space'?: Partial<SpaceTranslations>
   'spinner'?: Partial<SpinnerTranslations>
+  'sortable'?: Partial<SortableTranslations>
   'splitter'?: Partial<SplitterTranslations>
   'statistic'?: Partial<StatisticTranslations>
   'steps'?: Partial<StepsTranslations>

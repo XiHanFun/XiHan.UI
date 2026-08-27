@@ -9,7 +9,7 @@
 ```ts
 import { defineXhElements } from '@xihan-ui/web-components/define'
 
-defineXhElements() // 注册全部 121 个 xh-* 元素
+defineXhElements() // 注册全部 122 个 xh-* 元素
 ```
 
 主入口的 `import` 本身**不注册**，必须显式调这一行。注册是幂等的：同版本重复调直接返回；同标签不同版本、或标签已被非 XiHan.UI 代码占用，都会抛错而不是静默覆盖。无 `customElements` 的环境（SSR）静默跳过。
@@ -113,7 +113,7 @@ document.querySelector('xh-dialog')
 
 ## 自定义元素清单
 
-包内附带 `custom-elements.json`（CEM 格式），121 个元素的标签名、属性、事件、CSS part 都在里面。编辑器与框架的自定义元素支持可以直接读它拿到补全与类型提示。
+包内附带 `custom-elements.json`（CEM 格式），122 个元素的标签名、属性、事件、CSS part 都在里面。编辑器与框架的自定义元素支持可以直接读它拿到补全与类型提示。
 
 清单由构建生成，`pnpm gate:cem` 会重跑生成后比对——改了元素忘了重新生成会被拦下。
 

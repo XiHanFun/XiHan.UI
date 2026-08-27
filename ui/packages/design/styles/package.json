@@ -126,6 +126,7 @@
     "./slider.css": "./css/slider.css",
     "./space.css": "./css/space.css",
     "./spinner.css": "./css/spinner.css",
+    "./sortable.css": "./css/sortable.css",
     "./splitter.css": "./css/splitter.css",
     "./statistic.css": "./css/statistic.css",
     "./steps.css": "./css/steps.css",

@@ -189,6 +189,8 @@ export { connectSkeleton, skeletonAnatomy, skeletonKeyboard, skeletonMeta } from
 export type { SkeletonApi, SkeletonBoneProps, SkeletonProps, SkeletonTranslations, SkeletonVariant } from './skeleton'
 export { closestThumb, connectSlider, normalizeMarkValues, percentToValue, pointToValue, rangeExtent, setThumbValue, SLIDER_MAX, SLIDER_MIN, SLIDER_STEP, sliderAnatomy, sliderKeyboard, sliderMachine, sliderMeta, snapToMarkValues, snapToStep, stepMarkValue, thumbBounds, valueToPercent } from './slider'
 export type { AxisOptions, SliderApi, SliderMark, SliderMarkMeta, SliderMarkProps, SliderPoint, SliderSchema, SliderThumbState, SliderTranslations, SliderValueChangeDetails, SliderValueChangeEndDetails, SliderValueTextDetails, TrackRect } from './slider'
+export { connectSortable, sortableAnatomy, sortableAnnouncement, sortableKeyboard, sortableMachine, sortableMeta } from './sortable'
+export type { SortableAnnounceInput, SortableAnnounceKind, SortableApi, SortableDragEndDetails, SortableDragStartDetails, SortableItemState, SortableMode, SortableRefs, SortableSchema, SortableSortDetails, SortableTranslations } from './sortable'
 export { connectSpace, spaceAnatomy, spaceKeyboard, spaceMeta } from './space'
 export type { SpaceAlign, SpaceApi, SpaceGap, SpaceJustify, SpaceProps, SpaceTranslations } from './space'
 export type { ComponentMeta, KeyboardRow, KeyboardTable } from './spec'

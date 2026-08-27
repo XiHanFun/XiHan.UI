@@ -101,6 +101,10 @@
           "name": "间距"
         },
         {
+          "id": "sortable",
+          "name": "排序"
+        },
+        {
           "id": "splitter",
           "name": "分栏"
         }

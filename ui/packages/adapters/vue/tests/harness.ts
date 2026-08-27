@@ -13,6 +13,7 @@ const PUBLIC_EVENTS = {
   'open-change': 'onOpenChange',
   'pressed-change': 'onPressedChange',
   'select': 'onSelect',
+  'sort': 'onSort',
   'status-change': 'onStatusChange',
   'stick-change': 'onStickChange',
   'stop': 'onStop',
