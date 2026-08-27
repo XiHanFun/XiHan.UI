@@ -79,20 +79,22 @@ export const sortableSuite: ConformanceSuite = {
   },
   cases: [
     {
-      name: '默认：root 是 list，项是 listitem 且带身份与下标，手柄声明自己可排序',
+      name: '默认：root 是 group，项带身份与下标，手柄声明自己可排序',
       spec: { apg: APG },
       props: { ids: ['a', 'b', 'c'] },
       initial: {
         counts: { 'root': 1, 'item': 3, 'item-handle': 3, 'live-region': 1 },
         parts: {
           'root': {
-            'role': 'list',
-            'aria-orientation': 'vertical',
+            // group 而不是 list：播报区（role=status）就在容器里，list 只许有 listitem 子节点。
+            // 方向也不经 ARIA 表达——list/group 都不支持 aria-orientation
+            'role': 'group',
+            'aria-orientation': null,
             'data-orientation': 'vertical',
             'data-dragging': null,
             'data-disabled': null,
           },
-          'item[0]': { 'role': 'listitem', 'data-value': 'a', 'data-index': '0', 'data-dragging': null },
+          'item[0]': { 'data-value': 'a', 'data-index': '0', 'data-dragging': null },
           'item[2]': { 'data-value': 'c', 'data-index': '2' },
           'item-handle[0]': {
             'role': 'button',

@@ -101,9 +101,8 @@ export function connectSortable<T extends PropTypes>(
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
-      'role': 'list',
+      'role': 'group',
       'aria-label': translations?.root ?? 'Sortable list',
-      'aria-orientation': axis === 'both' ? undefined : axis,
       'data-orientation': axis,
       'data-disabled': dataAttr(disabled),
       'data-dragging': dataAttr(dragging),
@@ -114,7 +113,6 @@ export function connectSortable<T extends PropTypes>(
       const isDragging = !!item?.dragging
       const offset = item?.offset ?? ZERO
       return normalize.element({
-        'role': 'listitem',
         ...parts.item.attrs,
         [ITEM_VALUE_ATTR]: id,
         'data-index': String(item?.index ?? -1),
