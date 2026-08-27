@@ -1,5 +1,6 @@
 import type { Direction, Orientation, PropTypes } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
+import type { MultiPointerSession } from '@xihan-ui/pointer'
 
 /** 按住自动播放的来源。可同时有多个按住，最后一个松开才继续走。 */
 export type CarouselPauseSource = 'pointer' | 'focus' | 'api'
@@ -91,7 +92,10 @@ export interface CarouselSchema extends MachineSchema {
     dragOffset: number
   }
   computed: Record<string, never>
-  refs: Record<string, never>
+  refs: {
+    /** 跟住划在轨道上的那根手指。整个生命周期都在，机器停时摘掉。 */
+    gesture: MultiPointerSession | null
+  }
   /** 自动播放是唯一有阶段可分的事：跑 / 被按住 / 压根没开。翻页本身住在 context 的 cell 里。 */
   state: 'idle' | 'playing' | 'playing.running' | 'playing.paused'
   event:
@@ -122,7 +126,7 @@ export interface CarouselSchema extends MachineSchema {
     | 'startDrag'
     | 'moveDrag'
     | 'endDrag'
-  effect: 'trackAutoplay'
+  effect: 'trackAutoplay' | 'trackPointer'
 }
 
 export interface CarouselApi<T extends PropTypes = PropTypes> {
