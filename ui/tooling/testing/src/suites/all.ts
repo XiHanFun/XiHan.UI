@@ -79,6 +79,7 @@ import { progressSuite } from './progress.suite'
 import { qrCodeSuite } from './qr-code.suite'
 import { radioGroupSuite } from './radio-group.suite'
 import { ratingSuite } from './rating.suite'
+import { resizableSuite } from './resizable.suite'
 import { resultSuite } from './result.suite'
 import { scrollAreaSuite } from './scroll-area.suite'
 import { scrollbarSuite } from './scrollbar.suite'
@@ -201,6 +202,7 @@ export const allSuites: readonly ConformanceSuite[] = [
   qrCodeSuite,
   radioGroupSuite,
   ratingSuite,
+  resizableSuite,
   resultSuite,
   scrollAreaSuite,
   scrollbarSuite,

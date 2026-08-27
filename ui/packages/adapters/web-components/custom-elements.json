@@ -30063,6 +30063,392 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/resizable.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-resizable>` —— Light-DOM 行为宿主：作者写 root 与八向 handle 角色节点，\n元素跑 resizable 机器并把 connect 产出打上去。\n\n每个 handle 用 `edge` 属性写明自己是哪条边（`n` / `ne` / `e` / `se` / `s` / `sw` / `w` / `nw`），\n与 Vue 侧的 `:edge` 是同一份声明。\n\n尺寸由元素每帧写进 root 的内联 `inline-size` / `block-size`，作者的样式表不要再碰这两条轴。\n**推西边与北边时容器的起点会动**，那段位移写成 root 的 `left` / `top`——皮肤已给\n`position: relative`，开箱即对；把 root 改成 `static` 会让这两个方向只变尺寸不移位。\n\n键盘全在把手上：方向键按屏幕方向推一步（推东边时右键变宽、推西边时右键变窄，与拖动同义），\n按住 Shift 走大步，Home / End 推到这条边能到的两端。",
+          "name": "XhResizableElement",
+          "cssParts": [
+            {
+              "description": "承载 data-resizing / data-edge / data-disabled 的容器，尺寸写在它的内联样式上",
+              "name": "root"
+            },
+            {
+              "description": "role=separator 的把手，指针与键盘交互全在它身上",
+              "name": "handle"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: resizableAnatomy, meta: resizableMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "ResizableSize | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "defaultSize",
+              "privacy": "public",
+              "type": {
+                "text": "ResizableSize | undefined"
+              },
+              "attribute": "default-size"
+            },
+            {
+              "kind": "field",
+              "name": "minWidth",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "min-width"
+            },
+            {
+              "kind": "field",
+              "name": "minHeight",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "min-height"
+            },
+            {
+              "kind": "field",
+              "name": "maxWidth",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "max-width"
+            },
+            {
+              "kind": "field",
+              "name": "maxHeight",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "max-height"
+            },
+            {
+              "kind": "field",
+              "name": "aspectRatio",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "aspect-ratio"
+            },
+            {
+              "kind": "field",
+              "name": "step",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "step"
+            },
+            {
+              "kind": "field",
+              "name": "keyboardStep",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "keyboard-step"
+            },
+            {
+              "kind": "field",
+              "name": "keyboardLargeStep",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "keyboard-large-step"
+            },
+            {
+              "kind": "field",
+              "name": "edges",
+              "privacy": "public",
+              "type": {
+                "text": "ResizeEdge[] | undefined"
+              },
+              "attribute": "edges"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "direction",
+              "privacy": "public",
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "attribute": "dir"
+            },
+            {
+              "kind": "field",
+              "name": "idGen",
+              "type": {
+                "text": "IdGenerator"
+              },
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "resizableScope",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifySize",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifySizeEnd",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<ResizableSchema>( this, resizableMachine, () => this.machineProps(), { scope: this.resizableScope, onBuilt: svc => this.injectRefs(svc) }, )"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<ResizableSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "injectRefs",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "svc",
+                  "type": {
+                    "text": "Service<ResizableSchema>"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "edgeOf",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "ResizeEdge"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "el",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                }
+              ],
+              "description": "把手自报的边。没写就落东南角——那是文档流里最常见的那个。"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "尺寸变化（拖动途中会连发）；detail 为 `{ size }`",
+              "name": "size-change",
+              "type": {
+                "text": "ResizableSizeChangeDetails"
+              }
+            },
+            {
+              "description": "一次调整收尾发一次；detail 为 `{ size, edge }`",
+              "name": "size-change-end",
+              "type": {
+                "text": "ResizableSizeChangeEndDetails"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "ResizableSize | undefined"
+              },
+              "description": "受控尺寸，写成 `宽x高`（如 `320x200`）；缺省该属性即非受控",
+              "name": "size",
+              "fieldName": "size"
+            },
+            {
+              "type": {
+                "text": "ResizableSize | undefined"
+              },
+              "description": "非受控初值，同样写成 `宽x高`",
+              "name": "default-size",
+              "fieldName": "defaultSize"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "宽度下限",
+              "name": "min-width",
+              "fieldName": "minWidth"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "高度下限",
+              "name": "min-height",
+              "fieldName": "minHeight"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "宽度上限；不给即不封顶",
+              "name": "max-width",
+              "fieldName": "maxWidth"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "高度上限；不给即不封顶",
+              "name": "max-height",
+              "fieldName": "maxHeight"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "宽高比（宽 ÷ 高）。给了就锁死，四个角以宽为准",
+              "name": "aspect-ratio",
+              "fieldName": "aspectRatio"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "吸附步进：宽高各自落到最近的整数倍",
+              "name": "step",
+              "fieldName": "step"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "方向键一次推多远（px），默认 8",
+              "name": "keyboard-step",
+              "fieldName": "keyboardStep"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "按住 Shift 时的步长（px），默认 40",
+              "name": "keyboard-large-step",
+              "fieldName": "keyboardLargeStep"
+            },
+            {
+              "type": {
+                "text": "ResizeEdge[] | undefined"
+              },
+              "description": "开放哪几条边，逗号分隔（如 `e,s,se`）；默认八向全开",
+              "name": "edges",
+              "fieldName": "edges"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "禁用：把手退出 Tab 序列，按下也不进调整",
+              "name": "disabled",
+              "fieldName": "disabled"
+            },
+            {
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "description": "文字方向，只对调水平位移与左右两键的正负，默认 ltr",
+              "name": "dir",
+              "fieldName": "direction"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-resizable",
+          "customElement": true,
+          "cssProperties": [
+            {
+              "name": "--xh-resizable-corner"
+            },
+            {
+              "name": "--xh-resizable-grip"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhResizableElement",
+          "declaration": {
+            "name": "XhResizableElement",
+            "module": "src/elements/resizable.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/result.ts",
       "declarations": [
         {
@@ -34100,7 +34486,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-sortable>` —— Light-DOM 行为宿主：作者写 root/item/item-handle/live-region 角色节点，\n元素跑 sortable 机器并把 connect 产出打上去。\n\n顺序的唯一真源是 `ids`，DOM 里项的先后必须与它一致——几何按 DOM 量，事件按 `ids` 算。\n每个 item 与它的 item-handle 都要用 `id` 属性写明自己是哪一项（与 Vue 侧的 `:id` 同一份声明）。\n\n拖动落点走乐观投影：拖动过程中其余项实时让位，松手即定。让位与跟手的位移由元素每帧\n写进内联 transform，作者的样式表不要再碰这条属性。\n\n键盘全在手柄上：空格或回车拾起、方向键挪一格、再按空格放下、Esc 取消。\n拖动中的 Tab 会被拦下——焦点一旦移走，这一场就没有出口了。",
+          "description": "`<xh-sortable>` —— Light-DOM 行为宿主：作者写 root/item/item-handle/live-region 角色节点，\n元素跑 sortable 机器并把 connect 产出打上去。\n\n顺序的唯一真源是 `ids`，DOM 里项的先后必须与它一致——几何按 DOM 量，事件按 `ids` 算。\n每个 item 与它的 item-handle 都要用 `item-id` 属性写明自己是哪一项（与 Vue 侧的 `:item-id` 同一份声明）。\n单独禁掉某一项写 `item-disabled`。不给 item-handle 时整项可拖。\n\n拖动落点走乐观投影：拖动过程中其余项实时让位，松手即定。让位与跟手的位移由元素每帧\n写进内联 transform，作者的样式表不要再碰这条属性。\n\n键盘全在手柄上：空格或回车拾起、方向键挪一格、再按空格放下、Esc 取消。\n拖动中的 Tab 会被拦下——焦点一旦移走，这一场就没有出口了。",
           "name": "XhSortableElement",
           "cssParts": [
             {
@@ -34269,7 +34655,26 @@
                   }
                 }
               ],
-              "description": "部件自报的项标识。作者在节点上写 id=\"a\"，与 Vue 侧的 `:id` 是同一份声明；\n没写就落空串——connect 那边找不到对应项，会当作不可拖的普通节点。"
+              "description": "部件自报的项标识。作者在节点上写 item-id=\"a\"，与 Vue 侧的 `:id` 是同一份声明；\n没写就落空串——connect 那边找不到对应项，会当作不可拖的普通节点。\n\n不用 `id`：那是 HTML 全局属性，写上去会留在 DOM 里（Vue 侧的同名 prop 不会），\n而且同一项的外壳与手柄同名时会造出两个相同的 DOM id。"
+            },
+            {
+              "kind": "method",
+              "name": "partDisabled",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "el",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                }
+              ],
+              "description": "项级禁用。写 item-disabled 即禁掉这一项，与列表级的 disabled 各管各的。"
             },
             {
               "kind": "method",
@@ -34382,9 +34787,6 @@
             },
             {
               "name": "--xh-sortable-handle-size"
-            },
-            {
-              "name": "--xh-sortable-item-bg"
             },
             {
               "name": "--xh-sortable-item-gap"
@@ -36610,6 +37012,24 @@
             },
             {
               "name": "--xh-table-radius"
+            },
+            {
+              "name": "--xh-table-resize-fg"
+            },
+            {
+              "name": "--xh-table-resize-fg-active"
+            },
+            {
+              "name": "--xh-table-resize-line"
+            },
+            {
+              "name": "--xh-table-resize-line-length"
+            },
+            {
+              "name": "--xh-table-resize-radius"
+            },
+            {
+              "name": "--xh-table-resize-width"
             },
             {
               "name": "--xh-table-row-bg"

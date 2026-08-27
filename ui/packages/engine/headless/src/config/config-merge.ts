@@ -28,11 +28,11 @@ export interface XhConfigBase {
 }
 
 /**
- * size 同名不同义的组件：floating-panel 的 size 是一对像素数，垫一个 'md' 进去会当场坏掉。
+ * size 同名不同义的组件：floating-panel 与 resizable 的 size 都是一对像素数，垫一个 'md' 进去会当场坏掉。
  * qr-code 与 splitter 同属这一类，但它们没有名为 size 的 prop，天然够不着。
  * 判据由 check-config-wiring 守住：headless 里凡是 props 声明了非 Size 型 size 的都要在这儿。
  */
-export const SIZE_IS_NOT_AXIS: ReadonlySet<string> = new Set(['floating-panel'])
+export const SIZE_IS_NOT_AXIS: ReadonlySet<string> = new Set(['floating-panel', 'resizable'])
 
 /** 逐组件合并文案：同名组件下按键并，内层胜出。 */
 export function mergeTranslations(

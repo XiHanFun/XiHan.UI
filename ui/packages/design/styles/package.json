@@ -114,6 +114,7 @@
     "./radio-group.css": "./css/radio-group.css",
     "./rating.css": "./css/rating.css",
     "./reset.css": "./css/reset.css",
+    "./resizable.css": "./css/resizable.css",
     "./result.css": "./css/result.css",
     "./scroll-area.css": "./css/scroll-area.css",
     "./scrollbar.css": "./css/scrollbar.css",

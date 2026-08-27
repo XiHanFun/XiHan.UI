@@ -165,6 +165,8 @@ export { connectRadioGroup, radioGroupAnatomy, radioGroupKeyboard, radioGroupMac
 export type { RadioGroupApi, RadioGroupItemProps, RadioGroupNode, RadioGroupNodeMeta, RadioGroupSchema, RadioGroupTranslations, RadioGroupValueChangeDetails } from './radio-group'
 export { clampRating, connectRating, RATING_COUNT, ratingAnatomy, ratingIntentFromKey, ratingKeyboard, ratingMachine, ratingMax, ratingMeta, ratingStep, ratingValueAtPointer, stepRating } from './rating'
 export type { RatingApi, RatingHoverChangeDetails, RatingItemProps, RatingItemState, RatingKeyEventLike, RatingKeyIntent, RatingSchema, RatingTranslations, RatingValueChangeDetails } from './rating'
+export { connectResizable, RESIZABLE_DEFAULT_SIZE, RESIZABLE_EDGES, RESIZABLE_LARGE_STEP, RESIZABLE_STEP, resizableAnatomy, resizableConstraints, resizableKeyboard, resizableMachine, resizableMeta } from './resizable'
+export type { ResizableApi, ResizableOffset, ResizableRefs, ResizableSchema, ResizableSize, ResizableSizeChangeDetails, ResizableSizeChangeEndDetails, ResizableTranslations } from './resizable'
 export { connectResult, resultAnatomy, resultKeyboard, resultMeta } from './result'
 export type { ResultApi, ResultProps, ResultStatus, ResultTranslations } from './result'
 export { connectScrollArea, scrollAreaAnatomy, scrollAreaKeyboard, scrollAreaMeta, scrollAreaScrollbarProps } from './scroll-area'
