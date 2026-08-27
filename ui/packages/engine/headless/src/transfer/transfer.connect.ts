@@ -260,6 +260,9 @@ export function connectTransfer<T extends PropTypes>(
           if (!editable[side])
             return
           event.preventDefault()
+          // 按住不放会连发 keydown，这是切换：重复执行会来回翻转
+          if (event.repeat)
+            return
           send({ type: 'SIDE.TOGGLE_ALL', side })
           return
         }
@@ -297,6 +300,9 @@ export function connectTransfer<T extends PropTypes>(
 
         if (key === 'Enter' || key === ' ') {
           event.preventDefault()
+          // 按住不放会连发 keydown，这是切换：重复执行会来回翻转
+          if (event.repeat)
+            return
           commit(side)
         }
       },

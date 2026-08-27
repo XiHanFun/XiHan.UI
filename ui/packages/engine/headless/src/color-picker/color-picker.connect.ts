@@ -430,6 +430,9 @@ export function connectColorPicker<T extends PropTypes>(
           if (event.key !== 'Enter' || event.ctrlKey || event.metaKey || event.altKey)
             return
           event.preventDefault()
+          // 按住不放会连发 keydown，这是切换：重复执行会来回翻转
+          if (event.repeat)
+            return
           send({ type: 'INPUT.COMMIT', channel })
         },
         // 失焦同样收下，否则框里的半截字与实际值长期对不上

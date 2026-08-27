@@ -179,6 +179,9 @@ export function connectEditable<T extends PropTypes>(
             return
           // 拦下"顺带提交外层 form"的默认行为，提交由组件收口
           event.preventDefault()
+          // 按住不放会连发 keydown，这是切换：重复执行会来回翻转
+          if (event.repeat)
+            return
           send({ type: 'EDIT.SUBMIT', src: 'enter' })
           return
         }

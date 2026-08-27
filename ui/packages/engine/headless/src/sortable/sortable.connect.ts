@@ -74,6 +74,9 @@ export function connectSortable<T extends PropTypes>(
     }
     if (event.key === ' ' || event.key === 'Enter') {
       event.preventDefault()
+      // 按住不放会连发 keydown，这是切换：重复执行会来回翻转
+      if (event.repeat)
+        return true
       send({ type: 'KEY.DROP' })
       return true
     }
@@ -150,6 +153,9 @@ export function connectSortable<T extends PropTypes>(
             return
           }
           event.preventDefault()
+          // 按住不放会连发 keydown，这是切换：重复执行会来回翻转
+          if (event.repeat)
+            return
           send({ type: 'ITEM.PICKUP', id })
         },
       })
@@ -195,6 +201,9 @@ export function connectSortable<T extends PropTypes>(
           }
           if (event.key === ' ' || event.key === 'Enter') {
             event.preventDefault()
+            // 按住不放会连发 keydown，这是切换：重复执行会来回翻转
+            if (event.repeat)
+              return
             send({ type: 'ITEM.PICKUP', id })
           }
         },
