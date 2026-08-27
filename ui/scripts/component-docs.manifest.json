@@ -105,6 +105,10 @@
           "name": "排序"
         },
         {
+          "id": "resizable",
+          "name": "可调容器"
+        },
+        {
           "id": "splitter",
           "name": "分栏"
         }

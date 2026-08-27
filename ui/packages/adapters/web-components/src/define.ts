@@ -83,6 +83,7 @@ import { XhProgressElement } from './elements/progress'
 import { XhQrCodeElement } from './elements/qr-code'
 import { XhRadioGroupElement } from './elements/radio-group'
 import { XhRatingElement } from './elements/rating'
+import { XhResizableElement } from './elements/resizable'
 import { XhResultElement } from './elements/result'
 import { XhScrollAreaElement } from './elements/scroll-area'
 import { XhScrollbarElement } from './elements/scrollbar'
@@ -163,6 +164,7 @@ export function defineXhElements(): void {
   defineElement('xh-popconfirm', XhPopconfirmElement, VERSION)
   defineElement('xh-popselect', XhPopselectElement, VERSION)
   defineElement('xh-qr-code', XhQrCodeElement, VERSION)
+  defineElement('xh-resizable', XhResizableElement, VERSION)
   defineElement('xh-result', XhResultElement, VERSION)
   defineElement('xh-segmented', XhSegmentedElement, VERSION)
   defineElement('xh-signature-pad', XhSignaturePadElement, VERSION)
@@ -319,6 +321,7 @@ export {
   XhProgressElement,
   XhRadioGroupElement,
   XhRatingElement,
+  XhResizableElement,
   XhScrollAreaElement,
   XhScrollbarElement,
   XhSegmentedElement,

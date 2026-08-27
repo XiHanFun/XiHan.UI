@@ -82,6 +82,7 @@ import type { ProgressTranslations } from '../progress/progress.types'
 import type { QrCodeTranslations } from '../qr-code/qr-code.types'
 import type { RadioGroupTranslations } from '../radio-group/radio-group.types'
 import type { RatingTranslations } from '../rating/rating.types'
+import type { ResizableTranslations } from '../resizable/resizable.types'
 import type { ResultTranslations } from '../result/result.types'
 import type { ScrollAreaTranslations } from '../scroll-area/scroll-area.types'
 import type { ScrollbarTranslations } from '../scrollbar/scrollbar.types'
@@ -204,6 +205,7 @@ export interface XhTranslationOverrides {
   'qr-code'?: Partial<QrCodeTranslations>
   'radio-group'?: Partial<RadioGroupTranslations>
   'rating'?: Partial<RatingTranslations>
+  'resizable'?: Partial<ResizableTranslations>
   'result'?: Partial<ResultTranslations>
   'scroll-area'?: Partial<ScrollAreaTranslations>
   'scrollbar'?: Partial<ScrollbarTranslations>

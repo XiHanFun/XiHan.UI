@@ -1,0 +1,113 @@
+@layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='resizable'] {
+    --xh-resizable-skin: 1;
+  }
+
+  /* 分工：**尺寸与位移**由连接层每帧写进内联样式（inline-size / block-size / left / top）。
+     这份皮肤一条都不碰那四个——内联优先级更高，写了不但是死声明，
+     还会在拖动的每一帧跟连接层抢位置。皮肤只管定位上下文、把手落位与状态表现。 */
+
+  /* 定位上下文，八向可调靠它才成立：
+     推西边与北边时容器的起点会动，那段位移写成 left / top。relative 的 left / top
+     是视觉位移、元素仍占原位，因此对边钉得住。改成 static 会让这两个方向只变尺寸不移位。 */
+  [data-scope='resizable'][data-part='root'] {
+    position: relative;
+    /* 把层序关在容器里：把手的 1 / 2 只跟彼此比，不跟外面的层号打架 */
+    isolation: isolate;
+    box-sizing: border-box;
+  }
+
+  /* 调整期间关掉选中：把手一按就会把容器里的文字刷成选中态 */
+  [data-scope='resizable'][data-part='root'][data-resizing] {
+    user-select: none;
+  }
+
+  [data-scope='resizable'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  /* 把手压在边上，往外挪半个身位，两侧各留出一点可抓的余量——
+     贴着边只有一两个像素能按到。落位按 data-edge 分派。 */
+  [data-scope='resizable'][data-part='handle'] {
+    position: absolute;
+    z-index: 1;
+    display: block;
+    touch-action: none;
+  }
+
+  [data-scope='resizable'][data-part='handle'][hidden] {
+    display: none;
+  }
+
+  /* 四条边：各占一整条，厚度是可抓的余量 */
+  [data-scope='resizable'][data-part='handle'][data-edge='n'],
+  [data-scope='resizable'][data-part='handle'][data-edge='s'] {
+    inset-inline: var(--xh-resizable-grip, var(--xh-space-2));
+    block-size: var(--xh-resizable-grip, var(--xh-space-2));
+  }
+
+  [data-scope='resizable'][data-part='handle'][data-edge='e'],
+  [data-scope='resizable'][data-part='handle'][data-edge='w'] {
+    inset-block: var(--xh-resizable-grip, var(--xh-space-2));
+    inline-size: var(--xh-resizable-grip, var(--xh-space-2));
+  }
+
+  /* 落位用逻辑属性：e 说的是行尾侧，从右往左排版时它就该落在屏幕左边——
+     机器那边也是把逻辑边翻成物理边再算几何的，两处同源 */
+  [data-scope='resizable'][data-part='handle'][data-edge='n'] {
+    inset-block-start: calc(var(--xh-resizable-grip, var(--xh-space-2)) / -2);
+  }
+
+  [data-scope='resizable'][data-part='handle'][data-edge='s'] {
+    inset-block-end: calc(var(--xh-resizable-grip, var(--xh-space-2)) / -2);
+  }
+
+  [data-scope='resizable'][data-part='handle'][data-edge='e'] {
+    inset-inline-end: calc(var(--xh-resizable-grip, var(--xh-space-2)) / -2);
+  }
+
+  [data-scope='resizable'][data-part='handle'][data-edge='w'] {
+    inset-inline-start: calc(var(--xh-resizable-grip, var(--xh-space-2)) / -2);
+  }
+
+  /* 四个角：压在两条边的交点上，盖过相邻两条边（它们同时动两轴） */
+  [data-scope='resizable'][data-part='handle'][data-edge='ne'],
+  [data-scope='resizable'][data-part='handle'][data-edge='nw'],
+  [data-scope='resizable'][data-part='handle'][data-edge='se'],
+  [data-scope='resizable'][data-part='handle'][data-edge='sw'] {
+    z-index: 2;
+    inline-size: var(--xh-resizable-corner, var(--xh-space-3));
+    block-size: var(--xh-resizable-corner, var(--xh-space-3));
+  }
+
+  [data-scope='resizable'][data-part='handle'][data-edge='nw'] {
+    inset-block-start: calc(var(--xh-resizable-corner, var(--xh-space-3)) / -2);
+    inset-inline-start: calc(var(--xh-resizable-corner, var(--xh-space-3)) / -2);
+  }
+
+  [data-scope='resizable'][data-part='handle'][data-edge='ne'] {
+    inset-block-start: calc(var(--xh-resizable-corner, var(--xh-space-3)) / -2);
+    inset-inline-end: calc(var(--xh-resizable-corner, var(--xh-space-3)) / -2);
+  }
+
+  [data-scope='resizable'][data-part='handle'][data-edge='sw'] {
+    inset-block-end: calc(var(--xh-resizable-corner, var(--xh-space-3)) / -2);
+    inset-inline-start: calc(var(--xh-resizable-corner, var(--xh-space-3)) / -2);
+  }
+
+  [data-scope='resizable'][data-part='handle'][data-edge='se'] {
+    inset-block-end: calc(var(--xh-resizable-corner, var(--xh-space-3)) / -2);
+    inset-inline-end: calc(var(--xh-resizable-corner, var(--xh-space-3)) / -2);
+  }
+
+  [data-scope='resizable'][data-part='handle']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: var(--xh-ring-offset);
+  }
+
+  /* 没开放的边不显示把手：留着一个抓不动的区域只会让人反复去试 */
+  [data-scope='resizable'][data-part='handle'][data-disabled] {
+    display: none;
+  }
+}
