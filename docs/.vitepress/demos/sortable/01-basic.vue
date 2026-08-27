@@ -8,7 +8,7 @@ const ids = ref(["写方案", "评审", "实现", "上线"]);
 
 <template>
   <XhSortableRoot v-model:ids="ids" style="inline-size: 100%">
-    <XhSortableItem v-for="id in ids" :key="id" :item-id="id" style="padding: 8px 12px; border: 1px solid var(--xh-border-default)">
+    <XhSortableItem v-for="id in ids" :key="id" :item-id="id" style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid var(--xh-border-default)">
       <XhSortableItemHandle :item-id="id">⠿</XhSortableItemHandle>
       <span>{{ id }}</span>
     </XhSortableItem>

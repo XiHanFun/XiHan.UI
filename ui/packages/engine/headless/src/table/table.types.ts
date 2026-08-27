@@ -280,8 +280,12 @@ export interface TableSchema extends MachineSchema {
     | { type: 'SORT.TOGGLE', value: string, append: boolean }
     /** 整体改写列偏好；value 缺席即清空，回到作者定义的原样。 */
     | { type: 'COLUMN_PREF.SET', value?: TableColumnPreference }
-    /** 按住改宽把手。startWidth 由连接层在按下那一刻量出来，机器不碰 DOM。 */
-    | { type: 'COLUMN_RESIZE.START', columnId: string, startWidth: number, originX: number }
+    /**
+     * 按住改宽把手。宽度由连接层在按下那一刻量出来，机器不碰 DOM。
+     * `snapshot` 是**全部列**此刻的实际宽度：不把它们一起钉住的话，
+     * 改一列会让其余列重新分配剩余空间，看起来像整排列宽都乱了。
+     */
+    | { type: 'COLUMN_RESIZE.START', columnId: string, startWidth: number, originX: number, snapshot: Record<string, number> }
     | { type: 'COLUMN_RESIZE.MOVE', clientX: number }
     | { type: 'COLUMN_RESIZE.END' }
     | { type: 'COLUMN_RESIZE.CANCEL' }

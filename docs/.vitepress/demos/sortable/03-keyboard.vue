@@ -16,7 +16,7 @@ const log = ref<string[]>([]);
     @sort="log.unshift(`${$event.id}：第 ${$event.from + 1} 位 → 第 ${$event.to + 1} 位`)"
     @drag-end="$event.canceled && log.unshift(`${$event.id}：已取消`)"
   >
-    <XhSortableItem v-for="id in ids" :key="id" :item-id="id" style="padding: 8px 12px; border: 1px solid var(--xh-border-default)">
+    <XhSortableItem v-for="id in ids" :key="id" :item-id="id" style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid var(--xh-border-default)">
       <XhSortableItemHandle :item-id="id">⠿</XhSortableItemHandle>
       <span>{{ id }}</span>
     </XhSortableItem>

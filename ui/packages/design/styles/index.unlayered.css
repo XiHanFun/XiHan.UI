@@ -19487,12 +19487,9 @@ input[data-scope='mention'][data-part='input'] {
   flex-wrap: wrap;
 }
 
-[data-scope='sortable'][data-part='item'] {
-  display: flex;
-  align-items: center;
-  gap: var(--xh-sortable-item-gap, var(--xh-space-2));
-  border-radius: var(--xh-sortable-item-radius, var(--xh-shape-control));
-}
+/* 项里面放什么、怎么排全是使用者的事：这里不给 display 也不给间距。
+   给了会盖掉使用者自己的单元格布局——网格里的一格被压成 flex 行之后就不再撑满，
+   看起来像是尺寸算错了。皮肤只管拖起来那一项的视觉反馈。 */
 
 /* 让位期间关掉过渡，跟手的那一项才不会慢半拍粘在指针后面。
    其余项反过来要过渡：它们是被让开的，瞬移会看不出发生了什么。 */
@@ -19555,7 +19552,6 @@ input[data-scope='mention'][data-part='input'] {
 /* 给了 display 的角色节点必须补这条：display 声明会盖掉 UA 的 [hidden]{display:none}，
    不补的话作者给节点加 hidden 后它照样显示 */
 [data-scope='sortable'][data-part='root'][hidden],
-[data-scope='sortable'][data-part='item'][hidden],
 [data-scope='sortable'][data-part='item-handle'][hidden] {
   display: none;
 }
