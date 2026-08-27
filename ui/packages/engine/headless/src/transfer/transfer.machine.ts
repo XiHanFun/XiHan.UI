@@ -1,5 +1,6 @@
 import type { ContextFacade, Params, PropFn } from '@xihan-ui/machine'
 import type { TransferSchema, TransferSide } from './transfer.types'
+import { applySelection } from '@xihan-ui/behavior'
 import { setup } from '@xihan-ui/machine'
 import {
   transferCheckedValues,
@@ -85,6 +86,8 @@ export const transferMachine = createMachine({
       isEqual: sameValues,
       onChange: value => prop('onSelectionChange')?.({ value }),
     })),
+    selectionAnchor: cell<string | null>(() => ({ defaultValue: null })),
+    selectionBaseline: cell<string[] | null>(() => ({ defaultValue: null })),
     // 搜索串与焦点锚点都不受控、不对外通知：前者只影响看得见什么，后者只服务 roving tabindex
     sourceQuery: cell<string>(() => ({ defaultValue: '' })),
     targetQuery: cell<string>(() => ({ defaultValue: '' })),
@@ -134,9 +137,31 @@ export const transferMachine = createMachine({
         const side = transferSideOf(context.get('value'), e.value)
         if (!transferIsCheckable(side, prop('oneWay')))
           return
-        if (!operableOn({ prop, context }, side).includes(e.value))
+        const order = operableOn({ prop, context }, side)
+        if (!order.includes(e.value))
           return
+
+        // 按住 Shift 选一段。锚点不在这一侧的可操作序里就退化成普通切换——
+        // 两侧是各自独立的列表，跨着取「一段」没有意义
+        const anchor = context.get('selectionAnchor')
+        if (e.extend && anchor != null && order.includes(anchor)) {
+          const baseline = context.get('selectionBaseline') ?? context.get('selection')
+          context.set('selectionBaseline', baseline)
+          const next = applySelection({
+            state: { selected: baseline, anchor },
+            mode: 'multiple',
+            value: e.value,
+            extend: true,
+            additive: true,
+            items: order,
+          })
+          context.set('selection', [...next.selected])
+          return
+        }
+
         context.set('selection', transferToggleValue(context.get('selection'), e.value))
+        context.set('selectionAnchor', e.value)
+        context.set('selectionBaseline', null)
       },
 
       toggleAll: ({ prop, context, event }) => {

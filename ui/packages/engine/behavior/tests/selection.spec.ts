@@ -145,8 +145,17 @@ describe('全选 / 全不选', () => {
     expect(toggleSelectAll(on, withDisabled).selected).toEqual([])
   })
 
-  it('一个可选项都没有时清空', () => {
-    expect(toggleSelectAll(state(['a']), { items: ITEMS, isDisabled: () => true }).selected).toEqual([])
+  it('一个可选项都没有时原样返回', () => {
+    const before = state(['a'])
+    expect(toggleSelectAll(before, { items: ITEMS, isDisabled: () => true })).toBe(before)
+  })
+
+  it('取消时留下已选中的禁用项——用户改不动它们，全选也不该替他们改', () => {
+    const withDisabled = { items: ITEMS, isDisabled: (v: string) => v === 'c' }
+    // c 是禁用的但已被选中（比如是外部塞进来的）
+    const on = toggleSelectAll(state(['c']), withDisabled)
+    expect(on.selected).toEqual(['c', 'a', 'b', 'd', 'e'])
+    expect(toggleSelectAll(on, withDisabled).selected).toEqual(['c'])
   })
 
   it('不动锚点：全选不是「点了某一项」', () => {

@@ -175,7 +175,7 @@ leaf-orientation 按结构判据横排「子节点全是叶子」的那层；要
 | `setSelection` | `(next: string[]) => void` |  |
 | `expand` | `(value: string) => void` |  |
 | `collapse` | `(value: string) => void` |  |
-| `select` | `(value: string) => void` | 单选替换、复选切换，与点击同一语义。 |
+| `select` | `(value: string, options?: { extend?: boolean }) => void` | 选中某个节点。extend 为真时选中锚点到这一节点那一段（仅复选、且非级联）。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['element']` |  |
 | `getTreeProps` | `() => T['element']` |  |

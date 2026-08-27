@@ -155,6 +155,16 @@ export interface TreeSchema extends MachineSchema {
     selection: string[]
     /** 焦点位于树内时的瞬态锚点，焦点离开即清空。 */
     focusedValue: string | null
+    /**
+     * 范围选的起点。与 focusedValue 是两回事：那个跟着焦点跑、离场即清，
+     * 这个只在选中发生时挪，Shift 那一段从它算起。
+     */
+    selectionAnchor: string | null
+    /**
+     * 按住 Shift 之前的那份选中集。每一下 Shift 都从它重算，
+     * 拿上一次的结果继续并的话，选区就只能越拉越大、往回点收不回来。
+     */
+    selectionBaseline: string[] | null
   }
   computed: Record<string, never>
   refs: TreeRefs
@@ -169,7 +179,7 @@ export interface TreeSchema extends MachineSchema {
     /** 整体改写选中集合。 */
     | { type: 'SELECTION.SET', value: string[] }
     /** 单选替换、复选切换，由 selectionMode 决定。 */
-    | { type: 'NODE.SELECT', value: string }
+    | { type: 'NODE.SELECT', value: string, extend?: boolean }
     | { type: 'NODE.FOCUS', value: string }
     /** 焦点离开树，或持有焦点的节点被移出 DOM（浏览器此时不派 focusout，由适配器如实上报）。 */
     | { type: 'TREE.BLUR' }
@@ -213,7 +223,8 @@ export interface TreeApi<T extends PropTypes = PropTypes> {
   expand: (value: string) => void
   collapse: (value: string) => void
   /** 单选替换、复选切换，与点击同一语义。 */
-  select: (value: string) => void
+  /** 选中某个节点。extend 为真时选中锚点到这一节点那一段（仅复选、且非级联）。 */
+  select: (value: string, options?: { extend?: boolean }) => void
   getRootProps: () => T['element']
   getLabelProps: () => T['element']
   getTreeProps: () => T['element']

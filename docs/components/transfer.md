@@ -155,7 +155,7 @@ oneWay 把往回搬那条路整个封死，右侧不再接受勾选，往回的�
 | `setValue` | `(next: string[]) => void` |  |
 | `setSelection` | `(next: string[]) => void` |  |
 | `setQuery` | `(side: TransferSide, query: string) => void` |  |
-| `toggle` | `(value: string) => void` |  |
+| `toggle` | `(value: string, options?: { extend?: boolean }) => void` | 切换某一项的勾选。extend 为真时选中锚点到这一项那一段（同侧才成立）。 |
 | `toggleAll` | `(side: TransferSide) => void` |  |
 | `move` | `(to: TransferSide) => void` | 程序化搬运；焦点安排不在这里做，那要知道是哪个节点触发的。 |
 | `getRootProps` | `() => T['element']` |  |

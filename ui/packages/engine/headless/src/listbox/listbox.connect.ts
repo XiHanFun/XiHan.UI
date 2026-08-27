@@ -1,8 +1,8 @@
-import type { NavIntent } from '@xihan-ui/behavior'
+import type { NavIntent, SelectionOrder } from '@xihan-ui/behavior'
 import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { ListboxApi, ListboxItemProps, ListboxNodeMeta, ListboxSchema } from './listbox.types'
-import { focusItem, indexOfValue, isItemDisabled, ITEM_VALUE_ATTR, itemValue, matchTypeahead, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/behavior'
+import { applySelection, focusItem, indexOfValue, isItemDisabled, ITEM_VALUE_ATTR, itemValue, matchTypeahead, navigateItems, navIntentFromKey, queryItems, toggleSelectAll } from '@xihan-ui/behavior'
 import { contains, dataAttr } from '@xihan-ui/kernel'
 import { listboxAnatomy, listboxItemQuery, listboxItemText } from './listbox.anatomy'
 import { listboxSelectionMode } from './listbox.machine'
@@ -91,31 +91,31 @@ export function connectListbox<T extends PropTypes>(
   }
 
   /** 区间连选：整段替换原选中，段内禁用条目不入选。 */
-  const extendTo = (content: HTMLElement, to: string): void => {
+  /** 从标记里取全序与禁用判定：集合怎么算归原语，谁在前谁在后归 DOM。 */
+  const orderOf = (content: HTMLElement): SelectionOrder => {
     const list = items(content)
-    const from = indexOfValue(list, anchorValue ?? to)
-    const target = indexOfValue(list, to)
-    if (from < 0 || target < 0)
-      return
-    const [lo, hi] = from <= target ? [from, target] : [target, from]
-    const range = list
-      .slice(lo, hi + 1)
-      .filter(el => !isItemDisabled(el))
-      .map(itemValue)
-      .filter((v): v is string => v != null)
-    send({ type: 'VALUE.SET', value: range })
+    const disabled = new Set(list.filter(el => isItemDisabled(el)).map(itemValue).filter((v): v is string => v != null))
+    return {
+      items: list.map(itemValue).filter((v): v is string => v != null),
+      isDisabled: (value: string) => disabled.has(value),
+    }
+  }
+
+  const extendTo = (content: HTMLElement, to: string): void => {
+    const next = applySelection({
+      state: { selected: value, anchor: anchorValue ?? to },
+      mode: 'multiple',
+      value: to,
+      extend: true,
+      ...orderOf(content),
+    })
+    send({ type: 'VALUE.SET', value: [...next.selected] })
   }
 
   /** 全选/取消全选；取消时保留选中的禁用条目。 */
   const selectAll = (content: HTMLElement): void => {
-    const usable = items(content)
-      .filter(el => !isItemDisabled(el))
-      .map(itemValue)
-      .filter((v): v is string => v != null)
-    if (!usable.length)
-      return
-    const all = usable.every(v => isSelected(v))
-    send({ type: 'VALUE.SET', value: all ? value.filter(v => !usable.includes(v)) : [...value, ...usable] })
+    const next = toggleSelectAll({ selected: value, anchor: anchorValue }, orderOf(content))
+    send({ type: 'VALUE.SET', value: [...next.selected] })
   }
 
   return {

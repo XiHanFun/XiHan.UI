@@ -16,6 +16,11 @@ export const EMPTY_SELECTION: SelectionState = { selected: [], anchor: null }
  * 锚点不动是 Shift 的关键：连着按 Shift 才能从同一个起点反复改选区大小。
  * 还没有锚点时 Shift 退化成裸点击——没有起点，「一段」无从谈起。
  *
+ * **并入那一路（`extend` + `additive`）要传基线，不能传当下的选中集。**
+ * 调用方在第一次按住 Shift 时把那一刻的选中拍成基线，后面每一下都从它重算；
+ * 拿上一次的结果继续并，选区就只能越拉越大、往回点收不回来。
+ * 复选框语义的列表（表格、树）走的是这一路：既要留住先前勾的，又要能收缩。
+ *
  * `single` 忽略两个修饰键，恒是换成这一项：多选语义在单选模式下没有意义。
  * `none` 原样返回。
  */
@@ -44,17 +49,23 @@ export function applySelection(input: SelectionInput): SelectionState {
 /**
  * 全选 / 全不选。
  *
- * 当前可选项已经全在集合里就整段清空，否则整段选上——同一个键来回按能开能关。
- * 只动可选项：禁用的项既不会被选上，也不会因为它没被选上而让「已全选」判不成立。
+ * 当前可选项已经全在集合里就整段取消，否则整段选上——同一个键来回按能开能关。
+ *
+ * 只动可选项，两头都是：禁用的项不会被选上；取消时**已经选中的禁用项留着**——
+ * 用户自己改不动它们，全选这一下也不该替他们改。它们也不参与「算不算已全选」的判定，
+ * 否则一个选不上的禁用项就能让这个键永远只选不清。
  */
 export function toggleSelectAll(state: SelectionState, order: SelectionOrder): SelectionState {
   const selectable = order.items.filter(value => !order.isDisabled?.(value))
   if (selectable.length === 0)
-    return { selected: [], anchor: state.anchor }
+    return state
 
   const chosen = new Set(state.selected)
   const all = selectable.every(value => chosen.has(value))
-  return { selected: all ? [] : selectable, anchor: state.anchor }
+  return {
+    selected: all ? state.selected.filter(value => !selectable.includes(value)) : union(state.selected, selectable),
+    anchor: state.anchor,
+  }
 }
 
 /** 清空。锚点一并清掉：选区没了，起点也就没有意义。 */

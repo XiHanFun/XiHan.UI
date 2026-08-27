@@ -940,3 +940,61 @@ describe('连打检索', () => {
     expect(focused()).toBe('license')
   })
 })
+
+describe('范围选', () => {
+  it('按住 Shift 选中锚点到这一节点那一段，按屏幕上的可见序取', () => {
+    const h = mount({ multiple: true, defaultExpandedValue: ['src'] })
+    // 可见序：src / index / utils / readme / docs / license
+    h.api().select('index')
+    h.api().select('docs', { extend: true })
+    // readme 是禁用节点，占着顺序位置但不被选进去
+    expect(h.selected()).toEqual(['index', 'utils', 'readme', 'docs'])
+  })
+
+  it('折叠起来的子节点不在可见序里，一段选不到它们', () => {
+    const h = mount({ multiple: true })
+    // 全折叠时可见序只有三个根
+    h.api().select('src')
+    h.api().select('license', { extend: true })
+    expect(h.selected()).toEqual(['src', 'docs', 'license'])
+  })
+
+  it('锚点不动、且能收缩——每一下都从基线重算', () => {
+    const h = mount({ multiple: true })
+    h.api().select('src')
+    h.api().select('license', { extend: true })
+    expect(h.selected()).toEqual(['src', 'docs', 'license'])
+    h.api().select('docs', { extend: true })
+    expect(h.selected()).toEqual(['src', 'docs'])
+  })
+
+  it('那一段并进先前勾的，不清掉它们', () => {
+    const h = mount({ multiple: true })
+    h.api().select('license')
+    h.api().select('src')
+    h.api().select('docs', { extend: true })
+    expect(h.selected()).toEqual(['license', 'src', 'docs'])
+  })
+
+  it('单选不认范围选', () => {
+    const h = mount()
+    h.api().select('src')
+    h.api().select('license', { extend: true })
+    expect(h.selected()).toEqual(['license'])
+  })
+
+  it('级联那一路不接范围选：勾一个本来就带一片，再叠一段会难以预料', () => {
+    const h = mount({ multiple: true, cascade: true, defaultExpandedValue: ['src'] })
+    h.api().select('index')
+    const before = h.selected()
+    h.api().select('docs', { extend: true })
+    // 走的是级联的普通切换，不是范围选
+    expect(h.selected()).not.toEqual([...before, 'utils', 'readme', 'docs'])
+  })
+
+  it('还没有锚点时退化成普通的切换', () => {
+    const h = mount({ multiple: true })
+    h.api().select('docs', { extend: true })
+    expect(h.selected()).toEqual(['docs'])
+  })
+})
