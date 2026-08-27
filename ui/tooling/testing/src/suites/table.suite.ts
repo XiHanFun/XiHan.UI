@@ -21,22 +21,29 @@ const RESIZABLE_COLUMNS: TableColumnDef[] = [
   { id: 'size', label: 'Size', sortable: true },
 ]
 
-/** 给 name 列的表头挂一个改宽把手。只有列宽用例用它。 */
-function withResizeHandle(base: FixtureNode): FixtureNode {
+/** 列换位用例专用：三列都可换位、都不冻结，可拖的那一段就是这三列。 */
+const REORDERABLE_COLUMNS: TableColumnDef[] = [
+  { id: 'select', label: 'Select', width: 40, reorderable: true },
+  { id: 'name', label: 'Name', sortable: true, reorderable: true },
+  { id: 'size', label: 'Size', sortable: true, reorderable: true },
+]
+
+/** 给 name 列的表头挂一个把手。改宽与换位两组用例各挂各的。 */
+function withHeaderHandle(base: FixtureNode, part: string): FixtureNode {
   return {
     ...base,
-    children: base.children?.map(child => mapColumnHeader(child)),
+    children: base.children?.map(child => mapColumnHeader(child, part)),
   }
 }
 
-function mapColumnHeader(node: FixtureNode): FixtureNode {
+function mapColumnHeader(node: FixtureNode, part: string): FixtureNode {
   if (node.part === 'column-header' && node.attrs?.value === 'name') {
     return {
       ...node,
-      children: [...(node.children ?? []), { part: 'column-resize-trigger', tag: 'span', attrs: { value: 'name' } }],
+      children: [...(node.children ?? []), { part, tag: 'span', attrs: { value: 'name' } }],
     }
   }
-  return node.children?.length ? { ...node, children: node.children.map(mapColumnHeader) } : node
+  return node.children?.length ? { ...node, children: node.children.map(child => mapColumnHeader(child, part)) } : node
 }
 
 /**
@@ -198,6 +205,14 @@ function columnsSorted(...entries: readonly (readonly [string, 'ascending' | 'de
       'data-sort-index': String(i + 1),
     }
   })
+}
+
+/**
+ * 三列的列号期望。参数是此刻的列序，产出按 DOM 里 select / name / size 的固定次序排：
+ * 表头节点在 DOM 里不动，换位只改它们报出的 aria-colindex。
+ */
+function columnsAt(...order: readonly string[]): readonly AttrExpectation[] {
+  return ['select', 'name', 'size'].map(id => ({ 'aria-colindex': String(order.indexOf(id) + 1) }))
 }
 
 /** 行级 roving：断言整个表体只留一个 Tab 停靠点，没有锚点时由 body 兜底。 */
@@ -592,7 +607,7 @@ export const tableSuite: ConformanceSuite = {
       covers: ['table.kbd.column-resize', 'table.kbd.column-resize-large'],
       // 只在这个用例里给第一列挂改宽把手：加进基准 fixture 会动到其余用例的
       // order 与 counts 断言，而它们跟列宽没关系
-      fixture: (base: FixtureNode): FixtureNode => withResizeHandle(base),
+      fixture: (base: FixtureNode): FixtureNode => withHeaderHandle(base, 'column-resize-trigger'),
       props: props({ columns: RESIZABLE_COLUMNS }),
       steps: [
         { kind: 'focus', part: 'column-resize-trigger' },
@@ -611,6 +626,105 @@ export const tableSuite: ConformanceSuite = {
           key: 'ArrowRight',
           modifiers: ['Shift'],
           expect: { events: [{ type: 'column-preference-change', detail: { value: { widths: { name: 240 } } } }] },
+        },
+      ],
+    },
+    {
+      name: '列换位：方向键一次挪一位，焦点留在把手上；挪到段首再往前就不动，也不回绕',
+      spec: { apg: `${APG}#roles_states_properties` },
+      covers: ['table.kbd.column-move'],
+      // 只在换位用例里给 name 列挂拖拽把手：加进基准 fixture 会动到其余用例的
+      // order 与 counts 断言，而它们跟换位没关系
+      fixture: (base: FixtureNode): FixtureNode => withHeaderHandle(base, 'column-drag-trigger'),
+      props: props({ columns: REORDERABLE_COLUMNS }),
+      initial: {
+        parts: {
+          'column-drag-trigger': {
+            'role': 'button',
+            'aria-label': 'Reorder column Name',
+            'aria-roledescription': 'draggable column',
+            'aria-disabled': 'false',
+            'tabindex': '0',
+            'data-disabled': null,
+            'data-dragging': null,
+          },
+          'column-header': columnsAt('select', 'name', 'size'),
+        },
+      },
+      steps: [
+        { kind: 'focus', part: 'column-drag-trigger' },
+        {
+          kind: 'key',
+          key: 'ArrowRight',
+          expect: {
+            // 按一下就提交完，不进拖动态，焦点也不交给别人
+            activeElement: { part: 'column-drag-trigger', exact: true },
+            parts: {
+              'column-header': columnsAt('select', 'size', 'name'),
+              'column-drag-trigger': { 'data-dragging': null },
+            },
+            events: [{ type: 'column-preference-change', detail: { value: { order: ['select', 'size', 'name'] } } }],
+          },
+        },
+        {
+          kind: 'key',
+          key: 'ArrowLeft',
+          expect: {
+            parts: { 'column-header': columnsAt('select', 'name', 'size') },
+            events: [{ type: 'column-preference-change', detail: { value: { order: ['select', 'name', 'size'] } } }],
+          },
+        },
+        {
+          kind: 'key',
+          key: 'ArrowLeft',
+          expect: {
+            parts: { 'column-header': columnsAt('name', 'select', 'size') },
+            events: [{ type: 'column-preference-change', detail: { value: { order: ['name', 'select', 'size'] } } }],
+          },
+        },
+        // 已经在段首：列序不动，也不发事件
+        {
+          kind: 'key',
+          key: 'ArrowLeft',
+          expect: {
+            parts: { 'column-header': columnsAt('name', 'select', 'size') },
+            events: [],
+          },
+        },
+      ],
+    },
+    {
+      name: '列换位：Home / End 直接挪到可拖那一段的段首 / 段末，已经在那儿就不动',
+      spec: { apg: `${APG}#roles_states_properties` },
+      covers: ['table.kbd.column-move-edge'],
+      fixture: (base: FixtureNode): FixtureNode => withHeaderHandle(base, 'column-drag-trigger'),
+      props: props({ columns: REORDERABLE_COLUMNS }),
+      steps: [
+        { kind: 'focus', part: 'column-drag-trigger' },
+        {
+          kind: 'key',
+          key: 'End',
+          expect: {
+            parts: { 'column-header': columnsAt('select', 'size', 'name') },
+            events: [{ type: 'column-preference-change', detail: { value: { order: ['select', 'size', 'name'] } } }],
+          },
+        },
+        {
+          kind: 'key',
+          key: 'Home',
+          expect: {
+            parts: { 'column-header': columnsAt('name', 'select', 'size') },
+            events: [{ type: 'column-preference-change', detail: { value: { order: ['name', 'select', 'size'] } } }],
+          },
+        },
+        // 已经是段首那一列：不动也不发事件
+        {
+          kind: 'key',
+          key: 'Home',
+          expect: {
+            parts: { 'column-header': columnsAt('name', 'select', 'size') },
+            events: [],
+          },
         },
       ],
     },
@@ -703,6 +817,38 @@ export const tableSuite: ConformanceSuite = {
         {
           kind: 'key',
           key: 'Space',
+          expect: {
+            parts: {
+              'row': rowsSelected(),
+              'select-all-trigger': { 'aria-checked': 'false', 'data-state': 'unchecked' },
+            },
+          },
+        },
+      ],
+    },
+    {
+      name: '表体里 Ctrl / Cmd + A 与全选把手同义：先整段选上，再按一次整段清空',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      props: props({ selectionMode: 'multiple' }),
+      covers: ['table.kbd.select-all-body'],
+      steps: [
+        { kind: 'focus', part: 'body', expect: { activeElement: { part: 'row[1]', exact: true } } },
+        {
+          kind: 'key',
+          key: 'a',
+          modifiers: ['Control'],
+          expect: {
+            parts: {
+              // c 禁用选不上，也不算进全选把手的基数
+              'row': rowsSelected('a', 'b', 'd'),
+              'select-all-trigger': { 'aria-checked': 'true', 'data-state': 'checked' },
+            },
+          },
+        },
+        {
+          kind: 'key',
+          key: 'a',
+          modifiers: ['Meta'],
           expect: {
             parts: {
               'row': rowsSelected(),

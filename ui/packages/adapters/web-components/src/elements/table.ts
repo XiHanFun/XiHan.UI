@@ -76,6 +76,9 @@ const FOOTER_SELECTOR = '[data-xh-part="footer"]'
  * @csspart select-all-trigger - 全选把手，三态（aria-checked 半选为 mixed），自占一个 Tab 位
  * @csspart row-select-trigger - 行选择把手（aria-hidden 且不占 Tab 位，键盘那一路由 Space 承担）
  * @csspart sort-trigger - 排序把手，自占一个 Tab 位；按住 Shift 点是追加到排序链
+ * @csspart column-resize-trigger - 列宽把手，自占一个 Tab 位；方向键改一步、按住 Shift 是大步
+ * @csspart column-drag-trigger - 列拖拽把手，自占一个 Tab 位；方向键移一位、Home/End 移到可拖区段首末
+ * @csspart live-region - 视觉隐藏的播报区，列拖拽过程的读屏文案写在这里；须写在 root 之外（root 是 role=grid，它的子节点只能是 row 与 rowgroup）
  * @csspart expand-trigger - 展开把手（aria-hidden 且不占 Tab 位，键盘那一路由左右方向键承担）
  * @csspart expanded-row - role=row 详情行，须自带 value 属性与它所属的数据行配对，内部须放一个 cell 承载详情；收起时 hidden
  * @csspart empty - 空态节点，表体为空且不在加载时显形
@@ -225,6 +228,20 @@ export class XhTableElement extends XhElement {
     return { value: this.identityOf(el, COLUMN_HEADER_SELECTOR) }
   }
 
+  /**
+   * 播报区节点。第一次用时建出来挂在元素末尾，之后一直复用——
+   * 读屏不播报后插入的节点，等到拾起才建等于没有。
+   */
+  private ensureLiveRegion(): HTMLElement {
+    const existing = this.querySelector<HTMLElement>(`:scope > [data-xh-part="live-region"]`)
+    if (existing)
+      return existing
+    const el = this.ownerDocument.createElement('div')
+    el.setAttribute('data-xh-part', 'live-region')
+    this.append(el)
+    return el
+  }
+
   /** 按祖先链现查行所在的区段。 */
   private sectionOf(el: HTMLElement): 'header' | 'body' | 'footer' {
     const header = el.closest<HTMLElement>(HEADER_SELECTOR)
@@ -285,8 +302,17 @@ export class XhTableElement extends XhElement {
     putAll('row-select-trigger', el => api.getRowSelectTriggerProps(this.rowOf(el)))
     putAll('sort-trigger', el => api.getSortTriggerProps(this.columnOf(el)))
     putAll('column-resize-trigger', el => api.getColumnResizeTriggerProps(this.columnOf(el)))
+    putAll('column-drag-trigger', el => api.getColumnDragTriggerProps(this.columnOf(el)))
     putAll('expand-trigger', el => api.getExpandTriggerProps(this.rowOf(el)))
     putAll('expanded-row', el => api.getExpandedRowProps({ value: el.getAttribute('value') ?? '' }))
+
+    // 播报区由元素自己挂，不收作者写的：它必须落在 root 之外
+    // （root 是 role=grid，塞活动区域进去是 aria-required-children），
+    // 而作者是把整棵子树写在元素里的，位置由不得约束。挂在元素自己身上两个条件都满足。
+    const live = this.ensureLiveRegion()
+    this.spreader.spread(live, api.getLiveRegionProps() as Record<string, unknown>)
+    // 播报文案由元素写，不经属性铺开：它是文本内容不是属性
+    live.textContent = this.ctrl.service.context.get('announcement')
 
     // 行的禁用只认 rows 里的声明并归一到 aria-disabled，摘掉作者写在行上的原生 disabled
     for (const el of this.getParts('row')) {

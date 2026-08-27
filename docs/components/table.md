@@ -135,12 +135,18 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 
 <XhDemo src="table/19-range-selection" />
 
+### 拖拽换列位
+
+列上标了 reorderable 才认拖拽把手；也可以 Tab 到它用方向键挪，Home / End 到两头
+
+<XhDemo src="table/20-column-drag" />
+
 ## 产物
 
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-table>` |
-| Vue 组件 | `XhTableBody` `XhTableCaption` `XhTableCell` `XhTableColumnHeader` `XhTableColumnResizeTrigger` `XhTableEmpty` `XhTableExpandTrigger` `XhTableExpandedRow` `XhTableFooter` `XhTableHeader` `XhTableLoadingState` `XhTableRoot` `XhTableRow` `XhTableRowSelectTrigger` `XhTableSelectAllTrigger` `XhTableSortTrigger` |
+| Vue 组件 | `XhTableBody` `XhTableCaption` `XhTableCell` `XhTableColumnDragTrigger` `XhTableColumnHeader` `XhTableColumnResizeTrigger` `XhTableEmpty` `XhTableExpandTrigger` `XhTableExpandedRow` `XhTableFooter` `XhTableHeader` `XhTableLoadingState` `XhTableRoot` `XhTableRow` `XhTableRowSelectTrigger` `XhTableSelectAllTrigger` `XhTableSortTrigger` |
 | 组合式函数 | `useTable` |
 | 状态机 | `tableMachine` |
 | 皮肤 | `@xihan-ui/styles/table.css` |
@@ -149,7 +155,7 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="table"`：**`root`** · `header` · **`body`** · `footer` · `row` · `column-header` · `cell` · `caption` · `select-all-trigger` · `row-select-trigger` · `sort-trigger` · `column-resize-trigger` · `expand-trigger` · `expanded-row` · `empty` · `loading-state`
+`data-scope="table"`：**`root`** · `header` · **`body`** · `footer` · `row` · `column-header` · `cell` · `caption` · `select-all-trigger` · `row-select-trigger` · `sort-trigger` · `column-resize-trigger` · `column-drag-trigger` · `expand-trigger` · `expanded-row` · `empty` · `loading-state` · `live-region`
 
 ## Props
 
@@ -215,9 +221,9 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 
 状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
-**状态**：`idle` · `resizing`
+**状态**：`idle` · `resizing` · `columnDragging`
 
-**事件**：`SORT.SET` · `SORT.TOGGLE` · `COLUMN_PREF.SET` · `COLUMN_RESIZE.START` · `COLUMN_RESIZE.MOVE` · `COLUMN_RESIZE.END` · `COLUMN_RESIZE.CANCEL` · `COLUMN_RESIZE.STEP` · `COLUMN_PREF.PATCH` · `SELECTION.SET` · `ROW.SELECT` · `SELECTION.ALL_TOGGLE` · `EXPANDED.SET` · `ROW.EXPAND` · `ROW.COLLAPSE` · `ROW.EXPAND_TOGGLE` · `ROW.FOCUS` · `TABLE.BLUR`
+**事件**：`SORT.SET` · `SORT.TOGGLE` · `COLUMN_PREF.SET` · `COLUMN_RESIZE.START` · `COLUMN_RESIZE.MOVE` · `COLUMN_RESIZE.END` · `COLUMN_RESIZE.CANCEL` · `COLUMN_RESIZE.STEP` · `COLUMN_DRAG.START` · `COLUMN_DRAG.MOVE` · `COLUMN_DRAG.END` · `COLUMN_DRAG.CANCEL` · `COLUMN.MOVE_BY` · `COLUMN_PREF.PATCH` · `SELECTION.SET` · `ROW.SELECT` · `SELECTION.ALL_TOGGLE` · `EXPANDED.SET` · `ROW.EXPAND` · `ROW.COLLAPSE` · `ROW.EXPAND_TOGGLE` · `ROW.FOCUS` · `TABLE.BLUR`
 
 ## connect API
 
@@ -226,6 +232,9 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `columns` | `readonly TableColumn[]` | 生效的列：前缀列在前、数据列在后，各自自报 kind。 列号、渲染顺序都以它为准；不要前缀列时它与作者给的那份一模一样。 |
+| `draggableColumns` | `readonly string[]` | 可以拖着换位的那一段列 id。声明了 `reorderable`、不是冻结列、且彼此相连。 冻结列与不可拖的列是屏障，把可拖范围切成段；这里给的是最长的那一段。 拿它决定渲不渲把手，与库内部判「能不能落」的口径是同一份。 |
+| `dropTarget` | `TableDropTarget \| null` | 此刻的落点；松手就落在这儿。没有合法落点时是 null，指示线跟着消失。 |
+| `announcement` | `string` | 读屏播报文本。渲进 live-region，不进视觉版面。 |
 | `rows` | `readonly TableRowDef[]` | 作者给的行定义。 |
 | `visibleRows` | `readonly TableVisibleRow[]` | 展开摊平后的可见行序列（详情行插在它所属数据行之后）。 |
 | `sort` | `TableSortDescriptor[]` |  |
@@ -271,10 +280,12 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 | `getRowSelectTriggerProps` | `(props: TableRowProps) => T['element']` |  |
 | `getSortTriggerProps` | `(props: TableColumnProps) => T['element']` |  |
 | `getColumnResizeTriggerProps` | `(props: TableColumnProps) => T['element']` | 列宽把手。只有 resizable 的列才渲它。 |
+| `getColumnDragTriggerProps` | `(props: TableColumnProps) => T['element']` | 列拖拽把手。只有 reorderable 的列才渲它。 |
 | `getExpandTriggerProps` | `(props: TableRowProps) => T['element']` |  |
 | `getExpandedRowProps` | `(props: TableRowProps) => T['element']` |  |
 | `getEmptyProps` | `() => T['element']` |  |
 | `getLoadingStateProps` | `() => T['element']` |  |
+| `getLiveRegionProps` | `() => T['element']` | 拖动过程的读屏播报区。视觉隐藏，文本从 `announcement` 取。 它必须在拖动开始之前就在 DOM 上——读屏不播报后插入的节点。 |
 
 ## 键盘
 
@@ -292,8 +303,11 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 | `ArrowLeft` | focus on 可展开且已展开的行（dir=rtl 时改由 ArrowRight 承担） | 就地收起当前行，焦点不动；其余情形什么都不做且不吞键 |
 | `Enter` / `Space` | focus on sort-trigger, 该列 sortable | 排序方向按 升序 → 降序 → 不排序 循环；按住 Shift 是追加到排序链而不是替换整条链 |
 | `Enter` / `Space` | focus on select-all-trigger, selectionMode=multiple | 当前可选行全选中就整段清空，否则整段选上；三态由 aria-checked 报出（半选为 mixed） |
+| `Ctrl+A` / `Cmd+A` | focus in table body, selectionMode=multiple | 与全选把手同义：当前可选行全选中就整段清空，否则整段选上（禁用行不算进基数）。单选与不可选的表格不吞这个键，交还浏览器的整页全选；按住不放的连发只算一次 |
 | `ArrowLeft` / `ArrowRight` | focus in column-resize-trigger，该列 resizable | 把这一列按 8px 收窄 / 加宽；往行尾侧推是加宽，rtl 下左右两键对调，语义恒是「加宽 / 收窄」 |
 | `Shift+ArrowLeft` / `Shift+ArrowRight` | focus in column-resize-trigger，该列 resizable | 按 40px 收窄 / 加宽，方向规则同上 |
+| `ArrowLeft` / `ArrowRight` | focus in column-drag-trigger，该列在可拖的那一段里 | 把这一列往前 / 往后挪一位，按一下就是一次完整提交；往行首侧挪是往前，rtl 下左右两键对调，语义恒是「往前 / 往后」；已在段首 / 段末就不动，也不回绕 |
+| `Home` / `End` | focus in column-drag-trigger，该列在可拖的那一段里 | 把这一列挪到可拖那一段的段首 / 段末；rtl 下两键对调，语义恒是「段首 / 段末」；已经在那儿就不动 |
 
 ## 无障碍
 
@@ -338,12 +352,19 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 | `column-resize-trigger` | `aria-valuemin` | def?.minWidth \| undefined |
 | `column-resize-trigger` | `aria-valuenow` | columnNumericWidth(context.get('columnPreference').wi… |
 | `column-resize-trigger` | `role` | 'separator' |
+| `column-drag-trigger` | `aria-disabled` | 'false' \| 'true' |
+| `column-drag-trigger` | `aria-label` | label.columnDrag(def?.label ?? column.value) |
+| `column-drag-trigger` | `aria-roledescription` | 'draggable column' |
+| `column-drag-trigger` | `role` | 'button' |
 | `expand-trigger` | `aria-hidden` | 'true' |
 | `expanded-row` | `aria-level` | (metaIndex.get(row.value)?.level ?? 1) + 1 \| undefined |
 | `expanded-row` | `aria-posinset` | 1 \| undefined |
 | `expanded-row` | `aria-rowindex` | detailRowIndex.get(row.value) |
 | `expanded-row` | `aria-setsize` | 1 \| undefined |
 | `expanded-row` | `role` | 'row' |
+| `live-region` | `aria-atomic` | 'true' |
+| `live-region` | `aria-live` | 'polite' |
+| `live-region` | `role` | 'status' |
 | `header-row` | `aria-rowindex` | 1 |
 | `footer-row` | `aria-rowindex` | HEADER_ROW_COUNT + visibleRows.length + (hasFooter ? … \| undefined |
 | `header-row` | `role` | 'row' |
@@ -369,14 +390,20 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 | `header` | `data-sticky` | ''（条件成立时才出现） |
 | `body` | `data-empty` | ''（条件成立时才出现） |
 | `row` | `data-section` | 'body' |
+| `column-header` | `data-dragging` | ''（条件成立时才出现） |
+| `column-header` | `data-drop` | 'before' \| 'after' |
 | `column-header` | `data-sortable` | ''（条件成立时才出现） |
 | `cell` | `data-disabled` | ''（条件成立时才出现） \| undefined |
+| `cell` | `data-dragging` | ''（条件成立时才出现） |
+| `cell` | `data-drop` | 'before' \| 'after' |
 | `cell` | `data-selected` | ''（条件成立时才出现） \| undefined |
 | `select-all-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `select-all-trigger` | `data-state` | tableSelectionState(selection, selectableIds) |
 | `sort-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `column-resize-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `column-resize-trigger` | `data-resizing` | ''（条件成立时才出现） |
+| `column-drag-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `column-drag-trigger` | `data-dragging` | ''（条件成立时才出现） |
 | `expanded-row` | `data-state` | 'open' \| 'closed' |
 | `header-row` | `data-section` | 'header' |
 | `footer-row` | `data-section` | 'footer' |
@@ -385,7 +412,7 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-table-bg` · `--xh-table-border` · `--xh-table-caption-fg` · `--xh-table-caption-font-size` · `--xh-table-caption-font-weight` · `--xh-table-caption-px` · `--xh-table-caption-py` · `--xh-table-cell-gap` · `--xh-table-cell-min-w` · `--xh-table-cell-px` · `--xh-table-cell-py` · `--xh-table-cell-py-lg` · `--xh-table-cell-py-md` · `--xh-table-cell-py-sm` · `--xh-table-column-fg` · `--xh-table-column-font-weight` · `--xh-table-detail-bg` · `--xh-table-detail-px` · `--xh-table-detail-py` · `--xh-table-expand-fg` · `--xh-table-fg` · `--xh-table-font-size` · `--xh-table-footer-bg` · `--xh-table-footer-font-weight` · `--xh-table-header-bg` · `--xh-table-icon-size` · `--xh-table-max-h` · `--xh-table-radius` · `--xh-table-resize-fg` · `--xh-table-resize-fg-active` · `--xh-table-resize-line` · `--xh-table-resize-line-length` · `--xh-table-resize-radius` · `--xh-table-resize-width` · `--xh-table-row-bg` · `--xh-table-row-bg-hover` · `--xh-table-row-bg-selected` · `--xh-table-row-bg-striped` · `--xh-table-row-border` · `--xh-table-sort-fg` · `--xh-table-sort-fg-active` · `--xh-table-sort-gap` · `--xh-table-state-fg` · `--xh-table-state-gap` · `--xh-table-state-min-h` · `--xh-table-state-px` · `--xh-table-state-py` · `--xh-table-sticky-column-layer` · `--xh-table-sticky-header-layer` · `--xh-table-sticky-inset` · `--xh-table-trigger-bg-checked` · `--xh-table-trigger-border` · `--xh-table-trigger-border-checked` · `--xh-table-trigger-fg` · `--xh-table-trigger-radius` · `--xh-table-trigger-size`
+`--xh-table-bg` · `--xh-table-border` · `--xh-table-caption-fg` · `--xh-table-caption-font-size` · `--xh-table-caption-font-weight` · `--xh-table-caption-px` · `--xh-table-caption-py` · `--xh-table-cell-gap` · `--xh-table-cell-min-w` · `--xh-table-cell-px` · `--xh-table-cell-py` · `--xh-table-cell-py-lg` · `--xh-table-cell-py-md` · `--xh-table-cell-py-sm` · `--xh-table-column-fg` · `--xh-table-column-font-weight` · `--xh-table-detail-bg` · `--xh-table-detail-px` · `--xh-table-detail-py` · `--xh-table-drag-fg` · `--xh-table-drag-fg-active` · `--xh-table-drag-fg-disabled` · `--xh-table-drag-grip-h` · `--xh-table-drag-grip-w` · `--xh-table-drag-size` · `--xh-table-dragging-opacity` · `--xh-table-drop-fg` · `--xh-table-drop-line` · `--xh-table-expand-fg` · `--xh-table-fg` · `--xh-table-font-size` · `--xh-table-footer-bg` · `--xh-table-footer-font-weight` · `--xh-table-header-bg` · `--xh-table-icon-size` · `--xh-table-max-h` · `--xh-table-radius` · `--xh-table-resize-fg` · `--xh-table-resize-fg-active` · `--xh-table-resize-line` · `--xh-table-resize-line-length` · `--xh-table-resize-radius` · `--xh-table-resize-width` · `--xh-table-row-bg` · `--xh-table-row-bg-hover` · `--xh-table-row-bg-selected` · `--xh-table-row-bg-striped` · `--xh-table-row-border` · `--xh-table-sort-fg` · `--xh-table-sort-fg-active` · `--xh-table-sort-gap` · `--xh-table-state-fg` · `--xh-table-state-gap` · `--xh-table-state-min-h` · `--xh-table-state-px` · `--xh-table-state-py` · `--xh-table-sticky-column-layer` · `--xh-table-sticky-header-layer` · `--xh-table-sticky-inset` · `--xh-table-trigger-bg-checked` · `--xh-table-trigger-border` · `--xh-table-trigger-border-checked` · `--xh-table-trigger-fg` · `--xh-table-trigger-radius` · `--xh-table-trigger-size`
 
 ## 动效
 

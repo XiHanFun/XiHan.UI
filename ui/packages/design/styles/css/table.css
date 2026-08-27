@@ -418,6 +418,115 @@
     display: none;
   }
 
+  /* 列拖拽把手贴在表头格的行首侧，位置由源码顺序定，不写 auto 外边距：
+     同一个表头格里的改宽把手已经用 margin-inline-start: auto 把自己顶到行尾侧，
+     再添一条 auto，剩余空白会在两条外边距之间平分，两个把手谁都到不了自己那一头。
+     待在行首侧还有一层好处：它的位置与这一列有多宽、格里有没有排序把手都无关 */
+  [data-scope='table'][data-part='column-drag-trigger'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--xh-table-drag-size, var(--xh-control-indicator-size));
+    block-size: var(--xh-table-drag-size, var(--xh-control-indicator-size));
+    border-radius: var(--xh-table-trigger-radius, var(--xh-shape-control));
+    color: var(--xh-table-drag-fg, var(--xh-fg-subtle));
+    cursor: grab;
+    /* 关掉这一轴的默认手势：不关的话触屏上手指一划就被系统当成滚动收走 */
+    touch-action: none;
+  }
+
+  [data-scope='table'][data-part='column-drag-trigger'][hidden] {
+    display: none;
+  }
+
+  /* 抓手是两条竖线：盒子取边框盒，两侧描边就是那两条线，宽高与线宽都走令牌。
+     :empty 守卫让作者塞进来的图标整个顶掉它，而不是两份叠在一起 */
+  [data-scope='table'][data-part='column-drag-trigger']:empty::after {
+    content: '';
+    display: block;
+    inline-size: var(--xh-table-drag-grip-w, var(--xh-space-1));
+    block-size: var(--xh-table-drag-grip-h, var(--xh-space-2));
+    border-inline: var(--xh-stroke-thin) solid currentColor;
+  }
+
+  [data-scope='table'][data-part='column-drag-trigger']:not([data-disabled]):hover,
+  [data-scope='table'][data-part='column-drag-trigger'][data-dragging] {
+    color: var(--xh-table-drag-fg-active, var(--xh-fg-default));
+  }
+
+  [data-scope='table'][data-part='column-drag-trigger'][data-dragging] {
+    cursor: grabbing;
+  }
+
+  /* 不可拖的列照样带一个把手，这里保住它的位置、只把它压到禁用色。
+     收成 display: none 是不行的：把手在行首侧，藏掉之后同一行里能拖与不能拖的两列，
+     标题起点会错开一格 */
+  [data-scope='table'][data-part='column-drag-trigger'][data-disabled] {
+    color: var(--xh-table-drag-fg-disabled, var(--xh-fg-disabled));
+    cursor: not-allowed;
+  }
+
+  [data-scope='table'][data-part='column-drag-trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: var(--xh-ring-offset);
+  }
+
+  /* 落点指示线：拖到哪一列的哪一侧，线就画在那一列的那条边上。列头与表体的格子一起画，
+     线贯穿整张表才看得出这一列要落到哪儿。
+     定位上下文由这条规则自己给：列头与格子平时都不定位，缺了它伪元素会一路上溯到表格根，
+     线就飞到整张表的左上角去。
+     冻结列排除在外：它靠 position: sticky 钉住，在这儿改成 relative 会把吸附顶掉；
+     而冻结列既不可拖也不做落点，排除掉不会漏画任何一条线 */
+  [data-scope='table'][data-part='column-header'][data-drop]:not([data-frozen]),
+  [data-scope='table'][data-part='cell'][data-drop]:not([data-frozen]) {
+    position: relative;
+  }
+
+  /* 线整条画在盒内：列头与格子都收 overflow: hidden，压着边画会被裁掉半条 */
+  [data-scope='table'][data-part='column-header'][data-drop]:not([data-frozen])::after,
+  [data-scope='table'][data-part='cell'][data-drop]:not([data-frozen])::after {
+    content: '';
+    position: absolute;
+    inset-block: 0;
+    inline-size: var(--xh-table-drop-line, var(--xh-stroke-thick));
+    background: var(--xh-table-drop-fg, var(--xh-border-control-focus));
+  }
+
+  /* 落在哪一侧走逻辑属性：rtl 下 before 自己就换到右边去了。
+     换成 box-shadow: inset 的话偏移量是物理的，书写方向一反 before 与 after 就调个个儿 */
+  [data-scope='table'][data-part='column-header'][data-drop='before']:not([data-frozen])::after,
+  [data-scope='table'][data-part='cell'][data-drop='before']:not([data-frozen])::after {
+    inset-inline-start: 0;
+  }
+
+  [data-scope='table'][data-part='column-header'][data-drop='after']:not([data-frozen])::after,
+  [data-scope='table'][data-part='cell'][data-drop='after']:not([data-frozen])::after {
+    inset-inline-end: 0;
+  }
+
+  /* 被拖的那一列整列压暗，让人看得出正在搬的是它。这里只动 opacity 与 user-select，
+     一个 transform 都不写：冻结列是 position: sticky，祖先一有 transform 就掉出吸附。
+     位置的事全交给落点指示线，被拖的列自己原地不动 */
+  [data-scope='table'][data-part='column-header'][data-dragging],
+  [data-scope='table'][data-part='cell'][data-dragging] {
+    opacity: var(--xh-table-dragging-opacity, 0.6);
+    user-select: none;
+  }
+
+  /* 活动区域只说给读屏听，不占版面。声明与 shared/visually-hidden.ts 逐条同值。 */
+  [data-scope='table'][data-part='live-region'] {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+
   /* 排序方向用箭头字形表出来：aria-sort 只报给读屏，视觉侧也得有对应的东西 */
   [data-scope='table'][data-part='sort-trigger']::after {
     color: var(--xh-table-sort-fg, var(--xh-fg-subtle));

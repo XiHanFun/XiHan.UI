@@ -1,5 +1,6 @@
 import type { Direction, PropTypes, Size } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
+import type { DragRect, DragTranslations, DropTarget } from '../shared/drag'
 
 /**
  * 焦点模型：**行级** roving tabindex。
@@ -101,6 +102,13 @@ export interface TableColumnDef {
   maxWidth?: number
   /** 这一列的宽度可以拖着改。给了才产出改宽把手。 */
   resizable?: boolean
+  /**
+   * 这一列可以拖着换位。给了才产出拖拽把手——每个把手都是一个 Tab 位，
+   * 不声明的表格不白担这份代价。
+   *
+   * 不可拖的列与冻结列一样是屏障：跨过它去落会把它挤走，而作者说过这一列不动。
+   */
+  reorderable?: boolean
 }
 
 /**
@@ -275,17 +283,34 @@ export interface TableSchema extends MachineSchema {
     columnPreference: TableColumnPreference
     /** 正在拖着改宽的那一列；没在拖是 null。 */
     resizingColumn: string | null
+    /** 正在拖着换位的那一列；没在拖是 null。 */
+    draggingColumn: string | null
+    /**
+     * 此刻的落点：松手就落在这儿。指针不在任何可拖列上时是 null，
+     * 指示线跟着消失——「没有合法落点」是一档真实状态，不该夹到最近的一端。
+     */
+    dropTarget: TableDropTarget | null
+    /** 读屏播报文本。写进视觉隐藏的活动区域，不进视觉版面。 */
+    announcement: string
   }
   computed: Record<string, never>
   refs: {
     /** 正在拖的那一列：按下那一刻的列宽与指针横坐标。 */
     resize: { columnId: string, startWidth: number, originX: number } | null
+    /**
+     * 正在拖着换位的那一列：按下那一刻量到的可拖列矩形与指针横坐标。
+     *
+     * 矩形是一次性快照，全程不重量——重量会让「让位之后再判落点」自激振荡。
+     */
+    columnDrag: { columnId: string, rects: DragRect[], originX: number, pointerId: number } | null
   }
   /**
    * 排序、选中、展开与列偏好都不编码进状态——它们是随时可读可写的事实，不是过程。
-   * 改列宽是过程：有始有终、进行中要跟指针、收尾要发一次通知，因此它有自己的状态。
+   * 改列宽与换列位是过程：有始有终、进行中要跟指针、收尾要发一次通知，各有自己的状态。
+   *
+   * 键盘换位不进拖动态：按一下就是一次已过守卫的完整提交，没有「进行中」这回事。
    */
-  state: 'idle' | 'resizing'
+  state: 'idle' | 'resizing' | 'columnDragging'
   event:
     /** 整体改写排序链（外部 setSort 走它）。 */
     | { type: 'SORT.SET', value: TableSortDescriptor[] }
@@ -304,6 +329,13 @@ export interface TableSchema extends MachineSchema {
     | { type: 'COLUMN_RESIZE.CANCEL' }
     /** 键盘改宽：一次一步。 */
     | { type: 'COLUMN_RESIZE.STEP', columnId: string, delta: number }
+    /** 按下拖拽把手：矩形快照与起点横坐标由连接层量好交进来。 */
+    | { type: 'COLUMN_DRAG.START', columnId: string, rects: DragRect[], originX: number, pointerId: number }
+    | { type: 'COLUMN_DRAG.MOVE', clientX: number }
+    | { type: 'COLUMN_DRAG.END' }
+    | { type: 'COLUMN_DRAG.CANCEL' }
+    /** 键盘换位：一按就是一次完整提交，不进拖动态。 */
+    | { type: 'COLUMN.MOVE_BY', columnId: string, target: DropTarget }
     /** 改一列的显隐 / 位置 / 宽。 */
     | { type: 'COLUMN_PREF.PATCH', columnId: string, hidden?: boolean, toIndex?: number, width?: number | string }
     /** 整体改写选中集合。 */
@@ -341,7 +373,12 @@ export interface TableSchema extends MachineSchema {
     | 'stepColumnWidth'
     | 'endColumnResize'
     | 'cancelColumnResize'
-  effect: 'trackResizePointer'
+    | 'startColumnDrag'
+    | 'trackColumnDrag'
+    | 'endColumnDrag'
+    | 'cancelColumnDrag'
+    | 'moveColumnBy'
+  effect: 'trackResizePointer' | 'trackColumnDragPointer'
 }
 
 export interface TableApi<T extends PropTypes = PropTypes> {
@@ -350,6 +387,17 @@ export interface TableApi<T extends PropTypes = PropTypes> {
    * 列号、渲染顺序都以它为准；不要前缀列时它与作者给的那份一模一样。
    */
   columns: readonly TableColumn[]
+  /**
+   * 可以拖着换位的那一段列 id。声明了 `reorderable`、不是冻结列、且彼此相连。
+   *
+   * 冻结列与不可拖的列是屏障，把可拖范围切成段；这里给的是最长的那一段。
+   * 拿它决定渲不渲把手，与库内部判「能不能落」的口径是同一份。
+   */
+  draggableColumns: readonly string[]
+  /** 此刻的落点；松手就落在这儿。没有合法落点时是 null，指示线跟着消失。 */
+  dropTarget: TableDropTarget | null
+  /** 读屏播报文本。渲进 live-region，不进视觉版面。 */
+  announcement: string
   /** 作者给的行定义。 */
   rows: readonly TableRowDef[]
   /** 展开摊平后的可见行序列（详情行插在它所属数据行之后）。 */
@@ -417,14 +465,26 @@ export interface TableApi<T extends PropTypes = PropTypes> {
   getSortTriggerProps: (props: TableColumnProps) => T['element']
   /** 列宽把手。只有 resizable 的列才渲它。 */
   getColumnResizeTriggerProps: (props: TableColumnProps) => T['element']
+  /** 列拖拽把手。只有 reorderable 的列才渲它。 */
+  getColumnDragTriggerProps: (props: TableColumnProps) => T['element']
   getExpandTriggerProps: (props: TableRowProps) => T['element']
   getExpandedRowProps: (props: TableRowProps) => T['element']
   getEmptyProps: () => T['element']
   getLoadingStateProps: () => T['element']
+  /**
+   * 拖动过程的读屏播报区。视觉隐藏，文本从 `announcement` 取。
+   * 它必须在拖动开始之前就在 DOM 上——读屏不播报后插入的节点。
+   */
+  getLiveRegionProps: () => T['element']
 }
 
 /** 读屏用的文案。本组件目前没有需要外露的文案，位先留着。 */
-export interface TableTranslations {
+export interface TableTranslations extends Partial<DragTranslations> {
   /** 列宽把手的名字。表头文字是列名，把手自己得说清它是干什么的。 */
   columnResize: (columnLabel: string) => string
+  /** 列拖拽把手的名字。同一个列头里有两个把手，两个都得说清自己是谁。 */
+  columnDrag: (columnLabel: string) => string
 }
+
+/** 列拖拽的落点：落在哪一列的哪一侧。 */
+export type TableDropTarget = DropTarget

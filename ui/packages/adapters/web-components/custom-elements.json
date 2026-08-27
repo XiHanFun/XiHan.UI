@@ -34789,13 +34789,7 @@
               "name": "--xh-sortable-handle-size"
             },
             {
-              "name": "--xh-sortable-item-gap"
-            },
-            {
               "name": "--xh-sortable-item-opacity-dragging"
-            },
-            {
-              "name": "--xh-sortable-item-radius"
             },
             {
               "name": "--xh-sortable-item-shadow-dragging"
@@ -36407,6 +36401,18 @@
               "name": "sort-trigger"
             },
             {
+              "description": "列宽把手，自占一个 Tab 位；方向键改一步、按住 Shift 是大步",
+              "name": "column-resize-trigger"
+            },
+            {
+              "description": "列拖拽把手，自占一个 Tab 位；方向键移一位、Home/End 移到可拖区段首末",
+              "name": "column-drag-trigger"
+            },
+            {
+              "description": "视觉隐藏的播报区，列拖拽过程的读屏文案写在这里",
+              "name": "live-region"
+            },
+            {
               "description": "展开把手（aria-hidden 且不占 Tab 位，键盘那一路由左右方向键承担）",
               "name": "expand-trigger"
             },
@@ -36985,6 +36991,33 @@
             },
             {
               "name": "--xh-table-detail-py"
+            },
+            {
+              "name": "--xh-table-drag-fg"
+            },
+            {
+              "name": "--xh-table-drag-fg-active"
+            },
+            {
+              "name": "--xh-table-drag-fg-disabled"
+            },
+            {
+              "name": "--xh-table-drag-grip-h"
+            },
+            {
+              "name": "--xh-table-drag-grip-w"
+            },
+            {
+              "name": "--xh-table-drag-size"
+            },
+            {
+              "name": "--xh-table-dragging-opacity"
+            },
+            {
+              "name": "--xh-table-drop-fg"
+            },
+            {
+              "name": "--xh-table-drop-line"
             },
             {
               "name": "--xh-table-expand-fg"
