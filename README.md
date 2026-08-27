@@ -15,7 +15,7 @@
 <p>
   <img alt="Vue" src="https://img.shields.io/badge/Vue-3.5-4FC08D?style=flat-square&logo=vuedotjs&logoColor=white" />
   <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-6.0-3178C6?style=flat-square&logo=typescript&logoColor=white" />
-  <img alt="Components" src="https://img.shields.io/badge/Components-120-1f6feb?style=flat-square" />
+  <img alt="Components" src="https://img.shields.io/badge/Components-121-1f6feb?style=flat-square" />
   <a href="https://www.npmjs.com/package/@xihan-ui/vue"><img alt="npm" src="https://img.shields.io/npm/v/@xihan-ui/vue?style=flat-square&logo=npm&logoColor=white" /></a>
   <a href="./LICENSE"><img alt="License" src="https://img.shields.io/github/license/XiHanFun/XiHan.UI?style=flat-square&color=green" /></a>
 </p>
@@ -35,7 +35,7 @@ XiHan.UI 以框架无关的 Headless Core 为核心：一个组件的状态、�
 ## 特性
 
 - **框架无关** - 状态与无障碍逻辑住在无头内核，Vue 与 Web Components 两端行为一致
-- **120 个组件** - 覆盖通用、数据录入、数据展示、导航、反馈与浮层、AI 对话、布局七组
+- **121 个组件** - 覆盖通用、数据录入、数据展示、导航、反馈与浮层、AI 对话、布局七组
 - **近乎零依赖** - 运行时第三方依赖只有 `@internationalized/date`；浮层定位、虚拟滚动、代码着色、流式 Markdown 均为自研
 - **构建期样式** - 令牌从 DTCG 源产出 CSS 变量，皮肤按 `@layer` 分层，运行时不做 CSS-in-JS
 - **主题可切** - 明暗、品牌、密度、对比度、书写方向五个维度独立切换
@@ -133,7 +133,7 @@ pnpm dev
 
 ## 现状与边界
 
-已经能用的：120 个组件的内核与双适配器、默认皮肤、设计令牌与主题运行时、跨适配器一致性套件、真实 Chromium 里的无障碍扫描与浮层定位契约、文档站。
+已经能用的：121 个组件的内核与双适配器、默认皮肤、设计令牌与主题运行时、跨适配器一致性套件、真实 Chromium 里的无障碍扫描与浮层定位契约、文档站。
 
 还没做的：内建语言包（组件文案只内建英文，中文等要自备 `translations`，全局注入口已就绪）、令牌浏览器、AI 组件族的 MarkdownStream / Reasoning 与 ToolCall 折叠 / 工具审批、企业业务组件。
 
