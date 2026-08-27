@@ -4347,14 +4347,30 @@
       "tweenValueAt"
     ],
     "@xihan-ui/pointer": [
+      "ActivationConstraint",
+      "DEFAULT_ACTIVATION_DISTANCE",
+      "DEFAULT_EDGE_SPEED",
+      "DEFAULT_EDGE_THRESHOLD",
+      "DndDelta",
+      "DndRect",
+      "EdgeScrollInput",
       "PointerEndDetails",
       "PointerEndReason",
       "PointerPoint",
       "PointerSession",
       "PointerSessionDetails",
       "PointerSessionOptions",
+      "SortableAxis",
+      "SortableOffsetsInput",
+      "SortableProjection",
+      "SortableProjectionInput",
       "createPointerSession",
-      "resolveSessionDoc"
+      "edgeScrollDelta",
+      "moveItem",
+      "projectSortable",
+      "resolveSessionDoc",
+      "shouldActivate",
+      "sortableOffsets"
     ],
     "@xihan-ui/position": [
       "ComputeInput",
