@@ -12,8 +12,10 @@ import {
   queryItems,
 } from '@xihan-ui/behavior'
 import { contains, dataAttr, warn } from '@xihan-ui/kernel'
+import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { tableAnatomy, tableRowQuery } from './table.anatomy'
 import { resolveTableColumns } from './table.columns'
+import { columnDragRects, columnMoveCommand, columnMoveIntentFromKey, draggableColumnIds } from './table.drag'
 import { TABLE_COLUMN_LARGE_STEP, TABLE_COLUMN_MIN_WIDTH, TABLE_COLUMN_STEP, tableSelectionMode } from './table.machine'
 import {
   flattenTableRows,
@@ -119,7 +121,15 @@ export function connectTable<T extends PropTypes>(
   const hasWidthOverride = (id: string): boolean => context.get('columnPreference').widths?.[id] != null
   const label = {
     columnResize: translations?.columnResize ?? ((columnLabel: string) => `Resize column ${columnLabel}`),
+    columnDrag: translations?.columnDrag ?? ((columnLabel: string) => `Reorder column ${columnLabel}`),
   }
+  // 可拖的那一段列。谁能拖、落点算在谁身上、键盘能挪到哪儿，三处同一份口径
+  const draggableColumns = draggableColumnIds(columns)
+  const draggingColumn = context.get('draggingColumn')
+  const dropTarget = context.get('dropTarget')
+  /** 这一列此刻是不是落点，是的话落在它的哪一侧。 */
+  const dropSide = (id: string): 'before' | 'after' | undefined =>
+    dropTarget?.targetValue === id && dropTarget.position !== 'inside' ? dropTarget.position : undefined
   // 表格不回绕：上键停在首行、下键停在末行
   const loop = prop('loop') ?? false
   const ids = scope.ids('table', 'caption')
@@ -318,6 +328,9 @@ export function connectTable<T extends PropTypes>(
 
   return {
     columns,
+    draggableColumns,
+    dropTarget,
+    announcement: context.get('announcement'),
     columnPreference,
     setColumnHidden: (columnId, hidden) => send({ type: 'COLUMN_PREF.PATCH', columnId, hidden }),
     moveColumn: (columnId, toIndex) => send({ type: 'COLUMN_PREF.PATCH', columnId, toIndex }),
@@ -550,6 +563,10 @@ export function connectTable<T extends PropTypes>(
           ? (direction === 'asc' ? 'ascending' : direction === 'desc' ? 'descending' : 'none')
           : undefined,
         'data-sortable': dataAttr(sortable),
+        // 拖动中：被拖的那一列自己降透明度，落点那一列画指示线。
+        // 两个属性都不带位移——被拖的列原地不动，冻结列的吸附才不会被祖先 transform 打死
+        'data-dragging': dataAttr(draggingColumn === column.value),
+        'data-drop': dropSide(column.value),
         ...sticky,
         // 列宽由连接层写进内联 inline-size：那条轴归它，皮肤不再声明；吸附偏移与它同住一个 style
         ...(Object.keys(sizeStyle).length ? { style: { ...sticky.style as Record<string, unknown>, ...sizeStyle } } : {}),
@@ -573,6 +590,9 @@ export function connectTable<T extends PropTypes>(
         // 表头与脚注的格子不给 row，也就没有选中/禁用可言
         'data-selected': cell.row != null ? dataAttr(isSelected(cell.row)) : undefined,
         'data-disabled': cell.row != null ? dataAttr(isRowDisabled(cell.row)) : undefined,
+        // 与表头格同发：指示线要贯穿整张表，只画在列头上会看不出落到哪儿
+        'data-dragging': dataAttr(draggingColumn === cell.value),
+        'data-drop': dropSide(cell.value),
         ...sticky,
         ...(Object.keys(sizeStyle).length ? { style: { ...sticky.style as Record<string, unknown>, ...sizeStyle } } : {}),
       })
@@ -680,6 +700,91 @@ export function connectTable<T extends PropTypes>(
         },
       })
     },
+
+    getColumnDragTriggerProps: (column) => {
+      const def = columnOf(column.value)
+      // 可拖的判据由 draggableColumnIds 一处说了算：声明了 reorderable、不是冻结列、
+      // 且与本列同处最长的那一段。不在段里的列产出一个报不可用的把手，
+      // 而不是干脆不渲——列头的构成随拖动状态变会让 Tab 序列在拖动中跳动
+      const draggable = draggableColumns.includes(column.value)
+      return normalize.element({
+        ...parts['column-drag-trigger'].attrs,
+        [ITEM_VALUE_ATTR]: column.value,
+        // 显式给角色：作者常写成 <span>，读屏听不出能按
+        'role': 'button',
+        'aria-label': label.columnDrag(def?.label ?? column.value),
+        // 与同一个列头里的改宽把手（role=separator）区分开：两个都答方向键，
+        // 一个改宽一个换位，读屏得能说清按的是哪一个
+        'aria-roledescription': 'draggable column',
+        // 拖拽把手自己占一个 Tab 位，不属于表体的 roving 行组；不可拖的列退出 Tab 序列
+        'tabindex': draggable ? 0 : -1,
+        'aria-disabled': draggable ? 'false' : 'true',
+        'data-disabled': dataAttr(!draggable),
+        'data-dragging': dataAttr(draggingColumn === column.value),
+        // 不关掉这一轴的默认手势，触屏上手指一划就被系统收走（pointercancel）
+        'style': { touchAction: draggable ? 'none' : undefined },
+        'onPointerDown': (event: PointerEvent) => {
+          // 只认主键：右键要弹上下文菜单，中键是自动滚动
+          if (!draggable || event.button !== 0)
+            return
+          const trigger = event.currentTarget as HTMLElement | null
+          const header = trigger?.closest<HTMLElement>('[data-scope="table"][data-part="column-header"]')
+          const row = header?.closest<HTMLElement>('[data-scope="table"][data-part="row"]') ?? header?.parentElement
+          if (!row)
+            return
+          // 量一次可拖列此刻的横向位置。事件处理器里碰 DOM 是允许的，渲染期才不许。
+          // 快照全程不重量：重量会让「让位之后再判落点」自激振荡
+          const boxes = new Map<string, { start: number, size: number }>()
+          for (const el of row.querySelectorAll<HTMLElement>('[data-scope="table"][data-part="column-header"]')) {
+            const id = el.getAttribute(ITEM_VALUE_ATTR)
+            if (id) {
+              const rect = el.getBoundingClientRect()
+              boxes.set(id, { start: rect.left, size: rect.width })
+            }
+          }
+          event.preventDefault()
+          send({
+            type: 'COLUMN_DRAG.START',
+            columnId: column.value,
+            rects: columnDragRects(columns, id => boxes.get(id) ?? null),
+            originX: event.clientX,
+            pointerId: event.pointerId,
+          })
+        },
+        'onKeyDown': (event: KeyboardEvent) => {
+          if (!draggable)
+            return
+          // 带 Ctrl/Cmd/Alt 的组合一律不归换位管（Alt+方向键之类归浏览器与读屏）
+          if (event.ctrlKey || event.metaKey || event.altKey)
+            return
+          const intent = columnMoveIntentFromKey(event.key, dir === 'rtl')
+          if (intent == null)
+            return
+          event.preventDefault()
+          const target = columnMoveCommand(draggableColumns, column.value, intent)
+          // 已经在段首/段末：挡住默认行为但不发事件，也不回绕——回绕会让人以为按坏了
+          if (target)
+            send({ type: 'COLUMN.MOVE_BY', columnId: column.value, target })
+        },
+      })
+    },
+
+    /**
+     * 拖动过程只说给读屏听。
+     *
+     * 它必须渲在 root **之外**：root 是 role=grid，grid 的子节点只能是 row 与 rowgroup，
+     * 塞一个活动区域进去是 aria-required-children（critical）——不带 role 也一样，
+     * 无角色但带全局 aria 属性的节点照样被算进 owned。两个适配器都把它渲成 root 的兄弟。
+     *
+     * 也必须在拖动开始之前就在 DOM 上——读屏不播报后插入的节点。
+     */
+    getLiveRegionProps: () => normalize.element({
+      ...parts['live-region'].attrs,
+      'role': 'status',
+      'aria-live': 'polite',
+      'aria-atomic': 'true',
+      'style': VISUALLY_HIDDEN_STYLE,
+    }),
 
     getSortTriggerProps: (column) => {
       const sortable = !!columnOf(column.value)?.sortable

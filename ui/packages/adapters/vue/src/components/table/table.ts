@@ -15,7 +15,7 @@ import type { Direction, Size } from '@xihan-ui/kernel'
 import type { PropType, Ref, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import type { TableContext } from './use-table'
-import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
+import { computed, defineComponent, Fragment, h, onBeforeUnmount, ref, watch } from 'vue'
 import {
   provideTable,
   provideTableColumn,
@@ -146,31 +146,40 @@ export const XhTableRoot = defineComponent({
     }
     const ctx = useTable(props as TableProps, onSortChange, onSelectionChange, onExpandedChange, onColumnPreferenceChange)
     provideTable(ctx)
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
-      columns: ctx.api.value.columns,
-      columnPreference: ctx.api.value.columnPreference,
-      setColumnHidden: ctx.api.value.setColumnHidden,
-      moveColumn: ctx.api.value.moveColumn,
-      setColumnWidth: ctx.api.value.setColumnWidth,
-      setColumnPreference: ctx.api.value.setColumnPreference,
-      rowNumber: ctx.api.value.rowNumber,
-      visibleRows: ctx.api.value.visibleRows,
-      sort: ctx.api.value.sort,
-      selection: ctx.api.value.selection,
-      selectionState: ctx.api.value.selectionState,
-      expandedValue: ctx.api.value.expandedValue,
-      focusedRow: ctx.api.value.focusedRow,
-      empty: ctx.api.value.empty,
-      loading: ctx.api.value.loading,
-      isSelected: ctx.api.value.isSelected,
-      isExpanded: ctx.api.value.isExpanded,
-      sortDirection: ctx.api.value.sortDirection,
-      sortPriority: ctx.api.value.sortPriority,
-      toggleSort: ctx.api.value.toggleSort,
-      selectRow: ctx.api.value.selectRow,
-      toggleSelectAll: ctx.api.value.toggleSelectAll,
-      toggleExpandRow: ctx.api.value.toggleExpandRow,
-    }))
+    // 播报区由根组件自己渲，作者插不进 root 的兄弟位。它不能进 root：
+    // root 是 role=grid，塞活动区域进去是 aria-required-children（critical）
+    return () => h(Fragment, [
+      h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
+        columns: ctx.api.value.columns,
+        columnPreference: ctx.api.value.columnPreference,
+        setColumnHidden: ctx.api.value.setColumnHidden,
+        moveColumn: ctx.api.value.moveColumn,
+        setColumnWidth: ctx.api.value.setColumnWidth,
+        setColumnPreference: ctx.api.value.setColumnPreference,
+        rowNumber: ctx.api.value.rowNumber,
+        visibleRows: ctx.api.value.visibleRows,
+        sort: ctx.api.value.sort,
+        selection: ctx.api.value.selection,
+        selectionState: ctx.api.value.selectionState,
+        expandedValue: ctx.api.value.expandedValue,
+        focusedRow: ctx.api.value.focusedRow,
+        empty: ctx.api.value.empty,
+        loading: ctx.api.value.loading,
+        isSelected: ctx.api.value.isSelected,
+        isExpanded: ctx.api.value.isExpanded,
+        sortDirection: ctx.api.value.sortDirection,
+        sortPriority: ctx.api.value.sortPriority,
+        toggleSort: ctx.api.value.toggleSort,
+        selectRow: ctx.api.value.selectRow,
+        toggleSelectAll: ctx.api.value.toggleSelectAll,
+        toggleExpandRow: ctx.api.value.toggleExpandRow,
+      })),
+      h(
+        'div',
+        ctx.api.value.getLiveRegionProps() as Record<string, unknown>,
+        ctx.service.context.get('announcement'),
+      ),
+    ])
   },
 })
 
@@ -329,6 +338,20 @@ export const XhTableColumnResizeTrigger = defineComponent({
     return () => h(
       'span',
       ctx.api.value.getColumnResizeTriggerProps(column.value) as Record<string, unknown>,
+      slots.default?.(),
+    )
+  },
+})
+
+/** 列拖拽把手。放在表头格里，只有可拖的列渲它。 */
+export const XhTableColumnDragTrigger = defineComponent({
+  name: 'XhTableColumnDragTrigger',
+  setup(_, { slots }) {
+    const ctx = useTableContext()
+    const { column } = useTableColumnContext()
+    return () => h(
+      'span',
+      ctx.api.value.getColumnDragTriggerProps(column.value) as Record<string, unknown>,
       slots.default?.(),
     )
   },

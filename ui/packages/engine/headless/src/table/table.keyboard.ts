@@ -19,7 +19,10 @@ export const tableKeyboard: KeyboardTable = {
     { id: 'table.kbd.collapse', keys: ['ArrowLeft'], when: 'focus on 可展开且已展开的行（dir=rtl 时改由 ArrowRight 承担）', does: '就地收起当前行，焦点不动；其余情形什么都不做且不吞键' },
     { id: 'table.kbd.sort', keys: ['Enter', 'Space'], when: 'focus on sort-trigger, 该列 sortable', does: '排序方向按 升序 → 降序 → 不排序 循环；按住 Shift 是追加到排序链而不是替换整条链' },
     { id: 'table.kbd.select-all', keys: ['Enter', 'Space'], when: 'focus on select-all-trigger, selectionMode=multiple', does: '当前可选行全选中就整段清空，否则整段选上；三态由 aria-checked 报出（半选为 mixed）' },
+    { id: 'table.kbd.select-all-body', keys: ['Ctrl+A', 'Cmd+A'], when: 'focus in table body, selectionMode=multiple', does: '与全选把手同义：当前可选行全选中就整段清空，否则整段选上（禁用行不算进基数）。单选与不可选的表格不吞这个键，交还浏览器的整页全选；按住不放的连发只算一次' },
     { id: 'table.kbd.column-resize', keys: ['ArrowLeft', 'ArrowRight'], when: 'focus in column-resize-trigger，该列 resizable', does: '把这一列按 8px 收窄 / 加宽；往行尾侧推是加宽，rtl 下左右两键对调，语义恒是「加宽 / 收窄」' },
     { id: 'table.kbd.column-resize-large', keys: ['Shift+ArrowLeft', 'Shift+ArrowRight'], when: 'focus in column-resize-trigger，该列 resizable', does: '按 40px 收窄 / 加宽，方向规则同上' },
+    { id: 'table.kbd.column-move', keys: ['ArrowLeft', 'ArrowRight'], when: 'focus in column-drag-trigger，该列在可拖的那一段里', does: '把这一列往前 / 往后挪一位，按一下就是一次完整提交；往行首侧挪是往前，rtl 下左右两键对调，语义恒是「往前 / 往后」；已在段首 / 段末就不动，也不回绕' },
+    { id: 'table.kbd.column-move-edge', keys: ['Home', 'End'], when: 'focus in column-drag-trigger，该列在可拖的那一段里', does: '把这一列挪到可拖那一段的段首 / 段末；rtl 下两键对调，语义恒是「段首 / 段末」；已经在那儿就不动' },
   ],
 }

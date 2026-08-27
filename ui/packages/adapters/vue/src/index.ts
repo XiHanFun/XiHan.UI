@@ -769,6 +769,7 @@ export {
   XhTableBody,
   XhTableCaption,
   XhTableCell,
+  XhTableColumnDragTrigger,
   XhTableColumnHeader,
   XhTableColumnResizeTrigger,
   XhTableEmpty,

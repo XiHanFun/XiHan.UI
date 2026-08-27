@@ -15,10 +15,12 @@ export const tableAnatomy = createAnatomy('table', [
   'row-select-trigger',
   'sort-trigger',
   'column-resize-trigger',
+  'column-drag-trigger',
   'expand-trigger',
   'expanded-row',
   'empty',
   'loading-state',
+  'live-region',
 ])
 
 /**

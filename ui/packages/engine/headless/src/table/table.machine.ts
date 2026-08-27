@@ -1,5 +1,7 @@
+import type { DragAnnounceKind } from '../shared/drag'
 import type {
   TableColumnPreference,
+  TableDropTarget,
   TableRowDef,
   TableSchema,
   TableSelection,
@@ -9,7 +11,9 @@ import type {
 import { applySelection } from '@xihan-ui/behavior'
 import { setup } from '@xihan-ui/machine'
 import { clampSize, createPointerSession, resolveSessionDoc } from '@xihan-ui/pointer'
-import { orderColumnIds } from './table.columns'
+import { dragAnnouncement, hitAlong, insertionIndex } from '../shared/drag'
+import { orderColumnIds, resolveTableColumns } from './table.columns'
+import { draggableColumnIds, toColumnPreferenceIndex } from './table.drag'
 import { tableSelectableRowIds, tableSelectionIds, tableToggleRowSelection, tableToggleSelectAll } from './table.rows'
 import { tableNormalizeSort, tableToggleSort } from './table.sort'
 
@@ -101,9 +105,13 @@ export const tableMachine = createMachine({
       onChange: value => prop('onColumnPreferenceChange')?.({ value }),
     })),
     resizingColumn: cell<string | null>(() => ({ defaultValue: null })),
+    draggingColumn: cell<string | null>(() => ({ defaultValue: null })),
+    dropTarget: cell<TableDropTarget | null>(() => ({ defaultValue: null })),
+    announcement: cell<string>(() => ({ defaultValue: '' })),
   }),
   refs: () => ({
     resize: null,
+    columnDrag: null,
   }),
   initialState: () => 'idle',
   states: {
@@ -126,6 +134,18 @@ export const tableMachine = createMachine({
         // 键盘改宽不进拖动态：按一下改一步，没有「进行中」这回事
         'COLUMN_RESIZE.STEP': { actions: ['stepColumnWidth'] },
         'COLUMN_RESIZE.START': { target: 'resizing', actions: ['startColumnResize'] },
+        // 键盘换位同理不进拖动态：按一下就是一次已过守卫的完整提交
+        'COLUMN.MOVE_BY': { actions: ['moveColumnBy'] },
+        'COLUMN_DRAG.START': { target: 'columnDragging', actions: ['startColumnDrag'] },
+      },
+    },
+    columnDragging: {
+      effects: ['trackColumnDragPointer'],
+      on: {
+        'COLUMN_DRAG.MOVE': { actions: ['trackColumnDrag'] },
+        'COLUMN_DRAG.END': { target: 'idle', actions: ['endColumnDrag'] },
+        // 系统收走指针按取消算：列序一步不动
+        'COLUMN_DRAG.CANCEL': { target: 'idle', actions: ['cancelColumnDrag'] },
       },
     },
     resizing: {
@@ -146,6 +166,17 @@ export const tableMachine = createMachine({
           doc: resolveSessionDoc(scope.getDoc().documentElement),
           onMove: ({ point }) => send({ type: 'COLUMN_RESIZE.MOVE', clientX: point.clientX }),
           onEnd: ({ reason }) => send({ type: reason === 'pointercancel' ? 'COLUMN_RESIZE.CANCEL' : 'COLUMN_RESIZE.END' }),
+        })
+        return () => session.dispose()
+      },
+
+      /** 换列位同样跟手：只认按下那一根指针，触屏上第二根落下不劫持这一场。 */
+      trackColumnDragPointer: ({ refs, scope, send }) => {
+        const session = createPointerSession({
+          doc: resolveSessionDoc(scope.getDoc().documentElement),
+          pointerId: refs.get('columnDrag')?.pointerId,
+          onMove: ({ point }) => send({ type: 'COLUMN_DRAG.MOVE', clientX: point.clientX }),
+          onEnd: ({ reason }) => send({ type: reason === 'pointercancel' ? 'COLUMN_DRAG.CANCEL' : 'COLUMN_DRAG.END' }),
         })
         return () => session.dispose()
       },
@@ -196,6 +227,55 @@ export const tableMachine = createMachine({
       endColumnResize: ({ context, refs }) => {
         refs.set('resize', null)
         context.set('resizingColumn', null)
+      },
+
+      startColumnDrag: ({ context, refs, event }) => {
+        const e = event.current()
+        if (e.type !== 'COLUMN_DRAG.START')
+          return
+        refs.set('columnDrag', { columnId: e.columnId, rects: e.rects, originX: e.originX, pointerId: e.pointerId })
+        context.set('draggingColumn', e.columnId)
+        // 按下那一刻还没挪，落点先空着：指示线要等指针真的走到某一列上才出现
+        context.set('dropTarget', null)
+        context.set('announcement', '')
+      },
+
+      trackColumnDrag: ({ context, refs, event }) => {
+        const e = event.current()
+        const session = refs.get('columnDrag')
+        if (e.type !== 'COLUMN_DRAG.MOVE' || !session)
+          return
+        const hit = hitAlong(session.rects, e.clientX)
+        // 落在自己身上不算落点：那不是一次移动，指示线该消失
+        context.set('dropTarget', hit && hit.targetValue !== session.columnId ? hit : null)
+      },
+
+      endColumnDrag: ({ context, prop, refs, send }) => {
+        const session = refs.get('columnDrag')
+        const target = context.get('dropTarget')
+        clearColumnDrag(context, refs)
+        if (!session)
+          return
+        if (!target) {
+          // 松手时没有合法落点：视觉上「那条线没出现」已经说明了，读屏里得有人说一句
+          announceColumnDrag(context, prop, 'rejected', session.columnId)
+          return
+        }
+        commitColumnMove(context, prop, send, session.columnId, target, 'dropped')
+      },
+
+      cancelColumnDrag: ({ context, prop, refs }) => {
+        const session = refs.get('columnDrag')
+        clearColumnDrag(context, refs)
+        if (session)
+          announceColumnDrag(context, prop, 'canceled', session.columnId)
+      },
+
+      moveColumnBy: ({ context, prop, event, send }) => {
+        const e = event.current()
+        if (e.type !== 'COLUMN.MOVE_BY')
+          return
+        commitColumnMove(context, prop, send, e.columnId, e.target, 'moved')
       },
 
       cancelColumnResize: ({ context, prop, refs }) => {
@@ -411,3 +491,83 @@ function writeColumnWidth(
 export const TABLE_COLUMN_STEP = 8
 /** Shift + 方向键的步长（px）。 */
 export const TABLE_COLUMN_LARGE_STEP = 40
+
+/** 播报与落点两处都要写 announcement，抽一个最小接口，别把整个 service 拖进来。 */
+interface ColumnDragContext {
+  get: (k: 'columnPreference') => TableColumnPreference
+  set: (k: 'announcement', v: string) => void
+}
+
+/** 可拖的那一段列。落点、位置播报与键盘命令三处都以它为准，口径必须是同一份。 */
+function draggableSegment(
+  context: { get: (k: 'columnPreference') => TableColumnPreference },
+  prop: <K extends keyof TableSchema['props']>(k: K) => TableSchema['props'][K],
+): string[] {
+  return draggableColumnIds(resolveTableColumns(
+    prop('columns') ?? [],
+    prop('prefixColumns') ?? [],
+    context.get('columnPreference'),
+  ))
+}
+
+/** 播报一句。位置说的是「可拖的这一段里第几个」——用户能挪到的范围就是这一段。 */
+function announceColumnDrag(
+  context: ColumnDragContext,
+  prop: <K extends keyof TableSchema['props']>(k: K) => TableSchema['props'][K],
+  kind: DragAnnounceKind,
+  columnId: string,
+  position?: number,
+): void {
+  const segment = draggableSegment(context, prop)
+  const t = prop('translations')
+  context.set('announcement', dragAnnouncement(kind, {
+    value: columnId,
+    position: position ?? segment.indexOf(columnId) + 1,
+    total: segment.length,
+    // 列名比列 id 好听。作者没给 translations.item 时退回列的 label
+    translations: {
+      item: (value: string) => (prop('columns') ?? []).find(c => c.id === value)?.label ?? value,
+      ...t,
+    },
+  }))
+}
+
+/**
+ * 落点折算成一次列序改写，并播报改完之后的位置。
+ *
+ * 写偏好走既有的 COLUMN_PREF.PATCH 那一条路（列序只有一处在改）；播报的位置自己算，
+ * 因为嵌套发出去的事件要排到队尾，这一刻还读不到改完的偏好。
+ */
+function commitColumnMove(
+  context: ColumnDragContext,
+  prop: <K extends keyof TableSchema['props']>(k: K) => TableSchema['props'][K],
+  send: (event: { type: 'COLUMN_PREF.PATCH', columnId: string, toIndex: number }) => void,
+  columnId: string,
+  target: TableDropTarget,
+  kind: DragAnnounceKind,
+): void {
+  const segment = draggableSegment(context, prop)
+  const within = insertionIndex(segment, columnId, target)
+  const toIndex = toColumnPreferenceIndex(
+    (prop('columns') ?? []).map(column => column.id),
+    context.get('columnPreference').order,
+    columnId,
+    target,
+  )
+  if (within == null || toIndex == null) {
+    announceColumnDrag(context, prop, 'rejected', columnId)
+    return
+  }
+  send({ type: 'COLUMN_PREF.PATCH', columnId, toIndex })
+  announceColumnDrag(context, prop, kind, columnId, within + 1)
+}
+
+/** 收尾：拖动态的三样一起清干净，别留半截。 */
+function clearColumnDrag(
+  context: { set: (k: 'draggingColumn' | 'dropTarget', v: null) => void },
+  refs: { set: (k: 'columnDrag', v: null) => void },
+): void {
+  refs.set('columnDrag', null)
+  context.set('draggingColumn', null)
+  context.set('dropTarget', null)
+}
