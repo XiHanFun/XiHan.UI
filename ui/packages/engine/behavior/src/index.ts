@@ -37,6 +37,8 @@ export type {
   ScrollViewportRect,
   ViewportEntryOptions,
 } from './scroll-position'
+export { applySelection, clearSelection, EMPTY_SELECTION, rangeBetween, toggleSelectAll } from './selection/select'
+export type { SelectionInput, SelectionMode, SelectionOrder, SelectionState } from './selection/types'
 export { createStickToBottom, STICK_TO_BOTTOM_THRESHOLD } from './stick-to-bottom'
 export type { StickToBottomHandle, StickToBottomOptions, StickToBottomState } from './stick-to-bottom'
 export { easing } from '@xihan-ui/motion'
