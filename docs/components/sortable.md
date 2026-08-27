@@ -144,9 +144,7 @@ orientation 三档：竖排、横排，换行网格用 both，落点按最近中
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `aria-label` | translations?.root |
-| `root` | `aria-orientation` | undefined \| props.orientation |
-| `root` | `role` | 'list' |
-| `item` | `role` | 'listitem' |
+| `root` | `role` | 'group' |
 | `item-handle` | `aria-disabled` | 'true' \| 'false' |
 | `item-handle` | `aria-label` | translations?.itemHandle?.(name) |
 | `item-handle` | `aria-pressed` | 'true' \| 'false' |

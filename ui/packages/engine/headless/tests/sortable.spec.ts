@@ -238,10 +238,11 @@ describe('排序 · 键盘拖动', () => {
 })
 
 describe('排序 · 产出的属性', () => {
-  it('root 是 list，报出方向与拖动态', () => {
+  it('root 是 group，报出方向与拖动态', () => {
     const s = makeSortable()
     const root = s.api().getRootProps() as Record<string, unknown>
-    expect(root.role).toBe('list')
+    // group 而不是 list：播报区就在容器里，list 只许有 listitem 子节点
+    expect(root.role).toBe('group')
     expect(root['data-orientation']).toBe('vertical')
     expect(root['data-dragging']).toBeUndefined()
   })
@@ -250,7 +251,6 @@ describe('排序 · 产出的属性', () => {
     const s = makeSortable()
     s.service.send({ type: 'ITEM.PICKUP', id: 'b' })
     const item = s.api().getItemProps({ id: 'b' }) as Record<string, unknown>
-    expect(item.role).toBe('listitem')
     expect(item['data-value']).toBe('b')
     expect(item['data-index']).toBe('1')
     expect(item['data-dragging']).toBe('')
@@ -293,11 +293,12 @@ describe('排序 · 产出的属性', () => {
     expect((live.style as Record<string, unknown>).position).toBe('absolute')
   })
 
-  it('换行网格不写 aria-orientation：它不是单轴的', () => {
-    const s = makeSortable({ orientation: 'both' })
-    const root = s.api().getRootProps() as Record<string, unknown>
-    expect(root['aria-orientation']).toBeUndefined()
-    expect(root['data-orientation']).toBe('both')
+  it('方向不经 ARIA 表达：group 不支持 aria-orientation，只留 data-*', () => {
+    for (const orientation of ['vertical', 'horizontal', 'both'] as const) {
+      const root = makeSortable({ orientation }).api().getRootProps() as Record<string, unknown>
+      expect(root['aria-orientation']).toBeUndefined()
+      expect(root['data-orientation']).toBe(orientation)
+    }
   })
 })
 
