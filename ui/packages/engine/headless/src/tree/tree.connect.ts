@@ -226,7 +226,7 @@ export function connectTree<T extends PropTypes>(
     setSelection: next => send({ type: 'SELECTION.SET', value: next }),
     expand: value => send({ type: 'BRANCH.EXPAND', value }),
     collapse: value => send({ type: 'BRANCH.COLLAPSE', value }),
-    select: value => send({ type: 'NODE.SELECT', value }),
+    select: (value, options) => send({ type: 'NODE.SELECT', value, extend: options?.extend }),
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
@@ -382,7 +382,7 @@ export function connectTree<T extends PropTypes>(
           return
         // 点击即把焦点交给这一行：叶子本身就是 treeitem，直接认 currentTarget
         focusValue(event.currentTarget as HTMLElement)
-        send({ type: 'NODE.SELECT', value: node.value })
+        send({ type: 'NODE.SELECT', value: node.value, extend: (event as { shiftKey?: boolean }).shiftKey })
       },
       // 焦点是事实不是许可：禁用节点被点到也记锚点，方向键才知道从哪儿起步
       onFocus: () => send({ type: 'NODE.FOCUS', value: node.value }),
@@ -434,7 +434,7 @@ export function connectTree<T extends PropTypes>(
         // 指针聚焦被上面拦掉了，焦点得由把手交给所在的那一行：
         // 不接管则 roving tabindex 的锚点跟不上，treeitem 的 onFocus 也不触发
         focusValue(rowElOf(event.currentTarget as HTMLElement))
-        send({ type: 'NODE.SELECT', value: node.value })
+        send({ type: 'NODE.SELECT', value: node.value, extend: (event as { shiftKey?: boolean }).shiftKey })
       },
     }),
 
@@ -456,7 +456,7 @@ export function connectTree<T extends PropTypes>(
           return
         // 同 item-checkbox：指针聚焦被拦掉后由把手把焦点交给所在的那一行
         focusValue(rowElOf(event.currentTarget as HTMLElement))
-        send({ type: 'NODE.SELECT', value: node.value })
+        send({ type: 'NODE.SELECT', value: node.value, extend: (event as { shiftKey?: boolean }).shiftKey })
       },
     }),
 
@@ -470,7 +470,7 @@ export function connectTree<T extends PropTypes>(
         const branchEl = branchElOf(event.currentTarget as HTMLElement)
         if (branchEl)
           focusValue(branchEl)
-        send({ type: 'NODE.SELECT', value: node.value })
+        send({ type: 'NODE.SELECT', value: node.value, extend: (event as { shiftKey?: boolean }).shiftKey })
         if (expandOnClick)
           send({ type: 'BRANCH.TOGGLE', value: node.value })
       },

@@ -6,10 +6,11 @@ import type {
   TableSelectionMode,
   TableSortDescriptor,
 } from './table.types'
+import { applySelection } from '@xihan-ui/behavior'
 import { setup } from '@xihan-ui/machine'
 import { clampSize, createPointerSession, resolveSessionDoc } from '@xihan-ui/pointer'
 import { orderColumnIds } from './table.columns'
-import { tableSelectableRowIds, tableToggleRowSelection, tableToggleSelectAll } from './table.rows'
+import { tableSelectableRowIds, tableSelectionIds, tableToggleRowSelection, tableToggleSelectAll } from './table.rows'
 import { tableNormalizeSort, tableToggleSort } from './table.sort'
 
 /** 拖动改列宽时的缺省下限（px）。列定义可用 minWidth 覆盖。 */
@@ -92,6 +93,8 @@ export const tableMachine = createMachine({
     })),
     // 焦点锚点不受控、不对外通知：它只服务行级 roving tabindex 与方向键起点
     focusedRow: cell<string | null>(() => ({ defaultValue: null })),
+    selectionAnchor: cell<string | null>(() => ({ defaultValue: null })),
+    selectionBaseline: cell<string[] | null>(() => ({ defaultValue: null })),
     columnPreference: cell<TableColumnPreference>(() => ({
       value: prop('columnPreference'),
       defaultValue: prop('defaultColumnPreference') ?? {},
@@ -286,7 +289,32 @@ export const tableMachine = createMachine({
         if (!row || row.disabled)
           return
         const ids = tableSelectableRowIds(rows)
+        const anchor = context.get('selectionAnchor')
+
+        // 按住 Shift：锚点到这一行那一段并进当前选中。表格是复选框语义，
+        // 不像文件管理器那样整份替换——用户先前勾的不该被这一下清掉
+        if (e.extend && mode === 'multiple' && anchor != null) {
+          // 第一次按住 Shift 时把当下的选中集拍下来当基线，后面每一下都从它重算
+          const baseline = context.get('selectionBaseline') ?? tableSelectionIds(context.get('selection'), ids)
+          context.set('selectionBaseline', baseline)
+          const next = applySelection({
+            state: { selected: baseline, anchor },
+            mode: 'multiple',
+            value: e.value,
+            extend: true,
+            additive: true,
+            items: rows.map(item => item.id),
+            isDisabled: id => !ids.includes(id),
+          })
+          context.set('selection', [...next.selected])
+          // 锚点不动：连着按 Shift 能从同一行反复改这一段的长短
+          return
+        }
+
         context.set('selection', tableToggleRowSelection(context.get('selection'), e.value, mode, ids))
+        context.set('selectionAnchor', e.value)
+        // 非 Shift 的这一下作废基线：下一段 Shift 从这里重新拍
+        context.set('selectionBaseline', null)
       },
       toggleSelectAll: ({ context, prop }) => {
         // 全选只在复选下成立

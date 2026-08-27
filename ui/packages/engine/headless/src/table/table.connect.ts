@@ -343,7 +343,7 @@ export function connectTable<T extends PropTypes>(
     setSort: next => send({ type: 'SORT.SET', value: next }),
     toggleSort: (value, options) => toggleSortOf(value, !!options?.append),
     setSelection: next => send({ type: 'SELECTION.SET', value: next }),
-    selectRow: value => send({ type: 'ROW.SELECT', value }),
+    selectRow: (value, options) => send({ type: 'ROW.SELECT', value, extend: options?.extend }),
     toggleSelectAll: () => send({ type: 'SELECTION.ALL_TOGGLE' }),
     setExpandedValue: next => send({ type: 'EXPANDED.SET', value: next }),
     expandRow: value => send({ type: 'ROW.EXPAND', value }),
@@ -396,8 +396,19 @@ export function connectTable<T extends PropTypes>(
       'data-empty': dataAttr(isEmpty),
       'onKeyDown': (event: KeyboardEvent) => {
         const body = event.currentTarget as HTMLElement
-        // 带 Ctrl/Cmd/Alt 的组合一律不归表格管（Ctrl+Home 之类归浏览器与读屏）
-        if (event.ctrlKey || event.metaKey || event.altKey)
+        const command = event.ctrlKey || event.metaKey
+
+        // Ctrl/Cmd + A 全选。单选与不可选的表格不接这个键，让它回落到浏览器的全选
+        if (command && !event.altKey && (event.key === 'a' || event.key === 'A')) {
+          if (mode !== 'multiple')
+            return
+          event.preventDefault()
+          send({ type: 'SELECTION.ALL_TOGGLE' })
+          return
+        }
+
+        // 其余带 Ctrl/Cmd/Alt 的组合一律不归表格管（Ctrl+Home 之类归浏览器与读屏）
+        if (command || event.altKey)
           return
 
         // 上下键与 Home/End 走可见数据行；轴固定 vertical，左右键另有展开/收起语义
@@ -437,7 +448,7 @@ export function connectTable<T extends PropTypes>(
           if (mode === 'none' || row.disabled)
             return
           event.preventDefault()
-          send({ type: 'ROW.SELECT', value: row.id })
+          send({ type: 'ROW.SELECT', value: row.id, extend: event.shiftKey })
         }
       },
       'onFocus': (event: FocusEvent) => {
@@ -599,7 +610,7 @@ export function connectTable<T extends PropTypes>(
           return
         // tabindex=-1 的节点是点得到焦点的：不显式接管，焦点会停在这个 aria-hidden 的把手上
         focusOwnerRow(event.currentTarget as HTMLElement)
-        send({ type: 'ROW.SELECT', value: row.value })
+        send({ type: 'ROW.SELECT', value: row.value, extend: event.shiftKey })
       },
     }),
 

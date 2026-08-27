@@ -1139,3 +1139,50 @@ describe('吸附列的偏移与外观开关', () => {
     expect(plain['data-striped']).toBeUndefined()
   })
 })
+
+describe('范围选与全选快捷键', () => {
+  it('按住 Shift 选中锚点到这一行那一段', () => {
+    const h = mount({ selectionMode: 'multiple' })
+    h.api().selectRow('a')
+    h.api().selectRow('d', { extend: true })
+    // c 是禁用行，选不上但占着顺序位置
+    expect(h.selection()).toEqual(['a', 'b', 'd'])
+  })
+
+  it('那一段并进当前选中，先前勾的不被清掉——表格是复选框语义', () => {
+    const h = mount({ selectionMode: 'multiple' })
+    h.api().selectRow('d')
+    h.api().selectRow('a')
+    h.api().selectRow('b', { extend: true })
+    expect(h.selection()).toEqual(['d', 'a', 'b'])
+  })
+
+  it('锚点不动：连着按 Shift 从同一行改这一段的长短', () => {
+    const h = mount({ selectionMode: 'multiple' })
+    h.api().selectRow('a')
+    h.api().selectRow('d', { extend: true })
+    expect(h.selection()).toEqual(['a', 'b', 'd'])
+    h.api().selectRow('b', { extend: true })
+    expect(h.selection()).toEqual(['a', 'b'])
+  })
+
+  it('还没有锚点时退化成普通的切换', () => {
+    const h = mount({ selectionMode: 'multiple' })
+    h.api().selectRow('b', { extend: true })
+    expect(h.selection()).toEqual(['b'])
+  })
+
+  it('单选不认范围选', () => {
+    const h = mount({ selectionMode: 'single' })
+    h.api().selectRow('a')
+    h.api().selectRow('d', { extend: true })
+    expect(h.selection()).toEqual(['d'])
+  })
+
+  it('裸点击仍是切换，不是替换——既有语义不变', () => {
+    const h = mount({ selectionMode: 'multiple' })
+    h.api().selectRow('a')
+    h.api().selectRow('b')
+    expect(h.selection()).toEqual(['a', 'b'])
+  })
+})

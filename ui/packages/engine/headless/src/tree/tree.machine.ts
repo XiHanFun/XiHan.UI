@@ -1,5 +1,5 @@
 import type { TreeNode, TreeNodeMeta, TreeSchema, TreeSelectionMode, TreeVisibleNode } from './tree.types'
-import { cascadeToggle, collapseChecked, createTypeahead } from '@xihan-ui/behavior'
+import { applySelection, cascadeToggle, collapseChecked, createTypeahead } from '@xihan-ui/behavior'
 import { setup } from '@xihan-ui/machine'
 
 const { createMachine } = setup<TreeSchema>()
@@ -120,6 +120,8 @@ export const treeMachine = createMachine({
     })),
     // 焦点锚点不受控、不对外通知：它只服务 roving tabindex 与方向键起点
     focusedValue: cell<string | null>(() => ({ defaultValue: null })),
+    selectionAnchor: cell<string | null>(() => ({ defaultValue: null })),
+    selectionBaseline: cell<string[] | null>(() => ({ defaultValue: null })),
   }),
   refs: () => ({
     typeahead: createTypeahead(),
@@ -184,6 +186,30 @@ export const treeMachine = createMachine({
         if (e.type !== 'NODE.SELECT')
           return
         const current = context.get('selection')
+        const anchor = context.get('selectionAnchor')
+        const multiple = treeSelectionMode(prop('selectionMode'), prop('multiple')) === 'multiple'
+
+        // 按住 Shift 选一段。级联那一路不接：勾一个本来就带一片，
+        // 再叠上范围选，选出来什么会难以预料
+        if (e.extend && multiple && !prop('cascade') && anchor != null) {
+          const roots = prop('collection') ?? []
+          // 全序取展开后的可见行：折叠起来的子节点不在屏幕上，不该被一段选进去
+          const order = flattenTree(roots, context.get('expandedValue')).map(row => row.value)
+          const baseline = context.get('selectionBaseline') ?? current
+          context.set('selectionBaseline', baseline)
+          const next = applySelection({
+            state: { selected: baseline, anchor },
+            mode: 'multiple',
+            value: e.value,
+            extend: true,
+            additive: true,
+            items: order,
+          })
+          context.set('selection', [...next.selected])
+          return
+        }
+        context.set('selectionAnchor', e.value)
+        context.set('selectionBaseline', null)
         // 单选没有取消选中这回事，点两下不会把树点空
         if (treeSelectionMode(prop('selectionMode'), prop('multiple')) === 'single') {
           context.set('selection', [e.value])

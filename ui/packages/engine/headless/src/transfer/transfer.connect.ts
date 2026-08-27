@@ -175,7 +175,7 @@ export function connectTransfer<T extends PropTypes>(
     setValue: next => send({ type: 'VALUE.SET', value: next }),
     setSelection: next => send({ type: 'SELECTION.SET', value: next }),
     setQuery: (side, next) => send({ type: 'SEARCH.SET', side, query: next }),
-    toggle: v => send({ type: 'ITEM.TOGGLE', value: v }),
+    toggle: (v, options) => send({ type: 'ITEM.TOGGLE', value: v, extend: options?.extend }),
     toggleAll: side => send({ type: 'SIDE.TOGGLE_ALL', side }),
     move: to => send({ type: 'ITEMS.MOVE', to }),
 
@@ -370,10 +370,10 @@ export function connectTransfer<T extends PropTypes>(
         'tabindex': shown && anchor[item.side] === item.value ? 0 : -1,
         // 不属于本侧、或被搜索筛掉的那一份只隐去，不卸载作者节点
         'hidden': !shown || undefined,
-        'onClick': () => {
+        'onClick': (event: MouseEvent) => {
           if (!shown || locked || !editable[item.side])
             return
-          send({ type: 'ITEM.TOGGLE', value: item.value })
+          send({ type: 'ITEM.TOGGLE', value: item.value, extend: event.shiftKey })
         },
         // 焦点是事实不是许可：禁用条目被点到也记锚点，方向键才知道从哪儿起步
         'onFocus': () => {

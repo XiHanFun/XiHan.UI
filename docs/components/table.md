@@ -239,7 +239,7 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 | `setSort` | `(next: TableSortDescriptor[]) => void` |  |
 | `toggleSort` | `(value: string, options?: { append?: boolean }) => void` |  |
 | `setSelection` | `(next: TableSelection) => void` |  |
-| `selectRow` | `(value: string) => void` |  |
+| `selectRow` | `(value: string, options?: { extend?: boolean }) => void` | 选中某一行。extend 为真时选中锚点到这一行那一段（仅复选）。 |
 | `toggleSelectAll` | `() => void` |  |
 | `setExpandedValue` | `(next: string[]) => void` |  |
 | `expandRow` | `(value: string) => void` |  |

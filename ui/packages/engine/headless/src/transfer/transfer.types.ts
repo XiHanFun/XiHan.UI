@@ -87,6 +87,10 @@ export interface TransferSchema extends MachineSchema {
     value: string[]
     /** 被勾中的值，恒为数组。受控（selection 给定）时 cell 直读 prop。 */
     selection: string[]
+    /** 范围选的起点。Shift 那一段从它算起，跨到另一侧时作废。 */
+    selectionAnchor: string | null
+    /** 按住 Shift 之前的那份勾选，每一下都从它重算，往回点才收得回来。 */
+    selectionBaseline: string[] | null
     /** 两侧各自的搜索串。不受控、不对外通知：它只影响"看得见什么"。 */
     sourceQuery: string
     targetQuery: string
@@ -107,7 +111,7 @@ export interface TransferSchema extends MachineSchema {
     /** 整体改写勾选集合。 */
     | { type: 'SELECTION.SET', value: string[] }
     /** 切换一个条目的勾选态。 */
-    | { type: 'ITEM.TOGGLE', value: string }
+    | { type: 'ITEM.TOGGLE', value: string, extend?: boolean }
     /** 全选/取消全选某一侧（只动该侧可见且未禁用的那些）。 */
     | { type: 'SIDE.TOGGLE_ALL', side: TransferSide }
     /** 把对面勾中的条目搬到 to 侧。 */
@@ -153,7 +157,8 @@ export interface TransferApi<T extends PropTypes = PropTypes> {
   setValue: (next: string[]) => void
   setSelection: (next: string[]) => void
   setQuery: (side: TransferSide, query: string) => void
-  toggle: (value: string) => void
+  /** 切换某一项的勾选。extend 为真时选中锚点到这一项那一段（同侧才成立）。 */
+  toggle: (value: string, options?: { extend?: boolean }) => void
   toggleAll: (side: TransferSide) => void
   /** 程序化搬运；焦点安排不在这里做，那要知道是哪个节点触发的。 */
   move: (to: TransferSide) => void

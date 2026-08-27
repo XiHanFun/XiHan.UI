@@ -258,6 +258,19 @@ export interface TableSchema extends MachineSchema {
     expanded: string[]
     /** 焦点位于表体时的瞬态锚点，焦点离开即清空。 */
     focusedRow: string | null
+    /**
+     * 范围选的起点。与 focusedRow 是两回事：那个跟着焦点跑、离场即清，
+     * 这个只在选中发生时挪，Shift 那一段从它算起。
+     */
+    selectionAnchor: string | null
+    /**
+     * 按住 Shift 之前的那份选中集。
+     *
+     * 每一下 Shift 都从它重算「基线 ∪ 这一段」，而不是在上一次的结果上继续并——
+     * 只并的话连着按 Shift 就只能把选区越拉越大，往回点收不回来。
+     * 任何非 Shift 的选中操作都会把它作废。
+     */
+    selectionBaseline: string[] | null
     /** 列偏好。受控（columnPreference 给定）时 cell 直读 prop。 */
     columnPreference: TableColumnPreference
     /** 正在拖着改宽的那一列；没在拖是 null。 */
@@ -296,7 +309,7 @@ export interface TableSchema extends MachineSchema {
     /** 整体改写选中集合。 */
     | { type: 'SELECTION.SET', value: TableSelection }
     /** 切换单行选中（单选替换、复选增删）。 */
-    | { type: 'ROW.SELECT', value: string }
+    | { type: 'ROW.SELECT', value: string, extend?: boolean }
     /** 全选把手：全选着就清空，否则把当前可选行全部纳入。 */
     | { type: 'SELECTION.ALL_TOGGLE' }
     /** 整体改写展开集合。 */
@@ -365,7 +378,8 @@ export interface TableApi<T extends PropTypes = PropTypes> {
   setSort: (next: TableSortDescriptor[]) => void
   toggleSort: (value: string, options?: { append?: boolean }) => void
   setSelection: (next: TableSelection) => void
-  selectRow: (value: string) => void
+  /** 选中某一行。extend 为真时选中锚点到这一行那一段（仅复选）。 */
+  selectRow: (value: string, options?: { extend?: boolean }) => void
   toggleSelectAll: () => void
   setExpandedValue: (next: string[]) => void
   expandRow: (value: string) => void

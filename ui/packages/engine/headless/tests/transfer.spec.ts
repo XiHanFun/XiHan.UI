@@ -736,3 +736,44 @@ describe('连接层：整体禁用与受控', () => {
     expect(h.item('source', 'apple').getAttribute('aria-selected')).toBe('false')
   })
 })
+
+describe('范围选', () => {
+  it('按住 Shift 选中锚点到这一项那一段，按本侧可操作序取', () => {
+    const h = mount()
+    h.api().toggle('apple')
+    h.api().toggle('durian', { extend: true })
+    // banana 禁用，不在可操作序里，因此不被选进去
+    expect(h.selection()).toEqual(['apple', 'cherry', 'durian'])
+  })
+
+  it('锚点不动、且能收缩——每一下都从基线重算', () => {
+    const h = mount()
+    h.api().toggle('apple')
+    h.api().toggle('durian', { extend: true })
+    expect(h.selection()).toEqual(['apple', 'cherry', 'durian'])
+    h.api().toggle('cherry', { extend: true })
+    expect(h.selection()).toEqual(['apple', 'cherry'])
+  })
+
+  it('那一段并进先前勾的，不清掉它们', () => {
+    const h = mount()
+    h.api().toggle('durian')
+    h.api().toggle('apple')
+    h.api().toggle('cherry', { extend: true })
+    expect(h.selection()).toEqual(['durian', 'apple', 'cherry'])
+  })
+
+  it('锚点在另一侧时退化成普通切换——两侧是各自独立的列表', () => {
+    const h = mount({ defaultValue: ['durian'] })
+    // apple 在 source 侧，durian 已被搬到 target 侧
+    h.api().toggle('apple')
+    h.api().toggle('durian', { extend: true })
+    expect(h.selection()).toEqual(['apple', 'durian'])
+  })
+
+  it('还没有锚点时退化成普通切换', () => {
+    const h = mount()
+    h.api().toggle('cherry', { extend: true })
+    expect(h.selection()).toEqual(['cherry'])
+  })
+})
