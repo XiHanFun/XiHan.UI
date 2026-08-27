@@ -668,6 +668,10 @@ export function connectTable<T extends PropTypes>(
         'onKeyDown': (event: KeyboardEvent) => {
           if (!resizable)
             return
+          // 带 Ctrl/Cmd/Alt 的组合一律不归改宽管（Alt+方向键之类归浏览器与读屏）。
+          // Shift 不在此列：它是大步，见下
+          if (event.ctrlKey || event.metaKey || event.altKey)
+            return
           const step = resizeStepFromKey(event.key, dir === 'rtl')
           if (step == null)
             return

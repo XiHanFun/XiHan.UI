@@ -88,6 +88,16 @@ function key(h: Harness, id: string, k: string, shiftKey = false): void {
   ;(props.onKeyDown as (e: KeyboardEvent) => void)({ key: k, shiftKey, preventDefault: () => {} } as KeyboardEvent)
 }
 
+/** 带修饰键的那一路，顺带看它有没有挡掉浏览器的默认行为。 */
+function keyWith(h: Harness, id: string, k: string, mods: Partial<KeyboardEvent>): { prevented: boolean } {
+  let prevented = false
+  const props = h.api().getColumnResizeTriggerProps({ value: id }) as Dict
+  ;(props.onKeyDown as (e: KeyboardEvent) => void)(
+    { key: k, shiftKey: false, ...mods, preventDefault: () => { prevented = true } } as KeyboardEvent,
+  )
+  return { prevented }
+}
+
 beforeEach(() => {
   document.body.innerHTML = ''
 })
@@ -233,6 +243,23 @@ describe('列宽 · 键盘', () => {
     const h = mount({ columns: [{ id: 'pct', label: '百分比', width: '40%', resizable: true }] })
     key(h, 'pct', 'ArrowRight')
     expect(h.widths().pct).toBeUndefined()
+  })
+
+  it('带 Ctrl / Cmd / Alt 的组合不归改宽管，也不挡浏览器的默认行为', () => {
+    // Alt+方向键在多数浏览器是前进后退，吞掉它等于把人锁在这一页
+    for (const mods of [{ ctrlKey: true }, { metaKey: true }, { altKey: true }]) {
+      const h = mount()
+      const { prevented } = keyWith(h, 'name', 'ArrowRight', mods)
+      expect(h.widths().name).toBeUndefined()
+      expect(prevented).toBe(false)
+    }
+  })
+
+  it('按住 Shift 仍然归它管——那是大步，不是别人的键', () => {
+    const h = mount()
+    const { prevented } = keyWith(h, 'name', 'ArrowRight', { shiftKey: true })
+    expect(prevented).toBe(true)
+    expect(h.widths().name).toBe(200 + TABLE_COLUMN_LARGE_STEP)
   })
 })
 
