@@ -62,6 +62,12 @@ oneWay 把往回搬那条路整个封死，右侧不再接受勾选，往回的�
 
 <XhDemo src="transfer/07-long-list" />
 
+### 范围选
+
+按住 Shift 点某一项，选中锚点到它那一段；锚点跨到另一侧时退化成普通勾选
+
+<XhDemo src="transfer/07-range-selection" />
+
 ### 整块换档
 
 面板高度、表头、条目行、勾选格与搬运按钮各是一个令牌，写在根上整块一起换档

@@ -129,6 +129,12 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 
 <XhDemo src="table/18-prefix-columns" />
 
+### 范围选
+
+按住 Shift 点勾选框选中一段；焦点落在表体里按 Ctrl/Cmd + A 全选。禁用行占着顺序位置但不被选进去
+
+<XhDemo src="table/19-range-selection" />
+
 ## 产物
 
 | 层 | 值 |

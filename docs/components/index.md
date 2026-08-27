@@ -104,7 +104,7 @@
 | [文本输入](./text-field) | `text-field` | 5 | 1 | 16 |
 | [时间输入](./time-field) | `time-field` | 7 | 9 | 9 |
 | [时间选择器](./time-picker) | `time-picker` | 14 | 24 | 11 |
-| [穿梭框](./transfer) | `transfer` | 14 | 11 | 8 |
+| [穿梭框](./transfer) | `transfer` | 14 | 11 | 9 |
 | [树选择](./tree-select) | `tree-select` | 20 | 16 | 13 |
 
 ## 数据展示
@@ -136,12 +136,12 @@
 | [数值动画](./number-animation) | `number-animation` | 1 | 0 | 4 |
 | [二维码](./qr-code) | `qr-code` | 2 | 0 | 8 |
 | [统计数值](./statistic) | `statistic` | 5 | 0 | 5 |
-| [表格](./table) | `table` | 16 | 12 | 18 |
+| [表格](./table) | `table` | 16 | 12 | 19 |
 | [标签](./tag) | `tag` | 3 | 1 | 6 |
 | [时间](./time) | `time` | 1 | 0 | 4 |
 | [时间线](./timeline) | `timeline` | 8 | 0 | 5 |
 | [计时器](./timer) | `timer` | 5 | 1 | 6 |
-| [树](./tree) | `tree` | 14 | 10 | 11 |
+| [树](./tree) | `tree` | 14 | 10 | 12 |
 | [虚拟滚动](./virtualizer) | `virtualizer` | 4 | 0 | 5 |
 
 ## 反馈
