@@ -180,7 +180,7 @@ orientation 三档：竖排、横排，换行网格用 both，落点按最近中
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-sortable-gap` · `--xh-sortable-handle-bg-hover` · `--xh-sortable-handle-fg` · `--xh-sortable-handle-fg-disabled` · `--xh-sortable-handle-fg-hover` · `--xh-sortable-handle-radius` · `--xh-sortable-handle-size` · `--xh-sortable-item-bg` · `--xh-sortable-item-gap` · `--xh-sortable-item-opacity-dragging` · `--xh-sortable-item-radius` · `--xh-sortable-item-shadow-dragging`
+`--xh-sortable-gap` · `--xh-sortable-handle-bg-hover` · `--xh-sortable-handle-fg` · `--xh-sortable-handle-fg-disabled` · `--xh-sortable-handle-fg-hover` · `--xh-sortable-handle-radius` · `--xh-sortable-handle-size` · `--xh-sortable-item-gap` · `--xh-sortable-item-opacity-dragging` · `--xh-sortable-item-radius` · `--xh-sortable-item-shadow-dragging`
 
 ## 动效
 
