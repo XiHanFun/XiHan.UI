@@ -1,11 +1,13 @@
 // 面板几何的纯函数：只算数，不碰 DOM，也不认识状态机。
 
+import type { ResizeConstraints } from '@xihan-ui/pointer'
 import type {
   FloatingPanelPosition,
   FloatingPanelResizeEdge,
   FloatingPanelSize,
   FloatingPanelStage,
 } from './floating-panel.types'
+import { clampSize, resizeRect } from '@xihan-ui/pointer'
 
 /** 作者没给 minSize 时的尺寸下限：再小标题栏里的按钮就排不下了。 */
 export const FLOATING_PANEL_MIN_SIZE: FloatingPanelSize = { width: 160, height: 120 }
@@ -46,20 +48,25 @@ export function sameFloatingPanelSize(
 
 /**
  * 把尺寸夹进上下限。下限缺省用 FLOATING_PANEL_MIN_SIZE，上限不给即不封顶。
- * 上限比下限还小时以下限为准（先夹上限、后夹下限，下限那一步落在后面）。
+ * 上限比下限还小时以下限为准。
+ *
+ * 夹取本身由 pointer 的 resize 层做，这里只补面板自己的缺省下限。
  */
 export function clampFloatingPanelSize(
   size: FloatingPanelSize,
   min?: FloatingPanelSize,
   max?: FloatingPanelSize,
 ): FloatingPanelSize {
-  const minW = Math.max(0, finite(min?.width ?? FLOATING_PANEL_MIN_SIZE.width))
-  const minH = Math.max(0, finite(min?.height ?? FLOATING_PANEL_MIN_SIZE.height))
-  const maxW = max?.width != null && Number.isFinite(max.width) ? max.width : Number.POSITIVE_INFINITY
-  const maxH = max?.height != null && Number.isFinite(max.height) ? max.height : Number.POSITIVE_INFINITY
+  return clampSize(size, panelConstraints(min, max))
+}
+
+/** 面板的上下限翻成 resize 层的约束形状。下限缺省用面板自己那份。 */
+function panelConstraints(min?: FloatingPanelSize, max?: FloatingPanelSize): ResizeConstraints {
   return {
-    width: Math.max(minW, Math.min(maxW, finite(size.width))),
-    height: Math.max(minH, Math.min(maxH, finite(size.height))),
+    minWidth: min?.width ?? FLOATING_PANEL_MIN_SIZE.width,
+    minHeight: min?.height ?? FLOATING_PANEL_MIN_SIZE.height,
+    maxWidth: max?.width,
+    maxHeight: max?.height,
   }
 }
 
@@ -75,8 +82,8 @@ export function moveFloatingPanel(
 /**
  * 推动某条边之后的矩形。
  *
- * 西边与北边动的是矩形的起点，所以位置要跟着走；尺寸先夹进上下限，起点再按"实际收了多少"
- * 回算——顶到下限之后对边才不会继续漂。
+ * 几何交给 pointer 的 resize 层：西边与北边动的是起点、顶到下限之后对边不再漂，
+ * 这些规则那边统一实现，面板这里只负责把自己的上下限翻过去、把结果拆回位置与尺寸。
  */
 export function resizeFloatingPanel(
   position: FloatingPanelPosition,
@@ -87,23 +94,15 @@ export function resizeFloatingPanel(
   min?: FloatingPanelSize,
   max?: FloatingPanelSize,
 ): { position: FloatingPanelPosition, size: FloatingPanelSize } {
-  const moveX = finite(dx)
-  const moveY = finite(dy)
-  const east = edge.includes('e')
-  const west = edge.includes('w')
-  const north = edge.includes('n')
-  const south = edge.includes('s')
-
-  const width = east ? size.width + moveX : west ? size.width - moveX : size.width
-  const height = south ? size.height + moveY : north ? size.height - moveY : size.height
-  const next = clampFloatingPanelSize({ width, height }, min, max)
-
+  const next = resizeRect({
+    rect: { x: finite(position.x), y: finite(position.y), width: size.width, height: size.height },
+    edge,
+    delta: { x: dx, y: dy },
+    constraints: panelConstraints(min, max),
+  })
   return {
-    position: {
-      x: west ? finite(position.x) + (finite(size.width) - next.width) : finite(position.x),
-      y: north ? finite(position.y) + (finite(size.height) - next.height) : finite(position.y),
-    },
-    size: next,
+    position: { x: next.x, y: next.y },
+    size: { width: next.width, height: next.height },
   }
 }
 
