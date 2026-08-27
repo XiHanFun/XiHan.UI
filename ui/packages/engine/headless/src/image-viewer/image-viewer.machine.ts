@@ -1,7 +1,9 @@
-import type { ImageViewerItem, ImageViewerSchema, ImageViewerTransform } from './image-viewer.types'
+import type { PinchSnapshot, TrackedPoint } from '@xihan-ui/pointer'
+import type { ImageViewerItem, ImageViewerRefs, ImageViewerSchema, ImageViewerTransform } from './image-viewer.types'
 import { acquireScrollLock, createDismissLayer, createFocusScope } from '@xihan-ui/behavior'
 import { hideOutside } from '@xihan-ui/kernel'
 import { setup } from '@xihan-ui/machine'
+import { createMultiPointerSession, pinchChange, pinchSnapshot, resolveSessionDoc } from '@xihan-ui/pointer'
 import { closeReasonOf } from '../shared/close-reason'
 
 const { createMachine } = setup<ImageViewerSchema>()
@@ -71,6 +73,8 @@ export const imageViewerMachine = createMachine({
     registerLayer: null,
     getContentEl: () => null,
     panSession: null,
+    pinchSession: null,
+    gesture: null,
   }),
   initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
   watch: ({ track, prop, context, action }) => {
@@ -92,8 +96,8 @@ export const imageViewerMachine = createMachine({
     open: {
       // 每次展开都从基准态看起
       entry: ['resetTransform'],
-      effects: ['trackOverlay'],
-      exit: ['panEnd'],
+      effects: ['trackOverlay', 'trackPointers'],
+      exit: ['pointersEnd'],
       on: {
         'CLOSE': [
           { guard: 'isOpenControlled', actions: ['invokeOnClose'] },
@@ -107,9 +111,9 @@ export const imageViewerMachine = createMachine({
         'ROTATE.BY': { actions: ['rotateBy'] },
         'FLIP': { actions: ['flip'] },
         'TRANSFORM.RESET': { actions: ['resetTransform'] },
-        'PAN.START': { actions: ['panStart'] },
-        'PAN.MOVE': { actions: ['panMove'] },
-        'PAN.END': { actions: ['panEnd'] },
+        'POINTERS.DOWN': { actions: ['pointersDown'] },
+        'POINTERS.CHANGE': { actions: ['pointersChange'] },
+        'POINTERS.END': { actions: ['pointersEnd'] },
         'CONTROLLED.CLOSE': { target: 'closed' },
       },
     },
@@ -185,7 +189,60 @@ export const imageViewerMachine = createMachine({
         context.set('transform', e.axis === 'x' ? { ...t, flipX: !t.flipX } : { ...t, flipY: !t.flipY })
       },
       resetTransform: ({ context }) => context.set('transform', IMAGE_VIEWER_IDENTITY),
-      panStart: ({ context }) => context.set('panning', true),
+      /** 一根手指落在图上：交给会话跟着，并按当前点数拍基准。 */
+      pointersDown: ({ context, refs, event }) => {
+        const e = event.current()
+        if (e.type !== 'POINTERS.DOWN')
+          return
+        const session = refs.get('gesture')
+        if (!session)
+          return
+        session.add({ pointerId: e.pointerId, clientX: e.clientX, clientY: e.clientY })
+        rebase(context, refs, session.points())
+        context.set('panning', true)
+      },
+
+      /**
+       * 触点动了。一根手指是平移，两根是缩放；点数一变就重拍基准——
+       * 从双指退回单指时不重拍的话，剩下那根会带着上一段的基准继续走，图会跳一下。
+       */
+      pointersChange: ({ context, prop, refs, event }) => {
+        const e = event.current()
+        if (e.type !== 'POINTERS.CHANGE')
+          return
+        const points = e.points
+        const pinch = refs.get('pinchSession')
+        const pan = refs.get('panSession')
+
+        if (points.length >= 2) {
+          if (!pinch) {
+            rebase(context, refs, points)
+            return
+          }
+          applyPinch(context, prop, pinch, pinchSnapshot(points[0]!, points[1]!))
+          return
+        }
+
+        if (points.length === 1) {
+          // 上一拍还是双指：这一拍先重拍成单指基准，位移从这里重新起量
+          if (pinch || !pan) {
+            rebase(context, refs, points)
+            return
+          }
+          const t = context.get('transform')
+          context.set('transform', {
+            ...t,
+            x: pan.originX + (points[0]!.clientX - pan.startX),
+            y: pan.originY + (points[0]!.clientY - pan.startY),
+          })
+        }
+      },
+
+      pointersEnd: ({ context, refs }) => {
+        refs.set('panSession', null)
+        refs.set('pinchSession', null)
+        context.set('panning', false)
+      },
       panMove: ({ context, event }) => {
         const e = event.current()
         if (e.type !== 'PAN.MOVE')
@@ -200,6 +257,23 @@ export const imageViewerMachine = createMachine({
     },
     effects: {
       // 装配顺序照 dialog：dismiss → focus → scroll 锁 → 背景失活。看片恒为模态。
+      /**
+       * 跟住落在图上的那几根手指。会话的生死跟着 open：离开时摘干净，
+       * 拖到一半把浮层关掉也不会把监听留在文档上。
+       */
+      trackPointers: ({ refs, scope, send }) => {
+        const session = createMultiPointerSession({
+          doc: resolveSessionDoc(refs.get('getContentEl')() ?? scope.getDoc().documentElement),
+          onChange: points => send({ type: 'POINTERS.CHANGE', points }),
+          onEnd: () => send({ type: 'POINTERS.END' }),
+        })
+        refs.set('gesture', session)
+        return () => {
+          session.dispose()
+          refs.set('gesture', null)
+        }
+      },
+
       trackOverlay: ({ refs, prop, send, flush }) => {
         const config = refs.get('config')
         const registerLayer = refs.get('registerLayer')
@@ -271,3 +345,57 @@ export const imageViewerMachine = createMachine({
     },
   },
 })
+
+/**
+ * 按当前点数重拍基准。
+ *
+ * 一根手指记平移的起点，两根记双指的几何；两者互斥——点数一变就把另一份清掉，
+ * 留着的话下一拍会拿过期的基准去算，图会跳。
+ */
+function rebase(
+  context: { get: (k: 'transform') => ImageViewerTransform },
+  refs: { set: <K extends 'panSession' | 'pinchSession'>(k: K, v: ImageViewerRefs[K]) => void },
+  points: readonly TrackedPoint[],
+): void {
+  const t = context.get('transform')
+  if (points.length >= 2) {
+    refs.set('panSession', null)
+    refs.set('pinchSession', { start: pinchSnapshot(points[0]!, points[1]!), scale: t.scale, x: t.x, y: t.y })
+    return
+  }
+  refs.set('pinchSession', null)
+  const first = points[0]
+  refs.set('panSession', first ? { startX: first.clientX, startY: first.clientY, originX: t.x, originY: t.y } : null)
+}
+
+/**
+ * 双指跟手。缩放与位移都相对起始那一刻算，不相对上一帧——相对上一帧会把浮点误差一路累起来。
+ *
+ * 位移里除了两指中点自己的移动，还要补上「缩放绕原点发生」这一段：
+ * 不补的话图会绕自己的原点缩，手指底下的那一处会跑掉。
+ * 倍率取**夹过上下限之后**的那个，否则顶到边界后图还会继续漂。
+ */
+function applyPinch(
+  context: {
+    get: (k: 'transform') => ImageViewerTransform
+    set: (k: 'transform', v: ImageViewerTransform) => void
+  },
+  prop: <K extends keyof ImageViewerSchema['props']>(k: K) => ImageViewerSchema['props'][K],
+  session: NonNullable<ImageViewerRefs['pinchSession']>,
+  current: PinchSnapshot,
+): void {
+  const change = pinchChange(session.start, current)
+  const scale = clampScale(
+    session.scale * change.scale,
+    prop('minScale') ?? IMAGE_VIEWER_MIN_SCALE,
+    prop('maxScale') ?? IMAGE_VIEWER_MAX_SCALE,
+  )
+  const applied = session.scale === 0 ? 1 : scale / session.scale
+  const t = context.get('transform')
+  context.set('transform', {
+    ...t,
+    scale,
+    x: session.x * applied + change.translate.x,
+    y: session.y * applied + change.translate.y,
+  })
+}

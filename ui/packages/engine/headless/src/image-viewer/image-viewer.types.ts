@@ -1,5 +1,6 @@
 import type { Cleanup, Layer, OverlayCloseReason, PropTypes, RuntimeConfig } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
+import type { MultiPointerSession, PinchSnapshot, TrackedPoint } from '@xihan-ui/pointer'
 
 /** 一张待看的图。 */
 export interface ImageViewerItem {
@@ -42,7 +43,15 @@ export interface ImageViewerRefs {
   registerLayer: (() => { layer: Layer, dispose: Cleanup }) | null
   getContentEl: () => HTMLElement | null
   /** 平移中的指针会话：起点与起始平移量；不在拖拽中为 null。 */
-  panSession: { pointerId: number, startX: number, startY: number, originX: number, originY: number } | null
+  /** 单指平移的基准：按下那一刻的指针位置与当时的偏移。 */
+  panSession: { startX: number, startY: number, originX: number, originY: number } | null
+  /** 跟住落在图上的那几根指针。open 期间存在，离开即摘。 */
+  gesture: MultiPointerSession | null
+  /**
+   * 双指起始那一刻的快照：两指几何，加上当时的缩放与位移。
+   * 每一帧都相对它算，不相对上一帧——相对上一帧会把浮点误差一路累起来。
+   */
+  pinchSession: { start: PinchSnapshot, scale: number, x: number, y: number } | null
 }
 
 export interface ImageViewerOpenChangeDetails {
@@ -113,7 +122,11 @@ export interface ImageViewerSchema extends MachineSchema {
     | { type: 'TRANSFORM.RESET' }
     /** 平移到绝对偏移（px），由视口的指针会话驱动。 */
     | { type: 'PAN.MOVE', x: number, y: number }
-    | { type: 'PAN.START' }
+    /** 一根手指落在图上。连接层只报落点，跟不跟得住归会话管。 */
+    | { type: 'POINTERS.DOWN', pointerId: number, clientX: number, clientY: number }
+    /** 触点动了或少了一根。一根是平移，两根是缩放，点数一变就重拍基准。 */
+    | { type: 'POINTERS.CHANGE', points: readonly TrackedPoint[] }
+    | { type: 'POINTERS.END' }
     | { type: 'PAN.END' }
     // 受控回写：宿主改 open prop 后由 watch 派发，无条件跳转，不再通知
     | { type: 'CONTROLLED.OPEN' }
@@ -128,14 +141,16 @@ export interface ImageViewerSchema extends MachineSchema {
     | 'goNext'
     | 'goPrev'
     | 'zoomBy'
+    | 'panMove'
+    | 'pointersDown'
+    | 'pointersChange'
+    | 'pointersEnd'
     | 'zoomTo'
     | 'rotateBy'
     | 'flip'
     | 'resetTransform'
-    | 'panStart'
-    | 'panMove'
     | 'panEnd'
-  effect: 'trackOverlay'
+  effect: 'trackOverlay' | 'trackPointers'
 }
 
 export interface ImageViewerApi<T extends PropTypes = PropTypes> {

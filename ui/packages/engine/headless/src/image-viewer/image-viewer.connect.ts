@@ -16,7 +16,7 @@ export function connectImageViewer<T extends PropTypes>(
   service: Service<ImageViewerSchema>,
   normalize: NormalizeProps<T>,
 ): ImageViewerApi<T> {
-  const { state, context, prop, send, refs, scope } = service
+  const { state, context, prop, send, scope } = service
   const open = state.get() === 'open'
   const items = prop('items') ?? []
   const count = imageViewerCount(items)
@@ -151,42 +151,16 @@ export function connectImageViewer<T extends PropTypes>(
         event.preventDefault()
         send({ type: 'ZOOM.BY', delta: event.deltaY < 0 ? 1 : -1 })
       },
-      // 拖拽平移：起点与起始偏移记进 refs 的会话，move 里换算绝对偏移
+      /**
+       * 手指落在图上。这里只报落点，跟手与收尾都归多指会话——
+       * 它挂在文档上，手划出图片、划出窗口都跟得住，也不必再逐个捕获指针。
+       * 一根是平移，两根是缩放，点数怎么变由机器判。
+       */
       'onPointerdown': (event: PointerEvent) => {
         // 只认主键，右键留给系统菜单
         if (event.button !== 0)
           return
-        const el = event.currentTarget as HTMLElement
-        el.setPointerCapture?.(event.pointerId)
-        const t = context.get('transform')
-        refs.set('panSession', {
-          pointerId: event.pointerId,
-          startX: event.clientX,
-          startY: event.clientY,
-          originX: t.x,
-          originY: t.y,
-        })
-        send({ type: 'PAN.START' })
-      },
-      'onPointermove': (event: PointerEvent) => {
-        const session = refs.get('panSession')
-        if (!session || session.pointerId !== event.pointerId)
-          return
-        send({
-          type: 'PAN.MOVE',
-          x: session.originX + (event.clientX - session.startX),
-          y: session.originY + (event.clientY - session.startY),
-        })
-      },
-      'onPointerup': (event: PointerEvent) => {
-        const session = refs.get('panSession')
-        if (!session || session.pointerId !== event.pointerId)
-          return
-        send({ type: 'PAN.END' })
-      },
-      'onPointercancel': () => {
-        if (refs.get('panSession'))
-          send({ type: 'PAN.END' })
+        send({ type: 'POINTERS.DOWN', pointerId: event.pointerId, clientX: event.clientX, clientY: event.clientY })
       },
     }),
 
