@@ -16,6 +16,7 @@
 
 - `items` 给整组图，`index` 决定当前哪一张，`loop` 决定是否回绕。
 - 缩放步长与上下限可调。
+- 触屏上两指撑开放大、捏合缩小，单指平移；缩放以两指中点为锚。
 - 关闭后焦点归还触发器。
 
 ## 示例
@@ -37,6 +38,12 @@
 open 与 index 双受控；translations 换工具条的可及名与计数文案
 
 <XhDemo src="image-viewer/03-controlled" />
+
+### 双指缩放
+
+触屏上两指撑开放大、捏合缩小，单指平移；缩放夹在 minScale 与 maxScale 之间
+
+<XhDemo src="image-viewer/04-gesture" />
 
 ## 产物
 
@@ -110,7 +117,7 @@ open 与 index 双受控；translations 换工具条的可及名与计数文案
 
 **状态**：`open` · `closed`
 
-**事件**：`OPEN` · `CLOSE` · `INDEX.SET` · `INDEX.NEXT` · `INDEX.PREV` · `ZOOM.BY` · `ZOOM.SET` · `ROTATE.BY` · `FLIP` · `TRANSFORM.RESET` · `PAN.MOVE` · `PAN.START` · `PAN.END` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE`
+**事件**：`OPEN` · `CLOSE` · `INDEX.SET` · `INDEX.NEXT` · `INDEX.PREV` · `ZOOM.BY` · `ZOOM.SET` · `ROTATE.BY` · `FLIP` · `TRANSFORM.RESET` · `PAN.MOVE` · `POINTERS.DOWN` · `POINTERS.CHANGE` · `POINTERS.END` · `PAN.END` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE`
 
 **判据**：`isOpenControlled`
 

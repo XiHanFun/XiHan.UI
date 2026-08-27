@@ -25,6 +25,25 @@ type Dict = Record<string, unknown>
 
 // ── 纯函数：分页换算 ────────────────────────────────────────────────
 
+/** 手指落在轨道上。跟手与收尾归会话，事件派在文档上。 */
+function pressViewport(c: ReturnType<typeof makeCarousel>, clientX: number): void {
+  ;((c.api().getViewportProps() as Dict).onPointerDown as (e: PointerEvent) => void)(
+    { button: 0, pointerId: 1, clientX, clientY: 0, currentTarget: {} } as unknown as PointerEvent,
+  )
+}
+
+function movePointer(clientX: number): void {
+  document.dispatchEvent(new PointerEvent('pointermove', { pointerId: 1, clientX, clientY: 0, bubbles: true }))
+}
+
+function releasePointer(): void {
+  document.dispatchEvent(new PointerEvent('pointerup', { pointerId: 1, bubbles: true }))
+}
+
+function cancelPointer(): void {
+  document.dispatchEvent(new PointerEvent('pointercancel', { pointerId: 1, bubbles: true }))
+}
+
 describe('carouselPageCount', () => {
   it('一张都没有是 0 页，装得下一屏是 1 页', () => {
     // 0 页与 1 页是两回事：前者该把整条轮播连同两端按钮一起判成不可用
@@ -800,22 +819,14 @@ describe('connectCarousel 指针', () => {
 
   it('拖拽过阈值翻一页，途中的位移实时叠进轨道', () => {
     const c = makeCarousel({ ...SIX, allowPointerDrag: true })
-    const drag = (): Dict & {
-      onPointerDown: (e: PointerEvent) => void
-      onPointerMove: (e: PointerEvent) => void
-      onPointerUp: () => void
-      onPointerCancel: () => void
-    } => c.api().getViewportProps() as never
-    const at = (clientX: number): PointerEvent =>
-      ({ button: 0, pointerId: 1, clientX, clientY: 0, currentTarget: {} } as unknown as PointerEvent)
 
-    drag().onPointerDown(at(300))
-    drag().onPointerMove(at(240))
+    pressViewport(c, 300)
+    movePointer(240)
     expect(c.api().dragging).toBe(true)
     expect((c.api().getItemGroupProps() as Dict).style)
       .toEqual({ transform: 'translateX(calc(0% - 60px))' })
 
-    drag().onPointerUp()
+    releasePointer()
     expect(c.api().dragging).toBe(false)
     expect(c.api().page).toBe(1)
     // 松手后轨道回到整页位移，不再挂着那段像素
@@ -824,34 +835,26 @@ describe('connectCarousel 指针', () => {
 
   it('没过阈值就弹回原页；反向拖时位移用减号拼进 calc', () => {
     const c = makeCarousel({ ...SIX, defaultPage: 2, allowPointerDrag: true })
-    const view = (): Dict & { onPointerDown: (e: PointerEvent) => void, onPointerMove: (e: PointerEvent) => void, onPointerUp: () => void } =>
-      c.api().getViewportProps() as never
-    const at = (clientX: number): PointerEvent =>
-      ({ button: 0, pointerId: 1, clientX, clientY: 0, currentTarget: {} } as unknown as PointerEvent)
-
-    view().onPointerDown(at(300))
-    view().onPointerMove(at(300 + (CAROUSEL_DRAG_THRESHOLD - 1)))
+    pressViewport(c, 300)
+    movePointer(300 + (CAROUSEL_DRAG_THRESHOLD - 1))
     // calc 里写 `+ -39px` 各家解析并不一致，正负号得自己归一
     expect((c.api().getItemGroupProps() as Dict).style)
       .toEqual({ transform: `translateX(calc(-200% + ${CAROUSEL_DRAG_THRESHOLD - 1}px))` })
 
-    view().onPointerUp()
+    releasePointer()
     expect(c.api().page).toBe(2)
     expect(c.api().dragging).toBe(false)
   })
 
   it('allowPointerDrag 关着时按下不进入拖拽；系统收走指针也要收尾', () => {
     const off = makeCarousel(SIX)
-    const at = (clientX: number): PointerEvent =>
-      ({ button: 0, pointerId: 1, clientX, clientY: 0, currentTarget: {} } as unknown as PointerEvent)
-    ;((off.api().getViewportProps() as Dict).onPointerDown as (e: PointerEvent) => void)(at(300))
+    pressViewport(off, 300)
     expect(off.api().dragging).toBe(false)
 
     const on = makeCarousel({ ...SIX, allowPointerDrag: true })
-    const view = (): Dict => on.api().getViewportProps() as Dict
-    ;(view().onPointerDown as (e: PointerEvent) => void)(at(300))
-    ;(view().onPointerMove as (e: PointerEvent) => void)(at(200))
-    ;(view().onPointerCancel as () => void)()
+    pressViewport(on, 300)
+    movePointer(200)
+    cancelPointer()
     // 取消同样清干净拖拽态，否则轨道会永久挂着那段像素
     expect(on.api().dragging).toBe(false)
     expect(on.api().page).toBe(1)
@@ -859,15 +862,11 @@ describe('connectCarousel 指针', () => {
 
   it('自动播放跑着时拖拽照样翻页，并把计时重起', () => {
     const c = makeCarousel({ ...SIX, autoplay: 100, allowPointerDrag: true })
-    const view = (): Dict => c.api().getViewportProps() as Dict
-    const at = (clientX: number): PointerEvent =>
-      ({ button: 0, pointerId: 1, clientX, clientY: 0, currentTarget: {} } as unknown as PointerEvent)
-
     vi.advanceTimersByTime(80)
-    ;(view().onPointerDown as (e: PointerEvent) => void)(at(300))
-    ;(view().onPointerMove as (e: PointerEvent) => void)(at(200))
+    pressViewport(c, 300)
+    movePointer(200)
     // 收尾动作里嵌套发的 PAGE.NEXT 要真的走到（事件排队后接着排空）
-    ;(view().onPointerUp as () => void)()
+    releasePointer()
     expect(c.api().page).toBe(1)
     expect(c.state()).toBe('playing.running')
     // 拖完这一下重起了计时：不重起的话再过 20ms 就又被自动翻走一屏

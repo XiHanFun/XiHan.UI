@@ -127,7 +127,7 @@
 | [热力图](./heatmap) | `heatmap` | 13 | 10 | 11 |
 | [文本高亮](./highlight) | `highlight` | 2 | 0 | 4 |
 | [图片](./image) | `image` | 3 | 0 | 8 |
-| [图片预览](./image-viewer) | `image-viewer` | 18 | 8 | 3 |
+| [图片预览](./image-viewer) | `image-viewer` | 18 | 8 | 4 |
 | [无限滚动](./infinite-scroll) | `infinite-scroll` | 2 | 0 | 4 |
 | [JSON 视图](./json-viewer) | `json-viewer` | 13 | 9 | 8 |
 | [列表](./list) | `list` | 7 | 0 | 5 |

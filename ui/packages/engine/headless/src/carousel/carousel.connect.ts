@@ -166,33 +166,20 @@ export function connectCarousel<T extends PropTypes>(
       'data-dragging': dataAttr(dragging),
       // 不关掉沿轨道那一轴的默认滚动，指针会被 pointercancel 收走；另一轴留给页面滚动
       'style': { touchAction: allowPointerDrag ? (horizontal ? 'pan-y' : 'pan-x') : '' },
+      /**
+       * 手指落在轨道上。这里只报落点，跟手与收尾都归会话——
+       * 它挂在文档上，手划出视口仍跟得住，不必再捕获指针。
+       * 只交第一根进去：轮播是单指划动，已经在划的时候第二根不算数。
+       */
       'onPointerDown': (event: PointerEvent) => {
         // 只认主键：右键弹上下文菜单、中键是自动滚动
         if (!allowPointerDrag || event.button !== 0 || totalPages <= 1)
           return
-        const el = event.currentTarget as HTMLElement
-        // 捕获指针，手滑出视口后的 move / up 仍送到这里
-        try {
-          el.setPointerCapture(event.pointerId)
-        }
-        catch {
-          // 合成事件没有真实指针轨迹，捕获不到不影响拖拽
-        }
-        send({ type: 'DRAG.START', position: pointerPosition(event) })
-      },
-      'onPointerMove': (event: PointerEvent) => {
-        if (!isDragging())
+        const session = service.refs.get('gesture')
+        if (!session || session.points().length > 0)
           return
-        send({ type: 'DRAG.MOVE', position: pointerPosition(event) })
-      },
-      'onPointerUp': () => {
-        if (isDragging())
-          send({ type: 'DRAG.END' })
-      },
-      // 系统收走指针也要收尾，否则拖拽态永久卡住
-      'onPointerCancel': () => {
-        if (isDragging())
-          send({ type: 'DRAG.END' })
+        session.add({ pointerId: event.pointerId, clientX: pointerPosition(event), clientY: 0 })
+        send({ type: 'DRAG.START', position: pointerPosition(event) })
       },
     }),
 

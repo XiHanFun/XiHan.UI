@@ -1,6 +1,7 @@
 import type { PropFn } from '@xihan-ui/machine'
 import type { CarouselPauseSource, CarouselSchema } from './carousel.types'
 import { setTimeoutEffect, setup } from '@xihan-ui/machine'
+import { createMultiPointerSession, resolveSessionDoc } from '@xihan-ui/pointer'
 import { carouselDragDelta, carouselPageCount, clampCarouselPage } from './carousel.pages'
 
 const { createMachine } = setup<CarouselSchema>()
@@ -58,6 +59,12 @@ export const carouselMachine = createMachine({
   }),
   // 间隔为 0（没开自动播放）时不进 playing
   initialState: ({ prop }) => (resolveAutoplayInterval(prop('autoplay')) > 0 ? 'playing' : 'idle'),
+  // 跟手的会话整个生命周期都在。它不按拖动状态挂卸——常驻的代价只是几个早退的
+  // pointermove，换来的是不必为了「有拆卸时机」去改状态树
+  effects: ['trackPointer'],
+  refs: () => ({
+    gesture: null,
+  }),
   // autoplay 被改写（关掉、打开、换间隔）都要重挂计时器
   watch: ({ track, prop, action }) => track([() => prop('autoplay')], () => action(['syncAutoplay'])),
   on: {
@@ -202,6 +209,29 @@ export const carouselMachine = createMachine({
       },
     },
     effects: {
+      /**
+       * 跟住划在轨道上的那根手指。
+       *
+       * 监听挂在文档上：手划出轨道、划出窗口都要继续跟，系统收走指针也会收尾。
+       * 只认第一根——轮播是单指划动，第二根落下时连接层不会把它交进来。
+       */
+      trackPointer: ({ refs, scope, send }) => {
+        const session = createMultiPointerSession({
+          doc: resolveSessionDoc(scope.getDoc().documentElement),
+          onChange: (points: readonly { clientX: number }[]) => {
+            const first = points[0]
+            if (first)
+              send({ type: 'DRAG.MOVE', position: first.clientX })
+          },
+          onEnd: () => send({ type: 'DRAG.END' }),
+        })
+        refs.set('gesture', session)
+        return () => {
+          session.dispose()
+          refs.set('gesture', null)
+        }
+      },
+
       /**
        * 计时器只在 running 子态存在，且每次进入都从整个间隔重新计。
        * 刻意不记"还剩多少"这笔账（与 toast 相反）：指针从轮播上扫过一下之后立刻翻页，
