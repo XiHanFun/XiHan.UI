@@ -6,8 +6,14 @@ export {
   columnMoveCommand,
   columnMoveIntentFromKey,
   draggableColumnIds,
+  moveRowIds,
+  rowGroupRects,
+  rowMoveCommand,
+  rowMoveIntentFromKey,
+  rowReorderReason,
   toColumnPreferenceIndex,
 } from './table.drag'
+export type { MeasuredRow, TableRowReorderReason } from './table.drag'
 export { tableKeyboard } from './table.keyboard'
 export { TABLE_COLUMN_LARGE_STEP, TABLE_COLUMN_MIN_WIDTH, TABLE_COLUMN_STEP, tableMachine, tableSelectionMode } from './table.machine'
 export { tableMeta } from './table.meta'
@@ -27,4 +33,4 @@ export {
   tableToggleSort,
 } from './table.sort'
 export type { TableToggleSortOptions } from './table.sort'
-export type { TableApi, TableCellProps, TableColumn, TableColumnDef, TableColumnKind, TableColumnPreference, TableColumnPreferenceChangeDetails, TableColumnProps, TableDropTarget, TableExpandedChangeDetails, TableFocusModel, TableRowDef, TableRowProps, TableSchema, TableSelection, TableSelectionChangeDetails, TableSelectionMode, TableSelectionState, TableSortChangeDetails, TableSortDescriptor, TableSortDirection, TableTranslations, TableVisibleRow } from './table.types'
+export type { TableApi, TableCellProps, TableColumn, TableColumnDef, TableColumnKind, TableColumnPreference, TableColumnPreferenceChangeDetails, TableColumnProps, TableDropTarget, TableExpandedChangeDetails, TableFocusModel, TableRowDef, TableRowMoveDetails, TableRowProps, TableSchema, TableSelection, TableSelectionChangeDetails, TableSelectionMode, TableSelectionState, TableSortChangeDetails, TableSortDescriptor, TableSortDirection, TableTranslations, TableVisibleRow } from './table.types'

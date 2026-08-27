@@ -27,6 +27,9 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
 // 三态布尔：缺席=undefined（走缺省）、在场=true、显式写 "false"=false。
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
+/** 行换位事件的 detail：从机器 props 上的回调取，不在适配器里另抄一份类型。 */
+type TableRowMoveDetails = Parameters<NonNullable<TableSchema['props']['onRowMove']>>[0]
+
 /** 行系部件的归属容器：行内的把手与单元格向上找最近的那一行。 */
 const ROW_SELECTOR = '[data-xh-part="row"]'
 /** 列系部件的归属容器：排序把手向上找最近的那个列标题。 */
@@ -56,6 +59,7 @@ const FOOTER_SELECTOR = '[data-xh-part="footer"]'
  * @attr {boolean} borderless - 去掉外框，只留行间横线
  * @attr {boolean} ruled - 列与列之间加竖分隔线
  * @attr {boolean} footer - 表格带脚注行：行号空间的最后一行留给它，aria-rowcount 也算上
+ * @attr {boolean} row-reorderable - 行可以拖着换位：整行都是拖动源，不另出把手
  * @attr {boolean} loop - 上下键走到首尾回绕，默认关；写 loop="true" 打开
  * @attr {'ltr'|'rtl'} dir - 文字方向，只对调左右方向键的展开/收起语义，默认 ltr
  * @attr {'sm'|'md'|'lg'} size - 密度：只换单元格的纵向内边距与字号，列宽不受影响
@@ -65,6 +69,7 @@ const FOOTER_SELECTOR = '[data-xh-part="footer"]'
  * @prop {TableColumnKind[]} prefixColumns - 要哪几列前缀列，按给定顺序插在最前面
  * @fires selection-change - 选中集合变化；detail 为 `{ value: string[] | 'all' }`
  * @fires expanded-change - 展开集合变化；detail 为 `{ value: string[] }`
+ * @fires row-move - 行换了位置；detail 为 `{ id, from, to, ids }`，ids 是重排好的整份可见数据行序
  * @csspart root - role=grid 容器（rows 里有可展开的行时为 treegrid），报行列总数与多选声明
  * @csspart caption - 表格标题（aria-labelledby 目标）
  * @csspart header - role=rowgroup 表头区
@@ -113,6 +118,7 @@ export class XhTableElement extends XhElement {
     borderless: { type: Boolean },
     ruled: { type: Boolean },
     footer: { type: Boolean },
+    rowReorderable: { type: Boolean, attribute: 'row-reorderable' },
     loop: { converter: BOOLEAN_CONVERTER },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     size: { converter: STRING_CONVERTER },
@@ -139,6 +145,7 @@ export class XhTableElement extends XhElement {
   declare borderless?: boolean
   declare ruled?: boolean
   declare footer?: boolean
+  declare rowReorderable?: boolean
   declare loop?: boolean
   declare direction?: Direction
   declare size?: Size
@@ -157,6 +164,10 @@ export class XhTableElement extends XhElement {
 
   private readonly notifyExpanded = (details: TableExpandedChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('expanded-change', { detail: details, bubbles: true, composed: true }))
+  }
+
+  private readonly notifyRowMove = (details: TableRowMoveDetails): void => {
+    this.dispatchEvent(new CustomEvent('row-move', { detail: details, bubbles: true, composed: true }))
   }
 
   // table 机器无副作用，controller 只带 props。
@@ -187,12 +198,14 @@ export class XhTableElement extends XhElement {
       borderless: this.borderless ?? false,
       ruled: this.ruled ?? false,
       footer: this.footer ?? false,
+      rowReorderable: this.rowReorderable ?? false,
       loop: this.loop,
       dir: this.direction,
       size: this.size,
       onSortChange: this.notifySort,
       onSelectionChange: this.notifySelection,
       onExpandedChange: this.notifyExpanded,
+      onRowMove: this.notifyRowMove,
     }
   }
 

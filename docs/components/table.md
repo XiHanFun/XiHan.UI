@@ -141,6 +141,12 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 
 <XhDemo src="table/20-column-drag" />
 
+### 拖拽换行位
+
+整行都是拖动源，按住拖到别处松手；也可以 Tab 进表体后按 Alt + 上下键挪。库只报新行序，写回归使用者
+
+<XhDemo src="table/21-row-drag" />
+
 ## 产物
 
 | 层 | 值 |
@@ -186,6 +192,8 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 | `dir` | `Direction` |  | 文字方向，默认 ltr；只对调左右方向键的「展开/收起」语义。 |
 | `size` | `Size` |  | 密度：sm / md / lg。只换单元格的纵向内边距与字号，列宽算法不受影响。 |
 | `translations` | `Partial<TableTranslations>` |  |  |
+| `rowReorderable` | `boolean` |  | 行可以拖着换位。整行都是拖动源，不另出把手——行数无界，一行一个把手 就是一行一个 Tab 位。 |
+| `onRowMove` | `(details: TableRowMoveDetails) => void` |  |  |
 | `onColumnPreferenceChange` | `(details: TableColumnPreferenceChangeDetails) => void` |  |  |
 | `onSortChange` | `(details: TableSortChangeDetails) => void` |  |  |
 | `onSelectionChange` | `(details: TableSelectionChangeDetails) => void` |  |  |
@@ -221,9 +229,9 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 
 状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
-**状态**：`idle` · `resizing` · `columnDragging`
+**状态**：`idle` · `resizing` · `columnDragging` · `rowDragging`
 
-**事件**：`SORT.SET` · `SORT.TOGGLE` · `COLUMN_PREF.SET` · `COLUMN_RESIZE.START` · `COLUMN_RESIZE.MOVE` · `COLUMN_RESIZE.END` · `COLUMN_RESIZE.CANCEL` · `COLUMN_RESIZE.STEP` · `COLUMN_DRAG.START` · `COLUMN_DRAG.MOVE` · `COLUMN_DRAG.END` · `COLUMN_DRAG.CANCEL` · `COLUMN.MOVE_BY` · `COLUMN_PREF.PATCH` · `SELECTION.SET` · `ROW.SELECT` · `SELECTION.ALL_TOGGLE` · `EXPANDED.SET` · `ROW.EXPAND` · `ROW.COLLAPSE` · `ROW.EXPAND_TOGGLE` · `ROW.FOCUS` · `TABLE.BLUR`
+**事件**：`SORT.SET` · `SORT.TOGGLE` · `COLUMN_PREF.SET` · `COLUMN_RESIZE.START` · `COLUMN_RESIZE.MOVE` · `COLUMN_RESIZE.END` · `COLUMN_RESIZE.CANCEL` · `COLUMN_RESIZE.STEP` · `COLUMN_DRAG.START` · `COLUMN_DRAG.MOVE` · `COLUMN_DRAG.END` · `COLUMN_DRAG.CANCEL` · `COLUMN.MOVE_BY` · `ROW_DRAG.START` · `ROW_DRAG.MOVE` · `ROW_DRAG.END` · `ROW_DRAG.CANCEL` · `ROW.MOVE_BY` · `ROW.REORDER_BLOCKED` · `COLUMN_PREF.PATCH` · `SELECTION.SET` · `ROW.SELECT` · `SELECTION.ALL_TOGGLE` · `EXPANDED.SET` · `ROW.EXPAND` · `ROW.COLLAPSE` · `ROW.EXPAND_TOGGLE` · `ROW.FOCUS` · `TABLE.BLUR`
 
 ## connect API
 
@@ -233,6 +241,7 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 | --- | --- | --- |
 | `columns` | `readonly TableColumn[]` | 生效的列：前缀列在前、数据列在后，各自自报 kind。 列号、渲染顺序都以它为准；不要前缀列时它与作者给的那份一模一样。 |
 | `draggableColumns` | `readonly string[]` | 可以拖着换位的那一段列 id。声明了 `reorderable`、不是冻结列、且彼此相连。 冻结列与不可拖的列是屏障，把可拖范围切成段；这里给的是最长的那一段。 拿它决定渲不渲把手，与库内部判「能不能落」的口径是同一份。 |
+| `rowReorderDisabledReason` | `TableRowReorderReason \| null` | 行拖不动的原因，能拖时是 null。声明了 rowReorderable 才可能非空。 库不自己弹提示——要不要把原因显示给用户是使用者的事。 |
 | `dropTarget` | `TableDropTarget \| null` | 此刻的落点；松手就落在这儿。没有合法落点时是 null，指示线跟着消失。 |
 | `announcement` | `string` | 读屏播报文本。渲进 live-region，不进视觉版面。 |
 | `rows` | `readonly TableRowDef[]` | 作者给的行定义。 |
@@ -308,6 +317,7 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 | `Shift+ArrowLeft` / `Shift+ArrowRight` | focus in column-resize-trigger，该列 resizable | 按 40px 收窄 / 加宽，方向规则同上 |
 | `ArrowLeft` / `ArrowRight` | focus in column-drag-trigger，该列在可拖的那一段里 | 把这一列往前 / 往后挪一位，按一下就是一次完整提交；往行首侧挪是往前，rtl 下左右两键对调，语义恒是「往前 / 往后」；已在段首 / 段末就不动，也不回绕 |
 | `Home` / `End` | focus in column-drag-trigger，该列在可拖的那一段里 | 把这一列挪到可拖那一段的段首 / 段末；rtl 下两键对调，语义恒是「段首 / 段末」；已经在那儿就不动 |
+| `Alt+ArrowUp` / `Alt+ArrowDown` | focus in table body，rowReorderable 且行拖拽没有被阻断的原因 | 把焦点行往前 / 往后挪一位，按一下就是一次完整提交，不进拖动态；纵轴与文字方向无关，rtl 下两键不对调；已在首行 / 末行就不动，也不回绕；焦点锚点跟着搬走的那一行，连按几下能一路挪到位。裸方向键仍是导航、Space 仍是选中、左右键仍是展开收起 |
 
 ## 无障碍
 
@@ -389,6 +399,9 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 | `root` | `data-striped` | ''（条件成立时才出现） |
 | `header` | `data-sticky` | ''（条件成立时才出现） |
 | `body` | `data-empty` | ''（条件成立时才出现） |
+| `row` | `data-dragging` | ''（条件成立时才出现） |
+| `row` | `data-drop` | 'before' \| 'after' |
+| `row` | `data-row-draggable` | ''（条件成立时才出现） |
 | `row` | `data-section` | 'body' |
 | `column-header` | `data-dragging` | ''（条件成立时才出现） |
 | `column-header` | `data-drop` | 'before' \| 'after' |
@@ -404,6 +417,7 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 | `column-resize-trigger` | `data-resizing` | ''（条件成立时才出现） |
 | `column-drag-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `column-drag-trigger` | `data-dragging` | ''（条件成立时才出现） |
+| `expanded-row` | `data-dragging` | ''（条件成立时才出现） |
 | `expanded-row` | `data-state` | 'open' \| 'closed' |
 | `header-row` | `data-section` | 'header' |
 | `footer-row` | `data-section` | 'footer' |

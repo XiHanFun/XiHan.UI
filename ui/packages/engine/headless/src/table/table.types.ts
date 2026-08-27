@@ -1,6 +1,7 @@
 import type { Direction, PropTypes, Size } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 import type { DragRect, DragTranslations, DropTarget } from '../shared/drag'
+import type { TableRowReorderReason } from './table.drag'
 
 /**
  * 焦点模型：**行级** roving tabindex。
@@ -161,6 +162,17 @@ export interface TableVisibleRow {
   outline: string
 }
 
+export interface TableRowMoveDetails {
+  /** 被搬的那一行。 */
+  id: string
+  /** 从可见数据行的第几位。 */
+  from: number
+  /** 到第几位。 */
+  to: number
+  /** 已经重排好的整份行序，可直接拿去写回数据源。 */
+  ids: string[]
+}
+
 export interface TableSortChangeDetails {
   value: TableSortDescriptor[]
 }
@@ -252,6 +264,12 @@ export interface TableSchema extends MachineSchema {
     /** 密度：sm / md / lg。只换单元格的纵向内边距与字号，列宽算法不受影响。 */
     size?: Size
     translations?: Partial<TableTranslations>
+    /**
+     * 行可以拖着换位。整行都是拖动源，不另出把手——行数无界，一行一个把手
+     * 就是一行一个 Tab 位。
+     */
+    rowReorderable?: boolean
+    onRowMove?: (details: TableRowMoveDetails) => void
     onColumnPreferenceChange?: (details: TableColumnPreferenceChangeDetails) => void
     onSortChange?: (details: TableSortChangeDetails) => void
     onSelectionChange?: (details: TableSelectionChangeDetails) => void
@@ -286,6 +304,15 @@ export interface TableSchema extends MachineSchema {
     /** 正在拖着换位的那一列；没在拖是 null。 */
     draggingColumn: string | null
     /**
+     * 正在拖着换位的那一行；没在拖是 null。
+     *
+     * 按下还不算拖：整行可拖没有把手表明意图，要走够激活距离（笔与鼠标）
+     * 或按满长按时长（触屏）才算，在那之前这里恒是 null。
+     */
+    draggingRow: string | null
+    /** 行拖不动的原因；能拖时是 null。虚拟滚动那一条要按下量过才知道。 */
+    rowReorderBlocked: TableRowReorderReason | null
+    /**
      * 此刻的落点：松手就落在这儿。指针不在任何可拖列上时是 null，
      * 指示线跟着消失——「没有合法落点」是一档真实状态，不该夹到最近的一端。
      */
@@ -303,6 +330,17 @@ export interface TableSchema extends MachineSchema {
      * 矩形是一次性快照，全程不重量——重量会让「让位之后再判落点」自激振荡。
      */
     columnDrag: { columnId: string, rects: DragRect[], originX: number, pointerId: number } | null
+    /**
+     * 正在拖着换位的那一行。activated 之前只是「按住了」，还不是拖动——
+     * 整行可拖没有把手表明意图，要走够激活距离才算。
+     */
+    rowDrag: {
+      rowId: string
+      rects: DragRect[]
+      originY: number
+      pointerId: number
+      activated: boolean
+    } | null
   }
   /**
    * 排序、选中、展开与列偏好都不编码进状态——它们是随时可读可写的事实，不是过程。
@@ -310,7 +348,7 @@ export interface TableSchema extends MachineSchema {
    *
    * 键盘换位不进拖动态：按一下就是一次已过守卫的完整提交，没有「进行中」这回事。
    */
-  state: 'idle' | 'resizing' | 'columnDragging'
+  state: 'idle' | 'resizing' | 'columnDragging' | 'rowDragging'
   event:
     /** 整体改写排序链（外部 setSort 走它）。 */
     | { type: 'SORT.SET', value: TableSortDescriptor[] }
@@ -336,6 +374,14 @@ export interface TableSchema extends MachineSchema {
     | { type: 'COLUMN_DRAG.CANCEL' }
     /** 键盘换位：一按就是一次完整提交，不进拖动态。 */
     | { type: 'COLUMN.MOVE_BY', columnId: string, target: DropTarget }
+    /** 按在行上：矩形快照与起点纵坐标由连接层量好交进来。此刻只是按住，还不算拖。 */
+    | { type: 'ROW_DRAG.START', rowId: string, rects: DragRect[], originY: number, pointerId: number }
+    | { type: 'ROW_DRAG.MOVE', clientY: number }
+    | { type: 'ROW_DRAG.END' }
+    | { type: 'ROW_DRAG.CANCEL' }
+    | { type: 'ROW.MOVE_BY', rowId: string, target: DropTarget }
+    /** 按下时才发现拖不动（宿主只渲了一段），把原因记下来给使用者看。 */
+    | { type: 'ROW.REORDER_BLOCKED', reason: TableRowReorderReason }
     /** 改一列的显隐 / 位置 / 宽。 */
     | { type: 'COLUMN_PREF.PATCH', columnId: string, hidden?: boolean, toIndex?: number, width?: number | string }
     /** 整体改写选中集合。 */
@@ -378,7 +424,13 @@ export interface TableSchema extends MachineSchema {
     | 'endColumnDrag'
     | 'cancelColumnDrag'
     | 'moveColumnBy'
-  effect: 'trackResizePointer' | 'trackColumnDragPointer'
+    | 'startRowDrag'
+    | 'trackRowDrag'
+    | 'endRowDrag'
+    | 'cancelRowDrag'
+    | 'moveRowBy'
+    | 'blockRowReorder'
+  effect: 'trackResizePointer' | 'trackColumnDragPointer' | 'trackRowDragPointer'
 }
 
 export interface TableApi<T extends PropTypes = PropTypes> {
@@ -394,6 +446,11 @@ export interface TableApi<T extends PropTypes = PropTypes> {
    * 拿它决定渲不渲把手，与库内部判「能不能落」的口径是同一份。
    */
   draggableColumns: readonly string[]
+  /**
+   * 行拖不动的原因，能拖时是 null。声明了 rowReorderable 才可能非空。
+   * 库不自己弹提示——要不要把原因显示给用户是使用者的事。
+   */
+  rowReorderDisabledReason: TableRowReorderReason | null
   /** 此刻的落点；松手就落在这儿。没有合法落点时是 null，指示线跟着消失。 */
   dropTarget: TableDropTarget | null
   /** 读屏播报文本。渲进 live-region，不进视觉版面。 */

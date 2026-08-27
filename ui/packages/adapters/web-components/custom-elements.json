@@ -36409,7 +36409,7 @@
               "name": "column-drag-trigger"
             },
             {
-              "description": "视觉隐藏的播报区，列拖拽过程的读屏文案写在这里",
+              "description": "视觉隐藏的播报区，列拖拽过程的读屏文案写在这里；须写在 root 之外（root 是 role=grid，它的子节点只能是 row 与 rowgroup）",
               "name": "live-region"
             },
             {
@@ -36621,6 +36621,15 @@
             },
             {
               "kind": "field",
+              "name": "rowReorderable",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "row-reorderable"
+            },
+            {
+              "kind": "field",
               "name": "loop",
               "privacy": "public",
               "type": {
@@ -36667,6 +36676,12 @@
             {
               "kind": "field",
               "name": "notifyExpanded",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyRowMove",
               "privacy": "private",
               "readonly": true
             },
@@ -36769,6 +36784,17 @@
             },
             {
               "kind": "method",
+              "name": "ensureLiveRegion",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "HTMLElement"
+                }
+              },
+              "description": "播报区节点。第一次用时建出来挂在元素末尾，之后一直复用——\n读屏不播报后插入的节点，等到拾起才建等于没有。"
+            },
+            {
+              "kind": "method",
               "name": "sectionOf",
               "privacy": "private",
               "return": {
@@ -36821,6 +36847,13 @@
               "name": "expanded-change",
               "type": {
                 "text": "TableExpandedChangeDetails"
+              }
+            },
+            {
+              "description": "行换了位置；detail 为 `{ id, from, to, ids }`，ids 是重排好的整份可见数据行序",
+              "name": "row-move",
+              "type": {
+                "text": "TableRowMoveDetails"
               }
             }
           ],
@@ -36888,6 +36921,14 @@
               "description": "表格带脚注行：行号空间的最后一行留给它，aria-rowcount 也算上",
               "name": "footer",
               "fieldName": "footer"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "行可以拖着换位：整行都是拖动源，不另出把手",
+              "name": "row-reorderable",
+              "fieldName": "rowReorderable"
             },
             {
               "type": {

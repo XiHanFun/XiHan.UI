@@ -1,6 +1,7 @@
 import type { NavIntent } from '@xihan-ui/behavior'
 import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
+import type { MeasuredRow } from './table.drag'
 import type { TableApi, TableColumn, TableColumnDef, TableSchema, TableVisibleRow } from './table.types'
 import {
   focusItem,
@@ -11,11 +12,11 @@ import {
   navIntentFromKey,
   queryItems,
 } from '@xihan-ui/behavior'
-import { contains, dataAttr, warn } from '@xihan-ui/kernel'
+import { contains, dataAttr, isComposingEvent, isHTMLElement, warn } from '@xihan-ui/kernel'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { tableAnatomy, tableRowQuery } from './table.anatomy'
 import { resolveTableColumns } from './table.columns'
-import { columnDragRects, columnMoveCommand, columnMoveIntentFromKey, draggableColumnIds } from './table.drag'
+import { columnDragRects, columnMoveCommand, columnMoveIntentFromKey, draggableColumnIds, rowGroupRects, rowMoveCommand, rowMoveIntentFromKey, rowReorderReason } from './table.drag'
 import { TABLE_COLUMN_LARGE_STEP, TABLE_COLUMN_MIN_WIDTH, TABLE_COLUMN_STEP, tableSelectionMode } from './table.machine'
 import {
   flattenTableRows,
@@ -81,6 +82,18 @@ function columnNumericWidth(
   return typeof raw === 'number' && Number.isFinite(raw) ? raw : null
 }
 
+/**
+ * 按键落在可编辑控件上时不归表格管。
+ *
+ * 表体的键盘处理器挂在 body 上，单元格里的输入框冒上来的按键也会经过它。
+ * 不放行的话，在可编辑单元格里打一个空格会被当成「切换这一行的选中」吞掉。
+ */
+function isEditableTarget(target: EventTarget | null): boolean {
+  if (!isHTMLElement(target))
+    return false
+  return target.closest('input, textarea, select, [contenteditable="true"], [contenteditable=""]') != null
+}
+
 /** 改宽把手上的方向键：往行尾侧推是加宽。rtl 下左右两键对调，语义恒是「加宽 / 收窄」。 */
 function resizeStepFromKey(key: string, rtl: boolean): number | null {
   if (key === 'ArrowRight')
@@ -129,7 +142,9 @@ export function connectTable<T extends PropTypes>(
   const dropTarget = context.get('dropTarget')
   /** 这一列此刻是不是落点，是的话落在它的哪一侧。 */
   const dropSide = (id: string): 'before' | 'after' | undefined =>
-    dropTarget?.targetValue === id && dropTarget.position !== 'inside' ? dropTarget.position : undefined
+    draggingColumn != null && dropTarget?.targetValue === id && dropTarget.position !== 'inside'
+      ? dropTarget.position
+      : undefined
   // 表格不回绕：上键停在首行、下键停在末行
   const loop = prop('loop') ?? false
   const ids = scope.ids('table', 'caption')
@@ -169,6 +184,24 @@ export function connectTable<T extends PropTypes>(
       rowOutline.set(row.id, row.outline)
   }
   const rowSetSize = dataRows.length
+
+  const rowReorderable = !!prop('rowReorderable')
+  const draggingRow = context.get('draggingRow')
+  /**
+   * 行拖不动的原因。排序与树形在渲染期就知道；虚拟滚动要按下量过才知道，
+   * 那一条由机器在按下失败时记下来。
+   */
+  const rowBlocked = rowReorderable
+    // 判据是 nested（有行声明了 parentId）而不是 hierarchical——后者把「有可展开的行」
+    // 也算进去了，而展开出的详情行是跟着数据行一起搬的，不妨碍换位
+    // cell 初值是 undefined，这里连同收成 null：api 上写的是 | null
+    ? (rowReorderReason(sort.length, nested) ?? context.get('rowReorderBlocked') ?? null)
+    : null
+  /** 这一行此刻是不是落点。 */
+  const rowDropSide = (id: string): 'before' | 'after' | undefined =>
+    draggingRow != null && dropTarget?.targetValue === id && dropTarget.position !== 'inside'
+      ? dropTarget.position
+      : undefined
 
   const columnIndex = new Map<string, number>()
   const columnIndexDefs = new Map<string, TableColumnDef>()
@@ -329,6 +362,7 @@ export function connectTable<T extends PropTypes>(
   return {
     columns,
     draggableColumns,
+    rowReorderDisabledReason: rowBlocked,
     dropTarget,
     announcement: context.get('announcement'),
     columnPreference,
@@ -408,6 +442,10 @@ export function connectTable<T extends PropTypes>(
       'tabindex': focusedRow == null ? 0 : -1,
       'data-empty': dataAttr(isEmpty),
       'onKeyDown': (event: KeyboardEvent) => {
+        // 输入法组合中的按键是给候选框的，不是给表格的；
+        // 落在可编辑控件上的按键归那个控件
+        if (isComposingEvent(event) || isEditableTarget(event.target))
+          return
         const body = event.currentTarget as HTMLElement
         const command = event.ctrlKey || event.metaKey
 
@@ -421,6 +459,22 @@ export function connectTable<T extends PropTypes>(
             return
           send({ type: 'SELECTION.ALL_TOGGLE' })
           return
+        }
+
+        // Alt + 上下键换行位。一按就是一次已过守卫的完整提交，不进拖动态——
+        // 裸方向键是导航、Space 是选中、左右键是展开收起，模态拾起在这里无处落脚
+        if (event.altKey && !command && focusedRow != null) {
+          const intent = rowMoveIntentFromKey(event.key)
+          if (intent) {
+            // Alt + 方向键在部分浏览器是前进后退，认了就得挡住
+            event.preventDefault()
+            if (rowReorderable && rowBlocked == null) {
+              const target = rowMoveCommand(dataRows.map(r => r.id), focusedRow, intent)
+              if (target)
+                send({ type: 'ROW.MOVE_BY', rowId: focusedRow, target })
+            }
+            return
+          }
         }
 
         // 其余带 Ctrl/Cmd/Alt 的组合一律不归表格管（Ctrl+Home 之类归浏览器与读屏）
@@ -541,8 +595,57 @@ export function connectTable<T extends PropTypes>(
         // 行级 roving tabindex：整张表只有锚点行留在 Tab 序列内
         'tabindex': anchor === row.value ? 0 : -1,
         'data-section': 'body',
+        'data-dragging': dataAttr(draggingRow === row.value),
+        'data-drop': rowDropSide(row.value),
+        'data-row-draggable': dataAttr(rowReorderable && rowBlocked == null),
         // 焦点是事实不是许可：禁用行被点到也记锚点，方向键才知道从哪儿起步
         'onFocus': () => send({ type: 'ROW.FOCUS', value: row.value }),
+        // 整行都是拖动源，没有把手。按在行里的交互控件上不起拖：
+        // 那些地方按下去是要点它们，不是要搬这一行
+        'onPointerDown': (event: PointerEvent) => {
+          // 只认主键：右键要弹上下文菜单，中键是自动滚动。
+          // 触屏也不认：拖行是纵向的，而纵向手势在按下那一刻就归了浏览器滚动，
+          // touch-action 事后改不回来。触屏那一路要等一个专门的拖动把手
+          if (!rowReorderable || rowBlocked != null || event.button !== 0 || event.pointerType === 'touch')
+            return
+          const target = event.target as HTMLElement | null
+          if (target?.closest('input,textarea,select,button,a,[contenteditable],[role="button"],[role="checkbox"]'))
+            return
+          const el = event.currentTarget as HTMLElement | null
+          const body = el?.closest<HTMLElement>('[data-scope="table"][data-part="body"]')
+          if (!body)
+            return
+          // 量一次可见行此刻的纵向位置。事件处理器里碰 DOM 是允许的，渲染期才不许。
+          // 详情行并进它所属的数据行：不并的话拖过展开着的行时落点会来回跳
+          const measured: MeasuredRow[] = []
+          for (const node of body.querySelectorAll<HTMLElement>(
+            '[data-scope="table"][data-part="row"],[data-scope="table"][data-part="expanded-row"]',
+          )) {
+            if (node.hasAttribute('hidden'))
+              continue
+            const rect = node.getBoundingClientRect()
+            measured.push({
+              value: node.getAttribute(ITEM_VALUE_ATTR) ?? '',
+              kind: node.getAttribute('data-part') === 'row' ? 'data' : 'expanded',
+              start: rect.top,
+              size: rect.height,
+            })
+          }
+          const rects = rowGroupRects(measured)
+          // 量到的行数与数据行数对不上 = 宿主只渲了一段，窗口外的行没有矩形
+          if (rects.length !== dataRows.length) {
+            send({ type: 'ROW.REORDER_BLOCKED', reason: 'virtualized' })
+            return
+          }
+          send({
+            type: 'ROW_DRAG.START',
+            rowId: row.value,
+            rects,
+            originY: event.clientY,
+            pointerId: event.pointerId,
+          })
+        },
+
       })
     },
 
@@ -839,6 +942,8 @@ export function connectTable<T extends PropTypes>(
         'aria-posinset': hierarchical ? 1 : undefined,
         'aria-setsize': hierarchical ? 1 : undefined,
         'data-state': meta?.expanded ? 'open' : 'closed',
+        // 详情行跟着所属数据行一起标：落点判定把两者算作一整块
+        'data-dragging': dataAttr(draggingRow === row.value),
         // 收起只加 hidden，不卸载作者节点，详情里的输入框与滚动位置得留着
         'hidden': !meta?.expanded || undefined,
       })

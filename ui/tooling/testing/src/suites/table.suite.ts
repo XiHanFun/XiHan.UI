@@ -57,6 +57,17 @@ const ROWS: TableRowDef[] = [
   { id: 'd', expandable: true },
 ]
 
+/**
+ * 行换位用例专用：四行都展不开、都不禁用。
+ * 展得开的行整张表就拖不动行，禁用行也不该拿来当起点。
+ */
+const REORDERABLE_ROWS: TableRowDef[] = [
+  { id: 'a' },
+  { id: 'b' },
+  { id: 'c' },
+  { id: 'd' },
+]
+
 /** 给用例补上同一份行列定义与 footer 声明。 */
 function props(extra: Readonly<Record<string, unknown>> = {}): Readonly<Record<string, unknown>> {
   return { columns: COLUMNS, rows: ROWS, footer: true, ...extra }
@@ -726,6 +737,68 @@ export const tableSuite: ConformanceSuite = {
             events: [],
           },
         },
+      ],
+    },
+    {
+      name: '行换位：Alt + 上下键一次挪一位，只报事件不动 DOM；到头不回绕，裸方向键仍是导航',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      covers: ['table.kbd.row-move'],
+      // 整行就是拖动源，不出把手，基准 fixture 原样够用；行换成展不开的那一份，
+      // 可展开的行会把行拖拽整个挡下
+      props: props({ rows: REORDERABLE_ROWS, rowReorderable: true }),
+      initial: {
+        parts: {
+          // 表头行与脚注行不是拖动源
+          'row[0]': { 'data-row-draggable': null },
+          'row[1]': { 'data-row-draggable': '', 'data-dragging': null, 'data-drop': null },
+          'row[5]': { 'data-row-draggable': null },
+        },
+      },
+      steps: [
+        { kind: 'focus', part: 'body', expect: { activeElement: { part: 'row[1]', exact: true } } },
+        {
+          kind: 'key',
+          key: 'ArrowDown',
+          modifiers: ['Alt'],
+          expect: {
+            // 按一下就提交完，不进拖动态；焦点锚点留在搬走的那一行上
+            activeElement: { part: 'row[1]', exact: true },
+            parts: { 'row[1]': { 'data-dragging': null, 'data-drop': null } },
+            // 行序是 rows prop，库没有一份自己的行序可写：DOM 里 a 仍排在最前，
+            // 只有这条事件说得出新位置
+            events: [{ type: 'row-move', detail: { id: 'a', from: 0, to: 1, ids: ['b', 'a', 'c', 'd'] } }],
+          },
+        },
+        // 宿主没把新行序写回 rows，a 还在首位：往前挪不动，也不回绕
+        { kind: 'key', key: 'ArrowUp', modifiers: ['Alt'], expect: { events: [] } },
+        // 不带 Alt 的方向键照旧是行间导航，一个换位事件都不发
+        {
+          kind: 'key',
+          key: 'ArrowDown',
+          expect: { activeElement: { part: 'row[2]', exact: true }, events: [] },
+        },
+        {
+          kind: 'key',
+          key: 'ArrowDown',
+          modifiers: ['Alt'],
+          expect: {
+            activeElement: { part: 'row[2]', exact: true },
+            events: [{ type: 'row-move', detail: { id: 'b', from: 1, to: 2, ids: ['a', 'c', 'b', 'd'] } }],
+          },
+        },
+      ],
+    },
+    {
+      name: '行换位：排序中的表格拖不动行，Alt + 上下键一并不认',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      props: props({ rows: REORDERABLE_ROWS, rowReorderable: true, defaultSort: [{ id: 'name', direction: 'asc' }] }),
+      initial: {
+        // 行序由排序说了算，手排就没有落脚处
+        parts: { 'row[1]': { 'data-row-draggable': null } },
+      },
+      steps: [
+        { kind: 'focus', part: 'body', expect: { activeElement: { part: 'row[1]', exact: true } } },
+        { kind: 'key', key: 'ArrowDown', modifiers: ['Alt'], expect: { events: [] } },
       ],
     },
     {
