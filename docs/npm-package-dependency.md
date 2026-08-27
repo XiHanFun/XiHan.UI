@@ -11,6 +11,7 @@ XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（�
 | `@xihan-ui/tokens` | — | — | 1 |
 | `@xihan-ui/icons` | — | — | 1 |
 | `@xihan-ui/motion` | — | — | 1 |
+| `@xihan-ui/pointer` | — | — | 1 |
 | `@xihan-ui/behavior` | `kernel` `motion` | — | 2 |
 | `@xihan-ui/position` | `kernel` | — | 2 |
 | `@xihan-ui/code-highlight` | `kernel` | — | 2 |
@@ -18,11 +19,11 @@ XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（�
 | `@xihan-ui/markdown` | — | — | 2 |
 | `@xihan-ui/sound` | `kernel` | — | 2 |
 | `@xihan-ui/animations` | `kernel` `motion` | — | 2 |
-| `@xihan-ui/headless` | `kernel` `machine` `behavior` `motion` + `@internationalized/date` | — | 3 |
+| `@xihan-ui/headless` | `kernel` `machine` `behavior` `motion` `pointer` + `@internationalized/date` | — | 3 |
 | `@xihan-ui/styles` | `tokens`（只取其 CSS 产物） | — | 3 |
 | `@xihan-ui/backgrounds` | `kernel` `behavior` `motion` | — | 3 |
-| `@xihan-ui/vue` | `kernel` `machine` `behavior` `motion` `headless` `position` `code-highlight` | `vue`、`backgrounds`（可选）、`sound`（可选） | 4 |
-| `@xihan-ui/web-components` | `kernel` `machine` `behavior` `motion` `headless` `position` `code-highlight` | `backgrounds`（可选） | 4 |
+| `@xihan-ui/vue` | `kernel` `machine` `behavior` `motion` `pointer` `headless` `position` `code-highlight` | `vue`、`backgrounds`（可选）、`sound`（可选） | 4 |
+| `@xihan-ui/web-components` | `kernel` `machine` `behavior` `motion` `pointer` `headless` `position` `code-highlight` | `backgrounds`（可选） | 4 |
 
 发布走 changesets，所有库包同属一个 fixed 版本组，一起升到同一个版本号。
 
@@ -129,7 +130,7 @@ XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（�
 | `@xihan-ui/web-components` | `./define` `./backgrounds` `./custom-elements.json` |
 | `@xihan-ui/styles` | 每份皮肤一条 CSS，共 125 条（119 份组件皮肤 + 6 份共享层），另有 `./index.css` 与 `./index.unlayered.css` 两个整包入口 |
 
-其余七个包（`headless` / `motion` / `animations` / `backgrounds` / `chat-stream` / `markdown` / `sound`）只有主入口。
+其余八个包（`headless` / `motion` / `pointer` / `animations` / `backgrounds` / `chat-stream` / `markdown` / `sound`）只有主入口。
 
 组件**没有**单独的子路径导出——按需引入靠 tree-shaking，不靠手写路径。
 

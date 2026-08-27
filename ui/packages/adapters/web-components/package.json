@@ -78,6 +78,7 @@
     "@xihan-ui/kernel": "workspace:^",
     "@xihan-ui/machine": "workspace:^",
     "@xihan-ui/motion": "workspace:^",
+    "@xihan-ui/pointer": "workspace:^",
     "@xihan-ui/position": "workspace:^"
   },
   "devDependencies": {

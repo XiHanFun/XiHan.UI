@@ -1,6 +1,7 @@
 import type { PanelConstraint } from './splitter.sizing'
 import type { SplitterSchema } from './splitter.types'
 import { setup } from '@xihan-ui/machine'
+import { createPointerSession, resolveSessionDoc } from '@xihan-ui/pointer'
 import { clampIndex } from '../shared/number'
 import {
   collapsePanel,
@@ -217,7 +218,7 @@ export const splitterMachine = createMachine({
        * 一场拖拽只量一次容器，拖拽途中容器尺寸不会变。
        * 量在效应里：connect 在 Vue 的 render 期求值，此时 DOM 尚不存在，不得读 DOM；
        * 效应挂载发生在 DRAG.START 的转移里，节点已在文档上，不必推迟到下一帧。
-       * 监听器挂在文档上，指针拖出容器仍要跟手；pointercancel 不收会让状态永远停在 dragging。
+       * 跟手交给指针会话：监听挂在文档上，指针拖出容器仍要跟手，系统收走指针也会收尾。
        */
       trackPointer: ({ context, prop, refs, event, send }) => {
         const start = event.current()
@@ -232,24 +233,14 @@ export const splitterMachine = createMachine({
             sizes: [...context.get('sizes')],
           })
         }
-        const doc = root?.ownerDocument ?? (typeof document === 'undefined' ? null : document)
-        if (!doc) {
-          return () => {
-            refs.set('drag', null)
-          }
-        }
-        const onMove = (ev: PointerEvent): void => {
-          send({ type: 'DRAG.MOVE', point: { clientX: ev.clientX, clientY: ev.clientY } })
-        }
-        const onUp = (): void => send({ type: 'DRAG.END' })
-        doc.addEventListener('pointermove', onMove)
-        doc.addEventListener('pointerup', onUp)
-        doc.addEventListener('pointercancel', onUp)
+        const session = createPointerSession({
+          doc: resolveSessionDoc(root),
+          onMove: ({ point }) => send({ type: 'DRAG.MOVE', point }),
+          onEnd: () => send({ type: 'DRAG.END' }),
+        })
         return () => {
           refs.set('drag', null)
-          doc.removeEventListener('pointermove', onMove)
-          doc.removeEventListener('pointerup', onUp)
-          doc.removeEventListener('pointercancel', onUp)
+          session.dispose()
         }
       },
     },

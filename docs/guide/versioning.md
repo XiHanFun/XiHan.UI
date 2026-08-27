@@ -24,9 +24,9 @@ XiHan.UI 的公开面横跨五种介质，因为「丢掉自带皮肤自己写�
 
 版本号本身走标准语义化版本：`major.minor.patch`。受约束的东西改了走 major，新增走 minor，只修行为不改名字走 patch。
 
-## 17 个包必须同版本安装
+## 18 个包必须同版本安装
 
-17 个包锁步发布：任何一个包发新版本，全部 17 个包一起发同一个号。
+18 个包锁步发布：任何一个包发新版本，全部 18 个包一起发同一个号。
 
 ```
 @xihan-ui/kernel   @xihan-ui/machine        @xihan-ui/behavior
@@ -35,6 +35,7 @@ XiHan.UI 的公开面横跨五种介质，因为「丢掉自带皮肤自己写�
 @xihan-ui/web-components  @xihan-ui/chat-stream
 @xihan-ui/markdown @xihan-ui/code-highlight @xihan-ui/backgrounds
 @xihan-ui/sound    @xihan-ui/motion         @xihan-ui/animations
+@xihan-ui/pointer
 ```
 
 两条后果，都要知道：
@@ -46,14 +47,14 @@ XiHan.UI 的公开面横跨五种介质，因为「丢掉自带皮肤自己写�
 
 ## 一、JS / TS 导出面
 
-17 个包中 16 个出 JS（`@xihan-ui/styles` 只出 CSS），共 53 个带类型的入口。
+18 个包中 17 个出 JS（`@xihan-ui/styles` 只出 CSS），共 54 个带类型的入口。
 
 ### 受约束
 
 | 类别 | 数量 | 说明 |
 | --- | --- | --- |
-| 包名 | 17 | 把代码从一个包挪到另一个包 = major |
-| `exports` 子路径 | 53 个 JS 入口 | 如 `@xihan-ui/vue/backgrounds`、`@xihan-ui/web-components/define`、`@xihan-ui/kernel/deprecations`。没有 `./*` 通配，深路径引用（`.../dist/xxx.js`）被 Node 与打包器一并挡住，那些路径不是 API |
+| 包名 | 18 | 把代码从一个包挪到另一个包 = major |
+| `exports` 子路径 | 54 个 JS 入口 | 如 `@xihan-ui/vue/backgrounds`、`@xihan-ui/web-components/define`、`@xihan-ui/kernel/deprecations`。没有 `./*` 通配，深路径引用（`.../dist/xxx.js`）被 Node 与打包器一并挡住，那些路径不是 API |
 | Vue 组件导出 `Xh*` | 719（119 个家族） | `XhButton`、`XhSelectRoot`、`XhSelectItemIndicator` |
 | Vue 组合式函数 `use<家族>` | 86 | `useSelect`、`useCombobox`。这是「不用我的部件、自己写标记」的唯一入口 |
 | Vue 指令 | 2 | `vBackground`（`@xihan-ui/vue/backgrounds`）、`vSound`（`@xihan-ui/vue/sound`），两个子入口各依赖一个可选 peer |
@@ -373,7 +374,7 @@ Web Components 侧不构成额外约束：全部 Light DOM，不用 shadow DOM�
 
 锁步发版意味着版本号看不出稳定性，所以单列一张表。
 
-下面两张表覆盖 17 个包中的 14 个。`@xihan-ui/motion`、`@xihan-ui/animations`、`@xihan-ui/sound` 尚未定级，在定级之前按「排除」对待：不要在不易升级的地方依赖它们的具体导出。
+下面两张表覆盖 18 个包中的 14 个。`@xihan-ui/motion`、`@xihan-ui/pointer`、`@xihan-ui/animations`、`@xihan-ui/sound` 尚未定级，在定级之前按「排除」对待：不要在不易升级的地方依赖它们的具体导出。
 
 ### 稳定
 
@@ -410,10 +411,10 @@ Web Components 侧不构成额外约束：全部 Light DOM，不用 shadow DOM�
 ### 已经焊死的
 
 **六种介质的「改名 = major」现在有门禁兜着。** `pnpm gate:surface` 跑的 `check-public-surface`
-拿一份入库的基线（`ui/tooling/public-surface.json`，9397 个名字）比对当前状态：
+拿一份入库的基线（`ui/tooling/public-surface.json`，9405 个名字）比对当前状态：
 **基线里有而当前没有，就是删了或改名了，构建失败**。新增一律放行，因为那是 minor。
 
-覆盖：包名与 184 条子入口、4324 个导出名、119 个 `data-scope` 与 747 条部件配对、
+覆盖：包名与 185 条子入口、4332 个导出名、119 个 `data-scope` 与 747 条部件配对、
 119 个组件的 1273 个 prop 名、156 种 `data-*`、20 个 `data-state` 取值、294 个令牌、
 5 个 `@layer` 名、2603 个组件覆盖槽、121 个自定义元素及其 attribute 与事件。
 
@@ -438,7 +439,7 @@ changeset 里按 patch / minor 写就行——推基线这个动作本身不代�
 
 **还有三道门禁把「只靠自觉」的条款焊成了机器检查。** `check-css-floor` 守着浏览器硬底线：
 `.browserslistrc` 书面记录地板，拒绝名单拦住 `@container` 这类无兜底的抬底线特性，
-`light-dark()` / `dvh` 必须带级联兜底。`check-version-lock` 守着 17 包锁步：任何一个
+`light-dark()` / `dvh` 必须带级联兜底。`check-version-lock` 守着 18 包锁步：任何一个
 package.json 的 version 与其余不同，门禁直接失败。`check-wiring` 守着检查系统自身：新增的
 check 脚本不接进 `pnpm gate` 就等于没写，死引用同样被拦下。
 
@@ -455,6 +456,6 @@ check 脚本不接进 `pnpm gate` 就等于没写，死引用同样被拦下。
 | Vue 作用域插槽载荷 | 带载荷的插槽已声明 `slots:` 选项，`check-slot-types` 门禁四条判据兜着（缺声明 / 键非可选 / 值非函数 / 声明未用）。仅渲染无载荷插槽的部件仍不声明，消费方写错 slot 名不会报 | 无载荷插槽也补声明，或明确「只有带载荷的插槽进契约」 |
 | 废弃提示（CSS / `data-*` / attribute / 层名） | 已落地：`@xihan-ui/kernel/deprecations` 的 `registerDeprecation` + `startDeprecationScan`，Web Components 侧在 `defineXhElements()` 自动启动，Vue 侧按需手动启动（避免进组件树摇入口的体积棘轮），五种介质经诊断通道发 `warn`（见 [诊断通道](./diagnostics#废弃提示)）；登记表当前为空 | 首次废弃时随 changeset 登记第一条，验证真实迁移链路 |
 | 浏览器硬底线 | 已落地：`.browserslistrc` 记录硬底线，`check-css-floor` 门禁拒绝抬底线的无兜底特性（`@container` 等），并校验 `light-dark()` / `dvh` 的级联兜底 | 拒绝名单改动时联动本页支持面表格的提醒 |
-| 「17 个包必须同版本」 | `check-version-lock` 门禁保证 17 个 package.json 同版本。运行期这一侧只在 dev 有提示：两个适配器启动时调 `checkLockstepVersion`，自身版本与 kernel 不一致就经诊断通道发一条 `warn`；生产构建里跳过，且只比适配器与 kernel 两个版本，不是全部 17 个 | 提成 peer，或把运行期比对扩到全部包 |
+| 「18 个包必须同版本」 | `check-version-lock` 门禁保证 18 个 package.json 同版本。运行期这一侧只在 dev 有提示：两个适配器启动时调 `checkLockstepVersion`，自身版本与 kernel 不一致就经诊断通道发一条 `warn`；生产构建里跳过，且只比适配器与 kernel 两个版本，不是全部 18 个 | 提成 peer，或把运行期比对扩到全部包 |
 
 发现本页写的和实际行为对不上，按缺陷处理——请提 issue，不要当成「政策就是这样」。

@@ -1,5 +1,6 @@
 import type { FloatingPanelSchema } from './floating-panel.types'
 import { setup } from '@xihan-ui/machine'
+import { createPointerSession, resolveSessionDoc } from '@xihan-ui/pointer'
 import {
   clampFloatingPanelSize,
   FLOATING_PANEL_DEFAULT_POSITION,
@@ -224,30 +225,18 @@ export const floatingPanelMachine = createMachine({
     },
     effects: {
       /**
-       * 跟手期间的指针监听。挂在文档上而不是把手上：指针拖出把手甚至拖出面板仍要跟手；
-       * pointercancel 不收会让状态永远停在拖动中，面板从此粘在指针上。
+       * 跟手期间的指针会话。监听挂在文档上而不是把手上：指针拖出把手甚至拖出面板仍要跟手；
+       * 系统收走指针也会收尾，不收会让状态永远停在拖动中，面板从此粘在指针上。
        */
       trackPointer: ({ refs, send }) => {
-        const owner = refs.get('getContentEl')()?.ownerDocument
-        const doc = owner ?? (typeof document === 'undefined' ? null : document)
-        // 无 DOM 环境（纯逻辑测试）：状态照常转移，只是没有指针可跟
-        if (!doc) {
-          return () => {
-            refs.set('session', null)
-          }
-        }
-        const onMove = (ev: PointerEvent): void => {
-          send({ type: 'DRAG.MOVE', point: { clientX: ev.clientX, clientY: ev.clientY } })
-        }
-        const onUp = (): void => send({ type: 'DRAG.END' })
-        doc.addEventListener('pointermove', onMove)
-        doc.addEventListener('pointerup', onUp)
-        doc.addEventListener('pointercancel', onUp)
+        const pointer = createPointerSession({
+          doc: resolveSessionDoc(refs.get('getContentEl')()),
+          onMove: ({ point }) => send({ type: 'DRAG.MOVE', point }),
+          onEnd: () => send({ type: 'DRAG.END' }),
+        })
         return () => {
           refs.set('session', null)
-          doc.removeEventListener('pointermove', onMove)
-          doc.removeEventListener('pointerup', onUp)
-          doc.removeEventListener('pointercancel', onUp)
+          pointer.dispose()
         }
       },
     },

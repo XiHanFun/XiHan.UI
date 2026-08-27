@@ -5,6 +5,7 @@ import type { ColorPickerPoint } from './color-picker.geometry'
 import type { ColorPickerDragTarget, ColorPickerSchema } from './color-picker.types'
 import { createDismissLayer, createFocusScope } from '@xihan-ui/behavior'
 import { resetDeclaredValue, setup } from '@xihan-ui/machine'
+import { createPointerSession, resolveSessionDoc } from '@xihan-ui/pointer'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import {
   COLOR_PICKER_FALLBACK,
@@ -440,24 +441,14 @@ export const colorPickerMachine = createMachine({
         }
       },
 
-      // 监听器必须挂在文档上，挂在取色区上指针一离开就断；pointercancel 不收会永久卡在 dragging
+      // 跟手交给指针会话：监听挂在文档上，挂在取色区上指针一离开就断，系统收走指针也会收尾
       trackPointer: ({ send, refs }) => {
-        const area = refs.get('getAreaEl')()
-        const doc = area?.ownerDocument ?? (typeof document === 'undefined' ? null : document)
-        if (!doc)
-          return undefined
-        const onMove = (ev: PointerEvent): void => {
-          send({ type: 'DRAG.MOVE', point: { clientX: ev.clientX, clientY: ev.clientY } })
-        }
-        const onUp = (): void => send({ type: 'DRAG.END' })
-        doc.addEventListener('pointermove', onMove)
-        doc.addEventListener('pointerup', onUp)
-        doc.addEventListener('pointercancel', onUp)
-        return () => {
-          doc.removeEventListener('pointermove', onMove)
-          doc.removeEventListener('pointerup', onUp)
-          doc.removeEventListener('pointercancel', onUp)
-        }
+        const session = createPointerSession({
+          doc: resolveSessionDoc(refs.get('getAreaEl')()),
+          onMove: ({ point }) => send({ type: 'DRAG.MOVE', point }),
+          onEnd: () => send({ type: 'DRAG.END' }),
+        })
+        return () => session.dispose()
       },
 
       /** 屏幕取色。拆卸时用 disposed 标记挡掉已过期的 promise 回送，并 abort 接口。 */

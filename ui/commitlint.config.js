@@ -14,6 +14,7 @@ export default {
         'behavior',
         'motion',
         'position',
+        'pointer',
         'code-highlight',
         'headless',
         'tokens',

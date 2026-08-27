@@ -18,6 +18,7 @@
 | `@xihan-ui/machine` | 状态机运行时：`createMachine`、解释器契约、受控值绑定 |
 | `@xihan-ui/behavior` | 行为原语：dismissable layer、焦点域、滚动锁、进出场、集合、typeahead |
 | `@xihan-ui/motion` | 动效原语：缓动单一真源、纯补间、帧循环、减弱动效偏好、解析解弹簧、Web Animations 薄封装 |
+| `@xihan-ui/pointer` | 指针会话：一根指针从按下到抬起的跟手、过滤与收尾，自研，零依赖 |
 | `@xihan-ui/headless` | 119 个组件的 anatomy + machine + `connect`，无样式、无框架 |
 | `@xihan-ui/vue` | Vue 3 适配器 |
 | `@xihan-ui/web-components` | Web Components 适配器（自研响应式基类，无第三方运行时依赖） |
@@ -54,7 +55,7 @@ pnpm typecheck
 pnpm lint
 pnpm boundaries   # 分层依赖门禁（dependency-cruiser）
 pnpm build
-pnpm size         # 体积棘轮：先构建，再核对 .size-limit.json 里的 27 条产物限额
+pnpm size         # 体积棘轮：先构建，再核对 .size-limit.json 里的 28 条产物限额
 ```
 
 ## 约定

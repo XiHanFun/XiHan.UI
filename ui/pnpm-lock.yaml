@@ -176,6 +176,9 @@ importers:
       '@xihan-ui/motion':
         specifier: workspace:^
         version: link:../../engine/motion
+      '@xihan-ui/pointer':
+        specifier: workspace:^
+        version: link:../../engine/pointer
       '@xihan-ui/position':
         specifier: workspace:^
         version: link:../../engine/position
@@ -243,6 +246,9 @@ importers:
       '@xihan-ui/motion':
         specifier: workspace:^
         version: link:../../engine/motion
+      '@xihan-ui/pointer':
+        specifier: workspace:^
+        version: link:../../engine/pointer
       '@xihan-ui/position':
         specifier: workspace:^
         version: link:../../engine/position
@@ -375,6 +381,9 @@ importers:
       '@xihan-ui/motion':
         specifier: workspace:^
         version: link:../motion
+      '@xihan-ui/pointer':
+        specifier: workspace:^
+        version: link:../pointer
     devDependencies:
       '@xihan-ui/build':
         specifier: workspace:*
@@ -422,6 +431,21 @@ importers:
         version: 4.1.10(@types/node@24.13.3)(@vitest/browser-playwright@4.1.10)(jsdom@27.4.0)(vite@8.1.5(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.6.1)(tsx@4.19.4)(yaml@2.9.0))
 
   packages/engine/motion:
+    devDependencies:
+      '@xihan-ui/build':
+        specifier: workspace:*
+        version: link:../../../tooling/build
+      '@xihan-ui/tsconfig':
+        specifier: workspace:*
+        version: link:../../../tooling/tsconfig
+      jsdom:
+        specifier: 'catalog:'
+        version: 27.4.0
+      vitest:
+        specifier: 'catalog:'
+        version: 4.1.10(@types/node@24.13.3)(@vitest/browser-playwright@4.1.10)(jsdom@27.4.0)(vite@8.1.5(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.6.1)(tsx@4.19.4)(yaml@2.9.0))
+
+  packages/engine/pointer:
     devDependencies:
       '@xihan-ui/build':
         specifier: workspace:*

@@ -42,6 +42,12 @@
     "limit": "3 kB"
   },
   {
+    "name": "pointer",
+    "path": "packages/engine/pointer/dist/index.js",
+    "gzip": true,
+    "limit": "350 B"
+  },
+  {
     "name": "code-highlight",
     "path": "packages/engine/code-highlight/dist/index.js",
     "gzip": true,

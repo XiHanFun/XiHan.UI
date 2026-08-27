@@ -1,8 +1,8 @@
 {
-  "name": "@xihan-ui/headless",
+  "name": "@xihan-ui/pointer",
   "type": "module",
   "version": "1.0.0",
-  "description": "XiHan.UI headless components — anatomy, machine, connect. No styles.",
+  "description": "XiHan.UI pointer primitives — one pointer session that follows a single pointer from press to release.",
   "author": {
     "name": "XiHanFun",
     "url": "https://github.com/XiHanFun"
@@ -12,17 +12,16 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/XiHanFun/XiHan.UI.git",
-    "directory": "ui/packages/engine/headless"
+    "directory": "ui/packages/engine/pointer"
   },
   "bugs": {
     "url": "https://github.com/XiHanFun/XiHan.UI/issues"
   },
   "keywords": [
-    "headless-ui",
-    "unstyled",
-    "accessible",
-    "components",
-    "aria"
+    "pointer-events",
+    "pointer-session",
+    "drag",
+    "headless-ui"
   ],
   "sideEffects": false,
   "exports": {
@@ -50,14 +49,7 @@
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "vitest run"
   },
-  "dependencies": {
-    "@internationalized/date": "catalog:",
-    "@xihan-ui/behavior": "workspace:^",
-    "@xihan-ui/kernel": "workspace:^",
-    "@xihan-ui/machine": "workspace:^",
-    "@xihan-ui/motion": "workspace:^",
-    "@xihan-ui/pointer": "workspace:^"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@xihan-ui/build": "workspace:*",
     "@xihan-ui/tsconfig": "workspace:*",

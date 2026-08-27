@@ -2,6 +2,7 @@ import type { Params } from '@xihan-ui/machine'
 import type { CropConstraints } from './image-cropper.geometry'
 import type { ImageCropperRect, ImageCropperSchema, ImageCropperSize } from './image-cropper.types'
 import { resetDeclaredValue, setup } from '@xihan-ui/machine'
+import { createPointerSession, resolveSessionDoc } from '@xihan-ui/pointer'
 import {
   initialCropRect,
   moveCropRect,
@@ -231,24 +232,14 @@ export const imageCropperMachine = createMachine({
       },
     },
     effects: {
-      // 监听器挂在文档上，指针拖出视口仍要跟手；pointercancel 不收会让状态永远停在拖动态。
+      // 跟手交给指针会话：监听挂在文档上，指针拖出视口仍要跟手，系统收走指针也会收尾。
       trackPointer: ({ send, refs }) => {
-        const viewport = refs.get('getViewportEl')()
-        const doc = viewport?.ownerDocument ?? (typeof document === 'undefined' ? null : document)
-        if (!doc)
-          return () => {}
-        const onMove = (ev: PointerEvent): void => {
-          send({ type: 'DRAG.MOVE', point: { clientX: ev.clientX, clientY: ev.clientY } })
-        }
-        const onUp = (): void => send({ type: 'DRAG.END' })
-        doc.addEventListener('pointermove', onMove)
-        doc.addEventListener('pointerup', onUp)
-        doc.addEventListener('pointercancel', onUp)
-        return () => {
-          doc.removeEventListener('pointermove', onMove)
-          doc.removeEventListener('pointerup', onUp)
-          doc.removeEventListener('pointercancel', onUp)
-        }
+        const session = createPointerSession({
+          doc: resolveSessionDoc(refs.get('getViewportEl')()),
+          onMove: ({ point }) => send({ type: 'DRAG.MOVE', point }),
+          onEnd: () => send({ type: 'DRAG.END' }),
+        })
+        return () => session.dispose()
       },
     },
   },
