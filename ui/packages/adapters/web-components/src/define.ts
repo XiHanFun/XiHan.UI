@@ -93,6 +93,7 @@ import { XhSideNavElement } from './elements/side-nav'
 import { XhSignaturePadElement } from './elements/signature-pad'
 import { XhSkeletonElement } from './elements/skeleton'
 import { XhSliderElement } from './elements/slider'
+import { XhSortableElement } from './elements/sortable'
 import { XhSpaceElement } from './elements/space'
 import { XhSpinnerElement } from './elements/spinner'
 import { XhSplitterElement } from './elements/splitter'
@@ -220,6 +221,7 @@ export function defineXhElements(): void {
   defineElement('xh-separator', XhSeparatorElement, VERSION)
   defineElement('xh-side-nav', XhSideNavElement, VERSION)
   defineElement('xh-slider', XhSliderElement, VERSION)
+  defineElement('xh-sortable', XhSortableElement, VERSION)
   defineElement('xh-splitter', XhSplitterElement, VERSION)
   defineElement('xh-statistic', XhStatisticElement, VERSION)
   defineElement('xh-steps', XhStepsElement, VERSION)
@@ -326,6 +328,7 @@ export {
   XhSignaturePadElement,
   XhSkeletonElement,
   XhSliderElement,
+  XhSortableElement,
   XhSpaceElement,
   XhSpinnerElement,
   XhSplitterElement,
