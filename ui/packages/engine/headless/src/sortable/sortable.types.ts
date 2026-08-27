@@ -118,6 +118,16 @@ export interface SortableSchema extends MachineSchema {
   tag: string
 }
 
+export interface SortableItemProps {
+  /** 项标识，与 `ids` 里的值一一对应。 */
+  id: string
+  /**
+   * 单独禁掉这一项。整份 `disabled` 是列表级的开关，这条是项级的——
+   * 固定标签不许拖、其余照拖，就是这个形状。
+   */
+  disabled?: boolean
+}
+
 /** 一项在此刻的呈现状态，适配器据此渲染。 */
 export interface SortableItemState {
   id: string
@@ -138,7 +148,7 @@ export interface SortableApi<T extends PropTypes = PropTypes> {
   /** 逐项的呈现状态，顺序与 `ids` 一致。 */
   items: SortableItemState[]
   getRootProps: () => T['element']
-  getItemProps: (props: { id: string }) => T['element']
-  getItemHandleProps: (props: { id: string }) => T['element']
+  getItemProps: (props: SortableItemProps) => T['element']
+  getItemHandleProps: (props: SortableItemProps) => T['element']
   getLiveRegionProps: () => T['element']
 }

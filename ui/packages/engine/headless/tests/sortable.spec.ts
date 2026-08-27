@@ -340,3 +340,94 @@ describe('排序 · 播报', () => {
     expect(s.service.context.get('announcement')).not.toBe(picked)
   })
 })
+
+describe('排序 · 不给手柄时整项可拖', () => {
+  it('按在项上也能开拖', () => {
+    const s = makeSortable()
+    const item = s.api().getItemProps({ id: 'a' }) as Record<string, unknown>
+    ;(item.onPointerDown as (e: PointerEvent) => void)(
+      { button: 0, pointerId: 1, clientX: 0, clientY: 50 } as PointerEvent,
+    )
+    expect(s.state()).toBe('pending')
+    s.service.send({ type: 'POINTER.MOVE', point: at(200) })
+    expect(s.state()).toBe('dragging')
+  })
+
+  it('按在项上不拦默认行为——项里常有按钮与链接，拦掉会连它们的聚焦一起拦掉', () => {
+    const s = makeSortable()
+    let prevented = false
+    const item = s.api().getItemProps({ id: 'a' }) as Record<string, unknown>
+    ;(item.onPointerDown as (e: PointerEvent) => void)(
+      { button: 0, pointerId: 1, clientX: 0, clientY: 50, preventDefault: () => { prevented = true } } as unknown as PointerEvent,
+    )
+    expect(prevented).toBe(false)
+  })
+
+  it('手柄冒泡上来的那一次是幂等的，不会另起一场', () => {
+    const s = makeSortable()
+    const api = s.api()
+    const down = { button: 0, pointerId: 1, clientX: 0, clientY: 50, preventDefault: () => {} } as unknown as PointerEvent
+    ;((api.getItemHandleProps({ id: 'a' }) as Record<string, unknown>).onPointerDown as (e: PointerEvent) => void)(down)
+    // 手柄在项里面，同一次按下会再冒泡到项上
+    ;((api.getItemProps({ id: 'a' }) as Record<string, unknown>).onPointerDown as (e: PointerEvent) => void)(down)
+    expect(s.state()).toBe('pending')
+    expect(s.api().activeId).toBe('a')
+  })
+
+  it('项上的键盘只认空格：Enter 通常已经是这一项的主操作', () => {
+    const s = makeSortable()
+    const el = {}
+    const item = s.api().getItemProps({ id: 'a' }) as Record<string, unknown>
+    const key = (k: string) => ({ key: k, target: el, currentTarget: el, preventDefault: () => {} }) as unknown as KeyboardEvent
+    ;(item.onKeyDown as (e: KeyboardEvent) => void)(key('Enter'))
+    expect(s.state()).toBe('idle')
+    ;(item.onKeyDown as (e: KeyboardEvent) => void)(key(' '))
+    expect(s.state()).toBe('dragging')
+  })
+
+  it('焦点在项内部的按钮上时空格不算拾起', () => {
+    const s = makeSortable()
+    const item = s.api().getItemProps({ id: 'a' }) as Record<string, unknown>
+    ;(item.onKeyDown as (e: KeyboardEvent) => void)(
+      { key: ' ', target: {}, currentTarget: {}, preventDefault: () => {} } as unknown as KeyboardEvent,
+    )
+    expect(s.state()).toBe('idle')
+  })
+})
+
+describe('排序 · 逐项禁用', () => {
+  it('禁掉的那一项拖不动，别的照拖', () => {
+    const s = makeSortable()
+    const down = { button: 0, pointerId: 1, clientX: 0, clientY: 50, preventDefault: () => {} } as unknown as PointerEvent
+    ;((s.api().getItemProps({ id: 'a', disabled: true }) as Record<string, unknown>).onPointerDown as (e: PointerEvent) => void)(down)
+    expect(s.state()).toBe('idle')
+    ;((s.api().getItemProps({ id: 'b' }) as Record<string, unknown>).onPointerDown as (e: PointerEvent) => void)(down)
+    expect(s.state()).toBe('pending')
+  })
+
+  it('禁掉的那一项手柄退出 Tab 序列并报 aria-disabled', () => {
+    const s = makeSortable()
+    const handle = s.api().getItemHandleProps({ id: 'a', disabled: true }) as Record<string, unknown>
+    expect(handle.tabindex).toBeUndefined()
+    expect(handle['aria-disabled']).toBe('true')
+    const other = s.api().getItemHandleProps({ id: 'b' }) as Record<string, unknown>
+    expect(other.tabindex).toBe(0)
+    expect(other['aria-disabled']).toBe('false')
+  })
+
+  it('项级禁用与列表级禁用各管各的：列表禁了，逐项没写也一样禁', () => {
+    const s = makeSortable({ disabled: true })
+    const item = s.api().getItemProps({ id: 'a' }) as Record<string, unknown>
+    expect(item['data-disabled']).toBe('')
+  })
+
+  it('禁掉的那一项键盘也拾不起来', () => {
+    const s = makeSortable()
+    const el = {}
+    const item = s.api().getItemProps({ id: 'a', disabled: true }) as Record<string, unknown>
+    ;(item.onKeyDown as (e: KeyboardEvent) => void)(
+      { key: ' ', target: el, currentTarget: el, preventDefault: () => {} } as unknown as KeyboardEvent,
+    )
+    expect(s.state()).toBe('idle')
+  })
+})
