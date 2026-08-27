@@ -30,6 +30,7 @@ const ID_LIST_CONVERTER = {
  *
  * 顺序的唯一真源是 `ids`，DOM 里项的先后必须与它一致——几何按 DOM 量，事件按 `ids` 算。
  * 每个 item 与它的 item-handle 都要用 `item-id` 属性写明自己是哪一项（与 Vue 侧的 `:item-id` 同一份声明）。
+ * 单独禁掉某一项写 `item-disabled`。不给 item-handle 时整项可拖。
  *
  * 拖动落点走乐观投影：拖动过程中其余项实时让位，松手即定。让位与跟手的位移由元素每帧
  * 写进内联 transform，作者的样式表不要再碰这条属性。
@@ -126,6 +127,12 @@ export class XhSortableElement extends XhElement {
     return el.getAttribute('item-id') ?? ''
   }
 
+  /** 项级禁用。写 item-disabled 即禁掉这一项，与列表级的 disabled 各管各的。 */
+  private partDisabled(el: HTMLElement): boolean {
+    const raw = el.getAttribute('item-disabled')
+    return raw != null && raw !== 'false'
+  }
+
   protected wire(): void {
     const api = connectSortable(this.ctrl.service, wcNormalize)
 
@@ -134,10 +141,10 @@ export class XhSortableElement extends XhElement {
       this.spreader.spread(root, api.getRootProps() as Record<string, unknown>)
 
     for (const el of this.getParts('item'))
-      this.spreader.spread(el, api.getItemProps({ id: this.partId(el) }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getItemProps({ id: this.partId(el), disabled: this.partDisabled(el) }) as Record<string, unknown>)
 
     for (const el of this.getParts('item-handle'))
-      this.spreader.spread(el, api.getItemHandleProps({ id: this.partId(el) }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getItemHandleProps({ id: this.partId(el), disabled: this.partDisabled(el) }) as Record<string, unknown>)
 
     const live = this.getPart('live-region')
     if (live) {

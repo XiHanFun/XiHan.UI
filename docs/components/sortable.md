@@ -121,8 +121,8 @@ orientation 三档：竖排、横排，换行网格用 both，落点按最近中
 | `mode` | `SortableMode \| null` |  |
 | `items` | `SortableItemState[]` | 逐项的呈现状态，顺序与 `ids` 一致。 |
 | `getRootProps` | `() => T['element']` |  |
-| `getItemProps` | `(props: { id: string }) => T['element']` |  |
-| `getItemHandleProps` | `(props: { id: string }) => T['element']` |  |
+| `getItemProps` | `(props: SortableItemProps) => T['element']` |  |
+| `getItemHandleProps` | `(props: SortableItemProps) => T['element']` |  |
 | `getLiveRegionProps` | `() => T['element']` |  |
 
 ## 键盘

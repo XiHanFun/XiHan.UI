@@ -19355,6 +19355,11 @@ input[data-scope='mention'][data-part='input'] {
   gap: var(--xh-sortable-gap, var(--xh-space-2));
 }
 
+/* 拖动期间关掉选中：整项可拖时按下不 preventDefault，不关这条会一路刷蓝 */
+[data-scope='sortable'][data-part='root'][data-dragging] {
+  user-select: none;
+}
+
 [data-scope='sortable'][data-part='root'][data-orientation='vertical'] {
   flex-direction: column;
 }
@@ -19374,7 +19379,6 @@ input[data-scope='mention'][data-part='input'] {
   align-items: center;
   gap: var(--xh-sortable-item-gap, var(--xh-space-2));
   border-radius: var(--xh-sortable-item-radius, var(--xh-shape-control));
-  background: var(--xh-sortable-item-bg, var(--xh-bg-surface));
 }
 
 /* 让位期间关掉过渡，跟手的那一项才不会慢半拍粘在指针后面。

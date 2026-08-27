@@ -78,6 +78,8 @@ export const XhSortableItem = defineComponent({
   props: {
     /** 项标识，与 `ids` 里的值一一对应。 */
     itemId: { type: String, required: true },
+    /** 单独禁掉这一项。整份 `disabled` 在 Root 上，这条是项级的。 */
+    disabled: { type: Boolean, default: undefined },
   },
   slots: Object as SlotsType<{
     default?: (props: SortableItemSlotProps) => VNode[]
@@ -87,7 +89,7 @@ export const XhSortableItem = defineComponent({
     const state = computed(() => ctx.api.value.items.find(item => item.id === props.itemId))
     return () => h(
       'div',
-      ctx.api.value.getItemProps({ id: props.itemId }) as Record<string, unknown>,
+      ctx.api.value.getItemProps({ id: props.itemId, disabled: props.disabled }) as Record<string, unknown>,
       slots.default?.({
         dragging: state.value?.dragging ?? false,
         index: state.value?.index ?? -1,
@@ -101,6 +103,8 @@ export const XhSortableItemHandle = defineComponent({
   props: {
     /** 项标识，与 `ids` 里的值一一对应。 */
     itemId: { type: String, required: true },
+    /** 单独禁掉这一项。整份 `disabled` 在 Root 上，这条是项级的。 */
+    disabled: { type: Boolean, default: undefined },
   },
   slots: Object as SlotsType<{
     default?: () => VNode[]
@@ -109,7 +113,7 @@ export const XhSortableItemHandle = defineComponent({
     const ctx = useSortableContext()
     return () => h(
       'button',
-      ctx.api.value.getItemHandleProps({ id: props.itemId }) as Record<string, unknown>,
+      ctx.api.value.getItemHandleProps({ id: props.itemId, disabled: props.disabled }) as Record<string, unknown>,
       slots.default?.(),
     )
   },

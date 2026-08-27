@@ -9525,7 +9525,6 @@
     "--xh-sortable-handle-fg-hover",
     "--xh-sortable-handle-radius",
     "--xh-sortable-handle-size",
-    "--xh-sortable-item-bg",
     "--xh-sortable-item-gap",
     "--xh-sortable-item-opacity-dragging",
     "--xh-sortable-item-radius",

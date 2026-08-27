@@ -108,46 +108,75 @@ export function connectSortable<T extends PropTypes>(
       'data-dragging': dataAttr(dragging),
     }),
 
-    getItemProps: ({ id }) => {
+    getItemProps: ({ id, disabled: itemDisabled }) => {
       const item = itemAt(id)
       const isDragging = !!item?.dragging
       const offset = item?.offset ?? ZERO
+      const off = disabled || !!itemDisabled
       return normalize.element({
         ...parts.item.attrs,
         [ITEM_VALUE_ATTR]: id,
         'data-index': String(item?.index ?? -1),
         'data-dragging': dataAttr(isDragging),
-        // 让位中的项不接指针：它正在动，落点判定只看被拖的那一个
-        'data-disabled': dataAttr(disabled),
+        'data-disabled': dataAttr(off),
         'style': {
           transform: offset.x === 0 && offset.y === 0 ? undefined : `translate3d(${offset.x}px, ${offset.y}px, 0)`,
           // 被拖那一项要压在让位的项之上，否则跟手时会钻到别人底下
           zIndex: isDragging ? 1 : undefined,
         },
+        // 不给手柄时整项可拖。手柄在项里面，它的 pointerdown 冒泡上来会再发一次，
+        // 但那时已经进了 pending，重复的这条没有转移接它，因此是幂等的。
+        'onPointerDown': (event: PointerEvent) => {
+          // 只认主键：右键要弹上下文菜单，中键是自动滚动
+          if (off || event.button !== 0)
+            return
+          // 这里刻意不 preventDefault：整项可拖时项里常有按钮与链接，
+          // 拦掉默认行为会连它们的聚焦一起拦掉。拖起来之后由皮肤关掉选中
+          send({
+            type: 'ITEM.POINTER_DOWN',
+            id,
+            point: { clientX: event.clientX, clientY: event.clientY },
+            pointerId: event.pointerId,
+          })
+        },
+        // 键盘只认空格，且只在焦点落在项自身时响应：
+        // 整项可拖的场景里，Enter 通常已经是这一项的主操作（导航 / 打开），
+        // 项内部的按钮拿着焦点时也不该被当成拾起
+        'onKeyDown': (event: KeyboardEvent) => {
+          if (off || event.key !== ' ' || event.target !== event.currentTarget)
+            return
+          if (dragging) {
+            onDragKeyDown(event)
+            return
+          }
+          event.preventDefault()
+          send({ type: 'ITEM.PICKUP', id })
+        },
       })
     },
 
-    getItemHandleProps: ({ id }) => {
+    getItemHandleProps: ({ id, disabled: itemDisabled }) => {
       const item = itemAt(id)
       const isDragging = !!item?.dragging
       const position = (item?.index ?? 0) + 1
       const name = translations?.item?.(id, position, ids.length) ?? id
+      const off = disabled || !!itemDisabled
       return normalize.element({
         ...parts['item-handle'].attrs,
         // 宿主是 <button> 时必须显式写 type：不写默认是 submit，放进表单里一按就提交
         'type': 'button',
         'role': 'button',
-        'tabindex': disabled ? undefined : 0,
+        'tabindex': off ? undefined : 0,
         'aria-label': translations?.itemHandle?.(name) ?? `Reorder ${name}`,
         'aria-roledescription': 'sortable',
-        'aria-disabled': disabled ? 'true' : 'false',
+        'aria-disabled': off ? 'true' : 'false',
         'aria-pressed': isDragging ? 'true' : 'false',
         'data-dragging': dataAttr(isDragging),
         // 不关掉这一轴的默认手势，触屏上手指一划就被系统收走（pointercancel）
-        'style': { touchAction: disabled ? undefined : 'none' },
+        'style': { touchAction: off ? undefined : 'none' },
         'onPointerDown': (event: PointerEvent) => {
           // 只认主键：右键要弹上下文菜单，中键是自动滚动
-          if (disabled || event.button !== 0)
+          if (off || event.button !== 0)
             return
           event.preventDefault()
           send({
@@ -158,7 +187,7 @@ export function connectSortable<T extends PropTypes>(
           })
         },
         'onKeyDown': (event: KeyboardEvent) => {
-          if (disabled)
+          if (off)
             return
           if (dragging) {
             onDragKeyDown(event)
