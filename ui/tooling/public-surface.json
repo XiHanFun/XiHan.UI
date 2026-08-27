@@ -200,6 +200,9 @@
     "@xihan-ui/motion": [
       "."
     ],
+    "@xihan-ui/pointer": [
+      "."
+    ],
     "@xihan-ui/position": [
       ".",
       "./compute"
@@ -4342,6 +4345,16 @@
       "tweenEasings",
       "tweenProgress",
       "tweenValueAt"
+    ],
+    "@xihan-ui/pointer": [
+      "PointerEndDetails",
+      "PointerEndReason",
+      "PointerPoint",
+      "PointerSession",
+      "PointerSessionDetails",
+      "PointerSessionOptions",
+      "createPointerSession",
+      "resolveSessionDoc"
     ],
     "@xihan-ui/position": [
       "ComputeInput",

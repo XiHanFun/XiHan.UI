@@ -8,7 +8,7 @@
 
 ## `npm install` 能装到哪些包
 
-17 个公开包都在 npm 上，预览版走 `preview` dist-tag（`latest` 与 `alpha` 仍停在上一个预发布版）。发布走 changesets，全部库包同属一个 fixed 版本组，一起升到同一版本号，所以内部依赖区间总是对齐的。
+18 个公开包都在 npm 上，预览版走 `preview` dist-tag（`latest` 与 `alpha` 仍停在上一个预发布版）。发布走 changesets，全部库包同属一个 fixed 版本组，一起升到同一版本号，所以内部依赖区间总是对齐的。
 
 ## 和 XiHan.BasicApp 的前端是什么关系
 

@@ -86,6 +86,7 @@ service.send({ type: 'TRIGGER.CLICK' })            （machine）
 | `@xihan-ui/behavior` | 交互行为原语：消隐层、焦点域、滚动锁、进出场、集合导航、typeahead |
 | `@xihan-ui/motion` | 动效原语：缓动单一真源、纯补间、帧循环、减弱动效偏好、解析解弹簧 |
 | `@xihan-ui/position` | 浮层定位引擎，自研，零第三方依赖 |
+| `@xihan-ui/pointer` | 指针会话：一根指针从按下到抬起的跟手、过滤与收尾，自研，零依赖 |
 
 **组件与适配器**
 

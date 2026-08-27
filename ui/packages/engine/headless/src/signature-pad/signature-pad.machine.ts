@@ -1,5 +1,6 @@
 import type { SignaturePadDrawingOptions, SignaturePadPointerPoint, SignaturePadSchema, SignaturePadStroke, SignaturePadSurface } from './signature-pad.types'
 import { setup } from '@xihan-ui/machine'
+import { createPointerSession, resolveSessionDoc } from '@xihan-ui/pointer'
 import { lastStrokePath, pointDistance, SIGNATURE_PAD_MIN_DISTANCE, signaturePadSvg, simulatedPressure, strokesToPaths } from './signature-pad.geometry'
 
 const { createMachine } = setup<SignaturePadSchema>()
@@ -182,36 +183,20 @@ export const signaturePadMachine = createMachine({
     },
     effects: {
       trackPointer: ({ send, refs }) => {
-        const el = refs.get('getControlEl')()
-        const doc = el?.ownerDocument ?? (typeof document === 'undefined' ? null : document)
-        if (!doc)
-          return () => {}
-        // 只认起笔那根指针。落笔时没报 pointerId（程序化发事件）就不筛，否则一条都收不到
-        const isCurrent = (id: number | undefined): boolean => {
-          const current = refs.get('strokePointerId')
-          return current == null || current === id
-        }
-        const onMove = (ev: PointerEvent): void => {
-          if (!isCurrent(ev.pointerId))
-            return
-          send({
-            type: 'DRAW.MOVE',
-            point: { clientX: ev.clientX, clientY: ev.clientY, pressure: ev.pressure, pointerId: ev.pointerId },
-          })
-        }
-        const onUp = (ev: PointerEvent): void => {
-          if (!isCurrent(ev.pointerId))
-            return
-          send({ type: 'DRAW.END' })
-        }
-        doc.addEventListener('pointermove', onMove)
-        doc.addEventListener('pointerup', onUp)
-        doc.addEventListener('pointercancel', onUp)
-        return () => {
-          doc.removeEventListener('pointermove', onMove)
-          doc.removeEventListener('pointerup', onUp)
-          doc.removeEventListener('pointercancel', onUp)
-        }
+        // 只认起笔那根指针：起笔动作在本效应挂载之前就跑完了，此刻 ref 已就位。
+        // 落笔时没报 pointerId（程序化发事件）就不筛，否则一条都收不到
+        const session = createPointerSession({
+          doc: resolveSessionDoc(refs.get('getControlEl')()),
+          pointerId: refs.get('strokePointerId') ?? undefined,
+          onMove: ({ point, pressure, pointerId }) => {
+            send({
+              type: 'DRAW.MOVE',
+              point: { clientX: point.clientX, clientY: point.clientY, pressure, pointerId },
+            })
+          },
+          onEnd: () => send({ type: 'DRAW.END' }),
+        })
+        return () => session.dispose()
       },
     },
   },

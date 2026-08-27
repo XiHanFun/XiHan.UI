@@ -17,6 +17,7 @@
       "@xihan-ui/markdown",
       "@xihan-ui/code-highlight",
       "@xihan-ui/position",
+      "@xihan-ui/pointer",
       "@xihan-ui/backgrounds",
       "@xihan-ui/sound",
       "@xihan-ui/icons",

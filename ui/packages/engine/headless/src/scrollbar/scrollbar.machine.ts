@@ -4,6 +4,7 @@ import type { ScrollAxisMetrics } from '../shared/scroll-geometry'
 import type { ScrollbarSchema, ScrollbarType } from './scrollbar.types'
 import { DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/kernel'
 import { setTimeoutEffect, setup } from '@xihan-ui/machine'
+import { createPointerSession, resolveSessionDoc } from '@xihan-ui/pointer'
 import { clamp } from '../shared/number'
 import {
   maxScrollOffset,
@@ -510,24 +511,14 @@ export const scrollbarMachine = createMachine({
         return setTimeoutEffect(() => send({ type: 'after.hideDelay' }), delay)
       },
 
-      // 监听器挂在文档上，指针拖出滚动条仍要跟手；pointercancel 不收会让状态永远停在 dragging
+      // 跟手交给指针会话：监听挂在文档上，指针拖出滚动条仍要跟手，系统收走指针也会收尾
       trackPointer: ({ refs, send }) => {
-        const scrollable = refs.get('getScrollableEl')()
-        const doc = scrollable?.ownerDocument ?? (typeof document === 'undefined' ? null : document)
-        if (!doc)
-          return undefined
-        const onMove = (ev: PointerEvent): void => {
-          send({ type: 'DRAG.MOVE', point: { clientX: ev.clientX, clientY: ev.clientY } })
-        }
-        const onUp = (): void => send({ type: 'DRAG.END' })
-        doc.addEventListener('pointermove', onMove)
-        doc.addEventListener('pointerup', onUp)
-        doc.addEventListener('pointercancel', onUp)
-        return () => {
-          doc.removeEventListener('pointermove', onMove)
-          doc.removeEventListener('pointerup', onUp)
-          doc.removeEventListener('pointercancel', onUp)
-        }
+        const session = createPointerSession({
+          doc: resolveSessionDoc(refs.get('getScrollableEl')()),
+          onMove: ({ point }) => send({ type: 'DRAG.MOVE', point }),
+          onEnd: () => send({ type: 'DRAG.END' }),
+        })
+        return () => session.dispose()
       },
     },
   },

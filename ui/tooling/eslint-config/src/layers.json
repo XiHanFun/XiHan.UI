@@ -21,6 +21,10 @@
       "level": 1,
       "canDependOn": []
     },
+    "engine/pointer": {
+      "level": 1,
+      "canDependOn": []
+    },
     "engine/behavior": {
       "level": 2,
       "canDependOn": [
@@ -48,7 +52,8 @@
         "engine/machine",
         "engine/behavior",
         "design/tokens",
-        "engine/motion"
+        "engine/motion",
+        "engine/pointer"
       ]
     },
     "design/styles": {
@@ -75,7 +80,8 @@
         "design/tokens",
         "features/backgrounds",
         "features/sound",
-        "engine/motion"
+        "engine/motion",
+        "engine/pointer"
       ]
     },
     "adapters/web-components": {
@@ -89,7 +95,8 @@
         "engine/code-highlight",
         "design/tokens",
         "features/backgrounds",
-        "engine/motion"
+        "engine/motion",
+        "engine/pointer"
       ]
     },
     "features/chat-stream": {

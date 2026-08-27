@@ -24,6 +24,7 @@ Framework-agnostic component library. State machines and accessibility live in a
 | `@xihan-ui/styles` | Default skins, layered CSS |
 | `@xihan-ui/tokens` | Design tokens (from DTCG sources) + theme runtime (color scheme / density / direction) |
 | `@xihan-ui/position` | Floating layer positioning — self-implemented, no third-party runtime dependency |
+| `@xihan-ui/pointer` | Pointer session: one pointer from press to release — tracking, filtering, teardown; self-implemented, zero dependencies |
 | `@xihan-ui/chat-stream` | AI protocol core: SSE reading → protocol normalization → parts reduction → thread store (no DOM, no framework) |
 | `@xihan-ui/code-highlight` | Code highlighting — self-implemented coarse tokenizer, no third-party runtime dependency |
 | `@xihan-ui/markdown` | Streaming markdown renderer: incremental block splitting, stable keys, sanitization (CommonMark subset, 489/652) |
@@ -54,7 +55,7 @@ pnpm typecheck
 pnpm lint
 pnpm boundaries   # layered dependency gate (dependency-cruiser)
 pnpm build
-pnpm size         # bundle size ratchet — builds, then checks the 27 budgets in .size-limit.json
+pnpm size         # bundle size ratchet — builds, then checks the 28 budgets in .size-limit.json
 ```
 
 ## Conventions
