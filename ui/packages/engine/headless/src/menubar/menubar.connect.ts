@@ -289,6 +289,9 @@ export function connectMenubar<T extends PropTypes>(
           // 吞掉 Enter/Space，避免按钮默认行为再合成一次 click
           if (event.key === 'Enter' || event.key === ' ') {
             event.preventDefault()
+            // 按住不放会连发 keydown，这是切换：重复执行会来回翻转
+            if (event.repeat)
+              return
             send({ type: 'TRIGGER.TOGGLE', value: item.value })
           }
         },

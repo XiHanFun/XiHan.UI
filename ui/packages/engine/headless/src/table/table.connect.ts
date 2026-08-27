@@ -403,6 +403,9 @@ export function connectTable<T extends PropTypes>(
           if (mode !== 'multiple')
             return
           event.preventDefault()
+          // 按住不放会连发 keydown，这是切换：重复执行会来回翻转
+          if (event.repeat)
+            return
           send({ type: 'SELECTION.ALL_TOGGLE' })
           return
         }
@@ -594,6 +597,9 @@ export function connectTable<T extends PropTypes>(
           return
         // 作者写成 <button> 时按键会被再合成一次 click，拦下默认行为，否则同一次按键切两回
         event.preventDefault()
+        // 按住不放会连发 keydown，这是切换：重复执行会来回翻转
+        if (event.repeat)
+          return
         send({ type: 'SELECTION.ALL_TOGGLE' })
       },
     }),

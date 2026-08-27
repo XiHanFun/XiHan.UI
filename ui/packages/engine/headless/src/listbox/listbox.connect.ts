@@ -167,6 +167,9 @@ export function connectListbox<T extends PropTypes>(
           if (!multiselectable)
             return
           event.preventDefault()
+          // 按住不放会连发 keydown，这是切换：重复执行会来回翻转
+          if (event.repeat)
+            return
           selectAll(content)
           return
         }
@@ -175,6 +178,9 @@ export function connectListbox<T extends PropTypes>(
           if (!multiselectable)
             return
           event.preventDefault()
+          // 按住不放会连发 keydown，这是切换：重复执行会来回翻转
+          if (event.repeat)
+            return
           commit(content, 'toggle')
           return
         }

@@ -233,6 +233,9 @@ export function connectJsonViewer<T extends PropTypes>(
           if (!row?.branch)
             return
           event.preventDefault()
+          // 按住不放会连发 keydown，这是切换：重复执行会来回翻转
+          if (event.repeat)
+            return
           send({ type: 'BRANCH.TOGGLE', value: row.value })
           return
         }

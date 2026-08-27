@@ -290,6 +290,9 @@ export function connectCombobox<T extends PropTypes>(
           if (!open)
             return
           event.preventDefault()
+          // 按住不放会连发 keydown，这是切换：重复执行会来回翻转
+          if (event.repeat)
+            return
           if (commitHighlighted())
             return
           // 没有高亮：允许自定义值就把输入串收成值，否则只收起

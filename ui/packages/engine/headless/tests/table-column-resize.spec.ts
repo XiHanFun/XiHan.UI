@@ -22,7 +22,7 @@ const ROWS = [{ id: 'a' }, { id: 'b' }]
  * jsdom 不排版，把手要量的那份列宽打在表头格上。
  */
 function mount(initial: Partial<Props> = {}) {
-  const props: Partial<Props> = { columns: COLUMNS, rows: ROWS, ...initial }
+  const props: Partial<Props> = { columns: COLUMNS, rows: ROWS, selectionMode: 'multiple', ...initial }
   const runtime = createVanillaRuntime()
   const service = createService(tableMachine, { props: () => props, runtime })
   runtime.start()
@@ -350,5 +350,23 @@ describe('列宽 · 按下时把全部列钉住', () => {
     key(h, 'name', 'ArrowRight')
     const cell = h.api().getCellProps({ value: 'name', row: 'a' }) as Dict
     expect((cell.style as Dict).flexGrow).toBe(0)
+  })
+})
+
+describe('按住不放', () => {
+  it('自动重复不会反复切全选——按住 Ctrl+A 不该在全选与全不选之间闪', () => {
+    const h = mount()
+    const body = h.api().getBodyProps() as Dict
+    const press = (repeat: boolean) =>
+      (body.onKeyDown as (e: KeyboardEvent) => void)(
+        { key: 'a', ctrlKey: true, repeat, preventDefault: () => {}, currentTarget: document.createElement('div') } as unknown as KeyboardEvent,
+      )
+    press(false)
+    const afterFirst = h.service.context.get('selection')
+    // 后面这些是按住不放连发出来的，一次都不该生效
+    press(true)
+    press(true)
+    press(true)
+    expect(h.service.context.get('selection')).toEqual(afterFirst)
   })
 })

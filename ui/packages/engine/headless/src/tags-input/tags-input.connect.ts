@@ -233,6 +233,9 @@ export function connectTagsInput<T extends PropTypes>(
           if (splitTags(el.value, delimiter).length === 0)
             return
           event.preventDefault()
+          // 按住不放会连发 keydown，这是切换：重复执行会来回翻转
+          if (event.repeat)
+            return
           send({ type: 'INPUT.COMMIT' })
           return
         }
