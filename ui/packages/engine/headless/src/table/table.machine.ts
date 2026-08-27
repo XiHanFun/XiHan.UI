@@ -7,9 +7,13 @@ import type {
   TableSortDescriptor,
 } from './table.types'
 import { setup } from '@xihan-ui/machine'
+import { clampSize, createPointerSession, resolveSessionDoc } from '@xihan-ui/pointer'
 import { orderColumnIds } from './table.columns'
 import { tableSelectableRowIds, tableToggleRowSelection, tableToggleSelectAll } from './table.rows'
 import { tableNormalizeSort, tableToggleSort } from './table.sort'
+
+/** 拖动改列宽时的缺省下限（px）。列定义可用 minWidth 覆盖。 */
+export const TABLE_COLUMN_MIN_WIDTH = 48
 
 const { createMachine } = setup<TableSchema>()
 
@@ -93,6 +97,10 @@ export const tableMachine = createMachine({
       defaultValue: prop('defaultColumnPreference') ?? {},
       onChange: value => prop('onColumnPreferenceChange')?.({ value }),
     })),
+    resizingColumn: cell<string | null>(() => ({ defaultValue: null })),
+  }),
+  refs: () => ({
+    resize: null,
   }),
   initialState: () => 'idle',
   states: {
@@ -112,11 +120,75 @@ export const tableMachine = createMachine({
         'ROW.EXPAND_TOGGLE': { actions: ['toggleExpandRow'] },
         'ROW.FOCUS': { actions: ['setFocusedRow'] },
         'TABLE.BLUR': { actions: ['clearFocusedRow'] },
+        // 键盘改宽不进拖动态：按一下改一步，没有「进行中」这回事
+        'COLUMN_RESIZE.STEP': { actions: ['stepColumnWidth'] },
+        'COLUMN_RESIZE.START': { target: 'resizing', actions: ['startColumnResize'] },
+      },
+    },
+    resizing: {
+      effects: ['trackResizePointer'],
+      on: {
+        'COLUMN_RESIZE.MOVE': { actions: ['trackColumnResize'] },
+        'COLUMN_RESIZE.END': { target: 'idle', actions: ['endColumnResize'] },
+        // 系统收走指针按取消算：宽度退回按下那一刻
+        'COLUMN_RESIZE.CANCEL': { target: 'idle', actions: ['cancelColumnResize'] },
       },
     },
   },
   implementations: {
+    effects: {
+      /** 跟手交给指针会话：拖出表头仍要跟，系统收走指针也会收尾。 */
+      trackResizePointer: ({ scope, send }) => {
+        const session = createPointerSession({
+          doc: resolveSessionDoc(scope.getDoc().documentElement),
+          onMove: ({ point }) => send({ type: 'COLUMN_RESIZE.MOVE', clientX: point.clientX }),
+          onEnd: ({ reason }) => send({ type: reason === 'pointercancel' ? 'COLUMN_RESIZE.CANCEL' : 'COLUMN_RESIZE.END' }),
+        })
+        return () => session.dispose()
+      },
+    },
     actions: {
+      startColumnResize: ({ context, refs, event }) => {
+        const e = event.current()
+        if (e.type !== 'COLUMN_RESIZE.START')
+          return
+        refs.set('resize', { columnId: e.columnId, startWidth: e.startWidth, originX: e.originX })
+        context.set('resizingColumn', e.columnId)
+      },
+
+      trackColumnResize: ({ context, prop, refs, event }) => {
+        const e = event.current()
+        const session = refs.get('resize')
+        if (e.type !== 'COLUMN_RESIZE.MOVE' || !session)
+          return
+        // rtl 下往左拖才是加宽：位移的正负跟着文字方向翻
+        const towards = prop('dir') === 'rtl' ? session.originX - e.clientX : e.clientX - session.originX
+        writeColumnWidth(context, prop, session.columnId, session.startWidth + towards)
+      },
+
+      stepColumnWidth: ({ context, prop, event }) => {
+        const e = event.current()
+        if (e.type !== 'COLUMN_RESIZE.STEP')
+          return
+        const current = currentColumnWidth(context, prop, e.columnId)
+        if (current == null)
+          return
+        writeColumnWidth(context, prop, e.columnId, current + e.delta)
+      },
+
+      endColumnResize: ({ context, refs }) => {
+        refs.set('resize', null)
+        context.set('resizingColumn', null)
+      },
+
+      cancelColumnResize: ({ context, prop, refs }) => {
+        const session = refs.get('resize')
+        if (session)
+          writeColumnWidth(context, prop, session.columnId, session.startWidth)
+        refs.set('resize', null)
+        context.set('resizingColumn', null)
+      },
+
       setColumnPreference: ({ context, event }) => {
         const e = event.current()
         if (e.type === 'COLUMN_PREF.SET')
@@ -259,3 +331,41 @@ export const tableMachine = createMachine({
     },
   },
 })
+
+/** 这一列眼下的宽度（px）。列定义写的是字符串（如 `40%`）时算不出数，返回 null。 */
+function currentColumnWidth(
+  context: { get: (k: 'columnPreference') => TableColumnPreference },
+  prop: <K extends keyof TableSchema['props']>(k: K) => TableSchema['props'][K],
+  columnId: string,
+): number | null {
+  const override = context.get('columnPreference').widths?.[columnId]
+  const raw = override ?? prop('columns')?.find(c => c.id === columnId)?.width
+  return typeof raw === 'number' && Number.isFinite(raw) ? raw : null
+}
+
+/**
+ * 把新宽度夹进这一列的上下限再写回偏好。
+ * 夹取走 pointer 的 resize 层，与面板、可调容器同一份实现。
+ */
+function writeColumnWidth(
+  context: {
+    get: (k: 'columnPreference') => TableColumnPreference
+    set: (k: 'columnPreference', v: TableColumnPreference) => void
+  },
+  prop: <K extends keyof TableSchema['props']>(k: K) => TableSchema['props'][K],
+  columnId: string,
+  next: number,
+): void {
+  const def = prop('columns')?.find(c => c.id === columnId)
+  const { width } = clampSize({ width: next, height: 0 }, {
+    minWidth: def?.minWidth ?? TABLE_COLUMN_MIN_WIDTH,
+    maxWidth: def?.maxWidth,
+  })
+  const current = context.get('columnPreference')
+  context.set('columnPreference', { ...current, widths: { ...current.widths, [columnId]: width } })
+}
+
+/** 键盘改宽的步长（px）。 */
+export const TABLE_COLUMN_STEP = 8
+/** Shift + 方向键的步长（px）。 */
+export const TABLE_COLUMN_LARGE_STEP = 40

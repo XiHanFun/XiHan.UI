@@ -95,6 +95,12 @@ export interface TableColumnDef {
   sticky?: boolean | 'start' | 'end'
   /** 列宽。数字按 px 处理，字符串原样写进内联 inline-size。 */
   width?: string | number
+  /** 拖动改列宽时的下限（px）。不给用 TABLE_COLUMN_MIN_WIDTH。 */
+  minWidth?: number
+  /** 拖动改列宽时的上限（px）。不给即不封顶。 */
+  maxWidth?: number
+  /** 这一列的宽度可以拖着改。给了才产出改宽把手。 */
+  resizable?: boolean
 }
 
 /**
@@ -237,6 +243,7 @@ export interface TableSchema extends MachineSchema {
     dir?: Direction
     /** 密度：sm / md / lg。只换单元格的纵向内边距与字号，列宽算法不受影响。 */
     size?: Size
+    translations?: Partial<TableTranslations>
     onColumnPreferenceChange?: (details: TableColumnPreferenceChangeDetails) => void
     onSortChange?: (details: TableSortChangeDetails) => void
     onSelectionChange?: (details: TableSelectionChangeDetails) => void
@@ -253,11 +260,19 @@ export interface TableSchema extends MachineSchema {
     focusedRow: string | null
     /** 列偏好。受控（columnPreference 给定）时 cell 直读 prop。 */
     columnPreference: TableColumnPreference
+    /** 正在拖着改宽的那一列；没在拖是 null。 */
+    resizingColumn: string | null
   }
   computed: Record<string, never>
-  refs: Record<string, never>
-  /** 排序、选中、展开与列偏好都不编码进状态，机器只有一个状态。 */
-  state: 'idle'
+  refs: {
+    /** 正在拖的那一列：按下那一刻的列宽与指针横坐标。 */
+    resize: { columnId: string, startWidth: number, originX: number } | null
+  }
+  /**
+   * 排序、选中、展开与列偏好都不编码进状态——它们是随时可读可写的事实，不是过程。
+   * 改列宽是过程：有始有终、进行中要跟指针、收尾要发一次通知，因此它有自己的状态。
+   */
+  state: 'idle' | 'resizing'
   event:
     /** 整体改写排序链（外部 setSort 走它）。 */
     | { type: 'SORT.SET', value: TableSortDescriptor[] }
@@ -265,6 +280,13 @@ export interface TableSchema extends MachineSchema {
     | { type: 'SORT.TOGGLE', value: string, append: boolean }
     /** 整体改写列偏好；value 缺席即清空，回到作者定义的原样。 */
     | { type: 'COLUMN_PREF.SET', value?: TableColumnPreference }
+    /** 按住改宽把手。startWidth 由连接层在按下那一刻量出来，机器不碰 DOM。 */
+    | { type: 'COLUMN_RESIZE.START', columnId: string, startWidth: number, originX: number }
+    | { type: 'COLUMN_RESIZE.MOVE', clientX: number }
+    | { type: 'COLUMN_RESIZE.END' }
+    | { type: 'COLUMN_RESIZE.CANCEL' }
+    /** 键盘改宽：一次一步。 */
+    | { type: 'COLUMN_RESIZE.STEP', columnId: string, delta: number }
     /** 改一列的显隐 / 位置 / 宽。 */
     | { type: 'COLUMN_PREF.PATCH', columnId: string, hidden?: boolean, toIndex?: number, width?: number | string }
     /** 整体改写选中集合。 */
@@ -297,7 +319,12 @@ export interface TableSchema extends MachineSchema {
     | 'toggleExpandRow'
     | 'setFocusedRow'
     | 'clearFocusedRow'
-  effect: never
+    | 'startColumnResize'
+    | 'trackColumnResize'
+    | 'stepColumnWidth'
+    | 'endColumnResize'
+    | 'cancelColumnResize'
+  effect: 'trackResizePointer'
 }
 
 export interface TableApi<T extends PropTypes = PropTypes> {
@@ -370,6 +397,8 @@ export interface TableApi<T extends PropTypes = PropTypes> {
   getSelectAllTriggerProps: () => T['element']
   getRowSelectTriggerProps: (props: TableRowProps) => T['element']
   getSortTriggerProps: (props: TableColumnProps) => T['element']
+  /** 列宽把手。只有 resizable 的列才渲它。 */
+  getColumnResizeTriggerProps: (props: TableColumnProps) => T['element']
   getExpandTriggerProps: (props: TableRowProps) => T['element']
   getExpandedRowProps: (props: TableRowProps) => T['element']
   getEmptyProps: () => T['element']
@@ -377,4 +406,7 @@ export interface TableApi<T extends PropTypes = PropTypes> {
 }
 
 /** 读屏用的文案。本组件目前没有需要外露的文案，位先留着。 */
-export interface TableTranslations {}
+export interface TableTranslations {
+  /** 列宽把手的名字。表头文字是列名，把手自己得说清它是干什么的。 */
+  columnResize: (columnLabel: string) => string
+}

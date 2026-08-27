@@ -10,7 +10,7 @@ interface Updatable extends HTMLElement {
 }
 
 // 对外语义事件（跨适配器一致的 CustomEvent），无关组件忽略
-const PUBLIC_EVENTS = ['open-change', 'checked-change', 'pressed-change', 'value-change', 'select', 'sort', 'status-change', 'submit', 'stop', 'stick-change', 'download-complete', 'download-error']
+const PUBLIC_EVENTS = ['open-change', 'checked-change', 'column-preference-change', 'pressed-change', 'value-change', 'select', 'sort', 'status-change', 'submit', 'stop', 'stick-change', 'download-complete', 'download-error']
 
 const SVG_NS = 'http://www.w3.org/2000/svg'
 

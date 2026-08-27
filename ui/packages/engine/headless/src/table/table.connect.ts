@@ -14,7 +14,7 @@ import {
 import { contains, dataAttr, warn } from '@xihan-ui/kernel'
 import { tableAnatomy, tableRowQuery } from './table.anatomy'
 import { resolveTableColumns } from './table.columns'
-import { tableSelectionMode } from './table.machine'
+import { TABLE_COLUMN_LARGE_STEP, TABLE_COLUMN_MIN_WIDTH, TABLE_COLUMN_STEP, tableSelectionMode } from './table.machine'
 import {
   flattenTableRows,
   tableRowSelected,
@@ -33,6 +33,24 @@ function columnSize(width: string | number | undefined): string | undefined {
   if (width == null)
     return undefined
   return typeof width === 'number' ? `${width}px` : width
+}
+
+/** 这一列眼下的 px 宽度。偏好里的覆盖优先，两者都不是数字就返回 null。 */
+function columnNumericWidth(
+  override: string | number | undefined,
+  defWidth: string | number | undefined,
+): number | null {
+  const raw = override ?? defWidth
+  return typeof raw === 'number' && Number.isFinite(raw) ? raw : null
+}
+
+/** 改宽把手上的方向键：往行尾侧推是加宽。rtl 下左右两键对调，语义恒是「加宽 / 收窄」。 */
+function resizeStepFromKey(key: string, rtl: boolean): number | null {
+  if (key === 'ArrowRight')
+    return rtl ? -1 : 1
+  if (key === 'ArrowLeft')
+    return rtl ? 1 : -1
+  return null
 }
 
 export function connectTable<T extends PropTypes>(
@@ -59,6 +77,12 @@ export function connectTable<T extends PropTypes>(
   const stickyHeader = !!prop('stickyHeader')
   const hasFooter = !!prop('footer')
   const dir = prop('dir') ?? 'ltr'
+  const translations = prop('translations')
+  const numericWidth = (id: string, def: TableColumnDef | undefined): number | null =>
+    columnNumericWidth(context.get('columnPreference').widths?.[id], def?.width)
+  const label = {
+    columnResize: translations?.columnResize ?? ((columnLabel: string) => `Resize column ${columnLabel}`),
+  }
   // 表格不回绕：上键停在首行、下键停在末行
   const loop = prop('loop') ?? false
   const ids = scope.ids('table', 'caption')
@@ -541,6 +565,62 @@ export function connectTable<T extends PropTypes>(
         send({ type: 'ROW.SELECT', value: row.value })
       },
     }),
+
+    getColumnResizeTriggerProps: (column) => {
+      const def = columnOf(column.value)
+      // 可聚焦的 separator 是个 widget，读屏要一个数值。算不出 px 宽度（列宽写成
+      // 百分比这类）就不认可改宽——键盘本来也动不了它，只让指针拖会留下一个
+      // 读屏读不出、键盘够不着的半残控件
+      const width = numericWidth(column.value, def)
+      const resizable = !!def?.resizable && width != null
+      const active = context.get('resizingColumn') === column.value
+      return normalize.element({
+        ...parts['column-resize-trigger'].attrs,
+        [ITEM_VALUE_ATTR]: column.value,
+        // 显式给角色：作者常写成 <span>，读屏听不出能操作
+        'role': 'separator',
+        // 分隔条自身是竖的：它把左右两列分开
+        'aria-orientation': 'vertical',
+        'aria-label': label.columnResize(def?.label ?? column.value),
+        'aria-valuenow': width ?? undefined,
+        'aria-valuemin': resizable ? (def?.minWidth ?? TABLE_COLUMN_MIN_WIDTH) : undefined,
+        'aria-valuemax': resizable ? def?.maxWidth : undefined,
+        // 改宽把手自己占一个 Tab 位，不属于表体的 roving 行组；不可改宽的列退出 Tab 序列
+        'tabindex': resizable ? 0 : -1,
+        'aria-disabled': resizable ? 'false' : 'true',
+        'data-disabled': dataAttr(!resizable),
+        'data-resizing': dataAttr(active),
+        // 不关掉这一轴的默认手势，触屏上手指一划就被系统收走（pointercancel）
+        'style': { touchAction: resizable ? 'none' : undefined },
+        'onPointerDown': (event: PointerEvent) => {
+          // 只认主键：右键要弹上下文菜单，中键是自动滚动
+          if (!resizable || event.button !== 0)
+            return
+          // 量一次真实列宽：列定义里的 width 可能没写、也可能是百分比这类算不出 px 的写法。
+          // 事件处理器里碰 DOM 是允许的，渲染期才不许
+          const trigger = event.currentTarget as HTMLElement | null
+          const header = trigger?.closest<HTMLElement>('[data-scope="table"][data-part="column-header"]')
+          if (!header)
+            return
+          event.preventDefault()
+          send({
+            type: 'COLUMN_RESIZE.START',
+            columnId: column.value,
+            startWidth: header.getBoundingClientRect().width,
+            originX: event.clientX,
+          })
+        },
+        'onKeyDown': (event: KeyboardEvent) => {
+          if (!resizable)
+            return
+          const step = resizeStepFromKey(event.key, dir === 'rtl')
+          if (step == null)
+            return
+          event.preventDefault()
+          send({ type: 'COLUMN_RESIZE.STEP', columnId: column.value, delta: step * (event.shiftKey ? TABLE_COLUMN_LARGE_STEP : TABLE_COLUMN_STEP) })
+        },
+      })
+    },
 
     getSortTriggerProps: (column) => {
       const sortable = !!columnOf(column.value)?.sortable

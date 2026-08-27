@@ -135,7 +135,7 @@
     "name": "web-components/define",
     "path": "packages/adapters/web-components/dist/define.js",
     "gzip": true,
-    "limit": "250.6 kB"
+    "limit": "251.5 kB"
   },
   {
     "name": "web-components/backgrounds",
