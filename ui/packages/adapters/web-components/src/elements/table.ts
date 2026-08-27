@@ -284,6 +284,7 @@ export class XhTableElement extends XhElement {
     putAll('select-all-trigger', () => api.getSelectAllTriggerProps())
     putAll('row-select-trigger', el => api.getRowSelectTriggerProps(this.rowOf(el)))
     putAll('sort-trigger', el => api.getSortTriggerProps(this.columnOf(el)))
+    putAll('column-resize-trigger', el => api.getColumnResizeTriggerProps(this.columnOf(el)))
     putAll('expand-trigger', el => api.getExpandTriggerProps(this.rowOf(el)))
     putAll('expanded-row', el => api.getExpandedRowProps({ value: el.getAttribute('value') ?? '' }))
 

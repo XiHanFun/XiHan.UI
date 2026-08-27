@@ -14,6 +14,31 @@ const COLUMNS: TableColumnDef[] = [
   { id: 'size', label: 'Size', sortable: true },
 ]
 
+/** 列宽用例专用：name 列给了数字宽度并开可改宽，键盘那一步才算得出新宽度。 */
+const RESIZABLE_COLUMNS: TableColumnDef[] = [
+  { id: 'select', label: 'Select', width: 40 },
+  { id: 'name', label: 'Name', sortable: true, sticky: true, width: 200, resizable: true },
+  { id: 'size', label: 'Size', sortable: true },
+]
+
+/** 给 name 列的表头挂一个改宽把手。只有列宽用例用它。 */
+function withResizeHandle(base: FixtureNode): FixtureNode {
+  return {
+    ...base,
+    children: base.children?.map(child => mapColumnHeader(child)),
+  }
+}
+
+function mapColumnHeader(node: FixtureNode): FixtureNode {
+  if (node.part === 'column-header' && node.attrs?.value === 'name') {
+    return {
+      ...node,
+      children: [...(node.children ?? []), { part: 'column-resize-trigger', tag: 'span', attrs: { value: 'name' } }],
+    }
+  }
+  return node.children?.length ? { ...node, children: node.children.map(mapColumnHeader) } : node
+}
+
 /**
  * 行定义：a/c/d 可展开，b 是普通行；
  * c 禁用（方向键跳过但仍可聚焦，也不算进全选基数）。
@@ -558,6 +583,34 @@ export const tableSuite: ConformanceSuite = {
           kind: 'click',
           part: 'sort-trigger[0]',
           expect: { parts: { 'column-header': columnsSorted() } },
+        },
+      ],
+    },
+    {
+      name: '列宽：方向键一次一步，Shift 加方向键走大步；往行尾侧推是加宽',
+      spec: { apg: `${APG}#roles_states_properties` },
+      covers: ['table.kbd.column-resize', 'table.kbd.column-resize-large'],
+      // 只在这个用例里给第一列挂改宽把手：加进基准 fixture 会动到其余用例的
+      // order 与 counts 断言，而它们跟列宽没关系
+      fixture: (base: FixtureNode): FixtureNode => withResizeHandle(base),
+      props: props({ columns: RESIZABLE_COLUMNS }),
+      steps: [
+        { kind: 'focus', part: 'column-resize-trigger' },
+        {
+          kind: 'key',
+          key: 'ArrowRight',
+          expect: { events: [{ type: 'column-preference-change', detail: { value: { widths: { name: 208 } } } }] },
+        },
+        {
+          kind: 'key',
+          key: 'ArrowLeft',
+          expect: { events: [{ type: 'column-preference-change', detail: { value: { widths: { name: 200 } } } }] },
+        },
+        {
+          kind: 'key',
+          key: 'ArrowRight',
+          modifiers: ['Shift'],
+          expect: { events: [{ type: 'column-preference-change', detail: { value: { widths: { name: 240 } } } }] },
         },
       ],
     },

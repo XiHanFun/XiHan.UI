@@ -19,5 +19,7 @@ export const tableKeyboard: KeyboardTable = {
     { id: 'table.kbd.collapse', keys: ['ArrowLeft'], when: 'focus on 可展开且已展开的行（dir=rtl 时改由 ArrowRight 承担）', does: '就地收起当前行，焦点不动；其余情形什么都不做且不吞键' },
     { id: 'table.kbd.sort', keys: ['Enter', 'Space'], when: 'focus on sort-trigger, 该列 sortable', does: '排序方向按 升序 → 降序 → 不排序 循环；按住 Shift 是追加到排序链而不是替换整条链' },
     { id: 'table.kbd.select-all', keys: ['Enter', 'Space'], when: 'focus on select-all-trigger, selectionMode=multiple', does: '当前可选行全选中就整段清空，否则整段选上；三态由 aria-checked 报出（半选为 mixed）' },
+    { id: 'table.kbd.column-resize', keys: ['ArrowLeft', 'ArrowRight'], when: 'focus in column-resize-trigger，该列 resizable', does: '把这一列按 8px 收窄 / 加宽；往行尾侧推是加宽，rtl 下左右两键对调，语义恒是「加宽 / 收窄」' },
+    { id: 'table.kbd.column-resize-large', keys: ['Shift+ArrowLeft', 'Shift+ArrowRight'], when: 'focus in column-resize-trigger，该列 resizable', does: '按 40px 收窄 / 加宽，方向规则同上' },
   ],
 }

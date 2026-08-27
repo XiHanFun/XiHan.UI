@@ -107,7 +107,7 @@ rows 按契约就是一条已摊平的可见行序列：层级三件套逐行自
 
 ### 拖拽调列宽
 
-列宽的事实源是 columns[].width，把手只是列标题里的一段标记：按下量起点，移动改宽度，连接层随即写进列标题与整列单元格
+列上标了 resizable 才认改宽把手；拖出表头仍跟手，方向键一次 8px、按住 Shift 一次 40px
 
 <XhDemo src="table/15-column-resize" />
 
@@ -134,7 +134,7 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-table>` |
-| Vue 组件 | `XhTableBody` `XhTableCaption` `XhTableCell` `XhTableColumnHeader` `XhTableEmpty` `XhTableExpandTrigger` `XhTableExpandedRow` `XhTableFooter` `XhTableHeader` `XhTableLoadingState` `XhTableRoot` `XhTableRow` `XhTableRowSelectTrigger` `XhTableSelectAllTrigger` `XhTableSortTrigger` |
+| Vue 组件 | `XhTableBody` `XhTableCaption` `XhTableCell` `XhTableColumnHeader` `XhTableColumnResizeTrigger` `XhTableEmpty` `XhTableExpandTrigger` `XhTableExpandedRow` `XhTableFooter` `XhTableHeader` `XhTableLoadingState` `XhTableRoot` `XhTableRow` `XhTableRowSelectTrigger` `XhTableSelectAllTrigger` `XhTableSortTrigger` |
 | 组合式函数 | `useTable` |
 | 状态机 | `tableMachine` |
 | 皮肤 | `@xihan-ui/styles/table.css` |
@@ -143,7 +143,7 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="table"`：**`root`** · `header` · **`body`** · `footer` · `row` · `column-header` · `cell` · `caption` · `select-all-trigger` · `row-select-trigger` · `sort-trigger` · `expand-trigger` · `expanded-row` · `empty` · `loading-state`
+`data-scope="table"`：**`root`** · `header` · **`body`** · `footer` · `row` · `column-header` · `cell` · `caption` · `select-all-trigger` · `row-select-trigger` · `sort-trigger` · `column-resize-trigger` · `expand-trigger` · `expanded-row` · `empty` · `loading-state`
 
 ## Props
 
@@ -173,6 +173,7 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 | `loop` | `boolean` |  | 上下键走到首尾是否回绕，默认 false。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr；只对调左右方向键的「展开/收起」语义。 |
 | `size` | `Size` |  | 密度：sm / md / lg。只换单元格的纵向内边距与字号，列宽算法不受影响。 |
+| `translations` | `Partial<TableTranslations>` |  |  |
 | `onColumnPreferenceChange` | `(details: TableColumnPreferenceChangeDetails) => void` |  |  |
 | `onSortChange` | `(details: TableSortChangeDetails) => void` |  |  |
 | `onSelectionChange` | `(details: TableSelectionChangeDetails) => void` |  |  |
@@ -208,9 +209,9 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 
 状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
-**状态**：`idle`
+**状态**：`idle` · `resizing`
 
-**事件**：`SORT.SET` · `SORT.TOGGLE` · `COLUMN_PREF.SET` · `COLUMN_PREF.PATCH` · `SELECTION.SET` · `ROW.SELECT` · `SELECTION.ALL_TOGGLE` · `EXPANDED.SET` · `ROW.EXPAND` · `ROW.COLLAPSE` · `ROW.EXPAND_TOGGLE` · `ROW.FOCUS` · `TABLE.BLUR`
+**事件**：`SORT.SET` · `SORT.TOGGLE` · `COLUMN_PREF.SET` · `COLUMN_RESIZE.START` · `COLUMN_RESIZE.MOVE` · `COLUMN_RESIZE.END` · `COLUMN_RESIZE.CANCEL` · `COLUMN_RESIZE.STEP` · `COLUMN_PREF.PATCH` · `SELECTION.SET` · `ROW.SELECT` · `SELECTION.ALL_TOGGLE` · `EXPANDED.SET` · `ROW.EXPAND` · `ROW.COLLAPSE` · `ROW.EXPAND_TOGGLE` · `ROW.FOCUS` · `TABLE.BLUR`
 
 ## connect API
 
@@ -263,6 +264,7 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 | `getSelectAllTriggerProps` | `() => T['element']` |  |
 | `getRowSelectTriggerProps` | `(props: TableRowProps) => T['element']` |  |
 | `getSortTriggerProps` | `(props: TableColumnProps) => T['element']` |  |
+| `getColumnResizeTriggerProps` | `(props: TableColumnProps) => T['element']` | 列宽把手。只有 resizable 的列才渲它。 |
 | `getExpandTriggerProps` | `(props: TableRowProps) => T['element']` |  |
 | `getExpandedRowProps` | `(props: TableRowProps) => T['element']` |  |
 | `getEmptyProps` | `() => T['element']` |  |
@@ -284,6 +286,8 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 | `ArrowLeft` | focus on 可展开且已展开的行（dir=rtl 时改由 ArrowRight 承担） | 就地收起当前行，焦点不动；其余情形什么都不做且不吞键 |
 | `Enter` / `Space` | focus on sort-trigger, 该列 sortable | 排序方向按 升序 → 降序 → 不排序 循环；按住 Shift 是追加到排序链而不是替换整条链 |
 | `Enter` / `Space` | focus on select-all-trigger, selectionMode=multiple | 当前可选行全选中就整段清空，否则整段选上；三态由 aria-checked 报出（半选为 mixed） |
+| `ArrowLeft` / `ArrowRight` | focus in column-resize-trigger，该列 resizable | 把这一列按 8px 收窄 / 加宽；往行尾侧推是加宽，rtl 下左右两键对调，语义恒是「加宽 / 收窄」 |
+| `Shift+ArrowLeft` / `Shift+ArrowRight` | focus in column-resize-trigger，该列 resizable | 按 40px 收窄 / 加宽，方向规则同上 |
 
 ## 无障碍
 
@@ -321,6 +325,13 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 | `row-select-trigger` | `aria-hidden` | 'true' |
 | `sort-trigger` | `aria-disabled` | 'false' \| 'true' |
 | `sort-trigger` | `role` | 'button' |
+| `column-resize-trigger` | `aria-disabled` | 'false' \| 'true' |
+| `column-resize-trigger` | `aria-label` | label.columnResize(def?.label ?? column.value) |
+| `column-resize-trigger` | `aria-orientation` | 'vertical' |
+| `column-resize-trigger` | `aria-valuemax` | def?.maxWidth \| undefined |
+| `column-resize-trigger` | `aria-valuemin` | def?.minWidth \| undefined |
+| `column-resize-trigger` | `aria-valuenow` | columnNumericWidth(context.get('columnPreference').wi… |
+| `column-resize-trigger` | `role` | 'separator' |
 | `expand-trigger` | `aria-hidden` | 'true' |
 | `expanded-row` | `aria-level` | (metaIndex.get(row.value)?.level ?? 1) + 1 \| undefined |
 | `expanded-row` | `aria-posinset` | 1 \| undefined |
@@ -358,6 +369,8 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 | `select-all-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `select-all-trigger` | `data-state` | tableSelectionState(selection, selectableIds) |
 | `sort-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `column-resize-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `column-resize-trigger` | `data-resizing` | ''（条件成立时才出现） |
 | `expanded-row` | `data-state` | 'open' \| 'closed' |
 | `header-row` | `data-section` | 'header' |
 | `footer-row` | `data-section` | 'footer' |

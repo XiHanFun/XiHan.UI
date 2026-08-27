@@ -320,6 +320,20 @@ export const XhTableSortTrigger = defineComponent({
   },
 })
 
+/** 列宽把手。放在表头格里，只有 resizable 的列渲它。 */
+export const XhTableColumnResizeTrigger = defineComponent({
+  name: 'XhTableColumnResizeTrigger',
+  setup(_, { slots }) {
+    const ctx = useTableContext()
+    const { column } = useTableColumnContext()
+    return () => h(
+      'span',
+      ctx.api.value.getColumnResizeTriggerProps(column.value) as Record<string, unknown>,
+      slots.default?.(),
+    )
+  },
+})
+
 export const XhTableExpandTrigger = defineComponent({
   name: 'XhTableExpandTrigger',
   setup(_, { slots }) {

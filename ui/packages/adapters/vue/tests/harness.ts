@@ -8,6 +8,7 @@ const registry = X as unknown as Record<string, Component>
 
 const PUBLIC_EVENTS = {
   'checked-change': 'onCheckedChange',
+  'column-preference-change': 'onColumnPreferenceChange',
   'download-complete': 'onDownloadComplete',
   'download-error': 'onDownloadError',
   'open-change': 'onOpenChange',

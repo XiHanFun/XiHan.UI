@@ -20188,6 +20188,8 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='table'][data-part='column-header'] {
+  /* 定位上下文：改宽把手绝对定位在这一格的接缝上 */
+  position: relative;
   color: var(--xh-table-column-fg, var(--xh-fg-muted));
   font-weight: var(--xh-table-column-font-weight, var(--xh-text-label-weight));
   text-align: start;
@@ -20364,6 +20366,51 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='table'][data-part='sort-trigger'][hidden] {
+  display: none;
+}
+
+/* 列宽把手贴在表头格的行尾侧。它压在相邻两列的接缝上，因此往外挪半个身位，
+   两边各留出一点可抓的余量——贴着边只有一两个像素能按到。 */
+[data-scope='table'][data-part='column-resize-trigger'] {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-end: calc(var(--xh-table-resize-width, var(--xh-space-2)) / -2);
+  z-index: 1;
+  display: inline-flex;
+  inline-size: var(--xh-table-resize-width, var(--xh-space-2));
+  align-items: center;
+  justify-content: center;
+  cursor: col-resize;
+  touch-action: none;
+}
+
+[data-scope='table'][data-part='column-resize-trigger'][hidden] {
+  display: none;
+}
+
+/* 接缝上那条线。平时借表头的分隔色，按住与聚焦时换成品牌色好认 */
+[data-scope='table'][data-part='column-resize-trigger']::after {
+  content: '';
+  display: block;
+  inline-size: var(--xh-table-resize-line, var(--xh-stroke-thin));
+  block-size: var(--xh-table-resize-line-length, 60%);
+  border-radius: var(--xh-table-resize-radius, var(--xh-shape-pill));
+  background: var(--xh-table-resize-fg, var(--xh-border-default));
+}
+
+[data-scope='table'][data-part='column-resize-trigger']:hover::after,
+[data-scope='table'][data-part='column-resize-trigger'][data-resizing]::after {
+  background: var(--xh-table-resize-fg-active, var(--xh-border-control-focus));
+  block-size: 100%;
+}
+
+[data-scope='table'][data-part='column-resize-trigger']:focus-visible {
+  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline-offset: var(--xh-ring-offset);
+}
+
+/* 不可改宽的列不显示把手：留着一条抓不动的线只会让人反复去试 */
+[data-scope='table'][data-part='column-resize-trigger'][data-disabled] {
   display: none;
 }
 

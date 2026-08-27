@@ -14,6 +14,7 @@ export const tableAnatomy = createAnatomy('table', [
   'select-all-trigger',
   'row-select-trigger',
   'sort-trigger',
+  'column-resize-trigger',
   'expand-trigger',
   'expanded-row',
   'empty',
