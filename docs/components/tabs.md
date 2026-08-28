@@ -111,7 +111,7 @@ root 按书写顺序渲染子节点：把面板写在 list 前面，标签栏就
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-tabs>` |
-| Vue 组件 | `XhTabsContent` `XhTabsList` `XhTabsLiveRegion` `XhTabsRoot` `XhTabsTrigger` |
+| Vue 组件 | `XhTabsContent` `XhTabsList` `XhTabsLiveRegion` `XhTabsRoot` `XhTabsTabDragTrigger` `XhTabsTrigger` |
 | 组合式函数 | `useTabs` |
 | 状态机 | `tabsMachine` |
 | 皮肤 | `@xihan-ui/styles/tabs.css` |
@@ -120,7 +120,7 @@ root 按书写顺序渲染子节点：把面板写在 list 前面，标签栏就
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="tabs"`：`root` · **`list`** · **`trigger`** · **`content`** · `live-region`
+`data-scope="tabs"`：`root` · **`list`** · **`trigger`** · **`content`** · `tab-drag-trigger` · `live-region`
 
 ## Props
 
@@ -183,7 +183,8 @@ root 按书写顺序渲染子节点：把面板写在 list 前面，标签栏就
 | `getListProps` | `() => T['element']` |  |
 | `getTriggerProps` | `(props: TabsTriggerProps) => T['button']` |  |
 | `getContentProps` | `(props: TabsContentProps) => T['element']` |  |
-| `getLiveRegionProps` | `() => T['element']` | 拖动过程的读屏播报区。视觉隐藏，文本从 announcement 取。 它必须在拖动开始之前就在 DOM 上——读屏不播报后插入的节点。 |
+| `getTabDragTriggerProps` | `(props: TabsTriggerProps) => T['element']` | 标签拖动把手。触屏那一路唯一的入口，不占 Tab 位。 常挂即可：reorderable 关着或这个标签禁用时它自报 data-disabled、也不再让出滚动， 渲了不会错。按拖不拖得动来决定渲不渲，会让 DOM 结构随状态变。 |
+| `getLiveRegionProps` | `() => T['element']` |  |
 
 ## 键盘
 
@@ -213,6 +214,7 @@ root 按书写顺序渲染子节点：把面板写在 list 前面，标签栏就
 | `trigger` | `role` | 'tab' |
 | `content` | `aria-labelledby` | `trigger` 部件的 id |
 | `content` | `role` | 'tabpanel' |
+| `tab-drag-trigger` | `aria-hidden` | 'true' |
 | `live-region` | `aria-atomic` | 'true' |
 | `live-region` | `aria-live` | 'polite' |
 | `live-region` | `role` | 'status' |
@@ -237,12 +239,14 @@ root 按书写顺序渲染子节点：把面板写在 list 前面，标签栏就
 | `trigger` | `data-drop` | 'before' \| 'after' |
 | `trigger` | `data-state` | 'active' \| 'inactive' |
 | `content` | `data-state` | 'active' \| 'inactive' |
+| `tab-drag-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `tab-drag-trigger` | `data-dragging` | ''（条件成立时才出现） |
 
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-tabs-content-fg` · `--xh-tabs-content-py` · `--xh-tabs-dragging-opacity` · `--xh-tabs-drop-fg` · `--xh-tabs-drop-line` · `--xh-tabs-gap` · `--xh-tabs-list-bg` · `--xh-tabs-list-border` · `--xh-tabs-list-gap` · `--xh-tabs-list-p` · `--xh-tabs-list-radius` · `--xh-tabs-trigger-bg` · `--xh-tabs-trigger-bg-active` · `--xh-tabs-trigger-bg-active-hover` · `--xh-tabs-trigger-bg-hover` · `--xh-tabs-trigger-border` · `--xh-tabs-trigger-border-active` · `--xh-tabs-trigger-fg` · `--xh-tabs-trigger-fg-active` · `--xh-tabs-trigger-font-size` · `--xh-tabs-trigger-font-weight` · `--xh-tabs-trigger-gap` · `--xh-tabs-trigger-h` · `--xh-tabs-trigger-px` · `--xh-tabs-trigger-radius` · `--xh-tabs-trigger-shadow-active`
+`--xh-tabs-content-fg` · `--xh-tabs-content-py` · `--xh-tabs-drag-fg` · `--xh-tabs-drag-fg-active` · `--xh-tabs-drag-fg-disabled` · `--xh-tabs-drag-grip-long` · `--xh-tabs-drag-grip-short` · `--xh-tabs-drag-radius` · `--xh-tabs-drag-size` · `--xh-tabs-dragging-opacity` · `--xh-tabs-drop-fg` · `--xh-tabs-drop-line` · `--xh-tabs-gap` · `--xh-tabs-list-bg` · `--xh-tabs-list-border` · `--xh-tabs-list-gap` · `--xh-tabs-list-p` · `--xh-tabs-list-radius` · `--xh-tabs-trigger-bg` · `--xh-tabs-trigger-bg-active` · `--xh-tabs-trigger-bg-active-hover` · `--xh-tabs-trigger-bg-hover` · `--xh-tabs-trigger-border` · `--xh-tabs-trigger-border-active` · `--xh-tabs-trigger-fg` · `--xh-tabs-trigger-fg-active` · `--xh-tabs-trigger-font-size` · `--xh-tabs-trigger-font-weight` · `--xh-tabs-trigger-gap` · `--xh-tabs-trigger-h` · `--xh-tabs-trigger-px` · `--xh-tabs-trigger-radius` · `--xh-tabs-trigger-shadow-active`
 
 ## 动效
 

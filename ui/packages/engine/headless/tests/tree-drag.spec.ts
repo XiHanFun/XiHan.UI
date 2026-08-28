@@ -603,3 +603,65 @@ describe('节点拖拽 · 播报与属性', () => {
     expect((h.api().getItemProps({ value: 'quote' }) as Dict)['data-draggable']).toBeUndefined()
   })
 })
+
+describe('节点拖动把手 · 触屏那一路唯一的入口', () => {
+  function pressHandle(h: Harness, value: string, clientY: number, init: Partial<PointerEvent> = {}): void {
+    const props = h.api().getNodeDragTriggerProps({ value }) as Dict
+    ;(props.onPointerDown as (e: PointerEvent) => void)({
+      button: 0,
+      pointerId: 1,
+      pointerType: 'mouse',
+      clientX: 0,
+      clientY,
+      currentTarget: h.row(value),
+      target: h.row(value),
+      preventDefault: () => {},
+      ...init,
+    } as unknown as PointerEvent)
+  }
+
+  it('按下即拖，不等激活距离', () => {
+    const h = mount()
+    pressHandle(h, 'quote', 50)
+    expect(h.dragging()).toBe('quote')
+  })
+
+  it('触屏在把手上拖得动；整块起手那一路仍然不认触屏', () => {
+    const viaHandle = mount()
+    pressHandle(viaHandle, 'quote', 50, { pointerType: 'touch' })
+    expect(viaHandle.dragging()).toBe('quote')
+
+    const viaNode = mount()
+    press(viaNode, 'quote', 50, { pointerType: 'touch' })
+    move(140)
+    expect(viaNode.dragging()).toBeNull()
+  })
+
+  it('手势整个归拖动，且不占 Tab 位、对读屏隐藏', () => {
+    const props = mount().api().getNodeDragTriggerProps({ value: 'quote' }) as Dict
+    expect((props.style as Dict).touchAction).toBe('none')
+    expect(props.tabindex).toBe(-1)
+    expect(props['aria-hidden']).toBe(true)
+  })
+
+  it('禁用的节点与关掉 nodeDraggable 时把手都拖不动', () => {
+    const disabled = mount({
+      collection: [{ value: 'a', disabled: true }, { value: 'b' }],
+      defaultExpandedValue: [],
+    })
+    expect((disabled.api().getNodeDragTriggerProps({ value: 'a' }) as Dict)['data-disabled']).toBe('')
+
+    const off = mount({ nodeDraggable: false })
+    pressHandle(off, 'quote', 50)
+    expect(off.dragging()).toBeNull()
+  })
+
+  it('从把手起手，三档落点与松手落定跟整块起手是同一套', () => {
+    const onNodeMove = vi.fn()
+    const h = mount({ onNodeMove })
+    pressHandle(h, 'quote', 50)
+    move(140)
+    release()
+    expect(onNodeMove).toHaveBeenCalledWith({ value: 'quote', parent: 'archive', index: 0 })
+  })
+})

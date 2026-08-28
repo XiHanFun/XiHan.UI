@@ -109,7 +109,11 @@ export interface TabsSchema extends MachineSchema {
     | { type: 'TRIGGER.NAVIGATE', value: string }
     | { type: 'LIST.BLUR' }
     /** 按在标签上：矩形快照与起点坐标由连接层量好交进来。此刻只是按住，还不算拖。 */
-    | { type: 'TAB_DRAG.START', value: string, rects: DragRect[], origin: number }
+    /**
+     * 从专门的拖动把手起手：按下即拖，不再等激活距离。
+     * 把手是不占 Tab 位的独立可触区域，意图无歧义，触屏那一路也只走它。
+     */
+    | { type: 'TAB_DRAG.START', value: string, rects: DragRect[], origin: number, activate?: boolean }
     | { type: 'TAB_DRAG.MOVE', point: number }
     | { type: 'TAB_DRAG.END' }
     | { type: 'TAB_DRAG.CANCEL' }
@@ -149,6 +153,13 @@ export interface TabsApi<T extends PropTypes = PropTypes> {
    * 拖动过程的读屏播报区。视觉隐藏，文本从 announcement 取。
    * 它必须在拖动开始之前就在 DOM 上——读屏不播报后插入的节点。
    */
+  /**
+   * 标签拖动把手。触屏那一路唯一的入口，不占 Tab 位。
+   *
+   * 常挂即可：reorderable 关着或这个标签禁用时它自报 data-disabled、也不再让出滚动，
+   * 渲了不会错。按拖不拖得动来决定渲不渲，会让 DOM 结构随状态变。
+   */
+  getTabDragTriggerProps: (props: TabsTriggerProps) => T['element']
   getLiveRegionProps: () => T['element']
 }
 

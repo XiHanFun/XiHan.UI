@@ -211,7 +211,11 @@ export interface TreeSchema extends MachineSchema {
     /** 焦点离开树，或持有焦点的节点被移出 DOM（浏览器此时不派 focusout，由适配器如实上报）。 */
     | { type: 'TREE.BLUR' }
     /** 按在节点上：矩形快照与起点纵坐标由连接层量好交进来。此刻只是按住，还不算拖。 */
-    | { type: 'NODE_DRAG.START', value: string, rects: DragRect[], originY: number }
+    /**
+     * 从专门的拖动把手起手：按下即拖，不再等激活距离。
+     * 把手是不占 Tab 位的独立可触区域，意图无歧义，触屏那一路也只走它。
+     */
+    | { type: 'NODE_DRAG.START', value: string, rects: DragRect[], originY: number, activate?: boolean }
     | { type: 'NODE_DRAG.MOVE', clientY: number }
     | { type: 'NODE_DRAG.END' }
     | { type: 'NODE_DRAG.CANCEL' }
@@ -275,6 +279,13 @@ export interface TreeApi<T extends PropTypes = PropTypes> {
    * 拖动过程的读屏播报区。视觉隐藏，文本从 announcement 取。
    * 它必须在拖动开始之前就在 DOM 上——读屏不播报后插入的节点。
    */
+  /**
+   * 节点拖动把手。触屏那一路唯一的入口，不占 Tab 位。
+   *
+   * 常挂即可：nodeDraggable 关着或这个节点禁用时它自报 data-disabled、也不再让出滚动，
+   * 渲了不会错。按拖不拖得动来决定渲不渲，会让 DOM 结构随状态变。
+   */
+  getNodeDragTriggerProps: (props: TreeNodeProps) => T['element']
   getLiveRegionProps: () => T['element']
   getItemProps: (props: TreeNodeProps) => T['element']
   getItemTextProps: (props: TreeNodeProps) => T['element']

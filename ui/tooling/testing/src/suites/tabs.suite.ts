@@ -13,6 +13,10 @@ const COLLECTION = VALUES.map(value => ({ value }))
  * 三个 trigger + 三个 content：panel 全部常挂，靠 hidden 显隐。
  * disabled 落在哪个条目由用例指定；禁用条目仍在 DOM 与集合里，只是方向键跳过它。
  *
+ * 每个标签里带一个触屏拖动把手，占着标签内的头一格，身份跟着裹着它的那个标签走。
+ * 标签文字裹进一个 span，两个适配器建出的节点才一模一样——裸文本子节点在其中一侧
+ * 会被建成元素，文档序对不齐。
+ *
  * 末尾的播报区与 list 部件平级：root 自己不带角色，role=tablist 在 list 上，
  * 活动区域落不进它的子节点集合。它常挂在这儿，各用例不必各挂一遍。
  */
@@ -26,7 +30,16 @@ function tabsTree(disabled?: string): FixtureNode {
           const attrs: Record<string, string> = { value: v }
           if (v === disabled)
             attrs.disabled = ''
-          return { part: 'trigger', tag: 'button', text: `标签 ${v}`, attrs }
+          return {
+            part: 'trigger',
+            tag: 'button',
+            attrs,
+            children: [
+              // 标签带没有条目级上下文，把手与 trigger / content 一样自报 value
+              { part: 'tab-drag-trigger', tag: 'span', attrs: { value: v } },
+              { tag: 'span', text: `标签 ${v}` },
+            ],
+          }
         }),
       },
       ...VALUES.map(v => ({
@@ -56,8 +69,21 @@ export const tabsSuite: ConformanceSuite = {
       name: '初始无选中：panel 常挂且全部 hidden，list 兜底进 Tab 序列',
       spec: { apg: APG },
       initial: {
-        order: ['root', 'list', 'trigger[0]', 'trigger[1]', 'trigger[2]', 'content[0]', 'content[1]', 'content[2]', 'live-region'],
-        counts: { 'root': 1, 'list': 1, 'trigger': 3, 'content': 3, 'live-region': 1 },
+        order: [
+          'root',
+          'list',
+          'trigger[0]',
+          'tab-drag-trigger[0]',
+          'trigger[1]',
+          'tab-drag-trigger[1]',
+          'trigger[2]',
+          'tab-drag-trigger[2]',
+          'content[0]',
+          'content[1]',
+          'content[2]',
+          'live-region',
+        ],
+        counts: { 'root': 1, 'list': 1, 'trigger': 3, 'tab-drag-trigger': 3, 'content': 3, 'live-region': 1 },
         parts: {
           'root': { 'data-orientation': 'horizontal' },
           'list': { 'role': 'tablist', 'aria-orientation': 'horizontal', 'tabindex': '0' },
@@ -74,6 +100,14 @@ export const tabsSuite: ConformanceSuite = {
             'data-draggable': null,
           },
           'trigger[2]': { 'aria-selected': 'false', 'tabindex': '-1', 'data-value': 'three' },
+          'tab-drag-trigger[0]': {
+            // 把手不占 Tab 位、也不进可及树：键盘换位由标签带上的 Alt + 方向键承担
+            'aria-hidden': 'true',
+            'tabindex': '-1',
+            // reorderable 默认关：把手照样在场，只是报自己拖不动
+            'data-disabled': '',
+            'data-dragging': null,
+          },
           'content[0]': { 'role': 'tabpanel', 'tabindex': '0', 'hidden': '', 'data-state': 'inactive' },
           'content[2]': { 'hidden': '', 'data-state': 'inactive' },
         },
@@ -475,14 +509,15 @@ export const tabsSuite: ConformanceSuite = {
     {
       name: '标签换位：Alt + 左右键挪一位，只报事件不动 DOM；到首末不回绕，裸方向键仍是导航',
       spec: { apg: `${APG}#keyboardinteraction` },
-      // 整个标签就是拖动源，不出把手，基准 fixture 原样够用；开关只开在这个用例上，
-      // 其余用例的 order 与 counts 断言跟换位没关系
+      // 键盘那一路不碰把手：整个标签就是拖动源。开关只开在这个用例上
       props: { collection: COLLECTION, reorderable: true, defaultValue: 'one' },
       covers: ['tabs.kbd.tab-move'],
       initial: {
         parts: {
           'trigger[0]': { 'data-draggable': '', 'data-dragging': null, 'data-drop': null },
           'trigger[2]': { 'data-draggable': '' },
+          // 开着换位时把手才报得动
+          'tab-drag-trigger[0]': { 'data-disabled': null, 'data-dragging': null },
         },
       },
       steps: [

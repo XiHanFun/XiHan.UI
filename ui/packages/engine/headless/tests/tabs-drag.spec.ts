@@ -337,3 +337,69 @@ describe('标签拖拽 · 播报与属性', () => {
     expect((h.api().getTriggerProps({ value: 'one' }) as Dict)['data-draggable']).toBeUndefined()
   })
 })
+
+describe('标签拖动把手 · 触屏那一路唯一的入口', () => {
+  function pressHandle(h: Harness, value: string, point: number, init: Partial<PointerEvent> = {}): void {
+    const props = h.api().getTabDragTriggerProps({ value }) as Dict
+    ;(props.onPointerDown as (e: PointerEvent) => void)({
+      button: 0,
+      pointerId: 1,
+      pointerType: 'mouse',
+      clientX: point,
+      clientY: point,
+      currentTarget: h.trigger(value),
+      target: h.trigger(value),
+      preventDefault: () => {},
+      ...init,
+    } as unknown as PointerEvent)
+  }
+
+  it('按下即拖，不等激活距离', () => {
+    const h = mount()
+    pressHandle(h, 'one', 50)
+    expect(h.dragging()).toBe('one')
+  })
+
+  it('触屏在把手上拖得动；整块起手那一路仍然不认触屏', () => {
+    const viaHandle = mount()
+    pressHandle(viaHandle, 'one', 50, { pointerType: 'touch' })
+    expect(viaHandle.dragging()).toBe('one')
+
+    const viaTab = mount()
+    press(viaTab, 'one', 50, { pointerType: 'touch' })
+    move(280)
+    expect(viaTab.dragging()).toBeNull()
+  })
+
+  it('手势整个归拖动，且不占 Tab 位、对读屏隐藏', () => {
+    const props = mount().api().getTabDragTriggerProps({ value: 'one' }) as Dict
+    expect((props.style as Dict).touchAction).toBe('none')
+    expect(props.tabindex).toBe(-1)
+    expect(props['aria-hidden']).toBe(true)
+  })
+
+  it('禁用的标签与关掉 reorderable 时把手都拖不动', () => {
+    const disabled = mount({
+      collection: [{ value: 'one' }, { value: 'two', disabled: true }],
+    })
+    expect((disabled.api().getTabDragTriggerProps({ value: 'two' }) as Dict)['data-disabled']).toBe('')
+
+    const off = mount({ reorderable: false })
+    pressHandle(off, 'one', 50)
+    expect(off.dragging()).toBeNull()
+  })
+
+  it('从把手起手，落点与松手落定跟整块起手是同一套', () => {
+    const onTabMove = vi.fn()
+    const h = mount({ onTabMove })
+    pressHandle(h, 'one', 50)
+    move(280)
+    release()
+    expect(onTabMove).toHaveBeenCalledWith({
+      value: 'one',
+      from: 0,
+      to: 2,
+      values: ['two', 'three', 'one'],
+    })
+  })
+})

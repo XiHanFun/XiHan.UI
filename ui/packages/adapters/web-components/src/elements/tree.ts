@@ -20,6 +20,8 @@ type TreeNodeMoveDetails = Parameters<NonNullable<TreeSchema['props']['onNodeMov
 const ITEM_SELECTOR = '[data-xh-part="item"]'
 /** 分支一系的归属容器；嵌套分支各认最近的那个。 */
 const BRANCH_SELECTOR = '[data-xh-part="branch"]'
+/** 两类节点通吃的归属容器：拖动把手写在叶子里还是分支里都算，取最近的那一个。 */
+const NODE_SELECTOR = `${ITEM_SELECTOR}, ${BRANCH_SELECTOR}`
 
 /**
  * `<xh-tree>` —— Light-DOM 行为宿主：作者写 root/label/tree 与若干 item / branch 角色节点，
@@ -32,9 +34,9 @@ const BRANCH_SELECTOR = '[data-xh-part="branch"]'
  * 树数据与展开/选中集合都是数组，属性表达不了，只能走 property（`el.collection = [...]`）；
  * 落点校验 `allowDrop`（函数）与读屏文案 `translations`（对象）同理。
  *
- * 打开 node-draggable 后节点可以拖着搬家：整个节点都是拖动源，不另出把手。拖动中被拖的节点原地不动，
+ * 打开 node-draggable 后节点可以拖着搬家：整个节点都是拖动源。拖动中被拖的节点原地不动，
  * 只落 data-dragging；落点画在参照节点上——data-drop 为 before/after 是插在这一行前后，
- * 为 inside 是放进这个分支。触屏不进拖动。
+ * 为 inside 是放进这个分支。触屏那一路走 node-drag-trigger 把手。
  * 键盘走 Alt + 方向键：上下在同层兄弟间挪，左右改缩进层级（rtl 下左右对调），一按就是一次完整提交。
  *
  * @customElement xh-tree
@@ -67,6 +69,7 @@ const BRANCH_SELECTOR = '[data-xh-part="branch"]'
  * @csspart branch-indicator - 展开方向指示符（aria-hidden）
  * @csspart branch-text - 分支文本
  * @csspart branch-content - role=group 子层容器，收起时隐藏
+ * @csspart node-drag-trigger - 节点拖拽把手，触屏那一路的入口（自带 touch-action: none，按下即拖）；对读屏隐藏且不占 Tab 位，键盘那一路由树上的 Alt + 方向键承担
  */
 export class XhTreeElement extends XhElement {
   static override partContract = { anatomy: treeAnatomy, meta: treeMeta }
@@ -231,6 +234,8 @@ export class XhTreeElement extends XhElement {
     putAll('branch-indicator', BRANCH_SELECTOR, node => api.getBranchIndicatorProps(node))
     putAll('branch-text', BRANCH_SELECTOR, node => api.getBranchTextProps(node))
     putAll('branch-content', BRANCH_SELECTOR, node => api.getBranchContentProps(node))
+    // 把手写在叶子里还是分支里都行，身份跟着最近的那个节点走
+    putAll('node-drag-trigger', NODE_SELECTOR, node => api.getNodeDragTriggerProps(node))
 
     // Light DOM 子层常驻，WC 自管可见性：收起时隐藏 branch-content。
     // connect 已置 hidden，但 styles 给 [data-part=branch-content] 设了 display，

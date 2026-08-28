@@ -331,12 +331,66 @@
   }
 
   /* —— 节点拖拽搬家 —— */
-  /* 整行都是拖动源，不出把手，光标换成抓手告诉人这一行按得动。
-     不写 touch-action：拖节点只认鼠标与笔，触屏那一按压根不开拖，
-     关掉这一轴的手势只会连带把树容器的滚动也一并收走 */
+  /* 整行都是拖动源，光标换成抓手告诉人这一行按得动。
+     这条不写 touch-action：整行关掉纵向手势，树容器自己就滚不动了；
+     触屏那一路交给下面那块专属把手 */
   [data-scope='tree'][data-part='item'][data-draggable],
   [data-scope='tree'][data-part='branch-control'][data-draggable] {
     cursor: grab;
+  }
+
+  /* 节点拖拽把手：行里的一小块专属拖动区，按下即拖。触屏靠它起手，
+     代价只是这一小块地方不再跟着树滚。整行起手那一路原样保留，把手是叠加的第二个入口。
+     touch-action 不在这儿写：连接层按「拖不动就不写」把它写进了内联 style，
+     皮肤再写一遍会盖掉那份条件判断，让不可拖的节点也白白让出滚动 */
+  [data-scope='tree'][data-part='node-drag-trigger'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--xh-tree-drag-size, var(--xh-control-indicator-size));
+    block-size: var(--xh-tree-drag-size, var(--xh-control-indicator-size));
+    border-radius: var(--xh-tree-drag-radius, var(--xh-shape-control));
+    color: var(--xh-tree-drag-fg, var(--xh-fg-subtle));
+    cursor: grab;
+  }
+
+  [data-scope='tree'][data-part='node-drag-trigger'][hidden] {
+    display: none;
+  }
+
+  /* 抓手是两条横线：盒子取边框盒，块向两侧的描边就是那两条线，宽高与线宽都走令牌。
+     线的走向与能拖的方向垂直——节点沿块向上下排，画的就是横线。
+     用逻辑属性写，书写模式一换，线跟着排列轴自己转过去。
+     :empty 守卫让作者塞进来的图标整个顶掉它，而不是两份叠在一起 */
+  [data-scope='tree'][data-part='node-drag-trigger']:empty::after {
+    content: '';
+    display: block;
+    inline-size: var(--xh-tree-drag-grip-long, var(--xh-space-2));
+    block-size: var(--xh-tree-drag-grip-short, var(--xh-space-1));
+    border-block: var(--xh-stroke-thin) solid currentColor;
+  }
+
+  [data-scope='tree'][data-part='node-drag-trigger']:not([data-disabled]):hover,
+  [data-scope='tree'][data-part='node-drag-trigger'][data-dragging] {
+    color: var(--xh-tree-drag-fg-active, var(--xh-fg-default));
+  }
+
+  [data-scope='tree'][data-part='node-drag-trigger'][data-dragging] {
+    cursor: grabbing;
+  }
+
+  /* 不可拖的节点照样带一个把手，这里保住它的位置、只把它压到禁用色。
+     收成 display: none 是不行的：把手占着行首那一格，藏掉之后同一层里能拖与不能拖的两个节点，
+     文字起点会错开一格，层级关系跟着读歪 */
+  [data-scope='tree'][data-part='node-drag-trigger'][data-disabled] {
+    color: var(--xh-tree-drag-fg-disabled, var(--xh-fg-disabled));
+    cursor: not-allowed;
+  }
+
+  [data-scope='tree'][data-part='node-drag-trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: var(--xh-ring-offset);
   }
 
   /* 被拖的那一行压暗，让人看得出正在搬的是它。这里只动 opacity、cursor 与 user-select，

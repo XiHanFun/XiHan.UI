@@ -265,8 +265,8 @@ export interface TableSchema extends MachineSchema {
     size?: Size
     translations?: Partial<TableTranslations>
     /**
-     * 行可以拖着换位。整行都是拖动源，不另出把手——行数无界，一行一个把手
-     * 就是一行一个 Tab 位。
+     * 行可以拖着换位。整行都是拖动源；另有一个不占 Tab 位的拖动把手，
+     * 触屏那一路只走它（见 getRowDragTriggerProps）。
      */
     rowReorderable?: boolean
     onRowMove?: (details: TableRowMoveDetails) => void
@@ -375,7 +375,11 @@ export interface TableSchema extends MachineSchema {
     /** 键盘换位：一按就是一次完整提交，不进拖动态。 */
     | { type: 'COLUMN.MOVE_BY', columnId: string, target: DropTarget }
     /** 按在行上：矩形快照与起点纵坐标由连接层量好交进来。此刻只是按住，还不算拖。 */
-    | { type: 'ROW_DRAG.START', rowId: string, rects: DragRect[], originY: number, pointerId: number }
+    /**
+     * 从专门的拖动把手起手：按下即拖，不再等激活距离。
+     * 把手是不占 Tab 位的独立可触区域，意图无歧义，触屏那一路也只走它。
+     */
+    | { type: 'ROW_DRAG.START', rowId: string, rects: DragRect[], originY: number, pointerId: number, activate?: boolean }
     | { type: 'ROW_DRAG.MOVE', clientY: number }
     | { type: 'ROW_DRAG.END' }
     | { type: 'ROW_DRAG.CANCEL' }
@@ -524,6 +528,13 @@ export interface TableApi<T extends PropTypes = PropTypes> {
   getColumnResizeTriggerProps: (props: TableColumnProps) => T['element']
   /** 列拖拽把手。只有 reorderable 的列才渲它。 */
   getColumnDragTriggerProps: (props: TableColumnProps) => T['element']
+  /**
+   * 行拖动把手。触屏那一路唯一的入口，不占 Tab 位。
+   *
+   * 常挂即可：rowReorderable 关着或这张表拖不动时它自报 data-disabled、也不再让出滚动，
+   * 渲了不会错。按拖不拖得动来决定渲不渲，会让 DOM 结构随状态变。
+   */
+  getRowDragTriggerProps: (props: TableRowProps) => T['element']
   getExpandTriggerProps: (props: TableRowProps) => T['element']
   getExpandedRowProps: (props: TableRowProps) => T['element']
   getEmptyProps: () => T['element']

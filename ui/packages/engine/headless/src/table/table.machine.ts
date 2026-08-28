@@ -309,10 +309,10 @@ export const tableMachine = createMachine({
           rects: e.rects,
           originY: e.originY,
           pointerId: e.pointerId,
-          activated: false,
+          activated: !!e.activate,
         })
-        // 按下还不算拖：这三样要等激活之后才写，在那之前界面上一点变化都没有
-        context.set('draggingRow', null)
+        // 从把手起手即刻算拖；整行起手时按下还不算拖，要等走够激活距离
+        context.set('draggingRow', e.activate ? e.rowId : null)
         context.set('dropTarget', null)
         context.set('announcement', '')
       },

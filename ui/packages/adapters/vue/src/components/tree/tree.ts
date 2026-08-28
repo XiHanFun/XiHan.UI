@@ -175,6 +175,20 @@ export const XhTreeItemText = defineComponent({
   },
 })
 
+/**
+ * 节点拖拽把手。放在节点里，自带 touch-action: none，按下即拖，不等激活距离。
+ * 对读屏隐藏、也不占 Tab 位；键盘搬家由树上的 Alt + 方向键承担。
+ * 整个节点起手那一路照旧可用，把手是叠加的第二个入口。
+ */
+export const XhTreeNodeDragTrigger = defineComponent({
+  name: 'XhTreeNodeDragTrigger',
+  setup(_, { slots }) {
+    const ctx = useTreeContext()
+    const { node } = useTreeNodeContext()
+    return () => h('span', ctx.api.value.getNodeDragTriggerProps(node.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhTreeItemCheckbox = defineComponent({
   name: 'XhTreeItemCheckbox',
   setup(_, { slots }) {

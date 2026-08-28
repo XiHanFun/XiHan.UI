@@ -36409,6 +36409,10 @@
               "name": "column-drag-trigger"
             },
             {
+              "description": "行拖拽把手，触屏那一路的入口（自带 touch-action: none，按下即拖）；对读屏隐藏且不占 Tab 位，键盘那一路由表体上的 Alt + 上下键承担",
+              "name": "row-drag-trigger"
+            },
+            {
               "description": "视觉隐藏的播报区，列拖拽过程的读屏文案写在这里；须写在 root 之外（root 是 role=grid，它的子节点只能是 row 与 rowgroup）",
               "name": "live-region"
             },
@@ -36926,7 +36930,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "行可以拖着换位：整行都是拖动源，不另出把手",
+              "description": "行可以拖着换位：整行都是拖动源；触屏那一路走 row-drag-trigger 把手",
               "name": "row-reorderable",
               "fieldName": "rowReorderable"
             },
@@ -37121,6 +37125,24 @@
               "name": "--xh-table-row-border"
             },
             {
+              "name": "--xh-table-row-drag-fg"
+            },
+            {
+              "name": "--xh-table-row-drag-fg-active"
+            },
+            {
+              "name": "--xh-table-row-drag-fg-disabled"
+            },
+            {
+              "name": "--xh-table-row-drag-grip-long"
+            },
+            {
+              "name": "--xh-table-row-drag-grip-short"
+            },
+            {
+              "name": "--xh-table-row-drag-size"
+            },
+            {
               "name": "--xh-table-sort-fg"
             },
             {
@@ -37191,7 +37213,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-tabs>` —— Light-DOM 行为宿主，跑 tabs 机器并把 connect 产出打到 root/list/trigger/content\n角色节点上。条目身份取作者写在 trigger/content 上的 value 属性，trigger 的禁用由部件自报。\n\n读屏文案 `translations` 是对象，属性表达不了，只能走 property（`el.translations = {...}`）。\n\n打开 reorderable 后标签可以拖着换位：整个标签都是拖动源，不另出把手。拖动中被拖的标签原地不动，\n只落 data-dragging；落点画在参照标签上，data-drop 为 before/after 即插在这个标签前后。触屏不进拖动。\n键盘走 Alt + 主轴方向键（横排是左右、竖排是上下，横排 rtl 下左右对调），一按就是一次完整提交。\n顺序不由元素保管：换位只发 tab-move，标签序由使用方写回自己的数据源。",
+          "description": "`<xh-tabs>` —— Light-DOM 行为宿主，跑 tabs 机器并把 connect 产出打到 root/list/trigger/content\n角色节点上。条目身份取作者写在 trigger/content 上的 value 属性，trigger 的禁用由部件自报。\n\n读屏文案 `translations` 是对象，属性表达不了，只能走 property（`el.translations = {...}`）。\n\n打开 reorderable 后标签可以拖着换位：整个标签都是拖动源。拖动中被拖的标签原地不动，\n只落 data-dragging；落点画在参照标签上，data-drop 为 before/after 即插在这个标签前后。触屏那一路走 tab-drag-trigger 把手。\n键盘走 Alt + 主轴方向键（横排是左右、竖排是上下，横排 rtl 下左右对调），一按就是一次完整提交。\n顺序不由元素保管：换位只发 tab-move，标签序由使用方写回自己的数据源。",
           "name": "XhTabsElement",
           "cssParts": [
             {
@@ -37213,6 +37235,10 @@
             {
               "description": "role=tabpanel 的面板，须自带 value 属性与 trigger 配对；未选中时 hidden",
               "name": "content"
+            },
+            {
+              "description": "标签拖拽把手，触屏那一路的入口（自带 touch-action: none，按下即拖）；对读屏隐藏且不占 Tab 位，键盘那一路由标签带上的 Alt + 方向键承担",
+              "name": "tab-drag-trigger"
             }
           ],
           "members": [
@@ -37388,6 +37414,25 @@
             },
             {
               "kind": "method",
+              "name": "triggerElOf",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "HTMLElement"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "el",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                }
+              ],
+              "description": "把手所属的那个 trigger 节点；把手自己就写在 trigger 上时即它本身。"
+            },
+            {
+              "kind": "method",
               "name": "wire",
               "privacy": "protected",
               "return": {
@@ -37507,6 +37552,27 @@
             },
             {
               "name": "--xh-tabs-content-py"
+            },
+            {
+              "name": "--xh-tabs-drag-fg"
+            },
+            {
+              "name": "--xh-tabs-drag-fg-active"
+            },
+            {
+              "name": "--xh-tabs-drag-fg-disabled"
+            },
+            {
+              "name": "--xh-tabs-drag-grip-long"
+            },
+            {
+              "name": "--xh-tabs-drag-grip-short"
+            },
+            {
+              "name": "--xh-tabs-drag-radius"
+            },
+            {
+              "name": "--xh-tabs-drag-size"
             },
             {
               "name": "--xh-tabs-dragging-opacity"
@@ -45048,7 +45114,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-tree>` —— Light-DOM 行为宿主：作者写 root/label/tree 与若干 item / branch 角色节点，\n元素跑 tree 机器并把 connect 产出打上去。节点身份取自节点上的 value 属性。\n\n层级（aria-level / aria-posinset / aria-setsize）与禁用都不从 DOM 反推，而是查 `collection`\n这份树数据——它是元信息的唯一事实源，作者的标记只管长相，两个适配器也就不会各推各的。\n因此 collection 必须与标记同源：标记里有、collection 里没有的节点报不出层级，也进不了导航。\n\n树数据与展开/选中集合都是数组，属性表达不了，只能走 property（`el.collection = [...]`）；\n落点校验 `allowDrop`（函数）与读屏文案 `translations`（对象）同理。\n\n打开 node-draggable 后节点可以拖着搬家：整个节点都是拖动源，不另出把手。拖动中被拖的节点原地不动，\n只落 data-dragging；落点画在参照节点上——data-drop 为 before/after 是插在这一行前后，\n为 inside 是放进这个分支。触屏不进拖动。\n键盘走 Alt + 方向键：上下在同层兄弟间挪，左右改缩进层级（rtl 下左右对调），一按就是一次完整提交。",
+          "description": "`<xh-tree>` —— Light-DOM 行为宿主：作者写 root/label/tree 与若干 item / branch 角色节点，\n元素跑 tree 机器并把 connect 产出打上去。节点身份取自节点上的 value 属性。\n\n层级（aria-level / aria-posinset / aria-setsize）与禁用都不从 DOM 反推，而是查 `collection`\n这份树数据——它是元信息的唯一事实源，作者的标记只管长相，两个适配器也就不会各推各的。\n因此 collection 必须与标记同源：标记里有、collection 里没有的节点报不出层级，也进不了导航。\n\n树数据与展开/选中集合都是数组，属性表达不了，只能走 property（`el.collection = [...]`）；\n落点校验 `allowDrop`（函数）与读屏文案 `translations`（对象）同理。\n\n打开 node-draggable 后节点可以拖着搬家：整个节点都是拖动源。拖动中被拖的节点原地不动，\n只落 data-dragging；落点画在参照节点上——data-drop 为 before/after 是插在这一行前后，\n为 inside 是放进这个分支。触屏那一路走 node-drag-trigger 把手。\n键盘走 Alt + 方向键：上下在同层兄弟间挪，左右改缩进层级（rtl 下左右对调），一按就是一次完整提交。",
           "name": "XhTreeElement",
           "cssParts": [
             {
@@ -45110,6 +45176,10 @@
             {
               "description": "role=group 子层容器，收起时隐藏",
               "name": "branch-content"
+            },
+            {
+              "description": "节点拖拽把手，触屏那一路的入口（自带 touch-action: none，按下即拖）；对读屏隐藏且不占 Tab 位，键盘那一路由树上的 Alt + 方向键承担",
+              "name": "node-drag-trigger"
             }
           ],
           "members": [
@@ -45525,6 +45595,27 @@
             },
             {
               "name": "--xh-tree-checkbox-size"
+            },
+            {
+              "name": "--xh-tree-drag-fg"
+            },
+            {
+              "name": "--xh-tree-drag-fg-active"
+            },
+            {
+              "name": "--xh-tree-drag-fg-disabled"
+            },
+            {
+              "name": "--xh-tree-drag-grip-long"
+            },
+            {
+              "name": "--xh-tree-drag-grip-short"
+            },
+            {
+              "name": "--xh-tree-drag-radius"
+            },
+            {
+              "name": "--xh-tree-drag-size"
             },
             {
               "name": "--xh-tree-dragging-opacity"

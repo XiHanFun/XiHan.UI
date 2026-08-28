@@ -16,14 +16,17 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
 /** 换位事件的 detail：从机器 props 上的回调取，不在适配器里另抄一份类型。 */
 type TabsMoveDetails = Parameters<NonNullable<TabsSchema['props']['onTabMove']>>[0]
 
+/** 标签一系的归属容器：标签内的把手向上找最近的那个 trigger。 */
+const TRIGGER_SELECTOR = '[data-xh-part="trigger"]'
+
 /**
  * `<xh-tabs>` —— Light-DOM 行为宿主，跑 tabs 机器并把 connect 产出打到 root/list/trigger/content
  * 角色节点上。条目身份取作者写在 trigger/content 上的 value 属性，trigger 的禁用由部件自报。
  *
  * 读屏文案 `translations` 是对象，属性表达不了，只能走 property（`el.translations = {...}`）。
  *
- * 打开 reorderable 后标签可以拖着换位：整个标签都是拖动源，不另出把手。拖动中被拖的标签原地不动，
- * 只落 data-dragging；落点画在参照标签上，data-drop 为 before/after 即插在这个标签前后。触屏不进拖动。
+ * 打开 reorderable 后标签可以拖着换位：整个标签都是拖动源。拖动中被拖的标签原地不动，
+ * 只落 data-dragging；落点画在参照标签上，data-drop 为 before/after 即插在这个标签前后。触屏那一路走 tab-drag-trigger 把手。
  * 键盘走 Alt + 主轴方向键（横排是左右、竖排是上下，横排 rtl 下左右对调），一按就是一次完整提交。
  * 顺序不由元素保管：换位只发 tab-move，标签序由使用方写回自己的数据源。
  *
@@ -45,6 +48,7 @@ type TabsMoveDetails = Parameters<NonNullable<TabsSchema['props']['onTabMove']>>
  * @csspart live-region - 视觉隐藏的播报区，拖动过程的读屏文案写在这里；写在 root 里、与 list 部件平级（root 自己不带角色，它落不进 role=tablist 的子节点集合）
  * @csspart trigger - role=tab 的标签按钮，须自带 value 属性标识身份
  * @csspart content - role=tabpanel 的面板，须自带 value 属性与 trigger 配对；未选中时 hidden
+ * @csspart tab-drag-trigger - 标签拖拽把手，触屏那一路的入口（自带 touch-action: none，按下即拖）；对读屏隐藏且不占 Tab 位，键盘那一路由标签带上的 Alt + 方向键承担
  */
 export class XhTabsElement extends XhElement {
   static override partContract = { anatomy: tabsAnatomy, meta: tabsMeta }
@@ -129,6 +133,16 @@ export class XhTabsElement extends XhElement {
       send({ type: 'LIST.BLUR' })
   }
 
+  /**
+   * 取把手所属标签的身份：向上找本宿主内最近的 trigger，没有包裹层时退回读节点自身。
+   * 越出本宿主的 trigger 不算数——嵌套 xh-tabs 的内层把手不会认外层的标签。
+   */
+  /** 把手所属的那个 trigger 节点；把手自己就写在 trigger 上时即它本身。 */
+  private triggerElOf(el: HTMLElement): HTMLElement {
+    const owner = el.closest<HTMLElement>(TRIGGER_SELECTOR)
+    return owner && owner !== this && this.contains(owner) ? owner : el
+  }
+
   protected wire(): void {
     const api = connectTabs(this.ctrl.service, wcNormalize)
 
@@ -154,6 +168,18 @@ export class XhTabsElement extends XhElement {
       const props = api.getTriggerProps({
         value: el.getAttribute('value') ?? '',
         disabled: this.collection ? this.declaredDisabled(el) : isItemDisabled(el),
+      })
+      this.spreader.spread(el, props as Record<string, unknown>)
+    }
+
+    // 把手长在标签里，身份跟着所在的那个 trigger 走
+    for (const el of this.getParts('tab-drag-trigger')) {
+      // 禁用与 trigger 走同一条来路：没给 collection 时禁用写在标记上，
+      // 只传 value 的话标签禁着而把手仍判可拖
+      const trigger = this.triggerElOf(el)
+      const props = api.getTabDragTriggerProps({
+        value: trigger.getAttribute('value') ?? '',
+        disabled: this.collection ? this.declaredDisabled(trigger) : isItemDisabled(trigger),
       })
       this.spreader.spread(el, props as Record<string, unknown>)
     }

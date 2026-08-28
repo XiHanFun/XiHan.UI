@@ -31,11 +31,16 @@ function props(extra: Readonly<Record<string, unknown>> = {}): Readonly<Record<s
   return { collection: COLLECTION, ...extra }
 }
 
+/**
+ * 触屏拖动把手占着行首那一格，身份跟着裹着它的那个节点走：叶子挂在 item 上，
+ * 分支挂在 branch-control 上——分支的拖动源是它那一行，不是裹着整棵子树的 treeitem。
+ */
 function leaf(value: string, text: string): FixtureNode {
   return {
     part: 'item',
     attrs: { value },
     children: [
+      { part: 'node-drag-trigger', tag: 'span' },
       { part: 'item-indicator', tag: 'span' },
       { part: 'item-text', tag: 'span', text },
     ],
@@ -50,6 +55,7 @@ function branchNode(value: string, text: string, children: readonly FixtureNode[
       {
         part: 'branch-control',
         children: [
+          { part: 'node-drag-trigger', tag: 'span' },
           { part: 'branch-trigger', tag: 'span' },
           { part: 'branch-indicator', tag: 'span' },
           { part: 'branch-text', tag: 'span', text },
@@ -60,7 +66,8 @@ function branchNode(value: string, text: string, children: readonly FixtureNode[
   }
 }
 
-// 文档序下标：branch = [src, utils, docs]，item = [index, dom, readme, license]
+// 文档序下标：branch = [src, utils, docs]，item = [index, dom, readme, license]，
+// node-drag-trigger = [src, index, utils, dom, readme, docs, license]
 const FIXTURE: FixtureNode = {
   part: 'root',
   children: [
@@ -151,32 +158,39 @@ export const treeSuite: ConformanceSuite = {
           'tree',
           'branch[0]',
           'branch-control[0]',
+          'node-drag-trigger[0]',
           'branch-trigger[0]',
           'branch-indicator[0]',
           'branch-text[0]',
           'branch-content[0]',
           'item[0]',
+          'node-drag-trigger[1]',
           'item-indicator[0]',
           'item-text[0]',
           'branch[1]',
           'branch-control[1]',
+          'node-drag-trigger[2]',
           'branch-trigger[1]',
           'branch-indicator[1]',
           'branch-text[1]',
           'branch-content[1]',
           'item[1]',
+          'node-drag-trigger[3]',
           'item-indicator[1]',
           'item-text[1]',
           'item[2]',
+          'node-drag-trigger[4]',
           'item-indicator[2]',
           'item-text[2]',
           'branch[2]',
           'branch-control[2]',
+          'node-drag-trigger[5]',
           'branch-trigger[2]',
           'branch-indicator[2]',
           'branch-text[2]',
           'branch-content[2]',
           'item[3]',
+          'node-drag-trigger[6]',
           'item-indicator[3]',
           'item-text[3]',
           'live-region',
@@ -195,6 +209,8 @@ export const treeSuite: ConformanceSuite = {
           'item': 4,
           'item-text': 4,
           'item-indicator': 4,
+          // 三个分支各一个 + 四个叶子各一个
+          'node-drag-trigger': 7,
         },
         parts: {
           'root': { 'data-disabled': null },
@@ -265,6 +281,14 @@ export const treeSuite: ConformanceSuite = {
           'item[2]': { 'aria-disabled': 'true', 'data-disabled': '', 'data-value': 'readme', 'disabled': null },
           'item[3]': { 'aria-level': '1', 'aria-posinset': '3', 'aria-setsize': '3', 'data-value': 'license' },
           'item-indicator[0]': { 'aria-hidden': 'true' },
+          'node-drag-trigger[0]': {
+            // 把手不占 Tab 位、也不进可及树：键盘搬家由树上的 Alt + 方向键承担
+            'aria-hidden': 'true',
+            'tabindex': '-1',
+            // nodeDraggable 默认关：把手照样在场，只是报自己拖不动
+            'data-disabled': '',
+            'data-dragging': null,
+          },
         },
       },
     },
@@ -610,8 +634,7 @@ export const treeSuite: ConformanceSuite = {
     {
       name: '节点换位：Alt + 上下键在同层兄弟里挪一位，只报事件不动 DOM；到同层首末不回绕，裸方向键仍是走行',
       spec: { apg: `${APG}#keyboardinteraction` },
-      // 整个节点就是拖动源，不出把手，基准 fixture 原样够用；开关只开在这个用例上，
-      // 其余用例的 order 与 counts 断言跟换位没关系
+      // 键盘那一路不碰把手：整个节点就是拖动源。开关只开在这个用例上
       props: props({ nodeDraggable: true }),
       covers: ['tree.kbd.node-move'],
       initial: {
@@ -619,6 +642,8 @@ export const treeSuite: ConformanceSuite = {
           // 分支的拖动源是它的行，不是裹着整棵子树的那个 treeitem
           'branch-control[0]': { 'data-draggable': '', 'data-dragging': null, 'data-drop': null },
           'item[0]': { 'data-draggable': '' },
+          // 开着搬家时把手才报得动
+          'node-drag-trigger[0]': { 'data-disabled': null, 'data-dragging': null },
           // readme 禁用，拖不动
           'item[2]': { 'data-draggable': null },
         },

@@ -192,9 +192,9 @@ export const treeMachine = createMachine({
         const e = event.current()
         if (e.type !== 'NODE_DRAG.START')
           return
-        refs.set('nodeDrag', { value: e.value, rects: e.rects, originY: e.originY, activated: false })
-        // 按下还不算拖：这三样要等激活之后才写，在那之前界面上一点变化都没有
-        context.set('draggingNode', null)
+        refs.set('nodeDrag', { value: e.value, rects: e.rects, originY: e.originY, activated: !!e.activate })
+        // 从把手起手即刻算拖；整个节点起手时按下还不算拖，要等走够激活距离
+        context.set('draggingNode', e.activate ? e.value : null)
         context.set('dropTarget', null)
         context.set('announcement', '')
       },

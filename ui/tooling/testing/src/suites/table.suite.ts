@@ -73,11 +73,16 @@ function props(extra: Readonly<Record<string, unknown>> = {}): Readonly<Record<s
   return { columns: COLUMNS, rows: ROWS, footer: true, ...extra }
 }
 
+/**
+ * 数据行。触屏拖动把手占着行首那一格，排在所有格子之前：身份取裹着它的那一行。
+ * 它对读屏隐藏，不进这一行的可及子节点集合，格子的构成照旧只有格子。
+ */
 function dataRow(value: string): FixtureNode {
   return {
     part: 'row',
     attrs: { value },
     children: [
+      { part: 'row-drag-trigger', tag: 'span' },
       {
         part: 'cell',
         attrs: { value: 'select' },
@@ -113,7 +118,8 @@ function columnHeader(value: string, text: string): FixtureNode {
 // row      = [表头, a, b, c, d, 脚注]
 // cell     = [a×3, a 详情×1, b×3, c×3, c 详情×1, d×3, d 详情×1, 脚注×3]
 // 其余集合 = column-header [select, name, size]、sort-trigger [name, size]、
-//            expand-trigger / row-select-trigger [a, b, c, d]、expanded-row [a, c, d]
+//            row-drag-trigger / expand-trigger / row-select-trigger [a, b, c, d]、
+//            expanded-row [a, c, d]
 const FIXTURE: FixtureNode = {
   part: 'root',
   children: [
@@ -271,6 +277,8 @@ export const tableSuite: ConformanceSuite = {
           'row-select-trigger': 4,
           'sort-trigger': 2,
           'expand-trigger': 4,
+          // 四个数据行各一个；表头行与脚注行不是拖动源，不出把手
+          'row-drag-trigger': 4,
           'expanded-row': 3,
           'empty': 1,
           'loading-state': 1,
@@ -380,9 +388,18 @@ export const tableSuite: ConformanceSuite = {
             'tabindex': '0',
             'data-state': 'unchecked',
           },
-          // 行内两个把手退出可及树与 Tab 序列
+          // 行内三个把手都退出可及树与 Tab 序列
           'row-select-trigger[0]': { 'aria-hidden': 'true', 'tabindex': '-1' },
           'expand-trigger[0]': { 'aria-hidden': 'true', 'tabindex': '-1' },
+          'row-drag-trigger[0]': {
+            // 键盘换位由表体上的 Alt + 上下键承担，把手只管指针那一路
+            'aria-hidden': 'true',
+            'tabindex': '-1',
+            'data-value': 'a',
+            // rowReorderable 默认关：把手照样在场，只是报自己拖不动
+            'data-disabled': '',
+            'data-dragging': null,
+          },
           'sort-trigger[0]': { 'role': 'button', 'tabindex': '0', 'aria-disabled': 'false' },
           'expanded-row': detailsShown(),
           // 详情行是所属数据行的下一层，那一层只有它自己
@@ -743,7 +760,7 @@ export const tableSuite: ConformanceSuite = {
       name: '行换位：Alt + 上下键一次挪一位，只报事件不动 DOM；到头不回绕，裸方向键仍是导航',
       spec: { apg: `${APG}#keyboardinteraction` },
       covers: ['table.kbd.row-move'],
-      // 整行就是拖动源，不出把手，基准 fixture 原样够用；行换成展不开的那一份，
+      // 键盘那一路不碰把手：整行就是拖动源。行换成展不开的那一份，
       // 可展开的行会把行拖拽整个挡下
       props: props({ rows: REORDERABLE_ROWS, rowReorderable: true }),
       initial: {
@@ -752,6 +769,8 @@ export const tableSuite: ConformanceSuite = {
           'row[0]': { 'data-row-draggable': null },
           'row[1]': { 'data-row-draggable': '', 'data-dragging': null, 'data-drop': null },
           'row[5]': { 'data-row-draggable': null },
+          // 开着换位时把手才报得动
+          'row-drag-trigger[0]': { 'data-disabled': null, 'data-dragging': null },
         },
       },
       steps: [
@@ -793,8 +812,11 @@ export const tableSuite: ConformanceSuite = {
       spec: { apg: `${APG}#keyboardinteraction` },
       props: props({ rows: REORDERABLE_ROWS, rowReorderable: true, defaultSort: [{ id: 'name', direction: 'asc' }] }),
       initial: {
-        // 行序由排序说了算，手排就没有落脚处
-        parts: { 'row[1]': { 'data-row-draggable': null } },
+        // 行序由排序说了算，手排就没有落脚处：整行与把手一起失效
+        parts: {
+          'row[1]': { 'data-row-draggable': null },
+          'row-drag-trigger[0]': { 'data-disabled': '' },
+        },
       },
       steps: [
         { kind: 'focus', part: 'body', expect: { activeElement: { part: 'row[1]', exact: true } } },
