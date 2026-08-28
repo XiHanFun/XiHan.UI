@@ -8,7 +8,7 @@
 
 121 个组件，每个都有 headless 内核、Vue 组件、自定义元素与默认皮肤。
 
-> **预览阶段**：npm 上走 `preview` dist-tag，不承诺语义化版本、接口仍会变；文档站已上线（https://ui.docs.xihanfun.com）。无障碍扫描跑在真实 Chromium 上，存量违规登记表只剩两条（共用表里 tag 的禁用态对比度、WC 侧 steps 的必需子节点），另有一条 breadcrumb 的步骤重放豁免。请勿在生产环境依赖。
+> **v1.0.0**：18 个公开包锁步发版，已按 `1.0.0` 发布至 npm；唯一例外是 `@xihan-ui/pointer`，尚未发布。文档站已上线（https://ui.docs.xihanfun.com）。无障碍扫描跑在真实 Chromium 上，存量违规登记表只剩两条（共用表里 tag 的禁用态对比度、WC 侧 steps 的必需子节点），另有一条 breadcrumb 的步骤重放豁免。
 
 ## 包一览
 

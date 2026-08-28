@@ -879,7 +879,9 @@ const TABLE = [
   ['ui/README.md', /^(\d+) components, each shipping/m, '组件数'],
   ['ui/README.md', /\| (\d+) components as anatomy/, '组件数'],
   ['ui/README.md', /checks the (\d+) budgets/, '体积预算条数'],
+  ['ui/README.md', /The (\d+) public packages are released in lockstep/, '公开包数'],
   ['ui/README_cn.md', /^(\d+) 个组件，每个都有/m, '组件数'],
+  ['ui/README_cn.md', /(\d+) 个公开包锁步发版/, '公开包数'],
   ['ui/README_cn.md', /\| (\d+) 个组件的 anatomy/, '组件数'],
   ['ui/README_cn.md', /里的 (\d+) 条产物限额/, '体积预算条数'],
 
@@ -900,7 +902,7 @@ const TABLE = [
   ['docs/overview.md', /\| (\d+) 个组件的解剖/, '组件数'],
   ['docs/faq.md', /\*\*(\d+) 个\*\*。每个组件同时有/, '组件数'],
   ['docs/faq.md', /覆盖全部 (\d+) 个组件/, '组件数'],
-  ['docs/faq.md', /^(\d+) 个公开包都在 npm 上/m, '公开包数'],
+  ['docs/faq.md', /^(\d+) 个公开包锁步发版/m, '公开包数'],
 
   ['docs/installation.md', /XiHan\.UI 的 (\d+) 个公开包/, '公开包数'],
   ['docs/installation.md', /(\d+) 个组件的示例都是真实组件/, '组件数'],

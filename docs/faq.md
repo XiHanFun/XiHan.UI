@@ -2,13 +2,13 @@
 
 ## 现在能用吗
 
-可以试。库包已发布到 npm，走 `preview` dist-tag——公开面已按[版本与兼容性政策](./guide/versioning)整理完毕，该页条款自 `1.0.0` 正式版起生效。无障碍存量违规还剩两条登记在案（共用表里 tag 的禁用态对比度、WC 侧 steps 的必需子节点），另有一条 breadcrumb 的步骤重放豁免。
+可以试。库包已按 `1.0.0` 发布到 npm——公开面已按[版本与兼容性政策](./guide/versioning)整理完毕，该页条款自 `1.0.0` 正式版起生效。无障碍存量违规还剩两条登记在案（共用表里 tag 的禁用态对比度、WC 侧 steps 的必需子节点），另有一条 breadcrumb 的步骤重放豁免。
 
 上手路径：从 npm 装一份、克隆仓库把文档站跑起来看行为、读源码。见[安装与接入](./installation)。
 
 ## `npm install` 能装到哪些包
 
-18 个公开包都在 npm 上，预览版走 `preview` dist-tag（`latest` 与 `alpha` 仍停在上一个预发布版）。发布走 changesets，全部库包同属一个 fixed 版本组，一起升到同一版本号，所以内部依赖区间总是对齐的。
+18 个公开包锁步发版，`latest` 为 `1.0.0`；唯一例外是 `@xihan-ui/pointer`，尚未发布。发布走 changesets，全部库包同属一个 fixed 版本组，一起升到同一版本号，所以内部依赖区间总是对齐的。
 
 ## 和 XiHan.BasicApp 的前端是什么关系
 
