@@ -613,6 +613,57 @@ describe('节点拖拽 · 播报与属性', () => {
     expect(h.said()).toContain('甲')
   })
 
+  it('搬进哪一层要说出来——两个不同的父下面，同一个位次是两回事', () => {
+    // weekly 落进 archive 与落进 quote，算下来都是「那一层的第 1 个、那一层共 1 个」。
+    // 位次一个字不差，分得开两次搬家的只有落脚处的名字
+    const h = mount()
+    h.service.send({ type: 'NODE.MOVE_BY', value: 'weekly', target: { targetValue: 'archive', position: 'inside' } })
+    const intoArchive = h.said()
+    // collection 是 prop，库不改树：第二次仍从原样的树上算，两句可以直接比
+    h.service.send({ type: 'NODE.MOVE_BY', value: 'weekly', target: { targetValue: 'quote', position: 'inside' } })
+    expect(intoArchive).toBe('Moved weekly into archive, position 1 of 1.')
+    expect(h.said()).toBe('Moved weekly into quote, position 1 of 1.')
+  })
+
+  it('落脚处点的是父节点的 label，不是它的 value', () => {
+    const h = mount({
+      collection: [
+        { value: 'inbox', label: '收件箱', children: [{ value: 'weekly', label: '周报' }] },
+        { value: 'archive', label: '归档', children: [] },
+      ],
+      defaultExpandedValue: ['inbox', 'archive'],
+    })
+    h.service.send({ type: 'NODE.MOVE_BY', value: 'weekly', target: { targetValue: 'archive', position: 'inside' } })
+    expect(h.said()).toBe('Moved 周报 into 归档, position 1 of 1.')
+  })
+
+  it('搬到根层说的是根层，不是那个当参照的节点', () => {
+    // quote 落在 inbox 后面 = 出到根层的第 2 位。参照的是 inbox，落脚处却在它外面
+    const h = mount()
+    h.service.send({ type: 'NODE.MOVE_BY', value: 'quote', target: { targetValue: 'inbox', position: 'after' } })
+    expect(h.said()).toBe('Moved quote into the top level, position 2 of 4.')
+  })
+
+  it('根层的说法可以换', () => {
+    const h = mount({ translations: { rootLevel: '最外层' } })
+    h.service.send({ type: 'NODE.MOVE_BY', value: 'quote', target: { targetValue: 'inbox', position: 'after' } })
+    expect(h.said()).toBe('Moved quote into 最外层, position 2 of 4.')
+  })
+
+  it('取消也说落脚处——说的是它此刻所在的那一层', () => {
+    const h = mount()
+    press(h, 'quote', 50)
+    move(140)
+    document.dispatchEvent(new PointerEvent('pointercancel', { pointerId: 1, bubbles: true }))
+    expect(h.said()).toBe('Move canceled. quote returned to inbox, position 1.')
+  })
+
+  it('作者给了 item 就用它命名，落脚处那个父节点也跟着换', () => {
+    const h = mount({ translations: { item: (value: string) => `「${value}」` } })
+    h.service.send({ type: 'NODE.MOVE_BY', value: 'weekly', target: { targetValue: 'archive', position: 'inside' } })
+    expect(h.said()).toBe('Moved 「weekly」 into 「archive」, position 1 of 1.')
+  })
+
   it('播报区是视觉隐藏的 status 活区', () => {
     const props = mount().api().getLiveRegionProps() as Dict
     expect(props.role).toBe('status')

@@ -101,6 +101,17 @@ export interface DragTranslations {
   canceled: (name: string, position: number) => string
   /** 落点不合法。视觉上表现为「不画线」，读屏里必须有人说一句。 */
   rejected: (name: string) => string
+  /**
+   * 带容器的那三句：搬进了哪一层，以及在那一层的第几位。
+   * 层级结构（树）报这三句，一维重排（行、列、标签）报上面那三句。
+   *
+   * 缺哪一句就退到上面同名的那一句，只是不报容器；两处都没给才用内建英文。
+   */
+  movedInto: (name: string, into: string, position: number, total: number) => string
+  droppedInto: (name: string, into: string, position: number) => string
+  canceledInto: (name: string, into: string, position: number) => string
+  /** 根层的说法。落点在根层时拿它当容器名。 */
+  rootLevel: string
 }
 
 export interface DragAnnounceInput {
@@ -108,6 +119,12 @@ export interface DragAnnounceInput {
   /** 人类读法的第几位，从 1 数起。 */
   position: number
   total: number
+  /**
+   * 落在哪个容器里。给了这一位就报带容器的那三句。
+   *
+   * `null` 是根层，容器名走 `translations.rootLevel`；不给这一位表示这个组件没有层级可言。
+   */
+  into?: string | null
   translations?: Partial<DragTranslations>
 }
 
@@ -118,8 +135,27 @@ export interface DragAnnounceInput {
  * 看得见的人懂了，听的人只会听到一片安静。
  */
 export function dragAnnouncement(kind: DragAnnounceKind, input: DragAnnounceInput): string {
-  const { value, position, total, translations: t } = input
+  const { value, position, total, into, translations: t } = input
   const name = t?.item?.(value) ?? value
+
+  // 给了 into 就报带容器的那一套。rejected 那一档没有落点可言，恒走原句
+  if (into !== undefined && kind !== 'rejected') {
+    const container = into ?? t?.rootLevel ?? 'the top level'
+    switch (kind) {
+      case 'moved':
+        return t?.movedInto?.(name, container, position, total)
+          ?? t?.moved?.(name, position, total)
+          ?? `Moved ${name} into ${container}, position ${position} of ${total}.`
+      case 'dropped':
+        return t?.droppedInto?.(name, container, position)
+          ?? t?.dropped?.(name, position)
+          ?? `${name} dropped into ${container} at position ${position}.`
+      case 'canceled':
+        return t?.canceledInto?.(name, container, position)
+          ?? t?.canceled?.(name, position)
+          ?? `Move canceled. ${name} returned to ${container}, position ${position}.`
+    }
+  }
 
   switch (kind) {
     case 'moved':

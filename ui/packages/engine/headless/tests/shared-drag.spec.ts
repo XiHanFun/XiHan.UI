@@ -152,6 +152,77 @@ describe('播报', () => {
     expect(dragAnnouncement('moved', { ...input, translations })).toBe('name 移到第 2/5 位')
     expect(dragAnnouncement('dropped', { ...input, translations })).toBe('name dropped at position 2.')
   })
+
+  it('不给 into 的组件一个字都不变', () => {
+    expect(dragAnnouncement('moved', input)).toBe('Moved name to position 2 of 5.')
+    expect(dragAnnouncement('dropped', input)).toBe('name dropped at position 2.')
+    expect(dragAnnouncement('canceled', input)).toBe('Move canceled. name returned to position 2.')
+  })
+
+  it('给了 into 的三档各报一句带容器的', () => {
+    const nested = { ...input, into: '收件箱' }
+    expect(dragAnnouncement('moved', nested)).toBe('Moved name into 收件箱, position 2 of 5.')
+    expect(dragAnnouncement('dropped', nested)).toBe('name dropped into 收件箱 at position 2.')
+    expect(dragAnnouncement('canceled', nested)).toBe('Move canceled. name returned to 收件箱, position 2.')
+  })
+
+  it('两个不同的容器说出两句话——位次一样时只有容器名分得开', () => {
+    const one = dragAnnouncement('moved', { ...input, into: '收件箱' })
+    const other = dragAnnouncement('moved', { ...input, into: '归档' })
+    expect(one).not.toBe(other)
+  })
+
+  it('into 给 null 是根层，容器名走 rootLevel', () => {
+    expect(dragAnnouncement('moved', { ...input, into: null }))
+      .toBe('Moved name into the top level, position 2 of 5.')
+    expect(dragAnnouncement('moved', { ...input, into: null, translations: { rootLevel: '最外层' } }))
+      .toBe('Moved name into 最外层, position 2 of 5.')
+  })
+
+  it('带容器的那三句也逐句覆盖', () => {
+    const translations = {
+      movedInto: (n: string, into: string, p: number, t: number) => `${n} 移进 ${into} 第 ${p}/${t} 位`,
+    }
+    expect(dragAnnouncement('moved', { ...input, into: '收件箱', translations }))
+      .toBe('name 移进 收件箱 第 2/5 位')
+    expect(dragAnnouncement('dropped', { ...input, into: '收件箱', translations }))
+      .toBe('name dropped into 收件箱 at position 2.')
+  })
+
+  it('作者只本地化了不带容器的那三句：说他的话，只是不报容器', () => {
+    const translations = {
+      moved: (n: string, p: number, t: number) => `${n} 移到第 ${p}/${t} 位`,
+      dropped: (n: string, p: number) => `${n} 落在第 ${p} 位`,
+      canceled: (n: string, p: number) => `搬家取消，${n} 回到第 ${p} 位`,
+    }
+    const nested = { ...input, into: '收件箱', translations }
+    expect(dragAnnouncement('moved', nested)).toBe('name 移到第 2/5 位')
+    expect(dragAnnouncement('dropped', nested)).toBe('name 落在第 2 位')
+    expect(dragAnnouncement('canceled', nested)).toBe('搬家取消，name 回到第 2 位')
+  })
+
+  it('两句都给时带容器的那句在前', () => {
+    const translations = {
+      moved: (n: string, p: number, t: number) => `${n} 移到第 ${p}/${t} 位`,
+      movedInto: (n: string, into: string, p: number, t: number) => `${n} 移进 ${into} 第 ${p}/${t} 位`,
+    }
+    expect(dragAnnouncement('moved', { ...input, into: '收件箱', translations })).toBe('name 移进 收件箱 第 2/5 位')
+  })
+
+  it('落脚处有名字时不看 rootLevel', () => {
+    expect(dragAnnouncement('moved', { ...input, into: '收件箱', translations: { rootLevel: '最外层' } }))
+      .toBe('Moved name into 收件箱, position 2 of 5.')
+  })
+
+  it('into 不影响 rejected：落点不合法时根本没有容器可言', () => {
+    expect(dragAnnouncement('rejected', { ...input, into: '收件箱' })).toBe('name cannot be dropped here.')
+  })
+
+  it('item 换名字之后带容器的那几句也跟着换', () => {
+    const translations = { item: (v: string) => `第 ${v} 项` }
+    expect(dragAnnouncement('moved', { ...input, into: '收件箱', translations }))
+      .toBe('Moved 第 name 项 into 收件箱, position 2 of 5.')
+  })
 })
 
 describe('沿轴命中 · 文字方向', () => {
