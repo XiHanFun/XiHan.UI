@@ -282,20 +282,19 @@ export const imageViewerMachine = createMachine({
           return undefined
 
         const { layer, dispose: disposeLayer } = registerLayer()
-        const closeOnEscape = prop('closeOnEscape') ?? true
-        const closeOnInteractOutside = prop('closeOnInteractOutside') ?? true
         const getContentEl = refs.get('getContentEl')
         const disposers: Array<() => void> = []
 
         const dismiss = createDismissLayer({
           config,
           layer,
+          // 两个开关都现读 prop，展开中途改也立刻生效
           onEscapeKeyDown: (e) => {
-            if (!closeOnEscape)
+            if (!(prop('closeOnEscape') ?? true))
               e.preventDefault()
           },
           onInteractOutside: (e) => {
-            if (!closeOnInteractOutside)
+            if (!(prop('closeOnInteractOutside') ?? true))
               e.preventDefault()
           },
           onDismiss: reason =>
