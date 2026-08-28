@@ -28,14 +28,14 @@ export interface DropTarget {
  * 指针在所有候选之外时返回 null 而不是夹到两端——「此刻没有合法落点」是一档真实状态，
  * 指示线该消失，把它夹到最近的一端会让人以为松手就落在那儿。
  */
-export function hitAlong(rects: readonly DragRect[], point: number): DropTarget | null {
+export function hitAlong(rects: readonly DragRect[], point: number, rtl = false): DropTarget | null {
   for (const rect of rects) {
     if (point < rect.start || point > rect.start + rect.size)
       continue
-    return {
-      targetValue: rect.value,
-      position: point < rect.start + rect.size / 2 ? 'before' : 'after',
-    }
+    // 几何上的前半 = 逻辑上的 before，除非文字方向反过来：
+    // rtl 横排里 DOM 首项在最右，它的几何左半是逻辑末侧
+    const nearStart = point < rect.start + rect.size / 2
+    return { targetValue: rect.value, position: nearStart !== rtl ? 'before' : 'after' }
   }
   return null
 }

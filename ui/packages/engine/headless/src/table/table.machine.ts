@@ -269,12 +269,13 @@ export const tableMachine = createMachine({
         context.set('announcement', '')
       },
 
-      trackColumnDrag: ({ context, refs, event }) => {
+      trackColumnDrag: ({ context, prop, refs, event }) => {
         const e = event.current()
         const session = refs.get('columnDrag')
         if (e.type !== 'COLUMN_DRAG.MOVE' || !session)
           return
-        const hit = hitAlong(session.rects, e.clientX)
+        // 列是横排的：rtl 下几何左右与逻辑前后相反
+        const hit = hitAlong(session.rects, e.clientX, prop('dir') === 'rtl')
         // 落在自己身上不算落点：那不是一次移动，指示线该消失
         context.set('dropTarget', hit && hit.targetValue !== session.columnId ? hit : null)
       },

@@ -15,7 +15,7 @@ import type { Direction, Size } from '@xihan-ui/kernel'
 import type { PropType, Ref, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import type { TableContext } from './use-table'
-import { computed, defineComponent, Fragment, h, onBeforeUnmount, ref, watch } from 'vue'
+import { computed, defineComponent, Fragment, h, mergeProps, onBeforeUnmount, ref, watch } from 'vue'
 import {
   provideTable,
   provideTableColumn,
@@ -132,7 +132,10 @@ export const XhTableRoot = defineComponent({
   slots: Object as SlotsType<{
     default?: (props: TableRootSlotProps) => VNode[]
   }>,
-  setup(props, { slots, emit }) {
+  // Fragment 根接不住自动透传：Vue 只在单个元素根上做这件事。
+  // 作者写在 XhTableRoot 上的 class / aria-* / 监听器都要自己合到 root 那个 div 上
+  inheritAttrs: false,
+  setup(props, { slots, emit, attrs }) {
     const onColumnPreferenceChange: TableProps['onColumnPreferenceChange'] = (details) => {
       emit('column-preference-change', details)
       emit('update:columnPreference', details.value)
@@ -157,7 +160,7 @@ export const XhTableRoot = defineComponent({
     // 播报区由根组件自己渲，作者插不进 root 的兄弟位。它不能进 root：
     // root 是 role=grid，塞活动区域进去是 aria-required-children（critical）
     return () => h(Fragment, [
-      h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
+      h('div', mergeProps(ctx.api.value.getRootProps() as Record<string, unknown>, attrs), slots.default?.({
         columns: ctx.api.value.columns,
         columnPreference: ctx.api.value.columnPreference,
         setColumnHidden: ctx.api.value.setColumnHidden,

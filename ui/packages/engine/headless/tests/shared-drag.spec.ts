@@ -153,3 +153,26 @@ describe('播报', () => {
     expect(dragAnnouncement('dropped', { ...input, translations })).toBe('name dropped at position 2.')
   })
 })
+
+describe('沿轴命中 · 文字方向', () => {
+  // rtl 横排里 DOM 首项在最右：三块的 start 是递减的
+  const RECTS = [
+    { value: 'one', start: 200, size: 100 },
+    { value: 'two', start: 100, size: 100 },
+    { value: 'three', start: 0, size: 100 },
+  ]
+
+  it('ltr 下几何前半就是逻辑 before', () => {
+    expect(hitAlong(RECTS, 220)).toEqual({ targetValue: 'one', position: 'before' })
+    expect(hitAlong(RECTS, 280)).toEqual({ targetValue: 'one', position: 'after' })
+  })
+
+  it('rtl 下整体镜像：几何左半是逻辑末侧', () => {
+    expect(hitAlong(RECTS, 220, true)).toEqual({ targetValue: 'one', position: 'after' })
+    expect(hitAlong(RECTS, 280, true)).toEqual({ targetValue: 'one', position: 'before' })
+  })
+
+  it('纵轴不受文字方向影响，调用方不传即可', () => {
+    expect(hitAlong(RECTS, 220, false)).toEqual(hitAlong(RECTS, 220))
+  })
+})

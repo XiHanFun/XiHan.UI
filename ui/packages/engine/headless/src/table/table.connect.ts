@@ -477,7 +477,7 @@ export function connectTable<T extends PropTypes>(
 
         // Alt + 上下键换行位。一按就是一次已过守卫的完整提交，不进拖动态——
         // 裸方向键是导航、Space 是选中、左右键是展开收起，模态拾起在这里无处落脚
-        if (event.altKey && !command && focusedRow != null) {
+        if (event.altKey && !command && focusedRow != null && !isRowDisabled(focusedRow)) {
           // 行是纵向排的；轴之外的键不归换位管
           const intent = flatMoveIntentFromKey(event.key, 'vertical')
           if (intent) {
@@ -612,7 +612,7 @@ export function connectTable<T extends PropTypes>(
         'data-section': 'body',
         'data-dragging': dataAttr(draggingRow === row.value),
         'data-drop': rowDropSide(row.value),
-        'data-row-draggable': dataAttr(rowReorderable && rowBlocked == null),
+        'data-row-draggable': dataAttr(rowReorderable && rowBlocked == null && !isRowDisabled(row.value)),
         // 焦点是事实不是许可：禁用行被点到也记锚点，方向键才知道从哪儿起步
         'onFocus': () => send({ type: 'ROW.FOCUS', value: row.value }),
         // 整行都是拖动源，没有把手。按在行里的交互控件上不起拖：
@@ -621,8 +621,11 @@ export function connectTable<T extends PropTypes>(
           // 只认主键：右键要弹上下文菜单，中键是自动滚动。
           // 触屏也不认：拖行是纵向的，而纵向手势在按下那一刻就归了浏览器滚动，
           // touch-action 事后改不回来。触屏那一路要等一个专门的拖动把手
-          if (!rowReorderable || rowBlocked != null || event.button !== 0 || event.pointerType === 'touch')
+          // 禁用的行不是拖动源：它自己动不了，别人仍可以落在它前后
+          if (!rowReorderable || rowBlocked != null || isRowDisabled(row.value)
+            || event.button !== 0 || event.pointerType === 'touch') {
             return
+          }
           const target = event.target as HTMLElement | null
           if (target?.closest('input,textarea,select,button,a,[contenteditable],[role="button"],[role="checkbox"]'))
             return

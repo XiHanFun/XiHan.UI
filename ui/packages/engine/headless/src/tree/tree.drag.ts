@@ -51,7 +51,10 @@ export function isTreeDropAllowed(
     return false
   if (isSelfOrDescendant(meta.get(dragged), targetMeta))
     return false
-  if (targetMeta.disabled)
+  // 禁用只拦「放进去」：往一个禁用的分支里塞东西说不通，
+  // 但在它前后插只是绕着它排序，与它自己动不动得了无关。
+  // 同一口径在 table 与 tabs 那边也成立——禁用的行/标签照样是前后插的参照
+  if (targetMeta.disabled && target.position === 'inside')
     return false
   const move = treeMoveOf(meta, dragged, target)
   if (!move)

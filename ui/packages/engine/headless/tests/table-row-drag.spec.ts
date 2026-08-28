@@ -540,3 +540,47 @@ describe('行拖动把手 · 触屏那一路唯一的入口', () => {
     expect(onRowMove).toHaveBeenCalledWith({ id: 'a', from: 0, to: 3, ids: ['b', 'c', 'd', 'a'] })
   })
 })
+
+describe('禁用的行不是拖动源', () => {
+  it('整行起手拖不动', () => {
+    const h = mount({ rows: [{ id: 'a', disabled: true }, { id: 'b' }, { id: 'c' }, { id: 'd' }] })
+    press(h, 'a', 20)
+    move(150)
+    expect(h.dragging()).toBeNull()
+  })
+
+  it('alt + 上下键也搬不动', () => {
+    const onRowMove = vi.fn()
+    const h = mount({
+      rows: [{ id: 'a', disabled: true }, { id: 'b' }, { id: 'c' }, { id: 'd' }],
+      onRowMove,
+    })
+    h.service.send({ type: 'ROW.FOCUS', value: 'a' })
+    const body = h.api().getBodyProps() as Dict
+    ;(body.onKeyDown as (e: KeyboardEvent) => void)({
+      key: 'ArrowDown',
+      altKey: true,
+      preventDefault: () => {},
+      currentTarget: document.createElement('div'),
+    } as unknown as KeyboardEvent)
+    expect(onRowMove).not.toHaveBeenCalled()
+  })
+
+  it('不自报可拖，皮肤才不会给它一只抓手', () => {
+    const h = mount({ rows: [{ id: 'a', disabled: true }, { id: 'b' }, { id: 'c' }, { id: 'd' }] })
+    expect((h.api().getRowProps({ value: 'a' }) as Dict)['data-row-draggable']).toBeUndefined()
+    expect((h.api().getRowProps({ value: 'b' }) as Dict)['data-row-draggable']).toBe('')
+  })
+
+  it('别人仍可以落在它前后——禁用的是拖动源，不是落点', () => {
+    const onRowMove = vi.fn()
+    const h = mount({
+      rows: [{ id: 'a' }, { id: 'b', disabled: true }, { id: 'c' }, { id: 'd' }],
+      onRowMove,
+    })
+    press(h, 'a', 20)
+    move(70)
+    release()
+    expect(onRowMove).toHaveBeenCalledWith({ id: 'a', from: 0, to: 1, ids: ['b', 'a', 'c', 'd'] })
+  })
+})

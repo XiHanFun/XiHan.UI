@@ -76,9 +76,15 @@ describe('落点合不合法', () => {
     expect(isTreeDropAllowed(META, 'quote', { targetValue: 'archive', position: 'inside' })).toBe(true)
   })
 
-  it('落在禁用的节点上不行', () => {
+  it('放不进禁用的分支里', () => {
     const meta = indexTree([{ value: 'a' }, { value: 'b', disabled: true }])
     expect(isTreeDropAllowed(meta, 'a', { targetValue: 'b', position: 'inside' })).toBe(false)
+  })
+
+  it('但在禁用的节点前后插得进去——那只是绕着它排序', () => {
+    const meta = indexTree([{ value: 'a' }, { value: 'b', disabled: true }, { value: 'c' }])
+    expect(isTreeDropAllowed(meta, 'c', { targetValue: 'b', position: 'before' })).toBe(true)
+    expect(isTreeDropAllowed(meta, 'a', { targetValue: 'b', position: 'after' })).toBe(true)
   })
 
   it('认不出的目标不行', () => {
@@ -501,6 +507,21 @@ describe('节点拖拽 · 指针', () => {
     move(140)
     expect((h.api().getBranchControlProps({ value: 'archive' }) as Dict)['data-drop']).toBe('inside')
   })
+
+  it('同一个实例连拖两次——会话是常驻的，第一场收尾不该把它闩死', () => {
+    const onNodeMove = vi.fn()
+    const h = mount({ onNodeMove })
+    press(h, 'quote', 50)
+    move(140)
+    release()
+    expect(onNodeMove).toHaveBeenCalledTimes(1)
+
+    press(h, 'weekly', 90)
+    move(10)
+    expect(h.dragging()).toBe('weekly')
+    release()
+    expect(onNodeMove).toHaveBeenCalledTimes(2)
+  })
 })
 
 describe('节点拖拽 · 键盘命令', () => {
@@ -663,5 +684,39 @@ describe('节点拖动把手 · 触屏那一路唯一的入口', () => {
     move(140)
     release()
     expect(onNodeMove).toHaveBeenCalledWith({ value: 'quote', parent: 'archive', index: 0 })
+  })
+})
+
+describe('禁用的节点不是拖动源', () => {
+  it('按 Alt + 方向键搬不动', () => {
+    const onNodeMove = vi.fn()
+    const h = mount({
+      collection: [
+        { value: 'inbox', children: [{ value: 'quote', disabled: true }, { value: 'weekly' }] },
+        { value: 'archive', children: [] },
+        { value: 'trash' },
+      ],
+      onNodeMove,
+    })
+    h.service.send({ type: 'NODE.FOCUS', value: 'quote' })
+    key(h, 'ArrowDown', { altKey: true })
+    expect(onNodeMove).not.toHaveBeenCalled()
+  })
+
+  it('别人仍可以落到它身上——禁用的是拖动源那一头', () => {
+    // 落点那一头另有 isTreeDropAllowed 管，它对禁用目标的判定不在本条范围内；
+    // 这里只钉「源禁用」与「源不禁用」两条路的分界
+    const onNodeMove = vi.fn()
+    const h = mount({
+      collection: [
+        { value: 'inbox', children: [{ value: 'quote', disabled: true }, { value: 'weekly' }] },
+        { value: 'archive', children: [] },
+        { value: 'trash' },
+      ],
+      onNodeMove,
+    })
+    h.service.send({ type: 'NODE.FOCUS', value: 'weekly' })
+    key(h, 'ArrowUp', { altKey: true })
+    expect(onNodeMove).toHaveBeenCalledWith({ value: 'weekly', parent: 'inbox', index: 0 })
   })
 })

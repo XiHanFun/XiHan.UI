@@ -104,7 +104,7 @@ export const tabsMachine = createMachine({
         context.set('announcement', '')
       },
 
-      trackTabDrag: ({ context, refs, event }) => {
+      trackTabDrag: ({ context, prop, refs, event }) => {
         const e = event.current()
         const session = refs.get('tabDrag')
         if (e.type !== 'TAB_DRAG.MOVE' || !session)
@@ -117,7 +117,9 @@ export const tabsMachine = createMachine({
           refs.set('tabDrag', { ...session, activated: true })
           context.set('draggingTab', session.value)
         }
-        const hit = hitAlong(session.rects, e.point)
+        // 横排标签是横轴：rtl 下几何左右与逻辑前后相反。竖排与文字方向无关
+        const horizontal = (prop('orientation') ?? 'horizontal') === 'horizontal'
+        const hit = hitAlong(session.rects, e.point, horizontal && prop('dir') === 'rtl')
         // 落在自己身上不算落点：那不是一次移动，指示线该消失
         context.set('dropTarget', hit && hit.targetValue !== session.value ? hit : null)
       },
