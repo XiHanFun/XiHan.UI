@@ -1,6 +1,9 @@
 import type { CascadeStrategy, Typeahead } from '@xihan-ui/behavior'
 import type { Direction, Orientation, PropTypes } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
+import type { MultiPointerSession } from '@xihan-ui/pointer'
+import type { DragRect, DragTranslations, DropTarget } from '../shared/drag'
+import type { TreeMove } from './tree.drag'
 
 /**
  * 焦点模型：roving tabindex，不做 aria-activedescendant 变体。
@@ -88,6 +91,13 @@ export interface TreeNodeProps {
 }
 
 export interface TreeRefs {
+  /** 跟手的会话，整个生命周期都在。调用方在按下时把那一根指针交进来。 */
+  gesture: MultiPointerSession | null
+  /**
+   * 正在拖着搬家的那个节点。activated 之前只是「按住了」，还不是拖动——
+   * 整个节点都是拖动源没有把手表明意图，要走够激活距离才算。
+   */
+  nodeDrag: { value: string, rects: DragRect[], originY: number, activated: boolean } | null
   /**
    * 连打检索缓冲，随服务存活，停顿够久自行重开一轮。
    * 放模块变量会让同页两棵树共用一个缓冲。
@@ -145,6 +155,17 @@ export interface TreeSchema extends MachineSchema {
     typeahead?: boolean
     /** 文字方向，默认 ltr；只对调左右方向键的「展开/收起」语义。 */
     dir?: Direction
+    translations?: Partial<TreeTranslations>
+    /**
+     * 节点可以拖着搬家。整个节点都是拖动源，不另出把手。
+     */
+    nodeDraggable?: boolean
+    /**
+     * 这一次搬家许不许。收到的是折算好的落点（搬到哪个父下面的第几位）。
+     * 不给即都许——「落进自己的后代」与「落在禁用节点上」两条库自己会拦。
+     */
+    allowDrop?: (move: TreeMove) => boolean
+    onNodeMove?: (move: TreeMove) => void
     onExpandedChange?: (details: TreeExpandedChangeDetails) => void
     onSelectionChange?: (details: TreeSelectionChangeDetails) => void
   }
@@ -165,6 +186,12 @@ export interface TreeSchema extends MachineSchema {
      * 拿上一次的结果继续并的话，选区就只能越拉越大、往回点收不回来。
      */
     selectionBaseline: string[] | null
+    /** 正在拖着搬家的那个节点；按住但还没激活时仍是 null。 */
+    draggingNode: string | null
+    /** 此刻的落点；松手就落在这儿。不合法或没落在任何节点上时是 null。 */
+    dropTarget: DropTarget | null
+    /** 读屏播报文本。写进视觉隐藏的活动区域，不进视觉版面。 */
+    announcement: string
   }
   computed: Record<string, never>
   refs: TreeRefs
@@ -183,6 +210,13 @@ export interface TreeSchema extends MachineSchema {
     | { type: 'NODE.FOCUS', value: string }
     /** 焦点离开树，或持有焦点的节点被移出 DOM（浏览器此时不派 focusout，由适配器如实上报）。 */
     | { type: 'TREE.BLUR' }
+    /** 按在节点上：矩形快照与起点纵坐标由连接层量好交进来。此刻只是按住，还不算拖。 */
+    | { type: 'NODE_DRAG.START', value: string, rects: DragRect[], originY: number }
+    | { type: 'NODE_DRAG.MOVE', clientY: number }
+    | { type: 'NODE_DRAG.END' }
+    | { type: 'NODE_DRAG.CANCEL' }
+    /** 键盘换位：一按就是一次完整提交，不进拖动态。 */
+    | { type: 'NODE.MOVE_BY', value: string, target: DropTarget }
   tag: never
   guard: never
   action:
@@ -194,7 +228,12 @@ export interface TreeSchema extends MachineSchema {
     | 'selectNode'
     | 'setFocusedValue'
     | 'clearFocusedValue'
-  effect: never
+    | 'startNodeDrag'
+    | 'trackNodeDrag'
+    | 'endNodeDrag'
+    | 'cancelNodeDrag'
+    | 'moveNodeBy'
+  effect: 'trackPointer'
 }
 
 export interface TreeApi<T extends PropTypes = PropTypes> {
@@ -205,6 +244,10 @@ export interface TreeApi<T extends PropTypes = PropTypes> {
    * 方向键、Home/End 与连打检索都在它上面走，不是在原始树上走。
    */
   visibleNodes: readonly TreeVisibleNode[]
+  /** 此刻的落点；松手就落在这儿。不合法或没落在任何节点上时是 null。 */
+  dropTarget: DropTarget | null
+  /** 读屏播报文本。渲进 live-region，不进视觉版面。 */
+  announcement: string
   expandedValue: string[]
   selection: string[]
   /** 焦点锚点；焦点不在树内、或它已被收起而不可见时为 null。 */
@@ -228,6 +271,11 @@ export interface TreeApi<T extends PropTypes = PropTypes> {
   getRootProps: () => T['element']
   getLabelProps: () => T['element']
   getTreeProps: () => T['element']
+  /**
+   * 拖动过程的读屏播报区。视觉隐藏，文本从 announcement 取。
+   * 它必须在拖动开始之前就在 DOM 上——读屏不播报后插入的节点。
+   */
+  getLiveRegionProps: () => T['element']
   getItemProps: (props: TreeNodeProps) => T['element']
   getItemTextProps: (props: TreeNodeProps) => T['element']
   /** 勾选把手：把「勾这一项」与「点这一行」分成两个可点区域，不给它就没有独立把手。 */
@@ -243,4 +291,5 @@ export interface TreeApi<T extends PropTypes = PropTypes> {
 }
 
 /** 读屏用的文案。本组件目前没有需要外露的文案，位先留着。 */
-export interface TreeTranslations {}
+/** 读屏用的文案，默认英文。拖动过程在视觉上很清楚，在读屏里全靠这几句。 */
+export interface TreeTranslations extends Partial<DragTranslations> {}

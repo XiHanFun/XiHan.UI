@@ -1,6 +1,11 @@
+import type { DragAnnounceKind, DropTarget } from '../shared/drag'
+import type { TreeMove } from './tree.drag'
 import type { TreeNode, TreeNodeMeta, TreeSchema, TreeSelectionMode, TreeVisibleNode } from './tree.types'
 import { applySelection, cascadeToggle, collapseChecked, createTypeahead } from '@xihan-ui/behavior'
 import { setup } from '@xihan-ui/machine'
+import { createMultiPointerSession, resolveSessionDoc, shouldActivate } from '@xihan-ui/pointer'
+import { dragAnnouncement, hitAlongNested } from '../shared/drag'
+import { isTreeDropAllowed, treeMoveOf } from './tree.drag'
 
 const { createMachine } = setup<TreeSchema>()
 
@@ -122,9 +127,17 @@ export const treeMachine = createMachine({
     focusedValue: cell<string | null>(() => ({ defaultValue: null })),
     selectionAnchor: cell<string | null>(() => ({ defaultValue: null })),
     selectionBaseline: cell<string[] | null>(() => ({ defaultValue: null })),
+    draggingNode: cell<string | null>(() => ({ defaultValue: null })),
+    dropTarget: cell<DropTarget | null>(() => ({ defaultValue: null })),
+    announcement: cell<string>(() => ({ defaultValue: '' })),
   }),
+  // 跟手的会话整个生命周期都在，不按拖动状态挂卸。常驻的代价只是几个早退的
+  // pointermove，换来的是树的状态树一行都不用改——8 个既有事件原地不动
+  effects: ['trackPointer'],
   refs: () => ({
     typeahead: createTypeahead(),
+    gesture: null,
+    nodeDrag: null,
   }),
   initialState: () => 'idle',
   states: {
@@ -139,11 +152,106 @@ export const treeMachine = createMachine({
         'NODE.SELECT': { actions: ['selectNode'] },
         'NODE.FOCUS': { actions: ['setFocusedValue'] },
         'TREE.BLUR': { actions: ['clearFocusedValue'] },
+        'NODE_DRAG.START': { actions: ['startNodeDrag'] },
+        'NODE_DRAG.MOVE': { actions: ['trackNodeDrag'] },
+        'NODE_DRAG.END': { actions: ['endNodeDrag'] },
+        'NODE_DRAG.CANCEL': { actions: ['cancelNodeDrag'] },
+        // 键盘换位不进拖动态：按一下就是一次已过守卫的完整提交
+        'NODE.MOVE_BY': { actions: ['moveNodeBy'] },
       },
     },
   },
   implementations: {
+    effects: {
+      /**
+       * 跟住按在节点上的那根手指。
+       *
+       * 监听挂在文档上：拖出树、拖出窗口都要继续跟，系统收走指针也会收尾。
+       * 会话只跟调用方交进来的那一根——连接层在按下时判完是不是该起拖再交。
+       */
+      trackPointer: ({ refs, scope, send }) => {
+        const session = createMultiPointerSession({
+          doc: resolveSessionDoc(scope.getDoc().documentElement),
+          onChange: (points: readonly { clientY: number }[]) => {
+            const first = points[0]
+            if (first)
+              send({ type: 'NODE_DRAG.MOVE', clientY: first.clientY })
+          },
+          onEnd: ({ reason }: { reason: string }) =>
+            send({ type: reason === 'pointercancel' ? 'NODE_DRAG.CANCEL' : 'NODE_DRAG.END' }),
+        })
+        refs.set('gesture', session)
+        return () => {
+          session.dispose()
+          refs.set('gesture', null)
+        }
+      },
+    },
     actions: {
+      startNodeDrag: ({ context, refs, event }) => {
+        const e = event.current()
+        if (e.type !== 'NODE_DRAG.START')
+          return
+        refs.set('nodeDrag', { value: e.value, rects: e.rects, originY: e.originY, activated: false })
+        // 按下还不算拖：这三样要等激活之后才写，在那之前界面上一点变化都没有
+        context.set('draggingNode', null)
+        context.set('dropTarget', null)
+        context.set('announcement', '')
+      },
+
+      trackNodeDrag: ({ context, prop, refs, event }) => {
+        const e = event.current()
+        const session = refs.get('nodeDrag')
+        if (e.type !== 'NODE_DRAG.MOVE' || !session)
+          return
+        if (!session.activated) {
+          // 整个节点都是拖动源，没有把手表明意图：要走够激活距离才算拖动，
+          // 否则点一下选中就会被算成一次零位移的拖拽
+          if (!shouldActivate({ x: 0, y: e.clientY - session.originY }))
+            return
+          refs.set('nodeDrag', { ...session, activated: true })
+          context.set('draggingNode', session.value)
+        }
+        const meta = indexTree(prop('collection') ?? [])
+        // 只有分支收得下孩子；叶子上只有前后两档，没有「落进去」
+        const hit = hitAlongNested(session.rects, e.clientY, value => !!meta.get(value)?.branch)
+        const ok = hit != null && isTreeDropAllowed(meta, session.value, hit, prop('allowDrop'))
+        context.set('dropTarget', ok ? hit : null)
+      },
+
+      endNodeDrag: ({ context, prop, refs }) => {
+        const session = refs.get('nodeDrag')
+        const target = context.get('dropTarget')
+        clearNodeDrag(context, refs)
+        // 没激活过就只是按了一下：不是拖动，什么都不做也不播报
+        if (!session?.activated)
+          return
+        if (!target) {
+          announceNodeMove(context, prop, 'rejected', session.value)
+          return
+        }
+        commitNodeMove(context, prop, session.value, target, 'dropped')
+      },
+
+      cancelNodeDrag: ({ context, prop, refs }) => {
+        const session = refs.get('nodeDrag')
+        clearNodeDrag(context, refs)
+        if (session?.activated)
+          announceNodeMove(context, prop, 'canceled', session.value)
+      },
+
+      moveNodeBy: ({ context, prop, event }) => {
+        const e = event.current()
+        if (e.type !== 'NODE.MOVE_BY')
+          return
+        const meta = indexTree(prop('collection') ?? [])
+        if (!isTreeDropAllowed(meta, e.value, e.target, prop('allowDrop'))) {
+          announceNodeMove(context, prop, 'rejected', e.value)
+          return
+        }
+        commitNodeMove(context, prop, e.value, e.target, 'moved')
+      },
+
       setExpanded: ({ context, event }) => {
         const e = event.current()
         if (e.type !== 'EXPANDED.SET')
@@ -241,3 +349,74 @@ export const treeMachine = createMachine({
     },
   },
 })
+
+/** 播报与提交两处都要写 announcement，抽一个最小接口，别把整个 service 拖进来。 */
+interface NodeDragContext {
+  set: (k: 'announcement', v: string) => void
+}
+
+/** 播报一句。位置说的是「在新的那一层里第几个」——用户关心的是搬到哪儿了。 */
+function announceNodeMove(
+  context: NodeDragContext,
+  prop: <K extends keyof TreeSchema['props']>(k: K) => TreeSchema['props'][K],
+  kind: DragAnnounceKind,
+  value: string,
+  move?: TreeMove,
+): void {
+  const meta = indexTree(prop('collection') ?? [])
+  const self = meta.get(value)
+  // 落点在哪一层，那一层就有几个；说不出层时退回它此刻所在的层
+  const siblings = countSiblings(meta, move ? move.parent : (self?.parent ?? null))
+  context.set('announcement', dragAnnouncement(kind, {
+    value,
+    position: (move ? move.index : (self?.posInSet ?? 1) - 1) + 1,
+    total: move ? siblings + (move.parent === (self?.parent ?? null) ? 0 : 1) : siblings,
+    translations: {
+      item: (id: string) => meta.get(id)?.label ?? id,
+      ...prop('translations'),
+    },
+  }))
+}
+
+/** 某一层有几个节点。父为 null 即根层。 */
+function countSiblings(meta: ReadonlyMap<string, TreeNodeMeta>, parent: string | null): number {
+  let count = 0
+  for (const node of meta.values()) {
+    if (node.parent === parent)
+      count += 1
+  }
+  return count
+}
+
+/**
+ * 落点折算成搬家，报给宿主并播报。
+ *
+ * collection 是 prop，库没有一份自己的树可写，所以只发意图、写回归宿主——
+ * 它本来就是那棵树的主人。
+ */
+function commitNodeMove(
+  context: NodeDragContext,
+  prop: <K extends keyof TreeSchema['props']>(k: K) => TreeSchema['props'][K],
+  value: string,
+  target: DropTarget,
+  kind: DragAnnounceKind,
+): void {
+  const meta = indexTree(prop('collection') ?? [])
+  const move = treeMoveOf(meta, value, target)
+  if (!move) {
+    announceNodeMove(context, prop, 'rejected', value)
+    return
+  }
+  prop('onNodeMove')?.(move)
+  announceNodeMove(context, prop, kind, value, move)
+}
+
+/** 收尾：拖动态的三样一起清干净，别留半截。 */
+function clearNodeDrag(
+  context: { set: (k: 'draggingNode' | 'dropTarget', v: null) => void },
+  refs: { set: (k: 'nodeDrag', v: null) => void },
+): void {
+  refs.set('nodeDrag', null)
+  context.set('draggingNode', null)
+  context.set('dropTarget', null)
+}

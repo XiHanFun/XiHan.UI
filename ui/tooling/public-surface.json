@@ -1178,6 +1178,7 @@
       "XhTreeItemIndicator",
       "XhTreeItemText",
       "XhTreeLabel",
+      "XhTreeLiveRegion",
       "XhTreeRoot",
       "XhTreeSelectBranch",
       "XhTreeSelectBranchContent",
@@ -3048,6 +3049,7 @@
       "TreeApi",
       "TreeExpandedChangeDetails",
       "TreeFocusModel",
+      "TreeMove",
       "TreeNode",
       "TreeNodeMeta",
       "TreeNodeProps",
@@ -3640,6 +3642,7 @@
       "isAtLimit",
       "isAtMax",
       "isCollapsed",
+      "isEditableTarget",
       "isEllipsisOverflowing",
       "isEmptyFormValue",
       "isLoadingBarDeterminate",
@@ -3647,9 +3650,11 @@
       "isOverflow",
       "isOverflowing",
       "isPinComplete",
+      "isSelfOrDescendant",
       "isTimeOutOfRange",
       "isTimerUnit",
       "isTourLastStep",
+      "isTreeDropAllowed",
       "isTypingTarget",
       "isoToBlocks",
       "isoToSegments",
@@ -4148,6 +4153,9 @@
       "treeKeyboard",
       "treeMachine",
       "treeMeta",
+      "treeMoveCommand",
+      "treeMoveIntentFromKey",
+      "treeMoveOf",
       "treeSelectAnatomy",
       "treeSelectBranchQuery",
       "treeSelectItemQuery",
@@ -5676,6 +5684,7 @@
       "item-indicator",
       "item-text",
       "label",
+      "live-region",
       "root",
       "tree"
     ],
@@ -7195,6 +7204,7 @@
       "value"
     ],
     "tree": [
+      "allowDrop",
       "cascade",
       "checkedStrategy",
       "collection",
@@ -7207,10 +7217,13 @@
       "leafOrientation",
       "loop",
       "multiple",
+      "nodeDraggable",
       "onExpandedChange",
+      "onNodeMove",
       "onSelectionChange",
       "selection",
       "selectionMode",
+      "translations",
       "typeahead"
     ],
     "tree-select": [
@@ -7301,6 +7314,7 @@
     "data-direction",
     "data-disabled",
     "data-dot",
+    "data-draggable",
     "data-dragging",
     "data-drawing",
     "data-drop",
@@ -7703,6 +7717,7 @@
     "--xh-stack-gap-md",
     "--xh-stack-gap-sm",
     "--xh-state-disabled-opacity",
+    "--xh-state-dragging-opacity",
     "--xh-stroke-thick",
     "--xh-stroke-thin",
     "--xh-surface-px-md",
@@ -10269,6 +10284,10 @@
     "--xh-tree-checkbox-fg",
     "--xh-tree-checkbox-radius",
     "--xh-tree-checkbox-size",
+    "--xh-tree-dragging-opacity",
+    "--xh-tree-drop-fg",
+    "--xh-tree-drop-inside-bg",
+    "--xh-tree-drop-line",
     "--xh-tree-fg",
     "--xh-tree-gap",
     "--xh-tree-icon-size",
@@ -11893,6 +11912,7 @@
         "loop",
         "page",
         "page-size",
+        "row-reorderable",
         "ruled",
         "selection-mode",
         "size",
@@ -11902,6 +11922,7 @@
       "events": [
         "column-preference-change",
         "expanded-change",
+        "row-move",
         "selection-change",
         "sort-change"
       ]
@@ -12219,11 +12240,13 @@
         "leaf-orientation",
         "loop",
         "multiple",
+        "node-draggable",
         "selection-mode",
         "typeahead"
       ],
       "events": [
         "expanded-change",
+        "node-move",
         "selection-change"
       ]
     },

@@ -79,9 +79,9 @@ selection-mode="multiple" 加 cascade 内建父子传导：点分支整枝勾上
 
 <XhDemo src="tree/09-checkable" />
 
-### 拖放换父
+### 拖拽搬家
 
-树从不拥有数据：把 draggable 与拖放监听补在节点上，落点判定与数组搬运都在宿主这边，改完 collection 树自己重推层级
+整个节点都是拖动源：按住拖到别处松手，也可以 Tab 进树里用 Alt + 上下键在同层挪、Alt + 左右键改层级。三档落点（插在前 / 插在后 / 放进目录里）连同指示线、自我后代守卫与读屏播报都归库；树仍不拥有数据，宿主只管按库报的 value、parent、index 把数组搬一下，外加一条 allowDrop 说这次许不许
 
 <XhDemo src="tree/10-drag-move" />
 
@@ -102,7 +102,7 @@ leaf-orientation 按结构判据横排「子节点全是叶子」的那层；要
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-tree>` |
-| Vue 组件 | `XhTreeBranch` `XhTreeBranchCheckbox` `XhTreeBranchContent` `XhTreeBranchControl` `XhTreeBranchIndicator` `XhTreeBranchText` `XhTreeBranchTrigger` `XhTreeItem` `XhTreeItemCheckbox` `XhTreeItemIndicator` `XhTreeItemText` `XhTreeLabel` `XhTreeRoot` `XhTreeTree` |
+| Vue 组件 | `XhTreeBranch` `XhTreeBranchCheckbox` `XhTreeBranchContent` `XhTreeBranchControl` `XhTreeBranchIndicator` `XhTreeBranchText` `XhTreeBranchTrigger` `XhTreeItem` `XhTreeItemCheckbox` `XhTreeItemIndicator` `XhTreeItemText` `XhTreeLabel` `XhTreeLiveRegion` `XhTreeRoot` `XhTreeTree` |
 | 组合式函数 | `useTree` |
 | 状态机 | `treeMachine` |
 | 皮肤 | `@xihan-ui/styles/tree.css` |
@@ -111,7 +111,7 @@ leaf-orientation 按结构判据横排「子节点全是叶子」的那层；要
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="tree"`：`root` · `label` · **`tree`** · **`item`** · `item-checkbox` · `item-indicator` · `item-text` · `branch` · `branch-checkbox` · `branch-control` · `branch-trigger` · `branch-indicator` · `branch-text` · `branch-content`
+`data-scope="tree"`：`root` · `label` · **`tree`** · **`item`** · `item-checkbox` · `item-indicator` · `item-text` · `branch` · `branch-checkbox` · `branch-control` · `branch-trigger` · `branch-indicator` · `branch-text` · `branch-content` · `live-region`
 
 ## Props
 
@@ -132,6 +132,10 @@ leaf-orientation 按结构判据横排「子节点全是叶子」的那层；要
 | `loop` | `boolean` |  | 上下键走到首尾是否回绕，默认 false。 |
 | `typeahead` | `boolean` |  | 连打检索，默认开。关掉后可打印字符一律放行给页面。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr；只对调左右方向键的「展开/收起」语义。 |
+| `translations` | `Partial<TreeTranslations>` |  |  |
+| `nodeDraggable` | `boolean` |  | 节点可以拖着搬家。整个节点都是拖动源，不另出把手。 |
+| `allowDrop` | `(move: TreeMove) => boolean` |  | 这一次搬家许不许。收到的是折算好的落点（搬到哪个父下面的第几位）。 不给即都许——「落进自己的后代」与「落在禁用节点上」两条库自己会拦。 |
+| `onNodeMove` | `(move: TreeMove) => void` |  |  |
 | `onExpandedChange` | `(details: TreeExpandedChangeDetails) => void` |  |  |
 | `onSelectionChange` | `(details: TreeSelectionChangeDetails) => void` |  |  |
 
@@ -143,6 +147,7 @@ leaf-orientation 按结构判据横排「子节点全是叶子」的那层；要
 | --- | --- | --- |
 | `expanded-change` | `TreeExpandedChangeDetails` | 展开集合变化；detail 为 `{ value: string[] }` |
 | `selection-change` | `TreeSelectionChangeDetails` | 选中集合变化；detail 为 `{ value: string[] }` |
+| `node-move` | `TreeNodeMoveDetails` | 节点搬了家；detail 为 `{ value, parent, index }`，parent 为 null 即根层，index 是在那一层的落位（已算过先摘后插） |
 
 ## 插槽
 
@@ -158,7 +163,7 @@ leaf-orientation 按结构判据横排「子节点全是叶子」的那层；要
 
 **状态**：`idle`
 
-**事件**：`EXPANDED.SET` · `BRANCH.EXPAND` · `BRANCH.COLLAPSE` · `BRANCH.TOGGLE` · `SELECTION.SET` · `NODE.SELECT` · `NODE.FOCUS` · `TREE.BLUR`
+**事件**：`EXPANDED.SET` · `BRANCH.EXPAND` · `BRANCH.COLLAPSE` · `BRANCH.TOGGLE` · `SELECTION.SET` · `NODE.SELECT` · `NODE.FOCUS` · `TREE.BLUR` · `NODE_DRAG.START` · `NODE_DRAG.MOVE` · `NODE_DRAG.END` · `NODE_DRAG.CANCEL` · `NODE.MOVE_BY`
 
 ## connect API
 
@@ -168,6 +173,8 @@ leaf-orientation 按结构判据横排「子节点全是叶子」的那层；要
 | --- | --- | --- |
 | `collection` | `readonly TreeNode[]` | 作者给的原始树数据。 |
 | `visibleNodes` | `readonly TreeVisibleNode[]` | 当前可见行序列（收起分支的子树不在其中）。 方向键、Home/End 与连打检索都在它上面走，不是在原始树上走。 |
+| `dropTarget` | `DropTarget \| null` | 此刻的落点；松手就落在这儿。不合法或没落在任何节点上时是 null。 |
+| `announcement` | `string` | 读屏播报文本。渲进 live-region，不进视觉版面。 |
 | `expandedValue` | `string[]` |  |
 | `selection` | `string[]` |  |
 | `focusedValue` | `string \| null` | 焦点锚点；焦点不在树内、或它已被收起而不可见时为 null。 |
@@ -185,6 +192,7 @@ leaf-orientation 按结构判据横排「子节点全是叶子」的那层；要
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['element']` |  |
 | `getTreeProps` | `() => T['element']` |  |
+| `getLiveRegionProps` | `() => T['element']` | 拖动过程的读屏播报区。视觉隐藏，文本从 announcement 取。 它必须在拖动开始之前就在 DOM 上——读屏不播报后插入的节点。 |
 | `getItemProps` | `(props: TreeNodeProps) => T['element']` |  |
 | `getItemTextProps` | `(props: TreeNodeProps) => T['element']` |  |
 | `getItemCheckboxProps` | `(props: TreeNodeProps) => T['element']` | 勾选把手：把「勾这一项」与「点这一行」分成两个可点区域，不给它就没有独立把手。 |
@@ -213,6 +221,8 @@ leaf-orientation 按结构判据横排「子节点全是叶子」的那层；要
 | `Enter` / `Space` | focus on node, 节点未禁用 | 选中焦点节点（单选替换、复选切换）；焦点在分支上且 expandOnClick 未关时顺带切换展开态 |
 | `*` | focus in tree | 展开与焦点行同一父级的全部分支（已展开与禁用的不动）；同级没有可展开的分支时不吞这个键 |
 | `单个可打印字符` | focus in tree, typeahead 未关 | 连打检索在可见行上按 label 首字母搬焦点，不改选中值，也不展开任何分支 |
+| `Alt+ArrowUp` / `Alt+ArrowDown` | focus in tree, draggable 开着 | 把焦点节点在同一层的兄弟里往前 / 往后挪一位，按一下就是一次完整提交，不进拖动态；纵轴与文字方向无关，rtl 下两键不对调；已是同层首位 / 末位就不动，也不回绕；落点节点禁用或 allowDrop 不许就不搬。裸方向键仍是走可见行、确认键仍是选中 |
+| `Alt+ArrowLeft` / `Alt+ArrowRight` | focus in tree, draggable 开着 | 改焦点节点的缩进层级：往里去是认上一个兄弟当父、落进它子层末位，往外去是变成父节点的下一个兄弟；rtl 下两键对调，「往里去」的那个方向恒是缩进。没有上一个兄弟就缩不进去，已在根层就退不出去，两种情形都不动；落点节点禁用或 allowDrop 不许就不搬 |
 
 ## 无障碍
 
@@ -233,6 +243,9 @@ leaf-orientation 按结构判据横排「子节点全是叶子」的那层；要
 | `branch-trigger` | `aria-hidden` | 'true' |
 | `branch-indicator` | `aria-hidden` | 'true' |
 | `branch-content` | `role` | 'group' |
+| `live-region` | `aria-atomic` | 'true' |
+| `live-region` | `aria-live` | 'polite' |
+| `live-region` | `role` | 'status' |
 
 ## 样式
 
@@ -249,13 +262,19 @@ leaf-orientation 按结构判据横排「子节点全是叶子」的那层；要
 | `label` | `data-disabled` | ''（条件成立时才出现） |
 | `tree` | `data-disabled` | ''（条件成立时才出现） |
 | `tree` | `data-orientation` | 'vertical' |
+| `item` | `data-draggable` | ''（条件成立时才出现） |
+| `item` | `data-dragging` | ''（条件成立时才出现） |
+| `item` | `data-drop` | 'before' \| 'after' \| 'inside' |
+| `branch-control` | `data-draggable` | ''（条件成立时才出现） |
+| `branch-control` | `data-dragging` | ''（条件成立时才出现） |
+| `branch-control` | `data-drop` | 'before' \| 'after' \| 'inside' |
 | `branch-content` | `data-orientation` | 'horizontal' \| 'vertical' |
 
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-tree-bg` · `--xh-tree-border` · `--xh-tree-branch-content-gap` · `--xh-tree-branch-gap` · `--xh-tree-branch-indicator-fg` · `--xh-tree-checkbox-bg` · `--xh-tree-checkbox-bg-checked` · `--xh-tree-checkbox-border` · `--xh-tree-checkbox-border-checked` · `--xh-tree-checkbox-border-disabled` · `--xh-tree-checkbox-fg` · `--xh-tree-checkbox-radius` · `--xh-tree-checkbox-size` · `--xh-tree-fg` · `--xh-tree-gap` · `--xh-tree-icon-size` · `--xh-tree-indent` · `--xh-tree-indicator-fg` · `--xh-tree-indicator-size` · `--xh-tree-label-fg` · `--xh-tree-label-font-size` · `--xh-tree-label-font-weight` · `--xh-tree-leaf-row-gap` · `--xh-tree-max-h` · `--xh-tree-px` · `--xh-tree-py` · `--xh-tree-radius` · `--xh-tree-row-bg-hover` · `--xh-tree-row-fg` · `--xh-tree-row-fg-selected` · `--xh-tree-row-font-size` · `--xh-tree-row-gap` · `--xh-tree-row-leading` · `--xh-tree-row-px` · `--xh-tree-row-py` · `--xh-tree-row-radius` · `--xh-tree-row-selected-font-weight` · `--xh-tree-tree-gap`
+`--xh-tree-bg` · `--xh-tree-border` · `--xh-tree-branch-content-gap` · `--xh-tree-branch-gap` · `--xh-tree-branch-indicator-fg` · `--xh-tree-checkbox-bg` · `--xh-tree-checkbox-bg-checked` · `--xh-tree-checkbox-border` · `--xh-tree-checkbox-border-checked` · `--xh-tree-checkbox-border-disabled` · `--xh-tree-checkbox-fg` · `--xh-tree-checkbox-radius` · `--xh-tree-checkbox-size` · `--xh-tree-dragging-opacity` · `--xh-tree-drop-fg` · `--xh-tree-drop-inside-bg` · `--xh-tree-drop-line` · `--xh-tree-fg` · `--xh-tree-gap` · `--xh-tree-icon-size` · `--xh-tree-indent` · `--xh-tree-indicator-fg` · `--xh-tree-indicator-size` · `--xh-tree-label-fg` · `--xh-tree-label-font-size` · `--xh-tree-label-font-weight` · `--xh-tree-leaf-row-gap` · `--xh-tree-max-h` · `--xh-tree-px` · `--xh-tree-py` · `--xh-tree-radius` · `--xh-tree-row-bg-hover` · `--xh-tree-row-fg` · `--xh-tree-row-fg-selected` · `--xh-tree-row-font-size` · `--xh-tree-row-gap` · `--xh-tree-row-leading` · `--xh-tree-row-px` · `--xh-tree-row-py` · `--xh-tree-row-radius` · `--xh-tree-row-selected-font-weight` · `--xh-tree-tree-gap`
 
 ## 动效
 

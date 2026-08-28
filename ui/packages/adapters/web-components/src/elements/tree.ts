@@ -1,4 +1,4 @@
-import type { TreeExpandedChangeDetails, TreeNode, TreeNodeProps, TreeSchema, TreeSelectionChangeDetails, TreeSelectionMode } from '@xihan-ui/headless'
+import type { TreeExpandedChangeDetails, TreeNode, TreeNodeProps, TreeSchema, TreeSelectionChangeDetails, TreeSelectionMode, TreeTranslations } from '@xihan-ui/headless'
 import type { Direction, Orientation } from '@xihan-ui/kernel'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
 import { connectTree, treeAnatomy, treeMachine, treeMeta } from '@xihan-ui/headless'
@@ -13,6 +13,9 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 // Lit 默认的 Boolean 转换器是 v !== null，写 expand-on-click="false" 照样是真。
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
+/** 搬家事件的 detail：从机器 props 上的回调取，不在适配器里另抄一份类型。 */
+type TreeNodeMoveDetails = Parameters<NonNullable<TreeSchema['props']['onNodeMove']>>[0]
+
 /** 叶子一系的归属容器。 */
 const ITEM_SELECTOR = '[data-xh-part="item"]'
 /** 分支一系的归属容器；嵌套分支各认最近的那个。 */
@@ -26,7 +29,13 @@ const BRANCH_SELECTOR = '[data-xh-part="branch"]'
  * 这份树数据——它是元信息的唯一事实源，作者的标记只管长相，两个适配器也就不会各推各的。
  * 因此 collection 必须与标记同源：标记里有、collection 里没有的节点报不出层级，也进不了导航。
  *
- * 树数据与展开/选中集合都是数组，属性表达不了，只能走 property（`el.collection = [...]`）。
+ * 树数据与展开/选中集合都是数组，属性表达不了，只能走 property（`el.collection = [...]`）；
+ * 落点校验 `allowDrop`（函数）与读屏文案 `translations`（对象）同理。
+ *
+ * 打开 node-draggable 后节点可以拖着搬家：整个节点都是拖动源，不另出把手。拖动中被拖的节点原地不动，
+ * 只落 data-dragging；落点画在参照节点上——data-drop 为 before/after 是插在这一行前后，
+ * 为 inside 是放进这个分支。触屏不进拖动。
+ * 键盘走 Alt + 方向键：上下在同层兄弟间挪，左右改缩进层级（rtl 下左右对调），一按就是一次完整提交。
  *
  * @customElement xh-tree
  * @attr {boolean} multiple - 复选，默认关闭
@@ -39,10 +48,13 @@ const BRANCH_SELECTOR = '[data-xh-part="branch"]'
  * @attr {boolean} loop - 上下键走到首尾回绕，默认关；写 loop="true" 打开
  * @attr {boolean} typeahead - 连打检索，默认开；写 typeahead="false" 关掉
  * @attr {'ltr'|'rtl'} dir - 文字方向，只对调左右方向键的展开/收起语义，默认 ltr
+ * @attr {boolean} node-draggable - 节点可以拖着搬家，默认关；不叫 draggable 是因为那是 HTML 全局属性，写在元素上浏览器会拿它接管原生拖放，指针就到不了这里
  * @fires expanded-change - 展开集合变化；detail 为 `{ value: string[] }`
  * @fires selection-change - 选中集合变化；detail 为 `{ value: string[] }`
+ * @fires node-move - 节点搬了家；detail 为 `{ value, parent, index }`，parent 为 null 即根层，index 是在那一层的落位（已算过先摘后插）
  * @csspart root - 组件根容器
  * @csspart label - 树标题（aria-labelledby 目标）
+ * @csspart live-region - 视觉隐藏的播报区，拖动过程的读屏文案写在这里；写在 root 里、与 tree 部件平级（root 自己不带角色，它落不进 role=tree 的子节点集合）
  * @csspart tree - role=tree 容器，键盘在此收口，也是 roving tabindex 的兜底位
  * @csspart item - role=treeitem 叶子，须自带 value 属性标识身份
  * @csspart item-text - 叶子文本
@@ -79,6 +91,12 @@ export class XhTreeElement extends XhElement {
     loop: { converter: BOOLEAN_CONVERTER },
     typeahead: { converter: BOOLEAN_CONVERTER },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
+    // 缺席即关，没有第二种来路，用 Lit 自带的 Boolean 转换器就够；
+    // 属性名让开 HTML 全局的 draggable，见类注释里的 @attr node-draggable
+    nodeDraggable: { type: Boolean, attribute: 'node-draggable' },
+    // 函数与对象走不了属性，只作为 property 暴露
+    allowDrop: { attribute: false },
+    translations: { attribute: false },
   }
 
   declare collection?: TreeNode[]
@@ -96,6 +114,9 @@ export class XhTreeElement extends XhElement {
   declare loop?: boolean
   declare typeahead?: boolean
   declare direction?: Direction
+  declare nodeDraggable?: boolean
+  declare allowDrop?: (move: TreeNodeMoveDetails) => boolean
+  declare translations?: Partial<TreeTranslations>
 
   private readonly notifyExpanded = (details: TreeExpandedChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('expanded-change', { detail: details, bubbles: true, composed: true }))
@@ -103,6 +124,10 @@ export class XhTreeElement extends XhElement {
 
   private readonly notifySelection = (details: TreeSelectionChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('selection-change', { detail: details, bubbles: true, composed: true }))
+  }
+
+  private readonly notifyNodeMove = (details: TreeNodeMoveDetails): void => {
+    this.dispatchEvent(new CustomEvent('node-move', { detail: details, bubbles: true, composed: true }))
   }
 
   // tree 机器无副作用（连打缓冲住在 refs 里、由机器自己建），
@@ -127,8 +152,12 @@ export class XhTreeElement extends XhElement {
       loop: this.loop,
       typeahead: this.typeahead,
       dir: this.direction,
+      nodeDraggable: this.nodeDraggable ?? false,
+      allowDrop: this.allowDrop,
+      translations: this.translations,
       onExpandedChange: this.notifyExpanded,
       onSelectionChange: this.notifySelection,
+      onNodeMove: this.notifyNodeMove,
     }
   }
 
@@ -174,6 +203,15 @@ export class XhTreeElement extends XhElement {
     put('root', api.getRootProps() as Record<string, unknown>)
     put('label', api.getLabelProps() as Record<string, unknown>)
     put('tree', api.getTreeProps() as Record<string, unknown>)
+
+    // 播报区收作者写的那个节点：root 自己不带角色，作者把它放在 root 里、与 tree 部件平级即可，
+    // 不必由元素代建。没写就是不要读屏播报，跳过。
+    const live = this.getPart('live-region')
+    if (live) {
+      this.spreader.spread(live, api.getLiveRegionProps() as Record<string, unknown>)
+      // 播报文案由元素写，不经属性铺开：它是文本内容不是属性
+      live.textContent = this.ctrl.service.context.get('announcement')
+    }
 
     // 集合类 part 逐个 spread：身份由节点自报，不依赖下标，节点增删无需记账。
     // wire 跑在事件之前（element-base 的 updated），因此按键那一刻 data-scope/data-part/data-value

@@ -510,7 +510,7 @@
      位置的事全交给落点指示线，被拖的列自己原地不动 */
   [data-scope='table'][data-part='column-header'][data-dragging],
   [data-scope='table'][data-part='cell'][data-dragging] {
-    opacity: var(--xh-table-dragging-opacity, 0.6);
+    opacity: var(--xh-table-dragging-opacity, var(--xh-state-dragging-opacity));
     user-select: none;
   }
 
@@ -525,14 +525,14 @@
      跟手让位会让它们在拖动全程与行错开。位置的事全交给落点指示线。
      也不写 touch-action：拖行只认鼠标与笔，触屏那一按压根不开拖 */
   [data-scope='table'][data-part='row'][data-dragging] {
-    opacity: var(--xh-table-dragging-opacity, 0.6);
+    opacity: var(--xh-table-dragging-opacity, var(--xh-state-dragging-opacity));
     cursor: grabbing;
     user-select: none;
   }
 
   /* 详情行与它的数据行是同一块，一起压暗 */
   [data-scope='table'][data-part='expanded-row'][data-dragging] {
-    opacity: var(--xh-table-dragging-opacity, 0.6);
+    opacity: var(--xh-table-dragging-opacity, var(--xh-state-dragging-opacity));
   }
 
   /* 落点指示线：拖到哪一行的哪一侧，横线就画在那一行的那条边上。

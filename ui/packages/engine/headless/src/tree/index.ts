@@ -1,5 +1,7 @@
 export { treeAnatomy, treeBranchQuery, treeItemQuery } from './tree.anatomy'
 export { connectTree } from './tree.connect'
+export { isSelfOrDescendant, isTreeDropAllowed, treeMoveCommand, treeMoveIntentFromKey, treeMoveOf } from './tree.drag'
+export type { TreeMove } from './tree.drag'
 export { treeKeyboard } from './tree.keyboard'
 export { flattenTree, indexTree, treeMachine, treeSelectionMode } from './tree.machine'
 export { treeMeta } from './tree.meta'

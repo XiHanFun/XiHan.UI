@@ -77,6 +77,9 @@ const FIXTURE: FixtureNode = {
         leaf('license', 'License'),
       ],
     },
+    // 播报区与 tree 部件平级：root 自己不带角色，role=tree 在 tree 上，
+    // 活动区域落不进它的子节点集合
+    { part: 'live-region' },
   ],
 }
 
@@ -176,11 +179,13 @@ export const treeSuite: ConformanceSuite = {
           'item[3]',
           'item-indicator[3]',
           'item-text[3]',
+          'live-region',
         ],
         counts: {
           'root': 1,
           'label': 1,
           'tree': 1,
+          'live-region': 1,
           'branch': 3,
           'branch-control': 3,
           'branch-trigger': 3,
@@ -599,6 +604,113 @@ export const treeSuite: ConformanceSuite = {
             activeElement: { part: 'branch[2]', exact: true },
             parts: { 'branch': branchesExpanded(), 'item': itemsSelected(), 'item[1]': { 'data-highlighted': null } },
           },
+        },
+      ],
+    },
+    {
+      name: '节点换位：Alt + 上下键在同层兄弟里挪一位，只报事件不动 DOM；到同层首末不回绕，裸方向键仍是走行',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      // 整个节点就是拖动源，不出把手，基准 fixture 原样够用；开关只开在这个用例上，
+      // 其余用例的 order 与 counts 断言跟换位没关系
+      props: props({ nodeDraggable: true }),
+      covers: ['tree.kbd.node-move'],
+      initial: {
+        parts: {
+          // 分支的拖动源是它的行，不是裹着整棵子树的那个 treeitem
+          'branch-control[0]': { 'data-draggable': '', 'data-dragging': null, 'data-drop': null },
+          'item[0]': { 'data-draggable': '' },
+          // readme 禁用，拖不动
+          'item[2]': { 'data-draggable': null },
+        },
+      },
+      steps: [
+        { kind: 'focus', part: 'tree', expect: { activeElement: { part: 'branch[0]', exact: true } } },
+        {
+          kind: 'key',
+          key: 'ArrowDown',
+          modifiers: ['Alt'],
+          expect: {
+            // 按一下就提交完，不进拖动态；焦点锚点留在搬走的那个节点上
+            activeElement: { part: 'branch[0]', exact: true },
+            parts: { 'branch-control[0]': { 'data-dragging': null, 'data-drop': null } },
+            // 树形是 collection prop，库没有一份自己的树可写：DOM 里 src 仍排在最前，
+            // 只有这条事件说得出新位置
+            events: [{ type: 'node-move', detail: { value: 'src', parent: null, index: 1 } }],
+          },
+        },
+        // 宿主没把新树形写回 collection，src 还在同层首位：往前挪不动，也不回绕，连事件都不发
+        { kind: 'key', key: 'ArrowUp', modifiers: ['Alt'], expect: { events: [] } },
+        // 不带 Alt 的方向键照旧是走可见行，一个换位事件都不发
+        {
+          kind: 'key',
+          key: 'ArrowDown',
+          expect: { activeElement: { part: 'branch[2]', exact: true }, events: [] },
+        },
+        {
+          kind: 'key',
+          key: 'ArrowDown',
+          modifiers: ['Alt'],
+          expect: {
+            activeElement: { part: 'branch[2]', exact: true },
+            events: [{ type: 'node-move', detail: { value: 'docs', parent: null, index: 2 } }],
+          },
+        },
+        { kind: 'key', key: 'ArrowDown', expect: { activeElement: { part: 'item[3]', exact: true } } },
+        // license 是同层末位：往后挪不动
+        { kind: 'key', key: 'ArrowDown', modifiers: ['Alt'], expect: { events: [] } },
+      ],
+    },
+    {
+      name: '节点换位：Alt + 左右键改缩进层级——往里认上一个兄弟当父，往外变成父的下一个兄弟',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      props: props({ nodeDraggable: true, defaultExpandedValue: ['src'] }),
+      covers: ['tree.kbd.node-move-level'],
+      steps: [
+        { kind: 'focus', part: 'item[0]', expect: { activeElement: { part: 'item[0]', exact: true } } },
+        // index 是 src 子层的首位，没有上一个兄弟可认作父：缩不进去，连事件都不发
+        { kind: 'key', key: 'ArrowRight', modifiers: ['Alt'], expect: { events: [] } },
+        {
+          kind: 'key',
+          key: 'ArrowLeft',
+          modifiers: ['Alt'],
+          expect: {
+            activeElement: { part: 'item[0]', exact: true },
+            // 退出 src 那一层，落成它在根层的下一个兄弟
+            events: [{ type: 'node-move', detail: { value: 'index', parent: null, index: 1 } }],
+          },
+        },
+        { kind: 'key', key: 'ArrowDown', expect: { activeElement: { part: 'branch[1]', exact: true } } },
+        {
+          kind: 'key',
+          key: 'ArrowRight',
+          modifiers: ['Alt'],
+          expect: {
+            // utils 认上一个兄弟 index 当父，落进它的子层末位；index 还没有孩子，末位就是 0
+            events: [{ type: 'node-move', detail: { value: 'utils', parent: 'index', index: 0 } }],
+          },
+        },
+        { kind: 'focus', part: 'branch[0]', expect: { activeElement: { part: 'branch[0]', exact: true } } },
+        // src 在根层，没有父可退：什么都不做
+        { kind: 'key', key: 'ArrowLeft', modifiers: ['Alt'], expect: { events: [] } },
+      ],
+    },
+    {
+      name: 'dir=rtl 把 Alt + 左右键整体对调：往里去的那个方向恒是缩进',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      props: props({ nodeDraggable: true, defaultExpandedValue: ['src'], dir: 'rtl' }),
+      steps: [
+        { kind: 'focus', part: 'branch[1]', expect: { activeElement: { part: 'branch[1]', exact: true } } },
+        {
+          kind: 'key',
+          key: 'ArrowLeft',
+          modifiers: ['Alt'],
+          expect: { events: [{ type: 'node-move', detail: { value: 'utils', parent: 'index', index: 0 } }] },
+        },
+        {
+          kind: 'key',
+          key: 'ArrowRight',
+          modifiers: ['Alt'],
+          expect: { events: [{ type: 'node-move', detail: { value: 'utils', parent: null, index: 1 } }] },
         },
       ],
     },

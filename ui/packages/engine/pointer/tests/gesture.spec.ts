@@ -147,12 +147,22 @@ describe('多指会话', () => {
     s.dispose()
   })
 
-  it('系统收走指针与抬起同等对待', () => {
+  it('系统收走指针也收尾，但要如实报出是被收走的', () => {
+    // 调用方常常要分开处理：被收走时退回原样，抬手才是落定
     const onEnd = vi.fn()
     const s = createMultiPointerSession({ doc: document, onChange: vi.fn(), onEnd })
     s.add({ pointerId: 1, clientX: 0, clientY: 0 })
     document.dispatchEvent(pointer('pointercancel', 1))
-    expect(onEnd).toHaveBeenCalledTimes(1)
+    expect(onEnd).toHaveBeenCalledWith({ reason: 'pointercancel' })
+    s.dispose()
+  })
+
+  it('抬手报的是 pointerup', () => {
+    const onEnd = vi.fn()
+    const s = createMultiPointerSession({ doc: document, onChange: vi.fn(), onEnd })
+    s.add({ pointerId: 1, clientX: 0, clientY: 0 })
+    document.dispatchEvent(pointer('pointerup', 1))
+    expect(onEnd).toHaveBeenCalledWith({ reason: 'pointerup' })
     s.dispose()
   })
 

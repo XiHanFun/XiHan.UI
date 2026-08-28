@@ -17,6 +17,7 @@ export const treeAnatomy = createAnatomy('tree', [
   'branch-indicator',
   'branch-text',
   'branch-content',
+  'live-region',
 ])
 
 /**

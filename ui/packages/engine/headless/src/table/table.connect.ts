@@ -12,7 +12,8 @@ import {
   navIntentFromKey,
   queryItems,
 } from '@xihan-ui/behavior'
-import { contains, dataAttr, isComposingEvent, isHTMLElement, warn } from '@xihan-ui/kernel'
+import { contains, dataAttr, isComposingEvent, warn } from '@xihan-ui/kernel'
+import { isEditableTarget } from '../shared/editable-target'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { tableAnatomy, tableRowQuery } from './table.anatomy'
 import { resolveTableColumns } from './table.columns'
@@ -80,18 +81,6 @@ function columnNumericWidth(
 ): number | null {
   const raw = override ?? defWidth
   return typeof raw === 'number' && Number.isFinite(raw) ? raw : null
-}
-
-/**
- * 按键落在可编辑控件上时不归表格管。
- *
- * 表体的键盘处理器挂在 body 上，单元格里的输入框冒上来的按键也会经过它。
- * 不放行的话，在可编辑单元格里打一个空格会被当成「切换这一行的选中」吞掉。
- */
-function isEditableTarget(target: EventTarget | null): boolean {
-  if (!isHTMLElement(target))
-    return false
-  return target.closest('input, textarea, select, [contenteditable="true"], [contenteditable=""]') != null
 }
 
 /** 改宽把手上的方向键：往行尾侧推是加宽。rtl 下左右两键对调，语义恒是「加宽 / 收窄」。 */

@@ -186,6 +186,7 @@
     --xh-ring-width: var(--xh-stroke-thick);
     --xh-ring-offset: 2px;
     --xh-state-disabled-opacity: 0.5;
+    --xh-state-dragging-opacity: 0.6;
     --xh-elevation-raised: var(--xh-shadow-sm);
     --xh-elevation-floating: var(--xh-shadow-md);
     --xh-elevation-sheet: var(--xh-shadow-lg);
