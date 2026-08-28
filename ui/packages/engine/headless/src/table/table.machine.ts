@@ -13,6 +13,7 @@ import { applySelection } from '@xihan-ui/behavior'
 import { setup } from '@xihan-ui/machine'
 import { clampSize, createPointerSession, resolveSessionDoc, shouldActivate } from '@xihan-ui/pointer'
 import { dragAnnouncement, hitAlong, insertionIndex, reorderFlat } from '../shared/drag'
+import { snapshotDrift } from '../shared/drag-drift'
 import { orderColumnIds, resolveTableColumns } from './table.columns'
 import { draggableColumnIds, toColumnPreferenceIndex } from './table.drag'
 import { flattenTableRows, tableSelectableRowIds, tableSelectionIds, tableToggleRowSelection, tableToggleSelectAll } from './table.rows'
@@ -262,7 +263,7 @@ export const tableMachine = createMachine({
         const e = event.current()
         if (e.type !== 'COLUMN_DRAG.START')
           return
-        refs.set('columnDrag', { columnId: e.columnId, rects: e.rects, originX: e.originX, pointerId: e.pointerId })
+        refs.set('columnDrag', { columnId: e.columnId, rects: e.rects, originX: e.originX, pointerId: e.pointerId, source: e.source })
         context.set('draggingColumn', e.columnId)
         // 按下那一刻还没挪，落点先空着：指示线要等指针真的走到某一列上才出现
         context.set('dropTarget', null)
@@ -274,8 +275,10 @@ export const tableMachine = createMachine({
         const session = refs.get('columnDrag')
         if (e.type !== 'COLUMN_DRAG.MOVE' || !session)
           return
+        // 快照是按下那一刻量的；拖动中版面整体挪了多远，拿拖动源自己量出来减掉
+        const drift = snapshotDrift(session.source, session.rects, session.columnId, 'x')
         // 列是横排的：rtl 下几何左右与逻辑前后相反
-        const hit = hitAlong(session.rects, e.clientX, prop('dir') === 'rtl')
+        const hit = hitAlong(session.rects, e.clientX - drift, prop('dir') === 'rtl')
         // 落在自己身上不算落点：那不是一次移动，指示线该消失
         context.set('dropTarget', hit && hit.targetValue !== session.columnId ? hit : null)
       },
@@ -311,6 +314,7 @@ export const tableMachine = createMachine({
           originY: e.originY,
           pointerId: e.pointerId,
           activated: !!e.activate,
+          source: e.source,
         })
         // 从把手起手即刻算拖；整行起手时按下还不算拖，要等走够激活距离
         context.set('draggingRow', e.activate ? e.rowId : null)
@@ -323,13 +327,17 @@ export const tableMachine = createMachine({
         const session = refs.get('rowDrag')
         if (e.type !== 'ROW_DRAG.MOVE' || !session)
           return
+        // 两件事在两个坐标系里判：
+        // 激活看的是「手指动没动」，用原始视口坐标——内容滚过去了但手没动，不算拖了一段；
+        // 命中看的是「指针此刻指着哪一项」，要减掉版面漂移换算回快照那一刻的坐标
         if (!session.activated) {
           if (!shouldActivate({ x: 0, y: e.clientY - session.originY }))
             return
           refs.set('rowDrag', { ...session, activated: true })
           context.set('draggingRow', session.rowId)
         }
-        const hit = hitAlong(refs.get('rowDrag')?.rects ?? [], e.clientY)
+        const drift = snapshotDrift(session.source, session.rects, session.rowId, 'y')
+        const hit = hitAlong(refs.get('rowDrag')?.rects ?? [], e.clientY - drift)
         // 落在自己身上不算落点：那不是一次移动，指示线该消失
         context.set('dropTarget', hit && hit.targetValue !== session.rowId ? hit : null)
       },

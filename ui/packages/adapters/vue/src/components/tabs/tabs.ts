@@ -3,6 +3,7 @@ import type { Direction, Orientation, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { slotPaints } from '../../runtime/slot-content'
 import { provideTabs, useTabsContext } from './context'
 import { useTabs } from './use-tabs'
@@ -43,7 +44,7 @@ export const XhTabsRoot = defineComponent({
     const onTabMove: TabsProps['onTabMove'] = (details) => {
       emit('tab-move', details)
     }
-    const ctx = useTabs(props as TabsProps, notify, onTabMove)
+    const ctx = useTabs(withXhConfig('tabs', props) as TabsProps, notify, onTabMove)
     provideTabs(ctx)
     return () => {
       // 默认插槽里有真内容就照旧交给作者；只剩注释或空白时当没写，给了 collection 就按数据铺开整套结构

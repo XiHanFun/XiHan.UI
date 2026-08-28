@@ -87,13 +87,13 @@
     "name": "headless",
     "path": "packages/engine/headless/dist/index.js",
     "gzip": true,
-    "limit": "235.8 kB"
+    "limit": "236.2 kB"
   },
   {
     "name": "vue",
     "path": "packages/adapters/vue/dist/index.js",
     "gzip": true,
-    "limit": "271.5 kB",
+    "limit": "272 kB",
     "ignore": [
       "vue"
     ]
@@ -135,7 +135,7 @@
     "name": "web-components/define",
     "path": "packages/adapters/web-components/dist/define.js",
     "gzip": true,
-    "limit": "261.5 kB"
+    "limit": "261.9 kB"
   },
   {
     "name": "web-components/backgrounds",

@@ -99,7 +99,14 @@ export interface TabsSchema extends MachineSchema {
      * 正在拖着换位的那个标签。activated 之前只是「按住了」，还不是拖动——
      * 整个标签都是拖动源没有把手表明意图，要走够激活距离才算。
      */
-    tabDrag: { value: string, rects: DragRect[], origin: number, activated: boolean } | null
+    tabDrag: {
+      value: string
+      rects: DragRect[]
+      origin: number
+      activated: boolean
+      /** 拖动源节点。拖动中拿它量版面整体挪了多远，见 snapshotDrift。 */
+      source: HTMLElement | null
+    } | null
   }
   state: 'idle'
   event:
@@ -113,7 +120,7 @@ export interface TabsSchema extends MachineSchema {
      * 从专门的拖动把手起手：按下即拖，不再等激活距离。
      * 把手是不占 Tab 位的独立可触区域，意图无歧义，触屏那一路也只走它。
      */
-    | { type: 'TAB_DRAG.START', value: string, rects: DragRect[], origin: number, activate?: boolean }
+    | { type: 'TAB_DRAG.START', value: string, rects: DragRect[], origin: number, activate?: boolean, source: HTMLElement | null }
     | { type: 'TAB_DRAG.MOVE', point: number }
     | { type: 'TAB_DRAG.END' }
     | { type: 'TAB_DRAG.CANCEL' }

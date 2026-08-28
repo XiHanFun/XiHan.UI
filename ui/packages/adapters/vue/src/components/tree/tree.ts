@@ -4,6 +4,7 @@ import type { PropType, Ref, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import type { TreeContext } from './use-tree'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { provideTree, provideTreeNode, useTreeContext, useTreeNodeContext } from './context'
 import { useTree } from './use-tree'
 
@@ -96,7 +97,7 @@ export const XhTreeRoot = defineComponent({
     const onNodeMove: TreeProps['onNodeMove'] = (move) => {
       emit('node-move', move)
     }
-    const ctx = useTree(props as TreeProps, onExpandedChange, onSelectionChange, onNodeMove)
+    const ctx = useTree(withXhConfig('tree', props) as TreeProps, onExpandedChange, onSelectionChange, onNodeMove)
     provideTree(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       visibleNodes: ctx.api.value.visibleNodes,

@@ -541,6 +541,38 @@ describe('行拖动把手 · 触屏那一路唯一的入口', () => {
   })
 })
 
+describe('按 Alt + 方向键归谁管', () => {
+  it('没打开换位时 Alt + 方向键放行给页面——四处拖拽同一个写法', () => {
+    const h = mount({ rowReorderable: false })
+    h.service.send({ type: 'ROW.FOCUS', value: 'a' })
+    let prevented = false
+    const body = h.api().getBodyProps() as Dict
+    ;(body.onKeyDown as (e: KeyboardEvent) => void)({
+      key: 'ArrowDown',
+      altKey: true,
+      preventDefault: () => { prevented = true },
+      currentTarget: document.createElement('div'),
+    } as unknown as KeyboardEvent)
+    expect(prevented).toBe(false)
+  })
+
+  it('打开了但这张表此刻搬不动时照样挡住：键是认下了的', () => {
+    const onRowMove = vi.fn()
+    const h = mount({ defaultSort: [{ id: 'name', direction: 'asc' }], onRowMove })
+    h.service.send({ type: 'ROW.FOCUS', value: 'a' })
+    let prevented = false
+    const body = h.api().getBodyProps() as Dict
+    ;(body.onKeyDown as (e: KeyboardEvent) => void)({
+      key: 'ArrowDown',
+      altKey: true,
+      preventDefault: () => { prevented = true },
+      currentTarget: document.createElement('div'),
+    } as unknown as KeyboardEvent)
+    expect(prevented).toBe(true)
+    expect(onRowMove).not.toHaveBeenCalled()
+  })
+})
+
 describe('禁用的行不是拖动源', () => {
   it('整行起手拖不动', () => {
     const h = mount({ rows: [{ id: 'a', disabled: true }, { id: 'b' }, { id: 'c' }, { id: 'd' }] })
@@ -699,5 +731,42 @@ describe('行拖不动的判定要能恢复，也别把别人的行算进来', (
       preventDefault: () => {},
     } as unknown as PointerEvent)
     expect(service.state.get()).toBe('rowDragging')
+  })
+})
+
+describe('拖动中版面滚走了，落点仍按指针所指算', () => {
+  /** 把全部行的矩形桩整体挪 delta（正数 = 内容往上滚走）。 */
+  function scrollBy(h: Harness, delta: number): void {
+    for (const id of ['a', 'b', 'c', 'd']) {
+      const el = h.row(id)
+      if (!el)
+        continue
+      const before = el.getBoundingClientRect()
+      const top = before.top - delta
+      el.getBoundingClientRect = (): DOMRect =>
+        ({ x: 0, y: top, width: 200, height: 40, top, left: 0, right: 200, bottom: top + 40, toJSON: () => ({}) }) as DOMRect
+    }
+  }
+
+  it('滚过之后指针停在哪一行，落点就是哪一行', () => {
+    const h = mount()
+    press(h, 'a', 20)
+    move(60)
+    expect(h.api().dropTarget?.targetValue).toBe('b')
+
+    // 内容往上滚 40：原来 c 占 80-120，现在占 40-80。指针不动停在 60，
+    // 此刻指着的是 c。不补偿漂移的话仍会算成 b
+    scrollBy(h, 40)
+    move(60)
+    expect(h.api().dropTarget?.targetValue).toBe('c')
+  })
+
+  it('激活距离也吃同一份补偿：光滚动不算走了距离', () => {
+    const h = mount()
+    press(h, 'a', 20)
+    // 指针一动不动，只有内容滚走 40
+    scrollBy(h, 40)
+    move(20)
+    expect(h.dragging()).toBeNull()
   })
 })

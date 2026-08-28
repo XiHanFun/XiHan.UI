@@ -4,6 +4,7 @@ import type { SortableAxis } from '@xihan-ui/pointer'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { provideSortable, useSortableContext } from './context'
 import { useSortable } from './use-sortable'
 
@@ -52,7 +53,7 @@ export const XhSortableRoot = defineComponent({
       emit('update:ids', details.ids)
     }
     const ctx = useSortable(
-      props as SortableProps,
+      withXhConfig('sortable', props) as SortableProps,
       notifySort,
       details => emit('drag-start', details),
       details => emit('drag-end', details),

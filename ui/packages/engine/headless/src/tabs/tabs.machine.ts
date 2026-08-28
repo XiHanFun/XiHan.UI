@@ -3,6 +3,7 @@ import type { TabsSchema } from './tabs.types'
 import { setup } from '@xihan-ui/machine'
 import { createMultiPointerSession, resolveSessionDoc, shouldActivate } from '@xihan-ui/pointer'
 import { dragAnnouncement, hitAlong, reorderFlat } from '../shared/drag'
+import { snapshotDrift } from '../shared/drag-drift'
 
 const { createMachine } = setup<TabsSchema>()
 
@@ -100,7 +101,7 @@ export const tabsMachine = createMachine({
         const e = event.current()
         if (e.type !== 'TAB_DRAG.START')
           return
-        refs.set('tabDrag', { value: e.value, rects: e.rects, origin: e.origin, activated: !!e.activate })
+        refs.set('tabDrag', { value: e.value, rects: e.rects, origin: e.origin, activated: !!e.activate, source: e.source })
         // 从把手起手即刻算拖；整个标签起手时按下还不算拖，要等走够激活距离
         context.set('draggingTab', e.activate ? e.value : null)
         context.set('dropTarget', null)
@@ -112,6 +113,10 @@ export const tabsMachine = createMachine({
         const session = refs.get('tabDrag')
         if (e.type !== 'TAB_DRAG.MOVE' || !session)
           return
+        // 两件事在两个坐标系里判：
+        // 激活看的是「手指动没动」，用原始视口坐标——内容滚过去了但手没动，不算拖了一段；
+        // 命中看的是「指针此刻指着哪一项」，要减掉版面漂移换算回快照那一刻的坐标
+        const horizontal = (prop('orientation') ?? 'horizontal') === 'horizontal'
         if (!session.activated) {
           // 整个标签都是拖动源，没有把手表明意图：要走够激活距离才算拖动，
           // 否则点一下切换标签就会被算成一次零位移的拖拽
@@ -121,8 +126,8 @@ export const tabsMachine = createMachine({
           context.set('draggingTab', session.value)
         }
         // 横排标签是横轴：rtl 下几何左右与逻辑前后相反。竖排与文字方向无关
-        const horizontal = (prop('orientation') ?? 'horizontal') === 'horizontal'
-        const hit = hitAlong(session.rects, e.point, horizontal && prop('dir') === 'rtl')
+        const point = e.point - snapshotDrift(session.source, session.rects, session.value, horizontal ? 'x' : 'y')
+        const hit = hitAlong(session.rects, point, horizontal && prop('dir') === 'rtl')
         // 落在自己身上不算落点：那不是一次移动，指示线该消失
         context.set('dropTarget', hit && hit.targetValue !== session.value ? hit : null)
       },

@@ -3,6 +3,7 @@ import type { ControlVariant, Placement, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h, mergeProps, onMounted, onUnmounted, onUpdated, Teleport, watch } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import {
@@ -86,7 +87,7 @@ export const XhComboboxRoot = defineComponent({
       emit('open-change', details)
       emit('update:open', details.open)
     }
-    const ctx = useCombobox(props as ComboboxProps, {
+    const ctx = useCombobox(withXhConfig('combobox', props) as ComboboxProps, {
       onValueChange: notifyValue,
       onInputValueChange: notifyInputValue,
       onOpenChange: notifyOpen,

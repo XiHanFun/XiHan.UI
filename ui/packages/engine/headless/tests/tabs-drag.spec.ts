@@ -516,3 +516,38 @@ describe('禁用的标签不是拖动源', () => {
     })
   })
 })
+
+describe('拖动中版面滚走了，落点仍按指针所指算', () => {
+  /** 把全部标签的矩形桩沿主轴整体挪 delta。 */
+  function scrollBy(h: Harness, delta: number): void {
+    for (const v of ['one', 'two', 'three']) {
+      const el = h.trigger(v)
+      if (!el)
+        continue
+      const before = el.getBoundingClientRect()
+      const left = before.left - delta
+      el.getBoundingClientRect = (): DOMRect =>
+        ({ x: left, y: 0, width: SPAN, height: 32, top: 0, left, right: left + SPAN, bottom: 32, toJSON: () => ({}) }) as DOMRect
+    }
+  }
+
+  it('滚过之后指针停在哪个标签，落点就是哪个', () => {
+    const h = mount()
+    press(h, 'one', 20)
+    move(150)
+    expect(h.drop()?.targetValue).toBe('two')
+
+    // 内容往左滚 100：原来 three 占 200-300，现在占 100-200
+    scrollBy(h, 100)
+    move(150)
+    expect(h.drop()?.targetValue).toBe('three')
+  })
+
+  it('激活距离也吃同一份补偿：光滚动不算走了距离', () => {
+    const h = mount()
+    press(h, 'one', 20)
+    scrollBy(h, 100)
+    move(20)
+    expect(h.dragging()).toBeNull()
+  })
+})

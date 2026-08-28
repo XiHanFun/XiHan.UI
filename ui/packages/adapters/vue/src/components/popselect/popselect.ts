@@ -4,6 +4,7 @@ import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import type { PopselectNotifiers, PopselectRootProps } from './use-popselect'
 import { computed, defineComponent, h, mergeProps, onBeforeUnmount, ref, Teleport, watch } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { mergeIntoChild } from '../../runtime/as-child'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { providePopselect, providePopselectItem, usePopselectContext, usePopselectItemContext } from './context'
@@ -59,7 +60,7 @@ export const XhPopselectRoot = defineComponent({
         emit('update:open', details.open)
       },
     }
-    const ctx = usePopselect(props as PopselectRootProps, notify)
+    const ctx = usePopselect(withXhConfig('popselect', props) as PopselectRootProps, notify)
     providePopselect(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       open: ctx.api.value.open,

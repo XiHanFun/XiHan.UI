@@ -448,6 +448,40 @@ describe('列拖拽 · 把手产出的属性', () => {
 })
 
 describe('列拖拽 · 受控', () => {
+  it('可拖段之前有不可拖的列时，下标要换算到作者列序上', () => {
+    // 段内下标与作者列序的下标不是同一个空间：把 fixed 放在列首，两者才错开。
+    // 既有夹具把它放在末尾，段恰好是列序的前缀，两个空间凑巧相等，看不出错
+    const onColumnPreferenceChange = vi.fn()
+    const h = mount({
+      columns: [
+        { id: 'fixed', label: '不可拖', width: 100 },
+        { id: 'name', label: '名称', width: 100, reorderable: true },
+        { id: 'owner', label: '负责人', width: 100, reorderable: true },
+        { id: 'status', label: '状态', width: 100, reorderable: true },
+      ],
+      columnPreference: {},
+      onColumnPreferenceChange,
+    })
+    key(h, 'name', 'ArrowRight')
+    expect(onColumnPreferenceChange).toHaveBeenCalledWith({
+      value: { order: ['fixed', 'owner', 'name', 'status'] },
+    })
+  })
+
+  it('藏起来的列仍占作者列序的一个位，换算要把它算进去', () => {
+    const onColumnPreferenceChange = vi.fn()
+    const h = mount({
+      columnPreference: { hidden: ['owner'] },
+      onColumnPreferenceChange,
+    })
+    // 藏掉 owner 之后可见的是 name / status；把 name 往后挪一位，
+    // 落在 status 之后。owner 仍待在它原本的邻居旁边
+    key(h, 'name', 'ArrowRight')
+    expect(onColumnPreferenceChange).toHaveBeenCalledWith({
+      value: { hidden: ['owner'], order: ['owner', 'status', 'name', 'fixed'] },
+    })
+  })
+
   it('受控时只发通知，内部列序一步不动', () => {
     const onColumnPreferenceChange = vi.fn()
     const h = mount({ columnPreference: {}, onColumnPreferenceChange })
