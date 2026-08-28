@@ -355,7 +355,10 @@ interface NodeDragContext {
   set: (k: 'announcement', v: string) => void
 }
 
-/** 播报一句。位置说的是「在新的那一层里第几个」——用户关心的是搬到哪儿了。 */
+/**
+ * 播报一句。位置说的是「在新的那一层里第几个」——用户关心的是搬到哪儿了。
+ * 落脚处说的是那一层的名字，父为 null 时报根层的说法。
+ */
 function announceNodeMove(
   context: NodeDragContext,
   prop: <K extends keyof TreeSchema['props']>(k: K) => TreeSchema['props'][K],
@@ -366,14 +369,18 @@ function announceNodeMove(
   const meta = indexTree(prop('collection') ?? [])
   const self = meta.get(value)
   // 落点在哪一层，那一层就有几个；说不出层时退回它此刻所在的层
-  const siblings = countSiblings(meta, move ? move.parent : (self?.parent ?? null))
+  const parent = move ? move.parent : (self?.parent ?? null)
+  const siblings = countSiblings(meta, parent)
+  // 节点名：作者给了 item 就用它，节点自己的 label 是兜底。父节点的名字也走这一条
+  const label = (id: string): string => prop('translations')?.item?.(id) ?? meta.get(id)?.label ?? id
   context.set('announcement', dragAnnouncement(kind, {
     value,
     position: (move ? move.index : (self?.posInSet ?? 1) - 1) + 1,
     total: move ? siblings + (move.parent === (self?.parent ?? null) ? 0 : 1) : siblings,
+    into: parent == null ? null : label(parent),
     translations: {
-      item: (id: string) => meta.get(id)?.label ?? id,
       ...prop('translations'),
+      item: label,
     },
   }))
 }
