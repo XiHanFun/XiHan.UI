@@ -5,6 +5,7 @@ import { applySelection, cascadeToggle, collapseChecked, createTypeahead } from 
 import { setup } from '@xihan-ui/machine'
 import { createMultiPointerSession, resolveSessionDoc, shouldActivate } from '@xihan-ui/pointer'
 import { dragAnnouncement, hitAlongNested } from '../shared/drag'
+import { snapshotDrift } from '../shared/drag-drift'
 import { isTreeDropAllowed, treeMoveOf } from './tree.drag'
 
 const { createMachine } = setup<TreeSchema>()
@@ -192,7 +193,7 @@ export const treeMachine = createMachine({
         const e = event.current()
         if (e.type !== 'NODE_DRAG.START')
           return
-        refs.set('nodeDrag', { value: e.value, rects: e.rects, originY: e.originY, activated: !!e.activate })
+        refs.set('nodeDrag', { value: e.value, rects: e.rects, originY: e.originY, activated: !!e.activate, source: e.source })
         // 从把手起手即刻算拖；整个节点起手时按下还不算拖，要等走够激活距离
         context.set('draggingNode', e.activate ? e.value : null)
         context.set('dropTarget', null)
@@ -213,8 +214,11 @@ export const treeMachine = createMachine({
           context.set('draggingNode', session.value)
         }
         const meta = indexTree(prop('collection') ?? [])
+        // 命中要减掉版面漂移换算回快照坐标；激活上面用的是原始视口坐标，
+        // 两件事在两个坐标系里判——内容滚过去了但手没动，不算拖了一段
+        const point = e.clientY - snapshotDrift(session.source, session.rects, session.value, 'y')
         // 只有分支收得下孩子；叶子上只有前后两档，没有「落进去」
-        const hit = hitAlongNested(session.rects, e.clientY, value => !!meta.get(value)?.branch)
+        const hit = hitAlongNested(session.rects, point, value => !!meta.get(value)?.branch)
         const ok = hit != null && isTreeDropAllowed(meta, session.value, hit, prop('allowDrop'))
         context.set('dropTarget', ok ? hit : null)
       },

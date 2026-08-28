@@ -781,3 +781,39 @@ describe('禁用的节点不是拖动源', () => {
     expect(onNodeMove).toHaveBeenCalledWith({ value: 'weekly', parent: 'inbox', index: 0 })
   })
 })
+
+describe('拖动中版面滚走了，落点仍按指针所指算', () => {
+  /** 把全部可见行的矩形桩整体挪 delta（正数 = 内容往上滚走）。 */
+  function scrollBy(h: Harness, delta: number): void {
+    for (const v of ['inbox', 'quote', 'weekly', 'archive', 'trash']) {
+      const el = h.row(v)
+      if (!el)
+        continue
+      const before = el.getBoundingClientRect()
+      const top = before.top - delta
+      el.getBoundingClientRect = (): DOMRect =>
+        ({ x: 0, y: top, width: 200, height: 40, top, left: 0, right: 200, bottom: top + 40, toJSON: () => ({}) }) as DOMRect
+    }
+  }
+
+  it('滚过之后指针停在哪一行，落点就是哪一行', () => {
+    const h = mount()
+    press(h, 'trash', 170)
+    move(140)
+    expect(h.drop()?.targetValue).toBe('archive')
+
+    // 内容往上滚 40：原来 weekly 占 80-120，现在占 40-80；archive 挪到 80-120。
+    // 指针停在 140，此刻指着的是 trash 那一段（120-160 挪成 120-160 之后的位置）
+    scrollBy(h, 40)
+    move(100)
+    expect(h.drop()?.targetValue).toBe('archive')
+  })
+
+  it('激活距离不吃漂移：内容滚过去了但手没动，不算拖了一段', () => {
+    const h = mount()
+    press(h, 'quote', 50)
+    scrollBy(h, 40)
+    move(50)
+    expect(h.dragging()).toBeNull()
+  })
+})
