@@ -147,6 +147,8 @@ export interface TableVisibleRow {
   expanded: boolean
   /** 可见序，0 起算。连接层加上表头偏移即 aria-rowindex。 */
   index: number
+  /** 父行 id；根行为 null。指向不存在的行时按根行算，与摊平的口径一致。 */
+  parentId: string | null
   /** 层级，1 起算，直接落 aria-level。平表恒为 1。 */
   level: number
   /** 同层内序号，1 起算，直接落 aria-posinset。 */
@@ -165,10 +167,16 @@ export interface TableVisibleRow {
 export interface TableRowMoveDetails {
   /** 被搬的那一行。 */
   id: string
-  /** 从可见数据行的第几位。 */
-  from: number
-  /** 到第几位。 */
-  to: number
+  /**
+   * 新的父行 id；根层为 null。
+   *
+   * 表格的树是**带 parentId 的扁平数组**：结构由 parentId 定，同层次序由数组先后定。
+   * 所以写回要两件事——按 ids 重排，再把这一行的 parentId 设成这个值。
+   * 平表下它恒为 null。
+   */
+  parent: string | null
+  /** 在新那一层的第几位，0 起算。已经算过「先摘后插」的修正。 */
+  index: number
   /** 已经重排好的整份行序，可直接拿去写回数据源。 */
   ids: string[]
 }
@@ -270,6 +278,11 @@ export interface TableSchema extends MachineSchema {
      */
     rowReorderable?: boolean
     onRowMove?: (details: TableRowMoveDetails) => void
+    /**
+     * 这一次搬家许不许。收到的是折算好的落点。
+     * 不给即都许——「落进自己的后代」与「落在禁用行上」两条库自己会拦。
+     */
+    allowRowDrop?: (move: TableRowMoveDetails) => boolean
     onColumnPreferenceChange?: (details: TableColumnPreferenceChangeDetails) => void
     onSortChange?: (details: TableSortChangeDetails) => void
     onSelectionChange?: (details: TableSelectionChangeDetails) => void

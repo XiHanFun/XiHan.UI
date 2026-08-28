@@ -58,13 +58,24 @@ const ROWS: TableRowDef[] = [
 ]
 
 /**
- * 行换位用例专用：四行都展不开、都不禁用。
- * 展得开的行整张表就拖不动行，禁用行也不该拿来当起点。
+ * 行换位用例专用：四行都在根层、都不禁用。
+ * 一行都不带 parentId 就是平表，落点只有前后两档；禁用行不该拿来当起点。
  */
 const REORDERABLE_ROWS: TableRowDef[] = [
   { id: 'a' },
   { id: 'b' },
   { id: 'c' },
+  { id: 'd' },
+]
+
+/**
+ * 树形行换位用例专用：b、c 挂在 a 底下，d 与 a 同在根层。
+ * 行值仍是 a/b/c/d，展开 a 之后的可见序与基准 fixture 里那四个数据行一一对上。
+ */
+const TREE_ROWS: TableRowDef[] = [
+  { id: 'a' },
+  { id: 'b', parentId: 'a' },
+  { id: 'c', parentId: 'a' },
   { id: 'd' },
 ]
 
@@ -760,8 +771,8 @@ export const tableSuite: ConformanceSuite = {
       name: '行换位：Alt + 上下键一次挪一位，只报事件不动 DOM；到头不回绕，裸方向键仍是导航',
       spec: { apg: `${APG}#keyboardinteraction` },
       covers: ['table.kbd.row-move'],
-      // 键盘那一路不碰把手：整行就是拖动源。行换成展不开的那一份，
-      // 可展开的行会把行拖拽整个挡下
+      // 键盘那一路不碰把手：整行就是拖动源。行换成平的那一份，
+      // 落点只有前后两档，报出来的父行恒是 null
       props: props({ rows: REORDERABLE_ROWS, rowReorderable: true }),
       initial: {
         parts: {
@@ -784,8 +795,8 @@ export const tableSuite: ConformanceSuite = {
             activeElement: { part: 'row[1]', exact: true },
             parts: { 'row[1]': { 'data-dragging': null, 'data-drop': null } },
             // 行序是 rows prop，库没有一份自己的行序可写：DOM 里 a 仍排在最前，
-            // 只有这条事件说得出新位置
-            events: [{ type: 'row-move', detail: { id: 'a', from: 0, to: 1, ids: ['b', 'a', 'c', 'd'] } }],
+            // 只有这条事件说得出新位置——落在根层第 2 位（下标 1）
+            events: [{ type: 'row-move', detail: { id: 'a', parent: null, index: 1, ids: ['b', 'a', 'c', 'd'] } }],
           },
         },
         // 宿主没把新行序写回 rows，a 还在首位：往前挪不动，也不回绕
@@ -802,9 +813,61 @@ export const tableSuite: ConformanceSuite = {
           modifiers: ['Alt'],
           expect: {
             activeElement: { part: 'row[2]', exact: true },
-            events: [{ type: 'row-move', detail: { id: 'b', from: 1, to: 2, ids: ['a', 'c', 'b', 'd'] } }],
+            events: [{ type: 'row-move', detail: { id: 'b', parent: null, index: 2, ids: ['a', 'c', 'b', 'd'] } }],
           },
         },
+      ],
+    },
+    {
+      name: '树形行换位：Alt + 左右键改一层缩进，报出新的父与新层里的位次；到边界不动也不发事件',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      covers: ['table.kbd.row-indent'],
+      // 树形那一份行只给这个用例：行值仍是 a/b/c/d，基准 fixture 一个节点都不用改，
+      // 展开 a 之后可见序是 a、b、c、d，与 DOM 里那四个数据行一一对上
+      props: props({ rows: TREE_ROWS, rowReorderable: true, defaultExpanded: ['a'] }),
+      initial: {
+        parts: {
+          // b、c 是 a 的子行：层级与位次都在第二层上算
+          'row[1]': { 'aria-level': '1', 'aria-posinset': '1', 'aria-setsize': '2', 'aria-expanded': 'true' },
+          'row[2]': { 'aria-level': '2', 'aria-posinset': '1', 'aria-setsize': '2' },
+          'row[3]': { 'aria-level': '2', 'aria-posinset': '2', 'aria-setsize': '2' },
+          'row[4]': { 'aria-level': '1', 'aria-posinset': '2', 'aria-setsize': '2' },
+        },
+      },
+      steps: [
+        { kind: 'focus', part: 'body', expect: { activeElement: { part: 'row[1]', exact: true } } },
+        // a 已经在根层：没得再往外
+        { kind: 'key', key: 'ArrowLeft', modifiers: ['Alt'], expect: { events: [] } },
+        // a 是根层头一个：没有上一个兄弟可认作父，也就缩不进去
+        { kind: 'key', key: 'ArrowRight', modifiers: ['Alt'], expect: { events: [] } },
+        // 裸方向键仍是行间导航
+        { kind: 'key', key: 'ArrowDown', expect: { activeElement: { part: 'row[2]', exact: true }, events: [] } },
+        {
+          kind: 'key',
+          key: 'ArrowLeft',
+          modifiers: ['Alt'],
+          expect: {
+            // 焦点锚点跟着搬走的那一行
+            activeElement: { part: 'row[2]', exact: true },
+            // b 退到根层，落在 a 的下一位；c 还挂在 a 底下，所以 b 排到了 c 之后
+            events: [{ type: 'row-move', detail: { id: 'b', parent: null, index: 1, ids: ['a', 'c', 'b', 'd'] } }],
+          },
+        },
+        { kind: 'key', key: 'ArrowDown', expect: { activeElement: { part: 'row[3]', exact: true } } },
+        {
+          kind: 'key',
+          key: 'ArrowRight',
+          modifiers: ['Alt'],
+          expect: {
+            activeElement: { part: 'row[3]', exact: true },
+            // c 认上一个兄弟 b 当爹，落在 b 底下第一位；b 名下本来一个孩子都没有，
+            // 数组顺序反倒一个字都不用改——换的是父，不是位次
+            events: [{ type: 'row-move', detail: { id: 'c', parent: 'b', index: 0, ids: ['a', 'b', 'c', 'd'] } }],
+          },
+        },
+        // 换成一行都不带 parentId 的那份行：平表没有层级，同一个键不再归表格管
+        { kind: 'setProps', props: { rows: REORDERABLE_ROWS } },
+        { kind: 'key', key: 'ArrowRight', modifiers: ['Alt'], expect: { events: [] } },
       ],
     },
     {

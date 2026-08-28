@@ -113,6 +113,8 @@ export const XhTableRoot = defineComponent({
     footer: Boolean,
     /** 行可以拖着换位。整行都是拖动源，不另出把手。 */
     rowReorderable: Boolean,
+    /** 这一次搬家许不许。收到的是折算好的落点（搬到哪个父下面的第几位）。不给即都许。 */
+    allowRowDrop: { type: Function as PropType<TableProps['allowRowDrop']>, default: undefined },
     loop: { type: Boolean, default: undefined },
     dir: { type: String as PropType<Direction>, default: undefined },
     size: { type: String as PropType<Size>, default: undefined },
@@ -128,7 +130,7 @@ export const XhTableRoot = defineComponent({
     'update:selection': (_selection: PayloadOf<TableProps, 'onSelectionChange'>['value']) => true,
     'expanded-change': (_details: PayloadOf<TableProps, 'onExpandedChange'>) => true,
     'update:expanded': (_expanded: PayloadOf<TableProps, 'onExpandedChange'>['value']) => true,
-    // 行换位是通知，行序的真源在使用者的数据里，故没有配对的 update:*
+    // 行换位是通知，行序与父子归属的真源在使用者的数据里，故没有配对的 update:*
     'row-move': (_details: PayloadOf<TableProps, 'onRowMove'>) => true,
   },
   slots: Object as SlotsType<{
@@ -373,7 +375,8 @@ export const XhTableColumnDragTrigger = defineComponent({
 
 /**
  * 行拖拽把手。放在数据行里，自带 touch-action: none，按下即拖，不等激活距离。
- * 对读屏隐藏、也不占 Tab 位；键盘换位由表体上的 Alt + 上下键承担。
+ * 对读屏隐藏、也不占 Tab 位；键盘换位由表体上的 Alt + 上下键承担，
+ * 树形表下另有 Alt + 左右键改缩进层级。
  * 整行起手那一路照旧可用，把手是叠加的第二个入口。
  */
 export const XhTableRowDragTrigger = defineComponent({

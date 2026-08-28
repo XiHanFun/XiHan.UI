@@ -226,8 +226,11 @@
   }
 
   /* —— 三个可叠加的外观开关 —— */
-  /* 斑马纹：表体偶数行换一层浅底；悬停与选中的底色仍按原规则盖过它 */
-  [data-scope='table'][data-part='root'][data-striped] [data-scope='table'][data-part='body'] > [data-scope='table'][data-part='row']:nth-of-type(even) {
+  /* 斑马纹：表体偶数行换一层浅底。它是最底下那一档，悬停、选中、落点都要盖得过它，
+     所以祖先链与 :nth-of-type 都收进 :where()——特指度落到与基础底同档（0-2-0），
+     只靠排在基础底之后压过它一条。照字面写祖先链是 0-8-0，比悬停与选中都高，
+     斑马表里偶数行会既不响应悬停也显不出选中 */
+  :where([data-scope='table'][data-part='root'][data-striped] [data-scope='table'][data-part='body']) > [data-scope='table'][data-part='row']:where(:nth-of-type(even)) {
     background: var(--xh-table-row-bg-striped, var(--xh-bg-subtle));
   }
 
@@ -592,16 +595,18 @@
     opacity: var(--xh-table-dragging-opacity, var(--xh-state-dragging-opacity));
   }
 
-  /* 落点指示线：拖到哪一行的哪一侧，横线就画在那一行的那条边上。
-     定位上下文只给带 data-drop 的那一行：缺了它伪元素会一路上溯到表格根，线飞到整张表的左上角；
+  /* 落点指示：插到两行之间画一条横线，落进一行里面画一整圈。两档都靠伪元素画，
+     定位上下文只给带 data-drop 的那一行：缺了它伪元素会一路上溯到表格根，指示飞到整张表的左上角；
      写到所有行上则是给每一行都多担一份，而落点同一时刻只有一个 */
   [data-scope='table'][data-part='row'][data-drop] {
     position: relative;
   }
 
   /* 线贯穿整行宽度，并且要压在单元格之上：行是 flex 容器，横向吸附的格子带着层号，
-     伪元素不抬到它上面就会被盖住 */
-  [data-scope='table'][data-part='row'][data-drop]::after {
+     伪元素不抬到它上面就会被盖住。
+     选择器逐值列出前后两档，不写成裸 [data-drop]：换父那一档用的是同一个 ::after，
+     裸写会让它先摊上一条线高的横条，再由下面那块整个改写 */
+  [data-scope='table'][data-part='row']:is([data-drop='before'], [data-drop='after'])::after {
     content: '';
     position: absolute;
     z-index: calc(var(--xh-table-sticky-column-layer, 1) + 1);
@@ -617,6 +622,32 @@
 
   [data-scope='table'][data-part='row'][data-drop='after']::after {
     inset-block-end: 0;
+  }
+
+  /* 落进这一行里面（这一行成为新的父）：整行淡底，与上下沿那条横线一眼分得开。
+     底色打在行上而不是伪元素上，横向吸附的格子取的是 background: inherit，跟着一起换色，
+     横向滚过去时冻结列不会留下一块没上色的补丁。
+     祖先写到 root 与 body 两层，是为把特指度抬到 0-8-0：拖动时指针必然停在落点这一行上、
+     悬停恒真，而悬停那条是 0-6-0、选中那条是 0-3-0，少写一层祖先这块淡底就会被那两档盖掉。
+     禁用的行不接换父落点，:not([data-disabled]) 不会漏画任何一处高亮 */
+  [data-scope='table'][data-part='root'] [data-scope='table'][data-part='body'] > [data-scope='table'][data-part='row'][data-drop='inside']:not([data-disabled]) {
+    background: var(--xh-table-drop-inside-bg, var(--xh-bg-brand-subtle));
+  }
+
+  /* 换父那一档的描边：与底色分两层画，因为它得压在横向吸附的格子之上——
+     格子带着层号，画在行自己的背景层上会被首尾的冻结列盖掉半圈。
+     零偏移的内投影四边同时着色、不涉及方向，书写模式一换也不用调；
+     整圈画在行内不压着边，与上下沿那条横线同一口径。
+     行上不写 transform：冻结列是 position: sticky，祖先一有 transform 就掉出吸附 */
+  [data-scope='table'][data-part='row'][data-drop='inside']::after {
+    content: '';
+    position: absolute;
+    z-index: calc(var(--xh-table-sticky-column-layer, 1) + 1);
+    inset: 0;
+    box-shadow: inset 0 0 0 var(--xh-table-drop-line, var(--xh-stroke-thick))
+      var(--xh-table-drop-fg, var(--xh-border-control-focus));
+    /* 这一层盖满整行，让它不接指针，落点判定照旧落到行与格子上 */
+    pointer-events: none;
   }
 
   /* 活动区域只说给读屏听，不占版面。声明与 shared/visually-hidden.ts 逐条同值。 */

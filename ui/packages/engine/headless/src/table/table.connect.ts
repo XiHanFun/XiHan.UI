@@ -13,12 +13,12 @@ import {
   queryItems,
 } from '@xihan-ui/behavior'
 import { contains, dataAttr, isComposingEvent, warn } from '@xihan-ui/kernel'
-import { flatMoveCommand, flatMoveIntentFromKey } from '../shared/drag'
+import { flatMoveIntentFromKey } from '../shared/drag'
 import { isEditableTarget } from '../shared/editable-target'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { tableAnatomy, tableRowQuery } from './table.anatomy'
 import { resolveTableColumns } from './table.columns'
-import { columnDragRects, columnMoveCommand, columnMoveIntentFromKey, draggableColumnIds, rowGroupRects, rowReorderReason } from './table.drag'
+import { columnDragRects, columnMoveCommand, columnMoveIntentFromKey, draggableColumnIds, rowGroupRects, rowReorderReason, tableRowMoveCommand, treeRowIntentFromKey } from './table.drag'
 import { TABLE_COLUMN_LARGE_STEP, TABLE_COLUMN_MIN_WIDTH, TABLE_COLUMN_STEP, tableSelectionMode } from './table.machine'
 import {
   flattenTableRows,
@@ -215,13 +215,14 @@ export function connectTable<T extends PropTypes>(
     // 判据是 nested（有行声明了 parentId）而不是 hierarchical——后者把「有可展开的行」
     // 也算进去了，而展开出的详情行是跟着数据行一起搬的，不妨碍换位
     // cell 初值是 undefined，这里连同收成 null：api 上写的是 | null
-    ? (rowReorderReason(sort.length, nested) ?? context.get('rowReorderBlocked') ?? null)
+    ? (rowReorderReason(sort.length) ?? context.get('rowReorderBlocked') ?? null)
     : null
-  /** 这一行此刻是不是落点。 */
-  const rowDropSide = (id: string): 'before' | 'after' | undefined =>
-    draggingRow != null && dropTarget?.targetValue === id && dropTarget.position !== 'inside'
-      ? dropTarget.position
-      : undefined
+  /**
+   * 这一行此刻是不是落点，落在它的哪一档。
+   * 前后两档是插到这一行的上下沿，inside 是落进这一行里面、认它当父。
+   */
+  const rowDropSide = (id: string): 'before' | 'after' | 'inside' | undefined =>
+    draggingRow != null && dropTarget?.targetValue === id ? dropTarget.position : undefined
 
   const columnIndex = new Map<string, number>()
   const columnIndexDefs = new Map<string, TableColumnDef>()
@@ -485,7 +486,10 @@ export function connectTable<T extends PropTypes>(
         // 裸方向键是导航、Space 是选中、左右键是展开收起，模态拾起在这里无处落脚
         if (event.altKey && !command && focusedRow != null && !isRowDisabled(focusedRow)) {
           // 行是纵向排的；轴之外的键不归换位管
-          const intent = flatMoveIntentFromKey(event.key, 'vertical')
+          // 树形表多认左右键：改一层缩进。平表没有层级，那两个键放行给页面
+          const intent = nested
+            ? treeRowIntentFromKey(event.key, dir === 'rtl')
+            : flatMoveIntentFromKey(event.key, 'vertical')
           if (intent) {
             // 没打开换位就不归表格管，这个组合键放行给页面——
             // 与另外三处（列、树、标签）同一个写法
@@ -495,7 +499,7 @@ export function connectTable<T extends PropTypes>(
             // 降级时照样挡：键是认下了的，只是这张表此刻搬不动
             event.preventDefault()
             if (rowBlocked == null) {
-              const target = flatMoveCommand(dataRows.map(r => r.id), focusedRow, intent)
+              const target = tableRowMoveCommand(visibleRows, focusedRow, intent)
               if (target)
                 send({ type: 'ROW.MOVE_BY', rowId: focusedRow, target })
             }
@@ -639,7 +643,7 @@ export function connectTable<T extends PropTypes>(
           }
           // 排序链与树形在渲染期就知道；虚拟滚动那一条要量过才知道，
           // 所以它不进这道守卫——否则判过一次就再也没有重新测量的机会
-          if (rowReorderReason(sort.length, nested) != null)
+          if (rowReorderReason(sort.length) != null)
             return
           const target = event.target as HTMLElement | null
           if (target?.closest('input,textarea,select,button,a,[contenteditable],[role="button"],[role="checkbox"]'))
@@ -841,7 +845,7 @@ export function connectTable<T extends PropTypes>(
           // 就等于判过一次再也回不来
           if (!rowReorderable || isRowDisabled(row.value) || event.button !== 0)
             return
-          if (rowReorderReason(sort.length, nested) != null)
+          if (rowReorderReason(sort.length) != null)
             return
           const el = event.currentTarget as HTMLElement | null
           const body = el?.closest<HTMLElement>('[data-scope="table"][data-part="body"]')

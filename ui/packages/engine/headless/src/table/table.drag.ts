@@ -1,7 +1,7 @@
 // 列拖拽的纯算法：谁能拖、落点折算成列偏好里的下标。
 // 不碰 DOM、不认识状态机——连接层在 render 期就要用到它们，此时 DOM 尚不存在。
 import type { DragRect, DropTarget } from '../shared/drag'
-import type { TableColumn } from './table.types'
+import type { TableColumn, TableRowDef, TableVisibleRow } from './table.types'
 import { insertionIndex } from '../shared/drag'
 import { orderColumnIds } from './table.columns'
 
@@ -117,21 +117,17 @@ export function columnMoveIntentFromKey(
  *
  * 三条都是「拖了也没意义」而不是「拖了会崩」：
  * - `sorted`：排序链非空时顺序由排序键决定，拖出来的新序下一帧就被覆盖；
- * - `hierarchical`：树形行的「换父」两个下标说不出来，那是 tree 承担的语义；
  * - `virtualized`：只渲窗口内那一段时，窗口外的行不在 DOM 里，落点算不出来。
  */
-export type TableRowReorderReason = 'sorted' | 'hierarchical' | 'virtualized'
+export type TableRowReorderReason = 'sorted' | 'virtualized'
 
 export function rowReorderReason(
   sortLength: number,
-  hierarchical: boolean,
   measuredRows?: number,
   dataRows?: number,
 ): TableRowReorderReason | null {
   if (sortLength > 0)
     return 'sorted'
-  if (hierarchical)
-    return 'hierarchical'
   // 量到的行数与数据行数对不上 = 宿主只渲了一段。两者都给了才判，渲染前无从得知
   if (measuredRows != null && dataRows != null && measuredRows !== dataRows)
     return 'virtualized'
@@ -170,4 +166,192 @@ export function rowGroupRects(measured: readonly MeasuredRow[]): DragRect[] {
     out[out.length - 1] = { value: last.value, start, size: end - start }
   }
   return out
+}
+
+/** 行搬家：把某一行放到某个父行下的第几位。父为 null 即根层。 */
+export interface TableRowMove {
+  id: string
+  parent: string | null
+  index: number
+}
+
+/**
+ * 目标是不是被拖那一行自己或它的后代。
+ *
+ * 判据是大纲编号（`1.2.3`）的前缀关系：它就是这一行在树里的下标路径，
+ * 与树那边比 `indexPath` 是同一件事。比它天然无环——沿 parentId 往上走的话，
+ * 作者写出互相指向的两行就转不出来了。
+ *
+ * 前缀要按段比，不能比字符串：`1.1` 是 `1.10` 的字符串前缀，却不是它的祖先。
+ */
+export function isSelfOrDescendantRow(
+  rows: readonly TableVisibleRow[],
+  dragged: string,
+  target: string,
+): boolean {
+  const from = rows.find(row => row.id === dragged && row.kind === 'data')?.outline
+  const to = rows.find(row => row.id === target && row.kind === 'data')?.outline
+  if (from == null || to == null)
+    return false
+  const a = from.split('.')
+  const b = to.split('.')
+  if (b.length < a.length)
+    return false
+  return a.every((seg, i) => seg === b[i])
+}
+
+/**
+ * 落点折算成搬家。
+ *
+ * `inside` 落进目标的子层末尾；`before` / `after` 落进目标所在那一层。
+ * 下标吃「先摘后插」的修正：同一层内往后搬时，摘掉自己之后目标的序号少了一位。
+ */
+export function tableRowMoveOf(
+  rows: readonly TableVisibleRow[],
+  dragged: string,
+  target: DropTarget,
+): TableRowMove | null {
+  const data = rows.filter(row => row.kind === 'data')
+  const self = data.find(row => row.id === dragged)
+  const to = data.find(row => row.id === target.targetValue)
+  if (!self || !to)
+    return null
+  if (isSelfOrDescendantRow(rows, dragged, target.targetValue))
+    return null
+
+  if (target.position === 'inside') {
+    const childCount = data.filter(row => row.parentId === to.id).length
+    const already = self.parentId === to.id
+    const index = already ? childCount - 1 : childCount
+    // 本来就是这个父的末位孩子：算下来还是原位，不发一次空搬家
+    if (already && index === self.posInSet - 1)
+      return null
+    return { id: dragged, parent: to.id, index }
+  }
+
+  const parent = to.parentId
+  let index = to.posInSet - 1 + (target.position === 'after' ? 1 : 0)
+  if (self.parentId === parent) {
+    const from = self.posInSet - 1
+    if (from < index)
+      index -= 1
+    if (from === index)
+      return null
+  }
+  return { id: dragged, parent, index }
+}
+
+/**
+ * 搬完之后的整份 rows 顺序。
+ *
+ * 表格的树是**带 parentId 的扁平数组**：结构由 parentId 定，同层次序由数组里的先后定。
+ * 所以搬家要做两件事——把那一行的 parentId 换掉，再把它挪到新同层的正确位置上。
+ * 这里只算顺序，parentId 由使用者按 move.parent 自己写回。
+ */
+export function reorderTableRows(
+  rows: readonly TableRowDef[],
+  move: TableRowMove,
+): string[] {
+  const ids = rows.map(row => row.id)
+  if (!ids.includes(move.id))
+    return ids
+
+  const rest = rows.filter(row => row.id !== move.id)
+  const parentOf = new Map(rest.map(row => [row.id, row.parentId ?? null]))
+  /** 子树连着走：插进别人的子树中间虽然不改层级，但数组读起来是乱的。 */
+  const inSubtreeOf = (id: string, root: string): boolean => {
+    for (let at: string | null | undefined = id; at != null; at = parentOf.get(at)) {
+      if (at === root)
+        return true
+    }
+    return false
+  }
+
+  const siblings = rest.filter(row => (row.parentId ?? null) === move.parent).map(row => row.id)
+  let insertAt: number
+  const anchor = siblings[move.index]
+  if (anchor != null) {
+    // 插在新同层第 index 位那一行之前
+    insertAt = rest.findIndex(row => row.id === anchor)
+  }
+  else if (siblings.length > 0) {
+    // 落在这一层的末尾：要越过最后一个兄弟整棵子树
+    const last = siblings[siblings.length - 1]!
+    insertAt = rest.findIndex(row => row.id === last) + 1
+    while (insertAt < rest.length && inSubtreeOf(rest[insertAt]!.id, last))
+      insertAt += 1
+  }
+  else if (move.parent != null) {
+    // 新父还没有孩子：紧跟在父行之后
+    insertAt = rest.findIndex(row => row.id === move.parent) + 1
+  }
+  else {
+    insertAt = rest.length
+  }
+
+  const out = rest.map(row => row.id)
+  out.splice(insertAt, 0, move.id)
+  return out
+}
+
+/** 树形行的键盘命令：同层前后挪，或改一层缩进。 */
+export function tableRowMoveCommand(
+  rows: readonly TableVisibleRow[],
+  id: string,
+  intent: 'prev' | 'next' | 'outdent' | 'indent',
+): DropTarget | null {
+  const data = rows.filter(row => row.kind === 'data')
+  const self = data.find(row => row.id === id)
+  if (!self)
+    return null
+  const siblings = data.filter(row => row.parentId === self.parentId).map(row => row.id)
+  const at = siblings.indexOf(id)
+  if (at < 0)
+    return null
+
+  if (intent === 'prev' || intent === 'next') {
+    const neighbour = intent === 'prev' ? siblings[at - 1] : siblings[at + 1]
+    return neighbour == null
+      ? null
+      : { targetValue: neighbour, position: intent === 'prev' ? 'before' : 'after' }
+  }
+  // 已经在根层就没得往外了
+  if (intent === 'outdent')
+    return self.parentId == null ? null : { targetValue: self.parentId, position: 'after' }
+  // 缩进：认上一个兄弟当爹。没有上一个兄弟就没得缩
+  const previous = siblings[at - 1]
+  return previous == null ? null : { targetValue: previous, position: 'inside' }
+}
+
+/**
+ * 这一行收不收得下孩子。
+ *
+ * 判据是「作者说它可展开」或「它已经有孩子」——只有这样的行才给「落进去」那一档。
+ * 一行普通数据行不该因为拖到它中间就凭空长出子层。
+ */
+export function canOwnChildren(rows: readonly TableRowDef[], id: string): boolean {
+  const row = rows.find(item => item.id === id)
+  if (!row)
+    return false
+  return !!row.expandable || rows.some(item => item.parentId === id)
+}
+
+/**
+ * 树形行的方向键映射：上下同层挪，左右改缩进。
+ *
+ * 横轴跟着文字方向翻——「往里去」的那个方向恒是缩进。纵轴不翻。
+ */
+export function treeRowIntentFromKey(
+  key: string,
+  rtl: boolean,
+): 'prev' | 'next' | 'outdent' | 'indent' | null {
+  if (key === 'ArrowUp')
+    return 'prev'
+  if (key === 'ArrowDown')
+    return 'next'
+  if (key === 'ArrowRight')
+    return rtl ? 'outdent' : 'indent'
+  if (key === 'ArrowLeft')
+    return rtl ? 'indent' : 'outdent'
+  return null
 }

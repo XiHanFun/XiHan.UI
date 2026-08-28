@@ -34,10 +34,13 @@ export function flattenTableRows(
   }
 
   const childrenOf = new Map<string, TableRowDef[]>()
+  // 解析过的父行 id：作者写的 parentId 可能指向不存在的行，这里记的是判过之后的那个
+  const parentOf = new Map<string, string | null>()
   const roots: TableRowDef[] = []
   for (const row of unique) {
     // 父行不存在时按根行处理：吞掉这一行会让数据凭空少一条，比排错位置更难查
     const parent = row.parentId != null && seen.has(row.parentId) ? row.parentId : null
+    parentOf.set(row.id, parent)
     if (parent == null) {
       roots.push(row)
       continue
@@ -69,6 +72,7 @@ export function flattenTableRows(
         expandable,
         expanded: isExpanded,
         index: out.length,
+        parentId: parentOf.get(row.id) ?? null,
         level,
         posInSet: i + 1,
         setSize: list.length,
@@ -89,6 +93,7 @@ export function flattenTableRows(
         expandable,
         expanded: true,
         index: out.length,
+        parentId: row.id,
         level: level + 1,
         posInSet: 1,
         setSize: 1,

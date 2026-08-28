@@ -153,6 +153,12 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 
 <XhDemo src="table/22-row-drag-handle" />
 
+### 树形表拖拽
+
+行声明了 parentId 就是树：拖到一行中段是放进这一行（换个父），拖到上下两端仍是插在它前后；键盘走 Alt + 上下键同层挪、Alt + 左右键改缩进。库报的是「搬到哪个父下面的第几位」外加重排好的整份行序，写回归宿主——按 ids 重排、再把那一行的 parentId 设成 parent，两件都做才对得上。许不许搬那一句归 allowRowDrop
+
+<XhDemo src="table/23-tree-row-drag" />
+
 ## 产物
 
 | 层 | 值 |
@@ -200,6 +206,7 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 | `translations` | `Partial<TableTranslations>` |  |  |
 | `rowReorderable` | `boolean` |  | 行可以拖着换位。整行都是拖动源；另有一个不占 Tab 位的拖动把手， 触屏那一路只走它（见 getRowDragTriggerProps）。 |
 | `onRowMove` | `(details: TableRowMoveDetails) => void` |  |  |
+| `allowRowDrop` | `(move: TableRowMoveDetails) => boolean` |  | 这一次搬家许不许。收到的是折算好的落点。 不给即都许——「落进自己的后代」与「落在禁用行上」两条库自己会拦。 |
 | `onColumnPreferenceChange` | `(details: TableColumnPreferenceChangeDetails) => void` |  |  |
 | `onSortChange` | `(details: TableSortChangeDetails) => void` |  |  |
 | `onSelectionChange` | `(details: TableSelectionChangeDetails) => void` |  |  |
@@ -215,7 +222,7 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 | `column-preference-change` | `` | 列偏好变化；detail 为 `{ value: TableColumnPreference }` |
 | `selection-change` | `TableSelectionChangeDetails` | 选中集合变化；detail 为 `{ value: string[] \| 'all' }` |
 | `expanded-change` | `TableExpandedChangeDetails` | 展开集合变化；detail 为 `{ value: string[] }` |
-| `row-move` | `TableRowMoveDetails` | 行换了位置；detail 为 `{ id, from, to, ids }`，ids 是重排好的整份可见数据行序 |
+| `row-move` | `TableRowMoveDetails` | 行换了位置；detail 为 `{ id, parent, index, ids }`，parent 为 null 即根层，index 是在那一层的落位（已算过先摘后插），ids 是重排好的整份行序 |
 
 ## 插槽
 
@@ -326,6 +333,7 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 | `ArrowLeft` / `ArrowRight` | focus in column-drag-trigger，该列在可拖的那一段里 | 把这一列往前 / 往后挪一位，按一下就是一次完整提交；往行首侧挪是往前，rtl 下左右两键对调，语义恒是「往前 / 往后」；已在段首 / 段末就不动，也不回绕 |
 | `Home` / `End` | focus in column-drag-trigger，该列在可拖的那一段里 | 把这一列挪到可拖那一段的段首 / 段末；rtl 下两键对调，语义恒是「段首 / 段末」；已经在那儿就不动 |
 | `Alt+ArrowUp` / `Alt+ArrowDown` | focus in table body，rowReorderable 且行拖拽没有被阻断的原因 | 把焦点行往前 / 往后挪一位，按一下就是一次完整提交，不进拖动态；纵轴与文字方向无关，rtl 下两键不对调；已在首行 / 末行就不动，也不回绕；焦点锚点跟着搬走的那一行，连按几下能一路挪到位。裸方向键仍是导航、Space 仍是选中、左右键仍是展开收起 |
+| `Alt+ArrowLeft` / `Alt+ArrowRight` | focus in table body，rows 里有行声明了 parentId，rowReorderable 且行拖拽没有被阻断的原因 | 把焦点行改一层缩进：往里是认上一个兄弟当爹，往外是变成父行的下一个兄弟；按一下就是一次完整提交，不进拖动态；横轴跟着文字方向翻，rtl 下两键对调，语义恒是「往里 / 往外」；没有上一个兄弟就缩不进去、已在根层就退不出来，两种情形都不动。rows 里一行都不带 parentId 时这两个键不归表格管，放行给页面 |
 
 ## 无障碍
 
@@ -409,7 +417,7 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 | `header` | `data-sticky` | ''（条件成立时才出现） |
 | `body` | `data-empty` | ''（条件成立时才出现） |
 | `row` | `data-dragging` | ''（条件成立时才出现） |
-| `row` | `data-drop` | 'before' \| 'after' |
+| `row` | `data-drop` | 'before' \| 'after' \| 'inside' |
 | `row` | `data-row-draggable` | ''（条件成立时才出现） |
 | `row` | `data-section` | 'body' |
 | `column-header` | `data-dragging` | ''（条件成立时才出现） |
@@ -437,7 +445,7 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-table-bg` · `--xh-table-border` · `--xh-table-caption-fg` · `--xh-table-caption-font-size` · `--xh-table-caption-font-weight` · `--xh-table-caption-px` · `--xh-table-caption-py` · `--xh-table-cell-gap` · `--xh-table-cell-min-w` · `--xh-table-cell-px` · `--xh-table-cell-py` · `--xh-table-cell-py-lg` · `--xh-table-cell-py-md` · `--xh-table-cell-py-sm` · `--xh-table-column-fg` · `--xh-table-column-font-weight` · `--xh-table-detail-bg` · `--xh-table-detail-px` · `--xh-table-detail-py` · `--xh-table-drag-fg` · `--xh-table-drag-fg-active` · `--xh-table-drag-fg-disabled` · `--xh-table-drag-grip-h` · `--xh-table-drag-grip-w` · `--xh-table-drag-size` · `--xh-table-dragging-opacity` · `--xh-table-drop-fg` · `--xh-table-drop-line` · `--xh-table-expand-fg` · `--xh-table-fg` · `--xh-table-font-size` · `--xh-table-footer-bg` · `--xh-table-footer-font-weight` · `--xh-table-header-bg` · `--xh-table-icon-size` · `--xh-table-max-h` · `--xh-table-radius` · `--xh-table-resize-fg` · `--xh-table-resize-fg-active` · `--xh-table-resize-line` · `--xh-table-resize-line-length` · `--xh-table-resize-radius` · `--xh-table-resize-width` · `--xh-table-row-bg` · `--xh-table-row-bg-hover` · `--xh-table-row-bg-selected` · `--xh-table-row-bg-striped` · `--xh-table-row-border` · `--xh-table-row-drag-fg` · `--xh-table-row-drag-fg-active` · `--xh-table-row-drag-fg-disabled` · `--xh-table-row-drag-grip-long` · `--xh-table-row-drag-grip-short` · `--xh-table-row-drag-size` · `--xh-table-sort-fg` · `--xh-table-sort-fg-active` · `--xh-table-sort-gap` · `--xh-table-state-fg` · `--xh-table-state-gap` · `--xh-table-state-min-h` · `--xh-table-state-px` · `--xh-table-state-py` · `--xh-table-sticky-column-layer` · `--xh-table-sticky-header-layer` · `--xh-table-sticky-inset` · `--xh-table-trigger-bg-checked` · `--xh-table-trigger-border` · `--xh-table-trigger-border-checked` · `--xh-table-trigger-fg` · `--xh-table-trigger-radius` · `--xh-table-trigger-size`
+`--xh-table-bg` · `--xh-table-border` · `--xh-table-caption-fg` · `--xh-table-caption-font-size` · `--xh-table-caption-font-weight` · `--xh-table-caption-px` · `--xh-table-caption-py` · `--xh-table-cell-gap` · `--xh-table-cell-min-w` · `--xh-table-cell-px` · `--xh-table-cell-py` · `--xh-table-cell-py-lg` · `--xh-table-cell-py-md` · `--xh-table-cell-py-sm` · `--xh-table-column-fg` · `--xh-table-column-font-weight` · `--xh-table-detail-bg` · `--xh-table-detail-px` · `--xh-table-detail-py` · `--xh-table-drag-fg` · `--xh-table-drag-fg-active` · `--xh-table-drag-fg-disabled` · `--xh-table-drag-grip-h` · `--xh-table-drag-grip-w` · `--xh-table-drag-size` · `--xh-table-dragging-opacity` · `--xh-table-drop-fg` · `--xh-table-drop-inside-bg` · `--xh-table-drop-line` · `--xh-table-expand-fg` · `--xh-table-fg` · `--xh-table-font-size` · `--xh-table-footer-bg` · `--xh-table-footer-font-weight` · `--xh-table-header-bg` · `--xh-table-icon-size` · `--xh-table-max-h` · `--xh-table-radius` · `--xh-table-resize-fg` · `--xh-table-resize-fg-active` · `--xh-table-resize-line` · `--xh-table-resize-line-length` · `--xh-table-resize-radius` · `--xh-table-resize-width` · `--xh-table-row-bg` · `--xh-table-row-bg-hover` · `--xh-table-row-bg-selected` · `--xh-table-row-bg-striped` · `--xh-table-row-border` · `--xh-table-row-drag-fg` · `--xh-table-row-drag-fg-active` · `--xh-table-row-drag-fg-disabled` · `--xh-table-row-drag-grip-long` · `--xh-table-row-drag-grip-short` · `--xh-table-row-drag-size` · `--xh-table-sort-fg` · `--xh-table-sort-fg-active` · `--xh-table-sort-gap` · `--xh-table-state-fg` · `--xh-table-state-gap` · `--xh-table-state-min-h` · `--xh-table-state-px` · `--xh-table-state-py` · `--xh-table-sticky-column-layer` · `--xh-table-sticky-header-layer` · `--xh-table-sticky-inset` · `--xh-table-trigger-bg-checked` · `--xh-table-trigger-border` · `--xh-table-trigger-border-checked` · `--xh-table-trigger-fg` · `--xh-table-trigger-radius` · `--xh-table-trigger-size`
 
 ## 动效
 

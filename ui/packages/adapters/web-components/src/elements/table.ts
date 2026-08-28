@@ -48,7 +48,13 @@ const FOOTER_SELECTOR = '[data-xh-part="footer"]'
  * 同一个 row 部件写在 header / body / footer 里语义不同（表头行、数据行、脚注行），
  * 元素按祖先链现查区段，作者无需换用别的部件名。
  *
- * 两份定义与三个集合都是数组/对象，只走 property（`el.rows = [...]`）。
+ * 两份定义与三个集合都是数组/对象，只走 property（`el.rows = [...]`）；
+ * 落点校验 `allowRowDrop`（函数）同理。
+ *
+ * 打开 row-reorderable 后行可以拖着换位：整行都是拖动源。落点画在参照行上——
+ * data-drop 为 before/after 是插在这一行前后；rows 带 parentId 的树形表另有 inside，
+ * 是放进这一行底下，只有可展开或已经有孩子的行给这一档。触屏那一路走 row-drag-trigger 把手。
+ * 键盘走 Alt + 方向键：上下在同层挪一位，左右在树形表下改缩进层级（rtl 下左右对调）。
  *
  * @customElement xh-table
  * @attr {'none'|'single'|'multiple'} selection-mode - 选择模式，默认 none（不声明就没有选择这回事）
@@ -69,7 +75,8 @@ const FOOTER_SELECTOR = '[data-xh-part="footer"]'
  * @prop {TableColumnKind[]} prefixColumns - 要哪几列前缀列，按给定顺序插在最前面
  * @fires selection-change - 选中集合变化；detail 为 `{ value: string[] | 'all' }`
  * @fires expanded-change - 展开集合变化；detail 为 `{ value: string[] }`
- * @fires row-move - 行换了位置；detail 为 `{ id, from, to, ids }`，ids 是重排好的整份可见数据行序
+ * @fires row-move - 行换了位置；detail 为 `{ id, parent, index, ids }`，parent 为 null 即根层，index 是在那一层的落位（已算过先摘后插），ids 是重排好的整份行序
+ * @prop {(move: TableRowMoveDetails) => boolean} allowRowDrop - 这一次搬家许不许，收到的是折算好的落点；不给即都许
  * @csspart root - role=grid 容器（rows 里有可展开的行时为 treegrid），报行列总数与多选声明
  * @csspart caption - 表格标题（aria-labelledby 目标）
  * @csspart header - role=rowgroup 表头区
@@ -83,7 +90,7 @@ const FOOTER_SELECTOR = '[data-xh-part="footer"]'
  * @csspart sort-trigger - 排序把手，自占一个 Tab 位；按住 Shift 点是追加到排序链
  * @csspart column-resize-trigger - 列宽把手，自占一个 Tab 位；方向键改一步、按住 Shift 是大步
  * @csspart column-drag-trigger - 列拖拽把手，自占一个 Tab 位；方向键移一位、Home/End 移到可拖区段首末
- * @csspart row-drag-trigger - 行拖拽把手，触屏那一路的入口（自带 touch-action: none，按下即拖）；对读屏隐藏且不占 Tab 位，键盘那一路由表体上的 Alt + 上下键承担
+ * @csspart row-drag-trigger - 行拖拽把手，触屏那一路的入口（自带 touch-action: none，按下即拖）；对读屏隐藏且不占 Tab 位，键盘那一路由表体上的 Alt + 方向键承担
  * @csspart live-region - 视觉隐藏的播报区，列拖拽过程的读屏文案写在这里；须写在 root 之外（root 是 role=grid，它的子节点只能是 row 与 rowgroup）
  * @csspart expand-trigger - 展开把手（aria-hidden 且不占 Tab 位，键盘那一路由左右方向键承担）
  * @csspart expanded-row - role=row 详情行，须自带 value 属性与它所属的数据行配对，内部须放一个 cell 承载详情；收起时 hidden
@@ -120,6 +127,8 @@ export class XhTableElement extends XhElement {
     ruled: { type: Boolean },
     footer: { type: Boolean },
     rowReorderable: { type: Boolean, attribute: 'row-reorderable' },
+    // 落点校验是函数，走不了属性；只作为 property 暴露
+    allowRowDrop: { attribute: false },
     loop: { converter: BOOLEAN_CONVERTER },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     size: { converter: STRING_CONVERTER },
@@ -147,6 +156,7 @@ export class XhTableElement extends XhElement {
   declare ruled?: boolean
   declare footer?: boolean
   declare rowReorderable?: boolean
+  declare allowRowDrop?: (move: TableRowMoveDetails) => boolean
   declare loop?: boolean
   declare direction?: Direction
   declare size?: Size
@@ -200,6 +210,7 @@ export class XhTableElement extends XhElement {
       ruled: this.ruled ?? false,
       footer: this.footer ?? false,
       rowReorderable: this.rowReorderable ?? false,
+      allowRowDrop: this.allowRowDrop,
       loop: this.loop,
       dir: this.direction,
       size: this.size,

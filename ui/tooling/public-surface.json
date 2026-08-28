@@ -6946,6 +6946,7 @@
       "value"
     ],
     "table": [
+      "allowRowDrop",
       "borderless",
       "columnPreference",
       "columns",
@@ -9764,6 +9765,7 @@
     "--xh-table-drag-size",
     "--xh-table-dragging-opacity",
     "--xh-table-drop-fg",
+    "--xh-table-drop-inside-bg",
     "--xh-table-drop-line",
     "--xh-table-expand-fg",
     "--xh-table-fg",

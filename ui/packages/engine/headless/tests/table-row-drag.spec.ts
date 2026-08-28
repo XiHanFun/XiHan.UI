@@ -8,9 +8,14 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { flatMoveCommand, flatMoveIntentFromKey, reorderFlat } from '../src/shared/drag'
 import {
   connectTable,
+  flattenTableRows,
+  isSelfOrDescendantRow,
+  reorderTableRows,
   rowGroupRects,
   rowReorderReason,
   tableMachine,
+  tableRowMoveCommand,
+  tableRowMoveOf,
 } from '../src/table'
 
 describe('行组并块', () => {
@@ -56,28 +61,23 @@ describe('行组并块', () => {
 
 describe('行拖不动的原因', () => {
   it('都不占时能拖', () => {
-    expect(rowReorderReason(0, false, 3, 3)).toBeNull()
+    expect(rowReorderReason(0, 3, 3)).toBeNull()
   })
 
   it('排序链非空：拖出来的新序下一帧就被排序键覆盖', () => {
-    expect(rowReorderReason(1, false, 3, 3)).toBe('sorted')
-  })
-
-  it('树形行：换父两个下标说不出来', () => {
-    expect(rowReorderReason(0, true, 3, 3)).toBe('hierarchical')
+    expect(rowReorderReason(1, 3, 3)).toBe('sorted')
   })
 
   it('量到的行数与数据行数对不上 = 宿主只渲了一段，窗口外的行没有矩形', () => {
-    expect(rowReorderReason(0, false, 10, 500)).toBe('virtualized')
+    expect(rowReorderReason(0, 10, 500)).toBe('virtualized')
   })
 
-  it('排序优先于树形，树形优先于虚拟——先报最上游那条', () => {
-    expect(rowReorderReason(1, true, 10, 500)).toBe('sorted')
-    expect(rowReorderReason(0, true, 10, 500)).toBe('hierarchical')
+  it('排序优先于虚拟——先报最上游那条', () => {
+    expect(rowReorderReason(1, 10, 500)).toBe('sorted')
   })
 
   it('渲染期量不到行数，两者都不给时不判虚拟', () => {
-    expect(rowReorderReason(0, false)).toBeNull()
+    expect(rowReorderReason(0)).toBeNull()
   })
 })
 
@@ -169,8 +169,10 @@ function mount(initial: Partial<Props> = {}) {
     top += 40
     body.append(el)
     rowEls.set(row.id, el)
-    // 展开着的行后面跟一条详情行，落点判定要把两者算作一整块
-    if ((props.defaultExpanded ?? []).includes(row.id)) {
+    // 展开着的行后面跟一条详情行，落点判定要把两者算作一整块。
+    // 有子行的行展开出的是子行、不是详情行——与 flattenTableRows 同一口径
+    const hasKids = (props.rows ?? []).some(r => r.parentId === row.id)
+    if (!hasKids && (props.defaultExpanded ?? []).includes(row.id)) {
       const detail = document.createElement('div')
       detail.setAttribute('data-scope', 'table')
       detail.setAttribute('data-part', 'expanded-row')
@@ -302,7 +304,7 @@ describe('行拖拽 · 落点与提交', () => {
     expect(h.api().dropTarget).toEqual({ targetValue: 'd', position: 'after' })
 
     release()
-    expect(onRowMove).toHaveBeenCalledWith({ id: 'a', from: 0, to: 3, ids: ['b', 'c', 'd', 'a'] })
+    expect(onRowMove).toHaveBeenCalledWith({ id: 'a', parent: null, index: 3, ids: ['b', 'c', 'd', 'a'] })
     expect(h.state()).toBe('idle')
   })
 
@@ -372,11 +374,16 @@ describe('行拖拽 · 三条降级', () => {
     expect(h.state()).toBe('rowDragging')
   })
 
-  it('树形行：换父两个下标说不出来，那是 tree 承担的语义', () => {
-    const h = mount({ rows: [{ id: 'a' }, { id: 'b', parentId: 'a' }] })
-    expect(h.api().rowReorderDisabledReason).toBe('hierarchical')
+  it('树形行照样拖得动——换父由 parent 与 index 说清，不再整个关停', () => {
+    // 展开着 a，b 才是可见行；夹具按 rows 渲，不展开就与可见行数对不上
+    const h = mount({
+      rows: [{ id: 'a', expandable: true }, { id: 'b', parentId: 'a' }],
+      defaultExpanded: ['a'],
+    })
+    expect(h.api().rowReorderDisabledReason).toBeNull()
     press(h, 'a', 20)
-    expect(h.state()).toBe('idle')
+    move(60)
+    expect(h.state()).toBe('rowDragging')
   })
 
   it('宿主只渲了一段：量到的行数与数据行数对不上，按下即退出并记下原因', () => {
@@ -404,7 +411,7 @@ describe('行拖拽 · 键盘命令', () => {
     h.service.send({ type: 'ROW.FOCUS', value: 'a' })
     const { prevented } = bodyKey(h, 'ArrowDown', { altKey: true })
     expect(prevented).toBe(true)
-    expect(onRowMove).toHaveBeenCalledWith({ id: 'a', from: 0, to: 1, ids: ['b', 'a', 'c', 'd'] })
+    expect(onRowMove).toHaveBeenCalledWith({ id: 'a', parent: null, index: 1, ids: ['b', 'a', 'c', 'd'] })
     expect(h.state()).toBe('idle')
   })
 
@@ -539,7 +546,7 @@ describe('行拖动把手 · 触屏那一路唯一的入口', () => {
     // 四行各 40px：d 占 120-160，落在后半才是 after
     move(150)
     release()
-    expect(onRowMove).toHaveBeenCalledWith({ id: 'a', from: 0, to: 3, ids: ['b', 'c', 'd', 'a'] })
+    expect(onRowMove).toHaveBeenCalledWith({ id: 'a', parent: null, index: 3, ids: ['b', 'c', 'd', 'a'] })
   })
 })
 
@@ -615,7 +622,7 @@ describe('禁用的行不是拖动源', () => {
     press(h, 'a', 20)
     move(70)
     release()
-    expect(onRowMove).toHaveBeenCalledWith({ id: 'a', from: 0, to: 1, ids: ['b', 'a', 'c', 'd'] })
+    expect(onRowMove).toHaveBeenCalledWith({ id: 'a', parent: null, index: 1, ids: ['b', 'a', 'c', 'd'] })
   })
 })
 
@@ -796,5 +803,290 @@ describe('把手拖放之后焦点落在哪儿', () => {
 
     expect(h.service.context.get('focusedRow')).toBe('c')
     expect(document.activeElement).toBe(h.row('c'))
+  })
+})
+
+// ——— 树形行：换父与同层挪位 ———
+
+/**
+ * 收件箱
+ *   ├ 报价单
+ *   └ 项目
+ *      └ 周报
+ * 归档
+ * 回收站
+ */
+const NESTED: TableRowDef[] = [
+  { id: 'inbox', expandable: true },
+  { id: 'quote', parentId: 'inbox' },
+  { id: 'project', parentId: 'inbox', expandable: true },
+  { id: 'weekly', parentId: 'project' },
+  { id: 'archive' },
+  { id: 'trash' },
+]
+
+const VISIBLE = flattenTableRows(NESTED, ['inbox', 'project'])
+
+describe('树形行 · 自己与后代', () => {
+  it('自己、孩子、孙子都算', () => {
+    expect(isSelfOrDescendantRow(VISIBLE, 'inbox', 'inbox')).toBe(true)
+    expect(isSelfOrDescendantRow(VISIBLE, 'inbox', 'project')).toBe(true)
+    expect(isSelfOrDescendantRow(VISIBLE, 'inbox', 'weekly')).toBe(true)
+  })
+
+  it('兄弟与祖先不算', () => {
+    expect(isSelfOrDescendantRow(VISIBLE, 'inbox', 'archive')).toBe(false)
+    expect(isSelfOrDescendantRow(VISIBLE, 'project', 'inbox')).toBe(false)
+  })
+
+  it('大纲编号按段比，不比字符串——1.1 不是 1.10 的祖先', () => {
+    const wide: TableRowDef[] = [{ id: 'p', expandable: true }]
+    for (let i = 1; i <= 10; i++)
+      wide.push({ id: `c${i}`, parentId: 'p' })
+    const rows = flattenTableRows(wide, ['p'])
+    expect(rows.find(r => r.id === 'c1')?.outline).toBe('1.1')
+    expect(rows.find(r => r.id === 'c10')?.outline).toBe('1.10')
+    expect(isSelfOrDescendantRow(rows, 'c1', 'c10')).toBe(false)
+  })
+})
+
+describe('树形行 · 落点折算成搬家', () => {
+  it('落进目标的子层末尾', () => {
+    expect(tableRowMoveOf(VISIBLE, 'archive', { targetValue: 'inbox', position: 'inside' }))
+      .toEqual({ id: 'archive', parent: 'inbox', index: 2 })
+  })
+
+  it('落进没有孩子的行是第 0 位', () => {
+    expect(tableRowMoveOf(VISIBLE, 'archive', { targetValue: 'quote', position: 'inside' }))
+      .toEqual({ id: 'archive', parent: 'quote', index: 0 })
+  })
+
+  it('before / after 落进目标所在的那一层，跟着换父', () => {
+    expect(tableRowMoveOf(VISIBLE, 'archive', { targetValue: 'quote', position: 'before' }))
+      .toEqual({ id: 'archive', parent: 'inbox', index: 0 })
+    expect(tableRowMoveOf(VISIBLE, 'weekly', { targetValue: 'archive', position: 'after' }))
+      .toEqual({ id: 'weekly', parent: null, index: 2 })
+  })
+
+  it('同层往后搬吃到先摘后插的修正', () => {
+    expect(tableRowMoveOf(VISIBLE, 'inbox', { targetValue: 'archive', position: 'after' }))
+      .toEqual({ id: 'inbox', parent: null, index: 1 })
+  })
+
+  it('落进自己的后代不行——那会拖出一个环', () => {
+    expect(tableRowMoveOf(VISIBLE, 'inbox', { targetValue: 'weekly', position: 'inside' })).toBeNull()
+    expect(tableRowMoveOf(VISIBLE, 'inbox', { targetValue: 'project', position: 'before' })).toBeNull()
+  })
+
+  it('算下来还是原位时返回 null', () => {
+    expect(tableRowMoveOf(VISIBLE, 'quote', { targetValue: 'project', position: 'before' })).toBeNull()
+    expect(tableRowMoveOf(VISIBLE, 'project', { targetValue: 'inbox', position: 'inside' })).toBeNull()
+  })
+})
+
+describe('树形行 · 搬完之后的 rows 顺序', () => {
+  it('换父：挪到新同层的正确位置上', () => {
+    // archive 搬进 inbox 的子层末尾（quote、project 之后）
+    expect(reorderTableRows(NESTED, { id: 'archive', parent: 'inbox', index: 2 }))
+      .toEqual(['inbox', 'quote', 'project', 'weekly', 'archive', 'trash'])
+  })
+
+  it('换父到子层最前面', () => {
+    expect(reorderTableRows(NESTED, { id: 'archive', parent: 'inbox', index: 0 }))
+      .toEqual(['inbox', 'archive', 'quote', 'project', 'weekly', 'trash'])
+  })
+
+  it('同层挪位', () => {
+    expect(reorderTableRows(NESTED, { id: 'inbox', parent: null, index: 1 }))
+      .toEqual(['quote', 'project', 'weekly', 'archive', 'inbox', 'trash'])
+  })
+
+  it('搬到一个还没有孩子的行下面', () => {
+    expect(reorderTableRows(NESTED, { id: 'trash', parent: 'quote', index: 0 }))
+      .toEqual(['inbox', 'quote', 'trash', 'project', 'weekly', 'archive'])
+  })
+
+  it('认不出的行原样返回', () => {
+    expect(reorderTableRows(NESTED, { id: 'ghost', parent: null, index: 0 }))
+      .toEqual(['inbox', 'quote', 'project', 'weekly', 'archive', 'trash'])
+  })
+})
+
+describe('树形行 · 键盘命令', () => {
+  it('上下键在同层兄弟里挪，不跨层', () => {
+    expect(tableRowMoveCommand(VISIBLE, 'quote', 'next'))
+      .toEqual({ targetValue: 'project', position: 'after' })
+    expect(tableRowMoveCommand(VISIBLE, 'archive', 'prev'))
+      .toEqual({ targetValue: 'inbox', position: 'before' })
+  })
+
+  it('到同层首末就停住', () => {
+    expect(tableRowMoveCommand(VISIBLE, 'quote', 'prev')).toBeNull()
+    expect(tableRowMoveCommand(VISIBLE, 'trash', 'next')).toBeNull()
+  })
+
+  it('往外一层 = 变成父行的下一个兄弟', () => {
+    expect(tableRowMoveCommand(VISIBLE, 'quote', 'outdent'))
+      .toEqual({ targetValue: 'inbox', position: 'after' })
+  })
+
+  it('已经在根层就没得往外', () => {
+    expect(tableRowMoveCommand(VISIBLE, 'inbox', 'outdent')).toBeNull()
+  })
+
+  it('往里一层 = 认上一个兄弟当爹', () => {
+    expect(tableRowMoveCommand(VISIBLE, 'project', 'indent'))
+      .toEqual({ targetValue: 'quote', position: 'inside' })
+  })
+
+  it('没有上一个兄弟就没得缩进', () => {
+    expect(tableRowMoveCommand(VISIBLE, 'quote', 'indent')).toBeNull()
+  })
+})
+
+describe('树形行 · 端到端换父', () => {
+  /**
+   * 收件箱（展开）
+   *   ├ 报价单
+   *   └ 周报
+   * 归档
+   *
+   * 四条可见行各占 40px。
+   */
+  const NESTED_ROWS: TableRowDef[] = [
+    { id: 'inbox', expandable: true },
+    { id: 'quote', parentId: 'inbox' },
+    { id: 'weekly', parentId: 'inbox' },
+    { id: 'archive', expandable: true },
+  ]
+
+  function nested(extra: Partial<Props> = {}) {
+    return mount({ rows: NESTED_ROWS, defaultExpanded: ['inbox'], ...extra })
+  }
+
+  it('拖到一行的中段 = 落进它里面，换父', () => {
+    const onRowMove = vi.fn()
+    const h = nested({ onRowMove })
+    // archive 占 120-160，140 是它的中段 → 落进去
+    press(h, 'quote', 50)
+    move(140)
+    expect(h.api().dropTarget).toEqual({ targetValue: 'archive', position: 'inside' })
+
+    release()
+    expect(onRowMove).toHaveBeenCalledWith({
+      id: 'quote',
+      parent: 'archive',
+      index: 0,
+      ids: ['inbox', 'weekly', 'archive', 'quote'],
+    })
+  })
+
+  it('三档落点逐档打到行上，皮肤才画得出来', () => {
+    const h = nested()
+    const drop = (id: string): unknown => (h.api().getRowProps({ value: id }) as Dict)['data-drop']
+    press(h, 'quote', 50)
+
+    move(140)
+    expect(drop('archive')).toBe('inside')
+    move(125)
+    expect(drop('archive')).toBe('before')
+    move(155)
+    expect(drop('archive')).toBe('after')
+    // 落点同一时刻只有一个，别的行身上不该留着上一次的档
+    expect(drop('inbox')).toBeUndefined()
+  })
+
+  it('拖到一行的上下两端仍是前后插，跟着换到那一层', () => {
+    const onRowMove = vi.fn()
+    const h = nested({ onRowMove })
+    // archive 占 120-160，125 在上四分之一 → 插在它前面，即根层
+    press(h, 'quote', 50)
+    move(125)
+    expect(h.api().dropTarget).toEqual({ targetValue: 'archive', position: 'before' })
+    release()
+    expect(onRowMove).toHaveBeenCalledWith({
+      id: 'quote',
+      parent: null,
+      index: 1,
+      ids: ['inbox', 'weekly', 'quote', 'archive'],
+    })
+  })
+
+  it('收不下孩子的行只有前后两档，不会凭空长出子层', () => {
+    const h = nested()
+    // weekly 既不可展开也没有孩子；它占 80-120，100 是正中
+    press(h, 'quote', 50)
+    move(100)
+    expect(h.api().dropTarget?.position).not.toBe('inside')
+  })
+
+  it('落进自己的后代不合法，指示线消失', () => {
+    const h = nested()
+    press(h, 'inbox', 10)
+    move(60)
+    expect(h.dragging()).toBe('inbox')
+    expect(h.api().dropTarget).toBeNull()
+  })
+
+  it('按 Alt + 右键缩进：认上一个兄弟当爹', () => {
+    const onRowMove = vi.fn()
+    const h = nested({ onRowMove })
+    h.service.send({ type: 'ROW.FOCUS', value: 'weekly' })
+    const body = h.api().getBodyProps() as Dict
+    ;(body.onKeyDown as (e: KeyboardEvent) => void)({
+      key: 'ArrowRight',
+      altKey: true,
+      preventDefault: () => {},
+      currentTarget: document.createElement('div'),
+    } as unknown as KeyboardEvent)
+    expect(onRowMove).toHaveBeenCalledWith({
+      id: 'weekly',
+      parent: 'quote',
+      index: 0,
+      ids: ['inbox', 'quote', 'weekly', 'archive'],
+    })
+  })
+
+  it('按 Alt + 左键往外一层：变成父行的下一个兄弟', () => {
+    const onRowMove = vi.fn()
+    const h = nested({ onRowMove })
+    h.service.send({ type: 'ROW.FOCUS', value: 'quote' })
+    const body = h.api().getBodyProps() as Dict
+    ;(body.onKeyDown as (e: KeyboardEvent) => void)({
+      key: 'ArrowLeft',
+      altKey: true,
+      preventDefault: () => {},
+      currentTarget: document.createElement('div'),
+    } as unknown as KeyboardEvent)
+    expect(onRowMove).toHaveBeenCalledWith({
+      id: 'quote',
+      parent: null,
+      index: 1,
+      ids: ['inbox', 'weekly', 'quote', 'archive'],
+    })
+  })
+
+  it('allowRowDrop 说了不行，就不发事件、只播报一句', () => {
+    const onRowMove = vi.fn()
+    const h = nested({ onRowMove, allowRowDrop: move => move.parent !== 'archive' })
+    press(h, 'quote', 50)
+    move(140)
+    release()
+    expect(onRowMove).not.toHaveBeenCalled()
+    expect(h.service.context.get('announcement')).toContain('cannot be dropped')
+  })
+
+  it('平表下 parent 恒为 null，index 就是可见序里的第几位', () => {
+    const onRowMove = vi.fn()
+    const h = mount({ onRowMove })
+    press(h, 'a', 20)
+    move(150)
+    release()
+    expect(onRowMove).toHaveBeenCalledWith({
+      id: 'a',
+      parent: null,
+      index: 3,
+      ids: ['b', 'c', 'd', 'a'],
+    })
   })
 })

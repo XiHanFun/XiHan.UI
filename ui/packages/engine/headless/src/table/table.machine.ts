@@ -12,10 +12,10 @@ import type {
 import { applySelection } from '@xihan-ui/behavior'
 import { setup } from '@xihan-ui/machine'
 import { clampSize, createPointerSession, resolveSessionDoc, shouldActivate } from '@xihan-ui/pointer'
-import { dragAnnouncement, hitAlong, insertionIndex, reorderFlat } from '../shared/drag'
+import { dragAnnouncement, hitAlong, hitAlongNested, insertionIndex } from '../shared/drag'
 import { snapshotDrift } from '../shared/drag-drift'
 import { orderColumnIds, resolveTableColumns } from './table.columns'
-import { draggableColumnIds, toColumnPreferenceIndex } from './table.drag'
+import { canOwnChildren, draggableColumnIds, reorderTableRows, tableRowMoveOf, toColumnPreferenceIndex } from './table.drag'
 import { flattenTableRows, tableSelectableRowIds, tableSelectionIds, tableToggleRowSelection, tableToggleSelectAll } from './table.rows'
 import { tableNormalizeSort, tableToggleSort } from './table.sort'
 
@@ -322,7 +322,7 @@ export const tableMachine = createMachine({
         context.set('announcement', '')
       },
 
-      trackRowDrag: ({ context, refs, event }) => {
+      trackRowDrag: ({ context, prop, refs, event }) => {
         const e = event.current()
         const session = refs.get('rowDrag')
         if (e.type !== 'ROW_DRAG.MOVE' || !session)
@@ -337,9 +337,17 @@ export const tableMachine = createMachine({
           context.set('draggingRow', session.rowId)
         }
         const drift = snapshotDrift(session.source, session.rects, session.rowId, 'y')
-        const hit = hitAlong(refs.get('rowDrag')?.rects ?? [], e.clientY - drift)
-        // 落在自己身上不算落点：那不是一次移动，指示线该消失
-        context.set('dropTarget', hit && hit.targetValue !== session.rowId ? hit : null)
+        const rects = refs.get('rowDrag')?.rects ?? []
+        const point = e.clientY - drift
+        // 树形表多一档「落进去」：能收孩子的行才给这一档，平表只有前后两档
+        const rows = prop('rows') ?? []
+        const nested = rows.some((row: TableRowDef) => row.parentId != null)
+        const hit = nested
+          ? hitAlongNested(rects, point, value => canOwnChildren(rows, value))
+          : hitAlong(rects, point)
+        // 落不下去的地方不该出现指示线：落在自己身上、落进自己的后代、
+        // 算下来还是原位、以及作者的 allowRowDrop 说了不行
+        context.set('dropTarget', hit && rowDropAllowed(context, prop, session.rowId, hit) ? hit : null)
       },
 
       endRowDrag: ({ context, prop, refs, send }) => {
@@ -716,6 +724,15 @@ function announceRowMove(
  * 行序不进机器：rows 是 prop，库没有一份自己的行序可写。这里只发意图，
  * 写回归宿主——它本来就是那份数组的主人。
  */
+/**
+ * 落点折算成一次搬家，报给宿主并播报。
+ *
+ * 平表与树形表走同一条： 算出「搬到哪个父下面的第几位」，
+ * 平表下 parent 恒为 null、index 就是可见序里的第几位。
+ *
+ * 行序不进机器：rows 是 prop，库没有一份自己的行序可写。这里只发意图，
+ * 写回归宿主——按 ids 重排，再把这一行的 parentId 设成 parent。
+ */
 function commitRowMove(
   context: RowDragContext,
   prop: <K extends keyof TableSchema['props']>(k: K) => TableSchema['props'][K],
@@ -724,15 +741,22 @@ function commitRowMove(
   target: TableDropTarget,
   kind: DragAnnounceKind,
 ): void {
-  const moved = reorderFlat(visibleRowIds(context, prop), rowId, target)
-  if (!moved) {
+  const rows = prop('rows') ?? []
+  const move = tableRowMoveOf(flattenTableRows(rows, context.get('expanded')), rowId, target)
+  if (!move) {
     announceRowMove(context, prop, 'rejected', rowId)
     return
   }
-  prop('onRowMove')?.({ id: rowId, from: moved.from, to: moved.to, ids: moved.ids })
+  const details = { id: rowId, parent: move.parent, index: move.index, ids: reorderTableRows(rows, move) }
+  const allow = prop('allowRowDrop')
+  if (allow && !allow(details)) {
+    announceRowMove(context, prop, 'rejected', rowId)
+    return
+  }
+  prop('onRowMove')?.(details)
   // 焦点锚点跟着搬走的那一行，键盘连着挪几格才不会挪一次就丢了起点
   send({ type: 'ROW.FOCUS', value: rowId })
-  announceRowMove(context, prop, kind, rowId, moved.to + 1)
+  announceRowMove(context, prop, kind, rowId, move.index + 1)
 }
 
 /** 收尾：拖动态的三样一起清干净，别留半截。 */
@@ -743,4 +767,26 @@ function clearRowDrag(
   refs.set('rowDrag', null)
   context.set('draggingRow', null)
   context.set('dropTarget', null)
+}
+
+/**
+ * 这个落点落不落得下去。
+ *
+ * 库自己兜住三条：落在自己身上、落进自己的后代、算下来还是原位。
+ * 第四条是作者的 allowRowDrop——它收到的是折算好的搬家，与提交时那份一模一样。
+ */
+function rowDropAllowed(
+  context: { get: (k: 'expanded') => string[] },
+  prop: <K extends keyof TableSchema['props']>(k: K) => TableSchema['props'][K],
+  rowId: string,
+  target: TableDropTarget,
+): boolean {
+  const rows = prop('rows') ?? []
+  const move = tableRowMoveOf(flattenTableRows(rows, context.get('expanded')), rowId, target)
+  if (!move)
+    return false
+  const allow = prop('allowRowDrop')
+  if (!allow)
+    return true
+  return allow({ id: rowId, parent: move.parent, index: move.index, ids: reorderTableRows(rows, move) })
 }
