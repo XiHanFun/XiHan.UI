@@ -89,24 +89,27 @@ export const dialogMachine = createMachine({
         // 层只在展开期间入栈：只有栈顶响应 Escape，常驻的层会堵死其下各层
         const { layer, dispose: disposeLayer } = registerLayer()
 
+        // 开场快照：滚动锁与背景失活装配一次就定了，事后补不回来
         const modal = prop('modal') ?? true
         const role = prop('role') ?? 'dialog'
-        const closeOnEscape = prop('closeOnEscape') ?? true
-        const closeOnInteractOutside = role === 'alertdialog'
-          ? false
-          : (prop('closeOnInteractOutside') ?? modal)
         const getContentEl = refs.get('getContentEl')
         const disposers: Array<() => void> = []
 
         const dismiss = createDismissLayer({
           config,
           layer,
+          // 两个开关都现读 prop，展开中途改也立刻生效
           onEscapeKeyDown: (e) => {
-            if (!closeOnEscape)
+            if (!(prop('closeOnEscape') ?? true))
               e.preventDefault()
           },
           onInteractOutside: (e) => {
-            if (!closeOnInteractOutside)
+            // 缺省值依赖 role 与 modal，这两项也一并现读：
+            // alertdialog 一律不许点外面关，其余回落 modal
+            const allowed = (prop('role') ?? 'dialog') === 'alertdialog'
+              ? false
+              : prop('closeOnInteractOutside') ?? prop('modal') ?? true
+            if (!allowed)
               e.preventDefault()
           },
           onDismiss: reason =>
