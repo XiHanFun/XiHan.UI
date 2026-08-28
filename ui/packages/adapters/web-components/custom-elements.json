@@ -36353,7 +36353,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-table>` —— Light-DOM 行为宿主：作者写 root/caption/header/body/footer 与若干\nrow / column-header / cell 角色节点，元素跑 table 机器并把 connect 产出打上去。\n身份取自节点上的 value 属性：行系部件上是行 id，列系部件上是列 id。\n\n行号（aria-rowindex / aria-rowcount）与列号（aria-colindex / aria-colcount）查 `rows` 与\n`columns` 两份定义，不从 DOM 反推，故两份定义必须与标记同源。\n\n同一个 row 部件写在 header / body / footer 里语义不同（表头行、数据行、脚注行），\n元素按祖先链现查区段，作者无需换用别的部件名。\n\n两份定义与三个集合都是数组/对象，只走 property（`el.rows = [...]`）。",
+          "description": "`<xh-table>` —— Light-DOM 行为宿主：作者写 root/caption/header/body/footer 与若干\nrow / column-header / cell 角色节点，元素跑 table 机器并把 connect 产出打上去。\n身份取自节点上的 value 属性：行系部件上是行 id，列系部件上是列 id。\n\n行号（aria-rowindex / aria-rowcount）与列号（aria-colindex / aria-colcount）查 `rows` 与\n`columns` 两份定义，不从 DOM 反推，故两份定义必须与标记同源。\n\n同一个 row 部件写在 header / body / footer 里语义不同（表头行、数据行、脚注行），\n元素按祖先链现查区段，作者无需换用别的部件名。\n\n两份定义与三个集合都是数组/对象，只走 property（`el.rows = [...]`）；\n落点校验 `allowRowDrop`（函数）同理。\n\n打开 row-reorderable 后行可以拖着换位：整行都是拖动源。落点画在参照行上——\ndata-drop 为 before/after 是插在这一行前后；rows 带 parentId 的树形表另有 inside，\n是放进这一行底下，只有可展开或已经有孩子的行给这一档。触屏那一路走 row-drag-trigger 把手。\n键盘走 Alt + 方向键：上下在同层挪一位，左右在树形表下改缩进层级（rtl 下左右对调）。",
           "name": "XhTableElement",
           "cssParts": [
             {
@@ -36409,7 +36409,7 @@
               "name": "column-drag-trigger"
             },
             {
-              "description": "行拖拽把手，触屏那一路的入口（自带 touch-action: none，按下即拖）；对读屏隐藏且不占 Tab 位，键盘那一路由表体上的 Alt + 上下键承担",
+              "description": "行拖拽把手，触屏那一路的入口（自带 touch-action: none，按下即拖）；对读屏隐藏且不占 Tab 位，键盘那一路由表体上的 Alt + 方向键承担",
               "name": "row-drag-trigger"
             },
             {
@@ -36634,6 +36634,15 @@
             },
             {
               "kind": "field",
+              "name": "allowRowDrop",
+              "privacy": "public",
+              "type": {
+                "text": "(move: TableRowMoveDetails) => boolean"
+              },
+              "description": "这一次搬家许不许，收到的是折算好的落点；不给即都许"
+            },
+            {
+              "kind": "field",
               "name": "loop",
               "privacy": "public",
               "type": {
@@ -36854,7 +36863,7 @@
               }
             },
             {
-              "description": "行换了位置；detail 为 `{ id, from, to, ids }`，ids 是重排好的整份可见数据行序",
+              "description": "行换了位置；detail 为 `{ id, parent, index, ids }`，parent 为 null 即根层，index 是在那一层的落位（已算过先摘后插），ids 是重排好的整份行序",
               "name": "row-move",
               "type": {
                 "text": "TableRowMoveDetails"
@@ -37060,6 +37069,9 @@
             },
             {
               "name": "--xh-table-drop-fg"
+            },
+            {
+              "name": "--xh-table-drop-inside-bg"
             },
             {
               "name": "--xh-table-drop-line"

@@ -25,5 +25,6 @@ export const tableKeyboard: KeyboardTable = {
     { id: 'table.kbd.column-move', keys: ['ArrowLeft', 'ArrowRight'], when: 'focus in column-drag-trigger，该列在可拖的那一段里', does: '把这一列往前 / 往后挪一位，按一下就是一次完整提交；往行首侧挪是往前，rtl 下左右两键对调，语义恒是「往前 / 往后」；已在段首 / 段末就不动，也不回绕' },
     { id: 'table.kbd.column-move-edge', keys: ['Home', 'End'], when: 'focus in column-drag-trigger，该列在可拖的那一段里', does: '把这一列挪到可拖那一段的段首 / 段末；rtl 下两键对调，语义恒是「段首 / 段末」；已经在那儿就不动' },
     { id: 'table.kbd.row-move', keys: ['Alt+ArrowUp', 'Alt+ArrowDown'], when: 'focus in table body，rowReorderable 且行拖拽没有被阻断的原因', does: '把焦点行往前 / 往后挪一位，按一下就是一次完整提交，不进拖动态；纵轴与文字方向无关，rtl 下两键不对调；已在首行 / 末行就不动，也不回绕；焦点锚点跟着搬走的那一行，连按几下能一路挪到位。裸方向键仍是导航、Space 仍是选中、左右键仍是展开收起' },
+    { id: 'table.kbd.row-indent', keys: ['Alt+ArrowLeft', 'Alt+ArrowRight'], when: 'focus in table body，rows 里有行声明了 parentId，rowReorderable 且行拖拽没有被阻断的原因', does: '把焦点行改一层缩进：往里是认上一个兄弟当爹，往外是变成父行的下一个兄弟；按一下就是一次完整提交，不进拖动态；横轴跟着文字方向翻，rtl 下两键对调，语义恒是「往里 / 往外」；没有上一个兄弟就缩不进去、已在根层就退不出来，两种情形都不动。rows 里一行都不带 parentId 时这两个键不归表格管，放行给页面' },
   ],
 }

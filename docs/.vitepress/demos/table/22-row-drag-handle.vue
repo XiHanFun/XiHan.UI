@@ -29,8 +29,14 @@ const steps = ref([
 // 行序的主人是这份数组，跟着它走
 const rows = computed(() => steps.value.map((s) => ({ id: s.id })));
 
-// details.ids 是已经重排好的整份行序，照它取一遍就是新数组
-const onRowMove = (details: { id: string; from: number; to: number; ids: string[] }) => {
+// details.ids 是已经重排好的整份行序，照它取一遍就是新数组。
+// 平表没有层级，details.parent 恒为 null、index 就是搬完之后的第几行
+const onRowMove = (details: {
+  id: string;
+  parent: string | null;
+  index: number;
+  ids: string[];
+}) => {
   const byId = new Map(steps.value.map((s) => [s.id, s]));
   steps.value = details.ids.flatMap((id) => byId.get(id) ?? []);
 };
