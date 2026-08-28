@@ -37191,7 +37191,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-tabs>` —— Light-DOM 行为宿主，跑 tabs 机器并把 connect 产出打到 root/list/trigger/content\n角色节点上。条目身份取作者写在 trigger/content 上的 value 属性，trigger 的禁用由部件自报。",
+          "description": "`<xh-tabs>` —— Light-DOM 行为宿主，跑 tabs 机器并把 connect 产出打到 root/list/trigger/content\n角色节点上。条目身份取作者写在 trigger/content 上的 value 属性，trigger 的禁用由部件自报。\n\n读屏文案 `translations` 是对象，属性表达不了，只能走 property（`el.translations = {...}`）。\n\n打开 reorderable 后标签可以拖着换位：整个标签都是拖动源，不另出把手。拖动中被拖的标签原地不动，\n只落 data-dragging；落点画在参照标签上，data-drop 为 before/after 即插在这个标签前后。触屏不进拖动。\n键盘走 Alt + 主轴方向键（横排是左右、竖排是上下，横排 rtl 下左右对调），一按就是一次完整提交。\n顺序不由元素保管：换位只发 tab-move，标签序由使用方写回自己的数据源。",
           "name": "XhTabsElement",
           "cssParts": [
             {
@@ -37201,6 +37201,10 @@
             {
               "description": "role=tablist 容器（方向键与 Tab 序列在此收口）",
               "name": "list"
+            },
+            {
+              "description": "视觉隐藏的播报区，拖动过程的读屏文案写在这里；写在 root 里、与 list 部件平级（root 自己不带角色，它落不进 role=tablist 的子节点集合）",
+              "name": "live-region"
             },
             {
               "description": "role=tab 的标签按钮，须自带 value 属性标识身份",
@@ -37312,7 +37316,30 @@
             },
             {
               "kind": "field",
+              "name": "reorderable",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "reorderable"
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "Partial<TabsTranslations> | undefined"
+              }
+            },
+            {
+              "kind": "field",
               "name": "notify",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyTabMove",
               "privacy": "private",
               "readonly": true
             },
@@ -37376,6 +37403,13 @@
               "name": "value-change",
               "type": {
                 "text": "TabsValueChangeDetails"
+              }
+            },
+            {
+              "description": "标签换了位；detail 为 `{ value, from, to, values }`，values 是重排好的整份标签序",
+              "name": "tab-move",
+              "type": {
+                "text": "TabsMoveDetails"
               }
             }
           ],
@@ -37451,6 +37485,14 @@
               "description": "尺寸",
               "name": "size",
               "fieldName": "size"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "标签可以拖着换位，默认关",
+              "name": "reorderable",
+              "fieldName": "reorderable"
             }
           ],
           "superclass": {
@@ -37465,6 +37507,15 @@
             },
             {
               "name": "--xh-tabs-content-py"
+            },
+            {
+              "name": "--xh-tabs-dragging-opacity"
+            },
+            {
+              "name": "--xh-tabs-drop-fg"
+            },
+            {
+              "name": "--xh-tabs-drop-line"
             },
             {
               "name": "--xh-tabs-gap"

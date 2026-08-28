@@ -23,18 +23,27 @@ export const XhTabsRoot = defineComponent({
     variant: { type: String as PropType<TabsVariant>, default: undefined },
     tone: { type: String as PropType<Tone>, default: undefined },
     size: { type: String as PropType<Size>, default: undefined },
+    /** 标签可以拖着换位。整个标签都是拖动源，不另出把手。 */
+    reorderable: Boolean,
+    translations: { type: Object as PropType<TabsProps['translations']>, default: undefined },
   },
   // value-change 携带 { value }，update:value 携带裸值
   emits: {
     'value-change': (_details: PayloadOf<TabsProps, 'onValueChange'>) => true,
     'update:value': (_value: PayloadOf<TabsProps, 'onValueChange'>['value']) => true,
+    // 换位是通知，标签序的真源在使用者的数据里，故没有配对的 update:*
+    'tab-move': (_details: PayloadOf<TabsProps, 'onTabMove'>) => true,
   },
   setup(props, { slots, emit }) {
     const notify: TabsProps['onValueChange'] = (details) => {
       emit('value-change', details)
       emit('update:value', details.value)
     }
-    const ctx = useTabs(props as TabsProps, notify)
+    // 监听器不进 props 对象，故作为位置参数交给 useTabs，不能指望 { ...props } 带上
+    const onTabMove: TabsProps['onTabMove'] = (details) => {
+      emit('tab-move', details)
+    }
+    const ctx = useTabs(props as TabsProps, notify, onTabMove)
     provideTabs(ctx)
     return () => {
       // 默认插槽里有真内容就照旧交给作者；只剩注释或空白时当没写，给了 collection 就按数据铺开整套结构
@@ -52,6 +61,24 @@ export const XhTabsList = defineComponent({
   setup(_, { slots }) {
     const ctx = useTabsContext()
     return () => h('div', ctx.api.value.getListProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+/**
+ * 拖动过程的读屏播报区，视觉上不可见。
+ *
+ * 放在 root 里、与 list 部件平级。它必须在拖动开始**之前**就在 DOM 上——
+ * 读屏不播报后插入的节点，等到拖起才渲出来等于没有。
+ */
+export const XhTabsLiveRegion = defineComponent({
+  name: 'XhTabsLiveRegion',
+  setup() {
+    const ctx = useTabsContext()
+    return () => h(
+      'div',
+      ctx.api.value.getLiveRegionProps() as Record<string, unknown>,
+      ctx.service.context.get('announcement'),
+    )
   },
 })
 

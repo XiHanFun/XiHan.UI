@@ -1,4 +1,4 @@
-import type { TabsActivationMode, TabsNode, TabsSchema, TabsValueChangeDetails, TabsVariant } from '@xihan-ui/headless'
+import type { TabsActivationMode, TabsNode, TabsSchema, TabsTranslations, TabsValueChangeDetails, TabsVariant } from '@xihan-ui/headless'
 import type { Direction, Orientation, Size, Tone } from '@xihan-ui/kernel'
 import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
 import { connectTabs, tabsAnatomy, tabsMachine, tabsMeta } from '@xihan-ui/headless'
@@ -13,9 +13,19 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 // 三态布尔：缺席=undefined（用默认值）、="false"=false、其余=true。
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
+/** 换位事件的 detail：从机器 props 上的回调取，不在适配器里另抄一份类型。 */
+type TabsMoveDetails = Parameters<NonNullable<TabsSchema['props']['onTabMove']>>[0]
+
 /**
  * `<xh-tabs>` —— Light-DOM 行为宿主，跑 tabs 机器并把 connect 产出打到 root/list/trigger/content
  * 角色节点上。条目身份取作者写在 trigger/content 上的 value 属性，trigger 的禁用由部件自报。
+ *
+ * 读屏文案 `translations` 是对象，属性表达不了，只能走 property（`el.translations = {...}`）。
+ *
+ * 打开 reorderable 后标签可以拖着换位：整个标签都是拖动源，不另出把手。拖动中被拖的标签原地不动，
+ * 只落 data-dragging；落点画在参照标签上，data-drop 为 before/after 即插在这个标签前后。触屏不进拖动。
+ * 键盘走 Alt + 主轴方向键（横排是左右、竖排是上下，横排 rtl 下左右对调），一按就是一次完整提交。
+ * 顺序不由元素保管：换位只发 tab-move，标签序由使用方写回自己的数据源。
  *
  * @customElement xh-tabs
  * @attr {string} value - 受控选中值；缺省该属性即非受控
@@ -27,9 +37,12 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {'line'|'card'|'segment'} variant - 形态，默认 line
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
+ * @attr {boolean} reorderable - 标签可以拖着换位，默认关
  * @fires value-change - 选中值变化；detail 为 `{ value: string | null }`
+ * @fires tab-move - 标签换了位；detail 为 `{ value, from, to, values }`，values 是重排好的整份标签序
  * @csspart root - 组件根容器（承载 data-orientation）
  * @csspart list - role=tablist 容器（方向键与 Tab 序列在此收口）
+ * @csspart live-region - 视觉隐藏的播报区，拖动过程的读屏文案写在这里；写在 root 里、与 list 部件平级（root 自己不带角色，它落不进 role=tablist 的子节点集合）
  * @csspart trigger - role=tab 的标签按钮，须自带 value 属性标识身份
  * @csspart content - role=tabpanel 的面板，须自带 value 属性与 trigger 配对；未选中时 hidden
  */
@@ -50,6 +63,11 @@ export class XhTabsElement extends XhElement {
     variant: { converter: STRING_CONVERTER },
     tone: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
+    // 缺席即关，没有第二种来路，用 Lit 自带的 Boolean 转换器就够；
+    // 三态转换器只留给缺省为真的开关（如 loop），那种开关摘属性会落回默认值、写 "false" 才关得掉
+    reorderable: { type: Boolean },
+    // 对象走不了属性，只作为 property 暴露
+    translations: { attribute: false },
   }
 
   declare collection?: TabsNode[]
@@ -62,9 +80,15 @@ export class XhTabsElement extends XhElement {
   declare variant?: TabsVariant
   declare tone?: Tone
   declare size?: Size
+  declare reorderable?: boolean
+  declare translations?: Partial<TabsTranslations>
 
   private readonly notify = (details: TabsValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
+  }
+
+  private readonly notifyTabMove = (details: TabsMoveDetails): void => {
+    this.dispatchEvent(new CustomEvent('tab-move', { detail: details, bubbles: true, composed: true }))
   }
 
   private readonly ctrl = new MachineController<TabsSchema>(this, tabsMachine, () => this.machineProps())
@@ -84,7 +108,10 @@ export class XhTabsElement extends XhElement {
       variant: this.variant,
       tone: this.tone,
       size: this.size,
+      reorderable: this.reorderable ?? false,
+      translations: this.translations,
       onValueChange: this.notify,
+      onTabMove: this.notifyTabMove,
     }
   }
 
@@ -112,6 +139,15 @@ export class XhTabsElement extends XhElement {
     }
     put('root', api.getRootProps() as Record<string, unknown>)
     put('list', api.getListProps() as Record<string, unknown>)
+
+    // 播报区收作者写的那个节点：root 自己不带角色，作者把它放在 root 里、与 list 部件平级即可，
+    // 不必由元素代建。没写就是不要读屏播报，跳过。
+    const live = this.getPart('live-region')
+    if (live) {
+      this.spreader.spread(live, api.getLiveRegionProps() as Record<string, unknown>)
+      // 播报文案由元素写，不经属性铺开：它是文本内容不是属性
+      live.textContent = this.ctrl.service.context.get('announcement')
+    }
 
     // 条目是多实例 part，逐个打：身份取作者写的 value，禁用取部件自报的 aria-disabled
     for (const el of this.getParts('trigger')) {

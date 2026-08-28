@@ -12,9 +12,9 @@ import type {
 import { applySelection } from '@xihan-ui/behavior'
 import { setup } from '@xihan-ui/machine'
 import { clampSize, createPointerSession, resolveSessionDoc, shouldActivate } from '@xihan-ui/pointer'
-import { dragAnnouncement, hitAlong, insertionIndex } from '../shared/drag'
+import { dragAnnouncement, hitAlong, insertionIndex, reorderFlat } from '../shared/drag'
 import { orderColumnIds, resolveTableColumns } from './table.columns'
-import { draggableColumnIds, moveRowIds, toColumnPreferenceIndex } from './table.drag'
+import { draggableColumnIds, toColumnPreferenceIndex } from './table.drag'
 import { flattenTableRows, tableSelectableRowIds, tableSelectionIds, tableToggleRowSelection, tableToggleSelectAll } from './table.rows'
 import { tableNormalizeSort, tableToggleSort } from './table.sort'
 
@@ -715,7 +715,7 @@ function commitRowMove(
   target: TableDropTarget,
   kind: DragAnnounceKind,
 ): void {
-  const moved = moveRowIds(visibleRowIds(context, prop), rowId, target)
+  const moved = reorderFlat(visibleRowIds(context, prop), rowId, target)
   if (!moved) {
     announceRowMove(context, prop, 'rejected', rowId)
     return

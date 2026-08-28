@@ -790,6 +790,7 @@ export type { TableContext } from './components/table/use-table'
 export {
   XhTabsContent,
   XhTabsList,
+  XhTabsLiveRegion,
   XhTabsRoot,
   XhTabsTrigger,
 } from './components/tabs/tabs'

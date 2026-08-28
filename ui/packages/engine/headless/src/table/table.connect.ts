@@ -13,11 +13,12 @@ import {
   queryItems,
 } from '@xihan-ui/behavior'
 import { contains, dataAttr, isComposingEvent, warn } from '@xihan-ui/kernel'
+import { flatMoveCommand, flatMoveIntentFromKey } from '../shared/drag'
 import { isEditableTarget } from '../shared/editable-target'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { tableAnatomy, tableRowQuery } from './table.anatomy'
 import { resolveTableColumns } from './table.columns'
-import { columnDragRects, columnMoveCommand, columnMoveIntentFromKey, draggableColumnIds, rowGroupRects, rowMoveCommand, rowMoveIntentFromKey, rowReorderReason } from './table.drag'
+import { columnDragRects, columnMoveCommand, columnMoveIntentFromKey, draggableColumnIds, rowGroupRects, rowReorderReason } from './table.drag'
 import { TABLE_COLUMN_LARGE_STEP, TABLE_COLUMN_MIN_WIDTH, TABLE_COLUMN_STEP, tableSelectionMode } from './table.machine'
 import {
   flattenTableRows,
@@ -453,12 +454,13 @@ export function connectTable<T extends PropTypes>(
         // Alt + 上下键换行位。一按就是一次已过守卫的完整提交，不进拖动态——
         // 裸方向键是导航、Space 是选中、左右键是展开收起，模态拾起在这里无处落脚
         if (event.altKey && !command && focusedRow != null) {
-          const intent = rowMoveIntentFromKey(event.key)
+          // 行是纵向排的；轴之外的键不归换位管
+          const intent = flatMoveIntentFromKey(event.key, 'vertical')
           if (intent) {
             // Alt + 方向键在部分浏览器是前进后退，认了就得挡住
             event.preventDefault()
             if (rowReorderable && rowBlocked == null) {
-              const target = rowMoveCommand(dataRows.map(r => r.id), focusedRow, intent)
+              const target = flatMoveCommand(dataRows.map(r => r.id), focusedRow, intent)
               if (target)
                 send({ type: 'ROW.MOVE_BY', rowId: focusedRow, target })
             }

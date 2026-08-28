@@ -21,6 +21,7 @@ const PUBLIC_EVENTS = {
   'stick-change': 'onStickChange',
   'stop': 'onStop',
   'submit': 'onSubmit',
+  'tab-move': 'onTabMove',
   'value-change': 'onValueChange',
 } as const
 

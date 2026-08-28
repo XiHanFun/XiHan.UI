@@ -17,10 +17,11 @@ export interface TabsContext {
 export function useTabs(
   props: TabsSchema['props'],
   onValueChange?: TabsSchema['props']['onValueChange'],
+  onTabMove?: TabsSchema['props']['onTabMove'],
 ): TabsContext {
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
-  const service = useMachine(tabsMachine, () => ({ ...props, onValueChange }), scope)
+  const service = useMachine(tabsMachine, () => ({ ...props, onValueChange, onTabMove }), scope)
   const api = computed(() => connectTabs(service, vueNormalize))
   return { api, service }
 }
