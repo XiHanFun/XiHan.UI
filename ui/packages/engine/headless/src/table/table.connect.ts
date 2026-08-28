@@ -75,6 +75,30 @@ function measureColumns(header: HTMLElement): Record<string, number> {
   return out
 }
 
+/**
+ * 量出可见行此刻的纵向位置。事件处理器里碰 DOM 是允许的，渲染期才不许。
+ *
+ * 数据行与详情行一起量，并块归 rowGroupRects：不并的话拖过展开着的行时落点会来回跳。
+ * 收起的详情行带 hidden，跳过——它不占版面，量出来是一条零高的假行。
+ */
+function measureRowGroups(body: HTMLElement): MeasuredRow[] {
+  const out: MeasuredRow[] = []
+  for (const node of body.querySelectorAll<HTMLElement>(
+    '[data-scope="table"][data-part="row"],[data-scope="table"][data-part="expanded-row"]',
+  )) {
+    if (node.hasAttribute('hidden'))
+      continue
+    const rect = node.getBoundingClientRect()
+    out.push({
+      value: node.getAttribute(ITEM_VALUE_ATTR) ?? '',
+      kind: node.getAttribute('data-part') === 'row' ? 'data' : 'expanded',
+      start: rect.top,
+      size: rect.height,
+    })
+  }
+  return out
+}
+
 /** 这一列眼下的 px 宽度。偏好里的覆盖优先，两者都不是数字就返回 null。 */
 function columnNumericWidth(
   override: string | number | undefined,
@@ -606,23 +630,7 @@ export function connectTable<T extends PropTypes>(
           const body = el?.closest<HTMLElement>('[data-scope="table"][data-part="body"]')
           if (!body)
             return
-          // 量一次可见行此刻的纵向位置。事件处理器里碰 DOM 是允许的，渲染期才不许。
-          // 详情行并进它所属的数据行：不并的话拖过展开着的行时落点会来回跳
-          const measured: MeasuredRow[] = []
-          for (const node of body.querySelectorAll<HTMLElement>(
-            '[data-scope="table"][data-part="row"],[data-scope="table"][data-part="expanded-row"]',
-          )) {
-            if (node.hasAttribute('hidden'))
-              continue
-            const rect = node.getBoundingClientRect()
-            measured.push({
-              value: node.getAttribute(ITEM_VALUE_ATTR) ?? '',
-              kind: node.getAttribute('data-part') === 'row' ? 'data' : 'expanded',
-              start: rect.top,
-              size: rect.height,
-            })
-          }
-          const rects = rowGroupRects(measured)
+          const rects = rowGroupRects(measureRowGroups(body))
           // 量到的行数与数据行数对不上 = 宿主只渲了一段，窗口外的行没有矩形
           if (rects.length !== dataRows.length) {
             send({ type: 'ROW.REORDER_BLOCKED', reason: 'virtualized' })
@@ -791,6 +799,45 @@ export function connectTable<T extends PropTypes>(
             return
           event.preventDefault()
           send({ type: 'COLUMN_RESIZE.STEP', columnId: column.value, delta: step * (event.shiftKey ? TABLE_COLUMN_LARGE_STEP : TABLE_COLUMN_STEP) })
+        },
+      })
+    },
+
+    getRowDragTriggerProps: (row) => {
+      const draggable = rowReorderable && rowBlocked == null
+      return normalize.element({
+        ...parts['row-drag-trigger'].attrs,
+        [ITEM_VALUE_ATTR]: row.value,
+        // 把手对读屏隐藏、也不占 Tab 位：键盘那一路由表体上的 Alt + 上下键承担
+        'aria-hidden': true,
+        'tabindex': -1,
+        'data-disabled': dataAttr(!draggable),
+        'data-dragging': dataAttr(draggingRow === row.value),
+        // 手势从按下那一刻就归拖动。这一小块地方因此不再跟着表格滚，
+        // 换来的是触屏上拖得动——整行起手在触屏上做不到这件事
+        'style': { touchAction: draggable ? 'none' : undefined },
+        'onPointerDown': (event: PointerEvent) => {
+          if (!draggable || event.button !== 0)
+            return
+          const el = event.currentTarget as HTMLElement | null
+          const body = el?.closest<HTMLElement>('[data-scope="table"][data-part="body"]')
+          if (!body)
+            return
+          const rects = rowGroupRects(measureRowGroups(body))
+          if (rects.length !== dataRows.length) {
+            send({ type: 'ROW.REORDER_BLOCKED', reason: 'virtualized' })
+            return
+          }
+          event.preventDefault()
+          send({
+            type: 'ROW_DRAG.START',
+            rowId: row.value,
+            rects,
+            originY: event.clientY,
+            pointerId: event.pointerId,
+            // 把手是专门的拖动入口，意图无歧义：按下即拖，不等激活距离
+            activate: true,
+          })
         },
       })
     },

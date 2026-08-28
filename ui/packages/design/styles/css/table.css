@@ -515,15 +515,72 @@
   }
 
   /* —— 行拖拽排序 —— */
-  /* 整行都是拖动源，不出把手，光标换成抓手告诉人这一行按得动 */
+  /* 整行都是拖动源，光标换成抓手告诉人这一行按得动。
+     这条不写 touch-action：整行关掉纵向手势，表格自己就滚不动了；
+     触屏那一路交给下面那块专属把手 */
   [data-scope='table'][data-part='row'][data-row-draggable] {
     cursor: grab;
   }
 
+  /* 行拖拽把手：行里的一小块专属拖动区，按下即拖。触屏靠它起手，
+     代价只是这一小块地方不再跟着表格滚。整行起手那一路原样保留，把手是叠加的第二个入口。
+     touch-action 不在这儿写：连接层按「拖不动就不写」把它写进了内联 style，
+     皮肤再写一遍会盖掉那份条件判断，让不可拖的行也白白让出滚动 */
+  [data-scope='table'][data-part='row-drag-trigger'] {
+    display: inline-flex;
+    flex: none;
+    /* 行是 align-items: stretch 的 flex 容器，不自己居中就会被拉成整行高 */
+    align-self: center;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--xh-table-row-drag-size, var(--xh-control-indicator-size));
+    block-size: var(--xh-table-row-drag-size, var(--xh-control-indicator-size));
+    border-radius: var(--xh-table-trigger-radius, var(--xh-shape-control));
+    color: var(--xh-table-row-drag-fg, var(--xh-fg-subtle));
+    cursor: grab;
+  }
+
+  [data-scope='table'][data-part='row-drag-trigger'][hidden] {
+    display: none;
+  }
+
+  /* 抓手是两条横线：盒子取边框盒，块向两侧的描边就是那两条线，宽高与线宽都走令牌。
+     线的走向与能拖的方向垂直——行沿块向上下排，画横线；列沿行向左右排，那边画的是竖线。
+     两处都用逻辑属性，书写模式一换，线跟着排列轴自己转过去。
+     :empty 守卫让作者塞进来的图标整个顶掉它，而不是两份叠在一起 */
+  [data-scope='table'][data-part='row-drag-trigger']:empty::after {
+    content: '';
+    display: block;
+    inline-size: var(--xh-table-row-drag-grip-long, var(--xh-space-2));
+    block-size: var(--xh-table-row-drag-grip-short, var(--xh-space-1));
+    border-block: var(--xh-stroke-thin) solid currentColor;
+  }
+
+  [data-scope='table'][data-part='row-drag-trigger']:not([data-disabled]):hover,
+  [data-scope='table'][data-part='row-drag-trigger'][data-dragging] {
+    color: var(--xh-table-row-drag-fg-active, var(--xh-fg-default));
+  }
+
+  [data-scope='table'][data-part='row-drag-trigger'][data-dragging] {
+    cursor: grabbing;
+  }
+
+  /* 不可拖的行照样带一个把手，这里保住它的位置、只把它压到禁用色。
+     收成 display: none 是不行的：把手占着行首那一格，藏掉之后同一张表里能拖与不能拖的两行，
+     首列内容的起点会错开一格 */
+  [data-scope='table'][data-part='row-drag-trigger'][data-disabled] {
+    color: var(--xh-table-row-drag-fg-disabled, var(--xh-fg-disabled));
+    cursor: not-allowed;
+  }
+
+  [data-scope='table'][data-part='row-drag-trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: var(--xh-ring-offset);
+  }
+
   /* 被拖的行整行压暗，与被拖的列同一档透明度。这里只动 opacity、cursor 与 user-select，
      一个 transform 都不写：斑马纹按 nth-of-type 算、行间线按兄弟选择器算，两者认的都是 DOM 位置，
-     跟手让位会让它们在拖动全程与行错开。位置的事全交给落点指示线。
-     也不写 touch-action：拖行只认鼠标与笔，触屏那一按压根不开拖 */
+     跟手让位会让它们在拖动全程与行错开。位置的事全交给落点指示线 */
   [data-scope='table'][data-part='row'][data-dragging] {
     opacity: var(--xh-table-dragging-opacity, var(--xh-state-dragging-opacity));
     cursor: grabbing;

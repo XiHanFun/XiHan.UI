@@ -318,6 +318,39 @@ export function connectTree<T extends PropTypes>(
      *
      * 它必须在拖动开始之前就在 DOM 上——读屏不播报后插入的节点。
      */
+    getNodeDragTriggerProps: (node) => {
+      const draggable = nodeDraggable && !isDisabled(node.value)
+      return normalize.element({
+        ...parts['node-drag-trigger'].attrs,
+        // 把手对读屏隐藏、也不占 Tab 位：键盘那一路由树上的 Alt + 方向键承担
+        'aria-hidden': true,
+        'tabindex': -1,
+        'data-disabled': dataAttr(!draggable),
+        'data-dragging': dataAttr(draggingNode === node.value),
+        // 手势从按下那一刻就归拖动。整块起手在触屏上做不到这件事
+        'style': { touchAction: draggable ? 'none' : undefined },
+        'onPointerDown': (event: PointerEvent) => {
+          if (!draggable || event.button !== 0)
+            return
+          const el = event.currentTarget as HTMLElement | null
+          const treeEl = el?.closest<HTMLElement>('[data-scope="tree"][data-part="tree"]')
+          const session = service.refs.get('gesture')
+          if (!treeEl || !session || session.points().length > 0)
+            return
+          session.add({ pointerId: event.pointerId, clientX: event.clientX, clientY: event.clientY })
+          event.preventDefault()
+          send({
+            type: 'NODE_DRAG.START',
+            value: node.value,
+            rects: measureNodes(treeEl),
+            originY: event.clientY,
+            // 把手是专门的拖动入口，意图无歧义：按下即拖，不等激活距离
+            activate: true,
+          })
+        },
+      })
+    },
+
     getLiveRegionProps: () => normalize.element({
       ...parts['live-region'].attrs,
       'role': 'status',

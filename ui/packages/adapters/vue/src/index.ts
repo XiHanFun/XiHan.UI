@@ -780,6 +780,7 @@ export {
   XhTableLoadingState,
   XhTableRoot,
   XhTableRow,
+  XhTableRowDragTrigger,
   XhTableRowSelectTrigger,
   XhTableSelectAllTrigger,
   XhTableSortTrigger,
@@ -792,6 +793,7 @@ export {
   XhTabsList,
   XhTabsLiveRegion,
   XhTabsRoot,
+  XhTabsTabDragTrigger,
   XhTabsTrigger,
 } from './components/tabs/tabs'
 export { useTabs } from './components/tabs/use-tabs'
@@ -990,6 +992,7 @@ export {
   XhTreeItemText,
   XhTreeLabel,
   XhTreeLiveRegion,
+  XhTreeNodeDragTrigger,
   XhTreeRoot,
   XhTreeTree,
 } from './components/tree/tree'

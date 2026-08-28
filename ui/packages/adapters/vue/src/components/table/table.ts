@@ -366,6 +366,24 @@ export const XhTableColumnDragTrigger = defineComponent({
   },
 })
 
+/**
+ * 行拖拽把手。放在数据行里，自带 touch-action: none，按下即拖，不等激活距离。
+ * 对读屏隐藏、也不占 Tab 位；键盘换位由表体上的 Alt + 上下键承担。
+ * 整行起手那一路照旧可用，把手是叠加的第二个入口。
+ */
+export const XhTableRowDragTrigger = defineComponent({
+  name: 'XhTableRowDragTrigger',
+  setup(_, { slots }) {
+    const ctx = useTableContext()
+    const { row } = useTableRowContext()
+    return () => h(
+      'span',
+      ctx.api.value.getRowDragTriggerProps(row.value) as Record<string, unknown>,
+      slots.default?.(),
+    )
+  },
+})
+
 export const XhTableExpandTrigger = defineComponent({
   name: 'XhTableExpandTrigger',
   setup(_, { slots }) {

@@ -117,6 +117,27 @@ export const XhTabsTrigger = defineComponent({
   },
 })
 
+/**
+ * 标签拖拽把手。放在标签里，自带 touch-action: none，按下即拖，不等激活距离。
+ * 对读屏隐藏、也不占 Tab 位；键盘换位由标签带上的 Alt + 方向键承担。
+ * 整个标签起手那一路照旧可用，把手是叠加的第二个入口。
+ */
+export const XhTabsTabDragTrigger = defineComponent({
+  name: 'XhTabsTabDragTrigger',
+  props: {
+    /** 所属标签的 value。 */
+    value: { type: String, required: true },
+  },
+  setup(props, { slots }) {
+    const ctx = useTabsContext()
+    return () => h(
+      'span',
+      ctx.api.value.getTabDragTriggerProps({ value: props.value }) as Record<string, unknown>,
+      slots.default?.(),
+    )
+  },
+})
+
 export const XhTabsContent = defineComponent({
   name: 'XhTabsContent',
   props: {

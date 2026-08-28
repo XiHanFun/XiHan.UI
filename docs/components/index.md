@@ -64,7 +64,7 @@
 | [分段控制器](./segmented) | `segmented` | 5 | 6 | 8 |
 | [侧栏导航](./side-nav) | `side-nav` | 13 | 10 | 2 |
 | [步骤条](./steps) | `steps` | 9 | 6 | 8 |
-| [标签页](./tabs) | `tabs` | 5 | 7 | 14 |
+| [标签页](./tabs) | `tabs` | 6 | 7 | 14 |
 | [工具栏](./toolbar) | `toolbar` | 4 | 6 | 7 |
 | [引导](./tour) | `tour` | 13 | 4 | 3 |
 
@@ -136,12 +136,12 @@
 | [数值动画](./number-animation) | `number-animation` | 1 | 0 | 4 |
 | [二维码](./qr-code) | `qr-code` | 2 | 0 | 8 |
 | [统计数值](./statistic) | `statistic` | 5 | 0 | 5 |
-| [表格](./table) | `table` | 18 | 16 | 21 |
+| [表格](./table) | `table` | 19 | 16 | 22 |
 | [标签](./tag) | `tag` | 3 | 1 | 6 |
 | [时间](./time) | `time` | 1 | 0 | 4 |
 | [时间线](./timeline) | `timeline` | 8 | 0 | 5 |
 | [计时器](./timer) | `timer` | 5 | 1 | 6 |
-| [树](./tree) | `tree` | 15 | 12 | 12 |
+| [树](./tree) | `tree` | 16 | 12 | 12 |
 | [虚拟滚动](./virtualizer) | `virtualizer` | 4 | 0 | 5 |
 
 ## 反馈

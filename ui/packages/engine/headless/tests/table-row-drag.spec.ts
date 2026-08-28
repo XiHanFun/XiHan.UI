@@ -187,7 +187,7 @@ function mount(initial: Partial<Props> = {}) {
     row: (id: string) => rowEls.get(id),
     body,
     state: () => service.state.get(),
-    dragging: () => service.context.get('draggingRow'),
+    dragging: () => service.context.get('draggingRow') ?? null,
     said: () => service.context.get('announcement'),
   }
 }
@@ -473,5 +473,70 @@ describe('行拖拽 · 播报', () => {
     move(9999)
     release()
     expect(h.said()).toContain('cannot be dropped')
+  })
+})
+
+describe('行拖动把手 · 触屏那一路唯一的入口', () => {
+  /** 在把手上按下。把手的宿主行要在 DOM 里，连接层要从它往上找表体。 */
+  function pressHandle(h: Harness, id: string, clientY: number, init: Partial<PointerEvent> = {}): void {
+    const props = h.api().getRowDragTriggerProps({ value: id }) as Dict
+    ;(props.onPointerDown as (e: PointerEvent) => void)({
+      button: 0,
+      pointerId: 1,
+      pointerType: 'mouse',
+      clientX: 0,
+      clientY,
+      currentTarget: h.row(id),
+      target: h.row(id),
+      preventDefault: () => {},
+      ...init,
+    } as unknown as PointerEvent)
+  }
+
+  it('按下即拖，不等激活距离——把手是专门的拖动入口，意图无歧义', () => {
+    const h = mount()
+    pressHandle(h, 'a', 20)
+    expect(h.dragging()).toBe('a')
+  })
+
+  it('触屏在把手上拖得动；整行起手那一路仍然不认触屏', () => {
+    const viaHandle = mount()
+    pressHandle(viaHandle, 'a', 20, { pointerType: 'touch' })
+    expect(viaHandle.dragging()).toBe('a')
+
+    const viaRow = mount()
+    press(viaRow, 'a', 20, { pointerType: 'touch' })
+    move(140)
+    expect(viaRow.dragging()).toBeNull()
+  })
+
+  it('手势整个归拖动：把手自带 touch-action none', () => {
+    const props = mount().api().getRowDragTriggerProps({ value: 'a' }) as Dict
+    expect((props.style as Dict).touchAction).toBe('none')
+  })
+
+  it('不占 Tab 位、对读屏隐藏——键盘那一路由表体的 Alt + 上下键承担', () => {
+    const props = mount().api().getRowDragTriggerProps({ value: 'a' }) as Dict
+    expect(props.tabindex).toBe(-1)
+    expect(props['aria-hidden']).toBe(true)
+  })
+
+  it('拖不动时把手报禁用，也不再让出滚动', () => {
+    const h = mount({ defaultSort: [{ id: 'name', direction: 'asc' }] })
+    const props = h.api().getRowDragTriggerProps({ value: 'a' }) as Dict
+    expect(props['data-disabled']).toBe('')
+    expect((props.style as Dict).touchAction).toBeUndefined()
+    pressHandle(h, 'a', 20)
+    expect(h.dragging()).toBeNull()
+  })
+
+  it('从把手起手，落点与松手落定跟整行起手是同一套', () => {
+    const onRowMove = vi.fn()
+    const h = mount({ onRowMove })
+    pressHandle(h, 'a', 20)
+    // 四行各 40px：d 占 120-160，落在后半才是 after
+    move(150)
+    release()
+    expect(onRowMove).toHaveBeenCalledWith({ id: 'a', from: 0, to: 3, ids: ['b', 'c', 'd', 'a'] })
   })
 })

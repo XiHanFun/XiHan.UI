@@ -59,7 +59,7 @@ const FOOTER_SELECTOR = '[data-xh-part="footer"]'
  * @attr {boolean} borderless - 去掉外框，只留行间横线
  * @attr {boolean} ruled - 列与列之间加竖分隔线
  * @attr {boolean} footer - 表格带脚注行：行号空间的最后一行留给它，aria-rowcount 也算上
- * @attr {boolean} row-reorderable - 行可以拖着换位：整行都是拖动源，不另出把手
+ * @attr {boolean} row-reorderable - 行可以拖着换位：整行都是拖动源；触屏那一路走 row-drag-trigger 把手
  * @attr {boolean} loop - 上下键走到首尾回绕，默认关；写 loop="true" 打开
  * @attr {'ltr'|'rtl'} dir - 文字方向，只对调左右方向键的展开/收起语义，默认 ltr
  * @attr {'sm'|'md'|'lg'} size - 密度：只换单元格的纵向内边距与字号，列宽不受影响
@@ -83,6 +83,7 @@ const FOOTER_SELECTOR = '[data-xh-part="footer"]'
  * @csspart sort-trigger - 排序把手，自占一个 Tab 位；按住 Shift 点是追加到排序链
  * @csspart column-resize-trigger - 列宽把手，自占一个 Tab 位；方向键改一步、按住 Shift 是大步
  * @csspart column-drag-trigger - 列拖拽把手，自占一个 Tab 位；方向键移一位、Home/End 移到可拖区段首末
+ * @csspart row-drag-trigger - 行拖拽把手，触屏那一路的入口（自带 touch-action: none，按下即拖）；对读屏隐藏且不占 Tab 位，键盘那一路由表体上的 Alt + 上下键承担
  * @csspart live-region - 视觉隐藏的播报区，列拖拽过程的读屏文案写在这里；须写在 root 之外（root 是 role=grid，它的子节点只能是 row 与 rowgroup）
  * @csspart expand-trigger - 展开把手（aria-hidden 且不占 Tab 位，键盘那一路由左右方向键承担）
  * @csspart expanded-row - role=row 详情行，须自带 value 属性与它所属的数据行配对，内部须放一个 cell 承载详情；收起时 hidden
@@ -316,6 +317,8 @@ export class XhTableElement extends XhElement {
     putAll('sort-trigger', el => api.getSortTriggerProps(this.columnOf(el)))
     putAll('column-resize-trigger', el => api.getColumnResizeTriggerProps(this.columnOf(el)))
     putAll('column-drag-trigger', el => api.getColumnDragTriggerProps(this.columnOf(el)))
+    // 把手长在行里，身份跟着所在行走
+    putAll('row-drag-trigger', el => api.getRowDragTriggerProps(this.rowOf(el)))
     putAll('expand-trigger', el => api.getExpandTriggerProps(this.rowOf(el)))
     putAll('expanded-row', el => api.getExpandedRowProps({ value: el.getAttribute('value') ?? '' }))
 
