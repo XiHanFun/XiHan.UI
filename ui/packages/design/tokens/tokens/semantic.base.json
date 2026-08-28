@@ -351,6 +351,10 @@
     "disabled-opacity": {
       "$type": "number",
       "$value": 0.5
+    },
+    "dragging-opacity": {
+      "$type": "number",
+      "$value": 0.6
     }
   },
   "elevation": {

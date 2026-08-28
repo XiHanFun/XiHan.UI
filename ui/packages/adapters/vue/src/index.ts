@@ -988,6 +988,7 @@ export {
   XhTreeItemIndicator,
   XhTreeItemText,
   XhTreeLabel,
+  XhTreeLiveRegion,
   XhTreeRoot,
   XhTreeTree,
 } from './components/tree/tree'

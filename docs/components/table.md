@@ -209,6 +209,7 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 | `column-preference-change` | `` | 列偏好变化；detail 为 `{ value: TableColumnPreference }` |
 | `selection-change` | `TableSelectionChangeDetails` | 选中集合变化；detail 为 `{ value: string[] \| 'all' }` |
 | `expanded-change` | `TableExpandedChangeDetails` | 展开集合变化；detail 为 `{ value: string[] }` |
+| `row-move` | `TableRowMoveDetails` | 行换了位置；detail 为 `{ id, from, to, ids }`，ids 是重排好的整份可见数据行序 |
 
 ## 插槽
 

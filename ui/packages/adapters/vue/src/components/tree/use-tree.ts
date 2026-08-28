@@ -18,11 +18,16 @@ export function useTree(
   props: TreeSchema['props'],
   onExpandedChange?: TreeSchema['props']['onExpandedChange'],
   onSelectionChange?: TreeSchema['props']['onSelectionChange'],
+  onNodeMove?: TreeSchema['props']['onNodeMove'],
 ): TreeContext {
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
   // 连打检索缓冲存在机器的 refs 里，适配器不必注入 refs
-  const service = useMachine(treeMachine, () => ({ ...props, onExpandedChange, onSelectionChange }), scope)
+  const service = useMachine(
+    treeMachine,
+    () => ({ ...props, onExpandedChange, onSelectionChange, onNodeMove }),
+    scope,
+  )
   const api = computed(() => connectTree(service, vueNormalize))
   return { api, service }
 }

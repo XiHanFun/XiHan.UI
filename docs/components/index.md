@@ -141,7 +141,7 @@
 | [时间](./time) | `time` | 1 | 0 | 4 |
 | [时间线](./timeline) | `timeline` | 8 | 0 | 5 |
 | [计时器](./timer) | `timer` | 5 | 1 | 6 |
-| [树](./tree) | `tree` | 14 | 10 | 12 |
+| [树](./tree) | `tree` | 15 | 12 | 12 |
 | [虚拟滚动](./virtualizer) | `virtualizer` | 4 | 0 | 5 |
 
 ## 反馈

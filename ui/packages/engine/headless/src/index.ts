@@ -181,6 +181,7 @@ export { connectSeparator, separatorAnatomy, separatorKeyboard, separatorMeta } 
 export type { SeparatorApi, SeparatorProps, SeparatorTranslations } from './separator'
 export { dragAnnouncement, hitAlong, hitAlongNested, insertionIndex } from './shared/drag'
 export type { DragAnnounceInput, DragAnnounceKind, DragRect, DragTranslations, DropPosition, DropTarget } from './shared/drag'
+export { isEditableTarget } from './shared/editable-target'
 export { OVERLAY_OFFSET, OVERLAY_PLACEMENT_ANCHORED, OVERLAY_PLACEMENT_LIST } from './shared/overlay'
 export { isOverflowing, maxScrollOffset, pointerDelta, SCROLL_MIN_THUMB_SIZE, scrollbarGeometry, scrollFromThumbDrag, scrollFromTrackPoint, thumbOffsetRatio, thumbSizeRatio, toDomScroll, toLogicalScroll, trackOffset } from './shared/scroll-geometry'
 export type { ScrollAxis, ScrollAxisGeometry, ScrollAxisMetrics, ScrollRect } from './shared/scroll-geometry'
@@ -245,8 +246,8 @@ export type { TourApi, TourCompleteDetails, TourOpenChangeDetails, TourRefs, Tou
 export { connectTransfer, transferAnatomy, transferCheckedValues, transferCheckState, transferFocusKey, transferIsCheckable, transferItemQuery, transferKeyboard, transferMachine, transferMatchesQuery, transferMeta, transferMove, transferOperableValues, transferOppositeSide, transferQueryKey, transferSideOf, transferToggleAll, transferToggleValue, transferVisibleItems } from './transfer'
 export type { TransferApi, TransferCheckState, TransferFilter, TransferItem, TransferItemProps, TransferMoveInput, TransferMoveResult, TransferPanelProps, TransferSchema, TransferSelectionChangeDetails, TransferSide, TransferTranslations, TransferValueChangeDetails } from './transfer'
 
-export { connectTree, flattenTree, indexTree, treeAnatomy, treeBranchQuery, treeItemQuery, treeKeyboard, treeMachine, treeMeta, treeSelectionMode } from './tree'
-export type { TreeApi, TreeExpandedChangeDetails, TreeFocusModel, TreeNode, TreeNodeMeta, TreeNodeProps, TreeRefs, TreeSchema, TreeSelectionChangeDetails, TreeSelectionMode, TreeTranslations, TreeVisibleNode } from './tree'
+export { connectTree, flattenTree, indexTree, isSelfOrDescendant, isTreeDropAllowed, treeAnatomy, treeBranchQuery, treeItemQuery, treeKeyboard, treeMachine, treeMeta, treeMoveCommand, treeMoveIntentFromKey, treeMoveOf, treeSelectionMode } from './tree'
+export type { TreeApi, TreeExpandedChangeDetails, TreeFocusModel, TreeMove, TreeNode, TreeNodeMeta, TreeNodeProps, TreeRefs, TreeSchema, TreeSelectionChangeDetails, TreeSelectionMode, TreeTranslations, TreeVisibleNode } from './tree'
 export { connectTreeSelect, findTreeSelectNodeEl, TREE_SELECT_DEFAULT_PLACEMENT, treeSelectAnatomy, treeSelectBranchQuery, treeSelectItemQuery, treeSelectKeyboard, treeSelectMachine, treeSelectMeta, treeSelectNodeEls } from './tree-select'
 export type { TreeSelectApi, TreeSelectExpandedChangeDetails, TreeSelectFocusIntent, TreeSelectNodeProps, TreeSelectOpenChangeDetails, TreeSelectRefs, TreeSelectSchema, TreeSelectTranslations, TreeSelectValueChangeDetails } from './tree-select'
 export type { HeadlessComponent, NormalizeProps, PropTypes } from './types'

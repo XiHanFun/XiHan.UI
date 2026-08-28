@@ -1,4 +1,5 @@
 // 多指会话：同时跟住落在同一块区域上的几根指针，任意一根动都回送当前全部触点。
+import type { PointerEndReason } from '../session/types'
 import type { PinchPoint } from './pinch'
 
 export interface MultiPointerSessionOptions {
@@ -10,7 +11,11 @@ export interface MultiPointerSessionOptions {
    */
   onChange: (points: readonly TrackedPoint[]) => void
   /** 最后一根手指离开。 */
-  onEnd: () => void
+  /**
+   * 最后一根离开。reason 说的是怎么离开的：抬手是 pointerup，被系统收走是 pointercancel。
+   * 两者对调用方常常不是一回事——收走时该退回原样，抬手才是落定。
+   */
+  onEnd: (details: { reason: PointerEndReason }) => void
 }
 
 export interface TrackedPoint extends PinchPoint {
@@ -58,7 +63,7 @@ export function createMultiPointerSession(options: MultiPointerSessionOptions): 
     onChange([...points])
   }
 
-  const handleUp = (event: PointerEvent): void => {
+  const finish = (reason: PointerEndReason) => (event: PointerEvent): void => {
     if (done)
       return
     const at = indexOf(event.pointerId)
@@ -70,13 +75,15 @@ export function createMultiPointerSession(options: MultiPointerSessionOptions): 
     onChange([...points])
     if (points.length === 0) {
       done = true
-      onEnd()
+      onEnd({ reason })
     }
   }
 
   doc.addEventListener('pointermove', handleMove)
+  const handleUp = finish('pointerup')
+  const handleCancel = finish('pointercancel')
   doc.addEventListener('pointerup', handleUp)
-  doc.addEventListener('pointercancel', handleUp)
+  doc.addEventListener('pointercancel', handleCancel)
 
   return {
     add: (point) => {
@@ -94,7 +101,7 @@ export function createMultiPointerSession(options: MultiPointerSessionOptions): 
       points.splice(0)
       doc.removeEventListener('pointermove', handleMove)
       doc.removeEventListener('pointerup', handleUp)
-      doc.removeEventListener('pointercancel', handleUp)
+      doc.removeEventListener('pointercancel', handleCancel)
     },
   }
 }

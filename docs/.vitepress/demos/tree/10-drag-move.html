@@ -1,160 +1,104 @@
-<!-- 拖放换父 | 树从不拥有数据：把 draggable 与拖放监听补在节点上，落点判定与数组搬运都在宿主这边，改完 collection 树自己重推层级 -->
+<!-- 拖拽搬家 | 整个节点都是拖动源：按住拖到别处松手，也可以 Tab 进树里用 Alt + 上下键在同层挪、Alt + 左右键改层级。三档落点（插在前 / 插在后 / 放进目录里）连同指示线、自我后代守卫与读屏播报都归库；树仍不拥有数据，宿主只管按库报的 value、parent、index 把数组搬一下，外加一条 allowDrop 说这次许不许 -->
 <div style="width: 100%; max-width: 320px; display: grid; gap: 12px">
-  <xh-tree id="tree-drag">
-    <div data-xh-part="root">
-      <span data-xh-part="label">邮箱目录</span>
-      <div data-xh-part="tree">
-        <div data-xh-part="branch" value="inbox">
-          <div data-xh-part="branch-control">
-            <span data-xh-part="branch-trigger"></span>
-            <span data-xh-part="branch-text">收件箱</span>
-            <span data-count style="margin-inline-start: auto">2</span>
-          </div>
-          <div data-xh-part="branch-content">
-            <div data-xh-part="item" value="f1">
-              <span aria-hidden="true">📄</span>
-              <span data-xh-part="item-text">报价单.pdf</span>
-            </div>
-            <div data-xh-part="item" value="f2">
-              <span aria-hidden="true">📄</span>
-              <span data-xh-part="item-text">周报.md</span>
-            </div>
-          </div>
+  <!-- 属性名让开 HTML 全局的 draggable：写那个的话浏览器会拿它接管原生拖放 -->
+  <xh-tree id="tree-drag-move" node-draggable>
+    <span data-xh-part="label">邮箱目录</span>
+    <div data-xh-part="tree">
+      <div data-xh-part="branch" value="inbox">
+        <div data-xh-part="branch-control">
+          <button data-xh-part="branch-trigger"></button>
+          <span data-xh-part="branch-text">收件箱</span>
         </div>
-
-        <div data-xh-part="branch" value="archive">
-          <div data-xh-part="branch-control">
-            <span data-xh-part="branch-trigger"></span>
-            <span data-xh-part="branch-text">归档</span>
-            <span data-count style="margin-inline-start: auto">1</span>
+        <div data-xh-part="branch-content">
+          <div data-xh-part="item" value="f1">
+            <span aria-hidden="true">📄</span>
+            <span data-xh-part="item-text">报价单.pdf</span>
           </div>
-          <div data-xh-part="branch-content">
-            <div data-xh-part="item" value="f3">
-              <span aria-hidden="true">📄</span>
-              <span data-xh-part="item-text">去年总结.docx</span>
-            </div>
+          <div data-xh-part="item" value="f2">
+            <span aria-hidden="true">📄</span>
+            <span data-xh-part="item-text">周报.md</span>
           </div>
-        </div>
-
-        <div data-xh-part="branch" value="trash">
-          <div data-xh-part="branch-control">
-            <span data-xh-part="branch-trigger"></span>
-            <span data-xh-part="branch-text">回收站</span>
-            <span data-count style="margin-inline-start: auto">0</span>
+          <div data-xh-part="item" value="f3">
+            <span aria-hidden="true">📄</span>
+            <span data-xh-part="item-text">会议纪要.md</span>
           </div>
-          <div data-xh-part="branch-content"></div>
         </div>
       </div>
+      <div data-xh-part="branch" value="archive">
+        <div data-xh-part="branch-control">
+          <button data-xh-part="branch-trigger"></button>
+          <span data-xh-part="branch-text">归档</span>
+        </div>
+        <div data-xh-part="branch-content">
+          <div data-xh-part="item" value="f4">
+            <span aria-hidden="true">📄</span>
+            <span data-xh-part="item-text">去年总结.docx</span>
+          </div>
+        </div>
+      </div>
+      <div data-xh-part="branch" value="trash">
+        <div data-xh-part="branch-control">
+          <button data-xh-part="branch-trigger"></button>
+          <span data-xh-part="branch-text">回收站</span>
+        </div>
+        <div data-xh-part="branch-content"></div>
+      </div>
     </div>
+    <!-- 播报区视觉隐藏，必须在拖动开始之前就在 DOM 上 -->
+    <div data-xh-part="live-region"></div>
   </xh-tree>
-  <span id="tree-drag-log">把文件拖到别的目录上放开</span>
+  <span id="tree-drag-log">按住任意一行拖走，或 Tab 进树里按 Alt + 方向键搬</span>
 </div>
 
 <script type="module">
-  const tree = document.getElementById("tree-drag");
+  const el = document.getElementById("tree-drag-move");
   const log = document.getElementById("tree-drag-log");
 
-  const folders = [
+  // 层级数据是数组，只走属性
+  const collection = [
     {
       value: "inbox",
       label: "收件箱",
       children: [
         { value: "f1", label: "报价单.pdf" },
         { value: "f2", label: "周报.md" },
+        { value: "f3", label: "会议纪要.md" },
       ],
     },
-    {
-      value: "archive",
-      label: "归档",
-      children: [{ value: "f3", label: "去年总结.docx" }],
-    },
+    { value: "archive", label: "归档", children: [{ value: "f4", label: "去年总结.docx" }] },
     { value: "trash", label: "回收站", children: [] },
   ];
+  el.collection = collection;
+  el.defaultExpandedValue = ["inbox", "archive", "trash"];
 
-  tree.collection = folders;
-  tree.expandedValue = ["inbox", "archive", "trash"];
-  tree.addEventListener(
-    "expanded-change",
-    (event) => (tree.expandedValue = event.detail.value),
-  );
+  const isFolder = (entry) => Array.isArray(entry.children);
+  const folderOf = (value) => collection.filter(isFolder).find((f) => f.value === value);
+  const levelOf = (parent) => (parent == null ? collection : folderOf(parent)?.children);
 
-  let dragging = null;
+  // 这一次搬家许不许。库自己兜住的是「落进自己的后代」与「落在禁用节点上」，
+  // 剩下的是这份数据的规矩：只有目录收得下东西，而且只收文件
+  el.allowDrop = (move) => {
+    if (move.parent == null) return true;
+    return folderOf(move.parent) != null && folderOf(move.value) == null;
+  };
 
-  function createItem(file) {
-    const item = document.createElement("div");
-    item.dataset.xhPart = "item";
-    item.setAttribute("value", file.value);
-    item.draggable = true;
-    const icon = document.createElement("span");
-    icon.setAttribute("aria-hidden", "true");
-    icon.textContent = "📄";
-    const text = document.createElement("span");
-    text.dataset.xhPart = "item-text";
-    text.textContent = file.label;
-    item.append(icon, text);
-
-    item.addEventListener("dragstart", (event) => {
-      dragging = file.value;
-      item.style.opacity = "0.5";
-      // 不写载荷有些浏览器不认这次拖拽
-      event.dataTransfer.setData("text/plain", file.value);
-    });
-    item.addEventListener("dragend", () => {
-      dragging = null;
-      item.style.opacity = "";
-    });
-    return item;
-  }
-
-  function branchOf(value) {
-    return tree.querySelector(`[data-xh-part="branch"][value="${value}"]`);
-  }
-
-  // 这一支的行数与子层标记照当下的数据重铺
-  function renderFolder(folder) {
-    const branch = branchOf(folder.value);
-    branch.querySelector("[data-count]").textContent = String(folder.children.length);
-    branch
-      .querySelector(':scope > [data-xh-part="branch-content"]')
-      .replaceChildren(...folder.children.map(createItem));
-  }
-
-  function move(target) {
-    const value = dragging;
-    dragging = null;
-    if (value == null) return;
-    const from = folders.find((f) => f.children.some((c) => c.value === value));
-    const to = folders.find((f) => f.value === target);
-    // 同一个目录里放开不算搬家
-    if (!from || !to || from === to) return;
-    const index = from.children.findIndex((c) => c.value === value);
-    const [moved] = from.children.splice(index, 1);
-    to.children.push(moved);
-    renderFolder(from);
-    renderFolder(to);
-    tree.collection = [...folders];
-    log.textContent = `${moved.label} 移到了 ${to.label}`;
-  }
-
-  // 落点是目录那一行：拖过去时描一圈虚线，放开就搬
-  for (const folder of folders) {
-    const control = branchOf(folder.value).querySelector(
-      '[data-xh-part="branch-control"]',
+  // 树从不拥有数据：库只说搬到哪个父下面的第几位，改数组这一下归宿主。
+  // index 已经算过「先摘后插」，照着先摘再插即可
+  el.addEventListener("node-move", (event) => {
+    const move = event.detail;
+    const levels = [collection, ...collection.filter(isFolder).map((f) => f.children)];
+    const from = levels.find((level) => level.some((node) => node.value === move.value));
+    const into = levelOf(move.parent);
+    if (!from || !into) return;
+    const [moved] = from.splice(
+      from.findIndex((node) => node.value === move.value),
+      1,
     );
-    const mark = (on) => {
-      control.style.outline = on ? "2px dashed var(--xh-border-strong)" : "";
-      control.style.outlineOffset = on ? "-2px" : "";
-    };
-    control.addEventListener("dragover", (event) => {
-      event.preventDefault();
-      mark(true);
-    });
-    control.addEventListener("dragleave", () => mark(false));
-    control.addEventListener("drop", (event) => {
-      event.preventDefault();
-      mark(false);
-      move(folder.value);
-    });
-    renderFolder(folder);
-  }
+    if (!moved) return;
+    into.splice(move.index, 0, moved);
+    // 数组是就地改的，把同一份重新赋回去让元素重推层级
+    el.collection = [...collection];
+    const where = move.parent == null ? "根层" : (folderOf(move.parent)?.label ?? move.parent);
+    log.textContent = `${moved.label} 搬到了${where}第 ${move.index + 1} 位`;
+  });
 </script>

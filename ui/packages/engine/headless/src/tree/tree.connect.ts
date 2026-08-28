@@ -1,10 +1,14 @@
 import type { NavIntent } from '@xihan-ui/behavior'
 import type { NormalizeProps, Orientation, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
+import type { DragRect } from '../shared/drag'
 import type { TreeApi, TreeNode, TreeNodeMeta, TreeSchema, TreeVisibleNode } from './tree.types'
 import { cascadeState, focusItem, indexOfValue, isItemDisabled, ITEM_VALUE_ATTR, itemValue, matchTypeahead, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/behavior'
-import { contains, dataAttr } from '@xihan-ui/kernel'
+import { contains, dataAttr, isComposingEvent } from '@xihan-ui/kernel'
+import { isEditableTarget } from '../shared/editable-target'
+import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { treeAnatomy, treeBranchQuery, treeItemQuery } from './tree.anatomy'
+import { treeMoveCommand, treeMoveIntentFromKey } from './tree.drag'
 import { flattenTree, indexTree, treeSelectionMode } from './tree.machine'
 
 const parts = treeAnatomy.build()
@@ -81,6 +85,21 @@ export function connectTree<T extends PropTypes>(
   const focusedValue = rawFocused != null && visible.has(rawFocused) ? rawFocused : null
 
   const metaOf = (value: string): TreeNodeMeta | undefined => metaIndex.get(value)
+  const nodeDraggable = !!prop('nodeDraggable')
+  const draggingNode = context.get('draggingNode') ?? null
+  // cell 初值是 undefined，这里连同收成 null：api 上写的是 | null
+  const dropTarget = context.get('dropTarget') ?? null
+  /** 与这个节点同一层的全部节点，按同层序号排。键盘换位只在同一层里挪。 */
+  const siblingsOf = (value: string): string[] => {
+    const parent = metaOf(value)?.parent ?? null
+    return [...metaIndex.values()]
+      .filter(node => node.parent === parent)
+      .sort((a, b) => a.posInSet - b.posInSet)
+      .map(node => node.value)
+  }
+  /** 这个节点此刻是不是落点，是的话落在哪一档。 */
+  const dropSide = (value: string): 'before' | 'after' | 'inside' | undefined =>
+    dropTarget?.targetValue === value ? dropTarget.position : undefined
   const isExpanded = (value: string): boolean => expandedValue.includes(value)
   // 级联模式下选中态从值集聚合得出：父随子勾、部分勾中半选
   const cascade = mode === 'multiple' && !!prop('cascade')
@@ -159,6 +178,56 @@ export function connectTree<T extends PropTypes>(
   /** 节点级处理器拿不到 branch 容器，只能就地往上找最近的那个（嵌套分支各认各的）。 */
   const branchElOf = (el: HTMLElement): HTMLElement | null => el.closest<HTMLElement>(parts.branch.selector)
 
+  /**
+   * 量出可见节点此刻的纵向位置。
+   *
+   * 分支量的是 `branch-control` 而不是 `branch`：后者是「这一行 + 整棵子层」的外壳，
+   * 展开着的时候它的矩形把整棵子树都吞进去，落点会永远命中最外层那个分支。
+   * control 自己不带 value，回头找它所属的 branch 取。
+   */
+  function measureNodes(treeEl: HTMLElement): DragRect[] {
+    const out: DragRect[] = []
+    for (const el of treeEl.querySelectorAll<HTMLElement>(
+      '[data-scope="tree"][data-part="item"],[data-scope="tree"][data-part="branch-control"]',
+    )) {
+      if (el.closest('[hidden]'))
+        continue
+      const value = el.getAttribute(ITEM_VALUE_ATTR)
+        ?? el.closest<HTMLElement>('[data-scope="tree"][data-part="branch"]')?.getAttribute(ITEM_VALUE_ATTR)
+      if (!value)
+        continue
+      const rect = el.getBoundingClientRect()
+      out.push({ value, start: rect.top, size: rect.height })
+    }
+    return out
+  }
+
+  /**
+   * 按在节点上。整个节点都是拖动源，没有把手。
+   *
+   * 按在节点里的交互控件上不起拖：那些地方按下去是要点它们，不是要搬这个节点。
+   * 触屏不认——纵向手势在按下那一刻就归了浏览器滚动，touch-action 事后改不回来。
+   */
+  function onNodeDragStart(event: PointerEvent, value: string): void {
+    if (!nodeDraggable || isDisabled(value) || event.button !== 0 || event.pointerType === 'touch')
+      return
+    const target = event.target as HTMLElement | null
+    if (target?.closest('input,textarea,select,button,a,[contenteditable],[role="button"],[role="checkbox"]'))
+      return
+    const el = event.currentTarget as HTMLElement | null
+    const treeEl = el?.closest<HTMLElement>('[data-scope="tree"][data-part="tree"]')
+    const session = service.refs.get('gesture')
+    if (!treeEl || !session || session.points().length > 0)
+      return
+    session.add({ pointerId: event.pointerId, clientX: event.clientX, clientY: event.clientY })
+    send({
+      type: 'NODE_DRAG.START',
+      value,
+      rects: measureNodes(treeEl),
+      originY: event.clientY,
+    })
+  }
+
   const focusValue = (el: HTMLElement | null): string | null => {
     const next = itemValue(el)
     if (next == null)
@@ -213,6 +282,8 @@ export function connectTree<T extends PropTypes>(
   return {
     collection,
     visibleNodes: rows,
+    dropTarget,
+    announcement: context.get('announcement'),
     expandedValue,
     selection,
     focusedValue,
@@ -241,6 +312,20 @@ export function connectTree<T extends PropTypes>(
     }),
 
     // 键盘全在 tree 上收口：节点只管声明自己，一次冒泡一个处理器
+    /**
+     * 拖动过程只说给读屏听。放在 root 里、与 tree 部件平级即可——
+     * root 自己不带角色，role=tree 在 tree 部件上，活动区域落不进它的子节点集合。
+     *
+     * 它必须在拖动开始之前就在 DOM 上——读屏不播报后插入的节点。
+     */
+    getLiveRegionProps: () => normalize.element({
+      ...parts['live-region'].attrs,
+      'role': 'status',
+      'aria-live': 'polite',
+      'aria-atomic': 'true',
+      'style': VISUALLY_HIDDEN_STYLE,
+    }),
+
     getTreeProps: () => normalize.element({
       ...parts.tree.attrs,
       'id': ids.tree,
@@ -258,8 +343,28 @@ export function connectTree<T extends PropTypes>(
       'onKeyDown': (event: KeyboardEvent) => {
         if (treeDisabled)
           return
+        // 输入法组合中的按键是给候选框的，不是给树的；
+        // 落在可编辑控件上的按键归那个控件——不放行的话节点里的输入框
+        // 打一个空格会被当成「选中这一项」，打字会被连打检索吃掉
+        if (isComposingEvent(event) || isEditableTarget(event.target))
+          return
         const tree = event.currentTarget as HTMLElement
         const key = event.key
+        // Alt + 方向键搬家。一按就是一次已过守卫的完整提交，不进拖动态——
+        // 裸方向键是导航与展开收起，空格是确认键，连打检索还会先吃掉可打印字符，
+        // 模态拾起在这棵树上无处落脚
+        if (event.altKey && !event.ctrlKey && !event.metaKey && nodeDraggable && focusedValue != null) {
+          const moveIntent = treeMoveIntentFromKey(key, dir === 'rtl')
+          if (moveIntent) {
+            // Alt + 方向键在部分浏览器是前进后退，认了就得挡住
+            event.preventDefault()
+            const target = treeMoveCommand(metaIndex, siblingsOf(focusedValue), focusedValue, moveIntent)
+            if (target)
+              send({ type: 'NODE.MOVE_BY', value: focusedValue, target })
+            return
+          }
+        }
+
         // 带 Ctrl/Cmd/Alt 的组合一律不归树管（Ctrl+Home 之类归浏览器与读屏），也不进连打检索
         if (event.ctrlKey || event.metaKey || event.altKey)
           return
@@ -374,10 +479,14 @@ export function connectTree<T extends PropTypes>(
     }),
 
     getItemProps: node => normalize.element({
+      'data-dragging': dataAttr(draggingNode === node.value),
+      'data-drop': dropSide(node.value),
+      'data-draggable': dataAttr(nodeDraggable && !isDisabled(node.value)),
+      'onPointerDown': (event: PointerEvent) => onNodeDragStart(event, node.value),
       ...parts.item.attrs,
       ...nodeAttrs(node.value),
       ...itemState(node.value),
-      onClick: (event: MouseEvent) => {
+      'onClick': (event: MouseEvent) => {
         if (isDisabled(node.value))
           return
         // 点击即把焦点交给这一行：叶子本身就是 treeitem，直接认 currentTarget
@@ -385,7 +494,7 @@ export function connectTree<T extends PropTypes>(
         send({ type: 'NODE.SELECT', value: node.value, extend: (event as { shiftKey?: boolean }).shiftKey })
       },
       // 焦点是事实不是许可：禁用节点被点到也记锚点，方向键才知道从哪儿起步
-      onFocus: () => send({ type: 'NODE.FOCUS', value: node.value }),
+      'onFocus': () => send({ type: 'NODE.FOCUS', value: node.value }),
     }),
 
     getItemTextProps: node => normalize.element({
@@ -463,7 +572,11 @@ export function connectTree<T extends PropTypes>(
     getBranchControlProps: node => normalize.element({
       ...parts['branch-control'].attrs,
       ...branchState(node.value),
-      onClick: (event: MouseEvent) => {
+      'data-dragging': dataAttr(draggingNode === node.value),
+      'data-drop': dropSide(node.value),
+      'data-draggable': dataAttr(nodeDraggable && !isDisabled(node.value)),
+      'onPointerDown': (event: PointerEvent) => onNodeDragStart(event, node.value),
+      'onClick': (event: MouseEvent) => {
         if (isDisabled(node.value))
           return
         // 分支行只是 treeitem 里的一层内容，焦点该落在 branch 上

@@ -44997,7 +44997,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-tree>` —— Light-DOM 行为宿主：作者写 root/label/tree 与若干 item / branch 角色节点，\n元素跑 tree 机器并把 connect 产出打上去。节点身份取自节点上的 value 属性。\n\n层级（aria-level / aria-posinset / aria-setsize）与禁用都不从 DOM 反推，而是查 `collection`\n这份树数据——它是元信息的唯一事实源，作者的标记只管长相，两个适配器也就不会各推各的。\n因此 collection 必须与标记同源：标记里有、collection 里没有的节点报不出层级，也进不了导航。\n\n树数据与展开/选中集合都是数组，属性表达不了，只能走 property（`el.collection = [...]`）。",
+          "description": "`<xh-tree>` —— Light-DOM 行为宿主：作者写 root/label/tree 与若干 item / branch 角色节点，\n元素跑 tree 机器并把 connect 产出打上去。节点身份取自节点上的 value 属性。\n\n层级（aria-level / aria-posinset / aria-setsize）与禁用都不从 DOM 反推，而是查 `collection`\n这份树数据——它是元信息的唯一事实源，作者的标记只管长相，两个适配器也就不会各推各的。\n因此 collection 必须与标记同源：标记里有、collection 里没有的节点报不出层级，也进不了导航。\n\n树数据与展开/选中集合都是数组，属性表达不了，只能走 property（`el.collection = [...]`）；\n落点校验 `allowDrop`（函数）与读屏文案 `translations`（对象）同理。\n\n打开 node-draggable 后节点可以拖着搬家：整个节点都是拖动源，不另出把手。拖动中被拖的节点原地不动，\n只落 data-dragging；落点画在参照节点上——data-drop 为 before/after 是插在这一行前后，\n为 inside 是放进这个分支。触屏不进拖动。\n键盘走 Alt + 方向键：上下在同层兄弟间挪，左右改缩进层级（rtl 下左右对调），一按就是一次完整提交。",
           "name": "XhTreeElement",
           "cssParts": [
             {
@@ -45007,6 +45007,10 @@
             {
               "description": "树标题（aria-labelledby 目标）",
               "name": "label"
+            },
+            {
+              "description": "视觉隐藏的播报区，拖动过程的读屏文案写在这里；写在 root 里、与 tree 部件平级（root 自己不带角色，它落不进 role=tree 的子节点集合）",
+              "name": "live-region"
             },
             {
               "description": "role=tree 容器，键盘在此收口，也是 roving tabindex 的兜底位",
@@ -45199,6 +45203,31 @@
             },
             {
               "kind": "field",
+              "name": "nodeDraggable",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "node-draggable"
+            },
+            {
+              "kind": "field",
+              "name": "allowDrop",
+              "privacy": "public",
+              "type": {
+                "text": "(move: TreeNodeMoveDetails) => boolean | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "Partial<TreeTranslations> | undefined"
+              }
+            },
+            {
+              "kind": "field",
               "name": "notifyExpanded",
               "privacy": "private",
               "readonly": true
@@ -45206,6 +45235,12 @@
             {
               "kind": "field",
               "name": "notifySelection",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyNodeMove",
               "privacy": "private",
               "readonly": true
             },
@@ -45295,6 +45330,13 @@
               "type": {
                 "text": "TreeSelectionChangeDetails"
               }
+            },
+            {
+              "description": "节点搬了家；detail 为 `{ value, parent, index }`，parent 为 null 即根层，index 是在那一层的落位（已算过先摘后插）",
+              "name": "node-move",
+              "type": {
+                "text": "TreeNodeMoveDetails"
+              }
             }
           ],
           "attributes": [
@@ -45377,6 +45419,14 @@
               "description": "文字方向，只对调左右方向键的展开/收起语义，默认 ltr",
               "name": "dir",
               "fieldName": "direction"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "节点可以拖着搬家，默认关；不叫 draggable 是因为那是 HTML 全局属性，写在元素上浏览器会拿它接管原生拖放，指针就到不了这里",
+              "name": "node-draggable",
+              "fieldName": "nodeDraggable"
             }
           ],
           "superclass": {
@@ -45424,6 +45474,18 @@
             },
             {
               "name": "--xh-tree-checkbox-size"
+            },
+            {
+              "name": "--xh-tree-dragging-opacity"
+            },
+            {
+              "name": "--xh-tree-drop-fg"
+            },
+            {
+              "name": "--xh-tree-drop-inside-bg"
+            },
+            {
+              "name": "--xh-tree-drop-line"
             },
             {
               "name": "--xh-tree-fg"

@@ -66,6 +66,11 @@ export const XhTreeRoot = defineComponent({
     loop: { type: Boolean, default: undefined },
     typeahead: { type: Boolean, default: undefined },
     dir: { type: String as PropType<Direction>, default: undefined },
+    /** 节点可以拖着搬家。整个节点都是拖动源，不另出把手。 */
+    nodeDraggable: Boolean,
+    /** 这一次搬家许不许。收到的是折算好的落点（搬到哪个父下面的第几位）。不给即都许。 */
+    allowDrop: { type: Function as PropType<TreeProps['allowDrop']>, default: undefined },
+    translations: { type: Object as PropType<TreeProps['translations']>, default: undefined },
   },
   // *-change 携带 { value }，update:* 携带裸集合；回传值恒为数组，单选时长度 ≤ 1
   emits: {
@@ -73,6 +78,8 @@ export const XhTreeRoot = defineComponent({
     'update:expandedValue': (_value: PayloadOf<TreeProps, 'onExpandedChange'>['value']) => true,
     'selection-change': (_details: PayloadOf<TreeProps, 'onSelectionChange'>) => true,
     'update:selection': (_value: PayloadOf<TreeProps, 'onSelectionChange'>['value']) => true,
+    // 搬家是通知，节点顺序的真源在使用者的数据里，故没有配对的 update:*
+    'node-move': (_move: PayloadOf<TreeProps, 'onNodeMove'>) => true,
   },
   slots: Object as SlotsType<{
     default?: (props: TreeRootSlotProps) => VNode[]
@@ -86,7 +93,10 @@ export const XhTreeRoot = defineComponent({
       emit('selection-change', details)
       emit('update:selection', details.value)
     }
-    const ctx = useTree(props as TreeProps, onExpandedChange, onSelectionChange)
+    const onNodeMove: TreeProps['onNodeMove'] = (move) => {
+      emit('node-move', move)
+    }
+    const ctx = useTree(props as TreeProps, onExpandedChange, onSelectionChange, onNodeMove)
     provideTree(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       visibleNodes: ctx.api.value.visibleNodes,
@@ -116,6 +126,24 @@ export const XhTreeTree = defineComponent({
   setup(_, { slots }) {
     const ctx = useTreeContext()
     return () => h('div', ctx.api.value.getTreeProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+/**
+ * 拖动过程的读屏播报区，视觉上不可见。
+ *
+ * 放在 root 里、与 tree 部件平级。它必须在拖动开始**之前**就在 DOM 上——
+ * 读屏不播报后插入的节点，等到拾起才渲出来等于没有。
+ */
+export const XhTreeLiveRegion = defineComponent({
+  name: 'XhTreeLiveRegion',
+  setup() {
+    const ctx = useTreeContext()
+    return () => h(
+      'div',
+      ctx.api.value.getLiveRegionProps() as Record<string, unknown>,
+      ctx.service.context.get('announcement'),
+    )
   },
 })
 
