@@ -865,10 +865,16 @@ const TABLE = [
   // 发版当天最容易漏的一批：正文里「当前版本是 X」的陈述
   // 文档站是私有包，但版本号一直照着库包写；不登记就会像此前那样停在 alpha.1
   ['README.md', /Components-(\d+)-1f6feb/, '组件数'],
-  ['README.md', /- \*\*(\d+) 个组件\*\* - 覆盖/, '组件数'],
-  ['README.md', /已经能用的：(\d+) 个组件/, '组件数'],
-  ['README.md', /^(\d+) 个公开包均已发布至 npm/m, '公开包数'],
-  ['README.md', /一条命令跑 (\d+) 项结构检查/, 'gate串里的结构检查数'],
+  ['README.md', /- \*\*(\d+) components\*\* - covering/, '组件数'],
+  ['README.md', /Working today: (\d+) components/, '组件数'],
+  ['README.md', /^(\d+) public packages/m, '公开包数'],
+  ['README.md', /one command runs (\d+) structural checks/, 'gate串里的结构检查数'],
+
+  ['README_cn.md', /Components-(\d+)-1f6feb/, '组件数'],
+  ['README_cn.md', /- \*\*(\d+) 个组件\*\* - 覆盖/, '组件数'],
+  ['README_cn.md', /已经能用的：(\d+) 个组件/, '组件数'],
+  ['README_cn.md', /^(\d+) 个公开包/m, '公开包数'],
+  ['README_cn.md', /一条命令跑 (\d+) 项结构检查/, 'gate串里的结构检查数'],
 
   ['ui/README.md', /^(\d+) components, each shipping/m, '组件数'],
   ['ui/README.md', /\| (\d+) components as anatomy/, '组件数'],
@@ -1068,7 +1074,8 @@ const TABLE = [
   ['docs/introduction.md', /运行时第三方依赖只有([\d一二三四五六七八九十两]+)个/, '运行时第三方依赖数'],
   ['docs/introduction.md', /运行时第三方依赖只有[\d一二三四五六七八九十两]+个（`([^`]+)`/, '运行时第三方依赖名'],
   ['docs/overview.md', /唯一登记在案的例外是 `([^`]+)`/, '运行时第三方依赖名'],
-  ['README.md', /运行时第三方依赖只有 `([^`]+)`/, '运行时第三方依赖名'],
+  ['README.md', /the only third-party runtime dependency is `([^`]+)`/, '运行时第三方依赖名'],
+  ['README_cn.md', /运行时第三方依赖只有 `([^`]+)`/, '运行时第三方依赖名'],
   ['docs/faq.md', /无障碍存量违规还剩([\d一二三四五六七八九十两]+)条登记在案/, 'a11y存量违规条数'],
   ['docs/faq.md', /另有([\d一二三四五六七八九十两]+)条 breadcrumb 的步骤重放豁免/, 'a11y重放豁免条数'],
   ['docs/faq.md', /另有 breadcrumb ([\d一二三四五六七八九十两]+)条步骤重放豁免/, 'a11y重放豁免条数'],
