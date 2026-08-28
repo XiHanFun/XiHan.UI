@@ -85,7 +85,12 @@ export function treeMoveOf(
     // 落进子层末尾。已经在这个父下面时不必减一：末尾就是末尾
     const childCount = countChildren(meta, target.targetValue)
     const already = draggedMeta.parent === target.targetValue
-    return { value: dragged, parent: target.targetValue, index: already ? childCount - 1 : childCount }
+    const index = already ? childCount - 1 : childCount
+    // 本来就是这个父的末位孩子：算下来还是原位，不发一次空搬家。
+    // 与下面 before / after 那一支同一条约定
+    if (already && index === draggedMeta.posInSet - 1)
+      return null
+    return { value: dragged, parent: target.targetValue, index }
   }
 
   const parent = targetMeta.parent

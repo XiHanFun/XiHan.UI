@@ -60,13 +60,16 @@ export const tabsMachine = createMachine({
        * 会话只跟调用方交进来的那一根——连接层在按下时判完是不是该起拖再交。
        */
       trackPointer: ({ prop, refs, scope, send }) => {
-        const horizontal = (prop('orientation') ?? 'horizontal') === 'horizontal'
         const session = createMultiPointerSession({
           doc: resolveSessionDoc(scope.getDoc().documentElement),
           onChange: (points: readonly { clientX: number, clientY: number }[]) => {
             const first = points[0]
-            if (first)
-              send({ type: 'TAB_DRAG.MOVE', point: horizontal ? first.clientX : first.clientY })
+            if (!first)
+              return
+            // 轴在这里现读，不在效应顶部求值：会话是根级效应建的、只在 INIT 挂一次，
+            // 提前求值等于把轴钉死在挂载那一刻，运行期改 orientation 就量错轴了
+            const horizontal = (prop('orientation') ?? 'horizontal') === 'horizontal'
+            send({ type: 'TAB_DRAG.MOVE', point: horizontal ? first.clientX : first.clientY })
           },
           onEnd: ({ reason }: { reason: string }) =>
             send({ type: reason === 'pointercancel' ? 'TAB_DRAG.CANCEL' : 'TAB_DRAG.END' }),

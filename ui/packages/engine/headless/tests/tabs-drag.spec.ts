@@ -68,6 +68,7 @@ function mount(initial: Partial<Props> = {}) {
     dragging: () => service.context.get('draggingTab') ?? null,
     drop: () => service.context.get('dropTarget') ?? null,
     said: () => service.context.get('announcement'),
+    setProps: (next: Partial<Props>) => Object.assign(props, next),
   }
 }
 
@@ -265,6 +266,32 @@ describe('标签拖拽 · 指针', () => {
     press(h, 'three', 20)
     move(220)
     expect(h.drop()).toEqual({ targetValue: 'one', position: 'after' })
+  })
+
+  it('运行期把横排改成竖排，落点跟着换轴——跟手的会话是常驻的，轴不能在挂载那一刻定死', () => {
+    const h = mount()
+    // 三块横排各占 100：one 0-100、two 100-200、three 200-300
+    h.setProps({ orientation: 'vertical' })
+    // 竖排之后位置要按纵轴重排；夹具的矩形是按挂载时的排布打的，这里手工改掉
+    ;['one', 'two', 'three'].forEach((v, i) => {
+      const el = h.trigger(v)
+      const top = i * SPAN
+      if (el) {
+        el.getBoundingClientRect = (): DOMRect =>
+          ({ x: 0, y: top, width: 120, height: SPAN, top, left: 0, right: 120, bottom: top + SPAN, toJSON: () => ({}) }) as DOMRect
+      }
+    })
+
+    press(h, 'one', 20)
+    // 纵轴走到 280（three 的后半），横轴停在 5——轴没换过来的话会按 clientX 算，
+    // 5 落在 one 自己身上，也就是没有落点
+    document.dispatchEvent(new PointerEvent('pointermove', {
+      pointerId: 1,
+      clientX: 5,
+      clientY: 280,
+      bubbles: true,
+    }))
+    expect(h.drop()).toEqual({ targetValue: 'three', position: 'after' })
   })
 
   it('同一个实例连拖两次——会话是常驻的，第一场收尾不该把它闩死', () => {

@@ -114,6 +114,15 @@ describe('落点折算成搬家', () => {
       .toEqual({ value: 'quote', parent: 'archive', index: 1 })
   })
 
+  it('本来就是这个父的末位孩子，落进父节点里不算搬家', () => {
+    // 算下来 index 与它此刻的位置相同，与 before / after 那一支同一条约定
+    const meta = indexTree([{ value: 'p', children: [{ value: 'a' }, { value: 'b' }] }])
+    expect(treeMoveOf(meta, 'b', { targetValue: 'p', position: 'inside' })).toBeNull()
+    // 不是末位的那个照常搬得动
+    expect(treeMoveOf(meta, 'a', { targetValue: 'p', position: 'inside' }))
+      .toEqual({ value: 'a', parent: 'p', index: 1 })
+  })
+
   it('落进空分支是第 0 位', () => {
     expect(treeMoveOf(META, 'quote', { targetValue: 'trash', position: 'inside' }))
       .toEqual({ value: 'quote', parent: 'trash', index: 0 })
@@ -516,8 +525,9 @@ describe('节点拖拽 · 指针', () => {
     release()
     expect(onNodeMove).toHaveBeenCalledTimes(1)
 
+    // 第二拖要挑一个真会动的落点：落回自己的父节点是原地，不发事件
     press(h, 'weekly', 90)
-    move(10)
+    move(190)
     expect(h.dragging()).toBe('weekly')
     release()
     expect(onNodeMove).toHaveBeenCalledTimes(2)
