@@ -584,3 +584,120 @@ describe('禁用的行不是拖动源', () => {
     expect(onRowMove).toHaveBeenCalledWith({ id: 'a', from: 0, to: 1, ids: ['b', 'a', 'c', 'd'] })
   })
 })
+
+describe('行拖不动的判定要能恢复，也别把别人的行算进来', () => {
+  /** 只渲前 rendered 行的表体，模拟窗口化渲染。 */
+  function windowed(total: number, rendered: number) {
+    const rows = Array.from({ length: total }, (_, i) => ({ id: `r${i}` }))
+    const props: Partial<Props> = { rows, columns: COLUMNS, rowReorderable: true }
+    const runtime = createVanillaRuntime()
+    const service = createService(tableMachine, { props: () => props, runtime })
+    runtime.start()
+
+    const root = document.createElement('div')
+    root.setAttribute('data-scope', 'table')
+    root.setAttribute('data-part', 'root')
+    const body = document.createElement('div')
+    body.setAttribute('data-scope', 'table')
+    body.setAttribute('data-part', 'body')
+    root.append(body)
+
+    const addRow = (id: string, index: number): HTMLElement => {
+      const el = document.createElement('div')
+      el.setAttribute('data-scope', 'table')
+      el.setAttribute('data-part', 'row')
+      el.setAttribute('data-value', id)
+      const top = index * 40
+      el.getBoundingClientRect = (): DOMRect =>
+        ({ x: 0, y: top, width: 200, height: 40, top, left: 0, right: 200, bottom: top + 40, toJSON: () => ({}) }) as DOMRect
+      body.append(el)
+      return el
+    }
+    const els = new Map<string, HTMLElement>()
+    rows.slice(0, rendered).forEach((r, i) => els.set(r.id, addRow(r.id, i)))
+    document.body.append(root)
+
+    return {
+      service,
+      api: () => connectTable(service, normalizeProps),
+      press: (id: string) => {
+        const p = connectTable(service, normalizeProps).getRowProps({ value: id }) as Dict
+        ;(p.onPointerDown as (e: PointerEvent) => void)({
+          button: 0,
+          pointerId: 1,
+          pointerType: 'mouse',
+          clientY: 10,
+          currentTarget: els.get(id),
+          target: els.get(id),
+          preventDefault: () => {},
+        } as unknown as PointerEvent)
+      },
+      renderRest: () => rows.slice(rendered).forEach((r, i) => els.set(r.id, addRow(r.id, rendered + i))),
+    }
+  }
+
+  it('按下时才发现只渲了一段，把原因记下来', () => {
+    const h = windowed(3, 2)
+    h.press('r0')
+    expect(h.api().rowReorderDisabledReason).toBe('virtualized')
+    expect(h.service.state.get()).toBe('idle')
+  })
+
+  it('整份渲出来之后再按就恢复——判定不能是一记就锁死', () => {
+    const h = windowed(3, 2)
+    h.press('r0')
+    h.renderRest()
+    h.press('r0')
+    expect(h.api().rowReorderDisabledReason).toBeNull()
+    expect(h.service.state.get()).toBe('rowDragging')
+  })
+
+  it('详情行里嵌一张完整的表，外层照样拖得动', () => {
+    const rows = [{ id: 'a', expandable: true }, { id: 'b' }]
+    const props: Partial<Props> = {
+      rows,
+      columns: COLUMNS,
+      rowReorderable: true,
+      defaultExpanded: ['a'],
+    }
+    const runtime = createVanillaRuntime()
+    const service = createService(tableMachine, { props: () => props, runtime })
+    runtime.start()
+
+    const mk = (part: string, value: string | null, top: number, into: HTMLElement): HTMLElement => {
+      const el = document.createElement('div')
+      el.setAttribute('data-scope', 'table')
+      el.setAttribute('data-part', part)
+      if (value)
+        el.setAttribute('data-value', value)
+      el.getBoundingClientRect = (): DOMRect =>
+        ({ x: 0, y: top, width: 200, height: 40, top, left: 0, right: 200, bottom: top + 40, toJSON: () => ({}) }) as DOMRect
+      into.append(el)
+      return el
+    }
+    const root = document.createElement('div')
+    root.setAttribute('data-scope', 'table')
+    root.setAttribute('data-part', 'root')
+    const body = mk('body', null, 0, root)
+    const rowA = mk('row', 'a', 0, body)
+    const detail = mk('expanded-row', 'a', 40, body)
+    // 详情里放一张完整的内层表：它的行不该被外层量进去
+    const innerBody = mk('body', null, 40, detail)
+    mk('row', 'x', 40, innerBody)
+    mk('row', 'y', 80, innerBody)
+    mk('row', 'b', 120, body)
+    document.body.append(root)
+
+    const p = connectTable(service, normalizeProps).getRowProps({ value: 'a' }) as Dict
+    ;(p.onPointerDown as (e: PointerEvent) => void)({
+      button: 0,
+      pointerId: 1,
+      pointerType: 'mouse',
+      clientY: 10,
+      currentTarget: rowA,
+      target: rowA,
+      preventDefault: () => {},
+    } as unknown as PointerEvent)
+    expect(service.state.get()).toBe('rowDragging')
+  })
+})
