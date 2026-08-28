@@ -8,7 +8,7 @@ Framework-agnostic component library. State machines and accessibility live in a
 
 121 components, each shipping a headless core, a Vue component, a custom element, and a default skin.
 
-> **Preview.** Published to npm under the `preview` dist-tag — a pre-release: no semver guarantees, the API can still change. The documentation site is live at https://ui.docs.xihanfun.com. Accessibility is scanned in real Chromium; the backlog is down to two recorded entries (the shared table’s `tag` disabled-state contrast and the WC-side `steps` required-children), plus one replay exemption for `breadcrumb`. Do not depend on it in production.
+> **v1.0.0.** The 18 public packages are released in lockstep and published to npm at `1.0.0`; the one exception is `@xihan-ui/pointer`, which is not published yet. The documentation site is live at https://ui.docs.xihanfun.com. Accessibility is scanned in real Chromium; the backlog is down to two recorded entries (the shared table’s `tag` disabled-state contrast and the WC-side `steps` required-children), plus one replay exemption for `breadcrumb`.
 
 ## Packages
 
