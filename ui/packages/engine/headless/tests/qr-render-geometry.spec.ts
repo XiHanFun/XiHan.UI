@@ -23,6 +23,21 @@ const LOGO_DAMAGE_CODE = 'qr-code.logo-damage'
 /** 本轮收到的诊断记录；连 logo 的用例会往通道里报，逐条收下来自己看。 */
 let diagnostics: DiagnosticRecord[] = []
 
+/** 本条用例已经嚼过的几何点数：解析出来的路径点，加上取样过的坐标。 */
+let work = 0
+
+/**
+ * 一条用例允许嚼下的几何点数。
+ *
+ * 这份判据整条是同步的：一条用例跑多久 vitest 就等多久，
+ * 到了 testTimeout（缺省 5000ms）当场判失败，报的是超时不是对账不上，
+ * 而机器满载时同一段代码要跑上好几倍。
+ * 满码带圆弧的一组形状要嚼掉六十万个点，逐条卡住工作量，
+ * 一条用例只跑一组形状，本机耗时就压在 0.3 秒上下。
+ * 超预算的用例按形状组合或 margin 拆开，不要去调 testTimeout。
+ */
+const WORK_BUDGET = 800_000
+
 beforeEach(() => {
   resetDiagnostics()
   setDiagnosticsConsoleOutput(false)
@@ -31,10 +46,12 @@ beforeEach(() => {
   setDiagnosticsDedupe(false)
   diagnostics = []
   onDiagnostic(record => void diagnostics.push(record))
+  work = 0
 })
 
 afterEach(() => {
   resetDiagnostics()
+  expect(work).toBeLessThanOrEqual(WORK_BUDGET)
 })
 
 /** 本轮报出的 logo 损伤警告。 */
@@ -213,6 +230,8 @@ function parsePath(d: string): SubPath[] {
     }
   }
   flush()
+  for (const sub of subs)
+    work += sub.length
   return subs
 }
 
@@ -303,6 +322,7 @@ interface Painted {
  */
 function inkGrid(painted: Painted, xs: readonly number[], ys: readonly number[]): boolean[][] {
   const { clear } = painted
+  work += xs.length * ys.length * painted.layers.length
   return ys.map((y) => {
     const windings = painted.layers.map(layer => rowWindings(layer, y, xs))
     return xs.map((x, i) => {
@@ -545,6 +565,10 @@ const MODULE_SHAPES: readonly QrModuleShape[] = ['square', 'dot', 'rounded']
 const EYE_SHAPES: readonly QrEyeShape[] = ['square', 'rounded']
 const LEVELS: readonly QrLevel[] = ['L', 'M', 'Q', 'H']
 
+/** 六种形状组合。逐格读回墨的那几条判据一条用例只跑一组，工作量不叠在一起。 */
+const SHAPE_COMBOS: readonly (readonly [QrModuleShape, QrEyeShape])[] = MODULE_SHAPES
+  .flatMap(moduleShape => EYE_SHAPES.map(eyeShape => [moduleShape, eyeShape] as const))
+
 /** 取样点到最近墨边的最小余量门槛，单位是模块边长。 */
 const MIN_INK_MARGIN = 0.25
 
@@ -637,39 +661,37 @@ describe('缺省形状的几何总量不变', () => {
     return modules.reduce((n, line) => n + line.filter(Boolean).length, 0)
   }
 
-  it('square + square 的 path + eyePath 与整张码合并出来的那条盖住同一片墨', () => {
+  it.each([0, 1, 4, 9])('margin %d：square + square 的 path + eyePath 与整张码合并出来的那条盖住同一片墨', (margin) => {
     for (const { value, level } of SAMPLES) {
-      for (const margin of [0, 1, 4, 9]) {
-        const api = connectQrCode({ value, level, margin }, normalizeProps)
-        const matrix = qrEncode(value, level).modules
-        const merged = mergedRunPath(matrix, margin)
-        const tag = { value: value.slice(0, 8), margin }
+      const api = connectQrCode({ value, level, margin }, normalizeProps)
+      const matrix = qrEncode(value, level).modules
+      const merged = mergedRunPath(matrix, margin)
+      const tag = { value: value.slice(0, 8), margin }
 
-        // 一、面积：两条加起来恰好是深色模块数，一格不多一格不少
-        const dark = darkCount(matrix)
-        expect({ ...tag, area: Number((signedArea(api.path) + signedArea(api.eyePath)).toFixed(6)) })
-          .toEqual({ ...tag, area: dark })
-        expect(Number(signedArea(merged).toFixed(6))).toBe(dark)
+      // 一、面积：两条加起来恰好是深色模块数，一格不多一格不少
+      const dark = darkCount(matrix)
+      expect({ ...tag, area: Number((signedArea(api.path) + signedArea(api.eyePath)).toFixed(6)) })
+        .toEqual({ ...tag, area: dark })
+      expect(Number(signedArea(merged).toFixed(6))).toBe(dark)
 
-        // 二、落点：缺省形状的边界全在整数坐标上，格内墨色恒定，
-        // 于是逐格取样就是完备判据——整个 viewBox（含静区）每一格都与参照实现相同
-        const side = api.count + margin * 2
-        const coords = Array.from({ length: side }, (_, i) => i + 0.5)
-        const now = inkGrid(paintedOf(api.path, api.eyePath, undefined), coords, coords)
-        const before = inkGrid(paintedOf(merged, '', undefined), coords, coords)
-        const diff: string[] = []
-        for (let row = 0; row < side && diff.length < 8; row++) {
-          for (let col = 0; col < side && diff.length < 8; col++) {
-            if (now[row]![col] !== before[row]![col])
-              diff.push(`格 ${row},${col}：原先 ${before[row]![col] ? '有墨' : '无墨'}，现在 ${now[row]![col] ? '有墨' : '无墨'}`)
-          }
+      // 二、落点：缺省形状的边界全在整数坐标上，格内墨色恒定，
+      // 于是逐格取样就是完备判据——整个 viewBox（含静区）每一格都与参照实现相同
+      const side = api.count + margin * 2
+      const coords = Array.from({ length: side }, (_, i) => i + 0.5)
+      const now = inkGrid(paintedOf(api.path, api.eyePath, undefined), coords, coords)
+      const before = inkGrid(paintedOf(merged, '', undefined), coords, coords)
+      const diff: string[] = []
+      for (let row = 0; row < side && diff.length < 8; row++) {
+        for (let col = 0; col < side && diff.length < 8; col++) {
+          if (now[row]![col] !== before[row]![col])
+            diff.push(`格 ${row},${col}：原先 ${before[row]![col] ? '有墨' : '无墨'}，现在 ${now[row]![col] ? '有墨' : '无墨'}`)
         }
-        expect({ ...tag, diff }).toEqual({ ...tag, diff: [] })
-
-        // 三、码眼确实拆了出去：eyePath 非空，主 path 比参照实现短
-        expect(api.eyePath).not.toBe('')
-        expect(api.path.length).toBeLessThan(merged.length)
       }
+      expect({ ...tag, diff }).toEqual({ ...tag, diff: [] })
+
+      // 三、码眼确实拆了出去：eyePath 非空，主 path 比参照实现短
+      expect(api.eyePath).not.toBe('')
+      expect(api.path.length).toBeLessThan(merged.length)
     }
   })
 
@@ -717,26 +739,19 @@ describe('缺省形状的几何总量不变', () => {
 })
 
 describe('中心覆盖', () => {
-  it('六种形状组合下，每个深色模块的格心都有墨、浅色模块的格心都没有', () => {
-    for (const moduleShape of MODULE_SHAPES) {
-      for (const eyeShape of EYE_SHAPES) {
-        for (const { value, level } of SAMPLES) {
-          const got = readback({ value, level, moduleShape, eyeShape })
-          expect({ moduleShape, eyeShape, version: got.api.version, bad: mismatches(got.ink, got.matrix) })
-            .toEqual({ moduleShape, eyeShape, version: got.api.version, bad: [] })
-        }
-      }
+  it.each(SHAPE_COMBOS)('%s 码点 + %s 码眼：每个深色模块的格心都有墨、浅色模块的格心都没有', (moduleShape, eyeShape) => {
+    for (const { value, level } of SAMPLES) {
+      const got = readback({ value, level, moduleShape, eyeShape })
+      expect({ moduleShape, eyeShape, version: got.api.version, bad: mismatches(got.ink, got.matrix) })
+        .toEqual({ moduleShape, eyeShape, version: got.api.version, bad: [] })
     }
   })
 
-  it('大版本（含版本信息与多组校正图形）也逐格对得上', () => {
-    const value = 'x'.repeat(qrCapacityBytes(32, 'L'))
-    for (const [moduleShape, eyeShape] of [['dot', 'rounded'], ['rounded', 'square']] as const) {
-      const got = readback({ value, level: 'L', moduleShape, eyeShape })
-      expect(got.api.version).toBe(32)
-      expect({ moduleShape, eyeShape, bad: mismatches(got.ink, got.matrix) })
-        .toEqual({ moduleShape, eyeShape, bad: [] })
-    }
+  it.each([['dot', 'rounded'], ['rounded', 'square']] as const)('%s 码点 + %s 码眼：大版本（含版本信息与多组校正图形）也逐格对得上', (moduleShape, eyeShape) => {
+    const got = readback({ value: 'x'.repeat(qrCapacityBytes(32, 'L')), level: 'L', moduleShape, eyeShape })
+    expect(got.api.version).toBe(32)
+    expect({ moduleShape, eyeShape, bad: mismatches(got.ink, got.matrix) })
+      .toEqual({ moduleShape, eyeShape, bad: [] })
   })
 
   it('形状给了词表外的值时退到盖得住格心的画法，扫得出的码不变成扫不出的', () => {
@@ -799,23 +814,19 @@ describe('中心覆盖', () => {
 })
 
 describe('码眼结构', () => {
-  it('两种 eyeShape 下三处定位图形都是外环 + 空一圈 + 内心，没被画成实心块', () => {
-    for (const moduleShape of MODULE_SHAPES) {
-      for (const eyeShape of EYE_SHAPES) {
-        for (const { value, level } of SAMPLES) {
-          const { api, painted } = readback({ value, level, moduleShape, eyeShape })
-          const near = api.margin
-          const far = api.margin + api.count - 7
-          for (const [ex, ey] of [[near, near], [far, near], [near, far]] as const) {
-            const xs = Array.from({ length: 7 }, (_, i) => ex + i + 0.5)
-            const ys = Array.from({ length: 7 }, (_, i) => ey + i + 0.5)
-            const patch = inkGrid(painted, xs, ys)
-            expect({ moduleShape, eyeShape, at: `${ex},${ey}`, patch }).toEqual({ moduleShape, eyeShape, at: `${ex},${ey}`, patch: FINDER })
-            // 中间那圈必须整圈是空的：外环与内心连成一片就没有 1:1:3:1:1
-            expect(patch[1]!.slice(1, 6).some(Boolean)).toBe(false)
-            expect(patch[5]!.slice(1, 6).some(Boolean)).toBe(false)
-          }
-        }
+  it.each(SHAPE_COMBOS)('%s 码点 + %s 码眼：三处定位图形都是外环 + 空一圈 + 内心，没被画成实心块', (moduleShape, eyeShape) => {
+    for (const { value, level } of SAMPLES) {
+      const { api, painted } = readback({ value, level, moduleShape, eyeShape })
+      const near = api.margin
+      const far = api.margin + api.count - 7
+      for (const [ex, ey] of [[near, near], [far, near], [near, far]] as const) {
+        const xs = Array.from({ length: 7 }, (_, i) => ex + i + 0.5)
+        const ys = Array.from({ length: 7 }, (_, i) => ey + i + 0.5)
+        const patch = inkGrid(painted, xs, ys)
+        expect({ moduleShape, eyeShape, at: `${ex},${ey}`, patch }).toEqual({ moduleShape, eyeShape, at: `${ex},${ey}`, patch: FINDER })
+        // 中间那圈必须整圈是空的：外环与内心连成一片就没有 1:1:3:1:1
+        expect(patch[1]!.slice(1, 6).some(Boolean)).toBe(false)
+        expect(patch[5]!.slice(1, 6).some(Boolean)).toBe(false)
       }
     }
   })
@@ -860,27 +871,25 @@ describe('时序图形与校正图形没被变形', () => {
     return box
   }
 
-  it('三种 moduleShape 下，深色的时序 / 校正模块整格都在某一个矩形子路径里', () => {
-    for (const moduleShape of MODULE_SHAPES) {
-      for (const { value, level } of SAMPLES) {
-        const api = connectQrCode({ value, level, moduleShape, eyeShape: 'rounded' }, normalizeProps)
-        const matrix = qrEncode(value, level).modules
-        const kinds = cellKinds(api.version)
-        const rects = parsePath(api.path).map(rectOf).filter(box => box !== undefined)
-        const bad: string[] = []
-        for (let row = 0; row < api.count && bad.length < 6; row++) {
-          for (let col = 0; col < api.count && bad.length < 6; col++) {
-            if (kinds[row * api.count + col] !== CELL_ALWAYS_SQUARE || !matrix[row]![col])
-              continue
-            const x = col + api.margin
-            const y = row + api.margin
-            const covered = rects.some(box => box.x0 <= x && box.x1 >= x + 1 && box.y0 <= y && box.y1 >= y + 1)
-            if (!covered)
-              bad.push(`${moduleShape}：行 ${row} 列 ${col} 的时序 / 校正模块不是整格方块`)
-          }
+  it.each(MODULE_SHAPES)('%s 码点下，深色的时序 / 校正模块整格都在某一个矩形子路径里', (moduleShape) => {
+    for (const { value, level } of SAMPLES) {
+      const api = connectQrCode({ value, level, moduleShape, eyeShape: 'rounded' }, normalizeProps)
+      const matrix = qrEncode(value, level).modules
+      const kinds = cellKinds(api.version)
+      const rects = parsePath(api.path).map(rectOf).filter(box => box !== undefined)
+      const bad: string[] = []
+      for (let row = 0; row < api.count && bad.length < 6; row++) {
+        for (let col = 0; col < api.count && bad.length < 6; col++) {
+          if (kinds[row * api.count + col] !== CELL_ALWAYS_SQUARE || !matrix[row]![col])
+            continue
+          const x = col + api.margin
+          const y = row + api.margin
+          const covered = rects.some(box => box.x0 <= x && box.x1 >= x + 1 && box.y0 <= y && box.y1 >= y + 1)
+          if (!covered)
+            bad.push(`${moduleShape}：行 ${row} 列 ${col} 的时序 / 校正模块不是整格方块`)
         }
-        expect({ moduleShape, version: api.version, bad }).toEqual({ moduleShape, version: api.version, bad: [] })
       }
+      expect({ moduleShape, version: api.version, bad }).toEqual({ moduleShape, version: api.version, bad: [] })
     }
   })
 })
@@ -944,27 +953,23 @@ describe('logo 挖空', () => {
     expect(clearedAlignment).toEqual([[1, 0], [2, 0], [6, 0], [7, 25], [20, 0], [32, 64], [40, 25]])
   })
 
-  it('挖空区里的模块中心一律没墨，区外逐格照旧', () => {
-    for (const moduleShape of MODULE_SHAPES) {
-      for (const eyeShape of EYE_SHAPES) {
-        for (const { value, level } of SAMPLES) {
-          const got = readback({ value, level, moduleShape, eyeShape, logo: true })
-          const area = got.api.logoArea!
-          expect({ moduleShape, eyeShape, bad: mismatches(got.ink, got.matrix, area, got.api.margin) })
-            .toEqual({ moduleShape, eyeShape, bad: [] })
-          // 判据得真的看见过一片被挖掉的深色模块，不然它什么都没验
-          let erasedDark = 0
-          for (let row = 0; row < got.api.count; row++) {
-            for (let col = 0; col < got.api.count; col++) {
-              const inArea = row + got.api.margin >= area.y && row + got.api.margin < area.y + area.size
-                && col + got.api.margin >= area.x && col + got.api.margin < area.x + area.size
-              if (inArea && got.matrix[row]![col])
-                erasedDark++
-            }
-          }
-          expect(erasedDark).toBeGreaterThan(0)
+  it.each(SHAPE_COMBOS)('%s 码点 + %s 码眼：挖空区里的模块中心一律没墨，区外逐格照旧', (moduleShape, eyeShape) => {
+    for (const { value, level } of SAMPLES) {
+      const got = readback({ value, level, moduleShape, eyeShape, logo: true })
+      const area = got.api.logoArea!
+      expect({ moduleShape, eyeShape, bad: mismatches(got.ink, got.matrix, area, got.api.margin) })
+        .toEqual({ moduleShape, eyeShape, bad: [] })
+      // 判据得真的看见过一片被挖掉的深色模块，不然它什么都没验
+      let erasedDark = 0
+      for (let row = 0; row < got.api.count; row++) {
+        for (let col = 0; col < got.api.count; col++) {
+          const inArea = row + got.api.margin >= area.y && row + got.api.margin < area.y + area.size
+            && col + got.api.margin >= area.x && col + got.api.margin < area.x + area.size
+          if (inArea && got.matrix[row]![col])
+            erasedDark++
         }
       }
+      expect(erasedDark).toBeGreaterThan(0)
     }
   })
 
@@ -1161,5 +1166,15 @@ describe('判据自身有牙', () => {
     const layer = makeLayer(parsePath('M0 0h7v7h-7zM1 1v5h5v-5z'))
     expect(rowWindings(layer, 0.5, [0.5, 3.5, 6.5])).toEqual([1, 1, 1])
     expect(rowWindings(layer, 3.5, [0.5, 3.5, 6.5])).toEqual([1, 0, 1])
+  })
+
+  it('工作量记在了几何上：读回一张 30 版圆码点就记掉小半个预算', () => {
+    // 计数漏了，afterEach 那条预算就成了摆设：一条用例再重也报不出来
+    const before = work
+    readback({ value: 'x'.repeat(700), level: 'H', moduleShape: 'dot', eyeShape: 'rounded' })
+    const spent = work - before
+    expect(spent).toBeGreaterThan(WORK_BUDGET / 4)
+    // 六种形状组合并成一条用例就是这个数的六倍上下，预算兜得住
+    expect(spent * 6).toBeGreaterThan(WORK_BUDGET)
   })
 })
