@@ -6,10 +6,7 @@ export {
   columnMoveCommand,
   columnMoveIntentFromKey,
   draggableColumnIds,
-  moveRowIds,
   rowGroupRects,
-  rowMoveCommand,
-  rowMoveIntentFromKey,
   rowReorderReason,
   toColumnPreferenceIndex,
 } from './table.drag'

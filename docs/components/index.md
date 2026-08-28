@@ -64,7 +64,7 @@
 | [分段控制器](./segmented) | `segmented` | 5 | 6 | 8 |
 | [侧栏导航](./side-nav) | `side-nav` | 13 | 10 | 2 |
 | [步骤条](./steps) | `steps` | 9 | 6 | 8 |
-| [标签页](./tabs) | `tabs` | 4 | 6 | 13 |
+| [标签页](./tabs) | `tabs` | 5 | 7 | 14 |
 | [工具栏](./toolbar) | `toolbar` | 4 | 6 | 7 |
 | [引导](./tour) | `tour` | 13 | 4 | 3 |
 

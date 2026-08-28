@@ -1,9 +1,12 @@
 import type { ItemQuery, NavIntent } from '@xihan-ui/behavior'
 import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
+import type { DragRect } from '../shared/drag'
 import type { TabsApi, TabsNodeMeta, TabsSchema, TabsTriggerProps } from './tabs.types'
 import { anchorItem, focusItem, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/behavior'
 import { dataAttr } from '@xihan-ui/kernel'
+import { flatMoveCommand, flatMoveIntentFromKey } from '../shared/drag'
+import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { tabsAnatomy } from './tabs.anatomy'
 
 const parts = tabsAnatomy.build()
@@ -24,6 +27,7 @@ export function connectTabs<T extends PropTypes>(
   const orientation = prop('orientation') ?? 'horizontal'
   const dir = prop('dir')
   const loop = prop('loop') ?? true
+  const horizontal = orientation === 'horizontal'
 
   // collection 推出的条目元信息：标签文本与禁用都在这里定案，trigger 部件只报 value
   const collection: TabsNodeMeta[] = (prop('collection') ?? []).map(node => ({
@@ -38,6 +42,58 @@ export function connectTabs<T extends PropTypes>(
     item.disabled ?? metaOf.get(item.value)?.disabled ?? false
 
   const triggerId = (target: string): string => scope.partId(tabsAnatomy.name, `trigger:${target}`)
+
+  const reorderable = !!prop('reorderable')
+  const draggingTab = context.get('draggingTab') ?? null
+  const dropTarget = context.get('dropTarget') ?? null
+  /** 这个标签此刻是不是落点，是的话落在它的哪一侧。 */
+  const dropSide = (value: string): 'before' | 'after' | undefined =>
+    dropTarget?.targetValue === value && dropTarget.position !== 'inside'
+      ? dropTarget.position
+      : undefined
+
+  /**
+   * 量出标签此刻沿主轴的位置。横排量横轴，竖排量纵轴。
+   *
+   * 禁用的标签照量：它挪不动，但别人可以落在它前后——把它从快照里摘掉的话，
+   * 指针划过它那一段会没有落点，指示线一闪一闪。
+   */
+  function measureTabs(list: HTMLElement): DragRect[] {
+    const out: DragRect[] = []
+    for (const el of queryItems(list, ITEM_QUERY)) {
+      const value = itemValue(el)
+      if (!value)
+        continue
+      const rect = el.getBoundingClientRect()
+      out.push(horizontal
+        ? { value, start: rect.left, size: rect.width }
+        : { value, start: rect.top, size: rect.height })
+    }
+    return out
+  }
+
+  /**
+   * 按在标签上。整个标签都是拖动源，没有把手。
+   *
+   * 触屏不认——拖动方向与页面滚动同轴时手势在按下那一刻就归了浏览器，
+   * touch-action 事后改不回来。
+   */
+  function onTabDragStart(event: PointerEvent, value: string): void {
+    if (!reorderable || event.button !== 0 || event.pointerType === 'touch')
+      return
+    const el = event.currentTarget as HTMLElement | null
+    const list = el?.closest<HTMLElement>(parts.list.selector)
+    const session = service.refs.get('gesture')
+    if (!list || !session || session.points().length > 0)
+      return
+    session.add({ pointerId: event.pointerId, clientX: event.clientX, clientY: event.clientY })
+    send({
+      type: 'TAB_DRAG.START',
+      value,
+      rects: measureTabs(list),
+      origin: horizontal ? event.clientX : event.clientY,
+    })
+  }
   const contentId = (target: string): string => scope.partId(tabsAnatomy.name, `content:${target}`)
   const stateAttr = (target: string): 'active' | 'inactive' => (target === value ? 'active' : 'inactive')
 
@@ -67,6 +123,8 @@ export function connectTabs<T extends PropTypes>(
 
   return {
     value,
+    dropTarget,
+    announcement: context.get('announcement'),
     collection,
     focusedValue,
     setValue,
@@ -79,6 +137,20 @@ export function connectTabs<T extends PropTypes>(
       'data-size': prop('size'),
     }),
     // 键盘全在 list 上收口：条目只管声明自己，一次冒泡一个处理器
+    /**
+     * 拖动过程只说给读屏听。放在 root 里、与 list 部件平级即可——
+     * root 自己不带角色，role=tablist 在 list 上，活动区域落不进它的子节点集合。
+     *
+     * 它必须在拖动开始之前就在 DOM 上——读屏不播报后插入的节点。
+     */
+    getLiveRegionProps: () => normalize.element({
+      ...parts['live-region'].attrs,
+      'role': 'status',
+      'aria-live': 'polite',
+      'aria-atomic': 'true',
+      'style': VISUALLY_HIDDEN_STYLE,
+    }),
+
     getListProps: () => normalize.element({
       ...parts.list.attrs,
       'role': 'tablist',
@@ -88,6 +160,20 @@ export function connectTabs<T extends PropTypes>(
       // 焦点已在组内时容器让位（-1），Tab 才能正常离开本组。
       'tabindex': focusedValue == null ? 0 : -1,
       'onKeydown': (event: KeyboardEvent) => {
+        // Alt + 主轴方向键换位。一按就是一次完整提交，不进拖动态——
+        // 裸方向键是导航、Enter/Space 是确认，模态拾起在这条标签带上无处落脚
+        if (event.altKey && !event.ctrlKey && !event.metaKey && reorderable && focusedValue != null) {
+          const moveIntent = flatMoveIntentFromKey(event.key, orientation, dir === 'rtl')
+          if (moveIntent) {
+            // Alt + 方向键在部分浏览器是前进后退，认了就得挡住
+            event.preventDefault()
+            const target = flatMoveCommand(collection.map(node => node.value), focusedValue, moveIntent)
+            if (target)
+              send({ type: 'TAB.MOVE_BY', value: focusedValue, target })
+            return
+          }
+        }
+
         // 轴跟随 orientation；不归导航管的键绝不 preventDefault。dir 只作用于水平轴
         const intent = navIntentFromKey(event, { axis: orientation, dir })
         if (intent) {
@@ -132,6 +218,10 @@ export function connectTabs<T extends PropTypes>(
       'tabindex': anchor === item.value ? 0 : -1,
       'data-state': stateAttr(item.value),
       'data-disabled': dataAttr(itemDisabled(item)),
+      'data-dragging': dataAttr(draggingTab === item.value),
+      'data-drop': dropSide(item.value),
+      'data-draggable': dataAttr(reorderable),
+      'onPointerDown': (event: PointerEvent) => onTabDragStart(event, item.value),
       'onClick': () => {
         if (!itemDisabled(item))
           send({ type: 'TRIGGER.SELECT', value: item.value })

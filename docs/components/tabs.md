@@ -100,12 +100,18 @@ root 按书写顺序渲染子节点：把面板写在 list 前面，标签栏就
 
 <XhDemo src="tabs/13-placement" />
 
+### 拖拽换位
+
+整个标签都是拖动源：按住往旁边拖，落点画成一条线、被拖的标签原地不动；也可以聚焦标签带后按 Alt + 左右键挪一位（竖排是 Alt + 上下键），到首末就不动。库不拥有标签序，只报一次重排好的新顺序连同读屏播报，照它写回数组归使用者
+
+<XhDemo src="tabs/14-reorder" />
+
 ## 产物
 
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-tabs>` |
-| Vue 组件 | `XhTabsContent` `XhTabsList` `XhTabsRoot` `XhTabsTrigger` |
+| Vue 组件 | `XhTabsContent` `XhTabsList` `XhTabsLiveRegion` `XhTabsRoot` `XhTabsTrigger` |
 | 组合式函数 | `useTabs` |
 | 状态机 | `tabsMachine` |
 | 皮肤 | `@xihan-ui/styles/tabs.css` |
@@ -114,7 +120,7 @@ root 按书写顺序渲染子节点：把面板写在 list 前面，标签栏就
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="tabs"`：`root` · **`list`** · **`trigger`** · **`content`**
+`data-scope="tabs"`：`root` · **`list`** · **`trigger`** · **`content`** · `live-region`
 
 ## Props
 
@@ -130,6 +136,9 @@ root 按书写顺序渲染子节点：把面板写在 list 前面，标签栏就
 | `variant` | `TabsVariant` |  | 形态：line / card / segment，决定选中态怎么画。缺省是 line。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
+| `reorderable` | `boolean` |  | 标签可以拖着换位。整个标签都是拖动源，不另出把手。 顺序不进机器：collection 是 prop，库没有一份自己的标签序可写，只发 onTabMove。 |
+| `onTabMove` | `(details: TabsMoveDetails) => void` |  |  |
+| `translations` | `Partial<TabsTranslations>` |  |  |
 | `onValueChange` | `(details: TabsValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
 
 ## 事件
@@ -139,6 +148,7 @@ root 按书写顺序渲染子节点：把面板写在 list 前面，标签栏就
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `TabsValueChangeDetails` | 选中值变化；detail 为 `{ value: string \| null }` |
+| `tab-move` | `TabsMoveDetails` | 标签换了位；detail 为 `{ value, from, to, values }`，values 是重排好的整份标签序 |
 
 ## 状态
 
@@ -153,7 +163,7 @@ root 按书写顺序渲染子节点：把面板写在 list 前面，标签栏就
 
 **状态**：`idle`
 
-**事件**：`VALUE.SET` · `TRIGGER.SELECT` · `TRIGGER.FOCUS` · `TRIGGER.NAVIGATE` · `LIST.BLUR`
+**事件**：`VALUE.SET` · `TRIGGER.SELECT` · `TRIGGER.FOCUS` · `TRIGGER.NAVIGATE` · `LIST.BLUR` · `TAB_DRAG.START` · `TAB_DRAG.MOVE` · `TAB_DRAG.END` · `TAB_DRAG.CANCEL` · `TAB.MOVE_BY`
 
 **判据**：`isAutomatic`
 
@@ -166,11 +176,14 @@ root 按书写顺序渲染子节点：把面板写在 list 前面，标签栏就
 | `value` | `string \| null` |  |
 | `collection` | `readonly TabsNodeMeta[]` | collection 推出的条目元信息，按数据顺序排列；没给 collection 即空数组。 |
 | `focusedValue` | `string \| null` | 焦点在组外时为 null。 |
+| `dropTarget` | `DropTarget \| null` | 此刻的落点；松手就落在这儿。没落在任何标签上时是 null。 |
+| `announcement` | `string` | 读屏播报文本。渲进 live-region，不进视觉版面。 |
 | `setValue` | `(next: string \| null) => void` | 传 null 清空选中：context.value 与受控 value 都能表达"无选中"，写入侧同样收得下。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getListProps` | `() => T['element']` |  |
 | `getTriggerProps` | `(props: TabsTriggerProps) => T['button']` |  |
 | `getContentProps` | `(props: TabsContentProps) => T['element']` |  |
+| `getLiveRegionProps` | `() => T['element']` | 拖动过程的读屏播报区。视觉隐藏，文本从 announcement 取。 它必须在拖动开始之前就在 DOM 上——读屏不播报后插入的节点。 |
 
 ## 键盘
 
@@ -184,6 +197,7 @@ root 按书写顺序渲染子节点：把面板写在 list 前面，标签栏就
 | `End` | focus in list | 焦点移到末个可停留 trigger |
 | `Enter` / `Space` | focus in trigger, not disabled | 把选中切到焦点所在 trigger（manual 模式的确认键） |
 | `Tab` / `Shift+Tab` | focus in list | 整组只有锚点 trigger 留在 Tab 序列内，一次 Tab 进出；无锚点时由 list 兜底，焦点进来后转投锚点 trigger（即选中项），锚点缺席或被禁用才落首个可停留项 |
+| `Alt+ArrowLeft` / `Alt+ArrowRight` / `Alt+ArrowUp` / `Alt+ArrowDown` | focus in list, reorderable 开着, 按键与 orientation 同轴 | 把焦点标签在标签带里往前 / 往后挪一位，按一下就是一次完整提交，不进拖动态；横轴跟着文字方向翻、rtl 下左右两键对调，竖排的上下两键不对调；已是首位 / 末位就不动，也不回绕；标签序不进库，只报一次重排好的新顺序。裸方向键仍是导航、Enter/Space 仍是确认 |
 
 ## 无障碍
 
@@ -199,6 +213,9 @@ root 按书写顺序渲染子节点：把面板写在 list 前面，标签栏就
 | `trigger` | `role` | 'tab' |
 | `content` | `aria-labelledby` | `trigger` 部件的 id |
 | `content` | `role` | 'tabpanel' |
+| `live-region` | `aria-atomic` | 'true' |
+| `live-region` | `aria-live` | 'polite' |
+| `live-region` | `role` | 'status' |
 
 ## 样式
 
@@ -215,6 +232,9 @@ root 按书写顺序渲染子节点：把面板写在 list 前面，标签栏就
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `trigger` | `data-draggable` | ''（条件成立时才出现） |
+| `trigger` | `data-dragging` | ''（条件成立时才出现） |
+| `trigger` | `data-drop` | 'before' \| 'after' |
 | `trigger` | `data-state` | 'active' \| 'inactive' |
 | `content` | `data-state` | 'active' \| 'inactive' |
 
@@ -222,7 +242,7 @@ root 按书写顺序渲染子节点：把面板写在 list 前面，标签栏就
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-tabs-content-fg` · `--xh-tabs-content-py` · `--xh-tabs-gap` · `--xh-tabs-list-bg` · `--xh-tabs-list-border` · `--xh-tabs-list-gap` · `--xh-tabs-list-p` · `--xh-tabs-list-radius` · `--xh-tabs-trigger-bg` · `--xh-tabs-trigger-bg-active` · `--xh-tabs-trigger-bg-active-hover` · `--xh-tabs-trigger-bg-hover` · `--xh-tabs-trigger-border` · `--xh-tabs-trigger-border-active` · `--xh-tabs-trigger-fg` · `--xh-tabs-trigger-fg-active` · `--xh-tabs-trigger-font-size` · `--xh-tabs-trigger-font-weight` · `--xh-tabs-trigger-gap` · `--xh-tabs-trigger-h` · `--xh-tabs-trigger-px` · `--xh-tabs-trigger-radius` · `--xh-tabs-trigger-shadow-active`
+`--xh-tabs-content-fg` · `--xh-tabs-content-py` · `--xh-tabs-dragging-opacity` · `--xh-tabs-drop-fg` · `--xh-tabs-drop-line` · `--xh-tabs-gap` · `--xh-tabs-list-bg` · `--xh-tabs-list-border` · `--xh-tabs-list-gap` · `--xh-tabs-list-p` · `--xh-tabs-list-radius` · `--xh-tabs-trigger-bg` · `--xh-tabs-trigger-bg-active` · `--xh-tabs-trigger-bg-active-hover` · `--xh-tabs-trigger-bg-hover` · `--xh-tabs-trigger-border` · `--xh-tabs-trigger-border-active` · `--xh-tabs-trigger-fg` · `--xh-tabs-trigger-fg-active` · `--xh-tabs-trigger-font-size` · `--xh-tabs-trigger-font-weight` · `--xh-tabs-trigger-gap` · `--xh-tabs-trigger-h` · `--xh-tabs-trigger-px` · `--xh-tabs-trigger-radius` · `--xh-tabs-trigger-shadow-active`
 
 ## 动效
 

@@ -20978,6 +20978,84 @@ input[data-scope='mention'][data-part='input'] {
   outline-offset: var(--xh-ring-offset);
 }
 
+/* —— 标签拖拽换位 —— */
+/* 整张标签都是拖动源，不出把手，光标换成抓手告诉人这张标签按得动。
+   不写 touch-action：拖标签只认鼠标与笔，触屏那一按压根不开拖，
+   关掉这一轴的手势只会连带把标签带自己的滚动也一并收走 */
+[data-scope='tabs'][data-part='trigger'][data-draggable] {
+  cursor: grab;
+}
+
+/* 被拖的那张标签压暗，让人看得出正在搬的是它。这里只动 opacity、cursor 与 user-select，
+   一个 transform 都不写：标签原地不动，要落到哪儿全交给落点指示 */
+[data-scope='tabs'][data-part='trigger'][data-dragging] {
+  opacity: var(--xh-tabs-dragging-opacity, var(--xh-state-dragging-opacity));
+  cursor: grabbing;
+  user-select: none;
+}
+
+/* 落点指示线：插到哪张标签的哪一侧，线就画在那张标签的那条边上。
+   定位上下文不必在这儿再给：标签的基础规则里已经是 position: relative。
+   线走 ::after：选中态那道指示画的是 box-shadow（card 档的顶边条、segment 档的浮起），
+   line 档只换文字色，标签上两个伪元素都空着，落点线不与谁抢。
+   标签自身不收 overflow，线不会被裁掉；仍整条画在盒内不压着边 */
+[data-scope='tabs'][data-part='trigger']:is([data-drop='before'], [data-drop='after'])::after {
+  content: '';
+  position: absolute;
+  background: var(--xh-tabs-drop-fg, var(--xh-border-control-focus));
+}
+
+/* 线的方向跟着标签带的排法换：方向写在 root 的 data-orientation 上，从根往下选。
+   横排的标签左右排开，线是一条竖的，贯穿标签的块向、贴在行向的前后沿 */
+[data-scope='tabs'][data-part='root'][data-orientation='horizontal']
+  [data-scope='tabs'][data-part='trigger']:is([data-drop='before'], [data-drop='after'])::after {
+  inset-block: 0;
+  inline-size: var(--xh-tabs-drop-line, var(--xh-stroke-thick));
+}
+
+/* 落在前沿还是后沿走逻辑属性：rtl 下 before 自己就换到右边去了。
+   换成 box-shadow 的偏移量则是物理的，写不出逻辑方向 */
+[data-scope='tabs'][data-part='root'][data-orientation='horizontal']
+  [data-scope='tabs'][data-part='trigger'][data-drop='before']::after {
+  inset-inline-start: 0;
+}
+
+[data-scope='tabs'][data-part='root'][data-orientation='horizontal']
+  [data-scope='tabs'][data-part='trigger'][data-drop='after']::after {
+  inset-inline-end: 0;
+}
+
+/* 竖排的标签上下排开，线是一条横的，贯穿标签的行向、贴在块向的前后沿 */
+[data-scope='tabs'][data-part='root'][data-orientation='vertical']
+  [data-scope='tabs'][data-part='trigger']:is([data-drop='before'], [data-drop='after'])::after {
+  inset-inline: 0;
+  block-size: var(--xh-tabs-drop-line, var(--xh-stroke-thick));
+}
+
+/* 块向同样走逻辑属性，跟着书写模式走 */
+[data-scope='tabs'][data-part='root'][data-orientation='vertical']
+  [data-scope='tabs'][data-part='trigger'][data-drop='before']::after {
+  inset-block-start: 0;
+}
+
+[data-scope='tabs'][data-part='root'][data-orientation='vertical']
+  [data-scope='tabs'][data-part='trigger'][data-drop='after']::after {
+  inset-block-end: 0;
+}
+
+/* 活动区域只说给读屏听，不占版面。声明与 shared/visually-hidden.ts 逐条同值。 */
+[data-scope='tabs'][data-part='live-region'] {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
    写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
 [data-scope='tabs'][data-part='root'][hidden],

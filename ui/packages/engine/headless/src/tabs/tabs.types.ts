@@ -1,5 +1,7 @@
 import type { Direction, Orientation, PropTypes, Size, Tone } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
+import type { MultiPointerSession } from '@xihan-ui/pointer'
+import type { DragRect, DragTranslations, DropTarget } from '../shared/drag'
 
 /** 形态。line 是缺省档，皮肤里没有它的选择器，根规则画的就是它。 */
 export type TabsVariant = 'line' | 'card' | 'segment'
@@ -66,6 +68,14 @@ export interface TabsSchema extends MachineSchema {
     tone?: Tone
     /** 尺寸：sm / md / lg。 */
     size?: Size
+    /**
+     * 标签可以拖着换位。整个标签都是拖动源，不另出把手。
+     *
+     * 顺序不进机器：collection 是 prop，库没有一份自己的标签序可写，只发 onTabMove。
+     */
+    reorderable?: boolean
+    onTabMove?: (details: TabsMoveDetails) => void
+    translations?: Partial<TabsTranslations>
     /** value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 */
     onValueChange?: (details: TabsValueChangeDetails) => void
   }
@@ -74,9 +84,23 @@ export interface TabsSchema extends MachineSchema {
     value: string | null
     /** 焦点位于组内时的瞬态锚点，焦点离组即清空。 */
     focusedValue: string | null
+    /** 正在拖着换位的那个标签；按住但还没走够激活距离时仍是 null。 */
+    draggingTab: string | null
+    /** 此刻的落点；松手就落在这儿。没落在任何标签上时是 null。 */
+    dropTarget: DropTarget | null
+    /** 读屏播报文本。写进视觉隐藏的活动区域，不进视觉版面。 */
+    announcement: string
   }
   computed: Record<string, never>
-  refs: Record<string, never>
+  refs: {
+    /** 跟手的会话，整个生命周期都在。调用方在按下时把那一根指针交进来。 */
+    gesture: MultiPointerSession | null
+    /**
+     * 正在拖着换位的那个标签。activated 之前只是「按住了」，还不是拖动——
+     * 整个标签都是拖动源没有把手表明意图，要走够激活距离才算。
+     */
+    tabDrag: { value: string, rects: DragRect[], origin: number, activated: boolean } | null
+  }
   state: 'idle'
   event:
     | { type: 'VALUE.SET', value: string | null }
@@ -84,10 +108,25 @@ export interface TabsSchema extends MachineSchema {
     | { type: 'TRIGGER.FOCUS', value: string }
     | { type: 'TRIGGER.NAVIGATE', value: string }
     | { type: 'LIST.BLUR' }
+    /** 按在标签上：矩形快照与起点坐标由连接层量好交进来。此刻只是按住，还不算拖。 */
+    | { type: 'TAB_DRAG.START', value: string, rects: DragRect[], origin: number }
+    | { type: 'TAB_DRAG.MOVE', point: number }
+    | { type: 'TAB_DRAG.END' }
+    | { type: 'TAB_DRAG.CANCEL' }
+    /** 键盘换位：一按就是一次完整提交，不进拖动态。 */
+    | { type: 'TAB.MOVE_BY', value: string, target: DropTarget }
   tag: never
   guard: 'isAutomatic'
-  action: 'setValue' | 'setFocusedValue' | 'clearFocusedValue'
-  effect: never
+  action:
+    | 'setValue'
+    | 'setFocusedValue'
+    | 'clearFocusedValue'
+    | 'startTabDrag'
+    | 'trackTabDrag'
+    | 'endTabDrag'
+    | 'cancelTabDrag'
+    | 'moveTabBy'
+  effect: 'trackPointer'
 }
 
 export interface TabsApi<T extends PropTypes = PropTypes> {
@@ -96,13 +135,32 @@ export interface TabsApi<T extends PropTypes = PropTypes> {
   collection: readonly TabsNodeMeta[]
   /** 焦点在组外时为 null。 */
   focusedValue: string | null
+  /** 此刻的落点；松手就落在这儿。没落在任何标签上时是 null。 */
+  dropTarget: DropTarget | null
+  /** 读屏播报文本。渲进 live-region，不进视觉版面。 */
+  announcement: string
   /** 传 null 清空选中：context.value 与受控 value 都能表达"无选中"，写入侧同样收得下。 */
   setValue: (next: string | null) => void
   getRootProps: () => T['element']
   getListProps: () => T['element']
   getTriggerProps: (props: TabsTriggerProps) => T['button']
   getContentProps: (props: TabsContentProps) => T['element']
+  /**
+   * 拖动过程的读屏播报区。视觉隐藏，文本从 announcement 取。
+   * 它必须在拖动开始之前就在 DOM 上——读屏不播报后插入的节点。
+   */
+  getLiveRegionProps: () => T['element']
 }
 
 /** 读屏用的文案。本组件目前没有需要外露的文案，位先留着。 */
-export interface TabsTranslations {}
+/** 读屏用的文案，默认英文。拖动过程在视觉上很清楚，在读屏里全靠这几句。 */
+export interface TabsTranslations extends Partial<DragTranslations> {}
+
+/** 标签换位：从第几位挪到第几位，以及重排好的整份顺序。 */
+export interface TabsMoveDetails {
+  value: string
+  from: number
+  to: number
+  /** 已经重排好的整份标签序，可直接拿去写回数据源。 */
+  values: string[]
+}

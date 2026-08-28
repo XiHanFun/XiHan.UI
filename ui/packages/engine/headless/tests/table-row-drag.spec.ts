@@ -5,12 +5,10 @@ import { normalizeProps } from '@xihan-ui/kernel'
 import { createService } from '@xihan-ui/machine'
 import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { flatMoveCommand, flatMoveIntentFromKey, reorderFlat } from '../src/shared/drag'
 import {
   connectTable,
-  moveRowIds,
   rowGroupRects,
-  rowMoveCommand,
-  rowMoveIntentFromKey,
   rowReorderReason,
   tableMachine,
 } from '../src/table'
@@ -87,23 +85,23 @@ describe('行的键盘命令', () => {
   const IDS = ['a', 'b', 'c']
 
   it('上一格 = 落在前一行之前，下一格 = 落在后一行之后', () => {
-    expect(rowMoveCommand(IDS, 'b', 'prev')).toEqual({ targetValue: 'a', position: 'before' })
-    expect(rowMoveCommand(IDS, 'b', 'next')).toEqual({ targetValue: 'c', position: 'after' })
+    expect(flatMoveCommand(IDS, 'b', 'prev')).toEqual({ targetValue: 'a', position: 'before' })
+    expect(flatMoveCommand(IDS, 'b', 'next')).toEqual({ targetValue: 'c', position: 'after' })
   })
 
   it('到首末就停住，不回绕', () => {
-    expect(rowMoveCommand(IDS, 'a', 'prev')).toBeNull()
-    expect(rowMoveCommand(IDS, 'c', 'next')).toBeNull()
+    expect(flatMoveCommand(IDS, 'a', 'prev')).toBeNull()
+    expect(flatMoveCommand(IDS, 'c', 'next')).toBeNull()
   })
 
   it('不在可见行里的行一个命令都不认', () => {
-    expect(rowMoveCommand(IDS, 'ghost', 'next')).toBeNull()
+    expect(flatMoveCommand(IDS, 'ghost', 'next')).toBeNull()
   })
 
   it('纵轴与文字方向无关，不翻', () => {
-    expect(rowMoveIntentFromKey('ArrowUp')).toBe('prev')
-    expect(rowMoveIntentFromKey('ArrowDown')).toBe('next')
-    expect(rowMoveIntentFromKey('ArrowLeft')).toBeNull()
+    expect(flatMoveIntentFromKey('ArrowUp', 'vertical')).toBe('prev')
+    expect(flatMoveIntentFromKey('ArrowDown', 'vertical')).toBe('next')
+    expect(flatMoveIntentFromKey('ArrowLeft', 'vertical')).toBeNull()
   })
 })
 
@@ -111,21 +109,21 @@ describe('搬完之后的行序', () => {
   const IDS = ['a', 'b', 'c', 'd']
 
   it('往后搬吃到先摘后插的修正', () => {
-    expect(moveRowIds(IDS, 'a', { targetValue: 'c', position: 'after' }))
+    expect(reorderFlat(IDS, 'a', { targetValue: 'c', position: 'after' }))
       .toEqual({ from: 0, to: 2, ids: ['b', 'c', 'a', 'd'] })
   })
 
   it('往前搬', () => {
-    expect(moveRowIds(IDS, 'd', { targetValue: 'a', position: 'before' }))
+    expect(reorderFlat(IDS, 'd', { targetValue: 'a', position: 'before' }))
       .toEqual({ from: 3, to: 0, ids: ['d', 'a', 'b', 'c'] })
   })
 
   it('落点算下来还是原位时返回 null，不发一次空提交', () => {
-    expect(moveRowIds(IDS, 'b', { targetValue: 'a', position: 'after' })).toBeNull()
+    expect(reorderFlat(IDS, 'b', { targetValue: 'a', position: 'after' })).toBeNull()
   })
 
   it('认不出的行返回 null', () => {
-    expect(moveRowIds(IDS, 'ghost', { targetValue: 'a', position: 'before' })).toBeNull()
+    expect(reorderFlat(IDS, 'ghost', { targetValue: 'a', position: 'before' })).toBeNull()
   })
 })
 

@@ -6,9 +6,15 @@ const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/tabs/'
 
 const VALUES = ['one', 'two', 'three'] as const
 
+/** 标签序的真源是 collection：换位报出的新顺序按它算，没有它一次也搬不动。 */
+const COLLECTION = VALUES.map(value => ({ value }))
+
 /**
  * 三个 trigger + 三个 content：panel 全部常挂，靠 hidden 显隐。
  * disabled 落在哪个条目由用例指定；禁用条目仍在 DOM 与集合里，只是方向键跳过它。
+ *
+ * 末尾的播报区与 list 部件平级：root 自己不带角色，role=tablist 在 list 上，
+ * 活动区域落不进它的子节点集合。它常挂在这儿，各用例不必各挂一遍。
  */
 function tabsTree(disabled?: string): FixtureNode {
   return {
@@ -28,6 +34,7 @@ function tabsTree(disabled?: string): FixtureNode {
         attrs: { value: v },
         children: [{ text: `面板 ${v}` }],
       })),
+      { part: 'live-region' },
     ],
   }
 }
@@ -49,8 +56,8 @@ export const tabsSuite: ConformanceSuite = {
       name: '初始无选中：panel 常挂且全部 hidden，list 兜底进 Tab 序列',
       spec: { apg: APG },
       initial: {
-        order: ['root', 'list', 'trigger[0]', 'trigger[1]', 'trigger[2]', 'content[0]', 'content[1]', 'content[2]'],
-        counts: { root: 1, list: 1, trigger: 3, content: 3 },
+        order: ['root', 'list', 'trigger[0]', 'trigger[1]', 'trigger[2]', 'content[0]', 'content[1]', 'content[2]', 'live-region'],
+        counts: { 'root': 1, 'list': 1, 'trigger': 3, 'content': 3, 'live-region': 1 },
         parts: {
           'root': { 'data-orientation': 'horizontal' },
           'list': { 'role': 'tablist', 'aria-orientation': 'horizontal', 'tabindex': '0' },
@@ -63,6 +70,8 @@ export const tabsSuite: ConformanceSuite = {
             'data-state': 'inactive',
             'data-value': 'one',
             'data-disabled': null,
+            // reorderable 默认关：标签拖不动，这个标记就一个也不该出现
+            'data-draggable': null,
           },
           'trigger[2]': { 'aria-selected': 'false', 'tabindex': '-1', 'data-value': 'three' },
           'content[0]': { 'role': 'tabpanel', 'tabindex': '0', 'hidden': '', 'data-state': 'inactive' },
@@ -460,6 +469,105 @@ export const tabsSuite: ConformanceSuite = {
             // 宿主写回 value 不再回弹事件
             events: [],
           },
+        },
+      ],
+    },
+    {
+      name: '标签换位：Alt + 左右键挪一位，只报事件不动 DOM；到首末不回绕，裸方向键仍是导航',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      // 整个标签就是拖动源，不出把手，基准 fixture 原样够用；开关只开在这个用例上，
+      // 其余用例的 order 与 counts 断言跟换位没关系
+      props: { collection: COLLECTION, reorderable: true, defaultValue: 'one' },
+      covers: ['tabs.kbd.tab-move'],
+      initial: {
+        parts: {
+          'trigger[0]': { 'data-draggable': '', 'data-dragging': null, 'data-drop': null },
+          'trigger[2]': { 'data-draggable': '' },
+        },
+      },
+      steps: [
+        { kind: 'focus', part: 'trigger[0]' },
+        {
+          kind: 'key',
+          key: 'ArrowRight',
+          modifiers: ['Alt'],
+          expect: {
+            // 按一下就提交完，不进拖动态；焦点锚点留在搬走的那个标签上
+            activeElement: { part: 'trigger[0]', exact: true },
+            parts: { 'trigger[0]': { 'data-dragging': null, 'data-drop': null } },
+            // 标签序是 collection prop，库没有一份自己的顺序可写：DOM 里 one 仍排在最前，
+            // 只有这条事件说得出新顺序
+            events: [{ type: 'tab-move', detail: { value: 'one', from: 0, to: 1, values: ['two', 'one', 'three'] } }],
+          },
+        },
+        // 宿主没把新顺序写回 collection，one 还在首位：往前挪不动，也不回绕，连事件都不发
+        { kind: 'key', key: 'ArrowLeft', modifiers: ['Alt'], expect: { events: [] } },
+        // 不带 Alt 的方向键照旧是导航，automatic 下顺带切换选中，一个换位事件都不发
+        {
+          kind: 'key',
+          key: 'ArrowRight',
+          expect: {
+            activeElement: { part: 'trigger[1]', exact: true },
+            events: [{ type: 'value-change', detail: { value: 'two' } }],
+          },
+        },
+        {
+          kind: 'key',
+          key: 'ArrowRight',
+          modifiers: ['Alt'],
+          expect: {
+            activeElement: { part: 'trigger[1]', exact: true },
+            events: [{ type: 'tab-move', detail: { value: 'two', from: 1, to: 2, values: ['one', 'three', 'two'] } }],
+          },
+        },
+        { kind: 'key', key: 'ArrowRight', expect: { activeElement: { part: 'trigger[2]', exact: true } } },
+        // three 是末位：往后挪不动
+        { kind: 'key', key: 'ArrowRight', modifiers: ['Alt'], expect: { events: [] } },
+      ],
+    },
+    {
+      name: '标签换位跟着轴走：竖排改由 Alt + 上下键挪，横轴那两个键一概不认',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      props: { collection: COLLECTION, reorderable: true, defaultValue: 'one', orientation: 'vertical' },
+      steps: [
+        { kind: 'focus', part: 'trigger[0]' },
+        // 竖排里左右键既不是导航也不是换位：焦点、选中、顺序三样都不动
+        {
+          kind: 'key',
+          key: 'ArrowRight',
+          modifiers: ['Alt'],
+          expect: { activeElement: { part: 'trigger[0]', exact: true }, events: [] },
+        },
+        {
+          kind: 'key',
+          key: 'ArrowDown',
+          modifiers: ['Alt'],
+          expect: {
+            activeElement: { part: 'trigger[0]', exact: true },
+            events: [{ type: 'tab-move', detail: { value: 'one', from: 0, to: 1, values: ['two', 'one', 'three'] } }],
+          },
+        },
+        // 上下与阅读方向无关，首位往上挪不动
+        { kind: 'key', key: 'ArrowUp', modifiers: ['Alt'], expect: { events: [] } },
+      ],
+    },
+    {
+      name: 'dir=rtl 把 Alt + 左右键整体对调：视觉上往哪边挪就往哪边挪',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      props: { collection: COLLECTION, reorderable: true, defaultValue: 'two', dir: 'rtl' },
+      steps: [
+        { kind: 'focus', part: 'trigger[1]' },
+        {
+          kind: 'key',
+          key: 'ArrowLeft',
+          modifiers: ['Alt'],
+          expect: { events: [{ type: 'tab-move', detail: { value: 'two', from: 1, to: 2, values: ['one', 'three', 'two'] } }] },
+        },
+        {
+          kind: 'key',
+          key: 'ArrowRight',
+          modifiers: ['Alt'],
+          expect: { events: [{ type: 'tab-move', detail: { value: 'two', from: 1, to: 0, values: ['two', 'one', 'three'] } }] },
         },
       ],
     },

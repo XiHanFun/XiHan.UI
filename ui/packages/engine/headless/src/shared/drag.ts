@@ -132,3 +132,63 @@ export function dragAnnouncement(kind: DragAnnounceKind, input: DragAnnounceInpu
       return t?.rejected?.(name) ?? `${name} cannot be dropped here.`
   }
 }
+
+/**
+ * 扁平重排：把某一项挪到落点处，返回重排好的整份顺序。
+ *
+ * 下标吃「先摘后插」的修正（见 insertionIndex）。算下来还是原位时返回 null，
+ * 不发一次空提交。
+ */
+export function reorderFlat(
+  ids: readonly string[],
+  id: string,
+  target: DropTarget,
+): { from: number, to: number, ids: string[] } | null {
+  const from = ids.indexOf(id)
+  const to = insertionIndex(ids, id, target)
+  if (from < 0 || to == null)
+    return null
+  const next = [...ids]
+  const removed = next.splice(from, 1)
+  next.splice(to, 0, ...removed)
+  return { from, to, ids: next }
+}
+
+/** 一维序列里的键盘命令：往前一格 = 落在前一项之前，往后一格 = 落在后一项之后。 */
+export function flatMoveCommand(
+  ids: readonly string[],
+  id: string,
+  intent: 'prev' | 'next',
+): DropTarget | null {
+  const at = ids.indexOf(id)
+  if (at < 0 || ids.length < 2)
+    return null
+  const neighbour = intent === 'prev' ? ids[at - 1] : ids[at + 1]
+  return neighbour == null
+    ? null
+    : { targetValue: neighbour, position: intent === 'prev' ? 'before' : 'after' }
+}
+
+/**
+ * 方向键 → 一维命令。轴之外的键一概不认，绝不 preventDefault。
+ *
+ * 横轴跟着文字方向翻，纵轴不翻——上下与阅读方向无关。
+ */
+export function flatMoveIntentFromKey(
+  key: string,
+  axis: 'horizontal' | 'vertical',
+  rtl = false,
+): 'prev' | 'next' | null {
+  if (axis === 'vertical') {
+    if (key === 'ArrowUp')
+      return 'prev'
+    if (key === 'ArrowDown')
+      return 'next'
+    return null
+  }
+  if (key === 'ArrowLeft')
+    return rtl ? 'next' : 'prev'
+  if (key === 'ArrowRight')
+    return rtl ? 'prev' : 'next'
+  return null
+}
