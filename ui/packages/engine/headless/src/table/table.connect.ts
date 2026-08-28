@@ -86,7 +86,13 @@ function measureRowGroups(body: HTMLElement): MeasuredRow[] {
   for (const node of body.querySelectorAll<HTMLElement>(
     '[data-scope="table"][data-part="row"],[data-scope="table"][data-part="expanded-row"]',
   )) {
-    if (node.hasAttribute('hidden'))
+    // 只认直接归这个表体的行：详情行里可以嵌另一张完整的表，
+    // 把它的行也量进来会让行数对不上，整张外层表被误判成「只渲了一段」
+    if (node.parentElement?.closest('[data-scope="table"][data-part="body"]') !== body)
+      continue
+    // 收起的那一枝连同里面的一切都不占版面。查祖先而不是只看自己：
+    // hidden 落在容器上时，里面的行自己并不带这个属性
+    if (node.closest('[hidden]'))
       continue
     const rect = node.getBoundingClientRect()
     out.push({
@@ -620,12 +626,16 @@ export function connectTable<T extends PropTypes>(
         'onPointerDown': (event: PointerEvent) => {
           // 只认主键：右键要弹上下文菜单，中键是自动滚动。
           // 触屏也不认：拖行是纵向的，而纵向手势在按下那一刻就归了浏览器滚动，
-          // touch-action 事后改不回来。触屏那一路要等一个专门的拖动把手
+          // touch-action 事后改不回来。触屏那一路走 row-drag-trigger 把手。
           // 禁用的行不是拖动源：它自己动不了，别人仍可以落在它前后
-          if (!rowReorderable || rowBlocked != null || isRowDisabled(row.value)
+          if (!rowReorderable || isRowDisabled(row.value)
             || event.button !== 0 || event.pointerType === 'touch') {
             return
           }
+          // 排序链与树形在渲染期就知道；虚拟滚动那一条要量过才知道，
+          // 所以它不进这道守卫——否则判过一次就再也没有重新测量的机会
+          if (rowReorderReason(sort.length, nested) != null)
+            return
           const target = event.target as HTMLElement | null
           if (target?.closest('input,textarea,select,button,a,[contenteditable],[role="button"],[role="checkbox"]'))
             return
@@ -634,11 +644,12 @@ export function connectTable<T extends PropTypes>(
           if (!body)
             return
           const rects = rowGroupRects(measureRowGroups(body))
-          // 量到的行数与数据行数对不上 = 宿主只渲了一段，窗口外的行没有矩形
-          if (rects.length !== dataRows.length) {
-            send({ type: 'ROW.REORDER_BLOCKED', reason: 'virtualized' })
+          // 量到的行数与数据行数对不上 = 宿主只渲了一段，窗口外的行没有矩形。
+          // 无条件写回：这一下量出来能拖，就把上一次记下的原因清掉
+          const blocked = rects.length !== dataRows.length ? 'virtualized' : null
+          send({ type: 'ROW.REORDER_BLOCKED', reason: blocked })
+          if (blocked)
             return
-          }
           send({
             type: 'ROW_DRAG.START',
             rowId: row.value,
@@ -820,17 +831,22 @@ export function connectTable<T extends PropTypes>(
         // 换来的是触屏上拖得动——整行起手在触屏上做不到这件事
         'style': { touchAction: draggable ? 'none' : undefined },
         'onPointerDown': (event: PointerEvent) => {
-          if (!draggable || event.button !== 0)
+          // 不看 rowBlocked：虚拟滚动那一条要量过才知道，把它放进守卫
+          // 就等于判过一次再也回不来
+          if (!rowReorderable || isRowDisabled(row.value) || event.button !== 0)
+            return
+          if (rowReorderReason(sort.length, nested) != null)
             return
           const el = event.currentTarget as HTMLElement | null
           const body = el?.closest<HTMLElement>('[data-scope="table"][data-part="body"]')
           if (!body)
             return
           const rects = rowGroupRects(measureRowGroups(body))
-          if (rects.length !== dataRows.length) {
-            send({ type: 'ROW.REORDER_BLOCKED', reason: 'virtualized' })
+          // 无条件写回：这一下量出来能拖，就把上一次记下的原因清掉
+          const blocked = rects.length !== dataRows.length ? 'virtualized' : null
+          send({ type: 'ROW.REORDER_BLOCKED', reason: blocked })
+          if (blocked)
             return
-          }
           event.preventDefault()
           send({
             type: 'ROW_DRAG.START',

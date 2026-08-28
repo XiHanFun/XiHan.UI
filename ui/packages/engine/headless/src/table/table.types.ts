@@ -384,8 +384,13 @@ export interface TableSchema extends MachineSchema {
     | { type: 'ROW_DRAG.END' }
     | { type: 'ROW_DRAG.CANCEL' }
     | { type: 'ROW.MOVE_BY', rowId: string, target: DropTarget }
-    /** 按下时才发现拖不动（宿主只渲了一段），把原因记下来给使用者看。 */
-    | { type: 'ROW.REORDER_BLOCKED', reason: TableRowReorderReason }
+    /**
+     * 按下量过之后如实写回：拖不动就带原因，能拖就写 null。
+     *
+     * 必须能写回 null——虚拟滚动那一条只有量过才知道，判过一次就锁死的话，
+     * 宿主把整份渲出来之后再也恢复不了。
+     */
+    | { type: 'ROW.REORDER_BLOCKED', reason: TableRowReorderReason | null }
     /** 改一列的显隐 / 位置 / 宽。 */
     | { type: 'COLUMN_PREF.PATCH', columnId: string, hidden?: boolean, toIndex?: number, width?: number | string }
     /** 整体改写选中集合。 */
