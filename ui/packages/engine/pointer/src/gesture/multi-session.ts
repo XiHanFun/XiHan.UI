@@ -49,12 +49,19 @@ export function createMultiPointerSession(options: MultiPointerSessionOptions): 
     }
   }
 
-  let done = false
+  /** 会话作废：dispose 之后一切从此不再受理。 */
+  let disposed = false
+  /**
+   * 本场已收尾。最后一根抬起之后的杂散事件不再回送，但会话本身还活着——
+   * 下一次 add 就是新的一场。会话是根级效应建的、整个生命周期只建一次，
+   * 把「这一场完了」当成「会话完了」会让第二次拖拽彻底起不来。
+   */
+  let ended = false
 
   const indexOf = (pointerId: number): number => points.findIndex(p => p.pointerId === pointerId)
 
   const handleMove = (event: PointerEvent): void => {
-    if (done)
+    if (disposed || ended)
       return
     const at = indexOf(event.pointerId)
     if (at < 0)
@@ -64,7 +71,7 @@ export function createMultiPointerSession(options: MultiPointerSessionOptions): 
   }
 
   const finish = (reason: PointerEndReason) => (event: PointerEvent): void => {
-    if (done)
+    if (disposed || ended)
       return
     const at = indexOf(event.pointerId)
     if (at < 0)
@@ -74,7 +81,7 @@ export function createMultiPointerSession(options: MultiPointerSessionOptions): 
     // 否则剩下那根手指会带着上一段的缩放基准继续走，图会跳一下
     onChange([...points])
     if (points.length === 0) {
-      done = true
+      ended = true
       onEnd({ reason })
     }
   }
@@ -87,8 +94,11 @@ export function createMultiPointerSession(options: MultiPointerSessionOptions): 
 
   return {
     add: (point) => {
-      if (done)
+      if (disposed)
         return
+      // 上一场已经收尾、手也都抬干净了：这一下是新的一场
+      if (ended && points.length === 0)
+        ended = false
       const at = indexOf(point.pointerId)
       if (at < 0)
         points.push(point)
@@ -97,7 +107,8 @@ export function createMultiPointerSession(options: MultiPointerSessionOptions): 
     },
     points: () => [...points],
     dispose: () => {
-      done = true
+      disposed = true
+      ended = true
       points.splice(0)
       doc.removeEventListener('pointermove', handleMove)
       doc.removeEventListener('pointerup', handleUp)

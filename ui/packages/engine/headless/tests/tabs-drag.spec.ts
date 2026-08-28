@@ -48,7 +48,10 @@ function mount(initial: Partial<Props> = {}) {
     el.setAttribute('data-value', node.value)
     if (node.disabled)
       el.setAttribute('aria-disabled', 'true')
-    const at = i * SPAN
+    // rtl 横排里 DOM 首项排在最右：位置按倒序给，这才是浏览器真实的排布。
+    // 顺序给的话几何与逻辑恰好同向，rtl 走没走对根本看不出来
+    const slot = horizontal && props.dir === 'rtl' ? (props.collection ?? []).length - 1 - i : i
+    const at = slot * SPAN
     el.getBoundingClientRect = (): DOMRect => (horizontal
       ? { x: at, y: 0, width: SPAN, height: 32, top: 0, left: at, right: at + SPAN, bottom: 32, toJSON: () => ({}) }
       : { x: 0, y: at, width: 120, height: SPAN, top: at, left: 0, right: 120, bottom: at + SPAN, toJSON: () => ({}) }
@@ -239,6 +242,46 @@ describe('标签拖拽 · 指针', () => {
     move(120)
     expect(h.drop()?.targetValue).toBe('two')
   })
+
+  it('rtl 下松手落定的结果与同方向的键盘命令一致', () => {
+    const viaPointer = vi.fn()
+    const p = mount({ dir: 'rtl', onTabMove: viaPointer })
+    press(p, 'one', 250)
+    // two 占 100-200，120 是它的几何左半 = rtl 下的逻辑末侧，落点该是 after
+    move(120)
+    release()
+
+    const viaKey = vi.fn()
+    const k = mount({ dir: 'rtl', onTabMove: viaKey })
+    k.service.send({ type: 'TRIGGER.FOCUS', value: 'one' })
+    key(k, 'ArrowLeft', { altKey: true })
+
+    expect(viaPointer.mock.calls[0]?.[0]).toEqual(viaKey.mock.calls[0]?.[0])
+  })
+  it('rtl 下指针与键盘不打架：拖到最右那个标签的几何左半 = 落在它逻辑之后', () => {
+    // rtl 布局里 one 排在最右（占 200-300）。220 是它的几何左半，
+    // 而 rtl 下几何左侧是逻辑末侧——落点该是 after
+    const h = mount({ dir: 'rtl' })
+    press(h, 'three', 20)
+    move(220)
+    expect(h.drop()).toEqual({ targetValue: 'one', position: 'after' })
+  })
+
+  it('同一个实例连拖两次——会话是常驻的，第一场收尾不该把它闩死', () => {
+    const onTabMove = vi.fn()
+    const h = mount({ onTabMove })
+    press(h, 'one', 50)
+    move(280)
+    release()
+    expect(onTabMove).toHaveBeenCalledTimes(1)
+
+    // 第二场：同一个实例、同一个常驻会话
+    press(h, 'two', 150)
+    move(20)
+    expect(h.dragging()).toBe('two')
+    release()
+    expect(onTabMove).toHaveBeenCalledTimes(2)
+  })
 })
 
 describe('标签拖拽 · 键盘命令', () => {
@@ -400,6 +443,49 @@ describe('标签拖动把手 · 触屏那一路唯一的入口', () => {
       from: 0,
       to: 2,
       values: ['two', 'three', 'one'],
+    })
+  })
+})
+
+describe('禁用的标签不是拖动源', () => {
+  const WITH_DISABLED = [
+    { value: 'one', label: '概览' },
+    { value: 'two', label: '详情', disabled: true },
+    { value: 'three', label: '设置' },
+  ]
+
+  it('整块起手拖不动', () => {
+    const h = mount({ collection: WITH_DISABLED })
+    press(h, 'two', 150)
+    move(20)
+    expect(h.dragging()).toBeNull()
+  })
+
+  it('按 Alt + 方向键也搬不动', () => {
+    const onTabMove = vi.fn()
+    const h = mount({ collection: WITH_DISABLED, onTabMove })
+    h.service.send({ type: 'TRIGGER.FOCUS', value: 'two' })
+    key(h, 'ArrowRight', { altKey: true })
+    expect(onTabMove).not.toHaveBeenCalled()
+  })
+
+  it('不自报可拖，皮肤才不会给它一只抓手', () => {
+    const h = mount({ collection: WITH_DISABLED })
+    expect((h.api().getTriggerProps({ value: 'two' }) as Dict)['data-draggable']).toBeUndefined()
+    expect((h.api().getTriggerProps({ value: 'one' }) as Dict)['data-draggable']).toBe('')
+  })
+
+  it('别人仍可以落在它前后', () => {
+    const onTabMove = vi.fn()
+    const h = mount({ collection: WITH_DISABLED, onTabMove })
+    press(h, 'one', 50)
+    move(180)
+    release()
+    expect(onTabMove).toHaveBeenCalledWith({
+      value: 'one',
+      from: 0,
+      to: 1,
+      values: ['two', 'one', 'three'],
     })
   })
 })

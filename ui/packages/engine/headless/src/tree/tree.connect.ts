@@ -386,7 +386,8 @@ export function connectTree<T extends PropTypes>(
         // Alt + 方向键搬家。一按就是一次已过守卫的完整提交，不进拖动态——
         // 裸方向键是导航与展开收起，空格是确认键，连打检索还会先吃掉可打印字符，
         // 模态拾起在这棵树上无处落脚
-        if (event.altKey && !event.ctrlKey && !event.metaKey && nodeDraggable && focusedValue != null) {
+        if (event.altKey && !event.ctrlKey && !event.metaKey && nodeDraggable && focusedValue != null
+          && !isDisabled(focusedValue)) {
           const moveIntent = treeMoveIntentFromKey(key, dir === 'rtl')
           if (moveIntent) {
             // Alt + 方向键在部分浏览器是前进后退，认了就得挡住

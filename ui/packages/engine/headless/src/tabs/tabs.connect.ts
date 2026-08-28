@@ -78,9 +78,11 @@ export function connectTabs<T extends PropTypes>(
    * 触屏不认——拖动方向与页面滚动同轴时手势在按下那一刻就归了浏览器，
    * touch-action 事后改不回来。
    */
-  function onTabDragStart(event: PointerEvent, value: string): void {
-    if (!reorderable || event.button !== 0 || event.pointerType === 'touch')
+  function onTabDragStart(event: PointerEvent, item: TabsTriggerProps): void {
+    // 禁用的标签不是拖动源：它自己动不了，别人仍可以落在它前后
+    if (!reorderable || itemDisabled(item) || event.button !== 0 || event.pointerType === 'touch')
       return
+    const value = item.value
     const el = event.currentTarget as HTMLElement | null
     const list = el?.closest<HTMLElement>(parts.list.selector)
     const session = service.refs.get('gesture')
@@ -195,7 +197,8 @@ export function connectTabs<T extends PropTypes>(
       'onKeydown': (event: KeyboardEvent) => {
         // Alt + 主轴方向键换位。一按就是一次完整提交，不进拖动态——
         // 裸方向键是导航、Enter/Space 是确认，模态拾起在这条标签带上无处落脚
-        if (event.altKey && !event.ctrlKey && !event.metaKey && reorderable && focusedValue != null) {
+        if (event.altKey && !event.ctrlKey && !event.metaKey && reorderable && focusedValue != null
+          && !metaOf.get(focusedValue)?.disabled) {
           const moveIntent = flatMoveIntentFromKey(event.key, orientation, dir === 'rtl')
           if (moveIntent) {
             // Alt + 方向键在部分浏览器是前进后退，认了就得挡住
@@ -253,8 +256,8 @@ export function connectTabs<T extends PropTypes>(
       'data-disabled': dataAttr(itemDisabled(item)),
       'data-dragging': dataAttr(draggingTab === item.value),
       'data-drop': dropSide(item.value),
-      'data-draggable': dataAttr(reorderable),
-      'onPointerDown': (event: PointerEvent) => onTabDragStart(event, item.value),
+      'data-draggable': dataAttr(reorderable && !itemDisabled(item)),
+      'onPointerDown': (event: PointerEvent) => onTabDragStart(event, item),
       'onClick': () => {
         if (!itemDisabled(item))
           send({ type: 'TRIGGER.SELECT', value: item.value })

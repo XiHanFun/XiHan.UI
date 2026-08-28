@@ -166,21 +166,42 @@ describe('多指会话', () => {
     s.dispose()
   })
 
-  it('结束之后不再回送，dispose 可重复调用', () => {
+  it('本场收尾之后，下一次 add 就是新的一场——会话整个生命周期只建一次，拖第二回还得能拖', () => {
     const onChange = vi.fn()
-    const onEnd = vi.fn()
-    const s = createMultiPointerSession({ doc: document, onChange, onEnd })
+    const s = createMultiPointerSession({ doc: document, onChange, onEnd: vi.fn() })
     s.add({ pointerId: 1, clientX: 0, clientY: 0 })
     document.dispatchEvent(pointer('pointerup', 1))
     onChange.mockClear()
 
     s.add({ pointerId: 2, clientX: 0, clientY: 0 })
     document.dispatchEvent(pointer('pointermove', 2, 10, 0))
+    expect(onChange).toHaveBeenCalledTimes(1)
+    s.dispose()
+  })
+
+  it('收尾之后、下一场开始之前的杂散事件不回送', () => {
+    const onChange = vi.fn()
+    const s = createMultiPointerSession({ doc: document, onChange, onEnd: vi.fn() })
+    s.add({ pointerId: 1, clientX: 0, clientY: 0 })
+    document.dispatchEvent(pointer('pointerup', 1))
+    onChange.mockClear()
+
+    // 没有 add 就动的指针不算数
+    document.dispatchEvent(pointer('pointermove', 9, 10, 0))
     expect(onChange).not.toHaveBeenCalled()
-    expect(() => {
-      s.dispose()
-      s.dispose()
-    }).not.toThrow()
+    s.dispose()
+  })
+
+  it('dispose 之后一切不再受理，且可重复调用', () => {
+    const onChange = vi.fn()
+    const s = createMultiPointerSession({ doc: document, onChange, onEnd: vi.fn() })
+    s.add({ pointerId: 1, clientX: 0, clientY: 0 })
+    s.dispose()
+
+    s.add({ pointerId: 2, clientX: 0, clientY: 0 })
+    document.dispatchEvent(pointer('pointermove', 2, 10, 0))
+    expect(onChange).not.toHaveBeenCalled()
+    expect(() => s.dispose()).not.toThrow()
   })
 
   it('没有文档时退化成空操作', () => {
