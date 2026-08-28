@@ -97,7 +97,14 @@ export interface TreeRefs {
    * 正在拖着搬家的那个节点。activated 之前只是「按住了」，还不是拖动——
    * 整个节点都是拖动源没有把手表明意图，要走够激活距离才算。
    */
-  nodeDrag: { value: string, rects: DragRect[], originY: number, activated: boolean } | null
+  nodeDrag: {
+    value: string
+    rects: DragRect[]
+    originY: number
+    activated: boolean
+    /** 拖动源节点。拖动中拿它量版面整体挪了多远，见 snapshotDrift。 */
+    source: HTMLElement | null
+  } | null
   /**
    * 连打检索缓冲，随服务存活，停顿够久自行重开一轮。
    * 放模块变量会让同页两棵树共用一个缓冲。
@@ -215,7 +222,7 @@ export interface TreeSchema extends MachineSchema {
      * 从专门的拖动把手起手：按下即拖，不再等激活距离。
      * 把手是不占 Tab 位的独立可触区域，意图无歧义，触屏那一路也只走它。
      */
-    | { type: 'NODE_DRAG.START', value: string, rects: DragRect[], originY: number, activate?: boolean }
+    | { type: 'NODE_DRAG.START', value: string, rects: DragRect[], originY: number, activate?: boolean, source: HTMLElement | null }
     | { type: 'NODE_DRAG.MOVE', clientY: number }
     | { type: 'NODE_DRAG.END' }
     | { type: 'NODE_DRAG.CANCEL' }

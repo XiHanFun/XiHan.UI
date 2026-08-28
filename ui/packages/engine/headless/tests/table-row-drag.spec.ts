@@ -163,6 +163,8 @@ function mount(initial: Partial<Props> = {}) {
     el.setAttribute('data-scope', 'table')
     el.setAttribute('data-part', 'row')
     el.setAttribute('data-value', row.id)
+    // 连接层给每一行都发 tabindex（锚点 0、其余 -1）；jsdom 里没有它 focus() 落不上去
+    el.setAttribute('tabindex', '-1')
     box(el, top, 40)
     top += 40
     body.append(el)
@@ -768,5 +770,31 @@ describe('拖动中版面滚走了，落点仍按指针所指算', () => {
     scrollBy(h, 40)
     move(20)
     expect(h.dragging()).toBeNull()
+  })
+})
+
+describe('把手拖放之后焦点落在哪儿', () => {
+  it('从把手起手，焦点锚点与真实焦点都交给那一行', () => {
+    const h = mount()
+    // 先让焦点停在第一行，再从第三行的把手起手——不接管的话锚点还在第一行，
+    // 而真实焦点会停在这个 aria-hidden 的把手上
+    h.service.send({ type: 'ROW.FOCUS', value: 'a' })
+    const props = h.api().getRowDragTriggerProps({ value: 'c' }) as Dict
+    const handle = document.createElement('span')
+    handle.setAttribute('data-scope', 'table')
+    handle.setAttribute('data-part', 'row-drag-trigger')
+    h.row('c')?.prepend(handle)
+    ;(props.onPointerDown as (e: PointerEvent) => void)({
+      button: 0,
+      pointerId: 1,
+      pointerType: 'mouse',
+      clientY: 90,
+      currentTarget: handle,
+      target: handle,
+      preventDefault: () => {},
+    } as unknown as PointerEvent)
+
+    expect(h.service.context.get('focusedRow')).toBe('c')
+    expect(document.activeElement).toBe(h.row('c'))
   })
 })

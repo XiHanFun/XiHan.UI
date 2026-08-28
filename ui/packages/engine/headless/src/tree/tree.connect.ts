@@ -225,6 +225,8 @@ export function connectTree<T extends PropTypes>(
       value,
       rects: measureNodes(treeEl),
       originY: event.clientY,
+      // 拖动源就是按下的那一行：拖动中拿它量版面整体挪了多远
+      source: el,
     })
   }
 
@@ -339,11 +341,14 @@ export function connectTree<T extends PropTypes>(
             return
           session.add({ pointerId: event.pointerId, clientX: event.clientX, clientY: event.clientY })
           event.preventDefault()
+          // tabindex=-1 的节点是点得到焦点的：不显式接管，焦点会停在这个 aria-hidden 的把手上
+          focusValue(rowElOf(event.currentTarget as HTMLElement))
           send({
             type: 'NODE_DRAG.START',
             value: node.value,
             rects: measureNodes(treeEl),
             originY: event.clientY,
+            source: el ? rowElOf(el) : null,
             // 把手是专门的拖动入口，意图无歧义：按下即拖，不等激活距离
             activate: true,
           })

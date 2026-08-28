@@ -854,6 +854,9 @@ export function connectTable<T extends PropTypes>(
           if (blocked)
             return
           event.preventDefault()
+          // tabindex=-1 的节点是点得到焦点的：不显式接管，焦点会停在这个 aria-hidden 的把手上。
+          // 同一行里另外两个把手（选择、展开）也是这么做的
+          focusOwnerRow(event.currentTarget as HTMLElement)
           send({
             type: 'ROW_DRAG.START',
             rowId: row.value,
