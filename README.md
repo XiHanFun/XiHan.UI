@@ -2,9 +2,11 @@
 <img src="./assets/banner.png" alt="XiHan.UI" />
 <h1>XiHan.UI</h1>
 
-<p><b>快速、轻量、高效、用心的框架无关 Headless UI 组件库</b></p>
+<p><b>A fast, lightweight, efficient and thoughtfully built framework-agnostic component library</b></p>
 
-<p>以 Headless Core 为核心，提供 Vue 3 与 Web Components 双端适配，构建可组合、可访问、可主题化的现代 UI 基础设施</p>
+<p>A headless core with Vue 3 and Web Components adapters — composable, accessible and themeable UI infrastructure</p>
+
+<p><b>English</b> | <a href="./README_cn.md">简体中文</a></p>
 
 <p>
   <a href="https://github.com/XiHanFun/XiHan.UI/stargazers"><img alt="GitHub Stars" src="https://img.shields.io/github/stars/XiHanFun/XiHan.UI?style=flat-square&logo=github&label=Stars&color=1f6feb" /></a>
@@ -28,31 +30,31 @@
 
 </div>
 
-## 简介
+## Introduction
 
-XiHan.UI 以框架无关的 Headless Core 为核心：一个组件的状态、交互与无障碍逻辑沉在无头内核里，各框架只写一层薄适配器。同一份 `connect()` 产出在 Vue 与 Web Components 两端跑同一套一致性测试，逐帧比对归一化后的 DOM，以此证明「框架无关」不是口号。属于曦寒懿（XiHanFun）开源生态的组件层，拥有底座、组件、应用的完整生态。
+XiHan.UI is built around a framework-agnostic headless core: a component's state, interaction and accessibility logic live in that core, and every framework only gets a thin adapter. The same `connect()` output runs one shared conformance suite on both the Vue and the Web Components side, advancing the case step by step and comparing normalized DOM, so "framework-agnostic" is a property under test rather than a slogan. XiHan.UI is the component layer of the XiHanFun open-source ecosystem, which spans foundation, components and applications.
 
-## 特性
+## Features
 
-- **框架无关** - 状态与无障碍逻辑住在无头内核，Vue 与 Web Components 两端行为一致
-- **121 个组件** - 覆盖通用、数据录入、数据展示、导航、反馈与浮层、AI 对话、布局七组
-- **近乎零依赖** - 运行时第三方依赖只有 `@internationalized/date`；浮层定位、虚拟滚动、代码着色、流式 Markdown 均为自研
-- **构建期样式** - 令牌从 DTCG 源产出 CSS 变量，皮肤按 `@layer` 分层，运行时不做 CSS-in-JS
-- **主题可切** - 明暗、品牌、密度、对比度、书写方向五个维度独立切换
-- **无障碍** - 键盘交互依 W3C APG 落地，无障碍扫描跑在真实 Chromium 上
-- **TypeScript** - 全量类型定义，编辑器内可查
+- **Framework-agnostic** - state and accessibility live in the headless core; Vue and Web Components behave identically
+- **121 components** - covering general, layout, navigation, data entry, data display, feedback, overlay and AI chat — eight groups
+- **Almost dependency-free** - the only third-party runtime dependency is `@internationalized/date`; floating positioning, pointer sessions, code highlighting and streaming markdown are all first-party
+- **Build-time styling** - tokens are generated from DTCG sources into CSS variables and skins are layered with `@layer`; no CSS-in-JS at runtime
+- **Themeable** - color mode, brand, density, contrast and writing direction switch independently
+- **Accessible** - keyboard interaction follows the W3C APG; accessibility is scanned in real Chromium
+- **TypeScript** - fully typed, discoverable in the editor
 
-## 安装
+## Install
 
-18 个公开包均已发布至 npm，预览版走 `preview` dist-tag。
+18 public packages, 17 of them published to npm (`@xihan-ui/pointer` is not published yet); the current `latest` is `1.0.0`.
 
 ```bash
 pnpm add @xihan-ui/vue @xihan-ui/tokens @xihan-ui/styles
 ```
 
-## 使用
+## Usage
 
-两个适配器共用同一份令牌与皮肤，在入口处各引一次：
+Both adapters share the same tokens and skins — import them once at the entry point:
 
 ```ts
 import { createThemeController } from '@xihan-ui/tokens/runtime'
@@ -62,7 +64,7 @@ import '@xihan-ui/styles'
 createThemeController({ storageKey: 'app-theme' })
 ```
 
-Vue：
+Vue:
 
 ```vue
 <script setup lang="ts">
@@ -71,16 +73,16 @@ import { XhDialogContent, XhDialogRoot, XhDialogTitle, XhDialogTrigger } from '@
 
 <template>
   <XhDialogRoot v-slot="{ setOpen }">
-    <XhDialogTrigger>打开对话框</XhDialogTrigger>
+    <XhDialogTrigger>Open dialog</XhDialogTrigger>
     <XhDialogContent>
-      <XhDialogTitle>确认操作</XhDialogTitle>
-      <button @click="setOpen(false)">关闭</button>
+      <XhDialogTitle>Confirm</XhDialogTitle>
+      <button @click="setOpen(false)">Close</button>
     </XhDialogContent>
   </XhDialogRoot>
 </template>
 ```
 
-Web Components：元素不生成结构，作者写带 `data-xh-part` 的 Light-DOM 子节点，元素把 `connect()` 产出打上去。
+Web Components: the element renders no structure of its own. You write Light-DOM children carrying `data-xh-part`, and the element applies the `connect()` output to them.
 
 ```ts
 import { defineXhElements } from '@xihan-ui/web-components/define'
@@ -90,38 +92,30 @@ defineXhElements()
 
 ```html
 <xh-dialog>
-  <button data-xh-part="trigger">打开对话框</button>
+  <button data-xh-part="trigger">Open dialog</button>
   <div data-xh-part="backdrop"></div>
   <div data-xh-part="positioner">
     <div data-xh-part="content">
-      <h2 data-xh-part="title">确认操作</h2>
-      <button data-xh-part="close-trigger">关闭</button>
+      <h2 data-xh-part="title">Confirm</h2>
+      <button data-xh-part="close-trigger">Close</button>
     </div>
   </div>
 </xh-dialog>
 ```
 
-## 文档
+## Documentation
 
-<https://ui.docs.xihanfun.com> —— 组件页由 headless 产物与类型生成，含 connect API、键盘表与状态图。
+<https://ui.docs.xihanfun.com> — component pages are generated from the headless output and the type definitions, and include the connect API, keyboard tables and state charts.
 
-## 兼容环境
+## Browser Support
 
-现代浏览器（Chrome / Edge / Firefox / Safari 最新两个版本），本地开发需 Node.js 24+ 与 pnpm 11+。
+The styling floor is Chrome 111, Firefox 113 and Safari 16.2 (the bar for `oklch`, `@layer` and `:where`); below that line you get no styling rather than a degraded one. Local development requires Node.js 24+ and pnpm 11+.
 
-## 本地开发
+## Development
 
-```bash
-cd ui
-pnpm install --frozen-lockfile
-pnpm test         # 单元测试与跨适配器一致性测试
-pnpm test:browser # 真实 Chromium 里的无障碍扫描与浮层定位契约
-pnpm build
-```
+The package catalog, directory layout and development commands live in [ui/README.md](./ui/README.md).
 
-首次跑浏览器态测试前需 `pnpm exec playwright install chromium`。
-
-要在本地看组件跑起来，先 `cd ui && pnpm build`，再起文档站——每个组件页的示例引的都是真实组件，Vue 与 Web Components 两套写法并排：
+To see the components running locally, first `cd ui && pnpm build`, then start the documentation site — every example on a component page uses the real component, with the Vue and Web Components spellings side by side:
 
 ```bash
 cd docs
@@ -129,47 +123,47 @@ pnpm install
 pnpm dev
 ```
 
-改动需通过 CI 全套门禁，CI 与本地同一套命令：`pnpm lint`、`pnpm typecheck`、`pnpm boundaries`、`pnpm gate`（一条命令跑 68 项结构检查）、`pnpm test`、`pnpm build`、`pnpm size` 等。包一览、分层拓扑与命名约定见 [ui/README_cn.md](./ui/README_cn.md)。
+Changes must pass the full CI gate, and CI runs the same commands you do locally: `pnpm lint`, `pnpm typecheck`, `pnpm boundaries`, `pnpm gate` (one command runs 68 structural checks), `pnpm test`, `pnpm build`, `pnpm size` and more.
 
-## 现状与边界
+## Status and Boundaries
 
-已经能用的：121 个组件的内核与双适配器、默认皮肤、设计令牌与主题运行时、跨适配器一致性套件、真实 Chromium 里的无障碍扫描与浮层定位契约、文档站。
+Working today: 121 components with their cores and both adapters, the default skins, design tokens and the theme runtime, the cross-adapter conformance suite, the accessibility sweep and floating-position contract in real Chromium, and the documentation site.
 
-还没做的：内建语言包（组件文案只内建英文，中文等要自备 `translations`，全局注入口已就绪）、令牌浏览器、AI 组件族的 MarkdownStream / Reasoning 与 ToolCall 折叠 / 工具审批、企业业务组件。
+Not there yet: bundled language packs (component copy ships English only; other languages need your own `translations`, though the global injection point is in place), the token browser, the AI family's MarkdownStream / Reasoning and ToolCall collapsing / tool approval, and enterprise business components.
 
-## 相关项目
+## Related Projects
 
-- [XiHan.Framework](https://github.com/XiHanFun/XiHan.Framework) - .NET 模块化开发框架
-- [XiHan.BasicApp](https://github.com/XiHanFun/XiHan.BasicApp) - 基于 XiHan.Framework 与 Vue 3 的企业级中后台内核
+- [XiHan.Framework](https://github.com/XiHanFun/XiHan.Framework) - modular development framework for .NET
+- [XiHan.BasicApp](https://github.com/XiHanFun/XiHan.BasicApp) - enterprise admin kernel built on XiHan.Framework and Vue 3
 
-## 贡献
+## Contributing
 
-欢迎提交 Issue 和 Pull Request。提交遵循 conventional commits 规范，改动需通过上述门禁。
+Issues and pull requests are welcome. Commits follow conventional commits, and changes must pass the gates listed above.
 
-## 诚挚致谢
+## Acknowledgements
 
-排名不分先后。
+In no particular order.
 
-| 项目 | 致谢 |
+| Project | Thanks for |
 | --- | --- |
-| [Zag.js](https://github.com/chakra-ui/zag) | 作为组件状态图与 ARIA 接线的规格参考 |
-| [W3C APG](https://www.w3.org/WAI/ARIA/apg/) | 作为无障碍交互模式的规范依据 |
-| [CommonMark](https://spec.commonmark.org/) | 作为 Markdown 语义与一致率判据的规范来源 |
-| [axe-core](https://github.com/dequelabs/axe-core) | 作为无障碍自动化扫描的引擎 |
-| 其他第三方依赖 | 作为项目功能丰富与拓展的基石 |
+| [Zag.js](https://github.com/chakra-ui/zag) | Reference specs for component state charts and ARIA wiring |
+| [W3C APG](https://www.w3.org/WAI/ARIA/apg/) | The normative basis for accessible interaction patterns |
+| [CommonMark](https://spec.commonmark.org/) | The source of markdown semantics and the conformance benchmark |
+| [axe-core](https://github.com/dequelabs/axe-core) | The engine behind automated accessibility scanning |
+| Other third-party dependencies | Being the foundation this project is built upon |
 
-## 支持&赞助
+## Support & Sponsorship
 
-如果此项目对你的开发有助益，也欢迎请作者一杯咖啡。
+If this project helps your work, feel free to buy the author a coffee.
 
-官方赞助页 https://docs.xihanfun.com/cosmos/sponsor
+Official sponsorship page: https://docs.xihanfun.com/cosmos/sponsor
 
-## 版权&授权
+## License
 
 Copyright (c) 2021-Present XiHanFun and contributors.
 
-本项目采用 MIT 授权，详见 [License](./LICENSE)
+Released under the MIT License — see [License](./LICENSE).
 
-XiHan.UI Logo、XiHan.UI名称、界面视觉设计与原创视觉表达归作者所有，第三方依赖和第三方服务分别遵循其各自授权与服务条款。
+The XiHan.UI logo, name, interface visual design and original visual expression belong to the author; third-party dependencies and services are governed by their own licenses and terms.
 
-项目仅供学习参考，作者不承担任何软件的使用风险。
+This project is provided for study and reference; the author assumes no liability for any use of the software.
