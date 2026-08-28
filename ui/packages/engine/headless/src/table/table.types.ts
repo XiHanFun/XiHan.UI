@@ -329,7 +329,14 @@ export interface TableSchema extends MachineSchema {
      *
      * 矩形是一次性快照，全程不重量——重量会让「让位之后再判落点」自激振荡。
      */
-    columnDrag: { columnId: string, rects: DragRect[], originX: number, pointerId: number } | null
+    columnDrag: {
+      columnId: string
+      rects: DragRect[]
+      originX: number
+      pointerId: number
+      /** 拖动源节点。拖动中拿它量版面整体挪了多远，见 snapshotDrift。 */
+      source: HTMLElement | null
+    } | null
     /**
      * 正在拖着换位的那一行。activated 之前只是「按住了」，还不是拖动——
      * 整行可拖没有把手表明意图，要走够激活距离才算。
@@ -340,6 +347,8 @@ export interface TableSchema extends MachineSchema {
       originY: number
       pointerId: number
       activated: boolean
+      /** 拖动源节点。拖动中拿它量版面整体挪了多远，见 snapshotDrift。 */
+      source: HTMLElement | null
     } | null
   }
   /**
@@ -368,7 +377,7 @@ export interface TableSchema extends MachineSchema {
     /** 键盘改宽：一次一步。 */
     | { type: 'COLUMN_RESIZE.STEP', columnId: string, delta: number }
     /** 按下拖拽把手：矩形快照与起点横坐标由连接层量好交进来。 */
-    | { type: 'COLUMN_DRAG.START', columnId: string, rects: DragRect[], originX: number, pointerId: number }
+    | { type: 'COLUMN_DRAG.START', columnId: string, rects: DragRect[], originX: number, pointerId: number, source: HTMLElement | null }
     | { type: 'COLUMN_DRAG.MOVE', clientX: number }
     | { type: 'COLUMN_DRAG.END' }
     | { type: 'COLUMN_DRAG.CANCEL' }
@@ -379,7 +388,7 @@ export interface TableSchema extends MachineSchema {
      * 从专门的拖动把手起手：按下即拖，不再等激活距离。
      * 把手是不占 Tab 位的独立可触区域，意图无歧义，触屏那一路也只走它。
      */
-    | { type: 'ROW_DRAG.START', rowId: string, rects: DragRect[], originY: number, pointerId: number, activate?: boolean }
+    | { type: 'ROW_DRAG.START', rowId: string, rects: DragRect[], originY: number, pointerId: number, activate?: boolean, source: HTMLElement | null }
     | { type: 'ROW_DRAG.MOVE', clientY: number }
     | { type: 'ROW_DRAG.END' }
     | { type: 'ROW_DRAG.CANCEL' }

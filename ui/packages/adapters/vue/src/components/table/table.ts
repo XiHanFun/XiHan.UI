@@ -16,6 +16,7 @@ import type { PropType, Ref, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import type { TableContext } from './use-table'
 import { computed, defineComponent, Fragment, h, mergeProps, onBeforeUnmount, ref, watch } from 'vue'
+import { withXhConfig } from '../../config/config'
 import {
   provideTable,
   provideTableColumn,
@@ -115,6 +116,7 @@ export const XhTableRoot = defineComponent({
     loop: { type: Boolean, default: undefined },
     dir: { type: String as PropType<Direction>, default: undefined },
     size: { type: String as PropType<Size>, default: undefined },
+    translations: { type: Object as PropType<TableProps['translations']>, default: undefined },
   },
   // *-change 携带 { value }，update:* 携带裸值以支持 v-model
   emits: {
@@ -155,7 +157,7 @@ export const XhTableRoot = defineComponent({
     const onRowMove: TableProps['onRowMove'] = (details) => {
       emit('row-move', details)
     }
-    const ctx = useTable(props as TableProps, onSortChange, onSelectionChange, onExpandedChange, onColumnPreferenceChange, onRowMove)
+    const ctx = useTable(withXhConfig('table', props) as TableProps, onSortChange, onSelectionChange, onExpandedChange, onColumnPreferenceChange, onRowMove)
     provideTable(ctx)
     // 播报区由根组件自己渲，作者插不进 root 的兄弟位。它不能进 root：
     // root 是 role=grid，塞活动区域进去是 aria-required-children（critical）

@@ -94,6 +94,7 @@ export function connectTabs<T extends PropTypes>(
       value,
       rects: measureTabs(list),
       origin: horizontal ? event.clientX : event.clientY,
+      source: el,
     })
   }
   const contentId = (target: string): string => scope.partId(tabsAnatomy.name, `content:${target}`)
@@ -171,6 +172,8 @@ export function connectTabs<T extends PropTypes>(
             value: item.value,
             rects: measureTabs(list),
             origin: horizontal ? event.clientX : event.clientY,
+            // 拖动源取把手所属的那个标签：把手跟着它一起挪
+            source: el?.closest<HTMLElement>(parts.trigger.selector) ?? null,
             // 把手是专门的拖动入口，意图无歧义：按下即拖，不等激活距离
             activate: true,
           })

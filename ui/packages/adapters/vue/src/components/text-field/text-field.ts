@@ -4,6 +4,7 @@ import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { autoSizeTextarea } from '@xihan-ui/headless'
 import { defineComponent, h, onMounted, ref, watch } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { provideTextField, useTextFieldContext } from './context'
 import { useTextField } from './use-text-field'
@@ -50,7 +51,7 @@ export const XhTextFieldRoot = defineComponent({
       emit('value-change', details)
       emit('update:value', details.value)
     }
-    const ctx = useTextField(props as TextFieldProps, notify)
+    const ctx = useTextField(withXhConfig('text-field', props) as TextFieldProps, notify)
     provideTextField(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       value: ctx.api.value.value,

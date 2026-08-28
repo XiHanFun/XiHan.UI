@@ -109,9 +109,12 @@ for (const name of components) {
 
   const vue = await vueSource(name)
   if (vue !== '') {
-    const wired = vue.includes('withXhConfig(') || vue.includes('useMachine(')
-    if (!wired)
-      errors.push(`Vue 的 ${name}：headless 声明了 ${want}，却既没跑机器也没调 withXhConfig，全局配置到不了它`)
+    // size / locale 由 useMachine 那一处并（fillXhConfigDefaults 只认这两个键）；
+    // translations 按组件名分桶，只有 withXhConfig 认得出自己是谁——跑机器也不代表它接上了
+    if (wantsSize && !vue.includes('withXhConfig(') && !vue.includes('useMachine('))
+      errors.push(`Vue 的 ${name}：headless 声明了 size，却既没跑机器也没调 withXhConfig，全局配置到不了它`)
+    if (wantsText && !vue.includes('withXhConfig('))
+      errors.push(`Vue 的 ${name}：headless 声明了 translations，Vue 侧必须调 withXhConfig——useMachine 只并 locale 与 size，按组件名分桶的文案到不了它`)
   }
 
   const wc = await readFile(join(WC_ELEMENTS, `${name}.ts`), 'utf8').catch(() => '')

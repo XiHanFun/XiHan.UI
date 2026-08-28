@@ -4,6 +4,7 @@ import type { ResizeEdge } from '@xihan-ui/pointer'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { provideResizable, useResizableContext } from './context'
 import { useResizable } from './use-resizable'
 
@@ -50,7 +51,7 @@ export const XhResizableRoot = defineComponent({
       emit('size-change', details)
       emit('update:size', details.size)
     }
-    const ctx = useResizable(props as ResizableProps, notify, details => emit('size-change-end', details))
+    const ctx = useResizable(withXhConfig('resizable', props) as ResizableProps, notify, details => emit('size-change-end', details))
     provideResizable(ctx)
 
     return () => h('div', {

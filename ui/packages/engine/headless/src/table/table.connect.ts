@@ -487,9 +487,14 @@ export function connectTable<T extends PropTypes>(
           // 行是纵向排的；轴之外的键不归换位管
           const intent = flatMoveIntentFromKey(event.key, 'vertical')
           if (intent) {
-            // Alt + 方向键在部分浏览器是前进后退，认了就得挡住
+            // 没打开换位就不归表格管，这个组合键放行给页面——
+            // 与另外三处（列、树、标签）同一个写法
+            if (!rowReorderable)
+              return
+            // Alt + 方向键在部分浏览器是前进后退，认了就得挡住。
+            // 降级时照样挡：键是认下了的，只是这张表此刻搬不动
             event.preventDefault()
-            if (rowReorderable && rowBlocked == null) {
+            if (rowBlocked == null) {
               const target = flatMoveCommand(dataRows.map(r => r.id), focusedRow, intent)
               if (target)
                 send({ type: 'ROW.MOVE_BY', rowId: focusedRow, target })
@@ -656,6 +661,7 @@ export function connectTable<T extends PropTypes>(
             rects,
             originY: event.clientY,
             pointerId: event.pointerId,
+            source: el,
           })
         },
 
@@ -854,6 +860,8 @@ export function connectTable<T extends PropTypes>(
             rects,
             originY: event.clientY,
             pointerId: event.pointerId,
+            // 拖动源取把手所属的那一行：把手跟着行一起挪
+            source: el?.closest<HTMLElement>('[data-scope="table"][data-part="row"]') ?? null,
             // 把手是专门的拖动入口，意图无歧义：按下即拖，不等激活距离
             activate: true,
           })
@@ -909,6 +917,8 @@ export function connectTable<T extends PropTypes>(
             rects: columnDragRects(columns, id => boxes.get(id) ?? null),
             originX: event.clientX,
             pointerId: event.pointerId,
+            // 拖动源取列头本身：把手是它的孩子，跟着它一起挪
+            source: header ?? null,
           })
         },
         'onKeyDown': (event: KeyboardEvent) => {
