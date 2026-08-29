@@ -7,6 +7,7 @@ export default defineConfig({
   test: {
     name: 'wc-browser',
     include: ['tests/browser/**/*.spec.ts'],
+    setupFiles: ['./tests/browser/setup.ts'],
     browser: {
       enabled: true,
       provider: playwright(),
