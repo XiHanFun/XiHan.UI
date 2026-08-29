@@ -1,17 +1,7 @@
 // 节点拖拽的纯算法：落点合不合法、落点折算成「搬到哪个父的第几位」。
 // 不碰 DOM、不认识状态机——连接层在 render 期就要用到它们，此时 DOM 尚不存在。
 import type { DropTarget } from '../shared/drag'
-import type { TreeNodeMeta } from './tree.types'
-
-/** 搬家：把某个节点放到某个父节点下的第几位。父为 null 即根层。 */
-export interface TreeMove {
-  /** 被搬的节点。 */
-  value: string
-  /** 搬到谁下面；null 是根层。 */
-  parent: string | null
-  /** 在那一层的第几位，0 起算。已经算过「先摘后插」的修正。 */
-  index: number
-}
+import type { TreeMove, TreeNodeMeta } from './tree.types'
 
 /**
  * 目标是不是被拖节点自己或它的后代。

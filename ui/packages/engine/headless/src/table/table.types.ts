@@ -1,7 +1,6 @@
 import type { Direction, PropTypes, Size } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 import type { DragRect, DragTranslations, DropTarget } from '../shared/drag'
-import type { TableRowReorderReason } from './table.drag'
 
 /**
  * 焦点模型：**行级** roving tabindex。
@@ -163,6 +162,15 @@ export interface TableVisibleRow {
    */
   outline: string
 }
+
+/**
+ * 行拖不动的原因，null 表示能拖。
+ *
+ * 三条都是「拖了也没意义」而不是「拖了会崩」：
+ * - `sorted`：排序链非空时顺序由排序键决定，拖出来的新序下一帧就被覆盖；
+ * - `virtualized`：只渲窗口内那一段时，窗口外的行不在 DOM 里，落点算不出来。
+ */
+export type TableRowReorderReason = 'sorted' | 'virtualized'
 
 export interface TableRowMoveDetails {
   /** 被搬的那一行。 */

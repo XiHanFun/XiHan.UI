@@ -3,7 +3,6 @@ import type { Direction, Orientation, PropTypes } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 import type { MultiPointerSession } from '@xihan-ui/pointer'
 import type { DragRect, DragTranslations, DropTarget } from '../shared/drag'
-import type { TreeMove } from './tree.drag'
 
 /**
  * 焦点模型：roving tabindex，不做 aria-activedescendant 变体。
@@ -73,6 +72,16 @@ export interface TreeNodeMeta {
 export interface TreeVisibleNode extends TreeNodeMeta {
   /** 叶子恒为 false；分支为「它在展开集合里」。 */
   expanded: boolean
+}
+
+/** 搬家：把某个节点放到某个父节点下的第几位。父为 null 即根层。 */
+export interface TreeMove {
+  /** 被搬的节点。 */
+  value: string
+  /** 搬到谁下面；null 是根层。 */
+  parent: string | null
+  /** 在那一层的第几位，0 起算。已经算过「先摘后插」的修正。 */
+  index: number
 }
 
 export interface TreeExpandedChangeDetails {
