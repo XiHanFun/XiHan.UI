@@ -1,7 +1,8 @@
 @echo off
 title VersionUpgrade
 
-rem 改的是工作区里的 package.json 与 CHANGELOG，不需要管理员权限，因此不提权。
+rem Keep this file ASCII-only: cmd reads .bat with the console code page (GBK on
+rem zh-CN), so UTF-8 text here comes out mangled and can be parsed as a command.
 
 set "SCRIPT_DIR=%~dp0"
 
