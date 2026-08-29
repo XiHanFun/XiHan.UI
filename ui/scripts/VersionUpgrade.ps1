@@ -1,10 +1,10 @@
-# 设置控制台编码为 UTF-8 以正确显示中文
+﻿# 设置控制台编码为 UTF-8 以正确显示中文
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 $OutputEncoding = [System.Text.Encoding]::UTF8
 
 $ErrorActionPreference = 'Stop'
 
-# 本脚本只做一件事：把 18 个库包的版本号一起抬到下一个号，顺带把变更集收成 CHANGELOG。
+# 本脚本只做一件事：把全部库包的版本号一起抬到下一个号，顺带把变更集收成 CHANGELOG。
 # 提交、合并 main、打标签、发 npm 都不在这里——发布由 .github/workflows/release.yml
 # 在 main 上的 v* 标签触发。文档站的更新日志在发布之后另行补。
 
@@ -16,9 +16,15 @@ if (-not (Get-Command pnpm -ErrorAction SilentlyContinue)) {
     Write-Error "找不到 pnpm，请先安装：npm i -g pnpm"
 }
 
+# Windows PowerShell 5.1 的 Get-Content 默认按 ANSI 读，UTF-8 的 JSON 读进来是乱码，
+# 解析会断在第一段中文上。这里一律按 UTF-8 显式读。
+function Read-JsonFile([string]$Path) {
+    return [System.IO.File]::ReadAllText($Path, [System.Text.Encoding]::UTF8) | ConvertFrom-Json
+}
+
 # 版本真源取 kernel 的 package.json：库包锁步同版，kernel 的号就是整套库的号
 $kernelPkgPath = Join-Path $uiRoot 'packages\engine\kernel\package.json'
-$currentVersion = (Get-Content $kernelPkgPath -Raw | ConvertFrom-Json).version
+$currentVersion = (Read-JsonFile $kernelPkgPath).version
 
 Write-Output ""
 Write-Output "========================================"
@@ -26,7 +32,7 @@ Write-Output " VersionUpgrade - XiHan.UI"
 Write-Output "========================================"
 Write-Output "当前版本：$currentVersion"
 
-# 锁步核对：18 个包必须同版，不同版就先修好再发
+# 锁步核对：库包必须同版，不同版就先修好再发
 & node tooling/scripts/check-version-lock.mjs
 if ($LASTEXITCODE -ne 0) {
     Write-Error "库包版本不一致，发版前必须先统一"
@@ -34,7 +40,7 @@ if ($LASTEXITCODE -ne 0) {
 
 # 预发布模式记在 .changeset/pre.json；标签与它对不上会发出与预期不同的版本
 $prePath = Join-Path $uiRoot '.changeset\pre.json'
-$preTag = if (Test-Path $prePath) { (Get-Content $prePath -Raw | ConvertFrom-Json).tag } else { $null }
+$preTag = if (Test-Path $prePath) { (Read-JsonFile $prePath).tag } else { $null }
 if ($preTag) {
     Write-Output "预发布通道：$preTag（.changeset/pre.json 存在）"
 }
@@ -54,7 +60,7 @@ if (Test-Path $planPath) { Remove-Item $planPath -Force }
 $derivedVersion = $null
 $derivedType = $null
 if (Test-Path $planPath) {
-    $plan = Get-Content $planPath -Raw | ConvertFrom-Json
+    $plan = Read-JsonFile $planPath
     $bumping = @($plan.releases | Where-Object { $_.type -ne 'none' })
     if ($bumping.Count -gt 0) {
         $derivedVersion = $bumping[0].newVersion
@@ -135,19 +141,20 @@ switch ($releaseType) {
 }
 
 Write-Output ""
-$confirm = Read-Host ">>> 确认把 18 个库包从 $currentVersion 升上去 (Y|y / N|n)"
+$target = if ($forcedLevel) { "按 $forcedLevel 提升" } else { "升到 $derivedVersion" }
+$confirm = Read-Host ">>> 确认把库包版本从 $currentVersion $target (Y|y / N|n)"
 if ($confirm -notin @('Y', 'y')) {
     Write-Output "取消升级"
     exit
 }
 
-# 消费变更集：改 18 个 package.json 的 version、写各包 CHANGELOG.md、删掉用掉的变更集
+# 消费变更集：改各包 package.json 的 version、写各包 CHANGELOG.md、删掉用掉的变更集
 & pnpm run version
 if ($LASTEXITCODE -ne 0) {
     Write-Error "changeset version 失败"
 }
 
-$newVersion = (Get-Content $kernelPkgPath -Raw | ConvertFrom-Json).version
+$newVersion = (Read-JsonFile $kernelPkgPath).version
 Write-Output ""
 Write-Output "版本已升到：$newVersion"
 
