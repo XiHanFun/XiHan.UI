@@ -49,8 +49,10 @@ jobs:
         run: pnpm gate:surface
       - name: Boundaries (dependency-cruiser)
         run: pnpm boundaries
+      # 用例默认 5s 超时是按开发机定的。这一步并发跑二十多个包，CPU 争抢下纯计算的用例
+      # 慢十几倍，本机一秒多的会假超时。超时是护栏不是断言，放到 60s。
       - name: Test
-        run: pnpm test
+        run: pnpm test -- --testTimeout=60000
       - name: Size limit
         run: pnpm size
       # cjs-resolves-to-esm 是 ESM-only 的刻意选择，node10 / node16-from-ESM / bundler 三列均绿

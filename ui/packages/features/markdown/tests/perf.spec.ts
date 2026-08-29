@@ -125,35 +125,35 @@ const ONCE_SCALE = { small: 64 * KB, large: 128 * KB, maxRatio: 3 }
 describe('一次性喂全文的超线性形状', () => {
   it('未闭合 `[` 重复', () => {
     expectScaling({ gen: unclosedBrackets, budgetMs: 40 }, ONCE_SCALE, timeOnce)
-  })
+  }, 60_000)
 
   it('未配对反引号段', () => {
     expectScaling({ gen: unpairedTicks, budgetMs: 90 }, ONCE_SCALE, timeOnce)
-  })
+  }, 60_000)
 
   it('注定失败的强调标记', () => {
     expectScaling({ gen: danglingEmphasis, budgetMs: 120 }, ONCE_SCALE, timeOnce)
-  })
+  }, 60_000)
 
   it('表头 K 列加 K 个只写一个竖线的空行', () => {
     expectScaling({ gen: sparseTable, budgetMs: 90 }, ONCE_SCALE, timeOnce)
-  })
+  }, 60_000)
 
   it('截断的行内链接', () => {
     expectScaling({ gen: truncatedLinks, budgetMs: 60 }, ONCE_SCALE, timeOnce)
-  })
+  }, 60_000)
 
   it('截断的行内链接（中文标签与地址）', () => {
     expectScaling({ gen: truncatedLinksCjk, budgetMs: 50 }, ONCE_SCALE, timeOnce)
-  })
+  }, 60_000)
 
   it('不在串尾的空格墙', () => {
     expectScaling({ gen: spaceWall, budgetMs: 60, small: 256 * KB, large: 512 * KB }, ONCE_SCALE, timeOnce)
-  })
+  }, 60_000)
 
   it('嵌套方括号加非空定义表', () => {
     expectScaling({ gen: nestedBrackets, budgetMs: 70 }, ONCE_SCALE, timeOnce)
-  })
+  }, 60_000)
 })
 
 // ---------------------------------------------------------------------------
@@ -165,35 +165,35 @@ const STREAM_SCALE = { small: 2 * KB, large: 8 * KB, maxRatio: 30 }
 describe('流式按 token 喂的超线性形状', () => {
   it('未闭合 `[` 重复', () => {
     expectScaling({ gen: unclosedBrackets, budgetMs: 350 }, STREAM_SCALE, timeStream)
-  })
+  }, 60_000)
 
   it('未配对反引号段', () => {
     expectScaling({ gen: unpairedTicks, budgetMs: 1000 }, STREAM_SCALE, timeStream)
-  })
+  }, 60_000)
 
   it('注定失败的强调标记', () => {
     expectScaling({ gen: danglingEmphasis, budgetMs: 1400 }, STREAM_SCALE, timeStream)
-  })
+  }, 60_000)
 
   it('表头 K 列加 K 个只写一个竖线的空行', () => {
     expectScaling({ gen: sparseTable, budgetMs: 600 }, STREAM_SCALE, timeStream)
-  })
+  }, 60_000)
 
   it('截断的行内链接', () => {
     expectScaling({ gen: truncatedLinks, budgetMs: 700 }, STREAM_SCALE, timeStream)
-  })
+  }, 60_000)
 
   it('截断的行内链接（中文标签与地址）', () => {
     expectScaling({ gen: truncatedLinksCjk, budgetMs: 700 }, STREAM_SCALE, timeStream)
-  })
+  }, 60_000)
 
   it('不在串尾的空格墙', () => {
     expectScaling({ gen: spaceWall, budgetMs: 600, small: 16 * KB, large: 64 * KB }, STREAM_SCALE, timeStream)
-  })
+  }, 60_000)
 
   it('嵌套方括号加非空定义表', () => {
     expectScaling({ gen: nestedBrackets, budgetMs: 1400 }, STREAM_SCALE, timeStream)
-  })
+  }, 60_000)
 })
 
 // ---------------------------------------------------------------------------
@@ -246,5 +246,5 @@ describe('差分', () => {
         mismatches.push(JSON.stringify(text))
     }
     expect(mismatches).toEqual([])
-  })
+  }, 60_000)
 })
