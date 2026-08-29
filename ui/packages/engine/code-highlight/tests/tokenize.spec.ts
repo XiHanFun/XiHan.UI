@@ -167,7 +167,9 @@ describe('规模', () => {
     const b = fastest(() => tokenizeCode(large, JS))
     // 小样本没量出耗时就当场判失败，不拿兜底值当除数折算出假的超线性
     expect(a).toBeGreaterThan(0.05)
-    expect(b).toBeLessThan(200)
+    // 线性由下面这行比值判定；这一行只拦「整体慢一个数量级」，阈值按最慢的机器留够余量：
+    // 这一步是并发跑二十多个包的用例，单个进程分到多少 CPU 不由自己说了算
+    expect(b).toBeLessThan(2000)
     expect(b / a).toBeLessThan(30)
   })
 
