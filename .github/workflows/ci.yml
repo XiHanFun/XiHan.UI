@@ -14,13 +14,13 @@ jobs:
   quality:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       # 仓库根没有 package.json，action 默认在根找 packageManager 会失败；
       # 指向工作区的清单，pnpm 版本仍以 ui/package.json 为唯一事实源
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6
         with:
           package_json_file: ui/package.json
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: pnpm
@@ -66,20 +66,20 @@ jobs:
   browser:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       # 仓库根没有 package.json，action 默认在根找 packageManager 会失败；
       # 指向工作区的清单，pnpm 版本仍以 ui/package.json 为唯一事实源
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6
         with:
           package_json_file: ui/package.json
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: pnpm
           cache-dependency-path: ui/pnpm-lock.yaml
       - run: pnpm install --frozen-lockfile
       - name: Cache Playwright browsers
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ hashFiles('ui/pnpm-lock.yaml') }}
