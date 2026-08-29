@@ -4,6 +4,12 @@ $OutputEncoding = [System.Text.Encoding]::UTF8
 
 $ErrorActionPreference = 'Stop'
 
+# 标题打在这里：.bat 只负责快捷调用，直接跑 .ps1 也该看到同样的开头
+Write-Output ""
+Write-Output "========================================"
+Write-Output " VersionUpgrade - XiHan.UI"
+Write-Output "========================================"
+
 # 本脚本只做一件事：把全部库包的版本号一起抬到下一个号，顺带把变更集收成 CHANGELOG。
 # 提交、合并 main、打标签、发 npm 都不在这里——发布由 .github/workflows/release.yml
 # 在 main 上的 v* 标签触发。文档站的更新日志在发布之后另行补。
@@ -26,8 +32,6 @@ function Read-JsonFile([string]$Path) {
 $kernelPkgPath = Join-Path $uiRoot 'packages\engine\kernel\package.json'
 $currentVersion = (Read-JsonFile $kernelPkgPath).version
 
-# 标题由 VersionUpgrade.bat 打，这里不重复打一遍
-Write-Output ""
 Write-Output "当前版本：$currentVersion"
 
 # 锁步核对：库包必须同版，不同版就先修好再发
