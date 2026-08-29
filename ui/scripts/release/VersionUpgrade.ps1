@@ -14,8 +14,8 @@ Write-Output "========================================"
 # 提交、合并 main、打标签、发 npm 都不在这里——发布由 .github/workflows/release.yml
 # 在 main 上的 v* 标签触发。文档站的更新日志在发布之后另行补。
 
-# 脚本在 ui/scripts 下，工作区根在上一级
-$uiRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
+# 脚本在 ui/scripts/release 下，工作区根在上两级
+$uiRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
 Set-Location $uiRoot
 
 if (-not (Get-Command pnpm -ErrorAction SilentlyContinue)) {
