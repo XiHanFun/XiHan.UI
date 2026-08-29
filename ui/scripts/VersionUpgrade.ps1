@@ -26,10 +26,8 @@ function Read-JsonFile([string]$Path) {
 $kernelPkgPath = Join-Path $uiRoot 'packages\engine\kernel\package.json'
 $currentVersion = (Read-JsonFile $kernelPkgPath).version
 
+# 标题由 VersionUpgrade.bat 打，这里不重复打一遍
 Write-Output ""
-Write-Output "========================================"
-Write-Output " VersionUpgrade - XiHan.UI"
-Write-Output "========================================"
 Write-Output "当前版本：$currentVersion"
 
 # 锁步核对：库包必须同版，不同版就先修好再发
