@@ -1,7 +1,7 @@
 // 列拖拽的纯算法：谁能拖、落点折算成列偏好里的下标。
 // 不碰 DOM、不认识状态机——连接层在 render 期就要用到它们，此时 DOM 尚不存在。
 import type { DragRect, DropTarget } from '../shared/drag'
-import type { TableColumn, TableRowDef, TableVisibleRow } from './table.types'
+import type { TableColumn, TableRowDef, TableRowReorderReason, TableVisibleRow } from './table.types'
 import { insertionIndex } from '../shared/drag'
 import { orderColumnIds } from './table.columns'
 
@@ -111,15 +111,6 @@ export function columnMoveIntentFromKey(
       return null
   }
 }
-
-/**
- * 行拖不动的原因，null 表示能拖。
- *
- * 三条都是「拖了也没意义」而不是「拖了会崩」：
- * - `sorted`：排序链非空时顺序由排序键决定，拖出来的新序下一帧就被覆盖；
- * - `virtualized`：只渲窗口内那一段时，窗口外的行不在 DOM 里，落点算不出来。
- */
-export type TableRowReorderReason = 'sorted' | 'virtualized'
 
 export function rowReorderReason(
   sortLength: number,

@@ -1,9 +1,9 @@
 import type { DragAnnounceKind } from '../shared/drag'
-import type { TableRowReorderReason } from './table.drag'
 import type {
   TableColumnPreference,
   TableDropTarget,
   TableRowDef,
+  TableRowReorderReason,
   TableSchema,
   TableSelection,
   TableSelectionMode,

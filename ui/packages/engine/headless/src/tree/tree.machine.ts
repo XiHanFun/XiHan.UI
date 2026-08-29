@@ -1,6 +1,5 @@
 import type { DragAnnounceKind, DropTarget } from '../shared/drag'
-import type { TreeMove } from './tree.drag'
-import type { TreeNode, TreeNodeMeta, TreeSchema, TreeSelectionMode, TreeVisibleNode } from './tree.types'
+import type { TreeMove, TreeNode, TreeNodeMeta, TreeSchema, TreeSelectionMode, TreeVisibleNode } from './tree.types'
 import { applySelection, cascadeToggle, collapseChecked, createTypeahead } from '@xihan-ui/behavior'
 import { setup } from '@xihan-ui/machine'
 import { createMultiPointerSession, resolveSessionDoc, shouldActivate } from '@xihan-ui/pointer'
