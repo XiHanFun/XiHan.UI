@@ -1,6 +1,38 @@
 # 更新日志 · XiHan.UI
 
-本文件记录 XiHan.UI 各版本的变更。每条标注 **新增 / 修复 / 优化 / 调整 / 移除** 类别。库以 npm 包形式发布，17 个公开包锁步同版；升级前请留意「调整」类中的破坏性变更。
+本文件记录 XiHan.UI 各版本的变更。每条标注 **新增 / 修复 / 优化 / 调整 / 移除** 类别。库以 npm 包形式发布，18 个公开包锁步同版；升级前请留意「调整」类中的破坏性变更。
+
+## v1.1.0 (2026-08-31)
+
+19 份变更集，18 个公开包锁步同版。
+
+这一版的主线是**把拖拽做完**：`table` 的列、行与列宽，`tree` 的节点搬家，`tabs` 的标签换位，外加两个新组件 `sortable` 与 `resizable`——落点判定、乐观让位、读屏播报与键盘路径全归库，宿主只留「按意图改数组」那一段。支撑这一批的指针几何独立成第 18 个公开包 `@xihan-ui/pointer`。
+
+- **新增** `@xihan-ui/pointer`：指针原语包，自研零依赖。单指会话把跟手、过滤与收尾收在一处（gzip 316 B），七个此前各写一遍文档监听循环的组件（`slider` · `splitter` · `scrollbar` · `color-picker` · `image-cropper` · `floating-panel` · `signature-pad`）统一改走它、行为不变；另有多指会话与双指几何（间距、中点、连线角度，以及相对起始那一刻的缩放、位移、转角）、拖放几何（排序投影、让位计算、激活阈值、边缘滚动）与尺寸调整几何（八向边推动带上下限 / 宽高比 / 吸附步进 / 容器夹取），后两层全是纯函数
+- **新增** `sortable` 组件：列表 / 网格拖拽排序，两个适配器同批可用。落点走乐观投影——拖动中其余条目实时让位，松手即定，不是拖完才跳一下；`orientation` 三档（竖排、横排，以及换行网格按最近中心判），排版方向由首尾两项的先后推出，从右往左排时自动反向；按下要走够 `activationDistance`（默认 5px）才算拖动，条目本身仍然可以点击，拖到容器边缘会自动滚动。键盘路径默认开着且关不掉——空格拾起、方向键挪一格、空格放下、Esc 取消，每一步都写进视觉隐藏的播报区；`sort` 事件直接给出重排好的 `ids`，Vue 侧支持 `v-model:ids`
+- **新增** `resizable` 组件：一块能拖着改尺寸的区域，八条边都能推，键盘也能推。`edges` 决定开放哪几条边，`minWidth` / `maxWidth` / `minHeight` / `maxHeight` 夹住范围，`aspectRatio` 锁宽高比，`step` 吸附到整数倍；`onSizeChange` 拖动途中连着发，`onSizeChangeEnd` 收尾才发一次，存尺寸用后者。键盘按屏幕方向推，Home / End 直接推到两端；推西边与北边时容器起点会动，那段位移写成 root 的 `left` / `top`，皮肤已给 `position: relative`
+- **新增** `table` 的列拖拽排序：列上标了 `reorderable` 才产出拖拽把手，把手自占一个 Tab 位，方向键挪一格、Home / End 挪到可拖区段的首末。落点按列 id 认而不是按第几个，隐藏列自然留在原本的邻居旁边；不可拖的列与冻结列都是屏障，可拖范围被它们切成段。新增部件 `column-drag-trigger` 与 `live-region`、属性 `data-drop`，以及 `api.draggableColumns` / `api.dropTarget` / `api.announcement`
+- **新增** `table` 的行拖拽排序：`rowReorderable` 打开后整行都是拖动源，焦点在表体里时 `Alt` + 上下键挪一格；搬完发 `onRowMove`，载荷是 `{ id, parent, index, ids }`。树形行照样搬——落点分三档（上下两端是插在它前后、中段是落进它里面认它当父），`Alt` + 左右键改缩进层级，落进自己的后代会拖出一个环、库自己拦下，`allowRowDrop` 收业务侧的规矩。排序链非空或宿主只渲了一段时降级，理由从 `api.rowReorderDisabledReason` 读得出来
+- **新增** `table` 的列宽拖拽：列上标了 `resizable` 就产出改宽把手，拖动与方向键都能调（一次 8px，按住 Shift 一次 40px，rtl 下左右两键对调而语义恒是「加宽 / 收窄」）。把手是可聚焦的分隔条，报出当前列宽与上下限，宽度落在列偏好里可以直接存起来下次还原；列宽写成百分比这类算不出 px 的写法时不认可改宽
+- **新增** `tree` 的节点拖拽搬家：`draggable` 打开后整个节点都是拖动源，落点三档——`before` / `after` 插在同层，`inside` 落进这个分支，叶子上只有前后两档；焦点在树里时 `Alt` + 上下键在同层兄弟间挪、`Alt` + 左右键改缩进层级；搬完发 `onNodeMove`，载荷是 `{ value, parent, index }`。新增 `allowDrop` 与 `translations` 两个 prop、`live-region` 部件，以及 `api.dropTarget` / `api.announcement`
+- **新增** `tabs` 的标签拖拽换位：`reorderable` 打开后整个标签都是拖动源，焦点在标签带里时 `Alt` + 主轴方向键挪一位；搬完发 `onTabMove`，载荷是 `{ value, from, to, values }`。轴向跟随 `orientation`，另一轴的方向键照常放行给页面滚动与读屏，横排 rtl 下左右对调。新增 `live-region` 部件、`translations` prop 与标签上的三个 `data-*`
+- **新增** 三个触屏拖动把手 `row-drag-trigger` / `node-drag-trigger` / `tab-drag-trigger`：整块起手不认触屏——纵向手势在按下那一刻就归了浏览器滚动，而把整行设成 `touch-action: none` 又会让长列表滚不动；把手是一小块专门让出去的地方，自带 `touch-action: none`、按下即拖。把手不占 Tab 位，键盘那一路仍由容器上的 `Alt` + 方向键承担
+- **新增** 选中原语 `applySelection` / `toggleSelectAll` / `rangeBetween`：带锚点的范围选与全选，纯集合运算，不碰 DOM。`table` / `tree` / `transfer` 三处接上 Shift 范围选（此前只有 `listbox` 有），`table` 另加 `Ctrl` / `Cmd` + A 全选；范围选带基线，连着按 Shift 往回点收得回来。`tree` 按展开后的可见序取、级联模式不接，`transfer` 的锚点跨到另一侧时退化成普通切换
+- **新增** `image-viewer` 的双指缩放：两指撑开放大、捏合缩小，两指整体平移时只动偏移不动缩放。缩放与位移都相对起始那一刻算而不是相对上一帧，点数一变就重拍基准
+- **新增** `@xihan-ui/kernel/vite` 子入口：启动横幅打在开发者跑项目的那个终端里，标志逐字符横向彩虹。另导出 `getXiHanUiBanner()`（只出文本）与 `printXiHanUiBanner()`（打到 stdout），不认识 Vite 的 Node 脚本也能调；要不要上色的判据与 `picocolors` 逐条对齐，`NO_COLOR` / `--no-color` 一票否决
+
+- **调整** 浏览器控制台的启动摘要**默认不打**（`setMetadataAutoPrint(true)` 可以打开）：浏览器控制台是访问网站的人也看得见的地方，横幅是给开发者看的，两者不该混在一起
+- **调整** `XIHAN_UI_LOGO` 与 `XIHAN_UI_SEND_WORD` 从 `XIHAN_UI_METADATA` 对象里摘出来单独导出，`getMetadataSummary()` / `getMetadataDetails()` 随之不再带寄语那几行——对象被整体引用时打包器摇不掉它里面的字段，改之前标志与寄语确实出现在生产构建里。读过 `XIHAN_UI_METADATA.logo` / `.sendWord` 的代码改取这两个导出
+- **调整** `tree` 的拖拽播报报出落脚处：`Moved 甲 into 收件箱, position 1 of 3.`，父为 `null` 的根层报 `the top level`。新增 `DragAnnounceInput.into` 与 `DragTranslations` 的 `movedInto` / `droppedInto` / `canceledInto` / `rootLevel`；`table` 的行与列、`tabs` 的标签是一维重排，位次已经够用，三处播报一个字没变
+- **调整** `tree` 对禁用节点的落点判定收窄成只拦 `inside`：往一个禁用的分支里塞东西说不通，但在它前后插只是绕着它排序，`table` 与 `tabs` 本来就是这个口径
+- **调整** `carousel` 的划动与 `image-viewer` 的单指平移收进多指会话：监听改挂在文档上，手划出轨道、划出窗口都跟得住，系统收走指针也会收尾——原先靠指针捕获，这两种情形的表现随浏览器而异
+
+- **修复** `dialog` / `drawer` / `image-viewer` 的 `closeOnEscape` 与 `closeOnInteractOutside` 改为交互当时现读。这两个开关此前在浮层展开那一刻就求了值，而那个效应每次展开只挂一次，于是浮层开着的时候改它们不算数，得关掉重开才认——提交期间把弹窗锁住这一路直接失效
+- **修复** 按住切换类的键不放时会来回翻转：按住 `Ctrl` / `Cmd` + A 在全选与全不选之间一直闪，按住空格反复拾起放下。12 处切换类的按键分支补上自动重复守卫（`table` / `listbox` / `transfer` / `sortable` / `json-viewer` / `menubar` / `combobox` / `color-picker` / `tags-input` / `editable`）；步进类的按键不挡，按住连发正是它们的用法，新增门禁 `check-key-repeat` 守住这条界线
+- **修复** 八个 Vue 组件收不到全局配置里的读屏文案：`combobox` / `popselect` / `resizable` / `sortable` / `table` / `tabs` / `text-field` / `tree`；`table` 连实例上的 `translations` prop 都没有，一并补上
+- **修复** `XhTableRoot` 丢掉作者写在它上面的 `class` / `aria-*` / 监听器——它渲的是 Fragment（表格本体 + 播报区），而 Vue 只在单个元素根上自动透传 attrs
+- **修复** `table` 与 `tree` 的键盘处理器吞掉落在可编辑单元格 / 节点内容里的按键：打空格被当成「切换这一行的选中」、`Ctrl` + A 全选行、方向键换行。输入法组合中的按键与落在可编辑控件上的按键现在一律放行
+- **修复** 开着 `striped` 的表里，偶数行既不响应悬停也显不出选中——斑马纹那条的祖先链比悬停与选中都高。行底色的先后自此是：基础底 < 斑马纹 < 选中 < 悬停 / 键盘锚点 < 换父落点，由一个跑在真实 Chromium 上的用例钉住
 
 ## v1.0.0 (2026-08-26)
 

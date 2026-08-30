@@ -46,7 +46,7 @@ XiHan.UI 以框架无关的 Headless Core 为核心：一个组件的状态、�
 
 ## 安装
 
-18 个公开包，其中 17 个已发布至 npm（`@xihan-ui/pointer` 尚未发布），当前 `latest` 为 `1.0.0`。
+18 个公开包已全部发布至 npm，当前 `latest` 为 `1.1.0`。
 
 ```bash
 pnpm add @xihan-ui/vue @xihan-ui/tokens @xihan-ui/styles
