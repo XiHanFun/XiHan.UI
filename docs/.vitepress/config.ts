@@ -39,7 +39,7 @@ const guideChapters: [text: string, name: string][] = [
   ["connect 与属性产出", "connect"],
   ["行为原语", "behavior"],
   ["浮层定位", "position"],
-  ["指针会话", "pointer"],
+  ["指针原语", "pointer"],
   ["设计令牌与主题", "theme"],
   ["皮肤与样式分层", "styling"],
   ["图标集", "icons"],

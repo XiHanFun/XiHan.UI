@@ -8,7 +8,7 @@ Framework-agnostic component library. State machines and accessibility live in a
 
 121 components, each shipping a headless core, a Vue component, a custom element, and a default skin.
 
-> **v1.1.0.** The 18 public packages are released in lockstep and published to npm at `1.1.0`. The documentation site is live at https://ui.docs.xihanfun.com. Accessibility is scanned in real Chromium; the backlog is down to two recorded entries (the shared table’s `tag` disabled-state contrast and the WC-side `steps` required-children), plus one replay exemption for `breadcrumb`.
+> The 18 public packages are released in lockstep and published to npm; the documentation site is at https://ui.docs.xihanfun.com. Accessibility is scanned in real Chromium; the backlog is down to two recorded entries (the shared table’s `tag` disabled-state contrast and the WC-side `steps` required-children), plus one replay exemption for `breadcrumb`.
 
 ## Packages
 
@@ -22,7 +22,7 @@ Framework-agnostic component library. State machines and accessibility live in a
 | `@xihan-ui/vue` | Vue 3 adapter |
 | `@xihan-ui/web-components` | Web Components adapter (own reactive base, no third-party runtime dep) |
 | `@xihan-ui/styles` | Default skins, layered CSS |
-| `@xihan-ui/tokens` | Design tokens (from DTCG sources) + theme runtime (color scheme / density / direction) |
+| `@xihan-ui/tokens` | Design tokens (from DTCG sources) + theme runtime (color scheme / brand / density / contrast / direction) |
 | `@xihan-ui/position` | Floating layer positioning — self-implemented, no third-party runtime dependency |
 | `@xihan-ui/pointer` | Pointer session: one pointer from press to release — tracking, filtering, teardown; self-implemented, zero dependencies |
 | `@xihan-ui/chat-stream` | AI protocol core: SSE reading → protocol normalization → parts reduction → thread store (no DOM, no framework) |

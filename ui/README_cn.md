@@ -8,7 +8,7 @@
 
 121 个组件，每个都有 headless 内核、Vue 组件、自定义元素与默认皮肤。
 
-> **v1.1.0**：18 个公开包锁步发版，已全部按 `1.1.0` 发布至 npm。文档站已上线（https://ui.docs.xihanfun.com）。无障碍扫描跑在真实 Chromium 上，存量违规登记表只剩两条（共用表里 tag 的禁用态对比度、WC 侧 steps 的必需子节点），另有一条 breadcrumb 的步骤重放豁免。
+> 18 个公开包锁步发版，全部发布在 npm，文档站在 https://ui.docs.xihanfun.com。无障碍扫描跑在真实 Chromium 上，存量违规登记表只剩两条（共用表里 tag 的禁用态对比度、WC 侧 steps 的必需子节点），另有一条 breadcrumb 的步骤重放豁免。
 
 ## 包一览
 
@@ -23,7 +23,7 @@
 | `@xihan-ui/vue` | Vue 3 适配器 |
 | `@xihan-ui/web-components` | Web Components 适配器（自研响应式基类，无第三方运行时依赖） |
 | `@xihan-ui/styles` | 默认皮肤，按 `@layer` 分层的 CSS |
-| `@xihan-ui/tokens` | 设计令牌（源自 DTCG）与主题运行时（明暗 / 密度 / 书写方向） |
+| `@xihan-ui/tokens` | 设计令牌（源自 DTCG）与主题运行时（明暗 / 品牌 / 密度 / 对比度 / 书写方向） |
 | `@xihan-ui/position` | 浮层定位，自研实现，无第三方运行时依赖 |
 | `@xihan-ui/chat-stream` | AI 协议内核：SSE 读取 → 协议归一 → parts 归约 → 会话 store（零 DOM、零框架） |
 | `@xihan-ui/code-highlight` | 代码着色，自研粗粒度词法器，无第三方运行时依赖 |

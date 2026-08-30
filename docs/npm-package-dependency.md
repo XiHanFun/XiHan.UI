@@ -35,14 +35,14 @@ XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（�
 层 4   ┌─────────────┐       ┌──────────────────┐
        │     vue     │       │  web-components  │  peer: backgrounds（可选）；vue 另有 peer: sound（可选）、vue
        └──────┬──────┘       └────────┬─────────┘
-              │  kernel · machine · motion · behavior · headless · position · code-highlight
+              │  kernel · machine · motion · pointer · behavior · headless · position · code-highlight
               └───────────┬───────────┘
                           ▼
 层 3   ┌──────────────┐  ┌───────────────────┐   ┌────────────────┐
        │   headless   │  │    backgrounds    │   │ styles（纯CSS）│
        └──────┬───────┘  └─────────┬─────────┘   └───────┬────────┘
   kernel·machine·behavior·motion  kernel·behavior·motion   tokens 的 CSS 产物
-        + @internationalized/date
+      ·pointer + @internationalized/date
               │                    │
               ▼                    ▼
 层 2   ┌──────────┐ ┌──────────┐ ┌────────────────┐ ┌─────────────┐ ┌───────┐ ┌────────────┐ ┌──────────┐
@@ -50,10 +50,10 @@ XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（�
        └────┬─────┘ └────┬─────┘ └───────┬────────┘ └──────┬──────┘ └───┬───┘ └─────┬──────┘ └──────────┘
             └────────────┴───────────────┴─────────────────┴───────────┴───────────┘            无依赖
                           ▼
-层 1   ┌──────────┐  ┌──────────┐  ┌──────────┐   ┌──────────┐  ┌───────┐
-       │  kernel  │◄─┤ machine  │  │  motion  │   │  tokens  │  │ icons │
-       └────┬─────┘  └──────────┘  └──────────┘   └──────────┘  └───────┘
-            └──────────────────────────▲            无依赖        无依赖
+层 1   ┌──────────┐  ┌──────────┐  ┌──────────┐   ┌──────────┐  ┌───────┐  ┌─────────┐
+       │  kernel  │◄─┤ machine  │  │  motion  │   │  tokens  │  │ icons │  │ pointer │
+       └────┬─────┘  └──────────┘  └──────────┘   └──────────┘  └───────┘  └─────────┘
+            └──────────────────────────▲            无依赖        无依赖      无依赖
                                   零运行时依赖
 ```
 
@@ -119,14 +119,14 @@ XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（�
 
 | 包 | 子路径 |
 | --- | --- |
-| `@xihan-ui/kernel` | `./anatomy` `./attrs` `./compose` `./constants` `./deprecations` `./guards` `./id-generator` `./merge-props` `./metadata` `./normalize-props` `./runtime-config` `./scope` `./skin-check` `./types` |
+| `@xihan-ui/kernel` | `./anatomy` `./attrs` `./compose` `./constants` `./deprecations` `./guards` `./id-generator` `./locale` `./merge-props` `./metadata` `./normalize-props` `./runtime-config` `./scope` `./skin-check` `./types` `./vite` |
 | `@xihan-ui/machine` | `./create-machine` `./delay` `./errors` `./form-reset` `./guards` `./service` `./setup` `./state` `./transitions` `./vanilla` |
 | `@xihan-ui/behavior` | `./dispatch` `./presence` |
 | `@xihan-ui/position` | `./compute` |
 | `@xihan-ui/code-highlight` | `./languages` `./tokenize` |
 | `@xihan-ui/tokens` | `./runtime` `./tokens.css` `./tokens.json` |
 | `@xihan-ui/icons` | `./codegen` |
-| `@xihan-ui/vue` | `./backgrounds` `./sound` |
+| `@xihan-ui/vue` | `./backgrounds` `./behavior` `./sound` |
 | `@xihan-ui/web-components` | `./define` `./backgrounds` `./custom-elements.json` |
 | `@xihan-ui/styles` | 每份皮肤一条 CSS，共 127 条（121 份组件皮肤 + 6 份共享层），另有 `./index.css` 与 `./index.unlayered.css` 两个整包入口 |
 

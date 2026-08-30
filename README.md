@@ -46,7 +46,7 @@ XiHan.UI is built around a framework-agnostic headless core: a component's state
 
 ## Install
 
-18 public packages, all published to npm; the current `latest` is `1.1.0`.
+18 public packages, all published to npm; the current version is on the npm badge above.
 
 ```bash
 pnpm add @xihan-ui/vue @xihan-ui/tokens @xihan-ui/styles
@@ -125,11 +125,11 @@ pnpm dev
 
 Changes must pass the full CI gate, and CI runs the same commands you do locally: `pnpm lint`, `pnpm typecheck`, `pnpm boundaries`, `pnpm gate` (one command runs 68 structural checks), `pnpm test`, `pnpm build`, `pnpm size` and more.
 
-## Status and Boundaries
+## Scope
 
-Working today: 121 components with their cores and both adapters, the default skins, design tokens and the theme runtime, the cross-adapter conformance suite, the accessibility sweep and floating-position contract in real Chromium, and the documentation site.
+In the box: 121 components with their cores and both adapters, the default skins, design tokens and the theme runtime, the cross-adapter conformance suite, the accessibility sweep and floating-position contract in real Chromium, and the documentation site.
 
-Not there yet: bundled language packs (component copy ships English only; other languages need your own `translations`, though the global injection point is in place), the token browser, the AI family's MarkdownStream / Reasoning and ToolCall collapsing / tool approval, and enterprise business components.
+Not in the box: bundled language packs (component copy ships English only; other languages need your own `translations`, though the global injection point is in place), the token browser, the AI family's MarkdownStream / Reasoning and ToolCall collapsing / tool approval, and enterprise business components.
 
 ## Related Projects
 

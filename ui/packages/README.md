@@ -7,7 +7,7 @@ packages/
   adapters/   vue  web-components                                   ← 你选一个
   design/     tokens  styles  icons                                 ← 你的外观
   features/   markdown  chat-stream  backgrounds  sound  animations ← 按需自选
-  engine/     kernel  machine  motion  behavior  position  code-highlight  headless   ← 你不用管
+  engine/     kernel  machine  motion  pointer  behavior  position  code-highlight  headless   ← 你不用管
 ```
 
 ## 入组判据

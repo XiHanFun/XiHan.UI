@@ -196,7 +196,7 @@ function hostLine(): string {
   return `宿主:${runtimeHost.name} v${runtimeHost.version}`
 }
 
-/** 框架信息摘要:名称、版本、描述、寄语与宿主,一段话。 */
+/** 框架信息摘要:名称、版本、描述与宿主,一段话。 */
 export function getMetadataSummary(): string {
   const m = XIHAN_UI_METADATA
   return [
