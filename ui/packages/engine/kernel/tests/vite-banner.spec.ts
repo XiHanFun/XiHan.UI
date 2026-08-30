@@ -54,6 +54,43 @@ describe('终端启动横幅', () => {
   })
 })
 
+describe('上色判据', () => {
+  const real = (globalThis as { process?: unknown }).process
+
+  afterEach(() => {
+    ;(globalThis as { process?: unknown }).process = real
+  })
+
+  /** 换一份假进程，量 getXiHanUiBanner 不给 color 时自己怎么判。 */
+  function withProcess(fake: unknown): boolean {
+    ;(globalThis as { process?: unknown }).process = fake
+    return getXiHanUiBanner().includes(ESC)
+  }
+
+  it('管道里也上色：跑在 turbo 底下 stdout 不是 TTY，而 Vite 那几行照样是彩的', () => {
+    // 判据与 picocolors 逐条对齐,不然横幅会成为唯一没颜色的一段
+    expect(withProcess({ platform: 'win32', env: {}, argv: [], stdout: { isTTY: false } })).toBe(true)
+    expect(withProcess({ platform: 'linux', env: { FORCE_COLOR: '1' }, argv: [], stdout: { isTTY: false } })).toBe(true)
+    expect(withProcess({ platform: 'linux', env: { CI: 'true' }, argv: [], stdout: { isTTY: false } })).toBe(true)
+    expect(withProcess({ platform: 'linux', env: {}, argv: ['--color'], stdout: { isTTY: false } })).toBe(true)
+    expect(withProcess({ platform: 'linux', env: {}, argv: [], stdout: { isTTY: true } })).toBe(true)
+  })
+
+  it('说了不要就不上色，这一档压过其余全部', () => {
+    expect(withProcess({ platform: 'win32', env: { NO_COLOR: '1' }, argv: [], stdout: { isTTY: true } })).toBe(false)
+    expect(withProcess({ platform: 'win32', env: {}, argv: ['--no-color'], stdout: { isTTY: true } })).toBe(false)
+  })
+
+  it('重定向到文件时不上色：否则满屏转义序列', () => {
+    expect(withProcess({ platform: 'linux', env: {}, argv: [], stdout: { isTTY: false } })).toBe(false)
+    expect(withProcess({ platform: 'linux', env: { TERM: 'dumb' }, argv: [], stdout: { isTTY: true } })).toBe(false)
+  })
+
+  it('取不到进程就当没有，退成无色', () => {
+    expect(withProcess(undefined)).toBe(false)
+  })
+})
+
 describe('vite 插件', () => {
   /** 一份够用的假服务器：记下 logger 收到什么、printUrls 有没有被按顺序调到。 */
   function fakeServer() {

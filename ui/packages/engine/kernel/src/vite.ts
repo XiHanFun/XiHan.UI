@@ -39,6 +39,8 @@ export interface XiHanUiBannerOptions {
 interface ProcessLike {
   stdout?: { isTTY?: boolean }
   env?: Record<string, string | undefined>
+  argv?: string[]
+  platform?: string
 }
 
 function getProcess(): ProcessLike | undefined {
@@ -48,12 +50,27 @@ function getProcess(): ProcessLike | undefined {
   return (globalThis as { process?: ProcessLike }).process
 }
 
-/** NO_COLOR 是跨工具的约定；非 TTY 也不上色，输出重定向到文件时全是转义序列。 */
+/**
+ * 判据与 picocolors 逐条对齐——Vite 自己的输出就是用它上色的，
+ * 照它走横幅才与周围那几行同进同退。
+ *
+ * 只看 isTTY 是不够的：跑在 turbo 底下时 stdout 是管道、isTTY 为假，
+ * 而 Vite 的地址那几行照样是彩色的，横幅跟着变成唯一没颜色的一段。
+ * 那一条来自 platform === 'win32'：Windows 上无条件上色。
+ */
 function supportsColor(): boolean {
   const proc = getProcess()
-  if (!proc || proc.env?.NO_COLOR)
+  if (!proc)
     return false
-  return proc.stdout?.isTTY === true
+  const env = proc.env ?? {}
+  const argv = proc.argv ?? []
+  if (env.NO_COLOR || argv.includes('--no-color'))
+    return false
+  if (env.FORCE_COLOR || argv.includes('--color'))
+    return true
+  if (proc.platform === 'win32' || env.CI)
+    return true
+  return proc.stdout?.isTTY === true && env.TERM !== 'dumb'
 }
 
 /** 收色，回到终端默认前景色。 */
