@@ -86,20 +86,8 @@ export const XIHAN_UI_METADATA = Object.freeze({
   supportedPlatforms: Object.freeze(['Chrome', 'Edge', 'Firefox', 'Safari']),
   /** 框架提供的渲染适配器 */
   adapters: Object.freeze(['vue', 'web-components']),
-  /** 曦寒标志 */
-  logo: [
-    '   _  __ ______  _____    _   __',
-    '  | |/ //  _/ / / /   |  / | / /',
-    '  |   / / // /_/ / /| | /  |/ /',
-    ' /   |_/ // __  / ___ |/ /|  /',
-    '/_/|_/___/_/ /_/_/  |_/_/ |_/',
-  ].join('\n'),
-  /** 曦寒寄语 */
-  sendWord: [
-    '碧落降恩承淑颜，共挚崎缘挽曦寒。',
-    '迁般故事终成忆，谨此葳蕤换思短。',
-    '              —— 致她',
-  ].join('\n'),
+  // 标志与寄语不在这里：它们只给终端横幅用,住在 vite.ts 里。
+  // 放进这个对象就会跟着浏览器产物发到每个访问者手上,而那两样是给开发者看的
 }) as Readonly<{
   name: string
   displayName: string
@@ -120,8 +108,6 @@ export const XIHAN_UI_METADATA = Object.freeze({
   keywords: readonly string[]
   supportedPlatforms: readonly string[]
   adapters: readonly string[]
-  logo: string
-  sendWord: string
 }>
 
 export interface RuntimeHostInfo {
@@ -193,7 +179,6 @@ export function getMetadataSummary(): string {
   return [
     `${m.name} ${m.displayName} v${m.version}`,
     m.description,
-    m.sendWord,
     '',
     hostLine(),
   ].join('\n')
@@ -206,7 +191,6 @@ export function getMetadataDetails(): string {
   return [
     `${m.name} ${m.displayName} v${m.version}`,
     m.description,
-    m.sendWord,
     `作者: ${m.author}`,
     `组织: ${m.organization} (${m.organizationUrl})`,
     `仓库: ${m.repositoryUrl}`,
@@ -218,13 +202,13 @@ export function getMetadataDetails(): string {
   ].join('\n')
 }
 
-let autoPrint = true
+let autoPrint = false
 let bannerPrinted = false
 
 /**
- * 是否在适配器启动时自动打横幅(默认开)。关闭只影响之后的启动,不影响手动 print。
- * Framework 侧横幅印在应用构造上且无开关;UI 库落在每个消费方的浏览器控制台里,
- * 必须给一条能关的路。
+ * 是否在适配器启动时把摘要打进浏览器控制台(默认不打)。开关只影响之后的启动,不影响手动 print。
+ * 启动横幅归开发者的终端——那一份由 @xihan-ui/kernel/vite 打,与 Framework 侧
+ * 印在应用构造上的那一份对得上。浏览器控制台会被访问者看见,库不默认占。
  */
 export function setMetadataAutoPrint(on: boolean): void {
   autoPrint = on
@@ -240,8 +224,8 @@ export function resetMetadataBanner(): void {
 }
 
 /**
- * 适配器启动时调用一次:与 XiHanApplicationBase 构造时印 Logo + GetSummary() 对齐——
- * 引用即打印,整个页面只打一次,生产静默。
+ * 适配器启动时调用一次:整个页面只打一次,生产静默。
+ * 默认不打(见 setMetadataAutoPrint);打也只打摘要,标志与寄语归终端那一份。
  */
 export function printMetadataBannerOnce(): void {
   if (!autoPrint || bannerPrinted)
@@ -249,9 +233,7 @@ export function printMetadataBannerOnce(): void {
   bannerPrinted = true
   if (!isDev())
     return
-  // 标志用品牌色,正文走 info;这是启动横幅,不是内部调试日志
-  // eslint-disable-next-line no-console
-  console.info(`%c${XIHAN_UI_METADATA.logo}`, 'color: #a78bfa')
+  // 这是启动摘要,不是内部调试日志;info 语义就是给它用的
   // eslint-disable-next-line no-console
   console.info(getMetadataSummary())
 }

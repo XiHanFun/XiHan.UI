@@ -95,16 +95,34 @@ describe('框架元数据', () => {
     expect(getMetadataDetails()).toContain('未登记')
   })
 
-  it('引用即打印:横幅整页只打一次,标志与摘要各一条,reset 后可再打', () => {
+  it('浏览器横幅默认不打:标志与寄语归开发者的终端,不发给访问者', async () => {
+    // 上面的 beforeEach 已经把开关拨开了,重新取一份模块才看得到出厂值
+    vi.resetModules()
+    const fresh = await import('../src/metadata')
+    expect(fresh.isMetadataAutoPrint()).toBe(false)
+
+    const spy = vi.spyOn(console, 'info').mockImplementation(() => {})
+    fresh.printMetadataBannerOnce()
+    expect(spy).not.toHaveBeenCalled()
+  })
+
+  it('元数据里不带标志与寄语:这个对象会跟着浏览器产物发出去', () => {
+    expect(XIHAN_UI_METADATA).not.toHaveProperty('logo')
+    expect(XIHAN_UI_METADATA).not.toHaveProperty('sendWord')
+    expect(getMetadataSummary()).not.toContain('致她')
+    expect(getMetadataDetails()).not.toContain('致她')
+  })
+
+  it('开着的时候整页只打一次摘要,reset 后可再打', () => {
     const spy = vi.spyOn(console, 'info').mockImplementation(() => {})
     printMetadataBannerOnce()
     printMetadataBannerOnce()
-    expect(spy).toHaveBeenCalledTimes(2)
-    expect(spy.mock.calls[0]![0]).toContain(XIHAN_UI_METADATA.logo.split('\n')[0])
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(spy.mock.calls[0]![0]).toContain(XIHAN_UI_METADATA.name)
 
     resetMetadataBanner()
     printMetadataBannerOnce()
-    expect(spy).toHaveBeenCalledTimes(4)
+    expect(spy).toHaveBeenCalledTimes(2)
   })
 
   it('setMetadataAutoPrint(false) 关掉自动横幅,手动 print 不受影响', () => {
