@@ -4,33 +4,33 @@
 
 ## v1.1.0 (2026-08-31)
 
-这一版的主线是**把拖拽做完**：`table` 的列、行与列宽，`tree` 的节点搬家，`tabs` 的标签换位，外加两个新组件 `sortable` 与 `resizable`——落点判定、乐观让位、读屏播报与键盘路径全归库，宿主只留「按意图改数组」那一段。支撑这一批的指针几何独立成包 `@xihan-ui/pointer`。
+拖拽一次做完：`table` 的列、行与列宽，`tree` 的节点搬家，`tabs` 的标签换位，外加 `sortable` 与 `resizable` 两个新组件。支撑它们的指针与几何独立成 `@xihan-ui/pointer`。
 
-- **新增** `@xihan-ui/pointer`：指针原语包，自研零依赖。单指会话把跟手、过滤与收尾收在一处（gzip 316 B），七个此前各写一遍文档监听循环的组件（`slider` · `splitter` · `scrollbar` · `color-picker` · `image-cropper` · `floating-panel` · `signature-pad`）统一改走它、行为不变；另有多指会话与双指几何（间距、中点、连线角度，以及相对起始那一刻的缩放、位移、转角）、拖放几何（排序投影、让位计算、激活阈值、边缘滚动）与尺寸调整几何（八向边推动带上下限 / 宽高比 / 吸附步进 / 容器夹取），后两层全是纯函数
-- **新增** `sortable` 组件：列表 / 网格拖拽排序，两个适配器同批可用。落点走乐观投影——拖动中其余条目实时让位，松手即定，不是拖完才跳一下；`orientation` 三档（竖排、横排，以及换行网格按最近中心判），排版方向由首尾两项的先后推出，从右往左排时自动反向；按下要走够 `activationDistance`（默认 5px）才算拖动，条目本身仍然可以点击，拖到容器边缘会自动滚动。键盘路径默认开着且关不掉——空格拾起、方向键挪一格、空格放下、Esc 取消，每一步都写进视觉隐藏的播报区；`sort` 事件直接给出重排好的 `ids`，Vue 侧支持 `v-model:ids`
-- **新增** `resizable` 组件：一块能拖着改尺寸的区域，八条边都能推，键盘也能推。`edges` 决定开放哪几条边，`minWidth` / `maxWidth` / `minHeight` / `maxHeight` 夹住范围，`aspectRatio` 锁宽高比，`step` 吸附到整数倍；`onSizeChange` 拖动途中连着发，`onSizeChangeEnd` 收尾才发一次，存尺寸用后者。键盘按屏幕方向推，Home / End 直接推到两端；推西边与北边时容器起点会动，那段位移写成 root 的 `left` / `top`，皮肤已给 `position: relative`
-- **新增** `table` 的列拖拽排序：列上标了 `reorderable` 才产出拖拽把手，把手自占一个 Tab 位，方向键挪一格、Home / End 挪到可拖区段的首末。落点按列 id 认而不是按第几个，隐藏列自然留在原本的邻居旁边；不可拖的列与冻结列都是屏障，可拖范围被它们切成段。新增部件 `column-drag-trigger` 与 `live-region`、属性 `data-drop`，以及 `api.draggableColumns` / `api.dropTarget` / `api.announcement`
-- **新增** `table` 的行拖拽排序：`rowReorderable` 打开后整行都是拖动源，焦点在表体里时 `Alt` + 上下键挪一格；搬完发 `onRowMove`，载荷是 `{ id, parent, index, ids }`。树形行照样搬——落点分三档（上下两端是插在它前后、中段是落进它里面认它当父），`Alt` + 左右键改缩进层级，落进自己的后代会拖出一个环、库自己拦下，`allowRowDrop` 收业务侧的规矩。排序链非空或宿主只渲了一段时降级，理由从 `api.rowReorderDisabledReason` 读得出来
-- **新增** `table` 的列宽拖拽：列上标了 `resizable` 就产出改宽把手，拖动与方向键都能调（一次 8px，按住 Shift 一次 40px，rtl 下左右两键对调而语义恒是「加宽 / 收窄」）。把手是可聚焦的分隔条，报出当前列宽与上下限，宽度落在列偏好里可以直接存起来下次还原；列宽写成百分比这类算不出 px 的写法时不认可改宽
-- **新增** `tree` 的节点拖拽搬家：`draggable` 打开后整个节点都是拖动源，落点三档——`before` / `after` 插在同层，`inside` 落进这个分支，叶子上只有前后两档；焦点在树里时 `Alt` + 上下键在同层兄弟间挪、`Alt` + 左右键改缩进层级；搬完发 `onNodeMove`，载荷是 `{ value, parent, index }`。新增 `allowDrop` 与 `translations` 两个 prop、`live-region` 部件，以及 `api.dropTarget` / `api.announcement`
-- **新增** `tabs` 的标签拖拽换位：`reorderable` 打开后整个标签都是拖动源，焦点在标签带里时 `Alt` + 主轴方向键挪一位；搬完发 `onTabMove`，载荷是 `{ value, from, to, values }`。轴向跟随 `orientation`，另一轴的方向键照常放行给页面滚动与读屏，横排 rtl 下左右对调。新增 `live-region` 部件、`translations` prop 与标签上的三个 `data-*`
-- **新增** 三个触屏拖动把手 `row-drag-trigger` / `node-drag-trigger` / `tab-drag-trigger`：整块起手不认触屏——纵向手势在按下那一刻就归了浏览器滚动，而把整行设成 `touch-action: none` 又会让长列表滚不动；把手是一小块专门让出去的地方，自带 `touch-action: none`、按下即拖。把手不占 Tab 位，键盘那一路仍由容器上的 `Alt` + 方向键承担
-- **新增** 选中原语 `applySelection` / `toggleSelectAll` / `rangeBetween`：带锚点的范围选与全选，纯集合运算，不碰 DOM。`table` / `tree` / `transfer` 三处接上 Shift 范围选（此前只有 `listbox` 有），`table` 另加 `Ctrl` / `Cmd` + A 全选；范围选带基线，连着按 Shift 往回点收得回来。`tree` 按展开后的可见序取、级联模式不接，`transfer` 的锚点跨到另一侧时退化成普通切换
-- **新增** `image-viewer` 的双指缩放：两指撑开放大、捏合缩小，两指整体平移时只动偏移不动缩放。缩放与位移都相对起始那一刻算而不是相对上一帧，点数一变就重拍基准
-- **新增** `@xihan-ui/kernel/vite` 子入口：启动横幅打在开发者跑项目的那个终端里，标志逐字符横向彩虹。另导出 `getXiHanUiBanner()`（只出文本）与 `printXiHanUiBanner()`（打到 stdout），不认识 Vite 的 Node 脚本也能调；要不要上色的判据与 `picocolors` 逐条对齐，`NO_COLOR` / `--no-color` 一票否决
+- **新增** `sortable` 组件：列表 / 网格拖拽排序，拖动中其余条目实时让位，`sort` 事件直接给出重排好的 `ids`，键盘路径默认开着
+- **新增** `resizable` 组件：八条边都能推的可调容器，带上下限、宽高比与吸附步进，指针与键盘两条路都通
+- **新增** `@xihan-ui/pointer`：指针会话、多指会话与双指几何、拖放几何、尺寸调整几何四层，自研零依赖
+- **新增** `table` 的列拖拽排序：新增部件 `column-drag-trigger` 与 `live-region`，把手自占一个 Tab 位，落点按列 id 认
+- **新增** `table` 的行拖拽排序：`rowReorderable` 打开后整行可拖，树形行支持换父，搬完发 `onRowMove`
+- **新增** `table` 的列宽拖拽：标了 `resizable` 的列产出改宽把手，宽度落进列偏好可存可还原
+- **新增** `tree` 的节点拖拽搬家：落点三档（前 / 后 / 落进去），`Alt` + 方向键改同层次序与缩进，搬完发 `onNodeMove`
+- **新增** `tabs` 的标签拖拽换位：`reorderable` 打开后整个标签可拖，`Alt` + 主轴方向键可挪，搬完发 `onTabMove`
+- **新增** 三个触屏拖动把手 `row-drag-trigger` / `node-drag-trigger` / `tab-drag-trigger`，不占 Tab 位
+- **新增** 选中原语 `applySelection` / `toggleSelectAll` / `rangeBetween`；`table` / `tree` / `transfer` 接上 Shift 范围选，`table` 另加 `Ctrl` / `Cmd` + A 全选
+- **新增** `image-viewer` 的双指缩放
+- **新增** `@xihan-ui/kernel/vite` 子入口：开发服务器启动时在终端打一次横幅
 
-- **调整** 浏览器控制台的启动摘要**默认不打**（`setMetadataAutoPrint(true)` 可以打开）：浏览器控制台是访问网站的人也看得见的地方，横幅是给开发者看的，两者不该混在一起
-- **调整** `XIHAN_UI_LOGO` 与 `XIHAN_UI_SEND_WORD` 从 `XIHAN_UI_METADATA` 对象里摘出来单独导出，`getMetadataSummary()` / `getMetadataDetails()` 随之不再带寄语那几行——对象被整体引用时打包器摇不掉它里面的字段，改之前标志与寄语确实出现在生产构建里。读过 `XIHAN_UI_METADATA.logo` / `.sendWord` 的代码改取这两个导出
-- **调整** `tree` 的拖拽播报报出落脚处：`Moved 甲 into 收件箱, position 1 of 3.`，父为 `null` 的根层报 `the top level`。新增 `DragAnnounceInput.into` 与 `DragTranslations` 的 `movedInto` / `droppedInto` / `canceledInto` / `rootLevel`；`table` 的行与列、`tabs` 的标签是一维重排，位次已经够用，三处播报一个字没变
-- **调整** `tree` 对禁用节点的落点判定收窄成只拦 `inside`：往一个禁用的分支里塞东西说不通，但在它前后插只是绕着它排序，`table` 与 `tabs` 本来就是这个口径
-- **调整** `carousel` 的划动与 `image-viewer` 的单指平移收进多指会话：监听改挂在文档上，手划出轨道、划出窗口都跟得住，系统收走指针也会收尾——原先靠指针捕获，这两种情形的表现随浏览器而异
+- **调整** 浏览器控制台的启动摘要默认不打，要打显式 `setMetadataAutoPrint(true)`
+- **调整** `XIHAN_UI_LOGO` 与 `XIHAN_UI_SEND_WORD` 从 `XIHAN_UI_METADATA` 摘出来单独导出，`getMetadataSummary()` / `getMetadataDetails()` 不再带寄语
+- **调整** `tree` 的拖拽播报报出落脚处，新增 `movedInto` / `droppedInto` / `canceledInto` / `rootLevel` 四个文案键
+- **调整** `tree` 对禁用节点只拦 `inside` 落点，在它前后插不再拦
+- **调整** `carousel` 的划动与 `image-viewer` 的平移改走多指会话，不再逐个捕获指针
 
-- **修复** `dialog` / `drawer` / `image-viewer` 的 `closeOnEscape` 与 `closeOnInteractOutside` 改为交互当时现读。这两个开关此前在浮层展开那一刻就求了值，而那个效应每次展开只挂一次，于是浮层开着的时候改它们不算数，得关掉重开才认——提交期间把弹窗锁住这一路直接失效
-- **修复** 按住切换类的键不放时会来回翻转：按住 `Ctrl` / `Cmd` + A 在全选与全不选之间一直闪，按住空格反复拾起放下。12 处切换类的按键分支补上自动重复守卫（`table` / `listbox` / `transfer` / `sortable` / `json-viewer` / `menubar` / `combobox` / `color-picker` / `tags-input` / `editable`）；步进类的按键不挡，按住连发正是它们的用法，新增门禁 `check-key-repeat` 守住这条界线
-- **修复** 八个 Vue 组件收不到全局配置里的读屏文案：`combobox` / `popselect` / `resizable` / `sortable` / `table` / `tabs` / `text-field` / `tree`；`table` 连实例上的 `translations` prop 都没有，一并补上
-- **修复** `XhTableRoot` 丢掉作者写在它上面的 `class` / `aria-*` / 监听器——它渲的是 Fragment（表格本体 + 播报区），而 Vue 只在单个元素根上自动透传 attrs
-- **修复** `table` 与 `tree` 的键盘处理器吞掉落在可编辑单元格 / 节点内容里的按键：打空格被当成「切换这一行的选中」、`Ctrl` + A 全选行、方向键换行。输入法组合中的按键与落在可编辑控件上的按键现在一律放行
-- **修复** 开着 `striped` 的表里，偶数行既不响应悬停也显不出选中——斑马纹那条的祖先链比悬停与选中都高。行底色的先后自此是：基础底 < 斑马纹 < 选中 < 悬停 / 键盘锚点 < 换父落点，由一个跑在真实 Chromium 上的用例钉住
+- **修复** `dialog` / `drawer` / `image-viewer` 的 `closeOnEscape` 与 `closeOnInteractOutside` 改为交互当时现读——浮层开着时改这两个开关此前不算数
+- **修复** 按住切换类的按键会来回翻转（按住 `Ctrl` / `Cmd` + A 在全选与全不选之间闪、按住空格反复拾起放下），12 处补上自动重复守卫
+- **修复** 八个 Vue 组件收不到全局配置里的读屏文案：`combobox` / `popselect` / `resizable` / `sortable` / `table` / `tabs` / `text-field` / `tree`
+- **修复** `XhTableRoot` 丢掉作者写在它上面的 `class` / `aria-*` / 监听器
+- **修复** `table` 与 `tree` 的键盘处理器吞掉落在可编辑单元格 / 节点内容里的按键
+- **修复** 开着 `striped` 的表里，偶数行既不响应悬停也显不出选中
 
 ## v1.0.0 (2026-08-26)
 
@@ -38,48 +38,32 @@
 首个正式版。从这一版起，[版本与兼容性政策](/guide/versioning)的全部条款生效。
 :::
 
-- **新增** 框架无关的无头内核：一个组件的状态、交互与无障碍逻辑住在 `@xihan-ui/headless`，适配器只把 `connect()` 产出的属性挂到宿主元素上；同一份内核在 Vue 与 Web Components 两端跑同一套一致性套件，逐帧比对归一化后的 DOM
-- **新增** 样式与逻辑解耦：皮肤只认 `data-scope` / `data-part` / `data-*` 状态属性，不认框架、不认类名，整包换皮肤不用碰一行 JS
-- **新增** 17 个公开包由 changesets 的 `fixed` 组锁步同版，运行时第三方依赖只有一个（`@internationalized/date`，仅日期族使用）；浮层定位、虚拟滚动、代码着色、流式 Markdown、Web Components 响应式基类均为自研
-- **新增** `@xihan-ui/kernel` 结构原语：anatomy、`mergeProps`、`normalizeProps`、Scope、context、id；另有运行期锁步版本检查（混装两个版本在 dev 下报 `core.version-mismatch`）与框架元数据
-- **新增** `@xihan-ui/machine` 状态机运行时：`createMachine`、解释器契约、受控 / 非受控值绑定
-- **新增** `@xihan-ui/behavior` 行为原语：消解层、焦点域、滚动锁、进出场、集合、typeahead、悬停意图、滚动跟随与粘底
-- **新增** `@xihan-ui/motion` 动效原语：缓动单一真源、纯补间、帧循环、减弱动效偏好、解析解弹簧、Web Animations 薄封装
+- **新增** 框架无关的无头内核：状态、交互与无障碍逻辑住在 `@xihan-ui/headless`，适配器只把 `connect()` 产出挂到宿主元素上；同一份内核在两端跑同一套一致性套件
+- **新增** 119 个组件，每个同时产出无头内核、Vue 组件、自定义元素与默认皮肤——通用 15、布局 8、导航 16、数据录入 32、数据展示 30、反馈 9、浮层 7、AI 对话 2，逐个见[组件总览](./components/)
+- **新增** `@xihan-ui/vue` Vue 3 适配器，729 个部件：受控 / 非受控、`v-model`、带类型的作用域插槽；`behavior` 子入口出五个行为原语的组合式，另有四件命令式服务（轻提示、通知、对话框、顶部进度条）
+- **新增** `@xihan-ui/web-components` 适配器，121 个自定义元素：元素不生成结构，作者写带 `data-xh-part` 的 Light DOM 子节点；随包出 `custom-elements.json`
+- **新增** 引擎四包：`@xihan-ui/kernel` 结构原语、`@xihan-ui/machine` 状态机运行时、`@xihan-ui/behavior` 行为原语、`@xihan-ui/motion` 动效原语
 - **新增** `@xihan-ui/position` 浮层定位：放置、翻转、贴边、箭头锚点、rtl，自研无第三方依赖
-- **新增** `@xihan-ui/vue` Vue 3 适配器，729 个部件：受控 / 非受控、`v-model`、带类型的作用域插槽；`behavior` 子入口收五个行为原语的组合式；命令式服务四件（轻提示、通知、对话框 `confirm` / `prompt`、顶部进度条），配置源与文案可运行期换
-- **新增** `@xihan-ui/web-components` 适配器，121 个自定义元素：元素不生成结构，作者写带 `data-xh-part` 的 Light DOM 子节点，元素把 `connect()` 产出打上去；运行期增删子节点会重新接线；随包出 `custom-elements.json`
-- **新增** 119 个组件，每个同时产出无头内核、Vue 组件、自定义元素与默认皮肤，行为由内核唯一定义
-- **新增** 通用 15 个：按钮、按钮组、剪贴板、下载触发器、文本省略、浮动按钮、渐变文字、快捷键、图标、图标块、滚动条、切换按钮、切换按钮组、排印、水印
-- **新增** 布局 8 个：弹性布局、栅格、布局、瀑布流、滚动区域、分隔线、间距、分栏
-- **新增** 导航 16 个：固钉、锚点、回到顶部、面包屑、右键菜单、菜单、菜单栏、导航菜单、页头、分页、分段控制器、侧栏导航、步骤条、标签页、工具栏、引导
-- **新增** 数据录入 32 个：级联选择、复选框、复选框组、颜色选择器、组合框、日期输入、日期选择器、动态录入、就地编辑、表单字段、字段集、文件上传、表单、图片裁切、列表框、提及、数字输入、密码输入、分格输入、弹出选择、单选组、评分、选择器、签名板、滑块、开关、标签输入、文本输入、时间输入、时间选择器、穿梭框、树选择
-- **新增** 数据展示 30 个：手风琴、头像、头像组、日历、卡片、走马灯、代码块、折叠区域、倒计时、描述列表、空状态、热力图、文本高亮、图片、图片预览、无限滚动、JSON 视图、列表、日志、跑马灯、数值动画、二维码、统计数值、表格、标签、时间、时间线、计时器、树、虚拟滚动
-- **新增** 反馈 9 个：警告提示、徽标、加载条、进度条、结果页、骨架屏、加载指示器、通知、轻提示
-- **新增** 浮层 7 个：对话框、抽屉、浮动面板、悬浮卡片、弹出确认、气泡卡片、文字提示
-- **新增** AI 对话 2 个：消息编辑器、会话线程
-- **新增** `@xihan-ui/tokens` 设计令牌：源是 DTCG，构建期产出 CSS 变量——原语 95、语义 158，另有紧凑 49、浅色 41、深色 44、减弱动效 8 条覆盖，运行时不做 CSS-in-JS
+- **新增** 样式与逻辑解耦：皮肤只认 `data-scope` / `data-part` / `data-*`，不认框架也不认类名，整包换皮肤不用碰一行 JS
+- **新增** `@xihan-ui/tokens` 设计令牌：DTCG 源在构建期产出 CSS 变量（原语 95、语义 158，另有紧凑 49、浅色 41、深色 44、减弱动效 8 条覆盖），运行时不做 CSS-in-JS
 - **新增** `@xihan-ui/styles` 默认皮肤 125 份，按 `@layer` 分层（`xihan.reset` → `tokens` → `base` → `components` → `overrides`），使用者的覆盖恒排在最后
-- **新增** 三条视觉轴：`variant` 管形态、`tone` 管语气（六族）、`size` 管尺寸；语气色共享一层，实心底上的前景与交互态挪动方向由语气色按 WCAG 相对亮度现推，换肤下配对自动成立
+- **新增** 三条视觉轴：`variant` 管形态、`tone` 管语气（六族）、`size` 管尺寸；实心底上的前景与交互态由语气色按 WCAG 相对亮度现推
 - **新增** 主题五个维度独立切换：明暗、品牌、密度、对比度、书写方向，带 `createThemeController` 与品牌色派生
+- **新增** 浮层一律 Teleport 到单一落点 `#xh-portal-root`，层号不受宿主祖先影响；13 个滚动宿主自带自绘滚动条
 - **新增** 兜底字形二十个 `--xh-glyph-mark-*` 令牌，构建期内联图标包 SVG，跨系统长相一致
-- **新增** 浮层一律 Teleport 到单一落点 `#xh-portal-root`，层号不受宿主祖先的层叠上下文影响；13 个滚动宿主自带自绘滚动条，浮在内容之上不占宽度
-- **新增** `@xihan-ui/animations` 可序列化的动效配方、内置进场与注意动效、错开起播、文字拆分
-- **新增** `@xihan-ui/sound` 纯 Web Audio 程序化 UI 音效，零音频文件，三套主题
-- **新增** `@xihan-ui/backgrounds` WebGL2 效果与数据驱动的粒子云，框架无关
-- **新增** `@xihan-ui/icons` 首方图标集，`IconRecord` 结构化记录、渲染端逐节点建元素，运行期不解析 SVG 字符串；另有 SVG → `IconRecord` 的构建期转换器，可把任意 SVG 目录转成可摇树的运行期模块
-- **新增** `@xihan-ui/chat-stream` AI 协议内核：SSE 读取 → 协议归一 → parts 归约 → 会话 store，零 DOM、零框架
-- **新增** `@xihan-ui/markdown` 流式 Markdown 渲染内核：增量切块 + 稳定 key + 消毒，CommonMark 子集一致率 489/652
-- **新增** `@xihan-ui/code-highlight` 代码着色，自研粗粒度词法器
-- **新增** 键盘交互依 W3C APG 落地，77 份机读键盘规格表共 463 行键位，它同时是测试的分母：少覆盖一行即判套件失败
-- **新增** 无障碍扫描跑在真实 Chromium（axe），存量违规登记表只剩两条，另有一条 breadcrumb 的步骤重放豁免；焦点环、按下反馈、禁用态对比度与语气配色（2 档主题 × 6 族，158 组配对）都由门禁逐条守住
-- **新增** 119 个组件都留了文案位并挂进覆盖表，全局 `ConfigProvider` 一处注入；日期族的默认语言跟随宿主；书写方向用逻辑属性写，rtl 下浮层放置、方向键语义与图形朝向一并对调
-- **新增** 24 个表单字段组件认原生表单重置，11 个单一控件封装把字段状态与字段标签接到真控件上；`field` 提供标签、描述、错误与 `asChild` 逃生口
-- **新增** `pnpm gate` 一条命令跑 67 项结构检查：令牌产物、层序、皮肤在场、部件接线、浮层策略、聚焦环、语气对比度、键盘套件、导出、角色组、文档数字对账等，生成物一律由门禁核对
-- **新增** 单元与跨适配器一致性用例 10089 条；真实浏览器另跑无障碍扫描、浮层定位契约与 Web Components 示例
+- **新增** `@xihan-ui/icons` 首方图标集：`IconRecord` 结构化记录，运行期不解析 SVG 字符串，另有 SVG → `IconRecord` 的构建期转换器
+- **新增** `@xihan-ui/animations` 可序列化动效配方、`@xihan-ui/sound` 程序化 UI 音效（三套主题，零音频文件）、`@xihan-ui/backgrounds` WebGL2 效果与粒子云
+- **新增** `@xihan-ui/chat-stream` AI 协议内核：SSE 读取 → 协议归一 → parts 归约 → 会话 store，零 DOM 零框架
+- **新增** `@xihan-ui/markdown` 流式 Markdown 渲染内核（CommonMark 子集一致率 489/652）与 `@xihan-ui/code-highlight` 自研词法着色
+- **新增** 键盘交互依 W3C APG 落地：77 份机读键盘规格表共 463 行键位，同时是测试的分母，少覆盖一行即判套件失败
+- **新增** 无障碍扫描跑在真实 Chromium（axe）；焦点环、按下反馈、禁用态对比度与语气配色（2 档主题 × 6 族，158 组配对）由门禁逐条守住
+- **新增** 119 个组件都留了文案位并挂进覆盖表，全局 `ConfigProvider` 一处注入；rtl 下浮层放置、方向键语义与图形朝向一并对调
+- **新增** 24 个表单字段组件认原生表单重置；`field` 提供标签、描述、错误与 `asChild` 逃生口
+- **新增** 17 个公开包同版发布，运行时第三方依赖只有一个（`@internationalized/date`，仅日期族使用）；混装两个版本在 dev 下报 `core.version-mismatch`
+- **新增** `pnpm gate` 一条命令跑 67 项结构检查；单元与跨适配器一致性用例 10089 条，真实浏览器另跑无障碍扫描、浮层定位契约与 Web Components 示例
 - **新增** 体积棘轮 27 条产物限额，摇树是真的：只引一枚图标 149 B、整集合 7.37 kB，`XhButton` 1.38 kB、`XhDialogRoot` 15 kB（均 gzip）
 - **新增** 产物契约由 `publint` + `attw` 守住；ESM-only，子路径导出都带类型
-- **新增** 组件文档由 headless 产物与 TS 类型生成，示例引的是真实组件，Vue 与 Web Components 两套写法并排
-- **调整** 元数据的宿主行不再报锁步一致性，只报宿主与版本
+- **调整** 元数据的宿主行只报宿主与版本，不再报版本一致性
 
 ## v1.0.0-preview.0 (2026-08-26)
 
