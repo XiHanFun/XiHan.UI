@@ -14,18 +14,26 @@ export default defineConfig({ plugins: [xihanUiBanner()] })
 除插件外还导出 `getXiHanUiBanner()`（只出文本）与 `printXiHanUiBanner()`（打到 stdout），
 不认识 Vite，任何 Node 脚本都能调。这一份不从 `index` 再导出，浏览器产物里不会有它。
 
+标志逐字符横向彩虹，与 Framework 侧 `LogHelper.Rainbow` 同一套算术：进度取字符在行内的
+下标除以最长行的长度，色相走 0–300 度，空格不上色。非 TTY 与 `NO_COLOR` 下自动退成无色。
+
 **调整** 浏览器控制台的启动摘要**默认不打**（`setMetadataAutoPrint(true)` 可以打开）。
 浏览器控制台是访问网站的人也看得见的地方，横幅是给开发者看的，两者不该混在一起。
 
-**移除** `XIHAN_UI_METADATA` 的 `logo` 与 `sendWord` 两个字段，它们改由终端横幅那一份自持。
-这个对象会被浏览器产物整个带走——实测改之前，标志与寄语确实出现在生产构建的
-`vendor-ui-*.js` 里，发到了每个访问者手上（不打印，但字符串在）。改完这两样在
-`@xihan-ui/vue` 与 `@xihan-ui/web-components` 的产物里都搜不到了。
-`getMetadataSummary()` / `getMetadataDetails()` 随之不再带寄语那几行。
+**新增** `XIHAN_UI_LOGO` 与 `XIHAN_UI_SEND_WORD` 两个导出，同时把它们从
+`XIHAN_UI_METADATA` 对象里摘出来单独放。`getMetadataSummary()` / `getMetadataDetails()`
+随之不再带寄语那几行。
 
-按 [版本与兼容性政策](/guide/versioning)，走主版本的是导出名、prop、部件与 `data-*`、
-CSS 令牌与 `@layer` 名、自定义元素标签这六种介质；导出常量的内部字段不在其列。
-读过这两个字段的代码要改到 `@xihan-ui/kernel/vite`。
+摘出来是有实测依据的：那个对象被整体引用，打包器摇不掉它里面的字段——改之前标志与寄语
+确实出现在生产构建的 `vendor-ui-*.js` 里，发到了每个访问者手上（`isDev()` 挡住了打印，
+但字符串在）。单独导出之后还要再走一步：两个常量写成字面量相加而不是数组 `join`，
+因为 `join` 证明不了无副作用，打包器会把变量名摇掉、却把 `[...].join('\n')` 整段留下。
+折成字面量之后重建产物，寄语、标志、「致她」三处搜出来都是 0 个文件，
+而同一份产物里元数据的描述仍在。
+
+读过 `XIHAN_UI_METADATA.logo` / `.sendWord` 的代码改取这两个导出。按
+[版本与兼容性政策](/guide/versioning)，走主版本的是导出名、prop、部件与 `data-*`、
+CSS 令牌与 `@layer` 名、自定义元素标签这六种介质，导出常量的内部字段不在其列。
 
 横幅排在 Vite 打完本地地址之后：Vite 打那一段时会清屏，挂 `httpServer` 的 `listening`
 仍然早于它、横幅会被冲掉。走 `server.config.logger` 而不是 `console`，
