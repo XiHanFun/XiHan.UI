@@ -1,7 +1,7 @@
 {
   "name": "@xihan-ui/pointer",
   "type": "module",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "XiHan.UI pointer primitives — one pointer session that follows a single pointer from press to release.",
   "author": {
     "name": "XiHanFun",

@@ -1,7 +1,7 @@
 {
   "name": "@xihan-ui/position",
   "type": "module",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "XiHan.UI position engine — PositionEnginePort, no third-party runtime dependency.",
   "author": {
     "name": "XiHanFun",
