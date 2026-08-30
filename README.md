@@ -46,7 +46,7 @@ XiHan.UI is built around a framework-agnostic headless core: a component's state
 
 ## Install
 
-18 public packages, 17 of them published to npm (`@xihan-ui/pointer` is not published yet); the current `latest` is `1.0.0`.
+18 public packages, all published to npm; the current `latest` is `1.1.0`.
 
 ```bash
 pnpm add @xihan-ui/vue @xihan-ui/tokens @xihan-ui/styles
