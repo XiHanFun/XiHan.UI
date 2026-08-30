@@ -1,5 +1,218 @@
 # @xihan-ui/web-components
 
+## 1.1.0
+
+### Minor Changes
+
+- fe95f03: **新增** `@xihan-ui/pointer` 指针会话：一根指针从按下到抬起的跟手、过滤与收尾收在一处，自研，零依赖，压缩后 316 B。
+
+  七个需要跟手的组件（`slider` · `splitter` · `scrollbar` · `color-picker` · `image-cropper` · `floating-panel` · `signature-pad`）此前各自手写了一遍同样的文档监听循环，四个必须一次都不漏的点（监听挂文档、收 `pointercancel`、认 `pointerId`、拆卸摘干净）分散在七处，改一处不会带上另外六处。现在统一走会话，行为不变。
+
+- 442bdcc: **新增** `resizable` 组件：一块能拖着改尺寸的区域，八条边都能推，键盘也能推。
+
+  `edges` 决定开放哪几条边（默认八向全开），没开放的边不显示把手。`minWidth` / `maxWidth` / `minHeight` / `maxHeight` 夹住范围，`aspectRatio` 锁宽高比，`step` 吸附到整数倍。两个回调分工明确：`onSizeChange` 拖动途中连着发，`onSizeChangeEnd` 收尾才发一次，存尺寸用后者。
+
+  键盘按**屏幕方向**推：推东边时右键变宽、推西边时右键变窄，与拖动完全同义；Home / End 直接推到两端。`edge` 说的是逻辑方向——`e` 是行尾侧，从右往左排版时它落在屏幕左边，机器把逻辑边翻成物理边再算几何。
+
+  **推西边与北边时容器的起点会动**，那段位移写成 root 的 `left` / `top`。皮肤已给 `position: relative`，开箱即对；把 root 改成 `static` 会让这两个方向只变尺寸不移位。只用东 / 南 / 东南三向时没有这个前提。
+
+- 97482ad: **新增** `sortable` 组件：列表 / 网格拖拽排序，Vue 与 Web Components 两侧同时可用。
+
+  落点走乐观投影——拖动过程中其余条目实时让位，松手即定，不是拖完才跳一下。判据是被拖项的中心越过了谁的中心，沿轴扫描一遇到没越过的就停，因此落点连续，不会从第 0 位跳到第 5 位。几何一律取按下那一刻的快照：让位之后布局已经变了，拿变形后的几何再算会自激振荡。
+
+  **键盘路径默认开着且关不掉**：空格拾起、方向键挪一格、空格放下、Esc 取消，每一步都写进视觉隐藏的 `role=status` 区域。手柄带 `aria-roledescription="sortable"` 与 `aria-pressed`；拖动中的 Tab 被拦下，焦点一旦移走这一场就没有出口。
+
+  `orientation` 三档：竖排、横排，以及换行网格用的 `both`（按最近中心判落点）。排版方向由首尾两项的先后推出，从右往左排时自动反向。按下之后要走够 `activationDistance`（默认 5px）才算拖动，因此条目本身仍然可以点击。拖到容器边缘会自动滚动，速度随入侵深度线性上升。
+
+  `sort` 事件直接给出重排好的 `ids`，可以直接写回数据源，Vue 侧支持 `v-model:ids`。
+
+  **新增** `@xihan-ui/pointer` 的拖放几何层：排序投影、让位计算、激活阈值与边缘滚动，全部是纯函数，零 DOM、零状态。
+
+- 69577fa: **新增** `table` 的列拖拽排序：列上标了 `reorderable` 才产出拖拽把手，拖到别的列上换位；
+  把手自占一个 Tab 位，方向键挪一格、Home / End 挪到可拖区段的首末。
+
+  **新增** 两个部件 `column-drag-trigger` 与 `live-region`，一个属性名 `data-drop`（落点参照列，
+  取值 `before` / `after`），以及 `api.draggableColumns` / `api.dropTarget` / `api.announcement`。
+
+  **新增** `shared/drag.ts` 的沿轴落点判定（两档与三档）、插入下标折算与拖拽播报，
+  `table.drag.ts` 的可拖列判定与列偏好下标折算。
+
+  拖动中被拖的列**原地不动**，只落 `data-dragging`，落点由参照列上的一条指示线表示。
+  不写位移是因为冻结列是 `position: sticky` 的后代，祖先一有 `transform` 就掉出吸附；
+  斑马纹与行间线按 DOM 位置算，跟手让位会让它们在拖动全程与行错开。
+
+  键盘不做拾起 / 放下两态：按一下就是一次已过守卫的完整提交，各自播报一句。
+  列头里已经有排序把手与改宽把手两个 Tab 位，再加一套模态按键会让三者互相抢键。
+
+  提交走既有的 `COLUMN_PREF.PATCH`，列序仍然只有一处在改。落点按列 id 认而不是按第几个，
+  于是隐藏列自然留在原本的邻居旁边，前缀列压根不进落点快照。
+
+  不可拖的列与冻结列都是**屏障**：可拖范围被它们切成段，只有最长的那一段能拖。
+  跨过冻结列去落，落下来那一列会夹在两根钉住的列当中一起悬在滚动之上。
+
+  播报区渲在 `root` **之外**。`root` 是 `role=grid`，它的子节点只能是 `row` 与 `rowgroup`，
+  塞一个活动区域进去是 `aria-required-children`（critical）——不带 role 只留 `aria-live` 也一样，
+  无角色但带全局 aria 属性的节点照样被算进 owned。两个适配器都自己把它渲成 `root` 的兄弟，
+  使用者不必操心位置。
+
+- 0a147ba: **新增** `table` 的列宽拖拽：列上标了 `resizable` 就产出改宽把手，拖动与方向键都能调。
+
+  把手是可聚焦的分隔条，报出当前列宽与上下限；拖出表头仍跟手，系统收走指针时宽度退回按下那一刻。方向键一次 8px、按住 Shift 一次 40px，rtl 下左右两键对调而语义恒是「加宽 / 收窄」。列宽落在列偏好里，可以直接存起来下次还原。
+
+  列宽写成百分比这类算不出 px 的写法时不认可改宽——读屏要一个数值，给不出就不该声称自己是可调控件，键盘本来也动不了它。
+
+  **新增** `@xihan-ui/pointer` 的尺寸调整几何层：八向边推动加约束（上下限 / 宽高比 / 吸附步进 / 容器夹取），纯函数。`floating-panel` 的 `resizeFloatingPanel` 与 `clampFloatingPanelSize` 保留签名、内部改走它，行为不变。
+
+- 889c54d: **新增** `table` 的行拖拽排序：`rowReorderable` 打开后整行都是拖动源，拖到别的行上换位；
+  焦点在表体里时 `Alt` + 上下键挪一格。搬完发 `onRowMove`，载荷是 `{ id, parent, index, ids }`——
+  搬到 `parent` 那一行底下的第 `index` 位（`parent` 为 `null` 即根层，`index` 已算过「先摘后插」），
+  `ids` 是重排好的整份行序。
+
+  **新增** 行上的 `data-row-draggable` 与 `data-drop`（`before` / `after` / `inside`），
+  以及 `api.rowReorderDisabledReason`。
+
+  行序**不进机器**：`rows` 是 prop，库没有一份自己的行序可写，所以只发意图、写回归宿主。
+  这与列不同——列序有 `columnPreference.order` 这个受控通道。
+
+  按下不等于拖动：整行可拖没有把手表明意图，要走够 5px 才算，在那之前界面上一点变化都没有。
+  按在行内的输入框、按钮、链接一类控件上不起拖。
+
+  **树形行照样搬**：`rows` 里有行声明了 `parentId` 就是树，落点分三档——拖到一行的上下两端
+  是插在它前后（跟着换到那一层），拖到中段是落进它里面、认它当父。只有可展开或已经有子行的行
+  给中段那一档，普通数据行不会因为被拖过就凭空长出一层。键盘上 `Alt` + 左右键改缩进层级：
+  往里认上一个兄弟当爹，往外变成父行的下一个兄弟，rtl 下两键对调；平表下这两个键不归表格管。
+  落进自己的后代会拖出一个环，库自己拦下，指示线也不画。新增 `allowRowDrop` 收业务侧的规矩。
+
+  写回是**两件事**：按 `ids` 重排、再把那一行的 `parentId` 设成 `parent`。只做一件都对不上——
+  表格的树是一份带 `parentId` 的扁平数组，结构由 `parentId` 定、同层次序由数组先后定。
+
+  **两条降级**，各自有原因可读：排序链非空（拖出来的新序下一帧就被排序键覆盖）、
+  宿主只渲了一段（量到的行数与数据行数对不上，窗口外的行没有矩形）。
+  前一条渲染期就知道，后一条按下量过才知道。
+
+  展开着的行按**整块**算：数据行连同紧跟它的详情行是一个落点。不并块的话，
+  拖过一个展开着的行时指针明明还在这一块里，落点却因为跨进详情行那一段而反复跳。
+
+  拖动中被拖的行**原地不动**：斑马纹按 `nth-of-type` 算、行间线按兄弟选择器算，
+  两者认的都是 DOM 位置，跟手让位会让它们在拖动全程与行错开。
+
+  **触屏不开拖**。纵向手势在按下那一刻就归了浏览器滚动，`touch-action` 事后改不回来；
+  而把行设成 `touch-action: none` 又会让长表在行上完全滚不动。触屏那一路要等一个专门的
+  拖动把手（不占 Tab 位，自带 `touch-action: none`），单独排。
+
+  **修复** `table` 的键盘处理器不再吞掉落在可编辑单元格里的按键。表体的处理器挂在 `body` 上，
+  单元格里输入框冒上来的按键也经过它：焦点先落过行再进输入框时，打空格会被当成
+  「切换这一行的选中」、`Ctrl+A` 会全选行、方向键会换行。现在输入法组合中的按键与
+  落在可编辑控件上的按键一律放行。
+
+- 161ee77: **新增** `tabs` 的标签拖拽换位：`reorderable` 打开后整个标签都是拖动源，拖到别的标签上换位；
+  焦点在标签带里时 `Alt` + **主轴**方向键挪一位。搬完发 `onTabMove`，载荷是
+  `{ value, from, to, values }`，`values` 是重排好的整份标签序，可直接写回数据源。
+
+  **新增** `live-region` 部件、标签上的 `data-dragging` / `data-drop` / `data-draggable`、
+  `translations` prop，以及 `api.dropTarget` / `api.announcement`。
+
+  轴向跟随 `orientation`：横排量横轴、竖排量纵轴，键盘也只认主轴那两个键——
+  另一轴的方向键照常放行给页面滚动与读屏。横排 rtl 下左右对调。
+
+  禁用的标签**仍进落点快照**。它自己挪不动，但别人可以落在它前后；把它摘掉的话，
+  指针划过它那一段会没有落点，指示线一闪一闪。
+
+  顺序不进机器：`collection` 是 prop，库没有一份自己的标签序可写，只发意图、写回归宿主。
+
+  **重构** 一维重排的三件算术提到 `shared/drag`：`reorderFlat`、`flatMoveCommand`、
+  `flatMoveIntentFromKey`（后者收轴向与文字方向两个参数）。`table` 的行拖拽改指共享实现，
+  `moveRowIds` / `rowMoveCommand` / `rowMoveIntentFromKey` 三个行专用名字随之删除——
+  它们与本批同属一个未发布的系列，现在合并是免费的。三个组件从此共用同一份重排语义，
+  往后要改「先摘后插」这类算术只有一处。
+
+- c0a190f: **新增** 三个拖动把手：`table` 的 `row-drag-trigger`、`tree` 的 `node-drag-trigger`、
+  `tabs` 的 `tab-drag-trigger`。它们是**触屏那一路的入口**。
+
+  三处的「整块起手」此前都不认触屏：纵向手势在按下那一刻就归了浏览器滚动，
+  `touch-action` 事后改不回来；而把整行 / 整个节点设成 `touch-action: none`
+  又会让长列表在上面完全滚不动。把手是一小块专门让出去的地方，自带 `touch-action: none`，
+  手势从按下那一刻就是拖动的——同仓的 `column-resize-trigger` 早就是这个机制。
+
+  把手**不占 Tab 位**（`aria-hidden` + `tabindex=-1`）：键盘那一路早就由容器上的
+  `Alt` + 方向键承担，把手只是指针侧的第二个入口。整块起手（鼠标与笔）原样保留。
+
+  按下即拖，不等激活距离——把手是专门的入口，意图无歧义。三处的 `*_DRAG.START` 事件
+  因此多一个 `activate` 旗标，整块起手仍走激活距离那条路。
+
+  把手常挂即可：开关关着或这一项拖不动时它自报 `data-disabled`、也不再让出滚动。
+  按拖不拖得动来决定渲不渲，会让 DOM 结构随状态变。
+
+  **修复** `tabs` 的 Web Components 侧：把手此前只收 `value`，漏了「没给 `collection`、
+  禁用写在标记上」那条来路，于是标签禁着而把手仍判可拖。现在与 `trigger` 走同一条判定。
+
+  抓手字形按「线的走向与能拖的方向垂直」转了向：列是横排所以画竖线，行与树节点是纵排
+  所以画横线，`tabs` 跟着 `orientation` 两种都给。
+
+- e14c407: **新增** `tree` 的节点拖拽搬家：`draggable` 打开后整个节点都是拖动源，拖到别的节点上换位或换父。
+  焦点在树里时 `Alt` + 上下键在同层兄弟间挪，`Alt` + 左右键改缩进层级。
+  搬完发 `onNodeMove`，载荷是 `{ value, parent, index }`——搬到哪个父下面的第几位，父为 `null` 即根层。
+
+  **新增** `allowDrop` 与 `translations` 两个 prop、`live-region` 部件、
+  节点上的 `data-dragging` / `data-drop` / `data-draggable`，以及 `api.dropTarget` / `api.announcement`。
+  （`TreeTranslations` 以前只有类型没有对应的 prop，空接口所以一直没人发现，这次一并补上。）
+
+  **落点三档**：`before` / `after` 插在同层，`inside` 落进这个分支。叶子上只有前后两档。
+  「放进这个文件夹」和「插在这两行之间」是两件事，皮肤上必须一眼分得开。
+
+  **分支量的是 `branch-control` 不是 `branch`**。后者是「这一行 + 整棵子层」的外壳，
+  展开着的时候它的矩形把整棵子树都吞进去，落点会永远命中最外层那个分支，一辈子落不到子节点上。
+
+  **自我后代判据用 `indexPath` 前缀，不沿 `parent` 上溯**。作者写出自引用的数据是被支持的
+  （`collectNodes` 有祖先链防护），沿 `parent` 走会死循环；而同一个 value 挂在两个父下时
+  `parent` 只留先出现的那一支，判出来的祖先也是错的。前缀比较 O(深度) 且天然无环。
+
+  树的**状态树一行未改**：跟手的会话挂在根级效应上常驻，8 个既有事件原地不动。
+
+  **修复** `@xihan-ui/pointer` 的 `createMultiPointerSession`：`onEnd` 现在带 `reason`
+  （`pointerup` / `pointercancel`）。此前两者走同一条路、调用方分不开，于是**系统收走指针会被当成落定提交**。
+  `carousel` 与 `image-viewer` 不受影响（它们本就把两者同等对待）。
+
+  **修复** `tree` 的键盘处理器不再吞掉落在可编辑节点内容里的按键。处理器挂在 `tree` 部件上，
+  节点里输入框冒上来的按键也经过它：打空格会被当成「选中这一项」，打字会被连打检索吃掉。
+  `isEditableTarget` 从 `table` 提到 `shared/`——这是它的第二个消费者。
+
+  **触屏不开拖**（与 table 行拖拽同因）。
+
+  **改写** `tree/10-drag-move` 示例。它此前整个用 HTML5 `draggable` + `dataTransfer` 手写，
+  只支持「拖进文件夹」、没有前后排序、落点提示是内联 style——正是 AntD 审计点名的那份样板。
+  现在落点判定、三档落点、指示线、自我后代守卫全归库，宿主只留按 `{ value, parent, index }`
+  搬数组这一段。
+
+### Patch Changes
+
+- Updated dependencies [1b03cdb]
+- Updated dependencies [ba81107]
+- Updated dependencies [be46eab]
+- Updated dependencies [fad7a5a]
+- Updated dependencies [3d41890]
+- Updated dependencies [df08c58]
+- Updated dependencies [fe95f03]
+- Updated dependencies [442bdcc]
+- Updated dependencies [5b62d15]
+- Updated dependencies [97482ad]
+- Updated dependencies [69577fa]
+- Updated dependencies [0a147ba]
+- Updated dependencies [889c54d]
+- Updated dependencies [161ee77]
+- Updated dependencies [03fb633]
+- Updated dependencies [c0a190f]
+- Updated dependencies [9ae6c64]
+- Updated dependencies [e14c407]
+  - @xihan-ui/headless@1.1.0
+  - @xihan-ui/pointer@1.1.0
+  - @xihan-ui/behavior@1.1.0
+  - @xihan-ui/kernel@1.1.0
+  - @xihan-ui/machine@1.1.0
+  - @xihan-ui/motion@1.1.0
+  - @xihan-ui/code-highlight@1.1.0
+  - @xihan-ui/position@1.1.0
+
 ## 1.0.0
 
 ### Major Changes

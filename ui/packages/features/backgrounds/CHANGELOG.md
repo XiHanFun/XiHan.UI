@@ -1,5 +1,15 @@
 # @xihan-ui/backgrounds
 
+## 1.1.0
+
+### Patch Changes
+
+- Updated dependencies [5b62d15]
+- Updated dependencies [03fb633]
+  - @xihan-ui/behavior@1.1.0
+  - @xihan-ui/kernel@1.1.0
+  - @xihan-ui/motion@1.1.0
+
 ## 1.0.0
 
 ### Major Changes

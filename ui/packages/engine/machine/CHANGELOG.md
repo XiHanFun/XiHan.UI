@@ -1,5 +1,12 @@
 # @xihan-ui/machine
 
+## 1.1.0
+
+### Patch Changes
+
+- Updated dependencies [03fb633]
+  - @xihan-ui/kernel@1.1.0
+
 ## 1.0.0
 
 ### Major Changes
