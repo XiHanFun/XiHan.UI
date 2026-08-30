@@ -1,0 +1,23 @@
+const a=`<!-- 基础用法 | ids 是顺序的唯一真源，sort 事件回传的 ids 已经重排好，可直接写回 -->
+<xh-sortable ids="写方案,评审,实现,上线" style="display: contents">
+  <div data-xh-part="root" style="inline-size: 100%">
+    <div data-xh-part="item" id="写方案" style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid var(--xh-border-default)">
+      <button data-xh-part="item-handle" id="写方案">⠿</button>
+      <span>写方案</span>
+    </div>
+    <div data-xh-part="item" id="评审" style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid var(--xh-border-default)">
+      <button data-xh-part="item-handle" id="评审">⠿</button>
+      <span>评审</span>
+    </div>
+    <div data-xh-part="item" id="实现" style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid var(--xh-border-default)">
+      <button data-xh-part="item-handle" id="实现">⠿</button>
+      <span>实现</span>
+    </div>
+    <div data-xh-part="item" id="上线" style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid var(--xh-border-default)">
+      <button data-xh-part="item-handle" id="上线">⠿</button>
+      <span>上线</span>
+    </div>
+    <div data-xh-part="live-region"></div>
+  </div>
+</xh-sortable>
+`;export{a as default};

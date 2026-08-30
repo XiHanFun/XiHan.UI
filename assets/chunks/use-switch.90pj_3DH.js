@@ -1,0 +1,1 @@
+import{v as t}from"./normalize-props.DWkyZsBF.js";import{u as c}from"./use-machine.D5r1pEVp.js";import{c as e,s}from"./switch.machine.CfX8Oxqr.js";import{h as a}from"./framework.BYIUCCsM.js";function h(o,i){const r=c(s,()=>({...o,onCheckedChange:i}));return{api:a(()=>e(r,t))}}export{h as u};

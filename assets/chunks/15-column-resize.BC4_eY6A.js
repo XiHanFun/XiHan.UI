@@ -1,0 +1,71 @@
+const a=`<!-- 拖拽调列宽 | 列上标了 resizable 才认改宽把手；拖出表头仍跟手，方向键一次 8px、按住 Shift 一次 40px -->
+<div id="table-resize" style="width: 100%; max-width: 560px; display: grid; gap: 12px">
+  <xh-table id="table-resize-table">
+    <div data-xh-part="root">
+      <div data-xh-part="caption">拖动列标题右侧那条竖线；也可以 Tab 到它用方向键调</div>
+      <div data-xh-part="header">
+        <div data-xh-part="row">
+          <div data-xh-part="column-header" value="name">
+            <span style="flex: 1; overflow: hidden; text-overflow: ellipsis">姓名</span>
+            <!-- 把手压在两列的接缝上；没标 resizable 的列它自己不显示 -->
+            <span data-xh-part="column-resize-trigger" value="name"></span>
+          </div>
+          <div data-xh-part="column-header" value="dept">
+            <span style="flex: 1; overflow: hidden; text-overflow: ellipsis">部门</span>
+            <span data-xh-part="column-resize-trigger" value="dept"></span>
+          </div>
+          <div data-xh-part="column-header" value="city">
+            <span style="flex: 1; overflow: hidden; text-overflow: ellipsis">城市</span>
+            <span data-xh-part="column-resize-trigger" value="city"></span>
+          </div>
+        </div>
+      </div>
+      <div data-xh-part="body">
+        <div data-xh-part="row" value="u1">
+          <div data-xh-part="cell" value="name">赵一</div>
+          <div data-xh-part="cell" value="dept">平台研发</div>
+          <div data-xh-part="cell" value="city">杭州</div>
+        </div>
+        <div data-xh-part="row" value="u2">
+          <div data-xh-part="cell" value="name">钱二</div>
+          <div data-xh-part="cell" value="dept">前端体验</div>
+          <div data-xh-part="cell" value="city">上海</div>
+        </div>
+        <div data-xh-part="row" value="u3">
+          <div data-xh-part="cell" value="name">孙三</div>
+          <div data-xh-part="cell" value="dept">基础架构</div>
+          <div data-xh-part="cell" value="city">北京</div>
+        </div>
+        <div data-xh-part="row" value="u4">
+          <div data-xh-part="cell" value="name">李四</div>
+          <div data-xh-part="cell" value="dept">质量保障</div>
+          <div data-xh-part="cell" value="city">成都</div>
+        </div>
+      </div>
+    </div>
+  </xh-table>
+  <span id="table-resize-value"></span>
+</div>
+
+<script type="module">
+  const stage = document.getElementById("table-resize");
+  const table = stage.querySelector("#table-resize-table");
+  const readout = stage.querySelector("#table-resize-value");
+
+  // 列宽写成数字即按 px 处理；minWidth / maxWidth 是拖动的上下限
+  table.columns = [
+    { id: "name", label: "姓名", width: 120, resizable: true, minWidth: 72 },
+    { id: "dept", label: "部门", width: 150, resizable: true, minWidth: 90, maxWidth: 260 },
+    { id: "city", label: "城市", width: 120 },
+  ];
+
+  table.rows = [{ id: "u1" }, { id: "u2" }, { id: "u3" }, { id: "u4" }];
+
+  // 改宽落在列偏好里，可以直接存起来下次还原
+  table.addEventListener("column-preference-change", (event) => {
+    readout.textContent = \`列宽偏好：\${JSON.stringify(event.detail.value.widths ?? {})}\`;
+  });
+
+  readout.textContent = "列宽偏好：{}";
+<\/script>
+`;export{a as default};

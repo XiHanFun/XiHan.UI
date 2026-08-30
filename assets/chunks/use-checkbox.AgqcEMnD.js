@@ -1,1 +1,0 @@
-import{v as r}from"./normalize-props.DWkyZsBF.js";import{u as a}from"./use-machine.BIi85zM1.js";import{c as i,a as m}from"./checkbox.machine.C_n6_SLH.js";import{h as s}from"./framework.CINlqUGR.js";function h(o,e){const c=a(m,()=>({...o,onCheckedChange:e}));return{api:s(()=>i(c,r))}}export{h as u};
