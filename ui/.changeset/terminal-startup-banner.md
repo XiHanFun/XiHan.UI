@@ -15,7 +15,12 @@ export default defineConfig({ plugins: [xihanUiBanner()] })
 不认识 Vite，任何 Node 脚本都能调。这一份不从 `index` 再导出，浏览器产物里不会有它。
 
 标志逐字符横向彩虹，与 Framework 侧 `LogHelper.Rainbow` 同一套算术：进度取字符在行内的
-下标除以最长行的长度，色相走 0–300 度，空格不上色。非 TTY 与 `NO_COLOR` 下自动退成无色。
+下标除以最长行的长度，色相走 0–300 度，空格不上色。
+
+要不要上色的判据与 `picocolors` 逐条对齐——Vite 自己的输出就是用它上色的，照它走横幅才与
+周围那几行同进同退。只看 `isTTY` 不够：跑在 turbo 底下时 stdout 是管道、`isTTY` 为假，
+而 Vite 的地址那几行照样是彩的，横幅会成为唯一没颜色的一段。`NO_COLOR` / `--no-color`
+仍然一票否决。
 
 **调整** 浏览器控制台的启动摘要**默认不打**（`setMetadataAutoPrint(true)` 可以打开）。
 浏览器控制台是访问网站的人也看得见的地方，横幅是给开发者看的，两者不该混在一起。
