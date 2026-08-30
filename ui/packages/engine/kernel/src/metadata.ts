@@ -86,8 +86,6 @@ export const XIHAN_UI_METADATA = Object.freeze({
   supportedPlatforms: Object.freeze(['Chrome', 'Edge', 'Firefox', 'Safari']),
   /** 框架提供的渲染适配器 */
   adapters: Object.freeze(['vue', 'web-components']),
-  // 标志与寄语不在这里：它们只给终端横幅用,住在 vite.ts 里。
-  // 放进这个对象就会跟着浏览器产物发到每个访问者手上,而那两样是给开发者看的
 }) as Readonly<{
   name: string
   displayName: string
@@ -109,6 +107,31 @@ export const XIHAN_UI_METADATA = Object.freeze({
   supportedPlatforms: readonly string[]
   adapters: readonly string[]
 }>
+
+/**
+ * 曦寒标志。给终端启动横幅用,见 @xihan-ui/kernel/vite。
+ *
+ * 单独导出而不并进 XIHAN_UI_METADATA:那个对象被整体引用,打包器摇不掉它里面的字段,
+ * 并进去就会跟着浏览器产物发到每个访问者手上。这两样是给开发者看的。
+ */
+export const XIHAN_UI_LOGO: string
+  = '   _  __ ______  _____    _   __\n'
+    + '  | |/ //  _/ / / /   |  / | / /\n'
+    + '  |   / / // /_/ / /| | /  |/ /\n'
+    + ' /   |_/ // __  / ___ |/ /|  /\n'
+    + '/_/|_/___/_/ /_/_/  |_/_/ |_/'
+
+/**
+ * 曦寒寄语。与 XIHAN_UI_LOGO 同理,单独导出。
+ *
+ * 两处都写成字面量相加而不是数组 join:join 证明不了无副作用,
+ * 打包器会把变量名摇掉、却把 ['...'].join('\n') 这个表达式整段留在产物里。
+ * 字面量相加会被常量折叠成一个字符串,没人引用就整个消失。
+ */
+export const XIHAN_UI_SEND_WORD: string
+  = '碧落降恩承淑颜，共挚崎缘挽曦寒。\n'
+    + '迁般故事终成忆，谨此葳蕤换思短。\n'
+    + '              —— 致她'
 
 export interface RuntimeHostInfo {
   /** 适配器名(vue / web-components)。 */

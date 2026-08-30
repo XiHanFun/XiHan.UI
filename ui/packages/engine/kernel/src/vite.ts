@@ -7,23 +7,7 @@
 // 发到每个访问网站的人手上；横幅是给开发者看的，不该走那条路。
 // 浏览器侧的摘要默认不打，开关见 metadata.ts 的 setMetadataAutoPrint。
 
-import { XIHAN_UI_METADATA } from './metadata'
-
-/** 曦寒标志。 */
-const LOGO = [
-  '   _  __ ______  _____    _   __',
-  '  | |/ //  _/ / / /   |  / | / /',
-  '  |   / / // /_/ / /| | /  |/ /',
-  ' /   |_/ // __  / ___ |/ /|  /',
-  '/_/|_/___/_/ /_/_/  |_/_/ |_/',
-]
-
-/** 曦寒寄语。 */
-const SEND_WORD = [
-  '碧落降恩承淑颜，共挚崎缘挽曦寒。',
-  '迁般故事终成忆，谨此葳蕤换思短。',
-  '              —— 致她',
-]
+import { XIHAN_UI_LOGO, XIHAN_UI_METADATA, XIHAN_UI_SEND_WORD } from './metadata'
 
 /**
  * 只用到 Vite 的这几处形状，因此不从 vite 取类型：
@@ -72,24 +56,67 @@ function supportsColor(): boolean {
   return proc.stdout?.isTTY === true
 }
 
-/** 标志逐行渐变，与 Framework 侧 LogHelper.Rainbow 打出来的观感一致。 */
-const GRADIENT: readonly (readonly [number, number, number])[] = [
-  [167, 139, 250],
-  [139, 149, 250],
-  [110, 168, 249],
-  [96, 186, 240],
-  [94, 205, 224],
-]
+/** 收色，回到终端默认前景色。 */
+const RESET = '\u001B[0m'
 
-function paint(line: string, index: number, color: boolean): string {
+/**
+ * HSV 转 RGB，色相 0-360、饱和度与明度 0-1。
+ * 与 Framework 侧 ConsoleColorWriter.HsvToRgb 同一套算术。
+ */
+function hsvToRgb(hue: number, saturation: number, value: number): [number, number, number] {
+  const h = hue / 60
+  const c = value * saturation
+  const x = c * (1 - Math.abs((h % 2) - 1))
+  const m = value - c
+  const sextant: [number, number, number][] = [
+    [c, x, 0],
+    [x, c, 0],
+    [0, c, x],
+    [0, x, c],
+    [x, 0, c],
+    [c, 0, x],
+  ]
+  const [r, g, b] = sextant[Math.min(5, Math.trunc(h))]!
+  return [Math.trunc((r + m) * 255), Math.trunc((g + m) * 255), Math.trunc((b + m) * 255)]
+}
+
+/**
+ * 逐字符横向彩虹，与 Framework 侧 LogHelper.Rainbow 同一套：
+ * 进度取字符在行内的下标除以最长行的长度，色相走 0-300 度——到 300 就停，
+ * 再往前会绕回红色、首尾撞色。空格不上色，标志的镂空处不会被染上底噪。
+ */
+function rainbow(line: string, width: number, color: boolean): string {
   if (!color)
     return line
-  const [r, g, b] = GRADIENT[index % GRADIENT.length]!
-  return `\u001B[38;2;${r};${g};${b}m${line}\u001B[0m`
+  let out = ''
+  let painted = false
+  for (let i = 0; i < line.length; i++) {
+    const char = line[i]!
+    if (char === ' ') {
+      // 收掉当前颜色再写空格：留着它,行尾的背景色会拖出一条尾巴
+      if (painted) {
+        out += RESET
+        painted = false
+      }
+      out += char
+      continue
+    }
+    const [r, g, b] = hsvToRgb((i / Math.max(1, width - 1)) * 300, 1, 1)
+    out += `\u001B[38;2;${r};${g};${b}m${char}`
+    painted = true
+  }
+  return painted ? out + RESET : out
+}
+
+/** 整段逐行上色，进度基准取最长的那一行，与 Framework 一致。 */
+function rainbowBlock(text: string, color: boolean): string[] {
+  const lines = text.split('\n')
+  const width = lines.reduce((max, line) => Math.max(max, line.length), 0)
+  return lines.map(line => rainbow(line, width, color))
 }
 
 function dim(text: string, color: boolean): string {
-  return color ? `\u001B[2m${text}\u001B[0m` : text
+  return color ? `\u001B[2m${text}${RESET}` : text
 }
 
 /**
@@ -101,11 +128,11 @@ export function getXiHanUiBanner(options: XiHanUiBannerOptions = {}): string {
   const m = XIHAN_UI_METADATA
   return [
     '',
-    ...LOGO.map((line, i) => paint(line, i, color)),
+    ...rainbowBlock(XIHAN_UI_LOGO, color),
     '',
     `${m.name} ${m.displayName} v${m.version}`,
     dim(m.description, color),
-    dim(SEND_WORD.join('\n'), color),
+    dim(XIHAN_UI_SEND_WORD, color),
     '',
   ].join('\n')
 }

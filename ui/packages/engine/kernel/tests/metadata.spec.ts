@@ -11,7 +11,9 @@ import {
   resetMetadataBanner,
   resetRuntimeHost,
   setMetadataAutoPrint,
+  XIHAN_UI_LOGO,
   XIHAN_UI_METADATA,
+  XIHAN_UI_SEND_WORD,
   XIHAN_UI_VERSION,
 } from '../src/metadata'
 
@@ -106,11 +108,15 @@ describe('框架元数据', () => {
     expect(spy).not.toHaveBeenCalled()
   })
 
-  it('元数据里不带标志与寄语:这个对象会跟着浏览器产物发出去', () => {
+  it('标志与寄语单独导出,不并进元数据对象', () => {
+    // 并进那个对象就摇不掉了:它被整体引用,字段会跟着浏览器产物发到每个访问者手上
     expect(XIHAN_UI_METADATA).not.toHaveProperty('logo')
     expect(XIHAN_UI_METADATA).not.toHaveProperty('sendWord')
     expect(getMetadataSummary()).not.toContain('致她')
     expect(getMetadataDetails()).not.toContain('致她')
+
+    expect(XIHAN_UI_LOGO).toContain('_/|_/___/_/')
+    expect(XIHAN_UI_SEND_WORD).toContain('致她')
   })
 
   it('开着的时候整页只打一次摘要,reset 后可再打', () => {
