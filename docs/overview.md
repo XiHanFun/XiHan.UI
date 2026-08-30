@@ -21,11 +21,12 @@ XiHan.UI 是一个 pnpm + turbo 的 monorepo。它的组织方式只服务于一
 
 | 层 | 包 | 可依赖 |
 | --- | --- | --- |
-| 1 | `kernel` | — |
+| 1 | `kernel` | `motion` |
 | 1 | `machine` | `kernel` |
 | 1 | `motion` | — |
 | 1 | `tokens` | — |
 | 1 | `icons` | — |
+| 1 | `pointer` | — |
 | 2 | `behavior` | `kernel` `machine` `motion` |
 | 2 | `position` | `kernel` |
 | 2 | `code-highlight` | `kernel` |
@@ -33,11 +34,11 @@ XiHan.UI 是一个 pnpm + turbo 的 monorepo。它的组织方式只服务于一
 | 2 | `markdown` | `kernel` |
 | 2 | `sound` | `kernel` |
 | 2 | `animations` | `kernel` `motion` |
-| 3 | `headless` | `kernel` `machine` `behavior` `tokens` `motion` |
+| 3 | `headless` | `kernel` `machine` `behavior` `tokens` `motion` `pointer` |
 | 3 | `styles` | —（纯 CSS，不得依赖任何 JS 包） |
-| 3 | `backgrounds` | `kernel` `behavior` |
-| 4 | `vue` | `kernel` `machine` `behavior` `headless` `position` `code-highlight` `tokens` `backgrounds` `sound` `motion` |
-| 4 | `web-components` | `kernel` `machine` `behavior` `headless` `position` `code-highlight` `tokens` `backgrounds` `motion` |
+| 3 | `backgrounds` | `kernel` `behavior` `motion` |
+| 4 | `vue` | `kernel` `machine` `behavior` `headless` `position` `code-highlight` `tokens` `backgrounds` `sound` `motion` `pointer` |
+| 4 | `web-components` | `kernel` `machine` `behavior` `headless` `position` `code-highlight` `tokens` `backgrounds` `motion` `pointer` |
 
 除分层外还有三条硬规则，同样由门禁执行：
 
@@ -126,7 +127,7 @@ XiHan.UI/
 │   │   ├── adapters/        # vue · web-components——你选一个
 │   │   ├── design/          # tokens · styles · icons——外观
 │   │   ├── features/        # markdown · chat-stream · backgrounds · sound · animations——按需自选
-│   │   └── engine/          # kernel · machine · motion · behavior · position · code-highlight · headless
+│   │   └── engine/          # kernel · machine · motion · pointer · behavior · position · code-highlight · headless
 │   └── tooling/             # 内部构建与质量工具
 │       ├── build/           # 打包配置与 exports 回写
 │       ├── eslint-config/   # lint 规则 + 分层拓扑事实源

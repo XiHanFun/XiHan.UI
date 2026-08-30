@@ -793,6 +793,35 @@ const truth = {
       return Number(JSON.parse(await read('package.json')).engines.pnpm.match(/\d+/)[0])
     },
   },
+  WC元素类导出数: {
+    how: 'tooling/public-surface.json 里 @xihan-ui/web-components 形如 Xh*Element 的导出名',
+    async value() {
+      const surface = JSON.parse(await read('tooling/public-surface.json'))
+      const wc = surface.exports['@xihan-ui/web-components']
+      const names = Array.isArray(wc) ? wc : Object.values(wc).flat()
+      return names.filter(n => /^Xh[A-Za-z0-9]+Element$/.test(n)).length
+    },
+  },
+  用指针原语的组件数: {
+    how: 'headless 的组件目录里引了 @xihan-ui/pointer 的那些',
+    async value() {
+      const dirs = (await readdir(HEADLESS, { withFileTypes: true })).filter(d => d.isDirectory()).map(d => d.name)
+      let n = 0
+      for (const name of dirs) {
+        const files = await readdir(join(HEADLESS, name), { withFileTypes: true, recursive: true })
+        for (const entry of files) {
+          if (!entry.isFile() || !entry.name.endsWith('.ts'))
+            continue
+          const src = await readFile(join(entry.parentPath ?? entry.path, entry.name), 'utf8')
+          if (src.includes('@xihan-ui/pointer')) {
+            n++
+            break
+          }
+        }
+      }
+      return n
+    },
+  },
 }
 
 /** 皮肤 CSS 真正消费的 data-* 属性：剥注释、排除解剖那两个。 */
@@ -866,13 +895,13 @@ const TABLE = [
   // 文档站是私有包，但版本号一直照着库包写；不登记就会像此前那样停在 alpha.1
   ['README.md', /Components-(\d+)-1f6feb/, '组件数'],
   ['README.md', /- \*\*(\d+) components\*\* - covering/, '组件数'],
-  ['README.md', /Working today: (\d+) components/, '组件数'],
+  ['README.md', /In the box: (\d+) components/, '组件数'],
   ['README.md', /^(\d+) public packages/m, '公开包数'],
   ['README.md', /one command runs (\d+) structural checks/, 'gate串里的结构检查数'],
 
   ['README_cn.md', /Components-(\d+)-1f6feb/, '组件数'],
   ['README_cn.md', /- \*\*(\d+) 个组件\*\* - 覆盖/, '组件数'],
-  ['README_cn.md', /已经能用的：(\d+) 个组件/, '组件数'],
+  ['README_cn.md', /库里有的：(\d+) 个组件/, '组件数'],
   ['README_cn.md', /^(\d+) 个公开包/m, '公开包数'],
   ['README_cn.md', /一条命令跑 (\d+) 项结构检查/, 'gate串里的结构检查数'],
 
@@ -888,6 +917,7 @@ const TABLE = [
   ['docs/guide/versioning.md', /\| Vue 组件导出 `Xh\*` \| \d+（(\d+) 个家族）/, '组件数'],
   ['docs/guide/versioning.md', /\| 无头内核 `connect\*` \| (\d+) \|/, '组件数'],
   ['docs/guide/versioning.md', /\| `xxxAnatomy` \/ `xxxMeta` \/ `xxxKeyboard` 三组导出对象 \| 各 (\d+) \|/, '组件数'],
+  ['docs/guide/versioning.md', /\| WC 的元素类导出 `Xh\*Element` \| (\d+) \|/, 'WC元素类导出数'],
   ['docs/guide/versioning.md', /\| WC 元素上的 `static partContract` \| (\d+) \|/, '组件数'],
   ['docs/guide/versioning.md', /\| `data-scope` 取值（组件身份） \| (\d+) \|/, '组件数'],
   ['docs/guide/versioning.md', /新增第 (\d+) 个组件是 minor/, '组件数加一'],
@@ -902,7 +932,6 @@ const TABLE = [
   ['docs/overview.md', /\| (\d+) 个组件的解剖/, '组件数'],
   ['docs/faq.md', /\*\*(\d+) 个\*\*。每个组件同时有/, '组件数'],
   ['docs/faq.md', /覆盖全部 (\d+) 个组件/, '组件数'],
-  ['docs/faq.md', /^(\d+) 个公开包锁步发版/m, '公开包数'],
 
   ['docs/installation.md', /XiHan\.UI 的 (\d+) 个公开包/, '公开包数'],
   ['docs/installation.md', /(\d+) 个组件的示例都是真实组件/, '组件数'],
@@ -917,6 +946,7 @@ const TABLE = [
   ['docs/guide/testing.md', /^(\d+) 条产物各有上限/m, '体积预算条数'],
   ['docs/guide/forms.md', /^(\d+) 个：checkbox、/m, '表单字段组件数'],
   ['docs/guide/position.md', /\| (\d+) 种：四个方向/, 'placement取值数'],
+  ['docs/guide/pointer.md', /这一层，(\d+) 个组件在用/, '用指针原语的组件数'],
   ['docs/guide/styling.md', /^(\d+) 份皮肤吃这条令牌/m, '吃控件最小宽度令牌的皮肤数'],
   ['docs/guide/styling.md', /派生 (\d+) 档原语/, '品牌原语档数'],
   ['docs/guide/backgrounds.md', /^(\d+) 个：`aurora`/m, '内置背景效果数'],
@@ -1078,8 +1108,6 @@ const TABLE = [
   ['docs/overview.md', /唯一登记在案的例外是 `([^`]+)`/, '运行时第三方依赖名'],
   ['README.md', /the only third-party runtime dependency is `([^`]+)`/, '运行时第三方依赖名'],
   ['README_cn.md', /运行时第三方依赖只有 `([^`]+)`/, '运行时第三方依赖名'],
-  ['docs/faq.md', /无障碍存量违规还剩([\d一二三四五六七八九十两]+)条登记在案/, 'a11y存量违规条数'],
-  ['docs/faq.md', /另有([\d一二三四五六七八九十两]+)条 breadcrumb 的步骤重放豁免/, 'a11y重放豁免条数'],
   ['docs/faq.md', /另有 breadcrumb ([\d一二三四五六七八九十两]+)条步骤重放豁免/, 'a11y重放豁免条数'],
   ['docs/guide/a11y.md', /当前共([\d一二三四五六七八九十两]+)条/, 'a11y存量违规条数'],
   ['docs/guide/a11y.md', /只剩([\d一二三四五六七八九十两]+)个组件在真机里推不到用例终态/, 'a11y重放豁免条数'],
@@ -1088,6 +1116,7 @@ const TABLE = [
 /** 刻意的约数：不参与对账，但登记项必须仍能在文件里命中，免得留下一条早已不存在的豁免。 */
 const APPROX = [
   ['docs/installation.md', /压缩后约 (\d+) kB gzip/, '皮肤增删就漂，取整到十位，不逐份对账'],
+  ['docs/guide/pointer.md', /整包压缩后 ([\d.]+) kB/, '产物体积随实现走，随 size-limit 的限额一起看，不逐次对账'],
   ['docs/guide/backgrounds.md', /实测约 (\d+) kB（gzip 约 [\d.]+ kB），占整包四成/, '打包器与压缩档位不同结果就不同，只作量级参考'],
   ['docs/guide/testing.md', /预算一律按实测留一成余量/, '余量是口径不是数字，逐条限额各自取整'],
 ]

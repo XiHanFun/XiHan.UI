@@ -1,18 +1,8 @@
 # 常见问题
 
-## 现在能用吗
-
-可以试。库包已按 `1.1.0` 发布到 npm——公开面已按[版本与兼容性政策](./guide/versioning)整理完毕，该页条款自 `1.0.0` 正式版起生效。无障碍存量违规还剩两条登记在案（共用表里 tag 的禁用态对比度、WC 侧 steps 的必需子节点），另有一条 breadcrumb 的步骤重放豁免。
-
-上手路径：从 npm 装一份、克隆仓库把文档站跑起来看行为、读源码。见[安装与接入](./installation)。
-
-## `npm install` 能装到哪些包
-
-18 个公开包锁步发版，`latest` 为 `1.1.0`。发布走 changesets，全部库包同属一个 fixed 版本组，一起升到同一版本号，所以内部依赖区间总是对齐的。
-
 ## 和 XiHan.BasicApp 的前端是什么关系
 
-**没有依赖关系。** BasicApp 的前端基于 Naive UI 构建，不使用 XiHan.UI。两者是独立演进的两条线。
+BasicApp 的前端建在 XiHan.UI 之上：自 BasicApp v4.0.0 起，它的前端整体用这套库重建。想看组件库在真实业务里怎么用，读 BasicApp 前端的源码是最快的路径。
 
 BasicApp 的前端约定请看[基础应用前端手册](https://basicapp.docs.xihanfun.com/frontend/introduction)。
 
@@ -44,11 +34,11 @@ BasicApp 的前端约定请看[基础应用前端手册](https://basicapp.docs.x
 
 代价就是你得写结构。漏写必备部件不会静默失败——诊断通道会明确报出来。见 [Web Components 适配器](./adapters/web-components)。
 
-## 切换密度 / 高对比度 / 品牌为什么没效果
+## 切换品牌为什么没效果
 
-主题运行时对五个维度一视同仁地写属性，但令牌产物**目前只对 `data-theme` 的明暗两值给出了不同取值**。`data-density='compact'`、`data-contrast='more'`、`data-brand` 三个属性会被写到 DOM 上，令牌层还没有对应的取值块。
+品牌轴要注册之后才换色：`registerBrand(id, 种子色)` 注入该 id 的原语取值块，切到这个品牌才有视觉变化；不注册就只是把 `data-brand` 写到 DOM 上。
 
-这三条轴是预留的接入点，接法已经确定，但还没落地。见[设计令牌与主题](./guide/theme#五个维度当前的落地程度)。
+明暗、对比度、密度、书写方向四条轴开箱即有取值，切了就变。见[设计令牌与主题](./guide/theme#五个维度各管什么)。
 
 ## 皮肤里的某条样式没生效
 

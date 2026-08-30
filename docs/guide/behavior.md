@@ -225,6 +225,7 @@ stick.retarget() // 节点换了就解绑重绑
 | --- | --- |
 | `prefersReducedMotion()` / `onReducedMotionChange()` | 读与订阅「减弱动态效果」系统偏好 |
 | `easing` | 一组具名缓动函数 |
+| `applySelection()` / `toggleSelectAll()` / `rangeBetween()` | 选中集合运算：带锚点的范围选、全选与切换，不碰 DOM |
 | `dispatchCancelable()` | 派发可取消的自定义事件（表决票模式） |
 | `getTabbables()` / `focusFirst()` / `focusSafely()` | 可聚焦元素查询与安全聚焦 |
 

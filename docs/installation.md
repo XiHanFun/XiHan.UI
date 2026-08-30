@@ -2,7 +2,7 @@
 
 ## 从 npm 安装
 
-XiHan.UI 的 18 个公开包按 `1.1.0` 锁步发布到 npm。当前版本号以 npm 为准：`npm view @xihan-ui/vue version`。
+XiHan.UI 的 18 个公开包都已发布到 npm，同属一个版本组、始终同号。当前版本号以 npm 为准：`npm view @xihan-ui/vue version`。
 
 装哪几个包取决于你用哪个适配器：
 
@@ -22,7 +22,7 @@ pnpm add @xihan-ui/backgrounds
 
 `@xihan-ui/styles` 不是必需的：组件不依赖默认皮肤，只拿令牌自己写样式是完全可行的一条路，见下文「样式的三种接法」。
 
-适配器的引擎侧依赖（`kernel` / `machine` / `motion` / `behavior` / `headless` / `position` / `code-highlight`）写在 `dependencies` 里，装适配器就一并带进来，不用单独列。`@xihan-ui/vue` 的 peer 依赖是 `vue@^3.5.0`，由你的项目提供。
+适配器的引擎侧依赖（`kernel` / `machine` / `motion` / `pointer` / `behavior` / `headless` / `position` / `code-highlight`）写在 `dependencies` 里，装适配器就一并带进来，不用单独列。`@xihan-ui/vue` 的 peer 依赖是 `vue@^3.5.0`，由你的项目提供。
 
 除了从 npm 装，还有两条本地路径：
 
@@ -99,7 +99,7 @@ cd XiHan.UI/ui && pnpm build
 }
 ```
 
-`@xihan-ui/vue` 会顺着 `dependencies` 把 `kernel` / `machine` / `motion` / `behavior` / `headless` / `position` / `code-highlight` 一并带进来，这几个不用单独链接。`vue` 本身是它的 peer 依赖，由你的项目提供。
+`@xihan-ui/vue` 会顺着 `dependencies` 把 `kernel` / `machine` / `motion` / `pointer` / `behavior` / `headless` / `position` / `code-highlight` 一并带进来，这几个不用单独链接。`vue` 本身是它的 peer 依赖，由你的项目提供。
 
 ## 接入 Vue 项目
 
