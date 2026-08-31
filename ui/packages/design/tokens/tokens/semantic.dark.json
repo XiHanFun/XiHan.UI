@@ -45,6 +45,12 @@
     "focus": { "$type": "color", "$value": "{color.brand.400}" },
     "invalid": { "$type": "color", "$value": "{color.danger.400}" }
   },
+  "diff": {
+    "added-bg": { "$type": "color", "$value": "oklch(0.3 0.05 150)" },
+    "added-fg": { "$type": "color", "$value": "oklch(0.86 0.12 150)" },
+    "removed-bg": { "$type": "color", "$value": "oklch(0.3 0.05 25)" },
+    "removed-fg": { "$type": "color", "$value": "oklch(0.85 0.12 25)" }
+  },
   "syntax": {
     "string": { "$type": "color", "$value": "oklch(0.85 0.12 165)" },
     "number": { "$type": "color", "$value": "oklch(0.85 0.12 75)" },

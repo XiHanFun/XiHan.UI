@@ -67,6 +67,8 @@ export { connectDescriptions, descriptionsAnatomy, descriptionsKeyboard, descrip
 export type { DescriptionsApi, DescriptionsColumns, DescriptionsPlacement, DescriptionsProps, DescriptionsTranslations } from './descriptions'
 export { connectDialog, dialogAnatomy, dialogKeyboard, dialogMachine, dialogMeta } from './dialog'
 export type { DialogApi, DialogOpenChangeDetails, DialogRefs, DialogSchema, DialogTranslations } from './dialog'
+export { computeTextDiff, connectDiffView, diffStats, diffViewAnatomy, diffViewEmptyText, diffViewKeyboard, diffViewMachine, diffViewMeta, parseUnifiedPatch } from './diff-view'
+export type { ComputeTextDiffOptions, DiffChange, DiffHunk, DiffLine, DiffModel, DiffSide, DiffViewApi, DiffViewCellProps, DiffViewExpandedChangeDetails, DiffViewGapProps, DiffViewMode, DiffViewRow, DiffViewRowProps, DiffViewSchema, DiffViewTranslations } from './diff-view'
 export { connectDownloadTrigger, DOWNLOAD_TRIGGER_FILE_NAME, DOWNLOAD_TRIGGER_MIME_TYPE, DOWNLOAD_TRIGGER_REVOKE_DELAY, downloadTriggerAnatomy, downloadTriggerKeyboard, downloadTriggerMachine, downloadTriggerMeta, resolveDownloadData, resolveDownloadFileName, saveDownload, toDownloadBlob } from './download-trigger'
 export type { DownloadTriggerApi, DownloadTriggerCompleteDetails, DownloadTriggerContent, DownloadTriggerData, DownloadTriggerErrorDetails, DownloadTriggerSchema, DownloadTriggerStatus, DownloadTriggerTranslations } from './download-trigger'
 export { connectDrawer, DRAWER_DEFAULT_SIDE, drawerAnatomy, drawerKeyboard, drawerMachine, drawerMeta } from './drawer'

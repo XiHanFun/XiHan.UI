@@ -33,6 +33,7 @@ import type { DateFieldTranslations } from '../date-field/date-field.types'
 import type { DatePickerTranslations } from '../date-picker/date-picker.types'
 import type { DescriptionsTranslations } from '../descriptions/descriptions.types'
 import type { DialogTranslations } from '../dialog/dialog.types'
+import type { DiffViewTranslations } from '../diff-view/diff-view.types'
 import type { DownloadTriggerTranslations } from '../download-trigger/download-trigger.types'
 import type { DrawerTranslations } from '../drawer/drawer.types'
 import type { DynamicInputTranslations } from '../dynamic-input/dynamic-input.types'
@@ -164,6 +165,7 @@ export interface XhTranslationOverrides {
   'date-picker'?: Partial<DatePickerTranslations>
   'descriptions'?: Partial<DescriptionsTranslations>
   'dialog'?: Partial<DialogTranslations>
+  'diff-view'?: Partial<DiffViewTranslations>
   'download-trigger'?: Partial<DownloadTriggerTranslations>
   'drawer'?: Partial<DrawerTranslations>
   'dynamic-input'?: Partial<DynamicInputTranslations>

@@ -295,6 +295,10 @@ export const tokens = {
   "--xh-border-at-limit": "var(--xh-color-warning-600)",
   "--xh-ring-focus": "var(--xh-color-brand-500)",
   "--xh-ring-invalid": "var(--xh-color-danger-500)",
+  "--xh-diff-added-bg": "oklch(0.94 0.05 150)",
+  "--xh-diff-added-fg": "oklch(0.44 0.13 150)",
+  "--xh-diff-removed-bg": "oklch(0.94 0.05 25)",
+  "--xh-diff-removed-fg": "oklch(0.47 0.16 25)",
   "--xh-syntax-string": "oklch(0.52 0.13 165)",
   "--xh-syntax-number": "oklch(0.5 0.13 70)",
   "--xh-syntax-keyword": "oklch(0.5 0.2 300)"

@@ -12058,6 +12058,333 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/diff-view.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-diff-view>` —— Light-DOM 行为宿主：作者写 root/viewport/body 三个角色节点，\n行由本元素按模型铺进 body。\n\n行是模型算出来的派生结构，作者写不出 N 行，故 body 部件的内容由本元素接管；\n其余各处一律不替作者生成节点。",
+          "name": "XhDiffViewElement",
+          "cssParts": [
+            {
+              "description": "外壳，承载 data-view / data-truncated",
+              "name": "root"
+            },
+            {
+              "description": "文件名与增删统计那一行",
+              "name": "header"
+            },
+            {
+              "description": "滚动容器，唯一的 Tab 停靠点",
+              "name": "viewport"
+            },
+            {
+              "description": "role=table，承载 aria-rowcount / aria-colcount",
+              "name": "body"
+            },
+            {
+              "description": "一行，role=row + aria-rowindex + data-change",
+              "name": "row"
+            },
+            {
+              "description": "行号槽，不给 role、对读屏隐藏，皮肤用 attr() 画",
+              "name": "line-number"
+            },
+            {
+              "description": "唯一暴露的内容列，role=cell + aria-colindex",
+              "name": "line-content"
+            },
+            {
+              "description": "变更类型的读屏文字，住在内容格里并视觉隐藏",
+              "name": "change-label"
+            },
+            {
+              "description": "着色片段，承载 data-kind",
+              "name": "token"
+            },
+            {
+              "description": "折起来的上下文那一行，role=row",
+              "name": "gap"
+            },
+            {
+              "description": "裹住展开按钮的那一格，role=cell",
+              "name": "gap-cell"
+            },
+            {
+              "description": "展开按钮，承载 aria-expanded",
+              "name": "gap-trigger"
+            },
+            {
+              "description": "一条变更都没有时的占位",
+              "name": "empty"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: diffViewAnatomy, meta: diffViewMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "view",
+              "privacy": "public",
+              "type": {
+                "text": "DiffViewMode | undefined"
+              },
+              "attribute": "view"
+            },
+            {
+              "kind": "field",
+              "name": "contextLines",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "context-lines"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "Size | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "model",
+              "privacy": "public",
+              "type": {
+                "text": "DiffModel | undefined"
+              },
+              "description": "差异模型，由 computeTextDiff 或 parseUnifiedPatch 算出来。"
+            },
+            {
+              "kind": "field",
+              "name": "expanded",
+              "privacy": "public",
+              "type": {
+                "text": "readonly string[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "defaultExpanded",
+              "privacy": "public",
+              "type": {
+                "text": "readonly string[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "Partial<DiffViewTranslations> | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "notify",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<DiffViewSchema>(this, diffViewMachine, () => ({ model: this.model, view: this.view, contextLines: this.contextLines, expanded: this.expanded, defaultExpanded: this.defaultExpanded, size: this.size, translations: this.translations, onExpandedChange: this.notify, }))"
+            },
+            {
+              "kind": "field",
+              "name": "#painted",
+              "privacy": "private",
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "上一次铺进 body 的那份行序，用来判断要不要重铺。"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#paint",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "DiffViewApi"
+                  }
+                }
+              ],
+              "description": "把行序铺进 body。\n内容没变就不重铺——每次更新都重建节点会把用户正在拖的选区弄没。"
+            }
+          ],
+          "events": [
+            {
+              "description": "展开集合变化；detail 为 `{ expanded: string[] }`",
+              "name": "expanded-change",
+              "type": {
+                "text": "DiffViewExpandedChangeDetails"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "DiffViewMode | undefined"
+              },
+              "description": "unified（默认）或 split",
+              "name": "view",
+              "fieldName": "view"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "变更两侧各露几行上下文，其余折起来",
+              "name": "context-lines",
+              "fieldName": "contextLines"
+            },
+            {
+              "type": {
+                "text": "Size | undefined"
+              },
+              "description": "尺寸：sm / md / lg",
+              "name": "size",
+              "fieldName": "size"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-diff-view",
+          "customElement": true,
+          "cssProperties": [
+            {
+              "name": "--xh-diff-view-added-bg"
+            },
+            {
+              "name": "--xh-diff-view-added-fg"
+            },
+            {
+              "name": "--xh-diff-view-bg"
+            },
+            {
+              "name": "--xh-diff-view-border"
+            },
+            {
+              "name": "--xh-diff-view-comment-fg"
+            },
+            {
+              "name": "--xh-diff-view-empty-bg"
+            },
+            {
+              "name": "--xh-diff-view-empty-fg"
+            },
+            {
+              "name": "--xh-diff-view-font"
+            },
+            {
+              "name": "--xh-diff-view-font-size"
+            },
+            {
+              "name": "--xh-diff-view-gap-bg"
+            },
+            {
+              "name": "--xh-diff-view-gap-bg-hover"
+            },
+            {
+              "name": "--xh-diff-view-gap-fg"
+            },
+            {
+              "name": "--xh-diff-view-gutter"
+            },
+            {
+              "name": "--xh-diff-view-header-fg"
+            },
+            {
+              "name": "--xh-diff-view-header-font-size"
+            },
+            {
+              "name": "--xh-diff-view-header-gap"
+            },
+            {
+              "name": "--xh-diff-view-keyword-fg"
+            },
+            {
+              "name": "--xh-diff-view-keyword-weight"
+            },
+            {
+              "name": "--xh-diff-view-line-height"
+            },
+            {
+              "name": "--xh-diff-view-max-h"
+            },
+            {
+              "name": "--xh-diff-view-number-fg"
+            },
+            {
+              "name": "--xh-diff-view-number-token-fg"
+            },
+            {
+              "name": "--xh-diff-view-punctuation-fg"
+            },
+            {
+              "name": "--xh-diff-view-px"
+            },
+            {
+              "name": "--xh-diff-view-py"
+            },
+            {
+              "name": "--xh-diff-view-radius"
+            },
+            {
+              "name": "--xh-diff-view-removed-bg"
+            },
+            {
+              "name": "--xh-diff-view-removed-fg"
+            },
+            {
+              "name": "--xh-diff-view-string-fg"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhDiffViewElement",
+          "declaration": {
+            "name": "XhDiffViewElement",
+            "module": "src/elements/diff-view.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/download-trigger.ts",
       "declarations": [
         {

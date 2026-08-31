@@ -539,6 +539,10 @@
           "name": "代码视图"
         },
         {
+          "id": "diff-view",
+          "name": "差异视图"
+        },
+        {
           "id": "composer",
           "name": "消息编辑器"
         },
