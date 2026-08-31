@@ -1,0 +1,27 @@
+<!-- 基础用法 | 块列表由宿主用流式渲染器得到，组件只按 key 铺开、按种类分流 -->
+<xh-markdown-stream id="markdown-stream-basic" style="inline-size: 100%">
+  <div data-xh-part="root">
+    <div data-xh-part="content"></div>
+  </div>
+</xh-markdown-stream>
+
+<script type="module">
+  // 真实应用里这份数组来自 @xihan-ui/markdown 的 createStreamRenderer().render(全文)；
+  // 这份示例是裸 HTML，没有打包器，所以把渲染器的产出直接写在这里
+  const stream = document.getElementById("markdown-stream-basic");
+  stream.blocks = [
+    { key: "0:a", kind: "markdown", html: "<h2>结论</h2>", complete: true },
+    {
+      key: "1:b",
+      kind: "markdown",
+      html: "<p>先给<strong>结论</strong>：这段正文是一次性渲好的。</p>",
+      complete: true,
+    },
+    {
+      key: "2:c",
+      kind: "markdown",
+      html: "<ul>\n<li>块列表由渲染器产出</li>\n<li>每块带一个稳定的 key</li>\n</ul>",
+      complete: true,
+    },
+  ];
+</script>

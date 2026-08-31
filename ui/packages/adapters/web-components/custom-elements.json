@@ -21822,6 +21822,208 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/markdown-stream.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-markdown-stream>` —— Light-DOM 行为宿主，无状态机：wire 时算出 connectMarkdownStream\n的产出，打到作者写的角色节点上，并把块列表铺进 content 角色节点。\n\n块是数据铺出来的，作者写不出 N 个节点，故 content 部件的内容由本元素接管。\n**逐 key 比对复用**：key 没变的块只改内容不重建节点——整表重铺会把已定型的块连同用户\n正在拖的选区一起弄没，而稳定 key 正是为了避免这件事。\n\nmarkdown 块铺已消毒的 html；代码块与公式块只铺原文，要交给代码组件或公式引擎的话\n由作者监听块节点自行接管。",
+          "name": "XhMarkdownStreamElement",
+          "cssParts": [
+            {
+              "description": "外壳，承载 data-state / data-streaming",
+              "name": "root"
+            },
+            {
+              "description": "正文包裹层，内容由本元素铺",
+              "name": "content"
+            },
+            {
+              "description": "一个顶层块，承载 data-kind / data-live / data-complete",
+              "name": "block"
+            },
+            {
+              "description": "视觉隐藏的原子播报区，一段回复写完时念一句",
+              "name": "live-region"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: markdownStreamAnatomy, meta: markdownStreamMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "streaming",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "streaming"
+            },
+            {
+              "kind": "field",
+              "name": "announce",
+              "privacy": "public",
+              "type": {
+                "text": "MarkdownStreamProps['announce'] | undefined"
+              },
+              "attribute": "announce"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "MarkdownStreamProps['size'] | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "blocks",
+              "privacy": "public",
+              "type": {
+                "text": "readonly MarkdownBlock[] | undefined"
+              },
+              "description": "已渲染好的块列表，由宿主调 createStreamRenderer().render() 得到。"
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "Partial<MarkdownStreamTranslations> | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "#nodes",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new Map<string, HTMLElement>()",
+              "description": "上一轮铺出来的块节点，按 key 索引。"
+            },
+            {
+              "kind": "method",
+              "name": "viewProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "MarkdownStreamProps"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#paint",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "MarkdownStreamApi"
+                  }
+                }
+              ],
+              "description": "逐 key 比对铺块：key 相同复用节点、只更新内容，key 消失的移除，新 key 追加。"
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "MarkdownStreamProps['announce'] | undefined"
+              },
+              "description": "播报档位：off（默认）或 polite",
+              "name": "announce",
+              "fieldName": "announce"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "正文是否仍在增长，只落 data-streaming",
+              "name": "streaming",
+              "fieldName": "streaming"
+            },
+            {
+              "type": {
+                "text": "MarkdownStreamProps['size'] | undefined"
+              },
+              "description": "尺寸：sm / md / lg",
+              "name": "size",
+              "fieldName": "size"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-markdown-stream",
+          "customElement": true,
+          "cssProperties": [
+            {
+              "name": "--xh-markdown-stream-caret-bg"
+            },
+            {
+              "name": "--xh-markdown-stream-caret-duration"
+            },
+            {
+              "name": "--xh-markdown-stream-caret-h"
+            },
+            {
+              "name": "--xh-markdown-stream-caret-shift"
+            },
+            {
+              "name": "--xh-markdown-stream-caret-w"
+            },
+            {
+              "name": "--xh-markdown-stream-fg"
+            },
+            {
+              "name": "--xh-markdown-stream-font-size"
+            },
+            {
+              "name": "--xh-markdown-stream-gap"
+            },
+            {
+              "name": "--xh-markdown-stream-mono"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhMarkdownStreamElement",
+          "declaration": {
+            "name": "XhMarkdownStreamElement",
+            "module": "src/elements/markdown-stream.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/marquee.ts",
       "declarations": [
         {

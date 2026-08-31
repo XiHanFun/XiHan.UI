@@ -93,6 +93,7 @@
     "./listbox.css": "./css/listbox.css",
     "./loading-bar.css": "./css/loading-bar.css",
     "./log.css": "./css/log.css",
+    "./markdown-stream.css": "./css/markdown-stream.css",
     "./marquee.css": "./css/marquee.css",
     "./masonry.css": "./css/masonry.css",
     "./mention.css": "./css/mention.css",

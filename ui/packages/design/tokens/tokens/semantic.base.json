@@ -421,6 +421,13 @@
       "$value": "640ms"
     }
   },
+  "caret": {
+    "$description": "文本光标闪一次的周期。减弱动效由皮肤停掉动画，光标停在实心。",
+    "duration": {
+      "$type": "duration",
+      "$value": "1000ms"
+    }
+  },
   "shimmer": {
     "$description": "骨架屏微光扫过一遍的周期。减弱动效由皮肤停掉动画。",
     "duration": {

@@ -63,6 +63,7 @@ import type { ListTranslations } from '../list/list.types'
 import type { ListboxTranslations } from '../listbox/listbox.types'
 import type { LoadingBarTranslations } from '../loading-bar/loading-bar.types'
 import type { LogTranslations } from '../log/log.types'
+import type { MarkdownStreamTranslations } from '../markdown-stream/markdown-stream.types'
 import type { MarqueeTranslations } from '../marquee/marquee.types'
 import type { MasonryTranslations } from '../masonry/masonry.types'
 import type { MentionTranslations } from '../mention/mention.types'
@@ -188,6 +189,7 @@ export interface XhTranslationOverrides {
   'listbox'?: Partial<ListboxTranslations>
   'loading-bar'?: Partial<LoadingBarTranslations>
   'log'?: Partial<LogTranslations>
+  'markdown-stream'?: Partial<MarkdownStreamTranslations>
   'marquee'?: Partial<MarqueeTranslations>
   'masonry'?: Partial<MasonryTranslations>
   'mention'?: Partial<MentionTranslations>

@@ -539,6 +539,10 @@
           "name": "消息编辑器"
         },
         {
+          "id": "markdown-stream",
+          "name": "流式正文"
+        },
+        {
           "id": "thread",
           "name": "会话线程"
         }

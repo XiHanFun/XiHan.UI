@@ -1,0 +1,38 @@
+<!-- 代码块交给代码视图 | markdown 块铺 html，代码块拿 source 交出去——照 html 渲会让同一段代码出现两次 -->
+<xh-markdown-stream id="markdown-stream-code" style="inline-size: 100%">
+  <div data-xh-part="root">
+    <div data-xh-part="content"></div>
+  </div>
+</xh-markdown-stream>
+
+<script type="module">
+  // 元素只把代码块的原文当正文铺出来；要交给 <xh-code-view> 就自己看住那个块节点。
+  // 判据用 data-kind，它是元素打在块上的
+  const stream = document.getElementById("markdown-stream-code");
+  const code = [
+    "export function clamp(n: number, min: number, max: number) {",
+    "  return Math.min(Math.max(n, min), max)",
+    "}",
+  ].join("\n");
+
+  stream.blocks = [
+    { key: "0:a", kind: "markdown", html: "<p>先看这段实现：</p>", complete: true },
+    { key: "1:b", kind: "code", html: "", complete: true, lang: "typescript", source: code },
+    { key: "2:c", kind: "markdown", html: "<p>两端都夹住，越界的输入不会漏过去。</p>", complete: true },
+  ];
+
+  // 元素铺完块之后把代码那一格换成 <xh-code-view>
+  requestAnimationFrame(() => {
+    const slot = stream.querySelector('[data-xh-part="block"][data-kind="code"]');
+    if (!slot) return;
+    slot.textContent = "";
+    const view = document.createElement("xh-code-view");
+    view.setAttribute("code", code);
+    view.setAttribute("code-lang", "typescript");
+    view.setAttribute("complete", "");
+    view.setAttribute("line-numbers", "");
+    view.innerHTML =
+      '<div data-xh-part="root"><pre data-xh-part="pre"><code data-xh-part="code"></code></pre></div>';
+    slot.appendChild(view);
+  });
+</script>

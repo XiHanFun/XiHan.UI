@@ -127,6 +127,8 @@ export { clampLoadingBarValue, connectLoadingBar, isLoadingBarDeterminate, LOADI
 export type { LoadingBarApi, LoadingBarPhase, LoadingBarSchema, LoadingBarTranslations, LoadingBarValueChangeDetails } from './loading-bar'
 export { connectLog, logAnatomy, logKeyboard, logMachine, logMeta } from './log'
 export type { LogApi, LogProps, LogRefs, LogSchema, LogStickChangeDetails, LogTranslations } from './log'
+export { connectMarkdownStream, isLiveMarkdownBlock, MARKDOWN_STREAM_LIVE_KEY, markdownBlockHtml, markdownStreamAnatomy, markdownStreamKeyboard, markdownStreamMeta } from './markdown-stream'
+export type { MarkdownBlock, MarkdownStreamApi, MarkdownStreamProps, MarkdownStreamTranslations } from './markdown-stream'
 export { connectMarquee, marqueeAnatomy, marqueeKeyboard, marqueeMeta } from './marquee'
 export type { MarqueeApi, MarqueeDirection, MarqueeProps, MarqueeTranslations } from './marquee'
 export { connectMasonry, distributeMasonry, masonryAnatomy, masonryItemQuery, masonryKeyboard, masonryMeta, resolveMasonryColumns } from './masonry'

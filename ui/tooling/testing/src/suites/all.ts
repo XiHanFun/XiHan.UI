@@ -60,6 +60,7 @@ import { listSuite } from './list.suite'
 import { listboxSuite } from './listbox.suite'
 import { loadingBarSuite } from './loading-bar.suite'
 import { logSuite } from './log.suite'
+import { markdownStreamSuite } from './markdown-stream.suite'
 import { marqueeSuite } from './marquee.suite'
 import { masonrySuite } from './masonry.suite'
 import { mentionSuite } from './mention.suite'
@@ -185,6 +186,7 @@ export const allSuites: readonly ConformanceSuite[] = [
   listboxSuite,
   loadingBarSuite,
   logSuite,
+  markdownStreamSuite,
   marqueeSuite,
   masonrySuite,
   mentionSuite,
