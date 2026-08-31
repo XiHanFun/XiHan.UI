@@ -38,6 +38,7 @@ const EXEMPT = {
   'navigation-menu content': '横排导航面板，内容分栏铺开，纵向不滚',
   'tour content': '引导卡片不是浮层菜单，卡片文案有多长就多高',
   'code-block pre': '代码块滚的是横向长行，纵向由代码行数决定，截断会把代码读断',
+  'code-view pre': '同 code-block：纵向高度由行数算出来写进内联样式，折叠时夹到 clamp 行，不是预设的档',
   'floating-panel body': '面板高度由用户拖出来、存在机器里，不是预设的档',
   'heatmap root': '热力图滚的是横向的周列，纵向就是七行格子的高度',
   'drawer content': '贴边抽屉的厚度走 --xh-overlay-drawer-w-* 档，不是滚动面高度',

@@ -638,6 +638,10 @@
       "$type": "number",
       "$value": "{font-weight.regular}"
     },
+    "code-leading": {
+      "$type": "dimension",
+      "$value": "1.5rem"
+    },
     "secondary-size": {
       "$type": "dimension",
       "$value": "{font-size.sm}"

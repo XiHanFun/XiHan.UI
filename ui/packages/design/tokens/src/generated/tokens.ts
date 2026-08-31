@@ -240,6 +240,7 @@ export const tokens = {
   "--xh-text-body-size": "var(--xh-font-size-md)",
   "--xh-text-body-leading": "var(--xh-leading-normal)",
   "--xh-text-body-weight": "var(--xh-font-weight-regular)",
+  "--xh-text-code-leading": "1.5rem",
   "--xh-text-secondary-size": "var(--xh-font-size-sm)",
   "--xh-text-heading-3-size": "var(--xh-font-size-xl)",
   "--xh-text-heading-3-weight": "var(--xh-font-weight-semibold)",

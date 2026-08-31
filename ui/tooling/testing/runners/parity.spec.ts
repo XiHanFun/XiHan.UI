@@ -229,6 +229,7 @@ const EXCLUDED: Readonly<Record<string, string>> = {
   'checkbox': 'WC 侧 indicator 由作者手写，Vue 版组件内部渲染，fixture 不同构',
   'checkbox-group': '同上，且集合条目的禁用声明经 aria-disabled 改写',
   'code-block': '语言标注的入口名两侧永久不同（WC 必须叫 code-lang，lang 是 HTML 全局属性）',
+  'code-view': '同 code-block：语言标注的入口名两侧永久不同（WC 必须叫 code-lang，lang 是 HTML 全局属性）',
   'color-picker': '真实分歧：挂载时焦点落点不同（Vue 在 area-thumb，WC 在 channel-input），11/15 条同一根因',
   'combobox': '两端作者侧的禁用声明 API 不同：Vue 是组件 prop（被消费、不落 DOM），WC 要作者写 aria-disabled，逐帧比对不适用',
   'composer': '真实分歧：stop 是全仓唯一无载荷的语义事件，Vue 发 undefined、WC 发 null',

@@ -1,0 +1,256 @@
+@layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='code-view'] {
+    --xh-code-view-skin: 1;
+  }
+
+  /* overflow: hidden 让内部 <pre> 的滚动内容沿圆角收边；不设 display，排布由作者决定 */
+  [data-scope='code-view'][data-part='root'] {
+    overflow: hidden;
+    border-radius: var(--xh-code-view-radius, var(--xh-shape-surface));
+    background: var(--xh-code-view-bg, var(--xh-bg-subtle));
+  }
+
+  [data-scope='code-view'][data-part='header'] {
+    display: flex;
+    align-items: center;
+    gap: var(--xh-code-view-header-gap, var(--xh-space-2));
+    padding-inline: var(--xh-code-view-header-px, var(--xh-space-3));
+    padding-block: var(--xh-code-view-header-py, var(--xh-space-2));
+    border-block-end: var(--xh-stroke-thin) solid var(--xh-code-view-header-border, var(--xh-border-subtle));
+    color: var(--xh-code-view-header-fg, var(--xh-fg-muted));
+    font-size: var(--xh-code-view-header-font-size, var(--xh-text-secondary-size));
+    line-height: var(--xh-leading-tight);
+  }
+
+  /* 上面声明的 display 会盖掉 UA 的 [hidden]{display:none}，这里补回 */
+  [data-scope='code-view'][data-part='header'][hidden] {
+    display: none;
+  }
+
+  /* 文件名占满剩余宽度并单行截断：长路径不该把语言角标挤出去 */
+  [data-scope='code-view'][data-part='filename'] {
+    display: block;
+    overflow: hidden;
+    flex: 1 1 auto;
+    color: var(--xh-code-view-filename-fg, var(--xh-fg-default));
+    font-family: var(--xh-code-view-font, var(--xh-font-family-mono));
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  [data-scope='code-view'][data-part='filename'][hidden] {
+    display: none;
+  }
+
+  /* user-select: none 让它不被框选带走 */
+  [data-scope='code-view'][data-part='lang-label'] {
+    display: block;
+    flex: 0 0 auto;
+    color: var(--xh-code-view-label-fg, var(--xh-fg-subtle));
+    font-size: var(--xh-code-view-label-font-size, var(--xh-text-caption-size));
+    line-height: var(--xh-leading-none);
+    user-select: none;
+  }
+
+  [data-scope='code-view'][data-part='lang-label'][hidden] {
+    display: none;
+  }
+
+  /* margin: 0 去掉 UA 给 <pre> 的默认外边距。
+     --xh-code-view-line-height 的兜底须与连接层内联 min-block-size 用的一致，
+     且因参与 calc 乘法必须是长度而非无单位倍数。 */
+  [data-scope='code-view'][data-part='pre'] {
+    /* 逻辑属性 overflow-inline 尚无可用实现，写物理轴 */
+    overflow-x: auto;
+    padding-block: var(--xh-code-view-py, var(--xh-space-3));
+    margin: 0;
+    line-height: var(--xh-code-view-line-height, var(--xh-text-code-leading));
+  }
+
+  /* <pre> 带 tabindex=0，需要焦点环；偏移取负画在内侧，避免被 root 的 overflow: hidden 裁掉 */
+  [data-scope='code-view'][data-part='pre']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: calc(-1 * var(--xh-ring-width));
+  }
+
+  /* 折叠时 <pre> 的高度被连接层写死，超出部分沿圆角收边 */
+  [data-scope='code-view'][data-part='root'][data-clamped] [data-part='pre'] {
+    overflow-y: hidden;
+  }
+
+  [data-scope='code-view'][data-part='code'] {
+    display: block;
+    font-family: var(--xh-code-view-font, var(--xh-font-family-mono));
+  }
+
+  [data-scope='code-view'][data-part='code'][hidden] {
+    display: none;
+  }
+
+  /* 一行是一个块：行号槽与正文并排，空行也要占满一行高 */
+  [data-scope='code-view'][data-part='line'] {
+    display: flex;
+    min-block-size: var(--xh-code-view-line-height, var(--xh-text-code-leading));
+    padding-inline-end: var(--xh-code-view-px, var(--xh-space-3));
+  }
+
+  [data-scope='code-view'][data-part='line'][hidden] {
+    display: none;
+  }
+
+  [data-scope='code-view'][data-part='line'][data-highlighted] {
+    background: var(--xh-code-view-highlight-bg, var(--xh-bg-brand-subtle));
+    box-shadow: inset var(--xh-code-view-highlight-bar, var(--xh-stroke-thick)) 0 0 0 var(--xh-code-view-highlight-fg, var(--xh-bg-brand));
+  }
+
+  /* 行号是画上去的不是写上去的：复制代码不带它，读屏也不逐行念数字。
+     节点本身由适配器按 lineNumbers 决定渲不渲，槽宽按 root 上的位数枚举定，见下方 data-digits 各档。 */
+  [data-scope='code-view'][data-part='line-number'] {
+    display: block;
+    box-sizing: content-box;
+    flex: 0 0 auto;
+    padding-inline: var(--xh-code-view-px, var(--xh-space-3));
+    color: var(--xh-code-view-number-fg, var(--xh-fg-subtle));
+    inline-size: var(--xh-_code-view-gutter);
+    text-align: end;
+    user-select: none;
+  }
+
+  [data-scope='code-view'][data-part='line-number']::before {
+    content: attr(data-line-number);
+  }
+
+  [data-scope='code-view'][data-part='line-number'][hidden] {
+    display: none;
+  }
+
+  /* white-space: pre 保留缩进不自动换行，长行改为横向滚动 */
+  [data-scope='code-view'][data-part='line-content'] {
+    display: block;
+    flex: 1 1 auto;
+    white-space: pre;
+  }
+
+  [data-scope='code-view'][data-part='line-content'][hidden] {
+    display: none;
+  }
+
+  /* 开了换行：pre-wrap 仍保留缩进与连续空白，只是允许行尾折下来；
+     anywhere 让没有空格的长串（url、base64）也能断，否则照样撑出横向滚动 */
+  [data-scope='code-view'][data-part='code'][data-wrap] [data-part='line-content'] {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+
+  /* 没开行号时正文自带左内衬；开了行号则由行号槽的内衬顶开 */
+  [data-scope='code-view'][data-part='root']:not([data-line-numbers]) [data-part='line-content'] {
+    padding-inline-start: var(--xh-code-view-px, var(--xh-space-3));
+  }
+
+  /* 行号槽宽按位数分档：连接层写不了 CSS 自定义属性，只能发 data-digits 让这里自己设 */
+  [data-scope='code-view'][data-part='root'] {
+    --xh-_code-view-gutter: 1ch;
+  }
+
+  [data-scope='code-view'][data-part='root'][data-digits='2'] {
+    --xh-_code-view-gutter: 2ch;
+  }
+
+  [data-scope='code-view'][data-part='root'][data-digits='3'] {
+    --xh-_code-view-gutter: 3ch;
+  }
+
+  [data-scope='code-view'][data-part='root'][data-digits='4'] {
+    --xh-_code-view-gutter: 4ch;
+  }
+
+  [data-scope='code-view'][data-part='root'][data-digits='5'] {
+    --xh-_code-view-gutter: 5ch;
+  }
+
+  [data-scope='code-view'][data-part='root'][data-digits='6'] {
+    --xh-_code-view-gutter: 6ch;
+  }
+
+  [data-scope='code-view'][data-part='root'][data-digits='7'] {
+    --xh-_code-view-gutter: 7ch;
+  }
+
+  [data-scope='code-view'][data-part='fold-trigger'] {
+    display: block;
+    padding-inline: var(--xh-code-view-px, var(--xh-space-3));
+    padding-block: var(--xh-code-view-fold-py, var(--xh-space-2));
+    border: 0;
+    border-block-start: var(--xh-stroke-thin) solid var(--xh-code-view-header-border, var(--xh-border-subtle));
+    background: none;
+    color: var(--xh-code-view-fold-fg, var(--xh-fg-muted));
+    font: inherit;
+    font-size: var(--xh-code-view-header-font-size, var(--xh-text-secondary-size));
+    inline-size: 100%;
+    text-align: start;
+    cursor: pointer;
+  }
+
+  [data-scope='code-view'][data-part='fold-trigger'][hidden] {
+    display: none;
+  }
+
+  [data-scope='code-view'][data-part='fold-trigger']:hover {
+    background: var(--xh-code-view-fold-bg-hover, var(--xh-bg-subtle-hover));
+  }
+
+  [data-scope='code-view'][data-part='fold-trigger']:active {
+    scale: var(--xh-motion-scale-press);
+  }
+
+  [data-scope='code-view'][data-part='fold-trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: calc(-1 * var(--xh-ring-width));
+  }
+
+  /* 尺寸档只改字号与行高，行号槽随字号一起走 */
+  [data-scope='code-view'][data-part='root'][data-size='sm'] {
+    font-size: var(--xh-control-font-sm);
+  }
+
+  [data-scope='code-view'][data-part='root'][data-size='md'] {
+    font-size: var(--xh-control-font-md);
+  }
+
+  [data-scope='code-view'][data-part='root'][data-size='lg'] {
+    font-size: var(--xh-control-font-lg);
+  }
+
+  /* 语法配色：注释与标点复用既有语义色，三种真需要色相的走 --xh-syntax-* 语法令牌（随主题明暗切换）。 */
+  [data-scope='code-view'][data-part='root'] {
+    --xh-code-view-comment-fg: var(--xh-fg-muted);
+    --xh-code-view-punctuation-fg: var(--xh-fg-subtle);
+    --xh-code-view-string-fg: var(--xh-syntax-string);
+    --xh-code-view-number-fg: var(--xh-syntax-number);
+    --xh-code-view-keyword-fg: var(--xh-syntax-keyword);
+  }
+
+  /* 记号本身不带任何布局，只上色：它是行内片段，多一点盒模型都会破坏对齐 */
+  [data-scope='code-view'][data-part='token'][data-kind='comment'] {
+    color: var(--xh-code-view-comment-fg);
+    font-style: italic;
+  }
+
+  [data-scope='code-view'][data-part='token'][data-kind='string'] {
+    color: var(--xh-code-view-string-fg);
+  }
+
+  [data-scope='code-view'][data-part='token'][data-kind='number'] {
+    color: var(--xh-code-view-number-fg);
+  }
+
+  [data-scope='code-view'][data-part='token'][data-kind='keyword'] {
+    color: var(--xh-code-view-keyword-fg);
+    font-weight: var(--xh-code-view-keyword-weight, var(--xh-font-weight-semibold));
+  }
+
+  [data-scope='code-view'][data-part='token'][data-kind='punctuation'] {
+    color: var(--xh-code-view-punctuation-fg);
+  }
+}

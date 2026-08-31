@@ -48,6 +48,7 @@
     "./checkbox.css": "./css/checkbox.css",
     "./clipboard.css": "./css/clipboard.css",
     "./code-block.css": "./css/code-block.css",
+    "./code-view.css": "./css/code-view.css",
     "./collapsible.css": "./css/collapsible.css",
     "./color-picker.css": "./css/color-picker.css",
     "./combobox.css": "./css/combobox.css",

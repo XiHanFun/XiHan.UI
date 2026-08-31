@@ -21,6 +21,7 @@ import { XhCheckboxElement } from './elements/checkbox'
 import { XhCheckboxGroupElement } from './elements/checkbox-group'
 import { XhClipboardElement } from './elements/clipboard'
 import { XhCodeBlockElement } from './elements/code-block'
+import { XhCodeViewElement } from './elements/code-view'
 import { XhCollapsibleElement } from './elements/collapsible'
 import { XhColorPickerElement } from './elements/color-picker'
 import { XhComboboxElement } from './elements/combobox'
@@ -186,6 +187,7 @@ export function defineXhElements(): void {
   defineElement('xh-clipboard', XhClipboardElement, VERSION)
   defineElement('xh-config', XhConfigElement, VERSION)
   defineElement('xh-code-block', XhCodeBlockElement, VERSION)
+  defineElement('xh-code-view', XhCodeViewElement, VERSION)
   defineElement('xh-collapsible', XhCollapsibleElement, VERSION)
   defineElement('xh-color-picker', XhColorPickerElement, VERSION)
   defineElement('xh-combobox', XhComboboxElement, VERSION)
@@ -279,6 +281,7 @@ export {
   XhCheckboxGroupElement,
   XhClipboardElement,
   XhCodeBlockElement,
+  XhCodeViewElement,
   XhCollapsibleElement,
   XhColorPickerElement,
   XhComboboxElement,

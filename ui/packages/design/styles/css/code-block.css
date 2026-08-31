@@ -35,7 +35,7 @@
     overflow-x: auto;
     padding: var(--xh-code-block-p, var(--xh-space-3));
     margin: 0;
-    line-height: var(--xh-code-block-line-height, 1.5rem);
+    line-height: var(--xh-code-block-line-height, var(--xh-text-code-leading));
   }
 
   /* <pre> 带 tabindex=0，需要焦点环；偏移取负画在内侧，避免被 root 的 overflow: hidden 裁掉 */

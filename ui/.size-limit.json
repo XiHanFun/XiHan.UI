@@ -87,13 +87,13 @@
     "name": "headless",
     "path": "packages/engine/headless/dist/index.js",
     "gzip": true,
-    "limit": "237.4 kB"
+    "limit": "240 kB"
   },
   {
     "name": "vue",
     "path": "packages/adapters/vue/dist/index.js",
     "gzip": true,
-    "limit": "272.9 kB",
+    "limit": "276 kB",
     "ignore": [
       "vue"
     ]
@@ -135,7 +135,7 @@
     "name": "web-components/define",
     "path": "packages/adapters/web-components/dist/define.js",
     "gzip": true,
-    "limit": "262.8 kB"
+    "limit": "266 kB"
   },
   {
     "name": "web-components/backgrounds",
@@ -147,7 +147,7 @@
     "name": "styles",
     "path": "packages/design/styles/css/*.css",
     "gzip": true,
-    "limit": "125.4 kB"
+    "limit": "127.5 kB"
   },
   {
     "name": "icons：只用 CheckIcon",

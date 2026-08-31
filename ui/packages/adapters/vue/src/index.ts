@@ -141,6 +141,18 @@ export { useClipboard } from './components/clipboard/use-clipboard'
 export type { ClipboardContext } from './components/clipboard/use-clipboard'
 export { XhCodeBlock } from './components/code-block/code-block'
 export {
+  XhCodeViewCode,
+  XhCodeViewFilename,
+  XhCodeViewFoldTrigger,
+  XhCodeViewHeader,
+  XhCodeViewLangLabel,
+  XhCodeViewPre,
+  XhCodeViewRoot,
+} from './components/code-view/code-view'
+export type { CodeViewLineSlotProps, CodeViewRootSlotProps } from './components/code-view/code-view'
+export { useCodeView } from './components/code-view/use-code-view'
+export type { CodeViewContext } from './components/code-view/use-code-view'
+export {
   XhCollapsibleContent,
   XhCollapsibleRoot,
   XhCollapsibleTrigger,

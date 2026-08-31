@@ -92,7 +92,6 @@ for (const [key, comps] of groups) {
 /** 后缀相同但概念不同的，逐条写明理由；名单之外一律受管。 */
 const DISTINCT = {
   'column-min-w': '级联的列是一列选项文字，时间选择器的列是两位数字',
-  'line-height': 'code-block 的行距与连接层虚拟行高绑死，log 是紧排的日志行',
   // 同名不同面：看图的关闭钮压在暗遮罩上，只能往固定的深色兑；标签的移除钮在标签里面，
   // 实心 / 淡底 / 描边三种形态下底色各不相同，只有从 currentColor 兑才三种都压得住
   'close-bg-hover': 'image-viewer 的关闭钮压在暗遮罩上，tag 的移除钮压在标签自己的底上',

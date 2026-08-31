@@ -46,7 +46,7 @@ export function connectCodeBlock<T extends PropTypes>(
       'data-complete': complete,
       'data-wrap': dataAttr(!!props.wrap),
       // 按行数预撑高度；写成 style 而非 CSS 自定义属性，WC 侧的属性铺设写不进 --* 变量
-      'style': { minBlockSize: `calc(var(--xh-code-block-line-height, 1.5rem) * ${lineCount})` },
+      'style': { minBlockSize: `calc(var(--xh-code-block-line-height, var(--xh-text-code-leading)) * ${lineCount})` },
     }),
 
     getCodeProps: () => normalize.element({

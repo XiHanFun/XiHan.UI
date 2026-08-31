@@ -1,0 +1,38 @@
+<!-- 基础用法 | 代码原文由宿主给，组件切出逐行结构并铺记号；渲了文件名它就成为代码块的可访问名 -->
+<!-- complete 表示这段代码已经写完，可以放心着色 -->
+<xh-code-view
+  code="export function createTicker(intervalTime: number) {
+  let handle = 0
+  return {
+    start(onTick: () => void) {
+      handle = setInterval(onTick, intervalTime)
+    },
+    stop() {
+      clearInterval(handle)
+    },
+  }
+}"
+  code-lang="typescript"
+  filename="ticker.ts"
+  complete
+  style="inline-size: 100%"
+>
+  <div data-xh-part="root">
+    <div data-xh-part="header">
+      <span data-xh-part="filename">ticker.ts</span>
+      <span data-xh-part="lang-label">typescript</span>
+    </div>
+    <!-- 行由元素铺；这里写的原文是 JS 到达之前的样子 -->
+    <pre data-xh-part="pre"><code data-xh-part="code">export function createTicker(intervalTime: number) {
+  let handle = 0
+  return {
+    start(onTick: () => void) {
+      handle = setInterval(onTick, intervalTime)
+    },
+    stop() {
+      clearInterval(handle)
+    },
+  }
+}</code></pre>
+  </div>
+</xh-code-view>
