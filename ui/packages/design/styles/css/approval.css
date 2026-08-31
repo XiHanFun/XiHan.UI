@@ -1,11 +1,44 @@
+@layer xihan.motion {
+  /* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
+     动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
+
+  /* 幅度走令牌，减弱动效时由令牌层归零；位移用独立属性而非 transform 简写 */
+  @keyframes xh-approval-in {
+    from {
+      opacity: 0;
+      translate: 0 var(--xh-motion-distance-md);
+    }
+
+    to {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+
+  @keyframes xh-approval-result-in {
+    from {
+      opacity: 0;
+      scale: var(--xh-motion-scale-enter);
+    }
+
+    to {
+      opacity: 1;
+      scale: 1;
+    }
+  }
+}
+
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
   [data-scope='approval'] {
     --xh-approval-skin: 1;
   }
 
-  /* 一块要人做决定的表面：默认按警示语气画描边，判定落定后退回中性 */
+  /* 一块要人做决定的表面：浮起一档、按语气画描边，判定落定后描边退回中性 */
   [data-scope='approval'][data-part='root'] {
+    /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+    --xh-icon-size: var(--xh-approval-icon-size, var(--xh-glyph-size-text));
+
     display: flex;
     flex-direction: column;
     gap: var(--xh-approval-gap, var(--xh-space-3));
@@ -13,7 +46,9 @@
     border: var(--xh-stroke-thin) solid var(--xh-approval-border, var(--xh-_tone, var(--xh-border-strong)));
     border-radius: var(--xh-approval-radius, var(--xh-shape-surface));
     background: var(--xh-approval-bg, var(--xh-bg-surface));
+    box-shadow: var(--xh-approval-shadow, var(--xh-elevation-raised));
     transition: border-color var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+    animation: xh-approval-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
   /* 上面声明的 display 会盖掉 UA 的 [hidden]{display:none}，这里补回 */
@@ -78,7 +113,7 @@
   [data-scope='approval'][data-part='scope-item'] {
     display: flex;
     align-items: center;
-    gap: var(--xh-approval-scope-item-gap, var(--xh-space-2));
+    gap: var(--xh-approval-scope-item-gap, var(--xh-space-1_5));
     padding-inline: var(--xh-approval-scope-px, var(--xh-space-2));
     padding-block: var(--xh-approval-scope-py, var(--xh-space-1));
     border-radius: var(--xh-approval-scope-radius, var(--xh-shape-control));
@@ -120,11 +155,24 @@
     block-size: var(--xh-approval-indicator-size, var(--xh-control-indicator-size));
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='approval'][data-part='scope-indicator'][hidden] {
     display: none;
+  }
+
+  /* 没写内容就由皮肤画勾；作者往部件里塞了自己的图形，这条规则即不命中 */
+  [data-scope='approval'][data-part='scope-indicator']:empty::before {
+    content: '';
+    display: inline-block;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-check) center / contain no-repeat;
   }
 
   [data-scope='approval'][data-part='scope-indicator'][data-state='checked'] {
@@ -132,13 +180,58 @@
     background: var(--xh-approval-indicator-bg-checked, var(--xh-bg-brand));
   }
 
+  /* 没勾上时把勾隐去而不是撤掉：盒子留在原位，翻面时整行不跳 */
+  [data-scope='approval'][data-part='scope-indicator'][data-state='unchecked'] {
+    color: transparent;
+  }
+
+  /* 勾上的那条读起来更重一档 */
   [data-scope='approval'][data-part='scope-label'] {
     display: block;
     flex: 1 1 auto;
+    color: var(--xh-approval-scope-fg, var(--xh-fg-muted));
+  }
+
+  [data-scope='approval'][data-part='scope-item'][data-state='checked'] [data-part='scope-label'] {
+    color: var(--xh-approval-scope-fg-checked, var(--xh-fg-default));
+  }
+
+  /* 排在勾选档之后：禁用项无论勾没勾都是禁用色 */
+  [data-scope='approval'][data-part='scope-item'][data-disabled] [data-part='scope-label'] {
+    color: var(--xh-fg-disabled);
   }
 
   [data-scope='approval'][data-part='scope-label'][hidden] {
     display: none;
+  }
+
+  /* 备注：附在判定上的一句自由文本，占满整行 */
+  [data-scope='approval'][data-part='note'] {
+    display: block;
+    inline-size: 100%;
+    padding-inline: var(--xh-approval-note-px, var(--xh-space-2));
+    padding-block: var(--xh-approval-note-py, var(--xh-space-1_5));
+    border: var(--xh-stroke-thin) solid var(--xh-approval-note-border, var(--xh-border-control));
+    border-radius: var(--xh-approval-note-radius, var(--xh-shape-control));
+    background: var(--xh-approval-note-bg, var(--xh-bg-surface));
+    color: var(--xh-approval-note-fg, var(--xh-fg-default));
+    font-family: inherit;
+    font-size: var(--xh-approval-note-font-size, var(--xh-control-font-md));
+    transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='approval'][data-part='note'][hidden] {
+    display: none;
+  }
+
+  [data-scope='approval'][data-part='note']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: var(--xh-ring-offset);
+  }
+
+  [data-scope='approval'][data-part='note']:disabled {
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
   }
 
   /* 剩余时间：等宽数字，逐秒跳字时不左右晃 */
@@ -150,6 +243,44 @@
   }
 
   [data-scope='approval'][data-part='timer'][hidden] {
+    display: none;
+  }
+
+  /* 判定结果条：判过了才露出，语气随判定走 */
+  [data-scope='approval'][data-part='result'] {
+    display: inline-flex;
+    align-self: flex-start;
+    align-items: center;
+    gap: var(--xh-approval-result-gap, var(--xh-space-1_5));
+    padding-inline: var(--xh-approval-result-px, var(--xh-space-2));
+    padding-block: var(--xh-approval-result-py, var(--xh-space-1));
+    border-radius: var(--xh-approval-result-radius, var(--xh-shape-pill));
+    background: var(--xh-approval-result-bg, color-mix(in oklab, var(--xh-fg-success) 12%, var(--xh-bg-surface)));
+    color: var(--xh-approval-result-fg, var(--xh-fg-success));
+    font-size: var(--xh-approval-result-font-size, var(--xh-text-caption-size));
+    font-weight: var(--xh-approval-result-font-weight, var(--xh-text-label-weight));
+    animation: xh-approval-result-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  }
+
+  [data-scope='approval'][data-part='result'][hidden] {
+    display: none;
+  }
+
+  /* 超时按拒绝收口，两者同档：视觉上不该看着像第三种结果 */
+  [data-scope='approval'][data-part='result']:is([data-state='denied'], [data-state='expired']) {
+    background: var(--xh-approval-result-bg-denied, color-mix(in oklab, var(--xh-fg-danger) 12%, var(--xh-bg-surface)));
+    color: var(--xh-approval-result-fg-denied, var(--xh-fg-danger));
+  }
+
+  /* 动作行：两颗按钮靠右排，间距归库管 */
+  [data-scope='approval'][data-part='actions'] {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--xh-approval-actions-gap, var(--xh-space-2));
+  }
+
+  [data-scope='approval'][data-part='actions'][hidden] {
     display: none;
   }
 
@@ -180,9 +311,13 @@
     display: none;
   }
 
+  /* 内顶高光把实心块顶出一道边，与拒绝那颗的描边同一档厚度 */
   [data-scope='approval'][data-part='approve-trigger'] {
+    --xh-_approval-approve-highlight: inset 0 var(--xh-stroke-thin) 0 0 color-mix(in oklab, var(--xh-fg-on-brand) 14%, transparent);
+
     background: var(--xh-approval-approve-bg, var(--xh-_tone, var(--xh-bg-brand)));
     color: var(--xh-approval-approve-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
+    box-shadow: var(--xh-approval-approve-shadow, var(--xh-_approval-approve-highlight));
   }
 
   [data-scope='approval'][data-part='approve-trigger']:hover {
@@ -198,6 +333,7 @@
   [data-scope='approval'][data-part='approve-trigger'][aria-disabled='true'] {
     background: var(--xh-approval-approve-bg-off, var(--xh-bg-muted));
     color: var(--xh-fg-disabled);
+    box-shadow: none;
     cursor: not-allowed;
   }
 
@@ -227,13 +363,14 @@
     cursor: not-allowed;
   }
 
-  /* 尺寸档只改内衬、间距与按钮高度 */
+  /* 尺寸档改内衬、间距、按钮高度与行内字号 */
   [data-scope='approval'][data-part='root'][data-size='sm'] {
     --xh-approval-p: var(--xh-space-3);
     --xh-approval-gap: var(--xh-space-2);
     --xh-approval-action-h: var(--xh-control-h-sm);
     --xh-approval-action-px: var(--xh-control-px-sm);
     --xh-approval-scope-font-size: var(--xh-control-font-sm);
+    --xh-approval-note-font-size: var(--xh-control-font-sm);
   }
 
   [data-scope='approval'][data-part='root'][data-size='md'] {
@@ -242,6 +379,7 @@
     --xh-approval-action-h: var(--xh-control-h-md);
     --xh-approval-action-px: var(--xh-control-px-md);
     --xh-approval-scope-font-size: var(--xh-control-font-md);
+    --xh-approval-note-font-size: var(--xh-control-font-md);
   }
 
   [data-scope='approval'][data-part='root'][data-size='lg'] {
@@ -250,5 +388,6 @@
     --xh-approval-action-h: var(--xh-control-h-lg);
     --xh-approval-action-px: var(--xh-control-px-lg);
     --xh-approval-scope-font-size: var(--xh-control-font-lg);
+    --xh-approval-note-font-size: var(--xh-control-font-lg);
   }
 }

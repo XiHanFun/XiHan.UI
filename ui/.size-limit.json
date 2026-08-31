@@ -21,7 +21,7 @@
     "name": "tokens/tokens.css",
     "path": "packages/design/tokens/tokens.css",
     "gzip": true,
-    "limit": "3.9 kB"
+    "limit": "4 kB"
   },
   {
     "name": "behavior",
@@ -147,7 +147,7 @@
     "name": "styles",
     "path": "packages/design/styles/css/*.css",
     "gzip": true,
-    "limit": "133.5 kB"
+    "limit": "137.5 kB"
   },
   {
     "name": "icons：只用 CheckIcon",

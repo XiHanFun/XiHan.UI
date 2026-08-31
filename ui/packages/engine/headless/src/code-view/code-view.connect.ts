@@ -118,6 +118,9 @@ export function connectCodeView<T extends PropTypes>(
       ...parts.pre.attrs,
       ...labelling,
       'id': ids.pre,
+      // <pre> 自身没有角色，光挂 aria-labelledby 是无效属性；给它一个能承载可访问名的角色，
+      // 这个 Tab 停靠点才念得出文件名
+      'role': 'group',
       // 提供 Tab 停靠点，横向滚动交给浏览器
       'tabindex': 0,
       'data-complete': complete,

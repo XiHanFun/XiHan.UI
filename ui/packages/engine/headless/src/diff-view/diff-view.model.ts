@@ -13,7 +13,10 @@ export interface DiffLine {
   text: string
   /** 该行的着色片段，由 computeTextDiff 在建模时一次算好；不着色时缺席。 */
   tokens?: readonly CodeToken[]
-  /** 字级差异，本期不产出，位先留着。 */
+  /**
+   * 词级差异：把整行切成若干片段，`changed` 标出这一行里真正动过的那几段。
+   * 只在配对的一条删除行与一条新增行之间产出，整行改写与超长行不填。
+   */
   segments?: readonly { text: string, changed: boolean }[]
 }
 
@@ -42,6 +45,8 @@ export interface ComputeTextDiffOptions {
   maxLines?: number
   lang?: string
   highlighter?: HighlighterPort
+  /** 配对的删改行之间再算一次词级差异，默认开。 */
+  wordDiff?: boolean
 }
 
 /** 编辑脚本一条：保留、删除或新增。 */
@@ -144,10 +149,91 @@ function tokenizeLines(text: string, lang: string | undefined, highlighter: High
   return splitCodeLines(text, tokens).map(line => line.tokens)
 }
 
+/** 词级切分：连续空白、标识符、单个符号各成一份。 */
+const WORD = /\s+|[\w$]+|[^\s\w$]/g
+/** 单行跑词级差异的长度上限：再长就整行标变更，别在渲染前烧掉一个平方级。 */
+const MAX_WORD_DIFF_CHARS = 400
+/** 变更字符占比超过它就不填片段：整行都在高亮等于没有重点。 */
+const MAX_CHANGED_RATIO = 0.8
+
+/** 按一侧的编辑脚本铺出片段，相邻同态的合成一段。 */
+function wordSegments(edits: readonly Edit[], words: readonly string[], want: DiffChange): { text: string, changed: boolean }[] {
+  const useNew = want === 'added'
+  const out: { text: string, changed: boolean }[] = []
+  for (const edit of edits) {
+    if (edit.change !== 'context' && edit.change !== want)
+      continue
+    const text = words[useNew ? edit.newIndex : edit.oldIndex] ?? ''
+    if (text === '')
+      continue
+    const changed = edit.change === want
+    const last = out[out.length - 1]
+    if (last && last.changed === changed)
+      last.text += text
+    else
+      out.push({ text, changed })
+  }
+  return out
+}
+
+/** 变更字符占整行的比例。 */
+function changedRatio(segments: readonly { text: string, changed: boolean }[]): number {
+  let total = 0
+  let changed = 0
+  for (const segment of segments) {
+    total += segment.text.length
+    if (segment.changed)
+      changed += segment.text.length
+  }
+  return total === 0 ? 0 : changed / total
+}
+
+/** 给配对的两行各填一份词级片段；算不出或整行都变了就两行都不填。 */
+function pairWords(lines: DiffLine[], oldAt: number, newAt: number): void {
+  const before = lines[oldAt]!
+  const after = lines[newAt]!
+  if (before.text.length > MAX_WORD_DIFF_CHARS || after.text.length > MAX_WORD_DIFF_CHARS)
+    return
+  const a = before.text.match(WORD) ?? []
+  const b = after.text.match(WORD) ?? []
+  const edits = myers(a, b)
+  if (!edits)
+    return
+  const removed = wordSegments(edits, a, 'removed')
+  const added = wordSegments(edits, b, 'added')
+  const ratio = Math.max(changedRatio(removed), changedRatio(added))
+  if (ratio === 0 || ratio > MAX_CHANGED_RATIO)
+    return
+  lines[oldAt] = { ...before, segments: removed }
+  lines[newAt] = { ...after, segments: added }
+}
+
+/**
+ * 一段里连续的删除行与紧跟着的新增行按次序一一配对，逐对算词级差异。
+ *
+ * 配不上的（只删不增、只增不删、两边条数不等的富余部分）保持整行变更。
+ */
+function fillWordSegments(lines: DiffLine[]): void {
+  let i = 0
+  while (i < lines.length) {
+    if (lines[i]!.change !== 'removed') {
+      i++
+      continue
+    }
+    const removedStart = i
+    while (i < lines.length && lines[i]!.change === 'removed') i++
+    const addedStart = i
+    while (i < lines.length && lines[i]!.change === 'added') i++
+    const pairs = Math.min(addedStart - removedStart, i - addedStart)
+    for (let k = 0; k < pairs; k++)
+      pairWords(lines, removedStart + k, addedStart + k)
+  }
+}
+
 /**
  * 把编辑脚本切成 hunk：离变更超过 contextLines 行的上下文整段丢掉。
  */
-function toHunks(edits: readonly Edit[], contextLines: number, lineOf: (edit: Edit) => DiffLine): DiffHunk[] {
+function toHunks(edits: readonly Edit[], contextLines: number, lineOf: (edit: Edit) => DiffLine, wordDiff: boolean): DiffHunk[] {
   const changed = edits.map(e => e.change !== 'context')
   if (!changed.includes(true))
     return []
@@ -172,6 +258,8 @@ function toHunks(edits: readonly Edit[], contextLines: number, lineOf: (edit: Ed
     while (i < edits.length && keep[i]) i++
     const slice = edits.slice(start, i)
     const lines = slice.map(lineOf)
+    if (wordDiff)
+      fillWordSegments(lines)
     const oldNums = lines.map(l => l.oldNumber).filter((n): n is number => n !== undefined)
     const newNums = lines.map(l => l.newNumber).filter((n): n is number => n !== undefined)
     const oldStart = oldNums[0] ?? 0
@@ -239,7 +327,7 @@ export function computeTextDiff(before: string, after: string, options: ComputeT
     }
   }
 
-  return { hunks: toHunks(edits, contextLines, lineOf), truncated: truncated || undefined }
+  return { hunks: toHunks(edits, contextLines, lineOf, options.wordDiff !== false), truncated: truncated || undefined }
 }
 
 const HUNK_HEADER = /^@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@/
@@ -249,8 +337,11 @@ const HUNK_HEADER = /^@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@/
  *
  * **一律不填 tokens**：这里拿不到完整文件，跨行的记号切不准。
  * 宁可不着色也不错着色——与代码视图「未闭合默认不着色」是同一条取舍。
+ *
+ * 词级片段照填：它只在配对的两行之间比对，不需要文件的其余部分。
  */
-export function parseUnifiedPatch(patch: string): readonly DiffModel[] {
+export function parseUnifiedPatch(patch: string, options: { wordDiff?: boolean } = {}): readonly DiffModel[] {
+  const wordDiff = options.wordDiff !== false
   const models: DiffModel[] = []
   let current: { hunks: DiffHunk[], oldPath?: string, newPath?: string } | null = null
   let hunk: { header: string, oldStart: number, oldLines: number, newStart: number, newLines: number, lines: DiffLine[] } | null = null
@@ -258,8 +349,11 @@ export function parseUnifiedPatch(patch: string): readonly DiffModel[] {
   let newNumber = 0
 
   const closeHunk = (): void => {
-    if (hunk && current)
+    if (hunk && current) {
+      if (wordDiff)
+        fillWordSegments(hunk.lines)
       current.hunks.push({ ...hunk, lines: hunk.lines })
+    }
     hunk = null
   }
   const closeFile = (): void => {

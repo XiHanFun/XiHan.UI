@@ -6,7 +6,9 @@
       <p data-xh-part="description">没人答的话，到点按拒绝处理。</p>
       <!-- 剩余时间对读屏隐藏：逐秒跳字进活区会不停打断 -->
       <div data-xh-part="timer">还剩 10 秒</div>
-      <div style="display: flex; gap: 8px">
+      <!-- 升级前先自己收起：属性由连接层接管，判定落定后自动撤掉 -->
+      <div data-xh-part="result" hidden></div>
+      <div data-xh-part="actions">
         <button data-xh-part="approve-trigger">批准</button>
         <button data-xh-part="deny-trigger">拒绝</button>
       </div>
@@ -18,6 +20,7 @@
 <script type="module">
   const gate = document.getElementById("approval-timeout");
   const timer = gate.querySelector('[data-xh-part="timer"]');
+  const result = gate.querySelector('[data-xh-part="result"]');
   const line = document.getElementById("approval-timeout-decision");
 
   let left = 10;
@@ -30,6 +33,9 @@
   setTimeout(tick, 1000);
 
   gate.addEventListener("decision", (event) => {
-    line.textContent = `判定：${event.detail.decision}（来源 ${event.detail.source}）`;
+    const { decision, source } = event.detail;
+    if (decision === "approved") result.textContent = "已批准";
+    else result.textContent = source === "timeout" ? "超时未答，按拒绝处理" : "已拒绝";
+    line.textContent = `判定：${decision}（来源 ${source}）`;
   });
 </script>

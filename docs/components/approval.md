@@ -21,7 +21,13 @@
   都不起，停在待决——既不当 0ms 立刻到期，也绝不当成无限期放行。
 - **拒绝这条路永远走得通**：它不吃挂起中、不吃必选项、不吃任何闸门。
 - 勾选与判定是原子的：批准的载荷带着「批的是哪几项」，不存在「已批准但范围还没同步」的窗口。
+- 备注（`note`）与勾选同批取快照，随判定载荷一起发出；空着就不带这一格。
+  它不参与「必选项勾满了没有」的判断。
 - `requestId` 变了即重入待决并按新时长重起计时；**不替旧一轮补一次拒绝**，旧结果由宿主自己作废。
+  重入时勾选与备注一并回到各自的默认值。
+- 判定落定后 `result` 那一格才露出，语气随判定走（批准取成功档，拒绝与超时同取危险档）。
+  它对读屏隐藏：同一句话由播报区念一次就够。
+- 两颗按钮住在 `actions` 那一行里，间距与对齐归库管，不必每个使用者自己写一个 flex 容器。
 
 ## 示例
 
@@ -37,12 +43,18 @@
 
 <XhDemo src="approval/02-timeout" />
 
+### 附一句备注
+
+备注与勾选同批取快照，随判定载荷一起发出；空着就不带这一格，它不参与「必选项勾满了没有」的判断
+
+<XhDemo src="approval/03-note" />
+
 ## 产物
 
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-approval>` |
-| Vue 组件 | `XhApprovalAnnouncement` `XhApprovalApproveTrigger` `XhApprovalDenyTrigger` `XhApprovalDescription` `XhApprovalRoot` `XhApprovalScopeGroup` `XhApprovalScopeIndicator` `XhApprovalScopeItem` `XhApprovalScopeLabel` `XhApprovalTimer` `XhApprovalTitle` |
+| Vue 组件 | `XhApprovalActions` `XhApprovalAnnouncement` `XhApprovalApproveTrigger` `XhApprovalDenyTrigger` `XhApprovalDescription` `XhApprovalNote` `XhApprovalResult` `XhApprovalRoot` `XhApprovalScopeGroup` `XhApprovalScopeIndicator` `XhApprovalScopeItem` `XhApprovalScopeLabel` `XhApprovalTimer` `XhApprovalTitle` |
 | 组合式函数 | `useApproval` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/approval.css` |
@@ -51,7 +63,7 @@
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="approval"`：**`root`** · `title` · `description` · `announcement` · `scope-group` · `scope-item` · `scope-indicator` · `scope-label` · `timer` · **`approve-trigger`** · **`deny-trigger`**
+`data-scope="approval"`：**`root`** · `title` · `description` · `announcement` · `scope-group` · `scope-item` · `scope-indicator` · `scope-label` · `note` · `timer` · `result` · `actions` · **`approve-trigger`** · **`deny-trigger`**
 
 ## Props
 
@@ -64,6 +76,8 @@
 | `scopes` | `readonly ApprovalScope[]` |  |  |
 | `grantedScopes` | `readonly string[]` |  |  |
 | `defaultGrantedScopes` | `readonly string[]` |  |  |
+| `note` | `string` |  | 附在判定上的一句自由文本。给定即受控。 它只随判定载荷发出，不参与「必选项勾满了没有」的判断。 |
+| `defaultNote` | `string` |  |  |
 | `busy` | `boolean` |  | 判定在途：只挡重复批准，不挡拒绝。 |
 | `denyOnEscape` | `boolean` |  | Escape 判为拒绝，默认开。 |
 | `denyOnUnmount` | `boolean` |  | 卸载时若仍待决就按拒绝派发一次，**默认关**。 机理成立不等于默认值成立：列表换 key、路由切换、热更新任何一次重挂， 都会替用户发出他没做过的判定。 |
@@ -73,6 +87,7 @@
 | `translations` | `Partial<ApprovalTranslations>` |  |  |
 | `onDecision` | `(details: ApprovalDecisionDetails) => void` |  |  |
 | `onGrantedScopesChange` | `(details: ApprovalScopesChangeDetails) => void` |  |  |
+| `onNoteChange` | `(details: ApprovalNoteChangeDetails) => void` |  |  |
 
 ## 事件
 
@@ -82,6 +97,7 @@
 | --- | --- | --- |
 | `decision` | `ApprovalDecisionDetails` | 判定落定；detail 为 `{ requestId, decision, source, scopes }` |
 | `granted-scopes-change` | `ApprovalScopesChangeDetails` | 勾选的授权项变化；detail 为 `{ value: string[] }` |
+| `note-change` | `ApprovalNoteChangeDetails` | 备注变化；detail 为 `{ value: string }` |
 
 ## 插槽
 
@@ -101,13 +117,15 @@
 | `root` | state.get() |
 | `scope-item` | 'checked' \| 'unchecked' |
 | `scope-indicator` | 'checked' \| 'unchecked' |
+| `note` | state.get() |
 | `timer` | state.get() |
+| `result` | state.get() |
 | `approve-trigger` | state.get() |
 | `deny-trigger` | state.get() |
 
 状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
-**事件**：`APPROVE` · `DENY` · `SCOPE.TOGGLE` · `SCOPE.SET` · `after.timeout` · `CONTROLLED.PENDING` · `CONTROLLED.APPROVE` · `CONTROLLED.DENY` · `CONTROLLED.EXPIRE` · `REQUEST.RESET`
+**事件**：`APPROVE` · `DENY` · `SCOPE.TOGGLE` · `SCOPE.SET` · `NOTE.SET` · `after.timeout` · `CONTROLLED.PENDING` · `CONTROLLED.APPROVE` · `CONTROLLED.DENY` · `CONTROLLED.EXPIRE` · `REQUEST.RESET`
 
 **判据**：`isStatusControlled` · `canApprove` · `isEditable` · `canApproveControlled`
 
@@ -121,11 +139,13 @@
 | `settled` | `boolean` | 已经判过了：两颗按钮都收起出口。 |
 | `busy` | `boolean` |  |
 | `grantedScopes` | `string[]` |  |
+| `note` | `string` | 备注里的文字；没写过是空串。 |
 | `canApprove` | `boolean` | 必选项是不是都勾满了。 |
 | `announcement` | `string` | 按 status 选出的那一句播报文本；announce 关掉时作者不渲那个部件即可。 |
 | `approve` | `() => void` |  |
 | `deny` | `() => void` |  |
 | `setGrantedScopes` | `(next: string[]) => void` |  |
+| `setNote` | `(next: string) => void` |  |
 | `isScopeGranted` | `(value: string) => boolean` |  |
 | `getRootProps` | `() => T['element']` |  |
 | `getTitleProps` | `() => T['element']` |  |
@@ -135,7 +155,10 @@
 | `getScopeItemProps` | `(scope: ApprovalScope) => T['element']` |  |
 | `getScopeIndicatorProps` | `(scope: ApprovalScope) => T['element']` |  |
 | `getScopeLabelProps` | `(scope: ApprovalScope) => T['element']` |  |
+| `getNoteProps` | `() => T['input']` |  |
 | `getTimerProps` | `() => T['element']` |  |
+| `getResultProps` | `() => T['element']` |  |
+| `getActionsProps` | `() => T['element']` |  |
 | `getApproveTriggerProps` | `() => T['button']` |  |
 | `getDenyTriggerProps` | `() => T['button']` |  |
 
@@ -168,7 +191,9 @@
 | `scope-item` | `aria-required` | 'true' \| 'false' |
 | `scope-item` | `role` | 'checkbox' |
 | `scope-indicator` | `aria-hidden` | 'true' |
+| `note` | `aria-label` | translations?.note |
 | `timer` | `aria-hidden` | 'true' |
+| `result` | `aria-hidden` | 'true' |
 | `approve-trigger` | `aria-busy` | 'true' \| undefined |
 | `approve-trigger` | `aria-disabled` | 'true' \| 'false' |
 | `approve-trigger` | `aria-label` | translations?.approve |
@@ -177,11 +202,13 @@
 - 闸门是 `role=group`，由标题命名、由说明描述。
 - 待决时批准键用 `aria-disabled` 而不是原生 `disabled`：保住可聚焦，让读屏念得到为什么按不动。
 - 授权项是 `role=checkbox`，各占一个 Tab 停靠点，只认 `Space`——与原生复选框一致。
-- 剩余时间对读屏隐藏：逐秒变化的数字进活区会不停打断；截止这件事在播报区里一次说清。
+- 剩余时间与结果条都对读屏隐藏：逐秒变化的数字进活区会不停打断，判定结果由播报区念一次；
+  截止这件事同样在播报区里一次说清。
+- 备注那一格取 `translations.note` 作可及名（缺省 `Note`），占位文字另走 `translations.notePlaceholder`。
 
 ## 样式
 
-默认皮肤 `@xihan-ui/styles/approval.css` 按部件选择：`[data-scope="approval"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+默认皮肤 `@xihan-ui/styles/approval.css` 按部件选择：`[data-scope="approval"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
 
 ## 数据属性
 
@@ -198,7 +225,9 @@
 | `scope-item` | `data-value` | item.value |
 | `scope-indicator` | `data-state` | 'checked' \| 'unchecked' |
 | `scope-label` | `data-value` | item.value |
+| `note` | `data-state` | state.get() |
 | `timer` | `data-state` | state.get() |
+| `result` | `data-state` | state.get() |
 | `approve-trigger` | `data-busy` | ''（条件成立时才出现） |
 | `approve-trigger` | `data-state` | state.get() |
 | `deny-trigger` | `data-state` | state.get() |
@@ -207,11 +236,11 @@
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-approval-action-font-size` · `--xh-approval-action-font-weight` · `--xh-approval-action-h` · `--xh-approval-action-px` · `--xh-approval-action-radius` · `--xh-approval-approve-bg` · `--xh-approval-approve-bg-hover` · `--xh-approval-approve-bg-off` · `--xh-approval-approve-fg` · `--xh-approval-bg` · `--xh-approval-border` · `--xh-approval-border-settled` · `--xh-approval-deny-bg` · `--xh-approval-deny-bg-hover` · `--xh-approval-deny-border` · `--xh-approval-deny-fg` · `--xh-approval-description-fg` · `--xh-approval-description-font-size` · `--xh-approval-gap` · `--xh-approval-indicator-bg-checked` · `--xh-approval-indicator-border` · `--xh-approval-indicator-border-checked` · `--xh-approval-indicator-fg` · `--xh-approval-indicator-radius` · `--xh-approval-indicator-size` · `--xh-approval-p` · `--xh-approval-radius` · `--xh-approval-scope-bg-hover` · `--xh-approval-scope-font-size` · `--xh-approval-scope-gap` · `--xh-approval-scope-item-gap` · `--xh-approval-scope-px` · `--xh-approval-scope-py` · `--xh-approval-scope-radius` · `--xh-approval-timer-fg` · `--xh-approval-timer-font-size` · `--xh-approval-title-fg` · `--xh-approval-title-font-size` · `--xh-approval-title-font-weight`
+`--xh-approval-action-font-size` · `--xh-approval-action-font-weight` · `--xh-approval-action-h` · `--xh-approval-action-px` · `--xh-approval-action-radius` · `--xh-approval-actions-gap` · `--xh-approval-approve-bg` · `--xh-approval-approve-bg-hover` · `--xh-approval-approve-bg-off` · `--xh-approval-approve-fg` · `--xh-approval-approve-shadow` · `--xh-approval-bg` · `--xh-approval-border` · `--xh-approval-border-settled` · `--xh-approval-deny-bg` · `--xh-approval-deny-bg-hover` · `--xh-approval-deny-border` · `--xh-approval-deny-fg` · `--xh-approval-description-fg` · `--xh-approval-description-font-size` · `--xh-approval-gap` · `--xh-approval-icon-size` · `--xh-approval-indicator-bg-checked` · `--xh-approval-indicator-border` · `--xh-approval-indicator-border-checked` · `--xh-approval-indicator-fg` · `--xh-approval-indicator-radius` · `--xh-approval-indicator-size` · `--xh-approval-note-bg` · `--xh-approval-note-border` · `--xh-approval-note-fg` · `--xh-approval-note-font-size` · `--xh-approval-note-px` · `--xh-approval-note-py` · `--xh-approval-note-radius` · `--xh-approval-p` · `--xh-approval-radius` · `--xh-approval-result-bg` · `--xh-approval-result-bg-denied` · `--xh-approval-result-fg` · `--xh-approval-result-fg-denied` · `--xh-approval-result-font-size` · `--xh-approval-result-font-weight` · `--xh-approval-result-gap` · `--xh-approval-result-px` · `--xh-approval-result-py` · `--xh-approval-result-radius` · `--xh-approval-scope-bg-hover` · `--xh-approval-scope-fg` · `--xh-approval-scope-fg-checked` · `--xh-approval-scope-font-size` · `--xh-approval-scope-gap` · `--xh-approval-scope-item-gap` · `--xh-approval-scope-px` · `--xh-approval-scope-py` · `--xh-approval-scope-radius` · `--xh-approval-shadow` · `--xh-approval-timer-fg` · `--xh-approval-timer-font-size` · `--xh-approval-title-fg` · `--xh-approval-title-font-size` · `--xh-approval-title-font-weight`
 
 ## 动效
 
-状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-approval-in` · `xh-approval-result-in` 随皮肤自带，不引用别处文件里的名字；状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
@@ -228,6 +257,11 @@
 - 剩余时间的跳字交给[倒计时](./countdown)，判定权仍在本组件手里。
   **别把倒计时直接当 `timer` 那个节点渲**：两套解剖打在同一节点上会互相盖，
   让 `timer` 做外层容器、倒计时住在它里面。
+- 要一次问好几件事：用[步骤条](./steps)或[走马灯](./carousel)串起若干个闸门，一步一个。
+  本组件是单发闸门，`data-state` 的四个值互斥，塞不下「第几题」。
+- 要给用户「稍后再说」：那个入口归宿主，不归闸门。
+  常见做法是在 `onDecision` 之外自己留一条延后的路，或按上一条把闸门装进对话框——
+  浮层里仍只有批准与拒绝两个出口。
 
 ## 最佳实践
 

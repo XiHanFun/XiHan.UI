@@ -16,6 +16,8 @@
     border: var(--xh-stroke-thin) solid var(--xh-diff-view-border, var(--xh-border-subtle));
     border-radius: var(--xh-diff-view-radius, var(--xh-shape-surface));
     background: var(--xh-diff-view-bg, var(--xh-bg-surface));
+    /* 一张抬起的表面：描边加一档静态海拔，与同族的其余表面齐平 */
+    box-shadow: var(--xh-diff-view-shadow, var(--xh-elevation-raised));
   }
 
   /* 上面声明的 display 会盖掉 UA 的 [hidden]{display:none}，这里补回 */
@@ -37,6 +39,24 @@
 
   [data-scope='diff-view'][data-part='header'][hidden] {
     display: none;
+  }
+
+  /* 增删统计整组顶到右侧：头部是 flex，自动外边距吃掉中间的空当。
+     第二个之后的不再顶，与前一个之间只留头部本来的间隙 */
+  [data-scope='diff-view'][data-part='stat'] {
+    margin-inline-start: auto;
+  }
+
+  [data-scope='diff-view'][data-part='stat'] ~ [data-scope='diff-view'][data-part='stat'] {
+    margin-inline-start: 0;
+  }
+
+  [data-scope='diff-view'][data-part='stat'][data-change='added'] {
+    color: var(--xh-diff-view-added-fg);
+  }
+
+  [data-scope='diff-view'][data-part='stat'][data-change='removed'] {
+    color: var(--xh-diff-view-removed-fg);
   }
 
   /* 唯一的 Tab 停靠点；两轴都可能溢出 */
@@ -75,12 +95,30 @@
     display: none;
   }
 
+  /* 变更类型不只靠颜色：新增行画一条实心色条 */
   [data-scope='diff-view'][data-part='row'][data-change='added'] {
     background: var(--xh-diff-view-added-bg);
+    box-shadow: inset var(--xh-diff-view-change-bar, var(--xh-stroke-thick)) 0 0 0 var(--xh-diff-view-added-fg);
   }
 
+  /* 删除行的色条改画斜纹：与新增行的实心条在灰度与高对比度下也分得开。
+     45 度、1.5px 实 1.5px 空是纹理几何，不是设计尺度上的档位 */
   [data-scope='diff-view'][data-part='row'][data-change='removed'] {
-    background: var(--xh-diff-view-removed-bg);
+    background:
+      repeating-linear-gradient(
+          45deg,
+          var(--xh-diff-view-removed-fg) 0,
+          var(--xh-diff-view-removed-fg) 1.5px,
+          transparent 1.5px,
+          transparent 3px
+        )
+        left / var(--xh-diff-view-change-bar, var(--xh-stroke-thick)) 100% no-repeat,
+      var(--xh-diff-view-removed-bg);
+  }
+
+  /* 点开折叠格才露出来的那几行播一次入场；收起是硬切，不占一段退场窗口 */
+  [data-scope='diff-view'][data-part='row'][data-revealed] {
+    animation: xh-diff-view-reveal var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
   /* 行号是画上去的不是写上去的：复制差异不带它，读屏也不逐行念数字 */
@@ -89,6 +127,7 @@
     box-sizing: content-box;
     flex: 0 0 auto;
     padding-inline: var(--xh-diff-view-px, var(--xh-space-3));
+    border-inline-end: var(--xh-stroke-thin) solid var(--xh-diff-view-border, var(--xh-border-subtle));
     color: var(--xh-diff-view-number-fg, var(--xh-fg-subtle));
     inline-size: var(--xh-diff-view-gutter, 4ch);
     text-align: end;
@@ -101,6 +140,20 @@
 
   [data-scope='diff-view'][data-part='line-number'][hidden] {
     display: none;
+  }
+
+  /* 行号跟着行的变更类型走：一眼扫下来数字本身就分出了增删 */
+  [data-scope='diff-view'][data-part='line-number'][data-change='added'] {
+    color: var(--xh-diff-view-added-fg);
+  }
+
+  [data-scope='diff-view'][data-part='line-number'][data-change='removed'] {
+    color: var(--xh-diff-view-removed-fg);
+  }
+
+  /* 并排视图两列之间的接缝：新侧的行号槽再补一条左边线 */
+  [data-scope='diff-view'][data-part='root'][data-view='split'] [data-part='line-number'][data-side='new'] {
+    border-inline-start: var(--xh-stroke-thin) solid var(--xh-diff-view-border, var(--xh-border-subtle));
   }
 
   /* white-space: pre 保留缩进；每一侧各占一半宽 */
@@ -129,6 +182,18 @@
     background: var(--xh-diff-view-empty-bg, var(--xh-bg-subtle));
   }
 
+  /* 开了换行：pre-wrap 仍保留缩进与连续空白，只是允许行尾折下来；
+     anywhere 让没有空格的长串（url、base64）也能断 */
+  [data-scope='diff-view'][data-part='root'][data-wrap] [data-part='line-content'] {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+
+  /* 正文原本按最长行撑宽，不解除就折不下来 */
+  [data-scope='diff-view'][data-part='root'][data-wrap] [data-part='body'] {
+    min-inline-size: 0;
+  }
+
   /* 变更类型的读屏文字：视觉隐藏，不能 display:none——那样读屏就取不到它了。
      变更不该只靠颜色传达 */
   [data-scope='diff-view'][data-part='change-label'] {
@@ -141,6 +206,23 @@
     overflow: hidden;
     clip-path: inset(50%);
     white-space: nowrap;
+  }
+
+  /* 词级片段：只有真正动过的那几段上底色，其余段落是纯包裹。
+     不给内衬——等宽列要逐字对齐，多一像素整份差异就错位 */
+  [data-scope='diff-view'][data-part='segment'][data-change] {
+    border-radius: var(--xh-diff-view-segment-radius, var(--xh-shape-inset));
+    /* 片段跨行时两半各自收边，否则圆角只画在整段的首尾。两条都写：WebKit 只认带前缀那条 */
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+  }
+
+  [data-scope='diff-view'][data-part='segment'][data-change='added'] {
+    background: color-mix(in oklab, var(--xh-diff-view-added-fg) 18%, transparent);
+  }
+
+  [data-scope='diff-view'][data-part='segment'][data-change='removed'] {
+    background: color-mix(in oklab, var(--xh-diff-view-removed-fg) 18%, transparent);
   }
 
   /* 记号只上色，不带任何盒模型：多一点都会破坏对齐 */
@@ -249,5 +331,20 @@
     --xh-diff-view-font-size: var(--xh-control-font-lg);
     --xh-diff-view-px: var(--xh-space-4);
     --xh-diff-view-py: var(--xh-space-3);
+  }
+}
+
+@layer xihan.motion {
+  /* 露出来的行从上一行底下推出来：位移走幅度令牌，减弱动效档把它归零 */
+  @keyframes xh-diff-view-reveal {
+    from {
+      opacity: 0;
+      translate: 0 calc(-1 * var(--xh-motion-distance-sm));
+    }
+
+    to {
+      opacity: 1;
+      translate: 0 0;
+    }
   }
 }

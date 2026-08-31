@@ -12,7 +12,7 @@ type Props = ApprovalSchema['props']
 /** 默认插槽的载荷：判定状态、能不能批，以及三个动作入口。 */
 export type ApprovalRootSlotProps = Pick<
   ApprovalApi,
-  'status' | 'settled' | 'busy' | 'grantedScopes' | 'canApprove' | 'announcement' | 'approve' | 'deny' | 'setGrantedScopes'
+  'status' | 'settled' | 'busy' | 'grantedScopes' | 'note' | 'canApprove' | 'announcement' | 'approve' | 'deny' | 'setGrantedScopes' | 'setNote'
 >
 
 /** 逐项插槽的载荷。 */
@@ -31,6 +31,8 @@ export const XhApprovalRoot = defineComponent({
     scopes: { type: Array as PropType<readonly ApprovalScope[]>, default: undefined },
     grantedScopes: { type: Array as PropType<readonly string[]>, default: undefined },
     defaultGrantedScopes: { type: Array as PropType<readonly string[]>, default: undefined },
+    note: { type: String, default: undefined },
+    defaultNote: { type: String, default: undefined },
     busy: Boolean,
     // 用 undefined 而非裸 Boolean，缺省值由机器与 connect 给出
     denyOnEscape: { type: Boolean, default: undefined },
@@ -44,6 +46,8 @@ export const XhApprovalRoot = defineComponent({
     'decision': (_details: PayloadOf<Props, 'onDecision'>) => true,
     'granted-scopes-change': (_details: PayloadOf<Props, 'onGrantedScopesChange'>) => true,
     'update:grantedScopes': (_value: string[]) => true,
+    'note-change': (_details: PayloadOf<Props, 'onNoteChange'>) => true,
+    'update:note': (_value: string) => true,
   },
   slots: Object as SlotsType<{
     default?: (props: ApprovalRootSlotProps) => VNode[]
@@ -55,6 +59,10 @@ export const XhApprovalRoot = defineComponent({
         emit('granted-scopes-change', details)
         emit('update:grantedScopes', details.value)
       },
+      onNoteChange: (details) => {
+        emit('note-change', details)
+        emit('update:note', details.value)
+      },
     })
     provideApproval(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
@@ -62,11 +70,13 @@ export const XhApprovalRoot = defineComponent({
       settled: ctx.api.value.settled,
       busy: ctx.api.value.busy,
       grantedScopes: ctx.api.value.grantedScopes,
+      note: ctx.api.value.note,
       canApprove: ctx.api.value.canApprove,
       announcement: ctx.api.value.announcement,
       approve: ctx.api.value.approve,
       deny: ctx.api.value.deny,
       setGrantedScopes: ctx.api.value.setGrantedScopes,
+      setNote: ctx.api.value.setNote,
     }))
   },
 })
@@ -166,12 +176,38 @@ export const XhApprovalScopeLabel = defineComponent({
   },
 })
 
+export const XhApprovalNote = defineComponent({
+  name: 'XhApprovalNote',
+  setup() {
+    const ctx = useApprovalContext()
+    // 自闭合的输入格，内容由 value 给，不收插槽
+    return () => h('input', ctx.api.value.getNoteProps() as Record<string, unknown>)
+  },
+})
+
 export const XhApprovalTimer = defineComponent({
   name: 'XhApprovalTimer',
   setup(_, { slots }) {
     const ctx = useApprovalContext()
     // 对读屏隐藏：逐秒变化的数字进活区会不停打断
     return () => h('div', ctx.api.value.getTimerProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+export const XhApprovalResult = defineComponent({
+  name: 'XhApprovalResult',
+  setup(_, { slots }) {
+    const ctx = useApprovalContext()
+    // 判定落定后才露出；文字由播报区念，这一格对读屏隐藏
+    return () => h('div', ctx.api.value.getResultProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+export const XhApprovalActions = defineComponent({
+  name: 'XhApprovalActions',
+  setup(_, { slots }) {
+    const ctx = useApprovalContext()
+    return () => h('div', ctx.api.value.getActionsProps() as Record<string, unknown>, slots.default?.())
   },
 })
 

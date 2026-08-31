@@ -22,6 +22,8 @@
 - 整份消息列表只占**一个** Tab 停靠位：`PageDown` / `PageUp` 在消息之间走，
   `Ctrl+End` / `Ctrl+Home` 一步走到消息流之外（会话界面里通常就是输入框）。
 - 消息内容全部由作者写：气泡、头像、时间、动作条都不是本组件的部件。
+- 新长出来的消息与冒出来的「回到底部」各带一段淡入位移；减弱动效档由令牌层压平，不必另行关闭。
+- 「回到底部」留空时皮肤画一枚向下的字形，往按钮里塞节点即换成自己的图形。
 
 ## 示例
 
@@ -36,6 +38,12 @@
 新消息长出来时自动到底，往上翻就解除；一轮结束在播报区念一句
 
 <XhDemo src="message-feed/02-sticky" />
+
+### 按角色分侧
+
+条目上带 data-role，左右分侧与气泡在使用者这一侧写，组件不预设这层外观
+
+<XhDemo src="message-feed/03-roles" />
 
 ## 产物
 
@@ -139,8 +147,8 @@
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-label` | translations?.feed |
-| `root` | `role` | 'feed' |
+| `list` | `aria-label` | translations?.feed |
+| `list` | `role` | 'feed' |
 | `item` | `aria-label` | undefined \| translations?.item |
 | `item` | `aria-labelledby` | scope.partId('message-feed', `item-label:${item.id}`) \| undefined |
 | `item` | `aria-posinset` | item.index + 1 |
@@ -149,16 +157,17 @@
 | `scroll-button` | `aria-label` | translations?.scrollToBottom |
 | `live-region` | `aria-atomic` | 'true' |
 | `live-region` | `aria-live` | 'polite' |
-| `live-region` | `role` | 'status' |
 
 - `role=feed` 配 `role=article`，带 `aria-posinset` / `aria-setsize`；总数由 `count` 声明，
   不从 DOM 数——虚拟化或分页时 DOM 里的条数不等于会话长度。
+- 集合语义落在内容层而不是最外层：`role=feed` 只认 `role=article` 的子节点，
+  而播报区与回到底部按钮都是最外层的孩子。最外层只当 Tab 停靠点与键盘宿主。
 - 播报走独立的原子区：一份会话只该有一个活区，每条消息各开一个会互相打断。
 - 消息流本身不发 `aria-busy`：它会压住同一棵子树内播报区的播报。
 
 ## 样式
 
-默认皮肤 `@xihan-ui/styles/message-feed.css` 按部件选择：`[data-scope="message-feed"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+默认皮肤 `@xihan-ui/styles/message-feed.css` 按部件选择：`[data-scope="message-feed"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
 
 ## 数据属性
 
@@ -176,7 +185,13 @@
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-message-feed-button-bg` · `--xh-message-feed-button-bg-hover` · `--xh-message-feed-button-border` · `--xh-message-feed-button-fg` · `--xh-message-feed-button-inset` · `--xh-message-feed-button-radius` · `--xh-message-feed-button-shadow` · `--xh-message-feed-button-size` · `--xh-message-feed-gap` · `--xh-message-feed-item-gap` · `--xh-message-feed-item-radius` · `--xh-message-feed-label-fg` · `--xh-message-feed-label-font-size` · `--xh-message-feed-p`
+`--xh-message-feed-button-bg` · `--xh-message-feed-button-bg-hover` · `--xh-message-feed-button-border` · `--xh-message-feed-button-fg` · `--xh-message-feed-button-inset` · `--xh-message-feed-button-radius` · `--xh-message-feed-button-shadow` · `--xh-message-feed-button-size` · `--xh-message-feed-gap` · `--xh-message-feed-icon-size` · `--xh-message-feed-item-gap` · `--xh-message-feed-item-radius` · `--xh-message-feed-label-fg` · `--xh-message-feed-label-font-size` · `--xh-message-feed-p`
+
+## 动效
+
+关键帧 `xh-message-feed-button-in` · `xh-message-feed-item-in` 随皮肤自带，不引用别处文件里的名字；状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
 ## RTL
 
@@ -190,6 +205,11 @@
   否则它的提前量只对窗口视口生效。
 - 空会话用[空状态](./empty-state)，并显式把它的 `live` 设成 `off`：
   它默认会成为活区，放在消息流里会与播报区抢播报。
+- 要左右分侧或气泡：条目上带 `data-role`（`user` / `assistant` / `system`），
+  在自己的样式表里按它写 `align-self`、底色、内衬与最大行宽即可，组件不预设这层外观。
+- 还在流式写入的条目带 `data-streaming`，这是留给使用者的钩子：正文走[流式正文](./markdown-stream)时
+  那枚光标就是「还在写」的标记；正文不经它渲染时，可按这个属性自己加一个非遮蔽式的标记，
+  例如前导色条或一格标签态。
 
 ## 最佳实践
 
@@ -201,3 +221,4 @@
 
 - 给每条消息各写一个 `tabindex="0"`：两百条消息就是两百个 Tab 停靠位。
 - 在消息流里再套一层滚动容器：粘底句柄认的是本组件的视口，套一层它就不动了。
+- 按 `data-streaming` 把整条消息压暗或虚化：一轮流可能持续数分钟，被盖住的正是读者正在逐字读的内容。

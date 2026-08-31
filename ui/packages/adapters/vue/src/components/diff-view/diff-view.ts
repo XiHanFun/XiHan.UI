@@ -1,5 +1,5 @@
-import type { DiffModel, DiffSide, DiffViewApi, DiffViewMode, DiffViewSchema, DiffViewTranslations } from '@xihan-ui/headless'
-import type { Size } from '@xihan-ui/kernel'
+import type { DiffChange, DiffModel, DiffSide, DiffViewApi, DiffViewMode, DiffViewSchema, DiffViewTranslations } from '@xihan-ui/headless'
+import type { CodeToken, Size } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
@@ -28,6 +28,7 @@ export const XhDiffViewRoot = defineComponent({
     contextLines: { type: Number, default: undefined },
     expanded: { type: Array as PropType<readonly string[]>, default: undefined },
     defaultExpanded: { type: Array as PropType<readonly string[]>, default: undefined },
+    wrap: { type: Boolean, default: undefined },
     size: { type: String as PropType<Size>, default: undefined },
     translations: { type: Object as PropType<Partial<DiffViewTranslations>>, default: undefined },
   },
@@ -62,6 +63,33 @@ export const XhDiffViewHeader = defineComponent({
   setup(_, { slots }) {
     const ctx = useDiffViewContext()
     return () => h('div', ctx.api.value.getHeaderProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+/**
+ * 头部右侧的增删统计位，增删各放一个。
+ *
+ * 数字取自模型，默认渲染成 `+N` / `−N`；给了插槽就由插槽自己排版。
+ */
+export const XhDiffViewStat = defineComponent({
+  name: 'XhDiffViewStat',
+  props: {
+    change: { type: String as PropType<Extract<DiffChange, 'added' | 'removed'>>, required: true },
+  },
+  slots: Object as SlotsType<{
+    default?: (props: { count: number }) => VNode[]
+  }>,
+  setup(props, { slots }) {
+    const ctx = useDiffViewContext()
+    return () => {
+      const api = ctx.api.value
+      const count = props.change === 'added' ? api.stats.added : api.stats.removed
+      return h(
+        'span',
+        api.getStatProps({ change: props.change }) as Record<string, unknown>,
+        slots.default?.({ count }) ?? `${props.change === 'added' ? '+' : '−'}${count}`,
+      )
+    }
   },
 })
 
@@ -116,18 +144,31 @@ export const XhDiffViewBody = defineComponent({
   },
 })
 
-/** 一格的正文：有着色就逐段铺，没有就一个文本节点。 */
-function renderCell(api: DiffViewApi, rowIndex: number, side: DiffSide): VNode[] {
-  const tokens = api.cellTokens({ rowIndex, side })
-  if (tokens.length === 0) {
-    const text = api.cellText({ rowIndex, side })
-    return text === undefined ? [] : [h('span', text)]
-  }
+/** 着色记号逐个铺成 span。 */
+function renderTokens(api: DiffViewApi, tokens: readonly CodeToken[]): VNode[] {
   return tokens.map((token, i) => h(
     'span',
     { ...api.getTokenProps(token) as Record<string, unknown>, key: i },
     token.text,
   ))
+}
+
+/** 一格的正文：算了词级差异就先按片段裹一层，否则整行按记号铺；都没有就一个文本节点。 */
+function renderCell(api: DiffViewApi, rowIndex: number, side: DiffSide): VNode[] {
+  const segments = api.cellSegments({ rowIndex, side })
+  if (segments.length > 0) {
+    return segments.map((segment, i) => h(
+      'span',
+      { ...api.getSegmentProps({ rowIndex, changed: segment.changed }) as Record<string, unknown>, key: `s:${i}` },
+      segment.tokens.length === 0 ? segment.text : renderTokens(api, segment.tokens),
+    ))
+  }
+  const tokens = api.cellTokens({ rowIndex, side })
+  if (tokens.length === 0) {
+    const text = api.cellText({ rowIndex, side })
+    return text === undefined ? [] : [h('span', text)]
+  }
+  return renderTokens(api, tokens)
 }
 
 export const XhDiffViewEmpty = defineComponent({

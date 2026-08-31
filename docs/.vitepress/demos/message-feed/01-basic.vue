@@ -34,6 +34,6 @@ const messages = [
         </XhMessageFeedItem>
       </XhMessageFeedList>
     </XhMessageFeedViewport>
-    <XhMessageFeedScrollButton>↓</XhMessageFeedScrollButton>
+    <XhMessageFeedScrollButton />
   </XhMessageFeedRoot>
 </template>

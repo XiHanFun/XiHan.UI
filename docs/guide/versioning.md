@@ -134,7 +134,7 @@ XiHan.UI 的公开面横跨五种介质，因为「丢掉自带皮肤自己写�
 | `data-name` | 表单字段名（`form`） |
 | `data-index` | 条目序号（0 基） |
 
-**样式钩子**——自带皮肤自己就消费了 128 个属性名 / 559 条「皮肤 × 属性」配对（不含解剖的 `data-scope` / `data-part`），第三方皮肤照着抄的就是这一组：
+**样式钩子**——自带皮肤自己就消费了 131 个属性名 / 569 条「皮肤 × 属性」配对（不含解剖的 `data-scope` / `data-part`），第三方皮肤照着抄的就是这一组：
 
 | 属性 | 选中它的皮肤份数 |
 | --- | --- |
@@ -211,11 +211,11 @@ brand  neutral  success  warning  danger  info
 | --- | --- | --- |
 | 自定义元素标签 `xh-*` | 132（`defineXhElements()` 注册 131 + `xh-background`） | **受约束** |
 | 注册函数 | 2（`defineXhElements`、`defineXhBackground`） | **受约束** |
-| observed attribute | 1078 条声明 / 340 个不同名字 | **受约束**（具体元素上的具体属性名） |
-| attribute 名词汇表本身 | 340 | **只增不减**（新组件复用 `size` / `tone` / `dir` 不算破坏） |
-| `CustomEvent` 名 | 79 个名字 / 173 条「元素 × 事件」 | **受约束** |
+| observed attribute | 1085 条声明 / 343 个不同名字 | **受约束**（具体元素上的具体属性名） |
+| attribute 名词汇表本身 | 343 | **只增不减**（新组件复用 `size` / `tone` / `dir` 不算破坏） |
+| `CustomEvent` 名 | 80 个名字 / 174 条「元素 × 事件」 | **受约束** |
 | 事件传播语义 | `bubbles: true, composed: true`（161 处中 159 处） | **受约束**——把冒泡改掉会让祖先节点上的事件委托静默失效。唯一的例外是 `xh-composer` 的 `submit`：与原生表单提交同名，刻意不冒泡，免得被祖先 `<form>` 当成自己的提交 |
-| 事件 `detail` 形状 | 155 个 `*Details` 类型 | **受约束**，等同于 headless 的同名类型 |
+| 事件 `detail` 形状 | 156 个 `*Details` 类型 | **受约束**，等同于 headless 的同名类型 |
 | `attribute: false` 的 JS 字段 | 163 条（涉及 60 个字段名） | **受约束**。`collection`、`translations`、`validate`、`filter` 这类只能用 JS 赋值，HTML 里表达不出来——**不是每个 property 都有对应 attribute** |
 | 命令式方法 | 30（分布在 9 个元素） | **受约束**，含参数与返回类型 |
 

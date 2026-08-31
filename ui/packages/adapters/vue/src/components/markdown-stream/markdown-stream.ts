@@ -24,6 +24,7 @@ export const XhMarkdownStreamRoot = defineComponent({
     blocks: { type: Array as PropType<readonly MarkdownBlock[]>, default: () => [] },
     streaming: Boolean,
     announce: { type: String as PropType<'off' | 'polite'>, default: undefined },
+    caret: { type: Boolean, default: undefined },
     size: { type: String as PropType<Size>, default: undefined },
     translations: { type: Object as PropType<Partial<MarkdownStreamTranslations>>, default: undefined },
   },
@@ -42,6 +43,9 @@ export const XhMarkdownStreamRoot = defineComponent({
       },
       get announce() {
         return props.announce
+      },
+      get caret() {
+        return props.caret
       },
       get size() {
         return configured.size

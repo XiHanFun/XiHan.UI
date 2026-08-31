@@ -50,6 +50,12 @@ clamped 是纯受控的：组件只发意图，落不落由宿主决定，好让
 
 <XhDemo src="code-view/04-streaming" />
 
+### 头部内建复制
+
+复制交给剪贴板：把它放进头部条，用几个槽把描边按钮压成安静形态，1500 毫秒后自己回落
+
+<XhDemo src="code-view/05-copy" />
+
 ## 产物
 
 | 层 | 值 |
@@ -154,6 +160,7 @@ clamped 是纯受控的：组件只发意图，落不落由宿主决定，好让
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `lang-label` | `aria-hidden` | 'true' |
+| `pre` | `role` | 'group' |
 | `line-number` | `aria-hidden` | 'true' |
 | `fold-trigger` | `aria-controls` | `pre` 部件的 id |
 | `fold-trigger` | `aria-expanded` | 'false' \| 'true' |
@@ -191,7 +198,13 @@ clamped 是纯受控的：组件只发意图，落不落由宿主决定，好让
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-code-view-bg` · `--xh-code-view-comment-fg` · `--xh-code-view-filename-fg` · `--xh-code-view-fold-bg-hover` · `--xh-code-view-fold-fg` · `--xh-code-view-fold-py` · `--xh-code-view-font` · `--xh-code-view-header-border` · `--xh-code-view-header-fg` · `--xh-code-view-header-font-size` · `--xh-code-view-header-gap` · `--xh-code-view-header-px` · `--xh-code-view-header-py` · `--xh-code-view-highlight-bar` · `--xh-code-view-highlight-bg` · `--xh-code-view-highlight-fg` · `--xh-code-view-keyword-fg` · `--xh-code-view-keyword-weight` · `--xh-code-view-label-fg` · `--xh-code-view-label-font-size` · `--xh-code-view-line-height` · `--xh-code-view-number-fg` · `--xh-code-view-punctuation-fg` · `--xh-code-view-px` · `--xh-code-view-py` · `--xh-code-view-radius` · `--xh-code-view-string-fg`
+`--xh-code-view-bg` · `--xh-code-view-border` · `--xh-code-view-comment-fg` · `--xh-code-view-fg` · `--xh-code-view-filename-fg` · `--xh-code-view-fold-bg-hover` · `--xh-code-view-fold-fg` · `--xh-code-view-fold-py` · `--xh-code-view-font` · `--xh-code-view-font-size` · `--xh-code-view-gutter-border` · `--xh-code-view-gutter-gap` · `--xh-code-view-header-border` · `--xh-code-view-header-fg` · `--xh-code-view-header-font-size` · `--xh-code-view-header-gap` · `--xh-code-view-header-h` · `--xh-code-view-header-px` · `--xh-code-view-header-py` · `--xh-code-view-highlight-bar` · `--xh-code-view-highlight-bg` · `--xh-code-view-highlight-fg` · `--xh-code-view-keyword-fg` · `--xh-code-view-keyword-weight` · `--xh-code-view-label-fg` · `--xh-code-view-label-font-size` · `--xh-code-view-line-height` · `--xh-code-view-number-fg` · `--xh-code-view-number-font-size` · `--xh-code-view-number-token-fg` · `--xh-code-view-punctuation-fg` · `--xh-code-view-px` · `--xh-code-view-py` · `--xh-code-view-radius` · `--xh-code-view-shadow` · `--xh-code-view-string-fg`
+
+## 动效
+
+状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
 ## RTL
 
@@ -200,6 +213,11 @@ clamped 是纯受控的：组件只发意图，落不落由宿主决定，好让
 ## 组合
 
 - 与[剪贴板](./clipboard)配合提供复制；要非受控的折叠就套[折叠面板](./collapsible)。
+  把剪贴板三件放进 `header`，再用 `--xh-clipboard-trigger-border: transparent`、
+  `--xh-clipboard-trigger-bg: transparent`、`--xh-clipboard-trigger-h: var(--xh-control-h-sm)`
+  三个槽把按钮压成头部里的安静形态。
+- 内建词法只分注释、字符串、数字、关键字、标点五档。要区分函数名、类型名、属性名这类精度，
+  就自己实现 `highlighter` 端口（同步纯函数，接 Shiki 之类）传进来，皮肤按记号种类上色的那套照旧生效。
 - 放进 AI 回复正文时由[流式正文](./markdown-stream)把代码块交过来。
 
 ## 最佳实践

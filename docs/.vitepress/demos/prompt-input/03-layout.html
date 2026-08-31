@@ -1,0 +1,51 @@
+<!-- 竖排布局与兜底字形 | 写一层输入行，root 就翻成竖排：输入行在上、动作行在下；按钮留空时皮肤按身份画上箭头或停止方块 -->
+<div style="display: flex; flex-direction: column; gap: 12px">
+  <xh-prompt-input id="prompt-input-layout">
+    <div data-xh-part="root">
+      <div data-xh-part="input-row">
+        <textarea data-xh-part="input" rows="1" placeholder="给助手写点什么…"></textarea>
+        <button data-xh-part="submit-trigger"></button>
+      </div>
+      <div style="display: flex; align-items: center; gap: 12px; font-size: 12px">
+        <label style="display: inline-flex; align-items: center; gap: 4px">
+          <input id="prompt-input-layout-busy" type="checkbox" />
+          生成中
+        </label>
+        <select id="prompt-input-layout-key" aria-label="按哪一档提交">
+          <option value="enter">Enter 提交</option>
+          <option value="mod-enter">Ctrl/Cmd+Enter 提交</option>
+        </select>
+        <span id="prompt-input-layout-count" style="margin-inline-start: auto">0 字</span>
+      </div>
+    </div>
+  </xh-prompt-input>
+  <p id="prompt-input-layout-sent" style="margin: 0"></p>
+</div>
+
+<script type="module">
+  const input = document.getElementById("prompt-input-layout");
+  const busy = document.getElementById("prompt-input-layout-busy");
+  const key = document.getElementById("prompt-input-layout-key");
+  const count = document.getElementById("prompt-input-layout-count");
+  const line = document.getElementById("prompt-input-layout-sent");
+  const sent = [];
+  input.translations = { input: "给助手写点什么" };
+
+  input.addEventListener("value-change", (event) => {
+    count.textContent = `${event.detail.value.length} 字`;
+  });
+
+  // submit 与原生表单提交同名，故不冒泡，直接在元素上监听
+  input.addEventListener("submit", (event) => {
+    sent.push(event.detail.value);
+    line.textContent = `已发出：${sent.join(" / ")}`;
+  });
+
+  input.addEventListener("stop", () => {
+    busy.checked = false;
+    input.removeAttribute("busy");
+  });
+
+  busy.addEventListener("change", () => input.toggleAttribute("busy", busy.checked));
+  key.addEventListener("change", () => input.setAttribute("submit-key", key.value));
+</script>

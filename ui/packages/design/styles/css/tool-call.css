@@ -4,13 +4,16 @@
     --xh-tool-call-skin: 1;
   }
 
-  /* 一张表面：描边 + 圆角，不是控件也不是浮层，所以不接形态轴 */
+  /* 一张抬起的表面：描边 + 圆角 + 静态海拔；不是控件也不是浮层，所以不接形态轴。
+     卡片建出来时淡入并向上收一段，一屏若干张的错峰交给外层容器排 */
   [data-scope='tool-call'][data-part='root'] {
     display: block;
     overflow: hidden;
     border: var(--xh-stroke-thin) solid var(--xh-tool-call-border, var(--xh-border-subtle));
     border-radius: var(--xh-tool-call-radius, var(--xh-shape-surface));
     background: var(--xh-tool-call-bg, var(--xh-bg-surface));
+    box-shadow: var(--xh-tool-call-shadow, var(--xh-elevation-raised));
+    animation: xh-tool-call-enter var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) both;
   }
 
   /* 上面声明的 display 会盖掉 UA 的 [hidden]{display:none}，这里补回 */
@@ -71,7 +74,8 @@
     align-items: center;
     justify-content: center;
     color: var(--xh-tool-call-indicator-fg, var(--xh-fg-subtle));
-    transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    /* 与详情展开同时长同曲线：箭头先转完、内容后到位会像是两件事 */
+    transition: rotate var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='tool-call'][data-part='indicator'][hidden] {
@@ -96,28 +100,116 @@
     display: none;
   }
 
-  [data-scope='tool-call'][data-part='status'] {
+  /* 有摘要时把剩余宽度让给它：工具名只要放得下自己，摘要才是这一行里最想读到的东西 */
+  [data-scope='tool-call'][data-part='trigger']:has([data-part='summary']) [data-part='name'] {
+    flex: 0 1 auto;
+  }
+
+  /* 一行参数摘要：单行截断的浅底条，收起时也看得见这次查的是什么 */
+  [data-scope='tool-call'][data-part='summary'] {
     display: block;
+    overflow: hidden;
+    flex: 1 1 auto;
+    min-inline-size: 0;
+    padding-inline: var(--xh-tool-call-summary-px, var(--xh-space-1_5));
+    border-radius: var(--xh-tool-call-summary-radius, var(--xh-shape-control));
+    background: var(--xh-tool-call-summary-bg, var(--xh-bg-subtle));
+    color: var(--xh-tool-call-summary-fg, var(--xh-fg-muted));
+    font-family: var(--xh-tool-call-name-font, var(--xh-font-family-mono));
+    font-size: var(--xh-tool-call-summary-font-size, var(--xh-text-caption-size));
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  [data-scope='tool-call'][data-part='summary'][hidden] {
+    display: none;
+  }
+
+  [data-scope='tool-call'][data-part='status'] {
+    display: inline-flex;
     flex: none;
+    align-items: center;
     color: var(--xh-tool-call-status-fg, var(--xh-fg-muted));
     font-size: var(--xh-tool-call-status-font-size, var(--xh-text-caption-size));
+    line-height: var(--xh-leading-none);
   }
 
   [data-scope='tool-call'][data-part='status'][hidden] {
     display: none;
   }
 
+  /* 三档落定的阶段收成药丸：淡底 + 同族深字。在跑的两档不带底，让扫光自己说话 */
+  [data-scope='tool-call'][data-part='status'][data-phase='awaiting-approval'],
+  [data-scope='tool-call'][data-part='status'][data-phase='output-available'],
+  [data-scope='tool-call'][data-part='status'][data-phase='output-error'] {
+    padding-block: var(--xh-tool-call-status-py, var(--xh-space-0_5));
+    padding-inline: var(--xh-tool-call-status-px, var(--xh-space-2));
+    border-radius: var(--xh-tool-call-status-radius, var(--xh-shape-pill));
+  }
+
   /* 各阶段的状态色：与语气轴分开走，语气是作者定的强调 */
   [data-scope='tool-call'][data-part='status'][data-phase='awaiting-approval'] {
-    color: var(--xh-tool-call-status-fg-approval, var(--xh-fg-warning));
+    background: var(--xh-tool-call-status-bg-approval, color-mix(in oklab, var(--xh-fg-warning) 12%, var(--xh-bg-surface)));
+    color: var(--xh-tool-call-status-fg-approval, color-mix(in oklab, var(--xh-fg-warning) 60%, var(--xh-fg-default)));
   }
 
   [data-scope='tool-call'][data-part='status'][data-phase='output-available'] {
-    color: var(--xh-tool-call-status-fg-done, var(--xh-fg-success));
+    background: var(--xh-tool-call-status-bg-done, color-mix(in oklab, var(--xh-fg-success) 12%, var(--xh-bg-surface)));
+    color: var(--xh-tool-call-status-fg-done, color-mix(in oklab, var(--xh-fg-success) 60%, var(--xh-fg-default)));
   }
 
   [data-scope='tool-call'][data-part='status'][data-phase='output-error'] {
-    color: var(--xh-tool-call-status-fg-error, var(--xh-fg-danger));
+    background: var(--xh-tool-call-status-bg-error, color-mix(in oklab, var(--xh-fg-danger) 12%, var(--xh-bg-surface)));
+    color: var(--xh-tool-call-status-fg-error, color-mix(in oklab, var(--xh-fg-danger) 60%, var(--xh-fg-default)));
+  }
+
+  /* 在跑的时候状态文字自己扫一道光：data-running 此前在皮肤里没有任何表达，
+     参数在传与参数齐了两档在屏幕上一模一样。
+     渐变画在背景上再裁进字形，前景与 WebKit 的字形填充色都要透明才透得出底下那道光 */
+  [data-scope='tool-call'][data-part='root'][data-running] [data-part='status'] {
+    background-image: linear-gradient(
+      90deg,
+      var(--xh-tool-call-status-shimmer-base, var(--xh-fg-subtle)) 35%,
+      var(--xh-tool-call-status-shimmer-sheen, var(--xh-fg-default)) 50%,
+      var(--xh-tool-call-status-shimmer-base, var(--xh-fg-subtle)) 65%
+    );
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    animation: xh-tool-call-shimmer var(--xh-tool-call-shimmer-duration, var(--xh-shimmer-duration)) linear infinite;
+  }
+
+  /* 减少动效：整道光撤掉换回平色，"在跑"仍由状态文字本身表达——只停动画的话，
+     字形里会留着一段冻住的渐变。两条规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope='tool-call'][data-part='root'][data-running] [data-part='status'] {
+      background-image: none;
+      color: var(--xh-tool-call-status-fg, var(--xh-fg-muted));
+      -webkit-text-fill-color: currentColor;
+      animation: none;
+    }
+  }
+
+  :where([data-motion='reduce']) [data-scope='tool-call'][data-part='root'][data-running] [data-part='status'] {
+    background-image: none;
+    color: var(--xh-tool-call-status-fg, var(--xh-fg-muted));
+    -webkit-text-fill-color: currentColor;
+    animation: none;
+  }
+
+  /* 耗时：等宽数位，秒数跳动时不左右挪 */
+  [data-scope='tool-call'][data-part='duration'] {
+    display: block;
+    flex: none;
+    color: var(--xh-tool-call-duration-fg, var(--xh-fg-subtle));
+    font-size: var(--xh-tool-call-status-font-size, var(--xh-text-caption-size));
+    font-variant-numeric: tabular-nums;
+  }
+
+  [data-scope='tool-call'][data-part='duration'][hidden] {
+    display: none;
   }
 
   /* 审批闸门常驻在开关与详情之间，不随折叠一起藏起来 */
@@ -132,17 +224,25 @@
     display: none;
   }
 
+  /* 这里刻意没有 [data-part='content'][hidden] { display: none }：补了退场一帧都播不出来。
+     收起由适配器在退场结束后写内联 display 落成，退场窗口内靠 connect 发的 inert 挡住焦点。
+     详情区按阶段取舍，参数、结果与错误同一时刻只排一格，收起时整格随行高归零 */
   [data-scope='tool-call'][data-part='content'] {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-rows: 1fr;
+    overflow: clip;
     gap: var(--xh-tool-call-content-gap, var(--xh-space-2));
     padding-inline: var(--xh-tool-call-px, var(--xh-space-3));
     padding-block: var(--xh-tool-call-py, var(--xh-space-2));
     border-block-start: var(--xh-stroke-thin) solid var(--xh-tool-call-border, var(--xh-border-subtle));
   }
 
-  [data-scope='tool-call'][data-part='content'][hidden] {
-    display: none;
+  [data-scope='tool-call'][data-part='content'][data-state='open'] {
+    animation: xh-tool-call-expand var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  }
+
+  [data-scope='tool-call'][data-part='content'][data-state='closed'] {
+    animation: xh-tool-call-collapse var(--xh-motion-duration-exit) var(--xh-motion-ease-enter-strong) forwards;
   }
 
   [data-scope='tool-call'][data-part='input'],
@@ -186,8 +286,65 @@
     --xh-tool-call-font-size: var(--xh-control-font-lg);
   }
 
-  /* 语气只染左侧那一条色条，不夺走阶段色 */
+  /* 语气只染左侧那一条色条，不夺走阶段色；海拔跟着一起写回来，
+     box-shadow 是整条替换的，只写色条会把上面那层投影抹掉 */
   [data-scope='tool-call'][data-part='root'][data-tone] {
-    box-shadow: inset var(--xh-tool-call-tone-bar, var(--xh-stroke-thick)) 0 0 0 var(--xh-tool-call-tone-fg, var(--xh-_tone-soft, var(--xh-bg-brand)));
+    box-shadow:
+      inset var(--xh-tool-call-tone-bar, var(--xh-stroke-thick)) 0 0 0 var(--xh-tool-call-tone-fg, var(--xh-_tone-soft, var(--xh-bg-brand))),
+      var(--xh-tool-call-shadow, var(--xh-elevation-raised));
+  }
+}
+
+@layer xihan.motion {
+  /* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
+     动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。
+     幅度走令牌，减弱动效时由令牌层归零 */
+  @keyframes xh-tool-call-enter {
+    from {
+      opacity: 0;
+      translate: 0 var(--xh-motion-distance-md);
+    }
+
+    to {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+
+  /* 行高与内缩同帧动：内缩不归零的话，border-box 会把盒子钳在上下内缩之和上，收不干净 */
+  @keyframes xh-tool-call-expand {
+    from {
+      grid-template-rows: 0fr;
+      padding-block: 0;
+    }
+
+    to {
+      grid-template-rows: 1fr;
+      padding-block: var(--xh-tool-call-py, var(--xh-space-2));
+    }
+  }
+
+  @keyframes xh-tool-call-collapse {
+    from {
+      grid-template-rows: 1fr;
+      padding-block: var(--xh-tool-call-py, var(--xh-space-2));
+    }
+
+    to {
+      grid-template-rows: 0fr;
+      padding-block: 0;
+    }
+  }
+
+  /* 一道比字色亮的窄带从右扫到左。背景图比自身宽一倍，靠移动背景位置扫过去，
+     不动布局也不动 transform */
+  @keyframes xh-tool-call-shimmer {
+    from {
+      background-position: 150% center;
+    }
+
+    to {
+      background-position: -50% center;
+    }
   }
 }

@@ -1,0 +1,73 @@
+<!-- 多次调用分组 | 外面套一层手风琴当分组头：计数用等宽数位，整组开合归手风琴，卡片各管各的 -->
+<div style="width: 100%; max-width: 480px">
+  <xh-accordion id="tool-call-grouped">
+    <div data-xh-part="root">
+      <div data-xh-part="item" value="run">
+        <h3 data-xh-part="header">
+          <button data-xh-part="trigger">
+            <span>这一轮跑了的工具</span>
+            <span
+              style="display: flex; align-items: center; gap: 8px; font-size: 12px"
+            >
+              <!-- 计数用等宽数位：数字变了也不会把指示器推着走 -->
+              <span style="font-variant-numeric: tabular-nums">3 个</span>
+              <span data-xh-part="indicator"></span>
+            </span>
+          </button>
+        </h3>
+        <div data-xh-part="content">
+          <div style="display: flex; flex-direction: column; gap: 8px">
+            <xh-tool-call phase="output-available">
+              <div data-xh-part="root">
+                <button data-xh-part="trigger">
+                  <span data-xh-part="indicator">›</span>
+                  <span data-xh-part="name">search</span>
+                  <span data-xh-part="summary">"折叠动画"</span>
+                  <span data-xh-part="status"></span>
+                </button>
+                <div data-xh-part="content">
+                  <div data-xh-part="output">找到 3 条结果。</div>
+                </div>
+              </div>
+            </xh-tool-call>
+            <xh-tool-call phase="output-available">
+              <div data-xh-part="root">
+                <button data-xh-part="trigger">
+                  <span data-xh-part="indicator">›</span>
+                  <span data-xh-part="name">read_file</span>
+                  <span data-xh-part="summary">src/tool-call.css</span>
+                  <span data-xh-part="status"></span>
+                </button>
+                <div data-xh-part="content">
+                  <div data-xh-part="output">读了 214 行。</div>
+                </div>
+              </div>
+            </xh-tool-call>
+            <xh-tool-call phase="output-available">
+              <div data-xh-part="root">
+                <button data-xh-part="trigger">
+                  <span data-xh-part="indicator">›</span>
+                  <span data-xh-part="name">apply_patch</span>
+                  <span data-xh-part="summary">+12 −3 src/tool-call.css</span>
+                  <span data-xh-part="status"></span>
+                </button>
+                <div data-xh-part="content">
+                  <div data-xh-part="output">已写入 1 个文件。</div>
+                </div>
+              </div>
+            </xh-tool-call>
+          </div>
+        </div>
+      </div>
+    </div>
+  </xh-accordion>
+</div>
+
+<script type="module">
+  // 展开集合是数组，只走 property：设初值、每次变更写回
+  const accordion = document.getElementById("tool-call-grouped");
+  accordion.value = ["run"];
+  accordion.addEventListener("value-change", (event) => {
+    accordion.value = event.detail.value;
+  });
+</script>

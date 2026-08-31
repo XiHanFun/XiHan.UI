@@ -1,7 +1,7 @@
 import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { ApprovalApi, ApprovalSchema, ApprovalScope, ApprovalStatus } from './approval.types'
-import { dataAttr } from '@xihan-ui/kernel'
+import { dataAttr, isComposingEvent } from '@xihan-ui/kernel'
 import { approvalAnatomy } from './approval.anatomy'
 import { canApproveScopes } from './approval.types'
 
@@ -29,6 +29,7 @@ export function connectApproval<T extends PropTypes>(
   const settled = status !== 'pending'
   const busy = prop('busy') === true
   const granted = context.get('grantedScopes')
+  const note = context.get('note')
   const scopes = prop('scopes')
   const translations = prop('translations')
   const ids = scope.ids('approval', 'title', 'description')
@@ -43,11 +44,13 @@ export function connectApproval<T extends PropTypes>(
     settled,
     busy,
     grantedScopes: granted,
+    note,
     canApprove,
     announcement: announcementOf(status, translations),
     approve: () => send({ type: 'APPROVE' }),
     deny: () => send({ type: 'DENY', source: 'api' }),
     setGrantedScopes: next => send({ type: 'SCOPE.SET', value: next }),
+    setNote: next => send({ type: 'NOTE.SET', value: next }),
     isScopeGranted,
 
     // 不给 tabindex：内部按钮与勾选项都可聚焦，Escape 冒泡到这里即可。
@@ -62,6 +65,9 @@ export function connectApproval<T extends PropTypes>(
       'data-tone': prop('tone'),
       'data-size': prop('size'),
       'onKeyDown': (event: KeyboardEvent) => {
+        // 备注框在根内，组合期间的 Escape 是收候选词框，不是拒绝
+        if (isComposingEvent(event))
+          return
         if (event.key !== 'Escape' || settled || prop('denyOnEscape') === false)
           return
         // 这不是「关闭」：本组件不提供不作答的出口
@@ -133,11 +139,38 @@ export function connectApproval<T extends PropTypes>(
       'data-value': item.value,
     }),
 
+    // 只随判定载荷发出，不参与 canApprove。判过了就跟着两颗按钮一起禁用
+    getNoteProps: () => normalize.input({
+      ...parts.note.attrs,
+      'type': 'text',
+      'value': note,
+      'aria-label': translations?.note ?? 'Note',
+      'placeholder': translations?.notePlaceholder,
+      'disabled': settled || undefined,
+      'data-state': status,
+      'onInput': (event: Event) => {
+        send({ type: 'NOTE.SET', value: (event.target as HTMLInputElement).value })
+      },
+    }),
+
     // 逐秒变化的剩余时间若进活区会不停打断；截止这件事在播报区里一次说清
     getTimerProps: () => normalize.element({
       ...parts.timer.attrs,
       'aria-hidden': true,
       'data-state': status,
+    }),
+
+    // 判定落定后才露出的那一格。文字由播报区念，这里只给眼睛看
+    getResultProps: () => normalize.element({
+      ...parts.result.attrs,
+      'aria-hidden': true,
+      'hidden': !settled || undefined,
+      'data-state': status,
+    }),
+
+    // 只排布两颗按钮，不承载语义
+    getActionsProps: () => normalize.element({
+      ...parts.actions.attrs,
     }),
 
     // 待决时用 aria-disabled 而不是原生 disabled：保住可聚焦，让读屏念得到为什么按不动

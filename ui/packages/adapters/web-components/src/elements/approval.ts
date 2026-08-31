@@ -1,5 +1,6 @@
 import type {
   ApprovalDecisionDetails,
+  ApprovalNoteChangeDetails,
   ApprovalSchema,
   ApprovalScope,
   ApprovalScopesChangeDetails,
@@ -31,6 +32,8 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @attr {string} status - 受控判定态：pending / approved / denied / expired
  * @attr {string} default-status - 非受控初值，默认 pending
  * @attr {number} timeout-ms - 多久没人答就按拒绝收口；缺省不起计时器
+ * @attr {string} note - 受控的备注文本，随判定载荷一起发出
+ * @attr {string} default-note - 备注的非受控初值，默认空串
  * @attr {boolean} busy - 判定在途：只挡重复批准，不挡拒绝
  * @attr {boolean} deny-on-escape - Escape 判为拒绝，默认开
  * @attr {boolean} deny-on-unmount - 卸载时若仍待决就按拒绝派一次，默认关
@@ -39,6 +42,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @attr {string} size - 尺寸：sm / md / lg
  * @fires decision - 判定落定；detail 为 `{ requestId, decision, source, scopes }`
  * @fires granted-scopes-change - 勾选的授权项变化；detail 为 `{ value: string[] }`
+ * @fires note-change - 备注变化；detail 为 `{ value: string }`
  * @csspart root - role=group 的闸门本体
  * @csspart title - 闸门标题，给它命名
  * @csspart description - 闸门说明，给它描述
@@ -47,7 +51,10 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @csspart scope-item - 一项授权，role=checkbox，只认 Space
  * @csspart scope-indicator - 勾选记号，对读屏隐藏
  * @csspart scope-label - 授权项文字，排在勾选项内因而构成它的可及名
+ * @csspart note - 附在判定上的一句自由文本
  * @csspart timer - 剩余时间，对读屏隐藏
+ * @csspart result - 判定落定后才露出的结果条，对读屏隐藏
+ * @csspart actions - 排布两颗按钮的动作行
  * @csspart approve-trigger - 批准
  * @csspart deny-trigger - 拒绝
  */
@@ -60,6 +67,8 @@ export class XhApprovalElement extends XhElement {
     status: { converter: STRING_CONVERTER },
     defaultStatus: { converter: STRING_CONVERTER, attribute: 'default-status' },
     timeoutMs: { converter: NUMBER_CONVERTER, attribute: 'timeout-ms' },
+    note: { converter: STRING_CONVERTER },
+    defaultNote: { converter: STRING_CONVERTER, attribute: 'default-note' },
     busy: { converter: BOOLEAN_CONVERTER },
     denyOnEscape: { converter: BOOLEAN_CONVERTER, attribute: 'deny-on-escape' },
     denyOnUnmount: { converter: BOOLEAN_CONVERTER, attribute: 'deny-on-unmount' },
@@ -77,6 +86,8 @@ export class XhApprovalElement extends XhElement {
   declare status?: ApprovalStatus
   declare defaultStatus?: ApprovalStatus
   declare timeoutMs?: number
+  declare note?: string
+  declare defaultNote?: string
   declare busy?: boolean
   declare denyOnEscape?: boolean
   declare denyOnUnmount?: boolean
@@ -95,6 +106,7 @@ export class XhApprovalElement extends XhElement {
 
   private readonly notifyDecision = (details: ApprovalDecisionDetails): void => this.emit('decision', details)
   private readonly notifyScopes = (details: ApprovalScopesChangeDetails): void => this.emit('granted-scopes-change', details)
+  private readonly notifyNote = (details: ApprovalNoteChangeDetails): void => this.emit('note-change', details)
 
   private readonly ctrl = new MachineController<ApprovalSchema>(this, approvalMachine, () => ({
     requestId: this.requestId,
@@ -104,6 +116,8 @@ export class XhApprovalElement extends XhElement {
     scopes: this.scopes,
     grantedScopes: this.grantedScopes,
     defaultGrantedScopes: this.defaultGrantedScopes,
+    note: this.note,
+    defaultNote: this.defaultNote,
     busy: this.busy,
     denyOnEscape: this.denyOnEscape,
     denyOnUnmount: this.denyOnUnmount,
@@ -113,6 +127,7 @@ export class XhApprovalElement extends XhElement {
     translations: this.translations,
     onDecision: this.notifyDecision,
     onGrantedScopesChange: this.notifyScopes,
+    onNoteChange: this.notifyNote,
   }))
 
   /** 一项授权的自报家门，全部取自作者写在节点上的 scope-* 属性。 */
@@ -137,7 +152,10 @@ export class XhApprovalElement extends XhElement {
     put('title', api.getTitleProps() as Record<string, unknown>)
     put('description', api.getDescriptionProps() as Record<string, unknown>)
     put('scope-group', api.getScopeGroupProps() as Record<string, unknown>)
+    put('note', api.getNoteProps() as Record<string, unknown>)
     put('timer', api.getTimerProps() as Record<string, unknown>)
+    put('result', api.getResultProps() as Record<string, unknown>)
+    put('actions', api.getActionsProps() as Record<string, unknown>)
     put('approve-trigger', api.getApproveTriggerProps() as Record<string, unknown>)
     put('deny-trigger', api.getDenyTriggerProps() as Record<string, unknown>)
 

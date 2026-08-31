@@ -5,6 +5,8 @@ import { XhElement } from '../element-base'
 
 // 属性缺席翻成 undefined，缺省值由 connect 给出
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
+// 缺省为真的开关：缺席翻成 undefined 交给 connect，要关掉写 caret="false"
+const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
  * `<xh-markdown-stream>` —— Light-DOM 行为宿主，无状态机：wire 时算出 connectMarkdownStream
@@ -20,10 +22,11 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @customElement xh-markdown-stream
  * @attr {string} announce - 播报档位：off（默认）或 polite
  * @attr {boolean} streaming - 正文是否仍在增长，只落 data-streaming
+ * @attr {boolean} caret - 画不画流式光标，缺席时画，写 caret="false" 关掉
  * @attr {string} size - 尺寸：sm / md / lg
- * @csspart root - 外壳，承载 data-state / data-streaming
+ * @csspart root - 外壳，承载 data-state / data-streaming，零块流式时承载 data-caret
  * @csspart content - 正文包裹层，内容由本元素铺
- * @csspart block - 一个顶层块，承载 data-kind / data-live / data-complete
+ * @csspart block - 一个顶层块，承载 data-kind / data-live / data-complete / data-caret
  * @csspart live-region - 视觉隐藏的原子播报区，一段回复写完时念一句
  */
 export class XhMarkdownStreamElement extends XhElement {
@@ -33,6 +36,7 @@ export class XhMarkdownStreamElement extends XhElement {
   static override properties = {
     streaming: { type: Boolean },
     announce: { converter: STRING_CONVERTER },
+    caret: { converter: BOOLEAN_CONVERTER },
     size: { converter: STRING_CONVERTER },
     // 数组与对象值走不了 HTML 属性，只作为 property 暴露
     blocks: { attribute: false },
@@ -41,6 +45,7 @@ export class XhMarkdownStreamElement extends XhElement {
 
   declare streaming?: boolean
   declare announce?: MarkdownStreamProps['announce']
+  declare caret?: boolean
   declare size?: MarkdownStreamProps['size']
   /** 已渲染好的块列表，由宿主调 createStreamRenderer().render() 得到。 */
   declare blocks?: readonly MarkdownBlock[]
@@ -54,6 +59,7 @@ export class XhMarkdownStreamElement extends XhElement {
       blocks: this.blocks ?? [],
       streaming: this.streaming,
       announce: this.announce,
+      caret: this.caret,
       size: this.size,
       translations: this.translations,
     }

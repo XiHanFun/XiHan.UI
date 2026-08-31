@@ -77,6 +77,10 @@ export interface ToolCallSchema extends MachineSchema {
 export interface ToolCallProps {
   /** 这次调用走到哪一步，默认 input-available。 */
   phase?: ToolCallPhase
+  /** 这次调用开始的时刻，毫秒时间戳。 */
+  startTime?: number
+  /** 这次调用结束的时刻。**可能缺席**：还在跑，或者流被中止时兜底收尾不写这一个。 */
+  endTime?: number
   tone?: Tone
   size?: Size
   translations?: Partial<ToolCallTranslations>
@@ -90,12 +94,16 @@ export interface ToolCallApi<T extends PropTypes = PropTypes> {
   disabled: boolean
   /** 读屏用的一句话，由宿主写进会话级的那一个播报区。 */
   statusText: string
+  /** 跑了多久，毫秒；两个时刻任一缺席即 undefined。 */
+  durationMs: number | undefined
   setOpen: (next: boolean) => void
   getRootProps: () => T['element']
   getTriggerProps: () => T['button']
   getIndicatorProps: () => T['element']
   getNameProps: () => T['element']
+  getSummaryProps: () => T['element']
   getStatusProps: () => T['element']
+  getDurationProps: () => T['element']
   getApprovalProps: () => T['element']
   getContentProps: () => T['element']
   getInputProps: () => T['element']
@@ -114,6 +122,19 @@ export interface ToolCallTranslations {
   outputAvailable: string
   /** 出错了。 */
   outputError: string
+  /**
+   * 跑了多久，形如 `Ran for {seconds}s`。
+   * 模板串由调用方现场代入，连接层不做插值。
+   */
+  ranFor: string
+}
+
+/** 两个时刻算时长；任一缺席、或倒着走，都算不出来。 */
+export function toolCallDuration(startTime?: number, endTime?: number): number | undefined {
+  if (startTime === undefined || endTime === undefined)
+    return undefined
+  const ms = endTime - startTime
+  return Number.isFinite(ms) && ms >= 0 ? ms : undefined
 }
 
 /** 阶段对应的兜底播报文案。 */

@@ -1,0 +1,62 @@
+<!-- 头部内建复制 | 复制交给剪贴板：把它放进头部条，用几个槽把描边按钮压成安静形态，1500 毫秒后自己回落 -->
+<xh-code-view
+  code="export function createStore(reduce: Reducer, initial: State) {
+  let state = initial
+  return {
+    get: () => state,
+    dispatch(action: Action) {
+      state = reduce(state, action)
+    },
+  }
+}"
+  code-lang="typescript"
+  filename="store.ts"
+  complete
+  style="inline-size: 100%"
+>
+  <div data-xh-part="root">
+    <div data-xh-part="header">
+      <!-- 文件名占满剩余宽度，复制按钮自然被推到头部条末端 -->
+      <span data-xh-part="filename">store.ts</span>
+      <!-- 嵌套的 xh-* 子树由外层元素跳过，两个宿主各接各的角色节点 -->
+      <xh-clipboard
+        value="export function createStore(reduce: Reducer, initial: State) {
+  let state = initial
+  return {
+    get: () => state,
+    dispatch(action: Action) {
+      state = reduce(state, action)
+    },
+  }
+}"
+        timeout="1500"
+        style="
+          --xh-clipboard-trigger-border: transparent;
+          --xh-clipboard-trigger-border-hover: transparent;
+          --xh-clipboard-trigger-bg: transparent;
+          --xh-clipboard-trigger-h: var(--xh-control-h-sm);
+          --xh-clipboard-trigger-px: var(--xh-control-px-sm);
+          --xh-clipboard-trigger-font-size: var(--xh-text-caption-size);
+        "
+      >
+        <div data-xh-part="root">
+          <!-- 无边无底、矮一档、字号取脚注档：静息与悬停都不画描边，只换底色 -->
+          <button data-xh-part="trigger">
+            <span data-xh-part="indicator"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M15 6V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h1"/></svg> 复制</span>
+            <span data-xh-part="indicator" copied><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5L9.5 18L20 6"/></svg> 已复制</span>
+          </button>
+        </div>
+      </xh-clipboard>
+    </div>
+    <!-- 行由元素铺；这里写的原文是 JS 到达之前的样子 -->
+    <pre data-xh-part="pre"><code data-xh-part="code">export function createStore(reduce: Reducer, initial: State) {
+  let state = initial
+  return {
+    get: () =&gt; state,
+    dispatch(action: Action) {
+      state = reduce(state, action)
+    },
+  }
+}</code></pre>
+  </div>
+</xh-code-view>

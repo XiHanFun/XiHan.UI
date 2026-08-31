@@ -1,0 +1,38 @@
+<!-- 流式光标 | 一块都还没来的时候光标就已经在了，caret 设成 false 可以整个关掉 -->
+<div style="display: flex; flex-direction: column; gap: 16px">
+  <div>
+    <p>等第一个字：块列表还是空的</p>
+    <xh-markdown-stream id="markdown-stream-caret-waiting" streaming>
+      <div data-xh-part="root">
+        <div data-xh-part="content"></div>
+      </div>
+    </xh-markdown-stream>
+  </div>
+  <div>
+    <p>正在出字：光标停在生长块末尾</p>
+    <xh-markdown-stream id="markdown-stream-caret-growing" streaming>
+      <div data-xh-part="root">
+        <div data-xh-part="content"></div>
+      </div>
+    </xh-markdown-stream>
+  </div>
+  <div>
+    <p>caret 设成 false：一竖都不画</p>
+    <xh-markdown-stream id="markdown-stream-caret-off" streaming caret="false">
+      <div data-xh-part="root">
+        <div data-xh-part="content"></div>
+      </div>
+    </xh-markdown-stream>
+  </div>
+</div>
+
+<script type="module">
+  // 生长中的那一块 key 恒为 live，光标画在它末尾
+  const growing = [
+    { key: "live", kind: "markdown", html: "<p>正在写的这一句。</p>", complete: false },
+  ];
+
+  document.getElementById("markdown-stream-caret-waiting").blocks = [];
+  document.getElementById("markdown-stream-caret-growing").blocks = growing;
+  document.getElementById("markdown-stream-caret-off").blocks = growing;
+</script>

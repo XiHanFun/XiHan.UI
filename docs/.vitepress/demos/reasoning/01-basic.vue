@@ -1,8 +1,7 @@
-<!-- 基础用法 | 想的时候自动展开、想完自动收起；时长由两个时刻算出来，任一缺席就不显示 -->
+<!-- 基础用法 | 想的时候自动展开、想完自动收起；状态文案由组件按在不在想与时长给出 -->
 <script setup lang="ts">
 import {
   XhReasoningContent,
-  XhReasoningDuration,
   XhReasoningIndicator,
   XhReasoningLabel,
   XhReasoningRoot,
@@ -32,22 +31,24 @@ tick();
 
 onBeforeUnmount(() => window.clearTimeout(timer));
 
-// 模板串由调用方现场代入，连接层不做插值
-const durationText = (ms: number | undefined) =>
-  ms === undefined ? "思考中…" : `用时 ${Math.round(ms / 100) / 10} 秒`;
+// 名字位不写内容时显示这几句，{seconds} 由组件代入
+const translations = {
+  label: "思考过程",
+  thinking: "正在思考…",
+  thoughtFor: "想了 {seconds} 秒",
+};
 </script>
 
 <template>
   <XhReasoningRoot
-    v-slot="{ durationMs }"
     :streaming="streaming"
     :start-time="startTime"
     :end-time="endTime"
+    :translations="translations"
   >
     <XhReasoningTrigger>
-      <XhReasoningIndicator>›</XhReasoningIndicator>
-      <XhReasoningLabel>思考过程</XhReasoningLabel>
-      <XhReasoningDuration>{{ durationText(durationMs) }}</XhReasoningDuration>
+      <XhReasoningIndicator />
+      <XhReasoningLabel />
     </XhReasoningTrigger>
     <XhReasoningContent>{{ text }}</XhReasoningContent>
   </XhReasoningRoot>

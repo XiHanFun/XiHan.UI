@@ -37,7 +37,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @attr {string} size - 尺寸：sm / md / lg
  * @fires stick-change - 粘底状态变化；detail 为 `{ atBottom: boolean, sticking: boolean }`
  * @fires item-focus - 锚点变化；detail 为 `{ id: string | null }`
- * @csspart root - 组件根容器，承载 role=feed 与容器兜底的 Tab 位
+ * @csspart root - 组件根容器，承载容器兜底的 Tab 位与键盘模型
  * @csspart viewport - 滚动容器，只有几何
  * @csspart list - 内容包裹层，条目必须是它的直接子节点
  * @csspart item - 一条消息，role=article + aria-posinset / aria-setsize

@@ -5,6 +5,11 @@ import { canApproveScopes } from './approval.types'
 
 const { createMachine, guards } = setup<ApprovalSchema>()
 
+/** 判定载荷里的备注那一格：空串时不带。 */
+function noteOf(note: string): { note?: string } {
+  return note === '' ? {} : { note }
+}
+
 /**
  * 超时一律按拒绝收口，这条由机器结构保证，不靠调用方守规矩：
  *
@@ -26,6 +31,11 @@ export const approvalMachine = createMachine({
       isEqual: (a, b) => Array.isArray(b) && a.length === b.length && a.every((v, i) => v === b[i]),
       onChange: value => prop('onGrantedScopesChange')?.({ value }),
     })),
+    note: cell<string>(() => ({
+      value: prop('note') as string | undefined,
+      defaultValue: (prop('defaultNote') as string | undefined) ?? '',
+      onChange: value => prop('onNoteChange')?.({ value }),
+    })),
   }),
   initialState: ({ prop }) => prop('status') ?? prop('defaultStatus') ?? 'pending',
   watch: ({ track, prop, action }) => {
@@ -39,9 +49,10 @@ export const approvalMachine = createMachine({
     'CONTROLLED.APPROVE': { target: 'approved' },
     'CONTROLLED.DENY': { target: 'denied' },
     'CONTROLLED.EXPIRE': { target: 'expired' },
-    'REQUEST.RESET': { target: 'pending', reenter: true, actions: ['resetScopes'] },
+    'REQUEST.RESET': { target: 'pending', reenter: true, actions: ['resetScopes', 'resetNote'] },
     // 程序化写入不挂可编辑守卫：那是给宿主用的入口
     'SCOPE.SET': { actions: ['setScopes'] },
+    'NOTE.SET': { actions: ['setNote'] },
   },
   // 机器停止时若仍待决，按拒绝派一次（须 denyOnUnmount 显式开启）
   exit: ['denyIfPending'],
@@ -84,6 +95,7 @@ export const approvalMachine = createMachine({
           decision: 'approved',
           source: 'user',
           scopes: [...context.get('grantedScopes')],
+          ...noteOf(context.get('note')),
         })
       },
       invokeDeny: ({ prop, context, event }) => {
@@ -93,6 +105,7 @@ export const approvalMachine = createMachine({
           decision: 'denied',
           source: e.type === 'DENY' ? e.source : 'user',
           scopes: [...context.get('grantedScopes')],
+          ...noteOf(context.get('note')),
         })
       },
       // 超时写死成拒绝：类型层与这一行一起把「超时放行」这条路封死
@@ -102,6 +115,7 @@ export const approvalMachine = createMachine({
           decision: 'denied',
           source: 'timeout',
           scopes: [...context.get('grantedScopes')],
+          ...noteOf(context.get('note')),
         })
       },
       toggleScope: ({ context, event }) => {
@@ -117,6 +131,14 @@ export const approvalMachine = createMachine({
       resetScopes: ({ context, prop }) => {
         context.set('grantedScopes', [...(prop('defaultGrantedScopes') ?? [])])
       },
+      setNote: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'NOTE.SET')
+          context.set('note', e.value)
+      },
+      resetNote: ({ context, prop }) => {
+        context.set('note', prop('defaultNote') ?? '')
+      },
       denyIfPending: ({ prop, context, state }) => {
         if (prop('denyOnUnmount') !== true || state.get() !== 'pending')
           return
@@ -125,6 +147,7 @@ export const approvalMachine = createMachine({
           decision: 'denied',
           source: 'unmount',
           scopes: [...context.get('grantedScopes')],
+          ...noteOf(context.get('note')),
         })
       },
       // 换了一轮请求：旧结果由宿主自己作废，这里不替旧一轮补一次拒绝
