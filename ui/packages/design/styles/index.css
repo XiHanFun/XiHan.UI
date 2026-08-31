@@ -43,6 +43,7 @@
 @import './css/prompt-input.css';
 @import './css/qr-code.css';
 @import './css/reset.css';
+@import './css/reasoning.css';
 @import './css/resizable.css';
 @import './css/result.css';
 @import './css/segmented.css';
@@ -127,6 +128,7 @@
 @import './css/toast.css';
 @import './css/toggle.css';
 @import './css/toggle-group.css';
+@import './css/tool-call.css';
 @import './css/toolbar.css';
 @import './css/tooltip.css';
 @import './css/tour.css';

@@ -1,0 +1,38 @@
+<!-- 基础用法 | 想的时候自动展开、想完自动收起；时长由两个时刻算出来，任一缺席就不显示 -->
+<xh-reasoning id="reasoning-basic" streaming>
+  <div data-xh-part="root">
+    <button data-xh-part="trigger">
+      <span data-xh-part="indicator">›</span>
+      <span data-xh-part="label">思考过程</span>
+      <span data-xh-part="duration">思考中…</span>
+    </button>
+    <div data-xh-part="content"></div>
+  </div>
+</xh-reasoning>
+
+<script type="module">
+  const panel = document.getElementById("reasoning-basic");
+  const body = panel.querySelector('[data-xh-part="content"]');
+  const duration = panel.querySelector('[data-xh-part="duration"]');
+  const full = "先看约束：只读一次文件，别改它。再看目标：找出导出面。";
+
+  const startTime = performance.timeOrigin + performance.now();
+  panel.setAttribute("start-time", String(Math.round(startTime)));
+
+  let at = 0;
+  const tick = () => {
+    if (!panel.isConnected) return;
+    at = Math.min(at + 2, full.length);
+    body.textContent = full.slice(0, at);
+    if (at < full.length) {
+      setTimeout(tick, 60);
+      return;
+    }
+    const endTime = performance.timeOrigin + performance.now();
+    panel.setAttribute("end-time", String(Math.round(endTime)));
+    panel.removeAttribute("streaming");
+    // 模板串由调用方现场代入，连接层不做插值
+    duration.textContent = `用时 ${Math.round((endTime - startTime) / 100) / 10} 秒`;
+  };
+  tick();
+</script>

@@ -87,6 +87,7 @@ import { XhPromptInputElement } from './elements/prompt-input'
 import { XhQrCodeElement } from './elements/qr-code'
 import { XhRadioGroupElement } from './elements/radio-group'
 import { XhRatingElement } from './elements/rating'
+import { XhReasoningElement } from './elements/reasoning'
 import { XhResizableElement } from './elements/resizable'
 import { XhResultElement } from './elements/result'
 import { XhScrollAreaElement } from './elements/scroll-area'
@@ -120,6 +121,7 @@ import { XhToastElement } from './elements/toast'
 import { XhToggleElement } from './elements/toggle'
 import { XhToggleGroupElement } from './elements/toggle-group'
 import { XhToolbarElement } from './elements/toolbar'
+import { XhToolCallElement } from './elements/tool-call'
 import { XhTooltipElement } from './elements/tooltip'
 import { XhTourElement } from './elements/tour'
 import { XhTransferElement } from './elements/transfer'
@@ -169,6 +171,7 @@ export function defineXhElements(): void {
   defineElement('xh-popconfirm', XhPopconfirmElement, VERSION)
   defineElement('xh-popselect', XhPopselectElement, VERSION)
   defineElement('xh-qr-code', XhQrCodeElement, VERSION)
+  defineElement('xh-reasoning', XhReasoningElement, VERSION)
   defineElement('xh-resizable', XhResizableElement, VERSION)
   defineElement('xh-result', XhResultElement, VERSION)
   defineElement('xh-segmented', XhSegmentedElement, VERSION)
@@ -250,6 +253,7 @@ export function defineXhElements(): void {
   defineElement('xh-toast', XhToastElement, VERSION)
   defineElement('xh-toggle', XhToggleElement, VERSION)
   defineElement('xh-toggle-group', XhToggleGroupElement, VERSION)
+  defineElement('xh-tool-call', XhToolCallElement, VERSION)
   defineElement('xh-toolbar', XhToolbarElement, VERSION)
   defineElement('xh-tooltip', XhTooltipElement, VERSION)
   defineElement('xh-tour', XhTourElement, VERSION)
@@ -333,6 +337,7 @@ export {
   XhPromptInputElement,
   XhRadioGroupElement,
   XhRatingElement,
+  XhReasoningElement,
   XhResizableElement,
   XhScrollAreaElement,
   XhScrollbarElement,
@@ -362,6 +367,7 @@ export {
   XhToggleElement,
   XhToggleGroupElement,
   XhToolbarElement,
+  XhToolCallElement,
   XhTooltipElement,
   XhTourElement,
   XhTransferElement,

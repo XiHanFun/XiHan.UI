@@ -68,6 +68,7 @@ import {
   popselectSuite,
   qrCodeSuite,
   ratingSuite,
+  reasoningSuite,
   resizableSuite,
   resultSuite,
   runParity,
@@ -94,6 +95,7 @@ import {
   timeSuite,
   toastSuite,
   toggleSuite,
+  toolCallSuite,
   tooltipSuite,
   tourSuite,
   transferSuite,
@@ -223,6 +225,8 @@ const SUITES: readonly ConformanceSuite[] = [
   imageCropperSuite,
   signaturePadSuite,
   floatingPanelSuite,
+  toolCallSuite,
+  reasoningSuite,
 ]
 
 /** 暂不做逐帧比对的套件与理由。它们的跨适配器保证由两侧各自跑同一份 conformance 规格提供。 */

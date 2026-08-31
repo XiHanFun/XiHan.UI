@@ -667,6 +667,11 @@ export type { RatingItemSlotProps, RatingRootSlotProps } from './components/rati
 export { useRating } from './components/rating/use-rating'
 export type { RatingContext } from './components/rating/use-rating'
 export { provideResizable, useResizableContext } from './components/resizable/context'
+export { provideReasoning, useReasoningContext } from './components/reasoning/context'
+export { XhReasoningContent, XhReasoningDuration, XhReasoningIndicator, XhReasoningLabel, XhReasoningRoot, XhReasoningTrigger } from './components/reasoning/reasoning'
+export type { ReasoningRootSlotProps } from './components/reasoning/reasoning'
+export { useReasoning } from './components/reasoning/use-reasoning'
+export type { ReasoningContext } from './components/reasoning/use-reasoning'
 export { XhResizableHandle, XhResizableRoot } from './components/resizable/resizable'
 export type { ResizableRootSlotProps } from './components/resizable/resizable'
 export { useResizable } from './components/resizable/use-resizable'
@@ -925,6 +930,11 @@ export type { ToggleGroupContext } from './components/toggle-group/use-toggle-gr
 export { XhToggle } from './components/toggle/toggle'
 export { useToggle } from './components/toggle/use-toggle'
 export type { ToggleContext } from './components/toggle/use-toggle'
+export { provideToolCall, useToolCallContext } from './components/tool-call/context'
+export { XhToolCallApproval, XhToolCallContent, XhToolCallError, XhToolCallIndicator, XhToolCallInput, XhToolCallName, XhToolCallOutput, XhToolCallRoot, XhToolCallStatus, XhToolCallTrigger } from './components/tool-call/tool-call'
+export type { ToolCallRootSlotProps } from './components/tool-call/tool-call'
+export { useToolCall } from './components/tool-call/use-tool-call'
+export type { ToolCallContext } from './components/tool-call/use-tool-call'
 export {
   XhToolbarGroup,
   XhToolbarItem,
