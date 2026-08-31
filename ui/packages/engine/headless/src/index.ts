@@ -8,6 +8,8 @@ export { alertAnatomy, alertKeyboard, alertMachine, alertMeta, connectAlert } fr
 export type { AlertApi, AlertOpenChangeDetails, AlertSchema, AlertTranslations } from './alert'
 export { ANCHOR_DEFAULT_OFFSET, anchorAnatomy, anchorItemQuery, anchorKeyboard, anchorMachine, anchorMeta, connectAnchor, resolveActiveAnchor } from './anchor'
 export type { AnchorApi, AnchorIndicatorRect, AnchorLinkProps, AnchorRefs, AnchorSchema, AnchorTargetOffset, AnchorTranslations, AnchorValueChangeDetails } from './anchor'
+export { APPROVAL_DENY_SELECTOR, approvalAnatomy, approvalKeyboard, approvalMachine, approvalMeta, canApproveScopes, connectApproval } from './approval'
+export type { ApprovalApi, ApprovalDecisionDetails, ApprovalSchema, ApprovalScope, ApprovalScopesChangeDetails, ApprovalStatus, ApprovalTranslations } from './approval'
 export { avatarAnatomy, avatarKeyboard, avatarMachine, avatarMeta, connectAvatar } from './avatar'
 export type { AvatarApi, AvatarSchema, AvatarStatus, AvatarStatusChangeDetails, AvatarTranslations } from './avatar'
 export { avatarGroupAnatomy, avatarGroupKeyboard, avatarGroupMeta, connectAvatarGroup } from './avatar-group'

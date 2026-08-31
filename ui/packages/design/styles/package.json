@@ -34,6 +34,7 @@
     "./alert.css": "./css/alert.css",
     "./anchor.css": "./css/anchor.css",
     "./avatar-group.css": "./css/avatar-group.css",
+    "./approval.css": "./css/approval.css",
     "./avatar.css": "./css/avatar.css",
     "./back-top.css": "./css/back-top.css",
     "./badge.css": "./css/badge.css",

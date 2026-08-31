@@ -1085,6 +1085,484 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/approval.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-approval>` —— Light-DOM 行为宿主：危险动作执行前的人在环闸门。\n\n超时一律按拒绝收口，这条由机器结构保证；拒绝这条路永远走得通。\n授权项的身份写在作者自己的节点上（`scope-value` 等 `scope-*` 属性），\n**不用 value**——那是表单属性，写上去会与本组件无关的表单语义搅在一起。",
+          "name": "XhApprovalElement",
+          "cssParts": [
+            {
+              "description": "role=group 的闸门本体",
+              "name": "root"
+            },
+            {
+              "description": "闸门标题，给它命名",
+              "name": "title"
+            },
+            {
+              "description": "闸门说明，给它描述",
+              "name": "description"
+            },
+            {
+              "description": "可配档位的活区",
+              "name": "announcement"
+            },
+            {
+              "description": "授权项那一组",
+              "name": "scope-group"
+            },
+            {
+              "description": "一项授权，role=checkbox，只认 Space",
+              "name": "scope-item"
+            },
+            {
+              "description": "勾选记号，对读屏隐藏",
+              "name": "scope-indicator"
+            },
+            {
+              "description": "授权项文字，排在勾选项内因而构成它的可及名",
+              "name": "scope-label"
+            },
+            {
+              "description": "剩余时间，对读屏隐藏",
+              "name": "timer"
+            },
+            {
+              "description": "批准",
+              "name": "approve-trigger"
+            },
+            {
+              "description": "拒绝",
+              "name": "deny-trigger"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: approvalAnatomy, meta: approvalMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "requestId",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "request-id"
+            },
+            {
+              "kind": "field",
+              "name": "status",
+              "privacy": "public",
+              "type": {
+                "text": "ApprovalStatus | undefined"
+              },
+              "attribute": "status"
+            },
+            {
+              "kind": "field",
+              "name": "defaultStatus",
+              "privacy": "public",
+              "type": {
+                "text": "ApprovalStatus | undefined"
+              },
+              "attribute": "default-status"
+            },
+            {
+              "kind": "field",
+              "name": "timeoutMs",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "timeout-ms"
+            },
+            {
+              "kind": "field",
+              "name": "busy",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "busy"
+            },
+            {
+              "kind": "field",
+              "name": "denyOnEscape",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "deny-on-escape"
+            },
+            {
+              "kind": "field",
+              "name": "denyOnUnmount",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "deny-on-unmount"
+            },
+            {
+              "kind": "field",
+              "name": "live",
+              "privacy": "public",
+              "type": {
+                "text": "'polite' | 'assertive' | undefined"
+              },
+              "attribute": "live"
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "Tone | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "Size | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "scopes",
+              "privacy": "public",
+              "type": {
+                "text": "readonly ApprovalScope[] | undefined"
+              },
+              "description": "可勾选的授权范围；不给就没有勾选那一段。"
+            },
+            {
+              "kind": "field",
+              "name": "grantedScopes",
+              "privacy": "public",
+              "type": {
+                "text": "readonly string[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "defaultGrantedScopes",
+              "privacy": "public",
+              "type": {
+                "text": "readonly string[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "Partial<ApprovalTranslations> | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "emit",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyDecision",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyScopes",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<ApprovalSchema>(this, approvalMachine, () => ({ requestId: this.requestId, status: this.status, defaultStatus: this.defaultStatus, timeoutMs: this.timeoutMs, scopes: this.scopes, grantedScopes: this.grantedScopes, defaultGrantedScopes: this.defaultGrantedScopes, busy: this.busy, denyOnEscape: this.denyOnEscape, denyOnUnmount: this.denyOnUnmount, live: this.live, tone: this.tone, size: this.size, translations: this.translations, onDecision: this.notifyDecision, onGrantedScopesChange: this.notifyScopes, }))"
+            },
+            {
+              "kind": "method",
+              "name": "scopeOf",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "ApprovalScope"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "el",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                }
+              ],
+              "description": "一项授权的自报家门，全部取自作者写在节点上的 scope-* 属性。"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "判定落定；detail 为 `{ requestId, decision, source, scopes }`",
+              "name": "decision",
+              "type": {
+                "text": "ApprovalDecisionDetails"
+              }
+            },
+            {
+              "description": "勾选的授权项变化；detail 为 `{ value: string[] }`",
+              "name": "granted-scopes-change",
+              "type": {
+                "text": "ApprovalScopesChangeDetails"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "这一轮请求的身份，变了即重入待决并按新时长重起计时",
+              "name": "request-id",
+              "fieldName": "requestId"
+            },
+            {
+              "type": {
+                "text": "ApprovalStatus | undefined"
+              },
+              "description": "受控判定态：pending / approved / denied / expired",
+              "name": "status",
+              "fieldName": "status"
+            },
+            {
+              "type": {
+                "text": "ApprovalStatus | undefined"
+              },
+              "description": "非受控初值，默认 pending",
+              "name": "default-status",
+              "fieldName": "defaultStatus"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "多久没人答就按拒绝收口；缺省不起计时器",
+              "name": "timeout-ms",
+              "fieldName": "timeoutMs"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "判定在途：只挡重复批准，不挡拒绝",
+              "name": "busy",
+              "fieldName": "busy"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "Escape 判为拒绝，默认开",
+              "name": "deny-on-escape",
+              "fieldName": "denyOnEscape"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "卸载时若仍待决就按拒绝派一次，默认关",
+              "name": "deny-on-unmount",
+              "fieldName": "denyOnUnmount"
+            },
+            {
+              "type": {
+                "text": "'polite' | 'assertive' | undefined"
+              },
+              "description": "播报档位：polite（默认）或 assertive",
+              "name": "live",
+              "fieldName": "live"
+            },
+            {
+              "type": {
+                "text": "Tone | undefined"
+              },
+              "description": "语气",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "Size | undefined"
+              },
+              "description": "尺寸：sm / md / lg",
+              "name": "size",
+              "fieldName": "size"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-approval",
+          "customElement": true,
+          "cssProperties": [
+            {
+              "name": "--xh-approval-action-font-size"
+            },
+            {
+              "name": "--xh-approval-action-font-weight"
+            },
+            {
+              "name": "--xh-approval-action-h"
+            },
+            {
+              "name": "--xh-approval-action-px"
+            },
+            {
+              "name": "--xh-approval-action-radius"
+            },
+            {
+              "name": "--xh-approval-approve-bg"
+            },
+            {
+              "name": "--xh-approval-approve-bg-hover"
+            },
+            {
+              "name": "--xh-approval-approve-bg-off"
+            },
+            {
+              "name": "--xh-approval-approve-fg"
+            },
+            {
+              "name": "--xh-approval-bg"
+            },
+            {
+              "name": "--xh-approval-border"
+            },
+            {
+              "name": "--xh-approval-border-settled"
+            },
+            {
+              "name": "--xh-approval-deny-bg"
+            },
+            {
+              "name": "--xh-approval-deny-bg-hover"
+            },
+            {
+              "name": "--xh-approval-deny-border"
+            },
+            {
+              "name": "--xh-approval-deny-fg"
+            },
+            {
+              "name": "--xh-approval-description-fg"
+            },
+            {
+              "name": "--xh-approval-description-font-size"
+            },
+            {
+              "name": "--xh-approval-gap"
+            },
+            {
+              "name": "--xh-approval-indicator-bg-checked"
+            },
+            {
+              "name": "--xh-approval-indicator-border"
+            },
+            {
+              "name": "--xh-approval-indicator-border-checked"
+            },
+            {
+              "name": "--xh-approval-indicator-fg"
+            },
+            {
+              "name": "--xh-approval-indicator-radius"
+            },
+            {
+              "name": "--xh-approval-indicator-size"
+            },
+            {
+              "name": "--xh-approval-p"
+            },
+            {
+              "name": "--xh-approval-radius"
+            },
+            {
+              "name": "--xh-approval-scope-bg-hover"
+            },
+            {
+              "name": "--xh-approval-scope-font-size"
+            },
+            {
+              "name": "--xh-approval-scope-gap"
+            },
+            {
+              "name": "--xh-approval-scope-item-gap"
+            },
+            {
+              "name": "--xh-approval-scope-px"
+            },
+            {
+              "name": "--xh-approval-scope-py"
+            },
+            {
+              "name": "--xh-approval-scope-radius"
+            },
+            {
+              "name": "--xh-approval-timer-fg"
+            },
+            {
+              "name": "--xh-approval-timer-font-size"
+            },
+            {
+              "name": "--xh-approval-title-fg"
+            },
+            {
+              "name": "--xh-approval-title-font-size"
+            },
+            {
+              "name": "--xh-approval-title-font-weight"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhApprovalElement",
+          "declaration": {
+            "name": "XhApprovalElement",
+            "module": "src/elements/approval.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/avatar-group.ts",
       "declarations": [
         {

@@ -8292,6 +8292,250 @@ input[data-scope='mention'][data-part='input'] {
     inline-size var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
 }
 
+/* styles/approval.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='approval'] {
+  --xh-approval-skin: 1;
+}
+
+/* 一块要人做决定的表面：默认按警示语气画描边，判定落定后退回中性 */
+[data-scope='approval'][data-part='root'] {
+  display: flex;
+  flex-direction: column;
+  gap: var(--xh-approval-gap, var(--xh-space-3));
+  padding: var(--xh-approval-p, var(--xh-space-4));
+  border: var(--xh-stroke-thin) solid var(--xh-approval-border, var(--xh-_tone, var(--xh-border-strong)));
+  border-radius: var(--xh-approval-radius, var(--xh-shape-surface));
+  background: var(--xh-approval-bg, var(--xh-bg-surface));
+}
+
+/* 上面声明的 display 会盖掉 UA 的 [hidden]{display:none}，这里补回 */
+[data-scope='approval'][data-part='root'][hidden] {
+  display: none;
+}
+
+/* 判过了就不再抢注意力 */
+[data-scope='approval'][data-part='root']:not([data-state='pending']) {
+  border-color: var(--xh-approval-border-settled, var(--xh-border-subtle));
+}
+
+[data-scope='approval'][data-part='title'] {
+  display: block;
+  margin: 0;
+  color: var(--xh-approval-title-fg, var(--xh-fg-default));
+  font-size: var(--xh-approval-title-font-size, var(--xh-text-label-size));
+  font-weight: var(--xh-approval-title-font-weight, var(--xh-text-label-weight));
+  line-height: var(--xh-leading-tight);
+}
+
+[data-scope='approval'][data-part='title'][hidden] {
+  display: none;
+}
+
+[data-scope='approval'][data-part='description'] {
+  display: block;
+  margin: 0;
+  color: var(--xh-approval-description-fg, var(--xh-fg-muted));
+  font-size: var(--xh-approval-description-font-size, var(--xh-text-secondary-size));
+  line-height: var(--xh-text-body-leading);
+}
+
+[data-scope='approval'][data-part='description'][hidden] {
+  display: none;
+}
+
+/* 视觉隐藏的播报区：不能 display:none，那样读屏就取不到它了 */
+[data-scope='approval'][data-part='announcement'] {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  padding: 0;
+  margin: -1px;
+  border: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+[data-scope='approval'][data-part='scope-group'] {
+  display: flex;
+  flex-direction: column;
+  gap: var(--xh-approval-scope-gap, var(--xh-space-1));
+}
+
+[data-scope='approval'][data-part='scope-group'][hidden] {
+  display: none;
+}
+
+/* 一项授权：整行可点、可聚焦，勾选记号在左 */
+[data-scope='approval'][data-part='scope-item'] {
+  display: flex;
+  align-items: center;
+  gap: var(--xh-approval-scope-item-gap, var(--xh-space-2));
+  padding-inline: var(--xh-approval-scope-px, var(--xh-space-2));
+  padding-block: var(--xh-approval-scope-py, var(--xh-space-1));
+  border-radius: var(--xh-approval-scope-radius, var(--xh-shape-control));
+  font-size: var(--xh-approval-scope-font-size, var(--xh-control-font-md));
+  cursor: pointer;
+}
+
+[data-scope='approval'][data-part='scope-item'][hidden] {
+  display: none;
+}
+
+[data-scope='approval'][data-part='scope-item']:hover {
+  background: var(--xh-approval-scope-bg-hover, var(--xh-bg-subtle-hover));
+}
+
+[data-scope='approval'][data-part='scope-item']:focus-visible {
+  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline-offset: var(--xh-ring-offset);
+}
+
+[data-scope='approval'][data-part='scope-item'][data-disabled] {
+  color: var(--xh-fg-disabled);
+  cursor: not-allowed;
+}
+
+/* 勾选记号：方框 + 选中态填色，纯装饰不进可访问名 */
+[data-scope='approval'][data-part='scope-indicator'] {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  border: var(--xh-stroke-thin) solid var(--xh-approval-indicator-border, var(--xh-border-control));
+  border-radius: var(--xh-approval-indicator-radius, var(--xh-shape-inset));
+  color: var(--xh-approval-indicator-fg, var(--xh-fg-on-brand));
+  inline-size: var(--xh-approval-indicator-size, var(--xh-control-indicator-size));
+  block-size: var(--xh-approval-indicator-size, var(--xh-control-indicator-size));
+}
+
+[data-scope='approval'][data-part='scope-indicator'][hidden] {
+  display: none;
+}
+
+[data-scope='approval'][data-part='scope-indicator'][data-state='checked'] {
+  border-color: var(--xh-approval-indicator-border-checked, var(--xh-bg-brand));
+  background: var(--xh-approval-indicator-bg-checked, var(--xh-bg-brand));
+}
+
+[data-scope='approval'][data-part='scope-label'] {
+  display: block;
+  flex: 1 1 auto;
+}
+
+[data-scope='approval'][data-part='scope-label'][hidden] {
+  display: none;
+}
+
+/* 剩余时间：等宽数字，逐秒跳字时不左右晃 */
+[data-scope='approval'][data-part='timer'] {
+  display: block;
+  color: var(--xh-approval-timer-fg, var(--xh-fg-muted));
+  font-size: var(--xh-approval-timer-font-size, var(--xh-text-caption-size));
+  font-variant-numeric: tabular-nums;
+}
+
+[data-scope='approval'][data-part='timer'][hidden] {
+  display: none;
+}
+
+/* 两颗按钮：批准是实心主色，拒绝是描边中性 */
+[data-scope='approval'][data-part='approve-trigger'],
+[data-scope='approval'][data-part='deny-trigger'] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding-inline: var(--xh-approval-action-px, var(--xh-control-px-md));
+  border: var(--xh-stroke-thin) solid transparent;
+  border-radius: var(--xh-approval-action-radius, var(--xh-shape-control));
+  font-family: inherit;
+  font-size: var(--xh-approval-action-font-size, var(--xh-text-label-size));
+  font-weight: var(--xh-approval-action-font-weight, var(--xh-text-label-weight));
+  line-height: var(--xh-leading-none);
+  block-size: var(--xh-approval-action-h, var(--xh-control-h-md));
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+[data-scope='approval'][data-part='approve-trigger'][hidden],
+[data-scope='approval'][data-part='deny-trigger'][hidden] {
+  display: none;
+}
+
+[data-scope='approval'][data-part='approve-trigger'] {
+  background: var(--xh-approval-approve-bg, var(--xh-_tone, var(--xh-bg-brand)));
+  color: var(--xh-approval-approve-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
+}
+
+[data-scope='approval'][data-part='approve-trigger']:hover {
+  background: var(--xh-approval-approve-bg-hover, var(--xh-_tone-hover, var(--xh-bg-brand-hover)));
+}
+
+[data-scope='approval'][data-part='approve-trigger']:active {
+  scale: var(--xh-motion-scale-press);
+}
+
+/* 待决时用 aria-disabled 而不是原生 disabled：保住可聚焦，让读屏念得到为什么按不动。
+   所以置灰要按这个属性写，不能只写 :disabled */
+[data-scope='approval'][data-part='approve-trigger'][aria-disabled='true'] {
+  background: var(--xh-approval-approve-bg-off, var(--xh-bg-muted));
+  color: var(--xh-fg-disabled);
+  cursor: not-allowed;
+}
+
+[data-scope='approval'][data-part='deny-trigger'] {
+  border-color: var(--xh-approval-deny-border, var(--xh-border-control));
+  background: var(--xh-approval-deny-bg, transparent);
+  color: var(--xh-approval-deny-fg, var(--xh-fg-default));
+}
+
+[data-scope='approval'][data-part='deny-trigger']:hover {
+  background: var(--xh-approval-deny-bg-hover, var(--xh-bg-subtle-hover));
+}
+
+[data-scope='approval'][data-part='deny-trigger']:active {
+  scale: var(--xh-motion-scale-press);
+}
+
+[data-scope='approval'][data-part='approve-trigger']:focus-visible,
+[data-scope='approval'][data-part='deny-trigger']:focus-visible {
+  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline-offset: var(--xh-ring-offset);
+}
+
+[data-scope='approval'][data-part='approve-trigger']:disabled,
+[data-scope='approval'][data-part='deny-trigger']:disabled {
+  color: var(--xh-fg-disabled);
+  cursor: not-allowed;
+}
+
+/* 尺寸档只改内衬、间距与按钮高度 */
+[data-scope='approval'][data-part='root'][data-size='sm'] {
+  --xh-approval-p: var(--xh-space-3);
+  --xh-approval-gap: var(--xh-space-2);
+  --xh-approval-action-h: var(--xh-control-h-sm);
+  --xh-approval-action-px: var(--xh-control-px-sm);
+  --xh-approval-scope-font-size: var(--xh-control-font-sm);
+}
+
+[data-scope='approval'][data-part='root'][data-size='md'] {
+  --xh-approval-p: var(--xh-space-4);
+  --xh-approval-gap: var(--xh-space-3);
+  --xh-approval-action-h: var(--xh-control-h-md);
+  --xh-approval-action-px: var(--xh-control-px-md);
+  --xh-approval-scope-font-size: var(--xh-control-font-md);
+}
+
+[data-scope='approval'][data-part='root'][data-size='lg'] {
+  --xh-approval-p: var(--xh-space-5);
+  --xh-approval-gap: var(--xh-space-4);
+  --xh-approval-action-h: var(--xh-control-h-lg);
+  --xh-approval-action-px: var(--xh-control-px-lg);
+  --xh-approval-scope-font-size: var(--xh-control-font-lg);
+}
+
 /* styles/avatar.css */
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='avatar'] {

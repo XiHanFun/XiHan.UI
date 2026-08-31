@@ -9,6 +9,7 @@ import {
   allSuites,
   anchorSuite,
   avatarGroupSuite,
+  approvalSuite,
   avatarSuite,
   backTopSuite,
   badgeSuite,
@@ -225,6 +226,7 @@ const SUITES: readonly ConformanceSuite[] = [
   imageCropperSuite,
   signaturePadSuite,
   floatingPanelSuite,
+  approvalSuite,
   toolCallSuite,
   reasoningSuite,
 ]

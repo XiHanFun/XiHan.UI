@@ -25,6 +25,10 @@
       "$description": "步骤：steps 的每一步（timer 走完也落 completed）。配对 aria-current=step。",
       "values": ["completed", "current", "incomplete"]
     },
+    "decision": {
+      "$description": "人在环判定：待决、批准、拒绝、超时按拒绝收口。四值互斥，一个闸门在任一时刻只取其中一个。",
+      "values": ["pending", "approved", "denied", "expired"]
+    },
     "phase": {
       "$description": "过程阶段：异步或时序型组件的生命周期（头像/图片加载、剪贴板、下载、上传、计时器、进度条、签名板、二维码、时间输入、取色器）。",
       "values": [
