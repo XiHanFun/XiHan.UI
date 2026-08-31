@@ -14,6 +14,13 @@ export interface RenderedBlock {
   readonly complete: boolean
   /** 围栏语言标注，仅 code 块有。半截或不认识的标注一律留原样，由消费方降级。 */
   readonly lang?: string
+  /**
+   * 块正文的原始文本，只有 code 与 math 两种块填。
+   *
+   * html 对这两种块只是降级产物：代码要交给代码组件重排行号与着色，公式要交给公式引擎，
+   * 两者都得拿到未经转义的正文。code 块给的是剥掉起止围栏后的代码，math 块给的是剥掉 `$$` 后的公式。
+   */
+  readonly source?: string
 }
 
 export interface RenderOpts {

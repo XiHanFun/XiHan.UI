@@ -115,8 +115,8 @@ for (const entry of await readdir(HEADLESS, { withFileTypes: true })) {
 
 // ── 三点五、组件 props 名 ──
 //
-// 事实源取 headless 的 <组件>Schema['props']（没有机器的组件取 <组件>Props）——两个适配器的
-// props 都是照它铺的。
+// 事实源取 headless 的 <组件>Schema['props'] 与 <组件>Props 的并集——两个适配器的 props 都是照它铺的。
+// 没有机器的组件只有后者；机器 props 与视图 props 分开写的组件两份都有，两份都是使用者写得下来的名字。
 //
 // 走类型检查器而不是读语法树：popconfirm 与 float-button 的 props 是
 // `Omit<PopoverSchema['props'], …> & …` 这样的类型别名，只认 interface 的读法会把它们整个漏掉，
@@ -164,14 +164,17 @@ const componentProps = {}
             names = propsOf(member.type)
         }
       }
-      // 没有机器的组件把 props 单独写成接口或类型别名
+      // 没有机器的组件把 props 单独写成接口或类型别名；两份都在时是机器 props 与视图 props 分开写，
+      // 使用者两份都写得下来，公开面取并集
       const isPropsDecl = (ts.isInterfaceDeclaration(node) || ts.isTypeAliasDeclaration(node))
         && node.name.text === `${pascal}Props`
       if (isPropsDecl)
         fallback = propsOf(ts.isTypeAliasDeclaration(node) ? node.type : node.name)
     })
 
-    const resolved = names?.size ? names : fallback
+    const resolved = names?.size || fallback?.size
+      ? new Set([...(names ?? []), ...(fallback ?? [])])
+      : null
     if (!resolved?.size) {
       unresolved.push(component)
       continue

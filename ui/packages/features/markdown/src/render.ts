@@ -1,9 +1,9 @@
 import type { LinkDefs } from './refs'
-import { fenceLang } from './blocks'
+import { fenceBody, fenceLang } from './blocks'
 import { escapeAttr, escapeText } from './escape'
 import { renderInline } from './inline'
 import { NO_DEFS, splitDefinitions } from './refs'
-import { blockType, CODE_INDENT, FENCE_OPEN, LIST_ITEM, splitRow, stripColumns, topLevelRanges } from './scan'
+import { blockType, CODE_INDENT, LIST_ITEM, splitRow, stripColumns, topLevelRanges } from './scan'
 
 const HEADING = /^ {0,3}(#{1,6})(?![^ \t])(.*)$/
 const CLOSING_HASHES = /\s+#+$/
@@ -25,15 +25,10 @@ function contentLines(src: string): string[] {
 }
 
 function renderCode(src: string): string {
-  const lines = src.split('\n')
-  const marker = FENCE_OPEN.exec(lines[0]!)![1]!
-  const closing = new RegExp(`^ {0,3}\\${marker[0]!}{${marker.length},}\\s*$`)
-  const body = lines.slice(1)
-  if (body.length > 0 && closing.test(body[body.length - 1]!))
-    body.pop()
   const lang = fenceLang(src)
   const attr = lang === undefined ? '' : ` class="language-${escapeAttr(lang)}"`
-  return `<pre><code${attr}>${escapeText(body.join('\n'))}\n</code></pre>`
+  // 与 RenderedBlock.source 取同一份正文，两者不会走岔
+  return `<pre><code${attr}>${escapeText(fenceBody(src))}\n</code></pre>`
 }
 
 /** 缩进代码块：剥掉四列缩进，剩下的整段照原样escape。没有语言标注。 */

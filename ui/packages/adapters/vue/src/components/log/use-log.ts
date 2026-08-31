@@ -1,6 +1,6 @@
-import type { LogApi, LogProps, ThreadSchema } from '@xihan-ui/headless'
+import type { LogApi, LogProps, LogSchema } from '@xihan-ui/headless'
 import type { ComputedRef, Ref } from 'vue'
-import { connectLog, threadMachine } from '@xihan-ui/headless'
+import { connectLog, logMachine } from '@xihan-ui/headless'
 import { createRuntimeConfig, createScope } from '@xihan-ui/kernel'
 import { computed, ref, watch } from 'vue'
 import { vueNormalize } from '../../runtime/normalize-props'
@@ -15,20 +15,17 @@ export interface LogContext {
   contentRef: Ref<HTMLElement | null>
 }
 
-/**
- * 粘底整套复用 thread 的机器：它只认滚动容器与内容容器两个节点，不认解剖。
- * 机器只收 onStickChange，rows / loading / translations 是纯视图属性，直接进 connect。
- */
+/** 机器只收 onStickChange，rows / loading / translations 是纯视图属性，直接进 connect。 */
 export function useLog(
   props: LogProps,
-  onStickChange?: ThreadSchema['props']['onStickChange'],
+  onStickChange?: LogSchema['props']['onStickChange'],
 ): LogContext {
   const viewportRef = ref<HTMLElement | null>(null)
   const contentRef = ref<HTMLElement | null>(null)
 
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
-  const service = useMachine(threadMachine, () => ({ onStickChange }), scope)
+  const service = useMachine(logMachine, () => ({ onStickChange }), scope)
 
   // 无 DOM 环境不装 config，此时粘底效应整套不挂载
   if (typeof document !== 'undefined')

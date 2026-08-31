@@ -215,7 +215,7 @@ brand  neutral  success  warning  danger  info
 | attribute 名词汇表本身 | 318 | **只增不减**（新组件复用 `size` / `tone` / `dir` 不算破坏） |
 | `CustomEvent` 名 | 75 个名字 / 162 条「元素 × 事件」 | **受约束** |
 | 事件传播语义 | `bubbles: true, composed: true`（153 处中 152 处） | **受约束**——把冒泡改掉会让祖先节点上的事件委托静默失效。唯一的例外是 `xh-composer` 的 `submit`：与原生表单提交同名，刻意不冒泡，免得被祖先 `<form>` 当成自己的提交 |
-| 事件 `detail` 形状 | 145 个 `*Details` 类型 | **受约束**，等同于 headless 的同名类型 |
+| 事件 `detail` 形状 | 146 个 `*Details` 类型 | **受约束**，等同于 headless 的同名类型 |
 | `attribute: false` 的 JS 字段 | 148 条（涉及 55 个字段名） | **受约束**。`collection`、`translations`、`validate`、`filter` 这类只能用 JS 赋值，HTML 里表达不出来——**不是每个 property 都有对应 attribute** |
 | 命令式方法 | 29（分布在 8 个元素） | **受约束**，含参数与返回类型 |
 
@@ -411,11 +411,11 @@ Web Components 侧不构成额外约束：全部 Light DOM，不用 shadow DOM�
 ### 已经焊死的
 
 **六种介质的「改名 = major」现在有门禁兜着。** `pnpm gate:surface` 跑的 `check-public-surface`
-拿一份入库的基线（`ui/tooling/public-surface.json`，9666 个名字）比对当前状态：
+拿一份入库的基线（`ui/tooling/public-surface.json`，9672 个名字）比对当前状态：
 **基线里有而当前没有，就是删了或改名了，构建失败**。新增一律放行，因为那是 minor。
 
-覆盖：包名与 188 条子入口、4484 个导出名、121 个 `data-scope` 与 761 条部件配对、
-121 个组件的 1310 个 prop 名、159 种 `data-*`、20 个 `data-state` 取值、295 个令牌、
+覆盖：包名与 188 条子入口、4488 个导出名、121 个 `data-scope` 与 761 条部件配对、
+121 个组件的 1312 个 prop 名、159 种 `data-*`、20 个 `data-state` 取值、295 个令牌、
 5 个 `@layer` 名、2657 个组件覆盖槽、123 个自定义元素及其 attribute 与事件。
 
 prop 名那一维是后补的：在它进来之前，改一个 prop 名（实测 `transfer` 的 `items` 改

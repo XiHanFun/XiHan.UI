@@ -519,6 +519,9 @@ function unionMembers(node, sf) {
 function typeMeta(id) {
   const P = pascal(id)
   const result = { props: [], api: [], states: null, events: null, guards: null }
+  // 机器 props 与视图 props 分开收，合表时机器那份排在前
+  const machineProps = []
+  const viewProps = []
   for (const sf of program.getSourceFiles()) {
     if (!typeFiles.includes(path.normalize(sf.fileName)))
       continue
@@ -536,7 +539,7 @@ function typeMeta(id) {
             for (const p of member.type.members) {
               if (!ts.isPropertySignature(p) || !p.type)
                 continue
-              result.props.push({
+              machineProps.push({
                 name: p.name.getText(sf),
                 type: typeText(p.type, sf),
                 optional: Boolean(p.questionToken),
@@ -553,12 +556,12 @@ function typeMeta(id) {
         }
       }
 
-      // 没有自己机器的组件，props 不在 Schema 里，而是单独一个 XxxProps：
+      // 视图 props 单独写成一个 XxxProps：没有机器的组件全部 props 都在这儿，
+      // 机器 props 与视图 props 分开写的组件（log 与 AI 族）这儿是走 connect 第二参的那一半。
       // 有的写成 `Omit<别人Schema['props'], …> & …` 这样的类型别名（popconfirm、float-button），
       // 更多的直接写成 interface（qr-code、badge、card 等 30 余个）。两种形态都要认，
       // 少认一种就是整页 Props 表缺席——qr-code 的 pixelSize 曾因此全站无处可查。
-      if (result.props.length === 0
-        && (ts.isTypeAliasDeclaration(node) || ts.isInterfaceDeclaration(node))
+      if ((ts.isTypeAliasDeclaration(node) || ts.isInterfaceDeclaration(node))
         && name === `${P}Props`) {
         // 别名取它右边那个类型，接口取声明自身
         const target = ts.isTypeAliasDeclaration(node) ? node.type : node
@@ -567,14 +570,14 @@ function typeMeta(id) {
           if (!decl || !ts.isPropertySignature(decl) || !decl.type)
             continue
           const declSf = decl.getSourceFile()
-          result.props.push({
+          viewProps.push({
             name: sym.name,
             type: typeText(decl.type, declSf),
             optional: Boolean(decl.questionToken),
             doc: jsdoc(decl, declSf),
           })
         }
-        result.props.sort((a, b) => a.name.localeCompare(b.name))
+        viewProps.sort((a, b) => a.name.localeCompare(b.name))
       }
 
       if (ts.isInterfaceDeclaration(node) && name === `${P}Api`) {
@@ -590,6 +593,8 @@ function typeMeta(id) {
       }
     })
   }
+  const named = new Set(machineProps.map(x => x.name))
+  result.props = [...machineProps, ...viewProps.filter(x => !named.has(x.name))]
   return result
 }
 

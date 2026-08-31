@@ -1,4 +1,4 @@
-import type { LogApi, LogProps, LogTranslations, ThreadSchema } from '@xihan-ui/headless'
+import type { LogApi, LogProps, LogSchema, LogTranslations } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
@@ -19,13 +19,13 @@ export const XhLogRoot = defineComponent({
   },
   // stick-change 携带 { atBottom, sticking }，无对应的 v-model
   emits: {
-    'stick-change': (_details: PayloadOf<ThreadSchema['props'], 'onStickChange'>) => true,
+    'stick-change': (_details: PayloadOf<LogSchema['props'], 'onStickChange'>) => true,
   },
   slots: Object as SlotsType<{
     default?: (props: LogRootSlotProps) => VNode[]
   }>,
   setup(props, { slots, emit }) {
-    const notify: ThreadSchema['props']['onStickChange'] = details => emit('stick-change', details)
+    const notify: LogSchema['props']['onStickChange'] = details => emit('stick-change', details)
     const ctx = useLog(withXhConfig('log', props) as LogProps, notify)
     provideLog(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({

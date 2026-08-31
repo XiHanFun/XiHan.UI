@@ -1,6 +1,6 @@
 import type { LinkDef, LinkDefs } from './refs'
 import type { RenderedBlock, RenderOpts, StreamRenderer } from './types'
-import { blockKind, fenceLang, isFenceClosed } from './blocks'
+import { blockKind, fenceBody, fenceLang, isFenceClosed, mathBody } from './blocks'
 import { unescapeBackslash } from './escape'
 import { cheapHash } from './hash'
 import { blockDefinitions, normalizeLabel, splitDefinitions } from './refs'
@@ -17,10 +17,17 @@ interface FrozenBlock {
   block: RenderedBlock
 }
 
+/** 只有 code 与 math 两种块带正文原文，其余块的 html 就是全部产出。 */
+function blockSource(kind: 'markdown' | 'code' | 'math', src: string): string | undefined {
+  if (kind === 'code')
+    return fenceBody(src)
+  return kind === 'math' ? mathBody(src) : undefined
+}
+
 function renderBlock(src: string, defs: LinkDefs, key: string, complete: boolean): RenderedBlock {
   const kind = blockKind(src)
   const lang = kind === 'code' ? fenceLang(src) : undefined
-  return { key, kind, html: renderBlockHtml(src, defs), complete, lang }
+  return { key, kind, html: renderBlockHtml(src, defs), complete, lang, source: blockSource(kind, src) }
 }
 
 /** 取块正文里每一对方括号的内容，即这块可能拿去查定义表的标签。 */

@@ -124,6 +124,49 @@ describe('围栏代码块', () => {
   })
 })
 
+describe('块正文原文', () => {
+  it('code 块给的是剥掉起止围栏的代码，缩进与空行照原样留着', () => {
+    // html 里的代码已经转义过，代码组件要重排行号与着色只能拿未转义的原文
+    const r = createStreamRenderer()
+    expect(r.render('```ts\nconst a = 1\n```').at(-1)!.source).toBe('const a = 1')
+    expect(r.render('```ts\n  if (a) {\n\n    b()\n  }\n```').at(-1)!.source).toBe('  if (a) {\n\n    b()\n  }')
+  })
+
+  it('未闭合的 code 块照样给正文，剥掉开围栏即可', () => {
+    expect(createStreamRenderer().render('```ts\nconst a =').at(-1)!.source).toBe('const a =')
+  })
+
+  it('code 块的正文与 html 里的那份逐字对得上', () => {
+    const block = createStreamRenderer().render('```ts\nif (a < b && c > d) {}\n```').at(-1)!
+    expect(block.html).toContain('if (a &lt; b &amp;&amp; c &gt; d) {}')
+    expect(block.source).toBe('if (a < b && c > d) {}')
+  })
+
+  it('math 块给的是剥掉 $$ 的公式，单行与多行两种写法都认', () => {
+    const r = createStreamRenderer()
+    expect(r.render('$$x^2$$').at(-1)!.source).toBe('x^2')
+    expect(r.render('$$\n\\frac{a}{b}\n$$').at(-1)!.source).toBe('\\frac{a}{b}')
+    expect(r.render('$$\\sum_{i}\n$$').at(-1)!.source).toBe('\\sum_{i}')
+  })
+
+  it('未闭合的 math 块剥掉开定界符就给', () => {
+    expect(createStreamRenderer().render('$$\n\\frac{a}').at(-1)!.source).toBe('\\frac{a}')
+  })
+
+  it('其余种类的块不带正文原文', () => {
+    const blocks = createStreamRenderer().render('# 标题\n\n一段话。\n\n- 甲\n- 乙')
+    expect(blocks.every(b => b.kind === 'markdown')).toBe(true)
+    expect(blocks.every(b => b.source === undefined)).toBe(true)
+  })
+
+  it('缩进代码块算 markdown 块，不带正文原文', () => {
+    // blockKind 只把围栏块判成 code，缩进代码块的 html 就是它的全部产出
+    const block = createStreamRenderer().render('    const a = 1').at(-1)!
+    expect(block.kind).toBe('markdown')
+    expect(block.source).toBeUndefined()
+  })
+})
+
 describe('消毒', () => {
   it('模型吐的内联 HTML 一律转义成文本', () => {
     const blocks = createStreamRenderer().render('<script>alert(1)</script>')
