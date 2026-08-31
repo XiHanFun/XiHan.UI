@@ -60,6 +60,7 @@
     "./date-picker.css": "./css/date-picker.css",
     "./descriptions.css": "./css/descriptions.css",
     "./dialog.css": "./css/dialog.css",
+    "./diff-view.css": "./css/diff-view.css",
     "./download-trigger.css": "./css/download-trigger.css",
     "./drawer.css": "./css/drawer.css",
     "./dynamic-input.css": "./css/dynamic-input.css",

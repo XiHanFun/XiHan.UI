@@ -897,13 +897,13 @@ export const treeSelectSuite: ConformanceSuite = {
           kind: 'click',
           part: 'branch-trigger[0]',
           expect: {
-            // 箭头掐断冒泡，不再触发一遍「点行」
+            // 箭头掐断冒泡，不再触发一遍「点行」：只出展开、不出选中
             activeElement: { part: 'branch[0]', exact: true },
             parts: {
               'branch-content': branchContentsShown('src'),
               'branch': branchesSelected('src'),
             },
-            events: [],
+            events: [{ type: 'expanded-change', detail: { value: ['src'] } }],
           },
         },
         {

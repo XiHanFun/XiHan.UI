@@ -1,0 +1,120 @@
+import type { CodeToken, PropTypes, Size } from '@xihan-ui/kernel'
+import type { MachineSchema } from '@xihan-ui/machine'
+import type { DiffChange, DiffLine, DiffModel } from './diff-view.model'
+
+export type DiffViewMode = 'unified' | 'split'
+
+/** split 视图里的两侧。unified 只有一列，恒为 old。 */
+export type DiffSide = 'old' | 'new'
+
+export interface DiffViewExpandedChangeDetails {
+  expanded: string[]
+}
+
+/** 铺出来的一行：要么是一行差异，要么是折起来的那一格。 */
+export interface DiffViewRow {
+  kind: 'line' | 'gap'
+  /** 1 基可见行序，与 aria-rowcount 同一口径。 */
+  rowIndex: number
+  /** kind 为 line 时有。 */
+  line?: DiffLine
+  /** kind 为 gap 时有：这一格的身份。 */
+  gapId?: string
+  /** kind 为 gap 时有：折起来多少行。 */
+  hiddenCount?: number
+}
+
+export interface DiffViewRowProps {
+  rowIndex: number
+}
+
+export interface DiffViewCellProps {
+  rowIndex: number
+  side: DiffSide
+}
+
+export interface DiffViewGapProps {
+  gapId: string
+}
+
+export interface DiffViewSchema extends MachineSchema {
+  props: {
+    /** 差异模型，唯一入口。补丁与新旧两版文本都先归一到它。 */
+    model?: DiffModel
+    view?: DiffViewMode
+    /** 变更两侧各露几行上下文，其余折起来；不给或非有限值即不折叠。 */
+    contextLines?: number
+    /** 展开的折叠格 id 集合，给了即受控。 */
+    expanded?: readonly string[]
+    defaultExpanded?: readonly string[]
+    size?: Size
+    translations?: Partial<DiffViewTranslations>
+    onExpandedChange?: (details: DiffViewExpandedChangeDetails) => void
+  }
+  context: {
+    expanded: string[]
+  }
+  computed: Record<string, never>
+  refs: Record<string, never>
+  state: 'idle'
+  event:
+    | { type: 'GAP.EXPAND', id: string }
+    | { type: 'GAP.COLLAPSE', id: string }
+    // 受控回写：宿主改 expanded 后由 watch 派发，无条件写入、不再通知
+    | { type: 'CONTROLLED.EXPANDED.SET', value: string[] }
+  tag: never
+  guard: 'isExpandedControlled'
+  action: 'toggleGap' | 'invokeExpandedChange' | 'syncExpanded'
+  effect: never
+}
+
+export interface DiffViewApi<T extends PropTypes = PropTypes> {
+  view: DiffViewMode
+  /** 折叠后的可见行序，含折起来的那些格。 */
+  rows: readonly DiffViewRow[]
+  expanded: string[]
+  /** 增删各多少行。 */
+  stats: { added: number, removed: number }
+  /** 模型被上限截断过。 */
+  truncated: boolean
+  /** 一条变更都没有。 */
+  isEmpty: boolean
+  setExpanded: (next: string[]) => void
+  toggleGap: (id: string) => void
+  getRootProps: () => T['element']
+  getHeaderProps: () => T['element']
+  getViewportProps: () => T['element']
+  getBodyProps: () => T['element']
+  getRowProps: (props: DiffViewRowProps) => T['element']
+  getLineNumberProps: (props: DiffViewCellProps) => T['element']
+  getLineContentProps: (props: DiffViewCellProps) => T['element']
+  getChangeLabelProps: (props: { change: DiffChange }) => T['element']
+  getTokenProps: (token: CodeToken) => T['element']
+  getGapProps: (props: DiffViewGapProps) => T['element']
+  getGapCellProps: () => T['element']
+  getGapTriggerProps: (props: DiffViewGapProps) => T['button']
+  getEmptyProps: () => T['element']
+  /** 变更类型对应的读屏文字，写进视觉隐藏的那一格。 */
+  changeLabel: (change: DiffChange) => string
+  /** 这一行在这一侧的文本；split 下空侧为 undefined。 */
+  cellText: (props: DiffViewCellProps) => string | undefined
+  /** 这一行在这一侧的行号；没有就是 undefined。 */
+  cellNumber: (props: DiffViewCellProps) => number | undefined
+  /** 这一行在这一侧的着色片段；不着色或空侧时为空数组。 */
+  cellTokens: (props: DiffViewCellProps) => readonly CodeToken[]
+}
+
+export interface DiffViewTranslations {
+  /** 新增行的读屏文字。 */
+  added: string
+  /** 删除行的读屏文字。 */
+  removed: string
+  /** 未改动行的读屏文字。 */
+  unchanged: string
+  /** 展开按钮的可访问名，形如 `Show {count} hidden lines`，模板串由调用方现场代入。 */
+  expandGap: string
+  /** 没有文件名时表格的兜底可访问名。 */
+  diff: string
+  /** 一条变更都没有时的占位文案。 */
+  noChanges: string
+}

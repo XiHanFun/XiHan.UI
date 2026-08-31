@@ -6,7 +6,7 @@
 
 Framework-agnostic component library. State machines and accessibility live in a headless core; each framework only gets a thin adapter.
 
-128 components, each shipping a headless core, a Vue component, a custom element, and a default skin.
+129 components, each shipping a headless core, a Vue component, a custom element, and a default skin.
 
 > The 18 public packages are released in lockstep and published to npm; the documentation site is at https://ui.docs.xihanfun.com. Accessibility is scanned in real Chromium; the backlog is down to two recorded entries (the shared table’s `tag` disabled-state contrast and the WC-side `steps` required-children), plus one replay exemption for `breadcrumb`.
 
@@ -18,7 +18,7 @@ Framework-agnostic component library. State machines and accessibility live in a
 | `@xihan-ui/machine` | State machine runtime: `createMachine`, interpreter contract, controlled bindings |
 | `@xihan-ui/behavior` | Behavior primitives: dismissable layer, focus scope, scroll lock, presence, collection, typeahead |
 | `@xihan-ui/motion` | Motion primitives: easing single source, tweening, frame loop, reduced-motion preference, closed-form springs, Web Animations wrapper |
-| `@xihan-ui/headless` | 128 components as anatomy + machine + `connect` — no styles, no framework |
+| `@xihan-ui/headless` | 129 components as anatomy + machine + `connect` — no styles, no framework |
 | `@xihan-ui/vue` | Vue 3 adapter |
 | `@xihan-ui/web-components` | Web Components adapter (own reactive base, no third-party runtime dep) |
 | `@xihan-ui/styles` | Default skins, layered CSS |

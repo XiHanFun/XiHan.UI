@@ -1,0 +1,192 @@
+<!-- 并排与折叠 | 并排两列都发格子，空的那一侧照发；远离变更的连续上下文折成一格，点开即展开 -->
+<xh-diff-view id="diff-view-split" view="split" context-lines="3">
+  <div data-xh-part="root">
+    <div data-xh-part="header">
+      <span>src/pipeline.ts</span>
+      <span id="diff-view-split-stats"></span>
+    </div>
+    <div data-xh-part="viewport">
+      <div data-xh-part="body"></div>
+    </div>
+  </div>
+</xh-diff-view>
+
+<script type="module">
+  // 真实应用里这份模型来自 computeTextDiff；展开集合非受控，元素自己记
+  const view = document.getElementById("diff-view-split");
+  view.model = {
+    "hunks": [
+      {
+        "header": "@@ -1,24 +1,24 @@",
+        "oldStart": 1,
+        "oldLines": 24,
+        "newStart": 1,
+        "newLines": 24,
+        "lines": [
+          {
+            "change": "context",
+            "oldNumber": 1,
+            "newNumber": 1,
+            "text": "const step0 = pipeline.at(0)"
+          },
+          {
+            "change": "removed",
+            "oldNumber": 2,
+            "text": "const step1 = pipeline.at(1)"
+          },
+          {
+            "change": "added",
+            "newNumber": 2,
+            "text": "const step1 = pipeline.head()"
+          },
+          {
+            "change": "context",
+            "oldNumber": 3,
+            "newNumber": 3,
+            "text": "const step2 = pipeline.at(2)"
+          },
+          {
+            "change": "context",
+            "oldNumber": 4,
+            "newNumber": 4,
+            "text": "const step3 = pipeline.at(3)"
+          },
+          {
+            "change": "context",
+            "oldNumber": 5,
+            "newNumber": 5,
+            "text": "const step4 = pipeline.at(4)"
+          },
+          {
+            "change": "context",
+            "oldNumber": 6,
+            "newNumber": 6,
+            "text": "const step5 = pipeline.at(5)"
+          },
+          {
+            "change": "context",
+            "oldNumber": 7,
+            "newNumber": 7,
+            "text": "const step6 = pipeline.at(6)"
+          },
+          {
+            "change": "context",
+            "oldNumber": 8,
+            "newNumber": 8,
+            "text": "const step7 = pipeline.at(7)"
+          },
+          {
+            "change": "context",
+            "oldNumber": 9,
+            "newNumber": 9,
+            "text": "const step8 = pipeline.at(8)"
+          },
+          {
+            "change": "context",
+            "oldNumber": 10,
+            "newNumber": 10,
+            "text": "const step9 = pipeline.at(9)"
+          },
+          {
+            "change": "context",
+            "oldNumber": 11,
+            "newNumber": 11,
+            "text": "const step10 = pipeline.at(10)"
+          },
+          {
+            "change": "context",
+            "oldNumber": 12,
+            "newNumber": 12,
+            "text": "const step11 = pipeline.at(11)"
+          },
+          {
+            "change": "context",
+            "oldNumber": 13,
+            "newNumber": 13,
+            "text": "const step12 = pipeline.at(12)"
+          },
+          {
+            "change": "context",
+            "oldNumber": 14,
+            "newNumber": 14,
+            "text": "const step13 = pipeline.at(13)"
+          },
+          {
+            "change": "context",
+            "oldNumber": 15,
+            "newNumber": 15,
+            "text": "const step14 = pipeline.at(14)"
+          },
+          {
+            "change": "context",
+            "oldNumber": 16,
+            "newNumber": 16,
+            "text": "const step15 = pipeline.at(15)"
+          },
+          {
+            "change": "context",
+            "oldNumber": 17,
+            "newNumber": 17,
+            "text": "const step16 = pipeline.at(16)"
+          },
+          {
+            "change": "context",
+            "oldNumber": 18,
+            "newNumber": 18,
+            "text": "const step17 = pipeline.at(17)"
+          },
+          {
+            "change": "context",
+            "oldNumber": 19,
+            "newNumber": 19,
+            "text": "const step18 = pipeline.at(18)"
+          },
+          {
+            "change": "context",
+            "oldNumber": 20,
+            "newNumber": 20,
+            "text": "const step19 = pipeline.at(19)"
+          },
+          {
+            "change": "context",
+            "oldNumber": 21,
+            "newNumber": 21,
+            "text": "const step20 = pipeline.at(20)"
+          },
+          {
+            "change": "context",
+            "oldNumber": 22,
+            "newNumber": 22,
+            "text": "const step21 = pipeline.at(21)"
+          },
+          {
+            "change": "removed",
+            "oldNumber": 23,
+            "text": "const step22 = pipeline.at(22)"
+          },
+          {
+            "change": "added",
+            "newNumber": 23,
+            "text": "const step22 = pipeline.tail()"
+          },
+          {
+            "change": "context",
+            "oldNumber": 24,
+            "newNumber": 24,
+            "text": "const step23 = pipeline.at(23)"
+          }
+        ]
+      }
+    ]
+  };
+
+  const stats = view.model.hunks[0].lines.reduce(
+    (acc, line) => {
+      if (line.change === "added") acc.added += 1;
+      if (line.change === "removed") acc.removed += 1;
+      return acc;
+    },
+    { added: 0, removed: 0 },
+  );
+  document.getElementById("diff-view-split-stats").textContent = `+${stats.added} −${stats.removed}`;
+</script>

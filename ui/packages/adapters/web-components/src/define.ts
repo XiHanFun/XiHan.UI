@@ -34,6 +34,7 @@ import { XhDateFieldElement } from './elements/date-field'
 import { XhDatePickerElement } from './elements/date-picker'
 import { XhDescriptionsElement } from './elements/descriptions'
 import { XhDialogElement } from './elements/dialog'
+import { XhDiffViewElement } from './elements/diff-view'
 import { XhDownloadTriggerElement } from './elements/download-trigger'
 import { XhDrawerElement } from './elements/drawer'
 import { XhDynamicInputElement } from './elements/dynamic-input'
@@ -142,6 +143,7 @@ export function defineXhElements(): void {
   defineElement('xh-button-group', XhButtonGroupElement, VERSION)
   defineElement('xh-countdown', XhCountdownElement, VERSION)
   defineElement('xh-descriptions', XhDescriptionsElement, VERSION)
+  defineElement('xh-diff-view', XhDiffViewElement, VERSION)
   defineElement('xh-download-trigger', XhDownloadTriggerElement, VERSION)
   defineElement('xh-dynamic-input', XhDynamicInputElement, VERSION)
   defineElement('xh-ellipsis', XhEllipsisElement, VERSION)
@@ -304,6 +306,7 @@ export {
   XhDateFieldElement,
   XhDatePickerElement,
   XhDialogElement,
+  XhDiffViewElement,
   XhDownloadTriggerElement,
   XhDrawerElement,
   XhEditableElement,

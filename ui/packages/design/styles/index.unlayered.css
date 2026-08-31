@@ -603,6 +603,256 @@
   display: none;
 }
 
+/* styles/diff-view.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='diff-view'] {
+  --xh-diff-view-skin: 1;
+}
+
+/* 新增与删除的颜色是逐行状态不是组件语气，走各自的语义令牌、不接语气轴 */
+[data-scope='diff-view'][data-part='root'] {
+  --xh-diff-view-added-bg: var(--xh-diff-added-bg);
+  --xh-diff-view-added-fg: var(--xh-diff-added-fg);
+  --xh-diff-view-removed-bg: var(--xh-diff-removed-bg);
+  --xh-diff-view-removed-fg: var(--xh-diff-removed-fg);
+
+  display: block;
+  overflow: hidden;
+  border: var(--xh-stroke-thin) solid var(--xh-diff-view-border, var(--xh-border-subtle));
+  border-radius: var(--xh-diff-view-radius, var(--xh-shape-surface));
+  background: var(--xh-diff-view-bg, var(--xh-bg-surface));
+}
+
+/* 上面声明的 display 会盖掉 UA 的 [hidden]{display:none}，这里补回 */
+[data-scope='diff-view'][data-part='root'][hidden] {
+  display: none;
+}
+
+[data-scope='diff-view'][data-part='header'] {
+  display: flex;
+  align-items: center;
+  gap: var(--xh-diff-view-header-gap, var(--xh-space-2));
+  padding-inline: var(--xh-diff-view-px, var(--xh-space-3));
+  padding-block: var(--xh-diff-view-py, var(--xh-space-2));
+  border-block-end: var(--xh-stroke-thin) solid var(--xh-diff-view-border, var(--xh-border-subtle));
+  color: var(--xh-diff-view-header-fg, var(--xh-fg-muted));
+  font-family: var(--xh-diff-view-font, var(--xh-font-family-mono));
+  font-size: var(--xh-diff-view-header-font-size, var(--xh-text-secondary-size));
+}
+
+[data-scope='diff-view'][data-part='header'][hidden] {
+  display: none;
+}
+
+/* 唯一的 Tab 停靠点；两轴都可能溢出 */
+[data-scope='diff-view'][data-part='viewport'] {
+  overflow: auto;
+  max-block-size: var(--xh-diff-view-max-h, var(--xh-viewport-max-h));
+}
+
+/* 焦点环偏移取负画在内侧，避免被 root 的 overflow: hidden 裁掉 */
+[data-scope='diff-view'][data-part='viewport']:focus-visible {
+  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline-offset: calc(-1 * var(--xh-ring-width));
+}
+
+[data-scope='diff-view'][data-part='body'] {
+  display: block;
+  font-family: var(--xh-diff-view-font, var(--xh-font-family-mono));
+  font-size: var(--xh-diff-view-font-size, var(--xh-control-font-sm));
+  line-height: var(--xh-diff-view-line-height, var(--xh-text-code-leading));
+  min-inline-size: max-content;
+}
+
+[data-scope='diff-view'][data-part='body'][hidden] {
+  display: none;
+}
+
+/* 一行：行号与内容并排 */
+[data-scope='diff-view'][data-part='row'],
+[data-scope='diff-view'][data-part='gap'] {
+  display: flex;
+  min-block-size: var(--xh-diff-view-line-height, var(--xh-text-code-leading));
+}
+
+[data-scope='diff-view'][data-part='row'][hidden],
+[data-scope='diff-view'][data-part='gap'][hidden] {
+  display: none;
+}
+
+[data-scope='diff-view'][data-part='row'][data-change='added'] {
+  background: var(--xh-diff-view-added-bg);
+}
+
+[data-scope='diff-view'][data-part='row'][data-change='removed'] {
+  background: var(--xh-diff-view-removed-bg);
+}
+
+/* 行号是画上去的不是写上去的：复制差异不带它，读屏也不逐行念数字 */
+[data-scope='diff-view'][data-part='line-number'] {
+  display: block;
+  box-sizing: content-box;
+  flex: 0 0 auto;
+  padding-inline: var(--xh-diff-view-px, var(--xh-space-3));
+  color: var(--xh-diff-view-number-fg, var(--xh-fg-subtle));
+  inline-size: var(--xh-diff-view-gutter, 4ch);
+  text-align: end;
+  user-select: none;
+}
+
+[data-scope='diff-view'][data-part='line-number']::before {
+  content: attr(data-line-number);
+}
+
+[data-scope='diff-view'][data-part='line-number'][hidden] {
+  display: none;
+}
+
+/* white-space: pre 保留缩进；每一侧各占一半宽 */
+[data-scope='diff-view'][data-part='line-content'] {
+  display: block;
+  flex: 1 1 0;
+  min-inline-size: 0;
+  padding-inline-end: var(--xh-diff-view-px, var(--xh-space-3));
+  white-space: pre;
+}
+
+[data-scope='diff-view'][data-part='line-content'][hidden] {
+  display: none;
+}
+
+[data-scope='diff-view'][data-part='line-content'][data-change='added'] {
+  color: var(--xh-diff-view-added-fg);
+}
+
+[data-scope='diff-view'][data-part='line-content'][data-change='removed'] {
+  color: var(--xh-diff-view-removed-fg);
+}
+
+/* 并排视图里空的那一侧只有底色，没有内容 */
+[data-scope='diff-view'][data-part='line-content'][data-empty] {
+  background: var(--xh-diff-view-empty-bg, var(--xh-bg-subtle));
+}
+
+/* 变更类型的读屏文字：视觉隐藏，不能 display:none——那样读屏就取不到它了。
+   变更不该只靠颜色传达 */
+[data-scope='diff-view'][data-part='change-label'] {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  padding: 0;
+  margin: -1px;
+  border: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* 记号只上色，不带任何盒模型：多一点都会破坏对齐 */
+[data-scope='diff-view'][data-part='root'] {
+  --xh-diff-view-comment-fg: var(--xh-fg-muted);
+  --xh-diff-view-punctuation-fg: var(--xh-fg-subtle);
+  --xh-diff-view-string-fg: var(--xh-syntax-string);
+  --xh-diff-view-number-token-fg: var(--xh-syntax-number);
+  --xh-diff-view-keyword-fg: var(--xh-syntax-keyword);
+}
+
+[data-scope='diff-view'][data-part='token'][data-kind='comment'] {
+  color: var(--xh-diff-view-comment-fg);
+  font-style: italic;
+}
+
+[data-scope='diff-view'][data-part='token'][data-kind='string'] {
+  color: var(--xh-diff-view-string-fg);
+}
+
+[data-scope='diff-view'][data-part='token'][data-kind='number'] {
+  color: var(--xh-diff-view-number-token-fg);
+}
+
+[data-scope='diff-view'][data-part='token'][data-kind='keyword'] {
+  color: var(--xh-diff-view-keyword-fg);
+  font-weight: var(--xh-diff-view-keyword-weight, var(--xh-font-weight-semibold));
+}
+
+[data-scope='diff-view'][data-part='token'][data-kind='punctuation'] {
+  color: var(--xh-diff-view-punctuation-fg);
+}
+
+/* 折起来的那一行：整行都是展开按钮 */
+[data-scope='diff-view'][data-part='gap'] {
+  background: var(--xh-diff-view-gap-bg, var(--xh-bg-subtle));
+}
+
+[data-scope='diff-view'][data-part='gap-cell'] {
+  display: block;
+  flex: 1 1 auto;
+}
+
+[data-scope='diff-view'][data-part='gap-cell'][hidden] {
+  display: none;
+}
+
+[data-scope='diff-view'][data-part='gap-trigger'] {
+  display: block;
+  padding-inline: var(--xh-diff-view-px, var(--xh-space-3));
+  border: 0;
+  background: none;
+  color: var(--xh-diff-view-gap-fg, var(--xh-fg-muted));
+  font: inherit;
+  inline-size: 100%;
+  text-align: start;
+  cursor: pointer;
+}
+
+[data-scope='diff-view'][data-part='gap-trigger'][hidden] {
+  display: none;
+}
+
+[data-scope='diff-view'][data-part='gap-trigger']:hover {
+  background: var(--xh-diff-view-gap-bg-hover, var(--xh-bg-subtle-hover));
+}
+
+[data-scope='diff-view'][data-part='gap-trigger']:active {
+  scale: var(--xh-motion-scale-press);
+}
+
+[data-scope='diff-view'][data-part='gap-trigger']:focus-visible {
+  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline-offset: calc(-1 * var(--xh-ring-width));
+}
+
+[data-scope='diff-view'][data-part='empty'] {
+  display: block;
+  padding-inline: var(--xh-diff-view-px, var(--xh-space-3));
+  padding-block: var(--xh-diff-view-py, var(--xh-space-2));
+  color: var(--xh-diff-view-empty-fg, var(--xh-fg-muted));
+  font-size: var(--xh-diff-view-header-font-size, var(--xh-text-secondary-size));
+}
+
+[data-scope='diff-view'][data-part='empty'][hidden] {
+  display: none;
+}
+
+/* 尺寸档只改字号与内衬 */
+[data-scope='diff-view'][data-part='root'][data-size='sm'] {
+  --xh-diff-view-font-size: var(--xh-control-font-sm);
+  --xh-diff-view-px: var(--xh-space-2);
+  --xh-diff-view-py: var(--xh-space-1);
+}
+
+[data-scope='diff-view'][data-part='root'][data-size='md'] {
+  --xh-diff-view-font-size: var(--xh-control-font-md);
+  --xh-diff-view-px: var(--xh-space-3);
+  --xh-diff-view-py: var(--xh-space-2);
+}
+
+[data-scope='diff-view'][data-part='root'][data-size='lg'] {
+  --xh-diff-view-font-size: var(--xh-control-font-lg);
+  --xh-diff-view-px: var(--xh-space-4);
+  --xh-diff-view-py: var(--xh-space-3);
+}
+
 /* styles/download-trigger.css */
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='download-trigger'] {

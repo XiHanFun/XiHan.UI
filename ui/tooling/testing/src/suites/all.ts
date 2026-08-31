@@ -30,6 +30,7 @@ import { dateFieldSuite } from './date-field.suite'
 import { datePickerSuite } from './date-picker.suite'
 import { descriptionsSuite } from './descriptions.suite'
 import { dialogSuite } from './dialog.suite'
+import { diffViewSuite } from './diff-view.suite'
 import { downloadTriggerSuite } from './download-trigger.suite'
 import { drawerSuite } from './drawer.suite'
 import { dynamicInputSuite } from './dynamic-input.suite'
@@ -161,6 +162,7 @@ export const allSuites: readonly ConformanceSuite[] = [
   datePickerSuite,
   descriptionsSuite,
   dialogSuite,
+  diffViewSuite,
   downloadTriggerSuite,
   drawerSuite,
   dynamicInputSuite,
