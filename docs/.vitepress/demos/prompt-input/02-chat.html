@@ -1,0 +1,84 @@
+<!-- 与消息流合成一个对话 | 发送键原位变停止；提交后粘底跟到最新一条，生成期间还能接着改下一句 -->
+<div style="display: flex; flex-direction: column; gap: 12px; block-size: 320px">
+  <xh-message-feed id="chat-feed" count="1" style="flex: 1; min-block-size: 0">
+    <div data-xh-part="root">
+      <div data-xh-part="viewport">
+        <div data-xh-part="list">
+          <article data-xh-part="item" item-id="m0" item-index="0" item-role="assistant">
+            <span data-xh-part="item-label">助手</span>
+            <div>问点什么试试。</div>
+          </article>
+        </div>
+      </div>
+      <button data-xh-part="scroll-button">↓</button>
+    </div>
+  </xh-message-feed>
+
+  <!-- busy 期间按钮换成停止，输入框仍可编辑：用户还要能改下一句 -->
+  <xh-prompt-input id="chat-input">
+    <div data-xh-part="root">
+      <textarea data-xh-part="input" rows="1" placeholder="给助手写点什么…"></textarea>
+      <button data-xh-part="submit-trigger">发送</button>
+    </div>
+  </xh-prompt-input>
+</div>
+
+<script type="module">
+  const feed = document.getElementById("chat-feed");
+  const input = document.getElementById("chat-input");
+  const list = feed.querySelector('[data-xh-part="list"]');
+  const button = input.querySelector('[data-xh-part="submit-trigger"]');
+  input.translations = { input: "给助手写点什么" };
+
+  let seq = 0;
+  let timer = 0;
+  let count = 1;
+
+  const append = (id, role, who, text) => {
+    const item = document.createElement("article");
+    item.setAttribute("data-xh-part", "item");
+    item.setAttribute("item-id", id);
+    item.setAttribute("item-index", String(count));
+    item.setAttribute("item-role", role);
+    item.innerHTML = `<span data-xh-part="item-label"></span><div></div>`;
+    item.querySelector('[data-xh-part="item-label"]').textContent = who;
+    item.querySelector("div").textContent = text;
+    list.appendChild(item);
+    count += 1;
+    feed.setAttribute("count", String(count));
+    return item;
+  };
+
+  const setBusy = (busy) => {
+    input.toggleAttribute("busy", busy);
+    button.textContent = busy ? "停止" : "发送";
+  };
+
+  input.addEventListener("submit", (event) => {
+    const question = event.detail.value;
+    append(`u${(seq += 1)}`, "user", "我", question);
+    const bubble = append(`a${(seq += 1)}`, "assistant", "助手", "");
+    const body = bubble.querySelector("div");
+    setBusy(true);
+
+    const full = `收到「${question}」，这是一段边写边显示的回复。`;
+    let at = 0;
+    const tick = () => {
+      if (!feed.isConnected) return;
+      at = Math.min(at + 2, full.length);
+      body.textContent = full.slice(0, at);
+      bubble.toggleAttribute("item-streaming", at < full.length);
+      if (at < full.length) {
+        timer = setTimeout(tick, 60);
+        return;
+      }
+      setBusy(false);
+    };
+    tick();
+  });
+
+  input.addEventListener("stop", () => {
+    clearTimeout(timer);
+    setBusy(false);
+  });
+</script>

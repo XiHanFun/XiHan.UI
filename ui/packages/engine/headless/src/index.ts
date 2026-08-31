@@ -165,6 +165,8 @@ export { connectPopselect, POPSELECT_DEFAULT_PLACEMENT, popselectAnatomy, popsel
 export type { PopselectApi, PopselectItemProps, PopselectNode, PopselectNodeMeta, PopselectProps, PopselectService, PopselectTranslations } from './popselect'
 export { connectProgress, PROGRESS_VIEW, progressAnatomy, progressKeyboard, progressMeta, progressRing } from './progress'
 export type { ProgressApi, ProgressGapPosition, ProgressProps, ProgressRing, ProgressTranslations, ProgressVariant } from './progress'
+export { connectPromptInput, promptInputAnatomy, promptInputKeyboard, promptInputMachine, promptInputMeta } from './prompt-input'
+export type { PromptInputApi, PromptInputSchema, PromptInputState, PromptInputSubmitDetails, PromptInputSubmitKey, PromptInputTranslations, PromptInputValueChangeDetails } from './prompt-input'
 export { connectQrCode, QR_MAX_VERSION, qrAlignmentPositions, qrCapacityBytes, qrCodeAnatomy, qrCodeKeyboard, qrCodeMeta, qrEncode } from './qr-code'
 export type { QrCodeApi, QrCodeLogoArea, QrCodeLogoDamage, QrCodeProps, QrCodeState, QrCodeTranslations, QrEyeShape, QrLevel, QrMatrix, QrModuleShape } from './qr-code'
 export { connectRadioGroup, radioGroupAnatomy, radioGroupKeyboard, radioGroupMachine, radioGroupMeta } from './radio-group'

@@ -1,0 +1,22 @@
+<!-- 基础用法 | Enter 提交、Shift+Enter 换行；输入法组合中的 Enter 一律放行，那一下是在确认候选词 -->
+<div style="display: flex; flex-direction: column; gap: 12px">
+  <xh-prompt-input id="prompt-input-basic">
+    <div data-xh-part="root">
+      <textarea data-xh-part="input" rows="1" placeholder="给助手写点什么…"></textarea>
+      <button data-xh-part="submit-trigger">发送</button>
+    </div>
+  </xh-prompt-input>
+  <p id="prompt-input-basic-sent" style="margin: 0"></p>
+</div>
+
+<script type="module">
+  // submit 与原生表单提交同名，故不冒泡，直接在元素上监听
+  const input = document.getElementById("prompt-input-basic");
+  const sent = [];
+  const line = document.getElementById("prompt-input-basic-sent");
+  input.translations = { input: "给助手写点什么" };
+  input.addEventListener("submit", (event) => {
+    sent.push(event.detail.value);
+    line.textContent = `已发出：${sent.join(" / ")}`;
+  });
+</script>
