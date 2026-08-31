@@ -136,7 +136,7 @@
   }
 
   [data-scope='tour'][data-part='spotlight'][data-state='open'] {
-    animation: xh-tour-spotlight-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+    animation: xh-tour-spotlight-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
   /* 退场与气泡并行播，同一段时长；收起那一帧 hidden 由宿主押后到气泡的退场结束 */
@@ -209,7 +209,7 @@
   }
 
   [data-scope='tour'][data-part='content'][data-state='open'] {
-    animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+    animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
   /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
@@ -265,10 +265,13 @@
     display: none;
   }
 
-  /* 主按钮：整条引导的主线动作 */
+  /* 主按钮：整条引导的主线动作。实心底顶边一条极浅的内高光，把这块面衬出厚度 */
   [data-scope='tour'][data-part='next-trigger'] {
+    --xh-_tour-next-highlight: inset 0 var(--xh-stroke-thin) 0 0 color-mix(in oklab, var(--xh-fg-on-brand) 14%, transparent);
+
     background: var(--xh-tour-next-bg, var(--xh-bg-brand));
     color: var(--xh-tour-next-fg, var(--xh-fg-on-brand));
+    box-shadow: var(--xh-tour-next-shadow, var(--xh-_tour-next-highlight));
   }
 
   [data-scope='tour'][data-part='next-trigger']:hover {

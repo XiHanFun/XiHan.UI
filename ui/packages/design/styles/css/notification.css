@@ -164,7 +164,7 @@
 
   /* 生命周期只有三段，unmounted 那段由上面的 [hidden] 收走，这里只管前两段 */
   [data-scope='notification'][data-part='item'][data-state='visible'] {
-    animation: xh-notification-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+    animation: xh-notification-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
   /* forwards 不能省：退场窗口（removeDelay 默认 200ms）比退场动画长，

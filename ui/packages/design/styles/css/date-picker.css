@@ -34,10 +34,12 @@
     --xh-_date-picker-font-size: var(--xh-control-font-md);
     --xh-_date-picker-label-font-size: var(--xh-control-font-md);
 
-    /* 形态档只换这三个私有槽：底色与两档描边 */
+    /* 形态档只换这四个私有槽：底色、两档描边与落影 */
     --xh-_date-picker-control-bg: var(--xh-bg-canvas);
     --xh-_date-picker-control-border: var(--xh-border-control);
     --xh-_date-picker-control-border-hover: var(--xh-border-control-hover);
+    /* 一档静态落影把盒从页面里抬起一层，与描边一起画出盒的边界 */
+    --xh-_date-picker-control-shadow: var(--xh-elevation-raised);
 
     /* 聚焦环、时间列选中与确认按钮随语气走。没写 data-tone 时这几个 --xh-_tone* 没被声明，
        退回原来的焦点色与品牌色 */
@@ -49,6 +51,9 @@
     /* 淡底上的字与实心底上的字是两档：--xh-_tone-fg 是语气层为淡底配的那一档，
        没写 data-tone 时退到 fg-brand-strong——fg-brand（600）压在 brand-100 上只有 4.21 */
     --xh-_date-picker-accent-subtle-fg: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
+    /* 确认按钮是面板里唯一的实心块，顶边画一条极浅的内高光把它衬出厚度 */
+    --xh-_date-picker-confirm-highlight: inset 0 var(--xh-stroke-thin) 0 0
+      color-mix(in oklab, var(--xh-_date-picker-accent-fg) 14%, transparent);
   }
 
   /* 与文本框、分段日期同一套堆叠：标签一行、输入行一行 */
@@ -98,8 +103,10 @@
     --xh-_date-picker-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   }
 
-  /* 无框：底与常态描边透明，悬停与聚焦浮出描边 */
+  /* 无框：底与常态描边透明，悬停与聚焦浮出描边。
+     落影一并关掉——底与描边都透明时它就是一片没有面的影子 */
   [data-scope='date-picker']:is([data-part='root'], [data-part='positioner'])[data-variant='ghost'] {
+    --xh-_date-picker-control-shadow: 0 0 0 transparent;
     --xh-_date-picker-control-bg: transparent;
     --xh-_date-picker-control-border: transparent;
     --xh-_date-picker-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
@@ -139,6 +146,7 @@
     border: var(--xh-stroke-thin) solid var(--xh-date-picker-control-border, var(--xh-_date-picker-control-border));
     border-radius: var(--xh-date-picker-control-radius, var(--xh-shape-control));
     background: var(--xh-date-picker-control-bg, var(--xh-_date-picker-control-bg));
+    box-shadow: var(--xh-date-picker-control-shadow, var(--xh-_date-picker-control-shadow));
     color: var(--xh-date-picker-control-fg, var(--xh-fg-default));
     transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
@@ -293,7 +301,7 @@
   }
 
   [data-scope='date-picker'][data-part='content'][data-state='open'] {
-    animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+    animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
   /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
@@ -453,6 +461,7 @@
     border-radius: var(--xh-date-picker-confirm-trigger-radius, var(--xh-shape-control));
     background: var(--xh-date-picker-confirm-bg, var(--xh-_date-picker-accent));
     color: var(--xh-date-picker-confirm-fg, var(--xh-_date-picker-accent-fg));
+    box-shadow: var(--xh-date-picker-confirm-shadow, var(--xh-_date-picker-confirm-highlight));
     font-size: var(--xh-text-secondary-size);
     cursor: pointer;
   }

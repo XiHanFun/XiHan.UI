@@ -20,10 +20,12 @@
     --xh-_text-field-label-font-size: var(--xh-control-font-md);
     --xh-_text-field-action-font-size: var(--xh-control-caption-md);
 
-    /* 形态档只换这三个私有槽：底、常态描边、悬停描边 */
+    /* 形态档只换这四个私有槽：底、常态描边、悬停描边、落影 */
     --xh-_text-field-bg: var(--xh-bg-canvas);
     --xh-_text-field-border: var(--xh-border-control);
     --xh-_text-field-border-hover: var(--xh-border-control-hover);
+    /* 一档静态落影把框从页面里抬起一层，与描边一起画出框的边界 */
+    --xh-_text-field-shadow: var(--xh-elevation-raised);
 
     /* 语气只落在聚焦这一处：环与聚焦态描边。正文颜色不归它管。
        没写 data-tone 时 --xh-_tone 没被声明，退回原来的聚焦环色与常态描边 */
@@ -81,8 +83,10 @@
     --xh-_text-field-border-focus: var(--xh-_tone, var(--xh-border-control-focus));
   }
 
-  /* 无框：底与常态描边透明，悬停与聚焦浮出描边 */
+  /* 无框：底与常态描边透明，悬停与聚焦浮出描边。
+     落影一并关掉——底与描边都透明时它就是一片没有面的影子 */
   [data-scope='text-field'][data-part='root'][data-variant='ghost'] {
+    --xh-_text-field-shadow: 0 0 0 transparent;
     --xh-_text-field-bg: transparent;
     --xh-_text-field-border: transparent;
     --xh-_text-field-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
@@ -113,6 +117,7 @@
     border: var(--xh-stroke-thin) solid var(--xh-text-field-control-border, var(--xh-_text-field-border));
     border-radius: var(--xh-text-field-control-radius, var(--xh-shape-control));
     background: var(--xh-text-field-control-bg, var(--xh-_text-field-bg));
+    box-shadow: var(--xh-text-field-control-shadow, var(--xh-_text-field-shadow));
     color: var(--xh-text-field-control-fg, var(--xh-fg-default));
     transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
@@ -157,7 +162,7 @@
     cursor: not-allowed;
   }
 
-  /* 盒内 input：无边框无底无圆角，观感全归 control；行内内衬也归 control，
+  /* 盒内 input：无边框无底无圆角无落影，观感全归 control；行内内衬也归 control，
      这里再留一份就是框内套了一圈空白。它占满剩余宽度，把清空按钮顶到最右 */
   [data-scope='text-field'][data-part='control'] [data-part='input'] {
     flex: 1 1 auto;
@@ -167,6 +172,7 @@
     border: 0;
     border-radius: 0;
     background: transparent;
+    box-shadow: none;
   }
 
   /* 盒内 input 不再自己画各态，全部交还 control。hover 这条带上与基础规则同样的
@@ -203,6 +209,7 @@
     border: var(--xh-stroke-thin) solid var(--xh-text-field-input-border, var(--xh-_text-field-border));
     border-radius: var(--xh-text-field-input-radius, var(--xh-shape-control));
     background: var(--xh-text-field-input-bg, var(--xh-_text-field-bg));
+    box-shadow: var(--xh-text-field-input-shadow, var(--xh-_text-field-shadow));
     color: var(--xh-text-field-input-fg, var(--xh-fg-default));
     /* 表单控件不继承页面字体，只给字号会让输入框用 UA 默认字族，与周围文本对不上 */
     font-family: inherit;

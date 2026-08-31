@@ -97,7 +97,7 @@
   }
 
   [data-scope='popconfirm'][data-part='content'][data-state='open'] {
-    animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+    animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
   /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
@@ -164,8 +164,13 @@
   /* 确认是实心的主操作。底色走共享语气槽：作者在 content 上写 data-tone="danger"
      就整体换成危险色，不写则用品牌色 */
   [data-scope='popconfirm'][data-part='confirm-trigger'] {
+    /* 实心底顶边一条极浅的内高光，把这块面衬出厚度；换语气时高光跟着换 */
+    --xh-_popconfirm-confirm-highlight: inset 0 var(--xh-stroke-thin) 0 0
+      color-mix(in oklab, var(--xh-_tone-on, var(--xh-fg-on-brand)) 14%, transparent);
+
     background: var(--xh-popconfirm-confirm-bg, var(--xh-_tone, var(--xh-bg-brand)));
     color: var(--xh-popconfirm-confirm-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
+    box-shadow: var(--xh-popconfirm-confirm-shadow, var(--xh-_popconfirm-confirm-highlight));
   }
 
   /* 异步确认挂起：按钮转圈、指针挂起；不是禁用，焦点与对比度都保持 */

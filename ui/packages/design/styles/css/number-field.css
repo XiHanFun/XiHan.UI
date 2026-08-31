@@ -24,10 +24,12 @@
     /* 盒子的圆角 */
     --xh-_number-field-radius: var(--xh-number-field-input-radius, var(--xh-shape-control));
 
-    /* 形态档只换这几个私有槽：输入框的底与描边，加减钮的底与描边 */
+    /* 形态档只换这几个私有槽：输入框的底、描边与落影，加减钮的底与描边 */
     --xh-_number-field-bg: var(--xh-bg-canvas);
     --xh-_number-field-border: var(--xh-border-control);
     --xh-_number-field-border-hover: var(--xh-border-control-hover);
+    /* 一档静态落影把盒从页面里抬起一层，与描边一起画出盒的边界 */
+    --xh-_number-field-shadow: var(--xh-elevation-raised);
     --xh-_number-field-trigger-bg: var(--xh-bg-subtle);
     --xh-_number-field-trigger-bg-hover: var(--xh-bg-subtle-hover);
     --xh-_number-field-trigger-bg-active: var(--xh-bg-subtle-active);
@@ -100,8 +102,10 @@
     --xh-_number-field-border-focus: var(--xh-_tone, var(--xh-border-control-focus));
   }
 
-  /* 无框：底与常态描边透明，悬停与聚焦浮出描边 */
+  /* 无框：底与常态描边透明，悬停与聚焦浮出描边。
+     落影一并关掉——底与描边都透明时它就是一片没有面的影子 */
   [data-scope='number-field'][data-part='root'][data-variant='ghost'] {
+    --xh-_number-field-shadow: 0 0 0 transparent;
     --xh-_number-field-bg: transparent;
     --xh-_number-field-border: transparent;
     --xh-_number-field-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
@@ -141,6 +145,7 @@
     border: var(--xh-stroke-thin) solid var(--xh-number-field-input-border, var(--xh-_number-field-border));
     border-radius: var(--xh-_number-field-radius);
     background: var(--xh-number-field-input-bg, var(--xh-_number-field-bg));
+    box-shadow: var(--xh-number-field-input-shadow, var(--xh-_number-field-shadow));
     transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
@@ -171,7 +176,7 @@
     cursor: not-allowed;
   }
 
-  /* 盒内 input：无边框无底无圆角，观感全归 control；行内内衬也归 control，
+  /* 盒内 input：无边框无底无圆角无落影，观感全归 control；行内内衬也归 control，
      这里再留一份就是框内套了一圈空白。数字居中排在两个按钮之间；
      前后缀图标/文字直接流式排在 input 两侧，不用再绝对定位 */
   [data-scope='number-field'][data-part='control'] [data-part='input'] {
@@ -183,6 +188,7 @@
     border: 0;
     border-radius: 0;
     background: transparent;
+    box-shadow: none;
     text-align: var(--xh-number-field-input-align, center);
   }
 
@@ -249,6 +255,7 @@
     border: var(--xh-stroke-thin) solid var(--xh-number-field-input-border, var(--xh-_number-field-border));
     border-radius: var(--xh-_number-field-radius);
     background: var(--xh-number-field-input-bg, var(--xh-_number-field-bg));
+    box-shadow: var(--xh-number-field-input-shadow, var(--xh-_number-field-shadow));
     color: var(--xh-number-field-input-fg, var(--xh-fg-default));
     /* 表单控件不继承页面字体，只给字号会让输入框用 UA 默认字族 */
     font-family: inherit;

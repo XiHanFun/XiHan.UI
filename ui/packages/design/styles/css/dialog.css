@@ -135,7 +135,7 @@
   }
 
   [data-scope='dialog'][data-part='content'][data-state='open'] {
-    animation: xh-dialog-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+    animation: xh-dialog-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='dialog'][data-part='content'][data-state='closed'] {

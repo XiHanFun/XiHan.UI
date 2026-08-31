@@ -101,14 +101,22 @@
   /* 形态只决定颜色怎么用。每个形态拆成两条：先是没写语气时的基线配色，
      再是写了语气时的覆盖。语气槽会沿继承流下来，覆盖那条必须带 [data-tone] 限定，
      否则一枚没写语气的标签只要落在带 data-tone 的容器里（警告提示、吐司、按钮内）
-     就会跟着染色 */
+     就会跟着染色。
+     实心档还在顶边画一条极浅的内高光，把整块底衬出厚度；语气那条同样从实心底上的前景色兑，
+     换语气时高光跟着换 */
   [data-scope='tag'][data-part='root'][data-variant='solid'] {
+    --xh-_tag-highlight: inset 0 var(--xh-stroke-thin) 0 0 color-mix(in oklab, var(--xh-fg-on-brand) 14%, transparent);
+
     border-color: transparent;
     background: var(--xh-tag-bg, var(--xh-bg-brand));
     color: var(--xh-tag-fg, var(--xh-fg-on-brand));
+    box-shadow: var(--xh-tag-shadow, var(--xh-_tag-highlight));
   }
 
   [data-scope='tag'][data-part='root'][data-variant='solid'][data-tone] {
+    --xh-_tag-highlight: inset 0 var(--xh-stroke-thin) 0 0
+      color-mix(in oklab, var(--xh-_tone-on, var(--xh-fg-on-brand)) 14%, transparent);
+
     background: var(--xh-tag-bg, var(--xh-_tone, var(--xh-bg-brand)));
     color: var(--xh-tag-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
   }
@@ -162,6 +170,8 @@
     border-color: var(--xh-tag-border-disabled, var(--xh-border-subtle));
     background: var(--xh-tag-bg-disabled, var(--xh-bg-muted));
     color: var(--xh-fg-disabled);
+    /* 底已经退成置灰色，实心档那条内高光跟着收掉 */
+    box-shadow: none;
     cursor: not-allowed;
   }
 

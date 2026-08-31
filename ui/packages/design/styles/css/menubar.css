@@ -184,7 +184,7 @@
   /* 展开时轻微涨开。只在切换到别张菜单时不重播——那由 data-state 的翻转天然保证：
      一张关一张开，动画各跑各的 */
   [data-scope='menubar'][data-part='content'][data-state='open'] {
-    animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+    animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
   /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来 */

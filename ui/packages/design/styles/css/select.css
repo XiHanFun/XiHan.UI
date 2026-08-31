@@ -60,10 +60,12 @@
     --xh-_select-font-size: var(--xh-control-font-md);
     --xh-_select-label-font-size: var(--xh-control-font-md);
 
-    /* 形态档只换这三个槽：缺省即 outline（描边 + 画布底） */
+    /* 形态档只换这四个槽：缺省即 outline（描边 + 画布底 + 一档落影） */
     --xh-_select-control-bg: var(--xh-bg-canvas);
     --xh-_select-control-border: var(--xh-border-control);
     --xh-_select-control-border-hover: var(--xh-border-control-hover);
+    /* 一档静态落影把盒从页面里抬起一层，与描边一起画出盒的边界 */
+    --xh-_select-control-shadow: var(--xh-elevation-raised);
 
     /* 聚焦环恒用固定环色；强调色随语气走，只落在勾选标记与选中文字上，正文文字色不动。
        没写 data-tone 时 --xh-_tone 没被声明，两处都退回原来的取值 */
@@ -130,8 +132,10 @@
     --xh-_select-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   }
 
-  /* 无框：底与常态描边透明，悬停浮出描边，聚焦由焦点环表达 */
+  /* 无框：底与常态描边透明，悬停浮出描边，聚焦由焦点环表达。
+     落影一并关掉——底与描边都透明时它就是一片没有面的影子 */
   [data-scope='select']:is([data-part='root'], [data-part='positioner'])[data-variant='ghost'] {
+    --xh-_select-control-shadow: 0 0 0 transparent;
     --xh-_select-control-bg: transparent;
     --xh-_select-control-border: transparent;
     --xh-_select-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
@@ -160,6 +164,7 @@
     border: var(--xh-stroke-thin) solid var(--xh-select-control-border, var(--xh-_select-control-border));
     border-radius: var(--xh-select-control-radius, var(--xh-shape-control));
     background: var(--xh-select-control-bg, var(--xh-_select-control-bg));
+    box-shadow: var(--xh-select-control-shadow, var(--xh-_select-control-shadow));
   }
 
   /* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
@@ -445,7 +450,7 @@
   }
 
   [data-scope='select'][data-part='content'][data-state='open'] {
-    animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+    animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
   /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，

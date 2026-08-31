@@ -83,7 +83,7 @@
   /* 从收起翻成显出的那一下给一小段入场：读屏靠 role=alert 播报，
      视觉这边也得有个"它是刚冒出来的"的交代，否则像一直杵在那儿 */
   [data-scope='form'][data-part='error-summary'][data-state='invalid'] {
-    animation: xh-form-summary-enter var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+    animation: xh-form-summary-enter var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
   /* 摘要里的每一条是一个真链接，指向对应字段容器 */
@@ -167,11 +167,15 @@
     cursor: not-allowed;
   }
 
-  /* 提交是这一组里的主操作，给它一层实心底色区分开 */
+  /* 提交是这一组里的主操作，给它一层实心底色区分开，顶边再画一条极浅的内高光衬出厚度。
+     置灰那档不命中这条选择器，高光自然不出现 */
   [data-scope='form'][data-part='submit-trigger']:not(:disabled) {
+    --xh-_form-submit-highlight: inset 0 var(--xh-stroke-thin) 0 0 color-mix(in oklab, var(--xh-fg-on-brand) 14%, transparent);
+
     border-color: var(--xh-form-submit-border, var(--xh-form-submit-bg, var(--xh-bg-brand)));
     background: var(--xh-form-submit-bg, var(--xh-bg-brand));
     color: var(--xh-form-submit-fg, var(--xh-fg-on-brand));
+    box-shadow: var(--xh-form-submit-shadow, var(--xh-_form-submit-highlight));
   }
 
   [data-scope='form'][data-part='submit-trigger']:hover:not(:disabled) {

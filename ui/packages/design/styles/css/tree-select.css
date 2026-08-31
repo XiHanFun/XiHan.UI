@@ -65,11 +65,13 @@
     --xh-_tree-select-font-size: var(--xh-control-font-md);
     --xh-_tree-select-label-font-size: var(--xh-control-font-md);
 
-    /* 形态档只换触发框的描边与底色这三个槽，浮层与树不跟着变：
+    /* 形态档只换触发框的描边、底色与落影这四个槽，浮层与树不跟着变：
        变的是「这是个输入位」的表达方式，不是弹出内容的表达方式 */
     --xh-_tree-select-border: var(--xh-border-control);
     --xh-_tree-select-border-hover: var(--xh-border-control-hover);
     --xh-_tree-select-bg: var(--xh-bg-canvas);
+    /* 一档静态落影把触发框从页面里抬起一层，与描边一起画出框的边界 */
+    --xh-_tree-select-shadow: var(--xh-elevation-raised);
 
     /* 选中行的文字色随语气走，没写 data-tone 时退回品牌强调色 */
     --xh-_tree-select-selected-fg: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
@@ -106,8 +108,10 @@
     --xh-_tree-select-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   }
 
-  /* 无框：底与常态描边透明，悬停浮出描边，聚焦由焦点环表达 */
+  /* 无框：底与常态描边透明，悬停浮出描边，聚焦由焦点环表达。
+     落影一并关掉——底与描边都透明时它就是一片没有面的影子 */
   [data-scope='tree-select']:is([data-part='root'], [data-part='positioner'])[data-variant='ghost'] {
+    --xh-_tree-select-shadow: 0 0 0 transparent;
     --xh-_tree-select-border: transparent;
     --xh-_tree-select-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
     --xh-_tree-select-bg: transparent;
@@ -160,6 +164,7 @@
     border: var(--xh-stroke-thin) solid var(--xh-tree-select-control-border, var(--xh-_tree-select-border));
     border-radius: var(--xh-tree-select-control-radius, var(--xh-shape-control));
     background: var(--xh-tree-select-control-bg, var(--xh-_tree-select-bg));
+    box-shadow: var(--xh-tree-select-control-shadow, var(--xh-_tree-select-shadow));
     color: var(--xh-tree-select-control-fg, var(--xh-fg-default));
     cursor: pointer;
     transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
@@ -348,7 +353,7 @@
   }
 
   [data-scope='tree-select'][data-part='content'][data-state='open'] {
-    animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+    animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
   /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，

@@ -18,10 +18,12 @@
     --xh-_tags-input-input-font-size: var(--xh-control-font-md);
     --xh-_tags-input-item-font-size: var(--xh-control-caption-md);
     --xh-_tags-input-label-font-size: var(--xh-control-font-md);
-    /* 形态档只换这三个私有槽，缺省这一份就是描边式（描边 + 画布底） */
+    /* 形态档只换这四个私有槽，缺省这一份就是描边式（描边 + 画布底 + 一档落影） */
     --xh-_tags-input-control-bg: var(--xh-bg-canvas);
     --xh-_tags-input-control-border: var(--xh-border-control);
     --xh-_tags-input-control-border-hover: var(--xh-border-control-hover);
+    /* 一档静态落影把框从页面里抬起一层，与描边一起画出框的边界 */
+    --xh-_tags-input-control-shadow: var(--xh-elevation-raised);
     /* 聚焦环与标签块的强调色随语气走。没写 data-tone 时 --xh-_tone 没被声明，退回原来的取值 */
     --xh-_tags-input-ring: var(--xh-ring-focus);
     --xh-_tags-input-accent: var(--xh-_tone, var(--xh-bg-brand));
@@ -54,8 +56,10 @@
     --xh-_tags-input-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   }
 
-  /* 无边框、透明底：静息时框完全隐入背景，可见反馈全靠悬停描边与聚焦环 */
+  /* 无边框、透明底：静息时框完全隐入背景，可见反馈全靠悬停描边与聚焦环。
+     落影一并关掉——底与描边都透明时它就是一片没有面的影子 */
   [data-scope='tags-input'][data-part='root'][data-variant='ghost'] {
+    --xh-_tags-input-control-shadow: 0 0 0 transparent;
     --xh-_tags-input-control-bg: transparent;
     --xh-_tags-input-control-border: transparent;
     --xh-_tags-input-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
@@ -108,6 +112,7 @@
     border: var(--xh-stroke-thin) solid var(--xh-tags-input-control-border, var(--xh-_tags-input-control-border));
     border-radius: var(--xh-tags-input-control-radius, var(--xh-shape-control));
     background: var(--xh-tags-input-control-bg, var(--xh-_tags-input-control-bg));
+    box-shadow: var(--xh-tags-input-control-shadow, var(--xh-_tags-input-control-shadow));
     color: var(--xh-tags-input-control-fg, var(--xh-fg-default));
     cursor: text;
     transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);

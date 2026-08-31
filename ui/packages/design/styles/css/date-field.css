@@ -15,10 +15,12 @@
     --xh-_date-field-gap: var(--xh-control-gap-md);
     --xh-_date-field-font-size: var(--xh-control-font-md);
     --xh-_date-field-label-font-size: var(--xh-control-font-md);
-    /* 形态档只换这三个私有槽：底色与两档描边 */
+    /* 形态档只换这四个私有槽：底色、两档描边与落影 */
     --xh-_date-field-control-bg: var(--xh-bg-canvas);
     --xh-_date-field-control-border: var(--xh-border-control);
     --xh-_date-field-control-border-hover: var(--xh-border-control-hover);
+    /* 一档静态落影把分段框从页面里抬起一层，与描边一起画出框的边界 */
+    --xh-_date-field-control-shadow: var(--xh-elevation-raised);
     /* 聚焦环与段位反白随语气走。没写 data-tone 时这几个 --xh-_tone* 没被声明，退回原来的焦点色与品牌色 */
     --xh-_date-field-ring: var(--xh-ring-focus);
     --xh-_date-field-segment-bg: var(--xh-_tone, var(--xh-bg-brand));
@@ -63,8 +65,10 @@
     --xh-_date-field-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   }
 
-  /* 无框：底与常态描边透明，悬停与聚焦浮出描边 */
+  /* 无框：底与常态描边透明，悬停与聚焦浮出描边。
+     落影一并关掉——底与描边都透明时它就是一片没有面的影子 */
   [data-scope='date-field'][data-part='root'][data-variant='ghost'] {
+    --xh-_date-field-control-shadow: 0 0 0 transparent;
     --xh-_date-field-control-bg: transparent;
     --xh-_date-field-control-border: transparent;
     --xh-_date-field-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
@@ -103,6 +107,7 @@
     border: var(--xh-stroke-thin) solid var(--xh-date-field-control-border, var(--xh-_date-field-control-border));
     border-radius: var(--xh-date-field-control-radius, var(--xh-shape-control));
     background: var(--xh-date-field-control-bg, var(--xh-_date-field-control-bg));
+    box-shadow: var(--xh-date-field-control-shadow, var(--xh-_date-field-control-shadow));
     color: var(--xh-date-field-control-fg, var(--xh-fg-default));
     /* 表单控件不继承页面字体，只给字号会让分段框用 UA 默认字族 */
     font-family: inherit;

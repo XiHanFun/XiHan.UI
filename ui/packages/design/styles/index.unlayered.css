@@ -292,6 +292,9 @@
   --xh-button-bg-hover: var(--xh-_tone-hover, var(--xh-bg-brand-hover));
   --xh-button-bg-active: var(--xh-_tone-active, var(--xh-bg-brand-active));
   --xh-button-fg: var(--xh-_tone-on, var(--xh-fg-on-brand));
+  /* 实心面顶边的内高光，沿继承流给组里每一段；段自己写了形态时按钮那边会覆盖掉它 */
+  --xh-_button-group-highlight: inset 0 var(--xh-stroke-thin) 0 0
+    color-mix(in oklab, var(--xh-_tone-on, var(--xh-fg-on-brand)) 14%, transparent);
 }
 
 [data-scope='button-group'][data-part='root'][data-variant='subtle'] {
@@ -3006,10 +3009,15 @@
 }
 
 /* —— 形态 —— */
-/* 形态只决定颜色怎么用；用哪族颜色由 data-tone 决定，没写 tone 就沿用原来的品牌/中性配色 */
+/* 形态只决定颜色怎么用；用哪族颜色由 data-tone 决定，没写 tone 就沿用原来的品牌/中性配色。
+   实心档还在顶边画一条极浅的内高光，把这块底座衬出厚度；另外三档面上没有实心底，不画 */
 [data-scope='icon-wrapper'][data-part='root'][data-variant='solid'] {
+  --xh-_icon-wrapper-highlight: inset 0 var(--xh-stroke-thin) 0 0
+    color-mix(in oklab, var(--xh-_tone-on, var(--xh-fg-on-brand)) 14%, transparent);
+
   background: var(--xh-_tone, var(--xh-bg-brand));
   color: var(--xh-_tone-on, var(--xh-fg-on-brand));
+  box-shadow: var(--xh-icon-wrapper-shadow, var(--xh-_icon-wrapper-highlight));
 }
 
 [data-scope='icon-wrapper'][data-part='root'][data-variant='subtle'] {
@@ -4399,10 +4407,12 @@
   --xh-_mention-gap: var(--xh-control-gap-md);
   --xh-_mention-font-size: var(--xh-control-font-md);
 
-  /* 形态档只换这三个槽：缺省即 outline（描边 + 画布底） */
+  /* 形态档只换这四个槽：缺省即 outline（描边 + 画布底 + 一档落影） */
   --xh-_mention-input-bg: var(--xh-bg-canvas);
   --xh-_mention-input-border: var(--xh-border-control);
   --xh-_mention-input-border-hover: var(--xh-border-control-hover);
+  /* 一档静态落影把方框从页面里抬起一层，与描边一起画出框的边界 */
+  --xh-_mention-input-shadow: var(--xh-elevation-raised);
 
   /* 聚焦环恒用固定环色，不随语气走 */
   --xh-_mention-ring: var(--xh-ring-focus);
@@ -4455,7 +4465,9 @@
   --xh-_mention-input-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
 
+/* 无框：落影一并关掉——底与描边都透明时它就是一片没有面的影子 */
 [data-scope='mention']:is([data-part='root'], [data-part='positioner'])[data-variant='ghost'] {
+  --xh-_mention-input-shadow: 0 0 0 transparent;
   --xh-_mention-input-bg: transparent;
   --xh-_mention-input-border: transparent;
   --xh-_mention-input-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
@@ -4474,6 +4486,7 @@
   border: var(--xh-stroke-thin) solid var(--xh-mention-input-border, var(--xh-_mention-input-border));
   border-radius: var(--xh-mention-input-radius, var(--xh-shape-control));
   background: var(--xh-mention-input-bg, var(--xh-_mention-input-bg));
+  box-shadow: var(--xh-mention-input-shadow, var(--xh-_mention-input-shadow));
   color: var(--xh-mention-input-fg, var(--xh-fg-default));
   /* 表单控件不继承页面字体，只给字号会让输入框用 UA 默认字族，与周围文本对不上 */
   font-family: inherit;
@@ -4567,7 +4580,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='mention'][data-part='content'][data-state='open'] {
-  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
@@ -4794,10 +4807,12 @@ input[data-scope='mention'][data-part='input'] {
   /* 盒子的圆角 */
   --xh-_password-input-radius: var(--xh-password-input-input-radius, var(--xh-shape-control));
 
-  /* 形态档只换这三个私有槽：底、常态描边、悬停描边 */
+  /* 形态档只换这四个私有槽：底、常态描边、悬停描边、落影 */
   --xh-_password-input-bg: var(--xh-bg-canvas);
   --xh-_password-input-border: var(--xh-border-control);
   --xh-_password-input-border-hover: var(--xh-border-control-hover);
+  /* 一档静态落影把盒从页面里抬起一层，与描边一起画出盒的边界 */
+  --xh-_password-input-shadow: var(--xh-elevation-raised);
 
   /* 聚焦这一处的两个取值。语气只改描边，环恒用 --xh-ring-focus：
      环要在各种底上都读得出来，跟着语气走会掉到 warning 那种够不着对比度的档上 */
@@ -4855,8 +4870,10 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_password-input-border-hover: var(--xh-border-control-hover);
 }
 
-/* 无框：底与常态描边透明，悬停与聚焦浮出描边 */
+/* 无框：底与常态描边透明，悬停与聚焦浮出描边。
+   落影一并关掉——底与描边都透明时它就是一片没有面的影子 */
 [data-scope='password-input'][data-part='root'][data-variant='ghost'] {
+  --xh-_password-input-shadow: 0 0 0 transparent;
   --xh-_password-input-bg: transparent;
   --xh-_password-input-border: transparent;
   --xh-_password-input-border-hover: var(--xh-border-control-hover);
@@ -4904,6 +4921,7 @@ input[data-scope='mention'][data-part='input'] {
   border: var(--xh-stroke-thin) solid var(--xh-password-input-control-border, var(--xh-_password-input-border));
   border-radius: var(--xh-_password-input-radius);
   background: var(--xh-password-input-control-bg, var(--xh-_password-input-bg));
+  box-shadow: var(--xh-password-input-control-shadow, var(--xh-_password-input-shadow));
   transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
@@ -4950,6 +4968,7 @@ input[data-scope='mention'][data-part='input'] {
   border: var(--xh-stroke-thin) solid var(--xh-password-input-input-border, var(--xh-_password-input-border));
   border-radius: var(--xh-_password-input-radius);
   background: var(--xh-password-input-input-bg, var(--xh-_password-input-bg));
+  box-shadow: var(--xh-password-input-input-shadow, var(--xh-_password-input-shadow));
   color: var(--xh-password-input-input-fg, var(--xh-fg-default));
   /* 表单控件不继承页面字体，只给字号会让输入框用 UA 默认字族，与周围文本对不上 */
   font-family: inherit;
@@ -4989,7 +5008,7 @@ input[data-scope='mention'][data-part='input'] {
   cursor: not-allowed;
 }
 
-/* 盒内 input：无边框无底无圆角，观感全归 control；它自己不画聚焦环，
+/* 盒内 input：无边框无底无圆角无落影，观感全归 control；它自己不画聚焦环，
    盒子已经在 :focus-within 上画了一圈，再画一圈就成了两道 */
 [data-scope='password-input'][data-part='control'] [data-part='input'] {
   flex: 1 1 auto;
@@ -4999,6 +5018,7 @@ input[data-scope='mention'][data-part='input'] {
   border: 0;
   border-radius: 0;
   background: transparent;
+  box-shadow: none;
 }
 
 [data-scope='password-input'][data-part='control'] [data-part='input']:hover:not(:disabled, [data-invalid]) {
@@ -5217,7 +5237,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='popconfirm'][data-part='content'][data-state='open'] {
-  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
@@ -5284,8 +5304,13 @@ input[data-scope='mention'][data-part='input'] {
 /* 确认是实心的主操作。底色走共享语气槽：作者在 content 上写 data-tone="danger"
    就整体换成危险色，不写则用品牌色 */
 [data-scope='popconfirm'][data-part='confirm-trigger'] {
+  /* 实心底顶边一条极浅的内高光，把这块面衬出厚度；换语气时高光跟着换 */
+  --xh-_popconfirm-confirm-highlight: inset 0 var(--xh-stroke-thin) 0 0
+    color-mix(in oklab, var(--xh-_tone-on, var(--xh-fg-on-brand)) 14%, transparent);
+
   background: var(--xh-popconfirm-confirm-bg, var(--xh-_tone, var(--xh-bg-brand)));
   color: var(--xh-popconfirm-confirm-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
+  box-shadow: var(--xh-popconfirm-confirm-shadow, var(--xh-_popconfirm-confirm-highlight));
 }
 
 /* 异步确认挂起：按钮转圈、指针挂起；不是禁用，焦点与对比度都保持 */
@@ -5416,10 +5441,12 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_popselect-gap: var(--xh-control-gap-md);
   --xh-_popselect-font-size: var(--xh-control-font-md);
 
-  /* 形态档只换这三个槽：缺省即 outline（描边 + 画布底） */
+  /* 形态档只换这四个槽：缺省即 outline（描边 + 画布底 + 一档落影） */
   --xh-_popselect-control-bg: var(--xh-bg-canvas);
   --xh-_popselect-control-border: var(--xh-border-control);
   --xh-_popselect-control-border-hover: var(--xh-border-control-hover);
+  /* 一档静态落影把盒从页面里抬起一层，与描边一起画出盒的边界 */
+  --xh-_popselect-control-shadow: var(--xh-elevation-raised);
 
   /* 聚焦环恒用固定环色；强调色随语气走，只落在勾选标记与选中文字上，正文文字色不动。
      没写 data-tone 时 --xh-_tone 没被声明，两处都退回原来的取值 */
@@ -5481,8 +5508,10 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_popselect-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
 
-/* 无框：底与常态描边透明，悬停浮出描边，聚焦由焦点环表达 */
+/* 无框：底与常态描边透明，悬停浮出描边，聚焦由焦点环表达。
+   落影一并关掉——底与描边都透明时它就是一片没有面的影子 */
 [data-scope='popselect']:is([data-part='root'], [data-part='positioner'])[data-variant='ghost'] {
+  --xh-_popselect-control-shadow: 0 0 0 transparent;
   --xh-_popselect-control-bg: transparent;
   --xh-_popselect-control-border: transparent;
   --xh-_popselect-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
@@ -5500,6 +5529,7 @@ input[data-scope='mention'][data-part='input'] {
   border: var(--xh-stroke-thin) solid var(--xh-popselect-control-border, var(--xh-_popselect-control-border));
   border-radius: var(--xh-popselect-control-radius, var(--xh-shape-control));
   background: var(--xh-popselect-control-bg, var(--xh-_popselect-control-bg));
+  box-shadow: var(--xh-popselect-control-shadow, var(--xh-_popselect-control-shadow));
 }
 
 [data-scope='popselect'][data-part='control']:hover:not([data-disabled]) {
@@ -5642,7 +5672,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='popselect'][data-part='content'][data-state='open'] {
-  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
@@ -5913,6 +5943,9 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_bg-hover: var(--xh-prompt-input-send-bg-hover, var(--xh-_tone-hover, var(--xh-bg-brand-hover)));
   --xh-_bg-active: var(--xh-prompt-input-send-bg-active, var(--xh-_tone-active, var(--xh-bg-brand-active)));
   --xh-_fg: var(--xh-prompt-input-send-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
+  /* 发送身份是实心底，顶边画一条极浅的内高光把这块面衬出厚度 */
+  --xh-_prompt-input-submit-highlight: inset 0 var(--xh-stroke-thin) 0 0
+    color-mix(in oklab, var(--xh-_tone-on, var(--xh-fg-on-brand)) 14%, transparent);
 
   display: inline-flex;
   /* 按钮不参与弹性伸缩 */
@@ -5926,6 +5959,7 @@ input[data-scope='mention'][data-part='input'] {
   border-radius: var(--xh-prompt-input-submit-radius, var(--xh-shape-control));
   background: var(--xh-_bg);
   color: var(--xh-_fg);
+  box-shadow: var(--xh-prompt-input-submit-shadow, var(--xh-_prompt-input-submit-highlight));
   font-family: inherit;
   font-size: var(--xh-prompt-input-submit-font-size, var(--xh-text-label-size));
   font-weight: var(--xh-prompt-input-submit-font-weight, var(--xh-text-label-weight));
@@ -5963,6 +5997,9 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_bg-hover: var(--xh-prompt-input-stop-bg-hover, var(--xh-bg-subtle-hover));
   --xh-_bg-active: var(--xh-prompt-input-stop-bg-active, var(--xh-bg-subtle-active));
   --xh-_fg: var(--xh-prompt-input-stop-fg, var(--xh-fg-default));
+
+  /* 停止身份是淡底，面上没有厚度可言，内高光收掉 */
+  box-shadow: none;
 }
 
 /* 禁用走原生 disabled，输入为空时按钮转灰但不收起 */
@@ -5970,6 +6007,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_bg: var(--xh-prompt-input-send-bg-off, var(--xh-bg-muted));
   --xh-_fg: var(--xh-fg-disabled);
 
+  box-shadow: none;
   cursor: not-allowed;
 }
 
@@ -7285,14 +7323,22 @@ input[data-scope='mention'][data-part='input'] {
 /* 形态只决定颜色怎么用。每个形态拆成两条：先是没写语气时的基线配色，
    再是写了语气时的覆盖。语气槽会沿继承流下来，覆盖那条必须带 [data-tone] 限定，
    否则一枚没写语气的标签只要落在带 data-tone 的容器里（警告提示、吐司、按钮内）
-   就会跟着染色 */
+   就会跟着染色。
+   实心档还在顶边画一条极浅的内高光，把整块底衬出厚度；语气那条同样从实心底上的前景色兑，
+   换语气时高光跟着换 */
 [data-scope='tag'][data-part='root'][data-variant='solid'] {
+  --xh-_tag-highlight: inset 0 var(--xh-stroke-thin) 0 0 color-mix(in oklab, var(--xh-fg-on-brand) 14%, transparent);
+
   border-color: transparent;
   background: var(--xh-tag-bg, var(--xh-bg-brand));
   color: var(--xh-tag-fg, var(--xh-fg-on-brand));
+  box-shadow: var(--xh-tag-shadow, var(--xh-_tag-highlight));
 }
 
 [data-scope='tag'][data-part='root'][data-variant='solid'][data-tone] {
+  --xh-_tag-highlight: inset 0 var(--xh-stroke-thin) 0 0
+    color-mix(in oklab, var(--xh-_tone-on, var(--xh-fg-on-brand)) 14%, transparent);
+
   background: var(--xh-tag-bg, var(--xh-_tone, var(--xh-bg-brand)));
   color: var(--xh-tag-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
 }
@@ -7346,6 +7392,8 @@ input[data-scope='mention'][data-part='input'] {
   border-color: var(--xh-tag-border-disabled, var(--xh-border-subtle));
   background: var(--xh-tag-bg-disabled, var(--xh-bg-muted));
   color: var(--xh-fg-disabled);
+  /* 底已经退成置灰色，实心档那条内高光跟着收掉 */
+  box-shadow: none;
   cursor: not-allowed;
 }
 
@@ -8716,7 +8764,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='accordion'][data-part='content'][data-state='open'] {
-  animation: xh-accordion-expand var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  animation: xh-accordion-expand var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='accordion'][data-part='content'][data-state='closed'] {
@@ -9211,7 +9259,8 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 内顶高光把实心块顶出一道边，与拒绝那颗的描边同一档厚度 */
 [data-scope='approval'][data-part='approve-trigger'] {
-  --xh-_approval-approve-highlight: inset 0 var(--xh-stroke-thin) 0 0 color-mix(in oklab, var(--xh-fg-on-brand) 14%, transparent);
+  --xh-_approval-approve-highlight: inset 0 var(--xh-stroke-thin) 0 0
+    color-mix(in oklab, var(--xh-_tone-on, var(--xh-fg-on-brand)) 14%, transparent);
 
   background: var(--xh-approval-approve-bg, var(--xh-_tone, var(--xh-bg-brand)));
   color: var(--xh-approval-approve-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
@@ -9386,6 +9435,10 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_badge-px: var(--xh-space-1);
   --xh-_badge-font: var(--xh-text-secondary-size);
 
+  /* 顶边一条极浅的内高光，把这枚实心块衬出厚度 */
+  --xh-_badge-highlight: inset 0 var(--xh-stroke-thin) 0 0
+    color-mix(in oklab, var(--xh-_tone-on, var(--xh-fg-on-brand)) 14%, transparent);
+
   /* 不设 z-index：角标在 DOM 序里排在宿主之后，本来就压在上面 */
   position: absolute;
   display: inline-flex;
@@ -9400,6 +9453,7 @@ input[data-scope='mention'][data-part='input'] {
   /* 角标默认就是实心的：贴在别的东西上，淡底与描边都看不清 */
   background: var(--xh-badge-bg, var(--xh-_tone, var(--xh-bg-brand)));
   color: var(--xh-badge-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
+  box-shadow: var(--xh-badge-shadow, var(--xh-_badge-highlight));
   font-size: var(--xh-badge-font-size, var(--xh-_badge-font));
   font-weight: var(--xh-badge-font-weight, var(--xh-font-weight-medium));
   line-height: var(--xh-leading-none);
@@ -9415,12 +9469,14 @@ input[data-scope='mention'][data-part='input'] {
   display: none;
 }
 
-/* 圆点形态：只表示「有」，不表示「有几个」——收掉内边距与文字盒 */
+/* 圆点形态：只表示「有」，不表示「有几个」——收掉内边距与文字盒。
+   圆点直径只有六到十像素，一像素的内高光会占去顶上一大截、读成缺了一圈的描边，这里收掉 */
 [data-scope='badge'][data-part='indicator'][data-dot] {
   min-inline-size: var(--xh-badge-dot-size, var(--xh-_badge-dot));
   inline-size: var(--xh-badge-dot-size, var(--xh-_badge-dot));
   block-size: var(--xh-badge-dot-size, var(--xh-_badge-dot));
   padding: 0;
+  box-shadow: none;
   font-size: 0;
 }
 
@@ -9655,6 +9711,10 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_bg-active: var(--xh-button-bg-active, var(--xh-bg-subtle-active));
   --xh-_fg: var(--xh-button-fg, var(--xh-fg-default));
 
+  /* 实心面顶边的一条内高光，把整块底衬出厚度。形态那几条各自给值，没有实心底的形态给 none；
+     没写形态时跟着按钮组走——组把形态写在自己身上，段上并没有 data-variant */
+  --xh-_button-highlight: var(--xh-_button-group-highlight, none);
+
   /* 作者塞进来的图标跟着按钮的尺寸档走：xh-icon 的直径读的就是这个继承槽，
      它自己显式写了 size 时特异性更高，仍以作者写的为准 */
   --xh-icon-size: var(--xh-button-icon-size, var(--xh-glyph-size-md));
@@ -9669,6 +9729,7 @@ input[data-scope='mention'][data-part='input'] {
   border-radius: var(--xh-button-radius, var(--xh-shape-control));
   background: var(--xh-_bg);
   color: var(--xh-_fg);
+  box-shadow: var(--xh-button-shadow, var(--xh-_button-highlight));
   font-size: var(--xh-button-font-size, var(--xh-_button-group-font-size, var(--xh-text-label-size)));
   font-weight: var(--xh-button-font-weight, var(--xh-text-label-weight));
   line-height: var(--xh-leading-none);
@@ -9706,13 +9767,18 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_bg-hover: var(--xh-_tone-hover, var(--xh-bg-brand-hover));
   --xh-_bg-active: var(--xh-_tone-active, var(--xh-bg-brand-active));
   --xh-_fg: var(--xh-_tone-on, var(--xh-fg-on-brand));
+  --xh-_button-highlight: inset 0 var(--xh-stroke-thin) 0 0
+    color-mix(in oklab, var(--xh-_tone-on, var(--xh-fg-on-brand)) 14%, transparent);
 }
 
+/* 另外三档的面不是实心底，高光在上面只会显脏；显式清掉，
+   免得整组写了实心形态时那条高光顺着继承流漏到组里写了别的形态的段上 */
 [data-scope='button'][data-part='root'][data-variant='subtle'] {
   --xh-_bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   --xh-_bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
   --xh-_bg-active: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
   --xh-_fg: var(--xh-_tone-fg, var(--xh-fg-default));
+  --xh-_button-highlight: none;
 }
 
 [data-scope='button'][data-part='root'][data-variant='outline'] {
@@ -9720,6 +9786,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   --xh-_bg-active: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-active));
   --xh-_fg: var(--xh-_tone-fg, var(--xh-fg-default));
+  --xh-_button-highlight: none;
 
   border-color: var(--xh-_tone-border-control, var(--xh-border-control));
 }
@@ -9729,6 +9796,13 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   --xh-_bg-active: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-active));
   --xh-_fg: var(--xh-_tone-fg, var(--xh-fg-default));
+  --xh-_button-highlight: none;
+}
+
+/* 置灰与挂起时收掉高光：底色已经被压暗，再留一条亮线就成了噪点。
+   写在形态之后：与形态那几条同权重，靠后写压得住 */
+[data-scope='button'][data-part='root']:is([data-disabled], [data-loading]) {
+  --xh-_button-highlight: none;
 }
 
 /* —— 尺寸 —— */
@@ -10543,11 +10617,13 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_cascader-font-size: var(--xh-control-font-md);
   --xh-_cascader-label-font-size: var(--xh-control-font-md);
 
-  /* 形态档只换触发框的描边与底色这三个槽，浮层与列不跟着变：
+  /* 形态档只换触发框的描边、底色与落影这四个槽，浮层与列不跟着变：
      变的是「这是个输入位」的表达方式，不是弹出内容的表达方式 */
   --xh-_cascader-border: var(--xh-border-control);
   --xh-_cascader-border-hover: var(--xh-border-control-hover);
   --xh-_cascader-bg: var(--xh-bg-canvas);
+  /* 一档静态落影把触发框从页面里抬起一层，与描边一起画出框的边界 */
+  --xh-_cascader-shadow: var(--xh-elevation-raised);
 
   /* 选中条目的文字色随语气走，没写 data-tone 时退回品牌强调色 */
   --xh-_cascader-selected-fg: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
@@ -10587,8 +10663,10 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_cascader-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
 }
 
-/* 无框：底与常态描边透明，悬停浮出描边，聚焦由焦点环表达 */
+/* 无框：底与常态描边透明，悬停浮出描边，聚焦由焦点环表达。
+   落影一并关掉——底与描边都透明时它就是一片没有面的影子 */
 [data-scope='cascader']:is([data-part='root'], [data-part='positioner'])[data-variant='ghost'] {
+  --xh-_cascader-shadow: 0 0 0 transparent;
   --xh-_cascader-border: transparent;
   --xh-_cascader-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   --xh-_cascader-bg: transparent;
@@ -10641,6 +10719,7 @@ input[data-scope='mention'][data-part='input'] {
   border: var(--xh-stroke-thin) solid var(--xh-cascader-control-border, var(--xh-_cascader-border));
   border-radius: var(--xh-cascader-control-radius, var(--xh-shape-control));
   background: var(--xh-cascader-control-bg, var(--xh-_cascader-bg));
+  box-shadow: var(--xh-cascader-control-shadow, var(--xh-_cascader-shadow));
   color: var(--xh-cascader-control-fg, var(--xh-fg-default));
   cursor: pointer;
   transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
@@ -10837,7 +10916,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='cascader'][data-part='content'][data-state='open'] {
-  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
@@ -12138,7 +12217,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='collapsible'][data-part='content'][data-state='open'] {
-  animation: xh-collapsible-expand var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  animation: xh-collapsible-expand var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='collapsible'][data-part='content'][data-state='closed'] {
@@ -12254,7 +12333,8 @@ input[data-scope='mention'][data-part='input'] {
   color: var(--xh-fg-subtle);
 }
 
-/* 盒：描边、底色、控件高度与行内内衬都落在这一层 */
+/* 盒：描边、底色、控件高度与行内内衬都落在这一层，
+   另加一档静态落影把它从页面里抬起一层 */
 [data-scope='color-picker'][data-part='control'] {
   display: inline-flex;
   align-items: center;
@@ -12265,6 +12345,7 @@ input[data-scope='mention'][data-part='input'] {
   border: var(--xh-stroke-thin) solid var(--xh-color-picker-control-border, var(--xh-border-control));
   border-radius: var(--xh-color-picker-control-radius, var(--xh-shape-control));
   background: var(--xh-color-picker-control-bg, var(--xh-bg-canvas));
+  box-shadow: var(--xh-color-picker-control-shadow, var(--xh-elevation-raised));
   color: var(--xh-color-picker-control-fg, var(--xh-fg-default));
   cursor: pointer;
   transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
@@ -12386,7 +12467,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='color-picker'][data-part='content'][data-state='open'] {
-  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
@@ -12771,10 +12852,12 @@ input[data-scope='mention'][data-part='input'] {
   /* 作者塞进指示符槽的图标跟着控件的尺寸档走；它自己写了 size 时仍以作者的为准 */
   --xh-icon-size: var(--xh-combobox-icon-size, var(--xh-glyph-size-md));
 
-  /* 形态档只换这三个槽：缺省即 outline（描边 + 画布底） */
+  /* 形态档只换这四个槽：缺省即 outline（描边 + 画布底 + 一档落影） */
   --xh-_combobox-control-bg: var(--xh-bg-canvas);
   --xh-_combobox-control-border: var(--xh-border-control);
   --xh-_combobox-control-border-hover: var(--xh-border-control-hover);
+  /* 一档静态落影把盒从页面里抬起一层，与描边一起画出盒的边界 */
+  --xh-_combobox-control-shadow: var(--xh-elevation-raised);
 
   /* 聚焦环恒用固定环色；强调色随语气走，只落在勾选标记与选中文字上，正文文字色不动。
      没写 data-tone 时 --xh-_tone 没被声明，两处都退回原来的取值 */
@@ -12836,8 +12919,10 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_combobox-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
 
-/* 无框：底与常态描边透明，悬停与聚焦浮出描边 */
+/* 无框：底与常态描边透明，悬停与聚焦浮出描边。
+   落影一并关掉——底与描边都透明时它就是一片没有面的影子 */
 [data-scope='combobox']:is([data-part='root'], [data-part='positioner'])[data-variant='ghost'] {
+  --xh-_combobox-control-shadow: 0 0 0 transparent;
   --xh-_combobox-control-bg: transparent;
   --xh-_combobox-control-border: transparent;
   --xh-_combobox-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
@@ -12866,6 +12951,7 @@ input[data-scope='mention'][data-part='input'] {
   border: var(--xh-stroke-thin) solid var(--xh-combobox-control-border, var(--xh-_combobox-control-border));
   border-radius: var(--xh-combobox-control-radius, var(--xh-shape-control));
   background: var(--xh-combobox-control-bg, var(--xh-_combobox-control-bg));
+  box-shadow: var(--xh-combobox-control-shadow, var(--xh-_combobox-control-shadow));
   color: var(--xh-combobox-control-fg, var(--xh-fg-default));
   transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
@@ -13072,7 +13158,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='combobox'][data-part='content'][data-state='open'] {
-  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
@@ -13309,6 +13395,8 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_bg-hover: var(--xh-composer-send-bg-hover, var(--xh-bg-brand-hover));
   --xh-_bg-active: var(--xh-composer-send-bg-active, var(--xh-bg-brand-active));
   --xh-_fg: var(--xh-composer-send-fg, var(--xh-fg-on-brand));
+  /* 发送模式是实心底，顶边画一条极浅的内高光把这块面衬出厚度 */
+  --xh-_composer-submit-highlight: inset 0 var(--xh-stroke-thin) 0 0 color-mix(in oklab, var(--xh-fg-on-brand) 14%, transparent);
 
   display: inline-flex;
   /* 按钮不参与弹性伸缩 */
@@ -13322,6 +13410,7 @@ input[data-scope='mention'][data-part='input'] {
   border-radius: var(--xh-composer-submit-radius, var(--xh-shape-control));
   background: var(--xh-_bg);
   color: var(--xh-_fg);
+  box-shadow: var(--xh-composer-submit-shadow, var(--xh-_composer-submit-highlight));
   font-family: inherit;
   font-size: var(--xh-composer-submit-font-size, var(--xh-text-label-size));
   font-weight: var(--xh-composer-submit-font-weight, var(--xh-text-label-weight));
@@ -13355,11 +13444,15 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_bg-hover: var(--xh-composer-stop-bg-hover, var(--xh-bg-subtle-hover));
   --xh-_bg-active: var(--xh-composer-stop-bg-active, var(--xh-bg-subtle-active));
   --xh-_fg: var(--xh-composer-stop-fg, var(--xh-fg-default));
+
+  /* 停止模式是淡底，面上没有厚度可言，内高光收掉 */
+  box-shadow: none;
 }
 
 /* 禁用走原生 disabled，输入为空时按钮转灰但不收起 */
 [data-scope='composer'][data-part='submit-trigger']:disabled {
   color: var(--xh-fg-disabled);
+  box-shadow: none;
   cursor: not-allowed;
 }
 
@@ -13491,7 +13584,7 @@ input[data-scope='mention'][data-part='input'] {
 /* 展开时轻微涨开：菜单是被光标"点出来"的，纯淡入显得它一直都在
    （不设 transform-origin：那个属性没有逻辑关键字，写死方向会在 RTL 下反着涨） */
 [data-scope='context-menu'][data-part='content'][data-state='open'] {
-  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
@@ -13708,10 +13801,12 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_date-field-gap: var(--xh-control-gap-md);
   --xh-_date-field-font-size: var(--xh-control-font-md);
   --xh-_date-field-label-font-size: var(--xh-control-font-md);
-  /* 形态档只换这三个私有槽：底色与两档描边 */
+  /* 形态档只换这四个私有槽：底色、两档描边与落影 */
   --xh-_date-field-control-bg: var(--xh-bg-canvas);
   --xh-_date-field-control-border: var(--xh-border-control);
   --xh-_date-field-control-border-hover: var(--xh-border-control-hover);
+  /* 一档静态落影把分段框从页面里抬起一层，与描边一起画出框的边界 */
+  --xh-_date-field-control-shadow: var(--xh-elevation-raised);
   /* 聚焦环与段位反白随语气走。没写 data-tone 时这几个 --xh-_tone* 没被声明，退回原来的焦点色与品牌色 */
   --xh-_date-field-ring: var(--xh-ring-focus);
   --xh-_date-field-segment-bg: var(--xh-_tone, var(--xh-bg-brand));
@@ -13756,8 +13851,10 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_date-field-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
 
-/* 无框：底与常态描边透明，悬停与聚焦浮出描边 */
+/* 无框：底与常态描边透明，悬停与聚焦浮出描边。
+   落影一并关掉——底与描边都透明时它就是一片没有面的影子 */
 [data-scope='date-field'][data-part='root'][data-variant='ghost'] {
+  --xh-_date-field-control-shadow: 0 0 0 transparent;
   --xh-_date-field-control-bg: transparent;
   --xh-_date-field-control-border: transparent;
   --xh-_date-field-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
@@ -13796,6 +13893,7 @@ input[data-scope='mention'][data-part='input'] {
   border: var(--xh-stroke-thin) solid var(--xh-date-field-control-border, var(--xh-_date-field-control-border));
   border-radius: var(--xh-date-field-control-radius, var(--xh-shape-control));
   background: var(--xh-date-field-control-bg, var(--xh-_date-field-control-bg));
+  box-shadow: var(--xh-date-field-control-shadow, var(--xh-_date-field-control-shadow));
   color: var(--xh-date-field-control-fg, var(--xh-fg-default));
   /* 表单控件不继承页面字体，只给字号会让分段框用 UA 默认字族 */
   font-family: inherit;
@@ -14009,10 +14107,12 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_date-picker-font-size: var(--xh-control-font-md);
   --xh-_date-picker-label-font-size: var(--xh-control-font-md);
 
-  /* 形态档只换这三个私有槽：底色与两档描边 */
+  /* 形态档只换这四个私有槽：底色、两档描边与落影 */
   --xh-_date-picker-control-bg: var(--xh-bg-canvas);
   --xh-_date-picker-control-border: var(--xh-border-control);
   --xh-_date-picker-control-border-hover: var(--xh-border-control-hover);
+  /* 一档静态落影把盒从页面里抬起一层，与描边一起画出盒的边界 */
+  --xh-_date-picker-control-shadow: var(--xh-elevation-raised);
 
   /* 聚焦环、时间列选中与确认按钮随语气走。没写 data-tone 时这几个 --xh-_tone* 没被声明，
      退回原来的焦点色与品牌色 */
@@ -14024,6 +14124,9 @@ input[data-scope='mention'][data-part='input'] {
   /* 淡底上的字与实心底上的字是两档：--xh-_tone-fg 是语气层为淡底配的那一档，
      没写 data-tone 时退到 fg-brand-strong——fg-brand（600）压在 brand-100 上只有 4.21 */
   --xh-_date-picker-accent-subtle-fg: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
+  /* 确认按钮是面板里唯一的实心块，顶边画一条极浅的内高光把它衬出厚度 */
+  --xh-_date-picker-confirm-highlight: inset 0 var(--xh-stroke-thin) 0 0
+    color-mix(in oklab, var(--xh-_date-picker-accent-fg) 14%, transparent);
 }
 
 /* 与文本框、分段日期同一套堆叠：标签一行、输入行一行 */
@@ -14073,8 +14176,10 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_date-picker-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
 
-/* 无框：底与常态描边透明，悬停与聚焦浮出描边 */
+/* 无框：底与常态描边透明，悬停与聚焦浮出描边。
+   落影一并关掉——底与描边都透明时它就是一片没有面的影子 */
 [data-scope='date-picker']:is([data-part='root'], [data-part='positioner'])[data-variant='ghost'] {
+  --xh-_date-picker-control-shadow: 0 0 0 transparent;
   --xh-_date-picker-control-bg: transparent;
   --xh-_date-picker-control-border: transparent;
   --xh-_date-picker-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
@@ -14114,6 +14219,7 @@ input[data-scope='mention'][data-part='input'] {
   border: var(--xh-stroke-thin) solid var(--xh-date-picker-control-border, var(--xh-_date-picker-control-border));
   border-radius: var(--xh-date-picker-control-radius, var(--xh-shape-control));
   background: var(--xh-date-picker-control-bg, var(--xh-_date-picker-control-bg));
+  box-shadow: var(--xh-date-picker-control-shadow, var(--xh-_date-picker-control-shadow));
   color: var(--xh-date-picker-control-fg, var(--xh-fg-default));
   transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
@@ -14267,7 +14373,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='date-picker'][data-part='content'][data-state='open'] {
-  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
@@ -14427,6 +14533,7 @@ input[data-scope='mention'][data-part='input'] {
   border-radius: var(--xh-date-picker-confirm-trigger-radius, var(--xh-shape-control));
   background: var(--xh-date-picker-confirm-bg, var(--xh-_date-picker-accent));
   color: var(--xh-date-picker-confirm-fg, var(--xh-_date-picker-accent-fg));
+  box-shadow: var(--xh-date-picker-confirm-shadow, var(--xh-_date-picker-confirm-highlight));
   font-size: var(--xh-text-secondary-size);
   cursor: pointer;
 }
@@ -14626,7 +14733,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='dialog'][data-part='content'][data-state='open'] {
-  animation: xh-dialog-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  animation: xh-dialog-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='dialog'][data-part='content'][data-state='closed'] {
@@ -15040,7 +15147,7 @@ input[data-scope='mention'][data-part='input'] {
 /* 滑入/滑出按边配对。退场一律 forwards：presence 要等 animationend 才卸载，
    不定住终态，面板会在最后一帧弹回原位再消失。 */
 [data-scope='drawer'][data-part='content'][data-side='right'][data-state='open'] {
-  animation: xh-drawer-in-right var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  animation: xh-drawer-in-right var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='drawer'][data-part='content'][data-side='right'][data-state='closed'] {
@@ -15048,7 +15155,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='drawer'][data-part='content'][data-side='left'][data-state='open'] {
-  animation: xh-drawer-in-left var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  animation: xh-drawer-in-left var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='drawer'][data-part='content'][data-side='left'][data-state='closed'] {
@@ -15056,7 +15163,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='drawer'][data-part='content'][data-side='top'][data-state='open'] {
-  animation: xh-drawer-in-top var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  animation: xh-drawer-in-top var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='drawer'][data-part='content'][data-side='top'][data-state='closed'] {
@@ -15064,7 +15171,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='drawer'][data-part='content'][data-side='bottom'][data-state='open'] {
-  animation: xh-drawer-in-bottom var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  animation: xh-drawer-in-bottom var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='drawer'][data-part='content'][data-side='bottom'][data-state='closed'] {
@@ -15255,6 +15362,8 @@ input[data-scope='mention'][data-part='input'] {
   border: var(--xh-stroke-thin) solid var(--xh-editable-input-border, var(--xh-border-control));
   border-radius: var(--xh-editable-input-radius, var(--xh-shape-control));
   background: var(--xh-editable-input-bg, var(--xh-bg-canvas));
+  /* 一档静态落影把编辑态的框从页面里抬起一层，与描边一起画出框的边界 */
+  box-shadow: var(--xh-editable-input-shadow, var(--xh-elevation-raised));
   color: var(--xh-editable-input-fg, var(--xh-fg-default));
   /* 表单控件不继承页面字体，只给字号会让输入框用 UA 默认字族，与预览区的文字对不上 */
   font-family: inherit;
@@ -15380,11 +15489,15 @@ input[data-scope='mention'][data-part='input'] {
   cursor: not-allowed;
 }
 
-/* 提交按钮是这一组里的主操作，给它一层实心底色区分开 */
+/* 提交按钮是这一组里的主操作，给它一层实心底色区分开，顶边再画一条极浅的内高光衬出厚度。
+   置灰那档不命中这条选择器，高光自然不出现 */
 [data-scope='editable'][data-part='submit-trigger']:not(:disabled) {
+  --xh-_editable-submit-highlight: inset 0 var(--xh-stroke-thin) 0 0 color-mix(in oklab, var(--xh-fg-on-brand) 14%, transparent);
+
   border-color: var(--xh-editable-submit-border, var(--xh-bg-brand));
   background: var(--xh-editable-submit-bg, var(--xh-bg-brand));
   color: var(--xh-editable-submit-fg, var(--xh-fg-on-brand));
+  box-shadow: var(--xh-editable-submit-shadow, var(--xh-_editable-submit-highlight));
 }
 
 [data-scope='editable'][data-part='submit-trigger']:hover:not(:disabled) {
@@ -15934,7 +16047,7 @@ input[data-scope='mention'][data-part='input'] {
 /* 从收起翻成显出的那一下给一小段入场：读屏靠 role=alert 播报，
    视觉这边也得有个"它是刚冒出来的"的交代，否则像一直杵在那儿 */
 [data-scope='form'][data-part='error-summary'][data-state='invalid'] {
-  animation: xh-form-summary-enter var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  animation: xh-form-summary-enter var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 /* 摘要里的每一条是一个真链接，指向对应字段容器 */
@@ -16018,11 +16131,15 @@ input[data-scope='mention'][data-part='input'] {
   cursor: not-allowed;
 }
 
-/* 提交是这一组里的主操作，给它一层实心底色区分开 */
+/* 提交是这一组里的主操作，给它一层实心底色区分开，顶边再画一条极浅的内高光衬出厚度。
+   置灰那档不命中这条选择器，高光自然不出现 */
 [data-scope='form'][data-part='submit-trigger']:not(:disabled) {
+  --xh-_form-submit-highlight: inset 0 var(--xh-stroke-thin) 0 0 color-mix(in oklab, var(--xh-fg-on-brand) 14%, transparent);
+
   border-color: var(--xh-form-submit-border, var(--xh-form-submit-bg, var(--xh-bg-brand)));
   background: var(--xh-form-submit-bg, var(--xh-bg-brand));
   color: var(--xh-form-submit-fg, var(--xh-fg-on-brand));
+  box-shadow: var(--xh-form-submit-shadow, var(--xh-_form-submit-highlight));
 }
 
 [data-scope='form'][data-part='submit-trigger']:hover:not(:disabled) {
@@ -16171,7 +16288,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='hover-card'][data-part='content'][data-state='open'] {
-  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
@@ -17038,7 +17155,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='menu'][data-part='content'][data-state='open'] {
-  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
@@ -17366,7 +17483,7 @@ input[data-scope='mention'][data-part='input'] {
 /* 展开时轻微涨开。只在切换到别张菜单时不重播——那由 data-state 的翻转天然保证：
    一张关一张开，动画各跑各的 */
 [data-scope='menubar'][data-part='content'][data-state='open'] {
-  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来 */
@@ -17936,7 +18053,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='navigation-menu'][data-part='content'][data-state='open'] {
-  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来 */
@@ -18203,7 +18320,7 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 生命周期只有三段，unmounted 那段由上面的 [hidden] 收走，这里只管前两段 */
 [data-scope='notification'][data-part='item'][data-state='visible'] {
-  animation: xh-notification-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  animation: xh-notification-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 /* forwards 不能省：退场窗口（removeDelay 默认 200ms）比退场动画长，
@@ -18440,10 +18557,12 @@ input[data-scope='mention'][data-part='input'] {
   /* 盒子的圆角 */
   --xh-_number-field-radius: var(--xh-number-field-input-radius, var(--xh-shape-control));
 
-  /* 形态档只换这几个私有槽：输入框的底与描边，加减钮的底与描边 */
+  /* 形态档只换这几个私有槽：输入框的底、描边与落影，加减钮的底与描边 */
   --xh-_number-field-bg: var(--xh-bg-canvas);
   --xh-_number-field-border: var(--xh-border-control);
   --xh-_number-field-border-hover: var(--xh-border-control-hover);
+  /* 一档静态落影把盒从页面里抬起一层，与描边一起画出盒的边界 */
+  --xh-_number-field-shadow: var(--xh-elevation-raised);
   --xh-_number-field-trigger-bg: var(--xh-bg-subtle);
   --xh-_number-field-trigger-bg-hover: var(--xh-bg-subtle-hover);
   --xh-_number-field-trigger-bg-active: var(--xh-bg-subtle-active);
@@ -18516,8 +18635,10 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_number-field-border-focus: var(--xh-_tone, var(--xh-border-control-focus));
 }
 
-/* 无框：底与常态描边透明，悬停与聚焦浮出描边 */
+/* 无框：底与常态描边透明，悬停与聚焦浮出描边。
+   落影一并关掉——底与描边都透明时它就是一片没有面的影子 */
 [data-scope='number-field'][data-part='root'][data-variant='ghost'] {
+  --xh-_number-field-shadow: 0 0 0 transparent;
   --xh-_number-field-bg: transparent;
   --xh-_number-field-border: transparent;
   --xh-_number-field-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
@@ -18557,6 +18678,7 @@ input[data-scope='mention'][data-part='input'] {
   border: var(--xh-stroke-thin) solid var(--xh-number-field-input-border, var(--xh-_number-field-border));
   border-radius: var(--xh-_number-field-radius);
   background: var(--xh-number-field-input-bg, var(--xh-_number-field-bg));
+  box-shadow: var(--xh-number-field-input-shadow, var(--xh-_number-field-shadow));
   transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
@@ -18587,7 +18709,7 @@ input[data-scope='mention'][data-part='input'] {
   cursor: not-allowed;
 }
 
-/* 盒内 input：无边框无底无圆角，观感全归 control；行内内衬也归 control，
+/* 盒内 input：无边框无底无圆角无落影，观感全归 control；行内内衬也归 control，
    这里再留一份就是框内套了一圈空白。数字居中排在两个按钮之间；
    前后缀图标/文字直接流式排在 input 两侧，不用再绝对定位 */
 [data-scope='number-field'][data-part='control'] [data-part='input'] {
@@ -18599,6 +18721,7 @@ input[data-scope='mention'][data-part='input'] {
   border: 0;
   border-radius: 0;
   background: transparent;
+  box-shadow: none;
   text-align: var(--xh-number-field-input-align, center);
 }
 
@@ -18665,6 +18788,7 @@ input[data-scope='mention'][data-part='input'] {
   border: var(--xh-stroke-thin) solid var(--xh-number-field-input-border, var(--xh-_number-field-border));
   border-radius: var(--xh-_number-field-radius);
   background: var(--xh-number-field-input-bg, var(--xh-_number-field-bg));
+  box-shadow: var(--xh-number-field-input-shadow, var(--xh-_number-field-shadow));
   color: var(--xh-number-field-input-fg, var(--xh-fg-default));
   /* 表单控件不继承页面字体，只给字号会让输入框用 UA 默认字族 */
   font-family: inherit;
@@ -18851,6 +18975,9 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_pagination-selected-bg-hover: var(--xh-_tone-hover, var(--xh-bg-brand-hover));
   --xh-_pagination-selected-bg-active: var(--xh-_tone-active, var(--xh-bg-brand-active));
   --xh-_pagination-selected-fg: var(--xh-_tone-on, var(--xh-fg-on-brand));
+  /* 当前页那一格是实心底，顶边画一条极浅的内高光把它衬出厚度 */
+  --xh-_pagination-highlight: inset 0 var(--xh-stroke-thin) 0 0
+    color-mix(in oklab, var(--xh-_tone-on, var(--xh-fg-on-brand)) 14%, transparent);
 
   display: flex;
   align-items: center;
@@ -18962,6 +19089,7 @@ input[data-scope='mention'][data-part='input'] {
   border-color: var(--xh-pagination-item-border-selected, var(--xh-_pagination-selected-bg));
   background: var(--xh-pagination-item-bg-selected, var(--xh-_pagination-selected-bg));
   color: var(--xh-pagination-item-fg-selected, var(--xh-_pagination-selected-fg));
+  box-shadow: var(--xh-pagination-item-shadow, var(--xh-_pagination-highlight));
 }
 
 [data-scope='pagination'][data-part='item'][data-current]:hover {
@@ -19062,7 +19190,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='pagination'][data-part='content'][data-state='open'] {
-  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
@@ -19122,10 +19250,12 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_pin-input-box-gap: var(--xh-control-gap-md);
   --xh-_pin-input-box-font-size: var(--xh-text-heading-3-size);
   --xh-_pin-input-label-font-size: var(--xh-control-font-md);
-  /* 形态档只换这三个私有槽，缺省这一份就是描边式（描边 + 画布底） */
+  /* 形态档只换这四个私有槽，缺省这一份就是描边式（描边 + 画布底 + 一档落影） */
   --xh-_pin-input-box-bg: var(--xh-bg-canvas);
   --xh-_pin-input-box-border: var(--xh-border-control);
   --xh-_pin-input-box-border-hover: var(--xh-border-control-hover);
+  /* 一档静态落影把格子从页面里抬起一层，与描边一起画出格子的边界 */
+  --xh-_pin-input-box-shadow: var(--xh-elevation-raised);
   /* 聚焦环与填满态的强调色随语气走。没写 data-tone 时 --xh-_tone 没被声明，退回原来的取值 */
   --xh-_pin-input-ring: var(--xh-ring-focus);
   --xh-_pin-input-accent: var(--xh-_tone, var(--xh-bg-brand));
@@ -19156,8 +19286,10 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_pin-input-box-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
 
-/* 无边框、透明底：静息时格子完全隐入背景，可见反馈全靠悬停描边与聚焦环 */
+/* 无边框、透明底：静息时格子完全隐入背景，可见反馈全靠悬停描边与聚焦环。
+   落影一并关掉——底与描边都透明时它就是一片没有面的影子 */
 [data-scope='pin-input'][data-part='root'][data-variant='ghost'] {
+  --xh-_pin-input-box-shadow: 0 0 0 transparent;
   --xh-_pin-input-box-bg: transparent;
   --xh-_pin-input-box-border: transparent;
   --xh-_pin-input-box-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
@@ -19200,6 +19332,7 @@ input[data-scope='mention'][data-part='input'] {
   border: var(--xh-stroke-thin) solid var(--xh-pin-input-box-border, var(--xh-_pin-input-box-border));
   border-radius: var(--xh-pin-input-box-radius, var(--xh-shape-control));
   background: var(--xh-pin-input-box-bg, var(--xh-_pin-input-box-bg));
+  box-shadow: var(--xh-pin-input-box-shadow, var(--xh-_pin-input-box-shadow));
   color: var(--xh-pin-input-box-fg, var(--xh-fg-default));
   /* 表单控件不继承页面字体，只给字号会让格子用 UA 默认字族 */
   font-family: inherit;
@@ -19366,7 +19499,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='popover'][data-part='content'][data-state='open'] {
-  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 /* 退场:收起那一帧 hidden 由退场闸门押后,这里才播得出来。forwards 把末态钉住,
@@ -20271,10 +20404,12 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_select-font-size: var(--xh-control-font-md);
   --xh-_select-label-font-size: var(--xh-control-font-md);
 
-  /* 形态档只换这三个槽：缺省即 outline（描边 + 画布底） */
+  /* 形态档只换这四个槽：缺省即 outline（描边 + 画布底 + 一档落影） */
   --xh-_select-control-bg: var(--xh-bg-canvas);
   --xh-_select-control-border: var(--xh-border-control);
   --xh-_select-control-border-hover: var(--xh-border-control-hover);
+  /* 一档静态落影把盒从页面里抬起一层，与描边一起画出盒的边界 */
+  --xh-_select-control-shadow: var(--xh-elevation-raised);
 
   /* 聚焦环恒用固定环色；强调色随语气走，只落在勾选标记与选中文字上，正文文字色不动。
      没写 data-tone 时 --xh-_tone 没被声明，两处都退回原来的取值 */
@@ -20341,8 +20476,10 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_select-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
 
-/* 无框：底与常态描边透明，悬停浮出描边，聚焦由焦点环表达 */
+/* 无框：底与常态描边透明，悬停浮出描边，聚焦由焦点环表达。
+   落影一并关掉——底与描边都透明时它就是一片没有面的影子 */
 [data-scope='select']:is([data-part='root'], [data-part='positioner'])[data-variant='ghost'] {
+  --xh-_select-control-shadow: 0 0 0 transparent;
   --xh-_select-control-bg: transparent;
   --xh-_select-control-border: transparent;
   --xh-_select-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
@@ -20371,6 +20508,7 @@ input[data-scope='mention'][data-part='input'] {
   border: var(--xh-stroke-thin) solid var(--xh-select-control-border, var(--xh-_select-control-border));
   border-radius: var(--xh-select-control-radius, var(--xh-shape-control));
   background: var(--xh-select-control-bg, var(--xh-_select-control-bg));
+  box-shadow: var(--xh-select-control-shadow, var(--xh-_select-control-shadow));
 }
 
 /* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
@@ -20656,7 +20794,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='select'][data-part='content'][data-state='open'] {
-  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
@@ -21038,7 +21176,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='side-nav'][data-part='branch-content'][data-popout][data-state='open'] {
-  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
@@ -21597,6 +21735,9 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_steps-accent: var(--xh-_tone, var(--xh-bg-brand));
   --xh-_steps-accent-text: var(--xh-_tone-fg, var(--xh-bg-brand));
   --xh-_steps-on-accent: var(--xh-_tone-on, var(--xh-fg-on-brand));
+  /* 走过的那几步是实心圆，顶边画一条极浅的内高光把它衬出厚度 */
+  --xh-_steps-highlight: inset 0 var(--xh-stroke-thin) 0 0
+    color-mix(in oklab, var(--xh-_steps-on-accent) 14%, transparent);
 
   display: flex;
   flex-direction: column;
@@ -21760,11 +21901,14 @@ input[data-scope='mention'][data-part='input'] {
   border-color: var(--xh-steps-indicator-border-completed, var(--xh-_steps-accent));
   background: var(--xh-steps-indicator-bg-completed, var(--xh-_steps-accent));
   color: var(--xh-steps-indicator-fg-completed, var(--xh-_steps-on-accent));
+  box-shadow: var(--xh-steps-indicator-shadow, var(--xh-_steps-highlight));
 }
 
 [data-scope='steps'][data-part='item'][data-disabled] [data-scope='steps'][data-part='indicator'] {
   border-color: var(--xh-steps-indicator-border-disabled, var(--xh-border-subtle));
   color: var(--xh-steps-indicator-fg-disabled, var(--xh-fg-disabled));
+  /* 这一步动不了，实心那档的内高光跟着收掉 */
+  box-shadow: none;
 }
 
 /* 标题与说明都在右列：不给 display，网格布局会替它们块级化，
@@ -23120,10 +23264,12 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_tags-input-input-font-size: var(--xh-control-font-md);
   --xh-_tags-input-item-font-size: var(--xh-control-caption-md);
   --xh-_tags-input-label-font-size: var(--xh-control-font-md);
-  /* 形态档只换这三个私有槽，缺省这一份就是描边式（描边 + 画布底） */
+  /* 形态档只换这四个私有槽，缺省这一份就是描边式（描边 + 画布底 + 一档落影） */
   --xh-_tags-input-control-bg: var(--xh-bg-canvas);
   --xh-_tags-input-control-border: var(--xh-border-control);
   --xh-_tags-input-control-border-hover: var(--xh-border-control-hover);
+  /* 一档静态落影把框从页面里抬起一层，与描边一起画出框的边界 */
+  --xh-_tags-input-control-shadow: var(--xh-elevation-raised);
   /* 聚焦环与标签块的强调色随语气走。没写 data-tone 时 --xh-_tone 没被声明，退回原来的取值 */
   --xh-_tags-input-ring: var(--xh-ring-focus);
   --xh-_tags-input-accent: var(--xh-_tone, var(--xh-bg-brand));
@@ -23156,8 +23302,10 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_tags-input-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
 
-/* 无边框、透明底：静息时框完全隐入背景，可见反馈全靠悬停描边与聚焦环 */
+/* 无边框、透明底：静息时框完全隐入背景，可见反馈全靠悬停描边与聚焦环。
+   落影一并关掉——底与描边都透明时它就是一片没有面的影子 */
 [data-scope='tags-input'][data-part='root'][data-variant='ghost'] {
+  --xh-_tags-input-control-shadow: 0 0 0 transparent;
   --xh-_tags-input-control-bg: transparent;
   --xh-_tags-input-control-border: transparent;
   --xh-_tags-input-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
@@ -23210,6 +23358,7 @@ input[data-scope='mention'][data-part='input'] {
   border: var(--xh-stroke-thin) solid var(--xh-tags-input-control-border, var(--xh-_tags-input-control-border));
   border-radius: var(--xh-tags-input-control-radius, var(--xh-shape-control));
   background: var(--xh-tags-input-control-bg, var(--xh-_tags-input-control-bg));
+  box-shadow: var(--xh-tags-input-control-shadow, var(--xh-_tags-input-control-shadow));
   color: var(--xh-tags-input-control-fg, var(--xh-fg-default));
   cursor: text;
   transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
@@ -23525,10 +23674,12 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_text-field-label-font-size: var(--xh-control-font-md);
   --xh-_text-field-action-font-size: var(--xh-control-caption-md);
 
-  /* 形态档只换这三个私有槽：底、常态描边、悬停描边 */
+  /* 形态档只换这四个私有槽：底、常态描边、悬停描边、落影 */
   --xh-_text-field-bg: var(--xh-bg-canvas);
   --xh-_text-field-border: var(--xh-border-control);
   --xh-_text-field-border-hover: var(--xh-border-control-hover);
+  /* 一档静态落影把框从页面里抬起一层，与描边一起画出框的边界 */
+  --xh-_text-field-shadow: var(--xh-elevation-raised);
 
   /* 语气只落在聚焦这一处：环与聚焦态描边。正文颜色不归它管。
      没写 data-tone 时 --xh-_tone 没被声明，退回原来的聚焦环色与常态描边 */
@@ -23586,8 +23737,10 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_text-field-border-focus: var(--xh-_tone, var(--xh-border-control-focus));
 }
 
-/* 无框：底与常态描边透明，悬停与聚焦浮出描边 */
+/* 无框：底与常态描边透明，悬停与聚焦浮出描边。
+   落影一并关掉——底与描边都透明时它就是一片没有面的影子 */
 [data-scope='text-field'][data-part='root'][data-variant='ghost'] {
+  --xh-_text-field-shadow: 0 0 0 transparent;
   --xh-_text-field-bg: transparent;
   --xh-_text-field-border: transparent;
   --xh-_text-field-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
@@ -23618,6 +23771,7 @@ input[data-scope='mention'][data-part='input'] {
   border: var(--xh-stroke-thin) solid var(--xh-text-field-control-border, var(--xh-_text-field-border));
   border-radius: var(--xh-text-field-control-radius, var(--xh-shape-control));
   background: var(--xh-text-field-control-bg, var(--xh-_text-field-bg));
+  box-shadow: var(--xh-text-field-control-shadow, var(--xh-_text-field-shadow));
   color: var(--xh-text-field-control-fg, var(--xh-fg-default));
   transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
@@ -23662,7 +23816,7 @@ input[data-scope='mention'][data-part='input'] {
   cursor: not-allowed;
 }
 
-/* 盒内 input：无边框无底无圆角，观感全归 control；行内内衬也归 control，
+/* 盒内 input：无边框无底无圆角无落影，观感全归 control；行内内衬也归 control，
    这里再留一份就是框内套了一圈空白。它占满剩余宽度，把清空按钮顶到最右 */
 [data-scope='text-field'][data-part='control'] [data-part='input'] {
   flex: 1 1 auto;
@@ -23672,6 +23826,7 @@ input[data-scope='mention'][data-part='input'] {
   border: 0;
   border-radius: 0;
   background: transparent;
+  box-shadow: none;
 }
 
 /* 盒内 input 不再自己画各态，全部交还 control。hover 这条带上与基础规则同样的
@@ -23708,6 +23863,7 @@ input[data-scope='mention'][data-part='input'] {
   border: var(--xh-stroke-thin) solid var(--xh-text-field-input-border, var(--xh-_text-field-border));
   border-radius: var(--xh-text-field-input-radius, var(--xh-shape-control));
   background: var(--xh-text-field-input-bg, var(--xh-_text-field-bg));
+  box-shadow: var(--xh-text-field-input-shadow, var(--xh-_text-field-shadow));
   color: var(--xh-text-field-input-fg, var(--xh-fg-default));
   /* 表单控件不继承页面字体，只给字号会让输入框用 UA 默认字族，与周围文本对不上 */
   font-family: inherit;
@@ -23966,10 +24122,12 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_time-field-gap: var(--xh-control-gap-md);
   --xh-_time-field-font-size: var(--xh-control-font-md);
   --xh-_time-field-label-font-size: var(--xh-control-font-md);
-  /* 形态档只换这三个私有槽：底色与两档描边 */
+  /* 形态档只换这四个私有槽：底色、两档描边与落影 */
   --xh-_time-field-control-bg: var(--xh-bg-canvas);
   --xh-_time-field-control-border: var(--xh-border-control);
   --xh-_time-field-control-border-hover: var(--xh-border-control-hover);
+  /* 一档静态落影把控件从页面里抬起一层，与描边一起画出框的边界 */
+  --xh-_time-field-control-shadow: var(--xh-elevation-raised);
   /* 聚焦描边与段位反白随语气走。没写 data-tone 时这几个 --xh-_tone* 没被声明，退回原来的焦点色与品牌色 */
   --xh-_time-field-ring: var(--xh-ring-focus);
   --xh-_time-field-segment-bg: var(--xh-_tone, var(--xh-bg-brand));
@@ -24014,8 +24172,10 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_time-field-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
 
-/* 无框：底与常态描边透明，悬停与聚焦浮出描边 */
+/* 无框：底与常态描边透明，悬停与聚焦浮出描边。
+   落影一并关掉——底与描边都透明时它就是一片没有面的影子 */
 [data-scope='time-field'][data-part='root'][data-variant='ghost'] {
+  --xh-_time-field-control-shadow: 0 0 0 transparent;
   --xh-_time-field-control-bg: transparent;
   --xh-_time-field-control-border: transparent;
   --xh-_time-field-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
@@ -24051,6 +24211,7 @@ input[data-scope='mention'][data-part='input'] {
   border: var(--xh-stroke-thin) solid var(--xh-time-field-control-border, var(--xh-_time-field-control-border));
   border-radius: var(--xh-time-field-control-radius, var(--xh-shape-control));
   background: var(--xh-time-field-control-bg, var(--xh-_time-field-control-bg));
+  box-shadow: var(--xh-time-field-control-shadow, var(--xh-_time-field-control-shadow));
   color: var(--xh-time-field-control-fg, var(--xh-fg-default));
   /* 表单控件不继承页面字体，只给字号会让它用 UA 默认字族，与周围文本对不上 */
   font-family: inherit;
@@ -24265,10 +24426,12 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_time-picker-label-font-size: var(--xh-control-font-md);
   --xh-_time-picker-item-px: var(--xh-control-px-md);
 
-  /* 形态档只换这三个私有槽：底色与两档描边 */
+  /* 形态档只换这四个私有槽：底色、两档描边与落影 */
   --xh-_time-picker-control-bg: var(--xh-bg-canvas);
   --xh-_time-picker-control-border: var(--xh-border-control);
   --xh-_time-picker-control-border-hover: var(--xh-border-control-hover);
+  /* 一档静态落影把盒从页面里抬起一层，与描边一起画出盒的边界 */
+  --xh-_time-picker-control-shadow: var(--xh-elevation-raised);
 
   /* 聚焦环、段位反白与列里的选中随语气走。没写 data-tone 时这几个 --xh-_tone* 没被声明，
      退回原来的焦点色与品牌色 */
@@ -24327,8 +24490,10 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_time-picker-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
 
-/* 无框：底与常态描边透明，悬停与聚焦浮出描边 */
+/* 无框：底与常态描边透明，悬停与聚焦浮出描边。
+   落影一并关掉——底与描边都透明时它就是一片没有面的影子 */
 [data-scope='time-picker']:is([data-part='root'], [data-part='positioner'])[data-variant='ghost'] {
+  --xh-_time-picker-control-shadow: 0 0 0 transparent;
   --xh-_time-picker-control-bg: transparent;
   --xh-_time-picker-control-border: transparent;
   --xh-_time-picker-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
@@ -24364,6 +24529,7 @@ input[data-scope='mention'][data-part='input'] {
   border: var(--xh-stroke-thin) solid var(--xh-time-picker-control-border, var(--xh-_time-picker-control-border));
   border-radius: var(--xh-time-picker-control-radius, var(--xh-shape-control));
   background: var(--xh-time-picker-control-bg, var(--xh-_time-picker-control-bg));
+  box-shadow: var(--xh-time-picker-control-shadow, var(--xh-_time-picker-control-shadow));
   color: var(--xh-time-picker-control-fg, var(--xh-fg-default));
   /* 表单控件不继承页面字体，只给字号会让它用 UA 默认字族，与周围文本对不上 */
   font-family: inherit;
@@ -24564,7 +24730,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='time-picker'][data-part='content'][data-state='open'] {
-  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
@@ -24918,7 +25084,7 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 生命周期只有三段，unmounted 那段由上面的 [hidden] 收走，这里只管前两段 */
 [data-scope='toast'][data-part='root'][data-state='visible'] {
-  animation: xh-toast-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  animation: xh-toast-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 /* forwards 不能省：退场窗口（removeDelay 默认 200ms）比退场动画长，
@@ -25147,6 +25313,15 @@ input[data-scope='mention'][data-part='input'] {
   color: var(--xh-_fg-pressed);
 }
 
+/* 只有实心档按下后才是一块实心语气底，顶边画一条极浅的内高光把它衬出厚度；
+   其余三档按下走的是淡底，面上没有厚度可言。置灰时整枚已经压暗，高光一并排除 */
+[data-scope='toggle'][data-part='root'][data-variant='solid'][data-state='on']:not([data-disabled]) {
+  --xh-_toggle-highlight: inset 0 var(--xh-stroke-thin) 0 0
+    color-mix(in oklab, var(--xh-_tone-on, var(--xh-fg-on-brand)) 14%, transparent);
+
+  box-shadow: var(--xh-toggle-shadow, var(--xh-_toggle-highlight));
+}
+
 /* —— 尺寸 —— */
 [data-scope='toggle'][data-part='root'][data-size='sm'] {
   block-size: var(--xh-toggle-h, var(--xh-control-h-sm));
@@ -25315,6 +25490,10 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_bg-active: var(--xh-toggle-group-item-bg-on-active, var(--xh-bg-brand-active));
   --xh-_fg: var(--xh-toggle-group-item-fg-on, var(--xh-fg-on-brand));
   --xh-_border: var(--xh-toggle-group-item-border-on, var(--xh-bg-brand));
+  /* 选中的这一段是实心底，顶边画一条极浅的内高光把它衬出厚度；未选中的段是透明底，不画 */
+  --xh-_toggle-group-highlight: inset 0 var(--xh-stroke-thin) 0 0 color-mix(in oklab, var(--xh-fg-on-brand) 14%, transparent);
+
+  box-shadow: var(--xh-toggle-group-item-shadow, var(--xh-_toggle-group-highlight));
 
   /* 抬一层，让 brand 描边压住邻居的灰边。共边处两条边重合在同一像素上，
      不抬层就由文档序决定谁在上，选中段的左右两侧会一边有色一边灰 */
@@ -25329,6 +25508,8 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_fg: var(--xh-toggle-group-item-fg-disabled, var(--xh-fg-disabled));
   --xh-_border: var(--xh-toggle-group-item-border-disabled, var(--xh-border-subtle));
 
+  /* 改不动的段收掉内高光：底已经掺了灰，再留一条亮线只剩噪点 */
+  box-shadow: none;
   cursor: not-allowed;
 }
 
@@ -25916,7 +26097,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='tooltip'][data-part='content'][data-state='open'] {
-  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
@@ -26094,7 +26275,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='tour'][data-part='spotlight'][data-state='open'] {
-  animation: xh-tour-spotlight-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  animation: xh-tour-spotlight-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 /* 退场与气泡并行播，同一段时长；收起那一帧 hidden 由宿主押后到气泡的退场结束 */
@@ -26167,7 +26348,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='tour'][data-part='content'][data-state='open'] {
-  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
@@ -26223,10 +26404,13 @@ input[data-scope='mention'][data-part='input'] {
   display: none;
 }
 
-/* 主按钮：整条引导的主线动作 */
+/* 主按钮：整条引导的主线动作。实心底顶边一条极浅的内高光，把这块面衬出厚度 */
 [data-scope='tour'][data-part='next-trigger'] {
+  --xh-_tour-next-highlight: inset 0 var(--xh-stroke-thin) 0 0 color-mix(in oklab, var(--xh-fg-on-brand) 14%, transparent);
+
   background: var(--xh-tour-next-bg, var(--xh-bg-brand));
   color: var(--xh-tour-next-fg, var(--xh-fg-on-brand));
+  box-shadow: var(--xh-tour-next-shadow, var(--xh-_tour-next-highlight));
 }
 
 [data-scope='tour'][data-part='next-trigger']:hover {
@@ -27321,11 +27505,13 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_tree-select-font-size: var(--xh-control-font-md);
   --xh-_tree-select-label-font-size: var(--xh-control-font-md);
 
-  /* 形态档只换触发框的描边与底色这三个槽，浮层与树不跟着变：
+  /* 形态档只换触发框的描边、底色与落影这四个槽，浮层与树不跟着变：
      变的是「这是个输入位」的表达方式，不是弹出内容的表达方式 */
   --xh-_tree-select-border: var(--xh-border-control);
   --xh-_tree-select-border-hover: var(--xh-border-control-hover);
   --xh-_tree-select-bg: var(--xh-bg-canvas);
+  /* 一档静态落影把触发框从页面里抬起一层，与描边一起画出框的边界 */
+  --xh-_tree-select-shadow: var(--xh-elevation-raised);
 
   /* 选中行的文字色随语气走，没写 data-tone 时退回品牌强调色 */
   --xh-_tree-select-selected-fg: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
@@ -27362,8 +27548,10 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_tree-select-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
 }
 
-/* 无框：底与常态描边透明，悬停浮出描边，聚焦由焦点环表达 */
+/* 无框：底与常态描边透明，悬停浮出描边，聚焦由焦点环表达。
+   落影一并关掉——底与描边都透明时它就是一片没有面的影子 */
 [data-scope='tree-select']:is([data-part='root'], [data-part='positioner'])[data-variant='ghost'] {
+  --xh-_tree-select-shadow: 0 0 0 transparent;
   --xh-_tree-select-border: transparent;
   --xh-_tree-select-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   --xh-_tree-select-bg: transparent;
@@ -27416,6 +27604,7 @@ input[data-scope='mention'][data-part='input'] {
   border: var(--xh-stroke-thin) solid var(--xh-tree-select-control-border, var(--xh-_tree-select-border));
   border-radius: var(--xh-tree-select-control-radius, var(--xh-shape-control));
   background: var(--xh-tree-select-control-bg, var(--xh-_tree-select-bg));
+  box-shadow: var(--xh-tree-select-control-shadow, var(--xh-_tree-select-shadow));
   color: var(--xh-tree-select-control-fg, var(--xh-fg-default));
   cursor: pointer;
   transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
@@ -27604,7 +27793,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='tree-select'][data-part='content'][data-state='open'] {
-  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
