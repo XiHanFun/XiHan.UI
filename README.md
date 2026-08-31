@@ -17,7 +17,7 @@
 <p>
   <img alt="Vue" src="https://img.shields.io/badge/Vue-3.5-4FC08D?style=flat-square&logo=vuedotjs&logoColor=white" />
   <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-6.0-3178C6?style=flat-square&logo=typescript&logoColor=white" />
-  <img alt="Components" src="https://img.shields.io/badge/Components-123-1f6feb?style=flat-square" />
+  <img alt="Components" src="https://img.shields.io/badge/Components-124-1f6feb?style=flat-square" />
   <a href="https://www.npmjs.com/package/@xihan-ui/vue"><img alt="npm" src="https://img.shields.io/npm/v/@xihan-ui/vue?style=flat-square&logo=npm&logoColor=white" /></a>
   <a href="./LICENSE"><img alt="License" src="https://img.shields.io/github/license/XiHanFun/XiHan.UI?style=flat-square&color=green" /></a>
 </p>
@@ -37,7 +37,7 @@ XiHan.UI is built around a framework-agnostic headless core: a component's state
 ## Features
 
 - **Framework-agnostic** - state and accessibility live in the headless core; Vue and Web Components behave identically
-- **123 components** - covering general, layout, navigation, data entry, data display, feedback, overlay and AI chat — eight groups
+- **124 components** - covering general, layout, navigation, data entry, data display, feedback, overlay and AI chat — eight groups
 - **Almost dependency-free** - the only third-party runtime dependency is `@internationalized/date`; floating positioning, pointer sessions, code highlighting and streaming markdown are all first-party
 - **Build-time styling** - tokens are generated from DTCG sources into CSS variables and skins are layered with `@layer`; no CSS-in-JS at runtime
 - **Themeable** - color mode, brand, density, contrast and writing direction switch independently
@@ -127,7 +127,7 @@ Changes must pass the full CI gate, and CI runs the same commands you do locally
 
 ## Scope
 
-In the box: 123 components with their cores and both adapters, the default skins, design tokens and the theme runtime, the cross-adapter conformance suite, the accessibility sweep and floating-position contract in real Chromium, and the documentation site.
+In the box: 124 components with their cores and both adapters, the default skins, design tokens and the theme runtime, the cross-adapter conformance suite, the accessibility sweep and floating-position contract in real Chromium, and the documentation site.
 
 Not in the box: bundled language packs (component copy ships English only; other languages need your own `translations`, though the global injection point is in place), the token browser, the AI family's MarkdownStream / Reasoning and ToolCall collapsing / tool approval, and enterprise business components.
 

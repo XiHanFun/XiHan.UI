@@ -1,0 +1,27 @@
+<!-- 基础用法 | 消息内容全由作者写；组件管的是集合语义、粘底与那一个播报区 -->
+<!-- 键盘：Tab 进来落在第一条，PageDown / PageUp 在消息之间走，Ctrl+End 一步走到流外 -->
+<xh-message-feed count="4" style="block-size: 260px">
+  <div data-xh-part="root">
+    <div data-xh-part="viewport">
+      <div data-xh-part="list">
+        <article data-xh-part="item" item-id="m1" item-index="0" item-role="user">
+          <span data-xh-part="item-label">我</span>
+          <div>这个组件负责什么？</div>
+        </article>
+        <article data-xh-part="item" item-id="m2" item-index="1" item-role="assistant">
+          <span data-xh-part="item-label">助手</span>
+          <div>集合语义、粘底跟随，以及一个统一的播报区。</div>
+        </article>
+        <article data-xh-part="item" item-id="m3" item-index="2" item-role="user">
+          <span data-xh-part="item-label">我</span>
+          <div>气泡样式呢？</div>
+        </article>
+        <article data-xh-part="item" item-id="m4" item-index="3" item-role="assistant">
+          <span data-xh-part="item-label">助手</span>
+          <div>气泡、头像、时间都由你自己写，按条目上的 data-role 出样式。</div>
+        </article>
+      </div>
+    </div>
+    <button data-xh-part="scroll-button">↓</button>
+  </div>
+</xh-message-feed>

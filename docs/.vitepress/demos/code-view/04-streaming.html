@@ -17,6 +17,7 @@
 
   let at = 0;
   const tick = () => {
+    if (!view.isConnected) return;
     at = Math.min(at + 2, full.length);
     view.setAttribute("code", full.slice(0, at));
     if (at >= full.length) {

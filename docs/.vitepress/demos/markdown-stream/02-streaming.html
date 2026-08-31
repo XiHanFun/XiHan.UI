@@ -14,6 +14,7 @@
 
   let at = 0;
   const tick = () => {
+    if (!stream.isConnected) return;
     at = Math.min(at + 3, full.length);
     const ended = at >= full.length;
     stream.blocks = [

@@ -68,6 +68,7 @@ import type { MarqueeTranslations } from '../marquee/marquee.types'
 import type { MasonryTranslations } from '../masonry/masonry.types'
 import type { MentionTranslations } from '../mention/mention.types'
 import type { MenuTranslations } from '../menu/menu.types'
+import type { MessageFeedTranslations } from '../message-feed/message-feed.types'
 import type { MenubarTranslations } from '../menubar/menubar.types'
 import type { NavigationMenuTranslations } from '../navigation-menu/navigation-menu.types'
 import type { NotificationTranslations } from '../notification/notification.types'
@@ -194,6 +195,7 @@ export interface XhTranslationOverrides {
   'masonry'?: Partial<MasonryTranslations>
   'mention'?: Partial<MentionTranslations>
   'menu'?: Partial<MenuTranslations>
+  'message-feed'?: Partial<MessageFeedTranslations>
   'menubar'?: Partial<MenubarTranslations>
   'navigation-menu'?: Partial<NavigationMenuTranslations>
   'number-animation'?: Partial<NumberAnimationTranslations>

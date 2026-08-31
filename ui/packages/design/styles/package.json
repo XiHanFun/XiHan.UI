@@ -99,6 +99,7 @@
     "./mention.css": "./css/mention.css",
     "./menu.css": "./css/menu.css",
     "./menubar.css": "./css/menubar.css",
+    "./message-feed.css": "./css/message-feed.css",
     "./navigation-menu.css": "./css/navigation-menu.css",
     "./notification.css": "./css/notification.css",
     "./number-animation.css": "./css/number-animation.css",

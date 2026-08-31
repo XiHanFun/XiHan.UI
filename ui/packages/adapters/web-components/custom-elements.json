@@ -24205,6 +24205,347 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/message-feed.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-message-feed>` —— Light-DOM 行为宿主：作者写 root/viewport/list/item 等角色节点，\n元素把 connectMessageFeed 的产出打上去。\n\n条目的身份与序号写在作者自己的节点上：`item-id`、`item-index`、可选的 `item-role`\n与 `item-streaming`。**不用 id**——那是 HTML 全局属性，写上去会留在 DOM 里，\n而 Vue 侧的同名 prop 不会，两端就分叉了。\n\n消息内容一律由作者写，元素不替作者生成任何节点。",
+          "name": "XhMessageFeedElement",
+          "cssParts": [
+            {
+              "description": "组件根容器，承载 role=feed 与容器兜底的 Tab 位",
+              "name": "root"
+            },
+            {
+              "description": "滚动容器，只有几何",
+              "name": "viewport"
+            },
+            {
+              "description": "内容包裹层，条目必须是它的直接子节点",
+              "name": "list"
+            },
+            {
+              "description": "一条消息，role=article + aria-posinset / aria-setsize",
+              "name": "item"
+            },
+            {
+              "description": "作者名那一格，渲了它就成为该条消息的可访问名",
+              "name": "item-label"
+            },
+            {
+              "description": "回到底部",
+              "name": "scroll-button"
+            },
+            {
+              "description": "视觉隐藏的原子播报区，一份会话只该有一个",
+              "name": "live-region"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: messageFeedAnatomy, meta: messageFeedMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "count",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "count"
+            },
+            {
+              "kind": "field",
+              "name": "status",
+              "privacy": "public",
+              "type": {
+                "text": "MessageFeedStatus | undefined"
+              },
+              "attribute": "status"
+            },
+            {
+              "kind": "field",
+              "name": "threshold",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "threshold"
+            },
+            {
+              "kind": "field",
+              "name": "loop",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "loop"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "MessageFeedSchema['props']['size'] | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "Partial<MessageFeedTranslations> | undefined"
+              },
+              "description": "消息流与回到底部按钮的可访问名。"
+            },
+            {
+              "kind": "field",
+              "name": "idGen",
+              "type": {
+                "text": "IdGenerator"
+              },
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "feedScope",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "config",
+              "type": {
+                "text": "RuntimeConfig | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "notifyStick",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyFocus",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<MessageFeedSchema>( this, messageFeedMachine, () => ({ count: this.count, status: this.status, threshold: this.threshold, loop: this.loop, size: this.size, translations: this.translations, onStickChange: this.notifyStick, onItemFocus: this.notifyFocus, }), { scope: this.feedScope, onBuilt: svc => this.injectRefs(svc) }, )"
+            },
+            {
+              "kind": "method",
+              "name": "ensureConfig",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "injectRefs",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "svc",
+                  "type": {
+                    "text": "Service<MessageFeedSchema>"
+                  }
+                }
+              ],
+              "description": "装填 config 与三个节点 getter；onBuilt 在 ctrl 构造期就跑，故 service 由参数传入。"
+            },
+            {
+              "kind": "method",
+              "name": "itemProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "MessageFeedItemProps"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "el",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "fallbackIndex",
+                  "type": {
+                    "text": "number"
+                  }
+                }
+              ],
+              "description": "一条消息的自报家门，全部取自作者写在节点上的 item-* 属性。"
+            },
+            {
+              "kind": "method",
+              "name": "scrollToBottom",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "滚到底部并恢复粘附。机器要等 hostConnected 才建，还没进 DOM 时如实什么都不做。"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "粘底状态变化；detail 为 `{ atBottom: boolean, sticking: boolean }`",
+              "name": "stick-change",
+              "type": {
+                "text": "MessageFeedStickChangeDetails"
+              }
+            },
+            {
+              "description": "锚点变化；detail 为 `{ id: string | null }`",
+              "name": "item-focus",
+              "type": {
+                "text": "MessageFeedItemFocusDetails"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "消息总数，aria-setsize 取它；不从 DOM 数",
+              "name": "count",
+              "fieldName": "count"
+            },
+            {
+              "type": {
+                "text": "MessageFeedStatus | undefined"
+              },
+              "description": "这一轮的运行态：idle / submitted / streaming / error",
+              "name": "status",
+              "fieldName": "status"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "距底多少 px 视为在底",
+              "name": "threshold",
+              "fieldName": "threshold"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "走到首尾是否回绕，默认关",
+              "name": "loop",
+              "fieldName": "loop"
+            },
+            {
+              "type": {
+                "text": "MessageFeedSchema['props']['size'] | undefined"
+              },
+              "description": "尺寸：sm / md / lg",
+              "name": "size",
+              "fieldName": "size"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-message-feed",
+          "customElement": true,
+          "cssProperties": [
+            {
+              "name": "--xh-message-feed-button-bg"
+            },
+            {
+              "name": "--xh-message-feed-button-bg-hover"
+            },
+            {
+              "name": "--xh-message-feed-button-border"
+            },
+            {
+              "name": "--xh-message-feed-button-fg"
+            },
+            {
+              "name": "--xh-message-feed-button-inset"
+            },
+            {
+              "name": "--xh-message-feed-button-radius"
+            },
+            {
+              "name": "--xh-message-feed-button-shadow"
+            },
+            {
+              "name": "--xh-message-feed-button-size"
+            },
+            {
+              "name": "--xh-message-feed-gap"
+            },
+            {
+              "name": "--xh-message-feed-item-gap"
+            },
+            {
+              "name": "--xh-message-feed-item-radius"
+            },
+            {
+              "name": "--xh-message-feed-label-fg"
+            },
+            {
+              "name": "--xh-message-feed-label-font-size"
+            },
+            {
+              "name": "--xh-message-feed-p"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhMessageFeedElement",
+          "declaration": {
+            "name": "XhMessageFeedElement",
+            "module": "src/elements/message-feed.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/navigation-menu.ts",
       "declarations": [
         {

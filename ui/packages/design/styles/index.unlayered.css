@@ -16213,6 +16213,143 @@ input[data-scope='mention'][data-part='input'] {
   }
 }
 
+/* styles/message-feed.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='message-feed'] {
+  --xh-message-feed-skin: 1;
+}
+
+/* 根是定位基准：回到底部按钮贴在它的右下角。高度由使用者的版面给，这里不定高 */
+[data-scope='message-feed'][data-part='root'] {
+  position: relative;
+  display: flex;
+  min-block-size: 0;
+  flex-direction: column;
+}
+
+[data-scope='message-feed'][data-part='root'][hidden] {
+  display: none;
+}
+
+/* 根带容器兜底的 Tab 位，需要焦点环；偏移取负画在内侧，免得被外层裁掉 */
+[data-scope='message-feed'][data-part='root']:focus-visible {
+  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline-offset: calc(-1 * var(--xh-ring-width));
+}
+
+/* 滚动容器。overscroll-behavior 挡住滚到头之后把整页一起带走 */
+[data-scope='message-feed'][data-part='viewport'] {
+  overflow-y: auto;
+  flex: 1 1 auto;
+  min-block-size: 0;
+  overscroll-behavior: contain;
+}
+
+[data-scope='message-feed'][data-part='list'] {
+  display: flex;
+  flex-direction: column;
+  gap: var(--xh-message-feed-gap, var(--xh-space-4));
+  padding: var(--xh-message-feed-p, var(--xh-space-4));
+}
+
+[data-scope='message-feed'][data-part='list'][hidden] {
+  display: none;
+}
+
+/* 一条消息。默认整行铺开，左右分侧由使用者按 data-role 自己写 */
+[data-scope='message-feed'][data-part='item'] {
+  display: flex;
+  flex-direction: column;
+  gap: var(--xh-message-feed-item-gap, var(--xh-space-1));
+  border-radius: var(--xh-message-feed-item-radius, var(--xh-shape-surface));
+}
+
+[data-scope='message-feed'][data-part='item'][hidden] {
+  display: none;
+}
+
+/* 键盘遍历停在哪一条要看得见：焦点环画在内侧，长消息滚动时不会被裁掉一半 */
+[data-scope='message-feed'][data-part='item']:focus-visible {
+  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline-offset: var(--xh-ring-offset);
+}
+
+[data-scope='message-feed'][data-part='item-label'] {
+  display: block;
+  color: var(--xh-message-feed-label-fg, var(--xh-fg-muted));
+  font-size: var(--xh-message-feed-label-font-size, var(--xh-text-caption-size));
+  line-height: var(--xh-leading-tight);
+}
+
+[data-scope='message-feed'][data-part='item-label'][hidden] {
+  display: none;
+}
+
+/* 回到底部：贴在滚动区右下角，收起时不卸载只隐藏 */
+[data-scope='message-feed'][data-part='scroll-button'] {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: var(--xh-stroke-thin) solid var(--xh-message-feed-button-border, var(--xh-border-default));
+  border-radius: var(--xh-message-feed-button-radius, var(--xh-shape-pill));
+  background: var(--xh-message-feed-button-bg, var(--xh-bg-surface-raised));
+  box-shadow: var(--xh-message-feed-button-shadow, var(--xh-elevation-raised));
+  color: var(--xh-message-feed-button-fg, var(--xh-fg-default));
+  inline-size: var(--xh-message-feed-button-size, var(--xh-control-h-sm));
+  block-size: var(--xh-message-feed-button-size, var(--xh-control-h-sm));
+  inset-block-end: var(--xh-message-feed-button-inset, var(--xh-space-4));
+  inset-inline-end: var(--xh-message-feed-button-inset, var(--xh-space-4));
+  cursor: pointer;
+}
+
+[data-scope='message-feed'][data-part='scroll-button'][hidden] {
+  display: none;
+}
+
+[data-scope='message-feed'][data-part='scroll-button']:hover {
+  background: var(--xh-message-feed-button-bg-hover, var(--xh-bg-subtle-hover));
+}
+
+[data-scope='message-feed'][data-part='scroll-button']:active {
+  scale: var(--xh-motion-scale-press);
+}
+
+[data-scope='message-feed'][data-part='scroll-button']:focus-visible {
+  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline-offset: var(--xh-ring-offset);
+}
+
+/* 尺寸档只改消息之间的距离与内边距 */
+[data-scope='message-feed'][data-part='root'][data-size='sm'] {
+  --xh-message-feed-gap: var(--xh-space-2);
+  --xh-message-feed-p: var(--xh-space-2);
+}
+
+[data-scope='message-feed'][data-part='root'][data-size='md'] {
+  --xh-message-feed-gap: var(--xh-space-4);
+  --xh-message-feed-p: var(--xh-space-4);
+}
+
+[data-scope='message-feed'][data-part='root'][data-size='lg'] {
+  --xh-message-feed-gap: var(--xh-space-6);
+  --xh-message-feed-p: var(--xh-space-6);
+}
+
+/* 视觉隐藏的原子播报区：不能 display:none，那样读屏就取不到它了 */
+[data-scope='message-feed'][data-part='live-region'] {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  padding: 0;
+  margin: -1px;
+  border: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 /* styles/navigation-menu.css */
 /* 面板往下探一小截再落位：纯淡入看不出它是从哪条 trigger 长出来的 */
 @keyframes xh-pop-in {

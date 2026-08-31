@@ -69,6 +69,7 @@ import { XhMarqueeElement } from './elements/marquee'
 import { XhMasonryElement } from './elements/masonry'
 import { XhMentionElement } from './elements/mention'
 import { XhMenuElement } from './elements/menu'
+import { XhMessageFeedElement } from './elements/message-feed'
 import { XhMenubarElement } from './elements/menubar'
 import { XhNavigationMenuElement } from './elements/navigation-menu'
 import { XhNotificationElement, XhNotificationItemElement } from './elements/notification'
@@ -211,6 +212,7 @@ export function defineXhElements(): void {
   defineElement('xh-loading-bar', XhLoadingBarElement, VERSION)
   defineElement('xh-menu', XhMenuElement, VERSION)
   defineElement('xh-menubar', XhMenubarElement, VERSION)
+  defineElement('xh-message-feed', XhMessageFeedElement, VERSION)
   defineElement('xh-navigation-menu', XhNavigationMenuElement, VERSION)
   defineElement('xh-notification', XhNotificationElement, VERSION)
   defineElement('xh-notification-item', XhNotificationItemElement, VERSION)
@@ -316,6 +318,7 @@ export {
   XhMasonryElement,
   XhMenubarElement,
   XhMenuElement,
+  XhMessageFeedElement,
   XhNavigationMenuElement,
   XhNotificationElement,
   XhNotificationItemElement,
