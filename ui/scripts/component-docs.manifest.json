@@ -531,6 +531,10 @@
       "description": "AI 对话界面的组件。",
       "components": [
         {
+          "id": "approval",
+          "name": "审批"
+        },
+        {
           "id": "code-view",
           "name": "代码视图"
         },

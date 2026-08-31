@@ -6,6 +6,7 @@ import { XhAccordionElement } from './elements/accordion'
 import { XhAffixElement } from './elements/affix'
 import { XhAlertElement } from './elements/alert'
 import { XhAnchorElement } from './elements/anchor'
+import { XhApprovalElement } from './elements/approval'
 import { XhAvatarElement } from './elements/avatar'
 import { XhAvatarGroupElement } from './elements/avatar-group'
 import { XhBackTopElement } from './elements/back-top'
@@ -181,6 +182,7 @@ export function defineXhElements(): void {
   defineElement('xh-spinner', XhSpinnerElement, VERSION)
   defineElement('xh-accordion', XhAccordionElement, VERSION)
   defineElement('xh-anchor', XhAnchorElement, VERSION)
+  defineElement('xh-approval', XhApprovalElement, VERSION)
   defineElement('xh-avatar', XhAvatarElement, VERSION)
   defineElement('xh-badge', XhBadgeElement, VERSION)
   defineElement('xh-breadcrumb', XhBreadcrumbElement, VERSION)
@@ -280,6 +282,7 @@ export {
   XhAccordionElement,
   XhAlertElement,
   XhAnchorElement,
+  XhApprovalElement,
   XhAvatarElement,
   XhBadgeElement,
   XhBreadcrumbElement,

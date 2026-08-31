@@ -7,6 +7,7 @@ import type { AffixTranslations } from '../affix/affix.types'
 import type { AlertTranslations } from '../alert/alert.types'
 import type { AnchorTranslations } from '../anchor/anchor.types'
 import type { AvatarGroupTranslations } from '../avatar-group/avatar-group.types'
+import type { ApprovalTranslations } from '../approval/approval.types'
 import type { AvatarTranslations } from '../avatar/avatar.types'
 import type { BackTopTranslations } from '../back-top/back-top.types'
 import type { BadgeTranslations } from '../badge/badge.types'
@@ -136,6 +137,7 @@ export interface XhTranslationOverrides {
   'affix'?: Partial<AffixTranslations>
   'alert'?: Partial<AlertTranslations>
   'anchor'?: Partial<AnchorTranslations>
+  'approval'?: Partial<ApprovalTranslations>
   'avatar'?: Partial<AvatarTranslations>
   'avatar-group'?: Partial<AvatarGroupTranslations>
   'back-top'?: Partial<BackTopTranslations>

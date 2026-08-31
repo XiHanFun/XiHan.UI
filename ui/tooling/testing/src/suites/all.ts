@@ -4,6 +4,7 @@ import { affixSuite } from './affix.suite'
 import { alertSuite } from './alert.suite'
 import { anchorSuite } from './anchor.suite'
 import { avatarGroupSuite } from './avatar-group.suite'
+import { approvalSuite } from './approval.suite'
 import { avatarSuite } from './avatar.suite'
 import { backTopSuite } from './back-top.suite'
 import { badgeSuite } from './badge.suite'
@@ -133,6 +134,7 @@ export const allSuites: readonly ConformanceSuite[] = [
   affixSuite,
   alertSuite,
   anchorSuite,
+  approvalSuite,
   avatarSuite,
   avatarGroupSuite,
   backTopSuite,
