@@ -1,0 +1,29 @@
+<!-- 流式追加 | 代码还在写的时候默认不着色：半截代码的词法本来就不稳，每来一个字符整块变色比不着色更糟 -->
+<xh-code-view id="code-view-streaming" code-lang="typescript" style="inline-size: 100%">
+  <div data-xh-part="root">
+    <pre data-xh-part="pre"><code data-xh-part="code"></code></pre>
+  </div>
+</xh-code-view>
+
+<script type="module">
+  // complete 翻真的那一刻着色才上；高度一直按当前行数撑着，不会一跳一跳
+  const view = document.getElementById("code-view-streaming");
+  const full = [
+    "async function load(id: string) {",
+    "  const res = await fetch(`/api/items/${id}`)",
+    "  return res.json()",
+    "}",
+  ].join("\n");
+
+  let at = 0;
+  const tick = () => {
+    at = Math.min(at + 2, full.length);
+    view.setAttribute("code", full.slice(0, at));
+    if (at >= full.length) {
+      view.setAttribute("complete", "");
+      return;
+    }
+    setTimeout(tick, 60);
+  };
+  tick();
+</script>

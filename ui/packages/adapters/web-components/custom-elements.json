@@ -5810,6 +5810,468 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/code-view.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-code-view>` —— Light-DOM 行为宿主，无状态机：wire 时算出 connectCodeView 的产出，\n打到作者写的角色节点上，并把逐行结构铺进 code 角色节点。\n\n行是算出来的派生数据，作者写不出 N 个节点，故 code 部件的内容由本元素接管；\n其余各处一律不替作者生成节点。复制按钮由 `<xh-clipboard>` 组合提供。",
+          "name": "XhCodeViewElement",
+          "cssParts": [
+            {
+              "description": "外壳，承载 data-lang / data-complete / data-clamped / data-digits",
+              "name": "root"
+            },
+            {
+              "description": "文件名与语言角标那一行",
+              "name": "header"
+            },
+            {
+              "description": "文件名，渲了它就是 pre 的可访问名",
+              "name": "filename"
+            },
+            {
+              "description": "语言角标，纯装饰且对读屏隐藏",
+              "name": "lang-label"
+            },
+            {
+              "description": "横向滚动容器；tabindex=0，高度按行数写进内联样式",
+              "name": "pre"
+            },
+            {
+              "description": "全部行的容器，内容由本元素铺",
+              "name": "code"
+            },
+            {
+              "description": "一行，承载 data-line-number / data-highlighted",
+              "name": "line"
+            },
+            {
+              "description": "行号槽，皮肤用 attr() 画，对读屏隐藏",
+              "name": "line-number"
+            },
+            {
+              "description": "该行的正文与记号",
+              "name": "line-content"
+            },
+            {
+              "description": "着色生效时的一个记号，承载 data-kind",
+              "name": "token"
+            },
+            {
+              "description": "展开或收起，承载 aria-expanded / aria-controls",
+              "name": "fold-trigger"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: codeViewAnatomy, meta: codeViewMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "code",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "code"
+            },
+            {
+              "kind": "field",
+              "name": "codeLang",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "code-lang"
+            },
+            {
+              "kind": "field",
+              "name": "filename",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "filename"
+            },
+            {
+              "kind": "field",
+              "name": "complete",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "complete"
+            },
+            {
+              "kind": "field",
+              "name": "wrap",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "wrap"
+            },
+            {
+              "kind": "field",
+              "name": "lineNumbers",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "line-numbers"
+            },
+            {
+              "kind": "field",
+              "name": "startLine",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "start-line"
+            },
+            {
+              "kind": "field",
+              "name": "highlightLines",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "highlight-lines"
+            },
+            {
+              "kind": "field",
+              "name": "clamp",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "clamp"
+            },
+            {
+              "kind": "field",
+              "name": "clamped",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "clamped"
+            },
+            {
+              "kind": "field",
+              "name": "highlightWhileStreaming",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "highlight-while-streaming"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "CodeViewProps['size'] | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "Partial<CodeViewTranslations> | undefined"
+              },
+              "description": "可访问名与折叠按钮的文案。"
+            },
+            {
+              "kind": "field",
+              "name": "highlighter",
+              "type": {
+                "text": "HighlighterPort | null | undefined"
+              },
+              "description": "换一个着色实现（典型是接 Shiki）；置 null 关掉着色。只走 property，属性表达不了对象。"
+            },
+            {
+              "kind": "field",
+              "name": "idGen",
+              "type": {
+                "text": "IdGenerator"
+              },
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "codeViewScope",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "#painted",
+              "privacy": "private",
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "上一次铺进 code 部件的那份逐行结构，用来判断要不要重铺。"
+            },
+            {
+              "kind": "method",
+              "name": "viewProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "CodeViewProps"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#paint",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "CodeViewApi"
+                  }
+                }
+              ],
+              "description": "把逐行结构铺进 code 部件。\n内容没变就不重铺——每次更新都重建节点会把用户正在拖的选区弄没。"
+            }
+          ],
+          "events": [
+            {
+              "name": "clamp-toggle",
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "折叠态翻面的意图；detail 为 `{ clamped: boolean }`"
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "代码原文",
+              "name": "code",
+              "fieldName": "code"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "围栏语言标注，空白时按 plaintext 处理",
+              "name": "code-lang",
+              "fieldName": "codeLang"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "文件名；作者写了 filename 角色节点时它就是 pre 的可访问名",
+              "name": "filename",
+              "fieldName": "filename"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "代码是否已闭合，未闭合默认不着色",
+              "name": "complete",
+              "fieldName": "complete"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "长行自动换行，默认关（长行横向滚动）",
+              "name": "wrap",
+              "fieldName": "wrap"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "显示行号槽",
+              "name": "line-numbers",
+              "fieldName": "lineNumbers"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "首行的行号，默认 1",
+              "name": "start-line",
+              "fieldName": "startLine"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "要高亮的行号，写成 `3,7-9`",
+              "name": "highlight-lines",
+              "fieldName": "highlightLines"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "超过这么多行才算可折叠",
+              "name": "clamp",
+              "fieldName": "clamp"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "折叠态，纯受控",
+              "name": "clamped",
+              "fieldName": "clamped"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "未闭合时也着色，默认关",
+              "name": "highlight-while-streaming",
+              "fieldName": "highlightWhileStreaming"
+            },
+            {
+              "type": {
+                "text": "CodeViewProps['size'] | undefined"
+              },
+              "description": "尺寸：sm / md / lg",
+              "name": "size",
+              "fieldName": "size"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-code-view",
+          "customElement": true,
+          "cssProperties": [
+            {
+              "name": "--xh-code-view-bg"
+            },
+            {
+              "name": "--xh-code-view-comment-fg"
+            },
+            {
+              "name": "--xh-code-view-filename-fg"
+            },
+            {
+              "name": "--xh-code-view-fold-bg-hover"
+            },
+            {
+              "name": "--xh-code-view-fold-fg"
+            },
+            {
+              "name": "--xh-code-view-fold-py"
+            },
+            {
+              "name": "--xh-code-view-font"
+            },
+            {
+              "name": "--xh-code-view-header-border"
+            },
+            {
+              "name": "--xh-code-view-header-fg"
+            },
+            {
+              "name": "--xh-code-view-header-font-size"
+            },
+            {
+              "name": "--xh-code-view-header-gap"
+            },
+            {
+              "name": "--xh-code-view-header-px"
+            },
+            {
+              "name": "--xh-code-view-header-py"
+            },
+            {
+              "name": "--xh-code-view-highlight-bar"
+            },
+            {
+              "name": "--xh-code-view-highlight-bg"
+            },
+            {
+              "name": "--xh-code-view-highlight-fg"
+            },
+            {
+              "name": "--xh-code-view-keyword-fg"
+            },
+            {
+              "name": "--xh-code-view-keyword-weight"
+            },
+            {
+              "name": "--xh-code-view-label-fg"
+            },
+            {
+              "name": "--xh-code-view-label-font-size"
+            },
+            {
+              "name": "--xh-code-view-line-height"
+            },
+            {
+              "name": "--xh-code-view-number-fg"
+            },
+            {
+              "name": "--xh-code-view-punctuation-fg"
+            },
+            {
+              "name": "--xh-code-view-px"
+            },
+            {
+              "name": "--xh-code-view-py"
+            },
+            {
+              "name": "--xh-code-view-radius"
+            },
+            {
+              "name": "--xh-code-view-string-fg"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhCodeViewElement",
+          "declaration": {
+            "name": "XhCodeViewElement",
+            "module": "src/elements/code-view.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/collapsible.ts",
       "declarations": [
         {

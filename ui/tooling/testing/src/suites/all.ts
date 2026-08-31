@@ -18,6 +18,7 @@ import { checkboxGroupSuite } from './checkbox-group.suite'
 import { checkboxSuite } from './checkbox.suite'
 import { clipboardSuite } from './clipboard.suite'
 import { codeBlockSuite } from './code-block.suite'
+import { codeViewSuite } from './code-view.suite'
 import { collapsibleSuite } from './collapsible.suite'
 import { colorPickerSuite } from './color-picker.suite'
 import { comboboxSuite } from './combobox.suite'
@@ -142,6 +143,7 @@ export const allSuites: readonly ConformanceSuite[] = [
   checkboxGroupSuite,
   clipboardSuite,
   codeBlockSuite,
+  codeViewSuite,
   collapsibleSuite,
   colorPickerSuite,
   comboboxSuite,

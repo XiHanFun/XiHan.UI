@@ -21,6 +21,7 @@ import type { CheckboxGroupTranslations } from '../checkbox-group/checkbox-group
 import type { CheckboxTranslations } from '../checkbox/checkbox.types'
 import type { ClipboardTranslations } from '../clipboard/clipboard.types'
 import type { CodeBlockTranslations } from '../code-block/code-block.types'
+import type { CodeViewTranslations } from '../code-view/code-view.types'
 import type { CollapsibleTranslations } from '../collapsible/collapsible.types'
 import type { ColorPickerTranslations } from '../color-picker/color-picker.types'
 import type { ComboboxTranslations } from '../combobox/combobox.types'
@@ -145,6 +146,7 @@ export interface XhTranslationOverrides {
   'checkbox-group'?: Partial<CheckboxGroupTranslations>
   'clipboard'?: Partial<ClipboardTranslations>
   'code-block'?: Partial<CodeBlockTranslations>
+  'code-view'?: Partial<CodeViewTranslations>
   'collapsible'?: Partial<CollapsibleTranslations>
   'color-picker'?: Partial<ColorPickerTranslations>
   'combobox'?: Partial<ComboboxTranslations>

@@ -531,6 +531,10 @@
       "description": "AI 对话界面的组件。",
       "components": [
         {
+          "id": "code-view",
+          "name": "代码视图"
+        },
+        {
           "id": "composer",
           "name": "消息编辑器"
         },

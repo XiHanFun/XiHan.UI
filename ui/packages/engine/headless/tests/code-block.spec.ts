@@ -99,8 +99,8 @@ describe('连接层结构与标注', () => {
 describe('高度预估', () => {
   it('min-block-size 按行数长，行高走令牌', () => {
     const style = (code: string): Dict => (api({ code }).getPreProps() as Dict).style as Dict
-    expect(style('')).toEqual({ minBlockSize: 'calc(var(--xh-code-block-line-height, 1.5rem) * 1)' })
-    expect(style('a\nb\nc')).toEqual({ minBlockSize: 'calc(var(--xh-code-block-line-height, 1.5rem) * 3)' })
+    expect(style('')).toEqual({ minBlockSize: 'calc(var(--xh-code-block-line-height, var(--xh-text-code-leading)) * 1)' })
+    expect(style('a\nb\nc')).toEqual({ minBlockSize: 'calc(var(--xh-code-block-line-height, var(--xh-text-code-leading)) * 3)' })
   })
 
   it('lineCount 与 min-block-size 同源：两处各算一遍迟早会对不上', () => {
