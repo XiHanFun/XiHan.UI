@@ -246,6 +246,7 @@ const EXCLUDED: Readonly<Record<string, string>> = {
   'mention': '同集合族：候选的禁用声明两端不同，WC 侧 disabled 落成 DOM 属性，Vue 侧被 prop 消费',
   'menu': '两端作者侧的禁用声明 API 不同：Vue 是组件 prop（被消费、不落 DOM），WC 要作者写 aria-disabled，逐帧比对不适用',
   'progress': 'WC 侧 track/range 由作者手写，Vue 版组件内部渲染，fixture 不同构',
+  'prompt-input': '同 composer：stop 是全仓唯一无载荷的语义事件，Vue 发 undefined、WC 发 null',
   'radio-group': '两端作者侧的禁用声明 API 不同：Vue 是组件 prop（被消费、不落 DOM），WC 要作者写 aria-disabled，逐帧比对不适用',
   'segmented': '同集合族：条目的禁用声明两端不同，Vue 是被消费的组件 prop（不落 DOM），WC 落成 DOM 属性',
   'select': '同集合族，另加 WC 要作者手写影子 select',

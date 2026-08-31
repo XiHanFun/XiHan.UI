@@ -547,6 +547,10 @@
           "name": "消息流"
         },
         {
+          "id": "prompt-input",
+          "name": "提示输入框"
+        },
+        {
           "id": "thread",
           "name": "会话线程"
         }

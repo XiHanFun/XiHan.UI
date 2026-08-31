@@ -1,0 +1,192 @@
+@layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='prompt-input'] {
+    --xh-prompt-input-skin: 1;
+  }
+
+  /* 边框画在 root 上，内部 textarea 无边框；align-items: flex-end 让按钮随输入框长高贴着底边。
+     三个视觉轴都落在 root 上：形态管底与描边怎么画，语气管用哪族颜色，尺寸管高度与字号 */
+  [data-scope='prompt-input'][data-part='root'] {
+    /* 尺寸缺省档：不写 data-size 时按中档走 */
+    --xh-_prompt-input-h: var(--xh-control-h-md);
+    --xh-_prompt-input-gap: var(--xh-control-gap-md);
+    --xh-_prompt-input-px: var(--xh-control-px-sm);
+    --xh-_prompt-input-font-size: var(--xh-control-font-md);
+    --xh-_prompt-input-submit-px: var(--xh-control-px-md);
+    /* 形态缺省档：不写 data-variant 时按描边式走 */
+    --xh-_prompt-input-bg: var(--xh-bg-surface);
+    --xh-_prompt-input-border: var(--xh-border-control);
+    --xh-_prompt-input-border-focus: var(--xh-_tone, var(--xh-border-control-focus));
+
+    display: flex;
+    align-items: flex-end;
+    gap: var(--xh-prompt-input-gap, var(--xh-_prompt-input-gap));
+    /* 整框的内衬走控件内边距尺的小档，密度收紧时随之收窄 */
+    padding: var(--xh-prompt-input-p, var(--xh-_prompt-input-px));
+    border: var(--xh-stroke-thin) solid var(--xh-prompt-input-border, var(--xh-_prompt-input-border));
+    border-radius: var(--xh-prompt-input-radius, var(--xh-shape-surface));
+    background: var(--xh-prompt-input-bg, var(--xh-_prompt-input-bg));
+  }
+
+  /* 上面声明的 display 会盖掉 UA 的 [hidden]{display:none}，这里补回 */
+  [data-scope='prompt-input'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  /* 焦点环画在整个框上；用 focus-within 使焦点落在发送按钮时同样点亮 */
+  [data-scope='prompt-input'][data-part='root']:focus-within {
+    border-color: var(--xh-prompt-input-border-focus, var(--xh-_prompt-input-border-focus));
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: var(--xh-ring-offset);
+  }
+
+  /* 禁用态只换光标与底色；文字由 textarea 与按钮各自走 fg-disabled，
+     整框不再压 opacity——两者叠起来会压到读不出 */
+  [data-scope='prompt-input'][data-part='root'][data-disabled] {
+    cursor: not-allowed;
+    background: var(--xh-prompt-input-bg-disabled, var(--xh-bg-subtle));
+  }
+
+  /* —— 尺寸 —— */
+  [data-scope='prompt-input'][data-part='root'][data-size='sm'] {
+    --xh-_prompt-input-h: var(--xh-control-h-sm);
+    --xh-_prompt-input-gap: var(--xh-control-gap-sm);
+    --xh-_prompt-input-px: var(--xh-control-px-sm);
+    --xh-_prompt-input-font-size: var(--xh-control-font-sm);
+    --xh-_prompt-input-submit-px: var(--xh-control-px-sm);
+  }
+
+  [data-scope='prompt-input'][data-part='root'][data-size='md'] {
+    --xh-_prompt-input-h: var(--xh-control-h-md);
+    --xh-_prompt-input-gap: var(--xh-control-gap-md);
+    --xh-_prompt-input-px: var(--xh-control-px-md);
+    --xh-_prompt-input-font-size: var(--xh-control-font-md);
+    --xh-_prompt-input-submit-px: var(--xh-control-px-md);
+  }
+
+  [data-scope='prompt-input'][data-part='root'][data-size='lg'] {
+    --xh-_prompt-input-h: var(--xh-control-h-lg);
+    --xh-_prompt-input-gap: var(--xh-control-gap-lg);
+    --xh-_prompt-input-px: var(--xh-control-px-lg);
+    --xh-_prompt-input-font-size: var(--xh-control-font-lg);
+    --xh-_prompt-input-submit-px: var(--xh-control-px-lg);
+  }
+
+  /* —— 形态 —— */
+  /* 形态只决定底与描边怎么画；用哪族颜色由 data-tone 决定。
+     没有实心档：填满一个要往里打字的框，字与底就没法同时读 */
+  [data-scope='prompt-input'][data-part='root'][data-variant='outline'] {
+    --xh-_prompt-input-bg: var(--xh-bg-canvas);
+    --xh-_prompt-input-border: var(--xh-border-control);
+  }
+
+  /* 填充式：底色顶替描边表达边界。描边只退成透明而不去掉，1px 的位置留着，
+     与 outline 档并排时基线对得上、聚焦画描边也不引起跳动 */
+  [data-scope='prompt-input'][data-part='root'][data-variant='subtle'] {
+    --xh-_prompt-input-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+    --xh-_prompt-input-border: transparent;
+  }
+
+  /* 无框：底与常态描边透明，聚焦时浮出描边 */
+  [data-scope='prompt-input'][data-part='root'][data-variant='ghost'] {
+    --xh-_prompt-input-bg: transparent;
+    --xh-_prompt-input-border: transparent;
+  }
+
+  /* 无边框透明底，融进 root 的框里；min-inline-size: 0 防止长内容把弹性子项撑出容器 */
+  [data-scope='prompt-input'][data-part='input'] {
+    flex: 1;
+    min-inline-size: 0;
+    /* 上下留白把单行文本盒撑到控件高度，文字中线与按钮中线对齐 */
+    padding-block: calc((var(--xh-_prompt-input-h) - 1lh) / 2);
+    padding-inline: 0;
+    border: 0;
+    background: transparent;
+    color: var(--xh-prompt-input-input-fg, var(--xh-fg-default));
+    /* 表单控件默认不继承页面字族，显式继承 */
+    font-family: inherit;
+    font-size: var(--xh-prompt-input-input-font-size, var(--xh-_prompt-input-font-size));
+    line-height: var(--xh-leading-normal);
+    /* 高度由 field-sizing 随内容变，不支持的引擎退化为 rows 定下的固定行数；
+       配套禁用 resize，避免拖拽写死的高度盖掉它。封顶行数由使用者覆盖槽给。 */
+    max-block-size: var(--xh-prompt-input-max-h, calc(var(--xh-leading-normal) * 1em * 8));
+    field-sizing: content;
+    resize: none;
+  }
+
+  /* 焦点环已画在 root 上，这里去掉自身的环 */
+  [data-scope='prompt-input'][data-part='input']:focus-visible {
+    outline: none;
+  }
+
+  [data-scope='prompt-input'][data-part='input']::placeholder {
+    color: var(--xh-prompt-input-placeholder-fg, var(--xh-fg-subtle));
+  }
+
+  /* textarea 是单体表单控件，禁用走原生 disabled */
+  [data-scope='prompt-input'][data-part='input']:disabled {
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  /* 私有变量槽位，send 与 stop 两个身份只换这几个配色值 */
+  [data-scope='prompt-input'][data-part='submit-trigger'] {
+    --xh-_bg: var(--xh-prompt-input-send-bg, var(--xh-_tone, var(--xh-bg-brand)));
+    --xh-_bg-hover: var(--xh-prompt-input-send-bg-hover, var(--xh-_tone-hover, var(--xh-bg-brand-hover)));
+    --xh-_bg-active: var(--xh-prompt-input-send-bg-active, var(--xh-_tone-active, var(--xh-bg-brand-active)));
+    --xh-_fg: var(--xh-prompt-input-send-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
+
+    display: inline-flex;
+    /* 按钮不参与弹性伸缩 */
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    min-inline-size: var(--xh-_prompt-input-h);
+    block-size: var(--xh-_prompt-input-h);
+    padding-inline: var(--xh-prompt-input-submit-px, var(--xh-_prompt-input-submit-px));
+    border: 0;
+    border-radius: var(--xh-prompt-input-submit-radius, var(--xh-shape-control));
+    background: var(--xh-_bg);
+    color: var(--xh-_fg);
+    font-family: inherit;
+    font-size: var(--xh-prompt-input-submit-font-size, var(--xh-text-label-size));
+    font-weight: var(--xh-prompt-input-submit-font-weight, var(--xh-text-label-weight));
+    line-height: var(--xh-leading-none);
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='prompt-input'][data-part='submit-trigger'][hidden] {
+    display: none;
+  }
+
+  [data-scope='prompt-input'][data-part='submit-trigger']:hover:not(:disabled) {
+    background: var(--xh-_bg-hover);
+  }
+
+  [data-scope='prompt-input'][data-part='submit-trigger']:active:not(:disabled) {
+    background: var(--xh-_bg-active);
+    scale: var(--xh-motion-scale-press);
+  }
+
+  [data-scope='prompt-input'][data-part='submit-trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: var(--xh-ring-offset);
+  }
+
+  /* 停止身份只换配色，从主色降到中性；文案与可访问名由连接层切换 */
+  [data-scope='prompt-input'][data-part='submit-trigger'][data-mode='stop'] {
+    --xh-_bg: var(--xh-prompt-input-stop-bg, var(--xh-bg-subtle));
+    --xh-_bg-hover: var(--xh-prompt-input-stop-bg-hover, var(--xh-bg-subtle-hover));
+    --xh-_bg-active: var(--xh-prompt-input-stop-bg-active, var(--xh-bg-subtle-active));
+    --xh-_fg: var(--xh-prompt-input-stop-fg, var(--xh-fg-default));
+  }
+
+  /* 禁用走原生 disabled，输入为空时按钮转灰但不收起 */
+  [data-scope='prompt-input'][data-part='submit-trigger']:disabled {
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+}

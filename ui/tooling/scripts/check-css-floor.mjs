@@ -76,6 +76,7 @@ function supportsRanges(css, re) {
 // —— 白名单:退化路径在 CSS 外,逐文件放行 ——
 const ALLOWLIST = new Map([
   ['composer.css', 'field-sizing:退化路径是 <textarea> 的 rows 属性定下的固定行数(HTML 侧),CSS 里无法机械验证'],
+  ['prompt-input.css', '同 composer.css:field-sizing 的退化路径是 <textarea> 的 rows 属性定下的固定行数'],
 ])
 
 // 把文件切成顶层规则块:'{' 深度归零处切开。@media 等 at-rule 与其后的规则块各自成块,

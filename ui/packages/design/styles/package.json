@@ -113,6 +113,7 @@
     "./popover.css": "./css/popover.css",
     "./popselect.css": "./css/popselect.css",
     "./progress.css": "./css/progress.css",
+    "./prompt-input.css": "./css/prompt-input.css",
     "./qr-code.css": "./css/qr-code.css",
     "./radio-group.css": "./css/radio-group.css",
     "./rating.css": "./css/rating.css",

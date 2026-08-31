@@ -83,6 +83,7 @@ import { XhPopconfirmElement } from './elements/popconfirm'
 import { XhPopoverElement } from './elements/popover'
 import { XhPopselectElement } from './elements/popselect'
 import { XhProgressElement } from './elements/progress'
+import { XhPromptInputElement } from './elements/prompt-input'
 import { XhQrCodeElement } from './elements/qr-code'
 import { XhRadioGroupElement } from './elements/radio-group'
 import { XhRatingElement } from './elements/rating'
@@ -220,6 +221,7 @@ export function defineXhElements(): void {
   defineElement('xh-pin-input', XhPinInputElement, VERSION)
   defineElement('xh-popover', XhPopoverElement, VERSION)
   defineElement('xh-progress', XhProgressElement, VERSION)
+  defineElement('xh-prompt-input', XhPromptInputElement, VERSION)
   defineElement('xh-radio-group', XhRadioGroupElement, VERSION)
   defineElement('xh-number-field', XhNumberFieldElement, VERSION)
   defineElement('xh-rating', XhRatingElement, VERSION)
@@ -328,6 +330,7 @@ export {
   XhPinInputElement,
   XhPopoverElement,
   XhProgressElement,
+  XhPromptInputElement,
   XhRadioGroupElement,
   XhRatingElement,
   XhResizableElement,
