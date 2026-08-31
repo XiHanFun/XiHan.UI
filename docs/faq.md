@@ -8,7 +8,7 @@ BasicApp 的前端约定请看[基础应用前端手册](https://basicapp.docs.x
 
 ## 到底有多少个组件
 
-**122 个**。每个组件同时有无头内核、Vue 组件、自定义元素与默认皮肤四份产物，本文档的[组件总览](./components/)按分类列全，每个组件一页。
+**123 个**。每个组件同时有无头内核、Vue 组件、自定义元素与默认皮肤四份产物，本文档的[组件总览](./components/)按分类列全，每个组件一页。
 
 ## 组件的 props 有哪些？文档里怎么没有
 
@@ -92,4 +92,4 @@ BasicApp 的前端约定请看[基础应用前端手册](https://basicapp.docs.x
 ## 还有别的问题
 
 - 源码仓库：[GitHub](https://github.com/XiHanFun/XiHan.UI) · [Gitee](https://gitee.com/XiHanFun/XiHan.UI) · [GitCode](https://gitcode.com/XiHanFun/XiHan.UI)
-- 文档站的组件示例覆盖全部 122 个组件，且 Vue 与自定义元素两套写法并排，行为问题优先在那里复现
+- 文档站的组件示例覆盖全部 123 个组件，且 Vue 与自定义元素两套写法并排，行为问题优先在那里复现

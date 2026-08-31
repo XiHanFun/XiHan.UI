@@ -83,6 +83,7 @@
       "./listbox.css",
       "./loading-bar.css",
       "./log.css",
+      "./markdown-stream.css",
       "./marquee.css",
       "./masonry.css",
       "./mention.css",
@@ -346,6 +347,9 @@
       "LoadingBarServiceOptions",
       "LogContext",
       "LogRootSlotProps",
+      "MarkdownStreamBlockSlotProps",
+      "MarkdownStreamContext",
+      "MarkdownStreamRootSlotProps",
       "MarqueeContext",
       "MentionContext",
       "MentionItemContext",
@@ -842,6 +846,9 @@
       "XhLogLine",
       "XhLogRoot",
       "XhLogViewport",
+      "XhMarkdownStreamContent",
+      "XhMarkdownStreamLiveRegion",
+      "XhMarkdownStreamRoot",
       "XhMarqueeContent",
       "XhMarqueeRoot",
       "XhMasonry",
@@ -1252,6 +1259,7 @@
       "provideLayout",
       "provideList",
       "provideLog",
+      "provideMarkdownStream",
       "provideMarquee",
       "provideMention",
       "provideMentionItem",
@@ -1353,6 +1361,8 @@
       "useLog",
       "useLogContext",
       "useMachine",
+      "useMarkdownStream",
+      "useMarkdownStreamContext",
       "useMarqueeContext",
       "useMention",
       "useMentionContext",
@@ -1498,6 +1508,7 @@
       "XhJsonViewerElement",
       "XhListboxElement",
       "XhLoadingBarElement",
+      "XhMarkdownStreamElement",
       "XhMasonryElement",
       "XhMenuElement",
       "XhMenubarElement",
@@ -2538,10 +2549,15 @@
       "LogSchema",
       "LogStickChangeDetails",
       "LogTranslations",
+      "MARKDOWN_STREAM_LIVE_KEY",
       "MENTION_DEFAULT_PLACEMENT",
       "MENTION_DEFAULT_PREFIX",
       "MENUBAR_DEFAULT_PLACEMENT",
       "MENU_DEFAULT_PLACEMENT",
+      "MarkdownBlock",
+      "MarkdownStreamApi",
+      "MarkdownStreamProps",
+      "MarkdownStreamTranslations",
       "MarqueeApi",
       "MarqueeDirection",
       "MarqueeProps",
@@ -3395,6 +3411,7 @@
       "connectListbox",
       "connectLoadingBar",
       "connectLog",
+      "connectMarkdownStream",
       "connectMarquee",
       "connectMasonry",
       "connectMention",
@@ -3685,6 +3702,7 @@
       "isEditableTarget",
       "isEllipsisOverflowing",
       "isEmptyFormValue",
+      "isLiveMarkdownBlock",
       "isLoadingBarDeterminate",
       "isMetaSegment",
       "isOverflow",
@@ -3737,6 +3755,10 @@
       "logKeyboard",
       "logMachine",
       "logMeta",
+      "markdownBlockHtml",
+      "markdownStreamAnatomy",
+      "markdownStreamKeyboard",
+      "markdownStreamMeta",
       "marqueeAnatomy",
       "marqueeKeyboard",
       "marqueeMeta",
@@ -5282,6 +5304,12 @@
       "root",
       "viewport"
     ],
+    "markdown-stream": [
+      "block",
+      "content",
+      "live-region",
+      "root"
+    ],
     "marquee": [
       "content",
       "root"
@@ -6536,6 +6564,13 @@
       "threshold",
       "translations"
     ],
+    "markdown-stream": [
+      "announce",
+      "blocks",
+      "size",
+      "streaming",
+      "translations"
+    ],
     "marquee": [
       "autoFill",
       "direction",
@@ -7459,6 +7494,7 @@
     "data-line-number",
     "data-line-numbers",
     "data-lines",
+    "data-live",
     "data-loading",
     "data-logo",
     "data-max",
@@ -7586,6 +7622,7 @@
     "--xh-breakpoint-md",
     "--xh-breakpoint-sm",
     "--xh-breakpoint-xl",
+    "--xh-caret-duration",
     "--xh-color-brand-100",
     "--xh-color-brand-200",
     "--xh-color-brand-300",
@@ -9100,6 +9137,15 @@
     "--xh-log-radius",
     "--xh-log-rows",
     "--xh-log-tab-size",
+    "--xh-markdown-stream-caret-bg",
+    "--xh-markdown-stream-caret-duration",
+    "--xh-markdown-stream-caret-h",
+    "--xh-markdown-stream-caret-shift",
+    "--xh-markdown-stream-caret-w",
+    "--xh-markdown-stream-fg",
+    "--xh-markdown-stream-font-size",
+    "--xh-markdown-stream-gap",
+    "--xh-markdown-stream-mono",
     "--xh-marquee-block-size",
     "--xh-marquee-gap",
     "--xh-marquee-span",
@@ -11442,6 +11488,14 @@
       "events": [
         "stick-change"
       ]
+    },
+    "xh-markdown-stream": {
+      "attributes": [
+        "announce",
+        "size",
+        "streaming"
+      ],
+      "events": []
     },
     "xh-marquee": {
       "attributes": [

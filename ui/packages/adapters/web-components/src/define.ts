@@ -64,6 +64,7 @@ import { XhListElement } from './elements/list'
 import { XhListboxElement } from './elements/listbox'
 import { XhLoadingBarElement } from './elements/loading-bar'
 import { XhLogElement } from './elements/log'
+import { XhMarkdownStreamElement } from './elements/markdown-stream'
 import { XhMarqueeElement } from './elements/marquee'
 import { XhMasonryElement } from './elements/masonry'
 import { XhMentionElement } from './elements/mention'
@@ -156,6 +157,7 @@ export function defineXhElements(): void {
   defineElement('xh-layout', XhLayoutElement, VERSION)
   defineElement('xh-list', XhListElement, VERSION)
   defineElement('xh-log', XhLogElement, VERSION)
+  defineElement('xh-markdown-stream', XhMarkdownStreamElement, VERSION)
   defineElement('xh-marquee', XhMarqueeElement, VERSION)
   defineElement('xh-masonry', XhMasonryElement, VERSION)
   defineElement('xh-mention', XhMentionElement, VERSION)
@@ -310,6 +312,7 @@ export {
   XhJsonViewerElement,
   XhListboxElement,
   XhLoadingBarElement,
+  XhMarkdownStreamElement,
   XhMasonryElement,
   XhMenubarElement,
   XhMenuElement,

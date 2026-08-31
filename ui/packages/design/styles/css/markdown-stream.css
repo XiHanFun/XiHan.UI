@@ -1,0 +1,105 @@
+@layer xihan.motion {
+  /* 流式光标的闪烁定义在本文件里。皮肤可以按需单独引入，
+     引用别处文件里的动画名时那份文件不一定在场，动画会静默地整个不跑 */
+  @keyframes xh-markdown-stream-caret {
+    50% {
+      opacity: 0;
+    }
+  }
+}
+
+@layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='markdown-stream'] {
+    --xh-markdown-stream-skin: 1;
+  }
+
+  [data-scope='markdown-stream'][data-part='root'] {
+    color: var(--xh-markdown-stream-fg, var(--xh-fg-default));
+    font-size: var(--xh-markdown-stream-font-size, var(--xh-text-body-size));
+    line-height: var(--xh-text-body-leading);
+  }
+
+  /* 块之间的距离由这一层给，块内部的排版归作者的正文样式 */
+  [data-scope='markdown-stream'][data-part='content'] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-markdown-stream-gap, var(--xh-space-3));
+  }
+
+  [data-scope='markdown-stream'][data-part='content'][hidden] {
+    display: none;
+  }
+
+  [data-scope='markdown-stream'][data-part='block'] {
+    display: block;
+    min-inline-size: 0;
+  }
+
+  [data-scope='markdown-stream'][data-part='block'][hidden] {
+    display: none;
+  }
+
+  /* 代码块与公式块没人接管时铺的是原文，保住换行与缩进 */
+  [data-scope='markdown-stream'][data-part='block'][data-kind='code'],
+  [data-scope='markdown-stream'][data-part='block'][data-kind='math'] {
+    font-family: var(--xh-markdown-stream-mono, var(--xh-font-family-mono));
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+
+  /* 流式光标：只画在正在生长的那一块末尾。
+     它落在块的最后一个顶层元素之后，所以段落与标题是行内贴在文末，列表与表格另起一行——
+     要贴进段落末尾就得往已消毒的 html 里注入节点，那会打穿「原生 HTML 一律不透传」这条约束 */
+  [data-scope='markdown-stream'][data-part='block'][data-live]::after {
+    display: inline-block;
+    background: var(--xh-markdown-stream-caret-bg, var(--xh-fg-muted));
+    animation: xh-markdown-stream-caret var(--xh-markdown-stream-caret-duration, var(--xh-caret-duration)) steps(1, end) infinite;
+    content: '';
+    inline-size: var(--xh-markdown-stream-caret-w, var(--xh-stroke-thick));
+    block-size: var(--xh-markdown-stream-caret-h, var(--xh-text-code-leading));
+    vertical-align: text-bottom;
+    translate: 0 var(--xh-markdown-stream-caret-shift, 0.125em);
+  }
+
+  /* 减少动效：光标停在实心不闪，「还在写」这件事仍然看得出来。
+     两组规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope='markdown-stream'][data-part='block'][data-live]::after {
+      animation: none;
+    }
+  }
+
+  :where([data-motion='reduce']) [data-scope='markdown-stream'][data-part='block'][data-live]::after {
+    animation: none;
+  }
+
+  /* 尺寸档只改正文字号与块间距 */
+  [data-scope='markdown-stream'][data-part='root'][data-size='sm'] {
+    --xh-markdown-stream-font-size: var(--xh-control-font-sm);
+    --xh-markdown-stream-gap: var(--xh-space-2);
+  }
+
+  [data-scope='markdown-stream'][data-part='root'][data-size='md'] {
+    --xh-markdown-stream-font-size: var(--xh-control-font-md);
+    --xh-markdown-stream-gap: var(--xh-space-3);
+  }
+
+  [data-scope='markdown-stream'][data-part='root'][data-size='lg'] {
+    --xh-markdown-stream-font-size: var(--xh-control-font-lg);
+    --xh-markdown-stream-gap: var(--xh-space-4);
+  }
+
+  /* 视觉隐藏的原子播报区：不能 display:none，那样读屏就取不到它了 */
+  [data-scope='markdown-stream'][data-part='live-region'] {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    padding: 0;
+    margin: -1px;
+    border: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
