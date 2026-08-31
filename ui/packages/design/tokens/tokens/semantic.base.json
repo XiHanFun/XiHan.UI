@@ -199,6 +199,10 @@
       "$type": "icon",
       "$value": "chevron-right"
     },
+    "mark-arrow-up": {
+      "$type": "icon",
+      "$value": "arrow-up"
+    },
     "mark-sort": {
       "$type": "icon",
       "$value": "arrow-up-down"
@@ -387,6 +391,11 @@
     "ease-enter": {
       "$type": "cubicBezier",
       "$value": "{ease.out}"
+    },
+    "ease-enter-strong": {
+      "$description": "入场与展开用的强减速曲线，位移与高度变化走这一条。",
+      "$type": "cubicBezier",
+      "$value": "{ease.out-strong}"
     },
     "ease-exit": {
       "$type": "cubicBezier",
@@ -640,6 +649,11 @@
     "body-leading": {
       "$type": "number",
       "$value": "{leading.normal}"
+    },
+    "prose-leading": {
+      "$description": "成段正文的行高，比控件文字松一档。",
+      "$type": "number",
+      "$value": "{leading.relaxed}"
     },
     "body-weight": {
       "$type": "number",

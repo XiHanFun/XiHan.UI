@@ -31,6 +31,9 @@
     inline-size: 100%;
     text-align: start;
     cursor: pointer;
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='reasoning'][data-part='trigger'][hidden] {

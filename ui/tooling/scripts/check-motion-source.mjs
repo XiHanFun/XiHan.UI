@@ -16,6 +16,7 @@ const EASE_PAIRS = [
   ['standard', 'standard'],
   ['in', 'easeIn'],
   ['out', 'easeOut'],
+  ['out-strong', 'outStrong'],
 ]
 const DURATION_KEYS = ['fast', 'normal', 'slow']
 

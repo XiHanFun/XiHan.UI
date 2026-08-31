@@ -41,6 +41,14 @@ const PRESSABLE = {
   'image-viewer': ['close-trigger'],
   'tag': ['close-trigger'],
   'dynamic-input': ['item-delete-trigger'],
+  // AI 族里点得动的部件
+  'approval': ['approve-trigger', 'deny-trigger'],
+  'code-view': ['fold-trigger'],
+  'diff-view': ['gap-trigger'],
+  'message-feed': ['scroll-button'],
+  'prompt-input': ['submit-trigger'],
+  'reasoning': ['trigger'],
+  'tool-call': ['trigger'],
 }
 
 const problems = []
