@@ -86,6 +86,7 @@ import type { PromptInputTranslations } from '../prompt-input/prompt-input.types
 import type { QrCodeTranslations } from '../qr-code/qr-code.types'
 import type { RadioGroupTranslations } from '../radio-group/radio-group.types'
 import type { RatingTranslations } from '../rating/rating.types'
+import type { ReasoningTranslations } from '../reasoning/reasoning.types'
 import type { ResizableTranslations } from '../resizable/resizable.types'
 import type { ResultTranslations } from '../result/result.types'
 import type { ScrollAreaTranslations } from '../scroll-area/scroll-area.types'
@@ -119,6 +120,7 @@ import type { ToastTranslations } from '../toast/toast.types'
 import type { ToggleGroupTranslations } from '../toggle-group/toggle-group.types'
 import type { ToggleTranslations } from '../toggle/toggle.types'
 import type { ToolbarTranslations } from '../toolbar/toolbar.types'
+import type { ToolCallTranslations } from '../tool-call/tool-call.types'
 import type { TooltipTranslations } from '../tooltip/tooltip.types'
 import type { TourTranslations } from '../tour/tour.types'
 import type { TransferTranslations } from '../transfer/transfer.types'
@@ -213,6 +215,7 @@ export interface XhTranslationOverrides {
   'qr-code'?: Partial<QrCodeTranslations>
   'radio-group'?: Partial<RadioGroupTranslations>
   'rating'?: Partial<RatingTranslations>
+  'reasoning'?: Partial<ReasoningTranslations>
   'resizable'?: Partial<ResizableTranslations>
   'result'?: Partial<ResultTranslations>
   'scroll-area'?: Partial<ScrollAreaTranslations>
@@ -246,6 +249,7 @@ export interface XhTranslationOverrides {
   'notification'?: Partial<NotificationTranslations>
   'toggle'?: Partial<ToggleTranslations>
   'toggle-group'?: Partial<ToggleGroupTranslations>
+  'tool-call'?: Partial<ToolCallTranslations>
   'toolbar'?: Partial<ToolbarTranslations>
   'tooltip'?: Partial<TooltipTranslations>
   'tour'?: Partial<TourTranslations>

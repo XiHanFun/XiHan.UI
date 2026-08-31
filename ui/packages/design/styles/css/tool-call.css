@@ -1,0 +1,190 @@
+@layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='tool-call'] {
+    --xh-tool-call-skin: 1;
+  }
+
+  /* 一张表面：描边 + 圆角，不是控件也不是浮层，所以不接形态轴 */
+  [data-scope='tool-call'][data-part='root'] {
+    display: block;
+    overflow: hidden;
+    border: var(--xh-stroke-thin) solid var(--xh-tool-call-border, var(--xh-border-subtle));
+    border-radius: var(--xh-tool-call-radius, var(--xh-shape-surface));
+    background: var(--xh-tool-call-bg, var(--xh-bg-surface));
+  }
+
+  /* 上面声明的 display 会盖掉 UA 的 [hidden]{display:none}，这里补回 */
+  [data-scope='tool-call'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  /* 出错态换描边色，与语气轴各管各的：语气是作者定的强调，出错是组件自己的阶段 */
+  [data-scope='tool-call'][data-part='root'][data-phase='output-error'] {
+    border-color: var(--xh-tool-call-border-error, var(--xh-border-invalid));
+  }
+
+  [data-scope='tool-call'][data-part='trigger'] {
+    display: flex;
+    align-items: center;
+    gap: var(--xh-tool-call-trigger-gap, var(--xh-space-2));
+    padding-inline: var(--xh-tool-call-px, var(--xh-space-3));
+    padding-block: var(--xh-tool-call-py, var(--xh-space-2));
+    border: 0;
+    background: none;
+    color: var(--xh-tool-call-trigger-fg, var(--xh-fg-default));
+    font: inherit;
+    font-size: var(--xh-tool-call-font-size, var(--xh-control-font-md));
+    inline-size: 100%;
+    text-align: start;
+    cursor: pointer;
+  }
+
+  [data-scope='tool-call'][data-part='trigger'][hidden] {
+    display: none;
+  }
+
+  [data-scope='tool-call'][data-part='trigger']:hover:not(:disabled) {
+    background: var(--xh-tool-call-trigger-bg-hover, var(--xh-bg-subtle-hover));
+  }
+
+  [data-scope='tool-call'][data-part='trigger']:active:not(:disabled) {
+    scale: var(--xh-motion-scale-press);
+  }
+
+  [data-scope='tool-call'][data-part='trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: calc(-1 * var(--xh-ring-width));
+  }
+
+  [data-scope='tool-call'][data-part='trigger']:disabled {
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  /* 指示随开合转向，纯装饰 */
+  [data-scope='tool-call'][data-part='indicator'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    color: var(--xh-tool-call-indicator-fg, var(--xh-fg-subtle));
+    transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='tool-call'][data-part='indicator'][hidden] {
+    display: none;
+  }
+
+  [data-scope='tool-call'][data-part='indicator'][data-state='open'] {
+    rotate: 90deg;
+  }
+
+  /* 工具名占满剩余宽度并单行截断：长名字不该把状态挤出去 */
+  [data-scope='tool-call'][data-part='name'] {
+    display: block;
+    overflow: hidden;
+    flex: 1 1 auto;
+    font-family: var(--xh-tool-call-name-font, var(--xh-font-family-mono));
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  [data-scope='tool-call'][data-part='name'][hidden] {
+    display: none;
+  }
+
+  [data-scope='tool-call'][data-part='status'] {
+    display: block;
+    flex: none;
+    color: var(--xh-tool-call-status-fg, var(--xh-fg-muted));
+    font-size: var(--xh-tool-call-status-font-size, var(--xh-text-caption-size));
+  }
+
+  [data-scope='tool-call'][data-part='status'][hidden] {
+    display: none;
+  }
+
+  /* 各阶段的状态色：与语气轴分开走，语气是作者定的强调 */
+  [data-scope='tool-call'][data-part='status'][data-phase='awaiting-approval'] {
+    color: var(--xh-tool-call-status-fg-approval, var(--xh-fg-warning));
+  }
+
+  [data-scope='tool-call'][data-part='status'][data-phase='output-available'] {
+    color: var(--xh-tool-call-status-fg-done, var(--xh-fg-success));
+  }
+
+  [data-scope='tool-call'][data-part='status'][data-phase='output-error'] {
+    color: var(--xh-tool-call-status-fg-error, var(--xh-fg-danger));
+  }
+
+  /* 审批闸门常驻在开关与详情之间，不随折叠一起藏起来 */
+  [data-scope='tool-call'][data-part='approval'] {
+    display: block;
+    padding-inline: var(--xh-tool-call-px, var(--xh-space-3));
+    padding-block: var(--xh-tool-call-py, var(--xh-space-2));
+    border-block-start: var(--xh-stroke-thin) solid var(--xh-tool-call-border, var(--xh-border-subtle));
+  }
+
+  [data-scope='tool-call'][data-part='approval'][hidden] {
+    display: none;
+  }
+
+  [data-scope='tool-call'][data-part='content'] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-tool-call-content-gap, var(--xh-space-2));
+    padding-inline: var(--xh-tool-call-px, var(--xh-space-3));
+    padding-block: var(--xh-tool-call-py, var(--xh-space-2));
+    border-block-start: var(--xh-stroke-thin) solid var(--xh-tool-call-border, var(--xh-border-subtle));
+  }
+
+  [data-scope='tool-call'][data-part='content'][hidden] {
+    display: none;
+  }
+
+  [data-scope='tool-call'][data-part='input'],
+  [data-scope='tool-call'][data-part='output'] {
+    display: block;
+    min-inline-size: 0;
+  }
+
+  [data-scope='tool-call'][data-part='input'][hidden],
+  [data-scope='tool-call'][data-part='output'][hidden] {
+    display: none;
+  }
+
+  /* 出错时开关的 aria-describedby 指过来；流被中止时这里可能是空的 */
+  [data-scope='tool-call'][data-part='error'] {
+    display: block;
+    color: var(--xh-tool-call-error-fg, var(--xh-fg-danger));
+    font-size: var(--xh-tool-call-status-font-size, var(--xh-text-caption-size));
+  }
+
+  [data-scope='tool-call'][data-part='error'][hidden] {
+    display: none;
+  }
+
+  /* 尺寸档只改内衬与字号 */
+  [data-scope='tool-call'][data-part='root'][data-size='sm'] {
+    --xh-tool-call-px: var(--xh-space-2);
+    --xh-tool-call-py: var(--xh-space-1);
+    --xh-tool-call-font-size: var(--xh-control-font-sm);
+  }
+
+  [data-scope='tool-call'][data-part='root'][data-size='md'] {
+    --xh-tool-call-px: var(--xh-space-3);
+    --xh-tool-call-py: var(--xh-space-2);
+    --xh-tool-call-font-size: var(--xh-control-font-md);
+  }
+
+  [data-scope='tool-call'][data-part='root'][data-size='lg'] {
+    --xh-tool-call-px: var(--xh-space-4);
+    --xh-tool-call-py: var(--xh-space-3);
+    --xh-tool-call-font-size: var(--xh-control-font-lg);
+  }
+
+  /* 语气只染左侧那一条色条，不夺走阶段色 */
+  [data-scope='tool-call'][data-part='root'][data-tone] {
+    box-shadow: inset var(--xh-tool-call-tone-bar, var(--xh-stroke-thick)) 0 0 0 var(--xh-tool-call-tone-fg, var(--xh-_tone-soft, var(--xh-bg-brand)));
+  }
+}

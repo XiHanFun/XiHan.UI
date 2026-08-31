@@ -551,6 +551,14 @@
           "name": "提示输入框"
         },
         {
+          "id": "reasoning",
+          "name": "思考过程"
+        },
+        {
+          "id": "tool-call",
+          "name": "工具调用"
+        },
+        {
           "id": "thread",
           "name": "会话线程"
         }

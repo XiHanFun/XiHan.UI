@@ -1,0 +1,43 @@
+<!-- 自动开合与锁存 | 跑起来自动展开、结束自动收起；你手动开合过一次之后，阶段怎么变都不再自动 -->
+<div style="display: flex; flex-direction: column; gap: 8px">
+  <xh-tool-call id="tool-call-auto" phase="input-streaming">
+    <div data-xh-part="root">
+      <button data-xh-part="trigger">
+        <span data-xh-part="indicator">›</span>
+        <span data-xh-part="name">read_file</span>
+        <span data-xh-part="status"></span>
+      </button>
+      <div data-xh-part="content">
+        <div data-xh-part="input">
+          <!-- 参数在流式期是半截 JSON，complete 接成「阶段不是参数在传」 -->
+          <xh-code-view id="tool-call-auto-args" code='{ "path": "src/index.ts" }' code-lang="json">
+            <div data-xh-part="root">
+              <pre data-xh-part="pre"><code data-xh-part="code">{ "path": "src/index.ts" }</code></pre>
+            </div>
+          </xh-code-view>
+        </div>
+      </div>
+    </div>
+  </xh-tool-call>
+  <p id="tool-call-auto-source" style="margin: 0">上一次开合来自：还没动过</p>
+</div>
+
+<script type="module">
+  const card = document.getElementById("tool-call-auto");
+  const args = document.getElementById("tool-call-auto-args");
+  const line = document.getElementById("tool-call-auto-source");
+
+  card.addEventListener("open-change", (event) => {
+    line.textContent = `上一次开合来自：${event.detail.source}`;
+  });
+
+  // 三秒一轮：在跑 → 完成 → 在跑
+  const tick = () => {
+    if (!card.isConnected) return;
+    const running = card.getAttribute("phase") === "input-streaming";
+    card.setAttribute("phase", running ? "output-available" : "input-streaming");
+    args.toggleAttribute("complete", running);
+    setTimeout(tick, 3000);
+  };
+  setTimeout(tick, 3000);
+</script>

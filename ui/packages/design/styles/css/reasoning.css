@@ -1,0 +1,134 @@
+@layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='reasoning'] {
+    --xh-reasoning-skin: 1;
+  }
+
+  /* 比工具调用轻一档：思考过程是旁注不是主体，只用底色分区、不画描边 */
+  [data-scope='reasoning'][data-part='root'] {
+    display: block;
+    overflow: hidden;
+    border-radius: var(--xh-reasoning-radius, var(--xh-shape-surface));
+    background: var(--xh-reasoning-bg, var(--xh-bg-subtle));
+  }
+
+  /* 上面声明的 display 会盖掉 UA 的 [hidden]{display:none}，这里补回 */
+  [data-scope='reasoning'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  [data-scope='reasoning'][data-part='trigger'] {
+    display: flex;
+    align-items: center;
+    gap: var(--xh-reasoning-trigger-gap, var(--xh-space-2));
+    padding-inline: var(--xh-reasoning-px, var(--xh-space-3));
+    padding-block: var(--xh-reasoning-py, var(--xh-space-2));
+    border: 0;
+    background: none;
+    color: var(--xh-reasoning-trigger-fg, var(--xh-fg-muted));
+    font: inherit;
+    font-size: var(--xh-reasoning-font-size, var(--xh-control-font-sm));
+    inline-size: 100%;
+    text-align: start;
+    cursor: pointer;
+  }
+
+  [data-scope='reasoning'][data-part='trigger'][hidden] {
+    display: none;
+  }
+
+  [data-scope='reasoning'][data-part='trigger']:hover:not(:disabled) {
+    background: var(--xh-reasoning-trigger-bg-hover, var(--xh-bg-subtle-hover));
+  }
+
+  [data-scope='reasoning'][data-part='trigger']:active:not(:disabled) {
+    scale: var(--xh-motion-scale-press);
+  }
+
+  [data-scope='reasoning'][data-part='trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: calc(-1 * var(--xh-ring-width));
+  }
+
+  [data-scope='reasoning'][data-part='trigger']:disabled {
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  /* 指示随开合转向，纯装饰 */
+  [data-scope='reasoning'][data-part='indicator'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    color: var(--xh-reasoning-indicator-fg, var(--xh-fg-subtle));
+    transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='reasoning'][data-part='indicator'][hidden] {
+    display: none;
+  }
+
+  [data-scope='reasoning'][data-part='indicator'][data-state='open'] {
+    rotate: 90deg;
+  }
+
+  [data-scope='reasoning'][data-part='label'] {
+    display: block;
+    flex: 1 1 auto;
+  }
+
+  [data-scope='reasoning'][data-part='label'][hidden] {
+    display: none;
+  }
+
+  [data-scope='reasoning'][data-part='duration'] {
+    display: block;
+    flex: none;
+    color: var(--xh-reasoning-duration-fg, var(--xh-fg-subtle));
+    font-size: var(--xh-reasoning-duration-font-size, var(--xh-text-caption-size));
+    font-variant-numeric: tabular-nums;
+  }
+
+  [data-scope='reasoning'][data-part='duration'][hidden] {
+    display: none;
+  }
+
+  /* 思考正文是散文：段落排版，不用等宽 */
+  [data-scope='reasoning'][data-part='content'] {
+    display: block;
+    padding-inline: var(--xh-reasoning-px, var(--xh-space-3));
+    padding-block-end: var(--xh-reasoning-py, var(--xh-space-2));
+    color: var(--xh-reasoning-content-fg, var(--xh-fg-muted));
+    font-size: var(--xh-reasoning-content-font-size, var(--xh-text-secondary-size));
+    line-height: var(--xh-text-body-leading);
+  }
+
+  [data-scope='reasoning'][data-part='content'][hidden] {
+    display: none;
+  }
+
+  /* 尺寸档只改内衬与字号 */
+  [data-scope='reasoning'][data-part='root'][data-size='sm'] {
+    --xh-reasoning-px: var(--xh-space-2);
+    --xh-reasoning-py: var(--xh-space-1);
+    --xh-reasoning-font-size: var(--xh-control-font-sm);
+  }
+
+  [data-scope='reasoning'][data-part='root'][data-size='md'] {
+    --xh-reasoning-px: var(--xh-space-3);
+    --xh-reasoning-py: var(--xh-space-2);
+    --xh-reasoning-font-size: var(--xh-control-font-md);
+  }
+
+  [data-scope='reasoning'][data-part='root'][data-size='lg'] {
+    --xh-reasoning-px: var(--xh-space-4);
+    --xh-reasoning-py: var(--xh-space-3);
+    --xh-reasoning-font-size: var(--xh-control-font-lg);
+  }
+
+  /* 语气只染左侧那一条色条 */
+  [data-scope='reasoning'][data-part='root'][data-tone] {
+    box-shadow: inset var(--xh-reasoning-tone-bar, var(--xh-stroke-thick)) 0 0 0 var(--xh-reasoning-tone-fg, var(--xh-_tone-soft, var(--xh-bg-brand)));
+  }
+}

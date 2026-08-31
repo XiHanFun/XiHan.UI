@@ -31443,6 +31443,323 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/reasoning.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-reasoning>` —— Light-DOM 行为宿主：把思考过程收进一个折叠区。\n自动开合整套复用 tool-call 的机器，它不认解剖、只认在不在跑与四个叶态；\n全局文案另按 reasoning 分桶取，不经机器名。",
+          "name": "XhReasoningElement",
+          "cssParts": [
+            {
+              "description": "外壳，承载 data-state / data-streaming",
+              "name": "root"
+            },
+            {
+              "description": "折叠开关，承载 aria-expanded / aria-controls",
+              "name": "trigger"
+            },
+            {
+              "description": "纯装饰指示，对读屏隐藏",
+              "name": "indicator"
+            },
+            {
+              "description": "折叠区的名字，排在开关内因而计入它的可访问名",
+              "name": "label"
+            },
+            {
+              "description": "想了多久，同上",
+              "name": "duration"
+            },
+            {
+              "description": "思考正文，role=region 且由开关命名",
+              "name": "content"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: reasoningAnatomy, meta: reasoningMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "streaming",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "streaming"
+            },
+            {
+              "kind": "field",
+              "name": "startTime",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "start-time"
+            },
+            {
+              "kind": "field",
+              "name": "endTime",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "end-time"
+            },
+            {
+              "kind": "field",
+              "name": "open",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "open"
+            },
+            {
+              "kind": "field",
+              "name": "defaultOpen",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "default-open"
+            },
+            {
+              "kind": "field",
+              "name": "autoDisclosure",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "auto-disclosure"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "Tone | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "Size | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "Partial<ReasoningTranslations> | undefined"
+              },
+              "description": "折叠区的名字与两句时长文案。"
+            },
+            {
+              "kind": "field",
+              "name": "notify",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<ToolCallSchema>( this, toolCallMachine, () => ({ running: this.streaming, open: this.open, defaultOpen: this.defaultOpen, autoDisclosure: this.autoDisclosure, disabled: this.disabled, onOpenChange: this.notify, }), { configName: 'reasoning' }, )"
+            },
+            {
+              "kind": "method",
+              "name": "viewProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "ReasoningProps"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "开合变化；detail 为 `{ open: boolean, source: 'user' | 'auto' | 'api' }`",
+              "name": "open-change",
+              "type": {
+                "text": "ToolCallOpenChangeDetails"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "还在思考：跟着它自动展开，写完自动收起",
+              "name": "streaming",
+              "fieldName": "streaming"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "开始思考的毫秒时间戳",
+              "name": "start-time",
+              "fieldName": "startTime"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "思考结束的毫秒时间戳；流被中止时它会缺席",
+              "name": "end-time",
+              "fieldName": "endTime"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "受控开合，缺省该属性即非受控",
+              "name": "open",
+              "fieldName": "open"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "非受控初值",
+              "name": "default-open",
+              "fieldName": "defaultOpen"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "跟着思考状态自动开合，默认开；写 auto-disclosure=\"false\" 关掉",
+              "name": "auto-disclosure",
+              "fieldName": "autoDisclosure"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "禁用折叠开关",
+              "name": "disabled",
+              "fieldName": "disabled"
+            },
+            {
+              "type": {
+                "text": "Tone | undefined"
+              },
+              "description": "语气",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "Size | undefined"
+              },
+              "description": "尺寸：sm / md / lg",
+              "name": "size",
+              "fieldName": "size"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-reasoning",
+          "customElement": true,
+          "cssProperties": [
+            {
+              "name": "--xh-reasoning-bg"
+            },
+            {
+              "name": "--xh-reasoning-content-fg"
+            },
+            {
+              "name": "--xh-reasoning-content-font-size"
+            },
+            {
+              "name": "--xh-reasoning-duration-fg"
+            },
+            {
+              "name": "--xh-reasoning-duration-font-size"
+            },
+            {
+              "name": "--xh-reasoning-font-size"
+            },
+            {
+              "name": "--xh-reasoning-indicator-fg"
+            },
+            {
+              "name": "--xh-reasoning-px"
+            },
+            {
+              "name": "--xh-reasoning-py"
+            },
+            {
+              "name": "--xh-reasoning-radius"
+            },
+            {
+              "name": "--xh-reasoning-tone-bar"
+            },
+            {
+              "name": "--xh-reasoning-tone-fg"
+            },
+            {
+              "name": "--xh-reasoning-trigger-bg-hover"
+            },
+            {
+              "name": "--xh-reasoning-trigger-fg"
+            },
+            {
+              "name": "--xh-reasoning-trigger-gap"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhReasoningElement",
+          "declaration": {
+            "name": "XhReasoningElement",
+            "module": "src/elements/reasoning.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/resizable.ts",
       "declarations": [
         {
@@ -43839,6 +44156,324 @@
           "declaration": {
             "name": "XhToggleElement",
             "module": "src/elements/toggle.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/tool-call.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-tool-call>` —— Light-DOM 行为宿主：跑 tool-call 机器，把 connect 产出打到作者写的\n角色节点上。跑起来自动展开、结束自动收起；用户手动开合过一次即永久停用自动开合。\n\n参数与结果的内容一律由作者写，元素不替作者生成节点。",
+          "name": "XhToolCallElement",
+          "cssParts": [
+            {
+              "description": "外壳，承载 data-state / data-phase / data-running",
+              "name": "root"
+            },
+            {
+              "description": "折叠开关，承载 aria-expanded / aria-controls",
+              "name": "trigger"
+            },
+            {
+              "description": "纯装饰指示，对读屏隐藏",
+              "name": "indicator"
+            },
+            {
+              "description": "工具名，排在开关内因而计入它的可访问名",
+              "name": "name"
+            },
+            {
+              "description": "阶段文字，同上",
+              "name": "status"
+            },
+            {
+              "description": "审批闸门的常驻位，只在等人批准时显示",
+              "name": "approval"
+            },
+            {
+              "description": "详情区，role=region 且由开关命名",
+              "name": "content"
+            },
+            {
+              "description": "调用参数",
+              "name": "input"
+            },
+            {
+              "description": "调用结果",
+              "name": "output"
+            },
+            {
+              "description": "错误信息，出错时开关的 aria-describedby 指向它",
+              "name": "error"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: toolCallAnatomy, meta: toolCallMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "phase",
+              "privacy": "public",
+              "type": {
+                "text": "ToolCallPhase | undefined"
+              },
+              "attribute": "phase"
+            },
+            {
+              "kind": "field",
+              "name": "open",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "open"
+            },
+            {
+              "kind": "field",
+              "name": "defaultOpen",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "default-open"
+            },
+            {
+              "kind": "field",
+              "name": "autoDisclosure",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "auto-disclosure"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "Tone | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "Size | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "Partial<ToolCallTranslations> | undefined"
+              },
+              "description": "各阶段的状态文案。"
+            },
+            {
+              "kind": "field",
+              "name": "notify",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<ToolCallSchema>(this, toolCallMachine, () => ({ // 作者只写 phase，跑不跑由纯函数折出来交给机器 running: isToolCallRunning(this.phase ?? 'input-available'), open: this.open, defaultOpen: this.defaultOpen, autoDisclosure: this.autoDisclosure, disabled: this.disabled, onOpenChange: this.notify, }))"
+            },
+            {
+              "kind": "method",
+              "name": "viewProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "ToolCallProps"
+                }
+              },
+              "description": "视图属性另走一路：本族两个组件共用一台机器，走机器 props 的话文案会全取到 tool-call 那一格。"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "开合变化；detail 为 `{ open: boolean, source: 'user' | 'auto' | 'api' }`",
+              "name": "open-change",
+              "type": {
+                "text": "ToolCallOpenChangeDetails"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "ToolCallPhase | undefined"
+              },
+              "description": "走到哪一步：input-streaming / input-available / awaiting-approval / output-available / output-error",
+              "name": "phase",
+              "fieldName": "phase"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "受控开合，缺省该属性即非受控",
+              "name": "open",
+              "fieldName": "open"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "非受控初值",
+              "name": "default-open",
+              "fieldName": "defaultOpen"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "跟着阶段自动开合，默认开；写 auto-disclosure=\"false\" 关掉",
+              "name": "auto-disclosure",
+              "fieldName": "autoDisclosure"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "禁用折叠开关",
+              "name": "disabled",
+              "fieldName": "disabled"
+            },
+            {
+              "type": {
+                "text": "Tone | undefined"
+              },
+              "description": "语气",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "Size | undefined"
+              },
+              "description": "尺寸：sm / md / lg",
+              "name": "size",
+              "fieldName": "size"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-tool-call",
+          "customElement": true,
+          "cssProperties": [
+            {
+              "name": "--xh-tool-call-bg"
+            },
+            {
+              "name": "--xh-tool-call-border"
+            },
+            {
+              "name": "--xh-tool-call-border-error"
+            },
+            {
+              "name": "--xh-tool-call-content-gap"
+            },
+            {
+              "name": "--xh-tool-call-error-fg"
+            },
+            {
+              "name": "--xh-tool-call-font-size"
+            },
+            {
+              "name": "--xh-tool-call-indicator-fg"
+            },
+            {
+              "name": "--xh-tool-call-name-font"
+            },
+            {
+              "name": "--xh-tool-call-px"
+            },
+            {
+              "name": "--xh-tool-call-py"
+            },
+            {
+              "name": "--xh-tool-call-radius"
+            },
+            {
+              "name": "--xh-tool-call-status-fg"
+            },
+            {
+              "name": "--xh-tool-call-status-fg-approval"
+            },
+            {
+              "name": "--xh-tool-call-status-fg-done"
+            },
+            {
+              "name": "--xh-tool-call-status-fg-error"
+            },
+            {
+              "name": "--xh-tool-call-status-font-size"
+            },
+            {
+              "name": "--xh-tool-call-tone-bar"
+            },
+            {
+              "name": "--xh-tool-call-tone-fg"
+            },
+            {
+              "name": "--xh-tool-call-trigger-bg-hover"
+            },
+            {
+              "name": "--xh-tool-call-trigger-fg"
+            },
+            {
+              "name": "--xh-tool-call-trigger-gap"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhToolCallElement",
+          "declaration": {
+            "name": "XhToolCallElement",
+            "module": "src/elements/tool-call.ts"
           }
         }
       ]

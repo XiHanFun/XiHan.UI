@@ -83,6 +83,7 @@ import { promptInputSuite } from './prompt-input.suite'
 import { qrCodeSuite } from './qr-code.suite'
 import { radioGroupSuite } from './radio-group.suite'
 import { ratingSuite } from './rating.suite'
+import { reasoningSuite } from './reasoning.suite'
 import { resizableSuite } from './resizable.suite'
 import { resultSuite } from './result.suite'
 import { scrollAreaSuite } from './scroll-area.suite'
@@ -116,6 +117,7 @@ import { toastSuite } from './toast.suite'
 import { toggleGroupSuite } from './toggle-group.suite'
 import { toggleSuite } from './toggle.suite'
 import { toolbarSuite } from './toolbar.suite'
+import { toolCallSuite } from './tool-call.suite'
 import { tooltipSuite } from './tooltip.suite'
 import { tourSuite } from './tour.suite'
 import { transferSuite } from './transfer.suite'
@@ -210,6 +212,7 @@ export const allSuites: readonly ConformanceSuite[] = [
   qrCodeSuite,
   radioGroupSuite,
   ratingSuite,
+  reasoningSuite,
   resizableSuite,
   resultSuite,
   scrollAreaSuite,
@@ -244,6 +247,7 @@ export const allSuites: readonly ConformanceSuite[] = [
   toggleSuite,
   toggleGroupSuite,
   toolbarSuite,
+  toolCallSuite,
   tooltipSuite,
   tourSuite,
   transferSuite,
