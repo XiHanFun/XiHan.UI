@@ -72,7 +72,7 @@
   }
 
   [data-scope='collapsible'][data-part='content'][data-state='open'] {
-    animation: xh-collapsible-expand var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+    animation: xh-collapsible-expand var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='collapsible'][data-part='content'][data-state='closed'] {

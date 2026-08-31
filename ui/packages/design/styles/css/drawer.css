@@ -331,7 +331,7 @@
   /* 滑入/滑出按边配对。退场一律 forwards：presence 要等 animationend 才卸载，
      不定住终态，面板会在最后一帧弹回原位再消失。 */
   [data-scope='drawer'][data-part='content'][data-side='right'][data-state='open'] {
-    animation: xh-drawer-in-right var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+    animation: xh-drawer-in-right var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='drawer'][data-part='content'][data-side='right'][data-state='closed'] {
@@ -339,7 +339,7 @@
   }
 
   [data-scope='drawer'][data-part='content'][data-side='left'][data-state='open'] {
-    animation: xh-drawer-in-left var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+    animation: xh-drawer-in-left var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='drawer'][data-part='content'][data-side='left'][data-state='closed'] {
@@ -347,7 +347,7 @@
   }
 
   [data-scope='drawer'][data-part='content'][data-side='top'][data-state='open'] {
-    animation: xh-drawer-in-top var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+    animation: xh-drawer-in-top var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='drawer'][data-part='content'][data-side='top'][data-state='closed'] {
@@ -355,7 +355,7 @@
   }
 
   [data-scope='drawer'][data-part='content'][data-side='bottom'][data-state='open'] {
-    animation: xh-drawer-in-bottom var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+    animation: xh-drawer-in-bottom var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='drawer'][data-part='content'][data-side='bottom'][data-state='closed'] {

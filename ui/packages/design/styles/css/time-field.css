@@ -15,10 +15,12 @@
     --xh-_time-field-gap: var(--xh-control-gap-md);
     --xh-_time-field-font-size: var(--xh-control-font-md);
     --xh-_time-field-label-font-size: var(--xh-control-font-md);
-    /* 形态档只换这三个私有槽：底色与两档描边 */
+    /* 形态档只换这四个私有槽：底色、两档描边与落影 */
     --xh-_time-field-control-bg: var(--xh-bg-canvas);
     --xh-_time-field-control-border: var(--xh-border-control);
     --xh-_time-field-control-border-hover: var(--xh-border-control-hover);
+    /* 一档静态落影把控件从页面里抬起一层，与描边一起画出框的边界 */
+    --xh-_time-field-control-shadow: var(--xh-elevation-raised);
     /* 聚焦描边与段位反白随语气走。没写 data-tone 时这几个 --xh-_tone* 没被声明，退回原来的焦点色与品牌色 */
     --xh-_time-field-ring: var(--xh-ring-focus);
     --xh-_time-field-segment-bg: var(--xh-_tone, var(--xh-bg-brand));
@@ -63,8 +65,10 @@
     --xh-_time-field-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   }
 
-  /* 无框：底与常态描边透明，悬停与聚焦浮出描边 */
+  /* 无框：底与常态描边透明，悬停与聚焦浮出描边。
+     落影一并关掉——底与描边都透明时它就是一片没有面的影子 */
   [data-scope='time-field'][data-part='root'][data-variant='ghost'] {
+    --xh-_time-field-control-shadow: 0 0 0 transparent;
     --xh-_time-field-control-bg: transparent;
     --xh-_time-field-control-border: transparent;
     --xh-_time-field-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
@@ -100,6 +104,7 @@
     border: var(--xh-stroke-thin) solid var(--xh-time-field-control-border, var(--xh-_time-field-control-border));
     border-radius: var(--xh-time-field-control-radius, var(--xh-shape-control));
     background: var(--xh-time-field-control-bg, var(--xh-_time-field-control-bg));
+    box-shadow: var(--xh-time-field-control-shadow, var(--xh-_time-field-control-shadow));
     color: var(--xh-time-field-control-fg, var(--xh-fg-default));
     /* 表单控件不继承页面字体，只给字号会让它用 UA 默认字族，与周围文本对不上 */
     font-family: inherit;

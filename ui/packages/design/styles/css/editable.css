@@ -112,6 +112,8 @@
     border: var(--xh-stroke-thin) solid var(--xh-editable-input-border, var(--xh-border-control));
     border-radius: var(--xh-editable-input-radius, var(--xh-shape-control));
     background: var(--xh-editable-input-bg, var(--xh-bg-canvas));
+    /* 一档静态落影把编辑态的框从页面里抬起一层，与描边一起画出框的边界 */
+    box-shadow: var(--xh-editable-input-shadow, var(--xh-elevation-raised));
     color: var(--xh-editable-input-fg, var(--xh-fg-default));
     /* 表单控件不继承页面字体，只给字号会让输入框用 UA 默认字族，与预览区的文字对不上 */
     font-family: inherit;
@@ -237,11 +239,15 @@
     cursor: not-allowed;
   }
 
-  /* 提交按钮是这一组里的主操作，给它一层实心底色区分开 */
+  /* 提交按钮是这一组里的主操作，给它一层实心底色区分开，顶边再画一条极浅的内高光衬出厚度。
+     置灰那档不命中这条选择器，高光自然不出现 */
   [data-scope='editable'][data-part='submit-trigger']:not(:disabled) {
+    --xh-_editable-submit-highlight: inset 0 var(--xh-stroke-thin) 0 0 color-mix(in oklab, var(--xh-fg-on-brand) 14%, transparent);
+
     border-color: var(--xh-editable-submit-border, var(--xh-bg-brand));
     background: var(--xh-editable-submit-bg, var(--xh-bg-brand));
     color: var(--xh-editable-submit-fg, var(--xh-fg-on-brand));
+    box-shadow: var(--xh-editable-submit-shadow, var(--xh-_editable-submit-highlight));
   }
 
   [data-scope='editable'][data-part='submit-trigger']:hover:not(:disabled) {

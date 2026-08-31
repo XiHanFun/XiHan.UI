@@ -62,10 +62,12 @@
     --xh-_mention-gap: var(--xh-control-gap-md);
     --xh-_mention-font-size: var(--xh-control-font-md);
 
-    /* 形态档只换这三个槽：缺省即 outline（描边 + 画布底） */
+    /* 形态档只换这四个槽：缺省即 outline（描边 + 画布底 + 一档落影） */
     --xh-_mention-input-bg: var(--xh-bg-canvas);
     --xh-_mention-input-border: var(--xh-border-control);
     --xh-_mention-input-border-hover: var(--xh-border-control-hover);
+    /* 一档静态落影把方框从页面里抬起一层，与描边一起画出框的边界 */
+    --xh-_mention-input-shadow: var(--xh-elevation-raised);
 
     /* 聚焦环恒用固定环色，不随语气走 */
     --xh-_mention-ring: var(--xh-ring-focus);
@@ -118,7 +120,9 @@
     --xh-_mention-input-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   }
 
+  /* 无框：落影一并关掉——底与描边都透明时它就是一片没有面的影子 */
   [data-scope='mention']:is([data-part='root'], [data-part='positioner'])[data-variant='ghost'] {
+    --xh-_mention-input-shadow: 0 0 0 transparent;
     --xh-_mention-input-bg: transparent;
     --xh-_mention-input-border: transparent;
     --xh-_mention-input-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
@@ -137,6 +141,7 @@
     border: var(--xh-stroke-thin) solid var(--xh-mention-input-border, var(--xh-_mention-input-border));
     border-radius: var(--xh-mention-input-radius, var(--xh-shape-control));
     background: var(--xh-mention-input-bg, var(--xh-_mention-input-bg));
+    box-shadow: var(--xh-mention-input-shadow, var(--xh-_mention-input-shadow));
     color: var(--xh-mention-input-fg, var(--xh-fg-default));
     /* 表单控件不继承页面字体，只给字号会让输入框用 UA 默认字族，与周围文本对不上 */
     font-family: inherit;
@@ -230,7 +235,7 @@
   }
 
   [data-scope='mention'][data-part='content'][data-state='open'] {
-    animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+    animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
   /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，

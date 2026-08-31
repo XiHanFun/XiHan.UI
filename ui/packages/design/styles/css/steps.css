@@ -20,6 +20,9 @@
     --xh-_steps-accent: var(--xh-_tone, var(--xh-bg-brand));
     --xh-_steps-accent-text: var(--xh-_tone-fg, var(--xh-bg-brand));
     --xh-_steps-on-accent: var(--xh-_tone-on, var(--xh-fg-on-brand));
+    /* 走过的那几步是实心圆，顶边画一条极浅的内高光把它衬出厚度 */
+    --xh-_steps-highlight: inset 0 var(--xh-stroke-thin) 0 0
+      color-mix(in oklab, var(--xh-_steps-on-accent) 14%, transparent);
 
     display: flex;
     flex-direction: column;
@@ -183,11 +186,14 @@
     border-color: var(--xh-steps-indicator-border-completed, var(--xh-_steps-accent));
     background: var(--xh-steps-indicator-bg-completed, var(--xh-_steps-accent));
     color: var(--xh-steps-indicator-fg-completed, var(--xh-_steps-on-accent));
+    box-shadow: var(--xh-steps-indicator-shadow, var(--xh-_steps-highlight));
   }
 
   [data-scope='steps'][data-part='item'][data-disabled] [data-scope='steps'][data-part='indicator'] {
     border-color: var(--xh-steps-indicator-border-disabled, var(--xh-border-subtle));
     color: var(--xh-steps-indicator-fg-disabled, var(--xh-fg-disabled));
+    /* 这一步动不了，实心那档的内高光跟着收掉 */
+    box-shadow: none;
   }
 
   /* 标题与说明都在右列：不给 display，网格布局会替它们块级化，

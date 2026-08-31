@@ -66,10 +66,12 @@
     /* 作者塞进指示符槽的图标跟着控件的尺寸档走；它自己写了 size 时仍以作者的为准 */
     --xh-icon-size: var(--xh-combobox-icon-size, var(--xh-glyph-size-md));
 
-    /* 形态档只换这三个槽：缺省即 outline（描边 + 画布底） */
+    /* 形态档只换这四个槽：缺省即 outline（描边 + 画布底 + 一档落影） */
     --xh-_combobox-control-bg: var(--xh-bg-canvas);
     --xh-_combobox-control-border: var(--xh-border-control);
     --xh-_combobox-control-border-hover: var(--xh-border-control-hover);
+    /* 一档静态落影把盒从页面里抬起一层，与描边一起画出盒的边界 */
+    --xh-_combobox-control-shadow: var(--xh-elevation-raised);
 
     /* 聚焦环恒用固定环色；强调色随语气走，只落在勾选标记与选中文字上，正文文字色不动。
        没写 data-tone 时 --xh-_tone 没被声明，两处都退回原来的取值 */
@@ -131,8 +133,10 @@
     --xh-_combobox-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   }
 
-  /* 无框：底与常态描边透明，悬停与聚焦浮出描边 */
+  /* 无框：底与常态描边透明，悬停与聚焦浮出描边。
+     落影一并关掉——底与描边都透明时它就是一片没有面的影子 */
   [data-scope='combobox']:is([data-part='root'], [data-part='positioner'])[data-variant='ghost'] {
+    --xh-_combobox-control-shadow: 0 0 0 transparent;
     --xh-_combobox-control-bg: transparent;
     --xh-_combobox-control-border: transparent;
     --xh-_combobox-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
@@ -161,6 +165,7 @@
     border: var(--xh-stroke-thin) solid var(--xh-combobox-control-border, var(--xh-_combobox-control-border));
     border-radius: var(--xh-combobox-control-radius, var(--xh-shape-control));
     background: var(--xh-combobox-control-bg, var(--xh-_combobox-control-bg));
+    box-shadow: var(--xh-combobox-control-shadow, var(--xh-_combobox-control-shadow));
     color: var(--xh-combobox-control-fg, var(--xh-fg-default));
     transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
@@ -368,7 +373,7 @@
   }
 
   [data-scope='combobox'][data-part='content'][data-state='open'] {
-    animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+    animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
   /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，

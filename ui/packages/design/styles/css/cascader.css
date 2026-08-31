@@ -34,11 +34,13 @@
     --xh-_cascader-font-size: var(--xh-control-font-md);
     --xh-_cascader-label-font-size: var(--xh-control-font-md);
 
-    /* 形态档只换触发框的描边与底色这三个槽，浮层与列不跟着变：
+    /* 形态档只换触发框的描边、底色与落影这四个槽，浮层与列不跟着变：
        变的是「这是个输入位」的表达方式，不是弹出内容的表达方式 */
     --xh-_cascader-border: var(--xh-border-control);
     --xh-_cascader-border-hover: var(--xh-border-control-hover);
     --xh-_cascader-bg: var(--xh-bg-canvas);
+    /* 一档静态落影把触发框从页面里抬起一层，与描边一起画出框的边界 */
+    --xh-_cascader-shadow: var(--xh-elevation-raised);
 
     /* 选中条目的文字色随语气走，没写 data-tone 时退回品牌强调色 */
     --xh-_cascader-selected-fg: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
@@ -78,8 +80,10 @@
     --xh-_cascader-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   }
 
-  /* 无框：底与常态描边透明，悬停浮出描边，聚焦由焦点环表达 */
+  /* 无框：底与常态描边透明，悬停浮出描边，聚焦由焦点环表达。
+     落影一并关掉——底与描边都透明时它就是一片没有面的影子 */
   [data-scope='cascader']:is([data-part='root'], [data-part='positioner'])[data-variant='ghost'] {
+    --xh-_cascader-shadow: 0 0 0 transparent;
     --xh-_cascader-border: transparent;
     --xh-_cascader-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
     --xh-_cascader-bg: transparent;
@@ -132,6 +136,7 @@
     border: var(--xh-stroke-thin) solid var(--xh-cascader-control-border, var(--xh-_cascader-border));
     border-radius: var(--xh-cascader-control-radius, var(--xh-shape-control));
     background: var(--xh-cascader-control-bg, var(--xh-_cascader-bg));
+    box-shadow: var(--xh-cascader-control-shadow, var(--xh-_cascader-shadow));
     color: var(--xh-cascader-control-fg, var(--xh-fg-default));
     cursor: pointer;
     transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
@@ -328,7 +333,7 @@
   }
 
   [data-scope='cascader'][data-part='content'][data-state='open'] {
-    animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+    animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
   /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，

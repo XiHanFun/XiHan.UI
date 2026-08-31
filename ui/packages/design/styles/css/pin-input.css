@@ -11,10 +11,12 @@
     --xh-_pin-input-box-gap: var(--xh-control-gap-md);
     --xh-_pin-input-box-font-size: var(--xh-text-heading-3-size);
     --xh-_pin-input-label-font-size: var(--xh-control-font-md);
-    /* 形态档只换这三个私有槽，缺省这一份就是描边式（描边 + 画布底） */
+    /* 形态档只换这四个私有槽，缺省这一份就是描边式（描边 + 画布底 + 一档落影） */
     --xh-_pin-input-box-bg: var(--xh-bg-canvas);
     --xh-_pin-input-box-border: var(--xh-border-control);
     --xh-_pin-input-box-border-hover: var(--xh-border-control-hover);
+    /* 一档静态落影把格子从页面里抬起一层，与描边一起画出格子的边界 */
+    --xh-_pin-input-box-shadow: var(--xh-elevation-raised);
     /* 聚焦环与填满态的强调色随语气走。没写 data-tone 时 --xh-_tone 没被声明，退回原来的取值 */
     --xh-_pin-input-ring: var(--xh-ring-focus);
     --xh-_pin-input-accent: var(--xh-_tone, var(--xh-bg-brand));
@@ -45,8 +47,10 @@
     --xh-_pin-input-box-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   }
 
-  /* 无边框、透明底：静息时格子完全隐入背景，可见反馈全靠悬停描边与聚焦环 */
+  /* 无边框、透明底：静息时格子完全隐入背景，可见反馈全靠悬停描边与聚焦环。
+     落影一并关掉——底与描边都透明时它就是一片没有面的影子 */
   [data-scope='pin-input'][data-part='root'][data-variant='ghost'] {
+    --xh-_pin-input-box-shadow: 0 0 0 transparent;
     --xh-_pin-input-box-bg: transparent;
     --xh-_pin-input-box-border: transparent;
     --xh-_pin-input-box-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
@@ -89,6 +93,7 @@
     border: var(--xh-stroke-thin) solid var(--xh-pin-input-box-border, var(--xh-_pin-input-box-border));
     border-radius: var(--xh-pin-input-box-radius, var(--xh-shape-control));
     background: var(--xh-pin-input-box-bg, var(--xh-_pin-input-box-bg));
+    box-shadow: var(--xh-pin-input-box-shadow, var(--xh-_pin-input-box-shadow));
     color: var(--xh-pin-input-box-fg, var(--xh-fg-default));
     /* 表单控件不继承页面字体，只给字号会让格子用 UA 默认字族 */
     font-family: inherit;

@@ -167,6 +167,9 @@
     --xh-_bg-hover: var(--xh-prompt-input-send-bg-hover, var(--xh-_tone-hover, var(--xh-bg-brand-hover)));
     --xh-_bg-active: var(--xh-prompt-input-send-bg-active, var(--xh-_tone-active, var(--xh-bg-brand-active)));
     --xh-_fg: var(--xh-prompt-input-send-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
+    /* 发送身份是实心底，顶边画一条极浅的内高光把这块面衬出厚度 */
+    --xh-_prompt-input-submit-highlight: inset 0 var(--xh-stroke-thin) 0 0
+      color-mix(in oklab, var(--xh-_tone-on, var(--xh-fg-on-brand)) 14%, transparent);
 
     display: inline-flex;
     /* 按钮不参与弹性伸缩 */
@@ -180,6 +183,7 @@
     border-radius: var(--xh-prompt-input-submit-radius, var(--xh-shape-control));
     background: var(--xh-_bg);
     color: var(--xh-_fg);
+    box-shadow: var(--xh-prompt-input-submit-shadow, var(--xh-_prompt-input-submit-highlight));
     font-family: inherit;
     font-size: var(--xh-prompt-input-submit-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-prompt-input-submit-font-weight, var(--xh-text-label-weight));
@@ -217,6 +221,9 @@
     --xh-_bg-hover: var(--xh-prompt-input-stop-bg-hover, var(--xh-bg-subtle-hover));
     --xh-_bg-active: var(--xh-prompt-input-stop-bg-active, var(--xh-bg-subtle-active));
     --xh-_fg: var(--xh-prompt-input-stop-fg, var(--xh-fg-default));
+
+    /* 停止身份是淡底，面上没有厚度可言，内高光收掉 */
+    box-shadow: none;
   }
 
   /* 禁用走原生 disabled，输入为空时按钮转灰但不收起 */
@@ -224,6 +231,7 @@
     --xh-_bg: var(--xh-prompt-input-send-bg-off, var(--xh-bg-muted));
     --xh-_fg: var(--xh-fg-disabled);
 
+    box-shadow: none;
     cursor: not-allowed;
   }
 

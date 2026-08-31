@@ -29,6 +29,10 @@
     --xh-_badge-px: var(--xh-space-1);
     --xh-_badge-font: var(--xh-text-secondary-size);
 
+    /* 顶边一条极浅的内高光，把这枚实心块衬出厚度 */
+    --xh-_badge-highlight: inset 0 var(--xh-stroke-thin) 0 0
+      color-mix(in oklab, var(--xh-_tone-on, var(--xh-fg-on-brand)) 14%, transparent);
+
     /* 不设 z-index：角标在 DOM 序里排在宿主之后，本来就压在上面 */
     position: absolute;
     display: inline-flex;
@@ -43,6 +47,7 @@
     /* 角标默认就是实心的：贴在别的东西上，淡底与描边都看不清 */
     background: var(--xh-badge-bg, var(--xh-_tone, var(--xh-bg-brand)));
     color: var(--xh-badge-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
+    box-shadow: var(--xh-badge-shadow, var(--xh-_badge-highlight));
     font-size: var(--xh-badge-font-size, var(--xh-_badge-font));
     font-weight: var(--xh-badge-font-weight, var(--xh-font-weight-medium));
     line-height: var(--xh-leading-none);
@@ -58,12 +63,14 @@
     display: none;
   }
 
-  /* 圆点形态：只表示「有」，不表示「有几个」——收掉内边距与文字盒 */
+  /* 圆点形态：只表示「有」，不表示「有几个」——收掉内边距与文字盒。
+     圆点直径只有六到十像素，一像素的内高光会占去顶上一大截、读成缺了一圈的描边，这里收掉 */
   [data-scope='badge'][data-part='indicator'][data-dot] {
     min-inline-size: var(--xh-badge-dot-size, var(--xh-_badge-dot));
     inline-size: var(--xh-badge-dot-size, var(--xh-_badge-dot));
     block-size: var(--xh-badge-dot-size, var(--xh-_badge-dot));
     padding: 0;
+    box-shadow: none;
     font-size: 0;
   }
 
