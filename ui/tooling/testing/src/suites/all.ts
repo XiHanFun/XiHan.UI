@@ -66,6 +66,7 @@ import { masonrySuite } from './masonry.suite'
 import { mentionSuite } from './mention.suite'
 import { menuSuite } from './menu.suite'
 import { menubarSuite } from './menubar.suite'
+import { messageFeedSuite } from './message-feed.suite'
 import { navigationMenuSuite } from './navigation-menu.suite'
 import { notificationSuite } from './notification.suite'
 import { numberAnimationSuite } from './number-animation.suite'
@@ -192,6 +193,7 @@ export const allSuites: readonly ConformanceSuite[] = [
   mentionSuite,
   menuSuite,
   menubarSuite,
+  messageFeedSuite,
   navigationMenuSuite,
   numberAnimationSuite,
   numberFieldSuite,

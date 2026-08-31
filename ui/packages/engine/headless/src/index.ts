@@ -135,6 +135,8 @@ export { connectMasonry, distributeMasonry, masonryAnatomy, masonryItemQuery, ma
 export type { MasonryApi, MasonryBreakpoint, MasonryColumnProps, MasonryColumns, MasonryColumnsByBreakpoint, MasonryGap, MasonryItemProps, MasonryProps, MasonryTranslations } from './masonry'
 export { connectMention, findMentionTrigger, insertMention, MENTION_DEFAULT_PLACEMENT, MENTION_DEFAULT_PREFIX, mentionAnatomy, mentionItemQuery, mentionItemText, mentionKeyboard, mentionMachine, mentionMeta, normalizeMentionPrefixes } from './mention'
 export type { MentionApi, MentionInputEl, MentionInputHost, MentionInputProps, MentionItemProps, MentionNode, MentionNodeMeta, MentionOpenChangeDetails, MentionQueryChangeDetails, MentionRefs, MentionSchema, MentionSelectDetails, MentionTranslations, MentionTrigger, MentionValueChangeDetails } from './mention'
+export { connectMessageFeed, messageFeedAnatomy, messageFeedItemQuery, messageFeedKeyboard, messageFeedMachine, messageFeedMeta } from './message-feed'
+export type { MessageFeedApi, MessageFeedItemFocusDetails, MessageFeedItemProps, MessageFeedRefs, MessageFeedSchema, MessageFeedStatus, MessageFeedStickChangeDetails, MessageFeedTranslations } from './message-feed'
 export { connectMenu, MENU_DEFAULT_PLACEMENT, menuAnatomy, menuKeyboard, menuMachine, menuMeta } from './menu'
 export type { MenuApi, MenuFocusIntent, MenuGroupProps, MenuItemProps, MenuNode, MenuNodeMeta, MenuOpenChangeDetails, MenuRefs, MenuSchema, MenuSelectDetails, MenuTranslations } from './menu'
 export { connectMenubar, MENUBAR_DEFAULT_PLACEMENT, menubarAnatomy, menubarContentQuery, menubarItemQuery, menubarItemText, menubarKeyboard, menubarMachine, menubarMeta, menubarTriggerQuery } from './menubar'

@@ -6,7 +6,7 @@
 
 框架无关的组件库：状态机与无障碍逻辑沉在无头内核，各框架只写一层薄适配器。
 
-123 个组件，每个都有 headless 内核、Vue 组件、自定义元素与默认皮肤。
+124 个组件，每个都有 headless 内核、Vue 组件、自定义元素与默认皮肤。
 
 > 18 个公开包锁步发版，全部发布在 npm，文档站在 https://ui.docs.xihanfun.com。无障碍扫描跑在真实 Chromium 上，存量违规登记表只剩两条（共用表里 tag 的禁用态对比度、WC 侧 steps 的必需子节点），另有一条 breadcrumb 的步骤重放豁免。
 
@@ -19,7 +19,7 @@
 | `@xihan-ui/behavior` | 行为原语：dismissable layer、焦点域、滚动锁、进出场、集合、typeahead |
 | `@xihan-ui/motion` | 动效原语：缓动单一真源、纯补间、帧循环、减弱动效偏好、解析解弹簧、Web Animations 薄封装 |
 | `@xihan-ui/pointer` | 指针会话：一根指针从按下到抬起的跟手、过滤与收尾，自研，零依赖 |
-| `@xihan-ui/headless` | 123 个组件的 anatomy + machine + `connect`，无样式、无框架 |
+| `@xihan-ui/headless` | 124 个组件的 anatomy + machine + `connect`，无样式、无框架 |
 | `@xihan-ui/vue` | Vue 3 适配器 |
 | `@xihan-ui/web-components` | Web Components 适配器（自研响应式基类，无第三方运行时依赖） |
 | `@xihan-ui/styles` | 默认皮肤，按 `@layer` 分层的 CSS |

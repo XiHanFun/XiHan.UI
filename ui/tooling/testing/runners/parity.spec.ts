@@ -241,6 +241,7 @@ const EXCLUDED: Readonly<Record<string, string>> = {
   'image-viewer': '同 dialog：Vue 关闭即卸载 content，WC 是 Light DOM 不删作者节点',
   'drawer': '同 dialog',
   'listbox': '两端作者侧的禁用声明 API 不同：Vue 是组件 prop（被消费、不落 DOM），WC 要作者写 aria-disabled，逐帧比对不适用',
+  'message-feed': '条目的自报家门两端形态不同：Vue 是被消费的组件 prop（不落 DOM），WC 是作者写在节点上的 item-* 属性',
   'masonry': 'Vue 版由组件铺列、并把每个子节点各包一层，WC 侧 column 与 item 归作者手写，同一份 fixture 在两端铺不出同构 DOM',
   'mention': '同集合族：候选的禁用声明两端不同，WC 侧 disabled 落成 DOM 属性，Vue 侧被 prop 消费',
   'menu': '两端作者侧的禁用声明 API 不同：Vue 是组件 prop（被消费、不落 DOM），WC 要作者写 aria-disabled，逐帧比对不适用',

@@ -543,6 +543,10 @@
           "name": "流式正文"
         },
         {
+          "id": "message-feed",
+          "name": "消息流"
+        },
+        {
           "id": "thread",
           "name": "会话线程"
         }

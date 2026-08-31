@@ -12,6 +12,7 @@ const PUBLIC_EVENTS = {
   'column-preference-change': 'onColumnPreferenceChange',
   'download-complete': 'onDownloadComplete',
   'download-error': 'onDownloadError',
+  'item-focus': 'onItemFocus',
   'node-move': 'onNodeMove',
   'open-change': 'onOpenChange',
   'pressed-change': 'onPressedChange',

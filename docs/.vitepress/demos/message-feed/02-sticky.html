@@ -1,0 +1,40 @@
+<!-- 粘底跟随与播报 | 新消息长出来时自动到底，往上翻就解除；一轮结束在播报区念一句 -->
+<xh-message-feed id="message-feed-sticky" count="1" status="streaming" style="block-size: 220px">
+  <div data-xh-part="root">
+    <div data-xh-part="viewport">
+      <div data-xh-part="list">
+        <article data-xh-part="item" item-id="m1" item-index="0" item-role="assistant">
+          第 1 条：往上翻一下，粘附会解除，右下角出现回到底部。
+        </article>
+      </div>
+    </div>
+    <button data-xh-part="scroll-button">↓</button>
+    <!-- 一份会话只该有这一个活区：每条消息各开一个会互相打断 -->
+    <div data-xh-part="live-region"></div>
+  </div>
+</xh-message-feed>
+
+<script type="module">
+  // 消息由宿主追加，元素不替作者生成节点
+  const feed = document.getElementById("message-feed-sticky");
+  const list = feed.querySelector('[data-xh-part="list"]');
+  const live = feed.querySelector('[data-xh-part="live-region"]');
+
+  let n = 1;
+  const tick = () => {
+    // 元素被移出文档就收手，别让定时器在卸载后继续跑
+    if (!feed.isConnected) return;
+    n += 1;
+    const item = document.createElement("article");
+    item.setAttribute("data-xh-part", "item");
+    item.setAttribute("item-id", `m${n}`);
+    item.setAttribute("item-index", String(n - 1));
+    item.setAttribute("item-role", "assistant");
+    item.textContent = `第 ${n} 条：内容还在长。`;
+    list.appendChild(item);
+    feed.setAttribute("count", String(n));
+    live.textContent = `已收到 ${n} 条消息`;
+    if (n < 12) setTimeout(tick, 1200);
+  };
+  setTimeout(tick, 1200);
+</script>
