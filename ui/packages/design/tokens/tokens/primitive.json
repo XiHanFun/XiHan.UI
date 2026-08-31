@@ -325,6 +325,10 @@
     "normal": {
       "$type": "number",
       "$value": 1.5
+    },
+    "relaxed": {
+      "$type": "number",
+      "$value": 1.625
     }
   },
   "shadow": {
@@ -422,6 +426,11 @@
     "out": {
       "$type": "cubicBezier",
       "$value": "cubic-bezier(0, 0, 0.2, 1)"
+    },
+    "out-strong": {
+      "$description": "入场与展开的强减速曲线：起步快、收尾长，位移看得清但不拖沓。",
+      "$type": "cubicBezier",
+      "$value": "cubic-bezier(0.23, 1, 0.32, 1)"
     }
   }
 }

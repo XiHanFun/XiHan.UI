@@ -13,6 +13,7 @@
     border: var(--xh-stroke-thin) solid var(--xh-approval-border, var(--xh-_tone, var(--xh-border-strong)));
     border-radius: var(--xh-approval-radius, var(--xh-shape-surface));
     background: var(--xh-approval-bg, var(--xh-bg-surface));
+    transition: border-color var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
   /* 上面声明的 display 会盖掉 UA 的 [hidden]{display:none}，这里补回 */
@@ -83,6 +84,9 @@
     border-radius: var(--xh-approval-scope-radius, var(--xh-shape-control));
     font-size: var(--xh-approval-scope-font-size, var(--xh-control-font-md));
     cursor: pointer;
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='approval'][data-part='scope-item'][hidden] {
@@ -114,6 +118,9 @@
     color: var(--xh-approval-indicator-fg, var(--xh-fg-on-brand));
     inline-size: var(--xh-approval-indicator-size, var(--xh-control-indicator-size));
     block-size: var(--xh-approval-indicator-size, var(--xh-control-indicator-size));
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='approval'][data-part='scope-indicator'][hidden] {
@@ -162,7 +169,10 @@
     block-size: var(--xh-approval-action-h, var(--xh-control-h-md));
     white-space: nowrap;
     cursor: pointer;
-    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='approval'][data-part='approve-trigger'][hidden],

@@ -803,6 +803,9 @@
   inline-size: 100%;
   text-align: start;
   cursor: pointer;
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='diff-view'][data-part='gap-trigger'][hidden] {
@@ -5636,6 +5639,9 @@ input[data-scope='mention'][data-part='input'] {
 /* 边框画在 root 上，内部 textarea 无边框；align-items: flex-end 让按钮随输入框长高贴着底边。
    三个视觉轴都落在 root 上：形态管底与描边怎么画，语气管用哪族颜色，尺寸管高度与字号 */
 [data-scope='prompt-input'][data-part='root'] {
+  transition:
+    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    border-radius var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   /* 尺寸缺省档：不写 data-size 时按中档走 */
   --xh-_prompt-input-h: var(--xh-control-h-md);
   --xh-_prompt-input-gap: var(--xh-control-gap-md);
@@ -5784,7 +5790,10 @@ input[data-scope='mention'][data-part='input'] {
   white-space: nowrap;
   cursor: pointer;
   user-select: none;
-  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='prompt-input'][data-part='submit-trigger'][hidden] {
@@ -5815,7 +5824,9 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 禁用走原生 disabled，输入为空时按钮转灰但不收起 */
 [data-scope='prompt-input'][data-part='submit-trigger']:disabled {
-  color: var(--xh-fg-disabled);
+  --xh-_bg: var(--xh-prompt-input-send-bg-off, var(--xh-bg-muted));
+  --xh-_fg: var(--xh-fg-disabled);
+
   cursor: not-allowed;
 }
 
@@ -5947,6 +5958,9 @@ input[data-scope='mention'][data-part='input'] {
   inline-size: 100%;
   text-align: start;
   cursor: pointer;
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='reasoning'][data-part='trigger'][hidden] {
@@ -8557,6 +8571,7 @@ input[data-scope='mention'][data-part='input'] {
   border: var(--xh-stroke-thin) solid var(--xh-approval-border, var(--xh-_tone, var(--xh-border-strong)));
   border-radius: var(--xh-approval-radius, var(--xh-shape-surface));
   background: var(--xh-approval-bg, var(--xh-bg-surface));
+  transition: border-color var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 /* 上面声明的 display 会盖掉 UA 的 [hidden]{display:none}，这里补回 */
@@ -8627,6 +8642,9 @@ input[data-scope='mention'][data-part='input'] {
   border-radius: var(--xh-approval-scope-radius, var(--xh-shape-control));
   font-size: var(--xh-approval-scope-font-size, var(--xh-control-font-md));
   cursor: pointer;
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='approval'][data-part='scope-item'][hidden] {
@@ -8658,6 +8676,9 @@ input[data-scope='mention'][data-part='input'] {
   color: var(--xh-approval-indicator-fg, var(--xh-fg-on-brand));
   inline-size: var(--xh-approval-indicator-size, var(--xh-control-indicator-size));
   block-size: var(--xh-approval-indicator-size, var(--xh-control-indicator-size));
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='approval'][data-part='scope-indicator'][hidden] {
@@ -8706,7 +8727,10 @@ input[data-scope='mention'][data-part='input'] {
   block-size: var(--xh-approval-action-h, var(--xh-control-h-md));
   white-space: nowrap;
   cursor: pointer;
-  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='approval'][data-part='approve-trigger'][hidden],
@@ -11481,6 +11505,9 @@ input[data-scope='mention'][data-part='input'] {
   inline-size: 100%;
   text-align: start;
   cursor: pointer;
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='code-view'][data-part='fold-trigger'][hidden] {
@@ -11518,7 +11545,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-code-view-comment-fg: var(--xh-fg-muted);
   --xh-code-view-punctuation-fg: var(--xh-fg-subtle);
   --xh-code-view-string-fg: var(--xh-syntax-string);
-  --xh-code-view-number-fg: var(--xh-syntax-number);
+  --xh-code-view-number-token-fg: var(--xh-syntax-number);
   --xh-code-view-keyword-fg: var(--xh-syntax-keyword);
 }
 
@@ -11533,7 +11560,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='code-view'][data-part='token'][data-kind='number'] {
-  color: var(--xh-code-view-number-fg);
+  color: var(--xh-code-view-number-token-fg);
 }
 
 [data-scope='code-view'][data-part='token'][data-kind='keyword'] {
@@ -17122,6 +17149,9 @@ input[data-scope='mention'][data-part='input'] {
   inset-block-end: var(--xh-message-feed-button-inset, var(--xh-space-4));
   inset-inline-end: var(--xh-message-feed-button-inset, var(--xh-space-4));
   cursor: pointer;
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='message-feed'][data-part='scroll-button'][hidden] {
@@ -24825,6 +24855,9 @@ input[data-scope='mention'][data-part='input'] {
   inline-size: 100%;
   text-align: start;
   cursor: pointer;
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='tool-call'][data-part='trigger'][hidden] {

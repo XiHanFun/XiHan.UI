@@ -87,6 +87,9 @@
     inset-block-end: var(--xh-message-feed-button-inset, var(--xh-space-4));
     inset-inline-end: var(--xh-message-feed-button-inset, var(--xh-space-4));
     cursor: pointer;
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='message-feed'][data-part='scroll-button'][hidden] {

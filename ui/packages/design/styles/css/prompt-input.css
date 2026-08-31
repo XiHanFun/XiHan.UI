@@ -7,6 +7,9 @@
   /* 边框画在 root 上，内部 textarea 无边框；align-items: flex-end 让按钮随输入框长高贴着底边。
      三个视觉轴都落在 root 上：形态管底与描边怎么画，语气管用哪族颜色，尺寸管高度与字号 */
   [data-scope='prompt-input'][data-part='root'] {
+    transition:
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-radius var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
     /* 尺寸缺省档：不写 data-size 时按中档走 */
     --xh-_prompt-input-h: var(--xh-control-h-md);
     --xh-_prompt-input-gap: var(--xh-control-gap-md);
@@ -155,7 +158,10 @@
     white-space: nowrap;
     cursor: pointer;
     user-select: none;
-    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='prompt-input'][data-part='submit-trigger'][hidden] {
@@ -186,7 +192,9 @@
 
   /* 禁用走原生 disabled，输入为空时按钮转灰但不收起 */
   [data-scope='prompt-input'][data-part='submit-trigger']:disabled {
-    color: var(--xh-fg-disabled);
+    --xh-_bg: var(--xh-prompt-input-send-bg-off, var(--xh-bg-muted));
+    --xh-_fg: var(--xh-fg-disabled);
+
     cursor: not-allowed;
   }
 }
