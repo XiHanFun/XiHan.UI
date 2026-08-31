@@ -1,7 +1,6 @@
 import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
-import type { ThreadSchema } from '../thread'
-import type { LogApi, LogProps } from './log.types'
+import type { LogApi, LogProps, LogSchema } from './log.types'
 import { dataAttr } from '@xihan-ui/kernel'
 import { logAnatomy } from './log.anatomy'
 
@@ -14,11 +13,11 @@ const parts = logAnatomy.build()
 const LINE_HEIGHT = 'var(--xh-log-line-height, 1.25rem)'
 
 /**
- * 日志视图的连接层。粘底与"回到底部"复用 thread 的机器：它只认滚动容器与内容容器两个节点，
- * 不认解剖，故本组件用自己的 anatomy 配那台机器。行的内容由作者渲染，这里只发身份。
+ * 日志视图的连接层。机器只管粘底与"回到底部"，行数、载入态与文案都是视图属性走第二参。
+ * 行的内容由作者渲染，这里只发身份。
  */
 export function connectLog<T extends PropTypes>(
-  service: Service<ThreadSchema>,
+  service: Service<LogSchema>,
   props: LogProps,
   normalize: NormalizeProps<T>,
 ): LogApi<T> {

@@ -1,7 +1,7 @@
-import type { LogProps, LogTranslations, ThreadSchema, ThreadStickChangeDetails } from '@xihan-ui/headless'
+import type { LogProps, LogSchema, LogStickChangeDetails, LogTranslations } from '@xihan-ui/headless'
 import type { IdGenerator, RuntimeConfig } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
-import { connectLog, logAnatomy, logMeta, threadMachine } from '@xihan-ui/headless'
+import { connectLog, logAnatomy, logMachine, logMeta } from '@xihan-ui/headless'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/kernel'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -14,8 +14,6 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * `<xh-log>` —— Light-DOM 行为宿主：作者写 root/viewport/content/line 角色节点，
  * 元素把 connectLog 的产出打上去。行长出来时跟随滚动到底部，用户上滚后解除粘附，
  * 滚回底部阈值内或调 scrollToBottom() 时恢复。
- *
- * 粘底整套复用 thread 的机器：它只认滚动容器与内容容器两个节点，不认解剖。
  *
  * 行的内容不替作者生成：文本、级别、时间戳、标注都写在 line 角色节点里，元素只发身份与等宽排版。
  *
@@ -48,13 +46,13 @@ export class XhLogElement extends XhElement {
   private readonly logScope = createScope(null, this.idGen)
   private config: RuntimeConfig | null = null
 
-  private readonly notify = (details: ThreadStickChangeDetails): void => {
+  private readonly notify = (details: LogStickChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('stick-change', { detail: details, bubbles: true, composed: true }))
   }
 
-  private readonly ctrl = new MachineController<ThreadSchema>(
+  private readonly ctrl = new MachineController<LogSchema>(
     this,
-    threadMachine,
+    logMachine,
     () => ({ onStickChange: this.notify }),
     { scope: this.logScope, onBuilt: svc => this.injectRefs(svc) },
   )
@@ -66,7 +64,7 @@ export class XhLogElement extends XhElement {
   }
 
   /** 装填 config 与两个节点 getter；onBuilt 在 ctrl 构造期就跑，故 service 由参数传入。 */
-  private injectRefs(svc: Service<ThreadSchema>): void {
+  private injectRefs(svc: Service<LogSchema>): void {
     this.ensureConfig()
     svc.refs.set('config', this.config)
     svc.refs.set('getViewportEl', () => this.getPart('viewport'))
@@ -86,12 +84,12 @@ export class XhLogElement extends XhElement {
    * 元素不带内置的"回到底部"按钮，作者自己的按钮调它。
    */
   scrollToBottom(): void {
-    const service = this.ctrl.service as Service<ThreadSchema> | undefined
+    const service = this.ctrl.service as Service<LogSchema> | undefined
     service?.send({ type: 'SCROLL_TO_BOTTOM' })
   }
 
   protected wire(): void {
-    const api = connectLog(this.ctrl.service, this.viewProps(), wcNormalize)
+    const api = connectLog(this.ctrl.service, this.configured('log', this.viewProps()), wcNormalize)
 
     // 角色节点可能晚一拍才填进来，每次接线都让句柄按当前节点重绑
     this.ctrl.service.refs.get('stick')?.retarget()

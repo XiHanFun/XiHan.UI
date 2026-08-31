@@ -21126,7 +21126,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-log>` —— Light-DOM 行为宿主：作者写 root/viewport/content/line 角色节点，\n元素把 connectLog 的产出打上去。行长出来时跟随滚动到底部，用户上滚后解除粘附，\n滚回底部阈值内或调 scrollToBottom() 时恢复。\n\n粘底整套复用 thread 的机器：它只认滚动容器与内容容器两个节点，不认解剖。\n\n行的内容不替作者生成：文本、级别、时间戳、标注都写在 line 角色节点里，元素只发身份与等宽排版。",
+          "description": "`<xh-log>` —— Light-DOM 行为宿主：作者写 root/viewport/content/line 角色节点，\n元素把 connectLog 的产出打上去。行长出来时跟随滚动到底部，用户上滚后解除粘附，\n滚回底部阈值内或调 scrollToBottom() 时恢复。\n\n行的内容不替作者生成：文本、级别、时间戳、标注都写在 line 角色节点里，元素只发身份与等宽排版。",
           "name": "XhLogElement",
           "cssParts": [
             {
@@ -21218,7 +21218,7 @@
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
-              "default": "new MachineController<ThreadSchema>( this, threadMachine, () => ({ onStickChange: this.notify }), { scope: this.logScope, onBuilt: svc => this.injectRefs(svc) }, )"
+              "default": "new MachineController<LogSchema>( this, logMachine, () => ({ onStickChange: this.notify }), { scope: this.logScope, onBuilt: svc => this.injectRefs(svc) }, )"
             },
             {
               "kind": "method",
@@ -21243,7 +21243,7 @@
                 {
                   "name": "svc",
                   "type": {
-                    "text": "Service<ThreadSchema>"
+                    "text": "Service<LogSchema>"
                   }
                 }
               ],
@@ -21285,7 +21285,7 @@
               "description": "粘底状态变化；detail 为 `{ atBottom: boolean, sticking: boolean }`",
               "name": "stick-change",
               "type": {
-                "text": "ThreadStickChangeDetails"
+                "text": "LogStickChangeDetails"
               }
             }
           ],

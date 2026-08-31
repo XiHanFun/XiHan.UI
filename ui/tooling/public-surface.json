@@ -2512,6 +2512,9 @@
       "LoadingBarValueChangeDetails",
       "LogApi",
       "LogProps",
+      "LogRefs",
+      "LogSchema",
+      "LogStickChangeDetails",
       "LogTranslations",
       "MENTION_DEFAULT_PLACEMENT",
       "MENTION_DEFAULT_PREFIX",
@@ -3705,6 +3708,7 @@
       "localeDateOrder",
       "logAnatomy",
       "logKeyboard",
+      "logMachine",
       "logMeta",
       "marqueeAnatomy",
       "marqueeKeyboard",
@@ -6467,7 +6471,9 @@
     ],
     "log": [
       "loading",
+      "onStickChange",
       "rows",
+      "threshold",
       "translations"
     ],
     "marquee": [

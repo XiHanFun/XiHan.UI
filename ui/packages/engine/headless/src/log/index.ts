@@ -1,5 +1,6 @@
 export { logAnatomy } from './log.anatomy'
 export { connectLog } from './log.connect'
 export { logKeyboard } from './log.keyboard'
+export { logMachine } from './log.machine'
 export { logMeta } from './log.meta'
-export type { LogApi, LogProps, LogTranslations } from './log.types'
+export type { LogApi, LogProps, LogRefs, LogSchema, LogStickChangeDetails, LogTranslations } from './log.types'

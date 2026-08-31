@@ -62,7 +62,7 @@ line 只发身份与等宽排版，级别配色、时间戳、行内标记这些
 | 自定义元素 | `<xh-log>` |
 | Vue 组件 | `XhLogContent` `XhLogLine` `XhLogRoot` `XhLogViewport` |
 | 组合式函数 | `useLog` |
-| 状态机 | 无，`connect` 直接由 props 算属性 |
+| 状态机 | `logMachine` |
 | 皮肤 | `@xihan-ui/styles/log.css` |
 
 ## 解剖
@@ -75,6 +75,8 @@ line 只发身份与等宽排版，级别配色、时间戳、行内标记这些
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `threshold` | `number` |  | 距底多少 px 视为在底，缺省用粘底原语的默认值。 |
+| `onStickChange` | `(details: LogStickChangeDetails) => void` |  | 粘底状态变化时通知宿主。 |
 | `loading` | `boolean` |  | 行还在路上：日志区报 aria-busy，根落 data-loading。 |
 | `rows` | `number` |  | 视口按多少行定高；缺省时高度由皮肤给。 |
 | `translations` | `Partial<LogTranslations>` |  |  |
@@ -85,7 +87,7 @@ line 只发身份与等宽排版，级别配色、时间戳、行内标记这些
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `stick-change` | `ThreadStickChangeDetails` | 粘底状态变化；detail 为 `{ atBottom: boolean, sticking: boolean }` |
+| `stick-change` | `LogStickChangeDetails` | 粘底状态变化；detail 为 `{ atBottom: boolean, sticking: boolean }` |
 
 ## 插槽
 
@@ -94,6 +96,14 @@ line 只发身份与等宽排版，级别配色、时间戳、行内标记这些
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhLogRoot` | `default` | `LogRootSlotProps` |  |
+
+## 状态
+
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+
+**状态**：`idle`
+
+**事件**：`STICK.CHANGE` · `SCROLL_TO_BOTTOM`
 
 ## connect API
 
