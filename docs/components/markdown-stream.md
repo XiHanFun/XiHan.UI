@@ -20,7 +20,10 @@
   框架据此复用同一份 DOM 只改文本，用户每收到一个字都被重建节点的话，选区与滚动位置全丢。
 - **`html` 只对 markdown 块有效。** 代码块拿 `source` 交给[代码视图](./code-view)，
   公式块拿 `source` 交给宿主自选的公式引擎；不接管的降级结果是把原文当正文显示。
-- 流式光标是皮肤的 `::after`，挂在生长那一块上，不做成组件。
+- 流式光标是皮肤的 `::after`，不做成组件。它画在带 `data-caret` 的那一格上：
+  正文在长的时候是生长的那一块，一块都还没来的时候是外壳，所以请求刚发出去、
+  一个字都没到的那一段，页面上也有东西。`caret` 设成 `false` 时两处都不发这个属性。
+- 光标在等第一个字的时候闪，出字之后停在实心：正文自己在动，再闪一下只是噪声。
 
 ## 示例
 
@@ -41,6 +44,12 @@
 markdown 块铺 html，代码块拿 source 交出去——照 html 渲会让同一段代码出现两次
 
 <XhDemo src="markdown-stream/03-code-blocks" />
+
+### 流式光标
+
+一块都还没来的时候光标就已经在了，caret 设成 false 可以整个关掉
+
+<XhDemo src="markdown-stream/04-caret" />
 
 ## 产物
 
@@ -64,6 +73,7 @@ markdown 块铺 html，代码块拿 source 交出去——照 html 渲会让同�
 | --- | --- | --- | --- |
 | `announce` | `'off' \| 'polite'` |  | 播报档位，默认 off——会话级播报区在消息流那一层，别在每条回复里各开一个。 |
 | `blocks` | `readonly MarkdownBlock[]` | 是 | 已渲染好的块列表。 |
+| `caret` | `boolean` |  | 画不画流式光标，默认画。设成 false 时 data-caret 一处都不发。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `streaming` | `boolean` |  | 这一段正文是否仍在增长，只落 data-streaming。 |
 | `translations` | `Partial<MarkdownStreamTranslations>` |  |  |
@@ -131,8 +141,10 @@ markdown 块铺 html，代码块拿 source 交出去——照 html 渲会让同�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `root` | `data-caret` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | 'streaming' \| 'complete' |
+| `block` | `data-caret` | ''（条件成立时才出现） |
 | `block` | `data-complete` | ''（条件成立时才出现） |
 | `block` | `data-kind` | block.kind |
 | `block` | `data-lang` | block.lang |
@@ -142,19 +154,25 @@ markdown 块铺 html，代码块拿 source 交出去——照 html 渲会让同�
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-markdown-stream-caret-bg` · `--xh-markdown-stream-caret-duration` · `--xh-markdown-stream-caret-h` · `--xh-markdown-stream-caret-shift` · `--xh-markdown-stream-caret-w` · `--xh-markdown-stream-fg` · `--xh-markdown-stream-font-size` · `--xh-markdown-stream-gap` · `--xh-markdown-stream-mono`
+`--xh-markdown-stream-caret-bg` · `--xh-markdown-stream-caret-duration` · `--xh-markdown-stream-caret-enter-duration` · `--xh-markdown-stream-caret-gap` · `--xh-markdown-stream-caret-h` · `--xh-markdown-stream-caret-radius` · `--xh-markdown-stream-caret-shift` · `--xh-markdown-stream-caret-w` · `--xh-markdown-stream-fg` · `--xh-markdown-stream-font-size` · `--xh-markdown-stream-gap` · `--xh-markdown-stream-leading` · `--xh-markdown-stream-mono`
 
 ## 动效
 
-关键帧 `xh-markdown-stream-caret` 随皮肤自带，不引用别处文件里的名字。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-markdown-stream-caret` · `xh-markdown-stream-caret-in` 随皮肤自带，不引用别处文件里的名字。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
 
 ## 组合
 
 - 代码块交给[代码视图](./code-view)，整段正文放进[消息流](./message-feed)的一条消息里。
 - 逐字吐字的节奏由使用者驱动：`@xihan-ui/chat-stream` 的 `visibleLength` 是纯函数，
   时间原点与 rAF 循环由持有它的那一方写。
+- 正文里要嵌行内来源角标、脚注这类节点：用 `block` 插槽接管那一块自己渲。
+  组件不往已消毒的 html 里插节点，这条插槽就是留给这类需求的位置。
 
 ## 最佳实践
 

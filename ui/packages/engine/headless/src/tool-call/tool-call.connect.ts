@@ -3,7 +3,7 @@ import type { Service } from '@xihan-ui/machine'
 import type { ToolCallApi, ToolCallProps, ToolCallSchema } from './tool-call.types'
 import { dataAttr } from '@xihan-ui/kernel'
 import { toolCallAnatomy } from './tool-call.anatomy'
-import { isToolCallRunning, toolCallStatusText } from './tool-call.types'
+import { isToolCallRunning, toolCallDuration, toolCallStatusText } from './tool-call.types'
 
 const parts = toolCallAnatomy.build()
 
@@ -35,6 +35,8 @@ export function connectToolCall<T extends PropTypes>(
     running,
     disabled,
     statusText: toolCallStatusText(phase, props.translations),
+    // 两个时刻都由宿主给：连接层是渲染期纯函数，不读时钟也不起定时器
+    durationMs: toolCallDuration(props.startTime, props.endTime),
     setOpen,
 
     // 不发 aria-busy：它会压住同一棵子树内播报区的播报，而全族只认会话级的那一个活区
@@ -81,9 +83,22 @@ export function connectToolCall<T extends PropTypes>(
       'data-phase': phase,
     }),
 
+    // 一行参数摘要，排在工具名之后：详情收起时也看得见这次查的是什么
+    getSummaryProps: () => normalize.element({
+      ...parts.summary.attrs,
+      'data-phase': phase,
+    }),
+
     getStatusProps: () => normalize.element({
       ...parts.status.attrs,
       'data-phase': phase,
+    }),
+
+    // 秒数由宿主现场代入 ranFor 模板串，这一格只负责排版与阶段
+    getDurationProps: () => normalize.element({
+      ...parts.duration.attrs,
+      'data-phase': phase,
+      'data-running': dataAttr(running),
     }),
 
     // 常驻在 trigger 与 content 之间：审批闸门不该被折叠藏起来

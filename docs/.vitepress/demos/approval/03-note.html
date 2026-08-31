@@ -1,0 +1,26 @@
+<!-- 附一句备注 | 备注与勾选同批取快照，随判定载荷一起发出；空着就不带这一格，它不参与「必选项勾满了没有」的判断 -->
+<div style="display: flex; flex-direction: column; gap: 12px">
+  <xh-approval id="approval-note">
+    <div data-xh-part="root">
+      <h3 data-xh-part="title">要把这批改动推上去</h3>
+      <p data-xh-part="description">推之前可以留一句话，随判定一起交给宿主。</p>
+      <input data-xh-part="note" />
+      <div data-xh-part="actions">
+        <button data-xh-part="approve-trigger">批准</button>
+        <button data-xh-part="deny-trigger">拒绝</button>
+      </div>
+    </div>
+  </xh-approval>
+  <p id="approval-note-decision" style="margin: 0"></p>
+</div>
+
+<script type="module">
+  // 文案是对象，只走 property
+  const gate = document.getElementById("approval-note");
+  const line = document.getElementById("approval-note-decision");
+  gate.translations = { notePlaceholder: "补充一句（可不填）", note: "备注" };
+  gate.addEventListener("decision", (event) => {
+    const { decision, note } = event.detail;
+    line.textContent = `判定：${decision}（备注 ${note ?? "无"}）`;
+  });
+</script>

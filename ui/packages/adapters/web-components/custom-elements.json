@@ -1125,8 +1125,20 @@
               "name": "scope-label"
             },
             {
+              "description": "附在判定上的一句自由文本",
+              "name": "note"
+            },
+            {
               "description": "剩余时间，对读屏隐藏",
               "name": "timer"
+            },
+            {
+              "description": "判定落定后才露出的结果条，对读屏隐藏",
+              "name": "result"
+            },
+            {
+              "description": "排布两颗按钮的动作行",
+              "name": "actions"
             },
             {
               "description": "批准",
@@ -1182,6 +1194,24 @@
                 "text": "number | undefined"
               },
               "attribute": "timeout-ms"
+            },
+            {
+              "kind": "field",
+              "name": "note",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "note"
+            },
+            {
+              "kind": "field",
+              "name": "defaultNote",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "default-note"
             },
             {
               "kind": "field",
@@ -1290,10 +1320,16 @@
             },
             {
               "kind": "field",
+              "name": "notifyNote",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
-              "default": "new MachineController<ApprovalSchema>(this, approvalMachine, () => ({ requestId: this.requestId, status: this.status, defaultStatus: this.defaultStatus, timeoutMs: this.timeoutMs, scopes: this.scopes, grantedScopes: this.grantedScopes, defaultGrantedScopes: this.defaultGrantedScopes, busy: this.busy, denyOnEscape: this.denyOnEscape, denyOnUnmount: this.denyOnUnmount, live: this.live, tone: this.tone, size: this.size, translations: this.translations, onDecision: this.notifyDecision, onGrantedScopesChange: this.notifyScopes, }))"
+              "default": "new MachineController<ApprovalSchema>(this, approvalMachine, () => ({ requestId: this.requestId, status: this.status, defaultStatus: this.defaultStatus, timeoutMs: this.timeoutMs, scopes: this.scopes, grantedScopes: this.grantedScopes, defaultGrantedScopes: this.defaultGrantedScopes, note: this.note, defaultNote: this.defaultNote, busy: this.busy, denyOnEscape: this.denyOnEscape, denyOnUnmount: this.denyOnUnmount, live: this.live, tone: this.tone, size: this.size, translations: this.translations, onDecision: this.notifyDecision, onGrantedScopesChange: this.notifyScopes, onNoteChange: this.notifyNote, }))"
             },
             {
               "kind": "method",
@@ -1339,6 +1375,13 @@
               "type": {
                 "text": "ApprovalScopesChangeDetails"
               }
+            },
+            {
+              "description": "备注变化；detail 为 `{ value: string }`",
+              "name": "note-change",
+              "type": {
+                "text": "ApprovalNoteChangeDetails"
+              }
             }
           ],
           "attributes": [
@@ -1373,6 +1416,22 @@
               "description": "多久没人答就按拒绝收口；缺省不起计时器",
               "name": "timeout-ms",
               "fieldName": "timeoutMs"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "受控的备注文本，随判定载荷一起发出",
+              "name": "note",
+              "fieldName": "note"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "备注的非受控初值，默认空串",
+              "name": "default-note",
+              "fieldName": "defaultNote"
             },
             {
               "type": {
@@ -1446,6 +1505,9 @@
               "name": "--xh-approval-action-radius"
             },
             {
+              "name": "--xh-approval-actions-gap"
+            },
+            {
               "name": "--xh-approval-approve-bg"
             },
             {
@@ -1456,6 +1518,9 @@
             },
             {
               "name": "--xh-approval-approve-fg"
+            },
+            {
+              "name": "--xh-approval-approve-shadow"
             },
             {
               "name": "--xh-approval-bg"
@@ -1488,6 +1553,9 @@
               "name": "--xh-approval-gap"
             },
             {
+              "name": "--xh-approval-icon-size"
+            },
+            {
               "name": "--xh-approval-indicator-bg-checked"
             },
             {
@@ -1506,13 +1574,70 @@
               "name": "--xh-approval-indicator-size"
             },
             {
+              "name": "--xh-approval-note-bg"
+            },
+            {
+              "name": "--xh-approval-note-border"
+            },
+            {
+              "name": "--xh-approval-note-fg"
+            },
+            {
+              "name": "--xh-approval-note-font-size"
+            },
+            {
+              "name": "--xh-approval-note-px"
+            },
+            {
+              "name": "--xh-approval-note-py"
+            },
+            {
+              "name": "--xh-approval-note-radius"
+            },
+            {
               "name": "--xh-approval-p"
             },
             {
               "name": "--xh-approval-radius"
             },
             {
+              "name": "--xh-approval-result-bg"
+            },
+            {
+              "name": "--xh-approval-result-bg-denied"
+            },
+            {
+              "name": "--xh-approval-result-fg"
+            },
+            {
+              "name": "--xh-approval-result-fg-denied"
+            },
+            {
+              "name": "--xh-approval-result-font-size"
+            },
+            {
+              "name": "--xh-approval-result-font-weight"
+            },
+            {
+              "name": "--xh-approval-result-gap"
+            },
+            {
+              "name": "--xh-approval-result-px"
+            },
+            {
+              "name": "--xh-approval-result-py"
+            },
+            {
+              "name": "--xh-approval-result-radius"
+            },
+            {
               "name": "--xh-approval-scope-bg-hover"
+            },
+            {
+              "name": "--xh-approval-scope-fg"
+            },
+            {
+              "name": "--xh-approval-scope-fg-checked"
             },
             {
               "name": "--xh-approval-scope-font-size"
@@ -1531,6 +1656,9 @@
             },
             {
               "name": "--xh-approval-scope-radius"
+            },
+            {
+              "name": "--xh-approval-shadow"
             },
             {
               "name": "--xh-approval-timer-fg"
@@ -6657,7 +6785,13 @@
               "name": "--xh-code-view-bg"
             },
             {
+              "name": "--xh-code-view-border"
+            },
+            {
               "name": "--xh-code-view-comment-fg"
+            },
+            {
+              "name": "--xh-code-view-fg"
             },
             {
               "name": "--xh-code-view-filename-fg"
@@ -6675,6 +6809,15 @@
               "name": "--xh-code-view-font"
             },
             {
+              "name": "--xh-code-view-font-size"
+            },
+            {
+              "name": "--xh-code-view-gutter-border"
+            },
+            {
+              "name": "--xh-code-view-gutter-gap"
+            },
+            {
               "name": "--xh-code-view-header-border"
             },
             {
@@ -6685,6 +6828,9 @@
             },
             {
               "name": "--xh-code-view-header-gap"
+            },
+            {
+              "name": "--xh-code-view-header-h"
             },
             {
               "name": "--xh-code-view-header-px"
@@ -6720,6 +6866,12 @@
               "name": "--xh-code-view-number-fg"
             },
             {
+              "name": "--xh-code-view-number-font-size"
+            },
+            {
+              "name": "--xh-code-view-number-token-fg"
+            },
+            {
               "name": "--xh-code-view-punctuation-fg"
             },
             {
@@ -6730,6 +6882,9 @@
             },
             {
               "name": "--xh-code-view-radius"
+            },
+            {
+              "name": "--xh-code-view-shadow"
             },
             {
               "name": "--xh-code-view-string-fg"
@@ -12066,12 +12221,16 @@
           "name": "XhDiffViewElement",
           "cssParts": [
             {
-              "description": "外壳，承载 data-view / data-truncated",
+              "description": "外壳，承载 data-view / data-wrap / data-truncated",
               "name": "root"
             },
             {
               "description": "文件名与增删统计那一行",
               "name": "header"
+            },
+            {
+              "description": "增删统计位，写 data-change=\"added\" / \"removed\"，数字由本元素填",
+              "name": "stat"
             },
             {
               "description": "滚动容器，唯一的 Tab 停靠点",
@@ -12096,6 +12255,10 @@
             {
               "description": "变更类型的读屏文字，住在内容格里并视觉隐藏",
               "name": "change-label"
+            },
+            {
+              "description": "词级片段，变更处承载 data-change",
+              "name": "segment"
             },
             {
               "description": "着色片段，承载 data-kind",
@@ -12145,6 +12308,15 @@
                 "text": "number | undefined"
               },
               "attribute": "context-lines"
+            },
+            {
+              "kind": "field",
+              "name": "wrap",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "wrap"
             },
             {
               "kind": "field",
@@ -12199,7 +12371,7 @@
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
-              "default": "new MachineController<DiffViewSchema>(this, diffViewMachine, () => ({ model: this.model, view: this.view, contextLines: this.contextLines, expanded: this.expanded, defaultExpanded: this.defaultExpanded, size: this.size, translations: this.translations, onExpandedChange: this.notify, }))"
+              "default": "new MachineController<DiffViewSchema>(this, diffViewMachine, () => ({ model: this.model, view: this.view, contextLines: this.contextLines, wrap: this.wrap, expanded: this.expanded, defaultExpanded: this.defaultExpanded, size: this.size, translations: this.translations, onExpandedChange: this.notify, }))"
             },
             {
               "kind": "field",
@@ -12238,6 +12410,37 @@
                 }
               ],
               "description": "把行序铺进 body。\n内容没变就不重铺——每次更新都重建节点会把用户正在拖的选区弄没。"
+            },
+            {
+              "kind": "method",
+              "name": "#paintTokens",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "host",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "DiffViewApi"
+                  }
+                },
+                {
+                  "name": "tokens",
+                  "type": {
+                    "text": "readonly CodeToken[]"
+                  }
+                }
+              ],
+              "description": "着色记号逐个铺进给定的宿主。"
             }
           ],
           "events": [
@@ -12268,6 +12471,14 @@
             },
             {
               "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "长行原地折行，默认关（长行横向滚动）",
+              "name": "wrap",
+              "fieldName": "wrap"
+            },
+            {
+              "type": {
                 "text": "Size | undefined"
               },
               "description": "尺寸：sm / md / lg",
@@ -12293,6 +12504,9 @@
             },
             {
               "name": "--xh-diff-view-border"
+            },
+            {
+              "name": "--xh-diff-view-change-bar"
             },
             {
               "name": "--xh-diff-view-comment-fg"
@@ -12365,6 +12579,12 @@
             },
             {
               "name": "--xh-diff-view-removed-fg"
+            },
+            {
+              "name": "--xh-diff-view-segment-radius"
+            },
+            {
+              "name": "--xh-diff-view-shadow"
             },
             {
               "name": "--xh-diff-view-string-fg"
@@ -22635,7 +22855,7 @@
           "name": "XhMarkdownStreamElement",
           "cssParts": [
             {
-              "description": "外壳，承载 data-state / data-streaming",
+              "description": "外壳，承载 data-state / data-streaming，零块流式时承载 data-caret",
               "name": "root"
             },
             {
@@ -22643,7 +22863,7 @@
               "name": "content"
             },
             {
-              "description": "一个顶层块，承载 data-kind / data-live / data-complete",
+              "description": "一个顶层块，承载 data-kind / data-live / data-complete / data-caret",
               "name": "block"
             },
             {
@@ -22678,6 +22898,15 @@
                 "text": "MarkdownStreamProps['announce'] | undefined"
               },
               "attribute": "announce"
+            },
+            {
+              "kind": "field",
+              "name": "caret",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "caret"
             },
             {
               "kind": "field",
@@ -22772,6 +23001,14 @@
             },
             {
               "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "画不画流式光标，缺席时画，写 caret=\"false\" 关掉",
+              "name": "caret",
+              "fieldName": "caret"
+            },
+            {
+              "type": {
                 "text": "MarkdownStreamProps['size'] | undefined"
               },
               "description": "尺寸：sm / md / lg",
@@ -22793,7 +23030,16 @@
               "name": "--xh-markdown-stream-caret-duration"
             },
             {
+              "name": "--xh-markdown-stream-caret-enter-duration"
+            },
+            {
+              "name": "--xh-markdown-stream-caret-gap"
+            },
+            {
               "name": "--xh-markdown-stream-caret-h"
+            },
+            {
+              "name": "--xh-markdown-stream-caret-radius"
             },
             {
               "name": "--xh-markdown-stream-caret-shift"
@@ -22809,6 +23055,9 @@
             },
             {
               "name": "--xh-markdown-stream-gap"
+            },
+            {
+              "name": "--xh-markdown-stream-leading"
             },
             {
               "name": "--xh-markdown-stream-mono"
@@ -25018,7 +25267,7 @@
           "name": "XhMessageFeedElement",
           "cssParts": [
             {
-              "description": "组件根容器，承载 role=feed 与容器兜底的 Tab 位",
+              "description": "组件根容器，承载容器兜底的 Tab 位与键盘模型",
               "name": "root"
             },
             {
@@ -25319,6 +25568,9 @@
             },
             {
               "name": "--xh-message-feed-gap"
+            },
+            {
+              "name": "--xh-message-feed-icon-size"
             },
             {
               "name": "--xh-message-feed-item-gap"
@@ -30794,7 +31046,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-prompt-input>` —— Light-DOM 行为宿主：跑 prompt-input 机器，把 connect 产出打到作者写的\nroot/input/submit-trigger 三类角色节点上。input 须是原生 `<textarea>`，值经 property 写、\n禁用走原生 disabled。生成期间发送按钮原位变停止，只换 `data-mode` 与 `aria-label`。",
+          "description": "`<xh-prompt-input>` —— Light-DOM 行为宿主：跑 prompt-input 机器，把 connect 产出打到作者写的\nroot/input/submit-trigger 三类角色节点上，另有可选的 input-row。input 须是原生 `<textarea>`，\n值经 property 写、禁用走原生 disabled。生成期间发送按钮原位变停止，只换 `data-mode` 与 `aria-label`。",
           "name": "XhPromptInputElement",
           "cssParts": [
             {
@@ -30802,11 +31054,15 @@
               "name": "root"
             },
             {
+              "description": "可选的输入行：写了它，root 翻成竖排，输入框与按钮收进这一行",
+              "name": "input-row"
+            },
+            {
               "description": "输入框，须是原生 `<textarea>`",
               "name": "input"
             },
             {
-              "description": "发送 / 停止按钮，皮肤按 data-mode 换图标",
+              "description": "发送 / 停止按钮，留空时皮肤按 data-mode 画上箭头或停止方块",
               "name": "submit-trigger"
             }
           ],
@@ -31096,6 +31352,9 @@
               "name": "--xh-prompt-input-gap"
             },
             {
+              "name": "--xh-prompt-input-icon-size"
+            },
+            {
               "name": "--xh-prompt-input-input-fg"
             },
             {
@@ -31114,6 +31373,9 @@
               "name": "--xh-prompt-input-radius"
             },
             {
+              "name": "--xh-prompt-input-row-gap"
+            },
+            {
               "name": "--xh-prompt-input-send-bg"
             },
             {
@@ -31123,7 +31385,13 @@
               "name": "--xh-prompt-input-send-bg-hover"
             },
             {
+              "name": "--xh-prompt-input-send-bg-off"
+            },
+            {
               "name": "--xh-prompt-input-send-fg"
+            },
+            {
+              "name": "--xh-prompt-input-shadow"
             },
             {
               "name": "--xh-prompt-input-stop-bg"
@@ -31136,6 +31404,12 @@
             },
             {
               "name": "--xh-prompt-input-stop-fg"
+            },
+            {
+              "name": "--xh-prompt-input-stop-mark-radius"
+            },
+            {
+              "name": "--xh-prompt-input-stop-mark-size"
             },
             {
               "name": "--xh-prompt-input-submit-font-size"
@@ -32256,12 +32530,16 @@
           "name": "XhReasoningElement",
           "cssParts": [
             {
-              "description": "外壳，承载 data-state / data-streaming",
+              "description": "外壳，承载 data-state / data-streaming / data-variant",
               "name": "root"
             },
             {
               "description": "折叠开关，承载 aria-expanded / aria-controls",
               "name": "trigger"
+            },
+            {
+              "description": "状态图形位，承载 data-streaming，对读屏隐藏",
+              "name": "icon"
             },
             {
               "description": "纯装饰指示，对读屏隐藏",
@@ -32355,6 +32633,15 @@
             },
             {
               "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "ControlVariant | undefined"
+              },
+              "attribute": "variant"
+            },
+            {
+              "kind": "field",
               "name": "tone",
               "privacy": "public",
               "type": {
@@ -32382,6 +32669,15 @@
             },
             {
               "kind": "field",
+              "name": "statusText",
+              "type": {
+                "text": "string"
+              },
+              "description": "当前该显示哪句状态文案：作者把它写进 label 那个角色节点。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
               "name": "notify",
               "privacy": "private",
               "readonly": true
@@ -32400,6 +32696,49 @@
               "return": {
                 "type": {
                   "text": "ReasoningProps"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "exit",
+              "type": {
+                "text": "OverlayExit | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "idGen",
+              "type": {
+                "text": "IdGenerator"
+              },
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "reasoningScope",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "config",
+              "type": {
+                "text": "RuntimeConfig | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "method",
+              "name": "ensureConfig",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
                 }
               }
             },
@@ -32482,6 +32821,14 @@
             },
             {
               "type": {
+                "text": "ControlVariant | undefined"
+              },
+              "description": "形态：描边 / 底色分区（缺省档）/ 无壳内联",
+              "name": "variant",
+              "fieldName": "variant"
+            },
+            {
+              "type": {
                 "text": "Tone | undefined"
               },
               "description": "语气",
@@ -32508,10 +32855,22 @@
               "name": "--xh-reasoning-bg"
             },
             {
+              "name": "--xh-reasoning-border"
+            },
+            {
               "name": "--xh-reasoning-content-fg"
             },
             {
               "name": "--xh-reasoning-content-font-size"
+            },
+            {
+              "name": "--xh-reasoning-content-leading"
+            },
+            {
+              "name": "--xh-reasoning-content-pe"
+            },
+            {
+              "name": "--xh-reasoning-content-ps"
             },
             {
               "name": "--xh-reasoning-duration-fg"
@@ -32523,7 +32882,22 @@
               "name": "--xh-reasoning-font-size"
             },
             {
+              "name": "--xh-reasoning-icon-fg"
+            },
+            {
+              "name": "--xh-reasoning-icon-size"
+            },
+            {
+              "name": "--xh-reasoning-icon-streaming-fg"
+            },
+            {
               "name": "--xh-reasoning-indicator-fg"
+            },
+            {
+              "name": "--xh-reasoning-label-font-weight"
+            },
+            {
+              "name": "--xh-reasoning-label-streaming-fg"
             },
             {
               "name": "--xh-reasoning-px"
@@ -32533,6 +32907,27 @@
             },
             {
               "name": "--xh-reasoning-radius"
+            },
+            {
+              "name": "--xh-reasoning-rail"
+            },
+            {
+              "name": "--xh-reasoning-rail-inset"
+            },
+            {
+              "name": "--xh-reasoning-rail-width"
+            },
+            {
+              "name": "--xh-reasoning-shadow"
+            },
+            {
+              "name": "--xh-reasoning-shimmer-duration"
+            },
+            {
+              "name": "--xh-reasoning-shimmer-from"
+            },
+            {
+              "name": "--xh-reasoning-shimmer-to"
             },
             {
               "name": "--xh-reasoning-tone-bar"
@@ -32548,6 +32943,9 @@
             },
             {
               "name": "--xh-reasoning-trigger-gap"
+            },
+            {
+              "name": "--xh-reasoning-trigger-radius"
             }
           ]
         }
@@ -44991,8 +45389,16 @@
               "name": "name"
             },
             {
+              "description": "一行参数摘要，收起时也看得见这次查的是什么",
+              "name": "summary"
+            },
+            {
               "description": "阶段文字，同上",
               "name": "status"
+            },
+            {
+              "description": "跑了多久，同上",
+              "name": "duration"
             },
             {
               "description": "审批闸门的常驻位，只在等人批准时显示",
@@ -45018,6 +45424,49 @@
           "members": [
             {
               "kind": "field",
+              "name": "exit",
+              "type": {
+                "text": "OverlayExit | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "idGen",
+              "type": {
+                "text": "IdGenerator"
+              },
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "toolCallScope",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "config",
+              "type": {
+                "text": "RuntimeConfig | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "method",
+              "name": "ensureConfig",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "field",
               "name": "partContract",
               "type": {
                 "text": "object"
@@ -45033,6 +45482,24 @@
                 "text": "ToolCallPhase | undefined"
               },
               "attribute": "phase"
+            },
+            {
+              "kind": "field",
+              "name": "startTime",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "start-time"
+            },
+            {
+              "kind": "field",
+              "name": "endTime",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "end-time"
             },
             {
               "kind": "field",
@@ -45152,6 +45619,22 @@
             },
             {
               "type": {
+                "text": "number | undefined"
+              },
+              "description": "这次调用开始的毫秒时间戳",
+              "name": "start-time",
+              "fieldName": "startTime"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "这次调用结束的毫秒时间戳；还在跑或流被中止时它会缺席",
+              "name": "end-time",
+              "fieldName": "endTime"
+            },
+            {
+              "type": {
                 "text": "boolean | undefined"
               },
               "description": "受控开合，缺省该属性即非受控",
@@ -45219,6 +45702,9 @@
               "name": "--xh-tool-call-content-gap"
             },
             {
+              "name": "--xh-tool-call-duration-fg"
+            },
+            {
               "name": "--xh-tool-call-error-fg"
             },
             {
@@ -45240,6 +45726,21 @@
               "name": "--xh-tool-call-radius"
             },
             {
+              "name": "--xh-tool-call-shadow"
+            },
+            {
+              "name": "--xh-tool-call-shimmer-duration"
+            },
+            {
+              "name": "--xh-tool-call-status-bg-approval"
+            },
+            {
+              "name": "--xh-tool-call-status-bg-done"
+            },
+            {
+              "name": "--xh-tool-call-status-bg-error"
+            },
+            {
               "name": "--xh-tool-call-status-fg"
             },
             {
@@ -45253,6 +45754,36 @@
             },
             {
               "name": "--xh-tool-call-status-font-size"
+            },
+            {
+              "name": "--xh-tool-call-status-px"
+            },
+            {
+              "name": "--xh-tool-call-status-py"
+            },
+            {
+              "name": "--xh-tool-call-status-radius"
+            },
+            {
+              "name": "--xh-tool-call-status-shimmer-base"
+            },
+            {
+              "name": "--xh-tool-call-status-shimmer-sheen"
+            },
+            {
+              "name": "--xh-tool-call-summary-bg"
+            },
+            {
+              "name": "--xh-tool-call-summary-fg"
+            },
+            {
+              "name": "--xh-tool-call-summary-font-size"
+            },
+            {
+              "name": "--xh-tool-call-summary-px"
+            },
+            {
+              "name": "--xh-tool-call-summary-radius"
             },
             {
               "name": "--xh-tool-call-tone-bar"

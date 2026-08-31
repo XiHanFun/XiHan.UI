@@ -46,7 +46,7 @@ onBeforeUnmount(() => window.clearTimeout(timer));
         </XhMessageFeedItem>
       </XhMessageFeedList>
     </XhMessageFeedViewport>
-    <XhMessageFeedScrollButton>↓</XhMessageFeedScrollButton>
+    <XhMessageFeedScrollButton />
     <!-- 一份会话只该有这一个活区：每条消息各开一个会互相打断 -->
     <XhMessageFeedLiveRegion>{{ announcement }}</XhMessageFeedLiveRegion>
   </XhMessageFeedRoot>

@@ -45,6 +45,10 @@ export function connectPromptInput<T extends PropTypes>(
       'data-size': prop('size'),
     }),
 
+    getInputRowProps: () => normalize.element({
+      ...parts['input-row'].attrs,
+    }),
+
     getInputProps: () => normalize.textarea({
       ...parts.input.attrs,
       // 用原生 disabled 属性，同时挡住聚焦与输入

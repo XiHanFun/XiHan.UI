@@ -48,14 +48,15 @@ export const messageFeedSuite: ConformanceSuite = {
         counts: { 'root': 1, 'viewport': 1, 'list': 1, 'item': 3, 'item-label': 1 },
         parts: {
           'root': {
-            'role': 'feed',
-            'aria-label': 'Conversation',
+            // 集合语义在 list 上：role=feed 只认 article 子节点，而播报区与回到底部按钮是 root 的孩子
+            'role': null,
             // 没有锚点时容器认领唯一那个 Tab 停靠位
             'tabindex': '0',
             'data-status': 'idle',
             // 不发 aria-busy：它会压住同一棵子树内播报区的播报
             'aria-busy': null,
           },
+          'list': { 'role': 'feed', 'aria-label': 'Conversation' },
           // 只有几何：不给 role、不给 aria-live、不给 tabindex
           'viewport': { 'role': null, 'aria-live': null, 'tabindex': null },
           'item': [
@@ -63,7 +64,7 @@ export const messageFeedSuite: ConformanceSuite = {
             { 'role': 'article', 'aria-posinset': '2', 'aria-setsize': '3', 'tabindex': '-1', 'data-role': 'assistant', 'data-value': 'm2' },
             { 'role': 'article', 'aria-posinset': '3', 'aria-setsize': '3', 'tabindex': '-1', 'data-role': 'assistant', 'data-value': 'm3' },
           ],
-          'live-region': { 'role': 'status', 'aria-live': 'polite', 'aria-atomic': 'true' },
+          'live-region': { 'role': null, 'aria-live': 'polite', 'aria-atomic': 'true' },
         },
         activeElement: null,
         events: [],

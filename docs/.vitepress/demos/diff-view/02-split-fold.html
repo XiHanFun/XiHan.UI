@@ -3,7 +3,8 @@
   <div data-xh-part="root">
     <div data-xh-part="header">
       <span>src/pipeline.ts</span>
-      <span id="diff-view-split-stats"></span>
+      <span data-xh-part="stat" data-change="added"></span>
+      <span data-xh-part="stat" data-change="removed"></span>
     </div>
     <div data-xh-part="viewport">
       <div data-xh-part="body"></div>
@@ -179,14 +180,4 @@
       }
     ]
   };
-
-  const stats = view.model.hunks[0].lines.reduce(
-    (acc, line) => {
-      if (line.change === "added") acc.added += 1;
-      if (line.change === "removed") acc.removed += 1;
-      return acc;
-    },
-    { added: 0, removed: 0 },
-  );
-  document.getElementById("diff-view-split-stats").textContent = `+${stats.added} −${stats.removed}`;
 </script>

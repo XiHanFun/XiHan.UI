@@ -22,6 +22,17 @@ export interface DiffViewRow {
   gapId?: string
   /** kind 为 gap 时有：折起来多少行。 */
   hiddenCount?: number
+  /** 这一行是展开某一格才露出来的。 */
+  revealed?: boolean
+}
+
+/** 一格正文里的一段：词级片段，内部还带着自己那几个着色记号。 */
+export interface DiffViewSegment {
+  text: string
+  /** 这一段在配对的另一行里没有。 */
+  changed: boolean
+  /** 这一段内部的着色记号；不着色时为空数组。 */
+  tokens: readonly CodeToken[]
 }
 
 export interface DiffViewRowProps {
@@ -37,6 +48,12 @@ export interface DiffViewGapProps {
   gapId: string
 }
 
+export interface DiffViewSegmentProps {
+  rowIndex: number
+  /** 这一段是不是变更处。 */
+  changed: boolean
+}
+
 export interface DiffViewSchema extends MachineSchema {
   props: {
     /** 差异模型，唯一入口。补丁与新旧两版文本都先归一到它。 */
@@ -47,6 +64,8 @@ export interface DiffViewSchema extends MachineSchema {
     /** 展开的折叠格 id 集合，给了即受控。 */
     expanded?: readonly string[]
     defaultExpanded?: readonly string[]
+    /** 长行原地折行，不再横向滚动；默认关。 */
+    wrap?: boolean
     size?: Size
     translations?: Partial<DiffViewTranslations>
     onExpandedChange?: (details: DiffViewExpandedChangeDetails) => void
@@ -83,12 +102,15 @@ export interface DiffViewApi<T extends PropTypes = PropTypes> {
   toggleGap: (id: string) => void
   getRootProps: () => T['element']
   getHeaderProps: () => T['element']
+  /** 头部右侧的增删统计位，增删各一个。 */
+  getStatProps: (props: { change: DiffChange }) => T['element']
   getViewportProps: () => T['element']
   getBodyProps: () => T['element']
   getRowProps: (props: DiffViewRowProps) => T['element']
   getLineNumberProps: (props: DiffViewCellProps) => T['element']
   getLineContentProps: (props: DiffViewCellProps) => T['element']
   getChangeLabelProps: (props: { change: DiffChange }) => T['element']
+  getSegmentProps: (props: DiffViewSegmentProps) => T['element']
   getTokenProps: (token: CodeToken) => T['element']
   getGapProps: (props: DiffViewGapProps) => T['element']
   getGapCellProps: () => T['element']
@@ -102,6 +124,11 @@ export interface DiffViewApi<T extends PropTypes = PropTypes> {
   cellNumber: (props: DiffViewCellProps) => number | undefined
   /** 这一行在这一侧的着色片段；不着色或空侧时为空数组。 */
   cellTokens: (props: DiffViewCellProps) => readonly CodeToken[]
+  /**
+   * 这一行在这一侧的词级片段，着色记号已按片段边界切好。
+   * 没算词级差异时为空数组，此时照 cellTokens / cellText 铺。
+   */
+  cellSegments: (props: DiffViewCellProps) => readonly DiffViewSegment[]
 }
 
 export interface DiffViewTranslations {

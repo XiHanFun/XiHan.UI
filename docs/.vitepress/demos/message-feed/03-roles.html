@@ -1,0 +1,37 @@
+<!-- 按角色分侧 | 条目上带 data-role，左右分侧与气泡在使用者这一侧写，组件不预设这层外观 -->
+<style>
+  /* 用户侧靠右成气泡，助手侧整行铺开 */
+  #message-feed-roles [data-xh-part="item"][data-role="user"] {
+    align-self: flex-end;
+    max-inline-size: 75%;
+    padding: var(--xh-space-2) var(--xh-space-3);
+    background: var(--xh-bg-subtle);
+    border-radius: var(--xh-shape-surface);
+  }
+</style>
+
+<xh-message-feed id="message-feed-roles" count="4" style="block-size: 260px">
+  <div data-xh-part="root">
+    <div data-xh-part="viewport">
+      <div data-xh-part="list">
+        <article data-xh-part="item" item-id="m1" item-index="0" item-role="user">
+          <span data-xh-part="item-label">我</span>
+          <div>帮我把上面那段改成三句话。</div>
+        </article>
+        <article data-xh-part="item" item-id="m2" item-index="1" item-role="assistant">
+          <span data-xh-part="item-label">助手</span>
+          <div>好的，三句话的版本如下，保留了原来的结论顺序。</div>
+        </article>
+        <article data-xh-part="item" item-id="m3" item-index="2" item-role="user">
+          <span data-xh-part="item-label">我</span>
+          <div>第二句再短一点。</div>
+        </article>
+        <article data-xh-part="item" item-id="m4" item-index="3" item-role="assistant">
+          <span data-xh-part="item-label">助手</span>
+          <div>已经把第二句压到十二个字，其余不动。</div>
+        </article>
+      </div>
+    </div>
+    <button data-xh-part="scroll-button"></button>
+  </div>
+</xh-message-feed>

@@ -1,3 +1,32 @@
+@layer xihan.motion {
+  /* 关键帧写在本文件里：动画名的查找只认「文档里有没有这个名字」，
+     引用别处文件里的名字时那份文件不一定在场，动画会静默地整个不跑。
+     幅度与缩放走令牌，减弱动效时由令牌层归零 */
+  @keyframes xh-message-feed-item-in {
+    from {
+      opacity: 0;
+      translate: 0 var(--xh-motion-distance-md);
+    }
+
+    to {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+
+  @keyframes xh-message-feed-button-in {
+    from {
+      opacity: 0;
+      scale: var(--xh-motion-scale-enter);
+    }
+
+    to {
+      opacity: 1;
+      scale: 1;
+    }
+  }
+}
+
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
   [data-scope='message-feed'] {
@@ -6,6 +35,9 @@
 
   /* 根是定位基准：回到底部按钮贴在它的右下角。高度由使用者的版面给，这里不定高 */
   [data-scope='message-feed'][data-part='root'] {
+    /* 作者塞进按钮里的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+    --xh-icon-size: var(--xh-message-feed-icon-size, var(--xh-glyph-size-text));
+
     position: relative;
     display: flex;
     min-block-size: 0;
@@ -41,12 +73,14 @@
     display: none;
   }
 
-  /* 一条消息。默认整行铺开，左右分侧由使用者按 data-role 自己写 */
+  /* 一条消息。默认整行铺开，左右分侧由使用者按 data-role 自己写。
+     进场只动 opacity 与 translate：改高度会扰动粘底补偿量到的 scrollHeight */
   [data-scope='message-feed'][data-part='item'] {
     display: flex;
     flex-direction: column;
     gap: var(--xh-message-feed-item-gap, var(--xh-space-1));
     border-radius: var(--xh-message-feed-item-radius, var(--xh-shape-surface));
+    animation: xh-message-feed-item-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='message-feed'][data-part='item'][hidden] {
@@ -96,6 +130,11 @@
     display: none;
   }
 
+  /* 收起不卸载，冒出来时靠这条进场动画；不写 display，可见性归上面那条 [hidden] 管 */
+  [data-scope='message-feed'][data-part='scroll-button'][data-state='visible'] {
+    animation: xh-message-feed-button-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  }
+
   [data-scope='message-feed'][data-part='scroll-button']:hover {
     background: var(--xh-message-feed-button-bg-hover, var(--xh-bg-subtle-hover));
   }
@@ -109,7 +148,19 @@
     outline-offset: var(--xh-ring-offset);
   }
 
-  /* 尺寸档只改消息之间的距离与内边距 */
+  /* 没写内容就由皮肤画一枚向下的字形；作者往按钮里塞了自己的图形，这条规则即不命中 */
+  [data-scope='message-feed'][data-part='scroll-button']:empty::before {
+    content: '';
+    display: inline-block;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
+  }
+
+  /* 尺寸档只改消息之间的距离与内边距；宽松档把消息之间再放开一级，内边距不跟 */
   [data-scope='message-feed'][data-part='root'][data-size='sm'] {
     --xh-message-feed-gap: var(--xh-space-2);
     --xh-message-feed-p: var(--xh-space-2);
@@ -121,7 +172,7 @@
   }
 
   [data-scope='message-feed'][data-part='root'][data-size='lg'] {
-    --xh-message-feed-gap: var(--xh-space-6);
+    --xh-message-feed-gap: var(--xh-space-8);
     --xh-message-feed-p: var(--xh-space-6);
   }
 

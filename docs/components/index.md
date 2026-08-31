@@ -180,13 +180,13 @@ AI 对话界面的组件。
 
 | 组件 | 标识 | 部件数 | 键盘条目 | 示例 |
 | --- | --- | --- | --- | --- |
-| [审批](./approval) | `approval` | 11 | 4 | 2 |
-| [代码视图](./code-view) | `code-view` | 11 | 2 | 4 |
-| [差异视图](./diff-view) | `diff-view` | 13 | 2 | 2 |
+| [审批](./approval) | `approval` | 14 | 4 | 3 |
+| [代码视图](./code-view) | `code-view` | 11 | 2 | 5 |
+| [差异视图](./diff-view) | `diff-view` | 15 | 2 | 3 |
 | [消息编辑器](./composer) | `composer` | 3 | 4 | 10 |
-| [流式正文](./markdown-stream) | `markdown-stream` | 4 | 1 | 3 |
-| [消息流](./message-feed) | `message-feed` | 7 | 7 | 2 |
-| [提示输入框](./prompt-input) | `prompt-input` | 3 | 7 | 2 |
-| [思考过程](./reasoning) | `reasoning` | 6 | 1 | 1 |
-| [工具调用](./tool-call) | `tool-call` | 10 | 1 | 2 |
+| [流式正文](./markdown-stream) | `markdown-stream` | 4 | 1 | 4 |
+| [消息流](./message-feed) | `message-feed` | 7 | 7 | 3 |
+| [提示输入框](./prompt-input) | `prompt-input` | 4 | 7 | 3 |
+| [思考过程](./reasoning) | `reasoning` | 7 | 1 | 1 |
+| [工具调用](./tool-call) | `tool-call` | 12 | 1 | 4 |
 | [会话线程](./thread) | `thread` | 5 | 2 | 8 |

@@ -21,6 +21,10 @@
 - 输入法组合期间的 Enter 一律放行，那一下是在确认候选词。
 - 同一个输入框上叠了别的处理器且它已经处理过这一下时，组件让位。
 - 自动长高是两行 CSS，不进状态机；引擎不支持时退化成 `rows` 定的固定行数。
+- 两种排布同一份皮肤：直接把输入框与按钮放进 root 就是单行；套一层输入行，root 翻成竖排，
+  输入行上下两侧就能再放附件条与动作行。
+- 发送按钮留空时皮肤画兜底字形：发送身份一枚上箭头，停止身份一枚圆角方块；
+  塞进自己的图标或文案即盖掉它。
 
 ## 示例
 
@@ -36,12 +40,18 @@ Enter 提交、Shift+Enter 换行；输入法组合中的 Enter 一律放行，�
 
 <XhDemo src="prompt-input/02-chat" />
 
+### 竖排布局与兜底字形
+
+写一层输入行，root 就翻成竖排：输入行在上、动作行在下；按钮留空时皮肤按身份画上箭头或停止方块
+
+<XhDemo src="prompt-input/03-layout" />
+
 ## 产物
 
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-prompt-input>` |
-| Vue 组件 | `XhPromptInputInput` `XhPromptInputRoot` `XhPromptInputSubmitTrigger` |
+| Vue 组件 | `XhPromptInputInput` `XhPromptInputInputRow` `XhPromptInputRoot` `XhPromptInputSubmitTrigger` |
 | 组合式函数 | `usePromptInput` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/prompt-input.css` |
@@ -50,7 +60,7 @@ Enter 提交、Shift+Enter 换行；输入法组合中的 Enter 一律放行，�
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="prompt-input"`：**`root`** · **`input`** · **`submit-trigger`**
+`data-scope="prompt-input"`：**`root`** · `input-row` · **`input`** · **`submit-trigger`**
 
 ## Props
 
@@ -118,6 +128,7 @@ Enter 提交、Shift+Enter 换行；输入法组合中的 Enter 一律放行，�
 | `submit` | `() => void` |  |
 | `stop` | `() => void` |  |
 | `getRootProps` | `() => T['element']` |  |
+| `getInputRowProps` | `() => T['element']` | 可选的输入行容器：渲了它，输入框与按钮并排收在这一行里，root 翻成竖排。 |
 | `getInputProps` | `() => T['textarea']` |  |
 | `getSubmitTriggerProps` | `() => T['button']` |  |
 
@@ -170,7 +181,7 @@ Enter 提交、Shift+Enter 换行；输入法组合中的 Enter 一律放行，�
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-prompt-input-bg` · `--xh-prompt-input-bg-disabled` · `--xh-prompt-input-border` · `--xh-prompt-input-border-focus` · `--xh-prompt-input-gap` · `--xh-prompt-input-input-fg` · `--xh-prompt-input-input-font-size` · `--xh-prompt-input-max-h` · `--xh-prompt-input-p` · `--xh-prompt-input-placeholder-fg` · `--xh-prompt-input-radius` · `--xh-prompt-input-send-bg` · `--xh-prompt-input-send-bg-active` · `--xh-prompt-input-send-bg-hover` · `--xh-prompt-input-send-fg` · `--xh-prompt-input-stop-bg` · `--xh-prompt-input-stop-bg-active` · `--xh-prompt-input-stop-bg-hover` · `--xh-prompt-input-stop-fg` · `--xh-prompt-input-submit-font-size` · `--xh-prompt-input-submit-font-weight` · `--xh-prompt-input-submit-px` · `--xh-prompt-input-submit-radius`
+`--xh-prompt-input-bg` · `--xh-prompt-input-bg-disabled` · `--xh-prompt-input-border` · `--xh-prompt-input-border-focus` · `--xh-prompt-input-gap` · `--xh-prompt-input-icon-size` · `--xh-prompt-input-input-fg` · `--xh-prompt-input-input-font-size` · `--xh-prompt-input-max-h` · `--xh-prompt-input-p` · `--xh-prompt-input-placeholder-fg` · `--xh-prompt-input-radius` · `--xh-prompt-input-row-gap` · `--xh-prompt-input-send-bg` · `--xh-prompt-input-send-bg-active` · `--xh-prompt-input-send-bg-hover` · `--xh-prompt-input-send-bg-off` · `--xh-prompt-input-send-fg` · `--xh-prompt-input-shadow` · `--xh-prompt-input-stop-bg` · `--xh-prompt-input-stop-bg-active` · `--xh-prompt-input-stop-bg-hover` · `--xh-prompt-input-stop-fg` · `--xh-prompt-input-stop-mark-radius` · `--xh-prompt-input-stop-mark-size` · `--xh-prompt-input-submit-font-size` · `--xh-prompt-input-submit-font-weight` · `--xh-prompt-input-submit-px` · `--xh-prompt-input-submit-radius`
 
 ## 动效
 
@@ -185,15 +196,19 @@ Enter 提交、Shift+Enter 换行；输入法组合中的 Enter 一律放行，�
 ## 组合
 
 - 附件用[文件上传](./file-upload)：它已覆盖 accept、大小校验、拖拽投放与逐条删除；
-  有附件而正文为空时把 `allowEmptySubmit` 置真。
+  有附件而正文为空时把 `allowEmptySubmit` 置真。附件条摆在输入行上方，动作行摆在下方，
+  两者都是 root 的直接子节点，与输入行并列。
 - 粘贴上传由作者在输入框上自己挂 `onPaste`，处理器会与组件的链式组合。
-- 模型选择器用[弹出选择](./popselect)或[组合框](./combobox)，工具开关用[开关组](./toggle-group)。
+- 模型选择器用[弹出选择](./popselect)或[组合框](./combobox)，工具开关用[开关组](./toggle-group)，
+  它们连同自己的容器一起摆进输入行下方的那一段。
 - 与[消息流](./message-feed)合起来就是一个最小对话界面。
 
 ## 最佳实践
 
 - 受控用法下提交后由宿主清空；`clearOnSubmit` 关掉时组件不动值。
 - 生成期间把 `busy` 置真而不是把整个输入框禁用：用户还要能改下一句。
+- 要药丸形状不必换形态轴：在任意祖先上写一行 `--xh-prompt-input-radius: var(--xh-shape-pill)`，
+  按钮那一颗另有 `--xh-prompt-input-submit-radius`。形态轴只管底与描边怎么画。
 
 ## 反模式
 

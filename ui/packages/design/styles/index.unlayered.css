@@ -621,6 +621,8 @@
   border: var(--xh-stroke-thin) solid var(--xh-diff-view-border, var(--xh-border-subtle));
   border-radius: var(--xh-diff-view-radius, var(--xh-shape-surface));
   background: var(--xh-diff-view-bg, var(--xh-bg-surface));
+  /* 一张抬起的表面：描边加一档静态海拔，与同族的其余表面齐平 */
+  box-shadow: var(--xh-diff-view-shadow, var(--xh-elevation-raised));
 }
 
 /* 上面声明的 display 会盖掉 UA 的 [hidden]{display:none}，这里补回 */
@@ -642,6 +644,24 @@
 
 [data-scope='diff-view'][data-part='header'][hidden] {
   display: none;
+}
+
+/* 增删统计整组顶到右侧：头部是 flex，自动外边距吃掉中间的空当。
+   第二个之后的不再顶，与前一个之间只留头部本来的间隙 */
+[data-scope='diff-view'][data-part='stat'] {
+  margin-inline-start: auto;
+}
+
+[data-scope='diff-view'][data-part='stat'] ~ [data-scope='diff-view'][data-part='stat'] {
+  margin-inline-start: 0;
+}
+
+[data-scope='diff-view'][data-part='stat'][data-change='added'] {
+  color: var(--xh-diff-view-added-fg);
+}
+
+[data-scope='diff-view'][data-part='stat'][data-change='removed'] {
+  color: var(--xh-diff-view-removed-fg);
 }
 
 /* 唯一的 Tab 停靠点；两轴都可能溢出 */
@@ -680,12 +700,30 @@
   display: none;
 }
 
+/* 变更类型不只靠颜色：新增行画一条实心色条 */
 [data-scope='diff-view'][data-part='row'][data-change='added'] {
   background: var(--xh-diff-view-added-bg);
+  box-shadow: inset var(--xh-diff-view-change-bar, var(--xh-stroke-thick)) 0 0 0 var(--xh-diff-view-added-fg);
 }
 
+/* 删除行的色条改画斜纹：与新增行的实心条在灰度与高对比度下也分得开。
+   45 度、1.5px 实 1.5px 空是纹理几何，不是设计尺度上的档位 */
 [data-scope='diff-view'][data-part='row'][data-change='removed'] {
-  background: var(--xh-diff-view-removed-bg);
+  background:
+    repeating-linear-gradient(
+        45deg,
+        var(--xh-diff-view-removed-fg) 0,
+        var(--xh-diff-view-removed-fg) 1.5px,
+        transparent 1.5px,
+        transparent 3px
+      )
+      left / var(--xh-diff-view-change-bar, var(--xh-stroke-thick)) 100% no-repeat,
+    var(--xh-diff-view-removed-bg);
+}
+
+/* 点开折叠格才露出来的那几行播一次入场；收起是硬切，不占一段退场窗口 */
+[data-scope='diff-view'][data-part='row'][data-revealed] {
+  animation: xh-diff-view-reveal var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 /* 行号是画上去的不是写上去的：复制差异不带它，读屏也不逐行念数字 */
@@ -694,6 +732,7 @@
   box-sizing: content-box;
   flex: 0 0 auto;
   padding-inline: var(--xh-diff-view-px, var(--xh-space-3));
+  border-inline-end: var(--xh-stroke-thin) solid var(--xh-diff-view-border, var(--xh-border-subtle));
   color: var(--xh-diff-view-number-fg, var(--xh-fg-subtle));
   inline-size: var(--xh-diff-view-gutter, 4ch);
   text-align: end;
@@ -706,6 +745,20 @@
 
 [data-scope='diff-view'][data-part='line-number'][hidden] {
   display: none;
+}
+
+/* 行号跟着行的变更类型走：一眼扫下来数字本身就分出了增删 */
+[data-scope='diff-view'][data-part='line-number'][data-change='added'] {
+  color: var(--xh-diff-view-added-fg);
+}
+
+[data-scope='diff-view'][data-part='line-number'][data-change='removed'] {
+  color: var(--xh-diff-view-removed-fg);
+}
+
+/* 并排视图两列之间的接缝：新侧的行号槽再补一条左边线 */
+[data-scope='diff-view'][data-part='root'][data-view='split'] [data-part='line-number'][data-side='new'] {
+  border-inline-start: var(--xh-stroke-thin) solid var(--xh-diff-view-border, var(--xh-border-subtle));
 }
 
 /* white-space: pre 保留缩进；每一侧各占一半宽 */
@@ -734,6 +787,18 @@
   background: var(--xh-diff-view-empty-bg, var(--xh-bg-subtle));
 }
 
+/* 开了换行：pre-wrap 仍保留缩进与连续空白，只是允许行尾折下来；
+   anywhere 让没有空格的长串（url、base64）也能断 */
+[data-scope='diff-view'][data-part='root'][data-wrap] [data-part='line-content'] {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* 正文原本按最长行撑宽，不解除就折不下来 */
+[data-scope='diff-view'][data-part='root'][data-wrap] [data-part='body'] {
+  min-inline-size: 0;
+}
+
 /* 变更类型的读屏文字：视觉隐藏，不能 display:none——那样读屏就取不到它了。
    变更不该只靠颜色传达 */
 [data-scope='diff-view'][data-part='change-label'] {
@@ -746,6 +811,23 @@
   overflow: hidden;
   clip-path: inset(50%);
   white-space: nowrap;
+}
+
+/* 词级片段：只有真正动过的那几段上底色，其余段落是纯包裹。
+   不给内衬——等宽列要逐字对齐，多一像素整份差异就错位 */
+[data-scope='diff-view'][data-part='segment'][data-change] {
+  border-radius: var(--xh-diff-view-segment-radius, var(--xh-shape-inset));
+  /* 片段跨行时两半各自收边，否则圆角只画在整段的首尾。两条都写：WebKit 只认带前缀那条 */
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+[data-scope='diff-view'][data-part='segment'][data-change='added'] {
+  background: color-mix(in oklab, var(--xh-diff-view-added-fg) 18%, transparent);
+}
+
+[data-scope='diff-view'][data-part='segment'][data-change='removed'] {
+  background: color-mix(in oklab, var(--xh-diff-view-removed-fg) 18%, transparent);
 }
 
 /* 记号只上色，不带任何盒模型：多一点都会破坏对齐 */
@@ -854,6 +936,19 @@
   --xh-diff-view-font-size: var(--xh-control-font-lg);
   --xh-diff-view-px: var(--xh-space-4);
   --xh-diff-view-py: var(--xh-space-3);
+}
+
+/* 露出来的行从上一行底下推出来：位移走幅度令牌，减弱动效档把它归零 */
+@keyframes xh-diff-view-reveal {
+  from {
+    opacity: 0;
+    translate: 0 calc(-1 * var(--xh-motion-distance-sm));
+  }
+
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
 }
 
 /* styles/download-trigger.css */
@@ -3864,10 +3959,16 @@
 }
 
 /* styles/markdown-stream.css */
-/* 流式光标的闪烁定义在本文件里。皮肤可以按需单独引入，
+/* 光标的两段动效都定义在本文件里。皮肤可以按需单独引入，
    引用别处文件里的动画名时那份文件不一定在场，动画会静默地整个不跑 */
 @keyframes xh-markdown-stream-caret {
   50% {
+    opacity: 0;
+  }
+}
+
+@keyframes xh-markdown-stream-caret-in {
+  from {
     opacity: 0;
   }
 }
@@ -3880,7 +3981,7 @@
 [data-scope='markdown-stream'][data-part='root'] {
   color: var(--xh-markdown-stream-fg, var(--xh-fg-default));
   font-size: var(--xh-markdown-stream-font-size, var(--xh-text-body-size));
-  line-height: var(--xh-text-body-leading);
+  line-height: var(--xh-markdown-stream-leading, var(--xh-text-prose-leading));
 }
 
 /* 块之间的距离由这一层给，块内部的排版归作者的正文样式 */
@@ -3911,29 +4012,42 @@
   overflow-wrap: anywhere;
 }
 
-/* 流式光标：只画在正在生长的那一块末尾。
-   它落在块的最后一个顶层元素之后，所以段落与标题是行内贴在文末，列表与表格另起一行——
-   要贴进段落末尾就得往已消毒的 html 里注入节点，那会打穿「原生 HTML 一律不透传」这条约束 */
-[data-scope='markdown-stream'][data-part='block'][data-live]::after {
+/* 流式光标落在带 data-caret 的那一格上：正文在长的时候是生长块的末尾，
+   一个字都还没到的时候是外壳，所以「请求已经发出去」这件事第一帧就看得见。
+   它落在块的最后一个顶层元素之后，不是最后一句话的末尾——要贴进段落里就得往已消毒的
+   html 注入节点，那会打穿「原生 HTML 一律不透传」这条约束 */
+[data-scope='markdown-stream'][data-part='root'][data-caret]::after,
+[data-scope='markdown-stream'][data-part='block'][data-caret]::after {
   display: inline-block;
-  background: var(--xh-markdown-stream-caret-bg, var(--xh-fg-muted));
-  animation: xh-markdown-stream-caret var(--xh-markdown-stream-caret-duration, var(--xh-caret-duration)) steps(1, end) infinite;
+  background: var(--xh-markdown-stream-caret-bg, var(--xh-fg-default));
+  border-radius: var(--xh-markdown-stream-caret-radius, var(--xh-shape-inset));
   content: '';
   inline-size: var(--xh-markdown-stream-caret-w, var(--xh-stroke-thick));
-  block-size: var(--xh-markdown-stream-caret-h, var(--xh-text-code-leading));
+  block-size: var(--xh-markdown-stream-caret-h, 1.05em);
+  margin-inline-start: var(--xh-markdown-stream-caret-gap, 0.1em);
   vertical-align: text-bottom;
-  translate: 0 var(--xh-markdown-stream-caret-shift, 0.125em);
+  translate: 0 var(--xh-markdown-stream-caret-shift, -0.5px);
 }
 
-/* 减少动效：光标停在实心不闪，「还在写」这件事仍然看得出来。
+/* 正文在长的时候光标只淡入一次然后停在实心：旁边的字每帧都在变，再闪一下只是噪声 */
+[data-scope='markdown-stream'][data-part='block'][data-caret]::after {
+  animation: xh-markdown-stream-caret-in var(--xh-markdown-stream-caret-enter-duration, var(--xh-motion-duration-enter)) var(--xh-motion-ease-enter-strong) both;
+}
+
+/* 还没出字的那一段页面上只有这一竖，让它闪着，等的人才分得清是在等还是卡住了 */
+[data-scope='markdown-stream'][data-part='root'][data-caret]::after {
+  animation: xh-markdown-stream-caret var(--xh-markdown-stream-caret-duration, var(--xh-caret-duration)) steps(1, end) infinite;
+}
+
+/* 减少动效：等待时的光标停在实心不闪，「还在等」这件事仍然看得出来。
    两组规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
 @media (prefers-reduced-motion: reduce) {
-  [data-scope='markdown-stream'][data-part='block'][data-live]::after {
+  [data-scope='markdown-stream'][data-part='root'][data-caret]::after {
     animation: none;
   }
 }
 
-:where([data-motion='reduce']) [data-scope='markdown-stream'][data-part='block'][data-live]::after {
+:where([data-motion='reduce']) [data-scope='markdown-stream'][data-part='root'][data-caret]::after {
   animation: none;
 }
 
@@ -5637,6 +5751,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 /* 边框画在 root 上，内部 textarea 无边框；align-items: flex-end 让按钮随输入框长高贴着底边。
+   一档落影把输入框从它上方的内容里抬起来，与卡片同一档。
    三个视觉轴都落在 root 上：形态管底与描边怎么画，语气管用哪族颜色，尺寸管高度与字号 */
 [data-scope='prompt-input'][data-part='root'] {
   transition:
@@ -5648,10 +5763,13 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_prompt-input-px: var(--xh-control-px-sm);
   --xh-_prompt-input-font-size: var(--xh-control-font-md);
   --xh-_prompt-input-submit-px: var(--xh-control-px-md);
+  /* 皮肤画的兜底字形与作者塞进来的图标读同一把尺，随尺寸档一起换 */
+  --xh-icon-size: var(--xh-prompt-input-icon-size, var(--xh-glyph-size-md));
   /* 形态缺省档：不写 data-variant 时按描边式走 */
   --xh-_prompt-input-bg: var(--xh-bg-surface);
   --xh-_prompt-input-border: var(--xh-border-control);
   --xh-_prompt-input-border-focus: var(--xh-_tone, var(--xh-border-control-focus));
+  --xh-_prompt-input-shadow: var(--xh-elevation-raised);
 
   display: flex;
   align-items: flex-end;
@@ -5661,11 +5779,19 @@ input[data-scope='mention'][data-part='input'] {
   border: var(--xh-stroke-thin) solid var(--xh-prompt-input-border, var(--xh-_prompt-input-border));
   border-radius: var(--xh-prompt-input-radius, var(--xh-shape-surface));
   background: var(--xh-prompt-input-bg, var(--xh-_prompt-input-bg));
+  box-shadow: var(--xh-prompt-input-shadow, var(--xh-_prompt-input-shadow));
 }
 
 /* 上面声明的 display 会盖掉 UA 的 [hidden]{display:none}，这里补回 */
 [data-scope='prompt-input'][data-part='root'][hidden] {
   display: none;
+}
+
+/* 写了输入行，root 就翻成竖排：输入框与按钮收进那一行，上下两侧腾给附件条与动作行。
+   不写就是单行，输入框与按钮并排——两种写法的皮肤是同一份 */
+[data-scope='prompt-input'][data-part='root']:has(> [data-scope='prompt-input'][data-part='input-row']) {
+  flex-direction: column;
+  align-items: stretch;
 }
 
 /* 焦点环画在整个框上；用 focus-within 使焦点落在发送按钮时同样点亮 */
@@ -5689,6 +5815,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_prompt-input-px: var(--xh-control-px-sm);
   --xh-_prompt-input-font-size: var(--xh-control-font-sm);
   --xh-_prompt-input-submit-px: var(--xh-control-px-sm);
+  --xh-icon-size: var(--xh-prompt-input-icon-size, var(--xh-glyph-size-sm));
 }
 
 [data-scope='prompt-input'][data-part='root'][data-size='md'] {
@@ -5697,6 +5824,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_prompt-input-px: var(--xh-control-px-md);
   --xh-_prompt-input-font-size: var(--xh-control-font-md);
   --xh-_prompt-input-submit-px: var(--xh-control-px-md);
+  --xh-icon-size: var(--xh-prompt-input-icon-size, var(--xh-glyph-size-md));
 }
 
 [data-scope='prompt-input'][data-part='root'][data-size='lg'] {
@@ -5705,6 +5833,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_prompt-input-px: var(--xh-control-px-lg);
   --xh-_prompt-input-font-size: var(--xh-control-font-lg);
   --xh-_prompt-input-submit-px: var(--xh-control-px-lg);
+  --xh-icon-size: var(--xh-prompt-input-icon-size, var(--xh-glyph-size-lg));
 }
 
 /* —— 形态 —— */
@@ -5722,10 +5851,24 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_prompt-input-border: transparent;
 }
 
-/* 无框：底与常态描边透明，聚焦时浮出描边 */
+/* 无框：底与常态描边透明，聚焦时浮出描边。落影一并收掉——底都不画了，
+   一圈投影就成了没有来处的暗边 */
 [data-scope='prompt-input'][data-part='root'][data-variant='ghost'] {
   --xh-_prompt-input-bg: transparent;
   --xh-_prompt-input-border: transparent;
+  --xh-_prompt-input-shadow: none;
+}
+
+/* 输入行承接单行写法下落在 root 上的那份几何：输入框与按钮并排、按钮贴着底边。
+   它自己不画底也不画描边，边界仍由 root 表达 */
+[data-scope='prompt-input'][data-part='input-row'] {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--xh-prompt-input-row-gap, var(--xh-_prompt-input-gap));
+}
+
+[data-scope='prompt-input'][data-part='input-row'][hidden] {
+  display: none;
 }
 
 /* 无边框透明底，融进 root 的框里；min-inline-size: 0 防止长内容把弹性子项撑出容器 */
@@ -5830,6 +5973,30 @@ input[data-scope='mention'][data-part='input'] {
   cursor: not-allowed;
 }
 
+/* 按钮没写内容就由皮肤画兜底字形，两种身份各画一枚；
+   作者往部件里塞了自己的图形或文案，这两条即不命中 */
+[data-scope='prompt-input'][data-part='submit-trigger'][data-mode='send']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-arrow-up) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-arrow-up) center / contain no-repeat;
+}
+
+/* 停止身份画一枚实心圆角方块：它不是「反过来的发送」，用一个不指向任何方向的形状 */
+[data-scope='prompt-input'][data-part='submit-trigger'][data-mode='stop']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: var(--xh-prompt-input-stop-mark-size, calc(var(--xh-icon-size, var(--xh-glyph-size-text)) * 0.6));
+  block-size: var(--xh-prompt-input-stop-mark-size, calc(var(--xh-icon-size, var(--xh-glyph-size-text)) * 0.6));
+  vertical-align: var(--xh-glyph-baseline-shift);
+  border-radius: var(--xh-prompt-input-stop-mark-radius, var(--xh-shape-inset));
+  background-color: currentColor;
+}
+
 /* styles/qr-code.css */
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='qr-code'] {
@@ -5931,17 +6098,46 @@ input[data-scope='mention'][data-part='input'] {
   --xh-reasoning-skin: 1;
 }
 
-/* 比工具调用轻一档：思考过程是旁注不是主体，只用底色分区、不画描边 */
+/* 一张轻表面：底色分区、静态抬起，描边留给形态轴按档打开 */
 [data-scope='reasoning'][data-part='root'] {
+  /* 作者塞进两个图形位的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+  --xh-icon-size: var(--xh-reasoning-icon-size, var(--xh-glyph-size-text));
+
+  /* 海拔先落进私有槽：语气档要把它与左侧色条叠成一条 box-shadow，无壳档把它关掉 */
+  --xh-_reasoning-shadow: var(--xh-reasoning-shadow, var(--xh-elevation-raised));
+
   display: block;
   overflow: hidden;
+  border: var(--xh-stroke-thin) solid transparent;
   border-radius: var(--xh-reasoning-radius, var(--xh-shape-surface));
   background: var(--xh-reasoning-bg, var(--xh-bg-subtle));
+  box-shadow: var(--xh-_reasoning-shadow);
 }
 
 /* 上面声明的 display 会盖掉 UA 的 [hidden]{display:none}，这里补回 */
 [data-scope='reasoning'][data-part='root'][hidden] {
   display: none;
+}
+
+/* —— 形态 —— */
+/* 缺省档即 subtle，写在上面那条基础规则里 */
+[data-scope='reasoning'][data-part='root'][data-variant='outline'] {
+  border-color: var(--xh-reasoning-border, var(--xh-border-subtle));
+  background: var(--xh-reasoning-bg, var(--xh-bg-surface));
+}
+
+/* 无壳内联：思考过程贴着正文走，不占一块面 */
+[data-scope='reasoning'][data-part='root'][data-variant='ghost'] {
+  --xh-_reasoning-shadow: 0 0 0 transparent;
+
+  overflow: visible;
+  background: none;
+}
+
+/* 无壳档的开关只占文字宽度，自己带圆角，悬停时才浮出一块底 */
+[data-scope='reasoning'][data-part='root'][data-variant='ghost'] [data-scope='reasoning'][data-part='trigger'] {
+  inline-size: auto;
+  border-radius: var(--xh-reasoning-trigger-radius, var(--xh-shape-control));
 }
 
 [data-scope='reasoning'][data-part='trigger'] {
@@ -5985,31 +6181,105 @@ input[data-scope='mention'][data-part='input'] {
   cursor: not-allowed;
 }
 
-/* 指示随开合转向，纯装饰 */
+/* 状态图形位：在想的时候实一档，想完退回弱一档 */
+[data-scope='reasoning'][data-part='icon'] {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  color: var(--xh-reasoning-icon-fg, var(--xh-fg-subtle));
+  transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+[data-scope='reasoning'][data-part='icon'][data-streaming] {
+  color: var(--xh-reasoning-icon-streaming-fg, var(--xh-fg-muted));
+}
+
+[data-scope='reasoning'][data-part='icon'][hidden] {
+  display: none;
+}
+
+/* 指示随开合转向，纯装饰。转向与正文展开取同一档时长，两件事一起收尾 */
 [data-scope='reasoning'][data-part='indicator'] {
   display: inline-flex;
   flex: none;
   align-items: center;
   justify-content: center;
   color: var(--xh-reasoning-indicator-fg, var(--xh-fg-subtle));
-  transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition: rotate var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+}
+
+/* 没写内容就由皮肤画；作者往部件里塞了自己的图形，这条规则即不命中 */
+[data-scope='reasoning'][data-part='indicator']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
+}
+
+[data-scope='reasoning'][data-part='indicator'][data-state='open'] {
+  rotate: 180deg;
 }
 
 [data-scope='reasoning'][data-part='indicator'][hidden] {
   display: none;
 }
 
-[data-scope='reasoning'][data-part='indicator'][data-state='open'] {
-  rotate: 90deg;
-}
-
+/* 状态文案排成一行，长了截断：换行会把开关的高度顶开，时长位跟着跳 */
 [data-scope='reasoning'][data-part='label'] {
   display: block;
   flex: 1 1 auto;
+  overflow: hidden;
+  font-weight: var(--xh-reasoning-label-font-weight, var(--xh-text-label-weight));
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 [data-scope='reasoning'][data-part='label'][hidden] {
   display: none;
+}
+
+/* 还在想：一道亮带在文字上从右往左扫，字色由这层渐变裁出来 */
+[data-scope='reasoning'][data-part='label'][data-streaming] {
+  background-image: linear-gradient(
+    90deg,
+    var(--xh-reasoning-shimmer-from, var(--xh-fg-subtle)) 35%,
+    var(--xh-reasoning-shimmer-to, var(--xh-fg-default)) 50%,
+    var(--xh-reasoning-shimmer-from, var(--xh-fg-subtle)) 65%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: xh-reasoning-shimmer var(--xh-reasoning-shimmer-duration, var(--xh-shimmer-duration)) linear infinite;
+}
+
+/*
+ * 减少动效：撤掉扫光那层，换成一档更实的静态字色。
+ * 这里不能只把时长压到接近零——光带会停在某一帧上，在文字上留下一道说不清的渐变；
+ * 而撤掉渐变又不还字色的话，被裁成透明的文字会整句消失。
+ * 两条规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion。
+ */
+@media (prefers-reduced-motion: reduce) {
+  [data-scope='reasoning'][data-part='label'][data-streaming] {
+    background-image: none;
+    -webkit-background-clip: border-box;
+    background-clip: border-box;
+    color: var(--xh-reasoning-label-streaming-fg, var(--xh-fg-default));
+    animation: none;
+  }
+}
+
+:where([data-motion='reduce']) [data-scope='reasoning'][data-part='label'][data-streaming] {
+  background-image: none;
+  -webkit-background-clip: border-box;
+  background-clip: border-box;
+  color: var(--xh-reasoning-label-streaming-fg, var(--xh-fg-default));
+  animation: none;
 }
 
 [data-scope='reasoning'][data-part='duration'] {
@@ -6024,18 +6294,39 @@ input[data-scope='mention'][data-part='input'] {
   display: none;
 }
 
-/* 思考正文是散文：段落排版，不用等宽 */
+/* 想完那一下两句文案整句换掉，淡入接住这次替换 */
+[data-scope='reasoning'][data-part='label']:not([data-streaming]),
+[data-scope='reasoning'][data-part='duration']:not([data-streaming]) {
+  animation: xh-reasoning-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) both;
+}
+
+/*
+ * 思考正文是散文：段落排版，不用等宽，行距比正文松一档。
+ * 左侧一条轨迹线把这一段与开关分开，起点对齐开关里的图形位。
+ *
+ * 这里刻意没有 [data-part='content'][hidden] { display: none }：补了动画一帧都播不出来。
+ * 收起由适配器在退场结束后写内联 display 落成，退场窗口内靠 connect 发的 inert 挡住焦点。
+ */
 [data-scope='reasoning'][data-part='content'] {
-  display: block;
-  padding-inline: var(--xh-reasoning-px, var(--xh-space-3));
+  display: grid;
+  grid-template-rows: 1fr;
+  overflow: clip;
+  margin-inline-start: var(--xh-reasoning-rail-inset, var(--xh-reasoning-px, var(--xh-space-3)));
+  border-inline-start: var(--xh-reasoning-rail-width, var(--xh-stroke-thin)) solid var(--xh-reasoning-rail, var(--xh-border-subtle));
+  padding-inline-start: var(--xh-reasoning-content-ps, var(--xh-space-3));
+  padding-inline-end: var(--xh-reasoning-content-pe, var(--xh-reasoning-px, var(--xh-space-3)));
   padding-block-end: var(--xh-reasoning-py, var(--xh-space-2));
   color: var(--xh-reasoning-content-fg, var(--xh-fg-muted));
   font-size: var(--xh-reasoning-content-font-size, var(--xh-text-secondary-size));
-  line-height: var(--xh-text-body-leading);
+  line-height: var(--xh-reasoning-content-leading, var(--xh-text-prose-leading));
 }
 
-[data-scope='reasoning'][data-part='content'][hidden] {
-  display: none;
+[data-scope='reasoning'][data-part='content'][data-state='open'] {
+  animation: xh-reasoning-expand var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+}
+
+[data-scope='reasoning'][data-part='content'][data-state='closed'] {
+  animation: xh-reasoning-collapse var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
 }
 
 /* 尺寸档只改内衬与字号 */
@@ -6057,9 +6348,58 @@ input[data-scope='mention'][data-part='input'] {
   --xh-reasoning-font-size: var(--xh-control-font-lg);
 }
 
-/* 语气只染左侧那一条色条 */
+/* 语气只染左侧那一条色条，海拔跟着一起落在同一条 box-shadow 上 */
 [data-scope='reasoning'][data-part='root'][data-tone] {
-  box-shadow: inset var(--xh-reasoning-tone-bar, var(--xh-stroke-thick)) 0 0 0 var(--xh-reasoning-tone-fg, var(--xh-_tone-soft, var(--xh-bg-brand)));
+  box-shadow:
+    inset var(--xh-reasoning-tone-bar, var(--xh-stroke-thick)) 0 0 0 var(--xh-reasoning-tone-fg, var(--xh-_tone-soft, var(--xh-bg-brand))),
+    var(--xh-_reasoning-shadow);
+}
+
+/* 行高与内缩同帧动：内缩不归零的话，border-box 会把盒子钳在下内缩上，收不干净 */
+@keyframes xh-reasoning-expand {
+  from {
+    grid-template-rows: 0fr;
+    padding-block-end: 0;
+  }
+
+  to {
+    grid-template-rows: 1fr;
+    padding-block-end: var(--xh-reasoning-py, var(--xh-space-2));
+  }
+}
+
+@keyframes xh-reasoning-collapse {
+  from {
+    grid-template-rows: 1fr;
+    padding-block-end: var(--xh-reasoning-py, var(--xh-space-2));
+  }
+
+  to {
+    grid-template-rows: 0fr;
+    padding-block-end: 0;
+  }
+}
+
+/* 文案整句换掉时接住这次替换 */
+@keyframes xh-reasoning-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* 亮带从右往左扫过文字。背景图比自身宽一倍，只移动背景位置，不动布局 */
+@keyframes xh-reasoning-shimmer {
+  from {
+    background-position: 150% center;
+  }
+
+  to {
+    background-position: -50% center;
+  }
 }
 
 /* styles/resizable.css */
@@ -7643,10 +7983,12 @@ input[data-scope='mention'][data-part='input'] {
   xh-popconfirm,
   xh-popover,
   xh-popselect,
+  xh-reasoning,
   xh-select,
   xh-side-nav,
   xh-steps,
   xh-time-picker,
+  xh-tool-call,
   xh-tooltip,
   xh-tour,
   xh-tree-select
@@ -8557,13 +8899,44 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 /* styles/approval.css */
+/* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
+   动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
+
+/* 幅度走令牌，减弱动效时由令牌层归零；位移用独立属性而非 transform 简写 */
+@keyframes xh-approval-in {
+  from {
+    opacity: 0;
+    translate: 0 var(--xh-motion-distance-md);
+  }
+
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+@keyframes xh-approval-result-in {
+  from {
+    opacity: 0;
+    scale: var(--xh-motion-scale-enter);
+  }
+
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='approval'] {
   --xh-approval-skin: 1;
 }
 
-/* 一块要人做决定的表面：默认按警示语气画描边，判定落定后退回中性 */
+/* 一块要人做决定的表面：浮起一档、按语气画描边，判定落定后描边退回中性 */
 [data-scope='approval'][data-part='root'] {
+  /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+  --xh-icon-size: var(--xh-approval-icon-size, var(--xh-glyph-size-text));
+
   display: flex;
   flex-direction: column;
   gap: var(--xh-approval-gap, var(--xh-space-3));
@@ -8571,7 +8944,9 @@ input[data-scope='mention'][data-part='input'] {
   border: var(--xh-stroke-thin) solid var(--xh-approval-border, var(--xh-_tone, var(--xh-border-strong)));
   border-radius: var(--xh-approval-radius, var(--xh-shape-surface));
   background: var(--xh-approval-bg, var(--xh-bg-surface));
+  box-shadow: var(--xh-approval-shadow, var(--xh-elevation-raised));
   transition: border-color var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  animation: xh-approval-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 /* 上面声明的 display 会盖掉 UA 的 [hidden]{display:none}，这里补回 */
@@ -8636,7 +9011,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='approval'][data-part='scope-item'] {
   display: flex;
   align-items: center;
-  gap: var(--xh-approval-scope-item-gap, var(--xh-space-2));
+  gap: var(--xh-approval-scope-item-gap, var(--xh-space-1_5));
   padding-inline: var(--xh-approval-scope-px, var(--xh-space-2));
   padding-block: var(--xh-approval-scope-py, var(--xh-space-1));
   border-radius: var(--xh-approval-scope-radius, var(--xh-shape-control));
@@ -8678,11 +9053,24 @@ input[data-scope='mention'][data-part='input'] {
   block-size: var(--xh-approval-indicator-size, var(--xh-control-indicator-size));
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='approval'][data-part='scope-indicator'][hidden] {
   display: none;
+}
+
+/* 没写内容就由皮肤画勾；作者往部件里塞了自己的图形，这条规则即不命中 */
+[data-scope='approval'][data-part='scope-indicator']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-check) center / contain no-repeat;
 }
 
 [data-scope='approval'][data-part='scope-indicator'][data-state='checked'] {
@@ -8690,13 +9078,58 @@ input[data-scope='mention'][data-part='input'] {
   background: var(--xh-approval-indicator-bg-checked, var(--xh-bg-brand));
 }
 
+/* 没勾上时把勾隐去而不是撤掉：盒子留在原位，翻面时整行不跳 */
+[data-scope='approval'][data-part='scope-indicator'][data-state='unchecked'] {
+  color: transparent;
+}
+
+/* 勾上的那条读起来更重一档 */
 [data-scope='approval'][data-part='scope-label'] {
   display: block;
   flex: 1 1 auto;
+  color: var(--xh-approval-scope-fg, var(--xh-fg-muted));
+}
+
+[data-scope='approval'][data-part='scope-item'][data-state='checked'] [data-part='scope-label'] {
+  color: var(--xh-approval-scope-fg-checked, var(--xh-fg-default));
+}
+
+/* 排在勾选档之后：禁用项无论勾没勾都是禁用色 */
+[data-scope='approval'][data-part='scope-item'][data-disabled] [data-part='scope-label'] {
+  color: var(--xh-fg-disabled);
 }
 
 [data-scope='approval'][data-part='scope-label'][hidden] {
   display: none;
+}
+
+/* 备注：附在判定上的一句自由文本，占满整行 */
+[data-scope='approval'][data-part='note'] {
+  display: block;
+  inline-size: 100%;
+  padding-inline: var(--xh-approval-note-px, var(--xh-space-2));
+  padding-block: var(--xh-approval-note-py, var(--xh-space-1_5));
+  border: var(--xh-stroke-thin) solid var(--xh-approval-note-border, var(--xh-border-control));
+  border-radius: var(--xh-approval-note-radius, var(--xh-shape-control));
+  background: var(--xh-approval-note-bg, var(--xh-bg-surface));
+  color: var(--xh-approval-note-fg, var(--xh-fg-default));
+  font-family: inherit;
+  font-size: var(--xh-approval-note-font-size, var(--xh-control-font-md));
+  transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+[data-scope='approval'][data-part='note'][hidden] {
+  display: none;
+}
+
+[data-scope='approval'][data-part='note']:focus-visible {
+  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline-offset: var(--xh-ring-offset);
+}
+
+[data-scope='approval'][data-part='note']:disabled {
+  color: var(--xh-fg-disabled);
+  cursor: not-allowed;
 }
 
 /* 剩余时间：等宽数字，逐秒跳字时不左右晃 */
@@ -8708,6 +9141,44 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='approval'][data-part='timer'][hidden] {
+  display: none;
+}
+
+/* 判定结果条：判过了才露出，语气随判定走 */
+[data-scope='approval'][data-part='result'] {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  gap: var(--xh-approval-result-gap, var(--xh-space-1_5));
+  padding-inline: var(--xh-approval-result-px, var(--xh-space-2));
+  padding-block: var(--xh-approval-result-py, var(--xh-space-1));
+  border-radius: var(--xh-approval-result-radius, var(--xh-shape-pill));
+  background: var(--xh-approval-result-bg, color-mix(in oklab, var(--xh-fg-success) 12%, var(--xh-bg-surface)));
+  color: var(--xh-approval-result-fg, var(--xh-fg-success));
+  font-size: var(--xh-approval-result-font-size, var(--xh-text-caption-size));
+  font-weight: var(--xh-approval-result-font-weight, var(--xh-text-label-weight));
+  animation: xh-approval-result-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+}
+
+[data-scope='approval'][data-part='result'][hidden] {
+  display: none;
+}
+
+/* 超时按拒绝收口，两者同档：视觉上不该看着像第三种结果 */
+[data-scope='approval'][data-part='result']:is([data-state='denied'], [data-state='expired']) {
+  background: var(--xh-approval-result-bg-denied, color-mix(in oklab, var(--xh-fg-danger) 12%, var(--xh-bg-surface)));
+  color: var(--xh-approval-result-fg-denied, var(--xh-fg-danger));
+}
+
+/* 动作行：两颗按钮靠右排，间距归库管 */
+[data-scope='approval'][data-part='actions'] {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--xh-approval-actions-gap, var(--xh-space-2));
+}
+
+[data-scope='approval'][data-part='actions'][hidden] {
   display: none;
 }
 
@@ -8738,9 +9209,13 @@ input[data-scope='mention'][data-part='input'] {
   display: none;
 }
 
+/* 内顶高光把实心块顶出一道边，与拒绝那颗的描边同一档厚度 */
 [data-scope='approval'][data-part='approve-trigger'] {
+  --xh-_approval-approve-highlight: inset 0 var(--xh-stroke-thin) 0 0 color-mix(in oklab, var(--xh-fg-on-brand) 14%, transparent);
+
   background: var(--xh-approval-approve-bg, var(--xh-_tone, var(--xh-bg-brand)));
   color: var(--xh-approval-approve-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
+  box-shadow: var(--xh-approval-approve-shadow, var(--xh-_approval-approve-highlight));
 }
 
 [data-scope='approval'][data-part='approve-trigger']:hover {
@@ -8756,6 +9231,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='approval'][data-part='approve-trigger'][aria-disabled='true'] {
   background: var(--xh-approval-approve-bg-off, var(--xh-bg-muted));
   color: var(--xh-fg-disabled);
+  box-shadow: none;
   cursor: not-allowed;
 }
 
@@ -8785,13 +9261,14 @@ input[data-scope='mention'][data-part='input'] {
   cursor: not-allowed;
 }
 
-/* 尺寸档只改内衬、间距与按钮高度 */
+/* 尺寸档改内衬、间距、按钮高度与行内字号 */
 [data-scope='approval'][data-part='root'][data-size='sm'] {
   --xh-approval-p: var(--xh-space-3);
   --xh-approval-gap: var(--xh-space-2);
   --xh-approval-action-h: var(--xh-control-h-sm);
   --xh-approval-action-px: var(--xh-control-px-sm);
   --xh-approval-scope-font-size: var(--xh-control-font-sm);
+  --xh-approval-note-font-size: var(--xh-control-font-sm);
 }
 
 [data-scope='approval'][data-part='root'][data-size='md'] {
@@ -8800,6 +9277,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-approval-action-h: var(--xh-control-h-md);
   --xh-approval-action-px: var(--xh-control-px-md);
   --xh-approval-scope-font-size: var(--xh-control-font-md);
+  --xh-approval-note-font-size: var(--xh-control-font-md);
 }
 
 [data-scope='approval'][data-part='root'][data-size='lg'] {
@@ -8808,6 +9286,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-approval-action-h: var(--xh-control-h-lg);
   --xh-approval-action-px: var(--xh-control-px-lg);
   --xh-approval-scope-font-size: var(--xh-control-font-lg);
+  --xh-approval-note-font-size: var(--xh-control-font-lg);
 }
 
 /* styles/avatar.css */
@@ -11319,18 +11798,26 @@ input[data-scope='mention'][data-part='input'] {
   --xh-code-view-skin: 1;
 }
 
-/* overflow: hidden 让内部 <pre> 的滚动内容沿圆角收边；不设 display，排布由作者决定 */
+/* 一张浮起的表面：发丝边 + 圆角 + 一档落影，overflow: hidden 让内部 <pre> 的滚动内容沿圆角收边；
+   不设 display，排布由作者决定。
+   color 给整段未着色的代码定基线，字号在这里消费一次，缺省即 sm 档。 */
 [data-scope='code-view'][data-part='root'] {
   overflow: hidden;
+  border: var(--xh-stroke-thin) solid var(--xh-code-view-border, var(--xh-border-default));
   border-radius: var(--xh-code-view-radius, var(--xh-shape-surface));
-  background: var(--xh-code-view-bg, var(--xh-bg-subtle));
+  background: var(--xh-code-view-bg, var(--xh-bg-surface));
+  box-shadow: var(--xh-code-view-shadow, var(--xh-elevation-raised));
+  color: var(--xh-code-view-fg, var(--xh-fg-muted));
+  font-size: var(--xh-code-view-font-size, var(--xh-control-font-sm));
 }
 
+/* min-block-size 给头部条一个不随内容塌陷的定高：只放文件名时与放进按钮时一样高 */
 [data-scope='code-view'][data-part='header'] {
   display: flex;
+  min-block-size: var(--xh-code-view-header-h, var(--xh-control-h-lg));
   align-items: center;
   gap: var(--xh-code-view-header-gap, var(--xh-space-2));
-  padding-inline: var(--xh-code-view-header-px, var(--xh-space-3));
+  padding-inline: var(--xh-code-view-header-px, var(--xh-space-4));
   padding-block: var(--xh-code-view-header-py, var(--xh-space-2));
   border-block-end: var(--xh-stroke-thin) solid var(--xh-code-view-header-border, var(--xh-border-subtle));
   color: var(--xh-code-view-header-fg, var(--xh-fg-muted));
@@ -11420,13 +11907,17 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 /* 行号是画上去的不是写上去的：复制代码不带它，读屏也不逐行念数字。
-   节点本身由适配器按 lineNumbers 决定渲不渲，槽宽按 root 上的位数枚举定，见下方 data-digits 各档。 */
+   节点本身由适配器按 lineNumbers 决定渲不渲，槽宽按 root 上的位数枚举定，见下方 data-digits 各档。
+   行与行之间无间隙，逐行的右边框首尾相接连成一条分隔线；行号比正文小一档、右对齐，多位数才齐。 */
 [data-scope='code-view'][data-part='line-number'] {
   display: block;
   box-sizing: content-box;
   flex: 0 0 auto;
-  padding-inline: var(--xh-code-view-px, var(--xh-space-3));
+  padding-inline-start: var(--xh-code-view-px, var(--xh-space-3));
+  padding-inline-end: var(--xh-code-view-gutter-gap, var(--xh-space-1));
+  border-inline-end: var(--xh-stroke-thin) solid var(--xh-code-view-gutter-border, var(--xh-border-default));
   color: var(--xh-code-view-number-fg, var(--xh-fg-subtle));
+  font-size: var(--xh-code-view-number-font-size, var(--xh-text-caption-size));
   inline-size: var(--xh-_code-view-gutter);
   text-align: end;
   user-select: none;
@@ -11527,17 +12018,18 @@ input[data-scope='mention'][data-part='input'] {
   outline-offset: calc(-1 * var(--xh-ring-width));
 }
 
-/* 尺寸档只改字号与行高，行号槽随字号一起走 */
+/* 尺寸档给槽赋值、由 root 基础规则消费一次：缺省与阶梯是同一个口子，
+   作者设了 --xh-code-view-font-size 不会被这三条盖掉。行号槽随字号一起走 */
 [data-scope='code-view'][data-part='root'][data-size='sm'] {
-  font-size: var(--xh-control-font-sm);
+  --xh-code-view-font-size: var(--xh-control-font-sm);
 }
 
 [data-scope='code-view'][data-part='root'][data-size='md'] {
-  font-size: var(--xh-control-font-md);
+  --xh-code-view-font-size: var(--xh-control-font-md);
 }
 
 [data-scope='code-view'][data-part='root'][data-size='lg'] {
-  font-size: var(--xh-control-font-lg);
+  --xh-code-view-font-size: var(--xh-control-font-lg);
 }
 
 /* 语法配色：注释与标点复用既有语义色，三种真需要色相的走 --xh-syntax-* 语法令牌（随主题明暗切换）。 */
@@ -17061,6 +17553,33 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 /* styles/message-feed.css */
+/* 关键帧写在本文件里：动画名的查找只认「文档里有没有这个名字」，
+   引用别处文件里的名字时那份文件不一定在场，动画会静默地整个不跑。
+   幅度与缩放走令牌，减弱动效时由令牌层归零 */
+@keyframes xh-message-feed-item-in {
+  from {
+    opacity: 0;
+    translate: 0 var(--xh-motion-distance-md);
+  }
+
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+@keyframes xh-message-feed-button-in {
+  from {
+    opacity: 0;
+    scale: var(--xh-motion-scale-enter);
+  }
+
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='message-feed'] {
   --xh-message-feed-skin: 1;
@@ -17068,6 +17587,9 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 根是定位基准：回到底部按钮贴在它的右下角。高度由使用者的版面给，这里不定高 */
 [data-scope='message-feed'][data-part='root'] {
+  /* 作者塞进按钮里的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+  --xh-icon-size: var(--xh-message-feed-icon-size, var(--xh-glyph-size-text));
+
   position: relative;
   display: flex;
   min-block-size: 0;
@@ -17103,12 +17625,14 @@ input[data-scope='mention'][data-part='input'] {
   display: none;
 }
 
-/* 一条消息。默认整行铺开，左右分侧由使用者按 data-role 自己写 */
+/* 一条消息。默认整行铺开，左右分侧由使用者按 data-role 自己写。
+   进场只动 opacity 与 translate：改高度会扰动粘底补偿量到的 scrollHeight */
 [data-scope='message-feed'][data-part='item'] {
   display: flex;
   flex-direction: column;
   gap: var(--xh-message-feed-item-gap, var(--xh-space-1));
   border-radius: var(--xh-message-feed-item-radius, var(--xh-shape-surface));
+  animation: xh-message-feed-item-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='message-feed'][data-part='item'][hidden] {
@@ -17158,6 +17682,11 @@ input[data-scope='mention'][data-part='input'] {
   display: none;
 }
 
+/* 收起不卸载，冒出来时靠这条进场动画；不写 display，可见性归上面那条 [hidden] 管 */
+[data-scope='message-feed'][data-part='scroll-button'][data-state='visible'] {
+  animation: xh-message-feed-button-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+}
+
 [data-scope='message-feed'][data-part='scroll-button']:hover {
   background: var(--xh-message-feed-button-bg-hover, var(--xh-bg-subtle-hover));
 }
@@ -17171,7 +17700,19 @@ input[data-scope='mention'][data-part='input'] {
   outline-offset: var(--xh-ring-offset);
 }
 
-/* 尺寸档只改消息之间的距离与内边距 */
+/* 没写内容就由皮肤画一枚向下的字形；作者往按钮里塞了自己的图形，这条规则即不命中 */
+[data-scope='message-feed'][data-part='scroll-button']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
+}
+
+/* 尺寸档只改消息之间的距离与内边距；宽松档把消息之间再放开一级，内边距不跟 */
 [data-scope='message-feed'][data-part='root'][data-size='sm'] {
   --xh-message-feed-gap: var(--xh-space-2);
   --xh-message-feed-p: var(--xh-space-2);
@@ -17183,7 +17724,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='message-feed'][data-part='root'][data-size='lg'] {
-  --xh-message-feed-gap: var(--xh-space-6);
+  --xh-message-feed-gap: var(--xh-space-8);
   --xh-message-feed-p: var(--xh-space-6);
 }
 
@@ -24822,13 +25363,16 @@ input[data-scope='mention'][data-part='input'] {
   --xh-tool-call-skin: 1;
 }
 
-/* 一张表面：描边 + 圆角，不是控件也不是浮层，所以不接形态轴 */
+/* 一张抬起的表面：描边 + 圆角 + 静态海拔；不是控件也不是浮层，所以不接形态轴。
+   卡片建出来时淡入并向上收一段，一屏若干张的错峰交给外层容器排 */
 [data-scope='tool-call'][data-part='root'] {
   display: block;
   overflow: hidden;
   border: var(--xh-stroke-thin) solid var(--xh-tool-call-border, var(--xh-border-subtle));
   border-radius: var(--xh-tool-call-radius, var(--xh-shape-surface));
   background: var(--xh-tool-call-bg, var(--xh-bg-surface));
+  box-shadow: var(--xh-tool-call-shadow, var(--xh-elevation-raised));
+  animation: xh-tool-call-enter var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) both;
 }
 
 /* 上面声明的 display 会盖掉 UA 的 [hidden]{display:none}，这里补回 */
@@ -24889,7 +25433,8 @@ input[data-scope='mention'][data-part='input'] {
   align-items: center;
   justify-content: center;
   color: var(--xh-tool-call-indicator-fg, var(--xh-fg-subtle));
-  transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  /* 与详情展开同时长同曲线：箭头先转完、内容后到位会像是两件事 */
+  transition: rotate var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='tool-call'][data-part='indicator'][hidden] {
@@ -24914,28 +25459,116 @@ input[data-scope='mention'][data-part='input'] {
   display: none;
 }
 
-[data-scope='tool-call'][data-part='status'] {
+/* 有摘要时把剩余宽度让给它：工具名只要放得下自己，摘要才是这一行里最想读到的东西 */
+[data-scope='tool-call'][data-part='trigger']:has([data-part='summary']) [data-part='name'] {
+  flex: 0 1 auto;
+}
+
+/* 一行参数摘要：单行截断的浅底条，收起时也看得见这次查的是什么 */
+[data-scope='tool-call'][data-part='summary'] {
   display: block;
+  overflow: hidden;
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  padding-inline: var(--xh-tool-call-summary-px, var(--xh-space-1_5));
+  border-radius: var(--xh-tool-call-summary-radius, var(--xh-shape-control));
+  background: var(--xh-tool-call-summary-bg, var(--xh-bg-subtle));
+  color: var(--xh-tool-call-summary-fg, var(--xh-fg-muted));
+  font-family: var(--xh-tool-call-name-font, var(--xh-font-family-mono));
+  font-size: var(--xh-tool-call-summary-font-size, var(--xh-text-caption-size));
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+[data-scope='tool-call'][data-part='summary'][hidden] {
+  display: none;
+}
+
+[data-scope='tool-call'][data-part='status'] {
+  display: inline-flex;
   flex: none;
+  align-items: center;
   color: var(--xh-tool-call-status-fg, var(--xh-fg-muted));
   font-size: var(--xh-tool-call-status-font-size, var(--xh-text-caption-size));
+  line-height: var(--xh-leading-none);
 }
 
 [data-scope='tool-call'][data-part='status'][hidden] {
   display: none;
 }
 
+/* 三档落定的阶段收成药丸：淡底 + 同族深字。在跑的两档不带底，让扫光自己说话 */
+[data-scope='tool-call'][data-part='status'][data-phase='awaiting-approval'],
+[data-scope='tool-call'][data-part='status'][data-phase='output-available'],
+[data-scope='tool-call'][data-part='status'][data-phase='output-error'] {
+  padding-block: var(--xh-tool-call-status-py, var(--xh-space-0_5));
+  padding-inline: var(--xh-tool-call-status-px, var(--xh-space-2));
+  border-radius: var(--xh-tool-call-status-radius, var(--xh-shape-pill));
+}
+
 /* 各阶段的状态色：与语气轴分开走，语气是作者定的强调 */
 [data-scope='tool-call'][data-part='status'][data-phase='awaiting-approval'] {
-  color: var(--xh-tool-call-status-fg-approval, var(--xh-fg-warning));
+  background: var(--xh-tool-call-status-bg-approval, color-mix(in oklab, var(--xh-fg-warning) 12%, var(--xh-bg-surface)));
+  color: var(--xh-tool-call-status-fg-approval, color-mix(in oklab, var(--xh-fg-warning) 60%, var(--xh-fg-default)));
 }
 
 [data-scope='tool-call'][data-part='status'][data-phase='output-available'] {
-  color: var(--xh-tool-call-status-fg-done, var(--xh-fg-success));
+  background: var(--xh-tool-call-status-bg-done, color-mix(in oklab, var(--xh-fg-success) 12%, var(--xh-bg-surface)));
+  color: var(--xh-tool-call-status-fg-done, color-mix(in oklab, var(--xh-fg-success) 60%, var(--xh-fg-default)));
 }
 
 [data-scope='tool-call'][data-part='status'][data-phase='output-error'] {
-  color: var(--xh-tool-call-status-fg-error, var(--xh-fg-danger));
+  background: var(--xh-tool-call-status-bg-error, color-mix(in oklab, var(--xh-fg-danger) 12%, var(--xh-bg-surface)));
+  color: var(--xh-tool-call-status-fg-error, color-mix(in oklab, var(--xh-fg-danger) 60%, var(--xh-fg-default)));
+}
+
+/* 在跑的时候状态文字自己扫一道光：data-running 此前在皮肤里没有任何表达，
+   参数在传与参数齐了两档在屏幕上一模一样。
+   渐变画在背景上再裁进字形，前景与 WebKit 的字形填充色都要透明才透得出底下那道光 */
+[data-scope='tool-call'][data-part='root'][data-running] [data-part='status'] {
+  background-image: linear-gradient(
+    90deg,
+    var(--xh-tool-call-status-shimmer-base, var(--xh-fg-subtle)) 35%,
+    var(--xh-tool-call-status-shimmer-sheen, var(--xh-fg-default)) 50%,
+    var(--xh-tool-call-status-shimmer-base, var(--xh-fg-subtle)) 65%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  animation: xh-tool-call-shimmer var(--xh-tool-call-shimmer-duration, var(--xh-shimmer-duration)) linear infinite;
+}
+
+/* 减少动效：整道光撤掉换回平色，"在跑"仍由状态文字本身表达——只停动画的话，
+   字形里会留着一段冻住的渐变。两条规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
+@media (prefers-reduced-motion: reduce) {
+  [data-scope='tool-call'][data-part='root'][data-running] [data-part='status'] {
+    background-image: none;
+    color: var(--xh-tool-call-status-fg, var(--xh-fg-muted));
+    -webkit-text-fill-color: currentColor;
+    animation: none;
+  }
+}
+
+:where([data-motion='reduce']) [data-scope='tool-call'][data-part='root'][data-running] [data-part='status'] {
+  background-image: none;
+  color: var(--xh-tool-call-status-fg, var(--xh-fg-muted));
+  -webkit-text-fill-color: currentColor;
+  animation: none;
+}
+
+/* 耗时：等宽数位，秒数跳动时不左右挪 */
+[data-scope='tool-call'][data-part='duration'] {
+  display: block;
+  flex: none;
+  color: var(--xh-tool-call-duration-fg, var(--xh-fg-subtle));
+  font-size: var(--xh-tool-call-status-font-size, var(--xh-text-caption-size));
+  font-variant-numeric: tabular-nums;
+}
+
+[data-scope='tool-call'][data-part='duration'][hidden] {
+  display: none;
 }
 
 /* 审批闸门常驻在开关与详情之间，不随折叠一起藏起来 */
@@ -24950,17 +25583,25 @@ input[data-scope='mention'][data-part='input'] {
   display: none;
 }
 
+/* 这里刻意没有 [data-part='content'][hidden] { display: none }：补了退场一帧都播不出来。
+   收起由适配器在退场结束后写内联 display 落成，退场窗口内靠 connect 发的 inert 挡住焦点。
+   详情区按阶段取舍，参数、结果与错误同一时刻只排一格，收起时整格随行高归零 */
 [data-scope='tool-call'][data-part='content'] {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-rows: 1fr;
+  overflow: clip;
   gap: var(--xh-tool-call-content-gap, var(--xh-space-2));
   padding-inline: var(--xh-tool-call-px, var(--xh-space-3));
   padding-block: var(--xh-tool-call-py, var(--xh-space-2));
   border-block-start: var(--xh-stroke-thin) solid var(--xh-tool-call-border, var(--xh-border-subtle));
 }
 
-[data-scope='tool-call'][data-part='content'][hidden] {
-  display: none;
+[data-scope='tool-call'][data-part='content'][data-state='open'] {
+  animation: xh-tool-call-expand var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+}
+
+[data-scope='tool-call'][data-part='content'][data-state='closed'] {
+  animation: xh-tool-call-collapse var(--xh-motion-duration-exit) var(--xh-motion-ease-enter-strong) forwards;
 }
 
 [data-scope='tool-call'][data-part='input'],
@@ -25004,9 +25645,64 @@ input[data-scope='mention'][data-part='input'] {
   --xh-tool-call-font-size: var(--xh-control-font-lg);
 }
 
-/* 语气只染左侧那一条色条，不夺走阶段色 */
+/* 语气只染左侧那一条色条，不夺走阶段色；海拔跟着一起写回来，
+   box-shadow 是整条替换的，只写色条会把上面那层投影抹掉 */
 [data-scope='tool-call'][data-part='root'][data-tone] {
-  box-shadow: inset var(--xh-tool-call-tone-bar, var(--xh-stroke-thick)) 0 0 0 var(--xh-tool-call-tone-fg, var(--xh-_tone-soft, var(--xh-bg-brand)));
+  box-shadow:
+    inset var(--xh-tool-call-tone-bar, var(--xh-stroke-thick)) 0 0 0 var(--xh-tool-call-tone-fg, var(--xh-_tone-soft, var(--xh-bg-brand))),
+    var(--xh-tool-call-shadow, var(--xh-elevation-raised));
+}
+
+/* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
+   动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。
+   幅度走令牌，减弱动效时由令牌层归零 */
+@keyframes xh-tool-call-enter {
+  from {
+    opacity: 0;
+    translate: 0 var(--xh-motion-distance-md);
+  }
+
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+/* 行高与内缩同帧动：内缩不归零的话，border-box 会把盒子钳在上下内缩之和上，收不干净 */
+@keyframes xh-tool-call-expand {
+  from {
+    grid-template-rows: 0fr;
+    padding-block: 0;
+  }
+
+  to {
+    grid-template-rows: 1fr;
+    padding-block: var(--xh-tool-call-py, var(--xh-space-2));
+  }
+}
+
+@keyframes xh-tool-call-collapse {
+  from {
+    grid-template-rows: 1fr;
+    padding-block: var(--xh-tool-call-py, var(--xh-space-2));
+  }
+
+  to {
+    grid-template-rows: 0fr;
+    padding-block: 0;
+  }
+}
+
+/* 一道比字色亮的窄带从右扫到左。背景图比自身宽一倍，靠移动背景位置扫过去，
+   不动布局也不动 transform */
+@keyframes xh-tool-call-shimmer {
+  from {
+    background-position: 150% center;
+  }
+
+  to {
+    background-position: -50% center;
+  }
 }
 
 /* styles/toolbar.css */

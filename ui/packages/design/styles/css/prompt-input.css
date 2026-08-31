@@ -5,6 +5,7 @@
   }
 
   /* 边框画在 root 上，内部 textarea 无边框；align-items: flex-end 让按钮随输入框长高贴着底边。
+     一档落影把输入框从它上方的内容里抬起来，与卡片同一档。
      三个视觉轴都落在 root 上：形态管底与描边怎么画，语气管用哪族颜色，尺寸管高度与字号 */
   [data-scope='prompt-input'][data-part='root'] {
     transition:
@@ -16,10 +17,13 @@
     --xh-_prompt-input-px: var(--xh-control-px-sm);
     --xh-_prompt-input-font-size: var(--xh-control-font-md);
     --xh-_prompt-input-submit-px: var(--xh-control-px-md);
+    /* 皮肤画的兜底字形与作者塞进来的图标读同一把尺，随尺寸档一起换 */
+    --xh-icon-size: var(--xh-prompt-input-icon-size, var(--xh-glyph-size-md));
     /* 形态缺省档：不写 data-variant 时按描边式走 */
     --xh-_prompt-input-bg: var(--xh-bg-surface);
     --xh-_prompt-input-border: var(--xh-border-control);
     --xh-_prompt-input-border-focus: var(--xh-_tone, var(--xh-border-control-focus));
+    --xh-_prompt-input-shadow: var(--xh-elevation-raised);
 
     display: flex;
     align-items: flex-end;
@@ -29,11 +33,19 @@
     border: var(--xh-stroke-thin) solid var(--xh-prompt-input-border, var(--xh-_prompt-input-border));
     border-radius: var(--xh-prompt-input-radius, var(--xh-shape-surface));
     background: var(--xh-prompt-input-bg, var(--xh-_prompt-input-bg));
+    box-shadow: var(--xh-prompt-input-shadow, var(--xh-_prompt-input-shadow));
   }
 
   /* 上面声明的 display 会盖掉 UA 的 [hidden]{display:none}，这里补回 */
   [data-scope='prompt-input'][data-part='root'][hidden] {
     display: none;
+  }
+
+  /* 写了输入行，root 就翻成竖排：输入框与按钮收进那一行，上下两侧腾给附件条与动作行。
+     不写就是单行，输入框与按钮并排——两种写法的皮肤是同一份 */
+  [data-scope='prompt-input'][data-part='root']:has(> [data-scope='prompt-input'][data-part='input-row']) {
+    flex-direction: column;
+    align-items: stretch;
   }
 
   /* 焦点环画在整个框上；用 focus-within 使焦点落在发送按钮时同样点亮 */
@@ -57,6 +69,7 @@
     --xh-_prompt-input-px: var(--xh-control-px-sm);
     --xh-_prompt-input-font-size: var(--xh-control-font-sm);
     --xh-_prompt-input-submit-px: var(--xh-control-px-sm);
+    --xh-icon-size: var(--xh-prompt-input-icon-size, var(--xh-glyph-size-sm));
   }
 
   [data-scope='prompt-input'][data-part='root'][data-size='md'] {
@@ -65,6 +78,7 @@
     --xh-_prompt-input-px: var(--xh-control-px-md);
     --xh-_prompt-input-font-size: var(--xh-control-font-md);
     --xh-_prompt-input-submit-px: var(--xh-control-px-md);
+    --xh-icon-size: var(--xh-prompt-input-icon-size, var(--xh-glyph-size-md));
   }
 
   [data-scope='prompt-input'][data-part='root'][data-size='lg'] {
@@ -73,6 +87,7 @@
     --xh-_prompt-input-px: var(--xh-control-px-lg);
     --xh-_prompt-input-font-size: var(--xh-control-font-lg);
     --xh-_prompt-input-submit-px: var(--xh-control-px-lg);
+    --xh-icon-size: var(--xh-prompt-input-icon-size, var(--xh-glyph-size-lg));
   }
 
   /* —— 形态 —— */
@@ -90,10 +105,24 @@
     --xh-_prompt-input-border: transparent;
   }
 
-  /* 无框：底与常态描边透明，聚焦时浮出描边 */
+  /* 无框：底与常态描边透明，聚焦时浮出描边。落影一并收掉——底都不画了，
+     一圈投影就成了没有来处的暗边 */
   [data-scope='prompt-input'][data-part='root'][data-variant='ghost'] {
     --xh-_prompt-input-bg: transparent;
     --xh-_prompt-input-border: transparent;
+    --xh-_prompt-input-shadow: none;
+  }
+
+  /* 输入行承接单行写法下落在 root 上的那份几何：输入框与按钮并排、按钮贴着底边。
+     它自己不画底也不画描边，边界仍由 root 表达 */
+  [data-scope='prompt-input'][data-part='input-row'] {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--xh-prompt-input-row-gap, var(--xh-_prompt-input-gap));
+  }
+
+  [data-scope='prompt-input'][data-part='input-row'][hidden] {
+    display: none;
   }
 
   /* 无边框透明底，融进 root 的框里；min-inline-size: 0 防止长内容把弹性子项撑出容器 */
@@ -196,5 +225,29 @@
     --xh-_fg: var(--xh-fg-disabled);
 
     cursor: not-allowed;
+  }
+
+  /* 按钮没写内容就由皮肤画兜底字形，两种身份各画一枚；
+     作者往部件里塞了自己的图形或文案，这两条即不命中 */
+  [data-scope='prompt-input'][data-part='submit-trigger'][data-mode='send']:empty::before {
+    content: '';
+    display: inline-block;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-arrow-up) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-arrow-up) center / contain no-repeat;
+  }
+
+  /* 停止身份画一枚实心圆角方块：它不是「反过来的发送」，用一个不指向任何方向的形状 */
+  [data-scope='prompt-input'][data-part='submit-trigger'][data-mode='stop']:empty::before {
+    content: '';
+    display: inline-block;
+    inline-size: var(--xh-prompt-input-stop-mark-size, calc(var(--xh-icon-size, var(--xh-glyph-size-text)) * 0.6));
+    block-size: var(--xh-prompt-input-stop-mark-size, calc(var(--xh-icon-size, var(--xh-glyph-size-text)) * 0.6));
+    vertical-align: var(--xh-glyph-baseline-shift);
+    border-radius: var(--xh-prompt-input-stop-mark-radius, var(--xh-shape-inset));
+    background-color: currentColor;
   }
 }

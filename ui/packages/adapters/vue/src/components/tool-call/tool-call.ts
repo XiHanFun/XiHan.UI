@@ -10,13 +10,15 @@ import { useToolCall } from './use-tool-call'
 
 type MachineProps = ToolCallSchema['props']
 
-/** 默认插槽的载荷：开合、阶段与在不在跑，以及一句可播报的状态文本。 */
-export type ToolCallRootSlotProps = Pick<ToolCallApi, 'open' | 'phase' | 'running' | 'disabled' | 'statusText' | 'setOpen'>
+/** 默认插槽的载荷：开合、阶段与在不在跑，一句可播报的状态文本，以及跑了多久。 */
+export type ToolCallRootSlotProps = Pick<ToolCallApi, 'open' | 'phase' | 'running' | 'disabled' | 'statusText' | 'durationMs' | 'setOpen'>
 
 export const XhToolCallRoot = defineComponent({
   name: 'XhToolCallRoot',
   props: {
     phase: { type: String as PropType<ToolCallPhase>, default: undefined },
+    startTime: { type: Number, default: undefined },
+    endTime: { type: Number, default: undefined },
     open: { type: Boolean, default: undefined },
     defaultOpen: { type: Boolean, default: undefined },
     // 用 undefined 而非裸 Boolean，缺省值由机器给出
@@ -61,6 +63,12 @@ export const XhToolCallRoot = defineComponent({
       get phase() {
         return props.phase
       },
+      get startTime() {
+        return props.startTime
+      },
+      get endTime() {
+        return props.endTime
+      },
       get tone() {
         return props.tone
       },
@@ -79,6 +87,7 @@ export const XhToolCallRoot = defineComponent({
       running: ctx.api.value.running,
       disabled: ctx.api.value.disabled,
       statusText: ctx.api.value.statusText,
+      durationMs: ctx.api.value.durationMs,
       setOpen: ctx.api.value.setOpen,
     }))
   },
@@ -108,6 +117,15 @@ export const XhToolCallName = defineComponent({
   },
 })
 
+export const XhToolCallSummary = defineComponent({
+  name: 'XhToolCallSummary',
+  setup(_, { slots }) {
+    const ctx = useToolCallContext()
+    // 一行参数摘要，收起时也看得见这次查的是什么
+    return () => h('span', ctx.api.value.getSummaryProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhToolCallStatus = defineComponent({
   name: 'XhToolCallStatus',
   setup(_, { slots }) {
@@ -118,6 +136,15 @@ export const XhToolCallStatus = defineComponent({
       ctx.api.value.getStatusProps() as Record<string, unknown>,
       slots.default?.() ?? ctx.api.value.statusText,
     )
+  },
+})
+
+export const XhToolCallDuration = defineComponent({
+  name: 'XhToolCallDuration',
+  setup(_, { slots }) {
+    const ctx = useToolCallContext()
+    // 时长文案由作者现场代入：模板串里的秒数是宿主的事，连接层不做插值
+    return () => h('span', ctx.api.value.getDurationProps() as Record<string, unknown>, slots.default?.())
   },
 })
 
@@ -134,7 +161,13 @@ export const XhToolCallContent = defineComponent({
   name: 'XhToolCallContent',
   setup(_, { slots }) {
     const ctx = useToolCallContext()
-    return () => h('div', ctx.api.value.getContentProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', {
+      ...ctx.api.value.getContentProps() as Record<string, unknown>,
+      // 收起跟着退场闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场
+      // 就一帧都播不出来），所以真正的收起落成内联 display——节点始终留在原地
+      style: ctx.visible.value ? undefined : { display: 'none' },
+      ref: (el: unknown) => { ctx.contentRef.value = el as HTMLElement },
+    }, slots.default?.())
   },
 })
 

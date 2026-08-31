@@ -52,6 +52,8 @@ export const codeViewSuite: ConformanceSuite = {
           // 语言角标是纯装饰，对读屏隐藏
           'lang-label': { 'aria-hidden': 'true' },
           'pre': {
+            // <pre> 无角色时 aria-labelledby 是无效属性，给它一个能承载可访问名的角色
+            'role': 'group',
             // 让键盘用户能聚焦并滚动溢出的代码
             'tabindex': '0',
             'data-complete': null,

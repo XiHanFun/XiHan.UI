@@ -16,7 +16,12 @@ export const knownA11yViolations: KnownViolations = {
   // 而 tag 的 root 是个没有角色的容器，禁用只表达成 data-disabled——同样的 2.36
   // 在别处 axe 看不见，在这里看得见。单独把 tag 调亮会让它与整个禁用族对不上，
   // 真要改是把 fg.disabled 整层抬上去，那是令牌层的决定，不在这条登记的范围内。
-  tag: { 'color-contrast': '禁用标签的文字是全库统一的 fg-disabled/bg-muted 一档（2.36:1），按 1.4.3 失效控件豁免；tag 的 root 没有 axe 认得的禁用语义，所以只有它被扫出来' },
+  // 输入框刻意不无条件发 aria-label：那会盖掉作者的 <label for> 与自写的 aria-label
+  // （connect 是渲染期纯函数，看不见 DOM 里有没有 <label>）。一致性夹具刻意不给
+  // translations.input，为的是钉住这条契约，于是扫出来的就是一个没有名字的 textarea。
+  // 真实用法里由作者命名：给 translations.input，或自己写 <label for> / aria-label。
+  'prompt-input': { label: '输入框的可访问名归作者，组件不无条件发 aria-label；夹具刻意不给文案以钉住这条契约' },
+  'tag': { 'color-contrast': '禁用标签的文字是全库统一的 fg-disabled/bg-muted 一档（2.36:1），按 1.4.3 失效控件豁免；tag 的 root 没有 axe 认得的禁用语义，所以只有它被扫出来' },
 }
 
 /** 全组件通用登记，整轮至少命中一次即可。 */

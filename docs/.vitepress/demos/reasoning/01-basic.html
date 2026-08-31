@@ -1,10 +1,9 @@
-<!-- 基础用法 | 想的时候自动展开、想完自动收起；时长由两个时刻算出来，任一缺席就不显示 -->
+<!-- 基础用法 | 想的时候自动展开、想完自动收起；状态文案由组件按在不在想与时长给出 -->
 <xh-reasoning id="reasoning-basic" streaming>
   <div data-xh-part="root">
     <button data-xh-part="trigger">
-      <span data-xh-part="indicator">›</span>
-      <span data-xh-part="label">思考过程</span>
-      <span data-xh-part="duration">思考中…</span>
+      <span data-xh-part="indicator"></span>
+      <span data-xh-part="label">正在思考…</span>
     </button>
     <div data-xh-part="content"></div>
   </div>
@@ -13,8 +12,15 @@
 <script type="module">
   const panel = document.getElementById("reasoning-basic");
   const body = panel.querySelector('[data-xh-part="content"]');
-  const duration = panel.querySelector('[data-xh-part="duration"]');
+  const label = panel.querySelector('[data-xh-part="label"]');
   const full = "先看约束：只读一次文件，别改它。再看目标：找出导出面。";
+
+  // 文案是对象，只走 property；{seconds} 由元素代入
+  panel.translations = {
+    label: "思考过程",
+    thinking: "正在思考…",
+    thoughtFor: "想了 {seconds} 秒",
+  };
 
   const startTime = performance.timeOrigin + performance.now();
   panel.setAttribute("start-time", String(Math.round(startTime)));
@@ -31,8 +37,8 @@
     const endTime = performance.timeOrigin + performance.now();
     panel.setAttribute("end-time", String(Math.round(endTime)));
     panel.removeAttribute("streaming");
-    // 模板串由调用方现场代入，连接层不做插值
-    duration.textContent = `用时 ${Math.round((endTime - startTime) / 100) / 10} 秒`;
+    // 状态文案由元素算好，作者把它写进名字位
+    label.textContent = panel.statusText;
   };
   tick();
 </script>

@@ -4,18 +4,26 @@
     --xh-code-view-skin: 1;
   }
 
-  /* overflow: hidden 让内部 <pre> 的滚动内容沿圆角收边；不设 display，排布由作者决定 */
+  /* 一张浮起的表面：发丝边 + 圆角 + 一档落影，overflow: hidden 让内部 <pre> 的滚动内容沿圆角收边；
+     不设 display，排布由作者决定。
+     color 给整段未着色的代码定基线，字号在这里消费一次，缺省即 sm 档。 */
   [data-scope='code-view'][data-part='root'] {
     overflow: hidden;
+    border: var(--xh-stroke-thin) solid var(--xh-code-view-border, var(--xh-border-default));
     border-radius: var(--xh-code-view-radius, var(--xh-shape-surface));
-    background: var(--xh-code-view-bg, var(--xh-bg-subtle));
+    background: var(--xh-code-view-bg, var(--xh-bg-surface));
+    box-shadow: var(--xh-code-view-shadow, var(--xh-elevation-raised));
+    color: var(--xh-code-view-fg, var(--xh-fg-muted));
+    font-size: var(--xh-code-view-font-size, var(--xh-control-font-sm));
   }
 
+  /* min-block-size 给头部条一个不随内容塌陷的定高：只放文件名时与放进按钮时一样高 */
   [data-scope='code-view'][data-part='header'] {
     display: flex;
+    min-block-size: var(--xh-code-view-header-h, var(--xh-control-h-lg));
     align-items: center;
     gap: var(--xh-code-view-header-gap, var(--xh-space-2));
-    padding-inline: var(--xh-code-view-header-px, var(--xh-space-3));
+    padding-inline: var(--xh-code-view-header-px, var(--xh-space-4));
     padding-block: var(--xh-code-view-header-py, var(--xh-space-2));
     border-block-end: var(--xh-stroke-thin) solid var(--xh-code-view-header-border, var(--xh-border-subtle));
     color: var(--xh-code-view-header-fg, var(--xh-fg-muted));
@@ -105,13 +113,17 @@
   }
 
   /* 行号是画上去的不是写上去的：复制代码不带它，读屏也不逐行念数字。
-     节点本身由适配器按 lineNumbers 决定渲不渲，槽宽按 root 上的位数枚举定，见下方 data-digits 各档。 */
+     节点本身由适配器按 lineNumbers 决定渲不渲，槽宽按 root 上的位数枚举定，见下方 data-digits 各档。
+     行与行之间无间隙，逐行的右边框首尾相接连成一条分隔线；行号比正文小一档、右对齐，多位数才齐。 */
   [data-scope='code-view'][data-part='line-number'] {
     display: block;
     box-sizing: content-box;
     flex: 0 0 auto;
-    padding-inline: var(--xh-code-view-px, var(--xh-space-3));
+    padding-inline-start: var(--xh-code-view-px, var(--xh-space-3));
+    padding-inline-end: var(--xh-code-view-gutter-gap, var(--xh-space-1));
+    border-inline-end: var(--xh-stroke-thin) solid var(--xh-code-view-gutter-border, var(--xh-border-default));
     color: var(--xh-code-view-number-fg, var(--xh-fg-subtle));
+    font-size: var(--xh-code-view-number-font-size, var(--xh-text-caption-size));
     inline-size: var(--xh-_code-view-gutter);
     text-align: end;
     user-select: none;
@@ -212,17 +224,18 @@
     outline-offset: calc(-1 * var(--xh-ring-width));
   }
 
-  /* 尺寸档只改字号与行高，行号槽随字号一起走 */
+  /* 尺寸档给槽赋值、由 root 基础规则消费一次：缺省与阶梯是同一个口子，
+     作者设了 --xh-code-view-font-size 不会被这三条盖掉。行号槽随字号一起走 */
   [data-scope='code-view'][data-part='root'][data-size='sm'] {
-    font-size: var(--xh-control-font-sm);
+    --xh-code-view-font-size: var(--xh-control-font-sm);
   }
 
   [data-scope='code-view'][data-part='root'][data-size='md'] {
-    font-size: var(--xh-control-font-md);
+    --xh-code-view-font-size: var(--xh-control-font-md);
   }
 
   [data-scope='code-view'][data-part='root'][data-size='lg'] {
-    font-size: var(--xh-control-font-lg);
+    --xh-code-view-font-size: var(--xh-control-font-lg);
   }
 
   /* 语法配色：注释与标点复用既有语义色，三种真需要色相的走 --xh-syntax-* 语法令牌（随主题明暗切换）。 */

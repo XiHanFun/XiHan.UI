@@ -7,6 +7,7 @@ export { APPROVAL_DENY_SELECTOR, canApproveScopes } from './approval.types'
 export type {
   ApprovalApi,
   ApprovalDecisionDetails,
+  ApprovalNoteChangeDetails,
   ApprovalSchema,
   ApprovalScope,
   ApprovalScopesChangeDetails,

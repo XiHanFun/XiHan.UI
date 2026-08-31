@@ -1,7 +1,7 @@
 import type { CodeToken, NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { DiffChange, DiffLine, DiffModel } from './diff-view.model'
-import type { DiffSide, DiffViewApi, DiffViewCellProps, DiffViewRow, DiffViewSchema } from './diff-view.types'
+import type { DiffSide, DiffViewApi, DiffViewCellProps, DiffViewRow, DiffViewSchema, DiffViewSegment } from './diff-view.types'
 import { dataAttr } from '@xihan-ui/kernel'
 import { diffViewAnatomy } from './diff-view.anatomy'
 import { diffStats } from './diff-view.model'
@@ -10,6 +10,7 @@ const parts = diffViewAnatomy.build()
 
 const EMPTY_MODEL: DiffModel = { hunks: [] }
 const NO_TOKENS: readonly CodeToken[] = []
+const NO_SEGMENTS: readonly DiffViewSegment[] = []
 
 /**
  * 把模型摊成可见行序：hunk 内远离变更的连续上下文折成一格。
@@ -49,8 +50,9 @@ function buildRows(model: DiffModel, contextLines: number | undefined, expanded:
       for (let j = start; j < start + head; j++)
         rows.push({ kind: 'line', rowIndex: rows.length + 1, line: lines[j]! })
       if (expanded.includes(gapId)) {
+        // 标出「是点开才露出来的」：皮肤据此给这几行播一次入场
         for (let j = start + head; j < i - tail; j++)
-          rows.push({ kind: 'line', rowIndex: rows.length + 1, line: lines[j]! })
+          rows.push({ kind: 'line', rowIndex: rows.length + 1, line: lines[j]!, revealed: true })
       }
       else {
         rows.push({ kind: 'gap', rowIndex: rows.length + 1, gapId, hiddenCount: hidden })
@@ -60,6 +62,42 @@ function buildRows(model: DiffModel, contextLines: number | undefined, expanded:
     }
   })
   return rows
+}
+
+/**
+ * 把整行的着色记号按词级片段的边界切开，切完每一段各自带着自己那几个记号。
+ *
+ * 记号总长与片段总长对不上时（着色来自另一份文本）整行退回不着色：宁可不着色也不错着色。
+ */
+function sliceSegments(
+  segments: readonly { text: string, changed: boolean }[],
+  tokens: readonly CodeToken[] | undefined,
+): readonly DiffViewSegment[] {
+  const textLength = segments.reduce((n, segment) => n + segment.text.length, 0)
+  const tokenLength = tokens?.reduce((n, token) => n + token.text.length, 0) ?? -1
+  if (!tokens || tokenLength !== textLength)
+    return segments.map(segment => ({ text: segment.text, changed: segment.changed, tokens: NO_TOKENS }))
+
+  const out: DiffViewSegment[] = []
+  let index = 0
+  let taken = 0
+  for (const segment of segments) {
+    const pieces: CodeToken[] = []
+    let need = segment.text.length
+    while (need > 0 && index < tokens.length) {
+      const token = tokens[index]!
+      const take = Math.min(token.text.length - taken, need)
+      pieces.push({ kind: token.kind, text: token.text.slice(taken, taken + take) })
+      taken += take
+      need -= take
+      if (taken >= token.text.length) {
+        index++
+        taken = 0
+      }
+    }
+    out.push({ text: segment.text, changed: segment.changed, tokens: pieces })
+  }
+  return out
 }
 
 /** 这一行在这一侧有没有内容。unified 只有一列，恒有。 */
@@ -120,6 +158,13 @@ export function connectDiffView<T extends PropTypes>(
     return hasSide(line, side, split) ? line!.tokens ?? NO_TOKENS : NO_TOKENS
   }
 
+  const cellSegments = ({ rowIndex, side }: DiffViewCellProps): readonly DiffViewSegment[] => {
+    const line = lineAt(rowIndex)
+    if (!hasSide(line, side, split) || !line!.segments?.length)
+      return NO_SEGMENTS
+    return sliceSegments(line!.segments, line!.tokens)
+  }
+
   return {
     view,
     rows,
@@ -135,12 +180,19 @@ export function connectDiffView<T extends PropTypes>(
       ...parts.root.attrs,
       'data-view': view,
       'data-size': prop('size'),
+      'data-wrap': dataAttr(prop('wrap') === true),
       'data-truncated': dataAttr(model.truncated === true),
     }),
 
     getHeaderProps: () => normalize.element({
       ...parts.header.attrs,
       id: ids.header,
+    }),
+
+    // 增删各一个：数字由适配器从 stats 取，皮肤按 data-change 上色
+    getStatProps: ({ change }) => normalize.element({
+      ...parts.stat.attrs,
+      'data-change': change,
     }),
 
     // 唯一的 Tab 停靠点，横纵滚动交给浏览器
@@ -164,6 +216,7 @@ export function connectDiffView<T extends PropTypes>(
       ...parts.row.attrs,
       'aria-rowindex': rowIndex,
       'data-change': lineAt(rowIndex)?.change,
+      'data-revealed': dataAttr(rowAt(rowIndex)?.revealed === true),
     }),
 
     // 不给 role、不给列号：行号不是内容列。皮肤用 attr() 画，复制差异不带行号
@@ -172,6 +225,7 @@ export function connectDiffView<T extends PropTypes>(
       'aria-hidden': true,
       'data-side': side,
       'data-line-number': cellNumber({ rowIndex, side })?.toString(),
+      'data-change': lineAt(rowIndex)?.change,
     }),
 
     // split 下空侧照发 cell，否则列号会串位
@@ -188,6 +242,12 @@ export function connectDiffView<T extends PropTypes>(
     getChangeLabelProps: ({ change }) => normalize.element({
       ...parts['change-label'].attrs,
       'data-change': change,
+    }),
+
+    // 只有变更处的那几段发 data-change，未变的段落是纯包裹、不着色
+    getSegmentProps: ({ rowIndex, changed }) => normalize.element({
+      ...parts.segment.attrs,
+      'data-change': changed ? lineAt(rowIndex)?.change : undefined,
     }),
 
     getTokenProps: token => normalize.element({
@@ -228,6 +288,7 @@ export function connectDiffView<T extends PropTypes>(
     cellText,
     cellNumber,
     cellTokens,
+    cellSegments,
   }
 }
 

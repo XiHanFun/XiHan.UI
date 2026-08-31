@@ -4,17 +4,46 @@
     --xh-reasoning-skin: 1;
   }
 
-  /* 比工具调用轻一档：思考过程是旁注不是主体，只用底色分区、不画描边 */
+  /* 一张轻表面：底色分区、静态抬起，描边留给形态轴按档打开 */
   [data-scope='reasoning'][data-part='root'] {
+    /* 作者塞进两个图形位的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+    --xh-icon-size: var(--xh-reasoning-icon-size, var(--xh-glyph-size-text));
+
+    /* 海拔先落进私有槽：语气档要把它与左侧色条叠成一条 box-shadow，无壳档把它关掉 */
+    --xh-_reasoning-shadow: var(--xh-reasoning-shadow, var(--xh-elevation-raised));
+
     display: block;
     overflow: hidden;
+    border: var(--xh-stroke-thin) solid transparent;
     border-radius: var(--xh-reasoning-radius, var(--xh-shape-surface));
     background: var(--xh-reasoning-bg, var(--xh-bg-subtle));
+    box-shadow: var(--xh-_reasoning-shadow);
   }
 
   /* 上面声明的 display 会盖掉 UA 的 [hidden]{display:none}，这里补回 */
   [data-scope='reasoning'][data-part='root'][hidden] {
     display: none;
+  }
+
+  /* —— 形态 —— */
+  /* 缺省档即 subtle，写在上面那条基础规则里 */
+  [data-scope='reasoning'][data-part='root'][data-variant='outline'] {
+    border-color: var(--xh-reasoning-border, var(--xh-border-subtle));
+    background: var(--xh-reasoning-bg, var(--xh-bg-surface));
+  }
+
+  /* 无壳内联：思考过程贴着正文走，不占一块面 */
+  [data-scope='reasoning'][data-part='root'][data-variant='ghost'] {
+    --xh-_reasoning-shadow: 0 0 0 transparent;
+
+    overflow: visible;
+    background: none;
+  }
+
+  /* 无壳档的开关只占文字宽度，自己带圆角，悬停时才浮出一块底 */
+  [data-scope='reasoning'][data-part='root'][data-variant='ghost'] [data-scope='reasoning'][data-part='trigger'] {
+    inline-size: auto;
+    border-radius: var(--xh-reasoning-trigger-radius, var(--xh-shape-control));
   }
 
   [data-scope='reasoning'][data-part='trigger'] {
@@ -58,31 +87,105 @@
     cursor: not-allowed;
   }
 
-  /* 指示随开合转向，纯装饰 */
+  /* 状态图形位：在想的时候实一档，想完退回弱一档 */
+  [data-scope='reasoning'][data-part='icon'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    color: var(--xh-reasoning-icon-fg, var(--xh-fg-subtle));
+    transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='reasoning'][data-part='icon'][data-streaming] {
+    color: var(--xh-reasoning-icon-streaming-fg, var(--xh-fg-muted));
+  }
+
+  [data-scope='reasoning'][data-part='icon'][hidden] {
+    display: none;
+  }
+
+  /* 指示随开合转向，纯装饰。转向与正文展开取同一档时长，两件事一起收尾 */
   [data-scope='reasoning'][data-part='indicator'] {
     display: inline-flex;
     flex: none;
     align-items: center;
     justify-content: center;
     color: var(--xh-reasoning-indicator-fg, var(--xh-fg-subtle));
-    transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition: rotate var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  }
+
+  /* 没写内容就由皮肤画；作者往部件里塞了自己的图形，这条规则即不命中 */
+  [data-scope='reasoning'][data-part='indicator']:empty::before {
+    content: '';
+    display: inline-block;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
+  }
+
+  [data-scope='reasoning'][data-part='indicator'][data-state='open'] {
+    rotate: 180deg;
   }
 
   [data-scope='reasoning'][data-part='indicator'][hidden] {
     display: none;
   }
 
-  [data-scope='reasoning'][data-part='indicator'][data-state='open'] {
-    rotate: 90deg;
-  }
-
+  /* 状态文案排成一行，长了截断：换行会把开关的高度顶开，时长位跟着跳 */
   [data-scope='reasoning'][data-part='label'] {
     display: block;
     flex: 1 1 auto;
+    overflow: hidden;
+    font-weight: var(--xh-reasoning-label-font-weight, var(--xh-text-label-weight));
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
 
   [data-scope='reasoning'][data-part='label'][hidden] {
     display: none;
+  }
+
+  /* 还在想：一道亮带在文字上从右往左扫，字色由这层渐变裁出来 */
+  [data-scope='reasoning'][data-part='label'][data-streaming] {
+    background-image: linear-gradient(
+      90deg,
+      var(--xh-reasoning-shimmer-from, var(--xh-fg-subtle)) 35%,
+      var(--xh-reasoning-shimmer-to, var(--xh-fg-default)) 50%,
+      var(--xh-reasoning-shimmer-from, var(--xh-fg-subtle)) 65%
+    );
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: xh-reasoning-shimmer var(--xh-reasoning-shimmer-duration, var(--xh-shimmer-duration)) linear infinite;
+  }
+
+  /*
+   * 减少动效：撤掉扫光那层，换成一档更实的静态字色。
+   * 这里不能只把时长压到接近零——光带会停在某一帧上，在文字上留下一道说不清的渐变；
+   * 而撤掉渐变又不还字色的话，被裁成透明的文字会整句消失。
+   * 两条规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion。
+   */
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope='reasoning'][data-part='label'][data-streaming] {
+      background-image: none;
+      -webkit-background-clip: border-box;
+      background-clip: border-box;
+      color: var(--xh-reasoning-label-streaming-fg, var(--xh-fg-default));
+      animation: none;
+    }
+  }
+
+  :where([data-motion='reduce']) [data-scope='reasoning'][data-part='label'][data-streaming] {
+    background-image: none;
+    -webkit-background-clip: border-box;
+    background-clip: border-box;
+    color: var(--xh-reasoning-label-streaming-fg, var(--xh-fg-default));
+    animation: none;
   }
 
   [data-scope='reasoning'][data-part='duration'] {
@@ -97,18 +200,39 @@
     display: none;
   }
 
-  /* 思考正文是散文：段落排版，不用等宽 */
+  /* 想完那一下两句文案整句换掉，淡入接住这次替换 */
+  [data-scope='reasoning'][data-part='label']:not([data-streaming]),
+  [data-scope='reasoning'][data-part='duration']:not([data-streaming]) {
+    animation: xh-reasoning-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) both;
+  }
+
+  /*
+   * 思考正文是散文：段落排版，不用等宽，行距比正文松一档。
+   * 左侧一条轨迹线把这一段与开关分开，起点对齐开关里的图形位。
+   *
+   * 这里刻意没有 [data-part='content'][hidden] { display: none }：补了动画一帧都播不出来。
+   * 收起由适配器在退场结束后写内联 display 落成，退场窗口内靠 connect 发的 inert 挡住焦点。
+   */
   [data-scope='reasoning'][data-part='content'] {
-    display: block;
-    padding-inline: var(--xh-reasoning-px, var(--xh-space-3));
+    display: grid;
+    grid-template-rows: 1fr;
+    overflow: clip;
+    margin-inline-start: var(--xh-reasoning-rail-inset, var(--xh-reasoning-px, var(--xh-space-3)));
+    border-inline-start: var(--xh-reasoning-rail-width, var(--xh-stroke-thin)) solid var(--xh-reasoning-rail, var(--xh-border-subtle));
+    padding-inline-start: var(--xh-reasoning-content-ps, var(--xh-space-3));
+    padding-inline-end: var(--xh-reasoning-content-pe, var(--xh-reasoning-px, var(--xh-space-3)));
     padding-block-end: var(--xh-reasoning-py, var(--xh-space-2));
     color: var(--xh-reasoning-content-fg, var(--xh-fg-muted));
     font-size: var(--xh-reasoning-content-font-size, var(--xh-text-secondary-size));
-    line-height: var(--xh-text-body-leading);
+    line-height: var(--xh-reasoning-content-leading, var(--xh-text-prose-leading));
   }
 
-  [data-scope='reasoning'][data-part='content'][hidden] {
-    display: none;
+  [data-scope='reasoning'][data-part='content'][data-state='open'] {
+    animation: xh-reasoning-expand var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  }
+
+  [data-scope='reasoning'][data-part='content'][data-state='closed'] {
+    animation: xh-reasoning-collapse var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
   /* 尺寸档只改内衬与字号 */
@@ -130,8 +254,59 @@
     --xh-reasoning-font-size: var(--xh-control-font-lg);
   }
 
-  /* 语气只染左侧那一条色条 */
+  /* 语气只染左侧那一条色条，海拔跟着一起落在同一条 box-shadow 上 */
   [data-scope='reasoning'][data-part='root'][data-tone] {
-    box-shadow: inset var(--xh-reasoning-tone-bar, var(--xh-stroke-thick)) 0 0 0 var(--xh-reasoning-tone-fg, var(--xh-_tone-soft, var(--xh-bg-brand)));
+    box-shadow:
+      inset var(--xh-reasoning-tone-bar, var(--xh-stroke-thick)) 0 0 0 var(--xh-reasoning-tone-fg, var(--xh-_tone-soft, var(--xh-bg-brand))),
+      var(--xh-_reasoning-shadow);
+  }
+}
+
+@layer xihan.motion {
+  /* 行高与内缩同帧动：内缩不归零的话，border-box 会把盒子钳在下内缩上，收不干净 */
+  @keyframes xh-reasoning-expand {
+    from {
+      grid-template-rows: 0fr;
+      padding-block-end: 0;
+    }
+
+    to {
+      grid-template-rows: 1fr;
+      padding-block-end: var(--xh-reasoning-py, var(--xh-space-2));
+    }
+  }
+
+  @keyframes xh-reasoning-collapse {
+    from {
+      grid-template-rows: 1fr;
+      padding-block-end: var(--xh-reasoning-py, var(--xh-space-2));
+    }
+
+    to {
+      grid-template-rows: 0fr;
+      padding-block-end: 0;
+    }
+  }
+
+  /* 文案整句换掉时接住这次替换 */
+  @keyframes xh-reasoning-fade-in {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* 亮带从右往左扫过文字。背景图比自身宽一倍，只移动背景位置，不动布局 */
+  @keyframes xh-reasoning-shimmer {
+    from {
+      background-position: 150% center;
+    }
+
+    to {
+      background-position: -50% center;
+    }
   }
 }

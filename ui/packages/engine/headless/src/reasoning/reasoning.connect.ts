@@ -4,7 +4,7 @@ import type { ToolCallSchema } from '../tool-call'
 import type { ReasoningApi, ReasoningProps } from './reasoning.types'
 import { dataAttr } from '@xihan-ui/kernel'
 import { reasoningAnatomy } from './reasoning.anatomy'
-import { reasoningDuration } from './reasoning.types'
+import { reasoningDuration, reasoningStatusText } from './reasoning.types'
 
 const parts = reasoningAnatomy.build()
 
@@ -26,6 +26,7 @@ export function connectReasoning<T extends PropTypes>(
   const streaming = !!props.streaming
   const ids = scope.ids('reasoning', 'trigger', 'content')
   const stateAttr = open ? 'open' : 'closed'
+  const durationMs = reasoningDuration(props.startTime, props.endTime)
 
   const setOpen = (next: boolean): void => {
     if (next !== open)
@@ -36,7 +37,8 @@ export function connectReasoning<T extends PropTypes>(
     open,
     streaming,
     disabled,
-    durationMs: reasoningDuration(props.startTime, props.endTime),
+    durationMs,
+    statusText: reasoningStatusText(streaming, durationMs, props.translations),
     setOpen,
 
     // 不发 aria-busy：全族只认会话级的那一个活区
@@ -44,6 +46,7 @@ export function connectReasoning<T extends PropTypes>(
       ...parts.root.attrs,
       'data-state': stateAttr,
       'data-streaming': dataAttr(streaming),
+      'data-variant': props.variant,
       'data-tone': props.tone,
       'data-size': props.size,
       'data-disabled': dataAttr(disabled),
@@ -67,6 +70,13 @@ export function connectReasoning<T extends PropTypes>(
       },
     }),
 
+    // 状态图形位：跟着在不在想换色，对读屏隐藏——它说的话 label 已经说过了
+    getIconProps: () => normalize.element({
+      ...parts.icon.attrs,
+      'aria-hidden': true,
+      'data-streaming': dataAttr(streaming),
+    }),
+
     getIndicatorProps: () => normalize.element({
       ...parts.indicator.attrs,
       'aria-hidden': true,
@@ -75,6 +85,7 @@ export function connectReasoning<T extends PropTypes>(
 
     getLabelProps: () => normalize.element({
       ...parts.label.attrs,
+      'data-streaming': dataAttr(streaming),
     }),
 
     getDurationProps: () => normalize.element({

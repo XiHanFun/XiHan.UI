@@ -15,5 +15,7 @@ export type {
   DiffViewRow,
   DiffViewRowProps,
   DiffViewSchema,
+  DiffViewSegment,
+  DiffViewSegmentProps,
   DiffViewTranslations,
 } from './diff-view.types'

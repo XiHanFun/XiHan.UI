@@ -19,12 +19,17 @@
 - 「想了多久」由两个时刻算出来，**任一缺席即算不出来**——流被中止时兜底收尾不写结束时刻，
   推理块会只有起点没有终点，这一档必须接得住。
 - 名字与时长都排在开关里，「思考过程，用时 12 秒」整句自然构成开关的可访问名。
+- 状态文案由组件给：在想时是「在想」那一句，想完把秒数代进 `thoughtFor` 的 `{seconds}`，
+  算不出时长就回落折叠区的名字。名字位不写内容时显示的就是它。
+- 形态三档：`outline` 描边、`subtle` 底色分区（缺省档）、`ghost` 无壳内联——
+  一段回答里穿插好几处思考时用 `ghost`，它不占一块面，开关收成只占文字宽度的一枚小药丸。
+- 开合有动画：展开与收起是行高与内缩同帧动，收起在动画播完之后才真的落成隐藏。
 
 ## 示例
 
 ### 基础用法
 
-想的时候自动展开、想完自动收起；时长由两个时刻算出来，任一缺席就不显示
+想的时候自动展开、想完自动收起；状态文案由组件按在不在想与时长给出
 
 <XhDemo src="reasoning/01-basic" />
 
@@ -33,7 +38,7 @@
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-reasoning>` |
-| Vue 组件 | `XhReasoningContent` `XhReasoningDuration` `XhReasoningIndicator` `XhReasoningLabel` `XhReasoningRoot` `XhReasoningTrigger` |
+| Vue 组件 | `XhReasoningContent` `XhReasoningDuration` `XhReasoningIcon` `XhReasoningIndicator` `XhReasoningLabel` `XhReasoningRoot` `XhReasoningTrigger` |
 | 组合式函数 | `useReasoning` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/reasoning.css` |
@@ -42,7 +47,7 @@
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="reasoning"`：**`root`** · **`trigger`** · `indicator` · `label` · `duration` · **`content`**
+`data-scope="reasoning"`：**`root`** · **`trigger`** · `icon` · `indicator` · `label` · `duration` · **`content`**
 
 ## Props
 
@@ -54,6 +59,7 @@
 | `streaming` | `boolean` |  | 还在思考。适配器把它折成机器的 running。 |
 | `tone` | `Tone` |  |  |
 | `translations` | `Partial<ReasoningTranslations>` |  |  |
+| `variant` | `ControlVariant` |  | 形态：outline 描边、subtle 底色分区（缺省档）、ghost 无壳内联。 |
 
 ## 事件
 
@@ -92,9 +98,11 @@
 | `streaming` | `boolean` |  |
 | `disabled` | `boolean` |  |
 | `durationMs` | `number \| undefined` | 想了多久，毫秒；两个时刻任一缺席即 undefined。 |
+| `statusText` | `string` | 当前该显示哪句状态文案，已按 streaming 与时长选好。 |
 | `setOpen` | `(next: boolean) => void` |  |
 | `getRootProps` | `() => T['element']` |  |
 | `getTriggerProps` | `() => T['button']` |  |
+| `getIconProps` | `() => T['element']` |  |
 | `getIndicatorProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['element']` |  |
 | `getDurationProps` | `() => T['element']` |  |
@@ -116,6 +124,7 @@
 | --- | --- | --- |
 | `trigger` | `aria-controls` | `content` 部件的 id |
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
+| `icon` | `aria-hidden` | 'true' |
 | `indicator` | `aria-hidden` | 'true' |
 | `content` | `aria-labelledby` | `trigger` 部件的 id |
 | `content` | `role` | 'region' |
@@ -126,7 +135,7 @@
 
 ## 样式
 
-默认皮肤 `@xihan-ui/styles/reasoning.css` 按部件选择：`[data-scope="reasoning"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+默认皮肤 `@xihan-ui/styles/reasoning.css` 按部件选择：`[data-scope="reasoning"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
 
 ## 数据属性
 
@@ -139,10 +148,13 @@
 | `root` | `data-state` | 'open' \| 'closed' |
 | `root` | `data-streaming` | ''（条件成立时才出现） |
 | `root` | `data-tone` | props.tone |
+| `root` | `data-variant` | props.variant |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `trigger` | `data-state` | 'open' \| 'closed' |
 | `trigger` | `data-streaming` | ''（条件成立时才出现） |
+| `icon` | `data-streaming` | ''（条件成立时才出现） |
 | `indicator` | `data-state` | 'open' \| 'closed' |
+| `label` | `data-streaming` | ''（条件成立时才出现） |
 | `duration` | `data-streaming` | ''（条件成立时才出现） |
 | `content` | `data-state` | 'open' \| 'closed' |
 
@@ -150,13 +162,13 @@
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-reasoning-bg` · `--xh-reasoning-content-fg` · `--xh-reasoning-content-font-size` · `--xh-reasoning-duration-fg` · `--xh-reasoning-duration-font-size` · `--xh-reasoning-font-size` · `--xh-reasoning-indicator-fg` · `--xh-reasoning-px` · `--xh-reasoning-py` · `--xh-reasoning-radius` · `--xh-reasoning-tone-bar` · `--xh-reasoning-tone-fg` · `--xh-reasoning-trigger-bg-hover` · `--xh-reasoning-trigger-fg` · `--xh-reasoning-trigger-gap`
+`--xh-reasoning-bg` · `--xh-reasoning-border` · `--xh-reasoning-content-fg` · `--xh-reasoning-content-font-size` · `--xh-reasoning-content-leading` · `--xh-reasoning-content-pe` · `--xh-reasoning-content-ps` · `--xh-reasoning-duration-fg` · `--xh-reasoning-duration-font-size` · `--xh-reasoning-font-size` · `--xh-reasoning-icon-fg` · `--xh-reasoning-icon-size` · `--xh-reasoning-icon-streaming-fg` · `--xh-reasoning-indicator-fg` · `--xh-reasoning-label-font-weight` · `--xh-reasoning-label-streaming-fg` · `--xh-reasoning-px` · `--xh-reasoning-py` · `--xh-reasoning-radius` · `--xh-reasoning-rail` · `--xh-reasoning-rail-inset` · `--xh-reasoning-rail-width` · `--xh-reasoning-shadow` · `--xh-reasoning-shimmer-duration` · `--xh-reasoning-shimmer-from` · `--xh-reasoning-shimmer-to` · `--xh-reasoning-tone-bar` · `--xh-reasoning-tone-fg` · `--xh-reasoning-trigger-bg-hover` · `--xh-reasoning-trigger-fg` · `--xh-reasoning-trigger-gap` · `--xh-reasoning-trigger-radius`
 
 ## 动效
 
-状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-reasoning-collapse` · `xh-reasoning-expand` · `xh-reasoning-fade-in` · `xh-reasoning-shimmer` 随皮肤自带，不引用别处文件里的名字；状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
-系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+`prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
 ## RTL
 
@@ -165,7 +177,10 @@
 ## 组合
 
 - 正文用[流式正文](./markdown-stream)：思考过程是散文，与工具调用的等宽结构块不同。
+  正文**放在一个容器里**：展开动画量的是第一行的行高，散落的多个兄弟节点收不干净。
 - 多段推理并排、要一次只展开一段时套[手风琴](./accordion)。
+- 要让「在想 → 想完」被读屏播报：把会话级的那一个活区放在推理块外面，
+  由它念一句结果——组件自己不开活区（见下），整段思考每来一个字都播报会把读屏刷爆。
 
 ## 最佳实践
 

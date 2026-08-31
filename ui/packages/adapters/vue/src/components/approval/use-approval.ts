@@ -12,6 +12,7 @@ type Props = ApprovalSchema['props']
 export interface ApprovalCallbacks {
   onDecision?: Props['onDecision']
   onGrantedScopesChange?: Props['onGrantedScopesChange']
+  onNoteChange?: Props['onNoteChange']
 }
 
 export interface ApprovalContext {

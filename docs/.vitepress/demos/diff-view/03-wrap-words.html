@@ -1,0 +1,82 @@
+<!-- 长行换行与词级差异 | 开 wrap 让长行原地折行；配对的删改行之间再比一次词，只有真正动过的那几段上底色 -->
+<xh-diff-view id="diff-view-wrap" wrap>
+  <div data-xh-part="root">
+    <div data-xh-part="header">
+      <span>src/client.ts</span>
+      <span data-xh-part="stat" data-change="added"></span>
+      <span data-xh-part="stat" data-change="removed"></span>
+    </div>
+    <div data-xh-part="viewport">
+      <div data-xh-part="body"></div>
+    </div>
+  </div>
+</xh-diff-view>
+
+<script type="module">
+  // 真实应用里这份模型来自 computeTextDiff，词级片段也由它算好；
+  // 这份示例是裸 HTML、没有打包器，所以把模型直接写在这里
+  const view = document.getElementById("diff-view-wrap");
+  view.model = {
+    hunks: [
+      {
+        header: "@@ -1,3 +1,3 @@",
+        oldStart: 1,
+        oldLines: 3,
+        newStart: 1,
+        newLines: 3,
+        lines: [
+          {
+            change: "removed",
+            oldNumber: 1,
+            text: 'const endpoint = "https://api.example.com/v1/workspaces/{id}/documents?include=revisions&limit=50"',
+            segments: [
+              { text: 'const endpoint = "https://api.example.com/', changed: false },
+              { text: "v1", changed: true },
+              { text: "/workspaces/{id}/documents?include=revisions&limit=", changed: false },
+              { text: "50", changed: true },
+              { text: '"', changed: false },
+            ],
+          },
+          {
+            change: "added",
+            newNumber: 1,
+            text: 'const endpoint = "https://api.example.com/v2/workspaces/{id}/documents?include=revisions,authors&limit=100"',
+            segments: [
+              { text: 'const endpoint = "https://api.example.com/', changed: false },
+              { text: "v2", changed: true },
+              { text: "/workspaces/{id}/documents?include=revisions", changed: false },
+              { text: ",authors", changed: true },
+              { text: "&limit=", changed: false },
+              { text: "100", changed: true },
+              { text: '"', changed: false },
+            ],
+          },
+          {
+            change: "removed",
+            oldNumber: 2,
+            text: "const timeout = 3000",
+            segments: [
+              { text: "const timeout = ", changed: false },
+              { text: "3000", changed: true },
+            ],
+          },
+          {
+            change: "added",
+            newNumber: 2,
+            text: "const timeout = 8000",
+            segments: [
+              { text: "const timeout = ", changed: false },
+              { text: "8000", changed: true },
+            ],
+          },
+          {
+            change: "context",
+            oldNumber: 3,
+            newNumber: 3,
+            text: "export const client = createClient({ endpoint, timeout })",
+          },
+        ],
+      },
+    ],
+  };
+</script>

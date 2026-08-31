@@ -22,10 +22,16 @@ export interface ApprovalDecisionDetails {
   source: 'user' | 'timeout' | 'escape' | 'unmount' | 'api'
   /** 判定那一刻已勾选的授权项。勾选与判定是原子的，不存在「已批准但范围还没同步」的窗口。 */
   scopes: string[]
+  /** 判定那一刻备注里的文字。备注为空时不带这一格。 */
+  note?: string
 }
 
 export interface ApprovalScopesChangeDetails {
   value: string[]
+}
+
+export interface ApprovalNoteChangeDetails {
+  value: string
 }
 
 /**
@@ -50,6 +56,12 @@ export interface ApprovalSchema extends MachineSchema {
     scopes?: readonly ApprovalScope[]
     grantedScopes?: readonly string[]
     defaultGrantedScopes?: readonly string[]
+    /**
+     * 附在判定上的一句自由文本。给定即受控。
+     * 它只随判定载荷发出，不参与「必选项勾满了没有」的判断。
+     */
+    note?: string
+    defaultNote?: string
     /** 判定在途：只挡重复批准，不挡拒绝。 */
     busy?: boolean
     /** Escape 判为拒绝，默认开。 */
@@ -67,9 +79,11 @@ export interface ApprovalSchema extends MachineSchema {
     translations?: Partial<ApprovalTranslations>
     onDecision?: (details: ApprovalDecisionDetails) => void
     onGrantedScopesChange?: (details: ApprovalScopesChangeDetails) => void
+    onNoteChange?: (details: ApprovalNoteChangeDetails) => void
   }
   context: {
     grantedScopes: string[]
+    note: string
   }
   computed: Record<string, never>
   refs: Record<string, never>
@@ -79,6 +93,7 @@ export interface ApprovalSchema extends MachineSchema {
     | { type: 'DENY', source: ApprovalDecisionDetails['source'] }
     | { type: 'SCOPE.TOGGLE', value: string }
     | { type: 'SCOPE.SET', value: string[] }
+    | { type: 'NOTE.SET', value: string }
     /** 到点。只声明在待决态上，迟到的定时事件落地即静默丢弃。 */
     | { type: 'after.timeout' }
     // 受控回写：宿主改 status 后由 watch 派发，无条件跳转、不再通知
@@ -97,6 +112,8 @@ export interface ApprovalSchema extends MachineSchema {
     | 'toggleScope'
     | 'setScopes'
     | 'resetScopes'
+    | 'setNote'
+    | 'resetNote'
     | 'denyIfPending'
     | 'resetRequest'
     | 'syncStatus'
@@ -109,6 +126,8 @@ export interface ApprovalApi<T extends PropTypes = PropTypes> {
   settled: boolean
   busy: boolean
   grantedScopes: string[]
+  /** 备注里的文字；没写过是空串。 */
+  note: string
   /** 必选项是不是都勾满了。 */
   canApprove: boolean
   /** 按 status 选出的那一句播报文本；announce 关掉时作者不渲那个部件即可。 */
@@ -116,6 +135,7 @@ export interface ApprovalApi<T extends PropTypes = PropTypes> {
   approve: () => void
   deny: () => void
   setGrantedScopes: (next: string[]) => void
+  setNote: (next: string) => void
   isScopeGranted: (value: string) => boolean
   getRootProps: () => T['element']
   getTitleProps: () => T['element']
@@ -125,7 +145,10 @@ export interface ApprovalApi<T extends PropTypes = PropTypes> {
   getScopeItemProps: (scope: ApprovalScope) => T['element']
   getScopeIndicatorProps: (scope: ApprovalScope) => T['element']
   getScopeLabelProps: (scope: ApprovalScope) => T['element']
+  getNoteProps: () => T['input']
   getTimerProps: () => T['element']
+  getResultProps: () => T['element']
+  getActionsProps: () => T['element']
   getApproveTriggerProps: () => T['button']
   getDenyTriggerProps: () => T['button']
 }
@@ -135,6 +158,10 @@ export interface ApprovalTranslations {
   deny: string
   /** 授权项那一组的名字。 */
   scopes: string
+  /** 备注那一格的名字。 */
+  note: string
+  /** 备注那一格的占位文字；不给就不产出 placeholder。 */
+  notePlaceholder: string
   pending: string
   approved: string
   denied: string

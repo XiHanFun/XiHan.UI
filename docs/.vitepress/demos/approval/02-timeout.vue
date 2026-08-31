@@ -1,9 +1,12 @@
 <!-- 超时按拒绝收口 | 缺省不给默认超时值：替宿主定安全策略比不定更危险。到点落成拒绝，expired 只是显示态 -->
 <script setup lang="ts">
+import type { ApprovalStatus } from "@xihan-ui/headless";
 import {
+  XhApprovalActions,
   XhApprovalApproveTrigger,
   XhApprovalDenyTrigger,
   XhApprovalDescription,
+  XhApprovalResult,
   XhApprovalRoot,
   XhApprovalTimer,
   XhApprovalTitle,
@@ -12,6 +15,11 @@ import { onBeforeUnmount, ref } from "vue";
 
 const left = ref(10);
 const decided = ref("");
+
+const resultText = (status: ApprovalStatus) => {
+  if (status === "approved") return "已批准";
+  return status === "expired" ? "超时未答，按拒绝处理" : "已拒绝";
+};
 
 let timer = 0;
 const tick = () => {
@@ -26,6 +34,7 @@ onBeforeUnmount(() => window.clearTimeout(timer));
 <template>
   <div style="display: flex; flex-direction: column; gap: 12px;">
     <XhApprovalRoot
+      v-slot="{ status }"
       :timeout-ms="10000"
       tone="danger"
       @decision="decided = `${$event.decision}（来源 ${$event.source}）`"
@@ -34,10 +43,11 @@ onBeforeUnmount(() => window.clearTimeout(timer));
       <XhApprovalDescription>没人答的话，到点按拒绝处理。</XhApprovalDescription>
       <!-- 剩余时间对读屏隐藏：逐秒跳字进活区会不停打断 -->
       <XhApprovalTimer>还剩 {{ left }} 秒</XhApprovalTimer>
-      <div style="display: flex; gap: 8px;">
+      <XhApprovalResult>{{ resultText(status) }}</XhApprovalResult>
+      <XhApprovalActions>
         <XhApprovalApproveTrigger>批准</XhApprovalApproveTrigger>
         <XhApprovalDenyTrigger>拒绝</XhApprovalDenyTrigger>
-      </div>
+      </XhApprovalActions>
     </XhApprovalRoot>
     <p v-if="decided" style="margin: 0;">判定：{{ decided }}</p>
   </div>

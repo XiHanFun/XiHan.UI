@@ -89,13 +89,11 @@ export function connectMessageFeed<T extends PropTypes>(
       send({ type: 'ITEM.FOCUS', id })
     },
 
-    // role=feed 自带 article 集合语义与 W3C 定义的键盘模式，且不是活区——
-    // 播报另设一个原子区，不必像 role=log 那样先把隐含的 polite 关掉。
+    // root 是键盘宿主与唯一的 Tab 停靠点，集合语义落在直接包着条目的 list 上：
+    // role=feed 只认 article 子节点，而播报区与回到底部按钮都是 root 的孩子。
     // 不发 aria-busy：它会压住同子树内 live-region 的播报。
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
-      'role': 'feed',
-      'aria-label': translations?.feed ?? 'Conversation',
       // 整份消息列表只占一个 Tab 停靠位。
       // 判据用 focusedId 而非锚点元素：锚点可能指向已被删掉的消息，那时无人认领 tabindex=0
       'tabindex': focusedId == null ? 0 : -1,
@@ -151,8 +149,12 @@ export function connectMessageFeed<T extends PropTypes>(
     }),
 
     // 内容包裹层。条目必须是它的直接子节点：向上插入历史消息时的滚动补偿只在直接子节点里挑锚
+    // role=feed 自带 article 集合语义与 W3C 定义的键盘模式，且不是活区——
+    // 播报另设一个原子区，不必像 role=log 那样先把隐含的 polite 关掉
     getListProps: () => normalize.element({
       ...parts.list.attrs,
+      'role': 'feed',
+      'aria-label': translations?.feed ?? 'Conversation',
     }),
 
     getItemProps: item => normalize.element({
@@ -188,9 +190,10 @@ export function connectMessageFeed<T extends PropTypes>(
     }),
 
     // 一份会话只该有这一个活区：N 条消息各开一个会互相打断
+    // 不写 role=status：它与下面两条 aria-* 等价，而 role=feed 只认 article 子节点，
+    // 播报区带着角色待在流里会让集合语义判为不合法
     getLiveRegionProps: () => normalize.element({
       ...parts['live-region'].attrs,
-      'role': 'status',
       'aria-live': 'polite',
       'aria-atomic': 'true',
     }),

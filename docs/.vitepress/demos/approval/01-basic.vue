@@ -2,10 +2,12 @@
 <script setup lang="ts">
 import type { ApprovalScope } from "@xihan-ui/headless";
 import {
+  XhApprovalActions,
   XhApprovalAnnouncement,
   XhApprovalApproveTrigger,
   XhApprovalDenyTrigger,
   XhApprovalDescription,
+  XhApprovalResult,
   XhApprovalRoot,
   XhApprovalScopeGroup,
   XhApprovalScopeIndicator,
@@ -27,6 +29,7 @@ const decided = ref("");
   <div style="display: flex; flex-direction: column; gap: 12px;">
     <!-- 必选项没勾满就批不了；拒绝这条路不受它影响 -->
     <XhApprovalRoot
+      v-slot="{ status }"
       :scopes="scopes"
       tone="warning"
       @decision="decided = `${$event.decision}（来源 ${$event.source}，范围 ${$event.scopes.join('、') || '无'}）`"
@@ -41,14 +44,16 @@ const decided = ref("");
           :scope-label="scope.label"
           :scope-required="scope.required"
         >
-          <XhApprovalScopeIndicator :scope-value="scope.value">✓</XhApprovalScopeIndicator>
+          <!-- 勾由皮肤画：指示符留空即可，不必手打记号 -->
+          <XhApprovalScopeIndicator :scope-value="scope.value" />
           <XhApprovalScopeLabel :scope-value="scope.value">{{ scope.label }}</XhApprovalScopeLabel>
         </XhApprovalScopeItem>
       </XhApprovalScopeGroup>
-      <div style="display: flex; gap: 8px;">
+      <XhApprovalResult>{{ status === "approved" ? "已批准" : "已拒绝" }}</XhApprovalResult>
+      <XhApprovalActions>
         <XhApprovalApproveTrigger>批准</XhApprovalApproveTrigger>
         <XhApprovalDenyTrigger>拒绝</XhApprovalDenyTrigger>
-      </div>
+      </XhApprovalActions>
       <XhApprovalAnnouncement />
     </XhApprovalRoot>
     <p v-if="decided" style="margin: 0;">判定：{{ decided }}</p>

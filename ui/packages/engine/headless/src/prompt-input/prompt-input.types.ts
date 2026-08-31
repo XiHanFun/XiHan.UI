@@ -90,6 +90,8 @@ export interface PromptInputApi<T extends PropTypes = PropTypes> {
   submit: () => void
   stop: () => void
   getRootProps: () => T['element']
+  /** 可选的输入行容器：渲了它，输入框与按钮并排收在这一行里，root 翻成竖排。 */
+  getInputRowProps: () => T['element']
   getInputProps: () => T['textarea']
   getSubmitTriggerProps: () => T['button']
 }

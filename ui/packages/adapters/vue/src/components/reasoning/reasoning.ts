@@ -1,5 +1,5 @@
 import type { ReasoningApi, ReasoningProps, ReasoningTranslations, ToolCallSchema } from '@xihan-ui/headless'
-import type { Size, Tone } from '@xihan-ui/kernel'
+import type { ControlVariant, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
@@ -9,8 +9,8 @@ import { useReasoning } from './use-reasoning'
 
 type MachineProps = ToolCallSchema['props']
 
-/** 默认插槽的载荷：开合、还在不在想，以及想了多久。 */
-export type ReasoningRootSlotProps = Pick<ReasoningApi, 'open' | 'streaming' | 'disabled' | 'durationMs' | 'setOpen'>
+/** 默认插槽的载荷：开合、还在不在想、想了多久，以及当前该显示哪句状态文案。 */
+export type ReasoningRootSlotProps = Pick<ReasoningApi, 'open' | 'streaming' | 'disabled' | 'durationMs' | 'statusText' | 'setOpen'>
 
 export const XhReasoningRoot = defineComponent({
   name: 'XhReasoningRoot',
@@ -23,6 +23,7 @@ export const XhReasoningRoot = defineComponent({
     // 用 undefined 而非裸 Boolean，缺省值由机器给出
     autoDisclosure: { type: Boolean, default: undefined },
     disabled: Boolean,
+    variant: { type: String as PropType<ControlVariant>, default: undefined },
     tone: { type: String as PropType<Tone>, default: undefined },
     size: { type: String as PropType<Size>, default: undefined },
     translations: { type: Object as PropType<Partial<ReasoningTranslations>>, default: undefined },
@@ -68,6 +69,9 @@ export const XhReasoningRoot = defineComponent({
       get endTime() {
         return props.endTime
       },
+      get variant() {
+        return props.variant
+      },
       get tone() {
         return props.tone
       },
@@ -85,6 +89,7 @@ export const XhReasoningRoot = defineComponent({
       streaming: ctx.api.value.streaming,
       disabled: ctx.api.value.disabled,
       durationMs: ctx.api.value.durationMs,
+      statusText: ctx.api.value.statusText,
       setOpen: ctx.api.value.setOpen,
     }))
   },
@@ -95,6 +100,15 @@ export const XhReasoningTrigger = defineComponent({
   setup(_, { slots }) {
     const ctx = useReasoningContext()
     return () => h('button', ctx.api.value.getTriggerProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+export const XhReasoningIcon = defineComponent({
+  name: 'XhReasoningIcon',
+  setup(_, { slots }) {
+    const ctx = useReasoningContext()
+    // 状态图形位：跟着在不在想换色，对读屏隐藏
+    return () => h('span', ctx.api.value.getIconProps() as Record<string, unknown>, slots.default?.())
   },
 })
 
@@ -110,7 +124,12 @@ export const XhReasoningLabel = defineComponent({
   name: 'XhReasoningLabel',
   setup(_, { slots }) {
     const ctx = useReasoningContext()
-    return () => h('span', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
+    // 不给内容时显示当前状态那一句
+    return () => h(
+      'span',
+      ctx.api.value.getLabelProps() as Record<string, unknown>,
+      slots.default?.() ?? ctx.api.value.statusText,
+    )
   },
 })
 
@@ -118,7 +137,6 @@ export const XhReasoningDuration = defineComponent({
   name: 'XhReasoningDuration',
   setup(_, { slots }) {
     const ctx = useReasoningContext()
-    // 时长文案由作者现场代入：模板串里的秒数是宿主的事，连接层不做插值
     return () => h('span', ctx.api.value.getDurationProps() as Record<string, unknown>, slots.default?.())
   },
 })
@@ -127,6 +145,12 @@ export const XhReasoningContent = defineComponent({
   name: 'XhReasoningContent',
   setup(_, { slots }) {
     const ctx = useReasoningContext()
-    return () => h('div', ctx.api.value.getContentProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', {
+      ...ctx.api.value.getContentProps() as Record<string, unknown>,
+      // 收起跟着退场闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场
+      // 就一帧都播不出来），所以真正的收起落成内联 display——节点始终留在原地
+      style: ctx.visible.value ? undefined : { display: 'none' },
+      ref: (el: unknown) => { ctx.contentRef.value = el as HTMLElement },
+    }, slots.default?.())
   },
 })
