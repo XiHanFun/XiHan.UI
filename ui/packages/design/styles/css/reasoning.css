@@ -161,7 +161,7 @@
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
-    animation: xh-reasoning-shimmer var(--xh-reasoning-shimmer-duration, var(--xh-shimmer-duration)) linear infinite;
+    animation: xh-reasoning-shimmer var(--xh-reasoning-shimmer-duration, var(--xh-shimmer-duration)) var(--xh-motion-ease-loop) infinite;
   }
 
   /*

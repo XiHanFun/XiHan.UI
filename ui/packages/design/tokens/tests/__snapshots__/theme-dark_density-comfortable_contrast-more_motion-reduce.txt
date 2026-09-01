@@ -143,6 +143,7 @@
 --xh-motion-ease-enter: cubic-bezier(0, 0, 0.2, 1)  ← var(--xh-ease-out)
 --xh-motion-ease-enter-strong: cubic-bezier(0.23, 1, 0.32, 1)  ← var(--xh-ease-out-strong)
 --xh-motion-ease-exit: cubic-bezier(0.4, 0, 1, 1)  ← var(--xh-ease-in)
+--xh-motion-ease-loop: linear
 --xh-motion-scale-drag: 1
 --xh-motion-scale-enter: 1
 --xh-motion-scale-press: 1

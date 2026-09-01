@@ -389,9 +389,14 @@
       "$value": "{duration.fast}"
     },
     "ease-continuous": {
-      "$description": "既不进场也不退场的运动：循环动画，以及元素在屏内被推到新位置。两端都在屏内，所以起步就带速度，收尾再减速。",
+      "$description": "元素在屏内被推到新位置：起终点都在可视区内，所以起步就带速度、收尾再减速。循环动画不走这一条，走 ease-loop。",
       "$type": "cubicBezier",
       "$value": "{ease.standard}"
+    },
+    "ease-loop": {
+      "$description": "无限循环的匀速动画：加载环、流光、跑马灯。带缓动的曲线会让每一圈忽快忽慢，所以这一档恒是匀速；背后刻意不设原语——匀速没有可调余地，立了原语只是给令牌层加一个没人该拧的旋钮。",
+      "$type": "cubicBezier",
+      "$value": "linear"
     },
     "ease-enter": {
       "$type": "cubicBezier",

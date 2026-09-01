@@ -95,7 +95,7 @@
     border: var(--xh-stroke-thin) solid transparent;
     border-block-start-color: var(--xh-switch-loading-fg, var(--xh-bg-brand));
     border-radius: var(--xh-shape-pill);
-    animation: xh-switch-rotate var(--xh-switch-loading-duration, var(--xh-spin-duration)) linear infinite;
+    animation: xh-switch-rotate var(--xh-switch-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite;
   }
 
   /* —— 带文字的整行：<label> 包住控件与文字，与 checkbox-group 的条目同一副样子 —— */

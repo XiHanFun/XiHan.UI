@@ -1,19 +1,23 @@
 #!/usr/bin/env node
 // 门禁：缓动只走语义档，不许下探到 primitive，也不许在皮肤里手写曲线。
 //
-// 语义档四条：continuous（循环动画，以及元素在屏内被推到新位置——两端都在屏内，起步就带速度）·
-// enter（进场与常规状态过渡的减速曲线）· enter-strong（位移与展开的强减速）· exit（退场的加速）。
+// 语义档五条：loop（无限循环的匀速动画：加载环、流光、跑马灯）· continuous（元素在屏内被推到
+// 新位置，起终点都在可视区内）· enter（进场与常规状态过渡的减速）· enter-strong（位移与展开的
+// 强减速）· exit（退场的加速）。
 //
 // 这条是补出来的：审计时查到 4 份皮肤在 animation / transition 上写 var(--xh-ease-standard)，
-// 共 7 处，绕过整个语义层。原因不是谁偷懒，是语义层当时只有进场与退场两向——
-// 循环动画与"被推过去"的位移既不进也不退，没档可去，于是各自下探。补齐 continuous 之后
-// 把 7 处收回来，再用这条门禁钉住，免得下次又从 primitive 长出来。
+// 共 7 处，绕过整个语义层。原因不是谁偷懒，是语义层当时只有进场与退场两向，没档可去。
+//
+// loop 与 continuous 分家是第二轮审计逼出来的：起初把两者合成一档，结果循环动画拿到的是
+// 带缓动的曲线，每一圈忽快忽慢，于是 8 处循环只能手写 linear 再逐条登记为例外——同一道流光
+// 在库里跑出两种节奏（骨架走令牌、思考态走 linear），共用同一支时长、同构的关键帧，
+// 相邻放置看得出来，而没有任何判据会红。匀速是循环的硬要求，不是可选口味，所以它自成一档。
 //
 // 手写 cubic-bezier() 与 ease / ease-in-out 这类关键字同样拦：它们和下探 primitive 是一件事，
 // 都让这一处曲线脱离令牌层，皮肤之间再也对不齐。
 //
-// 匀速与阶跃不是曲线，语义层不给档：恒速旋转、恒速跑马灯、拿 steps(1) 硬切的闪烁，
-// 以及拿 0s linear 把 visibility 做成阶跃的写法。这些逐处登记进 NO_CURVE。
+// 阶跃不是曲线，语义层不给档：拿 steps(1) 硬切的闪烁，以及拿 0s linear 把 visibility
+// 做成阶跃的写法。这两类逐处登记进 NO_CURVE。恒速循环不在此列，它有 loop 那一档。
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import process from 'node:process'
@@ -39,17 +43,9 @@ const LITERAL = /(?<![\w-])(linear|ease|ease-in|ease-out|ease-in-out|steps)(?![\
  * 键写成「组件:关键帧名」，同一声明里没有关键帧名的写「组件:属性名」。
  */
 const NO_CURVE = {
-  'button:xh-spin': '按钮里的加载环，恒速转',
   'markdown-stream:xh-markdown-stream-caret': '等字的光标，steps(1) 硬切成亮灭两态，不淡入淡出',
-  'marquee:animation-timing-function': '跑马灯的轨道，恒速走才接得上接缝',
-  'notification:xh-notification-spin': '通知里的加载环，恒速转',
-  'popconfirm:xh-popconfirm-rotate': '确认气泡里的加载环，恒速转',
-  'reasoning:xh-reasoning-shimmer': '思考中的流光，恒速扫',
   'scroll-area:transition': 'visibility 走 0s 阶跃，linear 只是补齐这一项的曲线位',
   'scrollbar:transition': 'visibility 走 0s 阶跃，linear 只是补齐这一项的曲线位',
-  'spinner:xh-spinner-rotate': '加载指示器本体，恒速转',
-  'switch:xh-switch-rotate': '开关里的加载环，恒速转',
-  'tool-call:xh-tool-call-shimmer': '工具调用中的流光，恒速扫',
 }
 
 /** 去掉块注释但保留换行，报错行号才对得上源文件。 */
@@ -82,10 +78,10 @@ for (const file of files) {
     const at = () => `${file}:${css.slice(0, m.index).split('\n').length}  ${prop}: ${value}`
 
     if (PRIMITIVE.test(value))
-      problems.push(`${at()}\n    —— 缓动别直接引 --xh-ease-* 原语，改走 --xh-motion-ease-continuous / -enter / -enter-strong / -exit，或组件自己的缓动槽`)
+      problems.push(`${at()}\n    —— 缓动别直接引 --xh-ease-* 原语，改走 --xh-motion-ease-loop / -continuous / -enter / -enter-strong / -exit，或组件自己的缓动槽`)
 
     if (HANDWRITTEN.test(value))
-      problems.push(`${at()}\n    —— 皮肤里不许手写 cubic-bezier()，曲线归令牌层：循环与屏内位移用 --xh-motion-ease-continuous，进场用 -enter / -enter-strong，退场用 -exit`)
+      problems.push(`${at()}\n    —— 皮肤里不许手写 cubic-bezier()，曲线归令牌层：循环用 --xh-motion-ease-loop，屏内位移用 -continuous，进场用 -enter / -enter-strong，退场用 -exit`)
 
     const literal = LITERAL.exec(value)
     if (literal) {
@@ -93,7 +89,7 @@ for (const file of files) {
       if (key in NO_CURVE)
         seen.add(key)
       else
-        problems.push(`${at()}\n    —— 字面缓动 ${literal[1]} 没走语义档，改走 --xh-motion-ease-continuous / -enter / -enter-strong / -exit；确实要匀速或阶跃就把 ${key} 登记进 NO_CURVE`)
+        problems.push(`${at()}\n    —— 字面缓动 ${literal[1]} 没走语义档，匀速循环改走 --xh-motion-ease-loop，其余走 -continuous / -enter / -enter-strong / -exit；确实是阶跃就把 ${key} 登记进 NO_CURVE`)
     }
   }
 }
