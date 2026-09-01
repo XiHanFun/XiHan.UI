@@ -1,0 +1,101 @@
+<!-- 受控当前题 | 进度归宿主管：外面的按钮直接跳题，答案也一并受控，组件只发意图 -->
+<div style="display: flex; flex-direction: column; gap: 12px; max-width: 340px">
+  <div style="display: flex; gap: 6px">
+    <button type="button" id="question-flow-controlled-to-1">跳到第 1 题</button>
+    <button type="button" id="question-flow-controlled-to-2">跳到第 2 题</button>
+  </div>
+  <xh-question-flow id="question-flow-controlled" index="0" allow-skip="false">
+    <div data-xh-part="root">
+      <div data-xh-part="viewport">
+        <div data-xh-part="track">
+          <div data-xh-part="question" question-id="target">
+            <p data-xh-part="prompt" question-id="target">先修哪一处？</p>
+            <div data-xh-part="option-group" question-id="target">
+              <button data-xh-part="option" question-id="target" option-value="crash">
+                <span data-xh-part="option-indicator" question-id="target" option-value="crash"></span>
+                <span data-xh-part="option-label" question-id="target" option-value="crash">崩溃</span>
+              </button>
+              <button data-xh-part="option" question-id="target" option-value="slow">
+                <span data-xh-part="option-indicator" question-id="target" option-value="slow"></span>
+                <span data-xh-part="option-label" question-id="target" option-value="slow">卡顿</span>
+              </button>
+            </div>
+          </div>
+          <div data-xh-part="question" question-id="when">
+            <p data-xh-part="prompt" question-id="when">什么时候上线？</p>
+            <div data-xh-part="option-group" question-id="when">
+              <button data-xh-part="option" question-id="when" option-value="now">
+                <span data-xh-part="option-indicator" question-id="when" option-value="now"></span>
+                <span data-xh-part="option-label" question-id="when" option-value="now">今天</span>
+              </button>
+              <button data-xh-part="option" question-id="when" option-value="week">
+                <span data-xh-part="option-indicator" question-id="when" option-value="week"></span>
+                <span data-xh-part="option-label" question-id="when" option-value="week">本周内</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-xh-part="footer">
+        <div style="display: flex; align-items: center; gap: 4px">
+          <button data-xh-part="prev-trigger"></button>
+          <span data-xh-part="counter"></span>
+          <button data-xh-part="next-trigger"></button>
+        </div>
+        <button data-xh-part="submit-trigger">继续</button>
+      </div>
+      <div data-xh-part="announcement"></div>
+    </div>
+  </xh-question-flow>
+  <p id="question-flow-controlled-log" style="margin: 0"></p>
+</div>
+
+<script type="module">
+  // 受控：组件只发意图，进度与答案都由宿主写回去
+  const flow = document.getElementById("question-flow-controlled");
+  const line = document.getElementById("question-flow-controlled-log");
+  const submit = flow.querySelector('[data-xh-part="submit-trigger"]');
+  const questions = [
+    {
+      id: "target",
+      prompt: "先修哪一处？",
+      type: "single",
+      options: [
+        { value: "crash", label: "崩溃" },
+        { value: "slow", label: "卡顿" },
+      ],
+    },
+    {
+      id: "when",
+      prompt: "什么时候上线？",
+      type: "single",
+      options: [
+        { value: "now", label: "今天" },
+        { value: "week", label: "本周内" },
+      ],
+    },
+  ];
+  flow.questions = questions;
+  flow.answers = {};
+  const render = () => {
+    submit.textContent = flow.index === questions.length - 1 ? "发送" : "继续";
+    line.textContent = `宿主手上的进度：第 ${flow.index + 1} 题；已答 ${Object.keys(flow.answers).length} 题`;
+  };
+  render();
+  flow.addEventListener("index-change", (event) => {
+    flow.index = event.detail.index;
+    render();
+  });
+  flow.addEventListener("answers-change", (event) => {
+    flow.answers = event.detail.answers;
+    render();
+  });
+  document.getElementById("question-flow-controlled-to-1").addEventListener("click", () => {
+    flow.index = 0;
+    render();
+  });
+  document.getElementById("question-flow-controlled-to-2").addEventListener("click", () => {
+    flow.index = 1;
+    render();
+  });
+</script>

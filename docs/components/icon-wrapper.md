@@ -98,7 +98,7 @@
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-icon-wrapper-bg` · `--xh-icon-wrapper-fg` · `--xh-icon-wrapper-glyph-size` · `--xh-icon-wrapper-radius` · `--xh-icon-wrapper-size`
+`--xh-icon-wrapper-bg` · `--xh-icon-wrapper-fg` · `--xh-icon-wrapper-glyph-size` · `--xh-icon-wrapper-radius` · `--xh-icon-wrapper-shadow` · `--xh-icon-wrapper-size`
 
 ## 组合
 

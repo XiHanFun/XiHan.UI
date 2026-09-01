@@ -83,6 +83,7 @@ import { popselectSuite } from './popselect.suite'
 import { progressSuite } from './progress.suite'
 import { promptInputSuite } from './prompt-input.suite'
 import { qrCodeSuite } from './qr-code.suite'
+import { questionFlowSuite } from './question-flow.suite'
 import { radioGroupSuite } from './radio-group.suite'
 import { ratingSuite } from './rating.suite'
 import { reasoningSuite } from './reasoning.suite'
@@ -214,6 +215,7 @@ export const allSuites: readonly ConformanceSuite[] = [
   progressSuite,
   promptInputSuite,
   qrCodeSuite,
+  questionFlowSuite,
   radioGroupSuite,
   ratingSuite,
   reasoningSuite,

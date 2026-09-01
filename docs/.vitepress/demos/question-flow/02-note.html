@@ -1,0 +1,92 @@
+<!-- 自由文本与跳过 | 选项之外还能自己写一句，写了就算答过；关掉自动前进，每题都等人点继续 -->
+<div style="display: flex; flex-direction: column; gap: 12px; max-width: 340px">
+  <xh-question-flow id="question-flow-note" auto-advance="false" tone="neutral" variant="subtle">
+    <div data-xh-part="root">
+      <div data-xh-part="viewport">
+        <div data-xh-part="track">
+          <div data-xh-part="question" question-id="tone">
+            <p data-xh-part="prompt" question-id="tone">文案用什么口吻？</p>
+            <div data-xh-part="option-group" question-id="tone">
+              <button data-xh-part="option" question-id="tone" option-value="plain">
+                <span data-xh-part="option-indicator" question-id="tone" option-value="plain"></span>
+                <span data-xh-part="option-label" question-id="tone" option-value="plain">平铺直叙</span>
+              </button>
+              <button data-xh-part="option" question-id="tone" option-value="warm">
+                <span data-xh-part="option-indicator" question-id="tone" option-value="warm"></span>
+                <span data-xh-part="option-label" question-id="tone" option-value="warm">亲切一点</span>
+              </button>
+            </div>
+            <!-- 写了一句就算答过这一题，继续键随之亮起 -->
+            <input data-xh-part="note" question-id="tone" />
+          </div>
+          <div data-xh-part="question" question-id="length">
+            <p data-xh-part="prompt" question-id="length">篇幅控制在多长？</p>
+            <div data-xh-part="option-group" question-id="length">
+              <button data-xh-part="option" question-id="length" option-value="short">
+                <span data-xh-part="option-indicator" question-id="length" option-value="short"></span>
+                <span data-xh-part="option-label" question-id="length" option-value="short">一句话</span>
+              </button>
+              <button data-xh-part="option" question-id="length" option-value="long">
+                <span data-xh-part="option-indicator" question-id="length" option-value="long"></span>
+                <span data-xh-part="option-label" question-id="length" option-value="long">一段话</span>
+              </button>
+            </div>
+            <input data-xh-part="note" question-id="length" />
+          </div>
+        </div>
+      </div>
+      <div data-xh-part="footer">
+        <span data-xh-part="counter"></span>
+        <div style="display: flex; align-items: center; gap: 6px">
+          <button data-xh-part="skip-trigger">跳过</button>
+          <button data-xh-part="submit-trigger">继续</button>
+        </div>
+      </div>
+      <div data-xh-part="announcement"></div>
+    </div>
+  </xh-question-flow>
+  <p id="question-flow-note-log" style="margin: 0"></p>
+</div>
+
+<script type="module">
+  // 题目与文案都是对象，只走 property
+  const flow = document.getElementById("question-flow-note");
+  const line = document.getElementById("question-flow-note-log");
+  const submit = flow.querySelector('[data-xh-part="submit-trigger"]');
+  const questions = [
+    {
+      id: "tone",
+      prompt: "文案用什么口吻？",
+      type: "single",
+      options: [
+        { value: "plain", label: "平铺直叙" },
+        { value: "warm", label: "亲切一点" },
+      ],
+    },
+    {
+      id: "length",
+      prompt: "篇幅控制在多长？",
+      type: "single",
+      optional: true,
+      options: [
+        { value: "short", label: "一句话" },
+        { value: "long", label: "一段话" },
+      ],
+    },
+  ];
+  flow.questions = questions;
+  flow.translations = { note: "自己写一句", notePlaceholder: "都不是，我想要…" };
+  const label = (index) => {
+    submit.textContent = index === questions.length - 1 ? "发送" : "继续";
+  };
+  label(0);
+  flow.addEventListener("index-change", (event) => label(event.detail.index));
+  flow.addEventListener("skip", (event) => {
+    line.textContent = `跳过了第 ${event.detail.index + 1} 题`;
+  });
+  // submit 与原生表单提交同名，故不冒泡，直接在元素上监听
+  flow.addEventListener("submit", (event) => {
+    const written = Object.values(event.detail.notes).filter(Boolean).join(" / ");
+    line.textContent = `自己写的：${written || "（没写）"}`;
+  });
+</script>

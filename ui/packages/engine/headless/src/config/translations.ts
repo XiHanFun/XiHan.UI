@@ -86,6 +86,7 @@ import type { PopselectTranslations } from '../popselect/popselect.types'
 import type { ProgressTranslations } from '../progress/progress.types'
 import type { PromptInputTranslations } from '../prompt-input/prompt-input.types'
 import type { QrCodeTranslations } from '../qr-code/qr-code.types'
+import type { QuestionFlowTranslations } from '../question-flow/question-flow.types'
 import type { RadioGroupTranslations } from '../radio-group/radio-group.types'
 import type { RatingTranslations } from '../rating/rating.types'
 import type { ReasoningTranslations } from '../reasoning/reasoning.types'
@@ -217,6 +218,7 @@ export interface XhTranslationOverrides {
   'progress'?: Partial<ProgressTranslations>
   'prompt-input'?: Partial<PromptInputTranslations>
   'qr-code'?: Partial<QrCodeTranslations>
+  'question-flow'?: Partial<QuestionFlowTranslations>
   'radio-group'?: Partial<RadioGroupTranslations>
   'rating'?: Partial<RatingTranslations>
   'reasoning'?: Partial<ReasoningTranslations>
