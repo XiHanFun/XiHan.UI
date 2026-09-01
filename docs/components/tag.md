@@ -165,7 +165,7 @@ size 只改内边距、间距与字号，不写就是缺省档；关闭钮的命
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-tag-bg` · `--xh-tag-bg-disabled` · `--xh-tag-border` · `--xh-tag-border-disabled` · `--xh-tag-close-bg-active` · `--xh-tag-close-bg-hover` · `--xh-tag-close-fg` · `--xh-tag-close-radius` · `--xh-tag-close-size` · `--xh-tag-fg` · `--xh-tag-font-size` · `--xh-tag-font-weight` · `--xh-tag-gap` · `--xh-tag-icon-size` · `--xh-tag-px` · `--xh-tag-py` · `--xh-tag-radius`
+`--xh-tag-bg` · `--xh-tag-bg-disabled` · `--xh-tag-border` · `--xh-tag-border-disabled` · `--xh-tag-close-bg-active` · `--xh-tag-close-bg-hover` · `--xh-tag-close-fg` · `--xh-tag-close-radius` · `--xh-tag-close-size` · `--xh-tag-fg` · `--xh-tag-font-size` · `--xh-tag-font-weight` · `--xh-tag-gap` · `--xh-tag-icon-size` · `--xh-tag-px` · `--xh-tag-py` · `--xh-tag-radius` · `--xh-tag-shadow`
 
 ## 动效
 

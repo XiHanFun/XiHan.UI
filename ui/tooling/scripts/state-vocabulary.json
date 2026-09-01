@@ -50,6 +50,7 @@
         "running",
         "paused",
         "streaming",
+        "answering",
         "submitted",
         "editing",
         "disabled",

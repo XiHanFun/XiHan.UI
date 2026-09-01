@@ -658,6 +658,30 @@ export type { PromptInputCallbacks, PromptInputContext } from './components/prom
 export { provideQrCode, useQrCodeContext } from './components/qr-code/context'
 export type { QrCodeContext } from './components/qr-code/context'
 export { XhQrCode, XhQrCodeLogo } from './components/qr-code/qr-code'
+export { provideQuestionFlow, useQuestionFlowContext } from './components/question-flow/context'
+export {
+  XhQuestionFlowAnnouncement,
+  XhQuestionFlowCounter,
+  XhQuestionFlowFooter,
+  XhQuestionFlowNextTrigger,
+  XhQuestionFlowNote,
+  XhQuestionFlowOption,
+  XhQuestionFlowOptionGroup,
+  XhQuestionFlowOptionIndicator,
+  XhQuestionFlowOptionLabel,
+  XhQuestionFlowPrevTrigger,
+  XhQuestionFlowPrompt,
+  XhQuestionFlowQuestion,
+  XhQuestionFlowResult,
+  XhQuestionFlowRoot,
+  XhQuestionFlowSkipTrigger,
+  XhQuestionFlowSubmitTrigger,
+  XhQuestionFlowTrack,
+  XhQuestionFlowViewport,
+} from './components/question-flow/question-flow'
+export type { QuestionFlowOptionSlotProps, QuestionFlowRootSlotProps } from './components/question-flow/question-flow'
+export { useQuestionFlow } from './components/question-flow/use-question-flow'
+export type { QuestionFlowCallbacks, QuestionFlowContext } from './components/question-flow/use-question-flow'
 export {
   XhRadioGroupItem,
   XhRadioGroupItemText,

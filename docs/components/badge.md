@@ -129,7 +129,7 @@ tone 决定用哪族颜色——角标现实里主要是未读红点与在线/�
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-badge-bg` · `--xh-badge-dot-size` · `--xh-badge-fg` · `--xh-badge-font-size` · `--xh-badge-font-weight` · `--xh-badge-min-size` · `--xh-badge-px` · `--xh-badge-radius` · `--xh-badge-ring`
+`--xh-badge-bg` · `--xh-badge-dot-size` · `--xh-badge-fg` · `--xh-badge-font-size` · `--xh-badge-font-weight` · `--xh-badge-min-size` · `--xh-badge-px` · `--xh-badge-radius` · `--xh-badge-ring` · `--xh-badge-shadow`
 
 ## RTL
 

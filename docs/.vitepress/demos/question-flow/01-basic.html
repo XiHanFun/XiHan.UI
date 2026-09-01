@@ -1,0 +1,121 @@
+<!-- 基础用法 | 一次一题：单选选中后自动翻到下一题，多选等人点继续，末题上那颗按钮变成发送 -->
+<div style="display: flex; flex-direction: column; gap: 12px; max-width: 340px">
+  <xh-question-flow id="question-flow-basic">
+    <div data-xh-part="root">
+      <div data-xh-part="viewport">
+        <div data-xh-part="track">
+          <div data-xh-part="question" question-id="scope">
+            <p data-xh-part="prompt" question-id="scope">这次改动动到哪一层？</p>
+            <div data-xh-part="option-group" question-id="scope">
+              <button data-xh-part="option" question-id="scope" option-value="ui">
+                <!-- 记号由皮肤画：指示符留空即可，不必手打 -->
+                <span data-xh-part="option-indicator" question-id="scope" option-value="ui"></span>
+                <span data-xh-part="option-label" question-id="scope" option-value="ui">只改界面</span>
+              </button>
+              <button data-xh-part="option" question-id="scope" option-value="api">
+                <span data-xh-part="option-indicator" question-id="scope" option-value="api"></span>
+                <span data-xh-part="option-label" question-id="scope" option-value="api">改到接口</span>
+              </button>
+              <button data-xh-part="option" question-id="scope" option-value="db">
+                <span data-xh-part="option-indicator" question-id="scope" option-value="db"></span>
+                <span data-xh-part="option-label" question-id="scope" option-value="db">连数据结构一起改</span>
+              </button>
+            </div>
+          </div>
+          <div data-xh-part="question" question-id="checks">
+            <p data-xh-part="prompt" question-id="checks">要顺带补哪些检查？</p>
+            <div data-xh-part="option-group" question-id="checks">
+              <button data-xh-part="option" question-id="checks" option-value="unit">
+                <span data-xh-part="option-indicator" question-id="checks" option-value="unit"></span>
+                <span data-xh-part="option-label" question-id="checks" option-value="unit">单元测试</span>
+              </button>
+              <button data-xh-part="option" question-id="checks" option-value="e2e">
+                <span data-xh-part="option-indicator" question-id="checks" option-value="e2e"></span>
+                <span data-xh-part="option-label" question-id="checks" option-value="e2e">端到端</span>
+              </button>
+            </div>
+          </div>
+          <div data-xh-part="question" question-id="branch">
+            <p data-xh-part="prompt" question-id="branch">落到哪条分支？</p>
+            <div data-xh-part="option-group" question-id="branch">
+              <button data-xh-part="option" question-id="branch" option-value="main">
+                <span data-xh-part="option-indicator" question-id="branch" option-value="main"></span>
+                <span data-xh-part="option-label" question-id="branch" option-value="main">直接进主干</span>
+              </button>
+              <button data-xh-part="option" question-id="branch" option-value="feature">
+                <span data-xh-part="option-indicator" question-id="branch" option-value="feature"></span>
+                <span data-xh-part="option-label" question-id="branch" option-value="feature">先开一条特性分支</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- 升级前先自己收起：属性由连接层接管，交卷后自动撤掉 -->
+      <div data-xh-part="result" hidden>答案已送出</div>
+      <div data-xh-part="footer">
+        <div style="display: flex; align-items: center; gap: 4px">
+          <button data-xh-part="prev-trigger"></button>
+          <span data-xh-part="counter"></span>
+          <button data-xh-part="next-trigger"></button>
+        </div>
+        <div style="display: flex; align-items: center; gap: 6px">
+          <button data-xh-part="skip-trigger">跳过</button>
+          <button data-xh-part="submit-trigger">继续</button>
+        </div>
+      </div>
+      <div data-xh-part="announcement"></div>
+    </div>
+  </xh-question-flow>
+  <p id="question-flow-basic-sent" style="margin: 0"></p>
+</div>
+
+<script type="module">
+  // 题目是数组，只走 property
+  const flow = document.getElementById("question-flow-basic");
+  const line = document.getElementById("question-flow-basic-sent");
+  const submit = flow.querySelector('[data-xh-part="submit-trigger"]');
+  const questions = [
+    {
+      id: "scope",
+      prompt: "这次改动动到哪一层？",
+      type: "single",
+      options: [
+        { value: "ui", label: "只改界面" },
+        { value: "api", label: "改到接口" },
+        { value: "db", label: "连数据结构一起改" },
+      ],
+    },
+    {
+      id: "checks",
+      prompt: "要顺带补哪些检查？",
+      type: "multiple",
+      options: [
+        { value: "unit", label: "单元测试" },
+        { value: "e2e", label: "端到端" },
+      ],
+    },
+    {
+      id: "branch",
+      prompt: "落到哪条分支？",
+      type: "single",
+      options: [
+        { value: "main", label: "直接进主干" },
+        { value: "feature", label: "先开一条特性分支" },
+      ],
+    },
+  ];
+  flow.questions = questions;
+  // 按钮的两个身份由连接层切，可见文案归作者：按当前题算，末题写发送
+  const label = (index) => {
+    submit.textContent = index === questions.length - 1 ? "发送" : "继续";
+  };
+  label(0);
+  flow.addEventListener("index-change", (event) => label(event.detail.index));
+  // submit 与原生表单提交同名，故不冒泡，直接在元素上监听
+  flow.addEventListener("submit", (event) => {
+    const parts = Object.entries(event.detail.answers).map(
+      ([id, values]) => `${id}=${values.join("、") || "未答"}`,
+    );
+    line.textContent = `收到：${parts.join("；")}`;
+  });
+</script>

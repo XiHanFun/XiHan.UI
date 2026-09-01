@@ -1,0 +1,556 @@
+@layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='question-flow'] {
+    --xh-question-flow-skin: 1;
+  }
+
+  /* 一张抬起的卡：发丝描边 + 圆角 + 一档落影。三个视觉轴都落在 root 上：
+     形态管底与描边怎么画，语气管用哪族颜色，尺寸管内衬、按钮高度与字号 */
+  [data-scope='question-flow'][data-part='root'] {
+    /* 作者塞进指示符与翻页钮的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+    --xh-icon-size: var(--xh-question-flow-icon-size, var(--xh-glyph-size-md));
+    /* 尺寸缺省档：不写 data-size 时按中档走 */
+    --xh-_question-flow-p: var(--xh-space-4);
+    --xh-_question-flow-gap: var(--xh-space-3);
+    --xh-_question-flow-h: var(--xh-control-h-md);
+    --xh-_question-flow-px: var(--xh-control-px-md);
+    --xh-_question-flow-font-size: var(--xh-control-font-md);
+    --xh-_question-flow-indicator: var(--xh-control-indicator-md);
+    /* 形态缺省档：不写 data-variant 时按描边式走 */
+    --xh-_question-flow-bg: var(--xh-bg-surface);
+    --xh-_question-flow-border: var(--xh-border-subtle);
+    /* 海拔先落进私有槽：无壳档要把它整个关掉 */
+    --xh-_question-flow-shadow: var(--xh-question-flow-shadow, var(--xh-elevation-raised));
+
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-question-flow-gap, var(--xh-_question-flow-gap));
+    padding: var(--xh-question-flow-padding, var(--xh-_question-flow-p));
+    border: var(--xh-stroke-thin) solid var(--xh-question-flow-border, var(--xh-_question-flow-border));
+    border-radius: var(--xh-question-flow-radius, var(--xh-shape-surface));
+    background: var(--xh-question-flow-bg, var(--xh-_question-flow-bg));
+    box-shadow: var(--xh-_question-flow-shadow);
+    animation: xh-question-flow-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  }
+
+  /* 上面声明的 display 会盖掉 UA 的 [hidden]{display:none}，这里补回 */
+  [data-scope='question-flow'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  /* —— 形态 —— */
+  /* 描边式：底与描边都画满，缺省档就是它 */
+  [data-scope='question-flow'][data-part='root'][data-variant='outline'] {
+    --xh-_question-flow-bg: var(--xh-bg-surface);
+    --xh-_question-flow-border: var(--xh-border-subtle);
+  }
+
+  /* 填充式：底色顶替描边表达边界。描边只退成透明而不去掉，
+     1px 的位置留着，与 outline 档并排时基线对得上 */
+  [data-scope='question-flow'][data-part='root'][data-variant='subtle'] {
+    --xh-_question-flow-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+    --xh-_question-flow-border: transparent;
+  }
+
+  /* 无壳：底与描边都透明，落影一并收掉——底都不画了，一圈投影就成了没有来处的暗边 */
+  [data-scope='question-flow'][data-part='root'][data-variant='ghost'] {
+    --xh-_question-flow-bg: transparent;
+    --xh-_question-flow-border: transparent;
+    --xh-_question-flow-shadow: 0 0 0 transparent;
+  }
+
+  /* —— 尺寸 —— */
+  [data-scope='question-flow'][data-part='root'][data-size='sm'] {
+    --xh-_question-flow-p: var(--xh-space-3);
+    --xh-_question-flow-gap: var(--xh-space-2);
+    --xh-_question-flow-h: var(--xh-control-h-sm);
+    --xh-_question-flow-px: var(--xh-control-px-sm);
+    --xh-_question-flow-font-size: var(--xh-control-font-sm);
+    --xh-_question-flow-indicator: var(--xh-control-indicator-sm);
+    --xh-icon-size: var(--xh-question-flow-icon-size, var(--xh-glyph-size-sm));
+  }
+
+  [data-scope='question-flow'][data-part='root'][data-size='md'] {
+    --xh-_question-flow-p: var(--xh-space-4);
+    --xh-_question-flow-gap: var(--xh-space-3);
+    --xh-_question-flow-h: var(--xh-control-h-md);
+    --xh-_question-flow-px: var(--xh-control-px-md);
+    --xh-_question-flow-font-size: var(--xh-control-font-md);
+    --xh-_question-flow-indicator: var(--xh-control-indicator-md);
+    --xh-icon-size: var(--xh-question-flow-icon-size, var(--xh-glyph-size-md));
+  }
+
+  [data-scope='question-flow'][data-part='root'][data-size='lg'] {
+    --xh-_question-flow-p: var(--xh-space-5);
+    --xh-_question-flow-gap: var(--xh-space-4);
+    --xh-_question-flow-h: var(--xh-control-h-lg);
+    --xh-_question-flow-px: var(--xh-control-px-lg);
+    --xh-_question-flow-font-size: var(--xh-control-font-lg);
+    --xh-_question-flow-indicator: var(--xh-control-indicator-lg);
+    --xh-icon-size: var(--xh-question-flow-icon-size, var(--xh-glyph-size-lg));
+  }
+
+  /* 视口定高并裁切：高度由机器量出来写进私有槽，量到之前按内容撑开。
+     换题时高度过渡到新那一题，卡片跟着长高或收矮 */
+  [data-scope='question-flow'][data-part='viewport'] {
+    --xh-_question-flow-viewport-h: auto;
+
+    display: block;
+    overflow: hidden;
+    block-size: var(--xh-question-flow-viewport-h, var(--xh-_question-flow-viewport-h));
+    transition: block-size var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  }
+
+  [data-scope='question-flow'][data-part='viewport'][hidden] {
+    display: none;
+  }
+
+  /* 轨道把全部题目纵向排开，靠位移把当前题推进视口 */
+  [data-scope='question-flow'][data-part='track'] {
+    --xh-_question-flow-track-y: 0;
+
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-question-flow-track-gap, var(--xh-_question-flow-gap));
+    translate: 0 var(--xh-question-flow-track-y, var(--xh-_question-flow-track-y));
+    transition: translate var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  }
+
+  [data-scope='question-flow'][data-part='track'][hidden] {
+    display: none;
+  }
+
+  /* 一题的整块。非当前题淡出并让开指针：它仍留在轨道上，高度才有得可量 */
+  [data-scope='question-flow'][data-part='question'] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-question-flow-question-gap, var(--xh-space-2));
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  }
+
+  [data-scope='question-flow'][data-part='question'][hidden] {
+    display: none;
+  }
+
+  [data-scope='question-flow'][data-part='question'][data-current] {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* 题干就是这一题的标题，也是选项组的可访问名 */
+  [data-scope='question-flow'][data-part='prompt'] {
+    display: block;
+    margin: 0;
+    color: var(--xh-question-flow-prompt-fg, var(--xh-fg-default));
+    font-size: var(--xh-question-flow-prompt-font-size, var(--xh-text-label-size));
+    font-weight: var(--xh-question-flow-prompt-font-weight, var(--xh-text-label-weight));
+    line-height: var(--xh-leading-tight);
+  }
+
+  [data-scope='question-flow'][data-part='prompt'][hidden] {
+    display: none;
+  }
+
+  [data-scope='question-flow'][data-part='option-group'] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-question-flow-option-group-gap, var(--xh-space-1));
+  }
+
+  [data-scope='question-flow'][data-part='option-group'][hidden] {
+    display: none;
+  }
+
+  /* 一个选项：整行可点、可聚焦，记号在左 */
+  [data-scope='question-flow'][data-part='option'] {
+    display: flex;
+    align-items: center;
+    gap: var(--xh-question-flow-option-gap, var(--xh-space-1_5));
+    padding-inline: var(--xh-question-flow-option-px, var(--xh-space-2));
+    padding-block: var(--xh-question-flow-option-py, var(--xh-space-1));
+    border: 0;
+    border-radius: var(--xh-question-flow-option-radius, var(--xh-shape-control));
+    background: var(--xh-question-flow-option-bg, transparent);
+    color: var(--xh-question-flow-option-fg, var(--xh-fg-muted));
+    font-family: inherit;
+    font-size: var(--xh-question-flow-option-font-size, var(--xh-_question-flow-font-size));
+    line-height: var(--xh-leading-normal);
+    text-align: start;
+    cursor: pointer;
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='question-flow'][data-part='option'][hidden] {
+    display: none;
+  }
+
+  [data-scope='question-flow'][data-part='option']:hover {
+    background: var(--xh-question-flow-option-bg-hover, var(--xh-bg-subtle-hover));
+  }
+
+  [data-scope='question-flow'][data-part='option']:active {
+    scale: var(--xh-motion-scale-press);
+  }
+
+  [data-scope='question-flow'][data-part='option']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: var(--xh-ring-offset);
+  }
+
+  /* 选中的那条读起来更重一档 */
+  [data-scope='question-flow'][data-part='option'][data-state='checked'] {
+    color: var(--xh-question-flow-option-fg-checked, var(--xh-fg-default));
+  }
+
+  /* 排在选中档之后：禁用项无论选没选都是禁用色 */
+  [data-scope='question-flow'][data-part='option'][data-disabled] {
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  /* 记号盒：多选是圆角方格，单选是圆。选中态填色，纯装饰不进可访问名 */
+  [data-scope='question-flow'][data-part='option-indicator'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    border: var(--xh-stroke-thin) solid var(--xh-question-flow-indicator-border, var(--xh-border-control));
+    border-radius: var(--xh-question-flow-indicator-radius, var(--xh-shape-inset));
+    background: var(--xh-question-flow-indicator-bg, var(--xh-bg-canvas));
+    color: var(--xh-question-flow-indicator-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
+    inline-size: var(--xh-question-flow-indicator-size, var(--xh-_question-flow-indicator));
+    block-size: var(--xh-question-flow-indicator-size, var(--xh-_question-flow-indicator));
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='question-flow'][data-part='option-indicator'][hidden] {
+    display: none;
+  }
+
+  /* 单选那一档把方格收成圆 */
+  [data-scope='question-flow'][data-part='option-indicator'][data-type='single'] {
+    border-radius: var(--xh-question-flow-indicator-radius-single, var(--xh-shape-pill));
+  }
+
+  /* 没写内容就由皮肤画勾；作者往部件里塞了自己的图形，这条规则即不命中 */
+  [data-scope='question-flow'][data-part='option-indicator']:empty::before {
+    content: '';
+    display: inline-block;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+  }
+
+  /* 单选那一档把勾换成实心点：mask 撤掉，圆点由伪元素自己的底色画 */
+  [data-scope='question-flow'][data-part='option-indicator'][data-type='single']:empty::before {
+    inline-size: var(--xh-question-flow-dot-size, calc(var(--xh-icon-size, var(--xh-glyph-size-text)) * 0.5));
+    block-size: var(--xh-question-flow-dot-size, calc(var(--xh-icon-size, var(--xh-glyph-size-text)) * 0.5));
+    border-radius: var(--xh-question-flow-dot-radius, var(--xh-shape-pill));
+    -webkit-mask: none;
+    mask: none;
+  }
+
+  [data-scope='question-flow'][data-part='option-indicator'][data-state='checked'] {
+    border-color: var(--xh-question-flow-indicator-border-checked, var(--xh-_tone, var(--xh-bg-brand)));
+    background: var(--xh-question-flow-indicator-bg-checked, var(--xh-_tone, var(--xh-bg-brand)));
+  }
+
+  /* 没选中时把记号隐去而不是撤掉：盒留在原位，翻面时整行不跳 */
+  [data-scope='question-flow'][data-part='option-indicator'][data-state='unchecked'] {
+    color: transparent;
+  }
+
+  [data-scope='question-flow'][data-part='option-label'] {
+    display: block;
+    flex: 1 1 auto;
+  }
+
+  [data-scope='question-flow'][data-part='option-label'][hidden] {
+    display: none;
+  }
+
+  /* 自由文本：与选项同等算数的一条答案，占满整行 */
+  [data-scope='question-flow'][data-part='note'] {
+    display: block;
+    inline-size: 100%;
+    padding-inline: var(--xh-question-flow-note-px, var(--xh-space-2));
+    padding-block: var(--xh-question-flow-note-py, var(--xh-space-1_5));
+    border: var(--xh-stroke-thin) solid var(--xh-question-flow-note-border, var(--xh-border-control));
+    border-radius: var(--xh-question-flow-note-radius, var(--xh-shape-control));
+    background: var(--xh-question-flow-note-bg, var(--xh-bg-surface));
+    color: var(--xh-question-flow-note-fg, var(--xh-fg-default));
+    font-family: inherit;
+    font-size: var(--xh-question-flow-note-font-size, var(--xh-_question-flow-font-size));
+    transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='question-flow'][data-part='note'][hidden] {
+    display: none;
+  }
+
+  [data-scope='question-flow'][data-part='note']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: var(--xh-ring-offset);
+  }
+
+  [data-scope='question-flow'][data-part='note']::placeholder {
+    color: var(--xh-question-flow-placeholder-fg, var(--xh-fg-subtle));
+  }
+
+  [data-scope='question-flow'][data-part='note']:disabled {
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  /* 页脚：左边步进，右边动作 */
+  [data-scope='question-flow'][data-part='footer'] {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--xh-question-flow-footer-gap, var(--xh-space-3));
+  }
+
+  [data-scope='question-flow'][data-part='footer'][hidden] {
+    display: none;
+  }
+
+  /* 两颗翻页钮是方形图标钮，中间夹着计数 */
+  [data-scope='question-flow'][data-part='prev-trigger'],
+  [data-scope='question-flow'][data-part='next-trigger'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--xh-question-flow-step-size, var(--xh-control-action-size));
+    block-size: var(--xh-question-flow-step-size, var(--xh-control-action-size));
+    padding: var(--xh-question-flow-step-padding, var(--xh-space-0));
+    border: 0;
+    border-radius: var(--xh-question-flow-step-radius, var(--xh-shape-inset));
+    background: var(--xh-question-flow-step-bg, transparent);
+    color: var(--xh-question-flow-step-fg, var(--xh-fg-subtle));
+    cursor: pointer;
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='question-flow'][data-part='prev-trigger'][hidden],
+  [data-scope='question-flow'][data-part='next-trigger'][hidden] {
+    display: none;
+  }
+
+  [data-scope='question-flow'][data-part='prev-trigger']:hover:not(:disabled),
+  [data-scope='question-flow'][data-part='next-trigger']:hover:not(:disabled) {
+    background: var(--xh-question-flow-step-bg-hover, var(--xh-bg-subtle-hover));
+    color: var(--xh-question-flow-step-fg-hover, var(--xh-fg-default));
+  }
+
+  [data-scope='question-flow'][data-part='prev-trigger']:active:not(:disabled),
+  [data-scope='question-flow'][data-part='next-trigger']:active:not(:disabled) {
+    scale: var(--xh-motion-scale-press);
+  }
+
+  [data-scope='question-flow'][data-part='prev-trigger']:focus-visible,
+  [data-scope='question-flow'][data-part='next-trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: var(--xh-ring-offset);
+  }
+
+  [data-scope='question-flow'][data-part='prev-trigger']:disabled,
+  [data-scope='question-flow'][data-part='next-trigger']:disabled {
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  /* 没写内容就由皮肤画箭头；作者往按钮里塞了自己的图形，这两条即不命中 */
+  [data-scope='question-flow'][data-part='prev-trigger']:empty::before {
+    content: '';
+    display: inline-block;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-chevron-up) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-chevron-up) center / contain no-repeat;
+  }
+
+  [data-scope='question-flow'][data-part='next-trigger']:empty::before {
+    content: '';
+    display: inline-block;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
+  }
+
+  /* 给眼睛看的 N / M：等宽数字，换题时不左右晃 */
+  [data-scope='question-flow'][data-part='counter'] {
+    display: inline-flex;
+    align-items: center;
+    color: var(--xh-question-flow-counter-fg, var(--xh-fg-subtle));
+    font-size: var(--xh-question-flow-counter-font-size, var(--xh-text-caption-size));
+    font-variant-numeric: tabular-nums;
+  }
+
+  [data-scope='question-flow'][data-part='counter'][hidden] {
+    display: none;
+  }
+
+  /* 两颗动作钮共用一套盒：跳过是安静的文字钮，提交是实心块 */
+  [data-scope='question-flow'][data-part='skip-trigger'],
+  [data-scope='question-flow'][data-part='submit-trigger'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    gap: var(--xh-question-flow-action-gap, var(--xh-space-1));
+    padding-inline: var(--xh-question-flow-action-px, var(--xh-_question-flow-px));
+    border: var(--xh-stroke-thin) solid transparent;
+    border-radius: var(--xh-question-flow-action-radius, var(--xh-shape-control));
+    block-size: var(--xh-question-flow-action-h, var(--xh-_question-flow-h));
+    font-family: inherit;
+    font-size: var(--xh-question-flow-action-font-size, var(--xh-text-label-size));
+    font-weight: var(--xh-question-flow-action-font-weight, var(--xh-text-label-weight));
+    line-height: var(--xh-leading-none);
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='question-flow'][data-part='skip-trigger'][hidden],
+  [data-scope='question-flow'][data-part='submit-trigger'][hidden] {
+    display: none;
+  }
+
+  [data-scope='question-flow'][data-part='skip-trigger'] {
+    background: var(--xh-question-flow-skip-bg, transparent);
+    color: var(--xh-question-flow-skip-fg, var(--xh-fg-muted));
+  }
+
+  [data-scope='question-flow'][data-part='skip-trigger']:hover:not(:disabled) {
+    background: var(--xh-question-flow-skip-bg-hover, var(--xh-bg-subtle-hover));
+    color: var(--xh-question-flow-skip-fg-hover, var(--xh-fg-default));
+  }
+
+  [data-scope='question-flow'][data-part='skip-trigger']:active:not(:disabled) {
+    scale: var(--xh-motion-scale-press);
+  }
+
+  /* 内顶高光把实心块顶出一道边，与跳过那颗的描边同一档厚度 */
+  [data-scope='question-flow'][data-part='submit-trigger'] {
+    --xh-_question-flow-submit-highlight: inset 0 var(--xh-stroke-thin) 0 0
+      color-mix(in oklab, var(--xh-_tone-on, var(--xh-fg-on-brand)) 14%, transparent);
+
+    background: var(--xh-question-flow-submit-bg, var(--xh-_tone, var(--xh-bg-brand)));
+    color: var(--xh-question-flow-submit-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
+    box-shadow: var(--xh-question-flow-submit-shadow, var(--xh-_question-flow-submit-highlight));
+  }
+
+  [data-scope='question-flow'][data-part='submit-trigger']:hover:not(:disabled) {
+    background: var(--xh-question-flow-submit-bg-hover, var(--xh-_tone-hover, var(--xh-bg-brand-hover)));
+  }
+
+  [data-scope='question-flow'][data-part='submit-trigger']:active:not(:disabled) {
+    background: var(--xh-question-flow-submit-bg-active, var(--xh-_tone-active, var(--xh-bg-brand-active)));
+    scale: var(--xh-motion-scale-press);
+  }
+
+  [data-scope='question-flow'][data-part='skip-trigger']:focus-visible,
+  [data-scope='question-flow'][data-part='submit-trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: var(--xh-ring-offset);
+  }
+
+  [data-scope='question-flow'][data-part='skip-trigger']:disabled,
+  [data-scope='question-flow'][data-part='submit-trigger']:disabled {
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  /* 答不动时提交键转灰但不收起：出口一直在那里，只是还按不动 */
+  [data-scope='question-flow'][data-part='submit-trigger']:disabled {
+    background: var(--xh-question-flow-submit-bg-off, var(--xh-bg-muted));
+    box-shadow: none;
+  }
+
+  /* 交卷之后才露出的那一格 */
+  [data-scope='question-flow'][data-part='result'] {
+    display: inline-flex;
+    align-self: flex-start;
+    align-items: center;
+    gap: var(--xh-question-flow-result-gap, var(--xh-space-1_5));
+    padding-inline: var(--xh-question-flow-result-px, var(--xh-space-2));
+    padding-block: var(--xh-question-flow-result-py, var(--xh-space-1));
+    border-radius: var(--xh-question-flow-result-radius, var(--xh-shape-pill));
+    background: var(--xh-question-flow-result-bg, var(--xh-bg-subtle));
+    color: var(--xh-question-flow-result-fg, var(--xh-fg-success));
+    font-size: var(--xh-question-flow-result-font-size, var(--xh-text-caption-size));
+    font-weight: var(--xh-question-flow-result-font-weight, var(--xh-text-label-weight));
+    animation: xh-question-flow-result-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  }
+
+  [data-scope='question-flow'][data-part='result'][hidden] {
+    display: none;
+  }
+
+  /* 视觉隐藏的播报区：不能 display:none，那样读屏就取不到它了 */
+  [data-scope='question-flow'][data-part='announcement'] {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    padding: 0;
+    margin: -1px;
+    border: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+@layer xihan.motion {
+  /* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
+     动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
+
+  /* 幅度走令牌，减弱动效时由令牌层归零；位移用独立属性而非 transform 简写 */
+  @keyframes xh-question-flow-in {
+    from {
+      opacity: 0;
+      translate: 0 var(--xh-motion-distance-md);
+    }
+
+    to {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+
+  @keyframes xh-question-flow-result-in {
+    from {
+      opacity: 0;
+      scale: var(--xh-motion-scale-enter);
+    }
+
+    to {
+      opacity: 1;
+      scale: 1;
+    }
+  }
+}

@@ -1,6 +1,6 @@
 # 组件总览
 
-129 个组件，每个都同时提供**无头内核**（`@xihan-ui/headless`）、**Vue 组件**（`@xihan-ui/vue`）、**自定义元素**（`@xihan-ui/web-components`）与**默认皮肤**（`@xihan-ui/styles`）四份产物。四者同源：内核是唯一的行为定义，另外三份不重新实现任何逻辑。
+130 个组件，每个都同时提供**无头内核**（`@xihan-ui/headless`）、**Vue 组件**（`@xihan-ui/vue`）、**自定义元素**（`@xihan-ui/web-components`）与**默认皮肤**（`@xihan-ui/styles`）四份产物。四者同源：内核是唯一的行为定义，另外三份不重新实现任何逻辑。
 
 本册每个组件一页，页内小节固定：概述 · 何时使用 · 何时不用 · 特性 · 示例 · 产物 · 解剖 · Props · 事件 · 插槽 · 状态 · connect API · 键盘 · 无障碍 · 样式 · 数据属性 · CSS 变量 · 动效 · 响应式 · RTL · 组合 · 最佳实践 · 反模式。其中契约类的小节由组件源码、连接层与皮肤直接生成，不会与代码对不上；讲取舍的几节与组件源码同放，见各组件目录下的 doc.md。某一节没有内容时整节不出现，不留空标题。
 
@@ -187,6 +187,7 @@ AI 对话界面的组件。
 | [流式正文](./markdown-stream) | `markdown-stream` | 4 | 1 | 4 |
 | [消息流](./message-feed) | `message-feed` | 7 | 7 | 3 |
 | [提示输入框](./prompt-input) | `prompt-input` | 4 | 7 | 3 |
+| [澄清问卷](./question-flow) | `question-flow` | 18 | 6 | 3 |
 | [思考过程](./reasoning) | `reasoning` | 7 | 1 | 1 |
 | [工具调用](./tool-call) | `tool-call` | 12 | 1 | 4 |
 | [会话线程](./thread) | `thread` | 5 | 2 | 8 |

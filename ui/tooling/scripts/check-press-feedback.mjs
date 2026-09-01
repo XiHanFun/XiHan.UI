@@ -47,6 +47,7 @@ const PRESSABLE = {
   'diff-view': ['gap-trigger'],
   'message-feed': ['scroll-button'],
   'prompt-input': ['submit-trigger'],
+  'question-flow': ['option', 'prev-trigger', 'next-trigger', 'skip-trigger', 'submit-trigger'],
   'reasoning': ['trigger'],
   'tool-call': ['trigger'],
 }
