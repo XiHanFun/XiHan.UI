@@ -167,4 +167,12 @@
   [data-scope='scrollbar'][data-part='corner'][hidden] {
     display: none;
   }
+
+  @media print {
+    /* 打印：滚动条画的是「还能往下看多少」，纸上没有这回事，它只会在版心边上留一条灰带。 */
+    [data-scope='scrollbar'][data-part='root'],
+    [data-scope='scrollbar'][data-part='corner'] {
+      display: none;
+    }
+  }
 }

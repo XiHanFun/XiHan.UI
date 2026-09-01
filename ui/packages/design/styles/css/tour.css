@@ -380,4 +380,15 @@
     min-block-size: 0;
     overflow-y: auto;
   }
+
+  @media print {
+    /* 打印：定位层与遮罩是交互期才存在的东西，落到纸上只会盖住底下的正文。
+       收起写在这份皮肤里而不是 reset：reset 层排在组件层之前，组件层里任何一条 display 都压得住它。
+       居中那一档的选择器多带一个属性、权重高一级，所以把它一并列出来，靠同权重下的书写顺序压回去。 */
+    [data-scope='tour'][data-part='backdrop'],
+    [data-scope='tour'][data-part='positioner'],
+    [data-scope='tour'][data-part='positioner'][data-position='center'] {
+      display: none;
+    }
+  }
 }

@@ -1,0 +1,17 @@
+{
+  "$description": "打印档。纸上没有光源：投影印出来是一片脏灰，多数引擎还会连同底色一起丢弃，剩下的只是一圈把面与面糊在一起的脏边。三支海拔角色在打印时一律取消。只重映射角色，不动 shadow.* 原语——原语在屏幕档仍要按原值发出。",
+  "elevation": {
+    "raised": {
+      "$type": "shadow",
+      "$value": "none"
+    },
+    "floating": {
+      "$type": "shadow",
+      "$value": "none"
+    },
+    "sheet": {
+      "$type": "shadow",
+      "$value": "none"
+    }
+  }
+}

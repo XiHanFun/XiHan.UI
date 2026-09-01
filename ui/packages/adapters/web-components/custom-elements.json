@@ -5089,6 +5089,12 @@
               "name": "--xh-cascader-indicator-fg"
             },
             {
+              "name": "--xh-cascader-input-autofill-bg"
+            },
+            {
+              "name": "--xh-cascader-input-autofill-fg"
+            },
+            {
               "name": "--xh-cascader-input-font-size"
             },
             {
@@ -6088,6 +6094,12 @@
             },
             {
               "name": "--xh-clipboard-indicator-fg-copied"
+            },
+            {
+              "name": "--xh-clipboard-input-autofill-bg"
+            },
+            {
+              "name": "--xh-clipboard-input-autofill-fg"
             },
             {
               "name": "--xh-clipboard-input-bg"
@@ -8733,6 +8745,12 @@
               "name": "--xh-combobox-icon-size"
             },
             {
+              "name": "--xh-combobox-input-autofill-bg"
+            },
+            {
+              "name": "--xh-combobox-input-autofill-fg"
+            },
+            {
               "name": "--xh-combobox-input-font-size"
             },
             {
@@ -9024,6 +9042,12 @@
             },
             {
               "name": "--xh-composer-gap"
+            },
+            {
+              "name": "--xh-composer-input-autofill-bg"
+            },
+            {
+              "name": "--xh-composer-input-autofill-fg"
             },
             {
               "name": "--xh-composer-input-fg"
@@ -14094,6 +14118,12 @@
             },
             {
               "name": "--xh-editable-gap"
+            },
+            {
+              "name": "--xh-editable-input-autofill-bg"
+            },
+            {
+              "name": "--xh-editable-input-autofill-fg"
             },
             {
               "name": "--xh-editable-input-bg"
@@ -23996,6 +24026,12 @@
               "name": "--xh-mention-content-shadow"
             },
             {
+              "name": "--xh-mention-input-autofill-bg"
+            },
+            {
+              "name": "--xh-mention-input-autofill-fg"
+            },
+            {
               "name": "--xh-mention-input-bg"
             },
             {
@@ -27521,6 +27557,12 @@
               "name": "--xh-number-field-input-align"
             },
             {
+              "name": "--xh-number-field-input-autofill-bg"
+            },
+            {
+              "name": "--xh-number-field-input-autofill-fg"
+            },
+            {
               "name": "--xh-number-field-input-bg"
             },
             {
@@ -28742,6 +28784,12 @@
               "name": "--xh-password-input-icon-size"
             },
             {
+              "name": "--xh-password-input-input-autofill-bg"
+            },
+            {
+              "name": "--xh-password-input-input-autofill-fg"
+            },
+            {
               "name": "--xh-password-input-input-bg"
             },
             {
@@ -29200,6 +29248,12 @@
           "tagName": "xh-pin-input",
           "customElement": true,
           "cssProperties": [
+            {
+              "name": "--xh-pin-input-box-autofill-bg"
+            },
+            {
+              "name": "--xh-pin-input-box-autofill-fg"
+            },
             {
               "name": "--xh-pin-input-box-bg"
             },
@@ -31416,6 +31470,12 @@
             },
             {
               "name": "--xh-prompt-input-icon-size"
+            },
+            {
+              "name": "--xh-prompt-input-input-autofill-bg"
+            },
+            {
+              "name": "--xh-prompt-input-input-autofill-fg"
             },
             {
               "name": "--xh-prompt-input-input-fg"
@@ -42267,6 +42327,12 @@
               "name": "--xh-tags-input-icon-size"
             },
             {
+              "name": "--xh-tags-input-input-autofill-bg"
+            },
+            {
+              "name": "--xh-tags-input-input-autofill-fg"
+            },
+            {
               "name": "--xh-tags-input-input-basis"
             },
             {
@@ -42771,6 +42837,12 @@
             },
             {
               "name": "--xh-text-field-icon-size"
+            },
+            {
+              "name": "--xh-text-field-input-autofill-bg"
+            },
+            {
+              "name": "--xh-text-field-input-autofill-fg"
             },
             {
               "name": "--xh-text-field-input-bg"

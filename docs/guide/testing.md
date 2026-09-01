@@ -79,7 +79,7 @@ interface DomSnapshot {
 
 ## 结构门禁
 
-`pnpm gate` 跑 69 项结构检查，它们查的是**判据查不到的东西**——静默失效、悬空承诺、没被命名的决策：
+`pnpm gate` 跑 73 项结构检查，它们查的是**判据查不到的东西**——静默失效、悬空承诺、没被命名的决策：
 
 | 门禁 | 拦什么 |
 | --- | --- |
@@ -90,6 +90,10 @@ interface DomSnapshot {
 | `check-token-refs` | 皮肤引用了不存在的令牌名（整条声明会静默失效） |
 | `check-shared-slots` | 同一字面量在多个组件里当默认值，却没立语义令牌 |
 | `check-disabled-contrast` | 禁用态前景色令牌上又叠 `opacity`，对比度被压到读不出字 |
+| `check-color-literals` | 颜色写死在 `background` 简写、`box-shadow` 颜色位或 `--xh-*` 槽赋值里——stylelint 的六个长属性白名单看不见这几处 |
+| `check-print-surface` | 浮层定位层 / 遮罩 / 滚动条 / 钉在视口上的节点在打印时没收起，或投影没由令牌层取消 |
+| `check-placeholder-fg` | 占位文字两条通道（`::placeholder` 与 `[data-placeholder]`）取了不同的默认前景，或用 `opacity` 表达深浅 |
+| `check-autofill` | 渲染原生表单控件的输入框没写自动填充规则，或两个手段 / 两个引擎的选择器缺一 |
 | `check-part-wiring` | 解剖声明、`connect` 产出、适配器却不接线的部件 |
 | `check-breakpoints` | 皮肤 `@media` 里的断点字面量不在令牌清单里（自定义属性在媒体条件里不生效，只能写字面量） |
 | `check-focus-ring` | 聚焦环的粗细、颜色、偏移写了字面量而不是令牌，主题与全局调整对它无效 |

@@ -188,4 +188,11 @@
     clip-path: inset(50%);
     white-space: nowrap;
   }
+
+  @media print {
+    /* 打印：回到底部这颗钮只有在能滚的地方才成立，落到纸上是一颗按不动的按钮。 */
+    [data-scope='message-feed'][data-part='scroll-button'] {
+      display: none;
+    }
+  }
 }

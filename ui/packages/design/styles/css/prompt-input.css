@@ -161,6 +161,23 @@
     cursor: not-allowed;
   }
 
+  /* 自动填充：引擎给填过的框强加一套系统色（多数是黄底黑字），盖得过 background 与 color，
+     深色档下就剩一块不跟主题走的黄底。底改用 inset 阴影铺回来，扩散量 100vmax 填满内容盒；
+     字改用 -webkit-text-fill-color 接回来，那是这个态下唯一还听样式表的前景通道。
+     不去拉长 transition 把系统底推迟显现：那只是把它藏起来，减弱动效通道一关过渡就当场露出。
+     两个选择器名分写两条：一条选择器列表里只要有一个名字不被认识，整条规则就被丢弃。
+     框的底画在 root 上，input 本身是透明分段，所以铺的是 root 那一档的底；
+     取不透明的面令牌而不是 --xh-_prompt-input-bg：后者在 ghost 档下是透明的，铺了等于没铺。 */
+  [data-scope='prompt-input'][data-part='input']:autofill {
+    box-shadow: inset 0 0 0 100vmax var(--xh-prompt-input-input-autofill-bg, var(--xh-bg-canvas));
+    -webkit-text-fill-color: var(--xh-prompt-input-input-autofill-fg, var(--xh-fg-default));
+  }
+
+  [data-scope='prompt-input'][data-part='input']:-webkit-autofill {
+    box-shadow: inset 0 0 0 100vmax var(--xh-prompt-input-input-autofill-bg, var(--xh-bg-canvas));
+    -webkit-text-fill-color: var(--xh-prompt-input-input-autofill-fg, var(--xh-fg-default));
+  }
+
   /* 私有变量槽位，send 与 stop 两个身份只换这几个配色值 */
   [data-scope='prompt-input'][data-part='submit-trigger'] {
     --xh-_bg: var(--xh-prompt-input-send-bg, var(--xh-_tone, var(--xh-bg-brand)));

@@ -347,4 +347,17 @@
       background-position: -50% center;
     }
   }
+
+  @media print {
+    /* 打印：动画会被定格在任意一帧——转了一半的圈、扫到一半的微光。这里换成静止的表达，
+       取值与减弱动效那一档相同。两档各写一块、不并进一条媒体查询列表：减弱动效另有一份
+       :where([data-motion='reduce']) 的钩子版本与它成对，打印没有对应的钩子可配，
+       并成一条之后这层配对关系在文本上就断了。 */
+    [data-scope='tool-call'][data-part='root'][data-running] [data-part='status'] {
+      background-image: none;
+      color: var(--xh-tool-call-status-fg, var(--xh-fg-muted));
+      -webkit-text-fill-color: currentColor;
+      animation: none;
+    }
+  }
 }

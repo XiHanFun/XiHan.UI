@@ -145,4 +145,11 @@
   [data-scope='float-button'][data-part='trigger'][hidden] {
     display: none;
   }
+
+  @media print {
+    /* 打印：悬浮动作钮固定在视口上，纸上没有视口——它会印在页面某处盖住正文，而且按不动。 */
+    [data-scope='float-button'][data-part='root'] {
+      display: none;
+    }
+  }
 }

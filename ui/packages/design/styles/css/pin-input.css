@@ -152,6 +152,28 @@
     border-color: var(--xh-pin-input-box-border-complete, var(--xh-_pin-input-accent));
   }
 
+  /* 自动填充：一次性验证码由平台直接灌进这一行格子，引擎顺手给每格强加一套系统色
+     （多数是黄底黑字），盖得过 background 与 color，深色档下就剩一行不跟主题走的黄方块。
+     底改用 inset 阴影铺回来，扩散量 100vmax 填满内容盒；字改用 -webkit-text-fill-color
+     接回来，那是这个态下唯一还听样式表的前景通道。
+     不去拉长 transition 把系统底推迟显现：那只是把它藏起来，减弱动效通道一关过渡就当场露出。
+     两个选择器名分写两条：一条选择器列表里只要有一个名字不被认识，整条规则就被丢弃。
+     底取一支不透明的面令牌而不是 --xh-_pin-input-box-bg：后者在 ghost 档下是透明的，
+     铺一层透明等于没铺。自带的落影列在铺底之后，不然这条会把格子的边界连同投影一起抹掉。 */
+  [data-scope='pin-input'][data-part='input']:autofill {
+    box-shadow:
+      inset 0 0 0 100vmax var(--xh-pin-input-box-autofill-bg, var(--xh-bg-canvas)),
+      var(--xh-pin-input-box-shadow, var(--xh-_pin-input-box-shadow));
+    -webkit-text-fill-color: var(--xh-pin-input-box-autofill-fg, var(--xh-fg-default));
+  }
+
+  [data-scope='pin-input'][data-part='input']:-webkit-autofill {
+    box-shadow:
+      inset 0 0 0 100vmax var(--xh-pin-input-box-autofill-bg, var(--xh-bg-canvas)),
+      var(--xh-pin-input-box-shadow, var(--xh-_pin-input-box-shadow));
+    -webkit-text-fill-color: var(--xh-pin-input-box-autofill-fg, var(--xh-fg-default));
+  }
+
   /* 连接层把它写成 type=hidden，UA 自己就不渲染；这里的视觉隐藏是给元素升级前那一瞬兜底
      （作者手写的是一个普通 input，升级完成前它是可见的文本框）。
      刻意不写 display：写了反而会盖掉 UA 对 type=hidden 的收起，把它显出来 */

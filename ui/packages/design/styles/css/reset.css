@@ -36,4 +36,23 @@
   [data-scope][data-part='positioner'][data-positioned] {
     visibility: visible;
   }
+
+  /*
+   * 选区高亮的底与字。不写这条时用的是 UA 的系统高亮色（多数是系统蓝底白字）：
+   * 它不跟主题走，深色档下这块蓝会横在面板上，选中的文字反而比没选中时更难认。
+   *
+   * 后代那条不是冗余。高亮样式虽然会沿元素树往下继承，但「直接命中该元素的声明」
+   * 永远压过继承来的值：宿主页面自己写一条通配的 ::selection，它直接命中我们子树里
+   * 的每一个后代元素——只写第一条时，库节点自己的裸文本是我们的色，里面每个 <span>
+   * 却回退成宿主的色，一段文字选出两种底。两条一起写，整棵子树才是同一个色。
+   * 两条都以 [data-scope] 起手，着色止于库子树，宿主页面自己的选区不受影响。
+   *
+   * 只写这两个属性：高亮伪元素能吃的属性极窄，box-shadow / border 一类多数引擎
+   * 直接丢弃，不报错也不生效，写了只会让人以为已经处理过。
+   */
+  [data-scope]::selection,
+  [data-scope] *::selection {
+    background: var(--xh-bg-brand-subtle);
+    color: var(--xh-fg-default);
+  }
 }

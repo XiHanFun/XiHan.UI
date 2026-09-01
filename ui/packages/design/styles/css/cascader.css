@@ -545,6 +545,22 @@
     display: none;
   }
 
+  /* 自动填充：引擎给填过的框强加一套系统色（多数是黄底黑字），盖得过 background 与 color，
+     深色档下就剩一条不跟主题走的黄带。底改用 inset 阴影铺回来，扩散量 100vmax 填满内容盒；
+     字改用 -webkit-text-fill-color 接回来，那是这个态下唯一还听样式表的前景通道。
+     不去拉长 transition 把系统底推迟显现：那只是把它藏起来，减弱动效通道一关过渡就当场露出。
+     两个选择器名分写两条：一条选择器列表里只要有一个名字不被认识，整条规则就被丢弃。
+     搜索框排在浮层面里，铺的底取浮起面而不是页面底，不然框内会比周围亮出一块。 */
+  [data-scope='cascader'][data-part='input']:autofill {
+    box-shadow: inset 0 0 0 100vmax var(--xh-cascader-input-autofill-bg, var(--xh-bg-surface));
+    -webkit-text-fill-color: var(--xh-cascader-input-autofill-fg, var(--xh-fg-default));
+  }
+
+  [data-scope='cascader'][data-part='input']:-webkit-autofill {
+    box-shadow: inset 0 0 0 100vmax var(--xh-cascader-input-autofill-bg, var(--xh-bg-surface));
+    -webkit-text-fill-color: var(--xh-cascader-input-autofill-fg, var(--xh-fg-default));
+  }
+
   /* 与列同高：搜索视图与浏览视图互换时浮层不改高度，候选多了在列表内自己滚 */
   [data-scope='cascader'][data-part='search-list'] {
     display: flex;
@@ -664,6 +680,14 @@
     to {
       opacity: 0;
       scale: var(--xh-motion-scale-enter);
+    }
+  }
+
+  @media print {
+    /* 打印：定位层与遮罩是交互期才存在的东西，落到纸上只会盖住底下的正文。
+       收起写在这份皮肤里而不是 reset：reset 层排在组件层之前，组件层里任何一条 display 都压得住它。 */
+    [data-scope='cascader'][data-part='positioner'] {
+      display: none;
     }
   }
 }
