@@ -120,7 +120,7 @@
     position: absolute;
     inline-size: 40%;
     transition: none;
-    animation: xh-progress-indeterminate var(--xh-progress-indeterminate-duration, calc(var(--xh-spin-duration) * 2)) var(--xh-motion-ease-continuous) infinite;
+    animation: xh-progress-indeterminate var(--xh-progress-indeterminate-duration, calc(var(--xh-spin-duration) * 2)) var(--xh-motion-ease-loop) infinite;
   }
 
   /* 减弱动效档：不来回扫，改成一条铺满的静态条——进度仍然未知，只是不再动。

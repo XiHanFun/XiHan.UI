@@ -228,7 +228,7 @@
   [data-scope='notification'][data-part='item'][data-type='loading'] [data-part='item-indicator']:empty::before {
     -webkit-mask-image: var(--xh-glyph-mark-rotate-right);
     mask-image: var(--xh-glyph-mark-rotate-right);
-    animation: xh-notification-spin var(--xh-spin-duration) linear infinite;
+    animation: xh-notification-spin var(--xh-spin-duration) var(--xh-motion-ease-loop) infinite;
   }
 
   /* 减少动效：转圈停下，静止的箭头仍然读得出「还没好」；

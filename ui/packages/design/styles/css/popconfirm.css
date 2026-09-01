@@ -186,7 +186,7 @@
     border: var(--xh-stroke-thin) solid transparent;
     border-block-start-color: currentcolor;
     border-radius: var(--xh-shape-pill);
-    animation: xh-popconfirm-rotate var(--xh-popconfirm-loading-duration, var(--xh-spin-duration)) linear infinite;
+    animation: xh-popconfirm-rotate var(--xh-popconfirm-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite;
   }
 
   [data-scope='popconfirm'][data-part='confirm-trigger']:hover {

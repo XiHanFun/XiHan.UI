@@ -150,7 +150,7 @@
     min-block-size: var(--xh-_marquee-fill-block);
     animation-name: var(--xh-_marquee-name);
     animation-duration: var(--xh-_marquee-duration);
-    animation-timing-function: linear;
+    animation-timing-function: var(--xh-motion-ease-loop);
     animation-iteration-count: infinite;
     animation-play-state: var(--xh-_marquee-play);
   }

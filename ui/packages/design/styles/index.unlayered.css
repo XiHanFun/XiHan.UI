@@ -4278,7 +4278,7 @@
   min-block-size: var(--xh-_marquee-fill-block);
   animation-name: var(--xh-_marquee-name);
   animation-duration: var(--xh-_marquee-duration);
-  animation-timing-function: linear;
+  animation-timing-function: var(--xh-motion-ease-loop);
   animation-iteration-count: infinite;
   animation-play-state: var(--xh-_marquee-play);
 }
@@ -5441,7 +5441,7 @@ input[data-scope='mention'][data-part='input'] {
   border: var(--xh-stroke-thin) solid transparent;
   border-block-start-color: currentcolor;
   border-radius: var(--xh-shape-pill);
-  animation: xh-popconfirm-rotate var(--xh-popconfirm-loading-duration, var(--xh-spin-duration)) linear infinite;
+  animation: xh-popconfirm-rotate var(--xh-popconfirm-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite;
 }
 
 [data-scope='popconfirm'][data-part='confirm-trigger']:hover {
@@ -6460,7 +6460,7 @@ input[data-scope='mention'][data-part='input'] {
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  animation: xh-reasoning-shimmer var(--xh-reasoning-shimmer-duration, var(--xh-shimmer-duration)) linear infinite;
+  animation: xh-reasoning-shimmer var(--xh-reasoning-shimmer-duration, var(--xh-shimmer-duration)) var(--xh-motion-ease-loop) infinite;
 }
 
 /*
@@ -8668,7 +8668,7 @@ input[data-scope='mention'][data-part='input'] {
   );
   background-repeat: no-repeat;
   background-size: 200% 100%;
-  animation: xh-skeleton-shimmer var(--xh-skeleton-duration, var(--xh-shimmer-duration)) var(--xh-motion-ease-continuous) infinite;
+  animation: xh-skeleton-shimmer var(--xh-skeleton-duration, var(--xh-shimmer-duration)) var(--xh-motion-ease-loop) infinite;
 }
 
 /* 一行文字的高度取正文字号，圆角拉满，看起来就是一行还没排出来的字 */
@@ -8756,7 +8756,7 @@ input[data-scope='mention'][data-part='input'] {
   /* 一整圈是轨道色，只有起始边换成前景色，转起来才看得出方向 */
   border-block-start-color: var(--xh-spinner-fg, var(--xh-bg-brand));
   border-radius: var(--xh-spinner-radius, var(--xh-shape-pill));
-  animation: xh-spinner-rotate var(--xh-spinner-duration, var(--xh-spin-duration)) linear infinite;
+  animation: xh-spinner-rotate var(--xh-spinner-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite;
 }
 
 /* 三档直径走字形尺寸那把尺：圆环与同一行文字里的图标同级，三档同族才不会在 compact 下错位。
@@ -10043,7 +10043,7 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='button'][data-part='indicator'] {
   display: inline-flex;
-  animation: xh-spin var(--xh-button-spin-duration, var(--xh-spin-duration)) linear infinite;
+  animation: xh-spin var(--xh-button-spin-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite;
 }
 
 /* 减少动效：指示器停转，"还在忙"由按钮自身的挂起样式与指示器图标继续表达。
@@ -18792,7 +18792,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='notification'][data-part='item'][data-type='loading'] [data-part='item-indicator']:empty::before {
   -webkit-mask-image: var(--xh-glyph-mark-rotate-right);
   mask-image: var(--xh-glyph-mark-rotate-right);
-  animation: xh-notification-spin var(--xh-spin-duration) linear infinite;
+  animation: xh-notification-spin var(--xh-spin-duration) var(--xh-motion-ease-loop) infinite;
 }
 
 /* 减少动效：转圈停下，静止的箭头仍然读得出「还没好」；
@@ -20217,7 +20217,7 @@ input[data-scope='mention'][data-part='input'] {
   position: absolute;
   inline-size: 40%;
   transition: none;
-  animation: xh-progress-indeterminate var(--xh-progress-indeterminate-duration, calc(var(--xh-spin-duration) * 2)) var(--xh-motion-ease-continuous) infinite;
+  animation: xh-progress-indeterminate var(--xh-progress-indeterminate-duration, calc(var(--xh-spin-duration) * 2)) var(--xh-motion-ease-loop) infinite;
 }
 
 /* 减弱动效档：不来回扫，改成一条铺满的静态条——进度仍然未知，只是不再动。
@@ -23170,7 +23170,7 @@ input[data-scope='mention'][data-part='input'] {
   border: var(--xh-stroke-thin) solid transparent;
   border-block-start-color: var(--xh-switch-loading-fg, var(--xh-bg-brand));
   border-radius: var(--xh-shape-pill);
-  animation: xh-switch-rotate var(--xh-switch-loading-duration, var(--xh-spin-duration)) linear infinite;
+  animation: xh-switch-rotate var(--xh-switch-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite;
 }
 
 /* —— 带文字的整行：<label> 包住控件与文字，与 checkbox-group 的条目同一副样子 —— */
@@ -23991,7 +23991,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='table'][data-part='loading-state'] {
-  animation: xh-table-loading-pulse calc(var(--xh-spin-duration) / 2) var(--xh-motion-ease-continuous) infinite alternate;
+  animation: xh-table-loading-pulse calc(var(--xh-spin-duration) / 2) var(--xh-motion-ease-loop) infinite alternate;
 }
 
 /* 减少动效：呼吸停下，加载态只留静止的文案。两条规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
@@ -26892,7 +26892,7 @@ input[data-scope='mention'][data-part='input'] {
   background-clip: text;
   color: transparent;
   -webkit-text-fill-color: transparent;
-  animation: xh-tool-call-shimmer var(--xh-tool-call-shimmer-duration, var(--xh-shimmer-duration)) linear infinite;
+  animation: xh-tool-call-shimmer var(--xh-tool-call-shimmer-duration, var(--xh-shimmer-duration)) var(--xh-motion-ease-loop) infinite;
 }
 
 /* 减少动效：整道光撤掉换回平色，"在跑"仍由状态文字本身表达——只停动画的话，

@@ -197,6 +197,7 @@
     --xh-motion-duration-exit: var(--xh-duration-fast);
     --xh-motion-duration-micro: var(--xh-duration-fast);
     --xh-motion-ease-continuous: var(--xh-ease-standard);
+    --xh-motion-ease-loop: linear;
     --xh-motion-ease-enter: var(--xh-ease-out);
     --xh-motion-ease-enter-strong: var(--xh-ease-out-strong);
     --xh-motion-ease-exit: var(--xh-ease-in);

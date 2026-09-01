@@ -145,7 +145,7 @@
 
   [data-scope='button'][data-part='indicator'] {
     display: inline-flex;
-    animation: xh-spin var(--xh-button-spin-duration, var(--xh-spin-duration)) linear infinite;
+    animation: xh-spin var(--xh-button-spin-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite;
   }
 
   /* 减少动效：指示器停转，"还在忙"由按钮自身的挂起样式与指示器图标继续表达。
