@@ -882,9 +882,11 @@ describe('defaultFocusedValue 决定先落在哪一页', () => {
 
 describe('值被整份改写后区间不再跟着鼠标走', () => {
   it('点了起点再整份写值（快捷选项 / 清空 / setValue）：那个起点作废，指针扫过不再铺预览带', () => {
+    // 钉住铺开的那一页：不给就落到「今天」那一页，用例里写死的八月格子会随日历时钟消失
     const h = mount({
       defaultOpen: true,
       selectionMode: 'range',
+      defaultFocusedValue: '2026-08-10',
       presets: [{ value: '2026-08-01/2026-08-31', label: '整月' }],
     })
     // 先落一个起点，区间进入「挑到一半」
@@ -904,7 +906,7 @@ describe('值被整份改写后区间不再跟着鼠标走', () => {
   })
 
   it('作废之后再点一格，是重新起一段而不是接着旧起点收口', () => {
-    const h = mount({ defaultOpen: true, selectionMode: 'range' })
+    const h = mount({ defaultOpen: true, selectionMode: 'range', defaultFocusedValue: '2026-08-10' })
     click(h.cell('2026-08-10'))
     h.api().setValue([])
     click(h.cell('2026-08-20'))
