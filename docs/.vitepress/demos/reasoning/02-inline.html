@@ -1,0 +1,50 @@
+<!-- 无壳内联形态 | ghost 档不占一块面，开关收成只占文字宽度的小药丸，适合在一段回答里穿插好几处 -->
+<p>把两处思考穿插在同一段回答里，它们不再各自占一张卡：</p>
+
+<xh-reasoning
+  id="reasoning-inline-a"
+  variant="ghost"
+  start-time="0"
+  end-time="2400"
+>
+  <div data-xh-part="root">
+    <button data-xh-part="trigger">
+      <span data-xh-part="icon"></span>
+      <span data-xh-part="indicator"></span>
+      <span data-xh-part="label">思考过程</span>
+      <span data-xh-part="duration"></span>
+    </button>
+    <div data-xh-part="content">
+      先确认这次只改皮肤：解剖与事件都不动，公开面就只增不减。
+    </div>
+  </div>
+</xh-reasoning>
+
+<xh-reasoning
+  id="reasoning-inline-b"
+  variant="ghost"
+  start-time="0"
+  end-time="700"
+>
+  <div data-xh-part="root">
+    <button data-xh-part="trigger">
+      <span data-xh-part="icon"></span>
+      <span data-xh-part="indicator"></span>
+      <span data-xh-part="label">思考过程</span>
+      <span data-xh-part="duration"></span>
+    </button>
+    <div data-xh-part="content">
+      再看形态轴：ghost 关掉底与描边，缩进由左侧那条竖线接管。
+    </div>
+  </div>
+</xh-reasoning>
+
+<script type="module">
+  // 名字位写死组件名，秒数交给耗时位：两个排版位各司其职
+  for (const id of ["reasoning-inline-a", "reasoning-inline-b"]) {
+    const panel = document.getElementById(id);
+    const seconds = (panel.durationMs ?? 0) / 1000;
+    panel.querySelector('[data-xh-part="duration"]').textContent =
+      `${seconds.toFixed(1)} 秒`;
+  }
+</script>

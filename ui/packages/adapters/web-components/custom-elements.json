@@ -33486,6 +33486,15 @@
             },
             {
               "kind": "field",
+              "name": "durationMs",
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "两个时刻算出来的思考时长，任一缺席或倒着走都是 undefined。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
               "name": "statusText",
               "type": {
                 "text": "string"

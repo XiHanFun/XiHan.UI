@@ -33,6 +33,12 @@
 
 <XhDemo src="reasoning/01-basic" />
 
+### 无壳内联形态
+
+ghost 档不占一块面，开关收成只占文字宽度的小药丸，适合在一段回答里穿插好几处
+
+<XhDemo src="reasoning/02-inline" />
+
 ## 产物
 
 | 层 | 值 |
