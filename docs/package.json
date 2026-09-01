@@ -29,6 +29,7 @@
   },
   "dependencies": {
     "@xihan-ui/animations": "link:../ui/packages/features/animations",
+    "@xihan-ui/code-highlight": "link:../ui/packages/engine/code-highlight",
     "@xihan-ui/headless": "link:../ui/packages/engine/headless",
     "@xihan-ui/icons": "link:../ui/packages/design/icons",
     "@xihan-ui/kernel": "link:../ui/packages/engine/kernel",
