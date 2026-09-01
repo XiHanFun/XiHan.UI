@@ -23,6 +23,7 @@ AI 组件族八件统一补齐动效、表面语言与几处真实能力缺口�
 
 - `tool-call`：`summary`（收起态也看得见这次查了什么、改了哪个文件）与 `duration` 两个部件，配 `startTime` / `endTime` 两个属性、`durationMs` 与纯函数 `toolCallDuration()`、文案键 `ranFor`。
 - `reasoning`：`icon` 部件、`variant` 属性（`outline` / `subtle` / `ghost`，`ghost` 是无壳内联形态）、`statusText`（此前声明了却从没被消费的三个文案键现在真的生效）与纯函数 `reasoningStatusText()`。
+  自定义元素侧另有只读属性 `element.durationMs`，与 Vue 根插槽的同名字段对齐。
 - `approval`：`note`（附在判定上的自由文本）、`result`（判定落定后看得见的那一格）、`actions` 三个部件，配 `note` / `defaultNote` / `onNoteChange` 与 `ApprovalNoteChangeDetails`。
 - `diff-view`：`stat`（头部的增删统计位）与 `segment`（字级差异高亮）两个部件，配 `wrap` 属性与 `DiffViewSegment` / `DiffViewSegmentProps`。
 - `prompt-input`：可选的 `input-row` 部件——写了它，外壳翻成竖排、输入框与按钮收进这一行，上下两侧腾出来放附件条与工具行。

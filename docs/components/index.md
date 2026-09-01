@@ -188,6 +188,6 @@ AI 对话界面的组件。
 | [消息流](./message-feed) | `message-feed` | 7 | 7 | 3 |
 | [提示输入框](./prompt-input) | `prompt-input` | 4 | 7 | 3 |
 | [澄清问卷](./question-flow) | `question-flow` | 18 | 6 | 3 |
-| [思考过程](./reasoning) | `reasoning` | 7 | 1 | 1 |
+| [思考过程](./reasoning) | `reasoning` | 7 | 1 | 2 |
 | [工具调用](./tool-call) | `tool-call` | 12 | 1 | 4 |
 | [会话线程](./thread) | `thread` | 5 | 2 | 8 |

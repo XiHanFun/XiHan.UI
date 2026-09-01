@@ -72,6 +72,12 @@ export class XhReasoningElement extends XhElement {
   /** 折叠区的名字与两句时长文案。 */
   declare translations?: Partial<ReasoningTranslations>
 
+  /** 两个时刻算出来的思考时长，任一缺席或倒着走都是 undefined。 */
+  get durationMs(): number | undefined {
+    const props = this.configured('reasoning', this.viewProps())
+    return reasoningDuration(props.startTime, props.endTime)
+  }
+
   /** 当前该显示哪句状态文案：作者把它写进 label 那个角色节点。 */
   get statusText(): string {
     const props = this.configured('reasoning', this.viewProps())
