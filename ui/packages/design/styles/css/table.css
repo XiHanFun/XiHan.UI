@@ -762,7 +762,7 @@
   }
 
   [data-scope='table'][data-part='loading-state'] {
-    animation: xh-table-loading-pulse calc(var(--xh-spin-duration) / 2) var(--xh-ease-standard) infinite alternate;
+    animation: xh-table-loading-pulse calc(var(--xh-spin-duration) / 2) var(--xh-motion-ease-continuous) infinite alternate;
   }
 
   /* 减少动效：呼吸停下，加载态只留静止的文案。两条规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */

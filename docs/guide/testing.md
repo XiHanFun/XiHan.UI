@@ -116,7 +116,7 @@ pnpm visual:baseline --update   # 生成 / 更新基线并写回库里
 
 ## 结构门禁
 
-`pnpm gate` 跑 73 项结构检查，它们查的是**判据查不到的东西**——静默失效、悬空承诺、没被命名的决策：
+`pnpm gate` 跑 75 项结构检查，它们查的是**判据查不到的东西**——静默失效、悬空承诺、没被命名的决策：
 
 | 门禁 | 拦什么 |
 | --- | --- |
@@ -126,6 +126,8 @@ pnpm visual:baseline --update   # 生成 / 更新基线并写回库里
 | `check-overlay-strategy` | 浮层坐标系在机器 / `connect` / 皮肤三处不一致 |
 | `check-token-refs` | 皮肤引用了不存在的令牌名（整条声明会静默失效） |
 | `check-shared-slots` | 同一字面量在多个组件里当默认值，却没立语义令牌 |
+| `check-motion-easing` | 皮肤的缓动下探到 `--xh-ease-*` 原语、手写 `cubic-bezier()`，或用了没登记的字面曲线 |
+| `check-motion-amplitude` | 位移与缩放的幅度写成字面量（减弱动效档把 `--xh-motion-distance-*` 压成 `0px`、`--xh-motion-scale-*` 压成 `1`，写死的那一处压不下去）；居中用的百分比与 `0` / `1` 是几何，不在此列 |
 | `check-disabled-contrast` | 禁用态前景色令牌上又叠 `opacity`，对比度被压到读不出字 |
 | `check-color-literals` | 颜色写死在 `background` 简写、`box-shadow` 颜色位或 `--xh-*` 槽赋值里——stylelint 的六个长属性白名单看不见这几处 |
 | `check-print-surface` | 浮层定位层 / 遮罩 / 滚动条 / 钉在视口上的节点在打印时没收起，或投影没由令牌层取消 |

@@ -388,6 +388,11 @@
       "$type": "duration",
       "$value": "{duration.fast}"
     },
+    "ease-continuous": {
+      "$description": "既不进场也不退场的运动：循环动画，以及元素在屏内被推到新位置。两端都在屏内，所以起步就带速度，收尾再减速。",
+      "$type": "cubicBezier",
+      "$value": "{ease.standard}"
+    },
     "ease-enter": {
       "$type": "cubicBezier",
       "$value": "{ease.out}"

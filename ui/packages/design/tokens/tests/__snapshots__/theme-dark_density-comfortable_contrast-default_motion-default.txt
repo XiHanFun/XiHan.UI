@@ -136,6 +136,7 @@
 --xh-motion-duration-enter: 200ms  ← var(--xh-duration-normal)
 --xh-motion-duration-exit: 120ms  ← var(--xh-duration-fast)
 --xh-motion-duration-micro: 120ms  ← var(--xh-duration-fast)
+--xh-motion-ease-continuous: cubic-bezier(0.2, 0, 0, 1)  ← var(--xh-ease-standard)
 --xh-motion-ease-enter: cubic-bezier(0, 0, 0.2, 1)  ← var(--xh-ease-out)
 --xh-motion-ease-enter-strong: cubic-bezier(0.23, 1, 0.32, 1)  ← var(--xh-ease-out-strong)
 --xh-motion-ease-exit: cubic-bezier(0.4, 0, 1, 1)  ← var(--xh-ease-in)
