@@ -46,7 +46,7 @@
     );
     background-repeat: no-repeat;
     background-size: 200% 100%;
-    animation: xh-skeleton-shimmer var(--xh-skeleton-duration, var(--xh-shimmer-duration)) var(--xh-ease-standard) infinite;
+    animation: xh-skeleton-shimmer var(--xh-skeleton-duration, var(--xh-shimmer-duration)) var(--xh-motion-ease-continuous) infinite;
   }
 
   /* 一行文字的高度取正文字号，圆角拉满，看起来就是一行还没排出来的字 */

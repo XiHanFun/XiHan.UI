@@ -7051,13 +7051,13 @@ input[data-scope='mention'][data-part='input'] {
   box-shadow: var(--xh-segmented-indicator-shadow, var(--xh-elevation-raised));
   /* 段压在它上面，点击一律交给段；作者把它写在段之后时也不至于吞掉点击 */
   pointer-events: none;
-  /* 用标准曲线而不是进场那条：滑块是被推过去的，起步就该有速度，
+  /* 用连续档而不是进场那条：滑块是被推过去的，起步就该有速度，
      纯减速曲线看着像自己飘过去。四个几何量同时走，段宽不等时才不会先变形再挪位 */
   transition:
-    inset-inline-start var(--xh-motion-duration-enter) var(--xh-ease-standard),
-    inset-block-start var(--xh-motion-duration-enter) var(--xh-ease-standard),
-    inline-size var(--xh-motion-duration-enter) var(--xh-ease-standard),
-    block-size var(--xh-motion-duration-enter) var(--xh-ease-standard);
+    inset-inline-start var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
+    inset-block-start var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
+    inline-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
+    block-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous);
 }
 
 /* 给了 display 的角色节点必须补这条：display 声明会盖掉 UA 的 [hidden]{display:none}，
@@ -8668,7 +8668,7 @@ input[data-scope='mention'][data-part='input'] {
   );
   background-repeat: no-repeat;
   background-size: 200% 100%;
-  animation: xh-skeleton-shimmer var(--xh-skeleton-duration, var(--xh-shimmer-duration)) var(--xh-ease-standard) infinite;
+  animation: xh-skeleton-shimmer var(--xh-skeleton-duration, var(--xh-shimmer-duration)) var(--xh-motion-ease-continuous) infinite;
 }
 
 /* 一行文字的高度取正文字号，圆角拉满，看起来就是一行还没排出来的字 */
@@ -20217,7 +20217,7 @@ input[data-scope='mention'][data-part='input'] {
   position: absolute;
   inline-size: 40%;
   transition: none;
-  animation: xh-progress-indeterminate var(--xh-progress-indeterminate-duration, calc(var(--xh-spin-duration) * 2)) var(--xh-ease-standard) infinite;
+  animation: xh-progress-indeterminate var(--xh-progress-indeterminate-duration, calc(var(--xh-spin-duration) * 2)) var(--xh-motion-ease-continuous) infinite;
 }
 
 /* 减弱动效档：不来回扫，改成一条铺满的静态条——进度仍然未知，只是不再动。
@@ -23991,7 +23991,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='table'][data-part='loading-state'] {
-  animation: xh-table-loading-pulse calc(var(--xh-spin-duration) / 2) var(--xh-ease-standard) infinite alternate;
+  animation: xh-table-loading-pulse calc(var(--xh-spin-duration) / 2) var(--xh-motion-ease-continuous) infinite alternate;
 }
 
 /* 减少动效：呼吸停下，加载态只留静止的文案。两条规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */

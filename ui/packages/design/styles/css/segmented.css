@@ -196,13 +196,13 @@
     box-shadow: var(--xh-segmented-indicator-shadow, var(--xh-elevation-raised));
     /* 段压在它上面，点击一律交给段；作者把它写在段之后时也不至于吞掉点击 */
     pointer-events: none;
-    /* 用标准曲线而不是进场那条：滑块是被推过去的，起步就该有速度，
+    /* 用连续档而不是进场那条：滑块是被推过去的，起步就该有速度，
        纯减速曲线看着像自己飘过去。四个几何量同时走，段宽不等时才不会先变形再挪位 */
     transition:
-      inset-inline-start var(--xh-motion-duration-enter) var(--xh-ease-standard),
-      inset-block-start var(--xh-motion-duration-enter) var(--xh-ease-standard),
-      inline-size var(--xh-motion-duration-enter) var(--xh-ease-standard),
-      block-size var(--xh-motion-duration-enter) var(--xh-ease-standard);
+      inset-inline-start var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
+      inset-block-start var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
+      inline-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
+      block-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous);
   }
 
   /* 给了 display 的角色节点必须补这条：display 声明会盖掉 UA 的 [hidden]{display:none}，
