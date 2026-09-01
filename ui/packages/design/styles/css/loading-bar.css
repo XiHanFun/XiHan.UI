@@ -75,4 +75,11 @@
   :where([data-motion='reduce']) [data-scope='loading-bar'][data-part='range'] {
     transition: none;
   }
+
+  @media print {
+    /* 打印：加载进度条画的是「正在等」，落到纸上是一条没有含义的色带。 */
+    [data-scope='loading-bar'][data-part='root'] {
+      display: none;
+    }
+  }
 }

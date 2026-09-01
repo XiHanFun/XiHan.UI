@@ -222,7 +222,7 @@ pattern 是一段正则源码，逐个字符整格匹配；写坏了退回 type 
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-pin-input-box-bg` · `--xh-pin-input-box-bg-disabled` · `--xh-pin-input-box-border` · `--xh-pin-input-box-border-complete` · `--xh-pin-input-box-border-focus` · `--xh-pin-input-box-border-hover` · `--xh-pin-input-box-border-invalid` · `--xh-pin-input-box-fg` · `--xh-pin-input-box-font-size` · `--xh-pin-input-box-gap` · `--xh-pin-input-box-radius` · `--xh-pin-input-box-shadow` · `--xh-pin-input-box-size` · `--xh-pin-input-gap` · `--xh-pin-input-label-fg` · `--xh-pin-input-label-fg-disabled` · `--xh-pin-input-label-font-size` · `--xh-pin-input-label-font-weight` · `--xh-pin-input-placeholder-fg`
+`--xh-pin-input-box-autofill-bg` · `--xh-pin-input-box-autofill-fg` · `--xh-pin-input-box-bg` · `--xh-pin-input-box-bg-disabled` · `--xh-pin-input-box-border` · `--xh-pin-input-box-border-complete` · `--xh-pin-input-box-border-focus` · `--xh-pin-input-box-border-hover` · `--xh-pin-input-box-border-invalid` · `--xh-pin-input-box-fg` · `--xh-pin-input-box-font-size` · `--xh-pin-input-box-gap` · `--xh-pin-input-box-radius` · `--xh-pin-input-box-shadow` · `--xh-pin-input-box-size` · `--xh-pin-input-gap` · `--xh-pin-input-label-fg` · `--xh-pin-input-label-fg-disabled` · `--xh-pin-input-label-font-size` · `--xh-pin-input-label-font-weight` · `--xh-pin-input-placeholder-fg`
 
 ## 动效
 

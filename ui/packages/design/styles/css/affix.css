@@ -29,4 +29,12 @@
     position: fixed;
     z-index: var(--xh-affix-layer, var(--xh-layer-sticky));
   }
+
+  @media print {
+    /* 打印：钉住的是作者自己的内容，不能收起；但保持 fixed 会让部分打印引擎每页重复一次，
+       所以只把它放回正常流。 */
+    [data-scope='affix'][data-part='content'][data-affixed] {
+      position: static;
+    }
+  }
 }

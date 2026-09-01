@@ -1,0 +1,218 @@
+# theme=dark density=comfortable contrast=default motion=reduce
+# color-scheme: dark
+# 命中的取值块，按 tokens.css 的书写顺序：
+#   [1] :where(:root)
+#   [2] :where(:root), :where([data-density='comfortable'])
+#   [4] :where(:root)
+#   [6] :where([data-theme='dark'])
+#   [9] :where([data-motion='reduce'])
+
+--xh-bg-brand: oklch(0.623 0.214 258)  ← var(--xh-color-brand-500)
+--xh-bg-brand-active: oklch(0.809 0.105 258)  ← var(--xh-color-brand-300)
+--xh-bg-brand-hover: oklch(0.702 0.165 258)  ← var(--xh-color-brand-400)
+--xh-bg-brand-subtle: oklch(0.282 0.089 258)  ← var(--xh-color-brand-950)
+--xh-bg-canvas: oklch(0.145 0.005 258)  ← var(--xh-color-neutral-950)
+--xh-bg-muted: oklch(0.269 0.006 258)  ← var(--xh-color-neutral-800)
+--xh-bg-overlay: oklch(0 0 0 / 0.6)
+--xh-bg-scrollbar-track: oklch(0.208 0.006 258)  ← var(--xh-color-neutral-900)
+--xh-bg-subtle: oklch(0.269 0.006 258)  ← var(--xh-color-neutral-800)
+--xh-bg-subtle-active: oklch(0.439 0.006 258)  ← var(--xh-color-neutral-600)
+--xh-bg-subtle-hover: oklch(0.371 0.006 258)  ← var(--xh-color-neutral-700)
+--xh-bg-surface: oklch(0.208 0.006 258)  ← var(--xh-color-neutral-900)
+--xh-bg-surface-raised: oklch(0.269 0.006 258)  ← var(--xh-color-neutral-800)
+--xh-border-at-limit: oklch(0.795 0.161 86)  ← var(--xh-color-warning-500)
+--xh-border-control: oklch(0.52 0.006 258)  ← var(--xh-color-neutral-550)
+--xh-border-control-focus: oklch(0.52 0.006 258)  ← var(--xh-border-control)
+--xh-border-control-hover: oklch(0.556 0.006 258)  ← var(--xh-color-neutral-500)
+--xh-border-default: oklch(0.371 0.006 258)  ← var(--xh-color-neutral-700)
+--xh-border-invalid: oklch(0.637 0.208 25)  ← var(--xh-color-danger-500)
+--xh-border-strong: oklch(0.439 0.006 258)  ← var(--xh-color-neutral-600)
+--xh-border-subtle: oklch(0.269 0.006 258)  ← var(--xh-color-neutral-800)
+--xh-caret-duration: 1000ms
+--xh-control-action-size: 24px
+--xh-control-box-lg: 48px
+--xh-control-box-md: 40px
+--xh-control-box-sm: 32px
+--xh-control-caption-lg: 0.875rem  ← var(--xh-font-size-md)
+--xh-control-caption-md: 0.8125rem  ← var(--xh-font-size-sm)
+--xh-control-caption-sm: 0.75rem  ← var(--xh-font-size-xs)
+--xh-control-font-lg: 1rem  ← var(--xh-font-size-lg)
+--xh-control-font-md: 0.875rem  ← var(--xh-font-size-md)
+--xh-control-font-sm: 0.8125rem  ← var(--xh-font-size-sm)
+--xh-control-gap-lg: 12px  ← var(--xh-space-3)
+--xh-control-gap-md: 8px  ← var(--xh-space-2)
+--xh-control-gap-sm: 4px  ← var(--xh-space-1)
+--xh-control-h-lg: 40px
+--xh-control-h-md: 32px
+--xh-control-h-sm: 28px
+--xh-control-indicator-lg: 20px
+--xh-control-indicator-md: 16px
+--xh-control-indicator-size: 16px  ← var(--xh-control-indicator-md)
+--xh-control-indicator-sm: 12px
+--xh-control-min-w: 12rem
+--xh-control-px-lg: 16px  ← var(--xh-space-4)
+--xh-control-px-md: 12px  ← var(--xh-space-3)
+--xh-control-px-sm: 8px  ← var(--xh-space-2)
+--xh-diff-added-bg: oklch(0.3 0.05 150)
+--xh-diff-added-fg: oklch(0.86 0.12 150)
+--xh-diff-removed-bg: oklch(0.3 0.05 25)
+--xh-diff-removed-fg: oklch(0.85 0.12 25)
+--xh-elevation-floating: 0 4px 8px -2px oklch(0 0 0 / 0.5), 0 2px 4px -2px oklch(0 0 0 / 0.4), 0 0 0 1px oklch(1 0 0 / 0.06)
+--xh-elevation-raised: 0 1px 2px 0 oklch(0 0 0 / 0.4)
+--xh-elevation-sheet: 0 12px 24px -6px oklch(0 0 0 / 0.6), 0 4px 8px -4px oklch(0 0 0 / 0.4), 0 0 0 1px oklch(1 0 0 / 0.08)
+--xh-fg-brand: oklch(0.702 0.165 258)  ← var(--xh-color-brand-400)
+--xh-fg-brand-strong: oklch(0.809 0.105 258)  ← var(--xh-color-brand-300)
+--xh-fg-danger: oklch(0.637 0.208 25)  ← var(--xh-color-danger-500)
+--xh-fg-danger-hover: oklch(0.7 0.185 25)  ← var(--xh-color-danger-400)
+--xh-fg-default: oklch(0.985 0 0)  ← var(--xh-color-neutral-50)
+--xh-fg-disabled: oklch(0.439 0.006 258)  ← var(--xh-color-neutral-600)
+--xh-fg-info: oklch(0.685 0.156 237)  ← var(--xh-color-info-500)
+--xh-fg-muted: oklch(0.708 0.005 258)  ← var(--xh-color-neutral-400)
+--xh-fg-on-brand: oklch(0.145 0.005 258)  ← var(--xh-color-neutral-950)
+--xh-fg-scrollbar-thumb: oklch(0.556 0.006 258)  ← var(--xh-color-neutral-500)
+--xh-fg-scrollbar-thumb-active: oklch(0.87 0.003 258)  ← var(--xh-color-neutral-300)
+--xh-fg-scrollbar-thumb-hover: oklch(0.708 0.005 258)  ← var(--xh-color-neutral-400)
+--xh-fg-subtle: oklch(0.65 0.006 258)  ← var(--xh-color-neutral-450)
+--xh-fg-success: oklch(0.723 0.171 149)  ← var(--xh-color-success-500)
+--xh-fg-warning: oklch(0.795 0.161 86)  ← var(--xh-color-warning-500)
+--xh-field-py: 8px  ← var(--xh-space-2)
+--xh-glyph-baseline-shift: -0.125em
+--xh-glyph-mark-arrow-up: url("data:image/svg+xml,…")  sha256:9ed79f28ca55
+--xh-glyph-mark-check: url("data:image/svg+xml,…")  sha256:cc929bebd056
+--xh-glyph-mark-chevron-down: url("data:image/svg+xml,…")  sha256:7ab6018cc6aa
+--xh-glyph-mark-chevron-left: url("data:image/svg+xml,…")  sha256:60879582dadb
+--xh-glyph-mark-chevron-right: url("data:image/svg+xml,…")  sha256:e0c356ffa6b5
+--xh-glyph-mark-chevron-up: url("data:image/svg+xml,…")  sha256:46747891ba6d
+--xh-glyph-mark-close: url("data:image/svg+xml,…")  sha256:247de13c80d0
+--xh-glyph-mark-eye: url("data:image/svg+xml,…")  sha256:0038fceca8f4
+--xh-glyph-mark-eye-off: url("data:image/svg+xml,…")  sha256:9adea7064151
+--xh-glyph-mark-flip-horizontal: url("data:image/svg+xml,…")  sha256:e520b8e3e17b
+--xh-glyph-mark-flip-vertical: url("data:image/svg+xml,…")  sha256:f6c503e8eff7
+--xh-glyph-mark-info: url("data:image/svg+xml,…")  sha256:a5b7023be26e
+--xh-glyph-mark-minus: url("data:image/svg+xml,…")  sha256:277e0889e87d
+--xh-glyph-mark-plus: url("data:image/svg+xml,…")  sha256:30ae4f9d0480
+--xh-glyph-mark-required: '*'
+--xh-glyph-mark-rotate-left: url("data:image/svg+xml,…")  sha256:683db902d94c
+--xh-glyph-mark-rotate-right: url("data:image/svg+xml,…")  sha256:9c75884db7fb
+--xh-glyph-mark-sort: url("data:image/svg+xml,…")  sha256:77960074f2de
+--xh-glyph-mark-sort-asc: url("data:image/svg+xml,…")  sha256:9ed79f28ca55
+--xh-glyph-mark-sort-desc: url("data:image/svg+xml,…")  sha256:a07f0e76013b
+--xh-glyph-mark-warning: url("data:image/svg+xml,…")  sha256:d1a7e5bfac39
+--xh-glyph-mark-zoom-in: url("data:image/svg+xml,…")  sha256:f28482f0da28
+--xh-glyph-mark-zoom-out: url("data:image/svg+xml,…")  sha256:6779e03908af
+--xh-glyph-size-2xl: 40px
+--xh-glyph-size-3xl: 56px
+--xh-glyph-size-4xl: 72px
+--xh-glyph-size-lg: 24px
+--xh-glyph-size-md: 20px
+--xh-glyph-size-sm: 16px
+--xh-glyph-size-text: 1em
+--xh-glyph-size-xl: 32px
+--xh-glyph-stroke-bold: 2.5px
+--xh-glyph-stroke-light: 1.5px
+--xh-glyph-stroke-regular: 2px
+--xh-layer-drawer: 1100  ← var(--xh-z-modal)
+--xh-layer-modal: 1100  ← var(--xh-z-modal)
+--xh-layer-popover: 1200  ← var(--xh-z-popover)
+--xh-layer-sticky: 100  ← var(--xh-z-sticky)
+--xh-layer-toast: 1300  ← var(--xh-z-toast)
+--xh-layer-tooltip: 1400  ← var(--xh-z-tooltip)
+--xh-layout-gap-lg: 16px  ← var(--xh-space-4)
+--xh-layout-gap-md: 12px  ← var(--xh-space-3)
+--xh-layout-gap-sm: 8px  ← var(--xh-space-2)
+--xh-layout-gap-xl: 24px  ← var(--xh-space-6)
+--xh-layout-gap-xs: 4px  ← var(--xh-space-1)
+--xh-list-item-px-lg: 20px  ← var(--xh-space-5)
+--xh-list-item-px-md: 16px  ← var(--xh-space-4)
+--xh-list-item-px-sm: 12px  ← var(--xh-space-3)
+--xh-list-item-py-lg: 16px  ← var(--xh-space-4)
+--xh-list-item-py-md: 12px  ← var(--xh-space-3)
+--xh-list-item-py-sm: 8px  ← var(--xh-space-2)
+--xh-list-option-gap: 2px  ← var(--xh-space-0_5)
+--xh-list-option-py-lg: 8px  ← var(--xh-space-2)
+--xh-list-option-py-md: 6px  ← var(--xh-space-1_5)
+--xh-list-option-py-sm: 4px  ← var(--xh-space-1)
+--xh-motion-distance-md: 0px
+--xh-motion-distance-sm: 0px
+--xh-motion-duration-enter: 1ms
+--xh-motion-duration-exit: 1ms
+--xh-motion-duration-micro: 1ms
+--xh-motion-ease-enter: cubic-bezier(0, 0, 0.2, 1)  ← var(--xh-ease-out)
+--xh-motion-ease-enter-strong: cubic-bezier(0.23, 1, 0.32, 1)  ← var(--xh-ease-out-strong)
+--xh-motion-ease-exit: cubic-bezier(0.4, 0, 1, 1)  ← var(--xh-ease-in)
+--xh-motion-scale-drag: 1
+--xh-motion-scale-enter: 1
+--xh-motion-scale-press: 1
+--xh-nav-link-max-w: 12rem
+--xh-overlay-arrow-size: 8px  ← var(--xh-space-2)
+--xh-overlay-drawer-w-lg: 28rem
+--xh-overlay-drawer-w-md: 20rem
+--xh-overlay-drawer-w-sm: 16rem
+--xh-overlay-max-h: 16rem
+--xh-overlay-max-w: 20rem
+--xh-overlay-max-w-lg: 24rem
+--xh-overlay-max-w-sm: 16rem
+--xh-overlay-max-w-xl: 48rem
+--xh-overlay-menu-max-h: 20rem
+--xh-overlay-menu-min-w: 10rem
+--xh-overlay-min-w: 12rem
+--xh-overlay-sheet-w-lg: 48rem
+--xh-overlay-sheet-w-md: 32rem
+--xh-overlay-sheet-w-sm: 24rem
+--xh-ring-focus: oklch(0.702 0.165 258)  ← var(--xh-color-brand-400)
+--xh-ring-invalid: oklch(0.7 0.185 25)  ← var(--xh-color-danger-400)
+--xh-ring-offset: 2px
+--xh-ring-width: 2px  ← var(--xh-stroke-thick)
+--xh-scrollbar-gutter: 2px
+--xh-scrollbar-thickness-lg: 14px
+--xh-scrollbar-thickness-md: 10px
+--xh-scrollbar-thickness-sm: 6px
+--xh-section-py: 20px  ← var(--xh-section-py-md)
+--xh-section-py-lg: 32px  ← var(--xh-space-8)
+--xh-section-py-md: 20px  ← var(--xh-space-5)
+--xh-section-py-sm: 16px  ← var(--xh-space-4)
+--xh-shape-control: 6px  ← var(--xh-radius-md)
+--xh-shape-inset: 4px  ← var(--xh-radius-sm)
+--xh-shape-pill: 9999px  ← var(--xh-radius-full)
+--xh-shape-surface: 8px  ← var(--xh-radius-lg)
+--xh-shimmer-duration: 1600ms
+--xh-spin-duration: 640ms
+--xh-stack-gap-lg: 24px  ← var(--xh-space-6)
+--xh-stack-gap-md: 16px  ← var(--xh-space-4)
+--xh-stack-gap-sm: 8px  ← var(--xh-space-2)
+--xh-state-disabled-opacity: 0.5
+--xh-state-dragging-opacity: 0.6
+--xh-surface-px-md: 16px  ← var(--xh-control-px-lg)
+--xh-surface-px-sm: 16px  ← var(--xh-space-4)
+--xh-surface-py-md: 20px  ← var(--xh-section-py)
+--xh-surface-py-sm: 12px  ← var(--xh-space-3)
+--xh-switch-track-h-lg: 28px
+--xh-switch-track-h-md: 22px
+--xh-switch-track-h-sm: 18px
+--xh-syntax-keyword: oklch(0.82 0.14 300)
+--xh-syntax-number: oklch(0.85 0.12 75)
+--xh-syntax-string: oklch(0.85 0.12 165)
+--xh-table-cell-py-lg: 12px  ← var(--xh-space-3)
+--xh-table-cell-py-md: 8px  ← var(--xh-space-2)
+--xh-table-cell-py-sm: 4px  ← var(--xh-space-1)
+--xh-text-body-leading: 1.5  ← var(--xh-leading-normal)
+--xh-text-body-size: 0.875rem  ← var(--xh-font-size-md)
+--xh-text-body-weight: 400  ← var(--xh-font-weight-regular)
+--xh-text-caption-size: 0.75rem  ← var(--xh-font-size-xs)
+--xh-text-code-leading: 1.5rem
+--xh-text-heading-1-size: 1.75rem  ← var(--xh-font-size-3xl)
+--xh-text-heading-1-weight: 600  ← var(--xh-font-weight-semibold)
+--xh-text-heading-2-size: 1.375rem  ← var(--xh-font-size-2xl)
+--xh-text-heading-2-weight: 600  ← var(--xh-font-weight-semibold)
+--xh-text-heading-3-size: 1.125rem  ← var(--xh-font-size-xl)
+--xh-text-heading-3-weight: 600  ← var(--xh-font-weight-semibold)
+--xh-text-label-size: 0.875rem  ← var(--xh-font-size-md)
+--xh-text-label-weight: 500  ← var(--xh-font-weight-medium)
+--xh-text-prose-leading: 1.625  ← var(--xh-leading-relaxed)
+--xh-text-secondary-size: 0.8125rem  ← var(--xh-font-size-sm)
+--xh-track-thickness: 6px
+--xh-track-thumb-size: 18px
+--xh-viewport-h-lg: 24rem
+--xh-viewport-h-md: 16rem
+--xh-viewport-h-sm: 12rem
+--xh-viewport-max-h: 24rem

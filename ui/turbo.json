@@ -21,6 +21,11 @@
       "inputs": ["index.css", "css/**", "build/**", "package.json"],
       "outputs": []
     },
+    "@xihan-ui/tokens#test": {
+      "dependsOn": ["^build"],
+      "inputs": ["src/**", "tests/**", "tokens/**", "tokens.css"],
+      "outputs": ["coverage/**"]
+    },
     "@xihan-ui/testing#test": {
       "dependsOn": ["^build", "@xihan-ui/vue#build", "@xihan-ui/web-components#build"],
       "inputs": ["src/**", "tests/**", "spec/**", "runners/**"],

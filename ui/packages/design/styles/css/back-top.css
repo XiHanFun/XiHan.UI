@@ -84,4 +84,11 @@
   [data-scope='back-top'][data-part='trigger'][hidden] {
     display: none;
   }
+
+  @media print {
+    /* 打印：回到顶部这颗钮只有在能滚的地方才成立，落到纸上是一颗按不动的按钮。 */
+    [data-scope='back-top'][data-part='root'] {
+      display: none;
+    }
+  }
 }

@@ -93,8 +93,9 @@ async function main() {
   const lightMore = flatten(await load('semantic.light.more.json'))
   const darkMore = flatten(await load('semantic.dark.more.json'))
   const reduce = flatten(await load('semantic.reduce.json'))
+  const print = flatten(await load('semantic.print.json'))
 
-  for (const e of [...primitive, ...base, ...compact, ...light, ...dark, ...lightMore, ...darkMore, ...reduce])
+  for (const e of [...primitive, ...base, ...compact, ...light, ...dark, ...lightMore, ...darkMore, ...reduce, ...print])
     declared.add(e.name)
 
   // —— tokens.css ——
@@ -158,6 +159,17 @@ ${await declarations(reduce, '      ')}
   :where([data-motion='reduce']) {
 ${await declarations(reduce)}
   }
+
+  /* 打印：三支海拔角色取消。皮肤消费的是 var(--xh-<组件>-…-shadow, var(--xh-elevation-<角色>))，
+     角色变 none 就整层不画，皮肤一处都不用改，也不必跟皮肤里的 box-shadow 比特指度——
+     那条路走不通：拆层版本里两者按特指度重新竞争，皮肤选择器最深到六个属性，赢不过。
+     落点是 [data-scope] 而不是 :root：宿主页面自己的投影归宿主决定，本库只管自己的节点。
+     元素上直接命中的声明胜过从祖先继承来的值，与特指度无关，所以这一块压得住上面的取值块 */
+  @media print {
+    :where([data-scope]) {
+${await declarations(print, '      ')}
+    }
+  }
 }
 `
 
@@ -177,7 +189,7 @@ export type TokenName = keyof typeof tokens
   await mkdir(join(ROOT, 'src', 'generated'), { recursive: true })
   await writeFile(join(ROOT, 'src', 'generated', 'tokens.ts'), generatedTs)
 
-  console.log(`[emit-tokens] primitive ${primitive.length} · base ${base.length} · compact ${compact.length} · light ${light.length} · dark ${dark.length} · reduce ${reduce.length} → tokens.css / tokens.json / src/generated/tokens.ts`)
+  console.log(`[emit-tokens] primitive ${primitive.length} · base ${base.length} · compact ${compact.length} · light ${light.length} · dark ${dark.length} · reduce ${reduce.length} · print ${print.length} → tokens.css / tokens.json / src/generated/tokens.ts`)
 }
 
 main()
