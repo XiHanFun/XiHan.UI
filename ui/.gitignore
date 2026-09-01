@@ -4,6 +4,13 @@ dist
 .cache
 .turbo
 .local
+# 截图比对失败时 vitest 写出的 actual / diff 图，只用于当场排查
+.vitest-attachments
+
+# 基线文件名带平台后缀。入库的只有容器里出的 Linux 那一套；在开发机上直接跑浏览器态
+# 用例会另出一套带本机平台后缀的图，那套没有回归价值，也不该被提交。
+packages/adapters/*/tests/browser/__screenshots__/**/*-win32.png
+packages/adapters/*/tests/browser/__screenshots__/**/*-darwin.png
 # local env files
 .env.local
 .env.*.local

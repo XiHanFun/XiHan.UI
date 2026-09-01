@@ -33,7 +33,8 @@
     "test": "turbo run test",
     "test:browser": "turbo run test:browser",
     "typecheck": "turbo run typecheck",
-    "version": "changeset version"
+    "version": "changeset version",
+    "visual:baseline": "node tooling/scripts/visual-baseline.mjs"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "catalog:",

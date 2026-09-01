@@ -87,10 +87,27 @@ jobs:
           key: playwright-${{ runner.os }}-${{ hashFiles('ui/pnpm-lock.yaml') }}
       - name: Install Chromium
         run: pnpm --fail-if-no-match --filter @xihan-ui/vue exec playwright install --with-deps chromium
+      # 全库 53 处皮肤写 font-family: inherit，字体最终取文档根上的那一个，而截图用例把根上的
+      # 字体族按名字写死成 DejaVu Sans。这个名字在 runner 上解析不到时会静默回落成别的字体，
+      # 每个字形的栅格化结果都变，截图用例整体判红。这一步把那个名字装上。
+      # 核对的是这个名字本身，不是默认 sans-serif——上一步的 --with-deps 会带进一批字体，
+      # 默认 sans-serif 因此可能落到 Noto Sans 上，而画面一个像素都不变。
+      - name: Install baseline font (DejaVu)
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq --no-install-recommends fonts-dejavu-core && fc-match 'DejaVu Sans'
       - name: Build
         run: pnpm build
-      - name: Accessibility (real Chromium)
+      - name: Accessibility + visual baselines (real Chromium)
         run: pnpm test:browser
+      # 基线对不上时把实际截图与差异图带出来：像素差异在日志里看不出来，
+      # 必须下载下来逐张比对，确认是有意的视觉改动才重出基线。
+      - name: Upload visual diffs
+        if: failure()
+        uses: actions/upload-artifact@v5
+        with:
+          name: visual-diffs
+          path: ui/packages/adapters/*/.vitest-attachments/**
+          if-no-files-found: ignore
+          retention-days: 7
       # 示例文件在 docs/ 下，不在 turbo 对 test:browser 声明的输入集里，单开一步直接起 vitest
       - name: Web Components demos (real Chromium)
         run: pnpm gate:demos

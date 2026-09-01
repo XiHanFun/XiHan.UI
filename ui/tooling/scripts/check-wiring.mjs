@@ -21,6 +21,7 @@ const checks = new Map()
  */
 const WRITES_FILES = new Set([
   'build-public-surface.mjs',
+  'visual-baseline.mjs',
 ])
 
 /**
@@ -29,6 +30,7 @@ const WRITES_FILES = new Set([
  */
 const BASELINE_GUARDED = {
   'build-public-surface.mjs': 'check-public-surface.mjs',
+  'visual-baseline.mjs': 'packages/adapters/vue/tests/browser/visual-baseline.spec.ts',
 }
 
 const generators = new Map()

@@ -77,6 +77,43 @@ interface DomSnapshot {
 
 覆盖：十二种 placement 的贴边与对齐、offset、翻面与交叉轴避让（各配一条「关掉之后应当溢出」的对照）、虚拟锚点、缩放与 transform 容器、文档滚动、容器滚动跟随、裁剪后的 `hidden`、尺寸变化重算、静置不空转、停止跟随后不再回调。
 
+## 像素基线
+
+计算样式对不上会被令牌快照拦下，结构错位会被一致性套件拦下，但「值都对、看起来还是不一样」这一档没有任何判据管得住——层叠顺序、私有槽的覆盖时机、两条规则谁排在前面，这些只在最终那张位图上显形。像素基线守的就是这一档。
+
+受管范围是母组件 `button` / `text-field` / `select` / `menu` / `popover` / `dialog` / `drawer` / `toast`，每件在五组轴上各出一张：`light×comfortable`、`dark×comfortable`、`light×compact`、`dark×compact`、`dark×more`。前四格是主题与密度的笛卡尔积；第五格是层叠最脆的一格——两块 `contrast` 取值块必须排在两个 `mode` 块之后，顺序一错就静默回归。`motion=reduce` 不在其中：静止帧与默认档没有差别，那一轴由令牌快照与 `check-infinite-motion` 承担。
+
+基线文件在 `packages/adapters/vue/tests/browser/__screenshots__/` 下，具体几张以那个目录为准，这里不抄。
+
+### 为什么必须在容器里生成
+
+基线比的是逐像素的位图。字体、字形栅格化与子像素抹平在 Windows 与 Linux 上不是一回事，同一份 CSS 在两边渲出来的位图不同——在开发机上出的基线，CI 上一张都对不上。
+
+字体是这里最大的不确定性：全库皮肤写的是 `font-family: inherit`，没有 sans 字体令牌，字体最终取文档根上的那一个。截图用例因此把根上的字体族按名字写死成 `DejaVu Sans`，不留给环境默认的 `sans-serif` 去解析。所以基线的成立条件不止「Linux」，还包括「`DejaVu Sans` 这个名字解析得到」，即装了 `fonts-dejavu-core`——CI 的 `browser` job 里有一步专门装它，删掉那一步基线会整体判红。
+
+反过来，环境里多装几款字体不影响基线：字体族是按名字定的，默认 `sans-serif` 落到 Noto Sans 还是别的，画面一个像素都不变。核对字体时核对的是这个名字（`fc-match 'DejaVu Sans'`），不是默认 `sans-serif`。
+
+```bash
+pnpm visual:baseline            # 校验：与库里的基线逐像素比对
+pnpm visual:baseline --update   # 生成 / 更新基线并写回库里
+```
+
+两条都在 `mcr.microsoft.com/playwright:v1.62.0-noble` 里跑，与 CI 同一套渲染栈。第一次要先 `docker pull` 这个镜像；镜像版本与 `pnpm-workspace.yaml` 里 `playwright` 的版本必须对上，浏览器二进制才配套。
+
+运行器把仓库同步进容器里的工作副本再装依赖，不在宿主的 `node_modules` 上动手——宿主装的是 win32-x64 的原生二进制，容器里跑不起来，反过来在容器里装又会把宿主那份覆盖掉。pnpm store 与工作副本都落在一个命名卷上，重复运行不重装。
+
+校验模式下基线目录**根本没挂进容器**，容器写不到它。要改基线只能显式走 `--update`。
+
+比对失败时，实际截图与差异图落在 `packages/adapters/vue/.vitest-attachments/`（不入库）。CI 上同一批文件会作为 `visual-diffs` artifact 传出来，下载下来逐张看。
+
+### 基线变更必须过人眼
+
+基线的更新是无声的：`git diff` 只会说二进制文件变了，看不出变成了什么样。谁都能 `--update` 一把，把一次真实的视觉回归洗成「基线本来就长这样」。
+
+所以规则是：**PR 里凡有 `__screenshots__/` 下的改动，作者必须逐张说明为什么该变，审阅者必须打开图看过**。改动张数与改动理由对不上的 PR 不合并。
+
+基线文件名带浏览器与平台后缀（`…-chromium-linux.png`）。在 Windows 上直接跑 `pnpm test:browser` 不会与 Linux 基线比对，而是另出一套 `-win32` 的文件——这套不入库，看到了直接删，不要提交。
+
 ## 结构门禁
 
 `pnpm gate` 跑 73 项结构检查，它们查的是**判据查不到的东西**——静默失效、悬空承诺、没被命名的决策：
