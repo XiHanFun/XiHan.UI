@@ -21,7 +21,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @attr {string} alt - 图片替代文本，原样写到 image 节点上
  * @attr {number} fallback-delay - 加载超过这么多毫秒才让回退内容露面，默认 0（立刻露面）
  * @fires status-change - 加载状态变化；detail 为 `{ status: 'loading' | 'loaded' | 'error' }`
- * @csspart root - 图片根容器（承载 data-status）
+ * @csspart root - 图片根容器（承载 data-state）
  * @csspart image - 图片节点，必须是原生 img；src/alt 由宿主写入（作者别自己写，会被覆盖或清掉），未就绪时带 hidden
  * @csspart fallback - 回退内容（占位图、骨架屏、图标）；加载失败恒显，加载途中要看延迟门槛
  */

@@ -1,6 +1,6 @@
 <!-- 子节点按需加载 | 先给分支塞一个禁用的占位子节点让子列开得出来，展开到它时才去取真数据换掉占位 -->
 <style>
-  #cascader-lazy-load [data-busy] {
+  #cascader-lazy-load .lazy-hint {
     flex: none;
     color: var(--xh-fg-subtle);
     font-size: 12px;
@@ -21,12 +21,12 @@
         <div data-xh-part="column" level="0">
           <div data-xh-part="item" value="zhejiang">
             <span data-xh-part="item-text">浙江</span>
-            <span data-busy hidden>取数中</span>
+            <span class="lazy-hint" hidden>取数中</span>
             <span data-xh-part="item-indicator"></span>
           </div>
           <div data-xh-part="item" value="jiangsu">
             <span data-xh-part="item-text">江苏</span>
-            <span data-busy hidden>取数中</span>
+            <span class="lazy-hint" hidden>取数中</span>
             <span data-xh-part="item-indicator"></span>
           </div>
         </div>
@@ -96,7 +96,7 @@
 
   function setBusy(value, busy) {
     cascader.querySelector(
-      `[data-xh-part="item"][value="${value}"] [data-busy]`,
+      `[data-xh-part="item"][value="${value}"] .lazy-hint`,
     ).hidden = !busy;
   }
 

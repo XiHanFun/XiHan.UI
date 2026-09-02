@@ -40,7 +40,7 @@ const ARRAY_CONVERTER = {
  * @attr {string} input-value - 受控输入文本
  * @attr {string} default-input-value - 非受控初始输入文本
  * @attr {number} max - 最多几个标签；写 0 即一个也不许加
- * @attr {boolean} allow-overflow - 允许越过 max，越过后打出 data-overflow
+ * @attr {boolean} allow-overflow - 允许越过 max，越过后打出 data-overflowing
  * @attr {boolean} disabled - 禁用：输入框与各按钮都不可用
  * @attr {boolean} read-only - 只读：仍可聚焦与复制，加删改都走不通
  * @attr {boolean} invalid - 校验失败标注
@@ -55,7 +55,7 @@ const ARRAY_CONVERTER = {
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires value-change - 标签集合变化；detail 为 `{ value: string[] }`
  * @fires input-value-change - 输入文本变化；detail 为 `{ inputValue: string }`
- * @csspart root - 承载 data-disabled / data-readonly / data-invalid / data-empty / data-at-max / data-overflow
+ * @csspart root - 承载 data-disabled / data-readonly / data-invalid / data-empty / data-at-max / data-overflowing
  * @csspart label - 标题；`for` 恒写向 input，故须是原生 `<label>` 才点得动
  * @csspart control - role=group 的框，点它的空白处即聚焦输入框
  * @csspart input - 真正的输入框，须是原生 `<input>`；键盘交互全在它身上

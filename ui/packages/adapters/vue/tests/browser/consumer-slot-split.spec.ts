@@ -123,10 +123,10 @@ describe('toggle-group 的语气轴', () => {
     expect(ambient.off).toBe(plain.off)
   })
 
-  it('条目圆角槽带 item 段，不带段的旧名照样调得动', async () => {
+  it('条目圆角槽带 item 段，摘掉的 --xh-toggle-group-radius 一点效果都没有', async () => {
     const corner = 'border-top-left-radius'
     await mount(() => toggleGroup())
-    const fallback = styleOf('toggle-group', 'item', corner, 0)
+    const bare = styleOf('toggle-group', 'item', corner, 0)
     teardown()
 
     await mount(() => toggleGroup(), { style: '--xh-toggle-group-item-radius: 11px' })
@@ -134,15 +134,15 @@ describe('toggle-group 的语气轴', () => {
     teardown()
 
     await mount(() => toggleGroup(), { style: '--xh-toggle-group-radius: 13px' })
-    expect(styleOf('toggle-group', 'item', corner, 0)).toBe('13px')
+    expect(styleOf('toggle-group', 'item', corner, 0)).toBe(bare)
     teardown()
 
-    // 新名在外：两个都写时以带段的那个为准
+    // 两个都写时也只认带段的那个
     await mount(() => toggleGroup(), { style: '--xh-toggle-group-item-radius: 11px; --xh-toggle-group-radius: 13px' })
     expect(styleOf('toggle-group', 'item', corner, 0)).toBe('11px')
 
-    expect(fallback).not.toBe('11px')
-    expect(fallback).not.toBe('13px')
+    expect(bare).not.toBe('11px')
+    expect(bare).not.toBe('13px')
   })
 })
 
@@ -223,10 +223,11 @@ describe('导航菜单的面板内衬', () => {
     expect(only.content).toBe(base.content)
   })
 
-  it('只写旧名时两处仍一起走', async () => {
-    const legacy = await navPadding('--xh-navigation-menu-content-p: 3px')
-    expect(legacy.content).toBe('3px')
-    expect(legacy.viewport).toBe('3px')
+  it('只调面板时外壳不动', async () => {
+    const base = await navPadding()
+    const only = await navPadding('--xh-navigation-menu-content-p: 3px')
+    expect(only.content).toBe('3px')
+    expect(only.viewport).toBe(base.viewport)
   })
 })
 
@@ -271,16 +272,19 @@ describe('行内文字的两档前景色', () => {
     expect(recolored.muted).toBe(base.muted)
   })
 
-  it('只写旧名时两档仍一起走', async () => {
+  it('摘掉的 --xh-typography-text-fg 一点效果都没有', async () => {
+    const base = await typographyColors()
     const legacy = await typographyColors('--xh-typography-text-fg: rgb(7, 8, 9)')
-    expect(legacy.muted).toBe('rgb(7, 8, 9)')
-    expect(legacy.tones).toEqual(TONES.map(() => 'rgb(7, 8, 9)'))
+
+    expect(legacy.muted).toBe(base.muted)
+    expect(legacy.tones).toEqual(base.tones)
+    expect([legacy.muted, ...legacy.tones]).not.toContain('rgb(7, 8, 9)')
   })
 })
 
 // —— 五、什么都不写时，四处的落点还是原来那个令牌 —— //
-// 上面四组都是「新名在外、旧名在内、令牌垫底」的多级兜底。兜底链但凡接错一环，
-// 缺省渲染就会悄悄换个值。这一组把每一处的缺省逐个钉到它该落的那个令牌上。
+// 每个槽后面跟着的就是它的默认值，链上但凡接错一环，缺省渲染就会悄悄换个值。
+// 这一组把每一处的缺省逐个钉到它该落的那个令牌上。
 
 describe('缺省落点', () => {
   it('按钮：单独一枚是控件圆角，组内中间段是直角', async () => {

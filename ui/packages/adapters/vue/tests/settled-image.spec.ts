@@ -64,7 +64,7 @@ describe('avatar 挂载前就已就绪的图片', () => {
       try {
         const img = root.querySelector<HTMLElement>('[data-part="image"]')!
         const fallback = root.querySelector<HTMLElement>('[data-part="fallback"]')!
-        expect(root.getAttribute('data-status')).toBe('loaded')
+        expect(root.getAttribute('data-state')).toBe('loaded')
         expect(img.hasAttribute('hidden')).toBe(false)
         expect(fallback.hasAttribute('hidden')).toBe(true)
       }
@@ -78,7 +78,7 @@ describe('avatar 挂载前就已就绪的图片', () => {
     await withSettledImages({ complete: true, naturalWidth: 0, currentSrc: SRC }, async () => {
       const { root, teardown } = await mountAvatar()
       try {
-        expect(root.getAttribute('data-status')).toBe('loading')
+        expect(root.getAttribute('data-state')).toBe('loading')
         expect(root.querySelector('[data-part="fallback"]')!.hasAttribute('hidden')).toBe(false)
       }
       finally {
@@ -91,7 +91,7 @@ describe('avatar 挂载前就已就绪的图片', () => {
     await withSettledImages({ complete: true, naturalWidth: 64, currentSrc: 'https://example.test/旧图.png' }, async () => {
       const { root, teardown } = await mountAvatar()
       try {
-        expect(root.getAttribute('data-status')).toBe('loading')
+        expect(root.getAttribute('data-state')).toBe('loading')
       }
       finally {
         teardown()

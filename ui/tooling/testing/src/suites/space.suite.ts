@@ -42,7 +42,7 @@ export const spaceSuite: ConformanceSuite = {
     {
       name: '方向与两条对齐轴如实落到根上',
       spec: { apg: APG },
-      props: { direction: 'vertical', align: 'center', justify: 'between' },
+      props: { orientation: 'vertical', align: 'center', justify: 'between' },
       initial: {
         parts: {
           root: {

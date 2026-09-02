@@ -48,7 +48,7 @@ const selected = ref<string[]>([]);
       v-model:selection="selected"
       :collection="collection"
       :default-expanded-value="['cn', 'north']"
-      selection-mode="multiple"
+      multiple
     >
       <XhTreeLabel>投放城市</XhTreeLabel>
       <XhTreeTree>

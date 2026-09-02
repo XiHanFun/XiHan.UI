@@ -28,7 +28,7 @@
 
 ### 回退与状态
 
-地址写坏和压根没给 src 是同一个落点，status-change 把三态报出来，root 上的 data-status 也有一份
+地址写坏和压根没给 src 是同一个落点，status-change 把三态报出来，root 上的 data-state 也有一份
 
 <XhDemo src="image/02-fallback" />
 
@@ -155,11 +155,8 @@ src 是响应式的：进入视口前不给地址，观察器命中再换上，�
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-state` | state.get() |
-| `root` | `data-status` | state.get() |
 | `image` | `data-state` | state.get() |
-| `image` | `data-status` | state.get() |
 | `fallback` | `data-state` | state.get() |
-| `fallback` | `data-status` | state.get() |
 
 ## CSS 变量
 

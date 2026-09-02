@@ -14,14 +14,14 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * root 是占位盒，content 吸住时脱离常规流，root 留在原位撑住那块空间，页面不跳。
  * 判定与量测都在机器的效应里做：挂载后推迟一拍量一次，此后跟着 scroll 与 resize 走。
  * 钉住的落位（top / bottom / left / width）由机器量好写进 content 的内联样式，
- * 皮肤只按 data-affixed 给 position 与层级。
+ * 皮肤只按 data-fixed 给 position 与层级。
  *
  * @customElement xh-affix
  * @attr {number} offset-top - 吸住后距滚动容器可视区上边的距离（px），默认 0
  * @attr {number} offset-bottom - 吸住后距可视区下边的距离（px）；给了它就改贴下边
  * @fires affix-change - 吸附状态变化；detail 为 `{ affixed: boolean }`
  * @csspart root - 占位盒，吸住时带上冻结的高度
- * @csspart content - 真正被钉住的那块内容，吸住时带 data-affixed
+ * @csspart content - 真正被钉住的那块内容，吸住时带 data-fixed
  */
 export class XhAffixElement extends XhElement {
   static override partContract = { anatomy: affixAnatomy, meta: affixMeta }

@@ -15,7 +15,7 @@ import { XhElement } from '../element-base'
  * @attr {'sm'|'md'|'lg'} size - 尺寸，决定各段的内边距与标题字号
  * @attr {boolean} hoverable - 指针悬停时抬起
  * @attr {boolean} segmented - 在头、身、脚之间画分隔线
- * @csspart root - 卡片根容器，承载 data-variant / data-size / data-hoverable / data-segmented
+ * @csspart root - 卡片根容器，承载 data-variant / data-size / data-hoverable / data-split
  * @csspart cover - 封面位，通常放图片，压在头部之上
  * @csspart header - 头部，装标题与描述
  * @csspart title - 标题

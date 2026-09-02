@@ -195,7 +195,6 @@ root 里除输入与发送外还能放自己的节点；值的读写归宿主，
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
 | `root` | `data-state` | props.runStatus |
-| `root` | `data-status` | props.runStatus |
 | `input` | `data-state` | state.get() |
 | `submit-trigger` | `data-mode` | 'stop' \| 'send' |
 

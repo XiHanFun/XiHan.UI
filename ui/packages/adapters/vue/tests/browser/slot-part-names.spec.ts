@@ -1,6 +1,7 @@
 // 槽名的部件段与它作用的部件对不上时，使用者按名字找过去改的是另一处，或者干脆
-// 找不到名字。这一批把走样的名字改成按部件取名，改法是加法式：新名排在外层、
-// 旧名留在它的兜底位上。所以每一处都要量两遍——新名真的改得动，旧名照旧生效。
+// 找不到名字。这一批把走样的名字改成按部件取名，走样的那个名字直接摘掉。
+// 所以每一处都要量三遍——新名真的改得动，摘掉的名字一点效果都没有，
+// 两个都不写时落回原来那个缺省。
 //
 // 判据全是级联算出来的取值，只有真实浏览器算得出来：
 // jsdom 不解析样式表里的 var() 与继承，getComputedStyle 恒是空串。
@@ -51,14 +52,16 @@ let app: App | null = null
 let host: HTMLElement | null = null
 const overridden: string[] = []
 
-afterEach(() => {
+function teardown(): void {
   app?.unmount()
   app = null
   host?.remove()
   host = null
   for (const name of overridden.splice(0))
     document.documentElement.style.removeProperty(name)
-})
+}
+
+afterEach(teardown)
 
 /** 覆盖写在根元素上，与使用者真实的写法（`:root { --xh-…: … }`）同一层。 */
 function setSlot(name: string, value: string): void {
@@ -73,6 +76,23 @@ async function mount(render: () => unknown): Promise<void> {
   app.mount(host)
   await nextTick()
   await nextTick()
+}
+
+/**
+ * 挂一棵树、量一个值、拆干净。
+ * 摘掉的名字要证明「一点效果都没有」，判据是它与什么都不写量出来同值，
+ * 所以同一条用例里得连着量两回，两回之间必须把上一棵树与上一次覆盖都清掉。
+ */
+async function measure(
+  render: () => unknown,
+  read: () => string,
+  slots: Record<string, string> = {},
+): Promise<string> {
+  for (const [name, value] of Object.entries(slots)) setSlot(name, value)
+  await mount(render)
+  const value = read()
+  teardown()
+  return value
 }
 
 function part(scope: string, name: string, index = 0): HTMLElement {
@@ -109,21 +129,73 @@ describe('number-field 的一体式盒有自己的名字', () => {
     expect(styleOf(part('number-field', 'input', 1), 'background-color')).not.toBe(RED)
   })
 
-  it('旧名 --xh-number-field-input-bg 照旧管住两档', async () => {
+  it('--xh-number-field-input-bg 只管独立输入框那一档，一体式盒不再跟着走', async () => {
     setSlot('--xh-number-field-input-bg', LIME)
     await mount(TWO_FORMS)
 
-    expect(styleOf(part('number-field', 'control'), 'background-color')).toBe(LIME)
+    expect(styleOf(part('number-field', 'control'), 'background-color')).not.toBe(LIME)
     expect(styleOf(part('number-field', 'input', 1), 'background-color')).toBe(LIME)
   })
 
-  it('新名压得过旧名', async () => {
+  it('两档各调各的，互不牵连', async () => {
     setSlot('--xh-number-field-input-bg', LIME)
     setSlot('--xh-number-field-control-bg', RED)
     await mount(TWO_FORMS)
 
     expect(styleOf(part('number-field', 'control'), 'background-color')).toBe(RED)
     expect(styleOf(part('number-field', 'input', 1), 'background-color')).toBe(LIME)
+  })
+
+  it('设 --xh-number-field-input-bg 时一体式盒与什么都不写同值', async () => {
+    const read = (): string => styleOf(part('number-field', 'control'), 'background-color')
+    const bare = await measure(TWO_FORMS, read)
+    const legacy = await measure(TWO_FORMS, read, { '--xh-number-field-input-bg': LIME })
+
+    expect(legacy).toBe(bare)
+  })
+
+  it('圆角两档各调各的：input 槽不改一体式盒，control 槽不改独立输入框', async () => {
+    setSlot('--xh-number-field-input-radius', '11px')
+    setSlot('--xh-number-field-control-radius', '3px')
+    await mount(TWO_FORMS)
+
+    expect(styleOf(part('number-field', 'control'), 'border-top-left-radius')).toBe('3px')
+    expect(styleOf(part('number-field', 'input', 1), 'border-top-left-radius')).toBe('11px')
+  })
+
+  it('设 --xh-number-field-input-radius 时一体式盒与什么都不写同值', async () => {
+    const read = (): string => styleOf(part('number-field', 'control'), 'border-top-left-radius')
+    const bare = await measure(TWO_FORMS, read)
+    const legacy = await measure(TWO_FORMS, read, { '--xh-number-field-input-radius': '11px' })
+
+    expect(legacy).toBe(bare)
+  })
+
+  // 聚焦档：一体式盒的描边画在 control 上，由内层 input 拿到焦点触发 :focus-within
+  async function focusedControlBorder(slots: Record<string, string> = {}): Promise<string> {
+    // 描边色带过渡：聚焦后立刻读到的是插值起点，也就是常态那个色，两边永远同值
+    setSlot('--xh-motion-duration-micro', '0s')
+    for (const [name, value] of Object.entries(slots)) setSlot(name, value)
+    await mount(TWO_FORMS)
+    part('number-field', 'input', 0).focus()
+    await nextTick()
+    const value = styleOf(part('number-field', 'control'), 'border-top-color')
+    teardown()
+    return value
+  }
+
+  it('设 --xh-number-field-input-border 时一体式盒的聚焦描边与什么都不写同值', async () => {
+    const bare = await focusedControlBorder()
+    const legacy = await focusedControlBorder({ '--xh-number-field-input-border': LIME })
+
+    expect(legacy).toBe(bare)
+    expect(legacy).not.toBe(LIME)
+  })
+
+  it('一体式盒的聚焦描边归 --xh-number-field-control-border-focus 管', async () => {
+    const focused = await focusedControlBorder({ '--xh-number-field-control-border-focus': RED })
+
+    expect(focused).toBe(RED)
   })
 })
 
@@ -136,7 +208,7 @@ const TREE_COLLECTION = [
 function TREE(): unknown {
   return h(
     XhTreeRoot,
-    { collection: TREE_COLLECTION, selectionMode: 'multiple', defaultExpandedValue: ['branch'] },
+    { collection: TREE_COLLECTION, multiple: true, defaultExpandedValue: ['branch'] },
     () => [
       h(XhTreeTree, null, () => [
         h(XhTreeBranch, { value: 'branch' }, () => [
@@ -165,11 +237,13 @@ describe('tree 的两种指示符各有各的名字', () => {
     expect(styleOf(part('tree', 'branch-indicator'), 'color')).not.toBe(RED)
   })
 
-  it('旧名 --xh-tree-indicator-fg 仍然改得动叶子的勾', async () => {
-    setSlot('--xh-tree-indicator-fg', LIME)
-    await mount(TREE)
+  it('摘掉的 --xh-tree-indicator-fg 一点效果都没有', async () => {
+    const read = (): string => styleOf(part('tree', 'item-indicator'), 'color')
+    const bare = await measure(TREE, read)
+    const legacy = await measure(TREE, read, { '--xh-tree-indicator-fg': LIME })
 
-    expect(styleOf(part('tree', 'item-indicator'), 'color')).toBe(LIME)
+    expect(legacy).not.toBe(LIME)
+    expect(legacy).toBe(bare)
   })
 })
 
@@ -204,10 +278,13 @@ describe('transfer 面板标题的槽带 panel- 段', () => {
     expect(styleOf(part('transfer', 'panel-title'), 'color')).toBe(RED)
   })
 
-  it('旧名 --xh-transfer-title-fg 照旧生效', async () => {
-    setSlot('--xh-transfer-title-fg', LIME)
-    await mount(TRANSFER)
-    expect(styleOf(part('transfer', 'panel-title'), 'color')).toBe(LIME)
+  it('摘掉的 --xh-transfer-title-fg 一点效果都没有', async () => {
+    const read = (): string => styleOf(part('transfer', 'panel-title'), 'color')
+    const bare = await measure(TRANSFER, read)
+    const legacy = await measure(TRANSFER, read, { '--xh-transfer-title-fg': LIME })
+
+    expect(legacy).not.toBe(LIME)
+    expect(legacy).toBe(bare)
   })
 })
 
@@ -222,10 +299,13 @@ describe('highlight 命中片段的槽带 mark 段', () => {
     expect(styleOf(part('highlight', 'mark'), 'background-color')).toBe(RED)
   })
 
-  it('旧名 --xh-highlight-bg 照旧生效', async () => {
-    setSlot('--xh-highlight-bg', LIME)
-    await mount(HIGHLIGHT)
-    expect(styleOf(part('highlight', 'mark'), 'background-color')).toBe(LIME)
+  it('摘掉的 --xh-highlight-bg 一点效果都没有', async () => {
+    const read = (): string => styleOf(part('highlight', 'mark'), 'background-color')
+    const bare = await measure(HIGHLIGHT, read)
+    const legacy = await measure(HIGHLIGHT, read, { '--xh-highlight-bg': LIME })
+
+    expect(legacy).not.toBe(LIME)
+    expect(legacy).toBe(bare)
   })
 })
 
@@ -247,10 +327,13 @@ describe('password-input 大写锁定提示的槽按部件取名', () => {
     expect(styleOf(part('password-input', 'caps-lock-indicator'), 'color')).toBe(RED)
   })
 
-  it('旧名 --xh-password-input-hint-fg 照旧生效', async () => {
-    setSlot('--xh-password-input-hint-fg', LIME)
-    await mount(PASSWORD)
-    expect(styleOf(part('password-input', 'caps-lock-indicator'), 'color')).toBe(LIME)
+  it('摘掉的 --xh-password-input-hint-fg 一点效果都没有', async () => {
+    const read = (): string => styleOf(part('password-input', 'caps-lock-indicator'), 'color')
+    const bare = await measure(PASSWORD, read)
+    const legacy = await measure(PASSWORD, read, { '--xh-password-input-hint-fg': LIME })
+
+    expect(legacy).not.toBe(LIME)
+    expect(legacy).toBe(bare)
   })
 })
 
@@ -270,10 +353,13 @@ describe('layout 侧栏宽度的槽用 -w 缩写', () => {
     expect(styleOf(part('layout', 'sider'), 'inline-size')).toBe('123px')
   })
 
-  it('旧名 --xh-layout-sider-width 照旧生效', async () => {
-    setSlot('--xh-layout-sider-width', '234px')
-    await mount(LAYOUT)
-    expect(styleOf(part('layout', 'sider'), 'inline-size')).toBe('234px')
+  it('摘掉的 --xh-layout-sider-width 一点效果都没有', async () => {
+    const read = (): string => styleOf(part('layout', 'sider'), 'inline-size')
+    const bare = await measure(LAYOUT, read)
+    const legacy = await measure(LAYOUT, read, { '--xh-layout-sider-width': '234px' })
+
+    expect(legacy).not.toBe('234px')
+    expect(legacy).toBe(bare)
   })
 })
 

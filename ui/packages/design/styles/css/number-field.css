@@ -22,7 +22,7 @@
     --xh-_number-field-trigger-font-size: var(--xh-control-font-md);
 
     /* 盒子的圆角 */
-    --xh-_number-field-radius: var(--xh-number-field-input-radius, var(--xh-shape-control));
+    --xh-_number-field-radius: var(--xh-shape-control);
 
     /* 形态档只换这几个私有槽：输入框的底、描边与落影，加减钮的底与描边 */
     --xh-_number-field-bg: var(--xh-bg-canvas);
@@ -39,7 +39,7 @@
     /* 语气只落在聚焦这一处：环与聚焦态描边。框里的数字不归它管。
        没写 data-tone 时 --xh-_tone 没被声明，退回原来的聚焦环色与常态描边 */
     --xh-_number-field-ring: var(--xh-ring-focus);
-    --xh-_number-field-border-focus: var(--xh-number-field-input-border, var(--xh-_tone, var(--xh-border-control-focus)));
+    --xh-_number-field-border-focus: var(--xh-_tone, var(--xh-border-control-focus));
 
     display: inline-flex;
     flex-direction: column;
@@ -85,7 +85,7 @@
     --xh-_number-field-trigger-bg-active: var(--xh-bg-subtle-active);
     --xh-_number-field-trigger-border: var(--xh-border-control);
     --xh-_number-field-trigger-border-hover: var(--xh-border-control-hover);
-    --xh-_number-field-border-focus: var(--xh-number-field-input-border, var(--xh-_tone, var(--xh-border-control-focus)));
+    --xh-_number-field-border-focus: var(--xh-_tone, var(--xh-border-control-focus));
   }
 
   /* 填充式：底色顶替描边表达边界。描边只退成透明而不去掉，1px 的位置留着，
@@ -133,8 +133,8 @@
      整枚控件从头到尾只有这一道描边。减钮在前、input 居中、加钮在后（作者在模板里的顺序决定），
      前后缀内容直接流式插在框里。
      focus-within 而不是 :focus 上的聚焦态：按钮也能触发聚焦环。
-     外观槽按所在部件取名 --xh-number-field-control-*；原先的 --xh-number-field-input-*
-     排在它后面当兜底值，照旧名写的覆盖仍然生效 */
+     外观槽按所在部件取名 --xh-number-field-control-*；--xh-number-field-input-* 只管
+     input 自成一盒的那一档，两档各调各的 */
   [data-scope='number-field'][data-part='control'] {
     position: relative;
     display: inline-flex;
@@ -144,36 +144,36 @@
     min-inline-size: var(--xh-number-field-control-min-w, var(--xh-control-min-w));
     block-size: var(--xh-number-field-control-h, var(--xh-_number-field-h));
     padding-inline: var(--xh-number-field-control-px, var(--xh-_number-field-px));
-    border: var(--xh-stroke-thin) solid var(--xh-number-field-control-border, var(--xh-number-field-input-border, var(--xh-_number-field-border)));
+    border: var(--xh-stroke-thin) solid var(--xh-number-field-control-border, var(--xh-_number-field-border));
     border-radius: var(--xh-number-field-control-radius, var(--xh-_number-field-radius));
-    background: var(--xh-number-field-control-bg, var(--xh-number-field-input-bg, var(--xh-_number-field-bg)));
-    box-shadow: var(--xh-number-field-control-shadow, var(--xh-number-field-input-shadow, var(--xh-_number-field-shadow)));
+    background: var(--xh-number-field-control-bg, var(--xh-_number-field-bg));
+    box-shadow: var(--xh-number-field-control-shadow, var(--xh-_number-field-shadow));
     transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='number-field'][data-part='control']:hover:not([data-disabled], [data-invalid]) {
-    border-color: var(--xh-number-field-control-border-hover, var(--xh-number-field-input-border-hover, var(--xh-_number-field-border-hover)));
+    border-color: var(--xh-number-field-control-border-hover, var(--xh-_number-field-border-hover));
   }
 
   [data-scope='number-field'][data-part='control']:focus-within:not([data-disabled]) {
-    border-color: var(--xh-number-field-control-border-focus, var(--xh-number-field-input-border-focus, var(--xh-_number-field-border-focus)));
+    border-color: var(--xh-number-field-control-border-focus, var(--xh-_number-field-border-focus));
     outline: var(--xh-ring-width) solid var(--xh-_number-field-ring);
     outline-offset: var(--xh-ring-offset);
   }
 
   [data-scope='number-field'][data-part='control'][data-invalid] {
-    border-color: var(--xh-number-field-control-border-invalid, var(--xh-number-field-input-border-invalid, var(--xh-border-invalid)));
+    border-color: var(--xh-number-field-control-border-invalid, var(--xh-border-invalid));
 
     /* 校验失败时环也跟着变红：两圈等宽相邻却一红一蓝，读的人不知道哪个才是当前状态 */
     --xh-_number-field-ring: var(--xh-ring-invalid);
   }
 
   [data-scope='number-field'][data-part='control'][data-readonly] {
-    background: var(--xh-number-field-control-bg-readonly, var(--xh-number-field-input-bg-readonly, var(--xh-bg-subtle)));
+    background: var(--xh-number-field-control-bg-readonly, var(--xh-bg-subtle));
   }
 
   [data-scope='number-field'][data-part='control'][data-disabled] {
-    background: var(--xh-number-field-control-bg-disabled, var(--xh-number-field-input-bg-disabled, var(--xh-bg-subtle)));
+    background: var(--xh-number-field-control-bg-disabled, var(--xh-bg-subtle));
     color: var(--xh-fg-disabled);
     cursor: not-allowed;
   }
@@ -255,7 +255,7 @@
     padding-inline: var(--xh-number-field-input-px, var(--xh-_number-field-px));
     padding-block: 0;
     border: var(--xh-stroke-thin) solid var(--xh-number-field-input-border, var(--xh-_number-field-border));
-    border-radius: var(--xh-_number-field-radius);
+    border-radius: var(--xh-number-field-input-radius, var(--xh-_number-field-radius));
     background: var(--xh-number-field-input-bg, var(--xh-_number-field-bg));
     box-shadow: var(--xh-number-field-input-shadow, var(--xh-_number-field-shadow));
     color: var(--xh-number-field-input-fg, var(--xh-fg-default));

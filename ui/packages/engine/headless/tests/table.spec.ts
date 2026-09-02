@@ -678,12 +678,12 @@ describe('connectTable 属性输出', () => {
 
   it('横向吸附与表头吸顶各管各的轴：表头只落标记，吸附列还报出钉在哪一侧', () => {
     const h = mount({ stickyHeader: true })
-    expect(h.root.getAttribute('data-sticky')).toBe('')
-    expect(h.header.getAttribute('data-sticky')).toBe('')
+    expect(h.root.getAttribute('data-fixed')).toBe('')
+    expect(h.header.getAttribute('data-fixed')).toBe('')
     expect(h.columnHeader('name').getAttribute('data-frozen')).toBe('start')
     expect(h.row('a').cells.name!.getAttribute('data-frozen')).toBe('start')
     expect(h.columnHeader('size').hasAttribute('data-frozen')).toBe(false)
-    expect(mount().header.hasAttribute('data-sticky')).toBe(false)
+    expect(mount().header.hasAttribute('data-fixed')).toBe(false)
   })
 
   it('aria-sort 只在参与排序时给方向：可排序未排是 none，不可排序一个字不提', () => {
@@ -1138,15 +1138,18 @@ describe('吸附列的偏移与外观开关', () => {
     expect((name.style as Record<string, unknown> | undefined)?.['--xh-table-sticky-inset']).toBeUndefined()
   })
 
-  it('斑马纹 / 无外框 / 竖线三个开关落到 root 上', () => {
+  it('斑马纹 / 外框 / 竖线三个开关落到 root 上', () => {
     const h = mount({ striped: true, borderless: true, ruled: true })
     const root = h.api().getRootProps() as Record<string, unknown>
     expect(root['data-striped']).toBe('')
-    expect(root['data-borderless']).toBe('')
-    expect(root['data-ruled']).toBe('')
+    // 外框报的是正面事实：borderless 开着就是不画，这一位缺席
+    expect(root['data-bordered']).toBeUndefined()
+    expect(root['data-split']).toBe('')
 
     const plain = mount().api().getRootProps() as Record<string, unknown>
     expect(plain['data-striped']).toBeUndefined()
+    expect(plain['data-bordered']).toBe('')
+    expect(plain['data-split']).toBeUndefined()
   })
 })
 

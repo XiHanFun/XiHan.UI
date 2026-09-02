@@ -309,7 +309,7 @@ export const tableSuite: ConformanceSuite = {
             'data-loading': null,
           },
           'caption': { id: '@self' },
-          'header': { 'role': 'rowgroup', 'data-sticky': null },
+          'header': { 'role': 'rowgroup', 'data-fixed': null },
           'body': {
             // 焦点还在表外：容器兜底进 Tab 序列
             'role': 'rowgroup',
@@ -777,9 +777,9 @@ export const tableSuite: ConformanceSuite = {
       initial: {
         parts: {
           // 表头行与脚注行不是拖动源
-          'row[0]': { 'data-row-draggable': null },
-          'row[1]': { 'data-row-draggable': '', 'data-dragging': null, 'data-drop': null },
-          'row[5]': { 'data-row-draggable': null },
+          'row[0]': { 'data-draggable': null },
+          'row[1]': { 'data-draggable': '', 'data-dragging': null, 'data-drop': null },
+          'row[5]': { 'data-draggable': null },
           // 开着换位时把手才报得动
           'row-drag-trigger[0]': { 'data-disabled': null, 'data-dragging': null },
         },
@@ -877,7 +877,7 @@ export const tableSuite: ConformanceSuite = {
       initial: {
         // 行序由排序说了算，手排就没有落脚处：整行与把手一起失效
         parts: {
-          'row[1]': { 'data-row-draggable': null },
+          'row[1]': { 'data-draggable': null },
           'row-drag-trigger[0]': { 'data-disabled': '' },
         },
       },

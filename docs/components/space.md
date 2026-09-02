@@ -30,7 +30,7 @@
 
 ### 方向
 
-direction 换排布轴：horizontal 横排（缺省）按中线对齐，vertical 竖排拉伸占满
+orientation 换排布轴：horizontal 横排（缺省）按中线对齐，vertical 竖排拉伸占满
 
 <XhDemo src="space/02-direction" />
 
@@ -72,7 +72,6 @@ align 改交叉轴对齐，wrap 让放不下的子项换行、行间距同样吃
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `align` | `SpaceAlign` |  | 交叉轴对齐：start / center / end / stretch / baseline，不写则横排按中线对齐、竖排拉伸。 |
-| `direction` | `Orientation` |  | 排布方向的旧写法。 @deprecated 用 `orientation`——它发出去的属性一直就叫 data-orientation，prop 名此前与之对不上。 两个都写时以 orientation 为准。 |
 | `gap` | `SpaceGap` |  | 子项间距档位：xs / sm / md / lg / xl，缺省 md。档位换算成多少由皮肤定。 |
 | `inline` | `boolean` |  | 容器按行内盒排版，宽度收到内容。 |
 | `justify` | `SpaceJustify` |  | 主轴分布：start / center / end / between / around / evenly，不写则子项从主轴起点排起。 |

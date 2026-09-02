@@ -48,7 +48,7 @@ function mountTree(opts: { checkedStrategy?: 'all' | 'parent' | 'child', default
     setup: () => () =>
       h(XhTreeRoot, {
         'collection': COLLECTION,
-        'selectionMode': 'multiple',
+        'multiple': true,
         'cascade': true,
         'checkedStrategy': opts.checkedStrategy,
         'defaultExpandedValue': ['east'],

@@ -10,8 +10,8 @@
 //    手写的 `cond ? '' : undefined` 与它等价但绕开了单一出口，改语义时会漏掉。
 // ③ 同一个属性名不得既当布尔又当枚举：那样 [data-x] 这条选择器会同时命中两种语义，
 //    使用者写全局规则必然错一半。两种含义就取两个名字（列冻结叫 data-frozen，
-//    表头吸顶才叫 data-sticky）。判据③只认得出「dataAttr 对上字面量枚举」这一种组合——
-//    枚举值若由函数算出再经变量交进来（data-sticky 当初就是这样），静态看不出来，
+//    表头吸顶才叫 data-fixed）。判据③只认得出「dataAttr 对上字面量枚举」这一种组合——
+//    枚举值若由函数算出再经变量交进来（表格那一对当初就是这样），静态看不出来，
 //    得靠人工审计；它守的是照着别处复制粘贴写歪的那一类。
 //
 // ④ data-state 的取值必须登记在 state-vocabulary.json 的某个族里，connect 的字面量与皮肤的选择器两头都查；
@@ -28,6 +28,14 @@ import { join } from 'node:path'
 const HEADLESS_SRC = 'packages/engine/headless/src'
 const STYLES_DIR = 'packages/design/styles/css'
 const VOCAB_PATH = 'tooling/scripts/state-vocabulary.json'
+
+/**
+ * 发 aria-current 但 data 侧不配 data-current 的组件，逐条写明由谁承担当前项语义。
+ * 每条都要真被用来放行过一次，一次都没用上的会被下面的名单核验报出来。
+ */
+const ARIA_CURRENT_EXEMPT = {
+  steps: '当前步由 data-state 的 step 族表达（current / completed / …），不另开 data-current',
+}
 
 /** 属性名形态：data- 之后一律小写字母数字，连字符只作分隔。 */
 const RE_NAME_OK = /^data-[a-z0-9]+(?:-[a-z0-9]+)*$/
@@ -54,6 +62,8 @@ function lineOf(source, index) {
 }
 
 const problems = []
+/** 真的用来放行过的组件。 */
+const ariaCurrentExemptSeen = new Set()
 const vocabulary = new Map()
 /** 属性名 → { bool: [出处], enum: [出处] }，用于判据③。 */
 const shapes = new Map()
@@ -144,14 +154,17 @@ for (const [aria, map] of Object.entries(vocab.aria)) {
     problems.push(`state-vocabulary.json 里 ${aria} 指向的族 ${map.family} 不存在`)
 }
 
-// ⑥ 发了 aria-current 的节点，data 侧配对的是 data-current（steps 例外：它的 data-state 走 step 族）
+// ⑥ 发了 aria-current 的节点，data 侧配对的是 data-current（例外见 ARIA_CURRENT_EXEMPT）
 // ⑦ 有开合交互（api 上有 setOpen）的组件，data-state 走 open / closed，不借派生显隐的 visible / hidden
 for (const [path, source] of connectSources) {
   for (const getter of source.split(/\n\s{4}(?=get[A-Z]\w*Props\s*[:(])/)) {
     if (!/['"]aria-current['"]\s*:/.test(getter))
       continue
-    if (/\/steps\//.test(path))
+    const comp = path.split('/').at(-2)
+    if (comp in ARIA_CURRENT_EXEMPT) {
+      ariaCurrentExemptSeen.add(comp)
       continue
+    }
     if (!/['"]data-current['"]\s*:/.test(getter))
       problems.push(`${path} 里发 aria-current 的节点没配 data-current——当前项在 data 侧只用这一个名字`)
     if (/['"]data-(?:selected|active)['"]\s*:/.test(getter))
@@ -161,7 +174,12 @@ for (const [path, source] of connectSources) {
     problems.push(`${path} 有开合交互（setOpen）却把 data-state 发成 visible / hidden——改 open / closed`)
 }
 
-// ⑧ 布尔属性的名字两头对表：connect 发的必须登记，登记的必须有人发。
+for (const comp of Object.keys(ARIA_CURRENT_EXEMPT)) {
+  if (!ariaCurrentExemptSeen.has(comp))
+    problems.push(`${comp} 登记在 ARIA_CURRENT_EXEMPT 里却没被扫到——名单过期了`)
+}
+
+// ⑦ 布尔属性的名字两头对表：connect 发的必须登记，登记的必须有人发。
 {
   const registered = new Set(Object.keys(vocab.boolean).filter(key => !key.startsWith('$')))
   const emitted = new Set()
@@ -182,11 +200,11 @@ for (const [path, source] of connectSources) {
   }
 }
 
-// ⑤ 退役的属性名不许再发
+// ⑤ 删掉的属性名不许再出现：同一件事重新分裂成两个名字，使用者那条规则就只能命中一半
 for (const [path, source] of connectSources) {
   for (const match of source.matchAll(RE_DATA_KEY)) {
     if (match[1] in vocab.retired)
-      problems.push(`${path}:${lineOf(source, match.index)} 发了已退役的 ${match[1]}——${vocab.retired[match[1]]}`)
+      problems.push(`${path}:${lineOf(source, match.index)} 发了已删掉的 ${match[1]}——${vocab.retired[match[1]]}`)
   }
 }
 
@@ -199,39 +217,18 @@ for (const [path, source] of connectSources) {
   }
 }
 
-// ⑥ data-status 只属于「结果种类」那一轴。
-//
-// 它曾经同时承载两件事：result 的结果种类（404 / success / …）与另外五家的生命周期相位
-// （loading / streaming / …）。于是使用者写 [data-status='error'] 会同时命中两义。
-// 相位已经改发 data-state，那五家的 data-status 只是过渡期的兼容位，登记在
-// deprecatedDual 里；名单之外谁再发 data-status 就得先说清自己是不是结果种类。
+// ⑧ data-status 只属于「结果种类」那一轴：生命周期相位一律走 data-state 的 phase 族。
+//    两义共用一个名字时，使用者写 [data-status='error'] 会同时命中结果种类与相位。
+//    取值经变量中转的静态看不出来，只查字面量。
 {
-  const axis = vocab['data-status']
-  const allowed = new Set(axis.values)
-  const dual = new Set(axis.deprecatedDual.components)
-  const emitters = new Set()
+  const allowed = new Set(vocab['data-status'].values)
   for (const [path, source] of connectSources) {
-    if (!/'data-status'\s*:/.test(source))
-      continue
-    const comp = path.split('/').at(-2)
-    emitters.add(comp)
-    if (dual.has(comp))
-      continue
-    // 非过渡名单里的，值必须落在结果种类那一档；取值经变量中转的静态看不出来，只查字面量
     for (const match of source.matchAll(/'data-status'\s*:\s*([^,\n]+)/g)) {
       for (const [, value] of match[1].matchAll(/'([a-z0-9-]+)'/g)) {
         if (!allowed.has(value))
           problems.push(`${path} 给 data-status 发了 ${value}——这一轴只表达结果种类，相位走 data-state`)
       }
     }
-  }
-  for (const comp of dual) {
-    if (!emitters.has(comp))
-      problems.push(`state-vocabulary.json 的 deprecatedDual 里登着 ${comp}，但它已经不发 data-status 了——过渡期结束，把这条删掉`)
-    // 过渡期的那几家必须两条都发，只留旧的等于没迁
-    const entry = [...connectSources].find(([path]) => path.split('/').at(-2) === comp)
-    if (entry && !/'data-state'\s*:/.test(entry[1]))
-      problems.push(`${comp} 登在 deprecatedDual 里却只发 data-status、不发 data-state——迁移没做完`)
   }
 }
 
@@ -241,6 +238,8 @@ for (const file of skinFiles) {
   const css = (await readFile(join(STYLES_DIR, file), 'utf8')).replace(/\/\*[\s\S]*?\*\//g, '')
   for (const m of css.matchAll(/\[(data-[a-z0-9-]+)(?:=['"]([a-z0-9-]+)['"])?\]/g)) {
     consumed.add(m[1])
+    if (m[1] in vocab.retired)
+      problems.push(`${STYLES_DIR}/${file} 选了已删掉的 ${m[1]}——${vocab.retired[m[1]]}，这条规则永远不命中`)
     if (m[1] === 'data-state' && m[2] && !familyOf.has(m[2]))
       problems.push(`${STYLES_DIR}/${file} 选了 [data-state='${m[2]}']，这个值不在词汇表里——没有 connect 会发它，这条规则永远不命中`)
   }

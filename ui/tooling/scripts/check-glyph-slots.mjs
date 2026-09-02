@@ -14,7 +14,10 @@ const TOKENS_CSS = 'packages/design/tokens/tokens.css'
 /** 适配器里由 JS 拼出来的默认模板（命令式 toast / dialog 的类型徽记）也引这族令牌。 */
 const ADAPTER_SRC = ['packages/adapters/vue/src', 'packages/adapters/web-components/src']
 
-/** 数据本身的语法字符，不是视觉标记：换掉它渲染出来的就不是那个数据格式了。 */
+/**
+ * 数据本身的语法字符，不是视觉标记：换掉它渲染出来的就不是那个数据格式了。
+ * 每条都要真被用来放行过一次，皮肤里已经不写那个字符的由下面的名单核验报出来。
+ */
 const NOT_A_MARK = new Map([
   ['json-viewer.css', new Set(['\':\''])],
 ])
@@ -34,6 +37,8 @@ if (declared.size === 0) {
 const files = (await readdir(STYLES_DIR)).filter(name => name.endsWith('.css')).sort()
 const literals = []
 const used = new Set()
+/** 真的用来放行过的语法字符，写成「皮肤 字面量」。 */
+const usedExempt = new Set()
 
 for (const file of files) {
   const source = await readFile(join(STYLES_DIR, file), 'utf8')
@@ -43,8 +48,12 @@ for (const file of files) {
     for (const m of line.matchAll(LITERAL_CONTENT)) {
       const raw = m[1]
       // 空串是纯几何用的伪元素（画方框、画箭头），不是字形
-      if (raw === '\'\'' || raw === '""' || exempt.has(raw))
+      if (raw === '\'\'' || raw === '""')
         continue
+      if (exempt.has(raw)) {
+        usedExempt.add(`${file} ${raw}`)
+        continue
+      }
       literals.push(`${file}:${i + 1}  content: ${raw}`)
     }
     for (const m of line.matchAll(/var\(\s*(--xh-glyph-mark-[a-z0-9-]+)/g))
@@ -59,6 +68,14 @@ for (const root of ADAPTER_SRC) {
     const source = await readFile(join(entry.parentPath ?? entry.path, entry.name), 'utf8')
     for (const m of source.matchAll(/(--xh-glyph-mark-[a-z0-9-]+)/g))
       used.add(m[1])
+  }
+}
+
+const stale = []
+for (const [file, raws] of NOT_A_MARK) {
+  for (const raw of raws) {
+    if (!usedExempt.has(`${file} ${raw}`))
+      stale.push(`${file} 的 content: ${raw} 登记在 NOT_A_MARK 里却没被扫到——名单过期了`)
   }
 }
 
@@ -81,7 +98,12 @@ if (dead.length) {
   for (const name of dead)
     console.error(`  ${name}`)
 }
-if (literals.length || unknown.length || dead.length)
+if (stale.length) {
+  console.error('[check-glyph-slots] ✗ NOT_A_MARK 名单过期：')
+  for (const at of stale)
+    console.error(`  ${at}`)
+}
+if (literals.length || unknown.length || dead.length || stale.length)
   process.exit(1)
 
-console.log(`[check-glyph-slots] 通过：${declared.size} 个字形令牌都有人用，${files.length} 份皮肤里没有写死的字形`)
+console.log(`[check-glyph-slots] 通过：${declared.size} 个字形令牌都有人用，${files.length} 份皮肤里没有写死的字形（数据语法字符 ${usedExempt.size} 处）`)

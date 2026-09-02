@@ -47,7 +47,7 @@ export function connectToolCall<T extends PropTypes>(
       'data-tone': props.tone,
       'data-size': props.size,
       'data-disabled': dataAttr(disabled),
-      'data-running': dataAttr(running),
+      'data-loading': dataAttr(running),
     }),
 
     getTriggerProps: () => normalize.button({
@@ -98,7 +98,7 @@ export function connectToolCall<T extends PropTypes>(
     getDurationProps: () => normalize.element({
       ...parts.duration.attrs,
       'data-phase': phase,
-      'data-running': dataAttr(running),
+      'data-loading': dataAttr(running),
     }),
 
     // 常驻在 trigger 与 content 之间：审批闸门不该被折叠藏起来

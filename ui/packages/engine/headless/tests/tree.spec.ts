@@ -340,7 +340,7 @@ describe('treeMachine 展开与选中', () => {
   })
 
   it('复选：select 切换增删，setSelection 去重', () => {
-    const h = mount({ selectionMode: 'multiple' })
+    const h = mount({ multiple: true })
     h.api().select('docs')
     h.api().select('license')
     expect(h.selected()).toEqual(['docs', 'license'])
@@ -367,7 +367,7 @@ describe('treeMachine 展开与选中', () => {
 
   it('同一份集合重复写入不重复通知：数组按元素比，不看引用', () => {
     const onSelectionChange = vi.fn()
-    const h = mount({ selectionMode: 'multiple', defaultSelection: ['docs'], onSelectionChange })
+    const h = mount({ multiple: true, defaultSelection: ['docs'], onSelectionChange })
     h.api().setSelection(['docs'])
     expect(onSelectionChange).not.toHaveBeenCalled()
     h.api().setSelection(['docs', 'license'])
@@ -383,7 +383,7 @@ describe('connectTree 属性输出', () => {
     expect(h.treeEl.getAttribute('aria-multiselectable')).toBe('false')
     expect(h.treeEl.getAttribute('aria-disabled')).toBe('false')
     expect(h.treeEl.getAttribute('aria-labelledby')).toBe(h.label.id)
-    expect(mount({ selectionMode: 'multiple' }).treeEl.getAttribute('aria-multiselectable')).toBe('true')
+    expect(mount({ multiple: true }).treeEl.getAttribute('aria-multiselectable')).toBe('true')
   })
 
   it('叶子与分支都是 treeitem，层级三件套取自 collection 而不是 DOM 深度', () => {
@@ -798,7 +798,7 @@ describe('确认键与点击', () => {
   })
 
   it('复选：确认键切换而不是替换', () => {
-    const h = mount({ selectionMode: 'multiple', defaultExpandedValue: ['src'] })
+    const h = mount({ multiple: true, defaultExpandedValue: ['src'] })
     h.item('index').item.focus()
     press(active(), 'Enter')
     press(active(), 'ArrowDown')

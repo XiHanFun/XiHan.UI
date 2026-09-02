@@ -192,4 +192,10 @@ describe('connectDiffView 展开按钮', () => {
         .toBe(`展开折起的 ${gap.hiddenCount} 行`)
     }
   })
+
+  it('translations.expandGap 只收函数：给字符串不过类型', () => {
+    // @ts-expect-error 名字要把行数念进去，固定串念不出这一格折了多少行
+    makeDiffView({ model, contextLines: 2, translations: { expandGap: '展开' } })
+    // 这一行的 @ts-expect-error 是判据本身：形状若又放宽回并集，它会因「没有错可期待」而报错
+  })
 })

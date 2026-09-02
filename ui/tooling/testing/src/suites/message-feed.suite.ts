@@ -52,7 +52,7 @@ export const messageFeedSuite: ConformanceSuite = {
             'role': null,
             // 没有锚点时容器认领唯一那个 Tab 停靠位
             'tabindex': '0',
-            'data-status': 'idle',
+            'data-state': 'idle',
             // 不发 aria-busy：它会压住同一棵子树内播报区的播报
             'aria-busy': null,
           },
@@ -82,7 +82,7 @@ export const messageFeedSuite: ConformanceSuite = {
     {
       name: '渲了作者名就指过去，没渲的那条用文案兜底',
       spec: { apg: APG },
-      props: { translations: { item: '消息' } },
+      props: { translations: { item: () => '消息' } },
       initial: {
         parts: {
           item: [

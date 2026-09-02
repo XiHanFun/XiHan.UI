@@ -12,22 +12,22 @@ const tags = ["前端", "组件库", "无障碍", "设计令牌", "自定义元�
 </script>
 
 <template>
-  <XhFlex direction="column" gap="lg">
-    <XhFlex direction="column" gap="xs">
+  <XhFlex orientation="vertical" gap="lg">
+    <XhFlex orientation="vertical" gap="xs">
       <span :style="labelStyle">不折行（缺省）：全部挤在一行里，宽度不够就被压窄</span>
       <XhFlex gap="sm" :style="trackStyle">
         <span v-for="t in tags" :key="t" :style="tagStyle">{{ t }}</span>
       </XhFlex>
     </XhFlex>
 
-    <XhFlex direction="column" gap="xs">
+    <XhFlex orientation="vertical" gap="xs">
       <span :style="labelStyle">wrap：换行摆，行间距同样是 gap</span>
       <XhFlex wrap gap="sm" :style="trackStyle">
         <span v-for="t in tags" :key="t" :style="tagStyle">{{ t }}</span>
       </XhFlex>
     </XhFlex>
 
-    <XhFlex direction="column" gap="xs">
+    <XhFlex orientation="vertical" gap="xs">
       <span :style="labelStyle">inline：容器缩到内容宽度，跟前后文字排在同一行</span>
       <!-- 外层留成普通块级容器：行内盒要和文字处在同一个行内格式化上下文里才看得出效果 -->
       <div style="line-height: 2">

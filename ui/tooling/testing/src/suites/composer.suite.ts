@@ -54,7 +54,7 @@ export const composerSuite: ConformanceSuite = {
         order: ['root', 'input', 'submit-trigger'],
         counts: { 'root': 1, 'input': 1, 'submit-trigger': 1 },
         parts: {
-          'root': { 'data-state': 'ready', 'data-status': 'ready', 'data-disabled': null },
+          'root': { 'data-state': 'ready', 'data-disabled': null },
           'input': {
             'disabled': null,
             // 输入框的无障碍名由 connect 给出
@@ -129,7 +129,7 @@ export const composerSuite: ConformanceSuite = {
       props: { runStatus: 'streaming' },
       initial: {
         parts: {
-          'root': { 'data-state': 'streaming', 'data-status': 'streaming' },
+          'root': { 'data-state': 'streaming' },
           'submit-trigger': {
             'data-mode': 'stop',
             'aria-label': 'Stop generating',

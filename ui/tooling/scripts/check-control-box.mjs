@@ -59,6 +59,7 @@ const ACTION_PARTS = ['clear-trigger', 'trigger', 'visibility-trigger', 'eye-dro
 /**
  * 两套盒的控件：写了 control 由 control 画盒，不写则那个 input 自己画盒。
  * 两种用法都得有聚焦环，所以 input 上那条不算出格。
+ * 每条都要真被用来放行过一次，一次都没用上的会被下面的名单核验报出来。
  */
 const DUAL_BOX = new Set(['text-field', 'number-field', 'password-input'])
 
@@ -66,48 +67,16 @@ const DUAL_BOX = new Set(['text-field', 'number-field', 'password-input'])
 const BOX_AREA_PARTS = new Set(['control', 'input', 'trigger', 'value-text', 'segment-group', 'segment'])
 
 /**
- * 浮层那一侧的部件：它们在 positioner/content 里面，不在盒里。
+ * 盒外的部件：它们在 positioner/content 里面，不在盒里。
  * flex:1 与 margin 顶不顶的那两条只管盒内，这些部件的排布是列表自己的事。
+ * 每条都要真被用来放行过一次，一次都没用上的会被下面的名单核验报出来。
  */
-const OUTSIDE_BOX = new Set([
-  'positioner',
-  'content',
-  'list',
-  'item',
-  'item-text',
-  'item-indicator',
-  'group',
-  'group-label',
-  'separator',
-  'empty',
-  'footer',
-  'column',
-  'search-list',
-  'search-item',
-  'tree',
-  'branch',
-  'branch-control',
-  'branch-trigger',
-  'branch-indicator',
-  'branch-text',
-  'branch-content',
-  'presets',
-  'preset',
-  'calendar',
-  'time-column',
-  'time-item',
-  'confirm-trigger',
-  'area',
-  'area-thumb',
-  'channel-slider',
-  'channel-slider-track',
-  'channel-slider-thumb',
-  'channel-input',
-  'swatch-group',
-  'swatch-item',
-  'hidden-input',
-  'hidden-select',
-])
+const OUTSIDE_BOX = {
+  'list': 'select 的列表在浮层里撑满面板高度',
+  'item-text': '条目正文撑满条目宽度，把条目右侧的选中标记顶到最右',
+  'branch-text': 'tree-select 树枝的文字撑满枝宽',
+  'empty': 'cascader 空态铺满面板',
+}
 
 /**
  * 逐条登记的例外，键写成「组件 检查项」。检查项名见 CHECKS。
@@ -168,6 +137,10 @@ const problems = new Map()
 const usedExempt = new Set()
 /** 真的按单元素放行过的组件。 */
 const usedSingle = new Set()
+/** 真的按盒外部件放行过的 part。 */
+const usedOutside = new Set()
+/** 真的按两套盒放行过的组件。 */
+const usedDual = new Set()
 let governed = 0
 
 function report(comp, check, detail) {
@@ -279,8 +252,13 @@ for (const comp of COMPONENTS) {
         continue
       for (const selector of rule.selectors) {
         const part = lastPart(selector)
-        if (part != null && !OUTSIDE_BOX.has(part))
-          growers.push({ part, selector })
+        if (part == null)
+          continue
+        if (part in OUTSIDE_BOX) {
+          usedOutside.add(part)
+          continue
+        }
+        growers.push({ part, selector })
       }
     }
     const contentOk = part => CONTENT_PARTS.has(part) || (part === 'trigger' && TRIGGER_IS_CONTENT.has(comp))
@@ -329,8 +307,13 @@ for (const comp of COMPONENTS) {
       continue
     for (const selector of rule.selectors) {
       const part = lastPart(selector)
-      if (part != null && !OUTSIDE_BOX.has(part))
-        report(comp, 'margin-auto', `${part} 上写了 margin-inline-start: auto（${selector}），改用 flex:1 的内容区顶`)
+      if (part == null)
+        continue
+      if (part in OUTSIDE_BOX) {
+        usedOutside.add(part)
+        continue
+      }
+      report(comp, 'margin-auto', `${part} 上写了 margin-inline-start: auto（${selector}），改用 flex:1 的内容区顶`)
     }
   }
 
@@ -346,8 +329,10 @@ for (const comp of COMPONENTS) {
       if (part == null || !BOX_AREA_PARTS.has(part) || part === box)
         continue
       // 两套盒的控件：不写 control 时 input 自己是盒，那条环同样必须在
-      if (part === 'input' && DUAL_BOX.has(comp))
+      if (part === 'input' && DUAL_BOX.has(comp)) {
+        usedDual.add(comp)
         continue
+      }
       report(comp, 'focus-box', `聚焦环画在 ${part} 上（${selector}），盒是 ${box}`)
     }
   }
@@ -363,6 +348,16 @@ for (const key of Object.keys(SINGLE_ELEMENT)) {
     problems.set(key, [...(problems.get(key) ?? []), '登记在 SINGLE_ELEMENT 里却没被扫到——名单过期了'])
 }
 
+for (const part of Object.keys(OUTSIDE_BOX)) {
+  if (!usedOutside.has(part))
+    problems.set(part, [...(problems.get(part) ?? []), `${part} 登记在 OUTSIDE_BOX 里却没被扫到——名单过期了`])
+}
+
+for (const comp of DUAL_BOX) {
+  if (!usedDual.has(comp))
+    problems.set(comp, [...(problems.get(comp) ?? []), `${comp} 登记在 DUAL_BOX 里却没被扫到——名单过期了`])
+}
+
 if (problems.size) {
   console.error('[check-control-box] ✗ 盒结构没走同一种做法：')
   for (const [comp, list] of [...problems].sort((a, b) => a[0].localeCompare(b[0]))) {
@@ -376,4 +371,4 @@ if (problems.size) {
   process.exit(1)
 }
 
-console.log(`[check-control-box] 通过：${governed} 个控件的盒结构同构（单元素 ${Object.keys(SINGLE_ELEMENT).length} 个、例外 ${usedExempt.size} 条）`)
+console.log(`[check-control-box] 通过：${governed} 个控件的盒结构同构（单元素 ${Object.keys(SINGLE_ELEMENT).length} 个、盒外部件 ${usedOutside.size} 个、两套盒 ${usedDual.size} 个、例外 ${usedExempt.size} 条）`)

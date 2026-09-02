@@ -1,5 +1,4 @@
 import { isDev, VERSION as KERNEL_VERSION } from '@xihan-ui/kernel'
-import { startDeprecationScan } from '@xihan-ui/kernel/deprecations'
 import { checkLockstepVersion, printMetadataBannerOnce, registerRuntimeHost } from '@xihan-ui/kernel/metadata'
 import { version as VERSION } from '../package.json'
 import { XhAccordionElement } from './elements/accordion'
@@ -275,11 +274,8 @@ export function defineXhElements(): void {
   // 引用即打印：注册全部元素时打一次启动横幅（内部 dev 门禁 + 每页一次）
   printMetadataBannerOnce()
 
-  // dev 里启动废弃探测：登记表非空时才有动作，空表零开销（早退在扫描器内部）
-  if (isDev()) {
+  if (isDev())
     checkLockstepVersion('web-components', VERSION, KERNEL_VERSION)
-    startDeprecationScan()
-  }
 }
 
 export {

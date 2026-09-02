@@ -28,7 +28,7 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @attr {boolean} sider-fixed - 侧栏吸附：滚动时侧栏钉在滚动容器的上沿，头也吸顶时让开头那一条
  * @attr {boolean} bordered - 在头、侧栏、脚与内容之间画分隔线
  * @fires sider-collapsed-change - 折叠态变化；detail 为 `{ collapsed: boolean }`
- * @csspart root - 骨架根容器，承载 data-sider-placement / data-sider-collapsed / data-header-fixed / data-sider-fixed / data-bordered
+ * @csspart root - 骨架根容器，承载 data-sider-placement / data-collapsed / data-header-fixed / data-sider-fixed / data-bordered
  * @csspart header - 顶部横幅区，横贯整行；吸顶时带 data-fixed
  * @csspart sider - 侧栏，折叠时带 data-collapsed、宽度随之在两档之间切换；吸附时带 data-fixed
  * @csspart content - 主内容区

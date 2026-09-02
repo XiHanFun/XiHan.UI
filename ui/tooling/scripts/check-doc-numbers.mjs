@@ -687,6 +687,18 @@ const truth = {
       return files.reduce((n, [, src]) => n + (src.match(/bubbles: true/g) ?? []).length, 0)
     },
   },
+  connect产出的属性名数: {
+    how: '每个组件的 connect 里 \'data-…\': 写法的属性名去重数',
+    async value() {
+      return (await once('connectAttrs', connectDataAttrs)).names
+    },
+  },
+  connect组件属性配对数: {
+    how: '同上口径下「组件 × 属性名」去重后的条数',
+    async value() {
+      return (await once('connectAttrs', connectDataAttrs)).pairs
+    },
+  },
   皮肤消费的属性名数: {
     how: '皮肤 CSS 剥掉块注释后，选择器里 [data-… 的属性名去重数，排除解剖的 data-scope 与 data-part',
     async value() {
@@ -729,23 +741,6 @@ const truth = {
     how: 'tooling/testing/src/a11y/known.ts 的 replayExempt 键数',
     async value() {
       return countTopLevelKeys(await read('tooling/testing/src/a11y/known.ts'), 'replayExempt')
-    },
-  },
-  废弃登记表状态: {
-    how: '库包 src 里 registerDeprecation( 的调用处数（不含 kernel 自己那份定义）；一处都没有时正文写「空」',
-    async value() {
-      let n = 0
-      for (const group of (await readdir(join(uiRoot, 'packages'), { withFileTypes: true })).filter(d => d.isDirectory())) {
-        for (const pkg of await readdir(join(uiRoot, 'packages', group.name))) {
-          const files = await readTree(join(uiRoot, 'packages', group.name, pkg, 'src'), '.ts').catch(() => [])
-          for (const [path, src] of files) {
-            if (path.endsWith('deprecations.ts'))
-              continue
-            n += (src.match(/\bregisterDeprecation\(/g) ?? []).length
-          }
-        }
-      }
-      return n === 0 ? '空' : `${n} 条`
     },
   },
   运行时第三方依赖数: {
@@ -825,6 +820,21 @@ const truth = {
 }
 
 /** 皮肤 CSS 真正消费的 data-* 属性：剥注释、排除解剖那两个。 */
+async function connectDataAttrs() {
+  const names = new Set()
+  const pairs = new Set()
+  for (const dir of (await readdir(HEADLESS, { withFileTypes: true })).filter(d => d.isDirectory())) {
+    const src = await readFile(join(HEADLESS, dir.name, `${dir.name}.connect.ts`), 'utf8').catch(() => null)
+    if (src == null)
+      continue
+    for (const [, name] of src.matchAll(/'(data-[\w-]+)'\s*:/g)) {
+      names.add(name)
+      pairs.add(`${dir.name}|${name}`)
+    }
+  }
+  return { names: names.size, pairs: pairs.size }
+}
+
 async function skinDataAttrs() {
   const files = (await readdir(SKIN_CSS)).filter(f => f.endsWith('.css')).sort()
   const names = new Set()
@@ -1093,11 +1103,12 @@ const TABLE = [
   ['docs/guide/versioning.md', /\| 命令式方法 \| \d+（分布在 (\d+) 个元素）/, '带命令式方法的元素数'],
 
   // 自带皮肤真正消费的 data-*：剥掉 CSS 注释后数，排除解剖那两个
+  ['docs/guide/versioning.md', /一共产出 (\d+) 个不同的 `data-\*` 属性名/, 'connect产出的属性名数'],
+  ['docs/guide/versioning.md', /属性名、(\d+) 条「组件 × 属性」配对/, 'connect组件属性配对数'],
   ['docs/guide/versioning.md', /自带皮肤自己就消费了 (\d+) 个属性名/, '皮肤消费的属性名数'],
   ['docs/guide/versioning.md', /个属性名 \/ (\d+) 条「皮肤 × 属性」配对/, '皮肤属性配对数'],
 
   // 其余「当前状态是 X」式陈述
-  ['docs/guide/versioning.md', /登记表当前为(空|\d+ 条)/, '废弃登记表状态'],
   ['docs/guide/versioning.md', /\| Node（安装并运行本库） \| \*\*≥ (\d+)\*\*/, '消费端Node主版本下限'],
   ['docs/installation.md', /\| Node（装包使用） \| ≥ (\d+)，/, '消费端Node主版本下限'],
   ['docs/installation.md', /（参与本仓开发） \| ≥ ([\d.]+) \/ ≥ [\d.]+ \|/, '开发期Node下限'],

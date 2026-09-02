@@ -109,7 +109,7 @@ size 换的是整块正文的字号与段间距，不传 size 即默认档
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-typography-block-gap` · `--xh-typography-code-bg` · `--xh-typography-code-font` · `--xh-typography-code-font-size` · `--xh-typography-code-px` · `--xh-typography-code-py` · `--xh-typography-code-radius` · `--xh-typography-fg` · `--xh-typography-font-size` · `--xh-typography-font-weight` · `--xh-typography-heading-fg` · `--xh-typography-heading-font-size` · `--xh-typography-heading-font-weight` · `--xh-typography-heading-gap` · `--xh-typography-heading-leading` · `--xh-typography-leading` · `--xh-typography-link-fg` · `--xh-typography-link-fg-hover` · `--xh-typography-link-radius` · `--xh-typography-link-underline-offset` · `--xh-typography-measure` · `--xh-typography-text-fg` · `--xh-typography-text-fg-muted` · `--xh-typography-text-fg-tone` · `--xh-typography-text-font-weight`
+`--xh-typography-block-gap` · `--xh-typography-code-bg` · `--xh-typography-code-font` · `--xh-typography-code-font-size` · `--xh-typography-code-px` · `--xh-typography-code-py` · `--xh-typography-code-radius` · `--xh-typography-fg` · `--xh-typography-font-size` · `--xh-typography-font-weight` · `--xh-typography-heading-fg` · `--xh-typography-heading-font-size` · `--xh-typography-heading-font-weight` · `--xh-typography-heading-gap` · `--xh-typography-heading-leading` · `--xh-typography-leading` · `--xh-typography-link-fg` · `--xh-typography-link-fg-hover` · `--xh-typography-link-radius` · `--xh-typography-link-underline-offset` · `--xh-typography-measure` · `--xh-typography-text-fg-muted` · `--xh-typography-text-fg-tone` · `--xh-typography-text-font-weight`
 
 ## 响应式
 

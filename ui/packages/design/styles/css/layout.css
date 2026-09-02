@@ -8,8 +8,7 @@
      缺哪一段，对应的行/列就没有条目，宽高自动收成 0，不必为"少写一段"另立规则。
 
      侧栏两档宽度与头的高度声明在根上：各段自己读这些槽，换档只改这里。
-     宽度槽用 -w 缩写，与同处的 --xh-layout-header-h 一致；原先拼全的 -sider-width /
-     -sider-collapsed-width 排在后面当兜底值。
+     宽度槽用 -w 缩写，与同处的 --xh-layout-header-h 一致。
      头的高度之所以也归到根上：头吸顶时头这一行的轨道要按同一个值定高，两处必须同源。 */
   [data-scope='layout'][data-part='root'] {
     display: grid;
@@ -21,8 +20,8 @@
     grid-template-rows: auto minmax(0, 1fr) auto;
     background: var(--xh-layout-bg, var(--xh-bg-canvas));
     color: var(--xh-layout-fg, var(--xh-fg-default));
-    --xh-_layout-sider-w: var(--xh-layout-sider-w, var(--xh-layout-sider-width, 15rem));
-    --xh-_layout-sider-collapsed-w: var(--xh-layout-sider-collapsed-w, var(--xh-layout-sider-collapsed-width, 4rem));
+    --xh-_layout-sider-w: var(--xh-layout-sider-w, 15rem);
+    --xh-_layout-sider-collapsed-w: var(--xh-layout-sider-collapsed-w, 4rem);
     --xh-_layout-header-h: var(--xh-layout-header-h, 3.5rem);
     /* 侧栏吸附时钉在哪条线上：缺省贴滚动容器上沿，头也吸顶时改成让开头的高度 */
     --xh-_layout-sider-offset: 0px;

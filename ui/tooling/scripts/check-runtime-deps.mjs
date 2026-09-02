@@ -6,6 +6,8 @@ import { join } from 'node:path'
 const PACKAGES_DIR = 'packages'
 
 // 加条目前先问它值不值一个长期维护面；理由要写清楚何时可以摘掉。
+// 外层键是包名：包改名或删掉之后，这一整段登记就再也对不上任何一个包，
+// 里面的依赖也就不再受「登记在案」这句话约束——下面逐个核验包名真的扫到过。
 const ALLOWLIST = {
   '@xihan-ui/headless': {
     '@internationalized/date': '历法与时区运算；目标浏览器基线普遍支持 Temporal 后摘除',
@@ -38,6 +40,8 @@ async function packageDirs() {
 
 const violations = []
 const staleAllowlist = []
+/** 真的对上了某个包的登记段。 */
+const usedAllowlist = new Set()
 let checked = 0
 
 for (const dir of await packageDirs()) {
@@ -51,6 +55,8 @@ for (const dir of await packageDirs()) {
   checked++
 
   const allowed = ALLOWLIST[pkg.name] ?? {}
+  if (pkg.name in ALLOWLIST)
+    usedAllowlist.add(pkg.name)
   const deps = Object.fromEntries(RUNTIME_FIELDS.flatMap(f => Object.entries(pkg[f] ?? {})))
 
   for (const [dep, range] of Object.entries(deps)) {
@@ -75,6 +81,15 @@ if (violations.length) {
   process.exit(1)
 }
 
+// 登记表里躺着已经不存在的包名，那一整段登记谁也管不着。
+const staleOwners = Object.keys(ALLOWLIST).filter(name => !usedAllowlist.has(name))
+if (staleOwners.length) {
+  console.error('[check-runtime-deps] ✗ ALLOWLIST 里的包名没被扫到——名单过期了：')
+  for (const name of staleOwners)
+    console.error(`  ${name}`)
+  process.exit(1)
+}
+
 // 登记表里躺着已经摘掉的依赖，说明门禁在放行一个不存在的例外。
 if (staleAllowlist.length) {
   console.error('[check-runtime-deps] ✗ ALLOWLIST 里有已经不存在的条目，删掉它：')
@@ -89,4 +104,4 @@ if (checked === 0) {
   process.exit(1)
 }
 
-console.log(`[check-runtime-deps] 通过：${checked} 个库包的运行时依赖只有 workspace 兄弟包与登记在案的第三方`)
+console.log(`[check-runtime-deps] 通过：${checked} 个库包的运行时依赖只有 workspace 兄弟包与登记在案的第三方（${usedAllowlist.size} 个包有登记段）`)

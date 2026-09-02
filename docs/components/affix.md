@@ -120,7 +120,7 @@ affix-change 报吸住与松开；默认插槽也把 affixed 透出来
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `content` | `data-affixed` | ''（条件成立时才出现） |
+| `content` | `data-fixed` | ''（条件成立时才出现） |
 
 ## CSS 变量
 

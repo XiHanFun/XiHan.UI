@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
-// 每页条数从只读 prop 升成真状态。三件事要钉住：
-// 一是向后兼容——只给 pageSize 仍然是受控，升级前后一字不差；
+// 每页条数是一份真状态。三件事要钉住：
+// 一是受控——只给 pageSize 时档位由外部持有；
 // 二是非受控——只给 defaultPageSize 时由组件自持；
 // 三是换档时的页码换算：改档前第一条要仍留在页内，而不是被夹到别处。
 import type { App } from 'vue'

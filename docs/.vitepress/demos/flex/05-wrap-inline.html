@@ -21,9 +21,9 @@
 
 <!-- 宿主设 display: contents，排布落在 root 上 -->
 <div id="flex-wrap-inline">
-  <xh-flex direction="column" gap="lg" style="display: contents">
+  <xh-flex orientation="vertical" gap="lg" style="display: contents">
     <div data-xh-part="root">
-      <xh-flex direction="column" gap="xs" style="display: contents">
+      <xh-flex orientation="vertical" gap="xs" style="display: contents">
         <div data-xh-part="root">
           <span data-label>不折行（缺省）：全部挤在一行里，宽度不够就被压窄</span>
           <xh-flex gap="sm" style="display: contents">
@@ -39,7 +39,7 @@
         </div>
       </xh-flex>
 
-      <xh-flex direction="column" gap="xs" style="display: contents">
+      <xh-flex orientation="vertical" gap="xs" style="display: contents">
         <div data-xh-part="root">
           <span data-label>wrap：换行摆，行间距同样是 gap</span>
           <xh-flex wrap gap="sm" style="display: contents">
@@ -55,7 +55,7 @@
         </div>
       </xh-flex>
 
-      <xh-flex direction="column" gap="xs" style="display: contents">
+      <xh-flex orientation="vertical" gap="xs" style="display: contents">
         <div data-xh-part="root">
           <span data-label>inline：容器缩到内容宽度，跟前后文字排在同一行</span>
           <!-- 外层留成普通块级容器：行内盒要和文字处在同一个行内格式化上下文里才看得出效果 -->

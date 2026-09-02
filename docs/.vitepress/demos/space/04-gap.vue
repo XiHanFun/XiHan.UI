@@ -11,7 +11,7 @@ const gaps = ["xs", "sm", "md", "lg", "xl"] as const;
 </script>
 
 <template>
-  <XhSpace direction="vertical" gap="sm" align="start">
+  <XhSpace orientation="vertical" gap="sm" align="start">
     <XhSpace v-for="g in gaps" :key="g" gap="md">
       <span :style="labelStyle">gap = {{ g }}</span>
       <XhSpace :gap="g">

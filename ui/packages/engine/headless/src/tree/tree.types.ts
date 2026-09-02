@@ -15,15 +15,6 @@ import type { DragRect, DragTranslations, DropTarget } from '../shared/drag'
 export type TreeFocusModel = 'roving-tabindex'
 
 /**
- * 选择模式：
- * - single：一次只中一个，点击与确认键都是「替换」；
- * - multiple：复选，点击与确认键都是「切换」，tree 带 aria-multiselectable=true。
- *
- * @deprecated 只有两个取值，与布尔等价。用 `multiple`——同族的 tree-select 与另外六家都用它。
- */
-export type TreeSelectionMode = 'single' | 'multiple'
-
-/**
  * 作者给的树数据，是层级元信息（层级号、同层序号、同层总数、父子关系）的唯一事实源：
  * 连接层据此产出 aria-level / aria-posinset / aria-setsize，作者的标记只管长相。
  * value 必须全树唯一：它同时是 DOM 身份（data-value）、选中/展开集合的元素与查节点的键。
@@ -148,13 +139,6 @@ export interface TreeSchema extends MachineSchema {
     /** 复选：点击与确认键都是「切换」，tree 带 aria-multiselectable=true。默认 false（单选）。 */
     multiple?: boolean
     /**
-     * 选择模式的旧写法，默认 single。
-     *
-     * @deprecated 用 `multiple`。两者同时给时以 selectionMode 为准（与 listbox 同一条规矩），
-     * 旧代码的行为因此一点不变。
-     */
-    selectionMode?: TreeSelectionMode
-    /**
      * multiple 下父子级联勾选：点分支整枝传导、子全勾父勾、部分勾中半选，
      * 禁用子树整棵冻结。默认 false（朴素切换）；single 下无效。
      */
@@ -221,7 +205,7 @@ export interface TreeSchema extends MachineSchema {
     | { type: 'BRANCH.TOGGLE', value: string }
     /** 整体改写选中集合。 */
     | { type: 'SELECTION.SET', value: string[] }
-    /** 单选替换、复选切换，由 selectionMode 决定。 */
+    /** 单选替换、复选切换，由 multiple 决定。 */
     | { type: 'NODE.SELECT', value: string, extend?: boolean }
     | { type: 'NODE.FOCUS', value: string }
     /** 焦点离开树，或持有焦点的节点被移出 DOM（浏览器此时不派 focusout，由适配器如实上报）。 */
@@ -274,8 +258,6 @@ export interface TreeApi<T extends PropTypes = PropTypes> {
   focusedValue: string | null
   /** 生效的是不是复选。 */
   multiple: boolean
-  /** @deprecated 读 `multiple`。 */
-  selectionMode: TreeSelectionMode
   disabled: boolean
   isExpanded: (value: string) => boolean
   isSelected: (value: string) => boolean

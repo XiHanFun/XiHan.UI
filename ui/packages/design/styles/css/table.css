@@ -35,8 +35,8 @@
     position: relative;
     flex-direction: column;
     max-block-size: var(--xh-table-max-h, var(--xh-viewport-h-lg));
-    border: var(--xh-stroke-thin) solid var(--xh-table-border, var(--xh-border-default));
-    border-radius: var(--xh-table-radius, var(--xh-shape-surface));
+    /* 外框由 [data-bordered] 画：那一位缺席就是不要外框，只留行间横线 */
+    border: 0;
     background: var(--xh-table-bg, var(--xh-bg-surface));
     color: var(--xh-table-fg, var(--xh-fg-default));
     font-size: var(--xh-table-font-size, var(--xh-_table-font-size));
@@ -116,7 +116,7 @@
 
   /* 吸顶：滚动容器是 root，表头钉在它的上沿。背景必须是实色——
      透明的表头会让底下滚过的行透出来 */
-  [data-scope='table'][data-part='header'][data-sticky] {
+  [data-scope='table'][data-part='header'][data-fixed] {
     position: sticky;
     z-index: var(--xh-table-sticky-header-layer, var(--xh-layer-sticky));
     inset-block-start: 0;
@@ -234,15 +234,15 @@
     background: var(--xh-table-row-bg-striped, var(--xh-bg-subtle));
   }
 
-  /* 无外框：只留行间横线，圆角也随之无意义 */
-  [data-scope='table'][data-part='root'][data-borderless] {
-    border: 0;
-    border-radius: 0;
+  /* 外框：一圈描边加圆角。不画时只留行间横线，圆角也随之无意义 */
+  [data-scope='table'][data-part='root'][data-bordered] {
+    border: var(--xh-stroke-thin) solid var(--xh-table-border, var(--xh-border-default));
+    border-radius: var(--xh-table-radius, var(--xh-shape-surface));
   }
 
   /* 竖分隔线：列与列之间一道细线，末列不画 */
-  [data-scope='table'][data-part='root'][data-ruled] [data-scope='table'][data-part='column-header']:not(:last-child),
-  [data-scope='table'][data-part='root'][data-ruled] [data-scope='table'][data-part='cell']:not(:last-child) {
+  [data-scope='table'][data-part='root'][data-split] [data-scope='table'][data-part='column-header']:not(:last-child),
+  [data-scope='table'][data-part='root'][data-split] [data-scope='table'][data-part='cell']:not(:last-child) {
     border-inline-end: var(--xh-stroke-thin) solid var(--xh-table-row-border, var(--xh-border-subtle));
   }
 
@@ -521,7 +521,7 @@
   /* 整行都是拖动源，光标换成抓手告诉人这一行按得动。
      这条不写 touch-action：整行关掉纵向手势，表格自己就滚不动了；
      触屏那一路交给下面那块专属把手 */
-  [data-scope='table'][data-part='row'][data-row-draggable] {
+  [data-scope='table'][data-part='row'][data-draggable] {
     cursor: grab;
   }
 

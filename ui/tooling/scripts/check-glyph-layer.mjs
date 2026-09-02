@@ -22,7 +22,7 @@ const RE_GLYPH = /mask\s*:\s*var\(--xh-glyph-mark-/
 /** 只看落在伪元素上的选择器——真实节点当方框时天然是两层，不在此列。 */
 const RE_PSEUDO = /::(?:before|after)\s*$/
 /** 状态限定：同一个伪元素在不同状态下的规则，归一后算同一个目标。 */
-const RE_STATE = /\[data-(?:state|status|disabled|readonly|invalid|checked|selected|current|highlighted|hidden|empty|clearable|in-path|passed|collapsed|focus|loading|at-limit)(?:[~^|*$]?=[^\]]*)?\]/g
+const RE_STATE = /\[data-(?:state|status|disabled|readonly|invalid|checked|selected|current|highlighted|hidden|empty|clearable|in-path|passed|collapsed|focus|loading|at-max)(?:[~^|*$]?=[^\]]*)?\]/g
 const RE_PSEUDO_CLASS = /:(?:hover|focus|focus-visible|focus-within|active|empty|checked|first-child|last-child|not|is)\b/g
 
 /**

@@ -40,7 +40,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @prop {object} translations - 读屏文案（只走 property）：clearTrigger 是清空按钮的名字
  * @fires value-change - 值变化；detail 为 `{ value: string }`
- * @csspart root - 承载 data-disabled / data-readonly / data-invalid / data-empty / data-at-limit 的容器
+ * @csspart root - 承载 data-disabled / data-readonly / data-invalid / data-empty / data-at-max 的容器
  * @csspart control - 视觉盒；写了它就由它画描边、底色与聚焦环，输入框与清空按钮排在它里面
  * @csspart label - 标题；`for` 恒写向 input，故须是原生 `<label>` 才点得动
  * @csspart input - 真正的输入框，须是原生 `<input>`；键盘交互全在它身上

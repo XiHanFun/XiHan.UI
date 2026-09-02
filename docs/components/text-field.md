@@ -232,7 +232,7 @@ input 部件写成 textarea 即多行宿主；autoSize 让高度跟内容走，�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `data-at-limit` | ''（条件成立时才出现） |
+| `root` | `data-at-max` | ''（条件成立时才出现） |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
 | `root` | `data-empty` | ''（条件成立时才出现） |
 | `root` | `data-invalid` | ''（条件成立时才出现） |
@@ -241,12 +241,12 @@ input 部件写成 textarea 即多行宿主；autoSize 让高度跟内容走，�
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
-| `control` | `data-at-limit` | ''（条件成立时才出现） |
+| `control` | `data-at-max` | ''（条件成立时才出现） |
 | `control` | `data-disabled` | ''（条件成立时才出现） |
 | `control` | `data-invalid` | ''（条件成立时才出现） |
 | `control` | `data-readonly` | ''（条件成立时才出现） |
-| `input` | `data-at-limit` | ''（条件成立时才出现） |
-| `input` | `data-autosize` | ''（条件成立时才出现） |
+| `input` | `data-at-max` | ''（条件成立时才出现） |
+| `input` | `data-auto-resize` | ''（条件成立时才出现） |
 | `input` | `data-disabled` | ''（条件成立时才出现） |
 | `input` | `data-invalid` | ''（条件成立时才出现） |
 | `input` | `data-multiline` | ''（条件成立时才出现） |
@@ -255,7 +255,7 @@ input 部件写成 textarea 即多行宿主；autoSize 让高度跟内容走，�
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-text-field-action-bg` · `--xh-text-field-action-bg-active` · `--xh-text-field-action-bg-hover` · `--xh-text-field-action-fg` · `--xh-text-field-action-fg-hover` · `--xh-text-field-action-font-size` · `--xh-text-field-action-radius` · `--xh-text-field-action-size` · `--xh-text-field-control-bg` · `--xh-text-field-control-bg-disabled` · `--xh-text-field-control-bg-readonly` · `--xh-text-field-control-border` · `--xh-text-field-control-border-at-limit` · `--xh-text-field-control-border-focus` · `--xh-text-field-control-border-hover` · `--xh-text-field-control-border-invalid` · `--xh-text-field-control-fg` · `--xh-text-field-control-gap` · `--xh-text-field-control-h` · `--xh-text-field-control-min-w` · `--xh-text-field-control-px` · `--xh-text-field-control-radius` · `--xh-text-field-control-shadow` · `--xh-text-field-gap` · `--xh-text-field-icon-size` · `--xh-text-field-input-autofill-bg` · `--xh-text-field-input-autofill-fg` · `--xh-text-field-input-bg` · `--xh-text-field-input-bg-disabled` · `--xh-text-field-input-bg-readonly` · `--xh-text-field-input-border` · `--xh-text-field-input-border-at-limit` · `--xh-text-field-input-border-focus` · `--xh-text-field-input-border-hover` · `--xh-text-field-input-border-invalid` · `--xh-text-field-input-fg` · `--xh-text-field-input-font-size` · `--xh-text-field-input-h` · `--xh-text-field-input-min-w` · `--xh-text-field-input-px` · `--xh-text-field-input-radius` · `--xh-text-field-input-shadow` · `--xh-text-field-label-fg` · `--xh-text-field-label-fg-disabled` · `--xh-text-field-label-font-size` · `--xh-text-field-label-font-weight` · `--xh-text-field-placeholder-fg` · `--xh-text-field-textarea-py`
+`--xh-text-field-action-bg` · `--xh-text-field-action-bg-active` · `--xh-text-field-action-bg-hover` · `--xh-text-field-action-fg` · `--xh-text-field-action-fg-hover` · `--xh-text-field-action-font-size` · `--xh-text-field-action-radius` · `--xh-text-field-action-size` · `--xh-text-field-control-bg` · `--xh-text-field-control-bg-disabled` · `--xh-text-field-control-bg-readonly` · `--xh-text-field-control-border` · `--xh-text-field-control-border-at-max` · `--xh-text-field-control-border-focus` · `--xh-text-field-control-border-hover` · `--xh-text-field-control-border-invalid` · `--xh-text-field-control-fg` · `--xh-text-field-control-gap` · `--xh-text-field-control-h` · `--xh-text-field-control-min-w` · `--xh-text-field-control-px` · `--xh-text-field-control-radius` · `--xh-text-field-control-shadow` · `--xh-text-field-gap` · `--xh-text-field-icon-size` · `--xh-text-field-input-autofill-bg` · `--xh-text-field-input-autofill-fg` · `--xh-text-field-input-bg` · `--xh-text-field-input-bg-disabled` · `--xh-text-field-input-bg-readonly` · `--xh-text-field-input-border` · `--xh-text-field-input-border-at-max` · `--xh-text-field-input-border-focus` · `--xh-text-field-input-border-hover` · `--xh-text-field-input-border-invalid` · `--xh-text-field-input-fg` · `--xh-text-field-input-font-size` · `--xh-text-field-input-h` · `--xh-text-field-input-min-w` · `--xh-text-field-input-px` · `--xh-text-field-input-radius` · `--xh-text-field-input-shadow` · `--xh-text-field-label-fg` · `--xh-text-field-label-fg-disabled` · `--xh-text-field-label-font-size` · `--xh-text-field-label-font-weight` · `--xh-text-field-placeholder-fg` · `--xh-text-field-textarea-py`
 
 ## 动效
 

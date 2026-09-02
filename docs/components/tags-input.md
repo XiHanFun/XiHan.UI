@@ -118,7 +118,7 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 | `inputValue` | `string` |  | 受控输入文本；与 value 各自独立受控。 |
 | `defaultInputValue` | `string` |  | 非受控初始输入文本。 |
 | `max` | `number` |  | 最多几个标签。缺省不限；写 0 表示一个也不许加。 |
-| `allowOverflow` | `boolean` |  | 允许越过 max。 关（默认）：顶到上限后这一次输入整体不生效，文本原样留在框里，绝不悄悄吞掉。 开：照加不误，只在 root / control 上打出 data-overflow 供样式与提示使用。 |
+| `allowOverflow` | `boolean` |  | 允许越过 max。 关（默认）：顶到上限后这一次输入整体不生效，文本原样留在框里，绝不悄悄吞掉。 开：照加不误，只在 root / control 上打出 data-overflowing 供样式与提示使用。 |
 | `disabled` | `boolean` |  |  |
 | `readOnly` | `boolean` |  |  |
 | `invalid` | `boolean` |  |  |

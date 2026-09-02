@@ -49,11 +49,18 @@ for (const file of (await readdir(STYLES)).filter(f => f.endsWith('.css'))) {
 // 「描边跟环色」那一派上整个失效（环与描边都被钉成品牌色）。统一成一派：
 // border-color: var(--xh-<c>-<part>-border-focus, var(--xh-_tone, var(--xh-border-control-focus)))，
 // 经私有槽中转也行，槽的赋值里得出现 --xh-border-control-focus。环与描边可以拆成两条聚焦规则写。
-/** 输入类部件：框本身可聚焦或 focus-within 的那一层。选择器族的 trigger 与 composer 的 root 也是输入框。 */
+/** 输入类部件：框本身可聚焦或 focus-within 的那一层。 */
 const FOCUS_PARTS = new Set(['control', 'input', 'box', 'textarea'])
-const INPUT_LIKE = { 'select': 'trigger', 'tree-select': 'trigger', 'cascader': 'trigger', 'color-picker': 'trigger', 'composer': 'root' }
+/**
+ * 部件名不在 FOCUS_PARTS 里、但那一层就是输入框的组件，逐条登记。
+ * 这张表是把检查**接上**去，不是放行：条目过期（组件改名、那个部件不再是画描边的那一层）
+ * 等于这一家从此不受管辖，且没有任何别的判据会响，所以由下面的名单核验报出来。
+ */
+const INPUT_LIKE = { composer: 'root' }
 const FOCUS_RULE = /\[data-scope='([a-z-]+)'\]\[data-part='([a-z-]+)'\](?:\[[^\]]+\])*:focus-(?:within|visible)(?::not\([^)]*\))?\s*\{([^{}]*)\}/g
 const borderFocus = []
+/** 真的被这张表接进检查的组件。 */
+const usedInputLike = new Set()
 
 for (const file of (await readdir(STYLES)).filter(f => f.endsWith('.css'))) {
   const src = (await readFile(join(STYLES, file), 'utf8')).replace(/\/\*[\s\S]*?\*\//g, '')
@@ -67,6 +74,8 @@ for (const file of (await readdir(STYLES)).filter(f => f.endsWith('.css'))) {
     const base = new RegExp(`\\[data-scope='${scope}'\\]\\[data-part='${part}'\\]\\s*\\{([^{}]*)\\}`).exec(src)?.[1] ?? ''
     if (!/(?:^|;|\s)border(?:-color)?:\s*(?!\s|0\b|none\b)/.test(base))
       continue
+    if (INPUT_LIKE[scope] === part)
+      usedInputLike.add(scope)
     if (!seen.has(part))
       seen.set(part, [])
     const decl = body.match(/border-color:([^;]+);/)?.[1]
@@ -87,6 +96,11 @@ for (const file of (await readdir(STYLES)).filter(f => f.endsWith('.css'))) {
   }
 }
 
+for (const scope of Object.keys(INPUT_LIKE)) {
+  if (!usedInputLike.has(scope))
+    borderFocus.push(`${scope} 的 ${INPUT_LIKE[scope]} 登记在 INPUT_LIKE 里却没被扫到——名单过期了，这一家已经不受聚焦描边判据管辖`)
+}
+
 if (offenders.length || borderFocus.length) {
   if (offenders.length) {
     console.error('[check-focus-ring] 聚焦环里有没走令牌的字面量：')
@@ -101,4 +115,4 @@ if (offenders.length || borderFocus.length) {
   process.exit(1)
 }
 
-console.log('[check-focus-ring] 通过：聚焦环的粗细、颜色与偏移全部走令牌；带描边的输入部件聚焦时描边色都走 --xh-border-control-focus')
+console.log(`[check-focus-ring] 通过：聚焦环的粗细、颜色与偏移全部走令牌；带描边的输入部件聚焦时描边色都走 --xh-border-control-focus（另接 ${usedInputLike.size} 家非标准部件名）`)

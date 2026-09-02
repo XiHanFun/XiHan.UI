@@ -1,4 +1,4 @@
-<!-- 方向 | direction 换主轴：row 横排（缺省），column 竖排 -->
+<!-- 方向 | orientation 换主轴：horizontal 横排（缺省），vertical 竖排 -->
 <style>
   #flex-direction [data-box] {
     padding: 8px 14px;
@@ -14,11 +14,11 @@
 
 <!-- 宿主设 display: contents，排布落在 root 上 -->
 <div id="flex-direction">
-  <xh-flex direction="column" gap="lg" style="display: contents">
+  <xh-flex orientation="vertical" gap="lg" style="display: contents">
     <div data-xh-part="root">
-      <xh-flex direction="column" gap="xs" style="display: contents">
+      <xh-flex orientation="vertical" gap="xs" style="display: contents">
         <div data-xh-part="root">
-          <span data-label>row（缺省）</span>
+          <span data-label>horizontal（缺省）</span>
           <xh-flex gap="sm" style="display: contents">
             <div data-xh-part="root">
               <span data-box>甲</span>
@@ -29,10 +29,10 @@
         </div>
       </xh-flex>
 
-      <xh-flex direction="column" gap="xs" style="display: contents">
+      <xh-flex orientation="vertical" gap="xs" style="display: contents">
         <div data-xh-part="root">
-          <span data-label>column</span>
-          <xh-flex direction="column" gap="sm" style="display: contents">
+          <span data-label>vertical</span>
+          <xh-flex orientation="vertical" gap="sm" style="display: contents">
             <div data-xh-part="root">
               <span data-box>甲</span>
               <span data-box>乙</span>

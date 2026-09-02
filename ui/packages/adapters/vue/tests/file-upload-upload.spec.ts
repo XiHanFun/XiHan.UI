@@ -126,7 +126,7 @@ describe('file-upload 上传生命周期', () => {
     t.scope().addFiles([file])
     await tick()
     expect(t.scope().uploadOf(file)?.status).toBe('uploading')
-    expect(document.querySelector('[data-part="item"]')?.getAttribute('data-status')).toBe('uploading')
+    expect(document.querySelector('[data-part="item"]')?.getAttribute('data-state')).toBe('uploading')
 
     engine.progress(40)
     await tick()
@@ -137,7 +137,7 @@ describe('file-upload 上传生命周期', () => {
     expect(t.scope().uploadOf(file)?.status).toBe('done')
     expect(t.scope().uploadOf(file)?.url).toBe('https://cdn/a.txt')
     expect(complete).toHaveBeenCalledWith({ file, url: 'https://cdn/a.txt' })
-    expect(document.querySelector('[data-part="item"]')?.getAttribute('data-status')).toBe('done')
+    expect(document.querySelector('[data-part="item"]')?.getAttribute('data-state')).toBe('done')
   })
 
   it('失败进 error 并可 startUpload 重试', async () => {
@@ -188,13 +188,13 @@ describe('file-upload 上传生命周期', () => {
     expect(failed).not.toHaveBeenCalled()
   })
 
-  it('没配 upload 就是纯选择器：uploadOf 为 null、条目不带 data-status', async () => {
+  it('没配 upload 就是纯选择器：uploadOf 为 null、条目不带 data-state', async () => {
     const t = mountUpload()
     const file = makeFile()
     t.scope().addFiles([file])
     await tick()
     expect(t.scope().uploadOf(file)).toBeNull()
-    expect(document.querySelector('[data-part="item"]')?.hasAttribute('data-status')).toBe(false)
+    expect(document.querySelector('[data-part="item"]')?.hasAttribute('data-state')).toBe(false)
   })
 })
 

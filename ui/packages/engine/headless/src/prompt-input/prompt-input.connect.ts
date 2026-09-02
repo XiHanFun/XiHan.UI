@@ -36,10 +36,12 @@ export function connectPromptInput<T extends PropTypes>(
     submit: () => send({ type: 'SUBMIT' }),
     stop: () => send({ type: 'STOP' }),
 
+    // 不发 aria-busy：在途的是会话那一层的活区，输入壳自己没在更新；
+    // 报了它反而会压住同一棵子树内播报区的播报
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'data-disabled': dataAttr(disabled),
-      'data-busy': dataAttr(busy),
+      'data-loading': dataAttr(busy),
       'data-variant': prop('variant'),
       'data-tone': prop('tone'),
       'data-size': prop('size'),

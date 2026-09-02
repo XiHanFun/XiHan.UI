@@ -22,6 +22,9 @@ const BUSY_EXEMPT = {
   // role=progressbar 本身就是「进度」的角色，配 aria-valuenow 已经把在途说清楚了；
   // 再叠 aria-busy 是同一件事说两遍。它的 data-state='loading' 是常态不是「这块在更新」
   progress: 'role=progressbar 已经承担了在途语义',
+  // 报 busy 会压住同一棵子树内播报区的播报，而 AI 那一族只认会话级的那一个活区
+  'tool-call': '在更新的是会话那一层的活区，不是这一块',
+  'prompt-input': '在更新的是会话那一层的活区，不是输入壳；锁住的观感由提交钮切成 data-mode=stop 承载',
 }
 
 const problems = []

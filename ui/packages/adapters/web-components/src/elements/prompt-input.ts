@@ -36,7 +36,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @fires submit - 提交；detail 为 `{ value: string }`，清空发生在派发之后。
  *   与原生表单提交同名，故不冒泡，请直接在 `<xh-prompt-input>` 元素上监听
  * @fires stop - 生成期间按下停止；无 detail
- * @csspart root - 承载 data-disabled / data-busy 与三视觉轴的容器
+ * @csspart root - 承载 data-disabled / data-loading 与三视觉轴的容器
  * @csspart input-row - 可选的输入行：写了它，root 翻成竖排，输入框与按钮收进这一行
  * @csspart input - 输入框，须是原生 `<textarea>`
  * @csspart submit-trigger - 发送 / 停止按钮，留空时皮肤按 data-mode 画上箭头或停止方块

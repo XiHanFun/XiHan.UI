@@ -1,4 +1,4 @@
-<!-- 级联勾选 | selection-mode="multiple" 加 cascade 内建父子传导：点分支整枝勾上、子全勾父勾、部分勾中半选；勾选框是行里的一段标记，勾选态与半选态都由组件报出 -->
+<!-- 级联勾选 | multiple 加 cascade 内建父子传导：点分支整枝勾上、子全勾父勾、部分勾中半选；勾选框是行里的一段标记，勾选态与半选态都由组件报出 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import {
@@ -45,7 +45,7 @@ const selected = ref<string[]>(["hz"]);
       v-model:selection="selected"
       :collection="collection"
       :default-expanded-value="['east', 'north']"
-      selection-mode="multiple"
+      multiple
       cascade
     >
       <XhTreeLabel>投放城市</XhTreeLabel>

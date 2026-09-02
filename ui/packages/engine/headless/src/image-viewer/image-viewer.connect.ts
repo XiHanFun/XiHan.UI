@@ -145,7 +145,7 @@ export function connectImageViewer<T extends PropTypes>(
     getViewportProps: () => normalize.element({
       ...parts.viewport.attrs,
       'data-state': stateAttr,
-      'data-panning': dataAttr(panning),
+      'data-dragging': dataAttr(panning),
       // 滚轮就是缩放：向上放大、向下缩小。preventDefault 拦掉页面滚动，
       // 适配器须以 passive:false 绑定这个监听
       'onWheel': (event: WheelEvent) => {
@@ -172,7 +172,7 @@ export function connectImageViewer<T extends PropTypes>(
       // 原生拖图会跟平移打架
       'draggable': false,
       'data-state': stateAttr,
-      'data-panning': dataAttr(panning),
+      'data-dragging': dataAttr(panning),
       'style': {
         transform: [
           `translate(${transform.x}px, ${transform.y}px)`,

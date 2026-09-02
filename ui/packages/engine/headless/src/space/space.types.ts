@@ -12,13 +12,6 @@ export type SpaceGap = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
 export interface SpaceProps {
   /** 排布方向：horizontal 横排、vertical 竖排，缺省 horizontal。 */
   orientation?: Orientation
-  /**
-   * 排布方向的旧写法。
-   *
-   * @deprecated 用 `orientation`——它发出去的属性一直就叫 data-orientation，prop 名此前与之对不上。
-   * 两个都写时以 orientation 为准。
-   */
-  direction?: Orientation
   /** 子项间距档位：xs / sm / md / lg / xl，缺省 md。档位换算成多少由皮肤定。 */
   gap?: SpaceGap
   /** 交叉轴对齐：start / center / end / stretch / baseline，不写则横排按中线对齐、竖排拉伸。 */

@@ -28,8 +28,8 @@ export function connectAffix<T extends PropTypes>(
 
     getContentProps: () => normalize.element({
       ...parts.content.attrs,
-      'data-affixed': dataAttr(affixed),
-      // 四个键每帧写全，用不上的写空串清掉；position 由皮肤按 data-affixed 给，这里只写数字
+      'data-fixed': dataAttr(affixed),
+      // 四个键每帧写全，用不上的写空串清掉；position 由皮肤按 data-fixed 给，这里只写数字
       'style': {
         top: pinned?.side === 'top' ? `${pinned.offset}px` : '',
         bottom: pinned?.side === 'bottom' ? `${pinned.offset}px` : '',

@@ -25,6 +25,8 @@ import {
 /**
  * 不接可用高度通道的浮层，连同理由。
  * 判据是「高度不由结构封顶」且「现有机制兜不住」，两条都成立才该接；下面这些至少缺一条。
+ * 每条都要真被用来放行过一次——组件改名、不再是浮层族，登记就成了没人走的死条目，
+ * 由下面的名单核验报出来。
  */
 const SIZE_EXEMPT = {
   'cascader': '每列高度定死且列内自滚，面板高度不随数据增长',
@@ -54,6 +56,8 @@ async function wiringOf(name) {
 const families = await discoverFamilies()
 const problems = []
 const wired = []
+/** 真的按名单放行过的浮层。 */
+const usedExempt = new Set()
 
 for (const name of Object.keys(SKIN_POSITIONED)) {
   for (const err of await verifySkinPositioned(name))
@@ -73,6 +77,9 @@ for (const name of families) {
         `${name} 记在 SIZE_EXEMPT 里（${SIZE_EXEMPT[name]}），但它已经接上了可用高度——`
         + `把它从名单里删掉，或说明为什么两者并存`,
       )
+    }
+    else {
+      usedExempt.add(name)
     }
     continue
   }
@@ -101,6 +108,11 @@ for (const name of families) {
     wired.push(name)
 }
 
+for (const name of Object.keys(SIZE_EXEMPT)) {
+  if (!usedExempt.has(name))
+    problems.push(`${name} 登记在 SIZE_EXEMPT 里却没被扫到——名单过期了`)
+}
+
 if (problems.length) {
   console.error('[check-overlay-size] ✗ 可用高度通道没接齐：')
   for (const p of problems)
@@ -109,5 +121,4 @@ if (problems.length) {
   process.exit(1)
 }
 
-const exempt = Object.keys(SIZE_EXEMPT).length
-console.log(`[check-overlay-size] 通过：${wired.length} 个浮层的可用高度三段齐（另有 ${exempt} 个按名单不接、${SIZE_NOT_ENGINE_POSITIONED.size} 个不吃引擎坐标、${Object.keys(SKIN_POSITIONED).length} 个由皮肤排布）`)
+console.log(`[check-overlay-size] 通过：${wired.length} 个浮层的可用高度三段齐（另有 ${usedExempt.size} 个按名单不接、${SIZE_NOT_ENGINE_POSITIONED.size} 个不吃引擎坐标、${Object.keys(SKIN_POSITIONED).length} 个由皮肤排布）`)

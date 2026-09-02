@@ -158,11 +158,8 @@ status-change 在状态落位时通知，过渡态 idle 不通知；没给地址
 | --- | --- | --- |
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | state.get() |
-| `root` | `data-status` | state.get() |
 | `image` | `data-state` | state.get() |
-| `image` | `data-status` | state.get() |
 | `fallback` | `data-state` | state.get() |
-| `fallback` | `data-status` | state.get() |
 
 ## CSS 变量
 

@@ -1,8 +1,5 @@
-// 排布方向的词汇：两个布局原语与全库其余 23 份 connect 说同一句话。
-//
-// flex 此前发 data-direction='row|column'、space 发 data-orientation='horizontal|vertical'，
-// 而两边的 prop 都叫 direction——同一件事三种叫法。现在属性统一到 data-orientation，
-// data-direction 再发一个大版本给还在读它的使用者。
+// 两个布局原语的排布方向与全库其余 connect 说同一句话：prop 叫 orientation，
+// 属性落 data-orientation，取值 horizontal / vertical。除此之外不发第二个方向属性。
 import { describe, expect, it } from 'vitest'
 import { connectFlex } from '../src/flex'
 import { connectSpace } from '../src/space'
@@ -18,37 +15,36 @@ function spaceRoot(props: Parameters<typeof connectSpace>[0]) {
 }
 
 describe('布局原语的排布方向', () => {
-  it('flex 缺省横排，两套词汇同时发', () => {
-    const root = flexRoot({})
-    expect(root['data-orientation']).toBe('horizontal')
-    expect(root['data-direction']).toBe('row')
+  it('flex 缺省横排', () => {
+    expect(flexRoot({})['data-orientation']).toBe('horizontal')
   })
 
-  it('flex 的 orientation 说了算', () => {
-    const root = flexRoot({ orientation: 'vertical' })
-    expect(root['data-orientation']).toBe('vertical')
-    expect(root['data-direction']).toBe('column')
+  it('flex 的 orientation 落到 data-orientation', () => {
+    expect(flexRoot({ orientation: 'vertical' })['data-orientation']).toBe('vertical')
   })
 
-  it('flex 只写旧的 direction 时照旧生效', () => {
-    const root = flexRoot({ direction: 'column' })
-    expect(root['data-orientation']).toBe('vertical')
-    expect(root['data-direction']).toBe('column')
-  })
-
-  it('flex 两个都写时以 orientation 为准', () => {
-    const root = flexRoot({ orientation: 'horizontal', direction: 'column' })
-    expect(root['data-orientation']).toBe('horizontal')
-    expect(root['data-direction']).toBe('row')
+  it('flex 不发 data-direction：方向只有 data-orientation 一个出口', () => {
+    expect(flexRoot({})).not.toHaveProperty('data-direction')
+    expect(flexRoot({ orientation: 'vertical' })).not.toHaveProperty('data-direction')
   })
 
   it('space 缺省横排', () => {
     expect(spaceRoot({})['data-orientation']).toBe('horizontal')
   })
 
-  it('space 的 orientation 说了算，旧的 direction 仍然认', () => {
+  it('space 的 orientation 落到 data-orientation', () => {
     expect(spaceRoot({ orientation: 'vertical' })['data-orientation']).toBe('vertical')
-    expect(spaceRoot({ direction: 'vertical' })['data-orientation']).toBe('vertical')
-    expect(spaceRoot({ orientation: 'horizontal', direction: 'vertical' })['data-orientation']).toBe('horizontal')
+  })
+
+  it('space 不发 data-direction', () => {
+    expect(spaceRoot({})).not.toHaveProperty('data-direction')
+  })
+
+  it('两家都不再收 direction 入参', () => {
+    // @ts-expect-error 方向只有 orientation 一个入口
+    flexRoot({ direction: 'column' })
+    // @ts-expect-error 方向只有 orientation 一个入口
+    spaceRoot({ direction: 'vertical' })
+    // 两行 @ts-expect-error 是判据本身：别名若被加回来，它们会因「没有错可期待」而报错
   })
 })

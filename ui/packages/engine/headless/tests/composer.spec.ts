@@ -201,7 +201,7 @@ describe('流式运行态', () => {
     const r = mount({ defaultValue: '你好', runStatus: 'streaming' })
     expect(r.trigger()['data-mode']).toBe('stop')
     expect(r.trigger()['aria-label']).toBe('Stop generating')
-    expect(r.root()['data-status']).toBe('streaming')
+    expect(r.root()['data-state']).toBe('streaming')
   })
 
   it('流式期间按钮恒可用：此刻它是"停止"，跟框里有没有字没关系', () => {
@@ -239,7 +239,7 @@ describe('流式运行态', () => {
   it('runStatus 没给就按 ready 算', () => {
     const r = mount({ defaultValue: '你好' })
     expect(r.api().streaming).toBe(false)
-    expect(r.root()['data-status']).toBe('ready')
+    expect(r.root()['data-state']).toBe('ready')
   })
 })
 

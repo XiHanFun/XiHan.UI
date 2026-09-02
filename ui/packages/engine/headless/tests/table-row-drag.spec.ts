@@ -363,7 +363,7 @@ describe('行拖拽 · 三条降级', () => {
     expect(h.api().rowReorderDisabledReason).toBe('sorted')
     press(h, 'a', 20)
     expect(h.state()).toBe('idle')
-    expect((h.api().getRowProps({ value: 'a' }) as Dict)['data-row-draggable']).toBeUndefined()
+    expect((h.api().getRowProps({ value: 'a' }) as Dict)['data-draggable']).toBeUndefined()
   })
 
   it('有可展开的行不算树形：详情行是跟着数据行一起搬的，不妨碍换位', () => {
@@ -609,8 +609,8 @@ describe('禁用的行不是拖动源', () => {
 
   it('不自报可拖，皮肤才不会给它一只抓手', () => {
     const h = mount({ rows: [{ id: 'a', disabled: true }, { id: 'b' }, { id: 'c' }, { id: 'd' }] })
-    expect((h.api().getRowProps({ value: 'a' }) as Dict)['data-row-draggable']).toBeUndefined()
-    expect((h.api().getRowProps({ value: 'b' }) as Dict)['data-row-draggable']).toBe('')
+    expect((h.api().getRowProps({ value: 'a' }) as Dict)['data-draggable']).toBeUndefined()
+    expect((h.api().getRowProps({ value: 'b' }) as Dict)['data-draggable']).toBe('')
   })
 
   it('别人仍可以落在它前后——禁用的是拖动源，不是落点', () => {

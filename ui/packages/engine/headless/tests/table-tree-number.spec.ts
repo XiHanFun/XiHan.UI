@@ -90,7 +90,7 @@ describe('树形子行', () => {
     expect(rows.map(r => [r.id, r.outline])).toEqual([['orphan', '1']])
   })
 
-  it('平表一行不改：没有 parentId 时与升级前一致', () => {
+  it('平表一行不改：没有 parentId 时不摊层级、不缩进', () => {
     const rows = flattenTableRows([{ id: 'a' }, { id: 'b' }, { id: 'c' }], [])
     expect(rows.map(r => r.id)).toEqual(['a', 'b', 'c'])
     expect(rows.every(r => r.level === 1)).toBe(true)

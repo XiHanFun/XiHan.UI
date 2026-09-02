@@ -195,10 +195,10 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 | `pageSize` | `number` |  |  |
 | `loading` | `boolean` |  | 数据在路上：root 报 aria-busy，表体为空时加载态节点显形。 |
 | `empty` | `boolean` |  | 显式声明表体为空；缺省按 rows 是否为空推导。 |
-| `stickyHeader` | `boolean` |  | 表头吸顶：只落 data-sticky（布尔），钉住的实现归皮肤。列冻结走 data-frozen，两者不同名。 |
+| `stickyHeader` | `boolean` |  | 表头吸顶：只落 data-fixed（布尔），钉住的实现归皮肤。列冻结走 data-frozen，两者不同名。 |
 | `striped` | `boolean` |  | 斑马纹：表体偶数行换一层浅底。 |
-| `borderless` | `boolean` |  | 去掉外框，只留行间横线。 |
-| `ruled` | `boolean` |  | 列与列之间加竖分隔线。 |
+| `borderless` | `boolean` |  | 去掉外框，只留行间横线：root 上的 data-bordered 随之缺席。 |
+| `ruled` | `boolean` |  | 列与列之间加竖分隔线，落成 root 上的 data-split。 |
 | `footer` | `boolean` |  | 表格带脚注行。行号空间的最后一行留给它，aria-rowcount 也把它算进去。 |
 | `loop` | `boolean` |  | 上下键走到首尾是否回绕，默认 false。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr；只对调左右方向键的「展开/收起」语义。 |
@@ -408,18 +408,18 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `data-borderless` | ''（条件成立时才出现） |
+| `root` | `data-bordered` | ''（条件成立时才出现） |
 | `root` | `data-empty` | ''（条件成立时才出现） |
+| `root` | `data-fixed` | ''（条件成立时才出现） |
 | `root` | `data-loading` | ''（条件成立时才出现） |
-| `root` | `data-ruled` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
-| `root` | `data-sticky` | ''（条件成立时才出现） |
+| `root` | `data-split` | ''（条件成立时才出现） |
 | `root` | `data-striped` | ''（条件成立时才出现） |
-| `header` | `data-sticky` | ''（条件成立时才出现） |
+| `header` | `data-fixed` | ''（条件成立时才出现） |
 | `body` | `data-empty` | ''（条件成立时才出现） |
+| `row` | `data-draggable` | ''（条件成立时才出现） |
 | `row` | `data-dragging` | ''（条件成立时才出现） |
 | `row` | `data-drop` | 'before' \| 'after' \| 'inside' |
-| `row` | `data-row-draggable` | ''（条件成立时才出现） |
 | `row` | `data-section` | 'body' |
 | `column-header` | `data-dragging` | ''（条件成立时才出现） |
 | `column-header` | `data-drop` | 'before' \| 'after' |

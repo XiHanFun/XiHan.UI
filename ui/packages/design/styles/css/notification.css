@@ -122,8 +122,7 @@
    * 底与描边一律中性，语气只由左列那枚字形承载：整片兑色是轻提示那条的做法，
    * 一张有标题有正文的卡片全片染色会把两层文字都压在同一片语气色上。
    *
-   * 卡片的槽带 item 段（--xh-notification-item-*），与摞的 --xh-notification-inset
-   * 分开；原先不带部件段的 --xh-notification-* 排在后面当兜底值，旧覆盖仍然生效。
+   * 卡片的槽带 item 段（--xh-notification-item-*），与摞的 --xh-notification-inset 分开。
    */
   [data-scope='notification'][data-part='item'] {
     /* 叉与操作钮的兜底字形按控件指示符那一档走；左列那枚类型字形另有自己的尺寸 */
@@ -134,21 +133,21 @@
     /* 左列宽度由字形自己决定，作者不放指示符时它就是 0，正文自然贴到左内衬 */
     grid-template-columns: auto 1fr;
     align-items: start;
-    column-gap: var(--xh-notification-item-gap, var(--xh-notification-gap, var(--xh-space-3)));
-    row-gap: var(--xh-notification-item-row-gap, var(--xh-notification-row-gap, var(--xh-space-2)));
-    inline-size: var(--xh-notification-item-w, var(--xh-notification-w, var(--xh-overlay-max-w-lg)));
+    column-gap: var(--xh-notification-item-gap, var(--xh-space-3));
+    row-gap: var(--xh-notification-item-row-gap, var(--xh-space-2));
+    inline-size: var(--xh-notification-item-w, var(--xh-overlay-max-w-lg));
     /* 摞是整面视口宽的定位面且带内边距，取 100% 就等于自动让出两侧留白，
        窄屏上不必再算一遍 viewport 减法 */
     max-inline-size: 100%;
-    padding-block: var(--xh-notification-item-py, var(--xh-notification-py, var(--xh-space-4)));
-    padding-inline: var(--xh-notification-item-px, var(--xh-notification-px, var(--xh-space-4)));
-    border: var(--xh-stroke-thin) solid var(--xh-notification-item-border, var(--xh-notification-border, var(--xh-border-default)));
-    border-radius: var(--xh-notification-item-radius, var(--xh-notification-radius, var(--xh-shape-surface)));
-    background: var(--xh-notification-item-bg, var(--xh-notification-bg, var(--xh-bg-surface-raised)));
-    color: var(--xh-notification-item-fg, var(--xh-notification-fg, var(--xh-fg-default)));
-    box-shadow: var(--xh-notification-item-shadow, var(--xh-notification-shadow, var(--xh-elevation-sheet)));
-    font-size: var(--xh-notification-item-font-size, var(--xh-notification-font-size, var(--xh-text-body-size)));
-    line-height: var(--xh-notification-item-leading, var(--xh-notification-leading, var(--xh-text-body-leading)));
+    padding-block: var(--xh-notification-item-py, var(--xh-space-4));
+    padding-inline: var(--xh-notification-item-px, var(--xh-space-4));
+    border: var(--xh-stroke-thin) solid var(--xh-notification-item-border, var(--xh-border-default));
+    border-radius: var(--xh-notification-item-radius, var(--xh-shape-surface));
+    background: var(--xh-notification-item-bg, var(--xh-bg-surface-raised));
+    color: var(--xh-notification-item-fg, var(--xh-fg-default));
+    box-shadow: var(--xh-notification-item-shadow, var(--xh-elevation-sheet));
+    font-size: var(--xh-notification-item-font-size, var(--xh-text-body-size));
+    line-height: var(--xh-notification-item-leading, var(--xh-text-body-leading));
     /* 摞的定位面整面铺开且不吃指针，卡片必须自己吃回来：
        悬停按住计时、按钮可点、焦点进出，全指着这一条 */
     pointer-events: auto;

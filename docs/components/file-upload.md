@@ -256,7 +256,6 @@ remote-files 装编辑表单里已存在的附件：与本地文件同列渲染�
 | `item` | `data-file-size` | undefined \| String(file.size) \| String(file.size) |
 | `item` | `data-remote` | ''（条件成立时才出现） |
 | `item` | `data-state` | uploadOf(file)?.status |
-| `item` | `data-status` | uploadOf(file)?.status |
 | `item-name` | `data-disabled` | ''（条件成立时才出现） |
 | `item-size-text` | `data-disabled` | ''（条件成立时才出现） |
 | `item-size-text` | `data-file-size` | undefined \| String(file.size) \| String(file.size) |

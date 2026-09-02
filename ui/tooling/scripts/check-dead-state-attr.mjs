@@ -94,11 +94,6 @@ const HOOKS = {
   'prompt-input:data-state': '输入框的机器态；能看见的运行态在提交钮的 data-mode 上',
   'rating:data-state': '星的填充走 data-highlighted 与 data-half',
   'number-animation:data-state': '数字滚动的外观不随相位变，相位只留给作者接线',
-  'avatar:data-status': '与同处的 data-state 同值，显隐由 hidden 承载',
-  'image:data-status': '与同处的 data-state 同值，显隐由 hidden 承载',
-  'composer:data-status': '运行态的视觉落在提交钮的 data-mode=stop 上',
-  'message-feed:data-status': 'message-feed.types.ts:66 已写明：只落属性、机器不读，供作者与测试取用',
-  'thread:data-status': '会话的运行态，视口本身不随它改样子',
   // 禁用：视觉走真正落在可聚焦控件上的那一位——原生 :disabled，或集合条目的 aria-disabled
   'alert:data-disabled': '关闭钮是原生按钮，禁用观感走 :disabled',
   'carousel:data-disabled': 'carousel.css:132 已写明：单体控件用 :disabled，这一位是留给作者的钩子',
@@ -121,8 +116,8 @@ const HOOKS = {
   'field:data-readonly': '只读的观感落在各输入件自己身上（text-field.css:155 那一类），这一层只往下传状态',
   'form:data-readonly': '整份表单置只读时由逐个控件自己表出',
   // 忙：锁住的观感由 aria-disabled 与提交钮的身份切换承载
-  'approval:data-busy': '在途时两颗判定钮置 aria-disabled，观感挂在那一位上（approval.css:347）',
-  'prompt-input:data-busy': '在途时提交钮切成 data-mode=stop，观感挂在那一位上',
+  'approval:data-loading': '在途时两颗判定钮置 aria-disabled，观感挂在那一位上（approval.css:347）',
+  'prompt-input:data-loading': '在途时提交钮切成 data-mode=stop，观感挂在那一位上',
   // 暂停：自动播放钮自己有 running / paused 两档；另两家解剖里没有能承载停表的部件
   'carousel:data-paused': '暂停的视觉在自动播放钮的 data-state=paused 上（carousel.css:248）',
   'notification:data-paused': '解剖里没有进度部件能承载停表；与 toast 那一条成对',
@@ -141,10 +136,8 @@ const HOOKS = {
   'dynamic-input:data-last': '最后一条在形上与别的条目没有差别',
   'dynamic-input:data-movable': '这份列表能不能排序。手柄本身收不收由 hidden 承载',
   'file-upload:data-remote': '这条是不是已在服务端的旧文件，作者拿它决定要不要重传',
-  'flex:data-direction': '排布方向由 flex-direction 自己写，这一位是给作者的读数',
   'highlight:data-case-sensitive': '匹配时区不区分大小写，是查找入参不是外观',
   'json-viewer:data-view': '树视图还是原文视图，两种视图渲染的是不同的部件',
-  'layout:data-sider-collapsed': '侧栏收没收。真正驱动版面的是侧栏自己的 data-collapsed（layout.css:60）',
   'loading-bar:data-indeterminate': '不知进度时涓流本身就是表达，不另给一档外观',
   'log:data-at-bottom': '视口贴没贴底，作者拿它决定要不要提示"有新内容"',
   'log:data-sticking': '还粘不粘着底，与上面那一位成对',
@@ -157,7 +150,7 @@ const HOOKS = {
   'scroll-area:data-type': '露面策略是入参；露不露由 data-state=visible|hidden 表出',
   'scrollbar:data-type': '露面策略是入参；露不露由 data-state=visible|hidden 表出',
   'table:data-sortable': '这一列排不排得了序。排序钮不排序时置 hidden，箭头由 data-sort 画',
-  'tags-input:data-overflow': '越过上限时 data-at-max 同时为真（前者是 count > max，后者是 count >= max），观感由 control 上的 at-limit 描边一并承载，两者不另分档',
+  'tags-input:data-overflowing': '越过上限时 data-at-max 同时为真（前者是 count > max，后者是 count >= max），观感由 control 上的 at-max 描边一并承载，两者不另分档',
   'time:data-type': '按日期、时间还是两者一起渲染，换的是文本不是外观',
   'timer:data-action': '控制钮这一按是开始还是暂停，换的是文案不是外观',
   'timer:data-countdown': '正计时还是倒计时，数字的排版两者一致',
@@ -171,7 +164,6 @@ const HOOKS = {
  * 与 HOOKS 的区别是它不是"本来就不该有"，是"该有还没写"。
  */
 const MISSING_VISUAL = {
-  'file-upload:data-status': '每份文件的上传态（上传中 / 失败 / 成功）在皮肤里零规则，失败与成功看不出区别',
   'toast:data-type': '严重度只剩色相一条通道，没有字形指示符；同机器的 notification 有整套（notification.css:208 起）',
   'switch:data-readonly': '只读的开关与可操作的开关长得一模一样，按下去没反应；同为集合控件的 rating 给了只读一档观感',
 }

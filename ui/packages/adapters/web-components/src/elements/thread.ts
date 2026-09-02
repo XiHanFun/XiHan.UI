@@ -17,10 +17,10 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * 内容长高时跟随滚动到底部，用户上滚后解除粘附，滚回底部阈值内或按回到底部按钮时恢复。
  *
  * @customElement xh-thread
- * @attr {'idle'|'submitted'|'streaming'|'error'} status - 这一轮的运行态，只透出成 data-status
+ * @attr {'idle'|'submitted'|'streaming'|'error'} status - 这一轮的运行态，只透出成 data-state
  * @attr {number} threshold - 距底多少 px 视为在底，默认 64
  * @fires stick-change - 粘底状态变化；detail 为 `{ atBottom: boolean, sticking: boolean }`
- * @csspart root - 组件根容器，承载 data-status
+ * @csspart root - 组件根容器，承载 data-state
  * @csspart viewport - 滚动容器；role=log + aria-live=off + tabindex=0
  * @csspart content - 内容包裹层，尺寸变化的观察目标
  * @csspart scroll-button - 回到底部按钮，在底时收起（hidden + 内联 display）

@@ -14,8 +14,8 @@ const aligns = ["start", "center", "end", "stretch"] as const;
 </script>
 
 <template>
-  <XhFlex direction="column" gap="lg">
-    <XhFlex v-for="j in justifies" :key="j" direction="column" gap="xs">
+  <XhFlex orientation="vertical" gap="lg">
+    <XhFlex v-for="j in justifies" :key="j" orientation="vertical" gap="xs">
       <span :style="labelStyle">justify = {{ j }}</span>
       <!-- 轨道给了固定高度，主轴上才有多余空间可分 -->
       <XhFlex :justify="j" gap="sm" align="center" :style="trackStyle">
@@ -25,7 +25,7 @@ const aligns = ["start", "center", "end", "stretch"] as const;
       </XhFlex>
     </XhFlex>
 
-    <XhFlex v-for="a in aligns" :key="a" direction="column" gap="xs">
+    <XhFlex v-for="a in aligns" :key="a" orientation="vertical" gap="xs">
       <span :style="labelStyle">align = {{ a }}</span>
       <XhFlex :align="a" gap="sm" :style="trackStyle">
         <span :style="boxStyle">甲</span>

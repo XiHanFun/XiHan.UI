@@ -81,26 +81,36 @@ async function* walk(dir) {
 const problems = []
 let scanned = 0
 let refs = 0
+let decls = 0
 
 for await (const file of walk(DOCS)) {
   scanned += 1
   const src = await readFile(file, 'utf8')
   src.split('\n').forEach((line, i) => {
+    const where = `${file.split('\\').join('/')}:${i + 1}`
     for (const [, name] of line.matchAll(/var\(\s*(--xh-[a-z0-9_-]+)/g)) {
       refs += 1
       if (declared.has(name) || PLACEHOLDERS.has(name))
         continue
-      problems.push(`${file.split('\\').join('/')}:${i + 1}  ${name}`)
+      problems.push(`${where}  ${name}  （引用）`)
+    }
+    // 示例覆盖组件槽走的是声明而不是引用：style="--xh-transfer-gap: 8px"。
+    // 只查引用的话，槽改名之后示例里那半边照样是死名，而且一个字都不报。
+    for (const [, name] of line.matchAll(/(--xh-[a-z0-9_-]+)\s*:/g)) {
+      decls += 1
+      if (declared.has(name) || PLACEHOLDERS.has(name))
+        continue
+      problems.push(`${where}  ${name}  （声明）`)
     }
   })
 }
 
 if (problems.length) {
-  console.error('[check-demo-tokens] ✗ 文档站引用了不存在的令牌：')
+  console.error('[check-demo-tokens] ✗ 文档站写了库里不存在的名字：')
   for (const problem of problems)
     console.error(`  ${problem}`)
-  console.error('\n孤儿引用让整条声明在计算值阶段失效，且不报任何错——示例演示的效果就此消失。')
+  console.error('\n引用是孤儿：整条声明在计算值阶段失效。声明是空转：没有任何规则读它，示例演示的那一档纹丝不动。两种都不报错。')
   process.exit(1)
 }
 
-console.log(`[check-demo-tokens] 通过：扫描文档站 ${scanned} 个文件 · ${refs} 处令牌引用都有声明`)
+console.log(`[check-demo-tokens] 通过：扫描文档站 ${scanned} 个文件 · ${refs} 处引用 · ${decls} 处声明都对得上库里的名字`)

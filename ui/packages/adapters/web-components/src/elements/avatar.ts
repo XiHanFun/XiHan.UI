@@ -16,7 +16,7 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @attr {string} alt - 图片替代文本，原样写到 image 节点上
  * @attr {'sm'|'md'|'lg'} size - 尺寸档位，缺省 md
  * @fires status-change - 加载状态变化；detail 为 `{ status: 'loading' | 'loaded' | 'error' }`
- * @csspart root - 头像根容器，承载 data-status/data-size
+ * @csspart root - 头像根容器，承载 data-state/data-size
  * @csspart image - 图片节点，必须是原生 img；src/alt 由宿主写入，未就绪时带 hidden
  * @csspart fallback - 图片之外的回退内容，图片就绪后带 hidden
  */

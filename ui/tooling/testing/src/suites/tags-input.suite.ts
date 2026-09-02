@@ -154,7 +154,7 @@ export const tagsInputSuite: ConformanceSuite = {
             'data-readonly': null,
             'data-invalid': null,
             'data-at-max': null,
-            'data-overflow': null,
+            'data-overflowing': null,
           },
           // for 指向真正的输入框：指到别处点标题不聚焦、读屏也拿不到控件的名字
           'label': { id: '@self', for: '@part(input)' },
@@ -543,7 +543,7 @@ export const tagsInputSuite: ConformanceSuite = {
       spec: { apg: APG },
       fixture: withTags('vue'),
       props: { defaultValue: ['vue'], max: 1 },
-      initial: { parts: { root: { 'data-at-max': '', 'data-overflow': null } } },
+      initial: { parts: { root: { 'data-at-max': '', 'data-overflowing': null } } },
       steps: [
         { kind: 'focus', part: 'input' },
         {
@@ -560,7 +560,7 @@ export const tagsInputSuite: ConformanceSuite = {
       ],
     },
     {
-      name: 'allowOverflow：照加不误，只把 data-overflow 打出来',
+      name: 'allowOverflow：照加不误，只把 data-overflowing 打出来',
       spec: { apg: APG },
       fixture: withTags('vue'),
       props: { defaultValue: ['vue'], max: 1, allowOverflow: true },
@@ -572,8 +572,8 @@ export const tagsInputSuite: ConformanceSuite = {
           run: async ctx => typeInto(ctx, 'react,'),
           expect: {
             parts: {
-              root: { 'data-at-max': '', 'data-overflow': '' },
-              control: { 'data-overflow': '' },
+              root: { 'data-at-max': '', 'data-overflowing': '' },
+              control: { 'data-overflowing': '' },
             },
             events: [{ type: 'value-change', detail: { value: ['vue', 'react'] } }],
           },

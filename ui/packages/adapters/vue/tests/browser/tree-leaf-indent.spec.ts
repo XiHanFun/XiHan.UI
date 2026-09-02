@@ -79,7 +79,7 @@ async function mountTree(leading: 'checkbox' | 'indicator') {
         XhTreeRoot,
         {
           collection,
-          selectionMode: 'multiple',
+          multiple: true,
           defaultExpandedValue: ['l1', 'l2'],
         },
         () => [

@@ -46,10 +46,6 @@
       "types": "./dist/constants.d.ts",
       "import": "./dist/constants.js"
     },
-    "./deprecations": {
-      "types": "./dist/deprecations.d.ts",
-      "import": "./dist/deprecations.js"
-    },
     "./guards": {
       "types": "./dist/guards.d.ts",
       "import": "./dist/guards.js"

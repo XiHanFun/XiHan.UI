@@ -23,7 +23,6 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  *
  * @customElement xh-space
  * @attr {'horizontal'|'vertical'} orientation - 排布方向，缺省 horizontal
- * @attr {'horizontal'|'vertical'} direction - 排布方向的旧写法，两个都写时以 orientation 为准
  * @attr {'xs'|'sm'|'md'|'lg'|'xl'} gap - 子项间距档位，缺省 md，逐档对应一个间距令牌
  * @attr {'start'|'center'|'end'|'stretch'|'baseline'} align - 交叉轴对齐
  * @attr {'start'|'center'|'end'|'between'|'around'|'evenly'} justify - 主轴分布
@@ -37,7 +36,6 @@ export class XhSpaceElement extends XhElement {
 
   static override properties = {
     orientation: { converter: STRING_CONVERTER },
-    direction: { converter: STRING_CONVERTER },
     gap: { converter: STRING_CONVERTER },
     align: { converter: STRING_CONVERTER },
     justify: { converter: STRING_CONVERTER },
@@ -46,7 +44,6 @@ export class XhSpaceElement extends XhElement {
   }
 
   declare orientation?: SpaceProps['orientation']
-  declare direction?: SpaceProps['direction']
   declare gap?: SpaceProps['gap']
   declare align?: SpaceProps['align']
   declare justify?: SpaceProps['justify']
@@ -57,7 +54,6 @@ export class XhSpaceElement extends XhElement {
     // 读响应式 property，不回读 DOM 特性
     const api = connectSpace({
       orientation: this.orientation,
-      direction: this.direction,
       gap: this.gap,
       align: this.align,
       justify: this.justify,

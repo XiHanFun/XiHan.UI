@@ -11,10 +11,12 @@ import { extname, join } from 'node:path'
 
 const ADAPTERS = 'packages/adapters'
 
-/** 允许直接贴 body 的地方，各带理由。 */
-const ALLOWED = {
-  'packages/engine/kernel/src/structure/portal-root.ts': '落点自己就是在这里建的',
-}
+/**
+ * 允许直接贴 body 的地方，各带理由。键是相对仓库根的 posix 路径，
+ * 必须落在下面扫描的目录里、且那份文件真的写了贴 body 的调用——
+ * 两条有一条不成立，这条放行就永远走不到，由下面的名单核验报出来。
+ */
+const ALLOWED = {}
 
 const OFFENDER = /document\.body\.(?:appendChild|append|insertBefore|prepend)\s*\(/
 
@@ -31,20 +33,31 @@ async function* walk(dir) {
 }
 
 const problems = []
+/** 真的用来放行过的文件。 */
+const usedAllowed = new Set()
 let scanned = 0
 
 for await (const file of walk(ADAPTERS)) {
   scanned += 1
   const posix = file.split('\\').join('/')
-  if (posix in ALLOWED)
-    continue
   const src = (await readFile(file, 'utf8')).replace(/\/\*[\s\S]*?\*\//g, m => m.replace(/[^\n]/g, ' '))
   src.split('\n').forEach((line, i) => {
     if (line.trim().startsWith('//'))
       return
-    if (OFFENDER.test(line))
-      problems.push(`${posix}:${i + 1}  ${line.trim()}`)
+    if (!OFFENDER.test(line))
+      return
+    // 放行只在真扫到贴 body 的调用时记账：登记了却没有这么一行，那条登记就是死的
+    if (posix in ALLOWED) {
+      usedAllowed.add(posix)
+      return
+    }
+    problems.push(`${posix}:${i + 1}  ${line.trim()}`)
   })
+}
+
+for (const path of Object.keys(ALLOWED)) {
+  if (!usedAllowed.has(path))
+    problems.push(`${path} 登记在 ALLOWED 里却没被扫到——名单过期了`)
 }
 
 if (problems.length) {
@@ -55,4 +68,4 @@ if (problems.length) {
   process.exit(1)
 }
 
-console.log(`[check-portal-target] 通过：扫描 ${scanned} 个适配器源文件，浮层宿主都挂在唯一落点上`)
+console.log(`[check-portal-target] 通过：扫描 ${scanned} 个适配器源文件，浮层宿主都挂在唯一落点上（放行 ${usedAllowed.size} 处）`)

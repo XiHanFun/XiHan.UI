@@ -66,7 +66,7 @@
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `count` | `number` |  | 消息总数，由宿主声明，不从 DOM 数；aria-setsize 取它。 |
-| `status` | `MessageFeedStatus` |  | 这一轮的运行态，只落 data-status，机器不读它。 |
+| `status` | `MessageFeedStatus` |  | 这一轮的运行态，只落 data-state，机器不读它。 |
 | `threshold` | `number` |  | 距底多少 px 视为在底，缺省用粘底原语的默认值。 |
 | `loop` | `boolean` |  | 走到首尾是否回绕，默认 false——会话是线性的。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
@@ -97,6 +97,7 @@
 
 | 部件 | 取值 |
 | --- | --- |
+| `root` | props.status |
 | `scroll-button` | 'hidden' \| 'visible' |
 
 状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
@@ -176,7 +177,7 @@
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-size` | props.size |
-| `root` | `data-status` | props.status |
+| `root` | `data-state` | props.status |
 | `item` | `data-role` | item.role |
 | `item` | `data-streaming` | ''（条件成立时才出现） |
 | `scroll-button` | `data-state` | 'hidden' \| 'visible' |

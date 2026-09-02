@@ -24,17 +24,12 @@ export function connectMessageFeed<T extends PropTypes>(
   const count = prop('count')
   const translations = prop('translations')
 
-  // 文案两种形状都收：函数拿到位次与身份，字符串是一句固定名字（那时不做插值）
-  const itemText = translations?.item
-  const itemLabel = typeof itemText === 'function'
-    ? itemText
-    : (position: number, size: number, role?: MessageFeedItemRole): string => {
-        if (itemText != null)
-          return itemText
-        const who = role == null ? '' : `, ${role}`
-        // size 为 -1 是 ARIA 的「总数未知」，念出来只会让人以为倒数
-        return size > 0 ? `Message ${position} of ${size}${who}` : `Message ${position}${who}`
-      }
+  const itemLabel = translations?.item
+    ?? ((position: number, size: number, role?: MessageFeedItemRole): string => {
+      const who = role == null ? '' : `, ${role}`
+      // size 为 -1 是 ARIA 的「总数未知」，念出来只会让人以为倒数
+      return size > 0 ? `Message ${position} of ${size}${who}` : `Message ${position}${who}`
+    })
 
   /**
    * 条目集合只在事件处理器与命令式方法里查活 DOM，顺序即文档序。
@@ -109,7 +104,7 @@ export function connectMessageFeed<T extends PropTypes>(
       // 整份消息列表只占一个 Tab 停靠位。
       // 判据用 focusedId 而非锚点元素：锚点可能指向已被删掉的消息，那时无人认领 tabindex=0
       'tabindex': focusedId == null ? 0 : -1,
-      'data-status': status,
+      'data-state': status,
       'data-size': prop('size'),
       'onKeyDown': (event: KeyboardEvent) => {
         if (event.altKey || event.shiftKey)

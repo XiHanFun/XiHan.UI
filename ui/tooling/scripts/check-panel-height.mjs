@@ -18,7 +18,11 @@ const HEIGHT_TOKENS = /--xh-(?:viewport-h-(?:sm|md|lg)|viewport-max-h|overlay-me
 /** 不带尺寸的取值：把高度交给外层或视口，或者明说「不设下限 / 不设上限」。 */
 const PASS_THROUGH = /^(?:0|none|100%|auto|inherit|unset|revert|fit-content|max-content|min-content)$/
 
-/** 并排成对的面板：两块并排，其中一块按内容收就会与另一块错位，必须定高。 */
+/**
+ * 并排成对的面板：两块并排，其中一块按内容收就会与另一块错位，必须定高。
+ * 键是组件名，值是该组件里成对的那些部件。组件没了、部件不再是滚动面板，
+ * 两种情况都由下面的名单核验报出来。
+ */
 const PAIRED = {
   'transfer': ['list'],
   'cascader': ['column'],
@@ -77,6 +81,8 @@ const problems = new Map()
 const panelsBySkin = new Map()
 /** 用上了的例外条目。 */
 const usedExempt = new Set()
+/** 真的扫到皮肤的并排面板组件。 */
+const usedPaired = new Set()
 let governed = 0
 
 function report(comp, detail) {
@@ -165,6 +171,8 @@ for (const file of files) {
   }
 
   // 五、并排成对的面板必须定高
+  if (comp in PAIRED)
+    usedPaired.add(comp)
   for (const part of PAIRED[comp] ?? []) {
     const panel = panels.get(part)
     if (panel == null) {
@@ -186,6 +194,11 @@ for (const key of Object.keys(EXEMPT)) {
     report(comp, `例外 ${key} 的高度已经走滚动面令牌了，删掉这条`)
 }
 
+for (const comp of Object.keys(PAIRED)) {
+  if (!usedPaired.has(comp))
+    report(comp, `${comp} 登记在 PAIRED 里却没被扫到——名单过期了`)
+}
+
 if (problems.size) {
   console.error('[check-panel-height] ✗ 面板高度没走同一把尺：')
   for (const [comp, list] of [...problems].sort((a, b) => a[0].localeCompare(b[0]))) {
@@ -198,4 +211,4 @@ if (problems.size) {
   process.exit(1)
 }
 
-console.log(`[check-panel-height] 通过：${files.length} 份皮肤 · ${governed} 处面板高度都锚在滚动面令牌上（不上这把尺 ${usedExempt.size} 处）`)
+console.log(`[check-panel-height] 通过：${files.length} 份皮肤 · ${governed} 处面板高度都锚在滚动面令牌上（不上这把尺 ${usedExempt.size} 处、并排成对 ${usedPaired.size} 组）`)

@@ -107,30 +107,29 @@
 
   /* 两端圆角用逻辑角属性写，rtl 与竖排都跟着换边，不必另写一套。
      只认 root 的直接子节点：条目之间插了别的节点时宁可退化成直角，也不要圆错位置。
-     角画在条目上，槽名也带 item 段，与同文件其余条目槽同段；
-     不带段的旧名接在后面当默认值，照旧名写的覆盖照样生效 */
+     角画在条目上，槽名也带 item 段，与同文件其余条目槽同段 */
   [data-scope='toggle-group'][data-part='root'][data-orientation='horizontal']
     > [data-scope='toggle-group'][data-part='item']:first-child {
-    border-start-start-radius: var(--xh-toggle-group-item-radius, var(--xh-toggle-group-radius, var(--xh-shape-control)));
-    border-end-start-radius: var(--xh-toggle-group-item-radius, var(--xh-toggle-group-radius, var(--xh-shape-control)));
+    border-start-start-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-control));
+    border-end-start-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-control));
   }
 
   [data-scope='toggle-group'][data-part='root'][data-orientation='horizontal']
     > [data-scope='toggle-group'][data-part='item']:last-child {
-    border-start-end-radius: var(--xh-toggle-group-item-radius, var(--xh-toggle-group-radius, var(--xh-shape-control)));
-    border-end-end-radius: var(--xh-toggle-group-item-radius, var(--xh-toggle-group-radius, var(--xh-shape-control)));
+    border-start-end-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-control));
+    border-end-end-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-control));
   }
 
   [data-scope='toggle-group'][data-part='root'][data-orientation='vertical']
     > [data-scope='toggle-group'][data-part='item']:first-child {
-    border-start-start-radius: var(--xh-toggle-group-item-radius, var(--xh-toggle-group-radius, var(--xh-shape-control)));
-    border-start-end-radius: var(--xh-toggle-group-item-radius, var(--xh-toggle-group-radius, var(--xh-shape-control)));
+    border-start-start-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-control));
+    border-start-end-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-control));
   }
 
   [data-scope='toggle-group'][data-part='root'][data-orientation='vertical']
     > [data-scope='toggle-group'][data-part='item']:last-child {
-    border-end-start-radius: var(--xh-toggle-group-item-radius, var(--xh-toggle-group-radius, var(--xh-shape-control)));
-    border-end-end-radius: var(--xh-toggle-group-item-radius, var(--xh-toggle-group-radius, var(--xh-shape-control)));
+    border-end-start-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-control));
+    border-end-end-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-control));
   }
 
   [data-scope='toggle-group'][data-part='item']:not([data-disabled]):hover {

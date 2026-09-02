@@ -30,7 +30,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @fires submit - 提交；detail 为 `{ value: string }`，清空发生在派发之后。
  *   与原生表单提交同名，故不冒泡，请直接在 `<xh-composer>` 元素上监听
  * @fires stop - 流式期间按下停止；无 detail
- * @csspart root - 承载 data-disabled / data-status 的容器
+ * @csspart root - 承载 data-disabled / data-state 的容器
  * @csspart input - 输入框，须是原生 `<textarea>`
  * @csspart submit-trigger - 发送 / 停止按钮，皮肤按 data-mode 换图标
  */

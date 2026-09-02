@@ -10,8 +10,8 @@ import { attachFormReset } from './attach-form-reset'
 import { applyXhConfigDefaults, useXhConfigDefaults } from './config-defaults'
 import { createVueRuntime } from './create-vue-runtime'
 
-// 废弃探测与锁步版本检查都只启动一次：第一个组件建机器时借路启动，之后的组件全走这个开关。
-// 生产构建里 isDev() 为 false，跳过；登记表为空时扫描器内部早退，零开销。
+// 锁步版本检查只跑一次：第一个组件建机器时借路启动，之后的组件全走这个开关。
+// 生产构建里 isDev() 为 false，跳过。
 let devChecksStarted = false
 
 function ensureDevChecks(): void {
@@ -24,11 +24,6 @@ function ensureDevChecks(): void {
     checkLockstepVersion('vue', VUE_VERSION, KERNEL_VERSION)
     // 引用即打印:首个组件建机器时打一次启动横幅(整页一次,生产静默)
     printMetadataBannerOnce()
-    // 注意:废弃扫描不进 Vue 的组件树摇入口——它每个组件都会带一份(约 1.8 kB gzip),
-    // 组件级体积棘轮量得出来。需要时手动启动:
-    //   import { startDeprecationScan } from '@xihan-ui/kernel/deprecations'
-    //   if (import.meta.env.DEV) startDeprecationScan()
-    // Web Components 侧在 defineXhElements() 里自动启动,那边没有逐组件入口的棘轮。
   }
 }
 
