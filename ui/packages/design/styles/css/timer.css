@@ -64,6 +64,13 @@
     color: var(--xh-timer-completed-fg, var(--xh-fg-muted));
   }
 
+  /* 数字段自己一个前景槽，与记号那个成对。
+     缺省是 inherit 而不是某个具体前景：时间区走完会整体退一档，
+     数字段照着继承下来才跟得上，写死取值就跟不动了 */
+  [data-scope='timer'][data-part='item'] {
+    color: var(--xh-timer-item-fg, inherit);
+  }
+
   /* 记号只是排版，比数字弱一档、两侧留一点气口 */
   [data-scope='timer'][data-part='separator'] {
     padding-inline: var(--xh-timer-separator-px, var(--xh-space-0_5));

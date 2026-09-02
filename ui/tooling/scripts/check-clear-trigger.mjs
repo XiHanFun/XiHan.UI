@@ -7,7 +7,8 @@
 //    尺寸 --xh-<c>-action-size → --xh-control-action-size，圆角 --xh-<c>-action-radius → --xh-shape-control。
 // ② 独立动作钮（file-upload / signature-pad 的清空）：普通 Tab 位按钮，空时不收不灰、只打 data-empty；
 //    高 --xh-<c>-clear-h → --xh-control-h-sm。
-// ③ 浮层角落关闭钮：--xh-<c>-close-size → --xh-control-h-sm，--xh-<c>-close-radius → --xh-shape-control。
+// ③ 浮层角落关闭钮：--xh-<c>-close-size → --xh-control-h-sm，--xh-<c>-close-radius → --xh-shape-control；
+//    字形颜色也得留使用者槽——常态一个、悬停换色的再一个，写死语义令牌等于这颗叉的颜色改不动。
 // ④ 标签内移除钮：尺寸基准 --xh-control-indicator-size，圆角 --xh-shape-inset；行级删除钮同 ①的尺寸基准。
 // 四类都要有 :active 按压反馈（走 --xh-motion-scale-press）与 [hidden]{display:none}。
 import { readFile } from 'node:fs/promises'
@@ -27,6 +28,11 @@ const STANDALONE = ['file-upload', 'signature-pad']
 const CLOSE = { 'dialog': null, 'drawer': null, 'popover': null, 'tour': null, 'toast': '--xh-control-action-size', 'alert': null, 'floating-panel': null, 'image-viewer': '--xh-control-h-lg', 'notification': null }
 /** 部件名与 close-trigger 不同的，逐条登记（通知的叉在卡片那一层，叫 item-close-trigger）。 */
 const CLOSE_PART = { notification: 'item-close-trigger' }
+/**
+ * ③ 前景槽的例外：这颗叉不自定前景，颜色随别处走。
+ * 登记了却其实有槽的照样报，免得名单变成过期的免检通行证。
+ */
+const CLOSE_FG_EXCEPTION = { 'image-viewer': '看图时整块 chrome 盖住页面，叉的颜色随那层继承（color: inherit），自己不定前景' }
 /** ④ 标签内移除钮（组件 → 部件）与行级删除钮。 */
 const CHIP_REMOVE = { 'tag': 'close-trigger', 'tags-input': 'item-delete-trigger', 'select': 'item-delete-trigger' }
 const ROW_DELETE = { 'file-upload': 'item-delete-trigger', 'dynamic-input': 'item-delete-trigger' }
@@ -99,6 +105,45 @@ function checkButtonSkin(c, part, { sizeSlot, sizeToken, radiusSlot, radiusToken
         problems.push(`${c}.css [${part}] transition 里没有 scale——按下与松手是硬切`)
     }
   }
+}
+
+/**
+ * 取值链上的第一个 var() 是不是这个组件的使用者槽。
+ * 全局语义令牌（--xh-fg-muted 这类）不算出口：它一改整站跟着变，
+ * 使用者要单改这一颗按钮改不到；私有槽（--xh-_ 开头）也不算，那是皮肤自己的中转。
+ */
+function consumerSlot(comp, value) {
+  const m = /var\(\s*(--xh-[a-z0-9-]+)/.exec(value)
+  return m && m[1].startsWith(`--xh-${comp}-`) ? m[1] : null
+}
+
+/** 取某组规则里第一条 color 声明的取值（避开 background-color 之类带后缀的属性名）。 */
+function colorIn(rules, pick) {
+  for (const r of rules) {
+    if (!pick(r.tail))
+      continue
+    const m = /(?:^|[;\s])color:\s*([^;]+);/.exec(r.body)
+    if (m)
+      return m[1].trim()
+  }
+  return null
+}
+
+/** ③ 关闭钮的字形颜色：常态必须走使用者槽，悬停换色的那条也得走。 */
+function checkCloseForeground(c, part, css) {
+  const rules = rulesOf(css, c, part)
+  const base = colorIn(rules, t => t.trim() === '')
+  const excused = CLOSE_FG_EXCEPTION[c]
+  if (base && consumerSlot(c, base)) {
+    if (excused)
+      problems.push(`${c} 已有 --xh-${c}-close-fg 一类的前景槽，CLOSE_FG_EXCEPTION 里那条登记过期了，删掉`)
+  }
+  else if (!excused) {
+    problems.push(`${c}.css [${part}] 前景色没留使用者槽，该写 color: var(--xh-${c}-close-fg, <语义令牌>)`)
+  }
+  const hover = colorIn(rules, t => /:hover/.test(t))
+  if (hover && !consumerSlot(c, hover))
+    problems.push(`${c}.css [${part}] 悬停换了字色却没留槽，该写 color: var(--xh-${c}-close-fg-hover, <语义令牌>)`)
 }
 
 // ① 内嵌清空钮
@@ -176,12 +221,14 @@ for (const [c, sizeException] of Object.entries(CLOSE)) {
   const css = await skin(c)
   if (!css)
     continue
-  await checkButtonSkin(c, CLOSE_PART[c] ?? 'close-trigger', {
+  const part = CLOSE_PART[c] ?? 'close-trigger'
+  await checkButtonSkin(c, part, {
     sizeSlot: `--xh-${c}-close-size`,
     sizeToken: sizeException ?? '--xh-control-h-sm',
     radiusSlot: `--xh-${c}-close-radius`,
     radiusToken: '--xh-shape-control',
   })(css)
+  checkCloseForeground(c, part, css)
 }
 
 // ④ 标签内移除钮与行级删除钮

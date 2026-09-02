@@ -129,16 +129,19 @@
 
   /* 悬停这条选择器比当前页那条多一节（:hover），同层里权重更高、会反过来压住它，
      所以悬停一路显式把当前页排除：指针停在当前页上不该把品牌底色洗成灰底。
-     页码条目从不禁用（连接层只给上一页/下一页发原生 disabled），故这边不必再排除 :disabled */
+     页码条目从不禁用（连接层只给上一页/下一页发原生 disabled），故这边不必再排除 :disabled。
+     省略位也吃这两组：它是可点的展开钮，没有当前页一说，不必带那个守卫 */
   [data-scope='pagination'][data-part='prev-trigger']:hover:not(:disabled),
   [data-scope='pagination'][data-part='next-trigger']:hover:not(:disabled),
-  [data-scope='pagination'][data-part='item']:not([data-current]):hover {
+  [data-scope='pagination'][data-part='item']:not([data-current]):hover,
+  [data-scope='pagination'][data-part='ellipsis']:hover {
     background: var(--xh-pagination-item-bg-hover, var(--xh-bg-subtle-hover));
   }
 
   [data-scope='pagination'][data-part='prev-trigger']:active:not(:disabled),
   [data-scope='pagination'][data-part='next-trigger']:active:not(:disabled),
-  [data-scope='pagination'][data-part='item']:not([data-current]):active {
+  [data-scope='pagination'][data-part='item']:not([data-current]):active,
+  [data-scope='pagination'][data-part='ellipsis']:active {
     background: var(--xh-pagination-item-bg-active, var(--xh-bg-subtle-active));
   }
 

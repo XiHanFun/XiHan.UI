@@ -43,11 +43,13 @@
     --xh-_card-pad: var(--xh-space-6);
   }
 
-  /* 悬停抬起：只在能用指针的设备上生效，触摸端不留一个按不掉的悬停态 */
+  /* 悬停抬起：只在能用指针的设备上生效，触摸端不留一个按不掉的悬停态。
+     悬停这一档各有自己的槽：与常态共用一个槽的话，作者设了常态描边或投影，
+     指针停上去就再也看不出变化——两档的缺省本就取不同的深浅。 */
   @media (hover: hover) {
     [data-scope='card'][data-part='root'][data-hoverable]:hover {
-      border-color: var(--xh-card-border, var(--xh-border-strong));
-      box-shadow: var(--xh-card-shadow, var(--xh-elevation-raised));
+      border-color: var(--xh-card-border-hover, var(--xh-border-strong));
+      box-shadow: var(--xh-card-shadow-hover, var(--xh-elevation-raised));
     }
   }
 
@@ -84,8 +86,8 @@
   }
 
   [data-scope='card'][data-part='description'] {
-    color: var(--xh-fg-muted);
-    font-size: var(--xh-text-secondary-size);
+    color: var(--xh-card-description-fg, var(--xh-fg-muted));
+    font-size: var(--xh-card-description-font-size, var(--xh-text-secondary-size));
     line-height: var(--xh-leading-normal);
   }
 

@@ -8075,6 +8075,13 @@ input[data-scope='mention'][data-part='input'] {
   color: var(--xh-timer-completed-fg, var(--xh-fg-muted));
 }
 
+/* 数字段自己一个前景槽，与记号那个成对。
+   缺省是 inherit 而不是某个具体前景：时间区走完会整体退一档，
+   数字段照着继承下来才跟得上，写死取值就跟不动了 */
+[data-scope='timer'][data-part='item'] {
+  color: var(--xh-timer-item-fg, inherit);
+}
+
 /* 记号只是排版，比数字弱一档、两侧留一点气口 */
 [data-scope='timer'][data-part='separator'] {
   padding-inline: var(--xh-timer-separator-px, var(--xh-space-0_5));
@@ -9032,8 +9039,10 @@ input[data-scope='mention'][data-part='input'] {
   outline-offset: var(--xh-ring-offset);
 }
 
+/* 展开态自带一个槽：与常态共用一个的话，作者一改常态字色，
+   展开那一档的语气高亮就跟着被抹平，再也分不开 */
 [data-scope='accordion'][data-part='trigger'][data-state='open'] {
-  color: var(--xh-accordion-trigger-fg, var(--xh-_accordion-open-fg));
+  color: var(--xh-accordion-trigger-fg-open, var(--xh-_accordion-open-fg));
 }
 
 /* 禁用条目走 aria-disabled，仍留在 Tab 序里，只是不可操作 */
@@ -10628,11 +10637,13 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_card-pad: var(--xh-space-6);
 }
 
-/* 悬停抬起：只在能用指针的设备上生效，触摸端不留一个按不掉的悬停态 */
+/* 悬停抬起：只在能用指针的设备上生效，触摸端不留一个按不掉的悬停态。
+   悬停这一档各有自己的槽：与常态共用一个槽的话，作者设了常态描边或投影，
+   指针停上去就再也看不出变化——两档的缺省本就取不同的深浅。 */
 @media (hover: hover) {
   [data-scope='card'][data-part='root'][data-hoverable]:hover {
-    border-color: var(--xh-card-border, var(--xh-border-strong));
-    box-shadow: var(--xh-card-shadow, var(--xh-elevation-raised));
+    border-color: var(--xh-card-border-hover, var(--xh-border-strong));
+    box-shadow: var(--xh-card-shadow-hover, var(--xh-elevation-raised));
   }
 }
 
@@ -10669,8 +10680,8 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='card'][data-part='description'] {
-  color: var(--xh-fg-muted);
-  font-size: var(--xh-text-secondary-size);
+  color: var(--xh-card-description-fg, var(--xh-fg-muted));
+  font-size: var(--xh-card-description-font-size, var(--xh-text-secondary-size));
   line-height: var(--xh-leading-normal);
 }
 
@@ -11095,7 +11106,7 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 整个控件禁用会把 data-disabled 一路打到 label / value-text / indicator 上，各处观感保持一致 */
 [data-scope='cascader'][data-part='label'][data-disabled] {
-  color: var(--xh-fg-subtle);
+  color: var(--xh-cascader-label-fg-disabled, var(--xh-fg-subtle));
 }
 
 /* 盒：描边、底色、控件高度与行内内衬都落在这一层，触发按钮与清空按钮在里面并排 */
@@ -13386,7 +13397,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='combobox'][data-part='label'][data-disabled] {
-  color: var(--xh-fg-subtle);
+  color: var(--xh-combobox-label-fg-disabled, var(--xh-fg-subtle));
 }
 
 /* 画成一个框的是 control 而不是 input：输入框、展开按钮、清空按钮三者要看起来是一体的，
@@ -15267,7 +15278,7 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='dialog'][data-part='description'] {
   margin: 0;
-  font-size: var(--xh-text-body-size);
+  font-size: var(--xh-dialog-description-font-size, var(--xh-text-body-size));
   color: var(--xh-dialog-description-fg, var(--xh-fg-muted));
 }
 
@@ -15290,7 +15301,7 @@ input[data-scope='mention'][data-part='input'] {
   border: 0;
   border-radius: var(--xh-dialog-close-radius, var(--xh-shape-control));
   background: transparent;
-  color: var(--xh-fg-muted);
+  color: var(--xh-dialog-close-fg, var(--xh-fg-muted));
   cursor: pointer;
   transition:
     background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
@@ -15303,7 +15314,7 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='dialog'][data-part='close-trigger']:hover {
   background: var(--xh-dialog-close-bg-hover, var(--xh-bg-subtle-hover));
-  color: var(--xh-fg-default);
+  color: var(--xh-dialog-close-fg-hover, var(--xh-fg-default));
 }
 
 [data-scope='dialog'][data-part='close-trigger']:active {
@@ -15737,7 +15748,7 @@ input[data-scope='mention'][data-part='input'] {
   border: 0;
   border-radius: var(--xh-drawer-close-radius, var(--xh-shape-control));
   background: transparent;
-  color: var(--xh-fg-muted);
+  color: var(--xh-drawer-close-fg, var(--xh-fg-muted));
   cursor: pointer;
   transition:
     background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
@@ -15750,7 +15761,7 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='drawer'][data-part='close-trigger']:hover {
   background: var(--xh-drawer-close-bg-hover, var(--xh-bg-subtle-hover));
-  color: var(--xh-fg-default);
+  color: var(--xh-drawer-close-fg-hover, var(--xh-fg-default));
 }
 
 [data-scope='drawer'][data-part='close-trigger']:active {
@@ -19730,16 +19741,19 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 悬停这条选择器比当前页那条多一节（:hover），同层里权重更高、会反过来压住它，
    所以悬停一路显式把当前页排除：指针停在当前页上不该把品牌底色洗成灰底。
-   页码条目从不禁用（连接层只给上一页/下一页发原生 disabled），故这边不必再排除 :disabled */
+   页码条目从不禁用（连接层只给上一页/下一页发原生 disabled），故这边不必再排除 :disabled。
+   省略位也吃这两组：它是可点的展开钮，没有当前页一说，不必带那个守卫 */
 [data-scope='pagination'][data-part='prev-trigger']:hover:not(:disabled),
 [data-scope='pagination'][data-part='next-trigger']:hover:not(:disabled),
-[data-scope='pagination'][data-part='item']:not([data-current]):hover {
+[data-scope='pagination'][data-part='item']:not([data-current]):hover,
+[data-scope='pagination'][data-part='ellipsis']:hover {
   background: var(--xh-pagination-item-bg-hover, var(--xh-bg-subtle-hover));
 }
 
 [data-scope='pagination'][data-part='prev-trigger']:active:not(:disabled),
 [data-scope='pagination'][data-part='next-trigger']:active:not(:disabled),
-[data-scope='pagination'][data-part='item']:not([data-current]):active {
+[data-scope='pagination'][data-part='item']:not([data-current]):active,
+[data-scope='pagination'][data-part='ellipsis']:active {
   background: var(--xh-pagination-item-bg-active, var(--xh-bg-subtle-active));
 }
 
@@ -20262,7 +20276,7 @@ input[data-scope='mention'][data-part='input'] {
   border: 0;
   border-radius: var(--xh-popover-close-radius, var(--xh-shape-control));
   background: transparent;
-  color: var(--xh-fg-muted);
+  color: var(--xh-popover-close-fg, var(--xh-fg-muted));
   cursor: pointer;
   transition:
     background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
@@ -20275,7 +20289,7 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='popover'][data-part='close-trigger']:hover {
   background: var(--xh-popover-close-bg-hover, var(--xh-bg-subtle-hover));
-  color: var(--xh-fg-default);
+  color: var(--xh-popover-close-fg-hover, var(--xh-fg-default));
 }
 
 [data-scope='popover'][data-part='close-trigger']:active {
@@ -21792,7 +21806,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='select'][data-part='label'][data-disabled] {
-  color: var(--xh-fg-subtle);
+  color: var(--xh-select-label-fg-disabled, var(--xh-fg-subtle));
 }
 
 /* 盒：描边、底色、圆角、控件高度与行内内衬都长在这一层，触发器与清空按钮在里面并排。
@@ -22393,15 +22407,15 @@ input[data-scope='mention'][data-part='input'] {
 /* 选中的那条：品牌淡底 + 强调字。
    守卫与轻档那条同特指度，写在其后才压得住——键盘走到当前页那一行时底色仍是品牌淡底 */
 [data-scope='side-nav'][data-part='link']:not([data-disabled])[data-current] {
-  background: var(--xh-bg-brand-subtle);
+  background: var(--xh-side-nav-row-bg-active, var(--xh-bg-brand-subtle));
   /* 淡底上的字走 strong 档：fg-brand（600）压在 brand-subtle（100）上只有 4.21 */
-  color: var(--xh-fg-brand-strong);
-  font-weight: var(--xh-font-weight-medium);
+  color: var(--xh-side-nav-row-fg-active, var(--xh-fg-brand-strong));
+  font-weight: var(--xh-side-nav-row-font-weight-active, var(--xh-font-weight-medium));
 }
 
 /* 选中项的祖先枝：只染字色，一路指到当前页 */
 [data-scope='side-nav'][data-part='branch-trigger'][data-in-path] {
-  color: var(--xh-fg-brand);
+  color: var(--xh-side-nav-row-fg-in-path, var(--xh-fg-brand));
 }
 
 [data-scope='side-nav'][data-part='branch-trigger'][data-disabled],
@@ -27920,7 +27934,7 @@ input[data-scope='mention'][data-part='input'] {
   border: 0;
   border-radius: var(--xh-tour-close-radius, var(--xh-shape-control));
   background: transparent;
-  color: var(--xh-fg-muted);
+  color: var(--xh-tour-close-fg, var(--xh-fg-muted));
   cursor: pointer;
   transition:
     background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
@@ -27933,7 +27947,7 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='tour'][data-part='close-trigger']:hover {
   background: var(--xh-tour-close-bg-hover, var(--xh-bg-subtle-hover));
-  color: var(--xh-fg-default);
+  color: var(--xh-tour-close-fg-hover, var(--xh-fg-default));
 }
 
 [data-scope='tour'][data-part='close-trigger']:active {

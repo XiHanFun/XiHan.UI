@@ -394,7 +394,7 @@
     border: 0;
     border-radius: var(--xh-drawer-close-radius, var(--xh-shape-control));
     background: transparent;
-    color: var(--xh-fg-muted);
+    color: var(--xh-drawer-close-fg, var(--xh-fg-muted));
     cursor: pointer;
     transition:
       background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
@@ -407,7 +407,7 @@
 
   [data-scope='drawer'][data-part='close-trigger']:hover {
     background: var(--xh-drawer-close-bg-hover, var(--xh-bg-subtle-hover));
-    color: var(--xh-fg-default);
+    color: var(--xh-drawer-close-fg-hover, var(--xh-fg-default));
   }
 
   [data-scope='drawer'][data-part='close-trigger']:active {
