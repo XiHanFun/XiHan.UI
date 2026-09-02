@@ -587,6 +587,11 @@ export interface TableTranslations extends Partial<DragTranslations> {
   columnResize: (columnLabel: string) => string
   /** 列拖拽把手的名字。同一个列头里有两个把手，两个都得说清自己是谁。 */
   columnDrag: (columnLabel: string) => string
+  /**
+   * 全选把手的名字。它是个默认为空的角色节点，行内那颗把手又是 aria-hidden 的，
+   * 这里是整张表的选择功能对读屏唯一的入口，所以这一句总会发出去。
+   */
+  selectAll: string
 }
 
 /** 列拖拽的落点：落在哪一列的哪一侧。 */

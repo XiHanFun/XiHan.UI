@@ -11,7 +11,7 @@ const cards = ref(["甲", "乙", "丙", "丁", "戊", "己"]);
   <p style="margin-bottom: 8px">横排：只认左右方向键。</p>
   <XhSortableRoot v-model:ids="tabs" orientation="horizontal">
     <XhSortableItem v-for="id in tabs" :key="id" :item-id="id" style="display: flex; align-items: center; gap: 8px; padding: 6px 12px; border: 1px solid var(--xh-border-default)">
-      <XhSortableItemHandle :item-id="id">⠿</XhSortableItemHandle>
+      <XhSortableItemHandle :item-id="id" />
       <span>{{ id }}</span>
     </XhSortableItem>
   </XhSortableRoot>

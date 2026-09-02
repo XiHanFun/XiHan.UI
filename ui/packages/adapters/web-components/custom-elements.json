@@ -1538,7 +1538,13 @@
               "name": "--xh-approval-deny-bg-hover"
             },
             {
+              "name": "--xh-approval-deny-bg-off"
+            },
+            {
               "name": "--xh-approval-deny-border"
+            },
+            {
+              "name": "--xh-approval-deny-border-off"
             },
             {
               "name": "--xh-approval-deny-fg"
@@ -3877,6 +3883,10 @@
             {
               "description": "下一张；末页且不回绕时转原生 disabled",
               "name": "next-trigger"
+            },
+            {
+              "description": "播放 / 暂停开关，承载 data-state=\"running\" / \"paused\"；没配 autoplay 时转原生 disabled",
+              "name": "autoplay-trigger"
             },
             {
               "description": "指示点容器（role=group）",
@@ -9077,6 +9087,9 @@
               "name": "--xh-composer-send-bg-hover"
             },
             {
+              "name": "--xh-composer-send-bg-off"
+            },
+            {
               "name": "--xh-composer-send-fg"
             },
             {
@@ -9787,6 +9800,9 @@
             },
             {
               "name": "--xh-context-menu-shadow"
+            },
+            {
+              "name": "--xh-context-menu-trigger-bg-pressing"
             }
           ]
         }
@@ -12330,6 +12346,10 @@
             {
               "description": "一条变更都没有时的占位",
               "name": "empty"
+            },
+            {
+              "description": "截断提示条，文字由本元素填；没截断时带 hidden",
+              "name": "truncation"
             }
           ],
           "members": [
@@ -12596,6 +12616,9 @@
               "name": "--xh-diff-view-header-gap"
             },
             {
+              "name": "--xh-diff-view-icon-size"
+            },
+            {
               "name": "--xh-diff-view-keyword-fg"
             },
             {
@@ -12639,6 +12662,18 @@
             },
             {
               "name": "--xh-diff-view-string-fg"
+            },
+            {
+              "name": "--xh-diff-view-truncation-bg"
+            },
+            {
+              "name": "--xh-diff-view-truncation-border"
+            },
+            {
+              "name": "--xh-diff-view-truncation-fg"
+            },
+            {
+              "name": "--xh-diff-view-truncation-gap"
             }
           ]
         }
@@ -15750,7 +15785,13 @@
               "name": "--xh-file-upload-item-border"
             },
             {
+              "name": "--xh-file-upload-item-border-error"
+            },
+            {
               "name": "--xh-file-upload-item-fg"
+            },
+            {
+              "name": "--xh-file-upload-item-fg-error"
             },
             {
               "name": "--xh-file-upload-item-font-size"
@@ -38572,6 +38613,12 @@
               "name": "--xh-sortable-handle-fg-hover"
             },
             {
+              "name": "--xh-sortable-handle-grip-h"
+            },
+            {
+              "name": "--xh-sortable-handle-grip-w"
+            },
+            {
               "name": "--xh-sortable-handle-radius"
             },
             {
@@ -43114,6 +43161,9 @@
             },
             {
               "name": "--xh-thread-content-py"
+            },
+            {
+              "name": "--xh-thread-icon-size"
             },
             {
               "name": "--xh-thread-scroll-button-bg"
@@ -48071,11 +48121,11 @@
               "name": "select-all-trigger"
             },
             {
-              "description": "往右搬的按钮，须是原生 button",
+              "description": "往右搬的按钮，须是原生 button；可及名字由 translations.toTarget 给",
               "name": "to-target-trigger"
             },
             {
-              "description": "往左搬的按钮，须是原生 button；oneWay 下恒为禁用",
+              "description": "往左搬的按钮，须是原生 button；oneWay 下恒为禁用；可及名字由 translations.toSource 给",
               "name": "to-source-trigger"
             }
           ],
@@ -48181,6 +48231,14 @@
                 "text": "Direction | undefined"
               },
               "attribute": "dir"
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "Partial<TransferTranslations> | undefined"
+              }
             },
             {
               "kind": "field",

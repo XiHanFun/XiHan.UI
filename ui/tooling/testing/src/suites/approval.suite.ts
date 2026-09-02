@@ -105,14 +105,14 @@ export const approvalSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '拒绝这条路不吃任何闸门：必选项没勾满、挂起中，照样按得动',
+      name: '拒绝不吃必选项那道闸门：一项都没勾，照样按得动',
       spec: { apg: APG },
       covers: ['approval.kbd.deny'],
-      props: { busy: true, scopes: [{ value: 'read', required: true }] },
+      props: { scopes: [{ value: 'read', required: true }] },
       initial: {
         parts: {
-          'approve-trigger': { 'aria-disabled': 'true', 'aria-busy': 'true' },
-          'deny-trigger': { disabled: null },
+          'approve-trigger': { 'aria-disabled': 'true' },
+          'deny-trigger': { 'aria-disabled': 'false', 'disabled': null },
         },
       },
       steps: [
@@ -123,6 +123,39 @@ export const approvalSuite: ConformanceSuite = {
             parts: { root: { 'data-state': 'denied' } },
             events: [{ type: 'decision', detail: { decision: 'denied', source: 'user', scopes: [] } }],
           },
+        },
+      ],
+    },
+    {
+      // 一条判定已经在途、状态机还在等宿主回话，这段空窗里再按一次就是第二条判定，
+      // 闸门后面的系统会收到两条相互矛盾的结论。两颗钮同一把尺子
+      name: '判定在途：批准与拒绝一起锁住，再点谁都打不出第二条判定',
+      spec: { apg: APG },
+      props: { busy: true, scopes: [{ value: 'read', required: true }] },
+      initial: {
+        parts: {
+          'approve-trigger': { 'aria-disabled': 'true', 'aria-busy': 'true', 'data-busy': '' },
+          // 同样不用原生 disabled：锁住的钮仍留在 Tab 序里，读屏才念得到为什么按不动
+          'deny-trigger': { 'aria-disabled': 'true', 'aria-busy': 'true', 'data-busy': '', 'disabled': null },
+        },
+      },
+      steps: [
+        {
+          kind: 'click',
+          part: 'deny-trigger',
+          expect: { parts: { root: { 'data-state': 'pending' } }, events: [] },
+        },
+        {
+          kind: 'click',
+          part: 'approve-trigger',
+          expect: { parts: { root: { 'data-state': 'pending' } }, events: [] },
+        },
+        // Escape 是拒绝钮的键盘等价物，同一道闸门；只锁住钮的话换只手按 Escape 照样打得出
+        { kind: 'focus', part: 'deny-trigger' },
+        {
+          kind: 'key',
+          key: 'Escape',
+          expect: { parts: { root: { 'data-state': 'pending' } }, events: [] },
         },
       ],
     },

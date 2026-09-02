@@ -148,9 +148,13 @@
     box-shadow: none;
   }
 
-  /* 禁用走原生 disabled，输入为空时按钮转灰但不收起 */
+  /* 禁用走原生 disabled，输入为空时按钮转灰但不收起。
+     底与字一起换：留着实心的品牌底、只把字压成 fg-disabled，字与底几乎同亮度，
+     按钮就成了一块看不出内容的色斑。空输入是常态，这一档开箱第一眼就是它 */
   [data-scope='composer'][data-part='submit-trigger']:disabled {
-    color: var(--xh-fg-disabled);
+    --xh-_bg: var(--xh-composer-send-bg-off, var(--xh-bg-muted));
+    --xh-_fg: var(--xh-fg-disabled);
+
     box-shadow: none;
     cursor: not-allowed;
   }

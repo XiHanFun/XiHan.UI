@@ -37,9 +37,9 @@ slidesPerPage 决定一屏露几张，一次翻几张缺省跟着它走，所以
 
 <XhDemo src="carousel/03-slides-per-page" />
 
-### 自动播放与回绕
+### 自动播放与暂停
 
-autoplay 给毫秒即间隔，鼠标停上去或焦点走进来都会把计时按住
+autoplay 给毫秒即间隔；开了它就得渲播放开关，自动翻页必须能停住
 
 <XhDemo src="carousel/04-autoplay" />
 
@@ -78,7 +78,7 @@ slidesPerMove 与 slidesPerPage 分开给：一屏露三张、一次只挪一张
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-carousel>` |
-| Vue 组件 | `XhCarouselIndicator` `XhCarouselIndicatorGroup` `XhCarouselItem` `XhCarouselItemGroup` `XhCarouselNextTrigger` `XhCarouselPrevTrigger` `XhCarouselRoot` `XhCarouselViewport` |
+| Vue 组件 | `XhCarouselAutoplayTrigger` `XhCarouselIndicator` `XhCarouselIndicatorGroup` `XhCarouselItem` `XhCarouselItemGroup` `XhCarouselNextTrigger` `XhCarouselPrevTrigger` `XhCarouselRoot` `XhCarouselViewport` |
 | 组合式函数 | `useCarousel` |
 | 状态机 | `carouselMachine` |
 | 皮肤 | `@xihan-ui/styles/carousel.css` |
@@ -87,7 +87,7 @@ slidesPerMove 与 slidesPerPage 分开给：一屏露三张、一次只挪一张
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="carousel"`：**`root`** · **`viewport`** · **`item-group`** · `item` · `prev-trigger` · `next-trigger` · `indicator-group` · `indicator`
+`data-scope="carousel"`：**`root`** · **`viewport`** · **`item-group`** · `item` · `prev-trigger` · `next-trigger` · `autoplay-trigger` · `indicator-group` · `indicator`
 
 ## Props
 
@@ -101,7 +101,7 @@ slidesPerMove 与 slidesPerPage 分开给：一屏露三张、一次只挪一张
 | `orientation` | `Orientation` |  | 轨道方向，默认 horizontal；方向键的轴跟着它走。 |
 | `dir` | `Direction` |  | 文字方向。水平轴上同时作用于排版与位移方向：rtl 下"下一张"在左手边， 轨道也要往正方向位移。纵向轨道不受它影响。 |
 | `loop` | `boolean` |  | 走到尽头是否回绕，默认 false。 |
-| `autoplay` | `boolean \| number` |  | 自动播放。true 用默认间隔，数值即毫秒间隔；缺省 / false / 非正数一律不自动播放。 指针悬停或轮播内任一节点获得焦点时按住计时，离开后从头计满一整个间隔再翻。 |
+| `autoplay` | `boolean \| number` |  | 自动播放。true 用默认间隔，数值即毫秒间隔；缺省 / false / 非正数一律不自动播放。 指针悬停或轮播内任一节点获得焦点时按住计时，离开后从头计满一整个间隔再翻。 减弱动效档下不自动起播：给了间隔也停在 idle，要播得由用户按下播放开关。 |
 | `allowPointerDrag` | `boolean` |  | 允许指针拖拽切页，默认 false。鼠标、触摸、触控笔一并门控。 打开后沿轨道那一轴的原生滚动会让位给拖拽，关掉则完全没有拖拽、触摸走原生滚动。 |
 | `spacing` | `string` |  | 张与张之间的间距，任意 CSS 长度（如 '12px'）。落成条目自身的内边距，不影响位移算术。 |
 | `translations` | `Partial<CarouselTranslations>` |  |  |
@@ -121,9 +121,16 @@ slidesPerMove 与 slidesPerPage 分开给：一屏露三张、一次只挪一张
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
+| `XhCarouselAutoplayTrigger` | `default` | `{ stopped: boolean }` |  |
 | `XhCarouselRoot` | `default` | `CarouselRootSlotProps` |  |
 
 ## 状态
+
+对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+
+| 部件 | 取值 |
+| --- | --- |
+| `autoplay-trigger` | 'paused' \| 'running' |
 
 状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
@@ -151,6 +158,7 @@ slidesPerMove 与 slidesPerPage 分开给：一屏露三张、一次只挪一张
 | `canScrollNext` | `boolean` |  |
 | `autoplaying` | `boolean` | 自动播放的计时正在走。 |
 | `paused` | `boolean` | 自动播放开着但被按住（悬停 / 焦点 / 调用方）。 |
+| `autoplayStopped` | `boolean` | 自动播放此刻是不是由用户按停的：计时没在走（idle），或调用方那一路按住了。 与 `paused` 的差别在于它不算悬停与焦点那两路——那两路一挪开就自己续上， 拿它去驱动播放 / 暂停开关的名字与图形，鼠标一碰按钮就会在两态之间跳。 |
 | `dragging` | `boolean` |  |
 | `isInView` | `(index: number) => boolean` |  |
 | `setPage` | `(page: number) => void` | 页码会被收进合法区间（loop 时回绕），越界入参不会写出越界的页。 |
@@ -165,6 +173,7 @@ slidesPerMove 与 slidesPerPage 分开给：一屏露三张、一次只挪一张
 | `getItemProps` | `(props: CarouselItemProps) => T['element']` |  |
 | `getPrevTriggerProps` | `() => T['button']` |  |
 | `getNextTriggerProps` | `() => T['button']` |  |
+| `getAutoplayTriggerProps` | `() => T['button']` | 播放 / 暂停开关。没配自动播放（间隔为 0）时转原生 disabled。 |
 | `getIndicatorGroupProps` | `() => T['element']` |  |
 | `getIndicatorProps` | `(props: CarouselIndicatorProps) => T['button']` |  |
 
@@ -203,6 +212,8 @@ slidesPerMove 与 slidesPerPage 分开给：一屏露三张、一次只挪一张
 | `prev-trigger` | `aria-label` | label.prevTrigger |
 | `next-trigger` | `aria-controls` | `viewport` 部件的 id |
 | `next-trigger` | `aria-label` | label.nextTrigger |
+| `autoplay-trigger` | `aria-controls` | `viewport` 部件的 id |
+| `autoplay-trigger` | `aria-label` | label.autoplayTriggerPlay \| label.autoplayTriggerPause |
 | `indicator-group` | `aria-label` | label.indicatorGroup |
 | `indicator-group` | `role` | 'group' |
 | `indicator` | `aria-current` | 'true' \| 'false' |
@@ -233,6 +244,8 @@ slidesPerMove 与 slidesPerPage 分开给：一屏露三张、一次只挪一张
 | `prev-trigger` | `data-orientation` | props.orientation |
 | `next-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `next-trigger` | `data-orientation` | props.orientation |
+| `autoplay-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `autoplay-trigger` | `data-state` | 'paused' \| 'running' |
 | `indicator-group` | `data-orientation` | props.orientation |
 | `indicator` | `data-current` | ''（条件成立时才出现） |
 | `indicator` | `data-index` | String(index) |
@@ -255,7 +268,9 @@ slidesPerMove 与 slidesPerPage 分开给：一屏露三张、一次只挪一张
 
 ## 最佳实践
 
-- 自动播放要能暂停，且指针悬停或焦点进入时自动暂停。
+- 开了自动播放就把 `autoplay-trigger` 渲出来：它是唯一能把自动翻页停住、且停住之后不会被别的交互重新点着的入口。
+- 自动播放在指针悬停或焦点进入时自动暂停，离开后从头计满一整个间隔再翻。
+- 减弱动效档下自动播放不会自己起播，此时播放开关是用户唯一的起播入口。
 - 指示点要能看出总共几屏、当前第几屏。
 
 ## 反模式

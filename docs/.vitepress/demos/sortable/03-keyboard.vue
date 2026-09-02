@@ -9,7 +9,7 @@ const log = ref<string[]>([]);
 
 <template>
   <p style="margin-bottom: 8px; color: var(--xh-fg-muted)">
-    Tab 聚焦到 ⠿，按空格拾起后用 ↑↓ 移动，再按空格落下；Esc 退回原位。
+    Tab 聚焦到手柄，按空格拾起后用 ↑↓ 移动，再按空格落下；Esc 退回原位。
   </p>
   <XhSortableRoot
     v-model:ids="ids"
@@ -17,7 +17,7 @@ const log = ref<string[]>([]);
     @drag-end="$event.canceled && log.unshift(`${$event.id}：已取消`)"
   >
     <XhSortableItem v-for="id in ids" :key="id" :item-id="id" style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid var(--xh-border-default)">
-      <XhSortableItemHandle :item-id="id">⠿</XhSortableItemHandle>
+      <XhSortableItemHandle :item-id="id" />
       <span>{{ id }}</span>
     </XhSortableItem>
   </XhSortableRoot>

@@ -69,6 +69,12 @@
     cursor: not-allowed;
   }
 
+  /* 只读整组都改不动，但不是禁用：颜色照常，只把"可点"这个暗示收回来。
+     排掉禁用项是因为这条选择器权重高过上面那条，不排就会把 not-allowed 覆盖回 default */
+  [data-scope='radio-group'][data-part='item'][data-readonly]:not([data-disabled]) {
+    cursor: default;
+  }
+
   [data-scope='radio-group'][data-part='indicator'] {
     display: inline-flex;
     flex: none;

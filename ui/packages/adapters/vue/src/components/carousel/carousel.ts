@@ -21,6 +21,7 @@ export type CarouselRootSlotProps = Pick<
   | 'canScrollNext'
   | 'autoplaying'
   | 'paused'
+  | 'autoplayStopped'
   | 'dragging'
   | 'isInView'
   | 'setPage'
@@ -74,6 +75,7 @@ export const XhCarouselRoot = defineComponent({
       canScrollNext: ctx.api.value.canScrollNext,
       autoplaying: ctx.api.value.autoplaying,
       paused: ctx.api.value.paused,
+      autoplayStopped: ctx.api.value.autoplayStopped,
       dragging: ctx.api.value.dragging,
       isInView: ctx.api.value.isInView,
       setPage: ctx.api.value.setPage,
@@ -131,6 +133,27 @@ export const XhCarouselNextTrigger = defineComponent({
   setup(_, { slots }) {
     const ctx = useCarouselContext()
     return () => h('button', ctx.api.value.getNextTriggerProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+/**
+ * 播放 / 暂停开关。开了 autoplay 就该把它渲出来：
+ * 自动翻页得有一处能停住，且停住之后不会被别的交互重新点着。
+ *
+ * 插槽拿到的 `stopped` 是「用户按停了没有」，不含悬停与焦点那两路的临时按住。
+ */
+export const XhCarouselAutoplayTrigger = defineComponent({
+  name: 'XhCarouselAutoplayTrigger',
+  slots: Object as SlotsType<{
+    default?: (props: { stopped: boolean }) => VNode[]
+  }>,
+  setup(_, { slots }) {
+    const ctx = useCarouselContext()
+    return () => h(
+      'button',
+      ctx.api.value.getAutoplayTriggerProps() as Record<string, unknown>,
+      slots.default?.({ stopped: ctx.api.value.autoplayStopped }),
+    )
   },
 })
 

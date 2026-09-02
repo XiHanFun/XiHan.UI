@@ -34,14 +34,16 @@ export interface DiffModel {
   hunks: readonly DiffHunk[]
   oldPath?: string
   newPath?: string
-  /** 超过上限被截断了。 */
+  /** 超过上限被截断了，即下面那个数大于 0。 */
   truncated?: boolean
+  /** 被上限砍掉、压根没进这份模型的源文本行数（新旧两侧之和）。 */
+  truncatedLines?: number
 }
 
 export interface ComputeTextDiffOptions {
   /** 变更两侧各留几行上下文，默认 3。 */
   contextLines?: number
-  /** 两份文本的行数之和超过它就截断，默认 20000。AI 会吐超大文件。 */
+  /** 新旧两侧各自的行数上限，超出的从尾部砍掉，默认 20000。AI 会吐超大文件。 */
   maxLines?: number
   lang?: string
   highlighter?: HighlighterPort
@@ -293,9 +295,12 @@ export function computeTextDiff(before: string, after: string, options: ComputeT
 
   const oldLines = before.split('\n')
   const newLines = after.split('\n')
-  const truncated = oldLines.length + newLines.length > maxLines
-  const a = truncated ? oldLines.slice(0, maxLines) : oldLines
-  const b = truncated ? newLines.slice(0, maxLines) : newLines
+  // 上限按两侧各自计：谁超了砍谁。
+  // 砍掉的行数要一路带到界面上——差异从尾部断开之后看着仍像一份完整差异，
+  // 读的人会以为自己看完了，而少掉的恰恰是没被审到的那几行
+  const a = oldLines.length > maxLines ? oldLines.slice(0, maxLines) : oldLines
+  const b = newLines.length > maxLines ? newLines.slice(0, maxLines) : newLines
+  const truncatedLines = (oldLines.length - a.length) + (newLines.length - b.length)
 
   const edits = myers(a, b) ?? replaceAll(a, b)
   const oldTokens = tokenizeLines(before, options.lang, options.highlighter)
@@ -327,7 +332,11 @@ export function computeTextDiff(before: string, after: string, options: ComputeT
     }
   }
 
-  return { hunks: toHunks(edits, contextLines, lineOf, options.wordDiff !== false), truncated: truncated || undefined }
+  return {
+    hunks: toHunks(edits, contextLines, lineOf, options.wordDiff !== false),
+    truncated: truncatedLines > 0 || undefined,
+    truncatedLines: truncatedLines > 0 ? truncatedLines : undefined,
+  }
 }
 
 const HUNK_HEADER = /^@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@/

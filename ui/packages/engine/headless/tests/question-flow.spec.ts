@@ -205,14 +205,27 @@ describe('question-flow：受控答题态', () => {
 
 describe('question-flow：连接层', () => {
   it('提交键在末题上换身份：data-mode 与可访问名一起翻面', () => {
-    const rig = mount({ defaultAnswers: { a: ['a1'], c: ['c1'] } })
+    const rig = mount({
+      defaultAnswers: { a: ['a1'], c: ['c1'] },
+      translations: { continue: '继续', send: '发送' },
+    })
     const first = rig.api().getSubmitTriggerProps() as Dict
     expect(first['data-mode']).toBe('continue')
-    expect(first['aria-label']).toBe('Continue')
+    expect(first['aria-label']).toBe('继续')
     rig.service.send({ type: 'GOTO', index: 2 })
     const last = rig.api().getSubmitTriggerProps() as Dict
     expect(last['data-mode']).toBe('send')
-    expect(last['aria-label']).toBe('Send answers')
+    expect(last['aria-label']).toBe('发送')
+  })
+
+  // 提交键与跳过键都带可见文字。发一句写死的英文名会盖掉那行字，
+  // 语音控制照着屏幕上看见的词说「点击 继续」就再也点不动它。
+  it('没给文案时提交键与跳过键都不发 aria-label，可见文字自己当名字', () => {
+    const rig = mount({ defaultAnswers: { a: ['a1'], c: ['c1'] } })
+    expect((rig.api().getSubmitTriggerProps() as Dict)['aria-label']).toBeUndefined()
+    expect((rig.api().getSkipTriggerProps() as Dict)['aria-label']).toBeUndefined()
+    rig.service.send({ type: 'GOTO', index: 2 })
+    expect((rig.api().getSubmitTriggerProps() as Dict)['aria-label']).toBeUndefined()
   })
 
   it('非当前题对读屏与 Tab 序都不可达', () => {

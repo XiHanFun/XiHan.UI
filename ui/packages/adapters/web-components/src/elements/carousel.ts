@@ -64,6 +64,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @csspart item - 一张幻灯片，可自带 index 属性声明下标，缺省按文档序
  * @csspart prev-trigger - 上一张；首页且不回绕时转原生 disabled
  * @csspart next-trigger - 下一张；末页且不回绕时转原生 disabled
+ * @csspart autoplay-trigger - 播放 / 暂停开关，承载 data-state="running" / "paused"；没配 autoplay 时转原生 disabled
  * @csspart indicator-group - 指示点容器（role=group）
  * @csspart indicator - 一页一个的指示点，可自带 index 属性；当前页带 aria-current="true"
  */
@@ -140,6 +141,7 @@ export class XhCarouselElement extends XhElement {
     put('item-group', api.getItemGroupProps() as Record<string, unknown>)
     put('prev-trigger', api.getPrevTriggerProps() as Record<string, unknown>)
     put('next-trigger', api.getNextTriggerProps() as Record<string, unknown>)
+    put('autoplay-trigger', api.getAutoplayTriggerProps() as Record<string, unknown>)
     put('indicator-group', api.getIndicatorGroupProps() as Record<string, unknown>)
 
     // 条目与指示点是多实例 part，逐个打：身份取作者写的 index，缺省按文档序。

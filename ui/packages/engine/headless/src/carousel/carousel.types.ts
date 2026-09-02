@@ -30,6 +30,10 @@ export interface CarouselTranslations {
   root: string
   prevTrigger: string
   nextTrigger: string
+  /** 自动播放开关停着时的名字（按下去开始播）。 */
+  autoplayTriggerPlay: string
+  /** 自动播放开关正在播时的名字（按下去停住）。 */
+  autoplayTriggerPause: string
   /** 指示点容器的名字。 */
   indicatorGroup: string
   /** 指示点按钮文案，入参是 1 基页码。 */
@@ -68,6 +72,8 @@ export interface CarouselSchema extends MachineSchema {
     /**
      * 自动播放。true 用默认间隔，数值即毫秒间隔；缺省 / false / 非正数一律不自动播放。
      * 指针悬停或轮播内任一节点获得焦点时按住计时，离开后从头计满一整个间隔再翻。
+     *
+     * 减弱动效档下不自动起播：给了间隔也停在 idle，要播得由用户按下播放开关。
      */
     autoplay?: boolean | number
     /**
@@ -148,6 +154,12 @@ export interface CarouselApi<T extends PropTypes = PropTypes> {
   autoplaying: boolean
   /** 自动播放开着但被按住（悬停 / 焦点 / 调用方）。 */
   paused: boolean
+  /**
+   * 自动播放此刻是不是由用户按停的：计时没在走（idle），或调用方那一路按住了。
+   * 与 `paused` 的差别在于它不算悬停与焦点那两路——那两路一挪开就自己续上，
+   * 拿它去驱动播放 / 暂停开关的名字与图形，鼠标一碰按钮就会在两态之间跳。
+   */
+  autoplayStopped: boolean
   dragging: boolean
   isInView: (index: number) => boolean
   /** 页码会被收进合法区间（loop 时回绕），越界入参不会写出越界的页。 */
@@ -165,6 +177,8 @@ export interface CarouselApi<T extends PropTypes = PropTypes> {
   getItemProps: (props: CarouselItemProps) => T['element']
   getPrevTriggerProps: () => T['button']
   getNextTriggerProps: () => T['button']
+  /** 播放 / 暂停开关。没配自动播放（间隔为 0）时转原生 disabled。 */
+  getAutoplayTriggerProps: () => T['button']
   getIndicatorGroupProps: () => T['element']
   getIndicatorProps: (props: CarouselIndicatorProps) => T['button']
 }

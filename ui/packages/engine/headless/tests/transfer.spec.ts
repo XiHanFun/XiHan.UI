@@ -368,6 +368,20 @@ describe('连接层：初始形态', () => {
     expect(h.toSource.getAttribute('type')).toBe('button')
   })
 
+  // 两颗搬运钮是本组件唯一的操作出口，且默认是空按钮（箭头由皮肤画在伪元素上，
+  // 伪元素进不了可及树）。名字一旦缺席，读屏只念得出「按钮」，整个组件就用不成了。
+  it('两颗搬运钮各带一个可及名，没给文案时也有兜底', () => {
+    const h = mount()
+    expect(h.toTarget.getAttribute('aria-label')).toBe('Move to target list')
+    expect(h.toSource.getAttribute('aria-label')).toBe('Move to source list')
+  })
+
+  it('给了文案就用作者那份', () => {
+    const h = mount({ translations: { toTarget: '搬到已选', toSource: '搬回备选' } })
+    expect(h.toTarget.getAttribute('aria-label')).toBe('搬到已选')
+    expect(h.toSource.getAttribute('aria-label')).toBe('搬回备选')
+  })
+
   it('搜索框默认隐去，searchable 打开才显形', () => {
     expect(mount().side('source').search.hasAttribute('hidden')).toBe(true)
     const h = mount({ searchable: true })

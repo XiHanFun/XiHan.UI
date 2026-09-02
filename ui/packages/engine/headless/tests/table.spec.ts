@@ -777,6 +777,16 @@ describe('connectTable 属性输出', () => {
     expect(h.selectAll.getAttribute('data-state')).toBe('checked')
   })
 
+  // 全选把手默认是个空节点（勾由皮肤画在伪元素上），行内那颗把手又是 aria-hidden 的。
+  // 名字一旦缺席，读屏在整张表里就找不到任何能操作选择的东西。
+  it('全选把手带可及名，没给文案时也有兜底，给了就用作者那份', () => {
+    const h = mount({ selectionMode: 'multiple' })
+    expect(h.selectAll.getAttribute('aria-label')).toBe('Select all rows')
+    document.body.innerHTML = ''
+    const named = mount({ selectionMode: 'multiple', translations: { selectAll: '全选' } })
+    expect(named.selectAll.getAttribute('aria-label')).toBe('全选')
+  })
+
   it('单选与 none 下全选把手转 aria-disabled 且点不动', () => {
     for (const mode of ['none', 'single'] as const) {
       document.body.innerHTML = ''

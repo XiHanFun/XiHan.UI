@@ -44,6 +44,11 @@ export function connectTransfer<T extends PropTypes>(
   const loop = prop('loop') ?? true
   const dir = prop('dir') ?? 'ltr'
   const filter = prop('filter')
+  const translations = prop('translations')
+  const label = {
+    toTarget: translations?.toTarget ?? 'Move to target list',
+    toSource: translations?.toSource ?? 'Move to source list',
+  }
   const ids = scope.ids('transfer', 'source-title', 'target-title', 'source-list', 'target-list')
 
   const titleId: BySide<string> = { source: ids['source-title'], target: ids['target-title'] }
@@ -403,9 +408,12 @@ export function connectTransfer<T extends PropTypes>(
       'hidden': !selectable[item.side] || undefined,
     }),
 
+    // 两颗搬运钮是本组件唯一的操作出口，且默认只画一枚箭头、没有可读文字，
+    // 名字无条件发：缺了它读屏就只念得出「按钮」，整个组件对读屏不可用
     getToTargetTriggerProps: () => normalize.button({
       ...parts['to-target-trigger'].attrs,
       'type': 'button',
+      'aria-label': label.toTarget,
       // 单体控件用原生 disabled：没勾中任何可搬的条目时按下去什么也不会发生，
       // 它就该退出 Tab 序列，而不是留在那儿让人按一下、没反应、再按一下
       'disabled': !canMove('target') || undefined,
@@ -421,6 +429,7 @@ export function connectTransfer<T extends PropTypes>(
     getToSourceTriggerProps: () => normalize.button({
       ...parts['to-source-trigger'].attrs,
       'type': 'button',
+      'aria-label': label.toSource,
       // oneWay 把这条路整个封死，此时它恒为禁用
       'disabled': !canMove('source') || undefined,
       'aria-controls': listId.source,

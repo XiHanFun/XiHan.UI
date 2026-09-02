@@ -19,7 +19,9 @@
   有转移，迟到的定时事件落地即静默丢弃。
 - **缺省不给默认超时值**：替宿主定安全策略比不定更危险。时长非有限或非正数时一个计时器
   都不起，停在待决——既不当 0ms 立刻到期，也绝不当成无限期放行。
-- **拒绝这条路永远走得通**：它不吃挂起中、不吃必选项、不吃任何闸门。
+- **拒绝这条路永远走得通**：机器这一层的拒绝不吃必选项、不吃任何闸门，超时、卸载兜底与
+  宿主的 `deny()` 入口都落得下去。人手按的那两条路（拒绝按钮与 Escape）另有一道挂起闸门：
+  判定在途时它们跟批准钮一起锁住，否则等待宿主回话的空窗里能按出第二条判定。
 - 勾选与判定是原子的：批准的载荷带着「批的是哪几项」，不存在「已批准但范围还没同步」的窗口。
 - 备注（`note`）与勾选同批取快照，随判定载荷一起发出；空着就不带这一格。
   它不参与「必选项勾满了没有」的判断。
@@ -169,9 +171,9 @@
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
 | `Enter` / `Space` | 焦点在批准按钮上，待决、必选项已勾满、且不在挂起中 | 判为批准，载荷带上已勾选的授权项 |
-| `Enter` / `Space` | 焦点在拒绝按钮上且待决 | 判为拒绝 |
+| `Enter` / `Space` | 焦点在拒绝按钮上，待决且不在挂起中 | 判为拒绝 |
 | `Space` | 焦点在授权项上，待决且该项未禁用 | 勾选或取消该项。Enter 刻意不参与，与原生复选框一致 |
-| `Escape` | 焦点在闸门内且待决、且开着 denyOnEscape | 判为拒绝。**它不是「关闭」**——本组件不提供不作答的出口 |
+| `Escape` | 焦点在闸门内，待决、不在挂起中、且开着 denyOnEscape | 判为拒绝。**它不是「关闭」**——本组件不提供不作答的出口 |
 
 ## 无障碍
 
@@ -197,6 +199,8 @@
 | `approve-trigger` | `aria-busy` | 'true' \| undefined |
 | `approve-trigger` | `aria-disabled` | 'true' \| 'false' |
 | `approve-trigger` | `aria-label` | translations?.approve |
+| `deny-trigger` | `aria-busy` | 'true' \| undefined |
+| `deny-trigger` | `aria-disabled` | 'true' \| 'false' |
 | `deny-trigger` | `aria-label` | translations?.deny |
 
 - 闸门是 `role=group`，由标题命名、由说明描述。
@@ -230,13 +234,14 @@
 | `result` | `data-state` | state.get() |
 | `approve-trigger` | `data-busy` | ''（条件成立时才出现） |
 | `approve-trigger` | `data-state` | state.get() |
+| `deny-trigger` | `data-busy` | ''（条件成立时才出现） |
 | `deny-trigger` | `data-state` | state.get() |
 
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-approval-action-font-size` · `--xh-approval-action-font-weight` · `--xh-approval-action-h` · `--xh-approval-action-px` · `--xh-approval-action-radius` · `--xh-approval-actions-gap` · `--xh-approval-approve-bg` · `--xh-approval-approve-bg-hover` · `--xh-approval-approve-bg-off` · `--xh-approval-approve-fg` · `--xh-approval-approve-shadow` · `--xh-approval-bg` · `--xh-approval-border` · `--xh-approval-border-settled` · `--xh-approval-deny-bg` · `--xh-approval-deny-bg-hover` · `--xh-approval-deny-border` · `--xh-approval-deny-fg` · `--xh-approval-description-fg` · `--xh-approval-description-font-size` · `--xh-approval-gap` · `--xh-approval-icon-size` · `--xh-approval-indicator-bg-checked` · `--xh-approval-indicator-border` · `--xh-approval-indicator-border-checked` · `--xh-approval-indicator-fg` · `--xh-approval-indicator-radius` · `--xh-approval-indicator-size` · `--xh-approval-note-bg` · `--xh-approval-note-border` · `--xh-approval-note-fg` · `--xh-approval-note-font-size` · `--xh-approval-note-px` · `--xh-approval-note-py` · `--xh-approval-note-radius` · `--xh-approval-p` · `--xh-approval-radius` · `--xh-approval-result-bg` · `--xh-approval-result-bg-denied` · `--xh-approval-result-fg` · `--xh-approval-result-fg-denied` · `--xh-approval-result-font-size` · `--xh-approval-result-font-weight` · `--xh-approval-result-gap` · `--xh-approval-result-px` · `--xh-approval-result-py` · `--xh-approval-result-radius` · `--xh-approval-scope-bg-hover` · `--xh-approval-scope-fg` · `--xh-approval-scope-fg-checked` · `--xh-approval-scope-font-size` · `--xh-approval-scope-gap` · `--xh-approval-scope-item-gap` · `--xh-approval-scope-px` · `--xh-approval-scope-py` · `--xh-approval-scope-radius` · `--xh-approval-shadow` · `--xh-approval-timer-fg` · `--xh-approval-timer-font-size` · `--xh-approval-title-fg` · `--xh-approval-title-font-size` · `--xh-approval-title-font-weight`
+`--xh-approval-action-font-size` · `--xh-approval-action-font-weight` · `--xh-approval-action-h` · `--xh-approval-action-px` · `--xh-approval-action-radius` · `--xh-approval-actions-gap` · `--xh-approval-approve-bg` · `--xh-approval-approve-bg-hover` · `--xh-approval-approve-bg-off` · `--xh-approval-approve-fg` · `--xh-approval-approve-shadow` · `--xh-approval-bg` · `--xh-approval-border` · `--xh-approval-border-settled` · `--xh-approval-deny-bg` · `--xh-approval-deny-bg-hover` · `--xh-approval-deny-bg-off` · `--xh-approval-deny-border` · `--xh-approval-deny-border-off` · `--xh-approval-deny-fg` · `--xh-approval-description-fg` · `--xh-approval-description-font-size` · `--xh-approval-gap` · `--xh-approval-icon-size` · `--xh-approval-indicator-bg-checked` · `--xh-approval-indicator-border` · `--xh-approval-indicator-border-checked` · `--xh-approval-indicator-fg` · `--xh-approval-indicator-radius` · `--xh-approval-indicator-size` · `--xh-approval-note-bg` · `--xh-approval-note-border` · `--xh-approval-note-fg` · `--xh-approval-note-font-size` · `--xh-approval-note-px` · `--xh-approval-note-py` · `--xh-approval-note-radius` · `--xh-approval-p` · `--xh-approval-radius` · `--xh-approval-result-bg` · `--xh-approval-result-bg-denied` · `--xh-approval-result-fg` · `--xh-approval-result-fg-denied` · `--xh-approval-result-font-size` · `--xh-approval-result-font-weight` · `--xh-approval-result-gap` · `--xh-approval-result-px` · `--xh-approval-result-py` · `--xh-approval-result-radius` · `--xh-approval-scope-bg-hover` · `--xh-approval-scope-fg` · `--xh-approval-scope-fg-checked` · `--xh-approval-scope-font-size` · `--xh-approval-scope-gap` · `--xh-approval-scope-item-gap` · `--xh-approval-scope-px` · `--xh-approval-scope-py` · `--xh-approval-scope-radius` · `--xh-approval-shadow` · `--xh-approval-timer-fg` · `--xh-approval-timer-font-size` · `--xh-approval-title-fg` · `--xh-approval-title-font-size` · `--xh-approval-title-font-weight`
 
 ## 动效
 

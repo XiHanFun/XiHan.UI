@@ -23,9 +23,7 @@ import {
         <XhFloatingPanelHeader>
           <XhFloatingPanelTitle>只读面板</XhFloatingPanelTitle>
           <XhFloatingPanelDragTrigger />
-          <XhFloatingPanelStageTrigger stage="minimized"
-            >—</XhFloatingPanelStageTrigger
-          >
+          <XhFloatingPanelStageTrigger stage="minimized" />
           <XhFloatingPanelCloseTrigger />
         </XhFloatingPanelHeader>
         <XhFloatingPanelBody>

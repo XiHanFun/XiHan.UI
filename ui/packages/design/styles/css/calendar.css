@@ -335,6 +335,15 @@
     color: var(--xh-fg-disabled);
   }
 
+  /* 只读：日子改不动，但不是禁用——颜色照常，只把"可点"这个暗示收回来。
+     只收日视图这一档：粗粒度视图（月格、年格）点一格是往下钻一层，只读也照做，
+     那些格子仍是按得动的按钮，手型不能撤。
+     排掉不可用的格子是因为这条选择器权重高过上面那条，不排就会把 not-allowed 覆盖回 default */
+  [data-scope='calendar'][data-part='grid'][data-readonly][data-view='day']
+    [data-part='cell-trigger']:not([data-disabled]) {
+    cursor: default;
+  }
+
   /* 焦点环画在格子上：整张网格只有一格在 Tab 序列里，落焦点必须一眼看得见。
      往内收一像素，免得被相邻格子的底色盖住 */
   [data-scope='calendar'][data-part='cell-trigger']:focus-visible {

@@ -50,6 +50,7 @@ function segmentKey(line: DiffLine): string {
  * @csspart gap-cell - 裹住展开按钮的那一格，role=cell
  * @csspart gap-trigger - 展开按钮，承载 aria-expanded
  * @csspart empty - 一条变更都没有时的占位
+ * @csspart truncation - 截断提示条，文字由本元素填；没截断时带 hidden
  */
 export class XhDiffViewElement extends XhElement {
   static override partContract = { anatomy: diffViewAnatomy, meta: diffViewMeta }
@@ -109,6 +110,12 @@ export class XhDiffViewElement extends XhElement {
     put('viewport', api.getViewportProps() as Record<string, unknown>)
     put('body', api.getBodyProps() as Record<string, unknown>)
     put('empty', api.getEmptyProps() as Record<string, unknown>)
+    // 提示条的文字由本元素填：留给作者填的话，作者不填就又变回一份看着完整的残缺差异
+    const truncation = this.getPart('truncation')
+    if (truncation) {
+      this.spreader.spread(truncation, api.getTruncationProps() as Record<string, unknown>)
+      truncation.textContent = api.truncationText
+    }
 
     // 统计位增删各一个，作者用 data-change 说明这一个是哪一档，数字由本元素填
     for (const el of this.getParts('stat')) {

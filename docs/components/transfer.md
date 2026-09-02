@@ -105,6 +105,7 @@ oneWay 把往回搬那条路整个封死，右侧不再接受勾选，往回的�
 | `oneWay` | `boolean` |  | 只能往右不能往回：往回搬那条路整个封死，target 侧也不再接受勾选。 |
 | `loop` | `boolean` |  | 列表内方向键走到尽头是否回绕，默认 true。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr；决定列表内哪个横向方向键是"搬向对面"。 |
+| `translations` | `Partial<TransferTranslations>` |  |  |
 | `onValueChange` | `(details: TransferValueChangeDetails) => void` |  |  |
 | `onSelectionChange` | `(details: TransferSelectionChangeDetails) => void` |  |  |
 
@@ -213,7 +214,9 @@ oneWay 把往回搬那条路整个封死，右侧不再接受勾选，往回的�
 | `item` | `role` | 'option' |
 | `item-checkbox` | `aria-hidden` | 'true' |
 | `to-target-trigger` | `aria-controls` | listId.target |
+| `to-target-trigger` | `aria-label` | label.toTarget |
 | `to-source-trigger` | `aria-controls` | listId.source |
+| `to-source-trigger` | `aria-label` | label.toSource |
 | `select-all-trigger` | `aria-checked` | 'true' \| 'mixed' \| 'false' |
 | `select-all-trigger` | `aria-controls` | listId[panel.side] |
 | `select-all-trigger` | `role` | 'checkbox' |

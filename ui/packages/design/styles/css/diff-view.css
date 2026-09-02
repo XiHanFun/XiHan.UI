@@ -10,6 +10,8 @@
     --xh-diff-view-added-fg: var(--xh-diff-added-fg);
     --xh-diff-view-removed-bg: var(--xh-diff-removed-bg);
     --xh-diff-view-removed-fg: var(--xh-diff-removed-fg);
+    /* 作者塞进部件里的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+    --xh-icon-size: var(--xh-diff-view-icon-size, var(--xh-glyph-size-text));
 
     display: block;
     overflow: hidden;
@@ -312,6 +314,41 @@
 
   [data-scope='diff-view'][data-part='empty'][hidden] {
     display: none;
+  }
+
+  /* 截断提示条：这份差异不完整。它比 empty 显眼一档——空差异只是没东西可看，
+     被砍过的差异看着像完整的，读的人不主动往这儿看就不会知道 */
+  [data-scope='diff-view'][data-part='truncation'] {
+    display: flex;
+    align-items: center;
+    gap: var(--xh-diff-view-truncation-gap, var(--xh-space-2));
+    padding-inline: var(--xh-diff-view-px, var(--xh-space-3));
+    padding-block: var(--xh-diff-view-py, var(--xh-space-2));
+    border-block-start: var(--xh-stroke-thin) solid
+      var(--xh-diff-view-truncation-border, var(--xh-border-subtle));
+    background: var(--xh-diff-view-truncation-bg,
+      color-mix(in oklab, var(--xh-fg-warning) 12%, var(--xh-bg-surface)));
+    color: var(--xh-diff-view-truncation-fg,
+      color-mix(in oklab, var(--xh-fg-warning) 60%, var(--xh-fg-default)));
+    font-size: var(--xh-diff-view-header-font-size, var(--xh-text-secondary-size));
+  }
+
+  [data-scope='diff-view'][data-part='truncation'][hidden] {
+    display: none;
+  }
+
+  /* 提示条的文字由适配器填，所以字形不走 :empty 那条兜底路径，恒画一枚；
+     不要它就把 --xh-glyph-mark-warning 在子树上置 none */
+  [data-scope='diff-view'][data-part='truncation']::before {
+    content: '';
+    flex: none;
+    display: inline-block;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-warning) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-warning) center / contain no-repeat;
   }
 
   /* 尺寸档只改字号与内衬 */

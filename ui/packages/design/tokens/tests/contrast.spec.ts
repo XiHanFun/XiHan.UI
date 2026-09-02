@@ -233,6 +233,28 @@ describe('禁用态按 1.4.3 豁免，只钉住不比正文更差', () => {
   })
 })
 
+// 禁用态的实心按钮（发送钮这一类）：字压成 fg.disabled，底一起退到 bg.muted。
+// 这一档的比值本来就低（浅色 2.36、深色 1.94），钉住只是不许更淡——
+// 「看得出这是一颗按不动的按钮」靠的是底退成中性面，不是靠比值；
+// 留着高彩度的实心品牌底只换字，它看着仍是一颗主按钮。
+const DISABLED_FILL_RATCHET: ReadonlyArray<[keyof typeof themes, number]> = [
+  ['light', 2.36],
+  ['dark', 1.94],
+]
+
+describe('禁用态实心按钮的字底棘轮（1.4.3 豁免，只钉住不许更淡）', () => {
+  for (const [theme, baseline] of DISABLED_FILL_RATCHET) {
+    it(`${theme} fg.disabled / bg.muted 不低于 ${baseline}`, () => {
+      expect(round(contrast(theme, 'fg.disabled', 'bg.muted'))).toBeGreaterThanOrEqual(baseline)
+    })
+  }
+
+  it('禁用底与常态那块实心底不是同一块颜色：只换字就没有这一档可言', () => {
+    for (const theme of ['light', 'dark'] as const)
+      expect(resolve(theme, 'bg.muted')).not.toBe(resolve(theme, 'bg.brand'))
+  })
+})
+
 describe('控件边界（WCAG 1.4.11，3:1）', () => {
   for (const [theme, fg, bg] of CONTROL_BORDER_PAIRS) {
     it(`${theme} ${fg} / ${bg}`, () => {

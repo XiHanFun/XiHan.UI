@@ -367,6 +367,7 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 | `cell` | `role` | 'gridcell' |
 | `select-all-trigger` | `aria-checked` | 'true' \| 'mixed' \| 'false' |
 | `select-all-trigger` | `aria-disabled` | 'false' \| 'true' |
+| `select-all-trigger` | `aria-label` | label.selectAll |
 | `select-all-trigger` | `role` | 'checkbox' |
 | `row-select-trigger` | `aria-hidden` | 'true' |
 | `sort-trigger` | `aria-disabled` | 'false' \| 'true' |

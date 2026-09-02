@@ -118,7 +118,7 @@
 | [头像组](./avatar-group) | `avatar-group` | 2 | 0 | 4 |
 | [日历](./calendar) | `calendar` | 17 | 12 | 4 |
 | [卡片](./card) | `card` | 7 | 0 | 5 |
-| [走马灯](./carousel) | `carousel` | 8 | 10 | 9 |
+| [走马灯](./carousel) | `carousel` | 9 | 10 | 9 |
 | [代码块](./code-block) | `code-block` | 5 | 1 | 4 |
 | [折叠区域](./collapsible) | `collapsible` | 3 | 1 | 6 |
 | [倒计时](./countdown) | `countdown` | 1 | 0 | 4 |
@@ -182,7 +182,7 @@ AI 对话界面的组件。
 | --- | --- | --- | --- | --- |
 | [审批](./approval) | `approval` | 14 | 4 | 3 |
 | [代码视图](./code-view) | `code-view` | 11 | 2 | 5 |
-| [差异视图](./diff-view) | `diff-view` | 15 | 2 | 3 |
+| [差异视图](./diff-view) | `diff-view` | 16 | 2 | 4 |
 | [消息编辑器](./composer) | `composer` | 3 | 4 | 10 |
 | [流式正文](./markdown-stream) | `markdown-stream` | 4 | 1 | 4 |
 | [消息流](./message-feed) | `message-feed` | 7 | 7 | 3 |

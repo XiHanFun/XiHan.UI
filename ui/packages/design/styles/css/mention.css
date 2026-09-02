@@ -304,6 +304,14 @@
     cursor: not-allowed;
   }
 
+  /* 只读时正文插不进东西，候选也就不该再摆出可点的样子。
+     标记读定位层那一份：候选被搬到 portal 落点，根上的只读标记够不着它们。
+     排掉禁用条目是因为这条选择器权重高过上面那条，不排就会把 not-allowed 覆盖回 default */
+  [data-scope='mention'][data-part='positioner'][data-readonly]
+    [data-part='item']:not([data-disabled]) {
+    cursor: default;
+  }
+
   [data-scope='mention'][data-part='item-text'] {
     flex: 1;
     /* 弹性项默认 min-width: auto 不肯收缩到内容以下，省略号因此永不生效 */

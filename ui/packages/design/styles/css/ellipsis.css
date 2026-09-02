@@ -33,8 +33,10 @@
     white-space: normal;
   }
 
-  /* 可展开时整块文字就是那颗按钮 */
-  [data-scope='ellipsis'][data-part='root'][data-expandable] {
+  /* 真被裁了才是那颗按钮：装得下的短文本按下去什么都不变，摆出手型等于许一个按不动的按钮。
+     铺开态另收一条——那一档量不出"被裁"，但收回去的入口必须留着 */
+  [data-scope='ellipsis'][data-part='root'][data-expandable][data-overflowing],
+  [data-scope='ellipsis'][data-part='root'][data-expandable][data-state='open'] {
     cursor: pointer;
   }
 

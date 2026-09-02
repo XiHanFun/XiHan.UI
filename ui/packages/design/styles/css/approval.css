@@ -352,6 +352,18 @@
     scale: var(--xh-motion-scale-press);
   }
 
+  /* 判定在途时拒绝也按不动了，用 aria-disabled 而不是原生 disabled：保住可聚焦，
+     让读屏念得到为什么按不动。所以置灰要按这个属性写。
+     排在 :hover / :active 之后：三条选择器特指度相同，靠书写顺序压过它们，
+     否则悬停时这颗看着仍然是可按的 */
+  [data-scope='approval'][data-part='deny-trigger'][aria-disabled='true'] {
+    border-color: var(--xh-approval-deny-border-off, var(--xh-border-default));
+    background: var(--xh-approval-deny-bg-off, transparent);
+    color: var(--xh-fg-disabled);
+    scale: 1;
+    cursor: not-allowed;
+  }
+
   [data-scope='approval'][data-part='approve-trigger']:focus-visible,
   [data-scope='approval'][data-part='deny-trigger']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);

@@ -311,12 +311,14 @@ export function connectQuestionFlow<T extends PropTypes>(
       'onClick': () => send({ type: 'SKIP' }),
     }),
 
-    // 同一颗按钮按是不是末题在继续与发送两种身份间切换
+    // 同一颗按钮按是不是末题在继续与发送两种身份间切换。
+    // 名字与跳过键同一口径：不给就不发。这颗按钮按惯例带可见文字，
+    // 兜底的英文会把可见文字盖掉，语音控制照着看见的字念就点不动它
     getSubmitTriggerProps: () => normalize.button({
       ...parts['submit-trigger'].attrs,
       'type': 'button',
       'data-mode': isLast ? 'send' : 'continue',
-      'aria-label': isLast ? (translations?.send ?? 'Send answers') : (translations?.continue ?? 'Continue'),
+      'aria-label': isLast ? translations?.send : translations?.continue,
       'disabled': !canAdvance || undefined,
       'onClick': advance,
     }),

@@ -180,13 +180,17 @@ orientation 三档：竖排、横排，换行网格用 both，落点按最近中
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-sortable-gap` · `--xh-sortable-handle-bg-hover` · `--xh-sortable-handle-fg` · `--xh-sortable-handle-fg-disabled` · `--xh-sortable-handle-fg-hover` · `--xh-sortable-handle-radius` · `--xh-sortable-handle-size` · `--xh-sortable-item-opacity-dragging` · `--xh-sortable-item-shadow-dragging`
+`--xh-sortable-gap` · `--xh-sortable-handle-bg-hover` · `--xh-sortable-handle-fg` · `--xh-sortable-handle-fg-disabled` · `--xh-sortable-handle-fg-hover` · `--xh-sortable-handle-grip-h` · `--xh-sortable-handle-grip-w` · `--xh-sortable-handle-radius` · `--xh-sortable-handle-size` · `--xh-sortable-item-opacity-dragging` · `--xh-sortable-item-shadow-dragging`
 
 ## 动效
 
 状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
 
 ## 组合
 

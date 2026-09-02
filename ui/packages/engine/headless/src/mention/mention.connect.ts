@@ -253,6 +253,8 @@ export function connectMention<T extends PropTypes>(
       'data-variant': prop('variant'),
       'data-tone': prop('tone'),
       'data-size': prop('size'),
+      // 只读同样在这一侧再打一次：候选被搬到 portal 落点，根上那份够不着它们
+      'data-readonly': dataAttr(readOnly),
       'data-state': stateAttr,
       'data-placement': placement,
       // 锚点被滚出可视区时引擎会置 hidden，样式据此收起浮层

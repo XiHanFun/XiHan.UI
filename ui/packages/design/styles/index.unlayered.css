@@ -633,6 +633,8 @@
   --xh-diff-view-added-fg: var(--xh-diff-added-fg);
   --xh-diff-view-removed-bg: var(--xh-diff-removed-bg);
   --xh-diff-view-removed-fg: var(--xh-diff-removed-fg);
+  /* 作者塞进部件里的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+  --xh-icon-size: var(--xh-diff-view-icon-size, var(--xh-glyph-size-text));
 
   display: block;
   overflow: hidden;
@@ -935,6 +937,41 @@
 
 [data-scope='diff-view'][data-part='empty'][hidden] {
   display: none;
+}
+
+/* 截断提示条：这份差异不完整。它比 empty 显眼一档——空差异只是没东西可看，
+   被砍过的差异看着像完整的，读的人不主动往这儿看就不会知道 */
+[data-scope='diff-view'][data-part='truncation'] {
+  display: flex;
+  align-items: center;
+  gap: var(--xh-diff-view-truncation-gap, var(--xh-space-2));
+  padding-inline: var(--xh-diff-view-px, var(--xh-space-3));
+  padding-block: var(--xh-diff-view-py, var(--xh-space-2));
+  border-block-start: var(--xh-stroke-thin) solid
+    var(--xh-diff-view-truncation-border, var(--xh-border-subtle));
+  background: var(--xh-diff-view-truncation-bg,
+    color-mix(in oklab, var(--xh-fg-warning) 12%, var(--xh-bg-surface)));
+  color: var(--xh-diff-view-truncation-fg,
+    color-mix(in oklab, var(--xh-fg-warning) 60%, var(--xh-fg-default)));
+  font-size: var(--xh-diff-view-header-font-size, var(--xh-text-secondary-size));
+}
+
+[data-scope='diff-view'][data-part='truncation'][hidden] {
+  display: none;
+}
+
+/* 提示条的文字由适配器填，所以字形不走 :empty 那条兜底路径，恒画一枚；
+   不要它就把 --xh-glyph-mark-warning 在子树上置 none */
+[data-scope='diff-view'][data-part='truncation']::before {
+  content: '';
+  flex: none;
+  display: inline-block;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-warning) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-warning) center / contain no-repeat;
 }
 
 /* 尺寸档只改字号与内衬 */
@@ -1300,8 +1337,10 @@
   white-space: normal;
 }
 
-/* 可展开时整块文字就是那颗按钮 */
-[data-scope='ellipsis'][data-part='root'][data-expandable] {
+/* 真被裁了才是那颗按钮：装得下的短文本按下去什么都不变，摆出手型等于许一个按不动的按钮。
+   铺开态另收一条——那一档量不出"被裁"，但收回去的入口必须留着 */
+[data-scope='ellipsis'][data-part='root'][data-expandable][data-overflowing],
+[data-scope='ellipsis'][data-part='root'][data-expandable][data-state='open'] {
   cursor: pointer;
 }
 
@@ -1961,6 +2000,35 @@
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
   mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+}
+
+/* 形态钮是同一个部件的三副面孔，字形按它「按下去切到哪一档」分：
+   还原是四角朝内、铺满是四角朝外、收拢是一条横线。不分档的话标题栏上排着的
+   两三颗钮长得一模一样，按哪颗全靠猜。
+   这条打底画「还原」，另两档在下面换掉 mask-image。
+   选的是 data-target-stage 而不是面板身上的 data-stage：后者说的是面板此刻在哪一档，
+   用它会让排在一起的几颗钮同时换成同一枚字形。
+   字形也不随 data-state='on' 翻面：可访问名由连接层按 target 定死（按下的仍念「铺满面板」），
+   字形跟着按下态改就与念出来的名字对不上了 */
+[data-scope='floating-panel'][data-part='stage-trigger']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-restore) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-restore) center / contain no-repeat;
+}
+
+[data-scope='floating-panel'][data-part='stage-trigger'][data-target-stage='maximized']:empty::before {
+  -webkit-mask-image: var(--xh-glyph-mark-maximize);
+  mask-image: var(--xh-glyph-mark-maximize);
+}
+
+[data-scope='floating-panel'][data-part='stage-trigger'][data-target-stage='minimized']:empty::before {
+  -webkit-mask-image: var(--xh-glyph-mark-minus);
+  mask-image: var(--xh-glyph-mark-minus);
 }
 
 @media print {
@@ -4701,6 +4769,14 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='mention'][data-part='item'][data-disabled] {
   color: var(--xh-fg-disabled);
   cursor: not-allowed;
+}
+
+/* 只读时正文插不进东西，候选也就不该再摆出可点的样子。
+   标记读定位层那一份：候选被搬到 portal 落点，根上的只读标记够不着它们。
+   排掉禁用条目是因为这条选择器权重高过上面那条，不排就会把 not-allowed 覆盖回 default */
+[data-scope='mention'][data-part='positioner'][data-readonly]
+  [data-part='item']:not([data-disabled]) {
+  cursor: default;
 }
 
 [data-scope='mention'][data-part='item-text'] {
@@ -9506,6 +9582,18 @@ input[data-scope='mention'][data-part='input'] {
   scale: var(--xh-motion-scale-press);
 }
 
+/* 判定在途时拒绝也按不动了，用 aria-disabled 而不是原生 disabled：保住可聚焦，
+   让读屏念得到为什么按不动。所以置灰要按这个属性写。
+   排在 :hover / :active 之后：三条选择器特指度相同，靠书写顺序压过它们，
+   否则悬停时这颗看着仍然是可按的 */
+[data-scope='approval'][data-part='deny-trigger'][aria-disabled='true'] {
+  border-color: var(--xh-approval-deny-border-off, var(--xh-border-default));
+  background: var(--xh-approval-deny-bg-off, transparent);
+  color: var(--xh-fg-disabled);
+  scale: 1;
+  cursor: not-allowed;
+}
+
 [data-scope='approval'][data-part='approve-trigger']:focus-visible,
 [data-scope='approval'][data-part='deny-trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
@@ -10410,6 +10498,15 @@ input[data-scope='mention'][data-part='input'] {
   color: var(--xh-fg-disabled);
 }
 
+/* 只读：日子改不动，但不是禁用——颜色照常，只把"可点"这个暗示收回来。
+   只收日视图这一档：粗粒度视图（月格、年格）点一格是往下钻一层，只读也照做，
+   那些格子仍是按得动的按钮，手型不能撤。
+   排掉不可用的格子是因为这条选择器权重高过上面那条，不排就会把 not-allowed 覆盖回 default */
+[data-scope='calendar'][data-part='grid'][data-readonly][data-view='day']
+  [data-part='cell-trigger']:not([data-disabled]) {
+  cursor: default;
+}
+
 /* 焦点环画在格子上：整张网格只有一格在 Tab 序列里，落焦点必须一眼看得见。
    往内收一像素，免得被相邻格子的底色盖住 */
 [data-scope='calendar'][data-part='cell-trigger']:focus-visible {
@@ -10653,9 +10750,10 @@ input[data-scope='mention'][data-part='input'] {
   display: none;
 }
 
-/* 两端按钮：圆形、与控件同高，禁用时靠原生 :disabled 变灰 */
+/* 两端按钮与播放开关：圆形、与控件同高，禁用时靠原生 :disabled 变灰 */
 [data-scope='carousel'][data-part='prev-trigger'],
-[data-scope='carousel'][data-part='next-trigger'] {
+[data-scope='carousel'][data-part='next-trigger'],
+[data-scope='carousel'][data-part='autoplay-trigger'] {
   display: inline-flex;
   flex: none;
   align-items: center;
@@ -10674,22 +10772,26 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='carousel'][data-part='prev-trigger'][hidden],
-[data-scope='carousel'][data-part='next-trigger'][hidden] {
+[data-scope='carousel'][data-part='next-trigger'][hidden],
+[data-scope='carousel'][data-part='autoplay-trigger'][hidden] {
   display: none;
 }
 
 [data-scope='carousel'][data-part='prev-trigger']:hover:not(:disabled),
-[data-scope='carousel'][data-part='next-trigger']:hover:not(:disabled) {
+[data-scope='carousel'][data-part='next-trigger']:hover:not(:disabled),
+[data-scope='carousel'][data-part='autoplay-trigger']:hover:not(:disabled) {
   background: var(--xh-carousel-trigger-bg-hover, var(--xh-bg-subtle-hover));
 }
 
 [data-scope='carousel'][data-part='prev-trigger']:active:not(:disabled),
-[data-scope='carousel'][data-part='next-trigger']:active:not(:disabled) {
+[data-scope='carousel'][data-part='next-trigger']:active:not(:disabled),
+[data-scope='carousel'][data-part='autoplay-trigger']:active:not(:disabled) {
   background: var(--xh-carousel-trigger-bg-active, var(--xh-bg-subtle-active));
 }
 
 [data-scope='carousel'][data-part='prev-trigger']:focus-visible,
 [data-scope='carousel'][data-part='next-trigger']:focus-visible,
+[data-scope='carousel'][data-part='autoplay-trigger']:focus-visible,
 [data-scope='carousel'][data-part='indicator']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
   outline-offset: var(--xh-ring-offset);
@@ -10698,7 +10800,8 @@ input[data-scope='mention'][data-part='input'] {
 /* 两端到头时按钮是原生 disabled（不可聚焦、进不了 Tab 序列），所以这里必须用 :disabled；
    连接层同时给的 data-disabled 只是留给作者的钩子 */
 [data-scope='carousel'][data-part='prev-trigger']:disabled,
-[data-scope='carousel'][data-part='next-trigger']:disabled {
+[data-scope='carousel'][data-part='next-trigger']:disabled,
+[data-scope='carousel'][data-part='autoplay-trigger']:disabled {
   color: var(--xh-fg-disabled);
   cursor: not-allowed;
 }
@@ -10797,6 +10900,29 @@ input[data-scope='mention'][data-part='input'] {
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
   mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
+}
+
+/* 播放开关的字形随状态换：正在播画暂停、停着画播放，与按钮名字指的是同一个动作 */
+[data-scope='carousel'][data-part='autoplay-trigger'][data-state='running']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-pause) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-pause) center / contain no-repeat;
+}
+
+[data-scope='carousel'][data-part='autoplay-trigger'][data-state='paused']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-play) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-play) center / contain no-repeat;
 }
 
 /* styles/cascader.css */
@@ -11553,6 +11679,14 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='checkbox'][data-part='root'][data-disabled] {
   cursor: not-allowed;
   opacity: var(--xh-state-disabled-opacity);
+}
+
+/* 只读改不动值，但不是禁用：颜色与不透明度都照常，只把"可点"这个暗示收回来。
+   方框与整行文字一起收——给了默认插槽时外层是 <label>，只收方框的话文字那半仍摆着手型。
+   排掉禁用是因为这条选择器权重高过禁用那两条，不排就会把 not-allowed 覆盖回 default */
+[data-scope='checkbox'][data-part='root'][data-readonly]:not([data-disabled]),
+[data-scope='checkbox'][data-part='label'][data-readonly]:not([data-disabled]) {
+  cursor: default;
 }
 
 [data-scope='checkbox'][data-part='root']:focus-visible {
@@ -13756,9 +13890,13 @@ input[data-scope='mention'][data-part='input'] {
   box-shadow: none;
 }
 
-/* 禁用走原生 disabled，输入为空时按钮转灰但不收起 */
+/* 禁用走原生 disabled，输入为空时按钮转灰但不收起。
+   底与字一起换：留着实心的品牌底、只把字压成 fg-disabled，字与底几乎同亮度，
+   按钮就成了一块看不出内容的色斑。空输入是常态，这一档开箱第一眼就是它 */
 [data-scope='composer'][data-part='submit-trigger']:disabled {
-  color: var(--xh-fg-disabled);
+  --xh-_bg: var(--xh-composer-send-bg-off, var(--xh-bg-muted));
+  --xh-_fg: var(--xh-fg-disabled);
+
   box-shadow: none;
   cursor: not-allowed;
 }
@@ -13842,6 +13980,14 @@ input[data-scope='mention'][data-part='input'] {
    长按会先选中区域内的文字，长按菜单弹出时手指底下是一片高亮，很难看 */
 [data-scope='context-menu'][data-part='trigger'] {
   user-select: none;
+  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+/* 触屏没有右键，菜单靠长按计时打开。这段等待里若一点变化都没有，用户会当成没按上而提前
+   抬手，计时被抬手事件掐掉，菜单永远打不开。压一档中性轻底当「按住了，接着按」的回执。
+   只换底色不缩放：触发区是作者的整块内容，缩放它会把作者自己的排版一起抖起来 */
+[data-scope='context-menu'][data-part='trigger'][data-pressing] {
+  background: var(--xh-context-menu-trigger-bg-pressing, var(--xh-bg-subtle));
 }
 
 /* 触发区自带 Tab 位（Shift+F10 / 菜单键的落点），必须画得出焦点 */
@@ -16153,6 +16299,24 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='file-upload'][data-part='item'][data-disabled] {
   color: var(--xh-fg-disabled);
+}
+
+/* 上传失败的那一行必须一眼认出来：不标出来的话它跟传完的行渲染完全一致，
+   用户不知道该按哪一条的重试。红边之外再补一枚警示字形——只靠颜色的话，
+   色觉障碍用户与灰度打印下这一档等于没有 */
+[data-scope='file-upload'][data-part='item'][data-state='error'] {
+  border-color: var(--xh-file-upload-item-border-error, var(--xh-border-invalid));
+  color: var(--xh-file-upload-item-fg-error, var(--xh-fg-danger));
+}
+
+[data-scope='file-upload'][data-part='item'][data-state='error']::before {
+  content: '';
+  flex: none;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-warning) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-warning) center / contain no-repeat;
 }
 
 /* 缩略图占位：作者往里塞图标或真缩略图，尺寸由这里定死，一行行的图标才对得齐 */
@@ -20887,6 +21051,12 @@ input[data-scope='mention'][data-part='input'] {
   cursor: not-allowed;
 }
 
+/* 只读整组都改不动，但不是禁用：颜色照常，只把"可点"这个暗示收回来。
+   排掉禁用项是因为这条选择器权重高过上面那条，不排就会把 not-allowed 覆盖回 default */
+[data-scope='radio-group'][data-part='item'][data-readonly]:not([data-disabled]) {
+  cursor: default;
+}
+
 [data-scope='radio-group'][data-part='indicator'] {
   display: inline-flex;
   flex: none;
@@ -22623,6 +22793,17 @@ input[data-scope='mention'][data-part='input'] {
   background: transparent;
   color: var(--xh-sortable-handle-fg, var(--xh-fg-muted));
   cursor: grab;
+}
+
+/* 抓手是两条竖线：盒子取边框盒，两侧描边就是那两条线，宽高与线宽都走令牌。
+   :empty 守卫让作者塞进来的图标整个顶掉它，而不是两份叠在一起。
+   不画这条的话按钮里空无一物，只剩一块摸不着边的透明命中区 */
+[data-scope='sortable'][data-part='item-handle']:empty::after {
+  content: '';
+  display: block;
+  inline-size: var(--xh-sortable-handle-grip-w, var(--xh-space-1));
+  block-size: var(--xh-sortable-handle-grip-h, var(--xh-space-3));
+  border-inline: var(--xh-stroke-thin) solid currentColor;
 }
 
 [data-scope='sortable'][data-part='item-handle']:hover {
@@ -25146,6 +25327,9 @@ input[data-scope='mention'][data-part='input'] {
 /* 自建定位上下文，作为绝对定位的回到底部按钮的参照系；
    block-size: 100% 让高度由外部决定，使滚动发生在内部。 */
 [data-scope='thread'][data-part='root'] {
+  /* 作者塞进按钮里的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+  --xh-icon-size: var(--xh-thread-icon-size, var(--xh-glyph-size-text));
+
   /* 组件内那几档层号只在自己人之间排序：建一个层叠上下文把它们关起来，
      既不让页面上的层号插进来，也不让它们漏出去压住别人 */
   isolation: isolate;
@@ -25228,6 +25412,19 @@ input[data-scope='mention'][data-part='input'] {
 /* 连接层收起按钮时写 hidden 属性，上面的 display 会盖掉 UA 规则，这里补回 */
 [data-scope='thread'][data-part='scroll-button'][hidden] {
   display: none;
+}
+
+/* 没写内容就由皮肤画一枚向下的字形；作者往按钮里塞了自己的图形或文字，这条规则即不命中。
+   不画的话这颗按钮是一枚带边框带阴影的空胶囊，看不出它是干什么的——名字只在 aria-label 上 */
+[data-scope='thread'][data-part='scroll-button']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
 }
 
 [data-scope='thread'][data-part='scroll-button']:hover {

@@ -155,6 +155,7 @@ export function connectTable<T extends PropTypes>(
   const label = {
     columnResize: translations?.columnResize ?? ((columnLabel: string) => `Resize column ${columnLabel}`),
     columnDrag: translations?.columnDrag ?? ((columnLabel: string) => `Reorder column ${columnLabel}`),
+    selectAll: translations?.selectAll ?? 'Select all rows',
   }
   // 可拖的那一段列。谁能拖、落点算在谁身上、键盘能挪到哪儿，三处同一份口径
   const draggableColumns = draggableColumnIds(columns)
@@ -724,10 +725,13 @@ export function connectTable<T extends PropTypes>(
       })
     },
 
-    // 全选把手是三态的唯一载体；它不属于 roving 行组，自己占一个 Tab 位
+    // 全选把手是三态的唯一载体；它不属于 roving 行组，自己占一个 Tab 位。
+    // 名字无条件发：这一格默认没有内容，行内那颗把手又退出了可及树，
+    // 缺了它读屏在整张表里找不到任何能操作选择的东西
     getSelectAllTriggerProps: () => normalize.element({
       ...parts['select-all-trigger'].attrs,
       'role': 'checkbox',
+      'aria-label': label.selectAll,
       'aria-checked': selectionState === 'checked' ? 'true' : selectionState === 'indeterminate' ? 'mixed' : 'false',
       // 角色节点是普通元素而非原生控件，禁用后仍要能被聚焦
       'aria-disabled': canSelectAll ? 'false' : 'true',

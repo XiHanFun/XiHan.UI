@@ -68,7 +68,9 @@ export function connectApproval<T extends PropTypes>(
         // 备注框在根内，组合期间的 Escape 是收候选词框，不是拒绝
         if (isComposingEvent(event))
           return
-        if (event.key !== 'Escape' || settled || prop('denyOnEscape') === false)
+        // busy 与拒绝钮同一道闸门：Escape 是那颗钮的键盘等价物，只锁住钮的话
+        // 等待期里换只手按 Escape 照样打得出第二条判定
+        if (event.key !== 'Escape' || settled || busy || prop('denyOnEscape') === false)
           return
         // 这不是「关闭」：本组件不提供不作答的出口
         event.preventDefault()
@@ -189,15 +191,21 @@ export function connectApproval<T extends PropTypes>(
       },
     }),
 
-    // 拒绝这条路永远走得通：不吃挂起中、不吃必选项、不吃任何闸门
+    // 拒绝不吃必选项那道闸门——没勾满照样拒得掉。但一条判定已经在途时它必须跟批准一样锁住：
+    // 状态机要等宿主回话才落定，这段空窗里再按一次就会送出第二条判定，闸门后面的系统收到
+    // 两条相互矛盾的结论。锁法与批准同构：aria-disabled 而不是原生 disabled，保住可聚焦，
+    // 让读屏念得到为什么按不动
     getDenyTriggerProps: () => normalize.button({
       ...parts['deny-trigger'].attrs,
       'type': 'button',
+      'aria-disabled': busy ? 'true' : 'false',
+      'aria-busy': busy ? 'true' : undefined,
       'aria-label': translations?.deny,
       'disabled': settled || undefined,
       'data-state': status,
+      'data-busy': dataAttr(busy),
       'onClick': () => {
-        if (!settled)
+        if (!settled && !busy)
           send({ type: 'DENY', source: 'user' })
       },
     }),

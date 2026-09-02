@@ -614,6 +614,14 @@ describe('公开 API 与无障碍属性', () => {
     expect(style.position).toBe('fixed')
   })
 
+  it('只读标记在定位层上再打一次：候选被搬到 portal 落点，根上那份够不着', () => {
+    const readOnly = mount({ readOnly: true })
+    expect((readOnly.api().getRootProps() as Record<string, unknown>)['data-readonly']).toBe('')
+    expect((readOnly.api().getPositionerProps() as Record<string, unknown>)['data-readonly']).toBe('')
+    // 常态整条缺席，皮肤那边 [data-readonly] 才选得干净
+    expect((mount().api().getPositionerProps() as Record<string, unknown>)['data-readonly']).toBeUndefined()
+  })
+
   it('候选按下指针即拦掉：不拦的话输入框会失焦、浮层随即收起', async () => {
     const m = mount()
     type(m.input, '@')
