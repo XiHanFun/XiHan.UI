@@ -135,13 +135,15 @@
   }
 
   /* —— 两颗按钮 —— */
+  /* 这条规则同时作用在确认与取消上，内衬槽因此取两颗共用的 action 段，与下一行的
+     --xh-popconfirm-action-radius 一致；原先只写了取消的 -cancel-trigger-px 排在后面当兜底值 */
   [data-scope='popconfirm'][data-part='confirm-trigger'],
   [data-scope='popconfirm'][data-part='cancel-trigger'] {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     block-size: var(--xh-control-h-sm);
-    padding-inline: var(--xh-popconfirm-cancel-trigger-px, var(--xh-control-px-sm));
+    padding-inline: var(--xh-popconfirm-action-px, var(--xh-popconfirm-cancel-trigger-px, var(--xh-control-px-sm)));
     border: var(--xh-stroke-thin) solid transparent;
     border-radius: var(--xh-popconfirm-action-radius, var(--xh-shape-control));
     font-size: var(--xh-text-secondary-size);

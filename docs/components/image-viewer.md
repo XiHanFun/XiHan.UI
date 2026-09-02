@@ -194,7 +194,7 @@ open 与 index 双受控；translations 换工具条的可及名与计数文案
 | `content` | `aria-label` | currentItem?.alt |
 | `content` | `aria-modal` | 'true' |
 | `content` | `role` | 'dialog' |
-| `toolbar` | `aria-label` | label.content |
+| `toolbar` | `aria-label` | label.toolbar |
 | `toolbar` | `role` | 'toolbar' |
 | `counter` | `aria-live` | 'polite' |
 

@@ -451,23 +451,25 @@
     font-weight: var(--xh-font-weight-medium);
   }
 
+  /* 槽名统一按部件取 --xh-date-picker-confirm-trigger-*；原先少一段的
+     --xh-date-picker-confirm-* 排在后面当兜底值 */
   [data-scope='date-picker'][data-part='confirm-trigger'] {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    block-size: var(--xh-control-h-sm);
+    block-size: var(--xh-date-picker-confirm-trigger-h, var(--xh-control-h-sm));
     padding-inline: var(--xh-date-picker-confirm-trigger-px, var(--xh-control-px-sm));
     border: none;
     border-radius: var(--xh-date-picker-confirm-trigger-radius, var(--xh-shape-control));
-    background: var(--xh-date-picker-confirm-bg, var(--xh-_date-picker-accent));
-    color: var(--xh-date-picker-confirm-fg, var(--xh-_date-picker-accent-fg));
-    box-shadow: var(--xh-date-picker-confirm-shadow, var(--xh-_date-picker-confirm-highlight));
+    background: var(--xh-date-picker-confirm-trigger-bg, var(--xh-date-picker-confirm-bg, var(--xh-_date-picker-accent)));
+    color: var(--xh-date-picker-confirm-trigger-fg, var(--xh-date-picker-confirm-fg, var(--xh-_date-picker-accent-fg)));
+    box-shadow: var(--xh-date-picker-confirm-trigger-shadow, var(--xh-date-picker-confirm-shadow, var(--xh-_date-picker-confirm-highlight)));
     font-size: var(--xh-text-secondary-size);
     cursor: pointer;
   }
 
   [data-scope='date-picker'][data-part='confirm-trigger']:hover {
-    background: var(--xh-date-picker-confirm-bg-hover, var(--xh-_date-picker-accent-hover));
+    background: var(--xh-date-picker-confirm-trigger-bg-hover, var(--xh-date-picker-confirm-bg-hover, var(--xh-_date-picker-accent-hover)));
   }
 
   [data-scope='date-picker'][data-part='confirm-trigger']:focus-visible {

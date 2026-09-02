@@ -1,5 +1,5 @@
 import type { ToggleGroupItemProps, ToggleGroupNode, ToggleGroupSchema, ToggleGroupValueChangeDetails } from '@xihan-ui/headless'
-import type { Direction, Orientation, Size } from '@xihan-ui/kernel'
+import type { Direction, Orientation, Size, Tone } from '@xihan-ui/kernel'
 import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
 import { connectToggleGroup, toggleGroupAnatomy, toggleGroupMachine, toggleGroupMeta } from '@xihan-ui/headless'
 import { createDeclaredDisabled } from '../dom/declared-disabled'
@@ -31,6 +31,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {boolean} multiple - 允许多项同时选中，默认关闭
  * @attr {boolean} disabled - 整组禁用
  * @attr {boolean} disallow-empty - 不许把值点空（最后一个选中项摘不掉）
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @attr {'horizontal'|'vertical'} orientation - 视觉排布，默认 horizontal；方向键四个恒响应，与它无关
  * @attr {'ltr'|'rtl'} dir - 文字方向，只改写左右方向键语义，默认 ltr
@@ -55,6 +56,7 @@ export class XhToggleGroupElement extends XhElement {
     multiple: { converter: BOOLEAN_CONVERTER },
     disabled: { converter: BOOLEAN_CONVERTER },
     disallowEmpty: { converter: BOOLEAN_CONVERTER, attribute: 'disallow-empty' },
+    tone: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
     orientation: { converter: STRING_CONVERTER },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
@@ -69,6 +71,7 @@ export class XhToggleGroupElement extends XhElement {
   declare multiple?: boolean
   declare disabled?: boolean
   declare disallowEmpty?: boolean
+  declare tone?: Tone
   declare size?: Size
   declare orientation?: Orientation
   declare direction?: Direction
@@ -98,6 +101,7 @@ export class XhToggleGroupElement extends XhElement {
       multiple: this.multiple,
       disabled: this.disabled,
       disallowEmpty: this.disallowEmpty,
+      tone: this.tone,
       size: this.size,
       orientation: this.orientation,
       dir: this.direction,

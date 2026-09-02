@@ -28,13 +28,15 @@
     --xh-_back-top-size: var(--xh-control-h-lg);
   }
 
-  /* 圆形按钮：里面通常只放一个箭头图标，宽高同取一档尺寸 */
+  /* 圆形按钮：里面通常只放一个箭头图标，宽高同取一档尺寸。
+     整件只有这一颗按钮，槽名与其余十二个一样不带部件段（照 float-button 的 --xh-float-button-size）；
+     原先的 --xh-back-top-trigger-size 排在后面当兜底值 */
   [data-scope='back-top'][data-part='trigger'] {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    inline-size: var(--xh-back-top-trigger-size, var(--xh-_back-top-size));
-    block-size: var(--xh-back-top-trigger-size, var(--xh-_back-top-size));
+    inline-size: var(--xh-back-top-size, var(--xh-back-top-trigger-size, var(--xh-_back-top-size)));
+    block-size: var(--xh-back-top-size, var(--xh-back-top-trigger-size, var(--xh-_back-top-size)));
     padding: 0;
     border: var(--xh-stroke-thin) solid var(--xh-back-top-border, var(--xh-border-control));
     border-radius: var(--xh-back-top-radius, var(--xh-shape-pill));

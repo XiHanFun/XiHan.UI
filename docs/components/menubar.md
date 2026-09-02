@@ -113,6 +113,7 @@ XhMenubarSub 在菜单栏的一张菜单里再嵌一层：触发条目双重身�
 | `offset` | `number` |  |  |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
+| `translations` | `Partial<MenubarTranslations>` |  |  |
 | `onValueChange` | `(details: MenubarValueChangeDetails) => void` |  | value 变化回调。 |
 | `onSelect` | `(details: MenubarSelectDetails) => void` |  | 条目被选中；菜单随之收起。 |
 
@@ -209,6 +210,7 @@ XhMenubarSub 在菜单栏的一张菜单里再嵌一层：触发条目双重身�
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `aria-disabled` | 'true' \| 'false' |
+| `root` | `aria-label` | props.translations.root |
 | `root` | `aria-orientation` | props.orientation |
 | `root` | `role` | 'menubar' |
 | `trigger` | `aria-controls` | `content` 部件的 id |

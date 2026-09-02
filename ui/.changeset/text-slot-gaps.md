@@ -14,7 +14,7 @@
 
 **新增** `MenubarTranslations.root`（兜底 `Menu bar`）与 `menubar` 的 `translations` prop。`role=menubar` 的名字不从内容来，此前整条菜单栏没有名字。
 
-**新增** `RatingTranslations.item`（兜底 `${value} of ${count}`）与 `rating` 的 `translations` prop。星星那一格里只有符号，亮着与暗着画的还不是同一个，名字此前随高亮在两个符号之间来回变。
+**新增** `RatingTranslations.item` 与 `rating` 的 `translations` prop。星星那一格里只有符号，亮着与暗着画的还不是同一个，名字此前随高亮在两个符号之间来回变。**不给文案就不发名字**：写死一句会把作者标在星星上的那句盖掉，读屏念到的就不是屏幕上的东西。
 
 **新增** `TourTranslations.next` / `finish`。末步那颗按钮的语义是「完成」，此前只有一个 `data-last` 供皮肤换样子，没有任何地方能给它一句名字。两句都**不给就不产出 `aria-label`**——这颗按钮通常带可见文字。
 

@@ -149,7 +149,7 @@
 | --- | --- | --- |
 | `list` | `aria-label` | translations?.feed |
 | `list` | `role` | 'feed' |
-| `item` | `aria-label` | undefined \| translations?.item |
+| `item` | `aria-label` | undefined \| itemLabel(item.index + 1, count ?? -1, item.role) |
 | `item` | `aria-labelledby` | scope.partId('message-feed', `item-label:${item.id}`) \| undefined |
 | `item` | `aria-posinset` | item.index + 1 |
 | `item` | `aria-setsize` | props.count |

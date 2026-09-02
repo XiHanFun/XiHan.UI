@@ -21,7 +21,7 @@
   /* 私有槽位：组件令牌 → 中档字面量两级回退。厚度写在 root 上而不是 track 上，
      尺寸档才改得动一处就够，track 靠继承拿到值。 */
   [data-scope='progress'][data-part='root'] {
-    --xh-_thickness: var(--xh-progress-thickness, var(--xh-track-thickness));
+    --xh-_progress-thickness: var(--xh-progress-thickness, var(--xh-track-thickness));
 
     display: inline-block;
     inline-size: 100%;
@@ -30,7 +30,7 @@
   [data-scope='progress'][data-part='track'] {
     overflow: hidden;
     inline-size: 100%;
-    block-size: var(--xh-_thickness);
+    block-size: var(--xh-_progress-thickness);
     border-radius: var(--xh-progress-track-radius, var(--xh-shape-pill));
     background: var(--xh-progress-track, var(--xh-bg-subtle-active));
   }
@@ -47,11 +47,11 @@
   /* —— 尺寸 —— */
   /* 线形只有厚度分档；中间档不写规则，缺省即中档 */
   [data-scope='progress'][data-part='root'][data-size='sm'] {
-    --xh-_thickness: var(--xh-progress-thickness, var(--xh-space-1));
+    --xh-_progress-thickness: var(--xh-progress-thickness, var(--xh-space-1));
   }
 
   [data-scope='progress'][data-part='root'][data-size='lg'] {
-    --xh-_thickness: var(--xh-progress-thickness, var(--xh-space-2));
+    --xh-_progress-thickness: var(--xh-progress-thickness, var(--xh-space-2));
   }
 
   /* —— 环形 —— */
@@ -59,22 +59,22 @@
      画面与环心文字叠在同一格上，文字因此恒在圆心 */
   [data-scope='progress'][data-part='root'][data-variant='circle'],
   [data-scope='progress'][data-part='root'][data-variant='dashboard'] {
-    --xh-_diameter: var(--xh-progress-size, 7.5rem);
+    --xh-_progress-diameter: var(--xh-progress-size, 7.5rem);
 
     display: inline-grid;
     place-items: center;
-    inline-size: var(--xh-_diameter);
-    block-size: var(--xh-_diameter);
+    inline-size: var(--xh-_progress-diameter);
+    block-size: var(--xh-_progress-diameter);
   }
 
   [data-scope='progress'][data-part='root'][data-variant='circle'][data-size='sm'],
   [data-scope='progress'][data-part='root'][data-variant='dashboard'][data-size='sm'] {
-    --xh-_diameter: var(--xh-progress-size, 5rem);
+    --xh-_progress-diameter: var(--xh-progress-size, 5rem);
   }
 
   [data-scope='progress'][data-part='root'][data-variant='circle'][data-size='lg'],
   [data-scope='progress'][data-part='root'][data-variant='dashboard'][data-size='lg'] {
-    --xh-_diameter: var(--xh-progress-size, 10rem);
+    --xh-_progress-diameter: var(--xh-progress-size, 10rem);
   }
 
   [data-scope='progress'][data-part='canvas'],
