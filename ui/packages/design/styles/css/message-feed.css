@@ -38,6 +38,11 @@
     /* 作者塞进按钮里的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
     --xh-icon-size: var(--xh-message-feed-icon-size, var(--xh-glyph-size-text));
 
+    /* 尺寸缺省档：不写 data-size 时的取值。三档都只写这两个私有槽，
+       公开槽留在读处当首选，作者在祖先上设的覆盖才赢得过档位声明 */
+    --xh-_message-feed-gap: var(--xh-space-4);
+    --xh-_message-feed-p: var(--xh-space-4);
+
     position: relative;
     display: flex;
     min-block-size: 0;
@@ -65,8 +70,8 @@
   [data-scope='message-feed'][data-part='list'] {
     display: flex;
     flex-direction: column;
-    gap: var(--xh-message-feed-gap, var(--xh-space-4));
-    padding: var(--xh-message-feed-p, var(--xh-space-4));
+    gap: var(--xh-message-feed-gap, var(--xh-_message-feed-gap));
+    padding: var(--xh-message-feed-p, var(--xh-_message-feed-p));
   }
 
   [data-scope='message-feed'][data-part='list'][hidden] {
@@ -162,18 +167,18 @@
 
   /* 尺寸档只改消息之间的距离与内边距；宽松档把消息之间再放开一级，内边距不跟 */
   [data-scope='message-feed'][data-part='root'][data-size='sm'] {
-    --xh-message-feed-gap: var(--xh-space-2);
-    --xh-message-feed-p: var(--xh-space-2);
+    --xh-_message-feed-gap: var(--xh-space-2);
+    --xh-_message-feed-p: var(--xh-space-2);
   }
 
   [data-scope='message-feed'][data-part='root'][data-size='md'] {
-    --xh-message-feed-gap: var(--xh-space-4);
-    --xh-message-feed-p: var(--xh-space-4);
+    --xh-_message-feed-gap: var(--xh-space-4);
+    --xh-_message-feed-p: var(--xh-space-4);
   }
 
   [data-scope='message-feed'][data-part='root'][data-size='lg'] {
-    --xh-message-feed-gap: var(--xh-space-8);
-    --xh-message-feed-p: var(--xh-space-6);
+    --xh-_message-feed-gap: var(--xh-space-8);
+    --xh-_message-feed-p: var(--xh-space-6);
   }
 
   /* 视觉隐藏的原子播报区：不能 display:none，那样读屏就取不到它了 */

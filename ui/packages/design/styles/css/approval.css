@@ -39,10 +39,19 @@
     /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
     --xh-icon-size: var(--xh-approval-icon-size, var(--xh-glyph-size-text));
 
+    /* 尺寸缺省档：不写 data-size 时的取值。三档都只写这批私有槽，
+       公开槽留在读处当首选，作者在祖先上设的覆盖才赢得过档位声明 */
+    --xh-_approval-gap: var(--xh-space-3);
+    --xh-_approval-p: var(--xh-space-4);
+    --xh-_approval-action-h: var(--xh-control-h-md);
+    --xh-_approval-action-px: var(--xh-control-px-md);
+    --xh-_approval-scope-font-size: var(--xh-control-font-md);
+    --xh-_approval-note-font-size: var(--xh-control-font-md);
+
     display: flex;
     flex-direction: column;
-    gap: var(--xh-approval-gap, var(--xh-space-3));
-    padding: var(--xh-approval-p, var(--xh-space-4));
+    gap: var(--xh-approval-gap, var(--xh-_approval-gap));
+    padding: var(--xh-approval-p, var(--xh-_approval-p));
     border: var(--xh-stroke-thin) solid var(--xh-approval-border, var(--xh-_tone, var(--xh-border-strong)));
     border-radius: var(--xh-approval-radius, var(--xh-shape-surface));
     background: var(--xh-approval-bg, var(--xh-bg-surface));
@@ -117,7 +126,7 @@
     padding-inline: var(--xh-approval-scope-px, var(--xh-space-2));
     padding-block: var(--xh-approval-scope-py, var(--xh-space-1));
     border-radius: var(--xh-approval-scope-radius, var(--xh-shape-control));
-    font-size: var(--xh-approval-scope-font-size, var(--xh-control-font-md));
+    font-size: var(--xh-approval-scope-font-size, var(--xh-_approval-scope-font-size));
     cursor: pointer;
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
@@ -218,7 +227,7 @@
     background: var(--xh-approval-note-bg, var(--xh-bg-surface));
     color: var(--xh-approval-note-fg, var(--xh-fg-default));
     font-family: inherit;
-    font-size: var(--xh-approval-note-font-size, var(--xh-control-font-md));
+    font-size: var(--xh-approval-note-font-size, var(--xh-_approval-note-font-size));
     transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
@@ -292,14 +301,14 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding-inline: var(--xh-approval-action-px, var(--xh-control-px-md));
+    padding-inline: var(--xh-approval-action-px, var(--xh-_approval-action-px));
     border: var(--xh-stroke-thin) solid transparent;
     border-radius: var(--xh-approval-action-radius, var(--xh-shape-control));
     font-family: inherit;
     font-size: var(--xh-approval-action-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-approval-action-font-weight, var(--xh-text-label-weight));
     line-height: var(--xh-leading-none);
-    block-size: var(--xh-approval-action-h, var(--xh-control-h-md));
+    block-size: var(--xh-approval-action-h, var(--xh-_approval-action-h));
     white-space: nowrap;
     cursor: pointer;
     transition:
@@ -380,29 +389,29 @@
 
   /* 尺寸档改内衬、间距、按钮高度与行内字号 */
   [data-scope='approval'][data-part='root'][data-size='sm'] {
-    --xh-approval-p: var(--xh-space-3);
-    --xh-approval-gap: var(--xh-space-2);
-    --xh-approval-action-h: var(--xh-control-h-sm);
-    --xh-approval-action-px: var(--xh-control-px-sm);
-    --xh-approval-scope-font-size: var(--xh-control-font-sm);
-    --xh-approval-note-font-size: var(--xh-control-font-sm);
+    --xh-_approval-p: var(--xh-space-3);
+    --xh-_approval-gap: var(--xh-space-2);
+    --xh-_approval-action-h: var(--xh-control-h-sm);
+    --xh-_approval-action-px: var(--xh-control-px-sm);
+    --xh-_approval-scope-font-size: var(--xh-control-font-sm);
+    --xh-_approval-note-font-size: var(--xh-control-font-sm);
   }
 
   [data-scope='approval'][data-part='root'][data-size='md'] {
-    --xh-approval-p: var(--xh-space-4);
-    --xh-approval-gap: var(--xh-space-3);
-    --xh-approval-action-h: var(--xh-control-h-md);
-    --xh-approval-action-px: var(--xh-control-px-md);
-    --xh-approval-scope-font-size: var(--xh-control-font-md);
-    --xh-approval-note-font-size: var(--xh-control-font-md);
+    --xh-_approval-p: var(--xh-space-4);
+    --xh-_approval-gap: var(--xh-space-3);
+    --xh-_approval-action-h: var(--xh-control-h-md);
+    --xh-_approval-action-px: var(--xh-control-px-md);
+    --xh-_approval-scope-font-size: var(--xh-control-font-md);
+    --xh-_approval-note-font-size: var(--xh-control-font-md);
   }
 
   [data-scope='approval'][data-part='root'][data-size='lg'] {
-    --xh-approval-p: var(--xh-space-5);
-    --xh-approval-gap: var(--xh-space-4);
-    --xh-approval-action-h: var(--xh-control-h-lg);
-    --xh-approval-action-px: var(--xh-control-px-lg);
-    --xh-approval-scope-font-size: var(--xh-control-font-lg);
-    --xh-approval-note-font-size: var(--xh-control-font-lg);
+    --xh-_approval-p: var(--xh-space-5);
+    --xh-_approval-gap: var(--xh-space-4);
+    --xh-_approval-action-h: var(--xh-control-h-lg);
+    --xh-_approval-action-px: var(--xh-control-px-lg);
+    --xh-_approval-scope-font-size: var(--xh-control-font-lg);
+    --xh-_approval-note-font-size: var(--xh-control-font-lg);
   }
 }

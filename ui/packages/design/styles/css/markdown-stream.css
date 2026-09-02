@@ -21,8 +21,13 @@
   }
 
   [data-scope='markdown-stream'][data-part='root'] {
+    /* 尺寸缺省档：不写 data-size 时的取值。三档都只写这两个私有槽，
+       公开槽留在读处当首选，作者在祖先上设的覆盖才赢得过档位声明 */
+    --xh-_markdown-stream-font-size: var(--xh-text-body-size);
+    --xh-_markdown-stream-gap: var(--xh-space-3);
+
     color: var(--xh-markdown-stream-fg, var(--xh-fg-default));
-    font-size: var(--xh-markdown-stream-font-size, var(--xh-text-body-size));
+    font-size: var(--xh-markdown-stream-font-size, var(--xh-_markdown-stream-font-size));
     line-height: var(--xh-markdown-stream-leading, var(--xh-text-prose-leading));
   }
 
@@ -30,7 +35,7 @@
   [data-scope='markdown-stream'][data-part='content'] {
     display: flex;
     flex-direction: column;
-    gap: var(--xh-markdown-stream-gap, var(--xh-space-3));
+    gap: var(--xh-markdown-stream-gap, var(--xh-_markdown-stream-gap));
   }
 
   [data-scope='markdown-stream'][data-part='content'][hidden] {
@@ -95,18 +100,18 @@
 
   /* 尺寸档只改正文字号与块间距 */
   [data-scope='markdown-stream'][data-part='root'][data-size='sm'] {
-    --xh-markdown-stream-font-size: var(--xh-control-font-sm);
-    --xh-markdown-stream-gap: var(--xh-space-2);
+    --xh-_markdown-stream-font-size: var(--xh-control-font-sm);
+    --xh-_markdown-stream-gap: var(--xh-space-2);
   }
 
   [data-scope='markdown-stream'][data-part='root'][data-size='md'] {
-    --xh-markdown-stream-font-size: var(--xh-control-font-md);
-    --xh-markdown-stream-gap: var(--xh-space-3);
+    --xh-_markdown-stream-font-size: var(--xh-control-font-md);
+    --xh-_markdown-stream-gap: var(--xh-space-3);
   }
 
   [data-scope='markdown-stream'][data-part='root'][data-size='lg'] {
-    --xh-markdown-stream-font-size: var(--xh-control-font-lg);
-    --xh-markdown-stream-gap: var(--xh-space-4);
+    --xh-_markdown-stream-font-size: var(--xh-control-font-lg);
+    --xh-_markdown-stream-gap: var(--xh-space-4);
   }
 
   /* 视觉隐藏的原子播报区：不能 display:none，那样读屏就取不到它了 */

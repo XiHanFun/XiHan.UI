@@ -8,13 +8,17 @@
      不设 display，排布由作者决定。
      color 给整段未着色的代码定基线，字号在这里消费一次，缺省即 sm 档。 */
   [data-scope='code-view'][data-part='root'] {
+    /* 尺寸缺省档：不写 data-size 时的取值。三档都只写这个私有槽，
+       公开槽留在读处当首选，作者在祖先上设的覆盖才赢得过档位声明 */
+    --xh-_code-view-font-size: var(--xh-control-font-sm);
+
     overflow: hidden;
     border: var(--xh-stroke-thin) solid var(--xh-code-view-border, var(--xh-border-default));
     border-radius: var(--xh-code-view-radius, var(--xh-shape-surface));
     background: var(--xh-code-view-bg, var(--xh-bg-surface));
     box-shadow: var(--xh-code-view-shadow, var(--xh-elevation-raised));
     color: var(--xh-code-view-fg, var(--xh-fg-muted));
-    font-size: var(--xh-code-view-font-size, var(--xh-control-font-sm));
+    font-size: var(--xh-code-view-font-size, var(--xh-_code-view-font-size));
   }
 
   /* min-block-size 给头部条一个不随内容塌陷的定高：只放文件名时与放进按钮时一样高 */
@@ -224,18 +228,19 @@
     outline-offset: calc(-1 * var(--xh-ring-width));
   }
 
-  /* 尺寸档给槽赋值、由 root 基础规则消费一次：缺省与阶梯是同一个口子，
-     作者设了 --xh-code-view-font-size 不会被这三条盖掉。行号槽随字号一起走 */
+  /* 尺寸档写私有槽、由 root 基础规则消费一次：缺省与阶梯是同一个口子，
+     作者设的 --xh-code-view-font-size 排在读处首选，不会被这三条盖掉。
+     行号槽宽以 ch 计，随字号一起走 */
   [data-scope='code-view'][data-part='root'][data-size='sm'] {
-    --xh-code-view-font-size: var(--xh-control-font-sm);
+    --xh-_code-view-font-size: var(--xh-control-font-sm);
   }
 
   [data-scope='code-view'][data-part='root'][data-size='md'] {
-    --xh-code-view-font-size: var(--xh-control-font-md);
+    --xh-_code-view-font-size: var(--xh-control-font-md);
   }
 
   [data-scope='code-view'][data-part='root'][data-size='lg'] {
-    --xh-code-view-font-size: var(--xh-control-font-lg);
+    --xh-_code-view-font-size: var(--xh-control-font-lg);
   }
 
   /* 语法配色：注释与标点复用既有语义色，三种真需要色相的走 --xh-syntax-* 语法令牌（随主题明暗切换）。 */
