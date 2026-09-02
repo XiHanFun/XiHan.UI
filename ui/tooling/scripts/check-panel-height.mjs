@@ -30,13 +30,10 @@ const PAIRED = {
  * 高度不上滚动面这把尺的面板，连同理由。键写成「组件 部件」。
  * 登记后既不要求写高度声明（不限高），也不管它已有的高度取值（高度由别的尺给）。
  * 名单之外的滚动面板一律受本门禁管辖。
+ * 每条都要真被收成滚动面板查到，一次都没查到的会被下面的名单核验报出来。
  */
 const EXEMPT = {
-  'tooltip content': '一句话气泡，高度就是那一两行字，限高只会把提示裁掉',
-  'popconfirm content': '确认气泡是一段问句加两颗按钮，内容有多高就多高',
   'cascader content': '横排面板：滚的是列的方向（overflow-x），纵向高度由最高的那一列给',
-  'navigation-menu content': '横排导航面板，内容分栏铺开，纵向不滚',
-  'tour content': '引导卡片不是浮层菜单，卡片文案有多长就多高',
   'code-block pre': '代码块滚的是横向长行，纵向由代码行数决定，截断会把代码读断',
   'code-view pre': '同 code-block：纵向高度由行数算出来写进内联样式，折叠时夹到 clamp 行，不是预设的档',
   'floating-panel body': '面板高度由用户拖出来、存在机器里，不是预设的档',
@@ -76,8 +73,6 @@ function lastPart(selector) {
 
 const files = (await readdir(STYLES_DIR)).filter(f => f.endsWith('.css'))
 const problems = new Map()
-/** 每份皮肤出现过的 data-part，用来核验名单里的条目还在不在。 */
-const partsBySkin = new Map()
 /** 收进来的滚动面板，键写成「组件 部件」。 */
 const panelsBySkin = new Map()
 /** 用上了的例外条目。 */
@@ -119,21 +114,18 @@ for (const file of files) {
 
   // 一、收面板：规则里滚起来的部件就是面板，各皮肤的部件名不止一套，按实际 overflow 收
   const panels = new Map()
-  const allParts = new Set()
   for (const rule of rules) {
     const scrolls = rule.decls.some(([name, value]) => /^overflow(?:-[xy]|-block|-inline)?$/.test(name) && /\b(?:auto|scroll)\b/.test(value))
+    if (!scrolls)
+      continue
     for (const selector of rule.selectors) {
       const part = lastPart(selector)
       if (part == null)
-        continue
-      allParts.add(part)
-      if (!scrolls)
         continue
       if (!panels.has(part))
         panels.set(part, { heights: new Map() })
     }
   }
-  partsBySkin.set(comp, allParts)
 
   // 二、面板上的高度声明：基础块与带状态的块都算，同一属性后写的覆盖先写的
   for (const rule of rules) {
@@ -184,12 +176,13 @@ for (const file of files) {
   }
 }
 
-// 名单核验：部件没了、或者它已经上了滚动面这把尺，这条例外就该删
+// 名单核验：一次都没被查到（部件没了、或者它压根不是滚动面板、判据走不到它），这条例外就该删；
+// 查到了但高度已经上了滚动面这把尺，同样该删
 for (const key of Object.keys(EXEMPT)) {
-  const [comp, part] = key.split(' ')
-  if (!partsBySkin.get(comp)?.has(part))
-    report(comp, `例外 ${key} 指的部件在皮肤里已经没有了，删掉这条`)
-  else if (usedExempt.has(key) && panelsBySkin.get(key)?.onScale === true)
+  const comp = key.split(' ')[0]
+  if (!usedExempt.has(key))
+    report(comp, `例外 ${key} 登记了却没被扫到——名单过期了`)
+  else if (panelsBySkin.get(key)?.onScale === true)
     report(comp, `例外 ${key} 的高度已经走滚动面令牌了，删掉这条`)
 }
 

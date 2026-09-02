@@ -7917,6 +7917,9 @@
               "name": "--xh-color-picker-swatch-border"
             },
             {
+              "name": "--xh-color-picker-swatch-border-hover"
+            },
+            {
               "name": "--xh-color-picker-swatch-gap"
             },
             {
@@ -11539,6 +11542,9 @@
               "name": "--xh-date-picker-confirm-bg"
             },
             {
+              "name": "--xh-date-picker-confirm-bg-active"
+            },
+            {
               "name": "--xh-date-picker-confirm-bg-hover"
             },
             {
@@ -11549,6 +11555,9 @@
             },
             {
               "name": "--xh-date-picker-confirm-trigger-bg"
+            },
+            {
+              "name": "--xh-date-picker-confirm-trigger-bg-active"
             },
             {
               "name": "--xh-date-picker-confirm-trigger-bg-hover"
@@ -20513,6 +20522,12 @@
           "tagName": "xh-image-viewer",
           "customElement": true,
           "cssProperties": [
+            {
+              "name": "--xh-image-viewer-action-bg-active"
+            },
+            {
+              "name": "--xh-image-viewer-action-bg-hover"
+            },
             {
               "name": "--xh-image-viewer-backdrop-bg"
             },

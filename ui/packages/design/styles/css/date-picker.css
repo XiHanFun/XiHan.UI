@@ -46,6 +46,7 @@
     --xh-_date-picker-ring: var(--xh-ring-focus);
     --xh-_date-picker-accent: var(--xh-_tone, var(--xh-bg-brand));
     --xh-_date-picker-accent-hover: var(--xh-_tone-hover, var(--xh-bg-brand-hover));
+    --xh-_date-picker-accent-active: var(--xh-_tone-active, var(--xh-bg-brand-active));
     --xh-_date-picker-accent-fg: var(--xh-_tone-on, var(--xh-fg-on-brand));
     --xh-_date-picker-accent-subtle: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
     /* 淡底上的字与实心底上的字是两档：--xh-_tone-fg 是语气层为淡底配的那一档，
@@ -246,6 +247,7 @@
 
   [data-scope='date-picker'][data-part='trigger']:active:not(:disabled) {
     background: var(--xh-date-picker-action-bg-active, var(--xh-bg-subtle-active));
+    scale: var(--xh-motion-scale-press);
   }
 
   [data-scope='date-picker'][data-part='clear-trigger']:active {
@@ -466,10 +468,19 @@
     box-shadow: var(--xh-date-picker-confirm-trigger-shadow, var(--xh-date-picker-confirm-shadow, var(--xh-_date-picker-confirm-highlight)));
     font-size: var(--xh-text-secondary-size);
     cursor: pointer;
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='date-picker'][data-part='confirm-trigger']:hover {
     background: var(--xh-date-picker-confirm-trigger-bg-hover, var(--xh-date-picker-confirm-bg-hover, var(--xh-_date-picker-accent-hover)));
+  }
+
+  /* 它是面板里唯一的确认出口，与框内那两颗小钮同一副按压观感：换底再加一次轻微下压 */
+  [data-scope='date-picker'][data-part='confirm-trigger']:active {
+    background: var(--xh-date-picker-confirm-trigger-bg-active, var(--xh-date-picker-confirm-bg-active, var(--xh-_date-picker-accent-active)));
+    scale: var(--xh-motion-scale-press);
   }
 
   [data-scope='date-picker'][data-part='confirm-trigger']:focus-visible {

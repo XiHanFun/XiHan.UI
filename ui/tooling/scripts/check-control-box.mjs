@@ -33,9 +33,9 @@ const COMPONENTS = [
 /**
  * 单元素控件：盒就是那个 input 自己，里面没有并排的子节点。
  * 只在解剖里没有 control 时生效——补上 control 之后盒换人，整套并排规则重新受管。
+ * 解剖里有 control 的组件登在这里等于一条走不到的死登记，会被下面的名单核验报出来。
  */
 const SINGLE_ELEMENT = {
-  'text-field': '无 clear 时是裸 input，盒里没有并排的尾钮',
   'mention': '多行 textarea 自画盒，没有尾钮',
   'pin-input': '每格一个 input 自画盒，格与格之间由 root 排布',
 }
@@ -166,6 +166,8 @@ function lastPart(selector) {
 const files = new Set(await readdir(STYLES_DIR))
 const problems = new Map()
 const usedExempt = new Set()
+/** 真的按单元素放行过的组件。 */
+const usedSingle = new Set()
 let governed = 0
 
 function report(comp, check, detail) {
@@ -222,6 +224,8 @@ for (const comp of COMPONENTS) {
   const parts = new Set([...anatomy.matchAll(/'([\w-]+)',?\s*$/gm)].map(m => m[1]))
   const box = parts.has('control') ? 'control' : 'input'
   const single = box === 'input' && comp in SINGLE_ELEMENT
+  if (single)
+    usedSingle.add(comp)
   if (box === 'input' && !single)
     report(comp, 'box-part', `解剖里没有 control，盒退给 input，但它不在 SINGLE_ELEMENT 名单里`)
 
@@ -352,6 +356,11 @@ for (const comp of COMPONENTS) {
 for (const key of Object.keys(EXEMPT)) {
   if (!usedExempt.has(key))
     problems.set(key.split(' ')[0], [...(problems.get(key.split(' ')[0]) ?? []), `例外 ${key} 已经用不上了，删掉这条`])
+}
+
+for (const key of Object.keys(SINGLE_ELEMENT)) {
+  if (!usedSingle.has(key))
+    problems.set(key, [...(problems.get(key) ?? []), '登记在 SINGLE_ELEMENT 里却没被扫到——名单过期了'])
 }
 
 if (problems.size) {

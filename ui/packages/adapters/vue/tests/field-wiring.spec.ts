@@ -9,6 +9,7 @@ import { mount } from '@vue/test-utils'
 import { afterEach, describe, expect, it } from 'vitest'
 import { defineComponent, h } from 'vue'
 import {
+  XhCheckbox,
   XhFieldControl,
   XhFieldErrorText,
   XhFieldLabel,
@@ -16,6 +17,7 @@ import {
   XhSelectRoot,
   XhSelectTrigger,
   XhSelectValueText,
+  XhSwitch,
   XhTextFieldInput,
   XhTextFieldRoot,
 } from '../src'
@@ -57,6 +59,47 @@ describe('表单字段的状态接线', () => {
     const wrapper = mountField(false, () => h(XhTextFieldRoot, null, () => [h(XhTextFieldInput)]))
     const root = wrapper.find('[data-scope="text-field"][data-part="root"]')
     expect(root.attributes('aria-labelledby'), '封装根丢了名字').toBeTruthy()
+  })
+
+  // 复选框 / 开关给了文字就返回 <label> 根，XhFieldControl 把整份接线合在那个 label 上；
+  // 焦点却在里面的 button 上，说明与错误文本得单独补到按钮身上才念得到
+  describe.each([
+    { name: '复选框', scope: 'checkbox', Comp: XhCheckbox },
+    { name: '开关', scope: 'switch', Comp: XhSwitch },
+  ])('$name 套进字段', ({ scope, Comp }) => {
+    it('带文字：说明与错误文本落到里面那颗 button 上', () => {
+      const wrapper = mountField(true, () => h(Comp, null, () => '我同意'))
+      const box = wrapper.find(`[data-scope="${scope}"][data-part="root"]`)
+      expect(box.element.tagName).toBe('BUTTON')
+      expect(box.attributes('aria-describedby'), 'button 没接到说明与错误文本').toBeTruthy()
+      expect(box.attributes('aria-invalid')).toBe('true')
+    })
+
+    it('带文字：名字里字段的标签排在组件自己那段文字前面', () => {
+      const wrapper = mountField(false, () => h(Comp, null, () => '我同意'))
+      const labelId = wrapper.find(`[data-scope="field"][data-part="label"]`).attributes('id')
+      const textId = wrapper.find(`[data-scope="${scope}"][data-part="text"]`).attributes('id')
+      expect(labelId).toBeTruthy()
+      expect(textId).toBeTruthy()
+      expect(wrapper.find(`[data-scope="${scope}"][data-part="root"]`).attributes('aria-labelledby'))
+        .toBe(`${labelId} ${textId}`)
+    })
+
+    it('没给文字：封装根就是那颗 button，接线照旧落在它身上', () => {
+      const wrapper = mountField(true, () => h(Comp))
+      const box = wrapper.find(`[data-scope="${scope}"][data-part="root"]`)
+      expect(box.element.tagName).toBe('BUTTON')
+      expect(box.attributes('aria-describedby')).toBeTruthy()
+      expect(box.attributes('aria-invalid')).toBe('true')
+    })
+
+    it('不在字段里时名字仍由自己那段文字承担，也不凭空加说明', () => {
+      const wrapper = mount(defineComponent({ setup: () => () => h(Comp, null, () => '我同意') }), { attachTo: document.body })
+      const textId = wrapper.find(`[data-scope="${scope}"][data-part="text"]`).attributes('id')
+      const box = wrapper.find(`[data-scope="${scope}"][data-part="root"]`)
+      expect(box.attributes('aria-labelledby')).toBe(textId)
+      expect(box.attributes('aria-describedby')).toBeUndefined()
+    })
   })
 
   it('不在字段里时不凭空加属性', () => {

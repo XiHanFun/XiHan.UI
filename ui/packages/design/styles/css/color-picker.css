@@ -443,11 +443,22 @@
     line-height: var(--xh-leading-none);
     cursor: pointer;
     user-select: none;
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='color-picker'][data-part='eye-dropper-trigger']:hover:not(:disabled) {
     background: var(--xh-color-picker-action-bg-hover, var(--xh-bg-subtle-hover));
     color: var(--xh-color-picker-action-fg-hover, var(--xh-fg-default));
+  }
+
+  /* 按下去要有回应：换底之外再压一档。取色是一次「点下去就交给系统」的操作，
+     松手那一刻浮层多半已经被系统的取色镜头盖住，按下的回执只有这一瞬看得见 */
+  [data-scope='color-picker'][data-part='eye-dropper-trigger']:active:not(:disabled) {
+    background: var(--xh-color-picker-action-bg-active, var(--xh-bg-subtle-active));
+    scale: var(--xh-motion-scale-press);
   }
 
   [data-scope='color-picker'][data-part='eye-dropper-trigger']:focus-visible {
@@ -481,6 +492,19 @@
     border: var(--xh-stroke-thin) solid var(--xh-color-picker-swatch-border, var(--xh-border-default));
     border-radius: var(--xh-color-picker-swatch-radius, var(--xh-shape-inset));
     cursor: pointer;
+    transition:
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  /* 这一格的底色就是它要展示的那个颜色，换底等于把展示物盖掉，交互回执只能落在别处：
+     指到哪一格看描边，按下去看下压 */
+  [data-scope='color-picker'][data-part='swatch-item']:hover:not(:disabled) {
+    border-color: var(--xh-color-picker-swatch-border-hover, var(--xh-border-strong));
+  }
+
+  [data-scope='color-picker'][data-part='swatch-item']:active:not(:disabled) {
+    scale: var(--xh-motion-scale-press);
   }
 
   /* 正被选中的那一格：环画在盒子外面，不挤占色块本身的面积 */

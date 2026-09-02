@@ -117,7 +117,9 @@
     white-space: nowrap;
     cursor: pointer;
     user-select: none;
-    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='composer'][data-part='submit-trigger'][hidden] {
@@ -130,6 +132,7 @@
 
   [data-scope='composer'][data-part='submit-trigger']:active:not(:disabled) {
     background: var(--xh-_bg-active);
+    scale: var(--xh-motion-scale-press);
   }
 
   [data-scope='composer'][data-part='submit-trigger']:focus-visible {
