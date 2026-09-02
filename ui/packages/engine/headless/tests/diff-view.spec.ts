@@ -1,6 +1,21 @@
+import type { DiffViewSchema } from '../src/diff-view'
+import { normalizeProps } from '@xihan-ui/kernel'
+import { createService } from '@xihan-ui/machine'
+import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
 import { describe, expect, it } from 'vitest'
 // 直接从组件目录导入，不经包主入口
-import { computeTextDiff, diffStats, parseUnifiedPatch } from '../src/diff-view'
+import { computeTextDiff, connectDiffView, diffStats, diffViewMachine, parseUnifiedPatch } from '../src/diff-view'
+
+type Props = DiffViewSchema['props']
+type Dict = Record<string, unknown>
+
+function makeDiffView(initial: Props = {}) {
+  const runtime = createVanillaRuntime()
+  const props = runtime.signal<Props>(initial)
+  const service = createService(diffViewMachine, { props: () => props.get(), runtime })
+  runtime.start()
+  return connectDiffView(service, normalizeProps)
+}
 
 describe('computeTextDiff', () => {
   it('一行改一处：删一行、增一行，两侧行号各自推进', () => {
@@ -39,10 +54,22 @@ describe('computeTextDiff', () => {
     expect(computeTextDiff(before, after, { contextLines: 2 }).hunks).toHaveLength(2)
   })
 
-  it('超过上限即截断并标出来：AI 会吐超大文件', () => {
+  it('超过上限即截断并标出来，还要带上砍掉了多少行：AI 会吐超大文件', () => {
     const big = Array.from({ length: 40 }, (_, i) => `l${i}`).join('\n')
-    expect(computeTextDiff(big, `${big}\nmore`, { maxLines: 10 }).truncated).toBe(true)
+    const model = computeTextDiff(big, `${big}\nmore`, { maxLines: 10 })
+    expect(model.truncated).toBe(true)
+    // 旧的 40 行砍到 10 行、新的 41 行砍到 10 行
+    expect(model.truncatedLines).toBe(61)
     expect(computeTextDiff('a', 'b').truncated).toBeUndefined()
+  })
+
+  it('两侧各自都没超上限就是一行没掉，不报截断', () => {
+    // 上限按两侧分别计。按两侧行数之和判的话这里会报「截断了」却一行也没砍，
+    // 界面上就多出一条说「省略了 0 行」的提示
+    const model = computeTextDiff('a\nb\nc', 'a\nB\nc', { maxLines: 4 })
+    expect(model.truncated).toBeUndefined()
+    expect(model.truncatedLines).toBeUndefined()
+    expect(model.hunks.flatMap(h => h.lines)).toHaveLength(4)
   })
 
   it('增删统计只数变更行', () => {
@@ -102,5 +129,67 @@ describe('parseUnifiedPatch', () => {
     const withMarker = `${patch}\n\\ No newline at end of file`
     const lines = parseUnifiedPatch(withMarker)[0]!.hunks[0]!.lines
     expect(lines.every(l => !l.text.startsWith('No newline'))).toBe(true)
+  })
+})
+
+describe('connectDiffView 截断提示', () => {
+  const big = Array.from({ length: 40 }, (_, i) => `l${i}`).join('\n')
+  const cut = computeTextDiff(big, `${big}\nmore`, { maxLines: 10 })
+
+  it('截断了就把提示条露出来，并说清砍掉了多少行', () => {
+    const api = makeDiffView({ model: cut })
+    expect(api.truncated).toBe(true)
+    expect(api.truncatedLines).toBe(61)
+    // 断掉的差异看着仍像一份完整差异，这条提示是读的人唯一的线索
+    expect((api.getTruncationProps() as Dict).hidden).toBeUndefined()
+    expect(api.truncationText).toContain('61')
+    expect((api.getRootProps() as Dict)['data-truncated']).toBe('')
+  })
+
+  it('没截断时提示条带 hidden，文字是空串', () => {
+    const api = makeDiffView({ model: computeTextDiff('a\nb', 'a\nB') })
+    expect(api.truncated).toBe(false)
+    expect(api.truncatedLines).toBe(0)
+    expect((api.getTruncationProps() as Dict).hidden).toBe(true)
+    expect(api.truncationText).toBe('')
+    expect((api.getRootProps() as Dict)['data-truncated']).toBeUndefined()
+  })
+
+  it('translations.truncated 拿到的是被砍掉的行数', () => {
+    const api = makeDiffView({
+      model: cut,
+      translations: { truncated: count => `还有 ${count} 行没显示出来` },
+    })
+    expect(api.truncationText).toBe('还有 61 行没显示出来')
+  })
+})
+
+describe('connectDiffView 展开按钮', () => {
+  // 整份文件先收进一个 hunk，再由组件按 contextLines 把中间那段上下文折起来
+  const before = Array.from({ length: 30 }, (_, i) => `line ${i}`).join('\n')
+  const after = before.replace('line 5', 'X').replace('line 25', 'Y')
+  const model = computeTextDiff(before, after, { contextLines: 20 })
+
+  it('可访问名自带动作与行数，不是光秃秃的一个数', () => {
+    const api = makeDiffView({ model, contextLines: 2 })
+    const gap = api.rows.find(row => row.kind === 'gap')
+    expect(gap?.hiddenCount).toBeGreaterThan(0)
+    // 按钮上写的是「⋯ 15」，没有名字时读屏念的就是这一句，什么都没说明
+    expect((api.getGapTriggerProps({ gapId: gap!.gapId! }) as Dict)['aria-label'])
+      .toBe(`Show ${gap!.hiddenCount} hidden lines`)
+  })
+
+  it('translations.expandGap 拿到的是这一格自己折起来的行数', () => {
+    const api = makeDiffView({
+      model,
+      contextLines: 2,
+      translations: { expandGap: count => `展开折起的 ${count} 行` },
+    })
+    const gaps = api.rows.filter(row => row.kind === 'gap')
+    expect(gaps.length).toBeGreaterThan(0)
+    for (const gap of gaps) {
+      expect((api.getGapTriggerProps({ gapId: gap.gapId! }) as Dict)['aria-label'])
+        .toBe(`展开折起的 ${gap.hiddenCount} 行`)
+    }
   })
 })

@@ -96,6 +96,10 @@ export interface DiffViewApi<T extends PropTypes = PropTypes> {
   stats: { added: number, removed: number }
   /** 模型被上限截断过。 */
   truncated: boolean
+  /** 被上限砍掉、压根没进这份模型的源文本行数；没截断就是 0。 */
+  truncatedLines: number
+  /** 截断提示条的文字，已把行数代进去；没截断时是空串。 */
+  truncationText: string
   /** 一条变更都没有。 */
   isEmpty: boolean
   setExpanded: (next: string[]) => void
@@ -116,6 +120,8 @@ export interface DiffViewApi<T extends PropTypes = PropTypes> {
   getGapCellProps: () => T['element']
   getGapTriggerProps: (props: DiffViewGapProps) => T['button']
   getEmptyProps: () => T['element']
+  /** 截断提示条；没截断时带 hidden。 */
+  getTruncationProps: () => T['element']
   /** 变更类型对应的读屏文字，写进视觉隐藏的那一格。 */
   changeLabel: (change: DiffChange) => string
   /** 这一行在这一侧的文本；split 下空侧为 undefined。 */
@@ -138,10 +144,16 @@ export interface DiffViewTranslations {
   removed: string
   /** 未改动行的读屏文字。 */
   unchanged: string
-  /** 展开按钮的可访问名，形如 `Show {count} hidden lines`，模板串由调用方现场代入。 */
-  expandGap: string
+  /**
+   * 展开按钮的可访问名。给函数能把折起来的行数念进名字里；给字符串则是固定名字。
+   *
+   * 两种都收是为了不推翻已经传字符串的调用方——只支持函数会让它们在运行时炸。
+   */
+  expandGap: string | ((count: number) => string)
   /** 没有文件名时表格的兜底可访问名。 */
   diff: string
   /** 一条变更都没有时的占位文案。 */
   noChanges: string
+  /** 截断提示条的文案，入参是被砍掉的源文本行数。 */
+  truncated: (count: number) => string
 }

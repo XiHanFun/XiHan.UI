@@ -203,7 +203,7 @@ root 里除输入与发送外还能放自己的节点；值的读写归宿主，
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-composer-bg` · `--xh-composer-bg-disabled` · `--xh-composer-border` · `--xh-composer-gap` · `--xh-composer-input-autofill-bg` · `--xh-composer-input-autofill-fg` · `--xh-composer-input-fg` · `--xh-composer-input-font-size` · `--xh-composer-p` · `--xh-composer-placeholder-fg` · `--xh-composer-radius` · `--xh-composer-root-border-focus` · `--xh-composer-send-bg` · `--xh-composer-send-bg-active` · `--xh-composer-send-bg-hover` · `--xh-composer-send-fg` · `--xh-composer-stop-bg` · `--xh-composer-stop-bg-active` · `--xh-composer-stop-bg-hover` · `--xh-composer-stop-fg` · `--xh-composer-submit-font-size` · `--xh-composer-submit-font-weight` · `--xh-composer-submit-h` · `--xh-composer-submit-px` · `--xh-composer-submit-radius` · `--xh-composer-submit-shadow`
+`--xh-composer-bg` · `--xh-composer-bg-disabled` · `--xh-composer-border` · `--xh-composer-gap` · `--xh-composer-input-autofill-bg` · `--xh-composer-input-autofill-fg` · `--xh-composer-input-fg` · `--xh-composer-input-font-size` · `--xh-composer-p` · `--xh-composer-placeholder-fg` · `--xh-composer-radius` · `--xh-composer-root-border-focus` · `--xh-composer-send-bg` · `--xh-composer-send-bg-active` · `--xh-composer-send-bg-hover` · `--xh-composer-send-bg-off` · `--xh-composer-send-fg` · `--xh-composer-stop-bg` · `--xh-composer-stop-bg-active` · `--xh-composer-stop-bg-hover` · `--xh-composer-stop-fg` · `--xh-composer-submit-font-size` · `--xh-composer-submit-font-weight` · `--xh-composer-submit-h` · `--xh-composer-submit-px` · `--xh-composer-submit-radius` · `--xh-composer-submit-shadow`
 
 ## 动效
 

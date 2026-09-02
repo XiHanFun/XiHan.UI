@@ -92,9 +92,13 @@
 --xh-glyph-mark-flip-horizontal: url("data:image/svg+xml,…")  sha256:e520b8e3e17b
 --xh-glyph-mark-flip-vertical: url("data:image/svg+xml,…")  sha256:f6c503e8eff7
 --xh-glyph-mark-info: url("data:image/svg+xml,…")  sha256:a5b7023be26e
+--xh-glyph-mark-maximize: url("data:image/svg+xml,…")  sha256:dc92036439f5
 --xh-glyph-mark-minus: url("data:image/svg+xml,…")  sha256:277e0889e87d
+--xh-glyph-mark-pause: url("data:image/svg+xml,…")  sha256:de6a0811dd3e
+--xh-glyph-mark-play: url("data:image/svg+xml,…")  sha256:ff15c60fd286
 --xh-glyph-mark-plus: url("data:image/svg+xml,…")  sha256:30ae4f9d0480
 --xh-glyph-mark-required: '*'
+--xh-glyph-mark-restore: url("data:image/svg+xml,…")  sha256:d140d1076b2d
 --xh-glyph-mark-rotate-left: url("data:image/svg+xml,…")  sha256:683db902d94c
 --xh-glyph-mark-rotate-right: url("data:image/svg+xml,…")  sha256:9c75884db7fb
 --xh-glyph-mark-sort: url("data:image/svg+xml,…")  sha256:77960074f2de

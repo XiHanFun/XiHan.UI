@@ -232,9 +232,9 @@ export interface QuestionFlowTranslations {
   next: string
   /** 跳过键的可访问名。**不给就不产出 aria-label**——它一般带可见文字，盖掉反而更糟。 */
   skip: string
-  /** 不是末题时提交键的可访问名。 */
+  /** 不是末题时提交键的可访问名。**不给就不产出 aria-label**——同跳过键，它带可见文字。 */
   continue: string
-  /** 末题时同一颗提交键的可访问名。 */
+  /** 末题时同一颗提交键的可访问名，同样不给就不产出。 */
   send: string
   /** 进度播报，形如 `Question 2 of 3`。 */
   progress: (current: number, total: number) => string

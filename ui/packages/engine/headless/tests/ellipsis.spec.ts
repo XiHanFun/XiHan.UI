@@ -204,6 +204,48 @@ describe('ellipsis 展开', () => {
     expect(rig.api().overflowing).toBe(false)
   })
 
+  it('装得下的短文本不算按钮：开了 expandable 也不给角色与手型', async () => {
+    // 按下去什么都不变的东西不该报成按钮：读屏会念出一颗按不动的按钮，Tab 也会白停一站
+    const rig = makeRig({ expandable: true }, { sw: 100, cw: 100, sh: 100, ch: 100 })
+    await settle()
+    const props = rig.rootProps()
+    expect(rig.api().overflowing).toBe(false)
+    // 皮肤按这两条决定给不给手型
+    expect(props['data-expandable']).toBe('')
+    expect(props['data-overflowing']).toBeUndefined()
+    expect(props.role).toBeUndefined()
+    expect(props.tabindex).toBeUndefined()
+    expect(props['aria-expanded']).toBeUndefined()
+    expect(props['data-state']).toBeUndefined()
+    expect(props.onClick).toBeUndefined()
+    expect(props.onKeydown).toBeUndefined()
+  })
+
+  it('装不下了当场长出按钮语义', async () => {
+    const rig = makeRig({ expandable: true }, { sw: 100, cw: 100, sh: 100, ch: 100 })
+    await settle()
+    expect(rig.rootProps().role).toBeUndefined()
+
+    rig.resize({ sw: 400, cw: 100, sh: 100, ch: 100 })
+    await settle()
+    expect(rig.rootProps().role).toBe('button')
+    expect(rig.rootProps().tabindex).toBe(0)
+  })
+
+  it('铺开态恒留着收回去的入口：那一档量不出"被裁"', async () => {
+    // 铺开着起步时量测整个跳过，overflowing 停在初值 false，
+    // 只按它判就会把这颗按钮撤掉，用户再也收不回去
+    const rig = makeRig({ expandable: true, defaultExpanded: true }, { sw: 400, cw: 100, sh: 100, ch: 100 })
+    await settle()
+    expect(rig.api().overflowing).toBe(false)
+    expect(rig.rootProps().role).toBe('button')
+    expect(rig.rootProps()['aria-expanded']).toBe('true')
+
+    ;(rig.rootProps().onClick as () => void)()
+    await settle()
+    expect(rig.api().expanded).toBe(false)
+  })
+
   it('enter / Space 切换并拦掉 Space 的翻页，其它键不管', async () => {
     const rig = makeRig({ expandable: true })
     await settle()

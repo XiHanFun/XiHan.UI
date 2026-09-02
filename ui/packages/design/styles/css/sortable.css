@@ -63,6 +63,17 @@
     cursor: grab;
   }
 
+  /* 抓手是两条竖线：盒子取边框盒，两侧描边就是那两条线，宽高与线宽都走令牌。
+     :empty 守卫让作者塞进来的图标整个顶掉它，而不是两份叠在一起。
+     不画这条的话按钮里空无一物，只剩一块摸不着边的透明命中区 */
+  [data-scope='sortable'][data-part='item-handle']:empty::after {
+    content: '';
+    display: block;
+    inline-size: var(--xh-sortable-handle-grip-w, var(--xh-space-1));
+    block-size: var(--xh-sortable-handle-grip-h, var(--xh-space-3));
+    border-inline: var(--xh-stroke-thin) solid currentColor;
+  }
+
   [data-scope='sortable'][data-part='item-handle']:hover {
     background: var(--xh-sortable-handle-bg-hover, var(--xh-bg-subtle-hover));
     color: var(--xh-sortable-handle-fg-hover, var(--xh-fg-default));

@@ -12,7 +12,7 @@ type Props = DiffViewSchema['props']
 /** 默认插槽的载荷：可见行序、增删统计与展开集合。 */
 export type DiffViewRootSlotProps = Pick<
   DiffViewApi,
-  'view' | 'rows' | 'expanded' | 'stats' | 'truncated' | 'isEmpty' | 'toggleGap' | 'setExpanded'
+  'view' | 'rows' | 'expanded' | 'stats' | 'truncated' | 'truncatedLines' | 'isEmpty' | 'toggleGap' | 'setExpanded'
 >
 
 /** 单栏只有一列，恒为旧侧；并排两列都铺。 */
@@ -51,6 +51,7 @@ export const XhDiffViewRoot = defineComponent({
       expanded: ctx.api.value.expanded,
       stats: ctx.api.value.stats,
       truncated: ctx.api.value.truncated,
+      truncatedLines: ctx.api.value.truncatedLines,
       isEmpty: ctx.api.value.isEmpty,
       toggleGap: ctx.api.value.toggleGap,
       setExpanded: ctx.api.value.setExpanded,
@@ -176,5 +177,29 @@ export const XhDiffViewEmpty = defineComponent({
   setup(_, { slots }) {
     const ctx = useDiffViewContext()
     return () => h('div', ctx.api.value.getEmptyProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+/**
+ * 截断提示条：这份差异被上限砍掉过多少行。
+ *
+ * 文字默认由组件自己填——留给作者填的话，作者不填就又变回一份看着完整的残缺差异，
+ * 而这正是这条提示要挡的事。给了插槽就由插槽自己排版，行数一并交出去。
+ */
+export const XhDiffViewTruncation = defineComponent({
+  name: 'XhDiffViewTruncation',
+  slots: Object as SlotsType<{
+    default?: (props: { count: number }) => VNode[]
+  }>,
+  setup(_, { slots }) {
+    const ctx = useDiffViewContext()
+    return () => {
+      const api = ctx.api.value
+      return h(
+        'div',
+        api.getTruncationProps() as Record<string, unknown>,
+        slots.default?.({ count: api.truncatedLines }) ?? api.truncationText,
+      )
+    }
   },
 })

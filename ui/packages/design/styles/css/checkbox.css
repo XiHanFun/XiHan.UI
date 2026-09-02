@@ -63,6 +63,14 @@
     opacity: var(--xh-state-disabled-opacity);
   }
 
+  /* 只读改不动值，但不是禁用：颜色与不透明度都照常，只把"可点"这个暗示收回来。
+     方框与整行文字一起收——给了默认插槽时外层是 <label>，只收方框的话文字那半仍摆着手型。
+     排掉禁用是因为这条选择器权重高过禁用那两条，不排就会把 not-allowed 覆盖回 default */
+  [data-scope='checkbox'][data-part='root'][data-readonly]:not([data-disabled]),
+  [data-scope='checkbox'][data-part='label'][data-readonly]:not([data-disabled]) {
+    cursor: default;
+  }
+
   [data-scope='checkbox'][data-part='root']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
     outline-offset: var(--xh-ring-offset);

@@ -1,9 +1,7 @@
 <!-- 向上加载更早的消息 | 视口的滚动事件直接监听：滚到接近顶部就去取上一页，取回来的插在最前面 -->
 <script setup lang="ts">
 import { ref } from "vue";
-import { ArrowDownIcon } from "@xihan-ui/icons";
 import {
-  XhIcon,
   XhThreadContent,
   XhThreadRoot,
   XhThreadScrollButton,
@@ -49,7 +47,7 @@ function onScroll(event: Event): void {
           <p v-for="m in messages" :key="m.id" style="margin: 0">{{ m.text }}</p>
         </XhThreadContent>
       </XhThreadViewport>
-      <XhThreadScrollButton><XhIcon :icon="ArrowDownIcon" /> 回到底部</XhThreadScrollButton>
+      <XhThreadScrollButton />
     </XhThreadRoot>
 
     <span>已加载 {{ messages.length }} 条 · 最早到第 {{ earliest }} 条</span>

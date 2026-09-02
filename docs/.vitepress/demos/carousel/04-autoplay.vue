@@ -1,6 +1,7 @@
-<!-- 自动播放与回绕 | autoplay 给毫秒即间隔，鼠标停上去或焦点走进来都会把计时按住 -->
+<!-- 自动播放与暂停 | autoplay 给毫秒即间隔；开了它就得渲播放开关，自动翻页必须能停住 -->
 <script setup lang="ts">
 import {
+  XhCarouselAutoplayTrigger,
   XhCarouselItem,
   XhCarouselItemGroup,
   XhCarouselNextTrigger,
@@ -31,6 +32,7 @@ const slides = ["公告一", "公告二", "公告三"];
       </XhCarouselItemGroup>
     </XhCarouselViewport>
     <XhCarouselNextTrigger />
+    <XhCarouselAutoplayTrigger />
     <!-- root 自己就是会换行的横排 flex，回显想独占一行得自己占满 -->
     <span style="flex-basis: 100%">
       第 {{ page + 1 }} / {{ totalPages }} 页 ·

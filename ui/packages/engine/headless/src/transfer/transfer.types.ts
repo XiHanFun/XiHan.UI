@@ -79,6 +79,7 @@ export interface TransferSchema extends MachineSchema {
     loop?: boolean
     /** 文字方向，默认 ltr；决定列表内哪个横向方向键是"搬向对面"。 */
     dir?: Direction
+    translations?: Partial<TransferTranslations>
     onValueChange?: (details: TransferValueChangeDetails) => void
     onSelectionChange?: (details: TransferSelectionChangeDetails) => void
   }
@@ -177,5 +178,14 @@ export interface TransferApi<T extends PropTypes = PropTypes> {
   getToSourceTriggerProps: () => T['button']
 }
 
-/** 读屏用的文案。本组件目前没有需要外露的文案，位先留着。 */
-export interface TransferTranslations {}
+/** 读屏用的文案。 */
+export interface TransferTranslations {
+  /**
+   * 「搬到右边」那颗钮的可访问名。它只画一枚箭头、没有可读文字，
+   * 缺了名字读屏就念不出这是什么，而这两颗钮是本组件唯一的操作出口，
+   * 所以这一句**总会发出去**。
+   */
+  toTarget: string
+  /** 「搬回左边」那颗钮的可访问名，同样总会发出去。 */
+  toSource: string
+}

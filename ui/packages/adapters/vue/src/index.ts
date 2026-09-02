@@ -87,6 +87,7 @@ export {
 } from './components/card/card'
 export type { CardContext } from './components/card/context'
 export {
+  XhCarouselAutoplayTrigger,
   XhCarouselIndicator,
   XhCarouselIndicatorGroup,
   XhCarouselItem,
@@ -300,7 +301,7 @@ export type { DialogRootSlotProps } from './components/dialog/dialog'
 export { useDialog } from './components/dialog/use-dialog'
 export type { DialogContext } from './components/dialog/use-dialog'
 export { provideDiffView, useDiffViewContext } from './components/diff-view/context'
-export { XhDiffViewBody, XhDiffViewEmpty, XhDiffViewHeader, XhDiffViewRoot, XhDiffViewStat, XhDiffViewViewport } from './components/diff-view/diff-view'
+export { XhDiffViewBody, XhDiffViewEmpty, XhDiffViewHeader, XhDiffViewRoot, XhDiffViewStat, XhDiffViewTruncation, XhDiffViewViewport } from './components/diff-view/diff-view'
 export type { DiffViewRootSlotProps } from './components/diff-view/diff-view'
 export { useDiffView } from './components/diff-view/use-diff-view'
 export type { DiffViewContext } from './components/diff-view/use-diff-view'

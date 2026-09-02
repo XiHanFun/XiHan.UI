@@ -4,6 +4,7 @@ import type { CarouselApi, CarouselSchema } from './carousel.types'
 import { navIntentFromKey } from '@xihan-ui/behavior'
 import { dataAttr, isHTMLElement } from '@xihan-ui/kernel'
 import { carouselAnatomy } from './carousel.anatomy'
+import { resolveAutoplayInterval } from './carousel.machine'
 import {
   carouselPageCount,
   carouselPageSnapPoints,
@@ -57,6 +58,11 @@ export function connectCarousel<T extends PropTypes>(
 
   const autoplaying = state.matches('playing.running')
   const paused = state.matches('playing.paused')
+  const autoplayInterval = resolveAutoplayInterval(prop('autoplay'))
+  // 只认「用户按停的」这一档：计时没在走，或调用方那一路按住了。
+  // 悬停与焦点那两路刻意不算——开关本身就在轮播里，鼠标一移上去就会把计时按住，
+  // 跟着它走的话按钮的名字与图形会在指针刚碰到时就翻面，指的还是一件没发生的事
+  const autoplayStopped = state.matches('idle') || context.get('pausedBy').includes('api')
 
   const canScrollPrev = totalPages > 1 && (loop || page > 0)
   const canScrollNext = totalPages > 1 && (loop || page < totalPages - 1)
@@ -66,6 +72,8 @@ export function connectCarousel<T extends PropTypes>(
     root: translations?.root ?? 'Carousel',
     prevTrigger: translations?.prevTrigger ?? 'Previous slide',
     nextTrigger: translations?.nextTrigger ?? 'Next slide',
+    autoplayTriggerPlay: translations?.autoplayTriggerPlay ?? 'Start automatic slide show',
+    autoplayTriggerPause: translations?.autoplayTriggerPause ?? 'Stop automatic slide show',
     indicatorGroup: translations?.indicatorGroup ?? 'Choose slide to display',
     indicator: translations?.indicator ?? ((value: number) => `Go to slide ${value}`),
     item: translations?.item ?? ((index: number, count: number) => `${index} of ${count}`),
@@ -104,6 +112,7 @@ export function connectCarousel<T extends PropTypes>(
     canScrollNext,
     autoplaying,
     paused,
+    autoplayStopped,
     dragging,
     isInView,
     setPage,
@@ -231,6 +240,35 @@ export function connectCarousel<T extends PropTypes>(
       'data-disabled': dataAttr(!canScrollNext),
       'data-orientation': orientation,
       'onClick': () => send({ type: 'PAGE.NEXT' }),
+    }),
+
+    /**
+     * 播放 / 暂停开关。自动翻页是一段用户没要求就一直动下去的画面，
+     * 必须有一处能把它停住，且停住之后不会被任何别的交互重新点着。
+     *
+     * 名字随动作走，不再加 aria-pressed：名字与按压态两个通道各说各的，
+     * 会念成"停止自动播放 已按下"，听的人分不清此刻到底在放还是停着。
+     */
+    getAutoplayTriggerProps: () => normalize.button({
+      ...parts['autoplay-trigger'].attrs,
+      'type': 'button',
+      'aria-label': autoplayStopped ? label.autoplayTriggerPlay : label.autoplayTriggerPause,
+      'aria-controls': ids.viewport,
+      // 压根没配自动播放时它没有可开关的东西，走原生 disabled（单体控件）
+      'disabled': autoplayInterval <= 0 || undefined,
+      'data-disabled': dataAttr(autoplayInterval <= 0),
+      'data-state': autoplayStopped ? 'paused' : 'running',
+      // 三条出口各对一种停法：从没起播过要 START，被自己按住的要 RESUME，
+      // 正在走的才是 PAUSE。只发 PAUSE / RESUME 的话，reduce 档下那条停在 idle 的
+      // 轮播永远也播不起来
+      'onClick': () => {
+        if (state.matches('idle'))
+          send({ type: 'AUTOPLAY.START' })
+        else if (context.get('pausedBy').includes('api'))
+          send({ type: 'AUTOPLAY.RESUME', src: 'api' })
+        else
+          send({ type: 'AUTOPLAY.PAUSE', src: 'api' })
+      },
     }),
 
     getIndicatorGroupProps: () => normalize.element({

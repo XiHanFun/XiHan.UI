@@ -131,6 +131,22 @@ export function connectDiffView<T extends PropTypes>(
   const colCount = split ? 2 : 1
   const colIndexOf = (side: DiffSide): number => (split && side === 'new' ? 2 : 1)
 
+  const truncatedLines = Math.max(0, Math.trunc(model.truncatedLines ?? 0))
+  const truncated = model.truncated === true && truncatedLines > 0
+  // 作者给字符串就当固定名字用，给函数才把行数念进去；都没给才走兜底。
+  // 收字符串这一支是为了不推翻已经传字符串的调用方。
+  const expandGap = translations?.expandGap
+  const expandGapLabel = typeof expandGap === 'function'
+    ? expandGap
+    : (count: number) => expandGap ?? `Show ${count} hidden lines`
+  const truncationText = truncated
+    ? (translations?.truncated ?? ((count: number) => `${count} more lines were cut off and are not shown`))(truncatedLines)
+    : ''
+
+  /** 这一格折起来多少行。展开之后这一格就不在行序里了，取不到即 0。 */
+  const hiddenCountOf = (gapId: string): number =>
+    rows.find(row => row.kind === 'gap' && row.gapId === gapId)?.hiddenCount ?? 0
+
   const labelOf = (change: DiffChange): string => {
     if (change === 'added')
       return translations?.added ?? 'Added'
@@ -170,7 +186,9 @@ export function connectDiffView<T extends PropTypes>(
     rows,
     expanded,
     stats,
-    truncated: model.truncated === true,
+    truncated,
+    truncatedLines,
+    truncationText,
     isEmpty,
     setExpanded: next => send({ type: 'CONTROLLED.EXPANDED.SET', value: next }),
     toggleGap: id => send({ type: expanded.includes(id) ? 'GAP.COLLAPSE' : 'GAP.EXPAND', id }),
@@ -181,7 +199,7 @@ export function connectDiffView<T extends PropTypes>(
       'data-view': view,
       'data-size': prop('size'),
       'data-wrap': dataAttr(prop('wrap') === true),
-      'data-truncated': dataAttr(model.truncated === true),
+      'data-truncated': dataAttr(truncated),
     }),
 
     getHeaderProps: () => normalize.element({
@@ -273,7 +291,8 @@ export function connectDiffView<T extends PropTypes>(
       ...parts['gap-trigger'].attrs,
       'type': 'button',
       'aria-expanded': expanded.includes(gapId) ? 'true' : 'false',
-      'aria-label': translations?.expandGap,
+      // 按钮上写的是「⋯ 12」，读出来就是"⋯ 12"，什么都没说明；名字必须自带动作与量词
+      'aria-label': expandGapLabel(hiddenCountOf(gapId)),
       'data-value': gapId,
       'onClick': () => send({ type: expanded.includes(gapId) ? 'GAP.COLLAPSE' : 'GAP.EXPAND', id: gapId }),
     }),
@@ -282,6 +301,17 @@ export function connectDiffView<T extends PropTypes>(
     getEmptyProps: () => normalize.element({
       ...parts.empty.attrs,
       hidden: !isEmpty || undefined,
+    }),
+
+    /**
+     * 被砍掉多少行的提示条。没截断时带 hidden，与 empty 同一套取舍。
+     *
+     * 差异从尾部断开之后看着仍像一份完整差异，没有这一条，
+     * 评审的人会以为自己看完了，而少掉的恰恰是没被审到的那几行。
+     */
+    getTruncationProps: () => normalize.element({
+      ...parts.truncation.attrs,
+      hidden: !truncated || undefined,
     }),
 
     changeLabel: labelOf,

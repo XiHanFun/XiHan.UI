@@ -81,9 +81,10 @@
     display: none;
   }
 
-  /* 两端按钮：圆形、与控件同高，禁用时靠原生 :disabled 变灰 */
+  /* 两端按钮与播放开关：圆形、与控件同高，禁用时靠原生 :disabled 变灰 */
   [data-scope='carousel'][data-part='prev-trigger'],
-  [data-scope='carousel'][data-part='next-trigger'] {
+  [data-scope='carousel'][data-part='next-trigger'],
+  [data-scope='carousel'][data-part='autoplay-trigger'] {
     display: inline-flex;
     flex: none;
     align-items: center;
@@ -102,22 +103,26 @@
   }
 
   [data-scope='carousel'][data-part='prev-trigger'][hidden],
-  [data-scope='carousel'][data-part='next-trigger'][hidden] {
+  [data-scope='carousel'][data-part='next-trigger'][hidden],
+  [data-scope='carousel'][data-part='autoplay-trigger'][hidden] {
     display: none;
   }
 
   [data-scope='carousel'][data-part='prev-trigger']:hover:not(:disabled),
-  [data-scope='carousel'][data-part='next-trigger']:hover:not(:disabled) {
+  [data-scope='carousel'][data-part='next-trigger']:hover:not(:disabled),
+  [data-scope='carousel'][data-part='autoplay-trigger']:hover:not(:disabled) {
     background: var(--xh-carousel-trigger-bg-hover, var(--xh-bg-subtle-hover));
   }
 
   [data-scope='carousel'][data-part='prev-trigger']:active:not(:disabled),
-  [data-scope='carousel'][data-part='next-trigger']:active:not(:disabled) {
+  [data-scope='carousel'][data-part='next-trigger']:active:not(:disabled),
+  [data-scope='carousel'][data-part='autoplay-trigger']:active:not(:disabled) {
     background: var(--xh-carousel-trigger-bg-active, var(--xh-bg-subtle-active));
   }
 
   [data-scope='carousel'][data-part='prev-trigger']:focus-visible,
   [data-scope='carousel'][data-part='next-trigger']:focus-visible,
+  [data-scope='carousel'][data-part='autoplay-trigger']:focus-visible,
   [data-scope='carousel'][data-part='indicator']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
     outline-offset: var(--xh-ring-offset);
@@ -126,7 +131,8 @@
   /* 两端到头时按钮是原生 disabled（不可聚焦、进不了 Tab 序列），所以这里必须用 :disabled；
      连接层同时给的 data-disabled 只是留给作者的钩子 */
   [data-scope='carousel'][data-part='prev-trigger']:disabled,
-  [data-scope='carousel'][data-part='next-trigger']:disabled {
+  [data-scope='carousel'][data-part='next-trigger']:disabled,
+  [data-scope='carousel'][data-part='autoplay-trigger']:disabled {
     color: var(--xh-fg-disabled);
     cursor: not-allowed;
   }
@@ -225,5 +231,28 @@
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
     mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
+  }
+
+  /* 播放开关的字形随状态换：正在播画暂停、停着画播放，与按钮名字指的是同一个动作 */
+  [data-scope='carousel'][data-part='autoplay-trigger'][data-state='running']:empty::before {
+    content: '';
+    display: inline-block;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-pause) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-pause) center / contain no-repeat;
+  }
+
+  [data-scope='carousel'][data-part='autoplay-trigger'][data-state='paused']:empty::before {
+    content: '';
+    display: inline-block;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-play) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-play) center / contain no-repeat;
   }
 }

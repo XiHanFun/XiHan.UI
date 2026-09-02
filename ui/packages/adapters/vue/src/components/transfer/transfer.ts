@@ -11,6 +11,7 @@ import type { Direction } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
+import { withXhConfig } from '../../config/config'
 import {
   provideTransfer,
   provideTransferItem,
@@ -67,6 +68,7 @@ export const XhTransferRoot = defineComponent({
     oneWay: Boolean,
     loop: { type: Boolean, default: undefined },
     dir: { type: String as PropType<Direction>, default: undefined },
+    translations: { type: Object as PropType<TransferProps['translations']>, default: undefined },
   },
   // *-change 携带 details 对象，update:* 携带裸集合以支持 v-model
   emits: {
@@ -87,7 +89,7 @@ export const XhTransferRoot = defineComponent({
       emit('selection-change', details)
       emit('update:selection', details.value)
     }
-    const ctx = useTransfer(props as TransferProps, {
+    const ctx = useTransfer(withXhConfig('transfer', props) as TransferProps, {
       onValueChange: notifyValue,
       onSelectionChange: notifySelection,
     })

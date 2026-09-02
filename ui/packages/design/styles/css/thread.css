@@ -7,6 +7,9 @@
   /* 自建定位上下文，作为绝对定位的回到底部按钮的参照系；
      block-size: 100% 让高度由外部决定，使滚动发生在内部。 */
   [data-scope='thread'][data-part='root'] {
+    /* 作者塞进按钮里的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+    --xh-icon-size: var(--xh-thread-icon-size, var(--xh-glyph-size-text));
+
     /* 组件内那几档层号只在自己人之间排序：建一个层叠上下文把它们关起来，
        既不让页面上的层号插进来，也不让它们漏出去压住别人 */
     isolation: isolate;
@@ -89,6 +92,19 @@
   /* 连接层收起按钮时写 hidden 属性，上面的 display 会盖掉 UA 规则，这里补回 */
   [data-scope='thread'][data-part='scroll-button'][hidden] {
     display: none;
+  }
+
+  /* 没写内容就由皮肤画一枚向下的字形；作者往按钮里塞了自己的图形或文字，这条规则即不命中。
+     不画的话这颗按钮是一枚带边框带阴影的空胶囊，看不出它是干什么的——名字只在 aria-label 上 */
+  [data-scope='thread'][data-part='scroll-button']:empty::before {
+    content: '';
+    display: inline-block;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
   }
 
   [data-scope='thread'][data-part='scroll-button']:hover {

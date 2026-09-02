@@ -77,6 +77,14 @@
      长按会先选中区域内的文字，长按菜单弹出时手指底下是一片高亮，很难看 */
   [data-scope='context-menu'][data-part='trigger'] {
     user-select: none;
+    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  /* 触屏没有右键，菜单靠长按计时打开。这段等待里若一点变化都没有，用户会当成没按上而提前
+     抬手，计时被抬手事件掐掉，菜单永远打不开。压一档中性轻底当「按住了，接着按」的回执。
+     只换底色不缩放：触发区是作者的整块内容，缩放它会把作者自己的排版一起抖起来 */
+  [data-scope='context-menu'][data-part='trigger'][data-pressing] {
+    background: var(--xh-context-menu-trigger-bg-pressing, var(--xh-bg-subtle));
   }
 
   /* 触发区自带 Tab 位（Shift+F10 / 菜单键的落点），必须画得出焦点 */

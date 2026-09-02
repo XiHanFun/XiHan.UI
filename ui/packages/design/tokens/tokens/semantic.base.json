@@ -255,6 +255,26 @@
       "$type": "icon",
       "$value": "flip-vertical"
     },
+    "mark-maximize": {
+      "$description": "把面板铺满可视区。四角箭头朝外，与朝内的 mark-restore 成对。",
+      "$type": "icon",
+      "$value": "maximize"
+    },
+    "mark-restore": {
+      "$description": "把铺满或收拢的面板还原成常规尺寸。四角箭头朝内，与朝外的 mark-maximize 成对。",
+      "$type": "icon",
+      "$value": "minimize"
+    },
+    "mark-play": {
+      "$description": "开始自动播放。三角朝右，与 mark-pause 成对。",
+      "$type": "icon",
+      "$value": "play"
+    },
+    "mark-pause": {
+      "$description": "停住自动播放。两条竖杠，与 mark-play 成对。",
+      "$type": "icon",
+      "$value": "pause"
+    },
     "mark-required": {
       "$type": "string",
       "$value": "'*'"

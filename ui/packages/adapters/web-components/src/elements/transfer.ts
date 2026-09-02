@@ -4,6 +4,7 @@ import type {
   TransferSchema,
   TransferSelectionChangeDetails,
   TransferSide,
+  TransferTranslations,
   TransferValueChangeDetails,
 } from '@xihan-ui/headless'
 import type { Direction } from '@xihan-ui/kernel'
@@ -71,8 +72,8 @@ function stripNativeDisabled(el: HTMLElement): void {
  * @csspart item-text - 条目文本
  * @csspart item-checkbox - 条目勾选标记（aria-hidden）；oneWay 下右侧的那一份带 hidden
  * @csspart select-all-trigger - 本侧全选格，须是原生 button；三态经 aria-checked 上报
- * @csspart to-target-trigger - 往右搬的按钮，须是原生 button
- * @csspart to-source-trigger - 往左搬的按钮，须是原生 button；oneWay 下恒为禁用
+ * @csspart to-target-trigger - 往右搬的按钮，须是原生 button；可及名字由 translations.toTarget 给
+ * @csspart to-source-trigger - 往左搬的按钮，须是原生 button；oneWay 下恒为禁用；可及名字由 translations.toSource 给
  */
 export class XhTransferElement extends XhElement {
   static override partContract = { anatomy: transferAnatomy, meta: transferMeta }
@@ -92,6 +93,8 @@ export class XhTransferElement extends XhElement {
     oneWay: { type: Boolean, attribute: 'one-way' },
     loop: { converter: BOOLEAN_CONVERTER },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
+    // 文案是对象，只走 property
+    translations: { attribute: false },
   }
 
   declare collection?: TransferItem[]
@@ -105,6 +108,7 @@ export class XhTransferElement extends XhElement {
   declare oneWay?: boolean
   declare loop?: boolean
   declare direction?: Direction
+  declare translations?: Partial<TransferTranslations>
 
   private readonly notifyValue = (details: TransferValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
@@ -131,6 +135,7 @@ export class XhTransferElement extends XhElement {
       oneWay: this.oneWay ?? false,
       loop: this.loop,
       dir: this.direction,
+      translations: this.translations,
       onValueChange: this.notifyValue,
       onSelectionChange: this.notifySelection,
     }

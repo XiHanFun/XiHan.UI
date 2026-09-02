@@ -24,12 +24,8 @@ import {
           <XhFloatingPanelTitle>播放器</XhFloatingPanelTitle>
           <XhFloatingPanelDragTrigger />
           <!-- 当前形态的那个钮会被压住（aria-pressed=true） -->
-          <XhFloatingPanelStageTrigger stage="minimized"
-            >—</XhFloatingPanelStageTrigger
-          >
-          <XhFloatingPanelStageTrigger stage="maximized"
-            >▢</XhFloatingPanelStageTrigger
-          >
+          <XhFloatingPanelStageTrigger stage="minimized" />
+          <XhFloatingPanelStageTrigger stage="maximized" />
           <XhFloatingPanelCloseTrigger />
         </XhFloatingPanelHeader>
         <XhFloatingPanelBody>

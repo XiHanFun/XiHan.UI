@@ -1,0 +1,38 @@
+<!-- 超长差异的截断提示 | 超过 maxLines 的部分被砍掉，提示条把砍了多少行说给读的人 -->
+<xh-diff-view id="diff-view-truncated" context-lines="2">
+  <div data-xh-part="root">
+    <div data-xh-part="header">src/items.ts</div>
+    <div data-xh-part="viewport">
+      <div data-xh-part="body"></div>
+    </div>
+    <!-- 断掉的差异看着仍像一份完整差异，没有这一条读的人会以为自己看完了 -->
+    <div data-xh-part="truncation"></div>
+  </div>
+</xh-diff-view>
+
+<script type="module">
+  // 真实应用里这份模型来自 computeTextDiff（它会自己算出被砍掉多少行）；
+  // 这份示例是裸 HTML、没有打包器，所以把模型直接写在这里
+  const view = document.getElementById("diff-view-truncated");
+  view.model = {
+    truncated: true,
+    truncatedLines: 48,
+    hunks: [
+      {
+        header: "@@ -1,6 +1,6 @@",
+        oldStart: 1,
+        oldLines: 6,
+        newStart: 1,
+        newLines: 6,
+        lines: [
+          { change: "context", oldNumber: 1, newNumber: 1, text: "const item0 = 0" },
+          { change: "context", oldNumber: 2, newNumber: 2, text: "const item1 = 1" },
+          { change: "removed", oldNumber: 3, text: "const item2 = 2" },
+          { change: "added", newNumber: 3, text: "const item2 = 200" },
+          { change: "context", oldNumber: 4, newNumber: 4, text: "const item3 = 3" },
+          { change: "context", oldNumber: 5, newNumber: 5, text: "const item4 = 4" },
+        ],
+      },
+    ],
+  };
+</script>

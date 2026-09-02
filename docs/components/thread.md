@@ -187,7 +187,7 @@ stick-change 报到底，宿主据此去取下一页；先往上滚一段再滚�
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-thread-content-gap` · `--xh-thread-content-py` · `--xh-thread-scroll-button-bg` · `--xh-thread-scroll-button-bg-active` · `--xh-thread-scroll-button-bg-hover` · `--xh-thread-scroll-button-border` · `--xh-thread-scroll-button-fg` · `--xh-thread-scroll-button-font-size` · `--xh-thread-scroll-button-font-weight` · `--xh-thread-scroll-button-gap` · `--xh-thread-scroll-button-h` · `--xh-thread-scroll-button-inset` · `--xh-thread-scroll-button-px` · `--xh-thread-scroll-button-radius` · `--xh-thread-scroll-button-shadow`
+`--xh-thread-content-gap` · `--xh-thread-content-py` · `--xh-thread-icon-size` · `--xh-thread-scroll-button-bg` · `--xh-thread-scroll-button-bg-active` · `--xh-thread-scroll-button-bg-hover` · `--xh-thread-scroll-button-border` · `--xh-thread-scroll-button-fg` · `--xh-thread-scroll-button-font-size` · `--xh-thread-scroll-button-font-weight` · `--xh-thread-scroll-button-gap` · `--xh-thread-scroll-button-h` · `--xh-thread-scroll-button-inset` · `--xh-thread-scroll-button-px` · `--xh-thread-scroll-button-radius` · `--xh-thread-scroll-button-shadow`
 
 ## 动效
 

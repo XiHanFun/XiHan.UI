@@ -171,6 +171,24 @@
     color: var(--xh-fg-disabled);
   }
 
+  /* 上传失败的那一行必须一眼认出来：不标出来的话它跟传完的行渲染完全一致，
+     用户不知道该按哪一条的重试。红边之外再补一枚警示字形——只靠颜色的话，
+     色觉障碍用户与灰度打印下这一档等于没有 */
+  [data-scope='file-upload'][data-part='item'][data-state='error'] {
+    border-color: var(--xh-file-upload-item-border-error, var(--xh-border-invalid));
+    color: var(--xh-file-upload-item-fg-error, var(--xh-fg-danger));
+  }
+
+  [data-scope='file-upload'][data-part='item'][data-state='error']::before {
+    content: '';
+    flex: none;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-warning) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-warning) center / contain no-repeat;
+  }
+
   /* 缩略图占位：作者往里塞图标或真缩略图，尺寸由这里定死，一行行的图标才对得齐 */
   [data-scope='file-upload'][data-part='item-preview'] {
     display: inline-flex;

@@ -1,6 +1,7 @@
 import type { PropFn } from '@xihan-ui/machine'
 import type { CarouselPauseSource, CarouselSchema } from './carousel.types'
 import { setTimeoutEffect, setup } from '@xihan-ui/machine'
+import { resolveMotionPreference } from '@xihan-ui/motion'
 import { createMultiPointerSession, resolveSessionDoc } from '@xihan-ui/pointer'
 import { carouselDragDelta, carouselPageCount, clampCarouselPage } from './carousel.pages'
 
@@ -22,6 +23,21 @@ export function resolveAutoplayInterval(autoplay: boolean | number | undefined):
   if (autoplay === true)
     return CAROUSEL_AUTOPLAY_INTERVAL
   return Number.isFinite(autoplay) && autoplay > 0 ? autoplay : 0
+}
+
+/**
+ * 这一刻允不允许自己起播。
+ *
+ * 减弱动效档一律不许：自动翻页是一段没人按下去就一直动下去的画面，
+ * 表示"少放动画"的用户不该一进页面就被它推着走。用户按下播放开关是另一回事，
+ * 那条路只看间隔（见 hasAutoplay），不看这里。
+ *
+ * 偏好探测走 motion 包的统一入口：应用级强制档（setMotionOverride）只有它看得见，
+ * 自己拿 matchMedia 问一遍会漏掉那一层。不传窗口即取全局窗口——起播判定发生在
+ * 服务构造期，此时 scope 还可能落在没有 document 的宿主上。
+ */
+function startsOnItsOwn(prop: PropFn<CarouselSchema>): boolean {
+  return resolveAutoplayInterval(prop('autoplay')) > 0 && resolveMotionPreference() !== 'reduce'
 }
 
 /** 总页数由 props 现算，不缓存（slideCount 与两个 perX 随时会被宿主改）。 */
@@ -57,8 +73,8 @@ export const carouselMachine = createMachine({
     dragStart: cell<number | null>(() => ({ defaultValue: null })),
     dragOffset: cell<number>(() => ({ defaultValue: 0 })),
   }),
-  // 间隔为 0（没开自动播放）时不进 playing
-  initialState: ({ prop }) => (resolveAutoplayInterval(prop('autoplay')) > 0 ? 'playing' : 'idle'),
+  // 间隔为 0（没开自动播放）或用户要求减弱动效时不进 playing
+  initialState: ({ prop }) => (startsOnItsOwn(prop) ? 'playing' : 'idle'),
   // 跟手的会话整个生命周期都在。它不按拖动状态挂卸——常驻的代价只是几个早退的
   // pointermove，换来的是不必为了「有拆卸时机」去改状态树
   effects: ['trackPointer'],
@@ -171,8 +187,10 @@ export const carouselMachine = createMachine({
       },
       clearPauseSources: ({ context }) => context.set('pausedBy', []),
 
+      // autoplay 被改写后的重挂：同样只走"自己起播"那道判据，
+      // 否则减弱动效档下宿主一改间隔就把刚才没起播的这一条给点着了
       syncAutoplay: ({ prop, send }) => {
-        send(resolveAutoplayInterval(prop('autoplay')) > 0
+        send(startsOnItsOwn(prop)
           ? { type: 'AUTOPLAY.START' }
           : { type: 'AUTOPLAY.STOP' })
       },

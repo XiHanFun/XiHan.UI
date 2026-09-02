@@ -3,6 +3,7 @@ import type { CarouselSchema } from '../src/carousel'
 import { normalizeProps } from '@xihan-ui/kernel'
 import { createService } from '@xihan-ui/machine'
 import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
+import { setMotionOverride } from '@xihan-ui/motion'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 // 直接指向组件目录：包主入口的导出由接线一并补，测试不等它
 import {
@@ -236,6 +237,14 @@ function makeCarousel(initial: Props = {}) {
 
 /** 六张、一屏一张的基线：总页数 6，页码与张号一一对应。 */
 const SIX: Props = { slideCount: 6 }
+
+function autoplayTrigger(c: ReturnType<typeof makeCarousel>): Dict {
+  return c.api().getAutoplayTriggerProps() as Dict
+}
+
+function clickAutoplayTrigger(c: ReturnType<typeof makeCarousel>): void {
+  ;(autoplayTrigger(c).onClick as () => void)()
+}
 
 describe('carouselMachine 翻页', () => {
   it('默认停在第 0 页，defaultPage 决定初值', () => {
@@ -479,6 +488,44 @@ describe('carouselMachine 自动播放', () => {
     expect(c.api().page).toBe(0)
     c.api().resume()
     expect(c.api().autoplaying).toBe(true)
+  })
+})
+
+describe('carouselMachine 减弱动效', () => {
+  beforeEach(() => {
+    vi.useFakeTimers()
+  })
+
+  afterEach(() => {
+    // override 是模块级的，漏掉这一句会把后面所有用例都拖进减弱动效档
+    setMotionOverride(null)
+    vi.useRealTimers()
+  })
+
+  it('减弱动效档下不自动起播：给了间隔也停在 idle', () => {
+    setMotionOverride('reduce')
+    const c = makeCarousel({ ...SIX, autoplay: 100 })
+    expect(c.state()).toBe('idle')
+    vi.advanceTimersByTime(10_000)
+    expect(c.api().page).toBe(0)
+  })
+
+  it('减弱动效档下改写 autoplay 也不会把它点着', () => {
+    setMotionOverride('reduce')
+    const c = makeCarousel({ ...SIX, autoplay: 100 })
+    c.setProps({ autoplay: 200 })
+    expect(c.state()).toBe('idle')
+    vi.advanceTimersByTime(10_000)
+    expect(c.api().page).toBe(0)
+  })
+
+  it('不许自动起播不等于不许播：按下播放开关照样走', () => {
+    setMotionOverride('reduce')
+    const c = makeCarousel({ ...SIX, autoplay: 100 })
+    clickAutoplayTrigger(c)
+    expect(c.state()).toBe('playing.running')
+    vi.advanceTimersByTime(100)
+    expect(c.api().page).toBe(1)
   })
 })
 
@@ -890,5 +937,71 @@ describe('connectCarousel 指针', () => {
       { button: 0, pointerId: 1, clientX: 0, clientY: 0, currentTarget: {} } as unknown as PointerEvent,
     )
     expect(single.api().dragging).toBe(false)
+  })
+})
+
+describe('connectCarousel 播放开关', () => {
+  beforeEach(() => {
+    vi.useFakeTimers()
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it('按一下把自动翻页停住，时间再过多久也不翻；再按一下续上', () => {
+    const c = makeCarousel({ ...SIX, autoplay: 100 })
+    expect(autoplayTrigger(c)['data-state']).toBe('running')
+    expect(autoplayTrigger(c)['aria-label']).toBe('Stop automatic slide show')
+
+    clickAutoplayTrigger(c)
+    expect(autoplayTrigger(c)['data-state']).toBe('paused')
+    expect(autoplayTrigger(c)['aria-label']).toBe('Start automatic slide show')
+    vi.advanceTimersByTime(10_000)
+    expect(c.api().page).toBe(0)
+
+    clickAutoplayTrigger(c)
+    expect(autoplayTrigger(c)['data-state']).toBe('running')
+    vi.advanceTimersByTime(100)
+    expect(c.api().page).toBe(1)
+  })
+
+  it('悬停把计时按住时开关不跟着翻面，按下去仍是"停住"，且鼠标挪开也不会自己续上', () => {
+    const c = makeCarousel({ ...SIX, autoplay: 100 })
+    c.service.send({ type: 'AUTOPLAY.PAUSE', src: 'pointer' })
+    // 计时确实被按住了，但那是鼠标一挪开就自己续上的一档，不是用户按停的
+    expect(c.api().paused).toBe(true)
+    expect(c.api().autoplayStopped).toBe(false)
+    expect(autoplayTrigger(c)['aria-label']).toBe('Stop automatic slide show')
+
+    clickAutoplayTrigger(c)
+    expect(c.api().autoplayStopped).toBe(true)
+
+    c.service.send({ type: 'AUTOPLAY.RESUME', src: 'pointer' })
+    vi.advanceTimersByTime(10_000)
+    expect(c.api().page).toBe(0)
+    expect(autoplayTrigger(c)['data-state']).toBe('paused')
+  })
+
+  it('没配自动播放时是原生 disabled：按不动的按钮不留在 Tab 序列里', () => {
+    const off = makeCarousel(SIX)
+    expect(autoplayTrigger(off).disabled).toBe(true)
+    expect(autoplayTrigger(off)['data-disabled']).toBe('')
+
+    const on = makeCarousel({ ...SIX, autoplay: 100 })
+    expect(autoplayTrigger(on).disabled).toBeUndefined()
+    expect(autoplayTrigger(on)['data-disabled']).toBeUndefined()
+  })
+
+  it('translations 覆盖两态文案，且 aria-controls 指向视口', () => {
+    const c = makeCarousel({
+      ...SIX,
+      autoplay: 100,
+      translations: { autoplayTriggerPlay: '开始自动播放', autoplayTriggerPause: '停止自动播放' },
+    })
+    expect(autoplayTrigger(c)['aria-label']).toBe('停止自动播放')
+    expect(autoplayTrigger(c)['aria-controls']).toBe((c.api().getViewportProps() as Dict).id)
+    clickAutoplayTrigger(c)
+    expect(autoplayTrigger(c)['aria-label']).toBe('开始自动播放')
   })
 })

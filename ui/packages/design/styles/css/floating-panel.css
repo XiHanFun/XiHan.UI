@@ -314,6 +314,35 @@
     mask: var(--xh-glyph-mark-close) center / contain no-repeat;
   }
 
+  /* 形态钮是同一个部件的三副面孔，字形按它「按下去切到哪一档」分：
+     还原是四角朝内、铺满是四角朝外、收拢是一条横线。不分档的话标题栏上排着的
+     两三颗钮长得一模一样，按哪颗全靠猜。
+     这条打底画「还原」，另两档在下面换掉 mask-image。
+     选的是 data-target-stage 而不是面板身上的 data-stage：后者说的是面板此刻在哪一档，
+     用它会让排在一起的几颗钮同时换成同一枚字形。
+     字形也不随 data-state='on' 翻面：可访问名由连接层按 target 定死（按下的仍念「铺满面板」），
+     字形跟着按下态改就与念出来的名字对不上了 */
+  [data-scope='floating-panel'][data-part='stage-trigger']:empty::before {
+    content: '';
+    display: inline-block;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-restore) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-restore) center / contain no-repeat;
+  }
+
+  [data-scope='floating-panel'][data-part='stage-trigger'][data-target-stage='maximized']:empty::before {
+    -webkit-mask-image: var(--xh-glyph-mark-maximize);
+    mask-image: var(--xh-glyph-mark-maximize);
+  }
+
+  [data-scope='floating-panel'][data-part='stage-trigger'][data-target-stage='minimized']:empty::before {
+    -webkit-mask-image: var(--xh-glyph-mark-minus);
+    mask-image: var(--xh-glyph-mark-minus);
+  }
+
   @media print {
     /* 打印：定位层与遮罩是交互期才存在的东西，落到纸上只会盖住底下的正文。
        收起写在这份皮肤里而不是 reset：reset 层排在组件层之前，组件层里任何一条 display 都压得住它。 */

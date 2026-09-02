@@ -25,7 +25,8 @@
   展开集合可受控，好让「全部展开」这类操作统一持有。
 - `wrap` 让长行原地折行，卡片不再横向滚动；窄栏与并排视图下尤其有用。
 - 头部自带增删统计位 `stat`，增删各一个，数字取自模型、着色跟着变更类型走。
-- `maxLines` 是必须有的上限：AI 会吐超大文件，超出即截断并标出来。
+- `maxLines` 是必须有的上限：AI 会吐超大文件，新旧两侧各自超出即从尾部砍掉。
+  砍掉几行由模型带出来，`truncation` 提示条把这个数说给读的人。
 - 行号与列号一律从模型算，**绝不从 DOM 反推**。
 
 ## 示例
@@ -48,12 +49,18 @@
 
 <XhDemo src="diff-view/03-wrap-words" />
 
+### 超长差异的截断提示
+
+超过 maxLines 的部分被砍掉，提示条把砍了多少行说给读的人
+
+<XhDemo src="diff-view/04-truncated" />
+
 ## 产物
 
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-diff-view>` |
-| Vue 组件 | `XhDiffViewBody` `XhDiffViewEmpty` `XhDiffViewHeader` `XhDiffViewRoot` `XhDiffViewStat` `XhDiffViewViewport` |
+| Vue 组件 | `XhDiffViewBody` `XhDiffViewEmpty` `XhDiffViewHeader` `XhDiffViewRoot` `XhDiffViewStat` `XhDiffViewTruncation` `XhDiffViewViewport` |
 | 组合式函数 | `useDiffView` |
 | 状态机 | `diffViewMachine` |
 | 皮肤 | `@xihan-ui/styles/diff-view.css` |
@@ -62,7 +69,7 @@
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="diff-view"`：**`root`** · `header` · `stat` · **`viewport`** · **`body`** · `row` · `line-number` · `line-content` · `change-label` · `segment` · `token` · `gap` · `gap-cell` · `gap-trigger` · `empty`
+`data-scope="diff-view"`：**`root`** · `header` · `stat` · **`viewport`** · **`body`** · `row` · `line-number` · `line-content` · `change-label` · `segment` · `token` · `gap` · `gap-cell` · `gap-trigger` · `empty` · `truncation`
 
 ## Props
 
@@ -94,6 +101,7 @@
 | --- | --- | --- | --- |
 | `XhDiffViewRoot` | `default` | `DiffViewRootSlotProps` |  |
 | `XhDiffViewStat` | `default` | `{ count: number }` |  |
+| `XhDiffViewTruncation` | `default` | `{ count: number }` |  |
 
 ## 状态
 
@@ -116,6 +124,8 @@
 | `expanded` | `string[]` |  |
 | `stats` | `{ added: number, removed: number }` | 增删各多少行。 |
 | `truncated` | `boolean` | 模型被上限截断过。 |
+| `truncatedLines` | `number` | 被上限砍掉、压根没进这份模型的源文本行数；没截断就是 0。 |
+| `truncationText` | `string` | 截断提示条的文字，已把行数代进去；没截断时是空串。 |
 | `isEmpty` | `boolean` | 一条变更都没有。 |
 | `setExpanded` | `(next: string[]) => void` |  |
 | `toggleGap` | `(id: string) => void` |  |
@@ -134,6 +144,7 @@
 | `getGapCellProps` | `() => T['element']` |  |
 | `getGapTriggerProps` | `(props: DiffViewGapProps) => T['button']` |  |
 | `getEmptyProps` | `() => T['element']` |  |
+| `getTruncationProps` | `() => T['element']` | 截断提示条；没截断时带 hidden。 |
 | `changeLabel` | `(change: DiffChange) => string` | 变更类型对应的读屏文字，写进视觉隐藏的那一格。 |
 | `cellText` | `(props: DiffViewCellProps) => string \| undefined` | 这一行在这一侧的文本；split 下空侧为 undefined。 |
 | `cellNumber` | `(props: DiffViewCellProps) => number \| undefined` | 这一行在这一侧的行号；没有就是 undefined。 |
@@ -169,7 +180,7 @@
 | `gap-cell` | `aria-colindex` | 1 |
 | `gap-cell` | `role` | 'cell' |
 | `gap-trigger` | `aria-expanded` | 'true' \| 'false' |
-| `gap-trigger` | `aria-label` | translations?.expandGap |
+| `gap-trigger` | `aria-label` | expandGapLabel(hiddenCountOf(gapId)) |
 
 - 表格语义：`role=table` 配 `role=row` 与 `role=cell`，带 `aria-rowcount` / `aria-rowindex` /
   `aria-colcount` / `aria-colindex`。列数只数**真正暴露的内容列**——行号不算列。
@@ -213,7 +224,7 @@
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-diff-view-added-bg` · `--xh-diff-view-added-fg` · `--xh-diff-view-bg` · `--xh-diff-view-border` · `--xh-diff-view-change-bar` · `--xh-diff-view-comment-fg` · `--xh-diff-view-empty-bg` · `--xh-diff-view-empty-fg` · `--xh-diff-view-font` · `--xh-diff-view-font-size` · `--xh-diff-view-gap-bg` · `--xh-diff-view-gap-bg-hover` · `--xh-diff-view-gap-fg` · `--xh-diff-view-gutter` · `--xh-diff-view-header-fg` · `--xh-diff-view-header-font-size` · `--xh-diff-view-header-gap` · `--xh-diff-view-keyword-fg` · `--xh-diff-view-keyword-weight` · `--xh-diff-view-line-height` · `--xh-diff-view-max-h` · `--xh-diff-view-number-fg` · `--xh-diff-view-number-token-fg` · `--xh-diff-view-punctuation-fg` · `--xh-diff-view-px` · `--xh-diff-view-py` · `--xh-diff-view-radius` · `--xh-diff-view-removed-bg` · `--xh-diff-view-removed-fg` · `--xh-diff-view-segment-radius` · `--xh-diff-view-shadow` · `--xh-diff-view-string-fg`
+`--xh-diff-view-added-bg` · `--xh-diff-view-added-fg` · `--xh-diff-view-bg` · `--xh-diff-view-border` · `--xh-diff-view-change-bar` · `--xh-diff-view-comment-fg` · `--xh-diff-view-empty-bg` · `--xh-diff-view-empty-fg` · `--xh-diff-view-font` · `--xh-diff-view-font-size` · `--xh-diff-view-gap-bg` · `--xh-diff-view-gap-bg-hover` · `--xh-diff-view-gap-fg` · `--xh-diff-view-gutter` · `--xh-diff-view-header-fg` · `--xh-diff-view-header-font-size` · `--xh-diff-view-header-gap` · `--xh-diff-view-icon-size` · `--xh-diff-view-keyword-fg` · `--xh-diff-view-keyword-weight` · `--xh-diff-view-line-height` · `--xh-diff-view-max-h` · `--xh-diff-view-number-fg` · `--xh-diff-view-number-token-fg` · `--xh-diff-view-punctuation-fg` · `--xh-diff-view-px` · `--xh-diff-view-py` · `--xh-diff-view-radius` · `--xh-diff-view-removed-bg` · `--xh-diff-view-removed-fg` · `--xh-diff-view-segment-radius` · `--xh-diff-view-shadow` · `--xh-diff-view-string-fg` · `--xh-diff-view-truncation-bg` · `--xh-diff-view-truncation-border` · `--xh-diff-view-truncation-fg` · `--xh-diff-view-truncation-gap`
 
 ## 动效
 
@@ -241,5 +252,6 @@
 
 ## 反模式
 
+- 截断了却不渲 `truncation`：断掉的差异看着仍像一份完整差异，评审的人会以为自己看完了。
 - 拿补丁算出来的差异去着色：那份文本是残缺的，跨行的记号一定切错。
 - 用颜色作为变更类型的唯一线索：色觉障碍与高对比度模式下它就消失了。

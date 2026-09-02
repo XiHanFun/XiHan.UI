@@ -126,21 +126,41 @@ export const ellipsisSuite: ConformanceSuite = {
       ],
     },
     {
-      name: 'expandable：整块文字变成一颗按钮，Tab 停得住',
+      name: 'expandable 且真被裁：整块文字变成一颗按钮，Tab 停得住',
       spec: { apg: APG },
       covers: ['ellipsis.kbd.tab'],
       props: { expandable: true },
+      // 还没量出被裁的这一帧：按下去什么都不变，按钮那几件一个都不写，
+      // 否则读屏念出的是一颗按不动的按钮、Tab 也白停一站
       initial: {
         parts: {
           root: {
-            'role': 'button',
-            'tabindex': '0',
-            'aria-expanded': 'false',
             'data-expandable': '',
-            'data-state': 'closed',
+            'data-overflowing': null,
+            'role': null,
+            'tabindex': null,
+            'aria-expanded': null,
+            'data-state': null,
           },
         },
       },
+      steps: [
+        {
+          ...measureStep(400, 100, true),
+          expect: {
+            parts: {
+              root: {
+                'role': 'button',
+                'tabindex': '0',
+                'aria-expanded': 'false',
+                'data-expandable': '',
+                'data-overflowing': '',
+                'data-state': 'closed',
+              },
+            },
+          },
+        },
+      ],
     },
     {
       name: 'expandable：Enter 铺开、Space 收回',
@@ -148,6 +168,7 @@ export const ellipsisSuite: ConformanceSuite = {
       covers: ['ellipsis.kbd.toggle'],
       props: { expandable: true },
       steps: [
+        measureStep(400, 100, true),
         { kind: 'focus', part: 'root' },
         {
           kind: 'key',
@@ -201,6 +222,7 @@ export const ellipsisSuite: ConformanceSuite = {
       spec: { adr: 'controlled-uncontrolled' },
       props: { expandable: true, expanded: false },
       steps: [
+        measureStep(400, 100, true),
         {
           kind: 'click',
           part: 'root',
