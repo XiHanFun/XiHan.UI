@@ -98,6 +98,9 @@ export function connectRating<T extends PropTypes>(
 
   const items = Array.from({ length: count }, (_, i) => i + 1)
 
+  // 星星那一格里只有符号，名字只能由这里给：交给内容会随高亮在两个符号之间来回变
+  const itemLabel = prop('translations')?.item ?? ((v: number, n: number) => `${v} of ${n}`)
+
   // roving tabindex 锚点：优先焦点值，否则当前值；都没有时由 control 兜底进 Tab 序列
   const anchor = focusedValue ?? (value > 0 ? Math.min(Math.ceil(value), count) : null)
 
@@ -214,6 +217,7 @@ export function connectRating<T extends PropTypes>(
       return normalize.element({
         ...parts.item.attrs,
         'role': 'radio',
+        'aria-label': itemLabel(item.value, count),
         'aria-posinset': item.value,
         'aria-setsize': count,
         'aria-checked': s.checked ? 'true' : 'false',

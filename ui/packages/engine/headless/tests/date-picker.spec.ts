@@ -1362,3 +1362,28 @@ describe('快捷选项', () => {
     expect(tabs).toEqual([-1, -1, 0])
   })
 })
+
+describe('showTime 的时间列：名字不是内部枚举', () => {
+  const columnLabel = (h: Harness, unit: 'hour' | 'minute' | 'second'): unknown =>
+    (h.api().getTimeColumnProps({ unit }) as Record<string, unknown>)['aria-label']
+
+  it('缺省名字与时间选择器那份逐字相同', () => {
+    const h = mount({ showTime: true, timeGranularity: 'second', defaultValue: '2026-08-17T09:30:00', defaultOpen: true })
+    expect(columnLabel(h, 'hour')).toBe('hour')
+    expect(columnLabel(h, 'minute')).toBe('minute')
+    expect(columnLabel(h, 'second')).toBe('second')
+  })
+
+  it('作者给了文案就用作者那份，三列各归各的', () => {
+    const h = mount({
+      showTime: true,
+      timeGranularity: 'second',
+      defaultValue: '2026-08-17T09:30:00',
+      defaultOpen: true,
+      translations: { hour: '时', minute: '分', second: '秒' },
+    })
+    expect(columnLabel(h, 'hour')).toBe('时')
+    expect(columnLabel(h, 'minute')).toBe('分')
+    expect(columnLabel(h, 'second')).toBe('秒')
+  })
+})

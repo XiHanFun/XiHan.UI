@@ -37,7 +37,7 @@ export const tagSuite: ConformanceSuite = {
           },
           'close-trigger': {
             'type': 'button',
-            'aria-label': 'Remove',
+            'aria-label': 'Delete',
             // closable 缺省为假：叉既按不动也不占位置
             'disabled': '',
             'data-disabled': '',

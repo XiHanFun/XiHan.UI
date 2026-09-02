@@ -35,7 +35,7 @@ export interface SortableDragEndDetails {
 export interface SortableTranslations {
   /** 整个可排序区域的名字。 */
   root: string
-  /** 一项的名字。默认取该项的文本内容。 */
+  /** 一项的名字。不给就取该项屏幕上写着的字——id 是内部标识，念出来没人听得懂。 */
   item: (id: string, position: number, total: number) => string
   /** 拖拽手柄的名字。 */
   itemHandle: (name: string) => string

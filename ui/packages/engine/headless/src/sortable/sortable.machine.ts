@@ -33,6 +33,13 @@ function indexOfId(root: HTMLElement | null, id: string): number {
   return itemElements(root).findIndex(el => el.getAttribute(ITEM_VALUE_ATTR) === id)
 }
 
+/** 这一项屏幕上写着什么。节点不在、或里面一个字都没有时返回 null。 */
+function itemTextOf(root: HTMLElement | null, id: string): string | null {
+  const el = itemElements(root).find(item => item.getAttribute(ITEM_VALUE_ATTR) === id)
+  const text = el?.textContent?.replace(/\s+/g, ' ').trim()
+  return text || null
+}
+
 export const sortableMachine = createMachine({
   name: 'sortable',
   context: ({ cell }) => ({
@@ -117,7 +124,7 @@ export const sortableMachine = createMachine({
         context.set('mode', 'pointer')
         context.set('delta', deltaFrom(refs.get('origin'), e.point))
         context.set('to', context.get('from'))
-        say(context, prop, 'picked')
+        say(context, prop, refs, 'picked')
         prop('onDragStart')?.({ id: context.get('activeId') ?? '', from: context.get('from'), mode: 'pointer' })
       },
 
@@ -133,7 +140,7 @@ export const sortableMachine = createMachine({
         context.set('mode', 'keyboard')
         context.set('delta', ZERO)
         context.set('rects', itemElements(root).map(toDndRect))
-        say(context, prop, 'picked')
+        say(context, prop, refs, 'picked')
         prop('onDragStart')?.({ id: e.id, from: index, mode: 'keyboard' })
       },
 
@@ -151,11 +158,11 @@ export const sortableMachine = createMachine({
         })
         if (to !== context.get('to')) {
           context.set('to', to)
-          say(context, prop, 'moved')
+          say(context, prop, refs, 'moved')
         }
       },
 
-      stepTo: ({ context, prop, event }) => {
+      stepTo: ({ context, prop, refs, event }) => {
         const e = event.current()
         if (e.type !== 'KEY.MOVE')
           return
@@ -164,23 +171,23 @@ export const sortableMachine = createMachine({
         if (next < 0 || next >= context.get('rects').length)
           return
         context.set('to', next)
-        say(context, prop, 'moved')
+        say(context, prop, refs, 'moved')
       },
 
-      commit: ({ context, prop }) => {
+      commit: ({ context, prop, refs }) => {
         const from = context.get('from')
         const to = context.get('to')
         const id = context.get('activeId')
         if (id == null || from < 0 || to < 0 || from === to)
           return
         prop('onSort')?.({ from, to, id, ids: moveItem(prop('ids') ?? [], from, to) })
-        say(context, prop, 'dropped')
+        say(context, prop, refs, 'dropped')
       },
 
-      cancel: ({ context, prop }) => {
+      cancel: ({ context, prop, refs }) => {
         // 落点退回起点：收尾回调与播报都按「没动过」来说
         context.set('to', context.get('from'))
-        say(context, prop, 'canceled')
+        say(context, prop, refs, 'canceled')
       },
 
       invokeDragEnd: ({ context, prop, event }) => {
@@ -260,13 +267,17 @@ function deltaFrom(origin: { clientX: number, clientY: number } | null, point: {
 function say(
   context: { get: <K extends keyof SortableSchema['context']>(k: K) => SortableSchema['context'][K], set: (k: 'announcement', v: string) => void },
   prop: <K extends keyof SortableSchema['props']>(k: K) => SortableSchema['props'][K],
+  refs: { get: <K extends keyof SortableSchema['refs']>(k: K) => SortableSchema['refs'][K] },
   kind: 'picked' | 'moved' | 'dropped' | 'canceled',
 ): void {
+  const id = context.get('activeId') ?? ''
+  const text = itemTextOf(refs.get('getRootEl')(), id)
   context.set('announcement', sortableAnnouncement(kind, {
-    id: context.get('activeId') ?? '',
+    id,
     // 播报里说的是人类的第几位，从 1 数起；取消那次说的是回到哪儿
     position: context.get(kind === 'picked' || kind === 'canceled' ? 'from' : 'to') + 1,
     total: context.get('rects').length,
-    translations: prop('translations'),
+    // 项上写着的字比 id 好听。作者没给 translations.item 时退回它
+    translations: { item: () => text ?? id, ...prop('translations') },
   }))
 }

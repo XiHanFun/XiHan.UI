@@ -5,6 +5,7 @@ import type { PayloadOf } from '../../runtime/payload'
 import type { MenubarPartRegistry } from './use-menubar'
 import { createRuntimeConfig } from '@xihan-ui/kernel'
 import { computed, defineComponent, h, mergeProps, onBeforeUnmount, ref, Teleport, watch } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { mergeIntoChild } from '../../runtime/as-child'
 import { useOverlayExit } from '../../runtime/use-overlay-exit'
 import { provideMenu, provideMenuChain, useMenuContext } from '../menu/context'
@@ -63,6 +64,7 @@ export const XhMenubarRoot = defineComponent({
     offset: { type: Number, default: undefined },
     tone: { type: String as PropType<Tone>, default: undefined },
     size: { type: String as PropType<Size>, default: undefined },
+    translations: { type: Object as PropType<MenubarProps['translations']>, default: undefined },
   },
   // value-change 携带 { value }、select 携带 { menu, value }，update:value 携带裸值
   emits: {
@@ -80,7 +82,7 @@ export const XhMenubarRoot = defineComponent({
       emit('update:value', details.value)
     }
     const notifySelect: MenubarProps['onSelect'] = details => emit('select', details)
-    const ctx = useMenubar(props as MenubarProps, notifyValue, notifySelect)
+    const ctx = useMenubar(withXhConfig('menubar', props) as MenubarProps, notifyValue, notifySelect)
     provideMenubar(ctx)
     // 子菜单任意层级的选中都汇到这里：先发根的 select，再关掉整条菜单栏。
     // 关根用 setValue(null) —— 菜单栏是「当前展开哪一项」的模型，没有 setOpen

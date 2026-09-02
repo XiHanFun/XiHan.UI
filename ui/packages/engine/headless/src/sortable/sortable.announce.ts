@@ -19,6 +19,8 @@ export interface SortableAnnounceInput {
  */
 export function sortableAnnouncement(kind: SortableAnnounceKind, input: SortableAnnounceInput): string {
   const { id, position, total, translations: t } = input
+  // 名字走 translations.item：状态机在调进来之前把项上写着的字装进了这一条。
+  // 退到 id 是最后一手，只发生在项还没进 DOM、连一个字都取不到的时候
   const name = t?.item?.(id, position, total) ?? id
 
   switch (kind) {

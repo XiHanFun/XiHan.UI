@@ -57,7 +57,8 @@ function buildTagApi<T extends PropTypes>(
     getCloseTriggerProps: () => normalize.button({
       ...parts['close-trigger'].attrs,
       'type': 'button',
-      'aria-label': prop('translations')?.close ?? 'Remove',
+      // 摘掉一枚标签这个动作在 select 与 tags-input 里念的是 Delete，三处用同一个词
+      'aria-label': prop('translations')?.close ?? 'Delete',
       // 单体控件用原生 disabled：不可聚焦、也不占 Tab 位
       'disabled': !canClose || undefined,
       'data-disabled': dataAttr(!canClose),

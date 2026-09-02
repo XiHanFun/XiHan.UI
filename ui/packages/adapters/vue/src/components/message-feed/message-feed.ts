@@ -1,4 +1,4 @@
-import type { MessageFeedApi, MessageFeedItemProps, MessageFeedSchema, MessageFeedStatus, MessageFeedTranslations } from '@xihan-ui/headless'
+import type { MessageFeedApi, MessageFeedItemRole, MessageFeedSchema, MessageFeedStatus, MessageFeedTranslations } from '@xihan-ui/headless'
 import type { Size } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
@@ -98,7 +98,7 @@ export const XhMessageFeedItem = defineComponent({
     itemId: { type: String, required: true },
     // 收字符串是为了让作者能直接写在标记上（`item-index="0"`），与自定义元素那侧同形
     itemIndex: { type: [Number, String] as PropType<number | string>, required: true },
-    itemRole: { type: String as PropType<MessageFeedItemProps['role']>, default: undefined },
+    itemRole: { type: String as PropType<MessageFeedItemRole>, default: undefined },
     itemStreaming: Boolean,
   },
   setup(props, { slots }) {

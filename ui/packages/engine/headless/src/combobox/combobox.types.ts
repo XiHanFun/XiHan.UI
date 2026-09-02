@@ -275,6 +275,11 @@ export interface ComboboxApi<T extends PropTypes = PropTypes> {
 
 /** 读屏用的文案。 */
 export interface ComboboxTranslations {
+  /**
+   * 展开按钮的无障碍名，缺省 'Show suggestions'。
+   * 这颗钮里通常只有一枚箭头，没有名字读屏只念得出「按钮」。
+   */
+  trigger: string
   /** 清空按钮的无障碍名，缺省 'Clear'。 */
   clearTrigger: string
 }

@@ -176,3 +176,25 @@ describe('条目语义', () => {
     expect((mount({ status: 'streaming' }).api().getRootProps() as Dict)['aria-busy']).toBeUndefined()
   })
 })
+
+describe('消息流 · 单条消息的名字', () => {
+  it('缺省名字带位次、总数与身份，念不出占位符', () => {
+    const props = mount({ count: 5 }).api().getItemProps({ id: 'm1', index: 1, role: 'assistant' }) as Dict
+    expect(props['aria-label']).toBe('Message 2 of 5, assistant')
+    expect(String(props['aria-label'])).not.toContain('{')
+  })
+
+  it('宿主没声明总数就不念总数——aria-setsize 的 -1 是「未知」不是倒数', () => {
+    const props = mount().api().getItemProps({ id: 'm1', index: 0 }) as Dict
+    expect(props['aria-setsize']).toBe(-1)
+    expect(props['aria-label']).toBe('Message 1')
+  })
+
+  it('文案给函数就拿得到位次、总数与身份', () => {
+    const api = mount({
+      count: 3,
+      translations: { item: (position, size, role) => `第 ${position}/${size} 条，${role}` },
+    }).api()
+    expect((api.getItemProps({ id: 'm3', index: 2, role: 'user' }) as Dict)['aria-label']).toBe('第 3/3 条，user')
+  })
+})

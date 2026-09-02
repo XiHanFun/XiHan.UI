@@ -431,3 +431,38 @@ describe('排序 · 逐项禁用', () => {
     expect(s.state()).toBe('idle')
   })
 })
+
+describe('排序 · 播报里的项名', () => {
+  const IDS_LONG = ['id-901', 'id-902', 'id-903']
+
+  /** 造一棵带可见文字的 DOM：id 与屏幕上写的字是两回事。 */
+  function withText(): ReturnType<typeof makeSortable> {
+    const s = makeSortable({ ids: [...IDS_LONG] })
+    const items = [...s.root.querySelectorAll<HTMLElement>('[data-part="item"]')]
+    const texts = ['苹果', '香蕉', '柑橘']
+    items.forEach((el, i) => {
+      el.textContent = texts[i]!
+    })
+    return s
+  }
+
+  it('缺省念项上写着的字，不念内部 id', () => {
+    const s = withText()
+    s.service.send({ type: 'ITEM.PICKUP', id: 'id-901' })
+    const picked = s.service.context.get('announcement')
+    expect(picked).toContain('苹果')
+    expect(picked).not.toContain('id-901')
+  })
+
+  it('作者给了 translations.item 就用作者那份', () => {
+    const s = makeSortable({ ids: [...IDS_LONG], translations: { item: id => `第 ${id} 项` } })
+    s.service.send({ type: 'ITEM.PICKUP', id: 'id-902' })
+    expect(s.service.context.get('announcement')).toContain('第 id-902 项')
+  })
+
+  it('项上一个字都没有时退回 id——总比一句没有名字的播报强', () => {
+    const s = makeSortable({ ids: [...IDS_LONG] })
+    s.service.send({ type: 'ITEM.PICKUP', id: 'id-903' })
+    expect(s.service.context.get('announcement')).toContain('id-903')
+  })
+})

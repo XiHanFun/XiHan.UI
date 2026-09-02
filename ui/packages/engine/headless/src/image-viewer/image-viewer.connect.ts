@@ -35,6 +35,7 @@ export function connectImageViewer<T extends PropTypes>(
   const translations = prop('translations')
   const label = {
     content: translations?.content ?? 'Image preview',
+    toolbar: translations?.toolbar ?? 'Image tools',
     close: translations?.close ?? 'Close',
     zoomIn: translations?.zoomIn ?? 'Zoom in',
     zoomOut: translations?.zoomOut ?? 'Zoom out',
@@ -185,7 +186,7 @@ export function connectImageViewer<T extends PropTypes>(
     getToolbarProps: () => normalize.element({
       ...parts.toolbar.attrs,
       'role': 'toolbar',
-      'aria-label': label.content,
+      'aria-label': label.toolbar,
       'data-state': stateAttr,
     }),
 

@@ -112,8 +112,8 @@ describe('connectTag 显隐', () => {
 })
 
 describe('connectTag 关闭钮', () => {
-  it('可访问名默认 Remove，可由 translations 替换', () => {
-    expect(makeTag().api().getCloseTriggerProps()['aria-label']).toBe('Remove')
+  it('可访问名默认 Delete，与 select、tags-input 里同一个动作用同一个词', () => {
+    expect(makeTag().api().getCloseTriggerProps()['aria-label']).toBe('Delete')
     expect(makeTag({ translations: { close: '移除 前端' } }).api().getCloseTriggerProps()['aria-label']).toBe('移除 前端')
   })
 

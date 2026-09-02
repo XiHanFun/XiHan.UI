@@ -170,7 +170,6 @@ export interface TabsApi<T extends PropTypes = PropTypes> {
   getLiveRegionProps: () => T['element']
 }
 
-/** 读屏用的文案。本组件目前没有需要外露的文案，位先留着。 */
 /** 读屏用的文案，默认英文。拖动过程在视觉上很清楚，在读屏里全靠这几句。 */
 export interface TabsTranslations extends Partial<DragTranslations> {}
 

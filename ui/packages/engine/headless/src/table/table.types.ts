@@ -581,7 +581,7 @@ export interface TableApi<T extends PropTypes = PropTypes> {
   getLiveRegionProps: () => T['element']
 }
 
-/** 读屏用的文案。本组件目前没有需要外露的文案，位先留着。 */
+/** 读屏用的文案，默认英文。列拖拽那几句播报从共用的一份并进来。 */
 export interface TableTranslations extends Partial<DragTranslations> {
   /** 列宽把手的名字。表头文字是列名，把手自己得说清它是干什么的。 */
   columnResize: (columnLabel: string) => string

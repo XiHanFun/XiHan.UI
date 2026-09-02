@@ -1,4 +1,4 @@
-import type { RatingHoverChangeDetails, RatingItemProps, RatingSchema, RatingValueChangeDetails } from '@xihan-ui/headless'
+import type { RatingHoverChangeDetails, RatingItemProps, RatingSchema, RatingTranslations, RatingValueChangeDetails } from '@xihan-ui/headless'
 import type { Direction, Size, Tone } from '@xihan-ui/kernel'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
 import { connectRating, ratingAnatomy, ratingMachine, ratingMeta } from '@xihan-ui/headless'
@@ -62,6 +62,8 @@ export class XhRatingElement extends XhElement {
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     tone: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
+    // 文案是对象，只走 property
+    translations: { attribute: false },
   }
 
   declare value?: number
@@ -76,6 +78,7 @@ export class XhRatingElement extends XhElement {
   declare direction?: Direction
   declare tone?: Tone
   declare size?: Size
+  declare translations?: Partial<RatingTranslations>
 
   private readonly notifyValue = (details: RatingValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
@@ -101,6 +104,7 @@ export class XhRatingElement extends XhElement {
       dir: this.direction,
       tone: this.tone,
       size: this.size,
+      translations: this.translations,
       onValueChange: this.notifyValue,
       onHoverChange: this.notifyHover,
     }

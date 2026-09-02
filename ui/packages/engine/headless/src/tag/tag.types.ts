@@ -10,7 +10,10 @@ export interface TagOpenChangeDetails {
 
 /** 读屏用的文案，默认英文。 */
 export interface TagTranslations {
-  /** 关闭钮的 aria-label：钮里通常只有一个叉，读屏念不出摘掉的是哪一个标签。 */
+  /**
+   * 关闭钮的 aria-label：钮里通常只有一个叉，读屏念不出摘掉的是哪一个标签。
+   * 缺省 'Delete'，与 select、tags-input 里同一个动作用同一个词。
+   */
   close: string
 }
 

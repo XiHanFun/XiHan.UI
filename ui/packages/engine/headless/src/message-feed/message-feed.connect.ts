@@ -1,7 +1,7 @@
 import type { NavIntent } from '@xihan-ui/behavior'
 import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
-import type { MessageFeedApi, MessageFeedSchema, MessageFeedStatus } from './message-feed.types'
+import type { MessageFeedApi, MessageFeedItemRole, MessageFeedSchema, MessageFeedStatus } from './message-feed.types'
 import { focusItem, getTabbables, ITEM_VALUE_ATTR, itemValue, navigateItems, queryItems } from '@xihan-ui/behavior'
 import { contains, dataAttr } from '@xihan-ui/kernel'
 import { messageFeedAnatomy, messageFeedItemQuery } from './message-feed.anatomy'
@@ -23,6 +23,18 @@ export function connectMessageFeed<T extends PropTypes>(
   const loop = prop('loop') ?? false
   const count = prop('count')
   const translations = prop('translations')
+
+  // 文案两种形状都收：函数拿到位次与身份，字符串是一句固定名字（那时不做插值）
+  const itemText = translations?.item
+  const itemLabel = typeof itemText === 'function'
+    ? itemText
+    : (position: number, size: number, role?: MessageFeedItemRole): string => {
+        if (itemText != null)
+          return itemText
+        const who = role == null ? '' : `, ${role}`
+        // size 为 -1 是 ARIA 的「总数未知」，念出来只会让人以为倒数
+        return size > 0 ? `Message ${position} of ${size}${who}` : `Message ${position}${who}`
+      }
 
   /**
    * 条目集合只在事件处理器与命令式方法里查活 DOM，顺序即文档序。
@@ -166,7 +178,7 @@ export function connectMessageFeed<T extends PropTypes>(
       'aria-setsize': count ?? -1,
       // 二选一：指向没渲出来的 id 会让读屏读空
       'aria-labelledby': item.labelled === true ? scope.partId('message-feed', `item-label:${item.id}`) : undefined,
-      'aria-label': item.labelled === true ? undefined : translations?.item,
+      'aria-label': item.labelled === true ? undefined : itemLabel(item.index + 1, count ?? -1, item.role),
       // roving tabindex：整份消息流只有锚点那一条留在 Tab 序列内
       'tabindex': focusedId === item.id ? 0 : -1,
       'data-role': item.role,
