@@ -77,8 +77,7 @@ function supportsRanges(css, re) {
 // 每条都要真被用来放行过一次:皮肤没了、或者那处 field-sizing 已经删掉,
 // 这条白名单就成了一张没人走的通行证,由下面的名单核验报出来。
 const ALLOWLIST = new Map([
-  ['composer.css', 'field-sizing:退化路径是 <textarea> 的 rows 属性定下的固定行数(HTML 侧),CSS 里无法机械验证'],
-  ['prompt-input.css', '同 composer.css:field-sizing 的退化路径是 <textarea> 的 rows 属性定下的固定行数'],
+  ['prompt-input.css', 'field-sizing:退化路径是 <textarea> 的 rows 属性定下的固定行数(HTML 侧),CSS 里无法机械验证'],
 ])
 
 // 把文件切成顶层规则块:'{' 深度归零处切开。@media 等 at-rule 与其后的规则块各自成块,

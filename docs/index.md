@@ -6,7 +6,7 @@ titleTemplate: 快速 轻量 高效 用心的框架无关跨端组件库
 hero:
   name: 曦寒视图组件
   text: 框架无关的跨端组件库
-  tagline: 快速、轻量、高效、用心 · 130 个组件 · 无头内核 + 多适配器
+  tagline: 快速、轻量、高效、用心 · 127 个组件 · 无头内核 + 多适配器
   image:
     src: /images/logo.png
     alt: 曦寒视图组件
@@ -38,7 +38,7 @@ features:
 
   - title: 无障碍是判据
     icon: ♿
-    details: 每个组件都有一份机读的键盘规格表，共 514 条，它同时是测试的分母——用例少覆盖一条即判套件失败。扫描跑在真实 Chromium 上。
+    details: 每个组件都有一份机读的键盘规格表，共 509 条，它同时是测试的分母——用例少覆盖一条即判套件失败。扫描跑在真实 Chromium 上。
     link: /guide/a11y
     linkText: "了解无障碍规格"
 
@@ -56,7 +56,7 @@ features:
 
   - title: AI 对话内核
     icon: 🤖
-    details: SSE 读取、协议归一、parts 归约、会话 store 全在零 DOM 的内核里，配套 Thread / Composer / CodeBlock 三件与流式 Markdown 渲染。
+    details: SSE 读取、协议归一、parts 归约、会话 store 全在零 DOM 的内核里，配套消息流、提示输入框、代码视图三件与流式 Markdown 渲染。
     link: /guide/ai
     linkText: "了解 AI 对话内核"
 ---

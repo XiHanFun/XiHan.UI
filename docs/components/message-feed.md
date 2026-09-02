@@ -9,7 +9,8 @@
 
 ## 何时不用
 
-- 展示的是运行日志：用[日志](./log)，它按行播报。
+- 内容不分条，只是一段往下追加的输出（运行日志、命令回显）：用[日志](./log)。
+  两边的粘底、回到底部与播报区是同一套，差别只在要不要条目集合语义与逐条遍历。
 - 只是一列静态卡片：用[列表](./list)。
 - 消息数以万计：本组件不与[虚拟滚动](./virtualizer)组合，键盘遍历要求条目都在活 DOM 里；
   长会话请配[无限滚动](./infinite-scroll)分批加载并自行截断历史。
@@ -44,6 +45,30 @@
 条目上带 data-role，左右分侧与气泡在使用者这一侧写，组件不预设这层外观
 
 <XhDemo src="message-feed/03-roles" />
+
+### 运行态与播报
+
+status 由宿主持有，组件只把它透出成 root 上的 data-state；播报只发生在 live-region 里，一轮结束才写一句
+
+<XhDemo src="message-feed/04-status" />
+
+### 触底加载更多
+
+stick-change 报到底，宿主据此去取下一页；先往上翻一段再滚回底部，取回来的消息接在后面
+
+<XhDemo src="message-feed/05-load-more" />
+
+### 向上加载更早的消息
+
+视口的滚动事件直接监听：滚到接近顶部就去取上一页，取回来的插在最前面，读到一半的位置不会被顶走
+
+<XhDemo src="message-feed/06-load-earlier" />
+
+### 跳到指定的一条
+
+消息 id 就是锚点：Vue 侧用 root 插槽给的 scrollToItem / focusItem，自定义元素侧按同一个 id 取节点自己滚
+
+<XhDemo src="message-feed/07-scroll-to" />
 
 ## 产物
 

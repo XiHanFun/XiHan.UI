@@ -81,7 +81,7 @@
     "data-clamped": "code-view 的行数超过上限被夹住，只显示前若干行。",
     "data-clearable": "cascader / select / tree-select 当前有值可清空，清空钮顶上来、箭头让位。",
     "data-collapsed": "折叠：layout 的根、侧栏与把手，side-nav，splitter 的面板。",
-    "data-complete": "已经收尾：code-block / code-view / markdown-stream 的流已结束，date-field / date-picker / pin-input 的各段已填满，steps 的全部步骤已走完。三处是同一个意思落在不同主语上——这件东西该填的都填完了，所以共用一个名字。",
+    "data-complete": "已经收尾：code-view / markdown-stream 的流已结束，date-field / date-picker / pin-input 的各段已填满，steps 的全部步骤已走完。三处是同一个意思落在不同主语上——这件东西该填的都填完了，所以共用一个名字。",
     "data-contained": "drawer 开在局部容器里，不铺满整个视口。",
     "data-copied": "clipboard 刚复制成功，反馈窗口内为真。",
     "data-countdown": "timer 是倒计时方向（往零走），不写即正计时。",
@@ -156,7 +156,7 @@
     "data-striped": "table 画斑马纹。",
     "data-today": "calendar 的这一格是今天。",
     "data-truncated": "内容被截断：diff-view 超出行数上限、json-viewer 的值超长。",
-    "data-wrap": "允许折行：code-block / code-view / diff-view 的长代码原地换行，flex / space 的子项排不下时另起一行。两处是同一个意思落在不同主语上，所以共用一个名字。"
+    "data-wrap": "允许折行：code-view / diff-view 的长代码原地换行，flex / space 的子项排不下时另起一行。两处是同一个意思落在不同主语上，所以共用一个名字。"
   },
   "retired": {
     "$description": "已经从库里删掉的属性名：connect 发了、或者皮肤选了，都判失败。它不让任何旧写法继续工作，只拦「照着别处复制粘贴、把删掉的名字重新带回来」这一类回归——同一件事一旦有两个名字，使用者那条规则就只能命中一半。",

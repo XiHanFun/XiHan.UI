@@ -16,8 +16,9 @@
 
 - 发送与停止**原位共用一个节点**：正在按它的用户不会按空。生成期间按钮恒可用，
   此刻它的语义是停止。
-- `submitKey` 一个 prop 表达两档：`enter` 档 Enter 提交、Shift+Enter 换行、Mod+Enter 也提交；
-  `mod-enter` 档 Enter 换行，只有 Mod+Enter 提交。
+- `submitKey` 一个 prop 表达三档：`enter` 档 Enter 提交、Shift+Enter 换行、Mod+Enter 也提交；
+  `mod-enter` 档 Enter 换行，只有 Mod+Enter 提交；`none` 档两种按法都换行，
+  键盘一个提交出口都不留，只剩发送按钮与程序化的 `submit()`。
 - 输入法组合期间的 Enter 一律放行，那一下是在确认候选词。
 - 同一个输入框上叠了别的处理器且它已经处理过这一下时，组件让位。
 - 自动长高是两行 CSS，不进状态机；引擎不支持时退化成 `rows` 定的固定行数。
@@ -45,6 +46,42 @@ Enter 提交、Shift+Enter 换行；输入法组合中的 Enter 一律放行，�
 写一层输入行，root 就翻成竖排：输入行在上、动作行在下；按钮留空时皮肤按身份画上箭头或停止方块
 
 <XhDemo src="prompt-input/03-layout" />
+
+### 三档提交按键
+
+enter 档回车就发、mod-enter 档只有 Ctrl/Cmd+Enter 发、none 档两种按法都换行，提交只剩发送按钮
+
+<XhDemo src="prompt-input/04-submit-key" />
+
+### 禁用与空值
+
+disabled 罩住整框并走原生 disabled；输入为空或只有空白时发送按钮转灰，但位置留着不收起
+
+<XhDemo src="prompt-input/05-disabled" />
+
+### 框里的附加节点
+
+root 里除三件外还能放自己的按钮与计数；值的读写归宿主，原生属性照旧直接落到输入框上
+
+<XhDemo src="prompt-input/06-extras" />
+
+### 随内容长高
+
+输入框的高度跟着内容走，rows 定的是起始行数；不手动拖拽，也不写死高度
+
+<XhDemo src="prompt-input/07-autosize" />
+
+### 聚焦与选中
+
+输入部件就是一个原生 textarea，拿到它的节点就能聚焦、全选、失焦；发完一条把焦点送回去，接着敲下一条
+
+<XhDemo src="prompt-input/08-focus" />
+
+### 发送失败的错误态
+
+判定谁算出错是宿主的事：属性直接落到真元素上，整框换色靠覆盖公开变量，原因由活区播报
+
+<XhDemo src="prompt-input/09-invalid" />
 
 ## 产物
 
@@ -140,7 +177,8 @@ Enter 提交、Shift+Enter 换行；输入法组合中的 Enter 一律放行，�
 | --- | --- | --- |
 | `Enter` | 焦点在输入框、submitKey 为 enter、非组合态、可提交，且这一下还没被别的处理器处理过 | 提交，并按 clearOnSubmit 决定清不清空 |
 | `Shift+Enter` | 焦点在输入框 | 不归组件管：原样放行，浏览器插入换行 |
-| `Control+Enter` / `Meta+Enter` | 焦点在输入框、非组合态、可提交 | 两档 submitKey 下都提交 |
+| `Control+Enter` / `Meta+Enter` | 焦点在输入框、submitKey 为 enter 或 mod-enter、非组合态、可提交 | 提交，并按 clearOnSubmit 决定清不清空 |
+| `Enter` / `Control+Enter` / `Meta+Enter` | 焦点在输入框、submitKey 为 none | 都不提交也不拦截：原样放行，浏览器插入换行；提交只剩按钮与程序化两条路 |
 | `Enter` | 输入法组合中 | 不提交也不拦截：这一下是在确认候选词 |
 | `Enter` | 同一个输入框上叠了别的处理器且它已经处理过这一下 | 让位，本组件什么都不做 |
 | `Enter` / `Space` | 焦点在发送按钮上 | 按当前身份触发提交或停止（原生按钮激活） |

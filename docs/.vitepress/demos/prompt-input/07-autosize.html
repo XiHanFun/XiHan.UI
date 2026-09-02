@@ -1,0 +1,28 @@
+<!-- 随内容长高 | 输入框的高度跟着内容走，rows 定的是起始行数；不手动拖拽，也不写死高度 -->
+<div style="display: grid; gap: 12px">
+  <!-- 起始一行：敲到第二行时框自己变高 -->
+  <xh-prompt-input id="prompt-input-autosize-one">
+    <div data-xh-part="root">
+      <textarea data-xh-part="input" rows="1" placeholder="按 Shift+Enter 换行试试"></textarea>
+      <button data-xh-part="submit-trigger">发送</button>
+    </div>
+  </xh-prompt-input>
+
+  <!-- 初值就是好几行，挂载时框已经是撑开的 -->
+  <xh-prompt-input
+    id="prompt-input-autosize-draft"
+    default-value="第一行&#10;第二行&#10;第三行&#10;再多敲几行，框会继续往下长"
+  >
+    <div data-xh-part="root">
+      <textarea data-xh-part="input" rows="1"></textarea>
+      <button data-xh-part="submit-trigger">发送</button>
+    </div>
+  </xh-prompt-input>
+</div>
+
+<script type="module">
+  document.getElementById("prompt-input-autosize-one").translations = { input: "给助手写点什么" };
+  document.getElementById("prompt-input-autosize-draft").translations = {
+    input: "已经有草稿的输入框",
+  };
+</script>

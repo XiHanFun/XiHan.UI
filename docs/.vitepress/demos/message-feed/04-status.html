@@ -1,0 +1,83 @@
+<!-- 运行态与播报 | status 由宿主持有，组件只把它透出成 root 上的 data-state；播报只发生在 live-region 里，一轮结束才写一句 -->
+<div style="display: grid; gap: 12px">
+  <xh-message-feed id="message-feed-status" count="1" status="idle" style="block-size: 200px">
+    <div data-xh-part="root">
+      <div data-xh-part="viewport">
+        <div data-xh-part="list" id="message-feed-status-list">
+          <article data-xh-part="item" item-id="m1" item-index="0" item-role="user">
+            <span data-xh-part="item-label">我</span>
+            <div>帮我写一段开场白。</div>
+          </article>
+        </div>
+      </div>
+      <div data-xh-part="live-region" id="message-feed-status-live"></div>
+    </div>
+  </xh-message-feed>
+
+  <div style="display: flex; align-items: center; gap: 8px">
+    <xh-button id="message-feed-status-run" variant="solid">
+      <button data-xh-part="root">跑一轮</button>
+    </xh-button>
+    <xh-button id="message-feed-status-fail" variant="outline">
+      <button data-xh-part="root">置为 error</button>
+    </xh-button>
+    <span>status：<span id="message-feed-status-readout">idle</span></span>
+  </div>
+</div>
+
+<script type="module">
+  const feed = document.getElementById("message-feed-status");
+  const list = document.getElementById("message-feed-status-list");
+  const live = document.getElementById("message-feed-status-live");
+  const readout = document.getElementById("message-feed-status-readout");
+  let timer = 0;
+
+  // 运行态的真源在宿主，组件只负责把它铺成 data-state
+  function setStatus(status) {
+    feed.setAttribute("status", status);
+    readout.textContent = status;
+  }
+
+  // 补一条助手消息，返回正文节点以便后续改写
+  function appendReply(text) {
+    const item = document.createElement("article");
+    item.setAttribute("data-xh-part", "item");
+    item.setAttribute("item-id", "m2");
+    item.setAttribute("item-index", "1");
+    item.setAttribute("item-role", "assistant");
+    item.innerHTML = '<span data-xh-part="item-label"></span><div></div>';
+    item.querySelector('[data-xh-part="item-label"]').textContent = "助手";
+    const body = item.querySelector("div");
+    body.textContent = text;
+    list.append(item);
+    feed.setAttribute("count", "2");
+    return item;
+  }
+
+  document.getElementById("message-feed-status-run").addEventListener("click", () => {
+    window.clearTimeout(timer);
+    list.querySelector('[item-id="m2"]')?.remove();
+    feed.setAttribute("count", "1");
+    live.textContent = "";
+    setStatus("submitted");
+
+    timer = window.setTimeout(() => {
+      setStatus("streaming");
+      const item = appendReply("好的，正在往下写…");
+      item.toggleAttribute("item-streaming", true);
+
+      timer = window.setTimeout(() => {
+        const text = "好的，这是一段开场白：欢迎来到曦寒设计系统。";
+        item.querySelector("div").textContent = text;
+        item.toggleAttribute("item-streaming", false);
+        setStatus("idle");
+        // 播报只写整段最终文本：中途逐字写等于让读屏把同一段话越念越长
+        live.textContent = text;
+      }, 1200);
+    }, 600);
+  });
+
+  document.getElementById("message-feed-status-fail").addEventListener("click", () => {
+    setStatus("error");
+  });
+</script>

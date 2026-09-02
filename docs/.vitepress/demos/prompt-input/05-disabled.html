@@ -1,0 +1,36 @@
+<!-- 禁用与空值 | disabled 罩住整框并走原生 disabled；输入为空或只有空白时发送按钮转灰，但位置留着不收起 -->
+<div style="display: grid; gap: 12px">
+  <!-- 整框禁用：输入框带原生 disabled，提交与停止一并吃掉 -->
+  <xh-prompt-input id="prompt-input-disabled-off" disabled default-value="这一台是禁用的">
+    <div data-xh-part="root">
+      <textarea data-xh-part="input" rows="1"></textarea>
+      <button data-xh-part="submit-trigger">发送</button>
+    </div>
+  </xh-prompt-input>
+
+  <!-- 空值：按钮转灰，敲进第一个非空白字符就亮 -->
+  <xh-prompt-input id="prompt-input-disabled-empty">
+    <div data-xh-part="root">
+      <textarea data-xh-part="input" rows="1" placeholder="空着时发送按钮是灰的"></textarea>
+      <button data-xh-part="submit-trigger">发送</button>
+    </div>
+  </xh-prompt-input>
+
+  <!-- 有附件时正文可以为空：allow-empty-submit 一置真，空值也发得出去 -->
+  <xh-prompt-input id="prompt-input-disabled-allow-empty" allow-empty-submit>
+    <div data-xh-part="root">
+      <textarea data-xh-part="input" rows="1" placeholder="空着也能发（当作已经挂了附件）"></textarea>
+      <button data-xh-part="submit-trigger">发送</button>
+    </div>
+  </xh-prompt-input>
+</div>
+
+<script type="module">
+  const names = {
+    "prompt-input-disabled-off": "已禁用的输入框",
+    "prompt-input-disabled-empty": "给助手写点什么",
+    "prompt-input-disabled-allow-empty": "带附件的输入框",
+  };
+  for (const [id, name] of Object.entries(names))
+    document.getElementById(id).translations = { input: name };
+</script>

@@ -6,8 +6,16 @@ import { withXhConfig } from '../../config/config'
 import { provideLog, useLogContext } from './context'
 import { useLog } from './use-log'
 
-/** 默认插槽的载荷：行数与载入态、粘底状态，以及滚到底部的句柄。 */
-export type LogRootSlotProps = Pick<LogApi, 'rows' | 'loading' | 'atBottom' | 'sticking' | 'scrollToBottom'>
+/** 默认插槽的载荷：行数与载入态、粘底状态与按钮的露面情况，以及滚到底部的句柄。 */
+export type LogRootSlotProps = Pick<
+  LogApi,
+  | 'rows'
+  | 'loading'
+  | 'atBottom'
+  | 'sticking'
+  | 'showScrollButton'
+  | 'scrollToBottom'
+>
 
 export const XhLogRoot = defineComponent({
   name: 'XhLogRoot',
@@ -33,6 +41,7 @@ export const XhLogRoot = defineComponent({
       loading: ctx.api.value.loading,
       atBottom: ctx.api.value.atBottom,
       sticking: ctx.api.value.sticking,
+      showScrollButton: ctx.api.value.showScrollButton,
       scrollToBottom: ctx.api.value.scrollToBottom,
     }))
   },
@@ -68,5 +77,23 @@ export const XhLogLine = defineComponent({
     const ctx = useLogContext()
     // 一行的文本与级别标注由作者写在插槽里
     return () => h('div', ctx.api.value.getLineProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+export const XhLogScrollButton = defineComponent({
+  name: 'XhLogScrollButton',
+  setup(_, { slots }) {
+    const ctx = useLogContext()
+    // 收起时走 hidden 属性，节点不卸载；插槽留空则由皮肤画兜底字形
+    return () => h('button', ctx.api.value.getScrollButtonProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+export const XhLogLiveRegion = defineComponent({
+  name: 'XhLogLiveRegion',
+  setup(_, { slots }) {
+    const ctx = useLogContext()
+    // 内容由宿主写入，念哪一句、什么时候念都归宿主定
+    return () => h('div', ctx.api.value.getLiveRegionProps() as Record<string, unknown>, slots.default?.())
   },
 })

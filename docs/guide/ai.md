@@ -8,7 +8,7 @@
 | `@xihan-ui/markdown` | 流式 Markdown 渲染：增量切块、稳定 key、消毒 |
 | `@xihan-ui/code-highlight` | 代码着色，自研粗粒度词法器 |
 
-配套的两个组件是[会话线程](../components/thread)与[消息编辑器](../components/composer)。
+配套的组件按职责分成四件：[消息流](../components/message-feed)渲结构化会话，[日志](../components/log)渲任意会往下追加的内容，[提示输入框](../components/prompt-input)收话，[代码视图](../components/code-view)呈现代码。
 
 ## 数据流
 
@@ -108,7 +108,7 @@ const renderer = createStreamRenderer()
 
 // 幂等：传截至当前的全文，拿回带稳定 key 的块列表
 const blocks = renderer.render(fullText, { ended: false })
-// [{ key, kind: 'markdown' | 'code' | 'math' | 'html', html, complete, lang }]
+// [{ key, kind: 'markdown' | 'code' | 'math' | 'html', html, complete, lang, source }]
 ```
 
 两条设计要点：
@@ -140,9 +140,11 @@ const tokens = highlighter.highlight(code, 'typescript') // CodeToken[] | null
 
 认不出的语言、超长代码一律返回 `null`，调用方原样渲染纯文本。
 
-`HighlighterPort` 同样是 `@xihan-ui/kernel` 里的端口。想要更高精度，把别的高亮库接到同一个端口上即可，`code-block` 组件侧不用改。
+`HighlighterPort` 同样是 `@xihan-ui/kernel` 里的端口。想要更高精度，把别的高亮库接到同一个端口上即可，`code-view` 组件侧不用改。
 
 ## 相关
 
-- [会话线程](../components/thread) 与 [消息编辑器](../components/composer)：AI 对话的两个组件
+- [消息流](../components/message-feed) 与 [提示输入框](../components/prompt-input)：合起来就是一个最小对话界面
+- [日志](../components/log)：不分条、只往下追加的输出，同样粘底
+- [代码视图](../components/code-view)：把流里的代码原文渲成带行号的代码块
 - [行为原语](./behavior#贴底)：消息列表的自动贴底

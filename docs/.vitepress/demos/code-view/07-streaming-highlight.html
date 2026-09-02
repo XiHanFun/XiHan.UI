@@ -1,0 +1,42 @@
+<!-- 流式期间也着色 | 未闭合默认不着色；真要看着色就打开 highlight-while-streaming，同一段半截代码的两种呈现摆在一起 -->
+<div style="display: grid; gap: 12px">
+  <!-- 语言标注也没吐出来：空白、半截、不认识的一律落到 plaintext -->
+  <xh-code-view
+    code="const stream = await client.chat({
+  model: 'demo',
+  messages,
+  onToken(token) {
+    buffer +="
+    complete="false"
+    style="inline-size: 100%"
+  >
+    <div data-xh-part="root">
+      <pre data-xh-part="pre"><code data-xh-part="code">const stream = await client.chat({
+  model: 'demo',
+  messages,
+  onToken(token) {
+    buffer +=</code></pre>
+    </div>
+  </xh-code-view>
+
+  <!-- 打开开关：半截代码也按当前词法着色，每来一个字符可能重新分色 -->
+  <xh-code-view
+    code="const stream = await client.chat({
+  model: 'demo',
+  messages,
+  onToken(token) {
+    buffer +="
+    code-lang="typescript"
+    complete="false"
+    highlight-while-streaming
+    style="inline-size: 100%"
+  >
+    <div data-xh-part="root">
+      <pre data-xh-part="pre"><code data-xh-part="code">const stream = await client.chat({
+  model: 'demo',
+  messages,
+  onToken(token) {
+    buffer +=</code></pre>
+    </div>
+  </xh-code-view>
+</div>

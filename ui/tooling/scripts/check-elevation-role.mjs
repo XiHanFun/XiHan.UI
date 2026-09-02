@@ -26,7 +26,7 @@ const SLOTTED = /^var\((?:--xh-[a-z][a-z0-9-]*,\s*var\()+--xh-elevation-(?:raise
  *
  * 从前这里只登记组件名，"哪个部件算面"交给一句
  * `[data-part='(content|positioner|root|panel)']` 的正则去猜——猜漏的（side-nav 的
- * branch-content、heatmap 的 tooltip、thread 的 scroll-button）就整个不受管，
+ * branch-content、heatmap 的 tooltip）就整个不受管，
  * 而登记了却早已没有任何海拔的（image-viewer）也没人发现。
  * 改成逐部件登记，两个方向都查得出来：登了没有即死登记，有了没登即漏管。
  */
@@ -59,7 +59,6 @@ const EXPECTED = {
     'float-button': ['trigger'],
     'floating-panel': ['content'],
     'notification': ['item'],
-    'thread': ['scroll-button'],
     'toast': ['root'],
     'tour': ['content'],
   },

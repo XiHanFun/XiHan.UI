@@ -18,12 +18,10 @@ import { cascaderSuite } from './cascader.suite'
 import { checkboxGroupSuite } from './checkbox-group.suite'
 import { checkboxSuite } from './checkbox.suite'
 import { clipboardSuite } from './clipboard.suite'
-import { codeBlockSuite } from './code-block.suite'
 import { codeViewSuite } from './code-view.suite'
 import { collapsibleSuite } from './collapsible.suite'
 import { colorPickerSuite } from './color-picker.suite'
 import { comboboxSuite } from './combobox.suite'
-import { composerSuite } from './composer.suite'
 import { contextMenuSuite } from './context-menu.suite'
 import { countdownSuite } from './countdown.suite'
 import { dateFieldSuite } from './date-field.suite'
@@ -110,7 +108,6 @@ import { tabsSuite } from './tabs.suite'
 import { tagSuite } from './tag.suite'
 import { tagsInputSuite } from './tags-input.suite'
 import { textFieldSuite } from './text-field.suite'
-import { threadSuite } from './thread.suite'
 import { timeFieldSuite } from './time-field.suite'
 import { timePickerSuite } from './time-picker.suite'
 import { timeSuite } from './time.suite'
@@ -151,12 +148,10 @@ export const allSuites: readonly ConformanceSuite[] = [
   checkboxSuite,
   checkboxGroupSuite,
   clipboardSuite,
-  codeBlockSuite,
   codeViewSuite,
   collapsibleSuite,
   colorPickerSuite,
   comboboxSuite,
-  composerSuite,
   contextMenuSuite,
   countdownSuite,
   dateFieldSuite,
@@ -242,7 +237,6 @@ export const allSuites: readonly ConformanceSuite[] = [
   tagSuite,
   tagsInputSuite,
   textFieldSuite,
-  threadSuite,
   timeSuite,
   timeFieldSuite,
   timePickerSuite,

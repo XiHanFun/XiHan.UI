@@ -2,7 +2,7 @@
 export default {
   extends: ['@commitlint/config-conventional'],
   rules: {
-    // 提示级：历史上组件名（dialog / code-block / virtualizer）也常用作 scope，
+    // 提示级：历史上组件名（dialog / code-view / virtualizer）也常用作 scope，
     // 硬拦会把大量正常提交挡在门外。类型与格式仍是 error（继承自 config-conventional）。
     'scope-enum': [
       1,

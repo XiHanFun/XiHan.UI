@@ -1,0 +1,46 @@
+<!-- 三档提交按键 | enter 档回车就发、mod-enter 档只有 Ctrl/Cmd+Enter 发、none 档两种按法都换行，提交只剩发送按钮 -->
+<div style="display: grid; gap: 12px">
+  <!-- 默认档：Enter 提交、Shift+Enter 换行，Mod+Enter 也提交 -->
+  <xh-prompt-input id="prompt-input-key-enter">
+    <div data-xh-part="root">
+      <textarea data-xh-part="input" rows="1" placeholder="Enter 就发出去"></textarea>
+      <button data-xh-part="submit-trigger">发送</button>
+    </div>
+  </xh-prompt-input>
+
+  <!-- Enter 留给换行，提交收到组合键上：长文起草时不会敲一半被发出去 -->
+  <xh-prompt-input id="prompt-input-key-mod" submit-key="mod-enter">
+    <div data-xh-part="root">
+      <textarea data-xh-part="input" rows="2" placeholder="Enter 换行，Ctrl/Cmd+Enter 才发"></textarea>
+      <button data-xh-part="submit-trigger">发送</button>
+    </div>
+  </xh-prompt-input>
+
+  <!-- 键盘一个提交出口都不留：Enter 与 Mod+Enter 都原样交回浏览器插换行 -->
+  <xh-prompt-input id="prompt-input-key-none" submit-key="none">
+    <div data-xh-part="root">
+      <textarea data-xh-part="input" rows="2" placeholder="键盘怎么按都只换行"></textarea>
+      <button data-xh-part="submit-trigger">发送</button>
+    </div>
+  </xh-prompt-input>
+
+  <span id="prompt-input-key-log">（还没发过）</span>
+</div>
+
+<script type="module">
+  const log = document.getElementById("prompt-input-key-log");
+  const labels = {
+    "prompt-input-key-enter": ["Enter 提交", "enter"],
+    "prompt-input-key-mod": ["Ctrl 或 Cmd 加 Enter 提交", "mod-enter"],
+    "prompt-input-key-none": ["只用发送按钮提交", "none"],
+  };
+
+  for (const [id, [name, arch]] of Object.entries(labels)) {
+    const input = document.getElementById(id);
+    input.translations = { input: name };
+    // submit 与原生表单提交同名，故不冒泡，直接在元素上监听
+    input.addEventListener("submit", (event) => {
+      log.textContent = `${arch} 档发出：${event.detail.value}`;
+    });
+  }
+</script>

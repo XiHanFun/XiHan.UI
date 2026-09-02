@@ -1,4 +1,4 @@
-// 三个部件不写内容时看得见什么，只有真实浏览器答得出来：字形画在伪元素上，
+// 三类部件不写内容时看得见什么，只有真实浏览器答得出来：字形画在伪元素上，
 // jsdom 的 getComputedStyle 不解析伪元素里的 var()，量出来恒是空串。
 //
 // 这三处的共同故障是「摸得着但看不见」——命中区在、aria-label 在、画面上什么都没有：
@@ -13,13 +13,14 @@ import {
   XhFloatingPanelRoot,
   XhFloatingPanelStageTrigger,
   XhFloatingPanelTitle,
+  XhLogContent,
+  XhLogLine,
+  XhLogRoot,
+  XhLogScrollButton,
+  XhLogViewport,
   XhSortableItem,
   XhSortableItemHandle,
   XhSortableRoot,
-  XhThreadContent,
-  XhThreadRoot,
-  XhThreadScrollButton,
-  XhThreadViewport,
 } from '../../src'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
@@ -87,36 +88,36 @@ describe('拖拽把手画得出抓手', () => {
   })
 })
 
-describe('回到底部按钮画得出箭头', () => {
-  function mountThread(slotted = false) {
-    return mount(() => h(XhThreadRoot, { style: 'block-size: 120px' }, () => [
-      h(XhThreadViewport, null, () => h(XhThreadContent, null, () =>
-        Array.from({ length: 30 }, (_, i) => h('p', { key: i }, `第 ${i} 条`)))),
-      slotted ? h(XhThreadScrollButton, null, () => '回到底部') : h(XhThreadScrollButton),
+describe('日志的回到底部按钮画得出箭头', () => {
+  function mountLog(slotted = false) {
+    return mount(() => h(XhLogRoot, { rows: 4 }, () => [
+      h(XhLogViewport, null, () => h(XhLogContent, null, () =>
+        Array.from({ length: 30 }, (_, i) => h(XhLogLine, { key: i }, () => `12:00:0${i % 10}  第 ${i} 行`)))),
+      slotted ? h(XhLogScrollButton, null, () => '回到最新') : h(XhLogScrollButton),
     ]))
   }
 
   it('不写内容时画一枚字形，且那张图是真的取到了', async () => {
-    mountThread()
+    mountLog()
     await nextTick()
-    expect(maskOf(part('thread', 'scroll-button'))).toContain('data:image/svg')
+    expect(maskOf(part('log', 'scroll-button'))).toContain('data:image/svg')
   })
 
   it('字形盒与作者塞的图标同一把尺：--xh-icon-size 在 root 上声明了', async () => {
-    mountThread()
+    mountLog()
     await nextTick()
-    expect(getComputedStyle(part('thread', 'root')).getPropertyValue('--xh-icon-size').trim()).not.toBe('')
+    expect(getComputedStyle(part('log', 'root')).getPropertyValue('--xh-icon-size').trim()).not.toBe('')
 
-    const box = getComputedStyle(part('thread', 'scroll-button'), '::before')
+    const box = getComputedStyle(part('log', 'scroll-button'), '::before')
     expect(Number.parseFloat(box.inlineSize)).toBeGreaterThan(0)
     expect(box.inlineSize).toBe(box.blockSize)
   })
 
   it('作者塞了文字就让位，不再画字形', async () => {
-    mountThread(true)
+    mountLog(true)
     await nextTick()
-    expect(part('thread', 'scroll-button').textContent).toBe('回到底部')
-    expect(maskOf(part('thread', 'scroll-button'))).not.toContain('data:image/svg')
+    expect(part('log', 'scroll-button').textContent).toBe('回到最新')
+    expect(maskOf(part('log', 'scroll-button'))).not.toContain('data:image/svg')
   })
 })
 

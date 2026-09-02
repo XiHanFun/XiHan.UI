@@ -1,0 +1,49 @@
+<!-- 回到底部与播报 | 往上翻一段，右下角那颗钮自己冒出来，按下去归位并重新粘附；输出跑完在播报区念一句结论 -->
+<xh-log id="log-scroll-button" rows="8" style="inline-size: 100%">
+  <div data-xh-part="root">
+    <div data-xh-part="viewport">
+      <div data-xh-part="content">
+        <div data-xh-part="line">12:00:00  build  编译 packages/module-1 · 往上翻一段试试</div>
+        <div data-xh-part="line">12:00:01  build  编译 packages/module-2 · 往上翻一段试试</div>
+        <div data-xh-part="line">12:00:02  build  编译 packages/module-3 · 往上翻一段试试</div>
+        <div data-xh-part="line">12:00:03  build  编译 packages/module-4 · 往上翻一段试试</div>
+        <div data-xh-part="line">12:00:04  build  编译 packages/module-5 · 往上翻一段试试</div>
+        <div data-xh-part="line">12:00:05  build  编译 packages/module-6 · 往上翻一段试试</div>
+        <div data-xh-part="line">12:00:06  build  编译 packages/module-7 · 往上翻一段试试</div>
+        <div data-xh-part="line">12:00:07  build  编译 packages/module-8 · 往上翻一段试试</div>
+        <div data-xh-part="line">12:00:08  build  编译 packages/module-9 · 往上翻一段试试</div>
+        <div data-xh-part="line">12:00:09  build  编译 packages/module-10 · 往上翻一段试试</div>
+      </div>
+    </div>
+
+    <!-- 留空就由皮肤画一枚向下的字形，往里塞节点即换成自己的图形 -->
+    <button data-xh-part="scroll-button"></button>
+
+    <!-- 视觉隐藏的播报区：念哪一句、什么时候念都归宿主定 -->
+    <div data-xh-part="live-region"></div>
+  </div>
+</xh-log>
+
+<script type="module">
+  const view = document.getElementById("log-scroll-button");
+  const content = view.querySelector('[data-xh-part="content"]');
+  const live = view.querySelector('[data-xh-part="live-region"]');
+
+  function tick() {
+    // 示例被换走后停手，别让定时器在卸载后继续跑
+    if (!content.isConnected) return;
+    const seq = content.children.length + 1;
+    const line = document.createElement("div");
+    line.dataset.xhPart = "line";
+    line.textContent = `12:0${Math.floor(seq / 60)}:${String(seq % 60).padStart(2, "0")}  build  编译 packages/module-${seq}`;
+    content.append(line);
+    if (seq < 24) {
+      setTimeout(tick, 700);
+      return;
+    }
+    // 一段输出收尾时才念一句，逐行播报会把读屏淹掉
+    live.textContent = `构建完成，共 ${seq} 行输出，0 个错误`;
+  }
+
+  setTimeout(tick, 700);
+</script>

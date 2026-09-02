@@ -5,6 +5,8 @@ import type { MachineSchema } from '@xihan-ui/machine'
 export interface LogTranslations {
   /** 日志区的可访问名。 */
   log: string
+  /** 回到底部按钮的可访问名。 */
+  scrollToBottom: string
 }
 
 export interface LogStickChangeDetails {
@@ -67,10 +69,14 @@ export interface LogApi<T extends PropTypes = PropTypes> {
   atBottom: boolean
   /** 新行进来时是否自动跟到底。 */
   sticking: boolean
+  /** 是否显示回到底部按钮，不在底部时为 true。 */
+  showScrollButton: boolean
   /** 滚到底部并恢复粘附。 */
   scrollToBottom: () => void
   getRootProps: () => T['element']
   getViewportProps: () => T['element']
   getContentProps: () => T['element']
   getLineProps: () => T['element']
+  getScrollButtonProps: () => T['button']
+  getLiveRegionProps: () => T['element']
 }

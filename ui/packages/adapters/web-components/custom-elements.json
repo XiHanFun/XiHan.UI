@@ -6220,251 +6220,6 @@
     },
     {
       "kind": "javascript-module",
-      "path": "src/elements/code-block.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "`<xh-code-block>` —— Light-DOM 行为宿主，无状态机：wire 时算出 connectCodeBlock 的产出，\n打到四类角色节点上。显示的代码文本由作者写在 code 角色节点里，元素不改其子节点。\n复制按钮由 `<xh-clipboard>` 组合提供。",
-          "name": "XhCodeBlockElement",
-          "cssParts": [
-            {
-              "description": "外壳，承载 data-lang / data-complete",
-              "name": "root"
-            },
-            {
-              "description": "语言角标，纯装饰且对读屏隐藏",
-              "name": "lang-label"
-            },
-            {
-              "description": "横向滚动容器；tabindex=0，最小高度按行数写进内联样式",
-              "name": "pre"
-            },
-            {
-              "description": "代码文本本身，承载 data-lang",
-              "name": "code"
-            },
-            {
-              "description": "着色生效时的一个记号，承载 data-kind",
-              "name": "token"
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "partContract",
-              "type": {
-                "text": "object"
-              },
-              "static": true,
-              "default": "{ anatomy: codeBlockAnatomy, meta: codeBlockMeta }"
-            },
-            {
-              "kind": "field",
-              "name": "code",
-              "privacy": "public",
-              "type": {
-                "text": "string | undefined"
-              },
-              "attribute": "code"
-            },
-            {
-              "kind": "field",
-              "name": "codeLang",
-              "privacy": "public",
-              "type": {
-                "text": "string | undefined"
-              },
-              "attribute": "code-lang"
-            },
-            {
-              "kind": "field",
-              "name": "wrap",
-              "privacy": "public",
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "attribute": "wrap"
-            },
-            {
-              "kind": "field",
-              "name": "complete",
-              "privacy": "public",
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "attribute": "complete"
-            },
-            {
-              "kind": "field",
-              "name": "highlightWhileStreaming",
-              "privacy": "public",
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "attribute": "highlight-while-streaming"
-            },
-            {
-              "kind": "field",
-              "name": "highlighter",
-              "type": {
-                "text": "HighlighterPort | null | undefined"
-              },
-              "description": "换一个着色实现（典型是接 Shiki）；置 null 关掉着色。只走 property，属性表达不了对象。"
-            },
-            {
-              "kind": "field",
-              "name": "#painted",
-              "privacy": "private",
-              "type": {
-                "text": "string | undefined"
-              },
-              "description": "上一次铺进 code 部件的那串记号，用来判断要不要重铺。"
-            },
-            {
-              "kind": "method",
-              "name": "wire",
-              "privacy": "protected",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "#paint",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "tokens",
-                  "type": {
-                    "text": "readonly CodeToken[]"
-                  }
-                },
-                {
-                  "name": "propsOf",
-                  "type": {
-                    "text": "(token: CodeToken) => Record<string, unknown>"
-                  }
-                }
-              ],
-              "description": "着色生效时接管 code 部件的内容。\n本元素其余各处都不替作者生成节点，这里是**唯一的例外**：记号是算出来的派生数据，\n作者没法自己写。没有记号时一个节点都不动，作者写的代码文本原样留着。\n内容没变就不重铺——每次更新都重建节点会把用户正在拖的选区弄没。"
-            }
-          ],
-          "attributes": [
-            {
-              "type": {
-                "text": "string | undefined"
-              },
-              "description": "代码原文，只用于数行数预撑高度",
-              "name": "code",
-              "fieldName": "code"
-            },
-            {
-              "type": {
-                "text": "string | undefined"
-              },
-              "description": "围栏语言标注，空白时按 plaintext 处理",
-              "name": "code-lang",
-              "fieldName": "codeLang"
-            },
-            {
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "description": "长行自动换行，默认关（长行横向滚动）",
-              "name": "wrap",
-              "fieldName": "wrap"
-            },
-            {
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "description": "代码块是否已闭合",
-              "name": "complete",
-              "fieldName": "complete"
-            },
-            {
-              "name": "highlight-while-streaming",
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "fieldName": "highlightWhileStreaming"
-            }
-          ],
-          "superclass": {
-            "name": "XhElement",
-            "module": "/src/element-base"
-          },
-          "tagName": "xh-code-block",
-          "customElement": true,
-          "cssProperties": [
-            {
-              "name": "--xh-code-block-bg"
-            },
-            {
-              "name": "--xh-code-block-comment-fg"
-            },
-            {
-              "name": "--xh-code-block-font"
-            },
-            {
-              "name": "--xh-code-block-keyword-fg"
-            },
-            {
-              "name": "--xh-code-block-keyword-weight"
-            },
-            {
-              "name": "--xh-code-block-label-fg"
-            },
-            {
-              "name": "--xh-code-block-label-font-size"
-            },
-            {
-              "name": "--xh-code-block-label-px"
-            },
-            {
-              "name": "--xh-code-block-label-py"
-            },
-            {
-              "name": "--xh-code-block-line-height"
-            },
-            {
-              "name": "--xh-code-block-number-fg"
-            },
-            {
-              "name": "--xh-code-block-p"
-            },
-            {
-              "name": "--xh-code-block-punctuation-fg"
-            },
-            {
-              "name": "--xh-code-block-radius"
-            },
-            {
-              "name": "--xh-code-block-string-fg"
-            }
-          ]
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "XhCodeBlockElement",
-          "declaration": {
-            "name": "XhCodeBlockElement",
-            "module": "src/elements/code-block.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
       "path": "src/elements/code-view.ts",
       "declarations": [
         {
@@ -8854,308 +8609,6 @@
           "declaration": {
             "name": "XhComboboxElement",
             "module": "src/elements/combobox.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/elements/composer.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "`<xh-composer>` —— Light-DOM 行为宿主：跑 composer 机器，把 connect 产出打到作者写的\nroot/input/submit-trigger 三类角色节点上。input 须是原生 `<textarea>`，值经 property 写、\n禁用走原生 disabled。流式期间发送按钮原位变停止，只换 `data-mode` 与 `aria-label`。",
-          "name": "XhComposerElement",
-          "cssParts": [
-            {
-              "description": "承载 data-disabled / data-state 的容器",
-              "name": "root"
-            },
-            {
-              "description": "输入框，须是原生 `<textarea>`",
-              "name": "input"
-            },
-            {
-              "description": "发送 / 停止按钮，皮肤按 data-mode 换图标",
-              "name": "submit-trigger"
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "partContract",
-              "type": {
-                "text": "object"
-              },
-              "static": true,
-              "default": "{ anatomy: composerAnatomy, meta: composerMeta }"
-            },
-            {
-              "kind": "field",
-              "name": "value",
-              "privacy": "public",
-              "type": {
-                "text": "string | undefined"
-              },
-              "attribute": "value"
-            },
-            {
-              "kind": "field",
-              "name": "defaultValue",
-              "privacy": "public",
-              "type": {
-                "text": "string | undefined"
-              },
-              "attribute": "default-value"
-            },
-            {
-              "kind": "field",
-              "name": "disabled",
-              "privacy": "public",
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "attribute": "disabled"
-            },
-            {
-              "kind": "field",
-              "name": "runStatus",
-              "privacy": "public",
-              "type": {
-                "text": "ComposerRunStatus | undefined"
-              },
-              "attribute": "run-status"
-            },
-            {
-              "kind": "field",
-              "name": "submitOnEnter",
-              "privacy": "public",
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "attribute": "submit-on-enter"
-            },
-            {
-              "kind": "field",
-              "name": "translations",
-              "privacy": "public",
-              "type": {
-                "text": "Partial<ComposerTranslations> | undefined"
-              },
-              "description": "输入框与发送/停止按钮的无障碍名，由 connect 写到节点上。"
-            },
-            {
-              "kind": "field",
-              "name": "emit",
-              "privacy": "private",
-              "readonly": true
-            },
-            {
-              "kind": "field",
-              "name": "notifyValue",
-              "privacy": "private",
-              "readonly": true
-            },
-            {
-              "kind": "field",
-              "name": "notifySubmit",
-              "privacy": "private",
-              "readonly": true
-            },
-            {
-              "kind": "field",
-              "name": "notifyStop",
-              "privacy": "private",
-              "readonly": true
-            },
-            {
-              "kind": "field",
-              "name": "ctrl",
-              "privacy": "private",
-              "readonly": true,
-              "default": "new MachineController<ComposerSchema>(this, composerMachine, () => this.machineProps())"
-            },
-            {
-              "kind": "method",
-              "name": "machineProps",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "Partial<ComposerSchema['props']>"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "wire",
-              "privacy": "protected",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            }
-          ],
-          "events": [
-            {
-              "description": "值变化；detail 为 `{ value: string }`",
-              "name": "value-change",
-              "type": {
-                "text": "ComposerValueChangeDetails"
-              }
-            },
-            {
-              "description": "提交；detail 为 `{ value: string }`，清空发生在派发之后。 与原生表单提交同名，故不冒泡，请直接在 `<xh-composer>` 元素上监听",
-              "name": "submit",
-              "type": {
-                "text": "ComposerSubmitDetails"
-              }
-            },
-            {
-              "description": "流式期间按下停止；无 detail",
-              "name": "stop"
-            }
-          ],
-          "attributes": [
-            {
-              "type": {
-                "text": "string | undefined"
-              },
-              "description": "受控值，缺省该属性即非受控",
-              "name": "value",
-              "fieldName": "value"
-            },
-            {
-              "type": {
-                "text": "string | undefined"
-              },
-              "description": "非受控初值",
-              "name": "default-value",
-              "fieldName": "defaultValue"
-            },
-            {
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "description": "禁用，输入框带原生 disabled，发送与停止一并吃掉",
-              "name": "disabled",
-              "fieldName": "disabled"
-            },
-            {
-              "type": {
-                "text": "ComposerRunStatus | undefined"
-              },
-              "description": "宿主运行态，默认 ready；streaming 时发送按钮原位变停止",
-              "name": "run-status",
-              "fieldName": "runStatus"
-            },
-            {
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "description": "Enter 直接提交，默认 true；写 submit-on-enter=\"false\" 关掉",
-              "name": "submit-on-enter",
-              "fieldName": "submitOnEnter"
-            }
-          ],
-          "superclass": {
-            "name": "XhElement",
-            "module": "/src/element-base"
-          },
-          "tagName": "xh-composer",
-          "customElement": true,
-          "cssProperties": [
-            {
-              "name": "--xh-composer-bg"
-            },
-            {
-              "name": "--xh-composer-bg-disabled"
-            },
-            {
-              "name": "--xh-composer-border"
-            },
-            {
-              "name": "--xh-composer-gap"
-            },
-            {
-              "name": "--xh-composer-input-autofill-bg"
-            },
-            {
-              "name": "--xh-composer-input-autofill-fg"
-            },
-            {
-              "name": "--xh-composer-input-fg"
-            },
-            {
-              "name": "--xh-composer-input-font-size"
-            },
-            {
-              "name": "--xh-composer-p"
-            },
-            {
-              "name": "--xh-composer-placeholder-fg"
-            },
-            {
-              "name": "--xh-composer-radius"
-            },
-            {
-              "name": "--xh-composer-root-border-focus"
-            },
-            {
-              "name": "--xh-composer-send-bg"
-            },
-            {
-              "name": "--xh-composer-send-bg-active"
-            },
-            {
-              "name": "--xh-composer-send-bg-hover"
-            },
-            {
-              "name": "--xh-composer-send-bg-off"
-            },
-            {
-              "name": "--xh-composer-send-fg"
-            },
-            {
-              "name": "--xh-composer-stop-bg"
-            },
-            {
-              "name": "--xh-composer-stop-bg-active"
-            },
-            {
-              "name": "--xh-composer-stop-bg-hover"
-            },
-            {
-              "name": "--xh-composer-stop-fg"
-            },
-            {
-              "name": "--xh-composer-submit-font-size"
-            },
-            {
-              "name": "--xh-composer-submit-font-weight"
-            },
-            {
-              "name": "--xh-composer-submit-h"
-            },
-            {
-              "name": "--xh-composer-submit-px"
-            },
-            {
-              "name": "--xh-composer-submit-radius"
-            },
-            {
-              "name": "--xh-composer-submit-shadow"
-            }
-          ]
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "XhComposerElement",
-          "declaration": {
-            "name": "XhComposerElement",
-            "module": "src/elements/composer.ts"
           }
         }
       ]
@@ -22757,7 +22210,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-log>` —— Light-DOM 行为宿主：作者写 root/viewport/content/line 角色节点，\n元素把 connectLog 的产出打上去。行长出来时跟随滚动到底部，用户上滚后解除粘附，\n滚回底部阈值内或调 scrollToBottom() 时恢复。\n\n行的内容不替作者生成：文本、级别、时间戳、标注都写在 line 角色节点里，元素只发身份与等宽排版。",
+          "description": "`<xh-log>` —— Light-DOM 行为宿主：作者写 root/viewport/content/line 角色节点，\n元素把 connectLog 的产出打上去。行长出来时跟随滚动到底部，用户上滚后解除粘附，\n滚回底部阈值内、按回到底部按钮或调 scrollToBottom() 时恢复。\n\n行的内容不替作者生成：文本、级别、时间戳、标注都写在 line 角色节点里，元素只发身份与等宽排版。",
           "name": "XhLogElement",
           "cssParts": [
             {
@@ -22765,7 +22218,7 @@
               "name": "root"
             },
             {
-              "description": "滚动容器；role=log + tabindex=0，按行数定高写进内联样式",
+              "description": "滚动容器；role=log + aria-live=off + tabindex=0，按行数定高写进内联样式",
               "name": "viewport"
             },
             {
@@ -22775,6 +22228,14 @@
             {
               "description": "一行日志，只拿身份与等宽排版",
               "name": "line"
+            },
+            {
+              "description": "回到底部按钮，在底时收起（hidden + 内联 display）",
+              "name": "scroll-button"
+            },
+            {
+              "description": "视觉隐藏的播报区（role=status + aria-live=polite + aria-atomic）",
+              "name": "live-region"
             }
           ],
           "members": [
@@ -22812,7 +22273,7 @@
               "type": {
                 "text": "Partial<LogTranslations> | undefined"
               },
-              "description": "日志区的无障碍名，由 connect 写到视口上。"
+              "description": "日志区与回到底部按钮的无障碍名，由 connect 写到节点上。"
             },
             {
               "kind": "field",
@@ -22898,7 +22359,7 @@
                   "text": "void"
                 }
               },
-              "description": "滚回底部并恢复粘附。机器要等 hostConnected 才建，还没进 DOM 时如实什么都不做、别炸。\n元素不带内置的\"回到底部\"按钮，作者自己的按钮调它。"
+              "description": "滚回底部并恢复粘附。机器要等 hostConnected 才建，还没进 DOM 时如实什么都不做、别炸。\n作者不写 scroll-button 角色节点时，自己的按钮调它。"
             },
             {
               "kind": "method",
@@ -22964,6 +22425,9 @@
               "name": "--xh-log-font-size"
             },
             {
+              "name": "--xh-log-icon-size"
+            },
+            {
               "name": "--xh-log-line-height"
             },
             {
@@ -22971,6 +22435,30 @@
             },
             {
               "name": "--xh-log-rows"
+            },
+            {
+              "name": "--xh-log-scroll-button-bg"
+            },
+            {
+              "name": "--xh-log-scroll-button-bg-hover"
+            },
+            {
+              "name": "--xh-log-scroll-button-border"
+            },
+            {
+              "name": "--xh-log-scroll-button-fg"
+            },
+            {
+              "name": "--xh-log-scroll-button-inset"
+            },
+            {
+              "name": "--xh-log-scroll-button-radius"
+            },
+            {
+              "name": "--xh-log-scroll-button-shadow"
+            },
+            {
+              "name": "--xh-log-scroll-button-size"
             },
             {
               "name": "--xh-log-tab-size"
@@ -31520,7 +31008,7 @@
               "type": {
                 "text": "PromptInputSubmitKey | undefined"
               },
-              "description": "按哪一档提交，默认 enter",
+              "description": "按哪一档提交，默认 enter；none 档键盘不提交",
               "name": "submit-key",
               "fieldName": "submitKey"
             },
@@ -43054,256 +42542,6 @@
           "declaration": {
             "name": "XhTextFieldElement",
             "module": "src/elements/text-field.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/elements/thread.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "`<xh-thread>` —— Light-DOM 行为宿主：跑 thread 机器，把 connect 产出打到作者写的角色节点上。\n内容长高时跟随滚动到底部，用户上滚后解除粘附，滚回底部阈值内或按回到底部按钮时恢复。",
-          "name": "XhThreadElement",
-          "cssParts": [
-            {
-              "description": "组件根容器，承载 data-state",
-              "name": "root"
-            },
-            {
-              "description": "滚动容器；role=log + aria-live=off + tabindex=0",
-              "name": "viewport"
-            },
-            {
-              "description": "内容包裹层，尺寸变化的观察目标",
-              "name": "content"
-            },
-            {
-              "description": "回到底部按钮，在底时收起（hidden + 内联 display）",
-              "name": "scroll-button"
-            },
-            {
-              "description": "视觉隐藏的播报区（role=status + aria-live=polite + aria-atomic）",
-              "name": "live-region"
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "partContract",
-              "type": {
-                "text": "object"
-              },
-              "static": true,
-              "default": "{ anatomy: threadAnatomy, meta: threadMeta }"
-            },
-            {
-              "kind": "field",
-              "name": "status",
-              "privacy": "public",
-              "type": {
-                "text": "ThreadStatus | undefined"
-              },
-              "attribute": "status"
-            },
-            {
-              "kind": "field",
-              "name": "threshold",
-              "privacy": "public",
-              "type": {
-                "text": "number | undefined"
-              },
-              "attribute": "threshold"
-            },
-            {
-              "kind": "field",
-              "name": "translations",
-              "privacy": "public",
-              "type": {
-                "text": "Partial<ThreadTranslations> | undefined"
-              },
-              "description": "消息区与回到底部按钮的无障碍名，由 connect 写到节点上。"
-            },
-            {
-              "kind": "field",
-              "name": "idGen",
-              "type": {
-                "text": "IdGenerator"
-              },
-              "privacy": "private",
-              "readonly": true
-            },
-            {
-              "kind": "field",
-              "name": "threadScope",
-              "privacy": "private",
-              "readonly": true
-            },
-            {
-              "kind": "field",
-              "name": "config",
-              "type": {
-                "text": "RuntimeConfig | null"
-              },
-              "privacy": "private",
-              "default": "null"
-            },
-            {
-              "kind": "field",
-              "name": "notify",
-              "privacy": "private",
-              "readonly": true
-            },
-            {
-              "kind": "field",
-              "name": "ctrl",
-              "privacy": "private",
-              "readonly": true,
-              "default": "new MachineController<ThreadSchema>( this, threadMachine, () => this.machineProps(), { scope: this.threadScope, onBuilt: svc => this.injectRefs(svc) }, )"
-            },
-            {
-              "kind": "method",
-              "name": "machineProps",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "Partial<ThreadSchema['props']>"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "ensureConfig",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "injectRefs",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "svc",
-                  "type": {
-                    "text": "Service<ThreadSchema>"
-                  }
-                }
-              ],
-              "description": "装填 config 与两个节点 getter；onBuilt 在 ctrl 构造期就跑，故 service 由参数传入。"
-            },
-            {
-              "kind": "method",
-              "name": "wire",
-              "privacy": "protected",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            }
-          ],
-          "events": [
-            {
-              "description": "粘底状态变化；detail 为 `{ atBottom: boolean, sticking: boolean }`",
-              "name": "stick-change",
-              "type": {
-                "text": "ThreadStickChangeDetails"
-              }
-            }
-          ],
-          "attributes": [
-            {
-              "type": {
-                "text": "ThreadStatus | undefined"
-              },
-              "description": "这一轮的运行态，只透出成 data-state",
-              "name": "status",
-              "fieldName": "status"
-            },
-            {
-              "type": {
-                "text": "number | undefined"
-              },
-              "description": "距底多少 px 视为在底，默认 64",
-              "name": "threshold",
-              "fieldName": "threshold"
-            }
-          ],
-          "superclass": {
-            "name": "XhElement",
-            "module": "/src/element-base"
-          },
-          "tagName": "xh-thread",
-          "customElement": true,
-          "cssProperties": [
-            {
-              "name": "--xh-thread-content-gap"
-            },
-            {
-              "name": "--xh-thread-content-py"
-            },
-            {
-              "name": "--xh-thread-icon-size"
-            },
-            {
-              "name": "--xh-thread-scroll-button-bg"
-            },
-            {
-              "name": "--xh-thread-scroll-button-bg-active"
-            },
-            {
-              "name": "--xh-thread-scroll-button-bg-hover"
-            },
-            {
-              "name": "--xh-thread-scroll-button-border"
-            },
-            {
-              "name": "--xh-thread-scroll-button-fg"
-            },
-            {
-              "name": "--xh-thread-scroll-button-font-size"
-            },
-            {
-              "name": "--xh-thread-scroll-button-font-weight"
-            },
-            {
-              "name": "--xh-thread-scroll-button-gap"
-            },
-            {
-              "name": "--xh-thread-scroll-button-h"
-            },
-            {
-              "name": "--xh-thread-scroll-button-inset"
-            },
-            {
-              "name": "--xh-thread-scroll-button-px"
-            },
-            {
-              "name": "--xh-thread-scroll-button-radius"
-            },
-            {
-              "name": "--xh-thread-scroll-button-shadow"
-            }
-          ]
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "XhThreadElement",
-          "declaration": {
-            "name": "XhThreadElement",
-            "module": "src/elements/thread.ts"
           }
         }
       ]

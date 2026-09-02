@@ -1,6 +1,6 @@
 # 组件总览
 
-130 个组件，每个都同时提供**无头内核**（`@xihan-ui/headless`）、**Vue 组件**（`@xihan-ui/vue`）、**自定义元素**（`@xihan-ui/web-components`）与**默认皮肤**（`@xihan-ui/styles`）四份产物。四者同源：内核是唯一的行为定义，另外三份不重新实现任何逻辑。
+127 个组件，每个都同时提供**无头内核**（`@xihan-ui/headless`）、**Vue 组件**（`@xihan-ui/vue`）、**自定义元素**（`@xihan-ui/web-components`）与**默认皮肤**（`@xihan-ui/styles`）四份产物。四者同源：内核是唯一的行为定义，另外三份不重新实现任何逻辑。
 
 本册每个组件一页，页内小节固定：概述 · 何时使用 · 何时不用 · 特性 · 示例 · 产物 · 解剖 · Props · 事件 · 插槽 · 状态 · connect API · 键盘 · 无障碍 · 样式 · 数据属性 · CSS 变量 · 动效 · 响应式 · RTL · 组合 · 最佳实践 · 反模式。其中契约类的小节由组件源码、连接层与皮肤直接生成，不会与代码对不上；讲取舍的几节与组件源码同放，见各组件目录下的 doc.md。某一节没有内容时整节不出现，不留空标题。
 
@@ -119,7 +119,6 @@
 | [日历](./calendar) | `calendar` | 17 | 12 | 4 |
 | [卡片](./card) | `card` | 7 | 0 | 5 |
 | [走马灯](./carousel) | `carousel` | 9 | 10 | 9 |
-| [代码块](./code-block) | `code-block` | 5 | 1 | 4 |
 | [折叠区域](./collapsible) | `collapsible` | 3 | 1 | 6 |
 | [倒计时](./countdown) | `countdown` | 1 | 0 | 4 |
 | [描述列表](./descriptions) | `descriptions` | 4 | 0 | 5 |
@@ -131,7 +130,7 @@
 | [无限滚动](./infinite-scroll) | `infinite-scroll` | 2 | 0 | 4 |
 | [JSON 视图](./json-viewer) | `json-viewer` | 13 | 9 | 8 |
 | [列表](./list) | `list` | 7 | 0 | 5 |
-| [日志](./log) | `log` | 4 | 1 | 6 |
+| [日志](./log) | `log` | 6 | 2 | 7 |
 | [跑马灯](./marquee) | `marquee` | 2 | 0 | 4 |
 | [数值动画](./number-animation) | `number-animation` | 1 | 0 | 4 |
 | [二维码](./qr-code) | `qr-code` | 2 | 0 | 8 |
@@ -181,13 +180,11 @@ AI 对话界面的组件。
 | 组件 | 标识 | 部件数 | 键盘条目 | 示例 |
 | --- | --- | --- | --- | --- |
 | [审批](./approval) | `approval` | 14 | 4 | 3 |
-| [代码视图](./code-view) | `code-view` | 11 | 2 | 5 |
+| [代码视图](./code-view) | `code-view` | 11 | 2 | 7 |
 | [差异视图](./diff-view) | `diff-view` | 16 | 2 | 4 |
-| [消息编辑器](./composer) | `composer` | 3 | 4 | 10 |
 | [流式正文](./markdown-stream) | `markdown-stream` | 4 | 1 | 4 |
-| [消息流](./message-feed) | `message-feed` | 7 | 7 | 3 |
-| [提示输入框](./prompt-input) | `prompt-input` | 4 | 7 | 3 |
+| [消息流](./message-feed) | `message-feed` | 7 | 7 | 7 |
+| [提示输入框](./prompt-input) | `prompt-input` | 4 | 8 | 9 |
 | [澄清问卷](./question-flow) | `question-flow` | 18 | 6 | 3 |
 | [思考过程](./reasoning) | `reasoning` | 7 | 1 | 2 |
 | [工具调用](./tool-call) | `tool-call` | 12 | 1 | 4 |
-| [会话线程](./thread) | `thread` | 5 | 2 | 8 |

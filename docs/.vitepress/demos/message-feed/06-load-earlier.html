@@ -1,0 +1,70 @@
+<!-- 向上加载更早的消息 | 视口的滚动事件直接监听：滚到接近顶部就去取上一页，取回来的插在最前面，读到一半的位置不会被顶走 -->
+<div style="display: grid; gap: 12px">
+  <xh-message-feed id="message-feed-earlier" count="8" style="block-size: 220px">
+    <div data-xh-part="root">
+      <div data-xh-part="viewport" id="message-feed-earlier-viewport">
+        <div data-xh-part="list" id="message-feed-earlier-list">
+          <article data-xh-part="item" item-id="m33" item-index="0" item-role="assistant">第 33 条 · 会话记录</article>
+          <article data-xh-part="item" item-id="m34" item-index="1" item-role="assistant">第 34 条 · 会话记录</article>
+          <article data-xh-part="item" item-id="m35" item-index="2" item-role="assistant">第 35 条 · 会话记录</article>
+          <article data-xh-part="item" item-id="m36" item-index="3" item-role="assistant">第 36 条 · 会话记录</article>
+          <article data-xh-part="item" item-id="m37" item-index="4" item-role="assistant">第 37 条 · 会话记录</article>
+          <article data-xh-part="item" item-id="m38" item-index="5" item-role="assistant">第 38 条 · 会话记录</article>
+          <article data-xh-part="item" item-id="m39" item-index="6" item-role="assistant">第 39 条 · 会话记录</article>
+          <article data-xh-part="item" item-id="m40" item-index="7" item-role="assistant">第 40 条 · 会话记录</article>
+        </div>
+      </div>
+      <button data-xh-part="scroll-button"></button>
+    </div>
+  </xh-message-feed>
+
+  <span id="message-feed-earlier-readout">已加载 8 条 · 最早到第 33 条</span>
+</div>
+
+<script type="module">
+  const feed = document.getElementById("message-feed-earlier");
+  const viewport = document.getElementById("message-feed-earlier-viewport");
+  const list = document.getElementById("message-feed-earlier-list");
+  const readout = document.getElementById("message-feed-earlier-readout");
+  // 编号越小越早，取历史就是往前减
+  let earliest = 33;
+  let loading = false;
+  let hasMore = true;
+
+  function render() {
+    const tail = loading ? " · 正在取更早的…" : hasMore ? "" : " · 已经是最早的了";
+    readout.textContent = `已加载 ${list.children.length} 条 · 最早到第 ${earliest} 条${tail}`;
+  }
+
+  // 插在最前面之后，下标整体后移一截，逐个改回来
+  function renumber() {
+    for (let i = 0; i < list.children.length; i += 1)
+      list.children[i].setAttribute("item-index", String(i));
+    feed.setAttribute("count", String(list.children.length));
+  }
+
+  // 离顶部不到 48px 就取上一页；条目是 list 的直接子节点，内容增高时滚动位置按锚点补偿
+  viewport.addEventListener("scroll", () => {
+    if (viewport.scrollTop > 48 || loading || !hasMore) return;
+    loading = true;
+    render();
+    window.setTimeout(() => {
+      const size = Math.min(6, earliest - 1);
+      earliest -= size;
+      const batch = document.createDocumentFragment();
+      for (let i = 0; i < size; i += 1) {
+        const item = document.createElement("article");
+        item.setAttribute("data-xh-part", "item");
+        item.setAttribute("item-id", `m${earliest + i}`);
+        item.setAttribute("item-role", "assistant");
+        item.textContent = `第 ${earliest + i} 条 · 会话记录`;
+        batch.append(item);
+      }
+      list.prepend(batch);
+      renumber();
+      hasMore = earliest > 1;
+      loading = false;
+      render();
+    }, 500);
+  });
+</script>

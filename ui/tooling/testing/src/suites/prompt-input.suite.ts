@@ -152,6 +152,29 @@ export const promptInputSuite: ConformanceSuite = {
       ],
     },
     {
+      name: 'none 档：Enter 与 Mod+Enter 都不提交，提交只剩按钮那一条路',
+      spec: { apg: APG },
+      covers: ['prompt-input.kbd.none'],
+      props: { submitKey: 'none' },
+      steps: [
+        { kind: 'raw', why: '先把值写进去', run: ctx => typeInto(ctx, '键盘发不出去') },
+        { kind: 'focus', part: 'input' },
+        { kind: 'key', key: 'Enter', expect: { events: [] } },
+        { kind: 'key', key: 'Enter', modifiers: ['Control'], expect: { events: [] } },
+        { kind: 'key', key: 'Enter', modifiers: ['Meta'], expect: { events: [] } },
+        {
+          kind: 'click',
+          part: 'submit-trigger',
+          expect: {
+            events: [
+              { type: 'submit', detail: { value: '键盘发不出去' } },
+              { type: 'value-change', detail: { value: '' } },
+            ],
+          },
+        },
+      ],
+    },
+    {
       name: '生成中：按钮原位变停止且恒可用，提交路径全部挡下',
       spec: { apg: APG },
       covers: ['prompt-input.kbd.submit-press'],

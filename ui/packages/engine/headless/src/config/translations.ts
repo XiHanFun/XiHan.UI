@@ -21,12 +21,10 @@ import type { CascaderTranslations } from '../cascader/cascader.types'
 import type { CheckboxGroupTranslations } from '../checkbox-group/checkbox-group.types'
 import type { CheckboxTranslations } from '../checkbox/checkbox.types'
 import type { ClipboardTranslations } from '../clipboard/clipboard.types'
-import type { CodeBlockTranslations } from '../code-block/code-block.types'
 import type { CodeViewTranslations } from '../code-view/code-view.types'
 import type { CollapsibleTranslations } from '../collapsible/collapsible.types'
 import type { ColorPickerTranslations } from '../color-picker/color-picker.types'
 import type { ComboboxTranslations } from '../combobox/combobox.types'
-import type { ComposerTranslations } from '../composer/composer.types'
 import type { ContextMenuTranslations } from '../context-menu/context-menu.types'
 import type { CountdownTranslations } from '../countdown/countdown.types'
 import type { DateFieldTranslations } from '../date-field/date-field.types'
@@ -113,7 +111,6 @@ import type { TabsTranslations } from '../tabs/tabs.types'
 import type { TagTranslations } from '../tag/tag.types'
 import type { TagsInputTranslations } from '../tags-input/tags-input.types'
 import type { TextFieldTranslations } from '../text-field/text-field.types'
-import type { ThreadTranslations } from '../thread/thread.types'
 import type { TimeFieldTranslations } from '../time-field/time-field.types'
 import type { TimePickerTranslations } from '../time-picker/time-picker.types'
 import type { TimeTranslations } from '../time/time.types'
@@ -154,12 +151,10 @@ export interface XhTranslationOverrides {
   'checkbox'?: Partial<CheckboxTranslations>
   'checkbox-group'?: Partial<CheckboxGroupTranslations>
   'clipboard'?: Partial<ClipboardTranslations>
-  'code-block'?: Partial<CodeBlockTranslations>
   'code-view'?: Partial<CodeViewTranslations>
   'collapsible'?: Partial<CollapsibleTranslations>
   'color-picker'?: Partial<ColorPickerTranslations>
   'combobox'?: Partial<ComboboxTranslations>
-  'composer'?: Partial<ComposerTranslations>
   'context-menu'?: Partial<ContextMenuTranslations>
   'countdown'?: Partial<CountdownTranslations>
   'date-field'?: Partial<DateFieldTranslations>
@@ -245,7 +240,6 @@ export interface XhTranslationOverrides {
   'tag'?: Partial<TagTranslations>
   'tags-input'?: Partial<TagsInputTranslations>
   'text-field'?: Partial<TextFieldTranslations>
-  'thread'?: Partial<ThreadTranslations>
   'time'?: Partial<TimeTranslations>
   'time-field'?: Partial<TimeFieldTranslations>
   'time-picker'?: Partial<TimePickerTranslations>

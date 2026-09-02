@@ -17,7 +17,7 @@ createHighlighter().highlight('const x = 1', 'ts')
 想要那个精度，把 Shiki 之类接到同一个端口上即可，组件侧一行不用改：
 
 ```vue
-<XhCodeBlock :highlighter="myShikiAdapter" />
+<XhCodeView :highlighter="myShikiAdapter" />
 ```
 
 端口是同步的：连接层在渲染期求值，等不了 Promise。实现若要异步加载资产（Shiki 的 WASM

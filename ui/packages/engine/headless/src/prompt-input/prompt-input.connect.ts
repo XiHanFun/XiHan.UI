@@ -82,6 +82,9 @@ export function connectPromptInput<T extends PropTypes>(
         // Shift+Enter 恒为换行
         if (event.shiftKey)
           return
+        // none 档：键盘一律不提交，Enter 与 Mod+Enter 都原样放行去插换行
+        if (submitKey === 'none')
+          return
         const mod = event.ctrlKey || event.metaKey
         // enter 档：裸 Enter 与 Mod+Enter 都提交；mod-enter 档：只有 Mod+Enter 提交
         if (submitKey === 'mod-enter' && !mod)
