@@ -15,7 +15,7 @@
 
 - 触发器与内容通过 `aria-controls` 与 `aria-expanded` 关联。
 - 展开动画由皮肤给，内容高度由组件量出来。
-- 展开标记的图形自定。
+- 指示符部件空着由皮肤画一枚箭头，塞进图形即以作者的为准，转向两种情形都由皮肤打。
 
 ## 示例
 
@@ -45,7 +45,7 @@ size 换的是触发按钮的高度、内边距与字号，三档并排对照
 
 ### 自定义展开标记
 
-折叠区域不带指示器部件，标记由作者按 open 自己画，触发器两端对齐排
+往指示符部件里塞自己的图形，转向仍由皮肤按 open 接管
 
 <XhDemo src="collapsible/05-marker" />
 
@@ -60,7 +60,7 @@ size 换的是触发按钮的高度、内边距与字号，三档并排对照
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-collapsible>` |
-| Vue 组件 | `XhCollapsibleContent` `XhCollapsibleRoot` `XhCollapsibleTrigger` |
+| Vue 组件 | `XhCollapsibleContent` `XhCollapsibleIndicator` `XhCollapsibleRoot` `XhCollapsibleTrigger` |
 | 组合式函数 | `useCollapsible` |
 | 状态机 | `collapsibleMachine` |
 | 皮肤 | `@xihan-ui/styles/collapsible.css` |
@@ -69,7 +69,7 @@ size 换的是触发按钮的高度、内边距与字号，三档并排对照
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="collapsible"`：`root` · `trigger` · **`content`**
+`data-scope="collapsible"`：`root` · `trigger` · **`content`** · `indicator`
 
 ## Props
 
@@ -98,6 +98,7 @@ size 换的是触发按钮的高度、内边距与字号，三档并排对照
 | `root` | 'open' \| 'closed' |
 | `trigger` | 'open' \| 'closed' |
 | `content` | 'open' \| 'closed' |
+| `indicator` | 'open' \| 'closed' |
 
 状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
@@ -118,6 +119,7 @@ size 换的是触发按钮的高度、内边距与字号，三档并排对照
 | `getRootProps` | `() => T['element']` |  |
 | `getTriggerProps` | `() => T['button']` |  |
 | `getContentProps` | `() => T['element']` |  |
+| `getIndicatorProps` | `() => T['element']` |  |
 
 ## 键盘
 
@@ -135,6 +137,7 @@ size 换的是触发按钮的高度、内边距与字号，三档并排对照
 | --- | --- | --- |
 | `trigger` | `aria-controls` | `content` 部件的 id |
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
+| `indicator` | `aria-hidden` | 'true' |
 
 ## 样式
 
@@ -152,16 +155,18 @@ size 换的是触发按钮的高度、内边距与字号，三档并排对照
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `trigger` | `data-state` | 'open' \| 'closed' |
 | `content` | `data-state` | 'open' \| 'closed' |
+| `indicator` | `data-disabled` | ''（条件成立时才出现） |
+| `indicator` | `data-state` | 'open' \| 'closed' |
 
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-collapsible-content-fg` · `--xh-collapsible-content-py` · `--xh-collapsible-trigger-bg` · `--xh-collapsible-trigger-bg-hover` · `--xh-collapsible-trigger-fg` · `--xh-collapsible-trigger-font-size` · `--xh-collapsible-trigger-font-weight` · `--xh-collapsible-trigger-gap` · `--xh-collapsible-trigger-h` · `--xh-collapsible-trigger-px` · `--xh-collapsible-trigger-radius`
+`--xh-collapsible-content-fg` · `--xh-collapsible-content-py` · `--xh-collapsible-icon-size` · `--xh-collapsible-trigger-bg` · `--xh-collapsible-trigger-bg-hover` · `--xh-collapsible-trigger-fg` · `--xh-collapsible-trigger-font-size` · `--xh-collapsible-trigger-font-weight` · `--xh-collapsible-trigger-gap` · `--xh-collapsible-trigger-h` · `--xh-collapsible-trigger-px` · `--xh-collapsible-trigger-radius`
 
 ## 动效
 
-关键帧 `xh-collapsible-collapse` · `xh-collapsible-expand` 随皮肤自带，不引用别处文件里的名字。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-collapsible-collapse` · `xh-collapsible-expand` 随皮肤自带，不引用别处文件里的名字；状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

@@ -130,7 +130,7 @@
 
 ## 样式
 
-默认皮肤 `@xihan-ui/styles/clipboard.css` 按部件选择：`[data-scope="clipboard"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+默认皮肤 `@xihan-ui/styles/clipboard.css` 按部件选择：`[data-scope="clipboard"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
 
 ## 数据属性
 
@@ -152,13 +152,13 @@
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-clipboard-control-gap` · `--xh-clipboard-gap` · `--xh-clipboard-indicator-fg-copied` · `--xh-clipboard-input-autofill-bg` · `--xh-clipboard-input-autofill-fg` · `--xh-clipboard-input-bg` · `--xh-clipboard-input-border` · `--xh-clipboard-input-border-focus` · `--xh-clipboard-input-fg` · `--xh-clipboard-input-font-size` · `--xh-clipboard-input-h` · `--xh-clipboard-input-min-w` · `--xh-clipboard-input-px` · `--xh-clipboard-input-radius` · `--xh-clipboard-label-fg` · `--xh-clipboard-label-font-size` · `--xh-clipboard-label-font-weight` · `--xh-clipboard-trigger-bg` · `--xh-clipboard-trigger-bg-active` · `--xh-clipboard-trigger-bg-hover` · `--xh-clipboard-trigger-border` · `--xh-clipboard-trigger-border-copied` · `--xh-clipboard-trigger-border-hover` · `--xh-clipboard-trigger-fg` · `--xh-clipboard-trigger-fg-copied` · `--xh-clipboard-trigger-font-size` · `--xh-clipboard-trigger-gap` · `--xh-clipboard-trigger-h` · `--xh-clipboard-trigger-px` · `--xh-clipboard-trigger-radius`
+`--xh-clipboard-control-gap` · `--xh-clipboard-gap` · `--xh-clipboard-indicator-fg-copied` · `--xh-clipboard-input-autofill-bg` · `--xh-clipboard-input-autofill-fg` · `--xh-clipboard-input-bg` · `--xh-clipboard-input-border` · `--xh-clipboard-input-border-focus` · `--xh-clipboard-input-fg` · `--xh-clipboard-input-font-size` · `--xh-clipboard-input-h` · `--xh-clipboard-input-min-w` · `--xh-clipboard-input-px` · `--xh-clipboard-input-radius` · `--xh-clipboard-label-fg` · `--xh-clipboard-label-font-size` · `--xh-clipboard-label-font-weight` · `--xh-clipboard-loading-duration` · `--xh-clipboard-trigger-bg` · `--xh-clipboard-trigger-bg-active` · `--xh-clipboard-trigger-bg-hover` · `--xh-clipboard-trigger-border` · `--xh-clipboard-trigger-border-copied` · `--xh-clipboard-trigger-border-hover` · `--xh-clipboard-trigger-fg` · `--xh-clipboard-trigger-fg-copied` · `--xh-clipboard-trigger-font-size` · `--xh-clipboard-trigger-gap` · `--xh-clipboard-trigger-h` · `--xh-clipboard-trigger-px` · `--xh-clipboard-trigger-radius`
 
 ## 动效
 
-状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-clipboard-rotate` 随皮肤自带，不引用别处文件里的名字；状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
-系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+`prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
 ## RTL
 

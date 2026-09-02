@@ -431,6 +431,21 @@
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
+  /* 分支行的首格是展开箭头，叶子行没有这一格。作者摆了 item-indicator 时由它顶着，
+     没摆（如勾选档首位直接是作者自己的方框）就由行盒自己补出这一格的宽度，
+     否则叶子会比同级分支往行首缩一格，层级关系读不出来。
+     这里不带 tree.css 那条规则的 [data-orientation] 前提：tree-select 的连接层
+     不发这个属性，带上就一条都不命中 */
+  [data-scope='tree-select'][data-part='item']:not(
+      :has(> [data-scope='tree-select'][data-part='item-indicator'])
+    ) {
+    padding-inline-start: calc(
+      var(--xh-tree-select-row-px, var(--xh-_tree-select-row-px)) +
+        var(--xh-tree-select-item-indicator-size, var(--xh-control-indicator-size)) +
+        var(--xh-tree-select-row-gap, var(--xh-_tree-select-gap))
+    );
+  }
+
   [data-scope='tree-select'][data-part='item'][hidden],
   [data-scope='tree-select'][data-part='branch-control'][hidden] {
     display: none;
@@ -443,7 +458,7 @@
     background: var(--xh-tree-select-row-bg-hover, var(--xh-bg-subtle));
   }
 
-  /* 选中只换文字色与字重，配合行尾的 ✓ 标记；底色整条通道留给高亮，
+  /* 选中只换文字色与字重，配合行首那格 ✓ 标记；底色整条通道留给高亮，
      两者因此能同时看见 */
   [data-scope='tree-select'][data-part='item'][data-selected],
   [data-scope='tree-select'][data-part='branch-control'][data-selected] {

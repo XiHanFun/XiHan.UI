@@ -80,6 +80,8 @@ const CROSS_PART = {
   // 名字用等宽字族，摘要行里跟着它排；耗时与错误行与状态标签同一档字号
   'tool-call.name': ['summary'],
   'tool-call.status': ['duration', 'error'],
+  // 叶子行没摆指示符时由行盒自己补出首格，补的宽度就是那格本该有的部件的宽度
+  'tree-select.item-indicator': ['item'],
 }
 
 /** 注释挖空但保留换行。 */

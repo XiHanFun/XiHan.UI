@@ -161,11 +161,13 @@
   }
 
   /* 多拇指时只有手真正推着的那一个带 data-dragging，放大与光标因此不会全组一起变。
-     放大用 scale 而不是改尺寸：变换绕自身中心发生，圆心不动，负外边距的算式也不用跟着改。 */
+     放大用 scale 而不是改尺寸：变换绕自身中心发生，圆心不动，负外边距的算式也不用跟着改。
+     海拔从静态的 raised 换到 lifted：跟着手走的东西比贴在页面上的抬得高一档，
+     又不到锚定浮层那一层——用 floating 会让拇指和下拉面板一样重。 */
   [data-scope='slider'][data-part='thumb'][data-dragging] {
     scale: var(--xh-slider-thumb-scale-dragging, var(--xh-motion-scale-drag));
     cursor: grabbing;
-    box-shadow: var(--xh-slider-thumb-shadow-dragging, var(--xh-elevation-floating));
+    box-shadow: var(--xh-slider-thumb-shadow-dragging, var(--xh-elevation-lifted));
   }
 
   [data-scope='slider'][data-part='thumb'][data-invalid] {

@@ -13,8 +13,8 @@
 
     background-image: linear-gradient(
       var(--xh-_gradient-text-dir),
-      var(--xh-gradient-text-from, var(--xh-color-brand-500)),
-      var(--xh-gradient-text-to, var(--xh-color-brand-700))
+      var(--xh-gradient-text-from, var(--xh-gradient-brand-from)),
+      var(--xh-gradient-text-to, var(--xh-gradient-brand-to))
     );
     -webkit-background-clip: text;
     background-clip: text;

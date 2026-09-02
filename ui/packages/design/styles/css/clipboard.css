@@ -1,3 +1,12 @@
+@layer xihan.motion {
+  /* 转圈的关键帧定义在本文件里：引用别处文件的动画名时那份文件不一定在场，动画会静默不跑 */
+  @keyframes xh-clipboard-rotate {
+    to {
+      rotate: 360deg;
+    }
+  }
+}
+
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
   [data-scope='clipboard'] {
@@ -124,10 +133,38 @@
     outline-offset: var(--xh-ring-offset);
   }
 
-  /* 写入在途：按钮还在原地不动，只把它压暗一点，免得连点 */
+  /* 写入在途：指针换成 progress，同时在按钮里转一枚圆环。
+     不压透明度：那既没有令牌也没有覆盖槽，深色档下压出来的灰还会掉到读不清；
+     圆环与下载键那一档同形，在途在全库读起来是同一件事 */
   [data-scope='clipboard'][data-part='trigger'][data-state='copying'] {
     cursor: progress;
-    opacity: 0.7;
+  }
+
+  [data-scope='clipboard'][data-part='trigger'][data-state='copying']::before {
+    content: '';
+    flex: none;
+    inline-size: 1em;
+    block-size: 1em;
+    border: var(--xh-stroke-thin) solid transparent;
+    border-block-start-color: currentColor;
+    border-radius: var(--xh-shape-pill);
+    animation: xh-clipboard-rotate var(--xh-clipboard-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite;
+  }
+
+  /* 减少动效：圆环停下并整圈换成虚线，静止的形状仍然读得出"还没好"。
+     两条规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope='clipboard'][data-part='trigger'][data-state='copying']::before {
+      border-style: dotted;
+      border-color: currentColor;
+      animation: none;
+    }
+  }
+
+  :where([data-motion='reduce']) [data-scope='clipboard'][data-part='trigger'][data-state='copying']::before {
+    border-style: dotted;
+    border-color: currentColor;
+    animation: none;
   }
 
   /* 复制成功那一段换成成功色，撑住"这次真的写进去了"这句话 */

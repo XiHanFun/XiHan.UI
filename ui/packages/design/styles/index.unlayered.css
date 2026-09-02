@@ -163,8 +163,15 @@
   --xh-_back-top-size: var(--xh-control-h-md);
 
   position: fixed;
-  inset-block-end: var(--xh-back-top-inset-block, var(--xh-space-8));
-  inset-inline-end: var(--xh-back-top-inset-inline, var(--xh-space-8));
+  /* 贴边与安全区取大的一头：底部横条与圆角压住的那一段由系统给出，贴边比它窄时钮会被切掉一角。
+     桌面上 env() 恒为 0，取值与贴边槽完全一致。安全区只有物理方向的名字，
+     行内轴上两侧同取较宽的那一段，RTL 下不会翻错边。 */
+  inset-block-end: max(var(--xh-back-top-inset-block, var(--xh-space-8)), env(safe-area-inset-bottom));
+  inset-inline-end: max(
+    var(--xh-back-top-inset-inline, var(--xh-space-8)),
+    env(safe-area-inset-left),
+    env(safe-area-inset-right)
+  );
   z-index: var(--xh-back-top-layer, var(--xh-layer-sticky));
 }
 
@@ -1002,6 +1009,25 @@
   --xh-_diff-view-py: var(--xh-space-3);
 }
 
+/*
+ * 高对比档：新增行那条实心色条写在 box-shadow 上、删除行那条斜纹写在渐变上，
+ * 这一档里两者一起被丢弃，只剩两个被系统换成同色的底。
+ * 改画两圈内收的环，实线对新增、虚线对删除，两档在纯系统色下仍分得开。
+ * 用 outline 不用 border：行是横排 flex，加边会把行号与内容一起往里推，
+ * 没有变更的行不加边，同一屏上的行首就对不齐了。
+ */
+@media (forced-colors: active) {
+  [data-scope='diff-view'][data-part='row'][data-change='added'] {
+    outline: var(--xh-stroke-thick) solid CanvasText;
+    outline-offset: calc(-1 * var(--xh-stroke-thick));
+  }
+
+  [data-scope='diff-view'][data-part='row'][data-change='removed'] {
+    outline: var(--xh-stroke-thick) dashed CanvasText;
+    outline-offset: calc(-1 * var(--xh-stroke-thick));
+  }
+}
+
 /* 露出来的行从上一行底下推出来：位移走幅度令牌，减弱动效档把它归零 */
 @keyframes xh-diff-view-reveal {
   from {
@@ -1016,6 +1042,13 @@
 }
 
 /* styles/download-trigger.css */
+/* 转圈的关键帧定义在本文件里：引用别处文件的动画名时那份文件不一定在场，动画会静默不跑 */
+@keyframes xh-download-trigger-rotate {
+  to {
+    rotate: 360deg;
+  }
+}
+
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='download-trigger'] {
   --xh-download-trigger-skin: 1;
@@ -1072,9 +1105,38 @@
   outline-offset: var(--xh-ring-offset);
 }
 
-/* 取数在途：按钮留在原地不动，只换指针形状——位置一变，正要再点的人就点空了 */
+/* 取数在途：指针换成 progress，同时在按钮里转一枚圆环。
+   只靠指针形状的话触屏上是零反馈——手指按下去到文件出来之间屏上什么都不变，
+   用户只会接着点。圆环是行内的一个 flex 项，按钮的起始边不动，只往后长一截 */
 [data-scope='download-trigger'][data-part='root'][data-state='preparing'] {
   cursor: progress;
+}
+
+[data-scope='download-trigger'][data-part='root'][data-state='preparing']::before {
+  content: '';
+  flex: none;
+  inline-size: 1em;
+  block-size: 1em;
+  border: var(--xh-stroke-thin) solid transparent;
+  border-block-start-color: currentColor;
+  border-radius: var(--xh-shape-pill);
+  animation: xh-download-trigger-rotate var(--xh-download-trigger-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite;
+}
+
+/* 减少动效：圆环停下并整圈换成虚线，静止的形状仍然读得出"还没好"。
+   两条规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
+@media (prefers-reduced-motion: reduce) {
+  [data-scope='download-trigger'][data-part='root'][data-state='preparing']::before {
+    border-style: dotted;
+    border-color: currentColor;
+    animation: none;
+  }
+}
+
+:where([data-motion='reduce']) [data-scope='download-trigger'][data-part='root'][data-state='preparing']::before {
+  border-style: dotted;
+  border-color: currentColor;
+  animation: none;
 }
 
 /*
@@ -1571,23 +1633,26 @@
 
 /* —— 四角 ——
    start / end 用逻辑属性，RTL 下自动换到另一侧。
-   摞的方向按贴的是上沿还是下沿定：离屏幕边最近的恒是触发器，展开的那一组往页面中间长 */
+   摞的方向按贴的是上沿还是下沿定：离屏幕边最近的恒是触发器，展开的那一组往页面中间长。
+   四条贴边都与安全区取大的一头：刘海、圆角与底部横条压住的那一段由系统给出，
+   贴边比它窄时钮会被切掉一角；桌面上 env() 恒为 0，取值与贴边槽完全一致。
+   安全区只有物理方向的四个名字，行内轴上两侧同取较宽的那一段，RTL 下不会翻错边。 */
 [data-scope='float-button'][data-part='root'][data-placement^='top'] {
-  inset-block-start: var(--xh-_float-button-offset);
+  inset-block-start: max(var(--xh-_float-button-offset), env(safe-area-inset-top));
   flex-direction: column;
 }
 
 [data-scope='float-button'][data-part='root'][data-placement^='bottom'] {
-  inset-block-end: var(--xh-_float-button-offset);
+  inset-block-end: max(var(--xh-_float-button-offset), env(safe-area-inset-bottom));
   flex-direction: column-reverse;
 }
 
 [data-scope='float-button'][data-part='root'][data-placement$='-start'] {
-  inset-inline-start: var(--xh-_float-button-offset);
+  inset-inline-start: max(var(--xh-_float-button-offset), env(safe-area-inset-left), env(safe-area-inset-right));
 }
 
 [data-scope='float-button'][data-part='root'][data-placement$='-end'] {
-  inset-inline-end: var(--xh-_float-button-offset);
+  inset-inline-end: max(var(--xh-_float-button-offset), env(safe-area-inset-left), env(safe-area-inset-right));
 }
 
 /* —— 外形 —— */
@@ -1876,24 +1941,28 @@
 
 [data-scope='floating-panel'][data-part='resize-trigger'][data-edge='n'] {
   inset: 0 0 auto 0;
+  /* stylelint-disable-next-line property-disallowed-list -- 面板的落位与尺寸由连接层写成物理 left / top / width / height，data-edge 的 n/s/e/w 是屏幕方向，把手的厚度沿同一根物理轴 */
   height: var(--xh-_floating-panel-handle);
   cursor: ns-resize;
 }
 
 [data-scope='floating-panel'][data-part='resize-trigger'][data-edge='s'] {
   inset: auto 0 0 0;
+  /* stylelint-disable-next-line property-disallowed-list -- 同上 */
   height: var(--xh-_floating-panel-handle);
   cursor: ns-resize;
 }
 
 [data-scope='floating-panel'][data-part='resize-trigger'][data-edge='w'] {
   inset: 0 auto 0 0;
+  /* stylelint-disable-next-line property-disallowed-list -- 同上 */
   width: var(--xh-_floating-panel-handle);
   cursor: ew-resize;
 }
 
 [data-scope='floating-panel'][data-part='resize-trigger'][data-edge='e'] {
   inset: 0 0 0 auto;
+  /* stylelint-disable-next-line property-disallowed-list -- 同上 */
   width: var(--xh-_floating-panel-handle);
   cursor: ew-resize;
 }
@@ -1901,28 +1970,36 @@
 /* 四个角排在四条边之后，命中区大一圈：角上要同时抓住两条边 */
 [data-scope='floating-panel'][data-part='resize-trigger'][data-edge='nw'] {
   inset: 0 auto auto 0;
+  /* stylelint-disable-next-line property-disallowed-list -- 同上 */
   width: var(--xh-_floating-panel-corner);
+  /* stylelint-disable-next-line property-disallowed-list -- 同上 */
   height: var(--xh-_floating-panel-corner);
   cursor: nwse-resize;
 }
 
 [data-scope='floating-panel'][data-part='resize-trigger'][data-edge='ne'] {
   inset: 0 0 auto auto;
+  /* stylelint-disable-next-line property-disallowed-list -- 同上 */
   width: var(--xh-_floating-panel-corner);
+  /* stylelint-disable-next-line property-disallowed-list -- 同上 */
   height: var(--xh-_floating-panel-corner);
   cursor: nesw-resize;
 }
 
 [data-scope='floating-panel'][data-part='resize-trigger'][data-edge='se'] {
   inset: auto 0 0 auto;
+  /* stylelint-disable-next-line property-disallowed-list -- 同上 */
   width: var(--xh-_floating-panel-corner);
+  /* stylelint-disable-next-line property-disallowed-list -- 同上 */
   height: var(--xh-_floating-panel-corner);
   cursor: nwse-resize;
 }
 
 [data-scope='floating-panel'][data-part='resize-trigger'][data-edge='sw'] {
   inset: auto auto 0 0;
+  /* stylelint-disable-next-line property-disallowed-list -- 同上 */
   width: var(--xh-_floating-panel-corner);
+  /* stylelint-disable-next-line property-disallowed-list -- 同上 */
   height: var(--xh-_floating-panel-corner);
   cursor: nesw-resize;
 }
@@ -2072,8 +2149,8 @@
 
   background-image: linear-gradient(
     var(--xh-_gradient-text-dir),
-    var(--xh-gradient-text-from, var(--xh-color-brand-500)),
-    var(--xh-gradient-text-to, var(--xh-color-brand-700))
+    var(--xh-gradient-text-from, var(--xh-gradient-brand-from)),
+    var(--xh-gradient-text-to, var(--xh-gradient-brand-to))
   );
   -webkit-background-clip: text;
   background-clip: text;
@@ -2972,6 +3049,61 @@
 [data-scope='heatmap'][data-part='legend'][hidden],
 [data-scope='heatmap'][data-part='legend-item'][hidden] {
   display: none;
+}
+
+/*
+ * 打印：格子的深浅只写在底色上，纸上多数丢背景，整张图印成一片空白。
+ * 这一档把档位改画成边框的粗细——0 档只有一圈发丝线，档位越高边越厚，
+ * 顶到一半格宽时整格填满。边算在尺寸里（reset 兜了 border-box），格子大小一点不变。
+ *
+ * 比例取 0.2 / 0.3 / 0.4 / 0.5：缺省格宽 10px 下正好落在 2 / 3 / 4 / 5 像素，
+ * 与 0 档那一像素合成五档整数宽——边宽在屏幕与纸上都取整，分数宽会有两档并到一起。
+ *
+ * 第一条给的是高档那一身，下面四条按档位逐个改薄：档数由作者定，
+ * 超出缺省五档的那些落在第一条上，一律按最高档画。
+ * 图例里那几个方块与格子同源，跟着走同一套。
+ */
+@media print {
+  [data-scope='heatmap'][data-part='cell'],
+  [data-scope='heatmap'][data-part='legend-item'] {
+    --xh-_heatmap-ink-ring: calc(var(--xh-_heatmap-cell-size) * 0.5);
+
+    border: var(--xh-_heatmap-ink-ring) solid currentColor;
+  }
+
+  [data-scope='heatmap'][data-part='cell'][data-level='0'],
+  [data-scope='heatmap'][data-part='legend-item'][data-level='0'] {
+    --xh-_heatmap-ink-ring: var(--xh-stroke-thin);
+  }
+
+  [data-scope='heatmap'][data-part='cell'][data-level='1'],
+  [data-scope='heatmap'][data-part='legend-item'][data-level='1'] {
+    --xh-_heatmap-ink-ring: calc(var(--xh-_heatmap-cell-size) * 0.2);
+  }
+
+  [data-scope='heatmap'][data-part='cell'][data-level='2'],
+  [data-scope='heatmap'][data-part='legend-item'][data-level='2'] {
+    --xh-_heatmap-ink-ring: calc(var(--xh-_heatmap-cell-size) * 0.3);
+  }
+
+  [data-scope='heatmap'][data-part='cell'][data-level='3'],
+  [data-scope='heatmap'][data-part='legend-item'][data-level='3'] {
+    --xh-_heatmap-ink-ring: calc(var(--xh-_heatmap-cell-size) * 0.4);
+  }
+}
+
+/*
+ * 高对比档：格子画的就是色阶本身，被系统换成同一个底色之后整张图没有任何深浅。
+ * 这几处退出强制着色，自己保住色阶；退出之后不再跟系统底色走，
+ * 各补一圈系统描边把方格从背景里框出来（原来那圈发丝线写在 inset 阴影上，这一档里被丢弃）。
+ */
+@media (forced-colors: active) {
+  [data-scope='heatmap'][data-part='cell'],
+  [data-scope='heatmap'][data-part='legend-item'] {
+    forced-color-adjust: none;
+    outline: var(--xh-stroke-thin) solid CanvasText;
+    outline-offset: calc(-1 * var(--xh-stroke-thin));
+  }
 }
 
 /* styles/highlight.css */
@@ -5086,9 +5218,6 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_password-input-caps-lock-font-size: var(--xh-control-caption-md);
   --xh-_password-input-trigger-font-size: var(--xh-control-caption-md);
 
-  /* 盒子的圆角 */
-  --xh-_password-input-radius: var(--xh-password-input-input-radius, var(--xh-shape-control));
-
   /* 形态档只换这四个私有槽：底、常态描边、悬停描边、落影 */
   --xh-_password-input-bg: var(--xh-bg-canvas);
   --xh-_password-input-border: var(--xh-border-control);
@@ -5201,7 +5330,7 @@ input[data-scope='mention'][data-part='input'] {
   block-size: var(--xh-password-input-control-h, var(--xh-_password-input-h));
   padding-inline: var(--xh-password-input-control-px, var(--xh-_password-input-px));
   border: var(--xh-stroke-thin) solid var(--xh-password-input-control-border, var(--xh-_password-input-border));
-  border-radius: var(--xh-_password-input-radius);
+  border-radius: var(--xh-password-input-control-radius, var(--xh-shape-control));
   background: var(--xh-password-input-control-bg, var(--xh-_password-input-bg));
   box-shadow: var(--xh-password-input-control-shadow, var(--xh-_password-input-shadow));
   transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
@@ -5248,7 +5377,7 @@ input[data-scope='mention'][data-part='input'] {
   padding-inline: var(--xh-password-input-input-px, var(--xh-_password-input-px));
   padding-block: 0;
   border: var(--xh-stroke-thin) solid var(--xh-password-input-input-border, var(--xh-_password-input-border));
-  border-radius: var(--xh-_password-input-radius);
+  border-radius: var(--xh-password-input-input-radius, var(--xh-shape-control));
   background: var(--xh-password-input-input-bg, var(--xh-_password-input-bg));
   box-shadow: var(--xh-password-input-input-shadow, var(--xh-_password-input-shadow));
   color: var(--xh-password-input-input-fg, var(--xh-fg-default));
@@ -6828,6 +6957,20 @@ input[data-scope='mention'][data-part='input'] {
   }
 }
 
+/*
+ * 高对比档：扫光那层渐变被丢弃，只剩被裁成透明的文字，整行标题消失。
+ * 把填充还回去，在想这件事仍由标题文字本身与展开钮的状态表出。
+ */
+@media (forced-colors: active) {
+  [data-scope='reasoning'][data-part='label'][data-streaming] {
+    background-image: none;
+    -webkit-background-clip: border-box;
+    background-clip: border-box;
+    color: CanvasText;
+    animation: none;
+  }
+}
+
 /* styles/resizable.css */
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='resizable'] {
@@ -7427,7 +7570,7 @@ input[data-scope='mention'][data-part='input'] {
   display: flex;
   flex-wrap: nowrap;
   /* 不写档位也按 md 留白，这是与裸弹性容器的分野；使用者槽位排在档位之前，写死一个值即盖过所有档 */
-  gap: var(--xh-space-gap, var(--xh-layout-gap-md));
+  gap: var(--xh-space-root-gap, var(--xh-layout-gap-md));
 }
 
 /* 声明了 display 就盖掉了 UA 的 [hidden] 规则，这里还回去 */
@@ -7515,23 +7658,23 @@ input[data-scope='mention'][data-part='input'] {
 /* —— 间距档位 —— */
 /* 每一档指向一个间距令牌，折行时行与行之间也吃这份间距 */
 [data-scope='space'][data-part='root'][data-gap='xs'] {
-  gap: var(--xh-space-gap, var(--xh-layout-gap-xs));
+  gap: var(--xh-space-root-gap, var(--xh-layout-gap-xs));
 }
 
 [data-scope='space'][data-part='root'][data-gap='sm'] {
-  gap: var(--xh-space-gap, var(--xh-layout-gap-sm));
+  gap: var(--xh-space-root-gap, var(--xh-layout-gap-sm));
 }
 
 [data-scope='space'][data-part='root'][data-gap='md'] {
-  gap: var(--xh-space-gap, var(--xh-layout-gap-md));
+  gap: var(--xh-space-root-gap, var(--xh-layout-gap-md));
 }
 
 [data-scope='space'][data-part='root'][data-gap='lg'] {
-  gap: var(--xh-space-gap, var(--xh-layout-gap-lg));
+  gap: var(--xh-space-root-gap, var(--xh-layout-gap-lg));
 }
 
 [data-scope='space'][data-part='root'][data-gap='xl'] {
-  gap: var(--xh-space-gap, var(--xh-layout-gap-xl));
+  gap: var(--xh-space-root-gap, var(--xh-layout-gap-xl));
 }
 
 /* styles/statistic.css */
@@ -8949,6 +9092,17 @@ input[data-scope='mention'][data-part='input'] {
   }
 }
 
+/*
+ * 高对比档：骨架条整根靠底色画出来，这一档里底色与微光一起被系统换掉，
+ * 一块什么都没有的空白——正在加载这件事没有了任何表达。改成描一圈边把条子勾出来。
+ */
+@media (forced-colors: active) {
+  [data-scope='skeleton'][data-part='bone'] {
+    border: var(--xh-stroke-thin) solid GrayText;
+    background-image: none;
+  }
+}
+
 /* styles/spinner.css */
 /* 转圈的关键帧定义在本文件里。皮肤可以按需单独引入，
    引用别处文件里的动画名时那份文件不一定在场，动画会静默地整个不跑 */
@@ -9357,8 +9511,8 @@ input[data-scope='mention'][data-part='input'] {
 /* 当前那一节：颜色与字重都跟着变，不只靠指示条——
    指示条是可选部件，作者不渲染它时"当前在哪"仍然要看得出来 */
 [data-scope='anchor'][data-part='link'][data-current] {
-  color: var(--xh-anchor-link-fg-active, var(--xh-_anchor-accent-text));
-  font-weight: var(--xh-anchor-link-font-weight-active, var(--xh-font-weight-medium));
+  color: var(--xh-anchor-link-fg-current, var(--xh-_anchor-accent-text));
+  font-weight: var(--xh-anchor-link-font-weight-current, var(--xh-font-weight-medium));
 }
 
 /* 主轴上的位置与长度由连接层写成内联样式（它量得到，样式表量不到）；
@@ -10110,8 +10264,8 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 当前页用字重与前景色区分，不加下划线：下划线是"可点"的信号，而它点不动 */
 [data-scope='breadcrumb'][data-part='link'][data-current] {
-  color: var(--xh-breadcrumb-current-fg, var(--xh-_breadcrumb-accent-text));
-  font-weight: var(--xh-breadcrumb-current-font-weight, var(--xh-font-weight-medium));
+  color: var(--xh-breadcrumb-link-fg-current, var(--xh-_breadcrumb-accent-text));
+  font-weight: var(--xh-breadcrumb-link-font-weight-current, var(--xh-font-weight-medium));
   cursor: default;
 }
 
@@ -12194,6 +12348,13 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 /* styles/clipboard.css */
+/* 转圈的关键帧定义在本文件里：引用别处文件的动画名时那份文件不一定在场，动画会静默不跑 */
+@keyframes xh-clipboard-rotate {
+  to {
+    rotate: 360deg;
+  }
+}
+
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='clipboard'] {
   --xh-clipboard-skin: 1;
@@ -12319,10 +12480,38 @@ input[data-scope='mention'][data-part='input'] {
   outline-offset: var(--xh-ring-offset);
 }
 
-/* 写入在途：按钮还在原地不动，只把它压暗一点，免得连点 */
+/* 写入在途：指针换成 progress，同时在按钮里转一枚圆环。
+   不压透明度：那既没有令牌也没有覆盖槽，深色档下压出来的灰还会掉到读不清；
+   圆环与下载键那一档同形，在途在全库读起来是同一件事 */
 [data-scope='clipboard'][data-part='trigger'][data-state='copying'] {
   cursor: progress;
-  opacity: 0.7;
+}
+
+[data-scope='clipboard'][data-part='trigger'][data-state='copying']::before {
+  content: '';
+  flex: none;
+  inline-size: 1em;
+  block-size: 1em;
+  border: var(--xh-stroke-thin) solid transparent;
+  border-block-start-color: currentColor;
+  border-radius: var(--xh-shape-pill);
+  animation: xh-clipboard-rotate var(--xh-clipboard-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite;
+}
+
+/* 减少动效：圆环停下并整圈换成虚线，静止的形状仍然读得出"还没好"。
+   两条规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
+@media (prefers-reduced-motion: reduce) {
+  [data-scope='clipboard'][data-part='trigger'][data-state='copying']::before {
+    border-style: dotted;
+    border-color: currentColor;
+    animation: none;
+  }
+}
+
+:where([data-motion='reduce']) [data-scope='clipboard'][data-part='trigger'][data-state='copying']::before {
+  border-style: dotted;
+  border-color: currentColor;
+  animation: none;
 }
 
 /* 复制成功那一段换成成功色，撑住"这次真的写进去了"这句话 */
@@ -12625,6 +12814,19 @@ input[data-scope='mention'][data-part='input'] {
   color: var(--xh-code-view-punctuation-fg);
 }
 
+/*
+ * 打印：标出来的那几行只有一层淡底加一条写在 inset 阴影上的实心条，
+ * 底多数打印机丢掉、投影本就不该上纸，标了哪几行在纸上完全读不出来。
+ * 改画一圈内收的实边把那几行框出来。用 outline 不用 border：
+ * 行是横排 flex，加边会把行号与正文一起往里推，没标的行不加边就对不齐了。
+ */
+@media print {
+  [data-scope='code-view'][data-part='line'][data-highlighted] {
+    outline: var(--xh-code-view-highlight-bar, var(--xh-stroke-thick)) solid currentColor;
+    outline-offset: calc(-1 * var(--xh-code-view-highlight-bar, var(--xh-stroke-thick)));
+  }
+}
+
 /* styles/collapsible.css */
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='collapsible'] {
@@ -12634,6 +12836,9 @@ input[data-scope='mention'][data-part='input'] {
 /* 根容器自己不排版，这条只声明尺寸档的私有槽：触发按钮从 root 继承它们，
    换档不必给部件各写一条选择器 */
 [data-scope='collapsible'][data-part='root'] {
+  /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+  --xh-icon-size: var(--xh-collapsible-icon-size, var(--xh-glyph-size-text));
+
   --xh-_collapsible-trigger-h: var(--xh-control-h-md);
   --xh-_collapsible-trigger-px: var(--xh-control-px-md);
   --xh-_collapsible-trigger-gap: var(--xh-control-gap-md);
@@ -12688,6 +12893,32 @@ input[data-scope='mention'][data-part='input'] {
   opacity: var(--xh-state-disabled-opacity);
 }
 
+/* 开合方向的标记，排在触发器行尾（触发器是 space-between 两端对齐） */
+[data-scope='collapsible'][data-part='indicator'] {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  line-height: var(--xh-leading-none);
+  transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+/* 没写内容就由皮肤画；作者往部件里塞了自己的图形，这条规则即不命中 */
+[data-scope='collapsible'][data-part='indicator']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
+}
+
+[data-scope='collapsible'][data-part='indicator'][data-state='open'] {
+  rotate: 180deg;
+}
+
 /* 这里刻意没有 [data-part='content'][hidden] { display: none }：补了动画一帧都播不出来。
    收起由适配器在退场结束后写内联 display 落成，退场窗口内靠 connect 发的 inert 挡住焦点 */
 [data-scope='collapsible'][data-part='content'] {
@@ -12733,7 +12964,8 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
    写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
-[data-scope='collapsible'][data-part='trigger'][hidden] {
+[data-scope='collapsible'][data-part='trigger'][hidden],
+[data-scope='collapsible'][data-part='indicator'][hidden] {
   display: none;
 }
 
@@ -13297,6 +13529,30 @@ input[data-scope='mention'][data-part='input'] {
      收起写在这份皮肤里而不是 reset：reset 层排在组件层之前，组件层里任何一条 display 都压得住它。 */
   [data-scope='color-picker'][data-part='positioner'] {
     display: none;
+  }
+}
+
+/*
+ * 高对比档：取色面、色相带、透明度棋盘格与色板画的就是颜色本身，被系统换掉之后
+ * 整个组件不再能取色。这几处退出强制着色，自己保住原色。
+ * 退出之后它们不再跟着系统底色走，各补一圈系统描边把它们从背景里框出来。
+ */
+@media (forced-colors: active) {
+  [data-scope='color-picker'][data-part='area'],
+  [data-scope='color-picker'][data-part='area']::before,
+  [data-scope='color-picker'][data-part='channel-slider'],
+  [data-scope='color-picker'][data-part='channel-slider-track'],
+  [data-scope='color-picker'][data-part='swatch'],
+  [data-scope='color-picker'][data-part='swatch-item'] {
+    forced-color-adjust: none;
+  }
+
+  [data-scope='color-picker'][data-part='area'],
+  [data-scope='color-picker'][data-part='channel-slider'],
+  [data-scope='color-picker'][data-part='swatch'],
+  [data-scope='color-picker'][data-part='swatch-item'] {
+    outline: var(--xh-stroke-thin) solid ButtonBorder;
+    outline-offset: calc(-1 * var(--xh-stroke-thin));
   }
 }
 
@@ -15459,6 +15715,13 @@ input[data-scope='mention'][data-part='input'] {
   position: absolute;
 }
 
+/* 挂在局部容器里的面板碰不到屏幕边，安全区那一段让位收回去：留着会在容器内白让出一条。 */
+[data-scope='drawer'][data-part='content'][data-contained] {
+  padding-block-start: var(--xh-drawer-py, var(--xh-surface-py-md));
+  padding-block-end: var(--xh-drawer-py, var(--xh-surface-py-md));
+  padding-inline: var(--xh-drawer-px, var(--xh-surface-px-md));
+}
+
 [data-scope='drawer'][data-part='backdrop'][data-state='open'] {
   animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
 }
@@ -15498,8 +15761,17 @@ input[data-scope='mention'][data-part='input'] {
   display: flex;
   flex-direction: column;
   gap: var(--xh-drawer-gap, var(--xh-stack-gap-md));
-  padding-block: var(--xh-drawer-py, var(--xh-surface-py-md));
-  padding-inline: var(--xh-drawer-px, var(--xh-surface-px-md));
+  /* 面板贴死视口的某一条边、另一向满铺，内衬与安全区取大的一头：
+     刘海、圆角与底部横条压住的那一段由系统给出，内衬比它窄时首尾两行会被切掉。
+     桌面上 env() 恒为 0，取值与内衬槽完全一致。安全区只有物理方向的四个名字，
+     行内轴上两侧同取较宽的那一段，RTL 下不会翻错边。 */
+  padding-block-start: max(var(--xh-drawer-py, var(--xh-surface-py-md)), env(safe-area-inset-top));
+  padding-block-end: max(var(--xh-drawer-py, var(--xh-surface-py-md)), env(safe-area-inset-bottom));
+  padding-inline: max(
+    var(--xh-drawer-px, var(--xh-surface-px-md)),
+    env(safe-area-inset-left),
+    env(safe-area-inset-right)
+  );
   background: var(--xh-drawer-bg, var(--xh-bg-surface));
   color: var(--xh-drawer-fg, var(--xh-fg-default));
   box-shadow: var(--xh-drawer-shadow, var(--xh-elevation-sheet));
@@ -16545,7 +16817,7 @@ input[data-scope='mention'][data-part='input'] {
   color: inherit;
   font-size: var(--xh-form-summary-item-font-size, var(--xh-text-secondary-size));
   text-decoration: underline;
-  text-underline-offset: 2px;
+  text-underline-offset: var(--xh-form-summary-item-underline-offset, var(--xh-space-0_5));
   cursor: pointer;
 }
 
@@ -17041,7 +17313,10 @@ input[data-scope='mention'][data-part='input'] {
   transition: none;
 }
 
-/* —— 悬浮件共用：半透明深底加浅字 —— */
+/* —— 悬浮件共用：半透明深底加浅字 ——
+   四件都钉在铺满视口的那一层的边上，贴边一律与安全区取大的一头：刘海、圆角与
+   底部横条压住的那一段由系统给出，贴边比它窄时钮会被切掉一角；桌面上 env() 恒为 0。
+   安全区只有物理方向的四个名字，行内轴上两侧同取较宽的那一段，RTL 下不会翻错边。 */
 [data-scope='image-viewer'][data-part='toolbar'],
 [data-scope='image-viewer'][data-part='counter'],
 [data-scope='image-viewer'][data-part='prev-trigger'],
@@ -17055,7 +17330,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='image-viewer'][data-part='toolbar'] {
-  inset-block-end: var(--xh-space-6);
+  inset-block-end: max(var(--xh-space-6), env(safe-area-inset-bottom));
   inset-inline-start: 50%;
   translate: -50% 0;
   display: flex;
@@ -17084,7 +17359,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='image-viewer'][data-part='counter'] {
-  inset-block-start: var(--xh-space-6);
+  inset-block-start: max(var(--xh-space-6), env(safe-area-inset-top));
   inset-inline-start: 50%;
   translate: -50% 0;
   padding: var(--xh-image-viewer-counter-padding, var(--xh-space-1) var(--xh-space-3));
@@ -17106,13 +17381,13 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='image-viewer'][data-part='prev-trigger'] {
-  inset-inline-start: var(--xh-space-6);
+  inset-inline-start: max(var(--xh-space-6), env(safe-area-inset-left), env(safe-area-inset-right));
   inset-block-start: 50%;
   translate: 0 -50%;
 }
 
 [data-scope='image-viewer'][data-part='next-trigger'] {
-  inset-inline-end: var(--xh-space-6);
+  inset-inline-end: max(var(--xh-space-6), env(safe-area-inset-left), env(safe-area-inset-right));
   inset-block-start: 50%;
   translate: 0 -50%;
 }
@@ -17150,8 +17425,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='image-viewer'][data-part='close-trigger'] {
   position: absolute;
   z-index: 1;
-  inset-block-start: var(--xh-space-6);
-  inset-inline-end: var(--xh-space-6);
+  inset-block-start: max(var(--xh-space-6), env(safe-area-inset-top));
+  inset-inline-end: max(var(--xh-space-6), env(safe-area-inset-left), env(safe-area-inset-right));
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -17526,7 +17801,9 @@ input[data-scope='mention'][data-part='input'] {
  */
 [data-scope='loading-bar'][data-part='root'] {
   position: fixed;
-  inset-block-start: 0;
+  /* 顶到视口上沿的那一条：刘海或状态栏压住的那一段由系统给出，不让位就整条藏在下面。
+     桌面上 env() 恒为 0，条子照旧贴着上沿。 */
+  inset-block-start: env(safe-area-inset-top);
   inset-inline: 0;
   z-index: var(--xh-loading-bar-layer, var(--xh-layer-sticky));
 
@@ -18819,8 +19096,17 @@ input[data-scope='mention'][data-part='input'] {
   /* 基线按默认落位 bottom-end 写，下面只覆盖跟它不同的那几个位 */
   justify-content: flex-end;
   align-items: center;
-  padding-block: var(--xh-notification-inset, var(--xh-space-6));
-  padding-inline: var(--xh-notification-inset, var(--xh-space-6));
+  /* 贴边与安全区取大的一头：刘海、圆角与底部横条压住的那一段由系统给出，
+     贴边比它窄时卡片会被切掉一角。桌面上 env() 恒为 0，取值与贴边槽完全一致。
+     两条内联的 env 一起取大值：安全区只有物理方向的四个名字，
+     分左右写在 RTL 下会翻错边，两侧同取较宽的那一段。 */
+  padding-block-start: max(var(--xh-notification-inset, var(--xh-space-6)), env(safe-area-inset-top));
+  padding-block-end: max(var(--xh-notification-inset, var(--xh-space-6)), env(safe-area-inset-bottom));
+  padding-inline: max(
+    var(--xh-notification-inset, var(--xh-space-6)),
+    env(safe-area-inset-left),
+    env(safe-area-inset-right)
+  );
   /* 摞内间距由连接层写进内联 style（两个适配器共用同一份），这里绝不重复写：
      写了也会被内联盖掉，只会让人误以为间距归样式层管 */
   /* 整面铺开就等于罩住了整块视口。面本身不吃指针，只有卡片吃（见下），
@@ -19589,14 +19875,13 @@ input[data-scope='mention'][data-part='input'] {
   --xh-pagination-skin: 1;
 }
 
-/* 根节点是 nav 地标，只负责把上一页 / 页码 / 下一页排成一行。
-   页数为 0 时连接层会打 data-empty，这里不拿它做隐藏：作者常把「第 x-y 条」这类
-   区间回显也写在 nav 里，整块藏掉会连那行字一起吞了，是否隐藏交给作者决定 */
-[data-scope='pagination'][data-part='root'] {
+/* 私有槽同时声明在根与 positioner 上：摊开的页码面板被搬到 portal 落点，
+   不是根的后代，继承不过去。面板里的页码格子与主区那排消费的是同一批槽 */
+[data-scope='pagination']:is([data-part='root'], [data-part='positioner']) {
   /* 作者塞进上一页/下一页的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
   --xh-icon-size: var(--xh-pagination-icon-size, var(--xh-glyph-size-text));
 
-  /* 尺寸档只换这三个私有槽，上一页/下一页、页码与省略号都从 root 继承它们，
+  /* 尺寸档只换这三个私有槽，上一页/下一页、页码与省略号都从这两处继承它们，
      换档不必给每个部件各写一条选择器 */
   --xh-_pagination-item-size: var(--xh-control-h-md);
   --xh-_pagination-item-px: var(--xh-control-px-md);
@@ -19610,7 +19895,12 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_pagination-selected-fg: var(--xh-_tone-on, var(--xh-fg-on-brand));
   /* 当前页那一格是实心底，顶边画一条极浅的内高光把它衬出厚度 */
   --xh-_pagination-highlight: var(--xh-_highlight-tone);
+}
 
+/* 根节点是 nav 地标，只负责把上一页 / 页码 / 下一页排成一行。
+   页数为 0 时连接层会打 data-empty，这里不拿它做隐藏：作者常把「第 x-y 条」这类
+   区间回显也写在 nav 里，整块藏掉会连那行字一起吞了，是否隐藏交给作者决定 */
+[data-scope='pagination'][data-part='root'] {
   display: flex;
   align-items: center;
   /* 页码多到一行放不下就换行，宁可折行也不要把按钮压扁或撑出横向滚动 */
@@ -19621,13 +19911,13 @@ input[data-scope='mention'][data-part='input'] {
 /* —— 尺寸 —— */
 /* 缺省档写在上面的基础规则里。格子高度、内边距、字号三者各走控件尺的同一档；
    页码格子靠最小宽度撑等宽，内边距只在页码超出最小宽度时才起作用 */
-[data-scope='pagination'][data-part='root'][data-size='sm'] {
+[data-scope='pagination']:is([data-part='root'], [data-part='positioner'])[data-size='sm'] {
   --xh-_pagination-item-size: var(--xh-control-h-sm);
   --xh-_pagination-item-px: var(--xh-control-px-sm);
   --xh-_pagination-font-size: var(--xh-control-font-sm);
 }
 
-[data-scope='pagination'][data-part='root'][data-size='lg'] {
+[data-scope='pagination']:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
   --xh-_pagination-item-size: var(--xh-control-h-lg);
   --xh-_pagination-item-px: var(--xh-control-px-lg);
   --xh-_pagination-font-size: var(--xh-control-font-lg);
@@ -19808,9 +20098,6 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 摊开的页码面板：一串页码格子，横着排、必要时折行 */
 [data-scope='pagination'][data-part='content'] {
-  /* 浮层被搬到 portal 落点，继承不到 root 上那把尺，这里再声明一遍 */
-  --xh-icon-size: var(--xh-pagination-icon-size, var(--xh-glyph-size-text));
-
   display: flex;
   flex-flow: row wrap;
   gap: var(--xh-pagination-gap, var(--xh-space-1));
@@ -21278,6 +21565,28 @@ input[data-scope='mention'][data-part='input'] {
   display: none;
 }
 
+/*
+ * 高对比档：点亮与没点亮只差一档字色，这一档里两档一起被换成同一个系统前景色，
+ * 整条星带看上去全是亮的。改用系统自己的两个角色分开：亮的取高亮色、没亮的取不可用色。
+ * 半颗那道裁到字形上的渐变在这一档里被丢弃，留着透明填充整颗星会消失，
+ * 把填充还回去并按点亮那一档画。
+ */
+@media (forced-colors: active) {
+  [data-scope='rating'][data-part='item'] {
+    color: GrayText;
+  }
+
+  [data-scope='rating'][data-part='item'][data-highlighted],
+  [data-scope='rating'][data-part='item'][data-half] {
+    background-image: none;
+    -webkit-background-clip: border-box;
+    background-clip: border-box;
+    color: Highlight;
+    /* 亮档已经由字色表出，公共层那圈锚点虚线在这里只是重影 */
+    outline: none;
+  }
+}
+
 /* styles/scroll-area.css */
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='scroll-area'] {
@@ -22662,11 +22971,13 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 /* 多拇指时只有手真正推着的那一个带 data-dragging，放大与光标因此不会全组一起变。
-   放大用 scale 而不是改尺寸：变换绕自身中心发生，圆心不动，负外边距的算式也不用跟着改。 */
+   放大用 scale 而不是改尺寸：变换绕自身中心发生，圆心不动，负外边距的算式也不用跟着改。
+   海拔从静态的 raised 换到 lifted：跟着手走的东西比贴在页面上的抬得高一档，
+   又不到锚定浮层那一层——用 floating 会让拇指和下拉面板一样重。 */
 [data-scope='slider'][data-part='thumb'][data-dragging] {
   scale: var(--xh-slider-thumb-scale-dragging, var(--xh-motion-scale-drag));
   cursor: grabbing;
-  box-shadow: var(--xh-slider-thumb-shadow-dragging, var(--xh-elevation-floating));
+  box-shadow: var(--xh-slider-thumb-shadow-dragging, var(--xh-elevation-lifted));
 }
 
 [data-scope='slider'][data-part='thumb'][data-invalid] {
@@ -23332,6 +23643,22 @@ input[data-scope='mention'][data-part='input'] {
 /* 校验失败：轨道描一圈警示色。轨道本身没有边框，这里补出来 */
 [data-scope='switch'][data-part='root'][data-invalid] {
   box-shadow: inset 0 0 0 var(--xh-stroke-thin) var(--xh-switch-border-invalid, var(--xh-border-invalid));
+}
+
+/* 只读：值仍要读得清、也仍会随表单提交，所以不压对比度、也不借禁用那档灰。
+   变的是"动不动得了"：指针不摆手型，选中档的轨道换成中性底，滑块收掉那层浮起的投影
+   ——投影是"这颗按得动"的信号。与文本框只读那一档同口径（压低底色而非置灰）。
+   滑块停在哪一端不受影响，值本身仍由位置这条非颜色通道读出。 */
+[data-scope='switch'][data-part='root'][data-readonly] {
+  cursor: default;
+}
+
+[data-scope='switch'][data-part='root'][data-readonly][data-state='checked'] {
+  background: var(--xh-switch-bg-checked-readonly, var(--xh-bg-muted));
+}
+
+[data-scope='switch'][data-part='root'][data-readonly] [data-scope='switch'][data-part='thumb'] {
+  box-shadow: var(--xh-switch-thumb-shadow-readonly, none);
 }
 
 [data-scope='switch'][data-part='root'][data-disabled] {
@@ -25020,9 +25347,11 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_text-field-shadow: var(--xh-elevation-raised);
 
   /* 语气只落在聚焦这一处：环与聚焦态描边。正文颜色不归它管。
-     没写 data-tone 时 --xh-_tone 没被声明，退回原来的聚焦环色与常态描边 */
+     没写 data-tone 时 --xh-_tone 没被声明，两者各自退回缺省的聚焦环色与聚焦描边色。
+     常态描边的槽不接在这条链上：设了它只改常态那一档，聚焦档由
+     --xh-text-field-control-border-focus / --xh-text-field-input-border-focus 各自管 */
   --xh-_text-field-ring: var(--xh-ring-focus);
-  --xh-_text-field-border-focus: var(--xh-text-field-input-border, var(--xh-_tone, var(--xh-border-control-focus)));
+  --xh-_text-field-border-focus: var(--xh-_tone, var(--xh-border-control-focus));
 
   display: inline-flex;
   flex-direction: column;
@@ -25063,7 +25392,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_text-field-bg: var(--xh-bg-canvas);
   --xh-_text-field-border: var(--xh-border-control);
   --xh-_text-field-border-hover: var(--xh-border-control-hover);
-  --xh-_text-field-border-focus: var(--xh-text-field-input-border, var(--xh-_tone, var(--xh-border-control-focus)));
+  --xh-_text-field-border-focus: var(--xh-_tone, var(--xh-border-control-focus));
 }
 
 /* 填充式：底色顶替描边表达边界。描边只退成透明而不去掉，1px 的位置留着，
@@ -26227,6 +26556,12 @@ input[data-scope='mention'][data-part='input'] {
   }
 }
 
+@keyframes xh-toast-spin {
+  to {
+    rotate: 360deg;
+  }
+}
+
 @keyframes xh-toast-out {
   from {
     opacity: 1;
@@ -26263,8 +26598,17 @@ input[data-scope='mention'][data-part='input'] {
   /* 基线按默认落位 top 写，下面只覆盖跟它不同的那几个位 */
   justify-content: flex-start;
   align-items: center;
-  padding-block: var(--xh-toast-inset, var(--xh-space-6));
-  padding-inline: var(--xh-toast-inset, var(--xh-space-6));
+  /* 贴边与安全区取大的一头：刘海、圆角与底部横条压住的那一段由系统给出，
+     贴边比它窄时条子会被切掉一角。桌面上 env() 恒为 0，取值与贴边槽完全一致。
+     两条内联的 env 一起取大值：安全区只有物理方向的四个名字，
+     分左右写在 RTL 下会翻错边，两侧同取较宽的那一段。 */
+  padding-block-start: max(var(--xh-toast-inset, var(--xh-space-6)), env(safe-area-inset-top));
+  padding-block-end: max(var(--xh-toast-inset, var(--xh-space-6)), env(safe-area-inset-bottom));
+  padding-inline: max(
+    var(--xh-toast-inset, var(--xh-space-6)),
+    env(safe-area-inset-left),
+    env(safe-area-inset-right)
+  );
   /* 摞内间距由服务写进内联 style，这里绝不重复写：
      写了也会被内联盖掉，只会让人误以为间距归样式层管 */
   /* 整面铺开就等于罩住了整块视口。面本身不吃指针，只有条子吃（见下），
@@ -26348,6 +26692,61 @@ input[data-scope='mention'][data-part='input'] {
    不定住末帧的话动画跑完会弹回全不透明，条子在被收起前先闪一下 */
 [data-scope='toast'][data-part='root'][data-state='dismissing'] {
   animation: xh-toast-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+}
+
+/*
+ * 严重度的第二条通道。淡底、描边与正文色给的都是色相，四档在色觉障碍与黑白打印下
+ * 长得一模一样——「已保存」与「保存失败」看不出差别。行首这枚字形按 data-severity
+ * 各画一枚，取的是 notification 那套 --xh-glyph-mark-* 令牌，两家从此同一副读法。
+ * 解剖到 root 为止、没有第二个节点可挂，字形因此画在 root 的伪元素上；它是这一行
+ * flex 的第一个项，与文字之间的间距由 root 自己的 gap 给，不另写外边距。
+ * 颜色走语气层派生好的前景档：主色档兑在同族淡底上够不到图形该有的 3:1。
+ */
+[data-scope='toast'][data-part='root']::before {
+  content: '';
+  flex: none;
+  display: inline-block;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: var(--xh-toast-icon-fg, var(--xh-_tone-fg));
+  -webkit-mask: var(--xh-glyph-mark-info) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-info) center / contain no-repeat;
+}
+
+[data-scope='toast'][data-part='root'][data-severity='success']::before {
+  -webkit-mask-image: var(--xh-glyph-mark-check);
+  mask-image: var(--xh-glyph-mark-check);
+}
+
+[data-scope='toast'][data-part='root'][data-severity='warning']::before {
+  -webkit-mask-image: var(--xh-glyph-mark-warning);
+  mask-image: var(--xh-glyph-mark-warning);
+}
+
+[data-scope='toast'][data-part='root'][data-severity='error']::before {
+  -webkit-mask-image: var(--xh-glyph-mark-close);
+  mask-image: var(--xh-glyph-mark-close);
+}
+
+/* loading 那一档的颜色不必在这儿再兑：它派生的语气就是中性，前景档跟着一起换 */
+[data-scope='toast'][data-part='root'][data-severity='loading']::before {
+  -webkit-mask-image: var(--xh-glyph-mark-rotate-right);
+  mask-image: var(--xh-glyph-mark-rotate-right);
+  animation: xh-toast-spin var(--xh-spin-duration) var(--xh-motion-ease-loop) infinite;
+}
+
+/* 减少动效：转圈停下，静止的箭头仍然读得出「还没好」；「在等什么」由条子上的
+   role=status 与可见文案继续承担。
+   两组规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
+@media (prefers-reduced-motion: reduce) {
+  [data-scope='toast'][data-part='root'][data-severity='loading']::before {
+    animation: none;
+  }
+}
+
+:where([data-motion='reduce']) [data-scope='toast'][data-part='root'][data-severity='loading']::before {
+  animation: none;
 }
 
 [data-scope='toast'][data-part='title'] {
@@ -26479,6 +26878,12 @@ input[data-scope='mention'][data-part='input'] {
   /* 打印：轻提示是瞬态的，打印那一刻恰好在场就会横在正文上，且它已经错过了被读到的时机。 */
   [data-scope='toast'][data-part='group'] {
     display: none;
+  }
+
+  /* 摞收起后条子本不该出现在纸上；这一条兜的是作者把条子摆在别处的用法：
+     动画会被定格在任意一帧——转了一半的圈。取值与减弱动效那一档相同。 */
+  [data-scope='toast'][data-part='root'][data-severity='loading']::before {
+    animation: none;
   }
 }
 
@@ -27169,6 +27574,21 @@ input[data-scope='mention'][data-part='input'] {
   [data-scope='tool-call'][data-part='root'][data-loading] [data-part='status'] {
     background-image: none;
     color: var(--xh-tool-call-status-fg, var(--xh-fg-muted));
+    -webkit-text-fill-color: currentColor;
+    animation: none;
+  }
+}
+
+/*
+ * 高对比档：扫光那层渐变被丢弃，只剩被裁成透明的字形填充，状态文字整段消失。
+ * 把两处填充都还回去，在跑这件事仍由状态文字本身表出。
+ */
+@media (forced-colors: active) {
+  [data-scope='tool-call'][data-part='root'][data-loading] [data-part='status'] {
+    background-image: none;
+    -webkit-background-clip: border-box;
+    background-clip: border-box;
+    color: CanvasText;
     -webkit-text-fill-color: currentColor;
     animation: none;
   }
@@ -29181,6 +29601,21 @@ input[data-scope='mention'][data-part='input'] {
     color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
+/* 分支行的首格是展开箭头，叶子行没有这一格。作者摆了 item-indicator 时由它顶着，
+   没摆（如勾选档首位直接是作者自己的方框）就由行盒自己补出这一格的宽度，
+   否则叶子会比同级分支往行首缩一格，层级关系读不出来。
+   这里不带 tree.css 那条规则的 [data-orientation] 前提：tree-select 的连接层
+   不发这个属性，带上就一条都不命中 */
+[data-scope='tree-select'][data-part='item']:not(
+    :has(> [data-scope='tree-select'][data-part='item-indicator'])
+  ) {
+  padding-inline-start: calc(
+    var(--xh-tree-select-row-px, var(--xh-_tree-select-row-px)) +
+      var(--xh-tree-select-item-indicator-size, var(--xh-control-indicator-size)) +
+      var(--xh-tree-select-row-gap, var(--xh-_tree-select-gap))
+  );
+}
+
 [data-scope='tree-select'][data-part='item'][hidden],
 [data-scope='tree-select'][data-part='branch-control'][hidden] {
   display: none;
@@ -29193,7 +29628,7 @@ input[data-scope='mention'][data-part='input'] {
   background: var(--xh-tree-select-row-bg-hover, var(--xh-bg-subtle));
 }
 
-/* 选中只换文字色与字重，配合行尾的 ✓ 标记；底色整条通道留给高亮，
+/* 选中只换文字色与字重，配合行首那格 ✓ 标记；底色整条通道留给高亮，
    两者因此能同时看见 */
 [data-scope='tree-select'][data-part='item'][data-selected],
 [data-scope='tree-select'][data-part='branch-control'][data-selected] {
@@ -29517,5 +29952,83 @@ input[data-scope='mention'][data-part='input'] {
 @supports not ((mask-image: none) or (-webkit-mask-image: none)) {
   [data-scope='watermark'][data-part='root'][data-state='ready']::after {
     display: none;
+  }
+}
+
+/* 排在全部组件皮肤之后：高对比档的状态环靠源序压过组件里同特指度的 outline 声明。 */
+
+/* styles/forced-colors.css */
+/*
+ * 高对比档（forced-colors: active）的公共补救层。
+ *
+ * 这一档里系统接管配色：作者写的每一个颜色取值都被换成系统调色板里的对应角色，
+ * box-shadow 与 background-image 直接丢弃。于是「只靠底色差表达的状态」全部塌成同一个样子——
+ * 列表的悬停档与展开路径档、勾选与未勾选、当前页与别的页，看上去一模一样。
+ *
+ * 这份文件按状态词汇表逐个把通道补回来：outline 在这一档里不被丢弃，用它画两档可分的环。
+ * 逐组件写不动的东西收在这里，组件自己特有的（画的就是颜色、或者靠背景图承载信息）
+ * 在各自皮肤里另有 forced-colors 块。
+ *
+ * 取值只用 system color keyword：这一档里 --xh-* 令牌已经不生效，写了是误导。
+ * 排在全部组件皮肤之后：同特指度靠源序取胜，组件里那条 `:focus:not(:focus-visible) { outline: none }`
+ * 才压不掉这里的状态环。选择器一律停在两个属性（0,2,0），组件的 :focus-visible 规则
+ * 特指度更高，聚焦环恒压在状态环之上。
+ */
+
+@media (forced-colors: active) {
+  /* 轻档：方向键锚定的那一条（焦点仍在宿主上）。虚线环，与强档一眼分得开。 */
+  [data-scope][data-highlighted] {
+    outline: var(--xh-stroke-thin) dashed CanvasText;
+    outline-offset: calc(-1 * var(--xh-stroke-thin));
+  }
+
+  /*
+   * 强档：选中、当前项、展开路径、勾选、激活、按下、走到的步骤、区间内的日期。
+   * 实线环加系统高亮色，比轻档粗一档。
+   *
+   * data-state=open 那条要摘掉三个部件：定位层与遮罩都铺满视口，画上环就是绕着整块屏幕
+   * 描一圈；content 面的边由下面那条浮层规则统一给，不走状态环。
+   * 摘除写在 :where() 里，它不计特指度，整条选择器仍停在 (0,2,0)。
+   */
+  [data-scope][data-selected],
+  [data-scope][data-current],
+  [data-scope][data-in-path],
+  [data-scope][data-in-range],
+  [data-scope][data-indeterminate],
+  [data-scope][data-passed],
+  [data-scope][data-state='checked'],
+  [data-scope][data-state='indeterminate'],
+  [data-scope][data-state='active'],
+  [data-scope][data-state='on'],
+  [data-scope][data-state='current'],
+  [data-scope][data-state='completed'],
+  [data-scope][data-state='open']:where(:not([data-part='positioner'], [data-part='content'], [data-part='backdrop'])) {
+    outline: var(--xh-stroke-thick) solid Highlight;
+    outline-offset: calc(-1 * var(--xh-stroke-thick));
+  }
+
+  /*
+   * 禁用：常态靠淡化的前景色表达，这一档里前景被统一换成 CanvasText，淡化那一层没了。
+   * GrayText 是系统给「不可用」留的那个角色。
+   */
+  [data-scope][data-disabled] {
+    color: GrayText;
+    border-color: GrayText;
+  }
+
+  /*
+   * 只读：常态是压低一档底色，这一档里底色被统一换掉，与能改的控件一模一样。
+   * 改画虚线边——只读仍要照读，字色一动不动，改不动这件事写在框上。
+   */
+  [data-scope][data-readonly] {
+    border-style: dashed;
+  }
+
+  /*
+   * 浮层面：三档海拔角色都写在 box-shadow 上，这一档里整层丢弃，浮层与页面之间零分界。
+   * 定位层里的那张面补一圈实边把它框出来。
+   */
+  [data-scope][data-part='positioner'] [data-scope][data-part='content'] {
+    border: var(--xh-stroke-thin) solid CanvasText;
   }
 }

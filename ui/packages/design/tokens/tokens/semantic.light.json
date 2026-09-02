@@ -45,6 +45,12 @@
     "focus": { "$type": "color", "$value": "{color.brand.500}" },
     "invalid": { "$type": "color", "$value": "{color.danger.500}" }
   },
+  "gradient": {
+    "brand": {
+      "from": { "$description": "品牌渐变的起点。走向由用它的地方定，起点是对比度低的那一端。白底上实测 3.74:1，只够展示级字号。", "$type": "color", "$value": "{color.brand.500}" },
+      "to": { "$description": "品牌渐变的终点，对比度高的那一端；白底上实测 6.48:1。两端跨 2 档色阶，明度差 0.135，渐变才看得出来。", "$type": "color", "$value": "{color.brand.700}" }
+    }
+  },
   "diff": {
     "added-bg": { "$type": "color", "$value": "oklch(0.94 0.05 150)" },
     "added-fg": { "$type": "color", "$value": "oklch(0.44 0.13 150)" },

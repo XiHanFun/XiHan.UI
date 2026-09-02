@@ -61,6 +61,7 @@
 --xh-diff-removed-bg: oklch(0.3 0.05 25)
 --xh-diff-removed-fg: oklch(0.85 0.12 25)
 --xh-elevation-floating: 0 4px 8px -2px oklch(0 0 0 / 0.5), 0 2px 4px -2px oklch(0 0 0 / 0.4), 0 0 0 1px oklch(1 0 0 / 0.06)
+--xh-elevation-lifted: 0 2px 4px -1px oklch(0 0 0 / 0.45), 0 1px 2px -1px oklch(0 0 0 / 0.4)
 --xh-elevation-raised: 0 1px 2px 0 oklch(0 0 0 / 0.4)
 --xh-elevation-sheet: 0 12px 24px -6px oklch(0 0 0 / 0.6), 0 4px 8px -4px oklch(0 0 0 / 0.4), 0 0 0 1px oklch(1 0 0 / 0.08)
 --xh-fg-brand: oklch(0.702 0.165 258)  ← var(--xh-color-brand-400)
@@ -118,6 +119,8 @@
 --xh-glyph-stroke-bold: 2.5px
 --xh-glyph-stroke-light: 1.5px
 --xh-glyph-stroke-regular: 2px
+--xh-gradient-brand-from: oklch(0.702 0.165 258)  ← var(--xh-color-brand-400)
+--xh-gradient-brand-to: oklch(0.809 0.105 258)  ← var(--xh-color-brand-300)
 --xh-layer-drawer: 1100  ← var(--xh-z-modal)
 --xh-layer-modal: 1100  ← var(--xh-z-modal)
 --xh-layer-popover: 1200  ← var(--xh-z-popover)

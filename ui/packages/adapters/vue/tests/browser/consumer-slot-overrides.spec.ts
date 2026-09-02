@@ -26,8 +26,8 @@ import {
   XhComboboxInput,
   XhComboboxLabel,
   XhComboboxRoot,
-  XhDialogContent,
   XhDialogCloseTrigger,
+  XhDialogContent,
   XhDialogDescription,
   XhDialogRoot,
   XhDialogTitle,
@@ -35,6 +35,9 @@ import {
   XhDrawerContent,
   XhDrawerRoot,
   XhDrawerTitle,
+  XhFormErrorSummary,
+  XhFormErrorSummaryItem,
+  XhFormRoot,
   XhPaginationEllipsis,
   XhPaginationItem,
   XhPaginationRoot,
@@ -133,12 +136,14 @@ async function hover(el: HTMLElement): Promise<void> {
 
 // —— 卡片：常态与悬停各自的描边、投影，以及说明那一段的色与字号 ——
 
-const CARD = (): unknown => h(XhCardRoot, { variant: 'outline', hoverable: true }, () => [
-  h(XhCardHeader, null, () => [
-    h(XhCardTitle, null, () => '标题'),
-    h(XhCardDescription, null, () => '说明文字'),
-  ]),
-])
+function CARD(): unknown {
+  return h(XhCardRoot, { variant: 'outline', hoverable: true }, () => [
+    h(XhCardHeader, null, () => [
+      h(XhCardTitle, null, () => '标题'),
+      h(XhCardDescription, null, () => '说明文字'),
+    ]),
+  ])
+}
 
 describe('card 的常态与悬停各有各的槽', () => {
   it('设悬停槽：指针停上去就换成它', async () => {
@@ -194,16 +199,18 @@ describe('card 的常态与悬停各有各的槽', () => {
 
 // —— 手风琴：展开态的字色不再与常态共用一个槽 ——
 
-const ACCORDION = (): unknown => h(XhAccordionRoot, { defaultValue: ['a'], collapsible: true }, () => [
-  h(XhAccordionItem, { value: 'a' }, () => [
-    h(XhAccordionHeader, null, () => [h(XhAccordionTrigger, null, () => '展开的那条')]),
-    h(XhAccordionContent, null, () => '内容'),
-  ]),
-  h(XhAccordionItem, { value: 'b' }, () => [
-    h(XhAccordionHeader, null, () => [h(XhAccordionTrigger, null, () => '收着的那条')]),
-    h(XhAccordionContent, null, () => '内容'),
-  ]),
-])
+function ACCORDION(): unknown {
+  return h(XhAccordionRoot, { defaultValue: ['a'], collapsible: true }, () => [
+    h(XhAccordionItem, { value: 'a' }, () => [
+      h(XhAccordionHeader, null, () => [h(XhAccordionTrigger, null, () => '展开的那条')]),
+      h(XhAccordionContent, null, () => '内容'),
+    ]),
+    h(XhAccordionItem, { value: 'b' }, () => [
+      h(XhAccordionHeader, null, () => [h(XhAccordionTrigger, null, () => '收着的那条')]),
+      h(XhAccordionContent, null, () => '内容'),
+    ]),
+  ])
+}
 
 describe('accordion 的展开态字色自成一档', () => {
   it('设展开槽：只有展开的那条跟着换', async () => {
@@ -238,7 +245,7 @@ interface CloseCase {
 }
 
 const CLOSE_CASES: Record<string, CloseCase> = {
-  'dialog': {
+  dialog: {
     part: 'close-trigger',
     render: () => h(XhDialogRoot, { open: true }, () => [
       h(XhDialogContent, null, () => [
@@ -248,7 +255,7 @@ const CLOSE_CASES: Record<string, CloseCase> = {
       ]),
     ]),
   },
-  'drawer': {
+  drawer: {
     part: 'close-trigger',
     render: () => h(XhDrawerRoot, { open: true }, () => [
       h(XhDrawerContent, null, () => [
@@ -257,7 +264,7 @@ const CLOSE_CASES: Record<string, CloseCase> = {
       ]),
     ]),
   },
-  'popover': {
+  popover: {
     part: 'close-trigger',
     // 触发器要在：没有锚点的定位层算不出坐标，皮肤会一直把它按未落位藏着
     render: () => h(XhPopoverRoot, { open: true }, () => [
@@ -267,7 +274,7 @@ const CLOSE_CASES: Record<string, CloseCase> = {
       ]),
     ]),
   },
-  'tour': {
+  tour: {
     part: 'close-trigger',
     render: () => h(XhTourRoot, { open: true, steps: [{ id: 's1', title: '第一步' }] }, () => [
       h(XhTourPositioner, null, () => [
@@ -345,25 +352,27 @@ const SIDE_NAV_COLLECTION = [
   },
 ]
 
-const SIDE_NAV = (): unknown => h(
-  XhSideNavRoot,
-  { collection: SIDE_NAV_COLLECTION, value: 'user-list', defaultExpandedValue: ['user'] },
-  () => [
-    h(XhSideNavList, null, () => [
-      h(XhSideNavItem, null, () => [
-        h(XhSideNavLink, { value: 'dashboard' }, () => [h(XhSideNavLinkText, null, () => '工作台')]),
-      ]),
-      h(XhSideNavBranch, { value: 'user' }, () => [
-        h(XhSideNavBranchTrigger, null, () => [h(XhSideNavBranchText, null, () => '用户管理')]),
-        h(XhSideNavBranchContent, null, () => [
-          h(XhSideNavItem, null, () => [
-            h(XhSideNavLink, { value: 'user-list' }, () => [h(XhSideNavLinkText, null, () => '用户列表')]),
+function SIDE_NAV(): unknown {
+  return h(
+    XhSideNavRoot,
+    { collection: SIDE_NAV_COLLECTION, value: 'user-list', defaultExpandedValue: ['user'] },
+    () => [
+      h(XhSideNavList, null, () => [
+        h(XhSideNavItem, null, () => [
+          h(XhSideNavLink, { value: 'dashboard' }, () => [h(XhSideNavLinkText, null, () => '工作台')]),
+        ]),
+        h(XhSideNavBranch, { value: 'user' }, () => [
+          h(XhSideNavBranchTrigger, null, () => [h(XhSideNavBranchText, null, () => '用户管理')]),
+          h(XhSideNavBranchContent, null, () => [
+            h(XhSideNavItem, null, () => [
+              h(XhSideNavLink, { value: 'user-list' }, () => [h(XhSideNavLinkText, null, () => '用户列表')]),
+            ]),
           ]),
         ]),
       ]),
-    ]),
-  ],
-)
+    ],
+  )
+}
 
 describe('side-nav 当前页的品牌高亮有出口', () => {
   it('当前页的底色、字色与字重三样都改得动', async () => {
@@ -438,5 +447,30 @@ describe('分页省略位划过换底', () => {
     expect(styleOf(ellipsis, 'background-color'), '没停上去时不该有底色').not.toBe(RED)
     await hover(ellipsis)
     expect(styleOf(ellipsis, 'background-color')).toBe(RED)
+  })
+})
+
+// —— 表单错误摘要：条目上那条链接的下划线偏移 ——
+
+function FORM(): unknown {
+  return h(XhFormRoot, { defaultErrors: { name: '必填' } }, () => [
+    h(XhFormErrorSummary, null, () => [
+      h(XhFormErrorSummaryItem, { value: 'name' }, () => '必填'),
+    ]),
+  ])
+}
+
+describe('错误摘要里链接的下划线偏移', () => {
+  it('什么都不写时落在间距原语上', async () => {
+    await mount(FORM)
+
+    expect(styleOf(part('form', 'error-summary-item'), 'text-underline-offset')).toBe('2px')
+  })
+
+  it('设槽就改得动', async () => {
+    setSlot('--xh-form-summary-item-underline-offset', '7px')
+    await mount(FORM)
+
+    expect(styleOf(part('form', 'error-summary-item'), 'text-underline-offset')).toBe('7px')
   })
 })

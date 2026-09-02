@@ -45,6 +45,12 @@
     "focus": { "$type": "color", "$value": "{color.brand.400}" },
     "invalid": { "$type": "color", "$value": "{color.danger.400}" }
   },
+  "gradient": {
+    "brand": {
+      "from": { "$description": "深色档往色阶的亮端走，与浅色档取值不同：深底上实测 7.33:1。", "$type": "color", "$value": "{color.brand.400}" },
+      "to": { "$description": "深底上实测 10.85:1，明度差 0.107，与浅色档的 0.135 同一量级。", "$type": "color", "$value": "{color.brand.300}" }
+    }
+  },
   "diff": {
     "added-bg": { "$type": "color", "$value": "oklch(0.3 0.05 150)" },
     "added-fg": { "$type": "color", "$value": "oklch(0.86 0.12 150)" },
@@ -58,6 +64,7 @@
   },
   "elevation": {
     "raised": { "$type": "shadow", "$value": "0 1px 2px 0 oklch(0 0 0 / 0.4)" },
+    "lifted": { "$description": "深色档同样落在两档中间：偏移与模糊照浅色档的几何，主层不透明度 0.4→0.45→0.5。不带 floating 与 sheet 那条 1px 白色描边——那条描边是给 portal 出去、身下没有自己边界的面用的，跟手移动的元素带着自己的描边一起走，再加一圈就成了两道。", "$type": "shadow", "$value": "0 2px 4px -1px oklch(0 0 0 / 0.45), 0 1px 2px -1px oklch(0 0 0 / 0.4)" },
     "floating": { "$type": "shadow", "$value": "0 4px 8px -2px oklch(0 0 0 / 0.5), 0 2px 4px -2px oklch(0 0 0 / 0.4), 0 0 0 1px oklch(1 0 0 / 0.06)" },
     "sheet": { "$type": "shadow", "$value": "0 12px 24px -6px oklch(0 0 0 / 0.6), 0 4px 8px -4px oklch(0 0 0 / 0.4), 0 0 0 1px oklch(1 0 0 / 0.08)" }
   }

@@ -201,6 +201,13 @@
     position: absolute;
   }
 
+  /* 挂在局部容器里的面板碰不到屏幕边，安全区那一段让位收回去：留着会在容器内白让出一条。 */
+  [data-scope='drawer'][data-part='content'][data-contained] {
+    padding-block-start: var(--xh-drawer-py, var(--xh-surface-py-md));
+    padding-block-end: var(--xh-drawer-py, var(--xh-surface-py-md));
+    padding-inline: var(--xh-drawer-px, var(--xh-surface-px-md));
+  }
+
   [data-scope='drawer'][data-part='backdrop'][data-state='open'] {
     animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
   }
@@ -240,8 +247,17 @@
     display: flex;
     flex-direction: column;
     gap: var(--xh-drawer-gap, var(--xh-stack-gap-md));
-    padding-block: var(--xh-drawer-py, var(--xh-surface-py-md));
-    padding-inline: var(--xh-drawer-px, var(--xh-surface-px-md));
+    /* 面板贴死视口的某一条边、另一向满铺，内衬与安全区取大的一头：
+       刘海、圆角与底部横条压住的那一段由系统给出，内衬比它窄时首尾两行会被切掉。
+       桌面上 env() 恒为 0，取值与内衬槽完全一致。安全区只有物理方向的四个名字，
+       行内轴上两侧同取较宽的那一段，RTL 下不会翻错边。 */
+    padding-block-start: max(var(--xh-drawer-py, var(--xh-surface-py-md)), env(safe-area-inset-top));
+    padding-block-end: max(var(--xh-drawer-py, var(--xh-surface-py-md)), env(safe-area-inset-bottom));
+    padding-inline: max(
+      var(--xh-drawer-px, var(--xh-surface-px-md)),
+      env(safe-area-inset-left),
+      env(safe-area-inset-right)
+    );
     background: var(--xh-drawer-bg, var(--xh-bg-surface));
     color: var(--xh-drawer-fg, var(--xh-fg-default));
     box-shadow: var(--xh-drawer-shadow, var(--xh-elevation-sheet));

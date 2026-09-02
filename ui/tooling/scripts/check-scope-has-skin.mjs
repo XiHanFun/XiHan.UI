@@ -18,6 +18,7 @@ const STYLES_DIR = 'packages/design/styles/css'
  * 这条就成了一张过期的免检通行证，由下面的名单核验报出来。
  */
 const SHARED = {
+  'forced-colors': '高对比档的公共补救层，按状态词汇表匹配全部库节点，不挑具体哪一个',
   'layers': '层序单一真源，整份只有一行 @layer 次序声明',
   'overlay-arrow': '浮层箭头的几何，按 [data-part=\'arrow\'] 匹配，六份浮层皮肤共用',
   'reset': '库自己的基线，按 [data-scope] 匹配全部库节点，不挑具体哪一个',

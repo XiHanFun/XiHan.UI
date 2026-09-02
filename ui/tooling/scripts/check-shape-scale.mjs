@@ -37,6 +37,8 @@ const NO_SLOT = {
   'radio-group:indicator::before': '单选圆点，圆是它的身份',
   'popconfirm:confirm-trigger::before': '转圈的加载环',
   'switch:thumb::after': '转圈的加载环',
+  'download-trigger:root::before': '转圈的加载环',
+  'clipboard:trigger::before': '转圈的加载环',
 }
 
 const offenders = []

@@ -108,7 +108,10 @@
     transition: none;
   }
 
-  /* —— 悬浮件共用：半透明深底加浅字 —— */
+  /* —— 悬浮件共用：半透明深底加浅字 ——
+     四件都钉在铺满视口的那一层的边上，贴边一律与安全区取大的一头：刘海、圆角与
+     底部横条压住的那一段由系统给出，贴边比它窄时钮会被切掉一角；桌面上 env() 恒为 0。
+     安全区只有物理方向的四个名字，行内轴上两侧同取较宽的那一段，RTL 下不会翻错边。 */
   [data-scope='image-viewer'][data-part='toolbar'],
   [data-scope='image-viewer'][data-part='counter'],
   [data-scope='image-viewer'][data-part='prev-trigger'],
@@ -122,7 +125,7 @@
   }
 
   [data-scope='image-viewer'][data-part='toolbar'] {
-    inset-block-end: var(--xh-space-6);
+    inset-block-end: max(var(--xh-space-6), env(safe-area-inset-bottom));
     inset-inline-start: 50%;
     translate: -50% 0;
     display: flex;
@@ -151,7 +154,7 @@
   }
 
   [data-scope='image-viewer'][data-part='counter'] {
-    inset-block-start: var(--xh-space-6);
+    inset-block-start: max(var(--xh-space-6), env(safe-area-inset-top));
     inset-inline-start: 50%;
     translate: -50% 0;
     padding: var(--xh-image-viewer-counter-padding, var(--xh-space-1) var(--xh-space-3));
@@ -173,13 +176,13 @@
   }
 
   [data-scope='image-viewer'][data-part='prev-trigger'] {
-    inset-inline-start: var(--xh-space-6);
+    inset-inline-start: max(var(--xh-space-6), env(safe-area-inset-left), env(safe-area-inset-right));
     inset-block-start: 50%;
     translate: 0 -50%;
   }
 
   [data-scope='image-viewer'][data-part='next-trigger'] {
-    inset-inline-end: var(--xh-space-6);
+    inset-inline-end: max(var(--xh-space-6), env(safe-area-inset-left), env(safe-area-inset-right));
     inset-block-start: 50%;
     translate: 0 -50%;
   }
@@ -217,8 +220,8 @@
   [data-scope='image-viewer'][data-part='close-trigger'] {
     position: absolute;
     z-index: 1;
-    inset-block-start: var(--xh-space-6);
-    inset-inline-end: var(--xh-space-6);
+    inset-block-start: max(var(--xh-space-6), env(safe-area-inset-top));
+    inset-inline-end: max(var(--xh-space-6), env(safe-area-inset-left), env(safe-area-inset-right));
     display: inline-flex;
     align-items: center;
     justify-content: center;

@@ -28,6 +28,13 @@ const RAW_LENGTH = /(?<![\w-])\.?\d[\d.]*(?:r?(?:em|ex|ch|cap|ic)|px|[sdl]?v(?:[
  */
 const TRANSITION_ALL = /(?<![\w-])all(?![\w-])/
 
+/**
+ * 系统调色板关键字。高对比档（forced-colors: active）里令牌整体不生效，颜色只能写这九个词
+ * 才拿得到系统当前主题的对应角色。这条只放开语法，「只许出现在 forced-colors 块里」
+ * 由 check-forced-colors.mjs 判。
+ */
+const SYSTEM_COLOR = /^(?:Canvas|CanvasText|ButtonFace|ButtonText|ButtonBorder|Highlight|HighlightText|LinkText|GrayText)$/
+
 /** 属性名的键要写成 stylelint 认的「斜杠包起来的正则」形态，与上面的判据同一个来源。 */
 const asKey = re => `/${re.source}/`
 
@@ -40,7 +47,7 @@ function allowedListMessage(property, value) {
     return `${property} 的取值 "${value}" 不是令牌：圆角写 var(--xh-<组件>-<部件>-radius, var(--xh-shape-…))，`
       + '内衬与间隙写 var(--xh-<组件>-<部件>-<后缀>, var(--xh-space-…))；直角写 0，撑满写百分比'
   }
-  return `${property} 的取值 "${value}" 不是颜色令牌：写 var(--xh-…)，或 transparent / currentColor / inherit / none`
+  return `${property} 的取值 "${value}" 不是颜色令牌：写 var(--xh-…)，或 transparent / currentColor / inherit / none；高对比档里写系统调色板关键字`
 }
 
 /**
@@ -85,6 +92,7 @@ export default {
         '/^(color|background-color|border-color|outline-color|fill|stroke)$/': [
           /^var\(--xh-/,
           /^light-dark\(/,
+          SYSTEM_COLOR,
           'transparent',
           'currentColor',
           'inherit',
@@ -93,9 +101,12 @@ export default {
         // 圆角 / 内衬 / 间隙写死像素，换一次尺寸档就有一处对不上，而尺寸类门禁只看令牌引用、
         // 看不见字面量，会一路绿灯。这条正面挡住：取值只能是令牌引用、直角 0、auto、inherit、
         // 百分比，或由这些拼出来的 calc()。
+        // 数学函数整族放行（calc / min / max / clamp）：安全区让位写成
+        // max(var(--xh-…-inset, …), env(safe-area-inset-…))，取的仍是令牌，只是与系统给的
+        // 那一段取大的一头。里面藏的裸长度由上面那条禁用清单挡住，两条合起来口径不变。
         [asKey(LENGTH_PROP)]: [
           /^var\(\s*--xh-[\s\S]*\)$/,
-          /^calc\([\s\S]*\)$/,
+          /^(?:calc|min|max|clamp)\([\s\S]*\)$/,
           /^(?:\d+(?:\.\d+)?|\.\d+)%$/,
           '0',
           'auto',

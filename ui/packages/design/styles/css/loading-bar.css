@@ -14,7 +14,9 @@
    */
   [data-scope='loading-bar'][data-part='root'] {
     position: fixed;
-    inset-block-start: 0;
+    /* 顶到视口上沿的那一条：刘海或状态栏压住的那一段由系统给出，不让位就整条藏在下面。
+       桌面上 env() 恒为 0，条子照旧贴着上沿。 */
+    inset-block-start: env(safe-area-inset-top);
     inset-inline: 0;
     z-index: var(--xh-loading-bar-layer, var(--xh-layer-sticky));
 

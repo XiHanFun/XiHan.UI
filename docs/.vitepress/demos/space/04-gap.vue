@@ -24,7 +24,7 @@ const gaps = ["xs", "sm", "md", "lg", "xl"] as const;
     <!-- 档位不够用时，直接给使用者槽位写值，它排在所有档位之前 -->
     <XhSpace gap="md">
       <span :style="labelStyle">槽位覆盖</span>
-      <XhSpace gap="xs" style="--xh-space-gap: 40px">
+      <XhSpace gap="xs" style="--xh-space-root-gap: 40px">
         <span :style="boxStyle">甲</span>
         <span :style="boxStyle">乙</span>
         <span :style="boxStyle">丙</span>

@@ -19,7 +19,7 @@ const wcCheckboxSuite: ConformanceSuite = {
   fixture: { ...checkboxSuite.fixture, children: [{ part: 'indicator', tag: 'span' }] },
 }
 
-// collapsible 的 fixture 三个 part 本就由用户显式写，两侧同构、整份复用；
+// collapsible 的 fixture 四个 part 本就由用户显式写，两侧同构、整份复用；
 // 只排除受控 open（布尔属性表达不了 undefined，与 switch/dialog 同因）。
 const wcCollapsibleSuite: ConformanceSuite = {
   ...collapsibleSuite,

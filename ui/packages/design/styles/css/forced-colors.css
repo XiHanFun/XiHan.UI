@@ -1,0 +1,75 @@
+/*
+ * 高对比档（forced-colors: active）的公共补救层。
+ *
+ * 这一档里系统接管配色：作者写的每一个颜色取值都被换成系统调色板里的对应角色，
+ * box-shadow 与 background-image 直接丢弃。于是「只靠底色差表达的状态」全部塌成同一个样子——
+ * 列表的悬停档与展开路径档、勾选与未勾选、当前页与别的页，看上去一模一样。
+ *
+ * 这份文件按状态词汇表逐个把通道补回来：outline 在这一档里不被丢弃，用它画两档可分的环。
+ * 逐组件写不动的东西收在这里，组件自己特有的（画的就是颜色、或者靠背景图承载信息）
+ * 在各自皮肤里另有 forced-colors 块。
+ *
+ * 取值只用 system color keyword：这一档里 --xh-* 令牌已经不生效，写了是误导。
+ * 排在全部组件皮肤之后：同特指度靠源序取胜，组件里那条 `:focus:not(:focus-visible) { outline: none }`
+ * 才压不掉这里的状态环。选择器一律停在两个属性（0,2,0），组件的 :focus-visible 规则
+ * 特指度更高，聚焦环恒压在状态环之上。
+ */
+@layer xihan.components {
+  @media (forced-colors: active) {
+    /* 轻档：方向键锚定的那一条（焦点仍在宿主上）。虚线环，与强档一眼分得开。 */
+    [data-scope][data-highlighted] {
+      outline: var(--xh-stroke-thin) dashed CanvasText;
+      outline-offset: calc(-1 * var(--xh-stroke-thin));
+    }
+
+    /*
+     * 强档：选中、当前项、展开路径、勾选、激活、按下、走到的步骤、区间内的日期。
+     * 实线环加系统高亮色，比轻档粗一档。
+     *
+     * data-state=open 那条要摘掉三个部件：定位层与遮罩都铺满视口，画上环就是绕着整块屏幕
+     * 描一圈；content 面的边由下面那条浮层规则统一给，不走状态环。
+     * 摘除写在 :where() 里，它不计特指度，整条选择器仍停在 (0,2,0)。
+     */
+    [data-scope][data-selected],
+    [data-scope][data-current],
+    [data-scope][data-in-path],
+    [data-scope][data-in-range],
+    [data-scope][data-indeterminate],
+    [data-scope][data-passed],
+    [data-scope][data-state='checked'],
+    [data-scope][data-state='indeterminate'],
+    [data-scope][data-state='active'],
+    [data-scope][data-state='on'],
+    [data-scope][data-state='current'],
+    [data-scope][data-state='completed'],
+    [data-scope][data-state='open']:where(:not([data-part='positioner'], [data-part='content'], [data-part='backdrop'])) {
+      outline: var(--xh-stroke-thick) solid Highlight;
+      outline-offset: calc(-1 * var(--xh-stroke-thick));
+    }
+
+    /*
+     * 禁用：常态靠淡化的前景色表达，这一档里前景被统一换成 CanvasText，淡化那一层没了。
+     * GrayText 是系统给「不可用」留的那个角色。
+     */
+    [data-scope][data-disabled] {
+      color: GrayText;
+      border-color: GrayText;
+    }
+
+    /*
+     * 只读：常态是压低一档底色，这一档里底色被统一换掉，与能改的控件一模一样。
+     * 改画虚线边——只读仍要照读，字色一动不动，改不动这件事写在框上。
+     */
+    [data-scope][data-readonly] {
+      border-style: dashed;
+    }
+
+    /*
+     * 浮层面：三档海拔角色都写在 box-shadow 上，这一档里整层丢弃，浮层与页面之间零分界。
+     * 定位层里的那张面补一圈实边把它框出来。
+     */
+    [data-scope][data-part='positioner'] [data-scope][data-part='content'] {
+      border: var(--xh-stroke-thin) solid CanvasText;
+    }
+  }
+}

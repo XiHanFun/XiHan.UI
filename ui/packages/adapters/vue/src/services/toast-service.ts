@@ -11,7 +11,6 @@ import { TOAST_DURATION, TOAST_GAP, TOAST_PLACEMENT, toastAnatomy } from '@xihan
 import { DATA_INERT_EXEMPT, ensurePortalRoot } from '@xihan-ui/kernel'
 import { createApp, defineComponent, Fragment, h, shallowRef, toValue } from 'vue'
 import { XhToastCloseTrigger, XhToastRoot, XhToastTitle } from '../components/toast/toast'
-import { typeGlyph } from './glyph'
 import { mountServiceHost } from './mount-host'
 import { createServiceConfig } from './service-config'
 
@@ -85,8 +84,8 @@ function defaultToast(
   // 到点自己走的默认不出叉，多一颗叉就多一个「要不要点」的判断；
   // 走不掉的反过来默认给叉。两者都能用 closable 显式改口
   const closable = toast.closable ?? !selfDismissing(toast, defaults)
-  // 语气跟着 connect 的缺省走（type 缺席即 info），字形不能在这儿另算一份——
-  // 算差了就成了「整条蓝淡底、却没有字形」的半截态
+  // 语气跟着 connect 的缺省走（type 缺席即 info）。字形不在这儿渲染：
+  // 它由皮肤按 root 上的 data-severity 画，声明式用法与 Web Components 那侧才拿得到同一枚
   const type = toast.type ?? 'info'
   return h(XhToastRoot, {
     id: toast.id,
@@ -103,8 +102,7 @@ function defaultToast(
         onUnmounted(id)
     },
   }, () => [
-    // 三个节点平铺，不再套一层行容器：横排是皮肤的事，模板套一层只会与它打架
-    typeGlyph(type),
+    // 两个节点平铺，不再套一层行容器：横排是皮肤的事，模板套一层只会与它打架
     h(XhToastTitle),
     closable ? h(XhToastCloseTrigger) : null,
   ])

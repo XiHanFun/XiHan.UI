@@ -375,6 +375,25 @@
     --xh-_diff-view-px: var(--xh-space-4);
     --xh-_diff-view-py: var(--xh-space-3);
   }
+
+  /*
+   * 高对比档：新增行那条实心色条写在 box-shadow 上、删除行那条斜纹写在渐变上，
+   * 这一档里两者一起被丢弃，只剩两个被系统换成同色的底。
+   * 改画两圈内收的环，实线对新增、虚线对删除，两档在纯系统色下仍分得开。
+   * 用 outline 不用 border：行是横排 flex，加边会把行号与内容一起往里推，
+   * 没有变更的行不加边，同一屏上的行首就对不齐了。
+   */
+  @media (forced-colors: active) {
+    [data-scope='diff-view'][data-part='row'][data-change='added'] {
+      outline: var(--xh-stroke-thick) solid CanvasText;
+      outline-offset: calc(-1 * var(--xh-stroke-thick));
+    }
+
+    [data-scope='diff-view'][data-part='row'][data-change='removed'] {
+      outline: var(--xh-stroke-thick) dashed CanvasText;
+      outline-offset: calc(-1 * var(--xh-stroke-thick));
+    }
+  }
 }
 
 @layer xihan.motion {

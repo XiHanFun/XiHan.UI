@@ -79,8 +79,17 @@
     /* 基线按默认落位 bottom-end 写，下面只覆盖跟它不同的那几个位 */
     justify-content: flex-end;
     align-items: center;
-    padding-block: var(--xh-notification-inset, var(--xh-space-6));
-    padding-inline: var(--xh-notification-inset, var(--xh-space-6));
+    /* 贴边与安全区取大的一头：刘海、圆角与底部横条压住的那一段由系统给出，
+       贴边比它窄时卡片会被切掉一角。桌面上 env() 恒为 0，取值与贴边槽完全一致。
+       两条内联的 env 一起取大值：安全区只有物理方向的四个名字，
+       分左右写在 RTL 下会翻错边，两侧同取较宽的那一段。 */
+    padding-block-start: max(var(--xh-notification-inset, var(--xh-space-6)), env(safe-area-inset-top));
+    padding-block-end: max(var(--xh-notification-inset, var(--xh-space-6)), env(safe-area-inset-bottom));
+    padding-inline: max(
+      var(--xh-notification-inset, var(--xh-space-6)),
+      env(safe-area-inset-left),
+      env(safe-area-inset-right)
+    );
     /* 摞内间距由连接层写进内联 style（两个适配器共用同一份），这里绝不重复写：
        写了也会被内联盖掉，只会让人误以为间距归样式层管 */
     /* 整面铺开就等于罩住了整块视口。面本身不吃指针，只有卡片吃（见下），

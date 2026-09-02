@@ -122,7 +122,8 @@ function colorIn(rules, pick) {
   for (const r of rules) {
     if (!pick(r.tail))
       continue
-    const m = /(?:^|[;\s])color:\s*([^;]+);/.exec(r.body)
+    // 取值段不许以空白开头：与前面那段 \s* 的匹配面重叠会让引擎在长声明上退化成多项式回溯
+    const m = /(?:^|[;\s])color:\s*([^;\s][^;]*);/.exec(r.body)
     if (m)
       return m[1].trim()
   }

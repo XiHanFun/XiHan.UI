@@ -59,6 +59,47 @@ const GEOMETRY = {
   },
 }
 
+/**
+ * 色阶原语：`--xh-color-<族>-<档>`，档位是数字。它只在令牌产物的根上声明一次，
+ * 浅色档与深色档都不重声明——皮肤直接引它，那处颜色就四季不变，而同族的语义令牌
+ * （--xh-bg-brand 浅色指 600、深色指 500）是逐主题给值的。换肤同理：使用者换的是语义层。
+ * 所以语义令牌是皮肤取色的唯一入口。
+ *
+ * PRIMITIVE_OK 登记的是「这处画的东西本来就不该随主题翻」。登记项扫不到即判失败。
+ * `--xh-color-picker-*` 那一族不在此列：它是组件槽，档位段不是数字，判据认得出来。
+ */
+const PRIMITIVE_TOKEN = /--xh-color-([a-z]+)-(\d+)(?![\w-])/g
+const PRIMITIVE_OK = {
+  'tone.css': {
+    reason: '语气层就是语义色的产地：六族的主色、实心底上的前景与交互挪动方向在这里兑成 --xh-_tone-* 私有槽，下游组件只读私有槽。实心底本身不随主题翻，配色跟着翻就会变成白字压浅黄底',
+    tokens: ['neutral-0', 'neutral-550', 'neutral-600', 'neutral-950', 'success-600', 'warning-600', 'warning-700', 'danger-600', 'info-600'],
+  },
+  'heatmap.css': {
+    reason: '色板是数据可视化的配色轴，六档各指名一个颜色；借道语气槽会把语气的悬停 / 淡底 / 前景一起绑进来，也会被祖先的 data-tone 染色。灰那一族按主题分了两档，是唯一的例外',
+    tokens: ['neutral-450', 'neutral-600', 'success-600', 'warning-600', 'danger-600', 'info-600', 'purple-600'],
+  },
+  'result.css': {
+    reason: '四档结果色标取 500 那一装饰档，与语气层实心底用的 600 档不同源',
+    tokens: ['success-500', 'warning-500', 'danger-500', 'info-500'],
+  },
+  'rating.css': {
+    reason: '没写 data-tone 时点亮色退回警示色；这一支是语气缺席时的落点，与语气层同族同档',
+    tokens: ['warning-500'],
+  },
+  'image-viewer.css': {
+    reason: '看图时整块画布是恒定的深底加浅字，照片要在中性底上看，不随主题翻',
+    tokens: ['neutral-0', 'neutral-950'],
+  },
+  'qr-code.css': {
+    reason: '码点必须比底色深且对比要足，反相与深浅相近都会让一部分读码器扫不出来',
+    tokens: ['neutral-0', 'neutral-950'],
+  },
+  'color-picker.css': {
+    reason: '拇指描边压在使用者选的任意颜色上，要恒定；棋盘格画的是「透明」这件事本身',
+    tokens: ['neutral-0', 'neutral-300'],
+  },
+}
+
 /** CSS 具名色全表。这些词单独出现在会吃颜色的取值里就是写死的颜色。 */
 const NAMED_COLORS = new Set(`aliceblue antiquewhite aqua aquamarine azure beige bisque black
 blanchedalmond blue blueviolet brown burlywood cadetblue chartreuse chocolate coral cornflowerblue
@@ -209,8 +250,10 @@ function eachDeclaration(text, visit) {
 const offenders = []
 const stale = []
 const geometrySeen = new Map()
+const primitiveSeen = new Map()
 let scanned = 0
 let checked = 0
+let primitiveRefs = 0
 
 for (const file of fs.readdirSync(cssDir).filter(f => f.endsWith('.css')).sort()) {
   scanned++
@@ -218,6 +261,21 @@ for (const file of fs.readdirSync(cssDir).filter(f => f.endsWith('.css')).sort()
   // 注释整段涂白：注释里举的反例不是代码。等长空格保住行号
   const text = fs.readFileSync(path.join(cssDir, file), 'utf8').replace(/\/\*[\s\S]*?\*\//g, m => m.replace(/[^\n]/g, ' '))
   const lineAt = index => text.slice(0, index).split('\n').length
+
+  // 色阶原语按整份文件扫：原语能经任意自定义属性中转，不限于会吃颜色的那些属性
+  const allowed = PRIMITIVE_OK[file]
+  const seenHere = allowed ? (primitiveSeen.get(file) ?? new Set()) : null
+  if (seenHere)
+    primitiveSeen.set(file, seenHere)
+  for (const m of text.matchAll(PRIMITIVE_TOKEN)) {
+    primitiveRefs++
+    const step = `${m[1]}-${m[2]}`
+    if (allowed?.tokens.includes(step)) {
+      seenHere.add(step)
+      continue
+    }
+    offenders.push(`${file}:${lineAt(m.index)}  直引了色阶原语 --xh-color-${step}`)
+  }
 
   eachDeclaration(text, ({ prop, value, at, selector }) => {
     if (!COLOR_PROP.test(prop))
@@ -257,6 +315,18 @@ for (const [key, entry] of Object.entries(GEOMETRY)) {
   }
 }
 
+for (const [file, entry] of Object.entries(PRIMITIVE_OK)) {
+  const seen = primitiveSeen.get(file)
+  if (!seen) {
+    stale.push(`${file}  登记在 PRIMITIVE_OK 里却没被扫到——名单过期了`)
+    continue
+  }
+  for (const step of entry.tokens) {
+    if (!seen.has(step))
+      stale.push(`${file}  登记的 --xh-color-${step} 没被扫到——名单过期了`)
+  }
+}
+
 // 两块一起打印再退：例外的键写错时两块会同时亮（那处成了违规，名单也扫不到），
 // 只打头一块会把「名单过期」这条真正的病因藏起来
 if (offenders.length > 0 || stale.length > 0) {
@@ -264,10 +334,10 @@ if (offenders.length > 0 || stale.length > 0) {
     console.error('[check-color-literals] ✗ 皮肤里写死了颜色，换肤时它不跟着走：')
     for (const o of offenders)
       console.error(`  ${o}`)
-    console.error('改成 var(--xh-<组件>-<部件>-<角色>, var(--xh-…令牌))；画的就是颜色本身的（色相条、取色方块）登记进 GEOMETRY。')
+    console.error('改成 var(--xh-<组件>-<部件>-<角色>, var(--xh-…语义令牌))；画的就是颜色本身的（色相条、取色方块）登记进 GEOMETRY，本来就不该随主题翻的登记进 PRIMITIVE_OK。')
   }
   if (stale.length > 0) {
-    console.error('[check-color-literals] ✗ GEOMETRY 名单过期：')
+    console.error('[check-color-literals] ✗ 名单过期：')
     for (const s of stale)
       console.error(`  ${s}`)
   }
@@ -276,3 +346,4 @@ if (offenders.length > 0 || stale.length > 0) {
 
 const exempt = [...geometrySeen.values()].reduce((n, s) => n + s.size, 0)
 console.log(`[check-color-literals] 通过：${scanned} 份皮肤 · ${checked} 处吃颜色的声明全部走令牌（画色本身的 ${Object.keys(GEOMETRY).length} 处共 ${exempt} 个字面量已登记）`)
+console.log(`[check-color-literals] 通过：${primitiveRefs} 处直引色阶原语的都在 PRIMITIVE_OK 的 ${Object.keys(PRIMITIVE_OK).length} 份皮肤里，其余皮肤只经语义令牌取色`)

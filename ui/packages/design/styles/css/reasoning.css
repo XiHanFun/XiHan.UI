@@ -329,4 +329,18 @@
       animation: none;
     }
   }
+
+  /*
+   * 高对比档：扫光那层渐变被丢弃，只剩被裁成透明的文字，整行标题消失。
+   * 把填充还回去，在想这件事仍由标题文字本身与展开钮的状态表出。
+   */
+  @media (forced-colors: active) {
+    [data-scope='reasoning'][data-part='label'][data-streaming] {
+      background-image: none;
+      -webkit-background-clip: border-box;
+      background-clip: border-box;
+      color: CanvasText;
+      animation: none;
+    }
+  }
 }

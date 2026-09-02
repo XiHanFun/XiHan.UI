@@ -139,3 +139,6 @@
 @import './css/tree-select.css';
 @import './css/virtualizer.css';
 @import './css/watermark.css';
+
+/* 排在全部组件皮肤之后：高对比档的状态环靠源序压过组件里同特指度的 outline 声明。 */
+@import './css/forced-colors.css';

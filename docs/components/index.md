@@ -119,7 +119,7 @@
 | [日历](./calendar) | `calendar` | 17 | 12 | 4 |
 | [卡片](./card) | `card` | 7 | 0 | 5 |
 | [走马灯](./carousel) | `carousel` | 9 | 10 | 9 |
-| [折叠区域](./collapsible) | `collapsible` | 3 | 1 | 6 |
+| [折叠区域](./collapsible) | `collapsible` | 4 | 1 | 6 |
 | [倒计时](./countdown) | `countdown` | 1 | 0 | 4 |
 | [描述列表](./descriptions) | `descriptions` | 4 | 0 | 5 |
 | [空状态](./empty-state) | `empty-state` | 5 | 0 | 5 |

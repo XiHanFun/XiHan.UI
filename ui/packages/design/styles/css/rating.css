@@ -143,4 +143,26 @@
   [data-scope='rating'][data-part='item'][hidden] {
     display: none;
   }
+
+  /*
+   * 高对比档：点亮与没点亮只差一档字色，这一档里两档一起被换成同一个系统前景色，
+   * 整条星带看上去全是亮的。改用系统自己的两个角色分开：亮的取高亮色、没亮的取不可用色。
+   * 半颗那道裁到字形上的渐变在这一档里被丢弃，留着透明填充整颗星会消失，
+   * 把填充还回去并按点亮那一档画。
+   */
+  @media (forced-colors: active) {
+    [data-scope='rating'][data-part='item'] {
+      color: GrayText;
+    }
+
+    [data-scope='rating'][data-part='item'][data-highlighted],
+    [data-scope='rating'][data-part='item'][data-half] {
+      background-image: none;
+      -webkit-background-clip: border-box;
+      background-clip: border-box;
+      color: Highlight;
+      /* 亮档已经由字色表出，公共层那圈锚点虚线在这里只是重影 */
+      outline: none;
+    }
+  }
 }

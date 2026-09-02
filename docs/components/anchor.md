@@ -180,7 +180,7 @@ size 换条目的字号与左右内边距，不传 size 即默认档
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-anchor-fg` · `--xh-anchor-font-size` · `--xh-anchor-gap` · `--xh-anchor-gap-horizontal` · `--xh-anchor-indicator-color` · `--xh-anchor-indicator-radius` · `--xh-anchor-indicator-thickness` · `--xh-anchor-leading` · `--xh-anchor-link-fg-active` · `--xh-anchor-link-fg-hover` · `--xh-anchor-link-font-weight-active` · `--xh-anchor-link-max-w` · `--xh-anchor-link-px` · `--xh-anchor-link-py` · `--xh-anchor-link-radius` · `--xh-anchor-track`
+`--xh-anchor-fg` · `--xh-anchor-font-size` · `--xh-anchor-gap` · `--xh-anchor-gap-horizontal` · `--xh-anchor-indicator-color` · `--xh-anchor-indicator-radius` · `--xh-anchor-indicator-thickness` · `--xh-anchor-leading` · `--xh-anchor-link-fg-current` · `--xh-anchor-link-fg-hover` · `--xh-anchor-link-font-weight-current` · `--xh-anchor-link-max-w` · `--xh-anchor-link-px` · `--xh-anchor-link-py` · `--xh-anchor-link-radius` · `--xh-anchor-track`
 
 ## 动效
 

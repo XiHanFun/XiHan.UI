@@ -179,24 +179,28 @@
 
   [data-scope='floating-panel'][data-part='resize-trigger'][data-edge='n'] {
     inset: 0 0 auto 0;
+    /* stylelint-disable-next-line property-disallowed-list -- 面板的落位与尺寸由连接层写成物理 left / top / width / height，data-edge 的 n/s/e/w 是屏幕方向，把手的厚度沿同一根物理轴 */
     height: var(--xh-_floating-panel-handle);
     cursor: ns-resize;
   }
 
   [data-scope='floating-panel'][data-part='resize-trigger'][data-edge='s'] {
     inset: auto 0 0 0;
+    /* stylelint-disable-next-line property-disallowed-list -- 同上 */
     height: var(--xh-_floating-panel-handle);
     cursor: ns-resize;
   }
 
   [data-scope='floating-panel'][data-part='resize-trigger'][data-edge='w'] {
     inset: 0 auto 0 0;
+    /* stylelint-disable-next-line property-disallowed-list -- 同上 */
     width: var(--xh-_floating-panel-handle);
     cursor: ew-resize;
   }
 
   [data-scope='floating-panel'][data-part='resize-trigger'][data-edge='e'] {
     inset: 0 0 0 auto;
+    /* stylelint-disable-next-line property-disallowed-list -- 同上 */
     width: var(--xh-_floating-panel-handle);
     cursor: ew-resize;
   }
@@ -204,28 +208,36 @@
   /* 四个角排在四条边之后，命中区大一圈：角上要同时抓住两条边 */
   [data-scope='floating-panel'][data-part='resize-trigger'][data-edge='nw'] {
     inset: 0 auto auto 0;
+    /* stylelint-disable-next-line property-disallowed-list -- 同上 */
     width: var(--xh-_floating-panel-corner);
+    /* stylelint-disable-next-line property-disallowed-list -- 同上 */
     height: var(--xh-_floating-panel-corner);
     cursor: nwse-resize;
   }
 
   [data-scope='floating-panel'][data-part='resize-trigger'][data-edge='ne'] {
     inset: 0 0 auto auto;
+    /* stylelint-disable-next-line property-disallowed-list -- 同上 */
     width: var(--xh-_floating-panel-corner);
+    /* stylelint-disable-next-line property-disallowed-list -- 同上 */
     height: var(--xh-_floating-panel-corner);
     cursor: nesw-resize;
   }
 
   [data-scope='floating-panel'][data-part='resize-trigger'][data-edge='se'] {
     inset: auto 0 0 auto;
+    /* stylelint-disable-next-line property-disallowed-list -- 同上 */
     width: var(--xh-_floating-panel-corner);
+    /* stylelint-disable-next-line property-disallowed-list -- 同上 */
     height: var(--xh-_floating-panel-corner);
     cursor: nwse-resize;
   }
 
   [data-scope='floating-panel'][data-part='resize-trigger'][data-edge='sw'] {
     inset: auto auto 0 0;
+    /* stylelint-disable-next-line property-disallowed-list -- 同上 */
     width: var(--xh-_floating-panel-corner);
+    /* stylelint-disable-next-line property-disallowed-list -- 同上 */
     height: var(--xh-_floating-panel-corner);
     cursor: nesw-resize;
   }

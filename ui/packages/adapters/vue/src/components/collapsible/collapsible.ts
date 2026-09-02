@@ -55,6 +55,14 @@ export const XhCollapsibleTrigger = defineComponent({
   },
 })
 
+export const XhCollapsibleIndicator = defineComponent({
+  name: 'XhCollapsibleIndicator',
+  setup(_, { slots }) {
+    const ctx = useCollapsibleContext()
+    return () => h('span', ctx.api.value.getIndicatorProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhCollapsibleContent = defineComponent({
   name: 'XhCollapsibleContent',
   setup(_, { slots }) {

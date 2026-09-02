@@ -104,8 +104,8 @@
   /* 当前那一节：颜色与字重都跟着变，不只靠指示条——
      指示条是可选部件，作者不渲染它时"当前在哪"仍然要看得出来 */
   [data-scope='anchor'][data-part='link'][data-current] {
-    color: var(--xh-anchor-link-fg-active, var(--xh-_anchor-accent-text));
-    font-weight: var(--xh-anchor-link-font-weight-active, var(--xh-font-weight-medium));
+    color: var(--xh-anchor-link-fg-current, var(--xh-_anchor-accent-text));
+    font-weight: var(--xh-anchor-link-font-weight-current, var(--xh-font-weight-medium));
   }
 
   /* 主轴上的位置与长度由连接层写成内联样式（它量得到，样式表量不到）；

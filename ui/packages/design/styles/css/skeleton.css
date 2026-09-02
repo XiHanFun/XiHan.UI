@@ -97,4 +97,15 @@
       animation: none;
     }
   }
+
+  /*
+   * 高对比档：骨架条整根靠底色画出来，这一档里底色与微光一起被系统换掉，
+   * 一块什么都没有的空白——正在加载这件事没有了任何表达。改成描一圈边把条子勾出来。
+   */
+  @media (forced-colors: active) {
+    [data-scope='skeleton'][data-part='bone'] {
+      border: var(--xh-stroke-thin) solid GrayText;
+      background-image: none;
+    }
+  }
 }

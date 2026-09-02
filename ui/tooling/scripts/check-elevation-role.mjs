@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // 门禁：阴影只走海拔角色令牌，且角色与部件对得上。
 //
-// 三档角色：raised = 静态抬起面（卡片的 elevated 变体、分段控制器的滑块、滑杆拇指）；
+// 四档角色：raised = 静态抬起面（卡片的 elevated 变体、分段控制器的滑块、静止的滑杆拇指）；
+// lifted = 被指针拎起、正跟着手走的东西（拖动中的滑杆拇指），比 raised 高一档、不到 floating；
 // floating = 锚定浮层（下拉、菜单、popover、hover-card、tooltip，它们 portal 到同一落点，投影同深）；
 // sheet = 遮罩式与通知（dialog / drawer / toast / tour / floating-panel / float-button / back-top）。
 // 皮肤直接引 --xh-shadow-* 原语或给 box-shadow 写字面值，海拔就脱离了层级阶梯。
@@ -14,12 +15,12 @@ import { join } from 'node:path'
 
 const STYLES_DIR = 'packages/design/styles/css'
 
-const ROLE = /--xh-elevation-(raised|floating|sheet)\b/
+const ROLE = /--xh-elevation-(raised|lifted|floating|sheet)\b/
 /**
  * 使用者槽包着角色令牌：var(--xh-<组件>-…, var(--xh-elevation-<role>))。
  * 允许套多层：加法式改名把新槽名排在外层、旧名留在它的兜底位上，链因此不止一层。
  */
-const SLOTTED = /^var\((?:--xh-[a-z][a-z0-9-]*,\s*var\()+--xh-elevation-(?:raised|floating|sheet)\)+$/
+const SLOTTED = /^var\((?:--xh-[a-z][a-z0-9-]*,\s*var\()+--xh-elevation-(?:raised|lifted|floating|sheet)\)+$/
 /**
  * 哪个组件的哪个部件该是哪几档：`组件 → 部件 → 允许的角色`。
  *
@@ -58,9 +59,9 @@ const EXPECTED = {
   'popselect': { content: ['floating'] },
   'select': { content: ['floating'] },
   'side-nav': { 'branch-content': ['floating'] },
-  // 拇指静态时是 raised；带 data-dragging 的那一档现在引的是 floating，
-  // 与下拉面板同深——滑杆没有自己的"被抓起"档，拖动中借的就是浮层那一档
-  'slider': { thumb: ['raised', 'floating'] },
+  // 拇指静止时是 raised，带 data-dragging 的那一档走 lifted：跟着手走的元素抬高一档，
+  // 又不与下拉面板同深
+  'slider': { thumb: ['raised', 'lifted'] },
   'time-picker': { content: ['floating'] },
   'toast': { root: ['sheet'] },
   'tooltip': { content: ['floating'] },

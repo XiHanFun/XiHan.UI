@@ -408,4 +408,59 @@
   [data-scope='heatmap'][data-part='legend-item'][hidden] {
     display: none;
   }
+
+  /*
+   * 打印：格子的深浅只写在底色上，纸上多数丢背景，整张图印成一片空白。
+   * 这一档把档位改画成边框的粗细——0 档只有一圈发丝线，档位越高边越厚，
+   * 顶到一半格宽时整格填满。边算在尺寸里（reset 兜了 border-box），格子大小一点不变。
+   *
+   * 比例取 0.2 / 0.3 / 0.4 / 0.5：缺省格宽 10px 下正好落在 2 / 3 / 4 / 5 像素，
+   * 与 0 档那一像素合成五档整数宽——边宽在屏幕与纸上都取整，分数宽会有两档并到一起。
+   *
+   * 第一条给的是高档那一身，下面四条按档位逐个改薄：档数由作者定，
+   * 超出缺省五档的那些落在第一条上，一律按最高档画。
+   * 图例里那几个方块与格子同源，跟着走同一套。
+   */
+  @media print {
+    [data-scope='heatmap'][data-part='cell'],
+    [data-scope='heatmap'][data-part='legend-item'] {
+      --xh-_heatmap-ink-ring: calc(var(--xh-_heatmap-cell-size) * 0.5);
+
+      border: var(--xh-_heatmap-ink-ring) solid currentColor;
+    }
+
+    [data-scope='heatmap'][data-part='cell'][data-level='0'],
+    [data-scope='heatmap'][data-part='legend-item'][data-level='0'] {
+      --xh-_heatmap-ink-ring: var(--xh-stroke-thin);
+    }
+
+    [data-scope='heatmap'][data-part='cell'][data-level='1'],
+    [data-scope='heatmap'][data-part='legend-item'][data-level='1'] {
+      --xh-_heatmap-ink-ring: calc(var(--xh-_heatmap-cell-size) * 0.2);
+    }
+
+    [data-scope='heatmap'][data-part='cell'][data-level='2'],
+    [data-scope='heatmap'][data-part='legend-item'][data-level='2'] {
+      --xh-_heatmap-ink-ring: calc(var(--xh-_heatmap-cell-size) * 0.3);
+    }
+
+    [data-scope='heatmap'][data-part='cell'][data-level='3'],
+    [data-scope='heatmap'][data-part='legend-item'][data-level='3'] {
+      --xh-_heatmap-ink-ring: calc(var(--xh-_heatmap-cell-size) * 0.4);
+    }
+  }
+
+  /*
+   * 高对比档：格子画的就是色阶本身，被系统换成同一个底色之后整张图没有任何深浅。
+   * 这几处退出强制着色，自己保住色阶；退出之后不再跟系统底色走，
+   * 各补一圈系统描边把方格从背景里框出来（原来那圈发丝线写在 inset 阴影上，这一档里被丢弃）。
+   */
+  @media (forced-colors: active) {
+    [data-scope='heatmap'][data-part='cell'],
+    [data-scope='heatmap'][data-part='legend-item'] {
+      forced-color-adjust: none;
+      outline: var(--xh-stroke-thin) solid CanvasText;
+      outline-offset: calc(-1 * var(--xh-stroke-thin));
+    }
+  }
 }

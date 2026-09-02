@@ -562,4 +562,28 @@
       display: none;
     }
   }
+
+  /*
+   * 高对比档：取色面、色相带、透明度棋盘格与色板画的就是颜色本身，被系统换掉之后
+   * 整个组件不再能取色。这几处退出强制着色，自己保住原色。
+   * 退出之后它们不再跟着系统底色走，各补一圈系统描边把它们从背景里框出来。
+   */
+  @media (forced-colors: active) {
+    [data-scope='color-picker'][data-part='area'],
+    [data-scope='color-picker'][data-part='area']::before,
+    [data-scope='color-picker'][data-part='channel-slider'],
+    [data-scope='color-picker'][data-part='channel-slider-track'],
+    [data-scope='color-picker'][data-part='swatch'],
+    [data-scope='color-picker'][data-part='swatch-item'] {
+      forced-color-adjust: none;
+    }
+
+    [data-scope='color-picker'][data-part='area'],
+    [data-scope='color-picker'][data-part='channel-slider'],
+    [data-scope='color-picker'][data-part='swatch'],
+    [data-scope='color-picker'][data-part='swatch-item'] {
+      outline: var(--xh-stroke-thin) solid ButtonBorder;
+      outline-offset: calc(-1 * var(--xh-stroke-thin));
+    }
+  }
 }

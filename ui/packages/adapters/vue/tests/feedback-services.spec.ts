@@ -101,16 +101,16 @@ describe('createToastService 的默认模板', () => {
   const closeOf = (): HTMLElement | null =>
     document.querySelector<HTMLElement>('[data-scope="toast"][data-part="close-trigger"]')
 
-  it('到点自己走的不出叉：一枚状态字形加一句话，两个节点平铺', async () => {
+  it('到点自己走的不出叉：模板只铺一句话，严重度交给 root 上的那一位', async () => {
     const toast = createToastService()
     toast.success('已保存')
     await tick()
     const root = toastRoot()
     expect(closeOf()).toBeNull()
-    // 字形在前、标题在后，中间不再套一层行容器
-    expect(root.children.length).toBe(2)
-    expect(root.children[0]!.getAttribute('aria-hidden')).toBe('true')
-    expect(root.children[1]!.getAttribute('data-part')).toBe('title')
+    // 状态字形由皮肤按 data-severity 画在 root 的伪元素上，模板不渲染节点
+    expect(root.children.length).toBe(1)
+    expect(root.children[0]!.getAttribute('data-part')).toBe('title')
+    expect(root.getAttribute('data-severity')).toBe('success')
     toast.dispose()
   })
 
@@ -136,25 +136,24 @@ describe('createToastService 的默认模板', () => {
     toast.dispose()
   })
 
-  it('没写 type 也有状态字形：底色按 info 兑，字形不能缺席', async () => {
+  it('没写 type 也按 info 落位：语气与严重度两位都得有，皮肤才画得出字形', async () => {
     const toast = createToastService()
     toast.create({ title: '无类型' })
     await tick()
     const root = toastRoot()
     expect(root.getAttribute('data-tone')).toBe('info')
-    expect(root.children[0]!.getAttribute('aria-hidden')).toBe('true')
+    expect(root.getAttribute('data-severity')).toBe('info')
     toast.dispose()
   })
 
-  it('loading 改写成 success 时换掉字形节点，转圈不会留在勾号上', async () => {
+  it('改写 type 时严重度那一位跟着换，字形才会从转圈换成勾号', async () => {
     const toast = createToastService()
     const id = toast.loading('上传中')
     await tick()
-    const spinning = toastRoot().children[0]!
+    expect(toastRoot().getAttribute('data-severity')).toBe('loading')
     toast.update(id, { type: 'success', title: '上传完成' })
     await tick()
-    // 两支带着不同的 key，复用同一个元素的话挂在它上面的无限旋转没人收
-    expect(toastRoot().children[0]).not.toBe(spinning)
+    expect(toastRoot().getAttribute('data-severity')).toBe('success')
     toast.dispose()
   })
 })
