@@ -312,8 +312,7 @@
   --xh-button-bg-active: var(--xh-_tone-active, var(--xh-bg-brand-active));
   --xh-button-fg: var(--xh-_tone-on, var(--xh-fg-on-brand));
   /* 实心面顶边的内高光，沿继承流给组里每一段；段自己写了形态时按钮那边会覆盖掉它 */
-  --xh-_button-group-highlight: inset 0 var(--xh-stroke-thin) 0 0
-    color-mix(in oklab, var(--xh-_tone-on, var(--xh-fg-on-brand)) 14%, transparent);
+  --xh-_button-group-highlight: var(--xh-_highlight-tone);
 }
 
 [data-scope='button-group'][data-part='root'][data-variant='subtle'] {
@@ -3131,8 +3130,7 @@
 /* 形态只决定颜色怎么用；用哪族颜色由 data-tone 决定，没写 tone 就沿用原来的品牌/中性配色。
    实心档还在顶边画一条极浅的内高光，把这块底座衬出厚度；另外三档面上没有实心底，不画 */
 [data-scope='icon-wrapper'][data-part='root'][data-variant='solid'] {
-  --xh-_icon-wrapper-highlight: inset 0 var(--xh-stroke-thin) 0 0
-    color-mix(in oklab, var(--xh-_tone-on, var(--xh-fg-on-brand)) 14%, transparent);
+  --xh-_icon-wrapper-highlight: var(--xh-_highlight-tone);
 
   background: var(--xh-_tone, var(--xh-bg-brand));
   color: var(--xh-_tone-on, var(--xh-fg-on-brand));
@@ -3602,25 +3600,25 @@
   text-overflow: ellipsis;
 }
 
-[data-scope='json-viewer'][data-part='item-value'][data-type='string'] {
+[data-scope='json-viewer'][data-part='item-value'][data-value-type='string'] {
   color: var(--xh-json-viewer-string-fg);
 }
 
-[data-scope='json-viewer'][data-part='item-value'][data-type='number'] {
+[data-scope='json-viewer'][data-part='item-value'][data-value-type='number'] {
   color: var(--xh-json-viewer-number-fg);
 }
 
-[data-scope='json-viewer'][data-part='item-value'][data-type='boolean'] {
+[data-scope='json-viewer'][data-part='item-value'][data-value-type='boolean'] {
   color: var(--xh-json-viewer-boolean-fg);
 }
 
-[data-scope='json-viewer'][data-part='item-value'][data-type='null'] {
+[data-scope='json-viewer'][data-part='item-value'][data-value-type='null'] {
   color: var(--xh-json-viewer-null-fg);
 }
 
 /* 空对象与空数组只剩一对括号，跟标点同色 */
-[data-scope='json-viewer'][data-part='item-value'][data-type='array'],
-[data-scope='json-viewer'][data-part='item-value'][data-type='object'] {
+[data-scope='json-viewer'][data-part='item-value'][data-value-type='array'],
+[data-scope='json-viewer'][data-part='item-value'][data-value-type='object'] {
   color: var(--xh-json-viewer-punctuation-fg);
 }
 
@@ -5624,8 +5622,7 @@ input[data-scope='mention'][data-part='input'] {
    就整体换成危险色，不写则用品牌色 */
 [data-scope='popconfirm'][data-part='confirm-trigger'] {
   /* 实心底顶边一条极浅的内高光，把这块面衬出厚度；换语气时高光跟着换 */
-  --xh-_popconfirm-confirm-highlight: inset 0 var(--xh-stroke-thin) 0 0
-    color-mix(in oklab, var(--xh-_tone-on, var(--xh-fg-on-brand)) 14%, transparent);
+  --xh-_popconfirm-confirm-highlight: var(--xh-_highlight-tone);
 
   background: var(--xh-popconfirm-confirm-bg, var(--xh-_tone, var(--xh-bg-brand)));
   color: var(--xh-popconfirm-confirm-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
@@ -6297,8 +6294,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_bg-active: var(--xh-prompt-input-send-bg-active, var(--xh-_tone-active, var(--xh-bg-brand-active)));
   --xh-_fg: var(--xh-prompt-input-send-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
   /* 发送身份是实心底，顶边画一条极浅的内高光把这块面衬出厚度 */
-  --xh-_prompt-input-submit-highlight: inset 0 var(--xh-stroke-thin) 0 0
-    color-mix(in oklab, var(--xh-_tone-on, var(--xh-fg-on-brand)) 14%, transparent);
+  --xh-_prompt-input-submit-highlight: var(--xh-_highlight-tone);
 
   display: inline-flex;
   /* 按钮不参与弹性伸缩 */
@@ -6958,8 +6954,6 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_result-py: var(--xh-section-py-md);
   --xh-_result-icon-size: var(--xh-glyph-size-3xl);
   --xh-_result-title-size: var(--xh-text-heading-3-size);
-  /* 说明的读行宽度：整句话不收窄就会拉成一条难读的长行 */
-  --xh-_result-measure: 32rem;
   /* 图标区的语气色，由 data-status 换掉；没写 status 就退成中性 */
   --xh-_result-accent: var(--xh-fg-subtle);
 
@@ -7043,7 +7037,7 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='result'][data-part='description'] {
   margin: 0;
-  max-inline-size: var(--xh-result-description-max-w, var(--xh-_result-measure));
+  max-inline-size: var(--xh-result-description-max-w, var(--xh-measure-prose));
   color: var(--xh-result-description-fg, var(--xh-fg-muted));
   font-size: var(--xh-result-description-font-size, var(--xh-text-body-size));
   line-height: var(--xh-result-description-leading, var(--xh-text-body-leading));
@@ -7719,7 +7713,7 @@ input[data-scope='mention'][data-part='input'] {
    实心档还在顶边画一条极浅的内高光，把整块底衬出厚度；语气那条同样从实心底上的前景色兑，
    换语气时高光跟着换 */
 [data-scope='tag'][data-part='root'][data-variant='solid'] {
-  --xh-_tag-highlight: inset 0 var(--xh-stroke-thin) 0 0 color-mix(in oklab, var(--xh-fg-on-brand) 14%, transparent);
+  --xh-_tag-highlight: var(--xh-_highlight-brand);
 
   border-color: transparent;
   background: var(--xh-tag-bg, var(--xh-bg-brand));
@@ -7728,8 +7722,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='tag'][data-part='root'][data-variant='solid'][data-tone] {
-  --xh-_tag-highlight: inset 0 var(--xh-stroke-thin) 0 0
-    color-mix(in oklab, var(--xh-_tone-on, var(--xh-fg-on-brand)) 14%, transparent);
+  --xh-_tag-highlight: var(--xh-_highlight-tone);
 
   background: var(--xh-tag-bg, var(--xh-_tone, var(--xh-bg-brand)));
   color: var(--xh-tag-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
@@ -8607,6 +8600,24 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_tone-shift: var(--xh-color-neutral-0);
 }
 
+/* 实心面顶边的内高光：一条极浅的内阴影，把一块实心底衬出厚度。
+   全库十六处实心档共用这两条，别再逐个组件把式子抄一遍。
+
+   两条的差别只在取哪个前景色：--xh-_highlight-tone 跟着语气走（实心底上的前景色，
+   没写语气时退回品牌那一档），--xh-_highlight-brand 恒取品牌色——底色本身不跟语气走的
+   那几处（表单提交、引导主按钮、不带语气的实心标签）用它。
+
+   声明在 :where([data-scope]) 上而不是 :root 上：它俩的值里带 var()，而自定义属性的
+   var() 在「声明它的那个元素」上就替换掉了。落在 :root 上，--xh-_tone-on 与
+   --xh-fg-on-brand 就都按根元素解析，语气与嵌套主题一并冻死；逐元素声明才是现取。
+   同理它也不能收成 tokens 那边的一支令牌。 */
+:where([data-scope]) {
+  --xh-_highlight-tone: inset 0 var(--xh-stroke-thin) 0 0
+    color-mix(in oklab, var(--xh-_tone-on, var(--xh-fg-on-brand)) 14%, transparent);
+  --xh-_highlight-brand: inset 0 var(--xh-stroke-thin) 0 0
+    color-mix(in oklab, var(--xh-fg-on-brand) 14%, transparent);
+}
+
 /* styles/alert.css */
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='alert'] {
@@ -8762,8 +8773,6 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_empty-state-py: var(--xh-section-py-md);
   --xh-_empty-state-icon-size: var(--xh-glyph-size-2xl);
   --xh-_empty-state-title-size: var(--xh-control-font-lg);
-  /* 说明的读行宽度：整句话不收窄就会拉成一条难读的长行 */
-  --xh-_empty-state-measure: 32rem;
 
   display: flex;
   flex-direction: column;
@@ -8821,7 +8830,7 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='empty-state'][data-part='description'] {
   margin: 0;
-  max-inline-size: var(--xh-empty-state-description-max-w, var(--xh-_empty-state-measure));
+  max-inline-size: var(--xh-empty-state-description-max-w, var(--xh-measure-prose));
   color: var(--xh-empty-state-description-fg, var(--xh-fg-muted));
   font-size: var(--xh-empty-state-description-font-size, var(--xh-text-body-size));
   line-height: var(--xh-empty-state-description-leading, var(--xh-text-body-leading));
@@ -9708,8 +9717,7 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 内顶高光把实心块顶出一道边，与拒绝那颗的描边同一档厚度 */
 [data-scope='approval'][data-part='approve-trigger'] {
-  --xh-_approval-approve-highlight: inset 0 var(--xh-stroke-thin) 0 0
-    color-mix(in oklab, var(--xh-_tone-on, var(--xh-fg-on-brand)) 14%, transparent);
+  --xh-_approval-approve-highlight: var(--xh-_highlight-tone);
 
   background: var(--xh-approval-approve-bg, var(--xh-_tone, var(--xh-bg-brand)));
   color: var(--xh-approval-approve-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
@@ -9899,8 +9907,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_badge-font: var(--xh-text-secondary-size);
 
   /* 顶边一条极浅的内高光，把这枚实心块衬出厚度 */
-  --xh-_badge-highlight: inset 0 var(--xh-stroke-thin) 0 0
-    color-mix(in oklab, var(--xh-_tone-on, var(--xh-fg-on-brand)) 14%, transparent);
+  --xh-_badge-highlight: var(--xh-_highlight-tone);
 
   /* 不设 z-index：角标在 DOM 序里排在宿主之后，本来就压在上面 */
   position: absolute;
@@ -10232,8 +10239,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_bg-hover: var(--xh-_tone-hover, var(--xh-bg-brand-hover));
   --xh-_bg-active: var(--xh-_tone-active, var(--xh-bg-brand-active));
   --xh-_fg: var(--xh-_tone-on, var(--xh-fg-on-brand));
-  --xh-_button-highlight: inset 0 var(--xh-stroke-thin) 0 0
-    color-mix(in oklab, var(--xh-_tone-on, var(--xh-fg-on-brand)) 14%, transparent);
+  --xh-_button-highlight: var(--xh-_highlight-tone);
 }
 
 /* 另外三档的面不是实心底，高光在上面只会显脏；显式清掉，
@@ -13525,7 +13531,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='combobox'][data-part='control']:has([data-part='input'][data-multiline]) {
   align-items: start;
   block-size: auto;
-  padding-block: var(--xh-combobox-input-py, var(--xh-field-py));
+  padding-block: var(--xh-combobox-control-py, var(--xh-field-py));
 }
 
 [data-scope='combobox'][data-part='input'][data-multiline] {
@@ -15623,7 +15629,7 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='drawer'][data-part='description'] {
   margin: 0;
-  font-size: var(--xh-text-body-size);
+  font-size: var(--xh-drawer-description-font-size, var(--xh-text-body-size));
   color: var(--xh-drawer-description-fg, var(--xh-fg-muted));
 }
 
@@ -15957,7 +15963,7 @@ input[data-scope='mention'][data-part='input'] {
 /* 提交按钮是这一组里的主操作，给它一层实心底色区分开，顶边再画一条极浅的内高光衬出厚度。
    置灰那档不命中这条选择器，高光自然不出现 */
 [data-scope='editable'][data-part='submit-trigger']:not(:disabled) {
-  --xh-_editable-submit-highlight: inset 0 var(--xh-stroke-thin) 0 0 color-mix(in oklab, var(--xh-fg-on-brand) 14%, transparent);
+  --xh-_editable-submit-highlight: var(--xh-_highlight-brand);
 
   border-color: var(--xh-editable-submit-border, var(--xh-bg-brand));
   background: var(--xh-editable-submit-bg, var(--xh-bg-brand));
@@ -16617,7 +16623,7 @@ input[data-scope='mention'][data-part='input'] {
 /* 提交是这一组里的主操作，给它一层实心底色区分开，顶边再画一条极浅的内高光衬出厚度。
    置灰那档不命中这条选择器，高光自然不出现 */
 [data-scope='form'][data-part='submit-trigger']:not(:disabled) {
-  --xh-_form-submit-highlight: inset 0 var(--xh-stroke-thin) 0 0 color-mix(in oklab, var(--xh-fg-on-brand) 14%, transparent);
+  --xh-_form-submit-highlight: var(--xh-_highlight-brand);
 
   border-color: var(--xh-form-submit-border, var(--xh-form-submit-bg, var(--xh-bg-brand)));
   background: var(--xh-form-submit-bg, var(--xh-bg-brand));
@@ -18941,27 +18947,27 @@ input[data-scope='mention'][data-part='input'] {
   mask: var(--xh-glyph-mark-info) center / contain no-repeat;
 }
 
-[data-scope='notification'][data-part='item'][data-type='success'] [data-part='item-indicator']:empty::before {
+[data-scope='notification'][data-part='item'][data-severity='success'] [data-part='item-indicator']:empty::before {
   -webkit-mask-image: var(--xh-glyph-mark-check);
   mask-image: var(--xh-glyph-mark-check);
 }
 
-[data-scope='notification'][data-part='item'][data-type='warning'] [data-part='item-indicator']:empty::before {
+[data-scope='notification'][data-part='item'][data-severity='warning'] [data-part='item-indicator']:empty::before {
   -webkit-mask-image: var(--xh-glyph-mark-warning);
   mask-image: var(--xh-glyph-mark-warning);
 }
 
-[data-scope='notification'][data-part='item'][data-type='error'] [data-part='item-indicator']:empty::before {
+[data-scope='notification'][data-part='item'][data-severity='error'] [data-part='item-indicator']:empty::before {
   -webkit-mask-image: var(--xh-glyph-mark-close);
   mask-image: var(--xh-glyph-mark-close);
 }
 
 /* loading 说的是「事情还没完」，不是好消息也不是坏消息：走中性前景档而不是语气色 */
-[data-scope='notification'][data-part='item'][data-type='loading'] [data-part='item-indicator'] {
+[data-scope='notification'][data-part='item'][data-severity='loading'] [data-part='item-indicator'] {
   color: var(--xh-notification-indicator-fg, var(--xh-fg-muted));
 }
 
-[data-scope='notification'][data-part='item'][data-type='loading'] [data-part='item-indicator']:empty::before {
+[data-scope='notification'][data-part='item'][data-severity='loading'] [data-part='item-indicator']:empty::before {
   -webkit-mask-image: var(--xh-glyph-mark-rotate-right);
   mask-image: var(--xh-glyph-mark-rotate-right);
   animation: xh-notification-spin var(--xh-spin-duration) var(--xh-motion-ease-loop) infinite;
@@ -18971,12 +18977,12 @@ input[data-scope='mention'][data-part='input'] {
    "在等什么"由卡片上的 role=status 与可见文案继续承担。
    两组规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
 @media (prefers-reduced-motion: reduce) {
-  [data-scope='notification'][data-part='item'][data-type='loading'] [data-part='item-indicator']:empty::before {
+  [data-scope='notification'][data-part='item'][data-severity='loading'] [data-part='item-indicator']:empty::before {
     animation: none;
   }
 }
 
-:where([data-motion='reduce']) [data-scope='notification'][data-part='item'][data-type='loading'] [data-part='item-indicator']:empty::before {
+:where([data-motion='reduce']) [data-scope='notification'][data-part='item'][data-severity='loading'] [data-part='item-indicator']:empty::before {
   animation: none;
 }
 
@@ -19121,7 +19127,7 @@ input[data-scope='mention'][data-part='input'] {
     display: none;
   }
 
-  [data-scope='notification'][data-part='item'][data-type='loading'] [data-part='item-indicator']:empty::before {
+  [data-scope='notification'][data-part='item'][data-severity='loading'] [data-part='item-indicator']:empty::before {
     animation: none;
   }
 }
@@ -19603,8 +19609,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_pagination-selected-bg-active: var(--xh-_tone-active, var(--xh-bg-brand-active));
   --xh-_pagination-selected-fg: var(--xh-_tone-on, var(--xh-fg-on-brand));
   /* 当前页那一格是实心底，顶边画一条极浅的内高光把它衬出厚度 */
-  --xh-_pagination-highlight: inset 0 var(--xh-stroke-thin) 0 0
-    color-mix(in oklab, var(--xh-_tone-on, var(--xh-fg-on-brand)) 14%, transparent);
+  --xh-_pagination-highlight: var(--xh-_highlight-tone);
 
   display: flex;
   align-items: center;
@@ -20683,7 +20688,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 /* 单选那一档把方格收成圆 */
-[data-scope='question-flow'][data-part='option-indicator'][data-type='single'] {
+[data-scope='question-flow'][data-part='option-indicator'][data-select-mode='single'] {
   border-radius: var(--xh-question-flow-indicator-radius-single, var(--xh-shape-pill));
 }
 
@@ -20700,7 +20705,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 /* 单选那一档把勾换成实心点：mask 撤掉，圆点由伪元素自己的底色画 */
-[data-scope='question-flow'][data-part='option-indicator'][data-type='single']:empty::before {
+[data-scope='question-flow'][data-part='option-indicator'][data-select-mode='single']:empty::before {
   inline-size: var(--xh-question-flow-dot-size, calc(var(--xh-icon-size, var(--xh-glyph-size-text)) * 0.5));
   block-size: var(--xh-question-flow-dot-size, calc(var(--xh-icon-size, var(--xh-glyph-size-text)) * 0.5));
   border-radius: var(--xh-question-flow-dot-radius, var(--xh-shape-pill));
@@ -20903,8 +20908,7 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 内顶高光把实心块顶出一道边，与跳过那颗的描边同一档厚度 */
 [data-scope='question-flow'][data-part='submit-trigger'] {
-  --xh-_question-flow-submit-highlight: inset 0 var(--xh-stroke-thin) 0 0
-    color-mix(in oklab, var(--xh-_tone-on, var(--xh-fg-on-brand)) 14%, transparent);
+  --xh-_question-flow-submit-highlight: var(--xh-_highlight-tone);
 
   background: var(--xh-question-flow-submit-bg, var(--xh-_tone, var(--xh-bg-brand)));
   color: var(--xh-question-flow-submit-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
@@ -26576,8 +26580,7 @@ input[data-scope='mention'][data-part='input'] {
 /* 只有实心档按下后才是一块实心语气底，顶边画一条极浅的内高光把它衬出厚度；
    其余三档按下走的是淡底，面上没有厚度可言。置灰时整枚已经压暗，高光一并排除 */
 [data-scope='toggle'][data-part='root'][data-variant='solid'][data-state='on']:not([data-disabled]) {
-  --xh-_toggle-highlight: inset 0 var(--xh-stroke-thin) 0 0
-    color-mix(in oklab, var(--xh-_tone-on, var(--xh-fg-on-brand)) 14%, transparent);
+  --xh-_toggle-highlight: var(--xh-_highlight-tone);
 
   box-shadow: var(--xh-toggle-shadow, var(--xh-_toggle-highlight));
 }
@@ -26755,8 +26758,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_fg: var(--xh-toggle-group-item-fg-on, var(--xh-_tone-on, var(--xh-fg-on-brand)));
   --xh-_border: var(--xh-toggle-group-item-border-on, var(--xh-_tone, var(--xh-bg-brand)));
   /* 选中的这一段是实心底，顶边画一条极浅的内高光把它衬出厚度；未选中的段是透明底，不画 */
-  --xh-_toggle-group-highlight: inset 0 var(--xh-stroke-thin) 0 0
-    color-mix(in oklab, var(--xh-_tone-on, var(--xh-fg-on-brand)) 14%, transparent);
+  --xh-_toggle-group-highlight: var(--xh-_highlight-tone);
 
   box-shadow: var(--xh-toggle-group-item-shadow, var(--xh-_toggle-group-highlight));
 
@@ -26832,8 +26834,10 @@ input[data-scope='mention'][data-part='input'] {
   display: none;
 }
 
-/* 出错态换描边色，与语气轴各管各的：语气是作者定的强调，出错是组件自己的阶段 */
-[data-scope='tool-call'][data-part='root'][data-phase='output-error'] {
+/* 出错态换描边色，与语气轴各管各的：语气是作者定的强调，出错是组件自己的阶段。
+   根上的 data-state 已经被开合占着，阶段从下面任一部件上读——阶段发在名字、摘要、
+   状态、用时、审批、输入、输出、错误八个部件上，渲出其中任何一个这条都命中 */
+[data-scope='tool-call'][data-part='root']:has([data-scope='tool-call'][data-state='output-error']) {
   border-color: var(--xh-tool-call-border-error, var(--xh-border-invalid));
 }
 
@@ -26950,26 +26954,26 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 /* 三档落定的阶段收成药丸：淡底 + 同族深字。在跑的两档不带底，让扫光自己说话 */
-[data-scope='tool-call'][data-part='status'][data-phase='awaiting-approval'],
-[data-scope='tool-call'][data-part='status'][data-phase='output-available'],
-[data-scope='tool-call'][data-part='status'][data-phase='output-error'] {
+[data-scope='tool-call'][data-part='status'][data-state='awaiting-approval'],
+[data-scope='tool-call'][data-part='status'][data-state='output-available'],
+[data-scope='tool-call'][data-part='status'][data-state='output-error'] {
   padding-block: var(--xh-tool-call-status-py, var(--xh-space-0_5));
   padding-inline: var(--xh-tool-call-status-px, var(--xh-space-2));
   border-radius: var(--xh-tool-call-status-radius, var(--xh-shape-pill));
 }
 
 /* 各阶段的状态色：与语气轴分开走，语气是作者定的强调 */
-[data-scope='tool-call'][data-part='status'][data-phase='awaiting-approval'] {
+[data-scope='tool-call'][data-part='status'][data-state='awaiting-approval'] {
   background: var(--xh-tool-call-status-bg-approval, color-mix(in oklab, var(--xh-fg-warning) 12%, var(--xh-bg-surface)));
   color: var(--xh-tool-call-status-fg-approval, color-mix(in oklab, var(--xh-fg-warning) 60%, var(--xh-fg-default)));
 }
 
-[data-scope='tool-call'][data-part='status'][data-phase='output-available'] {
+[data-scope='tool-call'][data-part='status'][data-state='output-available'] {
   background: var(--xh-tool-call-status-bg-done, color-mix(in oklab, var(--xh-fg-success) 12%, var(--xh-bg-surface)));
   color: var(--xh-tool-call-status-fg-done, color-mix(in oklab, var(--xh-fg-success) 60%, var(--xh-fg-default)));
 }
 
-[data-scope='tool-call'][data-part='status'][data-phase='output-error'] {
+[data-scope='tool-call'][data-part='status'][data-state='output-error'] {
   background: var(--xh-tool-call-status-bg-error, color-mix(in oklab, var(--xh-fg-danger) 12%, var(--xh-bg-surface)));
   color: var(--xh-tool-call-status-fg-error, color-mix(in oklab, var(--xh-fg-danger) 60%, var(--xh-fg-default)));
 }
@@ -27698,7 +27702,7 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 主按钮：整条引导的主线动作。实心底顶边一条极浅的内高光，把这块面衬出厚度 */
 [data-scope='tour'][data-part='next-trigger'] {
-  --xh-_tour-next-highlight: inset 0 var(--xh-stroke-thin) 0 0 color-mix(in oklab, var(--xh-fg-on-brand) 14%, transparent);
+  --xh-_tour-next-highlight: var(--xh-_highlight-brand);
 
   background: var(--xh-tour-next-bg, var(--xh-bg-brand));
   color: var(--xh-tour-next-fg, var(--xh-fg-on-brand));

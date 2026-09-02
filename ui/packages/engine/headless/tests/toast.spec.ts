@@ -207,7 +207,7 @@ describe('connectToast', () => {
     expect(info.role).toBe('status')
     expect(info['aria-live']).toBe('polite')
     expect(info['aria-atomic']).toBe('true')
-    expect(info['data-type']).toBe('info')
+    expect(info['data-severity']).toBe('info')
     expect(info['data-state']).toBe('visible')
 
     const error = makeToast({ duration: 0, type: 'error' }).api().getRootProps() as Record<string, unknown>

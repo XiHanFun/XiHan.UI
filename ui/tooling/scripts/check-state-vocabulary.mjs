@@ -13,6 +13,11 @@
 //    表头吸顶才叫 data-fixed）。判据③只认得出「dataAttr 对上字面量枚举」这一种组合——
 //    枚举值若由函数算出再经变量交进来（表格那一对当初就是这样），静态看不出来，
 //    得靠人工审计；它守的是照着别处复制粘贴写歪的那一类。
+// ⑨ 一名多义的另一半：同一个属性名在两个组件里都是枚举、取值域却互不相交，
+//    说明它在两处问的不是同一个问题（形态轴那种「同一个问题、各家自己的取值」不算）。
+//    取值域两头收：connect 里的字面量，加上皮肤选择器里 [data-x='v'] 选中的值——
+//    取值经变量中转的组件（'data-severity': severity）静态看不出字面量，皮肤那一头补得上。
+//    判定为同一个问题的写进 state-vocabulary.json 的 enum 段，一句话说不清的即须拆名。
 //
 // ④ data-state 的取值必须登记在 state-vocabulary.json 的某个族里，connect 的字面量与皮肤的选择器两头都查；
 //    ARIA↔data 的配对也写在那份表里，供人照着配。
@@ -31,6 +36,7 @@ const VOCAB_PATH = 'tooling/scripts/state-vocabulary.json'
 
 /**
  * 发 aria-current 但 data 侧不配 data-current 的组件，逐条写明由谁承担当前项语义。
+ * 只豁免「必须配 data-current」这一条，同一处「不许再发 data-selected / data-active」照查。
  * 每条都要真被用来放行过一次，一次都没用上的会被下面的名单核验报出来。
  */
 const ARIA_CURRENT_EXEMPT = {
@@ -51,6 +57,10 @@ const RE_BOOL_CONST = /const\s+([A-Za-z_$][\w$]*)\s*=\s*dataAttr\(/g
 const RE_STATE_LITERALS = /'data-state'\s*:\s*([^,\n]+)/g
 /** 枚举形态：值是字面量字符串，或三元的两支都是字面量字符串。 */
 const RE_ENUM_VALUE = /^(?:'[a-z][a-z0-9-]*'|.*\?\s*'[a-z][a-z0-9-]*'\s*:\s*'[a-z][a-z0-9-]*')$/
+/** 值表达式里的取值字面量，判据⑨拿它当取值域。 */
+const RE_VALUE_LITERAL = /'([a-z][a-z0-9-]*)'/g
+/** 选择器里按出现顺序扫 scope 限定与带值的属性，用来把取值归到组件名下。 */
+const RE_SCOPE_OR_VALUE = /\[data-scope=['"]([a-z0-9-]+)['"]\]|\[(data-[a-z0-9-]+)=['"]([a-z0-9-]+)['"]\]/g
 
 function lineOf(source, index) {
   let line = 1
@@ -61,12 +71,56 @@ function lineOf(source, index) {
   return line
 }
 
+/** 取出所有规则块的选择器串；@ 开头的前奏（@layer / @media / @supports）不是选择器。 */
+function selectorLists(css) {
+  const out = []
+  let buf = ''
+  for (const ch of css) {
+    if (ch === '{') {
+      const prelude = buf.trim()
+      buf = ''
+      if (prelude && !prelude.startsWith('@'))
+        out.push(prelude)
+      continue
+    }
+    if (ch === '}' || ch === ';') {
+      buf = ''
+      continue
+    }
+    buf += ch
+  }
+  return out
+}
+
+/** 按逗号切成一条条选择器，括号里的逗号不算分隔——:is(a, b) 是一条。 */
+function splitSelectors(list) {
+  const out = []
+  let cur = ''
+  let paren = 0
+  for (const ch of list) {
+    if (ch === '(')
+      paren++
+    if (ch === ')')
+      paren--
+    if (paren === 0 && ch === ',') {
+      out.push(cur)
+      cur = ''
+      continue
+    }
+    cur += ch
+  }
+  out.push(cur)
+  return out.map(s => s.trim()).filter(Boolean)
+}
+
 const problems = []
 /** 真的用来放行过的组件。 */
 const ariaCurrentExemptSeen = new Set()
 const vocabulary = new Map()
 /** 属性名 → { bool: [出处], enum: [出处] }，用于判据③。 */
 const shapes = new Map()
+/** 属性名 → 组件名 → 取值集合，用于判据⑨。 */
+const enumDomains = new Map()
 /** 已读入的 connect 源码：posix 路径 → 内容，判据④复用。 */
 const connectSources = []
 let files = 0
@@ -75,6 +129,16 @@ function noteShape(attr, shape, where) {
   if (!shapes.has(attr))
     shapes.set(attr, { bool: [], enum: [] })
   shapes.get(attr)[shape].push(where)
+}
+
+function noteDomain(attr, component, values) {
+  if (!enumDomains.has(attr))
+    enumDomains.set(attr, new Map())
+  const byComponent = enumDomains.get(attr)
+  if (!byComponent.has(component))
+    byComponent.set(component, new Set())
+  for (const value of values)
+    byComponent.get(component).add(value)
 }
 
 const entries = await readdir(HEADLESS_SRC, { withFileTypes: true })
@@ -116,10 +180,13 @@ for (const entry of entries) {
       if (value === 'undefined')
         continue
       const where = `${posix}:${lineOf(source, match.index)}`
-      if (value.includes('dataAttr(') || boolConsts.has(value))
+      if (value.includes('dataAttr(') || boolConsts.has(value)) {
         noteShape(match[1], 'bool', where)
-      else if (RE_ENUM_VALUE.test(value))
+      }
+      else if (RE_ENUM_VALUE.test(value)) {
         noteShape(match[1], 'enum', where)
+        noteDomain(match[1], entry.name, [...value.matchAll(RE_VALUE_LITERAL)].map(m => m[1]))
+      }
     }
   }
 }
@@ -161,11 +228,10 @@ for (const [path, source] of connectSources) {
     if (!/['"]aria-current['"]\s*:/.test(getter))
       continue
     const comp = path.split('/').at(-2)
-    if (comp in ARIA_CURRENT_EXEMPT) {
+    const exempt = comp in ARIA_CURRENT_EXEMPT
+    if (exempt)
       ariaCurrentExemptSeen.add(comp)
-      continue
-    }
-    if (!/['"]data-current['"]\s*:/.test(getter))
+    if (!exempt && !/['"]data-current['"]\s*:/.test(getter))
       problems.push(`${path} 里发 aria-current 的节点没配 data-current——当前项在 data 侧只用这一个名字`)
     if (/['"]data-(?:selected|active)['"]\s*:/.test(getter))
       problems.push(`${path} 里发 aria-current 的节点还在发 data-selected / data-active——当前项改 data-current`)
@@ -235,13 +301,67 @@ for (const [path, source] of connectSources) {
 const skinFiles = (await readdir(STYLES_DIR)).filter(f => f.endsWith('.css'))
 const consumed = new Set()
 for (const file of skinFiles) {
-  const css = (await readFile(join(STYLES_DIR, file), 'utf8')).replace(/\/\*[\s\S]*?\*\//g, '')
+  // 注释里的选择器不算数；换行留着，报错时的行号才对得上原文
+  const css = (await readFile(join(STYLES_DIR, file), 'utf8')).replace(/\/\*[\s\S]*?\*\//g, block => block.replace(/[^\n]/g, ' '))
   for (const m of css.matchAll(/\[(data-[a-z0-9-]+)(?:=['"]([a-z0-9-]+)['"])?\]/g)) {
     consumed.add(m[1])
+    const at = `${STYLES_DIR}/${file}:${lineOf(css, m.index)}`
     if (m[1] in vocab.retired)
-      problems.push(`${STYLES_DIR}/${file} 选了已删掉的 ${m[1]}——${vocab.retired[m[1]]}，这条规则永远不命中`)
+      problems.push(`${at} 选了已删掉的 ${m[1]}——${vocab.retired[m[1]]}，这条规则永远不命中`)
     if (m[1] === 'data-state' && m[2] && !familyOf.has(m[2]))
-      problems.push(`${STYLES_DIR}/${file} 选了 [data-state='${m[2]}']，这个值不在词汇表里——没有 connect 会发它，这条规则永远不命中`)
+      problems.push(`${at} 选了 [data-state='${m[2]}']，这个值不在词汇表里——没有 connect 会发它，这条规则永远不命中`)
+  }
+
+  // 取值域的另一半来源：选择器里选中的值。scope 限定决定这个取值算哪个组件的，
+  // 后代选择器没有自己的 scope 时沿用左边最近的那一个。
+  for (const list of selectorLists(css)) {
+    for (const selector of splitSelectors(list)) {
+      let scope = null
+      for (const m of selector.matchAll(RE_SCOPE_OR_VALUE)) {
+        if (m[1]) {
+          scope = m[1]
+          continue
+        }
+        if (scope && vocabulary.has(m[2]))
+          noteDomain(m[2], scope, [m[3]])
+      }
+    }
+  }
+}
+
+// ⑨ 同一个属性名在两个组件里取值域互不相交＝它在两处问的不是同一个问题。
+//    判定为同一个问题（形态、摆位这一类逐组件自定取值的轴）的登记进 enum 段，
+//    登记项写清这个名字问的是什么；一句话说不清的就是一名多义，各取一个名字。
+{
+  const registered = new Set(Object.keys(vocab.enum).filter(key => !key.startsWith('$')))
+  const seen = new Set()
+  for (const [attr, byComponent] of enumDomains) {
+    const domains = [...byComponent].filter(([, values]) => values.size >= 2)
+    const disjoint = []
+    for (let i = 0; i < domains.length; i++) {
+      for (let j = i + 1; j < domains.length; j++) {
+        const [oneName, oneValues] = domains[i]
+        const [twoName, twoValues] = domains[j]
+        if ([...oneValues].some(value => twoValues.has(value)))
+          continue
+        disjoint.push(`${oneName}（${[...oneValues].join(' / ')}）与 ${twoName}（${[...twoValues].join(' / ')}）`)
+      }
+    }
+    if (!disjoint.length)
+      continue
+    seen.add(attr)
+    if (registered.has(attr))
+      continue
+    problems.push(
+      `${attr} 在这些组件里取值域互不相交：${sample(disjoint)}`
+      + `——一个名字答两个问题，使用者看见 [${attr}] 猜不出选中的是什么。`
+      + ` 两处问的是同一个问题就在 ${VOCAB_PATH} 的 enum 段登记这个名字问的是什么，`
+      + '一句话说不清的即须各取一个说得清的名字',
+    )
+  }
+  for (const attr of registered) {
+    if (!seen.has(attr))
+      problems.push(`${VOCAB_PATH} 的 enum 段登着 ${attr}，却没有哪两个组件的取值域互不相交——名单过期了，删掉这一行`)
   }
 }
 

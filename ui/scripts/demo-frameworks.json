@@ -4,22 +4,13 @@
       "id": "vue",
       "name": "Vue",
       "ext": ".vue",
-      "lang": "vue",
-      "enabled": true
+      "lang": "vue"
     },
     {
       "id": "web-components",
       "name": "Web Components",
       "ext": ".html",
-      "lang": "html",
-      "enabled": true
-    },
-    {
-      "id": "react",
-      "name": "React",
-      "ext": ".tsx",
-      "lang": "tsx",
-      "enabled": false
+      "lang": "html"
     }
   ]
 }

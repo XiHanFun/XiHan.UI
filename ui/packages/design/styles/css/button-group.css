@@ -68,8 +68,7 @@
     --xh-button-bg-active: var(--xh-_tone-active, var(--xh-bg-brand-active));
     --xh-button-fg: var(--xh-_tone-on, var(--xh-fg-on-brand));
     /* 实心面顶边的内高光，沿继承流给组里每一段；段自己写了形态时按钮那边会覆盖掉它 */
-    --xh-_button-group-highlight: inset 0 var(--xh-stroke-thin) 0 0
-      color-mix(in oklab, var(--xh-_tone-on, var(--xh-fg-on-brand)) 14%, transparent);
+    --xh-_button-group-highlight: var(--xh-_highlight-tone);
   }
 
   [data-scope='button-group'][data-part='root'][data-variant='subtle'] {

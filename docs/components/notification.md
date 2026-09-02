@@ -178,9 +178,9 @@ create 返回的就是队列身份 id，存下来随时 dismiss 掉那一条；d
 | `group` | `data-empty` | ''（条件成立时才出现） |
 | `group` | `data-placement` | props.placement |
 | `item` | `data-paused` | ''（条件成立时才出现） |
+| `item` | `data-severity` | props.type |
 | `item` | `data-state` | toStatus(state.get()) |
 | `item` | `data-tone` | toneOf(type) |
-| `item` | `data-type` | props.type |
 | `item-close-trigger` | `data-disabled` | ''（条件成立时才出现） |
 
 ## CSS 变量

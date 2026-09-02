@@ -264,6 +264,7 @@ export const tokens = {
   "--xh-switch-track-h-sm": "18px",
   "--xh-switch-track-h-md": "22px",
   "--xh-switch-track-h-lg": "28px",
+  "--xh-measure-prose": "32rem",
   "--xh-surface-py-sm": "var(--xh-space-3)",
   "--xh-surface-px-sm": "var(--xh-space-4)",
   "--xh-surface-py-md": "var(--xh-section-py)",

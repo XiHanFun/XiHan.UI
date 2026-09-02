@@ -60,6 +60,7 @@ export const colorPickerKeyboard: KeyboardTable = {
       keys: ['Escape'],
       when: 'open（本层在层栈顶）',
       does: '收起浮层，焦点归还触发器',
+      restoresFocus: true,
     },
   ],
 }

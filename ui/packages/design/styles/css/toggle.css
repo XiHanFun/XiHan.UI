@@ -96,8 +96,7 @@
   /* 只有实心档按下后才是一块实心语气底，顶边画一条极浅的内高光把它衬出厚度；
      其余三档按下走的是淡底，面上没有厚度可言。置灰时整枚已经压暗，高光一并排除 */
   [data-scope='toggle'][data-part='root'][data-variant='solid'][data-state='on']:not([data-disabled]) {
-    --xh-_toggle-highlight: inset 0 var(--xh-stroke-thin) 0 0
-      color-mix(in oklab, var(--xh-_tone-on, var(--xh-fg-on-brand)) 14%, transparent);
+    --xh-_toggle-highlight: var(--xh-_highlight-tone);
 
     box-shadow: var(--xh-toggle-shadow, var(--xh-_toggle-highlight));
   }

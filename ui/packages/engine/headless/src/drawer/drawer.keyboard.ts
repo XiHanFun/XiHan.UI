@@ -9,7 +9,7 @@ export const drawerKeyboard: KeyboardTable = {
   source: APG,
   rows: [
     { id: 'drawer.kbd.open-on-trigger', keys: ['Enter', 'Space'], when: 'focus in trigger', does: '打开抽屉并把焦点移入 content' },
-    { id: 'drawer.kbd.escape', keys: ['Escape'], when: 'open', does: '关闭并把焦点还给 trigger' },
+    { id: 'drawer.kbd.escape', keys: ['Escape'], when: 'open', does: '关闭并把焦点还给 trigger', restoresFocus: true },
     { id: 'drawer.kbd.tab', keys: ['Tab'], when: 'open 且 modal', does: '在 content 内向后循环焦点' },
     { id: 'drawer.kbd.shift-tab', keys: ['Shift+Tab'], when: 'open 且 modal', does: '在 content 内向前循环焦点' },
   ],

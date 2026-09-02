@@ -154,7 +154,7 @@ export function connectQuestionFlow<T extends PropTypes>(
         ...parts['option-group'].attrs,
         'aria-labelledby': prompt ? promptId(item.id) : undefined,
         'aria-label': prompt ? undefined : (translations?.options ?? 'Options'),
-        'data-type': single ? 'single' : 'multiple',
+        'data-select-mode': single ? 'single' : 'multiple',
         // 键盘全在组上收口：选项只管声明自己，一次冒泡一个处理器
         'onKeyDown': (event: KeyboardEvent) => {
           if (submitted || !isCurrent(item.id))
@@ -222,7 +222,7 @@ export function connectQuestionFlow<T extends PropTypes>(
         // 导航与选中都以此为条目身份
         [ITEM_VALUE_ATTR]: item.value,
         'data-state': selected ? 'checked' : 'unchecked',
-        'data-type': single ? 'single' : 'multiple',
+        'data-select-mode': single ? 'single' : 'multiple',
         'data-disabled': dataAttr(disabled),
         // 非当前题里的选项一个 Tab 停靠点都不占；当前题里只有锚点那一项占
         'tabindex': active && anchorOf(item.questionId) === item.value ? 0 : -1,
@@ -238,7 +238,7 @@ export function connectQuestionFlow<T extends PropTypes>(
       ...parts['option-indicator'].attrs,
       'aria-hidden': true,
       'data-state': isOptionSelected(item.questionId, item.value) ? 'checked' : 'unchecked',
-      'data-type': typeOf(item.questionId) === 'single' ? 'single' : 'multiple',
+      'data-select-mode': typeOf(item.questionId) === 'single' ? 'single' : 'multiple',
     }),
 
     // 排在选项之内，文本自然构成它的可及名

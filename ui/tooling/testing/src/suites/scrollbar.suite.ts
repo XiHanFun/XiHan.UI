@@ -150,7 +150,7 @@ export const scrollbarSuite: ConformanceSuite = {
             'dir': null,
             'aria-hidden': 'true',
             'data-orientation': 'vertical',
-            'data-type': 'always',
+            'data-reveal-mode': 'always',
             'data-state': 'visible',
             'data-dragging': null,
             'data-native': null,
@@ -172,7 +172,7 @@ export const scrollbarSuite: ConformanceSuite = {
       spec: { apg: WCAG },
       props: BASE,
       initial: {
-        parts: { root: { 'data-type': 'scroll-hover', 'data-state': 'hidden' } },
+        parts: { root: { 'data-reveal-mode': 'scroll-hover', 'data-state': 'hidden' } },
       },
     },
     {

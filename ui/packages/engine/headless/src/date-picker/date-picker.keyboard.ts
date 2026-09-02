@@ -9,9 +9,9 @@ export const datePickerKeyboard: KeyboardTable = {
   source: APG,
   rows: [
     { id: 'date-picker.kbd.open', keys: ['Enter', 'Space'], when: 'focus in trigger, closed', does: '展开日历浮层，焦点落到当前聚焦日那一格' },
-    { id: 'date-picker.kbd.toggle', keys: ['Enter', 'Space'], when: 'focus in trigger, open', does: '收起浮层，焦点回到 trigger' },
-    { id: 'date-picker.kbd.escape', keys: ['Escape'], when: 'open', does: '收起浮层并把焦点还给展开前那个控件（通常是 trigger），选中值不变' },
-    { id: 'date-picker.kbd.tab', keys: ['Tab', 'Shift+Tab'], when: 'open', does: '不拦按键：焦点按 Tab 序列自然离开，浮层随即收起且不抢回焦点' },
+    { id: 'date-picker.kbd.toggle', keys: ['Enter', 'Space'], when: 'focus in trigger, open', does: '收起浮层，焦点回到 trigger', restoresFocus: true },
+    { id: 'date-picker.kbd.escape', keys: ['Escape'], when: 'open', does: '收起浮层并把焦点还给展开前那个控件（通常是 trigger），选中值不变', restoresFocus: true },
+    { id: 'date-picker.kbd.tab', keys: ['Tab', 'Shift+Tab'], when: 'open', does: '不拦按键：焦点按 Tab 序列自然离开，浮层随即收起且不抢回焦点', restoresFocus: false },
     { id: 'date-picker.kbd.select', keys: ['Enter', 'Space'], when: 'open, focus in grid', does: '选中聚焦日（由日历完成）；closeOnSelect 时收起浮层——区间要两端都落定才算选完' },
     { id: 'date-picker.kbd.preset-move', keys: ['ArrowUp', 'ArrowDown', 'Home', 'End'], when: 'open, focus in 快捷选项列', does: '在快捷选项之间移动焦点，到头回绕；不写值' },
     { id: 'date-picker.kbd.preset-pick', keys: ['Enter', 'Space'], when: 'open, focus in 某条快捷选项', does: '把这条快捷选项整份写进选中值；closeOnSelect 时收起浮层' },

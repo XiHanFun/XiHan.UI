@@ -193,10 +193,10 @@ focusable 让滑块进 Tab 序并报 role=scrollbar，方向键与翻页键可�
 | `root` | `data-gutter` | ''（条件成立时才出现） |
 | `root` | `data-native` | ''（条件成立时才出现） |
 | `root` | `data-orientation` | props.orientation |
+| `root` | `data-reveal-mode` | props.type |
 | `root` | `data-scrolling` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | 'visible' \| 'hidden' |
-| `root` | `data-type` | props.type |
 | `track` | `data-disabled` | ''（条件成立时才出现） |
 | `track` | `data-orientation` | props.orientation |
 | `thumb` | `data-disabled` | ''（条件成立时才出现） |

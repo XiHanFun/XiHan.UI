@@ -1,5 +1,9 @@
 #!/usr/bin/env node
-// 门禁：内衬与间隙必须留一个使用者覆盖槽；槽名不许指向别的部件。
+// 门禁：两条判据，管辖面不同，别把其中一条的范围当成另一条的。
+//   一、内衬与间隙必须留一个使用者覆盖槽——只作用于 SUFFIX 那一族属性（padding / gap 系列）。
+//   二、槽名的部件段不许指向别的部件——不限属性，颜色 / 尺寸 / 描边 / 布局一并在内。
+//      判得出来的前提是那个部件段正好是本组件解剖里另一个真实部件名；段名压根不是任何
+//      部件名的（整段缺失那种）这条看不出来，那是另一件事。
 //
 // 皮肤是使用者唯一能改样式的口子，改法就是覆盖 --xh-<组件>-<部件>-<属性> 这些槽。
 // 一条 padding 直接写 var(--xh-space-3)，使用者要改就只能提高特指度去压整条规则——
@@ -37,6 +41,8 @@ const SUFFIX = {
  * 键是 `<组件>.<槽名的部件段>`，值是允许读到它的部件。
  */
 const CROSS_PART = {
+  // 摆了周序号的那一行是「序号列 + 七天」的网格，行首那一列的宽度按被排的那一列取名
+  'calendar.week-number': ['week-row'],
   // 搜索结果列表与空态占的都是一格列的位置，几何跟着 column 走，三种形态才等宽等高
   'cascader.column': ['search-list', 'empty'],
   // 勾选框画在 trigger 上，checkbox-group 没有单独的 indicator 节点承载它
@@ -78,6 +84,18 @@ const CROSS_PART = {
 
 /** 注释挖空但保留换行。 */
 const strip = css => css.replace(/\/\*[\s\S]*?\*\//g, m => m.replace(/[^\n]/g, ' '))
+
+/**
+ * 这条规则作用在哪些部件上。
+ *
+ * `:has(…)` 与 `:not(…)` 括号里的部件是**条件**、不是被作用的那个元素，先摘掉再取：
+ * 不摘的话 `[data-part='content']:has([data-part='close-trigger'])` 会把 close-trigger
+ * 也算成本规则的部件，槽名指到它身上也就跟着放行了。
+ */
+function styledParts(selector) {
+  const bare = selector.replace(/:(?:has|not)\([^()]*\)/g, '')
+  return [...bare.matchAll(/data-part='([a-z-]+)'/g)].map(hit => hit[1])
+}
 
 /**
  * 取值里没有被别的 var() 包住的那些槽名。
@@ -135,7 +153,7 @@ for (const file of (await readdir(STYLES_DIR)).filter(f => f.endsWith('.css')).s
 
   for (const rule of rules) {
     const [, selector, body] = rule
-    const parts = [...selector.matchAll(/data-part='([a-z-]+)'/g)].map(x => x[1])
+    const parts = styledParts(selector)
     // 冒号后不写 \s*：它与 [^;]+ 能吃同一批字符，不匹配时会逐位回溯。值交给 trim 归一
     for (const declaration of body.matchAll(/([\w-]+)\s*:([^;]+);/g)) {
       const [, prop, value] = declaration
@@ -220,4 +238,4 @@ if (dead.length) {
 if (problems.length || misnamed.length || dead.length)
   process.exit(1)
 
-console.log(`[check-spacing-slots] 通过：${withSlot} 处内衬 / 间隙都经使用者覆盖槽或私有槽（margin 是几何补偿，不在此列）；${checkedNames} 处槽名的部件段与所在部件对得上，${usedShared.size} 处共用同族已登记`)
+console.log(`[check-spacing-slots] 通过：${withSlot} 处内衬 / 间隙都经使用者覆盖槽或私有槽（margin 是几何补偿，不在此列）；${checkedNames} 处槽名的部件段与所在部件对得上（不限属性，颜色 / 尺寸 / 描边一并在内），${usedShared.size} 处共用同族已登记`)

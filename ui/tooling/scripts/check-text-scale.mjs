@@ -7,15 +7,15 @@
 //
 // 控件里的次级文字（提示、计数、快捷键、清空钮）走 --xh-control-caption-sm/md/lg，比同档主文字低一级。
 //
-// 扫所有引用了原语的声明行：font-size 属性、私有槽赋值、calc 里的换算——原语先灌进私有槽再消费同样是下探。
+// 扫所有引用了原语的声明：font-size 属性、私有槽赋值、calc 里的换算——原语先灌进私有槽再消费同样是下探。
 // 允许：语义档 / 组件槽 --xh-<comp>-* / 私有槽 --xh-_* / inherit / em / % / 0 / calc 里只含上述。
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
+import { declarations, lineCounter, stripComments } from './lib/css-declarations.mjs'
 
 const STYLES_DIR = 'packages/design/styles/css'
 
 const PRIMITIVE = /var\(\s*--xh-font-size-[\w-]+/
-const LINE = /^\s*([\w-]+):([^;]+);/
 
 /**
  * 字号不在文字档上的声明，连同理由。键写成「文件 属性名」。
@@ -35,26 +35,25 @@ const OFF_SCALE = {
 const files = (await readdir(STYLES_DIR)).filter(f => f.endsWith('.css')).sort()
 const problems = []
 const usedOff = new Set()
-let checked = 0
+let scanned = 0
+let sized = 0
 
 for (const file of files) {
-  // 注释抹成空白但保留换行，行号才对得上
-  const src = (await readFile(join(STYLES_DIR, file), 'utf8')).replace(/\/\*[\s\S]*?\*\//g, c => c.replace(/[^\n]/g, ''))
-  src.split('\n').forEach((line, i) => {
-    const m = line.match(LINE)
-    if (!m)
-      return
-    if (m[1] === 'font-size' || /font|size/.test(m[1]))
-      checked++
-    if (!PRIMITIVE.test(m[2]))
-      return
-    const key = `${file} ${m[1]}`
+  const src = stripComments(await readFile(join(STYLES_DIR, file), 'utf8'))
+  const lineOf = lineCounter(src)
+  for (const { prop, value, index } of declarations(src)) {
+    scanned++
+    if (prop === 'font-size' || prop === 'font')
+      sized++
+    if (!PRIMITIVE.test(value))
+      continue
+    const key = `${file} ${prop}`
     if (key in OFF_SCALE) {
       usedOff.add(key)
-      return
+      continue
     }
-    problems.push(`${file}:${i + 1}  ${line.trim()}`)
-  })
+    problems.push(`${file}:${lineOf(index)}  ${prop}: ${value}`)
+  }
 }
 
 for (const key of Object.keys(OFF_SCALE)) {
@@ -70,4 +69,4 @@ if (problems.length) {
   process.exit(1)
 }
 
-console.log(`[check-text-scale] 通过：${files.length} 份皮肤 · ${checked} 处字号声明全部走语义档（例外 ${usedOff.size} 处）`)
+console.log(`[check-text-scale] 通过：${files.length} 份皮肤 · 逐条扫过 ${scanned} 条声明（其中 ${sized} 处 font-size），没有直接下探原语的（例外 ${usedOff.size} 处）`)

@@ -105,7 +105,7 @@
      实心档还在顶边画一条极浅的内高光，把整块底衬出厚度；语气那条同样从实心底上的前景色兑，
      换语气时高光跟着换 */
   [data-scope='tag'][data-part='root'][data-variant='solid'] {
-    --xh-_tag-highlight: inset 0 var(--xh-stroke-thin) 0 0 color-mix(in oklab, var(--xh-fg-on-brand) 14%, transparent);
+    --xh-_tag-highlight: var(--xh-_highlight-brand);
 
     border-color: transparent;
     background: var(--xh-tag-bg, var(--xh-bg-brand));
@@ -114,8 +114,7 @@
   }
 
   [data-scope='tag'][data-part='root'][data-variant='solid'][data-tone] {
-    --xh-_tag-highlight: inset 0 var(--xh-stroke-thin) 0 0
-      color-mix(in oklab, var(--xh-_tone-on, var(--xh-fg-on-brand)) 14%, transparent);
+    --xh-_tag-highlight: var(--xh-_highlight-tone);
 
     background: var(--xh-tag-bg, var(--xh-_tone, var(--xh-bg-brand)));
     color: var(--xh-tag-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));

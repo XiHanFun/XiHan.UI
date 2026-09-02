@@ -32,7 +32,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @attr {string} tone - 语气
  * @attr {string} size - 尺寸：sm / md / lg
  * @fires open-change - 开合变化；detail 为 `{ open: boolean, source: 'user' | 'auto' | 'api' }`
- * @csspart root - 外壳，承载 data-state / data-phase / data-loading
+ * @csspart root - 外壳，承载 data-state（开合）/ data-loading
  * @csspart trigger - 折叠开关，承载 aria-expanded / aria-controls
  * @csspart indicator - 纯装饰指示，对读屏隐藏
  * @csspart name - 工具名，排在开关内因而计入它的可访问名

@@ -324,8 +324,7 @@
 
   /* 内顶高光把实心块顶出一道边，与拒绝那颗的描边同一档厚度 */
   [data-scope='approval'][data-part='approve-trigger'] {
-    --xh-_approval-approve-highlight: inset 0 var(--xh-stroke-thin) 0 0
-      color-mix(in oklab, var(--xh-_tone-on, var(--xh-fg-on-brand)) 14%, transparent);
+    --xh-_approval-approve-highlight: var(--xh-_highlight-tone);
 
     background: var(--xh-approval-approve-bg, var(--xh-_tone, var(--xh-bg-brand)));
     color: var(--xh-approval-approve-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));

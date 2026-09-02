@@ -11,8 +11,6 @@
     --xh-_empty-state-py: var(--xh-section-py-md);
     --xh-_empty-state-icon-size: var(--xh-glyph-size-2xl);
     --xh-_empty-state-title-size: var(--xh-control-font-lg);
-    /* 说明的读行宽度：整句话不收窄就会拉成一条难读的长行 */
-    --xh-_empty-state-measure: 32rem;
 
     display: flex;
     flex-direction: column;
@@ -70,7 +68,7 @@
 
   [data-scope='empty-state'][data-part='description'] {
     margin: 0;
-    max-inline-size: var(--xh-empty-state-description-max-w, var(--xh-_empty-state-measure));
+    max-inline-size: var(--xh-empty-state-description-max-w, var(--xh-measure-prose));
     color: var(--xh-empty-state-description-fg, var(--xh-fg-muted));
     font-size: var(--xh-empty-state-description-font-size, var(--xh-text-body-size));
     line-height: var(--xh-empty-state-description-leading, var(--xh-text-body-leading));

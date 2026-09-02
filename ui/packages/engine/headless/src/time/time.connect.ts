@@ -72,7 +72,7 @@ export function connectTime<T extends PropTypes>(
       ...parts.root.attrs,
       // 没有可读时刻时不写：空的 datetime 是一条机器读得进去、却指不到任何时刻的假信息
       'datetime': stamp,
-      'data-type': type,
+      'data-format': type,
       'data-state': state,
       // 这一次真按相对说法念了才立；落在四档之外退回绝对日期时不写
       'data-relative': dataAttr(relative),

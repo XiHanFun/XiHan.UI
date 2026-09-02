@@ -230,8 +230,8 @@ const ITEM_CONTRACT = { anatomy: notificationAnatomy, meta: { component: 'notifi
  * @attr {boolean} pause-on-page-idle - 页面切到后台时按住计时，默认关
  * @fires status-change - 生命周期落位；detail 为 `{ id: string, status: 'dismissing'|'unmounted' }`
  * @fires action - 操作按钮被按下；detail 为 `{ id: string }`
- * @csspart item - role=status（error 时 alert）的卡片，承载 data-type / data-tone / data-state / data-paused
- * @csspart item-indicator - 类型指示符；留空即由皮肤按 data-type 画一枚兜底字形
+ * @csspart item - role=status（error 时 alert）的卡片，承载 data-severity / data-tone / data-state / data-paused
+ * @csspart item-indicator - 类型指示符；留空即由皮肤按 data-severity 画一枚兜底字形
  * @csspart item-title - 标题，aria-labelledby 的目标
  * @csspart item-description - 补充说明，aria-describedby 的目标
  * @csspart item-action-trigger - 操作按钮：先发 action 再进入退场

@@ -145,11 +145,11 @@ const HOOKS = {
   'qr-code:data-logo': '中心留没留出徽标位。真正挖洞的是 connect 算出来的内联 style',
   'question-flow:data-mode': '提交钮是"继续"还是"发送"，换的是文案不是外观',
   'scroll-area:data-dragging': '拖的是滚动条部件，滚块的观感由 scrollbar.css:125 那条画',
-  'scroll-area:data-type': '露面策略是入参；露不露由 data-state=visible|hidden 表出',
-  'scrollbar:data-type': '露面策略是入参；露不露由 data-state=visible|hidden 表出',
+  'scroll-area:data-reveal-mode': '露面策略是入参；露不露由 data-state=visible|hidden 表出',
+  'scrollbar:data-reveal-mode': '露面策略是入参；露不露由 data-state=visible|hidden 表出',
   'table:data-sortable': '这一列排不排得了序。排序钮不排序时置 hidden，箭头由 data-sort 画',
   'tags-input:data-overflowing': '越过上限时 data-at-max 同时为真（前者是 count > max，后者是 count >= max），观感由 control 上的 at-max 描边一并承载，两者不另分档',
-  'time:data-type': '按日期、时间还是两者一起渲染，换的是文本不是外观',
+  'time:data-format': '按日期、时间还是两者一起渲染，换的是文本不是外观',
   'timer:data-action': '控制钮这一按是开始还是暂停，换的是文案不是外观',
   'timer:data-countdown': '正计时还是倒计时，数字的排版两者一致',
   'tour:data-last': '走到末步。末步换的是按钮文案不是外观',
@@ -162,7 +162,7 @@ const HOOKS = {
  * 与 HOOKS 的区别是它不是"本来就不该有"，是"该有还没写"。
  */
 const MISSING_VISUAL = {
-  'toast:data-type': '严重度只剩色相一条通道，没有字形指示符；同机器的 notification 有整套（notification.css:208 起）',
+  'toast:data-severity': '严重度只剩色相一条通道，没有字形指示符；同机器的 notification 有整套（notification.css:208 起）',
   'switch:data-readonly': '只读的开关与可操作的开关长得一模一样，按下去没反应；同为集合控件的 rating 给了只读一档观感',
 }
 

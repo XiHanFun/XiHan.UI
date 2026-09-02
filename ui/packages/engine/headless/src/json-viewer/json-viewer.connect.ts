@@ -84,7 +84,7 @@ export function connectJsonViewer<T extends PropTypes>(
 
   /** 行内各部件共用的状态标记，逐类型上色与循环/截断标注都读它。 */
   const nodeState = (node: JsonViewerNode | undefined, value: string): Record<string, string | undefined> => ({
-    'data-type': node?.type,
+    'data-value-type': node?.type,
     'data-circular': dataAttr(!!node?.circular),
     'data-truncated': dataAttr(!!node?.truncated),
     // 焦点落在哪一行是事实，与展开态互相独立

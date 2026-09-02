@@ -236,7 +236,7 @@
   }
 
   /* 单选那一档把方格收成圆 */
-  [data-scope='question-flow'][data-part='option-indicator'][data-type='single'] {
+  [data-scope='question-flow'][data-part='option-indicator'][data-select-mode='single'] {
     border-radius: var(--xh-question-flow-indicator-radius-single, var(--xh-shape-pill));
   }
 
@@ -253,7 +253,7 @@
   }
 
   /* 单选那一档把勾换成实心点：mask 撤掉，圆点由伪元素自己的底色画 */
-  [data-scope='question-flow'][data-part='option-indicator'][data-type='single']:empty::before {
+  [data-scope='question-flow'][data-part='option-indicator'][data-select-mode='single']:empty::before {
     inline-size: var(--xh-question-flow-dot-size, calc(var(--xh-icon-size, var(--xh-glyph-size-text)) * 0.5));
     block-size: var(--xh-question-flow-dot-size, calc(var(--xh-icon-size, var(--xh-glyph-size-text)) * 0.5));
     border-radius: var(--xh-question-flow-dot-radius, var(--xh-shape-pill));
@@ -456,8 +456,7 @@
 
   /* 内顶高光把实心块顶出一道边，与跳过那颗的描边同一档厚度 */
   [data-scope='question-flow'][data-part='submit-trigger'] {
-    --xh-_question-flow-submit-highlight: inset 0 var(--xh-stroke-thin) 0 0
-      color-mix(in oklab, var(--xh-_tone-on, var(--xh-fg-on-brand)) 14%, transparent);
+    --xh-_question-flow-submit-highlight: var(--xh-_highlight-tone);
 
     background: var(--xh-question-flow-submit-bg, var(--xh-_tone, var(--xh-bg-brand)));
     color: var(--xh-question-flow-submit-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));

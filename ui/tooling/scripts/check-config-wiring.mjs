@@ -5,7 +5,7 @@
 //   两侧字段不一致 → 同一份配置在 Vue 上生效、在 Web Components 上没反应，谁也不会报错
 //   size 同名不同义的组件没进豁免名单 → 全局垫一个 'md' 进去，那个组件当场坏掉
 //   headless 声明了 size / translations 的组件在某一侧没接配置 → 全局值对它永远不命中
-//   XhConfig 的字段没有任何组件读 → 配置是死的，写了也不生效
+//   XhConfig 的字段没有任何组件真读它 → 配置是死的，写了也不生效
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
@@ -128,30 +128,118 @@ for (const name of components) {
   }
 }
 
-// —— 四、XhConfig 的每个字段都要有人消费 ——
+// —— 四、XhConfig 的每个字段都要有人真读 ——
 // 声明了字段、合并也正确，但没有任何组件读它，配置就是死的：scrollRoot 曾在 WC 侧一直如此。
+//
+// 扫描面是两个适配器 src 下的全部 .ts，config.ts 也在内——两侧真正把 motion 交给
+// setMotionOverride 的接线点就写在那几个 config.ts 里，按文件名把它们排除，等于把要查的
+// 东西本身排除在外：删掉接线，判据照样绿。
 const VUE_SRC = 'packages/adapters/vue/src'
 const WC_SRC = 'packages/adapters/web-components/src'
-async function sourcesUnder(root) {
+
+/**
+ * 去掉注释，字符串与模板串里的 `//` 不动。
+ *
+ * 注释里的写法不算消费，注释掉的接线更不算：判据要能在接线被注释掉时判红。
+ */
+function stripComments(source) {
   let out = ''
-  for (const entry of await readdir(root, { withFileTypes: true, recursive: true })) {
-    if (entry.isFile() && entry.name.endsWith('.ts') && !entry.name.endsWith('config.ts'))
-      out += await readFile(join(entry.parentPath ?? entry.path, entry.name), 'utf8')
+  for (let i = 0; i < source.length; i++) {
+    const two = source.slice(i, i + 2)
+    if (two === '//') {
+      while (i < source.length && source[i] !== '\n') i++
+      out += '\n'
+      continue
+    }
+    if (two === '/*') {
+      const end = source.indexOf('*/', i + 2)
+      i = end === -1 ? source.length : end + 1
+      out += ' '
+      continue
+    }
+    const quote = source[i]
+    if (quote === '\'' || quote === '"' || quote === '`') {
+      out += quote
+      i++
+      while (i < source.length) {
+        if (source[i] === '\\') {
+          out += source.slice(i, i + 2)
+          i += 2
+          continue
+        }
+        out += source[i]
+        if (source[i] === quote)
+          break
+        i++
+      }
+      continue
+    }
+    out += source[i]
   }
   return out
 }
-// locale / size / translations 经 withXhConfig 统一垫进 props，不必逐字段点名
+
+async function sourcesUnder(root) {
+  let out = ''
+  for (const entry of await readdir(root, { withFileTypes: true, recursive: true })) {
+    if (entry.isFile() && entry.name.endsWith('.ts'))
+      out += `${stripComments(await readFile(join(entry.parentPath ?? entry.path, entry.name), 'utf8'))}\n`
+  }
+  return out
+}
+
+/**
+ * 一次真实取值：从一份配置里把这个字段读出来。
+ *
+ * 判据是「点号左边那一串里带 config」，两侧现有的读法都是这个形状：
+ *   config.<字段>            ·  toValue(config).<字段>
+ *   xhConfig.value.<字段>    ·  resolveXhConfig(this).<字段>
+ * 反过来，`motion: this.motion` 这种把值**装进**一份配置的写法不算消费——装进去没人读，
+ * 配置照样是死的；接口里的字段声明、`declare` 的类字段、import 路径、kebab 字符串同理，
+ * 它们都不是取值，不必再按文件或按 interface 块去排除。
+ *
+ * 新读法读不出来时改这个函数，别去放宽扫描面。
+ */
+function consumes(source, field) {
+  return new RegExp(`[Cc]onfig[\\w$.?!()[\\]]*\\.${field}\\b`).test(source)
+}
+
+/** locale / size / translations 经 withXhConfig 统一垫进 props，不必逐字段点名。 */
 const MERGED_BY_WITH = new Set(['locale', 'size', 'translations'])
+const globalKeys = new Set(
+  [...(mergeSource.match(/GLOBAL_KEYS = \[([^\]]*)\]/)?.[1] ?? '').matchAll(/'(\w+)'/g)].map(m => m[1]),
+)
+const withBody = mergeSource.slice(
+  mergeSource.indexOf('export function withXhConfigBase'),
+  mergeSource.indexOf('\n}', mergeSource.indexOf('export function withXhConfigBase')),
+)
+
 const vueAll = await sourcesUnder(VUE_SRC)
 const wcAll = await sourcesUnder(WC_SRC)
+let probed = 0
 for (const field of vueFields) {
   if (MERGED_BY_WITH.has(field))
     continue
-  const probe = new RegExp(`\\b${field}\\b`)
-  if (!probe.test(vueAll))
-    errors.push(`XhConfig.${field} 在 Vue 侧没有任何组件读它，配置是死的`)
-  if (!VUE_ONLY.has(field) && !probe.test(wcAll))
-    errors.push(`XhConfig.${field} 在 Web Components 侧没有任何组件读它，配置是死的`)
+  probed++
+  const how = `写法要能被 consumes() 认出来（config.${field} 这个形状）；确实读了但写法不同，把新形状加进 check-config-wiring.mjs 的 consumes()`
+  if (!consumes(vueAll, field))
+    errors.push(`XhConfig.${field} 在 Vue 侧没有任何组件读它，配置是死的：${how}`)
+  if (!VUE_ONLY.has(field) && !consumes(wcAll, field))
+    errors.push(`XhConfig.${field} 在 Web Components 侧没有任何组件读它，配置是死的：${how}`)
+}
+
+// 两张豁免名单的过期反查：登了却已不成立的比漏登更危险，它会一直放行
+for (const field of VUE_ONLY) {
+  if (!vueFields.has(field))
+    errors.push(`VUE_ONLY 里的 '${field}' 已经不是 XhConfig 的字段——名单过期了，删掉这一条`)
+  else if (wcFields.has(field))
+    errors.push(`VUE_ONLY 里的 '${field}' 现在 Web Components 侧也有了——名单过期了，删掉这一条，让它跟别的字段一样两侧都查`)
+}
+for (const field of MERGED_BY_WITH) {
+  if (!vueFields.has(field))
+    errors.push(`MERGED_BY_WITH 里的 '${field}' 已经不是 XhConfig 的字段——名单过期了，删掉这一条`)
+  else if (!globalKeys.has(field) && !withBody.includes(field))
+    errors.push(`MERGED_BY_WITH 里的 '${field}' 已经不由 withXhConfig 统一垫底（${MERGE} 的 GLOBAL_KEYS 与 withXhConfigBase 里都找不到它）——名单过期了，删掉这一条，让它照常查有没有人读`)
 }
 
 if (errors.length > 0) {
@@ -161,4 +249,4 @@ if (errors.length > 0) {
   process.exit(1)
 }
 
-console.log(`[check-config-wiring] 通过：两侧配置面各 ${vueFields.size}/${wcFields.size} 个字段都有人消费，size 豁免 ${exempt.size} 个，声明了 size / translations 的组件两侧都接了全局配置`)
+console.log(`[check-config-wiring] 通过：两侧配置面各 ${vueFields.size}/${wcFields.size} 个字段，其中 ${probed} 个逐一验过有人真读（另 ${MERGED_BY_WITH.size} 个经 withXhConfig 统一垫底），size 豁免 ${exempt.size} 个，声明了 size / translations 的组件两侧都接了全局配置`)

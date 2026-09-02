@@ -8477,6 +8477,9 @@
               "name": "--xh-combobox-control-px"
             },
             {
+              "name": "--xh-combobox-control-py"
+            },
+            {
               "name": "--xh-combobox-control-radius"
             },
             {
@@ -8538,9 +8541,6 @@
             },
             {
               "name": "--xh-combobox-input-font-size"
-            },
-            {
-              "name": "--xh-combobox-input-py"
             },
             {
               "name": "--xh-combobox-item-bg-hover"
@@ -12791,6 +12791,9 @@
             },
             {
               "name": "--xh-drawer-description-fg"
+            },
+            {
+              "name": "--xh-drawer-description-font-size"
             },
             {
               "name": "--xh-drawer-fg"
@@ -20380,7 +20383,7 @@
               "name": "tree"
             },
             {
-              "description": "标量行，role=treeitem，带 data-type",
+              "description": "标量行，role=treeitem，带 data-value-type",
               "name": "item"
             },
             {
@@ -26161,11 +26164,11 @@
           "name": "XhNotificationItemElement",
           "cssParts": [
             {
-              "description": "role=status（error 时 alert）的卡片，承载 data-type / data-tone / data-state / data-paused",
+              "description": "role=status（error 时 alert）的卡片，承载 data-severity / data-tone / data-state / data-paused",
               "name": "item"
             },
             {
-              "description": "类型指示符；留空即由皮肤按 data-type 画一枚兜底字形",
+              "description": "类型指示符；留空即由皮肤按 data-severity 画一枚兜底字形",
               "name": "item-indicator"
             },
             {
@@ -34014,7 +34017,7 @@
           "name": "XhScrollAreaElement",
           "cssParts": [
             {
-              "description": "组件根容器（承载 data-orientation / data-type / data-dragging），定位上下文",
+              "description": "组件根容器（承载 data-orientation / data-reveal-mode / data-dragging），定位上下文",
               "name": "root"
             },
             {
@@ -34321,7 +34324,7 @@
           "name": "XhScrollbarElement",
           "cssParts": [
             {
-              "description": "定位盒与指针热区，承载 data-orientation / data-type / data-state / data-scrolling / data-dragging / data-size / data-gutter / data-native；收起走 data-state=hidden 由皮肤淡出",
+              "description": "定位盒与指针热区，承载 data-orientation / data-reveal-mode / data-state / data-scrolling / data-dragging / data-size / data-gutter / data-native；收起走 data-state=hidden 由皮肤淡出",
               "name": "root"
             },
             {
@@ -43928,7 +43931,7 @@
           "name": "XhTimeElement",
           "cssParts": [
             {
-              "description": "那个 `<time>`，承载 datetime / data-type / data-state / data-relative",
+              "description": "那个 `<time>`，承载 datetime / data-format / data-state / data-relative",
               "name": "root"
             }
           ],
@@ -44681,7 +44684,7 @@
           "name": "XhToastElement",
           "cssParts": [
             {
-              "description": "role=status（error 时 alert）的容器，承载 data-type / data-tone / data-state / data-paused",
+              "description": "role=status（error 时 alert）的容器，承载 data-severity / data-tone / data-state / data-paused",
               "name": "root"
             },
             {
@@ -45699,7 +45702,7 @@
           "name": "XhToolCallElement",
           "cssParts": [
             {
-              "description": "外壳，承载 data-state / data-phase / data-loading",
+              "description": "外壳，承载 data-state（开合）/ data-loading",
               "name": "root"
             },
             {

@@ -62,7 +62,7 @@ export function connectToast<T extends PropTypes>(
       // 整条一起念，否则用户会听到半截话
       'aria-atomic': 'true',
       'aria-labelledby': ids.title,
-      'data-type': type,
+      'data-severity': type,
       // 语气轴只挂在 root 上，子部件靠继承拿到语气槽
       'data-tone': toneOf(type),
       'data-state': status,

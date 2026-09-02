@@ -30,7 +30,7 @@
 
 ### 语气
 
-type 落成 data-type，淡底、描边与字形一起换族，正文留中性；error 走 alert + assertive，loading 表示事情还没完、不自动消失
+type 落成 data-severity，淡底、描边与字形一起换族，正文留中性；error 走 alert + assertive，loading 表示事情还没完、不自动消失
 
 <XhDemo src="toast/02-type" />
 
@@ -176,9 +176,9 @@ action-trigger 按下时先发 action 事件，再让这条进入退场；closab
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-paused` | ''（条件成立时才出现） |
+| `root` | `data-severity` | props.type |
 | `root` | `data-state` | toStatus(state.get()) |
 | `root` | `data-tone` | toneOf(type) |
-| `root` | `data-type` | props.type |
 | `close-trigger` | `data-disabled` | ''（条件成立时才出现） |
 
 ## CSS 变量

@@ -8,7 +8,7 @@ export const notificationAnatomy = createAnatomy('notification', [
   'root',
   'group',
   'item',
-  // 类型指示符：作者不往里写东西时由皮肤按 data-type 画一枚兜底字形，
+  // 类型指示符：作者不往里写东西时由皮肤按 data-severity 画一枚兜底字形，
   // 因此「这条是成功还是出错」不依赖作者自己准备图标
   'item-indicator',
   'item-title',

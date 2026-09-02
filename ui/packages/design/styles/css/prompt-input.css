@@ -185,8 +185,7 @@
     --xh-_bg-active: var(--xh-prompt-input-send-bg-active, var(--xh-_tone-active, var(--xh-bg-brand-active)));
     --xh-_fg: var(--xh-prompt-input-send-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
     /* 发送身份是实心底，顶边画一条极浅的内高光把这块面衬出厚度 */
-    --xh-_prompt-input-submit-highlight: inset 0 var(--xh-stroke-thin) 0 0
-      color-mix(in oklab, var(--xh-_tone-on, var(--xh-fg-on-brand)) 14%, transparent);
+    --xh-_prompt-input-submit-highlight: var(--xh-_highlight-tone);
 
     display: inline-flex;
     /* 按钮不参与弹性伸缩 */

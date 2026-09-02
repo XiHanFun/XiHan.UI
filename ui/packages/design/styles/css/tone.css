@@ -139,4 +139,22 @@
   :is([data-theme='dark'] *, [data-theme='dark'])[data-tone='brand'] {
     --xh-_tone-shift: var(--xh-color-neutral-0);
   }
+
+  /* 实心面顶边的内高光：一条极浅的内阴影，把一块实心底衬出厚度。
+     全库十六处实心档共用这两条，别再逐个组件把式子抄一遍。
+
+     两条的差别只在取哪个前景色：--xh-_highlight-tone 跟着语气走（实心底上的前景色，
+     没写语气时退回品牌那一档），--xh-_highlight-brand 恒取品牌色——底色本身不跟语气走的
+     那几处（表单提交、引导主按钮、不带语气的实心标签）用它。
+
+     声明在 :where([data-scope]) 上而不是 :root 上：它俩的值里带 var()，而自定义属性的
+     var() 在「声明它的那个元素」上就替换掉了。落在 :root 上，--xh-_tone-on 与
+     --xh-fg-on-brand 就都按根元素解析，语气与嵌套主题一并冻死；逐元素声明才是现取。
+     同理它也不能收成 tokens 那边的一支令牌。 */
+  :where([data-scope]) {
+    --xh-_highlight-tone: inset 0 var(--xh-stroke-thin) 0 0
+      color-mix(in oklab, var(--xh-_tone-on, var(--xh-fg-on-brand)) 14%, transparent);
+    --xh-_highlight-brand: inset 0 var(--xh-stroke-thin) 0 0
+      color-mix(in oklab, var(--xh-fg-on-brand) 14%, transparent);
+  }
 }

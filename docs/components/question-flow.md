@@ -249,12 +249,12 @@
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
 | `question` | `data-current` | ''（条件成立时才出现） |
-| `option-group` | `data-type` | 'single' \| 'multiple' |
+| `option-group` | `data-select-mode` | 'single' \| 'multiple' |
 | `option` | `data-disabled` | ''（条件成立时才出现） |
+| `option` | `data-select-mode` | 'single' \| 'multiple' |
 | `option` | `data-state` | 'checked' \| 'unchecked' |
-| `option` | `data-type` | 'single' \| 'multiple' |
+| `option-indicator` | `data-select-mode` | 'single' \| 'multiple' |
 | `option-indicator` | `data-state` | 'checked' \| 'unchecked' |
-| `option-indicator` | `data-type` | 'single' \| 'multiple' |
 | `option-label` | `data-state` | 'checked' \| 'unchecked' |
 | `option-label` | `data-value` | item.value |
 | `submit-trigger` | `data-mode` | 'send' \| 'continue' |

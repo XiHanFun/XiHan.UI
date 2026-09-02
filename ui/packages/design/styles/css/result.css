@@ -11,8 +11,6 @@
     --xh-_result-py: var(--xh-section-py-md);
     --xh-_result-icon-size: var(--xh-glyph-size-3xl);
     --xh-_result-title-size: var(--xh-text-heading-3-size);
-    /* 说明的读行宽度：整句话不收窄就会拉成一条难读的长行 */
-    --xh-_result-measure: 32rem;
     /* 图标区的语气色，由 data-status 换掉；没写 status 就退成中性 */
     --xh-_result-accent: var(--xh-fg-subtle);
 
@@ -96,7 +94,7 @@
 
   [data-scope='result'][data-part='description'] {
     margin: 0;
-    max-inline-size: var(--xh-result-description-max-w, var(--xh-_result-measure));
+    max-inline-size: var(--xh-result-description-max-w, var(--xh-measure-prose));
     color: var(--xh-result-description-fg, var(--xh-fg-muted));
     font-size: var(--xh-result-description-font-size, var(--xh-text-body-size));
     line-height: var(--xh-result-description-leading, var(--xh-text-body-leading));

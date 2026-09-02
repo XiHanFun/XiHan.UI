@@ -106,9 +106,9 @@ just now / n minutes ago 四档，超过三十天退回绝对日期；locale 只
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `root` | `data-format` | props.type |
 | `root` | `data-relative` | ''（条件成立时才出现） |
 | `root` | `data-state` | 'empty' |
-| `root` | `data-type` | props.type |
 
 ## CSS 变量
 

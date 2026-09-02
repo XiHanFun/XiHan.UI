@@ -54,7 +54,7 @@ export const toastSuite: ConformanceSuite = {
             // 只念变化的那一小块，用户会听到半截话
             'aria-atomic': 'true',
             'aria-labelledby': '@part(title)',
-            'data-type': 'info',
+            'data-severity': 'info',
             // 配色走全库共用的语气层，由 type 派生
             'data-tone': 'info',
             'data-state': 'visible',
@@ -82,7 +82,7 @@ export const toastSuite: ConformanceSuite = {
           root: {
             'role': 'alert',
             'aria-live': 'assertive',
-            'data-type': 'error',
+            'data-severity': 'error',
             // 词汇表里没有 error 这个语气，出错走 danger
             'data-tone': 'danger',
           },
@@ -252,7 +252,7 @@ export const toastSuite: ConformanceSuite = {
           },
           expect: {
             // loading 既不是好消息也不是坏消息，语气走中性
-            parts: { root: { 'data-state': 'visible', 'data-type': 'loading', 'data-tone': 'neutral' } },
+            parts: { root: { 'data-state': 'visible', 'data-severity': 'loading', 'data-tone': 'neutral' } },
             events: [],
           },
         },
@@ -277,7 +277,7 @@ export const toastSuite: ConformanceSuite = {
           kind: 'settle',
           until: { attr: { part: 'root', name: 'data-state', value: 'dismissing' } },
           expect: {
-            parts: { root: { 'data-type': 'success' } },
+            parts: { root: { 'data-severity': 'success' } },
             events: [{ type: 'status-change', detail: { id: 't1', status: 'dismissing' } }],
           },
         },

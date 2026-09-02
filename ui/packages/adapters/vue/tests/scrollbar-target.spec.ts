@@ -75,7 +75,7 @@ describe('滚动条与作者的滚动容器', () => {
     expect(thumb.style.insetBlockStart).toBe('37.5%')
   })
 
-  it('挂载后改 type 与 disabled：根的 data-type 与 data-state 跟着变', async () => {
+  it('挂载后改 type 与 disabled：根的 data-reveal-mode 与 data-state 跟着变', async () => {
     const host = document.createElement('div')
     document.body.appendChild(host)
 
@@ -102,12 +102,12 @@ describe('滚动条与作者的滚动容器', () => {
     await nextTick()
 
     const root = host.querySelector<HTMLElement>('[data-part="root"]')!
-    expect(root.getAttribute('data-type')).toBe('hover')
+    expect(root.getAttribute('data-reveal-mode')).toBe('hover')
     expect(root.getAttribute('data-state')).toBe('hidden')
 
     type.value = 'always'
     await nextTick()
-    expect(root.getAttribute('data-type')).toBe('always')
+    expect(root.getAttribute('data-reveal-mode')).toBe('always')
     expect(root.getAttribute('data-state')).toBe('visible')
 
     disabled.value = true

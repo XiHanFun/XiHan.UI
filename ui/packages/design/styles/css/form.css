@@ -170,7 +170,7 @@
   /* 提交是这一组里的主操作，给它一层实心底色区分开，顶边再画一条极浅的内高光衬出厚度。
      置灰那档不命中这条选择器，高光自然不出现 */
   [data-scope='form'][data-part='submit-trigger']:not(:disabled) {
-    --xh-_form-submit-highlight: inset 0 var(--xh-stroke-thin) 0 0 color-mix(in oklab, var(--xh-fg-on-brand) 14%, transparent);
+    --xh-_form-submit-highlight: var(--xh-_highlight-brand);
 
     border-color: var(--xh-form-submit-border, var(--xh-form-submit-bg, var(--xh-bg-brand)));
     background: var(--xh-form-submit-bg, var(--xh-bg-brand));

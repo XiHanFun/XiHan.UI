@@ -37,8 +37,7 @@
   /* 形态只决定颜色怎么用；用哪族颜色由 data-tone 决定，没写 tone 就沿用原来的品牌/中性配色。
      实心档还在顶边画一条极浅的内高光，把这块底座衬出厚度；另外三档面上没有实心底，不画 */
   [data-scope='icon-wrapper'][data-part='root'][data-variant='solid'] {
-    --xh-_icon-wrapper-highlight: inset 0 var(--xh-stroke-thin) 0 0
-      color-mix(in oklab, var(--xh-_tone-on, var(--xh-fg-on-brand)) 14%, transparent);
+    --xh-_icon-wrapper-highlight: var(--xh-_highlight-tone);
 
     background: var(--xh-_tone, var(--xh-bg-brand));
     color: var(--xh-_tone-on, var(--xh-fg-on-brand));

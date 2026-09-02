@@ -35,7 +35,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {'sm'|'md'|'lg'} size - 尺寸档，换的是滚动条厚度
  * @attr {'ltr'|'rtl'} dir - 排版方向，只改写横轴的滚动量正负与指针位移方向
  * @attr {boolean} force-visible - 触屏（粗指针）上也画自绘滚动条；缺省交给原生滚动
- * @csspart root - 组件根容器（承载 data-orientation / data-type / data-dragging），定位上下文
+ * @csspart root - 组件根容器（承载 data-orientation / data-reveal-mode / data-dragging），定位上下文
  * @csspart viewport - 真正 overflow:auto 的那层，带 tabindex=0 让键盘用户落得进来；承载 data-lane-vertical / data-lane-horizontal
  * @csspart content - 内容包裹层，横向溢出靠它撑出宽度
  * @csspart scrollbar - 某条轴的滚动条挂载点，须用 orientation 属性写明轴向；同时是那条 scrollbar 的根，承载 data-state / data-gutter / data-native

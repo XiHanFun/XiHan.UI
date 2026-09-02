@@ -152,8 +152,7 @@
     --xh-_fg: var(--xh-toggle-group-item-fg-on, var(--xh-_tone-on, var(--xh-fg-on-brand)));
     --xh-_border: var(--xh-toggle-group-item-border-on, var(--xh-_tone, var(--xh-bg-brand)));
     /* 选中的这一段是实心底，顶边画一条极浅的内高光把它衬出厚度；未选中的段是透明底，不画 */
-    --xh-_toggle-group-highlight: inset 0 var(--xh-stroke-thin) 0 0
-      color-mix(in oklab, var(--xh-_tone-on, var(--xh-fg-on-brand)) 14%, transparent);
+    --xh-_toggle-group-highlight: var(--xh-_highlight-tone);
 
     box-shadow: var(--xh-toggle-group-item-shadow, var(--xh-_toggle-group-highlight));
 

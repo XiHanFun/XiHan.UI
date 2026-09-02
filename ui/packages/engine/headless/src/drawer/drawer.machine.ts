@@ -66,7 +66,7 @@ export const drawerMachine = createMachine({
       },
     },
     effects: {
-      trackOverlay: ({ refs, prop, send, flush }) => {
+      trackOverlay: ({ refs, prop, scope, send, flush }) => {
         const config = refs.get('config')
         const registerLayer = refs.get('registerLayer')
         // 无 DOM 环境（纯逻辑测试）：状态机照常转移，不挂副作用
@@ -115,6 +115,10 @@ export const drawerMachine = createMachine({
           // alertdialog 焦点落在 content 容器本身；普通抽屉交给 tabbable 探测取首个可聚焦元素
           initialFocus: () => (role === 'alertdialog' ? getContentEl() : null),
           restoreFocus: () => prop('restoreFocus') ?? true,
+          // 归还落点显式给 trigger：指针打开那一刻焦点未必真在它身上（Safari 点按不给按钮焦点），
+          // 靠焦点域的创建前快照会把 Escape 之后的 Tab 起点丢到 body 上。
+          // 按 connect 给 trigger 落的 id 现取，没有 trigger 的用法回 null，归还照旧走快照
+          restoreTarget: () => scope.getById<HTMLElement>(scope.partId('drawer', 'trigger')),
         })
         disposers.push(() => focus.dispose())
 
