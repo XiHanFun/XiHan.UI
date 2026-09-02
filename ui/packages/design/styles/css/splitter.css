@@ -33,9 +33,12 @@
     outline: none;
   }
 
-  /* 禁用的整体压暗只做一次，落在最外层：面板与分隔条各自再叠一层 opacity 会越叠越黑 */
+  /* 禁用的整体压暗只做一次，落在最外层：面板与分隔条各自再叠一层 opacity 会越叠越黑。
+     这一档压的是宿主塞进面板里的正文，不是控件自己的图形，所以地板比 --xh-state-disabled-opacity
+     高：那一档是 0.5，黑字白底压完只有 3.94:1，读不出字。压暗仍要表达「这块动不了」，
+     所以留一个槽让使用者按自己的配色调，而不是直接不压。 */
   [data-scope='splitter'][data-part='root'][data-disabled] {
-    opacity: 0.6;
+    opacity: var(--xh-splitter-disabled-opacity, 0.6);
   }
 
   /* 拖动期间整块不许选中文字：手在分隔条上来回蹭时会顺带把两侧的正文刷成高亮 */

@@ -509,7 +509,6 @@
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
     mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
-    font-weight: var(--xh-font-weight-semibold);
   }
 
   [data-scope='cascader'][data-part='item-indicator'][data-disabled] {

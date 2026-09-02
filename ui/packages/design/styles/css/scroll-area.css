@@ -86,6 +86,9 @@
      （轨道与滑块的皮仍归 scrollbar 那一份）。滑块主轴的起点与长度由连接层写进内联样式，这里不碰。 */
   [data-scope='scroll-area'][data-part='scrollbar'] {
     position: absolute;
+    /* 浮层的 positioner 一律 pointer-events: none，条子作为它的子节点会继承到，拖不动也点不着；
+       收起态那条规则优先级更高，仍旧穿透 */
+    pointer-events: auto;
     /* touch-action 关掉浏览器自己的手势：不关的话手指一按滑块页面就跟着滚，
        指针随即被系统收走（pointercancel），拖到一半的滑块停在原地。
        user-select 同理——拖动时选中页面文字会让滑块"粘"住。 */

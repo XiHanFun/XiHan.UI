@@ -80,6 +80,15 @@
     box-shadow: var(--xh-floating-panel-shadow, var(--xh-elevation-sheet));
   }
 
+  /* 最大化时几何层把面板写成铺满视口（left/top 归零、宽高 100%），四条边全贴着视口：
+     圆角会在四角把底下的页面露出来，描边缩成一圈贴边的多余框线，投影整块落在视口之外。
+     三样一起撤，与抽屉贴住视口的那条边不圆角是同一回事。 */
+  [data-scope='floating-panel'][data-part='content'][data-stage='maximized'] {
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
   [data-scope='floating-panel'][data-part='content'][hidden] {
     display: none;
   }

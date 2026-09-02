@@ -40,7 +40,7 @@
   }
 
   [data-scope='signature-pad'][data-part='control'][data-invalid] {
-    border-color: var(--xh-border-invalid);
+    border-color: var(--xh-signature-pad-control-border-invalid, var(--xh-border-invalid));
   }
 
   /* 落笔期间把描边压深一档。border-strong 是装饰梯度里的一档，比 border-control 更淡，

@@ -128,7 +128,9 @@
     display: none;
   }
 
-  [data-scope='approval'][data-part='scope-item']:hover {
+  /* 禁用项带的是 aria-disabled 而非原生 disabled，:hover 照样命中；
+     不挡掉的话已落定或置灰的那一条悬停仍会换底 */
+  [data-scope='approval'][data-part='scope-item']:not([data-disabled]):hover {
     background: var(--xh-approval-scope-bg-hover, var(--xh-bg-subtle-hover));
   }
 
@@ -321,11 +323,13 @@
     box-shadow: var(--xh-approval-approve-shadow, var(--xh-_approval-approve-highlight));
   }
 
-  [data-scope='approval'][data-part='approve-trigger']:hover {
+  /* 两道守卫缺一不可：判定在途走 aria-disabled（保住可聚焦），落定后才换成原生 disabled，
+     而浏览器对原生 disabled 的按钮照样给 :hover */
+  [data-scope='approval'][data-part='approve-trigger']:not([aria-disabled='true']):not(:disabled):hover {
     background: var(--xh-approval-approve-bg-hover, var(--xh-_tone-hover, var(--xh-bg-brand-hover)));
   }
 
-  [data-scope='approval'][data-part='approve-trigger']:active {
+  [data-scope='approval'][data-part='approve-trigger']:not([aria-disabled='true']):not(:disabled):active {
     scale: var(--xh-motion-scale-press);
   }
 
@@ -344,23 +348,21 @@
     color: var(--xh-approval-deny-fg, var(--xh-fg-default));
   }
 
-  [data-scope='approval'][data-part='deny-trigger']:hover {
+  /* 守卫与批准那颗同构：在途是 aria-disabled，落定是原生 disabled，两者浏览器都照给 :hover */
+  [data-scope='approval'][data-part='deny-trigger']:not([aria-disabled='true']):not(:disabled):hover {
     background: var(--xh-approval-deny-bg-hover, var(--xh-bg-subtle-hover));
   }
 
-  [data-scope='approval'][data-part='deny-trigger']:active {
+  [data-scope='approval'][data-part='deny-trigger']:not([aria-disabled='true']):not(:disabled):active {
     scale: var(--xh-motion-scale-press);
   }
 
   /* 判定在途时拒绝也按不动了，用 aria-disabled 而不是原生 disabled：保住可聚焦，
-     让读屏念得到为什么按不动。所以置灰要按这个属性写。
-     排在 :hover / :active 之后：三条选择器特指度相同，靠书写顺序压过它们，
-     否则悬停时这颗看着仍然是可按的 */
+     让读屏念得到为什么按不动。所以置灰要按这个属性写 */
   [data-scope='approval'][data-part='deny-trigger'][aria-disabled='true'] {
     border-color: var(--xh-approval-deny-border-off, var(--xh-border-default));
     background: var(--xh-approval-deny-bg-off, transparent);
     color: var(--xh-fg-disabled);
-    scale: 1;
     cursor: not-allowed;
   }
 

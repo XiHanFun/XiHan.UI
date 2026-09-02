@@ -3,6 +3,7 @@
 // 这条必须在真实浏览器里验：浮层被 Teleport 搬到 portal 落点，坐标由定位引擎实测，
 // 而「落位才露」是皮肤按 data-positioned 判的——jsdom 既不排版也量不出坐标。
 import type { App } from 'vue'
+import { userEvent } from '@vitest/browser/context'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick } from 'vue'
 import {
@@ -166,5 +167,55 @@ describe('摊开省略号', () => {
     ellipses()[1]!.click()
     await tick()
     expect(ellipses()[1]!.getAttribute('aria-expanded')).toBe('false')
+  })
+})
+
+/**
+ * 上面那些用例调的是 element.click()，事件从元素上直接派发，不过命中测试——
+ * 省略位就算被样式挡在指针之外也照样通过。这一组走真实指针与真实键盘，
+ * 只有它们能证明省略位对使用者真的到得了。
+ */
+describe('省略位对真实指针与键盘可达', () => {
+  /** 指针停在角落那块 fixture 上；每条用完都要还回去，免得下一条挂载时被补发 pointerenter。 */
+  async function parkPointer(): Promise<void> {
+    await userEvent.hover(document.querySelector<HTMLElement>('[data-test-park-pointer]')!)
+  }
+
+  it('省略位在命中测试里就是它自己，不是被它挡住的底下那层', async () => {
+    await mount()
+    const el = ellipses()[1]!
+    const box = el.getBoundingClientRect()
+    const hit = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2)
+
+    // 吞掉指针事件的话，这里点到的会是分页行乃至更外层
+    expect(el.contains(hit)).toBe(true)
+  })
+
+  it('真实指针悬停即摊开：折进去的那几页对指针用户不是死区', async () => {
+    await mount()
+    await parkPointer()
+    await userEvent.hover(ellipses()[1]!)
+    // 悬停要停够 openDelay 才摊开；多等无妨，指针不挪开就一直是开着的
+    await new Promise(r => setTimeout(r, 400))
+    await tick()
+
+    expect(ellipses()[1]!.getAttribute('aria-expanded')).toBe('true')
+    expect(foldedPages().length).toBeGreaterThan(0)
+    await parkPointer()
+  })
+
+  it('键盘走到省略位时有聚焦环', async () => {
+    await mount()
+    const target = ellipses()[0]!
+    // 从头逐个 Tab 过去：只有真实键盘走到的焦点才匹配 :focus-visible
+    for (let i = 0; i < 20 && document.activeElement !== target; i++)
+      await userEvent.tab()
+
+    expect(document.activeElement).toBe(target)
+    // 判的是库自己那圈环（solid），不是浏览器兜底的那圈（auto）——省略位漏出皮肤的 focus 组时，
+    // 屏幕上仍会有 UA 的环，只看宽度不为零验不出东西
+    const ring = getComputedStyle(target)
+    expect(ring.outlineStyle).toBe('solid')
+    expect(Number.parseFloat(ring.outlineWidth)).toBeGreaterThan(0)
   })
 })

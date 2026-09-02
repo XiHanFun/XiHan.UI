@@ -711,6 +711,12 @@ describe('connectDateField 结构与 ARIA', () => {
     expect(m.api().outOfRange).toBe(true)
     expect(m.root.getAttribute('data-out-of-range')).toBe('')
     expect(m.seg[0]!.getAttribute('aria-invalid')).toBe('true')
+    // 不合法态发到根与外框上：皮肤的红边长在 control 上，只标那一小格用户看不出整份输入出了错
+    expect(m.root.getAttribute('data-invalid')).toBe('')
+    expect(m.control.getAttribute('data-invalid')).toBe('')
+    const ok = open({ locale: 'zh-CN', defaultValue: '2026-07-28', min: '2026-01-01' })
+    expect(ok.root.hasAttribute('data-invalid')).toBe(false)
+    expect(ok.control.hasAttribute('data-invalid')).toBe(false)
   })
 })
 

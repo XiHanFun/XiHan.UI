@@ -64,6 +64,9 @@ export function connectDateField<T extends PropTypes>(
   // 拿算出来的值回读再比，不直接比段位：段集在场时段位里带着季度/周这些派生块，
   // 而边界只有年月日，逐段比会把「季度 2 对边界的 0」当成越界
   const outOfRange = complete && isOutOfRange(parseIsoSegments(value, 'second'), bounds)
+  // 越界与显式 invalid 在读屏那里是同一件事：这份输入现在不合法。
+  // 整份控件的不合法态照它发，只标出错的那一段等于把反馈藏在一格里
+  const flagged = invalid || outOfRange
   const ids = scope.ids('date-field', 'label', 'control')
 
   const placeholderOf = (type: DateSegmentType): string =>
@@ -155,7 +158,7 @@ export function connectDateField<T extends PropTypes>(
       'data-size': prop('size'),
       'data-disabled': dataAttr(disabled),
       'data-readonly': dataAttr(readOnly),
-      'data-invalid': dataAttr(invalid),
+      'data-invalid': dataAttr(flagged),
       'data-empty': dataAttr(empty),
       'data-complete': dataAttr(complete),
       'data-out-of-range': dataAttr(outOfRange),
@@ -184,7 +187,7 @@ export function connectDateField<T extends PropTypes>(
       'aria-disabled': disabled ? 'true' : 'false',
       'data-disabled': dataAttr(disabled),
       'data-readonly': dataAttr(readOnly),
-      'data-invalid': dataAttr(invalid),
+      'data-invalid': dataAttr(flagged),
     }),
 
     // 段位与作者写在段间的分隔符都挂在这一层，它占满盒里剩下的宽度，清空钮因此靠在框内末端
@@ -192,7 +195,7 @@ export function connectDateField<T extends PropTypes>(
       ...parts['segment-group'].attrs,
       'data-disabled': dataAttr(disabled),
       'data-readonly': dataAttr(readOnly),
-      'data-invalid': dataAttr(invalid || outOfRange),
+      'data-invalid': dataAttr(flagged),
     }),
 
     segmentOf: props => segmentStates[indexOf(props)],
@@ -212,7 +215,7 @@ export function connectDateField<T extends PropTypes>(
         'data-placeholder': dataAttr(!!item?.empty),
         'data-disabled': dataAttr(!spare && disabled),
         'data-readonly': dataAttr(!spare && readOnly),
-        'data-invalid': dataAttr(!spare && (invalid || outOfRange)),
+        'data-invalid': dataAttr(!spare && flagged),
         'data-focus': dataAttr(!!item?.focused),
         'hidden': spare || undefined,
         // role=spinbutton 让读屏念出当前值与区间，三个 aria-value* 必须显式给
@@ -227,7 +230,7 @@ export function connectDateField<T extends PropTypes>(
         'aria-disabled': spare ? undefined : (disabled ? 'true' : 'false'),
         'aria-readonly': spare ? undefined : (readOnly ? 'true' : 'false'),
         'aria-required': spare ? undefined : (required ? 'true' : 'false'),
-        'aria-invalid': spare ? undefined : (invalid || outOfRange ? 'true' : 'false'),
+        'aria-invalid': spare ? undefined : (flagged ? 'true' : 'false'),
         // 禁用时整组退出 Tab 序；其余时候只有锚点占位，组内移动交给方向键
         'tabindex': spare || disabled ? undefined : (anchor === item.type ? 0 : -1),
         'onFocus': spare ? undefined : () => send({ type: 'SEGMENT.FOCUS', segment: item.type }),

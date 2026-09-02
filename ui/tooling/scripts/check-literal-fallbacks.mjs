@@ -32,6 +32,7 @@ const ALLOWED = new Map([
   ['progress.css:--xh-progress-size=10rem', '环形进度大档直径，与菜单最小宽同值是巧合'],
   ['side-nav.css:--xh-side-nav-collapsed-w=56px', '侧栏折叠后的栏宽，与 56px 的字形档无关'],
   ['slider.css:--xh-slider-vertical-length=10rem', '纵向滑杆默认长度，与菜单最小宽同值是巧合'],
+  ['splitter.css:--xh-splitter-disabled-opacity=0.6', '压的是宿主正文不是控件图形，地板比禁用档高；与拖动档同值是巧合'],
   ['time-picker.css:--xh-time-picker-column-max-h=12rem', '时间列视口高度，与 12rem 的最小宽令牌无关'],
   ['transfer.css:--xh-transfer-list-max-h=16rem', '穿梭框是内嵌列表不是浮层，与 overlay 的 16rem 同值是巧合'],
 ])

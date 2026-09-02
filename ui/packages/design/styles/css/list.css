@@ -41,6 +41,7 @@
     --xh-_list-item-px: var(--xh-list-item-px-lg);
     --xh-_list-item-gap: var(--xh-space-4);
     --xh-_list-title-size: var(--xh-control-font-lg);
+    --xh-_list-description-size: var(--xh-control-caption-lg);
   }
 
   /* —— 外框 —— */
@@ -76,7 +77,7 @@
   /* 悬停换底色：只在能用指针的设备上生效，触摸端不留一个按不掉的悬停态 */
   @media (hover: hover) {
     [data-scope='list'][data-part='root'][data-hoverable] > [data-scope='list'][data-part='item']:hover {
-      background: var(--xh-list-item-bg-hover, var(--xh-bg-subtle-hover));
+      background: var(--xh-list-item-bg-hover, var(--xh-bg-subtle));
     }
   }
 

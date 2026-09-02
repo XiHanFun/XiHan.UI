@@ -1034,6 +1034,25 @@ describe('无障碍与表单出口', () => {
     expect(h.segments()[0]!.getAttribute('aria-required')).toBe('true')
   })
 
+  it('值落在 min/max 之外时整份输入都标成不合法，不只是那一组段位', () => {
+    const h = mount({ defaultValue: '2020-01-01', min: '2026-01-01' })
+    expect(h.input.getAttribute('data-invalid')).toBe('')
+    // 红边长在 control 上：只标段位那一层，用户看不出整份输入出了错
+    expect(h.root.getAttribute('data-invalid')).toBe('')
+    expect(h.control.getAttribute('data-invalid')).toBe('')
+
+    const ok = mount({ defaultValue: '2026-07-28', min: '2026-01-01' })
+    expect(ok.root.hasAttribute('data-invalid')).toBe(false)
+    expect(ok.control.hasAttribute('data-invalid')).toBe(false)
+  })
+
+  it('区间模式下终点那端越界，整份输入照样标成不合法', () => {
+    const h = mount({ selectionMode: 'range', defaultValue: ['2026-07-10', '2030-07-10'], max: '2026-12-31' })
+    expect(h.inputEnd.getAttribute('data-invalid')).toBe('')
+    expect(h.root.getAttribute('data-invalid')).toBe('')
+    expect(h.control.getAttribute('data-invalid')).toBe('')
+  })
+
   it('name 缺省即不参与提交；禁用的控件也不提交', () => {
     const anonymous = mount({ defaultValue: '2026-07-28' })
     expect(anonymous.hiddenInput.hasAttribute('name')).toBe(false)

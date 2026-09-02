@@ -79,7 +79,7 @@
     line-height: var(--xh-leading-tight);
   }
 
-  [data-scope='card'][data-part='root'][data-size='lg'] [data-part='title'] {
+  [data-scope='card'][data-part='root'][data-size='lg'] [data-scope='card'][data-part='title'] {
     font-size: var(--xh-card-title-font-size, var(--xh-control-font-lg));
   }
 
@@ -95,7 +95,7 @@
   }
 
   /* 头与身相邻时，头已经收窄了下边距，身不必再从顶上留一份 */
-  [data-scope='card'][data-part='header'] + [data-part='body'] {
+  [data-scope='card'][data-part='header'] + [data-scope='card'][data-part='body'] {
     padding-block-start: var(--xh-card-body-pt, var(--xh-space-2));
   }
 
@@ -109,13 +109,13 @@
 
   /* —— 分段 —— */
   /* 分隔线画在下一段的上边，段与段之间才只有一条 */
-  [data-scope='card'][data-part='root'][data-segmented] [data-part='body'],
-  [data-scope='card'][data-part='root'][data-segmented] [data-part='footer'] {
+  [data-scope='card'][data-part='root'][data-segmented] [data-scope='card'][data-part='body'],
+  [data-scope='card'][data-part='root'][data-segmented] [data-scope='card'][data-part='footer'] {
     border-block-start: var(--xh-stroke-thin) solid var(--xh-card-divider, var(--xh-border-subtle));
     padding-block-start: var(--xh-_card-pad);
   }
 
-  [data-scope='card'][data-part='root'][data-segmented] [data-part='header'] {
+  [data-scope='card'][data-part='root'][data-segmented] [data-scope='card'][data-part='header'] {
     padding-block-end: var(--xh-_card-pad);
   }
 
