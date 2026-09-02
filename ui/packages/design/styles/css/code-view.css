@@ -274,4 +274,17 @@
   [data-scope='code-view'][data-part='token'][data-kind='punctuation'] {
     color: var(--xh-code-view-punctuation-fg);
   }
+
+  /*
+   * 打印：标出来的那几行只有一层淡底加一条写在 inset 阴影上的实心条，
+   * 底多数打印机丢掉、投影本就不该上纸，标了哪几行在纸上完全读不出来。
+   * 改画一圈内收的实边把那几行框出来。用 outline 不用 border：
+   * 行是横排 flex，加边会把行号与正文一起往里推，没标的行不加边就对不齐了。
+   */
+  @media print {
+    [data-scope='code-view'][data-part='line'][data-highlighted] {
+      outline: var(--xh-code-view-highlight-bar, var(--xh-stroke-thick)) solid currentColor;
+      outline-offset: calc(-1 * var(--xh-code-view-highlight-bar, var(--xh-stroke-thick)));
+    }
+  }
 }

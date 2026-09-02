@@ -9,8 +9,8 @@ import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
 
 /**
- * `<xh-collapsible>` —— Light-DOM 行为宿主，跑 collapsible 机器打到 root/trigger/content 角色节点，
- * 收起时用内联 style.display 隐藏 content。
+ * `<xh-collapsible>` —— Light-DOM 行为宿主，跑 collapsible 机器打到 root/trigger/content/indicator
+ * 角色节点，收起时用内联 style.display 隐藏 content。
  *
  * @customElement xh-collapsible
  * @attr {boolean} open - 受控开合；缺省该属性即非受控
@@ -21,6 +21,7 @@ import { MachineController } from '../runtime/machine-controller'
  * @csspart root - 披露根容器
  * @csspart trigger - 触发按钮（aria-expanded/aria-controls 所在）
  * @csspart content - 可折叠内容（收起时隐藏）
+ * @csspart indicator - 开合方向标记（展开时转向）
  */
 export class XhCollapsibleElement extends XhElement {
   private exit: OverlayExit | null = null
@@ -81,6 +82,7 @@ export class XhCollapsibleElement extends XhElement {
     put('root', api.getRootProps() as Record<string, unknown>)
     put('trigger', api.getTriggerProps() as Record<string, unknown>)
     put('content', api.getContentProps() as Record<string, unknown>)
+    put('indicator', api.getIndicatorProps() as Record<string, unknown>)
 
     // 收起跟着退场闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场
     // 就一帧都播不出来），真正的收起在动画结束后落成内联 display

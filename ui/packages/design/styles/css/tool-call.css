@@ -368,4 +368,19 @@
       animation: none;
     }
   }
+
+  /*
+   * 高对比档：扫光那层渐变被丢弃，只剩被裁成透明的字形填充，状态文字整段消失。
+   * 把两处填充都还回去，在跑这件事仍由状态文字本身表出。
+   */
+  @media (forced-colors: active) {
+    [data-scope='tool-call'][data-part='root'][data-loading] [data-part='status'] {
+      background-image: none;
+      -webkit-background-clip: border-box;
+      background-clip: border-box;
+      color: CanvasText;
+      -webkit-text-fill-color: currentColor;
+      animation: none;
+    }
+  }
 }

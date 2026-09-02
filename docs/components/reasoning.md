@@ -176,6 +176,10 @@ ghost 档不占一块面，开关收成只占文字宽度的小药丸，适合�
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
+## 响应式
+
+皮肤内置条件规则：`forced-colors: active`。
+
 ## RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。

@@ -21,6 +21,9 @@ import {
   XhPasswordInputInput,
   XhPasswordInputRoot,
   XhProgress,
+  XhTextFieldControl,
+  XhTextFieldInput,
+  XhTextFieldRoot,
   XhTransferItem,
   XhTransferItemText,
   XhTransferList,
@@ -199,6 +202,72 @@ describe('number-field 的一体式盒有自己的名字', () => {
   })
 })
 
+// —— text-field：常态描边的槽只管常态，聚焦描边各档自己管 ——
+
+/** 两枚并排：前一枚有 control（盒画在它身上），后一枚只有 input（盒画在输入框上）。 */
+function TEXT_TWO_FORMS(): unknown {
+  return [
+    h(XhTextFieldRoot, null, () => [
+      h(XhTextFieldControl, null, () => [h(XhTextFieldInput)]),
+    ]),
+    h(XhTextFieldRoot, null, () => [h(XhTextFieldInput)]),
+  ]
+}
+
+/**
+ * 让某个输入框拿到焦点，再读一个部件的描边色。
+ * 描边色带过渡：聚焦后立刻读到的是插值起点，也就是常态那个色，
+ * 不把时长压成 0 两边永远同值，判据恒真。
+ */
+async function focusedBorder(
+  focusIndex: number,
+  readIndex: number,
+  readPart: string,
+  slots: Record<string, string> = {},
+): Promise<string> {
+  setSlot('--xh-motion-duration-micro', '0s')
+  for (const [name, value] of Object.entries(slots)) setSlot(name, value)
+  await mount(TEXT_TWO_FORMS)
+  part('text-field', 'input', focusIndex).focus()
+  await nextTick()
+  const value = styleOf(part('text-field', readPart, readIndex), 'border-top-color')
+  teardown()
+  return value
+}
+
+describe('text-field 的常态描边槽不牵着聚焦描边', () => {
+  it('设 --xh-text-field-input-border 时一体式盒的聚焦描边与什么都不写同值', async () => {
+    const bare = await focusedBorder(0, 0, 'control')
+    const withSlot = await focusedBorder(0, 0, 'control', { '--xh-text-field-input-border': LIME })
+
+    expect(withSlot).toBe(bare)
+    expect(withSlot).not.toBe(LIME)
+  })
+
+  it('设 --xh-text-field-input-border 时独立输入框的聚焦描边与什么都不写同值', async () => {
+    const bare = await focusedBorder(1, 1, 'input')
+    const withSlot = await focusedBorder(1, 1, 'input', { '--xh-text-field-input-border': LIME })
+
+    expect(withSlot).toBe(bare)
+    expect(withSlot).not.toBe(LIME)
+  })
+
+  it('一体式盒的聚焦描边归 --xh-text-field-control-border-focus 管', async () => {
+    expect(await focusedBorder(0, 0, 'control', { '--xh-text-field-control-border-focus': RED })).toBe(RED)
+  })
+
+  it('独立输入框的聚焦描边归 --xh-text-field-input-border-focus 管', async () => {
+    expect(await focusedBorder(1, 1, 'input', { '--xh-text-field-input-border-focus': RED })).toBe(RED)
+  })
+
+  it('--xh-text-field-input-border 仍管独立输入框的常态描边', async () => {
+    setSlot('--xh-text-field-input-border', LIME)
+    await mount(TEXT_TWO_FORMS)
+
+    expect(styleOf(part('text-field', 'input', 1), 'border-top-color')).toBe(LIME)
+  })
+})
+
 // —— tree：叶子的勾与分支的箭头各有各的名字 ——
 
 const TREE_COLLECTION = [
@@ -334,6 +403,36 @@ describe('password-input 大写锁定提示的槽按部件取名', () => {
 
     expect(legacy).not.toBe(LIME)
     expect(legacy).toBe(bare)
+  })
+})
+
+/** 两枚并排：前一枚有 control（盒画在它身上），后一枚只有 input（盒画在输入框上）。 */
+function PASSWORD_TWO_FORMS(): unknown {
+  return [
+    h(XhPasswordInputRoot, null, () => [
+      h(XhPasswordInputControl, null, () => [h(XhPasswordInputInput)]),
+    ]),
+    h(XhPasswordInputRoot, null, () => [h(XhPasswordInputInput)]),
+  ]
+}
+
+describe('password-input 的一体式盒有自己的圆角槽', () => {
+  it('两档各调各的：input 槽不改一体式盒，control 槽不改独立输入框', async () => {
+    setSlot('--xh-password-input-input-radius', '11px')
+    setSlot('--xh-password-input-control-radius', '3px')
+    await mount(PASSWORD_TWO_FORMS)
+
+    expect(styleOf(part('password-input', 'control'), 'border-top-left-radius')).toBe('3px')
+    expect(styleOf(part('password-input', 'input', 1), 'border-top-left-radius')).toBe('11px')
+  })
+
+  it('设 --xh-password-input-input-radius 时一体式盒与什么都不写同值', async () => {
+    const read = (): string => styleOf(part('password-input', 'control'), 'border-top-left-radius')
+    const bare = await measure(PASSWORD_TWO_FORMS, read)
+    const withSlot = await measure(PASSWORD_TWO_FORMS, read, { '--xh-password-input-input-radius': '11px' })
+
+    expect(withSlot).toBe(bare)
+    expect(withSlot).not.toBe('11px')
   })
 })
 

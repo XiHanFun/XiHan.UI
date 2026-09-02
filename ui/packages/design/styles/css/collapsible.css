@@ -7,6 +7,9 @@
   /* 根容器自己不排版，这条只声明尺寸档的私有槽：触发按钮从 root 继承它们，
      换档不必给部件各写一条选择器 */
   [data-scope='collapsible'][data-part='root'] {
+    /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+    --xh-icon-size: var(--xh-collapsible-icon-size, var(--xh-glyph-size-text));
+
     --xh-_collapsible-trigger-h: var(--xh-control-h-md);
     --xh-_collapsible-trigger-px: var(--xh-control-px-md);
     --xh-_collapsible-trigger-gap: var(--xh-control-gap-md);
@@ -61,6 +64,32 @@
     opacity: var(--xh-state-disabled-opacity);
   }
 
+  /* 开合方向的标记，排在触发器行尾（触发器是 space-between 两端对齐） */
+  [data-scope='collapsible'][data-part='indicator'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    line-height: var(--xh-leading-none);
+    transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  /* 没写内容就由皮肤画；作者往部件里塞了自己的图形，这条规则即不命中 */
+  [data-scope='collapsible'][data-part='indicator']:empty::before {
+    content: '';
+    display: inline-block;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
+  }
+
+  [data-scope='collapsible'][data-part='indicator'][data-state='open'] {
+    rotate: 180deg;
+  }
+
   /* 这里刻意没有 [data-part='content'][hidden] { display: none }：补了动画一帧都播不出来。
      收起由适配器在退场结束后写内联 display 落成，退场窗口内靠 connect 发的 inert 挡住焦点 */
   [data-scope='collapsible'][data-part='content'] {
@@ -108,7 +137,8 @@
 
   /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
      写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
-  [data-scope='collapsible'][data-part='trigger'][hidden] {
+  [data-scope='collapsible'][data-part='trigger'][hidden],
+  [data-scope='collapsible'][data-part='indicator'][hidden] {
     display: none;
   }
 }

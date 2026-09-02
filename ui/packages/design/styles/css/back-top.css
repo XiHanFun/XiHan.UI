@@ -14,8 +14,15 @@
     --xh-_back-top-size: var(--xh-control-h-md);
 
     position: fixed;
-    inset-block-end: var(--xh-back-top-inset-block, var(--xh-space-8));
-    inset-inline-end: var(--xh-back-top-inset-inline, var(--xh-space-8));
+    /* 贴边与安全区取大的一头：底部横条与圆角压住的那一段由系统给出，贴边比它窄时钮会被切掉一角。
+       桌面上 env() 恒为 0，取值与贴边槽完全一致。安全区只有物理方向的名字，
+       行内轴上两侧同取较宽的那一段，RTL 下不会翻错边。 */
+    inset-block-end: max(var(--xh-back-top-inset-block, var(--xh-space-8)), env(safe-area-inset-bottom));
+    inset-inline-end: max(
+      var(--xh-back-top-inset-inline, var(--xh-space-8)),
+      env(safe-area-inset-left),
+      env(safe-area-inset-right)
+    );
     z-index: var(--xh-back-top-layer, var(--xh-layer-sticky));
   }
 

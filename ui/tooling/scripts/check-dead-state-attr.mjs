@@ -12,13 +12,13 @@
 // · 整条选择器一个 scope 值都没有的，是与组件无关的通用规则（tone.css 的 [data-tone]、
 //   reset.css 的 [data-positioned]），对所有组件都算消费。
 //
-// 表分三份：
+// 表分两份：
 // · HOOK_ATTRS —— 属性级放行。属性名本身就在传值、传序号、传名字，落在哪个组件上都是给作者与
 //   测试用的数据位，本就不该有视觉。
 // · HOOKS —— 逐对放行。属性在别处是有视觉的，这一处的那件事由别的通道承载，理由里写清是哪一条。
-// · MISSING_VISUAL —— 逐对登记的欠账。这一处该有视觉、现在没有；补上皮肤规则后把条目删掉。
 //
-// 三份表都做过期反查：登记了却没被扫到（属性不再发了，或者已经补上规则了）同样判失败。
+// 两份表登的都是「本来就不该有」的永久结论，不收「该有还没写」——那种只能以失败呈现。
+// 两份表都做过期反查：登记了却没被扫到（属性不再发了，或者已经补上规则了）同样判失败。
 import { readdir, readFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import process from 'node:process'
@@ -37,7 +37,7 @@ const RE_ATTR_IN_SELECTOR = /\[(data-[a-z0-9-]+)/g
 
 /**
  * 属性级放行：这些属性名本身就是数据位，凡是没有规则的地方一律按信息钩子算。
- * 名字不在这张表里、又确实该有视觉的，走 MISSING_VISUAL。
+ * 名字不在这张表里、又确实该有视觉的，补皮肤规则。
  */
 const HOOK_ATTRS = {
   'data-index': '第几个。取值是序号，作者拿它定位、测试拿它断言',
@@ -157,15 +157,6 @@ const HOOKS = {
   'tree-select:data-indeterminate': '解剖里没有勾选框部件，三态没有可画的地方；选中与否由 data-selected 表出',
 }
 
-/**
- * 逐对登记的欠账：这一处该有视觉、现在没有。补上皮肤规则后把条目删掉。
- * 与 HOOKS 的区别是它不是"本来就不该有"，是"该有还没写"。
- */
-const MISSING_VISUAL = {
-  'toast:data-severity': '严重度只剩色相一条通道，没有字形指示符；同机器的 notification 有整套（notification.css:208 起）',
-  'switch:data-readonly': '只读的开关与可操作的开关长得一模一样，按下去没反应；同为集合控件的 rating 给了只读一档观感',
-}
-
 /** 去掉注释，注释里的选择器不算数。 */
 function stripComments(css) {
   return css.replace(/\/\*[\s\S]*?\*\//g, '')
@@ -190,6 +181,38 @@ function selectorLists(css) {
     buf += ch
   }
   return out
+}
+
+/**
+ * 抹掉 `@media (forced-colors: active)` 的整块正文（换行留着，别的判据的行号不移位）。
+ *
+ * 那一档里的规则只在系统接管配色时才画，常态渲染下一条都不生效；算进消费面的话，
+ * 公共补救层那条 `[data-scope][data-state='checked']` 会把每一个组件的 data-state
+ * 都算成「有视觉」，本判据就再也看不出常态下漏画的状态。
+ */
+function stripForcedColors(css) {
+  let out = css
+  for (;;) {
+    const at = out.search(/@media\s*\(\s*forced-colors\s*:\s*active\s*\)\s*\{/)
+    if (at === -1)
+      return out
+    const open = out.indexOf('{', at)
+    let depth = 0
+    let end = out.length
+    for (let i = open; i < out.length; i++) {
+      if (out[i] === '{') {
+        depth++
+      }
+      else if (out[i] === '}') {
+        depth--
+        if (depth === 0) {
+          end = i + 1
+          break
+        }
+      }
+    }
+    out = out.slice(0, at) + out.slice(at, end).replace(/[^\n]/g, ' ') + out.slice(end)
+  }
 }
 
 /** 按分隔符切，括号里的不切——:is(a, b) 这类里面的逗号不是选择器分隔。 */
@@ -256,7 +279,7 @@ const genericConsume = new Set()
 let skinFiles = 0
 for (const file of (await readdir(STYLES_DIR)).filter(f => f.endsWith('.css')).sort()) {
   skinFiles++
-  const css = stripComments(await readFile(join(STYLES_DIR, file), 'utf8'))
+  const css = stripForcedColors(stripComments(await readFile(join(STYLES_DIR, file), 'utf8')))
   for (const list of selectorLists(css)) {
     for (const selector of splitTop(list, ',')) {
       const attrs = [...selector.matchAll(RE_ATTR_IN_SELECTOR)].map(m => m[1]).filter(a => a !== 'data-scope')
@@ -281,7 +304,6 @@ for (const file of (await readdir(STYLES_DIR)).filter(f => f.endsWith('.css')).s
 const problems = []
 const hookAttrSeen = new Set()
 const hookSeen = new Set()
-const missingSeen = new Set()
 let pairs = 0
 let alive = 0
 
@@ -301,11 +323,7 @@ for (const [component, attrs] of [...emitted].sort()) {
       hookSeen.add(key)
       continue
     }
-    if (key in MISSING_VISUAL) {
-      missingSeen.add(key)
-      continue
-    }
-    problems.push(`${where} 发了 ${attr}，但 [data-scope='${component}'] 这个作用域里没有一条规则消费它——补一条皮肤规则，或者登记进 HOOKS / MISSING_VISUAL`)
+    problems.push(`${where} 发了 ${attr}，但 [data-scope='${component}'] 这个作用域里没有一条规则消费它——补一条皮肤规则，或者登记进 HOOKS`)
   }
 }
 
@@ -317,10 +335,6 @@ for (const key of Object.keys(HOOKS)) {
   if (!hookSeen.has(key))
     problems.push(`HOOKS 里登着 ${key}，却没被扫到——属性不发了，或者已经补上规则了，删掉这一条`)
 }
-for (const key of Object.keys(MISSING_VISUAL)) {
-  if (!missingSeen.has(key))
-    problems.push(`MISSING_VISUAL 里登着 ${key}，却没被扫到——欠账还上了就删掉这一条`)
-}
 
 if (problems.length > 0) {
   console.error('[check-dead-state-attr] ✗ 状态属性发了没人消费：')
@@ -330,4 +344,4 @@ if (problems.length > 0) {
   process.exit(1)
 }
 
-console.log(`[check-dead-state-attr] 通过：${connectFiles} 份 connect · ${skinFiles} 份皮肤 · ${pairs} 对（组件, 属性），${alive} 对在本组件作用域内有规则；登记放行 ${pairs - alive} 对（属性级 ${hookAttrSeen.size} 类 · 逐对钩子 ${hookSeen.size} 条 · 欠账 ${missingSeen.size} 条）`)
+console.log(`[check-dead-state-attr] 通过：${connectFiles} 份 connect · ${skinFiles} 份皮肤 · ${pairs} 对（组件, 属性），${alive} 对在本组件作用域内有规则；登记放行 ${pairs - alive} 对（属性级 ${hookAttrSeen.size} 类 · 逐对钩子 ${hookSeen.size} 条）`)

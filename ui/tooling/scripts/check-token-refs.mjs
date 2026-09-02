@@ -7,6 +7,7 @@ import { join } from 'node:path'
 
 const STYLES_DIR = 'packages/design/styles/css'
 const TOKENS_CSS = 'packages/design/tokens/tokens.css'
+const SPACE_ANATOMY = 'packages/engine/headless/src/space/space.anatomy.ts'
 
 /** 组件私有槽：由皮肤自己声明或留给使用者覆盖，不在令牌产物里。 */
 function isComponentSlot(name, declaredInStyles) {
@@ -94,6 +95,44 @@ for (const [file, src] of sources) {
   })
 }
 
+// ── --xh-space-* 命名空间 ──
+//
+// 全局间距原语占着这个前缀：--xh-space-0 … --xh-space-8 与 --xh-space-0_5 / -1_5 / -2_5，
+// 后缀一律是数字与下划线。前缀底下再出现一个词形的名字，使用者在 :root 上写它时
+// 会以为自己在改全站间距——而它其实只管一个组件；反过来，日后往令牌表里加一支同名的，
+// 那个组件的缺省间距会被悄悄接管，其余判据一条都不会响（引用「声明过就算数」）。
+//
+// 允许两类：
+//   一、原语本身；
+//   二、space 皮肤的使用者覆盖槽，形状是 --xh-space-<部件>-<属性>，部件段取自 space 的解剖。
+//      部件名改了这里立刻跟着红，槽名与解剖对不上就查得出来。
+// 另有一个登记：皮肤在场标记 --xh-space-skin，名字由 check-skin-markers 按 --xh-<scope>-skin 规定死。
+const SPACE_PRIMITIVE = /^\d+(?:_\d+)?$/
+const SPACE_MARKER = '--xh-space-skin'
+const spaceParts = [...(await readFile(SPACE_ANATOMY, 'utf8')).matchAll(/'([a-z][a-z0-9-]*)'/g)]
+  .map(m => m[1])
+  .filter(name => name !== 'space')
+const spaceSquatters = []
+let markerSeen = false
+for (const [file, src] of [...sources, ['tokens.css', tokensCss]]) {
+  src.split(/\r?\n/).forEach((line, i) => {
+    for (const m of line.matchAll(/--xh-space-([a-z0-9_-]+)/g)) {
+      const [full, rest] = m
+      if (SPACE_PRIMITIVE.test(rest))
+        continue
+      if (full === SPACE_MARKER) {
+        markerSeen = true
+        continue
+      }
+      if (spaceParts.some(part => rest === part || rest.startsWith(`${part}-`)))
+        continue
+      spaceSquatters.push(`${file}:${i + 1}  ${full}`)
+    }
+  })
+}
+if (!markerSeen)
+  spaceSquatters.push(`${SPACE_MARKER}  登记在这里却没被扫到——名单过期了`)
+
 if (colors.length) {
   console.error('[check-token-refs] ✗ 皮肤里写了颜色字面量：')
   for (const c of colors)
@@ -122,13 +161,19 @@ for (const file of Object.keys(BG_AS_FOREGROUND_OK)) {
   if (!roleOkSeen.has(file))
     roleSwaps.push(`${file}  登记在 BG_AS_FOREGROUND_OK 里却没被扫到——名单过期了`)
 }
+if (spaceSquatters.length) {
+  console.error('[check-token-refs] ✗ --xh-space-* 是全局间距原语的命名空间，这些名字占了它：')
+  for (const s of spaceSquatters)
+    console.error(`  ${s}`)
+  console.error(`原语的后缀只有数字与下划线；组件槽写成 --xh-space-<部件>-<属性>，部件取自 space 的解剖（${spaceParts.join(' / ')}）。`)
+}
 if (roleSwaps.length) {
   console.error('[check-token-refs] ✗ 底色令牌写进了前景属性：')
   for (const r of roleSwaps)
     console.error(`  ${r}`)
   console.error('前景取 --xh-fg-*。两族在浅色下常撞值，深色下才分开，所以写错了肉眼看不出来。')
 }
-if (orphans.length || fallbacks.length || garbage.length || colors.length || roleSwaps.length)
+if (orphans.length || fallbacks.length || garbage.length || colors.length || roleSwaps.length || spaceSquatters.length)
   process.exit(1)
 
-console.log(`[check-token-refs] 通过：${files.length} 份皮肤的全局令牌都有声明、没有字面量兜底、没有颜色字面量、没有把底色写进前景（反白浮层 ${roleOkSeen.size} 处除外）`)
+console.log(`[check-token-refs] 通过：${files.length} 份皮肤的全局令牌都有声明、没有字面量兜底、没有颜色字面量、没有把底色写进前景（反白浮层 ${roleOkSeen.size} 处除外），--xh-space-* 底下只有间距原语与 space 自己的部件槽`)

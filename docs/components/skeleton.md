@@ -124,6 +124,10 @@ loading 期间容器报 aria-busy，翻成 false 后整块收起，位置让给�
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
+## 响应式
+
+皮肤内置条件规则：`forced-colors: active`。
+
 ## 组合
 
 - 按最终版面用[栅格](./grid)或[弹性布局](./flex)摆骨块。

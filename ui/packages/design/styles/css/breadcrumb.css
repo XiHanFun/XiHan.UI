@@ -100,8 +100,8 @@
 
   /* 当前页用字重与前景色区分，不加下划线：下划线是"可点"的信号，而它点不动 */
   [data-scope='breadcrumb'][data-part='link'][data-current] {
-    color: var(--xh-breadcrumb-current-fg, var(--xh-_breadcrumb-accent-text));
-    font-weight: var(--xh-breadcrumb-current-font-weight, var(--xh-font-weight-medium));
+    color: var(--xh-breadcrumb-link-fg-current, var(--xh-_breadcrumb-accent-text));
+    font-weight: var(--xh-breadcrumb-link-font-weight-current, var(--xh-font-weight-medium));
     cursor: default;
   }
 

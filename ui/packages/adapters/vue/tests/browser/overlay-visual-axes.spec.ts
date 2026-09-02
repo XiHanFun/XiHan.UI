@@ -41,6 +41,11 @@ import {
   XhMentionItemText,
   XhMentionPositioner,
   XhMentionRoot,
+  XhPaginationContent,
+  XhPaginationEllipsis,
+  XhPaginationItem,
+  XhPaginationPositioner,
+  XhPaginationRoot,
   XhPopselectContent,
   XhPopselectItem,
   XhPopselectItemIndicator,
@@ -88,6 +93,8 @@ interface Case {
   /** 浮层里量哪个部件的哪个属性——它吃尺寸档的私有槽。属性名也可以写私有槽本身 */
   sizePart: string
   sizeProp: string
+  /** 同一个部件上还要与页内锚点逐条对齐的属性；有页内锚点时才比 */
+  extraSizeProps?: string[]
   /** 页内同档参照：触发器一侧吃同一个私有槽的那个部件 */
   anchorPart?: string
   /** 浮层里量哪个部件的哪个属性——它吃语气档的私有槽 */
@@ -95,6 +102,8 @@ interface Case {
   toneProp: string
   /** 两台机器合成的组件挂上来就展开会让落焦跑在机器挂载之前，改成挂完再点开 */
   openByClick?: boolean
+  /** 点哪个部件把浮层打开，缺省是 trigger */
+  openPart?: string
   render: (axes: Axes) => VNode
 }
 
@@ -221,6 +230,33 @@ const CASES: Record<string, Case> = {
     ]),
   },
 
+  // 摊开省略位后面板里的页码格子与主区那排是同一副骨架：等宽、等高、同内衬、同字号，
+  // 四项逐条比对。语气派生槽在面板里没有消费点（当前页从不被折进去），直接量槽本身
+  'pagination': {
+    sizePart: 'item',
+    sizeProp: 'font-size',
+    extraSizeProps: ['min-inline-size', 'block-size', 'padding-inline-start', 'line-height'],
+    anchorPart: 'item',
+    tonePart: 'positioner',
+    toneProp: '--xh-_pagination-selected-bg',
+    openByClick: true,
+    openPart: 'ellipsis',
+    render: axes => h(XhPaginationRoot, { ...axes, count: 2000, pageSize: 10, defaultPage: 100 }, {
+      default: ({ pageItems }) => [
+        ...pageItems.map((item, i) => (item.type === 'ellipsis'
+          ? h(XhPaginationEllipsis, { key: `ellipsis-${i}`, side: item.side })
+          : h(XhPaginationItem, { key: `page-${item.value}`, value: item.value }, () => String(item.value)))),
+        h(XhPaginationPositioner, null, () => [
+          h(XhPaginationContent, null, {
+            default: ({ pages }) => pages.map(page =>
+              h(XhPaginationItem, { key: page, value: page }, () => String(page)),
+            ),
+          }),
+        ]),
+      ],
+    }),
+  },
+
   'popselect': {
     sizePart: 'item',
     sizeProp: 'font-size',
@@ -294,7 +330,7 @@ async function mountCase(scope: string, spec: Case, axes: Axes): Promise<void> {
   await nextTick()
   await nextTick()
   if (spec.openByClick) {
-    host.querySelector<HTMLElement>(`[data-scope='${scope}'][data-part='trigger']`)?.click()
+    host.querySelector<HTMLElement>(`[data-scope='${scope}'][data-part='${spec.openPart ?? 'trigger'}']`)?.click()
     await nextTick()
     await nextTick()
   }
@@ -334,6 +370,12 @@ describe('浮层里的视觉轴', () => {
         if (spec.anchorPart) {
           // 浮层里的取值必须与触发器一侧的同档一模一样
           expect(measured[size], `${size} 档：浮层与页内不同`).toBe(inHost(scope, spec.anchorPart, spec.sizeProp))
+          for (const prop of spec.extraSizeProps ?? []) {
+            expect(
+              inPortal(scope, spec.sizePart, prop),
+              `${size} 档：浮层与页内的 ${prop} 不同`,
+            ).toBe(inHost(scope, spec.anchorPart, prop))
+          }
         }
         teardown()
       }
@@ -348,8 +390,11 @@ describe('浮层里的视觉轴', () => {
         measured[tone] = inPortal(scope, spec.tonePart, spec.toneProp)
         teardown()
       }
-      // 不吃语气的组件三族同值，只要求它别退到初值；吃语气的必须三族分开
-      const tonal = spec.toneProp === 'color' || spec.toneProp === 'background-color'
+      // 不吃语气的组件三族同值，只要求它别退到初值；吃语气的必须三族分开。
+      // 颜色属性与语气派生的私有槽都会跟着换族
+      const tonal = spec.toneProp === 'color'
+        || spec.toneProp === 'background-color'
+        || spec.toneProp.startsWith('--xh-_')
       if (tonal)
         expect(new Set(Object.values(measured)).size, `三族量出来是 ${JSON.stringify(measured)}`).toBe(3)
       else

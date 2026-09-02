@@ -4,7 +4,7 @@
 // 打印结果只能人眼验，但漏没漏是查得出来的，而且漏了在开发机上一点征兆都没有——
 // 没人会为了改一个下拉去点一次打印预览，浮层就那么原样印在纸上，盖着底下的正文。
 //
-// 三件事：
+// 四件事：
 // ① 有 positioner / backdrop 部件的皮肤，各自要在 @media print 里把它 display: none。
 //    这条只能落在皮肤里：reset 层排在组件层之前，写在那儿会被组件层任何一条 display 压掉，
 //    而拆层版本里两者又按特指度重新竞争，两份入口的表现会当场分叉。
@@ -12,6 +12,8 @@
 // ③ 投影走令牌层重映射：三支海拔角色在 @media print 里取消。皮肤消费的是
 //    var(--xh-<组件>-…-shadow, var(--xh-elevation-<角色>))，角色一变 none 就整层不画，
 //    不必去跟六个属性深的皮肤选择器比特指度。
+// ④ 只有颜色通道承载语义的表面（热度色阶、标出来的行）必须在打印档另开一条非颜色通道：
+//    多数打印默认丢背景色，只剩灰度相近的一堆字。逐处登记，登了却扫不到即名单过期。
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
@@ -45,8 +47,26 @@ const UNPINNED = {
   'affix.css': ['content'],
 }
 
+/**
+ * 只有颜色通道承载语义的表面：热度色阶、标出来的行。多数打印默认丢背景色，
+ * 剩下的只是灰度相近的一堆字，深浅与标记在纸上一点都读不出来。
+ * 这几处必须在 @media print 里另给一条非颜色通道——边框、描边、字形或字重都算。
+ * 登了却扫不到即名单过期。
+ */
+const COLOR_ONLY = {
+  'heatmap.css': ['cell', 'legend-item'],
+  'code-view.css': ['line'],
+}
+
+/**
+ * 印在纸上还看得见的非颜色通道：描边的宽与线型、字形、下划线、字重与字形斜正。
+ * 只写 -color / -offset / -radius 的那几个不算——颜色本身正是打印会丢掉的那一支，
+ * 偏移与圆角画不出任何东西。
+ */
+const INK_CHANNEL = /(?:border(?:-(?:block|inline)(?:-(?:start|end))?|-(?:top|right|bottom|left))?(?:-(?:width|style))?|outline(?:-(?:width|style))?|content|text-decoration(?:-(?:line|style))?|font-weight|font-style)\s*:/
+
 /** 海拔角色：令牌层必须在打印档把它们全部取消。 */
-const ELEVATION_ROLES = ['raised', 'floating', 'sheet']
+const ELEVATION_ROLES = ['raised', 'lifted', 'floating', 'sheet']
 
 /** 去掉块注释但保留换行，行号才对得上源文件。 */
 function stripComments(css) {
@@ -97,10 +117,27 @@ function hiddenInPrint(body, scope, part) {
   return false
 }
 
+/** 打印块里有没有给这个部件另开一条非颜色通道。 */
+function inkedInPrint(body, scope, part) {
+  const head = `[data-scope='${scope}'][data-part='${part}']`
+  for (const rule of body.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
+    if (!INK_CHANNEL.test(rule[2]))
+      continue
+    const hit = rule[1]
+      .split(',')
+      .map(s => s.replace(/\s+/g, ' ').trim())
+      .some(s => s.includes(head))
+    if (hit)
+      return true
+  }
+  return false
+}
+
 const problems = []
 const files = (await readdir(STYLES_DIR)).filter(f => f.endsWith('.css')).sort()
 let hidden = 0
 let unpinned = 0
+let inked = 0
 
 for (const file of files) {
   const scope = file.replace(/\.css$/, '')
@@ -138,9 +175,20 @@ for (const file of files) {
     else
       problems.push(`${file} 的 ${part} 在 @media print 里没有 position: static——固定定位会让它每页重复一次`)
   }
+
+  for (const part of COLOR_ONLY[file] ?? []) {
+    if (!css.includes(`[data-scope='${scope}'][data-part='${part}']`)) {
+      problems.push(`COLOR_ONLY['${file}'] 登着 ${part}，但这份皮肤里没有这个部件——名单过期`)
+      continue
+    }
+    if (inkedInPrint(body, scope, part))
+      inked++
+    else
+      problems.push(`${file} 的 ${part} 只有颜色通道承载语义，在 @media print 里没有另开一条非颜色通道——多数打印丢背景色，纸上读不出深浅`)
+  }
 }
 
-for (const file of [...Object.keys(REGISTERED), ...Object.keys(UNPINNED)]) {
+for (const file of [...Object.keys(REGISTERED), ...Object.keys(UNPINNED), ...Object.keys(COLOR_ONLY)]) {
   if (!files.includes(file))
     problems.push(`名单登着 ${file}，但皮肤目录里没有这份文件——名单过期`)
 }
@@ -167,4 +215,4 @@ if (problems.length) {
   process.exit(1)
 }
 
-console.log(`[check-print-surface] 通过：${files.length} 份皮肤 · ${hidden} 处交互性节点在打印时收起、${unpinned} 处钉住的内容放回正常流，${ELEVATION_ROLES.length} 支海拔角色由令牌层取消`)
+console.log(`[check-print-surface] 通过：${files.length} 份皮肤 · ${hidden} 处交互性节点在打印时收起、${unpinned} 处钉住的内容放回正常流、${inked} 处只有颜色通道的表面另开了非颜色通道，${ELEVATION_ROLES.length} 支海拔角色由令牌层取消`)

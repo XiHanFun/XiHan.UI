@@ -31,14 +31,13 @@
     --xh-pagination-skin: 1;
   }
 
-  /* 根节点是 nav 地标，只负责把上一页 / 页码 / 下一页排成一行。
-     页数为 0 时连接层会打 data-empty，这里不拿它做隐藏：作者常把「第 x-y 条」这类
-     区间回显也写在 nav 里，整块藏掉会连那行字一起吞了，是否隐藏交给作者决定 */
-  [data-scope='pagination'][data-part='root'] {
+  /* 私有槽同时声明在根与 positioner 上：摊开的页码面板被搬到 portal 落点，
+     不是根的后代，继承不过去。面板里的页码格子与主区那排消费的是同一批槽 */
+  [data-scope='pagination']:is([data-part='root'], [data-part='positioner']) {
     /* 作者塞进上一页/下一页的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
     --xh-icon-size: var(--xh-pagination-icon-size, var(--xh-glyph-size-text));
 
-    /* 尺寸档只换这三个私有槽，上一页/下一页、页码与省略号都从 root 继承它们，
+    /* 尺寸档只换这三个私有槽，上一页/下一页、页码与省略号都从这两处继承它们，
        换档不必给每个部件各写一条选择器 */
     --xh-_pagination-item-size: var(--xh-control-h-md);
     --xh-_pagination-item-px: var(--xh-control-px-md);
@@ -52,7 +51,12 @@
     --xh-_pagination-selected-fg: var(--xh-_tone-on, var(--xh-fg-on-brand));
     /* 当前页那一格是实心底，顶边画一条极浅的内高光把它衬出厚度 */
     --xh-_pagination-highlight: var(--xh-_highlight-tone);
+  }
 
+  /* 根节点是 nav 地标，只负责把上一页 / 页码 / 下一页排成一行。
+     页数为 0 时连接层会打 data-empty，这里不拿它做隐藏：作者常把「第 x-y 条」这类
+     区间回显也写在 nav 里，整块藏掉会连那行字一起吞了，是否隐藏交给作者决定 */
+  [data-scope='pagination'][data-part='root'] {
     display: flex;
     align-items: center;
     /* 页码多到一行放不下就换行，宁可折行也不要把按钮压扁或撑出横向滚动 */
@@ -63,13 +67,13 @@
   /* —— 尺寸 —— */
   /* 缺省档写在上面的基础规则里。格子高度、内边距、字号三者各走控件尺的同一档；
      页码格子靠最小宽度撑等宽，内边距只在页码超出最小宽度时才起作用 */
-  [data-scope='pagination'][data-part='root'][data-size='sm'] {
+  [data-scope='pagination']:is([data-part='root'], [data-part='positioner'])[data-size='sm'] {
     --xh-_pagination-item-size: var(--xh-control-h-sm);
     --xh-_pagination-item-px: var(--xh-control-px-sm);
     --xh-_pagination-font-size: var(--xh-control-font-sm);
   }
 
-  [data-scope='pagination'][data-part='root'][data-size='lg'] {
+  [data-scope='pagination']:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
     --xh-_pagination-item-size: var(--xh-control-h-lg);
     --xh-_pagination-item-px: var(--xh-control-px-lg);
     --xh-_pagination-font-size: var(--xh-control-font-lg);
@@ -250,9 +254,6 @@
 
   /* 摊开的页码面板：一串页码格子，横着排、必要时折行 */
   [data-scope='pagination'][data-part='content'] {
-    /* 浮层被搬到 portal 落点，继承不到 root 上那把尺，这里再声明一遍 */
-    --xh-icon-size: var(--xh-pagination-icon-size, var(--xh-glyph-size-text));
-
     display: flex;
     flex-flow: row wrap;
     gap: var(--xh-pagination-gap, var(--xh-space-1));

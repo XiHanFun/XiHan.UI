@@ -159,6 +159,7 @@ export { useCodeView } from './components/code-view/use-code-view'
 export type { CodeViewContext } from './components/code-view/use-code-view'
 export {
   XhCollapsibleContent,
+  XhCollapsibleIndicator,
   XhCollapsibleRoot,
   XhCollapsibleTrigger,
 } from './components/collapsible/collapsible'

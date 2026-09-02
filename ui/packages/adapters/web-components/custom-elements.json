@@ -1049,13 +1049,13 @@
               "name": "--xh-anchor-leading"
             },
             {
-              "name": "--xh-anchor-link-fg-active"
+              "name": "--xh-anchor-link-fg-current"
             },
             {
               "name": "--xh-anchor-link-fg-hover"
             },
             {
-              "name": "--xh-anchor-link-font-weight-active"
+              "name": "--xh-anchor-link-font-weight-current"
             },
             {
               "name": "--xh-anchor-link-max-w"
@@ -2591,12 +2591,6 @@
           "customElement": true,
           "cssProperties": [
             {
-              "name": "--xh-breadcrumb-current-fg"
-            },
-            {
-              "name": "--xh-breadcrumb-current-font-weight"
-            },
-            {
               "name": "--xh-breadcrumb-ellipsis-size"
             },
             {
@@ -2618,7 +2612,13 @@
               "name": "--xh-breadcrumb-link-bg-hover"
             },
             {
+              "name": "--xh-breadcrumb-link-fg-current"
+            },
+            {
               "name": "--xh-breadcrumb-link-fg-hover"
+            },
+            {
+              "name": "--xh-breadcrumb-link-font-weight-current"
             },
             {
               "name": "--xh-breadcrumb-link-gap"
@@ -6166,6 +6166,9 @@
               "name": "--xh-clipboard-label-font-weight"
             },
             {
+              "name": "--xh-clipboard-loading-duration"
+            },
+            {
               "name": "--xh-clipboard-trigger-bg"
             },
             {
@@ -6713,7 +6716,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-collapsible>` —— Light-DOM 行为宿主，跑 collapsible 机器打到 root/trigger/content 角色节点，\n收起时用内联 style.display 隐藏 content。",
+          "description": "`<xh-collapsible>` —— Light-DOM 行为宿主，跑 collapsible 机器打到 root/trigger/content/indicator\n角色节点，收起时用内联 style.display 隐藏 content。",
           "name": "XhCollapsibleElement",
           "cssParts": [
             {
@@ -6727,6 +6730,10 @@
             {
               "description": "可折叠内容（收起时隐藏）",
               "name": "content"
+            },
+            {
+              "description": "开合方向标记（展开时转向）",
+              "name": "indicator"
             }
           ],
           "members": [
@@ -6907,6 +6914,9 @@
             },
             {
               "name": "--xh-collapsible-content-py"
+            },
+            {
+              "name": "--xh-collapsible-icon-size"
             },
             {
               "name": "--xh-collapsible-trigger-bg"
@@ -12375,6 +12385,9 @@
               "name": "--xh-download-trigger-h"
             },
             {
+              "name": "--xh-download-trigger-loading-duration"
+            },
+            {
               "name": "--xh-download-trigger-px"
             },
             {
@@ -16926,6 +16939,9 @@
             },
             {
               "name": "--xh-form-summary-item-font-size"
+            },
+            {
+              "name": "--xh-form-summary-item-underline-offset"
             },
             {
               "name": "--xh-form-summary-px"
@@ -28379,6 +28395,9 @@
               "name": "--xh-password-input-control-px"
             },
             {
+              "name": "--xh-password-input-control-radius"
+            },
+            {
               "name": "--xh-password-input-control-shadow"
             },
             {
@@ -38390,7 +38409,7 @@
           "customElement": true,
           "cssProperties": [
             {
-              "name": "--xh-space-gap"
+              "name": "--xh-space-root-gap"
             }
           ]
         }
@@ -39712,6 +39731,9 @@
               "name": "--xh-switch-bg-checked"
             },
             {
+              "name": "--xh-switch-bg-checked-readonly"
+            },
+            {
               "name": "--xh-switch-border-invalid"
             },
             {
@@ -39743,6 +39765,9 @@
             },
             {
               "name": "--xh-switch-thumb-shadow"
+            },
+            {
+              "name": "--xh-switch-thumb-shadow-readonly"
             },
             {
               "name": "--xh-switch-track-h-lg"
@@ -44994,6 +45019,9 @@
             },
             {
               "name": "--xh-toast-gap"
+            },
+            {
+              "name": "--xh-toast-icon-fg"
             },
             {
               "name": "--xh-toast-icon-size"

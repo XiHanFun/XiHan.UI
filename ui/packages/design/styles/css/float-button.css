@@ -29,23 +29,26 @@
 
   /* —— 四角 ——
      start / end 用逻辑属性，RTL 下自动换到另一侧。
-     摞的方向按贴的是上沿还是下沿定：离屏幕边最近的恒是触发器，展开的那一组往页面中间长 */
+     摞的方向按贴的是上沿还是下沿定：离屏幕边最近的恒是触发器，展开的那一组往页面中间长。
+     四条贴边都与安全区取大的一头：刘海、圆角与底部横条压住的那一段由系统给出，
+     贴边比它窄时钮会被切掉一角；桌面上 env() 恒为 0，取值与贴边槽完全一致。
+     安全区只有物理方向的四个名字，行内轴上两侧同取较宽的那一段，RTL 下不会翻错边。 */
   [data-scope='float-button'][data-part='root'][data-placement^='top'] {
-    inset-block-start: var(--xh-_float-button-offset);
+    inset-block-start: max(var(--xh-_float-button-offset), env(safe-area-inset-top));
     flex-direction: column;
   }
 
   [data-scope='float-button'][data-part='root'][data-placement^='bottom'] {
-    inset-block-end: var(--xh-_float-button-offset);
+    inset-block-end: max(var(--xh-_float-button-offset), env(safe-area-inset-bottom));
     flex-direction: column-reverse;
   }
 
   [data-scope='float-button'][data-part='root'][data-placement$='-start'] {
-    inset-inline-start: var(--xh-_float-button-offset);
+    inset-inline-start: max(var(--xh-_float-button-offset), env(safe-area-inset-left), env(safe-area-inset-right));
   }
 
   [data-scope='float-button'][data-part='root'][data-placement$='-end'] {
-    inset-inline-end: var(--xh-_float-button-offset);
+    inset-inline-end: max(var(--xh-_float-button-offset), env(safe-area-inset-left), env(safe-area-inset-right));
   }
 
   /* —— 外形 —— */

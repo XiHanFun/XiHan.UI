@@ -1,3 +1,12 @@
+@layer xihan.motion {
+  /* 转圈的关键帧定义在本文件里：引用别处文件的动画名时那份文件不一定在场，动画会静默不跑 */
+  @keyframes xh-download-trigger-rotate {
+    to {
+      rotate: 360deg;
+    }
+  }
+}
+
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
   [data-scope='download-trigger'] {
@@ -55,9 +64,38 @@
     outline-offset: var(--xh-ring-offset);
   }
 
-  /* 取数在途：按钮留在原地不动，只换指针形状——位置一变，正要再点的人就点空了 */
+  /* 取数在途：指针换成 progress，同时在按钮里转一枚圆环。
+     只靠指针形状的话触屏上是零反馈——手指按下去到文件出来之间屏上什么都不变，
+     用户只会接着点。圆环是行内的一个 flex 项，按钮的起始边不动，只往后长一截 */
   [data-scope='download-trigger'][data-part='root'][data-state='preparing'] {
     cursor: progress;
+  }
+
+  [data-scope='download-trigger'][data-part='root'][data-state='preparing']::before {
+    content: '';
+    flex: none;
+    inline-size: 1em;
+    block-size: 1em;
+    border: var(--xh-stroke-thin) solid transparent;
+    border-block-start-color: currentColor;
+    border-radius: var(--xh-shape-pill);
+    animation: xh-download-trigger-rotate var(--xh-download-trigger-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite;
+  }
+
+  /* 减少动效：圆环停下并整圈换成虚线，静止的形状仍然读得出"还没好"。
+     两条规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope='download-trigger'][data-part='root'][data-state='preparing']::before {
+      border-style: dotted;
+      border-color: currentColor;
+      animation: none;
+    }
+  }
+
+  :where([data-motion='reduce']) [data-scope='download-trigger'][data-part='root'][data-state='preparing']::before {
+    border-style: dotted;
+    border-color: currentColor;
+    animation: none;
   }
 
   /*

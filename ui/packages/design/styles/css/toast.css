@@ -18,6 +18,12 @@
     }
   }
 
+  @keyframes xh-toast-spin {
+    to {
+      rotate: 360deg;
+    }
+  }
+
   @keyframes xh-toast-out {
     from {
       opacity: 1;
@@ -56,8 +62,17 @@
     /* 基线按默认落位 top 写，下面只覆盖跟它不同的那几个位 */
     justify-content: flex-start;
     align-items: center;
-    padding-block: var(--xh-toast-inset, var(--xh-space-6));
-    padding-inline: var(--xh-toast-inset, var(--xh-space-6));
+    /* 贴边与安全区取大的一头：刘海、圆角与底部横条压住的那一段由系统给出，
+       贴边比它窄时条子会被切掉一角。桌面上 env() 恒为 0，取值与贴边槽完全一致。
+       两条内联的 env 一起取大值：安全区只有物理方向的四个名字，
+       分左右写在 RTL 下会翻错边，两侧同取较宽的那一段。 */
+    padding-block-start: max(var(--xh-toast-inset, var(--xh-space-6)), env(safe-area-inset-top));
+    padding-block-end: max(var(--xh-toast-inset, var(--xh-space-6)), env(safe-area-inset-bottom));
+    padding-inline: max(
+      var(--xh-toast-inset, var(--xh-space-6)),
+      env(safe-area-inset-left),
+      env(safe-area-inset-right)
+    );
     /* 摞内间距由服务写进内联 style，这里绝不重复写：
        写了也会被内联盖掉，只会让人误以为间距归样式层管 */
     /* 整面铺开就等于罩住了整块视口。面本身不吃指针，只有条子吃（见下），
@@ -141,6 +156,61 @@
      不定住末帧的话动画跑完会弹回全不透明，条子在被收起前先闪一下 */
   [data-scope='toast'][data-part='root'][data-state='dismissing'] {
     animation: xh-toast-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+  }
+
+  /*
+   * 严重度的第二条通道。淡底、描边与正文色给的都是色相，四档在色觉障碍与黑白打印下
+   * 长得一模一样——「已保存」与「保存失败」看不出差别。行首这枚字形按 data-severity
+   * 各画一枚，取的是 notification 那套 --xh-glyph-mark-* 令牌，两家从此同一副读法。
+   * 解剖到 root 为止、没有第二个节点可挂，字形因此画在 root 的伪元素上；它是这一行
+   * flex 的第一个项，与文字之间的间距由 root 自己的 gap 给，不另写外边距。
+   * 颜色走语气层派生好的前景档：主色档兑在同族淡底上够不到图形该有的 3:1。
+   */
+  [data-scope='toast'][data-part='root']::before {
+    content: '';
+    flex: none;
+    display: inline-block;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: var(--xh-toast-icon-fg, var(--xh-_tone-fg));
+    -webkit-mask: var(--xh-glyph-mark-info) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-info) center / contain no-repeat;
+  }
+
+  [data-scope='toast'][data-part='root'][data-severity='success']::before {
+    -webkit-mask-image: var(--xh-glyph-mark-check);
+    mask-image: var(--xh-glyph-mark-check);
+  }
+
+  [data-scope='toast'][data-part='root'][data-severity='warning']::before {
+    -webkit-mask-image: var(--xh-glyph-mark-warning);
+    mask-image: var(--xh-glyph-mark-warning);
+  }
+
+  [data-scope='toast'][data-part='root'][data-severity='error']::before {
+    -webkit-mask-image: var(--xh-glyph-mark-close);
+    mask-image: var(--xh-glyph-mark-close);
+  }
+
+  /* loading 那一档的颜色不必在这儿再兑：它派生的语气就是中性，前景档跟着一起换 */
+  [data-scope='toast'][data-part='root'][data-severity='loading']::before {
+    -webkit-mask-image: var(--xh-glyph-mark-rotate-right);
+    mask-image: var(--xh-glyph-mark-rotate-right);
+    animation: xh-toast-spin var(--xh-spin-duration) var(--xh-motion-ease-loop) infinite;
+  }
+
+  /* 减少动效：转圈停下，静止的箭头仍然读得出「还没好」；「在等什么」由条子上的
+     role=status 与可见文案继续承担。
+     两组规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope='toast'][data-part='root'][data-severity='loading']::before {
+      animation: none;
+    }
+  }
+
+  :where([data-motion='reduce']) [data-scope='toast'][data-part='root'][data-severity='loading']::before {
+    animation: none;
   }
 
   [data-scope='toast'][data-part='title'] {
@@ -272,6 +342,12 @@
     /* 打印：轻提示是瞬态的，打印那一刻恰好在场就会横在正文上，且它已经错过了被读到的时机。 */
     [data-scope='toast'][data-part='group'] {
       display: none;
+    }
+
+    /* 摞收起后条子本不该出现在纸上；这一条兜的是作者把条子摆在别处的用法：
+       动画会被定格在任意一帧——转了一半的圈。取值与减弱动效那一档相同。 */
+    [data-scope='toast'][data-part='root'][data-severity='loading']::before {
+      animation: none;
     }
   }
 }

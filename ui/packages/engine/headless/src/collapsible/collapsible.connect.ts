@@ -54,5 +54,12 @@ export function connectCollapsible<T extends PropTypes>(
       // 靠 inert 把这一段窗口里的内容挡在读屏与 Tab 序之外
       'inert': !open || undefined,
     }),
+    getIndicatorProps: () => normalize.element({
+      ...parts.indicator.attrs,
+      // 开合状态由 trigger 的 aria-expanded 念出来，这枚标记只是同一件事的图形版
+      'aria-hidden': true,
+      'data-state': stateAttr,
+      'data-disabled': dataAttr(disabled),
+    }),
   }
 }

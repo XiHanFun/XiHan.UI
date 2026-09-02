@@ -1,8 +1,9 @@
-<!-- 自定义展开标记 | 折叠区域不带指示器部件，标记由作者按 open 自己画，触发器两端对齐排 -->
+<!-- 自定义展开标记 | 往指示符部件里塞自己的图形，转向仍由皮肤按 open 接管 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import {
   XhCollapsibleContent,
+  XhCollapsibleIndicator,
   XhCollapsibleRoot,
   XhCollapsibleTrigger,
   XhIcon,
@@ -17,10 +18,12 @@ const open = ref(false);
     <XhCollapsibleRoot v-model:open="open">
       <XhCollapsibleTrigger>
         <span>高级筛选</span>
-        <!-- 标记跟着 open 换字形，触发器里放什么全归作者 -->
         <span style="font-size: 12px; display: inline-flex; align-items: center; gap: 2px">
           {{ open ? "收起" : "展开" }}
-          <XhIcon :icon="ChevronDownIcon" :style="{ rotate: open ? '180deg' : '0deg' }" />
+          <!-- 部件里放什么归作者；transform 由皮肤跟着 data-state 打 -->
+          <XhCollapsibleIndicator>
+            <XhIcon :icon="ChevronDownIcon" />
+          </XhCollapsibleIndicator>
         </span>
       </XhCollapsibleTrigger>
       <XhCollapsibleContent>

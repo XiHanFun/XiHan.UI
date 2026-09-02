@@ -92,7 +92,7 @@
     color: inherit;
     font-size: var(--xh-form-summary-item-font-size, var(--xh-text-secondary-size));
     text-decoration: underline;
-    text-underline-offset: 2px;
+    text-underline-offset: var(--xh-form-summary-item-underline-offset, var(--xh-space-0_5));
     cursor: pointer;
   }
 

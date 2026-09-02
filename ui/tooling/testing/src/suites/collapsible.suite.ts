@@ -12,7 +12,7 @@ export const collapsibleSuite: ConformanceSuite = {
   fixture: {
     part: 'root',
     children: [
-      { part: 'trigger', tag: 'button', text: '切换' },
+      { part: 'trigger', tag: 'button', children: [{ tag: 'span', text: '切换' }, { part: 'indicator', tag: 'span' }] },
       { part: 'content', children: [{ text: '内容' }] },
     ],
   },
@@ -21,8 +21,8 @@ export const collapsibleSuite: ConformanceSuite = {
       name: '初始收起：trigger aria-expanded=false，content 带 hidden 属性',
       spec: { apg: APG },
       initial: {
-        order: ['root', 'trigger', 'content'],
-        counts: { root: 1, trigger: 1, content: 1 },
+        order: ['root', 'trigger', 'indicator', 'content'],
+        counts: { root: 1, trigger: 1, indicator: 1, content: 1 },
         parts: {
           trigger: {
             'type': 'button',
@@ -34,11 +34,17 @@ export const collapsibleSuite: ConformanceSuite = {
             'data-state': 'closed',
             'hidden': '',
           },
+          // 开合已由 trigger 的 aria-expanded 念出来，标记只是图形版，对读屏隐身
+          indicator: {
+            'aria-hidden': 'true',
+            'data-state': 'closed',
+            'data-disabled': null,
+          },
         },
       },
     },
     {
-      name: '点击 trigger 展开：aria-expanded=true，content 去掉 hidden，派发 open-change',
+      name: '点击 trigger 展开：aria-expanded=true，content 去掉 hidden，指示符转向，派发 open-change',
       spec: { apg: `${APG}#keyboardinteraction` },
       covers: ['collapsible.kbd.toggle'],
       steps: [
@@ -49,6 +55,7 @@ export const collapsibleSuite: ConformanceSuite = {
             parts: {
               trigger: { 'aria-expanded': 'true', 'data-state': 'open' },
               content: { 'data-state': 'open', 'hidden': null },
+              indicator: { 'data-state': 'open' },
             },
             events: [{ type: 'open-change', detail: { open: true } }],
           },
@@ -89,6 +96,7 @@ export const collapsibleSuite: ConformanceSuite = {
             // 披露按钮是单体控件：用原生 disabled，data-disabled 只是样式
             trigger: { 'disabled': '', 'data-disabled': '', 'aria-expanded': 'false', 'data-state': 'closed' },
             content: { 'data-state': 'closed', 'hidden': '' },
+            indicator: { 'data-disabled': '', 'data-state': 'closed' },
           },
           events: [],
         }),

@@ -45,6 +45,22 @@
     box-shadow: inset 0 0 0 var(--xh-stroke-thin) var(--xh-switch-border-invalid, var(--xh-border-invalid));
   }
 
+  /* 只读：值仍要读得清、也仍会随表单提交，所以不压对比度、也不借禁用那档灰。
+     变的是"动不动得了"：指针不摆手型，选中档的轨道换成中性底，滑块收掉那层浮起的投影
+     ——投影是"这颗按得动"的信号。与文本框只读那一档同口径（压低底色而非置灰）。
+     滑块停在哪一端不受影响，值本身仍由位置这条非颜色通道读出。 */
+  [data-scope='switch'][data-part='root'][data-readonly] {
+    cursor: default;
+  }
+
+  [data-scope='switch'][data-part='root'][data-readonly][data-state='checked'] {
+    background: var(--xh-switch-bg-checked-readonly, var(--xh-bg-muted));
+  }
+
+  [data-scope='switch'][data-part='root'][data-readonly] [data-scope='switch'][data-part='thumb'] {
+    box-shadow: var(--xh-switch-thumb-shadow-readonly, none);
+  }
+
   [data-scope='switch'][data-part='root'][data-disabled] {
     cursor: not-allowed;
     opacity: var(--xh-state-disabled-opacity);
