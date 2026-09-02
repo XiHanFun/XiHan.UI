@@ -124,7 +124,8 @@
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 悬停这条选择器比当前页那条多一节（:hover），同层里权重更高、会反过来压住它，
@@ -138,11 +139,14 @@
     background: var(--xh-pagination-item-bg-hover, var(--xh-bg-subtle-hover));
   }
 
+  /* 换底之外再压一档：换底只说明指针停在哪一格，下压才说明这一下点到了。
+     当前页那条按下也压，见下面成对的一条——按在当前页上同样是一次点击 */
   [data-scope='pagination'][data-part='prev-trigger']:active:not(:disabled),
   [data-scope='pagination'][data-part='next-trigger']:active:not(:disabled),
   [data-scope='pagination'][data-part='item']:not([data-current]):active,
   [data-scope='pagination'][data-part='ellipsis']:active {
     background: var(--xh-pagination-item-bg-active, var(--xh-bg-subtle-active));
+    scale: var(--xh-motion-scale-press);
   }
 
   [data-scope='pagination'][data-part='prev-trigger']:focus-visible,
@@ -180,6 +184,7 @@
   [data-scope='pagination'][data-part='item'][data-current]:active {
     border-color: var(--xh-pagination-item-border-selected-active, var(--xh-_pagination-selected-bg-active));
     background: var(--xh-pagination-item-bg-selected-active, var(--xh-_pagination-selected-bg-active));
+    scale: var(--xh-motion-scale-press);
   }
 
   /* 省略位是可展开的按钮：折进去的那几页只有它一个入口，指针与键盘都得点得到，

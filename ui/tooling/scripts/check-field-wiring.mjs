@@ -20,8 +20,6 @@ const VUE = 'packages/adapters/vue/src/components'
 const NOT_SINGLE_CONTROL = {
   'field': '它自己就是字段',
   'fieldset': '同上，分组容器',
-  'checkbox': '封装根就是那颗按钮，属性直接落在可聚焦节点上',
-  'switch': '同 checkbox',
   'checkbox-group': '分组：根是 role=group，读屏进组即念说明',
   'radio-group': '分组：根是 role=radiogroup',
   'segmented': '分组：根是 role=radiogroup',

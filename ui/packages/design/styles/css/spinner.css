@@ -92,6 +92,12 @@
     border-color: var(--xh-spinner-fg, var(--xh-_tone, var(--xh-bg-brand)));
   }
 
+  /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
+     写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
+  [data-scope='spinner'][data-part='root'][hidden] {
+    display: none;
+  }
+
   @media print {
     /* 打印：动画会被定格在任意一帧——转了一半的圈、扫到一半的微光。这里换成静止的表达，
        取值与减弱动效那一档相同。两档各写一块、不并进一条媒体查询列表：减弱动效另有一份

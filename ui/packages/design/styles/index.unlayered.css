@@ -5600,6 +5600,7 @@ input[data-scope='mention'][data-part='input'] {
 /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
    写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
 [data-scope='popconfirm'][data-part='root'][hidden],
+[data-scope='popconfirm'][data-part='confirm-trigger'][hidden],
 [data-scope='popconfirm'][data-part='cancel-trigger'][hidden] {
   display: none;
 }
@@ -8261,7 +8262,11 @@ input[data-scope='mention'][data-part='input'] {
 /* 不写形态与语气时就是一段普通正文，这里只声明形态各自加的那一层 */
 /* 次要文字与语气文字各有各的槽：两者同特异度、共用一个槽的话，
    调淡次要文字会把六族语气一并换成同一个灰。
-   不带档位的旧名接在后面当默认值，照旧名写的覆盖两处照样一起改 */
+   不带档位的旧名接在后面当默认值，照旧名写的覆盖两处照样一起改。
+
+   旧名必须留在这两条链上：它没有属于自己的规则，摘掉就再也没有任何地方读它，
+   等于让一个公开槽彻底失效。card 的常态槽是另一回事——那个名字自己还管着常态那一档，
+   所以它的悬停槽不接旧名。两处写法不同不是疏漏，别去「统一」。 */
 [data-scope='typography'][data-part='text'][data-variant='muted'] {
   color: var(--xh-typography-text-fg-muted, var(--xh-typography-text-fg, var(--xh-fg-muted)));
 }
@@ -8936,6 +8941,12 @@ input[data-scope='mention'][data-part='input'] {
   border-color: var(--xh-spinner-fg, var(--xh-_tone, var(--xh-bg-brand)));
 }
 
+/* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
+   写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
+[data-scope='spinner'][data-part='root'][hidden] {
+  display: none;
+}
+
 @media print {
   /* 打印：动画会被定格在任意一帧——转了一半的圈、扫到一半的微光。这里换成静止的表达，
      取值与减弱动效那一档相同。两档各写一块、不并进一条媒体查询列表：减弱动效另有一份
@@ -9055,7 +9066,7 @@ input[data-scope='mention'][data-part='input'] {
 /* 展开态自带一个槽：与常态共用一个的话，作者一改常态字色，
    展开那一档的语气高亮就跟着被抹平，再也分不开 */
 [data-scope='accordion'][data-part='trigger'][data-state='open'] {
-  color: var(--xh-accordion-trigger-fg-open, var(--xh-accordion-trigger-fg, var(--xh-_accordion-open-fg)));
+  color: var(--xh-accordion-trigger-fg-open, var(--xh-_accordion-open-fg));
 }
 
 /* 禁用条目走 aria-disabled，仍留在 Tab 序里，只是不可操作 */
@@ -10655,8 +10666,8 @@ input[data-scope='mention'][data-part='input'] {
    指针停上去就再也看不出变化——两档的缺省本就取不同的深浅。 */
 @media (hover: hover) {
   [data-scope='card'][data-part='root'][data-hoverable]:hover {
-    border-color: var(--xh-card-border-hover, var(--xh-card-border, var(--xh-border-strong)));
-    box-shadow: var(--xh-card-shadow-hover, var(--xh-card-shadow, var(--xh-elevation-raised)));
+    border-color: var(--xh-card-border-hover, var(--xh-border-strong));
+    box-shadow: var(--xh-card-shadow-hover, var(--xh-elevation-raised));
   }
 }
 
@@ -13164,11 +13175,22 @@ input[data-scope='mention'][data-part='input'] {
   line-height: var(--xh-leading-none);
   cursor: pointer;
   user-select: none;
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='color-picker'][data-part='eye-dropper-trigger']:hover:not(:disabled) {
   background: var(--xh-color-picker-action-bg-hover, var(--xh-bg-subtle-hover));
   color: var(--xh-color-picker-action-fg-hover, var(--xh-fg-default));
+}
+
+/* 按下去要有回应：换底之外再压一档。取色是一次「点下去就交给系统」的操作，
+   松手那一刻浮层多半已经被系统的取色镜头盖住，按下的回执只有这一瞬看得见 */
+[data-scope='color-picker'][data-part='eye-dropper-trigger']:active:not(:disabled) {
+  background: var(--xh-color-picker-action-bg-active, var(--xh-bg-subtle-active));
+  scale: var(--xh-motion-scale-press);
 }
 
 [data-scope='color-picker'][data-part='eye-dropper-trigger']:focus-visible {
@@ -13202,6 +13224,19 @@ input[data-scope='mention'][data-part='input'] {
   border: var(--xh-stroke-thin) solid var(--xh-color-picker-swatch-border, var(--xh-border-default));
   border-radius: var(--xh-color-picker-swatch-radius, var(--xh-shape-inset));
   cursor: pointer;
+  transition:
+    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+/* 这一格的底色就是它要展示的那个颜色，换底等于把展示物盖掉，交互回执只能落在别处：
+   指到哪一格看描边，按下去看下压 */
+[data-scope='color-picker'][data-part='swatch-item']:hover:not(:disabled) {
+  border-color: var(--xh-color-picker-swatch-border-hover, var(--xh-border-strong));
+}
+
+[data-scope='color-picker'][data-part='swatch-item']:active:not(:disabled) {
+  scale: var(--xh-motion-scale-press);
 }
 
 /* 正被选中的那一格：环画在盒子外面，不挤占色块本身的面积 */
@@ -13933,7 +13968,9 @@ input[data-scope='mention'][data-part='input'] {
   white-space: nowrap;
   cursor: pointer;
   user-select: none;
-  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='composer'][data-part='submit-trigger'][hidden] {
@@ -13946,6 +13983,7 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='composer'][data-part='submit-trigger']:active:not(:disabled) {
   background: var(--xh-_bg-active);
+  scale: var(--xh-motion-scale-press);
 }
 
 [data-scope='composer'][data-part='submit-trigger']:focus-visible {
@@ -14654,6 +14692,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_date-picker-ring: var(--xh-ring-focus);
   --xh-_date-picker-accent: var(--xh-_tone, var(--xh-bg-brand));
   --xh-_date-picker-accent-hover: var(--xh-_tone-hover, var(--xh-bg-brand-hover));
+  --xh-_date-picker-accent-active: var(--xh-_tone-active, var(--xh-bg-brand-active));
   --xh-_date-picker-accent-fg: var(--xh-_tone-on, var(--xh-fg-on-brand));
   --xh-_date-picker-accent-subtle: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
   /* 淡底上的字与实心底上的字是两档：--xh-_tone-fg 是语气层为淡底配的那一档，
@@ -14853,6 +14892,7 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='date-picker'][data-part='trigger']:active:not(:disabled) {
   background: var(--xh-date-picker-action-bg-active, var(--xh-bg-subtle-active));
+  scale: var(--xh-motion-scale-press);
 }
 
 [data-scope='date-picker'][data-part='clear-trigger']:active {
@@ -15073,10 +15113,19 @@ input[data-scope='mention'][data-part='input'] {
   box-shadow: var(--xh-date-picker-confirm-trigger-shadow, var(--xh-date-picker-confirm-shadow, var(--xh-_date-picker-confirm-highlight)));
   font-size: var(--xh-text-secondary-size);
   cursor: pointer;
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='date-picker'][data-part='confirm-trigger']:hover {
   background: var(--xh-date-picker-confirm-trigger-bg-hover, var(--xh-date-picker-confirm-bg-hover, var(--xh-_date-picker-accent-hover)));
+}
+
+/* 它是面板里唯一的确认出口，与框内那两颗小钮同一副按压观感：换底再加一次轻微下压 */
+[data-scope='date-picker'][data-part='confirm-trigger']:active {
+  background: var(--xh-date-picker-confirm-trigger-bg-active, var(--xh-date-picker-confirm-bg-active, var(--xh-_date-picker-accent-active)));
+  scale: var(--xh-motion-scale-press);
 }
 
 [data-scope='date-picker'][data-part='confirm-trigger']:focus-visible {
@@ -17189,6 +17238,9 @@ input[data-scope='mention'][data-part='input'] {
   color: inherit;
   font-size: var(--xh-glyph-size-sm);
   cursor: pointer;
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='image-viewer'][data-part='counter'] {
@@ -17208,6 +17260,9 @@ input[data-scope='mention'][data-part='input'] {
   block-size: var(--xh-control-h-lg);
   font-size: var(--xh-glyph-size-md);
   cursor: pointer;
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='image-viewer'][data-part='prev-trigger'] {
@@ -17220,6 +17275,35 @@ input[data-scope='mention'][data-part='input'] {
   inset-inline-end: var(--xh-space-6);
   inset-block-start: 50%;
   translate: 0 -50%;
+}
+
+/* 工具条按钮与翻页钮共用一副交互观感：底色再压一档，按下多一次轻微下压。
+   这几颗钮浮在图上，跟的是图上那层半透明深底而不是页面底色，所以不取语义档的
+   --xh-bg-subtle-*，与关闭钮同源。翻页钮到头时是原生 disabled，压不动的东西不给回应。
+   位移用 scale 而非 transform：这两颗钮的居中靠 translate，写 transform 会把它顶掉 */
+[data-scope='image-viewer'][data-part='zoom-in-trigger']:hover:not(:disabled),
+[data-scope='image-viewer'][data-part='zoom-out-trigger']:hover:not(:disabled),
+[data-scope='image-viewer'][data-part='rotate-left-trigger']:hover:not(:disabled),
+[data-scope='image-viewer'][data-part='rotate-right-trigger']:hover:not(:disabled),
+[data-scope='image-viewer'][data-part='flip-horizontal-trigger']:hover:not(:disabled),
+[data-scope='image-viewer'][data-part='flip-vertical-trigger']:hover:not(:disabled),
+[data-scope='image-viewer'][data-part='reset-trigger']:hover:not(:disabled),
+[data-scope='image-viewer'][data-part='prev-trigger']:hover:not(:disabled),
+[data-scope='image-viewer'][data-part='next-trigger']:hover:not(:disabled) {
+  background: var(--xh-image-viewer-action-bg-hover, color-mix(in oklab, var(--xh-color-neutral-950) 70%, transparent));
+}
+
+[data-scope='image-viewer'][data-part='zoom-in-trigger']:active:not(:disabled),
+[data-scope='image-viewer'][data-part='zoom-out-trigger']:active:not(:disabled),
+[data-scope='image-viewer'][data-part='rotate-left-trigger']:active:not(:disabled),
+[data-scope='image-viewer'][data-part='rotate-right-trigger']:active:not(:disabled),
+[data-scope='image-viewer'][data-part='flip-horizontal-trigger']:active:not(:disabled),
+[data-scope='image-viewer'][data-part='flip-vertical-trigger']:active:not(:disabled),
+[data-scope='image-viewer'][data-part='reset-trigger']:active:not(:disabled),
+[data-scope='image-viewer'][data-part='prev-trigger']:active:not(:disabled),
+[data-scope='image-viewer'][data-part='next-trigger']:active:not(:disabled) {
+  background: var(--xh-image-viewer-action-bg-active, color-mix(in oklab, var(--xh-color-neutral-950) 80%, transparent));
+  scale: var(--xh-motion-scale-press);
 }
 
 /* 右上角的关闭钮：与翻页钮同底同高，但圆角走控件档，按下有缩放 */
@@ -17372,6 +17456,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='image-viewer'][data-part='positioner'][hidden],
 [data-scope='image-viewer'][data-part='viewport'][hidden],
 [data-scope='image-viewer'][data-part='toolbar'][hidden],
+[data-scope='image-viewer'][data-part='prev-trigger'][hidden],
 [data-scope='image-viewer'][data-part='next-trigger'][hidden] {
   display: none;
 }
@@ -19759,7 +19844,8 @@ input[data-scope='mention'][data-part='input'] {
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 /* 悬停这条选择器比当前页那条多一节（:hover），同层里权重更高、会反过来压住它，
@@ -19773,11 +19859,14 @@ input[data-scope='mention'][data-part='input'] {
   background: var(--xh-pagination-item-bg-hover, var(--xh-bg-subtle-hover));
 }
 
+/* 换底之外再压一档：换底只说明指针停在哪一格，下压才说明这一下点到了。
+   当前页那条按下也压，见下面成对的一条——按在当前页上同样是一次点击 */
 [data-scope='pagination'][data-part='prev-trigger']:active:not(:disabled),
 [data-scope='pagination'][data-part='next-trigger']:active:not(:disabled),
 [data-scope='pagination'][data-part='item']:not([data-current]):active,
 [data-scope='pagination'][data-part='ellipsis']:active {
   background: var(--xh-pagination-item-bg-active, var(--xh-bg-subtle-active));
+  scale: var(--xh-motion-scale-press);
 }
 
 [data-scope='pagination'][data-part='prev-trigger']:focus-visible,
@@ -19815,6 +19904,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='pagination'][data-part='item'][data-current]:active {
   border-color: var(--xh-pagination-item-border-selected-active, var(--xh-_pagination-selected-bg-active));
   background: var(--xh-pagination-item-bg-selected-active, var(--xh-_pagination-selected-bg-active));
+  scale: var(--xh-motion-scale-press);
 }
 
 /* 省略位是可展开的按钮：折进去的那几页只有它一个入口，指针与键盘都得点得到，
@@ -22555,8 +22645,10 @@ input[data-scope='mention'][data-part='input'] {
 /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
    写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
 [data-scope='side-nav'][data-part='root'][hidden],
+[data-scope='side-nav'][data-part='list'][hidden],
 [data-scope='side-nav'][data-part='group'][hidden],
 [data-scope='side-nav'][data-part='branch'][hidden],
+[data-scope='side-nav'][data-part='branch-trigger'][hidden],
 [data-scope='side-nav'][data-part='item'][hidden],
 [data-scope='side-nav'][data-part='link'][hidden],
 [data-scope='side-nav'][data-part='branch-indicator'][hidden] {
@@ -23499,6 +23591,7 @@ input[data-scope='mention'][data-part='input'] {
 /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
    写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
 [data-scope='switch'][data-part='root'][hidden],
+[data-scope='switch'][data-part='thumb'][hidden],
 [data-scope='switch'][data-part='label'][hidden] {
   display: none;
 }
@@ -28961,6 +29054,7 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
    写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
+[data-scope='tree'][data-part='item-checkbox'][hidden],
 [data-scope='tree'][data-part='branch-checkbox'][hidden] {
   display: none;
 }

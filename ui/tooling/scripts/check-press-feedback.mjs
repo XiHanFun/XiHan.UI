@@ -8,7 +8,8 @@
 // 减弱动效档把它归 1，所以这条不与无障碍冲突。
 //
 // 名单制而非全量扫：不是每个组件都该有按压反馈——输入框、只读展示件按下去不该动。
-// 要求逐条登记，免得新组件默认逃过。
+// 要求逐条登记，免得新组件默认逃过。判定为不该有的，登进 NO_PRESS 留一句理由，
+// 那张表两侧都反查，登记过期或者反馈后来补上了都会判失败。
 //
 // 两种形态：
 // ① 即时按压（多数）：反馈落在 :active 上，缩放量走令牌。
@@ -19,6 +20,7 @@
 import { readFile } from 'node:fs/promises'
 
 const SKINS = 'packages/design/styles/css'
+const HEADLESS = 'packages/engine/headless/src'
 
 /**
  * 该有按压反馈的控件，连同它的部件名（一个组件可以登记多个部件）。
@@ -30,7 +32,8 @@ const PRESSABLE = {
   'cascader': ['clear-trigger'],
   'tree-select': ['clear-trigger'],
   'combobox': ['clear-trigger'],
-  'date-picker': ['clear-trigger'],
+  // 展开钮与确认钮跟着同组件的 clear-trigger 走同一副观感
+  'date-picker': ['clear-trigger', 'trigger', 'confirm-trigger'],
   'time-picker': ['clear-trigger'],
   'text-field': ['clear-trigger'],
   'tags-input': ['clear-trigger', 'item-delete-trigger'],
@@ -48,9 +51,24 @@ const PRESSABLE = {
   'toast': ['close-trigger'],
   'alert': ['close-trigger'],
   'floating-panel': ['close-trigger'],
-  'image-viewer': ['close-trigger'],
+  'image-viewer': [
+    'close-trigger',
+    'zoom-in-trigger',
+    'zoom-out-trigger',
+    'rotate-left-trigger',
+    'rotate-right-trigger',
+    'flip-horizontal-trigger',
+    'flip-vertical-trigger',
+    'reset-trigger',
+    'prev-trigger',
+    'next-trigger',
+  ],
   'tag': ['close-trigger'],
   'dynamic-input': ['item-delete-trigger'],
+  // 色板格子的底色就是它要展示的那个颜色，换底会盖掉展示物，按压回执只能落在缩放上
+  'color-picker': ['eye-dropper-trigger', 'swatch-item'],
+  'composer': ['submit-trigger'],
+  'pagination': ['prev-trigger', 'next-trigger', 'item', 'ellipsis'],
   // AI 族里点得动的部件
   'approval': ['approve-trigger', 'deny-trigger'],
   'code-view': ['fold-trigger'],
@@ -62,6 +80,15 @@ const PRESSABLE = {
   'tool-call': ['trigger'],
   // 触屏上代替右键的长按：等待期的回执落在 data-pressing 上
   'context-menu': [{ part: 'trigger', attr: 'data-pressing' }],
+}
+
+/**
+ * 点得动、但判定为不该有按压反馈的部件，值是理由。
+ * 两侧都反查：部件名得在解剖里查得到（组件改名或部件退役即失败），
+ * 皮肤里得查不到它的 :active 规则（有了就说明反馈已经补上，该挪进 PRESSABLE）。
+ */
+const NO_PRESS = {
+  'image-viewer:trigger': '触发区是作者自己的一块内容（多为缩略图），皮肤对它零外观规则；缩放它会把作者的排版一起抖起来',
 }
 
 const problems = []
@@ -81,6 +108,25 @@ for (const [name, parts] of Object.entries(PRESSABLE)) {
     else
       checkHeldPart(name, part.part, part.attr, css)
   }
+}
+
+for (const key of Object.keys(NO_PRESS)) {
+  const [name, part] = key.split(':')
+  let anatomy
+  try {
+    anatomy = await readFile(`${HEADLESS}/${name}/${name}.anatomy.ts`, 'utf8')
+  }
+  catch {
+    problems.push(`${key} 的解剖文件读不到——组件改名了就把 NO_PRESS 里那条一起改`)
+    continue
+  }
+  if (!anatomy.includes(`'${part}'`)) {
+    problems.push(`${key} 在解剖里查不到这个部件——名单过期了`)
+    continue
+  }
+  const css = await readFile(`${SKINS}/${name}.css`, 'utf8')
+  if (new RegExp(`\\[data-part='${part}'\\][^{]*:active`).test(css))
+    problems.push(`${key} 登记成不给按压反馈，皮肤里却已经有 :active 规则——把它挪进 PRESSABLE`)
 }
 
 function checkPart(name, part, css) {
@@ -133,5 +179,6 @@ if (problems.length) {
 const held = Object.values(PRESSABLE).flat().filter(part => typeof part !== 'string').length
 console.log(
   `[check-press-feedback] 通过：${Object.values(PRESSABLE).flat().length} 个部件按下去都有回应`
-  + `（其中长按等待 ${held} 个比底色，其余比缩放且缩放量都走令牌）`,
+  + `（其中长按等待 ${held} 个比底色，其余比缩放且缩放量都走令牌）`
+  + `，另有 ${Object.keys(NO_PRESS).length} 个判定为不给按压反馈`,
 )

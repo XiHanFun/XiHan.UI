@@ -191,7 +191,7 @@ allowClear 缺省就开：点中当前那一档清回“还没评”，键盘在
 | `control` | `role` | 'radiogroup' |
 | `item` | `aria-checked` | 'true' \| 'false' |
 | `item` | `aria-disabled` | 'true' \| 'false' |
-| `item` | `aria-label` | itemLabel(item.value, count) |
+| `item` | `aria-label` | itemLabel?.(item.value, count) |
 | `item` | `aria-posinset` | item.value |
 | `item` | `aria-setsize` | ratingMax(prop('count')) |
 | `item` | `role` | 'radio' |

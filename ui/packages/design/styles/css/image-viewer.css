@@ -145,6 +145,9 @@
     color: inherit;
     font-size: var(--xh-glyph-size-sm);
     cursor: pointer;
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='image-viewer'][data-part='counter'] {
@@ -164,6 +167,9 @@
     block-size: var(--xh-control-h-lg);
     font-size: var(--xh-glyph-size-md);
     cursor: pointer;
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='image-viewer'][data-part='prev-trigger'] {
@@ -176,6 +182,35 @@
     inset-inline-end: var(--xh-space-6);
     inset-block-start: 50%;
     translate: 0 -50%;
+  }
+
+  /* 工具条按钮与翻页钮共用一副交互观感：底色再压一档，按下多一次轻微下压。
+     这几颗钮浮在图上，跟的是图上那层半透明深底而不是页面底色，所以不取语义档的
+     --xh-bg-subtle-*，与关闭钮同源。翻页钮到头时是原生 disabled，压不动的东西不给回应。
+     位移用 scale 而非 transform：这两颗钮的居中靠 translate，写 transform 会把它顶掉 */
+  [data-scope='image-viewer'][data-part='zoom-in-trigger']:hover:not(:disabled),
+  [data-scope='image-viewer'][data-part='zoom-out-trigger']:hover:not(:disabled),
+  [data-scope='image-viewer'][data-part='rotate-left-trigger']:hover:not(:disabled),
+  [data-scope='image-viewer'][data-part='rotate-right-trigger']:hover:not(:disabled),
+  [data-scope='image-viewer'][data-part='flip-horizontal-trigger']:hover:not(:disabled),
+  [data-scope='image-viewer'][data-part='flip-vertical-trigger']:hover:not(:disabled),
+  [data-scope='image-viewer'][data-part='reset-trigger']:hover:not(:disabled),
+  [data-scope='image-viewer'][data-part='prev-trigger']:hover:not(:disabled),
+  [data-scope='image-viewer'][data-part='next-trigger']:hover:not(:disabled) {
+    background: var(--xh-image-viewer-action-bg-hover, color-mix(in oklab, var(--xh-color-neutral-950) 70%, transparent));
+  }
+
+  [data-scope='image-viewer'][data-part='zoom-in-trigger']:active:not(:disabled),
+  [data-scope='image-viewer'][data-part='zoom-out-trigger']:active:not(:disabled),
+  [data-scope='image-viewer'][data-part='rotate-left-trigger']:active:not(:disabled),
+  [data-scope='image-viewer'][data-part='rotate-right-trigger']:active:not(:disabled),
+  [data-scope='image-viewer'][data-part='flip-horizontal-trigger']:active:not(:disabled),
+  [data-scope='image-viewer'][data-part='flip-vertical-trigger']:active:not(:disabled),
+  [data-scope='image-viewer'][data-part='reset-trigger']:active:not(:disabled),
+  [data-scope='image-viewer'][data-part='prev-trigger']:active:not(:disabled),
+  [data-scope='image-viewer'][data-part='next-trigger']:active:not(:disabled) {
+    background: var(--xh-image-viewer-action-bg-active, color-mix(in oklab, var(--xh-color-neutral-950) 80%, transparent));
+    scale: var(--xh-motion-scale-press);
   }
 
   /* 右上角的关闭钮：与翻页钮同底同高，但圆角走控件档，按下有缩放 */
@@ -328,6 +363,7 @@
   [data-scope='image-viewer'][data-part='positioner'][hidden],
   [data-scope='image-viewer'][data-part='viewport'][hidden],
   [data-scope='image-viewer'][data-part='toolbar'][hidden],
+  [data-scope='image-viewer'][data-part='prev-trigger'][hidden],
   [data-scope='image-viewer'][data-part='next-trigger'][hidden] {
     display: none;
   }

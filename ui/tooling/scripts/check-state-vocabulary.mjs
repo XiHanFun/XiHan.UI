@@ -4,7 +4,7 @@
 // 皮肤层完全靠 data-* 选中状态，所以这些属性名与取值形态是对外契约的一部分：
 // 拼成 data-isOpen、或者布尔属性时有时无地写成空串，使用者那条全局规则就会漏掉一半组件。
 //
-// 七条判据：
+// 八条判据：
 // ① 属性名形态：一律小写连字符，不许驼峰或下划线。
 // ② 布尔类状态一律走 dataAttr(...)：它把 false 编成 undefined（属性缺席）、true 编成空串，
 //    手写的 `cond ? '' : undefined` 与它等价但绕开了单一出口，改语义时会漏掉。
@@ -16,6 +16,9 @@
 //
 // ④ data-state 的取值必须登记在 state-vocabulary.json 的某个族里，connect 的字面量与皮肤的选择器两头都查；
 //    ARIA↔data 的配对也写在那份表里，供人照着配。
+// ⑧ 布尔状态属性的名字必须登记在同一份表的 boolean 段里，两头都查：发了没登记的即报，
+//    登记了没人发的算名单过期。名字就是使用者那条 [data-xxx] 规则的入口，同一件事在两个
+//    组件里取两个名字，规则只能命中一半；逼着新名字先与已有的比对一遍，比事后清点便宜。
 //
 // 刻意不上的一条：ARIA↔data 配对的静态检查会被展开助手（...rowState / ...itemStateAttrs）
 // 大面积假阳性，要落地得先解析并内联同文件顶部的助手字面量。
@@ -156,6 +159,27 @@ for (const [path, source] of connectSources) {
   }
   if (/\bsetOpen\b/.test(source) && /['"]data-state['"]\s*:[^,\n]*['"](?:visible|hidden)['"]/.test(source))
     problems.push(`${path} 有开合交互（setOpen）却把 data-state 发成 visible / hidden——改 open / closed`)
+}
+
+// ⑧ 布尔属性的名字两头对表：connect 发的必须登记，登记的必须有人发。
+{
+  const registered = new Set(Object.keys(vocab.boolean).filter(key => !key.startsWith('$')))
+  const emitted = new Set()
+  for (const [attr, shape] of shapes) {
+    if (!shape.bool.length)
+      continue
+    emitted.add(attr)
+    if (!registered.has(attr)) {
+      problems.push(
+        `${sample(shape.bool)} 发的布尔属性 ${attr} 没有登记——先在 ${VOCAB_PATH} 的 boolean 表里写明它是什么语义；`
+        + ' 同一件事已经有名字的沿用旧名，别另起一个',
+      )
+    }
+  }
+  for (const attr of registered) {
+    if (!emitted.has(attr))
+      problems.push(`${VOCAB_PATH} 的 boolean 表里登着 ${attr}，却没有一处 connect 以 dataAttr(...) 发它——名单过期了`)
+  }
 }
 
 // ⑤ 退役的属性名不许再发

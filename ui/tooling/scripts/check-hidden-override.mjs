@@ -8,6 +8,8 @@
 // 判据：某个 part 已经有了 [hidden] 那条兜底，其后又出现同一个 part 的规则把 display
 // 改成非 none，且选择器里既没带 [hidden] 也没带 :not([hidden])——这种就是隐患。
 // 想加这类规则，把 :not([hidden]) 写进选择器即可，与顺序和特指度都无关了。
+//
+// 判据落到规则块前的每一条选择器上：多行逗号列表里排在前面的那些行同样算数。
 
 import fs from 'node:fs'
 import path from 'node:path'
@@ -38,6 +40,86 @@ function leadingPart(selector) {
   return `${m[1]}/${m[2]}`
 }
 
+/**
+ * 把一段选择器文本按顶层逗号拆成一条条选择器。
+ *
+ * 只在括号外的逗号处断开：`:is(:hover, [data-highlighted])` 里的那个逗号属于伪类参数，
+ * 从那儿断开会把一条选择器劈成两截残句。
+ */
+function splitSelectorList(text) {
+  const out = []
+  let depth = 0
+  let buf = ''
+  for (const ch of text) {
+    if (ch === '(' || ch === '[') {
+      depth++
+    }
+    else if (ch === ')' || ch === ']') {
+      depth--
+    }
+    else if (ch === ',' && depth === 0) {
+      out.push(buf.trim())
+      buf = ''
+      continue
+    }
+    buf += ch
+  }
+  out.push(buf.trim())
+  return out.filter(Boolean)
+}
+
+/**
+ * 逐行给出该行所在规则块的完整选择器列表。
+ *
+ * 只认带 `{` 的那一行，多行逗号列表里排在前面的选择器就整个进不了判据——
+ * `[data-part=prev-trigger],` 换行再写 `[data-part=next-trigger] {` 时只有 next 被查过。
+ * 这里把规则块前所有逗号分隔的行一起收进来。
+ *
+ * 收续行的时机看最内层那个块是不是样式规则：at 规则（@layer / @media / @supports）与文件顶层
+ * 里以逗号收尾的行是选择器续行，而样式规则里以逗号收尾的行是多值声明的续行，不能收。
+ * 传进来的行须先把注释抹成空白——注释里成对出现的 `{}` 会把块的层级算歪。
+ */
+function selectorListPerLine(lines) {
+  const perLine = Array.from({ length: lines.length }).fill(null)
+  /** 每个已打开的块是不是样式规则 */
+  const stack = []
+  /** 已读到、还在等 `{` 的选择器续行 */
+  let pending = []
+  let current = null
+
+  lines.forEach((line, i) => {
+    const brace = line.indexOf('{')
+    if (brace >= 0) {
+      const prelude = [...pending, line.slice(0, brace)].join(' ').trim()
+      pending = []
+      const isRule = prelude !== '' && !prelude.startsWith('@')
+      stack.push(isRule)
+      if (isRule)
+        current = splitSelectorList(prelude)
+    }
+    else if (line.includes('}')) {
+      stack.pop()
+      pending = []
+    }
+    else if (stack.at(-1) !== true && line.trim().endsWith(',')) {
+      pending.push(line.trim())
+    }
+    perLine[i] = stack.at(-1) === true ? current : null
+
+    // 一行写完的规则（`选择器 { 声明 }`）在上面只入栈、不出栈：`}` 落在同一行，
+    // 走不到出栈那一支。栈顶从此恒是「样式规则」，后面所有逗号续行都被当成多值声明
+    // 的续行丢掉，判据静默退回只认带 `{` 的那一行。所以本行的 `}` 要单独补一遍。
+    for (let k = brace >= 0 ? brace + 1 : 0; k < line.length; k++) {
+      if (line[k] === '}') {
+        stack.pop()
+        pending = []
+        current = null
+      }
+    }
+  })
+  return perLine
+}
+
 const offenders = []
 /** 那个部件一条 [hidden] 兜底都没写：作者给它加 hidden 也不会消失。 */
 const unguarded = []
@@ -46,27 +128,32 @@ let guarded = 0
 
 for (const file of fs.readdirSync(cssDir).filter(f => f.endsWith('.css')).sort()) {
   scanned++
-  const lines = fs.readFileSync(path.join(cssDir, file), 'utf8').split('\n')
+  const text = fs.readFileSync(path.join(cssDir, file), 'utf8')
+  // 注释抹成等长空白：行号与列宽都不动，块的层级不会被注释里的 `{}` 算歪
+  const code = text.replace(/\/\*[\s\S]*?\*\//g, m => m.replace(/[^\n]/g, ' ')).split('\n')
+  const selectorsAt = selectorListPerLine(code)
 
   // 哪些 part 的可见性由 animation 驱动：presence 会把它留在布局里播完退场再卸载，
   // 这段时间它身上就带着 hidden。给这类补 display:none 会把退场整段掐掉。
+  //
+  // 只认落在部件自己身上的动画。伪元素上的动画（加载环那种）转的是伪元素的盒子，
+  // 宿主该消失照样消失，拿它当免检理由会把宿主缺兜底这件事一起盖住。
   const animated = new Set()
-  {
-    let sel = null
-    for (const line of lines) {
-      if (line.includes('{'))
-        sel = line
-      if (/^\s*animation:/.test(line) && sel) {
-        const part = leadingPart(sel)
-        if (part)
-          animated.add(part)
-      }
+  code.forEach((line, i) => {
+    if (!/^\s*animation:/.test(line))
+      return
+    for (const sel of selectorsAt[i] ?? []) {
+      if (/::(?:before|after)/.test(sel))
+        continue
+      const part = leadingPart(sel)
+      if (part)
+        animated.add(part)
     }
-  }
+  })
 
   // 先记下每个 part 的 [hidden] 兜底出现在第几行
   const hiddenAt = new Map()
-  lines.forEach((line, i) => {
+  code.forEach((line, i) => {
     const m = line.match(/\[data-scope='([^']+)'\]\[data-part='([^']+)'\]\[hidden\]/)
     if (m && !hiddenAt.has(`${m[1]}/${m[2]}`)) {
       hiddenAt.set(`${m[1]}/${m[2]}`, i)
@@ -74,37 +161,37 @@ for (const file of fs.readdirSync(cssDir).filter(f => f.endsWith('.css')).sort()
     }
   })
 
-  let selector = null
-  lines.forEach((line, i) => {
-    if (line.includes('{'))
-      selector = line
+  code.forEach((line, i) => {
     const decl = line.match(/^\s*display:\s*([a-z-]+)/)
-    if (!decl || decl[1] === 'none' || !selector)
+    if (!decl || decl[1] === 'none')
       return
-    const part = leadingPart(selector)
-    if (!part)
-      return
-    // 自己带了 [hidden] / :not([hidden]) 的说明作者想清楚了
-    if (/\[hidden\]|:not\(\[hidden\]\)/.test(selector))
-      return
-    // 伪元素的 display 管的是它自己的盒子：宿主一旦 display:none，伪元素根本不生成
-    if (/::(?:before|after)\s*[,{]/.test(selector) || /::(?:before|after)\s*$/.test(selector.trim()))
-      return
-    const at = hiddenAt.get(part)
-    // 一条兜底都没写：整个部件的收起态都是坏的。这一支此前直接放行，
-    // 于是「从没写过兜底」比「写了但排在前面」还安全——恰好反了。
-    //
-    // 被 animation 驱动的部件除外：它们的 hidden 是退场那一段的中间态，节点要留在布局里
-    // 把退场动画播完（presence 播完才卸载）。给它们补 display:none 等于把退场掐掉。
-    if (at == null) {
-      if (!animated.has(part))
-        unguarded.push(`${file}:${i + 1}  display: ${decl[1]}\n    ${selector.trim()}`)
-      return
+    // 逐条选择器各判各的：同一条规则里可以一半带 [hidden]、一半不带
+    for (const selector of selectorsAt[i] ?? []) {
+      const part = leadingPart(selector)
+      if (!part)
+        continue
+      // 自己带了 [hidden] / :not([hidden]) 的说明作者想清楚了
+      if (/\[hidden\]|:not\(\[hidden\]\)/.test(selector))
+        continue
+      // 伪元素的 display 管的是它自己的盒子：宿主一旦 display:none，伪元素根本不生成
+      if (/::(?:before|after)/.test(selector))
+        continue
+      const at = hiddenAt.get(part)
+      // 一条兜底都没写：整个部件的收起态都是坏的。这一支此前直接放行，
+      // 于是「从没写过兜底」比「写了但排在前面」还安全——恰好反了。
+      //
+      // 被 animation 驱动的部件除外：它们的 hidden 是退场那一段的中间态，节点要留在布局里
+      // 把退场动画播完（presence 播完才卸载）。给它们补 display:none 等于把退场掐掉。
+      if (at == null) {
+        if (!animated.has(part))
+          unguarded.push(`${file}:${i + 1}  display: ${decl[1]}\n    ${selector}`)
+        continue
+      }
+      // 排在兜底之前的规则不成问题：兜底在后面，收起态照样赢
+      if (i <= at)
+        continue
+      offenders.push(`${file}:${i + 1}  display: ${decl[1]}\n    ${selector}`)
     }
-    // 排在兜底之前的规则不成问题：兜底在后面，收起态照样赢
-    if (i <= at)
-      return
-    offenders.push(`${file}:${i + 1}  display: ${decl[1]}\n    ${selector.trim()}`)
   })
 }
 
