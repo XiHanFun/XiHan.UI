@@ -198,7 +198,7 @@ tick 每过一个 interval 发一次，complete 只在走到终点那一刻发�
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-timer-area-fg` · `--xh-timer-completed-fg` · `--xh-timer-control-bg` · `--xh-timer-control-bg-active` · `--xh-timer-control-bg-disabled` · `--xh-timer-control-bg-hover` · `--xh-timer-control-border` · `--xh-timer-control-border-disabled` · `--xh-timer-control-border-focus` · `--xh-timer-control-border-hover` · `--xh-timer-control-fg` · `--xh-timer-control-gap` · `--xh-timer-control-h` · `--xh-timer-control-px` · `--xh-timer-control-radius` · `--xh-timer-digit-font-size` · `--xh-timer-fg` · `--xh-timer-gap` · `--xh-timer-separator-fg` · `--xh-timer-separator-px`
+`--xh-timer-area-fg` · `--xh-timer-completed-fg` · `--xh-timer-control-bg` · `--xh-timer-control-bg-active` · `--xh-timer-control-bg-disabled` · `--xh-timer-control-bg-hover` · `--xh-timer-control-border` · `--xh-timer-control-border-disabled` · `--xh-timer-control-border-focus` · `--xh-timer-control-border-hover` · `--xh-timer-control-fg` · `--xh-timer-control-gap` · `--xh-timer-control-h` · `--xh-timer-control-px` · `--xh-timer-control-radius` · `--xh-timer-digit-font-size` · `--xh-timer-fg` · `--xh-timer-gap` · `--xh-timer-item-fg` · `--xh-timer-separator-fg` · `--xh-timer-separator-px`
 
 ## 动效
 

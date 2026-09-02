@@ -150,7 +150,7 @@
   }
 
   [data-scope='combobox'][data-part='label'][data-disabled] {
-    color: var(--xh-fg-subtle);
+    color: var(--xh-combobox-label-fg-disabled, var(--xh-fg-subtle));
   }
 
   /* 画成一个框的是 control 而不是 input：输入框、展开按钮、清空按钮三者要看起来是一体的，

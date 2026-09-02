@@ -101,7 +101,7 @@ segmented 在段与段之间画一条分隔线；hoverable 只在能用指针的
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-card-bg` · `--xh-card-body-pt` · `--xh-card-border` · `--xh-card-divider` · `--xh-card-fg` · `--xh-card-footer-gap` · `--xh-card-footer-pt` · `--xh-card-header-gap` · `--xh-card-header-pb` · `--xh-card-radius` · `--xh-card-shadow` · `--xh-card-title-font-size`
+`--xh-card-bg` · `--xh-card-body-pt` · `--xh-card-border` · `--xh-card-border-hover` · `--xh-card-description-fg` · `--xh-card-description-font-size` · `--xh-card-divider` · `--xh-card-fg` · `--xh-card-footer-gap` · `--xh-card-footer-pt` · `--xh-card-header-gap` · `--xh-card-header-pb` · `--xh-card-radius` · `--xh-card-shadow` · `--xh-card-shadow-hover` · `--xh-card-title-font-size`
 
 ## 动效
 

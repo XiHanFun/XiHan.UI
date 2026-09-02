@@ -136,15 +136,15 @@
   /* 选中的那条：品牌淡底 + 强调字。
      守卫与轻档那条同特指度，写在其后才压得住——键盘走到当前页那一行时底色仍是品牌淡底 */
   [data-scope='side-nav'][data-part='link']:not([data-disabled])[data-current] {
-    background: var(--xh-bg-brand-subtle);
+    background: var(--xh-side-nav-row-bg-active, var(--xh-bg-brand-subtle));
     /* 淡底上的字走 strong 档：fg-brand（600）压在 brand-subtle（100）上只有 4.21 */
-    color: var(--xh-fg-brand-strong);
-    font-weight: var(--xh-font-weight-medium);
+    color: var(--xh-side-nav-row-fg-active, var(--xh-fg-brand-strong));
+    font-weight: var(--xh-side-nav-row-font-weight-active, var(--xh-font-weight-medium));
   }
 
   /* 选中项的祖先枝：只染字色，一路指到当前页 */
   [data-scope='side-nav'][data-part='branch-trigger'][data-in-path] {
-    color: var(--xh-fg-brand);
+    color: var(--xh-side-nav-row-fg-in-path, var(--xh-fg-brand));
   }
 
   [data-scope='side-nav'][data-part='branch-trigger'][data-disabled],

@@ -309,6 +309,9 @@
               "name": "--xh-accordion-trigger-fg"
             },
             {
+              "name": "--xh-accordion-trigger-fg-open"
+            },
+            {
               "name": "--xh-accordion-trigger-font-size"
             },
             {
@@ -3811,6 +3814,15 @@
               "name": "--xh-card-border"
             },
             {
+              "name": "--xh-card-border-hover"
+            },
+            {
+              "name": "--xh-card-description-fg"
+            },
+            {
+              "name": "--xh-card-description-font-size"
+            },
+            {
               "name": "--xh-card-divider"
             },
             {
@@ -3833,6 +3845,9 @@
             },
             {
               "name": "--xh-card-shadow"
+            },
+            {
+              "name": "--xh-card-shadow-hover"
             },
             {
               "name": "--xh-card-title-font-size"
@@ -5121,6 +5136,9 @@
             },
             {
               "name": "--xh-cascader-label-fg"
+            },
+            {
+              "name": "--xh-cascader-label-fg-disabled"
             },
             {
               "name": "--xh-cascader-label-font-size"
@@ -8809,6 +8827,9 @@
               "name": "--xh-combobox-label-fg"
             },
             {
+              "name": "--xh-combobox-label-fg-disabled"
+            },
+            {
               "name": "--xh-combobox-label-font-size"
             },
             {
@@ -12217,6 +12238,12 @@
               "name": "--xh-dialog-close-bg-hover"
             },
             {
+              "name": "--xh-dialog-close-fg"
+            },
+            {
+              "name": "--xh-dialog-close-fg-hover"
+            },
+            {
               "name": "--xh-dialog-close-radius"
             },
             {
@@ -12224,6 +12251,9 @@
             },
             {
               "name": "--xh-dialog-description-fg"
+            },
+            {
+              "name": "--xh-dialog-description-font-size"
             },
             {
               "name": "--xh-dialog-fg"
@@ -13284,6 +13314,12 @@
             },
             {
               "name": "--xh-drawer-close-bg-hover"
+            },
+            {
+              "name": "--xh-drawer-close-fg"
+            },
+            {
+              "name": "--xh-drawer-close-fg-hover"
             },
             {
               "name": "--xh-drawer-close-radius"
@@ -30128,6 +30164,12 @@
               "name": "--xh-popover-close-bg-hover"
             },
             {
+              "name": "--xh-popover-close-fg"
+            },
+            {
+              "name": "--xh-popover-close-fg-hover"
+            },
+            {
               "name": "--xh-popover-close-radius"
             },
             {
@@ -36539,6 +36581,9 @@
               "name": "--xh-select-label-fg"
             },
             {
+              "name": "--xh-select-label-fg-disabled"
+            },
+            {
               "name": "--xh-select-label-font-size"
             },
             {
@@ -37183,7 +37228,19 @@
               "name": "--xh-side-nav-popout-shadow"
             },
             {
+              "name": "--xh-side-nav-row-bg-active"
+            },
+            {
               "name": "--xh-side-nav-row-bg-hover"
+            },
+            {
+              "name": "--xh-side-nav-row-fg-active"
+            },
+            {
+              "name": "--xh-side-nav-row-fg-in-path"
+            },
+            {
+              "name": "--xh-side-nav-row-font-weight-active"
             },
             {
               "name": "--xh-side-nav-w"
@@ -45327,6 +45384,9 @@
               "name": "--xh-timer-gap"
             },
             {
+              "name": "--xh-timer-item-fg"
+            },
+            {
               "name": "--xh-timer-separator-fg"
             },
             {
@@ -47970,6 +48030,12 @@
             },
             {
               "name": "--xh-tour-close-bg-hover"
+            },
+            {
+              "name": "--xh-tour-close-fg"
+            },
+            {
+              "name": "--xh-tour-close-fg-hover"
             },
             {
               "name": "--xh-tour-close-radius"

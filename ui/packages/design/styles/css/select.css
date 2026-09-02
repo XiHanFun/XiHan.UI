@@ -149,7 +149,7 @@
   }
 
   [data-scope='select'][data-part='label'][data-disabled] {
-    color: var(--xh-fg-subtle);
+    color: var(--xh-select-label-fg-disabled, var(--xh-fg-subtle));
   }
 
   /* 盒：描边、底色、圆角、控件高度与行内内衬都长在这一层，触发器与清空按钮在里面并排。

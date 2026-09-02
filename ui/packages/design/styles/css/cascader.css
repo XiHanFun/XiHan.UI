@@ -122,7 +122,7 @@
 
   /* 整个控件禁用会把 data-disabled 一路打到 label / value-text / indicator 上，各处观感保持一致 */
   [data-scope='cascader'][data-part='label'][data-disabled] {
-    color: var(--xh-fg-subtle);
+    color: var(--xh-cascader-label-fg-disabled, var(--xh-fg-subtle));
   }
 
   /* 盒：描边、底色、控件高度与行内内衬都落在这一层，触发按钮与清空按钮在里面并排 */
