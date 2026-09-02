@@ -7,8 +7,9 @@ export type PromptInputState = 'empty' | 'editing' | 'disabled'
  * 哪一档按键提交。
  * `enter`：Enter 提交、Shift+Enter 换行、Mod+Enter 也提交。
  * `mod-enter`：Enter 换行，只有 Mod+Enter 提交。
+ * `none`：Enter 与 Mod+Enter 都换行，键盘不提交；提交只剩按钮与程序化两条路。
  */
-export type PromptInputSubmitKey = 'enter' | 'mod-enter'
+export type PromptInputSubmitKey = 'enter' | 'mod-enter' | 'none'
 
 export interface PromptInputValueChangeDetails {
   value: string

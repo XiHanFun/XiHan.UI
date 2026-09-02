@@ -56,6 +56,18 @@ clamped 是纯受控的：组件只发意图，落不落由宿主决定，好让
 
 <XhDemo src="code-view/05-copy" />
 
+### 着色端口
+
+着色是可换的端口：认不出的语言退回纯文本，接自己的实现组件侧一行不用改，传 null 则整个关掉
+
+<XhDemo src="code-view/06-highlighter" />
+
+### 流式期间也着色
+
+未闭合默认不着色；真要看着色就打开 highlight-while-streaming，同一段半截代码的两种呈现摆在一起
+
+<XhDemo src="code-view/07-streaming-highlight" />
+
 ## 产物
 
 | 层 | 值 |

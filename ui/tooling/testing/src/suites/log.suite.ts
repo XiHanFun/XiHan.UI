@@ -59,8 +59,8 @@ function expectNoInlineHeight(ctx: RawStepContext): void {
 }
 
 /**
- * log 的一致性套件：核对日志区的 ARIA 接线、行数如何落成高度、加载态怎么报，
- * 以及粘底状态如实透出到根上。
+ * log 的一致性套件：核对日志区与播报区的 ARIA 接线、行数如何落成高度、加载态怎么报，
+ * 以及粘底状态如实透出到根上、回到底部按钮跟着离底与否露面。
  */
 export const logSuite: ConformanceSuite = {
   component: 'log',
@@ -82,29 +82,45 @@ export const logSuite: ConformanceSuite = {
           },
         ],
       },
+      { part: 'scroll-button', tag: 'button' },
+      { part: 'live-region' },
     ],
   },
   cases: [
     {
-      name: 'ARIA 骨架：视口是可聚焦的 log 区，初始在底且粘附，没在取行故不报忙',
+      name: 'ARIA 骨架：视口是可聚焦但恒不播报的 log 区，播报只在 live-region，初始在底故按钮收起',
       spec: { apg: LIVE },
       initial: {
-        order: ['root', 'viewport', 'content', 'line[0]', 'line[1]', 'line[2]'],
-        counts: { root: 1, viewport: 1, content: 1, line: 3 },
+        order: ['root', 'viewport', 'content', 'line[0]', 'line[1]', 'line[2]', 'scroll-button', 'live-region'],
+        counts: { 'root': 1, 'viewport': 1, 'content': 1, 'line': 3, 'scroll-button': 1, 'live-region': 1 },
         parts: {
-          root: {
+          'root': {
             // 没在取行，data-loading 不留空属性
             'data-loading': null,
             'data-at-bottom': '',
             'data-sticking': '',
           },
-          viewport: {
-            // role=log 自带 polite，追加进来的行由它播报
+          'viewport': {
             'role': 'log',
+            // role=log 隐含 aria-live=polite，这里显式关掉：逐行播报会把成串的输出念成噪声
+            'aria-live': 'off',
             'aria-label': 'Log',
             'aria-busy': null,
             // 让键盘用户落得进日志区
             'tabindex': '0',
+          },
+          'scroll-button': {
+            'type': 'button',
+            'aria-label': 'Scroll to bottom',
+            'data-state': 'hidden',
+            // 收起时只置 hidden，不卸载节点
+            'hidden': '',
+          },
+          'live-region': {
+            'role': 'status',
+            'aria-live': 'polite',
+            // 每次变动重念整块
+            'aria-atomic': 'true',
           },
         },
         activeElement: null,
@@ -112,12 +128,13 @@ export const logSuite: ConformanceSuite = {
       },
     },
     {
-      name: '可访问名可改：translations 覆盖日志区的名字',
+      name: '可访问名可改：translations 覆盖日志区与回到底部按钮的名字',
       spec: { apg: LIVE },
-      props: { translations: { log: '构建日志' } },
+      props: { translations: { log: '构建日志', scrollToBottom: '回到最新' } },
       initial: {
         parts: {
-          viewport: { 'aria-label': '构建日志' },
+          'viewport': { 'aria-label': '构建日志' },
+          'scroll-button': { 'aria-label': '回到最新' },
         },
       },
     },
@@ -181,6 +198,31 @@ export const logSuite: ConformanceSuite = {
               root: { 'data-at-bottom': null, 'data-sticking': '' },
             },
             events: [{ type: 'stick-change', detail: { atBottom: false, sticking: true } }],
+          },
+        },
+      ],
+    },
+    {
+      name: '离底后按钮露头，按下去归位到底并重新粘附',
+      spec: { apg: APG },
+      covers: ['log.kbd.scroll-button'],
+      skipParity: 'jsdom 无布局，粘底状态由伪造几何驱动，两适配器的 RO 回调时机天然不同步',
+      steps: [
+        {
+          kind: 'raw',
+          why: 'jsdom 无布局，滚动几何恒为 0、视口永远判成在底，粘底状态只能由伪造几何驱动',
+          run: scrollAwayFromBottom,
+          expect: {
+            parts: { 'scroll-button': { 'hidden': null, 'data-state': 'visible' } },
+            events: [{ type: 'stick-change', detail: { atBottom: false, sticking: true } }],
+          },
+        },
+        {
+          kind: 'click',
+          part: 'scroll-button',
+          expect: {
+            parts: { 'scroll-button': { 'hidden': '', 'data-state': 'hidden' } },
+            events: [{ type: 'stick-change', detail: { atBottom: true, sticking: true } }],
           },
         },
       ],

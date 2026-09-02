@@ -592,6 +592,26 @@ const truth = {
       return (await surface()).cssLayers.length
     },
   },
+  VueXh导出数: {
+    how: 'public-surface.json 里 @xihan-ui/vue 的导出名中以 Xh 开头的条数',
+    async value() {
+      return (await surface()).exports['@xihan-ui/vue'].filter(n => n.startsWith('Xh')).length
+    },
+  },
+  覆盖槽涉及的组件数: {
+    how: '组件覆盖槽名 --xh-<组件>-… 按解剖名最长前缀归属后，至少有一个槽的组件数',
+    async value() {
+      const surf = await surface()
+      const names = Object.keys(surf.anatomy).sort((a, b) => b.length - a.length)
+      const covered = new Set()
+      for (const slot of surf.cssSlots) {
+        const owner = names.find(n => slot.startsWith(`--xh-${n}-`))
+        if (owner != null)
+          covered.add(owner)
+      }
+      return covered.size
+    },
+  },
   基线覆盖槽数: {
     how: 'public-surface.json 的 cssSlots 条数',
     async value() {
@@ -1060,6 +1080,9 @@ const TABLE = [
   ['docs/guide/versioning.md', /个组件覆盖槽、(\d+) 个自定义元素及其/, '基线元素数'],
   ['docs/guide/versioning.md', /\| `@layer` 名与声明顺序 \| (\d+) \|/, '基线层名数'],
   ['docs/guide/versioning.md', /\| 组件覆盖槽 \| (\d+)（覆盖 \d+ 个组件）/, '基线覆盖槽数'],
+  ['docs/guide/versioning.md', /\| 组件覆盖槽 \| \d+（覆盖 (\d+) 个组件）/, '覆盖槽涉及的组件数'],
+  ['docs/guide/versioning.md', /\| Vue 组件导出 `Xh\*` \| (\d+)（\d+ 个家族）/, 'VueXh导出数'],
+  ['docs/guide/versioning.md', /\| `@xihan-ui\/vue` \| (\d+) 个组件、/, 'VueXh导出数'],
   ['docs/guide/versioning.md', /当前用到的 (\d+) 个 `data-state` 取值全部受约束/, '基线dataState取值数'],
   ['docs/guide/versioning.md', /\| (\d+) 个令牌名/, '全局令牌数'],
   ['docs/guide/versioning.md', /共 (\d+) 个带类型的入口/, '带类型的入口数'],

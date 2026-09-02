@@ -26,7 +26,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {string} default-value - 非受控初值
  * @attr {boolean} disabled - 禁用，输入框带原生 disabled，提交与停止一并吃掉
  * @attr {boolean} busy - 正在生成：发送按钮原位变停止，提交路径全部挡下
- * @attr {'enter'|'mod-enter'} submit-key - 按哪一档提交，默认 enter
+ * @attr {'enter'|'mod-enter'|'none'} submit-key - 按哪一档提交，默认 enter；none 档键盘不提交
  * @attr {boolean} allow-empty-submit - 允许空值提交，默认关；有附件时置真
  * @attr {boolean} clear-on-submit - 提交后清空，默认开；写 clear-on-submit="false" 关掉
  * @attr {string} variant - 形态：outline / subtle / ghost

@@ -67,7 +67,6 @@ const PRESSABLE = {
   'dynamic-input': ['item-delete-trigger'],
   // 色板格子的底色就是它要展示的那个颜色，换底会盖掉展示物，按压回执只能落在缩放上
   'color-picker': ['eye-dropper-trigger', 'swatch-item'],
-  'composer': ['submit-trigger'],
   'pagination': ['prev-trigger', 'next-trigger', 'item', 'ellipsis'],
   // AI 族里点得动的部件
   'approval': ['approve-trigger', 'deny-trigger'],

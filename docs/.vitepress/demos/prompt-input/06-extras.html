@@ -1,0 +1,50 @@
+<!-- 框里的附加节点 | root 里除三件外还能放自己的按钮与计数；值的读写归宿主，原生属性照旧直接落到输入框上 -->
+<div style="display: grid; gap: 12px">
+  <xh-prompt-input id="prompt-input-extras">
+    <div data-xh-part="root">
+      <xh-button variant="ghost" size="sm">
+        <button data-xh-part="root">附件</button>
+      </xh-button>
+      <!-- maxlength 是原生属性，直接写在 textarea 上 -->
+      <textarea
+        data-xh-part="input"
+        maxlength="40"
+        rows="1"
+        placeholder="最多 40 个字"
+      ></textarea>
+      <span style="font-size: 13px; white-space: nowrap">
+        <span id="prompt-input-extras-count">0</span> / 40
+      </span>
+      <!-- 有内容才给清空，清空后按钮自己转灰 -->
+      <xh-button id="prompt-input-extras-clear" variant="ghost" size="sm">
+        <button data-xh-part="root">清空</button>
+      </xh-button>
+      <button data-xh-part="submit-trigger">发送</button>
+    </div>
+  </xh-prompt-input>
+  <span id="prompt-input-extras-log">（还没发过）</span>
+</div>
+
+<script type="module">
+  // 值受控：每次变化写回宿主，清空按钮只是写一个空串
+  const input = document.getElementById("prompt-input-extras");
+  const clear = document.getElementById("prompt-input-extras-clear");
+  const count = document.getElementById("prompt-input-extras-count");
+  const log = document.getElementById("prompt-input-extras-log");
+  input.translations = { input: "给助手写点什么" };
+
+  function setValue(next) {
+    input.value = next;
+    count.textContent = next.length;
+    clear.toggleAttribute("disabled", next === "");
+  }
+
+  input.addEventListener("value-change", (event) => setValue(event.detail.value));
+  clear.addEventListener("click", () => setValue(""));
+  // submit 与原生表单提交同名，故不冒泡，直接在元素上监听
+  input.addEventListener("submit", (event) => {
+    log.textContent = `提交：${event.detail.value}`;
+  });
+
+  setValue("输入框两侧各放了一颗自己的按钮");
+</script>

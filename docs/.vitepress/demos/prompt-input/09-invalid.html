@@ -1,0 +1,50 @@
+<!-- 发送失败的错误态 | 判定谁算出错是宿主的事：属性直接落到真元素上，整框换色靠覆盖公开变量，原因由活区播报 -->
+<div style="display: grid; gap: 8px">
+  <xh-prompt-input id="prompt-input-invalid">
+    <div data-xh-part="root">
+      <textarea
+        data-xh-part="input"
+        aria-invalid="false"
+        rows="1"
+        placeholder="发一条试试"
+      ></textarea>
+      <button data-xh-part="submit-trigger">发送</button>
+    </div>
+  </xh-prompt-input>
+
+  <!-- 节点常挂、靠 hidden 显隐：翻出来的那一刻读屏把原因念出来 -->
+  <p
+    id="prompt-input-invalid-reason"
+    role="alert"
+    hidden
+    style="margin: 0; font-size: 13px; color: var(--xh-fg-danger)"
+  >
+    网络不通，这条没能发出去，再发一次
+  </p>
+  <span id="prompt-input-invalid-log">（还没发过）</span>
+</div>
+
+<script type="module">
+  const host = document.getElementById("prompt-input-invalid");
+  const root = host.querySelector('[data-xh-part="root"]');
+  const input = host.querySelector('[data-xh-part="input"]');
+  const reason = document.getElementById("prompt-input-invalid-reason");
+  const log = document.getElementById("prompt-input-invalid-log");
+  host.translations = { input: "给助手写点什么" };
+  let attempt = 0;
+
+  // submit 与原生表单提交同名，故不冒泡，直接在元素上监听
+  host.addEventListener("submit", (event) => {
+    attempt += 1;
+    // 头一条故意发不出去，再发一条就成
+    const failed = attempt % 2 === 1;
+    root.toggleAttribute("data-invalid", failed);
+    // 边框换成危险档，覆盖的是公开变量
+    root.style.setProperty("--xh-prompt-input-border", failed ? "var(--xh-color-danger-500)" : "");
+    input.setAttribute("aria-invalid", failed ? "true" : "false");
+    if (failed) input.setAttribute("aria-describedby", reason.id);
+    else input.removeAttribute("aria-describedby");
+    reason.hidden = !failed;
+    log.textContent = failed ? `没发出去：${event.detail.value}` : `提交：${event.detail.value}`;
+  });
+</script>

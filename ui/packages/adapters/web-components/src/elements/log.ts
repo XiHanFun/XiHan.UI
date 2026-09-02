@@ -13,7 +13,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
 /**
  * `<xh-log>` —— Light-DOM 行为宿主：作者写 root/viewport/content/line 角色节点，
  * 元素把 connectLog 的产出打上去。行长出来时跟随滚动到底部，用户上滚后解除粘附，
- * 滚回底部阈值内或调 scrollToBottom() 时恢复。
+ * 滚回底部阈值内、按回到底部按钮或调 scrollToBottom() 时恢复。
  *
  * 行的内容不替作者生成：文本、级别、时间戳、标注都写在 line 角色节点里，元素只发身份与等宽排版。
  *
@@ -22,9 +22,11 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @attr {boolean} loading - 行还在路上：日志区报 aria-busy，根落 data-loading
  * @fires stick-change - 粘底状态变化；detail 为 `{ atBottom: boolean, sticking: boolean }`
  * @csspart root - 组件根容器，承载 data-loading / data-at-bottom / data-sticking
- * @csspart viewport - 滚动容器；role=log + tabindex=0，按行数定高写进内联样式
+ * @csspart viewport - 滚动容器；role=log + aria-live=off + tabindex=0，按行数定高写进内联样式
  * @csspart content - 所有行的包裹层，尺寸变化的观察目标
  * @csspart line - 一行日志，只拿身份与等宽排版
+ * @csspart scroll-button - 回到底部按钮，在底时收起（hidden + 内联 display）
+ * @csspart live-region - 视觉隐藏的播报区（role=status + aria-live=polite + aria-atomic）
  */
 export class XhLogElement extends XhElement {
   static override partContract = { anatomy: logAnatomy, meta: logMeta }
@@ -39,7 +41,7 @@ export class XhLogElement extends XhElement {
 
   declare rows?: number
   declare loading?: boolean
-  /** 日志区的无障碍名，由 connect 写到视口上。 */
+  /** 日志区与回到底部按钮的无障碍名，由 connect 写到节点上。 */
   declare translations?: Partial<LogTranslations>
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
@@ -81,7 +83,7 @@ export class XhLogElement extends XhElement {
 
   /**
    * 滚回底部并恢复粘附。机器要等 hostConnected 才建，还没进 DOM 时如实什么都不做、别炸。
-   * 元素不带内置的"回到底部"按钮，作者自己的按钮调它。
+   * 作者不写 scroll-button 角色节点时，自己的按钮调它。
    */
   scrollToBottom(): void {
     const service = this.ctrl.service as Service<LogSchema> | undefined
@@ -102,9 +104,14 @@ export class XhLogElement extends XhElement {
     put('root', api.getRootProps() as Record<string, unknown>)
     put('viewport', api.getViewportProps() as Record<string, unknown>)
     put('content', api.getContentProps() as Record<string, unknown>)
+    put('scroll-button', api.getScrollButtonProps() as Record<string, unknown>)
+    put('live-region', api.getLiveRegionProps() as Record<string, unknown>)
 
     // 多实例 part 逐个打，行有几条打几条
     for (const el of this.getParts('line'))
       this.spreader.spread(el, api.getLineProps() as Record<string, unknown>)
+
+    // 除 hidden 属性外还写内联 display，压住作者层给该 part 声明的 display
+    this.setPartHidden(this.getPart('scroll-button'), !api.showScrollButton)
   }
 }

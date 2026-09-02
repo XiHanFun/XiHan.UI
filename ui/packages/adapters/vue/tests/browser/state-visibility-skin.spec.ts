@@ -14,9 +14,9 @@ import {
   XhCalendarRoot,
   XhCalendarWeekRow,
   XhCheckbox,
-  XhComposerRoot,
-  XhComposerSubmitTrigger,
   XhEllipsis,
+  XhPromptInputRoot,
+  XhPromptInputSubmitTrigger,
   XhRadioGroupItem,
   XhRadioGroupItemText,
   XhRadioGroupRoot,
@@ -162,15 +162,15 @@ describe('mention 的只读手势', () => {
   })
 })
 
-describe('composer 的禁用发送钮', () => {
+describe('prompt-input 的禁用发送钮', () => {
   const token = (name: string): string =>
     getComputedStyle(document.documentElement).getPropertyValue(name).trim()
 
   function submit(text: string): HTMLElement {
-    mount(() => h(XhComposerRoot, { defaultValue: text }, {
-      default: () => [h(XhComposerSubmitTrigger, null, () => ['发送'])],
+    mount(() => h(XhPromptInputRoot, { defaultValue: text }, {
+      default: () => [h(XhPromptInputSubmitTrigger, null, () => ['发送'])],
     }))
-    return part('composer', 'submit-trigger')
+    return part('prompt-input', 'submit-trigger')
   }
 
   it('空输入即禁用，底跟着字一起退到禁用那一档', () => {

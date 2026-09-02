@@ -1,0 +1,69 @@
+<!-- 跳到指定的一条 | 消息 id 就是锚点：Vue 侧用 root 插槽给的 scrollToItem / focusItem，自定义元素侧按同一个 id 取节点自己滚 -->
+<div style="display: grid; gap: 12px">
+  <xh-message-feed id="message-feed-scroll-to" count="16" style="block-size: 220px">
+    <div data-xh-part="root">
+      <div data-xh-part="viewport" id="message-feed-scroll-to-viewport">
+        <div data-xh-part="list">
+          <article data-xh-part="item" item-id="m1" item-index="0" item-role="assistant">第 1 条 · 会话记录</article>
+          <article data-xh-part="item" item-id="m2" item-index="1" item-role="assistant">第 2 条 · 会话记录</article>
+          <article data-xh-part="item" item-id="m3" item-index="2" item-role="assistant">第 3 条 · 会话记录</article>
+          <article data-xh-part="item" item-id="m4" item-index="3" item-role="assistant">第 4 条 · 会话记录</article>
+          <article data-xh-part="item" item-id="m5" item-index="4" item-role="assistant">第 5 条 · 会话记录</article>
+          <article data-xh-part="item" item-id="m6" item-index="5" item-role="assistant">第 6 条 · 会话记录</article>
+          <article data-xh-part="item" item-id="m7" item-index="6" item-role="assistant">第 7 条 · 会话记录</article>
+          <article data-xh-part="item" item-id="m8" item-index="7" item-role="assistant">第 8 条 · 会话记录</article>
+          <article data-xh-part="item" item-id="m9" item-index="8" item-role="assistant">第 9 条 · 会话记录</article>
+          <article data-xh-part="item" item-id="m10" item-index="9" item-role="assistant">第 10 条 · 会话记录</article>
+          <article data-xh-part="item" item-id="m11" item-index="10" item-role="assistant">第 11 条 · 会话记录</article>
+          <article data-xh-part="item" item-id="m12" item-index="11" item-role="assistant">第 12 条 · 会话记录</article>
+          <article data-xh-part="item" item-id="m13" item-index="12" item-role="assistant">第 13 条 · 会话记录</article>
+          <article data-xh-part="item" item-id="m14" item-index="13" item-role="assistant">第 14 条 · 会话记录</article>
+          <article data-xh-part="item" item-id="m15" item-index="14" item-role="assistant">第 15 条 · 会话记录</article>
+          <article data-xh-part="item" item-id="m16" item-index="15" item-role="assistant">第 16 条 · 会话记录</article>
+        </div>
+      </div>
+
+      <!-- 按钮栏排在视口下面，是 root 的直接子节点 -->
+      <div style="display: flex; flex-wrap: wrap; gap: 8px; padding-block-start: 8px">
+        <xh-button id="message-feed-scroll-to-1" variant="outline" size="sm">
+          <button data-xh-part="root">滚到第 1 条</button>
+        </xh-button>
+        <xh-button id="message-feed-scroll-to-8" variant="outline" size="sm">
+          <button data-xh-part="root">滚到第 8 条</button>
+        </xh-button>
+        <xh-button id="message-feed-scroll-to-16" variant="ghost" size="sm">
+          <button data-xh-part="root">把焦点落到第 16 条</button>
+        </xh-button>
+      </div>
+    </div>
+  </xh-message-feed>
+
+  <span id="message-feed-scroll-to-readout">（还没跳过）</span>
+</div>
+
+<script type="module">
+  const feed = document.getElementById("message-feed-scroll-to");
+  const viewport = document.getElementById("message-feed-scroll-to-viewport");
+  const readout = document.getElementById("message-feed-scroll-to-readout");
+
+  // 元素只暴露 scrollToBottom，别的位置按 item-id 取节点自己算：
+  // 两个 offsetTop 同参照系，相减就是这一条在滚动内容里的位置
+  function scrollToItem(id, label) {
+    const item = feed.querySelector(`[item-id="${id}"]`);
+    if (!item) return;
+    viewport.scrollTo({ top: item.offsetTop - viewport.offsetTop, behavior: "smooth" });
+    readout.textContent = label;
+  }
+
+  document
+    .getElementById("message-feed-scroll-to-1")
+    .addEventListener("click", () => scrollToItem("m1", "滚到了第 1 条"));
+  document
+    .getElementById("message-feed-scroll-to-8")
+    .addEventListener("click", () => scrollToItem("m8", "滚到了第 8 条"));
+  // 连焦点一起挪过去：条目自己带着 roving tabindex，focus() 就够了
+  document.getElementById("message-feed-scroll-to-16").addEventListener("click", () => {
+    feed.querySelector('[item-id="m16"]')?.focus();
+    readout.textContent = "焦点落到了第 16 条";
+  });
+</script>

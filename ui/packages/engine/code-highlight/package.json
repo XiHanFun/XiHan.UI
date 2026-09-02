@@ -20,7 +20,7 @@
   "keywords": [
     "syntax-highlighting",
     "tokenizer",
-    "code-block"
+    "code-view"
   ],
   "sideEffects": false,
   "exports": {

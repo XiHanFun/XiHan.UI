@@ -350,10 +350,6 @@
           "name": "走马灯"
         },
         {
-          "id": "code-block",
-          "name": "代码块"
-        },
-        {
           "id": "collapsible",
           "name": "折叠区域"
         },
@@ -543,10 +539,6 @@
           "name": "差异视图"
         },
         {
-          "id": "composer",
-          "name": "消息编辑器"
-        },
-        {
           "id": "markdown-stream",
           "name": "流式正文"
         },
@@ -569,10 +561,6 @@
         {
           "id": "tool-call",
           "name": "工具调用"
-        },
-        {
-          "id": "thread",
-          "name": "会话线程"
         }
       ]
     }

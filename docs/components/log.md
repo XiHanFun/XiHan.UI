@@ -5,17 +5,24 @@
 ## 何时使用
 
 - 构建输出、运行日志、命令行回显。
+- 任意会从底部往下长、希望一直跟到底的内容：内容不必分得出「第几条、谁说的」，
+  一整段往里追加就行。
 
 ## 何时不用
 
+- 内容是一段会话，条目有身份、要能逐条遍历：用[消息流](./message-feed)。
 - 展示的是结构化记录、需要筛选排序：用[表格](./table)。
-- 是一段代码：用[代码块](./code-block)。
+- 是一段代码：用[代码视图](./code-view)。
 
 ## 特性
 
-- 四层结构：`root` · `viewport` · `content` · `line`；一行写什么由作者定，组件只给身份与等宽排版。
+- 骨架四层：`root` · `viewport` · `content` · `line`；一行写什么由作者定，组件只给身份与等宽排版。
+  另有两个可缺省的部件：`scroll-button` 与 `live-region`。
 - `rows` 按行数定高。
 - 自动跟到底部；用户往上翻时停住跟随，回到底部再恢复。
+- 内置「回到底部」：离底时冒出来，按下去归位并重新粘附。留空时皮肤画一枚向下的字形，
+  往按钮里塞节点即换成自己的图形。
+- 视口自身可聚焦，整块日志占一个 Tab 停靠位，方向键与翻页键交给浏览器滚动。
 
 ## 示例
 
@@ -55,12 +62,18 @@ line 只发身份与等宽排版，级别配色、时间戳、行内标记这些
 
 <XhDemo src="log/06-scrollbar" />
 
+### 回到底部与播报
+
+往上翻一段，右下角那颗钮自己冒出来，按下去归位并重新粘附；输出跑完在播报区念一句结论
+
+<XhDemo src="log/07-scroll-button" />
+
 ## 产物
 
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-log>` |
-| Vue 组件 | `XhLogContent` `XhLogLine` `XhLogRoot` `XhLogViewport` |
+| Vue 组件 | `XhLogContent` `XhLogLine` `XhLogLiveRegion` `XhLogRoot` `XhLogScrollButton` `XhLogViewport` |
 | 组合式函数 | `useLog` |
 | 状态机 | `logMachine` |
 | 皮肤 | `@xihan-ui/styles/log.css` |
@@ -69,7 +82,7 @@ line 只发身份与等宽排版，级别配色、时间戳、行内标记这些
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="log"`：**`root`** · **`viewport`** · **`content`** · `line`
+`data-scope="log"`：**`root`** · **`viewport`** · **`content`** · `line` · `scroll-button` · `live-region`
 
 ## Props
 
@@ -99,6 +112,12 @@ line 只发身份与等宽排版，级别配色、时间戳、行内标记这些
 
 ## 状态
 
+对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+
+| 部件 | 取值 |
+| --- | --- |
+| `scroll-button` | 'visible' \| 'hidden' |
+
 状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle`
@@ -115,11 +134,14 @@ line 只发身份与等宽排版，级别配色、时间戳、行内标记这些
 | `loading` | `boolean` |  |
 | `atBottom` | `boolean` | 当前滚动位置是否落在底部阈值内。 |
 | `sticking` | `boolean` | 新行进来时是否自动跟到底。 |
+| `showScrollButton` | `boolean` | 是否显示回到底部按钮，不在底部时为 true。 |
 | `scrollToBottom` | `() => void` | 滚到底部并恢复粘附。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getViewportProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |
 | `getLineProps` | `() => T['element']` |  |
+| `getScrollButtonProps` | `() => T['button']` |  |
+| `getLiveRegionProps` | `() => T['element']` |  |
 
 ## 键盘
 
@@ -128,6 +150,7 @@ line 只发身份与等宽排版，级别配色、时间戳、行内标记这些
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
 | `Tab` | 焦点进入日志区 | 日志区自身可聚焦，方向键/PageUp/PageDown/Home/End 交给浏览器滚动，组件不接管 |
+| `Space` / `Enter` | 焦点在"回到底部"按钮上 | 滚回底部并重新粘附 |
 
 ## 无障碍
 
@@ -136,12 +159,23 @@ line 只发身份与等宽排版，级别配色、时间戳、行内标记这些
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `viewport` | `aria-busy` | 'true' \| undefined |
-| `viewport` | `aria-label` | props.translations?.log |
+| `viewport` | `aria-label` | label.log |
+| `viewport` | `aria-live` | 'off' |
 | `viewport` | `role` | 'log' |
+| `scroll-button` | `aria-label` | label.scrollToBottom |
+| `live-region` | `aria-atomic` | 'true' |
+| `live-region` | `aria-live` | 'polite' |
+| `live-region` | `role` | 'status' |
+
+- 视口是 `role=log`，但它隐含的 `aria-live` 被显式关掉：一行来一句地念，连成串的输出
+  就成了读屏里的噪声。
+- 播报走独立的 `live-region`：宿主决定念哪一句、什么时候念，例如一段输出跑完之后念结论
+  与错误条数。别把每一行原样写进去，那就等于把关掉的逐行播报又打开了一遍。
+- 成批取行期间视口报 `aria-busy`；播报区是视口的兄弟节点，不受它压制。
 
 ## 样式
 
-默认皮肤 `@xihan-ui/styles/log.css` 按部件选择：`[data-scope="log"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+默认皮肤 `@xihan-ui/styles/log.css` 按部件选择：`[data-scope="log"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
 
 ## 数据属性
 
@@ -152,12 +186,19 @@ line 只发身份与等宽排版，级别配色、时间戳、行内标记这些
 | `root` | `data-at-bottom` | ''（条件成立时才出现） |
 | `root` | `data-loading` | ''（条件成立时才出现） |
 | `root` | `data-sticking` | ''（条件成立时才出现） |
+| `scroll-button` | `data-state` | 'visible' \| 'hidden' |
 
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-log-bg` · `--xh-log-border` · `--xh-log-content-px` · `--xh-log-fg` · `--xh-log-font` · `--xh-log-font-size` · `--xh-log-line-height` · `--xh-log-radius` · `--xh-log-rows` · `--xh-log-tab-size`
+`--xh-log-bg` · `--xh-log-border` · `--xh-log-content-px` · `--xh-log-fg` · `--xh-log-font` · `--xh-log-font-size` · `--xh-log-icon-size` · `--xh-log-line-height` · `--xh-log-radius` · `--xh-log-rows` · `--xh-log-scroll-button-bg` · `--xh-log-scroll-button-bg-hover` · `--xh-log-scroll-button-border` · `--xh-log-scroll-button-fg` · `--xh-log-scroll-button-inset` · `--xh-log-scroll-button-radius` · `--xh-log-scroll-button-shadow` · `--xh-log-scroll-button-size` · `--xh-log-tab-size`
+
+## 动效
+
+关键帧 `xh-log-button-in` 随皮肤自带，不引用别处文件里的名字；状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
 ## RTL
 
@@ -177,3 +218,4 @@ line 只发身份与等宽排版，级别配色、时间戳、行内标记这些
 
 - 每来一行就整块重渲。
 - 不给复制或下载全部日志的入口。
+- 把每一行都写进播报区：读屏会被逐行打断，什么也听不清。

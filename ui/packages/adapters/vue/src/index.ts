@@ -145,7 +145,6 @@ export {
 export type { ClipboardRootSlotProps } from './components/clipboard/clipboard'
 export { useClipboard } from './components/clipboard/use-clipboard'
 export type { ClipboardContext } from './components/clipboard/use-clipboard'
-export { XhCodeBlock } from './components/code-block/code-block'
 export {
   XhCodeViewCode,
   XhCodeViewFilename,
@@ -208,14 +207,6 @@ export {
 export type { ComboboxRootSlotProps } from './components/combobox/combobox'
 export { useCombobox } from './components/combobox/use-combobox'
 export type { ComboboxContext } from './components/combobox/use-combobox'
-export {
-  XhComposerInput,
-  XhComposerRoot,
-  XhComposerSubmitTrigger,
-} from './components/composer/composer'
-export type { ComposerRootSlotProps } from './components/composer/composer'
-export { useComposer } from './components/composer/use-composer'
-export type { ComposerCallbacks, ComposerContext } from './components/composer/use-composer'
 export { provideContextMenuChain, provideContextMenuSub, useContextMenuChain, useContextMenuSubContext } from './components/context-menu/context'
 export type { ContextMenuChain, ContextMenuSubHandle } from './components/context-menu/context'
 export {
@@ -494,7 +485,14 @@ export type { LoadingBarRootSlotProps } from './components/loading-bar/loading-b
 export { useLoadingBar } from './components/loading-bar/use-loading-bar'
 export type { LoadingBarContext } from './components/loading-bar/use-loading-bar'
 export { provideLog, useLogContext } from './components/log/context'
-export { XhLogContent, XhLogLine, XhLogRoot, XhLogViewport } from './components/log/log'
+export {
+  XhLogContent,
+  XhLogLine,
+  XhLogLiveRegion,
+  XhLogRoot,
+  XhLogScrollButton,
+  XhLogViewport,
+} from './components/log/log'
 export type { LogRootSlotProps } from './components/log/log'
 export { useLog } from './components/log/use-log'
 export type { LogContext } from './components/log/use-log'
@@ -896,17 +894,6 @@ export {
 export type { TextFieldRootSlotProps } from './components/text-field/text-field'
 export { useTextField } from './components/text-field/use-text-field'
 export type { TextFieldContext } from './components/text-field/use-text-field'
-export { provideThread, useThreadContext } from './components/thread/context'
-export {
-  XhThreadContent,
-  XhThreadLiveRegion,
-  XhThreadRoot,
-  XhThreadScrollButton,
-  XhThreadViewport,
-} from './components/thread/thread'
-export type { ThreadRootSlotProps } from './components/thread/thread'
-export { useThread } from './components/thread/use-thread'
-export type { ThreadContext } from './components/thread/use-thread'
 export {
   XhTimeFieldClearTrigger,
   XhTimeFieldControl,

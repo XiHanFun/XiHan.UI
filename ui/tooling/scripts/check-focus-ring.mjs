@@ -56,7 +56,7 @@ const FOCUS_PARTS = new Set(['control', 'input', 'box', 'textarea'])
  * 这张表是把检查**接上**去，不是放行：条目过期（组件改名、那个部件不再是画描边的那一层）
  * 等于这一家从此不受管辖，且没有任何别的判据会响，所以由下面的名单核验报出来。
  */
-const INPUT_LIKE = { composer: 'root' }
+const INPUT_LIKE = { 'prompt-input': 'root' }
 const FOCUS_RULE = /\[data-scope='([a-z-]+)'\]\[data-part='([a-z-]+)'\](?:\[[^\]]+\])*:focus-(?:within|visible)(?::not\([^)]*\))?\s*\{([^{}]*)\}/g
 const borderFocus = []
 /** 真的被这张表接进检查的组件。 */

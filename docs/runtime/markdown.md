@@ -27,6 +27,7 @@ interface RenderedBlock {
   readonly html: string      // 已消毒，可直接插进 DOM
   readonly complete: boolean // 该块是否已闭合
   readonly lang?: string     // 围栏语言标注，仅 code 块有
+  readonly source?: string   // 块正文的原始文本，仅 code 与 math 两种块有
 }
 ```
 
@@ -36,7 +37,7 @@ interface RenderedBlock {
 
 **`render` 是幂等的。** 传同一份全文调多少次结果都一样，内部按块 memo，已定型的块不会重渲。所以你不需要自己做增量 diff，每帧整份喂进去就行。
 
-**`complete` 是给你做决策用的。** 未闭合的块随时会变，昂贵的渲染（比如[代码着色](./code-highlight)）等它闭合再上。[代码块](../components/code-block)组件的 `complete` 与 `highlightWhileStreaming` 两个 prop 就是为这条留的。
+**`complete` 是给你做决策用的。** 未闭合的块随时会变，昂贵的渲染（比如[代码着色](./code-highlight)）等它闭合再上。[代码视图](../components/code-view)组件的 `complete` 与 `highlightWhileStreaming` 两个 prop 就是为这条留的。
 
 ## `ended` 不传是什么后果
 
@@ -73,14 +74,22 @@ interface RenderedBlock {
 
 ## 与组件的配合
 
-它产出数据，不产出 DOM，所以框架无关。典型接法是配 [AI 会话线程](../components/thread)：
+它产出数据，不产出 DOM，所以框架无关。一条助手消息的正文就是它的块列表，典型接法是配[消息流](../components/message-feed)：
 
 ```vue
-<XhThreadContent>
+<XhMessageFeedItem :item-id="message.id" :item-index="index" item-role="assistant">
   <div v-for="block in blocks" :key="block.key" v-html="block.html" />
-</XhThreadContent>
+</XhMessageFeedItem>
 ```
+
+不分条、只往下追加的输出（命令回显、构建日志）配[日志](../components/log)，粘底那套是一样的。
 
 `v-html` 在这里是安全的——`html` 字段已经消毒过，这正是消毒收在解析器内部的意义。
 
-代码块的 `html` 已经是渲染好的 `<pre><code>`，语言标注在 `lang` 上。**它不把原始代码文本交还给你**，所以没法直接转手喂给[代码块](../components/code-block)组件（那个组件收的是 `code` 原文）。要用组件形态的代码块，就得自己从流里另存一份原文，或者在渲染出的节点上后置着色——后者配 `complete` 判断更省：未闭合时不着色，闭合了再上一次。
+代码块的 `html` 是一份降级产物：渲染好的 `<pre><code>`，语言标注在 `lang` 上。**原始代码文本另放在 `source` 里**，所以要换成组件形态是一次转手：`source` 交给[代码视图](../components/code-view)的 `code`，`lang` 与 `complete` 原样传过去，行号、指定行高亮、超长折叠与闭合后才着色都归它管。
+
+```vue
+<XhCodeViewRoot :code="block.source" :lang="block.lang" :complete="block.complete" line-numbers>
+  <XhCodeViewPre><XhCodeViewCode /></XhCodeViewPre>
+</XhCodeViewRoot>
+```

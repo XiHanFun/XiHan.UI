@@ -8,7 +8,7 @@ import { createHighlighter } from '@xihan-ui/code-highlight'
 const highlighter = createHighlighter()
 ```
 
-把它交给[代码块](../components/code-block)组件的 `highlighter` prop 即可。组件本身不认任何具体的着色器——它只认这个端口。
+把它交给[代码视图](../components/code-view)组件的 `highlighter` prop 即可。组件本身不认任何具体的着色器——它只认这个端口。
 
 ## 它分得出什么，分不出什么
 
@@ -38,7 +38,7 @@ Shiki 要带 TextMate 语法与主题数据，体积在几百 kB 量级，且需
 
 `langSpecOf(lang)` 认得的语言就是支持的。传进去认不出的标注返回 `null`，代码原样渲染。
 
-流式场景要配合 `complete` 用：未闭合的代码随时会变，着色是纯计算但不是免费的，等闭合了再上一次更划算。[代码块](../components/code-block)组件的 `highlightWhileStreaming` 就是这个开关。
+流式场景要配合 `complete` 用：未闭合的代码随时会变，着色是纯计算但不是免费的，等闭合了再上一次更划算。[代码视图](../components/code-view)组件的 `highlightWhileStreaming` 就是这个开关。
 
 ## 长度上限
 

@@ -85,10 +85,8 @@ const HOOKS = {
   'image:data-state': '图与兜底各自的显隐由自己的 hidden 承载',
   'skeleton:data-state': '加载完置 hidden，整块骨架收起',
   'tag:data-state': '关掉后置 hidden',
-  'thread:data-state': '回到底部按钮的显隐由 hidden 承载',
   // 同一件事在别的部件上已经画了，根上这一位是镜像
   'code-view:data-state': '折叠的视觉在根的 data-clamped 上，触发器这一位是镜像',
-  'composer:data-state': '运行态的视觉落在提交钮的 data-mode=stop 上',
   'countdown:data-state': '走完的视觉落在 data-finished 上',
   'markdown-stream:data-state': '流式的视觉是内容上的 data-caret',
   'prompt-input:data-state': '输入框的机器态；能看见的运行态在提交钮的 data-mode 上',

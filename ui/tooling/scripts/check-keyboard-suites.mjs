@@ -43,9 +43,6 @@ const ROW_EXEMPT = {
   'image-viewer.kbd.shift-tab': '同 dialog',
   'popover.kbd.tab': '同 dialog',
   'popover.kbd.shift-tab': '同 dialog',
-  // 这两条要伪造 isComposing / shiftKey，一致性套件的按键步骤不造合成事件的细节
-  'composer.kbd.shift-enter': '由 headless 单测覆盖，见 tests/composer.spec.ts',
-  'composer.kbd.ime-enter': '同上',
 }
 
 function camel(name) {

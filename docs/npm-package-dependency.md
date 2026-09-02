@@ -119,7 +119,7 @@ XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（�
 
 | 包 | 子路径 |
 | --- | --- |
-| `@xihan-ui/kernel` | `./anatomy` `./attrs` `./compose` `./constants` `./deprecations` `./guards` `./id-generator` `./locale` `./merge-props` `./metadata` `./normalize-props` `./runtime-config` `./scope` `./skin-check` `./types` `./vite` |
+| `@xihan-ui/kernel` | `./anatomy` `./attrs` `./compose` `./constants` `./guards` `./id-generator` `./locale` `./merge-props` `./metadata` `./normalize-props` `./runtime-config` `./scope` `./skin-check` `./types` `./vite` |
 | `@xihan-ui/machine` | `./create-machine` `./delay` `./errors` `./form-reset` `./guards` `./service` `./setup` `./state` `./transitions` `./vanilla` |
 | `@xihan-ui/behavior` | `./dispatch` `./presence` |
 | `@xihan-ui/position` | `./compute` |
@@ -128,7 +128,7 @@ XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（�
 | `@xihan-ui/icons` | `./codegen` |
 | `@xihan-ui/vue` | `./backgrounds` `./behavior` `./sound` |
 | `@xihan-ui/web-components` | `./define` `./backgrounds` `./custom-elements.json` |
-| `@xihan-ui/styles` | 每份皮肤一条 CSS，共 136 条（130 份组件皮肤 + 6 份共享层），另有 `./index.css` 与 `./index.unlayered.css` 两个整包入口 |
+| `@xihan-ui/styles` | 每份皮肤一条 CSS，共 133 条（127 份组件皮肤 + 6 份共享层），另有 `./index.css` 与 `./index.unlayered.css` 两个整包入口 |
 
 其余八个包（`headless` / `motion` / `pointer` / `animations` / `backgrounds` / `chat-stream` / `markdown` / `sound`）只有主入口。
 
