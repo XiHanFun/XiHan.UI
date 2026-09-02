@@ -12,6 +12,12 @@
     /* 海拔先落进私有槽：语气档要把它与左侧色条叠成一条 box-shadow，无壳档把它关掉 */
     --xh-_reasoning-shadow: var(--xh-reasoning-shadow, var(--xh-elevation-raised));
 
+    /* 尺寸缺省档：不写 data-size 时的取值。三档都只写这三个私有槽，
+       公开槽留在读处当首选，作者在祖先上设的覆盖才赢得过档位声明 */
+    --xh-_reasoning-px: var(--xh-space-3);
+    --xh-_reasoning-py: var(--xh-space-2);
+    --xh-_reasoning-font-size: var(--xh-control-font-sm);
+
     display: block;
     overflow: hidden;
     border: var(--xh-stroke-thin) solid transparent;
@@ -50,13 +56,13 @@
     display: flex;
     align-items: center;
     gap: var(--xh-reasoning-trigger-gap, var(--xh-space-2));
-    padding-inline: var(--xh-reasoning-px, var(--xh-space-3));
-    padding-block: var(--xh-reasoning-py, var(--xh-space-2));
+    padding-inline: var(--xh-reasoning-px, var(--xh-_reasoning-px));
+    padding-block: var(--xh-reasoning-py, var(--xh-_reasoning-py));
     border: 0;
     background: none;
     color: var(--xh-reasoning-trigger-fg, var(--xh-fg-muted));
     font: inherit;
-    font-size: var(--xh-reasoning-font-size, var(--xh-control-font-sm));
+    font-size: var(--xh-reasoning-font-size, var(--xh-_reasoning-font-size));
     inline-size: 100%;
     text-align: start;
     cursor: pointer;
@@ -217,11 +223,11 @@
     display: grid;
     grid-template-rows: 1fr;
     overflow: clip;
-    margin-inline-start: var(--xh-reasoning-rail-inset, var(--xh-reasoning-px, var(--xh-space-3)));
+    margin-inline-start: var(--xh-reasoning-rail-inset, var(--xh-reasoning-px, var(--xh-_reasoning-px)));
     border-inline-start: var(--xh-reasoning-rail-width, var(--xh-stroke-thin)) solid var(--xh-reasoning-rail, var(--xh-border-subtle));
     padding-inline-start: var(--xh-reasoning-content-ps, var(--xh-space-3));
-    padding-inline-end: var(--xh-reasoning-content-pe, var(--xh-reasoning-px, var(--xh-space-3)));
-    padding-block-end: var(--xh-reasoning-py, var(--xh-space-2));
+    padding-inline-end: var(--xh-reasoning-content-pe, var(--xh-reasoning-px, var(--xh-_reasoning-px)));
+    padding-block-end: var(--xh-reasoning-py, var(--xh-_reasoning-py));
     color: var(--xh-reasoning-content-fg, var(--xh-fg-muted));
     font-size: var(--xh-reasoning-content-font-size, var(--xh-text-secondary-size));
     line-height: var(--xh-reasoning-content-leading, var(--xh-text-prose-leading));
@@ -237,21 +243,21 @@
 
   /* 尺寸档只改内衬与字号 */
   [data-scope='reasoning'][data-part='root'][data-size='sm'] {
-    --xh-reasoning-px: var(--xh-space-2);
-    --xh-reasoning-py: var(--xh-space-1);
-    --xh-reasoning-font-size: var(--xh-control-font-sm);
+    --xh-_reasoning-px: var(--xh-space-2);
+    --xh-_reasoning-py: var(--xh-space-1);
+    --xh-_reasoning-font-size: var(--xh-control-font-sm);
   }
 
   [data-scope='reasoning'][data-part='root'][data-size='md'] {
-    --xh-reasoning-px: var(--xh-space-3);
-    --xh-reasoning-py: var(--xh-space-2);
-    --xh-reasoning-font-size: var(--xh-control-font-md);
+    --xh-_reasoning-px: var(--xh-space-3);
+    --xh-_reasoning-py: var(--xh-space-2);
+    --xh-_reasoning-font-size: var(--xh-control-font-md);
   }
 
   [data-scope='reasoning'][data-part='root'][data-size='lg'] {
-    --xh-reasoning-px: var(--xh-space-4);
-    --xh-reasoning-py: var(--xh-space-3);
-    --xh-reasoning-font-size: var(--xh-control-font-lg);
+    --xh-_reasoning-px: var(--xh-space-4);
+    --xh-_reasoning-py: var(--xh-space-3);
+    --xh-_reasoning-font-size: var(--xh-control-font-lg);
   }
 
   /* 语气只染左侧那一条色条，海拔跟着一起落在同一条 box-shadow 上 */
@@ -272,14 +278,14 @@
 
     to {
       grid-template-rows: 1fr;
-      padding-block-end: var(--xh-reasoning-py, var(--xh-space-2));
+      padding-block-end: var(--xh-reasoning-py, var(--xh-_reasoning-py));
     }
   }
 
   @keyframes xh-reasoning-collapse {
     from {
       grid-template-rows: 1fr;
-      padding-block-end: var(--xh-reasoning-py, var(--xh-space-2));
+      padding-block-end: var(--xh-reasoning-py, var(--xh-_reasoning-py));
     }
 
     to {

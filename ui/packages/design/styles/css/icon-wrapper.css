@@ -10,7 +10,8 @@
     /* 私有槽位：底座直径与图元直径，换档只改这两个 */
     --xh-_icon-wrapper-size: var(--xh-icon-wrapper-size, var(--xh-control-h-md));
 
-    /* 流给里面的图元；图元自己写了档位时仍按自己的档走 */
+    /* 流给里面的图元——包括自己写了档位的那一枚，它的档位取值也读这个槽，
+       图元直径因此始终跟着底座换档 */
     --xh-icon-size: var(--xh-icon-wrapper-glyph-size, var(--xh-glyph-size-md));
 
     display: inline-flex;

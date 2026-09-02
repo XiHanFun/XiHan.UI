@@ -23,17 +23,19 @@
   }
 
   /* 三档尺寸对齐控件档位，缺省档写在上面的基础规则里；
-     字号跟着一起缩放，回退字才在小头像里放得下、在大头像里不显小 */
+     字号跟着一起缩放，回退字才在小头像里放得下、在大头像里不显小。
+     每一档都把 --xh-avatar-size / --xh-avatar-font-size 排在自己的档值前面：这两个槽是
+     外层统一整排头像的通道，档值直接写终值的话，写了 data-size 的那一枚就脱离外层控制 */
   [data-scope='avatar'][data-part='root'][data-size='sm'] {
-    inline-size: var(--xh-control-h-sm);
-    block-size: var(--xh-control-h-sm);
-    font-size: var(--xh-control-caption-sm);
+    inline-size: var(--xh-avatar-size, var(--xh-control-h-sm));
+    block-size: var(--xh-avatar-size, var(--xh-control-h-sm));
+    font-size: var(--xh-avatar-font-size, var(--xh-control-caption-sm));
   }
 
   [data-scope='avatar'][data-part='root'][data-size='lg'] {
-    inline-size: var(--xh-control-h-lg);
-    block-size: var(--xh-control-h-lg);
-    font-size: var(--xh-control-caption-lg);
+    inline-size: var(--xh-avatar-size, var(--xh-control-h-lg));
+    block-size: var(--xh-avatar-size, var(--xh-control-h-lg));
+    font-size: var(--xh-avatar-font-size, var(--xh-control-caption-lg));
   }
 
   /* 不声明 display，加载完成前的 hidden 直接交给浏览器的 [hidden] 规则收起 */

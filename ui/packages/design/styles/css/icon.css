@@ -30,24 +30,26 @@
     display: none;
   }
 
-  /* 三档直径，缺省档写在上面的基础规则里 */
+  /* 三档直径，缺省档写在上面的基础规则里。
+     每一档都把 --xh-icon-size 排在自己的档值前面：这个槽是外层统一图元直径的通道，
+     档值直接写终值的话，写了 data-size 的那一枚就脱离外层控制，作者在祖先上的覆盖也改不动它 */
   [data-scope='icon'][data-part='root'][data-size='sm'] {
-    inline-size: var(--xh-glyph-size-sm);
-    block-size: var(--xh-glyph-size-sm);
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-sm));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-sm));
   }
 
   [data-scope='icon'][data-part='root'][data-size='lg'] {
-    inline-size: var(--xh-glyph-size-lg);
-    block-size: var(--xh-glyph-size-lg);
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-lg));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-lg));
   }
 
-  /* 三档描边，缺省档同样写在基础规则里 */
+  /* 三档描边，缺省档同样写在基础规则里；--xh-icon-stroke 同样排在档值前面 */
   [data-scope='icon'][data-part='root'][data-weight='light'] {
-    stroke-width: var(--xh-glyph-stroke-light);
+    stroke-width: var(--xh-icon-stroke, var(--xh-glyph-stroke-light));
   }
 
   [data-scope='icon'][data-part='root'][data-weight='bold'] {
-    stroke-width: var(--xh-glyph-stroke-bold);
+    stroke-width: var(--xh-icon-stroke, var(--xh-glyph-stroke-bold));
   }
 
   /* 语气：图标没有底色，语气只落在前景上，取普通背景上表达该语气的那档文字色。

@@ -7,6 +7,12 @@
   /* 一张抬起的表面：描边 + 圆角 + 静态海拔；不是控件也不是浮层，所以不接形态轴。
      卡片建出来时淡入并向上收一段，一屏若干张的错峰交给外层容器排 */
   [data-scope='tool-call'][data-part='root'] {
+    /* 尺寸缺省档：不写 data-size 时的取值。三档都只写这三个私有槽，
+       公开槽留在读处当首选，作者在祖先上设的覆盖才赢得过档位声明 */
+    --xh-_tool-call-px: var(--xh-space-3);
+    --xh-_tool-call-py: var(--xh-space-2);
+    --xh-_tool-call-font-size: var(--xh-control-font-md);
+
     display: block;
     overflow: hidden;
     border: var(--xh-stroke-thin) solid var(--xh-tool-call-border, var(--xh-border-subtle));
@@ -30,13 +36,13 @@
     display: flex;
     align-items: center;
     gap: var(--xh-tool-call-trigger-gap, var(--xh-space-2));
-    padding-inline: var(--xh-tool-call-px, var(--xh-space-3));
-    padding-block: var(--xh-tool-call-py, var(--xh-space-2));
+    padding-inline: var(--xh-tool-call-px, var(--xh-_tool-call-px));
+    padding-block: var(--xh-tool-call-py, var(--xh-_tool-call-py));
     border: 0;
     background: none;
     color: var(--xh-tool-call-trigger-fg, var(--xh-fg-default));
     font: inherit;
-    font-size: var(--xh-tool-call-font-size, var(--xh-control-font-md));
+    font-size: var(--xh-tool-call-font-size, var(--xh-_tool-call-font-size));
     inline-size: 100%;
     text-align: start;
     cursor: pointer;
@@ -215,8 +221,8 @@
   /* 审批闸门常驻在开关与详情之间，不随折叠一起藏起来 */
   [data-scope='tool-call'][data-part='approval'] {
     display: block;
-    padding-inline: var(--xh-tool-call-px, var(--xh-space-3));
-    padding-block: var(--xh-tool-call-py, var(--xh-space-2));
+    padding-inline: var(--xh-tool-call-px, var(--xh-_tool-call-px));
+    padding-block: var(--xh-tool-call-py, var(--xh-_tool-call-py));
     border-block-start: var(--xh-stroke-thin) solid var(--xh-tool-call-border, var(--xh-border-subtle));
   }
 
@@ -232,8 +238,8 @@
     grid-template-rows: 1fr;
     overflow: clip;
     gap: var(--xh-tool-call-content-gap, var(--xh-space-2));
-    padding-inline: var(--xh-tool-call-px, var(--xh-space-3));
-    padding-block: var(--xh-tool-call-py, var(--xh-space-2));
+    padding-inline: var(--xh-tool-call-px, var(--xh-_tool-call-px));
+    padding-block: var(--xh-tool-call-py, var(--xh-_tool-call-py));
     border-block-start: var(--xh-stroke-thin) solid var(--xh-tool-call-border, var(--xh-border-subtle));
   }
 
@@ -269,21 +275,21 @@
 
   /* 尺寸档只改内衬与字号 */
   [data-scope='tool-call'][data-part='root'][data-size='sm'] {
-    --xh-tool-call-px: var(--xh-space-2);
-    --xh-tool-call-py: var(--xh-space-1);
-    --xh-tool-call-font-size: var(--xh-control-font-sm);
+    --xh-_tool-call-px: var(--xh-space-2);
+    --xh-_tool-call-py: var(--xh-space-1);
+    --xh-_tool-call-font-size: var(--xh-control-font-sm);
   }
 
   [data-scope='tool-call'][data-part='root'][data-size='md'] {
-    --xh-tool-call-px: var(--xh-space-3);
-    --xh-tool-call-py: var(--xh-space-2);
-    --xh-tool-call-font-size: var(--xh-control-font-md);
+    --xh-_tool-call-px: var(--xh-space-3);
+    --xh-_tool-call-py: var(--xh-space-2);
+    --xh-_tool-call-font-size: var(--xh-control-font-md);
   }
 
   [data-scope='tool-call'][data-part='root'][data-size='lg'] {
-    --xh-tool-call-px: var(--xh-space-4);
-    --xh-tool-call-py: var(--xh-space-3);
-    --xh-tool-call-font-size: var(--xh-control-font-lg);
+    --xh-_tool-call-px: var(--xh-space-4);
+    --xh-_tool-call-py: var(--xh-space-3);
+    --xh-_tool-call-font-size: var(--xh-control-font-lg);
   }
 
   /* 语气只染左侧那一条色条，不夺走阶段色；海拔跟着一起写回来，
@@ -320,14 +326,14 @@
 
     to {
       grid-template-rows: 1fr;
-      padding-block: var(--xh-tool-call-py, var(--xh-space-2));
+      padding-block: var(--xh-tool-call-py, var(--xh-_tool-call-py));
     }
   }
 
   @keyframes xh-tool-call-collapse {
     from {
       grid-template-rows: 1fr;
-      padding-block: var(--xh-tool-call-py, var(--xh-space-2));
+      padding-block: var(--xh-tool-call-py, var(--xh-_tool-call-py));
     }
 
     to {

@@ -13,6 +13,12 @@
     /* 作者塞进部件里的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
     --xh-icon-size: var(--xh-diff-view-icon-size, var(--xh-glyph-size-text));
 
+    /* 尺寸缺省档：不写 data-size 时的取值。三档都只写这三个私有槽，
+       公开槽留在读处当首选，作者在祖先上设的覆盖才赢得过档位声明 */
+    --xh-_diff-view-font-size: var(--xh-control-font-sm);
+    --xh-_diff-view-px: var(--xh-space-3);
+    --xh-_diff-view-py: var(--xh-space-2);
+
     display: block;
     overflow: hidden;
     border: var(--xh-stroke-thin) solid var(--xh-diff-view-border, var(--xh-border-subtle));
@@ -31,8 +37,8 @@
     display: flex;
     align-items: center;
     gap: var(--xh-diff-view-header-gap, var(--xh-space-2));
-    padding-inline: var(--xh-diff-view-px, var(--xh-space-3));
-    padding-block: var(--xh-diff-view-py, var(--xh-space-2));
+    padding-inline: var(--xh-diff-view-px, var(--xh-_diff-view-px));
+    padding-block: var(--xh-diff-view-py, var(--xh-_diff-view-py));
     border-block-end: var(--xh-stroke-thin) solid var(--xh-diff-view-border, var(--xh-border-subtle));
     color: var(--xh-diff-view-header-fg, var(--xh-fg-muted));
     font-family: var(--xh-diff-view-font, var(--xh-font-family-mono));
@@ -76,7 +82,7 @@
   [data-scope='diff-view'][data-part='body'] {
     display: block;
     font-family: var(--xh-diff-view-font, var(--xh-font-family-mono));
-    font-size: var(--xh-diff-view-font-size, var(--xh-control-font-sm));
+    font-size: var(--xh-diff-view-font-size, var(--xh-_diff-view-font-size));
     line-height: var(--xh-diff-view-line-height, var(--xh-text-code-leading));
     min-inline-size: max-content;
   }
@@ -128,7 +134,7 @@
     display: block;
     box-sizing: content-box;
     flex: 0 0 auto;
-    padding-inline: var(--xh-diff-view-px, var(--xh-space-3));
+    padding-inline: var(--xh-diff-view-px, var(--xh-_diff-view-px));
     border-inline-end: var(--xh-stroke-thin) solid var(--xh-diff-view-border, var(--xh-border-subtle));
     color: var(--xh-diff-view-number-fg, var(--xh-fg-subtle));
     inline-size: var(--xh-diff-view-gutter, 4ch);
@@ -163,7 +169,7 @@
     display: block;
     flex: 1 1 0;
     min-inline-size: 0;
-    padding-inline-end: var(--xh-diff-view-px, var(--xh-space-3));
+    padding-inline-end: var(--xh-diff-view-px, var(--xh-_diff-view-px));
     white-space: pre;
   }
 
@@ -274,7 +280,7 @@
 
   [data-scope='diff-view'][data-part='gap-trigger'] {
     display: block;
-    padding-inline: var(--xh-diff-view-px, var(--xh-space-3));
+    padding-inline: var(--xh-diff-view-px, var(--xh-_diff-view-px));
     border: 0;
     background: none;
     color: var(--xh-diff-view-gap-fg, var(--xh-fg-muted));
@@ -306,8 +312,8 @@
 
   [data-scope='diff-view'][data-part='empty'] {
     display: block;
-    padding-inline: var(--xh-diff-view-px, var(--xh-space-3));
-    padding-block: var(--xh-diff-view-py, var(--xh-space-2));
+    padding-inline: var(--xh-diff-view-px, var(--xh-_diff-view-px));
+    padding-block: var(--xh-diff-view-py, var(--xh-_diff-view-py));
     color: var(--xh-diff-view-empty-fg, var(--xh-fg-muted));
     font-size: var(--xh-diff-view-header-font-size, var(--xh-text-secondary-size));
   }
@@ -322,8 +328,8 @@
     display: flex;
     align-items: center;
     gap: var(--xh-diff-view-truncation-gap, var(--xh-space-2));
-    padding-inline: var(--xh-diff-view-px, var(--xh-space-3));
-    padding-block: var(--xh-diff-view-py, var(--xh-space-2));
+    padding-inline: var(--xh-diff-view-px, var(--xh-_diff-view-px));
+    padding-block: var(--xh-diff-view-py, var(--xh-_diff-view-py));
     border-block-start: var(--xh-stroke-thin) solid
       var(--xh-diff-view-truncation-border, var(--xh-border-subtle));
     background: var(--xh-diff-view-truncation-bg,
@@ -353,21 +359,21 @@
 
   /* 尺寸档只改字号与内衬 */
   [data-scope='diff-view'][data-part='root'][data-size='sm'] {
-    --xh-diff-view-font-size: var(--xh-control-font-sm);
-    --xh-diff-view-px: var(--xh-space-2);
-    --xh-diff-view-py: var(--xh-space-1);
+    --xh-_diff-view-font-size: var(--xh-control-font-sm);
+    --xh-_diff-view-px: var(--xh-space-2);
+    --xh-_diff-view-py: var(--xh-space-1);
   }
 
   [data-scope='diff-view'][data-part='root'][data-size='md'] {
-    --xh-diff-view-font-size: var(--xh-control-font-md);
-    --xh-diff-view-px: var(--xh-space-3);
-    --xh-diff-view-py: var(--xh-space-2);
+    --xh-_diff-view-font-size: var(--xh-control-font-md);
+    --xh-_diff-view-px: var(--xh-space-3);
+    --xh-_diff-view-py: var(--xh-space-2);
   }
 
   [data-scope='diff-view'][data-part='root'][data-size='lg'] {
-    --xh-diff-view-font-size: var(--xh-control-font-lg);
-    --xh-diff-view-px: var(--xh-space-4);
-    --xh-diff-view-py: var(--xh-space-3);
+    --xh-_diff-view-font-size: var(--xh-control-font-lg);
+    --xh-_diff-view-px: var(--xh-space-4);
+    --xh-_diff-view-py: var(--xh-space-3);
   }
 }
 
