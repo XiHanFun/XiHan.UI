@@ -1,5 +1,5 @@
 import { ref } from "vue";
-// 框架清单与生成器、门禁读同一份：id / 显示名 / 扩展名 / 语法高亮语言 / 本站是否已接入渲染
+// 框架清单与生成器、门禁读同一份：id / 显示名 / 扩展名 / 语法高亮语言
 import table from "../../../ui/scripts/demo-frameworks.json";
 
 export interface DemoFramework {
@@ -7,13 +7,10 @@ export interface DemoFramework {
   name: string;
   ext: string;
   lang: string;
-  enabled: boolean;
 }
 
-/** 本站已接入渲染的框架，切换器只列这些。 */
-export const demoFrameworks: DemoFramework[] = table.frameworks.filter(
-  (framework) => framework.enabled
-);
+/** 切换器列出的框架。 */
+export const demoFrameworks: DemoFramework[] = table.frameworks;
 
 /** 全站共用一份选择，所有示例跟着同一个值走。 */
 export const demoFramework = ref(demoFrameworks[0].id);

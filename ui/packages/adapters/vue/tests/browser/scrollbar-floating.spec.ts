@@ -158,14 +158,13 @@ describe('缺省档的滚动条浮在内容上', () => {
     expect(bar.getAttribute('data-state')).toBe('hidden')
   })
 
-  it('露面前后视口宽度一个像素都不变', async () => {
+  it('露面前后视口尺寸一个像素都不变', async () => {
     await mountArea()
     const vp = viewport()
-    const before = vp.clientWidth
+    const before = { w: vp.clientWidth, h: vp.clientHeight }
     await enter()
     expect(verticalBar().getAttribute('data-state')).toBe('visible')
-    expect(vp.clientWidth).toBe(before)
-    expect(vp.clientHeight).toBe(vp.clientHeight)
+    expect({ w: vp.clientWidth, h: vp.clientHeight }).toEqual(before)
   })
 
   it('从头滚到底，条子本身的矩形一动不动', async () => {

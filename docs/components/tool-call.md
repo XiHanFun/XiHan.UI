@@ -110,7 +110,15 @@
 | `root` | 'open' \| 'closed' |
 | `trigger` | 'open' \| 'closed' |
 | `indicator` | 'open' \| 'closed' |
+| `name` | props.phase |
+| `summary` | props.phase |
+| `status` | props.phase |
+| `duration` | props.phase |
+| `approval` | props.phase |
 | `content` | 'open' \| 'closed' |
+| `input` | props.phase |
+| `output` | props.phase |
+| `error` | props.phase |
 
 状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
@@ -184,24 +192,22 @@
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
 | `root` | `data-loading` | ''（条件成立时才出现） |
-| `root` | `data-phase` | props.phase |
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | 'open' \| 'closed' |
 | `root` | `data-tone` | props.tone |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
-| `trigger` | `data-phase` | props.phase |
 | `trigger` | `data-state` | 'open' \| 'closed' |
 | `indicator` | `data-state` | 'open' \| 'closed' |
-| `name` | `data-phase` | props.phase |
-| `summary` | `data-phase` | props.phase |
-| `status` | `data-phase` | props.phase |
+| `name` | `data-state` | props.phase |
+| `summary` | `data-state` | props.phase |
+| `status` | `data-state` | props.phase |
 | `duration` | `data-loading` | ''（条件成立时才出现） |
-| `duration` | `data-phase` | props.phase |
-| `approval` | `data-phase` | props.phase |
+| `duration` | `data-state` | props.phase |
+| `approval` | `data-state` | props.phase |
 | `content` | `data-state` | 'open' \| 'closed' |
-| `input` | `data-phase` | props.phase |
-| `output` | `data-phase` | props.phase |
-| `error` | `data-phase` | props.phase |
+| `input` | `data-state` | props.phase |
+| `output` | `data-state` | props.phase |
+| `error` | `data-state` | props.phase |
 
 ## CSS 变量
 

@@ -51,8 +51,7 @@
     --xh-_pagination-selected-bg-active: var(--xh-_tone-active, var(--xh-bg-brand-active));
     --xh-_pagination-selected-fg: var(--xh-_tone-on, var(--xh-fg-on-brand));
     /* 当前页那一格是实心底，顶边画一条极浅的内高光把它衬出厚度 */
-    --xh-_pagination-highlight: inset 0 var(--xh-stroke-thin) 0 0
-      color-mix(in oklab, var(--xh-_tone-on, var(--xh-fg-on-brand)) 14%, transparent);
+    --xh-_pagination-highlight: var(--xh-_highlight-tone);
 
     display: flex;
     align-items: center;

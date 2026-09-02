@@ -21,7 +21,7 @@
 - 展开集合可受控（`expandedValue` / `defaultExpandedValue`），不受控时按 `defaultExpandedDepth` 现算：数据晚于组件挂载才到（自定义元素常是先升级、再由脚本写 `.value`）也照样算得上，第一次展开或收起之后就固定下来，不再跟着数据走。
 - `maxStringLength` 截长字符串，`maxItems` 折超长数组，`sortKeys` 让对象键按字典序排。
 - 循环引用摊到就停，标成 `[Circular]`，不会无限递归。
-- 每一行带 `data-type`，六种值形态各自上色。
+- 每一行带 `data-value-type`，六种值形态各自上色。
 - 尺寸一轴与其余组件同源。
 - **只认 JSON 能表达的形状**，喂进活对象时呈现是有损的：`Date` / `Map` / `Set` 一律按自有可枚举键摊，因此显示成 `{}`；`undefined` 归 `null` 一档、显示成 `undefined`；`bigint` 归 `number`；函数与 symbol 归 `string`，按各自的字符串形式呈现。要如实展示这些值，先自己转成 JSON 能表达的形状。
 - 自定义元素侧：`value` 属性收的是一段 JSON 文本（解析不了就当一个字符串值展示），对象与数组直接赋 property（`el.value = { … }`）；`expandedValue` / `defaultExpandedValue` / `translations` **没有对应属性，只能走 property**，写成 `expanded-value='["$"]'` 不会生效。

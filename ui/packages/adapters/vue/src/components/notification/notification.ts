@@ -134,7 +134,7 @@ export const XhNotificationItem = defineComponent({
   },
 })
 
-/** 类型指示符。作者不写内容时由皮肤按 data-type 画一枚兜底字形。 */
+/** 类型指示符。作者不写内容时由皮肤按 data-severity 画一枚兜底字形。 */
 export const XhNotificationItemIndicator = defineComponent({
   name: 'XhNotificationItemIndicator',
   setup(_, { slots }) {

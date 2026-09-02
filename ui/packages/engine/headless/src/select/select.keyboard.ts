@@ -17,9 +17,9 @@ export const selectKeyboard: KeyboardTable = {
     { id: 'select.kbd.first', keys: ['Home'], when: 'open, focus in content', does: '高亮移到首个可用条目' },
     { id: 'select.kbd.last', keys: ['End'], when: 'open, focus in content', does: '高亮移到末个可用条目' },
     { id: 'select.kbd.typeahead', keys: ['单个可打印字符'], when: 'open, focus in content', does: '连打检索移动高亮，不改选中值' },
-    { id: 'select.kbd.select', keys: ['Enter', 'Space'], when: 'open, 单选, 高亮条目未禁用', does: '选中高亮条目并关闭列表，焦点归还 trigger' },
+    { id: 'select.kbd.select', keys: ['Enter', 'Space'], when: 'open, 单选, 高亮条目未禁用', does: '选中高亮条目并关闭列表，焦点归还 trigger', restoresFocus: true },
     { id: 'select.kbd.multi-select', keys: ['Enter', 'Space'], when: 'open, 多选, 高亮条目未禁用', does: '切换高亮条目的选中态，列表不收起、焦点留在条目上' },
-    { id: 'select.kbd.escape', keys: ['Escape'], when: 'open', does: '关闭列表并把焦点归还 trigger，选中值不变' },
-    { id: 'select.kbd.tab', keys: ['Tab', 'Shift+Tab'], when: 'open', does: '关闭列表，焦点不归还 trigger，按 Tab 序列自然离开' },
+    { id: 'select.kbd.escape', keys: ['Escape'], when: 'open', does: '关闭列表并把焦点归还 trigger，选中值不变', restoresFocus: true },
+    { id: 'select.kbd.tab', keys: ['Tab', 'Shift+Tab'], when: 'open', does: '关闭列表，焦点不归还 trigger，按 Tab 序列自然离开', restoresFocus: false },
   ],
 }

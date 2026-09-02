@@ -104,7 +104,7 @@ function scrollLayerOf(root: HTMLElement | null): HTMLElement | null {
  * @fires expanded-change - 展开集合变化；detail 为 `{ value: string[] }`
  * @csspart root - 组件根容器，由作者写出；承载 data-size
  * @csspart tree - role=tree 的树容器（键盘在此收口，焦点在树外时它兜底占 Tab 位）
- * @csspart item - 标量行，role=treeitem，带 data-type
+ * @csspart item - 标量行，role=treeitem，带 data-value-type
  * @csspart item-key - 标量行的键名
  * @csspart item-value - 标量行的值
  * @csspart branch - 对象/数组行，role=treeitem，带 aria-expanded 与 data-state

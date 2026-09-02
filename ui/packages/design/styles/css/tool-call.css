@@ -27,8 +27,10 @@
     display: none;
   }
 
-  /* 出错态换描边色，与语气轴各管各的：语气是作者定的强调，出错是组件自己的阶段 */
-  [data-scope='tool-call'][data-part='root'][data-phase='output-error'] {
+  /* 出错态换描边色，与语气轴各管各的：语气是作者定的强调，出错是组件自己的阶段。
+     根上的 data-state 已经被开合占着，阶段从下面任一部件上读——阶段发在名字、摘要、
+     状态、用时、审批、输入、输出、错误八个部件上，渲出其中任何一个这条都命中 */
+  [data-scope='tool-call'][data-part='root']:has([data-scope='tool-call'][data-state='output-error']) {
     border-color: var(--xh-tool-call-border-error, var(--xh-border-invalid));
   }
 
@@ -145,26 +147,26 @@
   }
 
   /* 三档落定的阶段收成药丸：淡底 + 同族深字。在跑的两档不带底，让扫光自己说话 */
-  [data-scope='tool-call'][data-part='status'][data-phase='awaiting-approval'],
-  [data-scope='tool-call'][data-part='status'][data-phase='output-available'],
-  [data-scope='tool-call'][data-part='status'][data-phase='output-error'] {
+  [data-scope='tool-call'][data-part='status'][data-state='awaiting-approval'],
+  [data-scope='tool-call'][data-part='status'][data-state='output-available'],
+  [data-scope='tool-call'][data-part='status'][data-state='output-error'] {
     padding-block: var(--xh-tool-call-status-py, var(--xh-space-0_5));
     padding-inline: var(--xh-tool-call-status-px, var(--xh-space-2));
     border-radius: var(--xh-tool-call-status-radius, var(--xh-shape-pill));
   }
 
   /* 各阶段的状态色：与语气轴分开走，语气是作者定的强调 */
-  [data-scope='tool-call'][data-part='status'][data-phase='awaiting-approval'] {
+  [data-scope='tool-call'][data-part='status'][data-state='awaiting-approval'] {
     background: var(--xh-tool-call-status-bg-approval, color-mix(in oklab, var(--xh-fg-warning) 12%, var(--xh-bg-surface)));
     color: var(--xh-tool-call-status-fg-approval, color-mix(in oklab, var(--xh-fg-warning) 60%, var(--xh-fg-default)));
   }
 
-  [data-scope='tool-call'][data-part='status'][data-phase='output-available'] {
+  [data-scope='tool-call'][data-part='status'][data-state='output-available'] {
     background: var(--xh-tool-call-status-bg-done, color-mix(in oklab, var(--xh-fg-success) 12%, var(--xh-bg-surface)));
     color: var(--xh-tool-call-status-fg-done, color-mix(in oklab, var(--xh-fg-success) 60%, var(--xh-fg-default)));
   }
 
-  [data-scope='tool-call'][data-part='status'][data-phase='output-error'] {
+  [data-scope='tool-call'][data-part='status'][data-state='output-error'] {
     background: var(--xh-tool-call-status-bg-error, color-mix(in oklab, var(--xh-fg-danger) 12%, var(--xh-bg-surface)));
     color: var(--xh-tool-call-status-fg-error, color-mix(in oklab, var(--xh-fg-danger) 60%, var(--xh-fg-default)));
   }

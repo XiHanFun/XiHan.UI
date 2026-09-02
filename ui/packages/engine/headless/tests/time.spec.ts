@@ -136,7 +136,7 @@ describe('connectTime', () => {
   })
 
   it('缺省是 datetime 型', () => {
-    expect((api({ value: '2026-08-11T09:30:05' }).getRootProps() as Dict)['data-type']).toBe('datetime')
+    expect((api({ value: '2026-08-11T09:30:05' }).getRootProps() as Dict)['data-format']).toBe('datetime')
   })
 
   it('戳与文本取自同一个墙钟', () => {

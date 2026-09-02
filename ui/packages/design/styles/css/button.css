@@ -79,8 +79,7 @@
     --xh-_bg-hover: var(--xh-_tone-hover, var(--xh-bg-brand-hover));
     --xh-_bg-active: var(--xh-_tone-active, var(--xh-bg-brand-active));
     --xh-_fg: var(--xh-_tone-on, var(--xh-fg-on-brand));
-    --xh-_button-highlight: inset 0 var(--xh-stroke-thin) 0 0
-      color-mix(in oklab, var(--xh-_tone-on, var(--xh-fg-on-brand)) 14%, transparent);
+    --xh-_button-highlight: var(--xh-_highlight-tone);
   }
 
   /* 另外三档的面不是实心底，高光在上面只会显脏；显式清掉，

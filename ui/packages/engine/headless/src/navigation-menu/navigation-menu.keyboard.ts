@@ -12,7 +12,7 @@ export const navigationMenuKeyboard: KeyboardTable = {
     { id: 'navigation-menu.kbd.first', keys: ['Home'], when: 'focus in trigger', does: '焦点移到首个可停留 trigger' },
     { id: 'navigation-menu.kbd.last', keys: ['End'], when: 'focus in trigger', does: '焦点移到末个可停留 trigger' },
     { id: 'navigation-menu.kbd.toggle', keys: ['Enter', 'Space'], when: 'focus in trigger, not disabled', does: '立即展开对应面板（不走 delayDuration）；面板是自动弹出来的那一次不收起，再按一次才收起' },
-    { id: 'navigation-menu.kbd.escape', keys: ['Escape'], when: 'open', does: '收起面板并把焦点归还对应 trigger；静默窗口内这一次归还不会把面板重新弹出来' },
+    { id: 'navigation-menu.kbd.escape', keys: ['Escape'], when: 'open', does: '收起面板并把焦点归还对应 trigger；静默窗口内这一次归还不会把面板重新弹出来', restoresFocus: true },
     { id: 'navigation-menu.kbd.tab', keys: ['Tab', 'Shift+Tab'], when: 'open, focus in trigger', does: '走进展开的面板：面板就在 trigger 之后，收起的面板带 hidden 因而被整个跳过' },
   ],
 }

@@ -55,7 +55,7 @@ export const timeSuite: ConformanceSuite = {
         parts: {
           root: {
             'role': null,
-            'data-type': 'datetime',
+            'data-format': 'datetime',
             'data-state': 'empty',
             'data-relative': null,
           },
@@ -73,7 +73,7 @@ export const timeSuite: ConformanceSuite = {
       spec: { apg: HTML },
       props: { value: AT, locale: 'en-US' },
       initial: {
-        parts: { root: { 'data-type': 'datetime', 'data-state': 'ready' } },
+        parts: { root: { 'data-format': 'datetime', 'data-state': 'ready' } },
       },
       steps: [
         { kind: 'raw', why: WHY, run: expectStamp('2026-08-11T09:30:05') },
@@ -85,7 +85,7 @@ export const timeSuite: ConformanceSuite = {
       spec: { apg: HTML },
       props: { value: AT, type: 'date', locale: 'en-US' },
       initial: {
-        parts: { root: { 'data-type': 'date', 'data-state': 'ready' } },
+        parts: { root: { 'data-format': 'date', 'data-state': 'ready' } },
       },
       steps: [
         { kind: 'raw', why: WHY, run: expectStamp('2026-08-11') },
@@ -106,7 +106,7 @@ export const timeSuite: ConformanceSuite = {
       spec: { apg: HTML },
       props: { value: '2026-08-11T09:00:00', type: 'relative', now: '2026-08-11T09:30:00', locale: 'en-US' },
       initial: {
-        parts: { root: { 'data-type': 'relative', 'data-state': 'ready', 'data-relative': '' } },
+        parts: { root: { 'data-format': 'relative', 'data-state': 'ready', 'data-relative': '' } },
       },
       steps: [
         { kind: 'raw', why: WHY, run: expectStamp('2026-08-11T09:00:00') },
@@ -118,7 +118,7 @@ export const timeSuite: ConformanceSuite = {
       spec: { apg: HTML },
       props: { value: '2026-01-01T00:00:00', type: 'relative', now: '2026-08-11T09:30:00', locale: 'en-US' },
       initial: {
-        parts: { root: { 'data-type': 'relative', 'data-state': 'ready', 'data-relative': null } },
+        parts: { root: { 'data-format': 'relative', 'data-state': 'ready', 'data-relative': null } },
       },
       steps: [
         { kind: 'raw', why: WHY, run: expectStamp('2026-01-01T00:00:00') },
@@ -139,7 +139,7 @@ export const timeSuite: ConformanceSuite = {
       spec: { apg: HTML },
       props: { value: '下周三下午' },
       initial: {
-        parts: { root: { 'data-type': 'datetime', 'data-state': 'invalid' } },
+        parts: { root: { 'data-format': 'datetime', 'data-state': 'invalid' } },
       },
       steps: [
         { kind: 'raw', why: WHY, run: expectStamp(null) },

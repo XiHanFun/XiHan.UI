@@ -30,7 +30,7 @@
       "values": ["pending", "approved", "denied", "expired"]
     },
     "phase": {
-      "$description": "过程阶段：异步或时序型组件的生命周期（头像/图片加载、剪贴板、下载、上传、计时器、进度条、签名板、二维码、时间输入、取色器）。",
+      "$description": "过程阶段：异步或时序型组件的生命周期（头像/图片加载、剪贴板、下载、上传、计时器、进度条、签名板、二维码、时间输入、取色器、工具调用）。相位只有这一个属性名，不另开 data-phase。",
       "values": [
         "idle",
         "loading",
@@ -56,13 +56,27 @@
         "disabled",
         "dismissing",
         "unmounted",
-        "picking"
+        "picking",
+        "input-streaming",
+        "input-available",
+        "awaiting-approval",
+        "output-available",
+        "output-error"
       ]
     }
   },
   "data-status": {
     "$description": "结果种类——不是相位。result 报的是这一页在说哪一类结果（找不到 / 没权限 / 服务器错 / 成功 / 警告 / 出错 / 提示），它没有生命周期，也不会随时间往前走。相位一律走 data-state 的 phase 族。",
     "values": ["404", "403", "500", "success", "warning", "error", "info"]
+  },
+  "enum": {
+    "$description": "取值域随组件变化的枚举属性。同一个名字在两个组件里取值域互不相交时，要么在这里写明它在两处问的是同一个问题，要么就是一名多义——一个名字答两个问题，使用者看见 [data-x] 猜不出选中的是什么，得各取一个说得清的名字。登记项写「这个名字问的是什么」，一句话说不清的即须拆名。判据⑨；登记了却没有任何一对组件取值域互不相交的算名单过期。",
+    "data-direction": "朝哪个方向：渐变的铺色方向、跑马灯的滚动方向。",
+    "data-kind": "这一段内容是哪一类：代码词法单元的类别、流式块的类别。",
+    "data-placement": "摆在宿主的哪一侧、哪个角。",
+    "data-position": "落在什么位置：浮层贴着锚点还是居中、裁剪手柄在哪个方位。",
+    "data-state": "当前处在哪一档状态。取值域登记在 data-state 段的族体系里，判据④逐值核对。",
+    "data-variant": "取哪一档形态（形态轴，取值域逐组件自定）。"
   },
   "boolean": {
     "$description": "布尔状态属性（有即真，缺席即假，一律经 dataAttr 发）。同一含义只用一个名字。connect 里发出的布尔属性必须逐个登记在这里，登记项写明它是什么语义；登记了却没人发的算名单过期。一件事只准有一个名字：新名字登记前先与已有的比对一遍，同义即用既有的那个。",
@@ -168,14 +182,17 @@
     "data-busy": "改 data-loading",
     "data-focused": "改 data-focus",
     "data-hover": "皮肤走 :hover，不发属性",
+    "data-open": "开合是枚举不是布尔，改 data-state=open|closed",
     "data-overflow": "改 data-overflowing",
     "data-panning": "改 data-dragging",
+    "data-phase": "相位只有 data-state 的 phase 族一个名字，改 data-state",
     "data-row-draggable": "改 data-draggable",
     "data-ruled": "改 data-bordered",
     "data-running": "改 data-loading",
     "data-segmented": "改 data-block",
     "data-sider-collapsed": "改 data-collapsed",
     "data-sticky": "表头吸顶改 data-fixed",
+    "data-type": "一名六义。JSON 值形态改 data-value-type，消息严重度改 data-severity，题型改 data-select-mode，滚动条露面策略改 data-reveal-mode，时间显示格式改 data-format",
     "data-visible": "派生显隐改 data-state=visible|hidden"
   },
   "aria": {

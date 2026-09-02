@@ -10,6 +10,14 @@ export interface KeyboardRow {
   readonly when: string
   /** 按键的效果。 */
   readonly does: string
+  /**
+   * 这一下之后焦点回不回触发器。
+   *
+   * true 是对外承诺：关掉浮层后焦点落在打开它的那个元素上，机器要为焦点域交出显式落点。
+   * false 用在明说不归还的键位上（Tab 走 Tab 序列、快照回落到别处）。
+   * 与焦点、触发器无关的键位不写这个字段。
+   */
+  readonly restoresFocus?: boolean
 }
 
 /** 组件键盘交互表，被测试、文档与校验共同消费。 */

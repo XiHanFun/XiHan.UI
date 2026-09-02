@@ -1,12 +1,14 @@
 #!/usr/bin/env node
 // 门禁：皮肤里的层号只能来自层序令牌 --xh-layer-*，组件内部的相对堆叠除外；
-// 浮层的定位层 / 遮罩层还必须先经一个组件覆盖槽再落到层序令牌，槽名后缀统一 -layer。
+// 接层序的层号一律先经一个组件覆盖槽再落到层序令牌，槽名后缀统一 -layer。
 //
 // 裸层号绕开了层序这一处事实源：两个组件各写各的数字，谁盖谁只由数值大小决定，
 // 而层序令牌一改，写死的那个不跟着走。
-// 定位层 / 遮罩层直引层序令牌则是另一种写死：使用者要把某个浮层单独抬高或压低，
-// 只能改全局层序令牌，一改所有同角色的浮层一起动。每个浮层自己的覆盖槽
-// `--xh-<组件>-…-layer` 把这个口子留出来，默认值才落到 `--xh-layer-<角色>`。
+// 直引层序令牌则是另一种写死：使用者要把某一处单独抬高或压低，只能改全局层序令牌，
+// 一改所有同角色的一起动。覆盖槽 `--xh-<组件>-…-layer` 把这个口子留出来，
+// 默认值才落到 `--xh-layer-<角色>`。
+//
+// 定位层 / 遮罩层再多受一条：它们排的是页面级层序，不许退回组件内的 0/1/2。
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
@@ -38,7 +40,14 @@ const IN_COMPONENT_STACKING = {
 /** 组件内堆叠允许的层号档位。 */
 const SMALL = new Set(['0', '1', '2'])
 
-/** 解剖里带这些部件的族，对应部件规则里的 z-index 必须走组件覆盖槽。 */
+/**
+ * 排页面级层序的部件名。它们额外多受一条约束：层号必须接上层序，不许退回组件内那三档
+ * （0/1/2），哪怕这份皮肤登在组件内堆叠名单里。
+ *
+ * 这张表只加严、不放行：接层序的那条判据对全部部件一视同仁地查（见下面的主循环）。
+ * 从前反过来——只有名字落在这张表里的部件才查，别的部件引层序令牌一律放行；
+ * 于是部件一改名，表筛出空集，判据不是判红而是什么都不查。表尾的过期反查钉住这一点。
+ */
 const LAYERED_PARTS = ['positioner', 'backdrop']
 
 async function read(path) {
@@ -50,9 +59,10 @@ async function read(path) {
   }
 }
 
-/** 读每个浮层族解剖里登记的定位层 / 遮罩层部件。 */
+/** 读每个浮层族解剖里登记的定位层 / 遮罩层部件；顺带记下哪些名字真被解剖认领过。 */
 async function collectLayeredParts() {
   const result = new Map()
+  const seen = new Set()
   for (const d of await readdir(HEADLESS, { withFileTypes: true })) {
     if (!d.isDirectory())
       continue
@@ -60,10 +70,12 @@ async function collectLayeredParts() {
     if (!anatomy)
       continue
     const parts = LAYERED_PARTS.filter(p => anatomy.includes(`'${p}'`))
+    for (const part of parts)
+      seen.add(part)
     if (parts.length)
       result.set(d.name, parts)
   }
-  return result
+  return { result, seen }
 }
 
 /**
@@ -106,11 +118,11 @@ function* declarations(src) {
   }
 }
 
-const layeredParts = await collectLayeredParts()
+const { result: layeredParts, seen: layeredPartsSeen } = await collectLayeredParts()
 const files = (await readdir(STYLES_DIR)).filter(f => f.endsWith('.css'))
 const problems = []
 const usedWhitelist = new Set()
-let tokenised = 0
+let onLayeredPart = 0
 let slotted = 0
 
 /** 文件名 → 去注释后的源码，名单核实那一段复用。 */
@@ -133,23 +145,33 @@ for (const file of files) {
     const at = `${file}:${line}  z-index: ${value}`
     const scope = selectors.join(' ')
     const part = parts.find(p => new RegExp(`\\[data-part=['"]${p}['"]\\]`).test(scope))
-    if (part) {
+    const where = part ? `${part} 的层号` : '层号'
+
+    // 接上全局层序的，一律先经一个组件覆盖槽：使用者要单独抬高压低某一处浮层，
+    // 改的是这个槽；直引层序令牌就只剩「改全局、同角色的一起动」一条路。
+    // 这一条对所有部件生效，不看名字——名字表只用来加严（见 LAYERED_PARTS）
+    if (/--xh-layer-/.test(value)) {
       const slot = value.match(/^var\(\s*(--xh-[a-z0-9-]+)\s*,\s*var\(\s*--xh-layer-[a-z-]+\s*\)\s*\)$/)
       if (!slot) {
-        problems.push(`${at}  —— ${part} 的层号要写成 var(--xh-${comp}-…-layer, var(--xh-layer-<角色>))，直引层序令牌没给使用者留覆盖槽`)
+        problems.push(`${at}  —— ${where}要写成 var(--xh-${comp}-…-layer, var(--xh-layer-<角色>))，直引层序令牌没给使用者留覆盖槽`)
         continue
       }
       if (!slot[1].startsWith(`--xh-${comp}-`) || !slot[1].endsWith('-layer')) {
-        problems.push(`${at}  —— ${part} 的覆盖槽要叫 --xh-${comp}-…-layer`)
+        problems.push(`${at}  —— 覆盖槽要叫 --xh-${comp}-…-layer`)
         continue
       }
       slotted++
+      if (part)
+        onLayeredPart++
       continue
     }
-    if (/var\(\s*--xh-layer-/.test(value)) {
-      tokenised++
+
+    // 定位层 / 遮罩层排的是页面级层序，退不回组件内那三档
+    if (part) {
+      problems.push(`${at}  —— ${part} 排的是页面级层序，层号要写成 var(--xh-${comp}-…-layer, var(--xh-layer-<角色>))，不是组件内的 0/1/2`)
       continue
     }
+
     const numbers = value.match(/\d+/g) ?? []
     if (numbers.length === 0) {
       problems.push(`${at}  —— 既没引层序令牌，也不是层号`)
@@ -168,6 +190,16 @@ for (const file of files) {
       continue
     }
     usedWhitelist.add(file)
+  }
+}
+
+// 名字表的过期反查：改名之后这张表会筛出空集，加严那一条于是悄悄消失
+for (const part of LAYERED_PARTS) {
+  if (!layeredPartsSeen.has(part)) {
+    problems.push(
+      `LAYERED_PARTS 里的 '${part}' 在全部解剖里一次都没出现——名单过期了：`
+      + `部件改了名，"这个部件排的是页面级层序" 这条加严就筛不到任何皮肤。改成新名字，或删掉这一条`,
+    )
   }
 }
 
@@ -197,8 +229,8 @@ if (problems.length) {
   console.error('[check-raw-zindex] ✗ 皮肤里的层号没走层序令牌 / 覆盖槽：')
   for (const p of problems)
     console.error(`  ${p}`)
-  console.error('层序只有 --xh-layer-* 一处事实源；浮层的定位层 / 遮罩层再经 --xh-<组件>-…-layer 槽留给使用者单独调。')
+  console.error('层序只有 --xh-layer-* 一处事实源；接层序的层号一律再经 --xh-<组件>-…-layer 槽留给使用者单独调。')
   process.exit(1)
 }
 
-console.log(`[check-raw-zindex] 通过：${files.length} 份皮肤 · ${layeredParts.size} 个浮层族的定位层 / 遮罩层 ${slotted} 处层号走覆盖槽 · 另 ${tokenised} 处层号走层序令牌（${usedWhitelist.size} 份皮肤只做组件内堆叠）`)
+console.log(`[check-raw-zindex] 通过：${files.length} 份皮肤 · ${slotted} 处接层序的层号全部先经组件覆盖槽（其中 ${onLayeredPart} 处落在 ${layeredParts.size} 个浮层族的定位层 / 遮罩层上）· ${usedWhitelist.size} 份皮肤只做组件内堆叠`)

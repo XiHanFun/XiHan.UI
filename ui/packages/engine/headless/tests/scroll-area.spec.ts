@@ -283,7 +283,7 @@ describe('props 原样交给两台机器', () => {
     const r = rig({ type: 'auto', size: 'sm' })
     await settle()
     expect((r.api().getRootProps() as Dict)['data-size']).toBe('sm')
-    expect((r.api().getRootProps() as Dict)['data-type']).toBe('auto')
+    expect((r.api().getRootProps() as Dict)['data-reveal-mode']).toBe('auto')
     expect((r.api().getScrollbarProps({ orientation: 'vertical' }) as Dict)['data-size']).toBe('sm')
   })
 

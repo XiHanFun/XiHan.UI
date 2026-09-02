@@ -1,4 +1,4 @@
-<!-- 语气 | type 落成 data-type，淡底、描边与字形一起换族，正文留中性；error 走 alert + assertive，loading 表示事情还没完、不自动消失 -->
+<!-- 语气 | type 落成 data-severity，淡底、描边与字形一起换族，正文留中性；error 走 alert + assertive，loading 表示事情还没完、不自动消失 -->
 <script setup lang="ts">
 import {
   CheckIcon,

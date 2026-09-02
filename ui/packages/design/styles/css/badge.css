@@ -30,8 +30,7 @@
     --xh-_badge-font: var(--xh-text-secondary-size);
 
     /* 顶边一条极浅的内高光，把这枚实心块衬出厚度 */
-    --xh-_badge-highlight: inset 0 var(--xh-stroke-thin) 0 0
-      color-mix(in oklab, var(--xh-_tone-on, var(--xh-fg-on-brand)) 14%, transparent);
+    --xh-_badge-highlight: var(--xh-_highlight-tone);
 
     /* 不设 z-index：角标在 DOM 序里排在宿主之后，本来就压在上面 */
     position: absolute;

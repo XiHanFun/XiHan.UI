@@ -14,6 +14,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
+import { declarations, lineCounter, stripComments } from './lib/css-declarations.mjs'
 
 const cssDir = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -22,6 +23,11 @@ const cssDir = path.resolve(
 
 /** primitive 的圆角档，只该由语义层引用，皮肤不许直接点名。 */
 const PRIMITIVE = /var\(\s*--xh-radius-[\w-]+/
+
+/** 简写、border-<side>-radius 与逻辑角长属性。 */
+const RADIUS_PROP = /^border(?:-[\w-]+)?-radius$/
+/** 私有槽赋值：原语先灌进私有槽再消费同样是下探。 */
+const RADIUS_SLOT = /^--xh-_[\w-]*radius[\w-]*$/
 
 /**
  * 圆角可以没有使用者覆盖槽的地方：形状本身就是这个部件的身份，换掉它就不是那个东西了。
@@ -42,35 +48,33 @@ let checked = 0
 for (const file of fs.readdirSync(cssDir).filter(f => f.endsWith('.css')).sort()) {
   scanned++
   const comp = file.replace(/\.css$/, '')
-  const text = fs.readFileSync(path.join(cssDir, file), 'utf8').replace(/\/\*[\s\S]*?\*\//g, m => m.replace(/[^\n]/g, ' '))
-  for (const line of text.split('\n')) {
-    // 冒号后不写 \s*：它与 [^;]+ 能吃同一批字符，不匹配时会逐位回溯。值交给 trim 归一
-    // 三种写法都扫：简写、border-<side>-radius 与逻辑角长属性、私有槽赋值——原语先灌进私有槽再消费同样是下探
-    const m = line.match(/^\s*(?:border(?:-[\w-]+)?-radius|--xh-_[\w-]*radius[\w-]*):([^;]+);/)
-    if (!m)
+  const text = stripComments(fs.readFileSync(path.join(cssDir, file), 'utf8'))
+  const lineOf = lineCounter(text)
+
+  for (const { prop, value, index, selectors } of declarations(text)) {
+    const isRadiusProp = RADIUS_PROP.test(prop)
+    if (!isRadiusProp && !RADIUS_SLOT.test(prop))
       continue
     checked++
-    if (PRIMITIVE.test(m[1].trim()))
-      offenders.push(`${file}: ${line.trim()}`)
-  }
 
-  // 第二条判据：取语义档的圆角必须留一个使用者覆盖槽，同角色的部件在别处都有
-  for (const [, selector, body] of text.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
-    // 冒号后不写 \s*：它与 [^;]+ 能吃同一批字符，不匹配时会逐位回溯。值交给 trim 归一
-    for (const [, prop, value] of body.matchAll(/(border(?:-[\w-]+)?-radius)\s*:([^;]+);/g)) {
-      const v = value.trim()
-      // 私有槽赋值、inherit、显式取直角都不在此列——它们不是「可换的形状」
-      if (!v.startsWith('var(--xh-shape-'))
-        continue
-      const parts = [...selector.matchAll(/data-part='([a-z-]+)'/g)].map(x => x[1])
-      const pseudo = /::(before|after)/.exec(selector)?.[1]
-      const key = `${comp}:${parts.at(-1) ?? '?'}${pseudo ? `::${pseudo}` : ''}`
-      if (key in NO_SLOT) {
-        noSlotSeen.add(key)
-        continue
-      }
-      slotless.push(`${file}  ${selector.replace(/\s+/g, ' ').trim().slice(0, 80)}  ${prop}: ${v}`)
+    if (PRIMITIVE.test(value)) {
+      offenders.push(`${file}:${lineOf(index)}  ${prop}: ${value}`)
+      continue
     }
+
+    // 第二条判据：取语义档的圆角必须留一个使用者覆盖槽，同角色的部件在别处都有。
+    // 私有槽赋值、inherit、显式取直角都不在此列——它们不是「可换的形状」
+    if (!isRadiusProp || !value.startsWith('var(--xh-shape-'))
+      continue
+    const selector = selectors.at(-1) ?? ''
+    const parts = [...selector.matchAll(/data-part='([a-z-]+)'/g)].map(x => x[1])
+    const pseudo = /::(before|after)/.exec(selector)?.[1]
+    const key = `${comp}:${parts.at(-1) ?? '?'}${pseudo ? `::${pseudo}` : ''}`
+    if (key in NO_SLOT) {
+      noSlotSeen.add(key)
+      continue
+    }
+    slotless.push(`${file}:${lineOf(index)}  ${selector.replace(/\s+/g, ' ').trim().slice(0, 80)}  ${prop}: ${value}`)
   }
 }
 

@@ -150,8 +150,8 @@ type 为 scroll 时滚动条停手后不立刻收起，hideDelay 决定还留多
 | --- | --- | --- |
 | `root` | `data-dragging` | ''（条件成立时才出现） |
 | `root` | `data-orientation` | props.orientation |
+| `root` | `data-reveal-mode` | props.type |
 | `root` | `data-size` | props.size |
-| `root` | `data-type` | props.type |
 | `viewport` | `data-lane-horizontal` | ''（条件成立时才出现） |
 | `viewport` | `data-lane-vertical` | ''（条件成立时才出现） |
 | `viewport` | `data-native` | ''（条件成立时才出现） |
@@ -161,10 +161,10 @@ type 为 scroll 时滚动条停手后不立刻收起，hideDelay 决定还留多
 | `scrollbar` | `data-gutter` | ''（条件成立时才出现） |
 | `scrollbar` | `data-native` | ''（条件成立时才出现） |
 | `scrollbar` | `data-orientation` | axis |
+| `scrollbar` | `data-reveal-mode` | props.type |
 | `scrollbar` | `data-scrolling` | ''（条件成立时才出现） |
 | `scrollbar` | `data-size` | props.size |
 | `scrollbar` | `data-state` | 'visible' \| 'hidden' |
-| `scrollbar` | `data-type` | props.type |
 | `corner` | `data-state` | 'visible' \| 'hidden' |
 
 ## 动效

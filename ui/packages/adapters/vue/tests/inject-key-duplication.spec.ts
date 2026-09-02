@@ -7,8 +7,10 @@
 // 与真正的原因隔着十万八千里。
 //
 // Symbol.for 按字符串查同一个键，两份模块也对得上，于是这类失败降级成「照常工作」。
+import type { InjectionKey } from 'vue'
 import { describe, expect, it } from 'vitest'
 import { createApp, defineComponent, h, inject, provide } from 'vue'
+import { XhAccordionItem, XhAccordionRoot } from '../src'
 
 /** 模拟一份被重新执行过的 context 模块：同名、但各自建自己的键。 */
 function makeContextModule(name: string) {
@@ -46,12 +48,27 @@ describe('注入键的模块重复', () => {
     app.unmount()
   })
 
-  it('用局部 Symbol 就会断掉——这正是要防的那种失败', () => {
-    const keyA = Symbol('xh-probe-context')
-    const keyB = Symbol('xh-probe-context')
-    expect(keyA).not.toBe(keyB)
-    // 同名不同键：provide 与 inject 各拿一个，谁也找不到谁
-    expect(Symbol.for('xh-probe-context')).toBe(Symbol.for('xh-probe-context'))
+  it('真组件提供的 context 在全局注册表里按名字查得到', () => {
+    // 第三方视角：只知道名字，不 import 组件的 context 模块，用 Symbol.for 自己查一份键。
+    // 键要是局部 Symbol，这里查到的就是 null——「另一份模块拿不到」在同一棵树里的等价形式。
+    const seen: Record<string, unknown> = {}
+    const Probe = defineComponent({
+      setup: () => {
+        seen.root = inject(Symbol.for('xh-accordion') as InjectionKey<unknown>, null)
+        seen.item = inject(Symbol.for('xh-accordion-item') as InjectionKey<unknown>, null)
+        return () => null
+      },
+    })
+
+    const app = createApp({
+      render: () => h(XhAccordionRoot, null, () => [
+        h(XhAccordionItem, { value: 'a' }, () => [h(Probe)]),
+      ]),
+    })
+    app.mount(document.createElement('div'))
+    expect(seen.root).not.toBeNull()
+    expect(seen.item).not.toBeNull()
+    app.unmount()
   })
 
   it('库里所有注入键都走全局注册表', async () => {

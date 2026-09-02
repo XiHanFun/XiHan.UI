@@ -94,7 +94,7 @@ export function connectScrollArea<T extends PropTypes>(
       // 作者没给就不写：写死 ltr 会切断从 RTL 祖先继承来的方向
       'dir': dir,
       'data-orientation': orientation,
-      'data-type': type,
+      'data-reveal-mode': type,
       'data-dragging': dataAttr(draggingAxis != null),
       // 缺省档不写属性：皮肤的基础规则就是缺省档
       'data-size': props.size,
@@ -128,7 +128,7 @@ export function connectScrollArea<T extends PropTypes>(
         // 自绘滚动条只是视觉替身，键盘与读屏走原生滚动，不报 role=scrollbar
         'aria-hidden': true,
         'data-orientation': axis,
-        'data-type': type,
+        'data-reveal-mode': type,
         'data-state': shown ? 'visible' : 'hidden',
         'data-scrolling': dataAttr(bar.scrolling),
         'data-dragging': dataAttr(bar.dragging),

@@ -207,27 +207,27 @@
     mask: var(--xh-glyph-mark-info) center / contain no-repeat;
   }
 
-  [data-scope='notification'][data-part='item'][data-type='success'] [data-part='item-indicator']:empty::before {
+  [data-scope='notification'][data-part='item'][data-severity='success'] [data-part='item-indicator']:empty::before {
     -webkit-mask-image: var(--xh-glyph-mark-check);
     mask-image: var(--xh-glyph-mark-check);
   }
 
-  [data-scope='notification'][data-part='item'][data-type='warning'] [data-part='item-indicator']:empty::before {
+  [data-scope='notification'][data-part='item'][data-severity='warning'] [data-part='item-indicator']:empty::before {
     -webkit-mask-image: var(--xh-glyph-mark-warning);
     mask-image: var(--xh-glyph-mark-warning);
   }
 
-  [data-scope='notification'][data-part='item'][data-type='error'] [data-part='item-indicator']:empty::before {
+  [data-scope='notification'][data-part='item'][data-severity='error'] [data-part='item-indicator']:empty::before {
     -webkit-mask-image: var(--xh-glyph-mark-close);
     mask-image: var(--xh-glyph-mark-close);
   }
 
   /* loading 说的是「事情还没完」，不是好消息也不是坏消息：走中性前景档而不是语气色 */
-  [data-scope='notification'][data-part='item'][data-type='loading'] [data-part='item-indicator'] {
+  [data-scope='notification'][data-part='item'][data-severity='loading'] [data-part='item-indicator'] {
     color: var(--xh-notification-indicator-fg, var(--xh-fg-muted));
   }
 
-  [data-scope='notification'][data-part='item'][data-type='loading'] [data-part='item-indicator']:empty::before {
+  [data-scope='notification'][data-part='item'][data-severity='loading'] [data-part='item-indicator']:empty::before {
     -webkit-mask-image: var(--xh-glyph-mark-rotate-right);
     mask-image: var(--xh-glyph-mark-rotate-right);
     animation: xh-notification-spin var(--xh-spin-duration) var(--xh-motion-ease-loop) infinite;
@@ -237,12 +237,12 @@
      "在等什么"由卡片上的 role=status 与可见文案继续承担。
      两组规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
   @media (prefers-reduced-motion: reduce) {
-    [data-scope='notification'][data-part='item'][data-type='loading'] [data-part='item-indicator']:empty::before {
+    [data-scope='notification'][data-part='item'][data-severity='loading'] [data-part='item-indicator']:empty::before {
       animation: none;
     }
   }
 
-  :where([data-motion='reduce']) [data-scope='notification'][data-part='item'][data-type='loading'] [data-part='item-indicator']:empty::before {
+  :where([data-motion='reduce']) [data-scope='notification'][data-part='item'][data-severity='loading'] [data-part='item-indicator']:empty::before {
     animation: none;
   }
 
@@ -387,7 +387,7 @@
       display: none;
     }
 
-    [data-scope='notification'][data-part='item'][data-type='loading'] [data-part='item-indicator']:empty::before {
+    [data-scope='notification'][data-part='item'][data-severity='loading'] [data-part='item-indicator']:empty::before {
       animation: none;
     }
   }

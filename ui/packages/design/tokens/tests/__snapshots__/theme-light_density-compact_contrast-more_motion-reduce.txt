@@ -138,6 +138,7 @@
 --xh-list-option-py-lg: 6px  ← var(--xh-space-1_5)
 --xh-list-option-py-md: 4px  ← var(--xh-space-1)
 --xh-list-option-py-sm: 2px  ← var(--xh-space-0_5)
+--xh-measure-prose: 32rem
 --xh-motion-distance-md: 0px
 --xh-motion-distance-sm: 0px
 --xh-motion-duration-enter: 1ms

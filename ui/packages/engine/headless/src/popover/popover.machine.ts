@@ -172,6 +172,9 @@ export const popoverMachine = createMachine({
           // 每次求值都现查，content 仍带 hidden 的那一帧返回 null，焦点域会自行重试到 DOM 就位
           initialFocus: () => refs.get('getInitialFocusEl')(),
           restoreFocus: () => context.get('returnFocus'),
+          // 归还落点显式给锚点：指针打开那一刻焦点未必真在它身上（Safari 点按不给按钮焦点），
+          // 靠焦点域的创建前快照会把 Escape 之后的 Tab 起点丢到 body 上
+          restoreTarget: () => refs.get('getAnchorEl')(),
         })
 
         // 逆序拆：先撤依赖层的两个订阅，最后才把层本身移出栈

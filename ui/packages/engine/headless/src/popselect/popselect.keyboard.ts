@@ -13,7 +13,7 @@ export const popselectKeyboard: KeyboardTable = {
     { id: 'popselect.kbd.prev', keys: ['ArrowUp'], when: 'focus in content', does: '焦点移到上一个可停留条目（禁用项跳过、尽头按 loop 回绕）' },
     { id: 'popselect.kbd.first', keys: ['Home'], when: 'focus in content', does: '焦点移到首个可停留条目' },
     { id: 'popselect.kbd.last', keys: ['End'], when: 'focus in content', does: '焦点移到末个可停留条目' },
-    { id: 'popselect.kbd.select', keys: ['Enter', 'Space'], when: 'focus in content, 单选', does: '选中焦点条目并收起浮层，焦点归还触发器；条目禁用则不认' },
+    { id: 'popselect.kbd.select', keys: ['Enter', 'Space'], when: 'focus in content, 单选', does: '选中焦点条目并收起浮层，焦点归还触发器；条目禁用则不认', restoresFocus: true },
     { id: 'popselect.kbd.toggle', keys: ['Enter', 'Space'], when: 'focus in content, multiple', does: '切换焦点条目的选中态，浮层保持展开继续挑' },
     { id: 'popselect.kbd.typeahead', keys: ['单个可打印字符'], when: 'focus in content, typeahead 未关', does: '连打检索把焦点移到首字母匹配的条目，不落值' },
     { id: 'popselect.kbd.clear', keys: ['Delete'], when: 'focus on trigger, 有选中值, not disabled', does: '清空全部选中，浮层开合不变' },

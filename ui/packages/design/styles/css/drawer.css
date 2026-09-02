@@ -371,7 +371,7 @@
 
   [data-scope='drawer'][data-part='description'] {
     margin: 0;
-    font-size: var(--xh-text-body-size);
+    font-size: var(--xh-drawer-description-font-size, var(--xh-text-body-size));
     color: var(--xh-drawer-description-fg, var(--xh-fg-muted));
   }
 

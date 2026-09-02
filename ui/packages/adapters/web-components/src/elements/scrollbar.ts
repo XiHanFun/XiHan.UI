@@ -45,7 +45,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @fires scroll-end - 一段滚动结束（停手 120ms）；detail 同上
  * @fires drag-start - 按住滑块；detail 同上
  * @fires drag-end - 松开滑块；detail 同上
- * @csspart root - 定位盒与指针热区，承载 data-orientation / data-type / data-state / data-scrolling / data-dragging / data-size / data-gutter / data-native；收起走 data-state=hidden 由皮肤淡出
+ * @csspart root - 定位盒与指针热区，承载 data-orientation / data-reveal-mode / data-state / data-scrolling / data-dragging / data-size / data-gutter / data-native；收起走 data-state=hidden 由皮肤淡出
  * @csspart track - 量长度的那条轨，点空白处把滑块中心挪过去
  * @csspart thumb - 滑块，位置与长度由内联逻辑属性给出；按住可拖，focusable 时可聚焦并吃方向键
  * @csspart corner - 交叉口补丁（可选），写在根里、贴在本条末端之外那一格，跟着本条显隐

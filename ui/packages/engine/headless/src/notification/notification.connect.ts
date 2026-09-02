@@ -151,7 +151,7 @@ export function connectNotificationItem<T extends PropTypes>(
       'aria-atomic': 'true',
       'aria-labelledby': ids.title,
       'aria-describedby': ids.description,
-      'data-type': type,
+      'data-severity': type,
       // 语气轴只挂在卡片上，子部件靠继承拿到语气槽
       'data-tone': toneOf(type),
       'data-state': status,

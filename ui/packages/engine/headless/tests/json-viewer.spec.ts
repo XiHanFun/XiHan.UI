@@ -445,9 +445,9 @@ describe('connectJsonViewer ARIA 与层级', () => {
     expect(name.textContent).toBe('name"xihan"')
   })
 
-  it('每一行带 data-type，六种值形态各自可上色', () => {
+  it('每一行带 data-value-type，六种值形态各自可上色', () => {
     const h = mount()
-    const typeOf = (p: string): string | null => h.row(p).host.getAttribute('data-type')
+    const typeOf = (p: string): string | null => h.row(p).host.getAttribute('data-value-type')
     expect(typeOf(path('name'))).toBe('string')
     expect(typeOf(path('count'))).toBe('number')
     expect(typeOf(path('ok'))).toBe('boolean')

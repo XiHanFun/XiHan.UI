@@ -51,7 +51,7 @@ describe('xh-notification-item 的角色节点', () => {
     expect(item.getAttribute('role')).toBe('status')
     expect(item.getAttribute('aria-live')).toBe('polite')
     expect(item.getAttribute('aria-atomic')).toBe('true')
-    expect(item.getAttribute('data-type')).toBe('info')
+    expect(item.getAttribute('data-severity')).toBe('info')
     expect(item.getAttribute('data-tone')).toBe('info')
     expect(item.getAttribute('data-state')).toBe('visible')
 

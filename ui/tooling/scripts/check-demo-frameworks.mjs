@@ -6,7 +6,10 @@
 // 唯一不变的那句话——两边一旦漂开，同一个示例就成了两份文档。
 //
 // 三条硬判据：首行逐字一致、每个示例都有规范来源框架的那份、目录里不出现未登记的扩展名。
-// 「每个示例都要备齐全部框架」暂时只报覆盖率，打开 REQUIRE_ALL 才升成失败。
+//
+// 第四条「每个示例都要备齐全部框架」不在硬判据里，只报覆盖率：Vue 侧每个示例都有，
+// Web Components 侧还有一批没有 .html 版，具体覆盖率见本脚本的输出行。
+// 置 XH_DEMO_REQUIRE_ALL_FRAMEWORKS=1 把缺席逐条升成失败，缺几条就红几条。
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
@@ -14,7 +17,7 @@ const DEMOS_DIR = '../docs/.vitepress/demos'
 const TABLE = 'scripts/demo-frameworks.json'
 // 示例的规范来源：缺这份就是没有基准
 const SPEC = 'vue'
-// 各框架示例补齐之前，缺席只报数不算失败
+// 缺席默认只报数：置 1 之后每个缺席的框架版本各报一条
 const REQUIRE_ALL = process.env.XH_DEMO_REQUIRE_ALL_FRAMEWORKS === '1'
 
 const { frameworks } = JSON.parse(await readFile(TABLE, 'utf8'))

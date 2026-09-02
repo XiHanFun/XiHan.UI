@@ -231,7 +231,7 @@
   [data-scope='combobox'][data-part='control']:has([data-part='input'][data-multiline]) {
     align-items: start;
     block-size: auto;
-    padding-block: var(--xh-combobox-input-py, var(--xh-field-py));
+    padding-block: var(--xh-combobox-control-py, var(--xh-field-py));
   }
 
   [data-scope='combobox'][data-part='input'][data-multiline] {

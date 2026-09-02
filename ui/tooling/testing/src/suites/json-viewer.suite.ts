@@ -123,7 +123,7 @@ export const jsonViewerSuite: ConformanceSuite = {
             // 根行没有键名，用文案里的称呼
             'aria-label': 'root',
             'data-value': ROOT,
-            'data-type': 'object',
+            'data-value-type': 'object',
             'data-state': 'open',
             'data-highlighted': null,
             'tabindex': '-1',
@@ -138,10 +138,10 @@ export const jsonViewerSuite: ConformanceSuite = {
             // 收起时成员数折进名字：括号摘要那个部件对读屏是隐藏的
             'aria-label': 'tags, 1 item',
             'data-value': TAGS,
-            'data-type': 'array',
+            'data-value-type': 'array',
             'data-state': 'closed',
           },
-          'branch[2]': { 'aria-label': 'meta, 1 item', 'data-value': META, 'data-type': 'object' },
+          'branch[2]': { 'aria-label': 'meta, 1 item', 'data-value': META, 'data-value-type': 'object' },
           'branch-content': { role: 'group' },
           // 展开箭头只是重复了分支自己的语义：退出可及树。
           // 它铺成 span，本来就不在 Tab 序列里，绝不能再给 tabindex——
@@ -159,13 +159,13 @@ export const jsonViewerSuite: ConformanceSuite = {
             // 也不另给 aria-label：那会盖掉值本身，只剩键名念得出来
             'aria-label': null,
             'data-value': NAME,
-            'data-type': 'string',
+            'data-value-type': 'string',
             'tabindex': '-1',
             'disabled': null,
           },
-          'item[1]': { 'data-value': COUNT, 'data-type': 'number', 'aria-posinset': '2' },
-          'item-value[0]': { 'data-type': 'string' },
-          'item-value[1]': { 'data-type': 'number' },
+          'item[1]': { 'data-value': COUNT, 'data-value-type': 'number', 'aria-posinset': '2' },
+          'item-value[0]': { 'data-value-type': 'string' },
+          'item-value[1]': { 'data-value-type': 'number' },
         },
         activeElement: null,
       },
@@ -413,7 +413,7 @@ export const jsonViewerSuite: ConformanceSuite = {
         counts: { item: 3 },
         parts: {
           'item[0]': { 'aria-posinset': '1', 'aria-setsize': '3', 'data-truncated': null },
-          'item[2]': { 'aria-posinset': '3', 'aria-setsize': '3', 'data-truncated': '', 'data-type': 'array' },
+          'item[2]': { 'aria-posinset': '3', 'aria-setsize': '3', 'data-truncated': '', 'data-value-type': 'array' },
         },
       },
     },

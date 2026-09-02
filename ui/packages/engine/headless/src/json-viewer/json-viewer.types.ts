@@ -2,7 +2,7 @@ import type { Direction, PropTypes, Size } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 
 /**
- * 值的类型标签，直接落到 data-type 上供皮肤逐类型上色。
+ * 值的类型标签，直接落到 data-value-type 上供皮肤逐类型上色。
  * 六个取值覆盖 JSON 能表达的全部形状；JSON 之外的值归到最接近的那一档：
  * undefined 归 null，bigint 归 number，函数与 symbol 归 string。
  */

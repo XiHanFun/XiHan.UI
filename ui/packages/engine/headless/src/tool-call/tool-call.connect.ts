@@ -39,11 +39,12 @@ export function connectToolCall<T extends PropTypes>(
     durationMs: toolCallDuration(props.startTime, props.endTime),
     setOpen,
 
-    // 不发 aria-busy：它会压住同一棵子树内播报区的播报，而全族只认会话级的那一个活区
+    // 不发 aria-busy：它会压住同一棵子树内播报区的播报，而全族只认会话级的那一个活区。
+    // 根上的 data-state 是开合：阶段与开合是两条正交的轴，一个属性只装得下一条，
+    // 展开与否是折叠件根上通用的那一条，阶段落在下面各部件的 data-state 上
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'data-state': stateAttr,
-      'data-phase': phase,
       'data-tone': props.tone,
       'data-size': props.size,
       'data-disabled': dataAttr(disabled),
@@ -61,7 +62,6 @@ export function connectToolCall<T extends PropTypes>(
       // 单体控件用原生 disabled，只留 data-disabled 的话禁用态只是样式
       'disabled': disabled || undefined,
       'data-state': stateAttr,
-      'data-phase': phase,
       'data-disabled': dataAttr(disabled),
       'onClick': () => {
         if (!disabled)
@@ -80,31 +80,31 @@ export function connectToolCall<T extends PropTypes>(
     // 各自都不另开活区
     getNameProps: () => normalize.element({
       ...parts.name.attrs,
-      'data-phase': phase,
+      'data-state': phase,
     }),
 
     // 一行参数摘要，排在工具名之后：详情收起时也看得见这次查的是什么
     getSummaryProps: () => normalize.element({
       ...parts.summary.attrs,
-      'data-phase': phase,
+      'data-state': phase,
     }),
 
     getStatusProps: () => normalize.element({
       ...parts.status.attrs,
-      'data-phase': phase,
+      'data-state': phase,
     }),
 
     // 秒数由宿主现场代入 ranFor 模板串，这一格只负责排版与阶段
     getDurationProps: () => normalize.element({
       ...parts.duration.attrs,
-      'data-phase': phase,
+      'data-state': phase,
       'data-loading': dataAttr(running),
     }),
 
     // 常驻在 trigger 与 content 之间：审批闸门不该被折叠藏起来
     getApprovalProps: () => normalize.element({
       ...parts.approval.attrs,
-      'data-phase': phase,
+      'data-state': phase,
       'hidden': phase !== 'awaiting-approval' || undefined,
     }),
 
@@ -122,19 +122,19 @@ export function connectToolCall<T extends PropTypes>(
 
     getInputProps: () => normalize.element({
       ...parts.input.attrs,
-      'data-phase': phase,
+      'data-state': phase,
     }),
 
     getOutputProps: () => normalize.element({
       ...parts.output.attrs,
-      'data-phase': phase,
+      'data-state': phase,
     }),
 
     // 流被中止时未拿到结果的工具会被收尾成出错态且不带错误文本，这一格要容忍空内容
     getErrorProps: () => normalize.element({
       ...parts.error.attrs,
       'id': ids.error,
-      'data-phase': phase,
+      'data-state': phase,
     }),
   }
 }

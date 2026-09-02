@@ -169,7 +169,7 @@ export const scrollAreaSuite: ConformanceSuite = {
             // 作者没给就不写：写死 ltr 会切断从 RTL 祖先继承来的方向，滑块用的全是逻辑属性
             'dir': null,
             'data-orientation': 'both',
-            'data-type': 'always',
+            'data-reveal-mode': 'always',
             'data-dragging': null,
           },
           // 滚动区里可能一个可聚焦元素都没有，不给 Tab 位键盘用户就落不进来；
@@ -180,7 +180,7 @@ export const scrollAreaSuite: ConformanceSuite = {
             'aria-hidden': 'true',
             'role': null,
             'data-orientation': 'vertical',
-            'data-type': 'always',
+            'data-reveal-mode': 'always',
             'data-state': 'visible',
             'data-dragging': null,
             // 两条都显形：各自让出交叉口
@@ -205,7 +205,7 @@ export const scrollAreaSuite: ConformanceSuite = {
       spec: { apg: WCAG },
       initial: {
         parts: {
-          'root': { 'data-type': 'scroll-hover' },
+          'root': { 'data-reveal-mode': 'scroll-hover' },
           'viewport': { 'data-lane-vertical': null, 'data-lane-horizontal': null },
           'scrollbar[0]': { 'data-state': 'hidden', 'data-gutter': null },
           'scrollbar[1]': { 'data-state': 'hidden' },

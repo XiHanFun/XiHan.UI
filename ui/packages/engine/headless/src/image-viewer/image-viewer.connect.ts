@@ -30,7 +30,7 @@ export function connectImageViewer<T extends PropTypes>(
   const canPrev = count > 1 && (loop || index > 0)
   const canNext = count > 1 && (loop || index < count - 1)
   const stateAttr = open ? 'open' : 'closed'
-  const ids = scope.ids('image-viewer', 'content')
+  const ids = scope.ids('image-viewer', 'trigger', 'content')
 
   const translations = prop('translations')
   const label = {
@@ -85,6 +85,7 @@ export function connectImageViewer<T extends PropTypes>(
 
     getTriggerProps: () => normalize.button({
       ...parts.trigger.attrs,
+      'id': ids.trigger,
       'type': 'button',
       'aria-haspopup': 'dialog',
       'aria-expanded': open ? 'true' : 'false',

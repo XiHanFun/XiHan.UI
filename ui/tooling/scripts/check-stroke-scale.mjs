@@ -10,13 +10,14 @@
 // 令牌 --xh-ring-width（焦点环宽度另有一档）/ thin|medium|thick 关键字不在允许之列。
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
+import { declarations, lineCounter, stripComments } from './lib/css-declarations.mjs'
 
 const STYLES_DIR = 'packages/design/styles/css'
 
 /** 简写属性：值里第一个长度就是宽度位。 */
-const SHORTHAND = /^\s*(border(?:-(?:block|inline)(?:-(?:start|end))?|-(?:top|right|bottom|left))?|outline):([^;]+);/
+const SHORTHAND = /^(?:border(?:-(?:block|inline)(?:-(?:start|end))?|-(?:top|right|bottom|left))?|outline)$/
 /** 长属性。 */
-const LONGHAND = /^\s*(border(?:-(?:block|inline)(?:-(?:start|end))?|-(?:top|right|bottom|left))?-width|outline-width):([^;]+);/
+const LONGHAND = /^(?:border(?:-(?:block|inline)(?:-(?:start|end))?|-(?:top|right|bottom|left))?-width|outline-width)$/
 /**
  * 宽度位允许的形态：0、描边令牌、焦点环宽、组件槽包着令牌、私有槽，以及把令牌按比例缩放的 calc
  * （图片裁切的取景框随缩放倍率反向缩，描边才在屏幕上恒为一像素）。装饰色条的宽度不是描边，走间距令牌。
@@ -54,23 +55,22 @@ function widthOf(value) {
 }
 
 for (const file of files) {
-  const src = (await readFile(join(STYLES_DIR, file), 'utf8')).replace(/\/\*[\s\S]*?\*\//g, '')
-  src.split('\n').forEach((line, i) => {
+  const src = stripComments(await readFile(join(STYLES_DIR, file), 'utf8'))
+  const lineOf = lineCounter(src)
+  for (const { prop, value, index } of declarations(src)) {
     let width = null
-    const long = line.match(LONGHAND)
-    const short = long ? null : line.match(SHORTHAND)
-    if (long)
-      width = long[2].trim()
-    else if (short)
-      width = widthOf(short[2])
+    if (LONGHAND.test(prop))
+      width = value
+    else if (SHORTHAND.test(prop))
+      width = widthOf(value)
     if (width == null)
-      return
+      continue
     if (/^none$/.test(width) || width === 'inherit' || width === 'transparent' || width === 'currentColor')
-      return
+      continue
     checked++
     if (!OK_WIDTH.test(width))
-      problems.push(`${file}:${i + 1}  ${line.trim()}`)
-  })
+      problems.push(`${file}:${lineOf(index)}  ${prop}: ${value}`)
+  }
 }
 
 if (problems.length) {

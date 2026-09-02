@@ -173,25 +173,25 @@
     text-overflow: ellipsis;
   }
 
-  [data-scope='json-viewer'][data-part='item-value'][data-type='string'] {
+  [data-scope='json-viewer'][data-part='item-value'][data-value-type='string'] {
     color: var(--xh-json-viewer-string-fg);
   }
 
-  [data-scope='json-viewer'][data-part='item-value'][data-type='number'] {
+  [data-scope='json-viewer'][data-part='item-value'][data-value-type='number'] {
     color: var(--xh-json-viewer-number-fg);
   }
 
-  [data-scope='json-viewer'][data-part='item-value'][data-type='boolean'] {
+  [data-scope='json-viewer'][data-part='item-value'][data-value-type='boolean'] {
     color: var(--xh-json-viewer-boolean-fg);
   }
 
-  [data-scope='json-viewer'][data-part='item-value'][data-type='null'] {
+  [data-scope='json-viewer'][data-part='item-value'][data-value-type='null'] {
     color: var(--xh-json-viewer-null-fg);
   }
 
   /* 空对象与空数组只剩一对括号，跟标点同色 */
-  [data-scope='json-viewer'][data-part='item-value'][data-type='array'],
-  [data-scope='json-viewer'][data-part='item-value'][data-type='object'] {
+  [data-scope='json-viewer'][data-part='item-value'][data-value-type='array'],
+  [data-scope='json-viewer'][data-part='item-value'][data-value-type='object'] {
     color: var(--xh-json-viewer-punctuation-fg);
   }
 
