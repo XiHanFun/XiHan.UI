@@ -51,11 +51,13 @@
       border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
-  [data-scope='button'][data-part='root']:hover {
+  /* 置灰与挂起都要挡掉悬停/按下的换底：挂起走的是 aria-disabled 而非原生 disabled，
+     :hover 与 :active 照样命中；原生 disabled 的那颗浏览器也仍然给 :hover */
+  [data-scope='button'][data-part='root']:not([data-disabled]):not([data-loading]):hover {
     background: var(--xh-_bg-hover);
   }
 
-  [data-scope='button'][data-part='root']:active {
+  [data-scope='button'][data-part='root']:not([data-disabled]):not([data-loading]):active {
     background: var(--xh-_bg-active);
   }
 

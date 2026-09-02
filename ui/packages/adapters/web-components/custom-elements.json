@@ -37556,6 +37556,9 @@
               "name": "--xh-signature-pad-clear-radius"
             },
             {
+              "name": "--xh-signature-pad-control-border-invalid"
+            },
+            {
               "name": "--xh-signature-pad-gap"
             },
             {
@@ -39261,6 +39264,9 @@
           "tagName": "xh-splitter",
           "customElement": true,
           "cssProperties": [
+            {
+              "name": "--xh-splitter-disabled-opacity"
+            },
             {
               "name": "--xh-splitter-radius"
             },

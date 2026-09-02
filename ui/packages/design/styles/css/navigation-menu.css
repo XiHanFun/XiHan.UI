@@ -138,7 +138,9 @@
     display: none;
   }
 
-  [data-scope='navigation-menu'][data-part='trigger']:hover {
+  /* 禁用项带的是 aria-disabled 而非原生 disabled，:hover 照样命中；
+     不挡掉的话置灰的那一项悬停仍会换底 */
+  [data-scope='navigation-menu'][data-part='trigger']:not([data-disabled]):hover {
     background: var(--xh-navigation-menu-trigger-bg-hover, var(--xh-_navigation-menu-highlight-bg));
   }
 
@@ -149,8 +151,9 @@
 
   /* 展开着的那一张是打开路径，走品牌淡底强档：哪一张开着必须一眼看得出来。
      不加粗：横排的栏加粗会推挤相邻触发器。
-     必须排在轻档之后：指针回到它身上时同特指度靠书写顺序压过轻档 */
-  [data-scope='navigation-menu'][data-part='trigger'][data-state='open'] {
+     必须排在轻档之后：指针回到它身上时同特指度靠书写顺序压过轻档，
+     所以禁用守卫要与轻档那条一样带上，缺了它特指度就低一档、压不住 */
+  [data-scope='navigation-menu'][data-part='trigger']:not([data-disabled])[data-state='open'] {
     background: var(--xh-navigation-menu-trigger-bg-active, var(--xh-_navigation-menu-active-bg));
   }
 

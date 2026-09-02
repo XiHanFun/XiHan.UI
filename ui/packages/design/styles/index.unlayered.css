@@ -1768,6 +1768,15 @@
   box-shadow: var(--xh-floating-panel-shadow, var(--xh-elevation-sheet));
 }
 
+/* 最大化时几何层把面板写成铺满视口（left/top 归零、宽高 100%），四条边全贴着视口：
+   圆角会在四角把底下的页面露出来，描边缩成一圈贴边的多余框线，投影整块落在视口之外。
+   三样一起撤，与抽屉贴住视口的那条边不圆角是同一回事。 */
+[data-scope='floating-panel'][data-part='content'][data-stage='maximized'] {
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
 [data-scope='floating-panel'][data-part='content'][hidden] {
   display: none;
 }
@@ -3901,6 +3910,7 @@
   --xh-_list-item-px: var(--xh-list-item-px-lg);
   --xh-_list-item-gap: var(--xh-space-4);
   --xh-_list-title-size: var(--xh-control-font-lg);
+  --xh-_list-description-size: var(--xh-control-caption-lg);
 }
 
 /* —— 外框 —— */
@@ -3936,7 +3946,7 @@
 /* 悬停换底色：只在能用指针的设备上生效，触摸端不留一个按不掉的悬停态 */
 @media (hover: hover) {
   [data-scope='list'][data-part='root'][data-hoverable] > [data-scope='list'][data-part='item']:hover {
-    background: var(--xh-list-item-bg-hover, var(--xh-bg-subtle-hover));
+    background: var(--xh-list-item-bg-hover, var(--xh-bg-subtle));
   }
 }
 
@@ -7186,7 +7196,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='signature-pad'][data-part='control'][data-invalid] {
-  border-color: var(--xh-border-invalid);
+  border-color: var(--xh-signature-pad-control-border-invalid, var(--xh-border-invalid));
 }
 
 /* 落笔期间把描边压深一档。border-strong 是装饰梯度里的一档，比 border-control 更淡，
@@ -8992,7 +9002,9 @@ input[data-scope='mention'][data-part='input'] {
   cursor: pointer;
 }
 
-[data-scope='accordion'][data-part='trigger']:hover {
+/* 禁用条目带的是 aria-disabled 而非原生 disabled，:hover 照样命中；
+   不挡掉的话置灰的那一条悬停仍会换底 */
+[data-scope='accordion'][data-part='trigger']:not([data-disabled]):hover {
   background: var(--xh-accordion-trigger-bg-hover, var(--xh-bg-subtle));
 }
 
@@ -9358,7 +9370,9 @@ input[data-scope='mention'][data-part='input'] {
   display: none;
 }
 
-[data-scope='approval'][data-part='scope-item']:hover {
+/* 禁用项带的是 aria-disabled 而非原生 disabled，:hover 照样命中；
+   不挡掉的话已落定或置灰的那一条悬停仍会换底 */
+[data-scope='approval'][data-part='scope-item']:not([data-disabled]):hover {
   background: var(--xh-approval-scope-bg-hover, var(--xh-bg-subtle-hover));
 }
 
@@ -9551,11 +9565,13 @@ input[data-scope='mention'][data-part='input'] {
   box-shadow: var(--xh-approval-approve-shadow, var(--xh-_approval-approve-highlight));
 }
 
-[data-scope='approval'][data-part='approve-trigger']:hover {
+/* 两道守卫缺一不可：判定在途走 aria-disabled（保住可聚焦），落定后才换成原生 disabled，
+   而浏览器对原生 disabled 的按钮照样给 :hover */
+[data-scope='approval'][data-part='approve-trigger']:not([aria-disabled='true']):not(:disabled):hover {
   background: var(--xh-approval-approve-bg-hover, var(--xh-_tone-hover, var(--xh-bg-brand-hover)));
 }
 
-[data-scope='approval'][data-part='approve-trigger']:active {
+[data-scope='approval'][data-part='approve-trigger']:not([aria-disabled='true']):not(:disabled):active {
   scale: var(--xh-motion-scale-press);
 }
 
@@ -9574,23 +9590,21 @@ input[data-scope='mention'][data-part='input'] {
   color: var(--xh-approval-deny-fg, var(--xh-fg-default));
 }
 
-[data-scope='approval'][data-part='deny-trigger']:hover {
+/* 守卫与批准那颗同构：在途是 aria-disabled，落定是原生 disabled，两者浏览器都照给 :hover */
+[data-scope='approval'][data-part='deny-trigger']:not([aria-disabled='true']):not(:disabled):hover {
   background: var(--xh-approval-deny-bg-hover, var(--xh-bg-subtle-hover));
 }
 
-[data-scope='approval'][data-part='deny-trigger']:active {
+[data-scope='approval'][data-part='deny-trigger']:not([aria-disabled='true']):not(:disabled):active {
   scale: var(--xh-motion-scale-press);
 }
 
 /* 判定在途时拒绝也按不动了，用 aria-disabled 而不是原生 disabled：保住可聚焦，
-   让读屏念得到为什么按不动。所以置灰要按这个属性写。
-   排在 :hover / :active 之后：三条选择器特指度相同，靠书写顺序压过它们，
-   否则悬停时这颗看着仍然是可按的 */
+   让读屏念得到为什么按不动。所以置灰要按这个属性写 */
 [data-scope='approval'][data-part='deny-trigger'][aria-disabled='true'] {
   border-color: var(--xh-approval-deny-border-off, var(--xh-border-default));
   background: var(--xh-approval-deny-bg-off, transparent);
   color: var(--xh-fg-disabled);
-  scale: 1;
   cursor: not-allowed;
 }
 
@@ -10037,11 +10051,13 @@ input[data-scope='mention'][data-part='input'] {
     border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
-[data-scope='button'][data-part='root']:hover {
+/* 置灰与挂起都要挡掉悬停/按下的换底：挂起走的是 aria-disabled 而非原生 disabled，
+   :hover 与 :active 照样命中；原生 disabled 的那颗浏览器也仍然给 :hover */
+[data-scope='button'][data-part='root']:not([data-disabled]):not([data-loading]):hover {
   background: var(--xh-_bg-hover);
 }
 
-[data-scope='button'][data-part='root']:active {
+[data-scope='button'][data-part='root']:not([data-disabled]):not([data-loading]):active {
   background: var(--xh-_bg-active);
 }
 
@@ -10618,7 +10634,7 @@ input[data-scope='mention'][data-part='input'] {
   line-height: var(--xh-leading-tight);
 }
 
-[data-scope='card'][data-part='root'][data-size='lg'] [data-part='title'] {
+[data-scope='card'][data-part='root'][data-size='lg'] [data-scope='card'][data-part='title'] {
   font-size: var(--xh-card-title-font-size, var(--xh-control-font-lg));
 }
 
@@ -10634,7 +10650,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 /* 头与身相邻时，头已经收窄了下边距，身不必再从顶上留一份 */
-[data-scope='card'][data-part='header'] + [data-part='body'] {
+[data-scope='card'][data-part='header'] + [data-scope='card'][data-part='body'] {
   padding-block-start: var(--xh-card-body-pt, var(--xh-space-2));
 }
 
@@ -10648,13 +10664,13 @@ input[data-scope='mention'][data-part='input'] {
 
 /* —— 分段 —— */
 /* 分隔线画在下一段的上边，段与段之间才只有一条 */
-[data-scope='card'][data-part='root'][data-segmented] [data-part='body'],
-[data-scope='card'][data-part='root'][data-segmented] [data-part='footer'] {
+[data-scope='card'][data-part='root'][data-segmented] [data-scope='card'][data-part='body'],
+[data-scope='card'][data-part='root'][data-segmented] [data-scope='card'][data-part='footer'] {
   border-block-start: var(--xh-stroke-thin) solid var(--xh-card-divider, var(--xh-border-subtle));
   padding-block-start: var(--xh-_card-pad);
 }
 
-[data-scope='card'][data-part='root'][data-segmented] [data-part='header'] {
+[data-scope='card'][data-part='root'][data-segmented] [data-scope='card'][data-part='header'] {
   padding-block-end: var(--xh-_card-pad);
 }
 
@@ -11436,7 +11452,6 @@ input[data-scope='mention'][data-part='input'] {
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
   mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
-  font-weight: var(--xh-font-weight-semibold);
 }
 
 [data-scope='cascader'][data-part='item-indicator'][data-disabled] {
@@ -15141,6 +15156,9 @@ input[data-scope='mention'][data-part='input'] {
   animation: xh-fade-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
 }
 
+/* 连接层发的 data-position 恒是 center，没有别的取值：对话框还没有 position 这个
+   使用者入参。要按 data-position 分档（顶部对齐之类）得先补上那个入参，
+   否则规则写了也永不命中 */
 [data-scope='dialog'][data-part='positioner'] {
   position: fixed;
   inset: 0;
@@ -15149,10 +15167,6 @@ input[data-scope='mention'][data-part='input'] {
   align-items: center;
   justify-content: center;
   padding: var(--xh-dialog-positioner-padding, var(--xh-space-4));
-}
-
-[data-scope='dialog'][data-part='positioner'][data-position='top'] {
-  align-items: flex-start;
 }
 
 [data-scope='dialog'][data-part='content'] {
@@ -16067,7 +16081,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 /* 必填星号：跟着根上的 data-required 亮，选填不标 */
-[data-scope='field'][data-part='root'][data-required] [data-part='label']::after {
+[data-scope='field'][data-part='root'][data-required] > [data-scope='field'][data-part='label']::after {
   content: var(--xh-glyph-mark-required);
   margin-inline-start: var(--xh-space-1);
   color: var(--xh-field-label-star, var(--xh-fg-danger));
@@ -18568,7 +18582,9 @@ input[data-scope='mention'][data-part='input'] {
   display: none;
 }
 
-[data-scope='navigation-menu'][data-part='trigger']:hover {
+/* 禁用项带的是 aria-disabled 而非原生 disabled，:hover 照样命中；
+   不挡掉的话置灰的那一项悬停仍会换底 */
+[data-scope='navigation-menu'][data-part='trigger']:not([data-disabled]):hover {
   background: var(--xh-navigation-menu-trigger-bg-hover, var(--xh-_navigation-menu-highlight-bg));
 }
 
@@ -18579,8 +18595,9 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 展开着的那一张是打开路径，走品牌淡底强档：哪一张开着必须一眼看得出来。
    不加粗：横排的栏加粗会推挤相邻触发器。
-   必须排在轻档之后：指针回到它身上时同特指度靠书写顺序压过轻档 */
-[data-scope='navigation-menu'][data-part='trigger'][data-state='open'] {
+   必须排在轻档之后：指针回到它身上时同特指度靠书写顺序压过轻档，
+   所以禁用守卫要与轻档那条一样带上，缺了它特指度就低一档、压不住 */
+[data-scope='navigation-menu'][data-part='trigger']:not([data-disabled])[data-state='open'] {
   background: var(--xh-navigation-menu-trigger-bg-active, var(--xh-_navigation-menu-active-bg));
 }
 
@@ -19654,10 +19671,11 @@ input[data-scope='mention'][data-part='input'] {
   display: none;
 }
 
-/* 三个按钮共用的可点观感：默认透明底，只有交互与当前页才上色 */
+/* 四个按钮共用的可点观感：默认透明底，只有交互与当前页才上色 */
 [data-scope='pagination'][data-part='prev-trigger'],
 [data-scope='pagination'][data-part='next-trigger'],
-[data-scope='pagination'][data-part='item'] {
+[data-scope='pagination'][data-part='item'],
+[data-scope='pagination'][data-part='ellipsis'] {
   background: var(--xh-pagination-item-bg, transparent);
   color: var(--xh-pagination-item-fg, var(--xh-fg-default));
   font-weight: var(--xh-pagination-item-font-weight, var(--xh-text-label-weight));
@@ -19685,7 +19703,8 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='pagination'][data-part='prev-trigger']:focus-visible,
 [data-scope='pagination'][data-part='next-trigger']:focus-visible,
-[data-scope='pagination'][data-part='item']:focus-visible {
+[data-scope='pagination'][data-part='item']:focus-visible,
+[data-scope='pagination'][data-part='ellipsis']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
   outline-offset: var(--xh-ring-offset);
 }
@@ -19719,12 +19738,11 @@ input[data-scope='mention'][data-part='input'] {
   background: var(--xh-pagination-item-bg-selected-active, var(--xh-_pagination-selected-bg-active));
 }
 
-/* 省略号是纯视觉占位，读屏那边已被 aria-hidden 摘掉：
-   吞掉指针事件，免得它出现悬停反馈、看起来像一颗点得动的按钮 */
+/* 省略位是可展开的按钮：折进去的那几页只有它一个入口，指针与键盘都得点得到，
+   所以它跟着上面几组一起吃可点观感与聚焦环。这里只把字色压淡一档，
+   与页码区分开——同权重且排在可点观感组之后，压得住那条 color */
 [data-scope='pagination'][data-part='ellipsis'] {
   color: var(--xh-pagination-ellipsis-fg, var(--xh-fg-subtle));
-  cursor: default;
-  pointer-events: none;
 }
 /* 每页条数控制器：原生 select，抹掉系统外观后与页码格子共用同一副骨架。
    箭头用背景图而非伪元素——原生 select 不生成 ::before */
@@ -21343,6 +21361,9 @@ input[data-scope='mention'][data-part='input'] {
    （轨道与滑块的皮仍归 scrollbar 那一份）。滑块主轴的起点与长度由连接层写进内联样式，这里不碰。 */
 [data-scope='scroll-area'][data-part='scrollbar'] {
   position: absolute;
+  /* 浮层的 positioner 一律 pointer-events: none，条子作为它的子节点会继承到，拖不动也点不着；
+     收起态那条规则优先级更高，仍旧穿透 */
+  pointer-events: auto;
   /* touch-action 关掉浏览器自己的手势：不关的话手指一按滑块页面就跟着滚，
      指针随即被系统收走（pointercancel），拖到一半的滑块停在原地。
      user-select 同理——拖动时选中页面文字会让滑块"粘"住。 */
@@ -22806,7 +22827,9 @@ input[data-scope='mention'][data-part='input'] {
   border-inline: var(--xh-stroke-thin) solid currentColor;
 }
 
-[data-scope='sortable'][data-part='item-handle']:hover {
+/* 抓手禁用走 aria-disabled 而非原生 disabled（宿主未必是 <button>），:hover 照样命中；
+   不挡掉的话拖不动的那颗悬停仍会换底 */
+[data-scope='sortable'][data-part='item-handle']:not([aria-disabled='true']):hover {
   background: var(--xh-sortable-handle-bg-hover, var(--xh-bg-subtle-hover));
   color: var(--xh-sortable-handle-fg-hover, var(--xh-fg-default));
 }
@@ -22879,9 +22902,12 @@ input[data-scope='mention'][data-part='input'] {
   outline: none;
 }
 
-/* 禁用的整体压暗只做一次，落在最外层：面板与分隔条各自再叠一层 opacity 会越叠越黑 */
+/* 禁用的整体压暗只做一次，落在最外层：面板与分隔条各自再叠一层 opacity 会越叠越黑。
+   这一档压的是宿主塞进面板里的正文，不是控件自己的图形，所以地板比 --xh-state-disabled-opacity
+   高：那一档是 0.5，黑字白底压完只有 3.94:1，读不出字。压暗仍要表达「这块动不了」，
+   所以留一个槽让使用者按自己的配色调，而不是直接不压。 */
 [data-scope='splitter'][data-part='root'][data-disabled] {
-  opacity: 0.6;
+  opacity: var(--xh-splitter-disabled-opacity, 0.6);
 }
 
 /* 拖动期间整块不许选中文字：手在分隔条上来回蹭时会顺带把两侧的正文刷成高亮 */
@@ -24345,7 +24371,9 @@ input[data-scope='mention'][data-part='input'] {
   transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
-[data-scope='tabs'][data-part='trigger']:hover {
+/* 禁用项带的是 aria-disabled 而非原生 disabled，:hover 照样命中；
+   不挡掉的话置灰的那一页悬停仍会换底，看着还能点 */
+[data-scope='tabs'][data-part='trigger']:not([data-disabled]):hover {
   background: var(--xh-tabs-trigger-bg-hover, var(--xh-bg-subtle-hover));
 }
 
@@ -24361,9 +24389,9 @@ input[data-scope='mention'][data-part='input'] {
   box-shadow: var(--xh-tabs-trigger-shadow-active, var(--xh-_tabs-trigger-shadow-active));
 }
 
-/* 选中项被悬停：上面那条与常态 :hover 特异度相同，谁写在后面谁赢，
-   不单列一条的话选中项的悬停底会被形态档的选中底吃掉 */
-[data-scope='tabs'][data-part='trigger'][data-state='active']:hover {
+/* 选中项被悬停：常态 :hover 那条带着禁用守卫，特指度高过上面那条选中档，
+   不单列一条的话指针一压到选中项上，形态档的选中底就被轻档吃掉 */
+[data-scope='tabs'][data-part='trigger']:not([data-disabled])[data-state='active']:hover {
   background: var(--xh-tabs-trigger-bg-active-hover, var(--xh-_tabs-trigger-bg-active-hover));
 }
 

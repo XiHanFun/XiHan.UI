@@ -182,7 +182,7 @@ disabled 后拖不动也推不动，分隔条整个退出 Tab 序列，方向键
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-splitter-radius` · `--xh-splitter-trigger-bg` · `--xh-splitter-trigger-bg-disabled` · `--xh-splitter-trigger-bg-dragging` · `--xh-splitter-trigger-bg-hover` · `--xh-splitter-trigger-thickness`
+`--xh-splitter-disabled-opacity` · `--xh-splitter-radius` · `--xh-splitter-trigger-bg` · `--xh-splitter-trigger-bg-disabled` · `--xh-splitter-trigger-bg-dragging` · `--xh-splitter-trigger-bg-hover` · `--xh-splitter-trigger-thickness`
 
 ## 动效
 

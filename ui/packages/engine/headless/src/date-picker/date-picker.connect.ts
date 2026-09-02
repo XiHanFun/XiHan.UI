@@ -205,6 +205,10 @@ export function connectDatePicker<T extends PropTypes>(
   const fieldRaw = connectDateField(services.field, normalizeProps)
   const fieldEndRaw = services.fieldEnd ? connectDateField(services.fieldEnd, normalizeProps) : null
   const bounds = { min: parseBoundary(prop('min')), max: parseBoundary(prop('max')) }
+  // 越界与显式 invalid 在读屏那里是同一件事：这份输入现在不合法。
+  // 整份控件的不合法态照它发，只标出错的那一组段位等于把反馈藏在输入行里的一小块。
+  // 区间两端各是一份分段输入，任一端越界整份就都算越界；终点那组只在区间模式下算数
+  const flagged = invalid || !!fieldRaw.outOfRange || (range && !!fieldEndRaw?.outOfRange)
 
   /**
    * 同一份分段输入里的全部段位，文档序。事件那一刻现查，不缓存节点数组。
@@ -356,7 +360,7 @@ export function connectDatePicker<T extends PropTypes>(
       'data-state': stateAttr,
       'data-disabled': dataAttr(disabled),
       'data-readonly': dataAttr(readOnly),
-      'data-invalid': dataAttr(invalid),
+      'data-invalid': dataAttr(flagged),
     }),
 
     getLabelProps: () => normalize.element({
@@ -378,7 +382,7 @@ export function connectDatePicker<T extends PropTypes>(
       'data-state': stateAttr,
       'data-disabled': dataAttr(disabled),
       'data-readonly': dataAttr(readOnly),
-      'data-invalid': dataAttr(invalid),
+      'data-invalid': dataAttr(flagged),
       'onClick': (event: MouseEvent) => {
         if (disabled)
           return

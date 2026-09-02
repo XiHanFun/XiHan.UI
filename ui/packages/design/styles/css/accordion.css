@@ -87,7 +87,9 @@
     cursor: pointer;
   }
 
-  [data-scope='accordion'][data-part='trigger']:hover {
+  /* 禁用条目带的是 aria-disabled 而非原生 disabled，:hover 照样命中；
+     不挡掉的话置灰的那一条悬停仍会换底 */
+  [data-scope='accordion'][data-part='trigger']:not([data-disabled]):hover {
     background: var(--xh-accordion-trigger-bg-hover, var(--xh-bg-subtle));
   }
 

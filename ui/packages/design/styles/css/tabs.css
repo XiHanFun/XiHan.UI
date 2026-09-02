@@ -123,7 +123,9 @@
     transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
-  [data-scope='tabs'][data-part='trigger']:hover {
+  /* 禁用项带的是 aria-disabled 而非原生 disabled，:hover 照样命中；
+     不挡掉的话置灰的那一页悬停仍会换底，看着还能点 */
+  [data-scope='tabs'][data-part='trigger']:not([data-disabled]):hover {
     background: var(--xh-tabs-trigger-bg-hover, var(--xh-bg-subtle-hover));
   }
 
@@ -139,9 +141,9 @@
     box-shadow: var(--xh-tabs-trigger-shadow-active, var(--xh-_tabs-trigger-shadow-active));
   }
 
-  /* 选中项被悬停：上面那条与常态 :hover 特异度相同，谁写在后面谁赢，
-     不单列一条的话选中项的悬停底会被形态档的选中底吃掉 */
-  [data-scope='tabs'][data-part='trigger'][data-state='active']:hover {
+  /* 选中项被悬停：常态 :hover 那条带着禁用守卫，特指度高过上面那条选中档，
+     不单列一条的话指针一压到选中项上，形态档的选中底就被轻档吃掉 */
+  [data-scope='tabs'][data-part='trigger']:not([data-disabled])[data-state='active']:hover {
     background: var(--xh-tabs-trigger-bg-active-hover, var(--xh-_tabs-trigger-bg-active-hover));
   }
 

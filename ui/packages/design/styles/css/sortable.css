@@ -74,7 +74,9 @@
     border-inline: var(--xh-stroke-thin) solid currentColor;
   }
 
-  [data-scope='sortable'][data-part='item-handle']:hover {
+  /* 抓手禁用走 aria-disabled 而非原生 disabled（宿主未必是 <button>），:hover 照样命中；
+     不挡掉的话拖不动的那颗悬停仍会换底 */
+  [data-scope='sortable'][data-part='item-handle']:not([aria-disabled='true']):hover {
     background: var(--xh-sortable-handle-bg-hover, var(--xh-bg-subtle-hover));
     color: var(--xh-sortable-handle-fg-hover, var(--xh-fg-default));
   }
