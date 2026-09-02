@@ -325,15 +325,15 @@ describe('tagsInputMachine 上限', () => {
     expect(h.input.value).toBe('b,c,')
   })
 
-  it('allowOverflow 开着就照加，只在 root/control 上打 data-overflow', () => {
+  it('allowOverflow 开着就照加，只在 root/control 上打 data-overflowing', () => {
     const h = mount({ defaultValue: ['a', 'b'], max: 2, allowOverflow: true })
     expect(h.root.getAttribute('data-at-max')).toBe('')
-    expect(h.root.getAttribute('data-overflow')).toBeNull()
+    expect(h.root.getAttribute('data-overflowing')).toBeNull()
     typeInto(h.input, 'c')
     press(h.input, 'Enter')
     expect(h.value()).toEqual(['a', 'b', 'c'])
-    expect(h.root.getAttribute('data-overflow')).toBe('')
-    expect(h.control.getAttribute('data-overflow')).toBe('')
+    expect(h.root.getAttribute('data-overflowing')).toBe('')
+    expect(h.control.getAttribute('data-overflowing')).toBe('')
   })
 
   it('max=0：一个标签都加不进去', () => {

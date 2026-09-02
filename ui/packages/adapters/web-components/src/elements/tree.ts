@@ -1,4 +1,4 @@
-import type { TreeExpandedChangeDetails, TreeNode, TreeNodeProps, TreeSchema, TreeSelectionChangeDetails, TreeSelectionMode, TreeTranslations } from '@xihan-ui/headless'
+import type { TreeExpandedChangeDetails, TreeNode, TreeNodeProps, TreeSchema, TreeSelectionChangeDetails, TreeTranslations } from '@xihan-ui/headless'
 import type { Direction, Orientation } from '@xihan-ui/kernel'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
 import { connectTree, treeAnatomy, treeMachine, treeMeta } from '@xihan-ui/headless'
@@ -42,7 +42,6 @@ const NODE_SELECTOR = `${ITEM_SELECTOR}, ${BRANCH_SELECTOR}`
  * @customElement xh-tree
  * @attr {boolean} multiple - 复选，默认关闭
  * @attr {'horizontal'|'vertical'} leaf-orientation - 末端那一层怎么排，默认 vertical；horizontal 让子节点全是叶子的那层并排铺开
- * @attr {'single'|'multiple'} selection-mode - 选择模式的旧写法，默认 single；与 multiple 同时给时以它为准
  * @attr {boolean} cascade - multiple 下父子级联勾选（整枝传导/半选/禁用冻结），默认 false
  * @attr {string} checked-strategy - 级联下对外值的收敛策略：child（默认）/ parent / all
  * @attr {boolean} expand-on-click - 点分支行顺带展开/收起，默认开；写 expand-on-click="false" 关掉
@@ -86,7 +85,6 @@ export class XhTreeElement extends XhElement {
     defaultSelection: { attribute: false },
     multiple: { converter: BOOLEAN_CONVERTER },
     leafOrientation: { converter: STRING_CONVERTER, attribute: 'leaf-orientation' },
-    selectionMode: { converter: STRING_CONVERTER, attribute: 'selection-mode' },
     cascade: { type: Boolean },
     checkedStrategy: { converter: STRING_CONVERTER, attribute: 'checked-strategy' },
     expandOnClick: { converter: BOOLEAN_CONVERTER, attribute: 'expand-on-click' },
@@ -109,7 +107,6 @@ export class XhTreeElement extends XhElement {
   declare defaultSelection?: string[]
   declare multiple?: boolean
   declare leafOrientation?: Orientation
-  declare selectionMode?: TreeSelectionMode
   declare cascade?: boolean
   declare checkedStrategy?: TreeSchema['props']['checkedStrategy']
   declare expandOnClick?: boolean
@@ -146,7 +143,6 @@ export class XhTreeElement extends XhElement {
       selection: this.selection,
       defaultSelection: this.defaultSelection,
       multiple: this.multiple,
-      selectionMode: this.selectionMode,
       cascade: this.cascade,
       leafOrientation: this.leafOrientation,
       checkedStrategy: this.checkedStrategy,

@@ -40,7 +40,7 @@ export const toolCallSuite: ConformanceSuite = {
       initial: {
         counts: { root: 1, trigger: 1, content: 1 },
         parts: {
-          root: { 'data-state': 'closed', 'data-phase': 'input-available', 'data-running': null, 'aria-busy': null },
+          root: { 'data-state': 'closed', 'data-phase': 'input-available', 'data-loading': null, 'aria-busy': null },
           trigger: { 'type': 'button', 'aria-expanded': 'false', 'aria-describedby': null },
           content: { role: 'region', hidden: '', inert: '' },
           // 纯装饰，不进可访问名
@@ -58,7 +58,7 @@ export const toolCallSuite: ConformanceSuite = {
       props: { phase: 'input-streaming' },
       initial: {
         parts: {
-          root: { 'data-state': 'open', 'data-running': '', 'data-phase': 'input-streaming' },
+          root: { 'data-state': 'open', 'data-loading': '', 'data-phase': 'input-streaming' },
           trigger: { 'aria-expanded': 'true' },
           content: { hidden: null, inert: null },
         },
@@ -70,7 +70,7 @@ export const toolCallSuite: ConformanceSuite = {
       props: { phase: 'awaiting-approval' },
       initial: {
         parts: {
-          root: { 'data-phase': 'awaiting-approval', 'data-running': null },
+          root: { 'data-phase': 'awaiting-approval', 'data-loading': null },
           approval: { hidden: null },
         },
       },

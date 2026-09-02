@@ -11,7 +11,6 @@ import { XhElement } from '../element-base'
  *
  * @customElement xh-flex
  * @attr {'horizontal'|'vertical'} orientation - 主轴方向，缺省 horizontal
- * @attr {'row'|'column'} direction - 主轴方向的旧写法，两个都写时以 orientation 为准
  * @attr {'start'|'center'|'end'|'stretch'|'baseline'} align - 交叉轴对齐
  * @attr {'start'|'center'|'end'|'between'|'around'|'evenly'} justify - 主轴分布
  * @attr {'xs'|'sm'|'md'|'lg'|'xl'} gap - 子项间距档位，逐档对应一个间距令牌
@@ -25,7 +24,6 @@ export class XhFlexElement extends XhElement {
   // 属性缺席翻成 undefined，缺省值由 connect 决定
   static override properties = {
     orientation: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
-    direction: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
     align: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
     justify: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
     gap: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
@@ -34,7 +32,6 @@ export class XhFlexElement extends XhElement {
   }
 
   declare orientation?: string
-  declare direction?: string
   declare align?: string
   declare justify?: string
   declare gap?: string
@@ -45,7 +42,6 @@ export class XhFlexElement extends XhElement {
     // 读响应式 property，不回读 DOM 特性
     const api = connectFlex({
       orientation: this.orientation as FlexProps['orientation'],
-      direction: this.direction as FlexProps['direction'],
       align: this.align as FlexProps['align'],
       justify: this.justify as FlexProps['justify'],
       gap: this.gap as FlexProps['gap'],

@@ -133,12 +133,7 @@ export function connectDiffView<T extends PropTypes>(
 
   const truncatedLines = Math.max(0, Math.trunc(model.truncatedLines ?? 0))
   const truncated = model.truncated === true && truncatedLines > 0
-  // 作者给字符串就当固定名字用，给函数才把行数念进去；都没给才走兜底。
-  // 收字符串这一支是为了不推翻已经传字符串的调用方。
-  const expandGap = translations?.expandGap
-  const expandGapLabel = typeof expandGap === 'function'
-    ? expandGap
-    : (count: number) => expandGap ?? `Show ${count} hidden lines`
+  const expandGapLabel = translations?.expandGap ?? ((count: number) => `Show ${count} hidden lines`)
   const truncationText = truncated
     ? (translations?.truncated ?? ((count: number) => `${count} more lines were cut off and are not shown`))(truncatedLines)
     : ''

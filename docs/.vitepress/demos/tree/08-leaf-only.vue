@@ -49,7 +49,7 @@ function onSelectionChange(details: { value: string[] }): void {
       :collection="collection"
       :selection="selected"
       :default-expanded-value="['src']"
-      selection-mode="multiple"
+      multiple
       @selection-change="onSelectionChange"
     >
       <XhTreeLabel>要提交的文件</XhTreeLabel>

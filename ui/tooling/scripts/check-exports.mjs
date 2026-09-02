@@ -16,7 +16,12 @@ const WC_DEFINE = 'packages/adapters/web-components/src/define.ts'
 const HEADLESS_SRC = 'packages/engine/headless/src'
 const HEADLESS_INDEX = 'packages/engine/headless/src/index.ts'
 
-/** 只在包内使用、不打算对外的名字，逐条写明理由。 */
+/**
+ * 只在包内使用、不打算对外的名字，逐条写明理由。
+ * 键是模块说明符（如 './components/foo'），值是该模块里不对外的名字数组。
+ * 每条都要真被用来放行过一次——文件没了、名字改了，登记就成了没人走的死条目，
+ * 由下面的名单核验报出来。
+ */
 const EXEMPT = {
   vue: {},
   headless: {},
@@ -94,6 +99,8 @@ function hint(index, key, fallback) {
 }
 
 const problems = []
+/** 真的用来放行过的名字，写成「侧 模块说明符 名字」。 */
+const usedExempt = new Set()
 let vueCount = 0
 let wcCount = 0
 let headlessCount = 0
@@ -106,8 +113,10 @@ let headlessCount = 0
     const specifier = specifierOf(VUE_SRC, file)
     for (const match of source.matchAll(RE_VUE_COMPONENT)) {
       const name = match[1]
-      if (EXEMPT.vue[specifier]?.includes(name))
+      if (EXEMPT.vue[specifier]?.includes(name)) {
+        usedExempt.add(`vue ${specifier} ${name}`)
         continue
+      }
       vueCount++
       if (index.values.has(name))
         continue
@@ -157,8 +166,10 @@ let headlessCount = 0
       ['type', sub.types, index.types],
     ]) {
       for (const [name, line] of subBucket) {
-        if (EXEMPT.headless[specifier]?.includes(name))
+        if (EXEMPT.headless[specifier]?.includes(name)) {
+          usedExempt.add(`headless ${specifier} ${name}`)
           continue
+        }
         headlessCount++
         if (rootBucket.has(name))
           continue
@@ -166,6 +177,16 @@ let headlessCount = 0
         const as = kind === 'type' ? '类型' : '值'
         problems.push(`${posix(file)}:${line} 的${as} ${name} 没从 ${HEADLESS_INDEX} 导出——${where}`)
       }
+    }
+  }
+}
+
+// 名单核验：登记了却没被扫到，说明这条豁免已经没有对应的实现，删掉
+for (const side of ['vue', 'headless']) {
+  for (const [specifier, names] of Object.entries(EXEMPT[side])) {
+    for (const name of names) {
+      if (!usedExempt.has(`${side} ${specifier} ${name}`))
+        problems.push(`EXEMPT.${side} 里 ${specifier} 的 ${name} 登记了却没被扫到——名单过期了`)
     }
   }
 }
@@ -178,4 +199,4 @@ if (problems.length) {
   process.exit(1)
 }
 
-console.log(`[check-exports] 通过：vue ${vueCount} 个部件、wc ${wcCount} 个元素、headless ${headlessCount} 个名字都导出了`)
+console.log(`[check-exports] 通过：vue ${vueCount} 个部件、wc ${wcCount} 个元素、headless ${headlessCount} 个名字都导出了（不对外 ${usedExempt.size} 个）`)

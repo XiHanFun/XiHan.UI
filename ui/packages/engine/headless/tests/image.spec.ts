@@ -223,7 +223,7 @@ describe('connectImage 结构与显隐', () => {
     const root = s.api().getRootProps() as Dict
     expect(root['data-scope']).toBe('image')
     expect(root['data-part']).toBe('root')
-    expect(root['data-status']).toBe('loading')
+    expect(root['data-state']).toBe('loading')
   })
 
   it('image 落 src / alt，并把 load / error 接回机器', async () => {
@@ -261,14 +261,14 @@ describe('connectImage 结构与显隐', () => {
     expect((s.api().getFallbackProps() as Dict).hidden).toBe(true)
   })
 
-  it('三个部件都带同一个 data-status', async () => {
+  it('三个部件都带同一个 data-state', async () => {
     const s = makeImage({ src: 'a.png' })
     await settleSrc()
     s.service.send({ type: 'IMAGE.LOAD' })
     const api = s.api()
-    expect((api.getRootProps() as Dict)['data-status']).toBe('loaded')
-    expect((api.getImageProps() as Dict)['data-status']).toBe('loaded')
-    expect((api.getFallbackProps() as Dict)['data-status']).toBe('loaded')
+    expect((api.getRootProps() as Dict)['data-state']).toBe('loaded')
+    expect((api.getImageProps() as Dict)['data-state']).toBe('loaded')
+    expect((api.getFallbackProps() as Dict)['data-state']).toBe('loaded')
     expect(api.loaded).toBe(true)
   })
 })

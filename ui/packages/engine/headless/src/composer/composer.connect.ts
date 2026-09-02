@@ -36,10 +36,7 @@ export function connectComposer<T extends PropTypes>(
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'data-disabled': dataAttr(disabled),
-      // 相位走 data-state（值都在词汇表的 phase 族里）；data-status 再发一个大版本，
-      // 下个大版本移除——它此后只属于 result 的「结果种类」那一轴
       'data-state': runStatus,
-      'data-status': runStatus,
     }),
 
     getInputProps: () => normalize.textarea({

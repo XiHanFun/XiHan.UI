@@ -16,7 +16,7 @@ function tree(props: Partial<TreeSchema['props']> = {}) {
   const runtime = createVanillaRuntime()
   const onSelectionChange = vi.fn()
   const service = createService(treeMachine, {
-    props: () => ({ collection, selectionMode: 'multiple', cascade: true, defaultExpandedValue: ['src'], onSelectionChange, ...props }),
+    props: () => ({ collection, multiple: true, cascade: true, defaultExpandedValue: ['src'], onSelectionChange, ...props }),
     runtime,
   })
   runtime.start()

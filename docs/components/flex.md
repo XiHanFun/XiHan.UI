@@ -28,7 +28,7 @@
 
 ### 方向
 
-direction 换主轴：row 横排（缺省），column 竖排
+orientation 换主轴：horizontal 横排（缺省），vertical 竖排
 
 <XhDemo src="flex/02-direction" />
 
@@ -70,7 +70,6 @@ wrap 让放不下的子项换行、行与行之间同样吃 gap；inline 让容�
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `align` | `FlexAlign` |  | 交叉轴对齐：start / center / end / stretch / baseline，不写则由皮肤的缺省对齐决定。 |
-| `direction` | `FlexDirection` |  | 主轴方向的旧写法。 @deprecated 用 `orientation`（horizontal / vertical）。两个都写时以 orientation 为准。 |
 | `gap` | `FlexGap` |  | 子项间距档位：xs / sm / md / lg / xl，不写则不留间距。档位换算成多少由皮肤定。 |
 | `inline` | `boolean` |  | 容器按行内盒排版，宽度收到内容。 |
 | `justify` | `FlexJustify` |  | 主轴分布：start / center / end / between / around / evenly，不写则子项从主轴起点排起。 |
@@ -102,7 +101,6 @@ wrap 让放不下的子项换行、行与行之间同样吃 gap；inline 让容�
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-align` | props.align |
-| `root` | `data-direction` | 'column' \| 'row' |
 | `root` | `data-gap` | props.gap |
 | `root` | `data-inline` | ''（条件成立时才出现） |
 | `root` | `data-justify` | props.justify |

@@ -1,4 +1,4 @@
-<!-- 方向 | direction 换排布轴：horizontal 横排（缺省）按中线对齐，vertical 竖排拉伸占满 -->
+<!-- 方向 | orientation 换排布轴：horizontal 横排（缺省）按中线对齐，vertical 竖排拉伸占满 -->
 <script setup lang="ts">
 import { XhSpace } from "@xihan-ui/vue";
 
@@ -21,7 +21,7 @@ const stackStyle = "display: flex; flex-direction: column; gap: 8px";
 
     <div :style="stackStyle">
       <span :style="labelStyle">vertical</span>
-      <XhSpace direction="vertical">
+      <XhSpace orientation="vertical">
         <span :style="boxStyle">甲</span>
         <span :style="boxStyle">乙</span>
         <span :style="boxStyle">丙</span>

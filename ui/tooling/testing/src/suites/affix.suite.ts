@@ -82,7 +82,7 @@ function step(f: Frame, scrollTop: number, affixed: boolean): StepWithExpect {
     kind: 'raw',
     why: '判定线要读实测矩形，无布局环境量什么都是 0，只能把这一帧的几何原地伪造出来',
     run: frame(f, scrollTop),
-    expect: { parts: { content: { 'data-affixed': affixed ? '' : null } } },
+    expect: { parts: { content: { 'data-fixed': affixed ? '' : null } } },
   }
 }
 
@@ -107,7 +107,7 @@ export const affixSuite: ConformanceSuite = {
       },
     },
     {
-      name: '判定线之下不吸住：不写 data-affixed，落位与占位高度一个都不留',
+      name: '判定线之下不吸住：不写 data-fixed，落位与占位高度一个都不留',
       spec: { apg: APG },
       steps: [
         step({ top: 320, height: 50, left: 12, width: 200 }, 40, false),
@@ -125,7 +125,7 @@ export const affixSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '越过判定线就钉住：content 报 data-affixed，占位盒接手冻结的高度',
+      name: '越过判定线就钉住：content 报 data-fixed，占位盒接手冻结的高度',
       spec: { apg: APG },
       steps: [
         step({ top: 320, height: 50, left: 12, width: 200 }, 40, false),

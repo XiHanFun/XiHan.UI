@@ -68,7 +68,7 @@ describe('判定在途（busy）', () => {
     for (const btn of [r.approve(), r.deny()]) {
       expect(btn['aria-disabled']).toBe('true')
       expect(btn['aria-busy']).toBe('true')
-      expect(btn['data-busy']).toBe('')
+      expect(btn['data-loading']).toBe('')
     }
   })
 
@@ -82,7 +82,7 @@ describe('判定在途（busy）', () => {
     const r = mount()
     expect(r.deny()['aria-disabled']).toBe('false')
     expect(r.deny()['aria-busy']).toBeUndefined()
-    expect(r.deny()['data-busy']).toBeUndefined()
+    expect(r.deny()['data-loading']).toBeUndefined()
   })
 
   // 这一条是整份用例的目的：等待宿主回话的那段空窗里，人还能再按一次拒绝，

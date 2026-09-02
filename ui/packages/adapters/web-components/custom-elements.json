@@ -349,7 +349,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-affix>` —— 吸附行为宿主：滚过判定线就把 content 钉在滚动容器可视区的边上。\n\nroot 是占位盒，content 吸住时脱离常规流，root 留在原位撑住那块空间，页面不跳。\n判定与量测都在机器的效应里做：挂载后推迟一拍量一次，此后跟着 scroll 与 resize 走。\n钉住的落位（top / bottom / left / width）由机器量好写进 content 的内联样式，\n皮肤只按 data-affixed 给 position 与层级。",
+          "description": "`<xh-affix>` —— 吸附行为宿主：滚过判定线就把 content 钉在滚动容器可视区的边上。\n\nroot 是占位盒，content 吸住时脱离常规流，root 留在原位撑住那块空间，页面不跳。\n判定与量测都在机器的效应里做：挂载后推迟一拍量一次，此后跟着 scroll 与 resize 走。\n钉住的落位（top / bottom / left / width）由机器量好写进 content 的内联样式，\n皮肤只按 data-fixed 给 position 与层级。",
           "name": "XhAffixElement",
           "cssParts": [
             {
@@ -357,7 +357,7 @@
               "name": "root"
             },
             {
-              "description": "真正被钉住的那块内容，吸住时带 data-affixed",
+              "description": "真正被钉住的那块内容，吸住时带 data-fixed",
               "name": "content"
             }
           ],
@@ -1828,7 +1828,7 @@
           "name": "XhAvatarElement",
           "cssParts": [
             {
-              "description": "头像根容器，承载 data-status/data-size",
+              "description": "头像根容器，承载 data-state/data-size",
               "name": "root"
             },
             {
@@ -2224,9 +2224,6 @@
             },
             {
               "name": "--xh-back-top-size"
-            },
-            {
-              "name": "--xh-back-top-trigger-size"
             }
           ]
         }
@@ -3681,7 +3678,7 @@
           "name": "XhCardElement",
           "cssParts": [
             {
-              "description": "卡片根容器，承载 data-variant / data-size / data-hoverable / data-segmented",
+              "description": "卡片根容器，承载 data-variant / data-size / data-hoverable / data-split",
               "name": "root"
             },
             {
@@ -8871,7 +8868,7 @@
           "name": "XhComposerElement",
           "cssParts": [
             {
-              "description": "承载 data-disabled / data-status 的容器",
+              "description": "承载 data-disabled / data-state 的容器",
               "name": "root"
             },
             {
@@ -11537,21 +11534,6 @@
             },
             {
               "name": "--xh-date-picker-column-divider"
-            },
-            {
-              "name": "--xh-date-picker-confirm-bg"
-            },
-            {
-              "name": "--xh-date-picker-confirm-bg-active"
-            },
-            {
-              "name": "--xh-date-picker-confirm-bg-hover"
-            },
-            {
-              "name": "--xh-date-picker-confirm-fg"
-            },
-            {
-              "name": "--xh-date-picker-confirm-shadow"
             },
             {
               "name": "--xh-date-picker-confirm-trigger-bg"
@@ -15988,15 +15970,6 @@
             },
             {
               "kind": "field",
-              "name": "direction",
-              "privacy": "public",
-              "type": {
-                "text": "string | undefined"
-              },
-              "attribute": "direction"
-            },
-            {
-              "kind": "field",
               "name": "align",
               "privacy": "public",
               "type": {
@@ -16059,14 +16032,6 @@
               "description": "主轴方向，缺省 horizontal",
               "name": "orientation",
               "fieldName": "orientation"
-            },
-            {
-              "type": {
-                "text": "string | undefined"
-              },
-              "description": "主轴方向的旧写法，两个都写时以 orientation 为准",
-              "name": "direction",
-              "fieldName": "direction"
             },
             {
               "type": {
@@ -18468,12 +18433,6 @@
           "customElement": true,
           "cssProperties": [
             {
-              "name": "--xh-highlight-bg"
-            },
-            {
-              "name": "--xh-highlight-fg"
-            },
-            {
               "name": "--xh-highlight-mark-bg"
             },
             {
@@ -18484,9 +18443,6 @@
             },
             {
               "name": "--xh-highlight-mark-radius"
-            },
-            {
-              "name": "--xh-highlight-radius"
             }
           ]
         }
@@ -20597,7 +20553,7 @@
           "name": "XhImageElement",
           "cssParts": [
             {
-              "description": "图片根容器（承载 data-status）",
+              "description": "图片根容器（承载 data-state）",
               "name": "root"
             },
             {
@@ -21526,7 +21482,7 @@
           "name": "XhLayoutElement",
           "cssParts": [
             {
-              "description": "骨架根容器，承载 data-sider-placement / data-sider-collapsed / data-header-fixed / data-sider-fixed / data-bordered",
+              "description": "骨架根容器，承载 data-sider-placement / data-collapsed / data-header-fixed / data-sider-fixed / data-bordered",
               "name": "root"
             },
             {
@@ -21791,9 +21747,6 @@
               "name": "--xh-layout-sider-collapsed-w"
             },
             {
-              "name": "--xh-layout-sider-collapsed-width"
-            },
-            {
               "name": "--xh-layout-sider-padding"
             },
             {
@@ -21816,9 +21769,6 @@
             },
             {
               "name": "--xh-layout-sider-w"
-            },
-            {
-              "name": "--xh-layout-sider-width"
             }
           ]
         }
@@ -26626,12 +26576,6 @@
               "name": "--xh-notification-action-radius"
             },
             {
-              "name": "--xh-notification-bg"
-            },
-            {
-              "name": "--xh-notification-border"
-            },
-            {
               "name": "--xh-notification-close-bg-active"
             },
             {
@@ -26657,15 +26601,6 @@
             },
             {
               "name": "--xh-notification-description-font-size"
-            },
-            {
-              "name": "--xh-notification-fg"
-            },
-            {
-              "name": "--xh-notification-font-size"
-            },
-            {
-              "name": "--xh-notification-gap"
             },
             {
               "name": "--xh-notification-icon-size"
@@ -26719,24 +26654,6 @@
               "name": "--xh-notification-layer"
             },
             {
-              "name": "--xh-notification-leading"
-            },
-            {
-              "name": "--xh-notification-px"
-            },
-            {
-              "name": "--xh-notification-py"
-            },
-            {
-              "name": "--xh-notification-radius"
-            },
-            {
-              "name": "--xh-notification-row-gap"
-            },
-            {
-              "name": "--xh-notification-shadow"
-            },
-            {
               "name": "--xh-notification-title-fg"
             },
             {
@@ -26747,9 +26664,6 @@
             },
             {
               "name": "--xh-notification-title-leading"
-            },
-            {
-              "name": "--xh-notification-w"
             }
           ]
         },
@@ -28980,18 +28894,6 @@
               "name": "--xh-password-input-gap"
             },
             {
-              "name": "--xh-password-input-hint-fg"
-            },
-            {
-              "name": "--xh-password-input-hint-font-size"
-            },
-            {
-              "name": "--xh-password-input-hint-gap"
-            },
-            {
-              "name": "--xh-password-input-hint-px"
-            },
-            {
               "name": "--xh-password-input-icon-size"
             },
             {
@@ -29889,9 +29791,6 @@
             },
             {
               "name": "--xh-popconfirm-cancel-fg"
-            },
-            {
-              "name": "--xh-popconfirm-cancel-trigger-px"
             },
             {
               "name": "--xh-popconfirm-confirm-bg"
@@ -31387,7 +31286,7 @@
           "name": "XhPromptInputElement",
           "cssParts": [
             {
-              "description": "承载 data-disabled / data-busy 与三视觉轴的容器",
+              "description": "承载 data-disabled / data-loading 与三视觉轴的容器",
               "name": "root"
             },
             {
@@ -38888,15 +38787,6 @@
             },
             {
               "kind": "field",
-              "name": "direction",
-              "privacy": "public",
-              "type": {
-                "text": "SpaceProps['direction'] | undefined"
-              },
-              "attribute": "direction"
-            },
-            {
-              "kind": "field",
               "name": "gap",
               "privacy": "public",
               "type": {
@@ -38959,14 +38849,6 @@
               "description": "排布方向，缺省 horizontal",
               "name": "orientation",
               "fieldName": "orientation"
-            },
-            {
-              "type": {
-                "text": "SpaceProps['direction'] | undefined"
-              },
-              "description": "排布方向的旧写法，两个都写时以 orientation 为准",
-              "name": "direction",
-              "fieldName": "direction"
             },
             {
               "type": {
@@ -40946,7 +40828,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "表头吸顶，只落 data-sticky（布尔）；列冻结另走 data-frozen",
+              "description": "表头吸顶，只落 data-fixed（布尔）；列冻结另走 data-frozen",
               "name": "sticky-header",
               "fieldName": "stickyHeader"
             },
@@ -42008,7 +41890,7 @@
           "name": "XhTagsInputElement",
           "cssParts": [
             {
-              "description": "承载 data-disabled / data-readonly / data-invalid / data-empty / data-at-max / data-overflow",
+              "description": "承载 data-disabled / data-readonly / data-invalid / data-empty / data-at-max / data-overflowing",
               "name": "root"
             },
             {
@@ -42368,7 +42250,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "允许越过 max，越过后打出 data-overflow",
+              "description": "允许越过 max，越过后打出 data-overflowing",
               "name": "allow-overflow",
               "fieldName": "allowOverflow"
             },
@@ -42671,7 +42553,7 @@
           "name": "XhTextFieldElement",
           "cssParts": [
             {
-              "description": "承载 data-disabled / data-readonly / data-invalid / data-empty / data-at-limit 的容器",
+              "description": "承载 data-disabled / data-readonly / data-invalid / data-empty / data-at-max 的容器",
               "name": "root"
             },
             {
@@ -43055,7 +42937,7 @@
               "name": "--xh-text-field-control-border"
             },
             {
-              "name": "--xh-text-field-control-border-at-limit"
+              "name": "--xh-text-field-control-border-at-max"
             },
             {
               "name": "--xh-text-field-control-border-focus"
@@ -43112,7 +42994,7 @@
               "name": "--xh-text-field-input-border"
             },
             {
-              "name": "--xh-text-field-input-border-at-limit"
+              "name": "--xh-text-field-input-border-at-max"
             },
             {
               "name": "--xh-text-field-input-border-focus"
@@ -43186,7 +43068,7 @@
           "name": "XhThreadElement",
           "cssParts": [
             {
-              "description": "组件根容器，承载 data-status",
+              "description": "组件根容器，承载 data-state",
               "name": "root"
             },
             {
@@ -43344,7 +43226,7 @@
               "type": {
                 "text": "ThreadStatus | undefined"
               },
-              "description": "这一轮的运行态，只透出成 data-status",
+              "description": "这一轮的运行态，只透出成 data-state",
               "name": "status",
               "fieldName": "status"
             },
@@ -46326,9 +46208,6 @@
             },
             {
               "name": "--xh-toggle-group-item-shadow"
-            },
-            {
-              "name": "--xh-toggle-group-radius"
             }
           ]
         }
@@ -46582,7 +46461,7 @@
           "name": "XhToolCallElement",
           "cssParts": [
             {
-              "description": "外壳，承载 data-state / data-phase / data-running",
+              "description": "外壳，承载 data-state / data-phase / data-loading",
               "name": "root"
             },
             {
@@ -48656,25 +48535,10 @@
               "name": "--xh-transfer-checkbox-size"
             },
             {
-              "name": "--xh-transfer-count-fg"
-            },
-            {
-              "name": "--xh-transfer-count-font-size"
-            },
-            {
               "name": "--xh-transfer-fg"
             },
             {
               "name": "--xh-transfer-gap"
-            },
-            {
-              "name": "--xh-transfer-header-gap"
-            },
-            {
-              "name": "--xh-transfer-header-px"
-            },
-            {
-              "name": "--xh-transfer-header-py"
             },
             {
               "name": "--xh-transfer-icon-size"
@@ -48780,15 +48644,6 @@
             },
             {
               "name": "--xh-transfer-select-all-radius"
-            },
-            {
-              "name": "--xh-transfer-title-fg"
-            },
-            {
-              "name": "--xh-transfer-title-font-size"
-            },
-            {
-              "name": "--xh-transfer-title-font-weight"
             },
             {
               "name": "--xh-transfer-trigger-bg"
@@ -49648,9 +49503,6 @@
               "name": "--xh-tree-select-indicator-fg"
             },
             {
-              "name": "--xh-tree-select-indicator-size"
-            },
-            {
               "name": "--xh-tree-select-item-indicator-fg"
             },
             {
@@ -49874,15 +49726,6 @@
             },
             {
               "kind": "field",
-              "name": "selectionMode",
-              "privacy": "public",
-              "type": {
-                "text": "TreeSelectionMode | undefined"
-              },
-              "attribute": "selection-mode"
-            },
-            {
-              "kind": "field",
               "name": "cascade",
               "privacy": "public",
               "type": {
@@ -50101,14 +49944,6 @@
             },
             {
               "type": {
-                "text": "TreeSelectionMode | undefined"
-              },
-              "description": "选择模式的旧写法，默认 single；与 multiple 同时给时以它为准",
-              "name": "selection-mode",
-              "fieldName": "selectionMode"
-            },
-            {
-              "type": {
                 "text": "boolean | undefined"
               },
               "description": "multiple 下父子级联勾选（整枝传导/半选/禁用冻结），默认 false",
@@ -50262,9 +50097,6 @@
             },
             {
               "name": "--xh-tree-indent"
-            },
-            {
-              "name": "--xh-tree-indicator-fg"
             },
             {
               "name": "--xh-tree-indicator-size"
@@ -50482,9 +50314,6 @@
             },
             {
               "name": "--xh-typography-measure"
-            },
-            {
-              "name": "--xh-typography-text-fg"
             },
             {
               "name": "--xh-typography-text-fg-muted"

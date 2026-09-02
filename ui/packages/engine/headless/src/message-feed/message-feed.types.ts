@@ -37,13 +37,11 @@ export interface MessageFeedTranslations {
   /** 回到底部按钮的可访问名。 */
   scrollToBottom: string
   /**
-   * 单条消息的可访问名。给函数能把「第几条、共几条、谁说的」代进名字里；
-   * 给字符串则是一句固定名字，连接层不做插值——每条消息会念到同一句。
+   * 单条消息的可访问名，入参是「第几条、共几条、谁说的」。
    *
    * size 为 -1 表示宿主没声明总数（`count` 缺席），此时名字里不该出现总数。
-   * 两种都收是为了不推翻已经传字符串的调用方——只支持函数会让它们在运行时炸。
    */
-  item: string | ((position: number, size: number, role?: MessageFeedItemRole) => string)
+  item: (position: number, size: number, role?: MessageFeedItemRole) => string
 }
 
 // 由适配器在挂载前填入；缺省时对应能力短路。
@@ -63,7 +61,7 @@ export interface MessageFeedSchema extends MachineSchema {
   props: {
     /** 消息总数，由宿主声明，不从 DOM 数；aria-setsize 取它。 */
     count?: number
-    /** 这一轮的运行态，只落 data-status，机器不读它。 */
+    /** 这一轮的运行态，只落 data-state，机器不读它。 */
     status?: MessageFeedStatus
     /** 距底多少 px 视为在底，缺省用粘底原语的默认值。 */
     threshold?: number

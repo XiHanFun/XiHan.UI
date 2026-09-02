@@ -34,7 +34,7 @@ export const cardSuite: ConformanceSuite = {
             'data-variant': null,
             'data-size': null,
             'data-hoverable': null,
-            'data-segmented': null,
+            'data-split': null,
           },
         },
       },
@@ -60,7 +60,7 @@ export const cardSuite: ConformanceSuite = {
         parts: {
           root: {
             'data-hoverable': '',
-            'data-segmented': null,
+            'data-split': null,
           },
         },
       },

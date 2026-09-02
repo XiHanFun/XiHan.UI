@@ -16,7 +16,11 @@ const WC_SPECS = [
   'packages/adapters/web-components/tests/dialog-conformance.spec.ts',
 ]
 
-/** 某一侧刻意不跑的组件，逐条写明理由。 */
+/**
+ * 某一侧刻意不跑的组件，逐条写明理由。
+ * 每条都要真被用来放行过一次——组件没了、或那一侧其实已经登记了套件，
+ * 这条豁免就成了一张过期的免检通行证，由下面的名单核验报出来。
+ */
 const EXEMPT = {
   vue: {},
   wc: {},
@@ -63,6 +67,8 @@ const problems = []
 let checked = 0
 let rows = 0
 const exemptSeen = new Set()
+/** 真的用来放行过的单侧豁免，写成「侧 组件」。 */
+const sideExemptSeen = new Set()
 
 for (const dir of (await readdir(HEADLESS, { withFileTypes: true })).filter(d => d.isDirectory()).map(d => d.name).sort()) {
   let keyboard
@@ -82,10 +88,19 @@ for (const dir of (await readdir(HEADLESS, { withFileTypes: true })).filter(d =>
   const id = `${camel(dir)}Suite`
   const wcId = `wc${id[0].toUpperCase()}${id.slice(1)}`
   const usedIn = (src, ids) => ids.some(x => new RegExp(`(?<![\\w$])${x}(?![\\w$])`).test(src))
-  if (!EXEMPT.vue[dir] && !usedIn(vueSrc, [id]))
-    problems.push(`${dir}  Vue 的 conformance 清单没有登记 ${id}`)
-  if (!EXEMPT.wc[dir] && !usedIn(wcSrc, [id, wcId]))
-    problems.push(`${dir}  WC 的 conformance 清单没有登记 ${id} / ${wcId}`)
+  const registered = { vue: usedIn(vueSrc, [id]), wc: usedIn(wcSrc, [id, wcId]) }
+  const wanted = { vue: id, wc: `${id} / ${wcId}` }
+  for (const side of ['vue', 'wc']) {
+    if (EXEMPT[side][dir]) {
+      sideExemptSeen.add(`${side} ${dir}`)
+      // 豁免要真起作用才算数：那一侧其实已经登记了，这条豁免就该删
+      if (registered[side])
+        problems.push(`EXEMPT.${side} 里的 ${dir} 已经登记了套件，这条豁免用不上了，删掉`)
+      continue
+    }
+    if (!registered[side])
+      problems.push(`${dir}  ${side === 'vue' ? 'Vue' : 'WC'} 的 conformance 清单没有登记 ${wanted[side]}`)
+  }
 
   // 逐行对账：表里每一行都要有用例 covers 到，或在 ROW_EXEMPT 里写明由谁认领
   const suite = await readFile(join(SUITES, `${dir}.suite.ts`), 'utf8')
@@ -112,8 +127,8 @@ for (const rowId of Object.keys(ROW_EXEMPT)) {
 
 for (const side of ['vue', 'wc']) {
   for (const dir of Object.keys(EXEMPT[side])) {
-    if (!suiteFiles.has(`${dir}.suite.ts`))
-      problems.push(`EXEMPT.${side} 里的 ${dir} 没有套件，这条豁免是陈旧的，删掉`)
+    if (!sideExemptSeen.has(`${side} ${dir}`))
+      problems.push(`EXEMPT.${side} 里的 ${dir} 登记了却没被扫到——名单过期了`)
   }
 }
 
@@ -124,4 +139,4 @@ if (problems.length) {
   process.exit(1)
 }
 
-console.log(`[check-keyboard-suites] 通过：${checked} 份键盘表都有套件、两侧都登记了，${rows} 行键位逐行有用例认领（另有 ${exemptSeen.size} 行由共享原语或单测认领）`)
+console.log(`[check-keyboard-suites] 通过：${checked} 份键盘表都有套件、两侧都登记了，${rows} 行键位逐行有用例认领（另有 ${exemptSeen.size} 行由共享原语或单测认领、${sideExemptSeen.size} 处单侧豁免）`)

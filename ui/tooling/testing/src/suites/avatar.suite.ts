@@ -54,16 +54,14 @@ export const avatarSuite: ConformanceSuite = {
         order: ['root', 'image', 'fallback'],
         counts: { root: 1, image: 1, fallback: 1 },
         parts: {
-          root: { 'data-state': 'error', 'data-status': 'error' },
+          root: { 'data-state': 'error' },
           image: {
             'role': null,
             'data-state': 'error',
-            'data-status': 'error',
             'hidden': '',
           },
           fallback: {
             'data-state': 'error',
-            'data-status': 'error',
             'hidden': null,
           },
         },
@@ -75,9 +73,9 @@ export const avatarSuite: ConformanceSuite = {
       props: { src: SRC, alt: '谁的头像' },
       initial: {
         parts: {
-          root: { 'data-state': 'loading', 'data-status': 'loading' },
-          image: { 'data-state': 'loading', 'data-status': 'loading', 'hidden': '' },
-          fallback: { 'data-state': 'loading', 'data-status': 'loading', 'hidden': null },
+          root: { 'data-state': 'loading' },
+          image: { 'data-state': 'loading', 'hidden': '' },
+          fallback: { 'data-state': 'loading', 'hidden': null },
         },
       },
       steps: [
@@ -100,9 +98,9 @@ export const avatarSuite: ConformanceSuite = {
           run: dispatchOnImage('load'),
           expect: {
             parts: {
-              root: { 'data-state': 'loaded', 'data-status': 'loaded' },
-              image: { 'data-state': 'loaded', 'data-status': 'loaded', 'hidden': null },
-              fallback: { 'data-state': 'loaded', 'data-status': 'loaded', 'hidden': '' },
+              root: { 'data-state': 'loaded' },
+              image: { 'data-state': 'loaded', 'hidden': null },
+              fallback: { 'data-state': 'loaded', 'hidden': '' },
             },
           },
         },
@@ -119,9 +117,9 @@ export const avatarSuite: ConformanceSuite = {
           run: dispatchOnImage('error'),
           expect: {
             parts: {
-              root: { 'data-state': 'error', 'data-status': 'error' },
-              image: { 'data-state': 'error', 'data-status': 'error', 'hidden': '' },
-              fallback: { 'data-state': 'error', 'data-status': 'error', 'hidden': null },
+              root: { 'data-state': 'error' },
+              image: { 'data-state': 'error', 'hidden': '' },
+              fallback: { 'data-state': 'error', 'hidden': null },
             },
           },
         },
@@ -140,7 +138,7 @@ export const avatarSuite: ConformanceSuite = {
           why: 'jsdom 不真加载图片，load 只能在 image 节点上直接派发',
           run: dispatchOnImage('load'),
           expect: {
-            parts: { root: { 'data-state': 'loaded', 'data-status': 'loaded' } },
+            parts: { root: { 'data-state': 'loaded' } },
             events: [{ type: 'status-change', detail: { status: 'loaded' } }],
           },
         },
@@ -156,18 +154,18 @@ export const avatarSuite: ConformanceSuite = {
           why: 'jsdom 不真加载图片，load 只能在 image 节点上直接派发',
           run: dispatchOnImage('load'),
           expect: {
-            parts: { root: { 'data-state': 'loaded', 'data-status': 'loaded' }, image: { hidden: null } },
+            parts: { root: { 'data-state': 'loaded' }, image: { hidden: null } },
           },
         },
         { kind: 'setProps', props: { src: NEXT_SRC } },
         {
           kind: 'settle',
-          until: { attr: { part: 'root', name: 'data-status', value: 'loading' } },
+          until: { attr: { part: 'root', name: 'data-state', value: 'loading' } },
           expect: {
             parts: {
-              root: { 'data-state': 'loading', 'data-status': 'loading' },
-              image: { 'data-state': 'loading', 'data-status': 'loading', 'hidden': '' },
-              fallback: { 'data-state': 'loading', 'data-status': 'loading', 'hidden': null },
+              root: { 'data-state': 'loading' },
+              image: { 'data-state': 'loading', 'hidden': '' },
+              fallback: { 'data-state': 'loading', 'hidden': null },
             },
           },
         },

@@ -213,9 +213,9 @@ open 与 index 双受控；translations 换工具条的可及名与计数文案
 | `positioner` | `data-positioned` | '' |
 | `positioner` | `data-state` | 'open' \| 'closed' |
 | `content` | `data-state` | 'open' \| 'closed' |
-| `viewport` | `data-panning` | ''（条件成立时才出现） |
+| `viewport` | `data-dragging` | ''（条件成立时才出现） |
 | `viewport` | `data-state` | 'open' \| 'closed' |
-| `image` | `data-panning` | ''（条件成立时才出现） |
+| `image` | `data-dragging` | ''（条件成立时才出现） |
 | `image` | `data-state` | 'open' \| 'closed' |
 | `toolbar` | `data-state` | 'open' \| 'closed' |
 | `counter` | `data-count` | String(count) |

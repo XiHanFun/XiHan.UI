@@ -73,7 +73,7 @@ const selection = ref<string[]>(["user:add"]);
       :collection="collection"
       :leaf-orientation="wide ? 'horizontal' : 'vertical'"
       :default-expanded-value="['system', 'user', 'role', 'log']"
-      selection-mode="multiple"
+      multiple
       cascade
     >
       <XhTreeLabel>菜单授权</XhTreeLabel>

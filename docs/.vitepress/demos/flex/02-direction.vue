@@ -1,4 +1,4 @@
-<!-- 方向 | direction 换主轴：row 横排（缺省），column 竖排 -->
+<!-- 方向 | orientation 换主轴：horizontal 横排（缺省），vertical 竖排 -->
 <script setup lang="ts">
 import { XhFlex } from "@xihan-ui/vue";
 
@@ -8,9 +8,9 @@ const labelStyle = "font-size: 13px; color: var(--xh-fg-muted)";
 </script>
 
 <template>
-  <XhFlex direction="column" gap="lg">
-    <XhFlex direction="column" gap="xs">
-      <span :style="labelStyle">row（缺省）</span>
+  <XhFlex orientation="vertical" gap="lg">
+    <XhFlex orientation="vertical" gap="xs">
+      <span :style="labelStyle">horizontal（缺省）</span>
       <XhFlex gap="sm">
         <span :style="boxStyle">甲</span>
         <span :style="boxStyle">乙</span>
@@ -18,9 +18,9 @@ const labelStyle = "font-size: 13px; color: var(--xh-fg-muted)";
       </XhFlex>
     </XhFlex>
 
-    <XhFlex direction="column" gap="xs">
-      <span :style="labelStyle">column</span>
-      <XhFlex direction="column" gap="sm">
+    <XhFlex orientation="vertical" gap="xs">
+      <span :style="labelStyle">vertical</span>
+      <XhFlex orientation="vertical" gap="sm">
         <span :style="boxStyle">甲</span>
         <span :style="boxStyle">乙</span>
         <span :style="boxStyle">丙</span>

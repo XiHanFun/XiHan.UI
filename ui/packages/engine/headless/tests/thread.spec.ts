@@ -151,11 +151,11 @@ describe('播报接线', () => {
   it('运行态透到 root 与 viewport 上，没给就算 idle', () => {
     const bare = rig()
     expect(bare.api().status).toBe('idle')
-    expect(bare.root()['data-status']).toBe('idle')
+    expect(bare.root()['data-state']).toBe('idle')
 
     const streaming = rig({ status: 'streaming' })
-    expect(streaming.root()['data-status']).toBe('streaming')
-    expect(streaming.viewportProps()['data-status']).toBe('streaming')
+    expect(streaming.root()['data-state']).toBe('streaming')
+    expect(streaming.viewportProps()['data-state']).toBe('streaming')
   })
 
   it('文案默认英文，给了就用给的', () => {

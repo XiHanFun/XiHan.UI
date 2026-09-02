@@ -2,9 +2,9 @@
 "@xihan-ui/styles": minor
 ---
 
-**修复**十二处槽名与它作用的部件对不上——使用者按名字找过去，改的是另一处，或者干脆找不到名字。全部加法式：新名排在外层、旧名留在它的兜底位上，照旧名写的覆盖一条不失效。
+**修复**十二处槽名与它作用的部件对不上——使用者按名字找过去，改的是另一处，或者干脆找不到名字。十二处一律改名，走样的旧名不留兼容位，删掉的名字逐条列在「摘掉全部旧名兼容层」那份里。
 
-**number-field 的一体式盒挂着输入框的名字。** 描边、底、落影、圆角与悬停/聚焦/校验失败/只读/禁用五档全画在 `control` 上，槽却叫 `--xh-number-field-input-*`，而 `input` 是同一份解剖里另一个真实部件——同为一体式盒的 text-field 与 password-input 用的都是 `-control-`。补出 `--xh-number-field-control-bg` / `-border` / `-border-hover` / `-border-focus` / `-border-invalid` / `-bg-readonly` / `-bg-disabled` / `-shadow` / `-radius` 九个。写 `-control-` 只改一体式盒那一档，独立输入框那一档不再跟着走；写旧的 `-input-` 照旧两档一起改。
+**number-field 的一体式盒挂着输入框的名字。** 描边、底、落影、圆角与悬停/聚焦/校验失败/只读/禁用五档全画在 `control` 上，槽却叫 `--xh-number-field-input-*`，而 `input` 是同一份解剖里另一个真实部件——同为一体式盒的 text-field 与 password-input 用的都是 `-control-`。补出 `--xh-number-field-control-bg` / `-border` / `-border-hover` / `-border-focus` / `-border-invalid` / `-bg-readonly` / `-bg-disabled` / `-shadow` / `-radius` 九个。`-control-` 只改一体式盒那一档，`-input-` 只改独立输入框那一档，两档各调各的。
 
 **notification 的卡片十二个槽没有部件段。** 卡片是 `item` 部件，其余六个角色都带 `item-` 前缀，只有卡片自己的间距、宽度、内衬、描边、圆角、底、前景、落影、字号与行距不带；其中管内衬的 `--xh-notification-px` / `-py` 与管摞贴边的 `--xh-notification-inset` 只差一个词，改错了要在九个落位上逐个试。十二个槽各补一个 `--xh-notification-item-*`。
 

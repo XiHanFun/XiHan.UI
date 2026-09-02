@@ -169,10 +169,10 @@
     color: var(--xh-tool-call-status-fg-error, color-mix(in oklab, var(--xh-fg-danger) 60%, var(--xh-fg-default)));
   }
 
-  /* 在跑的时候状态文字自己扫一道光：data-running 此前在皮肤里没有任何表达，
+  /* 在跑的时候状态文字自己扫一道光：data-loading 此前在皮肤里没有任何表达，
      参数在传与参数齐了两档在屏幕上一模一样。
      渐变画在背景上再裁进字形，前景与 WebKit 的字形填充色都要透明才透得出底下那道光 */
-  [data-scope='tool-call'][data-part='root'][data-running] [data-part='status'] {
+  [data-scope='tool-call'][data-part='root'][data-loading] [data-part='status'] {
     background-image: linear-gradient(
       90deg,
       var(--xh-tool-call-status-shimmer-base, var(--xh-fg-subtle)) 35%,
@@ -190,7 +190,7 @@
   /* 减少动效：整道光撤掉换回平色，"在跑"仍由状态文字本身表达——只停动画的话，
      字形里会留着一段冻住的渐变。两条规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
   @media (prefers-reduced-motion: reduce) {
-    [data-scope='tool-call'][data-part='root'][data-running] [data-part='status'] {
+    [data-scope='tool-call'][data-part='root'][data-loading] [data-part='status'] {
       background-image: none;
       color: var(--xh-tool-call-status-fg, var(--xh-fg-muted));
       -webkit-text-fill-color: currentColor;
@@ -198,7 +198,7 @@
     }
   }
 
-  :where([data-motion='reduce']) [data-scope='tool-call'][data-part='root'][data-running] [data-part='status'] {
+  :where([data-motion='reduce']) [data-scope='tool-call'][data-part='root'][data-loading] [data-part='status'] {
     background-image: none;
     color: var(--xh-tool-call-status-fg, var(--xh-fg-muted));
     -webkit-text-fill-color: currentColor;
@@ -359,7 +359,7 @@
        取值与减弱动效那一档相同。两档各写一块、不并进一条媒体查询列表：减弱动效另有一份
        :where([data-motion='reduce']) 的钩子版本与它成对，打印没有对应的钩子可配，
        并成一条之后这层配对关系在文本上就断了。 */
-    [data-scope='tool-call'][data-part='root'][data-running] [data-part='status'] {
+    [data-scope='tool-call'][data-part='root'][data-loading] [data-part='status'] {
       background-image: none;
       color: var(--xh-tool-call-status-fg, var(--xh-fg-muted));
       -webkit-text-fill-color: currentColor;

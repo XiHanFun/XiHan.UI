@@ -169,8 +169,8 @@ Enter 提交、Shift+Enter 换行；输入法组合中的 Enter 一律放行，�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `data-busy` | ''（条件成立时才出现） |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-loading` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |

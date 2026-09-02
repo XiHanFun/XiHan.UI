@@ -34,7 +34,7 @@ export const paginationMachine = createMachine({
   name: 'pagination',
   context: ({ prop, cell }) => {
     // 先建每页条数：页码的回调要报出当下的档位，而档位在非受控时只有 cell 认得
-    // 只给 pageSize 仍是受控，与升级前一字不差；只给 defaultPageSize 才由组件自持
+    // 只给 pageSize 即受控，档位由外部持有；只给 defaultPageSize 才由组件自持
     const pageSize = cell<number>(() => ({
       value: prop('pageSize'),
       defaultValue: prop('defaultPageSize') ?? PAGINATION_PAGE_SIZE,

@@ -509,7 +509,7 @@ export const treeSuite: ConformanceSuite = {
     {
       name: '复选：确认键切换而不是替换，tree 报 aria-multiselectable',
       spec: { apg: `${APG}#keyboardinteraction` },
-      props: props({ selectionMode: 'multiple', expandOnClick: false, defaultExpandedValue: ['src'] }),
+      props: props({ multiple: true, expandOnClick: false, defaultExpandedValue: ['src'] }),
       initial: { parts: { tree: { 'aria-multiselectable': 'true' } } },
       steps: [
         { kind: 'focus', part: 'tree' },

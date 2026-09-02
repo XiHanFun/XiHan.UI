@@ -1,4 +1,4 @@
-<!-- 多选 | selectionMode 默认 single，改成 multiple 后点击与确认键都变成切换，选中集合形状不变仍是数组 -->
+<!-- 多选 | multiple 关着是单选，打开后点击与确认键都变成切换，选中集合形状不变仍是数组 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import {
@@ -44,7 +44,7 @@ const selected = ref<string[]>(["hz"]);
       v-model:selection="selected"
       :collection="collection"
       :default-expanded-value="['cn', 'north']"
-      selection-mode="multiple"
+      multiple
     >
       <XhTreeLabel>投放城市</XhTreeLabel>
       <XhTreeTree>

@@ -279,15 +279,14 @@
 
   /* 共享面板外壳：只管落位与统一的面板外观，里面装哪一份内容归 content。
      内衬自成一个槽：外壳装的是整份面板，缺省比 content 宽一档，
-     两处共用一个槽的话调了一处另一处跟着走，差值就再也调不开。
-     content 那个槽接在后面当默认值，照旧名写的覆盖两处照样一起改 */
+     两处共用一个槽的话调了一处另一处跟着走，差值就再也调不开 */
   [data-scope='navigation-menu'][data-part='viewport'] {
     position: absolute;
     z-index: var(--xh-navigation-menu-layer, var(--xh-layer-popover));
     inset-block-start: calc(100% + var(--xh-navigation-menu-content-offset, var(--xh-space-1)));
     inset-inline-start: 0;
     display: block;
-    padding: var(--xh-navigation-menu-viewport-p, var(--xh-navigation-menu-content-p, var(--xh-space-2)));
+    padding: var(--xh-navigation-menu-viewport-p, var(--xh-space-2));
     border: var(--xh-stroke-thin) solid var(--xh-navigation-menu-content-border, var(--xh-border-default));
     border-radius: var(--xh-navigation-menu-content-radius, var(--xh-shape-surface));
     background: var(--xh-navigation-menu-content-bg, var(--xh-bg-surface));

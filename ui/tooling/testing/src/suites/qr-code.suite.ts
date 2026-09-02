@@ -326,7 +326,7 @@ export const qrCodeSuite: ConformanceSuite = {
         },
         {
           kind: 'raw',
-          why: '缺省形状的几何是向后兼容的硬要求，只能逐字比对那两条 d',
+          why: '缺省形状与显式写 square / square 必须画出同一条 d，只能逐字比对那两条',
           run: (ctx) => {
             for (const name of ['modules', 'eyes'] as const) {
               const now = geomD(ctx.doc, name, ctx.adapterName)

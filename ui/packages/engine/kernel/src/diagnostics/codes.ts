@@ -19,16 +19,6 @@ export const DIAGNOSTIC_CODES = {
   qrCodeLogoDamage: 'qr-code.logo-damage',
   /** 页面上出现了某个组件，但它那份皮肤没被引入。 */
   stylesMissingSkin: 'styles.missing-skin',
-  /** 样式表里用到了已废弃的 CSS 自定义属性。 */
-  deprecatedCssVar: 'deprecated.css-var',
-  /** 样式表里用到了已废弃的 @layer 名。 */
-  deprecatedLayer: 'deprecated.layer',
-  /** 样式表里用到了已废弃的 data-* 选择器。 */
-  deprecatedSelector: 'deprecated.selector',
-  /** 自定义元素上挂了已废弃的 attribute。 */
-  deprecatedAttribute: 'deprecated.attribute',
-  /** 作者写了已废弃的 data-xh-part 角色名。 */
-  deprecatedPart: 'deprecated.part',
   /** 适配器与 kernel 的版本不一致，锁步发版被打破。 */
   versionMismatch: 'core.version-mismatch',
   /** 作者给了默认插槽，但该组件不渲染插槽内容。 */

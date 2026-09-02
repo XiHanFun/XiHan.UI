@@ -36,7 +36,7 @@ root 的高度由外部给定，滚动才发生在 viewport 里面；root / view
 
 ### 运行态与播报
 
-status 由宿主持有，组件只把它透出成 data-status；viewport 恒 aria-live="off"，播报只发生在 live-region 里
+status 由宿主持有，组件只把它透出成 data-state；viewport 恒 aria-live="off"，播报只发生在 live-region 里
 
 <XhDemo src="thread/03-status" />
 
@@ -178,9 +178,7 @@ stick-change 报到底，宿主据此去取下一页；先往上滚一段再滚�
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-state` | props.status |
-| `root` | `data-status` | props.status |
 | `viewport` | `data-state` | props.status |
-| `viewport` | `data-status` | props.status |
 | `scroll-button` | `data-state` | 'visible' \| 'hidden' |
 
 ## CSS 变量

@@ -61,7 +61,7 @@ export function connectApproval<T extends PropTypes>(
       'aria-labelledby': ids.title,
       'aria-describedby': ids.description,
       'data-state': status,
-      'data-busy': dataAttr(busy),
+      'data-loading': dataAttr(busy),
       'data-tone': prop('tone'),
       'data-size': prop('size'),
       'onKeyDown': (event: KeyboardEvent) => {
@@ -184,7 +184,7 @@ export function connectApproval<T extends PropTypes>(
       'aria-label': translations?.approve,
       'disabled': settled || undefined,
       'data-state': status,
-      'data-busy': dataAttr(busy),
+      'data-loading': dataAttr(busy),
       'onClick': () => {
         if (!settled && canApprove)
           send({ type: 'APPROVE' })
@@ -203,7 +203,7 @@ export function connectApproval<T extends PropTypes>(
       'aria-label': translations?.deny,
       'disabled': settled || undefined,
       'data-state': status,
-      'data-busy': dataAttr(busy),
+      'data-loading': dataAttr(busy),
       'onClick': () => {
         if (!settled && !busy)
           send({ type: 'DENY', source: 'user' })

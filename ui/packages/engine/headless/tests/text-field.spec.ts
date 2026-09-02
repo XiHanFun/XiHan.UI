@@ -162,7 +162,7 @@ describe('connectTextField 结构与标注', () => {
     expect(root['data-disabled']).toBeUndefined()
     expect(root['data-readonly']).toBeUndefined()
     expect(root['data-invalid']).toBeUndefined()
-    expect(root['data-at-limit']).toBeUndefined()
+    expect(root['data-at-max']).toBeUndefined()
   })
 
   it('label 的 for 指向 input 自己的 id，input 反手 aria-labelledby 指回 label', () => {
@@ -208,14 +208,14 @@ describe('connectTextField 结构与标注', () => {
     expect((readOnly.getRootProps() as Dict)['data-readonly']).toBe('')
   })
 
-  it('到顶时 root 与 input 都出 data-at-limit', () => {
+  it('到顶时 root 与 input 都出 data-at-max', () => {
     const api = makeService({ defaultValue: 'abc', maxLength: 3 }).api()
     expect(api.atLimit).toBe(true)
-    expect((api.getRootProps() as Dict)['data-at-limit']).toBe('')
-    expect((api.getInputProps() as Dict)['data-at-limit']).toBe('')
+    expect((api.getRootProps() as Dict)['data-at-max']).toBe('')
+    expect((api.getInputProps() as Dict)['data-at-max']).toBe('')
 
     const below = makeService({ defaultValue: 'ab', maxLength: 3 }).api()
-    expect((below.getRootProps() as Dict)['data-at-limit']).toBeUndefined()
+    expect((below.getRootProps() as Dict)['data-at-max']).toBeUndefined()
   })
 })
 

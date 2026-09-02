@@ -89,7 +89,7 @@ export interface TableColumnDef {
   sortable?: boolean
   /**
    * 横向冻结（左右滚动时这一列钉住），落成条目上的 data-frozen。true 等于 'start'（钉在行首侧），'end' 钉在行尾侧。
-   * 与表头吸顶的 data-sticky 是两件事：那个是布尔，这个带方向，同名会让 [data-sticky] 一条选择器命中两种语义。
+   * 与表头吸顶的 data-fixed 是两件事：那个是布尔，这个带方向，同名会让 [data-fixed] 一条选择器命中两种语义。
    * 同侧有多列吸附时，连接层按前面各列的数字列宽累加出偏移，写进 --xh-table-sticky-inset；
    * 有一列宽度不是数字就算不出来，那一侧从这列起都退回贴边。
    */
@@ -263,13 +263,13 @@ export interface TableSchema extends MachineSchema {
     loading?: boolean
     /** 显式声明表体为空；缺省按 rows 是否为空推导。 */
     empty?: boolean
-    /** 表头吸顶：只落 data-sticky（布尔），钉住的实现归皮肤。列冻结走 data-frozen，两者不同名。 */
+    /** 表头吸顶：只落 data-fixed（布尔），钉住的实现归皮肤。列冻结走 data-frozen，两者不同名。 */
     stickyHeader?: boolean
     /** 斑马纹：表体偶数行换一层浅底。 */
     striped?: boolean
-    /** 去掉外框，只留行间横线。 */
+    /** 去掉外框，只留行间横线：root 上的 data-bordered 随之缺席。 */
     borderless?: boolean
-    /** 列与列之间加竖分隔线。 */
+    /** 列与列之间加竖分隔线，落成 root 上的 data-split。 */
     ruled?: boolean
     /** 表格带脚注行。行号空间的最后一行留给它，aria-rowcount 也把它算进去。 */
     footer?: boolean

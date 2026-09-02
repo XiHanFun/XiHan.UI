@@ -117,8 +117,8 @@ export const imageViewerSuite: ConformanceSuite = {
                 // 当前图的 alt 就是对话框的名字
                 'aria-label': '第一张',
               },
-              'viewport': { 'data-state': 'open', 'data-panning': null },
-              'image': { 'data-state': 'open', 'data-panning': null },
+              'viewport': { 'data-state': 'open', 'data-dragging': null },
+              'image': { 'data-state': 'open', 'data-dragging': null },
               'toolbar': { 'role': 'toolbar', 'aria-label': 'Image tools', 'data-state': 'open' },
               'counter': { 'aria-live': 'polite', 'data-index': '1', 'data-count': '3', 'data-state': 'open' },
               'prev-trigger': { 'type': 'button', 'aria-label': 'Previous image', 'disabled': null, 'data-disabled': null },

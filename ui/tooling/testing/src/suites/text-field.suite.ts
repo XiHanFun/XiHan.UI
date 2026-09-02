@@ -84,7 +84,7 @@ export const textFieldSuite: ConformanceSuite = {
             'data-disabled': null,
             'data-readonly': null,
             'data-invalid': null,
-            'data-at-limit': null,
+            'data-at-max': null,
           },
           'label': { for: '@part(input)' },
           'input': {
@@ -94,7 +94,7 @@ export const textFieldSuite: ConformanceSuite = {
             'aria-invalid': 'false',
             'disabled': null,
             'readonly': null,
-            'data-at-limit': null,
+            'data-at-max': null,
           },
           // 没开 clearable：按钮收起而不是卸载，节点是作者写的；不占 Tab 位但带名字、不对读屏隐藏
           'clear-trigger': { 'hidden': '', 'disabled': null, 'data-disabled': null, 'aria-hidden': null, 'aria-label': 'Clear', 'tabindex': '-1', 'type': 'button' },
@@ -222,7 +222,7 @@ export const textFieldSuite: ConformanceSuite = {
       ],
     },
     {
-      name: 'maxLength：原生 maxlength 落到 input 上，超长输入被截断并出 data-at-limit',
+      name: 'maxLength：原生 maxlength 落到 input 上，超长输入被截断并出 data-at-max',
       spec: { apg: HTML_SPEC },
       props: { maxLength: 4 },
       steps: [
@@ -238,17 +238,17 @@ export const textFieldSuite: ConformanceSuite = {
             expectValue(doc, '一二三四', '超过上限的部分应被截掉')
           },
           expect: {
-            parts: { root: { 'data-at-limit': '' }, input: { 'data-at-limit': '' } },
+            parts: { root: { 'data-at-max': '' }, input: { 'data-at-max': '' } },
             events: [{ type: 'value-change', detail: { value: '一二三四' } }],
           },
         },
       ],
     },
     {
-      name: 'maxLength：没顶到上限时不出 data-at-limit',
+      name: 'maxLength：没顶到上限时不出 data-at-max',
       spec: { apg: HTML_SPEC },
       props: { maxLength: 4, defaultValue: '一二' },
-      initial: { parts: { root: { 'data-at-limit': null }, input: { 'data-at-limit': null } } },
+      initial: { parts: { root: { 'data-at-max': null }, input: { 'data-at-max': null } } },
     },
     {
       name: 'disabled：input 带原生 disabled，输入与清空都推不动',

@@ -1,4 +1,4 @@
-import type { TreeApi, TreeNode, TreeNodeProps, TreeSchema, TreeSelectionMode } from '@xihan-ui/headless'
+import type { TreeApi, TreeNode, TreeNodeProps, TreeSchema } from '@xihan-ui/headless'
 import type { Direction } from '@xihan-ui/kernel'
 import type { PropType, Ref, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
@@ -59,7 +59,6 @@ export const XhTreeRoot = defineComponent({
     multiple: { type: Boolean, default: undefined },
     /** 末端那一层怎么排，默认 vertical；horizontal 让子节点全是叶子的那层并排铺开。 */
     leafOrientation: { type: String as PropType<TreeProps['leafOrientation']>, default: undefined },
-    selectionMode: { type: String as PropType<TreeSelectionMode>, default: undefined },
     cascade: Boolean,
     checkedStrategy: { type: String as PropType<TreeProps['checkedStrategy']>, default: undefined },
     expandOnClick: { type: Boolean, default: undefined },

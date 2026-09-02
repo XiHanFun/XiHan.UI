@@ -163,7 +163,7 @@ describe('条目语义', () => {
 
   it('可访问名二选一：渲了作者名就指过去，没渲才用文案', () => {
     // 指向一个没渲出来的 id 会让读屏读空
-    const api = mount({ translations: { item: '消息' } }).api()
+    const api = mount({ translations: { item: () => '消息' } }).api()
     const labelled = api.getItemProps({ id: 'm1', index: 0, labelled: true }) as Dict
     expect(labelled['aria-labelledby']).toBe((api.getItemLabelProps({ id: 'm1' }) as Dict).id)
     expect(labelled['aria-label']).toBeUndefined()
@@ -196,5 +196,11 @@ describe('消息流 · 单条消息的名字', () => {
       translations: { item: (position, size, role) => `第 ${position}/${size} 条，${role}` },
     }).api()
     expect((api.getItemProps({ id: 'm3', index: 2, role: 'user' }) as Dict)['aria-label']).toBe('第 3/3 条，user')
+  })
+
+  it('translations.item 只收函数：给字符串不过类型', () => {
+    // @ts-expect-error 固定串会让每条消息念到同一句，位次与身份都丢了
+    mount({ translations: { item: '消息' } })
+    // 这一行的 @ts-expect-error 是判据本身：形状若又放宽回并集，它会因「没有错可期待」而报错
   })
 })

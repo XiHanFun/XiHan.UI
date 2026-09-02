@@ -1,5 +1,5 @@
 import type { DragAnnounceKind, DropTarget } from '../shared/drag'
-import type { TreeMove, TreeNode, TreeNodeMeta, TreeSchema, TreeSelectionMode, TreeVisibleNode } from './tree.types'
+import type { TreeMove, TreeNode, TreeNodeMeta, TreeSchema, TreeVisibleNode } from './tree.types'
 import { applySelection, cascadeToggle, collapseChecked, createTypeahead } from '@xihan-ui/behavior'
 import { setup } from '@xihan-ui/machine'
 import { createMultiPointerSession, resolveSessionDoc, shouldActivate } from '@xihan-ui/pointer'
@@ -8,16 +8,6 @@ import { snapshotDrift } from '../shared/drag-drift'
 import { isTreeDropAllowed, treeMoveOf } from './tree.drag'
 
 const { createMachine } = setup<TreeSchema>()
-
-/**
- * 生效的选择模式。
- *
- * 两个来源：新的 `multiple` 布尔与旧的 `selectionMode` 枚举。两者同时给时以 selectionMode
- * 为准——与 listbox 同一条规矩，也让过渡期里旧代码的行为一点不变。
- */
-export function treeSelectionMode(mode: TreeSelectionMode | undefined, multiple?: boolean): TreeSelectionMode {
-  return mode ?? (multiple ? 'multiple' : 'single')
-}
 
 /**
  * 深度优先走一遍 collection，按 shouldDescend 决定要不要下潜。
@@ -97,8 +87,8 @@ function unique(values: readonly string[]): string[] {
 }
 
 /** 选中集合的不变量：单选恒为长度 ≤ 1，复选去重。公开 API 与内部写入都经这里收口。 */
-function normalizeSelection(next: readonly string[], mode: TreeSelectionMode): string[] {
-  return mode === 'single' ? next.slice(0, 1) : unique(next)
+function normalizeSelection(next: readonly string[], multiple: boolean): string[] {
+  return multiple ? unique(next) : next.slice(0, 1)
 }
 
 /** 数组按元素比：受控时 cell 每次读都产出新数组，默认的 Object.is 恒不相等。 */
@@ -290,7 +280,7 @@ export const treeMachine = createMachine({
         const e = event.current()
         if (e.type !== 'SELECTION.SET')
           return
-        context.set('selection', normalizeSelection(e.value, treeSelectionMode(prop('selectionMode'), prop('multiple'))))
+        context.set('selection', normalizeSelection(e.value, !!prop('multiple')))
       },
       selectNode: ({ context, prop, event }) => {
         const e = event.current()
@@ -298,7 +288,7 @@ export const treeMachine = createMachine({
           return
         const current = context.get('selection')
         const anchor = context.get('selectionAnchor')
-        const multiple = treeSelectionMode(prop('selectionMode'), prop('multiple')) === 'multiple'
+        const multiple = !!prop('multiple')
 
         // 按住 Shift 选一段。级联那一路不接：勾一个本来就带一片，
         // 再叠上范围选，选出来什么会难以预料
@@ -322,7 +312,7 @@ export const treeMachine = createMachine({
         context.set('selectionAnchor', e.value)
         context.set('selectionBaseline', null)
         // 单选没有取消选中这回事，点两下不会把树点空
-        if (treeSelectionMode(prop('selectionMode'), prop('multiple')) === 'single') {
+        if (!prop('multiple')) {
           context.set('selection', [e.value])
           return
         }

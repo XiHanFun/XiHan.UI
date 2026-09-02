@@ -58,7 +58,7 @@ export function connectTextField<T extends PropTypes>(
       'data-readonly': dataAttr(readOnly),
       'data-invalid': dataAttr(invalid),
       'data-empty': dataAttr(empty),
-      'data-at-limit': dataAttr(atLimit),
+      'data-at-max': dataAttr(atLimit),
     }),
 
     // 视觉盒：写了这个节点就由它画描边、底色与聚焦环，输入框与清空按钮排在它里面；
@@ -68,7 +68,7 @@ export function connectTextField<T extends PropTypes>(
       'data-disabled': dataAttr(disabled),
       'data-readonly': dataAttr(readOnly),
       'data-invalid': dataAttr(invalid),
-      'data-at-limit': dataAttr(atLimit),
+      'data-at-max': dataAttr(atLimit),
     }),
 
     getLabelProps: () => normalize.label({
@@ -100,10 +100,10 @@ export function connectTextField<T extends PropTypes>(
       'aria-invalid': invalid ? 'true' : 'false',
       // 皮肤只认 data-*、不认标签名，多行宿主的排版靠这一条认出来
       'data-multiline': dataAttr((input.as ?? 'input') === 'textarea'),
-      'data-autosize': dataAttr((input.as ?? 'input') === 'textarea' && !!autoSize),
+      'data-auto-resize': dataAttr((input.as ?? 'input') === 'textarea' && !!autoSize),
       'data-disabled': dataAttr(disabled),
       'data-invalid': dataAttr(invalid),
-      'data-at-limit': dataAttr(atLimit),
+      'data-at-max': dataAttr(atLimit),
       'onInput': (event: Event) => {
         const el = event.target as HTMLInputElement | HTMLTextAreaElement
         send({ type: 'VALUE.SET', value: el.value })

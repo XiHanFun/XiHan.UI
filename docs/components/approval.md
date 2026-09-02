@@ -220,7 +220,7 @@
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `data-busy` | ''（条件成立时才出现） |
+| `root` | `data-loading` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | state.get() |
 | `root` | `data-tone` | props.tone |
@@ -232,9 +232,9 @@
 | `note` | `data-state` | state.get() |
 | `timer` | `data-state` | state.get() |
 | `result` | `data-state` | state.get() |
-| `approve-trigger` | `data-busy` | ''（条件成立时才出现） |
+| `approve-trigger` | `data-loading` | ''（条件成立时才出现） |
 | `approve-trigger` | `data-state` | state.get() |
-| `deny-trigger` | `data-busy` | ''（条件成立时才出现） |
+| `deny-trigger` | `data-loading` | ''（条件成立时才出现） |
 | `deny-trigger` | `data-state` | state.get() |
 
 ## CSS 变量

@@ -126,9 +126,9 @@
     display: none;
   }
 
-  /* hover 只在中性态换描边：invalid 与 at-limit 正拿边框颜色说事，
+  /* hover 只在中性态换描边：invalid 与 at-max 正拿边框颜色说事，
      被 hover 盖掉那条信息就没了 */
-  [data-scope='text-field'][data-part='control']:hover:not([data-disabled], [data-invalid], [data-at-limit]) {
+  [data-scope='text-field'][data-part='control']:hover:not([data-disabled], [data-invalid], [data-at-max]) {
     border-color: var(--xh-text-field-control-border-hover, var(--xh-_text-field-border-hover));
   }
 
@@ -140,8 +140,8 @@
 
   /* 顶到字数上限：再敲进不去，边框先给个提示。放在 invalid 之前，
      两者同时成立时按源序让 invalid 赢 */
-  [data-scope='text-field'][data-part='control'][data-at-limit] {
-    border-color: var(--xh-text-field-control-border-at-limit, var(--xh-border-at-limit));
+  [data-scope='text-field'][data-part='control'][data-at-max] {
+    border-color: var(--xh-text-field-control-border-at-max, var(--xh-border-at-limit));
   }
 
   [data-scope='text-field'][data-part='control'][data-invalid] {
@@ -177,7 +177,7 @@
 
   /* 盒内 input 不再自己画各态，全部交还 control。hover 这条带上与基础规则同样的
      :not 条件：基础 hover 的特异度里有它们，不带就打不过 */
-  [data-scope='text-field'][data-part='control'] [data-part='input']:hover:not(:disabled, [data-invalid], [data-at-limit]) {
+  [data-scope='text-field'][data-part='control'] [data-part='input']:hover:not(:disabled, [data-invalid], [data-at-max]) {
     border-color: transparent;
   }
 
@@ -186,7 +186,7 @@
     outline: none;
   }
 
-  [data-scope='text-field'][data-part='control'] [data-part='input'][data-at-limit],
+  [data-scope='text-field'][data-part='control'] [data-part='input'][data-at-max],
   [data-scope='text-field'][data-part='control'] [data-part='input'][data-invalid] {
     border-color: transparent;
   }
@@ -226,7 +226,7 @@
     resize: vertical;
   }
 
-  [data-scope='text-field'][data-part='input'][data-multiline][data-autosize] {
+  [data-scope='text-field'][data-part='input'][data-multiline][data-auto-resize] {
     overflow: hidden;
     resize: none;
   }
@@ -235,14 +235,14 @@
     color: var(--xh-text-field-placeholder-fg, var(--xh-fg-subtle));
   }
 
-  /* hover 只在中性态换描边：invalid 与 at-limit 正拿边框颜色说事，
+  /* hover 只在中性态换描边：invalid 与 at-max 正拿边框颜色说事，
      被 hover 盖掉那条信息就没了 */
-  [data-scope='text-field'][data-part='input']:hover:not(:disabled, [data-invalid], [data-at-limit]) {
+  [data-scope='text-field'][data-part='input']:hover:not(:disabled, [data-invalid], [data-at-max]) {
     border-color: var(--xh-text-field-input-border-hover, var(--xh-_text-field-border-hover));
   }
 
   /* 聚焦态描边与环共用一族语气色。这条特异度低于上面的 hover、也低于下面的
-     at-limit 与 invalid，三者仍按原来的次序赢过它 */
+     at-max 与 invalid，三者仍按原来的次序赢过它 */
   [data-scope='text-field'][data-part='input']:focus-visible {
     border-color: var(--xh-text-field-input-border-focus, var(--xh-_text-field-border-focus));
     outline: var(--xh-ring-width) solid var(--xh-_text-field-ring);
@@ -251,8 +251,8 @@
 
   /* 顶到字数上限：再敲进不去，边框先给个提示。放在 invalid 之前，
      两者同时成立时按源序让 invalid 赢——真出错比"写满了"要紧 */
-  [data-scope='text-field'][data-part='input'][data-at-limit] {
-    border-color: var(--xh-text-field-input-border-at-limit, var(--xh-border-at-limit));
+  [data-scope='text-field'][data-part='input'][data-at-max] {
+    border-color: var(--xh-text-field-input-border-at-max, var(--xh-border-at-limit));
   }
 
   [data-scope='text-field'][data-part='input'][data-invalid] {

@@ -49,7 +49,7 @@ export interface TagsInputSchema extends MachineSchema {
     /**
      * 允许越过 max。
      * 关（默认）：顶到上限后这一次输入整体不生效，文本原样留在框里，绝不悄悄吞掉。
-     * 开：照加不误，只在 root / control 上打出 data-overflow 供样式与提示使用。
+     * 开：照加不误，只在 root / control 上打出 data-overflowing 供样式与提示使用。
      */
     allowOverflow?: boolean
     disabled?: boolean

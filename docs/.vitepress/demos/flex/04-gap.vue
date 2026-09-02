@@ -10,7 +10,7 @@ const gaps = ["xs", "sm", "md", "lg", "xl"] as const;
 </script>
 
 <template>
-  <XhFlex direction="column" gap="sm">
+  <XhFlex orientation="vertical" gap="sm">
     <XhFlex v-for="g in gaps" :key="g" align="center" gap="md">
       <span :style="labelStyle">gap = {{ g }}</span>
       <XhFlex :gap="g">

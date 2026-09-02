@@ -6,6 +6,7 @@
 // 它会把产物写进库里,只有一道「先生成、再 `git diff --exit-code`(或 --check 模式核对)」的
 // gate:* 脚本才能让生成结果与库内文件的偏离在流水线上现形。其余门禁管库的公开面,这条管
 // 检查与生成系统自己的完整性。
+import { existsSync } from 'node:fs'
 import { readdir, readFile } from 'node:fs/promises'
 
 const SCRIPT_DIRS = ['tooling/scripts', 'scripts']
@@ -27,9 +28,12 @@ const WRITES_FILES = new Set([
 /**
  * 产物是基线快照而不是从源码派生的生成器：重跑再 diff 没有意义（推基线本来就是有意改它），
  * 由另一道读同一份产物的检查器兜住意外变化。值是那道检查器。
+ *
+ * 这张表放行的是「产物无人核对」那一条，所以它自己不能过期：键不再是生成器、
+ * 或那道检查器的文件没了，放行就落空——下面逐条核验。
  */
 const BASELINE_GUARDED = {
-  'build-public-surface.mjs': 'check-public-surface.mjs',
+  'build-public-surface.mjs': 'tooling/scripts/check-public-surface.mjs',
   'visual-baseline.mjs': 'packages/adapters/vue/tests/browser/visual-baseline.spec.ts',
 }
 
@@ -73,6 +77,8 @@ function isGuardingGate(name, body) {
 }
 
 const errors = []
+/** 真的用来放行过的生成器。 */
+const usedBaseline = new Set()
 
 for (const [path, name] of checks) {
   if (path in EXEMPT)
@@ -90,8 +96,10 @@ for (const [path, name] of generators) {
     errors.push(referenceHint(path, name, '没接进任何 pnpm script——能手跑一次就把产物永久写进库,却没有任何门禁核对它'))
     continue
   }
-  const guarded = referrers.some(ref => isGuardingGate(ref, root.scripts[ref]))
-    || BASELINE_GUARDED[name] != null
+  const byGate = referrers.some(ref => isGuardingGate(ref, root.scripts[ref]))
+  if (!byGate && BASELINE_GUARDED[name] != null)
+    usedBaseline.add(name)
+  const guarded = byGate || BASELINE_GUARDED[name] != null
   if (!guarded) {
     errors.push(
       `${path} 只被 ${referrers.join(' / ')} 引用,产物无人核对`
@@ -120,6 +128,14 @@ for (const [name, body] of entries) {
   }
 }
 
+// 基线名单自身的保鲜:键不再是生成器、或那道检查器不存在,放行就落空
+for (const [name, guard] of Object.entries(BASELINE_GUARDED)) {
+  if (!usedBaseline.has(name))
+    errors.push(`BASELINE_GUARDED 里的 ${name} 登记了却没被扫到——名单过期了`)
+  else if (!existsSync(guard))
+    errors.push(`BASELINE_GUARDED 里 ${name} 指向的检查器 ${guard} 不存在,产物其实无人核对`)
+}
+
 // 免检名单自身的保鲜:文件删了或改名了,名单条目要一并清掉
 for (const path of Object.keys(EXEMPT)) {
   if (!known.has(path))
@@ -138,5 +154,5 @@ if (errors.length > 0) {
 const exempt = Object.keys(EXEMPT).length
 console.log(
   `[check-wiring] 通过:${checks.size} 个检查脚本、${generators.size} 个生成器全部接入 script`
-  + `${exempt > 0 ? `(${exempt} 个免检)` : ''},生成器产物均由 gate 核对,script 里没有死引用`,
+  + `${exempt > 0 ? `(${exempt} 个免检)` : ''},生成器产物均由 gate 核对(基线快照 ${usedBaseline.size} 个由检查器兜住),script 里没有死引用`,
 )

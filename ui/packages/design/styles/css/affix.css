@@ -25,7 +25,7 @@
    * transform / filter / backdrop-filter / contain，包含块就被抢走，钉住的内容立刻贴错位置——
    * 所以别往覆盖钩子里加这几个属性。
    */
-  [data-scope='affix'][data-part='content'][data-affixed] {
+  [data-scope='affix'][data-part='content'][data-fixed] {
     position: fixed;
     z-index: var(--xh-affix-layer, var(--xh-layer-sticky));
   }
@@ -33,7 +33,7 @@
   @media print {
     /* 打印：钉住的是作者自己的内容，不能收起；但保持 fixed 会让部分打印引擎每页重复一次，
        所以只把它放回正常流。 */
-    [data-scope='affix'][data-part='content'][data-affixed] {
+    [data-scope='affix'][data-part='content'][data-fixed] {
       position: static;
     }
   }

@@ -184,7 +184,7 @@ multiple 换的是整套 ARIA：root 退回 group、条目退回原生按钮 + a
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-toggle-group-item-bg` · `--xh-toggle-group-item-bg-active` · `--xh-toggle-group-item-bg-disabled` · `--xh-toggle-group-item-bg-hover` · `--xh-toggle-group-item-bg-on` · `--xh-toggle-group-item-bg-on-active` · `--xh-toggle-group-item-bg-on-hover` · `--xh-toggle-group-item-border` · `--xh-toggle-group-item-border-disabled` · `--xh-toggle-group-item-border-on` · `--xh-toggle-group-item-border-on-disabled` · `--xh-toggle-group-item-fg` · `--xh-toggle-group-item-fg-disabled` · `--xh-toggle-group-item-fg-on` · `--xh-toggle-group-item-fg-on-disabled` · `--xh-toggle-group-item-font-size` · `--xh-toggle-group-item-font-weight` · `--xh-toggle-group-item-gap` · `--xh-toggle-group-item-h` · `--xh-toggle-group-item-px` · `--xh-toggle-group-item-radius` · `--xh-toggle-group-item-shadow` · `--xh-toggle-group-radius`
+`--xh-toggle-group-item-bg` · `--xh-toggle-group-item-bg-active` · `--xh-toggle-group-item-bg-disabled` · `--xh-toggle-group-item-bg-hover` · `--xh-toggle-group-item-bg-on` · `--xh-toggle-group-item-bg-on-active` · `--xh-toggle-group-item-bg-on-hover` · `--xh-toggle-group-item-border` · `--xh-toggle-group-item-border-disabled` · `--xh-toggle-group-item-border-on` · `--xh-toggle-group-item-border-on-disabled` · `--xh-toggle-group-item-fg` · `--xh-toggle-group-item-fg-disabled` · `--xh-toggle-group-item-fg-on` · `--xh-toggle-group-item-fg-on-disabled` · `--xh-toggle-group-item-font-size` · `--xh-toggle-group-item-font-weight` · `--xh-toggle-group-item-gap` · `--xh-toggle-group-item-h` · `--xh-toggle-group-item-px` · `--xh-toggle-group-item-radius` · `--xh-toggle-group-item-shadow`
 
 ## 动效
 

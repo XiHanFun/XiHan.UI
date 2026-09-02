@@ -35,7 +35,6 @@ export {
 } from './diagnostics/channel'
 export type { DiagnosticCode } from './diagnostics/codes'
 export { DIAGNOSTIC_CODES } from './diagnostics/codes'
-// 废弃登记与探测在 ./deprecations 子路径:它是开发期工具,不该躺在每个消费方都会打包的主入口里
 // (与 ./skin-check 同理,见 .size-limit.json 里 kernel 与 vue 各入口的棘轮)
 export type {
   DiagnosticHandler,

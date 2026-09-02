@@ -60,7 +60,7 @@ const FOOTER_SELECTOR = '[data-xh-part="footer"]'
  * @attr {'none'|'single'|'multiple'} selection-mode - 选择模式，默认 none（不声明就没有选择这回事）
  * @attr {boolean} loading - 数据在路上：root 报 aria-busy，表体为空时加载态节点显形
  * @attr {boolean} empty - 显式声明表体为空；缺省按 rows 是否为空推导，写 empty="false" 强制不空
- * @attr {boolean} sticky-header - 表头吸顶，只落 data-sticky（布尔）；列冻结另走 data-frozen
+ * @attr {boolean} sticky-header - 表头吸顶，只落 data-fixed（布尔）；列冻结另走 data-frozen
  * @attr {boolean} striped - 斑马纹：表体偶数行换一层浅底
  * @attr {boolean} borderless - 去掉外框，只留行间横线
  * @attr {boolean} ruled - 列与列之间加竖分隔线

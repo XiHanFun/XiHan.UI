@@ -12,7 +12,10 @@ const HEADLESS = 'packages/engine/headless/src'
 const VUE = 'packages/adapters/vue/src/components'
 const WC = 'packages/adapters/web-components/src/elements'
 
-/** 只在某一端存在的角色节点，逐条写明理由。 */
+/**
+ * 只在某一端存在的角色节点，逐条写明理由。键是组件名，值是 part 名数组。
+ * 每条都要真被用来放行过一次，一次都没用上的会被下面的名单核验报出来。
+ */
 const EXEMPT = {}
 
 /**
@@ -21,6 +24,9 @@ const EXEMPT = {}
  * 判据靠「part 名派生 getter 名」找承诺，名字对不上就整段跳过——那个 part 于是
  * 一道检查都不过。side-nav 的定位层就这么漏了：connect 叫 getPopoutPositionerProps，
  * 派生出来的是 getPositionerProps，两边对不上，WC 适配器整个没接它也没人报错。
+ *
+ * 别名本身也会过期：connect 改回了派生名、或那个 part 没了，别名就再也对不上，
+ * 于是又变回「整段跳过」的静默。每条都要真被用上一次，用不上的由下面的名单核验报出来。
  */
 const GETTER_ALIAS = {
   'side-nav': { positioner: 'getPopoutPositionerProps' },
@@ -43,6 +49,10 @@ async function readVue(comp) {
 const pascal = s => s.replace(/(^|-)([a-z])/g, (_, __, c) => c.toUpperCase())
 
 const problems = []
+/** 真的用来放行过的例外，写成「组件 part」。 */
+const usedExempt = new Set()
+/** 真的用来找到 getter 的别名，写成「组件 part」。 */
+const usedAlias = new Set()
 const entries = await readdir(HEADLESS, { withFileTypes: true })
 
 for (const entry of entries) {
@@ -59,11 +69,16 @@ for (const entry of entries) {
   const wc = (await read(join(WC, `${comp}.ts`))) ?? ''
 
   for (const part of parts) {
-    const getter = GETTER_ALIAS[comp]?.[part] ?? `get${pascal(part)}Props`
+    const alias = GETTER_ALIAS[comp]?.[part]
+    const getter = alias ?? `get${pascal(part)}Props`
     if (!connect.includes(getter))
       continue
-    if (EXEMPT[comp]?.includes(part))
+    if (alias)
+      usedAlias.add(`${comp} ${part}`)
+    if (EXEMPT[comp]?.includes(part)) {
+      usedExempt.add(`${comp} ${part}`)
       continue
+    }
     const inVue = vue.includes(getter)
     const inWc = wc.includes(`'${part}'`) || wc.includes(getter)
     if (!inVue && !inWc)
@@ -75,6 +90,20 @@ for (const entry of entries) {
   }
 }
 
+for (const [comp, parts] of Object.entries(EXEMPT)) {
+  for (const part of parts) {
+    if (!usedExempt.has(`${comp} ${part}`))
+      problems.push(`${comp} 的 ${part} 登记在 EXEMPT 里却没被扫到——名单过期了`)
+  }
+}
+
+for (const [comp, aliases] of Object.entries(GETTER_ALIAS)) {
+  for (const part of Object.keys(aliases)) {
+    if (!usedAlias.has(`${comp} ${part}`))
+      problems.push(`${comp} 的 ${part} 登记在 GETTER_ALIAS 里却没被扫到——名单过期了，那个 part 会整段跳过一道检查都不过`)
+  }
+}
+
 if (problems.length) {
   console.error('[check-part-wiring] ✗ 角色节点悬空：')
   for (const p of problems)
@@ -83,4 +112,4 @@ if (problems.length) {
   process.exit(1)
 }
 
-console.log('[check-part-wiring] 通过：connect 产出的角色节点两端都接上了')
+console.log(`[check-part-wiring] 通过：connect 产出的角色节点两端都接上了（getter 别名 ${usedAlias.size} 条、例外 ${usedExempt.size} 条）`)

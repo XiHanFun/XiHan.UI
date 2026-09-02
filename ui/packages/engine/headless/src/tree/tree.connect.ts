@@ -9,7 +9,7 @@ import { isEditableTarget } from '../shared/editable-target'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { treeAnatomy, treeBranchQuery, treeItemQuery } from './tree.anatomy'
 import { treeMoveCommand, treeMoveIntentFromKey } from './tree.drag'
-import { flattenTree, indexTree, treeSelectionMode } from './tree.machine'
+import { flattenTree, indexTree } from './tree.machine'
 
 const parts = treeAnatomy.build()
 
@@ -68,8 +68,7 @@ export function connectTree<T extends PropTypes>(
   const loop = prop('loop') ?? false
   const typeaheadOn = prop('typeahead') ?? true
   const expandOnClick = prop('expandOnClick') ?? true
-  const mode = treeSelectionMode(prop('selectionMode'), prop('multiple'))
-  const multiselectable = mode === 'multiple'
+  const multiselectable = !!prop('multiple')
   const ids = scope.ids('tree', 'label', 'tree')
 
   // 摊平与索引都是 (collection, 展开集合) 的纯函数；connect 在 Vue 的 render 期求值，此时 DOM 尚不存在。
@@ -102,7 +101,7 @@ export function connectTree<T extends PropTypes>(
     dropTarget?.targetValue === value ? dropTarget.position : undefined
   const isExpanded = (value: string): boolean => expandedValue.includes(value)
   // 级联模式下选中态从值集聚合得出：父随子勾、部分勾中半选
-  const cascade = mode === 'multiple' && !!prop('cascade')
+  const cascade = multiselectable && !!prop('cascade')
   const cascaded = cascade ? cascadeState(collection, selection) : null
   const isSelected = (value: string): boolean => (cascaded ? cascaded.checked.has(value) : selection.includes(value))
   const isIndeterminate = (value: string): boolean => cascaded?.indeterminate.has(value) ?? false
@@ -289,8 +288,7 @@ export function connectTree<T extends PropTypes>(
     expandedValue,
     selection,
     focusedValue,
-    multiple: mode === 'multiple',
-    selectionMode: mode,
+    multiple: multiselectable,
     disabled: treeDisabled,
     isExpanded,
     isSelected,

@@ -1,4 +1,4 @@
-<!-- 运行态与播报 | status 由宿主持有，组件只把它透出成 data-status；viewport 恒 aria-live="off"，播报只发生在 live-region 里 -->
+<!-- 运行态与播报 | status 由宿主持有，组件只把它透出成 data-state；viewport 恒 aria-live="off"，播报只发生在 live-region 里 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import {

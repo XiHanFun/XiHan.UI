@@ -65,7 +65,7 @@ export const threadSuite: ConformanceSuite = {
         order: ['root', 'viewport', 'content', 'scroll-button', 'live-region'],
         counts: { 'root': 1, 'viewport': 1, 'content': 1, 'scroll-button': 1, 'live-region': 1 },
         parts: {
-          'root': { 'data-state': 'idle', 'data-status': 'idle' },
+          'root': { 'data-state': 'idle' },
           'viewport': {
             'role': 'log',
             // role=log 隐含 aria-live=polite，这里显式关掉
@@ -74,7 +74,6 @@ export const threadSuite: ConformanceSuite = {
             // 让键盘用户能聚焦消息区
             'tabindex': '0',
             'data-state': 'idle',
-            'data-status': 'idle',
           },
           'scroll-button': {
             'type': 'button',

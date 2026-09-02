@@ -15,8 +15,8 @@ const tags = ["前端", "组件库", "无障碍", "设计令牌", "自定义元�
 </script>
 
 <template>
-  <XhSpace direction="vertical" gap="lg">
-    <XhSpace direction="vertical" gap="xs">
+  <XhSpace orientation="vertical" gap="lg">
+    <XhSpace orientation="vertical" gap="xs">
       <span :style="labelStyle">align = start：高矮不齐时顶端对齐（不写时横排按中线对齐）</span>
       <XhSpace align="start" :style="trackStyle">
         <span :style="boxStyle">甲</span>
@@ -25,14 +25,14 @@ const tags = ["前端", "组件库", "无障碍", "设计令牌", "自定义元�
       </XhSpace>
     </XhSpace>
 
-    <XhSpace direction="vertical" gap="xs">
+    <XhSpace orientation="vertical" gap="xs">
       <span :style="labelStyle">wrap：换行摆，行与行之间同样是 gap</span>
       <XhSpace wrap gap="sm" :style="trackStyle">
         <span v-for="t in tags" :key="t" :style="tagStyle">{{ t }}</span>
       </XhSpace>
     </XhSpace>
 
-    <XhSpace direction="vertical" gap="xs">
+    <XhSpace orientation="vertical" gap="xs">
       <span :style="labelStyle">inline：容器缩到内容宽度，跟前后文字排在同一行</span>
       <!-- 外层留成普通块级容器：行内盒要和文字处在同一个行内格式化上下文里才看得出效果 -->
       <div style="line-height: 2">

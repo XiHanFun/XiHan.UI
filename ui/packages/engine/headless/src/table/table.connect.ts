@@ -436,10 +436,10 @@ export function connectTable<T extends PropTypes>(
       'data-size': prop('size'),
       'data-loading': dataAttr(loading),
       'data-empty': dataAttr(isEmpty),
-      'data-sticky': dataAttr(stickyHeader),
+      'data-fixed': dataAttr(stickyHeader),
       'data-striped': dataAttr(!!prop('striped')),
-      'data-borderless': dataAttr(!!prop('borderless')),
-      'data-ruled': dataAttr(!!prop('ruled')),
+      'data-bordered': dataAttr(!prop('borderless')),
+      'data-split': dataAttr(!!prop('ruled')),
     }),
 
     getCaptionProps: () => normalize.element({
@@ -451,7 +451,7 @@ export function connectTable<T extends PropTypes>(
       ...parts.header.attrs,
       'role': 'rowgroup',
       // 吸顶只落标记，钉住的实现归皮肤
-      'data-sticky': dataAttr(stickyHeader),
+      'data-fixed': dataAttr(stickyHeader),
     }),
 
     // 键盘全在 body 上收口，行只管声明自己。
@@ -628,7 +628,7 @@ export function connectTable<T extends PropTypes>(
         'data-section': 'body',
         'data-dragging': dataAttr(draggingRow === row.value),
         'data-drop': rowDropSide(row.value),
-        'data-row-draggable': dataAttr(rowReorderable && rowBlocked == null && !isRowDisabled(row.value)),
+        'data-draggable': dataAttr(rowReorderable && rowBlocked == null && !isRowDisabled(row.value)),
         // 焦点是事实不是许可：禁用行被点到也记锚点，方向键才知道从哪儿起步
         'onFocus': () => send({ type: 'ROW.FOCUS', value: row.value }),
         // 整行都是拖动源，没有把手。按在行里的交互控件上不起拖：

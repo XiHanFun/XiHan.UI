@@ -50,7 +50,7 @@ export const promptInputSuite: ConformanceSuite = {
       initial: {
         counts: { 'root': 1, 'input': 1, 'submit-trigger': 1 },
         parts: {
-          'root': { 'data-disabled': null, 'data-busy': null },
+          'root': { 'data-disabled': null, 'data-loading': null },
           // 不给 translations.input 就整条不输出，作者的 <label for> 与自写的 aria-label 才留得住
           'input': { 'aria-label': null, 'data-state': 'empty' },
           'submit-trigger': { 'type': 'button', 'data-mode': 'send', 'aria-label': 'Send', 'disabled': '' },
@@ -158,7 +158,7 @@ export const promptInputSuite: ConformanceSuite = {
       props: { busy: true, defaultValue: '这句还没发' },
       initial: {
         parts: {
-          'root': { 'data-busy': '' },
+          'root': { 'data-loading': '' },
           // 同一个节点换身份：正在按它的用户不会按空
           'submit-trigger': { 'data-mode': 'stop', 'aria-label': 'Stop generating', 'disabled': null },
         },

@@ -102,7 +102,7 @@ export function connectTagsInput<T extends PropTypes>(
     'data-invalid': dataAttr(invalid),
     'data-empty': dataAttr(empty),
     'data-at-max': dataAttr(atMax),
-    'data-overflow': dataAttr(overflow),
+    'data-overflowing': dataAttr(overflow),
   })
 
   return {

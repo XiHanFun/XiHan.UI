@@ -40,7 +40,7 @@ export function connectLayout<T extends PropTypes>(
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'data-sider-placement': placement,
-      'data-sider-collapsed': dataAttr(collapsed),
+      'data-collapsed': dataAttr(collapsed),
       'data-header-fixed': dataAttr(headerFixed),
       'data-sider-fixed': dataAttr(siderFixed),
       'data-bordered': dataAttr(prop('bordered')),

@@ -44,7 +44,7 @@ describe('text-field 多行宿主', () => {
     expect(el.tagName).toBe('TEXTAREA')
     expect(el.hasAttribute('type')).toBe(false)
     expect(el.hasAttribute('data-multiline')).toBe(true)
-    expect(el.hasAttribute('data-autosize')).toBe(true)
+    expect(el.hasAttribute('data-auto-resize')).toBe(true)
     expect(el.getAttribute('rows')).toBe('3')
   })
 

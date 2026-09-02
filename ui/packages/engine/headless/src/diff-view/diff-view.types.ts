@@ -144,12 +144,8 @@ export interface DiffViewTranslations {
   removed: string
   /** 未改动行的读屏文字。 */
   unchanged: string
-  /**
-   * 展开按钮的可访问名。给函数能把折起来的行数念进名字里；给字符串则是固定名字。
-   *
-   * 两种都收是为了不推翻已经传字符串的调用方——只支持函数会让它们在运行时炸。
-   */
-  expandGap: string | ((count: number) => string)
+  /** 展开按钮的可访问名，入参是这一格折起来的行数。 */
+  expandGap: (count: number) => string
   /** 没有文件名时表格的兜底可访问名。 */
   diff: string
   /** 一条变更都没有时的占位文案。 */

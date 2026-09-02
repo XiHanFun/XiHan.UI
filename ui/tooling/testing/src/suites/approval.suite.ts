@@ -47,7 +47,7 @@ export const approvalSuite: ConformanceSuite = {
       initial: {
         counts: { 'root': 1, 'approve-trigger': 1, 'deny-trigger': 1, 'scope-item': 2 },
         parts: {
-          'root': { 'role': 'group', 'data-state': 'pending', 'data-busy': null },
+          'root': { 'role': 'group', 'data-state': 'pending', 'data-loading': null },
           // 待决时用 aria-disabled 而不是原生 disabled：保住可聚焦、让读屏念得到为什么按不动
           'approve-trigger': { 'type': 'button', 'aria-disabled': 'true', 'disabled': null },
           'deny-trigger': { type: 'button', disabled: null },
@@ -134,9 +134,9 @@ export const approvalSuite: ConformanceSuite = {
       props: { busy: true, scopes: [{ value: 'read', required: true }] },
       initial: {
         parts: {
-          'approve-trigger': { 'aria-disabled': 'true', 'aria-busy': 'true', 'data-busy': '' },
+          'approve-trigger': { 'aria-disabled': 'true', 'aria-busy': 'true', 'data-loading': '' },
           // 同样不用原生 disabled：锁住的钮仍留在 Tab 序里，读屏才念得到为什么按不动
-          'deny-trigger': { 'aria-disabled': 'true', 'aria-busy': 'true', 'data-busy': '', 'disabled': null },
+          'deny-trigger': { 'aria-disabled': 'true', 'aria-busy': 'true', 'data-loading': '', 'disabled': null },
         },
       },
       steps: [

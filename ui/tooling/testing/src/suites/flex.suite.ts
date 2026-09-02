@@ -19,13 +19,13 @@ export const flexSuite: ConformanceSuite = {
   },
   cases: [
     {
-      name: '缺省：方向落 row，其余排版参数一律不输出',
+      name: '缺省：方向落 horizontal，其余排版参数一律不输出',
       spec: { apg: APG },
       initial: {
         parts: {
           root: {
             'role': null,
-            'data-direction': 'row',
+            'data-orientation': 'horizontal',
             'data-align': null,
             'data-justify': null,
             'data-gap': null,
@@ -38,11 +38,11 @@ export const flexSuite: ConformanceSuite = {
     {
       name: '方向与两条对齐轴如实落到根上',
       spec: { apg: APG },
-      props: { direction: 'column', align: 'center', justify: 'between' },
+      props: { orientation: 'vertical', align: 'center', justify: 'between' },
       initial: {
         parts: {
           root: {
-            'data-direction': 'column',
+            'data-orientation': 'vertical',
             'data-align': 'center',
             'data-justify': 'between',
           },

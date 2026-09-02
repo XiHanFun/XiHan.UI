@@ -92,7 +92,7 @@
     touch-action: none;
   }
 
-  [data-scope='image-viewer'][data-part='viewport'][data-panning] {
+  [data-scope='image-viewer'][data-part='viewport'][data-dragging] {
     cursor: grabbing;
   }
 
@@ -104,7 +104,7 @@
     transition: transform var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
-  [data-scope='image-viewer'][data-part='image'][data-panning] {
+  [data-scope='image-viewer'][data-part='image'][data-dragging] {
     transition: none;
   }
 

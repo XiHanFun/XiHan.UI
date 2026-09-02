@@ -33,7 +33,7 @@ collection 是层级元信息的唯一事实源，标记只管长相；缩进由
 
 ### 多选
 
-selectionMode 默认 single，改成 multiple 后点击与确认键都变成切换，选中集合形状不变仍是数组
+multiple 关着是单选，打开后点击与确认键都变成切换，选中集合形状不变仍是数组
 
 <XhDemo src="tree/02-multiple" />
 
@@ -75,7 +75,7 @@ collection 换一份树就换一棵：标记跟着数据重铺，过滤剩下的
 
 ### 级联勾选
 
-selection-mode="multiple" 加 cascade 内建父子传导：点分支整枝勾上、子全勾父勾、部分勾中半选；勾选框是行里的一段标记，勾选态与半选态都由组件报出
+multiple 加 cascade 内建父子传导：点分支整枝勾上、子全勾父勾、部分勾中半选；勾选框是行里的一段标记，勾选态与半选态都由组件报出
 
 <XhDemo src="tree/09-checkable" />
 
@@ -124,7 +124,6 @@ leaf-orientation 按结构判据横排「子节点全是叶子」的那层；要
 | `selection` | `string[]` |  | 选中集合。给定即受控，语义同上。 |
 | `defaultSelection` | `string[]` |  |  |
 | `multiple` | `boolean` |  | 复选：点击与确认键都是「切换」，tree 带 aria-multiselectable=true。默认 false（单选）。 |
-| `selectionMode` | `TreeSelectionMode` |  | 选择模式的旧写法，默认 single。 @deprecated 用 `multiple`。两者同时给时以 selectionMode 为准（与 listbox 同一条规矩）， 旧代码的行为因此一点不变。 |
 | `cascade` | `boolean` |  | multiple 下父子级联勾选：点分支整枝传导、子全勾父勾、部分勾中半选， 禁用子树整棵冻结。默认 false（朴素切换）；single 下无效。 |
 | `checkedStrategy` | `CascadeStrategy` |  | 级联下对外值的收敛策略，默认 child（只收叶）；parent = 最高整枝，all = 全部勾中节点。 |
 | `expandOnClick` | `boolean` |  | 点分支行是否顺带展开/收起，默认 true。关掉后只有 branch-trigger 与左右方向键能改展开态。 |
@@ -179,7 +178,6 @@ leaf-orientation 按结构判据横排「子节点全是叶子」的那层；要
 | `selection` | `string[]` |  |
 | `focusedValue` | `string \| null` | 焦点锚点；焦点不在树内、或它已被收起而不可见时为 null。 |
 | `multiple` | `boolean` | 生效的是不是复选。 |
-| `selectionMode` | `TreeSelectionMode` | @deprecated 读 `multiple`。 |
 | `disabled` | `boolean` |  |
 | `isExpanded` | `(value: string) => boolean` |  |
 | `isSelected` | `(value: string) => boolean` |  |
@@ -278,7 +276,7 @@ leaf-orientation 按结构判据横排「子节点全是叶子」的那层；要
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-tree-bg` · `--xh-tree-border` · `--xh-tree-branch-content-gap` · `--xh-tree-branch-gap` · `--xh-tree-branch-indicator-fg` · `--xh-tree-checkbox-bg` · `--xh-tree-checkbox-bg-checked` · `--xh-tree-checkbox-border` · `--xh-tree-checkbox-border-checked` · `--xh-tree-checkbox-border-disabled` · `--xh-tree-checkbox-fg` · `--xh-tree-checkbox-radius` · `--xh-tree-checkbox-size` · `--xh-tree-drag-fg` · `--xh-tree-drag-fg-active` · `--xh-tree-drag-fg-disabled` · `--xh-tree-drag-grip-long` · `--xh-tree-drag-grip-short` · `--xh-tree-drag-radius` · `--xh-tree-drag-size` · `--xh-tree-dragging-opacity` · `--xh-tree-drop-fg` · `--xh-tree-drop-inside-bg` · `--xh-tree-drop-line` · `--xh-tree-fg` · `--xh-tree-gap` · `--xh-tree-icon-size` · `--xh-tree-indent` · `--xh-tree-indicator-fg` · `--xh-tree-indicator-size` · `--xh-tree-item-indicator-fg` · `--xh-tree-label-fg` · `--xh-tree-label-font-size` · `--xh-tree-label-font-weight` · `--xh-tree-leaf-row-gap` · `--xh-tree-max-h` · `--xh-tree-px` · `--xh-tree-py` · `--xh-tree-radius` · `--xh-tree-row-bg-hover` · `--xh-tree-row-fg` · `--xh-tree-row-fg-selected` · `--xh-tree-row-font-size` · `--xh-tree-row-gap` · `--xh-tree-row-leading` · `--xh-tree-row-px` · `--xh-tree-row-py` · `--xh-tree-row-radius` · `--xh-tree-row-selected-font-weight` · `--xh-tree-tree-gap`
+`--xh-tree-bg` · `--xh-tree-border` · `--xh-tree-branch-content-gap` · `--xh-tree-branch-gap` · `--xh-tree-branch-indicator-fg` · `--xh-tree-checkbox-bg` · `--xh-tree-checkbox-bg-checked` · `--xh-tree-checkbox-border` · `--xh-tree-checkbox-border-checked` · `--xh-tree-checkbox-border-disabled` · `--xh-tree-checkbox-fg` · `--xh-tree-checkbox-radius` · `--xh-tree-checkbox-size` · `--xh-tree-drag-fg` · `--xh-tree-drag-fg-active` · `--xh-tree-drag-fg-disabled` · `--xh-tree-drag-grip-long` · `--xh-tree-drag-grip-short` · `--xh-tree-drag-radius` · `--xh-tree-drag-size` · `--xh-tree-dragging-opacity` · `--xh-tree-drop-fg` · `--xh-tree-drop-inside-bg` · `--xh-tree-drop-line` · `--xh-tree-fg` · `--xh-tree-gap` · `--xh-tree-icon-size` · `--xh-tree-indent` · `--xh-tree-indicator-size` · `--xh-tree-item-indicator-fg` · `--xh-tree-label-fg` · `--xh-tree-label-font-size` · `--xh-tree-label-font-weight` · `--xh-tree-leaf-row-gap` · `--xh-tree-max-h` · `--xh-tree-px` · `--xh-tree-py` · `--xh-tree-radius` · `--xh-tree-row-bg-hover` · `--xh-tree-row-fg` · `--xh-tree-row-fg-selected` · `--xh-tree-row-font-size` · `--xh-tree-row-gap` · `--xh-tree-row-leading` · `--xh-tree-row-px` · `--xh-tree-row-py` · `--xh-tree-row-radius` · `--xh-tree-row-selected-font-weight` · `--xh-tree-tree-gap`
 
 ## 动效
 

@@ -183,8 +183,8 @@
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-loading` | ''（条件成立时才出现） |
 | `root` | `data-phase` | props.phase |
-| `root` | `data-running` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | 'open' \| 'closed' |
 | `root` | `data-tone` | props.tone |
@@ -195,8 +195,8 @@
 | `name` | `data-phase` | props.phase |
 | `summary` | `data-phase` | props.phase |
 | `status` | `data-phase` | props.phase |
+| `duration` | `data-loading` | ''（条件成立时才出现） |
 | `duration` | `data-phase` | props.phase |
-| `duration` | `data-running` | ''（条件成立时才出现） |
 | `approval` | `data-phase` | props.phase |
 | `content` | `data-state` | 'open' \| 'closed' |
 | `input` | `data-phase` | props.phase |
