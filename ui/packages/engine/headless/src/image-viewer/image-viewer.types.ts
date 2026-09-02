@@ -12,6 +12,8 @@ export interface ImageViewerItem {
 export interface ImageViewerTranslations {
   /** 对话框的可及名（当前图没有 alt 时兜底）。 */
   content: string
+  /** 工具条的可及名。它与对话框是两块不同的区域，共用一个名字读屏分不出走到了哪儿。 */
+  toolbar: string
   close: string
   zoomIn: string
   zoomOut: string

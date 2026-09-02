@@ -191,6 +191,8 @@ export function connectTour<T extends PropTypes>(
       'type': 'button',
       // 末步这颗按钮的语义是完成，作者据此换文案
       'data-last': dataAttr(lastStep),
+      // 两句都不给就整条不输出：这颗按钮通常带可见文字，发一句会把它盖掉
+      'aria-label': lastStep ? translations?.finish : translations?.next,
       'data-state': stateAttr,
       'onClick': () => send({ type: 'STEP.NEXT' }),
     }),
@@ -202,8 +204,8 @@ export function connectTour<T extends PropTypes>(
       'onClick': () => send({ type: 'SKIP' }),
     }),
 
-    // 关闭按钮通常只有一个叉，名字只能从 translations 给；
-    // 上一步/下一步/跳过都带可见文案，不再写 aria-label
+    // 关闭按钮通常只有一个叉，名字只能从 translations 给，所以这一句总会发出去；
+    // 上一步/跳过都带可见文案，不写 aria-label
     getCloseTriggerProps: () => normalize.button({
       ...parts['close-trigger'].attrs,
       'type': 'button',

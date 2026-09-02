@@ -20,6 +20,16 @@ export interface TourTranslations {
   close: string
   /** progress-text 的文案；step 从 1 起，count 为总步数。 */
   progress: (step: number, count: number) => string
+  /**
+   * 不是末步时「下一步」那颗按钮的可访问名。
+   * **不给就不产出 aria-label**——它一般带可见文字，盖掉反而更糟。
+   */
+  next: string
+  /**
+   * 末步时同一颗按钮的可访问名。那一下的语义是完成，不是往下走，
+   * 只靠 data-last 换皮肤的作者拿不到这句话。同样不给就不产出。
+   */
+  finish: string
 }
 
 /** 高亮框的几何，视口坐标，已经含进 spotlightPadding。 */

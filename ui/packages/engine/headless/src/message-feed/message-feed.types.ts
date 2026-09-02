@@ -15,13 +15,16 @@ export interface MessageFeedItemFocusDetails {
   id: string | null
 }
 
+/** 这条消息是谁说的。 */
+export type MessageFeedItemRole = 'user' | 'assistant' | 'system'
+
 /** 条目自报家门。connect 是纯函数，一行 DOM 都不查。 */
 export interface MessageFeedItemProps {
   /** 这条消息的身份，落成 data-value；导航与锚点都以它为准。 */
   id: string
   /** 0 基下标，落成 aria-posinset = index + 1。 */
   index: number
-  role?: 'user' | 'assistant' | 'system'
+  role?: MessageFeedItemRole
   /** 这条还在流式写入。 */
   streaming?: boolean
   /** 作者渲了 item-label 部件时声明；为真时可访问名指过去，否则用文案现场代入。 */
@@ -34,10 +37,13 @@ export interface MessageFeedTranslations {
   /** 回到底部按钮的可访问名。 */
   scrollToBottom: string
   /**
-   * 单条消息的可访问名模板，形如 `Message {position} of {size}, {role}`。
-   * 模板串由调用方现场代入，连接层不做插值。
+   * 单条消息的可访问名。给函数能把「第几条、共几条、谁说的」代进名字里；
+   * 给字符串则是一句固定名字，连接层不做插值——每条消息会念到同一句。
+   *
+   * size 为 -1 表示宿主没声明总数（`count` 缺席），此时名字里不该出现总数。
+   * 两种都收是为了不推翻已经传字符串的调用方——只支持函数会让它们在运行时炸。
    */
-  item: string
+  item: string | ((position: number, size: number, role?: MessageFeedItemRole) => string)
 }
 
 // 由适配器在挂载前填入；缺省时对应能力短路。

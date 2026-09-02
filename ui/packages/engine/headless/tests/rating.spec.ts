@@ -540,3 +540,17 @@ describe('connectRating 的指针处理器', () => {
     expect(api(service).hoveredValue).toBeNull()
   })
 })
+
+describe('评分 · 每颗星的名字', () => {
+  it('缺省名字带档位与总数，不随高亮变', () => {
+    const { service } = makeService({ defaultValue: 3, count: 5 })
+    expect(itemAttrs(service, 2)['aria-label']).toBe('2 of 5')
+    // 第 2 颗此刻亮着、第 4 颗暗着，名字仍只讲档位
+    expect(itemAttrs(service, 4)['aria-label']).toBe('4 of 5')
+  })
+
+  it('文案拿得到档位与总数，作者给了就用作者那份', () => {
+    const { service } = makeService({ count: 4, translations: { item: (value, count) => `${count} 分里的 ${value} 分` } })
+    expect(itemAttrs(service, 3)['aria-label']).toBe('4 分里的 3 分')
+  })
+})

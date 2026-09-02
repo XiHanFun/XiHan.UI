@@ -21,6 +21,12 @@ export interface DatePickerTranslations {
   presets: string
   /** 清空按钮的名字。 */
   clearTrigger: string
+  /** 小时那一列的名字。 */
+  hour: string
+  /** 分钟那一列的名字。 */
+  minute: string
+  /** 秒那一列的名字。 */
+  second: string
 }
 
 /**

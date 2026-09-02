@@ -55,6 +55,7 @@ export interface RatingSchema extends MachineSchema {
     tone?: Tone
     /** 尺寸：sm / md / lg。 */
     size?: Size
+    translations?: Partial<RatingTranslations>
     onValueChange?: (details: RatingValueChangeDetails) => void
     /** 悬停预览变化；指针离开时带 null。它不代表值变了。 */
     onHoverChange?: (details: RatingHoverChangeDetails) => void
@@ -120,5 +121,13 @@ export interface RatingApi<T extends PropTypes = PropTypes> {
   getHiddenInputProps: () => T['input']
 }
 
-/** 读屏用的文案。本组件目前没有需要外露的文案，位先留着。 */
-export interface RatingTranslations {}
+/** 读屏用的文案，默认英文。 */
+export interface RatingTranslations {
+  /**
+   * 一颗星的可及名，入参是它的分值与总档数。
+   *
+   * 这一句**总会发出去**：星星那一格里画的是符号，亮着与暗着画的还不是同一个，
+   * 名字交给内容就会随高亮在两个符号之间来回变。
+   */
+  item: (value: number, count: number) => string
+}

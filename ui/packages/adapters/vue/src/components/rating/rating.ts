@@ -3,6 +3,7 @@ import type { Direction, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { provideRating, useRatingContext } from './context'
 import { useRating } from './use-rating'
 
@@ -40,6 +41,7 @@ export const XhRatingRoot = defineComponent({
     dir: { type: String as PropType<Direction>, default: undefined },
     tone: { type: String as PropType<Tone>, default: undefined },
     size: { type: String as PropType<Size>, default: undefined },
+    translations: { type: Object as PropType<RatingProps['translations']>, default: undefined },
   },
   // value-change 携带 { value }，update:value 携带裸值；hover-change 是预览通道
   emits: {
@@ -58,7 +60,7 @@ export const XhRatingRoot = defineComponent({
     const onHoverChange: RatingProps['onHoverChange'] = (details) => {
       emit('hover-change', details)
     }
-    const ctx = useRating(props as RatingProps, { onValueChange, onHoverChange })
+    const ctx = useRating(withXhConfig('rating', props) as RatingProps, { onValueChange, onHoverChange })
     provideRating(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       value: ctx.api.value.value,

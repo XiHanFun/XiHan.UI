@@ -117,6 +117,7 @@ export interface MenubarSchema extends MachineSchema {
     tone?: Tone
     /** 尺寸：sm / md / lg。 */
     size?: Size
+    translations?: Partial<MenubarTranslations>
     /** value 变化回调。 */
     onValueChange?: (details: MenubarValueChangeDetails) => void
     /** 条目被选中；菜单随之收起。 */
@@ -231,5 +232,8 @@ export interface MenubarApi<T extends PropTypes = PropTypes> {
   getGroupLabelProps: (props: MenubarGroupProps) => T['element']
 }
 
-/** 读屏用的文案。本组件目前没有需要外露的文案，位先留着。 */
-export interface MenubarTranslations {}
+/** 读屏用的文案，默认英文。 */
+export interface MenubarTranslations {
+  /** 根节点的 aria-label，用于区分页面上的多条菜单栏。 */
+  root: string
+}

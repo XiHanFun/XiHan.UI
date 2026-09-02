@@ -809,3 +809,18 @@ describe('消解层', () => {
     expect(h.state()).toBe('open')
   })
 })
+
+describe('组合框 · 展开按钮的名字', () => {
+  const label = (h: ReturnType<typeof mount>): unknown =>
+    (h.api().getTriggerProps() as Record<string, unknown>)['aria-label']
+
+  it('钮里只有一枚箭头，缺省也得有个名字', () => {
+    expect(label(mount())).toBe('Show suggestions')
+  })
+
+  it('作者给了文案就用作者那份，清空钮那句不受牵连', () => {
+    const h = mount({ translations: { trigger: '展开候选' } })
+    expect(label(h)).toBe('展开候选')
+    expect((h.api().getClearTriggerProps() as Record<string, unknown>)['aria-label']).toBe('Clear')
+  })
+})

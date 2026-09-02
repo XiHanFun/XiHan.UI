@@ -329,6 +329,8 @@ export function connectCombobox<T extends PropTypes>(
       'tabindex': -1,
       // 单体控件用原生 disabled（与候选条目的 aria-disabled 相反）
       'disabled': !interactive || undefined,
+      // 钮里只有一枚箭头，名字只能从这里给；展开与否由输入框的 aria-expanded 说，名字不跟着变
+      'aria-label': prop('translations')?.trigger ?? 'Show suggestions',
       'aria-controls': ids.content,
       'data-state': stateAttr,
       'data-disabled': dataAttr(!interactive),

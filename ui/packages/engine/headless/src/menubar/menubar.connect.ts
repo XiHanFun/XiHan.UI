@@ -199,6 +199,8 @@ export function connectMenubar<T extends PropTypes>(
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'role': 'menubar',
+      // menubar 的名字不从内容来：不给这一句，读屏念到的就是一个没有名字的菜单栏
+      'aria-label': prop('translations')?.root ?? 'Menu bar',
       'aria-orientation': orientation,
       'aria-disabled': menubarDisabled ? 'true' : 'false',
       'data-orientation': orientation,

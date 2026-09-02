@@ -45,6 +45,10 @@ function resolveTranslations(input: Partial<DatePickerTranslations> | undefined)
     endDate: input?.endDate ?? 'End date',
     presets: input?.presets ?? 'Shortcuts',
     clearTrigger: input?.clearTrigger ?? 'Clear',
+    // 内建英文与时间选择器那份逐字相同：同一页上的两个组件不该把同一列念成两个名字
+    hour: input?.hour ?? 'hour',
+    minute: input?.minute ?? 'minute',
+    second: input?.second ?? 'second',
   }
 }
 
@@ -598,7 +602,8 @@ export function connectDatePicker<T extends PropTypes>(
     getTimeColumnProps: ({ unit }) => normalize.element({
       ...parts['time-column'].attrs,
       'role': 'listbox',
-      'aria-label': unit,
+      // unit 是内部枚举，直接当名字读屏就把标识符念出来了；名字走文案桶
+      'aria-label': label[unit],
       'aria-orientation': 'vertical',
       // 单选与否必须显式说，省略只是「没说」
       'aria-multiselectable': 'false',

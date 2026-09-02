@@ -1,4 +1,4 @@
-import type { MenubarItemProps, MenubarNode, MenubarSchema, MenubarSelectDetails, MenubarValueChangeDetails } from '@xihan-ui/headless'
+import type { MenubarItemProps, MenubarNode, MenubarSchema, MenubarSelectDetails, MenubarTranslations, MenubarValueChangeDetails } from '@xihan-ui/headless'
 import type { Cleanup, Direction, IdGenerator, Layer, Orientation, Placement, PositionEnginePort, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { OverlayExit } from '../overlay-exit'
@@ -85,6 +85,8 @@ export class XhMenubarElement extends XhElement {
     offset: { converter: NUMBER_CONVERTER },
     tone: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
+    // 文案是对象，只走 property
+    translations: { attribute: false },
   }
 
   declare collection?: MenubarNode[]
@@ -99,6 +101,7 @@ export class XhMenubarElement extends XhElement {
   declare offset?: number
   declare tone?: Tone
   declare size?: Size
+  declare translations?: Partial<MenubarTranslations>
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   // trigger 与 content 按 value 逐对互指的 id 由 scope 派生
@@ -136,6 +139,7 @@ export class XhMenubarElement extends XhElement {
       offset: this.offset,
       tone: this.tone,
       size: this.size,
+      translations: this.translations,
       onValueChange: this.notifyValue,
       onSelect: this.notifySelect,
     }

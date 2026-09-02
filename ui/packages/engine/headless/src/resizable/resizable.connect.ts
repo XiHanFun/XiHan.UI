@@ -20,6 +20,18 @@ const EDGE_CURSOR: Record<ResizeEdge, string> = {
   se: 'nwse-resize',
 }
 
+/** 内建的把手方位说法，读屏用；作者要中文就传 translations。 */
+const EDGE_LABEL: Record<ResizeEdge, string> = {
+  n: 'top edge',
+  s: 'bottom edge',
+  e: 'right edge',
+  w: 'left edge',
+  ne: 'top right corner',
+  nw: 'top left corner',
+  se: 'bottom right corner',
+  sw: 'bottom left corner',
+}
+
 export function connectResizable<T extends PropTypes>(
   service: Service<ResizableSchema>,
   normalize: NormalizeProps<T>,
@@ -75,7 +87,8 @@ export function connectResizable<T extends PropTypes>(
         'role': 'separator',
         // 分隔条自身的横竖与它推的那一轴垂直：推东西两边的是竖线
         'aria-orientation': edge === 'n' || edge === 's' ? 'horizontal' : 'vertical',
-        'aria-label': translations?.handle?.(edge) ?? `Resize ${edge}`,
+        // edge 是内部枚举，直接拼进名字读屏念的就是 n / ne / se 这几个字母
+        'aria-label': translations?.handle?.(edge) ?? `Resize ${EDGE_LABEL[edge]}`,
         'aria-valuenow': Math.round(edge === 'n' || edge === 's' ? size.height : size.width),
         'aria-disabled': enabled ? 'false' : 'true',
         'tabindex': enabled ? 0 : -1,

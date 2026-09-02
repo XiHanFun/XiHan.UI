@@ -358,3 +358,18 @@ describe('可调容器 · 受控', () => {
     expect(onSizeChange).toHaveBeenCalled()
   })
 })
+
+describe('可调容器 · 把手的名字', () => {
+  it('缺省名字念的是方位，不是 n / ne / se 这几个内部字母', () => {
+    const h = mount()
+    expect((h.api().getHandleProps({ edge: 'e' }) as Dict)['aria-label']).toBe('Resize right edge')
+    expect((h.api().getHandleProps({ edge: 'se' }) as Dict)['aria-label']).toBe('Resize bottom right corner')
+    for (const edge of ['n', 'ne', 'se'] as const)
+      expect((h.api().getHandleProps({ edge }) as Dict)['aria-label']).not.toBe(`Resize ${edge}`)
+  })
+
+  it('作者给了 translations.handle 就用作者那份', () => {
+    const h = mount({ translations: { handle: edge => `拖动${edge === 'e' ? '右边' : '别处'}` } })
+    expect((h.api().getHandleProps({ edge: 'e' }) as Dict)['aria-label']).toBe('拖动右边')
+  })
+})

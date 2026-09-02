@@ -7,6 +7,7 @@ export type {
   MessageFeedApi,
   MessageFeedItemFocusDetails,
   MessageFeedItemProps,
+  MessageFeedItemRole,
   MessageFeedRefs,
   MessageFeedSchema,
   MessageFeedStatus,

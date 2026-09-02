@@ -119,7 +119,7 @@ export const imageViewerSuite: ConformanceSuite = {
               },
               'viewport': { 'data-state': 'open', 'data-panning': null },
               'image': { 'data-state': 'open', 'data-panning': null },
-              'toolbar': { 'role': 'toolbar', 'aria-label': 'Image preview', 'data-state': 'open' },
+              'toolbar': { 'role': 'toolbar', 'aria-label': 'Image tools', 'data-state': 'open' },
               'counter': { 'aria-live': 'polite', 'data-index': '1', 'data-count': '3', 'data-state': 'open' },
               'prev-trigger': { 'type': 'button', 'aria-label': 'Previous image', 'disabled': null, 'data-disabled': null },
               'next-trigger': { 'type': 'button', 'aria-label': 'Next image', 'disabled': null, 'data-disabled': null },
