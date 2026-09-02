@@ -273,6 +273,7 @@ invalid 让输入行报 aria-invalid、描边转告警色；选出值后判定�
 | `input` | `aria-labelledby` | `label` 部件的 id |
 | `input` | `role` | undefined \| 'combobox' |
 | `trigger` | `aria-controls` | `content` 部件的 id |
+| `trigger` | `aria-label` | props.translations.trigger |
 | `clear-trigger` | `aria-label` | props.translations.clearTrigger |
 | `content` | `aria-labelledby` | `label` 部件的 id |
 | `content` | `aria-multiselectable` | 'true' \| 'false' |

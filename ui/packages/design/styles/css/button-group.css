@@ -6,13 +6,15 @@
 
   /* 一组按钮连成一条：段与段之间不留缝，靠共边接上，所以不设 gap。
      排布只能读 data-orientation——role=group 不收 aria-orientation，连接层根本不输出它。
-     圆角槽位在容器上先收成 0，组内每段都取得到，两端的圆角再逐段补回来 */
+     圆角在容器上先收成 0，组内每段都取得到，两端的圆角再逐段补回来 */
   [data-scope='button-group'][data-part='root'] {
     /* 组件内那几档层号只在自己人之间排序：建一个层叠上下文把它们关起来，
        既不让页面上的层号插进来，也不让它们漏出去压住别人 */
     isolation: isolate;
 
-    --xh-button-radius: 0;
+    /* 与下面几档同理，写私有槽而非 --xh-button-radius：
+       后者是使用者的入口，写死它，进了组的胶囊按钮就再也圆不起来 */
+    --xh-_button-group-radius: 0;
 
     display: inline-flex;
     align-items: stretch;

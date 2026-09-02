@@ -2223,6 +2223,9 @@
               "name": "--xh-back-top-shadow"
             },
             {
+              "name": "--xh-back-top-size"
+            },
+            {
               "name": "--xh-back-top-trigger-size"
             }
           ]
@@ -11545,10 +11548,25 @@
               "name": "--xh-date-picker-confirm-shadow"
             },
             {
+              "name": "--xh-date-picker-confirm-trigger-bg"
+            },
+            {
+              "name": "--xh-date-picker-confirm-trigger-bg-hover"
+            },
+            {
+              "name": "--xh-date-picker-confirm-trigger-fg"
+            },
+            {
+              "name": "--xh-date-picker-confirm-trigger-h"
+            },
+            {
               "name": "--xh-date-picker-confirm-trigger-px"
             },
             {
               "name": "--xh-date-picker-confirm-trigger-radius"
+            },
+            {
+              "name": "--xh-date-picker-confirm-trigger-shadow"
             },
             {
               "name": "--xh-date-picker-content-bg"
@@ -18447,7 +18465,16 @@
               "name": "--xh-highlight-fg"
             },
             {
+              "name": "--xh-highlight-mark-bg"
+            },
+            {
+              "name": "--xh-highlight-mark-fg"
+            },
+            {
               "name": "--xh-highlight-mark-px"
+            },
+            {
+              "name": "--xh-highlight-mark-radius"
             },
             {
               "name": "--xh-highlight-radius"
@@ -21746,6 +21773,9 @@
               "name": "--xh-layout-sider-bg"
             },
             {
+              "name": "--xh-layout-sider-collapsed-w"
+            },
+            {
               "name": "--xh-layout-sider-collapsed-width"
             },
             {
@@ -21768,6 +21798,9 @@
             },
             {
               "name": "--xh-layout-sider-trigger-radius"
+            },
+            {
+              "name": "--xh-layout-sider-w"
             },
             {
               "name": "--xh-layout-sider-width"
@@ -24961,6 +24994,14 @@
             },
             {
               "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "Partial<MenubarTranslations> | undefined"
+              }
+            },
+            {
+              "kind": "field",
               "name": "idGen",
               "type": {
                 "text": "IdGenerator"
@@ -26188,6 +26229,9 @@
             },
             {
               "name": "--xh-navigation-menu-trigger-radius"
+            },
+            {
+              "name": "--xh-navigation-menu-viewport-p"
             }
           ]
         }
@@ -26619,6 +26663,42 @@
             },
             {
               "name": "--xh-notification-inset"
+            },
+            {
+              "name": "--xh-notification-item-bg"
+            },
+            {
+              "name": "--xh-notification-item-border"
+            },
+            {
+              "name": "--xh-notification-item-fg"
+            },
+            {
+              "name": "--xh-notification-item-font-size"
+            },
+            {
+              "name": "--xh-notification-item-gap"
+            },
+            {
+              "name": "--xh-notification-item-leading"
+            },
+            {
+              "name": "--xh-notification-item-px"
+            },
+            {
+              "name": "--xh-notification-item-py"
+            },
+            {
+              "name": "--xh-notification-item-radius"
+            },
+            {
+              "name": "--xh-notification-item-row-gap"
+            },
+            {
+              "name": "--xh-notification-item-shadow"
+            },
+            {
+              "name": "--xh-notification-item-w"
             },
             {
               "name": "--xh-notification-layer"
@@ -27613,6 +27693,27 @@
           "customElement": true,
           "cssProperties": [
             {
+              "name": "--xh-number-field-control-bg"
+            },
+            {
+              "name": "--xh-number-field-control-bg-disabled"
+            },
+            {
+              "name": "--xh-number-field-control-bg-readonly"
+            },
+            {
+              "name": "--xh-number-field-control-border"
+            },
+            {
+              "name": "--xh-number-field-control-border-focus"
+            },
+            {
+              "name": "--xh-number-field-control-border-hover"
+            },
+            {
+              "name": "--xh-number-field-control-border-invalid"
+            },
+            {
               "name": "--xh-number-field-control-gap"
             },
             {
@@ -27623,6 +27724,12 @@
             },
             {
               "name": "--xh-number-field-control-px"
+            },
+            {
+              "name": "--xh-number-field-control-radius"
+            },
+            {
+              "name": "--xh-number-field-control-shadow"
             },
             {
               "name": "--xh-number-field-gap"
@@ -28807,6 +28914,18 @@
           "customElement": true,
           "cssProperties": [
             {
+              "name": "--xh-password-input-caps-lock-fg"
+            },
+            {
+              "name": "--xh-password-input-caps-lock-font-size"
+            },
+            {
+              "name": "--xh-password-input-caps-lock-gap"
+            },
+            {
+              "name": "--xh-password-input-caps-lock-px"
+            },
+            {
               "name": "--xh-password-input-control-bg"
             },
             {
@@ -29738,6 +29857,9 @@
           "tagName": "xh-popconfirm",
           "customElement": true,
           "cssProperties": [
+            {
+              "name": "--xh-popconfirm-action-px"
+            },
             {
               "name": "--xh-popconfirm-action-radius"
             },
@@ -33239,6 +33361,14 @@
                 "text": "Size | undefined"
               },
               "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "Partial<RatingTranslations> | undefined"
+              }
             },
             {
               "kind": "field",
@@ -45863,6 +45993,15 @@
             },
             {
               "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "Tone | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
               "name": "size",
               "privacy": "public",
               "type": {
@@ -46053,6 +46192,14 @@
             },
             {
               "type": {
+                "text": "Tone | undefined"
+              },
+              "description": "语气",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
                 "text": "Size | undefined"
               },
               "description": "尺寸",
@@ -46158,6 +46305,9 @@
             },
             {
               "name": "--xh-toggle-group-item-px"
+            },
+            {
+              "name": "--xh-toggle-group-item-radius"
             },
             {
               "name": "--xh-toggle-group-item-shadow"
@@ -48560,7 +48710,31 @@
               "name": "--xh-transfer-panel-border"
             },
             {
+              "name": "--xh-transfer-panel-count-fg"
+            },
+            {
+              "name": "--xh-transfer-panel-count-font-size"
+            },
+            {
+              "name": "--xh-transfer-panel-header-gap"
+            },
+            {
+              "name": "--xh-transfer-panel-header-px"
+            },
+            {
+              "name": "--xh-transfer-panel-header-py"
+            },
+            {
               "name": "--xh-transfer-panel-radius"
+            },
+            {
+              "name": "--xh-transfer-panel-title-fg"
+            },
+            {
+              "name": "--xh-transfer-panel-title-font-size"
+            },
+            {
+              "name": "--xh-transfer-panel-title-font-weight"
             },
             {
               "name": "--xh-transfer-search-bg"
@@ -49372,6 +49546,9 @@
               "name": "--xh-tree-select-branch-indicator-fg"
             },
             {
+              "name": "--xh-tree-select-branch-indicator-size"
+            },
+            {
               "name": "--xh-tree-select-content-bg"
             },
             {
@@ -49460,6 +49637,9 @@
             },
             {
               "name": "--xh-tree-select-item-indicator-fg"
+            },
+            {
+              "name": "--xh-tree-select-item-indicator-size"
             },
             {
               "name": "--xh-tree-select-label-fg"
@@ -50075,6 +50255,9 @@
               "name": "--xh-tree-indicator-size"
             },
             {
+              "name": "--xh-tree-item-indicator-fg"
+            },
+            {
               "name": "--xh-tree-label-fg"
             },
             {
@@ -50287,6 +50470,12 @@
             },
             {
               "name": "--xh-typography-text-fg"
+            },
+            {
+              "name": "--xh-typography-text-fg-muted"
+            },
+            {
+              "name": "--xh-typography-text-fg-tone"
             },
             {
               "name": "--xh-typography-text-font-weight"

@@ -215,14 +215,15 @@
     text-overflow: ellipsis;
   }
 
-  /* 勾选标记只在选中项上出现；未选中时占位不塌，切换选中不引起行宽抖动 */
+  /* 勾选标记只在选中项上出现；未选中时占位不塌，切换选中不引起行宽抖动。
+     前景槽带 item- 段与分支那条成对；原先的 --xh-tree-indicator-fg 排在后面当兜底值 */
   [data-scope='tree'][data-part='item-indicator'] {
     display: inline-flex;
     flex: none;
     align-items: center;
     justify-content: center;
     inline-size: var(--xh-tree-indicator-size, var(--xh-control-indicator-size));
-    color: var(--xh-tree-indicator-fg, var(--xh-fg-brand));
+    color: var(--xh-tree-item-indicator-fg, var(--xh-tree-indicator-fg, var(--xh-fg-brand)));
     visibility: hidden;
   }
 

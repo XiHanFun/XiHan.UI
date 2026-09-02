@@ -82,7 +82,11 @@ export function createSpreader(): Spreader {
         continue
       }
       if (value === undefined || value === null || value === false) {
-        removeAttr(node, key)
+        // 只撤自己写过的：连接层发 undefined 表示「这一条我不给」，不是「把作者写的那条删掉」。
+        // 作者在角色节点上标的 aria-label 一类，机器没写过就不该碰——碰了等于把屏幕上有名字的
+        // 按钮变成读屏念不出的空按钮，而 Vue 那边（fallthrough attrs 后合并）从来不会这样。
+        if (s.attrs.has(key))
+          removeAttr(node, key)
         continue
       }
       nextAttrs.add(key)

@@ -112,8 +112,11 @@
 
   /* —— 行内文字 —— */
   /* 不写形态与语气时就是一段普通正文，这里只声明形态各自加的那一层 */
+  /* 次要文字与语气文字各有各的槽：两者同特异度、共用一个槽的话，
+     调淡次要文字会把六族语气一并换成同一个灰。
+     不带档位的旧名接在后面当默认值，照旧名写的覆盖两处照样一起改 */
   [data-scope='typography'][data-part='text'][data-variant='muted'] {
-    color: var(--xh-typography-text-fg, var(--xh-fg-muted));
+    color: var(--xh-typography-text-fg-muted, var(--xh-typography-text-fg, var(--xh-fg-muted)));
   }
 
   [data-scope='typography'][data-part='text'][data-variant='strong'] {
@@ -131,7 +134,7 @@
 
   /* 语气排在形态之后：两个轴一起写时，用哪族颜色由语气说了算 */
   [data-scope='typography'][data-part='text'][data-tone] {
-    color: var(--xh-typography-text-fg, var(--xh-_tone-fg));
+    color: var(--xh-typography-text-fg-tone, var(--xh-typography-text-fg, var(--xh-_tone-fg)));
   }
 
   /* —— 行内链接 —— */

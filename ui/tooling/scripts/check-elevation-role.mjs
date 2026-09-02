@@ -15,8 +15,11 @@ import { join } from 'node:path'
 const STYLES_DIR = 'packages/design/styles/css'
 
 const ROLE = /--xh-elevation-(raised|floating|sheet)\b/
-/** 使用者槽包着角色令牌：var(--xh-<组件>-…, var(--xh-elevation-<role>)) */
-const SLOTTED = /^var\(--xh-[a-z][a-z0-9-]*,\s*var\(--xh-elevation-(?:raised|floating|sheet)\)\)$/
+/**
+ * 使用者槽包着角色令牌：var(--xh-<组件>-…, var(--xh-elevation-<role>))。
+ * 允许套多层：加法式改名把新槽名排在外层、旧名留在它的兜底位上，链因此不止一层。
+ */
+const SLOTTED = /^var\((?:--xh-[a-z][a-z0-9-]*,\s*var\()+--xh-elevation-(?:raised|floating|sheet)\)+$/
 /** 锚定浮层与遮罩面的内容部件该落在哪一档；不在表里的部件只要求走角色令牌。 */
 /**
  * 哪个组件的哪个部件该是哪一档。
@@ -80,7 +83,7 @@ for (const file of files) {
       if (value === 'none' || value === '0' || /^inset\b/.test(value) || value.startsWith('0 0 0 ') || /,\s*none\)$/.test(value))
         continue
       // 只引私有槽（或组件槽包着私有槽）的消费点：角色在私有槽的赋值点那里查
-      if (/^var\((?:--xh-[a-z0-9-]+,\s*)?var\(--xh-_[\w-]+\)\)$/.test(value) || /^var\(--xh-_[\w-]+\)$/.test(value))
+      if (/^var\((?:--xh-[a-z0-9-]+,\s*var\()*--xh-_[\w-]+\)+$/.test(value))
         continue
       checked++
       const role = value.match(ROLE)?.[1]

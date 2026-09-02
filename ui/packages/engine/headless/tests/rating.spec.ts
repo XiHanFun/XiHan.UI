@@ -542,11 +542,12 @@ describe('connectRating 的指针处理器', () => {
 })
 
 describe('评分 · 每颗星的名字', () => {
-  it('缺省名字带档位与总数，不随高亮变', () => {
+  it('没给文案就不发名字，作者标在星星上的那句自己当名字', () => {
     const { service } = makeService({ defaultValue: 3, count: 5 })
-    expect(itemAttrs(service, 2)['aria-label']).toBe('2 of 5')
-    // 第 2 颗此刻亮着、第 4 颗暗着，名字仍只讲档位
-    expect(itemAttrs(service, 4)['aria-label']).toBe('4 of 5')
+    // 星里只有符号时名字会随高亮在两个符号间变，所以留了文案位；但写死一句会把作者
+    // 标在星星上的那句盖掉，读屏念到的就不是屏幕上的东西——不给就不发。
+    expect(itemAttrs(service, 2)['aria-label']).toBeUndefined()
+    expect(itemAttrs(service, 4)['aria-label']).toBeUndefined()
   })
 
   it('文案拿得到档位与总数，作者给了就用作者那份', () => {

@@ -474,13 +474,15 @@
     text-overflow: ellipsis;
   }
 
-  /* 勾选标记只在选中项上出现；未选中时占位不塌，切换选中不引起行宽抖动 */
+  /* 勾选标记只在选中项上出现；未选中时占位不塌，切换选中不引起行宽抖动。
+     尺寸槽按各自部件取名：--xh-tree-select-indicator-* 归触发器上那枚箭头，
+     行内的勾与展开箭头分别是 item- 与 branch- 段；旧名排在后面当兜底值，仍同时管住两处 */
   [data-scope='tree-select'][data-part='item-indicator'] {
     display: inline-flex;
     flex: none;
     align-items: center;
     justify-content: center;
-    inline-size: var(--xh-tree-select-indicator-size, var(--xh-control-indicator-size));
+    inline-size: var(--xh-tree-select-item-indicator-size, var(--xh-tree-select-indicator-size, var(--xh-control-indicator-size)));
     color: var(--xh-tree-select-item-indicator-fg, var(--xh-_tone, var(--xh-fg-brand)));
     visibility: hidden;
   }
@@ -505,7 +507,7 @@
     flex: none;
     align-items: center;
     justify-content: center;
-    inline-size: var(--xh-tree-select-indicator-size, var(--xh-control-indicator-size));
+    inline-size: var(--xh-tree-select-branch-indicator-size, var(--xh-tree-select-indicator-size, var(--xh-control-indicator-size)));
     color: var(--xh-tree-select-branch-indicator-fg, var(--xh-fg-subtle));
     transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }

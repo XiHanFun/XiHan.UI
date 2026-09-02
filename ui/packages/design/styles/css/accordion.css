@@ -101,7 +101,7 @@
   /* 展开态自带一个槽：与常态共用一个的话，作者一改常态字色，
      展开那一档的语气高亮就跟着被抹平，再也分不开 */
   [data-scope='accordion'][data-part='trigger'][data-state='open'] {
-    color: var(--xh-accordion-trigger-fg-open, var(--xh-_accordion-open-fg));
+    color: var(--xh-accordion-trigger-fg-open, var(--xh-accordion-trigger-fg, var(--xh-_accordion-open-fg)));
   }
 
   /* 禁用条目走 aria-disabled，仍留在 Tab 序里，只是不可操作 */

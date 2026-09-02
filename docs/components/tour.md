@@ -177,6 +177,7 @@ steps 是唯一事实源，组件只按下标取用；每步的 target 是一个
 | `content` | `aria-modal` | 'true' |
 | `content` | `role` | 'dialog' |
 | `progress-text` | `aria-live` | 'polite' |
+| `next-trigger` | `aria-label` | translations?.finish \| translations?.next |
 | `close-trigger` | `aria-label` | translations?.close |
 | `arrow` | `aria-hidden` | 'true' |
 

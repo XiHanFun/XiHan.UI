@@ -105,6 +105,7 @@ allowClear 缺省就开：点中当前那一档清回“还没评”，键盘在
 | `dir` | `Direction` |  | 文字方向，缺省 'ltr'。只改写左右方向键与"指针落在哪半边"的语义。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
+| `translations` | `Partial<RatingTranslations>` |  |  |
 | `onValueChange` | `(details: RatingValueChangeDetails) => void` |  |  |
 | `onHoverChange` | `(details: RatingHoverChangeDetails) => void` |  | 悬停预览变化；指针离开时带 null。它不代表值变了。 |
 
@@ -190,6 +191,7 @@ allowClear 缺省就开：点中当前那一档清回“还没评”，键盘在
 | `control` | `role` | 'radiogroup' |
 | `item` | `aria-checked` | 'true' \| 'false' |
 | `item` | `aria-disabled` | 'true' \| 'false' |
+| `item` | `aria-label` | itemLabel(item.value, count) |
 | `item` | `aria-posinset` | item.value |
 | `item` | `aria-setsize` | ratingMax(prop('count')) |
 | `item` | `role` | 'radio' |

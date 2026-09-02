@@ -106,29 +106,31 @@
   }
 
   /* 两端圆角用逻辑角属性写，rtl 与竖排都跟着换边，不必另写一套。
-     只认 root 的直接子节点：条目之间插了别的节点时宁可退化成直角，也不要圆错位置 */
+     只认 root 的直接子节点：条目之间插了别的节点时宁可退化成直角，也不要圆错位置。
+     角画在条目上，槽名也带 item 段，与同文件其余条目槽同段；
+     不带段的旧名接在后面当默认值，照旧名写的覆盖照样生效 */
   [data-scope='toggle-group'][data-part='root'][data-orientation='horizontal']
     > [data-scope='toggle-group'][data-part='item']:first-child {
-    border-start-start-radius: var(--xh-toggle-group-radius, var(--xh-shape-control));
-    border-end-start-radius: var(--xh-toggle-group-radius, var(--xh-shape-control));
+    border-start-start-radius: var(--xh-toggle-group-item-radius, var(--xh-toggle-group-radius, var(--xh-shape-control)));
+    border-end-start-radius: var(--xh-toggle-group-item-radius, var(--xh-toggle-group-radius, var(--xh-shape-control)));
   }
 
   [data-scope='toggle-group'][data-part='root'][data-orientation='horizontal']
     > [data-scope='toggle-group'][data-part='item']:last-child {
-    border-start-end-radius: var(--xh-toggle-group-radius, var(--xh-shape-control));
-    border-end-end-radius: var(--xh-toggle-group-radius, var(--xh-shape-control));
+    border-start-end-radius: var(--xh-toggle-group-item-radius, var(--xh-toggle-group-radius, var(--xh-shape-control)));
+    border-end-end-radius: var(--xh-toggle-group-item-radius, var(--xh-toggle-group-radius, var(--xh-shape-control)));
   }
 
   [data-scope='toggle-group'][data-part='root'][data-orientation='vertical']
     > [data-scope='toggle-group'][data-part='item']:first-child {
-    border-start-start-radius: var(--xh-toggle-group-radius, var(--xh-shape-control));
-    border-start-end-radius: var(--xh-toggle-group-radius, var(--xh-shape-control));
+    border-start-start-radius: var(--xh-toggle-group-item-radius, var(--xh-toggle-group-radius, var(--xh-shape-control)));
+    border-start-end-radius: var(--xh-toggle-group-item-radius, var(--xh-toggle-group-radius, var(--xh-shape-control)));
   }
 
   [data-scope='toggle-group'][data-part='root'][data-orientation='vertical']
     > [data-scope='toggle-group'][data-part='item']:last-child {
-    border-end-start-radius: var(--xh-toggle-group-radius, var(--xh-shape-control));
-    border-end-end-radius: var(--xh-toggle-group-radius, var(--xh-shape-control));
+    border-end-start-radius: var(--xh-toggle-group-item-radius, var(--xh-toggle-group-radius, var(--xh-shape-control)));
+    border-end-end-radius: var(--xh-toggle-group-item-radius, var(--xh-toggle-group-radius, var(--xh-shape-control)));
   }
 
   [data-scope='toggle-group'][data-part='item']:not([data-disabled]):hover {
@@ -140,15 +142,19 @@
   }
 
   /* 选中态：单选是 role=radio + aria-checked，多选是原生按钮 + aria-pressed，
-     两套 ARIA 各出一半，样式一条都对不上——只有 data-state 是两种模式共同的出口 */
+     两套 ARIA 各出一半，样式一条都对不上——只有 data-state 是两种模式共同的出口。
+     用哪族颜色由 data-tone 决定：语气槽沿继承流下来，root 自己写了 tone 算、
+     整组落在语气容器里也算；没有语气就退回品牌配色，与不接语气时逐值相同。
+     使用者令牌排在语气之前：写了组件槽就以它为准 */
   [data-scope='toggle-group'][data-part='item'][data-state='on'] {
-    --xh-_bg: var(--xh-toggle-group-item-bg-on, var(--xh-bg-brand));
-    --xh-_bg-hover: var(--xh-toggle-group-item-bg-on-hover, var(--xh-bg-brand-hover));
-    --xh-_bg-active: var(--xh-toggle-group-item-bg-on-active, var(--xh-bg-brand-active));
-    --xh-_fg: var(--xh-toggle-group-item-fg-on, var(--xh-fg-on-brand));
-    --xh-_border: var(--xh-toggle-group-item-border-on, var(--xh-bg-brand));
+    --xh-_bg: var(--xh-toggle-group-item-bg-on, var(--xh-_tone, var(--xh-bg-brand)));
+    --xh-_bg-hover: var(--xh-toggle-group-item-bg-on-hover, var(--xh-_tone-hover, var(--xh-bg-brand-hover)));
+    --xh-_bg-active: var(--xh-toggle-group-item-bg-on-active, var(--xh-_tone-active, var(--xh-bg-brand-active)));
+    --xh-_fg: var(--xh-toggle-group-item-fg-on, var(--xh-_tone-on, var(--xh-fg-on-brand)));
+    --xh-_border: var(--xh-toggle-group-item-border-on, var(--xh-_tone, var(--xh-bg-brand)));
     /* 选中的这一段是实心底，顶边画一条极浅的内高光把它衬出厚度；未选中的段是透明底，不画 */
-    --xh-_toggle-group-highlight: inset 0 var(--xh-stroke-thin) 0 0 color-mix(in oklab, var(--xh-fg-on-brand) 14%, transparent);
+    --xh-_toggle-group-highlight: inset 0 var(--xh-stroke-thin) 0 0
+      color-mix(in oklab, var(--xh-_tone-on, var(--xh-fg-on-brand)) 14%, transparent);
 
     box-shadow: var(--xh-toggle-group-item-shadow, var(--xh-_toggle-group-highlight));
 
@@ -175,10 +181,10 @@
   [data-scope='toggle-group'][data-part='item'][data-disabled][data-state='on'] {
     --xh-_bg: var(
       --xh-toggle-group-item-bg-on-disabled,
-      color-mix(in oklab, var(--xh-bg-brand) 50%, var(--xh-bg-muted))
+      color-mix(in oklab, var(--xh-_tone, var(--xh-bg-brand)) 50%, var(--xh-bg-muted))
     );
-    --xh-_fg: var(--xh-toggle-group-item-fg-on-disabled, var(--xh-fg-on-brand));
-    --xh-_border: var(--xh-toggle-group-item-border-on-disabled, var(--xh-bg-brand));
+    --xh-_fg: var(--xh-toggle-group-item-fg-on-disabled, var(--xh-_tone-on, var(--xh-fg-on-brand)));
+    --xh-_border: var(--xh-toggle-group-item-border-on-disabled, var(--xh-_tone, var(--xh-bg-brand)));
   }
 
   /* 焦点环要浮在共边之上：outline 画在元素外侧，不抬层就会被后一段的底色与描边盖掉一半 */
