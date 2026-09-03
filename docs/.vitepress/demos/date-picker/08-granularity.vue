@@ -76,8 +76,8 @@ const values = ref<Record<string, string[]>>({
         <XhDatePickerContent>
           <XhDatePickerCalendar v-for="panel in panels" :key="panel.index">
             <XhDatePickerHeader>
-              <!-- « 与 » 走大步：日视图一年，粗粒度视图十页 -->
-              <XhDatePickerPrevYearTrigger aria-label="快退">«</XhDatePickerPrevYearTrigger>
+              <!-- 大步翻那对钮：日视图一年，粗粒度视图十页 -->
+              <XhDatePickerPrevYearTrigger aria-label="快退" />
               <XhDatePickerPrevTrigger aria-label="上一页" />
               <XhDatePickerHeading :index="panel.index">
                 <!-- 年与月各是一个钮：点年进十年格、点月进月格；到顶那一截自动按不动，
@@ -86,7 +86,7 @@ const values = ref<Record<string, string[]>>({
                 <XhDatePickerHeadingMonthTrigger :index="panel.index" />
               </XhDatePickerHeading>
               <XhDatePickerNextTrigger aria-label="下一页" />
-              <XhDatePickerNextYearTrigger aria-label="快进">»</XhDatePickerNextYearTrigger>
+              <XhDatePickerNextYearTrigger aria-label="快进" />
             </XhDatePickerHeader>
             <XhDatePickerGrid :index="panel.index">
               <!-- 日视图铺周行，粗粒度视图把格子直接铺进网格。钻上去之后铺的也是格子，

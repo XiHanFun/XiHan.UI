@@ -281,7 +281,7 @@ export function calendarPeriodIndex(value: string, view: Exclude<CalendarView, '
  * 粗粒度视图里的方向键落点：一格一格走，不是一天一天走。
  *
  * 左右一格、上下一行（行宽即 CALENDAR_PERIOD_COLUMNS）、Home/End 到本行两头、
- * 翻页键一整页、Shift+翻页键十页——与 « » 那对大步按钮同一个档位。
+ * 翻页键一整页、Shift+翻页键十页——与大步翻那对按钮同一个档位。
  * 细的位（日号）一路沿用，钻回日视图时人还落在原来那一天上。
  */
 function periodNavTarget(anchor: string, intent: CalendarNavIntent, view: Exclude<CalendarView, 'day'>): string {

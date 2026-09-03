@@ -8049,6 +8049,8 @@
     "--xh-glyph-mark-chevron-left",
     "--xh-glyph-mark-chevron-right",
     "--xh-glyph-mark-chevron-up",
+    "--xh-glyph-mark-chevrons-left",
+    "--xh-glyph-mark-chevrons-right",
     "--xh-glyph-mark-close",
     "--xh-glyph-mark-eye",
     "--xh-glyph-mark-eye-off",

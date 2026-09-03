@@ -7775,7 +7775,7 @@
               "name": "input"
             },
             {
-              "description": "展开/收起按钮，须是原生 button；不占 Tab 位，可及名字由作者给",
+              "description": "展开/收起按钮，须是原生 button；不占 Tab 位，可及名字由作者给；旁边的清空钮一出现皮肤就让它让位",
               "name": "trigger"
             },
             {

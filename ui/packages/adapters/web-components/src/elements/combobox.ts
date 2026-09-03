@@ -68,7 +68,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart label - 标题，须是原生 label（connect 给的 for 只在它身上生效）
  * @csspart control - 输入行容器，同时是浮层的定位锚点
  * @csspart input - 输入框，整个组合框唯一的 Tab 停靠点；写 input 时带 role=combobox，写 textarea 时保留它自带的 textbox 角色
- * @csspart trigger - 展开/收起按钮，须是原生 button；不占 Tab 位，可及名字由作者给
+ * @csspart trigger - 展开/收起按钮，须是原生 button；不占 Tab 位，可及名字由作者给；旁边的清空钮一出现皮肤就让它让位
  * @csspart clear-trigger - 清空按钮，须是原生 button；不占 Tab 位，读屏按 aria-label 找到它
  * @csspart positioner - 浮层定位容器，坐标由引擎写成内联样式
  * @csspart content - role=listbox 容器（消解层的根节点），收起时带 hidden

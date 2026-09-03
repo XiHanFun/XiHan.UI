@@ -1,4 +1,4 @@
-<!-- 区间选择 | 五种粒度都能挑区间：两端跨页才并排两页，同一页放得下就一页；翻页整窗一起走，« » 走大步 -->
+<!-- 区间选择 | 五种粒度都能挑区间：两端跨页才并排两页，同一页放得下就一页；翻页整窗一起走，大步翻那对钮一次跨一年或十页 -->
 <script setup lang="ts">
 import type { CalendarView } from "@xihan-ui/headless";
 import { ref } from "vue";
@@ -86,18 +86,11 @@ function text(v: string[]): string {
           <XhDatePickerCalendar v-for="panel in panels" :key="panel.index" :index="panel.index">
             <XhDatePickerHeader>
               <!-- 往前只在最左那张、往后只在最右那张：整窗一起走 -->
-              <XhDatePickerPrevYearTrigger v-if="panel.index === 0" aria-label="快退">
-                «
-              </XhDatePickerPrevYearTrigger>
+              <XhDatePickerPrevYearTrigger v-if="panel.index === 0" aria-label="快退" />
               <XhDatePickerPrevTrigger v-if="panel.index === 0" aria-label="上一页" />
               <XhDatePickerHeading />
               <XhDatePickerNextTrigger v-if="panel.index === panels.length - 1" aria-label="下一页" />
-              <XhDatePickerNextYearTrigger
-                v-if="panel.index === panels.length - 1"
-                aria-label="快进"
-              >
-                »
-              </XhDatePickerNextYearTrigger>
+              <XhDatePickerNextYearTrigger v-if="panel.index === panels.length - 1" aria-label="快进" />
             </XhDatePickerHeader>
             <XhDatePickerGrid>
               <template v-if="panel.weeks.length > 0">
