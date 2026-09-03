@@ -12,8 +12,7 @@ allowBuilds:
   rs-module-lexer: true
 
 # 依赖目录（单一版本事实源）。包内一律用 catalog: 引用，升级只改这里一处。
-# 版本基线截至 2026-07，与消费方 XiHan.BasicApp/frontend 已验证组合对齐；
-# 详见 开发设计/UI.Rearchitect/附录/技术选型/LATEST-TECH.md
+# 版本基线截至 2026-07，与消费方 XiHan.BasicApp/frontend 已验证组合对齐。
 catalog:
   '@antfu/eslint-config': ^9.2.0
   '@arethetypeswrong/cli': ^0.18.0

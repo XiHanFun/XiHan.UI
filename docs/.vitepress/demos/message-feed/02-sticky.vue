@@ -8,7 +8,7 @@ import {
   XhMessageFeedScrollButton,
   XhMessageFeedViewport,
 } from "@xihan-ui/vue";
-import { onBeforeUnmount, ref } from "vue";
+import { onBeforeUnmount, onMounted, ref } from "vue";
 
 const messages = ref([{ id: "m0", text: "第 1 条：往上翻一下，粘附会解除，右下角出现回到底部。" }]);
 const announcement = ref("");
@@ -21,7 +21,10 @@ const tick = () => {
   announcement.value = `已收到 ${n} 条消息`;
   if (n < 12) timer = window.setTimeout(tick, 1200);
 };
-timer = window.setTimeout(tick, 1200);
+// 挂载后才起：<script setup> 顶层在服务端渲染时也执行，那里没有 window
+onMounted(() => {
+  timer = window.setTimeout(tick, 1200);
+});
 
 onBeforeUnmount(() => window.clearTimeout(timer));
 </script>

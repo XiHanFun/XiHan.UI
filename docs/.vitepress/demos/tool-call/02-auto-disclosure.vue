@@ -13,7 +13,7 @@ import {
   XhToolCallStatus,
   XhToolCallTrigger,
 } from "@xihan-ui/vue";
-import { onBeforeUnmount, ref } from "vue";
+import { onBeforeUnmount, onMounted, ref } from "vue";
 
 const phase = ref<ToolCallPhase>("input-streaming");
 const lastSource = ref("");
@@ -24,7 +24,10 @@ const tick = () => {
   phase.value = phase.value === "input-streaming" ? "output-available" : "input-streaming";
   timer = window.setTimeout(tick, 3000);
 };
-timer = window.setTimeout(tick, 3000);
+// 挂载后才起：<script setup> 顶层在服务端渲染时也执行，那里没有 window
+onMounted(() => {
+  timer = window.setTimeout(tick, 3000);
+});
 
 onBeforeUnmount(() => window.clearTimeout(timer));
 </script>

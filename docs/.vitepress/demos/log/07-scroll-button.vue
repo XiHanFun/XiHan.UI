@@ -1,6 +1,6 @@
 <!-- 回到底部与播报 | 往上翻一段，右下角那颗钮自己冒出来，按下去归位并重新粘附；输出跑完在播报区念一句结论 -->
 <script setup lang="ts">
-import { onUnmounted, ref } from "vue";
+import { onMounted, onUnmounted, ref } from "vue";
 import {
   XhLogContent,
   XhLogLine,
@@ -31,7 +31,10 @@ function tick(): void {
   announcement.value = `构建完成，共 ${seq} 行输出，0 个错误`;
 }
 
-timer = window.setTimeout(tick, 700);
+// 挂载后才起：<script setup> 顶层在服务端渲染时也执行，那里没有 window
+onMounted(() => {
+  timer = window.setTimeout(tick, 700);
+});
 
 // 离开页面时把定时器收掉
 onUnmounted(() => window.clearTimeout(timer));

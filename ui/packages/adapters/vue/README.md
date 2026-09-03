@@ -7,7 +7,7 @@ Vue 3 适配器：127 个组件的 Vue 形态，外加对应的 composables。�
 ## 用法
 
 ```ts
-import { XhButton, XhDialog } from '@xihan-ui/vue'
+import { XhButton, XhDialogContent, XhDialogRoot, XhDialogTrigger } from '@xihan-ui/vue'
 import '@xihan-ui/styles'
 ```
 

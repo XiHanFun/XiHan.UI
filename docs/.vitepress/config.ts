@@ -3,6 +3,24 @@ import { DefaultTheme, HeadConfig, defineConfig } from "vitepress";
 
 const require = createRequire(import.meta.url);
 
+// 渲染页面阶段组件抛的异常被 Vue 接住后只打进 console.error，构建仍退出 0：
+// 出错的示例在静态页里整块缺失，而流水线什么都看不见。这里把这一路的异常收下来，
+// buildEnd 时一并抛出，让构建真的失败。
+const renderErrors: Error[] = [];
+const passThroughError = console.error.bind(console);
+console.error = (...args: unknown[]): void => {
+  for (const arg of args) {
+    if (arg instanceof Error) renderErrors.push(arg);
+  }
+  passThroughError(...args);
+};
+
+// 栈里第一处指向示例编译产物的帧，用它的文件名指认是哪一份示例
+function demoOfStack(error: Error): string {
+  const frame = /\.temp[\\/]([^.\\/]+)\.[\w-]+\.js/.exec(error.stack ?? "");
+  return frame ? frame[1] : "未定位到示例";
+}
+
 // 导航末项显示的版本号直接取自库包，changesets 一改就跟着走
 const { version } = require("../../ui/packages/adapters/vue/package.json");
 
@@ -87,6 +105,13 @@ const guideSidebar: DefaultTheme.SidebarItem[] = [
       text: `${i + 1}. ${text}`,
       link: `/guide/${name}`,
     })),
+  },
+  // 这一页的路径落在 /guide/ 前缀下，点进去用的就是这一份侧栏；
+  // 它不属于编号章节，另起一组，读者才在侧栏里找得到自己在哪
+  {
+    text: "参考",
+    collapsed: false,
+    items: [{ text: "版本与兼容性政策", link: "/guide/versioning" }],
   },
 ];
 
@@ -315,6 +340,18 @@ export default defineConfig({
   head: head,
   lastUpdated: true,
   cleanUrls: true,
+  buildEnd() {
+    if (renderErrors.length === 0) return;
+    const list = renderErrors
+      .map(
+        (error, i) =>
+          `  ${i + 1}. ${demoOfStack(error)} —— ${error.name}: ${error.message}`
+      )
+      .join("\n");
+    throw new Error(
+      `渲染页面阶段抛了 ${renderErrors.length} 个异常，出错的示例在静态页里整块缺失（完整栈见上方日志）：\n${list}`
+    );
+  },
   vite: {
     // 组件库是 link: 进来的，Vite 的依赖预打包缓存只认 package.json 与锁文件，
     // 改了库的源码它不会失效——本地构建会拿着旧产物继续渲染而且什么都不说。

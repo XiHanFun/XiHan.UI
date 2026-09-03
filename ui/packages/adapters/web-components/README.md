@@ -22,8 +22,10 @@ Web Components 适配器：把框架无关的 headless（anatomy + machine + con
 - **Presence 模型不同（已知差异，非缺陷）**：Vue 用 Presence 卸载 content（关闭即从 DOM 移除）；
   WC 是 Light DOM，不能删用户节点，content **常驻**，关闭态只由 `data-state="closed"` 标记，
   视觉隐藏交给 styles 层的 `[data-state='closed']{display:none}`。因此两端关闭态 DOM 不同
-  （Vue 无 content 节点，WC 有 content[data-state=closed]），Button 可做逐帧 parity、
-  Dialog 暂用各自 conformance（Dialog 全量 parity 需 presence 容差，留待后续）。
+  （Vue 无 content 节点，WC 有 content[data-state=closed]）。逐帧 parity 覆盖 101 个套件，
+  收不进来的 26 个逐条登记在 `tooling/testing/runners/parity.spec.ts` 的 `EXCLUDED` 里并各带理由；
+  dialog 在这 26 个里，理由就是这条 presence 模型差异——它属永久性差异，跨适配器保证由两端
+  各自跑同一份 dialog conformance 规格提供。
 - **顶层/Portal**：真机可给 content 加 Popover API 上顶层；jsdom 无 Popover，当前只靠
   `data-state` + focus-scope + dismiss-layer，不搬运 DOM。
 - **重连（元素在 DOM 中移动）**：解释器 stop 后不可复活，`MachineController` 在 stop 后
@@ -38,4 +40,5 @@ Web Components 适配器：把框架无关的 headless（anatomy + machine + con
   命中即重新发现 part 并接线。两道过滤：增删里得真有元素节点；目标与宿主之间隔着别的
   `xh-*` 元素则跳过（内层子树归内层元素自己管）。
 - **受控 open**：HTML 布尔属性表达不了 `undefined`，`open` 用自定义 converter（属性缺省→
-  `undefined`=非受控，`open="false"`→受控关）。受控 open 的跨适配器一致性留待后续。
+  `undefined`=非受控，`open="false"`→受控关）。受控 open 的跨适配器一致性由两端各自跑同一份
+  conformance 规格覆盖：点击只发 open-change 不自改 DOM，父级写回 open 之后才打开。

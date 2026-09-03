@@ -56,7 +56,7 @@ features:
 
   - title: AI 对话内核
     icon: 🤖
-    details: SSE 读取、协议归一、parts 归约、会话 store 全在零 DOM 的内核里，配套消息流、提示输入框、代码视图三件与流式 Markdown 渲染。
+    details: SSE 读取、协议归一、parts 归约、会话 store 全在零 DOM 的内核里，渲染那一半交给消息流、日志、提示输入框、代码视图与流式 Markdown。
     link: /guide/ai
     linkText: "了解 AI 对话内核"
 ---
