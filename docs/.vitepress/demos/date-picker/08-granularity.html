@@ -1,0 +1,187 @@
+<!-- 五种粒度 | 天 / 周 / 月 / 季度 / 年一套结构走完：输入行铺哪几段跟着 view 走，标题里的年与月可点，逐级钻上去 -->
+<div
+  id="date-picker-granularity-mount"
+  style="display: flex; flex-wrap: wrap; gap: 24px"
+></div>
+<p id="date-picker-granularity-readout" style="font-size: 13px"></p>
+
+<!-- 壳先收在模板里：段位与网格都由作者照取数口铺，铺好了才入页 -->
+<template id="date-picker-granularity-template">
+  <xh-date-picker locale="zh-CN">
+    <div data-xh-part="root">
+      <span data-xh-part="label"></span>
+      <div data-xh-part="control">
+        <div data-xh-part="segment-group"></div>
+        <button data-xh-part="clear-trigger"></button>
+      </div>
+      <div data-xh-part="positioner">
+        <div data-xh-part="content">
+          <div data-xh-part="calendar">
+            <div data-xh-part="header">
+              <!-- 大步翻那对钮：日视图一年，粗粒度视图十页 -->
+              <button data-xh-part="prev-year-trigger" aria-label="快退"></button>
+              <button data-xh-part="prev-trigger" aria-label="上一页"></button>
+              <div data-xh-part="heading">
+                <!-- 年与月各是一个钮：点年进十年格、点月进月格；文字由元素填，
+                     到顶那一截自动按不动，没有的那一截自动收起 -->
+                <button data-xh-part="heading-year-trigger"></button>
+                <button data-xh-part="heading-month-trigger"></button>
+              </div>
+              <button data-xh-part="next-trigger" aria-label="下一页"></button>
+              <button data-xh-part="next-year-trigger" aria-label="快进"></button>
+            </div>
+            <div data-xh-part="grid"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </xh-date-picker>
+</template>
+
+<script type="module">
+  const kinds = [
+    { key: "day", label: "按天", view: "day", week: false },
+    { key: "week", label: "按周", view: "day", week: true },
+    { key: "month", label: "按月", view: "month", week: false },
+    { key: "quarter", label: "按季度", view: "quarter", week: false },
+    { key: "year", label: "按年", view: "year", week: false },
+  ];
+
+  const mount = document.getElementById("date-picker-granularity-mount");
+  const template = document.getElementById("date-picker-granularity-template");
+  const readout = document.getElementById("date-picker-granularity-readout");
+
+  // 各粒度各自挑到了什么，一起印在下面
+  const values = new Map(kinds.map((kind) => [kind.key, []]));
+
+  function paintReadout() {
+    readout.replaceChildren(
+      ...kinds.map((kind) => {
+        const item = document.createElement("span");
+        item.style.marginInlineEnd = "12px";
+        item.textContent = `${kind.label}：${values.get(kind.key).join(" → ") || "—"}`;
+        return item;
+      }),
+    );
+  }
+
+  function node(tag, part, text) {
+    const el = document.createElement(tag);
+    if (part) {
+      el.dataset.xhPart = part;
+    }
+    if (text !== undefined) {
+      el.textContent = text;
+    }
+    return el;
+  }
+
+  // 周序号：挑的是第几周，光看日期看不出来。身份取行首那天，文字由元素填
+  function weekNumber(value) {
+    const el = node("span", "week-number");
+    el.setAttribute("value", value);
+    return el;
+  }
+
+  function dayCell(value, text) {
+    const cell = node("div", "cell");
+    cell.setAttribute("value", value);
+    cell.append(node("div", "cell-trigger", text));
+    return cell;
+  }
+
+  for (const kind of kinds) {
+    const fragment = template.content.cloneNode(true);
+    const picker = fragment.querySelector("xh-date-picker");
+    picker.setAttribute("view", kind.view);
+    picker.setAttribute("selection-mode", kind.week ? "range" : "single");
+    if (kind.week) {
+      picker.setAttribute("week-selection", "");
+    }
+    picker.querySelector('[data-xh-part="label"]').textContent = kind.label;
+
+    const group = picker.querySelector('[data-xh-part="segment-group"]');
+    const grid = picker.querySelector('[data-xh-part="grid"]');
+
+    // 已经画出来的是哪一页
+    let painted = "";
+
+    function paintGrid() {
+      const panel = picker.panels[0];
+      if (!panel) {
+        return;
+      }
+      const signature = `${panel.startValue}:${panel.weeks.length}`;
+      // 换了页或钻了层才重画；同页内移动焦点时格子原样留着
+      if (signature === painted) {
+        return;
+      }
+      painted = signature;
+
+      // 日视图铺周行，粗粒度视图把格子直接铺进网格。钻上去之后铺的也是格子，
+      // 所以这里看 panel.weeks 有没有东西，不看 view
+      if (panel.weeks.length === 0) {
+        grid.replaceChildren(
+          ...panel.cells.map((cell) => dayCell(cell.value, cell.label)),
+        );
+        return;
+      }
+
+      const head = node("div", "grid-head");
+      const headRow = node("div", "week-row");
+      // 周选时行首多一列周序号，表头也得空出这一格
+      if (kind.week) {
+        headRow.append(weekNumber(""));
+      }
+      for (const day of picker.weekDays) {
+        const column = node("span", "week-day", day.label);
+        column.setAttribute("value", day.value);
+        headRow.append(column);
+      }
+      head.append(headRow);
+
+      const body = node("div", "grid-body");
+      for (const week of panel.weeks) {
+        const row = node("div", "week-row");
+        if (kind.week) {
+          row.append(weekNumber(week[0].value));
+        }
+        for (const day of week) {
+          row.append(dayCell(day.value, day.day));
+        }
+        body.append(row);
+      }
+      grid.replaceChildren(head, body);
+    }
+
+    // 段位不必手数几段：铺哪几块由 view 推出来，照 fieldSegments 铺就是。
+    // 段位是空节点，显示什么由组件按当前值填；「-」与「周」是普通节点，写在段位旁边
+    function paintSegments() {
+      const out = [];
+      picker.fieldSegments.forEach((segment, index) => {
+        if (index > 0) {
+          out.push(node("span", undefined, "-"));
+        }
+        out.push(node("span", "segment"));
+        if (segment.type === "week") {
+          out.push(node("span", undefined, "周"));
+        }
+      });
+      group.replaceChildren(...out);
+    }
+
+    // 元素一连上就能读 panels / fieldSegments，接线排在这之后，节点赶得上
+    mount.append(fragment);
+    paintSegments();
+    paintGrid();
+
+    picker.addEventListener("focused-value-change", paintGrid);
+    picker.addEventListener("active-view-change", paintGrid);
+    picker.addEventListener("value-change", (event) => {
+      values.set(kind.key, event.detail.value);
+      paintReadout();
+    });
+  }
+
+  paintReadout();
+</script>

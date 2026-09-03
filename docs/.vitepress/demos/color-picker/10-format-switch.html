@@ -1,0 +1,64 @@
+<!-- 面板里切换写法 | format 只管对外的序列化：换过之后把当前值原样写回一次，值串就改按新写法产出，工作色一点不动 -->
+<div style="display: grid; gap: 12px">
+  <xh-color-picker id="color-picker-format-switch" format="hex" value="#3b82f6">
+    <div data-xh-part="root">
+      <label data-xh-part="label">强调色</label>
+      <div data-xh-part="control">
+        <button data-xh-part="trigger">
+          <span data-xh-part="swatch"></span>
+          <span data-xh-part="value-text"></span>
+        </button>
+      </div>
+      <div data-xh-part="positioner">
+        <div data-xh-part="content">
+          <div data-xh-part="area">
+            <div data-xh-part="area-thumb"></div>
+          </div>
+          <div data-xh-part="channel-slider" channel="hue">
+            <div data-xh-part="channel-slider-track"></div>
+            <div data-xh-part="channel-slider-thumb"></div>
+          </div>
+          <!-- 三个写法钮：当前那个实心，其余幽灵 -->
+          <div id="color-picker-format-switch-modes" style="display: flex; gap: 6px">
+            <xh-button size="sm" variant="solid" data-format="hex">
+              <button data-xh-part="root">hex</button>
+            </xh-button>
+            <xh-button size="sm" variant="ghost" data-format="rgba">
+              <button data-xh-part="root">rgba</button>
+            </xh-button>
+            <xh-button size="sm" variant="ghost" data-format="hsla">
+              <button data-xh-part="root">hsla</button>
+            </xh-button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </xh-color-picker>
+
+  <span>当前：<span id="color-picker-format-switch-value">#3b82f6</span></span>
+</div>
+
+<script type="module">
+  const picker = document.getElementById("color-picker-format-switch");
+  const readout = document.getElementById("color-picker-format-switch-value");
+  const modes = document.getElementById("color-picker-format-switch-modes");
+
+  // 值由宿主握着：变更经事件回来，写回去才生效
+  picker.addEventListener("value-change", (event) => {
+    picker.value = event.detail.value;
+    readout.textContent = event.detail.value;
+  });
+
+  modes.addEventListener("click", (event) => {
+    const pressed = event.target.closest("xh-button");
+    if (!pressed) {
+      return;
+    }
+    // 先换写法，再把当前值原样写回一次：落值那一刻才按新写法序列化
+    picker.format = pressed.dataset.format;
+    picker.setValue(picker.value);
+    for (const item of modes.children) {
+      item.variant = item === pressed ? "solid" : "ghost";
+    }
+  });
+</script>

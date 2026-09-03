@@ -170,6 +170,14 @@ export class XhTransferElement extends XhElement {
     return this.getParts(name).filter(el => owner.contains(el))
   }
 
+  /**
+   * 某一侧此刻看得见的条目（先分侧、再套本侧的搜索串），顺序恒为 collection 原序。
+   * 作者据它自己渲染列表（分组、只渲可视区那一段都走这条）。机器尚未建起时给空数组。
+   */
+  visibleItems(side: TransferSide): readonly TransferItem[] {
+    return this.ctrl.service ? connectTransfer(this.ctrl.service, wcNormalize).visibleItems(side) : []
+  }
+
   protected wire(): void {
     const api = connectTransfer(this.ctrl.service, wcNormalize)
 

@@ -6968,7 +6968,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-color-picker>` —— Light-DOM 行为宿主：作者写 root/label/trigger/value-text/swatch/\npositioner/content/area/area-thumb/channel-slider/channel-input/swatch-item 等角色节点，\n元素跑 color-picker 机器并把 connect 产出打上去。浮层定位引擎在本元素里建好、经 refs 注入机器，\n锚点取 trigger，被定位的浮层取 positioner。\n\n工作色恒是 HSVA（取色区两轴为饱和度与明度），对外的值串按 format 序列化。\n取色区与通道滑杆的矩形只在指针事件那一刻才量。\n\n通道滑杆与数值框用 channel 属性写明自己调哪一路（`channel=\"hue\"` / `channel=\"r\"`），\n滑杆内的轨道与拇指跟随所在滑杆的通道；预设色板每格用 value 属性写明颜色。",
+          "description": "`<xh-color-picker>` —— Light-DOM 行为宿主：作者写 root/label/trigger/value-text/swatch/\npositioner/content/area/area-thumb/channel-slider/channel-input/swatch-item 等角色节点，\n元素跑 color-picker 机器并把 connect 产出打上去。浮层定位引擎在本元素里建好、经 refs 注入机器，\n锚点取 trigger，被定位的浮层取 positioner。\n\n工作色恒是 HSVA（取色区两轴为饱和度与明度），对外的值串按 format 序列化。\nformat 只在落值那一刻起作用，单独改它不重排已有的值串——要让当前颜色改按新写法产出，\n换过 format 再调一次 `setValue(当前值)`。取色区与通道滑杆的矩形只在指针事件那一刻才量。\n\n通道滑杆与数值框用 channel 属性写明自己调哪一路（`channel=\"hue\"` / `channel=\"r\"`），\n滑杆内的轨道与拇指跟随所在滑杆的通道；预设色板每格用 value 属性写明颜色。",
           "name": "XhColorPickerElement",
           "cssParts": [
             {
@@ -7320,6 +7320,35 @@
                   }
                 }
               ]
+            },
+            {
+              "kind": "method",
+              "name": "api",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "ReturnType<typeof connectColorPicker> | null"
+                }
+              },
+              "description": "命令式入口共用的取法；机器要到进文档（hostConnected）才建，还没建时给 null，调用方退回空操作。"
+            },
+            {
+              "kind": "method",
+              "name": "setValue",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "next",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "写一个新颜色，与点预设色板同一条路径（照常发 value-change）。\n入参按当前 format 重新序列化后落值，所以换过 format 再把原值写回来，值串就改按新写法产出。"
             },
             {
               "kind": "field",
@@ -10019,7 +10048,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-date-picker>` —— Light-DOM 行为宿主：作者写 root/label/control/segment-group/segment/trigger/\nclear-trigger/positioner/content/calendar 角色节点，calendar 之内再照日历那套写\nheader/prev-trigger/next-trigger/heading/grid/grid-head/week-day/grid-body/week-row/cell/cell-trigger。\n\n本元素是编排机，只持有开合与「分段输入 ↔ 日历」之间的值同步；选日期、翻月、网格键盘导航\n委派给内嵌日历，分段输入委派给内嵌分段输入，两部件之内的 DOM 各戴各自的 data-scope。\n\n网格由作者渲染，元素不生成节点：读 `weeks` / `weekDays` / `headingLabel` 三个只读属性，\n听 `focused-value-change` 重画。日期身份取 cell 节点上的 `value`（ISO 串），\ncell-trigger 跟随所在 cell；表头列取 week-day 上的 `value`（列序 0-6）；\n段位可自带 `segment` 属性按段名认领（`segment=\"quarter\"`），或自带 `index` 属性声明下标，\n两者都没写按所在 segment-group 之内的文档序。\n\n区间模式（selection-mode=\"range\"）下 segment-group 写两个：文档序在前的是起点、在后的是终点，\n各自内部写一整套段位。段位与 hidden-input 按所在 segment-group 归组，方向键不跨组；\nhidden-input 写在 segment-group 之外（如与 control 平级）时按文档序对应起止两端。\n其余模式只认第一个 segment-group。",
+          "description": "`<xh-date-picker>` —— Light-DOM 行为宿主：作者写 root/label/control/segment-group/segment/trigger/\nclear-trigger/positioner/content/calendar 角色节点，calendar 之内再照日历那套写\nheader/prev-trigger/next-trigger/heading/grid/grid-head/week-day/grid-body/week-row/cell/cell-trigger。\n\n本元素是编排机，只持有开合与「分段输入 ↔ 日历」之间的值同步；选日期、翻月、网格键盘导航\n委派给内嵌日历，分段输入委派给内嵌分段输入，两部件之内的 DOM 各戴各自的 data-scope。\n\n网格由作者渲染，元素不生成节点：读 `panels` / `weeks` / `weekDays` / `headingLabel` 几个只读属性，\n听 `focused-value-change` 与 `active-view-change` 重画。并排多页时读 `panels`，每页自带\n日期矩阵、粗粒度格子与标题；输入行铺哪几段读 `fieldSegments` 与 `fieldEndSegments`。\n日期身份取 cell 节点上的 `value`（ISO 串），\ncell-trigger 跟随所在 cell；表头列取 week-day 上的 `value`（列序 0-6）；\n段位可自带 `segment` 属性按段名认领（`segment=\"quarter\"`），或自带 `index` 属性声明下标，\n两者都没写按所在 segment-group 之内的文档序。\n\n区间模式（selection-mode=\"range\"）下 segment-group 写两个：文档序在前的是起点、在后的是终点，\n各自内部写一整套段位。段位与 hidden-input 按所在 segment-group 归组，方向键不跨组；\nhidden-input 写在 segment-group 之外（如与 control 平级）时按文档序对应起止两端。\n其余模式只认第一个 segment-group。",
           "name": "XhDatePickerElement",
           "cssParts": [
             {
@@ -10067,7 +10096,7 @@
               "name": "preset"
             },
             {
-              "description": "内嵌日历的挂载点，同时充当日历的根节点",
+              "description": "内嵌日历的挂载点，同时充当日历的根节点；并排多页时每页各写一个",
               "name": "calendar"
             },
             {
@@ -10622,12 +10651,32 @@
               ]
             },
             {
+              "kind": "method",
+              "name": "api",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "ReturnType<typeof connectDatePicker> | null"
+                }
+              },
+              "description": "下面几个只读属性是公开面，作者拿到元素就可能读——机器要到进文档（hostConnected）才建，\n还没建时如实给空，别炸。"
+            },
+            {
+              "kind": "field",
+              "name": "panels",
+              "type": {
+                "text": "CalendarPanel[]"
+              },
+              "description": "并排展示的面板，长度即此刻铺了几页（区间跨页时是两页）。\n每页自带日期矩阵、粗粒度格子与标题，作者照它渲染 calendar / heading / grid 那几层。",
+              "readonly": true
+            },
+            {
               "kind": "field",
               "name": "weeks",
               "type": {
                 "text": "CalendarDay[][]"
               },
-              "description": "当前展示月的日期矩阵，作者照它重画网格。机器尚未建起时给空数组。",
+              "description": "首个面板的日期矩阵，作者照它重画网格。粗粒度视图下为空数组，多面板请改用 panels。",
               "readonly": true
             },
             {
@@ -10645,7 +10694,25 @@
               "type": {
                 "text": "string"
               },
-              "description": "展示月标题文案，作者写进 heading 节点。",
+              "description": "首个面板的标题文案，作者写进 heading 节点。多面板请改用 panels。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "fieldSegments",
+              "type": {
+                "text": "DateFieldSegmentState[]"
+              },
+              "description": "输入行此刻该铺哪几段（段名、当前文字与占位），段数与段序按 view 与 locale 推出来。\n作者照它写 segment 节点，不必自己数几段。区间模式下这是起点那一组。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "fieldEndSegments",
+              "type": {
+                "text": "DateFieldSegmentState[]"
+              },
+              "description": "区间终点那一组该铺哪几段；非区间模式为空数组。",
               "readonly": true
             },
             {
@@ -27492,7 +27559,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-pagination>` —— Light-DOM 行为宿主：作者写 root/prev-trigger/item/ellipsis/next-trigger\n角色节点，元素跑 pagination 机器并把 connect 产出打上去。\n\nroot 必须是 `<nav>`：分页器是\"跳到某一页\"的导航地标，元素只往上打 aria-label，\n地标语义得由标签自己给。页码按钮须自带 `value` 属性标明是第几页。\n\n页码序列（几号页、哪里该出省略号）由作者按 headless 的 `pages` 渲染，元素不替作者生成节点：\n生成节点就等于收走模板控制权，外层 `<li>` 壳、图标、i18n 文案都再塞不进来。",
+          "description": "`<xh-pagination>` —— Light-DOM 行为宿主：作者写 root/prev-trigger/item/ellipsis/next-trigger\n角色节点，元素跑 pagination 机器并把 connect 产出打上去。\n\nroot 必须是 `<nav>`：分页器是\"跳到某一页\"的导航地标，元素只往上打 aria-label，\n地标语义得由标签自己给。页码按钮须自带 `value` 属性标明是第几页。\n\n页码序列（几号页、哪里该出省略号）由作者照 `pages` 渲染，元素不替作者生成节点：\n生成节点就等于收走模板控制权，外层 `<li>` 壳、图标、i18n 文案都再塞不进来。序列本身\n从元素上取（`pages` / `pageItems`），不必自己按当前页与总页数推一遍。\n\n取数口是现算的，读到的恒是此刻那一份。什么时候重读：`page-change` 与 `page-size-change`\n两条事件覆盖了运行期会改动序列的全部输入，在它们的处理器里重读即可；改 `count` /\n`sibling-count` 这类作者自己写的属性，写完当场重读，不必等事件。受控（写了 `page` 属性）时\n得先把新页码写回 `page` 再读——受控下当前页住在属性里，不写回读到的还是上一页那份序列。",
           "name": "XhPaginationElement",
           "cssParts": [
             {
@@ -27782,6 +27849,135 @@
                   }
                 }
               ]
+            },
+            {
+              "kind": "method",
+              "name": "api",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "PaginationApi | null"
+                }
+              },
+              "description": "取数口与命令共用的取法。机器要到进文档（hostConnected）才建，\n而这些都是公开面，作者拿到元素随时可能读、可能调——还没进文档时如实给空，不抛错。"
+            },
+            {
+              "kind": "field",
+              "name": "pages",
+              "type": {
+                "text": "PaginationPage[]"
+              },
+              "description": "页码序列：页码与省略位交替的一串，作者照它渲染 item 与 ellipsis。\n机器尚未建起时给空数组。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "pageItems",
+              "type": {
+                "text": "PaginationPageItem[]"
+              },
+              "description": "同一串序列，但省略位带着被折叠的是哪几页——摊开省略号照它铺面板。\n机器尚未建起时给空数组。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "currentPage",
+              "type": {
+                "text": "number"
+              },
+              "description": "此刻显示的是第几页，已夹进合法区间（`page` 属性是受控入参，可能缺席或越界，这里是结果）。\n机器尚未建起时给 1：页码没有第 0 页，1 也正是无数据时的取值。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "currentPageSize",
+              "type": {
+                "text": "number"
+              },
+              "description": "此刻每页几条（`page-size` 属性缺席时非受控的那份住在机器里，只有这里读得到）。\n机器尚未建起时给 0。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "totalPages",
+              "type": {
+                "text": "number"
+              },
+              "description": "总页数，由总条数与每页条数算出。无数据是 0 页，不是 1 页空页。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "pageRange",
+              "type": {
+                "text": "PaginationEntryRange"
+              },
+              "description": "当前页对应的条目区间，1 基闭区间（\"第 x-y 条\"里的 x 与 y）。无数据时两端都是 0。",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "setPage",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "page",
+                  "type": {
+                    "text": "number"
+                  }
+                }
+              ],
+              "description": "跳到某一页，越界页码夹回合法区间。\n受控（写了 `page` 属性）时只发 page-change，页码归宿主写回。机器尚未建起时不动。"
+            },
+            {
+              "kind": "method",
+              "name": "setPageSize",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "pageSize",
+                  "type": {
+                    "text": "number"
+                  }
+                }
+              ],
+              "description": "换每页条数：页码跟着换算，让改档前第一条仍留在页内。\n受控时语义同 setPage。机器尚未建起时不动。"
+            },
+            {
+              "kind": "method",
+              "name": "slice",
+              "return": {
+                "type": {
+                  "text": "V[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "data",
+                  "type": {
+                    "text": "readonly V[]"
+                  }
+                }
+              ],
+              "description": "按当前页从整份数据里切出这一页。机器尚未建起时给空数组。"
+            },
+            {
+              "kind": "method",
+              "name": "closeEllipsis",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "收起摊开的那个省略位。机器尚未建起时不动。"
             },
             {
               "kind": "method",
@@ -35842,6 +36038,24 @@
               "description": "给表单影子补齐选项：空串选项是无选中时的落点，每个选中值一个 selected 选项。\n必须晚于属性写入：multiple 还没落到元素上时，单选 select 每收下一个 selected 选项\n就会跑一次原生「ask for a reset」，把前面的选中全撤掉。"
             },
             {
+              "kind": "field",
+              "name": "tags",
+              "type": {
+                "text": "SelectTagMeta[]"
+              },
+              "description": "该摆出来的标签（值 + 显示文本），已按 max-tag-count 截断，与选中先后同序。\n作者据它渲染 tag 部件。机器尚未建起时给空数组。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "overflowCount",
+              "type": {
+                "text": "number"
+              },
+              "description": "被 max-tag-count 折起来的标签数，作者据它渲染 +N。机器尚未建起时为 0。",
+              "readonly": true
+            },
+            {
               "kind": "method",
               "name": "wire",
               "privacy": "protected",
@@ -42367,6 +42581,43 @@
               }
             },
             {
+              "kind": "field",
+              "name": "canClear",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "清空此刻可不可行（开了 clearable、可编辑、且有值）。\n作者据它禁用自己写在组件外面的清空钮。机器尚未建起时为 false。",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "setValue",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "next",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "从外面写值，只受禁用、只读与字数上限约束，与 clearable 无关。\n机器尚未建起时是空操作。"
+            },
+            {
+              "kind": "method",
+              "name": "clear",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "走清空意图，canClear 不成立时按兵不动；无条件清空请用 setValue('')。\n机器尚未建起时是空操作。"
+            },
+            {
               "kind": "method",
               "name": "wire",
               "privacy": "protected",
@@ -43633,6 +43884,15 @@
                 }
               ],
               "description": "填节点上的文字，归属只在第一次见到这个节点时定一次。"
+            },
+            {
+              "kind": "field",
+              "name": "columns",
+              "type": {
+                "text": "TimePickerColumn[]"
+              },
+              "description": "此刻该排哪几列、每列有哪些可选值——落在 min/max 之外的、不合 step 的、\n以及随已选的时（分）收窄掉的那些都已经不在里面。作者据它渲染列与格子。\n机器尚未建起时给空数组。",
+              "readonly": true
             },
             {
               "kind": "method",
@@ -47846,6 +48106,24 @@
                   }
                 }
               ]
+            },
+            {
+              "kind": "method",
+              "name": "visibleItems",
+              "return": {
+                "type": {
+                  "text": "readonly TransferItem[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "side",
+                  "type": {
+                    "text": "TransferSide"
+                  }
+                }
+              ],
+              "description": "某一侧此刻看得见的条目（先分侧、再套本侧的搜索串），顺序恒为 collection 原序。\n作者据它自己渲染列表（分组、只渲可视区那一段都走这条）。机器尚未建起时给空数组。"
             },
             {
               "kind": "method",

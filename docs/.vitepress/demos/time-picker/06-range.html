@@ -1,11 +1,4 @@
 <!-- 可选时段 | min / max 直接把界外的格从列里裁掉；分列还会随已选的时再裁一遍 -->
-<style>
-  /* 落在 min / max 之外的格由组件标成 aria-disabled，这条规则把它们从列里收起来 */
-  #time-picker-range [data-xh-part="item"][aria-disabled="true"] {
-    display: none;
-  }
-</style>
-
 <xh-time-picker id="time-picker-range" min="09:00" max="18:00" step="30">
   <div data-xh-part="root">
     <label data-xh-part="label">面谈时段</label>
@@ -18,39 +11,8 @@
       <button data-xh-part="trigger"></button>
     </div>
     <div data-xh-part="positioner">
-      <div data-xh-part="content">
-        <!-- 时列写满 24 格，剩下的只有 09 到 18；选到 18 时分列就只剩 00 -->
-        <div data-xh-part="column" unit="hour">
-          <div data-xh-part="item" value="00"></div>
-          <div data-xh-part="item" value="01"></div>
-          <div data-xh-part="item" value="02"></div>
-          <div data-xh-part="item" value="03"></div>
-          <div data-xh-part="item" value="04"></div>
-          <div data-xh-part="item" value="05"></div>
-          <div data-xh-part="item" value="06"></div>
-          <div data-xh-part="item" value="07"></div>
-          <div data-xh-part="item" value="08"></div>
-          <div data-xh-part="item" value="09"></div>
-          <div data-xh-part="item" value="10"></div>
-          <div data-xh-part="item" value="11"></div>
-          <div data-xh-part="item" value="12"></div>
-          <div data-xh-part="item" value="13"></div>
-          <div data-xh-part="item" value="14"></div>
-          <div data-xh-part="item" value="15"></div>
-          <div data-xh-part="item" value="16"></div>
-          <div data-xh-part="item" value="17"></div>
-          <div data-xh-part="item" value="18"></div>
-          <div data-xh-part="item" value="19"></div>
-          <div data-xh-part="item" value="20"></div>
-          <div data-xh-part="item" value="21"></div>
-          <div data-xh-part="item" value="22"></div>
-          <div data-xh-part="item" value="23"></div>
-        </div>
-        <div data-xh-part="column" unit="minute">
-          <div data-xh-part="item" value="00"></div>
-          <div data-xh-part="item" value="30"></div>
-        </div>
-      </div>
+      <!-- 列与格子都由作者渲染，组件只说该排哪几列、每列还剩哪些值 -->
+      <div data-xh-part="content"></div>
     </div>
   </div>
 </xh-time-picker>
@@ -60,10 +22,52 @@
 </span>
 
 <script type="module">
-  // 当前值回显在旁边那行文字里
   const picker = document.getElementById("time-picker-range");
+  const content = picker.querySelector('[data-xh-part="content"]');
   const readout = document.getElementById("time-picker-range-value");
+
+  // 一列一个节点，按单位记着；重画只换里面的格子
+  const columns = new Map();
+  // 每列上一次画的是哪一串值，没变就不动它（正在用方向键走的那一列不该被换掉）
+  const painted = new Map();
+
+  function columnOf(unit) {
+    let node = columns.get(unit);
+    if (!node) {
+      node = document.createElement("div");
+      node.dataset.xhPart = "column";
+      node.setAttribute("unit", unit);
+      columns.set(unit, node);
+      content.append(node);
+    }
+    return node;
+  }
+
+  function itemNode(value) {
+    const cell = document.createElement("div");
+    cell.dataset.xhPart = "item";
+    cell.setAttribute("value", value);
+    // 格子上的字由组件按 locale 填
+    return cell;
+  }
+
+  // 列里排哪些格子由组件给：越界的、不合 step 的、随已选的时收窄掉的，都已经不在里面
+  function paint() {
+    for (const column of picker.columns) {
+      const shape = column.options.join(",");
+      if (painted.get(column.unit) === shape) continue;
+      painted.set(column.unit, shape);
+      columnOf(column.unit).replaceChildren(...column.options.map(itemNode));
+    }
+  }
+
+  // 挑一格、敲一个数字都可能让别的列跟着收窄；交互之后重读一遍
+  for (const type of ["value-change", "click", "keydown"])
+    picker.addEventListener(type, paint);
+
   picker.addEventListener("value-change", (event) => {
     readout.textContent = event.detail.value || "（空）";
   });
+
+  paint();
 </script>

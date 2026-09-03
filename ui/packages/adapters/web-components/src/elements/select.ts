@@ -1,4 +1,4 @@
-import type { SelectItemProps, SelectNode, SelectOpenChangeDetails, SelectSchema, SelectValueChangeDetails } from '@xihan-ui/headless'
+import type { SelectItemProps, SelectNode, SelectOpenChangeDetails, SelectSchema, SelectTagMeta, SelectValueChangeDetails } from '@xihan-ui/headless'
 import type { Cleanup, ControlVariant, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { OverlayExit } from '../overlay-exit'
@@ -283,6 +283,19 @@ export class XhSelectElement extends XhElement {
       option.selected = true
       el.appendChild(option)
     }
+  }
+
+  /**
+   * 该摆出来的标签（值 + 显示文本），已按 max-tag-count 截断，与选中先后同序。
+   * 作者据它渲染 tag 部件。机器尚未建起时给空数组。
+   */
+  get tags(): SelectTagMeta[] {
+    return this.ctrl.service ? connectSelect(this.ctrl.service, wcNormalize).tags : []
+  }
+
+  /** 被 max-tag-count 折起来的标签数，作者据它渲染 +N。机器尚未建起时为 0。 */
+  get overflowCount(): number {
+    return this.ctrl.service ? connectSelect(this.ctrl.service, wcNormalize).overflowCount : 0
   }
 
   protected wire(): void {

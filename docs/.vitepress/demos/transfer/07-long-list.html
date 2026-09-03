@@ -51,24 +51,18 @@
   transfer.collection = items;
 
   let value = ["sku-3"];
-  let inTarget = new Set(value);
   transfer.value = value;
 
-  // 两侧各记一份滚动位置与搜索串
+  // 两侧各记一份滚动位置；本侧看得见哪些条目不记，每次都问组件要
   const sides = ["source", "target"].map((side) => {
     const panel = stage.querySelector(`[data-xh-part="${side}-panel"]`);
     const state = {
       side,
       list: panel.querySelector('[data-xh-part="list"]'),
       scrolled: 0,
-      query: "",
     };
     state.list.addEventListener("scroll", () => {
       state.scrolled = state.list.scrollTop;
-      render(state);
-    });
-    panel.querySelector('[data-xh-part="search"]').addEventListener("input", (event) => {
-      state.query = event.target.value;
       render(state);
     });
     return state;
@@ -93,19 +87,10 @@
     return el;
   }
 
-  // 本侧此刻看得见的全集：先按落在哪一侧分，再套搜索串，与元素内部同一口径
-  function shownOf(state) {
-    const query = state.query.trim().toLowerCase();
-    return items.filter(
-      (item) =>
-        (inTarget.has(item.value) ? "target" : "source") === state.side &&
-        (query === "" || item.label.toLowerCase().includes(query))
-    );
-  }
-
-  // 该挂出来的那一段：可视区前后各多铺几条，方向键走到边上时下一条已经在 DOM 里
+  // 该挂出来的那一段：可视区前后各多铺几条，方向键走到边上时下一条已经在 DOM 里。
+  // 本侧看得见的全集由组件给——落在哪一侧、被搜索筛掉没有都在它里面算完了
   function render(state) {
-    const shown = shownOf(state);
+    const shown = transfer.visibleItems(state.side);
     const max = Math.max(0, shown.length * ROW - VIEW);
     const top = Math.min(state.scrolled, max);
     const start = Math.max(0, Math.floor(top / ROW) - OVERSCAN);
@@ -117,13 +102,18 @@
     );
   }
 
+  function renderAll() {
+    for (const state of sides) render(state);
+  }
+
   transfer.addEventListener("value-change", (event) => {
     value = event.detail.value;
-    inTarget = new Set(value);
     transfer.value = value;
     out.textContent = `已上架 ${value.length} 件`;
-    for (const state of sides) render(state);
+    renderAll();
   });
+  // 搜索串住在组件里、不对外派事件；这一条挂在宿主上，跑在组件写给搜索框的处理器之后
+  transfer.addEventListener("input", renderAll);
 
-  for (const state of sides) render(state);
+  renderAll();
 </script>

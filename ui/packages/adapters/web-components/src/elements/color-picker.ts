@@ -40,7 +40,8 @@ const STRING_LIST_CONVERTER = {
  * 锚点取 trigger，被定位的浮层取 positioner。
  *
  * 工作色恒是 HSVA（取色区两轴为饱和度与明度），对外的值串按 format 序列化。
- * 取色区与通道滑杆的矩形只在指针事件那一刻才量。
+ * format 只在落值那一刻起作用，单独改它不重排已有的值串——要让当前颜色改按新写法产出，
+ * 换过 format 再调一次 `setValue(当前值)`。取色区与通道滑杆的矩形只在指针事件那一刻才量。
  *
  * 通道滑杆与数值框用 channel 属性写明自己调哪一路（`channel="hue"` / `channel="r"`），
  * 滑杆内的轨道与拇指跟随所在滑杆的通道；预设色板每格用 value 属性写明颜色。
@@ -219,6 +220,21 @@ export class XhColorPickerElement extends XhElement {
   override connectedCallback(): void {
     this.refreshParts()
     super.connectedCallback()
+  }
+
+  /**
+   * 命令式入口共用的取法；机器要到进文档（hostConnected）才建，还没建时给 null，调用方退回空操作。
+   */
+  private api(): ReturnType<typeof connectColorPicker> | null {
+    return this.ctrl.service ? connectColorPicker(this.ctrl.service, wcNormalize) : null
+  }
+
+  /**
+   * 写一个新颜色，与点预设色板同一条路径（照常发 value-change）。
+   * 入参按当前 format 重新序列化后落值，所以换过 format 再把原值写回来，值串就改按新写法产出。
+   */
+  setValue(next: string): void {
+    this.api()?.setValue(next)
   }
 
   /** value-text 是否归元素填：首次见到该节点时定，之后不再回读（读到的会是自己写的字）。 */

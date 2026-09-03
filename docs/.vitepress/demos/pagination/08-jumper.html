@@ -35,54 +35,20 @@
 </xh-pagination>
 
 <script type="module">
-  const TOTAL = 100;
-
-  // 页码序列：首尾各恒显一页，当前页两侧各留 siblings 页，中间的空隙折成省略位
-  function pageItems(page, totalPages, siblings) {
-    const range = (a, b) =>
-      Array.from({ length: b - a + 1 }, (_, i) => ({ value: a + i }));
-    if (totalPages <= siblings * 2 + 5) return range(1, totalPages);
-    const width = siblings * 2 + 1;
-    let start = page - siblings;
-    let end = page + siblings;
-    if (page <= siblings + 2) {
-      start = 1;
-      end = width + 2;
-    } else if (page >= totalPages - siblings - 1) {
-      start = totalPages - width - 1;
-      end = totalPages;
-    }
-    const head =
-      start <= 1
-        ? []
-        : start <= 3
-          ? range(1, start - 1)
-          : [{ value: 1 }, { side: "start" }];
-    const tail =
-      end >= totalPages
-        ? []
-        : end >= totalPages - 2
-          ? range(end + 1, totalPages)
-          : [{ side: "end" }, { value: totalPages }];
-    return [...head, ...range(start, end), ...tail];
-  }
-
   const host = document.getElementById("pagination-jumper");
   const root = host.querySelector('[data-xh-part="root"]');
   const next = root.querySelector('[data-xh-part="next-trigger"]');
   const field = document.getElementById("pagination-jumper-field");
   const input = field.querySelector('[data-xh-part="input"]');
 
-  // 页码写回 page；越界值照写不误，当前页那一格由分页自己夹回合法区间
-  function goto(page) {
-    host.page = page;
+  function render() {
     for (const node of root.querySelectorAll(
       '[data-xh-part="item"], [data-xh-part="ellipsis"]',
     ))
       node.remove();
-    for (const item of pageItems(page, TOTAL, 1)) {
+    for (const item of host.pageItems) {
       const el = document.createElement("button");
-      if (item.side) {
+      if (item.type === "ellipsis") {
         el.dataset.xhPart = "ellipsis";
         el.setAttribute("side", item.side);
         el.textContent = "…";
@@ -95,17 +61,22 @@
     }
   }
 
-  host.addEventListener("page-change", (event) => goto(event.detail.page));
+  // 受控：页码写回 page 之后再照新序列重挂
+  host.addEventListener("page-change", (event) => {
+    host.page = event.detail.page;
+    render();
+  });
+
   field.addEventListener("value-change", (event) => {
     field.value = event.detail.value;
   });
 
-  // 只放正整数进去，其余按无效输入丢掉
+  // 只放正整数进去，其余按无效输入丢掉；超出总页数的照给，setPage 会夹回合法区间
   input.addEventListener("keydown", (event) => {
     if (event.key !== "Enter") return;
     const target = Number(field.value);
     if (Number.isInteger(target) && target > 0) {
-      goto(target);
+      host.setPage(target);
     }
     field.value = "";
   });

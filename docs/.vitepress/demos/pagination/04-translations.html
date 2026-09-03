@@ -19,38 +19,6 @@
 </xh-pagination>
 
 <script type="module">
-  const TOTAL = 8;
-
-  // 页码序列：首尾各恒显一页，当前页两侧各留 siblings 页，中间的空隙折成省略位
-  function pageItems(page, totalPages, siblings) {
-    const range = (a, b) =>
-      Array.from({ length: b - a + 1 }, (_, i) => ({ value: a + i }));
-    if (totalPages <= siblings * 2 + 5) return range(1, totalPages);
-    const width = siblings * 2 + 1;
-    let start = page - siblings;
-    let end = page + siblings;
-    if (page <= siblings + 2) {
-      start = 1;
-      end = width + 2;
-    } else if (page >= totalPages - siblings - 1) {
-      start = totalPages - width - 1;
-      end = totalPages;
-    }
-    const head =
-      start <= 1
-        ? []
-        : start <= 3
-          ? range(1, start - 1)
-          : [{ value: 1 }, { side: "start" }];
-    const tail =
-      end >= totalPages
-        ? []
-        : end >= totalPages - 2
-          ? range(end + 1, totalPages)
-          : [{ side: "end" }, { value: totalPages }];
-    return [...head, ...range(start, end), ...tail];
-  }
-
   const host = document.getElementById("pagination-i18n");
 
   // 文案是对象、页码那条还是函数，只走 property
@@ -64,14 +32,15 @@
   const root = host.querySelector('[data-xh-part="root"]');
   const next = root.querySelector('[data-xh-part="next-trigger"]');
 
-  function render(page) {
+  // 序列照旧从元素上取；换页重挂的格子由元素接线，aria-label 一并按新文案写上去
+  function render() {
     for (const node of root.querySelectorAll(
       '[data-xh-part="item"], [data-xh-part="ellipsis"]',
     ))
       node.remove();
-    for (const item of pageItems(page, TOTAL, 1)) {
+    for (const item of host.pageItems) {
       const el = document.createElement("button");
-      if (item.side) {
+      if (item.type === "ellipsis") {
         el.dataset.xhPart = "ellipsis";
         el.setAttribute("side", item.side);
         el.textContent = "…";
@@ -84,5 +53,5 @@
     }
   }
 
-  host.addEventListener("page-change", (event) => render(event.detail.page));
+  host.addEventListener("page-change", render);
 </script>

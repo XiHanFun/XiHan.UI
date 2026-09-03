@@ -1,5 +1,6 @@
 import type {
   CalendarDay,
+  CalendarPanel,
   CalendarSchema,
   CalendarSelectionMode,
   CalendarView,
@@ -7,6 +8,7 @@ import type {
   CalendarWeekDay,
   DateFieldSchema,
   DateFieldSegmentProps,
+  DateFieldSegmentState,
   DatePickerFieldApi,
   DatePickerFocusChangeDetails,
   DatePickerOpenChangeDetails,
@@ -76,8 +78,10 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * 本元素是编排机，只持有开合与「分段输入 ↔ 日历」之间的值同步；选日期、翻月、网格键盘导航
  * 委派给内嵌日历，分段输入委派给内嵌分段输入，两部件之内的 DOM 各戴各自的 data-scope。
  *
- * 网格由作者渲染，元素不生成节点：读 `weeks` / `weekDays` / `headingLabel` 三个只读属性，
- * 听 `focused-value-change` 重画。日期身份取 cell 节点上的 `value`（ISO 串），
+ * 网格由作者渲染，元素不生成节点：读 `panels` / `weeks` / `weekDays` / `headingLabel` 几个只读属性，
+ * 听 `focused-value-change` 与 `active-view-change` 重画。并排多页时读 `panels`，每页自带
+ * 日期矩阵、粗粒度格子与标题；输入行铺哪几段读 `fieldSegments` 与 `fieldEndSegments`。
+ * 日期身份取 cell 节点上的 `value`（ISO 串），
  * cell-trigger 跟随所在 cell；表头列取 week-day 上的 `value`（列序 0-6）；
  * 段位可自带 `segment` 属性按段名认领（`segment="quarter"`），或自带 `index` 属性声明下标，
  * 两者都没写按所在 segment-group 之内的文档序。
@@ -133,7 +137,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @csspart content - role=dialog 浮层（消解层的根节点），收起时带 hidden
  * @csspart presets - 快捷选项列（role=listbox）；没给 presets 时带 hidden
  * @csspart preset - 一条快捷选项（role=option），须自带 value 属性（与 presets 数据里的 value 逐字对上）
- * @csspart calendar - 内嵌日历的挂载点，同时充当日历的根节点
+ * @csspart calendar - 内嵌日历的挂载点，同时充当日历的根节点；并排多页时每页各写一个
  * @csspart time-column - showTime 的时间列，须自带 unit 属性（hour/minute/second）；没开时带 hidden
  * @csspart time-item - 时间选项，须自带 value 属性（两位补零串）；点按把该单位写进值
  * @csspart confirm-trigger - showTime 的收口按钮；没开时带 hidden
@@ -400,19 +404,48 @@ export class XhDatePickerElement extends XhElement {
     super.connectedCallback()
   }
 
-  /** 当前展示月的日期矩阵，作者照它重画网格。机器尚未建起时给空数组。 */
+  /**
+   * 下面几个只读属性是公开面，作者拿到元素就可能读——机器要到进文档（hostConnected）才建，
+   * 还没建时如实给空，别炸。
+   */
+  private api(): ReturnType<typeof connectDatePicker> | null {
+    return this.rootCtrl.service ? connectDatePicker(this.services(), wcNormalize) : null
+  }
+
+  /**
+   * 并排展示的面板，长度即此刻铺了几页（区间跨页时是两页）。
+   * 每页自带日期矩阵、粗粒度格子与标题，作者照它渲染 calendar / heading / grid 那几层。
+   */
+  get panels(): CalendarPanel[] {
+    return this.api()?.calendar.panels ?? []
+  }
+
+  /** 首个面板的日期矩阵，作者照它重画网格。粗粒度视图下为空数组，多面板请改用 panels。 */
   get weeks(): CalendarDay[][] {
-    return this.rootCtrl.service ? connectDatePicker(this.services(), wcNormalize).calendar.weeks : []
+    return this.api()?.calendar.weeks ?? []
   }
 
   /** 七列表头（缩写 + 全称），列序与 weeks 的列序一致。 */
   get weekDays(): CalendarWeekDay[] {
-    return this.rootCtrl.service ? connectDatePicker(this.services(), wcNormalize).calendar.weekDays : []
+    return this.api()?.calendar.weekDays ?? []
   }
 
-  /** 展示月标题文案，作者写进 heading 节点。 */
+  /** 首个面板的标题文案，作者写进 heading 节点。多面板请改用 panels。 */
   get headingLabel(): string {
-    return this.rootCtrl.service ? connectDatePicker(this.services(), wcNormalize).calendar.headingLabel : ''
+    return this.api()?.calendar.headingLabel ?? ''
+  }
+
+  /**
+   * 输入行此刻该铺哪几段（段名、当前文字与占位），段数与段序按 view 与 locale 推出来。
+   * 作者照它写 segment 节点，不必自己数几段。区间模式下这是起点那一组。
+   */
+  get fieldSegments(): DateFieldSegmentState[] {
+    return this.api()?.field.segments ?? []
+  }
+
+  /** 区间终点那一组该铺哪几段；非区间模式为空数组。 */
+  get fieldEndSegments(): DateFieldSegmentState[] {
+    return this.api()?.fieldEnd?.segments ?? []
   }
 
   /** 取 owner 子树内指定名字的角色节点。 */
@@ -457,6 +490,11 @@ export class XhDatePickerElement extends XhElement {
       if (el)
         this.spreader.spread(el, props)
     }
+    // 面板并排时这几层每页各写一份，产出与页无关，逐个打同一份
+    const putAll = (name: string, props: Record<string, unknown>): void => {
+      for (const el of this.getParts(name))
+        this.spreader.spread(el, props)
+    }
     put('root', api.getRootProps() as Record<string, unknown>)
     put('label', api.getLabelProps() as Record<string, unknown>)
     put('control', api.getControlProps() as Record<string, unknown>)
@@ -465,7 +503,7 @@ export class XhDatePickerElement extends XhElement {
     // positioner 的 style 是对象，spreader 会逐条写成内联样式
     put('positioner', api.getPositionerProps() as Record<string, unknown>)
     put('content', api.getContentProps() as Record<string, unknown>)
-    put('calendar', api.getCalendarProps() as Record<string, unknown>)
+    putAll('calendar', api.getCalendarProps() as Record<string, unknown>)
     put('presets', api.getPresetsProps() as Record<string, unknown>)
 
     // 快捷选项是多实例 part：条目自报 value
@@ -504,11 +542,11 @@ export class XhDatePickerElement extends XhElement {
     }
 
     // 内嵌日历的角色节点：行为取自本元素持有的那台日历机器
-    put('header', api.calendar.getHeaderProps() as Record<string, unknown>)
-    put('prev-year-trigger', api.calendar.getPrevYearTriggerProps() as Record<string, unknown>)
-    put('prev-trigger', api.calendar.getPrevTriggerProps() as Record<string, unknown>)
-    put('next-trigger', api.calendar.getNextTriggerProps() as Record<string, unknown>)
-    put('next-year-trigger', api.calendar.getNextYearTriggerProps() as Record<string, unknown>)
+    putAll('header', api.calendar.getHeaderProps() as Record<string, unknown>)
+    putAll('prev-year-trigger', api.calendar.getPrevYearTriggerProps() as Record<string, unknown>)
+    putAll('prev-trigger', api.calendar.getPrevTriggerProps() as Record<string, unknown>)
+    putAll('next-trigger', api.calendar.getNextTriggerProps() as Record<string, unknown>)
+    putAll('next-year-trigger', api.calendar.getNextYearTriggerProps() as Record<string, unknown>)
     // 面板逐个打：下标取作者写的 index，没写就按文档序（第 N 张就是第 N 个面板）
     this.getParts('heading').forEach((el, position) => {
       this.spreader.spread(el, api.calendar.getHeadingProps({ index: declaredIndex(el, position) }) as Record<string, unknown>)
@@ -533,8 +571,8 @@ export class XhDatePickerElement extends XhElement {
     this.getParts('grid').forEach((el, position) => {
       this.spreader.spread(el, api.calendar.getGridProps({ index: declaredIndex(el, position) }) as Record<string, unknown>)
     })
-    put('grid-head', api.calendar.getGridHeadProps() as Record<string, unknown>)
-    put('grid-body', api.calendar.getGridBodyProps() as Record<string, unknown>)
+    putAll('grid-head', api.calendar.getGridHeadProps() as Record<string, unknown>)
+    putAll('grid-body', api.calendar.getGridBodyProps() as Record<string, unknown>)
 
     // 表头行与日期行共用 role=row，一并打
     // 周序号格：身份取行首那天，文字由元素填

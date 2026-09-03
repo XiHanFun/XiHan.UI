@@ -29,42 +29,6 @@
 </xh-pagination>
 
 <script type="module">
-  const TOTAL = 200;
-
-  const nums = (a, b) => Array.from({ length: b - a + 1 }, (_, i) => a + i);
-
-  // 页码序列：首尾各恒显一页，当前页两侧各留 siblings 页；空隙折成省略位，并记下折的是哪几页
-  function pageItems(page, totalPages, siblings) {
-    const asPages = (list) => list.map((value) => ({ value }));
-    if (totalPages <= siblings * 2 + 5) return asPages(nums(1, totalPages));
-    const width = siblings * 2 + 1;
-    let start = page - siblings;
-    let end = page + siblings;
-    if (page <= siblings + 2) {
-      start = 1;
-      end = width + 2;
-    } else if (page >= totalPages - siblings - 1) {
-      start = totalPages - width - 1;
-      end = totalPages;
-    }
-    const head =
-      start <= 1
-        ? []
-        : start <= 3
-          ? asPages(nums(1, start - 1))
-          : [{ value: 1 }, { side: "start", pages: nums(2, start - 1) }];
-    const tail =
-      end >= totalPages
-        ? []
-        : end >= totalPages - 2
-          ? asPages(nums(end + 1, totalPages))
-          : [
-              { side: "end", pages: nums(end + 1, totalPages - 1) },
-              { value: totalPages },
-            ];
-    return [...head, ...asPages(nums(start, end)), ...tail];
-  }
-
   const host = document.getElementById("pagination-expand");
   const root = host.querySelector('[data-xh-part="root"]');
   const next = root.querySelector('[data-xh-part="next-trigger"]');
@@ -79,28 +43,14 @@
     return el;
   }
 
-  // 每一侧折进去的是哪几页，摊开时照它铺面板
-  let folded = { start: [], end: [] };
-  let filled = null;
-
-  function collect(items) {
-    folded = { start: [], end: [] };
-    filled = null;
-    for (const item of items) {
-      if (item.side) folded[item.side] = item.pages;
-    }
-  }
-
-  function render(page) {
-    const items = pageItems(page, TOTAL, 1);
-    collect(items);
+  function render() {
     // 只摘行里的格子：面板里的页码也是 item，不能一起清掉
     for (const node of [...root.children]) {
       const part = node.dataset.xhPart;
       if (part === "item" || part === "ellipsis") node.remove();
     }
-    for (const item of items) {
-      if (item.side) {
+    for (const item of host.pageItems) {
+      if (item.type === "ellipsis") {
         const el = document.createElement("button");
         el.dataset.xhPart = "ellipsis";
         el.setAttribute("side", item.side);
@@ -110,15 +60,21 @@
         root.insertBefore(makeItem(item.value), next);
       }
     }
-    readout.textContent = `当前第 ${page} 页，共 ${TOTAL} 页`;
+    readout.textContent = `当前第 ${host.currentPage} 页，共 ${host.totalPages} 页`;
   }
 
-  // 指针停上去与按下去都会摊开，面板照那一侧折进去的页码铺
+  // 指针停上去与按下去都会摊开，面板照那一侧折进去的页码铺：
+  // 折的是哪几页由 pageItems 的省略位自带，脚本只负责认出指的是哪一侧
+  let filled = null;
+
   function fill(el) {
     const side = el.getAttribute("side");
     if (filled === side) return;
     filled = side;
-    content.replaceChildren(...folded[side].map(makeItem));
+    const folded = host.pageItems.find(
+      (item) => item.type === "ellipsis" && item.side === side,
+    );
+    content.replaceChildren(...(folded?.pages ?? []).map(makeItem));
   }
 
   for (const type of ["pointerover", "click"]) {
@@ -128,6 +84,9 @@
     });
   }
 
-  collect(pageItems(100, TOTAL, 1));
-  host.addEventListener("page-change", (event) => render(event.detail.page));
+  host.addEventListener("page-change", () => {
+    // 换页之后折进去的页码变了，面板下次摊开要重铺
+    filled = null;
+    render();
+  });
 </script>

@@ -23,52 +23,20 @@
 </xh-pagination>
 
 <script type="module">
-  const TOTAL = 50;
-  const SIBLINGS = 2;
-
-  // 页码序列：首尾各恒显一页，当前页两侧各留 siblings 页，中间的空隙折成省略位
-  function pageItems(page, totalPages, siblings) {
-    const range = (a, b) =>
-      Array.from({ length: b - a + 1 }, (_, i) => ({ value: a + i }));
-    if (totalPages <= siblings * 2 + 5) return range(1, totalPages);
-    const width = siblings * 2 + 1;
-    let start = page - siblings;
-    let end = page + siblings;
-    if (page <= siblings + 2) {
-      start = 1;
-      end = width + 2;
-    } else if (page >= totalPages - siblings - 1) {
-      start = totalPages - width - 1;
-      end = totalPages;
-    }
-    const head =
-      start <= 1
-        ? []
-        : start <= 3
-          ? range(1, start - 1)
-          : [{ value: 1 }, { side: "start" }];
-    const tail =
-      end >= totalPages
-        ? []
-        : end >= totalPages - 2
-          ? range(end + 1, totalPages)
-          : [{ side: "end" }, { value: totalPages }];
-    return [...head, ...range(start, end), ...tail];
-  }
-
   const host = document.getElementById("pagination-siblings");
   const root = host.querySelector('[data-xh-part="root"]');
   const next = root.querySelector('[data-xh-part="next-trigger"]');
 
-  // 每一轮的格子数恒为 siblings * 2 + 5，省略位在其中左右挪，一行的宽度不变
-  function render(page) {
+  // 序列照 sibling-count 折好了才交出来：每一轮的格子数恒为 siblings * 2 + 5，
+  // 省略位在其中左右挪，一行的宽度不变
+  function render() {
     for (const node of root.querySelectorAll(
       '[data-xh-part="item"], [data-xh-part="ellipsis"]',
     ))
       node.remove();
-    for (const item of pageItems(page, TOTAL, SIBLINGS)) {
+    for (const item of host.pageItems) {
       const el = document.createElement("button");
-      if (item.side) {
+      if (item.type === "ellipsis") {
         el.dataset.xhPart = "ellipsis";
         el.setAttribute("side", item.side);
         el.textContent = "…";
@@ -81,5 +49,5 @@
     }
   }
 
-  host.addEventListener("page-change", (event) => render(event.detail.page));
+  host.addEventListener("page-change", render);
 </script>
