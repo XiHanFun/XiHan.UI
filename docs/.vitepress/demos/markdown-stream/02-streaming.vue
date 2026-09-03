@@ -3,7 +3,7 @@
 import type { MarkdownBlock } from "@xihan-ui/headless";
 import { createStreamRenderer } from "@xihan-ui/markdown";
 import { XhMarkdownStreamContent, XhMarkdownStreamLiveRegion, XhMarkdownStreamRoot } from "@xihan-ui/vue";
-import { onBeforeUnmount, shallowRef } from "vue";
+import { onBeforeUnmount, onMounted, shallowRef } from "vue";
 
 const article = `## 增量渲染
 
@@ -25,7 +25,8 @@ const tick = () => {
   streaming.value = !ended;
   if (!ended) timer = window.setTimeout(tick, 70);
 };
-tick();
+// 挂载后才开始追加：<script setup> 顶层在服务端渲染时也执行，那里没有 window
+onMounted(tick);
 
 onBeforeUnmount(() => {
   window.clearTimeout(timer);

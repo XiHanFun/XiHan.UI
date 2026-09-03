@@ -7,7 +7,7 @@ SSE 传输与流式消息归约：把服务端推来的增量事件归一成消�
 ## 用法
 
 ```ts
-import { createChatStore, httpSseTransport } from '@xihan-ui/chat-stream'
+import { createHttpSseTransport, createThreadStore } from '@xihan-ui/chat-stream'
 ```
 
 ## 装

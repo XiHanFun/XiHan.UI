@@ -26,7 +26,7 @@
 
 ## 影响范围
 
-<!-- 包 / 领域：kernel / machine / tokens / behavior / position / motion / code-highlight / markdown / chat-stream /
+<!-- 包 / 领域：kernel / machine / tokens / behavior / position / pointer / motion / code-highlight / markdown / chat-stream /
      backgrounds / animations / sound / headless / styles / vue / web-components / icons / tooling（构建工程）/ 文档 -->
 <!-- 相关组件 / 包名：如 @xihan-ui/vue 的 XhButton -->
 
@@ -42,7 +42,7 @@
 
 ## 门禁看不住的改动
 
-<!-- 下面三类改动没有脚本拦得住，全绿也不代表对，只能靠人读；本次都没涉及则填「无」 -->
+<!-- 下面四类改动没有脚本拦得住，全绿也不代表对，只能靠人读；本次都没涉及则填「无」 -->
 
 - **改了 `tooling/scripts/state-vocabulary.json`**：逐条写明新增的族或取值是什么语义、
   现有的族为什么装不下它（同一族内取值互斥，塞进不该去的族会让皮肤同时命中两个状态），
@@ -53,6 +53,11 @@
 - **改了 `BUILTIN_MOTION_NAMES` / `BUILTIN_SOUND_NAMES` 里的预设名**：按破坏性变更处理。
   公开面基线采集的是标识符，这两处的预设名是数组里的字符串字面量、不在采集范围内，
   改名后 `pnpm gate:surface` 照样绿，而使用者按名字取的预设会取空。
+- **往某道门禁的例外表里加了条目**（各 `check-*.mjs` 的 `EXEMPT` / `ALLOWED` / `ALLOWLIST` /
+  `HOOKS`，以及 `parity.spec.ts` 的 `EXCLUDED`）：逐条写明这一处为什么确实不归那道门禁管，
+  并说明它是永久性结论、不是等以后再修的欠账。条目的键会不会过期由脚本自己核（登了却没被
+  用到就报错），但理由那句话没有任何东西核得了——加一条就是让那道门禁在这一处不再判断，
+  之后绿的是名单，不是代码。
 
 ## 破坏性变更
 

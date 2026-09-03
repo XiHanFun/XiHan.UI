@@ -44,6 +44,32 @@ function countStringLiterals(source, constName) {
   return (source.slice(open, close).match(/'[^']+'/g) ?? []).length
 }
 
+/** `const SUITES: … = [ ident, ident ]` 里逐帧比对的套件条目，按原序。 */
+function paritySuites(source) {
+  const start = source.search(/^const SUITES\b.*\[$/m)
+  if (start === -1)
+    throw new Error('parity.spec.ts 里找不到 SUITES')
+  const out = []
+  for (const line of source.slice(start).split('\n').slice(1)) {
+    if (line === ']')
+      break
+    const hit = line.match(/^ {2}(\w+Suite),$/)
+    if (hit)
+      out.push(hit[1])
+  }
+  return out
+}
+
+/** 逐行的 `键: '值',` → `键=值` 空格分隔：源码与正文里贴的那份代码块用同一把尺子量。 */
+function codePairs(text) {
+  return [...text.matchAll(/^\s*(\w+): '([^']+)'/gm)].map(hit => `${hit[1]}=${hit[2]}`).join(' ')
+}
+
+/** 表格里以 `| \`@xihan-ui/x\` |` 开头的行 → 包名去重排序后空格分隔。 */
+function tabledPackageNames(text) {
+  return [...new Set([...text.matchAll(/^\| `(@xihan-ui\/[\w-]+)` \|/gm)].map(hit => hit[1]))].sort().join(' ')
+}
+
 /** 对象字面量 `const NAME: … = { … }` 的顶层键数（键一律缩进两格）。 */
 function countTopLevelKeys(source, constName) {
   const start = source.search(new RegExp(`^(?:export )?const ${constName}\\b.*\\{$`, 'm'))
@@ -248,6 +274,12 @@ const truth = {
         }
       }
       return n
+    },
+  },
+  除自己外的公开包数: {
+    how: '公开包数减一——「改一个包不动其余 N 个」这类说法里的 N',
+    async value() {
+      return (await truth.公开包数.value()) - 1
     },
   },
   仅主入口的包数: {
@@ -837,6 +869,18 @@ const truth = {
       return names.size
     },
   },
+  逐帧parity套件数: {
+    how: 'parity.spec.ts 的 SUITES 数组里的套件条目数',
+    async value() {
+      return paritySuites(await read('tooling/testing/runners/parity.spec.ts')).length
+    },
+  },
+  parity排除套件数: {
+    how: 'parity.spec.ts 的 EXCLUDED 对象里的登记条数',
+    async value() {
+      return countTopLevelKeys(await read('tooling/testing/runners/parity.spec.ts'), 'EXCLUDED')
+    },
+  },
   用指针原语的组件数: {
     how: 'headless 的组件目录里引了 @xihan-ui/pointer 的那些',
     async value() {
@@ -901,6 +945,82 @@ async function thirdPartyRuntimeDeps() {
     }
   }
   return [...names].sort()
+}
+
+truth.诊断码名单 = {
+  how: 'packages/engine/kernel/src/diagnostics/codes.ts 里 DIAGNOSTIC_CODES 的「键=码」全表，按源码顺序',
+  async value() {
+    const src = await read('packages/engine/kernel/src/diagnostics/codes.ts')
+    return codePairs(src.slice(src.indexOf('DIAGNOSTIC_CODES')))
+  },
+}
+
+truth.分级表覆盖的包名单 = {
+  how: 'packages/*/* 里 private 不为 true 的包名，去重排序',
+  async value() {
+    return (await publicPackages()).map(p => p.name).sort().join(' ')
+  },
+}
+
+truth.Vue家族组合式函数数 = {
+  how: '组件目录名的 use<PascalName> 出现在 packages/adapters/vue/src/index.ts 值导出里的那些',
+  async value() {
+    const src = await read('packages/adapters/vue/src/index.ts')
+    const names = new Set()
+    for (const block of src.matchAll(/^export\s+\{([\s\S]*?)\}\s+from/gm)) {
+      for (const raw of block[1].split(',')) {
+        const name = raw.trim().split(/\s+as\s+/).pop()?.trim()
+        if (name)
+          names.add(name)
+      }
+    }
+    const comps = await once('anatomy', () => componentDirs('anatomy.ts'))
+    const pascal = kebab => kebab.split('-').map(part => part[0].toUpperCase() + part.slice(1)).join('')
+    return comps.filter(name => names.has(`use${pascal(name)}`)).length
+  },
+}
+
+truth.Vue内部注入函数数 = {
+  how: 'packages/adapters/vue/src/index.ts 值导出里 provide* 与 use*Context 两类的条数之和',
+  async value() {
+    const src = await read('packages/adapters/vue/src/index.ts')
+    const names = new Set()
+    for (const block of src.matchAll(/^export\s+\{([\s\S]*?)\}\s+from/gm)) {
+      for (const raw of block[1].split(',')) {
+        const name = raw.trim().split(/\s+as\s+/).pop()?.trim()
+        if (name)
+          names.add(name)
+      }
+    }
+    return [...names].filter(name => /^provide[A-Z]/.test(name) || /^use[A-Z].*Context$/.test(name)).length
+  },
+}
+
+truth.对象式emits的组件数 = {
+  how: 'packages/adapters/vue/src/components 下声明了 emits: { 的组件目录数',
+  async value() {
+    const dir = join(uiRoot, 'packages/adapters/vue/src/components')
+    const names = new Set()
+    for (const [path, src] of await readTree(dir, '.ts')) {
+      if (src.includes('emits: {'))
+        names.add(path.slice(dir.length + 1).split(/[\\/]/)[0])
+    }
+    return names.size
+  },
+}
+
+truth.styles子路径键数 = {
+  how: 'packages/design/styles/package.json 的 exports 键数（含主入口 .）',
+  async value() {
+    return Object.keys(JSON.parse(await read('packages/design/styles/package.json')).exports).length
+  },
+}
+
+truth.引用袋类型数 = {
+  how: '公开面基线里 @xihan-ui/headless 以 Refs 结尾的导出名数',
+  async value() {
+    return ((await surface()).exports['@xihan-ui/headless'] ?? []).filter(name => name.endsWith('Refs')).length
+  },
 }
 
 // CommonMark 逐节的通过数与用例数：包 README 与文档站都逐节抄了这两个数。
@@ -1026,7 +1146,12 @@ const TABLE = [
   // 包 README——npm 把它们当落地页，改数字的人一般只翻文档站，这一片最容易停在旧值
   ['ui/packages/README.md', /`headless` 的 (\d+) 个/, '组件数'],
   ['ui/packages/README.md', /(\d+) 个组件共享同一套机器/, '组件数'],
+  ['ui/tooling/scripts/check-version-lock.mjs', /version 而不动其余 (\d+) 个/, '除自己外的公开包数'],
+
   ['ui/packages/adapters/vue/README.md', /^Vue 3 适配器：(\d+) 个组件的 Vue 形态/m, '组件数'],
+  ['ui/packages/adapters/web-components/README.md', /逐帧 parity 覆盖 (\d+) 个套件/, '逐帧parity套件数'],
+  ['ui/packages/adapters/web-components/README.md', /收不进来的 (\d+) 个逐条登记在/, 'parity排除套件数'],
+  ['ui/packages/adapters/web-components/README.md', /dialog 在这 (\d+) 个里/, 'parity排除套件数'],
   ['ui/packages/engine/headless/README.md', /^(\d+) 个组件的无视觉实现/m, '组件数'],
   ['ui/packages/design/styles/README.md', /^默认皮肤：(\d+) 份纯 CSS/m, '皮肤份数'],
   ['ui/packages/engine/kernel/README.md', /以及([\d一二三四五六七八九十两]+)个端口的类型契约/, '内核端口数'],
@@ -1120,7 +1245,7 @@ const TABLE = [
   ['docs/guide/versioning.md', /全部 (\d+) 个包一起发同一个号/, '公开包数'],
   ['docs/guide/versioning.md', /^(\d+) 个包中 \d+ 个出 JS/m, '公开包数'],
   ['docs/guide/versioning.md', /^\| 包名 \| (\d+) \|/m, '公开包数'],
-  ['docs/guide/versioning.md', /下面两张表覆盖 (\d+) 个包中的 \d+ 个/, '公开包数'],
+  ['docs/guide/versioning.md', /下面两张表覆盖全部 (\d+) 个包/, '公开包数'],
   ['docs/guide/versioning.md', /守着 (\d+) 包锁步/, '公开包数'],
   ['docs/guide/versioning.md', /「(\d+) 个包必须同版本」/, '公开包数'],
   ['docs/guide/versioning.md', /门禁保证 (\d+) 个 package\.json 同版本/, '公开包数'],
@@ -1166,6 +1291,22 @@ const TABLE = [
   ['docs/faq.md', /另有 breadcrumb ([\d一二三四五六七八九十两]+)条步骤重放豁免/, 'a11y重放豁免条数'],
   ['docs/guide/a11y.md', /当前共([\d一二三四五六七八九十两]+)条/, 'a11y存量违规条数'],
   ['docs/guide/a11y.md', /只剩([\d一二三四五六七八九十两]+)个组件在真机里推不到用例终态/, 'a11y重放豁免条数'],
+
+  // 名单式登记：正文抄的是一整份清单，第四项把捕获到的那段归一成与真值同形的串再比
+  ['docs/guide/diagnostics.md', /```ts\nexport const DIAGNOSTIC_CODES = \{\n([\s\S]*?)\n\}\n```/, '诊断码名单', codePairs],
+  ['docs/guide/versioning.md', /## 九、包的稳定性分级\n([\s\S]*?)\n---\n/, '分级表覆盖的包名单', tabledPackageNames],
+
+  // 稳定性分级表里的规模数：与上面同名的数各自登记过，这两张表是第二处抄写
+  ['docs/guide/versioning.md', /\| Vue 组合式函数 `use<家族>` \| (\d+) \|/, 'Vue家族组合式函数数'],
+  ['docs/guide/versioning.md', /\| `@xihan-ui\/vue` \| \d+ 个组件、(\d+) 个组合式函数/, 'Vue家族组合式函数数'],
+  ['docs/guide/versioning.md', /\| `@xihan-ui\/web-components` \| (\d+) 个自定义元素/, '自定义元素数加一'],
+  ['docs/guide/versioning.md', /\| `@xihan-ui\/styles` \| (\d+) 份组件皮肤/, '组件皮肤份数'],
+  ['docs/guide/versioning.md', /DOM 引用袋，(\d+) 个）/, '引用袋类型数'],
+  ['docs/guide/versioning.md', /\| Vue 的 `provide\*` \/ `use\*Context` 函数 \| (\d+) \|/, 'Vue内部注入函数数'],
+  ['docs/guide/versioning.md', /，(\d+) 个组件的 `emits` 全是对象式/, '对象式emits的组件数'],
+  ['docs/guide/versioning.md', /\| `@xihan-ui\/styles` 的 CSS 子路径 \| (\d+) \|/, 'styles子路径键数'],
+  ['docs/guide/versioning.md', /，与 (\d+) 条 `\.css`——/, '皮肤份数'],
+  ['docs/guide/versioning.md', /条 `\.css`——(\d+) 份组件皮肤加/, '组件皮肤份数'],
 ]
 
 /** 刻意的约数：不参与对账，但登记项必须仍能在文件里命中，免得留下一条早已不存在的豁免。 */
@@ -1180,10 +1321,23 @@ function lineOf(source, index) {
   return source.slice(0, index).split('\n').length
 }
 
+/** 失败信息：单个值原样打，名单式登记（带归一函数的那些）只打两边的差集。 */
+function diffText(written, actual, isList) {
+  if (!isList || typeof actual !== 'string')
+    return `文档写 ${written}，实际 ${actual}`
+  const doc = new Set(String(written).split(' ').filter(Boolean))
+  const real = new Set(actual.split(' ').filter(Boolean))
+  const missing = [...real].filter(name => !doc.has(name))
+  const extra = [...doc].filter(name => !real.has(name))
+  if (missing.length === 0 && extra.length === 0)
+    return `名单顺序与真值不一致：\n    文档 ${written}\n    实际 ${actual}`
+  return `名单对不上：${missing.length ? `正文缺 ${missing.join(' ')}` : ''}${missing.length && extra.length ? '；' : ''}${extra.length ? `正文多出 ${extra.join(' ')}` : ''}`
+}
+
 const problems = []
 let checked = 0
 
-for (const [file, pattern, key] of TABLE) {
+for (const [file, pattern, key, normalize] of TABLE) {
   const entry = truth[key]
   if (!entry) {
     problems.push(`${file}  登记的真值取法 ${key} 不存在`)
@@ -1199,9 +1353,10 @@ for (const [file, pattern, key] of TABLE) {
   const actual = await entry.value()
   for (const hit of hits) {
     checked++
-    const written = typeof actual === 'string' ? hit[1] : parseCount(hit[1])
+    const raw = normalize ? normalize(hit[1]) : hit[1]
+    const written = typeof actual === 'string' ? raw : parseCount(raw)
     if (written !== actual)
-      problems.push(`${file}:${lineOf(source, hit.index)}  文档写 ${hit[1]}，实际 ${actual}（${entry.how}）`)
+      problems.push(`${file}:${lineOf(source, hit.index)}  ${diffText(written, actual, Boolean(normalize))}（${entry.how}）`)
   }
 }
 

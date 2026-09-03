@@ -56,7 +56,7 @@ XiHan.UI 的公开面横跨五种介质，因为「丢掉自带皮肤自己写�
 | 包名 | 18 | 把代码从一个包挪到另一个包 = major |
 | `exports` 子路径 | 29 个 JS 入口 | 如 `@xihan-ui/vue/backgrounds`、`@xihan-ui/web-components/define`、`@xihan-ui/kernel/metadata`。没有 `./*` 通配，深路径引用（`.../dist/xxx.js`）被 Node 与打包器一并挡住，那些路径不是 API |
 | Vue 组件导出 `Xh*` | 819（127 个家族） | `XhButton`、`XhSelectRoot`、`XhSelectItemIndicator` |
-| Vue 组合式函数 `use<家族>` | 86 | `useSelect`、`useCombobox`。这是「不用我的部件、自己写标记」的唯一入口 |
+| Vue 组合式函数 `use<家族>` | 96 | `useSelect`、`useCombobox`。这是「不用我的部件、自己写标记」的唯一入口 |
 | Vue 指令 | 2 | `vBackground`（`@xihan-ui/vue/backgrounds`）、`vSound`（`@xihan-ui/vue/sound`），两个子入口各依赖一个可选 peer |
 | 无头内核 `connect*` | 127 | `connectAccordion` 及其参数顺序、返回的 getter 名 |
 | 无头内核 `*Machine` | 80 | 机器 schema 的形状 |
@@ -81,9 +81,9 @@ XiHan.UI 的公开面横跨五种介质，因为「丢掉自带皮肤自己写�
 | 类别 | 数量 | 为什么排除是安全的 |
 | --- | --- | --- |
 | `@xihan-ui/headless` 的内部算子与常量 | 625 | `clampRating`、`buildMonthGrid`、`colorPickerHexToRgba`、`CAROUSEL_AUTOPLAY_INTERVAL` 这类。它们是内核实现的一部分，改一次实现就得改一次签名。你需要的默认值应当从组件 props 的文档默认值读，不要 import 一个常量再自己比对 |
-| `@xihan-ui/headless` 的内部伴生类型 | 563 | `*Refs`（机器持有的 DOM 引用袋，34 个）、`ColorPickerHsva`、`CascaderLevel` 等，是上面那批函数的参数与返回类型 |
+| `@xihan-ui/headless` 的内部伴生类型 | 563 | `*Refs`（机器持有的 DOM 引用袋，38 个）、`ColorPickerHsva`、`CascaderLevel` 等，是上面那批函数的参数与返回类型 |
 | `xxxAnatomy` / `xxxMeta` / `xxxKeyboard` 三组导出对象 | 各 127 | **它们描述的 part 名单是受约束的（见第二节），但这三个对象本身的组织方式不是。** 想拿到部件名单，请以组件文档页的解剖表为准，不要 import 这些对象 |
-| Vue 的 `provide*` / `use*Context` 函数 | 84 | [Vue 适配器](../adapters/vue) 早已写明「父子组件之间的 provide / inject 是内部实现，不对外开放」。要下探请用 `use<家族>()` |
+| Vue 的 `provide*` / `use*Context` 函数 | 113 | [Vue 适配器](../adapters/vue) 早已写明「父子组件之间的 provide / inject 是内部实现，不对外开放」。要下探请用 `use<家族>()` |
 | Vue 的 `useTimelineItem` | 1 | 名字看着像组合式函数，实际是 inject 管道，与上一行同类 |
 | 适配器运行时底座 | Vue 3 个、WC 8 个 | `createVueRuntime` / `createVueIdGenerator` / `vueNormalize`；`createLitRuntime` / `createSpreader` / `defineElement` / `discoverParts` / `wcNormalize` / `MachineController` 等。这些是适配器与内核之间的接缝，签名依赖的类型没有从同一个包导出，实际也写不出调用 |
 | WC 的元素类导出 `Xh*Element` | 98 | 只作 `instanceof` 与手动 `customElements.define` 的便利品，**不支持 `extends`**（基类不导出、`wire()` 是 protected abstract）。要拿元素请用 `document.querySelector` |
@@ -370,7 +370,7 @@ Web Components 侧不构成额外约束：全部 Light DOM，不用 shadow DOM�
 
 锁步发版意味着版本号看不出稳定性，所以单列一张表。
 
-下面两张表覆盖 18 个包中的 14 个。`@xihan-ui/motion`、`@xihan-ui/pointer`、`@xihan-ui/animations`、`@xihan-ui/sound` 尚未定级，在定级之前按「排除」对待：不要在不易升级的地方依赖它们的具体导出。
+下面两张表覆盖全部 18 个包，每个包必在其中一张里；门禁比对两张表的包名与 `packages/` 下的公开包，新增一个包不定级就构建失败。
 
 ### 稳定
 
@@ -378,20 +378,22 @@ Web Components 侧不构成额外约束：全部 Light DOM，不用 shadow DOM�
 
 | 包 | 说明 |
 | --- | --- |
-| `@xihan-ui/vue` | 819 个组件、93 个组合式函数 |
-| `@xihan-ui/web-components` | 121 个自定义元素 |
+| `@xihan-ui/vue` | 819 个组件、96 个组合式函数 |
+| `@xihan-ui/web-components` | 130 个自定义元素 |
 | `@xihan-ui/headless` | `connect*` / `*Machine` / 各类公开类型；内部算子在排除清单里 |
-| `@xihan-ui/styles` | 119 份组件皮肤、5 个层名 |
+| `@xihan-ui/styles` | 127 份组件皮肤、5 个层名 |
 | `@xihan-ui/tokens` | 316 个令牌名，外加 `./runtime` 的主题控制器与种子色 API |
 | `@xihan-ui/icons` | 图标集 |
 | `@xihan-ui/kernel` | 只有被适配器与 headless 公开消费的那部分（`createAnatomy`、`createNormalizer`、归一化规则） |
 | `@xihan-ui/machine` | 同上 |
 | `@xihan-ui/behavior` | 同上，含 `data-value` 这条集合导航契约 |
 | `@xihan-ui/position` | `createPositionEngine` 与它的选项；其余 9 个导出是内部算子 |
+| `@xihan-ui/motion` | 缓动名、时长常量、`animate`、补间与弹簧算子。三值与令牌层同源（`check-motion-source` 比对），并且 `kernel` / `behavior` / `headless` / 两个适配器都建在它上面——这里改名等于库自己先碎 |
+| `@xihan-ui/pointer` | `createPointerSession` / `createMultiPointerSession` 与四层几何纯函数。`headless` 与两个适配器的拖拽、缩放、划动全部经它，同上 |
 
 ### 实验
 
-**这四个包的破坏性变更可以出现在 minor 里。** 不适合放进不易升级的生产代码。
+**这六个包的破坏性变更可以出现在 minor 里。** 不适合放进不易升级的生产代码。
 
 | 包 | 为什么还在动 |
 | --- | --- |
@@ -399,6 +401,8 @@ Web Components 侧不构成额外约束：全部 Light DOM，不用 shadow DOM�
 | `@xihan-ui/markdown` | 公开面是 `createStreamRenderer` 与它的三个类型，外加 `blockKind` / `fenceLang` / `isFenceClosed` / `LIVE_BLOCK_KEY` 四个切块算子；解析、切块、缓存的中间件随时会变 |
 | `@xihan-ui/chat-stream` | AI 会话协议类型（`UIMessage`、`TextPart` 等）跟随上游生态演进 |
 | `@xihan-ui/backgrounds` | 效果参数与点云 API 仍在调整；通用短名（`bool` / `num` / `str` / `rgb`）不是公开 API |
+| `@xihan-ui/animations` | 公开面是 `MotionSpec` 的字段与 `BUILTIN_MOTION_NAMES` 里的预设名。预设表随组件接入继续调整，而预设改名没有任何门禁拦得住——它不是导出名，删不掉也就报不出来 |
+| `@xihan-ui/sound` | 同上：`SoundSpec` 的层与包络字段、三套主题、`BUILTIN_SOUND_NAMES` 里的预设名都还在调 |
 
 ---
 
@@ -428,7 +432,7 @@ prop 名那一维是后补的：在它进来之前，改一个 prop 名（实测
 ::: warning 基线锁的名字比本页承诺的范围宽
 基线是「所有能写下来的名字」的机械快照，不区分档位：本页归入**排除**的那些也在里面——
 headless 的 625 个内部算子与常量、563 个伴生类型、`*Anatomy` / `*Meta` / `*Keyboard` 三组导出对象，
-以及四个实验包的全部导出。政策允许你随时删改它们，但删了照样撞门禁。
+以及六个实验包的全部导出。政策允许你随时删改它们，但删了照样撞门禁。
 **行使这份删除权时，先跑 `pnpm surface:update` 推基线**，这不是破坏性变更，
 changeset 里按 patch / minor 写就行——推基线这个动作本身不代表 major。
 :::
@@ -440,7 +444,7 @@ package.json 的 version 与其余不同，门禁直接失败。`check-wiring` �
 check 脚本不接进 `pnpm gate` 就等于没写，死引用同样被拦下。
 
 **三条视觉轴已收成联合类型**，`tone` / `size` / `variant` 不再是裸 `string`，
-写错值编译期就报错。**Vue 事件载荷也有类型了**，84 个组件的 `emits` 全是对象式，
+写错值编译期就报错。**Vue 事件载荷也有类型了**，92 个组件的 `emits` 全是对象式，
 产物 `.d.ts` 里 `(...args: any[]) => any` 一处不剩。
 
 ### 仍然只靠自觉的

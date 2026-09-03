@@ -35,13 +35,17 @@ jobs:
         with:
           fetch-depth: 0
 
+      # 仓库根没有 package.json，action 默认在根找 packageManager 会失败；
+      # 指向工作区的清单，pnpm 版本仍以 ui/package.json 为唯一事实源
+      - name: 安装 pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          package_json_file: ui/package.json
+
       - name: 安装 Node.js
         uses: actions/setup-node@v7
         with:
           node-version: 24
-
-      - name: 安装 pnpm
-        run: npm install -g pnpm@11
 
       # 文档站以 link: 引用 ui/packages/adapters/vue 与 ui/packages/design/styles，示例要渲染就得先有 dist
       - name: 安装组件库依赖
@@ -52,6 +56,7 @@ jobs:
         working-directory: ./ui/
         run: pnpm build
 
+      # docs/pnpm-lock.yaml 在 .gitignore 里，检出后没有这份文件，装依赖不能用 --frozen-lockfile
       - name: 安装依赖
         run: pnpm install
 

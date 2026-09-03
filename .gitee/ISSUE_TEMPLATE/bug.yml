@@ -72,6 +72,7 @@ body:
         - 设计令牌 / 主题（tokens）
         - 交互行为（behavior）
         - 浮层定位（position）
+        - 指针原语（pointer）
         - 动效引擎（motion）
         - 代码着色（code-highlight）
         - 流式 Markdown（markdown）

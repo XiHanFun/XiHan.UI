@@ -7,7 +7,7 @@
 ## 用法
 
 ```ts
-import { createDismissableLayer, createFocusScope } from '@xihan-ui/behavior'
+import { createDismissLayer, createFocusScope } from '@xihan-ui/behavior'
 ```
 
 ## 装

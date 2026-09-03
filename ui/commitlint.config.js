@@ -37,8 +37,6 @@ export default {
         'ci',
         'deps',
         'release',
-        // —— 应用 ——
-        'benchmark',
         // —— 跨切 ——
         'repo',
         'a11y',

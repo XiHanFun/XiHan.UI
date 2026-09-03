@@ -7,7 +7,7 @@ import {
   XhReasoningRoot,
   XhReasoningTrigger,
 } from "@xihan-ui/vue";
-import { onBeforeUnmount, ref } from "vue";
+import { onBeforeUnmount, onMounted, ref } from "vue";
 
 const streaming = ref(true);
 const startTime = ref(Date.now());
@@ -27,7 +27,11 @@ const tick = () => {
   endTime.value = Date.now();
   streaming.value = false;
 };
-tick();
+// 挂载后才开始追加：<script setup> 顶层在服务端渲染时也执行，那里没有 window
+onMounted(() => {
+  startTime.value = Date.now();
+  tick();
+});
 
 onBeforeUnmount(() => window.clearTimeout(timer));
 

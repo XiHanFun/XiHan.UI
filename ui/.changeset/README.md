@@ -1,13 +1,15 @@
 # Changesets · 发布流程
 
-版本与发布由 [changesets](https://github.com/changesets/changesets) 驱动。**17 个公开包**
-（kernel / machine / behavior / motion / tokens / headless / styles / vue / web-components / chat-stream /
-markdown / position / code-highlight / backgrounds / sound / icons / animations）
+版本与发布由 [changesets](https://github.com/changesets/changesets) 驱动。**18 个公开包**
+（kernel / machine / behavior / motion / pointer / tokens / headless / styles / vue / web-components /
+chat-stream / markdown / position / code-highlight / backgrounds / sound / icons / animations）
 经 `fixed` 组**锁步同版**；私有包（testing / build / scripts / tsconfig / eslint-config /
 stylelint-config）不发布、不计版。
 
 新增一个对外发布的包时，除了建包本身，还要把它加进 `.changeset/config.json` 的 `fixed` 组——
-漏了它就会自己走一套版本号，与其余包脱节。
+漏了它就会自己走一套版本号，与其余包脱节。上面那份名单、提交 scope 表、体积限额表、两份仓库 README
+的包表以及三个平台的 issue / PR 模板同样要一起加；`check-package-manifests` 逐张对账，
+少一个包或多一个已退役的包都判失败，包缺 README 也判失败。
 
 ## 职责划分
 

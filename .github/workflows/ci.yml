@@ -60,6 +60,16 @@ jobs:
         run: pnpm gate:exports
       - name: Publish artifacts (publint + attw)
         run: pnpm gate:publish
+      # 文档站是全仓唯一会编译 .vue 示例的地方，也是站内死链唯一的判据（没配 ignoreDeadLinks，
+      # 断一条就构建失败）；渲染期抛的异常由 .vitepress/config.ts 的 buildEnd 收口成非零退出。
+      # 它以 link: 吃 ui 的 dist，必须排在 Build 之后。
+      # docs/pnpm-lock.yaml 在 .gitignore 里，检出后没有这份文件，装依赖不能用 --frozen-lockfile
+      - name: 装文档站依赖
+        working-directory: ./docs
+        run: pnpm install
+      - name: 构建文档站（编译 .vue 示例 + 站内死链）
+        working-directory: ./docs
+        run: pnpm build
       - name: Commit message
         if: github.event_name == 'pull_request'
         run: pnpm exec commitlint --from origin/${{ github.base_ref }} --to HEAD
