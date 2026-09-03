@@ -1,0 +1,157 @@
+<!-- 外部触发的输入会话 | 输入部件平时收起，按「添加」才露面并聚焦；打字时给候选，选中即落标签，失焦按 blur-behavior 收尾 -->
+<xh-tags-input
+  id="tags-input-custom"
+  value="hi@xihan.dev"
+  max="4"
+  blur-behavior="add"
+  placeholder="打前缀选后缀"
+  style="max-inline-size: 420px"
+>
+  <div data-xh-part="root">
+    <label data-xh-part="label">通知邮箱（最多 4 个）</label>
+    <div data-xh-part="control">
+      <div data-xh-part="item" value="hi@xihan.dev">
+        <div data-xh-part="item-preview">
+          <span data-xh-part="item-text">hi@xihan.dev</span>
+          <button data-xh-part="item-delete-trigger"></button>
+        </div>
+      </div>
+      <!-- 输入框常驻文档，平时用内联 display 收起 -->
+      <input data-xh-part="input" style="display: none" />
+      <xh-button id="tags-input-custom-start" size="sm" variant="outline">
+        <button data-xh-part="root">＋ 添加</button>
+      </xh-button>
+    </div>
+
+    <!-- 候选面板是作者自己的节点：按下不放焦点，点完把框里的半截文本清掉 -->
+    <div
+      id="tags-input-custom-options"
+      style="
+        display: none;
+        flex-direction: column;
+        margin-block-start: 4px;
+        border: 1px solid var(--xh-border-subtle);
+        border-radius: var(--xh-radius-md);
+        overflow: hidden;
+      "
+    ></div>
+  </div>
+</xh-tags-input>
+
+<script type="module">
+  const host = document.getElementById("tags-input-custom");
+  const shell = host.querySelector('[data-xh-part="root"]');
+  const control = host.querySelector('[data-xh-part="control"]');
+  const input = control.querySelector('[data-xh-part="input"]');
+  const start = document.getElementById("tags-input-custom-start");
+  const panel = document.getElementById("tags-input-custom-options");
+
+  const DOMAINS = ["@qq.com", "@163.com", "@gmail.com"];
+
+  let values = ["hi@xihan.dev"];
+  let inputValue = "";
+  let typing = false;
+
+  // 输入文本也交给宿主持有：加完标签要把框里的半截文本清掉
+  host.inputValue = inputValue;
+
+  // 一个标签一个节点：外壳带 value 标识身份，里面是文本与删除按钮
+  function createTag(value) {
+    const item = document.createElement("div");
+    item.dataset.xhPart = "item";
+    item.setAttribute("value", value);
+    const preview = document.createElement("div");
+    preview.dataset.xhPart = "item-preview";
+    const text = document.createElement("span");
+    text.dataset.xhPart = "item-text";
+    text.textContent = value;
+    const remove = document.createElement("button");
+    remove.dataset.xhPart = "item-delete-trigger";
+    preview.append(text, remove);
+    item.append(preview);
+    return item;
+  }
+
+  // 按当前值增删标签节点，已经在的那份原地留着
+  function renderTags(next) {
+    const alive = new Map();
+    for (const el of control.querySelectorAll('[data-xh-part="item"]')) {
+      alive.set(el.getAttribute("value"), el);
+    }
+    for (const [value, el] of alive) {
+      if (!next.includes(value)) el.remove();
+    }
+    for (const value of next) {
+      if (!alive.has(value)) control.insertBefore(createTag(value), input);
+    }
+  }
+
+  // 候选：拿已经打出来的前缀拼几个完整地址
+  function options(text) {
+    const prefix = text.split("@")[0] ?? "";
+    return prefix ? DOMAINS.map((domain) => prefix + domain) : [];
+  }
+
+  function pick(value) {
+    values = [...values, value];
+    host.value = values;
+    inputValue = "";
+    host.inputValue = inputValue;
+    renderTags(values);
+    paint();
+  }
+
+  function paint() {
+    input.style.display = typing ? "" : "none";
+    start.style.display = typing ? "none" : "";
+    // 禁用写在 xh-button 上而不是里面那颗原生按钮上：原生 disabled 归元素自己打
+    start.disabled = shell.hasAttribute("data-at-max");
+
+    const list = typing ? options(inputValue) : [];
+    panel.style.display = list.length > 0 ? "flex" : "none";
+    panel.replaceChildren(
+      ...list.map((option) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = option;
+        button.style.cssText =
+          "padding: 6px 10px; border: 0; background: none; color: var(--xh-fg-default); font: inherit; text-align: start; cursor: pointer;";
+        // 按下不夺走焦点，输入框才不会在点中候选之前先失焦
+        button.addEventListener("mousedown", (event) => event.preventDefault());
+        button.addEventListener("click", () => pick(option));
+        return button;
+      }),
+    );
+  }
+
+  // 输入框由外面这颗按钮开合，露面之后焦点要自己送进去
+  start.addEventListener("click", () => {
+    typing = true;
+    paint();
+    input.focus();
+  });
+
+  input.addEventListener("blur", () => {
+    typing = false;
+    paint();
+  });
+
+  host.addEventListener("input-value-change", (event) => {
+    inputValue = event.detail.inputValue;
+    host.inputValue = inputValue;
+    paint();
+  });
+
+  host.addEventListener("value-change", (event) => {
+    values = event.detail.value;
+    host.value = values;
+    renderTags(values);
+    paint();
+  });
+
+  new MutationObserver(paint).observe(shell, {
+    attributes: true,
+    attributeFilter: ["data-at-max"],
+  });
+  paint();
+</script>

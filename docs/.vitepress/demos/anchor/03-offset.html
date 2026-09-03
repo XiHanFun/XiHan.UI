@@ -1,0 +1,78 @@
+<!-- 判定线偏移 | offset 是判定线距容器视口顶边的距离，有吸顶栏就把栏高填进去，越过它的最后一节才算当前节 -->
+<div
+  style="
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 20px;
+    inline-size: 100%;
+    align-items: start;
+  "
+>
+  <template id="anchor-offset-nav">
+    <xh-anchor offset="44" smooth>
+      <nav data-xh-part="root">
+        <ul data-xh-part="list">
+          <li data-xh-part="item">
+            <a data-xh-part="link" value="anchor-offset-a">第一节</a>
+          </li>
+          <li data-xh-part="item">
+            <a data-xh-part="link" value="anchor-offset-b">第二节</a>
+          </li>
+          <li data-xh-part="item">
+            <a data-xh-part="link" value="anchor-offset-c">第三节</a>
+          </li>
+          <li data-xh-part="indicator"></li>
+        </ul>
+      </nav>
+    </xh-anchor>
+  </template>
+
+  <div
+    id="anchor-offset-scroll"
+    style="
+      position: relative;
+      block-size: 240px;
+      overflow: auto;
+      border: 1px solid var(--xh-border-default);
+      border-radius: 8px;
+    "
+  >
+    <!-- 44px 高的吸顶栏，判定线正好压在它下沿 -->
+    <div
+      style="
+        position: sticky;
+        inset-block-start: 0;
+        z-index: 1;
+        block-size: 44px;
+        display: flex;
+        align-items: center;
+        padding-inline: 12px;
+        background: var(--xh-bg-surface);
+        border-block-end: 1px solid var(--xh-border-default);
+      "
+    >
+      吸顶栏（44px）
+    </div>
+
+    <div id="anchor-offset-a" style="block-size: 180px; padding: 12px">
+      <strong>第一节</strong>
+      <p>这一节被吸顶栏挡住时不算当前节。</p>
+    </div>
+    <div id="anchor-offset-b" style="block-size: 180px; padding: 12px">
+      <strong>第二节</strong>
+      <p>这一节被吸顶栏挡住时不算当前节。</p>
+    </div>
+    <div id="anchor-offset-c" style="block-size: 180px; padding: 12px">
+      <strong>第三节</strong>
+      <p>这一节被吸顶栏挡住时不算当前节。</p>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  // 滚动容器是 DOM 句柄，只走属性；先交句柄再进 DOM，滚动观察器才挂得到这一层
+  const template = document.getElementById("anchor-offset-nav");
+  const anchor = template.content.firstElementChild;
+  anchor.scrollElement = document.getElementById("anchor-offset-scroll");
+  template.replaceWith(anchor);
+</script>

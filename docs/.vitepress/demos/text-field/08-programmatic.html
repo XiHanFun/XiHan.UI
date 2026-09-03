@@ -1,0 +1,51 @@
+<!-- 程序化改值 | setValue 直接写值，只受禁用、只读与字数上限约束；clear 走清空意图，canClear 不成立时按兵不动 -->
+<xh-text-field id="text-field-programmatic" placeholder="等着被写入" max-length="12" clearable>
+  <div data-xh-part="root">
+    <label data-xh-part="label">收货人</label>
+    <div data-xh-part="control">
+      <input data-xh-part="input" style="inline-size: 200px" />
+      <!-- 清不了的时候组件把它收起来，点也点不到 -->
+      <button data-xh-part="clear-trigger"></button>
+    </div>
+  </div>
+</xh-text-field>
+<div style="display: flex; gap: 8px">
+  <button type="button" id="text-field-programmatic-write">写入</button>
+  <button type="button" id="text-field-programmatic-append">追加一个点</button>
+  <button type="button" id="text-field-programmatic-clear-proxy">清空</button>
+</div>
+<span id="text-field-programmatic-readout">（空）</span>
+
+<script type="module">
+  const field = document.getElementById("text-field-programmatic");
+  const input = field.querySelector('[data-xh-part="input"]');
+  const clear = field.querySelector('[data-xh-part="clear-trigger"]');
+  const readout = document.getElementById("text-field-programmatic-readout");
+
+  // 值的真本住在组件里，这里只跟着 value-change 抄一份
+  let value = "";
+
+  // 从外面写值：改原生输入框再让它自报一次，与用户自己敲进去走的是同一条路。
+  // 禁用、只读与字数上限照样管得住——超出 12 个字的那截会被截掉，截完的那份写回框里
+  function setValue(next) {
+    input.value = next;
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+    input.value = value;
+  }
+
+  field.addEventListener("value-change", (event) => {
+    value = event.detail.value;
+    readout.textContent = value === "" ? "（空）" : `${value.length} / 12`;
+  });
+
+  document
+    .getElementById("text-field-programmatic-write")
+    .addEventListener("click", () => setValue("曦寒"));
+  document
+    .getElementById("text-field-programmatic-append")
+    .addEventListener("click", () => setValue(`${value}·`));
+  // 清空意图交给组件自己的清空钮：清不了的时候它是收起的，点了也不会有事发生
+  document
+    .getElementById("text-field-programmatic-clear-proxy")
+    .addEventListener("click", () => clear.click());
+</script>

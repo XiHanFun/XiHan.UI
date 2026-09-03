@@ -1,0 +1,68 @@
+<!-- 露面阈值 | visibility-height 决定滚过多少像素按钮才出现 -->
+<div style="display: grid; gap: 12px; inline-size: 100%">
+  <label style="display: flex; align-items: center; gap: 8px">
+    滚过
+    <input
+      id="back-top-vh-range"
+      type="range"
+      min="0"
+      max="600"
+      step="20"
+      value="80"
+    />
+    <span id="back-top-vh-readout">80</span>px 才露面
+  </label>
+
+  <div style="position: relative">
+    <div
+      id="back-top-vh-scroll"
+      style="
+        block-size: 240px;
+        overflow: auto;
+        padding: 12px;
+        border: 1px solid var(--xh-border-default);
+        border-radius: 8px;
+      "
+    ></div>
+
+    <template id="back-top-vh-tpl">
+      <xh-back-top visibility-height="80">
+        <div
+          data-xh-part="root"
+          style="
+            position: absolute;
+            --xh-back-top-inset-block: 12px;
+            --xh-back-top-inset-inline: 12px;
+          "
+        >
+          <button data-xh-part="trigger"></button>
+        </div>
+      </xh-back-top>
+    </template>
+  </div>
+</div>
+
+<script type="module">
+  const box = document.getElementById("back-top-vh-scroll");
+  // 撑出可滚动的高度
+  for (let i = 1; i <= 20; i++) {
+    const line = document.createElement("p");
+    line.style.margin = "0 0 12px";
+    line.textContent = `第 ${i} 段内容。`;
+    box.append(line);
+  }
+
+  // 滚动容器是 DOM 句柄，只走属性；先交句柄再进 DOM，滚动观察器才挂得到这一层
+  const template = document.getElementById("back-top-vh-tpl");
+  const backTop = template.content.firstElementChild;
+  backTop.target = box;
+  template.replaceWith(backTop);
+
+  // 阈值改完当场生效，不必重挂元素
+  const range = document.getElementById("back-top-vh-range");
+  const readout = document.getElementById("back-top-vh-readout");
+  range.addEventListener("input", () => {
+    backTop.setAttribute("visibility-height", range.value);
+    readout.textContent = range.value;
+  });
+</script>

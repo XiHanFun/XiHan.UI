@@ -1,0 +1,133 @@
+<!-- 整组禁用 | 分页自己没有禁用开关：裹一层 disabled 的 fieldset，里面的按钮统一失效并脱出 Tab 序 -->
+<div style="display: flex; flex-direction: column; gap: 12px; inline-size: 100%">
+  <div style="display: flex; align-items: center; gap: 8px">
+    <xh-button size="sm" variant="outline">
+      <button data-xh-part="root" id="pagination-disabled-toggle">
+        加载完成
+      </button>
+    </xh-button>
+    <span id="pagination-disabled-hint">数据加载中，整组分页不可操作</span>
+  </div>
+
+  <!-- 禁用期间把页码格子的取色也压成禁用态：上一页 / 下一页由皮肤的 :disabled 规则自己接管 -->
+  <fieldset
+    id="pagination-disabled-fieldset"
+    disabled
+    style="
+      margin: 0;
+      padding: 0;
+      border: 0;
+      min-inline-size: 0;
+      --xh-pagination-item-fg: var(--xh-fg-disabled);
+      --xh-pagination-item-bg-hover: transparent;
+      --xh-pagination-item-bg-selected: var(--xh-bg-muted);
+      --xh-pagination-item-border-selected: var(--xh-bg-muted);
+      --xh-pagination-item-fg-selected: var(--xh-fg-disabled);
+    "
+  >
+    <xh-pagination
+      id="pagination-disabled"
+      count="196"
+      page-size="10"
+      default-page="3"
+    >
+      <nav data-xh-part="root">
+        <button data-xh-part="prev-trigger"></button>
+        <button data-xh-part="item" value="1">1</button>
+        <button data-xh-part="item" value="2">2</button>
+        <button data-xh-part="item" value="3">3</button>
+        <button data-xh-part="item" value="4">4</button>
+        <button data-xh-part="item" value="5">5</button>
+        <button data-xh-part="ellipsis" side="end">…</button>
+        <button data-xh-part="item" value="20">20</button>
+        <button data-xh-part="next-trigger"></button>
+      </nav>
+    </xh-pagination>
+  </fieldset>
+</div>
+
+<script type="module">
+  const TOTAL = 20;
+
+  // 页码序列：首尾各恒显一页，当前页两侧各留 siblings 页，中间的空隙折成省略位
+  function pageItems(page, totalPages, siblings) {
+    const range = (a, b) =>
+      Array.from({ length: b - a + 1 }, (_, i) => ({ value: a + i }));
+    if (totalPages <= siblings * 2 + 5) return range(1, totalPages);
+    const width = siblings * 2 + 1;
+    let start = page - siblings;
+    let end = page + siblings;
+    if (page <= siblings + 2) {
+      start = 1;
+      end = width + 2;
+    } else if (page >= totalPages - siblings - 1) {
+      start = totalPages - width - 1;
+      end = totalPages;
+    }
+    const head =
+      start <= 1
+        ? []
+        : start <= 3
+          ? range(1, start - 1)
+          : [{ value: 1 }, { side: "start" }];
+    const tail =
+      end >= totalPages
+        ? []
+        : end >= totalPages - 2
+          ? range(end + 1, totalPages)
+          : [{ side: "end" }, { value: totalPages }];
+    return [...head, ...range(start, end), ...tail];
+  }
+
+  const host = document.getElementById("pagination-disabled");
+  const root = host.querySelector('[data-xh-part="root"]');
+  const next = root.querySelector('[data-xh-part="next-trigger"]');
+  const fieldset = document.getElementById("pagination-disabled-fieldset");
+  const toggle = document.getElementById("pagination-disabled-toggle");
+  const hint = document.getElementById("pagination-disabled-hint");
+
+  // 禁用态的那几个覆盖槽写在 fieldset 的内联样式里，翻假时逐个撤掉
+  const mutedTokens = [
+    "--xh-pagination-item-fg",
+    "--xh-pagination-item-bg-hover",
+    "--xh-pagination-item-bg-selected",
+    "--xh-pagination-item-border-selected",
+    "--xh-pagination-item-fg-selected",
+  ];
+  const mutedValues = mutedTokens.map((name) =>
+    fieldset.style.getPropertyValue(name),
+  );
+
+  let loading = true;
+
+  toggle.addEventListener("click", () => {
+    loading = !loading;
+    fieldset.disabled = loading;
+    mutedTokens.forEach((name, i) => {
+      if (loading) fieldset.style.setProperty(name, mutedValues[i]);
+      else fieldset.style.removeProperty(name);
+    });
+    toggle.textContent = loading ? "加载完成" : "重新加载";
+    hint.textContent = loading ? "数据加载中，整组分页不可操作" : "可以翻页了";
+  });
+
+  host.addEventListener("page-change", (event) => {
+    for (const node of root.querySelectorAll(
+      '[data-xh-part="item"], [data-xh-part="ellipsis"]',
+    ))
+      node.remove();
+    for (const item of pageItems(event.detail.page, TOTAL, 1)) {
+      const el = document.createElement("button");
+      if (item.side) {
+        el.dataset.xhPart = "ellipsis";
+        el.setAttribute("side", item.side);
+        el.textContent = "…";
+      } else {
+        el.dataset.xhPart = "item";
+        el.setAttribute("value", String(item.value));
+        el.textContent = String(item.value);
+      }
+      root.insertBefore(el, next);
+    }
+  });
+</script>

@@ -1,0 +1,100 @@
+<!-- 范围选 | 按住 Shift 点勾选框选中一段；焦点落在表体里按 Ctrl/Cmd + A 全选。禁用行占着顺序位置但不被选进去 -->
+<div style="width: 100%; max-width: 560px; display: grid; gap: 12px">
+  <p style="color: var(--xh-fg-muted)">
+    点第一行的勾选框，再<strong>按住 Shift</strong> 点第五行 ——
+    中间整段一起选上（禁用那行跳过）。 再按住 Shift 点第三行，选区会往回收，起点不变。
+    焦点落在表体里按 <kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>A</kbd> 全选。
+  </p>
+  <xh-table id="table-range" selection-mode="multiple">
+    <div data-xh-part="root">
+      <div data-xh-part="header">
+        <div data-xh-part="row">
+          <div data-xh-part="column-header" value="select">
+            <span data-xh-part="select-all-trigger"></span>
+          </div>
+          <div data-xh-part="column-header" value="name">文件名</div>
+          <div data-xh-part="column-header" value="size">大小</div>
+        </div>
+      </div>
+      <div data-xh-part="body">
+        <div data-xh-part="row" value="f1">
+          <div data-xh-part="cell" value="select">
+            <span data-xh-part="row-select-trigger"></span>
+          </div>
+          <div data-xh-part="cell" value="name">报告.docx</div>
+          <div data-xh-part="cell" value="size">1.2 MB</div>
+        </div>
+        <div data-xh-part="row" value="f2">
+          <div data-xh-part="cell" value="select">
+            <span data-xh-part="row-select-trigger"></span>
+          </div>
+          <div data-xh-part="cell" value="name">预算.xlsx</div>
+          <div data-xh-part="cell" value="size">480 KB</div>
+        </div>
+        <div data-xh-part="row" value="f3">
+          <div data-xh-part="cell" value="select">
+            <span data-xh-part="row-select-trigger"></span>
+          </div>
+          <div data-xh-part="cell" value="name">会议纪要.md</div>
+          <div data-xh-part="cell" value="size">12 KB</div>
+        </div>
+        <div data-xh-part="row" value="f4">
+          <div data-xh-part="cell" value="select">
+            <span data-xh-part="row-select-trigger"></span>
+          </div>
+          <div data-xh-part="cell" value="name">归档.zip（禁用）</div>
+          <div data-xh-part="cell" value="size">88 MB</div>
+        </div>
+        <div data-xh-part="row" value="f5">
+          <div data-xh-part="cell" value="select">
+            <span data-xh-part="row-select-trigger"></span>
+          </div>
+          <div data-xh-part="cell" value="name">封面.png</div>
+          <div data-xh-part="cell" value="size">2.4 MB</div>
+        </div>
+        <div data-xh-part="row" value="f6">
+          <div data-xh-part="cell" value="select">
+            <span data-xh-part="row-select-trigger"></span>
+          </div>
+          <div data-xh-part="cell" value="name">演示.pptx</div>
+          <div data-xh-part="cell" value="size">5.1 MB</div>
+        </div>
+      </div>
+    </div>
+  </xh-table>
+  <span id="table-range-value"></span>
+</div>
+
+<script type="module">
+  const table = document.getElementById("table-range");
+  const readout = document.getElementById("table-range-value");
+
+  table.columns = [
+    { id: "select", width: "3rem" },
+    { id: "name", label: "文件名", width: "10rem" },
+    { id: "size", label: "大小" },
+  ];
+  // 禁用行选不动，也不算进全选的基数
+  table.rows = [
+    { id: "f1" },
+    { id: "f2" },
+    { id: "f3" },
+    { id: "f4", disabled: true },
+    { id: "f5" },
+    { id: "f6" },
+  ];
+
+  function apply(selection) {
+    table.selection = selection;
+    readout.textContent = `选中：${
+      selection === "all"
+        ? "全部"
+        : selection.length
+          ? selection.join("、")
+          : "（无）"
+    }`;
+  }
+
+  apply([]);
+  table.addEventListener("selection-change", (event) => apply(event.detail.value));
+</script>

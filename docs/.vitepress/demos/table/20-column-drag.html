@@ -1,0 +1,90 @@
+<!-- 拖拽换列位 | 列上标了 reorderable 才认拖拽把手；也可以 Tab 到它用方向键挪，Home / End 到两头 -->
+<div id="table-column-drag" style="width: 100%; max-width: 560px; display: grid; gap: 12px">
+  <xh-table data-host>
+    <div data-xh-part="root">
+      <div data-xh-part="caption">
+        拖列标题左侧的抓手换位；「操作」列没标 reorderable，拖不动也拖不过去
+      </div>
+      <div data-xh-part="header">
+        <div data-xh-part="row">
+          <!-- 把手在标题之前；不可拖的列它自己报不可用 -->
+          <div data-xh-part="column-header" value="name">
+            <span data-xh-part="column-drag-trigger"></span>
+            <span style="flex: 1; overflow: hidden; text-overflow: ellipsis">姓名</span>
+          </div>
+          <div data-xh-part="column-header" value="dept">
+            <span data-xh-part="column-drag-trigger"></span>
+            <span style="flex: 1; overflow: hidden; text-overflow: ellipsis">部门</span>
+          </div>
+          <div data-xh-part="column-header" value="city">
+            <span data-xh-part="column-drag-trigger"></span>
+            <span style="flex: 1; overflow: hidden; text-overflow: ellipsis">城市</span>
+          </div>
+          <div data-xh-part="column-header" value="ops">
+            <span data-xh-part="column-drag-trigger"></span>
+            <span style="flex: 1; overflow: hidden; text-overflow: ellipsis">操作</span>
+          </div>
+        </div>
+      </div>
+      <div data-xh-part="body">
+        <div data-xh-part="row" value="u1">
+          <div data-xh-part="cell" value="name">赵一</div>
+          <div data-xh-part="cell" value="dept">平台研发</div>
+          <div data-xh-part="cell" value="city">杭州</div>
+          <div data-xh-part="cell" value="ops">编辑</div>
+        </div>
+        <div data-xh-part="row" value="u2">
+          <div data-xh-part="cell" value="name">钱二</div>
+          <div data-xh-part="cell" value="dept">前端体验</div>
+          <div data-xh-part="cell" value="city">上海</div>
+          <div data-xh-part="cell" value="ops">编辑</div>
+        </div>
+        <div data-xh-part="row" value="u3">
+          <div data-xh-part="cell" value="name">孙三</div>
+          <div data-xh-part="cell" value="dept">基础架构</div>
+          <div data-xh-part="cell" value="city">北京</div>
+          <div data-xh-part="cell" value="ops">编辑</div>
+        </div>
+      </div>
+    </div>
+  </xh-table>
+  <span data-readout></span>
+</div>
+
+<script type="module">
+  const scope = document.getElementById("table-column-drag");
+  const table = scope.querySelector("[data-host]");
+  const readout = scope.querySelector("[data-readout]");
+
+  // 标了 reorderable 的列才产出把手。没标的列是屏障：拖不过去，也落不到它身上
+  const columns = [
+    { id: "name", label: "姓名", width: 120, reorderable: true },
+    { id: "dept", label: "部门", width: 150, reorderable: true },
+    { id: "city", label: "城市", width: 120, reorderable: true },
+    { id: "ops", label: "操作", width: 100 },
+  ];
+
+  table.columns = columns;
+  table.rows = [{ id: "u1" }, { id: "u2" }, { id: "u3" }];
+
+  // 偏好里的 order 只列了一部分时，没列到的按原顺序跟在后面
+  function effectiveOrder(preference) {
+    const ids = columns.map((column) => column.id);
+    const order = (preference.order ?? []).filter((id) => ids.includes(id));
+    return [...order, ...ids.filter((id) => !order.includes(id))];
+  }
+
+  // 库只算生效列序，格子的先后归标记：表头与每一行都照这份顺序重排一遍
+  table.addEventListener("column-preference-change", (event) => {
+    const preference = event.detail.value;
+    table.columnPreference = preference;
+    const order = effectiveOrder(preference);
+    for (const row of scope.querySelectorAll('[data-xh-part="row"]')) {
+      row.append(...order.map((id) => row.querySelector(`[value="${id}"]`)));
+    }
+    readout.textContent = `列序：${order.join(" → ")}`;
+  });
+
+  // 换位落在列偏好的 order 里，可以直接存起来下次还原
+  readout.textContent = "列序：（还没改过）";
+</script>

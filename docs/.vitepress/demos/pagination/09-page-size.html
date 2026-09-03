@@ -1,0 +1,105 @@
+<!-- 每页条数 | 控制器由库自带：档位从 page-size-options 来，换档时页码跟着换算，改档前第一条仍留在页内 -->
+<xh-pagination
+  id="pagination-page-size"
+  count="196"
+  default-page-size="10"
+  default-page="8"
+  style="inline-size: 100%"
+>
+  <nav data-xh-part="root">
+    <!-- 控制器是原生 select，档位写成 option，长相归作者 -->
+    <select data-xh-part="page-size-select">
+      <option value="10">10 条 / 页</option>
+      <option value="20">20 条 / 页</option>
+      <option value="50">50 条 / 页</option>
+    </select>
+
+    <button data-xh-part="prev-trigger"></button>
+    <button data-xh-part="item" value="1">1</button>
+    <button data-xh-part="ellipsis" side="start">…</button>
+    <button data-xh-part="item" value="7">7</button>
+    <button data-xh-part="item" value="8">8</button>
+    <button data-xh-part="item" value="9">9</button>
+    <button data-xh-part="ellipsis" side="end">…</button>
+    <button data-xh-part="item" value="20">20</button>
+    <button data-xh-part="next-trigger"></button>
+    <span id="pagination-page-size-readout" style="flex-basis: 100%">
+      第 8 页 · 第 71-80 条，共 196 条
+    </span>
+  </nav>
+</xh-pagination>
+
+<script type="module">
+  const COUNT = 196;
+
+  // 页码序列：首尾各恒显一页，当前页两侧各留 siblings 页，中间的空隙折成省略位
+  function pageItems(page, totalPages, siblings) {
+    const range = (a, b) =>
+      Array.from({ length: b - a + 1 }, (_, i) => ({ value: a + i }));
+    if (totalPages <= siblings * 2 + 5) return range(1, totalPages);
+    const width = siblings * 2 + 1;
+    let start = page - siblings;
+    let end = page + siblings;
+    if (page <= siblings + 2) {
+      start = 1;
+      end = width + 2;
+    } else if (page >= totalPages - siblings - 1) {
+      start = totalPages - width - 1;
+      end = totalPages;
+    }
+    const head =
+      start <= 1
+        ? []
+        : start <= 3
+          ? range(1, start - 1)
+          : [{ value: 1 }, { side: "start" }];
+    const tail =
+      end >= totalPages
+        ? []
+        : end >= totalPages - 2
+          ? range(end + 1, totalPages)
+          : [{ side: "end" }, { value: totalPages }];
+    return [...head, ...range(start, end), ...tail];
+  }
+
+  const host = document.getElementById("pagination-page-size");
+  const root = host.querySelector('[data-xh-part="root"]');
+  const next = root.querySelector('[data-xh-part="next-trigger"]');
+  const readout = document.getElementById("pagination-page-size-readout");
+
+  // 档位表只做取值来源，不决定长相
+  host.pageSizeOptions = [10, 20, 50];
+
+  function render(page, pageSize) {
+    const totalPages = Math.ceil(COUNT / pageSize);
+    for (const node of root.querySelectorAll(
+      '[data-xh-part="item"], [data-xh-part="ellipsis"]',
+    ))
+      node.remove();
+    for (const item of pageItems(page, totalPages, 1)) {
+      const el = document.createElement("button");
+      if (item.side) {
+        el.dataset.xhPart = "ellipsis";
+        el.setAttribute("side", item.side);
+        el.textContent = "…";
+      } else {
+        el.dataset.xhPart = "item";
+        el.setAttribute("value", String(item.value));
+        el.textContent = String(item.value);
+      }
+      root.insertBefore(el, next);
+    }
+    // 末页通常不满，区间的右端取实际条数
+    const start = (page - 1) * pageSize + 1;
+    const end = Math.min(page * pageSize, COUNT);
+    readout.textContent = `第 ${page} 页 · 第 ${start}-${end} 条，共 ${COUNT} 条`;
+  }
+
+  // 两条事件的 detail 都同时给出页码与档位，取哪一条都是同一份新状态
+  host.addEventListener("page-change", (event) =>
+    render(event.detail.page, event.detail.pageSize),
+  );
+  host.addEventListener("page-size-change", (event) =>
+    render(event.detail.page, event.detail.pageSize),
+  );
+</script>

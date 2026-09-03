@@ -1,0 +1,46 @@
+<!-- 贴下边 | 给了 offset-bottom 就改贴可视区的下边，判定线也换到下边 -->
+<div
+  id="affix-offset-bottom-scroll"
+  style="
+    block-size: 240px;
+    overflow: auto;
+    padding: 12px;
+    border: 1px solid var(--xh-border-default);
+    border-radius: 8px;
+  "
+>
+  <p style="block-size: 80px">
+    这块工具条在滚到它之前就贴在容器底边，滚过去之后回到常规流。
+  </p>
+
+  <template id="affix-offset-bottom-tpl">
+    <xh-affix offset-bottom="12" style="display: block">
+      <div data-xh-part="root">
+        <div
+          data-xh-part="content"
+          style="
+            display: flex;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            background: var(--xh-bg-surface-raised);
+            box-shadow: var(--xh-elevation-floating);
+          "
+        >
+          <span>共 42 项</span>
+          <span>已选 3 项</span>
+        </div>
+      </div>
+    </xh-affix>
+  </template>
+
+  <p style="block-size: 600px">下面是很长的列表内容。</p>
+</div>
+
+<script type="module">
+  // 滚动容器是 DOM 句柄，只走属性；先交句柄再进 DOM，滚动观察器才挂得到这一层
+  const template = document.getElementById("affix-offset-bottom-tpl");
+  const affix = template.content.firstElementChild;
+  affix.target = document.getElementById("affix-offset-bottom-scroll");
+  template.replaceWith(affix);
+</script>

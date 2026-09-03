@@ -1,0 +1,55 @@
+<!-- 拖拽换位 | 整个标签都是拖动源：按住往旁边拖，落点画成一条线、被拖的标签原地不动；也可以聚焦标签带后按 Alt + 左右键挪一位（竖排是 Alt + 上下键），到首末就不动。库不拥有标签序，只报一次重排好的新顺序连同读屏播报，照它写回数组归使用者 -->
+<div id="tabs-reorder" style="width: 100%; display: grid; gap: 12px">
+  <xh-tabs data-host variant="card" default-value="outline" reorderable>
+    <div data-xh-part="root" style="inline-size: 100%">
+      <div data-xh-part="list" data-list>
+        <button data-xh-part="trigger" value="outline">大纲</button>
+        <button data-xh-part="trigger" value="draft">草稿</button>
+        <button data-xh-part="trigger" value="review">评审</button>
+        <button data-xh-part="trigger" value="publish">发布</button>
+      </div>
+
+      <div data-xh-part="content" value="outline">大纲 的内容</div>
+      <div data-xh-part="content" value="draft">草稿 的内容</div>
+      <div data-xh-part="content" value="review">评审 的内容</div>
+      <div data-xh-part="content" value="publish">发布 的内容</div>
+
+      <!-- 播报区视觉隐藏，必须在拖动开始之前就在 DOM 上 -->
+      <div data-xh-part="live-region"></div>
+    </div>
+  </xh-tabs>
+  <span data-log>按住标签拖到别处，或聚焦标签带后按 Alt + 左右键</span>
+</div>
+
+<script type="module">
+  const scope = document.getElementById("tabs-reorder");
+  const host = scope.querySelector("[data-host]");
+  const list = scope.querySelector("[data-list]");
+  const log = scope.querySelector("[data-log]");
+
+  // 标签序的主人是这份数组，库按它算位置，也按它取标签文字。数组只走属性
+  let tabs = [
+    { value: "outline", label: "大纲" },
+    { value: "draft", label: "草稿" },
+    { value: "review", label: "评审" },
+    { value: "publish", label: "发布" },
+  ];
+  host.collection = tabs;
+
+  // values 已经重排好，照它取一遍就是新数组，标签节点也照它重排一遍；
+  // 选中的是哪一页不受换位影响
+  host.addEventListener("tab-move", (event) => {
+    const move = event.detail;
+    const byValue = new Map(tabs.map((tab) => [tab.value, tab]));
+    tabs = move.values.flatMap((value) => byValue.get(value) ?? []);
+    host.collection = tabs;
+    list.append(
+      ...move.values.map((value) =>
+        list.querySelector(`[data-xh-part="trigger"][value="${value}"]`),
+      ),
+    );
+    log.textContent = `${byValue.get(move.value)?.label ?? move.value} 挪到了第 ${
+      move.to + 1
+    } 位`;
+  });
+</script>

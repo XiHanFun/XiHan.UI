@@ -1,0 +1,42 @@
+<!-- 基础用法 | 滚过判定线就把内容钉在滚动容器可视区的上边；占位盒留在原位，页面不跳 -->
+<div
+  id="affix-basic-scroll"
+  style="
+    block-size: 240px;
+    overflow: auto;
+    padding: 12px;
+    border: 1px solid var(--xh-border-default);
+    border-radius: 8px;
+  "
+>
+  <p style="block-size: 120px">往下滚，下面那条会钉在容器顶边。</p>
+
+  <!-- target 指向真正在滚的那层；不给就按整页滚动算 -->
+  <template id="affix-basic-tpl">
+    <xh-affix style="display: block">
+      <div data-xh-part="root">
+        <div
+          data-xh-part="content"
+          style="
+            padding: 8px 12px;
+            border-radius: 6px;
+            background: var(--xh-bg-brand);
+            color: var(--xh-fg-on-brand);
+          "
+        >
+          我会钉在顶边
+        </div>
+      </div>
+    </xh-affix>
+  </template>
+
+  <p style="block-size: 600px">后面还有很长的内容，一直滚到底再滚回去。</p>
+</div>
+
+<script type="module">
+  // 滚动容器是 DOM 句柄，只走属性；先交句柄再进 DOM，滚动观察器才挂得到这一层
+  const template = document.getElementById("affix-basic-tpl");
+  const affix = template.content.firstElementChild;
+  affix.target = document.getElementById("affix-basic-scroll");
+  template.replaceWith(affix);
+</script>

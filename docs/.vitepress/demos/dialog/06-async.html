@@ -1,0 +1,72 @@
+<!-- 异步确认 | 提交期间按钮转圈，Esc 与点遮罩这两条出口一并封住，落定之后才把 open 写回 false -->
+<div style="display: flex; align-items: center; gap: 12px">
+  <xh-dialog id="dialog-async" open="false">
+    <button data-xh-part="trigger">归档这个项目</button>
+    <div data-xh-part="backdrop"></div>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <h2 data-xh-part="title">归档项目</h2>
+        <p data-xh-part="description">归档后项目转为只读，随时可以恢复。</p>
+        <div style="display: flex; justify-content: flex-end; gap: 8px">
+          <xh-button variant="ghost" id="dialog-async-cancel">
+            <button data-xh-part="root">取消</button>
+          </xh-button>
+          <xh-button variant="solid" id="dialog-async-submit">
+            <button data-xh-part="root">
+              <span data-xh-part="indicator" style="display: none"></span>
+              <span data-xh-part="label">确认归档</span>
+            </button>
+          </xh-button>
+        </div>
+      </div>
+    </div>
+  </xh-dialog>
+  <span id="dialog-async-state">未归档</span>
+</div>
+
+<script type="module">
+  const dialog = document.getElementById("dialog-async");
+  // 标题与描述的 id 由元素改写成 aria 引用的目标，取节点只能按角色查
+  const text = dialog.querySelector('[data-xh-part="description"]');
+  const cancel = document.getElementById("dialog-async-cancel");
+  const submit = document.getElementById("dialog-async-submit");
+  const spinner = submit.querySelector('[data-xh-part="indicator"]');
+  const label = submit.querySelector('[data-xh-part="label"]');
+  const state = document.getElementById("dialog-async-state");
+
+  let submitting = false;
+
+  // 提交态一并写进正文、两颗按钮与转圈指示器
+  function render() {
+    text.textContent = submitting
+      ? "正在归档，先别走开。"
+      : "归档后项目转为只读，随时可以恢复。";
+    cancel.disabled = submitting;
+    submit.loading = submitting;
+    spinner.style.display = submitting ? "" : "none";
+    label.textContent = submitting ? "归档中" : "确认归档";
+  }
+
+  // open 握在宿主这一侧：提交期间 Esc 与点遮罩照常发意图，不写回就关不掉
+  dialog.addEventListener("open-change", (event) => {
+    if (submitting) return;
+    dialog.open = event.detail.open;
+  });
+
+  cancel.addEventListener("click", () => {
+    dialog.open = false;
+  });
+
+  submit.addEventListener("click", () => {
+    submitting = true;
+    render();
+    setTimeout(() => {
+      submitting = false;
+      render();
+      state.textContent = "已归档";
+      dialog.open = false;
+    }, 1200);
+  });
+
+  render();
+</script>

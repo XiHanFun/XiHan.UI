@@ -1,0 +1,80 @@
+<!-- 滚动方式 | behavior=auto 一步跳回顶部，smooth 平滑滚过去 -->
+<div
+  style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; inline-size: 100%"
+>
+  <div style="position: relative">
+    <div
+      id="back-top-behavior-smooth-scroll"
+      style="
+        block-size: 200px;
+        overflow: auto;
+        padding: 12px;
+        border: 1px solid var(--xh-border-default);
+        border-radius: 8px;
+      "
+    ></div>
+    <template id="back-top-behavior-smooth-tpl">
+      <xh-back-top behavior="smooth" size="sm">
+        <div
+          data-xh-part="root"
+          style="
+            position: absolute;
+            --xh-back-top-inset-block: 12px;
+            --xh-back-top-inset-inline: 12px;
+          "
+        >
+          <button data-xh-part="trigger"></button>
+        </div>
+      </xh-back-top>
+    </template>
+  </div>
+
+  <div style="position: relative">
+    <div
+      id="back-top-behavior-auto-scroll"
+      style="
+        block-size: 200px;
+        overflow: auto;
+        padding: 12px;
+        border: 1px solid var(--xh-border-default);
+        border-radius: 8px;
+      "
+    ></div>
+    <template id="back-top-behavior-auto-tpl">
+      <xh-back-top behavior="auto" size="sm">
+        <div
+          data-xh-part="root"
+          style="
+            position: absolute;
+            --xh-back-top-inset-block: 12px;
+            --xh-back-top-inset-inline: 12px;
+          "
+        >
+          <button data-xh-part="trigger"></button>
+        </div>
+      </xh-back-top>
+    </template>
+  </div>
+</div>
+
+<script type="module">
+  // 滚动容器是 DOM 句柄，只走属性；先交句柄再进 DOM，滚动观察器才挂得到这一层
+  function setUp(label) {
+    const box = document.getElementById(`back-top-behavior-${label}-scroll`);
+    // 撑出可滚动的高度
+    for (let i = 1; i <= 16; i++) {
+      const line = document.createElement("p");
+      line.style.margin = "0 0 12px";
+      line.textContent = `${label} · 第 ${i} 段`;
+      box.append(line);
+    }
+
+    const template = document.getElementById(`back-top-behavior-${label}-tpl`);
+    const backTop = template.content.firstElementChild;
+    backTop.target = box;
+    template.replaceWith(backTop);
+  }
+
+  setUp("smooth");
+  setUp("auto");
+</script>

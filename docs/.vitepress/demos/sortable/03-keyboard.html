@@ -1,0 +1,53 @@
+<!-- 键盘拖拽 | 默认开着且关不掉：Tab 到手柄，空格拾起，方向键挪，空格放下，Esc 取消 -->
+<p style="margin-bottom: 8px; color: var(--xh-fg-muted)">
+  Tab 聚焦到手柄，按空格拾起后用 ↑↓ 移动，再按空格落下；Esc 退回原位。
+</p>
+<xh-sortable id="sortable-keyboard" ids="第一项,第二项,第三项" style="display: contents">
+  <div data-xh-part="root">
+    <div data-xh-part="item" item-id="第一项" style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid var(--xh-border-default)">
+      <button data-xh-part="item-drag-trigger" item-id="第一项"></button>
+      <span>第一项</span>
+    </div>
+    <div data-xh-part="item" item-id="第二项" style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid var(--xh-border-default)">
+      <button data-xh-part="item-drag-trigger" item-id="第二项"></button>
+      <span>第二项</span>
+    </div>
+    <div data-xh-part="item" item-id="第三项" style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid var(--xh-border-default)">
+      <button data-xh-part="item-drag-trigger" item-id="第三项"></button>
+      <span>第三项</span>
+    </div>
+    <div data-xh-part="live-region"></div>
+  </div>
+</xh-sortable>
+<ul id="sortable-keyboard-log" style="margin-top: 12px; color: var(--xh-fg-muted)"></ul>
+
+<script type="module">
+  const host = document.getElementById("sortable-keyboard");
+  const root = host.querySelector('[data-xh-part="root"]');
+  const logEl = document.getElementById("sortable-keyboard-log");
+  const log = [];
+
+  function push(line) {
+    log.unshift(line);
+    logEl.replaceChildren(
+      ...log.slice(0, 4).map((text) => {
+        const li = document.createElement("li");
+        li.textContent = text;
+        return li;
+      })
+    );
+  }
+
+  host.addEventListener("sort", (event) => {
+    // 顺序真源是 ids：写回去的同时把 DOM 顺序搬成一样——几何按 DOM 量
+    host.ids = event.detail.ids;
+    for (const itemId of event.detail.ids) {
+      root.append(root.querySelector(`[data-xh-part="item"][item-id="${itemId}"]`));
+    }
+    push(`${event.detail.id}：第 ${event.detail.from + 1} 位 → 第 ${event.detail.to + 1} 位`);
+  });
+
+  host.addEventListener("drag-end", (event) => {
+    if (event.detail.canceled) push(`${event.detail.id}：已取消`);
+  });
+</script>

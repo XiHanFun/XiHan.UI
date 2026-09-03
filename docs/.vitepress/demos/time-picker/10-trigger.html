@@ -1,0 +1,68 @@
+<!-- 可选的触发钮 | 点输入行本来就展开，这个按钮不是必需的；要它是因为它才带 aria-haspopup / aria-expanded -->
+<xh-time-picker id="time-picker-trigger" default-value="09:30">
+  <div data-xh-part="root">
+    <label data-xh-part="label">会议开始</label>
+    <div data-xh-part="control">
+      <div data-xh-part="segment-group">
+        <span data-xh-part="input" segment="hour"></span>
+        <span>:</span>
+        <span data-xh-part="input" segment="minute"></span>
+      </div>
+      <button data-xh-part="clear-trigger"></button>
+      <!-- 写上它多一个明写的入口；不写也照样能展开——点输入行即可，
+           键盘则在段上按 Alt+ArrowDown -->
+      <button data-xh-part="trigger" aria-label="展开时间列"></button>
+    </div>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <div data-xh-part="column" unit="hour">
+          <div data-xh-part="item" value="00"></div>
+          <div data-xh-part="item" value="01"></div>
+          <div data-xh-part="item" value="02"></div>
+          <div data-xh-part="item" value="03"></div>
+          <div data-xh-part="item" value="04"></div>
+          <div data-xh-part="item" value="05"></div>
+          <div data-xh-part="item" value="06"></div>
+          <div data-xh-part="item" value="07"></div>
+          <div data-xh-part="item" value="08"></div>
+          <div data-xh-part="item" value="09"></div>
+          <div data-xh-part="item" value="10"></div>
+          <div data-xh-part="item" value="11"></div>
+          <div data-xh-part="item" value="12"></div>
+          <div data-xh-part="item" value="13"></div>
+          <div data-xh-part="item" value="14"></div>
+          <div data-xh-part="item" value="15"></div>
+          <div data-xh-part="item" value="16"></div>
+          <div data-xh-part="item" value="17"></div>
+          <div data-xh-part="item" value="18"></div>
+          <div data-xh-part="item" value="19"></div>
+          <div data-xh-part="item" value="20"></div>
+          <div data-xh-part="item" value="21"></div>
+          <div data-xh-part="item" value="22"></div>
+          <div data-xh-part="item" value="23"></div>
+        </div>
+        <div data-xh-part="column" unit="minute"></div>
+      </div>
+    </div>
+  </div>
+</xh-time-picker>
+
+<span style="font-size: 13px">当前值：<span id="time-picker-trigger-value">09:30</span></span>
+
+<script type="module">
+  const picker = document.getElementById("time-picker-trigger");
+  const readout = document.getElementById("time-picker-trigger-value");
+
+  // 分列六十格，铺一遍就够
+  const minutes = picker.querySelector('[unit="minute"]');
+  for (let i = 0; i < 60; i += 1) {
+    const item = document.createElement("div");
+    item.dataset.xhPart = "item";
+    item.setAttribute("value", String(i).padStart(2, "0"));
+    minutes.append(item);
+  }
+
+  picker.addEventListener("value-change", (event) => {
+    readout.textContent = event.detail.value || "（空）";
+  });
+</script>

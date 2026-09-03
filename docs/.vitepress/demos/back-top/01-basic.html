@@ -1,0 +1,47 @@
+<!-- 基础用法 | 滚过 200px 按钮才露面，点它滚回顶部 -->
+<!-- 定位壳缺省钉在视口一角；这里把它改成钉在面板内，示例才不必占用整页 -->
+<div style="position: relative; inline-size: 100%">
+  <div
+    id="back-top-basic-scroll"
+    style="
+      block-size: 240px;
+      overflow: auto;
+      padding: 12px;
+      border: 1px solid var(--xh-border-default);
+      border-radius: 8px;
+    "
+  ></div>
+
+  <template id="back-top-basic-tpl">
+    <xh-back-top>
+      <div
+        data-xh-part="root"
+        style="
+          position: absolute;
+          --xh-back-top-inset-block: 12px;
+          --xh-back-top-inset-inline: 12px;
+        "
+      >
+        <!-- 按钮不写内容，皮肤画兜底的箭头字形 -->
+        <button data-xh-part="trigger"></button>
+      </div>
+    </xh-back-top>
+  </template>
+</div>
+
+<script type="module">
+  const box = document.getElementById("back-top-basic-scroll");
+  // 撑出可滚动的高度
+  for (let i = 1; i <= 20; i++) {
+    const line = document.createElement("p");
+    line.style.margin = "0 0 12px";
+    line.textContent = `第 ${i} 段内容，往下滚。`;
+    box.append(line);
+  }
+
+  // 滚动容器是 DOM 句柄，只走属性；先交句柄再进 DOM，滚动观察器才挂得到这一层
+  const template = document.getElementById("back-top-basic-tpl");
+  const backTop = template.content.firstElementChild;
+  backTop.target = box;
+  template.replaceWith(backTop);
+</script>

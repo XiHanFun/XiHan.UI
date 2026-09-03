@@ -1,0 +1,50 @@
+<!-- 书写方向 | start / end 是逻辑对齐不是左右：RTL 下 bottom-start 贴的是锚点右缘，块轴上的对齐不受影响 -->
+<div style="display: grid; gap: 12px; justify-items: start">
+  <xh-button size="sm" variant="outline">
+    <button data-xh-part="root" id="popover-rtl-toggle">
+      当前方向：rtl（点一下切换）
+    </button>
+  </xh-button>
+
+  <div id="popover-rtl-stage" dir="rtl" style="display: flex; gap: 24px">
+    <xh-popover dir="rtl" placement="bottom-start">
+      <button data-xh-part="trigger">bottom-start</button>
+      <div data-xh-part="positioner">
+        <div data-xh-part="content">
+          <h3 data-xh-part="title">start</h3>
+          <p data-xh-part="description" style="margin: 0">LTR 贴左缘，RTL 贴右缘</p>
+        </div>
+      </div>
+    </xh-popover>
+
+    <xh-popover dir="rtl" placement="bottom-end">
+      <button data-xh-part="trigger">bottom-end</button>
+      <div data-xh-part="positioner">
+        <div data-xh-part="content">
+          <h3 data-xh-part="title">end</h3>
+          <p data-xh-part="description" style="margin: 0">与 start 恰好相反</p>
+        </div>
+      </div>
+    </xh-popover>
+  </div>
+</div>
+
+<script type="module">
+  // 方向同时写给排版容器与两台浮层：前者管文字流向，后者管 start / end 落在哪一缘
+  const stage = document.getElementById("popover-rtl-stage");
+  const toggle = document.getElementById("popover-rtl-toggle");
+  let dir = "rtl";
+
+  function apply() {
+    stage.setAttribute("dir", dir);
+    for (const popover of stage.querySelectorAll("xh-popover")) {
+      popover.setAttribute("dir", dir);
+    }
+    toggle.textContent = "当前方向：" + dir + "（点一下切换）";
+  }
+
+  toggle.addEventListener("click", () => {
+    dir = dir === "ltr" ? "rtl" : "ltr";
+    apply();
+  });
+</script>

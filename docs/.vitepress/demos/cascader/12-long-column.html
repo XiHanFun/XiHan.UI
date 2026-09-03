@@ -1,0 +1,167 @@
+<!-- 长列表只渲可视区 | 列自己就是滚动容器：按滚动位置切一段挂出来，其余交给撑高块，焦点那一条无论在不在窗口里都挂着 -->
+<xh-cascader id="cascader-long-column" placeholder="请选择货位">
+  <div data-xh-part="root">
+    <span data-xh-part="label">货位（每仓 1000 条）</span>
+    <div data-xh-part="control">
+      <button data-xh-part="trigger">
+        <span data-xh-part="value-text"></span>
+        <span data-xh-part="indicator"></span>
+      </button>
+    </div>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <div data-xh-part="column" level="0" id="cascader-long-column-roots">
+          <div data-xh-part="item" value="east">
+            <span data-xh-part="item-text">华东仓</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="south">
+            <span data-xh-part="item-text">华南仓</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+        </div>
+        <div
+          data-xh-part="column"
+          level="1"
+          id="cascader-long-column-shelves"
+          style="
+            --xh-cascader-column-h: 256px;
+            --xh-cascader-column-min-w: 11rem;
+            position: relative;
+            padding-block: 0;
+          "
+        >
+          <!-- 撑高块把滚动条撑到全长，条目按各自的索引落位 -->
+          <div
+            id="cascader-long-column-spacer"
+            aria-hidden="true"
+            style="flex: none"
+          ></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</xh-cascader>
+<p>当前货位：<span id="cascader-long-column-value">（未选）</span></p>
+
+<script type="module">
+  // 行高与列高写死，窗口才算得出来
+  const ROW = 32;
+  const VIEW = 256;
+  const OVERSCAN = 6;
+
+  const cascader = document.getElementById("cascader-long-column");
+  const roots = document.getElementById("cascader-long-column-roots");
+  const column = document.getElementById("cascader-long-column-shelves");
+  const spacer = document.getElementById("cascader-long-column-spacer");
+  const readout = document.getElementById("cascader-long-column-value");
+
+  function shelves(prefix, name) {
+    return Array.from({ length: 1000 }, (_, i) => ({
+      value: prefix + "-" + (i + 1),
+      label: name + "货位 " + String(i + 1).padStart(4, "0"),
+    }));
+  }
+
+  const warehouses = [
+    { value: "east", label: "华东仓", children: shelves("east", "华东") },
+    { value: "south", label: "华南仓", children: shelves("south", "华南") },
+  ];
+  cascader.collection = warehouses;
+
+  // 已挂出来的条目：按值复用节点，重排窗口时焦点不会被连根拔掉
+  const mounted = new Map();
+  let items = [];
+  let focused = null;
+
+  function itemOf(item, index) {
+    const el = document.createElement("div");
+    el.setAttribute("data-xh-part", "item");
+    el.setAttribute("value", item.value);
+    el.style.position = "absolute";
+    el.style.insetInlineStart = "var(--xh-space-1)";
+    el.style.insetInlineEnd = "var(--xh-space-1)";
+    el.style.blockSize = ROW + "px";
+    el.style.insetBlockStart = index * ROW + "px";
+    const text = document.createElement("span");
+    text.setAttribute("data-xh-part", "item-text");
+    text.textContent = item.label;
+    const mark = document.createElement("span");
+    mark.setAttribute("data-xh-part", "item-indicator");
+    el.append(text, mark);
+    return el;
+  }
+
+  // 该挂出来的那一段：可视区前后各多铺几条，另外三条无论滚到哪儿都留着
+  function windowOf() {
+    const wanted = new Map();
+    if (items.length === 0) return wanted;
+    const max = Math.max(0, items.length * ROW - VIEW);
+    const top = Math.min(column.scrollTop, max);
+    const start = Math.max(0, Math.floor(top / ROW) - OVERSCAN);
+    const end = Math.min(items.length, Math.ceil((top + VIEW) / ROW) + OVERSCAN);
+    for (let i = start; i < end; i++) wanted.set(items[i].value, i);
+    // 首尾两条：Home 与 End 直奔它们，机器按值现查 DOM 时得找得到
+    wanted.set(items[0].value, 0);
+    wanted.set(items[items.length - 1].value, items.length - 1);
+    // 焦点那一条一旦离开 DOM，方向键就接不下去了
+    const at = items.findIndex((item) => item.value === focused);
+    if (at >= 0) wanted.set(items[at].value, at);
+    return wanted;
+  }
+
+  function render() {
+    spacer.style.blockSize = items.length * ROW + "px";
+    const wanted = windowOf();
+    for (const [value, el] of mounted) {
+      if (wanted.has(value)) continue;
+      el.remove();
+      mounted.delete(value);
+    }
+    for (const [value, index] of wanted) {
+      const el = mounted.get(value);
+      if (el) {
+        el.style.insetBlockStart = index * ROW + "px";
+        continue;
+      }
+      const next = itemOf(items[index], index);
+      mounted.set(value, next);
+      column.append(next);
+    }
+  }
+
+  // 展开路径落在哪一仓，第二列就换成它的货位
+  function syncBranch() {
+    const branch = roots.querySelector(
+      '[data-xh-part="item"][data-in-path]',
+    );
+    const hit = warehouses.find(
+      (warehouse) => warehouse.value === branch?.getAttribute("value"),
+    );
+    const next = hit ? hit.children : [];
+    if (next === items) return;
+    items = next;
+    focused = null;
+    column.scrollTop = 0;
+    render();
+  }
+
+  new MutationObserver(syncBranch).observe(roots, {
+    attributes: true,
+    attributeFilter: ["data-in-path"],
+    subtree: true,
+  });
+
+  column.addEventListener("scroll", render);
+  column.addEventListener("focusin", (event) => {
+    const item = event.target.closest('[data-xh-part="item"]');
+    if (item) focused = item.getAttribute("value");
+  });
+
+  cascader.addEventListener("value-change", (event) => {
+    const path = event.detail.value[0];
+    readout.textContent = path ? path.join(" / ") : "（未选）";
+  });
+
+  render();
+</script>

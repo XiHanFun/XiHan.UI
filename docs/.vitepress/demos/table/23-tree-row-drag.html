@@ -1,0 +1,142 @@
+<!-- 树形表拖拽 | 行声明了 parentId 就是树：拖到一行中段是放进这一行（换个父），拖到上下两端仍是插在它前后；键盘走 Alt + 上下键同层挪、Alt + 左右键改缩进。库报的是「搬到哪个父下面的第几位」外加重排好的整份行序，写回归宿主——按 ids 重排、再把那一行的 parentId 设成 parent，两件都做才对得上。许不许搬那一句归 allowRowDrop -->
+<div id="table-tree-drag" style="width: 100%; max-width: 560px; display: grid; gap: 12px">
+  <xh-table data-host row-reorderable>
+    <div data-xh-part="root">
+      <div data-xh-part="caption">
+        拖到一行中段是放进这一行，拖到上下两端是插在它前后；也可以 Tab 进表体，用「Alt +
+        上下键」同层挪、「Alt + 左右键」改缩进。已归档那一组只出不进
+      </div>
+      <div data-xh-part="header">
+        <div data-xh-part="row">
+          <div data-xh-part="column-header" value="name">任务</div>
+          <div data-xh-part="column-header" value="owner">负责人</div>
+        </div>
+      </div>
+      <div data-xh-part="body" data-body></div>
+    </div>
+  </xh-table>
+  <span data-log>按住任意一行拖走，或 Tab 进表体按 Alt + 方向键搬</span>
+</div>
+
+<script type="module">
+  const scope = document.getElementById("table-tree-drag");
+  const table = scope.querySelector("[data-host]");
+  const body = scope.querySelector("[data-body]");
+  const log = scope.querySelector("[data-log]");
+
+  table.columns = [
+    { id: "name", label: "任务", width: "14rem" },
+    { id: "owner", label: "负责人" },
+  ];
+
+  // 表格的树是一份带 parentId 的扁平数组：父子归属由 parentId 定，同层次序由数组里的先后定
+  let tasks = [
+    { id: "client", label: "客户端", owner: "赵一", parentId: null, group: true },
+    { id: "t1", label: "登录页改版", owner: "钱二", parentId: "client" },
+    { id: "t2", label: "离线缓存", owner: "孙三", parentId: "client" },
+    { id: "server", label: "服务端", owner: "李四", parentId: null, group: true },
+    { id: "t3", label: "限流中间件", owner: "周五", parentId: "server" },
+    { id: "archive", label: "已归档", owner: "吴六", parentId: null, group: true },
+    { id: "t4", label: "旧版导出", owner: "郑七", parentId: "archive" },
+  ];
+
+  let expanded = ["client", "server", "archive"];
+
+  // 叶子行没有开合把手，补一块同宽的空位，两种行的文字才起在同一处
+  const SPACER_STYLE =
+    "display: inline-flex; flex: none; inline-size: var(--xh-table-trigger-size, var(--xh-control-indicator-size))";
+
+  const byId = () => new Map(tasks.map((task) => [task.id, task]));
+
+  // 收起的分组连着它的子行整段不出现；这份摊平与库算行号用的是同一条口径：
+  // 根行按数组先后，子行紧跟各自的父
+  function visible() {
+    const children = new Map();
+    for (const task of tasks) {
+      const list = children.get(task.parentId) ?? [];
+      list.push(task);
+      children.set(task.parentId, list);
+    }
+    const out = [];
+    const walk = (parentId, level) => {
+      for (const task of children.get(parentId) ?? []) {
+        const kids = children.get(task.id) ?? [];
+        const expandable = kids.length > 0 || !!task.group;
+        out.push({ task, level, expandable });
+        if (expandable && expanded.includes(task.id)) walk(task.id, level + 1);
+      }
+    };
+    walk(null, 1);
+    return out;
+  }
+
+  function rowNode(entry) {
+    const el = document.createElement("div");
+    el.dataset.xhPart = "row";
+    el.setAttribute("value", entry.task.id);
+
+    const name = document.createElement("div");
+    name.dataset.xhPart = "cell";
+    name.setAttribute("value", "name");
+    // 缩进是首格的内边距，与库报的层级号同源
+    name.style.paddingInlineStart = `${entry.level * 16}px`;
+    const twisty = document.createElement("span");
+    if (entry.expandable) {
+      // 把手只服务指针，键盘那一路走裸左右方向键，因此它对读屏隐藏也不占 Tab 位
+      twisty.dataset.xhPart = "expand-trigger";
+    } else {
+      twisty.setAttribute("aria-hidden", "true");
+      twisty.setAttribute("style", SPACER_STYLE);
+    }
+    name.append(twisty, entry.task.label);
+
+    const owner = document.createElement("div");
+    owner.dataset.xhPart = "cell";
+    owner.setAttribute("value", "owner");
+    owner.textContent = entry.task.owner;
+
+    el.append(name, owner);
+    return el;
+  }
+
+  // 行序与父子归属的事实源就是这份数组。分组行标上 expandable：
+  // 有子行的行本来就展得开，标了它的分组被搬空之后也仍收得下东西
+  function render() {
+    table.expanded = expanded;
+    table.rows = tasks.map((task) => ({
+      id: task.id,
+      parentId: task.parentId ?? undefined,
+      expandable: task.group,
+    }));
+    body.replaceChildren(...visible().map(rowNode));
+  }
+
+  // 这一次搬家许不许。库自己兜住「落在自己身上 / 落进自己的后代 / 算下来还是原位」，
+  // 「落进普通数据行」也早被挡掉——只有可展开或已经有子行的行才给中段那一档。
+  // 剩下的是这份数据的规矩：已归档那一组只出不进。它是函数，只走属性
+  table.allowRowDrop = (move) => move.parent !== "archive";
+
+  table.addEventListener("expanded-change", (event) => {
+    expanded = event.detail.value;
+    render();
+  });
+
+  // 写回是两件事：按 ids 重排，再把搬走那一行的 parentId 换成 parent。
+  // 只重排它会留在原来的父下面，只换父则同层次序对不上，缺一件都是错的
+  table.addEventListener("row-move", (event) => {
+    const move = event.detail;
+    const known = byId();
+    tasks = move.ids.flatMap((id) => {
+      const task = known.get(id);
+      if (!task) return [];
+      return [id === move.id ? { ...task, parentId: move.parent } : task];
+    });
+    render();
+    const where = move.parent == null ? "根层" : (known.get(move.parent)?.label ?? move.parent);
+    log.textContent = `${known.get(move.id)?.label ?? move.id} 搬到了${where}第 ${
+      move.index + 1
+    } 位`;
+  });
+
+  render();
+</script>

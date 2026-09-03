@@ -1,0 +1,142 @@
+<!-- 上传生命周期 | 给一个 upload 实现组件就是上传器：收下即开传（auto-upload 可关成手动），进度、成败与返回地址都在每条的传输快照里，失败一键重试 -->
+<xh-file-upload id="file-upload-manual" max-files="9">
+  <div data-xh-part="root" style="max-inline-size: 420px">
+    <label data-xh-part="label">附件</label>
+    <div data-xh-part="dropzone">拖进来或点击选择，收下即开传</div>
+    <button data-xh-part="trigger">选择文件</button>
+    <input data-xh-part="hidden-input" />
+    <div data-xh-part="item-group"></div>
+  </div>
+</xh-file-upload>
+<p>试试选一个文件名带「坏」字的文件，看失败与重试。</p>
+
+<script type="module">
+  const upload = document.getElementById("file-upload-manual");
+  const group = upload.querySelector('[data-xh-part="item-group"]');
+
+  // 每份文件的传输快照：进度由 upload 实现一路汇报，成败由元素的两个事件给
+  const snapshots = new Map();
+  // 每份文件那一行的状态位，按文件取，进度走动时只改这一块
+  const slots = new Map();
+
+  // 演示用的假传输：一秒走完，文件名带「坏」字的在半路失败；真实实现把 signal 接给请求库即可
+  function fakeUpload(request) {
+    return new Promise((resolve, reject) => {
+      let progress = 0;
+      const timer = setInterval(() => {
+        if (request.signal.aborted) {
+          clearInterval(timer);
+          reject(new Error("aborted"));
+          return;
+        }
+        progress += 20;
+        request.onProgress(progress);
+        snapshots.set(request.file, { status: "uploading", progress });
+        paint(request.file);
+        if (progress >= 60 && request.file.name.includes("坏")) {
+          clearInterval(timer);
+          reject(new Error("网络中断"));
+          return;
+        }
+        if (progress >= 100) {
+          clearInterval(timer);
+          resolve({ url: `https://cdn.example.com/${request.file.name}` });
+        }
+      }, 200);
+      request.signal.addEventListener("abort", () => clearInterval(timer));
+    });
+  }
+
+  upload.upload = fakeUpload;
+
+  // 失败的那一份换成同内容的新 File 放回原位：列表一变，收下即开传的那条路重新走一遍
+  function retry(file) {
+    const fresh = new File([file], file.name, { type: file.type });
+    snapshots.delete(file);
+    upload.setFiles(upload.acceptedFiles.map((f) => (f === file ? fresh : f)));
+  }
+
+  function paint(file) {
+    const slot = slots.get(file);
+    if (!slot) return;
+    const snapshot = snapshots.get(file);
+    if (!snapshot) {
+      slot.replaceChildren();
+      return;
+    }
+
+    if (snapshot.status === "uploading") {
+      let bar = slot.querySelector("xh-progress");
+      if (!bar) {
+        bar = document.createElement("xh-progress");
+        bar.style.cssText = "display: block; flex: 1";
+        bar.innerHTML =
+          '<div data-xh-part="root"><div data-xh-part="track"><div data-xh-part="range"></div></div></div>';
+        slot.replaceChildren(bar);
+      }
+      bar.setAttribute("value", String(snapshot.progress));
+      return;
+    }
+
+    if (snapshot.status === "done") {
+      const text = document.createElement("span");
+      text.textContent = `已传到 ${snapshot.url}`;
+      slot.replaceChildren(text);
+      return;
+    }
+
+    const failed = document.createElement("span");
+    failed.style.color = "var(--xh-fg-danger)";
+    failed.textContent = "失败";
+    const button = document.createElement("xh-button");
+    button.setAttribute("size", "sm");
+    button.setAttribute("variant", "outline");
+    button.innerHTML = '<button data-xh-part="root">重试</button>';
+    button.addEventListener("click", () => retry(file));
+    slot.replaceChildren(failed, button);
+  }
+
+  // 条目节点由作者按当前列表铺，文件名由元素代填；状态位留成空壳，由 paint 填
+  function render(files) {
+    slots.clear();
+    group.replaceChildren(
+      ...files.map((file) => {
+        const item = document.createElement("div");
+        item.dataset.xhPart = "item";
+
+        const name = document.createElement("span");
+        name.dataset.xhPart = "item-name";
+
+        const slot = document.createElement("span");
+        slot.style.cssText =
+          "display: flex; flex: 1; min-inline-size: 0; align-items: center; gap: 8px";
+
+        const remove = document.createElement("button");
+        remove.dataset.xhPart = "item-delete-trigger";
+
+        item.append(name, slot, remove);
+        slots.set(file, slot);
+        return item;
+      })
+    );
+    for (const file of files) paint(file);
+  }
+
+  upload.addEventListener("files-change", (event) => {
+    // 已经不在列表里的快照跟着清掉
+    for (const file of [...snapshots.keys()]) {
+      if (!event.detail.files.includes(file)) snapshots.delete(file);
+    }
+    render(event.detail.files);
+  });
+
+  upload.addEventListener("upload-complete", (event) => {
+    snapshots.set(event.detail.file, { status: "done", url: event.detail.url });
+    paint(event.detail.file);
+  });
+
+  upload.addEventListener("upload-error", (event) => {
+    snapshots.set(event.detail.file, { status: "error" });
+    paint(event.detail.file);
+  });
+</script>

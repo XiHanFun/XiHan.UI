@@ -1,0 +1,107 @@
+<!-- 候选词一键添加 | 根插槽给出 addValue 与 atMax：输入框之外再开一条加标签的路，上限一样管得住 -->
+<xh-tags-input
+  id="tags-input-suggest"
+  value="文档"
+  max="3"
+  placeholder="回车落一个"
+  style="max-inline-size: 420px"
+>
+  <div data-xh-part="root">
+    <label data-xh-part="label">话题（最多 3 个）</label>
+    <div data-xh-part="control">
+      <div data-xh-part="item" value="文档">
+        <div data-xh-part="item-preview">
+          <span data-xh-part="item-text">文档</span>
+          <button data-xh-part="item-delete-trigger"></button>
+        </div>
+      </div>
+      <input data-xh-part="input" />
+    </div>
+  </div>
+</xh-tags-input>
+
+<!-- 输入框之外的那条路：一排候选钮，点一下就落一个标签 -->
+<div id="tags-input-suggest-picks" style="display: flex; flex-wrap: wrap; gap: 8px"></div>
+
+<script type="module">
+  const host = document.getElementById("tags-input-suggest");
+  const shell = host.querySelector('[data-xh-part="root"]');
+  const control = host.querySelector('[data-xh-part="control"]');
+  const input = control.querySelector('[data-xh-part="input"]');
+  const picks = document.getElementById("tags-input-suggest-picks");
+
+  const SUGGESTIONS = ["文档", "无障碍", "设计令牌", "组件库"];
+  let values = ["文档"];
+
+  // 一个标签一个节点：外壳带 value 标识身份，里面是文本与删除按钮
+  function createTag(value) {
+    const item = document.createElement("div");
+    item.dataset.xhPart = "item";
+    item.setAttribute("value", value);
+    const preview = document.createElement("div");
+    preview.dataset.xhPart = "item-preview";
+    const text = document.createElement("span");
+    text.dataset.xhPart = "item-text";
+    text.textContent = value;
+    const remove = document.createElement("button");
+    remove.dataset.xhPart = "item-delete-trigger";
+    preview.append(text, remove);
+    item.append(preview);
+    return item;
+  }
+
+  // 按当前值增删标签节点，已经在的那份原地留着
+  function renderTags(next) {
+    const alive = new Map();
+    for (const el of control.querySelectorAll('[data-xh-part="item"]')) {
+      alive.set(el.getAttribute("value"), el);
+    }
+    for (const [value, el] of alive) {
+      if (!next.includes(value)) el.remove();
+    }
+    for (const value of next) {
+      if (!alive.has(value)) control.insertBefore(createTag(value), input);
+    }
+  }
+
+  // 禁用写在 xh-button 上而不是里面那颗原生按钮上：原生 disabled 归元素自己打
+  const picked = SUGGESTIONS.map((suggestion) => {
+    const wrapper = document.createElement("xh-button");
+    wrapper.setAttribute("size", "sm");
+    wrapper.setAttribute("variant", "outline");
+    const button = document.createElement("button");
+    button.dataset.xhPart = "root";
+    button.textContent = suggestion;
+    wrapper.append(button);
+    wrapper.addEventListener("click", () => {
+      values = [...values, suggestion];
+      host.value = values;
+      renderTags(values);
+      paintPicks();
+    });
+    picks.append(wrapper);
+    return { suggestion, wrapper };
+  });
+
+  // 顶到上限这件事由组件报在 root 的 data-at-max 上，候选钮照它一起关掉
+  function paintPicks() {
+    const atMax = shell.hasAttribute("data-at-max");
+    for (const { suggestion, wrapper } of picked) {
+      wrapper.disabled = atMax || values.includes(suggestion);
+    }
+  }
+
+  host.addEventListener("value-change", (event) => {
+    values = event.detail.value;
+    host.value = values;
+    renderTags(values);
+    paintPicks();
+  });
+
+  // data-at-max 是接线之后才落到 DOM 上的，写完值等它变了再刷一遍
+  new MutationObserver(paintPicks).observe(shell, {
+    attributes: true,
+    attributeFilter: ["data-at-max"],
+  });
+  paintPicks();
+</script>

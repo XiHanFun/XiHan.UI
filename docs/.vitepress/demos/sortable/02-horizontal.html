@@ -1,0 +1,72 @@
+<!-- 横排与网格 | orientation 三档：竖排、横排，换行网格用 both，落点按最近中心判 -->
+<p style="margin-bottom: 8px">横排：只认左右方向键。</p>
+<xh-sortable
+  id="sortable-tabs"
+  ids="概览,订单,库存,报表"
+  orientation="horizontal"
+  style="display: contents"
+>
+  <div data-xh-part="root">
+    <div data-xh-part="item" item-id="概览" style="display: flex; align-items: center; gap: 8px; padding: 6px 12px; border: 1px solid var(--xh-border-default)">
+      <button data-xh-part="item-drag-trigger" item-id="概览"></button>
+      <span>概览</span>
+    </div>
+    <div data-xh-part="item" item-id="订单" style="display: flex; align-items: center; gap: 8px; padding: 6px 12px; border: 1px solid var(--xh-border-default)">
+      <button data-xh-part="item-drag-trigger" item-id="订单"></button>
+      <span>订单</span>
+    </div>
+    <div data-xh-part="item" item-id="库存" style="display: flex; align-items: center; gap: 8px; padding: 6px 12px; border: 1px solid var(--xh-border-default)">
+      <button data-xh-part="item-drag-trigger" item-id="库存"></button>
+      <span>库存</span>
+    </div>
+    <div data-xh-part="item" item-id="报表" style="display: flex; align-items: center; gap: 8px; padding: 6px 12px; border: 1px solid var(--xh-border-default)">
+      <button data-xh-part="item-drag-trigger" item-id="报表"></button>
+      <span>报表</span>
+    </div>
+    <div data-xh-part="live-region"></div>
+  </div>
+</xh-sortable>
+
+<p style="margin: 20px 0 8px">换行网格：上下左右都认，落点取离指针最近的那一格。</p>
+<xh-sortable
+  id="sortable-cards"
+  ids="甲,乙,丙,丁,戊,己"
+  orientation="both"
+  style="display: contents"
+>
+  <div data-xh-part="root" style="max-inline-size: 320px">
+    <div data-xh-part="item" item-id="甲" style="display: flex; align-items: center; justify-content: center; inline-size: 88px; block-size: 64px; border: 1px solid var(--xh-border-default)">
+      <button data-xh-part="item-drag-trigger" item-id="甲">甲</button>
+    </div>
+    <div data-xh-part="item" item-id="乙" style="display: flex; align-items: center; justify-content: center; inline-size: 88px; block-size: 64px; border: 1px solid var(--xh-border-default)">
+      <button data-xh-part="item-drag-trigger" item-id="乙">乙</button>
+    </div>
+    <div data-xh-part="item" item-id="丙" style="display: flex; align-items: center; justify-content: center; inline-size: 88px; block-size: 64px; border: 1px solid var(--xh-border-default)">
+      <button data-xh-part="item-drag-trigger" item-id="丙">丙</button>
+    </div>
+    <div data-xh-part="item" item-id="丁" style="display: flex; align-items: center; justify-content: center; inline-size: 88px; block-size: 64px; border: 1px solid var(--xh-border-default)">
+      <button data-xh-part="item-drag-trigger" item-id="丁">丁</button>
+    </div>
+    <div data-xh-part="item" item-id="戊" style="display: flex; align-items: center; justify-content: center; inline-size: 88px; block-size: 64px; border: 1px solid var(--xh-border-default)">
+      <button data-xh-part="item-drag-trigger" item-id="戊">戊</button>
+    </div>
+    <div data-xh-part="item" item-id="己" style="display: flex; align-items: center; justify-content: center; inline-size: 88px; block-size: 64px; border: 1px solid var(--xh-border-default)">
+      <button data-xh-part="item-drag-trigger" item-id="己">己</button>
+    </div>
+    <div data-xh-part="live-region"></div>
+  </div>
+</xh-sortable>
+
+<script type="module">
+  // 顺序真源是 ids：sort 回传的那份已经重排好，写回去的同时把 DOM 顺序搬成一样——几何按 DOM 量
+  for (const id of ["sortable-tabs", "sortable-cards"]) {
+    const host = document.getElementById(id);
+    const root = host.querySelector('[data-xh-part="root"]');
+    host.addEventListener("sort", (event) => {
+      host.ids = event.detail.ids;
+      for (const itemId of event.detail.ids) {
+        root.append(root.querySelector(`[data-xh-part="item"][item-id="${itemId}"]`));
+      }
+    });
+  }
+</script>

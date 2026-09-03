@@ -1,0 +1,49 @@
+<!-- 监听吸附状态 | affix-change 报吸住与松开；默认插槽也把 affixed 透出来 -->
+<div style="display: grid; gap: 12px; inline-size: 100%">
+  <div
+    id="affix-change-scroll"
+    style="
+      block-size: 220px;
+      overflow: auto;
+      padding: 12px;
+      border: 1px solid var(--xh-border-default);
+      border-radius: 8px;
+    "
+  >
+    <p style="block-size: 120px">往下滚，下面的状态会跟着变。</p>
+
+    <template id="affix-change-tpl">
+      <xh-affix style="display: block">
+        <div data-xh-part="root">
+          <!-- 同一份状态也写在这个部件的 data-fixed 上，纯样式的场合不必接事件 -->
+          <div
+            data-xh-part="content"
+            style="padding: 8px 12px; border-radius: 6px; background: var(--xh-bg-subtle)"
+          >
+            在常规流里
+          </div>
+        </div>
+      </xh-affix>
+    </template>
+
+    <p style="block-size: 600px">后面还有很长的内容。</p>
+  </div>
+
+  <span>affix-change 最近一次报的是：<span id="affix-change-readout">松开</span></span>
+</div>
+
+<script type="module">
+  // 滚动容器是 DOM 句柄，只走属性；先交句柄再进 DOM，滚动观察器才挂得到这一层
+  const template = document.getElementById("affix-change-tpl");
+  const affix = template.content.firstElementChild;
+  const content = affix.querySelector('[data-xh-part="content"]');
+  const readout = document.getElementById("affix-change-readout");
+  affix.target = document.getElementById("affix-change-scroll");
+  template.replaceWith(affix);
+
+  affix.addEventListener("affix-change", (event) => {
+    const { affixed } = event.detail;
+    content.textContent = affixed ? "已钉住" : "在常规流里";
+    readout.textContent = affixed ? "吸住" : "松开";
+  });
+</script>

@@ -1,0 +1,49 @@
+<!-- 基础用法 | 默认单开：展开一项即收起其余，defaultValue 只给初始值，之后由组件自己维护 -->
+<div style="width: 100%; max-width: 420px">
+  <xh-accordion id="accordion-basic">
+    <div data-xh-part="root">
+      <div data-xh-part="item" value="install">
+        <h3 data-xh-part="header">
+          <button data-xh-part="trigger">
+            <span>怎么安装</span>
+            <span data-xh-part="indicator"></span>
+          </button>
+        </h3>
+        <div data-xh-part="content">
+          装 @xihan-ui/web-components 与 @xihan-ui/styles 两个包，皮肤单独引一次。
+        </div>
+      </div>
+      <div data-xh-part="item" value="theme">
+        <h3 data-xh-part="header">
+          <button data-xh-part="trigger">
+            <span>怎么换皮肤</span>
+            <span data-xh-part="indicator"></span>
+          </button>
+        </h3>
+        <div data-xh-part="content">
+          皮肤只认 data-part 与 data-state，覆写同名令牌即可。
+        </div>
+      </div>
+      <div data-xh-part="item" value="a11y">
+        <h3 data-xh-part="header">
+          <button data-xh-part="trigger">
+            <span>键盘怎么走</span>
+            <span data-xh-part="indicator"></span>
+          </button>
+        </h3>
+        <div data-xh-part="content">
+          方向键只在标题之间搬焦点，永不进内容区，首尾不回绕。
+        </div>
+      </div>
+    </div>
+  </xh-accordion>
+</div>
+
+<script type="module">
+  // 展开集合是数组，只走 property：设初值、每次变更写回
+  const accordion = document.getElementById("accordion-basic");
+  accordion.value = ["install"];
+  accordion.addEventListener("value-change", (event) => {
+    accordion.value = event.detail.value;
+  });
+</script>

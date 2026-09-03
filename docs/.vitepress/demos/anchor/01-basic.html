@@ -1,0 +1,72 @@
+<!-- 基础用法 | 目录跟着滚动位置自己换高亮；scroll-element 把判定线挂到指定滚动容器上，不给就挂在窗口上 -->
+<div
+  style="
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 20px;
+    inline-size: 100%;
+    align-items: start;
+  "
+>
+  <!-- 目录先放在模板里：模板里的节点还没升级，滚动容器交得进去 -->
+  <template id="anchor-basic-nav">
+    <xh-anchor smooth>
+      <nav data-xh-part="root">
+        <ul data-xh-part="list">
+          <!-- 链接的 value 就是目标区块的 id：href 由元素按它派生 -->
+          <li data-xh-part="item">
+            <a data-xh-part="link" value="anchor-basic-intro">这是什么</a>
+          </li>
+          <li data-xh-part="item">
+            <a data-xh-part="link" value="anchor-basic-keyboard">键盘怎么走</a>
+          </li>
+          <li data-xh-part="item">
+            <a data-xh-part="link" value="anchor-basic-edge">边界在哪</a>
+          </li>
+          <li data-xh-part="item">
+            <a data-xh-part="link" value="anchor-basic-token">主题与令牌</a>
+          </li>
+          <!-- 指示条必须住在 list 里：它以 list 为定位参照系，而 ul 里只放得下 li -->
+          <li data-xh-part="indicator"></li>
+        </ul>
+      </nav>
+    </xh-anchor>
+  </template>
+
+  <div
+    id="anchor-basic-scroll"
+    style="
+      block-size: 240px;
+      overflow: auto;
+      padding: 12px;
+      border: 1px solid var(--xh-border-default);
+      border-radius: 8px;
+    "
+  >
+    <!-- 目标区块是页面内容、不是组件的部件：元素按链接的 value 现查 id -->
+    <div id="anchor-basic-intro" style="block-size: 180px">
+      <strong>这是什么</strong>
+      <p>滚动这一栏，看左边哪一条亮起来。</p>
+    </div>
+    <div id="anchor-basic-keyboard" style="block-size: 180px">
+      <strong>键盘怎么走</strong>
+      <p>滚动这一栏，看左边哪一条亮起来。</p>
+    </div>
+    <div id="anchor-basic-edge" style="block-size: 180px">
+      <strong>边界在哪</strong>
+      <p>滚动这一栏，看左边哪一条亮起来。</p>
+    </div>
+    <div id="anchor-basic-token" style="block-size: 180px">
+      <strong>主题与令牌</strong>
+      <p>滚动这一栏，看左边哪一条亮起来。</p>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  // 滚动容器是 DOM 句柄，只走属性；先交句柄再进 DOM，滚动观察器才挂得到这一层
+  const template = document.getElementById("anchor-basic-nav");
+  const anchor = template.content.firstElementChild;
+  anchor.scrollElement = document.getElementById("anchor-basic-scroll");
+  template.replaceWith(anchor);
+</script>

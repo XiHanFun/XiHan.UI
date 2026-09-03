@@ -1,0 +1,99 @@
+<!-- 服务器附件回显 | remote-files 装编辑表单里已存在的附件：与本地文件同列渲染（allFiles 远程在前）、占 max-files 名额，删除走 remote-files-change 由宿主落库 -->
+<xh-file-upload id="file-upload-remote" max-files="4">
+  <div data-xh-part="root" style="max-inline-size: 420px">
+    <label data-xh-part="label">附件</label>
+    <div data-xh-part="dropzone">拖进来或点击选择</div>
+    <button data-xh-part="trigger">选择文件</button>
+    <input data-xh-part="hidden-input" />
+    <div data-xh-part="item-group"></div>
+  </div>
+</xh-file-upload>
+<p>剩余名额与新选文件共享；删除服务器附件只改 remote-files，落库由宿主决定。</p>
+
+<script type="module">
+  const upload = document.getElementById("file-upload-remote");
+  const group = upload.querySelector('[data-xh-part="item-group"]');
+  const label = upload.querySelector('[data-xh-part="label"]');
+
+  // 编辑场景：这两条是服务端返回的既有附件，不是本地 File
+  let remoteFiles = [
+    {
+      id: "a1",
+      name: "合同扫描件.pdf",
+      size: 382_000,
+      type: "application/pdf",
+      url: "https://cdn.example.com/a1.pdf",
+    },
+    {
+      id: "a2",
+      name: "报价单.xlsx",
+      size: 51_200,
+      url: "https://cdn.example.com/a2.xlsx",
+    },
+  ];
+  upload.remoteFiles = remoteFiles;
+
+  const action = "flex: none; font-size: 12px; color: var(--xh-fg-brand)";
+
+  // 远程那几条没有本地字节，名字与大小由作者自己写；删除交回元素，走的是同一条删除口
+  function remoteRow(file) {
+    const item = document.createElement("div");
+
+    const name = document.createElement("span");
+    name.textContent = file.name;
+
+    const size = document.createElement("span");
+    size.style.cssText = "flex: none; color: var(--xh-fg-subtle); font-size: 12px";
+    size.textContent = `${(file.size / 1024).toFixed(1)} KB`;
+
+    const link = document.createElement("a");
+    link.style.cssText = action;
+    link.href = file.url;
+    link.target = "_blank";
+    link.rel = "noreferrer";
+    link.textContent = "查看";
+
+    const remove = document.createElement("button");
+    remove.type = "button";
+    remove.style.cssText = action;
+    remove.textContent = "移除";
+    remove.setAttribute("aria-label", `移除 ${file.name}`);
+    remove.addEventListener("click", () => upload.deleteFile(file));
+
+    item.style.cssText =
+      "display: flex; align-items: center; gap: 8px; padding-block: 4px";
+    item.append(name, size, link, remove);
+    return item;
+  }
+
+  // 本地那几条走角色节点，文件名与大小由元素代填
+  function localRow() {
+    const item = document.createElement("div");
+    item.dataset.xhPart = "item";
+    item.innerHTML =
+      '<span data-xh-part="item-name"></span>' +
+      '<span data-xh-part="item-size-text"></span>' +
+      '<button data-xh-part="item-delete-trigger"></button>';
+    return item;
+  }
+
+  // 远程在前、本地在后，两段同挂在一个列表容器里
+  function render() {
+    label.textContent = `附件（最多 4 个，已有 ${remoteFiles.length} 个在服务器上）`;
+    group.replaceChildren(
+      ...remoteFiles.map(remoteRow),
+      ...upload.acceptedFiles.map(localRow)
+    );
+  }
+
+  upload.addEventListener("files-change", render);
+
+  // 远程列表是受控的：删除意图由这里落回宿主那份数组，真要落库也在这一处
+  upload.addEventListener("remote-files-change", (event) => {
+    remoteFiles = event.detail.files;
+    upload.remoteFiles = remoteFiles;
+    render();
+  });
+
+  render();
+</script>

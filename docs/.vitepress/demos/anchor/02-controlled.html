@@ -1,0 +1,85 @@
+<!-- 受控 | 传了 value 就由宿主说了算；一节都没越过判定线时它是 null，此时谁都不亮、指示条整条收起 -->
+<div style="display: flex; flex-direction: column; gap: 12px; inline-size: 100%">
+  <div
+    style="
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: 20px;
+      align-items: start;
+    "
+  >
+    <template id="anchor-ctl-nav">
+      <xh-anchor smooth>
+        <nav data-xh-part="root">
+          <ul data-xh-part="list">
+            <li data-xh-part="item">
+              <a data-xh-part="link" value="anchor-ctl-install">安装</a>
+            </li>
+            <li data-xh-part="item">
+              <a data-xh-part="link" value="anchor-ctl-usage">用法</a>
+            </li>
+            <li data-xh-part="item">
+              <a data-xh-part="link" value="anchor-ctl-faq">常见问题</a>
+            </li>
+            <li data-xh-part="indicator"></li>
+          </ul>
+        </nav>
+      </xh-anchor>
+    </template>
+
+    <div
+      id="anchor-ctl-scroll"
+      style="
+        block-size: 220px;
+        overflow: auto;
+        padding: 12px;
+        border: 1px solid var(--xh-border-default);
+        border-radius: 8px;
+      "
+    >
+      <div id="anchor-ctl-install" style="block-size: 180px">
+        <strong>安装</strong>
+        <p>这一节的正文。</p>
+      </div>
+      <div id="anchor-ctl-usage" style="block-size: 180px">
+        <strong>用法</strong>
+        <p>这一节的正文。</p>
+      </div>
+      <div id="anchor-ctl-faq" style="block-size: 180px">
+        <strong>常见问题</strong>
+        <p>这一节的正文。</p>
+      </div>
+    </div>
+  </div>
+
+  <div style="display: flex; align-items: center; gap: 8px">
+    <xh-button id="anchor-ctl-jump" variant="outline">
+      <button data-xh-part="root">点亮「常见问题」</button>
+    </xh-button>
+    <span>当前：<span id="anchor-ctl-readout"></span></span>
+  </div>
+</div>
+
+<script type="module">
+  const template = document.getElementById("anchor-ctl-nav");
+  const anchor = template.content.firstElementChild;
+  const readout = document.getElementById("anchor-ctl-readout");
+
+  // 激活项写在宿主这边：初值是 null，此刻谁都不亮
+  function apply(next) {
+    anchor.value = next;
+    readout.textContent = next ?? "（还没有一节越过判定线）";
+  }
+
+  // 滚动容器是 DOM 句柄，只走属性；先交句柄再进 DOM，滚动观察器才挂得到这一层
+  anchor.scrollElement = document.getElementById("anchor-ctl-scroll");
+  apply(null);
+  template.replaceWith(anchor);
+
+  // 观察器结算出的新激活项写回宿主，值才真的换
+  anchor.addEventListener("value-change", (event) => apply(event.detail.value));
+
+  document
+    .getElementById("anchor-ctl-jump")
+    .addEventListener("click", () => apply("anchor-ctl-faq"));
+</script>
