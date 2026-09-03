@@ -160,6 +160,42 @@ export const gridSuite: ConformanceSuite = {
       },
     },
     {
+      name: '列数越界按没写算：超过 12、0、负数、小数都落回一列，断点档同理不输出',
+      spec: { apg: APG },
+      props: { cols: { base: 16, sm: 0, md: -2, lg: 2.5, xl: 12 } },
+      initial: {
+        parts: {
+          root: {
+            'data-cols': '1',
+            'data-cols-sm': null,
+            'data-cols-md': null,
+            'data-cols-lg': null,
+            'data-cols-xl': '12',
+          },
+        },
+      },
+    },
+    {
+      name: '跨列与错列越界按没写算：span 收 1 至 12、offset 收 1 至 11，出界即不输出',
+      spec: { apg: APG },
+      props: { cols: 4 },
+      fixture: (base): FixtureNode => ({
+        ...base,
+        children: [
+          { part: 'item', attrs: { span: '13' }, text: '甲' },
+          { part: 'item', attrs: { offset: '12' }, text: '乙' },
+          { part: 'item', attrs: { span: '0', offset: '-1' }, text: '丙' },
+        ],
+      }),
+      initial: {
+        parts: {
+          'item[0]': { 'data-span': null },
+          'item[1]': { 'data-offset': null },
+          'item[2]': { 'data-span': null, 'data-offset': null },
+        },
+      },
+    },
+    {
       name: '一个根带三格，按文档序排列',
       spec: { apg: APG },
       initial: {

@@ -8,7 +8,7 @@ import type {
   TimePickerValueChangeDetails,
   TimeSegmentType,
 } from '@xihan-ui/headless'
-import type { Cleanup, ControlVariant, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
+import type { Cleanup, ControlVariant, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { OverlayExit } from '../overlay-exit'
 import { connectTimePicker, timePickerAnatomy, timePickerMachine, timePickerMeta } from '@xihan-ui/headless'
@@ -81,6 +81,7 @@ function declaredUnit(el: HTMLElement, position: number): TimePickerColumnUnit {
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @attr {string} placement - 首选放置位，默认 bottom-start；避让后的实际位写在 data-placement 上
  * @attr {number} offset - 浮层与锚点的间距（px）
+ * @attr {'ltr'|'rtl'} dir - 文字方向，翻转浮层在行内轴上 start 与 end 的落点；只在显式给了才写到定位层上
  * @fires value-change - 值变化；detail 为 `{ value: string }`
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @csspart root - 组件根容器（承载 data-state/data-disabled/data-readonly/data-invalid/data-empty）
@@ -127,6 +128,9 @@ export class XhTimePickerElement extends XhElement {
     size: { converter: STRING_CONVERTER },
     placement: { converter: STRING_CONVERTER },
     offset: { converter: NUMBER_CONVERTER },
+    // dir 只占属性名、字段改叫 direction：HTMLElement 原生 dir 是 string 访问器，
+    // 同名响应式字段会与基类类型打架。属性仍进 observedAttributes，改 dir 照样触发重算。
+    direction: { converter: STRING_CONVERTER, attribute: 'dir' },
   }
 
   declare value?: string
@@ -152,6 +156,7 @@ export class XhTimePickerElement extends XhElement {
   declare size?: Size
   declare placement?: Placement
   declare offset?: number
+  declare direction?: Direction
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly pickerScope = createScope(null, this.idGen)
@@ -200,6 +205,7 @@ export class XhTimePickerElement extends XhElement {
       size: this.size,
       placement: this.placement,
       offset: this.offset,
+      dir: this.direction,
       onValueChange: this.notifyValue,
       onOpenChange: this.notifyOpen,
     }

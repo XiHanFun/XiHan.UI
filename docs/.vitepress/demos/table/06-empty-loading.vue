@@ -7,7 +7,7 @@ import {
   XhTableColumnHeader,
   XhTableEmpty,
   XhTableHeader,
-  XhTableLoadingState,
+  XhTableLoading,
   XhTableRoot,
   XhTableRow,
 } from "@xihan-ui/vue";
@@ -74,7 +74,7 @@ const rows = computed(() => tasks.value.map((t) => ({ id: t.id })));
           <XhTableCell value="owner">{{ t.owner }}</XhTableCell>
         </XhTableRow>
       </XhTableBody>
-      <XhTableLoadingState>正在取数…</XhTableLoadingState>
+      <XhTableLoading>正在取数…</XhTableLoading>
       <XhTableEmpty>还没有任务，点「取数」拉一份。</XhTableEmpty>
     </XhTableRoot>
   </div>

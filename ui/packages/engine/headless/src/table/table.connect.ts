@@ -431,7 +431,7 @@ export function connectTable<T extends PropTypes>(
       'aria-colcount': columns.length || undefined,
       // 复选与否必须显式说，省略只是没说
       'aria-multiselectable': mode === 'multiple' ? 'true' : 'false',
-      // 加载态的播报归它：两个状态节点自己不带 role，见 getLoadingStateProps
+      // 加载态的播报归它：两个状态节点自己不带 role，见 getLoadingProps
       'aria-busy': loading ? 'true' : undefined,
       'data-size': prop('size'),
       'data-loading': dataAttr(loading),
@@ -1034,8 +1034,8 @@ export function connectTable<T extends PropTypes>(
       hidden: !showEmpty || undefined,
     }),
 
-    getLoadingStateProps: () => normalize.element({
-      ...parts['loading-state'].attrs,
+    getLoadingProps: () => normalize.element({
+      ...parts.loading.attrs,
       hidden: !showLoading || undefined,
     }),
   }

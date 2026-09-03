@@ -146,8 +146,8 @@ export class XhCheckboxGroupElement extends XhElement {
     put('root', api.getRootProps() as Record<string, unknown>)
     put('label', api.getLabelProps() as Record<string, unknown>)
     // trigger 是多实例 part，逐个接线；root/label 只认头一个（label 的 id 是 aria-labelledby 的唯一目标）
-    for (const el of this.getParts('trigger'))
-      this.spreader.spread(el, api.getTriggerProps() as Record<string, unknown>)
+    for (const el of this.getParts('select-all-trigger'))
+      this.spreader.spread(el, api.getSelectAllTriggerProps() as Record<string, unknown>)
 
     for (const el of this.getParts('item')) {
       const item = this.itemProps(el)

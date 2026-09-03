@@ -78,7 +78,7 @@
      尺寸与选中态照 checkbox 的 root 搬，同一份视觉语言在单体与集合里必须一致。
      trigger 那格没有对应的角色节点（anatomy 到 trigger 为止），只能由伪元素补出来 */
   [data-scope='checkbox-group'][data-part='indicator'],
-  [data-scope='checkbox-group'][data-part='trigger']::before {
+  [data-scope='checkbox-group'][data-part='select-all-trigger']::before {
     display: inline-flex;
     flex: none;
     align-items: center;
@@ -98,7 +98,7 @@
 
   /* content 只能给伪元素，绝不能并进上面那条：content 落在普通元素上会顶掉它的全部子节点，
      indicator 里作者写的图标就此消失 */
-  [data-scope='checkbox-group'][data-part='trigger']::before {
+  [data-scope='checkbox-group'][data-part='select-all-trigger']::before {
     content: '';
   }
 
@@ -111,7 +111,7 @@
 
   /* 选中即填色：条目是二态，全选格三态里 checked 与 indeterminate 都算"有值"，共用同一副填色 */
   [data-scope='checkbox-group'][data-part='indicator'][data-state='checked'],
-  [data-scope='checkbox-group'][data-part='trigger']:is([data-state='checked'], [data-state='indeterminate'])::before {
+  [data-scope='checkbox-group'][data-part='select-all-trigger']:is([data-state='checked'], [data-state='indeterminate'])::before {
     border-color: var(--xh-checkbox-group-indicator-border-checked, var(--xh-bg-brand));
     background: var(--xh-checkbox-group-indicator-bg-checked, var(--xh-bg-brand));
   }
@@ -138,7 +138,7 @@
      方框是行首那颗 ::before、宽度即指示符尺寸，所以字形按「盒与字形的宽度差之半」
      内推即落在圆心；纵向靠 inset-block: 0 + margin-block: auto 居中。
      font-size 与 ::before 同值，--xh-icon-size 的 1em 兜底才和条目那侧量得一样大 */
-  [data-scope='checkbox-group'][data-part='trigger'][data-state='checked']::after {
+  [data-scope='checkbox-group'][data-part='select-all-trigger'][data-state='checked']::after {
     content: '';
     position: absolute;
     inset-block: 0;
@@ -158,7 +158,7 @@
     mask: var(--xh-glyph-mark-check) center / contain no-repeat;
   }
 
-  [data-scope='checkbox-group'][data-part='trigger'][data-state='indeterminate']::after {
+  [data-scope='checkbox-group'][data-part='select-all-trigger'][data-state='indeterminate']::after {
     content: '';
     position: absolute;
     inset-block: 0;
@@ -192,33 +192,33 @@
   /* 全选格与条目同形，但字重加一档，读起来才不像又一个普通选项。
      它是普通元素而非原生控件（三态只有非原生控件表达得出），禁用态同样只能读 data-disabled。
      position 是给叠在方框上的那颗字形 ::after 当定位基准 */
-  [data-scope='checkbox-group'][data-part='trigger'] {
+  [data-scope='checkbox-group'][data-part='select-all-trigger'] {
     position: relative;
     display: inline-flex;
     align-items: center;
-    gap: var(--xh-checkbox-group-trigger-gap, var(--xh-control-gap-md));
-    border-radius: var(--xh-checkbox-group-trigger-radius, var(--xh-shape-control));
-    color: var(--xh-checkbox-group-trigger-fg, var(--xh-fg-default));
-    font-size: var(--xh-checkbox-group-trigger-font-size, var(--xh-text-label-size));
-    font-weight: var(--xh-checkbox-group-trigger-font-weight, var(--xh-font-weight-medium));
+    gap: var(--xh-checkbox-group-select-all-trigger-gap, var(--xh-control-gap-md));
+    border-radius: var(--xh-checkbox-group-select-all-trigger-radius, var(--xh-shape-control));
+    color: var(--xh-checkbox-group-select-all-trigger-fg, var(--xh-fg-default));
+    font-size: var(--xh-checkbox-group-select-all-trigger-font-size, var(--xh-text-label-size));
+    font-weight: var(--xh-checkbox-group-select-all-trigger-font-weight, var(--xh-font-weight-medium));
     line-height: var(--xh-leading-none);
     cursor: pointer;
     user-select: none;
   }
 
-  [data-scope='checkbox-group'][data-part='trigger']:focus-visible {
+  [data-scope='checkbox-group'][data-part='select-all-trigger']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
     outline-offset: var(--xh-ring-offset);
   }
 
-  [data-scope='checkbox-group'][data-part='trigger'][data-disabled] {
-    color: var(--xh-checkbox-group-trigger-fg-disabled, var(--xh-fg-disabled));
+  [data-scope='checkbox-group'][data-part='select-all-trigger'][data-disabled] {
+    color: var(--xh-checkbox-group-select-all-trigger-fg-disabled, var(--xh-fg-disabled));
     cursor: not-allowed;
   }
 
   /* 只读与禁用会同时出现在 trigger 上（连接层两个属性各写各的），
      同权重下后写的赢，所以这里必须显式排掉禁用，否则禁用的手势指示被只读盖掉 */
-  [data-scope='checkbox-group'][data-part='trigger'][data-readonly]:not([data-disabled]) {
+  [data-scope='checkbox-group'][data-part='select-all-trigger'][data-readonly]:not([data-disabled]) {
     cursor: default;
   }
 
@@ -234,7 +234,7 @@
   [data-scope='checkbox-group'][data-part='root'][hidden],
   [data-scope='checkbox-group'][data-part='item'][hidden],
   [data-scope='checkbox-group'][data-part='indicator'][hidden],
-  [data-scope='checkbox-group'][data-part='trigger'][hidden] {
+  [data-scope='checkbox-group'][data-part='select-all-trigger'][hidden] {
     display: none;
   }
 }

@@ -49,6 +49,8 @@ export class XhDialogElement extends XhElement {
     restoreFocus: { converter: BOOLEAN_CONVERTER, attribute: 'restore-focus' },
     initialFocus: { converter: STRING_CONVERTER, attribute: 'initial-focus' },
     size: { converter: STRING_CONVERTER },
+    // 对象进不了属性，只作为 property 暴露
+    translations: { attribute: false },
   }
 
   declare open?: boolean
@@ -58,6 +60,8 @@ export class XhDialogElement extends XhElement {
   declare restoreFocus?: boolean
   declare initialFocus?: string
   declare size?: Size
+  /** 关闭按钮的无障碍名；connect 每帧重写 aria-label，作者写在节点上会被盖掉，只能从这里给。 */
+  declare translations?: DialogSchema['props']['translations']
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly dialogScope = createScope(null, this.idGen)
@@ -87,6 +91,7 @@ export class XhDialogElement extends XhElement {
       restoreFocus: this.restoreFocus,
       initialFocus: this.initialFocus,
       size: this.size,
+      translations: this.translations,
       onOpenChange: this.notify,
     }
   }

@@ -1,5 +1,5 @@
 import type { ComboboxApi, ComboboxInputBehavior, ComboboxInputEl, ComboboxInputHost, ComboboxItemGroupProps, ComboboxItemProps, ComboboxNode, ComboboxNodeMeta, ComboboxSchema } from '@xihan-ui/headless'
-import type { ControlVariant, Placement, Size, Tone } from '@xihan-ui/kernel'
+import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h, mergeProps, onMounted, onUnmounted, onUpdated, Teleport, watch } from 'vue'
@@ -55,6 +55,8 @@ export const XhComboboxRoot = defineComponent({
     inputBehavior: { type: String as PropType<ComboboxInputBehavior>, default: undefined },
     placement: { type: String as PropType<Placement>, default: undefined },
     offset: { type: Number, default: undefined },
+    /** 文字方向；浮层搬到落点后继承不到作者子树上的方向，要 RTL 就显式给。 */
+    dir: { type: String as PropType<Direction>, default: undefined },
     variant: { type: String as PropType<ControlVariant>, default: undefined },
     tone: { type: String as PropType<Tone>, default: undefined },
     size: { type: String as PropType<Size>, default: undefined },

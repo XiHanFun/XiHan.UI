@@ -122,6 +122,15 @@ for (const name of components) {
     const wired = wc.includes('MachineController') || wc.includes('this.configured(')
     if (!wired)
       errors.push(`Web Components 的 ${name}：headless 声明了 ${want}，却既没跑机器也没调 this.configured，全局配置到不了它`)
+    // 跑机器只保证全局那份并得进来，逐实例那条通道是另一回事：元素上没有
+    // translations 这个 property、或者收下了不往 props 里转交，作者就只能靠
+    // <xh-config> 改整棵子树，同一个组件在 Vue 上却能逐实例改——五个元素曾一直如此。
+    if (wantsText) {
+      if (!/^\s*translations: \{/m.test(wc))
+        errors.push(`Web Components 的 ${name}：headless 声明了 translations，元素上没有这个 property——照 select.ts 写 translations: { attribute: false }（对象递不进属性），作者只能改整棵子树的文案`)
+      else if (!/\btranslations: this\.translations\b/.test(wc))
+        errors.push(`Web Components 的 ${name}：translations 这个 property 收下了却没转交进 props——machineProps 里补 translations: this.translations，否则设了也不生效`)
+    }
     // 绕开宿主直接调 withXhConfig 只看得见全局那份，<xh-config> 的局部覆盖对它无效
     if (/\bwithXhConfig\(/.test(wc))
       errors.push(`Web Components 的 ${name}：元素里直接调 withXhConfig 看不见祖先链上的 <xh-config>，改用 this.configured`)

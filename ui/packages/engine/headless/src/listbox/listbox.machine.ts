@@ -4,14 +4,6 @@ import { setup } from '@xihan-ui/machine'
 
 const { createMachine } = setup<ListboxSchema>()
 
-/** 生效的选择模式；selectionMode 优先于 multiple 简写。 */
-export function listboxSelectionMode(
-  mode: ListboxSelectionMode | undefined,
-  multiple: boolean | undefined,
-): ListboxSelectionMode {
-  return mode ?? (multiple ? 'multiple' : 'single')
-}
-
 /** 裸串归一为单元素数组；undefined 原样透传。 */
 function toValues(input: string | string[] | undefined): string[] | undefined {
   if (input === undefined)
@@ -68,7 +60,7 @@ export const listboxMachine = createMachine({
         const e = event.current()
         if (e.type !== 'VALUE.SET')
           return
-        context.set('value', normalizeSelection(e.value, listboxSelectionMode(prop('selectionMode'), prop('multiple'))))
+        context.set('value', normalizeSelection(e.value, prop('selectionMode') ?? 'single'))
       },
       clearValue: ({ context }) => context.set('value', []),
       selectItem: ({ context, event }) => {
@@ -85,7 +77,7 @@ export const listboxMachine = createMachine({
           return
         const current = context.get('value')
         // 单选下切换退化成选中，不做取消
-        if (listboxSelectionMode(prop('selectionMode'), prop('multiple')) === 'single')
+        if ((prop('selectionMode') ?? 'single') === 'single')
           context.set('value', [e.value])
         else
           context.set('value', current.includes(e.value) ? current.filter(v => v !== e.value) : [...current, e.value])

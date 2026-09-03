@@ -74,9 +74,6 @@
     animation: xh-fade-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
-  /* 连接层发的 data-position 恒是 center，没有别的取值：对话框还没有 position 这个
-     使用者入参。要按 data-position 分档（顶部对齐之类）得先补上那个入参，
-     否则规则写了也永不命中 */
   [data-scope='dialog'][data-part='positioner'] {
     position: fixed;
     inset: 0;

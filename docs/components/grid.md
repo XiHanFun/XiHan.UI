@@ -18,6 +18,10 @@
 - `cols` 除了整数也收断点对象，逐档写各自的列数，没写的档沿用比它窄的那一档。
 - `span` 让一格横跨几列，`offset` 把它前面几列空出来。
 - 四档断点取自令牌：`sm` 640px、`md` 768px、`lg` 1024px、`xl` 1280px。
+- `cols`（含断点对象的每一档）与 `span` 收 1 至 12 的整数，`offset` 收 1 至 11 的整数；
+  范围外的值——0、负数、小数、超过上限——一律按没写算：`cols` 落回一列、`span` 占一列、`offset` 不错列。
+- DOM 上只出得来皮肤有规则接的取值：`data-cols` 恒在 1 至 12 之间，`data-span` 与 `data-offset`
+  要么落在范围内、要么不出现。
 
 ## 示例
 
@@ -83,7 +87,7 @@ cols 除了整数也收断点对象，逐档写各自的列数：窄视口一列
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `align` | `GridAlign` |  | 每一项在自己那格里的块向对齐：start / center / end / stretch / baseline，不写则铺满格高。 |
-| `cols` | `GridCols` |  | 列数：1 至 12 的整数，不写按一列排。各列等宽，且每列的下限是 0，长内容不会把自己那列撑宽。 也收断点对象 `{ base, sm, md, lg, xl }`，逐档写各自的列数，没写的档沿用比它窄的那一档。 |
+| `cols` | `GridCols` |  | 列数：1 至 12 的整数，不写按一列排；范围外的值也按一列排。 各列等宽，且每列的下限是 0，长内容不会把自己那列撑宽。 也收断点对象 `{ base, sm, md, lg, xl }`，逐档写各自的列数，没写的档沿用比它窄的那一档。 |
 | `gap` | `GridGap` |  | 行列间距档位：xs / sm / md / lg / xl，不写则不留间距。档位换算成多少由皮肤定。 |
 | `justify` | `GridJustify` |  | 每一项在自己那格里的行内对齐：start / center / end / stretch，不写则铺满格宽。 |
 
@@ -115,8 +119,8 @@ cols 除了整数也收断点对象，逐档写各自的列数：窄视口一列
 | `root` | `data-align` | props.align |
 | `root` | `data-gap` | props.gap |
 | `root` | `data-justify` | props.justify |
-| `item` | `data-offset` | tier(item.offset) |
-| `item` | `data-span` | tier(item.span) |
+| `item` | `data-offset` | tier(item.offset, MAX_COLUMN_OFFSET) |
+| `item` | `data-span` | tier(item.span, MAX_COLUMN_COUNT) |
 
 ## CSS 变量
 
@@ -135,7 +139,7 @@ cols 除了整数也收断点对象，逐档写各自的列数：窄视口一列
 ## 最佳实践
 
 - 断点对象自窄到宽写，别只写 `lg`——比它窄的档会退回默认的一列。
-- 列数控制在 12 以内，超过就该拆成两块。
+- 需要多于 12 列的结构就拆成两块，别把列数往大了写——超过 12 的值按一列排。
 
 ## 反模式
 

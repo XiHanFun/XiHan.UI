@@ -87,7 +87,7 @@ export function usePopselect(props: PopselectRootProps, notify: PopselectNotifie
     collection: props.collection,
     value: props.value,
     defaultValue: props.defaultValue,
-    multiple: props.multiple,
+    selectionMode: props.multiple ? 'multiple' as const : 'single' as const,
     disabled: props.disabled,
     loop: props.loop,
     typeahead: props.typeahead,

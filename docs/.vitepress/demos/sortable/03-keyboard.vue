@@ -1,6 +1,6 @@
 <!-- 键盘拖拽 | 默认开着且关不掉：Tab 到手柄，空格拾起，方向键挪，空格放下，Esc 取消 -->
 <script setup lang="ts">
-import { XhSortableItem, XhSortableItemHandle, XhSortableRoot } from "@xihan-ui/vue";
+import { XhSortableItem, XhSortableItemDragTrigger, XhSortableRoot } from "@xihan-ui/vue";
 import { ref } from "vue";
 
 const ids = ref(["第一项", "第二项", "第三项"]);
@@ -17,7 +17,7 @@ const log = ref<string[]>([]);
     @drag-end="$event.canceled && log.unshift(`${$event.id}：已取消`)"
   >
     <XhSortableItem v-for="id in ids" :key="id" :item-id="id" style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid var(--xh-border-default)">
-      <XhSortableItemHandle :item-id="id" />
+      <XhSortableItemDragTrigger :item-id="id" />
       <span>{{ id }}</span>
     </XhSortableItem>
   </XhSortableRoot>

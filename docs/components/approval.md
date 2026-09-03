@@ -56,7 +56,7 @@
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-approval>` |
-| Vue 组件 | `XhApprovalActions` `XhApprovalAnnouncement` `XhApprovalApproveTrigger` `XhApprovalDenyTrigger` `XhApprovalDescription` `XhApprovalNote` `XhApprovalResult` `XhApprovalRoot` `XhApprovalScopeGroup` `XhApprovalScopeIndicator` `XhApprovalScopeItem` `XhApprovalScopeLabel` `XhApprovalTimer` `XhApprovalTitle` |
+| Vue 组件 | `XhApprovalApproveTrigger` `XhApprovalDenyTrigger` `XhApprovalDescription` `XhApprovalFooter` `XhApprovalLiveRegion` `XhApprovalNote` `XhApprovalResult` `XhApprovalRoot` `XhApprovalScopeGroup` `XhApprovalScopeIndicator` `XhApprovalScopeItem` `XhApprovalScopeLabel` `XhApprovalTimer` `XhApprovalTitle` |
 | 组合式函数 | `useApproval` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/approval.css` |
@@ -65,7 +65,7 @@
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="approval"`：**`root`** · `title` · `description` · `announcement` · `scope-group` · `scope-item` · `scope-indicator` · `scope-label` · `note` · `timer` · `result` · `actions` · **`approve-trigger`** · **`deny-trigger`**
+`data-scope="approval"`：**`root`** · `title` · `description` · `live-region` · `scope-group` · `scope-item` · `scope-indicator` · `scope-label` · `note` · `timer` · `result` · `footer` · **`approve-trigger`** · **`deny-trigger`**
 
 ## Props
 
@@ -152,7 +152,7 @@
 | `getRootProps` | `() => T['element']` |  |
 | `getTitleProps` | `() => T['element']` |  |
 | `getDescriptionProps` | `() => T['element']` |  |
-| `getAnnouncementProps` | `() => T['element']` |  |
+| `getLiveRegionProps` | `() => T['element']` |  |
 | `getScopeGroupProps` | `() => T['element']` |  |
 | `getScopeItemProps` | `(scope: ApprovalScope) => T['element']` |  |
 | `getScopeIndicatorProps` | `(scope: ApprovalScope) => T['element']` |  |
@@ -160,7 +160,7 @@
 | `getNoteProps` | `() => T['input']` |  |
 | `getTimerProps` | `() => T['element']` |  |
 | `getResultProps` | `() => T['element']` |  |
-| `getActionsProps` | `() => T['element']` |  |
+| `getFooterProps` | `() => T['element']` |  |
 | `getApproveTriggerProps` | `() => T['button']` |  |
 | `getDenyTriggerProps` | `() => T['button']` |  |
 
@@ -184,8 +184,8 @@
 | `root` | `aria-describedby` | `description` 部件的 id |
 | `root` | `aria-labelledby` | `title` 部件的 id |
 | `root` | `role` | 'group' |
-| `announcement` | `aria-atomic` | 'true' |
-| `announcement` | `aria-live` | props.live |
+| `live-region` | `aria-atomic` | 'true' |
+| `live-region` | `aria-live` | props.live |
 | `scope-group` | `aria-label` | translations?.scopes |
 | `scope-group` | `role` | 'group' |
 | `scope-item` | `aria-checked` | 'true' \| 'false' |
@@ -241,13 +241,13 @@
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-approval-action-font-size` · `--xh-approval-action-font-weight` · `--xh-approval-action-h` · `--xh-approval-action-px` · `--xh-approval-action-radius` · `--xh-approval-actions-gap` · `--xh-approval-approve-bg` · `--xh-approval-approve-bg-hover` · `--xh-approval-approve-bg-off` · `--xh-approval-approve-fg` · `--xh-approval-approve-shadow` · `--xh-approval-bg` · `--xh-approval-border` · `--xh-approval-border-settled` · `--xh-approval-deny-bg` · `--xh-approval-deny-bg-hover` · `--xh-approval-deny-bg-off` · `--xh-approval-deny-border` · `--xh-approval-deny-border-off` · `--xh-approval-deny-fg` · `--xh-approval-description-fg` · `--xh-approval-description-font-size` · `--xh-approval-gap` · `--xh-approval-icon-size` · `--xh-approval-indicator-bg-checked` · `--xh-approval-indicator-border` · `--xh-approval-indicator-border-checked` · `--xh-approval-indicator-fg` · `--xh-approval-indicator-radius` · `--xh-approval-indicator-size` · `--xh-approval-note-bg` · `--xh-approval-note-border` · `--xh-approval-note-fg` · `--xh-approval-note-font-size` · `--xh-approval-note-px` · `--xh-approval-note-py` · `--xh-approval-note-radius` · `--xh-approval-p` · `--xh-approval-radius` · `--xh-approval-result-bg` · `--xh-approval-result-bg-denied` · `--xh-approval-result-fg` · `--xh-approval-result-fg-denied` · `--xh-approval-result-font-size` · `--xh-approval-result-font-weight` · `--xh-approval-result-gap` · `--xh-approval-result-px` · `--xh-approval-result-py` · `--xh-approval-result-radius` · `--xh-approval-scope-bg-hover` · `--xh-approval-scope-fg` · `--xh-approval-scope-fg-checked` · `--xh-approval-scope-font-size` · `--xh-approval-scope-gap` · `--xh-approval-scope-item-gap` · `--xh-approval-scope-px` · `--xh-approval-scope-py` · `--xh-approval-scope-radius` · `--xh-approval-shadow` · `--xh-approval-timer-fg` · `--xh-approval-timer-font-size` · `--xh-approval-title-fg` · `--xh-approval-title-font-size` · `--xh-approval-title-font-weight`
+`--xh-approval-action-font-size` · `--xh-approval-action-font-weight` · `--xh-approval-action-h` · `--xh-approval-action-px` · `--xh-approval-action-radius` · `--xh-approval-approve-bg` · `--xh-approval-approve-bg-hover` · `--xh-approval-approve-bg-off` · `--xh-approval-approve-fg` · `--xh-approval-approve-shadow` · `--xh-approval-bg` · `--xh-approval-border` · `--xh-approval-border-settled` · `--xh-approval-deny-bg` · `--xh-approval-deny-bg-hover` · `--xh-approval-deny-bg-off` · `--xh-approval-deny-border` · `--xh-approval-deny-border-off` · `--xh-approval-deny-fg` · `--xh-approval-description-fg` · `--xh-approval-description-font-size` · `--xh-approval-footer-gap` · `--xh-approval-gap` · `--xh-approval-icon-size` · `--xh-approval-indicator-bg-checked` · `--xh-approval-indicator-border` · `--xh-approval-indicator-border-checked` · `--xh-approval-indicator-fg` · `--xh-approval-indicator-radius` · `--xh-approval-indicator-size` · `--xh-approval-loading-duration` · `--xh-approval-note-bg` · `--xh-approval-note-border` · `--xh-approval-note-fg` · `--xh-approval-note-font-size` · `--xh-approval-note-px` · `--xh-approval-note-py` · `--xh-approval-note-radius` · `--xh-approval-p` · `--xh-approval-radius` · `--xh-approval-result-bg` · `--xh-approval-result-bg-denied` · `--xh-approval-result-fg` · `--xh-approval-result-fg-denied` · `--xh-approval-result-font-size` · `--xh-approval-result-font-weight` · `--xh-approval-result-gap` · `--xh-approval-result-px` · `--xh-approval-result-py` · `--xh-approval-result-radius` · `--xh-approval-scope-bg-hover` · `--xh-approval-scope-fg` · `--xh-approval-scope-fg-checked` · `--xh-approval-scope-font-size` · `--xh-approval-scope-gap` · `--xh-approval-scope-item-gap` · `--xh-approval-scope-px` · `--xh-approval-scope-py` · `--xh-approval-scope-radius` · `--xh-approval-shadow` · `--xh-approval-timer-fg` · `--xh-approval-timer-font-size` · `--xh-approval-title-fg` · `--xh-approval-title-font-size` · `--xh-approval-title-font-weight`
 
 ## 动效
 
-关键帧 `xh-approval-in` · `xh-approval-result-in` 随皮肤自带，不引用别处文件里的名字；状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-approval-in` · `xh-approval-result-in` · `xh-approval-rotate` 随皮肤自带，不引用别处文件里的名字；状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
-系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+`prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
 ## RTL
 

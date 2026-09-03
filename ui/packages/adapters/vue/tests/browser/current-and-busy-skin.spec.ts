@@ -11,6 +11,10 @@ import {
   XhAnchorLink,
   XhAnchorList,
   XhAnchorRoot,
+  XhApprovalApproveTrigger,
+  XhApprovalDenyTrigger,
+  XhApprovalFooter,
+  XhApprovalRoot,
   XhBreadcrumbItem,
   XhBreadcrumbLink,
   XhBreadcrumbList,
@@ -179,6 +183,58 @@ describe('取数与写入在途的转圈', () => {
     expect(styleOf(trigger, 'opacity')).toBe('1')
     expect(beforeOf(trigger, 'animation-name')).toBe('xh-clipboard-rotate')
     expect(Number.parseFloat(beforeOf(trigger, 'width'))).toBeGreaterThan(0)
+  })
+})
+
+// —— 判定闸门的在途：此前与「必选项没勾满」共用一档灰，两种情形长得一模一样 ——
+
+describe('判定闸门在途的那一档', () => {
+  const APPROVAL = (props: Record<string, unknown>): unknown =>
+    h(XhApprovalRoot, props, () => [
+      h(XhApprovalFooter, null, () => [
+        h(XhApprovalDenyTrigger, null, () => '拒绝'),
+        h(XhApprovalApproveTrigger, null, () => '批准'),
+      ]),
+    ])
+
+  it('在途转一枚圆环，两颗钮不再借用「按不动」那档灰', async () => {
+    await mount(() => [
+      APPROVAL({}),
+      APPROVAL({ busy: true }),
+      APPROVAL({ scopes: [{ value: 'write', required: true }] }),
+    ])
+    // 底色走 micro 档过渡，中途读到的是插值
+    await settled()
+
+    const live = part('approval', 'approve-trigger', 0)
+    const busy = part('approval', 'approve-trigger', 1)
+    const gated = part('approval', 'approve-trigger', 2)
+
+    // 两种情形在 aria 上是同一位，光看它分不出该等还是该去补勾
+    expect(busy.getAttribute('aria-disabled')).toBe('true')
+    expect(gated.getAttribute('aria-disabled')).toBe('true')
+
+    // 在途保持能按时的底色，只有闸门没过才置灰
+    expect(styleOf(busy, 'background-color')).toBe(styleOf(live, 'background-color'))
+    expect(styleOf(gated, 'background-color')).not.toBe(styleOf(live, 'background-color'))
+
+    // 圆环只在在途那一格转，且真占了一格盒子
+    const busyRow = part('approval', 'footer', 1)
+    expect(beforeOf(busyRow, 'animation-name')).toBe('xh-approval-rotate')
+    expect(beforeOf(busyRow, 'animation-iteration-count')).toBe('infinite')
+    expect(Number.parseFloat(beforeOf(busyRow, 'width'))).toBeGreaterThan(0)
+    expect(beforeOf(part('approval', 'footer', 0), 'animation-name')).toBe('none')
+
+    // 指针同样分档，只是它在触屏上不存在，所以不能是唯一通道
+    expect(styleOf(busy, 'cursor')).toBe('progress')
+    expect(styleOf(part('approval', 'deny-trigger', 1), 'cursor')).toBe('progress')
+    expect(styleOf(gated, 'cursor')).toBe('not-allowed')
+  })
+
+  it('转圈时长认使用者槽', async () => {
+    setSlot('--xh-approval-loading-duration', '3s')
+    await mount(() => APPROVAL({ busy: true }))
+    expect(beforeOf(part('approval', 'footer'), 'animation-duration')).toBe('3s')
   })
 })
 

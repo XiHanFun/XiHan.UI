@@ -2,6 +2,7 @@ import type { ItemQuery } from '@xihan-ui/behavior'
 import { createAnatomy } from '@xihan-ui/kernel'
 
 // data-part 直接用 kebab-case，与 CSS 选择器一致。
+// empty 与 loading 是表体的两个占位节点，成对命名：一个装「一行都没有」、一个装「还在取」。
 export const tableAnatomy = createAnatomy('table', [
   'root',
   'header',
@@ -20,7 +21,7 @@ export const tableAnatomy = createAnatomy('table', [
   'expand-trigger',
   'expanded-row',
   'empty',
-  'loading-state',
+  'loading',
   'live-region',
 ])
 

@@ -214,7 +214,7 @@ export interface QuestionFlowApi<T extends PropTypes = PropTypes> {
   getSkipTriggerProps: () => T['button']
   getSubmitTriggerProps: () => T['button']
   getResultProps: () => T['element']
-  getAnnouncementProps: () => T['element']
+  getLiveRegionProps: () => T['element']
 }
 
 export interface QuestionFlowTranslations {

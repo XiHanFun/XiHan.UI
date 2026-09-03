@@ -1109,7 +1109,7 @@
             },
             {
               "description": "可配档位的活区",
-              "name": "announcement"
+              "name": "live-region"
             },
             {
               "description": "授权项那一组",
@@ -1508,9 +1508,6 @@
               "name": "--xh-approval-action-radius"
             },
             {
-              "name": "--xh-approval-actions-gap"
-            },
-            {
               "name": "--xh-approval-approve-bg"
             },
             {
@@ -1559,6 +1556,9 @@
               "name": "--xh-approval-description-font-size"
             },
             {
+              "name": "--xh-approval-footer-gap"
+            },
+            {
               "name": "--xh-approval-gap"
             },
             {
@@ -1581,6 +1581,9 @@
             },
             {
               "name": "--xh-approval-indicator-size"
+            },
+            {
+              "name": "--xh-approval-loading-duration"
             },
             {
               "name": "--xh-approval-note-bg"
@@ -5623,22 +5626,22 @@
               "name": "--xh-checkbox-group-label-font-weight"
             },
             {
-              "name": "--xh-checkbox-group-trigger-fg"
+              "name": "--xh-checkbox-group-select-all-trigger-fg"
             },
             {
-              "name": "--xh-checkbox-group-trigger-fg-disabled"
+              "name": "--xh-checkbox-group-select-all-trigger-fg-disabled"
             },
             {
-              "name": "--xh-checkbox-group-trigger-font-size"
+              "name": "--xh-checkbox-group-select-all-trigger-font-size"
             },
             {
-              "name": "--xh-checkbox-group-trigger-font-weight"
+              "name": "--xh-checkbox-group-select-all-trigger-font-weight"
             },
             {
-              "name": "--xh-checkbox-group-trigger-gap"
+              "name": "--xh-checkbox-group-select-all-trigger-gap"
             },
             {
-              "name": "--xh-checkbox-group-trigger-radius"
+              "name": "--xh-checkbox-group-select-all-trigger-radius"
             }
           ]
         }
@@ -8006,6 +8009,15 @@
             },
             {
               "kind": "field",
+              "name": "direction",
+              "privacy": "public",
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "attribute": "dir"
+            },
+            {
+              "kind": "field",
               "name": "variant",
               "privacy": "public",
               "type": {
@@ -8352,6 +8364,14 @@
               "description": "浮层与锚点的间距（px）",
               "name": "offset",
               "fieldName": "offset"
+            },
+            {
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "description": "文字方向，翻转浮层在行内轴上 start 与 end 的落点；只在显式给了才写到定位层上",
+              "name": "dir",
+              "fieldName": "direction"
             },
             {
               "type": {
@@ -10402,6 +10422,15 @@
             },
             {
               "kind": "field",
+              "name": "direction",
+              "privacy": "public",
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "attribute": "dir"
+            },
+            {
+              "kind": "field",
               "name": "closeOnSelect",
               "privacy": "public",
               "type": {
@@ -10937,6 +10966,14 @@
               "description": "浮层与锚点的间距（px）",
               "name": "offset",
               "fieldName": "offset"
+            },
+            {
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "description": "文字方向，翻转浮层在行内轴上 start 与 end 的落点；只在显式给了才写到定位层上",
+              "name": "dir",
+              "fieldName": "direction"
             },
             {
               "type": {
@@ -11482,6 +11519,15 @@
                 "text": "Size | undefined"
               },
               "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "DialogSchema['props']['translations'] | undefined"
+              },
+              "description": "关闭按钮的无障碍名；connect 每帧重写 aria-label，作者写在节点上会被盖掉，只能从这里给。"
             },
             {
               "kind": "field",
@@ -14406,7 +14452,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-fieldset>` —— Light-DOM 行为宿主，无状态机，把 connectFieldset 产出的属性打到\nroot/legend/helper-text/error-text 角色节点上：说明与错误文案的 id 自动接进 root 的描述链。\n\nroot 必须是原生 `<fieldset>`、legend 必须是原生 `<legend>` 且写成 root 的首个子节点——\n整组禁用连坐组内控件与\"legend 即组名\"都是浏览器给的，写成 div 两样都静默失效。\n\n每个实例自带一份 scope 派生 part id，同页多个字段集各出各的 id。",
+          "description": "`<xh-fieldset>` —— Light-DOM 行为宿主，无状态机，把 connectFieldset 产出的属性打到\nroot/legend/description/error-text 角色节点上：说明与错误文案的 id 自动接进 root 的描述链。\n\nroot 必须是原生 `<fieldset>`、legend 必须是原生 `<legend>` 且写成 root 的首个子节点——\n整组禁用连坐组内控件与\"legend 即组名\"都是浏览器给的，写成 div 两样都静默失效。\n\n每个实例自带一份 scope 派生 part id，同页多个字段集各出各的 id。",
           "name": "XhFieldsetElement",
           "cssParts": [
             {
@@ -14419,7 +14465,7 @@
             },
             {
               "description": "常驻说明文案，恒在 root 的描述链里",
-              "name": "helper-text"
+              "name": "description"
             },
             {
               "description": "错误文案（role=alert）；非 invalid 时带 hidden 收起，节点不卸载",
@@ -17126,7 +17172,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-grid>` —— Light-DOM 行为宿主，无状态机，把 connectGrid 产出打到 root 与各 item 角色节点。\n列数、间距档位与两条对齐轴原样落成 data-*，排布规则写在皮肤里。\n列数可以逐档写：`cols='{\"base\":1,\"md\":3}'` 落成 data-cols 与 data-cols-md，\n窄视口分一列、宽到 md 断点后分三列。\n\n每一格的跨列与错列写在 item 角色节点自己的 `span` / `offset` 属性上。\n运行期改写这两个属性不触发重新接线，需作者自行 requestUpdate。\n\n根上不写 role：容器只做排布，里面装的是列表还是一组卡片由作者自己声明。",
+          "description": "`<xh-grid>` —— Light-DOM 行为宿主，无状态机，把 connectGrid 产出打到 root 与各 item 角色节点。\n列数、间距档位与两条对齐轴原样落成 data-*，排布规则写在皮肤里。\n列数可以逐档写：`cols='{\"base\":1,\"md\":3}'` 落成 data-cols 与 data-cols-md，\n窄视口分一列、宽到 md 断点后分三列。\n\n每一格的跨列与错列写在 item 角色节点自己的 `span` / `offset` 属性上：\nspan 收 1 至 12、offset 收 1 至 11，范围外的值按没写算。\n运行期改写这两个属性不触发重新接线，需作者自行 requestUpdate。\n\n根上不写 role：容器只做排布，里面装的是列表还是一组卡片由作者自己声明。",
           "name": "XhGridElement",
           "cssParts": [
             {
@@ -17153,7 +17199,7 @@
               "name": "cols",
               "privacy": "public",
               "type": {
-                "text": "number | ColsByBreakpoint | undefined"
+                "text": "GridColumnCount | ColsByBreakpoint | undefined"
               },
               "attribute": "cols"
             },
@@ -17198,9 +17244,9 @@
           "attributes": [
             {
               "type": {
-                "text": "number | ColsByBreakpoint | undefined"
+                "text": "GridColumnCount | ColsByBreakpoint | undefined"
               },
-              "description": "列数（1–12），不写按一列排；写 JSON 对象则逐档给列数（base / sm / md / lg / xl）",
+              "description": "列数（1 至 12 的整数），不写或超出范围按一列排；写 JSON 对象则逐档给列数（base / sm / md / lg / xl）",
               "name": "cols",
               "fieldName": "cols"
             },
@@ -21552,15 +21598,6 @@
             },
             {
               "kind": "field",
-              "name": "multiple",
-              "privacy": "public",
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "attribute": "multiple"
-            },
-            {
-              "kind": "field",
               "name": "selectionMode",
               "privacy": "public",
               "type": {
@@ -21757,14 +21794,6 @@
               "description": "非受控初始选中值",
               "name": "default-value",
               "fieldName": "defaultValue"
-            },
-            {
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "description": "selection-mode=\"multiple\" 的简写",
-              "name": "multiple",
-              "fieldName": "multiple"
             },
             {
               "type": {
@@ -23238,6 +23267,15 @@
             },
             {
               "kind": "field",
+              "name": "direction",
+              "privacy": "public",
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "attribute": "dir"
+            },
+            {
+              "kind": "field",
               "name": "variant",
               "privacy": "public",
               "type": {
@@ -23541,6 +23579,14 @@
               "description": "浮层与输入框的间距（px）",
               "name": "offset",
               "fieldName": "offset"
+            },
+            {
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "description": "文字方向，翻转浮层在行内轴上 start 与 end 的落点；只在显式给了才写到定位层上",
+              "name": "dir",
+              "fieldName": "direction"
             },
             {
               "type": {
@@ -29450,6 +29496,15 @@
             },
             {
               "kind": "field",
+              "name": "direction",
+              "privacy": "public",
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "attribute": "dir"
+            },
+            {
+              "kind": "field",
               "name": "modal",
               "privacy": "public",
               "type": {
@@ -29653,6 +29708,14 @@
               "description": "浮层与锚点的间距（px），默认 8",
               "name": "offset",
               "fieldName": "offset"
+            },
+            {
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "description": "文字方向，翻转浮层在行内轴上 start 与 end 的落点；只在显式给了才写到定位层上",
+              "name": "dir",
+              "fieldName": "direction"
             },
             {
               "type": {
@@ -31504,7 +31567,7 @@
             },
             {
               "description": "进度播报的活区",
-              "name": "announcement"
+              "name": "live-region"
             }
           ],
           "members": [
@@ -33628,6 +33691,15 @@
                 "text": "Direction | undefined"
               },
               "attribute": "dir"
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "ResizableSchema['props']['translations'] | undefined"
+              },
+              "description": "可调区域与各条边把手的无障碍名。"
             },
             {
               "kind": "field",
@@ -37930,7 +38002,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-sortable>` —— Light-DOM 行为宿主：作者写 root/item/item-handle/live-region 角色节点，\n元素跑 sortable 机器并把 connect 产出打上去。\n\n顺序的唯一真源是 `ids`，DOM 里项的先后必须与它一致——几何按 DOM 量，事件按 `ids` 算。\n每个 item 与它的 item-handle 都要用 `item-id` 属性写明自己是哪一项（与 Vue 侧的 `:item-id` 同一份声明）。\n单独禁掉某一项写 `item-disabled`。不给 item-handle 时整项可拖。\n\n拖动落点走乐观投影：拖动过程中其余项实时让位，松手即定。让位与跟手的位移由元素每帧\n写进内联 transform，作者的样式表不要再碰这条属性。\n\n键盘全在手柄上：空格或回车拾起、方向键挪一格、再按空格放下、Esc 取消。\n拖动中的 Tab 会被拦下——焦点一旦移走，这一场就没有出口了。",
+          "description": "`<xh-sortable>` —— Light-DOM 行为宿主：作者写 root/item/item-drag-trigger/live-region 角色节点，\n元素跑 sortable 机器并把 connect 产出打上去。\n\n顺序的唯一真源是 `ids`，DOM 里项的先后必须与它一致——几何按 DOM 量，事件按 `ids` 算。\n每个 item 与它的 item-drag-trigger 都要用 `item-id` 属性写明自己是哪一项（与 Vue 侧的 `:item-id` 同一份声明）。\n单独禁掉某一项写 `item-disabled`。不给 item-drag-trigger 时整项可拖。\n\n拖动落点走乐观投影：拖动过程中其余项实时让位，松手即定。让位与跟手的位移由元素每帧\n写进内联 transform，作者的样式表不要再碰这条属性。\n\n键盘全在手柄上：空格或回车拾起、方向键挪一格、再按空格放下、Esc 取消。\n拖动中的 Tab 会被拦下——焦点一旦移走，这一场就没有出口了。",
           "name": "XhSortableElement",
           "cssParts": [
             {
@@ -37943,7 +38015,7 @@
             },
             {
               "description": "role=button 的拖拽手柄，指针与键盘交互全在它身上",
-              "name": "item-handle"
+              "name": "item-drag-trigger"
             },
             {
               "description": "视觉隐藏的播报区，拖动过程的读屏文案写在这里",
@@ -38013,6 +38085,15 @@
                 "text": "boolean | undefined"
               },
               "attribute": "auto-scroll"
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "SortableSchema['props']['translations'] | undefined"
+              },
+              "description": "区域名、项名、拖拽把手名，以及拾起 / 移动 / 放下 / 取消四句键盘拖拽播报。"
             },
             {
               "kind": "field",
@@ -38212,31 +38293,31 @@
           "customElement": true,
           "cssProperties": [
             {
+              "name": "--xh-sortable-drag-bg-hover"
+            },
+            {
+              "name": "--xh-sortable-drag-fg"
+            },
+            {
+              "name": "--xh-sortable-drag-fg-disabled"
+            },
+            {
+              "name": "--xh-sortable-drag-fg-hover"
+            },
+            {
+              "name": "--xh-sortable-drag-grip-h"
+            },
+            {
+              "name": "--xh-sortable-drag-grip-w"
+            },
+            {
+              "name": "--xh-sortable-drag-radius"
+            },
+            {
+              "name": "--xh-sortable-drag-size"
+            },
+            {
               "name": "--xh-sortable-gap"
-            },
-            {
-              "name": "--xh-sortable-handle-bg-hover"
-            },
-            {
-              "name": "--xh-sortable-handle-fg"
-            },
-            {
-              "name": "--xh-sortable-handle-fg-disabled"
-            },
-            {
-              "name": "--xh-sortable-handle-fg-hover"
-            },
-            {
-              "name": "--xh-sortable-handle-grip-h"
-            },
-            {
-              "name": "--xh-sortable-handle-grip-w"
-            },
-            {
-              "name": "--xh-sortable-handle-radius"
-            },
-            {
-              "name": "--xh-sortable-handle-size"
             },
             {
               "name": "--xh-sortable-item-opacity-dragging"
@@ -39875,7 +39956,7 @@
             },
             {
               "description": "加载态节点，表体为空且正在加载时显形",
-              "name": "loading-state"
+              "name": "loading"
             }
           ],
           "members": [
@@ -40112,6 +40193,15 @@
                 "text": "Size | undefined"
               },
               "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "TableSchema['props']['translations'] | undefined"
+              },
+              "description": "列宽把手、列拖拽把手、全选把手的名字，以及行拖拽的播报。"
             },
             {
               "kind": "field",
@@ -41621,6 +41711,15 @@
                 "text": "Size | undefined"
               },
               "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "TagsInputSchema['props']['translations'] | undefined"
+              },
+              "description": "删除钮、就地编辑框与清空钮的无障碍名。"
             },
             {
               "kind": "field",
@@ -43389,6 +43488,15 @@
             },
             {
               "kind": "field",
+              "name": "direction",
+              "privacy": "public",
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "attribute": "dir"
+            },
+            {
+              "kind": "field",
               "name": "idGen",
               "type": {
                 "text": "IdGenerator"
@@ -43713,6 +43821,14 @@
               "description": "浮层与锚点的间距（px）",
               "name": "offset",
               "fieldName": "offset"
+            },
+            {
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "description": "文字方向，翻转浮层在行内轴上 start 与 end 的落点；只在显式给了才写到定位层上",
+              "name": "dir",
+              "fieldName": "direction"
             }
           ],
           "superclass": {
@@ -46071,7 +46187,7 @@
               "name": "--xh-tool-call-indicator-fg"
             },
             {
-              "name": "--xh-tool-call-name-font"
+              "name": "--xh-tool-call-label-font"
             },
             {
               "name": "--xh-tool-call-px"
@@ -46523,6 +46639,15 @@
             },
             {
               "kind": "field",
+              "name": "direction",
+              "privacy": "public",
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "attribute": "dir"
+            },
+            {
+              "kind": "field",
               "name": "openDelay",
               "privacy": "public",
               "type": {
@@ -46694,6 +46819,14 @@
               "description": "浮层与锚点的间距（px），默认 8",
               "name": "offset",
               "fieldName": "offset"
+            },
+            {
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "description": "文字方向，翻转浮层在行内轴上 start 与 end 的落点；只在显式给了才写到定位层上",
+              "name": "dir",
+              "fieldName": "direction"
             },
             {
               "type": {
@@ -46915,6 +47048,15 @@
                 "text": "number | undefined"
               },
               "attribute": "offset"
+            },
+            {
+              "kind": "field",
+              "name": "direction",
+              "privacy": "public",
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "attribute": "dir"
             },
             {
               "kind": "field",
@@ -47271,6 +47413,14 @@
               "description": "气泡与目标的间距（px）",
               "name": "offset",
               "fieldName": "offset"
+            },
+            {
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "description": "文字方向，翻转浮层在行内轴上 start 与 end 的落点；只在显式给了才写到定位层上",
+              "name": "dir",
+              "fieldName": "direction"
             },
             {
               "type": {

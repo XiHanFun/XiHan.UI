@@ -11,7 +11,7 @@ import {
   XhCheckboxGroupItem,
   XhCheckboxGroupItemText,
   XhCheckboxGroupRoot,
-  XhCheckboxGroupTrigger,
+  XhCheckboxGroupSelectAllTrigger,
 } from '../../src'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
@@ -44,7 +44,7 @@ async function mountGroup(value: string[]) {
       itemValues: TOPPINGS.map(node => node.value),
       name: 'topping',
     }, () => [
-      h(XhCheckboxGroupTrigger, null, () => '全选'),
+      h(XhCheckboxGroupSelectAllTrigger, null, () => '全选'),
       ...TOPPINGS.map(node =>
         h(XhCheckboxGroupItem, { key: node.value, value: node.value }, () => [
           h(XhCheckboxGroupIndicator),
@@ -71,7 +71,7 @@ describe('全选格：方框与字形分两层', () => {
   for (const [state, value] of [['checked', ['cheese', 'bacon']], ['indeterminate', ['cheese']]] as const) {
     it(`${state} 时方框还是方框`, async () => {
       await mountGroup([...value])
-      const trigger = part('trigger')
+      const trigger = part('select-all-trigger')
       expect(trigger.dataset.state).toBe(state)
 
       const box = getComputedStyle(trigger, '::before')
@@ -99,7 +99,7 @@ describe('全选格：方框与字形分两层', () => {
 
   it('没有值时不画字形', async () => {
     await mountGroup([])
-    const trigger = part('trigger')
+    const trigger = part('select-all-trigger')
     expect(trigger.dataset.state).toBe('unchecked')
     expect(getComputedStyle(trigger, '::after').content).toBe('none')
   })

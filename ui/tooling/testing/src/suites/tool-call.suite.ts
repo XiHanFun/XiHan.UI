@@ -18,7 +18,7 @@ export const toolCallSuite: ConformanceSuite = {
         tag: 'button',
         children: [
           { part: 'indicator' },
-          { part: 'name', text: 'search' },
+          { part: 'label', text: 'search' },
           { part: 'status' },
         ],
       },

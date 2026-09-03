@@ -2,7 +2,7 @@
 <script setup lang="ts">
 import type { QuestionFlowAnswers, QuestionFlowQuestion } from "@xihan-ui/headless";
 import {
-  XhQuestionFlowAnnouncement,
+  XhQuestionFlowLiveRegion,
   XhQuestionFlowCounter,
   XhQuestionFlowFooter,
   XhQuestionFlowNextTrigger,
@@ -87,7 +87,7 @@ const answers = ref<QuestionFlowAnswers>({});
         </div>
         <XhQuestionFlowSubmitTrigger>{{ isLast ? "发送" : "继续" }}</XhQuestionFlowSubmitTrigger>
       </XhQuestionFlowFooter>
-      <XhQuestionFlowAnnouncement />
+      <XhQuestionFlowLiveRegion />
     </XhQuestionFlowRoot>
     <p style="margin: 0;">宿主手上的进度：第 {{ index + 1 }} 题；已答 {{ Object.keys(answers).length }} 题</p>
   </div>

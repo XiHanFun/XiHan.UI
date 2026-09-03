@@ -8,7 +8,7 @@ import {
   XhToolCallContent,
   XhToolCallIndicator,
   XhToolCallInput,
-  XhToolCallName,
+  XhToolCallLabel,
   XhToolCallRoot,
   XhToolCallStatus,
   XhToolCallTrigger,
@@ -34,7 +34,7 @@ onBeforeUnmount(() => window.clearTimeout(timer));
     <XhToolCallRoot :phase="phase" @open-change="lastSource = $event.source">
       <XhToolCallTrigger>
         <XhToolCallIndicator>›</XhToolCallIndicator>
-        <XhToolCallName>read_file</XhToolCallName>
+        <XhToolCallLabel>read_file</XhToolCallLabel>
         <XhToolCallStatus />
       </XhToolCallTrigger>
       <XhToolCallContent>

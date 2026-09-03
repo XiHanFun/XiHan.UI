@@ -19,7 +19,7 @@ import {
   XhLogScrollButton,
   XhLogViewport,
   XhSortableItem,
-  XhSortableItemHandle,
+  XhSortableItemDragTrigger,
   XhSortableRoot,
 } from '../../src'
 import '@xihan-ui/tokens/tokens.css'
@@ -62,7 +62,7 @@ describe('拖拽把手画得出抓手', () => {
     const ids = ['甲', '乙']
     return mount(() => h(XhSortableRoot, { ids }, () => ids.map(id =>
       h(XhSortableItem, { key: id, itemId: id }, () => [
-        slotted ? h(XhSortableItemHandle, { itemId: id }, () => '拖') : h(XhSortableItemHandle, { itemId: id }),
+        slotted ? h(XhSortableItemDragTrigger, { itemId: id }, () => '拖') : h(XhSortableItemDragTrigger, { itemId: id }),
         h('span', id),
       ]))))
   }
@@ -70,7 +70,7 @@ describe('拖拽把手画得出抓手', () => {
   it('不写内容时画两条竖线，占得出面积', async () => {
     mountSortable()
     await nextTick()
-    const grip = getComputedStyle(part('sortable', 'item-handle'), '::after')
+    const grip = getComputedStyle(part('sortable', 'item-drag-trigger'), '::after')
 
     expect(grip.content).not.toBe('none')
     expect(Number.parseFloat(grip.inlineSize)).toBeGreaterThan(0)
@@ -83,8 +83,8 @@ describe('拖拽把手画得出抓手', () => {
   it('作者塞了内容就让位，不再画抓手', async () => {
     mountSortable(true)
     await nextTick()
-    expect(part('sortable', 'item-handle').textContent).toBe('拖')
-    expect(getComputedStyle(part('sortable', 'item-handle'), '::after').content).toBe('none')
+    expect(part('sortable', 'item-drag-trigger').textContent).toBe('拖')
+    expect(getComputedStyle(part('sortable', 'item-drag-trigger'), '::after').content).toBe('none')
   })
 })
 

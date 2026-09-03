@@ -2,7 +2,7 @@
 <script setup lang="ts">
 import type { ApprovalStatus } from "@xihan-ui/headless";
 import {
-  XhApprovalActions,
+  XhApprovalFooter,
   XhApprovalApproveTrigger,
   XhApprovalDenyTrigger,
   XhApprovalDescription,
@@ -44,10 +44,10 @@ onBeforeUnmount(() => window.clearTimeout(timer));
       <!-- 剩余时间对读屏隐藏：逐秒跳字进活区会不停打断 -->
       <XhApprovalTimer>还剩 {{ left }} 秒</XhApprovalTimer>
       <XhApprovalResult>{{ resultText(status) }}</XhApprovalResult>
-      <XhApprovalActions>
+      <XhApprovalFooter>
         <XhApprovalApproveTrigger>批准</XhApprovalApproveTrigger>
         <XhApprovalDenyTrigger>拒绝</XhApprovalDenyTrigger>
-      </XhApprovalActions>
+      </XhApprovalFooter>
     </XhApprovalRoot>
     <p v-if="decided" style="margin: 0;">判定：{{ decided }}</p>
   </div>

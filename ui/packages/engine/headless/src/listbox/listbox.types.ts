@@ -76,8 +76,7 @@ export interface ListboxSchema extends MachineSchema {
     /** 选中值，给定即受控；单选可写成裸串，内部归一成数组。 */
     value?: string | string[]
     defaultValue?: string | string[]
-    /** selectionMode='multiple' 的简写；两者同时给时以 selectionMode 为准。 */
-    multiple?: boolean
+    /** 选择模式，默认 single。 */
     selectionMode?: ListboxSelectionMode
     /** 整个列表禁用，键盘与点击都不再改选中值。 */
     disabled?: boolean

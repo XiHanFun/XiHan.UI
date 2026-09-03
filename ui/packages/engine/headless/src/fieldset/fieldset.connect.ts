@@ -14,9 +14,9 @@ export function connectFieldset<T extends PropTypes>(
   const disabled = !!props.disabled
   const invalid = !!props.invalid
   const required = !!props.required
-  const ids = scope.ids('fieldset', 'helper-text', 'error-text')
+  const ids = scope.ids('fieldset', 'description', 'error-text')
   // 错误文案只在 invalid 时进描述链
-  const describedBy = invalid ? `${ids['helper-text']} ${ids['error-text']}` : ids['helper-text']
+  const describedBy = invalid ? `${ids.description} ${ids['error-text']}` : ids.description
 
   return {
     disabled,
@@ -39,9 +39,9 @@ export function connectFieldset<T extends PropTypes>(
       ...parts.legend.attrs,
       'data-disabled': dataAttr(disabled),
     }),
-    getHelperTextProps: () => normalize.element({
-      ...parts['helper-text'].attrs,
-      'id': ids['helper-text'],
+    getDescriptionProps: () => normalize.element({
+      ...parts.description.attrs,
+      'id': ids.description,
       'data-disabled': dataAttr(disabled),
     }),
     getErrorTextProps: () => normalize.element({

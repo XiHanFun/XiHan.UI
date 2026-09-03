@@ -28,7 +28,7 @@
 
 ### 全选与半选
 
-trigger 是第三态复选框，只有把全部条目的值交给 itemValues 才分得清 checked 与 indeterminate
+select-all-trigger 是第三态复选框，只有把全部条目的值交给 itemValues 才分得清 checked 与 indeterminate
 
 <XhDemo src="checkbox-group/02-select-all" />
 
@@ -73,7 +73,7 @@ orientation 只出 data-orientation 交给皮肤排版，role=group 不接受 ar
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-checkbox-group>` |
-| Vue 组件 | `XhCheckboxGroupIndicator` `XhCheckboxGroupItem` `XhCheckboxGroupItemText` `XhCheckboxGroupLabel` `XhCheckboxGroupRoot` `XhCheckboxGroupTrigger` |
+| Vue 组件 | `XhCheckboxGroupIndicator` `XhCheckboxGroupItem` `XhCheckboxGroupItemText` `XhCheckboxGroupLabel` `XhCheckboxGroupRoot` `XhCheckboxGroupSelectAllTrigger` |
 | 组合式函数 | `useCheckboxGroup` |
 | 状态机 | `checkboxGroupMachine` |
 | 皮肤 | `@xihan-ui/styles/checkbox-group.css` |
@@ -82,7 +82,7 @@ orientation 只出 data-orientation 交给皮肤排版，role=group 不接受 ar
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="checkbox-group"`：**`root`** · `label` · **`item`** · `indicator` · `item-text` · `hidden-input` · `trigger`
+`data-scope="checkbox-group"`：**`root`** · `label` · **`item`** · `indicator` · `item-text` · `hidden-input` · `select-all-trigger`
 
 ## Props
 
@@ -123,7 +123,7 @@ orientation 只出 data-orientation 交给皮肤排版，role=group 不接受 ar
 
 | 部件 | 取值 |
 | --- | --- |
-| `trigger` | resolveCheckedState(value, prop('itemValues') ?? []) |
+| `select-all-trigger` | resolveCheckedState(value, prop('itemValues') ?? []) |
 
 状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
@@ -154,7 +154,7 @@ orientation 只出 data-orientation 交给皮肤排版，role=group 不接受 ar
 | `getIndicatorProps` | `(props: CheckboxGroupItemProps) => T['element']` |  |
 | `getItemTextProps` | `(props: CheckboxGroupItemProps) => T['element']` |  |
 | `getHiddenInputProps` | `(props: CheckboxGroupItemProps) => T['input']` | 条目的表单影子：一份视觉隐藏的原生 checkbox，由条目内部渲染。 |
-| `getTriggerProps` | `() => T['element']` | 全选/半选的父复选框。必须写在 root 之内，它靠祖先链找到本组。 |
+| `getSelectAllTriggerProps` | `() => T['element']` | 全选/半选的父复选框。必须写在 root 之内，它靠祖先链找到本组。 |
 
 ## 键盘
 
@@ -164,7 +164,7 @@ orientation 只出 data-orientation 交给皮肤排版，role=group 不接受 ar
 | --- | --- | --- |
 | `Tab` / `Shift+Tab` | focus enters or leaves the group | 组内有几个条目就有几个 Tab 停靠点（禁用条目也留一个），容器自己不占位；单选组的"整组一个停靠点"在这里不成立 |
 | `Space` | focus on item, group editable and item not disabled | 翻转该条目的选中态；改不动时放行按键给页面滚动 |
-| `Space` | focus on trigger, group editable | 可用条目未全选则一并勾上，已全选则一并取消；禁用条目不受影响 |
+| `Space` | focus on select-all-trigger, group editable | 可用条目未全选则一并勾上，已全选则一并取消；禁用条目不受影响 |
 
 ## 无障碍
 
@@ -181,11 +181,11 @@ orientation 只出 data-orientation 交给皮肤排版，role=group 不接受 ar
 | `item` | `role` | 'checkbox' |
 | `indicator` | `aria-hidden` | 'true' |
 | `hidden-input` | `aria-hidden` | 'true' |
-| `trigger` | `aria-checked` | 'true' \| 'mixed' \| 'false' |
-| `trigger` | `aria-disabled` | 'false' \| 'true' |
-| `trigger` | `aria-labelledby` | `label` 部件的 id `trigger` 部件的 id |
-| `trigger` | `aria-readonly` | 'true' \| 'false' |
-| `trigger` | `role` | 'checkbox' |
+| `select-all-trigger` | `aria-checked` | 'true' \| 'mixed' \| 'false' |
+| `select-all-trigger` | `aria-disabled` | 'false' \| 'true' |
+| `select-all-trigger` | `aria-labelledby` | `label` 部件的 id `select-all-trigger` 部件的 id |
+| `select-all-trigger` | `aria-readonly` | 'true' \| 'false' |
+| `select-all-trigger` | `role` | 'checkbox' |
 
 ## 样式
 
@@ -201,15 +201,15 @@ orientation 只出 data-orientation 交给皮肤排版，role=group 不接受 ar
 | `root` | `data-invalid` | ''（条件成立时才出现） |
 | `root` | `data-orientation` | props.orientation |
 | `root` | `data-readonly` | ''（条件成立时才出现） |
-| `trigger` | `data-disabled` | ''（条件成立时才出现） |
-| `trigger` | `data-readonly` | ''（条件成立时才出现） |
-| `trigger` | `data-state` | resolveCheckedState(value, prop('itemValues') ?? []) |
+| `select-all-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `select-all-trigger` | `data-readonly` | ''（条件成立时才出现） |
+| `select-all-trigger` | `data-state` | resolveCheckedState(value, prop('itemValues') ?? []) |
 
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-checkbox-group-gap` · `--xh-checkbox-group-icon-size` · `--xh-checkbox-group-indicator-bg` · `--xh-checkbox-group-indicator-bg-checked` · `--xh-checkbox-group-indicator-border` · `--xh-checkbox-group-indicator-border-checked` · `--xh-checkbox-group-indicator-border-hover` · `--xh-checkbox-group-indicator-border-invalid` · `--xh-checkbox-group-indicator-fg` · `--xh-checkbox-group-indicator-font-size` · `--xh-checkbox-group-indicator-radius` · `--xh-checkbox-group-indicator-size` · `--xh-checkbox-group-item-fg` · `--xh-checkbox-group-item-fg-disabled` · `--xh-checkbox-group-item-font-size` · `--xh-checkbox-group-item-gap` · `--xh-checkbox-group-item-radius` · `--xh-checkbox-group-label-fg` · `--xh-checkbox-group-label-fg-disabled` · `--xh-checkbox-group-label-font-size` · `--xh-checkbox-group-label-font-weight` · `--xh-checkbox-group-trigger-fg` · `--xh-checkbox-group-trigger-fg-disabled` · `--xh-checkbox-group-trigger-font-size` · `--xh-checkbox-group-trigger-font-weight` · `--xh-checkbox-group-trigger-gap` · `--xh-checkbox-group-trigger-radius`
+`--xh-checkbox-group-gap` · `--xh-checkbox-group-icon-size` · `--xh-checkbox-group-indicator-bg` · `--xh-checkbox-group-indicator-bg-checked` · `--xh-checkbox-group-indicator-border` · `--xh-checkbox-group-indicator-border-checked` · `--xh-checkbox-group-indicator-border-hover` · `--xh-checkbox-group-indicator-border-invalid` · `--xh-checkbox-group-indicator-fg` · `--xh-checkbox-group-indicator-font-size` · `--xh-checkbox-group-indicator-radius` · `--xh-checkbox-group-indicator-size` · `--xh-checkbox-group-item-fg` · `--xh-checkbox-group-item-fg-disabled` · `--xh-checkbox-group-item-font-size` · `--xh-checkbox-group-item-gap` · `--xh-checkbox-group-item-radius` · `--xh-checkbox-group-label-fg` · `--xh-checkbox-group-label-fg-disabled` · `--xh-checkbox-group-label-font-size` · `--xh-checkbox-group-label-font-weight` · `--xh-checkbox-group-select-all-trigger-fg` · `--xh-checkbox-group-select-all-trigger-fg-disabled` · `--xh-checkbox-group-select-all-trigger-font-size` · `--xh-checkbox-group-select-all-trigger-font-weight` · `--xh-checkbox-group-select-all-trigger-gap` · `--xh-checkbox-group-select-all-trigger-radius`
 
 ## 动效
 

@@ -1,4 +1,5 @@
 import type { Disposable, Layer, RuntimeConfig } from '@xihan-ui/kernel'
+import { EV_ESCAPE_KEY_DOWN, EV_FOCUS_OUTSIDE, EV_INTERACT_OUTSIDE, EV_POINTER_DOWN_OUTSIDE } from '@xihan-ui/kernel'
 import { isInside, shouldDismiss } from './layer-stack'
 
 export type DismissReason = 'escape-key' | 'pointer-down-outside' | 'focus-outside' | 'programmatic'
@@ -14,11 +15,6 @@ export interface DismissLayerOptions {
   /** 上面两者任一发生时也派发一次。 */
   onInteractOutside?: (e: CustomEvent) => void
 }
-
-const EV_ESCAPE = 'xh.dismiss.escapeKeyDown'
-const EV_POINTER_OUTSIDE = 'xh.dismiss.pointerDownOutside'
-const EV_FOCUS_OUTSIDE = 'xh.dismiss.focusOutside'
-const EV_INTERACT_OUTSIDE = 'xh.dismiss.interactOutside'
 
 export function createDismissLayer(o: DismissLayerOptions): Disposable {
   const { config, layer, onDismiss } = o
@@ -38,7 +34,7 @@ export function createDismissLayer(o: DismissLayerOptions): Disposable {
     if (registry.top() !== layer)
       return
     const el = node()
-    const vote = new CustomEvent(EV_ESCAPE, { bubbles: false, cancelable: true, detail: { originalEvent: e } })
+    const vote = new CustomEvent(EV_ESCAPE_KEY_DOWN, { bubbles: false, cancelable: true, detail: { originalEvent: e } })
     el?.dispatchEvent(vote)
     o.onEscapeKeyDown?.(vote)
     if (vote.defaultPrevented)
@@ -64,7 +60,7 @@ export function createDismissLayer(o: DismissLayerOptions): Disposable {
       return
     if (!shouldDismiss(e, registry, layer))
       return
-    if (fireInteractOutside(el, EV_POINTER_OUTSIDE, o.onPointerDownOutside)) {
+    if (fireInteractOutside(el, EV_POINTER_DOWN_OUTSIDE, o.onPointerDownOutside)) {
       justDismissed = true
       win.requestAnimationFrame(() => {
         justDismissed = false

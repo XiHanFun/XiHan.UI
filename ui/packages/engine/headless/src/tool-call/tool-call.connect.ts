@@ -78,8 +78,8 @@ export function connectToolCall<T extends PropTypes>(
 
     // name 与 status 排在 trigger 之内，自然计入它的可访问名（「搜索，已完成」），
     // 各自都不另开活区
-    getNameProps: () => normalize.element({
-      ...parts.name.attrs,
+    getLabelProps: () => normalize.element({
+      ...parts.label.attrs,
       'data-state': phase,
     }),
 

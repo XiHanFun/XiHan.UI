@@ -164,7 +164,7 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-table>` |
-| Vue 组件 | `XhTableBody` `XhTableCaption` `XhTableCell` `XhTableColumnDragTrigger` `XhTableColumnHeader` `XhTableColumnResizeTrigger` `XhTableEmpty` `XhTableExpandTrigger` `XhTableExpandedRow` `XhTableFooter` `XhTableHeader` `XhTableLoadingState` `XhTableRoot` `XhTableRow` `XhTableRowDragTrigger` `XhTableRowSelectTrigger` `XhTableSelectAllTrigger` `XhTableSortTrigger` |
+| Vue 组件 | `XhTableBody` `XhTableCaption` `XhTableCell` `XhTableColumnDragTrigger` `XhTableColumnHeader` `XhTableColumnResizeTrigger` `XhTableEmpty` `XhTableExpandTrigger` `XhTableExpandedRow` `XhTableFooter` `XhTableHeader` `XhTableLoading` `XhTableRoot` `XhTableRow` `XhTableRowDragTrigger` `XhTableRowSelectTrigger` `XhTableSelectAllTrigger` `XhTableSortTrigger` |
 | 组合式函数 | `useTable` |
 | 状态机 | `tableMachine` |
 | 皮肤 | `@xihan-ui/styles/table.css` |
@@ -173,7 +173,7 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="table"`：**`root`** · `header` · **`body`** · `footer` · `row` · `column-header` · `cell` · `caption` · `select-all-trigger` · `row-select-trigger` · `sort-trigger` · `column-resize-trigger` · `column-drag-trigger` · `row-drag-trigger` · `expand-trigger` · `expanded-row` · `empty` · `loading-state` · `live-region`
+`data-scope="table"`：**`root`** · `header` · **`body`** · `footer` · `row` · `column-header` · `cell` · `caption` · `select-all-trigger` · `row-select-trigger` · `sort-trigger` · `column-resize-trigger` · `column-drag-trigger` · `row-drag-trigger` · `expand-trigger` · `expanded-row` · `empty` · `loading` · `live-region`
 
 ## Props
 
@@ -308,7 +308,7 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 | `getExpandTriggerProps` | `(props: TableRowProps) => T['element']` |  |
 | `getExpandedRowProps` | `(props: TableRowProps) => T['element']` |  |
 | `getEmptyProps` | `() => T['element']` |  |
-| `getLoadingStateProps` | `() => T['element']` |  |
+| `getLoadingProps` | `() => T['element']` |  |
 | `getLiveRegionProps` | `() => T['element']` | 拖动过程的读屏播报区。视觉隐藏，文本从 `announcement` 取。 它必须在拖动开始之前就在 DOM 上——读屏不播报后插入的节点。 |
 
 ## 键盘

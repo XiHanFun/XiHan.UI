@@ -12,26 +12,33 @@ export type GridGap = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
 /** 断点档位名，与断点令牌逐字同名。 */
 export type GridBreakpoint = 'sm' | 'md' | 'lg' | 'xl'
 
-/** 逐档的列数：每一档写 1 至 12 的整数，档与档之间自窄到宽依次接管，写了哪档就在哪档换列数。 */
+/** 列数与跨列的取值：1 至 12，逐值对应一条皮肤规则。 */
+export type GridColumnCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12
+
+/** 错列的取值：1 至 11，最多把这一格推到最后一列起排。 */
+export type GridColumnOffset = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11
+
+/** 逐档的列数：档与档之间自窄到宽依次接管，写了哪档就在哪档换列数。 */
 export interface GridColsByBreakpoint {
   /** 未达到任何断点时分几列，不写按一列排。 */
-  base?: number
+  base?: GridColumnCount
   /** 视口宽度达到 sm 断点后分几列。 */
-  sm?: number
+  sm?: GridColumnCount
   /** 视口宽度达到 md 断点后分几列。 */
-  md?: number
+  md?: GridColumnCount
   /** 视口宽度达到 lg 断点后分几列。 */
-  lg?: number
+  lg?: GridColumnCount
   /** 视口宽度达到 xl 断点后分几列。 */
-  xl?: number
+  xl?: GridColumnCount
 }
 
 /** 列数：整数即各档同一个列数；断点对象则逐档取值。 */
-export type GridCols = number | GridColsByBreakpoint
+export type GridCols = GridColumnCount | GridColsByBreakpoint
 
 export interface GridProps {
   /**
-   * 列数：1 至 12 的整数，不写按一列排。各列等宽，且每列的下限是 0，长内容不会把自己那列撑宽。
+   * 列数：1 至 12 的整数，不写按一列排；范围外的值也按一列排。
+   * 各列等宽，且每列的下限是 0，长内容不会把自己那列撑宽。
    * 也收断点对象 `{ base, sm, md, lg, xl }`，逐档写各自的列数，没写的档沿用比它窄的那一档。
    */
   cols?: GridCols
@@ -45,10 +52,13 @@ export interface GridProps {
 
 /** 每一格自报的占位声明。 */
 export interface GridItemProps {
-  /** 跨几列：1 至 12 的整数，不写占一列。 */
-  span?: number
-  /** 往后错几列：1 至 11 的整数，这一项改从第 offset + 1 条列线起排，它前面那几列空着。 */
-  offset?: number
+  /** 跨几列：1 至 12 的整数，不写占一列；范围外的值也占一列。 */
+  span?: GridColumnCount
+  /**
+   * 往后错几列：1 至 11 的整数，这一项改从第 offset + 1 条列线起排，它前面那几列空着；
+   * 不写不错列，范围外的值也不错列。
+   */
+  offset?: GridColumnOffset
 }
 
 export interface GridApi<T extends PropTypes = PropTypes> {

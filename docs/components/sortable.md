@@ -52,7 +52,7 @@ orientation 三档：竖排、横排，换行网格用 both，落点按最近中
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-sortable>` |
-| Vue 组件 | `XhSortableItem` `XhSortableItemHandle` `XhSortableLiveRegion` `XhSortableRoot` |
+| Vue 组件 | `XhSortableItem` `XhSortableItemDragTrigger` `XhSortableLiveRegion` `XhSortableRoot` |
 | 组合式函数 | `useSortable` |
 | 状态机 | `sortableMachine` |
 | 皮肤 | `@xihan-ui/styles/sortable.css` |
@@ -61,7 +61,7 @@ orientation 三档：竖排、横排，换行网格用 both，落点按最近中
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="sortable"`：**`root`** · **`item`** · `item-handle` · `live-region`
+`data-scope="sortable"`：**`root`** · **`item`** · `item-drag-trigger` · `live-region`
 
 ## Props
 
@@ -95,7 +95,7 @@ orientation 三档：竖排、横排，换行网格用 both，落点按最近中
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhSortableItem` | `default` | `SortableItemSlotProps` |  |
-| `XhSortableItemHandle` | `default` | — |  |
+| `XhSortableItemDragTrigger` | `default` | — |  |
 | `XhSortableRoot` | `default` | `SortableRootSlotProps` |  |
 
 ## 状态
@@ -122,7 +122,7 @@ orientation 三档：竖排、横排，换行网格用 both，落点按最近中
 | `items` | `SortableItemState[]` | 逐项的呈现状态，顺序与 `ids` 一致。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getItemProps` | `(props: SortableItemProps) => T['element']` |  |
-| `getItemHandleProps` | `(props: SortableItemProps) => T['element']` |  |
+| `getItemDragTriggerProps` | `(props: SortableItemProps) => T['element']` |  |
 | `getLiveRegionProps` | `() => T['element']` |  |
 
 ## 键盘
@@ -131,7 +131,7 @@ orientation 三档：竖排、横排，换行网格用 both，落点按最近中
 
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
-| `Space` / `Enter` | focus in item-handle，未在拖动，not disabled | 拾起这一项，进入键盘拖动；播报它现在第几位、共几项、以及接下来能按什么 |
+| `Space` / `Enter` | focus in item-drag-trigger，未在拖动，not disabled | 拾起这一项，进入键盘拖动；播报它现在第几位、共几项、以及接下来能按什么 |
 | `ArrowDown` / `ArrowRight` | 键盘拖动中 | 往后挪一位并播报新位置；已在末位时不动，也不回绕。竖直排布认上下键、水平排布认左右键，另一条轴上的方向键原样放行 |
 | `ArrowUp` / `ArrowLeft` | 键盘拖动中 | 往前挪一位，规则同上；rtl 下左右两键对调，语义恒是「往前 / 往后」 |
 | `Space` / `Enter` | 键盘拖动中 | 放下，按当前位置提交顺序并播报落点 |
@@ -145,11 +145,11 @@ orientation 三档：竖排、横排，换行网格用 both，落点按最近中
 | --- | --- | --- |
 | `root` | `aria-label` | translations?.root |
 | `root` | `role` | 'group' |
-| `item-handle` | `aria-disabled` | 'true' \| 'false' |
-| `item-handle` | `aria-label` | translations?.itemHandle?.(name) |
-| `item-handle` | `aria-pressed` | 'true' \| 'false' |
-| `item-handle` | `aria-roledescription` | 'sortable' |
-| `item-handle` | `role` | 'button' |
+| `item-drag-trigger` | `aria-disabled` | 'true' \| 'false' |
+| `item-drag-trigger` | `aria-label` | translations?.itemDragTrigger?.(name) |
+| `item-drag-trigger` | `aria-pressed` | 'true' \| 'false' |
+| `item-drag-trigger` | `aria-roledescription` | 'sortable' |
+| `item-drag-trigger` | `role` | 'button' |
 | `live-region` | `aria-atomic` | 'true' |
 | `live-region` | `aria-live` | 'polite' |
 | `live-region` | `role` | 'status' |
@@ -174,13 +174,13 @@ orientation 三档：竖排、横排，换行网格用 both，落点按最近中
 | `item` | `data-disabled` | ''（条件成立时才出现） |
 | `item` | `data-dragging` | ''（条件成立时才出现） |
 | `item` | `data-index` | String(item?.index ?? -1) |
-| `item-handle` | `data-dragging` | ''（条件成立时才出现） |
+| `item-drag-trigger` | `data-dragging` | ''（条件成立时才出现） |
 
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-sortable-gap` · `--xh-sortable-handle-bg-hover` · `--xh-sortable-handle-fg` · `--xh-sortable-handle-fg-disabled` · `--xh-sortable-handle-fg-hover` · `--xh-sortable-handle-grip-h` · `--xh-sortable-handle-grip-w` · `--xh-sortable-handle-radius` · `--xh-sortable-handle-size` · `--xh-sortable-item-opacity-dragging` · `--xh-sortable-item-shadow-dragging`
+`--xh-sortable-drag-bg-hover` · `--xh-sortable-drag-fg` · `--xh-sortable-drag-fg-disabled` · `--xh-sortable-drag-fg-hover` · `--xh-sortable-drag-grip-h` · `--xh-sortable-drag-grip-w` · `--xh-sortable-drag-radius` · `--xh-sortable-drag-size` · `--xh-sortable-gap` · `--xh-sortable-item-opacity-dragging` · `--xh-sortable-item-shadow-dragging`
 
 ## 动效
 

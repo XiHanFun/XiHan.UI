@@ -97,14 +97,14 @@ export const XhApprovalDescription = defineComponent({
   },
 })
 
-export const XhApprovalAnnouncement = defineComponent({
-  name: 'XhApprovalAnnouncement',
+export const XhApprovalLiveRegion = defineComponent({
+  name: 'XhApprovalLiveRegion',
   setup(_, { slots }) {
     const ctx = useApprovalContext()
     // 不给内容时念状态对应的那一句
     return () => h(
       'div',
-      ctx.api.value.getAnnouncementProps() as Record<string, unknown>,
+      ctx.api.value.getLiveRegionProps() as Record<string, unknown>,
       slots.default?.() ?? ctx.api.value.announcement,
     )
   },
@@ -203,11 +203,11 @@ export const XhApprovalResult = defineComponent({
   },
 })
 
-export const XhApprovalActions = defineComponent({
-  name: 'XhApprovalActions',
+export const XhApprovalFooter = defineComponent({
+  name: 'XhApprovalFooter',
   setup(_, { slots }) {
     const ctx = useApprovalContext()
-    return () => h('div', ctx.api.value.getActionsProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getFooterProps() as Record<string, unknown>, slots.default?.())
   },
 })
 

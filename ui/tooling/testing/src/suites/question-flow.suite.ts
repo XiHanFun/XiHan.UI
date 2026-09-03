@@ -89,7 +89,7 @@ export const questionFlowSuite: ConformanceSuite = {
           { part: 'submit-trigger', tag: 'button', text: '继续' },
         ],
       },
-      { part: 'announcement' },
+      { part: 'live-region' },
     ],
   },
   cases: [
@@ -120,7 +120,7 @@ export const questionFlowSuite: ConformanceSuite = {
           ],
           // 计数只给眼睛看，进度由播报区念
           'counter': { 'aria-hidden': 'true' },
-          'announcement': { 'aria-live': 'polite', 'aria-atomic': 'true' },
+          'live-region': { 'aria-live': 'polite', 'aria-atomic': 'true' },
           'prev-trigger': { disabled: '' },
           'next-trigger': { disabled: null },
           'submit-trigger': { 'data-mode': 'continue', 'disabled': '' },

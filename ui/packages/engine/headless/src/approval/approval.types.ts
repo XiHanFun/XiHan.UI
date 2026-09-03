@@ -140,7 +140,7 @@ export interface ApprovalApi<T extends PropTypes = PropTypes> {
   getRootProps: () => T['element']
   getTitleProps: () => T['element']
   getDescriptionProps: () => T['element']
-  getAnnouncementProps: () => T['element']
+  getLiveRegionProps: () => T['element']
   getScopeGroupProps: () => T['element']
   getScopeItemProps: (scope: ApprovalScope) => T['element']
   getScopeIndicatorProps: (scope: ApprovalScope) => T['element']
@@ -148,7 +148,7 @@ export interface ApprovalApi<T extends PropTypes = PropTypes> {
   getNoteProps: () => T['input']
   getTimerProps: () => T['element']
   getResultProps: () => T['element']
-  getActionsProps: () => T['element']
+  getFooterProps: () => T['element']
   getApproveTriggerProps: () => T['button']
   getDenyTriggerProps: () => T['button']
 }

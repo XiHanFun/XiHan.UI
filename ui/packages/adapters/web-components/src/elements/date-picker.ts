@@ -17,7 +17,7 @@ import type {
   DateSegmentSet,
   DateSegmentType,
 } from '@xihan-ui/headless'
-import type { Cleanup, ControlVariant, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
+import type { Cleanup, ControlVariant, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { OverlayExit } from '../overlay-exit'
 import { calendarAnatomy, calendarMachine, connectDatePicker, dateFieldAnatomy, dateFieldMachine, datePickerAnatomy, datePickerCalendarProps, datePickerFieldEndProps, datePickerFieldProps, datePickerMachine, datePickerMeta } from '@xihan-ui/headless'
@@ -115,6 +115,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @attr {string} placement - 首选放置位，默认 bottom-start；避让后的实际位写在 data-placement 上
  * @attr {number} offset - 浮层与锚点的间距（px）
+ * @attr {'ltr'|'rtl'} dir - 文字方向，翻转浮层在行内轴上 start 与 end 的落点；只在显式给了才写到定位层上
  * @attr {boolean} close-on-select - 选完即收起，默认 true；写 close-on-select="false" 关掉
  * @fires value-change - 选中集合变化；detail 为 `{ value: string[] }`
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
@@ -195,6 +196,9 @@ export class XhDatePickerElement extends XhElement {
     size: { converter: STRING_CONVERTER },
     placement: { converter: STRING_CONVERTER },
     offset: { converter: NUMBER_CONVERTER },
+    // dir 只占属性名、字段改叫 direction：HTMLElement 原生 dir 是 string 访问器，
+    // 同名响应式字段会与基类类型打架。属性仍进 observedAttributes，改 dir 照样触发重算。
+    direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     closeOnSelect: { converter: BOOLEAN_CONVERTER, attribute: 'close-on-select' },
     showTime: { converter: BOOLEAN_CONVERTER, attribute: 'show-time' },
     timeGranularity: { converter: STRING_CONVERTER, attribute: 'time-granularity' },
@@ -231,6 +235,7 @@ export class XhDatePickerElement extends XhElement {
   declare size?: Size
   declare placement?: Placement
   declare offset?: number
+  declare direction?: Direction
   declare closeOnSelect?: boolean
   declare showTime?: boolean
   declare timeGranularity?: DatePickerSchema['props']['timeGranularity']
@@ -345,6 +350,7 @@ export class XhDatePickerElement extends XhElement {
       size: this.size,
       placement: this.placement,
       offset: this.offset,
+      dir: this.direction,
       closeOnSelect: this.closeOnSelect,
       showTime: this.showTime,
       timeGranularity: this.timeGranularity,

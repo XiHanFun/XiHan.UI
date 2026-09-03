@@ -1,4 +1,4 @@
-<!-- 选择模式 | selection-mode 直接指定三种模式，extended 是「单击换一条、Ctrl 与 Shift 才扩选」 -->
+<!-- 选择模式 | selection-mode="extended" 是「裸点换一条、Ctrl 与 Shift 才扩选」，与 multiple 档的区别就在裸点 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import { XhListboxRoot } from "@xihan-ui/vue";

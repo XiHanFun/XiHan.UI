@@ -89,8 +89,8 @@ export function connectApproval<T extends PropTypes>(
     }),
 
     // 不写 role：role=status 会把档位钉死成 polite，而这一格的档位是可配的
-    getAnnouncementProps: () => normalize.element({
-      ...parts.announcement.attrs,
+    getLiveRegionProps: () => normalize.element({
+      ...parts['live-region'].attrs,
       'aria-live': prop('live') ?? 'polite',
       'aria-atomic': 'true',
     }),
@@ -171,8 +171,8 @@ export function connectApproval<T extends PropTypes>(
     }),
 
     // 只排布两颗按钮，不承载语义
-    getActionsProps: () => normalize.element({
-      ...parts.actions.attrs,
+    getFooterProps: () => normalize.element({
+      ...parts.footer.attrs,
     }),
 
     // 待决时用 aria-disabled 而不是原生 disabled：保住可聚焦，让读屏念得到为什么按不动

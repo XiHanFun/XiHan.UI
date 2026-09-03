@@ -5,7 +5,6 @@ import type { ListboxApi, ListboxItemProps, ListboxNodeMeta, ListboxSchema } fro
 import { applySelection, focusItem, indexOfValue, isItemDisabled, ITEM_VALUE_ATTR, itemValue, matchTypeahead, navigateItems, navIntentFromKey, queryItems, toggleSelectAll } from '@xihan-ui/behavior'
 import { contains, dataAttr } from '@xihan-ui/kernel'
 import { listboxAnatomy, listboxItemQuery, listboxItemText } from './listbox.anatomy'
-import { listboxSelectionMode } from './listbox.machine'
 
 const parts = listboxAnatomy.build()
 
@@ -22,7 +21,7 @@ export function connectListbox<T extends PropTypes>(
   const dir = prop('dir') ?? 'ltr'
   const loop = prop('loop') ?? true
   const typeaheadOn = prop('typeahead') ?? true
-  const mode = listboxSelectionMode(prop('selectionMode'), prop('multiple'))
+  const mode = prop('selectionMode') ?? 'single'
   const multiselectable = mode !== 'single'
   const ids = scope.ids('listbox', 'label', 'content')
 

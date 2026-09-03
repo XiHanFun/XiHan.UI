@@ -10,7 +10,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
 
 /**
  * `<xh-fieldset>` —— Light-DOM 行为宿主，无状态机，把 connectFieldset 产出的属性打到
- * root/legend/helper-text/error-text 角色节点上：说明与错误文案的 id 自动接进 root 的描述链。
+ * root/legend/description/error-text 角色节点上：说明与错误文案的 id 自动接进 root 的描述链。
  *
  * root 必须是原生 `<fieldset>`、legend 必须是原生 `<legend>` 且写成 root 的首个子节点——
  * 整组禁用连坐组内控件与"legend 即组名"都是浏览器给的，写成 div 两样都静默失效。
@@ -23,7 +23,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {boolean} required - 必填标记，只落 data-required 供皮肤给组标题加星号
  * @csspart root - 原生 `<fieldset>`，承载原生 disabled 与 data-disabled/data-invalid/data-required
  * @csspart legend - 原生 `<legend>`，这一组的名字；须是 root 的首个子节点
- * @csspart helper-text - 常驻说明文案，恒在 root 的描述链里
+ * @csspart description - 常驻说明文案，恒在 root 的描述链里
  * @csspart error-text - 错误文案（role=alert）；非 invalid 时带 hidden 收起，节点不卸载
  */
 export class XhFieldsetElement extends XhElement {
@@ -70,7 +70,7 @@ export class XhFieldsetElement extends XhElement {
     }
     put('root', api.getRootProps() as Record<string, unknown>)
     put('legend', api.getLegendProps() as Record<string, unknown>)
-    put('helper-text', api.getHelperTextProps() as Record<string, unknown>)
+    put('description', api.getDescriptionProps() as Record<string, unknown>)
     put('error-text', api.getErrorTextProps() as Record<string, unknown>)
 
     // 错误文案常挂，非 invalid 时用内联 display 收起（作者层的 display 会盖过 UA 的 [hidden] 规则）

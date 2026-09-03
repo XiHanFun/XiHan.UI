@@ -1,10 +1,10 @@
-import type { GridProps } from '@xihan-ui/headless'
+import type { GridColumnCount, GridColumnOffset, GridProps } from '@xihan-ui/headless'
 import { connectGrid, gridAnatomy, gridMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 
 /** 断点对象形态的列数，从 GridProps 上取，不在这里另抄一份档位清单。 */
-type ColsByBreakpoint = Exclude<GridProps['cols'], number | undefined>
+type ColsByBreakpoint = Exclude<GridProps['cols'], GridColumnCount | undefined>
 
 // 属性缺席翻成 undefined，缺省值由 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
@@ -18,7 +18,7 @@ const COLS_CONVERTER = {
     if (v === null)
       return undefined
     if (!v.trimStart().startsWith('{'))
-      return Number(v)
+      return Number(v) as GridColumnCount
     try {
       const parsed: unknown = JSON.parse(v)
       return parsed !== null && typeof parsed === 'object' && !Array.isArray(parsed)
@@ -31,7 +31,7 @@ const COLS_CONVERTER = {
   },
 }
 
-/** 读作者写在角色节点上的数值声明：属性缺席、为空或不是数字时当作没写。 */
+/** 读作者写在角色节点上的数值声明：属性缺席、为空或不是数字时当作没写；取值范围由 connect 判。 */
 function authorNumber(el: HTMLElement, name: string): number | undefined {
   const raw = el.getAttribute(name)
   if (raw == null || raw.trim() === '')
@@ -46,13 +46,14 @@ function authorNumber(el: HTMLElement, name: string): number | undefined {
  * 列数可以逐档写：`cols='{"base":1,"md":3}'` 落成 data-cols 与 data-cols-md，
  * 窄视口分一列、宽到 md 断点后分三列。
  *
- * 每一格的跨列与错列写在 item 角色节点自己的 `span` / `offset` 属性上。
+ * 每一格的跨列与错列写在 item 角色节点自己的 `span` / `offset` 属性上：
+ * span 收 1 至 12、offset 收 1 至 11，范围外的值按没写算。
  * 运行期改写这两个属性不触发重新接线，需作者自行 requestUpdate。
  *
  * 根上不写 role：容器只做排布，里面装的是列表还是一组卡片由作者自己声明。
  *
  * @customElement xh-grid
- * @attr {number|string} cols - 列数（1–12），不写按一列排；写 JSON 对象则逐档给列数（base / sm / md / lg / xl）
+ * @attr {number|string} cols - 列数（1 至 12 的整数），不写或超出范围按一列排；写 JSON 对象则逐档给列数（base / sm / md / lg / xl）
  * @attr {'xs'|'sm'|'md'|'lg'|'xl'} gap - 行列间距档位，逐档对应一个间距令牌
  * @attr {'start'|'center'|'end'|'stretch'|'baseline'} align - 每一项在自己那格里的块向对齐
  * @attr {'start'|'center'|'end'|'stretch'} justify - 每一项在自己那格里的行内对齐
@@ -70,7 +71,7 @@ export class XhGridElement extends XhElement {
     justify: { converter: STRING_CONVERTER },
   }
 
-  declare cols?: number | ColsByBreakpoint
+  declare cols?: GridColumnCount | ColsByBreakpoint
   declare gap?: string
   declare align?: string
   declare justify?: string
@@ -91,8 +92,8 @@ export class XhGridElement extends XhElement {
     // 多实例 part 逐个打，每一格的占位取作者写的 span 与 offset
     for (const el of this.getParts('item')) {
       const attrs = api.getItemProps({
-        span: authorNumber(el, 'span'),
-        offset: authorNumber(el, 'offset'),
+        span: authorNumber(el, 'span') as GridColumnCount | undefined,
+        offset: authorNumber(el, 'offset') as GridColumnOffset | undefined,
       })
       this.spreader.spread(el, attrs as Record<string, unknown>)
     }

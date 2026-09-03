@@ -2,7 +2,7 @@
 <script setup lang="ts">
 import type { QuestionFlowQuestion } from "@xihan-ui/headless";
 import {
-  XhQuestionFlowAnnouncement,
+  XhQuestionFlowLiveRegion,
   XhQuestionFlowCounter,
   XhQuestionFlowFooter,
   XhQuestionFlowNote,
@@ -86,7 +86,7 @@ const log = ref("");
           <XhQuestionFlowSubmitTrigger>{{ isLast ? "发送" : "继续" }}</XhQuestionFlowSubmitTrigger>
         </div>
       </XhQuestionFlowFooter>
-      <XhQuestionFlowAnnouncement />
+      <XhQuestionFlowLiveRegion />
     </XhQuestionFlowRoot>
     <p v-if="log" style="margin: 0;">{{ log }}</p>
   </div>

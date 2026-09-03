@@ -109,12 +109,11 @@ const HOOKS = {
   'tooltip:data-disabled': '停用即不弹，没有可画的东西',
   'infinite-scroll:data-disabled': 'infinite-scroll.css:9 已写明：这一层不占版面，只往身上挂钩子供作者取用',
   'infinite-scroll:data-loading': 'infinite-scroll.css:9 已写明：加载中的观感由作者自己的哨兵内容表出',
-  'table:data-loading': '加载中的观感由 loading-state 部件承载（table.css:746 起，收起时 hidden）',
+  'table:data-loading': '加载中的观感由 loading 部件承载（table.css:746 起，收起时 hidden）',
   // 只读：观感落在真正的输入件身上
   'field:data-readonly': '只读的观感落在各输入件自己身上（text-field.css:155 那一类），这一层只往下传状态',
   'form:data-readonly': '整份表单置只读时由逐个控件自己表出',
-  // 忙：锁住的观感由 aria-disabled 与提交钮的身份切换承载
-  'approval:data-loading': '在途时两颗判定钮置 aria-disabled，观感挂在那一位上（approval.css:347）',
+  // 忙：锁住的观感由提交钮的身份切换承载
   'prompt-input:data-loading': '在途时提交钮切成 data-mode=stop，观感挂在那一位上',
   // 暂停：自动播放钮自己有 running / paused 两档；另两家解剖里没有能承载停表的部件
   'carousel:data-paused': '暂停的视觉在自动播放钮的 data-state=paused 上（carousel.css:248）',
@@ -125,7 +124,6 @@ const HOOKS = {
   'carousel:data-autoplay': '自动播放开没开，视觉在自动播放钮的 data-state 上',
   'carousel:data-inview': '这一帧在不在视口里，作者拿它做懒加载与埋点',
   'code-view:data-foldable': '折不折得动。真正裁切的是根上的 data-clamped',
-  'dialog:data-position': 'dialog.css:77 已写明：恒是 center，对话框还没有 position 这个入参',
   'diff-view:data-expanded': '折叠段展开后整条 gap 置 hidden，显隐由它承载',
   'diff-view:data-truncated': '整份差异被截断的标志，作者拿它决定要不要提示"还有更多"',
   'dynamic-input:data-at-max': '顶到上限时新增钮置 aria-disabled，观感挂在那一位上（dynamic-input.css:173）',

@@ -511,7 +511,7 @@
   }
 
   /* 视觉隐藏的播报区：不能 display:none，那样读屏就取不到它了 */
-  [data-scope='question-flow'][data-part='announcement'] {
+  [data-scope='question-flow'][data-part='live-region'] {
     position: absolute;
     inline-size: 1px;
     block-size: 1px;

@@ -38,7 +38,7 @@ export interface SortableTranslations {
   /** 一项的名字。不给就取该项屏幕上写着的字——id 是内部标识，念出来没人听得懂。 */
   item: (id: string, position: number, total: number) => string
   /** 拖拽手柄的名字。 */
-  itemHandle: (name: string) => string
+  itemDragTrigger: (name: string) => string
   /** 拾起时的播报。 */
   picked: (name: string, position: number, total: number) => string
   /** 移动一格后的播报。 */
@@ -149,6 +149,6 @@ export interface SortableApi<T extends PropTypes = PropTypes> {
   items: SortableItemState[]
   getRootProps: () => T['element']
   getItemProps: (props: SortableItemProps) => T['element']
-  getItemHandleProps: (props: SortableItemProps) => T['element']
+  getItemDragTriggerProps: (props: SortableItemProps) => T['element']
   getLiveRegionProps: () => T['element']
 }

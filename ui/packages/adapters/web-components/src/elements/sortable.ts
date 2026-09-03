@@ -25,12 +25,12 @@ const ID_LIST_CONVERTER = {
 }
 
 /**
- * `<xh-sortable>` —— Light-DOM 行为宿主：作者写 root/item/item-handle/live-region 角色节点，
+ * `<xh-sortable>` —— Light-DOM 行为宿主：作者写 root/item/item-drag-trigger/live-region 角色节点，
  * 元素跑 sortable 机器并把 connect 产出打上去。
  *
  * 顺序的唯一真源是 `ids`，DOM 里项的先后必须与它一致——几何按 DOM 量，事件按 `ids` 算。
- * 每个 item 与它的 item-handle 都要用 `item-id` 属性写明自己是哪一项（与 Vue 侧的 `:item-id` 同一份声明）。
- * 单独禁掉某一项写 `item-disabled`。不给 item-handle 时整项可拖。
+ * 每个 item 与它的 item-drag-trigger 都要用 `item-id` 属性写明自己是哪一项（与 Vue 侧的 `:item-id` 同一份声明）。
+ * 单独禁掉某一项写 `item-disabled`。不给 item-drag-trigger 时整项可拖。
  *
  * 拖动落点走乐观投影：拖动过程中其余项实时让位，松手即定。让位与跟手的位移由元素每帧
  * 写进内联 transform，作者的样式表不要再碰这条属性。
@@ -50,7 +50,7 @@ const ID_LIST_CONVERTER = {
  * @fires drag-end - 收尾（含取消）；detail 为 `{ id, from, to, mode, canceled }`
  * @csspart root - 承载 data-orientation / data-disabled / data-dragging 的容器
  * @csspart item - 一项；位移由内联 transform 给出，被拖的那项带 data-dragging
- * @csspart item-handle - role=button 的拖拽手柄，指针与键盘交互全在它身上
+ * @csspart item-drag-trigger - role=button 的拖拽手柄，指针与键盘交互全在它身上
  * @csspart live-region - 视觉隐藏的播报区，拖动过程的读屏文案写在这里
  */
 export class XhSortableElement extends XhElement {
@@ -65,6 +65,8 @@ export class XhSortableElement extends XhElement {
     disabled: { converter: BOOLEAN_CONVERTER },
     activationDistance: { converter: NUMBER_CONVERTER, attribute: 'activation-distance' },
     autoScroll: { converter: BOOLEAN_CONVERTER, attribute: 'auto-scroll' },
+    // 对象进不了属性，只作为 property 暴露
+    translations: { attribute: false },
   }
 
   declare ids?: string[]
@@ -73,6 +75,8 @@ export class XhSortableElement extends XhElement {
   declare disabled?: boolean
   declare activationDistance?: number
   declare autoScroll?: boolean
+  /** 区域名、项名、拖拽把手名，以及拾起 / 移动 / 放下 / 取消四句键盘拖拽播报。 */
+  declare translations?: SortableSchema['props']['translations']
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly sortableScope = createScope(null, this.idGen)
@@ -104,6 +108,7 @@ export class XhSortableElement extends XhElement {
       disabled: this.disabled ?? false,
       activationDistance: this.activationDistance,
       autoScroll: this.autoScroll,
+      translations: this.translations,
       onSort: this.notifySort,
       onDragStart: this.notifyDragStart,
       onDragEnd: this.notifyDragEnd,
@@ -143,8 +148,8 @@ export class XhSortableElement extends XhElement {
     for (const el of this.getParts('item'))
       this.spreader.spread(el, api.getItemProps({ id: this.partId(el), disabled: this.partDisabled(el) }) as Record<string, unknown>)
 
-    for (const el of this.getParts('item-handle'))
-      this.spreader.spread(el, api.getItemHandleProps({ id: this.partId(el), disabled: this.partDisabled(el) }) as Record<string, unknown>)
+    for (const el of this.getParts('item-drag-trigger'))
+      this.spreader.spread(el, api.getItemDragTriggerProps({ id: this.partId(el), disabled: this.partDisabled(el) }) as Record<string, unknown>)
 
     const live = this.getPart('live-region')
     if (live) {

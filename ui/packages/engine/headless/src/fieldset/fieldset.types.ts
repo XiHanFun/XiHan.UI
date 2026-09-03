@@ -23,7 +23,7 @@ export interface FieldsetApi<T extends PropTypes = PropTypes> {
   required: boolean
   getRootProps: () => T['element']
   getLegendProps: () => T['element']
-  getHelperTextProps: () => T['element']
+  getDescriptionProps: () => T['element']
   getErrorTextProps: () => T['element']
 }
 

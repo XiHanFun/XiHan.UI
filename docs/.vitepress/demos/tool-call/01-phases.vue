@@ -5,7 +5,7 @@ import {
   XhToolCallApproval,
   XhToolCallContent,
   XhToolCallIndicator,
-  XhToolCallName,
+  XhToolCallLabel,
   XhToolCallOutput,
   XhToolCallRoot,
   XhToolCallStatus,
@@ -26,7 +26,7 @@ const phases: ToolCallPhase[] = [
     <XhToolCallRoot v-for="phase in phases" :key="phase" :phase="phase">
       <XhToolCallTrigger>
         <XhToolCallIndicator>›</XhToolCallIndicator>
-        <XhToolCallName>search</XhToolCallName>
+        <XhToolCallLabel>search</XhToolCallLabel>
         <XhToolCallStatus />
       </XhToolCallTrigger>
       <XhToolCallApproval>这一步要先经你批准。</XhToolCallApproval>

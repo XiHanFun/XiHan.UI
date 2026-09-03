@@ -30,61 +30,13 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
-    "./anatomy": {
-      "types": "./dist/anatomy.d.ts",
-      "import": "./dist/anatomy.js"
-    },
-    "./attrs": {
-      "types": "./dist/attrs.d.ts",
-      "import": "./dist/attrs.js"
-    },
-    "./compose": {
-      "types": "./dist/compose.d.ts",
-      "import": "./dist/compose.js"
-    },
-    "./constants": {
-      "types": "./dist/constants.d.ts",
-      "import": "./dist/constants.js"
-    },
-    "./guards": {
-      "types": "./dist/guards.d.ts",
-      "import": "./dist/guards.js"
-    },
-    "./id-generator": {
-      "types": "./dist/id-generator.d.ts",
-      "import": "./dist/id-generator.js"
-    },
-    "./locale": {
-      "types": "./dist/locale.d.ts",
-      "import": "./dist/locale.js"
-    },
-    "./merge-props": {
-      "types": "./dist/merge-props.d.ts",
-      "import": "./dist/merge-props.js"
-    },
     "./metadata": {
       "types": "./dist/metadata.d.ts",
       "import": "./dist/metadata.js"
     },
-    "./normalize-props": {
-      "types": "./dist/normalize-props.d.ts",
-      "import": "./dist/normalize-props.js"
-    },
-    "./runtime-config": {
-      "types": "./dist/runtime-config.d.ts",
-      "import": "./dist/runtime-config.js"
-    },
-    "./scope": {
-      "types": "./dist/scope.d.ts",
-      "import": "./dist/scope.js"
-    },
     "./skin-check": {
       "types": "./dist/skin-check.d.ts",
       "import": "./dist/skin-check.js"
-    },
-    "./types": {
-      "types": "./dist/types.d.ts",
-      "import": "./dist/types.js"
     },
     "./vite": {
       "types": "./dist/vite.d.ts",

@@ -122,12 +122,12 @@ export const XhCheckboxGroupItemText = defineComponent({
   },
 })
 
-export const XhCheckboxGroupTrigger = defineComponent({
-  name: 'XhCheckboxGroupTrigger',
+export const XhCheckboxGroupSelectAllTrigger = defineComponent({
+  name: 'XhCheckboxGroupSelectAllTrigger',
   setup(_, { slots }) {
     const ctx = useCheckboxGroupContext()
     // 与条目同形的 role=checkbox 节点，渲染为 div，Space 由 connect 接管
-    return () => h('div', ctx.api.value.getTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getSelectAllTriggerProps() as Record<string, unknown>, slots.default?.())
   },
 })
 

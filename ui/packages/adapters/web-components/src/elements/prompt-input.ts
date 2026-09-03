@@ -73,14 +73,15 @@ export class XhPromptInputElement extends XhElement {
   /** 发送与停止按钮的无障碍名；给了 input 才会写输入框的 aria-label。 */
   declare translations?: Partial<PromptInputTranslations>
 
-  private readonly emit = (type: string, detail: unknown, bubbles = true): void => {
+  private readonly emit = (type: string, detail?: unknown, bubbles = true): void => {
     this.dispatchEvent(new CustomEvent(type, { detail, bubbles, composed: bubbles }))
   }
 
   private readonly notifyValue = (details: PromptInputValueChangeDetails): void => this.emit('value-change', details)
   // submit 与原生表单提交同名，故不冒泡，避免被祖先 <form> 当成自己的提交
   private readonly notifySubmit = (details: PromptInputSubmitDetails): void => this.emit('submit', details, false)
-  private readonly notifyStop = (): void => this.emit('stop', null)
+  // 无载荷：不写 detail，与其它无载荷事件（popconfirm 的 confirm/cancel 等）同一写法
+  private readonly notifyStop = (): void => this.emit('stop')
 
   private readonly ctrl = new MachineController<PromptInputSchema>(this, promptInputMachine, () => this.machineProps())
 

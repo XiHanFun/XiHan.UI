@@ -10,7 +10,7 @@ import type {
   MentionTranslations,
   MentionValueChangeDetails,
 } from '@xihan-ui/headless'
-import type { Cleanup, ControlVariant, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
+import type { Cleanup, ControlVariant, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { OverlayExit } from '../overlay-exit'
 import { connectMention, mentionAnatomy, mentionMachine, mentionMeta } from '@xihan-ui/headless'
@@ -56,6 +56,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {boolean} loop - 方向键走到尽头回绕，默认 true；写 loop="false" 关掉
  * @attr {string} placement - 首选放置位，默认 bottom-start；避让后的实际位写在 data-placement 上
  * @attr {number} offset - 浮层与输入框的间距（px）
+ * @attr {'ltr'|'rtl'} dir - 文字方向，翻转浮层在行内轴上 start 与 end 的落点；只在显式给了才写到定位层上
  * @attr {'outline'|'subtle'|'ghost'} variant - 视觉变体
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
@@ -89,6 +90,9 @@ export class XhMentionElement extends XhElement {
     loop: { converter: BOOLEAN_CONVERTER },
     placement: { converter: STRING_CONVERTER },
     offset: { converter: NUMBER_CONVERTER },
+    // dir 只占属性名、字段改叫 direction：HTMLElement 原生 dir 是 string 访问器，
+    // 同名响应式字段会与基类类型打架。属性仍进 observedAttributes，改 dir 照样触发重算。
+    direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     variant: { converter: STRING_CONVERTER },
     tone: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
@@ -106,6 +110,7 @@ export class XhMentionElement extends XhElement {
   declare loop?: boolean
   declare placement?: Placement
   declare offset?: number
+  declare direction?: Direction
   declare variant?: ControlVariant
   declare tone?: Tone
   declare size?: Size
@@ -162,6 +167,7 @@ export class XhMentionElement extends XhElement {
       loop: this.loop,
       placement: this.placement,
       offset: this.offset,
+      dir: this.direction,
       translations: this.translations,
       variant: this.variant,
       tone: this.tone,

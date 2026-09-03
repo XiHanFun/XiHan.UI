@@ -68,7 +68,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @csspart skip-trigger - 跳过；allow-skip 关掉时整颗收起
  * @csspart submit-trigger - 继续 / 发送同一颗按钮
  * @csspart result - 交卷后才露出的结果条，对读屏隐藏
- * @csspart announcement - 进度播报的活区
+ * @csspart live-region - 进度播报的活区
  */
 export class XhQuestionFlowElement extends XhElement {
   static override partContract = { anatomy: questionFlowAnatomy, meta: questionFlowMeta }
@@ -212,10 +212,10 @@ export class XhQuestionFlowElement extends XhElement {
       counter.textContent = api.counter
     }
 
-    const announcement = this.getPart('announcement')
-    if (announcement) {
-      this.spreader.spread(announcement, api.getAnnouncementProps() as Record<string, unknown>)
-      announcement.textContent = api.announcement
+    const live = this.getPart('live-region')
+    if (live) {
+      this.spreader.spread(live, api.getLiveRegionProps() as Record<string, unknown>)
+      live.textContent = api.announcement
     }
 
     // 多实例 part 逐个打，题有几道打几道

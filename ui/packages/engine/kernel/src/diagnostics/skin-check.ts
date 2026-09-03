@@ -67,8 +67,3 @@ export function startSkinCheck(options: SkinCheckOptions = {}): Cleanup {
   observer.observe(root, { childList: true, subtree: true })
   return () => observer.disconnect()
 }
-
-/** 清掉「探过哪些 scope」的记账，测试之间用。 */
-export function resetSkinCheck(): void {
-  probed.clear()
-}

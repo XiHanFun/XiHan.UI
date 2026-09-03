@@ -68,7 +68,7 @@ export function connectPopselect<T extends PropTypes>(
 
   const value = listbox.context.get('value')
   const focusedValue = listbox.context.get('focusedValue') ?? null
-  const multiple = !!listbox.prop('multiple')
+  const multiple = listbox.prop('selectionMode') === 'multiple'
   const disabled = !!listbox.prop('disabled')
   const loop = listbox.prop('loop') ?? true
   const dir = listbox.prop('dir')

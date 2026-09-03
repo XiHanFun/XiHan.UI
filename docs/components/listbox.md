@@ -28,7 +28,7 @@
 
 ### 多选
 
-multiple 下空格改成切换该条，Shift + 方向键顺手扩选，Ctrl / Cmd + A 全选或全不选
+selection-mode="multiple" 下空格改成切换该条，Shift + 方向键顺手扩选，Ctrl / Cmd + A 全选或全不选
 
 <XhDemo src="listbox/02-multiple" />
 
@@ -40,7 +40,7 @@ item-group 把条目分段，group-label 是这一段的可及名字，不参与
 
 ### 选择模式
 
-selection-mode 直接指定三种模式，extended 是「单击换一条、Ctrl 与 Shift 才扩选」
+selection-mode="extended" 是「裸点换一条、Ctrl 与 Shift 才扩选」，与 multiple 档的区别就在裸点
 
 <XhDemo src="listbox/04-selection-mode" />
 
@@ -85,8 +85,7 @@ selection-mode 直接指定三种模式，extended 是「单击换一条、Ctrl 
 | `collection` | `ListboxNode[]` |  | 条目数据，显示文本与禁用的事实源。给了它，条目部件只需报 value。 缺省即回到「文本与禁用都写在条目部件上」的老路。 |
 | `value` | `string \| string[]` |  | 选中值，给定即受控；单选可写成裸串，内部归一成数组。 |
 | `defaultValue` | `string \| string[]` |  |  |
-| `multiple` | `boolean` |  | selectionMode='multiple' 的简写；两者同时给时以 selectionMode 为准。 |
-| `selectionMode` | `ListboxSelectionMode` |  |  |
+| `selectionMode` | `ListboxSelectionMode` |  | 选择模式，默认 single。 |
 | `disabled` | `boolean` |  | 整个列表禁用，键盘与点击都不再改选中值。 |
 | `loop` | `boolean` |  | 方向键走到尽头是否回绕，默认 true。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr。 |

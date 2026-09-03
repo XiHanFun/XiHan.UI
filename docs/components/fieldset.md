@@ -61,7 +61,7 @@ required 落成 data-required，皮肤据此给组标题加星号；星号只是
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-fieldset>` |
-| Vue 组件 | `XhFieldsetErrorText` `XhFieldsetHelperText` `XhFieldsetLegend` `XhFieldsetRoot` |
+| Vue 组件 | `XhFieldsetDescription` `XhFieldsetErrorText` `XhFieldsetLegend` `XhFieldsetRoot` |
 | 组合式函数 | `useFieldset` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/fieldset.css` |
@@ -70,7 +70,7 @@ required 落成 data-required，皮肤据此给组标题加星号；星号只是
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="fieldset"`：**`root`** · **`legend`** · `helper-text` · `error-text`
+`data-scope="fieldset"`：**`root`** · **`legend`** · `description` · `error-text`
 
 ## Props
 
@@ -92,7 +92,7 @@ required 落成 data-required，皮肤据此给组标题加星号；星号只是
 | `required` | `boolean` |  |
 | `getRootProps` | `() => T['element']` |  |
 | `getLegendProps` | `() => T['element']` |  |
-| `getHelperTextProps` | `() => T['element']` |  |
+| `getDescriptionProps` | `() => T['element']` |  |
 | `getErrorTextProps` | `() => T['element']` |  |
 
 ## 键盘
@@ -107,7 +107,7 @@ required 落成 data-required，皮肤据此给组标题加星号；星号只是
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-describedby` | `helper-text` 部件的 id `error-text` 部件的 id \| `helper-text` 部件的 id |
+| `root` | `aria-describedby` | `description` 部件的 id `error-text` 部件的 id \| `description` 部件的 id |
 | `error-text` | `role` | 'alert' |
 
 - 组名来自原生 `<legend>`，它必须是 `<fieldset>` 的首个子节点，否则浏览器不把它当组名。
@@ -131,7 +131,7 @@ required 落成 data-required，皮肤据此给组标题加星号；星号只是
 | `root` | `data-invalid` | ''（条件成立时才出现） |
 | `root` | `data-required` | ''（条件成立时才出现） |
 | `legend` | `data-disabled` | ''（条件成立时才出现） |
-| `helper-text` | `data-disabled` | ''（条件成立时才出现） |
+| `description` | `data-disabled` | ''（条件成立时才出现） |
 
 ## CSS 变量
 

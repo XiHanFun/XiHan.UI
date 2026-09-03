@@ -3,17 +3,8 @@
 // —— 公共样式接口 ——
 export const DATA_SCOPE = 'data-scope' // 组件名，如 dialog
 export const DATA_PART = 'data-part' // 部件名，如 content
-export const DATA_STATE = 'data-state' // open | closed | checked | indeterminate …
-export const DATA_DISABLED = 'data-disabled'
-export const DATA_ORIENTATION = 'data-orientation'
-export const DATA_HIGHLIGHTED = 'data-highlighted'
-export const DATA_SIDE = 'data-side'
-export const DATA_ALIGN = 'data-align'
 
 // —— core 自用的内部标记（不作为公共样式接口）——
-export const DATA_LAYER = 'data-xh-layer'
-export const DATA_LAYER_BRANCH = 'data-xh-layer-branch'
-export const DATA_COLLECTION_ITEM = 'data-xh-collection-item'
 export const DATA_FOCUS_GUARD = 'data-xh-focus-guard'
 /** 带此属性的元素及其后代不被 hideOutside 施加 inert，其祖先只递归不整块罩住。 */
 export const DATA_INERT_EXEMPT = 'data-xh-inert-exempt'

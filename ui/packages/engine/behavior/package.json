@@ -30,10 +30,6 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
-    "./dispatch": {
-      "types": "./dist/dispatch.d.ts",
-      "import": "./dist/dispatch.js"
-    },
     "./presence": {
       "types": "./dist/presence.d.ts",
       "import": "./dist/presence.js"

@@ -332,8 +332,8 @@ export function connectQuestionFlow<T extends PropTypes>(
     }),
 
     // 不写 role：本仓统一走两条 aria-*，role=status 是同一件事的简写
-    getAnnouncementProps: () => normalize.element({
-      ...parts.announcement.attrs,
+    getLiveRegionProps: () => normalize.element({
+      ...parts['live-region'].attrs,
       'aria-live': 'polite',
       'aria-atomic': 'true',
     }),

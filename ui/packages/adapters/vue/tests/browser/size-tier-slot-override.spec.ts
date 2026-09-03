@@ -11,7 +11,7 @@ import {
   XhIcon,
   XhMarkdownStreamContent,
   XhMarkdownStreamRoot,
-  XhToolCallName,
+  XhToolCallLabel,
   XhToolCallRoot,
   XhToolCallTrigger,
 } from '../../src'
@@ -108,7 +108,7 @@ function toolCall(props: Record<string, unknown>): VNode {
   return h(
     XhToolCallRoot,
     { phase: 'output-available', ...props },
-    () => [h(XhToolCallTrigger, null, () => [h(XhToolCallName, null, () => 'read_file')])],
+    () => [h(XhToolCallTrigger, null, () => [h(XhToolCallLabel, null, () => 'read_file')])],
   )
 }
 

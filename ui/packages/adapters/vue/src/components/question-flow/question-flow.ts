@@ -321,14 +321,14 @@ export const XhQuestionFlowResult = defineComponent({
   },
 })
 
-export const XhQuestionFlowAnnouncement = defineComponent({
-  name: 'XhQuestionFlowAnnouncement',
+export const XhQuestionFlowLiveRegion = defineComponent({
+  name: 'XhQuestionFlowLiveRegion',
   setup(_, { slots }) {
     const ctx = useQuestionFlowContext()
     // 不给内容时念进度，交卷后念结果
     return () => h(
       'div',
-      ctx.api.value.getAnnouncementProps() as Record<string, unknown>,
+      ctx.api.value.getLiveRegionProps() as Record<string, unknown>,
       slots.default?.() ?? ctx.api.value.announcement,
     )
   },
