@@ -1,0 +1,76 @@
+<!-- 异步校验 | 规则里的 validator 直接返回 Promise：提交时机器等它回来再放行或拦下，期间 validating 置真可用来标忙 -->
+<xh-form id="form-async">
+  <form data-xh-part="root" style="inline-size: 320px; display: grid; gap: 12px">
+    <div data-xh-part="field-group" value="username">
+      <xh-field>
+        <div data-xh-part="root">
+          <label data-xh-part="label">用户名</label>
+          <input data-xh-part="control" placeholder="试试 admin" />
+          <p data-xh-part="description">提交时先问一次服务端，占用的名字会被挡下</p>
+          <p data-xh-part="error-text"></p>
+        </div>
+      </xh-field>
+    </div>
+
+    <button data-xh-part="submit-trigger" id="form-async-submit">提交</button>
+    <p style="margin: 0; font-size: 13px">已提交：<span id="form-async-submitted">（还没提交过）</span></p>
+  </form>
+</xh-form>
+
+<script type="module">
+  const host = document.getElementById("form-async");
+  const input = host.querySelector('[data-xh-part="control"]');
+  // 部件节点上的 id 由组件自己派生，别写自己的：查它们一律按角色名
+  const hint = host.querySelector('[data-xh-part="description"]');
+  const error = host.querySelector('[data-xh-part="error-text"]');
+  const submit = document.getElementById("form-async-submit");
+  const submitted = document.getElementById("form-async-submitted");
+
+  const TAKEN = ["admin", "root", "xihan"];
+  const HINT = "提交时先问一次服务端，占用的名字会被挡下";
+
+  const defaults = { username: "" };
+  let values = { ...defaults };
+
+  // 远程唯一性核验：这里用定时器模拟服务端往返
+  host.rules = {
+    username: [
+      { required: true, message: "用户名不能为空" },
+      {
+        validator: async (value) => {
+          await new Promise((resolve) => setTimeout(resolve, 700));
+          return TAKEN.includes(String(value).trim()) ? "这个用户名已经有人用了" : undefined;
+        },
+      },
+    ],
+  };
+
+  host.defaultValues = defaults;
+  host.values = values;
+
+  // 提交发出到结果回来之间标忙：这一段正是机器里 validating 为真的那一段
+  function setBusy(busy) {
+    submit.textContent = busy ? "核验中…" : "提交";
+    hint.textContent = busy ? "正在核验…" : HINT;
+  }
+
+  input.addEventListener("input", () => host.setFieldValue("username", input.value));
+
+  host.addEventListener("values-change", (event) => {
+    values = event.detail.values;
+    host.values = values;
+    const next = String(values.username ?? "");
+    if (input.value !== next) input.value = next;
+  });
+
+  host.addEventListener("errors-change", (event) => {
+    error.textContent = event.detail.errors.username ?? "";
+  });
+
+  submit.addEventListener("click", () => setBusy(true));
+  host.addEventListener("submit", (event) => {
+    setBusy(false);
+    submitted.textContent = String(event.detail.values.username ?? "");
+  });
+  host.addEventListener("invalid", () => setBusy(false));
+</script>

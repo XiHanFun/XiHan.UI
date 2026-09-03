@@ -1,0 +1,30 @@
+<!-- 极简排布 | 页码序列不渲染也行，只留上一页 / 下一页与一行位置回显；先后顺序归作者 -->
+<xh-pagination
+  id="pagination-simple"
+  count="1000"
+  page-size="10"
+  page="2"
+  style="inline-size: 100%"
+>
+  <nav data-xh-part="root">
+    <button data-xh-part="prev-trigger"></button>
+    <!-- 整条序列都不铺，只留当前页那一格当位置回显 -->
+    <button id="pagination-simple-current" data-xh-part="item" value="2">
+      2
+    </button>
+    <span>/ 100</span>
+    <button data-xh-part="next-trigger"></button>
+  </nav>
+</xh-pagination>
+
+<script type="module">
+  // 页码写回 page，那一格跟着换数
+  const host = document.getElementById("pagination-simple");
+  const current = document.getElementById("pagination-simple-current");
+
+  host.addEventListener("page-change", (event) => {
+    host.page = event.detail.page;
+    current.setAttribute("value", String(event.detail.page));
+    current.textContent = String(event.detail.page);
+  });
+</script>

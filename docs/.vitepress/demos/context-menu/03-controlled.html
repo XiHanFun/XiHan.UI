@@ -1,0 +1,90 @@
+<!-- 受控与锚点 | 传了 open 就由宿主说了算；root 的插槽给出锚点坐标与 openAt，可以从任意位置弹出 -->
+<div style="inline-size: 100%; display: grid; gap: 12px">
+  <xh-context-menu id="context-menu-controlled" open="false">
+    <div data-xh-part="root">
+      <div
+        data-xh-part="trigger"
+        style="display: grid; place-items: center; min-block-size: 120px"
+      >
+        <span>右键这里，或者用下面的按钮从固定坐标弹出</span>
+      </div>
+      <div data-xh-part="positioner">
+        <div data-xh-part="content">
+          <div data-xh-part="item" value="open">
+            <span data-xh-part="item-text">打开</span>
+          </div>
+          <div data-xh-part="item" value="share">
+            <span data-xh-part="item-text">分享</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap">
+        <button type="button" id="context-menu-controlled-at">
+          在 (120, 200) 弹出
+        </button>
+        <button type="button" id="context-menu-controlled-close">收起</button>
+        <span id="context-menu-controlled-state">已收起</span>
+      </div>
+    </div>
+  </xh-context-menu>
+</div>
+
+<script type="module">
+  const menu = document.getElementById("context-menu-controlled");
+  const trigger = menu.querySelector('[data-xh-part="trigger"]');
+  const state = document.getElementById("context-menu-controlled-state");
+
+  let open = false;
+  let point = null;
+
+  function apply() {
+    menu.open = open;
+    if (!open) {
+      state.textContent = "已收起";
+      return;
+    }
+    // 键盘与长按那两条入口不经 contextmenu，锚点归机器自己挑
+    state.textContent = point
+      ? "展开中 · 锚点 (" + point.x + ", " + point.y + ")"
+      : "展开中";
+  }
+
+  // 锚点坐标就是这一下右键的位置：捕获阶段先记下来，再轮到触发区把菜单打开。
+  // 展开着再右键只挪坐标、不发开合，所以这里也刷一次回显
+  menu.addEventListener(
+    "contextmenu",
+    (event) => {
+      point = { x: event.clientX, y: event.clientY };
+      apply();
+    },
+    true,
+  );
+
+  menu.addEventListener("open-change", (event) => {
+    open = event.detail.open;
+    if (!open) point = null;
+    apply();
+  });
+
+  // 从固定坐标弹出：给触发区补一记带坐标的右键，与用户亲手点的那一下同一条路
+  document
+    .getElementById("context-menu-controlled-at")
+    .addEventListener("click", () => {
+      trigger.dispatchEvent(
+        new MouseEvent("contextmenu", {
+          bubbles: true,
+          cancelable: true,
+          clientX: 120,
+          clientY: 200,
+        }),
+      );
+    });
+
+  document
+    .getElementById("context-menu-controlled-close")
+    .addEventListener("click", () => {
+      open = false;
+      apply();
+    });
+</script>

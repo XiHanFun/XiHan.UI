@@ -1,0 +1,72 @@
+<!-- 圆点与落点 | dot 只表示「有」不表示「有几个」；placement 决定挂在哪个角，rtl 下 end 自动落到左边 -->
+<div style="display: flex; flex-direction: column; gap: 24px">
+  <div style="display: flex; align-items: center; gap: 24px">
+    <xh-badge dot tone="danger" label="有新消息">
+      <span data-xh-part="root">
+        <xh-button variant="outline"><button data-xh-part="root">消息</button></xh-button>
+        <span data-xh-part="indicator"></span>
+      </span>
+    </xh-badge>
+
+    <!-- 在线状态点挂在头像右下角 -->
+    <xh-badge dot tone="success" placement="bottom-end" label="在线">
+      <span data-xh-part="root">
+        <xh-avatar>
+          <span data-xh-part="root">
+            <span data-xh-part="fallback">曦</span>
+          </span>
+        </xh-avatar>
+        <span data-xh-part="indicator"></span>
+      </span>
+    </xh-badge>
+
+    <xh-badge dot tone="neutral" placement="bottom-end" label="离线">
+      <span data-xh-part="root">
+        <xh-avatar>
+          <span data-xh-part="root">
+            <span data-xh-part="fallback">寒</span>
+          </span>
+        </xh-avatar>
+        <span data-xh-part="indicator"></span>
+      </span>
+    </xh-badge>
+  </div>
+
+  <div style="display: flex; align-items: center; gap: 24px">
+    <xh-badge count="9" tone="danger" placement="top-end">
+      <span data-xh-part="root">
+        <xh-button variant="outline"
+          ><button data-xh-part="root">top-end</button></xh-button
+        >
+        <span data-xh-part="indicator"></span>
+      </span>
+    </xh-badge>
+
+    <xh-badge count="9" tone="danger" placement="top-start">
+      <span data-xh-part="root">
+        <xh-button variant="outline"
+          ><button data-xh-part="root">top-start</button></xh-button
+        >
+        <span data-xh-part="indicator"></span>
+      </span>
+    </xh-badge>
+
+    <xh-badge count="9" tone="danger" placement="bottom-end">
+      <span data-xh-part="root">
+        <xh-button variant="outline"
+          ><button data-xh-part="root">bottom-end</button></xh-button
+        >
+        <span data-xh-part="indicator"></span>
+      </span>
+    </xh-badge>
+
+    <xh-badge count="9" tone="danger" placement="bottom-start">
+      <span data-xh-part="root">
+        <xh-button variant="outline"
+          ><button data-xh-part="root">bottom-start</button></xh-button
+        >
+        <span data-xh-part="indicator"></span>
+      </span>
+    </xh-badge>
+  </div>
+</div>

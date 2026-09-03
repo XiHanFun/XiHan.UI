@@ -1,0 +1,105 @@
+<!-- 范围选 | 按住 Shift 点某一项，选中锚点到它那一段；锚点跨到另一侧时退化成普通勾选 -->
+<div id="transfer-range" style="inline-size: 100%; max-inline-size: 520px">
+  <p style="margin-block-end: 12px; color: var(--xh-fg-muted)">
+    点左侧第一项，再<strong>按住 Shift</strong> 点更下面的一项 —— 中间整段一起勾上。
+    两侧是各自独立的列表，锚点跨到另一侧时退化成普通勾选。
+  </p>
+  <xh-transfer>
+    <div data-xh-part="root">
+      <div data-xh-part="source-panel">
+        <div data-xh-part="panel-header">
+          <span data-xh-part="panel-title">待选权限</span>
+          <span data-xh-part="panel-count"></span>
+        </div>
+        <!-- 两侧各挂一份全集，不属于本侧的那一份由元素打上 hidden，不卸载节点 -->
+        <div data-xh-part="list">
+          <div data-xh-part="item" value="read">
+            <span data-xh-part="item-checkbox"></span>
+            <span data-xh-part="item-text">查看</span>
+          </div>
+          <div data-xh-part="item" value="create">
+            <span data-xh-part="item-checkbox"></span>
+            <span data-xh-part="item-text">新建</span>
+          </div>
+          <div data-xh-part="item" value="update">
+            <span data-xh-part="item-checkbox"></span>
+            <span data-xh-part="item-text">编辑</span>
+          </div>
+          <div data-xh-part="item" value="delete">
+            <span data-xh-part="item-checkbox"></span>
+            <span data-xh-part="item-text">删除</span>
+          </div>
+          <div data-xh-part="item" value="export">
+            <span data-xh-part="item-checkbox"></span>
+            <span data-xh-part="item-text">导出</span>
+          </div>
+          <div data-xh-part="item" value="audit">
+            <span data-xh-part="item-checkbox"></span>
+            <span data-xh-part="item-text">审计</span>
+          </div>
+        </div>
+      </div>
+
+      <button data-xh-part="to-target-trigger"></button>
+      <button data-xh-part="to-source-trigger"></button>
+
+      <div data-xh-part="target-panel">
+        <div data-xh-part="panel-header">
+          <span data-xh-part="panel-title">已选权限</span>
+          <span data-xh-part="panel-count"></span>
+        </div>
+        <div data-xh-part="list">
+          <div data-xh-part="item" value="read">
+            <span data-xh-part="item-checkbox"></span>
+            <span data-xh-part="item-text">查看</span>
+          </div>
+          <div data-xh-part="item" value="create">
+            <span data-xh-part="item-checkbox"></span>
+            <span data-xh-part="item-text">新建</span>
+          </div>
+          <div data-xh-part="item" value="update">
+            <span data-xh-part="item-checkbox"></span>
+            <span data-xh-part="item-text">编辑</span>
+          </div>
+          <div data-xh-part="item" value="delete">
+            <span data-xh-part="item-checkbox"></span>
+            <span data-xh-part="item-text">删除</span>
+          </div>
+          <div data-xh-part="item" value="export">
+            <span data-xh-part="item-checkbox"></span>
+            <span data-xh-part="item-text">导出</span>
+          </div>
+          <div data-xh-part="item" value="audit">
+            <span data-xh-part="item-checkbox"></span>
+            <span data-xh-part="item-text">审计</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </xh-transfer>
+
+  <p id="transfer-range-out" style="margin-block-start: 12px; font-size: 13px">
+    已选：read
+  </p>
+</div>
+
+<script type="module">
+  const stage = document.getElementById("transfer-range");
+  const transfer = stage.querySelector("xh-transfer");
+  const out = document.getElementById("transfer-range-out");
+
+  transfer.collection = [
+    { value: "read", label: "查看" },
+    { value: "create", label: "新建" },
+    { value: "update", label: "编辑" },
+    { value: "delete", label: "删除" },
+    { value: "export", label: "导出" },
+    { value: "audit", label: "审计" },
+  ];
+
+  transfer.value = ["read"];
+  transfer.addEventListener("value-change", (event) => {
+    transfer.value = event.detail.value;
+    out.textContent = `已选：${event.detail.value.length ? event.detail.value.join("、") : "（无）"}`;
+  });
+</script>

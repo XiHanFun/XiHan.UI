@@ -1,0 +1,31 @@
+<!-- 可见文案 | label 部件不写内容时显示解析后的 label，屏幕上看到的与读屏念的因此是同一段字 -->
+<div id="spinner-label" style="display: flex; align-items: center; gap: 24px">
+  <!-- 文案只写在 label 特性上，可见文字从活区的名字取回来 -->
+  <xh-spinner label="正在加载数据">
+    <span data-xh-part="root">
+      <span data-xh-part="label"></span>
+    </span>
+  </xh-spinner>
+
+  <!-- 换语言包同理：label → translations.label → 内置默认值，取第一段有字的 -->
+  <xh-spinner id="spinner-label-i18n">
+    <span data-xh-part="root">
+      <span data-xh-part="label"></span>
+    </span>
+  </xh-spinner>
+</div>
+
+<script type="module">
+  // 文案是对象，只走 property
+  document.getElementById("spinner-label-i18n").translations = {
+    label: "正在提交表单",
+  };
+
+  // 可见文字取元素解析后写在活区上的那个名字，两处于是恒等
+  for (const host of document.querySelectorAll("#spinner-label xh-spinner")) {
+    await host.updateComplete;
+    const root = host.querySelector('[data-xh-part="root"]');
+    host.querySelector('[data-xh-part="label"]').textContent =
+      root.getAttribute("aria-label");
+  }
+</script>

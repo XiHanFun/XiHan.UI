@@ -1,0 +1,108 @@
+<!-- 触屏拖动把手 | 整行起手只认鼠标与笔；触屏要按住行首那个把手才拖得动，代价是那一小块地方不再跟着表格滚。键盘那一路照旧：Tab 进表体后 Alt + 上下键 -->
+<div
+  id="table-row-drag-handle"
+  style="width: 100%; max-width: 560px; display: grid; gap: 12px"
+>
+  <xh-table data-host row-reorderable>
+    <div data-xh-part="root">
+      <div data-xh-part="caption">
+        鼠标按住整行就能拖；手机上按住行首的抓手拖，按下即走，不用先拖一段距离
+      </div>
+      <div data-xh-part="header">
+        <div data-xh-part="row">
+          <!-- 表头没有把手，补一块同宽的空位，列标题才和下面的格子对得上 -->
+          <span
+            aria-hidden="true"
+            style="
+              flex: none;
+              inline-size: var(--xh-table-row-drag-size, var(--xh-control-indicator-size));
+            "
+          ></span>
+          <div data-xh-part="column-header" value="step">序号</div>
+          <div data-xh-part="column-header" value="name">环节</div>
+          <div data-xh-part="column-header" value="owner">负责人</div>
+        </div>
+      </div>
+      <div data-xh-part="body" data-body>
+        <div data-xh-part="row" value="s1">
+          <!-- 把手排在所有格子之前；它对读屏隐藏也不占 Tab 位，键盘换位走表体上的 Alt + 上下键 -->
+          <span data-xh-part="row-drag-trigger"></span>
+          <div data-xh-part="cell" value="step">1</div>
+          <div data-xh-part="cell" value="name">需求评审</div>
+          <div data-xh-part="cell" value="owner">赵一</div>
+        </div>
+        <div data-xh-part="row" value="s2">
+          <span data-xh-part="row-drag-trigger"></span>
+          <div data-xh-part="cell" value="step">2</div>
+          <div data-xh-part="cell" value="name">方案设计</div>
+          <div data-xh-part="cell" value="owner">钱二</div>
+        </div>
+        <div data-xh-part="row" value="s3">
+          <span data-xh-part="row-drag-trigger"></span>
+          <div data-xh-part="cell" value="step">3</div>
+          <div data-xh-part="cell" value="name">开发实现</div>
+          <div data-xh-part="cell" value="owner">孙三</div>
+        </div>
+        <div data-xh-part="row" value="s4">
+          <span data-xh-part="row-drag-trigger"></span>
+          <div data-xh-part="cell" value="step">4</div>
+          <div data-xh-part="cell" value="name">测试验收</div>
+          <div data-xh-part="cell" value="owner">李四</div>
+        </div>
+        <div data-xh-part="row" value="s5">
+          <span data-xh-part="row-drag-trigger"></span>
+          <div data-xh-part="cell" value="step">5</div>
+          <div data-xh-part="cell" value="name">发布上线</div>
+          <div data-xh-part="cell" value="owner">周五</div>
+        </div>
+      </div>
+    </div>
+  </xh-table>
+  <span data-readout></span>
+</div>
+
+<script type="module">
+  const scope = document.getElementById("table-row-drag-handle");
+  const table = scope.querySelector("[data-host]");
+  const body = scope.querySelector("[data-body]");
+  const readout = scope.querySelector("[data-readout]");
+
+  table.columns = [
+    { id: "step", label: "序号", width: "4rem" },
+    { id: "name", label: "环节", width: "10rem" },
+    { id: "owner", label: "负责人" },
+  ];
+
+  // 行序的主人是这份数组，跟着它走
+  let steps = [
+    { id: "s1", name: "需求评审" },
+    { id: "s2", name: "方案设计" },
+    { id: "s3", name: "开发实现" },
+    { id: "s4", name: "测试验收" },
+    { id: "s5", name: "发布上线" },
+  ];
+
+  const nodeOf = new Map(
+    [...body.children].map((row) => [row.getAttribute("value"), row]),
+  );
+
+  // 行序变了要动三处：rows 定义、表体里的节点次序、序号那一列
+  function render() {
+    table.rows = steps.map((step) => ({ id: step.id }));
+    body.append(...steps.map((step) => nodeOf.get(step.id)));
+    steps.forEach((step, i) => {
+      nodeOf.get(step.id).querySelector('[value="step"]').textContent = String(i + 1);
+    });
+    readout.textContent = `当前顺序：${steps.map((step) => step.name).join(" → ")}`;
+  }
+
+  // detail.ids 是已经重排好的整份行序，照它取一遍就是新数组。
+  // 平表没有层级，detail.parent 恒为 null、index 就是搬完之后的第几行
+  table.addEventListener("row-move", (event) => {
+    const byId = new Map(steps.map((step) => [step.id, step]));
+    steps = event.detail.ids.flatMap((id) => byId.get(id) ?? []);
+    render();
+  });
+
+  render();
+</script>

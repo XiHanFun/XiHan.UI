@@ -1,0 +1,76 @@
+<!-- 线性模式 | linear 下还没走到的步一律禁用，只能回头看走过的；它只拦界面上的乱跳，逐步前进照常 -->
+<div style="display: flex; flex-direction: column; gap: 12px; inline-size: 100%">
+  <xh-steps id="steps-linear" step="0" count="3" linear>
+    <div data-xh-part="root">
+      <div data-xh-part="list">
+        <div data-xh-part="item" value="0">
+          <button data-xh-part="trigger">
+            <span data-xh-part="indicator">1</span>
+            <span data-xh-part="title">实名认证</span>
+          </button>
+          <div data-xh-part="separator"></div>
+        </div>
+        <div data-xh-part="item" value="1">
+          <button data-xh-part="trigger">
+            <span data-xh-part="indicator">2</span>
+            <span data-xh-part="title">绑定银行卡</span>
+          </button>
+          <div data-xh-part="separator"></div>
+        </div>
+        <div data-xh-part="item" value="2">
+          <button data-xh-part="trigger">
+            <span data-xh-part="indicator">3</span>
+            <span data-xh-part="title">签署协议</span>
+          </button>
+          <div data-xh-part="separator"></div>
+        </div>
+      </div>
+
+      <div data-xh-part="content" value="0">面板 1：上传证件照。</div>
+      <div data-xh-part="content" value="1">面板 2：填写卡号。</div>
+      <div data-xh-part="content" value="2">面板 3：勾选并签署。</div>
+      <div data-xh-part="content" value="3">全部完成。</div>
+    </div>
+  </xh-steps>
+
+  <div style="display: flex; align-items: center; gap: 8px">
+    <xh-button id="steps-linear-prev" variant="outline">
+      <button data-xh-part="root">上一步</button>
+    </xh-button>
+    <xh-button id="steps-linear-next" variant="solid">
+      <button data-xh-part="root">下一步</button>
+    </xh-button>
+    <span id="steps-linear-value">当前：第 1 / 3 步</span>
+  </div>
+</div>
+
+<script type="module">
+  const steps = document.getElementById("steps-linear");
+  const readout = document.getElementById("steps-linear-value");
+  const prev = document.getElementById("steps-linear-prev");
+  const next = document.getElementById("steps-linear-next");
+  const indicators = [...steps.querySelectorAll('[data-xh-part="indicator"]')];
+
+  const COUNT = 3;
+  let step = 0;
+
+  // 两颗按钮直接写步序：linear 拦的是标签上的乱跳，逐步前进不受它管
+  function setStep(current) {
+    step = current;
+    steps.step = current;
+    prev.disabled = current === 0;
+    next.disabled = current === COUNT;
+    readout.textContent =
+      current === COUNT ? "当前：全部完成" : `当前：第 ${current + 1} / ${COUNT} 步`;
+    indicators.forEach((indicator, index) => {
+      indicator.textContent = current > index ? "" : String(index + 1);
+    });
+  }
+
+  prev.addEventListener("click", () => setStep(step - 1));
+  next.addEventListener("click", () => setStep(step + 1));
+
+  // 点已经走过的标签能回头看，还没解锁的那些按不动
+  steps.addEventListener("step-change", (event) => setStep(event.detail.step));
+  setStep(0);
+</script>

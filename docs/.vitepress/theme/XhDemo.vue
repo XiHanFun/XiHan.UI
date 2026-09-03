@@ -7,7 +7,12 @@ import {
   watchPostEffect,
   type Component,
 } from "vue";
-import { demoFramework, demoFrameworks, setDemoFramework } from "./demo-framework";
+import {
+  demoFramework,
+  demoFrameworks,
+  demoNotApplicable,
+  setDemoFramework,
+} from "./demo-framework";
 
 const props = defineProps<{
   /** 示例路径，相对 .vitepress/demos 且不带扩展名，如 "switch/01-basic" */
@@ -86,6 +91,10 @@ const wcHtml = computed(() =>
 );
 // 源码还在路上时不显示「暂无此框架版本」
 const missing = computed(() => !availableIds.value.has(demoFramework.value));
+// 这个目录本就不出当前框架的版本时，把结论摆出来，不说成「还没写」
+const notApplicable = computed(() =>
+  demoNotApplicable(demoFramework.value, props.src)
+);
 
 const wcHost = ref<HTMLElement | null>(null);
 
@@ -140,7 +149,8 @@ async function copy() {
       <component :is="vueDemo" v-if="vueDemo" />
       <div v-else-if="!missing" ref="wcHost" class="xh-demo__wc" />
       <div v-else class="xh-demo__missing">
-        <p>这个示例还没有 {{ activeName }} 版：{{ src }}</p>
+        <p v-if="notApplicable">{{ activeName }} 版不适用：{{ notApplicable }}</p>
+        <p v-else>这个示例还没有 {{ activeName }} 版：{{ src }}</p>
         <button
           v-if="fallback"
           class="xh-demo__btn"
@@ -199,13 +209,17 @@ async function copy() {
 }
 .xh-demo__missing {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 12px;
   color: var(--vp-c-text-2);
   font-size: 14px;
+  line-height: 1.7;
 }
+/* 结论是整句话，长过一行就折行，右边的按钮跟着落到下一行 */
 .xh-demo__missing p {
   margin: 0;
+  max-width: 68ch;
 }
 .xh-demo__bar {
   display: flex;

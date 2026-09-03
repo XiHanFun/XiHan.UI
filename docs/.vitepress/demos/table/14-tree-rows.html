@@ -1,0 +1,146 @@
+<!-- 树形表格 | rows 按契约就是一条已摊平的可见行序列：层级三件套逐行自报，缩进落在首格的内边距上 -->
+<div id="table-tree-rows" style="width: 100%; max-width: 520px; display: grid; gap: 12px">
+  <xh-table data-host>
+    <div data-xh-part="root">
+      <div data-xh-part="header">
+        <div data-xh-part="row">
+          <div data-xh-part="column-header" value="name">组织</div>
+          <div data-xh-part="column-header" value="owner">负责人</div>
+        </div>
+      </div>
+      <div data-xh-part="body" data-body></div>
+    </div>
+  </xh-table>
+  <span data-readout></span>
+</div>
+
+<script type="module">
+  const scope = document.getElementById("table-tree-rows");
+  const table = scope.querySelector("[data-host]");
+  const body = scope.querySelector("[data-body]");
+  const readout = scope.querySelector("[data-readout]");
+
+  table.columns = [
+    { id: "name", label: "组织", width: "13rem" },
+    { id: "owner", label: "负责人" },
+  ];
+
+  const tree = [
+    {
+      id: "rd",
+      label: "研发中心",
+      owner: "赵一",
+      children: [
+        {
+          id: "rd-web",
+          label: "前端组",
+          owner: "钱二",
+          children: [
+            { id: "rd-web-1", label: "组件库", owner: "孙三" },
+            { id: "rd-web-2", label: "控制台", owner: "李四" },
+          ],
+        },
+        { id: "rd-api", label: "服务端组", owner: "周五" },
+      ],
+    },
+    {
+      id: "ops",
+      label: "运维中心",
+      owner: "吴六",
+      children: [{ id: "ops-1", label: "值班平台", owner: "郑七" }],
+    },
+  ];
+
+  let expanded = ["rd"];
+
+  // 收起分支的子树整段不出现在序列里，行号因此永远连续
+  function flatten() {
+    const out = [];
+    const walk = (nodes, level) => {
+      nodes.forEach((node, i) => {
+        const branch = !!node.children?.length;
+        const open = branch && expanded.includes(node.id);
+        out.push({ ...node, level, pos: i + 1, size: nodes.length, branch, open });
+        if (open) walk(node.children, level + 1);
+      });
+    };
+    walk(tree, 1);
+    return out;
+  }
+
+  const TWISTY_STYLE =
+    "display: inline-flex; flex: none; align-items: center; justify-content: center; inline-size: 1rem; block-size: 1rem";
+  const CHEVRON = `<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6L15 12L9 18"/></svg>`;
+
+  function rowNode(row) {
+    const el = document.createElement("div");
+    el.dataset.xhPart = "row";
+    el.setAttribute("value", row.id);
+    // 层级三件套逐行自报：摊平的序列在 DOM 上不嵌套，层级只能这样说出来
+    el.setAttribute("aria-level", String(row.level));
+    el.setAttribute("aria-posinset", String(row.pos));
+    el.setAttribute("aria-setsize", String(row.size));
+    if (row.branch) el.setAttribute("aria-expanded", String(row.open));
+
+    const name = document.createElement("div");
+    name.dataset.xhPart = "cell";
+    name.setAttribute("value", "name");
+    // 缩进是首格的内边距，与层级号同源
+    name.style.paddingInlineStart = `${row.level * 16}px`;
+    // 开合箭头只服务指针，键盘那一路走左右方向键，因此对读屏隐藏
+    const twisty = document.createElement("span");
+    twisty.setAttribute("aria-hidden", "true");
+    twisty.setAttribute("style", TWISTY_STYLE);
+    if (row.branch) {
+      twisty.dataset.twisty = row.id;
+      twisty.style.cursor = "pointer";
+      twisty.style.rotate = row.open ? "90deg" : "0deg";
+      twisty.innerHTML = CHEVRON;
+    }
+    name.append(twisty, row.label);
+
+    const owner = document.createElement("div");
+    owner.dataset.xhPart = "cell";
+    owner.setAttribute("value", "owner");
+    owner.textContent = row.owner;
+
+    el.append(name, owner);
+    return el;
+  }
+
+  function render() {
+    const flat = flatten();
+    table.rows = flat.map((row) => ({ id: row.id }));
+    body.replaceChildren(...flat.map(rowNode));
+    readout.textContent = `展开：${expanded.length ? expanded.join("、") : "（无）"}`;
+  }
+
+  function toggle(id) {
+    expanded = expanded.includes(id)
+      ? expanded.filter((value) => value !== id)
+      : [...expanded, id];
+    render();
+  }
+
+  body.addEventListener("click", (event) => {
+    const twisty = event.target.closest("[data-twisty]");
+    if (twisty) toggle(twisty.dataset.twisty);
+  });
+
+  // 焦点行是父级时左右方向键切换开合；连接层遇到不可展开的行原样放行这两个键
+  body.addEventListener("keydown", (event) => {
+    const el = event.target.closest('[data-xh-part="row"]');
+    if (!el) return;
+    const id = el.getAttribute("value");
+    const row = flatten().find((item) => item.id === id);
+    if (!row?.branch) return;
+    const wantOpen = event.key === "ArrowRight";
+    const wantClose = event.key === "ArrowLeft";
+    if ((wantOpen && !row.open) || (wantClose && row.open)) {
+      event.preventDefault();
+      toggle(id);
+    }
+  });
+
+  render();
+</script>

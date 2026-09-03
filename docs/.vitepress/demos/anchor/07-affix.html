@@ -1,0 +1,76 @@
+<!-- 吸顶目录 | 目录用 sticky 钉在滚动容器顶边，滚动时留在原处；判定线仍由 offset 定 -->
+<div
+  id="anchor-affix-scroll"
+  style="
+    block-size: 260px;
+    overflow: auto;
+    inline-size: 100%;
+    border: 1px solid var(--xh-border-default);
+    border-radius: 8px;
+  "
+>
+  <div
+    style="display: grid; grid-template-columns: 140px 1fr; gap: 20px; padding: 12px"
+  >
+    <!-- 外层这格随内容拉满，目录在它内部 sticky，才有可移动的余量 -->
+    <div>
+      <template id="anchor-affix-nav">
+        <xh-anchor
+          offset="12"
+          smooth
+          style="
+            display: block;
+            position: sticky;
+            inset-block-start: 0;
+            background: var(--xh-bg-surface);
+          "
+        >
+          <nav data-xh-part="root">
+            <ul data-xh-part="list">
+              <li data-xh-part="item">
+                <a data-xh-part="link" value="anchor-affix-intro">简介</a>
+              </li>
+              <li data-xh-part="item">
+                <a data-xh-part="link" value="anchor-affix-install">安装</a>
+              </li>
+              <li data-xh-part="item">
+                <a data-xh-part="link" value="anchor-affix-usage">用法</a>
+              </li>
+              <li data-xh-part="item">
+                <a data-xh-part="link" value="anchor-affix-faq">常见问题</a>
+              </li>
+              <li data-xh-part="indicator"></li>
+            </ul>
+          </nav>
+        </xh-anchor>
+      </template>
+    </div>
+
+    <div>
+      <div id="anchor-affix-intro" style="block-size: 200px">
+        <strong>简介</strong>
+        <p>滚动整块区域，左边的目录会一直贴在顶边。</p>
+      </div>
+      <div id="anchor-affix-install" style="block-size: 200px">
+        <strong>安装</strong>
+        <p>滚动整块区域，左边的目录会一直贴在顶边。</p>
+      </div>
+      <div id="anchor-affix-usage" style="block-size: 200px">
+        <strong>用法</strong>
+        <p>滚动整块区域，左边的目录会一直贴在顶边。</p>
+      </div>
+      <div id="anchor-affix-faq" style="block-size: 200px">
+        <strong>常见问题</strong>
+        <p>滚动整块区域，左边的目录会一直贴在顶边。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  // 滚动容器是 DOM 句柄，只走属性；先交句柄再进 DOM，滚动观察器才挂得到这一层
+  const template = document.getElementById("anchor-affix-nav");
+  const anchor = template.content.firstElementChild;
+  anchor.scrollElement = document.getElementById("anchor-affix-scroll");
+  template.replaceWith(anchor);
+</script>

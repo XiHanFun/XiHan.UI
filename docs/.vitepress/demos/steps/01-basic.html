@@ -1,0 +1,78 @@
+<!-- 基础用法 | 不传 step 即为非受控；方向键只搬焦点，按 Enter 或空格才切步，进退方法由 root 的插槽交出来 -->
+<div style="display: flex; flex-direction: column; gap: 12px; inline-size: 100%">
+  <!-- 不写 step：步序住在组件里，宿主只跟着它回显 -->
+  <xh-steps id="steps-basic" count="3">
+    <div data-xh-part="root">
+      <div data-xh-part="list">
+        <div data-xh-part="item" value="0">
+          <button data-xh-part="trigger">
+            <!-- 圆点里的字符是作者内容：皮肤只按 data-state 管描边与填充 -->
+            <span data-xh-part="indicator">1</span>
+            <span data-xh-part="title">填写地址</span>
+            <span data-xh-part="description">收货人与联系方式</span>
+          </button>
+          <div data-xh-part="separator"></div>
+        </div>
+        <div data-xh-part="item" value="1">
+          <button data-xh-part="trigger">
+            <span data-xh-part="indicator">2</span>
+            <span data-xh-part="title">选择支付</span>
+            <span data-xh-part="description">支付方式与优惠</span>
+          </button>
+          <div data-xh-part="separator"></div>
+        </div>
+        <div data-xh-part="item" value="2">
+          <button data-xh-part="trigger">
+            <span data-xh-part="indicator">3</span>
+            <span data-xh-part="title">确认订单</span>
+            <span data-xh-part="description">核对金额</span>
+          </button>
+          <div data-xh-part="separator"></div>
+        </div>
+      </div>
+
+      <div data-xh-part="content" value="0">面板 1：填写收货地址。</div>
+      <div data-xh-part="content" value="1">面板 2：选择支付方式。</div>
+      <div data-xh-part="content" value="2">面板 3：核对金额并提交。</div>
+    </div>
+  </xh-steps>
+
+  <div style="display: flex; align-items: center; gap: 8px">
+    <xh-button id="steps-basic-prev" variant="outline">
+      <button data-xh-part="root">上一步</button>
+    </xh-button>
+    <xh-button id="steps-basic-next" variant="solid">
+      <button data-xh-part="root">下一步</button>
+    </xh-button>
+    <span>当前：第 <span id="steps-basic-value">1</span> / 3 步</span>
+  </div>
+</div>
+
+<script type="module">
+  const steps = document.getElementById("steps-basic");
+  const readout = document.getElementById("steps-basic-value");
+  const prev = document.getElementById("steps-basic-prev");
+  const next = document.getElementById("steps-basic-next");
+  const triggers = [...steps.querySelectorAll('[data-xh-part="trigger"]')];
+  const indicators = [...steps.querySelectorAll('[data-xh-part="indicator"]')];
+
+  // 步序不在这里持有，只从 step-change 抄一份用来画圆点与开合按钮
+  let step = 0;
+
+  function paint(current) {
+    step = current;
+    readout.textContent = String(current + 1);
+    prev.disabled = current === 0;
+    next.disabled = current === triggers.length - 1;
+    indicators.forEach((indicator, index) => {
+      indicator.textContent = current > index ? "" : String(index + 1);
+    });
+  }
+
+  // 外部按钮转交给对应那一步的标签，与用户自己点它走的是同一条路
+  prev.addEventListener("click", () => triggers[step - 1]?.click());
+  next.addEventListener("click", () => triggers[step + 1]?.click());
+
+  steps.addEventListener("step-change", (event) => paint(event.detail.step));
+  paint(0);
+</script>

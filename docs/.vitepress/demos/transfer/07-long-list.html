@@ -1,0 +1,129 @@
+<!-- 一万条只渲可视区 | 面板插槽给的是本侧此刻看得见的全集，作者按滚动位置切一段挂出来，上下各留一个撑高块；全选、计数与搬运不读 DOM，照样管到窗口外 -->
+<div id="transfer-long" style="inline-size: 100%; max-inline-size: 560px">
+  <!-- 行高与列表高度写死，窗口才算得出来 -->
+  <xh-transfer searchable style="--xh-transfer-list-h: 240px">
+    <div data-xh-part="root">
+      <div data-xh-part="source-panel">
+        <div data-xh-part="panel-header">
+          <span data-xh-part="panel-title">全部商品</span>
+          <button data-xh-part="select-all-trigger">全选</button>
+          <span data-xh-part="panel-count"></span>
+        </div>
+        <input data-xh-part="search" placeholder="搜索编号" />
+        <div data-xh-part="list"></div>
+      </div>
+
+      <button data-xh-part="to-target-trigger"></button>
+      <button data-xh-part="to-source-trigger"></button>
+
+      <div data-xh-part="target-panel">
+        <div data-xh-part="panel-header">
+          <span data-xh-part="panel-title">本次上架</span>
+          <button data-xh-part="select-all-trigger">全选</button>
+          <span data-xh-part="panel-count"></span>
+        </div>
+        <input data-xh-part="search" placeholder="搜索编号" />
+        <div data-xh-part="list"></div>
+      </div>
+    </div>
+  </xh-transfer>
+
+  <p id="transfer-long-out" style="margin-block-start: 12px; font-size: 13px">
+    已上架 1 件
+  </p>
+</div>
+
+<script type="module">
+  // 行高与列表高度写死，窗口才算得出来
+  const ROW = 30;
+  const VIEW = 240;
+  const OVERSCAN = 6;
+
+  const items = Array.from({ length: 10000 }, (_, i) => ({
+    value: `sku-${i + 1}`,
+    label: `商品 SKU-${String(i + 1).padStart(5, "0")}`,
+  }));
+
+  const stage = document.getElementById("transfer-long");
+  const transfer = stage.querySelector("xh-transfer");
+  const out = document.getElementById("transfer-long-out");
+
+  transfer.collection = items;
+
+  let value = ["sku-3"];
+  let inTarget = new Set(value);
+  transfer.value = value;
+
+  // 两侧各记一份滚动位置与搜索串
+  const sides = ["source", "target"].map((side) => {
+    const panel = stage.querySelector(`[data-xh-part="${side}-panel"]`);
+    const state = {
+      side,
+      list: panel.querySelector('[data-xh-part="list"]'),
+      scrolled: 0,
+      query: "",
+    };
+    state.list.addEventListener("scroll", () => {
+      state.scrolled = state.list.scrollTop;
+      render(state);
+    });
+    panel.querySelector('[data-xh-part="search"]').addEventListener("input", (event) => {
+      state.query = event.target.value;
+      render(state);
+    });
+    return state;
+  });
+
+  function pad(size) {
+    const el = document.createElement("div");
+    el.setAttribute("aria-hidden", "true");
+    el.style.flex = "none";
+    el.style.blockSize = `${size}px`;
+    return el;
+  }
+
+  function itemNode(item) {
+    const el = document.createElement("div");
+    el.dataset.xhPart = "item";
+    el.setAttribute("value", item.value);
+    el.style.blockSize = `${ROW}px`;
+    el.innerHTML =
+      '<span data-xh-part="item-checkbox"></span><span data-xh-part="item-text"></span>';
+    el.querySelector('[data-xh-part="item-text"]').textContent = item.label;
+    return el;
+  }
+
+  // 本侧此刻看得见的全集：先按落在哪一侧分，再套搜索串，与元素内部同一口径
+  function shownOf(state) {
+    const query = state.query.trim().toLowerCase();
+    return items.filter(
+      (item) =>
+        (inTarget.has(item.value) ? "target" : "source") === state.side &&
+        (query === "" || item.label.toLowerCase().includes(query))
+    );
+  }
+
+  // 该挂出来的那一段：可视区前后各多铺几条，方向键走到边上时下一条已经在 DOM 里
+  function render(state) {
+    const shown = shownOf(state);
+    const max = Math.max(0, shown.length * ROW - VIEW);
+    const top = Math.min(state.scrolled, max);
+    const start = Math.max(0, Math.floor(top / ROW) - OVERSCAN);
+    const end = Math.min(shown.length, Math.ceil((top + VIEW) / ROW) + OVERSCAN);
+    state.list.replaceChildren(
+      pad(start * ROW),
+      ...shown.slice(start, end).map(itemNode),
+      pad((shown.length - end) * ROW)
+    );
+  }
+
+  transfer.addEventListener("value-change", (event) => {
+    value = event.detail.value;
+    inTarget = new Set(value);
+    transfer.value = value;
+    out.textContent = `已上架 ${value.length} 件`;
+    for (const state of sides) render(state);
+  });
+
+  for (const state of sides) render(state);
+</script>

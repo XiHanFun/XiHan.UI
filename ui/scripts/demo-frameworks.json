@@ -10,7 +10,15 @@
       "id": "web-components",
       "name": "Web Components",
       "ext": ".html",
-      "lang": "html"
+      "lang": "html",
+      "elements": "packages/adapters/web-components/custom-elements.json"
     }
-  ]
+  ],
+  "notApplicable": {
+    "web-components": {
+      "animations": "@xihan-ui/animations 是框架无关的 JS 包，没有 <xh-animations> 元素，这两份示例的主语是 createMotionPlayer 与 playAll 两个函数。自定义元素版取不到它们：示例源码经 innerHTML 注入、再把 <script> 逐个重建执行，页面里没有 import map，裸说明符当场抛错，函数只能从包里导入。「不用 Vue 怎么写」这一问值得答，但要答它得先给文档站一条让示例取到包的路，那是文档站的能力，不是这两份示例补得上的。",
+      "motion": "@xihan-ui/motion 是框架无关的 JS 包，没有 <xh-motion> 元素，这份示例的主语是 createSpring 与 springToLinearEasing 两个函数。自定义元素版取不到它们：示例源码经 innerHTML 注入、再把 <script> 逐个重建执行，页面里没有 import map，裸说明符当场抛错。「不用 Vue 怎么写」这一问值得答，但要答它得先给文档站一条让示例取到包的路，那是文档站的能力，不是这份示例补得上的。",
+      "sound": "@xihan-ui/sound 是框架无关的 JS 包，没有 <xh-sound> 元素。01-play 与 04-designer 的主语是 createSoundPlayer 与 play：示例源码经 innerHTML 注入、再把 <script> 逐个重建执行，页面里没有 import map，裸说明符当场抛错，自定义元素版取不到这两个函数；要答「不用 Vue 怎么写」，得先给文档站一条让示例取到包的路。02-toast 与 03-directive 的主语是 withToastSound 与 v-sound，只存在于 @xihan-ui/vue/sound，换个框架就没有对应的东西。"
+    }
+  }
 }

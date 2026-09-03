@@ -1,0 +1,121 @@
+<!-- 前缀列与分页序号 | prefix-columns 让库把序号/多选列插在最前面并占住列号；序号是分页全局序号，翻到第二页不会又从 1 开始 -->
+<div
+  id="table-prefix-columns"
+  style="display: flex; flex-direction: column; gap: 12px; inline-size: 100%"
+>
+  <xh-table data-host selection-mode="multiple" page="1" page-size="10" striped>
+    <div data-xh-part="root">
+      <div data-xh-part="header">
+        <div data-xh-part="row" value="__head__">
+          <!-- 前缀列的列 id 由库定，两侧带下划线，与作者自己的列 id 分得开 -->
+          <div data-xh-part="column-header" value="__index__">#</div>
+          <div data-xh-part="column-header" value="__select__">
+            <span data-xh-part="select-all-trigger"></span>
+          </div>
+          <div data-xh-part="column-header" value="name">名称</div>
+          <div data-xh-part="column-header" value="owner">负责人</div>
+          <div data-xh-part="column-header" value="status">状态</div>
+        </div>
+      </div>
+      <div data-xh-part="body" data-body></div>
+    </div>
+  </xh-table>
+
+  <xh-pagination data-pagination count="43" page-size="10">
+    <nav data-xh-part="root">
+      <button data-xh-part="prev-trigger"></button>
+      <button data-xh-part="item" value="1">1</button>
+      <button data-xh-part="item" value="2">2</button>
+      <button data-xh-part="item" value="3">3</button>
+      <button data-xh-part="item" value="4">4</button>
+      <button data-xh-part="item" value="5">5</button>
+      <button data-xh-part="next-trigger"></button>
+    </nav>
+  </xh-pagination>
+
+  <span data-readout style="font-size: 13px"></span>
+</div>
+
+<script type="module">
+  const scope = document.getElementById("table-prefix-columns");
+  const table = scope.querySelector("[data-host]");
+  const pagination = scope.querySelector("[data-pagination]");
+  const body = scope.querySelector("[data-body]");
+  const readout = scope.querySelector("[data-readout]");
+
+  const PAGE_SIZE = 10;
+
+  const all = Array.from({ length: 43 }, (_, i) => ({
+    id: `r${i + 1}`,
+    name: `资源 ${i + 1}`,
+    owner: ["曦寒", "碧落", "葳蕤"][i % 3],
+    status: i % 4 === 0 ? "停用" : "启用",
+  }));
+
+  // 序号与多选两列由库插在最前面，作者只管照这个顺序渲格子。数组只走属性
+  table.prefixColumns = ["index", "select"];
+  table.columns = [
+    { id: "name", label: "名称" },
+    { id: "owner", label: "负责人" },
+    { id: "status", label: "状态" },
+  ];
+
+  let page = 1;
+  let selection = [];
+
+  function cell(id, content) {
+    const el = document.createElement("div");
+    el.dataset.xhPart = "cell";
+    el.setAttribute("value", id);
+    if (typeof content === "string") el.textContent = content;
+    else el.append(content);
+    return el;
+  }
+
+  function renderReadout() {
+    readout.textContent = `已选 ${selection.length} 项 · 序号跨页连续`;
+  }
+
+  function render() {
+    // 切片归调用方：表格只拿 page/pageSize 算序号
+    const pageRows = all.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+    table.page = page;
+    table.selection = selection;
+    table.rows = pageRows.map((row) => ({ id: row.id }));
+
+    body.replaceChildren(
+      ...pageRows.map((row, i) => {
+        const el = document.createElement("div");
+        el.dataset.xhPart = "row";
+        el.setAttribute("value", row.id);
+        const mark = document.createElement("span");
+        mark.dataset.xhPart = "row-select-trigger";
+        el.append(
+          // 序号是分页全局序号：前面几页的条数照样算进去
+          cell("__index__", String((page - 1) * PAGE_SIZE + i + 1)),
+          cell("__select__", mark),
+          cell("name", row.name),
+          cell("owner", row.owner),
+          cell("status", row.status),
+        );
+        return el;
+      }),
+    );
+
+    renderReadout();
+  }
+
+  // 选中集合只改回显，行不必重建
+  table.addEventListener("selection-change", (event) => {
+    selection = event.detail.value;
+    table.selection = selection;
+    renderReadout();
+  });
+
+  pagination.addEventListener("page-change", (event) => {
+    page = event.detail.page;
+    render();
+  });
+
+  render();
+</script>

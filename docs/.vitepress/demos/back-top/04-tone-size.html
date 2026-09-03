@@ -1,0 +1,75 @@
+<!-- 语气与尺寸 | tone 决定按钮用哪族颜色，size 换一档尺寸；translations 换掉读屏念出的名字 -->
+<div style="display: grid; gap: 12px; inline-size: 100%">
+  <div style="display: flex; gap: 16px">
+    <label style="display: flex; align-items: center; gap: 6px">
+      语气
+      <select id="back-top-tone-select">
+        <option value="brand">brand</option>
+        <option value="neutral">neutral</option>
+        <option value="success">success</option>
+        <option value="warning">warning</option>
+        <option value="danger">danger</option>
+        <option value="info">info</option>
+      </select>
+    </label>
+    <label style="display: flex; align-items: center; gap: 6px">
+      尺寸
+      <select id="back-top-size-select">
+        <option value="sm">sm</option>
+        <option value="md" selected>md</option>
+        <option value="lg">lg</option>
+      </select>
+    </label>
+  </div>
+
+  <div style="position: relative">
+    <div
+      id="back-top-tone-scroll"
+      style="
+        block-size: 220px;
+        overflow: auto;
+        padding: 12px;
+        border: 1px solid var(--xh-border-default);
+        border-radius: 8px;
+      "
+    ></div>
+
+    <template id="back-top-tone-tpl">
+      <xh-back-top tone="brand" size="md" visibility-height="40">
+        <div
+          data-xh-part="root"
+          style="
+            position: absolute;
+            --xh-back-top-inset-block: 12px;
+            --xh-back-top-inset-inline: 12px;
+          "
+        >
+          <button data-xh-part="trigger"></button>
+        </div>
+      </xh-back-top>
+    </template>
+  </div>
+</div>
+
+<script type="module">
+  const box = document.getElementById("back-top-tone-scroll");
+  // 撑出可滚动的高度
+  for (let i = 1; i <= 20; i++) {
+    const line = document.createElement("p");
+    line.style.margin = "0 0 12px";
+    line.textContent = `第 ${i} 段内容。`;
+    box.append(line);
+  }
+
+  const template = document.getElementById("back-top-tone-tpl");
+  const backTop = template.content.firstElementChild;
+  // 文案是对象，只走属性；滚动容器同理，两样都在进 DOM 之前交好
+  backTop.translations = { trigger: "回到顶部" };
+  backTop.target = box;
+  template.replaceWith(backTop);
+
+  const tone = document.getElementById("back-top-tone-select");
+  const size = document.getElementById("back-top-size-select");
+  tone.addEventListener("change", () => backTop.setAttribute("tone", tone.value));
+  size.addEventListener("change", () => backTop.setAttribute("size", size.value));
+</script>

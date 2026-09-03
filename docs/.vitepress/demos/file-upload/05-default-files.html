@@ -1,0 +1,59 @@
+<!-- 预置列表 | defaultFiles 给出挂载时就在的那几份，之后列表照旧由组件自己保管，删除与清空都照常 -->
+<div id="file-upload-default" style="width: 100%; max-width: 480px"></div>
+
+<script type="module">
+  // 预置项就是普通的 File，与用户挑进来的那些没有区别
+  const initialFiles = [
+    new File(["甲方与乙方就本次合作达成如下条款……"], "合同正文.txt", {
+      type: "text/plain",
+    }),
+    new File(["# 交付说明\n\n分三批交付。"], "交付说明.md", {
+      type: "text/markdown",
+    }),
+  ];
+
+  // defaultFiles 是挂载那一刻的初值：元素一进文档就把机器建起来，
+  // 所以先把元素造好、设完这份初值，再挂到页面上
+  const upload = document.createElement("xh-file-upload");
+  upload.setAttribute("max-files", "4");
+  upload.innerHTML = `
+    <div data-xh-part="root">
+      <label data-xh-part="label">随件资料</label>
+      <div data-xh-part="dropzone">
+        <span>已经带了两份进来</span>
+        <span>再拖几份也收，最多 4 份</span>
+      </div>
+      <div>
+        <button data-xh-part="trigger">继续添加</button>
+      </div>
+      <input data-xh-part="hidden-input" />
+      <div data-xh-part="item-group"></div>
+      <button data-xh-part="clear-trigger">清空</button>
+    </div>`;
+  upload.defaultFiles = initialFiles;
+  document.getElementById("file-upload-default").append(upload);
+
+  const group = upload.querySelector('[data-xh-part="item-group"]');
+
+  // 条目节点由作者按当前列表铺，文件名与大小由元素代填
+  function render(files) {
+    group.replaceChildren(
+      ...files.map(() => {
+        const item = document.createElement("div");
+        item.dataset.xhPart = "item";
+        item.innerHTML =
+          '<span data-xh-part="item-preview"></span>' +
+          '<span data-xh-part="item-name"></span>' +
+          '<span data-xh-part="item-size-text"></span>' +
+          '<button data-xh-part="item-delete-trigger"></button>';
+        return item;
+      })
+    );
+  }
+
+  upload.addEventListener("files-change", (event) => {
+    render(event.detail.files);
+  });
+
+  render(upload.acceptedFiles);
+</script>

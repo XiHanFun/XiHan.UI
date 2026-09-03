@@ -1,0 +1,77 @@
+<!-- 段位自定义文本 | 段位插槽给出这一段的类型、取值与焦点状态，离焦后年份只留两位、月份换成中文名 -->
+<div style="display: grid; gap: 8px; justify-items: start">
+  <xh-date-field id="date-field-segment-format" default-value="2026-07-28" locale="zh-CN">
+    <div data-xh-part="root">
+      <label data-xh-part="label">发布日期</label>
+      <div data-xh-part="control">
+        <div data-xh-part="segment-group">
+          <span data-xh-part="segment" index="0"></span>
+          <span>年</span>
+          <span data-xh-part="segment" index="1"></span>
+          <span data-xh-part="segment" index="2"></span>
+          <span>日</span>
+        </div>
+      </div>
+    </div>
+  </xh-date-field>
+
+  <span style="font-size: 13px">
+    值仍是 ISO 串：<span id="date-field-segment-format-value">2026-07-28</span>
+  </span>
+</div>
+
+<script type="module">
+  const field = document.getElementById("date-field-segment-format");
+  const group = field.querySelector('[data-xh-part="segment-group"]');
+  const readout = document.getElementById("date-field-segment-format-value");
+  const segments = [...group.querySelectorAll('[data-xh-part="segment"]')];
+
+  const MONTH_NAMES = [
+    "一月",
+    "二月",
+    "三月",
+    "四月",
+    "五月",
+    "六月",
+    "七月",
+    "八月",
+    "九月",
+    "十月",
+    "十一月",
+    "十二月",
+  ];
+
+  // 这一段的类型、取值与焦点状态，组件都写在段位节点自己身上
+  function display(segment) {
+    const type = segment.getAttribute("data-segment");
+    // 标准写法恒留在 aria-valuetext 上：改写的只是看得见的那份
+    const text = segment.getAttribute("aria-valuetext") ?? "";
+    const empty = segment.hasAttribute("data-placeholder");
+    const focused = segment.hasAttribute("data-focus");
+    if (empty || focused) return text;
+    if (type === "year") return text.slice(-2);
+    if (type === "month") return MONTH_NAMES[Number(segment.getAttribute("aria-valuenow") ?? 1) - 1];
+    return text;
+  }
+
+  // 元素每次接线都会把段位文字写回标准写法，这里在它写完之后照自己的写法改一遍
+  function paint() {
+    for (const segment of segments) {
+      const text = display(segment);
+      if (segment.textContent !== text) segment.textContent = text;
+    }
+  }
+
+  new MutationObserver(paint).observe(group, {
+    subtree: true,
+    childList: true,
+    characterData: true,
+    attributes: true,
+    attributeFilter: ["aria-valuetext", "aria-valuenow", "data-focus", "data-placeholder"],
+  });
+
+  field.addEventListener("value-change", (event) => {
+    readout.textContent = event.detail.value ?? "（未填齐）";
+  });
+  paint();
+</script>

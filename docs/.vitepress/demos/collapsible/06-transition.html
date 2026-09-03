@@ -1,0 +1,39 @@
+<!-- 展开动画 | 收起时节点不卸载，作者接管内容区的 display，用一条行高过渡就能平滑展开 -->
+<div style="width: 100%; max-width: 420px; display: grid; gap: 12px">
+  <xh-collapsible id="collapsible-transition">
+    <div data-xh-part="root">
+      <button data-xh-part="trigger" data-label>展开详情</button>
+      <!-- 行高在 0fr 与 1fr 之间过渡，不必测量内容高度；
+           内边距挪到内层，收起时外层才不留白 -->
+      <div
+        data-xh-part="content"
+        data-panel
+        style="
+          display: grid;
+          grid-template-rows: 0fr;
+          padding-block: 0;
+          transition: grid-template-rows var(--xh-motion-duration-enter)
+            var(--xh-motion-ease-enter);
+        "
+      >
+        <div style="overflow: hidden">
+          <p style="margin: 0; padding-block: 12px">
+            展开与收起都走同一条过渡，中途再点一次会从当前高度掉头。
+          </p>
+        </div>
+      </div>
+    </div>
+  </xh-collapsible>
+</div>
+
+<script type="module">
+  // 开合只改两处：触发器上那行字，与内容区的行高
+  const collapsible = document.getElementById("collapsible-transition");
+  const label = collapsible.querySelector("[data-label]");
+  const panel = collapsible.querySelector("[data-panel]");
+
+  collapsible.addEventListener("open-change", (event) => {
+    label.textContent = event.detail.open ? "收起详情" : "展开详情";
+    panel.style.gridTemplateRows = event.detail.open ? "1fr" : "0fr";
+  });
+</script>

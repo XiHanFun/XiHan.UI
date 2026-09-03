@@ -1,0 +1,58 @@
+<!-- 约束 | 上下限夹住范围，aspectRatio 锁宽高比，step 吸附到整数倍 -->
+<div style="display: grid; gap: 24px">
+  <div>
+    <p style="margin-bottom: 8px">锁 16:9——推一条边，另一轴跟着算</p>
+    <xh-resizable id="rz-ratio" default-size="240x135" edges="e,s,se" min-width="160">
+      <div
+        data-xh-part="root"
+        style="border: 1px solid var(--xh-border-default); border-radius: var(--xh-shape-surface); padding: 12px"
+      >
+        <span id="rz-ratio-out">240 × 135</span>
+        <span data-xh-part="handle" edge="e"></span>
+        <span data-xh-part="handle" edge="s"></span>
+        <span data-xh-part="handle" edge="se"></span>
+      </div>
+    </xh-resizable>
+  </div>
+
+  <div>
+    <p style="margin-bottom: 8px">吸附到 40 的整数倍</p>
+    <xh-resizable
+      id="rz-step"
+      default-size="240x120"
+      step="40"
+      edges="e,s,se"
+      min-width="120"
+      min-height="80"
+    >
+      <div
+        data-xh-part="root"
+        style="border: 1px solid var(--xh-border-default); border-radius: var(--xh-shape-surface); padding: 12px"
+      >
+        <span id="rz-step-out">240 × 120</span>
+        <span data-xh-part="handle" edge="e"></span>
+        <span data-xh-part="handle" edge="s"></span>
+        <span data-xh-part="handle" edge="se"></span>
+      </div>
+    </xh-resizable>
+  </div>
+</div>
+
+<script type="module">
+  const ratio = document.getElementById("rz-ratio");
+  const step = document.getElementById("rz-step");
+
+  // 宽高比是个数，写成属性只能取近似值，直接给 property
+  ratio.aspectRatio = 16 / 9;
+
+  ratio.addEventListener("size-change", (event) => {
+    const { width, height } = event.detail.size;
+    document.getElementById("rz-ratio-out").textContent =
+      `${Math.round(width)} × ${Math.round(height)}`;
+  });
+
+  step.addEventListener("size-change", (event) => {
+    const { width, height } = event.detail.size;
+    document.getElementById("rz-step-out").textContent = `${width} × ${height}`;
+  });
+</script>

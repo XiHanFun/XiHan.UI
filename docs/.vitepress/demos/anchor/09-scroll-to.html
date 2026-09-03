@@ -1,0 +1,110 @@
+<!-- 从外部跳到某一节 | 组件只在点链接时滚动；程序化跳转由宿主自己滚，滚完观察器会把高亮结算过来 -->
+<div style="display: flex; flex-direction: column; gap: 12px; inline-size: 100%">
+  <div
+    id="anchor-goto-bar"
+    style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap"
+  >
+    <xh-button size="sm" variant="outline" data-target="anchor-goto-intro">
+      <button data-xh-part="root">跳到简介</button>
+    </xh-button>
+    <xh-button size="sm" variant="outline" data-target="anchor-goto-usage">
+      <button data-xh-part="root">跳到用法</button>
+    </xh-button>
+    <xh-button size="sm" variant="outline" data-target="anchor-goto-faq">
+      <button data-xh-part="root">跳到常见问题</button>
+    </xh-button>
+    <span>当前：<span id="anchor-goto-readout"></span></span>
+  </div>
+
+  <div
+    style="
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: 20px;
+      align-items: start;
+    "
+  >
+    <template id="anchor-goto-nav">
+      <xh-anchor offset="12" smooth>
+        <nav data-xh-part="root">
+          <ul data-xh-part="list">
+            <li data-xh-part="item">
+              <a data-xh-part="link" value="anchor-goto-intro">简介</a>
+            </li>
+            <li data-xh-part="item">
+              <a data-xh-part="link" value="anchor-goto-usage">用法</a>
+            </li>
+            <li data-xh-part="item">
+              <a data-xh-part="link" value="anchor-goto-faq">常见问题</a>
+            </li>
+            <li data-xh-part="indicator"></li>
+          </ul>
+        </nav>
+      </xh-anchor>
+    </template>
+
+    <div
+      id="anchor-goto-scroll"
+      style="
+        block-size: 220px;
+        overflow: auto;
+        padding: 12px;
+        border: 1px solid var(--xh-border-default);
+        border-radius: 8px;
+      "
+    >
+      <div id="anchor-goto-intro" style="block-size: 180px">
+        <strong>简介</strong>
+        <p>这一节的正文。</p>
+      </div>
+      <div id="anchor-goto-usage" style="block-size: 180px">
+        <strong>用法</strong>
+        <p>这一节的正文。</p>
+      </div>
+      <div id="anchor-goto-faq" style="block-size: 180px">
+        <strong>常见问题</strong>
+        <p>这一节的正文。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  // 判定线与滚动落点用同一个偏移，跳过去之后高亮正好落在这一节
+  const OFFSET = 12;
+
+  const container = document.getElementById("anchor-goto-scroll");
+  const readout = document.getElementById("anchor-goto-readout");
+  const template = document.getElementById("anchor-goto-nav");
+  const anchor = template.content.firstElementChild;
+
+  function apply(next) {
+    anchor.value = next;
+    readout.textContent = next ?? "（还没有一节越过判定线）";
+  }
+
+  // 滚动容器是 DOM 句柄，只走属性；先交句柄再进 DOM，滚动观察器才挂得到这一层
+  anchor.scrollElement = container;
+  apply(null);
+  template.replaceWith(anchor);
+
+  anchor.addEventListener("value-change", (event) => apply(event.detail.value));
+
+  function jumpTo(id) {
+    const target = container.querySelector(`#${id}`);
+    if (!target) {
+      return;
+    }
+    const delta =
+      target.getBoundingClientRect().top -
+      container.getBoundingClientRect().top -
+      OFFSET;
+    container.scrollTo({ top: container.scrollTop + delta, behavior: "smooth" });
+  }
+
+  for (const button of document.getElementById("anchor-goto-bar").children) {
+    if (button.dataset.target) {
+      button.addEventListener("click", () => jumpTo(button.dataset.target));
+    }
+  }
+</script>

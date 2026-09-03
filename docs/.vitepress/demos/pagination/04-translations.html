@@ -1,0 +1,88 @@
+<!-- 读屏文案 | translations 换掉 nav 地标名与各按钮的 aria-label，默认是英文 -->
+<xh-pagination
+  id="pagination-i18n"
+  count="80"
+  page-size="10"
+  style="inline-size: 100%"
+>
+  <nav data-xh-part="root">
+    <button data-xh-part="prev-trigger"></button>
+    <button data-xh-part="item" value="1">1</button>
+    <button data-xh-part="item" value="2">2</button>
+    <button data-xh-part="item" value="3">3</button>
+    <button data-xh-part="item" value="4">4</button>
+    <button data-xh-part="item" value="5">5</button>
+    <button data-xh-part="ellipsis" side="end">…</button>
+    <button data-xh-part="item" value="8">8</button>
+    <button data-xh-part="next-trigger"></button>
+  </nav>
+</xh-pagination>
+
+<script type="module">
+  const TOTAL = 8;
+
+  // 页码序列：首尾各恒显一页，当前页两侧各留 siblings 页，中间的空隙折成省略位
+  function pageItems(page, totalPages, siblings) {
+    const range = (a, b) =>
+      Array.from({ length: b - a + 1 }, (_, i) => ({ value: a + i }));
+    if (totalPages <= siblings * 2 + 5) return range(1, totalPages);
+    const width = siblings * 2 + 1;
+    let start = page - siblings;
+    let end = page + siblings;
+    if (page <= siblings + 2) {
+      start = 1;
+      end = width + 2;
+    } else if (page >= totalPages - siblings - 1) {
+      start = totalPages - width - 1;
+      end = totalPages;
+    }
+    const head =
+      start <= 1
+        ? []
+        : start <= 3
+          ? range(1, start - 1)
+          : [{ value: 1 }, { side: "start" }];
+    const tail =
+      end >= totalPages
+        ? []
+        : end >= totalPages - 2
+          ? range(end + 1, totalPages)
+          : [{ side: "end" }, { value: totalPages }];
+    return [...head, ...range(start, end), ...tail];
+  }
+
+  const host = document.getElementById("pagination-i18n");
+
+  // 文案是对象、页码那条还是函数，只走 property
+  host.translations = {
+    root: "订单列表分页",
+    prevTrigger: "上一页",
+    nextTrigger: "下一页",
+    item: (page) => `第 ${page} 页`,
+  };
+
+  const root = host.querySelector('[data-xh-part="root"]');
+  const next = root.querySelector('[data-xh-part="next-trigger"]');
+
+  function render(page) {
+    for (const node of root.querySelectorAll(
+      '[data-xh-part="item"], [data-xh-part="ellipsis"]',
+    ))
+      node.remove();
+    for (const item of pageItems(page, TOTAL, 1)) {
+      const el = document.createElement("button");
+      if (item.side) {
+        el.dataset.xhPart = "ellipsis";
+        el.setAttribute("side", item.side);
+        el.textContent = "…";
+      } else {
+        el.dataset.xhPart = "item";
+        el.setAttribute("value", String(item.value));
+        el.textContent = String(item.value);
+      }
+      root.insertBefore(el, next);
+    }
+  }
+
+  host.addEventListener("page-change", (event) => render(event.detail.page));
+</script>
