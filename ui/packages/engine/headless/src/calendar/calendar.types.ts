@@ -254,7 +254,7 @@ export interface CalendarApi<T extends PropTypes = PropTypes> {
   /** 上一页是否还有可看的日子（整张禁用或整页都在 min 之前即为假）。 */
   canGoPrev: boolean
   canGoNext: boolean
-  /** 大步翻（« / »）此刻能不能按。判据同上，只是步长换成大步。 */
+  /** 大步翻此刻能不能按。判据同上，只是步长换成大步。 */
   canGoPrevYear: boolean
   canGoNextYear: boolean
   setValue: (next: string[]) => void

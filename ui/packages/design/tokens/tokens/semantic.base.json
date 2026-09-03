@@ -199,6 +199,14 @@
       "$type": "icon",
       "$value": "chevron-right"
     },
+    "mark-chevrons-left": {
+      "$type": "icon",
+      "$value": "chevrons-left"
+    },
+    "mark-chevrons-right": {
+      "$type": "icon",
+      "$value": "chevrons-right"
+    },
     "mark-arrow-up": {
       "$type": "icon",
       "$value": "arrow-up"

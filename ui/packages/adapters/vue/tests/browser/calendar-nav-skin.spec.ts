@@ -35,11 +35,11 @@ function mountCalendar(): void {
   app = createApp({
     setup: () => () => h(XhCalendarRoot, { locale: 'zh-CN', timeZone: 'UTC', defaultValue: '2026-07-15' }, () => [
       h(XhCalendarHeader, null, () => [
-        h(XhCalendarPrevYearTrigger, null, () => '«'),
+        h(XhCalendarPrevYearTrigger),
         h(XhCalendarPrevTrigger),
         h(XhCalendarHeading),
         h(XhCalendarNextTrigger),
-        h(XhCalendarNextYearTrigger, null, () => '»'),
+        h(XhCalendarNextYearTrigger),
       ]),
     ]),
   })
@@ -76,6 +76,21 @@ describe('日历翻页钮的皮肤', () => {
       expect(getComputedStyle(el).display, `${part} 的 hidden 没兜住`).toBe('none')
       el.removeAttribute('hidden')
     }
+  })
+
+  it('不写内容时四颗各画一枚字形，大步那对与单步那对不是同一张图', () => {
+    mountCalendar()
+    const masks = NAV.map((part) => {
+      const style = getComputedStyle(nav(part), '::before')
+      return style.maskImage || style.webkitMaskImage || ''
+    })
+    for (const [i, mask] of masks.entries())
+      expect(mask, `${NAV[i]} 没画出字形`).toContain('data:image/svg')
+    // 大步翻画双箭头、单步翻画单箭头；同一张图说明大步那对退化成了单步的样子
+    expect(masks[0]).not.toBe(masks[1])
+    expect(masks[3]).not.toBe(masks[2])
+    // 左右两侧各自成对：往前的两颗都朝左，往后的两颗都朝右，四张图互不相同
+    expect(new Set(masks).size).toBe(4)
   })
 
   it('禁用态四颗同一副长相', () => {

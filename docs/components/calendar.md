@@ -138,7 +138,7 @@ cell-trigger 的内容全由作者写，日号之外还能塞自己的标记
 | `isUnavailable` | `(value: string) => boolean` | 界外或作者判定不可用。禁用的日历下恒为真。 |
 | `canGoPrev` | `boolean` | 上一页是否还有可看的日子（整张禁用或整页都在 min 之前即为假）。 |
 | `canGoNext` | `boolean` |  |
-| `canGoPrevYear` | `boolean` | 大步翻（« / »）此刻能不能按。判据同上，只是步长换成大步。 |
+| `canGoPrevYear` | `boolean` | 大步翻此刻能不能按。判据同上，只是步长换成大步。 |
 | `canGoNextYear` | `boolean` |  |
 | `setValue` | `(next: string[]) => void` |  |
 | `select` | `(value: string) => void` |  |

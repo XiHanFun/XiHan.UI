@@ -74,7 +74,7 @@ export function connectCalendar<T extends PropTypes>(
   const weekSelection = !!prop('weekSelection') && view === 'day' && mode === 'range'
   // 翻一页走多少个月：日视图一个月，月/季度一年，年视图十年
   const pageMonths = calendarPageMonths(view)
-  // 大步翻（« / »）：日视图走一年，粗粒度视图走十页——月/季度即十年，年视图即一百年
+  // 大步翻：日视图走一年，粗粒度视图走十页——月/季度即十年，年视图即一百年
   const bigMonths = view === 'day' ? 12 : pageMonths * 10
   const visibleCount = visibleCountOf(prop('visibleCount'))
   /**

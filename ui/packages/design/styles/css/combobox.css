@@ -299,6 +299,13 @@
     display: none;
   }
 
+  /* 有值时清空钮顶上来，展开钮让位：两颗并排堆着用户分不清点哪个，换来换去还会让盒的宽度跳一下。
+     判据是盒里此刻有一颗没收起的清空钮——没写清空钮的结构里展开钮照常留着；
+     输入框仍是展开的入口（打字、方向键、openOnClick） */
+  [data-scope='combobox'][data-part='control']:has([data-part='clear-trigger']:not([hidden])) [data-part='trigger'] {
+    display: none;
+  }
+
   /* 展开时箭头翻个面，指向与列表的去向一致。转的是字形或作者塞的图形，不转按钮本体：
      按钮自带悬停底色，整个按钮转会带着底色一起转 */
   [data-scope='combobox'][data-part='trigger']:empty::before,
