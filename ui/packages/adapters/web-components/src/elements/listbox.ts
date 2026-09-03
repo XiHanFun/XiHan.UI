@@ -32,7 +32,6 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @customElement xh-listbox
  * @attr {string} value - 受控选中值（单选简写）；缺省该属性即非受控，多选请用 property
  * @attr {string} default-value - 非受控初始选中值
- * @attr {boolean} multiple - selection-mode="multiple" 的简写
  * @attr {'single'|'multiple'|'extended'} selection-mode - 选择模式，默认 single
  * @attr {boolean} disabled - 整列禁用：条目全转 aria-disabled，键盘与点击都改不了选中值
  * @attr {boolean} loop - 方向键走到尽头回绕，默认 true；写 loop="false" 关掉
@@ -61,7 +60,6 @@ export class XhListboxElement extends XhElement {
     collection: { attribute: false },
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
-    multiple: { type: Boolean },
     selectionMode: { converter: STRING_CONVERTER, attribute: 'selection-mode' },
     disabled: { type: Boolean },
     loop: { converter: BOOLEAN_CONVERTER },
@@ -73,7 +71,6 @@ export class XhListboxElement extends XhElement {
   declare collection?: ListboxNode[]
   declare value?: string | string[]
   declare defaultValue?: string | string[]
-  declare multiple?: boolean
   declare selectionMode?: ListboxSelectionMode
   declare disabled?: boolean
   declare loop?: boolean
@@ -100,7 +97,6 @@ export class XhListboxElement extends XhElement {
       collection: this.collection,
       value: this.value,
       defaultValue: this.defaultValue,
-      multiple: this.multiple ?? false,
       selectionMode: this.selectionMode,
       disabled: this.disabled ?? false,
       loop: this.loop,

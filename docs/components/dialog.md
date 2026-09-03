@@ -198,7 +198,6 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 | --- | --- | --- |
 | `trigger` | `data-state` | 'open' \| 'closed' |
 | `backdrop` | `data-state` | 'open' \| 'closed' |
-| `positioner` | `data-position` | 'center' |
 | `positioner` | `data-positioned` | '' |
 | `positioner` | `data-state` | 'open' \| 'closed' |
 | `content` | `data-size` | props.size |

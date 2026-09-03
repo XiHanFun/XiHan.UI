@@ -48,14 +48,14 @@
     color: var(--xh-fieldset-legend-star, var(--xh-fg-danger));
   }
 
-  [data-scope='fieldset'][data-part='helper-text'] {
+  [data-scope='fieldset'][data-part='description'] {
     margin: 0;
     color: var(--xh-fieldset-helper-fg, var(--xh-fg-muted));
     font-size: var(--xh-fieldset-helper-font-size, var(--xh-text-secondary-size));
     line-height: var(--xh-leading-normal);
   }
 
-  [data-scope='fieldset'][data-part='helper-text'][data-disabled] {
+  [data-scope='fieldset'][data-part='description'][data-disabled] {
     color: var(--xh-fieldset-helper-fg-disabled, var(--xh-fg-subtle));
   }
 

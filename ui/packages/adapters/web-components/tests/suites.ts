@@ -4,30 +4,20 @@
 import type { ConformanceSuite, FixtureNode } from '@xihan-ui/testing'
 import { accordionSuite, affixSuite, alertSuite, anchorSuite, approvalSuite, avatarGroupSuite, avatarSuite, backTopSuite, badgeSuite, breadcrumbSuite, buttonGroupSuite, buttonSuite, calendarSuite, cardSuite, carouselSuite, cascaderSuite, checkboxGroupSuite, checkboxSuite, clipboardSuite, codeViewSuite, collapsibleSuite, colorPickerSuite, comboboxSuite, contextMenuSuite, countdownSuite, dateFieldSuite, datePickerSuite, descriptionsSuite, diffViewSuite, downloadTriggerSuite, dynamicInputSuite, editableSuite, ellipsisSuite, emptyStateSuite, fieldsetSuite, fieldSuite, fileUploadSuite, flexSuite, floatButtonSuite, floatingPanelSuite, formSuite, gradientTextSuite, gridSuite, heatmapSuite, highlightSuite, hotkeysSuite, hoverCardSuite, iconSuite, iconWrapperSuite, imageCropperSuite, imageSuite, infiniteScrollSuite, jsonViewerSuite, layoutSuite, listboxSuite, listSuite, loadingBarSuite, logSuite, markdownStreamSuite, marqueeSuite, masonrySuite, mentionSuite, menubarSuite, menuSuite, messageFeedSuite, navigationMenuSuite, notificationSuite, numberAnimationSuite, numberFieldSuite, pageHeaderSuite, paginationSuite, passwordInputSuite, pinInputSuite, popconfirmSuite, popoverSuite, popselectSuite, progressSuite, promptInputSuite, qrCodeSuite, questionFlowSuite, radioGroupSuite, ratingSuite, reasoningSuite, resizableSuite, resultSuite, scrollAreaSuite, scrollbarSuite, segmentedSuite, selectSuite, separatorSuite, sideNavSuite, signaturePadSuite, skeletonSuite, sliderSuite, sortableSuite, spaceSuite, spinnerSuite, splitterSuite, statisticSuite, stepsSuite, switchSuite, tableSuite, tabsSuite, tagsInputSuite, tagSuite, textFieldSuite, timeFieldSuite, timelineSuite, timePickerSuite, timerSuite, timeSuite, toastSuite, toggleGroupSuite, toggleSuite, toolbarSuite, toolCallSuite, tooltipSuite, tourSuite, transferSuite, treeSelectSuite, treeSuite, typographySuite, virtualizerSuite, watermarkSuite } from '@xihan-ui/testing'
 
+// 布尔受控用例两侧跑的是同一份：假值由 harness 写成 name="false"（元素的三态转换器
+// 认得它），不是摘掉属性——摘掉在三态语义里是"没指定"，会落回缺省。见 harness.ts 的 applyInputs。
+
 // switch 无 portal/presence 分歧，复用共享用例、只把 fixture 换成 WC 行为宿主形态
 // （用户显式写 root/thumb 角色节点，Vue 版 XhSwitch 是内部渲染 thumb）。
-// 受控用例排除：HTML 布尔属性表达不了 undefined（checked=false 会被 harness 抹成缺省=非受控），
-// 与 WC dialog 受控 open 同因延后，待受控属性机制落地。
 const wcSwitchSuite: ConformanceSuite = {
   ...switchSuite,
   fixture: { ...switchSuite.fixture, children: [{ part: 'thumb', tag: 'span' }] },
 }
 
-// checkbox 与 switch 同因：受控用例排除，fixture 换成行为宿主形态（indicator 由用户显式写）。
+// checkbox 与 switch 同因：fixture 换成行为宿主形态（indicator 由用户显式写）。
 const wcCheckboxSuite: ConformanceSuite = {
   ...checkboxSuite,
   fixture: { ...checkboxSuite.fixture, children: [{ part: 'indicator', tag: 'span' }] },
-}
-
-// collapsible 的 fixture 四个 part 本就由用户显式写，两侧同构、整份复用；
-// 只排除受控 open（布尔属性表达不了 undefined，与 switch/dialog 同因）。
-const wcCollapsibleSuite: ConformanceSuite = {
-  ...collapsibleSuite,
-}
-
-// toggle 与 switch 同因：受控用例排除；fixture 只有 root 一个 part，两侧同构。
-const wcToggleSuite: ConformanceSuite = {
-  ...toggleSuite,
 }
 
 // progress 的 track/range 在 Vue 版由组件内部渲染，WC 版由作者手写，故只换 fixture；
@@ -117,12 +107,7 @@ const wcMentionSuite = authorDisabled(mentionSuite)
 const wcTabsSuite = authorDisabled(tabsSuite)
 const wcAccordionSuite = authorDisabled(accordionSuite)
 
-// tooltip / popover 的受控 open 与 switch 等同因排除：HTML 布尔属性表达不了 undefined。
-const wcTooltipSuite: ConformanceSuite = {
-  ...tooltipSuite,
-}
-
-// 条目禁用同样改用 aria-disabled 声明；受控 open 与 switch 等同因排除。
+// 条目禁用同样改用 aria-disabled 声明。
 // select 的表单影子 select 在 Vue 侧由根部件自行装配、且排在 root 的第一个子节点；
 // WC 侧要作者手写这个空壳（元素只按当前值补选项），位置也得对齐，order 断言逐字比对。
 // 用例级 fixture 有两种：整棵重建（此时树里没有影子）与从默认树派生（此时影子已在树里）。
@@ -137,7 +122,7 @@ function withHiddenSelect(node: FixtureNode): FixtureNode {
   return { ...node, children: [{ part: 'hidden-select', tag: 'select' }, ...children] }
 }
 
-// 条目禁用同样改用 aria-disabled 声明；受控 open 与 switch 等同因排除。
+// 条目禁用同样改用 aria-disabled 声明。
 const wcSelectSuite: ConformanceSuite = authorDisabled({
   ...selectSuite,
   fixture: withHiddenSelect(selectSuite.fixture),
@@ -173,13 +158,7 @@ const wcFieldSuite: ConformanceSuite = {
   }),
 }
 
-const wcMenuSuite: ConformanceSuite = authorDisabled({
-  ...menuSuite,
-})
-
-const wcPopoverSuite: ConformanceSuite = {
-  ...popoverSuite,
-}
+const wcMenuSuite = authorDisabled(menuSuite)
 
 // rating 的星档是集合条目，禁用声明同样改 aria-disabled。
 const wcRatingSuite = authorDisabled(ratingSuite)
@@ -212,29 +191,14 @@ const wcCheckboxGroupSuite = authorDisabled({
 const listboxSuiteWc = authorDisabled(listboxSuite)
 const wcToggleGroupSuite = authorDisabled(toggleGroupSuite)
 
-// closable 缺省为真，而 HTML 布尔属性表达不了 false：harness 摘掉属性等于"没指定"，
-// 元素会退回缺省。与 switch/checkbox 同因，这一条用例在 WC 侧排除。
-const wcToastSuite: ConformanceSuite = {
-  ...toastSuite,
-}
-
 // 本批集合类与既有 tabs/accordion 同因：条目禁用改用 aria-disabled 声明。
 const wcStepsSuite = authorDisabled(stepsSuite)
 const wcToolbarSuite = authorDisabled(toolbarSuite)
 const wcTreeSuite = authorDisabled(treeSuite)
 
-// 这两个既是集合、又是浮层：条目禁用改声明之外，受控 open 与 switch 等同因排除。
-const wcComboboxSuite = authorDisabled({
-  ...comboboxSuite,
-})
-
-const wcContextMenuSuite = authorDisabled({
-  ...contextMenuSuite,
-})
-
-const wcHoverCardSuite: ConformanceSuite = {
-  ...hoverCardSuite,
-}
+// 这两个既是集合、又是浮层：与上面几家同因，条目禁用改用 aria-disabled 声明。
+const wcComboboxSuite = authorDisabled(comboboxSuite)
+const wcContextMenuSuite = authorDisabled(contextMenuSuite)
 
 // segmented 的段是集合条目，禁用声明与 tabs/radio-group 同因改用 aria-disabled。
 const wcSegmentedSuite = authorDisabled(segmentedSuite)
@@ -283,8 +247,7 @@ const wcSideNavSuite: ConformanceSuite = {
   }),
 }
 
-// 同一份规格喂给 WC 适配器实现，逐帧核对。separator/badge 无状态无受控，整份复用。
-// 三个集合类组件的受控值是字符串/数组（不像布尔那样表达不了 undefined），受控用例可原样跑。
+// 同一份规格喂给 WC 适配器实现，逐帧核对。下面直接列出的那些两侧 fixture 同构，整份复用。
 
 export const wcSuites: readonly ConformanceSuite[]
   = [
@@ -331,13 +294,13 @@ export const wcSuites: readonly ConformanceSuite[]
     wcAccordionSuite,
     wcCheckboxGroupSuite,
     wcCheckboxSuite,
-    wcCollapsibleSuite,
+    collapsibleSuite,
     wcComboboxSuite,
     wcContextMenuSuite,
     wcFieldSuite,
-    wcHoverCardSuite,
+    hoverCardSuite,
     wcMenuSuite,
-    wcPopoverSuite,
+    popoverSuite,
     wcProgressSuite,
     wcRadioGroupSuite,
     wcRatingSuite,
@@ -345,12 +308,12 @@ export const wcSuites: readonly ConformanceSuite[]
     wcStepsSuite,
     wcSwitchSuite,
     wcTabsSuite,
-    wcToastSuite,
+    toastSuite,
     wcToggleGroupSuite,
-    wcToggleSuite,
+    toggleSuite,
     wcToolbarSuite,
     toolCallSuite,
-    wcTooltipSuite,
+    tooltipSuite,
     cascaderSuite,
     colorPickerSuite,
     formSuite,

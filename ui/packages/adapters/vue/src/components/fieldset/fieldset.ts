@@ -31,11 +31,11 @@ export const XhFieldsetLegend = defineComponent({
   },
 })
 
-export const XhFieldsetHelperText = defineComponent({
-  name: 'XhFieldsetHelperText',
+export const XhFieldsetDescription = defineComponent({
+  name: 'XhFieldsetDescription',
   setup(_, { slots }) {
     const ctx = useFieldsetContext()
-    return () => h('p', ctx.api.value.getHelperTextProps() as Record<string, unknown>, slots.default?.())
+    return () => h('p', ctx.api.value.getDescriptionProps() as Record<string, unknown>, slots.default?.())
   },
 })
 

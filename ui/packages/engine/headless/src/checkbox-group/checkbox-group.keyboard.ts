@@ -21,7 +21,7 @@ export const checkboxGroupKeyboard: KeyboardTable = {
     {
       id: 'checkbox-group.kbd.toggle-all',
       keys: ['Space'],
-      when: 'focus on trigger, group editable',
+      when: 'focus on select-all-trigger, group editable',
       does: '可用条目未全选则一并勾上，已全选则一并取消；禁用条目不受影响',
     },
   ],

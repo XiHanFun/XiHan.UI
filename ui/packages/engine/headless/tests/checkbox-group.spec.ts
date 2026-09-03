@@ -289,7 +289,7 @@ describe('connectCheckboxGroup：全选/半选的 trigger', () => {
   const ALL = ['a', 'b', 'c']
 
   function triggerProps(props: Props) {
-    return api(makeService(props)).getTriggerProps() as Record<string, unknown>
+    return api(makeService(props)).getSelectAllTriggerProps() as Record<string, unknown>
   }
 
   it('aria-checked 三态：none=false / some=mixed / all=true', () => {
@@ -301,12 +301,12 @@ describe('connectCheckboxGroup：全选/半选的 trigger', () => {
   it('data-state 与 api.checkedState 同源', () => {
     const s = makeService({ itemValues: ALL, defaultValue: ['a', 'b'] })
     expect(api(s).checkedState).toBe('indeterminate')
-    expect((api(s).getTriggerProps() as Record<string, unknown>)['data-state']).toBe('indeterminate')
+    expect((api(s).getSelectAllTriggerProps() as Record<string, unknown>)['data-state']).toBe('indeterminate')
   })
 
   it('可及名两段：组标题在前，全选格自己的文本在后（自指那段落在它自己的 id 上）', () => {
     const a = api(makeService({}))
-    const trigger = a.getTriggerProps() as Record<string, unknown>
+    const trigger = a.getSelectAllTriggerProps() as Record<string, unknown>
     const labelId = (a.getLabelProps() as Record<string, unknown>).id
     expect(trigger['aria-labelledby']).toBe(`${labelId} ${trigger.id}`)
   })
@@ -331,7 +331,7 @@ describe('connectCheckboxGroup：trigger 在真实 DOM 上的全选', () => {
         root.setAttribute(k, v)
     })
     const trigger = document.createElement('div')
-    const triggerAttrs = a.getTriggerProps() as Record<string, unknown>
+    const triggerAttrs = a.getSelectAllTriggerProps() as Record<string, unknown>
     Object.entries(triggerAttrs).forEach(([k, v]) => {
       if (typeof v === 'string' || typeof v === 'number')
         trigger.setAttribute(k, String(v))
@@ -397,7 +397,7 @@ describe('connectCheckboxGroup：trigger 在真实 DOM 上的全选', () => {
     const s = makeService({ itemValues: ['a', 'b', 'c'] })
     mountGroup(s, DECLS)
     const stray = document.createElement('div')
-    stray.addEventListener('click', (api(s).getTriggerProps() as Record<string, unknown>).onClick as EventListener)
+    stray.addEventListener('click', (api(s).getSelectAllTriggerProps() as Record<string, unknown>).onClick as EventListener)
     document.body.appendChild(stray)
     stray.click()
     expect(s.context.get('value')).toEqual([])

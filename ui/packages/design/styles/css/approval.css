@@ -26,6 +26,12 @@
       scale: 1;
     }
   }
+
+  @keyframes xh-approval-rotate {
+    to {
+      rotate: 360deg;
+    }
+  }
 }
 
 @layer xihan.components {
@@ -96,7 +102,7 @@
   }
 
   /* 视觉隐藏的播报区：不能 display:none，那样读屏就取不到它了 */
-  [data-scope='approval'][data-part='announcement'] {
+  [data-scope='approval'][data-part='live-region'] {
     position: absolute;
     inline-size: 1px;
     block-size: 1px;
@@ -284,14 +290,14 @@
   }
 
   /* 动作行：两颗按钮靠右排，间距归库管 */
-  [data-scope='approval'][data-part='actions'] {
+  [data-scope='approval'][data-part='footer'] {
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    gap: var(--xh-approval-actions-gap, var(--xh-space-2));
+    gap: var(--xh-approval-footer-gap, var(--xh-space-2));
   }
 
-  [data-scope='approval'][data-part='actions'][hidden] {
+  [data-scope='approval'][data-part='footer'][hidden] {
     display: none;
   }
 
@@ -342,8 +348,9 @@
   }
 
   /* 待决时用 aria-disabled 而不是原生 disabled：保住可聚焦，让读屏念得到为什么按不动。
-     所以置灰要按这个属性写，不能只写 :disabled */
-  [data-scope='approval'][data-part='approve-trigger'][aria-disabled='true'] {
+     所以置灰要按这个属性写，不能只写 :disabled。
+     判定在途时这一位同样为真，但那一档另有观感，排除掉 */
+  [data-scope='approval'][data-part='approve-trigger'][aria-disabled='true']:not([data-loading]) {
     background: var(--xh-approval-approve-bg-off, var(--xh-bg-muted));
     color: var(--xh-fg-disabled);
     box-shadow: none;
@@ -365,13 +372,53 @@
     scale: var(--xh-motion-scale-press);
   }
 
-  /* 判定在途时拒绝也按不动了，用 aria-disabled 而不是原生 disabled：保住可聚焦，
-     让读屏念得到为什么按不动。所以置灰要按这个属性写 */
-  [data-scope='approval'][data-part='deny-trigger'][aria-disabled='true'] {
+  /* 拒绝钮只有落定后才真的按不动，那一档走原生 disabled：描边退回中性，不再像个能按的出口。
+     前景与指针由文件末尾两颗钮共用的那条 :disabled 规则给 */
+  [data-scope='approval'][data-part='deny-trigger']:disabled {
     border-color: var(--xh-approval-deny-border-off, var(--xh-border-default));
     background: var(--xh-approval-deny-bg-off, transparent);
-    color: var(--xh-fg-disabled);
-    cursor: not-allowed;
+  }
+
+  /* 判定在途：两颗钮那一行里转一枚圆环，指针换成 progress。
+     两颗钮此刻确实按不动，但按不动的理由是「你按的那一下正在走」，与「必选项没勾满」
+     的那档灰不是一回事；只留灰的话两种情形长得一模一样，用户读不出系统正在想。
+     所以在途这一档不置灰：颜色与对比度都保持原样，锁住只由圆环与指针说。
+     圆环挂在这一行上而不是某一颗钮上：连接层只拿到「有一条判定在途」，
+     拿不到是哪一颗按下的，画在两颗钮上会有一颗在说假话 */
+  [data-scope='approval'][data-part='approve-trigger'][data-loading],
+  [data-scope='approval'][data-part='deny-trigger'][data-loading] {
+    cursor: progress;
+  }
+
+  [data-scope='approval'][data-part='root'][data-loading] [data-scope='approval'][data-part='footer']::before {
+    content: '';
+    flex: none;
+
+    /* 圆环那一枚跟着两颗钮的字号走，不跟页面的：download-trigger 与 clipboard 的圆环
+       1em 量的都是它所在那颗钮，这里的宿主是整行，不锁字号就会比按钮上的大一圈 */
+    font-size: var(--xh-approval-action-font-size, var(--xh-text-label-size));
+    inline-size: 1em;
+    block-size: 1em;
+    border: var(--xh-stroke-thin) solid transparent;
+    border-block-start-color: currentColor;
+    border-radius: var(--xh-shape-pill);
+    animation: xh-approval-rotate var(--xh-approval-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite;
+  }
+
+  /* 减少动效：圆环停下并整圈换成虚线，静止的形状仍然读得出"还没好"。
+     两条规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope='approval'][data-part='root'][data-loading] [data-scope='approval'][data-part='footer']::before {
+      border-style: dotted;
+      border-color: currentColor;
+      animation: none;
+    }
+  }
+
+  :where([data-motion='reduce']) [data-scope='approval'][data-part='root'][data-loading] [data-scope='approval'][data-part='footer']::before {
+    border-style: dotted;
+    border-color: currentColor;
+    animation: none;
   }
 
   [data-scope='approval'][data-part='approve-trigger']:focus-visible,

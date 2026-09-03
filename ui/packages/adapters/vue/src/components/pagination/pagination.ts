@@ -1,5 +1,5 @@
 import type { PaginationApi, PaginationEllipsisSide, PaginationPageSizeChangeDetails, PaginationSchema, PaginationTranslations } from '@xihan-ui/headless'
-import type { Direction, Size, Tone } from '@xihan-ui/kernel'
+import type { Direction, Placement, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h, mergeProps, Teleport } from 'vue'
@@ -44,6 +44,10 @@ export const XhPaginationRoot = defineComponent({
     siblingCount: { type: Number, default: undefined },
     dir: { type: String as PropType<Direction>, default: undefined },
     translations: { type: Object as PropType<Partial<PaginationTranslations>>, default: undefined },
+    placement: { type: String as PropType<Placement>, default: undefined },
+    offset: { type: Number, default: undefined },
+    openDelay: { type: Number, default: undefined },
+    closeDelay: { type: Number, default: undefined },
     tone: { type: String as PropType<Tone>, default: undefined },
     size: { type: String as PropType<Size>, default: undefined },
   },

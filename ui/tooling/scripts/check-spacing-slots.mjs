@@ -45,8 +45,8 @@ const CROSS_PART = {
   'calendar.week-number': ['week-row'],
   // 搜索结果列表与空态占的都是一格列的位置，几何跟着 column 走，三种形态才等宽等高
   'cascader.column': ['search-list', 'empty'],
-  // 勾选框画在 trigger 上，checkbox-group 没有单独的 indicator 节点承载它
-  'checkbox-group.indicator': ['trigger'],
+  // 勾选框画在全选格上，checkbox-group 没有单独的 indicator 节点承载它
+  'checkbox-group.indicator': ['select-all-trigger'],
   // --xh-code-view-line-height 是整块代码的行距，line 只是它头一个词，与行部件无关
   'code-view.line': ['pre'],
   // 折叠条与文件头是同一条横栏的两端，描边与字号取同一族才连成一条
@@ -77,8 +77,8 @@ const CROSS_PART = {
   'table.header': ['column-header'],
   // 预设列与时间列并排在同一行，分隔线取同一族，两列之间只有一道等宽的线
   'time-picker.column': ['presets'],
-  // 名字用等宽字族，摘要行里跟着它排；耗时与错误行与状态标签同一档字号
-  'tool-call.name': ['summary'],
+  // 工具名用等宽字族，摘要行里跟着它排；耗时与错误行与状态标签同一档字号
+  'tool-call.label': ['summary'],
   'tool-call.status': ['duration', 'error'],
   // 叶子行没摆指示符时由行盒自己补出首格，补的宽度就是那格本该有的部件的宽度
   'tree-select.item-indicator': ['item'],

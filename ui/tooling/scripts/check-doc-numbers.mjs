@@ -817,6 +817,26 @@ const truth = {
       return names.filter(n => /^Xh[A-Za-z0-9]+Element$/.test(n)).length
     },
   },
+  库自用dataXh属性数: {
+    how: 'packages / tooling 源码里出现过的 data-xh-* 名字去重，减掉作者输入用的 data-xh-part',
+    async value() {
+      const EXT = ['.ts', '.js', '.mjs', '.css', '.vue', '.html']
+      const names = new Set()
+      for (const root of ['packages', 'tooling']) {
+        for (const entry of await readdir(join(uiRoot, root), { withFileTypes: true, recursive: true })) {
+          if (!entry.isFile() || !EXT.some(ext => entry.name.endsWith(ext)))
+            continue
+          const dir = entry.parentPath ?? entry.path
+          if (/[\\/](?:dist|node_modules)[\\/]/.test(`${dir}/`))
+            continue
+          for (const m of (await readFile(join(dir, entry.name), 'utf8')).matchAll(/data-xh-[a-z-]+/g))
+            names.add(m[0])
+        }
+      }
+      names.delete('data-xh-part')
+      return names.size
+    },
+  },
   用指针原语的组件数: {
     how: 'headless 的组件目录里引了 @xihan-ui/pointer 的那些',
     async value() {
@@ -950,6 +970,7 @@ const TABLE = [
   ['docs/guide/versioning.md', /\| WC 的元素类导出 `Xh\*Element` \| (\d+) \|/, 'WC元素类导出数'],
   ['docs/guide/versioning.md', /\| WC 元素上的 `static partContract` \| (\d+) \|/, '组件数'],
   ['docs/guide/versioning.md', /\| `data-scope` 取值（组件身份） \| (\d+) \|/, '组件数'],
+  ['docs/guide/versioning.md', /等 (\d+) 个）是库自用标记/, '库自用dataXh属性数'],
   ['docs/guide/versioning.md', /新增第 (\d+) 个组件是 minor/, '组件数加一'],
   ['docs/guide/versioning.md', /\| `custom-elements.json`（CEM） \| 1 份 \/ (\d+) 个元素/, '自定义元素数'],
   ['docs/guide/versioning.md', /注册 (\d+) \+ `xh-background`/, '自定义元素数'],

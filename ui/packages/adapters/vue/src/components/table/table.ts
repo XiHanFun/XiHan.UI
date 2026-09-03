@@ -431,10 +431,10 @@ export const XhTableEmpty = defineComponent({
   },
 })
 
-export const XhTableLoadingState = defineComponent({
-  name: 'XhTableLoadingState',
+export const XhTableLoading = defineComponent({
+  name: 'XhTableLoading',
   setup(_, { slots }) {
     const ctx = useTableContext()
-    return () => h('div', ctx.api.value.getLoadingStateProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getLoadingProps() as Record<string, unknown>, slots.default?.())
   },
 })

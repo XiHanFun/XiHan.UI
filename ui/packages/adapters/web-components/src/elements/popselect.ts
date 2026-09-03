@@ -177,7 +177,7 @@ export class XhPopselectElement extends XhElement {
       collection: this.collection,
       value: this.value,
       defaultValue: this.defaultValue,
-      multiple: this.multiple ?? false,
+      selectionMode: this.multiple ? 'multiple' : 'single',
       disabled: this.disabled ?? false,
       loop: this.loop,
       typeahead: this.typeahead,

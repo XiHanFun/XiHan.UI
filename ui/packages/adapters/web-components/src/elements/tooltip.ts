@@ -1,5 +1,5 @@
 import type { TooltipOpenChangeDetails, TooltipSchema } from '@xihan-ui/headless'
-import type { Cleanup, Layer, Placement, PositionEnginePort, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
+import type { Cleanup, Direction, Layer, Placement, PositionEnginePort, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { OverlayExit } from '../overlay-exit'
 import { connectTooltip, tooltipAnatomy, tooltipMachine, tooltipMeta } from '@xihan-ui/headless'
@@ -34,6 +34,7 @@ const NUMBER_CONVERTER = {
  * @attr {boolean} default-open - 非受控初始为展开
  * @attr {string} placement - 请求的浮层朝向（top/right/bottom/left，可带 -start/-end 后缀），默认 bottom；空间不足时由引擎避让
  * @attr {number} offset - 浮层与锚点的间距（px），默认 8
+ * @attr {'ltr'|'rtl'} dir - 文字方向，翻转浮层在行内轴上 start 与 end 的落点；只在显式给了才写到定位层上
  * @attr {number} open-delay - 悬停进入到展开的等待毫秒，默认 700
  * @attr {number} close-delay - 悬停移出到收起的等待毫秒，默认 300
  * @attr {boolean} disabled - 只关掉提示，被包裹的控件仍可用
@@ -57,6 +58,9 @@ export class XhTooltipElement extends XhElement {
     defaultOpen: { type: Boolean, attribute: 'default-open' },
     placement: { converter: STRING_CONVERTER },
     offset: { converter: NUMBER_CONVERTER },
+    // dir 只占属性名、字段改叫 direction：HTMLElement 原生 dir 是 string 访问器，
+    // 同名响应式字段会与基类类型打架。属性仍进 observedAttributes，改 dir 照样触发重算。
+    direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     openDelay: { converter: NUMBER_CONVERTER, attribute: 'open-delay' },
     closeDelay: { converter: NUMBER_CONVERTER, attribute: 'close-delay' },
     disabled: { type: Boolean },
@@ -68,6 +72,7 @@ export class XhTooltipElement extends XhElement {
   declare defaultOpen?: boolean
   declare placement?: Placement
   declare offset?: number
+  declare direction?: Direction
   declare openDelay?: number
   declare closeDelay?: number
   declare disabled?: boolean
@@ -96,6 +101,7 @@ export class XhTooltipElement extends XhElement {
       defaultOpen: this.defaultOpen ?? false,
       placement: this.placement,
       offset: this.offset,
+      dir: this.direction,
       openDelay: this.openDelay,
       closeDelay: this.closeDelay,
       disabled: this.disabled ?? false,

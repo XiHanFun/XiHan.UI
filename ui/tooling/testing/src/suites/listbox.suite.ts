@@ -240,7 +240,7 @@ export const listboxSuite: ConformanceSuite = {
       name: '复选：Space 切换而不是替换，content 报 aria-multiselectable',
       spec: { apg: `${APG}#keyboardinteraction` },
       covers: ['listbox.kbd.toggle'],
-      props: { multiple: true },
+      props: { selectionMode: 'multiple' },
       initial: { parts: { content: { 'aria-multiselectable': 'true' } } },
       steps: [
         { kind: 'focus', part: 'content' },
@@ -268,7 +268,7 @@ export const listboxSuite: ConformanceSuite = {
       name: 'Shift+方向键扩选：焦点移动并切换落点，往回走即把刚扩进来的摘掉',
       spec: { apg: `${APG}#keyboardinteraction` },
       covers: ['listbox.kbd.extend'],
-      props: { multiple: true, defaultValue: 'apple' },
+      props: { selectionMode: 'multiple', defaultValue: 'apple' },
       steps: [
         { kind: 'focus', part: 'content', expect: { activeElement: { part: 'item[0]', exact: true } } },
         {
@@ -295,7 +295,7 @@ export const listboxSuite: ConformanceSuite = {
       name: 'Ctrl+A 全选可选条目（禁用项不进集合），再按一次取消',
       spec: { apg: `${APG}#keyboardinteraction` },
       covers: ['listbox.kbd.select-all'],
-      props: { multiple: true },
+      props: { selectionMode: 'multiple' },
       steps: [
         { kind: 'focus', part: 'content' },
         {

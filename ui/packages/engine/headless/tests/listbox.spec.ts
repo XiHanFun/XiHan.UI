@@ -163,7 +163,7 @@ afterEach(() => {
 describe('listboxMachine 选中集合', () => {
   it('裸串是单选简写，内部一律归一成数组', () => {
     expect(mount({ defaultValue: 'apple' }).value()).toEqual(['apple'])
-    expect(mount({ defaultValue: ['apple', 'cherry'], multiple: true }).value()).toEqual(['apple', 'cherry'])
+    expect(mount({ defaultValue: ['apple', 'cherry'], selectionMode: 'multiple' }).value()).toEqual(['apple', 'cherry'])
     expect(mount().value()).toEqual([])
   })
 
@@ -176,7 +176,7 @@ describe('listboxMachine 选中集合', () => {
   })
 
   it('复选：切换增删，setValue 去重', () => {
-    const h = mount({ multiple: true })
+    const h = mount({ selectionMode: 'multiple' })
     h.api().toggle('apple')
     h.api().toggle('cherry')
     expect(h.value()).toEqual(['apple', 'cherry'])
@@ -204,7 +204,7 @@ describe('listboxMachine 选中集合', () => {
 
   it('同一份选中值重复写入不重复通知：数组按元素比，不看引用', () => {
     const onValueChange = vi.fn()
-    const h = mount({ multiple: true, defaultValue: ['apple'], onValueChange })
+    const h = mount({ selectionMode: 'multiple', defaultValue: ['apple'], onValueChange })
     h.api().setValue(['apple'])
     expect(onValueChange).not.toHaveBeenCalled()
     h.api().setValue(['apple', 'cherry'])
@@ -223,12 +223,10 @@ describe('connectListbox 属性输出', () => {
     expect(h.content.getAttribute('aria-labelledby')).toBe(h.root.querySelector('[data-part="label"]')!.id)
   })
 
-  it('可多选时 aria-multiselectable=true：multiple 与 selectionMode 两种写法等价', () => {
-    expect(mount({ multiple: true }).content.getAttribute('aria-multiselectable')).toBe('true')
+  it('aria-multiselectable 随 selectionMode：single 为 false，multiple 与 extended 为 true', () => {
+    expect(mount({ selectionMode: 'single' }).content.getAttribute('aria-multiselectable')).toBe('false')
     expect(mount({ selectionMode: 'multiple' }).content.getAttribute('aria-multiselectable')).toBe('true')
     expect(mount({ selectionMode: 'extended' }).content.getAttribute('aria-multiselectable')).toBe('true')
-    // selectionMode 说得更细，同时给时以它为准
-    expect(mount({ multiple: true, selectionMode: 'single' }).content.getAttribute('aria-multiselectable')).toBe('false')
   })
 
   it('条目：role=option + aria-selected/aria-disabled 显式给，且绝不输出原生 disabled', () => {
@@ -424,7 +422,7 @@ describe('确认键与点击', () => {
   })
 
   it('复选：Space 切换而不是替换', () => {
-    const h = mount({ multiple: true })
+    const h = mount({ selectionMode: 'multiple' })
     h.content.focus()
     press(h.item('apple'), ' ')
     press(h.item('apple'), 'ArrowDown')
@@ -459,7 +457,7 @@ describe('确认键与点击', () => {
     click(single.item('cherry'))
     expect(single.value()).toEqual(['cherry'])
 
-    const multi = mount({ multiple: true })
+    const multi = mount({ selectionMode: 'multiple' })
     click(multi.item('apple'))
     click(multi.item('cherry'))
     expect(multi.value()).toEqual(['apple', 'cherry'])
@@ -513,7 +511,7 @@ describe('extended 的修饰键扩选', () => {
   })
 
   it('shift+方向键：焦点移动并切换落点，往回走即把刚扩进来的摘掉', () => {
-    const h = mount({ multiple: true })
+    const h = mount({ selectionMode: 'multiple' })
     h.content.focus()
     press(h.item('apple'), ' ')
     press(h.item('apple'), 'ArrowDown', { shiftKey: true })
@@ -533,7 +531,7 @@ describe('extended 的修饰键扩选', () => {
   })
 
   it('ctrl+A 全选可选条目，再按一次取消；单选列表不接这个键', () => {
-    const h = mount({ multiple: true })
+    const h = mount({ selectionMode: 'multiple' })
     h.content.focus()
     const event = press(h.item('apple'), 'a', { ctrlKey: true })
     expect(event.defaultPrevented).toBe(true)
@@ -549,7 +547,7 @@ describe('extended 的修饰键扩选', () => {
   })
 
   it('ctrl+A 取消全选时不动禁用条目上的选中', () => {
-    const h = mount({ multiple: true, defaultValue: ['banana', 'apple'] })
+    const h = mount({ selectionMode: 'multiple', defaultValue: ['banana', 'apple'] })
     h.content.focus()
     press(h.item('apple'), 'a', { ctrlKey: true })
     expect(h.value()).toEqual(['banana', 'apple', 'cherry', 'durian'])

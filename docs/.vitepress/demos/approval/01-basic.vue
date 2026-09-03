@@ -2,8 +2,8 @@
 <script setup lang="ts">
 import type { ApprovalScope } from "@xihan-ui/headless";
 import {
-  XhApprovalActions,
-  XhApprovalAnnouncement,
+  XhApprovalFooter,
+  XhApprovalLiveRegion,
   XhApprovalApproveTrigger,
   XhApprovalDenyTrigger,
   XhApprovalDescription,
@@ -50,11 +50,11 @@ const decided = ref("");
         </XhApprovalScopeItem>
       </XhApprovalScopeGroup>
       <XhApprovalResult>{{ status === "approved" ? "已批准" : "已拒绝" }}</XhApprovalResult>
-      <XhApprovalActions>
+      <XhApprovalFooter>
         <XhApprovalApproveTrigger>批准</XhApprovalApproveTrigger>
         <XhApprovalDenyTrigger>拒绝</XhApprovalDenyTrigger>
-      </XhApprovalActions>
-      <XhApprovalAnnouncement />
+      </XhApprovalFooter>
+      <XhApprovalLiveRegion />
     </XhApprovalRoot>
     <p v-if="decided" style="margin: 0;">判定：{{ decided }}</p>
   </div>

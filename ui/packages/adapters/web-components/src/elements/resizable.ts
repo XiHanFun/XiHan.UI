@@ -83,6 +83,8 @@ export class XhResizableElement extends XhElement {
     edges: { converter: EDGES_CONVERTER },
     disabled: { converter: BOOLEAN_CONVERTER },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
+    // 对象进不了属性，只作为 property 暴露
+    translations: { attribute: false },
   }
 
   declare size?: ResizableSize
@@ -98,6 +100,8 @@ export class XhResizableElement extends XhElement {
   declare edges?: ResizeEdge[]
   declare disabled?: boolean
   declare direction?: Direction
+  /** 可调区域与各条边把手的无障碍名。 */
+  declare translations?: ResizableSchema['props']['translations']
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly resizableScope = createScope(null, this.idGen)
@@ -132,6 +136,7 @@ export class XhResizableElement extends XhElement {
       edges: this.edges,
       disabled: this.disabled ?? false,
       dir: this.direction,
+      translations: this.translations,
       onSizeChange: this.notifySize,
       onSizeChangeEnd: this.notifySizeEnd,
     }

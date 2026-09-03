@@ -68,6 +68,7 @@ import {
   popconfirmSuite,
   popoverSuite,
   popselectSuite,
+  promptInputSuite,
   qrCodeSuite,
   questionFlowSuite,
   ratingSuite,
@@ -127,8 +128,8 @@ afterEach(() => {
  * WC 侧 `el.setAttribute` 让它变成 DOM 属性。禁用声明正落在这个差异上，
  * 而那是两端作者侧 API 的真实区别，不是缺陷，逐帧比对本就不适用。
  *
- * 其余三类：部件形态不同构、入口名永久性差异、presence 模型不同，
- * 以及真实分歧——最后一类是待办不是结论，逐条注明了差在哪。
+ * 其余三类：部件形态不同构、入口名永久性差异，以及两端渲染模型本身的差别
+ * （presence、以及「渲染」与「机器效应」的先后）。逐条注明了差在哪。
  */
 const SUITES: readonly ConformanceSuite[] = [
   alertSuite,
@@ -231,6 +232,7 @@ const SUITES: readonly ConformanceSuite[] = [
   toolCallSuite,
   reasoningSuite,
   questionFlowSuite,
+  promptInputSuite,
 ]
 
 /** 暂不做逐帧比对的套件与理由。它们的跨适配器保证由两侧各自跑同一份 conformance 规格提供。 */
@@ -239,7 +241,7 @@ const EXCLUDED: Readonly<Record<string, string>> = {
   'checkbox': 'WC 侧 indicator 由作者手写，Vue 版组件内部渲染，fixture 不同构',
   'checkbox-group': '同上，且集合条目的禁用声明经 aria-disabled 改写',
   'code-view': '语言标注的入口名两侧永久不同（WC 必须叫 code-lang，lang 是 HTML 全局属性）',
-  'color-picker': '真实分歧：挂载时焦点落点不同（Vue 在 area-thumb，WC 在 channel-input），11/15 条同一根因',
+  'color-picker': '两处永久性差异：①「渲染」与「机器效应」的先后两端相反——Vue 先渲染出带 tabindex 的部件再跑效应，行为宿主要先把机器 mount 起来才有属性可写，defaultOpen 的焦点域因此在 Vue 落 area-thumb、在 WC 落第一个原生可聚焦的 channel-input，17 条里 13 条差在这里；②带表单出口的 4 条另有一处 fixture 不同构，hidden-input 与被搬走的浮层在两端的文档先后相反',
   'combobox': '两端作者侧的禁用声明 API 不同：Vue 是组件 prop（被消费、不落 DOM），WC 要作者写 aria-disabled，逐帧比对不适用',
   'context-menu': '两端作者侧的禁用声明 API 不同：Vue 是组件 prop（被消费、不落 DOM），WC 要作者写 aria-disabled，逐帧比对不适用',
   'dialog': '两端 presence 模型不同：Vue 关闭即卸载 content，WC 是 Light DOM 不删作者节点',
@@ -252,7 +254,6 @@ const EXCLUDED: Readonly<Record<string, string>> = {
   'mention': '同集合族：候选的禁用声明两端不同，WC 侧 disabled 落成 DOM 属性，Vue 侧被 prop 消费',
   'menu': '两端作者侧的禁用声明 API 不同：Vue 是组件 prop（被消费、不落 DOM），WC 要作者写 aria-disabled，逐帧比对不适用',
   'progress': 'WC 侧 track/range 由作者手写，Vue 版组件内部渲染，fixture 不同构',
-  'prompt-input': '真实分歧：stop 是全仓唯一无载荷的语义事件，Vue 发 undefined、WC 发 null',
   'radio-group': '两端作者侧的禁用声明 API 不同：Vue 是组件 prop（被消费、不落 DOM），WC 要作者写 aria-disabled，逐帧比对不适用',
   'segmented': '同集合族：条目的禁用声明两端不同，Vue 是被消费的组件 prop（不落 DOM），WC 落成 DOM 属性',
   'select': '同集合族，另加 WC 要作者手写影子 select',

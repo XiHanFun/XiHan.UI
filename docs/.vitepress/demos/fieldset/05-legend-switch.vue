@@ -1,7 +1,7 @@
 <!-- 总开关放进 legend | 按 HTML 规范，首个 legend 里的控件不受 fieldset[disabled] 连坐，总开关因此始终可点 -->
 <script setup lang="ts">
 import { ref } from "vue";
-import { XhFieldsetHelperText, XhFieldsetLegend, XhFieldsetRoot } from "@xihan-ui/vue";
+import { XhFieldsetDescription, XhFieldsetLegend, XhFieldsetRoot } from "@xihan-ui/vue";
 
 const enabled = ref(false);
 </script>
@@ -25,6 +25,6 @@ const enabled = ref(false);
       <input type="checkbox" />
       失败时发通知
     </label>
-    <XhFieldsetHelperText>关掉总开关，下面两项跟着停用，唯独总开关自己还能点</XhFieldsetHelperText>
+    <XhFieldsetDescription>关掉总开关，下面两项跟着停用，唯独总开关自己还能点</XhFieldsetDescription>
   </XhFieldsetRoot>
 </template>

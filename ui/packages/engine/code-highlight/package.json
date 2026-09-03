@@ -27,14 +27,6 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
-    },
-    "./languages": {
-      "types": "./dist/languages.d.ts",
-      "import": "./dist/languages.js"
-    },
-    "./tokenize": {
-      "types": "./dist/tokenize.d.ts",
-      "import": "./dist/tokenize.js"
     }
   },
   "main": "./dist/index.js",

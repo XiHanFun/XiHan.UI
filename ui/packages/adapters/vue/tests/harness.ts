@@ -119,10 +119,13 @@ export function createVueHarness(): AdapterHarness {
       // 捕获对外语义事件（跨适配器一致的 emit）；v-model 的 update:open 是 Vue 特化
       // 语法糖、不入跨适配器事件流。只传 Root 明确声明的监听器；未声明的 onX 会被
       // Vue 当普通属性透传到根元素，Fragment 根还会产生 Extraneous non-emits warning。
+      // 无载荷记成 null：轨迹里「没有载荷」只能有一种写法，否则逐帧比对比的是两个平台的
+      // 拼法而不是行为。取 DOM 那一种——CustomEvent.detail 缺省即 null，规范里没有 undefined 这一档，
+      // WC 侧表达不出来；Vue 的无参 emit 到这里映射成同一个值。
       const record = (type: string) => (detail: unknown) => {
         if (detail instanceof Event)
           return
-        events.push({ type, detail })
+        events.push({ type, detail: detail === undefined ? null : detail })
       }
       const declared = declaredEvents(Root)
       const listeners: Record<string, (detail: unknown) => void> = {}

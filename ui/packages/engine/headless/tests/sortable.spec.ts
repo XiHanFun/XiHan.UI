@@ -264,7 +264,7 @@ describe('排序 · 产出的属性', () => {
 
   it('手柄是按钮、可聚焦，且声明自己是可排序的', () => {
     const s = makeSortable()
-    const handle = s.api().getItemHandleProps({ id: 'a' }) as Record<string, unknown>
+    const handle = s.api().getItemDragTriggerProps({ id: 'a' }) as Record<string, unknown>
     expect(handle.role).toBe('button')
     expect(handle.tabindex).toBe(0)
     expect(handle['aria-roledescription']).toBe('sortable')
@@ -275,12 +275,12 @@ describe('排序 · 产出的属性', () => {
   it('拖动中的手柄报 aria-pressed=true', () => {
     const s = makeSortable()
     s.service.send({ type: 'ITEM.PICKUP', id: 'a' })
-    expect((s.api().getItemHandleProps({ id: 'a' }) as Record<string, unknown>)['aria-pressed']).toBe('true')
+    expect((s.api().getItemDragTriggerProps({ id: 'a' }) as Record<string, unknown>)['aria-pressed']).toBe('true')
   })
 
   it('disabled 时手柄不可聚焦', () => {
     const s = makeSortable({ disabled: true })
-    const handle = s.api().getItemHandleProps({ id: 'a' }) as Record<string, unknown>
+    const handle = s.api().getItemDragTriggerProps({ id: 'a' }) as Record<string, unknown>
     expect(handle.tabindex).toBeUndefined()
     expect(handle['aria-disabled']).toBe('true')
   })
@@ -367,7 +367,7 @@ describe('排序 · 不给手柄时整项可拖', () => {
     const s = makeSortable()
     const api = s.api()
     const down = { button: 0, pointerId: 1, clientX: 0, clientY: 50, preventDefault: () => {} } as unknown as PointerEvent
-    ;((api.getItemHandleProps({ id: 'a' }) as Record<string, unknown>).onPointerDown as (e: PointerEvent) => void)(down)
+    ;((api.getItemDragTriggerProps({ id: 'a' }) as Record<string, unknown>).onPointerDown as (e: PointerEvent) => void)(down)
     // 手柄在项里面，同一次按下会再冒泡到项上
     ;((api.getItemProps({ id: 'a' }) as Record<string, unknown>).onPointerDown as (e: PointerEvent) => void)(down)
     expect(s.state()).toBe('pending')
@@ -407,10 +407,10 @@ describe('排序 · 逐项禁用', () => {
 
   it('禁掉的那一项手柄退出 Tab 序列并报 aria-disabled', () => {
     const s = makeSortable()
-    const handle = s.api().getItemHandleProps({ id: 'a', disabled: true }) as Record<string, unknown>
+    const handle = s.api().getItemDragTriggerProps({ id: 'a', disabled: true }) as Record<string, unknown>
     expect(handle.tabindex).toBeUndefined()
     expect(handle['aria-disabled']).toBe('true')
-    const other = s.api().getItemHandleProps({ id: 'b' }) as Record<string, unknown>
+    const other = s.api().getItemDragTriggerProps({ id: 'b' }) as Record<string, unknown>
     expect(other.tabindex).toBe(0)
     expect(other['aria-disabled']).toBe('false')
   })

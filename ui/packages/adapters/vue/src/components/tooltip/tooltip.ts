@@ -1,5 +1,5 @@
 import type { TooltipApi, TooltipSchema } from '@xihan-ui/headless'
-import type { Placement, Size, Tone } from '@xihan-ui/kernel'
+import type { Direction, Placement, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h, mergeProps, Teleport } from 'vue'
@@ -19,6 +19,8 @@ export const XhTooltipRoot = defineComponent({
     defaultOpen: Boolean,
     placement: { type: String as PropType<Placement>, default: undefined },
     offset: { type: Number, default: undefined },
+    /** 文字方向；浮层搬到落点后继承不到作者子树上的方向，要 RTL 就显式给。 */
+    dir: { type: String as PropType<Direction>, default: undefined },
     openDelay: { type: Number, default: undefined },
     closeDelay: { type: Number, default: undefined },
     disabled: Boolean,

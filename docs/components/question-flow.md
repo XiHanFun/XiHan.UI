@@ -56,7 +56,7 @@
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-question-flow>` |
-| Vue 组件 | `XhQuestionFlowAnnouncement` `XhQuestionFlowCounter` `XhQuestionFlowFooter` `XhQuestionFlowNextTrigger` `XhQuestionFlowNote` `XhQuestionFlowOption` `XhQuestionFlowOptionGroup` `XhQuestionFlowOptionIndicator` `XhQuestionFlowOptionLabel` `XhQuestionFlowPrevTrigger` `XhQuestionFlowPrompt` `XhQuestionFlowQuestion` `XhQuestionFlowResult` `XhQuestionFlowRoot` `XhQuestionFlowSkipTrigger` `XhQuestionFlowSubmitTrigger` `XhQuestionFlowTrack` `XhQuestionFlowViewport` |
+| Vue 组件 | `XhQuestionFlowCounter` `XhQuestionFlowFooter` `XhQuestionFlowLiveRegion` `XhQuestionFlowNextTrigger` `XhQuestionFlowNote` `XhQuestionFlowOption` `XhQuestionFlowOptionGroup` `XhQuestionFlowOptionIndicator` `XhQuestionFlowOptionLabel` `XhQuestionFlowPrevTrigger` `XhQuestionFlowPrompt` `XhQuestionFlowQuestion` `XhQuestionFlowResult` `XhQuestionFlowRoot` `XhQuestionFlowSkipTrigger` `XhQuestionFlowSubmitTrigger` `XhQuestionFlowTrack` `XhQuestionFlowViewport` |
 | 组合式函数 | `useQuestionFlow` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/question-flow.css` |
@@ -65,7 +65,7 @@
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="question-flow"`：**`root`** · `viewport` · **`track`** · **`question`** · `prompt` · `option-group` · `option` · `option-indicator` · `option-label` · `note` · `footer` · `prev-trigger` · `counter` · `next-trigger` · `skip-trigger` · **`submit-trigger`** · `result` · `announcement`
+`data-scope="question-flow"`：**`root`** · `viewport` · **`track`** · **`question`** · `prompt` · `option-group` · `option` · `option-indicator` · `option-label` · `note` · `footer` · `prev-trigger` · `counter` · `next-trigger` · `skip-trigger` · **`submit-trigger`** · `result` · `live-region`
 
 ## Props
 
@@ -181,7 +181,7 @@
 | `getSkipTriggerProps` | `() => T['button']` |  |
 | `getSubmitTriggerProps` | `() => T['button']` |  |
 | `getResultProps` | `() => T['element']` |  |
-| `getAnnouncementProps` | `() => T['element']` |  |
+| `getLiveRegionProps` | `() => T['element']` |  |
 
 ## 键盘
 
@@ -220,8 +220,8 @@
 | `skip-trigger` | `aria-label` | translations?.skip |
 | `submit-trigger` | `aria-label` | translations?.send \| translations?.continue |
 | `result` | `aria-hidden` | 'true' |
-| `announcement` | `aria-atomic` | 'true' |
-| `announcement` | `aria-live` | 'polite' |
+| `live-region` | `aria-atomic` | 'true' |
+| `live-region` | `aria-live` | 'polite' |
 
 - 每题是 `role=group`，题干是它的可访问名；题干缺席时退到 `translations.prompt`。
 - 选项组按题型取 `role=radiogroup`（单选）或 `role=group`（多选），同样由题干命名；

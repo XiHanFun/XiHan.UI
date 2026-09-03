@@ -7,9 +7,21 @@ const parts = gridAnatomy.build()
 /** 断点档位，自窄到宽。 */
 const BREAKPOINTS: readonly GridBreakpoint[] = ['sm', 'md', 'lg', 'xl']
 
-/** 档位数落成字符串，两个适配器写到 DOM 上的值一致；没给就不写这个属性。 */
-function tier(value: number | undefined): string | undefined {
-  return value == null ? undefined : String(value)
+/** 列数与跨列的取值上限，与皮肤逐值写出的那一批规则同一个范围。 */
+const MAX_COLUMN_COUNT = 12
+/** 错列的取值上限：最多把这一格推到最后一列起排。 */
+const MAX_COLUMN_OFFSET = 11
+
+/**
+ * 档位数落成字符串，两个适配器写到 DOM 上的值一致；没给就不写这个属性。
+ * 只有 1 到 max 的整数落得下去，0、负数、小数与超出上限的一律按没写算——
+ * 类型只管得住 TypeScript 那一路，特性写的是字符串、property 也收得下任意数字，
+ * 落一个皮肤没有规则接的值，等于既不生效又看不出写错在哪。
+ */
+function tier(value: number | undefined, max: number): string | undefined {
+  if (value == null || !Number.isInteger(value) || value < 1 || value > max)
+    return undefined
+  return String(value)
 }
 
 /**
@@ -20,10 +32,10 @@ function colsAttrs(cols: GridCols | undefined): Record<string, string | undefine
   const byTier: GridColsByBreakpoint = cols != null && typeof cols === 'object' ? cols : { base: cols }
   const attrs: Record<string, string | undefined> = {
     // 列数恒有值：不写就是一列，读一眼 DOM 就知道这一层分几列
-    'data-cols': tier(byTier.base) ?? '1',
+    'data-cols': tier(byTier.base, MAX_COLUMN_COUNT) ?? '1',
   }
   for (const name of BREAKPOINTS)
-    attrs[`data-cols-${name}`] = tier(byTier[name])
+    attrs[`data-cols-${name}`] = tier(byTier[name], MAX_COLUMN_COUNT)
   return attrs
 }
 
@@ -47,8 +59,8 @@ export function connectGrid<T extends PropTypes>(
     // 跨列与错列是每一格自报的声明，都不写就按文档序占一格
     getItemProps: (item = {}) => normalize.element({
       ...parts.item.attrs,
-      'data-span': tier(item.span),
-      'data-offset': tier(item.offset),
+      'data-span': tier(item.span, MAX_COLUMN_COUNT),
+      'data-offset': tier(item.offset, MAX_COLUMN_OFFSET),
     }),
   }
 }

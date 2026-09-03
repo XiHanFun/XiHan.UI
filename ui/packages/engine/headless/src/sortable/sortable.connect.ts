@@ -161,19 +161,19 @@ export function connectSortable<T extends PropTypes>(
       })
     },
 
-    getItemHandleProps: ({ id, disabled: itemDisabled }) => {
+    getItemDragTriggerProps: ({ id, disabled: itemDisabled }) => {
       const item = itemAt(id)
       const isDragging = !!item?.dragging
       const position = (item?.index ?? 0) + 1
       const name = translations?.item?.(id, position, ids.length) ?? id
       const off = disabled || !!itemDisabled
       return normalize.element({
-        ...parts['item-handle'].attrs,
+        ...parts['item-drag-trigger'].attrs,
         // 宿主是 <button> 时必须显式写 type：不写默认是 submit，放进表单里一按就提交
         'type': 'button',
         'role': 'button',
         'tabindex': off ? undefined : 0,
-        'aria-label': translations?.itemHandle?.(name) ?? `Reorder ${name}`,
+        'aria-label': translations?.itemDragTrigger?.(name) ?? `Reorder ${name}`,
         'aria-roledescription': 'sortable',
         'aria-disabled': off ? 'true' : 'false',
         'aria-pressed': isDragging ? 'true' : 'false',

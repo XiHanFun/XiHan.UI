@@ -19,20 +19,20 @@ export const fieldsetSuite: ConformanceSuite = {
     children: [
       { part: 'legend', tag: 'legend', text: '联系方式' },
       { tag: 'input', attrs: { 'type': 'email', 'aria-label': '邮箱' } },
-      { part: 'helper-text', tag: 'p', text: '至少填写一种联系方式' },
+      { part: 'description', tag: 'p', text: '至少填写一种联系方式' },
       { part: 'error-text', tag: 'p', text: '请至少填写一种联系方式' },
     ],
   },
   cases: [
     {
-      name: '默认：描述链只挂 helper-text，错误文案隐藏，root 上不落原生 disabled',
+      name: '默认：描述链只挂 description，错误文案隐藏，root 上不落原生 disabled',
       spec: { apg: APG },
       initial: {
-        order: ['root', 'legend', 'helper-text', 'error-text'],
-        counts: { 'root': 1, 'legend': 1, 'helper-text': 1, 'error-text': 1 },
+        order: ['root', 'legend', 'description', 'error-text'],
+        counts: { 'root': 1, 'legend': 1, 'description': 1, 'error-text': 1 },
         parts: {
           'root': {
-            'aria-describedby': '@part(helper-text)',
+            'aria-describedby': '@part(description)',
             'disabled': null,
             'data-disabled': null,
             'data-invalid': null,
@@ -43,7 +43,7 @@ export const fieldsetSuite: ConformanceSuite = {
             'aria-disabled': null,
           },
           'legend': { 'data-disabled': null },
-          'helper-text': { 'id': '@self', 'data-disabled': null },
+          'description': { 'id': '@self', 'data-disabled': null },
           'error-text': {
             role: 'alert',
             hidden: '',
@@ -75,7 +75,7 @@ export const fieldsetSuite: ConformanceSuite = {
       initial: {
         parts: {
           'root': {
-            'aria-describedby': '@part(helper-text) @part(error-text)',
+            'aria-describedby': '@part(description) @part(error-text)',
             'data-invalid': '',
             'aria-invalid': null,
           },
@@ -100,19 +100,19 @@ export const fieldsetSuite: ConformanceSuite = {
       },
     },
     {
-      name: 'disabled：root 落原生 disabled，legend 与 helper-text 同步 data-disabled',
+      name: 'disabled：root 落原生 disabled，legend 与 description 同步 data-disabled',
       spec: { apg: HTML_SPEC },
       props: { disabled: true },
       initial: {
         parts: {
-          'root': {
+          root: {
             'disabled': '',
             'data-disabled': '',
             // 原生 disabled 已进无障碍树，不再另发 aria-disabled
             'aria-disabled': null,
           },
-          'legend': { 'data-disabled': '' },
-          'helper-text': { 'data-disabled': '' },
+          legend: { 'data-disabled': '' },
+          description: { 'data-disabled': '' },
         },
       },
     },
@@ -121,7 +121,7 @@ export const fieldsetSuite: ConformanceSuite = {
       spec: { apg: APG },
       initial: {
         parts: {
-          'root': { 'aria-describedby': '@part(helper-text)' },
+          'root': { 'aria-describedby': '@part(description)' },
           'error-text': { hidden: '' },
         },
       },
@@ -131,7 +131,7 @@ export const fieldsetSuite: ConformanceSuite = {
           props: { invalid: true },
           expect: {
             parts: {
-              'root': { 'aria-describedby': '@part(helper-text) @part(error-text)', 'data-invalid': '' },
+              'root': { 'aria-describedby': '@part(description) @part(error-text)', 'data-invalid': '' },
               'error-text': { hidden: null },
             },
           },
@@ -141,7 +141,7 @@ export const fieldsetSuite: ConformanceSuite = {
           props: { invalid: false },
           expect: {
             parts: {
-              'root': { 'aria-describedby': '@part(helper-text)', 'data-invalid': null },
+              'root': { 'aria-describedby': '@part(description)', 'data-invalid': null },
               'error-text': { hidden: '' },
             },
           },

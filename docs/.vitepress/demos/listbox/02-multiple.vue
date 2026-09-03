@@ -1,4 +1,4 @@
-<!-- 多选 | multiple 下空格改成切换该条，Shift + 方向键顺手扩选，Ctrl / Cmd + A 全选或全不选 -->
+<!-- 多选 | selection-mode="multiple" 下空格改成切换该条，Shift + 方向键顺手扩选，Ctrl / Cmd + A 全选或全不选 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import { XhListboxRoot } from "@xihan-ui/vue";
@@ -17,7 +17,7 @@ const options = [
     v-model:value="cities"
     :collection="options"
     label="常去城市"
-    multiple
+    selection-mode="multiple"
     style="max-inline-size: 320px"
   />
   <p>已选：{{ cities.length ? cities.join("、") : "（无）" }}</p>

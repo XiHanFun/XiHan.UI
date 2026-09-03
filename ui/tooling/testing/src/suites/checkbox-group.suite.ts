@@ -55,7 +55,7 @@ export const checkboxGroupSuite: ConformanceSuite = {
     part: 'root',
     children: [
       { part: 'label', text: '配料' },
-      { part: 'trigger', text: '全选' },
+      { part: 'select-all-trigger', text: '全选' },
       {
         part: 'item',
         attrs: { value: 'a' },
@@ -81,14 +81,14 @@ export const checkboxGroupSuite: ConformanceSuite = {
       steps: [everyItemIsTabStop],
     },
     {
-      name: '初始无选中：root 是 role=group，条目全 aria-checked=false，trigger 报 none',
+      name: '初始无选中：root 是 role=group，条目全 aria-checked=false，select-all-trigger 报 none',
       spec: { apg: `${APG}#wai-ariaroles,states,andproperties` },
       props: { itemValues: ['a', 'b', 'c'] },
       initial: {
         order: [
           'root',
           'label',
-          'trigger',
+          'select-all-trigger',
           'item[0]',
           'hidden-input[0]',
           'indicator[0]',
@@ -105,7 +105,7 @@ export const checkboxGroupSuite: ConformanceSuite = {
         counts: {
           'root': 1,
           'label': 1,
-          'trigger': 1,
+          'select-all-trigger': 1,
           'item': 3,
           'indicator': 3,
           'item-text': 3,
@@ -124,11 +124,11 @@ export const checkboxGroupSuite: ConformanceSuite = {
             // role=group 不接受 aria-orientation，写上去是无效 ARIA
             'aria-orientation': null,
           },
-          'trigger': {
+          'select-all-trigger': {
             'role': 'checkbox',
             // 名字两段：组标题在前，全选格自己的文本在后（自指）
             'id': '@self',
-            'aria-labelledby': '@part(label) @part(trigger)',
+            'aria-labelledby': '@part(label) @part(select-all-trigger)',
             'aria-checked': 'false',
             'aria-disabled': 'false',
             'aria-readonly': 'false',
@@ -307,7 +307,7 @@ export const checkboxGroupSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '整组 disabled：条目全部 aria-disabled，点击与 trigger 都改不动',
+      name: '整组 disabled：条目全部 aria-disabled，点击与全选格都改不动',
       spec: { apg: APG },
       props: { disabled: true, itemValues: ['a', 'b', 'c'] },
       steps: [
@@ -316,24 +316,24 @@ export const checkboxGroupSuite: ConformanceSuite = {
           part: 'item[0]',
           expect: {
             parts: {
-              root: { 'data-disabled': '' },
-              item: [
+              'root': { 'data-disabled': '' },
+              'item': [
                 { 'aria-checked': 'false', 'aria-disabled': 'true', 'data-disabled': '', 'disabled': null },
                 { 'aria-checked': 'false', 'aria-disabled': 'true', 'data-disabled': '' },
                 { 'aria-checked': 'false', 'aria-disabled': 'true', 'data-disabled': '' },
               ],
-              trigger: { 'aria-disabled': 'true', 'data-disabled': '', 'disabled': null },
+              'select-all-trigger': { 'aria-disabled': 'true', 'data-disabled': '', 'disabled': null },
             },
             events: [],
           },
         },
         {
           kind: 'click',
-          part: 'trigger',
+          part: 'select-all-trigger',
           expect: {
             parts: {
-              item: [{ 'aria-checked': 'false' }, { 'aria-checked': 'false' }, { 'aria-checked': 'false' }],
-              trigger: { 'aria-checked': 'false' },
+              'item': [{ 'aria-checked': 'false' }, { 'aria-checked': 'false' }, { 'aria-checked': 'false' }],
+              'select-all-trigger': { 'aria-checked': 'false' },
             },
             events: [],
           },
@@ -350,13 +350,13 @@ export const checkboxGroupSuite: ConformanceSuite = {
           part: 'item[2]',
           expect: {
             parts: {
-              root: { 'data-readonly': '', 'data-disabled': null },
-              item: [
+              'root': { 'data-readonly': '', 'data-disabled': null },
+              'item': [
                 { 'aria-checked': 'true', 'aria-readonly': 'true' },
                 { 'aria-checked': 'false', 'aria-readonly': 'true' },
                 { 'aria-checked': 'false', 'aria-readonly': 'true' },
               ],
-              trigger: { 'aria-readonly': 'true', 'aria-disabled': 'true' },
+              'select-all-trigger': { 'aria-readonly': 'true', 'aria-disabled': 'true' },
             },
             // 只读条目仍要能被聚焦，读屏才读得到当前值
             activeElement: { part: 'item[2]', exact: true },
@@ -434,23 +434,23 @@ export const checkboxGroupSuite: ConformanceSuite = {
       ],
     },
     {
-      name: 'trigger 全选：勾上全部可用条目，禁用项不受影响；再点一次整批取消',
+      name: 'select-all-trigger 全选：勾上全部可用条目，禁用项不受影响；再点一次整批取消',
       spec: { apg: `${APG}#wai-ariaroles,states,andproperties` },
       props: { itemValues: ['a', 'b', 'c'] },
       steps: [
         {
           kind: 'click',
-          part: 'trigger',
+          part: 'select-all-trigger',
           expect: {
             parts: {
-              item: [
+              'item': [
                 { 'aria-checked': 'true', 'data-state': 'checked' },
                 // 禁用条目点不动，全选也不该替用户勾上
                 { 'aria-checked': 'false', 'data-state': 'unchecked' },
                 { 'aria-checked': 'true', 'data-state': 'checked' },
               ],
               // 还差一个 b，因此仍是"半选"而不是"全选"
-              trigger: { 'aria-checked': 'mixed', 'data-state': 'indeterminate' },
+              'select-all-trigger': { 'aria-checked': 'mixed', 'data-state': 'indeterminate' },
             },
             events: [{ type: 'value-change', detail: { value: ['a', 'c'] } }],
           },
@@ -458,15 +458,15 @@ export const checkboxGroupSuite: ConformanceSuite = {
         {
           // 半选态下再点一次整批取消：判据不是全集是否都勾上了
           kind: 'click',
-          part: 'trigger',
+          part: 'select-all-trigger',
           expect: {
             parts: {
-              item: [
+              'item': [
                 { 'aria-checked': 'false' },
                 { 'aria-checked': 'false' },
                 { 'aria-checked': 'false' },
               ],
-              trigger: { 'aria-checked': 'false', 'data-state': 'unchecked' },
+              'select-all-trigger': { 'aria-checked': 'false', 'data-state': 'unchecked' },
             },
             events: [{ type: 'value-change', detail: { value: [] } }],
           },
@@ -474,19 +474,19 @@ export const checkboxGroupSuite: ConformanceSuite = {
       ],
     },
     {
-      name: 'trigger 上按 Space 与点击等效',
+      name: 'select-all-trigger 上按 Space 与点击等效',
       spec: { apg: `${APG}#keyboardinteraction` },
       covers: ['checkbox-group.kbd.toggle-all'],
       props: { itemValues: ['a', 'b', 'c'] },
       steps: [
-        { kind: 'focus', part: 'trigger', expect: { activeElement: { part: 'trigger', exact: true }, events: [] } },
+        { kind: 'focus', part: 'select-all-trigger', expect: { activeElement: { part: 'select-all-trigger', exact: true }, events: [] } },
         {
           kind: 'key',
           key: 'Space',
           expect: {
             parts: {
-              item: [{ 'aria-checked': 'true' }, { 'aria-checked': 'false' }, { 'aria-checked': 'true' }],
-              trigger: { 'aria-checked': 'mixed' },
+              'item': [{ 'aria-checked': 'true' }, { 'aria-checked': 'false' }, { 'aria-checked': 'true' }],
+              'select-all-trigger': { 'aria-checked': 'mixed' },
             },
             events: [{ type: 'value-change', detail: { value: ['a', 'c'] } }],
           },
@@ -494,21 +494,21 @@ export const checkboxGroupSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '声明了全集：三项全勾时 trigger 从 mixed 转 true',
+      name: '声明了全集：三项全勾时 select-all-trigger 从 mixed 转 true',
       spec: { apg: `${APG}#wai-ariaroles,states,andproperties` },
       fixture: allEnabled,
       props: { itemValues: ['a', 'b', 'c'], defaultValue: ['a'] },
       initial: {
-        parts: { trigger: { 'aria-checked': 'mixed', 'data-state': 'indeterminate' } },
+        parts: { 'select-all-trigger': { 'aria-checked': 'mixed', 'data-state': 'indeterminate' } },
       },
       steps: [
         {
           kind: 'click',
-          part: 'trigger',
+          part: 'select-all-trigger',
           expect: {
             parts: {
-              item: [{ 'aria-checked': 'true' }, { 'aria-checked': 'true' }, { 'aria-checked': 'true' }],
-              trigger: { 'aria-checked': 'true', 'data-state': 'checked' },
+              'item': [{ 'aria-checked': 'true' }, { 'aria-checked': 'true' }, { 'aria-checked': 'true' }],
+              'select-all-trigger': { 'aria-checked': 'true', 'data-state': 'checked' },
             },
             events: [{ type: 'value-change', detail: { value: ['a', 'b', 'c'] } }],
           },
@@ -523,11 +523,11 @@ export const checkboxGroupSuite: ConformanceSuite = {
         {
           // connect 在渲染期不许读 DOM，作者没给 itemValues 时只能停在 mixed
           kind: 'click',
-          part: 'trigger',
+          part: 'select-all-trigger',
           expect: {
             parts: {
-              item: [{ 'aria-checked': 'true' }, { 'aria-checked': 'true' }, { 'aria-checked': 'true' }],
-              trigger: { 'aria-checked': 'mixed', 'data-state': 'indeterminate' },
+              'item': [{ 'aria-checked': 'true' }, { 'aria-checked': 'true' }, { 'aria-checked': 'true' }],
+              'select-all-trigger': { 'aria-checked': 'mixed', 'data-state': 'indeterminate' },
             },
             events: [{ type: 'value-change', detail: { value: ['a', 'b', 'c'] } }],
           },

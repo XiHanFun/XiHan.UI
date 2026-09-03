@@ -34,9 +34,9 @@ function layout({ doc }: RawStepContext): void {
 }
 
 function handleAt(doc: Document, index: number): HTMLElement {
-  const el = doc.querySelectorAll<HTMLElement>('[data-scope="sortable"][data-part="item-handle"]')[index]
+  const el = doc.querySelectorAll<HTMLElement>('[data-scope="sortable"][data-part="item-drag-trigger"]')[index]
   if (!el)
-    throw new Error(`找不到 item-handle[${index}]`)
+    throw new Error(`找不到 item-drag-trigger[${index}]`)
   return el
 }
 
@@ -64,7 +64,7 @@ function itemNode(id: string, text: string): FixtureNode {
   return {
     part: 'item',
     attrs: { 'item-id': id },
-    children: [{ part: 'item-handle', tag: 'button', attrs: { 'item-id': id }, text: '⠿' }],
+    children: [{ part: 'item-drag-trigger', tag: 'button', attrs: { 'item-id': id }, text: '⠿' }],
     text,
   }
 }
@@ -83,7 +83,7 @@ export const sortableSuite: ConformanceSuite = {
       spec: { apg: APG },
       props: { ids: ['a', 'b', 'c'] },
       initial: {
-        counts: { 'root': 1, 'item': 3, 'item-handle': 3, 'live-region': 1 },
+        counts: { 'root': 1, 'item': 3, 'item-drag-trigger': 3, 'live-region': 1 },
         parts: {
           'root': {
             // group 而不是 list：播报区（role=status）就在容器里，list 只许有 listitem 子节点。
@@ -96,7 +96,7 @@ export const sortableSuite: ConformanceSuite = {
           },
           'item[0]': { 'data-value': 'a', 'data-index': '0', 'data-dragging': null },
           'item[2]': { 'data-value': 'c', 'data-index': '2' },
-          'item-handle[0]': {
+          'item-drag-trigger[0]': {
             'role': 'button',
             'aria-roledescription': 'sortable',
             // 显式 false：省略是「没说」，读屏对两者的处理并不一样
@@ -114,18 +114,18 @@ export const sortableSuite: ConformanceSuite = {
       props: { ids: ['a', 'b', 'c'] },
       steps: [
         { kind: 'raw', why: LAYOUT_WHY, run: layout },
-        { kind: 'focus', part: 'item-handle' },
+        { kind: 'focus', part: 'item-drag-trigger' },
         {
           kind: 'key',
           key: ' ',
-          expect: { parts: { 'item-handle[0]': { 'aria-pressed': 'true' }, 'root': { 'data-dragging': '' } } },
+          expect: { parts: { 'item-drag-trigger[0]': { 'aria-pressed': 'true' }, 'root': { 'data-dragging': '' } } },
         },
         { kind: 'key', key: 'ArrowDown' },
         {
           kind: 'key',
           key: ' ',
           expect: {
-            parts: { 'item-handle[0]': { 'aria-pressed': 'false' }, 'root': { 'data-dragging': null } },
+            parts: { 'item-drag-trigger[0]': { 'aria-pressed': 'false' }, 'root': { 'data-dragging': null } },
             events: [{ type: 'sort', detail: { from: 0, to: 1, id: 'a', ids: ['b', 'a', 'c'] } }],
           },
         },
@@ -138,7 +138,7 @@ export const sortableSuite: ConformanceSuite = {
       props: { ids: ['a', 'b', 'c'] },
       steps: [
         { kind: 'raw', why: LAYOUT_WHY, run: layout },
-        { kind: 'focus', part: 'item-handle' },
+        { kind: 'focus', part: 'item-drag-trigger' },
         { kind: 'key', key: ' ' },
         // 第 0 项已经在首位，再往前也出不去
         { kind: 'key', key: 'ArrowUp' },
@@ -153,14 +153,14 @@ export const sortableSuite: ConformanceSuite = {
       props: { ids: ['a', 'b', 'c'] },
       steps: [
         { kind: 'raw', why: LAYOUT_WHY, run: layout },
-        { kind: 'focus', part: 'item-handle' },
+        { kind: 'focus', part: 'item-drag-trigger' },
         { kind: 'key', key: ' ' },
         { kind: 'key', key: 'ArrowDown' },
         {
           kind: 'key',
           key: 'Escape',
           expect: {
-            parts: { 'item-handle[0]': { 'aria-pressed': 'false' }, 'root': { 'data-dragging': null } },
+            parts: { 'item-drag-trigger[0]': { 'aria-pressed': 'false' }, 'root': { 'data-dragging': null } },
             events: [],
           },
         },
@@ -200,7 +200,7 @@ export const sortableSuite: ConformanceSuite = {
       initial: {
         parts: {
           'root': { 'data-disabled': '' },
-          'item-handle[0]': { 'aria-disabled': 'true', 'tabindex': null },
+          'item-drag-trigger[0]': { 'aria-disabled': 'true', 'tabindex': null },
         },
       },
       steps: [

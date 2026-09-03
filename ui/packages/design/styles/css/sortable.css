@@ -48,51 +48,51 @@
     opacity: var(--xh-sortable-item-opacity-dragging, 0.9);
   }
 
-  [data-scope='sortable'][data-part='item-handle'] {
+  [data-scope='sortable'][data-part='item-drag-trigger'] {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     flex: none;
-    inline-size: var(--xh-sortable-handle-size, var(--xh-control-action-size));
-    block-size: var(--xh-sortable-handle-size, var(--xh-control-action-size));
+    inline-size: var(--xh-sortable-drag-size, var(--xh-control-action-size));
+    block-size: var(--xh-sortable-drag-size, var(--xh-control-action-size));
     padding: 0;
     border: 0;
-    border-radius: var(--xh-sortable-handle-radius, var(--xh-shape-control));
+    border-radius: var(--xh-sortable-drag-radius, var(--xh-shape-control));
     background: transparent;
-    color: var(--xh-sortable-handle-fg, var(--xh-fg-muted));
+    color: var(--xh-sortable-drag-fg, var(--xh-fg-muted));
     cursor: grab;
   }
 
   /* 抓手是两条竖线：盒子取边框盒，两侧描边就是那两条线，宽高与线宽都走令牌。
      :empty 守卫让作者塞进来的图标整个顶掉它，而不是两份叠在一起。
      不画这条的话按钮里空无一物，只剩一块摸不着边的透明命中区 */
-  [data-scope='sortable'][data-part='item-handle']:empty::after {
+  [data-scope='sortable'][data-part='item-drag-trigger']:empty::after {
     content: '';
     display: block;
-    inline-size: var(--xh-sortable-handle-grip-w, var(--xh-space-1));
-    block-size: var(--xh-sortable-handle-grip-h, var(--xh-space-3));
+    inline-size: var(--xh-sortable-drag-grip-w, var(--xh-space-1));
+    block-size: var(--xh-sortable-drag-grip-h, var(--xh-space-3));
     border-inline: var(--xh-stroke-thin) solid currentColor;
   }
 
   /* 抓手禁用走 aria-disabled 而非原生 disabled（宿主未必是 <button>），:hover 照样命中；
      不挡掉的话拖不动的那颗悬停仍会换底 */
-  [data-scope='sortable'][data-part='item-handle']:not([aria-disabled='true']):hover {
-    background: var(--xh-sortable-handle-bg-hover, var(--xh-bg-subtle-hover));
-    color: var(--xh-sortable-handle-fg-hover, var(--xh-fg-default));
+  [data-scope='sortable'][data-part='item-drag-trigger']:not([aria-disabled='true']):hover {
+    background: var(--xh-sortable-drag-bg-hover, var(--xh-bg-subtle-hover));
+    color: var(--xh-sortable-drag-fg-hover, var(--xh-fg-default));
   }
 
-  [data-scope='sortable'][data-part='item-handle'][data-dragging] {
+  [data-scope='sortable'][data-part='item-drag-trigger'][data-dragging] {
     cursor: grabbing;
   }
 
-  [data-scope='sortable'][data-part='item-handle']:focus-visible {
+  [data-scope='sortable'][data-part='item-drag-trigger']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
     outline-offset: var(--xh-ring-offset);
   }
 
-  [data-scope='sortable'][data-part='item-handle'][aria-disabled='true'] {
+  [data-scope='sortable'][data-part='item-drag-trigger'][aria-disabled='true'] {
     cursor: not-allowed;
-    color: var(--xh-sortable-handle-fg-disabled, var(--xh-fg-disabled));
+    color: var(--xh-sortable-drag-fg-disabled, var(--xh-fg-disabled));
   }
 
   /* 活动区域只说给读屏听，不占版面。声明与 shared/visually-hidden.ts 逐条同值。 */
@@ -110,7 +110,7 @@
   /* 给了 display 的角色节点必须补这条：display 声明会盖掉 UA 的 [hidden]{display:none}，
      不补的话作者给节点加 hidden 后它照样显示 */
   [data-scope='sortable'][data-part='root'][hidden],
-  [data-scope='sortable'][data-part='item-handle'][hidden] {
+  [data-scope='sortable'][data-part='item-drag-trigger'][hidden] {
     display: none;
   }
 }

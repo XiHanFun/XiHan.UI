@@ -12,7 +12,7 @@ import type {
   DateSegmentSet,
   DateSegmentType,
 } from '@xihan-ui/headless'
-import type { ControlVariant, Placement, Size, Tone } from '@xihan-ui/kernel'
+import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui/kernel'
 import type { ComputedRef, PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h, mergeProps, Teleport } from 'vue'
@@ -136,6 +136,8 @@ export const XhDatePickerRoot = defineComponent({
     size: { type: String as PropType<Size>, default: undefined },
     placement: { type: String as PropType<Placement>, default: undefined },
     offset: { type: Number, default: undefined },
+    /** 文字方向；浮层搬到落点后继承不到作者子树上的方向，要 RTL 就显式给。 */
+    dir: { type: String as PropType<Direction>, default: undefined },
     closeOnSelect: { type: Boolean, default: undefined },
     showTime: { type: Boolean, default: undefined },
     timeGranularity: { type: String as PropType<DatePickerSchema['props']['timeGranularity']>, default: undefined },

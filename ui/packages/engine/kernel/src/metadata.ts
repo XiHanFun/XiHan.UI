@@ -167,11 +167,6 @@ export function getRuntimeHost(): Readonly<RuntimeHostInfo> | null {
   return runtimeHost
 }
 
-/** 清掉宿主登记,测试之间用。 */
-export function resetRuntimeHost(): void {
-  runtimeHost = null
-}
-
 export interface RuntimeInfo {
   /** development / production,取 isDev()。 */
   mode: 'development' | 'production'
@@ -239,11 +234,6 @@ export function setMetadataAutoPrint(on: boolean): void {
 
 export function isMetadataAutoPrint(): boolean {
   return autoPrint
-}
-
-/** 清掉「已打过」记账,测试之间用。 */
-export function resetMetadataBanner(): void {
-  bannerPrinted = false
 }
 
 /**

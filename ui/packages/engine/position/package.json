@@ -29,10 +29,6 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
-    },
-    "./compute": {
-      "types": "./dist/compute.d.ts",
-      "import": "./dist/compute.js"
     }
   },
   "main": "./dist/index.js",

@@ -25,7 +25,7 @@ export {
 } from './components/anchor/anchor'
 export { useAnchor } from './components/anchor/use-anchor'
 export type { AnchorContext } from './components/anchor/use-anchor'
-export { XhApprovalActions, XhApprovalAnnouncement, XhApprovalApproveTrigger, XhApprovalDenyTrigger, XhApprovalDescription, XhApprovalNote, XhApprovalResult, XhApprovalRoot, XhApprovalScopeGroup, XhApprovalScopeIndicator, XhApprovalScopeItem, XhApprovalScopeLabel, XhApprovalTimer, XhApprovalTitle } from './components/approval/approval'
+export { XhApprovalApproveTrigger, XhApprovalDenyTrigger, XhApprovalDescription, XhApprovalFooter, XhApprovalLiveRegion, XhApprovalNote, XhApprovalResult, XhApprovalRoot, XhApprovalScopeGroup, XhApprovalScopeIndicator, XhApprovalScopeItem, XhApprovalScopeLabel, XhApprovalTimer, XhApprovalTitle } from './components/approval/approval'
 export type { ApprovalRootSlotProps, ApprovalScopeSlotProps } from './components/approval/approval'
 export { provideApproval, useApprovalContext } from './components/approval/context'
 export { useApproval } from './components/approval/use-approval'
@@ -126,7 +126,7 @@ export {
   XhCheckboxGroupItemText,
   XhCheckboxGroupLabel,
   XhCheckboxGroupRoot,
-  XhCheckboxGroupTrigger,
+  XhCheckboxGroupSelectAllTrigger,
 } from './components/checkbox-group/checkbox-group'
 export type { CheckboxGroupRootSlotProps } from './components/checkbox-group/checkbox-group'
 export { useCheckboxGroup } from './components/checkbox-group/use-checkbox-group'
@@ -344,7 +344,7 @@ export { useField } from './components/field/use-field'
 export type { FieldContext } from './components/field/use-field'
 export { useFieldControl, useFieldLabelWiring, useFieldStateWiring } from './components/field/use-field-control'
 export { useFieldsetContext } from './components/fieldset/context'
-export { XhFieldsetErrorText, XhFieldsetHelperText, XhFieldsetLegend, XhFieldsetRoot } from './components/fieldset/fieldset'
+export { XhFieldsetDescription, XhFieldsetErrorText, XhFieldsetLegend, XhFieldsetRoot } from './components/fieldset/fieldset'
 export { useFieldset } from './components/fieldset/use-fieldset'
 export type { FieldsetContext } from './components/fieldset/use-fieldset'
 export {
@@ -660,9 +660,9 @@ export type { QrCodeContext } from './components/qr-code/context'
 export { XhQrCode, XhQrCodeLogo } from './components/qr-code/qr-code'
 export { provideQuestionFlow, useQuestionFlowContext } from './components/question-flow/context'
 export {
-  XhQuestionFlowAnnouncement,
   XhQuestionFlowCounter,
   XhQuestionFlowFooter,
+  XhQuestionFlowLiveRegion,
   XhQuestionFlowNextTrigger,
   XhQuestionFlowNote,
   XhQuestionFlowOption,
@@ -796,7 +796,7 @@ export type { SliderMarksMarkSlotProps, SliderRootSlotProps } from './components
 export { useSlider } from './components/slider/use-slider'
 export type { SliderContext } from './components/slider/use-slider'
 export { provideSortable, useSortableContext } from './components/sortable/context'
-export { XhSortableItem, XhSortableItemHandle, XhSortableLiveRegion, XhSortableRoot } from './components/sortable/sortable'
+export { XhSortableItem, XhSortableItemDragTrigger, XhSortableLiveRegion, XhSortableRoot } from './components/sortable/sortable'
 export type { SortableItemSlotProps, SortableRootSlotProps } from './components/sortable/sortable'
 export { useSortable } from './components/sortable/use-sortable'
 export type { SortableContext } from './components/sortable/use-sortable'
@@ -844,7 +844,7 @@ export {
   XhTableExpandTrigger,
   XhTableFooter,
   XhTableHeader,
-  XhTableLoadingState,
+  XhTableLoading,
   XhTableRoot,
   XhTableRow,
   XhTableRowDragTrigger,
@@ -954,7 +954,7 @@ export { XhToggle } from './components/toggle/toggle'
 export { useToggle } from './components/toggle/use-toggle'
 export type { ToggleContext } from './components/toggle/use-toggle'
 export { provideToolCall, useToolCallContext } from './components/tool-call/context'
-export { XhToolCallApproval, XhToolCallContent, XhToolCallDuration, XhToolCallError, XhToolCallIndicator, XhToolCallInput, XhToolCallName, XhToolCallOutput, XhToolCallRoot, XhToolCallStatus, XhToolCallSummary, XhToolCallTrigger } from './components/tool-call/tool-call'
+export { XhToolCallApproval, XhToolCallContent, XhToolCallDuration, XhToolCallError, XhToolCallIndicator, XhToolCallInput, XhToolCallLabel, XhToolCallOutput, XhToolCallRoot, XhToolCallStatus, XhToolCallSummary, XhToolCallTrigger } from './components/tool-call/tool-call'
 export type { ToolCallRootSlotProps } from './components/tool-call/tool-call'
 export { useToolCall } from './components/tool-call/use-tool-call'
 export type { ToolCallContext } from './components/tool-call/use-tool-call'

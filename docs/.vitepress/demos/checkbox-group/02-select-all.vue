@@ -1,4 +1,4 @@
-<!-- 全选与半选 | trigger 是第三态复选框，只有把全部条目的值交给 itemValues 才分得清 checked 与 indeterminate -->
+<!-- 全选与半选 | select-all-trigger 是第三态复选框，只有把全部条目的值交给 itemValues 才分得清 checked 与 indeterminate -->
 <script setup lang="ts">
 import { ref } from "vue";
 import {
@@ -7,7 +7,7 @@ import {
   XhCheckboxGroupItemText,
   XhCheckboxGroupLabel,
   XhCheckboxGroupRoot,
-  XhCheckboxGroupTrigger,
+  XhCheckboxGroupSelectAllTrigger,
 } from "@xihan-ui/vue";
 
 const items = [
@@ -28,9 +28,9 @@ const toppings = ref<string[]>(["cheese"]);
   >
     <XhCheckboxGroupLabel>配料</XhCheckboxGroupLabel>
     <!-- 方框与勾号／横杠由皮肤画，这里只写文案 -->
-    <XhCheckboxGroupTrigger>
+    <XhCheckboxGroupSelectAllTrigger>
       <span>全选（{{ checkedState }}）</span>
-    </XhCheckboxGroupTrigger>
+    </XhCheckboxGroupSelectAllTrigger>
     <XhCheckboxGroupItem
       v-for="t in items"
       :key="t.value"

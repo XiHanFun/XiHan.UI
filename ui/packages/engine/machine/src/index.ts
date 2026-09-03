@@ -9,6 +9,7 @@ export { COMBINATOR, createGuards, isCombinator } from './guards'
 export type { GuardCombinators } from './guards'
 export { createService } from './service'
 export { setup } from './setup'
+export type { Setup } from './setup'
 export { appendStatePath, ensureStateIndex } from './state'
 export { findTransition, getExitEnterStates, getStateChain, resolveStateValue, resolveToLeaf } from './transitions'
 

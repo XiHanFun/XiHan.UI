@@ -9,7 +9,7 @@ import {
   XhAccordionTrigger,
   XhToolCallContent,
   XhToolCallIndicator,
-  XhToolCallName,
+  XhToolCallLabel,
   XhToolCallOutput,
   XhToolCallRoot,
   XhToolCallStatus,
@@ -43,7 +43,7 @@ const calls = [
             <XhToolCallRoot v-for="call in calls" :key="call.name" phase="output-available">
               <XhToolCallTrigger>
                 <XhToolCallIndicator>›</XhToolCallIndicator>
-                <XhToolCallName>{{ call.name }}</XhToolCallName>
+                <XhToolCallLabel>{{ call.name }}</XhToolCallLabel>
                 <XhToolCallSummary>{{ call.summary }}</XhToolCallSummary>
                 <XhToolCallStatus />
               </XhToolCallTrigger>

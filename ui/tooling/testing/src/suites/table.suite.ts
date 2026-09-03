@@ -178,7 +178,7 @@ const FIXTURE: FixtureNode = {
       ],
     },
     { part: 'empty', text: '暂无数据' },
-    { part: 'loading-state', text: '加载中' },
+    { part: 'loading', text: '加载中' },
   ],
 }
 
@@ -292,7 +292,7 @@ export const tableSuite: ConformanceSuite = {
           'row-drag-trigger': 4,
           'expanded-row': 3,
           'empty': 1,
-          'loading-state': 1,
+          'loading': 1,
         },
         parts: {
           'root': {
@@ -425,7 +425,7 @@ export const tableSuite: ConformanceSuite = {
           },
           // 表体有数据：两个状态节点都收着
           'empty': { hidden: '' },
-          'loading-state': { hidden: '' },
+          'loading': { hidden: '' },
         },
       },
     },
@@ -1060,10 +1060,10 @@ export const tableSuite: ConformanceSuite = {
       initial: {
         parts: {
           // 一行都没有，也就没有可展开的行：平表格报 grid
-          'root': { 'role': 'grid', 'data-empty': '', 'aria-busy': null, 'aria-rowcount': '2' },
-          'body': { 'data-empty': '' },
-          'empty': { hidden: null },
-          'loading-state': { hidden: '' },
+          root: { 'role': 'grid', 'data-empty': '', 'aria-busy': null, 'aria-rowcount': '2' },
+          body: { 'data-empty': '' },
+          empty: { hidden: null },
+          loading: { hidden: '' },
         },
       },
       steps: [
@@ -1072,9 +1072,9 @@ export const tableSuite: ConformanceSuite = {
           props: { loading: true },
           expect: {
             parts: {
-              'root': { 'data-empty': '', 'data-loading': '', 'aria-busy': 'true' },
-              'empty': { hidden: '' },
-              'loading-state': { hidden: null },
+              root: { 'data-empty': '', 'data-loading': '', 'aria-busy': 'true' },
+              empty: { hidden: '' },
+              loading: { hidden: null },
             },
           },
         },
@@ -1084,9 +1084,9 @@ export const tableSuite: ConformanceSuite = {
           expect: {
             parts: {
               // 装进可展开的行，角色跟着换
-              'root': { 'role': 'treegrid', 'data-empty': null, 'aria-busy': 'true' },
-              'empty': { hidden: '' },
-              'loading-state': { hidden: '' },
+              root: { 'role': 'treegrid', 'data-empty': null, 'aria-busy': 'true' },
+              empty: { hidden: '' },
+              loading: { hidden: '' },
             },
           },
         },

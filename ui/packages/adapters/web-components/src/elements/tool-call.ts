@@ -124,7 +124,7 @@ export class XhToolCallElement extends XhElement {
     put('root', api.getRootProps() as Record<string, unknown>)
     put('trigger', api.getTriggerProps() as Record<string, unknown>)
     put('indicator', api.getIndicatorProps() as Record<string, unknown>)
-    put('name', api.getNameProps() as Record<string, unknown>)
+    put('label', api.getLabelProps() as Record<string, unknown>)
     put('summary', api.getSummaryProps() as Record<string, unknown>)
     put('status', api.getStatusProps() as Record<string, unknown>)
     put('duration', api.getDurationProps() as Record<string, unknown>)

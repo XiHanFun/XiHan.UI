@@ -109,11 +109,11 @@ export const XhToolCallIndicator = defineComponent({
   },
 })
 
-export const XhToolCallName = defineComponent({
-  name: 'XhToolCallName',
+export const XhToolCallLabel = defineComponent({
+  name: 'XhToolCallLabel',
   setup(_, { slots }) {
     const ctx = useToolCallContext()
-    return () => h('span', ctx.api.value.getNameProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
   },
 })
 

@@ -1477,14 +1477,14 @@
   color: var(--xh-fieldset-legend-star, var(--xh-fg-danger));
 }
 
-[data-scope='fieldset'][data-part='helper-text'] {
+[data-scope='fieldset'][data-part='description'] {
   margin: 0;
   color: var(--xh-fieldset-helper-fg, var(--xh-fg-muted));
   font-size: var(--xh-fieldset-helper-font-size, var(--xh-text-secondary-size));
   line-height: var(--xh-leading-normal);
 }
 
-[data-scope='fieldset'][data-part='helper-text'][data-disabled] {
+[data-scope='fieldset'][data-part='description'][data-disabled] {
   color: var(--xh-fieldset-helper-fg-disabled, var(--xh-fg-subtle));
 }
 
@@ -9576,6 +9576,12 @@ input[data-scope='mention'][data-part='input'] {
   }
 }
 
+@keyframes xh-approval-rotate {
+  to {
+    rotate: 360deg;
+  }
+}
+
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='approval'] {
   --xh-approval-skin: 1;
@@ -9643,7 +9649,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 /* 视觉隐藏的播报区：不能 display:none，那样读屏就取不到它了 */
-[data-scope='approval'][data-part='announcement'] {
+[data-scope='approval'][data-part='live-region'] {
   position: absolute;
   inline-size: 1px;
   block-size: 1px;
@@ -9831,14 +9837,14 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 /* 动作行：两颗按钮靠右排，间距归库管 */
-[data-scope='approval'][data-part='actions'] {
+[data-scope='approval'][data-part='footer'] {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: var(--xh-approval-actions-gap, var(--xh-space-2));
+  gap: var(--xh-approval-footer-gap, var(--xh-space-2));
 }
 
-[data-scope='approval'][data-part='actions'][hidden] {
+[data-scope='approval'][data-part='footer'][hidden] {
   display: none;
 }
 
@@ -9889,8 +9895,9 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 /* 待决时用 aria-disabled 而不是原生 disabled：保住可聚焦，让读屏念得到为什么按不动。
-   所以置灰要按这个属性写，不能只写 :disabled */
-[data-scope='approval'][data-part='approve-trigger'][aria-disabled='true'] {
+   所以置灰要按这个属性写，不能只写 :disabled。
+   判定在途时这一位同样为真，但那一档另有观感，排除掉 */
+[data-scope='approval'][data-part='approve-trigger'][aria-disabled='true']:not([data-loading]) {
   background: var(--xh-approval-approve-bg-off, var(--xh-bg-muted));
   color: var(--xh-fg-disabled);
   box-shadow: none;
@@ -9912,13 +9919,53 @@ input[data-scope='mention'][data-part='input'] {
   scale: var(--xh-motion-scale-press);
 }
 
-/* 判定在途时拒绝也按不动了，用 aria-disabled 而不是原生 disabled：保住可聚焦，
-   让读屏念得到为什么按不动。所以置灰要按这个属性写 */
-[data-scope='approval'][data-part='deny-trigger'][aria-disabled='true'] {
+/* 拒绝钮只有落定后才真的按不动，那一档走原生 disabled：描边退回中性，不再像个能按的出口。
+   前景与指针由文件末尾两颗钮共用的那条 :disabled 规则给 */
+[data-scope='approval'][data-part='deny-trigger']:disabled {
   border-color: var(--xh-approval-deny-border-off, var(--xh-border-default));
   background: var(--xh-approval-deny-bg-off, transparent);
-  color: var(--xh-fg-disabled);
-  cursor: not-allowed;
+}
+
+/* 判定在途：两颗钮那一行里转一枚圆环，指针换成 progress。
+   两颗钮此刻确实按不动，但按不动的理由是「你按的那一下正在走」，与「必选项没勾满」
+   的那档灰不是一回事；只留灰的话两种情形长得一模一样，用户读不出系统正在想。
+   所以在途这一档不置灰：颜色与对比度都保持原样，锁住只由圆环与指针说。
+   圆环挂在这一行上而不是某一颗钮上：连接层只拿到「有一条判定在途」，
+   拿不到是哪一颗按下的，画在两颗钮上会有一颗在说假话 */
+[data-scope='approval'][data-part='approve-trigger'][data-loading],
+[data-scope='approval'][data-part='deny-trigger'][data-loading] {
+  cursor: progress;
+}
+
+[data-scope='approval'][data-part='root'][data-loading] [data-scope='approval'][data-part='footer']::before {
+  content: '';
+  flex: none;
+
+  /* 圆环那一枚跟着两颗钮的字号走，不跟页面的：download-trigger 与 clipboard 的圆环
+     1em 量的都是它所在那颗钮，这里的宿主是整行，不锁字号就会比按钮上的大一圈 */
+  font-size: var(--xh-approval-action-font-size, var(--xh-text-label-size));
+  inline-size: 1em;
+  block-size: 1em;
+  border: var(--xh-stroke-thin) solid transparent;
+  border-block-start-color: currentColor;
+  border-radius: var(--xh-shape-pill);
+  animation: xh-approval-rotate var(--xh-approval-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite;
+}
+
+/* 减少动效：圆环停下并整圈换成虚线，静止的形状仍然读得出"还没好"。
+   两条规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
+@media (prefers-reduced-motion: reduce) {
+  [data-scope='approval'][data-part='root'][data-loading] [data-scope='approval'][data-part='footer']::before {
+    border-style: dotted;
+    border-color: currentColor;
+    animation: none;
+  }
+}
+
+:where([data-motion='reduce']) [data-scope='approval'][data-part='root'][data-loading] [data-scope='approval'][data-part='footer']::before {
+  border-style: dotted;
+  border-color: currentColor;
+  animation: none;
 }
 
 [data-scope='approval'][data-part='approve-trigger']:focus-visible,
@@ -12187,7 +12234,7 @@ input[data-scope='mention'][data-part='input'] {
    尺寸与选中态照 checkbox 的 root 搬，同一份视觉语言在单体与集合里必须一致。
    trigger 那格没有对应的角色节点（anatomy 到 trigger 为止），只能由伪元素补出来 */
 [data-scope='checkbox-group'][data-part='indicator'],
-[data-scope='checkbox-group'][data-part='trigger']::before {
+[data-scope='checkbox-group'][data-part='select-all-trigger']::before {
   display: inline-flex;
   flex: none;
   align-items: center;
@@ -12207,7 +12254,7 @@ input[data-scope='mention'][data-part='input'] {
 
 /* content 只能给伪元素，绝不能并进上面那条：content 落在普通元素上会顶掉它的全部子节点，
    indicator 里作者写的图标就此消失 */
-[data-scope='checkbox-group'][data-part='trigger']::before {
+[data-scope='checkbox-group'][data-part='select-all-trigger']::before {
   content: '';
 }
 
@@ -12220,7 +12267,7 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 选中即填色：条目是二态，全选格三态里 checked 与 indeterminate 都算"有值"，共用同一副填色 */
 [data-scope='checkbox-group'][data-part='indicator'][data-state='checked'],
-[data-scope='checkbox-group'][data-part='trigger']:is([data-state='checked'], [data-state='indeterminate'])::before {
+[data-scope='checkbox-group'][data-part='select-all-trigger']:is([data-state='checked'], [data-state='indeterminate'])::before {
   border-color: var(--xh-checkbox-group-indicator-border-checked, var(--xh-bg-brand));
   background: var(--xh-checkbox-group-indicator-bg-checked, var(--xh-bg-brand));
 }
@@ -12247,7 +12294,7 @@ input[data-scope='mention'][data-part='input'] {
    方框是行首那颗 ::before、宽度即指示符尺寸，所以字形按「盒与字形的宽度差之半」
    内推即落在圆心；纵向靠 inset-block: 0 + margin-block: auto 居中。
    font-size 与 ::before 同值，--xh-icon-size 的 1em 兜底才和条目那侧量得一样大 */
-[data-scope='checkbox-group'][data-part='trigger'][data-state='checked']::after {
+[data-scope='checkbox-group'][data-part='select-all-trigger'][data-state='checked']::after {
   content: '';
   position: absolute;
   inset-block: 0;
@@ -12267,7 +12314,7 @@ input[data-scope='mention'][data-part='input'] {
   mask: var(--xh-glyph-mark-check) center / contain no-repeat;
 }
 
-[data-scope='checkbox-group'][data-part='trigger'][data-state='indeterminate']::after {
+[data-scope='checkbox-group'][data-part='select-all-trigger'][data-state='indeterminate']::after {
   content: '';
   position: absolute;
   inset-block: 0;
@@ -12301,33 +12348,33 @@ input[data-scope='mention'][data-part='input'] {
 /* 全选格与条目同形，但字重加一档，读起来才不像又一个普通选项。
    它是普通元素而非原生控件（三态只有非原生控件表达得出），禁用态同样只能读 data-disabled。
    position 是给叠在方框上的那颗字形 ::after 当定位基准 */
-[data-scope='checkbox-group'][data-part='trigger'] {
+[data-scope='checkbox-group'][data-part='select-all-trigger'] {
   position: relative;
   display: inline-flex;
   align-items: center;
-  gap: var(--xh-checkbox-group-trigger-gap, var(--xh-control-gap-md));
-  border-radius: var(--xh-checkbox-group-trigger-radius, var(--xh-shape-control));
-  color: var(--xh-checkbox-group-trigger-fg, var(--xh-fg-default));
-  font-size: var(--xh-checkbox-group-trigger-font-size, var(--xh-text-label-size));
-  font-weight: var(--xh-checkbox-group-trigger-font-weight, var(--xh-font-weight-medium));
+  gap: var(--xh-checkbox-group-select-all-trigger-gap, var(--xh-control-gap-md));
+  border-radius: var(--xh-checkbox-group-select-all-trigger-radius, var(--xh-shape-control));
+  color: var(--xh-checkbox-group-select-all-trigger-fg, var(--xh-fg-default));
+  font-size: var(--xh-checkbox-group-select-all-trigger-font-size, var(--xh-text-label-size));
+  font-weight: var(--xh-checkbox-group-select-all-trigger-font-weight, var(--xh-font-weight-medium));
   line-height: var(--xh-leading-none);
   cursor: pointer;
   user-select: none;
 }
 
-[data-scope='checkbox-group'][data-part='trigger']:focus-visible {
+[data-scope='checkbox-group'][data-part='select-all-trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
   outline-offset: var(--xh-ring-offset);
 }
 
-[data-scope='checkbox-group'][data-part='trigger'][data-disabled] {
-  color: var(--xh-checkbox-group-trigger-fg-disabled, var(--xh-fg-disabled));
+[data-scope='checkbox-group'][data-part='select-all-trigger'][data-disabled] {
+  color: var(--xh-checkbox-group-select-all-trigger-fg-disabled, var(--xh-fg-disabled));
   cursor: not-allowed;
 }
 
 /* 只读与禁用会同时出现在 trigger 上（连接层两个属性各写各的），
    同权重下后写的赢，所以这里必须显式排掉禁用，否则禁用的手势指示被只读盖掉 */
-[data-scope='checkbox-group'][data-part='trigger'][data-readonly]:not([data-disabled]) {
+[data-scope='checkbox-group'][data-part='select-all-trigger'][data-readonly]:not([data-disabled]) {
   cursor: default;
 }
 
@@ -12343,7 +12390,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='checkbox-group'][data-part='root'][hidden],
 [data-scope='checkbox-group'][data-part='item'][hidden],
 [data-scope='checkbox-group'][data-part='indicator'][hidden],
-[data-scope='checkbox-group'][data-part='trigger'][hidden] {
+[data-scope='checkbox-group'][data-part='select-all-trigger'][hidden] {
   display: none;
 }
 
@@ -15362,9 +15409,6 @@ input[data-scope='mention'][data-part='input'] {
   animation: xh-fade-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
 }
 
-/* 连接层发的 data-position 恒是 center，没有别的取值：对话框还没有 position 这个
-   使用者入参。要按 data-position 分档（顶部对齐之类）得先补上那个入参，
-   否则规则写了也永不命中 */
 [data-scope='dialog'][data-part='positioner'] {
   position: fixed;
   inset: 0;
@@ -21250,7 +21294,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 /* 视觉隐藏的播报区：不能 display:none，那样读屏就取不到它了 */
-[data-scope='question-flow'][data-part='announcement'] {
+[data-scope='question-flow'][data-part='live-region'] {
   position: absolute;
   inline-size: 1px;
   block-size: 1px;
@@ -23119,51 +23163,51 @@ input[data-scope='mention'][data-part='input'] {
   opacity: var(--xh-sortable-item-opacity-dragging, 0.9);
 }
 
-[data-scope='sortable'][data-part='item-handle'] {
+[data-scope='sortable'][data-part='item-drag-trigger'] {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex: none;
-  inline-size: var(--xh-sortable-handle-size, var(--xh-control-action-size));
-  block-size: var(--xh-sortable-handle-size, var(--xh-control-action-size));
+  inline-size: var(--xh-sortable-drag-size, var(--xh-control-action-size));
+  block-size: var(--xh-sortable-drag-size, var(--xh-control-action-size));
   padding: 0;
   border: 0;
-  border-radius: var(--xh-sortable-handle-radius, var(--xh-shape-control));
+  border-radius: var(--xh-sortable-drag-radius, var(--xh-shape-control));
   background: transparent;
-  color: var(--xh-sortable-handle-fg, var(--xh-fg-muted));
+  color: var(--xh-sortable-drag-fg, var(--xh-fg-muted));
   cursor: grab;
 }
 
 /* 抓手是两条竖线：盒子取边框盒，两侧描边就是那两条线，宽高与线宽都走令牌。
    :empty 守卫让作者塞进来的图标整个顶掉它，而不是两份叠在一起。
    不画这条的话按钮里空无一物，只剩一块摸不着边的透明命中区 */
-[data-scope='sortable'][data-part='item-handle']:empty::after {
+[data-scope='sortable'][data-part='item-drag-trigger']:empty::after {
   content: '';
   display: block;
-  inline-size: var(--xh-sortable-handle-grip-w, var(--xh-space-1));
-  block-size: var(--xh-sortable-handle-grip-h, var(--xh-space-3));
+  inline-size: var(--xh-sortable-drag-grip-w, var(--xh-space-1));
+  block-size: var(--xh-sortable-drag-grip-h, var(--xh-space-3));
   border-inline: var(--xh-stroke-thin) solid currentColor;
 }
 
 /* 抓手禁用走 aria-disabled 而非原生 disabled（宿主未必是 <button>），:hover 照样命中；
    不挡掉的话拖不动的那颗悬停仍会换底 */
-[data-scope='sortable'][data-part='item-handle']:not([aria-disabled='true']):hover {
-  background: var(--xh-sortable-handle-bg-hover, var(--xh-bg-subtle-hover));
-  color: var(--xh-sortable-handle-fg-hover, var(--xh-fg-default));
+[data-scope='sortable'][data-part='item-drag-trigger']:not([aria-disabled='true']):hover {
+  background: var(--xh-sortable-drag-bg-hover, var(--xh-bg-subtle-hover));
+  color: var(--xh-sortable-drag-fg-hover, var(--xh-fg-default));
 }
 
-[data-scope='sortable'][data-part='item-handle'][data-dragging] {
+[data-scope='sortable'][data-part='item-drag-trigger'][data-dragging] {
   cursor: grabbing;
 }
 
-[data-scope='sortable'][data-part='item-handle']:focus-visible {
+[data-scope='sortable'][data-part='item-drag-trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
   outline-offset: var(--xh-ring-offset);
 }
 
-[data-scope='sortable'][data-part='item-handle'][aria-disabled='true'] {
+[data-scope='sortable'][data-part='item-drag-trigger'][aria-disabled='true'] {
   cursor: not-allowed;
-  color: var(--xh-sortable-handle-fg-disabled, var(--xh-fg-disabled));
+  color: var(--xh-sortable-drag-fg-disabled, var(--xh-fg-disabled));
 }
 
 /* 活动区域只说给读屏听，不占版面。声明与 shared/visually-hidden.ts 逐条同值。 */
@@ -23181,7 +23225,7 @@ input[data-scope='mention'][data-part='input'] {
 /* 给了 display 的角色节点必须补这条：display 声明会盖掉 UA 的 [hidden]{display:none}，
    不补的话作者给节点加 hidden 后它照样显示 */
 [data-scope='sortable'][data-part='root'][hidden],
-[data-scope='sortable'][data-part='item-handle'][hidden] {
+[data-scope='sortable'][data-part='item-drag-trigger'][hidden] {
   display: none;
 }
 
@@ -24514,7 +24558,7 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 两个状态节点常挂，只在表体为空时才显形 */
 [data-scope='table'][data-part='empty'],
-[data-scope='table'][data-part='loading-state'] {
+[data-scope='table'][data-part='loading'] {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -24528,22 +24572,22 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='table'][data-part='empty'][hidden],
-[data-scope='table'][data-part='loading-state'][hidden] {
+[data-scope='table'][data-part='loading'][hidden] {
   display: none;
 }
 
-[data-scope='table'][data-part='loading-state'] {
+[data-scope='table'][data-part='loading'] {
   animation: xh-table-loading-pulse calc(var(--xh-spin-duration) / 2) var(--xh-motion-ease-loop) infinite alternate;
 }
 
 /* 减少动效：呼吸停下，加载态只留静止的文案。两条规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
 @media (prefers-reduced-motion: reduce) {
-  [data-scope='table'][data-part='loading-state'] {
+  [data-scope='table'][data-part='loading'] {
     animation: none;
   }
 }
 
-:where([data-motion='reduce']) [data-scope='table'][data-part='loading-state'] {
+:where([data-motion='reduce']) [data-scope='table'][data-part='loading'] {
   animation: none;
 }
 
@@ -24576,7 +24620,7 @@ input[data-scope='mention'][data-part='input'] {
      取值与减弱动效那一档相同。两档各写一块、不并进一条媒体查询列表：减弱动效另有一份
      :where([data-motion='reduce']) 的钩子版本与它成对，打印没有对应的钩子可配，
      并成一条之后这层配对关系在文本上就断了。 */
-  [data-scope='table'][data-part='loading-state'] {
+  [data-scope='table'][data-part='loading'] {
     animation: none;
   }
 }
@@ -27307,21 +27351,21 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 /* 工具名占满剩余宽度并单行截断：长名字不该把状态挤出去 */
-[data-scope='tool-call'][data-part='name'] {
+[data-scope='tool-call'][data-part='label'] {
   display: block;
   overflow: hidden;
   flex: 1 1 auto;
-  font-family: var(--xh-tool-call-name-font, var(--xh-font-family-mono));
+  font-family: var(--xh-tool-call-label-font, var(--xh-font-family-mono));
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-[data-scope='tool-call'][data-part='name'][hidden] {
+[data-scope='tool-call'][data-part='label'][hidden] {
   display: none;
 }
 
 /* 有摘要时把剩余宽度让给它：工具名只要放得下自己，摘要才是这一行里最想读到的东西 */
-[data-scope='tool-call'][data-part='trigger']:has([data-part='summary']) [data-part='name'] {
+[data-scope='tool-call'][data-part='trigger']:has([data-part='summary']) [data-part='label'] {
   flex: 0 1 auto;
 }
 
@@ -27335,7 +27379,7 @@ input[data-scope='mention'][data-part='input'] {
   border-radius: var(--xh-tool-call-summary-radius, var(--xh-shape-control));
   background: var(--xh-tool-call-summary-bg, var(--xh-bg-subtle));
   color: var(--xh-tool-call-summary-fg, var(--xh-fg-muted));
-  font-family: var(--xh-tool-call-name-font, var(--xh-font-family-mono));
+  font-family: var(--xh-tool-call-label-font, var(--xh-font-family-mono));
   font-size: var(--xh-tool-call-summary-font-size, var(--xh-text-caption-size));
   text-overflow: ellipsis;
   white-space: nowrap;

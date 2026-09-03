@@ -2,6 +2,8 @@ import type { ItemQuery } from '@xihan-ui/behavior'
 import { createAnatomy } from '@xihan-ui/kernel'
 
 // data-part 直接用 kebab-case，与 CSS 选择器一致。
+// tag 是控件里表示一个已选值的那枚小片，由本组件自己画；它与 tag 组件同名不同物——
+// scope 名（data-scope）标识的是组件，部件名（data-part）标识的是组件里的位置，两把尺子不交叉。
 export const selectAnatomy = createAnatomy('select', [
   'root',
   'label',

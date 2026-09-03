@@ -39,6 +39,7 @@ const NO_SLOT = {
   'switch:thumb::after': '转圈的加载环',
   'download-trigger:root::before': '转圈的加载环',
   'clipboard:trigger::before': '转圈的加载环',
+  'approval:footer::before': '转圈的加载环',
 }
 
 const offenders = []

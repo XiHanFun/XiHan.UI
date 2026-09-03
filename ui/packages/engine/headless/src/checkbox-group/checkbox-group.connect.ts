@@ -42,7 +42,7 @@ export function connectCheckboxGroup<T extends PropTypes>(
   const invalid = !!prop('invalid')
   const orientation = prop('orientation') ?? 'vertical'
   const name = prop('name')
-  const ids = scope.ids('checkbox-group', 'label', 'trigger')
+  const ids = scope.ids('checkbox-group', 'label', 'select-all-trigger')
 
   const editable = !groupDisabled && !readOnly
   const checkedState = resolveCheckedState(value, prop('itemValues') ?? [])
@@ -173,15 +173,15 @@ export function connectCheckboxGroup<T extends PropTypes>(
       'style': VISUALLY_HIDDEN_STYLE,
     }),
 
-    getTriggerProps: () => normalize.element({
-      ...parts.trigger.attrs,
+    getSelectAllTriggerProps: () => normalize.element({
+      ...parts['select-all-trigger'].attrs,
       'role': 'checkbox',
       // 自指的那一段要有落点
-      'id': ids.trigger,
+      'id': ids['select-all-trigger'],
       // 名字 = 组标题 + 全选格自己的文本：作者没写文本时由组标题兜住，
       // 写了文本也不会被顶掉（自指那段按 accname 规则取本节点的内容）；
       // 两段各自缺席时都是悬空 IDREF，按规则跳过
-      'aria-labelledby': `${ids.label} ${ids.trigger}`,
+      'aria-labelledby': `${ids.label} ${ids['select-all-trigger']}`,
       // 勾了一部分时输出 mixed
       'aria-checked': checkedState === 'checked' ? 'true' : checkedState === 'indeterminate' ? 'mixed' : 'false',
       // 与条目同形：用 aria-disabled，禁用后仍可聚焦

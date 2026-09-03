@@ -3,7 +3,8 @@ import { createAnatomy } from '@xihan-ui/kernel'
 
 // viewport 定高并裁切，track 是纵向排布全部题目的轨道，靠位移把当前题推进视口；
 // question 是一题的整块，prompt 是题干，option-group 按题型取单选组或普通组；
-// note 是这一题的自由文本，counter 是给眼睛看的 N / M，announcement 才是念给读屏的进度；
+// note 是这一题的自由文本，counter 是给眼睛看的 N / M，live-region 才是念给读屏的进度
+// （念的那句文本在 api.announcement 上）；
 // submit-trigger 一颗按钮两个身份：不是末题时继续，末题时发送。
 export const questionFlowAnatomy = createAnatomy('question-flow', [
   'root',
@@ -23,7 +24,7 @@ export const questionFlowAnatomy = createAnatomy('question-flow', [
   'skip-trigger',
   'submit-trigger',
   'result',
-  'announcement',
+  'live-region',
 ])
 
 /** 量测当前题几何时查的集合，容器是 track。 */

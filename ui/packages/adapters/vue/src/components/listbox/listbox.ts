@@ -30,7 +30,6 @@ export const XhListboxRoot = defineComponent({
     label: { type: String, default: undefined },
     value: { type: [String, Array] as PropType<string | string[]>, default: undefined },
     defaultValue: { type: [String, Array] as PropType<string | string[]>, default: undefined },
-    multiple: Boolean,
     selectionMode: { type: String as PropType<ListboxSelectionMode>, default: undefined },
     disabled: Boolean,
     loop: { type: Boolean, default: undefined },

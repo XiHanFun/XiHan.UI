@@ -95,7 +95,7 @@ const FOOTER_SELECTOR = '[data-xh-part="footer"]'
  * @csspart expand-trigger - 展开把手（aria-hidden 且不占 Tab 位，键盘那一路由左右方向键承担）
  * @csspart expanded-row - role=row 详情行，须自带 value 属性与它所属的数据行配对，内部须放一个 cell 承载详情；收起时 hidden
  * @csspart empty - 空态节点，表体为空且不在加载时显形
- * @csspart loading-state - 加载态节点，表体为空且正在加载时显形
+ * @csspart loading - 加载态节点，表体为空且正在加载时显形
  */
 export class XhTableElement extends XhElement {
   static override partContract = { anatomy: tableAnatomy, meta: tableMeta }
@@ -132,6 +132,8 @@ export class XhTableElement extends XhElement {
     loop: { converter: BOOLEAN_CONVERTER },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     size: { converter: STRING_CONVERTER },
+    // 对象进不了属性，只作为 property 暴露
+    translations: { attribute: false },
   }
 
   declare columns?: TableColumnDef[]
@@ -160,6 +162,8 @@ export class XhTableElement extends XhElement {
   declare loop?: boolean
   declare direction?: Direction
   declare size?: Size
+  /** 列宽把手、列拖拽把手、全选把手的名字，以及行拖拽的播报。 */
+  declare translations?: TableSchema['props']['translations']
 
   private readonly notifyColumnPreference = (details: { value: TableColumnPreference }): void => {
     this.dispatchEvent(new CustomEvent('column-preference-change', { detail: details, bubbles: true, composed: true }))
@@ -214,6 +218,7 @@ export class XhTableElement extends XhElement {
       loop: this.loop,
       dir: this.direction,
       size: this.size,
+      translations: this.translations,
       onSortChange: this.notifySort,
       onSelectionChange: this.notifySelection,
       onExpandedChange: this.notifyExpanded,
@@ -293,9 +298,9 @@ export class XhTableElement extends XhElement {
     put('footer', api.getFooterProps() as Record<string, unknown>)
     // 两个状态节点的显隐直接读连接层给的 hidden
     const emptyProps = api.getEmptyProps() as Record<string, unknown>
-    const loadingProps = api.getLoadingStateProps() as Record<string, unknown>
+    const loadingProps = api.getLoadingProps() as Record<string, unknown>
     put('empty', emptyProps)
-    put('loading-state', loadingProps)
+    put('loading', loadingProps)
 
     // 集合类 part 逐个 spread，身份由节点自报，不依赖下标。
     // wire 跑在事件之前，按键时 data-scope/data-part/data-value 已在 DOM 上供连接层现查。
@@ -351,6 +356,6 @@ export class XhTableElement extends XhElement {
     for (const el of this.getParts('expanded-row'))
       this.setPartHidden(el, !api.isExpanded(el.getAttribute('value') ?? ''))
     this.setPartHidden(this.getPart('empty'), !!emptyProps.hidden)
-    this.setPartHidden(this.getPart('loading-state'), !!loadingProps.hidden)
+    this.setPartHidden(this.getPart('loading'), !!loadingProps.hidden)
   }
 }

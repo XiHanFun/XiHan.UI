@@ -1,18 +1,24 @@
 // @vitest-environment jsdom
 import type { DiagnosticRecord } from '../src'
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { DIAGNOSTIC_CODES, onDiagnostic, resetDiagnostics } from '../src'
-import { resetSkinCheck, startSkinCheck } from '../src/diagnostics/skin-check'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const seen: DiagnosticRecord[] = []
 let stopSubscribe: (() => void) | undefined
 let stopCheck: (() => void) | undefined
+let startSkinCheck: (typeof import('../src/diagnostics/skin-check'))['startSkinCheck']
+let DIAGNOSTIC_CODES: (typeof import('../src'))['DIAGNOSTIC_CODES']
 
-beforeEach(() => {
+// 「每个 scope 只探一次」的记账挂在模块上，逐条用例重取一份模块拿出厂状态；
+// 诊断通道挂在 globalThis 上，重取模块清不掉它的去重记录，另外调 resetDiagnostics
+beforeEach(async () => {
+  vi.resetModules()
+  const kernel = await import('../src')
+  const skinCheck = await import('../src/diagnostics/skin-check')
+  startSkinCheck = skinCheck.startSkinCheck
+  DIAGNOSTIC_CODES = kernel.DIAGNOSTIC_CODES
   seen.length = 0
-  resetDiagnostics()
-  resetSkinCheck()
-  stopSubscribe = onDiagnostic(record => void seen.push(record))
+  kernel.resetDiagnostics()
+  stopSubscribe = kernel.onDiagnostic(record => void seen.push(record))
 })
 
 afterEach(() => {

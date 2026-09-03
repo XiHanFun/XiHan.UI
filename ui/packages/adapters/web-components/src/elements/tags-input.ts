@@ -90,6 +90,8 @@ export class XhTagsInputElement extends XhElement {
     variant: { converter: STRING_CONVERTER },
     tone: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
+    // 对象进不了属性，只作为 property 暴露
+    translations: { attribute: false },
   }
 
   declare value?: string[]
@@ -110,6 +112,8 @@ export class XhTagsInputElement extends XhElement {
   declare variant?: ControlVariant
   declare tone?: Tone
   declare size?: Size
+  /** 删除钮、就地编辑框与清空钮的无障碍名。 */
+  declare translations?: TagsInputSchema['props']['translations']
 
   private readonly notifyValue = (details: TagsInputValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
@@ -143,6 +147,7 @@ export class XhTagsInputElement extends XhElement {
       variant: this.variant,
       tone: this.tone,
       size: this.size,
+      translations: this.translations,
       onValueChange: this.notifyValue,
       onInputValueChange: this.notifyInputValue,
     }

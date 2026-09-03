@@ -29,7 +29,7 @@ export const approvalSuite: ConformanceSuite = {
     children: [
       { part: 'title', tag: 'h3', text: '要写文件' },
       { part: 'description', tag: 'p', text: '它想改 src/index.ts。' },
-      { part: 'announcement' },
+      { part: 'live-region' },
       {
         part: 'scope-group',
         children: [scope('read', '读文件', true), scope('write', '写文件')],

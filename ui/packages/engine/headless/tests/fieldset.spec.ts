@@ -9,7 +9,7 @@ function api(props: FieldsetProps = {}) {
 }
 
 const rootProps = (props?: FieldsetProps) => api(props).getRootProps() as Record<string, unknown>
-const helperProps = (props?: FieldsetProps) => api(props).getHelperTextProps() as Record<string, unknown>
+const descriptionProps = (props?: FieldsetProps) => api(props).getDescriptionProps() as Record<string, unknown>
 const errorProps = (props?: FieldsetProps) => api(props).getErrorTextProps() as Record<string, unknown>
 
 describe('connectFieldset 整组禁用', () => {
@@ -29,31 +29,31 @@ describe('connectFieldset 整组禁用', () => {
 
   it('组标题与说明文案同步 data-disabled，整段可以一起变淡', () => {
     expect(api({ disabled: true }).getLegendProps()['data-disabled']).toBe('')
-    expect(helperProps({ disabled: true })['data-disabled']).toBe('')
+    expect(descriptionProps({ disabled: true })['data-disabled']).toBe('')
   })
 })
 
 describe('connectFieldset 描述链', () => {
   it('默认只挂说明文案，错误文案不在链上', () => {
     const one = api()
-    expect(one.getRootProps()['aria-describedby']).toBe(one.getHelperTextProps().id)
+    expect(one.getRootProps()['aria-describedby']).toBe(one.getDescriptionProps().id)
   })
 
   it('invalid 时错误文案追加到链尾，顺序是说明在前、错误在后', () => {
     const one = api({ invalid: true })
-    const helperId = one.getHelperTextProps().id
+    const descriptionId = one.getDescriptionProps().id
     const errorId = one.getErrorTextProps().id
-    expect(one.getRootProps()['aria-describedby']).toBe(`${helperId} ${errorId}`)
+    expect(one.getRootProps()['aria-describedby']).toBe(`${descriptionId} ${errorId}`)
   })
 
   it('两份文案的 id 由同一个 scope 派生，互不相同', () => {
     const scope = createScope(null, createCounterIdGenerator())
     const one = connectFieldset({}, scope, normalizeProps)
-    expect(one.getHelperTextProps().id).not.toBe(one.getErrorTextProps().id)
+    expect(one.getDescriptionProps().id).not.toBe(one.getErrorTextProps().id)
   })
 
   it('两个实例各出各的 id，同页多个字段集的 IDREF 不相撞', () => {
-    expect(helperProps().id).not.toBe(helperProps().id)
+    expect(descriptionProps().id).not.toBe(descriptionProps().id)
   })
 })
 

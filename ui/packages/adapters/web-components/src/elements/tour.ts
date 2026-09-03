@@ -7,7 +7,7 @@ import type {
   TourStepChangeDetails,
   TourTranslations,
 } from '@xihan-ui/headless'
-import type { Cleanup, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig } from '@xihan-ui/kernel'
+import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { OverlayExit } from '../overlay-exit'
 import { connectTour, tourAnatomy, tourMachine, tourMeta } from '@xihan-ui/headless'
@@ -37,6 +37,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {number} default-step - 非受控初始步序，默认 0
  * @attr {string} placement - 整份引导的首选放置位，默认 bottom；单步可用自己的 placement 覆盖
  * @attr {number} offset - 气泡与目标的间距（px）
+ * @attr {'ltr'|'rtl'} dir - 文字方向，翻转浮层在行内轴上 start 与 end 的落点；只在显式给了才写到定位层上
  * @attr {boolean} close-on-escape - Esc 放弃引导，默认 true；写 close-on-escape="false" 关掉
  * @attr {boolean} close-on-interact-outside - 层外交互关闭，默认 false；写 "true" 打开
  * @attr {boolean} show-backdrop - 画遮罩，默认 true；写 show-backdrop="false" 关掉
@@ -71,6 +72,9 @@ export class XhTourElement extends XhElement {
     defaultStep: { converter: NUMBER_CONVERTER, attribute: 'default-step' },
     placement: { converter: STRING_CONVERTER },
     offset: { converter: NUMBER_CONVERTER },
+    // dir 只占属性名、字段改叫 direction：HTMLElement 原生 dir 是 string 访问器，
+    // 同名响应式字段会与基类类型打架。属性仍进 observedAttributes，改 dir 照样触发重算。
+    direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     closeOnEscape: { converter: BOOLEAN_CONVERTER, attribute: 'close-on-escape' },
     closeOnInteractOutside: { converter: BOOLEAN_CONVERTER, attribute: 'close-on-interact-outside' },
     showBackdrop: { converter: BOOLEAN_CONVERTER, attribute: 'show-backdrop' },
@@ -87,6 +91,7 @@ export class XhTourElement extends XhElement {
   declare defaultStep?: number
   declare placement?: Placement
   declare offset?: number
+  declare direction?: Direction
   declare closeOnEscape?: boolean
   declare closeOnInteractOutside?: boolean
   declare showBackdrop?: boolean
@@ -133,6 +138,7 @@ export class XhTourElement extends XhElement {
       defaultOpen: this.defaultOpen ?? false,
       placement: this.placement,
       offset: this.offset,
+      dir: this.direction,
       closeOnEscape: this.closeOnEscape,
       closeOnInteractOutside: this.closeOnInteractOutside,
       showBackdrop: this.showBackdrop,

@@ -205,7 +205,7 @@ function mount(initial: Partial<Props> = {}): Harness {
         spread(els.cells[column.id]!, api.getCellProps({ value: column.id, row: id }) as Record<string, unknown>)
     }
     spread(emptyState, api.getEmptyProps() as Record<string, unknown>)
-    spread(loadingState, api.getLoadingStateProps() as Record<string, unknown>)
+    spread(loadingState, api.getLoadingProps() as Record<string, unknown>)
   }
 
   // 任一 cell 变化即重渲，与两个适配器同语义（受控时内部不写值，因此也不会重渲——

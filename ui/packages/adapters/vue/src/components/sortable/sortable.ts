@@ -99,8 +99,8 @@ export const XhSortableItem = defineComponent({
   },
 })
 
-export const XhSortableItemHandle = defineComponent({
-  name: 'XhSortableItemHandle',
+export const XhSortableItemDragTrigger = defineComponent({
+  name: 'XhSortableItemDragTrigger',
   props: {
     /** 项标识，与 `ids` 里的值一一对应。 */
     itemId: { type: String, required: true },
@@ -114,7 +114,7 @@ export const XhSortableItemHandle = defineComponent({
     const ctx = useSortableContext()
     return () => h(
       'button',
-      ctx.api.value.getItemHandleProps({ id: props.itemId, disabled: props.disabled }) as Record<string, unknown>,
+      ctx.api.value.getItemDragTriggerProps({ id: props.itemId, disabled: props.disabled }) as Record<string, unknown>,
       slots.default?.(),
     )
   },

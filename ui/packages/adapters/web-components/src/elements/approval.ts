@@ -46,7 +46,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @csspart root - role=group 的闸门本体
  * @csspart title - 闸门标题，给它命名
  * @csspart description - 闸门说明，给它描述
- * @csspart announcement - 可配档位的活区
+ * @csspart live-region - 可配档位的活区
  * @csspart scope-group - 授权项那一组
  * @csspart scope-item - 一项授权，role=checkbox，只认 Space
  * @csspart scope-indicator - 勾选记号，对读屏隐藏
@@ -155,14 +155,14 @@ export class XhApprovalElement extends XhElement {
     put('note', api.getNoteProps() as Record<string, unknown>)
     put('timer', api.getTimerProps() as Record<string, unknown>)
     put('result', api.getResultProps() as Record<string, unknown>)
-    put('actions', api.getActionsProps() as Record<string, unknown>)
+    put('footer', api.getFooterProps() as Record<string, unknown>)
     put('approve-trigger', api.getApproveTriggerProps() as Record<string, unknown>)
     put('deny-trigger', api.getDenyTriggerProps() as Record<string, unknown>)
 
-    const announcement = this.getPart('announcement')
-    if (announcement) {
-      this.spreader.spread(announcement, api.getAnnouncementProps() as Record<string, unknown>)
-      announcement.textContent = api.announcement
+    const live = this.getPart('live-region')
+    if (live) {
+      this.spreader.spread(live, api.getLiveRegionProps() as Record<string, unknown>)
+      live.textContent = api.announcement
     }
 
     // 多实例 part 逐个打，授权项有几条打几条

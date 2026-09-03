@@ -57,7 +57,7 @@
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-tool-call>` |
-| Vue 组件 | `XhToolCallApproval` `XhToolCallContent` `XhToolCallDuration` `XhToolCallError` `XhToolCallIndicator` `XhToolCallInput` `XhToolCallName` `XhToolCallOutput` `XhToolCallRoot` `XhToolCallStatus` `XhToolCallSummary` `XhToolCallTrigger` |
+| Vue 组件 | `XhToolCallApproval` `XhToolCallContent` `XhToolCallDuration` `XhToolCallError` `XhToolCallIndicator` `XhToolCallInput` `XhToolCallLabel` `XhToolCallOutput` `XhToolCallRoot` `XhToolCallStatus` `XhToolCallSummary` `XhToolCallTrigger` |
 | 组合式函数 | `useToolCall` |
 | 状态机 | `toolCallMachine` |
 | 皮肤 | `@xihan-ui/styles/tool-call.css` |
@@ -66,7 +66,7 @@
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="tool-call"`：**`root`** · **`trigger`** · `indicator` · `name` · `summary` · `status` · `duration` · `approval` · **`content`** · `input` · `output` · `error`
+`data-scope="tool-call"`：**`root`** · **`trigger`** · `indicator` · `label` · `summary` · `status` · `duration` · `approval` · **`content`** · `input` · `output` · `error`
 
 ## Props
 
@@ -110,7 +110,7 @@
 | `root` | 'open' \| 'closed' |
 | `trigger` | 'open' \| 'closed' |
 | `indicator` | 'open' \| 'closed' |
-| `name` | props.phase |
+| `label` | props.phase |
 | `summary` | props.phase |
 | `status` | props.phase |
 | `duration` | props.phase |
@@ -144,7 +144,7 @@
 | `getRootProps` | `() => T['element']` |  |
 | `getTriggerProps` | `() => T['button']` |  |
 | `getIndicatorProps` | `() => T['element']` |  |
-| `getNameProps` | `() => T['element']` |  |
+| `getLabelProps` | `() => T['element']` |  |
 | `getSummaryProps` | `() => T['element']` |  |
 | `getStatusProps` | `() => T['element']` |  |
 | `getDurationProps` | `() => T['element']` |  |
@@ -198,7 +198,7 @@
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `trigger` | `data-state` | 'open' \| 'closed' |
 | `indicator` | `data-state` | 'open' \| 'closed' |
-| `name` | `data-state` | props.phase |
+| `label` | `data-state` | props.phase |
 | `summary` | `data-state` | props.phase |
 | `status` | `data-state` | props.phase |
 | `duration` | `data-loading` | ''（条件成立时才出现） |
@@ -213,7 +213,7 @@
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-tool-call-bg` · `--xh-tool-call-border` · `--xh-tool-call-border-error` · `--xh-tool-call-content-gap` · `--xh-tool-call-duration-fg` · `--xh-tool-call-error-fg` · `--xh-tool-call-font-size` · `--xh-tool-call-indicator-fg` · `--xh-tool-call-name-font` · `--xh-tool-call-px` · `--xh-tool-call-py` · `--xh-tool-call-radius` · `--xh-tool-call-shadow` · `--xh-tool-call-shimmer-duration` · `--xh-tool-call-status-bg-approval` · `--xh-tool-call-status-bg-done` · `--xh-tool-call-status-bg-error` · `--xh-tool-call-status-fg` · `--xh-tool-call-status-fg-approval` · `--xh-tool-call-status-fg-done` · `--xh-tool-call-status-fg-error` · `--xh-tool-call-status-font-size` · `--xh-tool-call-status-px` · `--xh-tool-call-status-py` · `--xh-tool-call-status-radius` · `--xh-tool-call-status-shimmer-base` · `--xh-tool-call-status-shimmer-sheen` · `--xh-tool-call-summary-bg` · `--xh-tool-call-summary-fg` · `--xh-tool-call-summary-font-size` · `--xh-tool-call-summary-px` · `--xh-tool-call-summary-radius` · `--xh-tool-call-tone-bar` · `--xh-tool-call-tone-fg` · `--xh-tool-call-trigger-bg-hover` · `--xh-tool-call-trigger-fg` · `--xh-tool-call-trigger-gap`
+`--xh-tool-call-bg` · `--xh-tool-call-border` · `--xh-tool-call-border-error` · `--xh-tool-call-content-gap` · `--xh-tool-call-duration-fg` · `--xh-tool-call-error-fg` · `--xh-tool-call-font-size` · `--xh-tool-call-indicator-fg` · `--xh-tool-call-label-font` · `--xh-tool-call-px` · `--xh-tool-call-py` · `--xh-tool-call-radius` · `--xh-tool-call-shadow` · `--xh-tool-call-shimmer-duration` · `--xh-tool-call-status-bg-approval` · `--xh-tool-call-status-bg-done` · `--xh-tool-call-status-bg-error` · `--xh-tool-call-status-fg` · `--xh-tool-call-status-fg-approval` · `--xh-tool-call-status-fg-done` · `--xh-tool-call-status-fg-error` · `--xh-tool-call-status-font-size` · `--xh-tool-call-status-px` · `--xh-tool-call-status-py` · `--xh-tool-call-status-radius` · `--xh-tool-call-status-shimmer-base` · `--xh-tool-call-status-shimmer-sheen` · `--xh-tool-call-summary-bg` · `--xh-tool-call-summary-fg` · `--xh-tool-call-summary-font-size` · `--xh-tool-call-summary-px` · `--xh-tool-call-summary-radius` · `--xh-tool-call-tone-bar` · `--xh-tool-call-tone-fg` · `--xh-tool-call-trigger-bg-hover` · `--xh-tool-call-trigger-fg` · `--xh-tool-call-trigger-gap`
 
 ## 动效
 

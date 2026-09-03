@@ -1,8 +1,15 @@
 // @vitest-environment jsdom
 // 观察器的构造器必须从被观测节点自己的文档取。跨 iframe 时全局的那个来自另一个 window，
 // 拿它去观测别的文档里的节点，回调一次都不会来——而且不报错，是静默失效。
-import { describe, expect, it, vi } from 'vitest'
-import { resetSkinCheck, startSkinCheck } from '../src/diagnostics/skin-check'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+
+let startSkinCheck: (typeof import('../src/diagnostics/skin-check'))['startSkinCheck']
+
+// 「每个 scope 只探一次」的记账挂在模块上，逐条用例重取一份模块拿出厂状态
+beforeEach(async () => {
+  vi.resetModules()
+  startSkinCheck = (await import('../src/diagnostics/skin-check')).startSkinCheck
+})
 
 /** 造一个独立文档，并记下它自己的 MutationObserver 被构造了几次。 */
 function foreignDocument() {
@@ -31,7 +38,6 @@ describe('跨文档的观察器', () => {
     const stop = startSkinCheck({ root: host })
     expect(spy).toHaveBeenCalled()
     stop()
-    resetSkinCheck()
     cleanup()
   })
 
@@ -40,7 +46,6 @@ describe('跨文档的观察器', () => {
     const stop = startSkinCheck({ root: doc })
     expect(spy).toHaveBeenCalled()
     stop()
-    resetSkinCheck()
     cleanup()
   })
 })

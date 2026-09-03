@@ -4,7 +4,7 @@ import {
   XhToolCallContent,
   XhToolCallDuration,
   XhToolCallIndicator,
-  XhToolCallName,
+  XhToolCallLabel,
   XhToolCallOutput,
   XhToolCallRoot,
   XhToolCallStatus,
@@ -43,7 +43,7 @@ const calls = [
       <template #default="{ durationMs }">
         <XhToolCallTrigger>
           <XhToolCallIndicator>›</XhToolCallIndicator>
-          <XhToolCallName>{{ call.name }}</XhToolCallName>
+          <XhToolCallLabel>{{ call.name }}</XhToolCallLabel>
           <XhToolCallSummary>{{ call.summary }}</XhToolCallSummary>
           <XhToolCallStatus />
           <!-- 秒数由宿主现场代入，连接层只交出毫秒数 -->

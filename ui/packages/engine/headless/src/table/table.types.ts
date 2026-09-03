@@ -573,7 +573,7 @@ export interface TableApi<T extends PropTypes = PropTypes> {
   getExpandTriggerProps: (props: TableRowProps) => T['element']
   getExpandedRowProps: (props: TableRowProps) => T['element']
   getEmptyProps: () => T['element']
-  getLoadingStateProps: () => T['element']
+  getLoadingProps: () => T['element']
   /**
    * 拖动过程的读屏播报区。视觉隐藏，文本从 `announcement` 取。
    * 它必须在拖动开始之前就在 DOM 上——读屏不播报后插入的节点。
