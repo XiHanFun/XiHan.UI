@@ -1,6 +1,7 @@
 import type {
   TimeGranularity,
   TimeHourCycle,
+  TimePickerColumn,
   TimePickerColumnUnit,
   TimePickerOpenChangeDetails,
   TimePickerPreset,
@@ -263,6 +264,15 @@ export class XhTimePickerElement extends XhElement {
     if (!owned || el.textContent === text)
       return
     el.textContent = text
+  }
+
+  /**
+   * 此刻该排哪几列、每列有哪些可选值——落在 min/max 之外的、不合 step 的、
+   * 以及随已选的时（分）收窄掉的那些都已经不在里面。作者据它渲染列与格子。
+   * 机器尚未建起时给空数组。
+   */
+  get columns(): TimePickerColumn[] {
+    return this.ctrl.service ? connectTimePicker(this.ctrl.service, wcNormalize).columns : []
   }
 
   protected wire(): void {

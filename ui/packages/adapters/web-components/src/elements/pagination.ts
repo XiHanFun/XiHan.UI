@@ -1,4 +1,4 @@
-import type { PaginationEllipsisSide, PaginationPageChangeDetails, PaginationSchema, PaginationTranslations } from '@xihan-ui/headless'
+import type { PaginationApi, PaginationEllipsisSide, PaginationEntryRange, PaginationPage, PaginationPageChangeDetails, PaginationPageItem, PaginationSchema, PaginationTranslations } from '@xihan-ui/headless'
 import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { OverlayExit } from '../overlay-exit'
@@ -29,8 +29,14 @@ function itemPage(el: HTMLElement): number {
  * root 必须是 `<nav>`：分页器是"跳到某一页"的导航地标，元素只往上打 aria-label，
  * 地标语义得由标签自己给。页码按钮须自带 `value` 属性标明是第几页。
  *
- * 页码序列（几号页、哪里该出省略号）由作者按 headless 的 `pages` 渲染，元素不替作者生成节点：
- * 生成节点就等于收走模板控制权，外层 `<li>` 壳、图标、i18n 文案都再塞不进来。
+ * 页码序列（几号页、哪里该出省略号）由作者照 `pages` 渲染，元素不替作者生成节点：
+ * 生成节点就等于收走模板控制权，外层 `<li>` 壳、图标、i18n 文案都再塞不进来。序列本身
+ * 从元素上取（`pages` / `pageItems`），不必自己按当前页与总页数推一遍。
+ *
+ * 取数口是现算的，读到的恒是此刻那一份。什么时候重读：`page-change` 与 `page-size-change`
+ * 两条事件覆盖了运行期会改动序列的全部输入，在它们的处理器里重读即可；改 `count` /
+ * `sibling-count` 这类作者自己写的属性，写完当场重读，不必等事件。受控（写了 `page` 属性）时
+ * 得先把新页码写回 `page` 再读——受控下当前页住在属性里，不写回读到的还是上一页那份序列。
  *
  * @customElement xh-pagination
  * @attr {number} count - 总条数（不是总页数）
@@ -176,6 +182,83 @@ export class XhPaginationElement extends XhElement {
   override connectedCallback(): void {
     this.refreshParts()
     super.connectedCallback()
+  }
+
+  /**
+   * 取数口与命令共用的取法。机器要到进文档（hostConnected）才建，
+   * 而这些都是公开面，作者拿到元素随时可能读、可能调——还没进文档时如实给空，不抛错。
+   */
+  private api(): PaginationApi | null {
+    const service = this.ctrl.service as Service<PaginationSchema> | undefined
+    return service ? connectPagination(service, wcNormalize) : null
+  }
+
+  /**
+   * 页码序列：页码与省略位交替的一串，作者照它渲染 item 与 ellipsis。
+   * 机器尚未建起时给空数组。
+   */
+  get pages(): PaginationPage[] {
+    return this.api()?.pages ?? []
+  }
+
+  /**
+   * 同一串序列，但省略位带着被折叠的是哪几页——摊开省略号照它铺面板。
+   * 机器尚未建起时给空数组。
+   */
+  get pageItems(): PaginationPageItem[] {
+    return this.api()?.pageItems ?? []
+  }
+
+  /**
+   * 此刻显示的是第几页，已夹进合法区间（`page` 属性是受控入参，可能缺席或越界，这里是结果）。
+   * 机器尚未建起时给 1：页码没有第 0 页，1 也正是无数据时的取值。
+   */
+  get currentPage(): number {
+    return this.api()?.page ?? 1
+  }
+
+  /**
+   * 此刻每页几条（`page-size` 属性缺席时非受控的那份住在机器里，只有这里读得到）。
+   * 机器尚未建起时给 0。
+   */
+  get currentPageSize(): number {
+    return this.api()?.pageSize ?? 0
+  }
+
+  /** 总页数，由总条数与每页条数算出。无数据是 0 页，不是 1 页空页。 */
+  get totalPages(): number {
+    return this.api()?.totalPages ?? 0
+  }
+
+  /** 当前页对应的条目区间，1 基闭区间（"第 x-y 条"里的 x 与 y）。无数据时两端都是 0。 */
+  get pageRange(): PaginationEntryRange {
+    return this.api()?.pageRange ?? { start: 0, end: 0 }
+  }
+
+  /**
+   * 跳到某一页，越界页码夹回合法区间。
+   * 受控（写了 `page` 属性）时只发 page-change，页码归宿主写回。机器尚未建起时不动。
+   */
+  setPage(page: number): void {
+    this.api()?.setPage(page)
+  }
+
+  /**
+   * 换每页条数：页码跟着换算，让改档前第一条仍留在页内。
+   * 受控时语义同 setPage。机器尚未建起时不动。
+   */
+  setPageSize(pageSize: number): void {
+    this.api()?.setPageSize(pageSize)
+  }
+
+  /** 按当前页从整份数据里切出这一页。机器尚未建起时给空数组。 */
+  slice<V>(data: readonly V[]): V[] {
+    return this.api()?.slice(data) ?? []
+  }
+
+  /** 收起摊开的那个省略位。机器尚未建起时不动。 */
+  closeEllipsis(): void {
+    this.api()?.closeEllipsis()
   }
 
   private machineProps(): Partial<PaginationSchema['props']> {

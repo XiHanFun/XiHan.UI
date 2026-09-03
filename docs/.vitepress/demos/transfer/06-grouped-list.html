@@ -1,23 +1,4 @@
 <!-- 列表分组 | 面板插槽给出本侧此刻看得见的条目，据此分组渲染；小标题是普通节点，不入方向键也不入搬运 -->
-<style>
-  /* 分组壳不参与排布，标题与条目照旧是列表的直接子项，间距不断档 */
-  #transfer-grouped [data-group] {
-    display: contents;
-  }
-
-  /* 本组条目一个都不在这一侧（或被搜索筛掉）时，小标题跟着收起 */
-  #transfer-grouped [data-group]:not(:has([data-xh-part="item"]:not([hidden]))) {
-    display: none;
-  }
-
-  #transfer-grouped [data-group-label] {
-    padding-block: 4px;
-    padding-inline: 8px;
-    color: var(--xh-fg-subtle);
-    font-size: 12px;
-  }
-</style>
-
 <div id="transfer-grouped" style="inline-size: 100%; max-inline-size: 520px">
   <xh-transfer searchable>
     <div data-xh-part="root">
@@ -27,49 +8,7 @@
           <span data-xh-part="panel-count"></span>
         </div>
         <input data-xh-part="search" placeholder="搜索" />
-        <div data-xh-part="list">
-          <div data-group>
-            <div data-group-label>读取</div>
-            <div data-xh-part="item" value="list">
-              <span data-xh-part="item-checkbox"></span>
-              <span data-xh-part="item-text">查看列表</span>
-            </div>
-            <div data-xh-part="item" value="detail">
-              <span data-xh-part="item-checkbox"></span>
-              <span data-xh-part="item-text">查看详情</span>
-            </div>
-            <div data-xh-part="item" value="export">
-              <span data-xh-part="item-checkbox"></span>
-              <span data-xh-part="item-text">导出数据</span>
-            </div>
-          </div>
-          <div data-group>
-            <div data-group-label>写入</div>
-            <div data-xh-part="item" value="create">
-              <span data-xh-part="item-checkbox"></span>
-              <span data-xh-part="item-text">新建</span>
-            </div>
-            <div data-xh-part="item" value="update">
-              <span data-xh-part="item-checkbox"></span>
-              <span data-xh-part="item-text">编辑</span>
-            </div>
-            <div data-xh-part="item" value="remove">
-              <span data-xh-part="item-checkbox"></span>
-              <span data-xh-part="item-text">删除</span>
-            </div>
-          </div>
-          <div data-group>
-            <div data-group-label>管理</div>
-            <div data-xh-part="item" value="grant">
-              <span data-xh-part="item-checkbox"></span>
-              <span data-xh-part="item-text">授权</span>
-            </div>
-            <div data-xh-part="item" value="audit">
-              <span data-xh-part="item-checkbox"></span>
-              <span data-xh-part="item-text">审计</span>
-            </div>
-          </div>
-        </div>
+        <div data-xh-part="list"></div>
       </div>
 
       <button data-xh-part="to-target-trigger"></button>
@@ -81,73 +20,92 @@
           <span data-xh-part="panel-count"></span>
         </div>
         <input data-xh-part="search" placeholder="搜索" />
-        <div data-xh-part="list">
-          <div data-group>
-            <div data-group-label>读取</div>
-            <div data-xh-part="item" value="list">
-              <span data-xh-part="item-checkbox"></span>
-              <span data-xh-part="item-text">查看列表</span>
-            </div>
-            <div data-xh-part="item" value="detail">
-              <span data-xh-part="item-checkbox"></span>
-              <span data-xh-part="item-text">查看详情</span>
-            </div>
-            <div data-xh-part="item" value="export">
-              <span data-xh-part="item-checkbox"></span>
-              <span data-xh-part="item-text">导出数据</span>
-            </div>
-          </div>
-          <div data-group>
-            <div data-group-label>写入</div>
-            <div data-xh-part="item" value="create">
-              <span data-xh-part="item-checkbox"></span>
-              <span data-xh-part="item-text">新建</span>
-            </div>
-            <div data-xh-part="item" value="update">
-              <span data-xh-part="item-checkbox"></span>
-              <span data-xh-part="item-text">编辑</span>
-            </div>
-            <div data-xh-part="item" value="remove">
-              <span data-xh-part="item-checkbox"></span>
-              <span data-xh-part="item-text">删除</span>
-            </div>
-          </div>
-          <div data-group>
-            <div data-group-label>管理</div>
-            <div data-xh-part="item" value="grant">
-              <span data-xh-part="item-checkbox"></span>
-              <span data-xh-part="item-text">授权</span>
-            </div>
-            <div data-xh-part="item" value="audit">
-              <span data-xh-part="item-checkbox"></span>
-              <span data-xh-part="item-text">审计</span>
-            </div>
-          </div>
-        </div>
+        <div data-xh-part="list"></div>
       </div>
     </div>
   </xh-transfer>
 </div>
 
 <script type="module">
-  // 分组是标记里的事：两侧各挂一份全集，不属于本侧的那一份由元素打上 hidden，小标题跟着 :has 收起
-  const transfer = document
-    .getElementById("transfer-grouped")
-    .querySelector("xh-transfer");
+  const stage = document.getElementById("transfer-grouped");
+  const transfer = stage.querySelector("xh-transfer");
 
-  transfer.collection = [
-    { value: "list", label: "查看列表" },
-    { value: "detail", label: "查看详情" },
-    { value: "export", label: "导出数据" },
-    { value: "create", label: "新建" },
-    { value: "update", label: "编辑" },
-    { value: "remove", label: "删除" },
-    { value: "grant", label: "授权" },
-    { value: "audit", label: "审计" },
+  const groups = [
+    { key: "read", label: "读取" },
+    { key: "write", label: "写入" },
+    { key: "admin", label: "管理" },
   ];
 
+  const permissions = [
+    { value: "list", label: "查看列表", group: "read" },
+    { value: "detail", label: "查看详情", group: "read" },
+    { value: "export", label: "导出数据", group: "read" },
+    { value: "create", label: "新建", group: "write" },
+    { value: "update", label: "编辑", group: "write" },
+    { value: "remove", label: "删除", group: "write" },
+    { value: "grant", label: "授权", group: "admin" },
+    { value: "audit", label: "审计", group: "admin" },
+  ];
+
+  // 面板给的条目只带 value / label，分组信息回自己那份数据里查
+  const groupOf = new Map(permissions.map((item) => [item.value, item.group]));
+
+  transfer.collection = permissions;
   transfer.value = ["list"];
+
+  const panels = ["source", "target"].map((side) => ({
+    side,
+    list: stage.querySelector(
+      `[data-xh-part="${side}-panel"] [data-xh-part="list"]`,
+    ),
+  }));
+
+  function labelNode(text) {
+    const el = document.createElement("div");
+    el.style.paddingBlock = "4px";
+    el.style.paddingInline = "8px";
+    el.style.color = "var(--xh-fg-subtle)";
+    el.style.fontSize = "12px";
+    el.textContent = text;
+    return el;
+  }
+
+  function itemNode(item) {
+    const el = document.createElement("div");
+    el.dataset.xhPart = "item";
+    el.setAttribute("value", item.value);
+    const box = document.createElement("span");
+    box.dataset.xhPart = "item-checkbox";
+    const text = document.createElement("span");
+    text.dataset.xhPart = "item-text";
+    text.textContent = item.label;
+    el.append(box, text);
+    return el;
+  }
+
+  // 本侧此刻看得见哪些条目由组件给：落在哪一侧、被搜索筛掉没有都在它里面算完了
+  function render() {
+    for (const panel of panels) {
+      const shown = transfer.visibleItems(panel.side);
+      const nodes = [];
+      for (const group of groups) {
+        const inGroup = shown.filter(
+          (item) => groupOf.get(item.value) === group.key,
+        );
+        // 本组一条都不剩时小标题跟着不出
+        if (inGroup.length === 0) continue;
+        nodes.push(labelNode(group.label), ...inGroup.map(itemNode));
+      }
+      panel.list.replaceChildren(...nodes);
+    }
+  }
+
   transfer.addEventListener("value-change", (event) => {
     transfer.value = event.detail.value;
+    render();
   });
+  // 搜索串住在组件里、不对外派事件；这一条挂在宿主上，跑在组件写给搜索框的处理器之后
+  transfer.addEventListener("input", render);
+
+  render();
 </script>

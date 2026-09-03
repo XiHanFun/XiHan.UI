@@ -24,29 +24,28 @@
 </xh-pagination>
 
 <script type="module">
-  // 页码写回 page，列表与区间回显按当前页重算
   const host = document.getElementById("pagination-controlled");
   const list = document.getElementById("pagination-controlled-rows");
   const range = document.getElementById("pagination-controlled-range");
   const rows = Array.from({ length: 23 }, (_, i) => `第 ${i + 1} 条记录`);
-  const pageSize = 5;
 
-  function render(page) {
-    const start = (page - 1) * pageSize;
-    const slice = rows.slice(start, start + pageSize);
+  // 切片与条目区间都按当前页从元素上取：偏移量与末页那个不满的右端都不必自己算
+  function render() {
     list.replaceChildren(
-      ...slice.map((row) => {
+      ...host.slice(rows).map((row) => {
         const li = document.createElement("li");
         li.textContent = row;
         return li;
       }),
     );
-    range.textContent = `第 ${start + 1}-${start + slice.length} 条，共 ${rows.length} 条`;
+    const { start, end } = host.pageRange;
+    range.textContent = `第 ${start}-${end} 条，共 ${host.count} 条`;
   }
 
-  render(1);
+  render();
   host.addEventListener("page-change", (event) => {
+    // 受控：先把新页码写回 page，切出来的才是这一页
     host.page = event.detail.page;
-    render(event.detail.page);
+    render();
   });
 </script>

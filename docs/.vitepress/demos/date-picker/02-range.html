@@ -1,0 +1,206 @@
+<!-- 区间选择 | 五种粒度都能挑区间：两端跨页才并排两页，同一页放得下就一页；翻页整窗一起走，大步翻那对钮一次跨一年或十页 -->
+<div
+  id="date-picker-range-mount"
+  style="display: flex; flex-direction: column; gap: 20px"
+></div>
+
+<!-- 壳先收在模板里：段位与面板都由作者照取数口铺，铺好了才入页 -->
+<template id="date-picker-range-template">
+  <xh-date-picker selection-mode="range" locale="zh-CN">
+    <div data-xh-part="root">
+      <span data-xh-part="label"></span>
+      <div data-xh-part="control">
+        <!-- 文档序在前的这组认领起点，在后的认领终点；里面铺几段由 view 推 -->
+        <div data-xh-part="segment-group"></div>
+        <div data-xh-part="segment-group"></div>
+        <button data-xh-part="clear-trigger"></button>
+      </div>
+      <div data-xh-part="positioner">
+        <div data-xh-part="content"></div>
+      </div>
+      <span class="date-picker-range-text" style="font-size: 13px">（未选）</span>
+    </div>
+  </xh-date-picker>
+</template>
+
+<script type="module">
+  const kinds = [
+    { label: "按天", view: "day", week: false },
+    { label: "按周", view: "day", week: true },
+    { label: "按月", view: "month", week: false },
+    { label: "按季度", view: "quarter", week: false },
+    { label: "按年", view: "year", week: false },
+  ];
+
+  // 两组段位各自的读屏名字，区间模式下替掉指向 label 的那份
+  const translations = { startDate: "开始", endDate: "结束" };
+
+  const mount = document.getElementById("date-picker-range-mount");
+  const template = document.getElementById("date-picker-range-template");
+
+  function node(tag, part, text) {
+    const el = document.createElement(tag);
+    if (part) {
+      el.dataset.xhPart = part;
+    }
+    if (text !== undefined) {
+      el.textContent = text;
+    }
+    return el;
+  }
+
+  function pageTrigger(part, label) {
+    const el = node("button", part);
+    el.setAttribute("aria-label", label);
+    return el;
+  }
+
+  // 周序号：挑的是第几周，光看日期看不出来。身份取行首那天，文字由元素填
+  function weekNumber(value) {
+    const el = node("span", "week-number");
+    el.setAttribute("value", value);
+    return el;
+  }
+
+  function dayCell(value, text) {
+    const cell = node("div", "cell");
+    cell.setAttribute("value", value);
+    cell.append(node("div", "cell-trigger", text));
+    return cell;
+  }
+
+  // 一页一张日历：面板号写在标题与网格上，格子跟着所在网格走
+  function panelOf(panel, last, kind, weekDays) {
+    const calendar = node("div", "calendar");
+    const header = node("div", "header");
+    // 往前只在最左那张、往后只在最右那张：翻页整窗一起走
+    if (panel.index === 0) {
+      header.append(
+        pageTrigger("prev-year-trigger", "快退"),
+        pageTrigger("prev-trigger", "上一页"),
+      );
+    }
+    const heading = node("div", "heading", panel.headingLabel);
+    heading.setAttribute("index", panel.index);
+    header.append(heading);
+    if (last) {
+      header.append(
+        pageTrigger("next-trigger", "下一页"),
+        pageTrigger("next-year-trigger", "快进"),
+      );
+    }
+
+    const grid = node("div", "grid");
+    grid.setAttribute("index", panel.index);
+    // 日视图铺周行，粗粒度视图把格子直接铺进网格
+    if (panel.weeks.length > 0) {
+      const head = node("div", "grid-head");
+      const headRow = node("div", "week-row");
+      // 周选时行首多一列周序号，表头也得空出这一格
+      if (kind.week) {
+        headRow.append(weekNumber(""));
+      }
+      for (const day of weekDays) {
+        const column = node("span", "week-day", day.label);
+        column.setAttribute("value", day.value);
+        headRow.append(column);
+      }
+      head.append(headRow);
+
+      const body = node("div", "grid-body");
+      for (const week of panel.weeks) {
+        const row = node("div", "week-row");
+        if (kind.week) {
+          row.append(weekNumber(week[0].value));
+        }
+        for (const day of week) {
+          row.append(dayCell(day.value, day.day));
+        }
+        body.append(row);
+      }
+      grid.append(head, body);
+    } else {
+      for (const cell of panel.cells) {
+        grid.append(dayCell(cell.value, cell.label));
+      }
+    }
+
+    calendar.append(header, grid);
+    return calendar;
+  }
+
+  function readoutText(value) {
+    if (value.length === 0) {
+      return "（未选）";
+    }
+    if (value.length === 1) {
+      return `${value[0]}（另一端待定）`;
+    }
+    return `${value[0]} → ${value[1]}`;
+  }
+
+  for (const kind of kinds) {
+    const fragment = template.content.cloneNode(true);
+    const picker = fragment.querySelector("xh-date-picker");
+    picker.setAttribute("view", kind.view);
+    if (kind.week) {
+      picker.setAttribute("week-selection", "");
+    }
+    picker.querySelector('[data-xh-part="label"]').textContent = kind.label;
+    picker.translations = translations;
+
+    const groups = picker.querySelectorAll('[data-xh-part="segment-group"]');
+    const content = picker.querySelector('[data-xh-part="content"]');
+    const readout = picker.querySelector(".date-picker-range-text");
+
+    // 已经画出来的是哪几页
+    let painted = "";
+
+    function paintPanels() {
+      const panels = picker.panels;
+      const signature = panels
+        .map((panel) => `${panel.index}:${panel.startValue}:${panel.weeks.length}`)
+        .join("|");
+      // 换了页、钻了层或并排页数变了才重画；同页内移动焦点时格子原样留着
+      if (signature === painted) {
+        return;
+      }
+      painted = signature;
+      const weekDays = picker.weekDays;
+      content.replaceChildren(
+        ...panels.map((panel, index) =>
+          panelOf(panel, index === panels.length - 1, kind, weekDays),
+        ),
+      );
+    }
+
+    // 段位是空节点：显示什么由组件按当前值填。「-」与「周」是普通节点，写在段位旁边
+    function paintSegments(group, segments) {
+      const out = [];
+      segments.forEach((segment, index) => {
+        if (index > 0) {
+          out.push(node("span", undefined, "-"));
+        }
+        out.push(node("span", "segment"));
+        if (segment.type === "week") {
+          out.push(node("span", undefined, "周"));
+        }
+      });
+      group.replaceChildren(...out);
+    }
+
+    // 元素一连上就能读 panels / fieldSegments，接线排在这之后，节点赶得上
+    mount.append(fragment);
+    paintSegments(groups[0], picker.fieldSegments);
+    paintSegments(groups[1], picker.fieldEndSegments);
+    paintPanels();
+
+    picker.addEventListener("focused-value-change", paintPanels);
+    picker.addEventListener("active-view-change", paintPanels);
+    picker.addEventListener("value-change", (event) => {
+      readout.textContent = readoutText(event.detail.value);
+      // 两端落在不同页时并排两页，页数跟着值走
+      paintPanels();
+    });
+  }
+</script>

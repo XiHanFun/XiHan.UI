@@ -115,6 +115,32 @@ export class XhTextFieldElement extends XhElement {
     }
   }
 
+  /**
+   * 清空此刻可不可行（开了 clearable、可编辑、且有值）。
+   * 作者据它禁用自己写在组件外面的清空钮。机器尚未建起时为 false。
+   */
+  get canClear(): boolean {
+    return this.ctrl.service ? connectTextField(this.ctrl.service, wcNormalize).canClear : false
+  }
+
+  /**
+   * 从外面写值，只受禁用、只读与字数上限约束，与 clearable 无关。
+   * 机器尚未建起时是空操作。
+   */
+  setValue(next: string): void {
+    if (this.ctrl.service)
+      connectTextField(this.ctrl.service, wcNormalize).setValue(next)
+  }
+
+  /**
+   * 走清空意图，canClear 不成立时按兵不动；无条件清空请用 setValue('')。
+   * 机器尚未建起时是空操作。
+   */
+  clear(): void {
+    if (this.ctrl.service)
+      connectTextField(this.ctrl.service, wcNormalize).clear()
+  }
+
   protected wire(): void {
     const api = connectTextField(this.ctrl.service, wcNormalize)
 

@@ -64,16 +64,12 @@
 
   let picked = ["vue", "svelte", "solid"];
 
-  function labelOf(value) {
-    return options.find((option) => option.value === value)?.label ?? value;
-  }
-
   // 一枚标签：带删除钮的那一份放在触发器外面
-  function tagOf(value, deletable) {
+  function tagOf(value, label, deletable) {
     const tag = document.createElement("span");
     tag.setAttribute("data-xh-part", "tag");
     tag.setAttribute("value", value);
-    tag.textContent = labelOf(value);
+    tag.textContent = label;
     if (deletable) {
       const remove = document.createElement("button");
       remove.setAttribute("data-xh-part", "item-delete-trigger");
@@ -82,27 +78,34 @@
     return tag;
   }
 
-  // 截断点取元素上的 max-tag-count，余数摆成 +n
   function render() {
     select.value = picked;
-    const max = select.maxTagCount ?? picked.length;
-    const shown = picked.slice(0, max);
-    const overflow = picked.length - shown.length;
 
-    const nodes = shown.map((value) => tagOf(value, false));
-    if (overflow > 0) {
+    // 摆得下几枚、余数是几，都由组件按 max-tag-count 算好
+    const tags = select.tags;
+    const nodes = tags.map((tag) => tagOf(tag.value, tag.label, false));
+    if (select.overflowCount > 0) {
       const rest = document.createElement("span");
       rest.style.color = "var(--xh-fg-muted)";
       rest.style.fontSize = "12px";
-      rest.textContent = "+" + overflow;
+      rest.textContent = "+" + select.overflowCount;
       nodes.push(rest);
     }
     preview.replaceChildren(...nodes);
     // 没有选中时让位给占位文字
-    preview.style.display = picked.length === 0 ? "none" : "inline-flex";
-    valueText.style.display = picked.length === 0 ? "" : "none";
+    preview.style.display = tags.length === 0 ? "none" : "inline-flex";
+    valueText.style.display = tags.length === 0 ? "" : "none";
 
-    row.replaceChildren(...picked.map((value) => tagOf(value, true)));
+    // 外面这一行不截断，逐个都摆出来，标签文字回自己那份数据里查
+    row.replaceChildren(
+      ...picked.map((value) =>
+        tagOf(
+          value,
+          options.find((option) => option.value === value)?.label ?? value,
+          true,
+        ),
+      ),
+    );
   }
 
   select.addEventListener("value-change", (event) => {

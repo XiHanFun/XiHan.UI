@@ -217,7 +217,7 @@ brand  neutral  success  warning  danger  info
 | 事件传播语义 | `bubbles: true, composed: true`（160 处中 158 处） | **受约束**——把冒泡改掉会让祖先节点上的事件委托静默失效。例外是名为 `submit` 的事件（`xh-prompt-input` / `xh-question-flow`）：与原生表单提交同名，一律不冒泡，免得被祖先 `<form>` 当成自己的提交 |
 | 事件 `detail` 形状 | 158 个 `*Details` 类型 | **受约束**，等同于 headless 的同名类型 |
 | `attribute: false` 的 JS 字段 | 175 条（涉及 65 个字段名） | **受约束**。`collection`、`translations`、`validate`、`filter` 这类只能用 JS 赋值，HTML 里表达不出来——**不是每个 property 都有对应 attribute** |
-| 命令式方法 | 30（分布在 9 个元素） | **受约束**，含参数与返回类型 |
+| 命令式方法 | 38（分布在 13 个元素） | **受约束**，含参数与返回类型 |
 
 命令式方法全清单：
 

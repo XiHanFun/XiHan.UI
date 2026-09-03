@@ -86,6 +86,8 @@
 --xh-glyph-mark-chevron-left: url("data:image/svg+xml,…")  sha256:60879582dadb
 --xh-glyph-mark-chevron-right: url("data:image/svg+xml,…")  sha256:e0c356ffa6b5
 --xh-glyph-mark-chevron-up: url("data:image/svg+xml,…")  sha256:46747891ba6d
+--xh-glyph-mark-chevrons-left: url("data:image/svg+xml,…")  sha256:71cb31c7dd71
+--xh-glyph-mark-chevrons-right: url("data:image/svg+xml,…")  sha256:6f309e052402
 --xh-glyph-mark-close: url("data:image/svg+xml,…")  sha256:247de13c80d0
 --xh-glyph-mark-eye: url("data:image/svg+xml,…")  sha256:0038fceca8f4
 --xh-glyph-mark-eye-off: url("data:image/svg+xml,…")  sha256:9adea7064151
