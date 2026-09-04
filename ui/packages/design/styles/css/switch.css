@@ -33,8 +33,10 @@
     border-radius: var(--xh-switch-radius, var(--xh-shape-pill));
     background: var(--xh-switch-bg, var(--xh-bg-subtle-active));
     cursor: pointer;
+    /* 投影一项走的是校验失败那圈内描边：它由 box-shadow 画出来，不接过渡就是一帧跳出来的 */
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
@@ -95,7 +97,10 @@
     border-radius: var(--xh-switch-thumb-radius, var(--xh-shape-pill));
     background: var(--xh-switch-thumb, var(--xh-bg-canvas));
     box-shadow: var(--xh-switch-thumb-shadow, var(--xh-elevation-raised));
-    transition: translate var(--xh-motion-duration-micro) var(--xh-motion-ease-continuous);
+    /* 只读那一档滑块收掉浮起的投影，与轨道换底色同步淡出 */
+    transition:
+      translate var(--xh-motion-duration-micro) var(--xh-motion-ease-continuous),
+      box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='switch'][data-part='thumb'][data-state='checked'] {

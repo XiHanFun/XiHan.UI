@@ -19,6 +19,8 @@ pnpm test         # 第一套
 pnpm test:browser # 后两套（先 pnpm exec playwright install chromium）
 ```
 
+在 Windows / macOS 宿主上，`pnpm test:browser` **必红一条**：像素基线那个文件挂在字体守卫上，整文件判失败、40 条用例全部 skipped。这是预期结果不是环境坏了，怎么在本地验像素改动见下面的「像素基线」。
+
 ## 一致性：一份规格喂两个适配器
 
 **规格**（`ConformanceSuite`）声明组件的解剖部件、键盘表与用例；**适配器**各实现一个 `AdapterHarness`（挂载 fixture 树、取事件、卸载）。运行器把同一份规格喂给不同的 harness，逐帧采集归一化后的 `DomSnapshot` 并断言。
@@ -106,17 +108,31 @@ pnpm visual:baseline --update   # 生成 / 更新基线并写回库里
 
 比对失败时，实际截图与差异图落在 `packages/adapters/vue/.vitest-attachments/`（不入库）。CI 上同一批文件会作为 `visual-diffs` artifact 传出来，下载下来逐张看。
 
+### 本地怎么跑，本地那条红怎么回事
+
+`pnpm visual:baseline` 是本地唯一有效的入口，它不吃宿主的渲染栈：源码同步进容器、依赖在容器里装、用例也在容器里跑，所以 Windows 与 macOS 上跑出来的结果与 CI 逐像素一致。前置条件只有一个 `docker pull`。
+
+直接跑 `pnpm test:browser` 时，像素基线那个文件会整文件判红：字体守卫在 `beforeAll` 里抛错，40 条用例全部 skipped，一张位图都不会生成，因此也不会在 `__screenshots__/` 下留下带 `-win32` 后缀的垃圾文件。在宿主上装 DejaVu 也解决不了：字体只是差异之一，字形栅格化与子像素抹平仍与 Linux 不同，比出来的结果没有意义。这条红是预期结果，同一批浏览器态用例里的无障碍与浮层定位在宿主上照常全绿。
+
+于是改皮肤的工作方式是：
+
+- 本地 `pnpm visual:baseline` 看这次动了哪几张，差异图在 `.vitest-attachments/` 下逐张打开；
+- PR 的判据是 CI 的 `browser` job，本地 `pnpm test:browser` 的那条红不用管；
+- CI 红了先下 `visual-diffs` artifact 看图，确认是有意的视觉改动，再 `pnpm visual:baseline --update` 重出基线并提交。
+
+字体族名、装它的 apt 包、容器镜像与运行命令这四样散在用例、容器脚本、CI 与本页里，任何一处走样都只表现为「四十张整体判红」。`check-visual-baseline-env` 把四处对齐，并核对镜像版本与 `pnpm-workspace.yaml` 里 `playwright` 的版本一致、CI 的 `browser` job 里装字体那步排在跑用例之前。
+
 ### 基线变更必须过人眼
 
 基线的更新是无声的：`git diff` 只会说二进制文件变了，看不出变成了什么样。谁都能 `--update` 一把，把一次真实的视觉回归洗成「基线本来就长这样」。
 
 所以规则是：**PR 里凡有 `__screenshots__/` 下的改动，作者必须逐张说明为什么该变，审阅者必须打开图看过**。改动张数与改动理由对不上的 PR 不合并。
 
-基线文件名带浏览器与平台后缀（`…-chromium-linux.png`）。在 Windows 上直接跑 `pnpm test:browser` 不会与 Linux 基线比对，而是另出一套 `-win32` 的文件——这套不入库，看到了直接删，不要提交。
+基线文件名带浏览器与平台后缀（`…-chromium-linux.png`），入库的只有 `linux` 这一套。带别的平台后缀的文件不该出现——字体守卫会在生成之前就把用例拦下——真见到了直接删，不要提交。
 
 ## 结构门禁
 
-`pnpm gate` 跑 90 项结构检查，它们查的是**判据查不到的东西**——静默失效、悬空承诺、没被命名的决策：
+`pnpm gate` 跑 95 项结构检查，它们查的是**判据查不到的东西**——静默失效、悬空承诺、没被命名的决策：
 
 | 门禁 | 拦什么 |
 | --- | --- |

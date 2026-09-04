@@ -64,6 +64,11 @@
     background: var(--xh-field-control-bg, var(--xh-bg-canvas));
     color: var(--xh-field-control-fg, var(--xh-fg-default));
     font-size: var(--xh-field-control-font-size, var(--xh-text-body-size));
+    /* 聚焦、无效与禁用三档换的都是颜色，各态之间接一段过渡 */
+    transition:
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='field'][data-part='control']:focus-visible {

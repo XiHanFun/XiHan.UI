@@ -1,5 +1,6 @@
 // 浮层被搬去 portal 落点之后，视觉轴还落不落得到浮层里的部件上。
 // 只有真实浏览器算得出来：jsdom 不解析样式表里的 var() 与继承，getComputedStyle 恒是空串。
+import type { PaginationPageItem } from '@xihan-ui/headless'
 import type { App, VNode } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick } from 'vue'
@@ -242,13 +243,13 @@ const CASES: Record<string, Case> = {
     openByClick: true,
     openPart: 'ellipsis',
     render: axes => h(XhPaginationRoot, { ...axes, count: 2000, pageSize: 10, defaultPage: 100 }, {
-      default: ({ pageItems }) => [
+      default: ({ pageItems }: { pageItems: PaginationPageItem[] }) => [
         ...pageItems.map((item, i) => (item.type === 'ellipsis'
           ? h(XhPaginationEllipsis, { key: `ellipsis-${i}`, side: item.side })
           : h(XhPaginationItem, { key: `page-${item.value}`, value: item.value }, () => String(item.value)))),
         h(XhPaginationPositioner, null, () => [
           h(XhPaginationContent, null, {
-            default: ({ pages }) => pages.map(page =>
+            default: ({ pages }: { pages: number[] }) => pages.map(page =>
               h(XhPaginationItem, { key: page, value: page }, () => String(page)),
             ),
           }),

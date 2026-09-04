@@ -42,6 +42,13 @@
     transition: transform var(--xh-motion-duration-micro) var(--xh-motion-ease-continuous);
   }
 
+  /* 抓起与放下时的抬升、压深都淡变。位移不进这条：它由连接层每帧写内联 transform */
+  [data-scope='sortable'][data-part='item'] {
+    transition:
+      box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
   [data-scope='sortable'][data-part='item'][data-dragging] {
     /* 拖起来的那一项浮在上面。层级由连接层写内联，这里只管观感 */
     box-shadow: var(--xh-sortable-item-shadow-dragging, var(--xh-elevation-raised));

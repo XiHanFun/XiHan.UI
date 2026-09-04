@@ -20,7 +20,7 @@ function fakeEvent(path: object[]): Event {
 }
 
 function fakeRegistry(layers: Layer[]): LayerRegistry {
-  return { list: () => layers } as LayerRegistry
+  return { list: () => layers } as unknown as LayerRegistry
 }
 
 describe('isInside', () => {

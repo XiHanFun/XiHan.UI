@@ -41,7 +41,7 @@
     block-size: 100%;
     border-radius: var(--xh-progress-range-radius, var(--xh-shape-pill));
     background: var(--xh-progress-range, var(--xh-_tone, var(--xh-bg-brand)));
-    transition: inline-size var(--xh-motion-duration-micro) var(--xh-motion-ease-continuous);
+    transition: inline-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous);
   }
 
   /* —— 尺寸 —— */
@@ -106,7 +106,7 @@
   [data-scope='progress'][data-part='range'][data-variant='dashboard'] {
     stroke: var(--xh-progress-range, var(--xh-_tone, var(--xh-bg-brand)));
     stroke-linecap: var(--xh-progress-linecap, round);
-    transition: stroke-dashoffset var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition: stroke-dashoffset var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
   }
 
   /* 进度未知：线形条改为一小段来回扫。宽度交给动画，连接层算出的 inline-size 与
@@ -120,7 +120,7 @@
     position: absolute;
     inline-size: 40%;
     transition: none;
-    animation: xh-progress-indeterminate var(--xh-progress-indeterminate-duration, calc(var(--xh-spin-duration) * 2)) var(--xh-motion-ease-loop) infinite;
+    animation: xh-progress-indeterminate var(--xh-progress-indeterminate-duration, var(--xh-shimmer-duration)) var(--xh-motion-ease-loop) infinite;
   }
 
   /* 减弱动效档：不来回扫，改成一条铺满的静态条——进度仍然未知，只是不再动。

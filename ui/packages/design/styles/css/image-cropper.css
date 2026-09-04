@@ -125,6 +125,8 @@
     block-size: var(--xh-_image-cropper-handle-size);
     translate: -50% -50%;
     scale: calc(1 / var(--xh-_image-cropper-zoom));
+    /* 拉动那一枚换底色，换的过程要看得出来 */
+    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 看得见的方块比手指小：另铺一层不可见的命中区，把它撑到最小可点尺寸。

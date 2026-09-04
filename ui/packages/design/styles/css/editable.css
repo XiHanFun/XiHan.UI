@@ -217,8 +217,10 @@
     white-space: nowrap;
     cursor: pointer;
     user-select: none;
+    /* box-shadow 在列里是给提交钮的内高光留的：它随可用与置灰两档进出 */
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 

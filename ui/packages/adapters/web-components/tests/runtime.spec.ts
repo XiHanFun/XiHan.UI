@@ -36,11 +36,11 @@ const toggleMachine = createMachine({
 
 class XhToggleTest extends XhReactiveElement {
   readonly ctrl = new MachineController(this, toggleMachine, () => ({}))
-  protected createRenderRoot(): HTMLElement {
+  protected override createRenderRoot(): HTMLElement {
     return this
   }
 
-  protected updated(): void {
+  protected override updated(): void {
     this.dataset.state = this.ctrl.service.state.get()
     this.dataset.pressed = String(this.ctrl.service.context.get('pressed'))
   }

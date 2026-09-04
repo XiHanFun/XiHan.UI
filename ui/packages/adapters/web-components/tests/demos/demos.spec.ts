@@ -166,7 +166,7 @@ describe('自定义元素版示例', () => {
 
       // 判据五：脚本必须 type="module"。示例会被反复挂载，顶层常量在经典脚本里第二次就撞名
       for (const [index, matched] of [...demo.html.matchAll(/<script\b([^>]*)>/gi)].entries()) {
-        if (!/\btype\s*=\s*["']module["']/i.test(matched[1]))
+        if (!/\btype\s*=\s*["']module["']/i.test(matched[1] ?? ''))
           problems.push(`第 ${index + 1} 个 <script> 没写 type="module"`)
       }
 

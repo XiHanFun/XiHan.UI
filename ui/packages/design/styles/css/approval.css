@@ -317,9 +317,11 @@
     block-size: var(--xh-approval-action-h, var(--xh-_approval-action-h));
     white-space: nowrap;
     cursor: pointer;
+    /* 必选项勾满与否会把批准钮的内高光开合，box-shadow 因此跟着配色一起过渡 */
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 

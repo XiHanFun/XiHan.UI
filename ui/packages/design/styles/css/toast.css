@@ -34,7 +34,7 @@
     to {
       opacity: 0;
       translate: 0 var(--xh-motion-distance-md);
-      scale: var(--xh-motion-scale-enter);
+      scale: var(--xh-motion-scale-exit);
     }
   }
 }
@@ -149,7 +149,29 @@
 
   /* 生命周期只有三段，unmounted 那段由上面的 [hidden] 收走，这里只管前两段 */
   [data-scope='toast'][data-part='root'][data-state='visible'] {
-    animation: xh-toast-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+    animation: xh-toast-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
+  }
+
+  /* 一摞里的多条按位次错开开幕。backwards 不能省：等待期间起帧不生效的话，
+     条子会先以全不透明度露一下再跳回起帧。第 6 条起并到同一拍上 */
+  [data-scope='toast'][data-part='root'][data-state='visible']:nth-child(2) {
+    animation-delay: calc(var(--xh-motion-stagger-step) * 1);
+  }
+
+  [data-scope='toast'][data-part='root'][data-state='visible']:nth-child(3) {
+    animation-delay: calc(var(--xh-motion-stagger-step) * 2);
+  }
+
+  [data-scope='toast'][data-part='root'][data-state='visible']:nth-child(4) {
+    animation-delay: calc(var(--xh-motion-stagger-step) * 3);
+  }
+
+  [data-scope='toast'][data-part='root'][data-state='visible']:nth-child(5) {
+    animation-delay: calc(var(--xh-motion-stagger-step) * 4);
+  }
+
+  [data-scope='toast'][data-part='root'][data-state='visible']:nth-child(n + 6) {
+    animation-delay: calc(var(--xh-motion-stagger-step) * 5);
   }
 
   /* forwards 不能省：退场窗口（removeDelay 默认 200ms）比退场动画长，

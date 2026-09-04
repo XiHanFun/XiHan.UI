@@ -123,7 +123,7 @@ pnpm install
 pnpm dev
 ```
 
-改动需通过 CI 全套门禁，CI 与本地同一套命令：`pnpm lint`、`pnpm typecheck`、`pnpm boundaries`、`pnpm gate`（一条命令跑 90 项结构检查）、`pnpm test`、`pnpm build`、`pnpm size` 等。
+改动需通过 CI 全套门禁，CI 与本地同一套命令：`pnpm lint`、`pnpm typecheck`、`pnpm boundaries`、`pnpm gate`（一条命令跑 95 项结构检查）、`pnpm test`、`pnpm build`、`pnpm size` 等。
 
 ## 覆盖范围
 

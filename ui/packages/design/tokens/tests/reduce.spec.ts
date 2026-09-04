@@ -37,6 +37,9 @@ const css = readFileSync(join(ROOT, 'tokens.css'), 'utf8')
 /** 需要降级的档：时长与幅度。缓动不降级——曲线形状不引起前庭不适。 */
 const DEGRADABLE = new Set(['duration', 'dimension', 'number'])
 
+/** 时长里的延迟位：降级取 0ms 而不是 1ms，见下面成对的两条。 */
+const DELAY = new Set(['motion-stagger-step'])
+
 describe('semantic.reduce.json', () => {
   it('每一项都对应基线里的同名令牌', () => {
     const baseNames = new Set(base.map(t => t.name))
@@ -66,8 +69,18 @@ describe('semantic.reduce.json', () => {
   it('时长降到 1ms 而不是 0', () => {
     // 零时长动画仍会派发 animationstart/animationend，但历史实现有差异；
     // 取 1ms 让动画名照常变化、进出场时序与不降级时同构
-    for (const t of reduce.filter(t => t.type === 'duration'))
+    for (const t of reduce.filter(t => t.type === 'duration' && !DELAY.has(t.name)))
       expect(t.value, t.name).toBe('1ms')
+  })
+
+  it('延迟归 0ms', () => {
+    // 上一条的理由是「让动画照常派发事件」，那是动画时长的事。延迟位不派发任何东西，
+    // 而交错的延迟是逐项累加的：留 1ms，六项交错就在减弱档下错开 5ms。
+    for (const name of DELAY) {
+      const t = reduce.find(t => t.name === name)
+      expect(t, `${name} 是延迟位，reduce 档必须显式覆盖`).toBeDefined()
+      expect(t?.value, name).toBe('0ms')
+    }
   })
 
   it('幅度归零、缩放归一', () => {

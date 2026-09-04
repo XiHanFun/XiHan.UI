@@ -281,8 +281,16 @@ function assertBaselineFontInstalled(): void {
   const resolved = generics.some(generic => textWidth(generic) !== textWidth(`'${BASELINE_FONT}',${generic}`))
   if (!resolved) {
     throw new Error(
-      `基线字体「${BASELINE_FONT}」没装上，画面会静默换成环境默认字体、40 张基线整体作废。`
-      + ' 在跑用例的环境里装：apt-get install -y fonts-dejavu-core && fc-cache -f。',
+      [
+        `基线字体「${BASELINE_FONT}」没装上，画面会静默换成环境默认字体、40 张基线整体作废。`,
+        'Windows / macOS 宿主直接跑 pnpm test:browser 时这一条必红，是预期结果：',
+        '基线是 Linux 位图，宿主上装字体也比不出有意义的结果。本地要验皮肤的像素影响走容器：',
+        '  pnpm visual:baseline            校验',
+        '  pnpm visual:baseline --update   重出基线',
+        'Linux 环境（容器内 / CI）里装法：apt-get install -y fonts-dejavu-core && fc-cache -f。',
+        'CI 上装它的是 .github/workflows/ci.yml 的 browser job 里那步 Install baseline font (DejaVu)。',
+        '详见 docs/guide/testing.md 的「像素基线」。',
+      ].join('\n'),
     )
   }
 }
@@ -377,7 +385,7 @@ async function waitForPositioned(): Promise<void> {
 /**
  * 等动画跑完。
  *
- * 八件的皮肤都带进场动画（xh-dialog-in / xh-drawer-in-* / xh-toast-in / xh-pop-in / xh-fade-in）。
+ * 八件的皮肤都带进场动画（xh-dialog-in / xh-drawer-in-* / xh-toast-in / xh-overlay-pop-in / xh-fade-in）。
  * 不能用 data-motion='reduce' 绕开：那会换掉一整块令牌取值，截出来的就不是默认档的样子了。
  *
  * 逐条等 finished，等完再看一拍有没有新动画起来——落位与重排会引出第二批。

@@ -238,9 +238,9 @@ background-color: rgba(0, 0, 0, 0)
 transition-property: background, color
 transition-duration: 0.12s, 0.12s
 transition-timing-function: cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1)
-animation-name: none
-animation-duration: 0s
-animation-timing-function: ease
+animation-name: xh-pop-in
+animation-duration: 0.2s
+animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1)
 outline-width: 3px
 outline-offset: 0px
 outline-color: oklch(0.145 0.005 258)

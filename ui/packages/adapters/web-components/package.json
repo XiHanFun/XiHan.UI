@@ -58,7 +58,7 @@
   "scripts": {
     "build": "tsdown",
     "cem": "cem analyze && node scripts/enrich-cem.mjs",
-    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.test.json",
     "test": "vitest run",
     "test:browser": "vitest run --config vitest.browser.config.ts",
     "test:demos": "vitest run --config vitest.demos.config.ts --reporter verbose"

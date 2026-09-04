@@ -72,7 +72,9 @@
     color: var(--xh-image-viewer-fg, var(--xh-color-neutral-0));
   }
 
+  /* 在场那一档才提前备好合成层：属性随 data-state 一起消失，收起后不长期占着 */
   [data-scope='image-viewer'][data-part='content'][data-state='open'] {
+    will-change: opacity;
     animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
   }
 
@@ -104,8 +106,10 @@
     transition: transform var(--xh-motion-duration-micro) var(--xh-motion-ease-continuous);
   }
 
+  /* 拖拽期间变换每帧都在改：只在这一档备好合成层，松手后随 data-dragging 一起撤掉 */
   [data-scope='image-viewer'][data-part='image'][data-dragging] {
     transition: none;
+    will-change: transform;
   }
 
   /* —— 悬浮件共用：半透明深底加浅字 ——

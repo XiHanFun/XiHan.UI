@@ -1,6 +1,6 @@
 // 退场动画只能在真实浏览器里验：jsdom 不把样式表里的 animation 简写算进
 // getComputedStyle（animationName 恒为空串），退场探测那条路在 jsdom 里天然走不到。
-import type { App } from 'vue'
+import type { App, Ref } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick, ref } from 'vue'
 import {
@@ -30,7 +30,7 @@ afterEach(() => {
 })
 
 /** 挂一棵受控展开的浮层，返回控制展开的 ref。 */
-function mount(render: (open: boolean) => ReturnType<typeof h>): { open: { value: boolean } } {
+function mount(render: (open: boolean) => ReturnType<typeof h>): Ref<boolean> {
   const open = ref(true)
   host = document.createElement('div')
   document.body.append(host)
@@ -151,7 +151,7 @@ describe('image-viewer 退场', () => {
 
 describe('date-picker 退场', () => {
   /** 两张日历并排的面板：content 靠 :has 认出第二张才横排。 */
-  function mountRange(): { open: { value: boolean } } {
+  function mountRange(): Ref<boolean> {
     return mount(value => h(XhDatePickerRoot, { open: value }, {
       default: () => [
         h(XhDatePickerPositioner, null, () => [

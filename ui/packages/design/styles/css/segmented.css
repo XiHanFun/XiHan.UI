@@ -196,12 +196,14 @@
     /* 段压在它上面，点击一律交给段；作者把它写在段之后时也不至于吞掉点击 */
     pointer-events: none;
     /* 用连续档而不是进场那条：滑块是被推过去的，起步就该有速度，
-       纯减速曲线看着像自己飘过去。四个几何量同时走，段宽不等时才不会先变形再挪位 */
+       纯减速曲线看着像自己飘过去。四个几何量同时走，段宽不等时才不会先变形再挪位。
+       投影单列一项：整组禁用时滑块落回轨道平面，那层投影跟着收 */
     transition:
       inset-inline-start var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
       inset-block-start var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
       inline-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
-      block-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous);
+      block-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
+      box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 给了 display 的角色节点必须补这条：display 声明会盖掉 UA 的 [hidden]{display:none}，

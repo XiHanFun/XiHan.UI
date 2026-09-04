@@ -17,6 +17,7 @@
     font-size: var(--xh-hotkeys-font-size, var(--xh-_hotkeys-font-size));
     line-height: var(--xh-leading-none);
     white-space: nowrap;
+    transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 一枚键帽：等宽字，带描边与一层薄阴影凑出按键的样子。
@@ -38,6 +39,11 @@
     font-size: inherit;
     font-weight: var(--xh-hotkeys-key-font-weight, var(--xh-font-weight-medium));
     line-height: var(--xh-leading-none);
+    /* 监听开合时键帽整枚换装：底色、那层薄阴影与前景一起过去，不各走各的 */
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 修饰键多是符号，与主键的字母混排时字宽差得远，单独留一档给使用者调 */
@@ -49,6 +55,7 @@
   [data-scope='hotkeys'][data-part='separator'] {
     color: var(--xh-hotkeys-separator-fg, var(--xh-fg-subtle));
     user-select: none;
+    transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 监听关掉时组合按不出来，整块转成不可用的样子：键帽换成暗底、去掉阴影，前景压到 fg-subtle。

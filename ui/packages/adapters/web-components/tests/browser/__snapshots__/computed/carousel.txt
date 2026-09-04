@@ -131,8 +131,8 @@ font-weight: 400
 color: rgb(0, 0, 0)
 background-color: rgba(0, 0, 0, 0)
 transition-property: transform
-transition-duration: 0.2s
-transition-timing-function: cubic-bezier(0.2, 0, 0, 1)
+transition-duration: 0.32s
+transition-timing-function: cubic-bezier(0.32, 0.72, 0, 1)
 animation-name: none
 animation-duration: 0s
 animation-timing-function: ease

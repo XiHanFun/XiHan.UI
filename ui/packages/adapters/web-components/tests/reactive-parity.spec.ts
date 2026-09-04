@@ -204,7 +204,7 @@ function createSuite(Base: typeof ReactiveElement, ns: string): Suite {
   }
 
   class InheritBase extends Recorded {
-    static override properties = {
+    static override properties: Record<string, PropertyDeclaration> = {
       alpha: { converter: STRING_CONVERTER },
       shared: { converter: STRING_CONVERTER },
     }

@@ -47,7 +47,7 @@ function mount(): { host: HTMLElement, 源: Record<string, unknown>, 目标: Rec
       }),
   })
   app.mount(host)
-  return { host, 源: seen.source, 目标: seen.target, unmount: () => app.unmount() }
+  return { host, 源: seen.source!, 目标: seen.target!, unmount: () => app.unmount() }
 }
 
 describe('面板插槽的变量', () => {

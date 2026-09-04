@@ -206,7 +206,7 @@ describe('可调容器 · 指针', () => {
     expect(onSizeChangeEnd).not.toHaveBeenCalled()
     release()
     expect(onSizeChangeEnd).toHaveBeenCalledTimes(1)
-    expect(onSizeChangeEnd.mock.calls[0][0]).toEqual({ size: { width: 240, height: 100 }, edge: 'e' })
+    expect(onSizeChangeEnd.mock.calls[0]![0]).toEqual({ size: { width: 240, height: 100 }, edge: 'e' })
   })
 })
 
@@ -266,7 +266,7 @@ describe('可调容器 · 键盘', () => {
     const h = mount({ onSizeChangeEnd })
     key(h, 'e', 'ArrowRight')
     expect(onSizeChangeEnd).toHaveBeenCalledTimes(1)
-    expect(onSizeChangeEnd.mock.calls[0][0].edge).toBe('e')
+    expect(onSizeChangeEnd.mock.calls[0]![0].edge).toBe('e')
   })
 
   it('键盘同样吃上下限', () => {

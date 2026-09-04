@@ -15,7 +15,7 @@ const collection = [
   { value: 'edit', label: '编辑', items: [{ value: 'undo', label: '撤销' }] },
 ]
 
-const FILE_AT = { x: 360, y: 464, placement: 'bottom-start' as const }
+const FILE_AT = { x: 360, y: 464, placement: 'bottom-start' as const, hidden: false }
 
 function menubar(props: Partial<MenubarSchema['props']> = {}) {
   const runtime = createVanillaRuntime()
@@ -83,7 +83,7 @@ describe('新展开的菜单落位前不带落位信号', () => {
     const { service, api } = menubar({ defaultValue: 'file' })
     placeFile(service)
     service.send({ type: 'TRIGGER.OPEN', value: 'edit' })
-    service.context.set('placements', { ...service.context.get('placements'), edit: { x: 408, y: 464, placement: 'bottom-start' } })
+    service.context.set('placements', { ...service.context.get('placements'), edit: { x: 408, y: 464, placement: 'bottom-start', hidden: false } })
 
     const opened = positionerOf(api, 'edit')
     expect(opened.positioned).toBe('')
@@ -142,7 +142,7 @@ describe('换张交接：新菜单落位前上一张保持显示', () => {
     placeFile(service)
     service.send({ type: 'TRIGGER.POINTER', value: 'edit' })
     // 模拟引擎落位后的账目状态
-    service.context.set('placements', { ...service.context.get('placements'), edit: { x: 408, y: 464, placement: 'bottom-start' } })
+    service.context.set('placements', { ...service.context.get('placements'), edit: { x: 408, y: 464, placement: 'bottom-start', hidden: false } })
     service.context.set('handoffValue', null)
     expect(contentHidden(api, 'file')).toBe(true)
   })

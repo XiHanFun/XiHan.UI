@@ -151,7 +151,7 @@ describe('走 Web Animations', () => {
     animate(el, [{ opacity: '0' }, { opacity: '1' }])
 
     expect(stub.calls).toHaveLength(1)
-    expect(stub.calls[0][1]).toEqual({
+    expect(stub.calls[0]![1]).toEqual({
       duration: durations.normal,
       easing: easing.standard,
       delay: 0,
@@ -169,7 +169,7 @@ describe('走 Web Animations', () => {
 
     animate(el, [{ opacity: '1' }], { easing: 'easeOut' })
 
-    expect(stub.calls[0][1].easing).toBe(easing.easeOut)
+    expect(stub.calls[0]![1].easing).toBe(easing.easeOut)
   })
 
   it('任意 CSS 缓动串原样透传', () => {
@@ -179,7 +179,7 @@ describe('走 Web Animations', () => {
 
     animate(el, [{ opacity: '1' }], { easing: 'linear(0, 0.5, 1)' })
 
-    expect(stub.calls[0][1].easing).toBe('linear(0, 0.5, 1)')
+    expect(stub.calls[0]![1].easing).toBe('linear(0, 0.5, 1)')
   })
 
   it('播完结算成 finished', async () => {

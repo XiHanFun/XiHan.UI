@@ -191,6 +191,8 @@
   /* 展开时轻微涨开。只在切换到别张菜单时不重播——那由 data-state 的翻转天然保证：
      一张关一张开，动画各跑各的 */
   [data-scope='menubar'][data-part='content'][data-state='open'] {
+    /* 在场那一档才提前备好合成层：属性随 data-state 一起消失，收起后不长期占着 */
+    will-change: opacity, scale;
     animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
@@ -375,7 +377,7 @@
 
     to {
       opacity: 0;
-      scale: var(--xh-motion-scale-enter);
+      scale: var(--xh-motion-scale-exit);
     }
   }
 

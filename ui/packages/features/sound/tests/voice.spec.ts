@@ -34,7 +34,7 @@ function setup(): { sound: SoundContext, ctx: FakeAudioContext } {
   return { sound, ctx }
 }
 
-interface Scheduled {
+interface Scheduled extends FakeNode {
   started: number | undefined
   stopped: number | undefined
   onended: (() => void) | null

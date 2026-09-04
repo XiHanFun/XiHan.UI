@@ -15,7 +15,9 @@ defineXhElements()
 
 interface IconHost extends HTMLElement {
   updateComplete: Promise<unknown>
+  requestUpdate: () => void
   icon?: IconRecord
+  label?: string
 }
 
 const CHECK: IconRecord = {

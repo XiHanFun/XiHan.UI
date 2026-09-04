@@ -105,6 +105,10 @@
     display: flex;
     min-block-size: var(--xh-code-view-line-height, var(--xh-text-code-leading));
     padding-inline-end: var(--xh-code-view-px, var(--xh-space-3));
+    /* 标出来的那几行换的是底色与那条内阴影色条，两样一起过渡才是同一个动作 */
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='code-view'][data-part='line'][hidden] {

@@ -4,17 +4,24 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "inputs": ["src/**", "tokens/**", "build/**", "tsdown.config.ts", "package.json"],
+      "inputs": ["src/**", "tokens/**", "build/**", "tsdown.config.ts", "tsconfig.json", "package.json"],
       "outputs": ["dist/**"]
     },
     "typecheck": {
       "dependsOn": ["^build"],
-      "inputs": ["src/**", "*.vue", "tsconfig*.json"],
+      "inputs": ["src/**", "tests/**", "*.vue", "tsconfig*.json"],
       "outputs": []
     },
     "test": {
       "dependsOn": ["^build"],
-      "inputs": ["src/**", "tests/**", "spec/**", "runners/**"],
+      "inputs": [
+        "src/**",
+        "tests/**",
+        "spec/**",
+        "runners/**",
+        "vitest*.config.ts",
+        "package.json"
+      ],
       "outputs": ["coverage/**"]
     },
     "@xihan-ui/styles#build": {
@@ -23,12 +30,12 @@
     },
     "@xihan-ui/tokens#test": {
       "dependsOn": ["^build"],
-      "inputs": ["src/**", "tests/**", "tokens/**", "tokens.css"],
+      "inputs": ["src/**", "tests/**", "tokens/**", "tokens.css", "vitest*.config.ts", "package.json"],
       "outputs": ["coverage/**"]
     },
     "@xihan-ui/testing#test": {
       "dependsOn": ["^build", "@xihan-ui/vue#build", "@xihan-ui/web-components#build"],
-      "inputs": ["src/**", "tests/**", "spec/**", "runners/**"],
+      "inputs": ["src/**", "tests/**", "spec/**", "runners/**", "vitest*.config.ts", "package.json"],
       "outputs": ["coverage/**"]
     },
     "test:browser": {

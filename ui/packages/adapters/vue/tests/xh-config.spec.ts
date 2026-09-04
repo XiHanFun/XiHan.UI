@@ -140,7 +140,7 @@ describe('provideXhConfig · size', () => {
   })
 
   it('不跑机器的组件也吃全局尺寸档，全局值是 ref 时切换即重渲', async () => {
-    const config = ref({ size: 'lg' as const })
+    const config = ref<{ size: 'lg' | 'sm' }>({ size: 'lg' })
     const host = mount(() => {
       provideXhConfig(config)
       return () => [

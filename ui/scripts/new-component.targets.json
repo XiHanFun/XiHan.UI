@@ -1,0 +1,118 @@
+{
+  "$description": "加一个组件要碰的落点清单。creates 是脚手架落盘的新文件，modifies 是要插一行的登记点，generated 是跑生成器重出的产物，manual 是只能人工决定的。路径相对 ui/，`../` 前缀指仓库根。占位符：{c} kebab 组件名、{P} Pascal、{camel} camelCase。",
+  "probe": "toggle",
+  "$probe": "反查用的既有组件：creates 的每条路径它都得有，modifies 的每条 probeAnchor 都得在对应文件里命中。命中不了说明这张表过期了。",
+  "creates": [
+    { "id": "headless-anatomy", "path": "packages/engine/headless/src/{c}/{c}.anatomy.ts", "what": "解剖：scope 名与部件名" },
+    { "id": "headless-types", "path": "packages/engine/headless/src/{c}/{c}.types.ts", "what": "Schema / Api / Translations 三组类型" },
+    { "id": "headless-machine", "path": "packages/engine/headless/src/{c}/{c}.machine.ts", "what": "状态机" },
+    { "id": "headless-connect", "path": "packages/engine/headless/src/{c}/{c}.connect.ts", "what": "连接层：机器状态翻成 DOM 属性" },
+    { "id": "headless-keyboard", "path": "packages/engine/headless/src/{c}/{c}.keyboard.ts", "what": "键盘规格表" },
+    { "id": "headless-meta", "path": "packages/engine/headless/src/{c}/{c}.meta.ts", "what": "必备部件声明" },
+    { "id": "headless-doc", "path": "packages/engine/headless/src/{c}/{c}.doc.md", "what": "文档站正文（概述 + 小节）" },
+    { "id": "headless-entry", "path": "packages/engine/headless/src/{c}/index.ts", "what": "组件目录的 index" },
+    { "id": "vue-component", "path": "packages/adapters/vue/src/components/{c}/{c}.ts", "what": "Vue 外壳组件" },
+    { "id": "vue-composable", "path": "packages/adapters/vue/src/components/{c}/use-{c}.ts", "what": "Vue 组合式函数" },
+    { "id": "wc-element", "path": "packages/adapters/web-components/src/elements/{c}.ts", "what": "自定义元素" },
+    { "id": "skin", "path": "packages/design/styles/css/{c}.css", "what": "皮肤" },
+    { "id": "suite", "path": "tooling/testing/src/suites/{c}.suite.ts", "what": "两端共用的一致性套件" },
+    { "id": "demo-vue", "path": "../docs/.vitepress/demos/{c}/01-basic.vue", "what": "文档站示例（Vue 版）" },
+    { "id": "demo-html", "path": "../docs/.vitepress/demos/{c}/01-basic.html", "what": "文档站示例（自定义元素版）" },
+    { "id": "changeset", "path": ".changeset/{c}.md", "probe": "none", "whyNoProbe": "变更集发版后被 changeset version 消费掉，既有组件留不下来", "what": "变更集（新增组件目录触发 changeset-required）" }
+  ],
+  "modifies": [
+    {
+      "id": "headless-index",
+      "path": "packages/engine/headless/src/index.ts",
+      "what": "包级入口的两行 re-export（值与类型）",
+      "probeAnchor": "(?m)^export \\{[^}]*\\} from '\\./{c}'$"
+    },
+    {
+      "id": "headless-translations",
+      "path": "packages/engine/headless/src/config/translations.ts",
+      "what": "文案覆盖表：import type 一行 + 表内一行",
+      "probeAnchor": "(?m)^  '{c}'\\?: Partial<{P}Translations>$"
+    },
+    {
+      "id": "vue-index",
+      "path": "packages/adapters/vue/src/index.ts",
+      "what": "Vue 包入口的三行导出（组件 / 组合式 / 上下文类型）",
+      "probeAnchor": "(?m)^export \\{ Xh{P} \\} from '\\./components/{c}/{c}'$"
+    },
+    {
+      "id": "vue-conformance",
+      "path": "packages/adapters/vue/tests/conformance.spec.ts",
+      "what": "Vue 侧一致性清单：具名导入 + 跑起来的数组",
+      "probeAnchor": "\\b{camel}Suite\\b"
+    },
+    {
+      "id": "wc-define",
+      "path": "packages/adapters/web-components/src/define.ts",
+      "what": "元素注册：import + defineElement + 类导出",
+      "probeAnchor": "(?m)^  defineElement\\('xh-{c}', Xh{P}Element, VERSION\\)$"
+    },
+    {
+      "id": "wc-suites",
+      "path": "packages/adapters/web-components/tests/suites.ts",
+      "what": "WC 侧一致性清单：具名导入 + 跑起来的数组",
+      "probeAnchor": "\\b{camel}Suite\\b"
+    },
+    {
+      "id": "testing-index",
+      "path": "tooling/testing/src/index.ts",
+      "what": "套件包入口的一行导出",
+      "probeAnchor": "(?m)^export \\{ {camel}Suite \\} from '\\./suites/{c}\\.suite'$"
+    },
+    {
+      "id": "testing-all",
+      "path": "tooling/testing/src/suites/all.ts",
+      "what": "套件全集：import + allSuites 数组",
+      "probeAnchor": "(?m)^import \\{ {camel}Suite \\} from '\\./{c}\\.suite'$"
+    },
+    {
+      "id": "testing-parity",
+      "path": "tooling/testing/runners/parity.spec.ts",
+      "what": "逐帧对拍：具名导入 + SUITES 数组",
+      "probeAnchor": "\\b{camel}Suite\\b"
+    },
+    {
+      "id": "styles-index",
+      "path": "packages/design/styles/index.css",
+      "what": "全量入口的 @import 一行（源序即层内胜负序）",
+      "probeAnchor": "(?m)^@import '\\./css/{c}\\.css';$"
+    },
+    {
+      "id": "docs-manifest",
+      "path": "scripts/component-docs.manifest.json",
+      "what": "文档站分类与中文名登记",
+      "probeAnchor": "\"id\": \"{c}\""
+    },
+    {
+      "id": "gate-press-feedback",
+      "path": "tooling/scripts/check-press-feedback.mjs",
+      "what": "按压反馈登记：皮肤里带 cursor:pointer 的部件必须在两张表之一",
+      "probeAnchor": "(?m)^  '{c}': \\["
+    },
+    {
+      "id": "gate-control-height",
+      "path": "tooling/scripts/check-control-height.mjs",
+      "what": "控件本体登记：root 是控件本体，高度受控件尺度令牌管辖",
+      "probeAnchor": "(?m)^  '{c}': \\["
+    }
+  ],
+  "generated": [
+    { "path": "packages/adapters/web-components/custom-elements.json", "command": "pnpm gate:cem", "what": "自定义元素清单" },
+    { "path": "packages/design/styles/index.unlayered.css", "command": "pnpm gate:styled", "what": "按需入口的无层版皮肤" },
+    { "path": "packages/design/styles/package.json", "command": "pnpm gate:exports", "what": "皮肤子路径导出" },
+    { "path": "../docs/components/{c}.md", "command": "pnpm gen:docs", "what": "组件参考页与目录页" },
+    { "path": "tooling/public-surface.json", "command": "pnpm surface:update", "what": "公开面基线" },
+    { "path": ".size-limit.css.json", "command": "pnpm size:css --update", "what": "逐份皮肤体积基线" },
+    { "path": "tooling/scripts/part-vocabulary.json", "command": "pnpm vocab:update", "what": "部件名词汇表" },
+    { "path": "packages/adapters/vue/tests/browser/__snapshots__/computed/{c}.txt", "command": "pnpm test:browser", "what": "Vue 侧计算样式快照（两侧逐字对拍的一半）" },
+    { "path": "packages/adapters/web-components/tests/browser/__snapshots__/computed/{c}.txt", "command": "pnpm test:browser", "what": "WC 侧计算样式快照（缺一侧即判两端漏登记）" }
+  ],
+  "manual": [
+    { "path": ".size-limit.json", "what": "styles 那条是全部皮肤合起来称一次；新皮肤把它顶破了要人工重设限额，并在变更集里写清涨在哪" },
+    { "path": "packages/engine/headless/tests/{c}.spec.ts", "probe": "none", "whyNoProbe": "没有门禁强制，参照组件本身就没有这份单测", "what": "headless 单测：机器一旦长出真逻辑就补上" }
+  ]
+}

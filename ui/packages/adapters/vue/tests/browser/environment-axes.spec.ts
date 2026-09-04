@@ -162,7 +162,7 @@ describe('打印档', () => {
     const widths = [0, 1, 2, 3, 4].map(level => Number.parseFloat(styleOf(`[data-level="${level}"]`).borderTopWidth))
     // 逐档递增，且最高档正好是半个格宽（格宽 10px），整格填满
     for (let i = 1; i < widths.length; i++)
-      expect(widths[i]).toBeGreaterThan(widths[i - 1])
+      expect(widths[i]).toBeGreaterThan(widths[i - 1]!)
     expect(widths[0]).toBe(1)
     expect(widths[4]).toBe(5)
     // 边算在尺寸里，格子大小一点不变

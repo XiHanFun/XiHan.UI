@@ -2,6 +2,7 @@
 //
 // 这四件只有真实浏览器量得出来：jsdom 不排版，clientWidth / getBoundingClientRect 恒是 0，
 // 原生滚动条占不占位也无从谈起；滚动事件更是要真的滚过才派。
+import type { ScrollbarType } from '@xihan-ui/headless'
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick } from 'vue'
@@ -34,7 +35,7 @@ afterEach(() => {
 })
 
 /** 视口 240×160、内容远超两轴：竖横都溢出。 */
-async function mountArea(type?: string): Promise<void> {
+async function mountArea(type?: ScrollbarType): Promise<void> {
   host = document.createElement('div')
   document.body.append(host)
 
@@ -67,7 +68,7 @@ async function mountArea(type?: string): Promise<void> {
 }
 
 function part(name: string, index = 0): HTMLElement {
-  return host!.querySelectorAll<HTMLElement>(`[data-scope="scroll-area"][data-part="${name}"]`)[index]
+  return host!.querySelectorAll<HTMLElement>(`[data-scope="scroll-area"][data-part="${name}"]`)[index]!
 }
 
 function viewport(): HTMLElement {

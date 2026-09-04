@@ -4,6 +4,7 @@ dist
 .cache
 .turbo
 .local
+coverage
 # 截图比对失败时 vitest 写出的 actual / diff 图，只用于当场排查
 .vitest-attachments
 

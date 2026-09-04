@@ -67,7 +67,7 @@ function maskCondition(mask: number, row: number, col: number): boolean {
 /** 解码侧自己算一遍功能格占位图，不问编码器要。 */
 function functionMap(version: number): boolean[][] {
   const size = 4 * version + 17
-  const map = Array.from({ length: size }, () => Array.from({ length: size }).fill(false))
+  const map = Array.from({ length: size }, () => Array.from<boolean>({ length: size }).fill(false))
   const mark = (row: number, col: number): void => {
     if (row >= 0 && row < size && col >= 0 && col < size)
       map[row]![col] = true
@@ -183,7 +183,7 @@ function decode(matrix: readonly (readonly boolean[])[]): Decoded {
   const dataLenOf = (j: number): number => shortBlockLen - eccLen + (j < shortBlockCount ? 0 : 1)
   const blocks = Array.from(
     { length: blockCount },
-    (_, j) => Array.from({ length: shortBlockLen + (j < shortBlockCount ? 0 : 1) }).fill(0),
+    (_, j) => Array.from<number>({ length: shortBlockLen + (j < shortBlockCount ? 0 : 1) }).fill(0),
   )
 
   let taken = 0

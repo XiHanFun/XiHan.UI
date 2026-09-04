@@ -1,3 +1,19 @@
+@layer xihan.motion {
+  /* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
+     动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
+  @keyframes xh-pop-in {
+    from {
+      opacity: 0;
+      scale: var(--xh-motion-scale-enter);
+    }
+
+    to {
+      opacity: 1;
+      scale: 1;
+    }
+  }
+}
+
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
   [data-scope='float-button'] {
@@ -131,6 +147,30 @@
     inline-size: var(--xh-_float-button-size);
     block-size: var(--xh-_float-button-size);
     border-radius: var(--xh-_float-button-radius);
+    /* 逐条依次冒出来，离触发器最近的那条先到。backwards 让每条在自己那份延迟里保持起始帧 */
+    animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
+  }
+
+  /* 交错的间隔：第二条起逐级往后推，第六条起统一钉在第五级，
+     动作再多也不会拖出一条越来越慢的尾巴 */
+  [data-scope='float-button'][data-part='list'] > *:nth-child(2) {
+    animation-delay: var(--xh-motion-stagger-step);
+  }
+
+  [data-scope='float-button'][data-part='list'] > *:nth-child(3) {
+    animation-delay: calc(2 * var(--xh-motion-stagger-step));
+  }
+
+  [data-scope='float-button'][data-part='list'] > *:nth-child(4) {
+    animation-delay: calc(3 * var(--xh-motion-stagger-step));
+  }
+
+  [data-scope='float-button'][data-part='list'] > *:nth-child(5) {
+    animation-delay: calc(4 * var(--xh-motion-stagger-step));
+  }
+
+  [data-scope='float-button'][data-part='list'] > *:nth-child(n + 6) {
+    animation-delay: calc(5 * var(--xh-motion-stagger-step));
   }
 
   /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */

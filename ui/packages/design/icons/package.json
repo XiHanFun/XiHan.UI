@@ -53,7 +53,7 @@
   },
   "scripts": {
     "build": "node build/build-icons.mjs",
-    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.test.json",
     "test": "vitest run"
   },
   "dependencies": {},

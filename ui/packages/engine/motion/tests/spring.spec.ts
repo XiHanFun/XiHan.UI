@@ -48,7 +48,7 @@ describe('解析解与数值积分一致', () => {
       const reference = integrate(physical, velocity, until, step)
 
       for (let i = 0; i < reference.length; i += Math.ceil(reference.length / 200))
-        expect(solver(i * step)).toBeCloseTo(reference[i], 6)
+        expect(solver(i * step)).toBeCloseTo(reference[i]!, 6)
     })
   }
 })

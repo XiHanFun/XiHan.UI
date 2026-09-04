@@ -18,6 +18,10 @@
     "./position": {
       "types": "./dist/position.d.ts",
       "import": "./dist/position.js"
+    },
+    "./ssr": {
+      "types": "./dist/ssr.d.ts",
+      "import": "./dist/ssr.js"
     }
   },
   "main": "./dist/index.js",

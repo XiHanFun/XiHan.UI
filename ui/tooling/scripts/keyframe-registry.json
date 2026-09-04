@@ -83,7 +83,7 @@
       ]
     },
     "xh-dialog-out": {
-      "content": "from{opacity:1;translate:0 0;scale:1}to{opacity:0;translate:0 var(--xh-motion-distance-md);scale:var(--xh-motion-scale-enter)}",
+      "content": "from{opacity:1;translate:0 0;scale:1}to{opacity:0;translate:0 var(--xh-motion-distance-md);scale:var(--xh-motion-scale-exit)}",
       "definedIn": [
         "dialog.css"
       ],
@@ -289,7 +289,7 @@
       ]
     },
     "xh-notification-out": {
-      "content": "from{opacity:1;translate:0 0;scale:1}to{opacity:0;translate:0 var(--xh-motion-distance-md);scale:var(--xh-motion-scale-enter)}",
+      "content": "from{opacity:1;translate:0 0;scale:1}to{opacity:0;translate:0 var(--xh-motion-distance-md);scale:var(--xh-motion-scale-exit)}",
       "definedIn": [
         "notification.css"
       ],
@@ -306,25 +306,18 @@
         "notification"
       ]
     },
-    "xh-pop-in": {
-      "content": "from{opacity:0;scale:var(--xh-motion-scale-enter)}to{opacity:1;scale:1}",
+    "xh-overlay-pop-in": {
+      "content": "from{opacity:0;scale:var(--xh-motion-scale-enter);translate:calc((var(--xh-_overlay-enter-right,0) - var(--xh-_overlay-enter-left,0)) * var(--xh-motion-distance-sm)) calc((var(--xh-_overlay-enter-down,0) - var(--xh-_overlay-enter-up,0)) * var(--xh-motion-distance-sm))}to{opacity:1;scale:1;translate:0 0}",
       "definedIn": [
         "cascader.css",
-        "color-picker.css",
         "combobox.css",
-        "context-menu.css",
         "date-picker.css",
         "hover-card.css",
         "mention.css",
-        "menu.css",
-        "menubar.css",
-        "navigation-menu.css",
-        "pagination.css",
         "popconfirm.css",
         "popover.css",
         "popselect.css",
         "select.css",
-        "side-nav.css",
         "time-picker.css",
         "tooltip.css",
         "tour.css",
@@ -332,29 +325,47 @@
       ],
       "consumers": [
         "cascader",
-        "color-picker",
         "combobox",
-        "context-menu",
         "date-picker",
         "hover-card",
         "mention",
-        "menu",
-        "menubar",
-        "navigation-menu",
-        "pagination",
         "popconfirm",
         "popover",
         "popselect",
         "select",
-        "side-nav",
         "time-picker",
         "tooltip",
         "tour",
         "tree-select"
       ]
     },
+    "xh-pop-in": {
+      "content": "from{opacity:0;scale:var(--xh-motion-scale-enter)}to{opacity:1;scale:1}",
+      "definedIn": [
+        "cascader.css",
+        "color-picker.css",
+        "context-menu.css",
+        "float-button.css",
+        "menu.css",
+        "menubar.css",
+        "navigation-menu.css",
+        "pagination.css",
+        "side-nav.css"
+      ],
+      "consumers": [
+        "cascader",
+        "color-picker",
+        "context-menu",
+        "float-button",
+        "menu",
+        "menubar",
+        "navigation-menu",
+        "pagination",
+        "side-nav"
+      ]
+    },
     "xh-pop-out": {
-      "content": "from{opacity:1;scale:1}to{opacity:0;scale:var(--xh-motion-scale-enter)}",
+      "content": "from{opacity:1;scale:1}to{opacity:0;scale:var(--xh-motion-scale-exit)}",
       "definedIn": [
         "cascader.css",
         "color-picker.css",
@@ -472,6 +483,19 @@
         "reasoning"
       ]
     },
+    "xh-rise-in": {
+      "content": "from{opacity:0;translate:0 var(--xh-motion-distance-sm)}to{opacity:1;translate:0 0}",
+      "definedIn": [
+        "empty-state.css",
+        "question-flow.css",
+        "result.css"
+      ],
+      "consumers": [
+        "empty-state",
+        "question-flow",
+        "result"
+      ]
+    },
     "xh-skeleton-shimmer": {
       "content": "from{background-position:200% 0}to{background-position:-200% 0}",
       "definedIn": [
@@ -509,7 +533,7 @@
       ]
     },
     "xh-table-loading-pulse": {
-      "content": "from{opacity:var(--xh-state-disabled-opacity)}to{opacity:1}",
+      "content": "0%,100%{opacity:var(--xh-state-disabled-opacity)}50%{opacity:1}",
       "definedIn": [
         "table.css"
       ],
@@ -527,7 +551,7 @@
       ]
     },
     "xh-toast-out": {
-      "content": "from{opacity:1;translate:0 0;scale:1}to{opacity:0;translate:0 var(--xh-motion-distance-md);scale:var(--xh-motion-scale-enter)}",
+      "content": "from{opacity:1;translate:0 0;scale:1}to{opacity:0;translate:0 var(--xh-motion-distance-md);scale:var(--xh-motion-scale-exit)}",
       "definedIn": [
         "toast.css"
       ],
@@ -590,7 +614,7 @@
       ]
     },
     "xh-tour-spotlight-out": {
-      "content": "from{opacity:1;scale:1}to{opacity:0;scale:calc(2 - var(--xh-motion-scale-enter))}",
+      "content": "from{opacity:1;scale:1}to{opacity:0;scale:calc(2 - var(--xh-motion-scale-exit))}",
       "definedIn": [
         "tour.css"
       ],

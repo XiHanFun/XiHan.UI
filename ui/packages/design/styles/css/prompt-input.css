@@ -207,9 +207,11 @@
     white-space: nowrap;
     cursor: pointer;
     user-select: none;
+    /* 换到停止身份与转灰这两档都会把内高光收掉，box-shadow 因此跟着配色一起过渡 */
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 

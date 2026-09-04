@@ -151,7 +151,7 @@ describe('timePicker 的逐值可选性', () => {
   }
 
   it('判真的格子转 aria-disabled，与界外同等对待', () => {
-    const get = picker({ isTimeUnavailable: (v, unit) => unit === 'minute' && v !== '00' })
+    const get = picker({ isTimeUnavailable: (v: string, unit: string) => unit === 'minute' && v !== '00' })
     const ok = get().getItemProps({ unit: 'minute', value: '00' }) as Record<string, unknown>
     const no = get().getItemProps({ unit: 'minute', value: '30' }) as Record<string, unknown>
     expect(ok['aria-disabled']).toBe('false')
@@ -160,7 +160,7 @@ describe('timePicker 的逐值可选性', () => {
   })
 
   it('只作用于指定的列：同一个值在别的列不受影响', () => {
-    const get = picker({ isTimeUnavailable: (v, unit) => unit === 'minute' && v === '30' })
+    const get = picker({ isTimeUnavailable: (v: string, unit: string) => unit === 'minute' && v === '30' })
     const hour = get().getItemProps({ unit: 'hour', value: '13' }) as Record<string, unknown>
     expect(hour['aria-disabled']).toBe('false')
   })

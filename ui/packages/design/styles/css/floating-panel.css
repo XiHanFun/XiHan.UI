@@ -83,6 +83,8 @@
     background: var(--xh-floating-panel-bg, var(--xh-bg-surface));
     color: var(--xh-floating-panel-fg, var(--xh-fg-default));
     box-shadow: var(--xh-floating-panel-shadow, var(--xh-elevation-sheet));
+    /* 铺满那一档要把投影整个撤掉，海拔的这一跳跟着过渡走 */
+    transition: box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 最大化时几何层把面板写成铺满视口（left/top 归零、宽高 100%），四条边全贴着视口：

@@ -47,8 +47,8 @@
     display: flex;
     flex-direction: row;
     block-size: 100%;
-    transition: transform var(--xh-carousel-duration, var(--xh-motion-duration-enter))
-      var(--xh-carousel-ease, var(--xh-motion-ease-continuous));
+    transition: transform var(--xh-carousel-duration, var(--xh-motion-duration-slide))
+      var(--xh-carousel-ease, var(--xh-motion-ease-slide));
   }
 
   [data-scope='carousel'][data-part='item-group'][hidden] {
@@ -59,9 +59,11 @@
     flex-direction: column;
   }
 
-  /* 拖拽期间关掉过渡：留着的话画面会拖着手指慢半拍，像在拉一根皮筋 */
+  /* 拖拽期间关掉过渡：留着的话画面会拖着手指慢半拍，像在拉一根皮筋。
+     整条轨道的位移这一档每帧都在改，合成层只在这一档备好，松手随 data-dragging 一起撤掉 */
   [data-scope='carousel'][data-part='item-group'][data-dragging] {
     transition: none;
+    will-change: transform;
   }
 
   /* 一张幻灯片。

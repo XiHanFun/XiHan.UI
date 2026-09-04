@@ -142,14 +142,14 @@ describe('xhIcon 嵌套建树', () => {
     expect(inner.children[0]!.getAttribute('x2')).toBe('18')
 
     // 整棵子树里没有一个 data- 前缀属性
-    const all = Array.from(glyph.querySelectorAll('*'))
+    const all = Array.from<Element>(glyph.querySelectorAll('*'))
     const dataKeys = all.flatMap(el => attrNames(el)).filter(n => n.startsWith('data-'))
     expect(dataKeys).toEqual([])
   })
 
   it('所有图元都落在 SVG 命名空间', () => {
     const w = mount(XhIcon, { props: { icon: badge } })
-    const all = Array.from(w.element.querySelectorAll('*'))
+    const all = Array.from<Element>(w.element.querySelectorAll('*'))
     expect(all.length).toBeGreaterThan(0)
     for (const el of all)
       expect(el.namespaceURI).toBe('http://www.w3.org/2000/svg')

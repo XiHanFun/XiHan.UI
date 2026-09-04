@@ -69,7 +69,7 @@ pnpm lint         # oxlint + eslint + stylelint
 pnpm test         # 单元测试与跨适配器一致性测试（jsdom）
 pnpm test:browser # 真实 Chromium 里的无障碍扫描与浮层定位契约
 pnpm boundaries   # 分层依赖门禁
-pnpm gate         # 90 项结构门禁
+pnpm gate         # 95 项结构门禁
 pnpm size         # 产物体积棘轮
 ```
 

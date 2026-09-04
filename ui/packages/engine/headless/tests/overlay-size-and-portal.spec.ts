@@ -36,14 +36,14 @@ function sideNav(props: Partial<SideNavSchema['props']>) {
 describe('可用高度交到皮肤手上', () => {
   it('引擎给了 availableHeight 就写成私有槽', () => {
     const { service, api } = select({ defaultOpen: true })
-    service.context.set('position', { x: 10, y: 20, placement: 'bottom-start', availableHeight: 240 })
+    service.context.set('position', { x: 10, y: 20, placement: 'bottom-start', hidden: false, availableHeight: 240 })
     const style = (api().getPositionerProps() as Record<string, unknown>).style as Record<string, string>
     expect(style['--xh-_select-available-h']).toBe('240px')
   })
 
   it('引擎没算出来就留空，皮肤退回自己那档上限', () => {
     const { service, api } = select({ defaultOpen: true })
-    service.context.set('position', { x: 0, y: 0, placement: 'bottom-start' })
+    service.context.set('position', { x: 0, y: 0, placement: 'bottom-start', hidden: false })
     const style = (api().getPositionerProps() as Record<string, unknown>).style as Record<string, string>
     expect(style['--xh-_select-available-h']).toBe('')
   })
@@ -70,7 +70,7 @@ describe('side-nav 弹出面板的定位层', () => {
   it('坐标落在定位层上，面板自己不再写 fixed', () => {
     const { service, api } = sideNav({ collection, collapsed: true })
     service.send({ type: 'POPOUT.OPEN', value: 'docs', focus: 'none' })
-    service.context.set('popoutPlacements', { docs: { x: 56, y: 12, placement: 'right-start' } })
+    service.context.set('popoutPlacements', { docs: { x: 56, y: 12, placement: 'right-start', hidden: false } })
 
     const positioner = api().getPopoutPositionerProps({ value: 'docs' }) as Record<string, unknown>
     const style = positioner.style as Record<string, string>
@@ -88,7 +88,7 @@ describe('side-nav 弹出面板的定位层', () => {
   it('可用高度写成私有槽，交给面板限高', () => {
     const { service, api } = sideNav({ collection, collapsed: true })
     service.send({ type: 'POPOUT.OPEN', value: 'docs', focus: 'none' })
-    service.context.set('popoutPlacements', { docs: { x: 56, y: 12, placement: 'right-start', availableHeight: 320 } })
+    service.context.set('popoutPlacements', { docs: { x: 56, y: 12, placement: 'right-start', hidden: false, availableHeight: 320 } })
     const style = (api().getPopoutPositionerProps({ value: 'docs' }) as Record<string, unknown>).style as Record<string, string>
     expect(style['--xh-_side-nav-available-h']).toBe('320px')
   })
@@ -96,7 +96,7 @@ describe('side-nav 弹出面板的定位层', () => {
   it('贴边时引擎回报 0，当作没算出来——写进 min() 会把面板压成零高', () => {
     const { service, api } = sideNav({ collection, collapsed: true })
     service.send({ type: 'POPOUT.OPEN', value: 'docs', focus: 'none' })
-    service.context.set('popoutPlacements', { docs: { x: 56, y: 12, placement: 'right-start', availableHeight: 0 } })
+    service.context.set('popoutPlacements', { docs: { x: 56, y: 12, placement: 'right-start', hidden: false, availableHeight: 0 } })
     const style = (api().getPopoutPositionerProps({ value: 'docs' }) as Record<string, unknown>).style as Record<string, string>
     expect(style['--xh-_side-nav-available-h']).toBe('')
   })
@@ -104,7 +104,7 @@ describe('side-nav 弹出面板的定位层', () => {
   it('小到放不下几个条目也退回皮肤那档，不给一条缝', () => {
     const { service, api } = sideNav({ collection, collapsed: true })
     service.send({ type: 'POPOUT.OPEN', value: 'docs', focus: 'none' })
-    service.context.set('popoutPlacements', { docs: { x: 56, y: 12, placement: 'right-start', availableHeight: 40 } })
+    service.context.set('popoutPlacements', { docs: { x: 56, y: 12, placement: 'right-start', hidden: false, availableHeight: 40 } })
     const style = (api().getPopoutPositionerProps({ value: 'docs' }) as Record<string, unknown>).style as Record<string, string>
     expect(style['--xh-_side-nav-available-h']).toBe('')
   })
@@ -126,14 +126,14 @@ describe('side-nav 弹出面板的定位层', () => {
 describe('hover-card 的可用高度', () => {
   it('引擎给了就写成私有槽——机器没开 size 通道时这里恒空，皮肤的 min() 会变成死代码', () => {
     const { service, api } = hoverCard({ defaultOpen: true })
-    service.context.set('position', { x: 10, y: 20, placement: 'bottom', availableHeight: 300 })
+    service.context.set('position', { x: 10, y: 20, placement: 'bottom', hidden: false, availableHeight: 300 })
     const style = (api().getPositionerProps() as Record<string, unknown>).style as Record<string, string>
     expect(style['--xh-_hover-card-available-h']).toBe('300px')
   })
 
   it('贴边归零当作没算出来', () => {
     const { service, api } = hoverCard({ defaultOpen: true })
-    service.context.set('position', { x: 0, y: 0, placement: 'bottom', availableHeight: 0 })
+    service.context.set('position', { x: 0, y: 0, placement: 'bottom', hidden: false, availableHeight: 0 })
     const style = (api().getPositionerProps() as Record<string, unknown>).style as Record<string, string>
     expect(style['--xh-_hover-card-available-h']).toBe('')
   })
@@ -141,7 +141,7 @@ describe('hover-card 的可用高度', () => {
 
 describe('引导气泡的可用高度', () => {
   const steps = [
-    { id: 'a', target: () => document.body, title: '第一步', description: '正文' },
+    { id: 'a', target: 'body', title: '第一步', description: '正文' },
     { id: 'b', title: '居中步', description: '没有锚点' },
   ]
 
@@ -157,28 +157,28 @@ describe('引导气泡的可用高度', () => {
 
   it('锚定步把可用高度写成私有槽', () => {
     const { service, api } = tour(0)
-    service.context.set('position', { x: 10, y: 20, placement: 'bottom', availableHeight: 400 })
+    service.context.set('position', { x: 10, y: 20, placement: 'bottom', hidden: false, availableHeight: 400 })
     const style = (api().getPositionerProps() as Record<string, unknown>).style as Record<string, string>
     expect(style['--xh-_tour-available-h']).toBe('400px')
   })
 
   it('居中步没有引擎结果，发空串把上一步的高度撤掉', () => {
     const { service, api } = tour(1)
-    service.context.set('position', { x: 10, y: 20, placement: 'bottom', availableHeight: 400 })
+    service.context.set('position', { x: 10, y: 20, placement: 'bottom', hidden: false, availableHeight: 400 })
     const style = (api().getPositionerProps() as Record<string, unknown>).style as Record<string, string>
     expect(style['--xh-_tour-available-h']).toBe('')
   })
 
   it('只够放下骨架、放不下正文时也退回静态档', () => {
     const { service, api } = tour(0)
-    service.context.set('position', { x: 0, y: 0, placement: 'bottom', availableHeight: 120 })
+    service.context.set('position', { x: 0, y: 0, placement: 'bottom', hidden: false, availableHeight: 120 })
     const style = (api().getPositionerProps() as Record<string, unknown>).style as Record<string, string>
     expect(style['--xh-_tour-available-h']).toBe('')
   })
 
   it('贴边归零当作没算出来', () => {
     const { service, api } = tour(0)
-    service.context.set('position', { x: 0, y: 0, placement: 'bottom', availableHeight: 0 })
+    service.context.set('position', { x: 0, y: 0, placement: 'bottom', hidden: false, availableHeight: 0 })
     const style = (api().getPositionerProps() as Record<string, unknown>).style as Record<string, string>
     expect(style['--xh-_tour-available-h']).toBe('')
   })
@@ -193,7 +193,7 @@ describe('side-nav 换枝不闪旧位置', () => {
   it('换枝时新面板藏到拿到新坐标为止，旧面板的坐标留着播退场', () => {
     const { service, api } = sideNav({ collection, collapsed: true })
     service.send({ type: 'POPOUT.OPEN', value: 'docs', focus: 'none' })
-    service.context.set('popoutPlacements', { docs: { x: 56, y: 12, placement: 'right-start' } })
+    service.context.set('popoutPlacements', { docs: { x: 56, y: 12, placement: 'right-start', hidden: false } })
 
     service.send({ type: 'POPOUT.OPEN', value: 'blog', focus: 'none' })
     const positioner = api().getPopoutPositionerProps({ value: 'blog' }) as Record<string, unknown>
@@ -211,7 +211,7 @@ describe('side-nav 换枝不闪旧位置', () => {
   it('重开同一枝不作废——坐标还是它自己的', () => {
     const { service, api } = sideNav({ collection, collapsed: true })
     service.send({ type: 'POPOUT.OPEN', value: 'docs', focus: 'none' })
-    service.context.set('popoutPlacements', { docs: { x: 56, y: 12, placement: 'right-start' } })
+    service.context.set('popoutPlacements', { docs: { x: 56, y: 12, placement: 'right-start', hidden: false } })
     service.send({ type: 'POPOUT.OPEN', value: 'docs', focus: 'none' })
     const positioner = api().getPopoutPositionerProps({ value: 'docs' }) as Record<string, unknown>
     expect(positioner['data-positioned']).toBe('')

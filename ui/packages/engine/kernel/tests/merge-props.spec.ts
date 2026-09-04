@@ -3,7 +3,8 @@ import { mergeProps } from '../src/merge-props'
 
 describe('普通键', () => {
   it('后者覆盖前者', () => {
-    expect(mergeProps({ id: 'a', role: 'button' }, { id: 'b' })).toEqual({ id: 'b', role: 'button' })
+    expect(mergeProps<{ id: string, role: string }>({ id: 'a', role: 'button' }, { id: 'b' }))
+      .toEqual({ id: 'b', role: 'button' })
   })
 
   it('后者显式给 undefined 也算覆盖', () => {
@@ -11,7 +12,8 @@ describe('普通键', () => {
   })
 
   it('跳过 undefined 的整份来源', () => {
-    expect(mergeProps({ id: 'a' }, undefined, { role: 'x' })).toEqual({ id: 'a', role: 'x' })
+    expect(mergeProps<{ id: string, role: string }>({ id: 'a' }, undefined, { role: 'x' }))
+      .toEqual({ id: 'a', role: 'x' })
   })
 
   it('不改动传入的对象', () => {
@@ -35,7 +37,8 @@ describe('class 与 className', () => {
   })
 
   it('class 与 className 各走各的，不互相拼', () => {
-    expect(mergeProps({ class: 'a' }, { className: 'b' })).toEqual({ class: 'a', className: 'b' })
+    expect(mergeProps<{ class: string, className: string }>({ class: 'a' }, { className: 'b' }))
+      .toEqual({ class: 'a', className: 'b' })
   })
 
   it('两侧都是空值时不产出多余空格', () => {
@@ -45,14 +48,15 @@ describe('class 与 className', () => {
 
 describe('style', () => {
   it('浅合并，后者的同名属性胜出', () => {
-    expect(mergeProps(
+    expect(mergeProps<{ style: Record<string, string> }>(
       { style: { color: 'red', top: '1px' } },
       { style: { color: 'blue' } },
-    )).toEqual({ style: { color: 'red', top: '1px', color: 'blue' } })
+    )).toEqual({ style: { top: '1px', color: 'blue' } })
   })
 
   it('非对象的一侧按空对象处理', () => {
-    expect(mergeProps({ style: 'color:red' }, { style: { top: '1px' } })).toEqual({ style: { top: '1px' } })
+    expect(mergeProps<{ style: unknown }>({ style: 'color:red' }, { style: { top: '1px' } }))
+      .toEqual({ style: { top: '1px' } })
   })
 })
 

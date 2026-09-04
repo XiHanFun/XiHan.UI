@@ -101,6 +101,57 @@
     display: none;
   }
 
+  /* 摘要显出时条目逐条入场，越靠后起步越晚。
+     backwards 让还没轮到的条目停在首帧，不是先显出再重播 */
+  [data-scope='form'][data-part='error-summary'][data-state='invalid'] [data-part='error-summary-item'] {
+    animation: xh-form-summary-enter var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
+  }
+
+  /* 排序按"前面有几条露面的"数，不按 nth-child：作者一次把所有字段的条目都写上，
+     没出错的那些带着 hidden 留在 DOM 里，按位置数会把空号也算进去。
+     每多一节 ~ 就多要求前面多一条露面的条目，链越长的规则排得越后、赢过短链 */
+  [data-scope='form'][data-part='error-summary'][data-state='invalid']
+    [data-part='error-summary-item']:not([hidden])
+    ~ [data-part='error-summary-item']:not([hidden]) {
+    animation-delay: var(--xh-motion-stagger-step);
+  }
+
+  [data-scope='form'][data-part='error-summary'][data-state='invalid']
+    [data-part='error-summary-item']:not([hidden])
+    ~ [data-part='error-summary-item']:not([hidden])
+    ~ [data-part='error-summary-item']:not([hidden]) {
+    animation-delay: calc(var(--xh-motion-stagger-step) * 2);
+  }
+
+  [data-scope='form'][data-part='error-summary'][data-state='invalid']
+    [data-part='error-summary-item']:not([hidden])
+    ~ [data-part='error-summary-item']:not([hidden])
+    ~ [data-part='error-summary-item']:not([hidden])
+    ~ [data-part='error-summary-item']:not([hidden]) {
+    animation-delay: calc(var(--xh-motion-stagger-step) * 3);
+  }
+
+  [data-scope='form'][data-part='error-summary'][data-state='invalid']
+    [data-part='error-summary-item']:not([hidden])
+    ~ [data-part='error-summary-item']:not([hidden])
+    ~ [data-part='error-summary-item']:not([hidden])
+    ~ [data-part='error-summary-item']:not([hidden])
+    ~ [data-part='error-summary-item']:not([hidden]) {
+    animation-delay: calc(var(--xh-motion-stagger-step) * 4);
+  }
+
+  /* 第 6 条起共用同一档延迟：这条要求前面有五条露面的，第七条往后同样命中，
+     错误多时整批的等待时间不再随条数增长 */
+  [data-scope='form'][data-part='error-summary'][data-state='invalid']
+    [data-part='error-summary-item']:not([hidden])
+    ~ [data-part='error-summary-item']:not([hidden])
+    ~ [data-part='error-summary-item']:not([hidden])
+    ~ [data-part='error-summary-item']:not([hidden])
+    ~ [data-part='error-summary-item']:not([hidden])
+    ~ [data-part='error-summary-item']:not([hidden]) {
+    animation-delay: calc(var(--xh-motion-stagger-step) * 5);
+  }
+
   [data-scope='form'][data-part='error-summary-item']:hover {
     color: var(--xh-form-summary-item-fg-hover, var(--xh-fg-danger-hover));
   }
@@ -132,8 +183,10 @@
     white-space: nowrap;
     cursor: pointer;
     user-select: none;
+    /* box-shadow 在列里是给提交键的内高光留的：它随可用与置灰两档进出 */
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
