@@ -15,6 +15,9 @@
     --xh-_pin-input-box-bg: var(--xh-bg-canvas);
     --xh-_pin-input-box-border: var(--xh-border-control);
     --xh-_pin-input-box-border-hover: var(--xh-border-control-hover);
+    /* 悬停时底色朝 subtle 走小半步：换一条 1px 的描边色是全场最轻的一档回执，
+       填充跟着动才看得出指针停在哪一格上。基准取本档的底，三个形态各自算各自的 */
+    --xh-_pin-input-box-bg-hover: color-mix(in oklab, var(--xh-bg-subtle) 45%, var(--xh-_pin-input-box-bg));
     /* 一档静态落影把格子从页面里抬起一层，与描边一起画出格子的边界 */
     --xh-_pin-input-box-shadow: var(--xh-elevation-raised);
     /* 聚焦环与填满态的强调色随语气走。没写 data-tone 时 --xh-_tone 没被声明，退回原来的取值 */
@@ -43,6 +46,8 @@
   /* 填充式：底色说明这里是一格输入位，描边让位给底色 */
   [data-scope='pin-input'][data-part='root'][data-variant='subtle'] {
     --xh-_pin-input-box-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+    /* 这一档的底本来就是 subtle，朝它兑没有位移，改走淡底自己那级悬停档 */
+    --xh-_pin-input-box-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
     --xh-_pin-input-box-border: transparent;
     --xh-_pin-input-box-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   }
@@ -101,7 +106,9 @@
     font-variant-numeric: tabular-nums;
     line-height: var(--xh-leading-none);
     text-align: center;
-    transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 格间距只能长在格子自己身上：包住这一行的容器是作者写的，不在角色表里，
@@ -115,9 +122,11 @@
     color: var(--xh-pin-input-placeholder-fg, var(--xh-fg-subtle));
   }
 
-  /* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
+  /* hover 换描边与填充两条通道。只在中性态换：invalid 正拿边框颜色说事，
+     被 hover 盖掉那条信息就没了 */
   [data-scope='pin-input'][data-part='input']:hover:not(:disabled, [data-invalid]) {
     border-color: var(--xh-pin-input-box-border-hover, var(--xh-_pin-input-box-border-hover));
+    background: var(--xh-pin-input-box-bg-hover, var(--xh-_pin-input-box-bg-hover));
   }
 
   /* 一行格子长得一模一样，光标那道竖线太细，看不出正在填哪一格：

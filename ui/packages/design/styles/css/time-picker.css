@@ -51,8 +51,10 @@
     --xh-_time-picker-label-font-size: var(--xh-control-font-md);
     --xh-_time-picker-item-px: var(--xh-control-px-md);
 
-    /* 形态档只换这四个私有槽：底色、两档描边与落影 */
+    /* 形态档只换这五个私有槽：两档底色、两档描边与落影 */
     --xh-_time-picker-control-bg: var(--xh-bg-canvas);
+    /* 悬停那一档底：描边之外再换一次填充，语气在场时兑同族的淡底 */
+    --xh-_time-picker-control-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
     --xh-_time-picker-control-border: var(--xh-border-control);
     --xh-_time-picker-control-border-hover: var(--xh-border-control-hover);
     /* 一档静态落影把盒从页面里抬起一层，与描边一起画出盒的边界 */
@@ -103,6 +105,7 @@
      形态只决定底与描边怎么画，用哪族颜色由 data-tone 决定 */
   [data-scope='time-picker']:is([data-part='root'], [data-part='positioner'])[data-variant='outline'] {
     --xh-_time-picker-control-bg: var(--xh-bg-canvas);
+    --xh-_time-picker-control-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
     --xh-_time-picker-control-border: var(--xh-border-control);
     --xh-_time-picker-control-border-hover: var(--xh-border-control-hover);
   }
@@ -111,6 +114,7 @@
      与 outline 档并排时基线对得上、聚焦画描边也不引起跳动 */
   [data-scope='time-picker']:is([data-part='root'], [data-part='positioner'])[data-variant='subtle'] {
     --xh-_time-picker-control-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+    --xh-_time-picker-control-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
     --xh-_time-picker-control-border: transparent;
     --xh-_time-picker-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   }
@@ -120,6 +124,7 @@
   [data-scope='time-picker']:is([data-part='root'], [data-part='positioner'])[data-variant='ghost'] {
     --xh-_time-picker-control-shadow: 0 0 0 transparent;
     --xh-_time-picker-control-bg: transparent;
+    --xh-_time-picker-control-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
     --xh-_time-picker-control-border: transparent;
     --xh-_time-picker-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   }
@@ -161,7 +166,9 @@
     /* 等宽数字：各位字宽不一时逐段填入会让整行左右跳 */
     font-variant-numeric: tabular-nums;
     line-height: var(--xh-leading-normal);
-    transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='time-picker'][data-part='control'][hidden] {
@@ -171,6 +178,12 @@
   /* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
   [data-scope='time-picker'][data-part='control']:hover:not([data-disabled], [data-invalid]) {
     border-color: var(--xh-time-picker-control-border-hover, var(--xh-_time-picker-control-border-hover));
+  }
+
+  /* 描边之外再换一档填充：只挪一格描边色的悬停在浅底上几乎读不出来。
+     只读盒的底色正说着「改不动」，不参与换填充 */
+  [data-scope='time-picker'][data-part='control']:hover:not([data-disabled], [data-readonly]) {
+    background: var(--xh-time-picker-control-bg-hover, var(--xh-_time-picker-control-bg-hover));
   }
 
   /* 焦点真正落在段或按钮上，但整块看起来才是一个控件：内部有焦点时整框亮起来。

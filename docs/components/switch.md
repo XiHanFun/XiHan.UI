@@ -220,6 +220,10 @@ checked-change 带一份 { checked }，非受控时内部转移也照发一次
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
+## 响应式
+
+皮肤内置条件规则：`pointer: coarse`。
+
 ## 组合
 
 - 与[表单字段](./field)配合；成排时放进[列表](./list)。

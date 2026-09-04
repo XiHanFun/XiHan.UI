@@ -43,7 +43,7 @@ export const XhFieldsetErrorText = defineComponent({
   name: 'XhFieldsetErrorText',
   setup(_, { slots }) {
     const ctx = useFieldsetContext()
-    // 节点常挂，靠 hidden 显隐：翻转时 role=alert 才播报得出来，卸载重挂读屏读不到
+    // 节点常挂，靠 hidden 显隐：活区要先在场才播报得出来，卸载重挂读屏读不到
     return () => h('p', ctx.api.value.getErrorTextProps() as Record<string, unknown>, slots.default?.())
   },
 })

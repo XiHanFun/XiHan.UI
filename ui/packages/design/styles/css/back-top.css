@@ -84,6 +84,21 @@
     mask: var(--xh-glyph-mark-chevron-up) center / contain no-repeat;
   }
 
+  /* 手指落点：钮的视觉盒是 32px，命中区外扩到 44×44（两边各 6px）。
+     外扩走绝对定位的伪元素，盒子本身一动不动——放大盒子会改掉它与贴边距离的关系。
+     用 ::after：::before 已经被兜底字形占着 */
+  @media (pointer: coarse) {
+    [data-scope='back-top'][data-part='trigger'] {
+      position: relative;
+    }
+
+    [data-scope='back-top'][data-part='trigger']::after {
+      content: '';
+      position: absolute;
+      inset: calc(-1 * var(--xh-space-1_5));
+    }
+  }
+
   /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
      写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
   [data-scope='back-top'][data-part='trigger'][hidden] {

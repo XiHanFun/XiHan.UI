@@ -91,6 +91,11 @@
         "$type": "color",
         "$value": "oklch(0.371 0.006 258)"
       },
+      "750": {
+        "$description": "700 与 800 之间的半档，贴着 800 一侧。取值上界由深色档语气前景压得住这一档来定：这一档上次要文字（{fg.subtle}）是 4.51，再亮 0.005 就掉到 4.5 以下。",
+        "$type": "color",
+        "$value": "oklch(0.28 0.006 258)"
+      },
       "800": {
         "$type": "color",
         "$value": "oklch(0.269 0.006 258)"
@@ -332,21 +337,22 @@
     }
   },
   "shadow": {
+    "$description": "四档投影，每档三层：贴边层画出面与底的交界、主层给出方向、环境层铺开大范围的暗。投影色是中性色阶最暗那一档的色相与彩度（oklch(0.145 0.005 258)）而不是纯黑，落在带色的底上不会把底色抽成灰。",
     "sm": {
       "$type": "shadow",
-      "$value": "0 1px 2px 0 oklch(0 0 0 / 0.05)"
+      "$value": "0 1px 1px -0.5px oklch(0.145 0.005 258 / 0.05), 0 2px 3px -1.5px oklch(0.145 0.005 258 / 0.04), 0 3px 6px -3px oklch(0.145 0.005 258 / 0.03)"
     },
     "md": {
       "$type": "shadow",
-      "$value": "0 4px 8px -2px oklch(0 0 0 / 0.1), 0 2px 4px -2px oklch(0 0 0 / 0.06)"
+      "$value": "0 1px 2px -0.5px oklch(0.145 0.005 258 / 0.06), 0 4px 8px -2px oklch(0.145 0.005 258 / 0.08), 0 10px 20px -6px oklch(0.145 0.005 258 / 0.07)"
     },
     "lg": {
       "$type": "shadow",
-      "$value": "0 12px 24px -6px oklch(0 0 0 / 0.15), 0 4px 8px -4px oklch(0 0 0 / 0.08)"
+      "$value": "0 1px 3px -0.5px oklch(0.145 0.005 258 / 0.08), 0 8px 16px -4px oklch(0.145 0.005 258 / 0.1), 0 20px 40px -12px oklch(0.145 0.005 258 / 0.12)"
     },
     "xl": {
       "$type": "shadow",
-      "$value": "0 24px 48px -12px oklch(0 0 0 / 0.2)"
+      "$value": "0 2px 4px -1px oklch(0.145 0.005 258 / 0.1), 0 12px 24px -6px oklch(0.145 0.005 258 / 0.12), 0 32px 64px -16px oklch(0.145 0.005 258 / 0.16)"
     }
   },
   "stroke": {

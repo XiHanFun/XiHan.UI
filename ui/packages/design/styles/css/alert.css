@@ -128,6 +128,41 @@
     mask: var(--xh-glyph-mark-close) center / contain no-repeat;
   }
 
+  /*
+   * 打印：底色被丢掉，六档语气那层淡底一起没了，剩下的描边兑了 40% 的底色，在纸上几乎印不出。
+   * 描边换成正文色把这块提示框出来，标题加重一档——纸上分得出「这是一段提示」，
+   * 靠的是框与字重这两条无色通道，不是那层底。
+   * 关闭钮在纸上按不动，一并收起。
+   */
+  @media print {
+    [data-scope='alert'][data-part='root'] {
+      border-color: currentColor;
+    }
+
+    [data-scope='alert'][data-part='title'] {
+      font-weight: var(--xh-font-weight-bold);
+    }
+
+    [data-scope='alert'][data-part='close-trigger'] {
+      display: none;
+    }
+  }
+
+  /* 手指落点：叉的视觉盒是 28px，命中区外扩到 44×44（两边各 8px）。
+     外扩走绝对定位的伪元素，盒子本身一动不动——放大盒子会把标题挤窄。
+     用 ::after：::before 已经被兜底字形占着 */
+  @media (pointer: coarse) {
+    [data-scope='alert'][data-part='close-trigger'] {
+      position: relative;
+    }
+
+    [data-scope='alert'][data-part='close-trigger']::after {
+      content: '';
+      position: absolute;
+      inset: calc(-1 * var(--xh-space-2));
+    }
+  }
+
   /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
      写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
   [data-scope='alert'][data-part='icon'][hidden] {

@@ -94,6 +94,10 @@
     --xh-_mention-input-bg: var(--xh-bg-canvas);
     --xh-_mention-input-border: var(--xh-border-control);
     --xh-_mention-input-border-hover: var(--xh-border-control-hover);
+    /* 悬停时底色朝 subtle 走小半步：换一条 1px 的描边色是全场最轻的一档回执，
+       填充跟着动才看得出指针停在哪个框上。基准取本档的底，三个形态各自算各自的；
+       只走小半步是为了与只读那一档的 subtle 实底分得开 */
+    --xh-_mention-input-bg-hover: color-mix(in oklab, var(--xh-bg-subtle) 45%, var(--xh-_mention-input-bg));
     /* 一档静态落影把方框从页面里抬起一层，与描边一起画出框的边界 */
     --xh-_mention-input-shadow: var(--xh-elevation-raised);
 
@@ -144,6 +148,8 @@
   /* 填充式：底色顶替描边，悬停时才浮出一道淡边 */
   [data-scope='mention']:is([data-part='root'], [data-part='positioner'])[data-variant='subtle'] {
     --xh-_mention-input-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+    /* 这一档的底本来就是 subtle，朝它兑没有位移，改走淡底自己那级悬停档 */
+    --xh-_mention-input-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
     --xh-_mention-input-border: transparent;
     --xh-_mention-input-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   }
@@ -177,7 +183,9 @@
     line-height: var(--xh-leading-normal);
     /* 多行宿主只许纵向拉伸：横向拉宽会把浮层与输入框的对齐拽歪 */
     resize: vertical;
-    transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 单行宿主定高到控件档，纵向内距归零，与并排的其他控件等高。
@@ -195,8 +203,10 @@
     color: var(--xh-mention-placeholder-fg, var(--xh-fg-subtle));
   }
 
-  [data-scope='mention'][data-part='input']:hover:not(:disabled, [data-invalid]) {
+  /* hover 换描边与填充两条通道；只读排掉，它的底色本身就是"改不动"这句话 */
+  [data-scope='mention'][data-part='input']:hover:not(:disabled, [readonly], [data-invalid]) {
     border-color: var(--xh-mention-input-border-hover, var(--xh-_mention-input-border-hover));
+    background: var(--xh-mention-input-bg-hover, var(--xh-_mention-input-bg-hover));
   }
 
   [data-scope='mention'][data-part='input']:focus-visible {

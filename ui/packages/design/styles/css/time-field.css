@@ -15,8 +15,10 @@
     --xh-_time-field-gap: var(--xh-control-gap-md);
     --xh-_time-field-font-size: var(--xh-control-font-md);
     --xh-_time-field-label-font-size: var(--xh-control-font-md);
-    /* 形态档只换这四个私有槽：底色、两档描边与落影 */
+    /* 形态档只换这五个私有槽：两档底色、两档描边与落影 */
     --xh-_time-field-control-bg: var(--xh-bg-canvas);
+    /* 悬停那一档底：描边之外再换一次填充，语气在场时兑同族的淡底 */
+    --xh-_time-field-control-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
     --xh-_time-field-control-border: var(--xh-border-control);
     --xh-_time-field-control-border-hover: var(--xh-border-control-hover);
     /* 一档静态落影把控件从页面里抬起一层，与描边一起画出框的边界 */
@@ -54,6 +56,7 @@
   /* 描边式：与缺省等价，写出来是为了三档形态在皮肤里都看得见 */
   [data-scope='time-field'][data-part='root'][data-variant='outline'] {
     --xh-_time-field-control-bg: var(--xh-bg-canvas);
+    --xh-_time-field-control-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
     --xh-_time-field-control-border: var(--xh-border-control);
     --xh-_time-field-control-border-hover: var(--xh-border-control-hover);
   }
@@ -61,6 +64,7 @@
   /* 填充式：底色顶替描边，悬停时才浮出一道淡边 */
   [data-scope='time-field'][data-part='root'][data-variant='subtle'] {
     --xh-_time-field-control-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+    --xh-_time-field-control-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
     --xh-_time-field-control-border: transparent;
     --xh-_time-field-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   }
@@ -70,6 +74,7 @@
   [data-scope='time-field'][data-part='root'][data-variant='ghost'] {
     --xh-_time-field-control-shadow: 0 0 0 transparent;
     --xh-_time-field-control-bg: transparent;
+    --xh-_time-field-control-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
     --xh-_time-field-control-border: transparent;
     --xh-_time-field-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   }
@@ -120,6 +125,12 @@
   /* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
   [data-scope='time-field'][data-part='control']:hover:not([data-disabled], [data-invalid]) {
     border-color: var(--xh-time-field-control-border-hover, var(--xh-_time-field-control-border-hover));
+  }
+
+  /* 描边之外再换一档填充：只挪一格描边色的悬停在浅底上几乎读不出来。
+     只读盒的底色正说着「改不动」，不参与换填充 */
+  [data-scope='time-field'][data-part='control']:hover:not([data-disabled], [data-readonly]) {
+    background: var(--xh-time-field-control-bg-hover, var(--xh-_time-field-control-bg-hover));
   }
 
   /* 焦点真正落在段上，但整块看起来才是一个控件：段内有焦点时整框亮起来。

@@ -328,17 +328,25 @@
     font-size: var(--xh-transfer-trigger-font-size, var(--xh-text-label-size));
     line-height: var(--xh-leading-none);
     cursor: pointer;
-    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
+  /* 换底之外再抬起一层：这两颗钮是两块面板之间唯一的动作面，
+     光换一档底色与它自己的常态底只差一点，隔着两列条目看不出来 */
   [data-scope='transfer'][data-part='to-target-trigger']:hover:not(:disabled),
   [data-scope='transfer'][data-part='to-source-trigger']:hover:not(:disabled) {
     background: var(--xh-transfer-trigger-bg-hover, var(--xh-bg-subtle-hover));
+    box-shadow: var(--xh-transfer-trigger-shadow-hover, var(--xh-elevation-raised));
   }
 
+  /* 按下那一刻把悬停抬起的那层影子收回去，钮才像是被按回了平面 */
   [data-scope='transfer'][data-part='to-target-trigger']:active:not(:disabled),
   [data-scope='transfer'][data-part='to-source-trigger']:active:not(:disabled) {
     background: var(--xh-transfer-trigger-bg-active, var(--xh-bg-subtle-active));
+    box-shadow: var(--xh-transfer-trigger-shadow-active, none);
     scale: var(--xh-motion-scale-press);
   }
 

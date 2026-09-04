@@ -1,65 +1,214 @@
 {
   "bg": {
-    "canvas": { "$type": "color", "$value": "{color.neutral.0}" },
-    "surface": { "$type": "color", "$value": "{color.neutral.0}" },
-    "surface-raised": { "$type": "color", "$value": "{color.neutral.0}" },
-    "subtle": { "$type": "color", "$value": "{color.neutral.100}" },
-    "subtle-hover": { "$type": "color", "$value": "{color.neutral.200}" },
-    "subtle-active": { "$type": "color", "$value": "{color.neutral.300}" },
-    "muted": { "$type": "color", "$value": "{color.neutral.100}" },
-    "brand": { "$type": "color", "$value": "{color.brand.600}" },
-    "brand-hover": { "$type": "color", "$value": "{color.brand.700}" },
-    "brand-active": { "$type": "color", "$value": "{color.brand.800}" },
-    "brand-subtle": { "$type": "color", "$value": "{color.brand.100}" },
-    "overlay": { "$type": "color", "$value": "oklch(0 0 0 / 0.45)" },
-    "scrollbar-track": { "$type": "color", "$value": "{color.neutral.100}" }
+    "page": {
+      "$description": "页面底：面之下的那一层，铺满视口、不承载任何部件。比 {bg.surface} 暗一档，面才浮得出来。控件盒的底是 {bg.canvas}，两者取值不同。",
+      "$type": "color",
+      "$value": "{color.neutral.50}"
+    },
+    "canvas": {
+      "$type": "color",
+      "$value": "{color.neutral.0}"
+    },
+    "surface": {
+      "$type": "color",
+      "$value": "{color.neutral.0}"
+    },
+    "surface-raised": {
+      "$type": "color",
+      "$value": "{color.neutral.0}"
+    },
+    "subtle": {
+      "$type": "color",
+      "$value": "{color.neutral.100}"
+    },
+    "subtle-hover": {
+      "$type": "color",
+      "$value": "{color.neutral.200}"
+    },
+    "subtle-active": {
+      "$type": "color",
+      "$value": "{color.neutral.300}"
+    },
+    "muted": {
+      "$type": "color",
+      "$value": "{color.neutral.100}"
+    },
+    "brand": {
+      "$type": "color",
+      "$value": "{color.brand.600}"
+    },
+    "brand-hover": {
+      "$type": "color",
+      "$value": "{color.brand.700}"
+    },
+    "brand-active": {
+      "$type": "color",
+      "$value": "{color.brand.800}"
+    },
+    "brand-subtle": {
+      "$type": "color",
+      "$value": "{color.brand.100}"
+    },
+    "overlay": {
+      "$type": "color",
+      "$value": "oklch(0 0 0 / 0.45)"
+    },
+    "scrollbar-track": {
+      "$type": "color",
+      "$value": "{color.neutral.100}"
+    }
   },
   "fg": {
-    "default": { "$type": "color", "$value": "{color.neutral.950}" },
-    "muted": { "$type": "color", "$value": "{color.neutral.600}" },
-    "subtle": { "$type": "color", "$value": "{color.neutral.550}" },
-    "disabled": { "$type": "color", "$value": "{color.neutral.400}" },
-    "on-brand": { "$type": "color", "$value": "{color.neutral.0}" },
-    "brand": { "$type": "color", "$value": "{color.brand.600}" },
-    "brand-strong": { "$type": "color", "$value": "{color.brand.700}" },
-    "success": { "$type": "color", "$value": "{color.success.700}" },
-    "warning": { "$type": "color", "$value": "{color.warning.700}" },
-    "info": { "$type": "color", "$value": "{color.info.700}" },
-    "danger": { "$type": "color", "$value": "{color.danger.600}" },
-    "danger-hover": { "$type": "color", "$value": "{color.danger.700}" },
-    "scrollbar-thumb": { "$type": "color", "$value": "{color.neutral.400}" },
-    "scrollbar-thumb-hover": { "$type": "color", "$value": "{color.neutral.500}" },
-    "scrollbar-thumb-active": { "$type": "color", "$value": "{color.neutral.600}" }
+    "default": {
+      "$type": "color",
+      "$value": "{color.neutral.950}"
+    },
+    "muted": {
+      "$type": "color",
+      "$value": "{color.neutral.600}"
+    },
+    "subtle": {
+      "$type": "color",
+      "$value": "{color.neutral.550}"
+    },
+    "disabled": {
+      "$type": "color",
+      "$value": "{color.neutral.400}"
+    },
+    "on-brand": {
+      "$type": "color",
+      "$value": "{color.neutral.0}"
+    },
+    "brand": {
+      "$type": "color",
+      "$value": "{color.brand.600}"
+    },
+    "brand-strong": {
+      "$type": "color",
+      "$value": "{color.brand.700}"
+    },
+    "success": {
+      "$type": "color",
+      "$value": "{color.success.700}"
+    },
+    "warning": {
+      "$type": "color",
+      "$value": "{color.warning.700}"
+    },
+    "info": {
+      "$type": "color",
+      "$value": "{color.info.700}"
+    },
+    "danger": {
+      "$type": "color",
+      "$value": "{color.danger.600}"
+    },
+    "danger-hover": {
+      "$type": "color",
+      "$value": "{color.danger.700}"
+    },
+    "scrollbar-thumb": {
+      "$type": "color",
+      "$value": "{color.neutral.400}"
+    },
+    "scrollbar-thumb-hover": {
+      "$type": "color",
+      "$value": "{color.neutral.500}"
+    },
+    "scrollbar-thumb-active": {
+      "$type": "color",
+      "$value": "{color.neutral.600}"
+    }
   },
   "border": {
-    "default": { "$type": "color", "$value": "{color.neutral.200}" },
-    "subtle": { "$type": "color", "$value": "{color.neutral.100}" },
-    "strong": { "$type": "color", "$value": "{color.neutral.300}" },
-    "control": { "$type": "color", "$value": "{color.neutral.450}" },
-    "control-hover": { "$type": "color", "$value": "{color.neutral.500}" },
-    "control-focus": { "$description": "聚焦时控件的描边色，与聚焦环同色；常态描边是 {border.control}，两者取值不同，聚焦才在描边上看得出来。", "$type": "color", "$value": "{ring.focus}" },
-    "invalid": { "$type": "color", "$value": "{color.danger.600}" },
-    "at-limit": { "$type": "color", "$value": "{color.warning.600}" }
+    "default": {
+      "$type": "color",
+      "$value": "{color.neutral.200}"
+    },
+    "subtle": {
+      "$type": "color",
+      "$value": "{color.neutral.100}"
+    },
+    "strong": {
+      "$type": "color",
+      "$value": "{color.neutral.300}"
+    },
+    "control": {
+      "$type": "color",
+      "$value": "{color.neutral.450}"
+    },
+    "control-hover": {
+      "$type": "color",
+      "$value": "{color.neutral.500}"
+    },
+    "control-focus": {
+      "$description": "聚焦时控件的描边色，与聚焦环同色；常态描边是 {border.control}，两者取值不同，聚焦才在描边上看得出来。",
+      "$type": "color",
+      "$value": "{ring.focus}"
+    },
+    "invalid": {
+      "$type": "color",
+      "$value": "{color.danger.600}"
+    },
+    "at-limit": {
+      "$type": "color",
+      "$value": "{color.warning.600}"
+    }
   },
   "ring": {
-    "focus": { "$type": "color", "$value": "{color.brand.500}" },
-    "invalid": { "$type": "color", "$value": "{color.danger.500}" }
+    "focus": {
+      "$type": "color",
+      "$value": "{color.brand.500}"
+    },
+    "invalid": {
+      "$type": "color",
+      "$value": "{color.danger.500}"
+    }
   },
   "gradient": {
     "brand": {
-      "from": { "$description": "品牌渐变的起点。走向由用它的地方定，起点是对比度低的那一端。白底上实测 3.74:1，只够展示级字号。", "$type": "color", "$value": "{color.brand.500}" },
-      "to": { "$description": "品牌渐变的终点，对比度高的那一端；白底上实测 6.48:1。两端跨 2 档色阶，明度差 0.135，渐变才看得出来。", "$type": "color", "$value": "{color.brand.700}" }
+      "from": {
+        "$description": "品牌渐变的起点。走向由用它的地方定，起点是对比度低的那一端。白底上实测 3.74:1，只够展示级字号。",
+        "$type": "color",
+        "$value": "{color.brand.500}"
+      },
+      "to": {
+        "$description": "品牌渐变的终点，对比度高的那一端；白底上实测 6.48:1。两端跨 2 档色阶，明度差 0.135，渐变才看得出来。",
+        "$type": "color",
+        "$value": "{color.brand.700}"
+      }
     }
   },
   "diff": {
-    "added-bg": { "$type": "color", "$value": "oklch(0.94 0.05 150)" },
-    "added-fg": { "$type": "color", "$value": "oklch(0.44 0.13 150)" },
-    "removed-bg": { "$type": "color", "$value": "oklch(0.94 0.05 25)" },
-    "removed-fg": { "$type": "color", "$value": "oklch(0.47 0.16 25)" }
+    "added-bg": {
+      "$type": "color",
+      "$value": "oklch(0.94 0.05 150)"
+    },
+    "added-fg": {
+      "$type": "color",
+      "$value": "oklch(0.44 0.13 150)"
+    },
+    "removed-bg": {
+      "$type": "color",
+      "$value": "oklch(0.94 0.05 25)"
+    },
+    "removed-fg": {
+      "$type": "color",
+      "$value": "oklch(0.47 0.16 25)"
+    }
   },
   "syntax": {
-    "string": { "$type": "color", "$value": "oklch(0.52 0.13 165)" },
-    "number": { "$type": "color", "$value": "oklch(0.5 0.13 70)" },
-    "keyword": { "$type": "color", "$value": "oklch(0.5 0.2 300)" }
+    "string": {
+      "$type": "color",
+      "$value": "oklch(0.52 0.13 165)"
+    },
+    "number": {
+      "$type": "color",
+      "$value": "oklch(0.5 0.13 70)"
+    },
+    "keyword": {
+      "$type": "color",
+      "$value": "oklch(0.5 0.2 300)"
+    }
   }
 }

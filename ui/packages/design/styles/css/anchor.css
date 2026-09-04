@@ -85,14 +85,19 @@
     text-decoration: none;
     text-overflow: ellipsis;
     overflow: hidden;
-    transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='anchor'][data-part='link'][hidden] {
     display: none;
   }
 
+  /* 悬停走列表族的轻档：中性灰底，与面包屑的链接同一副回执。
+     只把 muted 提到 default 的话，一行小字上那点色差在长目录里几乎读不出来 */
   [data-scope='anchor'][data-part='link']:hover {
+    background: var(--xh-anchor-link-bg-hover, var(--xh-bg-subtle-hover));
     color: var(--xh-anchor-link-fg-hover, var(--xh-fg-default));
   }
 
@@ -133,5 +138,13 @@
     transition:
       inset-inline-start var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
       inline-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous);
+  }
+
+  @media (forced-colors: active) {
+    /* 指示条画的是一块纯底色，这一档里底色被统一换成 Canvas，条子整根消失，
+       "读到哪一节"就只剩链接自己的字重。换成系统高亮色画回来 */
+    [data-scope='anchor'][data-part='indicator'] {
+      background: Highlight;
+    }
   }
 }

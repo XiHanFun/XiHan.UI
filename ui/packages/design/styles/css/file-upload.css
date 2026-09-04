@@ -56,9 +56,17 @@
     display: none;
   }
 
-  /* hover 只在中性态换描边：invalid 与 dragging 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
+  /* hover 只在中性态命中：invalid 与 dragging 正拿边框颜色说事，被 hover 盖掉那条信息就没了。
+     描边与底一起换：这块面有整整八行高，只挪一圈 1px 的描边在这个面积上几乎读不出来 */
   [data-scope='file-upload'][data-part='dropzone']:hover:not([data-disabled], [data-invalid], [data-dragging]) {
     border-color: var(--xh-file-upload-dropzone-border-hover, var(--xh-border-control-hover));
+    background: var(--xh-file-upload-dropzone-bg-hover, var(--xh-bg-subtle));
+  }
+
+  /* 键盘落焦时描边跟着语气走，与聚焦环同族；环由 focus.css 统一画。
+     摘掉的三档与 hover 那条一致：它们各自正拿边框颜色说事 */
+  [data-scope='file-upload'][data-part='dropzone']:focus-visible:not([data-disabled], [data-invalid], [data-dragging]) {
+    border-color: var(--xh-file-upload-dropzone-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
   }
 
   /* 悬停在上方：整块换成品牌色描边加浅底，比只换边框显眼得多 */
@@ -97,6 +105,7 @@
     cursor: pointer;
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
@@ -104,13 +113,16 @@
     display: none;
   }
 
+  /* 悬停换底色的同时把这块面抬起一档：只换底色的回执在一颗按钮上太轻 */
   [data-scope='file-upload'][data-part='trigger']:hover:not(:disabled) {
     background: var(--xh-file-upload-trigger-bg-hover, var(--xh-bg-subtle-hover));
+    box-shadow: var(--xh-file-upload-trigger-shadow-hover, var(--xh-elevation-raised));
   }
 
-  /* 按下：换到按压档底色并轻微下压，松手弹回；禁用钮不压 */
+  /* 按下：换到按压档底色并轻微下压，抬起的那一档同时落回，松手弹回；禁用钮不压 */
   [data-scope='file-upload'][data-part='trigger']:not(:disabled):active {
     background: var(--xh-file-upload-trigger-bg-active, var(--xh-bg-subtle-active));
+    box-shadow: none;
     scale: var(--xh-motion-scale-press);
   }
 

@@ -262,6 +262,10 @@ slidesPerMove 与 slidesPerPage 分开给：一屏露三张、一次只挪一张
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
+## 响应式
+
+皮肤内置条件规则：`pointer: coarse`。
+
 ## 组合
 
 - 每一张放[图片](./image)或[卡片](./card)。

@@ -88,15 +88,20 @@
     box-shadow: var(--xh-color-picker-control-shadow, var(--xh-elevation-raised));
     color: var(--xh-color-picker-control-fg, var(--xh-fg-default));
     cursor: pointer;
-    transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='color-picker'][data-part='control'][hidden] {
     display: none;
   }
 
-  [data-scope='color-picker'][data-part='control']:hover:not([data-disabled]) {
+  /* 悬停换描边的同时换填充：这个盒里大半面积是那块色样，只挪一圈 1px 的描边读不出来。
+     只读档摘掉：它正拿压低一档的底色说「改不动」，被悬停的填充盖掉那条信息就没了 */
+  [data-scope='color-picker'][data-part='control']:hover:not([data-disabled], [data-readonly]) {
     border-color: var(--xh-color-picker-control-border-hover, var(--xh-border-control-hover));
+    background: var(--xh-color-picker-control-bg-hover, var(--xh-bg-subtle));
   }
 
   /* Tab 停靠点是盒里的 trigger，环画在盒上 */

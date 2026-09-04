@@ -193,6 +193,10 @@ action-trigger 按下时先发 action 事件，再让这条进入退场；closab
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
+## 响应式
+
+皮肤内置条件规则：`pointer: coarse`。
+
 ## RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。

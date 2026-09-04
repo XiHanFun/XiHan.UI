@@ -336,4 +336,12 @@
       display: none;
     }
   }
+
+  @media (forced-colors: active) {
+    /* 分组之间那条线画的是一块纯底色，这一档里底色被统一换成 Canvas，线整条消失，
+       几组条目就连成了一长串。换成前景色画回来 */
+    [data-scope='context-menu'][data-part='separator'] {
+      background: CanvasText;
+    }
+  }
 }

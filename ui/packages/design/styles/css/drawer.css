@@ -460,6 +460,18 @@
     mask: var(--xh-glyph-mark-close) center / contain no-repeat;
   }
 
+  /* 手指落点：叉的视觉盒是 28px，命中区外扩到 44×44（两边各 8px）。
+     外扩走绝对定位的伪元素，盒子本身一动不动——放大盒子会把标题挤窄。
+     用 ::after：::before 已经被兜底字形占着。
+     钮本身贴边 12px，8px 的外扩仍落在面板的内衬里 */
+  @media (pointer: coarse) {
+    [data-scope='drawer'][data-part='close-trigger']::after {
+      content: '';
+      position: absolute;
+      inset: calc(-1 * var(--xh-space-2));
+    }
+  }
+
   @media print {
     /* 打印：定位层与遮罩是交互期才存在的东西，落到纸上只会盖住底下的正文。
        收起写在这份皮肤里而不是 reset：reset 层排在组件层之前，组件层里任何一条 display 都压得住它。 */

@@ -171,6 +171,22 @@
     box-shadow: none;
   }
 
+  /*
+   * 打印：底色被丢掉，实心与淡底两档的底一起没了。实心档配的是实心底上的前景色，
+   * 底一没那行字就落在白纸上——白字印在白纸上，整枚标签只剩一块空白。
+   * 两档在纸上都退成描边档：字色回到正文色，轮廓由边框接手，内高光跟着收掉。
+   * 两条选择器分别压过形态与语气这两层覆盖点；禁用档摘掉，它自己就是灰的。
+   */
+  @media print {
+    [data-scope='tag'][data-part='root']:not([data-disabled]),
+    [data-scope='tag'][data-part='root'][data-variant][data-tone]:not([data-disabled]) {
+      border-color: currentColor;
+      background: none;
+      color: var(--xh-fg-default);
+      box-shadow: none;
+    }
+  }
+
   /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
   [data-scope='tag'][data-part='close-trigger']:empty::before {
     content: '';

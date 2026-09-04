@@ -206,10 +206,16 @@
     line-height: var(--xh-leading-none);
     appearance: none;
     cursor: pointer;
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
+  /* 描边与填充一起换：只加深一圈描边的话，指针停在控件正中时那点变化落在视野外围，
+     旁边那排页码格子换的是整块底色，两者的回执强度对不上 */
   [data-scope='pagination'][data-part='page-size-select']:hover:not(:disabled) {
     border-color: var(--xh-pagination-page-size-border-hover, var(--xh-border-strong));
+    background: var(--xh-pagination-page-size-bg-hover, var(--xh-bg-subtle-hover));
   }
 
   [data-scope='pagination'][data-part='page-size-select']:disabled {
@@ -313,6 +319,12 @@
        收起写在这份皮肤里而不是 reset：reset 层排在组件层之前，组件层里任何一条 display 都压得住它。 */
     [data-scope='pagination'][data-part='positioner'] {
       display: none;
+    }
+
+    /* 打印默认丢背景：当前页那格的实心底印不出来，一排页码看上去完全一样。
+       改用字重表达同一件事——常态之所以不加粗是怕格子变宽、行宽跟着抖，纸上没有这回事 */
+    [data-scope='pagination'][data-part='item'][data-current] {
+      font-weight: var(--xh-font-weight-semibold);
     }
   }
 }

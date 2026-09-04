@@ -33,6 +33,8 @@
   /*
    * 单根骨架条。底色与微光两层叠在一起：
    * background-color 是静止时看到的那层，background-image 是扫过去的那道光。
+   * 微光取比底亮一档的那支面色：浅色下比 bg-subtle 亮、深色下同样比它亮，
+   * 两个主题里扫过去的都是一道亮带，而不是浅色下反倒扫出一道暗带。
    */
   [data-scope='skeleton'][data-part='bone'] {
     inline-size: 100%;
@@ -41,7 +43,7 @@
     background-image: linear-gradient(
       90deg,
       transparent 20%,
-      var(--xh-skeleton-sheen, var(--xh-bg-subtle-hover)) 50%,
+      var(--xh-skeleton-sheen, var(--xh-bg-surface-raised)) 50%,
       transparent 80%
     );
     background-repeat: no-repeat;

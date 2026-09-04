@@ -58,10 +58,17 @@ describe('connectFieldset 描述链', () => {
 })
 
 describe('connectFieldset 无效与必填', () => {
-  it('错误文案带 role=alert 且非 invalid 时 hidden，翻转那一刻读屏才播报得出来', () => {
-    expect(errorProps().role).toBe('alert')
+  it('错误文案是排队播报的活区且非 invalid 时 hidden，翻转那一刻读屏才播报得出来', () => {
+    expect(errorProps().role).toBe('status')
+    expect(errorProps()['aria-live']).toBe('polite')
+    expect(errorProps()['aria-atomic']).toBe('true')
     expect(errorProps().hidden).toBe(true)
     expect(errorProps({ invalid: true }).hidden).toBeUndefined()
+  })
+
+  it('错误文案不打断当前朗读：多组同时翻转时不会互相截断', () => {
+    expect(errorProps({ invalid: true }).role).not.toBe('alert')
+    expect(errorProps({ invalid: true })['aria-live']).not.toBe('assertive')
   })
 
   it('无效与必填只走 data-*：aria-invalid / aria-required 在 group 角色上不被支持', () => {

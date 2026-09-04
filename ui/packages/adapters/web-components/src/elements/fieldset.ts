@@ -24,7 +24,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart root - 原生 `<fieldset>`，承载原生 disabled 与 data-disabled/data-invalid/data-required
  * @csspart legend - 原生 `<legend>`，这一组的名字；须是 root 的首个子节点
  * @csspart description - 常驻说明文案，恒在 root 的描述链里
- * @csspart error-text - 错误文案（role=alert）；非 invalid 时带 hidden 收起，节点不卸载
+ * @csspart error-text - 错误文案（role=status，排队播报不打断）；非 invalid 时带 hidden 收起，节点不卸载
  */
 export class XhFieldsetElement extends XhElement {
   // 两个部件的标签名一旦写错，禁用连坐与组名都没了，却不会报任何错，故登记进契约校验

@@ -99,8 +99,10 @@
     /* 作者塞进指示符槽的图标跟着控件的尺寸档走；它自己写了 size 时仍以作者的为准 */
     --xh-icon-size: var(--xh-combobox-icon-size, var(--xh-glyph-size-md));
 
-    /* 形态档只换这四个槽：缺省即 outline（描边 + 画布底 + 一档落影） */
+    /* 形态档只换这五个槽：缺省即 outline（描边 + 画布底 + 一档落影） */
     --xh-_combobox-control-bg: var(--xh-bg-canvas);
+    /* 悬停那一档底：描边之外再换一次填充，语气在场时兑同族的淡底 */
+    --xh-_combobox-control-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
     --xh-_combobox-control-border: var(--xh-border-control);
     --xh-_combobox-control-border-hover: var(--xh-border-control-hover);
     /* 一档静态落影把盒从页面里抬起一层，与描边一起画出盒的边界 */
@@ -155,6 +157,7 @@
      形态只决定描边与底色怎么用，用哪族颜色由 data-tone 决定 */
   [data-scope='combobox']:is([data-part='root'], [data-part='positioner'])[data-variant='outline'] {
     --xh-_combobox-control-bg: var(--xh-bg-canvas);
+    --xh-_combobox-control-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
     --xh-_combobox-control-border: var(--xh-border-control);
     --xh-_combobox-control-border-hover: var(--xh-border-control-hover);
   }
@@ -162,6 +165,7 @@
   /* 填充式：底色顶替描边，悬停时才浮出一道淡边 */
   [data-scope='combobox']:is([data-part='root'], [data-part='positioner'])[data-variant='subtle'] {
     --xh-_combobox-control-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+    --xh-_combobox-control-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
     --xh-_combobox-control-border: transparent;
     --xh-_combobox-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   }
@@ -171,6 +175,7 @@
   [data-scope='combobox']:is([data-part='root'], [data-part='positioner'])[data-variant='ghost'] {
     --xh-_combobox-control-shadow: 0 0 0 transparent;
     --xh-_combobox-control-bg: transparent;
+    --xh-_combobox-control-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
     --xh-_combobox-control-border: transparent;
     --xh-_combobox-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   }
@@ -200,7 +205,9 @@
     background: var(--xh-combobox-control-bg, var(--xh-_combobox-control-bg));
     box-shadow: var(--xh-combobox-control-shadow, var(--xh-_combobox-control-shadow));
     color: var(--xh-combobox-control-fg, var(--xh-fg-default));
-    transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='combobox'][data-part='control'][hidden] {
@@ -210,6 +217,12 @@
   /* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
   [data-scope='combobox'][data-part='control']:hover:not([data-disabled], [data-invalid]) {
     border-color: var(--xh-combobox-control-border-hover, var(--xh-_combobox-control-border-hover));
+  }
+
+  /* 描边之外再换一档填充：只挪一格描边色的悬停在浅底上几乎读不出来。
+     只读盒的底色正说着「改不动」，不参与换填充 */
+  [data-scope='combobox'][data-part='control']:hover:not([data-disabled], [data-readonly]) {
+    background: var(--xh-combobox-control-bg-hover, var(--xh-_combobox-control-bg-hover));
   }
 
   /* 焦点环画在 control 上而不是 input 上：视觉上的「框」是 control，

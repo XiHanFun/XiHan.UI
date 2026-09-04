@@ -20,7 +20,7 @@
 
 - `disabled` 落成原生 `fieldset[disabled]`，组内控件不可聚焦、不可编辑、不参与提交，无需逐个控件接线。
 - 说明文字与错误文案自动派生 `id` 并接进根节点的 `aria-describedby`，作者不写 `id`。
-- 错误文案带 `role="alert"`，节点常挂、靠 `hidden` 显隐，`invalid` 翻转的那一刻读屏立即播报。
+- 错误文案带 `role="status"` + `aria-live="polite"`，节点常挂、靠 `hidden` 显隐，`invalid` 翻转时读屏排队播报，不打断当前朗读。整表提交失败时打断式播报只由 Form 的错误摘要发出。
 - `invalid` 落成 `data-invalid`，皮肤据此把组标题转成警示色，同时把错误文案接进描述链并显出。
 - `required` 落成 `data-required`，皮肤据此给组标题加星号。
 

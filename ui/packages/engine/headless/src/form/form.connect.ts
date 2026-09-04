@@ -109,8 +109,13 @@ export function connectForm<T extends PropTypes>(
       ...parts['error-summary'].attrs,
       // 自带稳定 id，供作者从页面别处指过来（跳转链接、aria-describedby）
       'id': ids['error-summary'],
-      // role=alert 自带 assertive 活区：从收起翻成显出的那一刻读屏立刻播报
+      // 一次提交失败里唯一打断当前朗读的活区：摘要带着错误条数与逐条链接，
+      // 字段与字段集那两处错误文案只排队不打断。
+      // live 值显式写出：role 隐含的 live 各家读屏落实并不一致
       'role': 'alert',
+      'aria-live': 'assertive',
+      // 整份摘要一起念，否则用户只听到半截
+      'aria-atomic': 'true',
       'data-state': stateAttr,
       // 皮肤据此渲染"共 N 处错误"这类修饰
       'data-count': String(errorCount),

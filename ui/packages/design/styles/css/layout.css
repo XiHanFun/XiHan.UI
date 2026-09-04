@@ -18,7 +18,7 @@
       'footer footer';
     grid-template-columns: auto minmax(0, 1fr);
     grid-template-rows: auto minmax(0, 1fr) auto;
-    background: var(--xh-layout-bg, var(--xh-bg-canvas));
+    background: var(--xh-layout-bg, var(--xh-bg-page));
     color: var(--xh-layout-fg, var(--xh-fg-default));
     --xh-_layout-sider-w: var(--xh-layout-sider-w, 15rem);
     --xh-_layout-sider-collapsed-w: var(--xh-layout-sider-collapsed-w, 4rem);

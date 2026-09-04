@@ -132,7 +132,9 @@ Field 的 disabled 只把 data-disabled 铺到各部件上；真正改不动还�
 | `control` | `aria-labelledby` | `label` 部件的 id |
 | `control` | `aria-readonly` | 'true' \| 'false' |
 | `control` | `aria-required` | 'true' \| 'false' |
-| `error-text` | `role` | 'alert' |
+| `error-text` | `aria-atomic` | 'true' |
+| `error-text` | `aria-live` | 'polite' |
+| `error-text` | `role` | 'status' |
 
 ## 样式
 

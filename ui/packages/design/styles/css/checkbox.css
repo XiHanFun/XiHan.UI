@@ -13,6 +13,10 @@
     --xh-_checkbox-box: var(--xh-control-indicator-md);
     --xh-_checkbox-glyph: calc(var(--xh-_checkbox-box) * 0.75);
 
+    /* 粗指针一档的命中区外扩量：方框边长加两条它正好是 44px。
+       lg 档不另给一份——那一档的方框本来就更大，同一个外扩量下命中区只多不少 */
+    --xh-_checkbox-touch-inset: 14px;
+
     /* 选中态的底与描边随语气走。没写 data-tone 时 --xh-_tone 没被声明，退回原来的品牌色 */
     --xh-_checkbox-accent: var(--xh-_tone, var(--xh-bg-brand));
 
@@ -81,10 +85,26 @@
   /* 缺省档写在上面的基础规则里 */
   [data-scope='checkbox'][data-part='root'][data-size='sm'] {
     --xh-_checkbox-box: var(--xh-control-indicator-sm);
+    --xh-_checkbox-touch-inset: 16px;
   }
 
   [data-scope='checkbox'][data-part='root'][data-size='lg'] {
     --xh-_checkbox-box: var(--xh-control-indicator-lg);
+  }
+
+  /* 手指与鼠标落点：方框只有一档指示符那么大，命中区靠一枚绝对定位的伪元素往外扩，
+     盒子本身一动不动——放大盒子会把并排的文字挤开。
+     常态外扩 6px，最小的 sm 档由 12px 到 24px；粗指针下按档位补到 44px。 */
+  [data-scope='checkbox'][data-part='root']::after {
+    content: '';
+    position: absolute;
+    inset: calc(-1 * var(--xh-space-1_5));
+  }
+
+  @media (pointer: coarse) {
+    [data-scope='checkbox'][data-part='root']::after {
+      inset: calc(-1 * var(--xh-_checkbox-touch-inset));
+    }
   }
 
   [data-scope='checkbox'][data-part='indicator'] {
@@ -156,5 +176,20 @@
   [data-scope='checkbox'][data-part='indicator'][hidden],
   [data-scope='checkbox'][data-part='label'][hidden] {
     display: none;
+  }
+
+  @media print {
+    /* 打印默认丢底色：勾上与半选两档全靠实心底加底上那枚浅色标记表达，落到纸上与没勾的一模一样
+       （标记本身也是一块 background，同样印不出来）。改用描边这条印得出来的通道：
+       两档各加粗一级把方框分出来，半选再换成虚线，三档在纸上各不相同。
+       描边吃进定尺盒里（reset 层已把 box-sizing 收成 border-box），方框边长不变。 */
+    [data-scope='checkbox'][data-part='root'][data-state='checked'] {
+      border-width: var(--xh-stroke-thick);
+    }
+
+    [data-scope='checkbox'][data-part='root'][data-state='indeterminate'] {
+      border-width: var(--xh-stroke-thick);
+      border-style: dashed;
+    }
   }
 }

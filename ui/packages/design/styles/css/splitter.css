@@ -133,4 +133,12 @@
   [data-scope='splitter'][data-part='resize-trigger'][hidden] {
     display: none;
   }
+
+  @media (forced-colors: active) {
+    /* 分隔条画的是一块纯底色，这一档里底色被统一换成 Canvas，那条线整根消失，
+       两侧面板就糊成一块。换成前景色画回来 */
+    [data-scope='splitter'][data-part='resize-trigger'] {
+      background: CanvasText;
+    }
+  }
 }

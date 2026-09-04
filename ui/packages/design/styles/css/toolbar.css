@@ -114,4 +114,12 @@
     margin-block: var(--xh-toolbar-separator-gap, var(--xh-space-1));
     margin-inline: var(--xh-toolbar-separator-inset, var(--xh-space-1));
   }
+
+  @media (forced-colors: active) {
+    /* 分段之间那条线画的是一块纯底色，这一档里底色被统一换成 Canvas，线整条消失，
+       几段控件就连成了一长串。换成前景色画回来 */
+    [data-scope='toolbar'][data-part='separator'] {
+      background: CanvasText;
+    }
+  }
 }

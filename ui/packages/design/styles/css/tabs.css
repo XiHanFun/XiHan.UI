@@ -293,4 +293,14 @@
   [data-scope='tabs'][data-part='tab-drag-trigger'][hidden] {
     display: none;
   }
+
+  @media print {
+    /* 打印默认丢背景与投影：三档形态表达选中的三条通道（选中底、card 档的顶边条、
+       segment 档的浮起）在纸上一条都不剩，只有一条比别人深一点的字色。
+       改用下划线与字重表达同一件事，两者都不改盒子的高度 */
+    [data-scope='tabs'][data-part='trigger'][data-state='active'] {
+      font-weight: var(--xh-font-weight-semibold);
+      text-decoration: underline;
+    }
+  }
 }

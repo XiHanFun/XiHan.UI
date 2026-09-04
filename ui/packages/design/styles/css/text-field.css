@@ -24,6 +24,11 @@
     --xh-_text-field-bg: var(--xh-bg-canvas);
     --xh-_text-field-border: var(--xh-border-control);
     --xh-_text-field-border-hover: var(--xh-border-control-hover);
+    /* 悬停时底色朝 subtle 走小半步：换一条 1px 的描边色是全场最轻的一档回执，
+       填充跟着动才看得出指针停在哪个框上。基准取本档的底，三个形态各自算各自的：
+       outline 从画布起、ghost 从透明起（兑出来的就是一层半透的淡底）。
+       只走小半步是为了与只读那一档的 subtle 实底分得开 */
+    --xh-_text-field-bg-hover: color-mix(in oklab, var(--xh-bg-subtle) 45%, var(--xh-_text-field-bg));
     /* 一档静态落影把框从页面里抬起一层，与描边一起画出框的边界 */
     --xh-_text-field-shadow: var(--xh-elevation-raised);
 
@@ -80,6 +85,8 @@
      与 outline 档并排时基线对得上、聚焦画描边也不引起跳动 */
   [data-scope='text-field'][data-part='root'][data-variant='subtle'] {
     --xh-_text-field-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+    /* 这一档的底本来就是 subtle，朝它兑没有位移，改走淡底自己那级悬停档 */
+    --xh-_text-field-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
     --xh-_text-field-border: transparent;
     --xh-_text-field-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
     --xh-_text-field-border-focus: var(--xh-_tone, var(--xh-border-control-focus));
@@ -120,17 +127,20 @@
     background: var(--xh-text-field-control-bg, var(--xh-_text-field-bg));
     box-shadow: var(--xh-text-field-control-shadow, var(--xh-_text-field-shadow));
     color: var(--xh-text-field-control-fg, var(--xh-fg-default));
-    transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='text-field'][data-part='control'][hidden] {
     display: none;
   }
 
-  /* hover 只在中性态换描边：invalid 与 at-max 正拿边框颜色说事，
-     被 hover 盖掉那条信息就没了 */
-  [data-scope='text-field'][data-part='control']:hover:not([data-disabled], [data-invalid], [data-at-max]) {
+  /* hover 换描边与填充两条通道。只在中性态换：invalid 与 at-max 正拿边框颜色说事，
+     被 hover 盖掉那条信息就没了；只读也排掉，它的底色本身就是"改不动"这句话 */
+  [data-scope='text-field'][data-part='control']:hover:not([data-disabled], [data-readonly], [data-invalid], [data-at-max]) {
     border-color: var(--xh-text-field-control-border-hover, var(--xh-_text-field-border-hover));
+    background: var(--xh-text-field-control-bg-hover, var(--xh-_text-field-bg-hover));
   }
 
   [data-scope='text-field'][data-part='control']:focus-within:not([data-disabled]) {
@@ -179,6 +189,7 @@
      :not 条件：基础 hover 的特异度里有它们，不带就打不过 */
   [data-scope='text-field'][data-part='control'] [data-part='input']:hover:not(:disabled, [data-invalid], [data-at-max]) {
     border-color: transparent;
+    background: transparent;
   }
 
   [data-scope='text-field'][data-part='control'] [data-part='input']:focus-visible {
@@ -215,7 +226,9 @@
     font-family: inherit;
     font-size: var(--xh-text-field-input-font-size, var(--xh-_text-field-font-size));
     line-height: var(--xh-leading-normal);
-    transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 多行宿主：定高换成行数撑高，纵向留出内边距；autoSize 接管高度后拉柄与滚动都收掉 */
@@ -235,10 +248,11 @@
     color: var(--xh-text-field-placeholder-fg, var(--xh-fg-subtle));
   }
 
-  /* hover 只在中性态换描边：invalid 与 at-max 正拿边框颜色说事，
-     被 hover 盖掉那条信息就没了 */
-  [data-scope='text-field'][data-part='input']:hover:not(:disabled, [data-invalid], [data-at-max]) {
+  /* hover 换描边与填充两条通道。只在中性态换：invalid 与 at-max 正拿边框颜色说事，
+     被 hover 盖掉那条信息就没了；只读也排掉，它的底色本身就是"改不动"这句话 */
+  [data-scope='text-field'][data-part='input']:hover:not(:disabled, [readonly], [data-invalid], [data-at-max]) {
     border-color: var(--xh-text-field-input-border-hover, var(--xh-_text-field-border-hover));
+    background: var(--xh-text-field-input-bg-hover, var(--xh-_text-field-bg-hover));
   }
 
   /* 聚焦态描边与环共用一族语气色。这条特异度低于上面的 hover、也低于下面的

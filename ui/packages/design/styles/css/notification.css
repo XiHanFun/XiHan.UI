@@ -405,6 +405,17 @@
     mask: var(--xh-glyph-mark-close) center / contain no-repeat;
   }
 
+  /* 手指落点：叉的视觉盒是 28px，命中区外扩到 44×44（两边各 8px）。
+     外扩走绝对定位的伪元素，盒子本身一动不动——放大盒子会压住标题。
+     用 ::after：::before 已经被兜底字形占着 */
+  @media (pointer: coarse) {
+    [data-scope='notification'][data-part='item-close-trigger']::after {
+      content: '';
+      position: absolute;
+      inset: calc(-1 * var(--xh-space-2));
+    }
+  }
+
   @media print {
     /* 打印：动画会被定格在任意一帧——转了一半的圈、扫到一半的微光。这里换成静止的表达，
        取值与减弱动效那一档相同。两档各写一块、不并进一条媒体查询列表：减弱动效另有一份

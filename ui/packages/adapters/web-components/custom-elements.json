@@ -14362,7 +14362,7 @@
               "name": "description"
             },
             {
-              "description": "错误文案（role=alert）；非 invalid 时带 hidden 收起，节点不卸载",
+              "description": "错误文案（role=status，排队播报不打断）；非 invalid 时带 hidden 收起，节点不卸载",
               "name": "error-text"
             }
           ],
@@ -14578,7 +14578,7 @@
               "name": "description"
             },
             {
-              "description": "错误文案（role=alert）；非 invalid 时带 hidden 收起，节点不卸载",
+              "description": "错误文案（role=status，排队播报不打断）；非 invalid 时带 hidden 收起，节点不卸载",
               "name": "error-text"
             }
           ],
@@ -16615,7 +16615,7 @@
               "name": "field-group"
             },
             {
-              "description": "role=alert 的错误汇总，提交失败且仍有错误时才显形",
+              "description": "role=alert 的错误汇总（一次提交失败里唯一打断朗读的活区），提交失败且仍有错误时才显形",
               "name": "error-summary"
             },
             {

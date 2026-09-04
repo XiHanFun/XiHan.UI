@@ -217,6 +217,10 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
+## 响应式
+
+皮肤内置条件规则：`pointer: coarse`。
+
 ## RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。

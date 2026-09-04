@@ -402,4 +402,21 @@
     -webkit-mask: var(--xh-glyph-mark-chevrons-right) center / contain no-repeat;
     mask: var(--xh-glyph-mark-chevrons-right) center / contain no-repeat;
   }
+
+  @media print {
+    /* 打印默认丢背景色：选中片与区间底都不画，一整张网格印出来是一模一样的三十来个数字。
+       两档各换一条不吃底色的通道——选中走实边加粗体，区间走格底下的一道线。 */
+    [data-scope='calendar'][data-part='cell-trigger'][data-selected] {
+      border-color: currentColor;
+      /* 反白那层文字的取值是「压在实心底上的前景」，底一没就印成一片白，退回正文色 */
+      color: var(--xh-calendar-cell-fg, var(--xh-fg-default));
+      font-weight: var(--xh-font-weight-bold);
+    }
+
+    /* 区间那块底收成格子下沿的一道横线：起点让开，只留下边那条描边 */
+    [data-scope='calendar'][data-part='cell'][data-in-range]::before {
+      inset-block-start: auto;
+      border-block-end: var(--xh-stroke-thick) solid currentColor;
+    }
+  }
 }
