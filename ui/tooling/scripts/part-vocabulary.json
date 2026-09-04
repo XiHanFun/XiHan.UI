@@ -1,0 +1,1451 @@
+{
+  "$description": "部件名（data-part 取值）的真源。parts 段由 check-part-vocabulary.mjs --update 从 127 份 *.anatomy.ts 现算生成。tails 段记尾词裁决：值为 true 是规范词，值为对象且带 synonymOf 的判红，pendingUsers 是收敛前放行的存量。",
+  "parts": {
+    "action": [
+      "empty-state",
+      "result"
+    ],
+    "action-trigger": [
+      "toast"
+    ],
+    "add-trigger": [
+      "dynamic-input"
+    ],
+    "approval": [
+      "tool-call"
+    ],
+    "approve-trigger": [
+      "approval"
+    ],
+    "area": [
+      "color-picker",
+      "editable",
+      "timer"
+    ],
+    "area-thumb": [
+      "color-picker"
+    ],
+    "arrow": [
+      "context-menu",
+      "hover-card",
+      "menu",
+      "popover",
+      "tooltip",
+      "tour"
+    ],
+    "autoplay-trigger": [
+      "carousel"
+    ],
+    "back-trigger": [
+      "page-header"
+    ],
+    "backdrop": [
+      "dialog",
+      "drawer",
+      "image-viewer",
+      "tour"
+    ],
+    "block": [
+      "markdown-stream"
+    ],
+    "body": [
+      "card",
+      "diff-view",
+      "floating-panel",
+      "table"
+    ],
+    "bone": [
+      "skeleton"
+    ],
+    "branch": [
+      "json-viewer",
+      "side-nav",
+      "tree",
+      "tree-select"
+    ],
+    "branch-checkbox": [
+      "tree"
+    ],
+    "branch-content": [
+      "json-viewer",
+      "side-nav",
+      "tree",
+      "tree-select"
+    ],
+    "branch-control": [
+      "json-viewer",
+      "tree",
+      "tree-select"
+    ],
+    "branch-indicator": [
+      "json-viewer",
+      "side-nav",
+      "tree",
+      "tree-select"
+    ],
+    "branch-text": [
+      "json-viewer",
+      "side-nav",
+      "tree",
+      "tree-select"
+    ],
+    "branch-trigger": [
+      "json-viewer",
+      "side-nav",
+      "tree",
+      "tree-select"
+    ],
+    "calendar": [
+      "date-picker"
+    ],
+    "cancel-trigger": [
+      "editable",
+      "popconfirm"
+    ],
+    "canvas": [
+      "progress"
+    ],
+    "caps-lock-indicator": [
+      "password-input"
+    ],
+    "caption": [
+      "table"
+    ],
+    "cell": [
+      "calendar",
+      "heatmap",
+      "table"
+    ],
+    "cell-trigger": [
+      "calendar"
+    ],
+    "change-label": [
+      "diff-view"
+    ],
+    "channel-input": [
+      "color-picker"
+    ],
+    "channel-slider": [
+      "color-picker"
+    ],
+    "channel-slider-thumb": [
+      "color-picker"
+    ],
+    "channel-slider-track": [
+      "color-picker"
+    ],
+    "clear-trigger": [
+      "cascader",
+      "combobox",
+      "date-field",
+      "date-picker",
+      "file-upload",
+      "popselect",
+      "select",
+      "signature-pad",
+      "tags-input",
+      "text-field",
+      "time-field",
+      "time-picker",
+      "tree-select"
+    ],
+    "close-trigger": [
+      "alert",
+      "dialog",
+      "drawer",
+      "floating-panel",
+      "image-viewer",
+      "popover",
+      "tag",
+      "toast",
+      "tour"
+    ],
+    "code": [
+      "code-view"
+    ],
+    "column": [
+      "cascader",
+      "masonry",
+      "time-picker"
+    ],
+    "column-drag-trigger": [
+      "table"
+    ],
+    "column-header": [
+      "table"
+    ],
+    "column-label": [
+      "heatmap"
+    ],
+    "column-resize-trigger": [
+      "table"
+    ],
+    "confirm-trigger": [
+      "date-picker",
+      "popconfirm"
+    ],
+    "connector": [
+      "timeline"
+    ],
+    "content": [
+      "accordion",
+      "affix",
+      "cascader",
+      "collapsible",
+      "color-picker",
+      "combobox",
+      "context-menu",
+      "date-picker",
+      "dialog",
+      "drawer",
+      "floating-panel",
+      "hover-card",
+      "image-viewer",
+      "layout",
+      "listbox",
+      "log",
+      "markdown-stream",
+      "marquee",
+      "mention",
+      "menu",
+      "menubar",
+      "navigation-menu",
+      "pagination",
+      "popconfirm",
+      "popover",
+      "popselect",
+      "reasoning",
+      "scroll-area",
+      "select",
+      "steps",
+      "tabs",
+      "time-picker",
+      "timeline",
+      "tool-call",
+      "tooltip",
+      "tour",
+      "tree-select",
+      "virtualizer",
+      "watermark"
+    ],
+    "control": [
+      "cascader",
+      "clipboard",
+      "color-picker",
+      "combobox",
+      "date-field",
+      "date-picker",
+      "editable",
+      "field",
+      "number-field",
+      "password-input",
+      "popselect",
+      "rating",
+      "select",
+      "signature-pad",
+      "slider",
+      "tags-input",
+      "text-field",
+      "time-field",
+      "time-picker",
+      "timer",
+      "tree-select"
+    ],
+    "corner": [
+      "scrollbar"
+    ],
+    "counter": [
+      "image-viewer",
+      "question-flow"
+    ],
+    "cover": [
+      "card"
+    ],
+    "crop-area": [
+      "image-cropper"
+    ],
+    "crop-handle": [
+      "image-cropper"
+    ],
+    "decrement-trigger": [
+      "number-field"
+    ],
+    "deny-trigger": [
+      "approval"
+    ],
+    "description": [
+      "alert",
+      "approval",
+      "card",
+      "dialog",
+      "drawer",
+      "empty-state",
+      "field",
+      "fieldset",
+      "popconfirm",
+      "popover",
+      "result",
+      "steps",
+      "timeline",
+      "tour"
+    ],
+    "drag-trigger": [
+      "floating-panel"
+    ],
+    "dropzone": [
+      "file-upload"
+    ],
+    "duration": [
+      "reasoning",
+      "tool-call"
+    ],
+    "edit-trigger": [
+      "editable"
+    ],
+    "ellipsis": [
+      "breadcrumb",
+      "pagination"
+    ],
+    "empty": [
+      "cascader",
+      "combobox",
+      "diff-view",
+      "table"
+    ],
+    "error": [
+      "tool-call"
+    ],
+    "error-summary": [
+      "form"
+    ],
+    "error-summary-item": [
+      "form"
+    ],
+    "error-text": [
+      "field",
+      "fieldset"
+    ],
+    "expand-trigger": [
+      "table"
+    ],
+    "expanded-row": [
+      "table"
+    ],
+    "extra": [
+      "page-header"
+    ],
+    "eye-dropper-trigger": [
+      "color-picker"
+    ],
+    "fallback": [
+      "avatar",
+      "image"
+    ],
+    "field-group": [
+      "form"
+    ],
+    "filename": [
+      "code-view"
+    ],
+    "flip-horizontal-trigger": [
+      "image-viewer"
+    ],
+    "flip-vertical-trigger": [
+      "image-viewer"
+    ],
+    "fold-trigger": [
+      "code-view"
+    ],
+    "footer": [
+      "approval",
+      "card",
+      "layout",
+      "page-header",
+      "question-flow",
+      "select",
+      "table"
+    ],
+    "gap": [
+      "diff-view"
+    ],
+    "gap-cell": [
+      "diff-view"
+    ],
+    "gap-trigger": [
+      "diff-view"
+    ],
+    "glyph": [
+      "icon"
+    ],
+    "grid": [
+      "calendar",
+      "heatmap",
+      "image-cropper"
+    ],
+    "grid-body": [
+      "calendar"
+    ],
+    "grid-head": [
+      "calendar"
+    ],
+    "group": [
+      "context-menu",
+      "menu",
+      "menubar",
+      "notification",
+      "side-nav",
+      "toast",
+      "toolbar"
+    ],
+    "group-label": [
+      "context-menu",
+      "menu",
+      "menubar",
+      "side-nav"
+    ],
+    "guide": [
+      "signature-pad"
+    ],
+    "handle": [
+      "resizable"
+    ],
+    "header": [
+      "accordion",
+      "calendar",
+      "card",
+      "code-view",
+      "diff-view",
+      "floating-panel",
+      "layout",
+      "table"
+    ],
+    "heading": [
+      "calendar",
+      "typography"
+    ],
+    "heading-month-trigger": [
+      "calendar"
+    ],
+    "heading-year-trigger": [
+      "calendar"
+    ],
+    "hidden-input": [
+      "checkbox",
+      "checkbox-group",
+      "color-picker",
+      "combobox",
+      "date-field",
+      "file-upload",
+      "image-cropper",
+      "pin-input",
+      "radio-group",
+      "rating",
+      "segmented",
+      "signature-pad",
+      "slider",
+      "switch",
+      "tags-input",
+      "time-field",
+      "time-picker",
+      "tree-select"
+    ],
+    "hidden-select": [
+      "select"
+    ],
+    "icon": [
+      "alert",
+      "empty-state",
+      "reasoning",
+      "result"
+    ],
+    "image": [
+      "avatar",
+      "image",
+      "image-cropper",
+      "image-viewer"
+    ],
+    "increment-trigger": [
+      "number-field"
+    ],
+    "indicator": [
+      "accordion",
+      "anchor",
+      "badge",
+      "button",
+      "carousel",
+      "cascader",
+      "checkbox",
+      "checkbox-group",
+      "clipboard",
+      "collapsible",
+      "navigation-menu",
+      "radio-group",
+      "reasoning",
+      "segmented",
+      "select",
+      "steps",
+      "timeline",
+      "tool-call",
+      "tree-select"
+    ],
+    "indicator-group": [
+      "carousel"
+    ],
+    "input": [
+      "cascader",
+      "clipboard",
+      "combobox",
+      "editable",
+      "mention",
+      "number-field",
+      "password-input",
+      "pin-input",
+      "prompt-input",
+      "tags-input",
+      "text-field",
+      "time-picker",
+      "tool-call"
+    ],
+    "input-row": [
+      "prompt-input"
+    ],
+    "item": [
+      "accordion",
+      "anchor",
+      "breadcrumb",
+      "carousel",
+      "cascader",
+      "checkbox-group",
+      "combobox",
+      "context-menu",
+      "descriptions",
+      "dynamic-input",
+      "file-upload",
+      "grid",
+      "json-viewer",
+      "list",
+      "listbox",
+      "masonry",
+      "mention",
+      "menu",
+      "menubar",
+      "message-feed",
+      "navigation-menu",
+      "notification",
+      "pagination",
+      "popselect",
+      "radio-group",
+      "rating",
+      "segmented",
+      "select",
+      "side-nav",
+      "sortable",
+      "steps",
+      "tags-input",
+      "time-picker",
+      "timeline",
+      "timer",
+      "toggle-group",
+      "toolbar",
+      "transfer",
+      "tree",
+      "tree-select",
+      "virtualizer"
+    ],
+    "item-action": [
+      "dynamic-input",
+      "list"
+    ],
+    "item-action-trigger": [
+      "notification"
+    ],
+    "item-checkbox": [
+      "transfer",
+      "tree"
+    ],
+    "item-close-trigger": [
+      "notification"
+    ],
+    "item-content": [
+      "dynamic-input",
+      "list"
+    ],
+    "item-delete-trigger": [
+      "dynamic-input",
+      "file-upload",
+      "select",
+      "tags-input"
+    ],
+    "item-description": [
+      "list",
+      "notification"
+    ],
+    "item-drag-trigger": [
+      "sortable"
+    ],
+    "item-group": [
+      "carousel",
+      "combobox",
+      "file-upload",
+      "listbox"
+    ],
+    "item-group-label": [
+      "combobox",
+      "listbox"
+    ],
+    "item-indicator": [
+      "cascader",
+      "combobox",
+      "context-menu",
+      "listbox",
+      "menubar",
+      "notification",
+      "popselect",
+      "select",
+      "tree",
+      "tree-select"
+    ],
+    "item-input": [
+      "tags-input"
+    ],
+    "item-key": [
+      "json-viewer"
+    ],
+    "item-label": [
+      "message-feed"
+    ],
+    "item-media": [
+      "list"
+    ],
+    "item-name": [
+      "file-upload"
+    ],
+    "item-preview": [
+      "file-upload",
+      "tags-input"
+    ],
+    "item-size-text": [
+      "file-upload"
+    ],
+    "item-text": [
+      "cascader",
+      "checkbox-group",
+      "combobox",
+      "context-menu",
+      "listbox",
+      "mention",
+      "menubar",
+      "popselect",
+      "radio-group",
+      "segmented",
+      "select",
+      "tags-input",
+      "transfer",
+      "tree",
+      "tree-select"
+    ],
+    "item-title": [
+      "list",
+      "notification"
+    ],
+    "item-value": [
+      "json-viewer"
+    ],
+    "key": [
+      "hotkeys"
+    ],
+    "label": [
+      "button",
+      "cascader",
+      "checkbox",
+      "checkbox-group",
+      "clipboard",
+      "color-picker",
+      "combobox",
+      "date-field",
+      "date-picker",
+      "descriptions",
+      "editable",
+      "field",
+      "file-upload",
+      "listbox",
+      "number-field",
+      "password-input",
+      "pin-input",
+      "progress",
+      "radio-group",
+      "rating",
+      "reasoning",
+      "select",
+      "signature-pad",
+      "slider",
+      "spinner",
+      "statistic",
+      "switch",
+      "tag",
+      "tags-input",
+      "text-field",
+      "time-field",
+      "time-picker",
+      "tool-call",
+      "tree",
+      "tree-select"
+    ],
+    "lang-label": [
+      "code-view"
+    ],
+    "legend": [
+      "fieldset",
+      "heatmap"
+    ],
+    "legend-item": [
+      "heatmap"
+    ],
+    "legend-label": [
+      "heatmap"
+    ],
+    "line": [
+      "code-view",
+      "log"
+    ],
+    "line-content": [
+      "code-view",
+      "diff-view"
+    ],
+    "line-number": [
+      "code-view",
+      "diff-view"
+    ],
+    "link": [
+      "anchor",
+      "breadcrumb",
+      "navigation-menu",
+      "side-nav",
+      "typography"
+    ],
+    "link-text": [
+      "side-nav"
+    ],
+    "list": [
+      "anchor",
+      "breadcrumb",
+      "float-button",
+      "message-feed",
+      "navigation-menu",
+      "select",
+      "side-nav",
+      "steps",
+      "tabs",
+      "transfer"
+    ],
+    "live-region": [
+      "approval",
+      "log",
+      "markdown-stream",
+      "message-feed",
+      "question-flow",
+      "sortable",
+      "table",
+      "tabs",
+      "tree"
+    ],
+    "loading": [
+      "table"
+    ],
+    "logo": [
+      "qr-code"
+    ],
+    "mark": [
+      "highlight",
+      "slider"
+    ],
+    "mark-label": [
+      "slider"
+    ],
+    "marks": [
+      "slider"
+    ],
+    "month-block": [
+      "heatmap"
+    ],
+    "month-label": [
+      "heatmap"
+    ],
+    "move-down-trigger": [
+      "dynamic-input"
+    ],
+    "move-up-trigger": [
+      "dynamic-input"
+    ],
+    "next-trigger": [
+      "calendar",
+      "carousel",
+      "image-viewer",
+      "pagination",
+      "question-flow",
+      "tour"
+    ],
+    "next-year-trigger": [
+      "calendar"
+    ],
+    "node-drag-trigger": [
+      "tree"
+    ],
+    "note": [
+      "approval",
+      "question-flow"
+    ],
+    "option": [
+      "question-flow"
+    ],
+    "option-group": [
+      "question-flow"
+    ],
+    "option-indicator": [
+      "question-flow"
+    ],
+    "option-label": [
+      "question-flow"
+    ],
+    "output": [
+      "tool-call"
+    ],
+    "overflow": [
+      "avatar-group"
+    ],
+    "page-size-select": [
+      "pagination"
+    ],
+    "panel": [
+      "splitter"
+    ],
+    "panel-count": [
+      "transfer"
+    ],
+    "panel-header": [
+      "transfer"
+    ],
+    "panel-title": [
+      "transfer"
+    ],
+    "paragraph": [
+      "typography"
+    ],
+    "positioner": [
+      "cascader",
+      "color-picker",
+      "combobox",
+      "context-menu",
+      "date-picker",
+      "dialog",
+      "drawer",
+      "floating-panel",
+      "hover-card",
+      "image-viewer",
+      "mention",
+      "menu",
+      "menubar",
+      "pagination",
+      "popconfirm",
+      "popover",
+      "popselect",
+      "select",
+      "side-nav",
+      "time-picker",
+      "tooltip",
+      "tour",
+      "tree-select"
+    ],
+    "pre": [
+      "code-view"
+    ],
+    "prefix": [
+      "button",
+      "statistic"
+    ],
+    "preset": [
+      "date-picker",
+      "time-picker"
+    ],
+    "presets": [
+      "date-picker",
+      "time-picker"
+    ],
+    "prev-trigger": [
+      "calendar",
+      "carousel",
+      "image-viewer",
+      "pagination",
+      "question-flow",
+      "tour"
+    ],
+    "prev-year-trigger": [
+      "calendar"
+    ],
+    "preview": [
+      "editable",
+      "json-viewer"
+    ],
+    "progress-text": [
+      "tour"
+    ],
+    "prompt": [
+      "question-flow"
+    ],
+    "question": [
+      "question-flow"
+    ],
+    "range": [
+      "loading-bar",
+      "progress",
+      "slider"
+    ],
+    "reset-trigger": [
+      "form",
+      "image-viewer"
+    ],
+    "resize-trigger": [
+      "floating-panel",
+      "splitter"
+    ],
+    "result": [
+      "approval",
+      "question-flow"
+    ],
+    "root": [
+      "accordion",
+      "affix",
+      "alert",
+      "anchor",
+      "approval",
+      "avatar",
+      "avatar-group",
+      "back-top",
+      "badge",
+      "breadcrumb",
+      "button",
+      "button-group",
+      "calendar",
+      "card",
+      "carousel",
+      "cascader",
+      "checkbox",
+      "checkbox-group",
+      "clipboard",
+      "code-view",
+      "collapsible",
+      "color-picker",
+      "combobox",
+      "context-menu",
+      "countdown",
+      "date-field",
+      "date-picker",
+      "descriptions",
+      "diff-view",
+      "download-trigger",
+      "drawer",
+      "dynamic-input",
+      "editable",
+      "ellipsis",
+      "empty-state",
+      "field",
+      "fieldset",
+      "file-upload",
+      "flex",
+      "float-button",
+      "floating-panel",
+      "form",
+      "gradient-text",
+      "grid",
+      "heatmap",
+      "highlight",
+      "hotkeys",
+      "hover-card",
+      "icon",
+      "icon-wrapper",
+      "image",
+      "image-cropper",
+      "infinite-scroll",
+      "json-viewer",
+      "layout",
+      "list",
+      "listbox",
+      "loading-bar",
+      "log",
+      "markdown-stream",
+      "marquee",
+      "masonry",
+      "mention",
+      "menubar",
+      "message-feed",
+      "navigation-menu",
+      "notification",
+      "number-animation",
+      "number-field",
+      "page-header",
+      "pagination",
+      "password-input",
+      "pin-input",
+      "popconfirm",
+      "popselect",
+      "progress",
+      "prompt-input",
+      "qr-code",
+      "question-flow",
+      "radio-group",
+      "rating",
+      "reasoning",
+      "resizable",
+      "result",
+      "scroll-area",
+      "scrollbar",
+      "segmented",
+      "select",
+      "separator",
+      "side-nav",
+      "signature-pad",
+      "skeleton",
+      "slider",
+      "sortable",
+      "space",
+      "spinner",
+      "splitter",
+      "statistic",
+      "steps",
+      "switch",
+      "table",
+      "tabs",
+      "tag",
+      "tags-input",
+      "text-field",
+      "time",
+      "time-field",
+      "time-picker",
+      "timeline",
+      "timer",
+      "toast",
+      "toggle",
+      "toggle-group",
+      "tool-call",
+      "toolbar",
+      "tour",
+      "transfer",
+      "tree",
+      "tree-select",
+      "typography",
+      "virtualizer",
+      "watermark"
+    ],
+    "rotate-left-trigger": [
+      "image-viewer"
+    ],
+    "rotate-right-trigger": [
+      "image-viewer"
+    ],
+    "row": [
+      "diff-view",
+      "heatmap",
+      "table"
+    ],
+    "row-drag-trigger": [
+      "table"
+    ],
+    "row-label": [
+      "heatmap"
+    ],
+    "row-select-trigger": [
+      "table"
+    ],
+    "scope-group": [
+      "approval"
+    ],
+    "scope-indicator": [
+      "approval"
+    ],
+    "scope-item": [
+      "approval"
+    ],
+    "scope-label": [
+      "approval"
+    ],
+    "scroll-button": [
+      "log",
+      "message-feed"
+    ],
+    "scrollbar": [
+      "scroll-area"
+    ],
+    "search": [
+      "transfer"
+    ],
+    "search-item": [
+      "cascader"
+    ],
+    "search-list": [
+      "cascader"
+    ],
+    "segment": [
+      "date-field",
+      "diff-view",
+      "signature-pad",
+      "time-field"
+    ],
+    "segment-group": [
+      "date-field",
+      "date-picker",
+      "time-field",
+      "time-picker"
+    ],
+    "select-all-trigger": [
+      "checkbox-group",
+      "table",
+      "transfer"
+    ],
+    "sentinel": [
+      "infinite-scroll"
+    ],
+    "separator": [
+      "breadcrumb",
+      "context-menu",
+      "hotkeys",
+      "menu",
+      "menubar",
+      "steps",
+      "timer",
+      "toolbar"
+    ],
+    "sider": [
+      "layout"
+    ],
+    "sider-trigger": [
+      "layout"
+    ],
+    "skip-trigger": [
+      "question-flow",
+      "tour"
+    ],
+    "sort-trigger": [
+      "table"
+    ],
+    "source-panel": [
+      "transfer"
+    ],
+    "split": [
+      "space"
+    ],
+    "spotlight": [
+      "tour"
+    ],
+    "stage-trigger": [
+      "floating-panel"
+    ],
+    "stat": [
+      "diff-view"
+    ],
+    "status": [
+      "signature-pad",
+      "tool-call"
+    ],
+    "submit-trigger": [
+      "editable",
+      "form",
+      "prompt-input",
+      "question-flow"
+    ],
+    "subtitle": [
+      "page-header"
+    ],
+    "suffix": [
+      "button",
+      "statistic"
+    ],
+    "summary": [
+      "tool-call"
+    ],
+    "swatch": [
+      "color-picker"
+    ],
+    "swatch-group": [
+      "color-picker"
+    ],
+    "swatch-item": [
+      "color-picker"
+    ],
+    "tab-drag-trigger": [
+      "tabs"
+    ],
+    "tag": [
+      "select"
+    ],
+    "target-panel": [
+      "transfer"
+    ],
+    "text": [
+      "checkbox",
+      "json-viewer",
+      "switch",
+      "typography"
+    ],
+    "thumb": [
+      "scrollbar",
+      "slider",
+      "switch"
+    ],
+    "time": [
+      "timeline"
+    ],
+    "time-column": [
+      "date-picker"
+    ],
+    "time-item": [
+      "date-picker"
+    ],
+    "timer": [
+      "approval"
+    ],
+    "title": [
+      "alert",
+      "approval",
+      "card",
+      "dialog",
+      "drawer",
+      "empty-state",
+      "floating-panel",
+      "page-header",
+      "popconfirm",
+      "popover",
+      "result",
+      "steps",
+      "timeline",
+      "toast",
+      "tour"
+    ],
+    "to-source-trigger": [
+      "transfer"
+    ],
+    "to-target-trigger": [
+      "transfer"
+    ],
+    "token": [
+      "code-view",
+      "diff-view"
+    ],
+    "toolbar": [
+      "image-viewer"
+    ],
+    "tooltip": [
+      "heatmap"
+    ],
+    "track": [
+      "loading-bar",
+      "progress",
+      "question-flow",
+      "scrollbar",
+      "slider"
+    ],
+    "tree": [
+      "json-viewer",
+      "tree",
+      "tree-select"
+    ],
+    "trigger": [
+      "accordion",
+      "back-top",
+      "cascader",
+      "clipboard",
+      "collapsible",
+      "color-picker",
+      "combobox",
+      "context-menu",
+      "date-picker",
+      "dialog",
+      "drawer",
+      "file-upload",
+      "float-button",
+      "floating-panel",
+      "hover-card",
+      "image-viewer",
+      "menu",
+      "menubar",
+      "navigation-menu",
+      "popconfirm",
+      "popover",
+      "popselect",
+      "reasoning",
+      "select",
+      "steps",
+      "tabs",
+      "time-picker",
+      "tool-call",
+      "tooltip",
+      "tree-select"
+    ],
+    "truncation": [
+      "diff-view"
+    ],
+    "value": [
+      "descriptions",
+      "statistic"
+    ],
+    "value-text": [
+      "cascader",
+      "color-picker",
+      "select",
+      "tree-select"
+    ],
+    "viewport": [
+      "carousel",
+      "diff-view",
+      "image-cropper",
+      "image-viewer",
+      "log",
+      "message-feed",
+      "navigation-menu",
+      "question-flow",
+      "scroll-area",
+      "virtualizer"
+    ],
+    "visibility-trigger": [
+      "password-input"
+    ],
+    "week-day": [
+      "calendar"
+    ],
+    "week-day-label": [
+      "heatmap"
+    ],
+    "week-number": [
+      "calendar"
+    ],
+    "week-row": [
+      "calendar"
+    ],
+    "zoom-in-trigger": [
+      "image-viewer"
+    ],
+    "zoom-out-trigger": [
+      "image-viewer"
+    ]
+  },
+  "tails": {
+    "action": true,
+    "approval": true,
+    "area": true,
+    "arrow": true,
+    "backdrop": true,
+    "block": true,
+    "body": true,
+    "bone": true,
+    "branch": true,
+    "button": {
+      "synonymOf": "trigger",
+      "$description": "规范 §17.4：能点的东西一律用具名 *-trigger",
+      "pendingUsers": [
+        "scroll-button"
+      ]
+    },
+    "calendar": true,
+    "canvas": true,
+    "caption": true,
+    "cell": true,
+    "checkbox": true,
+    "code": true,
+    "column": true,
+    "connector": true,
+    "content": true,
+    "control": true,
+    "corner": true,
+    "count": true,
+    "counter": true,
+    "cover": true,
+    "day": true,
+    "description": true,
+    "dropzone": true,
+    "duration": true,
+    "ellipsis": true,
+    "empty": true,
+    "error": true,
+    "extra": true,
+    "fallback": true,
+    "filename": true,
+    "footer": true,
+    "gap": true,
+    "glyph": true,
+    "grid": true,
+    "group": true,
+    "guide": true,
+    "handle": true,
+    "head": true,
+    "header": true,
+    "heading": true,
+    "icon": true,
+    "image": true,
+    "indicator": true,
+    "input": true,
+    "item": true,
+    "key": true,
+    "label": true,
+    "legend": true,
+    "line": true,
+    "link": true,
+    "list": true,
+    "loading": true,
+    "logo": true,
+    "mark": true,
+    "marks": true,
+    "media": true,
+    "name": true,
+    "note": true,
+    "number": true,
+    "option": true,
+    "output": true,
+    "overflow": true,
+    "panel": true,
+    "paragraph": true,
+    "positioner": true,
+    "pre": true,
+    "prefix": true,
+    "preset": true,
+    "presets": true,
+    "preview": true,
+    "prompt": true,
+    "question": true,
+    "range": true,
+    "region": true,
+    "result": true,
+    "root": true,
+    "row": true,
+    "scrollbar": true,
+    "search": true,
+    "segment": true,
+    "select": true,
+    "sentinel": true,
+    "separator": true,
+    "sider": true,
+    "slider": true,
+    "split": true,
+    "spotlight": true,
+    "stat": true,
+    "status": true,
+    "subtitle": true,
+    "suffix": true,
+    "summary": true,
+    "swatch": true,
+    "tag": true,
+    "text": true,
+    "thumb": true,
+    "time": true,
+    "timer": true,
+    "title": true,
+    "token": true,
+    "toolbar": true,
+    "tooltip": true,
+    "track": true,
+    "tree": true,
+    "trigger": true,
+    "truncation": true,
+    "value": true,
+    "viewport": true
+  },
+  "retired": {}
+}

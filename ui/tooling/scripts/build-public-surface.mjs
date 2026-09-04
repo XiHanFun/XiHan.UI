@@ -229,6 +229,7 @@ const tokens = sorted(new Set(Object.keys(JSON.parse(await readFile(TOKENS, 'utf
 const layers = new Set()
 const slots = new Set()
 const stateValues = new Set()
+const keyframes = new Set()
 for (const file of await readdir(SKINS)) {
   if (!file.endsWith('.css'))
     continue
@@ -243,6 +244,9 @@ for (const file of await readdir(SKINS)) {
     slots.add(m[1])
   for (const m of css.matchAll(/\[data-state=['"]([a-z0-9-]+)['"]\]/g))
     stateValues.add(m[1])
+  // 关键帧名字是受支持的覆盖点（规范 §8.7 约束 3），改名与删名同样是破坏性变更。
+  for (const m of css.matchAll(/@keyframes\s+([\w-]+)/g))
+    keyframes.add(m[1])
 }
 
 // ── 六、自定义元素标签与 attribute ──
@@ -275,6 +279,7 @@ const surface = {
   tokens,
   cssLayers: sorted(layers),
   cssSlots: sorted(slots),
+  keyframes: sorted(keyframes),
   elements,
 }
 
@@ -287,5 +292,5 @@ console.log(`  导出名 ${count(exportsByPackage)} 个`)
 console.log(`  解剖 ${Object.keys(anatomy).length} 个 scope · 部件配对 ${count(anatomy)} 条`)
 console.log(`  组件 props ${Object.keys(componentProps).length} 个组件 · ${count(componentProps)} 个名字`)
 console.log(`  data-* 属性 ${surface.dataAttributes.length} 种 · data-state 取值 ${surface.dataStateValues.length} 个`)
-console.log(`  令牌 ${tokens.length} 个 · @layer ${surface.cssLayers.length} 个 · 组件槽 ${surface.cssSlots.length} 个`)
+console.log(`  令牌 ${tokens.length} 个 · @layer ${surface.cssLayers.length} 个 · 组件槽 ${surface.cssSlots.length} 个 · 关键帧 ${surface.keyframes.length} 个`)
 console.log(`  自定义元素 ${Object.keys(elements).length} 个`)

@@ -650,6 +650,12 @@ const truth = {
       return (await surface()).cssSlots.length
     },
   },
+  基线关键帧数: {
+    how: 'public-surface.json 的 keyframes 条数',
+    async value() {
+      return (await surface()).keyframes.length
+    },
+  },
   基线元素数: {
     how: 'public-surface.json 的 elements 键数',
     async value() {
@@ -1226,6 +1232,7 @@ const TABLE = [
   ['docs/guide/versioning.md', /个组件覆盖槽、(\d+) 个自定义元素及其/, '基线元素数'],
   ['docs/guide/versioning.md', /\| `@layer` 名与声明顺序 \| (\d+) \|/, '基线层名数'],
   ['docs/guide/versioning.md', /\| 组件覆盖槽 \| (\d+)（覆盖 \d+ 个组件）/, '基线覆盖槽数'],
+  ['docs/guide/versioning.md', /\| 关键帧名 \| (\d+) \|/, '基线关键帧数'],
   ['docs/guide/versioning.md', /\| 组件覆盖槽 \| \d+（覆盖 (\d+) 个组件）/, '覆盖槽涉及的组件数'],
   ['docs/guide/versioning.md', /\| Vue 组件导出 `Xh\*` \| (\d+)（\d+ 个家族）/, 'VueXh导出数'],
   ['docs/guide/versioning.md', /\| `@xihan-ui\/vue` \| (\d+) 个组件、/, 'VueXh导出数'],

@@ -1,0 +1,679 @@
+{
+  "$description": "关键帧的名字与内容真源。关键帧逐皮肤自带，同名散在多份皮肤里各定义一次，本表登记「这个名字全库该长什么样」。duplicateContent 记的是现存的「一个视觉多个名字」，每消掉一组就删一条，删完判据 4 即对全库生效。",
+  "frames": {
+    "xh-accordion-collapse": {
+      "content": "from{grid-template-rows:1fr;padding-block:var(--xh-accordion-content-py,var(--xh-stack-gap-md))}to{grid-template-rows:0fr;padding-block:0}",
+      "definedIn": [
+        "accordion.css"
+      ],
+      "consumers": [
+        "accordion"
+      ]
+    },
+    "xh-accordion-expand": {
+      "content": "from{grid-template-rows:0fr;padding-block:0}to{grid-template-rows:1fr;padding-block:var(--xh-accordion-content-py,var(--xh-stack-gap-md))}",
+      "definedIn": [
+        "accordion.css"
+      ],
+      "consumers": [
+        "accordion"
+      ]
+    },
+    "xh-approval-in": {
+      "content": "from{opacity:0;translate:0 var(--xh-motion-distance-md)}to{opacity:1;translate:0 0}",
+      "definedIn": [
+        "approval.css"
+      ],
+      "consumers": [
+        "approval"
+      ]
+    },
+    "xh-approval-result-in": {
+      "content": "from{opacity:0;scale:var(--xh-motion-scale-enter)}to{opacity:1;scale:1}",
+      "definedIn": [
+        "approval.css"
+      ],
+      "consumers": [
+        "approval"
+      ]
+    },
+    "xh-approval-rotate": {
+      "content": "to{rotate:360deg}",
+      "definedIn": [
+        "approval.css"
+      ],
+      "consumers": [
+        "approval"
+      ]
+    },
+    "xh-clipboard-rotate": {
+      "content": "to{rotate:360deg}",
+      "definedIn": [
+        "clipboard.css"
+      ],
+      "consumers": [
+        "clipboard"
+      ]
+    },
+    "xh-collapsible-collapse": {
+      "content": "from{grid-template-rows:1fr;padding-block:var(--xh-collapsible-content-py,var(--xh-stack-gap-md))}to{grid-template-rows:0fr;padding-block:0}",
+      "definedIn": [
+        "collapsible.css"
+      ],
+      "consumers": [
+        "collapsible"
+      ]
+    },
+    "xh-collapsible-expand": {
+      "content": "from{grid-template-rows:0fr;padding-block:0}to{grid-template-rows:1fr;padding-block:var(--xh-collapsible-content-py,var(--xh-stack-gap-md))}",
+      "definedIn": [
+        "collapsible.css"
+      ],
+      "consumers": [
+        "collapsible"
+      ]
+    },
+    "xh-dialog-in": {
+      "content": "from{opacity:0;translate:0 var(--xh-motion-distance-md);scale:var(--xh-motion-scale-enter)}to{opacity:1;translate:0 0;scale:1}",
+      "definedIn": [
+        "dialog.css"
+      ],
+      "consumers": [
+        "dialog"
+      ]
+    },
+    "xh-dialog-out": {
+      "content": "from{opacity:1;translate:0 0;scale:1}to{opacity:0;translate:0 var(--xh-motion-distance-md);scale:var(--xh-motion-scale-enter)}",
+      "definedIn": [
+        "dialog.css"
+      ],
+      "consumers": [
+        "dialog"
+      ]
+    },
+    "xh-diff-view-reveal": {
+      "content": "from{opacity:0;translate:0 calc(-1 * var(--xh-motion-distance-sm))}to{opacity:1;translate:0 0}",
+      "definedIn": [
+        "diff-view.css"
+      ],
+      "consumers": [
+        "diff-view"
+      ]
+    },
+    "xh-download-trigger-rotate": {
+      "content": "to{rotate:360deg}",
+      "definedIn": [
+        "download-trigger.css"
+      ],
+      "consumers": [
+        "download-trigger"
+      ]
+    },
+    "xh-drawer-in-bottom": {
+      "content": "from{translate:0 var(--xh-_drawer-shift-block,100%)}to{translate:0 0}",
+      "definedIn": [
+        "drawer.css"
+      ],
+      "consumers": [
+        "drawer"
+      ]
+    },
+    "xh-drawer-in-left": {
+      "content": "from{translate:calc(-1 * var(--xh-_drawer-shift-inline,100%)) 0}to{translate:0 0}",
+      "definedIn": [
+        "drawer.css"
+      ],
+      "consumers": [
+        "drawer"
+      ]
+    },
+    "xh-drawer-in-right": {
+      "content": "from{translate:var(--xh-_drawer-shift-inline,100%) 0}to{translate:0 0}",
+      "definedIn": [
+        "drawer.css"
+      ],
+      "consumers": [
+        "drawer"
+      ]
+    },
+    "xh-drawer-in-top": {
+      "content": "from{translate:0 calc(-1 * var(--xh-_drawer-shift-block,100%))}to{translate:0 0}",
+      "definedIn": [
+        "drawer.css"
+      ],
+      "consumers": [
+        "drawer"
+      ]
+    },
+    "xh-drawer-out-bottom": {
+      "content": "from{translate:0 0}to{translate:0 var(--xh-_drawer-shift-block,100%)}",
+      "definedIn": [
+        "drawer.css"
+      ],
+      "consumers": [
+        "drawer"
+      ]
+    },
+    "xh-drawer-out-left": {
+      "content": "from{translate:0 0}to{translate:calc(-1 * var(--xh-_drawer-shift-inline,100%)) 0}",
+      "definedIn": [
+        "drawer.css"
+      ],
+      "consumers": [
+        "drawer"
+      ]
+    },
+    "xh-drawer-out-right": {
+      "content": "from{translate:0 0}to{translate:var(--xh-_drawer-shift-inline,100%) 0}",
+      "definedIn": [
+        "drawer.css"
+      ],
+      "consumers": [
+        "drawer"
+      ]
+    },
+    "xh-drawer-out-top": {
+      "content": "from{translate:0 0}to{translate:0 calc(-1 * var(--xh-_drawer-shift-block,100%))}",
+      "definedIn": [
+        "drawer.css"
+      ],
+      "consumers": [
+        "drawer"
+      ]
+    },
+    "xh-fade-in": {
+      "content": "from{opacity:0}to{opacity:1}",
+      "definedIn": [
+        "dialog.css",
+        "drawer.css",
+        "image-viewer.css",
+        "tour.css"
+      ],
+      "consumers": [
+        "dialog",
+        "drawer",
+        "image-viewer",
+        "tour"
+      ]
+    },
+    "xh-fade-out": {
+      "content": "from{opacity:1}to{opacity:0}",
+      "definedIn": [
+        "dialog.css",
+        "drawer.css",
+        "image-viewer.css",
+        "tour.css"
+      ],
+      "consumers": [
+        "dialog",
+        "drawer",
+        "image-viewer",
+        "tour"
+      ]
+    },
+    "xh-form-summary-enter": {
+      "content": "from{opacity:0;translate:0 calc(-1 * var(--xh-motion-distance-sm))}to{opacity:1;translate:0 0}",
+      "definedIn": [
+        "form.css"
+      ],
+      "consumers": [
+        "form"
+      ]
+    },
+    "xh-log-button-in": {
+      "content": "from{opacity:0;scale:var(--xh-motion-scale-enter)}to{opacity:1;scale:1}",
+      "definedIn": [
+        "log.css"
+      ],
+      "consumers": [
+        "log"
+      ]
+    },
+    "xh-markdown-stream-caret": {
+      "content": "50%{opacity:0}",
+      "definedIn": [
+        "markdown-stream.css"
+      ],
+      "consumers": [
+        "markdown-stream"
+      ]
+    },
+    "xh-markdown-stream-caret-in": {
+      "content": "from{opacity:0}",
+      "definedIn": [
+        "markdown-stream.css"
+      ],
+      "consumers": [
+        "markdown-stream"
+      ]
+    },
+    "xh-marquee-x": {
+      "content": "from{transform:translateX(var(--xh-_marquee-from))}to{transform:translateX(var(--xh-_marquee-to))}",
+      "definedIn": [
+        "marquee.css"
+      ],
+      "consumers": []
+    },
+    "xh-marquee-y": {
+      "content": "from{transform:translateY(var(--xh-_marquee-from))}to{transform:translateY(var(--xh-_marquee-to))}",
+      "definedIn": [
+        "marquee.css"
+      ],
+      "consumers": []
+    },
+    "xh-message-feed-button-in": {
+      "content": "from{opacity:0;scale:var(--xh-motion-scale-enter)}to{opacity:1;scale:1}",
+      "definedIn": [
+        "message-feed.css"
+      ],
+      "consumers": [
+        "message-feed"
+      ]
+    },
+    "xh-message-feed-item-in": {
+      "content": "from{opacity:0;translate:0 var(--xh-motion-distance-md)}to{opacity:1;translate:0 0}",
+      "definedIn": [
+        "message-feed.css"
+      ],
+      "consumers": [
+        "message-feed"
+      ]
+    },
+    "xh-notification-in": {
+      "content": "from{opacity:0;translate:0 var(--xh-motion-distance-md);scale:var(--xh-motion-scale-enter)}to{opacity:1;translate:0 0;scale:1}",
+      "definedIn": [
+        "notification.css"
+      ],
+      "consumers": [
+        "notification"
+      ]
+    },
+    "xh-notification-out": {
+      "content": "from{opacity:1;translate:0 0;scale:1}to{opacity:0;translate:0 var(--xh-motion-distance-md);scale:var(--xh-motion-scale-enter)}",
+      "definedIn": [
+        "notification.css"
+      ],
+      "consumers": [
+        "notification"
+      ]
+    },
+    "xh-notification-spin": {
+      "content": "to{rotate:360deg}",
+      "definedIn": [
+        "notification.css"
+      ],
+      "consumers": [
+        "notification"
+      ]
+    },
+    "xh-pop-in": {
+      "content": "from{opacity:0;scale:var(--xh-motion-scale-enter)}to{opacity:1;scale:1}",
+      "definedIn": [
+        "cascader.css",
+        "color-picker.css",
+        "combobox.css",
+        "context-menu.css",
+        "date-picker.css",
+        "hover-card.css",
+        "mention.css",
+        "menu.css",
+        "menubar.css",
+        "navigation-menu.css",
+        "pagination.css",
+        "popconfirm.css",
+        "popover.css",
+        "popselect.css",
+        "select.css",
+        "side-nav.css",
+        "time-picker.css",
+        "tooltip.css",
+        "tour.css",
+        "tree-select.css"
+      ],
+      "consumers": [
+        "cascader",
+        "color-picker",
+        "combobox",
+        "context-menu",
+        "date-picker",
+        "hover-card",
+        "mention",
+        "menu",
+        "menubar",
+        "navigation-menu",
+        "pagination",
+        "popconfirm",
+        "popover",
+        "popselect",
+        "select",
+        "side-nav",
+        "time-picker",
+        "tooltip",
+        "tour",
+        "tree-select"
+      ]
+    },
+    "xh-pop-out": {
+      "content": "from{opacity:1;scale:1}to{opacity:0;scale:var(--xh-motion-scale-enter)}",
+      "definedIn": [
+        "cascader.css",
+        "color-picker.css",
+        "combobox.css",
+        "context-menu.css",
+        "date-picker.css",
+        "hover-card.css",
+        "mention.css",
+        "menu.css",
+        "menubar.css",
+        "navigation-menu.css",
+        "pagination.css",
+        "popconfirm.css",
+        "popover.css",
+        "popselect.css",
+        "select.css",
+        "side-nav.css",
+        "time-picker.css",
+        "tooltip.css",
+        "tour.css",
+        "tree-select.css"
+      ],
+      "consumers": [
+        "cascader",
+        "color-picker",
+        "combobox",
+        "context-menu",
+        "date-picker",
+        "hover-card",
+        "mention",
+        "menu",
+        "menubar",
+        "navigation-menu",
+        "pagination",
+        "popconfirm",
+        "popover",
+        "popselect",
+        "select",
+        "side-nav",
+        "time-picker",
+        "tooltip",
+        "tour",
+        "tree-select"
+      ]
+    },
+    "xh-popconfirm-rotate": {
+      "content": "to{transform:rotate(1turn)}",
+      "definedIn": [
+        "popconfirm.css"
+      ],
+      "consumers": [
+        "popconfirm"
+      ]
+    },
+    "xh-progress-indeterminate": {
+      "content": "from{inset-inline-start:-40%}to{inset-inline-start:100%}",
+      "definedIn": [
+        "progress.css"
+      ],
+      "consumers": [
+        "progress"
+      ]
+    },
+    "xh-question-flow-in": {
+      "content": "from{opacity:0;translate:0 var(--xh-motion-distance-md)}to{opacity:1;translate:0 0}",
+      "definedIn": [
+        "question-flow.css"
+      ],
+      "consumers": [
+        "question-flow"
+      ]
+    },
+    "xh-question-flow-result-in": {
+      "content": "from{opacity:0;scale:var(--xh-motion-scale-enter)}to{opacity:1;scale:1}",
+      "definedIn": [
+        "question-flow.css"
+      ],
+      "consumers": [
+        "question-flow"
+      ]
+    },
+    "xh-reasoning-collapse": {
+      "content": "from{grid-template-rows:1fr;padding-block-end:var(--xh-reasoning-py,var(--xh-_reasoning-py))}to{grid-template-rows:0fr;padding-block-end:0}",
+      "definedIn": [
+        "reasoning.css"
+      ],
+      "consumers": [
+        "reasoning"
+      ]
+    },
+    "xh-reasoning-expand": {
+      "content": "from{grid-template-rows:0fr;padding-block-end:0}to{grid-template-rows:1fr;padding-block-end:var(--xh-reasoning-py,var(--xh-_reasoning-py))}",
+      "definedIn": [
+        "reasoning.css"
+      ],
+      "consumers": [
+        "reasoning"
+      ]
+    },
+    "xh-reasoning-fade-in": {
+      "content": "from{opacity:0}to{opacity:1}",
+      "definedIn": [
+        "reasoning.css"
+      ],
+      "consumers": [
+        "reasoning"
+      ]
+    },
+    "xh-reasoning-shimmer": {
+      "content": "from{background-position:150% center}to{background-position:-50% center}",
+      "definedIn": [
+        "reasoning.css"
+      ],
+      "consumers": [
+        "reasoning"
+      ]
+    },
+    "xh-skeleton-shimmer": {
+      "content": "from{background-position:200% 0}to{background-position:-200% 0}",
+      "definedIn": [
+        "skeleton.css"
+      ],
+      "consumers": [
+        "skeleton"
+      ]
+    },
+    "xh-spin": {
+      "content": "to{transform:rotate(360deg)}",
+      "definedIn": [
+        "button.css"
+      ],
+      "consumers": [
+        "button"
+      ]
+    },
+    "xh-spinner-rotate": {
+      "content": "to{transform:rotate(1turn)}",
+      "definedIn": [
+        "spinner.css"
+      ],
+      "consumers": [
+        "spinner"
+      ]
+    },
+    "xh-switch-rotate": {
+      "content": "to{transform:rotate(1turn)}",
+      "definedIn": [
+        "switch.css"
+      ],
+      "consumers": [
+        "switch"
+      ]
+    },
+    "xh-table-loading-pulse": {
+      "content": "from{opacity:var(--xh-state-disabled-opacity)}to{opacity:1}",
+      "definedIn": [
+        "table.css"
+      ],
+      "consumers": [
+        "table"
+      ]
+    },
+    "xh-toast-in": {
+      "content": "from{opacity:0;translate:0 var(--xh-motion-distance-md);scale:var(--xh-motion-scale-enter)}to{opacity:1;translate:0 0;scale:1}",
+      "definedIn": [
+        "toast.css"
+      ],
+      "consumers": [
+        "toast"
+      ]
+    },
+    "xh-toast-out": {
+      "content": "from{opacity:1;translate:0 0;scale:1}to{opacity:0;translate:0 var(--xh-motion-distance-md);scale:var(--xh-motion-scale-enter)}",
+      "definedIn": [
+        "toast.css"
+      ],
+      "consumers": [
+        "toast"
+      ]
+    },
+    "xh-toast-spin": {
+      "content": "to{rotate:360deg}",
+      "definedIn": [
+        "toast.css"
+      ],
+      "consumers": [
+        "toast"
+      ]
+    },
+    "xh-tool-call-collapse": {
+      "content": "from{grid-template-rows:1fr;padding-block:var(--xh-tool-call-py,var(--xh-_tool-call-py))}to{grid-template-rows:0fr;padding-block:0}",
+      "definedIn": [
+        "tool-call.css"
+      ],
+      "consumers": [
+        "tool-call"
+      ]
+    },
+    "xh-tool-call-enter": {
+      "content": "from{opacity:0;translate:0 var(--xh-motion-distance-md)}to{opacity:1;translate:0 0}",
+      "definedIn": [
+        "tool-call.css"
+      ],
+      "consumers": [
+        "tool-call"
+      ]
+    },
+    "xh-tool-call-expand": {
+      "content": "from{grid-template-rows:0fr;padding-block:0}to{grid-template-rows:1fr;padding-block:var(--xh-tool-call-py,var(--xh-_tool-call-py))}",
+      "definedIn": [
+        "tool-call.css"
+      ],
+      "consumers": [
+        "tool-call"
+      ]
+    },
+    "xh-tool-call-shimmer": {
+      "content": "from{background-position:150% center}to{background-position:-50% center}",
+      "definedIn": [
+        "tool-call.css"
+      ],
+      "consumers": [
+        "tool-call"
+      ]
+    },
+    "xh-tour-spotlight-in": {
+      "content": "from{opacity:0;scale:calc(2 - var(--xh-motion-scale-enter))}to{opacity:1;scale:1}",
+      "definedIn": [
+        "tour.css"
+      ],
+      "consumers": [
+        "tour"
+      ]
+    },
+    "xh-tour-spotlight-out": {
+      "content": "from{opacity:1;scale:1}to{opacity:0;scale:calc(2 - var(--xh-motion-scale-enter))}",
+      "definedIn": [
+        "tour.css"
+      ],
+      "consumers": [
+        "tour"
+      ]
+    }
+  },
+  "duplicateContent": {
+    "xh-approval-in": {
+      "$description": "4 个名字是同一段动画，收敛前登记在案",
+      "names": [
+        "xh-approval-in",
+        "xh-message-feed-item-in",
+        "xh-question-flow-in",
+        "xh-tool-call-enter"
+      ]
+    },
+    "xh-approval-result-in": {
+      "$description": "5 个名字是同一段动画，收敛前登记在案",
+      "names": [
+        "xh-approval-result-in",
+        "xh-log-button-in",
+        "xh-message-feed-button-in",
+        "xh-pop-in",
+        "xh-question-flow-result-in"
+      ]
+    },
+    "xh-approval-rotate": {
+      "$description": "5 个名字是同一段动画，收敛前登记在案",
+      "names": [
+        "xh-approval-rotate",
+        "xh-clipboard-rotate",
+        "xh-download-trigger-rotate",
+        "xh-notification-spin",
+        "xh-toast-spin"
+      ]
+    },
+    "xh-fade-in": {
+      "$description": "2 个名字是同一段动画，收敛前登记在案",
+      "names": [
+        "xh-fade-in",
+        "xh-reasoning-fade-in"
+      ]
+    },
+    "xh-dialog-in": {
+      "$description": "3 个名字是同一段动画，收敛前登记在案",
+      "names": [
+        "xh-dialog-in",
+        "xh-notification-in",
+        "xh-toast-in"
+      ]
+    },
+    "xh-dialog-out": {
+      "$description": "3 个名字是同一段动画，收敛前登记在案",
+      "names": [
+        "xh-dialog-out",
+        "xh-notification-out",
+        "xh-toast-out"
+      ]
+    },
+    "xh-diff-view-reveal": {
+      "$description": "2 个名字是同一段动画，收敛前登记在案",
+      "names": [
+        "xh-diff-view-reveal",
+        "xh-form-summary-enter"
+      ]
+    },
+    "xh-popconfirm-rotate": {
+      "$description": "3 个名字是同一段动画，收敛前登记在案",
+      "names": [
+        "xh-popconfirm-rotate",
+        "xh-spinner-rotate",
+        "xh-switch-rotate"
+      ]
+    },
+    "xh-reasoning-shimmer": {
+      "$description": "2 个名字是同一段动画，收敛前登记在案",
+      "names": [
+        "xh-reasoning-shimmer",
+        "xh-tool-call-shimmer"
+      ]
+    }
+  },
+  "retired": {}
+}
