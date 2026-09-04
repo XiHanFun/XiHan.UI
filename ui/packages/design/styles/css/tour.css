@@ -125,10 +125,10 @@
       0 0 0 100vmax var(--xh-tour-spotlight-shroud, var(--xh-bg-overlay));
     /* 换步时框自己滑过去，用户的视线跟得上；逻辑属性照样可过渡 */
     transition:
-      inset-inline-start var(--xh-motion-duration-enter) var(--xh-motion-ease-enter),
-      inset-block-start var(--xh-motion-duration-enter) var(--xh-motion-ease-enter),
-      inline-size var(--xh-motion-duration-enter) var(--xh-motion-ease-enter),
-      block-size var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+      inset-inline-start var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
+      inset-block-start var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
+      inline-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
+      block-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous);
   }
 
   [data-scope='tour'][data-part='spotlight'][hidden] {
@@ -317,7 +317,7 @@
     cursor: pointer;
     transition:
       background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='tour'][data-part='close-trigger'][hidden] {

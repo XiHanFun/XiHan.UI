@@ -923,7 +923,7 @@
   cursor: pointer;
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='diff-view'][data-part='gap-trigger'][hidden] {
@@ -1222,7 +1222,7 @@
   cursor: pointer;
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
 /* 行级删除把手：命中区取行内动作按钮尺寸，圆角取控件圆角 */
@@ -2018,7 +2018,7 @@
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
 /* 两颗钮同高同圆角，尺寸与圆角槽按各自角色命名 */
@@ -3778,7 +3778,7 @@
 [data-scope='json-viewer'][data-part='branch-indicator'] {
   display: inline-block;
   line-height: var(--xh-leading-none);
-  transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='json-viewer'][data-part='branch-indicator'][hidden] {
@@ -3887,7 +3887,7 @@
   overflow: hidden;
   padding: var(--xh-layout-sider-padding, var(--xh-space-3));
   background: var(--xh-layout-sider-bg, var(--xh-bg-subtle));
-  transition: inline-size var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  transition: inline-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous);
 }
 
 /* 折起来时不换行：窄到放不下的那几个字直接被 overflow 裁掉，不会挤成一列竖排 */
@@ -4254,7 +4254,7 @@
   cursor: pointer;
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
 /* 连接层收起按钮时写 hidden 属性，上面的 display 会盖掉 UA 规则，这里补回 */
@@ -6056,7 +6056,7 @@ input[data-scope='mention'][data-part='input'] {
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='popselect'][data-part='clear-trigger']:hover {
@@ -6448,7 +6448,7 @@ input[data-scope='mention'][data-part='input'] {
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='prompt-input'][data-part='submit-trigger'][hidden] {
@@ -6697,7 +6697,7 @@ input[data-scope='mention'][data-part='input'] {
   cursor: pointer;
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='reasoning'][data-part='trigger'][hidden] {
@@ -7327,7 +7327,7 @@ input[data-scope='mention'][data-part='input'] {
   transition:
     color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
 /* 选中态：单选是 role=radio + aria-checked，样式一律读 data-state，不读 ARIA。
@@ -7509,7 +7509,7 @@ input[data-scope='mention'][data-part='input'] {
   cursor: pointer;
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='signature-pad'][data-part='clear-trigger']:hover {
@@ -7819,7 +7819,7 @@ input[data-scope='mention'][data-part='input'] {
   cursor: pointer;
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
 /* closable=false 时连接层同时给了 hidden 与 disabled，这条是它真正收起的那一半 */
@@ -8856,7 +8856,7 @@ input[data-scope='mention'][data-part='input'] {
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
 /* closable=false 时连接层同时给了 hidden 与 disabled，这条是它真正收起的那一半 */
@@ -9334,7 +9334,7 @@ input[data-scope='mention'][data-part='input'] {
   justify-content: center;
   flex: none;
   line-height: var(--xh-leading-none);
-  transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
 /* 没写内容就由皮肤画；作者往部件里塞了自己的图形，这条规则即不命中 */
@@ -9527,8 +9527,8 @@ input[data-scope='mention'][data-part='input'] {
   border-radius: var(--xh-anchor-indicator-radius, var(--xh-shape-pill));
   background: var(--xh-anchor-indicator-color, var(--xh-_anchor-accent));
   transition:
-    inset-block-start var(--xh-motion-duration-enter) var(--xh-motion-ease-enter),
-    block-size var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+    inset-block-start var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
+    block-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous);
 }
 
 /* display 会盖掉 hidden 属性的 UA 规则，无激活项时显式让位 */
@@ -9543,8 +9543,8 @@ input[data-scope='mention'][data-part='input'] {
   inline-size: auto;
   block-size: var(--xh-anchor-indicator-thickness, var(--xh-stroke-thick));
   transition:
-    inset-inline-start var(--xh-motion-duration-enter) var(--xh-motion-ease-enter),
-    inline-size var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+    inset-inline-start var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
+    inline-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous);
 }
 
 /* styles/approval.css */
@@ -9867,7 +9867,7 @@ input[data-scope='mention'][data-part='input'] {
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='approval'][data-part='approve-trigger'][hidden],
@@ -11118,7 +11118,7 @@ input[data-scope='mention'][data-part='input'] {
   flex-direction: row;
   block-size: 100%;
   transition: transform var(--xh-carousel-duration, var(--xh-motion-duration-enter))
-    var(--xh-carousel-ease, var(--xh-motion-ease-enter));
+    var(--xh-carousel-ease, var(--xh-motion-ease-continuous));
 }
 
 [data-scope='carousel'][data-part='item-group'][hidden] {
@@ -11563,7 +11563,7 @@ input[data-scope='mention'][data-part='input'] {
   align-items: center;
   justify-content: center;
   color: var(--xh-cascader-indicator-fg, var(--xh-fg-muted));
-  transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='cascader'][data-part='indicator'][hidden] {
@@ -11608,7 +11608,7 @@ input[data-scope='mention'][data-part='input'] {
   line-height: var(--xh-leading-none);
   cursor: pointer;
   user-select: none;
-  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='cascader'][data-part='clear-trigger'][hidden] {
@@ -12817,7 +12817,7 @@ input[data-scope='mention'][data-part='input'] {
   cursor: pointer;
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='code-view'][data-part='fold-trigger'][hidden] {
@@ -12970,7 +12970,7 @@ input[data-scope='mention'][data-part='input'] {
   align-items: center;
   justify-content: center;
   line-height: var(--xh-leading-none);
-  transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
 /* 没写内容就由皮肤画；作者往部件里塞了自己的图形，这条规则即不命中 */
@@ -13323,7 +13323,7 @@ input[data-scope='mention'][data-part='input'] {
   background: transparent;
   box-shadow: var(--xh-color-picker-thumb-shadow, var(--xh-elevation-raised));
   cursor: grab;
-  transition: scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition: scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
 /* 取色区的纵轴也由连接层给（inset-block-start），回拉同样按 block-start 那侧 */
@@ -13485,7 +13485,7 @@ input[data-scope='mention'][data-part='input'] {
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='color-picker'][data-part='eye-dropper-trigger']:hover:not(:disabled) {
@@ -13533,7 +13533,7 @@ input[data-scope='mention'][data-part='input'] {
   cursor: pointer;
   transition:
     border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
 /* 这一格的底色就是它要展示的那个颜色，换底等于把展示物盖掉，交互回执只能落在别处：
@@ -13916,7 +13916,7 @@ input[data-scope='mention'][data-part='input'] {
   line-height: var(--xh-leading-none);
   cursor: pointer;
   user-select: none;
-  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='combobox'][data-part='trigger'][hidden],
@@ -13935,7 +13935,7 @@ input[data-scope='mention'][data-part='input'] {
    按钮自带悬停底色，整个按钮转会带着底色一起转 */
 [data-scope='combobox'][data-part='trigger']:empty::before,
 [data-scope='combobox'][data-part='trigger'] > * {
-  transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
 /* 没写内容就由皮肤画箭头；作者往部件里塞了自己的图形，这条规则即不命中 */
@@ -14766,7 +14766,7 @@ input[data-scope='mention'][data-part='input'] {
   line-height: var(--xh-leading-none);
   cursor: pointer;
   user-select: none;
-  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
 /* 上面给了 display，UA 的 [hidden]{display:none} 已被盖掉，这里补回来 */
@@ -15050,7 +15050,7 @@ input[data-scope='mention'][data-part='input'] {
   line-height: var(--xh-leading-none);
   cursor: pointer;
   user-select: none;
-  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='date-picker'][data-part='trigger'][hidden],
@@ -15288,7 +15288,7 @@ input[data-scope='mention'][data-part='input'] {
   cursor: pointer;
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='date-picker'][data-part='confirm-trigger']:hover {
@@ -15539,7 +15539,7 @@ input[data-scope='mention'][data-part='input'] {
   cursor: pointer;
   transition:
     background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='dialog'][data-part='close-trigger'][hidden] {
@@ -16002,7 +16002,7 @@ input[data-scope='mention'][data-part='input'] {
   cursor: pointer;
   transition:
     background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='drawer'][data-part='close-trigger'][hidden] {
@@ -16703,7 +16703,7 @@ input[data-scope='mention'][data-part='input'] {
   cursor: pointer;
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='file-upload'][data-part='item-delete-trigger'][hidden] {
@@ -16751,7 +16751,7 @@ input[data-scope='mention'][data-part='input'] {
   cursor: pointer;
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='file-upload'][data-part='clear-trigger'][hidden] {
@@ -17380,7 +17380,7 @@ input[data-scope='mention'][data-part='input'] {
   max-block-size: 85%;
   user-select: none;
   /* 变换是内联 style 写的，只给缩放旋转一点缓动；拖拽平移要跟手，不缓 */
-  transition: transform var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition: transform var(--xh-motion-duration-micro) var(--xh-motion-ease-continuous);
 }
 
 [data-scope='image-viewer'][data-part='image'][data-dragging] {
@@ -17429,7 +17429,7 @@ input[data-scope='mention'][data-part='input'] {
   cursor: pointer;
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='image-viewer'][data-part='counter'] {
@@ -17451,7 +17451,7 @@ input[data-scope='mention'][data-part='input'] {
   cursor: pointer;
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='image-viewer'][data-part='prev-trigger'] {
@@ -17514,7 +17514,7 @@ input[data-scope='mention'][data-part='input'] {
   cursor: pointer;
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='image-viewer'][data-part='close-trigger'][hidden] {
@@ -17921,7 +17921,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='loading-bar'][data-part='range'] {
   block-size: 100%;
   background: var(--xh-loading-bar-range, var(--xh-_tone-soft, var(--xh-bg-brand)));
-  transition: inline-size var(--xh-loading-bar-speed, var(--xh-motion-duration-enter)) var(--xh-motion-ease-enter);
+  transition: inline-size var(--xh-loading-bar-speed, var(--xh-motion-duration-enter)) var(--xh-motion-ease-continuous);
 }
 
 /* 减少动效：宽度与淡出都立刻到位。进度本身照常推进，只是不再有过渡的过程——
@@ -18715,7 +18715,7 @@ input[data-scope='mention'][data-part='input'] {
   cursor: pointer;
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='message-feed'][data-part='scroll-button'][hidden] {
@@ -19046,8 +19046,8 @@ input[data-scope='mention'][data-part='input'] {
   border-radius: var(--xh-navigation-menu-indicator-radius, var(--xh-shape-pill));
   background: var(--xh-navigation-menu-indicator-color, var(--xh-_navigation-menu-accent));
   transition:
-    inset-inline-start var(--xh-motion-duration-enter) var(--xh-motion-ease-enter),
-    inline-size var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+    inset-inline-start var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
+    inline-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous);
 }
 
 [data-scope='navigation-menu'][data-part='indicator'][hidden] {
@@ -19061,8 +19061,8 @@ input[data-scope='mention'][data-part='input'] {
   inline-size: var(--xh-navigation-menu-indicator-thickness, var(--xh-stroke-thick));
   block-size: auto;
   transition:
-    inset-block-start var(--xh-motion-duration-enter) var(--xh-motion-ease-enter),
-    block-size var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+    inset-block-start var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
+    block-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous);
 }
 
 /* 共享面板外壳：只管落位与统一的面板外观，里面装哪一份内容归 content。
@@ -19434,7 +19434,7 @@ input[data-scope='mention'][data-part='input'] {
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
 /* closable=false 时连接层同时给了 hidden 与 disabled，这条是它真正收起的那一半：
@@ -20046,7 +20046,7 @@ input[data-scope='mention'][data-part='input'] {
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
 /* 悬停这条选择器比当前页那条多一节（:hover），同层里权重更高、会反过来压住它，
@@ -20591,7 +20591,7 @@ input[data-scope='mention'][data-part='input'] {
   cursor: pointer;
   transition:
     background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='popover'][data-part='close-trigger'][hidden] {
@@ -20687,7 +20687,7 @@ input[data-scope='mention'][data-part='input'] {
   block-size: 100%;
   border-radius: var(--xh-progress-range-radius, var(--xh-shape-pill));
   background: var(--xh-progress-range, var(--xh-_tone, var(--xh-bg-brand)));
-  transition: inline-size var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition: inline-size var(--xh-motion-duration-micro) var(--xh-motion-ease-continuous);
 }
 
 /* —— 尺寸 —— */
@@ -20911,7 +20911,7 @@ input[data-scope='mention'][data-part='input'] {
   display: block;
   overflow: hidden;
   block-size: var(--xh-question-flow-viewport-h, var(--xh-_question-flow-viewport-h));
-  transition: block-size var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  transition: block-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous);
 }
 
 [data-scope='question-flow'][data-part='viewport'][hidden] {
@@ -20926,7 +20926,7 @@ input[data-scope='mention'][data-part='input'] {
   flex-direction: column;
   gap: var(--xh-question-flow-track-gap, var(--xh-_question-flow-gap));
   translate: 0 var(--xh-question-flow-track-y, var(--xh-_question-flow-track-y));
-  transition: translate var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  transition: translate var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous);
 }
 
 [data-scope='question-flow'][data-part='track'][hidden] {
@@ -20995,7 +20995,7 @@ input[data-scope='mention'][data-part='input'] {
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='question-flow'][data-part='option'][hidden] {
@@ -21156,7 +21156,7 @@ input[data-scope='mention'][data-part='input'] {
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='question-flow'][data-part='prev-trigger'][hidden],
@@ -21245,7 +21245,7 @@ input[data-scope='mention'][data-part='input'] {
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='question-flow'][data-part='skip-trigger'][hidden],
@@ -21473,7 +21473,7 @@ input[data-scope='mention'][data-part='input'] {
   border-radius: var(--xh-shape-pill);
   background: var(--xh-radio-group-indicator-dot, var(--xh-_radio-group-accent));
   scale: 0;
-  transition: scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition: scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='radio-group'][data-part='indicator'][data-state='checked']::before {
@@ -22229,7 +22229,7 @@ input[data-scope='mention'][data-part='input'] {
   line-height: var(--xh-leading-none);
   cursor: pointer;
   user-select: none;
-  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='select'][data-part='clear-trigger'][hidden] {
@@ -22284,7 +22284,7 @@ input[data-scope='mention'][data-part='input'] {
   color: var(--xh-select-item-delete-fg, var(--xh-fg-subtle));
   font-size: inherit;
   cursor: pointer;
-  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='select'][data-part='item-delete-trigger'][hidden] {
@@ -22351,7 +22351,7 @@ input[data-scope='mention'][data-part='input'] {
   inline-size: var(--xh-select-action-size, var(--xh-control-action-size));
   block-size: var(--xh-select-action-size, var(--xh-control-action-size));
   color: var(--xh-select-indicator-fg, var(--xh-fg-muted));
-  transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
 /* 没写内容就由皮肤画箭头；作者往部件里塞了自己的图形，这条规则即不命中 */
@@ -22842,7 +22842,7 @@ input[data-scope='mention'][data-part='input'] {
   margin-inline-start: auto;
   display: inline-flex;
   flex: none;
-  transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='side-nav'][data-part='branch-indicator'][data-state='open'] {
@@ -23017,7 +23017,7 @@ input[data-scope='mention'][data-part='input'] {
   box-shadow: var(--xh-slider-thumb-shadow, var(--xh-elevation-raised));
   cursor: grab;
   transition:
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong),
     box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
@@ -23184,7 +23184,7 @@ input[data-scope='mention'][data-part='input'] {
 /* 让位期间关掉过渡，跟手的那一项才不会慢半拍粘在指针后面。
    其余项反过来要过渡：它们是被让开的，瞬移会看不出发生了什么。 */
 [data-scope='sortable'][data-part='root'][data-dragging] [data-part='item']:not([data-dragging]) {
-  transition: transform var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition: transform var(--xh-motion-duration-micro) var(--xh-motion-ease-continuous);
 }
 
 [data-scope='sortable'][data-part='item'][data-dragging] {
@@ -23761,7 +23761,7 @@ input[data-scope='mention'][data-part='input'] {
   border-radius: var(--xh-switch-thumb-radius, var(--xh-shape-pill));
   background: var(--xh-switch-thumb, var(--xh-bg-canvas));
   box-shadow: var(--xh-switch-thumb-shadow, var(--xh-elevation-raised));
-  transition: translate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition: translate var(--xh-motion-duration-micro) var(--xh-motion-ease-continuous);
 }
 
 [data-scope='switch'][data-part='thumb'][data-state='checked'] {
@@ -24177,7 +24177,7 @@ input[data-scope='mention'][data-part='input'] {
 /* 展开箭头：收起时朝向行首、展开时转向下方，与逻辑书写方向一致 */
 [data-scope='table'][data-part='expand-trigger'] {
   color: var(--xh-table-expand-fg, var(--xh-fg-subtle));
-  transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='table'][data-part='expand-trigger'][data-state='open'] {
@@ -25257,7 +25257,7 @@ input[data-scope='mention'][data-part='input'] {
   cursor: pointer;
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='tags-input'][data-part='item-delete-trigger'][hidden] {
@@ -25342,7 +25342,7 @@ input[data-scope='mention'][data-part='input'] {
   cursor: pointer;
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
 /* 没值可清时连接层只打 hidden；上面那条 display 会盖掉 UA 规则，少了这条按钮就一直杵着 */
@@ -25719,7 +25719,7 @@ input[data-scope='mention'][data-part='input'] {
   line-height: var(--xh-leading-none);
   cursor: pointer;
   user-select: none;
-  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
 /* 没开 clearable 或清不了时连接层给的是 hidden 属性；上面那条 display 会把 UA 规则盖掉，
@@ -25996,7 +25996,7 @@ input[data-scope='mention'][data-part='input'] {
   user-select: none;
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
 /* 没值时连接层给的是 hidden 属性；上面那条 display 会把 UA 规则盖掉 */
@@ -26313,7 +26313,7 @@ input[data-scope='mention'][data-part='input'] {
   user-select: none;
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='time-picker'][data-part='trigger'][hidden],
@@ -26905,7 +26905,7 @@ input[data-scope='mention'][data-part='input'] {
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
 /* closable=false 时连接层同时给了 hidden 与 disabled，这条是它真正收起的那一半：
@@ -27336,7 +27336,7 @@ input[data-scope='mention'][data-part='input'] {
   cursor: pointer;
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='tool-call'][data-part='trigger'][hidden] {
@@ -28054,10 +28054,10 @@ input[data-scope='mention'][data-part='input'] {
     0 0 0 100vmax var(--xh-tour-spotlight-shroud, var(--xh-bg-overlay));
   /* 换步时框自己滑过去，用户的视线跟得上；逻辑属性照样可过渡 */
   transition:
-    inset-inline-start var(--xh-motion-duration-enter) var(--xh-motion-ease-enter),
-    inset-block-start var(--xh-motion-duration-enter) var(--xh-motion-ease-enter),
-    inline-size var(--xh-motion-duration-enter) var(--xh-motion-ease-enter),
-    block-size var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+    inset-inline-start var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
+    inset-block-start var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
+    inline-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
+    block-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous);
 }
 
 [data-scope='tour'][data-part='spotlight'][hidden] {
@@ -28246,7 +28246,7 @@ input[data-scope='mention'][data-part='input'] {
   cursor: pointer;
   transition:
     background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='tour'][data-part='close-trigger'][hidden] {
@@ -29026,7 +29026,7 @@ input[data-scope='mention'][data-part='input'] {
   justify-content: center;
   inline-size: var(--xh-tree-indicator-size, var(--xh-control-indicator-size));
   color: var(--xh-tree-branch-indicator-fg, var(--xh-fg-subtle));
-  transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='tree'][data-part='branch-trigger'][hidden],
@@ -29510,7 +29510,7 @@ input[data-scope='mention'][data-part='input'] {
   align-items: center;
   justify-content: center;
   color: var(--xh-tree-select-indicator-fg, var(--xh-fg-muted));
-  transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='tree-select'][data-part='indicator'][hidden] {
@@ -29543,7 +29543,7 @@ input[data-scope='mention'][data-part='input'] {
   line-height: var(--xh-leading-none);
   cursor: pointer;
   user-select: none;
-  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='tree-select'][data-part='clear-trigger'][hidden] {
@@ -29768,7 +29768,7 @@ input[data-scope='mention'][data-part='input'] {
   justify-content: center;
   inline-size: var(--xh-tree-select-branch-indicator-size, var(--xh-control-indicator-size));
   color: var(--xh-tree-select-branch-indicator-fg, var(--xh-fg-subtle));
-  transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='tree-select'][data-part='branch-trigger'][hidden],

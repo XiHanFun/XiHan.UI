@@ -239,7 +239,7 @@
     margin-inline-start: auto;
     display: inline-flex;
     flex: none;
-    transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='side-nav'][data-part='branch-indicator'][data-state='open'] {

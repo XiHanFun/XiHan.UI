@@ -174,7 +174,7 @@
     cursor: pointer;
     transition:
       background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='dialog'][data-part='close-trigger'][hidden] {

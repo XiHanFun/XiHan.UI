@@ -263,7 +263,7 @@
     user-select: none;
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
 

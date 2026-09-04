@@ -87,7 +87,7 @@
     border-radius: var(--xh-switch-thumb-radius, var(--xh-shape-pill));
     background: var(--xh-switch-thumb, var(--xh-bg-canvas));
     box-shadow: var(--xh-switch-thumb-shadow, var(--xh-elevation-raised));
-    transition: translate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition: translate var(--xh-motion-duration-micro) var(--xh-motion-ease-continuous);
   }
 
   [data-scope='switch'][data-part='thumb'][data-state='checked'] {

@@ -41,7 +41,7 @@
     block-size: 100%;
     border-radius: var(--xh-progress-range-radius, var(--xh-shape-pill));
     background: var(--xh-progress-range, var(--xh-_tone, var(--xh-bg-brand)));
-    transition: inline-size var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition: inline-size var(--xh-motion-duration-micro) var(--xh-motion-ease-continuous);
   }
 
   /* —— 尺寸 —— */

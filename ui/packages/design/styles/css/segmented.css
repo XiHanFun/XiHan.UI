@@ -124,7 +124,7 @@
     transition:
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
   /* 选中态：单选是 role=radio + aria-checked，样式一律读 data-state，不读 ARIA。

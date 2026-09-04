@@ -235,7 +235,7 @@
     align-items: center;
     justify-content: center;
     color: var(--xh-cascader-indicator-fg, var(--xh-fg-muted));
-    transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='cascader'][data-part='indicator'][hidden] {
@@ -280,7 +280,7 @@
     line-height: var(--xh-leading-none);
     cursor: pointer;
     user-select: none;
-    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='cascader'][data-part='clear-trigger'][hidden] {

@@ -54,7 +54,7 @@
     overflow: hidden;
     padding: var(--xh-layout-sider-padding, var(--xh-space-3));
     background: var(--xh-layout-sider-bg, var(--xh-bg-subtle));
-    transition: inline-size var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+    transition: inline-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous);
   }
 
   /* 折起来时不换行：窄到放不下的那几个字直接被 overflow 裁掉，不会挤成一列竖排 */

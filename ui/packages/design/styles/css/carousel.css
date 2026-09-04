@@ -48,7 +48,7 @@
     flex-direction: row;
     block-size: 100%;
     transition: transform var(--xh-carousel-duration, var(--xh-motion-duration-enter))
-      var(--xh-carousel-ease, var(--xh-motion-ease-enter));
+      var(--xh-carousel-ease, var(--xh-motion-ease-continuous));
   }
 
   [data-scope='carousel'][data-part='item-group'][hidden] {

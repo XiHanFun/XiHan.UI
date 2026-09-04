@@ -219,7 +219,7 @@
   [data-scope='json-viewer'][data-part='branch-indicator'] {
     display: inline-block;
     line-height: var(--xh-leading-none);
-    transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='json-viewer'][data-part='branch-indicator'][hidden] {
