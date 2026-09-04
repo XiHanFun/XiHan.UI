@@ -13,6 +13,18 @@
       "$type": "duration",
       "$value": "1ms"
     },
+    "duration-slide": {
+      "$type": "duration",
+      "$value": "1ms"
+    },
+    "duration-nudge": {
+      "$type": "duration",
+      "$value": "1ms"
+    },
+    "stagger-step": {
+      "$type": "duration",
+      "$value": "0ms"
+    },
     "distance-sm": {
       "$type": "dimension",
       "$value": "0px"
@@ -22,6 +34,10 @@
       "$value": "0px"
     },
     "scale-enter": {
+      "$type": "number",
+      "$value": 1
+    },
+    "scale-exit": {
       "$type": "number",
       "$value": 1
     },

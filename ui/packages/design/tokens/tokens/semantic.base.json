@@ -421,6 +421,21 @@
       "$type": "duration",
       "$value": "{duration.fast}"
     },
+    "duration-slide": {
+      "$description": "尺度大的位移与容器级尺寸变化：抽屉推入推出、轮播换页、面板长高。只此一支，不按场景再分名。",
+      "$type": "duration",
+      "$value": "{duration.slow}"
+    },
+    "duration-nudge": {
+      "$description": "几何类微交互：小件被推一下就到位，比 duration-micro 长一档，让位移看得清。",
+      "$type": "duration",
+      "$value": "{duration.normal}"
+    },
+    "stagger-step": {
+      "$description": "交错进场的相邻两项间隔。派生自 duration-enter 的五分之一，改进场时长它跟着走。减弱档显式归 0ms，不靠 calc 传递。",
+      "$type": "duration",
+      "$value": "calc({duration.normal} / 5)"
+    },
     "ease-continuous": {
       "$description": "元素在屏内被推到新位置：起终点都在可视区内，所以起步就带速度、收尾再减速。循环动画不走这一条，走 ease-loop。",
       "$type": "cubicBezier",
@@ -444,6 +459,21 @@
       "$type": "cubicBezier",
       "$value": "{ease.in}"
     },
+    "ease-slide": {
+      "$description": "尺度大的位移与尺寸变化。与 ease-continuous 的分界：位移量以百分比或视口尺度计、或一端在可视区外的走这一条，像素级的屏内推移走 continuous。",
+      "$type": "cubicBezier",
+      "$value": "{ease.out-fluid}"
+    },
+    "ease-sweep": {
+      "$description": "往返型无限循环：进度条的不定态、骨架呼吸、加载条的游标。单向循环仍走 ease-loop——匀速是转圈的硬要求，而往返在折返点需要两端减速，linear 在那里是瞬时反向、读成硬弹。",
+      "$type": "cubicBezier",
+      "$value": "{ease.in-out}"
+    },
+    "ease-settle": {
+      "$description": "小件的过冲落位：勾、圆点、开关拇指、按压释放。只许打在 scale / rotate 上，且部件短边不超过 32px。",
+      "$type": "cubicBezier",
+      "$value": "{ease.out-back}"
+    },
     "distance-sm": {
       "$type": "dimension",
       "$value": "{space.1}"
@@ -455,6 +485,11 @@
     "scale-enter": {
       "$type": "number",
       "$value": 0.96
+    },
+    "scale-exit": {
+      "$description": "退场缩到的比例。比进场的起点更靠近 1：退场不是进场倒放，收得更浅才不显得被吸走。",
+      "$type": "number",
+      "$value": 0.98
     },
     "scale-press": {
       "$type": "number",

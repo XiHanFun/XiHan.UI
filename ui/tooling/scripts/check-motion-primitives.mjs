@@ -13,8 +13,19 @@ import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
 const STYLES_DIR = 'packages/design/styles/css'
-const TIMING_PROPS = new Set(['animation', 'transition', 'animation-duration', 'transition-duration'])
+const TIMING_PROPS = new Set([
+  'animation',
+  'transition',
+  'animation-duration',
+  'transition-duration',
+  'animation-delay',
+  'transition-delay',
+])
 const PRIMITIVE = /--xh-duration-(?:fast|normal|slow)(?![\w-])/
+
+/** 延迟位专查：交错的间隔只许由 stagger-step 派生。 */
+const DELAY_PROPS = new Set(['animation-delay', 'transition-delay'])
+const STAGGER = /var\(\s*--xh-motion-stagger-step\s*[,)]/
 
 /** 去掉块注释但保留换行，报错行号才对得上源文件。 */
 function stripComments(css) {
@@ -37,6 +48,12 @@ for (const file of files) {
     if (PRIMITIVE.test(raw)) {
       const line = css.slice(0, m.index).split('\n').length
       problems.push(`${file}:${line}  ${prop}: ${raw.replace(/\s+/g, ' ').trim()}  —— 时长别直接引 --xh-duration-* 原语，走 --xh-motion-duration-* 或组件时长槽`)
+    }
+    // 延迟位只许由 stagger-step 派生：写死 40ms 的那一处，减弱档归不掉，
+    // 而 TIMING_PROPS 只测「有没有下探原语」，字面值它一个字都看不见
+    if (DELAY_PROPS.has(prop) && raw.trim() !== '0s' && raw.trim() !== '0ms' && !STAGGER.test(raw)) {
+      const line = css.slice(0, m.index).split('\n').length
+      problems.push(`${file}:${line}  ${prop}: ${raw.replace(/\s+/g, ' ').trim()}  —— 交错的间隔要走 var(--xh-motion-stagger-step)（可乘序号），写死的值在减弱档归不掉`)
     }
   }
 
