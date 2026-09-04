@@ -121,11 +121,9 @@
     gap: var(--xh-heatmap-grid-gap, var(--xh-_heatmap-gap));
   }
 
-  /* 网格自己只在没有格子可落焦点时才占 Tab 位，那几帧里也该看得出焦点在哪。
-     环往内收：网格铺满 root，root 那层 overflow-x: auto 会把画在外沿的环裁掉 */
+  /* 环往内收：网格铺满 root，root 那层 overflow-x: auto 会把画在外沿的环裁掉 */
   [data-scope='heatmap'][data-part='grid']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: calc(-1 * var(--xh-ring-width));
+    --xh-_ring-offset: var(--xh-_ring-inset);
   }
 
   [data-scope='heatmap'][data-part='row'] {
@@ -221,11 +219,6 @@
     margin-inline-start: calc(
       var(--xh-_heatmap-row-offset) * (var(--xh-_heatmap-cell-size) + var(--xh-_heatmap-gap))
     );
-  }
-
-  [data-scope='heatmap'][data-part='cell']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
   }
 
   /* —— 月历形态：一个自然月一块，块内一行是一周、一列是一个星期几 —— */

@@ -8,6 +8,9 @@
     /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
     --xh-icon-size: var(--xh-listbox-icon-size, var(--xh-glyph-size-text));
 
+    /* 强调色随语气走，只落在勾选标记上；没写 data-tone 时退回品牌色 */
+    --xh-_listbox-accent: var(--xh-_tone, var(--xh-fg-brand));
+
     display: flex;
     flex-direction: column;
     gap: var(--xh-listbox-gap, var(--xh-space-2));
@@ -139,8 +142,7 @@
 
   /* 键盘落焦的条目画内收环；指针触发的聚焦不画 */
   [data-scope='listbox'][data-part='item']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: calc(-1 * var(--xh-ring-width));
+    --xh-_ring-offset: var(--xh-_ring-inset);
   }
 
   [data-scope='listbox'][data-part='item']:focus:not(:focus-visible) {
@@ -151,7 +153,6 @@
      所以只能靠 data-disabled 表达，写 :disabled 永远不命中 */
   [data-scope='listbox'][data-part='item'][data-disabled] {
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
   [data-scope='listbox'][data-part='item-text'] {
@@ -170,7 +171,7 @@
     align-items: center;
     justify-content: center;
     inline-size: var(--xh-listbox-item-indicator-size, var(--xh-control-indicator-size));
-    color: var(--xh-listbox-item-indicator-fg, var(--xh-fg-brand));
+    color: var(--xh-listbox-item-indicator-fg, var(--xh-_listbox-accent));
     visibility: hidden;
   }
 

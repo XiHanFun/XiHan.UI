@@ -50,9 +50,9 @@
     cursor: inherit;
   }
 
-  [data-scope='tooltip'][data-part='trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
+  /* 这里的 data-disabled 关掉的是提示，不是宿主控件：光标仍旧交给宿主 */
+  [data-scope='tooltip'][data-part='trigger'][data-disabled] {
+    cursor: inherit;
   }
 
   /* 坐标由定位引擎写在行内 style 上，这里只兜底 SSR 首帧 */

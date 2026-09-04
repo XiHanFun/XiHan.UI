@@ -193,10 +193,9 @@
     font-weight: var(--xh-tree-row-selected-font-weight, var(--xh-font-weight-medium));
   }
 
-  /* 叶子自己就是 treeitem，环直接画在它身上 */
+  /* 叶子自己就是 treeitem，环往内收：行是撑满宽度的，画在外沿会被容器裁掉 */
   [data-scope='tree'][data-part='item']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: calc(-1 * var(--xh-ring-width));
+    --xh-_ring-offset: var(--xh-_ring-inset);
   }
 
   /* 禁用走 aria-disabled 而非原生 disabled：节点仍要可聚焦（它还得当方向键的起点），
@@ -204,7 +203,6 @@
   [data-scope='tree'][data-part='item'][data-disabled],
   [data-scope='tree'][data-part='branch-control'][data-disabled] {
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
   [data-scope='tree'][data-part='item-text'],
@@ -388,12 +386,6 @@
      文字起点会错开一格，层级关系跟着读歪 */
   [data-scope='tree'][data-part='node-drag-trigger'][data-disabled] {
     color: var(--xh-tree-drag-fg-disabled, var(--xh-fg-disabled));
-    cursor: not-allowed;
-  }
-
-  [data-scope='tree'][data-part='node-drag-trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
   }
 
   /* 被拖的那一行压暗，让人看得出正在搬的是它。这里只动 opacity、cursor 与 user-select，

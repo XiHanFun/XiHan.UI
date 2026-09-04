@@ -124,21 +124,12 @@
     scale: var(--xh-motion-scale-press);
   }
 
-  [data-scope='carousel'][data-part='prev-trigger']:focus-visible,
-  [data-scope='carousel'][data-part='next-trigger']:focus-visible,
-  [data-scope='carousel'][data-part='autoplay-trigger']:focus-visible,
-  [data-scope='carousel'][data-part='indicator']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
-  }
-
   /* 两端到头时按钮是原生 disabled（不可聚焦、进不了 Tab 序列），所以这里必须用 :disabled；
      连接层同时给的 data-disabled 只是留给作者的钩子 */
   [data-scope='carousel'][data-part='prev-trigger']:disabled,
   [data-scope='carousel'][data-part='next-trigger']:disabled,
   [data-scope='carousel'][data-part='autoplay-trigger']:disabled {
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
   /* 视口与指示点都不是可聚焦节点，落焦只会是浏览器兜底行为，别画焦点环 */

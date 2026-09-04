@@ -91,9 +91,8 @@
   /* 面板排成三列：左列吃掉剩余宽度，右两列各摆一颗按钮。
      标题、说明与作者塞进来的内容各占一整行，两颗按钮因此并排落在最后一行的右侧。 */
   [data-scope='popconfirm'][data-part='content'] {
-    /* 尺寸档只换这三个私有槽 */
-    --xh-_popconfirm-py: var(--xh-space-3);
-    --xh-_popconfirm-px: var(--xh-control-px-md);
+    /* 尺寸档只换这两个私有槽 */
+    --xh-_popconfirm-pad: var(--xh-surface-pad-md);
     --xh-_popconfirm-max-w: var(--xh-overlay-max-w);
 
     display: grid;
@@ -102,8 +101,8 @@
     gap: var(--xh-popconfirm-gap, var(--xh-space-2));
     inline-size: max-content;
     max-inline-size: var(--xh-popconfirm-max-w, var(--xh-_popconfirm-max-w));
-    padding-block: var(--xh-popconfirm-py, var(--xh-_popconfirm-py));
-    padding-inline: var(--xh-popconfirm-px, var(--xh-_popconfirm-px));
+    padding-block: var(--xh-popconfirm-py, var(--xh-_popconfirm-pad));
+    padding-inline: var(--xh-popconfirm-px, var(--xh-_popconfirm-pad));
     border: var(--xh-stroke-thin) solid var(--xh-popconfirm-border, var(--xh-border-default));
     border-radius: var(--xh-popconfirm-radius, var(--xh-shape-surface));
     background: var(--xh-popconfirm-bg, var(--xh-bg-surface));
@@ -141,16 +140,14 @@
   }
 
   /* —— 尺寸 —— */
-  /* 缺省档写在 content 的基础规则里；行内内缩取 control-px 那把尺，纵向按 space 档同步 */
+  /* 缺省档写在 content 的基础规则里；四边等宽的面板内衬三档取 surface-pad 那把尺 */
   [data-scope='popconfirm'][data-part='content'][data-size='sm'] {
-    --xh-_popconfirm-py: var(--xh-space-2);
-    --xh-_popconfirm-px: var(--xh-control-px-sm);
+    --xh-_popconfirm-pad: var(--xh-surface-pad-sm);
     --xh-_popconfirm-max-w: var(--xh-overlay-max-w-sm);
   }
 
   [data-scope='popconfirm'][data-part='content'][data-size='lg'] {
-    --xh-_popconfirm-py: var(--xh-space-4);
-    --xh-_popconfirm-px: var(--xh-control-px-lg);
+    --xh-_popconfirm-pad: var(--xh-surface-pad-lg);
     --xh-_popconfirm-max-w: var(--xh-overlay-max-w-lg);
   }
 
@@ -210,9 +207,9 @@
     box-shadow: var(--xh-popconfirm-confirm-shadow, var(--xh-_popconfirm-confirm-highlight));
   }
 
-  /* 异步确认挂起：按钮转圈、指针挂起；不是禁用，焦点与对比度都保持 */
+  /* 异步确认挂起：按钮转圈、指针摆「在途」；不是禁用，焦点与对比度都保持 */
   [data-scope='popconfirm'][data-part='confirm-trigger'][data-loading] {
-    cursor: wait;
+    cursor: progress;
   }
 
   [data-scope='popconfirm'][data-part='confirm-trigger'][data-loading]::before {
@@ -248,12 +245,6 @@
   [data-scope='popconfirm'][data-part='cancel-trigger']:active {
     background: var(--xh-bg-subtle-active);
     scale: var(--xh-motion-scale-press);
-  }
-
-  [data-scope='popconfirm'][data-part='confirm-trigger']:focus-visible,
-  [data-scope='popconfirm'][data-part='cancel-trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
   }
 
   /* 减少动效：圆环停下并整圈换成虚线，静止的形状仍然读得出"还没好"。

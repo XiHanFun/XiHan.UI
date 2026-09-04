@@ -29,7 +29,6 @@
 
   /* 禁用的整体压暗只做一次，落在最外层：track / range / thumb 各自再叠一层 opacity 会越叠越黑 */
   [data-scope='slider'][data-part='root'][data-disabled] {
-    cursor: not-allowed;
     opacity: var(--xh-state-disabled-opacity);
   }
 
@@ -37,11 +36,6 @@
     color: var(--xh-slider-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-slider-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-slider-label-font-weight, var(--xh-text-label-weight));
-    line-height: var(--xh-leading-none);
-  }
-
-  [data-scope='slider'][data-part='label'][data-disabled] {
-    color: var(--xh-fg-subtle);
   }
 
   /* 拇指以它为定位上下文（拇指常常浮出轨道，挂在 track 上会被轨道的盒子束住）。
@@ -67,12 +61,8 @@
     cursor: grabbing;
   }
 
-  [data-scope='slider'][data-part='control'][data-readonly] {
+  [data-scope='slider'][data-part='control'][data-readonly]:not([data-disabled]) {
     cursor: default;
-  }
-
-  [data-scope='slider'][data-part='control'][data-disabled] {
-    cursor: not-allowed;
   }
 
   /* 已选区间以它为定位上下文。不写 overflow: hidden：作者把拇指写进轨道里也是合法结构，
@@ -155,11 +145,6 @@
     margin-block-end: calc(var(--xh-_thumb-size) / -2);
   }
 
-  [data-scope='slider'][data-part='thumb']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
-  }
-
   /* 多拇指时只有手真正推着的那一个带 data-dragging，放大与光标因此不会全组一起变。
      放大用 scale 而不是改尺寸：变换绕自身中心发生，圆心不动，负外边距的算式也不用跟着改。
      海拔从静态的 raised 换到 lifted：跟着手走的东西比贴在页面上的抬得高一档，
@@ -174,12 +159,8 @@
     background: var(--xh-slider-thumb-bg-invalid, var(--xh-border-invalid));
   }
 
-  [data-scope='slider'][data-part='thumb'][data-readonly] {
+  [data-scope='slider'][data-part='thumb'][data-readonly]:not([data-disabled]) {
     cursor: default;
-  }
-
-  [data-scope='slider'][data-part='thumb'][data-disabled] {
-    cursor: not-allowed;
   }
 
   /* —— 尺寸 —— */

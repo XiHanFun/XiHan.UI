@@ -65,15 +65,14 @@
     scale: var(--xh-motion-scale-press);
   }
 
-  [data-scope='button'][data-part='root']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
-  }
-
   [data-scope='button'][data-part='root'][data-disabled],
   [data-scope='button'][data-part='root'][data-loading] {
-    cursor: not-allowed;
     opacity: var(--xh-state-disabled-opacity);
+  }
+
+  /* 挂起：按钮在跑，不是不可用，指针摆的是「在途」那一个 */
+  [data-scope='button'][data-part='root'][data-loading] {
+    cursor: progress;
   }
 
   /* —— 变体 —— */

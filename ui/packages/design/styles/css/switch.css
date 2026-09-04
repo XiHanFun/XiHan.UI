@@ -53,7 +53,7 @@
      变的是"动不动得了"：指针不摆手型，选中档的轨道换成中性底，滑块收掉那层浮起的投影
      ——投影是"这颗按得动"的信号。与文本框只读那一档同口径（压低底色而非置灰）。
      滑块停在哪一端不受影响，值本身仍由位置这条非颜色通道读出。 */
-  [data-scope='switch'][data-part='root'][data-readonly] {
+  [data-scope='switch'][data-part='root'][data-readonly]:not([data-disabled]) {
     cursor: default;
   }
 
@@ -72,13 +72,7 @@
   }
 
   [data-scope='switch'][data-part='root'][data-disabled] {
-    cursor: not-allowed;
     opacity: var(--xh-state-disabled-opacity);
-  }
-
-  [data-scope='switch'][data-part='root']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
   }
 
   /* —— 尺寸 —— */
@@ -107,9 +101,9 @@
     translate: var(--xh-_switch-thumb-size) 0;
   }
 
-  /* 提交中：指针挂起、滑块里转圈；不是禁用，焦点与对比度都保持 */
+  /* 提交中：指针摆「在途」、滑块里转圈；不是禁用，焦点与对比度都保持 */
   [data-scope='switch'][data-part='root'][data-loading] {
-    cursor: wait;
+    cursor: progress;
   }
 
   [data-scope='switch'][data-part='thumb'][data-loading] {
@@ -134,13 +128,11 @@
     gap: var(--xh-switch-label-gap, var(--xh-control-gap-md));
     color: var(--xh-switch-label-fg, var(--xh-fg-default));
     font-size: var(--xh-switch-label-font-size, var(--xh-text-label-size));
-    line-height: var(--xh-leading-none);
     cursor: pointer;
   }
 
   [data-scope='switch'][data-part='label'][data-disabled] {
     color: var(--xh-switch-label-fg-disabled, var(--xh-fg-disabled));
-    cursor: not-allowed;
   }
 
   [data-scope='switch'][data-part='text'] {

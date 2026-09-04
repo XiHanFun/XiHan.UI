@@ -197,11 +197,6 @@
     scale: var(--xh-motion-scale-press);
   }
 
-  [data-scope='question-flow'][data-part='option']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
-  }
-
   /* 当前题的选项按位次错开开幕，换题时随 data-current 重跑。
      backwards 不能省：等待期间起帧不生效的话，后面几条会先露一下再跳回去。
      第 6 条起并到同一拍上 */
@@ -237,7 +232,6 @@
   /* 排在选中档之后：禁用项无论选没选都是禁用色 */
   [data-scope='question-flow'][data-part='option'][data-disabled] {
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
   /* 记号盒：多选是圆角方格，单选是圆。选中态填色，纯装饰不进可访问名 */
@@ -326,18 +320,12 @@
     display: none;
   }
 
-  [data-scope='question-flow'][data-part='note']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
-  }
-
   [data-scope='question-flow'][data-part='note']::placeholder {
     color: var(--xh-question-flow-placeholder-fg, var(--xh-fg-subtle));
   }
 
   [data-scope='question-flow'][data-part='note']:disabled {
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
   /* 页脚：左边步进，右边动作 */
@@ -389,16 +377,9 @@
     scale: var(--xh-motion-scale-press);
   }
 
-  [data-scope='question-flow'][data-part='prev-trigger']:focus-visible,
-  [data-scope='question-flow'][data-part='next-trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
-  }
-
   [data-scope='question-flow'][data-part='prev-trigger']:disabled,
   [data-scope='question-flow'][data-part='next-trigger']:disabled {
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
   /* 没写内容就由皮肤画箭头；作者往按钮里塞了自己的图形，这两条即不命中 */
@@ -501,16 +482,9 @@
     scale: var(--xh-motion-scale-press);
   }
 
-  [data-scope='question-flow'][data-part='skip-trigger']:focus-visible,
-  [data-scope='question-flow'][data-part='submit-trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
-  }
-
   [data-scope='question-flow'][data-part='skip-trigger']:disabled,
   [data-scope='question-flow'][data-part='submit-trigger']:disabled {
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
   /* 答不动时提交键转灰但不收起：出口一直在那里，只是还按不动 */

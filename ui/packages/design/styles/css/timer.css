@@ -116,8 +116,6 @@
 
   [data-scope='timer'][data-part='control']:focus-visible {
     border-color: var(--xh-timer-control-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
   }
 
   /* 作者把按钮禁掉时的样子。文字改用 fg-disabled 就不再叠 opacity，两条一起上会掉到读不出来 */
@@ -125,6 +123,5 @@
     border-color: var(--xh-timer-control-border-disabled, var(--xh-border-subtle));
     background: var(--xh-timer-control-bg-disabled, var(--xh-bg-muted));
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 }

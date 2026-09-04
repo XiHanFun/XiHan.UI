@@ -76,7 +76,6 @@
     color: var(--xh-pin-input-label-fg, var(--xh-fg-default));
     font-size: var(--xh-pin-input-label-font-size, var(--xh-_pin-input-label-font-size));
     font-weight: var(--xh-pin-input-label-font-weight, var(--xh-text-label-weight));
-    line-height: var(--xh-leading-none);
   }
 
   [data-scope='pin-input'][data-part='label'][data-disabled] {
@@ -142,7 +141,6 @@
   [data-scope='pin-input'][data-part='input']:disabled {
     background: var(--xh-pin-input-box-bg-disabled, var(--xh-bg-subtle));
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
   /* 填满只代表"格子都有字"，不代表"验证码对"，所以用品牌色而不是成功色收个尾。

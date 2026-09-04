@@ -62,11 +62,6 @@
     scale: var(--xh-motion-scale-press);
   }
 
-  [data-scope='download-trigger'][data-part='root']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
-  }
-
   /* 取数在途：指针换成 progress，同时在按钮里转一枚圆环。
      只靠指针形状的话触屏上是零反馈——手指按下去到文件出来之间屏上什么都不变，
      用户只会接着点。圆环是行内的一个 flex 项，按钮的起始边不动，只往后长一截 */
@@ -112,6 +107,5 @@
     border-color: var(--xh-download-trigger-border-disabled, var(--xh-border-control));
     background: var(--xh-download-trigger-bg-disabled, var(--xh-bg-muted));
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 }

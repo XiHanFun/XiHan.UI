@@ -75,8 +75,7 @@
 
   /* 焦点环偏移取负画在内侧，避免被 root 的 overflow: hidden 裁掉 */
   [data-scope='diff-view'][data-part='viewport']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: calc(-1 * var(--xh-ring-width));
+    --xh-_ring-offset: var(--xh-_ring-inset);
   }
 
   [data-scope='diff-view'][data-part='body'] {
@@ -306,8 +305,7 @@
   }
 
   [data-scope='diff-view'][data-part='gap-trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: calc(-1 * var(--xh-ring-width));
+    --xh-_ring-offset: var(--xh-_ring-inset);
   }
 
   [data-scope='diff-view'][data-part='empty'] {

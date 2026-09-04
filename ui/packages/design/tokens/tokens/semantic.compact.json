@@ -53,7 +53,12 @@
   },
   "surface": {
     "py-sm": { "$type": "dimension", "$value": "{space.2}" },
-    "px-sm": { "$type": "dimension", "$value": "{space.3}" }
+    "px-sm": { "$type": "dimension", "$value": "{space.3}" },
+    "py-md": { "$type": "dimension", "$value": "{space.4}" },
+    "px-md": { "$type": "dimension", "$value": "{space.3}" },
+    "pad-sm": { "$type": "dimension", "$value": "{space.1_5}" },
+    "pad-md": { "$type": "dimension", "$value": "{space.2}" },
+    "pad-lg": { "$type": "dimension", "$value": "{space.3}" }
   },
   "section": {
     "py-sm": { "$type": "dimension", "$value": "{space.3}" },

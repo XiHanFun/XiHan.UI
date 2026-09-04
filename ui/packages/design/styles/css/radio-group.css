@@ -42,7 +42,6 @@
     color: var(--xh-radio-group-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-radio-group-label-font-size, var(--xh-_radio-group-font-size));
     font-weight: var(--xh-radio-group-label-font-weight, var(--xh-text-label-weight));
-    line-height: var(--xh-leading-none);
   }
 
   /* position 是给条目内那份视觉隐藏的原生输入做定位基准，别去掉 */
@@ -58,15 +57,9 @@
     cursor: pointer;
   }
 
-  [data-scope='radio-group'][data-part='item']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
-  }
-
   /* 禁用走 aria-disabled 而非原生 disabled，条目仍可聚焦，样式由 data-disabled 表达 */
   [data-scope='radio-group'][data-part='item'][data-disabled] {
     color: var(--xh-radio-group-item-fg-disabled, var(--xh-fg-disabled));
-    cursor: not-allowed;
   }
 
   /* 只读整组都改不动，但不是禁用：颜色照常，只把"可点"这个暗示收回来。

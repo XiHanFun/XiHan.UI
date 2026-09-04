@@ -82,12 +82,6 @@
     cursor: default;
   }
 
-  [data-scope='calendar'][data-part='heading-year-trigger']:focus-visible,
-  [data-scope='calendar'][data-part='heading-month-trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
-  }
-
   [data-scope='calendar'][data-part='prev-year-trigger'],
   [data-scope='calendar'][data-part='prev-trigger'],
   [data-scope='calendar'][data-part='next-year-trigger'],
@@ -137,15 +131,6 @@
   [data-scope='calendar'][data-part='next-year-trigger']:disabled,
   [data-scope='calendar'][data-part='next-trigger']:disabled {
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
-  }
-
-  [data-scope='calendar'][data-part='prev-year-trigger']:focus-visible,
-  [data-scope='calendar'][data-part='prev-trigger']:focus-visible,
-  [data-scope='calendar'][data-part='next-year-trigger']:focus-visible,
-  [data-scope='calendar'][data-part='next-trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
   }
 
   [data-scope='calendar'][data-part='grid'] {
@@ -351,7 +336,6 @@
      所以只能靠 data-disabled 表达，写 :disabled 永远不命中 */
   [data-scope='calendar'][data-part='cell-trigger'][data-disabled] {
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
   [data-scope='calendar'][data-part='cell-trigger'][data-disabled][data-selected] {
@@ -368,11 +352,9 @@
     cursor: default;
   }
 
-  /* 焦点环画在格子上：整张网格只有一格在 Tab 序列里，落焦点必须一眼看得见。
-     往内收一像素，免得被相邻格子的底色盖住 */
+  /* 焦点环往内收一像素，免得被相邻格子的底色盖住 */
   [data-scope='calendar'][data-part='cell-trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: calc(-1 * var(--xh-ring-width));
+    --xh-_ring-offset: var(--xh-_ring-inset);
   }
 
   /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */

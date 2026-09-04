@@ -62,7 +62,9 @@
      这块是 role=img 的说明性文字而不是失效控件，读者仍要认出按的是哪几枚键，
      所以前景不用 fg-disabled（那一档压在 muted 底上只有 2.36:1 / 1.94:1），也不叠 opacity */
   [data-scope='hotkeys'][data-part='root'][data-disabled] {
+    /* 同一个理由也管光标：这块从来不是能按的东西，不摆共享层那个「不可用」的样子 */
     color: var(--xh-fg-subtle);
+    cursor: inherit;
   }
 
   [data-scope='hotkeys'][data-part='root'][data-disabled] [data-scope='hotkeys'][data-part='key'] {

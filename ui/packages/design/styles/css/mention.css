@@ -223,7 +223,6 @@
     color: var(--xh-fg-disabled);
     /* 禁用时连拉伸把手也一并收走，免得留一个拖得动却改不了内容的角 */
     resize: none;
-    cursor: not-allowed;
   }
 
   /* 自动填充：引擎给填过的框强加一套系统色（多数是黄底黑字），盖得过 background 与 color，
@@ -333,7 +332,6 @@
      所以只能靠 data-disabled 表达，写 :disabled 永远不命中 */
   [data-scope='mention'][data-part='item'][data-disabled] {
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
   /* 只读时正文插不进东西，候选也就不该再摆出可点的样子。

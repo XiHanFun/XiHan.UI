@@ -51,6 +51,15 @@ if (imports[0] !== './css/layers.css')
 if (imports[1] !== '@xihan-ui/tokens/tokens.css')
   errors.push(`${ENTRIES.layered} 的第二条 @import 是 ${imports[1] ?? '(没有)'}，令牌必须紧随层序`)
 
+// 聚焦环公共层排在全部组件皮肤之前：它与组件皮肤同特指度（0,3,0），同层内靠源序定胜负。
+// 一旦被某份皮肤挤到后面，那份皮肤要另画环的规则就压不过公共层，而两边取值都合法、
+// 门禁与构建全绿，只有真去 Tab 一遍才看得出环没变。
+const focusAt = imports.indexOf('./css/focus.css')
+if (focusAt === -1)
+  errors.push(`${ENTRIES.layered} 里找不到 ./css/focus.css 的 @import——聚焦环公共层没被引入`)
+else if (focusAt !== 2)
+  errors.push(`${ENTRIES.layered} 的第三条 @import 是 ${imports[2] ?? '(没有)'}，聚焦环公共层必须紧随令牌、排在全部组件皮肤之前`)
+
 const unlayeredCss = await readFile(ENTRIES.unlayered, 'utf8')
 const tokenImportAt = unlayeredCss.search(/^@import\s+['"]@xihan-ui\/tokens/m)
 if (tokenImportAt === -1) {

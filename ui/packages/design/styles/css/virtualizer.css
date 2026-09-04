@@ -48,11 +48,9 @@
     overflow-y: hidden;
   }
 
-  /* 视口带 tabindex=0（长列表里可能一个可聚焦元素都没有），因此要有焦点环。
-     偏移取负：环画在视口内侧，否则会被 root 的 overflow:hidden 裁掉半圈 */
+  /* 偏移取负：环画在视口内侧，否则会被 root 的 overflow:hidden 裁掉半圈 */
   [data-scope='virtualizer'][data-part='viewport']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: calc(-1 * var(--xh-ring-width));
+    --xh-_ring-offset: var(--xh-_ring-inset);
   }
 
   /* 撑出总长的那层，同时是条目的定位上下文——条目是绝对定位的，

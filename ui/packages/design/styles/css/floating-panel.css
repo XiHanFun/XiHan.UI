@@ -78,11 +78,6 @@
     scale: var(--xh-motion-scale-press);
   }
 
-  [data-scope='floating-panel'][data-part='trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
-  }
-
   /* 把手的粗细：八个把手共用这两档，声明在这里往下继承。 */
   [data-scope='floating-panel'][data-part='positioner'] {
     --xh-_floating-panel-handle: var(--xh-floating-panel-handle-size, var(--xh-space-2));
@@ -198,8 +193,7 @@
   }
 
   [data-scope='floating-panel'][data-part='drag-trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: calc(-1 * var(--xh-ring-offset));
+    --xh-_ring-offset: var(--xh-_ring-inset);
   }
 
   /* —— 改尺把手 ——
@@ -221,8 +215,7 @@
   }
 
   [data-scope='floating-panel'][data-part='resize-trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: calc(-1 * var(--xh-ring-offset));
+    --xh-_ring-offset: var(--xh-_ring-inset);
   }
 
   [data-scope='floating-panel'][data-part='resize-trigger'][data-edge='n'] {
@@ -349,13 +342,6 @@
   [data-scope='floating-panel'][data-part='stage-trigger'][data-disabled] {
     background: transparent;
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
-  }
-
-  [data-scope='floating-panel'][data-part='stage-trigger']:focus-visible,
-  [data-scope='floating-panel'][data-part='close-trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
   }
 
   [data-scope='floating-panel'][data-part='body'] {

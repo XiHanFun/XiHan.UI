@@ -4,6 +4,12 @@
     --xh-infinite-scroll-skin: 1;
   }
 
+  /* 这里的 data-disabled 关掉的是「还取不取下一页」，列表本身照常可读可点：
+     光标交回给作者，不摆共享层那个「不可用」的样子 */
+  [data-scope='infinite-scroll'][data-part='root'][data-disabled] {
+    cursor: inherit;
+  }
+
   /*
    * 列表外壳这一层刻意不给盒模型：滚的是页面还是作者自己的 overflow 容器、列表长什么样，
    * 都归作者的布局管，组件只往它身上挂 data-loading / data-disabled 供作者取用。

@@ -63,10 +63,9 @@
     scrollbar-gutter: stable;
   }
 
-  /* 视口带 tabindex=0，需要焦点环；偏移取负画在内侧，避免被 root 裁掉 */
+  /* 偏移取负画在内侧，避免被 root 裁掉 */
   [data-scope='log'][data-part='viewport']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: calc(-1 * var(--xh-ring-width));
+    --xh-_ring-offset: var(--xh-_ring-inset);
   }
 
   /* 取行期间指针给出忙的反馈 */
@@ -131,11 +130,6 @@
 
   [data-scope='log'][data-part='scroll-button']:active {
     scale: var(--xh-motion-scale-press);
-  }
-
-  [data-scope='log'][data-part='scroll-button']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
   }
 
   /* 没写内容就由皮肤画一枚向下的字形；作者往按钮里塞了自己的图形，这条规则即不命中。

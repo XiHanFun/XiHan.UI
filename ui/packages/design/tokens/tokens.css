@@ -288,8 +288,13 @@
     --xh-measure-prose: 32rem;
     --xh-surface-py-sm: var(--xh-space-3);
     --xh-surface-px-sm: var(--xh-space-4);
-    --xh-surface-py-md: var(--xh-section-py);
-    --xh-surface-px-md: var(--xh-control-px-lg);
+    --xh-surface-py-md: var(--xh-space-5);
+    --xh-surface-px-md: var(--xh-space-4);
+    --xh-surface-pad-xs: var(--xh-space-1);
+    --xh-surface-pad-sm: var(--xh-space-2);
+    --xh-surface-pad-md: var(--xh-space-3);
+    --xh-surface-pad-lg: var(--xh-space-4);
+    --xh-surface-action-inset: var(--xh-space-3);
   }
 
   /* density 轴 · compact 档：只覆盖收紧的盒尺寸。排在基线合并块之后，
@@ -334,6 +339,11 @@
     --xh-overlay-max-h: 14rem;
     --xh-surface-py-sm: var(--xh-space-2);
     --xh-surface-px-sm: var(--xh-space-3);
+    --xh-surface-py-md: var(--xh-space-4);
+    --xh-surface-px-md: var(--xh-space-3);
+    --xh-surface-pad-sm: var(--xh-space-1_5);
+    --xh-surface-pad-md: var(--xh-space-2);
+    --xh-surface-pad-lg: var(--xh-space-3);
     --xh-section-py-sm: var(--xh-space-3);
     --xh-section-py-md: var(--xh-space-4);
     --xh-section-py-lg: var(--xh-space-6);
@@ -382,7 +392,7 @@
     --xh-border-strong: var(--xh-color-neutral-300);
     --xh-border-control: var(--xh-color-neutral-450);
     --xh-border-control-hover: var(--xh-color-neutral-500);
-    --xh-border-control-focus: var(--xh-border-control);
+    --xh-border-control-focus: var(--xh-ring-focus);
     --xh-border-invalid: var(--xh-color-danger-600);
     --xh-border-at-limit: var(--xh-color-warning-600);
     --xh-ring-focus: var(--xh-color-brand-500);
@@ -434,7 +444,7 @@
     --xh-border-strong: var(--xh-color-neutral-300);
     --xh-border-control: var(--xh-color-neutral-450);
     --xh-border-control-hover: var(--xh-color-neutral-500);
-    --xh-border-control-focus: var(--xh-border-control);
+    --xh-border-control-focus: var(--xh-ring-focus);
     --xh-border-invalid: var(--xh-color-danger-600);
     --xh-border-at-limit: var(--xh-color-warning-600);
     --xh-ring-focus: var(--xh-color-brand-500);
@@ -486,7 +496,7 @@
     --xh-border-strong: var(--xh-color-neutral-600);
     --xh-border-control: var(--xh-color-neutral-550);
     --xh-border-control-hover: var(--xh-color-neutral-500);
-    --xh-border-control-focus: var(--xh-border-control);
+    --xh-border-control-focus: var(--xh-ring-focus);
     --xh-border-invalid: var(--xh-color-danger-500);
     --xh-border-at-limit: var(--xh-color-warning-500);
     --xh-ring-focus: var(--xh-color-brand-400);

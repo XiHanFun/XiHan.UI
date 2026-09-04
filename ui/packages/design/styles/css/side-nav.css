@@ -127,12 +127,6 @@
     background: var(--xh-side-nav-row-bg-hover, var(--xh-bg-subtle));
   }
 
-  [data-scope='side-nav'][data-part='branch-trigger']:focus-visible,
-  [data-scope='side-nav'][data-part='link']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
-  }
-
   /* 选中的那条：品牌淡底 + 强调字。
      守卫与轻档那条同特指度，写在其后才压得住——键盘走到当前页那一行时底色仍是品牌淡底 */
   [data-scope='side-nav'][data-part='link']:not([data-disabled])[data-current] {
@@ -150,7 +144,6 @@
   [data-scope='side-nav'][data-part='branch-trigger'][data-disabled],
   [data-scope='side-nav'][data-part='link'][data-disabled] {
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
   [data-scope='side-nav'][data-part='branch-text'],

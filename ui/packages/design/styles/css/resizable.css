@@ -23,6 +23,12 @@
     user-select: none;
   }
 
+  /* 这里的 data-disabled 关掉的是「能不能调尺寸」，容器里作者的内容照常可用：
+     光标交回给作者，不摆共享层那个「不可用」的样子 */
+  [data-scope='resizable'][data-part='root'][data-disabled] {
+    cursor: inherit;
+  }
+
   [data-scope='resizable'][data-part='root'][hidden] {
     display: none;
   }
@@ -99,11 +105,6 @@
   [data-scope='resizable'][data-part='handle'][data-edge='se'] {
     inset-block-end: calc(var(--xh-resizable-corner, var(--xh-space-3)) / -2);
     inset-inline-end: calc(var(--xh-resizable-corner, var(--xh-space-3)) / -2);
-  }
-
-  [data-scope='resizable'][data-part='handle']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
   }
 
   /* 没开放的边不显示把手：留着一个抓不动的区域只会让人反复去试 */

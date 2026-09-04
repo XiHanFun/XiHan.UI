@@ -236,7 +236,6 @@
   [data-scope='combobox'][data-part='control'][data-disabled] {
     background: var(--xh-combobox-control-bg-disabled, var(--xh-bg-subtle));
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
   /* input 是单体表单控件，禁用走原生 disabled（候选那边一律 aria-disabled）。
@@ -284,7 +283,6 @@
 
   [data-scope='combobox'][data-part='input']:disabled {
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
   /* 自动填充：引擎给填过的框强加一套系统色（多数是黄底黑字），盖得过 background 与 color，
@@ -396,7 +394,6 @@
   [data-scope='combobox'][data-part='trigger']:disabled {
     background: var(--xh-combobox-action-bg, transparent);
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
   [data-scope='combobox'][data-part='content'] {
@@ -518,7 +515,6 @@
      所以只能靠 data-disabled 表达，写 :disabled 永远不命中 */
   [data-scope='combobox'][data-part='item'][data-disabled] {
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
   [data-scope='combobox'][data-part='item-text'] {

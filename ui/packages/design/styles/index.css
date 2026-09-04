@@ -5,6 +5,15 @@
    tokens.css 自带 @layer xihan.tokens，层序由 layers.css 定。 */
 @import '@xihan-ui/tokens/tokens.css';
 
+/* 排在全部组件皮肤之前：聚焦环的公共层，组件只在需要往内收时给私有槽赋值。 */
+@import './css/focus.css';
+
+/* 排在全部组件皮肤之前：字段族标签的公共层，组件另写行距即可压过。 */
+@import './css/label.css';
+
+/* 排在全部组件皮肤之前：指针反馈的公共层，组件另写光标即可压过。 */
+@import './css/pointer.css';
+
 /* 其余按层归属排列。 */
 @import './css/affix.css';
 @import './css/avatar-group.css';

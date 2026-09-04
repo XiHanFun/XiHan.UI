@@ -1,0 +1,48 @@
+/*
+ * 字段族标签的公共层，按 [data-part='label'] 匹配下面逐个列出的 scope。
+ *
+ * 收在这里的是逐值相同的两条：行距取 --xh-leading-none，禁用档字色取 --xh-fg-subtle。
+ * 字色、字号、字重三条留在各组件皮肤——它们挂着 --xh-<组件>-label-* 覆盖槽，
+ * 槽名里带组件名，写不进一条共享规则。
+ *
+ * scope 逐个列出，不写成 [data-scope][data-part='label']：label 这个部件名在标签、
+ * 统计、进度、推理、说明列表上指的是另一种文字（行内省略的标签正文、环内居中的数字、
+ * 描述项的名字），通配规则会把行距按到它们头上。要接进来的组件把 scope 加进列表。
+ *
+ * 选择器停在两个属性（0,2,0），与组件皮肤同级；引入顺序排在全部组件皮肤之前，
+ * 要另写行距的组件照写即可压过。
+ */
+@layer xihan.components {
+  /* 标签是单行短文，行距不留额外的行间空白，标签与控件之间只剩容器给的那一道间距。 */
+  [data-scope='checkbox'][data-part='label'],
+  [data-scope='checkbox-group'][data-part='label'],
+  [data-scope='color-picker'][data-part='label'],
+  [data-scope='date-field'][data-part='label'],
+  [data-scope='editable'][data-part='label'],
+  [data-scope='field'][data-part='label'],
+  [data-scope='file-upload'][data-part='label'],
+  [data-scope='number-field'][data-part='label'],
+  [data-scope='password-input'][data-part='label'],
+  [data-scope='pin-input'][data-part='label'],
+  [data-scope='radio-group'][data-part='label'],
+  [data-scope='rating'][data-part='label'],
+  [data-scope='signature-pad'][data-part='label'],
+  [data-scope='slider'][data-part='label'],
+  [data-scope='switch'][data-part='label'],
+  [data-scope='tags-input'][data-part='label'],
+  [data-scope='text-field'][data-part='label'],
+  [data-scope='time-field'][data-part='label'] {
+    line-height: var(--xh-leading-none);
+  }
+
+  /*
+   * 禁用档的字色：这四家没有 --xh-<组件>-label-fg-disabled 覆盖槽，取值只有这一处。
+   * 挂了那个槽的组件在各自皮肤里另写一条，排在本份之后，压过这里。
+   */
+  [data-scope='color-picker'][data-part='label'][data-disabled],
+  [data-scope='rating'][data-part='label'][data-disabled],
+  [data-scope='signature-pad'][data-part='label'][data-disabled],
+  [data-scope='slider'][data-part='label'][data-disabled] {
+    color: var(--xh-fg-subtle);
+  }
+}

@@ -18,9 +18,12 @@ const STYLES_DIR = 'packages/design/styles/css'
  * 这条就成了一张过期的免检通行证，由下面的名单核验报出来。
  */
 const SHARED = {
+  'focus': '聚焦环的公共层，按 [data-scope][data-part] 匹配全部库节点，不挑具体哪一个',
   'forced-colors': '高对比档的公共补救层，按状态词汇表匹配全部库节点，不挑具体哪一个',
+  'label': '字段族标签的公共层，按 [data-part=\'label\'] 匹配逐个列出的 scope',
   'layers': '层序单一真源，整份只有一行 @layer 次序声明',
   'overlay-arrow': '浮层箭头的几何，按 [data-part=\'arrow\'] 匹配，六份浮层皮肤共用',
+  'pointer': '指针反馈的公共层，按 [data-scope] 与禁用态的三种条件拼写匹配全部库节点，不挑具体哪一个',
   'reset': '库自己的基线，按 [data-scope] 匹配全部库节点，不挑具体哪一个',
   'tone': '语气层，与组件无关，三视觉轴共用一份',
   'undefined': '自定义元素升级前的形态，按元素名匹配，那一刻 data-scope 还没打上',

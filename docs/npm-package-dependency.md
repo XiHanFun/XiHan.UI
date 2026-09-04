@@ -126,7 +126,7 @@ XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（�
 | `@xihan-ui/icons` | `./codegen` |
 | `@xihan-ui/vue` | `./backgrounds` `./behavior` `./sound` |
 | `@xihan-ui/web-components` | `./define` `./backgrounds` `./custom-elements.json` |
-| `@xihan-ui/styles` | 每份皮肤一条 CSS，共 134 条（127 份组件皮肤 + 7 份共享层），另有 `./index.css` 与 `./index.unlayered.css` 两个整包入口 |
+| `@xihan-ui/styles` | 每份皮肤一条 CSS，共 137 条（127 份组件皮肤 + 10 份共享层），另有 `./index.css` 与 `./index.unlayered.css` 两个整包入口 |
 
 其余十个包（`headless` / `motion` / `pointer` / `position` / `code-highlight` / `animations` / `backgrounds` / `chat-stream` / `markdown` / `sound`）只有主入口。
 

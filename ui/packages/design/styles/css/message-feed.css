@@ -53,10 +53,9 @@
     display: none;
   }
 
-  /* 根带容器兜底的 Tab 位，需要焦点环；偏移取负画在内侧，免得被外层裁掉 */
+  /* 偏移取负画在内侧，免得被外层裁掉 */
   [data-scope='message-feed'][data-part='root']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: calc(-1 * var(--xh-ring-width));
+    --xh-_ring-offset: var(--xh-_ring-inset);
   }
 
   /* 滚动容器。overscroll-behavior 挡住滚到头之后把整页一起带走 */
@@ -90,12 +89,6 @@
 
   [data-scope='message-feed'][data-part='item'][hidden] {
     display: none;
-  }
-
-  /* 键盘遍历停在哪一条要看得见：焦点环画在内侧，长消息滚动时不会被裁掉一半 */
-  [data-scope='message-feed'][data-part='item']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
   }
 
   [data-scope='message-feed'][data-part='item-label'] {
@@ -146,11 +139,6 @@
 
   [data-scope='message-feed'][data-part='scroll-button']:active {
     scale: var(--xh-motion-scale-press);
-  }
-
-  [data-scope='message-feed'][data-part='scroll-button']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
   }
 
   /* 没写内容就由皮肤画一枚向下的字形；作者往按钮里塞了自己的图形，这条规则即不命中 */

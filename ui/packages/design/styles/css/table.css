@@ -166,11 +166,9 @@
     color: var(--xh-fg-disabled);
   }
 
-  /* 行才是 Tab 停靠点，环画在整行上 */
+  /* 行才是 Tab 停靠点，环画在整行上；往内收：行是撑满宽度的，环画在外沿会被滚动容器裁掉 */
   [data-scope='table'][data-part='row']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    /* 往内收：行是撑满宽度的，环画在外沿会被滚动容器裁掉 */
-    outline-offset: calc(-1 * var(--xh-ring-width));
+    --xh-_ring-offset: var(--xh-_ring-inset);
   }
 
   /* 列宽由连接层写进内联 inline-size，因此 flex-basis 取 auto：
@@ -323,15 +321,13 @@
     border-color: var(--xh-border-subtle);
     background: var(--xh-bg-muted);
     color: transparent;
-    cursor: not-allowed;
   }
 
   /* 全选把手是表头里独立的 Tab 停靠点，环得画在它自己身上。
      往内收，与行、排序把手同一口径：把手长在列头里，列头与根都收 overflow，
      环画在外沿会被裁掉 */
   [data-scope='table'][data-part='select-all-trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: calc(-1 * var(--xh-ring-width));
+    --xh-_ring-offset: var(--xh-_ring-inset);
   }
 
   /* 行选择把手不占 Tab 位（键盘那一路走 Space），只服务指针 */
@@ -363,7 +359,6 @@
 
   [data-scope='table'][data-part='expand-trigger'][data-disabled] {
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
   [data-scope='table'][data-part='expand-trigger']:focus-visible {
@@ -420,13 +415,8 @@
 
   [data-scope='table'][data-part='column-resize-trigger']:hover::after,
   [data-scope='table'][data-part='column-resize-trigger'][data-resizing]::after {
-    background: var(--xh-table-resize-fg-active, var(--xh-border-control-focus));
+    background: var(--xh-table-resize-fg-active, var(--xh-bg-brand));
     block-size: 100%;
-  }
-
-  [data-scope='table'][data-part='column-resize-trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
   }
 
   /* 不可改宽的列不显示把手：留着一条抓不动的线只会让人反复去试 */
@@ -480,12 +470,6 @@
      标题起点会错开一格 */
   [data-scope='table'][data-part='column-drag-trigger'][data-disabled] {
     color: var(--xh-table-drag-fg-disabled, var(--xh-fg-disabled));
-    cursor: not-allowed;
-  }
-
-  [data-scope='table'][data-part='column-drag-trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
   }
 
   /* 落点指示线：拖到哪一列的哪一侧，线就画在那一列的那条边上。列头与表体的格子一起画，
@@ -506,7 +490,7 @@
     position: absolute;
     inset-block: 0;
     inline-size: var(--xh-table-drop-line, var(--xh-stroke-thick));
-    background: var(--xh-table-drop-fg, var(--xh-border-control-focus));
+    background: var(--xh-table-drop-fg, var(--xh-bg-brand));
   }
 
   /* 落在哪一侧走逻辑属性：rtl 下 before 自己就换到右边去了。
@@ -586,12 +570,6 @@
      首列内容的起点会错开一格 */
   [data-scope='table'][data-part='row-drag-trigger'][data-disabled] {
     color: var(--xh-table-row-drag-fg-disabled, var(--xh-fg-disabled));
-    cursor: not-allowed;
-  }
-
-  [data-scope='table'][data-part='row-drag-trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
   }
 
   /* 被拖的行整行压暗，与被拖的列同一档透明度。这里只动 opacity、cursor 与 user-select，
@@ -625,7 +603,7 @@
     z-index: calc(var(--xh-table-sticky-column-layer, 1) + 1);
     inset-inline: 0;
     block-size: var(--xh-table-drop-line, var(--xh-stroke-thick));
-    background: var(--xh-table-drop-fg, var(--xh-border-control-focus));
+    background: var(--xh-table-drop-fg, var(--xh-bg-brand));
   }
 
   /* 线整条画在行内，不压着边。压着边画的话，首行那条上沿线会被表格根的圆角与滚动裁掉半条 */
@@ -658,7 +636,7 @@
     z-index: calc(var(--xh-table-sticky-column-layer, 1) + 1);
     inset: 0;
     box-shadow: inset 0 0 0 var(--xh-table-drop-line, var(--xh-stroke-thick))
-      var(--xh-table-drop-fg, var(--xh-border-control-focus));
+      var(--xh-table-drop-fg, var(--xh-bg-brand));
     /* 这一层盖满整行，让它不接指针，落点判定照旧落到行与格子上 */
     pointer-events: none;
   }
@@ -730,8 +708,7 @@
   }
 
   [data-scope='table'][data-part='sort-trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: calc(-1 * var(--xh-ring-width));
+    --xh-_ring-offset: var(--xh-_ring-inset);
   }
 
   /* 详情行：靠 hidden 收起，不卸载作者节点。内容长在它的单元格里，行本身只画底色 */

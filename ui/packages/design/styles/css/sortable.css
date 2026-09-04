@@ -92,13 +92,7 @@
     cursor: grabbing;
   }
 
-  [data-scope='sortable'][data-part='item-drag-trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
-  }
-
   [data-scope='sortable'][data-part='item-drag-trigger'][aria-disabled='true'] {
-    cursor: not-allowed;
     color: var(--xh-sortable-drag-fg-disabled, var(--xh-fg-disabled));
   }
 

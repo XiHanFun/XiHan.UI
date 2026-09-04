@@ -48,13 +48,7 @@
   }
 
   [data-scope='toggle'][data-part='root'][data-disabled] {
-    cursor: not-allowed;
     opacity: var(--xh-state-disabled-opacity);
-  }
-
-  [data-scope='toggle'][data-part='root']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
   }
 
   /* —— 变体 —— */

@@ -149,14 +149,8 @@
     background: var(--xh-approval-scope-bg-hover, var(--xh-bg-subtle-hover));
   }
 
-  [data-scope='approval'][data-part='scope-item']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
-  }
-
   [data-scope='approval'][data-part='scope-item'][data-disabled] {
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
   /* 勾选记号：方框 + 选中态填色，纯装饰不进可访问名 */
@@ -241,14 +235,8 @@
     display: none;
   }
 
-  [data-scope='approval'][data-part='note']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
-  }
-
   [data-scope='approval'][data-part='note']:disabled {
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
   /* 剩余时间：等宽数字，逐秒跳字时不左右晃 */
@@ -423,16 +411,9 @@
     animation: none;
   }
 
-  [data-scope='approval'][data-part='approve-trigger']:focus-visible,
-  [data-scope='approval'][data-part='deny-trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
-  }
-
   [data-scope='approval'][data-part='approve-trigger']:disabled,
   [data-scope='approval'][data-part='deny-trigger']:disabled {
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
   /* 尺寸档改内衬、间距、按钮高度与行内字号 */

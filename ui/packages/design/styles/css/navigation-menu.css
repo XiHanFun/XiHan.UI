@@ -151,11 +151,6 @@
     scale: var(--xh-motion-scale-press);
   }
 
-  [data-scope='navigation-menu'][data-part='trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
-  }
-
   /* 展开着的那一张是打开路径，走品牌淡底强档：哪一张开着必须一眼看得出来。
      不加粗：横排的栏加粗会推挤相邻触发器。
      必须排在轻档之后：指针回到它身上时同特指度靠书写顺序压过轻档，
@@ -168,7 +163,6 @@
      仍可聚焦、仍是方向键的起点 */
   [data-scope='navigation-menu'][data-part='trigger'][data-disabled] {
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
   /* 竖排：入口占满整项的宽度，面板才从入口右缘长出来 */
@@ -186,7 +180,7 @@
     flex-direction: column;
     gap: var(--xh-navigation-menu-content-gap, var(--xh-space-1));
     min-inline-size: var(--xh-navigation-menu-content-min-w, var(--xh-overlay-menu-min-w));
-    padding: var(--xh-navigation-menu-content-p, var(--xh-space-1));
+    padding: var(--xh-navigation-menu-content-p, var(--xh-surface-pad-xs));
     border: var(--xh-stroke-thin) solid var(--xh-navigation-menu-content-border, var(--xh-border-default));
     border-radius: var(--xh-navigation-menu-content-radius, var(--xh-shape-surface));
     background: var(--xh-navigation-menu-content-bg, var(--xh-bg-surface));
@@ -242,11 +236,6 @@
 
   [data-scope='navigation-menu'][data-part='link']:hover {
     background: var(--xh-navigation-menu-link-bg-hover, var(--xh-_navigation-menu-highlight-bg));
-  }
-
-  [data-scope='navigation-menu'][data-part='link']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
   }
 
   /* 指向当前页面的那一条：颜色与字重都变，不加下划线（下划线是"可点"的信号，它已经在这儿了） */
