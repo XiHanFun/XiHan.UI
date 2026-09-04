@@ -235,6 +235,7 @@
   [data-scope='number-field'][data-part='control'] [data-part='increment-trigger']:active:not(:disabled),
   [data-scope='number-field'][data-part='control'] [data-part='decrement-trigger']:active:not(:disabled) {
     background: var(--xh-number-field-trigger-bg-active, var(--xh-_number-field-trigger-bg-active));
+    scale: var(--xh-motion-scale-press);
   }
 
   /* 焦点落到盒内按钮时 control 已经 focus-within 起了环，按钮自己再画一圈就是框里套框 */
@@ -357,7 +358,9 @@
        触屏上还会当成双击缩放，两条都得先掐掉 */
     user-select: none;
     touch-action: manipulation;
-    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
   /* 上面给了 display，UA 的 [hidden]{display:none} 已被盖掉，这里补回来 */
@@ -376,6 +379,7 @@
   [data-scope='number-field'][data-part='increment-trigger']:active:not(:disabled),
   [data-scope='number-field'][data-part='decrement-trigger']:active:not(:disabled) {
     background: var(--xh-number-field-trigger-bg-active, var(--xh-_number-field-trigger-bg-active));
+    scale: var(--xh-motion-scale-press);
   }
 
   /* 按钮不占 Tab 位（tabindex=-1），留这条是给程序化聚焦兜底 */

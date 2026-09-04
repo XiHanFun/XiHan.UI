@@ -7,9 +7,13 @@
 // 判据只管「有没有」，不管缩多少：缩放量走 --xh-motion-scale-press，
 // 减弱动效档把它归 1，所以这条不与无障碍冲突。
 //
-// 名单制而非全量扫：不是每个组件都该有按压反馈——输入框、只读展示件按下去不该动。
-// 要求逐条登记，免得新组件默认逃过。判定为不该有的，登进 NO_PRESS 留一句理由，
-// 那张表两侧都反查，登记过期或者反馈后来补上了都会判失败。
+// 不是每个组件都该有按压反馈——输入框、只读展示件按下去不该动。所以分两张表：
+// 该给的登进 PRESSABLE 逐条查形态，不该给的登进 NO_PRESS 留一句理由。
+// NO_PRESS 两侧都反查，登记过期或者反馈后来补上了都会判失败。
+//
+// 全集是扫出来的，不是登出来的：皮肤里带 cursor:pointer 的部件就是「可点部件」，
+// 两张表加起来必须盖住它们，漏一个就判红。反过来不成立——已登记的部件不要求自己那条
+// 规则里写 cursor:pointer，共享规则里继承来的也算数。
 //
 // 两种形态：
 // ① 即时按压（多数）：反馈落在 :active 上，缩放量走令牌。
@@ -17,7 +21,8 @@
 //    状态属性驱动。这一支不能靠 :active——手指按住不动时 :active 会被滚动接管等原因
 //    提前撤掉，而等待期恰恰是最需要回执的那几百毫秒；也不比缩放，因为这类触发区往往是
 //    作者的整块内容，缩放它会把作者自己的排版一起抖起来。改比底色。
-import { readFile } from 'node:fs/promises'
+import { readdir, readFile } from 'node:fs/promises'
+import { join } from 'node:path'
 
 const SKINS = 'packages/design/styles/css'
 const HEADLESS = 'packages/engine/headless/src'
@@ -27,30 +32,39 @@ const HEADLESS = 'packages/engine/headless/src'
  * 字符串条目按形态①查；`{ part, attr }` 条目按形态②查。
  */
 const PRESSABLE = {
+  // 按钮形的控件本体：整颗就是点击目标
+  'button': ['root'],
+  'download-trigger': ['root'],
+  'toggle': ['root'],
+  'toggle-group': ['item'],
   'segmented': ['item'],
+  'back-top': ['trigger'],
+  'float-button': ['trigger'],
+  'clipboard': ['trigger'],
   // 清空 / 关闭 / 移除按钮四类（契约见 check-clear-trigger）
   'cascader': ['clear-trigger'],
   'tree-select': ['clear-trigger'],
-  'combobox': ['clear-trigger'],
+  'combobox': ['clear-trigger', 'trigger'],
   // 展开钮与确认钮跟着同组件的 clear-trigger 走同一副观感
   'date-picker': ['clear-trigger', 'trigger', 'confirm-trigger'],
-  'time-picker': ['clear-trigger'],
+  'time-picker': ['clear-trigger', 'trigger'],
   'text-field': ['clear-trigger'],
   'tags-input': ['clear-trigger', 'item-delete-trigger'],
   'select': ['clear-trigger', 'item-delete-trigger'],
   'popselect': ['clear-trigger'],
   'date-field': ['clear-trigger'],
   'time-field': ['clear-trigger'],
-  'file-upload': ['clear-trigger', 'item-delete-trigger'],
+  'file-upload': ['clear-trigger', 'item-delete-trigger', 'trigger'],
   'signature-pad': ['clear-trigger'],
   'dialog': ['close-trigger'],
-  'drawer': ['close-trigger'],
-  'notification': ['item-close-trigger'],
+  'drawer': ['close-trigger', 'trigger'],
+  'notification': ['item-close-trigger', 'item-action-trigger'],
   'popover': ['close-trigger'],
-  'tour': ['close-trigger'],
-  'toast': ['close-trigger'],
+  'tour': ['close-trigger', 'prev-trigger', 'next-trigger', 'skip-trigger'],
+  'toast': ['close-trigger', 'action-trigger'],
   'alert': ['close-trigger'],
-  'floating-panel': ['close-trigger'],
+  'floating-panel': ['close-trigger', 'trigger', 'stage-trigger'],
+  'popconfirm': ['confirm-trigger', 'cancel-trigger'],
   'image-viewer': [
     'close-trigger',
     'zoom-in-trigger',
@@ -64,14 +78,47 @@ const PRESSABLE = {
     'next-trigger',
   ],
   'tag': ['close-trigger'],
-  'dynamic-input': ['item-delete-trigger'],
+  'dynamic-input': ['item-delete-trigger', 'move-up-trigger', 'move-down-trigger', 'add-trigger'],
+  // 表单里的编辑、提交与增减
+  'editable': ['edit-trigger', 'submit-trigger', 'cancel-trigger'],
+  'form': ['submit-trigger', 'reset-trigger'],
+  'number-field': ['increment-trigger', 'decrement-trigger'],
+  'password-input': ['visibility-trigger'],
+  'transfer': ['to-target-trigger', 'to-source-trigger'],
+  // 勾选形的控件本体：方框、轨道、星星都是自己能被按下的一颗
+  'checkbox': ['root'],
+  'switch': ['root'],
+  'rating': ['item'],
   // 色板格子的底色就是它要展示的那个颜色，换底会盖掉展示物，按压回执只能落在缩放上
   'color-picker': ['eye-dropper-trigger', 'swatch-item'],
   'pagination': ['prev-trigger', 'next-trigger', 'item', 'ellipsis'],
+  // 日历的翻页钮、标题钮与日期格
+  'calendar': [
+    'prev-year-trigger',
+    'prev-trigger',
+    'next-trigger',
+    'next-year-trigger',
+    'heading-year-trigger',
+    'heading-month-trigger',
+    'cell-trigger',
+  ],
+  'timer': ['control'],
+  // 展开与导航的触发钮
+  'accordion': ['trigger'],
+  'collapsible': ['trigger'],
+  'menubar': ['trigger'],
+  'navigation-menu': ['trigger'],
+  'tabs': ['trigger'],
+  // 表格里的勾选与展开把手
+  'table': ['select-all-trigger', 'row-select-trigger', 'expand-trigger'],
+  // 走马灯的翻页钮、播放钮与圆点
+  'carousel': ['prev-trigger', 'next-trigger', 'autoplay-trigger', 'indicator'],
+  'layout': ['sider-trigger'],
   // AI 族里点得动的部件
   'approval': ['approve-trigger', 'deny-trigger'],
   'code-view': ['fold-trigger'],
   'diff-view': ['gap-trigger'],
+  'log': ['scroll-button'],
   'message-feed': ['scroll-button'],
   'prompt-input': ['submit-trigger'],
   'question-flow': ['option', 'prev-trigger', 'next-trigger', 'skip-trigger', 'submit-trigger'],
@@ -87,7 +134,61 @@ const PRESSABLE = {
  * 皮肤里得查不到它的 :active 规则（有了就说明反馈已经补上，该挪进 PRESSABLE）。
  */
 const NO_PRESS = {
+  // 列表族条目：一行文字，按下的回执走高亮档（悬停中性灰、展开路径品牌淡底）
+  'menu:item': '列表行的按下回执走高亮档，缩放会抖动整列',
+  'menubar:item': '列表行的按下回执走高亮档，缩放会抖动整列',
+  'context-menu:item': '列表行的按下回执走高亮档，缩放会抖动整列',
+  'listbox:item': '列表行的按下回执走高亮档，缩放会抖动整列',
+  'select:item': '列表行的按下回执走高亮档，缩放会抖动整列',
+  'combobox:item': '列表行的按下回执走高亮档，缩放会抖动整列',
+  'popselect:item': '列表行的按下回执走高亮档，缩放会抖动整列',
+  'cascader:item': '列表行的按下回执走高亮档，缩放会抖动整列',
+  'cascader:search-item': '列表行的按下回执走高亮档，缩放会抖动整列',
+  'mention:item': '列表行的按下回执走高亮档，缩放会抖动整列',
+  'transfer:item': '列表行的按下回执走高亮档，缩放会抖动整列',
+  'tree:item': '列表行的按下回执走高亮档，缩放会抖动整列',
+  'tree:branch-control': '分支那一行与叶子行共用同一套行盒，列表行的按下回执走高亮档，缩放会抖动整列',
+  'tree-select:item': '列表行的按下回执走高亮档，缩放会抖动整列',
+  'tree-select:branch-control': '分支行与叶子行共用同一套行盒，按下回执走高亮档，缩放会抖动整列',
+  'json-viewer:branch-control': '分支那一行是整行点击目标，列表行的按下回执走高亮档，缩放会抖动整列',
+  'date-picker:preset': '列表行的按下回执走高亮档，缩放会抖动整列',
+  'date-picker:time-item': '列表行的按下回执走高亮档，缩放会抖动整列',
+  'time-picker:preset': '列表行的按下回执走高亮档，缩放会抖动整列',
+  'time-picker:item': '列表行的按下回执走高亮档，缩放会抖动整列',
+  'side-nav:link': '列表行的按下回执走高亮档，缩放会抖动整列',
+  'side-nav:branch-trigger': '列表行的按下回执走高亮档，缩放会抖动整列',
+  'approval:scope-item': '列表行的按下回执走高亮档，缩放会抖动整列',
+  'form:error-summary-item': '错误摘要里的每一条是一行文字链接，回执走文字色，缩放一行文字会把整块摘要抖起来',
+  'steps:trigger': '步骤条目是序号圆点加标题说明的整块内容，按下回执走高亮底色，缩放会把多行文字一起抖起来',
+  // 扩大命中区的标签：点它等于点控件，回执落在控件本体上
+  'checkbox:label': '标签是包住方框与文字的整行命中区，点它等于点方框，按下的回执落在方框本体上，标签自己不动',
+  'switch:label': '标签是包住轨道与文字的整行命中区，点它等于点轨道，按下的回执落在轨道与滑块上，标签自己不动',
+  'editable:label': '标题是「点它等于进编辑态」的扩大命中区，反馈该落在预览区与输入框本体上，标签自己不动',
+  'slider:mark-label': '刻度文案是点它跳到该刻度的扩大命中区，回执落在拇指上，文案自己不动',
+  // 方框圆圈连着文字的整行条目：回执落在方框与圆点的填色上
+  'checkbox-group:item': '条目是「方框 + 文字」的整行命中区，缩放整行会把文字一起抖起来，按下的回执落在方框的填色上',
+  'checkbox-group:select-all-trigger': '全选格与条目同形，也是「方框 + 文字」的整行，缩放会带着整列条目一起抖',
+  'radio-group:item': '条目是「圆圈 + 文字」的整行命中区，缩放整行会把文字一起抖起来，按下的回执落在圆圈的圆点上',
+  'transfer:select-all-trigger': '勾选方框与标签连成的一行，缩放会带着标签文字一起抖，回执落在方框的勾选态上',
+  // 字段外壳与壳里铺满宽度的值显示体：缩放会把回显文字一起挤
+  'cascader:control': '字段外壳，描边底色与控件高度都长在这一层，缩放它会把盒里的回显文字与按钮一起挤',
+  'cascader:trigger': '盒里撑满剩余宽度的透明区，承载回显与箭头，缩放它等于抖动整个字段的内容',
+  'select:trigger': '盒里撑满剩余宽度的透明区，承载回显与箭头，缩放它等于抖动整个字段的内容',
+  'popselect:trigger': '盒里撑满剩余宽度的透明区，承载回显与箭头，缩放它等于抖动整个字段的内容',
+  'tree-select:control': '字段外壳，描边底色与控件高度都长在这一层，缩放它会把盒里的回显文字与按钮一起挤',
+  'tree-select:trigger': '盒里撑满剩余宽度的透明区，承载回显与箭头，缩放它等于抖动整个字段的内容',
+  'color-picker:control': '字段外壳：按下整壳缩放会把里面的色块与值文本一起挤，回执该落在盒里的部件上',
+  'color-picker:trigger': '不是按钮形，是撑满字段的内容区（色块加值串），缩放它等于缩放整条字段文本',
+  'pagination:page-size-select': '原生 select 的字段外壳，按下即弹出系统下拉，缩放整壳会把里面的文字一起挤',
+  // 拖拽轨道：按下即进入拖动，回执由拇指给出
+  'slider:control': '控件是整条轨道，按下即进入拖动，回执由拇指的拖动放大给出；缩放整条轨道会把刻度点与刻度文案一起挤',
+  'color-picker:channel-slider': '拖拽轨道，按下的回执由拇指的拖拽放大给出；缩放整条轨道会让渐变与拇指位置一起错开',
+  // 大块区域：缩放会把里面的排版一起抖起来
   'image-viewer:trigger': '触发区是作者自己的一块内容（多为缩略图），皮肤对它零外观规则；缩放它会把作者的排版一起抖起来',
+  'image-viewer:toolbar': '工具条本身是容器，cursor:pointer 落在它里面的按钮上（那几颗已登记有按压反馈），缩放整条会把所有按钮一起抖起来',
+  'file-upload:dropzone': '大块投放区，按下回执由拖入态的描边与底色给出；缩放整块会把里面的说明文字一起抖起来',
+  'ellipsis:root': '触发区就是被裁的那整段文本，缩放它会把整段排版一起抖起来',
+  'table:sort-trigger': '排序把手 flex:1 撑满整块列标题，缩放会把表头文字连同列宽基线一起抖起来；按下回执落在排序指示字形与列标题底色上',
 }
 
 const problems = []
@@ -126,6 +227,49 @@ for (const key of Object.keys(NO_PRESS)) {
   const css = await readFile(`${SKINS}/${name}.css`, 'utf8')
   if (new RegExp(`\\[data-part='${part}'\\][^{]*:active`).test(css))
     problems.push(`${key} 登记成不给按压反馈，皮肤里却已经有 :active 规则——把它挪进 PRESSABLE`)
+}
+
+// 全集反查：皮肤里带 cursor:pointer 的部件，两张表加起来必须盖住
+const registered = new Set()
+for (const [name, parts] of Object.entries(PRESSABLE)) {
+  for (const part of parts)
+    registered.add(`${name}:${typeof part === 'string' ? part : part.part}`)
+}
+for (const key of Object.keys(NO_PRESS))
+  registered.add(key)
+
+const clickable = await collectClickableParts()
+for (const [key, line] of clickable) {
+  if (registered.has(key))
+    continue
+  problems.push(
+    `未登记：${key}（${key.split(':')[0]}.css:${line}）——新的可点部件必须定性：`
+    + `该给按压反馈就登进 PRESSABLE，不该给就登进 NO_PRESS 并写一句理由`,
+  )
+}
+
+/** 扫皮肤，收全带 cursor:pointer 的部件，返回 `组件:部件` → 规则起始行号。 */
+async function collectClickableParts() {
+  const found = new Map()
+  const files = (await readdir(SKINS)).filter(file => file.endsWith('.css')).sort()
+  for (const file of files) {
+    const name = file.replace(/\.css$/, '')
+    // 去块注释时把内容换成等长空格，保留换行，行号才对得上
+    const css = (await readFile(join(SKINS, file), 'utf8'))
+      .replace(/\/\*[\s\S]*?\*\//g, block => block.replace(/[^\n]/g, ' '))
+    for (const rule of css.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
+      if (!/cursor:\s*pointer/.test(rule[2]))
+        continue
+      // 选择器可能是逗号分组，一条规则里列的部件全收
+      const parts = new Set([...rule[1].matchAll(/\[data-part='([a-z0-9-]+)'\]/g)].map(m => m[1]))
+      for (const part of parts) {
+        const key = `${name}:${part}`
+        if (!found.has(key))
+          found.set(key, css.slice(0, rule.index).split('\n').length)
+      }
+    }
+  }
+  return [...found].sort(([a], [b]) => a.localeCompare(b))
 }
 
 function checkPart(name, part, css) {
@@ -175,9 +319,11 @@ if (problems.length) {
   process.exit(1)
 }
 
-const held = Object.values(PRESSABLE).flat().filter(part => typeof part !== 'string').length
+const pressable = Object.values(PRESSABLE).flat()
+const held = pressable.filter(part => typeof part !== 'string').length
 console.log(
-  `[check-press-feedback] 通过：${Object.values(PRESSABLE).flat().length} 个部件按下去都有回应`
+  `[check-press-feedback] 通过：皮肤里 ${clickable.length} 个可点部件全部定性过`
+  + `（登记 ${registered.size} 个）——${pressable.length} 个按下去有回应`
   + `（其中长按等待 ${held} 个比底色，其余比缩放且缩放量都走令牌）`
-  + `，另有 ${Object.keys(NO_PRESS).length} 个判定为不给按压反馈`,
+  + `，${Object.keys(NO_PRESS).length} 个判定为不给按压反馈`,
 )

@@ -153,7 +153,8 @@
     cursor: pointer;
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='drawer'][data-part='trigger'][hidden] {
@@ -170,6 +171,11 @@
   [data-scope='drawer'][data-part='trigger'][data-state='open'] {
     background: var(--xh-drawer-trigger-bg-open, var(--xh-bg-subtle-active));
     border-color: var(--xh-drawer-trigger-border-open, var(--xh-border-control-hover));
+  }
+
+  [data-scope='drawer'][data-part='trigger']:active:not(:disabled) {
+    background: var(--xh-drawer-trigger-bg-active, var(--xh-bg-subtle-active));
+    scale: var(--xh-motion-scale-press);
   }
 
   [data-scope='drawer'][data-part='trigger']:focus-visible {

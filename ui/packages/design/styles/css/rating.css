@@ -82,7 +82,9 @@
     cursor: pointer;
     /* 从一颗星划到另一颗会把中间的字符连着选中，星带看上去像被刷蓝了 */
     user-select: none;
-    transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition:
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
   /* 点亮的判据是 data-highlighted，不是 aria-checked：
@@ -119,6 +121,12 @@
   [data-scope='rating'][data-part='item']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
     outline-offset: var(--xh-ring-offset);
+  }
+
+  /* 按下去要有回应：被按的那一颗星单独下压，松手即弹回。
+     缩的是 inline-block 的这一个盒子，其余星不动，星带整体不移位。只读与禁用不压 */
+  [data-scope='rating'][data-part='item']:not([data-disabled]):not([data-readonly]):active {
+    scale: var(--xh-motion-scale-press);
   }
 
   /* 只读仍进得了 Tab 序列、读屏也念得出，只是改不动：收掉手型，别暗示"点这儿能改" */

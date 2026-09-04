@@ -99,7 +99,8 @@
     cursor: pointer;
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='carousel'][data-part='prev-trigger'][hidden],
@@ -118,6 +119,7 @@
   [data-scope='carousel'][data-part='next-trigger']:active:not(:disabled),
   [data-scope='carousel'][data-part='autoplay-trigger']:active:not(:disabled) {
     background: var(--xh-carousel-trigger-bg-active, var(--xh-bg-subtle-active));
+    scale: var(--xh-motion-scale-press);
   }
 
   [data-scope='carousel'][data-part='prev-trigger']:focus-visible,
@@ -181,7 +183,9 @@
     background: var(--xh-carousel-indicator-bg, var(--xh-border-control));
     font-size: 0;
     cursor: pointer;
-    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='carousel'][data-part='indicator'][hidden] {
@@ -190,6 +194,11 @@
 
   [data-scope='carousel'][data-part='indicator']:hover:not([data-current]) {
     background: var(--xh-carousel-indicator-bg-hover, var(--xh-fg-subtle));
+  }
+
+  /* 底色被当前页与悬停占着，按下的回执只剩缩放 */
+  [data-scope='carousel'][data-part='indicator']:active {
+    scale: var(--xh-motion-scale-press);
   }
 
   /* 当前页：data-current 与 aria-current='true' 由连接层成对给出，

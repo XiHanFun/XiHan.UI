@@ -151,7 +151,9 @@
     line-height: var(--xh-leading-none);
     white-space: nowrap;
     cursor: pointer;
-    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
   /* 并排落在最后一行的右侧两格；取消在左、确认在右 */
@@ -196,6 +198,7 @@
 
   [data-scope='popconfirm'][data-part='confirm-trigger']:active {
     background: var(--xh-_tone-active, var(--xh-bg-brand-active));
+    scale: var(--xh-motion-scale-press);
   }
 
   /* 取消是次要出口，用淡底中性色，不参与语气 */
@@ -210,6 +213,7 @@
 
   [data-scope='popconfirm'][data-part='cancel-trigger']:active {
     background: var(--xh-bg-subtle-active);
+    scale: var(--xh-motion-scale-press);
   }
 
   [data-scope='popconfirm'][data-part='confirm-trigger']:focus-visible,

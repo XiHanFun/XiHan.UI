@@ -31,11 +31,19 @@
     white-space: nowrap;
     cursor: pointer;
     user-select: none;
-    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='toggle'][data-part='root']:hover {
     background: var(--xh-_bg-hover);
+  }
+
+  /* 按下去要有回应：整颗轻微下压，松手即弹回。data-state='on' 是选中后的持久态，
+     不承担按下那一瞬的回执。置灰的不压 */
+  [data-scope='toggle'][data-part='root']:not([data-disabled]):active {
+    scale: var(--xh-motion-scale-press);
   }
 
   [data-scope='toggle'][data-part='root'][data-disabled] {

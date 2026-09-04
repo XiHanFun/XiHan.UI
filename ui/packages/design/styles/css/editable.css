@@ -217,7 +217,9 @@
     white-space: nowrap;
     cursor: pointer;
     user-select: none;
-    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
   /* 三颗按钮按形态轮流收起，连接层给的是 hidden 属性；
@@ -239,6 +241,7 @@
   [data-scope='editable'][data-part='submit-trigger']:active:not(:disabled),
   [data-scope='editable'][data-part='cancel-trigger']:active:not(:disabled) {
     background: var(--xh-editable-trigger-bg-active, var(--xh-bg-subtle-active));
+    scale: var(--xh-motion-scale-press);
   }
 
   [data-scope='editable'][data-part='edit-trigger']:focus-visible,

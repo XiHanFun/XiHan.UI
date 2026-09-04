@@ -48,10 +48,16 @@
     font-weight: var(--xh-collapsible-trigger-font-weight, var(--xh-text-label-weight));
     line-height: var(--xh-leading-none);
     cursor: pointer;
+    transition: scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='collapsible'][data-part='trigger']:hover {
     background: var(--xh-collapsible-trigger-bg-hover, var(--xh-bg-subtle));
+  }
+
+  /* 按下去要有回应：整条按钮轻微下压，松手即弹回 */
+  [data-scope='collapsible'][data-part='trigger']:not([data-disabled]):active {
+    scale: var(--xh-motion-scale-press);
   }
 
   [data-scope='collapsible'][data-part='trigger']:focus-visible {

@@ -60,7 +60,9 @@
     white-space: nowrap;
     cursor: pointer;
     user-select: none;
-    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='menubar'][data-part='trigger'][hidden] {
@@ -77,6 +79,11 @@
      必须排在轻档之后：指针回到它身上时同特指度靠书写顺序压过轻档 */
   [data-scope='menubar'][data-part='trigger']:not([data-disabled])[data-state='open'] {
     background: var(--xh-menubar-trigger-bg-active, var(--xh-_menubar-active-bg));
+  }
+
+  /* 按下去要有回应：顶层按钮轻微下压，松手即弹回 */
+  [data-scope='menubar'][data-part='trigger']:not([data-disabled]):active {
+    scale: var(--xh-motion-scale-press);
   }
 
   /* trigger 自带 Tab 位（整条菜单栏唯一的那个），必须画得出焦点 */

@@ -149,7 +149,8 @@
     cursor: pointer;
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='dynamic-input'][data-part='add-trigger'][hidden] {
@@ -163,6 +164,7 @@
 
   [data-scope='dynamic-input'][data-part='add-trigger']:not([aria-disabled='true']):active {
     background: var(--xh-dynamic-input-add-bg-active, var(--xh-bg-subtle-active));
+    scale: var(--xh-motion-scale-press);
   }
 
   [data-scope='dynamic-input'][data-part='add-trigger']:focus-visible {

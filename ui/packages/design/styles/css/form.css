@@ -132,7 +132,9 @@
     white-space: nowrap;
     cursor: pointer;
     user-select: none;
-    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='form'][data-part='submit-trigger'][hidden],
@@ -149,6 +151,7 @@
   [data-scope='form'][data-part='submit-trigger']:active:not(:disabled),
   [data-scope='form'][data-part='reset-trigger']:active:not(:disabled) {
     background: var(--xh-form-trigger-bg-active, var(--xh-bg-subtle-active));
+    scale: var(--xh-motion-scale-press);
   }
 
   [data-scope='form'][data-part='submit-trigger']:focus-visible,

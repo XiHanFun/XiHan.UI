@@ -257,6 +257,7 @@
     border-radius: var(--xh-tour-action-radius, var(--xh-shape-control));
     font-size: var(--xh-text-secondary-size);
     cursor: pointer;
+    transition: scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='tour'][data-part='prev-trigger'][hidden],
@@ -292,6 +293,13 @@
   [data-scope='tour'][data-part='prev-trigger']:hover:not(:disabled),
   [data-scope='tour'][data-part='skip-trigger']:hover {
     background: var(--xh-bg-subtle);
+  }
+
+  /* 按下的回执：三颗按钮同一档缩放 */
+  [data-scope='tour'][data-part='next-trigger']:active,
+  [data-scope='tour'][data-part='skip-trigger']:active,
+  [data-scope='tour'][data-part='prev-trigger']:active:not(:disabled) {
+    scale: var(--xh-motion-scale-press);
   }
 
   /* 单体控件用原生 disabled（集合条目才用 [data-disabled]）：首步的上一步就是这个形态 */

@@ -142,8 +142,7 @@
     background: var(--xh-pagination-item-bg-hover, var(--xh-bg-subtle-hover));
   }
 
-  /* 换底之外再压一档：换底只说明指针停在哪一格，下压才说明这一下点到了。
-     当前页那条按下也压，见下面成对的一条——按在当前页上同样是一次点击 */
+  /* 换底之外再压一档：按下时缩放。当前页那条按下也压，见下面成对的一条 */
   [data-scope='pagination'][data-part='prev-trigger']:active:not(:disabled),
   [data-scope='pagination'][data-part='next-trigger']:active:not(:disabled),
   [data-scope='pagination'][data-part='item']:not([data-current]):active,

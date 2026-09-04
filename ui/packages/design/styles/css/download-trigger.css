@@ -42,7 +42,8 @@
     touch-action: manipulation;
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
   /* 上面声明了 display，会盖掉 UA 的 [hidden] 规则，收起态要在这里接回来 */
@@ -55,8 +56,10 @@
     background: var(--xh-download-trigger-bg-hover, var(--xh-bg-subtle-hover));
   }
 
+  /* 换底之外再压一档：取数在途前的那一下按压给出回执 */
   [data-scope='download-trigger'][data-part='root']:active {
     background: var(--xh-download-trigger-bg-active, var(--xh-bg-subtle-active));
+    scale: var(--xh-motion-scale-press);
   }
 
   [data-scope='download-trigger'][data-part='root']:focus-visible {

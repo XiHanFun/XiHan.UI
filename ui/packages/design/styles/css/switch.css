@@ -33,7 +33,9 @@
     border-radius: var(--xh-switch-radius, var(--xh-shape-pill));
     background: var(--xh-switch-bg, var(--xh-bg-subtle-active));
     cursor: pointer;
-    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='switch'][data-part='root'][data-state='checked'] {
@@ -59,6 +61,12 @@
 
   [data-scope='switch'][data-part='root'][data-readonly] [data-scope='switch'][data-part='thumb'] {
     box-shadow: var(--xh-switch-thumb-shadow-readonly, none);
+  }
+
+  /* 按下去要有回应：轨道整条轻微下压，松手即弹回。
+     轨道宽高由私有槽定死，文字在外层 label 里，缩它不改布局。只读与禁用不压 */
+  [data-scope='switch'][data-part='root']:not([data-disabled]):not([data-readonly]):active {
+    scale: var(--xh-motion-scale-press);
   }
 
   [data-scope='switch'][data-part='root'][data-disabled] {
