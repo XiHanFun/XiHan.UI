@@ -799,5 +799,30 @@
     [data-scope='table'][data-part='loading'] {
       animation: none;
     }
+
+    /* 底色被丢掉：选中行那层淡底没了，与别的行一模一样。改画一条内收的实线框——
+       用 outline 不用 border：行是横排 flex，加边会把单元格整体往里推，没选中的行不加边，
+       同一屏上的列就对不齐了 */
+    [data-scope='table'][data-part='row'][data-selected] {
+      outline: var(--xh-stroke-thick) solid currentColor;
+      outline-offset: calc(-1 * var(--xh-stroke-thick));
+    }
+
+    /* 两个勾选框的实心底也被丢掉，配它的浅色勾落在白纸上就整个不见了——
+       勾与框都换成正文色，勾没勾在纸上才分得出 */
+    [data-scope='table'][data-part='select-all-trigger']:is([data-state='checked'], [data-state='indeterminate']),
+    [data-scope='table'][data-part='row-select-trigger'][data-selected] {
+      border-color: var(--xh-fg-default);
+    }
+
+    [data-scope='table'][data-part='select-all-trigger'][data-state='checked'],
+    [data-scope='table'][data-part='row-select-trigger'][data-selected] {
+      color: var(--xh-fg-default);
+    }
+
+    /* 半选那枚横杠是伪元素画的，字色照旧留成透明把勾压住，只换横杠自己的颜色 */
+    [data-scope='table'][data-part='select-all-trigger'][data-state='indeterminate']::after {
+      background-color: var(--xh-fg-default);
+    }
   }
 }

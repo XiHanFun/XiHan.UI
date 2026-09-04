@@ -24,7 +24,7 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @csspart label - 标题；`for` 恒写向控件，故须是原生 `<label>` 才点得动控件
  * @csspart control - 真正的输入控件本身（id 与 aria-* 落在这里，别标在外层包裹节点上）
  * @csspart description - 常驻说明文案，恒在控件的描述链里
- * @csspart error-text - 错误文案（role=alert）；非 invalid 时带 hidden 收起，节点不卸载
+ * @csspart error-text - 错误文案（role=status，排队播报不打断）；非 invalid 时带 hidden 收起，节点不卸载
  */
 export class XhFieldElement extends XhElement {
   // label 必须是原生 <label>：for 只在它身上有效，写成 div 则点标签不再聚焦控件

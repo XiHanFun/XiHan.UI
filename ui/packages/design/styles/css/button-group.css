@@ -16,6 +16,10 @@
        后者是使用者的入口，写死它，进了组的胶囊按钮就再也圆不起来 */
     --xh-_button-group-radius: 0;
 
+    /* 段与段共边焊成一条，悬停那一档不抬：抬起其中一段，投影会压到左右两段的面上。
+       收回常态那一档——实心组仍留着顶边那条高光，其余形态本来就是 none */
+    --xh-_button-group-shadow-hover: var(--xh-_button-group-highlight, none);
+
     display: inline-flex;
     align-items: stretch;
   }

@@ -43,6 +43,7 @@
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
@@ -51,9 +52,11 @@
     display: none;
   }
 
+  /* 换底、换描边之外再抬起一档：这是一块实心的可点面，指针停上去它从页面里浮出来 */
   [data-scope='download-trigger'][data-part='root']:hover {
     border-color: var(--xh-download-trigger-border-hover, var(--xh-border-control-hover));
     background: var(--xh-download-trigger-bg-hover, var(--xh-bg-subtle-hover));
+    box-shadow: var(--xh-download-trigger-shadow-hover, var(--xh-elevation-raised));
   }
 
   /* 换底之外再压一档：取数在途前的那一下按压给出回执 */
@@ -107,5 +110,7 @@
     border-color: var(--xh-download-trigger-border-disabled, var(--xh-border-control));
     background: var(--xh-download-trigger-bg-disabled, var(--xh-bg-muted));
     color: var(--xh-fg-disabled);
+    /* 置灰的按钮仍然会命中 :hover，抬起那一档要在这里收掉 */
+    box-shadow: none;
   }
 }

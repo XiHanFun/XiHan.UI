@@ -129,7 +129,7 @@ font-size: 16px
 line-height: normal
 font-weight: 400
 color: oklch(0.145 0.005 258)
-background-color: oklch(1 0 0)
+background-color: oklch(0.985 0 0)
 transition-property: all
 transition-duration: 0s
 transition-timing-function: ease

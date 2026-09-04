@@ -74,10 +74,16 @@ export function connectField<T extends PropTypes>(
     }),
     getErrorTextProps: () => normalize.element({
       ...parts['error-text'].attrs,
-      id: ids['error-text'],
-      // role=alert：invalid 翻转时读屏立即播报
-      role: 'alert',
-      hidden: !invalid || undefined,
+      'id': ids['error-text'],
+      // invalid 翻转时排队播报，不打断当前朗读：一次提交失败会有多个字段同时翻转，
+      // 打断式活区只留给表单那一处错误摘要。这段文案同时挂在控件的描述链上，
+      // 焦点落到控件时读屏会再念一遍。
+      // live 值显式写出：role 隐含的 live 各家读屏落实并不一致
+      'role': 'status',
+      'aria-live': 'polite',
+      // 整句一起念，否则用户只听到半截
+      'aria-atomic': 'true',
+      'hidden': !invalid || undefined,
     }),
   }
 }

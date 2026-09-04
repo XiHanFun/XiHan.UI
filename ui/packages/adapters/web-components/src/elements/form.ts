@@ -62,7 +62,7 @@ function fieldNameOf(el: HTMLElement): string {
  * @csspart root - 表单根容器，必须是原生 `<form>`（承载 data-state/data-disabled/data-readonly/data-invalid）
  * @csspart field-group - 单个字段的容器，须自带 value 属性标识字段名；带 id 供摘要链接指向。
  *   组里的 `<xh-field>` 由表单驱动 invalid/required/disabled，作者显式设的会被顶掉
- * @csspart error-summary - role=alert 的错误汇总，提交失败且仍有错误时才显形
+ * @csspart error-summary - role=alert 的错误汇总（一次提交失败里唯一打断朗读的活区），提交失败且仍有错误时才显形
  * @csspart error-summary-item - 摘要里的一条，须是原生 `<a>` 且自带 value 属性标识字段名；无对应错误时带 hidden
  * @csspart submit-trigger - 提交键，须是原生 button（连接层写成 type=submit）
  * @csspart reset-trigger - 重置键，须是原生 button（连接层写成 type=reset）

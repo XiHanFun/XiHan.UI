@@ -153,6 +153,34 @@
     display: none;
   }
 
+  /*
+   * 高对比档：走完的那段与底槽都是底色画的，这一档里两者被换成同一个系统色，
+   * 整根条子成了一色，读不出走到哪儿。走完的那段改取系统高亮色，底槽补一圈环把全长框出来。
+   * 环用 outline 不用 border：条子的厚度是写死的，加边会把它顶高一档。
+   * 环形档画的是描边，stroke 在这一档里照旧生效，两条各自换成系统色即可。
+   */
+  @media (forced-colors: active) {
+    [data-scope='progress'][data-part='track'] {
+      outline: var(--xh-stroke-thin) solid CanvasText;
+      outline-offset: calc(-1 * var(--xh-stroke-thin));
+    }
+
+    [data-scope='progress'][data-part='range'] {
+      background: Highlight;
+    }
+
+    [data-scope='progress'][data-part='track'][data-variant='circle'],
+    [data-scope='progress'][data-part='track'][data-variant='dashboard'] {
+      outline: none;
+      stroke: CanvasText;
+    }
+
+    [data-scope='progress'][data-part='range'][data-variant='circle'],
+    [data-scope='progress'][data-part='range'][data-variant='dashboard'] {
+      stroke: Highlight;
+    }
+  }
+
   @media print {
     /* 打印：动画会被定格在任意一帧——转了一半的圈、扫到一半的微光。这里换成静止的表达，
        取值与减弱动效那一档相同。两档各写一块、不并进一条媒体查询列表：减弱动效另有一份

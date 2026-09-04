@@ -57,11 +57,13 @@
     --xh-_cascader-font-size: var(--xh-control-font-md);
     --xh-_cascader-label-font-size: var(--xh-control-font-md);
 
-    /* 形态档只换触发框的描边、底色与落影这四个槽，浮层与列不跟着变：
+    /* 形态档只换触发框的描边、两档底色与落影这五个槽，浮层与列不跟着变：
        变的是「这是个输入位」的表达方式，不是弹出内容的表达方式 */
     --xh-_cascader-border: var(--xh-border-control);
     --xh-_cascader-border-hover: var(--xh-border-control-hover);
     --xh-_cascader-bg: var(--xh-bg-canvas);
+    /* 悬停那一档底：描边之外再换一次填充，语气在场时兑同族的淡底 */
+    --xh-_cascader-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
     /* 一档静态落影把触发框从页面里抬起一层，与描边一起画出框的边界 */
     --xh-_cascader-shadow: var(--xh-elevation-raised);
 
@@ -97,6 +99,7 @@
     --xh-_cascader-border: var(--xh-border-control);
     --xh-_cascader-border-hover: var(--xh-border-control-hover);
     --xh-_cascader-bg: var(--xh-bg-canvas);
+    --xh-_cascader-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   }
 
   /* subtle 是填充式：底色接过「这里能点」的表达，描边随之让位 */
@@ -104,6 +107,7 @@
     --xh-_cascader-border: transparent;
     --xh-_cascader-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
     --xh-_cascader-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+    --xh-_cascader-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
   }
 
   /* 无框：底与常态描边透明，悬停浮出描边，聚焦由焦点环表达。
@@ -113,6 +117,7 @@
     --xh-_cascader-border: transparent;
     --xh-_cascader-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
     --xh-_cascader-bg: transparent;
+    --xh-_cascader-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   }
 
   /* —— 尺寸 —— */
@@ -165,7 +170,9 @@
     box-shadow: var(--xh-cascader-control-shadow, var(--xh-_cascader-shadow));
     color: var(--xh-cascader-control-fg, var(--xh-fg-default));
     cursor: pointer;
-    transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='cascader'][data-part='control'][hidden] {
@@ -175,6 +182,12 @@
   /* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
   [data-scope='cascader'][data-part='control']:hover:not([data-disabled], [data-invalid]) {
     border-color: var(--xh-cascader-control-border-hover, var(--xh-_cascader-border-hover));
+  }
+
+  /* 描边之外再换一档填充：只挪一格描边色的悬停在浅底上几乎读不出来。
+     只读盒的底色正说着「改不动」，不参与换填充 */
+  [data-scope='cascader'][data-part='control']:hover:not([data-disabled], [data-readonly]) {
+    background: var(--xh-cascader-control-bg-hover, var(--xh-_cascader-bg-hover));
   }
 
   /* Tab 停靠点是盒里的 trigger（展开后才移进列里），环画在盒上 */

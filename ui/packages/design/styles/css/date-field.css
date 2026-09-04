@@ -15,8 +15,10 @@
     --xh-_date-field-gap: var(--xh-control-gap-md);
     --xh-_date-field-font-size: var(--xh-control-font-md);
     --xh-_date-field-label-font-size: var(--xh-control-font-md);
-    /* 形态档只换这四个私有槽：底色、两档描边与落影 */
+    /* 形态档只换这五个私有槽：两档底色、两档描边与落影 */
     --xh-_date-field-control-bg: var(--xh-bg-canvas);
+    /* 悬停那一档底：描边之外再换一次填充，语气在场时兑同族的淡底 */
+    --xh-_date-field-control-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
     --xh-_date-field-control-border: var(--xh-border-control);
     --xh-_date-field-control-border-hover: var(--xh-border-control-hover);
     /* 一档静态落影把分段框从页面里抬起一层，与描边一起画出框的边界 */
@@ -54,6 +56,7 @@
   /* 描边式：与缺省等价，写出来是为了三档形态在皮肤里都看得见 */
   [data-scope='date-field'][data-part='root'][data-variant='outline'] {
     --xh-_date-field-control-bg: var(--xh-bg-canvas);
+    --xh-_date-field-control-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
     --xh-_date-field-control-border: var(--xh-border-control);
     --xh-_date-field-control-border-hover: var(--xh-border-control-hover);
   }
@@ -61,6 +64,7 @@
   /* 填充式：底色顶替描边，悬停时才浮出一道淡边 */
   [data-scope='date-field'][data-part='root'][data-variant='subtle'] {
     --xh-_date-field-control-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+    --xh-_date-field-control-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
     --xh-_date-field-control-border: transparent;
     --xh-_date-field-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   }
@@ -70,6 +74,7 @@
   [data-scope='date-field'][data-part='root'][data-variant='ghost'] {
     --xh-_date-field-control-shadow: 0 0 0 transparent;
     --xh-_date-field-control-bg: transparent;
+    --xh-_date-field-control-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
     --xh-_date-field-control-border: transparent;
     --xh-_date-field-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   }
@@ -111,7 +116,9 @@
     font-family: inherit;
     font-size: var(--xh-date-field-font-size, var(--xh-_date-field-font-size));
     line-height: var(--xh-leading-none);
-    transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='date-field'][data-part='control'][hidden] {
@@ -121,6 +128,12 @@
   /* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
   [data-scope='date-field'][data-part='control']:hover:not([data-disabled], [data-invalid]) {
     border-color: var(--xh-date-field-control-border-hover, var(--xh-_date-field-control-border-hover));
+  }
+
+  /* 描边之外再换一档填充：只挪一格描边色的悬停在浅底上几乎读不出来。
+     只读盒的底色正说着「改不动」，不参与换填充 */
+  [data-scope='date-field'][data-part='control']:hover:not([data-disabled], [data-readonly]) {
+    background: var(--xh-date-field-control-bg-hover, var(--xh-_date-field-control-bg-hover));
   }
 
   /* 焦点落在某一段上，而边框长在 control 上：焦点环得由内向外借一层。

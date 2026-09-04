@@ -573,10 +573,12 @@ describe('connectForm 结构与标注', () => {
     expect(s.errors()).toEqual({ email: '不能为空' })
   })
 
-  it('错误摘要：role=alert，未提交失败前收起，data-count 跟着错误数走', () => {
+  it('错误摘要：打断式活区，未提交失败前收起，data-count 跟着错误数走', () => {
     const s = makeService({ validate: () => ({ email: '不能为空', password: '太短' }) })
     const idle = s.api().getErrorSummaryProps() as Dict
     expect(idle.role).toBe('alert')
+    expect(idle['aria-live']).toBe('assertive')
+    expect(idle['aria-atomic']).toBe('true')
     expect(idle.hidden).toBe(true)
     expect(idle['data-state']).toBe('idle')
     expect(idle['data-count']).toBe('0')

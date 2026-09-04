@@ -195,6 +195,10 @@ create 返回的就是队列身份 id，存下来随时 dismiss 掉那一条；d
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
+## 响应式
+
+皮肤内置条件规则：`pointer: coarse`。
+
 ## RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。

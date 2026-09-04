@@ -102,6 +102,7 @@
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
@@ -111,16 +112,20 @@
     display: none;
   }
 
+  /* 悬停换底色的同时把这颗钮抬起一档：它压在图上，只换底色的回执几乎看不出来 */
   [data-scope='carousel'][data-part='prev-trigger']:hover:not(:disabled),
   [data-scope='carousel'][data-part='next-trigger']:hover:not(:disabled),
   [data-scope='carousel'][data-part='autoplay-trigger']:hover:not(:disabled) {
     background: var(--xh-carousel-trigger-bg-hover, var(--xh-bg-subtle-hover));
+    box-shadow: var(--xh-carousel-trigger-shadow-hover, var(--xh-elevation-raised));
   }
 
+  /* 按下：底色换到按压档，抬起的那一档同时落回 */
   [data-scope='carousel'][data-part='prev-trigger']:active:not(:disabled),
   [data-scope='carousel'][data-part='next-trigger']:active:not(:disabled),
   [data-scope='carousel'][data-part='autoplay-trigger']:active:not(:disabled) {
     background: var(--xh-carousel-trigger-bg-active, var(--xh-bg-subtle-active));
+    box-shadow: none;
     scale: var(--xh-motion-scale-press);
   }
 
@@ -256,5 +261,24 @@
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-play) center / contain no-repeat;
     mask: var(--xh-glyph-mark-play) center / contain no-repeat;
+  }
+
+  /* 手指落点：三颗钮的视觉盒是 32px，命中区外扩到 44×44（两边各 6px）。
+     外扩走绝对定位的伪元素，盒子本身一动不动——放大盒子会把它旁边的东西挤开。
+     用 ::after：::before 已经被兜底字形占着 */
+  @media (pointer: coarse) {
+    [data-scope='carousel'][data-part='prev-trigger'],
+    [data-scope='carousel'][data-part='next-trigger'],
+    [data-scope='carousel'][data-part='autoplay-trigger'] {
+      position: relative;
+    }
+
+    [data-scope='carousel'][data-part='prev-trigger']::after,
+    [data-scope='carousel'][data-part='next-trigger']::after,
+    [data-scope='carousel'][data-part='autoplay-trigger']::after {
+      content: '';
+      position: absolute;
+      inset: calc(-1 * var(--xh-space-1_5));
+    }
   }
 }

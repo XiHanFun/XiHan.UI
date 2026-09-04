@@ -25,6 +25,10 @@
        没写形态时跟着按钮组走——组把形态写在自己身上，段上并没有 data-variant */
     --xh-_button-highlight: var(--xh-_button-group-highlight, none);
 
+    /* 悬停那一档的投影：有实心底的面抬起一层，换底之外再多一条回执。
+       组里的段共边焊成一条，由组把这个槽收回常态那一档 */
+    --xh-_button-shadow-hover: var(--xh-_button-group-shadow-hover, var(--xh-elevation-raised));
+
     /* 作者塞进来的图标跟着按钮的尺寸档走：xh-icon 的直径读的就是这个继承槽，
        它自己显式写了 size 时特异性更高，仍以作者写的为准 */
     --xh-icon-size: var(--xh-button-icon-size, var(--xh-glyph-size-md));
@@ -57,6 +61,7 @@
      :hover 与 :active 照样命中；原生 disabled 的那颗浏览器也仍然给 :hover */
   [data-scope='button'][data-part='root']:not([data-disabled]):not([data-loading]):hover {
     background: var(--xh-_bg-hover);
+    box-shadow: var(--xh-button-shadow-hover, var(--xh-_button-shadow-hover));
   }
 
   /* 换底之外再压一档：四档形态都是独立控件盒，缩放只动按钮自己 */
@@ -83,6 +88,8 @@
     --xh-_bg-active: var(--xh-_tone-active, var(--xh-bg-brand-active));
     --xh-_fg: var(--xh-_tone-on, var(--xh-fg-on-brand));
     --xh-_button-highlight: var(--xh-_highlight-tone);
+    /* 抬起时把顶边那条高光一并列出来：只写投影会把常态的高光顶掉，面在悬停那一帧变薄 */
+    --xh-_button-shadow-hover: var(--xh-_button-group-shadow-hover, var(--xh-_highlight-tone), var(--xh-elevation-raised));
   }
 
   /* 另外三档的面不是实心底，高光在上面只会显脏；显式清掉，
@@ -101,6 +108,8 @@
     --xh-_bg-active: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-active));
     --xh-_fg: var(--xh-_tone-fg, var(--xh-fg-default));
     --xh-_button-highlight: none;
+    /* 面是透空的，抬起来只会在页面上留一圈没有面的影子；这一档的回执由浮出的底色给 */
+    --xh-_button-shadow-hover: none;
 
     border-color: var(--xh-_tone-border-control, var(--xh-border-control));
   }
@@ -111,6 +120,8 @@
     --xh-_bg-active: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-active));
     --xh-_fg: var(--xh-_tone-fg, var(--xh-fg-default));
     --xh-_button-highlight: none;
+    /* 同 outline：没有实心底可抬 */
+    --xh-_button-shadow-hover: none;
   }
 
   /* 置灰与挂起时收掉高光：底色已经被压暗，再留一条亮线就成了噪点。

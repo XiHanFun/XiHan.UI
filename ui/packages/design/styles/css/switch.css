@@ -20,6 +20,10 @@
     --xh-_switch-pad: var(--xh-space-0_5);
     --xh-_switch-thumb-size: calc(var(--xh-_switch-track-h) - var(--xh-_switch-pad) * 2);
 
+    /* 粗指针一档的命中区外扩量：轨道高加两条它正好是 44px。
+       lg 档不另给一份——那一档的轨道本来就更高，同一个外扩量下命中区只多不少 */
+    --xh-_switch-touch-inset: 11px;
+
     /* 选中态轨道色随语气走。没写 data-tone 时 --xh-_tone 没被声明，退回原来的品牌色 */
     --xh-_switch-accent: var(--xh-_tone, var(--xh-bg-brand));
 
@@ -79,10 +83,26 @@
   /* 缺省档写在上面的基础规则里 */
   [data-scope='switch'][data-part='root'][data-size='sm'] {
     --xh-_switch-track-h: var(--xh-switch-track-h-sm);
+    --xh-_switch-touch-inset: 13px;
   }
 
   [data-scope='switch'][data-part='root'][data-size='lg'] {
     --xh-_switch-track-h: var(--xh-switch-track-h-lg);
+  }
+
+  /* 手指与鼠标落点：轨道只有二十来个像素高，命中区靠一枚绝对定位的伪元素往外扩，
+     轨道本身一动不动——把轨道加高会改掉整条开关的比例。
+     常态外扩 4px，最矮的 sm 档由 18px 到 26px；粗指针下按档位补到 44px。 */
+  [data-scope='switch'][data-part='root']::after {
+    content: '';
+    position: absolute;
+    inset: calc(-1 * var(--xh-space-1));
+  }
+
+  @media (pointer: coarse) {
+    [data-scope='switch'][data-part='root']::after {
+      inset: calc(-1 * var(--xh-_switch-touch-inset));
+    }
   }
 
   [data-scope='switch'][data-part='thumb'] {
@@ -165,6 +185,20 @@
   }
 
   @media print {
+    /* 打印默认丢底色与投影：轨道与滑块都只有一块底，落到纸上整条开关消失，开与关无从读起。
+       轨道补一圈实边把形状画出来，滑块补一圈实边把它停在哪一端画出来——
+       开与关本来就由滑块的位置读出，位置这条通道在纸上仍然成立。
+       轨道走 outline 而不是 border：这条盒子的内衬与滑块行程都从轨道高算出来，
+       加一条实边会把行程改掉。 */
+    [data-scope='switch'][data-part='root'] {
+      outline: var(--xh-stroke-thin) solid currentColor;
+      outline-offset: calc(-1 * var(--xh-stroke-thin));
+    }
+
+    [data-scope='switch'][data-part='thumb'] {
+      border: var(--xh-stroke-thin) solid currentColor;
+    }
+
     /* 打印：动画会被定格在任意一帧——转了一半的圈、扫到一半的微光。这里换成静止的表达，
        取值与减弱动效那一档相同。两档各写一块、不并进一条媒体查询列表：减弱动效另有一份
        :where([data-motion='reduce']) 的钩子版本与它成对，打印没有对应的钩子可配，

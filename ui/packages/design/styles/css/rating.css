@@ -153,4 +153,15 @@
       outline: none;
     }
   }
+
+  @media print {
+    /* 打印默认丢底图：半颗那道裁到字形上的渐变整个消失，星上只剩 color: transparent，
+       那颗星在纸上什么都不剩。把填充还回去并按点亮那一档画整颗。 */
+    [data-scope='rating'][data-part='item'][data-half] {
+      background-image: none;
+      -webkit-background-clip: border-box;
+      background-clip: border-box;
+      color: var(--xh-rating-item-fg-highlighted, var(--xh-_rating-accent));
+    }
+  }
 }

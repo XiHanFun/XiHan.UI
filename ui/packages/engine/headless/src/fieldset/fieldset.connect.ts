@@ -24,7 +24,7 @@ export function connectFieldset<T extends PropTypes>(
     required,
     // root 上的原生 disabled 会连坐组内每个表单控件，这条是浏览器给的，不用 aria-disabled 代替
     // （那只是说给读屏听，控件照样点得动）。aria-invalid / aria-required 在 group 角色上不被支持，
-    // 一律不产出：无效与必填只走 data-*，读屏那一侧由错误文案（role=alert）与描述链承担。
+    // 一律不产出：无效与必填只走 data-*，读屏那一侧由错误文案与描述链承担。
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'disabled': disabled || undefined,
@@ -46,10 +46,16 @@ export function connectFieldset<T extends PropTypes>(
     }),
     getErrorTextProps: () => normalize.element({
       ...parts['error-text'].attrs,
-      id: ids['error-text'],
-      // role=alert：invalid 翻转时读屏立即播报
-      role: 'alert',
-      hidden: !invalid || undefined,
+      'id': ids['error-text'],
+      // invalid 翻转时排队播报，不打断当前朗读：一次提交失败会有多组同时翻转，
+      // 打断式活区只留给表单那一处错误摘要。这段文案同时挂在 root 的描述链上，
+      // 焦点进组时读屏会再念一遍。
+      // live 值显式写出：role 隐含的 live 各家读屏落实并不一致
+      'role': 'status',
+      'aria-live': 'polite',
+      // 整句一起念，否则用户只听到半截
+      'aria-atomic': 'true',
+      'hidden': !invalid || undefined,
     }),
   }
 }

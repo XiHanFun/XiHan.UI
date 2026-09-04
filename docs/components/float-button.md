@@ -169,7 +169,7 @@ shape 换圆角档，offset 决定距那两条边多远；translations 换掉读
 
 ## 响应式
 
-皮肤内置条件规则：`hover: hover`。
+皮肤内置条件规则：`hover: hover` · `pointer: coarse`。
 
 ## RTL
 

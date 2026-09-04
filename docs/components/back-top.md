@@ -160,7 +160,7 @@ tone 决定按钮用哪族颜色，size 换一档尺寸；translations 换掉读
 
 ## 响应式
 
-皮肤内置条件规则：`hover: hover`。
+皮肤内置条件规则：`hover: hover` · `pointer: coarse`。
 
 ## RTL
 

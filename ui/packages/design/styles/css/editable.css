@@ -110,7 +110,9 @@
     font-family: inherit;
     font-size: var(--xh-editable-input-font-size, var(--xh-text-body-size));
     line-height: var(--xh-leading-normal);
-    transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 预览态由连接层给 hidden；上面给了 inline-size 与 block-size 但没给 display，
@@ -128,9 +130,12 @@
     color: var(--xh-editable-placeholder-fg, var(--xh-fg-subtle));
   }
 
-  /* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
-  [data-scope='editable'][data-part='input']:hover:not(:disabled, [data-invalid]) {
+  /* hover 换描边与填充两条通道：换一条 1px 的描边色是全场最轻的一档回执，填充跟着动
+     才看得出指针停在框上。底朝 subtle 走小半步，与只读那一档的 subtle 实底分得开。
+     只在中性态换：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了；只读也排掉 */
+  [data-scope='editable'][data-part='input']:hover:not(:disabled, [readonly], [data-invalid]) {
     border-color: var(--xh-editable-input-border-hover, var(--xh-border-control-hover));
+    background: var(--xh-editable-input-bg-hover, color-mix(in oklab, var(--xh-bg-subtle) 45%, var(--xh-editable-input-bg, var(--xh-bg-canvas))));
   }
 
   [data-scope='editable'][data-part='input']:focus-visible {

@@ -122,4 +122,13 @@
   [data-scope='toggle'][data-part='root'][hidden] {
     display: none;
   }
+
+  @media print {
+    /* 打印默认丢底色与投影：按下那一档只换了底（实心档另有一条内高光），落到纸上与没按下的
+       一模一样。改用描边与字重两条印得出来的通道——常态那圈边是透明的，这里把它显出来。 */
+    [data-scope='toggle'][data-part='root'][data-state='on'] {
+      border-color: currentColor;
+      font-weight: var(--xh-font-weight-semibold);
+    }
+  }
 }

@@ -130,4 +130,18 @@
     --xh-_badge-px: var(--xh-space-1_5);
     --xh-_badge-font: var(--xh-text-body-size);
   }
+
+  /*
+   * 打印：底色被丢掉。计数档配的是实心底上的前景色，底一没那串数字就印不出来；
+   * 圆点档整个由底色画成，底一没连位置都看不见。
+   * 两档都改由描边承载：常态那圈边是衬在宿主上的隔离环，取的是面色，纸上同样是白的，
+   * 这里换成正文色——计数成了一枚描边药丸，圆点成了一个小圈。
+   */
+  @media print {
+    [data-scope='badge'][data-part='indicator'] {
+      border-color: currentColor;
+      color: var(--xh-fg-default);
+      box-shadow: none;
+    }
+  }
 }

@@ -392,6 +392,23 @@
       outline-offset: calc(-1 * var(--xh-stroke-thick));
     }
   }
+
+  /*
+   * 打印：底色与背景图一起被丢掉，新增行那条实心色条写在 box-shadow 上、
+   * 删除行那条斜纹写在渐变上，两者在纸上都不出现，两种变更就此糊成一样。
+   * 与高对比档同一套办法：实线环对新增、虚线环对删除，都是印得出来的通道。
+   */
+  @media print {
+    [data-scope='diff-view'][data-part='row'][data-change='added'] {
+      outline: var(--xh-stroke-thick) solid currentColor;
+      outline-offset: calc(-1 * var(--xh-stroke-thick));
+    }
+
+    [data-scope='diff-view'][data-part='row'][data-change='removed'] {
+      outline: var(--xh-stroke-thick) dashed currentColor;
+      outline-offset: calc(-1 * var(--xh-stroke-thick));
+    }
+  }
 }
 
 @layer xihan.motion {

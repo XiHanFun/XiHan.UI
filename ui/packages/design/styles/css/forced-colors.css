@@ -71,5 +71,18 @@
     [data-scope][data-part='positioner'] [data-scope][data-part='content'] {
       border: var(--xh-stroke-thin) solid CanvasText;
     }
+
+    /*
+     * 正在编辑的那一段：日期与时间的分段框里，当前段常态靠反白表达，这一档里底色被统一换掉，
+     * 整行数字看上去一模一样，而这类框本来就没有光标那道线。改画一圈实边把它框出来。
+     *
+     * 这一条走三个属性而不是上面那些的两个：分段框的皮肤在同一档上写了 outline: none
+     * （常态下环画在外层的 control 上），那条规则本身就是三个属性，两个属性压不过它。
+     * data-focus 只长在日期段与时间段上，这条选到的正是它们。
+     */
+    [data-scope][data-part='segment'][data-focus] {
+      outline: var(--xh-stroke-thick) solid Highlight;
+      outline-offset: calc(-1 * var(--xh-stroke-thick));
+    }
   }
 }

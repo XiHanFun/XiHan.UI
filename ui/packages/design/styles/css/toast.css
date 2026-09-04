@@ -353,6 +353,21 @@
     mask: var(--xh-glyph-mark-close) center / contain no-repeat;
   }
 
+  /* 手指落点：叉的视觉盒是 24px，命中区外扩到 44×44（两边各 10px）。
+     外扩走绝对定位的伪元素，盒子本身一动不动——放大盒子会把整条顶高一截。
+     用 ::after：::before 已经被兜底字形占着 */
+  @media (pointer: coarse) {
+    [data-scope='toast'][data-part='close-trigger'] {
+      position: relative;
+    }
+
+    [data-scope='toast'][data-part='close-trigger']::after {
+      content: '';
+      position: absolute;
+      inset: calc(-1 * var(--xh-space-2_5));
+    }
+  }
+
   @media print {
     /* 打印：轻提示是瞬态的，打印那一刻恰好在场就会横在正文上，且它已经错过了被读到的时机。 */
     [data-scope='toast'][data-part='group'] {

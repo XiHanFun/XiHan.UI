@@ -286,4 +286,19 @@
     font-variant-numeric: tabular-nums;
     line-height: var(--xh-leading-normal);
   }
+
+  /*
+   * 打印：底色被丢掉，圆点与连线整个是底色画出来的，纸上这条轴的骨架就此不见，
+   * 只剩几段没有次序的文字。两处都改由描边承载：圆点成一个空心圈，
+   * 连线的两条边合起来就是那条线（线本身只有一个描边厚，两边各画一半正好填满）。
+   */
+  @media print {
+    [data-scope='timeline'][data-part='indicator'] {
+      border: var(--xh-stroke-thick) solid currentColor;
+    }
+
+    [data-scope='timeline'][data-part='connector'] {
+      border: var(--xh-stroke-thin) solid currentColor;
+    }
+  }
 }

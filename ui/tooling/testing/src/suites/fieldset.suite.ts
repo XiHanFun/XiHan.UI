@@ -45,8 +45,10 @@ export const fieldsetSuite: ConformanceSuite = {
           'legend': { 'data-disabled': null },
           'description': { 'id': '@self', 'data-disabled': null },
           'error-text': {
-            role: 'alert',
-            hidden: '',
+            'role': 'status',
+            'aria-live': 'polite',
+            'aria-atomic': 'true',
+            'hidden': '',
           },
         },
       },
@@ -80,8 +82,10 @@ export const fieldsetSuite: ConformanceSuite = {
             'aria-invalid': null,
           },
           'error-text': {
-            role: 'alert',
-            hidden: null,
+            // 排队播报不打断：一次提交失败会有多组同时翻转
+            'role': 'status',
+            'aria-live': 'polite',
+            'hidden': null,
           },
         },
       },

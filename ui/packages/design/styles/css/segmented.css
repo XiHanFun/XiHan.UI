@@ -210,4 +210,25 @@
   [data-scope='segmented'][data-part='indicator'][hidden] {
     display: none;
   }
+
+  @media print {
+    /* 打印默认丢背景色：滑块那块底与它的落影都不画，「当前选的是哪一段」在纸上没了。
+       选中段改画一圈实边、字加粗，两条都不吃底色 */
+    [data-scope='segmented'][data-part='item'][data-state='checked'] {
+      border: var(--xh-stroke-thin) solid currentColor;
+      font-weight: var(--xh-font-weight-bold);
+    }
+  }
+
+  @media (pointer: coarse) {
+    /* 手指的落点比一段高：命中区由伪元素向块轴两侧外扩，段的盒与轨道内的分格一点不动。
+       只扩块轴——段与段在行内轴上首尾相接，往两侧扩会与相邻段的命中区叠上。
+       取 8px 是按最矮的 sm 档算的（28 + 8 × 2 = 44），md 与 lg 档更宽裕 */
+    [data-scope='segmented'][data-part='item']::before {
+      content: '';
+      position: absolute;
+      inset-block: -8px;
+      inset-inline: 0;
+    }
+  }
 }

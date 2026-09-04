@@ -120,4 +120,12 @@
   [data-scope='radio-group'][data-part='indicator'][hidden] {
     display: none;
   }
+
+  @media print {
+    /* 打印默认丢底色：选中那颗圆点是一块底，落到纸上整个消失，选中与没选中的圈一模一样。
+       圆点改画成一圈实边——边框印得出来，直径与圆心都不动（描边吃进盒里）。 */
+    [data-scope='radio-group'][data-part='indicator'][data-state='checked']::before {
+      border: var(--xh-stroke-thick) solid currentColor;
+    }
+  }
 }

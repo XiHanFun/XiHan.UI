@@ -83,7 +83,10 @@ export const formSuite: ConformanceSuite = {
             'data-readonly': null,
           },
           'error-summary': {
+            // 一次提交失败里唯一打断朗读的活区，字段与字段集的错误文案只排队
             'role': 'alert',
+            'aria-live': 'assertive',
+            'aria-atomic': 'true',
             'hidden': '',
             'data-count': '0',
             'data-state': 'idle',

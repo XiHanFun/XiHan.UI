@@ -395,9 +395,9 @@
       "$value": "{shadow.sm}"
     },
     "lifted": {
-      "$description": "被指针拎起来、正跟着手移动的东西：滑杆拇指、拖动中的排序项、取色器的拇指。它比贴在页面上的 raised 抬得高，又没到 floating 那一层——floating 是 portal 出去的锚定浮层，抬到那一档，拖动中的拇指会和下拉面板一样重。取值逐位落在两档中间：偏移 1→2→4、模糊 2→4→8、收缩 0→-1→-2、主层不透明度 0.05→0.08→0.1；第二层是 floating 第二层的一半。不写 shadow.* 原语是因为原语只有 sm / md / lg / xl 四档，两档之间没有位置。",
+      "$description": "被指针拎起来、正跟着手移动的东西：滑杆拇指、拖动中的排序项、取色器的拇指。它比贴在页面上的 raised 抬得高，又没到 floating 那一层——floating 是 portal 出去的锚定浮层，抬到那一档，拖动中的拇指会和下拉面板一样重。三层与投影色都照 shadow.* 那份配方，取值逐层落在 raised 与 floating 中间：主层偏移 2→3→4、模糊 3→6→8，环境层偏移 3→6→10。不写 shadow.* 原语是因为原语只有 sm / md / lg / xl 四档，两档之间没有位置。",
       "$type": "shadow",
-      "$value": "0 2px 4px -1px oklch(0 0 0 / 0.08), 0 1px 2px -1px oklch(0 0 0 / 0.05)"
+      "$value": "0 1px 2px -0.5px oklch(0.145 0.005 258 / 0.06), 0 3px 6px -2px oklch(0.145 0.005 258 / 0.06), 0 6px 12px -5px oklch(0.145 0.005 258 / 0.05)"
     },
     "floating": {
       "$type": "shadow",

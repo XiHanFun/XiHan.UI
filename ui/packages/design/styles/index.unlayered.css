@@ -349,6 +349,21 @@
   mask: var(--xh-glyph-mark-chevron-up) center / contain no-repeat;
 }
 
+/* 手指落点：钮的视觉盒是 32px，命中区外扩到 44×44（两边各 6px）。
+   外扩走绝对定位的伪元素，盒子本身一动不动——放大盒子会改掉它与贴边距离的关系。
+   用 ::after：::before 已经被兜底字形占着 */
+@media (pointer: coarse) {
+  [data-scope='back-top'][data-part='trigger'] {
+    position: relative;
+  }
+
+  [data-scope='back-top'][data-part='trigger']::after {
+    content: '';
+    position: absolute;
+    inset: calc(-1 * var(--xh-space-1_5));
+  }
+}
+
 /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
    写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
 [data-scope='back-top'][data-part='trigger'][hidden] {
@@ -379,6 +394,10 @@
   /* 与下面几档同理，写私有槽而非 --xh-button-radius：
      后者是使用者的入口，写死它，进了组的胶囊按钮就再也圆不起来 */
   --xh-_button-group-radius: 0;
+
+  /* 段与段共边焊成一条，悬停那一档不抬：抬起其中一段，投影会压到左右两段的面上。
+     收回常态那一档——实心组仍留着顶边那条高光，其余形态本来就是 none */
+  --xh-_button-group-shadow-hover: var(--xh-_button-group-highlight, none);
 
   display: inline-flex;
   align-items: stretch;
@@ -1141,6 +1160,23 @@
   }
 }
 
+/*
+ * 打印：底色与背景图一起被丢掉，新增行那条实心色条写在 box-shadow 上、
+ * 删除行那条斜纹写在渐变上，两者在纸上都不出现，两种变更就此糊成一样。
+ * 与高对比档同一套办法：实线环对新增、虚线环对删除，都是印得出来的通道。
+ */
+@media print {
+  [data-scope='diff-view'][data-part='row'][data-change='added'] {
+    outline: var(--xh-stroke-thick) solid currentColor;
+    outline-offset: calc(-1 * var(--xh-stroke-thick));
+  }
+
+  [data-scope='diff-view'][data-part='row'][data-change='removed'] {
+    outline: var(--xh-stroke-thick) dashed currentColor;
+    outline-offset: calc(-1 * var(--xh-stroke-thick));
+  }
+}
+
 /* 露出来的行从上一行底下推出来：位移走幅度令牌，减弱动效档把它归零 */
 @keyframes xh-diff-view-reveal {
   from {
@@ -1197,6 +1233,7 @@
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
@@ -1205,9 +1242,11 @@
   display: none;
 }
 
+/* 换底、换描边之外再抬起一档：这是一块实心的可点面，指针停上去它从页面里浮出来 */
 [data-scope='download-trigger'][data-part='root']:hover {
   border-color: var(--xh-download-trigger-border-hover, var(--xh-border-control-hover));
   background: var(--xh-download-trigger-bg-hover, var(--xh-bg-subtle-hover));
+  box-shadow: var(--xh-download-trigger-shadow-hover, var(--xh-elevation-raised));
 }
 
 /* 换底之外再压一档：取数在途前的那一下按压给出回执 */
@@ -1261,6 +1300,8 @@
   border-color: var(--xh-download-trigger-border-disabled, var(--xh-border-control));
   background: var(--xh-download-trigger-bg-disabled, var(--xh-bg-muted));
   color: var(--xh-fg-disabled);
+  /* 置灰的按钮仍然会命中 :hover，抬起那一档要在这里收掉 */
+  box-shadow: none;
 }
 
 /* styles/dynamic-input.css */
@@ -1874,6 +1915,21 @@
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-plus) center / contain no-repeat;
   mask: var(--xh-glyph-mark-plus) center / contain no-repeat;
+}
+
+/* 手指落点：触发器的视觉盒是 40px，命中区外扩到 44×44（两边各 2px）。
+   外扩走绝对定位的伪元素，盒子本身一动不动——放大盒子会把它和展开的那一列对不齐。
+   用 ::after：::before 已经被兜底字形占着 */
+@media (pointer: coarse) {
+  [data-scope='float-button'][data-part='trigger'] {
+    position: relative;
+  }
+
+  [data-scope='float-button'][data-part='trigger']::after {
+    content: '';
+    position: absolute;
+    inset: calc(-1 * var(--xh-space-0_5));
+  }
 }
 
 /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
@@ -4014,7 +4070,7 @@
     'footer footer';
   grid-template-columns: auto minmax(0, 1fr);
   grid-template-rows: auto minmax(0, 1fr) auto;
-  background: var(--xh-layout-bg, var(--xh-bg-canvas));
+  background: var(--xh-layout-bg, var(--xh-bg-page));
   color: var(--xh-layout-fg, var(--xh-fg-default));
   --xh-_layout-sider-w: var(--xh-layout-sider-w, 15rem);
   --xh-_layout-sider-collapsed-w: var(--xh-layout-sider-collapsed-w, 4rem);
@@ -4977,6 +5033,10 @@
   --xh-_mention-input-bg: var(--xh-bg-canvas);
   --xh-_mention-input-border: var(--xh-border-control);
   --xh-_mention-input-border-hover: var(--xh-border-control-hover);
+  /* 悬停时底色朝 subtle 走小半步：换一条 1px 的描边色是全场最轻的一档回执，
+     填充跟着动才看得出指针停在哪个框上。基准取本档的底，三个形态各自算各自的；
+     只走小半步是为了与只读那一档的 subtle 实底分得开 */
+  --xh-_mention-input-bg-hover: color-mix(in oklab, var(--xh-bg-subtle) 45%, var(--xh-_mention-input-bg));
   /* 一档静态落影把方框从页面里抬起一层，与描边一起画出框的边界 */
   --xh-_mention-input-shadow: var(--xh-elevation-raised);
 
@@ -5027,6 +5087,8 @@
 /* 填充式：底色顶替描边，悬停时才浮出一道淡边 */
 [data-scope='mention']:is([data-part='root'], [data-part='positioner'])[data-variant='subtle'] {
   --xh-_mention-input-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+  /* 这一档的底本来就是 subtle，朝它兑没有位移，改走淡底自己那级悬停档 */
+  --xh-_mention-input-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
   --xh-_mention-input-border: transparent;
   --xh-_mention-input-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
@@ -5060,7 +5122,9 @@
   line-height: var(--xh-leading-normal);
   /* 多行宿主只许纵向拉伸：横向拉宽会把浮层与输入框的对齐拽歪 */
   resize: vertical;
-  transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 /* 单行宿主定高到控件档，纵向内距归零，与并排的其他控件等高。
@@ -5078,8 +5142,10 @@ input[data-scope='mention'][data-part='input'] {
   color: var(--xh-mention-placeholder-fg, var(--xh-fg-subtle));
 }
 
-[data-scope='mention'][data-part='input']:hover:not(:disabled, [data-invalid]) {
+/* hover 换描边与填充两条通道；只读排掉，它的底色本身就是"改不动"这句话 */
+[data-scope='mention'][data-part='input']:hover:not(:disabled, [readonly], [data-invalid]) {
   border-color: var(--xh-mention-input-border-hover, var(--xh-_mention-input-border-hover));
+  background: var(--xh-mention-input-bg-hover, var(--xh-_mention-input-bg-hover));
 }
 
 [data-scope='mention'][data-part='input']:focus-visible {
@@ -5413,6 +5479,10 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_password-input-bg: var(--xh-bg-canvas);
   --xh-_password-input-border: var(--xh-border-control);
   --xh-_password-input-border-hover: var(--xh-border-control-hover);
+  /* 悬停时底色朝 subtle 走小半步：换一条 1px 的描边色是全场最轻的一档回执，
+     填充跟着动才看得出指针停在哪个盒上。基准取本档的底，三个形态各自算各自的；
+     只走小半步是为了与只读那一档的 subtle 实底分得开 */
+  --xh-_password-input-bg-hover: color-mix(in oklab, var(--xh-bg-subtle) 45%, var(--xh-_password-input-bg));
   /* 一档静态落影把盒从页面里抬起一层，与描边一起画出盒的边界 */
   --xh-_password-input-shadow: var(--xh-elevation-raised);
 
@@ -5468,6 +5538,8 @@ input[data-scope='mention'][data-part='input'] {
    与 outline 档并排时基线对得上、聚焦画描边也不引起跳动 */
 [data-scope='password-input'][data-part='root'][data-variant='subtle'] {
   --xh-_password-input-bg: var(--xh-bg-subtle);
+  /* 这一档的底本来就是 subtle，朝它兑没有位移，改走淡底自己那级悬停档 */
+  --xh-_password-input-bg-hover: var(--xh-bg-subtle-hover);
   --xh-_password-input-border: transparent;
   --xh-_password-input-border-hover: var(--xh-border-control-hover);
 }
@@ -5490,6 +5562,7 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='password-input'][data-part='root'][data-variant='subtle'][data-tone] {
   --xh-_password-input-bg: var(--xh-_tone-subtle);
+  --xh-_password-input-bg-hover: var(--xh-_tone-subtle-hover);
   --xh-_password-input-border-hover: var(--xh-_tone-border);
 }
 
@@ -5523,16 +5596,20 @@ input[data-scope='mention'][data-part='input'] {
   border-radius: var(--xh-password-input-control-radius, var(--xh-shape-control));
   background: var(--xh-password-input-control-bg, var(--xh-_password-input-bg));
   box-shadow: var(--xh-password-input-control-shadow, var(--xh-_password-input-shadow));
-  transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='password-input'][data-part='control'][hidden] {
   display: none;
 }
 
-/* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
-[data-scope='password-input'][data-part='control']:hover:not([data-disabled], [data-invalid]) {
+/* hover 换描边与填充两条通道。只在中性态换：invalid 正拿边框颜色说事，被 hover 盖掉那条
+   信息就没了；只读也排掉，它的底色本身就是"改不动"这句话 */
+[data-scope='password-input'][data-part='control']:hover:not([data-disabled], [data-readonly], [data-invalid]) {
   border-color: var(--xh-password-input-control-border-hover, var(--xh-_password-input-border-hover));
+  background: var(--xh-password-input-control-bg-hover, var(--xh-_password-input-bg-hover));
 }
 
 [data-scope='password-input'][data-part='control']:focus-within:not([data-disabled]) {
@@ -5574,15 +5651,19 @@ input[data-scope='mention'][data-part='input'] {
   font-family: inherit;
   font-size: var(--xh-password-input-input-font-size, var(--xh-_password-input-font-size));
   line-height: var(--xh-leading-normal);
-  transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='password-input'][data-part='input']::placeholder {
   color: var(--xh-password-input-placeholder-fg, var(--xh-fg-subtle));
 }
 
-[data-scope='password-input'][data-part='input']:hover:not(:disabled, [data-invalid]) {
+/* hover 换描边与填充两条通道；只读排掉，它的底色本身就是"改不动"这句话 */
+[data-scope='password-input'][data-part='input']:hover:not(:disabled, [readonly], [data-invalid]) {
   border-color: var(--xh-password-input-input-border-hover, var(--xh-_password-input-border-hover));
+  background: var(--xh-password-input-input-bg-hover, var(--xh-_password-input-bg-hover));
 }
 
 [data-scope='password-input'][data-part='input']:focus-visible {
@@ -5622,6 +5703,7 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='password-input'][data-part='control'] [data-part='input']:hover:not(:disabled, [data-invalid]) {
   border-color: transparent;
+  background: transparent;
 }
 
 [data-scope='password-input'][data-part='control'] [data-part='input']:focus-visible {
@@ -6147,8 +6229,10 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_popselect-gap: var(--xh-control-gap-md);
   --xh-_popselect-font-size: var(--xh-control-font-md);
 
-  /* 形态档只换这四个槽：缺省即 outline（描边 + 画布底 + 一档落影） */
+  /* 形态档只换这五个槽：缺省即 outline（描边 + 画布底 + 一档落影） */
   --xh-_popselect-control-bg: var(--xh-bg-canvas);
+  /* 悬停那一档底：描边之外再换一次填充，语气在场时兑同族的淡底 */
+  --xh-_popselect-control-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   --xh-_popselect-control-border: var(--xh-border-control);
   --xh-_popselect-control-border-hover: var(--xh-border-control-hover);
   /* 一档静态落影把盒从页面里抬起一层，与描边一起画出盒的边界 */
@@ -6203,6 +6287,7 @@ input[data-scope='mention'][data-part='input'] {
 /* 形态只决定描边与底色怎么用，用哪族颜色由 data-tone 决定 */
 [data-scope='popselect']:is([data-part='root'], [data-part='positioner'])[data-variant='outline'] {
   --xh-_popselect-control-bg: var(--xh-bg-canvas);
+  --xh-_popselect-control-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   --xh-_popselect-control-border: var(--xh-border-control);
   --xh-_popselect-control-border-hover: var(--xh-border-control-hover);
 }
@@ -6210,6 +6295,7 @@ input[data-scope='mention'][data-part='input'] {
 /* 填充式：底色顶替描边，悬停时才浮出一道淡边 */
 [data-scope='popselect']:is([data-part='root'], [data-part='positioner'])[data-variant='subtle'] {
   --xh-_popselect-control-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+  --xh-_popselect-control-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
   --xh-_popselect-control-border: transparent;
   --xh-_popselect-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
@@ -6219,6 +6305,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='popselect']:is([data-part='root'], [data-part='positioner'])[data-variant='ghost'] {
   --xh-_popselect-control-shadow: 0 0 0 transparent;
   --xh-_popselect-control-bg: transparent;
+  --xh-_popselect-control-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   --xh-_popselect-control-border: transparent;
   --xh-_popselect-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
@@ -6236,10 +6323,15 @@ input[data-scope='mention'][data-part='input'] {
   border-radius: var(--xh-popselect-control-radius, var(--xh-shape-control));
   background: var(--xh-popselect-control-bg, var(--xh-_popselect-control-bg));
   box-shadow: var(--xh-popselect-control-shadow, var(--xh-_popselect-control-shadow));
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
+/* 描边挪一格之外再换一档填充：只换描边的悬停在浅底上几乎读不出来 */
 [data-scope='popselect'][data-part='control']:hover:not([data-disabled]) {
   border-color: var(--xh-popselect-control-border-hover, var(--xh-_popselect-control-border-hover));
+  background: var(--xh-popselect-control-bg-hover, var(--xh-_popselect-control-bg-hover));
 }
 
 /* 焦点落在盒内任一颗按钮上都画同一圈环；禁用时按钮不可聚焦，守卫只是把这条说死。
@@ -6498,6 +6590,7 @@ input[data-scope='mention'][data-part='input'] {
    三个视觉轴都落在 root 上：形态管底与描边怎么画，语气管用哪族颜色，尺寸管高度与字号 */
 [data-scope='prompt-input'][data-part='root'] {
   transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     border-radius var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   /* 尺寸缺省档：不写 data-size 时按中档走 */
@@ -6510,7 +6603,9 @@ input[data-scope='mention'][data-part='input'] {
   --xh-icon-size: var(--xh-prompt-input-icon-size, var(--xh-glyph-size-md));
   /* 形态缺省档：不写 data-variant 时按描边式走 */
   --xh-_prompt-input-bg: var(--xh-bg-surface);
+  --xh-_prompt-input-bg-hover: var(--xh-bg-subtle);
   --xh-_prompt-input-border: var(--xh-border-control);
+  --xh-_prompt-input-border-hover: var(--xh-border-control-hover);
   --xh-_prompt-input-border-focus: var(--xh-_tone, var(--xh-border-control-focus));
   --xh-_prompt-input-shadow: var(--xh-elevation-raised);
 
@@ -6535,6 +6630,13 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='prompt-input'][data-part='root']:has(> [data-scope='prompt-input'][data-part='input-row']) {
   flex-direction: column;
   align-items: stretch;
+}
+
+/* 指针停在框上：描边与底一起换。这是一块要打字的大面，只挪一圈 1px 的描边读不出来。
+   摘掉持有焦点的那一档：打字时指针多半就停在框上，不摘的话语气色的聚焦描边一直被压着 */
+[data-scope='prompt-input'][data-part='root']:hover:not([data-disabled], :focus-within) {
+  border-color: var(--xh-prompt-input-border-hover, var(--xh-_prompt-input-border-hover));
+  background: var(--xh-prompt-input-bg-hover, var(--xh-_prompt-input-bg-hover));
 }
 
 /* 焦点环画在整个框上；用 focus-within 使焦点落在发送按钮时同样点亮 */
@@ -6583,21 +6685,27 @@ input[data-scope='mention'][data-part='input'] {
    没有实心档：填满一个要往里打字的框，字与底就没法同时读 */
 [data-scope='prompt-input'][data-part='root'][data-variant='outline'] {
   --xh-_prompt-input-bg: var(--xh-bg-canvas);
+  --xh-_prompt-input-bg-hover: var(--xh-bg-subtle);
   --xh-_prompt-input-border: var(--xh-border-control);
+  --xh-_prompt-input-border-hover: var(--xh-border-control-hover);
 }
 
 /* 填充式：底色顶替描边表达边界。描边只退成透明而不去掉，1px 的位置留着，
    与 outline 档并排时基线对得上、聚焦画描边也不引起跳动 */
 [data-scope='prompt-input'][data-part='root'][data-variant='subtle'] {
   --xh-_prompt-input-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+  --xh-_prompt-input-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
   --xh-_prompt-input-border: transparent;
+  --xh-_prompt-input-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
 
 /* 无框：底与常态描边透明，聚焦时浮出描边。落影一并收掉——底都不画了，
    一圈投影就成了没有来处的暗边 */
 [data-scope='prompt-input'][data-part='root'][data-variant='ghost'] {
   --xh-_prompt-input-bg: transparent;
+  --xh-_prompt-input-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   --xh-_prompt-input-border: transparent;
+  --xh-_prompt-input-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   --xh-_prompt-input-shadow: none;
 }
 
@@ -7702,6 +7810,27 @@ input[data-scope='mention'][data-part='input'] {
   display: none;
 }
 
+@media print {
+  /* 打印默认丢背景色：滑块那块底与它的落影都不画，「当前选的是哪一段」在纸上没了。
+     选中段改画一圈实边、字加粗，两条都不吃底色 */
+  [data-scope='segmented'][data-part='item'][data-state='checked'] {
+    border: var(--xh-stroke-thin) solid currentColor;
+    font-weight: var(--xh-font-weight-bold);
+  }
+}
+
+@media (pointer: coarse) {
+  /* 手指的落点比一段高：命中区由伪元素向块轴两侧外扩，段的盒与轨道内的分格一点不动。
+     只扩块轴——段与段在行内轴上首尾相接，往两侧扩会与相邻段的命中区叠上。
+     取 8px 是按最矮的 sm 档算的（28 + 8 × 2 = 44），md 与 lg 档更宽裕 */
+  [data-scope='segmented'][data-part='item']::before {
+    content: '';
+    position: absolute;
+    inset-block: -8px;
+    inset-inline: 0;
+  }
+}
+
 /* styles/signature-pad.css */
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='signature-pad'] {
@@ -7793,16 +7922,20 @@ input[data-scope='mention'][data-part='input'] {
   cursor: pointer;
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
-[data-scope='signature-pad'][data-part='clear-trigger']:hover {
+/* 悬停换底色的同时把这块面抬起一档：只换底色的回执在一颗按钮上太轻 */
+[data-scope='signature-pad'][data-part='clear-trigger']:hover:not(:disabled) {
   background: var(--xh-signature-pad-clear-bg-hover, var(--xh-bg-subtle-hover));
+  box-shadow: var(--xh-signature-pad-clear-shadow-hover, var(--xh-elevation-raised));
 }
 
-/* 按下：换到按压档底色并轻微下压，松手弹回；禁用钮不压 */
+/* 按下：换到按压档底色并轻微下压，抬起的那一档同时落回，松手弹回；禁用钮不压 */
 [data-scope='signature-pad'][data-part='clear-trigger']:not(:disabled):active {
   background: var(--xh-signature-pad-clear-bg-active, var(--xh-bg-subtle-active));
+  box-shadow: none;
   scale: var(--xh-motion-scale-press);
 }
 
@@ -8200,6 +8333,22 @@ input[data-scope='mention'][data-part='input'] {
   box-shadow: none;
 }
 
+/*
+ * 打印：底色被丢掉，实心与淡底两档的底一起没了。实心档配的是实心底上的前景色，
+ * 底一没那行字就落在白纸上——白字印在白纸上，整枚标签只剩一块空白。
+ * 两档在纸上都退成描边档：字色回到正文色，轮廓由边框接手，内高光跟着收掉。
+ * 两条选择器分别压过形态与语气这两层覆盖点；禁用档摘掉，它自己就是灰的。
+ */
+@media print {
+  [data-scope='tag'][data-part='root']:not([data-disabled]),
+  [data-scope='tag'][data-part='root'][data-variant][data-tone]:not([data-disabled]) {
+    border-color: currentColor;
+    background: none;
+    color: var(--xh-fg-default);
+    box-shadow: none;
+  }
+}
+
 /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
 [data-scope='tag'][data-part='close-trigger']:empty::before {
   content: '';
@@ -8528,6 +8677,21 @@ input[data-scope='mention'][data-part='input'] {
   line-height: var(--xh-leading-normal);
 }
 
+/*
+ * 打印：底色被丢掉，圆点与连线整个是底色画出来的，纸上这条轴的骨架就此不见，
+ * 只剩几段没有次序的文字。两处都改由描边承载：圆点成一个空心圈，
+ * 连线的两条边合起来就是那条线（线本身只有一个描边厚，两边各画一半正好填满）。
+ */
+@media print {
+  [data-scope='timeline'][data-part='indicator'] {
+    border: var(--xh-stroke-thick) solid currentColor;
+  }
+
+  [data-scope='timeline'][data-part='connector'] {
+    border: var(--xh-stroke-thin) solid currentColor;
+  }
+}
+
 /* styles/timer.css */
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='timer'] {
@@ -8610,6 +8774,8 @@ input[data-scope='mention'][data-part='input'] {
 
 /* —— 起停按钮 —— */
 [data-scope='timer'][data-part='control'] {
+  /* 粗指针下的命中区是钮上的绝对定位伪元素，这一层是它的定位参照系 */
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -8626,6 +8792,7 @@ input[data-scope='mention'][data-part='input'] {
   cursor: pointer;
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
@@ -8638,9 +8805,17 @@ input[data-scope='mention'][data-part='input'] {
   background: var(--xh-timer-control-bg-hover, var(--xh-bg-subtle-hover));
 }
 
-/* 换底之外再压一档：起停是 timer 唯一的动作入口，按下要有回执 */
+/* 换底之外再抬起一层：它是一块可点的面，光换一档底色在浅色页面上读不出来。
+   禁用的那一档不抬——抬起来就是在说它还能按 */
+[data-scope='timer'][data-part='control']:hover:not(:disabled) {
+  box-shadow: var(--xh-timer-control-shadow-hover, var(--xh-elevation-raised));
+}
+
+/* 换底之外再压一档：起停是 timer 唯一的动作入口，按下要有回执。
+   按下那一刻把悬停抬起的那层影子收回去，钮才像是被按回了平面 */
 [data-scope='timer'][data-part='control']:active:not(:disabled) {
   background: var(--xh-timer-control-bg-active, var(--xh-bg-subtle-active));
+  box-shadow: var(--xh-timer-control-shadow-active, none);
   scale: var(--xh-motion-scale-press);
 }
 
@@ -8653,6 +8828,16 @@ input[data-scope='mention'][data-part='input'] {
   border-color: var(--xh-timer-control-border-disabled, var(--xh-border-subtle));
   background: var(--xh-timer-control-bg-disabled, var(--xh-bg-muted));
   color: var(--xh-fg-disabled);
+}
+
+@media (pointer: coarse) {
+  /* 手指的落点比这颗钮大：命中区由伪元素向四周外扩，钮自己的盒与排版一点不动。
+     取 8px 是按最矮的 sm 档算的（28 + 8 × 2 = 44），md 与 lg 档更宽裕 */
+  [data-scope='timer'][data-part='control']::before {
+    content: '';
+    position: absolute;
+    inset: -8px;
+  }
 }
 
 /* styles/typography.css */
@@ -9165,6 +9350,41 @@ input[data-scope='mention'][data-part='input'] {
   mask: var(--xh-glyph-mark-close) center / contain no-repeat;
 }
 
+/*
+ * 打印：底色被丢掉，六档语气那层淡底一起没了，剩下的描边兑了 40% 的底色，在纸上几乎印不出。
+ * 描边换成正文色把这块提示框出来，标题加重一档——纸上分得出「这是一段提示」，
+ * 靠的是框与字重这两条无色通道，不是那层底。
+ * 关闭钮在纸上按不动，一并收起。
+ */
+@media print {
+  [data-scope='alert'][data-part='root'] {
+    border-color: currentColor;
+  }
+
+  [data-scope='alert'][data-part='title'] {
+    font-weight: var(--xh-font-weight-bold);
+  }
+
+  [data-scope='alert'][data-part='close-trigger'] {
+    display: none;
+  }
+}
+
+/* 手指落点：叉的视觉盒是 28px，命中区外扩到 44×44（两边各 8px）。
+   外扩走绝对定位的伪元素，盒子本身一动不动——放大盒子会把标题挤窄。
+   用 ::after：::before 已经被兜底字形占着 */
+@media (pointer: coarse) {
+  [data-scope='alert'][data-part='close-trigger'] {
+    position: relative;
+  }
+
+  [data-scope='alert'][data-part='close-trigger']::after {
+    content: '';
+    position: absolute;
+    inset: calc(-1 * var(--xh-space-2));
+  }
+}
+
 /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
    写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
 [data-scope='alert'][data-part='icon'][hidden] {
@@ -9332,6 +9552,8 @@ input[data-scope='mention'][data-part='input'] {
 /*
  * 单根骨架条。底色与微光两层叠在一起：
  * background-color 是静止时看到的那层，background-image 是扫过去的那道光。
+ * 微光取比底亮一档的那支面色：浅色下比 bg-subtle 亮、深色下同样比它亮，
+ * 两个主题里扫过去的都是一道亮带，而不是浅色下反倒扫出一道暗带。
  */
 [data-scope='skeleton'][data-part='bone'] {
   inline-size: 100%;
@@ -9340,7 +9562,7 @@ input[data-scope='mention'][data-part='input'] {
   background-image: linear-gradient(
     90deg,
     transparent 20%,
-    var(--xh-skeleton-sheen, var(--xh-bg-subtle-hover)) 50%,
+    var(--xh-skeleton-sheen, var(--xh-bg-surface-raised)) 50%,
     transparent 80%
   );
   background-repeat: no-repeat;
@@ -9799,14 +10021,19 @@ input[data-scope='mention'][data-part='input'] {
   text-decoration: none;
   text-overflow: ellipsis;
   overflow: hidden;
-  transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='anchor'][data-part='link'][hidden] {
   display: none;
 }
 
+/* 悬停走列表族的轻档：中性灰底，与面包屑的链接同一副回执。
+   只把 muted 提到 default 的话，一行小字上那点色差在长目录里几乎读不出来 */
 [data-scope='anchor'][data-part='link']:hover {
+  background: var(--xh-anchor-link-bg-hover, var(--xh-bg-subtle-hover));
   color: var(--xh-anchor-link-fg-hover, var(--xh-fg-default));
 }
 
@@ -9847,6 +10074,14 @@ input[data-scope='mention'][data-part='input'] {
   transition:
     inset-inline-start var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
     inline-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous);
+}
+
+@media (forced-colors: active) {
+  /* 指示条画的是一块纯底色，这一档里底色被统一换成 Canvas，条子整根消失，
+     "读到哪一节"就只剩链接自己的字重。换成系统高亮色画回来 */
+  [data-scope='anchor'][data-part='indicator'] {
+    background: Highlight;
+  }
 }
 
 /* styles/approval.css */
@@ -10494,6 +10729,20 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_badge-font: var(--xh-text-body-size);
 }
 
+/*
+ * 打印：底色被丢掉。计数档配的是实心底上的前景色，底一没那串数字就印不出来；
+ * 圆点档整个由底色画成，底一没连位置都看不见。
+ * 两档都改由描边承载：常态那圈边是衬在宿主上的隔离环，取的是面色，纸上同样是白的，
+ * 这里换成正文色——计数成了一枚描边药丸，圆点成了一个小圈。
+ */
+@media print {
+  [data-scope='badge'][data-part='indicator'] {
+    border-color: currentColor;
+    color: var(--xh-fg-default);
+    box-shadow: none;
+  }
+}
+
 /* styles/breadcrumb.css */
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='breadcrumb'] {
@@ -10666,6 +10915,10 @@ input[data-scope='mention'][data-part='input'] {
      没写形态时跟着按钮组走——组把形态写在自己身上，段上并没有 data-variant */
   --xh-_button-highlight: var(--xh-_button-group-highlight, none);
 
+  /* 悬停那一档的投影：有实心底的面抬起一层，换底之外再多一条回执。
+     组里的段共边焊成一条，由组把这个槽收回常态那一档 */
+  --xh-_button-shadow-hover: var(--xh-_button-group-shadow-hover, var(--xh-elevation-raised));
+
   /* 作者塞进来的图标跟着按钮的尺寸档走：xh-icon 的直径读的就是这个继承槽，
      它自己显式写了 size 时特异性更高，仍以作者写的为准 */
   --xh-icon-size: var(--xh-button-icon-size, var(--xh-glyph-size-md));
@@ -10698,6 +10951,7 @@ input[data-scope='mention'][data-part='input'] {
    :hover 与 :active 照样命中；原生 disabled 的那颗浏览器也仍然给 :hover */
 [data-scope='button'][data-part='root']:not([data-disabled]):not([data-loading]):hover {
   background: var(--xh-_bg-hover);
+  box-shadow: var(--xh-button-shadow-hover, var(--xh-_button-shadow-hover));
 }
 
 /* 换底之外再压一档：四档形态都是独立控件盒，缩放只动按钮自己 */
@@ -10724,6 +10978,8 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_bg-active: var(--xh-_tone-active, var(--xh-bg-brand-active));
   --xh-_fg: var(--xh-_tone-on, var(--xh-fg-on-brand));
   --xh-_button-highlight: var(--xh-_highlight-tone);
+  /* 抬起时把顶边那条高光一并列出来：只写投影会把常态的高光顶掉，面在悬停那一帧变薄 */
+  --xh-_button-shadow-hover: var(--xh-_button-group-shadow-hover, var(--xh-_highlight-tone), var(--xh-elevation-raised));
 }
 
 /* 另外三档的面不是实心底，高光在上面只会显脏；显式清掉，
@@ -10742,6 +10998,8 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_bg-active: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-active));
   --xh-_fg: var(--xh-_tone-fg, var(--xh-fg-default));
   --xh-_button-highlight: none;
+  /* 面是透空的，抬起来只会在页面上留一圈没有面的影子；这一档的回执由浮出的底色给 */
+  --xh-_button-shadow-hover: none;
 
   border-color: var(--xh-_tone-border-control, var(--xh-border-control));
 }
@@ -10752,6 +11010,8 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_bg-active: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-active));
   --xh-_fg: var(--xh-_tone-fg, var(--xh-fg-default));
   --xh-_button-highlight: none;
+  /* 同 outline：没有实心底可抬 */
+  --xh-_button-shadow-hover: none;
 }
 
 /* 置灰与挂起时收掉高光：底色已经被压暗，再留一条亮线就成了噪点。
@@ -11225,6 +11485,23 @@ input[data-scope='mention'][data-part='input'] {
   mask: var(--xh-glyph-mark-chevrons-right) center / contain no-repeat;
 }
 
+@media print {
+  /* 打印默认丢背景色：选中片与区间底都不画，一整张网格印出来是一模一样的三十来个数字。
+     两档各换一条不吃底色的通道——选中走实边加粗体，区间走格底下的一道线。 */
+  [data-scope='calendar'][data-part='cell-trigger'][data-selected] {
+    border-color: currentColor;
+    /* 反白那层文字的取值是「压在实心底上的前景」，底一没就印成一片白，退回正文色 */
+    color: var(--xh-calendar-cell-fg, var(--xh-fg-default));
+    font-weight: var(--xh-font-weight-bold);
+  }
+
+  /* 区间那块底收成格子下沿的一道横线：起点让开，只留下边那条描边 */
+  [data-scope='calendar'][data-part='cell'][data-in-range]::before {
+    inset-block-start: auto;
+    border-block-end: var(--xh-stroke-thick) solid currentColor;
+  }
+}
+
 /* styles/card.css */
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='card'] {
@@ -11461,6 +11738,7 @@ input[data-scope='mention'][data-part='input'] {
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
@@ -11470,16 +11748,20 @@ input[data-scope='mention'][data-part='input'] {
   display: none;
 }
 
+/* 悬停换底色的同时把这颗钮抬起一档：它压在图上，只换底色的回执几乎看不出来 */
 [data-scope='carousel'][data-part='prev-trigger']:hover:not(:disabled),
 [data-scope='carousel'][data-part='next-trigger']:hover:not(:disabled),
 [data-scope='carousel'][data-part='autoplay-trigger']:hover:not(:disabled) {
   background: var(--xh-carousel-trigger-bg-hover, var(--xh-bg-subtle-hover));
+  box-shadow: var(--xh-carousel-trigger-shadow-hover, var(--xh-elevation-raised));
 }
 
+/* 按下：底色换到按压档，抬起的那一档同时落回 */
 [data-scope='carousel'][data-part='prev-trigger']:active:not(:disabled),
 [data-scope='carousel'][data-part='next-trigger']:active:not(:disabled),
 [data-scope='carousel'][data-part='autoplay-trigger']:active:not(:disabled) {
   background: var(--xh-carousel-trigger-bg-active, var(--xh-bg-subtle-active));
+  box-shadow: none;
   scale: var(--xh-motion-scale-press);
 }
 
@@ -11617,6 +11899,25 @@ input[data-scope='mention'][data-part='input'] {
   mask: var(--xh-glyph-mark-play) center / contain no-repeat;
 }
 
+/* 手指落点：三颗钮的视觉盒是 32px，命中区外扩到 44×44（两边各 6px）。
+   外扩走绝对定位的伪元素，盒子本身一动不动——放大盒子会把它旁边的东西挤开。
+   用 ::after：::before 已经被兜底字形占着 */
+@media (pointer: coarse) {
+  [data-scope='carousel'][data-part='prev-trigger'],
+  [data-scope='carousel'][data-part='next-trigger'],
+  [data-scope='carousel'][data-part='autoplay-trigger'] {
+    position: relative;
+  }
+
+  [data-scope='carousel'][data-part='prev-trigger']::after,
+  [data-scope='carousel'][data-part='next-trigger']::after,
+  [data-scope='carousel'][data-part='autoplay-trigger']::after {
+    content: '';
+    position: absolute;
+    inset: calc(-1 * var(--xh-space-1_5));
+  }
+}
+
 /* styles/cascader.css */
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='cascader'] {
@@ -11676,11 +11977,13 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_cascader-font-size: var(--xh-control-font-md);
   --xh-_cascader-label-font-size: var(--xh-control-font-md);
 
-  /* 形态档只换触发框的描边、底色与落影这四个槽，浮层与列不跟着变：
+  /* 形态档只换触发框的描边、两档底色与落影这五个槽，浮层与列不跟着变：
      变的是「这是个输入位」的表达方式，不是弹出内容的表达方式 */
   --xh-_cascader-border: var(--xh-border-control);
   --xh-_cascader-border-hover: var(--xh-border-control-hover);
   --xh-_cascader-bg: var(--xh-bg-canvas);
+  /* 悬停那一档底：描边之外再换一次填充，语气在场时兑同族的淡底 */
+  --xh-_cascader-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   /* 一档静态落影把触发框从页面里抬起一层，与描边一起画出框的边界 */
   --xh-_cascader-shadow: var(--xh-elevation-raised);
 
@@ -11716,6 +12019,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_cascader-border: var(--xh-border-control);
   --xh-_cascader-border-hover: var(--xh-border-control-hover);
   --xh-_cascader-bg: var(--xh-bg-canvas);
+  --xh-_cascader-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
 }
 
 /* subtle 是填充式：底色接过「这里能点」的表达，描边随之让位 */
@@ -11723,6 +12027,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_cascader-border: transparent;
   --xh-_cascader-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   --xh-_cascader-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+  --xh-_cascader-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
 }
 
 /* 无框：底与常态描边透明，悬停浮出描边，聚焦由焦点环表达。
@@ -11732,6 +12037,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_cascader-border: transparent;
   --xh-_cascader-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   --xh-_cascader-bg: transparent;
+  --xh-_cascader-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
 }
 
 /* —— 尺寸 —— */
@@ -11784,7 +12090,9 @@ input[data-scope='mention'][data-part='input'] {
   box-shadow: var(--xh-cascader-control-shadow, var(--xh-_cascader-shadow));
   color: var(--xh-cascader-control-fg, var(--xh-fg-default));
   cursor: pointer;
-  transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='cascader'][data-part='control'][hidden] {
@@ -11794,6 +12102,12 @@ input[data-scope='mention'][data-part='input'] {
 /* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
 [data-scope='cascader'][data-part='control']:hover:not([data-disabled], [data-invalid]) {
   border-color: var(--xh-cascader-control-border-hover, var(--xh-_cascader-border-hover));
+}
+
+/* 描边之外再换一档填充：只挪一格描边色的悬停在浅底上几乎读不出来。
+   只读盒的底色正说着「改不动」，不参与换填充 */
+[data-scope='cascader'][data-part='control']:hover:not([data-disabled], [data-readonly]) {
+  background: var(--xh-cascader-control-bg-hover, var(--xh-_cascader-bg-hover));
 }
 
 /* Tab 停靠点是盒里的 trigger（展开后才移进列里），环画在盒上 */
@@ -12386,6 +12700,10 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_checkbox-box: var(--xh-control-indicator-md);
   --xh-_checkbox-glyph: calc(var(--xh-_checkbox-box) * 0.75);
 
+  /* 粗指针一档的命中区外扩量：方框边长加两条它正好是 44px。
+     lg 档不另给一份——那一档的方框本来就更大，同一个外扩量下命中区只多不少 */
+  --xh-_checkbox-touch-inset: 14px;
+
   /* 选中态的底与描边随语气走。没写 data-tone 时 --xh-_tone 没被声明，退回原来的品牌色 */
   --xh-_checkbox-accent: var(--xh-_tone, var(--xh-bg-brand));
 
@@ -12454,10 +12772,26 @@ input[data-scope='mention'][data-part='input'] {
 /* 缺省档写在上面的基础规则里 */
 [data-scope='checkbox'][data-part='root'][data-size='sm'] {
   --xh-_checkbox-box: var(--xh-control-indicator-sm);
+  --xh-_checkbox-touch-inset: 16px;
 }
 
 [data-scope='checkbox'][data-part='root'][data-size='lg'] {
   --xh-_checkbox-box: var(--xh-control-indicator-lg);
+}
+
+/* 手指与鼠标落点：方框只有一档指示符那么大，命中区靠一枚绝对定位的伪元素往外扩，
+   盒子本身一动不动——放大盒子会把并排的文字挤开。
+   常态外扩 6px，最小的 sm 档由 12px 到 24px；粗指针下按档位补到 44px。 */
+[data-scope='checkbox'][data-part='root']::after {
+  content: '';
+  position: absolute;
+  inset: calc(-1 * var(--xh-space-1_5));
+}
+
+@media (pointer: coarse) {
+  [data-scope='checkbox'][data-part='root']::after {
+    inset: calc(-1 * var(--xh-_checkbox-touch-inset));
+  }
 }
 
 [data-scope='checkbox'][data-part='indicator'] {
@@ -12529,6 +12863,21 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='checkbox'][data-part='indicator'][hidden],
 [data-scope='checkbox'][data-part='label'][hidden] {
   display: none;
+}
+
+@media print {
+  /* 打印默认丢底色：勾上与半选两档全靠实心底加底上那枚浅色标记表达，落到纸上与没勾的一模一样
+     （标记本身也是一块 background，同样印不出来）。改用描边这条印得出来的通道：
+     两档各加粗一级把方框分出来，半选再换成虚线，三档在纸上各不相同。
+     描边吃进定尺盒里（reset 层已把 box-sizing 收成 border-box），方框边长不变。 */
+  [data-scope='checkbox'][data-part='root'][data-state='checked'] {
+    border-width: var(--xh-stroke-thick);
+  }
+
+  [data-scope='checkbox'][data-part='root'][data-state='indeterminate'] {
+    border-width: var(--xh-stroke-thick);
+    border-style: dashed;
+  }
 }
 
 /* styles/checkbox-group.css */
@@ -12868,6 +13217,7 @@ input[data-scope='mention'][data-part='input'] {
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
@@ -12876,9 +13226,11 @@ input[data-scope='mention'][data-part='input'] {
   display: none;
 }
 
+/* 换底、换描边之外再抬起一档：这是一块实心的可点面，指针停上去它从输入框那一行浮出来 */
 [data-scope='clipboard'][data-part='trigger']:hover {
   border-color: var(--xh-clipboard-trigger-border-hover, var(--xh-border-control-hover));
   background: var(--xh-clipboard-trigger-bg-hover, var(--xh-bg-subtle-hover));
+  box-shadow: var(--xh-clipboard-trigger-shadow-hover, var(--xh-elevation-raised));
 }
 
 /* 换底之外再压一档：复制钮按下时缩放 */
@@ -13468,15 +13820,20 @@ input[data-scope='mention'][data-part='input'] {
   box-shadow: var(--xh-color-picker-control-shadow, var(--xh-elevation-raised));
   color: var(--xh-color-picker-control-fg, var(--xh-fg-default));
   cursor: pointer;
-  transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='color-picker'][data-part='control'][hidden] {
   display: none;
 }
 
-[data-scope='color-picker'][data-part='control']:hover:not([data-disabled]) {
+/* 悬停换描边的同时换填充：这个盒里大半面积是那块色样，只挪一圈 1px 的描边读不出来。
+   只读档摘掉：它正拿压低一档的底色说「改不动」，被悬停的填充盖掉那条信息就没了 */
+[data-scope='color-picker'][data-part='control']:hover:not([data-disabled], [data-readonly]) {
   border-color: var(--xh-color-picker-control-border-hover, var(--xh-border-control-hover));
+  background: var(--xh-color-picker-control-bg-hover, var(--xh-bg-subtle));
 }
 
 /* Tab 停靠点是盒里的 trigger，环画在盒上 */
@@ -14041,8 +14398,10 @@ input[data-scope='mention'][data-part='input'] {
   /* 作者塞进指示符槽的图标跟着控件的尺寸档走；它自己写了 size 时仍以作者的为准 */
   --xh-icon-size: var(--xh-combobox-icon-size, var(--xh-glyph-size-md));
 
-  /* 形态档只换这四个槽：缺省即 outline（描边 + 画布底 + 一档落影） */
+  /* 形态档只换这五个槽：缺省即 outline（描边 + 画布底 + 一档落影） */
   --xh-_combobox-control-bg: var(--xh-bg-canvas);
+  /* 悬停那一档底：描边之外再换一次填充，语气在场时兑同族的淡底 */
+  --xh-_combobox-control-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   --xh-_combobox-control-border: var(--xh-border-control);
   --xh-_combobox-control-border-hover: var(--xh-border-control-hover);
   /* 一档静态落影把盒从页面里抬起一层，与描边一起画出盒的边界 */
@@ -14097,6 +14456,7 @@ input[data-scope='mention'][data-part='input'] {
    形态只决定描边与底色怎么用，用哪族颜色由 data-tone 决定 */
 [data-scope='combobox']:is([data-part='root'], [data-part='positioner'])[data-variant='outline'] {
   --xh-_combobox-control-bg: var(--xh-bg-canvas);
+  --xh-_combobox-control-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   --xh-_combobox-control-border: var(--xh-border-control);
   --xh-_combobox-control-border-hover: var(--xh-border-control-hover);
 }
@@ -14104,6 +14464,7 @@ input[data-scope='mention'][data-part='input'] {
 /* 填充式：底色顶替描边，悬停时才浮出一道淡边 */
 [data-scope='combobox']:is([data-part='root'], [data-part='positioner'])[data-variant='subtle'] {
   --xh-_combobox-control-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+  --xh-_combobox-control-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
   --xh-_combobox-control-border: transparent;
   --xh-_combobox-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
@@ -14113,6 +14474,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='combobox']:is([data-part='root'], [data-part='positioner'])[data-variant='ghost'] {
   --xh-_combobox-control-shadow: 0 0 0 transparent;
   --xh-_combobox-control-bg: transparent;
+  --xh-_combobox-control-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   --xh-_combobox-control-border: transparent;
   --xh-_combobox-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
@@ -14142,7 +14504,9 @@ input[data-scope='mention'][data-part='input'] {
   background: var(--xh-combobox-control-bg, var(--xh-_combobox-control-bg));
   box-shadow: var(--xh-combobox-control-shadow, var(--xh-_combobox-control-shadow));
   color: var(--xh-combobox-control-fg, var(--xh-fg-default));
-  transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='combobox'][data-part='control'][hidden] {
@@ -14152,6 +14516,12 @@ input[data-scope='mention'][data-part='input'] {
 /* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
 [data-scope='combobox'][data-part='control']:hover:not([data-disabled], [data-invalid]) {
   border-color: var(--xh-combobox-control-border-hover, var(--xh-_combobox-control-border-hover));
+}
+
+/* 描边之外再换一档填充：只挪一格描边色的悬停在浅底上几乎读不出来。
+   只读盒的底色正说着「改不动」，不参与换填充 */
+[data-scope='combobox'][data-part='control']:hover:not([data-disabled], [data-readonly]) {
+  background: var(--xh-combobox-control-bg-hover, var(--xh-_combobox-control-bg-hover));
 }
 
 /* 焦点环画在 control 上而不是 input 上：视觉上的「框」是 control，
@@ -14873,6 +15243,14 @@ input[data-scope='mention'][data-part='input'] {
   }
 }
 
+@media (forced-colors: active) {
+  /* 分组之间那条线画的是一块纯底色，这一档里底色被统一换成 Canvas，线整条消失，
+     几组条目就连成了一长串。换成前景色画回来 */
+  [data-scope='context-menu'][data-part='separator'] {
+    background: CanvasText;
+  }
+}
+
 /* styles/date-field.css */
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='date-field'] {
@@ -14890,8 +15268,10 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_date-field-gap: var(--xh-control-gap-md);
   --xh-_date-field-font-size: var(--xh-control-font-md);
   --xh-_date-field-label-font-size: var(--xh-control-font-md);
-  /* 形态档只换这四个私有槽：底色、两档描边与落影 */
+  /* 形态档只换这五个私有槽：两档底色、两档描边与落影 */
   --xh-_date-field-control-bg: var(--xh-bg-canvas);
+  /* 悬停那一档底：描边之外再换一次填充，语气在场时兑同族的淡底 */
+  --xh-_date-field-control-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   --xh-_date-field-control-border: var(--xh-border-control);
   --xh-_date-field-control-border-hover: var(--xh-border-control-hover);
   /* 一档静态落影把分段框从页面里抬起一层，与描边一起画出框的边界 */
@@ -14929,6 +15309,7 @@ input[data-scope='mention'][data-part='input'] {
 /* 描边式：与缺省等价，写出来是为了三档形态在皮肤里都看得见 */
 [data-scope='date-field'][data-part='root'][data-variant='outline'] {
   --xh-_date-field-control-bg: var(--xh-bg-canvas);
+  --xh-_date-field-control-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   --xh-_date-field-control-border: var(--xh-border-control);
   --xh-_date-field-control-border-hover: var(--xh-border-control-hover);
 }
@@ -14936,6 +15317,7 @@ input[data-scope='mention'][data-part='input'] {
 /* 填充式：底色顶替描边，悬停时才浮出一道淡边 */
 [data-scope='date-field'][data-part='root'][data-variant='subtle'] {
   --xh-_date-field-control-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+  --xh-_date-field-control-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
   --xh-_date-field-control-border: transparent;
   --xh-_date-field-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
@@ -14945,6 +15327,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='date-field'][data-part='root'][data-variant='ghost'] {
   --xh-_date-field-control-shadow: 0 0 0 transparent;
   --xh-_date-field-control-bg: transparent;
+  --xh-_date-field-control-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   --xh-_date-field-control-border: transparent;
   --xh-_date-field-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
@@ -14986,7 +15369,9 @@ input[data-scope='mention'][data-part='input'] {
   font-family: inherit;
   font-size: var(--xh-date-field-font-size, var(--xh-_date-field-font-size));
   line-height: var(--xh-leading-none);
-  transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='date-field'][data-part='control'][hidden] {
@@ -14996,6 +15381,12 @@ input[data-scope='mention'][data-part='input'] {
 /* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
 [data-scope='date-field'][data-part='control']:hover:not([data-disabled], [data-invalid]) {
   border-color: var(--xh-date-field-control-border-hover, var(--xh-_date-field-control-border-hover));
+}
+
+/* 描边之外再换一档填充：只挪一格描边色的悬停在浅底上几乎读不出来。
+   只读盒的底色正说着「改不动」，不参与换填充 */
+[data-scope='date-field'][data-part='control']:hover:not([data-disabled], [data-readonly]) {
+  background: var(--xh-date-field-control-bg-hover, var(--xh-_date-field-control-bg-hover));
 }
 
 /* 焦点落在某一段上，而边框长在 control 上：焦点环得由内向外借一层。
@@ -15215,8 +15606,10 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_date-picker-font-size: var(--xh-control-font-md);
   --xh-_date-picker-label-font-size: var(--xh-control-font-md);
 
-  /* 形态档只换这四个私有槽：底色、两档描边与落影 */
+  /* 形态档只换这五个私有槽：两档底色、两档描边与落影 */
   --xh-_date-picker-control-bg: var(--xh-bg-canvas);
+  /* 悬停那一档底：描边之外再换一次填充，语气在场时兑同族的淡底 */
+  --xh-_date-picker-control-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   --xh-_date-picker-control-border: var(--xh-border-control);
   --xh-_date-picker-control-border-hover: var(--xh-border-control-hover);
   /* 一档静态落影把盒从页面里抬起一层，与描边一起画出盒的边界 */
@@ -15273,6 +15666,7 @@ input[data-scope='mention'][data-part='input'] {
    形态只决定底与描边怎么画，用哪族颜色由 data-tone 决定 */
 [data-scope='date-picker']:is([data-part='root'], [data-part='positioner'])[data-variant='outline'] {
   --xh-_date-picker-control-bg: var(--xh-bg-canvas);
+  --xh-_date-picker-control-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   --xh-_date-picker-control-border: var(--xh-border-control);
   --xh-_date-picker-control-border-hover: var(--xh-border-control-hover);
 }
@@ -15281,6 +15675,7 @@ input[data-scope='mention'][data-part='input'] {
    与 outline 档并排时基线对得上、聚焦画描边也不引起跳动 */
 [data-scope='date-picker']:is([data-part='root'], [data-part='positioner'])[data-variant='subtle'] {
   --xh-_date-picker-control-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+  --xh-_date-picker-control-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
   --xh-_date-picker-control-border: transparent;
   --xh-_date-picker-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
@@ -15290,6 +15685,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='date-picker']:is([data-part='root'], [data-part='positioner'])[data-variant='ghost'] {
   --xh-_date-picker-control-shadow: 0 0 0 transparent;
   --xh-_date-picker-control-bg: transparent;
+  --xh-_date-picker-control-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   --xh-_date-picker-control-border: transparent;
   --xh-_date-picker-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
@@ -15329,7 +15725,9 @@ input[data-scope='mention'][data-part='input'] {
   background: var(--xh-date-picker-control-bg, var(--xh-_date-picker-control-bg));
   box-shadow: var(--xh-date-picker-control-shadow, var(--xh-_date-picker-control-shadow));
   color: var(--xh-date-picker-control-fg, var(--xh-fg-default));
-  transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='date-picker'][data-part='control'][hidden] {
@@ -15339,6 +15737,12 @@ input[data-scope='mention'][data-part='input'] {
 /* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
 [data-scope='date-picker'][data-part='control']:hover:not([data-disabled], [data-invalid]) {
   border-color: var(--xh-date-picker-control-border-hover, var(--xh-_date-picker-control-border-hover));
+}
+
+/* 描边之外再换一档填充：只挪一格描边色的悬停在浅底上几乎读不出来。
+   只读盒的底色正说着「改不动」，不参与换填充 */
+[data-scope='date-picker'][data-part='control']:hover:not([data-disabled], [data-readonly]) {
+  background: var(--xh-date-picker-control-bg-hover, var(--xh-_date-picker-control-bg-hover));
 }
 
 /* 焦点落在某一段或某个按钮上，而边框长在 control 上：焦点环得由内向外借一层。
@@ -15945,6 +16349,18 @@ input[data-scope='mention'][data-part='input'] {
   mask: var(--xh-glyph-mark-close) center / contain no-repeat;
 }
 
+/* 手指落点：叉的视觉盒是 28px，命中区外扩到 44×44（两边各 8px）。
+   外扩走绝对定位的伪元素，盒子本身一动不动——放大盒子会把标题挤窄。
+   用 ::after：::before 已经被兜底字形占着。
+   钮本身贴边 12px，8px 的外扩仍落在面板的内衬里 */
+@media (pointer: coarse) {
+  [data-scope='dialog'][data-part='close-trigger']::after {
+    content: '';
+    position: absolute;
+    inset: calc(-1 * var(--xh-space-2));
+  }
+}
+
 /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
    写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
 [data-scope='dialog'][data-part='positioner'][hidden] {
@@ -16420,6 +16836,18 @@ input[data-scope='mention'][data-part='input'] {
   mask: var(--xh-glyph-mark-close) center / contain no-repeat;
 }
 
+/* 手指落点：叉的视觉盒是 28px，命中区外扩到 44×44（两边各 8px）。
+   外扩走绝对定位的伪元素，盒子本身一动不动——放大盒子会把标题挤窄。
+   用 ::after：::before 已经被兜底字形占着。
+   钮本身贴边 12px，8px 的外扩仍落在面板的内衬里 */
+@media (pointer: coarse) {
+  [data-scope='drawer'][data-part='close-trigger']::after {
+    content: '';
+    position: absolute;
+    inset: calc(-1 * var(--xh-space-2));
+  }
+}
+
 @media print {
   /* 打印：定位层与遮罩是交互期才存在的东西，落到纸上只会盖住底下的正文。
      收起写在这份皮肤里而不是 reset：reset 层排在组件层之前，组件层里任何一条 display 都压得住它。 */
@@ -16541,7 +16969,9 @@ input[data-scope='mention'][data-part='input'] {
   font-family: inherit;
   font-size: var(--xh-editable-input-font-size, var(--xh-text-body-size));
   line-height: var(--xh-leading-normal);
-  transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 /* 预览态由连接层给 hidden；上面给了 inline-size 与 block-size 但没给 display，
@@ -16559,9 +16989,12 @@ input[data-scope='mention'][data-part='input'] {
   color: var(--xh-editable-placeholder-fg, var(--xh-fg-subtle));
 }
 
-/* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
-[data-scope='editable'][data-part='input']:hover:not(:disabled, [data-invalid]) {
+/* hover 换描边与填充两条通道：换一条 1px 的描边色是全场最轻的一档回执，填充跟着动
+   才看得出指针停在框上。底朝 subtle 走小半步，与只读那一档的 subtle 实底分得开。
+   只在中性态换：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了；只读也排掉 */
+[data-scope='editable'][data-part='input']:hover:not(:disabled, [readonly], [data-invalid]) {
   border-color: var(--xh-editable-input-border-hover, var(--xh-border-control-hover));
+  background: var(--xh-editable-input-bg-hover, color-mix(in oklab, var(--xh-bg-subtle) 45%, var(--xh-editable-input-bg, var(--xh-bg-canvas))));
 }
 
 [data-scope='editable'][data-part='input']:focus-visible {
@@ -16866,9 +17299,17 @@ input[data-scope='mention'][data-part='input'] {
   display: none;
 }
 
-/* hover 只在中性态换描边：invalid 与 dragging 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
+/* hover 只在中性态命中：invalid 与 dragging 正拿边框颜色说事，被 hover 盖掉那条信息就没了。
+   描边与底一起换：这块面有整整八行高，只挪一圈 1px 的描边在这个面积上几乎读不出来 */
 [data-scope='file-upload'][data-part='dropzone']:hover:not([data-disabled], [data-invalid], [data-dragging]) {
   border-color: var(--xh-file-upload-dropzone-border-hover, var(--xh-border-control-hover));
+  background: var(--xh-file-upload-dropzone-bg-hover, var(--xh-bg-subtle));
+}
+
+/* 键盘落焦时描边跟着语气走，与聚焦环同族；环由 focus.css 统一画。
+   摘掉的三档与 hover 那条一致：它们各自正拿边框颜色说事 */
+[data-scope='file-upload'][data-part='dropzone']:focus-visible:not([data-disabled], [data-invalid], [data-dragging]) {
+  border-color: var(--xh-file-upload-dropzone-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
 }
 
 /* 悬停在上方：整块换成品牌色描边加浅底，比只换边框显眼得多 */
@@ -16907,6 +17348,7 @@ input[data-scope='mention'][data-part='input'] {
   cursor: pointer;
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
@@ -16914,13 +17356,16 @@ input[data-scope='mention'][data-part='input'] {
   display: none;
 }
 
+/* 悬停换底色的同时把这块面抬起一档：只换底色的回执在一颗按钮上太轻 */
 [data-scope='file-upload'][data-part='trigger']:hover:not(:disabled) {
   background: var(--xh-file-upload-trigger-bg-hover, var(--xh-bg-subtle-hover));
+  box-shadow: var(--xh-file-upload-trigger-shadow-hover, var(--xh-elevation-raised));
 }
 
-/* 按下：换到按压档底色并轻微下压，松手弹回；禁用钮不压 */
+/* 按下：换到按压档底色并轻微下压，抬起的那一档同时落回，松手弹回；禁用钮不压 */
 [data-scope='file-upload'][data-part='trigger']:not(:disabled):active {
   background: var(--xh-file-upload-trigger-bg-active, var(--xh-bg-subtle-active));
+  box-shadow: none;
   scale: var(--xh-motion-scale-press);
 }
 
@@ -18629,6 +19074,14 @@ input[data-scope='mention'][data-part='input'] {
   display: none;
 }
 
+@media (forced-colors: active) {
+  /* 分组之间那条线画的是一块纯底色，这一档里底色被统一换成 Canvas，线整条消失，
+     几组条目就连成了一长串。换成前景色画回来 */
+  [data-scope='menu'][data-part='separator'] {
+    background: CanvasText;
+  }
+}
+
 @media print {
   /* 打印：定位层与遮罩是交互期才存在的东西，落到纸上只会盖住底下的正文。
      收起写在这份皮肤里而不是 reset：reset 层排在组件层之前，组件层里任何一条 display 都压得住它。 */
@@ -19014,6 +19467,14 @@ input[data-scope='mention'][data-part='input'] {
      收起写在这份皮肤里而不是 reset：reset 层排在组件层之前，组件层里任何一条 display 都压得住它。 */
   [data-scope='menubar'][data-part='positioner'] {
     display: none;
+  }
+}
+
+@media (forced-colors: active) {
+  /* 分组之间那条线画的是一块纯底色，这一档里底色被统一换成 Canvas，线整条消失，
+     几组条目就连成了一长串。换成前景色画回来 */
+  [data-scope='menubar'][data-part='separator'] {
+    background: CanvasText;
   }
 }
 
@@ -19912,6 +20373,17 @@ input[data-scope='mention'][data-part='input'] {
   mask: var(--xh-glyph-mark-close) center / contain no-repeat;
 }
 
+/* 手指落点：叉的视觉盒是 28px，命中区外扩到 44×44（两边各 8px）。
+   外扩走绝对定位的伪元素，盒子本身一动不动——放大盒子会压住标题。
+   用 ::after：::before 已经被兜底字形占着 */
+@media (pointer: coarse) {
+  [data-scope='notification'][data-part='item-close-trigger']::after {
+    content: '';
+    position: absolute;
+    inset: calc(-1 * var(--xh-space-2));
+  }
+}
+
 @media print {
   /* 打印：动画会被定格在任意一帧——转了一半的圈、扫到一半的微光。这里换成静止的表达，
      取值与减弱动效那一档相同。两档各写一块、不并进一条媒体查询列表：减弱动效另有一份
@@ -19957,6 +20429,10 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_number-field-bg: var(--xh-bg-canvas);
   --xh-_number-field-border: var(--xh-border-control);
   --xh-_number-field-border-hover: var(--xh-border-control-hover);
+  /* 悬停时底色朝 subtle 走小半步：换一条 1px 的描边色是全场最轻的一档回执，
+     填充跟着动才看得出指针停在哪个盒上。基准取本档的底，三个形态各自算各自的；
+     只走小半步是为了与只读那一档的 subtle 实底分得开 */
+  --xh-_number-field-bg-hover: color-mix(in oklab, var(--xh-bg-subtle) 45%, var(--xh-_number-field-bg));
   /* 一档静态落影把盒从页面里抬起一层，与描边一起画出盒的边界 */
   --xh-_number-field-shadow: var(--xh-elevation-raised);
   --xh-_number-field-trigger-bg: var(--xh-bg-subtle);
@@ -20021,6 +20497,8 @@ input[data-scope='mention'][data-part='input'] {
    与 outline 档并排时基线对得上、聚焦画描边也不引起跳动 */
 [data-scope='number-field'][data-part='root'][data-variant='subtle'] {
   --xh-_number-field-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+  /* 这一档的底本来就是 subtle，朝它兑没有位移，改走淡底自己那级悬停档 */
+  --xh-_number-field-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
   --xh-_number-field-border: transparent;
   --xh-_number-field-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   --xh-_number-field-trigger-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
@@ -20076,11 +20554,16 @@ input[data-scope='mention'][data-part='input'] {
   border-radius: var(--xh-number-field-control-radius, var(--xh-_number-field-radius));
   background: var(--xh-number-field-control-bg, var(--xh-_number-field-bg));
   box-shadow: var(--xh-number-field-control-shadow, var(--xh-_number-field-shadow));
-  transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
-[data-scope='number-field'][data-part='control']:hover:not([data-disabled], [data-invalid]) {
+/* hover 换描边与填充两条通道。只在中性态换：invalid 正拿边框颜色说事，被 hover 盖掉那条
+   信息就没了；只读也排掉，它的底色本身就是"改不动"这句话 */
+[data-scope='number-field'][data-part='control']:hover:not([data-disabled], [data-readonly], [data-invalid]) {
   border-color: var(--xh-number-field-control-border-hover, var(--xh-_number-field-border-hover));
+  background: var(--xh-number-field-control-bg-hover, var(--xh-_number-field-bg-hover));
 }
 
 [data-scope='number-field'][data-part='control']:focus-within:not([data-disabled]) {
@@ -20125,6 +20608,7 @@ input[data-scope='mention'][data-part='input'] {
    :not 条件：基础 hover 的特异度里有它们，不带就打不过 */
 [data-scope='number-field'][data-part='control'] [data-part='input']:hover:not(:disabled, [data-invalid]) {
   border-color: transparent;
+  background: transparent;
 }
 
 [data-scope='number-field'][data-part='control'] [data-part='input']:focus-visible {
@@ -20193,16 +20677,20 @@ input[data-scope='mention'][data-part='input'] {
   /* 等宽数字：按住加减钮连发时字宽一变，框里的数字就会左右抖 */
   font-variant-numeric: tabular-nums;
   line-height: var(--xh-leading-normal);
-  transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='number-field'][data-part='input']::placeholder {
   color: var(--xh-number-field-placeholder-fg, var(--xh-fg-subtle));
 }
 
-/* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
-[data-scope='number-field'][data-part='input']:hover:not(:disabled, [data-invalid]) {
+/* hover 换描边与填充两条通道。只在中性态换：invalid 正拿边框颜色说事，被 hover 盖掉那条
+   信息就没了；只读也排掉，它的底色本身就是"改不动"这句话 */
+[data-scope='number-field'][data-part='input']:hover:not(:disabled, [readonly], [data-invalid]) {
   border-color: var(--xh-number-field-input-border-hover, var(--xh-_number-field-border-hover));
+  background: var(--xh-number-field-input-bg-hover, var(--xh-_number-field-bg-hover));
 }
 
 /* 聚焦态描边与环共用一族语气色。这条特异度低于上面的 hover、也低于下面的 invalid，
@@ -20559,10 +21047,16 @@ input[data-scope='mention'][data-part='input'] {
   line-height: var(--xh-leading-none);
   appearance: none;
   cursor: pointer;
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
+/* 描边与填充一起换：只加深一圈描边的话，指针停在控件正中时那点变化落在视野外围，
+   旁边那排页码格子换的是整块底色，两者的回执强度对不上 */
 [data-scope='pagination'][data-part='page-size-select']:hover:not(:disabled) {
   border-color: var(--xh-pagination-page-size-border-hover, var(--xh-border-strong));
+  background: var(--xh-pagination-page-size-bg-hover, var(--xh-bg-subtle-hover));
 }
 
 [data-scope='pagination'][data-part='page-size-select']:disabled {
@@ -20667,6 +21161,12 @@ input[data-scope='mention'][data-part='input'] {
   [data-scope='pagination'][data-part='positioner'] {
     display: none;
   }
+
+  /* 打印默认丢背景：当前页那格的实心底印不出来，一排页码看上去完全一样。
+     改用字重表达同一件事——常态之所以不加粗是怕格子变宽、行宽跟着抖，纸上没有这回事 */
+  [data-scope='pagination'][data-part='item'][data-current] {
+    font-weight: var(--xh-font-weight-semibold);
+  }
 }
 
 /* styles/pin-input.css */
@@ -20686,6 +21186,9 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_pin-input-box-bg: var(--xh-bg-canvas);
   --xh-_pin-input-box-border: var(--xh-border-control);
   --xh-_pin-input-box-border-hover: var(--xh-border-control-hover);
+  /* 悬停时底色朝 subtle 走小半步：换一条 1px 的描边色是全场最轻的一档回执，
+     填充跟着动才看得出指针停在哪一格上。基准取本档的底，三个形态各自算各自的 */
+  --xh-_pin-input-box-bg-hover: color-mix(in oklab, var(--xh-bg-subtle) 45%, var(--xh-_pin-input-box-bg));
   /* 一档静态落影把格子从页面里抬起一层，与描边一起画出格子的边界 */
   --xh-_pin-input-box-shadow: var(--xh-elevation-raised);
   /* 聚焦环与填满态的强调色随语气走。没写 data-tone 时 --xh-_tone 没被声明，退回原来的取值 */
@@ -20714,6 +21217,8 @@ input[data-scope='mention'][data-part='input'] {
 /* 填充式：底色说明这里是一格输入位，描边让位给底色 */
 [data-scope='pin-input'][data-part='root'][data-variant='subtle'] {
   --xh-_pin-input-box-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+  /* 这一档的底本来就是 subtle，朝它兑没有位移，改走淡底自己那级悬停档 */
+  --xh-_pin-input-box-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
   --xh-_pin-input-box-border: transparent;
   --xh-_pin-input-box-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
@@ -20772,7 +21277,9 @@ input[data-scope='mention'][data-part='input'] {
   font-variant-numeric: tabular-nums;
   line-height: var(--xh-leading-none);
   text-align: center;
-  transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 /* 格间距只能长在格子自己身上：包住这一行的容器是作者写的，不在角色表里，
@@ -20786,9 +21293,11 @@ input[data-scope='mention'][data-part='input'] {
   color: var(--xh-pin-input-placeholder-fg, var(--xh-fg-subtle));
 }
 
-/* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
+/* hover 换描边与填充两条通道。只在中性态换：invalid 正拿边框颜色说事，
+   被 hover 盖掉那条信息就没了 */
 [data-scope='pin-input'][data-part='input']:hover:not(:disabled, [data-invalid]) {
   border-color: var(--xh-pin-input-box-border-hover, var(--xh-_pin-input-box-border-hover));
+  background: var(--xh-pin-input-box-bg-hover, var(--xh-_pin-input-box-bg-hover));
 }
 
 /* 一行格子长得一模一样，光标那道竖线太细，看不出正在填哪一格：
@@ -21085,6 +21594,18 @@ input[data-scope='mention'][data-part='input'] {
   mask: var(--xh-glyph-mark-close) center / contain no-repeat;
 }
 
+/* 手指落点：叉的视觉盒是 28px，命中区外扩到 44×44（两边各 8px）。
+   外扩走绝对定位的伪元素，盒子本身一动不动——放大盒子会把标题挤窄。
+   用 ::after：::before 已经被兜底字形占着。
+   钮本身贴边 8px，8px 的外扩正好齐到气泡的边，不会被 content 裁掉 */
+@media (pointer: coarse) {
+  [data-scope='popover'][data-part='close-trigger']::after {
+    content: '';
+    position: absolute;
+    inset: calc(-1 * var(--xh-space-2));
+  }
+}
+
 @media print {
   /* 打印：定位层与遮罩是交互期才存在的东西，落到纸上只会盖住底下的正文。
      收起写在这份皮肤里而不是 reset：reset 层排在组件层之前，组件层里任何一条 display 都压得住它。 */
@@ -21243,6 +21764,34 @@ input[data-scope='mention'][data-part='input'] {
    写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
 [data-scope='progress'][data-part='root'][hidden] {
   display: none;
+}
+
+/*
+ * 高对比档：走完的那段与底槽都是底色画的，这一档里两者被换成同一个系统色，
+ * 整根条子成了一色，读不出走到哪儿。走完的那段改取系统高亮色，底槽补一圈环把全长框出来。
+ * 环用 outline 不用 border：条子的厚度是写死的，加边会把它顶高一档。
+ * 环形档画的是描边，stroke 在这一档里照旧生效，两条各自换成系统色即可。
+ */
+@media (forced-colors: active) {
+  [data-scope='progress'][data-part='track'] {
+    outline: var(--xh-stroke-thin) solid CanvasText;
+    outline-offset: calc(-1 * var(--xh-stroke-thin));
+  }
+
+  [data-scope='progress'][data-part='range'] {
+    background: Highlight;
+  }
+
+  [data-scope='progress'][data-part='track'][data-variant='circle'],
+  [data-scope='progress'][data-part='track'][data-variant='dashboard'] {
+    outline: none;
+    stroke: CanvasText;
+  }
+
+  [data-scope='progress'][data-part='range'][data-variant='circle'],
+  [data-scope='progress'][data-part='range'][data-variant='dashboard'] {
+    stroke: Highlight;
+  }
 }
 
 @media print {
@@ -21496,6 +22045,10 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 记号盒：多选是圆角方格，单选是圆。选中态填色，纯装饰不进可访问名 */
 [data-scope='question-flow'][data-part='option-indicator'] {
+  /* 盒里那枚记号跟着字号走，与其余带记号盒的控件同一把尺。
+     根上那把是展示型图标档，比指示符盒还大一档，画进这个盒里会溢出四个像素 */
+  --xh-icon-size: var(--xh-question-flow-indicator-icon-size, var(--xh-glyph-size-text));
+
   display: inline-flex;
   flex: none;
   align-items: center;
@@ -21533,10 +22086,11 @@ input[data-scope='mention'][data-part='input'] {
   mask: var(--xh-glyph-mark-check) center / contain no-repeat;
 }
 
-/* 单选那一档把勾换成实心点：mask 撤掉，圆点由伪元素自己的底色画 */
+/* 单选那一档把勾换成实心点：mask 撤掉，圆点由伪元素自己的底色画。
+   直径按记号盒的一半量，与其余单选控件的圆点同源——盒换档时点跟着换 */
 [data-scope='question-flow'][data-part='option-indicator'][data-select-mode='single']:empty::before {
-  inline-size: var(--xh-question-flow-dot-size, calc(var(--xh-icon-size, var(--xh-glyph-size-text)) * 0.5));
-  block-size: var(--xh-question-flow-dot-size, calc(var(--xh-icon-size, var(--xh-glyph-size-text)) * 0.5));
+  inline-size: var(--xh-question-flow-dot-size, calc(var(--xh-question-flow-indicator-size, var(--xh-_question-flow-indicator)) / 2));
+  block-size: var(--xh-question-flow-dot-size, calc(var(--xh-question-flow-indicator-size, var(--xh-_question-flow-indicator)) / 2));
   border-radius: var(--xh-question-flow-dot-radius, var(--xh-shape-pill));
   -webkit-mask: none;
   mask: none;
@@ -21949,6 +22503,14 @@ input[data-scope='mention'][data-part='input'] {
   display: none;
 }
 
+@media print {
+  /* 打印默认丢底色：选中那颗圆点是一块底，落到纸上整个消失，选中与没选中的圈一模一样。
+     圆点改画成一圈实边——边框印得出来，直径与圆心都不动（描边吃进盒里）。 */
+  [data-scope='radio-group'][data-part='indicator'][data-state='checked']::before {
+    border: var(--xh-stroke-thick) solid currentColor;
+  }
+}
+
 /* styles/rating.css */
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='rating'] {
@@ -22102,6 +22664,17 @@ input[data-scope='mention'][data-part='input'] {
     color: Highlight;
     /* 亮档已经由字色表出，公共层那圈锚点虚线在这里只是重影 */
     outline: none;
+  }
+}
+
+@media print {
+  /* 打印默认丢底图：半颗那道裁到字形上的渐变整个消失，星上只剩 color: transparent，
+     那颗星在纸上什么都不剩。把填充还回去并按点亮那一档画整颗。 */
+  [data-scope='rating'][data-part='item'][data-half] {
+    background-image: none;
+    -webkit-background-clip: border-box;
+    background-clip: border-box;
+    color: var(--xh-rating-item-fg-highlighted, var(--xh-_rating-accent));
   }
 }
 
@@ -22521,8 +23094,10 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_select-font-size: var(--xh-control-font-md);
   --xh-_select-label-font-size: var(--xh-control-font-md);
 
-  /* 形态档只换这四个槽：缺省即 outline（描边 + 画布底 + 一档落影） */
+  /* 形态档只换这五个槽：缺省即 outline（描边 + 画布底 + 一档落影） */
   --xh-_select-control-bg: var(--xh-bg-canvas);
+  /* 悬停那一档底：描边之外再换一次填充，语气在场时兑同族的淡底 */
+  --xh-_select-control-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   --xh-_select-control-border: var(--xh-border-control);
   --xh-_select-control-border-hover: var(--xh-border-control-hover);
   /* 一档静态落影把盒从页面里抬起一层，与描边一起画出盒的边界 */
@@ -22582,6 +23157,7 @@ input[data-scope='mention'][data-part='input'] {
    形态只决定描边与底色怎么用，用哪族颜色由 data-tone 决定 */
 [data-scope='select']:is([data-part='root'], [data-part='positioner'])[data-variant='outline'] {
   --xh-_select-control-bg: var(--xh-bg-canvas);
+  --xh-_select-control-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   --xh-_select-control-border: var(--xh-border-control);
   --xh-_select-control-border-hover: var(--xh-border-control-hover);
 }
@@ -22589,6 +23165,7 @@ input[data-scope='mention'][data-part='input'] {
 /* 填充式：底色顶替描边，悬停时才浮出一道淡边 */
 [data-scope='select']:is([data-part='root'], [data-part='positioner'])[data-variant='subtle'] {
   --xh-_select-control-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+  --xh-_select-control-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
   --xh-_select-control-border: transparent;
   --xh-_select-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
@@ -22598,6 +23175,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='select']:is([data-part='root'], [data-part='positioner'])[data-variant='ghost'] {
   --xh-_select-control-shadow: 0 0 0 transparent;
   --xh-_select-control-bg: transparent;
+  --xh-_select-control-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   --xh-_select-control-border: transparent;
   --xh-_select-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
@@ -22626,11 +23204,20 @@ input[data-scope='mention'][data-part='input'] {
   border-radius: var(--xh-select-control-radius, var(--xh-shape-control));
   background: var(--xh-select-control-bg, var(--xh-_select-control-bg));
   box-shadow: var(--xh-select-control-shadow, var(--xh-_select-control-shadow));
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 /* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
 [data-scope='select'][data-part='control']:hover:not([data-disabled], [data-invalid]) {
   border-color: var(--xh-select-control-border-hover, var(--xh-_select-control-border-hover));
+}
+
+/* 描边之外再换一档填充：只挪一格描边色的悬停在浅底上几乎读不出来。
+   只读盒的底色正说着「改不动」，不参与换填充 */
+[data-scope='select'][data-part='control']:hover:not([data-disabled], [data-readonly]) {
+  background: var(--xh-select-control-bg-hover, var(--xh-_select-control-bg-hover));
 }
 
 [data-scope='select'][data-part='control'][data-invalid] {
@@ -23842,6 +24429,14 @@ input[data-scope='mention'][data-part='input'] {
   display: none;
 }
 
+@media (forced-colors: active) {
+  /* 分隔条画的是一块纯底色，这一档里底色被统一换成 Canvas，那条线整根消失，
+     两侧面板就糊成一块。换成前景色画回来 */
+  [data-scope='splitter'][data-part='resize-trigger'] {
+    background: CanvasText;
+  }
+}
+
 /* styles/steps.css */
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='steps'] {
@@ -24101,6 +24696,30 @@ input[data-scope='mention'][data-part='input'] {
   mask: var(--xh-glyph-mark-check) center / contain no-repeat;
 }
 
+@media (forced-colors: active) {
+  /* 连接线画的是一块纯底色，这一档里底色被统一换成 Canvas，整条进度线消失，
+     只剩一排孤立的圆点。走过的那几截换成系统高亮色，其余换成前景色 */
+  [data-scope='steps'][data-part='separator'] {
+    background: CanvasText;
+  }
+
+  [data-scope='steps'][data-part='separator'][data-state='completed'] {
+    background: Highlight;
+  }
+}
+
+@media print {
+  /* 打印默认丢背景：走过那几步的实心底与里面那枚勾都印不出来，
+     当前步与走过的步只剩一模一样的一圈细描边。改用描边的粗细与字重表达同一件事 */
+  [data-scope='steps'][data-part='indicator']:is([data-state='current'], [data-state='completed']) {
+    border-width: var(--xh-stroke-thick);
+  }
+
+  [data-scope='steps'][data-part='title'][data-state='current'] {
+    font-weight: var(--xh-font-weight-semibold);
+  }
+}
+
 /* styles/switch.css */
 /* 转圈的关键帧定义在本文件里：引用别处文件的动画名时那份文件不一定在场，动画会静默不跑 */
 @keyframes xh-switch-rotate {
@@ -24120,6 +24739,10 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_switch-track-h: var(--xh-switch-track-h-md);
   --xh-_switch-pad: var(--xh-space-0_5);
   --xh-_switch-thumb-size: calc(var(--xh-_switch-track-h) - var(--xh-_switch-pad) * 2);
+
+  /* 粗指针一档的命中区外扩量：轨道高加两条它正好是 44px。
+     lg 档不另给一份——那一档的轨道本来就更高，同一个外扩量下命中区只多不少 */
+  --xh-_switch-touch-inset: 11px;
 
   /* 选中态轨道色随语气走。没写 data-tone 时 --xh-_tone 没被声明，退回原来的品牌色 */
   --xh-_switch-accent: var(--xh-_tone, var(--xh-bg-brand));
@@ -24180,10 +24803,26 @@ input[data-scope='mention'][data-part='input'] {
 /* 缺省档写在上面的基础规则里 */
 [data-scope='switch'][data-part='root'][data-size='sm'] {
   --xh-_switch-track-h: var(--xh-switch-track-h-sm);
+  --xh-_switch-touch-inset: 13px;
 }
 
 [data-scope='switch'][data-part='root'][data-size='lg'] {
   --xh-_switch-track-h: var(--xh-switch-track-h-lg);
+}
+
+/* 手指与鼠标落点：轨道只有二十来个像素高，命中区靠一枚绝对定位的伪元素往外扩，
+   轨道本身一动不动——把轨道加高会改掉整条开关的比例。
+   常态外扩 4px，最矮的 sm 档由 18px 到 26px；粗指针下按档位补到 44px。 */
+[data-scope='switch'][data-part='root']::after {
+  content: '';
+  position: absolute;
+  inset: calc(-1 * var(--xh-space-1));
+}
+
+@media (pointer: coarse) {
+  [data-scope='switch'][data-part='root']::after {
+    inset: calc(-1 * var(--xh-_switch-touch-inset));
+  }
 }
 
 [data-scope='switch'][data-part='thumb'] {
@@ -24266,6 +24905,20 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 @media print {
+  /* 打印默认丢底色与投影：轨道与滑块都只有一块底，落到纸上整条开关消失，开与关无从读起。
+     轨道补一圈实边把形状画出来，滑块补一圈实边把它停在哪一端画出来——
+     开与关本来就由滑块的位置读出，位置这条通道在纸上仍然成立。
+     轨道走 outline 而不是 border：这条盒子的内衬与滑块行程都从轨道高算出来，
+     加一条实边会把行程改掉。 */
+  [data-scope='switch'][data-part='root'] {
+    outline: var(--xh-stroke-thin) solid currentColor;
+    outline-offset: calc(-1 * var(--xh-stroke-thin));
+  }
+
+  [data-scope='switch'][data-part='thumb'] {
+    border: var(--xh-stroke-thin) solid currentColor;
+  }
+
   /* 打印：动画会被定格在任意一帧——转了一半的圈、扫到一半的微光。这里换成静止的表达，
      取值与减弱动效那一档相同。两档各写一块、不并进一条媒体查询列表：减弱动效另有一份
      :where([data-motion='reduce']) 的钩子版本与它成对，打印没有对应的钩子可配，
@@ -25076,6 +25729,31 @@ input[data-scope='mention'][data-part='input'] {
   [data-scope='table'][data-part='loading'] {
     animation: none;
   }
+
+  /* 底色被丢掉：选中行那层淡底没了，与别的行一模一样。改画一条内收的实线框——
+     用 outline 不用 border：行是横排 flex，加边会把单元格整体往里推，没选中的行不加边，
+     同一屏上的列就对不齐了 */
+  [data-scope='table'][data-part='row'][data-selected] {
+    outline: var(--xh-stroke-thick) solid currentColor;
+    outline-offset: calc(-1 * var(--xh-stroke-thick));
+  }
+
+  /* 两个勾选框的实心底也被丢掉，配它的浅色勾落在白纸上就整个不见了——
+     勾与框都换成正文色，勾没勾在纸上才分得出 */
+  [data-scope='table'][data-part='select-all-trigger']:is([data-state='checked'], [data-state='indeterminate']),
+  [data-scope='table'][data-part='row-select-trigger'][data-selected] {
+    border-color: var(--xh-fg-default);
+  }
+
+  [data-scope='table'][data-part='select-all-trigger'][data-state='checked'],
+  [data-scope='table'][data-part='row-select-trigger'][data-selected] {
+    color: var(--xh-fg-default);
+  }
+
+  /* 半选那枚横杠是伪元素画的，字色照旧留成透明把勾压住，只换横杠自己的颜色 */
+  [data-scope='table'][data-part='select-all-trigger'][data-state='indeterminate']::after {
+    background-color: var(--xh-fg-default);
+  }
 }
 
 /* styles/tabs.css */
@@ -25374,6 +26052,16 @@ input[data-scope='mention'][data-part='input'] {
   display: none;
 }
 
+@media print {
+  /* 打印默认丢背景与投影：三档形态表达选中的三条通道（选中底、card 档的顶边条、
+     segment 档的浮起）在纸上一条都不剩，只有一条比别人深一点的字色。
+     改用下划线与字重表达同一件事，两者都不改盒子的高度 */
+  [data-scope='tabs'][data-part='trigger'][data-state='active'] {
+    font-weight: var(--xh-font-weight-semibold);
+    text-decoration: underline;
+  }
+}
+
 /* styles/tags-input.css */
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='tags-input'] {
@@ -25398,6 +26086,10 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_tags-input-control-bg: var(--xh-bg-canvas);
   --xh-_tags-input-control-border: var(--xh-border-control);
   --xh-_tags-input-control-border-hover: var(--xh-border-control-hover);
+  /* 悬停时底色朝 subtle 走小半步：换一条 1px 的描边色是全场最轻的一档回执，
+     填充跟着动才看得出指针停在哪个框上。基准取本档的底，三个形态各自算各自的；
+     只走小半步是为了与只读那一档的 subtle 实底分得开 */
+  --xh-_tags-input-control-bg-hover: color-mix(in oklab, var(--xh-bg-subtle) 45%, var(--xh-_tags-input-control-bg));
   /* 一档静态落影把框从页面里抬起一层，与描边一起画出框的边界 */
   --xh-_tags-input-control-shadow: var(--xh-elevation-raised);
   /* 聚焦环与标签块的强调色随语气走。没写 data-tone 时 --xh-_tone 没被声明，退回原来的取值 */
@@ -25428,6 +26120,8 @@ input[data-scope='mention'][data-part='input'] {
 /* 填充式：底色圈出可输入的范围，描边让位给底色 */
 [data-scope='tags-input'][data-part='root'][data-variant='subtle'] {
   --xh-_tags-input-control-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+  /* 这一档的底本来就是 subtle，朝它兑没有位移，改走淡底自己那级悬停档 */
+  --xh-_tags-input-control-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
   --xh-_tags-input-control-border: transparent;
   --xh-_tags-input-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
@@ -25490,16 +26184,20 @@ input[data-scope='mention'][data-part='input'] {
   box-shadow: var(--xh-tags-input-control-shadow, var(--xh-_tags-input-control-shadow));
   color: var(--xh-tags-input-control-fg, var(--xh-fg-default));
   cursor: text;
-  transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='tags-input'][data-part='control'][hidden] {
   display: none;
 }
 
-/* hover 只在中性态换描边：invalid 与 at-max 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
-[data-scope='tags-input'][data-part='control']:hover:not([data-disabled], [data-invalid], [data-at-max]) {
+/* hover 换描边与填充两条通道。只在中性态换：invalid 与 at-max 正拿边框颜色说事，被 hover
+   盖掉那条信息就没了；只读也排掉，它的底色本身就是"改不动"这句话 */
+[data-scope='tags-input'][data-part='control']:hover:not([data-disabled], [data-readonly], [data-invalid], [data-at-max]) {
   border-color: var(--xh-tags-input-control-border-hover, var(--xh-_tags-input-control-border-hover));
+  background: var(--xh-tags-input-control-bg-hover, var(--xh-_tags-input-control-bg-hover));
 }
 
 /* 焦点环画在这个框上：用户眼里"被聚焦的控件"就是整个框，
@@ -25819,6 +26517,11 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_text-field-bg: var(--xh-bg-canvas);
   --xh-_text-field-border: var(--xh-border-control);
   --xh-_text-field-border-hover: var(--xh-border-control-hover);
+  /* 悬停时底色朝 subtle 走小半步：换一条 1px 的描边色是全场最轻的一档回执，
+     填充跟着动才看得出指针停在哪个框上。基准取本档的底，三个形态各自算各自的：
+     outline 从画布起、ghost 从透明起（兑出来的就是一层半透的淡底）。
+     只走小半步是为了与只读那一档的 subtle 实底分得开 */
+  --xh-_text-field-bg-hover: color-mix(in oklab, var(--xh-bg-subtle) 45%, var(--xh-_text-field-bg));
   /* 一档静态落影把框从页面里抬起一层，与描边一起画出框的边界 */
   --xh-_text-field-shadow: var(--xh-elevation-raised);
 
@@ -25875,6 +26578,8 @@ input[data-scope='mention'][data-part='input'] {
    与 outline 档并排时基线对得上、聚焦画描边也不引起跳动 */
 [data-scope='text-field'][data-part='root'][data-variant='subtle'] {
   --xh-_text-field-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+  /* 这一档的底本来就是 subtle，朝它兑没有位移，改走淡底自己那级悬停档 */
+  --xh-_text-field-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
   --xh-_text-field-border: transparent;
   --xh-_text-field-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   --xh-_text-field-border-focus: var(--xh-_tone, var(--xh-border-control-focus));
@@ -25915,17 +26620,20 @@ input[data-scope='mention'][data-part='input'] {
   background: var(--xh-text-field-control-bg, var(--xh-_text-field-bg));
   box-shadow: var(--xh-text-field-control-shadow, var(--xh-_text-field-shadow));
   color: var(--xh-text-field-control-fg, var(--xh-fg-default));
-  transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='text-field'][data-part='control'][hidden] {
   display: none;
 }
 
-/* hover 只在中性态换描边：invalid 与 at-max 正拿边框颜色说事，
-   被 hover 盖掉那条信息就没了 */
-[data-scope='text-field'][data-part='control']:hover:not([data-disabled], [data-invalid], [data-at-max]) {
+/* hover 换描边与填充两条通道。只在中性态换：invalid 与 at-max 正拿边框颜色说事，
+   被 hover 盖掉那条信息就没了；只读也排掉，它的底色本身就是"改不动"这句话 */
+[data-scope='text-field'][data-part='control']:hover:not([data-disabled], [data-readonly], [data-invalid], [data-at-max]) {
   border-color: var(--xh-text-field-control-border-hover, var(--xh-_text-field-border-hover));
+  background: var(--xh-text-field-control-bg-hover, var(--xh-_text-field-bg-hover));
 }
 
 [data-scope='text-field'][data-part='control']:focus-within:not([data-disabled]) {
@@ -25974,6 +26682,7 @@ input[data-scope='mention'][data-part='input'] {
    :not 条件：基础 hover 的特异度里有它们，不带就打不过 */
 [data-scope='text-field'][data-part='control'] [data-part='input']:hover:not(:disabled, [data-invalid], [data-at-max]) {
   border-color: transparent;
+  background: transparent;
 }
 
 [data-scope='text-field'][data-part='control'] [data-part='input']:focus-visible {
@@ -26010,7 +26719,9 @@ input[data-scope='mention'][data-part='input'] {
   font-family: inherit;
   font-size: var(--xh-text-field-input-font-size, var(--xh-_text-field-font-size));
   line-height: var(--xh-leading-normal);
-  transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 /* 多行宿主：定高换成行数撑高，纵向留出内边距；autoSize 接管高度后拉柄与滚动都收掉 */
@@ -26030,10 +26741,11 @@ input[data-scope='mention'][data-part='input'] {
   color: var(--xh-text-field-placeholder-fg, var(--xh-fg-subtle));
 }
 
-/* hover 只在中性态换描边：invalid 与 at-max 正拿边框颜色说事，
-   被 hover 盖掉那条信息就没了 */
-[data-scope='text-field'][data-part='input']:hover:not(:disabled, [data-invalid], [data-at-max]) {
+/* hover 换描边与填充两条通道。只在中性态换：invalid 与 at-max 正拿边框颜色说事，
+   被 hover 盖掉那条信息就没了；只读也排掉，它的底色本身就是"改不动"这句话 */
+[data-scope='text-field'][data-part='input']:hover:not(:disabled, [readonly], [data-invalid], [data-at-max]) {
   border-color: var(--xh-text-field-input-border-hover, var(--xh-_text-field-border-hover));
+  background: var(--xh-text-field-input-bg-hover, var(--xh-_text-field-bg-hover));
 }
 
 /* 聚焦态描边与环共用一族语气色。这条特异度低于上面的 hover、也低于下面的
@@ -26173,8 +26885,10 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_time-field-gap: var(--xh-control-gap-md);
   --xh-_time-field-font-size: var(--xh-control-font-md);
   --xh-_time-field-label-font-size: var(--xh-control-font-md);
-  /* 形态档只换这四个私有槽：底色、两档描边与落影 */
+  /* 形态档只换这五个私有槽：两档底色、两档描边与落影 */
   --xh-_time-field-control-bg: var(--xh-bg-canvas);
+  /* 悬停那一档底：描边之外再换一次填充，语气在场时兑同族的淡底 */
+  --xh-_time-field-control-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   --xh-_time-field-control-border: var(--xh-border-control);
   --xh-_time-field-control-border-hover: var(--xh-border-control-hover);
   /* 一档静态落影把控件从页面里抬起一层，与描边一起画出框的边界 */
@@ -26212,6 +26926,7 @@ input[data-scope='mention'][data-part='input'] {
 /* 描边式：与缺省等价，写出来是为了三档形态在皮肤里都看得见 */
 [data-scope='time-field'][data-part='root'][data-variant='outline'] {
   --xh-_time-field-control-bg: var(--xh-bg-canvas);
+  --xh-_time-field-control-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   --xh-_time-field-control-border: var(--xh-border-control);
   --xh-_time-field-control-border-hover: var(--xh-border-control-hover);
 }
@@ -26219,6 +26934,7 @@ input[data-scope='mention'][data-part='input'] {
 /* 填充式：底色顶替描边，悬停时才浮出一道淡边 */
 [data-scope='time-field'][data-part='root'][data-variant='subtle'] {
   --xh-_time-field-control-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+  --xh-_time-field-control-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
   --xh-_time-field-control-border: transparent;
   --xh-_time-field-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
@@ -26228,6 +26944,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='time-field'][data-part='root'][data-variant='ghost'] {
   --xh-_time-field-control-shadow: 0 0 0 transparent;
   --xh-_time-field-control-bg: transparent;
+  --xh-_time-field-control-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   --xh-_time-field-control-border: transparent;
   --xh-_time-field-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
@@ -26278,6 +26995,12 @@ input[data-scope='mention'][data-part='input'] {
 /* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
 [data-scope='time-field'][data-part='control']:hover:not([data-disabled], [data-invalid]) {
   border-color: var(--xh-time-field-control-border-hover, var(--xh-_time-field-control-border-hover));
+}
+
+/* 描边之外再换一档填充：只挪一格描边色的悬停在浅底上几乎读不出来。
+   只读盒的底色正说着「改不动」，不参与换填充 */
+[data-scope='time-field'][data-part='control']:hover:not([data-disabled], [data-readonly]) {
+  background: var(--xh-time-field-control-bg-hover, var(--xh-_time-field-control-bg-hover));
 }
 
 /* 焦点真正落在段上，但整块看起来才是一个控件：段内有焦点时整框亮起来。
@@ -26496,8 +27219,10 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_time-picker-label-font-size: var(--xh-control-font-md);
   --xh-_time-picker-item-px: var(--xh-control-px-md);
 
-  /* 形态档只换这四个私有槽：底色、两档描边与落影 */
+  /* 形态档只换这五个私有槽：两档底色、两档描边与落影 */
   --xh-_time-picker-control-bg: var(--xh-bg-canvas);
+  /* 悬停那一档底：描边之外再换一次填充，语气在场时兑同族的淡底 */
+  --xh-_time-picker-control-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   --xh-_time-picker-control-border: var(--xh-border-control);
   --xh-_time-picker-control-border-hover: var(--xh-border-control-hover);
   /* 一档静态落影把盒从页面里抬起一层，与描边一起画出盒的边界 */
@@ -26548,6 +27273,7 @@ input[data-scope='mention'][data-part='input'] {
    形态只决定底与描边怎么画，用哪族颜色由 data-tone 决定 */
 [data-scope='time-picker']:is([data-part='root'], [data-part='positioner'])[data-variant='outline'] {
   --xh-_time-picker-control-bg: var(--xh-bg-canvas);
+  --xh-_time-picker-control-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   --xh-_time-picker-control-border: var(--xh-border-control);
   --xh-_time-picker-control-border-hover: var(--xh-border-control-hover);
 }
@@ -26556,6 +27282,7 @@ input[data-scope='mention'][data-part='input'] {
    与 outline 档并排时基线对得上、聚焦画描边也不引起跳动 */
 [data-scope='time-picker']:is([data-part='root'], [data-part='positioner'])[data-variant='subtle'] {
   --xh-_time-picker-control-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+  --xh-_time-picker-control-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
   --xh-_time-picker-control-border: transparent;
   --xh-_time-picker-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
@@ -26565,6 +27292,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='time-picker']:is([data-part='root'], [data-part='positioner'])[data-variant='ghost'] {
   --xh-_time-picker-control-shadow: 0 0 0 transparent;
   --xh-_time-picker-control-bg: transparent;
+  --xh-_time-picker-control-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   --xh-_time-picker-control-border: transparent;
   --xh-_time-picker-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
@@ -26606,7 +27334,9 @@ input[data-scope='mention'][data-part='input'] {
   /* 等宽数字：各位字宽不一时逐段填入会让整行左右跳 */
   font-variant-numeric: tabular-nums;
   line-height: var(--xh-leading-normal);
-  transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='time-picker'][data-part='control'][hidden] {
@@ -26616,6 +27346,12 @@ input[data-scope='mention'][data-part='input'] {
 /* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
 [data-scope='time-picker'][data-part='control']:hover:not([data-disabled], [data-invalid]) {
   border-color: var(--xh-time-picker-control-border-hover, var(--xh-_time-picker-control-border-hover));
+}
+
+/* 描边之外再换一档填充：只挪一格描边色的悬停在浅底上几乎读不出来。
+   只读盒的底色正说着「改不动」，不参与换填充 */
+[data-scope='time-picker'][data-part='control']:hover:not([data-disabled], [data-readonly]) {
+  background: var(--xh-time-picker-control-bg-hover, var(--xh-_time-picker-control-bg-hover));
 }
 
 /* 焦点真正落在段或按钮上，但整块看起来才是一个控件：内部有焦点时整框亮起来。
@@ -27384,6 +28120,21 @@ input[data-scope='mention'][data-part='input'] {
   mask: var(--xh-glyph-mark-close) center / contain no-repeat;
 }
 
+/* 手指落点：叉的视觉盒是 24px，命中区外扩到 44×44（两边各 10px）。
+   外扩走绝对定位的伪元素，盒子本身一动不动——放大盒子会把整条顶高一截。
+   用 ::after：::before 已经被兜底字形占着 */
+@media (pointer: coarse) {
+  [data-scope='toast'][data-part='close-trigger'] {
+    position: relative;
+  }
+
+  [data-scope='toast'][data-part='close-trigger']::after {
+    content: '';
+    position: absolute;
+    inset: calc(-1 * var(--xh-space-2_5));
+  }
+}
+
 @media print {
   /* 打印：轻提示是瞬态的，打印那一刻恰好在场就会横在正文上，且它已经错过了被读到的时机。 */
   [data-scope='toast'][data-part='group'] {
@@ -27520,6 +28271,15 @@ input[data-scope='mention'][data-part='input'] {
    写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
 [data-scope='toggle'][data-part='root'][hidden] {
   display: none;
+}
+
+@media print {
+  /* 打印默认丢底色与投影：按下那一档只换了底（实心档另有一条内高光），落到纸上与没按下的
+     一模一样。改用描边与字重两条印得出来的通道——常态那圈边是透明的，这里把它显出来。 */
+  [data-scope='toggle'][data-part='root'][data-state='on'] {
+    border-color: currentColor;
+    font-weight: var(--xh-font-weight-semibold);
+  }
 }
 
 /* styles/toggle-group.css */
@@ -28221,6 +28981,14 @@ input[data-scope='mention'][data-part='input'] {
   margin-inline: var(--xh-toolbar-separator-inset, var(--xh-space-1));
 }
 
+@media (forced-colors: active) {
+  /* 分段之间那条线画的是一块纯底色，这一档里底色被统一换成 Canvas，线整条消失，
+     几段控件就连成了一长串。换成前景色画回来 */
+  [data-scope='toolbar'][data-part='separator'] {
+    background: CanvasText;
+  }
+}
+
 /* styles/tooltip.css */
 /* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
    动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
@@ -28809,6 +29577,18 @@ input[data-scope='mention'][data-part='input'] {
   overflow-y: auto;
 }
 
+/* 手指落点：叉的视觉盒是 28px，命中区外扩到 44×44（两边各 8px）。
+   外扩走绝对定位的伪元素，盒子本身一动不动——放大盒子会把标题挤窄。
+   用 ::after：::before 已经被兜底字形占着。
+   钮本身贴边 12px，8px 的外扩仍落在气泡的内衬里 */
+@media (pointer: coarse) {
+  [data-scope='tour'][data-part='close-trigger']::after {
+    content: '';
+    position: absolute;
+    inset: calc(-1 * var(--xh-space-2));
+  }
+}
+
 @media print {
   /* 打印：定位层与遮罩是交互期才存在的东西，落到纸上只会盖住底下的正文。
      收起写在这份皮肤里而不是 reset：reset 层排在组件层之前，组件层里任何一条 display 都压得住它。
@@ -29203,17 +29983,25 @@ input[data-scope='mention'][data-part='input'] {
   font-size: var(--xh-transfer-trigger-font-size, var(--xh-text-label-size));
   line-height: var(--xh-leading-none);
   cursor: pointer;
-  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
+/* 换底之外再抬起一层：这两颗钮是两块面板之间唯一的动作面，
+   光换一档底色与它自己的常态底只差一点，隔着两列条目看不出来 */
 [data-scope='transfer'][data-part='to-target-trigger']:hover:not(:disabled),
 [data-scope='transfer'][data-part='to-source-trigger']:hover:not(:disabled) {
   background: var(--xh-transfer-trigger-bg-hover, var(--xh-bg-subtle-hover));
+  box-shadow: var(--xh-transfer-trigger-shadow-hover, var(--xh-elevation-raised));
 }
 
+/* 按下那一刻把悬停抬起的那层影子收回去，钮才像是被按回了平面 */
 [data-scope='transfer'][data-part='to-target-trigger']:active:not(:disabled),
 [data-scope='transfer'][data-part='to-source-trigger']:active:not(:disabled) {
   background: var(--xh-transfer-trigger-bg-active, var(--xh-bg-subtle-active));
+  box-shadow: var(--xh-transfer-trigger-shadow-active, none);
   scale: var(--xh-motion-scale-press);
 }
 
@@ -29825,11 +30613,13 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_tree-select-font-size: var(--xh-control-font-md);
   --xh-_tree-select-label-font-size: var(--xh-control-font-md);
 
-  /* 形态档只换触发框的描边、底色与落影这四个槽，浮层与树不跟着变：
+  /* 形态档只换触发框的描边、两档底色与落影这五个槽，浮层与树不跟着变：
      变的是「这是个输入位」的表达方式，不是弹出内容的表达方式 */
   --xh-_tree-select-border: var(--xh-border-control);
   --xh-_tree-select-border-hover: var(--xh-border-control-hover);
   --xh-_tree-select-bg: var(--xh-bg-canvas);
+  /* 悬停那一档底：描边之外再换一次填充，语气在场时兑同族的淡底 */
+  --xh-_tree-select-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   /* 一档静态落影把触发框从页面里抬起一层，与描边一起画出框的边界 */
   --xh-_tree-select-shadow: var(--xh-elevation-raised);
 
@@ -29862,6 +30652,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_tree-select-border: var(--xh-border-control);
   --xh-_tree-select-border-hover: var(--xh-border-control-hover);
   --xh-_tree-select-bg: var(--xh-bg-canvas);
+  --xh-_tree-select-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
 }
 
 /* subtle 是填充式：底色接过「这里能点」的表达，描边随之让位 */
@@ -29869,6 +30660,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_tree-select-border: transparent;
   --xh-_tree-select-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   --xh-_tree-select-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+  --xh-_tree-select-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
 }
 
 /* 无框：底与常态描边透明，悬停浮出描边，聚焦由焦点环表达。
@@ -29878,6 +30670,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_tree-select-border: transparent;
   --xh-_tree-select-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   --xh-_tree-select-bg: transparent;
+  --xh-_tree-select-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
 }
 
 /* —— 尺寸 —— */
@@ -29930,7 +30723,9 @@ input[data-scope='mention'][data-part='input'] {
   box-shadow: var(--xh-tree-select-control-shadow, var(--xh-_tree-select-shadow));
   color: var(--xh-tree-select-control-fg, var(--xh-fg-default));
   cursor: pointer;
-  transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='tree-select'][data-part='control'][hidden] {
@@ -29940,6 +30735,12 @@ input[data-scope='mention'][data-part='input'] {
 /* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
 [data-scope='tree-select'][data-part='control']:hover:not([data-disabled], [data-invalid]) {
   border-color: var(--xh-tree-select-control-border-hover, var(--xh-_tree-select-border-hover));
+}
+
+/* 描边之外再换一档填充：只挪一格描边色的悬停在浅底上几乎读不出来。
+   只读盒的底色正说着「改不动」，不参与换填充 */
+[data-scope='tree-select'][data-part='control']:hover:not([data-disabled], [data-readonly]) {
+  background: var(--xh-tree-select-control-bg-hover, var(--xh-_tree-select-bg-hover));
 }
 
 /* Tab 停靠点是盒里的 trigger（展开后才移进树里），环画在盒上 */
@@ -30613,5 +31414,18 @@ input[data-scope='mention'][data-part='input'] {
    */
   [data-scope][data-part='positioner'] [data-scope][data-part='content'] {
     border: var(--xh-stroke-thin) solid CanvasText;
+  }
+
+  /*
+   * 正在编辑的那一段：日期与时间的分段框里，当前段常态靠反白表达，这一档里底色被统一换掉，
+   * 整行数字看上去一模一样，而这类框本来就没有光标那道线。改画一圈实边把它框出来。
+   *
+   * 这一条走三个属性而不是上面那些的两个：分段框的皮肤在同一档上写了 outline: none
+   * （常态下环画在外层的 control 上），那条规则本身就是三个属性，两个属性压不过它。
+   * data-focus 只长在日期段与时间段上，这条选到的正是它们。
+   */
+  [data-scope][data-part='segment'][data-focus] {
+    outline: var(--xh-stroke-thick) solid Highlight;
+    outline-offset: calc(-1 * var(--xh-stroke-thick));
   }
 }

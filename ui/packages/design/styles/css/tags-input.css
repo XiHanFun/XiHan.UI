@@ -22,6 +22,10 @@
     --xh-_tags-input-control-bg: var(--xh-bg-canvas);
     --xh-_tags-input-control-border: var(--xh-border-control);
     --xh-_tags-input-control-border-hover: var(--xh-border-control-hover);
+    /* 悬停时底色朝 subtle 走小半步：换一条 1px 的描边色是全场最轻的一档回执，
+       填充跟着动才看得出指针停在哪个框上。基准取本档的底，三个形态各自算各自的；
+       只走小半步是为了与只读那一档的 subtle 实底分得开 */
+    --xh-_tags-input-control-bg-hover: color-mix(in oklab, var(--xh-bg-subtle) 45%, var(--xh-_tags-input-control-bg));
     /* 一档静态落影把框从页面里抬起一层，与描边一起画出框的边界 */
     --xh-_tags-input-control-shadow: var(--xh-elevation-raised);
     /* 聚焦环与标签块的强调色随语气走。没写 data-tone 时 --xh-_tone 没被声明，退回原来的取值 */
@@ -52,6 +56,8 @@
   /* 填充式：底色圈出可输入的范围，描边让位给底色 */
   [data-scope='tags-input'][data-part='root'][data-variant='subtle'] {
     --xh-_tags-input-control-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+    /* 这一档的底本来就是 subtle，朝它兑没有位移，改走淡底自己那级悬停档 */
+    --xh-_tags-input-control-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
     --xh-_tags-input-control-border: transparent;
     --xh-_tags-input-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   }
@@ -114,16 +120,20 @@
     box-shadow: var(--xh-tags-input-control-shadow, var(--xh-_tags-input-control-shadow));
     color: var(--xh-tags-input-control-fg, var(--xh-fg-default));
     cursor: text;
-    transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='tags-input'][data-part='control'][hidden] {
     display: none;
   }
 
-  /* hover 只在中性态换描边：invalid 与 at-max 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
-  [data-scope='tags-input'][data-part='control']:hover:not([data-disabled], [data-invalid], [data-at-max]) {
+  /* hover 换描边与填充两条通道。只在中性态换：invalid 与 at-max 正拿边框颜色说事，被 hover
+     盖掉那条信息就没了；只读也排掉，它的底色本身就是"改不动"这句话 */
+  [data-scope='tags-input'][data-part='control']:hover:not([data-disabled], [data-readonly], [data-invalid], [data-at-max]) {
     border-color: var(--xh-tags-input-control-border-hover, var(--xh-_tags-input-control-border-hover));
+    background: var(--xh-tags-input-control-bg-hover, var(--xh-_tags-input-control-bg-hover));
   }
 
   /* 焦点环画在这个框上：用户眼里"被聚焦的控件"就是整个框，

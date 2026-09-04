@@ -223,6 +223,8 @@ layout 三档：vertical 竖排（默认）、horizontal 标签左置两列（la
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `error-summary` | `aria-atomic` | 'true' |
+| `error-summary` | `aria-live` | 'assertive' |
 | `error-summary` | `role` | 'alert' |
 
 ## 样式

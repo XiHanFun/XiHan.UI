@@ -47,8 +47,10 @@ export const fieldSuite: ConformanceSuite = {
             'data-disabled': null,
           },
           'error-text': {
-            role: 'alert',
-            hidden: '',
+            'role': 'status',
+            'aria-live': 'polite',
+            'aria-atomic': 'true',
+            'hidden': '',
           },
         },
       },
@@ -89,8 +91,10 @@ export const fieldSuite: ConformanceSuite = {
             'data-invalid': '',
           },
           'error-text': {
-            role: 'alert',
-            hidden: null,
+            // 排队播报不打断：一次提交失败会有多个字段同时翻转
+            'role': 'status',
+            'aria-live': 'polite',
+            'hidden': null,
           },
         },
       },

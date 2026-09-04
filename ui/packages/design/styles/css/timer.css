@@ -80,6 +80,8 @@
 
   /* —— 起停按钮 —— */
   [data-scope='timer'][data-part='control'] {
+    /* 粗指针下的命中区是钮上的绝对定位伪元素，这一层是它的定位参照系 */
+    position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -96,6 +98,7 @@
     cursor: pointer;
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
@@ -108,9 +111,17 @@
     background: var(--xh-timer-control-bg-hover, var(--xh-bg-subtle-hover));
   }
 
-  /* 换底之外再压一档：起停是 timer 唯一的动作入口，按下要有回执 */
+  /* 换底之外再抬起一层：它是一块可点的面，光换一档底色在浅色页面上读不出来。
+     禁用的那一档不抬——抬起来就是在说它还能按 */
+  [data-scope='timer'][data-part='control']:hover:not(:disabled) {
+    box-shadow: var(--xh-timer-control-shadow-hover, var(--xh-elevation-raised));
+  }
+
+  /* 换底之外再压一档：起停是 timer 唯一的动作入口，按下要有回执。
+     按下那一刻把悬停抬起的那层影子收回去，钮才像是被按回了平面 */
   [data-scope='timer'][data-part='control']:active:not(:disabled) {
     background: var(--xh-timer-control-bg-active, var(--xh-bg-subtle-active));
+    box-shadow: var(--xh-timer-control-shadow-active, none);
     scale: var(--xh-motion-scale-press);
   }
 
@@ -123,5 +134,15 @@
     border-color: var(--xh-timer-control-border-disabled, var(--xh-border-subtle));
     background: var(--xh-timer-control-bg-disabled, var(--xh-bg-muted));
     color: var(--xh-fg-disabled);
+  }
+
+  @media (pointer: coarse) {
+    /* 手指的落点比这颗钮大：命中区由伪元素向四周外扩，钮自己的盒与排版一点不动。
+       取 8px 是按最矮的 sm 档算的（28 + 8 × 2 = 44），md 与 lg 档更宽裕 */
+    [data-scope='timer'][data-part='control']::before {
+      content: '';
+      position: absolute;
+      inset: -8px;
+    }
   }
 }

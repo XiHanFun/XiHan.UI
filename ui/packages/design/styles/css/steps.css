@@ -256,4 +256,28 @@
     -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
     mask: var(--xh-glyph-mark-check) center / contain no-repeat;
   }
+
+  @media (forced-colors: active) {
+    /* 连接线画的是一块纯底色，这一档里底色被统一换成 Canvas，整条进度线消失，
+       只剩一排孤立的圆点。走过的那几截换成系统高亮色，其余换成前景色 */
+    [data-scope='steps'][data-part='separator'] {
+      background: CanvasText;
+    }
+
+    [data-scope='steps'][data-part='separator'][data-state='completed'] {
+      background: Highlight;
+    }
+  }
+
+  @media print {
+    /* 打印默认丢背景：走过那几步的实心底与里面那枚勾都印不出来，
+       当前步与走过的步只剩一模一样的一圈细描边。改用描边的粗细与字重表达同一件事 */
+    [data-scope='steps'][data-part='indicator']:is([data-state='current'], [data-state='completed']) {
+      border-width: var(--xh-stroke-thick);
+    }
+
+    [data-scope='steps'][data-part='title'][data-state='current'] {
+      font-weight: var(--xh-font-weight-semibold);
+    }
+  }
 }

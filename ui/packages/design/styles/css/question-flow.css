@@ -236,6 +236,10 @@
 
   /* 记号盒：多选是圆角方格，单选是圆。选中态填色，纯装饰不进可访问名 */
   [data-scope='question-flow'][data-part='option-indicator'] {
+    /* 盒里那枚记号跟着字号走，与其余带记号盒的控件同一把尺。
+       根上那把是展示型图标档，比指示符盒还大一档，画进这个盒里会溢出四个像素 */
+    --xh-icon-size: var(--xh-question-flow-indicator-icon-size, var(--xh-glyph-size-text));
+
     display: inline-flex;
     flex: none;
     align-items: center;
@@ -273,10 +277,11 @@
     mask: var(--xh-glyph-mark-check) center / contain no-repeat;
   }
 
-  /* 单选那一档把勾换成实心点：mask 撤掉，圆点由伪元素自己的底色画 */
+  /* 单选那一档把勾换成实心点：mask 撤掉，圆点由伪元素自己的底色画。
+     直径按记号盒的一半量，与其余单选控件的圆点同源——盒换档时点跟着换 */
   [data-scope='question-flow'][data-part='option-indicator'][data-select-mode='single']:empty::before {
-    inline-size: var(--xh-question-flow-dot-size, calc(var(--xh-icon-size, var(--xh-glyph-size-text)) * 0.5));
-    block-size: var(--xh-question-flow-dot-size, calc(var(--xh-icon-size, var(--xh-glyph-size-text)) * 0.5));
+    inline-size: var(--xh-question-flow-dot-size, calc(var(--xh-question-flow-indicator-size, var(--xh-_question-flow-indicator)) / 2));
+    block-size: var(--xh-question-flow-dot-size, calc(var(--xh-question-flow-indicator-size, var(--xh-_question-flow-indicator)) / 2));
     border-radius: var(--xh-question-flow-dot-radius, var(--xh-shape-pill));
     -webkit-mask: none;
     mask: none;
