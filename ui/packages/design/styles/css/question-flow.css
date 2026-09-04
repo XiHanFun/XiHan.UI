@@ -202,6 +202,33 @@
     outline-offset: var(--xh-ring-offset);
   }
 
+  /* 当前题的选项按位次错开开幕，换题时随 data-current 重跑。
+     backwards 不能省：等待期间起帧不生效的话，后面几条会先露一下再跳回去。
+     第 6 条起并到同一拍上 */
+  [data-scope='question-flow'][data-part='question'][data-current] [data-part='option'] {
+    animation: xh-rise-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
+  }
+
+  [data-scope='question-flow'][data-part='question'][data-current] [data-part='option']:nth-child(2) {
+    animation-delay: calc(var(--xh-motion-stagger-step) * 1);
+  }
+
+  [data-scope='question-flow'][data-part='question'][data-current] [data-part='option']:nth-child(3) {
+    animation-delay: calc(var(--xh-motion-stagger-step) * 2);
+  }
+
+  [data-scope='question-flow'][data-part='question'][data-current] [data-part='option']:nth-child(4) {
+    animation-delay: calc(var(--xh-motion-stagger-step) * 3);
+  }
+
+  [data-scope='question-flow'][data-part='question'][data-current] [data-part='option']:nth-child(5) {
+    animation-delay: calc(var(--xh-motion-stagger-step) * 4);
+  }
+
+  [data-scope='question-flow'][data-part='question'][data-current] [data-part='option']:nth-child(n + 6) {
+    animation-delay: calc(var(--xh-motion-stagger-step) * 5);
+  }
+
   /* 选中的那条读起来更重一档 */
   [data-scope='question-flow'][data-part='option'][data-state='checked'] {
     color: var(--xh-question-flow-option-fg-checked, var(--xh-fg-default));
@@ -428,9 +455,11 @@
     line-height: var(--xh-leading-none);
     white-space: nowrap;
     cursor: pointer;
+    /* box-shadow 在列里是给提交键的：它按不动时内顶高光整个撤掉，不接过渡就是硬切 */
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
@@ -533,6 +562,18 @@
     from {
       opacity: 0;
       translate: 0 var(--xh-motion-distance-md);
+    }
+
+    to {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+
+  @keyframes xh-rise-in {
+    from {
+      opacity: 0;
+      translate: 0 var(--xh-motion-distance-sm);
     }
 
     to {

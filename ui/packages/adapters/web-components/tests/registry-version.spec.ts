@@ -14,7 +14,7 @@ const pkg = JSON.parse(
 defineXhElements()
 
 function registry(): Map<string, RegistryEntry> {
-  return (globalThis as unknown as Record<string, Map<string, RegistryEntry>>).__XIHAN_UI_WC__
+  return (globalThis as unknown as Record<string, Map<string, RegistryEntry>>).__XIHAN_UI_WC__!
 }
 
 describe('元素注册版本', () => {

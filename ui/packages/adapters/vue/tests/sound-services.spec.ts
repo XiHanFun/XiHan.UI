@@ -2,6 +2,8 @@
 // 判据按「配了声音的服务与原服务行为完全一致」写：视觉照旧、返回值照旧，
 // 只是多出一声；禁用与未装声音包的路径都不许把调用点炸掉。
 import type { SoundPlayer, SoundSpec } from '@xihan-ui/sound'
+import type { ObjectDirective } from 'vue'
+import type { SoundDirectiveValue } from '../src/sound'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { nextTick } from 'vue'
 import { createDialogService, createToastService } from '../src'
@@ -151,10 +153,12 @@ describe('withDialogSound', () => {
 })
 
 describe('v-sound', () => {
+  const dir = vSound as ObjectDirective<HTMLElement, SoundDirectiveValue>
+
   function mount(value: unknown): HTMLButtonElement {
     const el = document.createElement('button')
     document.body.appendChild(el)
-    vSound.mounted!(el, { value, oldValue: null, arg: undefined, modifiers: {}, instance: null, dir: vSound } as never, null as never, null as never)
+    dir.mounted!(el, { value, oldValue: null, arg: undefined, modifiers: {}, instance: null, dir } as never, null as never, null as never)
     return el
   }
 
@@ -184,7 +188,7 @@ describe('v-sound', () => {
     const player = recorder()
     setSoundPlayer(player)
     const el = mount('click')
-    vSound.unmounted!(el, {} as never, null as never, null as never)
+    dir.unmounted!(el, {} as never, null as never, null as never)
     el.click()
     expect(player.played).toEqual([])
   })

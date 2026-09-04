@@ -124,7 +124,7 @@ describe('排序 · 指针拖动', () => {
     s.service.send({ type: 'POINTER.MOVE', point: at(300) })
     s.service.send({ type: 'POINTER.END' })
     expect(onSort).toHaveBeenCalledTimes(1)
-    expect(onSort.mock.calls[0][0]).toEqual({ from: 0, to: 2, id: 'a', ids: ['b', 'c', 'a'] })
+    expect(onSort.mock.calls[0]![0]).toEqual({ from: 0, to: 2, id: 'a', ids: ['b', 'c', 'a'] })
     expect(s.state()).toBe('idle')
   })
 
@@ -145,7 +145,7 @@ describe('排序 · 指针拖动', () => {
     s.service.send({ type: 'POINTER.MOVE', point: at(300) })
     s.service.send({ type: 'POINTER.CANCEL' })
     expect(onSort).not.toHaveBeenCalled()
-    expect(onDragEnd.mock.calls[0][0]).toMatchObject({ canceled: true, from: 0, to: 0 })
+    expect(onDragEnd.mock.calls[0]![0]).toMatchObject({ canceled: true, from: 0, to: 0 })
     expect(s.state()).toBe('idle')
   })
 
@@ -222,7 +222,7 @@ describe('排序 · 键盘拖动', () => {
     s.service.send({ type: 'ITEM.PICKUP', id: 'a' })
     s.service.send({ type: 'KEY.MOVE', step: 1 })
     s.service.send({ type: 'KEY.DROP' })
-    expect(onSort.mock.calls[0][0]).toEqual({ from: 0, to: 1, id: 'a', ids: ['b', 'a', 'c'] })
+    expect(onSort.mock.calls[0]![0]).toEqual({ from: 0, to: 1, id: 'a', ids: ['b', 'a', 'c'] })
   })
 
   it('按 Escape 取消：顺序不动，落点退回起点', () => {
@@ -233,7 +233,7 @@ describe('排序 · 键盘拖动', () => {
     s.service.send({ type: 'KEY.MOVE', step: 2 })
     s.service.send({ type: 'KEY.CANCEL' })
     expect(onSort).not.toHaveBeenCalled()
-    expect(onDragEnd.mock.calls[0][0]).toMatchObject({ canceled: true, from: 0, to: 0 })
+    expect(onDragEnd.mock.calls[0]![0]).toMatchObject({ canceled: true, from: 0, to: 0 })
   })
 })
 

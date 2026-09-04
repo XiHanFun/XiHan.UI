@@ -153,7 +153,7 @@ describe('combobox 的 collection', () => {
   it('选中项不在候选里时不替它造文本', async () => {
     // 过滤归宿主：collection 只是此刻该显示的那几条，选中项可能不在其中
     const w = mount(defineComponent({
-      setup: () => () => h(XhComboboxRoot, { value: ['banana'], collection: [COLLECTION[0]] }),
+      setup: () => () => h(XhComboboxRoot, { value: ['banana'], collection: [COLLECTION[0]!] }),
     }), { attachTo: document.body })
     await nextTick()
     expect(inputValue(w.element)).toBe('')

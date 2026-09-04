@@ -49,7 +49,7 @@ describe('落到浮层上', () => {
 
   it('引擎给出坐标后带上', () => {
     const { service, api } = menu(true)
-    service.context.set('position', { x: 12, y: 34, placement: 'bottom-start' })
+    service.context.set('position', { x: 12, y: 34, placement: 'bottom-start', hidden: false })
     const positioner = api().getPositionerProps() as Record<string, unknown>
     expect(positioner['data-positioned']).toBe('')
     expect(positioner['data-hidden']).toBeUndefined()
@@ -65,7 +65,7 @@ describe('落到浮层上', () => {
 
   it('重开先清账：上次的坐标不作数，再次落位前藏着', () => {
     const { service, api } = menu(true)
-    service.context.set('position', { x: 12, y: 34, placement: 'bottom-start' })
+    service.context.set('position', { x: 12, y: 34, placement: 'bottom-start', hidden: false })
     service.send({ type: 'CLOSE' })
     // 收起中坐标还留着——退场要用
     expect((api().getPositionerProps() as Record<string, unknown>)['data-positioned']).toBe('')

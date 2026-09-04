@@ -1,3 +1,21 @@
+@layer xihan.motion {
+  /* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
+     动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
+
+  /* 幅度走令牌，减弱动效时由令牌层归零；位移用独立属性而非 transform 简写 */
+  @keyframes xh-rise-in {
+    from {
+      opacity: 0;
+      translate: 0 var(--xh-motion-distance-sm);
+    }
+
+    to {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+}
+
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
   [data-scope='empty-state'] {
@@ -80,6 +98,27 @@
     align-items: center;
     justify-content: center;
     gap: var(--xh-empty-state-action-gap, var(--xh-space-2));
+  }
+
+  /* 图标、标题、说明、动作按次序开幕，间隔由交错步长派生。
+     backwards 不能省：等待期间起帧不生效的话，后三段会先露一下再跳回去 */
+  [data-scope='empty-state'][data-part='icon'],
+  [data-scope='empty-state'][data-part='title'],
+  [data-scope='empty-state'][data-part='description'],
+  [data-scope='empty-state'][data-part='action'] {
+    animation: xh-rise-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
+  }
+
+  [data-scope='empty-state'][data-part='title'] {
+    animation-delay: calc(var(--xh-motion-stagger-step) * 1);
+  }
+
+  [data-scope='empty-state'][data-part='description'] {
+    animation-delay: calc(var(--xh-motion-stagger-step) * 2);
+  }
+
+  [data-scope='empty-state'][data-part='action'] {
+    animation-delay: calc(var(--xh-motion-stagger-step) * 3);
   }
 
   /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。

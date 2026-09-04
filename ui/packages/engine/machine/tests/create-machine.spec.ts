@@ -55,7 +55,7 @@ describe('createMachine', () => {
       name: 'bad-initial',
       initialState: () => 'off',
       states: {
-        // @ts-expect-error 故意的非法 initial
+        // 故意写一个不在 states 里的 initial
         off: { initial: 'nope', states: { a: {} } },
         on: {},
       },

@@ -20,7 +20,7 @@
 
     to {
       opacity: 0;
-      scale: var(--xh-motion-scale-enter);
+      scale: var(--xh-motion-scale-exit);
     }
   }
 }
@@ -204,7 +204,9 @@
     inset-inline-start: calc(100% + var(--xh-navigation-menu-content-offset, var(--xh-space-1)));
   }
 
+  /* 在场那一档才提前备好合成层：属性随 data-state 一起消失，收起后不长期占着 */
   [data-scope='navigation-menu'][data-part='content'][data-state='open'] {
+    will-change: opacity, scale;
     animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 

@@ -26,7 +26,7 @@ font-weight: 400
 color: rgb(0, 0, 0)
 background-color: oklch(0.546 0.216 258)
 transition-property: inline-size
-transition-duration: 0.12s
+transition-duration: 0.2s
 transition-timing-function: cubic-bezier(0.2, 0, 0, 1)
 animation-name: none
 animation-duration: 0s

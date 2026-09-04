@@ -96,9 +96,11 @@
     white-space: nowrap;
     cursor: pointer;
     user-select: none;
+    /* box-shadow 一并接过渡：换父落点那圈内描边挂在行自己身上，跟着 data-drop 在行间移动 */
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 分支行的首格是展开箭头，叶子行没有这一格。作者摆了 item-indicator 时由它顶着，

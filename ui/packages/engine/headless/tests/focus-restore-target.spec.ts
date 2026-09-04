@@ -150,7 +150,7 @@ function imageViewerHarness(): Harness {
   const config = createRuntimeConfig()
   const runtime = createVanillaRuntime()
   const service = createService(imageViewerMachine, {
-    props: () => ({ images: [{ src: 'a.png' }, { src: 'b.png' }] }),
+    props: () => ({ items: [{ src: 'a.png' }, { src: 'b.png' }] }),
     runtime,
   })
   service.refs.set('config', config)

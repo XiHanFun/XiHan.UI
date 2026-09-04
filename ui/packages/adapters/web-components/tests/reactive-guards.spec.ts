@@ -61,7 +61,9 @@ describe('原型上已有同名成员', () => {
 
   it('子类重新声明父类已声明的同名字段不算冲突', () => {
     class Parent extends XhReactiveElement {
-      static override properties = { shared: { attribute: 'shared', type: String } }
+      static override properties: Record<string, PropertyDeclaration> = {
+        shared: { attribute: 'shared', type: String },
+      }
     }
     class Child extends Parent {
       static override properties = { shared: { attribute: 'shared-num', type: Number } }
@@ -108,7 +110,7 @@ describe('声明键', () => {
 describe('createProperty 在未定稿的子类上被调用', () => {
   it('不写进父类的 elementProperties，也不泄漏给兄弟子类', () => {
     class Base extends XhReactiveElement {
-      static override properties = { p: { type: String } }
+      static override properties: Record<string, PropertyDeclaration> = { p: { type: String } }
     }
     customElements.define('x-guard-base', Base)
 

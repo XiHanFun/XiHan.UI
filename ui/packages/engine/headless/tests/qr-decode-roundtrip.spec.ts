@@ -118,10 +118,10 @@ function gfPow(power: number): number {
 function rsGenerator(degree: number): number[] {
   let poly = [1]
   for (let i = 0; i < degree; i++) {
-    const next = Array.from({ length: poly.length + 1 }).fill(0)
+    const next = Array.from<number>({ length: poly.length + 1 }).fill(0)
     for (let j = 0; j < poly.length; j++) {
-      next[j] ^= poly[j]!
-      next[j + 1] ^= gfMul(poly[j]!, gfPow(i))
+      next[j]! ^= poly[j]!
+      next[j + 1]! ^= gfMul(poly[j]!, gfPow(i))
     }
     poly = next
   }
@@ -131,12 +131,12 @@ function rsGenerator(degree: number): number[] {
 /** 数据码字的纠错码字：多项式长除的余式。 */
 function rsEncode(data: readonly number[], degree: number): number[] {
   const gen = rsGenerator(degree)
-  const rem = Array.from({ length: degree }).fill(0)
+  const rem = Array.from<number>({ length: degree }).fill(0)
   for (const byte of data) {
     const factor = byte ^ rem.shift()!
     rem.push(0)
     for (let i = 0; i < degree; i++)
-      rem[i] ^= gfMul(gen[i + 1]!, factor)
+      rem[i]! ^= gfMul(gen[i + 1]!, factor)
   }
   return rem
 }

@@ -1,0 +1,240 @@
+{
+  "exempt": {
+    "color-picker:hidden-input": "原生 input 被压成 1px 藏在控件里承接表单提交与读屏，指针落在可见的取色触发钮上，不落在它身上",
+    "date-field:hidden-input": "原生 input 被压成 1px 藏在控件里承接表单提交与读屏，指针落在可见的日期段上，不落在它身上",
+    "file-upload:hidden-input": "原生 file input 被压成 1px 藏在控件里承接选文件，指针落在可见的触发钮与投放区上，不落在它身上",
+    "pin-input:hidden-input": "原生 input 被压成 1px 藏在控件里承接表单提交，指针落在可见的格子上，不落在它身上",
+    "time-field:hidden-input": "原生 input 被压成 1px 藏在控件里承接表单提交与读屏，指针落在可见的时间段上，不落在它身上",
+    "time-picker:hidden-input": "原生 input 被压成 1px 藏在控件里承接表单提交与读屏，指针落在可见的触发钮上，不落在它身上"
+  },
+  "inlineMark": {
+    "select:item-delete-trigger": "回显区里每枚标签自带的移除钮，随文排在标签文字旁，尺寸随指示符档不随控件行高",
+    "tag:close-trigger": "标签是随文排的标记，那颗叉排在标签文字旁，尺寸随指示符档不随控件行高",
+    "tags-input:item-delete-trigger": "输入框里每枚标签自带的移除钮，随文排在标签文字旁，尺寸随指示符档不随控件行高"
+  },
+  "backlog": {
+    "carousel:indicator": {
+      "px": 8,
+      "why": "圆点直径取间距档 8px，一排圆点之间只隔一个间距位，外扩到 24px 会让相邻圆点的命中区叠在一起"
+    },
+    "checkbox:root": {
+      "px": 16,
+      "why": "方框边长取指示符档 16px，命中区没做外扩；扩大要走伪元素，眼下皮肤里一处都没有"
+    },
+    "color-picker:area-thumb": {
+      "px": 14,
+      "why": "取色面上的拇指 14px，命中区就是拇指本身；外扩会盖住它下面正在取的那块色域"
+    },
+    "color-picker:channel-slider-thumb": {
+      "px": 14,
+      "why": "通道轨道上的拇指 14px，命中区就是拇指本身；外扩会盖住轨道的渐变"
+    },
+    "color-picker:swatch-item": {
+      "px": 20,
+      "why": "色板格子 20px 铺成网格，格与格之间只隔一个间距位，外扩到 24px 会让相邻格子的命中区叠在一起"
+    },
+    "floating-panel:resize-trigger": {
+      "px": 8,
+      "why": "缩放把手贴着面板四边与四角，8px 是边条厚度；外扩会伸进面板内容区，压住里面的按钮"
+    },
+    "heatmap:cell": {
+      "px": 10,
+      "why": "热力格 10px 密排成矩阵，格与格相邻无间距，外扩到 24px 会让相邻格子的命中区叠在一起"
+    },
+    "image-cropper:crop-handle": {
+      "px": 16,
+      "why": "裁剪框四角的把手 16px，命中区就是把手本身；外扩会伸进裁剪区，压住拖动裁剪框本体的那块面"
+    },
+    "resizable:handle": {
+      "px": 8,
+      "why": "分栏把手是 8px 厚的竖条，外扩会伸进两侧面板，压住面板里的内容"
+    },
+    "slider:thumb": {
+      "px": 18,
+      "why": "滑块拇指 18px，命中区就是拇指本身；外扩会盖住轨道上的刻度点"
+    },
+    "splitter:resize-trigger": {
+      "px": 4,
+      "why": "分隔条只有 4px 厚，外扩会伸进两侧面板，压住面板里的内容"
+    },
+    "switch:root": {
+      "px": 22,
+      "why": "开关轨道高 22px（宽向够），命中区没做外扩；扩大要走伪元素，眼下皮肤里一处都没有"
+    },
+    "table:column-drag-trigger": {
+      "px": 16,
+      "why": "列头里的拖拽把手 16px，与排序把手、筛选钮并排挤在一格列头里，外扩会与它们的命中区叠上"
+    },
+    "table:column-resize-trigger": {
+      "px": 8,
+      "why": "列宽把手是骑在列边界上的 8px 竖条，外扩会伸进相邻两列的列头，压住排序与筛选"
+    },
+    "table:expand-trigger": {
+      "px": 16,
+      "why": "展开把手 16px 排在单元格首列，与勾选框并排，外扩会与勾选框的命中区叠上"
+    },
+    "table:row-drag-trigger": {
+      "px": 16,
+      "why": "行拖拽把手 16px 排在单元格首列，与勾选框、展开把手并排，外扩会与它们的命中区叠上"
+    },
+    "table:row-select-trigger": {
+      "px": 16,
+      "why": "行勾选框取指示符档 16px，排在行高 32px 的单元格里，外扩到 24px 会顶到上下相邻行"
+    },
+    "table:select-all-trigger": {
+      "px": 16,
+      "why": "全选框取指示符档 16px，排在列头里，外扩到 24px 会顶到列头的排序与筛选"
+    },
+    "tabs:tab-drag-trigger": {
+      "px": 16,
+      "why": "页签里的拖拽把手 16px，与页签文字、关闭钮同排在一枚页签内，外扩会与它们的命中区叠上"
+    },
+    "tree-select:branch-trigger": {
+      "px": 16,
+      "why": "分支展开箭头取指示符档 16px，排在树行首，与勾选框并排，外扩会与勾选框的命中区叠上"
+    },
+    "tree:branch-checkbox": {
+      "px": 16,
+      "why": "分支行的勾选框取指示符档 16px，与展开箭头并排在行首，外扩会与箭头的命中区叠上"
+    },
+    "tree:branch-trigger": {
+      "px": 16,
+      "why": "分支展开箭头取指示符档 16px，排在树行首，与勾选框并排，外扩会与勾选框的命中区叠上"
+    },
+    "tree:item-checkbox": {
+      "px": 16,
+      "why": "叶子行的勾选框取指示符档 16px，与缩进位并排在行首，外扩到 24px 会顶到上下相邻行"
+    },
+    "tree:node-drag-trigger": {
+      "px": 16,
+      "why": "树节点的拖拽把手 16px，与勾选框、展开箭头并排在行首，外扩会与它们的命中区叠上"
+    }
+  },
+  "coarseTargets": {
+    "alert:close-trigger": {
+      "px": 28,
+      "why": "提示条右上角的叉，手指直接落上去",
+      "pending": "皮肤里没有粗指针块，触屏下命中区仍是 28px 的视觉盒"
+    },
+    "back-top:trigger": {
+      "px": 32,
+      "why": "浮在页面角上的回顶钮，手指直接落上去",
+      "pending": "皮肤里没有粗指针块，触屏下命中区仍是 32px 的视觉盒"
+    },
+    "button:root": {
+      "px": 28,
+      "why": "按钮本体，手指直接落上去；28px 是 sm 档，md 与 lg 档更高",
+      "pending": "皮肤里没有粗指针块，触屏下命中区仍是控件行高本身"
+    },
+    "carousel:indicator": {
+      "px": 8,
+      "why": "走马灯底部的圆点，手指直接落上去翻页",
+      "pending": "皮肤里没有粗指针块，触屏下命中区仍是 8px 的圆点本身"
+    },
+    "carousel:next-trigger": {
+      "px": 32,
+      "why": "走马灯的翻页钮，手指直接落上去",
+      "pending": "皮肤里没有粗指针块，触屏下命中区仍是 32px 的视觉盒"
+    },
+    "carousel:prev-trigger": {
+      "px": 32,
+      "why": "走马灯的翻页钮，手指直接落上去",
+      "pending": "皮肤里没有粗指针块，触屏下命中区仍是 32px 的视觉盒"
+    },
+    "checkbox:root": {
+      "px": 16,
+      "why": "勾选框本体，手指直接落上去",
+      "pending": "皮肤里没有粗指针块，触屏下命中区仍是 16px 的方框本身"
+    },
+    "clipboard:trigger": {
+      "px": 32,
+      "why": "复制钮，手指直接落上去",
+      "pending": "皮肤里没有粗指针块，触屏下命中区仍是 32px 的视觉盒"
+    },
+    "dialog:close-trigger": {
+      "px": 28,
+      "why": "对话框右上角的叉，手指直接落上去",
+      "pending": "皮肤里没有粗指针块，触屏下命中区仍是 28px 的视觉盒"
+    },
+    "download-trigger:root": {
+      "px": 32,
+      "why": "下载钮本体，手指直接落上去",
+      "pending": "皮肤里没有粗指针块，触屏下命中区仍是 32px 的视觉盒"
+    },
+    "drawer:close-trigger": {
+      "px": 28,
+      "why": "抽屉右上角的叉，手指直接落上去",
+      "pending": "皮肤里没有粗指针块，触屏下命中区仍是 28px 的视觉盒"
+    },
+    "float-button:trigger": {
+      "px": 40,
+      "why": "浮在页面角上的动作钮，手指直接落上去",
+      "pending": "皮肤里没有粗指针块，触屏下命中区仍是 40px 的视觉盒"
+    },
+    "notification:item-close-trigger": {
+      "px": 28,
+      "why": "通知卡片右上角的叉，手指直接落上去",
+      "pending": "皮肤里没有粗指针块，触屏下命中区仍是 28px 的视觉盒"
+    },
+    "pagination:item": {
+      "px": 32,
+      "why": "页码格，手指直接落上去",
+      "pending": "皮肤里没有粗指针块，触屏下命中区仍是 32px 的视觉盒"
+    },
+    "pagination:next-trigger": {
+      "px": 32,
+      "why": "翻页钮，手指直接落上去",
+      "pending": "皮肤里没有粗指针块，触屏下命中区仍是 32px 的视觉盒"
+    },
+    "pagination:prev-trigger": {
+      "px": 32,
+      "why": "翻页钮，手指直接落上去",
+      "pending": "皮肤里没有粗指针块，触屏下命中区仍是 32px 的视觉盒"
+    },
+    "popover:close-trigger": {
+      "px": 28,
+      "why": "浮层右上角的叉，手指直接落上去",
+      "pending": "皮肤里没有粗指针块，触屏下命中区仍是 28px 的视觉盒"
+    },
+    "segmented:item": {
+      "px": 32,
+      "why": "分段控件的每一段，手指直接落上去",
+      "pending": "皮肤里没有粗指针块，触屏下命中区仍是 32px 的段高"
+    },
+    "switch:root": {
+      "px": 22,
+      "why": "开关本体，手指直接落上去",
+      "pending": "皮肤里没有粗指针块，触屏下命中区仍是 22px 高的轨道本身"
+    },
+    "tabs:trigger": {
+      "px": 32,
+      "why": "页签，手指直接落上去",
+      "pending": "皮肤里没有粗指针块，触屏下命中区仍是 32px 的页签高"
+    },
+    "timer:control": {
+      "px": 32,
+      "why": "计时器的起停钮，手指直接落上去",
+      "pending": "皮肤里没有粗指针块，触屏下命中区仍是 32px 的视觉盒"
+    },
+    "toast:close-trigger": {
+      "px": 24,
+      "why": "轻提示行尾的叉，手指直接落上去",
+      "pending": "皮肤里没有粗指针块，触屏下命中区仍是 24px 的视觉盒"
+    },
+    "toggle-group:item": {
+      "px": 32,
+      "why": "切换组的每一格，手指直接落上去",
+      "pending": "皮肤里没有粗指针块，触屏下命中区仍是 32px 的格高"
+    },
+    "toggle:root": {
+      "px": 28,
+      "why": "切换钮本体，手指直接落上去",
+      "pending": "皮肤里没有粗指针块，触屏下命中区仍是 28px 的控件行高"
+    },
+    "tour:close-trigger": {
+      "px": 28,
+      "why": "漫游卡片右上角的叉，手指直接落上去",
+      "pending": "皮肤里没有粗指针块，触屏下命中区仍是 28px 的视觉盒"
+    }
+  }
+}

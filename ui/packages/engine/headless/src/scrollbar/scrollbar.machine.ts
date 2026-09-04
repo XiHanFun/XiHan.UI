@@ -383,7 +383,7 @@ export const scrollbarMachine = createMachine({
 
         const attach = (scrollable: HTMLElement): (() => void) => {
           const win = scope.getWin()
-          let idle: ReturnType<typeof setTimeout> | undefined
+          let idle: ReturnType<Window['setTimeout']> | undefined
           const onScroll = (): void => {
             send({ type: 'SCROLL' })
             if (idle !== undefined)

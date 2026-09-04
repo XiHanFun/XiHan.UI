@@ -187,7 +187,7 @@ describe('wc popover 退场', () => {
     await settle()
 
     expect(content.style.display).not.toBe('none')
-    expect(getComputedStyle(content).animationName).toBe('xh-pop-in')
+    expect(getComputedStyle(content).animationName).toBe('xh-overlay-pop-in')
   })
 })
 

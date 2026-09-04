@@ -152,7 +152,9 @@
     color: var(--xh-accordion-content-fg, var(--xh-fg-default));
   }
 
+  /* 展开那一档才提前备好行高这条通道：属性随 data-state 一起消失，收起后不长期占着 */
   [data-scope='accordion'][data-part='content'][data-state='open'] {
+    will-change: grid-template-rows;
     animation: xh-accordion-expand var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 

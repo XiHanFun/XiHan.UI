@@ -142,6 +142,7 @@
     color: var(--xh-typography-link-fg, var(--xh-fg-brand));
     text-decoration: underline;
     text-underline-offset: var(--xh-typography-link-underline-offset, var(--xh-space-0_5));
+    transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 悬停只在能用指针的设备上生效，触摸端不留一个按不掉的悬停态 */

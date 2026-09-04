@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import type { RuntimeConfig } from '@xihan-ui/kernel'
 import type { VanillaRuntime } from '@xihan-ui/machine/vanilla'
-import type { DatePickerApi, DatePickerSchema, DatePickerServices } from '../src/date-picker'
+import type { DatePickerApi, DatePickerSchema, DatePickerServices, DatePickerTimeUnit } from '../src/date-picker'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, normalizeProps } from '@xihan-ui/kernel'
 import { createService } from '@xihan-ui/machine'
 import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
@@ -90,7 +90,7 @@ interface Harness {
   segmentsEnd: () => HTMLElement[]
   /** 段位的可见文字，文档序。 */
   /** 某一列的容器与逐格节点；没开 showTime 时列仍在但带 hidden。 */
-  timeColumn: (unit: string) => { col: HTMLElement, items: Map<string, HTMLElement> }
+  timeColumn: (unit: DatePickerTimeUnit) => { col: HTMLElement, items: Map<string, HTMLElement> }
   segmentTexts: () => string[]
   /** 终点那组段位的可见文字，文档序。 */
   segmentEndTexts: () => string[]
@@ -209,7 +209,7 @@ function mount(initial: Partial<Props> = {}): Harness {
   rootService.refs.set('getContentEl', () => content)
   calendarService.refs.set('getGridEl', () => grid)
 
-  const timeEls = new Map<string, { col: HTMLElement, items: Map<string, HTMLElement> }>()
+  const timeEls = new Map<DatePickerTimeUnit, { col: HTMLElement, items: Map<string, HTMLElement> }>()
   let timePainted = ''
   const triggers = new Map<string, HTMLElement>()
   const cells = new Map<string, HTMLElement>()
@@ -352,7 +352,7 @@ function mount(initial: Partial<Props> = {}): Harness {
       props.set({ ...props.get(), ...next2 })
       render()
     },
-    timeColumn: (unit: string) => {
+    timeColumn: (unit: DatePickerTimeUnit) => {
       const found = timeEls.get(unit)
       if (!found)
         throw new Error(`没有 ${unit} 这一列（此刻 timeColumns 是 ${[...timeEls.keys()].join()}）`)

@@ -35,7 +35,7 @@ describe('colorPickerHexToRgba', () => {
 
   it('四位与八位带透明度', () => {
     expect(colorPickerHexToRgba('#0000')).toEqual({ r: 0, g: 0, b: 0, a: 0 })
-    expect(colorPickerHexToRgba('#3b82f680').a).toBeCloseTo(128 / 255, 5)
+    expect(colorPickerHexToRgba('#3b82f680')!.a).toBeCloseTo(128 / 255, 5)
   })
 
   it('位数不对（用户打了一半）一律 null，不猜颜色', () => {

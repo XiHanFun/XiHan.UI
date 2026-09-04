@@ -89,7 +89,7 @@ describe('字段标签要念到真控件上', () => {
 
   it('字段标签的 id 查得回真节点，不是又一条悬空引用', async () => {
     await mount(selectInField)
-    const first = part('select', 'trigger').getAttribute('aria-labelledby')!.split(' ')[0]
+    const first = part('select', 'trigger').getAttribute('aria-labelledby')!.split(' ')[0]!
 
     expect(host!.ownerDocument.getElementById(first)).toBe(part('field', 'label'))
   })

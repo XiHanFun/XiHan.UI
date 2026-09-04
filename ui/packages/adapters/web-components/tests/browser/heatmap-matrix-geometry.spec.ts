@@ -90,7 +90,8 @@ describe('矩阵格子的几何', () => {
   })
 
   it('列名与它那一列的格子同宽，调宽之后仍然同宽', () => {
-    for (const vars of [{}, { '--xh-heatmap-column-w': '80px' }]) {
+    const cases: Record<string, string>[] = [{}, { '--xh-heatmap-column-w': '80px' }]
+    for (const vars of cases) {
       const cell = probe(null, vars)
       expect(Math.abs(cell.labelInline - cell.inline)).toBeLessThan(1)
     }

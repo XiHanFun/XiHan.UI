@@ -347,10 +347,10 @@ describe('其余映射', () => {
   it('message-metadata 落在 message 上而不是 parts 里', () => {
     const state = reduceEvent(createReduceState('m1'), {
       kind: 'message-metadata',
-      metadata: { totalTokens: 12 },
+      metadata: { usage: { totalTokens: 12 } },
       receivedTime: T,
     })
-    expect(state.message.metadata).toEqual({ totalTokens: 12 })
+    expect(state.message.metadata).toEqual({ usage: { totalTokens: 12 } })
     expect(state.message.parts).toEqual([])
   })
 })

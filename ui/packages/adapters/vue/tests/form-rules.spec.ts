@@ -130,7 +130,7 @@ describe('form 声明式规则', () => {
       defaultValues: { user: 'taken' },
       rules: {
         user: {
-          validator: async (value) => {
+          validator: async (value: unknown) => {
             await new Promise(r => setTimeout(r, 20))
             return value === 'taken' ? '已被占用' : undefined
           },

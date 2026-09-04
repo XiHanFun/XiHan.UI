@@ -46,8 +46,8 @@ afterEach(() => {
   host = null
 })
 
-/** 挂一张开着斑马纹的表，返回表体里那四个数据行。 */
-async function mountStriped(): Promise<HTMLElement[]> {
+/** 挂一张开着斑马纹的表，返回表体里的头两个数据行：奇数行与偶数行各一。 */
+async function mountStriped(): Promise<[HTMLElement, HTMLElement]> {
   host = document.createElement('div')
   for (const [name, value] of PALETTE)
     host.style.setProperty(name, value)
@@ -68,7 +68,8 @@ async function mountStriped(): Promise<HTMLElement[]> {
   app.mount(host)
   await nextTick()
   const body = host.querySelector('[data-scope="table"][data-part="body"]')!
-  return [...body.querySelectorAll<HTMLElement>('[data-scope="table"][data-part="row"]')]
+  const found = [...body.querySelectorAll<HTMLElement>('[data-scope="table"][data-part="row"]')]
+  return [found[0]!, found[1]!]
 }
 
 const bg = (el: HTMLElement): string => getComputedStyle(el).backgroundColor

@@ -28,6 +28,8 @@
     font-size: var(--xh-fieldset-legend-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-fieldset-legend-font-weight, var(--xh-text-label-weight));
     line-height: var(--xh-leading-tight);
+    /* 整组转无效或转禁用时组标题换色，两档之间接一段过渡 */
+    transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 整组无效时组标题转警示色：没渲染错误文案的字段集上，这是屏幕上唯一变化的东西 */
@@ -53,6 +55,8 @@
     color: var(--xh-fieldset-helper-fg, var(--xh-fg-muted));
     font-size: var(--xh-fieldset-helper-font-size, var(--xh-text-secondary-size));
     line-height: var(--xh-leading-normal);
+    /* 与组标题同一档过渡：整组转禁用时两处一起变淡 */
+    transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='fieldset'][data-part='description'][data-disabled] {

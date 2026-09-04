@@ -410,6 +410,8 @@
   /* 等宽数字：逐位宽度一致，秒数换位时冒号不会左右挪动 */
   font-variant-numeric: tabular-nums;
   line-height: var(--xh-leading-tight);
+  /* 走到点那一刻前景退一档，这里让它淡过去而不是硬跳 */
+  transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 /* 上面声明了 display，会盖掉 UA 的 [hidden] 规则，收起态要在这里接回来 */
@@ -1465,6 +1467,8 @@
   font-size: var(--xh-fieldset-legend-font-size, var(--xh-text-label-size));
   font-weight: var(--xh-fieldset-legend-font-weight, var(--xh-text-label-weight));
   line-height: var(--xh-leading-tight);
+  /* 整组转无效或转禁用时组标题换色，两档之间接一段过渡 */
+  transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 /* 整组无效时组标题转警示色：没渲染错误文案的字段集上，这是屏幕上唯一变化的东西 */
@@ -1490,6 +1494,8 @@
   color: var(--xh-fieldset-helper-fg, var(--xh-fg-muted));
   font-size: var(--xh-fieldset-helper-font-size, var(--xh-text-secondary-size));
   line-height: var(--xh-leading-normal);
+  /* 与组标题同一档过渡：整组转禁用时两处一起变淡 */
+  transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='fieldset'][data-part='description'][data-disabled] {
@@ -1611,6 +1617,20 @@
 }
 
 /* styles/float-button.css */
+/* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
+   动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
+@keyframes xh-pop-in {
+  from {
+    opacity: 0;
+    scale: var(--xh-motion-scale-enter);
+  }
+
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='float-button'] {
   --xh-float-button-skin: 1;
@@ -1743,6 +1763,30 @@
   inline-size: var(--xh-_float-button-size);
   block-size: var(--xh-_float-button-size);
   border-radius: var(--xh-_float-button-radius);
+  /* 逐条依次冒出来，离触发器最近的那条先到。backwards 让每条在自己那份延迟里保持起始帧 */
+  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
+}
+
+/* 交错的间隔：第二条起逐级往后推，第六条起统一钉在第五级，
+   动作再多也不会拖出一条越来越慢的尾巴 */
+[data-scope='float-button'][data-part='list'] > *:nth-child(2) {
+  animation-delay: var(--xh-motion-stagger-step);
+}
+
+[data-scope='float-button'][data-part='list'] > *:nth-child(3) {
+  animation-delay: calc(2 * var(--xh-motion-stagger-step));
+}
+
+[data-scope='float-button'][data-part='list'] > *:nth-child(4) {
+  animation-delay: calc(3 * var(--xh-motion-stagger-step));
+}
+
+[data-scope='float-button'][data-part='list'] > *:nth-child(5) {
+  animation-delay: calc(4 * var(--xh-motion-stagger-step));
+}
+
+[data-scope='float-button'][data-part='list'] > *:nth-child(n + 6) {
+  animation-delay: calc(5 * var(--xh-motion-stagger-step));
 }
 
 /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
@@ -1856,6 +1900,8 @@
   background: var(--xh-floating-panel-bg, var(--xh-bg-surface));
   color: var(--xh-floating-panel-fg, var(--xh-fg-default));
   box-shadow: var(--xh-floating-panel-shadow, var(--xh-elevation-sheet));
+  /* 铺满那一档要把投影整个撤掉，海拔的这一跳跟着过渡走 */
+  transition: box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 /* 最大化时几何层把面板写成铺满视口（left/top 归零、宽高 100%），四条边全贴着视口：
@@ -3168,6 +3214,7 @@
   font-size: var(--xh-hotkeys-font-size, var(--xh-_hotkeys-font-size));
   line-height: var(--xh-leading-none);
   white-space: nowrap;
+  transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 /* 一枚键帽：等宽字，带描边与一层薄阴影凑出按键的样子。
@@ -3189,6 +3236,11 @@
   font-size: inherit;
   font-weight: var(--xh-hotkeys-key-font-weight, var(--xh-font-weight-medium));
   line-height: var(--xh-leading-none);
+  /* 监听开合时键帽整枚换装：底色、那层薄阴影与前景一起过去，不各走各的 */
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 /* 修饰键多是符号，与主键的字母混排时字宽差得远，单独留一档给使用者调 */
@@ -3200,6 +3252,7 @@
 [data-scope='hotkeys'][data-part='separator'] {
   color: var(--xh-hotkeys-separator-fg, var(--xh-fg-subtle));
   user-select: none;
+  transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 /* 监听关掉时组合按不出来，整块转成不可用的样子：键帽换成暗底、去掉阴影，前景压到 fg-subtle。
@@ -3440,6 +3493,8 @@
   block-size: var(--xh-_image-cropper-handle-size);
   translate: -50% -50%;
   scale: calc(1 / var(--xh-_image-cropper-zoom));
+  /* 拉动那一枚换底色，换的过程要看得出来 */
+  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 /* 看得见的方块比手指小：另铺一层不可见的命中区，把它撑到最小可点尺寸。
@@ -4750,15 +4805,20 @@
 /* styles/mention.css */
 /* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
    动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
-@keyframes xh-pop-in {
+/* 进场从锚点那一侧冒出来：位移的两个分量由 placement 写进私有槽，没写就退回原地缩放 */
+@keyframes xh-overlay-pop-in {
   from {
     opacity: 0;
     scale: var(--xh-motion-scale-enter);
+    translate:
+      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
+      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
   }
 
   to {
     opacity: 1;
     scale: 1;
+    translate: 0 0;
   }
 }
 @keyframes xh-pop-out {
@@ -4769,7 +4829,7 @@
 
   to {
     opacity: 0;
-    scale: var(--xh-motion-scale-enter);
+    scale: var(--xh-motion-scale-exit);
   }
 }
 
@@ -4796,6 +4856,29 @@
 /* 输入框被滚出可视区：整个浮层随之收起 */
 [data-scope='mention'][data-part='positioner'][data-hidden] {
   visibility: hidden;
+}
+
+/* 缩放原点与进场位移按落定的那一侧给：列表从贴着输入框的那条边涨开、沿主轴退让一小段。
+   两个槽由 content 继承。placement 是物理方向（引擎按 top / right / bottom / left 出值），
+   origin 与 translate 也是物理量，两边同轴，不随书写方向翻 */
+[data-scope='mention'][data-part='positioner'][data-placement^='top'] {
+  --xh-_overlay-origin-y: 100%;
+  --xh-_overlay-enter-down: 1;
+}
+
+[data-scope='mention'][data-part='positioner'][data-placement^='bottom'] {
+  --xh-_overlay-origin-y: 0;
+  --xh-_overlay-enter-up: 1;
+}
+
+[data-scope='mention'][data-part='positioner'][data-placement^='left'] {
+  --xh-_overlay-origin-x: 100%;
+  --xh-_overlay-enter-right: 1;
+}
+
+[data-scope='mention'][data-part='positioner'][data-placement^='right'] {
+  --xh-_overlay-origin-x: 0;
+  --xh-_overlay-enter-left: 1;
 }
 
 /* 私有槽同时声明在根与 positioner 上：浮层被搬到 portal 落点，不是根的后代，继承不过去 */
@@ -4982,6 +5065,8 @@ input[data-scope='mention'][data-part='input'] {
   box-shadow: var(--xh-mention-content-shadow, var(--xh-elevation-floating));
   overflow-y: auto;
   pointer-events: auto;
+  /* 进退场的缩放锚在贴着输入框的那条边上；两个分量由 positioner 按 placement 写进私有槽 */
+  transform-origin: var(--xh-_overlay-origin-x, 50%) var(--xh-_overlay-origin-y, 50%);
 }
 
 /* 这里刻意没有 [data-part='content'][hidden] { display: none }，与 dialog 一致：
@@ -5003,7 +5088,9 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='mention'][data-part='content'][data-state='open'] {
-  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  /* 只在开着的这一档挂：合成层随 data-state 一起收走，收起后不再占着 */
+  will-change: opacity, scale, translate;
 }
 
 /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
@@ -5624,17 +5711,24 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
    动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
-@keyframes xh-pop-in {
+/* 进场从锚点那一侧冒出来：起点朝哪个方向退让由 placement 写进四个方向槽（那一侧写 1），
+   四个都没写就退回原地缩放 */
+@keyframes xh-overlay-pop-in {
   from {
     opacity: 0;
     scale: var(--xh-motion-scale-enter);
+    translate:
+      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
+      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
   }
 
   to {
     opacity: 1;
     scale: 1;
+    translate: 0 0;
   }
 }
+
 @keyframes xh-pop-out {
   from {
     opacity: 1;
@@ -5643,7 +5737,7 @@ input[data-scope='mention'][data-part='input'] {
 
   to {
     opacity: 0;
-    scale: var(--xh-motion-scale-enter);
+    scale: var(--xh-motion-scale-exit);
   }
 }
 
@@ -5670,6 +5764,29 @@ input[data-scope='mention'][data-part='input'] {
   visibility: hidden;
 }
 
+/* 缩放原点与进场位移按落定的那一侧给：面板从贴着锚点的那条边涨开、沿主轴退让一小段。
+   两个槽由 content 继承。placement 是物理方向（引擎按 top / right / bottom / left 出值），
+   origin 与 translate 也是物理量，两边同轴，不随书写方向翻 */
+[data-scope='popconfirm'][data-part='positioner'][data-placement^='top'] {
+  --xh-_overlay-origin-y: 100%;
+  --xh-_overlay-enter-down: 1;
+}
+
+[data-scope='popconfirm'][data-part='positioner'][data-placement^='bottom'] {
+  --xh-_overlay-origin-y: 0;
+  --xh-_overlay-enter-up: 1;
+}
+
+[data-scope='popconfirm'][data-part='positioner'][data-placement^='left'] {
+  --xh-_overlay-origin-x: 100%;
+  --xh-_overlay-enter-right: 1;
+}
+
+[data-scope='popconfirm'][data-part='positioner'][data-placement^='right'] {
+  --xh-_overlay-origin-x: 0;
+  --xh-_overlay-enter-left: 1;
+}
+
 /* 面板排成三列：左列吃掉剩余宽度，右两列各摆一颗按钮。
    标题、说明与作者塞进来的内容各占一整行，两颗按钮因此并排落在最后一行的右侧。 */
 [data-scope='popconfirm'][data-part='content'] {
@@ -5692,6 +5809,8 @@ input[data-scope='mention'][data-part='input'] {
   color: var(--xh-popconfirm-fg, var(--xh-fg-default));
   box-shadow: var(--xh-popconfirm-shadow, var(--xh-elevation-floating));
   pointer-events: auto;
+  /* 进退场的缩放锚在贴着锚点的那条边上；两个分量由 positioner 按 placement 写进私有槽 */
+  transform-origin: var(--xh-_overlay-origin-x, 50%) var(--xh-_overlay-origin-y, 50%);
 }
 
 [data-scope='popconfirm'][data-part='content'] > * {
@@ -5709,7 +5828,9 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='popconfirm'][data-part='content'][data-state='open'] {
-  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  /* 只在开着的这一档挂：合成层随 data-state 一起收走，收起后不再占着 */
+  will-change: opacity, scale, translate;
 }
 
 /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
@@ -5869,17 +5990,24 @@ input[data-scope='mention'][data-part='input'] {
 /* styles/popselect.css */
 /* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
    动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
-@keyframes xh-pop-in {
+/* 进场从锚点那一侧冒出来：起点朝哪个方向退让由 placement 写进四个方向槽（那一侧写 1），
+   四个都没写就退回原地缩放 */
+@keyframes xh-overlay-pop-in {
   from {
     opacity: 0;
     scale: var(--xh-motion-scale-enter);
+    translate:
+      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
+      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
   }
 
   to {
     opacity: 1;
     scale: 1;
+    translate: 0 0;
   }
 }
+
 @keyframes xh-pop-out {
   from {
     opacity: 1;
@@ -5888,7 +6016,7 @@ input[data-scope='mention'][data-part='input'] {
 
   to {
     opacity: 0;
-    scale: var(--xh-motion-scale-enter);
+    scale: var(--xh-motion-scale-exit);
   }
 }
 
@@ -5915,6 +6043,29 @@ input[data-scope='mention'][data-part='input'] {
 /* 锚点被滚出可视区：整个浮层随之收起 */
 [data-scope='popselect'][data-part='positioner'][data-hidden] {
   visibility: hidden;
+}
+
+/* 缩放原点与进场位移按落定的那一侧给：浮层从贴着盒的那条边涨开、沿主轴退让一小段。
+   两个槽由 content 继承。placement 是物理方向（引擎按 top / right / bottom / left 出值），
+   origin 与 translate 也是物理量，两边同轴，不随书写方向翻 */
+[data-scope='popselect'][data-part='positioner'][data-placement^='top'] {
+  --xh-_overlay-origin-y: 100%;
+  --xh-_overlay-enter-down: 1;
+}
+
+[data-scope='popselect'][data-part='positioner'][data-placement^='bottom'] {
+  --xh-_overlay-origin-y: 0;
+  --xh-_overlay-enter-up: 1;
+}
+
+[data-scope='popselect'][data-part='positioner'][data-placement^='left'] {
+  --xh-_overlay-origin-x: 100%;
+  --xh-_overlay-enter-right: 1;
+}
+
+[data-scope='popselect'][data-part='positioner'][data-placement^='right'] {
+  --xh-_overlay-origin-x: 0;
+  --xh-_overlay-enter-left: 1;
 }
 
 /* 私有槽同时声明在根与 positioner 上：浮层被搬到 portal 落点，不是根的后代，继承不过去 */
@@ -6138,6 +6289,8 @@ input[data-scope='mention'][data-part='input'] {
   box-shadow: var(--xh-popselect-content-shadow, var(--xh-elevation-floating));
   overflow-y: auto;
   pointer-events: auto;
+  /* 进退场的缩放锚在贴着盒的那条边上；两个分量由 positioner 按 placement 写进私有槽 */
+  transform-origin: var(--xh-_overlay-origin-x, 50%) var(--xh-_overlay-origin-y, 50%);
 }
 
 /* 这里刻意没有 [data-part='content'][hidden] { display: none }，与 dialog 一致：
@@ -6158,7 +6311,9 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='popselect'][data-part='content'][data-state='open'] {
-  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  /* 只在开着的这一档挂：合成层随 data-state 一起收走，收起后不再占着 */
+  will-change: opacity, scale, translate;
 }
 
 /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
@@ -6477,9 +6632,11 @@ input[data-scope='mention'][data-part='input'] {
   white-space: nowrap;
   cursor: pointer;
   user-select: none;
+  /* 换到停止身份与转灰这两档都会把内高光收掉，box-shadow 因此跟着配色一起过渡 */
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
@@ -6570,6 +6727,11 @@ input[data-scope='mention'][data-part='input'] {
   /* 模块那条 path 不带自己的填充色，从这里继承下去 */
   color: var(--xh-qr-code-fg, var(--xh-color-neutral-950));
   fill: currentColor;
+
+  /* 占位与码面之间来回时，底色与那圈描边淡变 */
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 /* 声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
@@ -6894,7 +7056,9 @@ input[data-scope='mention'][data-part='input'] {
   line-height: var(--xh-reasoning-content-leading, var(--xh-text-prose-leading));
 }
 
+/* 展开那一档才提前备好行高这条通道：属性随 data-state 一起消失，收起后不长期占着 */
 [data-scope='reasoning'][data-part='content'][data-state='open'] {
+  will-change: grid-template-rows;
   animation: xh-reasoning-expand var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
@@ -7117,6 +7281,22 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 /* styles/result.css */
+/* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
+   动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
+
+/* 幅度走令牌，减弱动效时由令牌层归零；位移用独立属性而非 transform 简写 */
+@keyframes xh-rise-in {
+  from {
+    opacity: 0;
+    translate: 0 var(--xh-motion-distance-sm);
+  }
+
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='result'] {
   --xh-result-skin: 1;
@@ -7224,6 +7404,27 @@ input[data-scope='mention'][data-part='input'] {
   align-items: center;
   justify-content: center;
   gap: var(--xh-result-action-gap, var(--xh-space-2));
+}
+
+/* 图标、标题、说明、动作按次序开幕，间隔由交错步长派生。
+   backwards 不能省：等待期间起帧不生效的话，后三段会先露一下再跳回去 */
+[data-scope='result'][data-part='icon'],
+[data-scope='result'][data-part='title'],
+[data-scope='result'][data-part='description'],
+[data-scope='result'][data-part='action'] {
+  animation: xh-rise-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
+}
+
+[data-scope='result'][data-part='title'] {
+  animation-delay: calc(var(--xh-motion-stagger-step) * 1);
+}
+
+[data-scope='result'][data-part='description'] {
+  animation-delay: calc(var(--xh-motion-stagger-step) * 2);
+}
+
+[data-scope='result'][data-part='action'] {
+  animation-delay: calc(var(--xh-motion-stagger-step) * 3);
 }
 
 /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
@@ -7431,12 +7632,14 @@ input[data-scope='mention'][data-part='input'] {
   /* 段压在它上面，点击一律交给段；作者把它写在段之后时也不至于吞掉点击 */
   pointer-events: none;
   /* 用连续档而不是进场那条：滑块是被推过去的，起步就该有速度，
-     纯减速曲线看着像自己飘过去。四个几何量同时走，段宽不等时才不会先变形再挪位 */
+     纯减速曲线看着像自己飘过去。四个几何量同时走，段宽不等时才不会先变形再挪位。
+     投影单列一项：整组禁用时滑块落回轨道平面，那层投影跟着收 */
   transition:
     inset-inline-start var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
     inset-block-start var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
     inline-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
-    block-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous);
+    block-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
+    box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 /* 给了 display 的角色节点必须补这条：display 声明会盖掉 UA 的 [hidden]{display:none}，
@@ -7486,6 +7689,10 @@ input[data-scope='mention'][data-part='input'] {
   cursor: crosshair;
   /* 一划就会把画布连同旁边的文字一起刷成选中态 */
   user-select: none;
+  /* 落笔、校验不过与禁用三档各换一次描边或底色，换的过程要看得出来 */
+  transition:
+    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='signature-pad'][data-part='control'][data-invalid] {
@@ -7980,6 +8187,8 @@ input[data-scope='mention'][data-part='input'] {
   font-variant-numeric: tabular-nums;
   /* 一个时间戳不该被拆到两行去 */
   white-space: nowrap;
+  /* 时刻换成认不出的值时前景要换档，这里让它淡过去而不是硬跳 */
+  transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 /* 相对说法是一句话不是一串数字，等宽数字反而把字距拉开 */
@@ -8556,6 +8765,7 @@ input[data-scope='mention'][data-part='input'] {
   color: var(--xh-typography-link-fg, var(--xh-fg-brand));
   text-decoration: underline;
   text-underline-offset: var(--xh-typography-link-underline-offset, var(--xh-space-0_5));
+  transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 /* 悬停只在能用指针的设备上生效，触摸端不留一个按不掉的悬停态 */
@@ -8939,6 +9149,22 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 /* styles/empty-state.css */
+/* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
+   动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
+
+/* 幅度走令牌，减弱动效时由令牌层归零；位移用独立属性而非 transform 简写 */
+@keyframes xh-rise-in {
+  from {
+    opacity: 0;
+    translate: 0 var(--xh-motion-distance-sm);
+  }
+
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='empty-state'] {
   --xh-empty-state-skin: 1;
@@ -9020,6 +9246,27 @@ input[data-scope='mention'][data-part='input'] {
   align-items: center;
   justify-content: center;
   gap: var(--xh-empty-state-action-gap, var(--xh-space-2));
+}
+
+/* 图标、标题、说明、动作按次序开幕，间隔由交错步长派生。
+   backwards 不能省：等待期间起帧不生效的话，后三段会先露一下再跳回去 */
+[data-scope='empty-state'][data-part='icon'],
+[data-scope='empty-state'][data-part='title'],
+[data-scope='empty-state'][data-part='description'],
+[data-scope='empty-state'][data-part='action'] {
+  animation: xh-rise-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
+}
+
+[data-scope='empty-state'][data-part='title'] {
+  animation-delay: calc(var(--xh-motion-stagger-step) * 1);
+}
+
+[data-scope='empty-state'][data-part='description'] {
+  animation-delay: calc(var(--xh-motion-stagger-step) * 2);
+}
+
+[data-scope='empty-state'][data-part='action'] {
+  animation-delay: calc(var(--xh-motion-stagger-step) * 3);
 }
 
 /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
@@ -9405,7 +9652,9 @@ input[data-scope='mention'][data-part='input'] {
   color: var(--xh-accordion-content-fg, var(--xh-fg-default));
 }
 
+/* 展开那一档才提前备好行高这条通道：属性随 data-state 一起消失，收起后不长期占着 */
 [data-scope='accordion'][data-part='content'][data-state='open'] {
+  will-change: grid-template-rows;
   animation: xh-accordion-expand var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
@@ -9905,9 +10154,11 @@ input[data-scope='mention'][data-part='input'] {
   block-size: var(--xh-approval-action-h, var(--xh-_approval-action-h));
   white-space: nowrap;
   cursor: pointer;
+  /* 必选项勾满与否会把批准钮的内高光开合，box-shadow 因此跟着配色一起过渡 */
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
@@ -10451,6 +10702,7 @@ input[data-scope='mention'][data-part='input'] {
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
@@ -11185,8 +11437,8 @@ input[data-scope='mention'][data-part='input'] {
   display: flex;
   flex-direction: row;
   block-size: 100%;
-  transition: transform var(--xh-carousel-duration, var(--xh-motion-duration-enter))
-    var(--xh-carousel-ease, var(--xh-motion-ease-continuous));
+  transition: transform var(--xh-carousel-duration, var(--xh-motion-duration-slide))
+    var(--xh-carousel-ease, var(--xh-motion-ease-slide));
 }
 
 [data-scope='carousel'][data-part='item-group'][hidden] {
@@ -11197,9 +11449,11 @@ input[data-scope='mention'][data-part='input'] {
   flex-direction: column;
 }
 
-/* 拖拽期间关掉过渡：留着的话画面会拖着手指慢半拍，像在拉一根皮筋 */
+/* 拖拽期间关掉过渡：留着的话画面会拖着手指慢半拍，像在拉一根皮筋。
+   整条轨道的位移这一档每帧都在改，合成层只在这一档备好，松手随 data-dragging 一起撤掉 */
 [data-scope='carousel'][data-part='item-group'][data-dragging] {
   transition: none;
+  will-change: transform;
 }
 
 /* 一张幻灯片。
@@ -11423,6 +11677,29 @@ input[data-scope='mention'][data-part='input'] {
 /* 锚点被滚出可视区：整个浮层随之收起 */
 [data-scope='cascader'][data-part='positioner'][data-hidden] {
   visibility: hidden;
+}
+
+/* 缩放原点与进场位移按落定的那一侧给：列区从贴着盒的那条边涨开、沿主轴退让一小段。
+   两个槽由 content 继承。placement 是物理方向（引擎按 top / right / bottom / left 出值），
+   origin 与 translate 也是物理量，两边同轴，不随书写方向翻 */
+[data-scope='cascader'][data-part='positioner'][data-placement^='top'] {
+  --xh-_overlay-origin-y: 100%;
+  --xh-_overlay-enter-down: 1;
+}
+
+[data-scope='cascader'][data-part='positioner'][data-placement^='bottom'] {
+  --xh-_overlay-origin-y: 0;
+  --xh-_overlay-enter-up: 1;
+}
+
+[data-scope='cascader'][data-part='positioner'][data-placement^='left'] {
+  --xh-_overlay-origin-x: 100%;
+  --xh-_overlay-enter-right: 1;
+}
+
+[data-scope='cascader'][data-part='positioner'][data-placement^='right'] {
+  --xh-_overlay-origin-x: 0;
+  --xh-_overlay-enter-left: 1;
 }
 
 /* 私有槽同时声明在根与 positioner 上：浮层被搬到 portal 落点，不是根的后代，继承不过去 */
@@ -11724,6 +12001,8 @@ input[data-scope='mention'][data-part='input'] {
   /* 列多到放不下时整体横向滚动；纵向溢出归每一列自己 */
   overflow-x: auto;
   pointer-events: auto;
+  /* 进退场的缩放锚在贴着盒的那条边上；两个分量由 positioner 按 placement 写进私有槽 */
+  transform-origin: var(--xh-_overlay-origin-x, 50%) var(--xh-_overlay-origin-y, 50%);
 }
 
 /* 这里刻意没有 [data-part='content'][hidden] { display: none }，与 dialog 一致：
@@ -11738,7 +12017,9 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='cascader'][data-part='content'][data-state='open'] {
-  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  /* 只在开着的这一档挂：合成层随 data-state 一起收走，收起后不再占着 */
+  will-change: opacity, scale, translate;
 }
 
 /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
@@ -11808,6 +12089,34 @@ input[data-scope='mention'][data-part='input'] {
    display 盖掉了 UA 的 [hidden]{display:none}，漏了这条列换了内容旧条目还留在那儿 */
 [data-scope='cascader'][data-part='item'][hidden] {
   display: none;
+}
+
+/* 一列开幕：条目自上而下逐条冒出来。列从 hidden 转回来、或换了展开路径把另一批条目放出来时，
+   这段动画重新起跑。backwards 让每条在自己那份延迟里保持起始帧 */
+[data-scope='cascader'][data-part='column'] [data-part='item'] {
+  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
+}
+
+/* 交错的间隔：第二条起逐级往后推，第六条起统一钉在第五级，条目再多也不会拖出一条越来越慢的尾巴。
+   列里同时挂着别的父节点下的条目（收起态），计数把它们排掉，序号才对得上看得见的那几条 */
+[data-scope='cascader'][data-part='column'] [data-part='item']:nth-child(2 of :not([hidden])) {
+  animation-delay: var(--xh-motion-stagger-step);
+}
+
+[data-scope='cascader'][data-part='column'] [data-part='item']:nth-child(3 of :not([hidden])) {
+  animation-delay: calc(2 * var(--xh-motion-stagger-step));
+}
+
+[data-scope='cascader'][data-part='column'] [data-part='item']:nth-child(4 of :not([hidden])) {
+  animation-delay: calc(3 * var(--xh-motion-stagger-step));
+}
+
+[data-scope='cascader'][data-part='column'] [data-part='item']:nth-child(5 of :not([hidden])) {
+  animation-delay: calc(4 * var(--xh-motion-stagger-step));
+}
+
+[data-scope='cascader'][data-part='column'] [data-part='item']:nth-child(n + 6 of :not([hidden])) {
+  animation-delay: calc(5 * var(--xh-motion-stagger-step));
 }
 
 /* 底色分两档、靠色相分家：悬停与键盘锚点是中性灰轻档，展开路径是品牌淡底加粗。
@@ -12059,9 +12368,27 @@ input[data-scope='mention'][data-part='input'] {
   mask: var(--xh-glyph-mark-close) center / contain no-repeat;
 }
 
-/* 浮层是横向长出来的：淡入之外再沿书写方向起始缘推一小段，观感上像列被「拉开」。
-   位移量从 content 上的私有槽取，rtl 侧翻符号后同一份关键帧两个方向都对。
-   关键帧写在本文件里、名字带组件前缀，不动公共的那一份 */
+/* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
+   动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
+/* 进场从锚点那一侧冒出来：起点朝哪个方向退让由 placement 写进四个方向槽（那一侧写 1），
+   四个都没写就退回原地缩放 */
+@keyframes xh-overlay-pop-in {
+  from {
+    opacity: 0;
+    scale: var(--xh-motion-scale-enter);
+    translate:
+      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
+      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
+  }
+
+  to {
+    opacity: 1;
+    scale: 1;
+    translate: 0 0;
+  }
+}
+
+/* 列里的条目原地涨开，不带方向位移：浮层壳已经沿主轴挪过一段，条目再挪一次就是两段位移 */
 @keyframes xh-pop-in {
   from {
     opacity: 0;
@@ -12073,6 +12400,7 @@ input[data-scope='mention'][data-part='input'] {
     scale: 1;
   }
 }
+
 @keyframes xh-pop-out {
   from {
     opacity: 1;
@@ -12081,7 +12409,7 @@ input[data-scope='mention'][data-part='input'] {
 
   to {
     opacity: 0;
-    scale: var(--xh-motion-scale-enter);
+    scale: var(--xh-motion-scale-exit);
   }
 }
 
@@ -12801,6 +13129,10 @@ input[data-scope='mention'][data-part='input'] {
   display: flex;
   min-block-size: var(--xh-code-view-line-height, var(--xh-text-code-leading));
   padding-inline-end: var(--xh-code-view-px, var(--xh-space-3));
+  /* 标出来的那几行换的是底色与那条内阴影色条，两样一起过渡才是同一个动作 */
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='code-view'][data-part='line'][hidden] {
@@ -13092,7 +13424,9 @@ input[data-scope='mention'][data-part='input'] {
   color: var(--xh-collapsible-content-fg, var(--xh-fg-default));
 }
 
+/* 展开那一档才提前备好行高这条通道：属性随 data-state 一起消失，收起后不长期占着 */
 [data-scope='collapsible'][data-part='content'][data-state='open'] {
+  will-change: grid-template-rows;
   animation: xh-collapsible-expand var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
@@ -13152,7 +13486,7 @@ input[data-scope='mention'][data-part='input'] {
 
   to {
     opacity: 0;
-    scale: var(--xh-motion-scale-enter);
+    scale: var(--xh-motion-scale-exit);
   }
 }
 
@@ -13343,7 +13677,9 @@ input[data-scope='mention'][data-part='input'] {
   pointer-events: auto;
 }
 
+/* 在场那一档才提前备好合成层：属性随 data-state 一起消失，收起后不长期占着 */
 [data-scope='color-picker'][data-part='content'][data-state='open'] {
+  will-change: opacity, scale;
   animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
@@ -13722,17 +14058,24 @@ input[data-scope='mention'][data-part='input'] {
 /* styles/combobox.css */
 /* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
    动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
-@keyframes xh-pop-in {
+/* 进场从锚点那一侧冒出来：起点朝哪个方向退让由 placement 写进四个方向槽（那一侧写 1），
+   四个都没写就退回原地缩放 */
+@keyframes xh-overlay-pop-in {
   from {
     opacity: 0;
     scale: var(--xh-motion-scale-enter);
+    translate:
+      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
+      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
   }
 
   to {
     opacity: 1;
     scale: 1;
+    translate: 0 0;
   }
 }
+
 @keyframes xh-pop-out {
   from {
     opacity: 1;
@@ -13741,7 +14084,7 @@ input[data-scope='mention'][data-part='input'] {
 
   to {
     opacity: 0;
-    scale: var(--xh-motion-scale-enter);
+    scale: var(--xh-motion-scale-exit);
   }
 }
 
@@ -13768,6 +14111,29 @@ input[data-scope='mention'][data-part='input'] {
 /* 锚点被滚出可视区：整个浮层随之收起 */
 [data-scope='combobox'][data-part='positioner'][data-hidden] {
   visibility: hidden;
+}
+
+/* 缩放原点与进场位移按落定的那一侧给：浮层从贴着盒的那条边涨开、沿主轴退让一小段。
+   两个槽由 content 继承。placement 是物理方向（引擎按 top / right / bottom / left 出值），
+   origin 与 translate 也是物理量，两边同轴，不随书写方向翻 */
+[data-scope='combobox'][data-part='positioner'][data-placement^='top'] {
+  --xh-_overlay-origin-y: 100%;
+  --xh-_overlay-enter-down: 1;
+}
+
+[data-scope='combobox'][data-part='positioner'][data-placement^='bottom'] {
+  --xh-_overlay-origin-y: 0;
+  --xh-_overlay-enter-up: 1;
+}
+
+[data-scope='combobox'][data-part='positioner'][data-placement^='left'] {
+  --xh-_overlay-origin-x: 100%;
+  --xh-_overlay-enter-right: 1;
+}
+
+[data-scope='combobox'][data-part='positioner'][data-placement^='right'] {
+  --xh-_overlay-origin-x: 0;
+  --xh-_overlay-enter-left: 1;
 }
 
 /* 私有槽同时声明在根与 positioner 上：浮层被搬到 portal 落点，不是根的后代，继承不过去 */
@@ -14100,6 +14466,8 @@ input[data-scope='mention'][data-part='input'] {
   box-shadow: var(--xh-combobox-content-shadow, var(--xh-elevation-floating));
   overflow-y: auto;
   pointer-events: auto;
+  /* 进退场的缩放锚在贴着盒的那条边上；两个分量由 positioner 按 placement 写进私有槽 */
+  transform-origin: var(--xh-_overlay-origin-x, 50%) var(--xh-_overlay-origin-y, 50%);
 }
 
 /* 这里刻意没有 [data-part='content'][hidden] { display: none }，与 dialog 一致：
@@ -14115,7 +14483,9 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='combobox'][data-part='content'][data-state='open'] {
-  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  /* 只在开着的这一档挂：合成层随 data-state 一起收走，收起后不再占着 */
+  will-change: opacity, scale, translate;
 }
 
 /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
@@ -14416,6 +14786,8 @@ input[data-scope='mention'][data-part='input'] {
 /* 展开时轻微涨开：菜单是被光标"点出来"的，纯淡入显得它一直都在
    （不设 transform-origin：那个属性没有逻辑关键字，写死方向会在 RTL 下反着涨） */
 [data-scope='context-menu'][data-part='content'][data-state='open'] {
+  /* 在场那一档才提前备好合成层：属性随 data-state 一起消失，收起后不长期占着 */
+  will-change: opacity, scale;
   animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
@@ -14612,7 +14984,7 @@ input[data-scope='mention'][data-part='input'] {
 
   to {
     opacity: 0;
-    scale: var(--xh-motion-scale-enter);
+    scale: var(--xh-motion-scale-exit);
   }
 }
 
@@ -14937,6 +15309,29 @@ input[data-scope='mention'][data-part='input'] {
   visibility: hidden;
 }
 
+/* 缩放原点与进场位移按落定的那一侧给：面板从贴着锚点的那条边涨开、沿主轴退让一小段。
+   两个槽由 content 继承。placement 是物理方向（引擎按 top / right / bottom / left 出值），
+   origin 与 translate 也是物理量，两边同轴，不随书写方向翻 */
+[data-scope='date-picker'][data-part='positioner'][data-placement^='top'] {
+  --xh-_overlay-origin-y: 100%;
+  --xh-_overlay-enter-down: 1;
+}
+
+[data-scope='date-picker'][data-part='positioner'][data-placement^='bottom'] {
+  --xh-_overlay-origin-y: 0;
+  --xh-_overlay-enter-up: 1;
+}
+
+[data-scope='date-picker'][data-part='positioner'][data-placement^='left'] {
+  --xh-_overlay-origin-x: 100%;
+  --xh-_overlay-enter-right: 1;
+}
+
+[data-scope='date-picker'][data-part='positioner'][data-placement^='right'] {
+  --xh-_overlay-origin-x: 0;
+  --xh-_overlay-enter-left: 1;
+}
+
 /* 私有槽同时声明在根与 positioner 上：浮层被搬到 portal 落点，不是根的后代，继承不过去 */
 [data-scope='date-picker']:is([data-part='root'], [data-part='positioner']) {
   /* 尺寸档只换这几个私有槽，标题、输入行与浮层里的部件都从这两处继承它们，
@@ -15198,6 +15593,8 @@ input[data-scope='mention'][data-part='input'] {
      可用高度是定位引擎算出的视口余量，视口真放不下时再收一截 */
   max-block-size: min(var(--xh-date-picker-max-h, var(--xh-viewport-h-lg)), var(--xh-_date-picker-available-h));
   overflow-y: auto;
+  /* 进退场的缩放锚在贴着锚点的那条边上；两个分量由 positioner 按 placement 写进私有槽 */
+  transform-origin: var(--xh-_overlay-origin-x, 50%) var(--xh-_overlay-origin-y, 50%);
   box-shadow: var(--xh-date-picker-content-shadow, var(--xh-elevation-floating));
   pointer-events: auto;
 }
@@ -15215,7 +15612,9 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='date-picker'][data-part='content'][data-state='open'] {
-  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  /* 只在展开态挂着：随状态属性一起消失，不长期占着合成层 */
+  will-change: opacity, scale, translate;
+  animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
@@ -15426,18 +15825,23 @@ input[data-scope='mention'][data-part='input'] {
   mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
 }
 
-/* 浮层进场：淡入 + 轻微上浮。名字带组件前缀，不与公共关键帧抢名 */
-@keyframes xh-pop-in {
+/* 进场从锚点那一侧冒出来：位移的两个分量由 placement 写进私有槽，没写就退回原地缩放 */
+@keyframes xh-overlay-pop-in {
   from {
     opacity: 0;
     scale: var(--xh-motion-scale-enter);
+    translate:
+      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
+      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
   }
 
   to {
     opacity: 1;
     scale: 1;
+    translate: 0 0;
   }
 }
+
 @keyframes xh-pop-out {
   from {
     opacity: 1;
@@ -15446,7 +15850,7 @@ input[data-scope='mention'][data-part='input'] {
 
   to {
     opacity: 0;
-    scale: var(--xh-motion-scale-enter);
+    scale: var(--xh-motion-scale-exit);
   }
 }
 
@@ -15507,7 +15911,7 @@ input[data-scope='mention'][data-part='input'] {
   to {
     opacity: 0;
     translate: 0 var(--xh-motion-distance-md);
-    scale: var(--xh-motion-scale-enter);
+    scale: var(--xh-motion-scale-exit);
   }
 }
 
@@ -15590,6 +15994,8 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='dialog'][data-part='content'][data-state='open'] {
   animation: xh-dialog-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  /* 只在开着的这一档挂：合成层随 data-state 一起收走，收起后不再占着 */
+  will-change: opacity, scale, translate;
 }
 
 [data-scope='dialog'][data-part='content'][data-state='closed'] {
@@ -16031,6 +16437,12 @@ input[data-scope='mention'][data-part='input'] {
   border-start-end-radius: var(--xh-drawer-radius, var(--xh-shape-surface));
 }
 
+/* 展开期间面板整块推到一屏之外再推回来：只在开着的这一档挂，
+   合成层随 data-state 一起收走，收起后不再占着 */
+[data-scope='drawer'][data-part='content'][data-state='open'] {
+  will-change: translate;
+}
+
 /* 滑入/滑出按边配对。退场一律 forwards：presence 要等 animationend 才卸载，
    不定住终态，面板会在最后一帧弹回原位再消失。 */
 [data-scope='drawer'][data-part='content'][data-side='right'][data-state='open'] {
@@ -16363,8 +16775,10 @@ input[data-scope='mention'][data-part='input'] {
   white-space: nowrap;
   cursor: pointer;
   user-select: none;
+  /* box-shadow 在列里是给提交钮的内高光留的：它随可用与置灰两档进出 */
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
@@ -16495,6 +16909,11 @@ input[data-scope='mention'][data-part='input'] {
   background: var(--xh-field-control-bg, var(--xh-bg-canvas));
   color: var(--xh-field-control-fg, var(--xh-fg-default));
   font-size: var(--xh-field-control-font-size, var(--xh-text-body-size));
+  /* 聚焦、无效与禁用三档换的都是颜色，各态之间接一段过渡 */
+  transition:
+    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='field'][data-part='control']:focus-visible {
@@ -17011,6 +17430,57 @@ input[data-scope='mention'][data-part='input'] {
   display: none;
 }
 
+/* 摘要显出时条目逐条入场，越靠后起步越晚。
+   backwards 让还没轮到的条目停在首帧，不是先显出再重播 */
+[data-scope='form'][data-part='error-summary'][data-state='invalid'] [data-part='error-summary-item'] {
+  animation: xh-form-summary-enter var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
+}
+
+/* 排序按"前面有几条露面的"数，不按 nth-child：作者一次把所有字段的条目都写上，
+   没出错的那些带着 hidden 留在 DOM 里，按位置数会把空号也算进去。
+   每多一节 ~ 就多要求前面多一条露面的条目，链越长的规则排得越后、赢过短链 */
+[data-scope='form'][data-part='error-summary'][data-state='invalid']
+  [data-part='error-summary-item']:not([hidden])
+  ~ [data-part='error-summary-item']:not([hidden]) {
+  animation-delay: var(--xh-motion-stagger-step);
+}
+
+[data-scope='form'][data-part='error-summary'][data-state='invalid']
+  [data-part='error-summary-item']:not([hidden])
+  ~ [data-part='error-summary-item']:not([hidden])
+  ~ [data-part='error-summary-item']:not([hidden]) {
+  animation-delay: calc(var(--xh-motion-stagger-step) * 2);
+}
+
+[data-scope='form'][data-part='error-summary'][data-state='invalid']
+  [data-part='error-summary-item']:not([hidden])
+  ~ [data-part='error-summary-item']:not([hidden])
+  ~ [data-part='error-summary-item']:not([hidden])
+  ~ [data-part='error-summary-item']:not([hidden]) {
+  animation-delay: calc(var(--xh-motion-stagger-step) * 3);
+}
+
+[data-scope='form'][data-part='error-summary'][data-state='invalid']
+  [data-part='error-summary-item']:not([hidden])
+  ~ [data-part='error-summary-item']:not([hidden])
+  ~ [data-part='error-summary-item']:not([hidden])
+  ~ [data-part='error-summary-item']:not([hidden])
+  ~ [data-part='error-summary-item']:not([hidden]) {
+  animation-delay: calc(var(--xh-motion-stagger-step) * 4);
+}
+
+/* 第 6 条起共用同一档延迟：这条要求前面有五条露面的，第七条往后同样命中，
+   错误多时整批的等待时间不再随条数增长 */
+[data-scope='form'][data-part='error-summary'][data-state='invalid']
+  [data-part='error-summary-item']:not([hidden])
+  ~ [data-part='error-summary-item']:not([hidden])
+  ~ [data-part='error-summary-item']:not([hidden])
+  ~ [data-part='error-summary-item']:not([hidden])
+  ~ [data-part='error-summary-item']:not([hidden])
+  ~ [data-part='error-summary-item']:not([hidden]) {
+  animation-delay: calc(var(--xh-motion-stagger-step) * 5);
+}
+
 [data-scope='form'][data-part='error-summary-item']:hover {
   color: var(--xh-form-summary-item-fg-hover, var(--xh-fg-danger-hover));
 }
@@ -17042,8 +17512,10 @@ input[data-scope='mention'][data-part='input'] {
   white-space: nowrap;
   cursor: pointer;
   user-select: none;
+  /* box-shadow 在列里是给提交键的内高光留的：它随可用与置灰两档进出 */
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
@@ -17118,17 +17590,24 @@ input[data-scope='mention'][data-part='input'] {
 /* styles/hover-card.css */
 /* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
    动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
-@keyframes xh-pop-in {
+/* 进场从锚点那一侧冒出来：起点朝哪个方向退让由 placement 写进四个方向槽（那一侧写 1），
+   四个都没写就退回原地缩放 */
+@keyframes xh-overlay-pop-in {
   from {
     opacity: 0;
     scale: var(--xh-motion-scale-enter);
+    translate:
+      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
+      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
   }
 
   to {
     opacity: 1;
     scale: 1;
+    translate: 0 0;
   }
 }
+
 @keyframes xh-pop-out {
   from {
     opacity: 1;
@@ -17137,7 +17616,7 @@ input[data-scope='mention'][data-part='input'] {
 
   to {
     opacity: 0;
-    scale: var(--xh-motion-scale-enter);
+    scale: var(--xh-motion-scale-exit);
   }
 }
 
@@ -17197,6 +17676,29 @@ input[data-scope='mention'][data-part='input'] {
   visibility: hidden;
 }
 
+/* 缩放原点与进场位移按落定的那一侧给：卡片从贴着锚点的那条边涨开、沿主轴退让一小段。
+   两个槽由 content 继承。placement 是物理方向（引擎按 top / right / bottom / left 出值），
+   origin 与 translate 也是物理量，两边同轴，不随书写方向翻 */
+[data-scope='hover-card'][data-part='positioner'][data-placement^='top'] {
+  --xh-_overlay-origin-y: 100%;
+  --xh-_overlay-enter-down: 1;
+}
+
+[data-scope='hover-card'][data-part='positioner'][data-placement^='bottom'] {
+  --xh-_overlay-origin-y: 0;
+  --xh-_overlay-enter-up: 1;
+}
+
+[data-scope='hover-card'][data-part='positioner'][data-placement^='left'] {
+  --xh-_overlay-origin-x: 100%;
+  --xh-_overlay-enter-right: 1;
+}
+
+[data-scope='hover-card'][data-part='positioner'][data-placement^='right'] {
+  --xh-_overlay-origin-x: 0;
+  --xh-_overlay-enter-left: 1;
+}
+
 /* 与 tooltip 不同：卡片本体承载交互，必须吃指针——
    指针停在卡片上就不该收起，里面的链接与按钮也要点得到 */
 [data-scope='hover-card'][data-part='content'] {
@@ -17223,6 +17725,8 @@ input[data-scope='mention'][data-part='input'] {
   color: var(--xh-hover-card-fg, var(--xh-fg-default));
   box-shadow: var(--xh-hover-card-shadow, var(--xh-elevation-floating));
   pointer-events: auto;
+  /* 进退场的缩放锚在贴着锚点的那条边上；两个分量由 positioner 按 placement 写进私有槽 */
+  transform-origin: var(--xh-_overlay-origin-x, 50%) var(--xh-_overlay-origin-y, 50%);
 }
 
 /* 这里刻意没有 [data-part='content'][hidden] { display: none }，与 dialog 一致：
@@ -17237,7 +17741,9 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='hover-card'][data-part='content'][data-state='open'] {
-  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  /* 只在开着的这一档挂：合成层随 data-state 一起收走，收起后不再占着 */
+  will-change: opacity, scale, translate;
 }
 
 /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
@@ -17465,7 +17971,9 @@ input[data-scope='mention'][data-part='input'] {
   color: var(--xh-image-viewer-fg, var(--xh-color-neutral-0));
 }
 
+/* 在场那一档才提前备好合成层：属性随 data-state 一起消失，收起后不长期占着 */
 [data-scope='image-viewer'][data-part='content'][data-state='open'] {
+  will-change: opacity;
   animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
 }
 
@@ -17497,8 +18005,10 @@ input[data-scope='mention'][data-part='input'] {
   transition: transform var(--xh-motion-duration-micro) var(--xh-motion-ease-continuous);
 }
 
+/* 拖拽期间变换每帧都在改：只在这一档备好合成层，松手后随 data-dragging 一起撤掉 */
 [data-scope='image-viewer'][data-part='image'][data-dragging] {
   transition: none;
+  will-change: transform;
 }
 
 /* —— 悬浮件共用：半透明深底加浅字 ——
@@ -18082,7 +18592,7 @@ input[data-scope='mention'][data-part='input'] {
 
   to {
     opacity: 0;
-    scale: var(--xh-motion-scale-enter);
+    scale: var(--xh-motion-scale-exit);
   }
 }
 
@@ -18170,7 +18680,9 @@ input[data-scope='mention'][data-part='input'] {
   outline: none;
 }
 
+/* 在场那一档才提前备好合成层：属性随 data-state 一起消失，收起后不长期占着 */
 [data-scope='menu'][data-part='content'][data-state='open'] {
+  will-change: opacity, scale;
   animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
@@ -18514,6 +19026,8 @@ input[data-scope='mention'][data-part='input'] {
 /* 展开时轻微涨开。只在切换到别张菜单时不重播——那由 data-state 的翻转天然保证：
    一张关一张开，动画各跑各的 */
 [data-scope='menubar'][data-part='content'][data-state='open'] {
+  /* 在场那一档才提前备好合成层：属性随 data-state 一起消失，收起后不长期占着 */
+  will-change: opacity, scale;
   animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
@@ -18696,7 +19210,7 @@ input[data-scope='mention'][data-part='input'] {
 
   to {
     opacity: 0;
-    scale: var(--xh-motion-scale-enter);
+    scale: var(--xh-motion-scale-exit);
   }
 }
 
@@ -18931,7 +19445,7 @@ input[data-scope='mention'][data-part='input'] {
 
   to {
     opacity: 0;
-    scale: var(--xh-motion-scale-enter);
+    scale: var(--xh-motion-scale-exit);
   }
 }
 
@@ -19113,7 +19627,9 @@ input[data-scope='mention'][data-part='input'] {
   inset-inline-start: calc(100% + var(--xh-navigation-menu-content-offset, var(--xh-space-1)));
 }
 
+/* 在场那一档才提前备好合成层：属性随 data-state 一起消失，收起后不长期占着 */
 [data-scope='navigation-menu'][data-part='content'][data-state='open'] {
+  will-change: opacity, scale;
   animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
@@ -19257,7 +19773,7 @@ input[data-scope='mention'][data-part='input'] {
   to {
     opacity: 0;
     translate: 0 var(--xh-motion-distance-md);
-    scale: var(--xh-motion-scale-enter);
+    scale: var(--xh-motion-scale-exit);
   }
 }
 
@@ -19394,7 +19910,29 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 生命周期只有三段，unmounted 那段由上面的 [hidden] 收走，这里只管前两段 */
 [data-scope='notification'][data-part='item'][data-state='visible'] {
-  animation: xh-notification-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  animation: xh-notification-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
+}
+
+/* 一摞里的多条按位次错开开幕。backwards 不能省：等待期间起帧不生效的话，
+   卡片会先以全不透明度露一下再跳回起帧。第 6 条起并到同一拍上 */
+[data-scope='notification'][data-part='item'][data-state='visible']:nth-child(2) {
+  animation-delay: calc(var(--xh-motion-stagger-step) * 1);
+}
+
+[data-scope='notification'][data-part='item'][data-state='visible']:nth-child(3) {
+  animation-delay: calc(var(--xh-motion-stagger-step) * 2);
+}
+
+[data-scope='notification'][data-part='item'][data-state='visible']:nth-child(4) {
+  animation-delay: calc(var(--xh-motion-stagger-step) * 3);
+}
+
+[data-scope='notification'][data-part='item'][data-state='visible']:nth-child(5) {
+  animation-delay: calc(var(--xh-motion-stagger-step) * 4);
+}
+
+[data-scope='notification'][data-part='item'][data-state='visible']:nth-child(n + 6) {
+  animation-delay: calc(var(--xh-motion-stagger-step) * 5);
 }
 
 /* forwards 不能省：退场窗口（removeDelay 默认 200ms）比退场动画长，
@@ -20076,7 +20614,7 @@ input[data-scope='mention'][data-part='input'] {
 
   to {
     opacity: 0;
-    scale: var(--xh-motion-scale-enter);
+    scale: var(--xh-motion-scale-exit);
   }
 }
 
@@ -20182,6 +20720,7 @@ input[data-scope='mention'][data-part='input'] {
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
@@ -20326,7 +20865,9 @@ input[data-scope='mention'][data-part='input'] {
   pointer-events: auto;
 }
 
+/* 在场那一档才提前备好合成层：属性随 data-state 一起消失，收起后不长期占着 */
 [data-scope='pagination'][data-part='content'][data-state='open'] {
+  will-change: opacity, scale;
   animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
@@ -20577,15 +21118,21 @@ input[data-scope='mention'][data-part='input'] {
 /* styles/popover.css */
 /* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
    动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
-@keyframes xh-pop-in {
+/* 进场从锚点那一侧冒出来：起点朝哪个方向退让由 placement 写进四个方向槽（那一侧写 1），
+   四个都没写就退回原地缩放 */
+@keyframes xh-overlay-pop-in {
   from {
     opacity: 0;
     scale: var(--xh-motion-scale-enter);
+    translate:
+      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
+      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
   }
 
   to {
     opacity: 1;
     scale: 1;
+    translate: 0 0;
   }
 }
 
@@ -20597,7 +21144,7 @@ input[data-scope='mention'][data-part='input'] {
 
   to {
     opacity: 0;
-    scale: var(--xh-motion-scale-enter);
+    scale: var(--xh-motion-scale-exit);
   }
 }
 
@@ -20624,6 +21171,29 @@ input[data-scope='mention'][data-part='input'] {
 /* 锚点被滚出可视区：整个浮层随之收起 */
 [data-scope='popover'][data-part='positioner'][data-hidden] {
   visibility: hidden;
+}
+
+/* 缩放原点与进场位移按落定的那一侧给：面板从贴着锚点的那条边涨开、沿主轴退让一小段。
+   两个槽由 content 继承。placement 是物理方向（引擎按 top / right / bottom / left 出值），
+   origin 与 translate 也是物理量，两边同轴，不随书写方向翻 */
+[data-scope='popover'][data-part='positioner'][data-placement^='top'] {
+  --xh-_overlay-origin-y: 100%;
+  --xh-_overlay-enter-down: 1;
+}
+
+[data-scope='popover'][data-part='positioner'][data-placement^='bottom'] {
+  --xh-_overlay-origin-y: 0;
+  --xh-_overlay-enter-up: 1;
+}
+
+[data-scope='popover'][data-part='positioner'][data-placement^='left'] {
+  --xh-_overlay-origin-x: 100%;
+  --xh-_overlay-enter-right: 1;
+}
+
+[data-scope='popover'][data-part='positioner'][data-placement^='right'] {
+  --xh-_overlay-origin-x: 0;
+  --xh-_overlay-enter-left: 1;
 }
 
 [data-scope='popover'][data-part='content'] {
@@ -20653,6 +21223,8 @@ input[data-scope='mention'][data-part='input'] {
   color: var(--xh-popover-fg, var(--xh-fg-default));
   box-shadow: var(--xh-popover-shadow, var(--xh-elevation-floating));
   pointer-events: auto;
+  /* 进退场的缩放锚在贴着锚点的那条边上；两个分量由 positioner 按 placement 写进私有槽 */
+  transform-origin: var(--xh-_overlay-origin-x, 50%) var(--xh-_overlay-origin-y, 50%);
 }
 
 /* 这里刻意没有 [data-part='content'][hidden] { display: none }，与 dialog 一致：
@@ -20666,7 +21238,9 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='popover'][data-part='content'][data-state='open'] {
-  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  /* 只在开着的这一档挂：合成层随 data-state 一起收走，收起后不再占着 */
+  will-change: opacity, scale, translate;
 }
 
 /* 退场:收起那一帧 hidden 由退场闸门押后,这里才播得出来。forwards 把末态钉住,
@@ -20822,7 +21396,7 @@ input[data-scope='mention'][data-part='input'] {
   block-size: 100%;
   border-radius: var(--xh-progress-range-radius, var(--xh-shape-pill));
   background: var(--xh-progress-range, var(--xh-_tone, var(--xh-bg-brand)));
-  transition: inline-size var(--xh-motion-duration-micro) var(--xh-motion-ease-continuous);
+  transition: inline-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous);
 }
 
 /* —— 尺寸 —— */
@@ -20887,7 +21461,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='progress'][data-part='range'][data-variant='dashboard'] {
   stroke: var(--xh-progress-range, var(--xh-_tone, var(--xh-bg-brand)));
   stroke-linecap: var(--xh-progress-linecap, round);
-  transition: stroke-dashoffset var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition: stroke-dashoffset var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
 }
 
 /* 进度未知：线形条改为一小段来回扫。宽度交给动画，连接层算出的 inline-size 与
@@ -20901,7 +21475,7 @@ input[data-scope='mention'][data-part='input'] {
   position: absolute;
   inline-size: 40%;
   transition: none;
-  animation: xh-progress-indeterminate var(--xh-progress-indeterminate-duration, calc(var(--xh-spin-duration) * 2)) var(--xh-motion-ease-loop) infinite;
+  animation: xh-progress-indeterminate var(--xh-progress-indeterminate-duration, var(--xh-shimmer-duration)) var(--xh-motion-ease-loop) infinite;
 }
 
 /* 减弱动效档：不来回扫，改成一条铺满的静态条——进度仍然未知，只是不再动。
@@ -21150,6 +21724,33 @@ input[data-scope='mention'][data-part='input'] {
   outline-offset: var(--xh-ring-offset);
 }
 
+/* 当前题的选项按位次错开开幕，换题时随 data-current 重跑。
+   backwards 不能省：等待期间起帧不生效的话，后面几条会先露一下再跳回去。
+   第 6 条起并到同一拍上 */
+[data-scope='question-flow'][data-part='question'][data-current] [data-part='option'] {
+  animation: xh-rise-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
+}
+
+[data-scope='question-flow'][data-part='question'][data-current] [data-part='option']:nth-child(2) {
+  animation-delay: calc(var(--xh-motion-stagger-step) * 1);
+}
+
+[data-scope='question-flow'][data-part='question'][data-current] [data-part='option']:nth-child(3) {
+  animation-delay: calc(var(--xh-motion-stagger-step) * 2);
+}
+
+[data-scope='question-flow'][data-part='question'][data-current] [data-part='option']:nth-child(4) {
+  animation-delay: calc(var(--xh-motion-stagger-step) * 3);
+}
+
+[data-scope='question-flow'][data-part='question'][data-current] [data-part='option']:nth-child(5) {
+  animation-delay: calc(var(--xh-motion-stagger-step) * 4);
+}
+
+[data-scope='question-flow'][data-part='question'][data-current] [data-part='option']:nth-child(n + 6) {
+  animation-delay: calc(var(--xh-motion-stagger-step) * 5);
+}
+
 /* 选中的那条读起来更重一档 */
 [data-scope='question-flow'][data-part='option'][data-state='checked'] {
   color: var(--xh-question-flow-option-fg-checked, var(--xh-fg-default));
@@ -21376,9 +21977,11 @@ input[data-scope='mention'][data-part='input'] {
   line-height: var(--xh-leading-none);
   white-space: nowrap;
   cursor: pointer;
+  /* box-shadow 在列里是给提交键的：它按不动时内顶高光整个撤掉，不接过渡就是硬切 */
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
@@ -21479,6 +22082,18 @@ input[data-scope='mention'][data-part='input'] {
   from {
     opacity: 0;
     translate: 0 var(--xh-motion-distance-md);
+  }
+
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+@keyframes xh-rise-in {
+  from {
+    opacity: 0;
+    translate: 0 var(--xh-motion-distance-sm);
   }
 
   to {
@@ -21600,7 +22215,8 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 /* 圆点用 scale 收放，选中态切换不引起布局抖动。
-   直径取指示器的一半：换尺寸档时圈与点一起走，比例不散 */
+   直径取指示器的一半：换尺寸档时圈与点一起走，比例不散。
+   出现时略微涨过 1 再收回，过冲量落在圈内不碰描边 */
 [data-scope='radio-group'][data-part='indicator']::before {
   content: '';
   inline-size: calc(var(--xh-radio-group-indicator-size, var(--xh-_radio-group-indicator)) / 2);
@@ -21608,7 +22224,7 @@ input[data-scope='mention'][data-part='input'] {
   border-radius: var(--xh-shape-pill);
   background: var(--xh-radio-group-indicator-dot, var(--xh-_radio-group-accent));
   scale: 0;
-  transition: scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+  transition: scale var(--xh-motion-duration-micro) var(--xh-motion-ease-settle);
 }
 
 [data-scope='radio-group'][data-part='indicator'][data-state='checked']::before {
@@ -22135,17 +22751,24 @@ input[data-scope='mention'][data-part='input'] {
 /* styles/select.css */
 /* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
    动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
-@keyframes xh-pop-in {
+/* 进场从锚点那一侧冒出来：起点朝哪个方向退让由 placement 写进四个方向槽（那一侧写 1），
+   四个都没写就退回原地缩放 */
+@keyframes xh-overlay-pop-in {
   from {
     opacity: 0;
     scale: var(--xh-motion-scale-enter);
+    translate:
+      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
+      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
   }
 
   to {
     opacity: 1;
     scale: 1;
+    translate: 0 0;
   }
 }
+
 @keyframes xh-pop-out {
   from {
     opacity: 1;
@@ -22154,7 +22777,7 @@ input[data-scope='mention'][data-part='input'] {
 
   to {
     opacity: 0;
-    scale: var(--xh-motion-scale-enter);
+    scale: var(--xh-motion-scale-exit);
   }
 }
 
@@ -22178,6 +22801,29 @@ input[data-scope='mention'][data-part='input'] {
 /* 锚点被滚出可视区：整个浮层随之收起 */
 [data-scope='select'][data-part='positioner'][data-hidden] {
   visibility: hidden;
+}
+
+/* 缩放原点与进场位移按落定的那一侧给：浮层从贴着盒的那条边涨开、沿主轴退让一小段。
+   两个槽由 content 继承。placement 是物理方向（引擎按 top / right / bottom / left 出值），
+   origin 与 translate 也是物理量，两边同轴，不随书写方向翻 */
+[data-scope='select'][data-part='positioner'][data-placement^='top'] {
+  --xh-_overlay-origin-y: 100%;
+  --xh-_overlay-enter-down: 1;
+}
+
+[data-scope='select'][data-part='positioner'][data-placement^='bottom'] {
+  --xh-_overlay-origin-y: 0;
+  --xh-_overlay-enter-up: 1;
+}
+
+[data-scope='select'][data-part='positioner'][data-placement^='left'] {
+  --xh-_overlay-origin-x: 100%;
+  --xh-_overlay-enter-right: 1;
+}
+
+[data-scope='select'][data-part='positioner'][data-placement^='right'] {
+  --xh-_overlay-origin-x: 0;
+  --xh-_overlay-enter-left: 1;
 }
 
 /* 私有槽同时声明在根与 positioner 上：浮层被搬到 portal 落点，不是根的后代，继承不过去 */
@@ -22531,6 +23177,8 @@ input[data-scope='mention'][data-part='input'] {
   /* 条目的悬停底色是方角，滚到两端时会探出外壳的圆角 */
   overflow: hidden;
   pointer-events: auto;
+  /* 进退场的缩放锚在贴着盒的那条边上；两个分量由 positioner 按 placement 写进私有槽 */
+  transform-origin: var(--xh-_overlay-origin-x, 50%) var(--xh-_overlay-origin-y, 50%);
 }
 
 /* 列表框本体：只管滚动，留白归外壳。
@@ -22582,7 +23230,9 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='select'][data-part='content'][data-state='open'] {
-  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  /* 只在开着的这一档挂：合成层随 data-state 一起收走，收起后不再占着 */
+  will-change: opacity, scale, translate;
 }
 
 /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
@@ -22769,7 +23419,7 @@ input[data-scope='mention'][data-part='input'] {
 
   to {
     opacity: 0;
-    scale: var(--xh-motion-scale-enter);
+    scale: var(--xh-motion-scale-exit);
   }
 }
 
@@ -22971,7 +23621,9 @@ input[data-scope='mention'][data-part='input'] {
   overflow-y: auto;
 }
 
+/* 在场那一档才提前备好合成层：属性随 data-state 一起消失，收起后不长期占着 */
 [data-scope='side-nav'][data-part='branch-content'][data-popout][data-state='open'] {
+  will-change: opacity, scale;
   animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
@@ -23328,6 +23980,13 @@ input[data-scope='mention'][data-part='input'] {
    其余项反过来要过渡：它们是被让开的，瞬移会看不出发生了什么。 */
 [data-scope='sortable'][data-part='root'][data-dragging] [data-part='item']:not([data-dragging]) {
   transition: transform var(--xh-motion-duration-micro) var(--xh-motion-ease-continuous);
+}
+
+/* 抓起与放下时的抬升、压深都淡变。位移不进这条：它由连接层每帧写内联 transform */
+[data-scope='sortable'][data-part='item'] {
+  transition:
+    box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='sortable'][data-part='item'][data-dragging] {
@@ -23707,6 +24366,7 @@ input[data-scope='mention'][data-part='input'] {
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
@@ -23850,8 +24510,10 @@ input[data-scope='mention'][data-part='input'] {
   border-radius: var(--xh-switch-radius, var(--xh-shape-pill));
   background: var(--xh-switch-bg, var(--xh-bg-subtle-active));
   cursor: pointer;
+  /* 投影一项走的是校验失败那圈内描边：它由 box-shadow 画出来，不接过渡就是一帧跳出来的 */
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
@@ -23912,7 +24574,10 @@ input[data-scope='mention'][data-part='input'] {
   border-radius: var(--xh-switch-thumb-radius, var(--xh-shape-pill));
   background: var(--xh-switch-thumb, var(--xh-bg-canvas));
   box-shadow: var(--xh-switch-thumb-shadow, var(--xh-elevation-raised));
-  transition: translate var(--xh-motion-duration-micro) var(--xh-motion-ease-continuous);
+  /* 只读那一档滑块收掉浮起的投影，与轨道换底色同步淡出 */
+  transition:
+    translate var(--xh-motion-duration-micro) var(--xh-motion-ease-continuous),
+    box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='switch'][data-part='thumb'][data-state='checked'] {
@@ -23998,12 +24663,14 @@ input[data-scope='mention'][data-part='input'] {
 
 /* styles/table.css */
 /* 加载态自己冒出来，用户没按任何键：一段极轻的呼吸就够，别抢走正在读表的注意力 */
+/* 一次呼吸自带来回：起止两端与中点各写一帧，声明的周期就是一次完整的明暗往返 */
 @keyframes xh-table-loading-pulse {
-  from {
+  0%,
+  100% {
     opacity: var(--xh-state-disabled-opacity);
   }
 
-  to {
+  50% {
     opacity: 1;
   }
 }
@@ -24769,7 +25436,8 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='table'][data-part='loading'] {
-  animation: xh-table-loading-pulse calc(var(--xh-spin-duration) / 2) var(--xh-motion-ease-loop) infinite alternate;
+  animation: xh-table-loading-pulse var(--xh-table-loading-duration, var(--xh-shimmer-duration))
+    var(--xh-motion-ease-sweep) infinite;
 }
 
 /* 减少动效：呼吸停下，加载态只留静止的文案。两条规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
@@ -24941,6 +25609,7 @@ input[data-scope='mention'][data-part='input'] {
   cursor: pointer;
   transition:
     color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
@@ -26236,6 +26905,29 @@ input[data-scope='mention'][data-part='input'] {
   visibility: hidden;
 }
 
+/* 缩放原点与进场位移按落定的那一侧给：面板从贴着锚点的那条边涨开、沿主轴退让一小段。
+   两个槽由 content 继承。placement 是物理方向（引擎按 top / right / bottom / left 出值），
+   origin 与 translate 也是物理量，两边同轴，不随书写方向翻 */
+[data-scope='time-picker'][data-part='positioner'][data-placement^='top'] {
+  --xh-_overlay-origin-y: 100%;
+  --xh-_overlay-enter-down: 1;
+}
+
+[data-scope='time-picker'][data-part='positioner'][data-placement^='bottom'] {
+  --xh-_overlay-origin-y: 0;
+  --xh-_overlay-enter-up: 1;
+}
+
+[data-scope='time-picker'][data-part='positioner'][data-placement^='left'] {
+  --xh-_overlay-origin-x: 100%;
+  --xh-_overlay-enter-right: 1;
+}
+
+[data-scope='time-picker'][data-part='positioner'][data-placement^='right'] {
+  --xh-_overlay-origin-x: 0;
+  --xh-_overlay-enter-left: 1;
+}
+
 /* 私有槽同时声明在根与 positioner 上：浮层被搬到 portal 落点，不是根的后代，继承不过去 */
 [data-scope='time-picker']:is([data-part='root'], [data-part='positioner']) {
   /* 尺寸档只换这几个私有槽，标题、输入行与浮层里的格子都从这两处继承它们，
@@ -26538,6 +27230,8 @@ input[data-scope='mention'][data-part='input'] {
   color: var(--xh-time-picker-content-fg, var(--xh-fg-default));
   font-variant-numeric: tabular-nums;
   box-shadow: var(--xh-time-picker-content-shadow, var(--xh-elevation-floating));
+  /* 进退场的缩放锚在贴着锚点的那条边上；两个分量由 positioner 按 placement 写进私有槽 */
+  transform-origin: var(--xh-_overlay-origin-x, 50%) var(--xh-_overlay-origin-y, 50%);
   pointer-events: auto;
 }
 
@@ -26553,7 +27247,9 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='time-picker'][data-part='content'][data-state='open'] {
-  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  /* 只在展开态挂着：随状态属性一起消失，不长期占着合成层 */
+  will-change: opacity, scale, translate;
+  animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
@@ -26748,19 +27444,23 @@ input[data-scope='mention'][data-part='input'] {
   mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
 }
 
-/* 浮层进场：淡入 + 轻微上浮，方向与它从输入行下方展开一致。
-   关键帧写在自己文件里并带组件前缀，不去动共享的 motion.css */
-@keyframes xh-pop-in {
+/* 进场从锚点那一侧冒出来：位移的两个分量由 placement 写进私有槽，没写就退回原地缩放 */
+@keyframes xh-overlay-pop-in {
   from {
     opacity: 0;
     scale: var(--xh-motion-scale-enter);
+    translate:
+      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
+      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
   }
 
   to {
     opacity: 1;
     scale: 1;
+    translate: 0 0;
   }
 }
+
 @keyframes xh-pop-out {
   from {
     opacity: 1;
@@ -26769,7 +27469,7 @@ input[data-scope='mention'][data-part='input'] {
 
   to {
     opacity: 0;
-    scale: var(--xh-motion-scale-enter);
+    scale: var(--xh-motion-scale-exit);
   }
 }
 
@@ -26817,7 +27517,7 @@ input[data-scope='mention'][data-part='input'] {
   to {
     opacity: 0;
     translate: 0 var(--xh-motion-distance-md);
-    scale: var(--xh-motion-scale-enter);
+    scale: var(--xh-motion-scale-exit);
   }
 }
 
@@ -26930,7 +27630,29 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 生命周期只有三段，unmounted 那段由上面的 [hidden] 收走，这里只管前两段 */
 [data-scope='toast'][data-part='root'][data-state='visible'] {
-  animation: xh-toast-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  animation: xh-toast-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
+}
+
+/* 一摞里的多条按位次错开开幕。backwards 不能省：等待期间起帧不生效的话，
+   条子会先以全不透明度露一下再跳回起帧。第 6 条起并到同一拍上 */
+[data-scope='toast'][data-part='root'][data-state='visible']:nth-child(2) {
+  animation-delay: calc(var(--xh-motion-stagger-step) * 1);
+}
+
+[data-scope='toast'][data-part='root'][data-state='visible']:nth-child(3) {
+  animation-delay: calc(var(--xh-motion-stagger-step) * 2);
+}
+
+[data-scope='toast'][data-part='root'][data-state='visible']:nth-child(4) {
+  animation-delay: calc(var(--xh-motion-stagger-step) * 3);
+}
+
+[data-scope='toast'][data-part='root'][data-state='visible']:nth-child(5) {
+  animation-delay: calc(var(--xh-motion-stagger-step) * 4);
+}
+
+[data-scope='toast'][data-part='root'][data-state='visible']:nth-child(n + 6) {
+  animation-delay: calc(var(--xh-motion-stagger-step) * 5);
 }
 
 /* forwards 不能省：退场窗口（removeDelay 默认 200ms）比退场动画长，
@@ -27171,6 +27893,7 @@ input[data-scope='mention'][data-part='input'] {
   user-select: none;
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
@@ -27356,6 +28079,7 @@ input[data-scope='mention'][data-part='input'] {
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
@@ -27717,7 +28441,9 @@ input[data-scope='mention'][data-part='input'] {
   border-block-start: var(--xh-stroke-thin) solid var(--xh-tool-call-border, var(--xh-border-subtle));
 }
 
+/* 展开那一档才提前备好行高这条通道：属性随 data-state 一起消失，收起后不长期占着 */
 [data-scope='tool-call'][data-part='content'][data-state='open'] {
+  will-change: grid-template-rows;
   animation: xh-tool-call-expand var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
@@ -27876,6 +28602,10 @@ input[data-scope='mention'][data-part='input'] {
   border-radius: var(--xh-toolbar-radius, var(--xh-shape-surface));
   background: var(--xh-toolbar-bg, var(--xh-bg-surface));
   color: var(--xh-toolbar-fg, var(--xh-fg-default));
+  /* 整条置灰与恢复是一次状态切换，底色与字色淡着换，不硬切 */
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='toolbar'][data-part='root'][data-orientation='horizontal'] {
@@ -27976,15 +28706,21 @@ input[data-scope='mention'][data-part='input'] {
 /* styles/tooltip.css */
 /* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
    动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
-@keyframes xh-pop-in {
+/* 进场从锚点那一侧冒出来：起点朝哪个方向退让由 placement 写进四个方向槽（那一侧写 1），
+   四个都没写就退回原地缩放 */
+@keyframes xh-overlay-pop-in {
   from {
     opacity: 0;
     scale: var(--xh-motion-scale-enter);
+    translate:
+      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
+      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
   }
 
   to {
     opacity: 1;
     scale: 1;
+    translate: 0 0;
   }
 }
 
@@ -27996,7 +28732,7 @@ input[data-scope='mention'][data-part='input'] {
 
   to {
     opacity: 0;
-    scale: var(--xh-motion-scale-enter);
+    scale: var(--xh-motion-scale-exit);
   }
 }
 
@@ -28037,6 +28773,29 @@ input[data-scope='mention'][data-part='input'] {
   visibility: hidden;
 }
 
+/* 缩放原点与进场位移按落定的那一侧给：气泡从贴着锚点的那条边涨开、沿主轴退让一小段。
+   两个槽由 content 继承。placement 是物理方向（引擎按 top / right / bottom / left 出值），
+   origin 与 translate 也是物理量，两边同轴，不随书写方向翻 */
+[data-scope='tooltip'][data-part='positioner'][data-placement^='top'] {
+  --xh-_overlay-origin-y: 100%;
+  --xh-_overlay-enter-down: 1;
+}
+
+[data-scope='tooltip'][data-part='positioner'][data-placement^='bottom'] {
+  --xh-_overlay-origin-y: 0;
+  --xh-_overlay-enter-up: 1;
+}
+
+[data-scope='tooltip'][data-part='positioner'][data-placement^='left'] {
+  --xh-_overlay-origin-x: 100%;
+  --xh-_overlay-enter-right: 1;
+}
+
+[data-scope='tooltip'][data-part='positioner'][data-placement^='right'] {
+  --xh-_overlay-origin-x: 0;
+  --xh-_overlay-enter-left: 1;
+}
+
 [data-scope='tooltip'][data-part='content'] {
   /* 尺寸档只换这三个私有槽。tooltip 没有 root 部件，两轴都落在浮层树最外层的 content 上，
      箭头是它的后代，语气槽一并继承 */
@@ -28062,10 +28821,14 @@ input[data-scope='mention'][data-part='input'] {
   font-size: var(--xh-tooltip-font-size, var(--xh-_tooltip-font-size));
   line-height: var(--xh-leading-normal);
   box-shadow: var(--xh-tooltip-shadow, var(--xh-elevation-floating));
+  /* 进退场的缩放锚在贴着锚点的那条边上；两个分量由 positioner 按 placement 写进私有槽 */
+  transform-origin: var(--xh-_overlay-origin-x, 50%) var(--xh-_overlay-origin-y, 50%);
 }
 
 [data-scope='tooltip'][data-part='content'][data-state='open'] {
-  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  /* 只在开着的这一档挂：合成层随 data-state 一起收走，收起后不再占着 */
+  will-change: opacity, scale, translate;
 }
 
 /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
@@ -28138,15 +28901,21 @@ input[data-scope='mention'][data-part='input'] {
   }
 }
 
-@keyframes xh-pop-in {
+/* 进场从锚点那一侧冒出来：起点朝哪个方向退让由 placement 写进四个方向槽（那一侧写 1），
+   四个都没写就退回原地缩放 */
+@keyframes xh-overlay-pop-in {
   from {
     opacity: 0;
     scale: var(--xh-motion-scale-enter);
+    translate:
+      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
+      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
   }
 
   to {
     opacity: 1;
     scale: 1;
+    translate: 0 0;
   }
 }
 
@@ -28158,7 +28927,7 @@ input[data-scope='mention'][data-part='input'] {
 
   to {
     opacity: 0;
-    scale: var(--xh-motion-scale-enter);
+    scale: var(--xh-motion-scale-exit);
   }
 }
 
@@ -28175,7 +28944,7 @@ input[data-scope='mention'][data-part='input'] {
   }
 }
 
-/* 退场反向放大淡出，与进场对称 */
+/* 退场反向放大淡出，幅度比进场浅一档 */
 @keyframes xh-tour-spotlight-out {
   from {
     opacity: 1;
@@ -28184,7 +28953,7 @@ input[data-scope='mention'][data-part='input'] {
 
   to {
     opacity: 0;
-    scale: calc(2 - var(--xh-motion-scale-enter));
+    scale: calc(2 - var(--xh-motion-scale-exit));
   }
 }
 
@@ -28295,6 +29064,30 @@ input[data-scope='mention'][data-part='input'] {
   display: none;
 }
 
+/* 缩放原点与进场位移按落定的那一侧给：气泡从贴着锚点的那条边涨开、沿主轴退让一小段。
+   两个槽由 content 继承。只认锚定步：居中步没有锚点，data-placement 仍带着缺省值。
+   placement 是物理方向（引擎按 top / right / bottom / left 出值），origin 与 translate
+   也是物理量，两边同轴，不随书写方向翻 */
+[data-scope='tour'][data-part='positioner'][data-position='anchored'][data-placement^='top'] {
+  --xh-_overlay-origin-y: 100%;
+  --xh-_overlay-enter-down: 1;
+}
+
+[data-scope='tour'][data-part='positioner'][data-position='anchored'][data-placement^='bottom'] {
+  --xh-_overlay-origin-y: 0;
+  --xh-_overlay-enter-up: 1;
+}
+
+[data-scope='tour'][data-part='positioner'][data-position='anchored'][data-placement^='left'] {
+  --xh-_overlay-origin-x: 100%;
+  --xh-_overlay-enter-right: 1;
+}
+
+[data-scope='tour'][data-part='positioner'][data-position='anchored'][data-placement^='right'] {
+  --xh-_overlay-origin-x: 0;
+  --xh-_overlay-enter-left: 1;
+}
+
 [data-scope='tour'][data-part='content'] {
   position: relative;
   display: flex;
@@ -28312,6 +29105,8 @@ input[data-scope='mention'][data-part='input'] {
   color: var(--xh-tour-fg, var(--xh-fg-default));
   box-shadow: var(--xh-tour-shadow, var(--xh-elevation-sheet));
   pointer-events: auto;
+  /* 进退场的缩放锚在贴着锚点的那条边上；两个分量由 positioner 按 placement 写进私有槽 */
+  transform-origin: var(--xh-_overlay-origin-x, 50%) var(--xh-_overlay-origin-y, 50%);
 }
 
 /* 这里刻意没有 [data-part='content'][hidden] { display: none }，与 popover 一致：
@@ -28324,7 +29119,9 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='tour'][data-part='content'][data-state='open'] {
-  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  /* 只在开着的这一档挂：合成层随 data-state 一起收走，收起后不再占着 */
+  will-change: opacity, scale, translate;
 }
 
 /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
@@ -29068,9 +29865,11 @@ input[data-scope='mention'][data-part='input'] {
   white-space: nowrap;
   cursor: pointer;
   user-select: none;
+  /* box-shadow 一并接过渡：换父落点那圈内描边挂在行自己身上，跟着 data-drop 在行间移动 */
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 /* 分支行的首格是展开箭头，叶子行没有这一格。作者摆了 item-indicator 时由它顶着，
@@ -29442,17 +30241,24 @@ input[data-scope='mention'][data-part='input'] {
 /* styles/tree-select.css */
 /* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
    动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
-@keyframes xh-pop-in {
+/* 进场从锚点那一侧冒出来：起点朝哪个方向退让由 placement 写进四个方向槽（那一侧写 1），
+   四个都没写就退回原地缩放 */
+@keyframes xh-overlay-pop-in {
   from {
     opacity: 0;
     scale: var(--xh-motion-scale-enter);
+    translate:
+      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
+      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
   }
 
   to {
     opacity: 1;
     scale: 1;
+    translate: 0 0;
   }
 }
+
 @keyframes xh-pop-out {
   from {
     opacity: 1;
@@ -29461,7 +30267,7 @@ input[data-scope='mention'][data-part='input'] {
 
   to {
     opacity: 0;
-    scale: var(--xh-motion-scale-enter);
+    scale: var(--xh-motion-scale-exit);
   }
 }
 
@@ -29488,6 +30294,29 @@ input[data-scope='mention'][data-part='input'] {
 /* 锚点被滚出可视区：整个浮层随之收起 */
 [data-scope='tree-select'][data-part='positioner'][data-hidden] {
   visibility: hidden;
+}
+
+/* 缩放原点与进场位移按落定的那一侧给：浮层从贴着盒的那条边涨开、沿主轴退让一小段。
+   两个槽由 content 继承。placement 是物理方向（引擎按 top / right / bottom / left 出值），
+   origin 与 translate 也是物理量，两边同轴，不随书写方向翻 */
+[data-scope='tree-select'][data-part='positioner'][data-placement^='top'] {
+  --xh-_overlay-origin-y: 100%;
+  --xh-_overlay-enter-down: 1;
+}
+
+[data-scope='tree-select'][data-part='positioner'][data-placement^='bottom'] {
+  --xh-_overlay-origin-y: 0;
+  --xh-_overlay-enter-up: 1;
+}
+
+[data-scope='tree-select'][data-part='positioner'][data-placement^='left'] {
+  --xh-_overlay-origin-x: 100%;
+  --xh-_overlay-enter-right: 1;
+}
+
+[data-scope='tree-select'][data-part='positioner'][data-placement^='right'] {
+  --xh-_overlay-origin-x: 0;
+  --xh-_overlay-enter-left: 1;
 }
 
 /* 私有槽同时声明在根与 positioner 上：浮层被搬到 portal 落点，不是根的后代，继承不过去 */
@@ -29778,6 +30607,8 @@ input[data-scope='mention'][data-part='input'] {
   /* 两轴一起给：深层节点靠缩进往行末推，横向溢出是常态，得够得着 */
   overflow: auto;
   pointer-events: auto;
+  /* 进退场的缩放锚在贴着盒的那条边上；两个分量由 positioner 按 placement 写进私有槽 */
+  transform-origin: var(--xh-_overlay-origin-x, 50%) var(--xh-_overlay-origin-y, 50%);
 }
 
 /* 这里刻意没有 [data-part='content'][hidden] { display: none }，与 dialog 一致：
@@ -29792,7 +30623,9 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='tree-select'][data-part='content'][data-state='open'] {
-  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  /* 只在开着的这一档挂：合成层随 data-state 一起收走，收起后不再占着 */
+  will-change: opacity, scale, translate;
 }
 
 /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，

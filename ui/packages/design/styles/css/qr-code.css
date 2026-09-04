@@ -23,6 +23,11 @@
     /* 模块那条 path 不带自己的填充色，从这里继承下去 */
     color: var(--xh-qr-code-fg, var(--xh-color-neutral-950));
     fill: currentColor;
+
+    /* 占位与码面之间来回时，底色与那圈描边淡变 */
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */

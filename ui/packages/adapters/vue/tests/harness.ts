@@ -1,10 +1,8 @@
-import type { AdapterEvent, AdapterHarness, Fixture, FixtureNode } from '@xihan-ui/testing'
-import type { App, Component, VNode } from 'vue'
+import type { AdapterEvent, AdapterHarness, Fixture } from '@xihan-ui/testing'
+import type { App, Component } from 'vue'
 import { attachHost } from '@xihan-ui/testing'
 import { createApp, h, nextTick, reactive } from 'vue'
-import * as X from '../src'
-
-const registry = X as unknown as Record<string, Component>
+import { renderFixtureNode, resolveRoot } from './fixture-vnode'
 
 const PUBLIC_EVENTS = {
   'checked-change': 'onCheckedChange',
@@ -33,39 +31,9 @@ const PUBLIC_EVENTS = {
   'value-change': 'onValueChange',
 } as const
 
-function pascal(s: string): string {
-  return s.split(/[-_]/).filter(Boolean).map(w => w[0]!.toUpperCase() + w.slice(1)).join('')
-}
-
-// 根组件命名可能带 Root 后缀（XhDialogRoot），也可能就是组件名本身（XhButton）。
-function resolveRoot(component: string): Component {
-  const root = registry[`Xh${pascal(component)}Root`] ?? registry[`Xh${pascal(component)}`]
-  if (!root)
-    throw new Error(`vue 适配器缺根组件：Xh${pascal(component)}[Root]`)
-  return root
-}
-
-function resolvePart(component: string, part: string): Component {
-  const comp = registry[`Xh${pascal(component)}${pascal(part)}`]
-  if (!comp)
-    throw new Error(`vue 适配器缺组件：Xh${pascal(component)}${pascal(part)}`)
-  return comp
-}
-
 function declaredEvents(component: Component): Set<string> {
   const emits = (component as { emits?: readonly string[] | Record<string, unknown> }).emits
   return new Set(Array.isArray(emits) ? emits : Object.keys(emits ?? {}))
-}
-
-// FixtureNode → VNode。part 节点解析成对应组件，纯结构节点直接建元素；组件数增加时零改动。
-function render(node: FixtureNode, component: string): VNode {
-  if (node.part) {
-    const kids = node.children?.map(c => render(c, component))
-    const slot = kids ? () => kids : node.text != null ? () => node.text : undefined
-    return h(resolvePart(component, node.part), { ...node.attrs }, slot ? { default: slot } : undefined)
-  }
-  const kids = node.children?.map(c => render(c, component))
-  return h(node.tag ?? 'div', { ...node.attrs }, kids ?? node.text)
 }
 
 export function createVueHarness(): AdapterHarness {
@@ -138,7 +106,7 @@ export function createVueHarness(): AdapterHarness {
       app = createApp({
         setup: () => () =>
           h(Root, { ...fixture.tree.attrs, ...props, ...listeners }, {
-            default: () => fixture.tree.children?.map(c => render(c, fixture.component)) ?? [],
+            default: () => fixture.tree.children?.map(c => renderFixtureNode(c, fixture.component)) ?? [],
           }),
       })
       app.config.warnHandler = (message) => {

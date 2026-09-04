@@ -116,7 +116,7 @@ describe('多指会话', () => {
     s.add({ pointerId: 2, clientX: 100, clientY: 0 })
 
     document.dispatchEvent(pointer('pointermove', 2, 200, 0))
-    const points = onChange.mock.calls[0][0]
+    const points = onChange.mock.calls[0]![0]
     expect(points).toHaveLength(2)
     expect(points[1]).toMatchObject({ pointerId: 2, clientX: 200 })
     s.dispose()
@@ -130,7 +130,7 @@ describe('多指会话', () => {
 
     document.dispatchEvent(pointer('pointerup', 2))
     expect(onChange).toHaveBeenCalledTimes(1)
-    expect(onChange.mock.calls[0][0]).toHaveLength(1)
+    expect(onChange.mock.calls[0]![0]).toHaveLength(1)
     s.dispose()
   })
 

@@ -51,16 +51,24 @@ const MOVE = new Set([
 /** 原地形变的属性。 */
 const SHAPE = new Set(['scale', 'rotate'])
 
-/** 各角色要求的语义档。 */
+/** 各角色要求的语义档。move 有两档，按位移的尺度分。 */
 const REQUIRED = { move: '--xh-motion-ease-continuous', shape: '--xh-motion-ease-enter-strong' }
 
 /**
- * 逐项例外。键写成「组件:行内属性」，值写这一项为什么不走 REQUIRED 的档。
+ * 位移以百分比或视口尺度计、或一端在可视区外的那些项，走 --xh-motion-ease-slide
+ * 而不是 -continuous。键写成「组件:行内属性」，值写这一项为什么算大尺度。
+ * 登记了却没被扫到的键会判红，名单不会悄悄过期。
+ */
+const SLIDE_REQUIRED = {
+  'carousel:transform': '整页换位，位移量以百分比计',
+}
+
+/**
+ * 逐项例外。键写成「组件:行内属性」，值写这一项为什么两档都不走。
  * 登记了却没被扫到的键会判红，名单不会悄悄过期。
  */
 const ROLE_OVERRIDE = {
-  // 目前无例外；新令牌 --xh-motion-ease-slide / -settle 落地后，
-  // 整页换位与小件落位两类从这里转出去。
+  'radio-group:scale': '圆点直径为指示器一半的小件落位，走 --xh-motion-ease-settle 的过冲收束，过冲量落在圈内不碰描边',
 }
 
 /** 去掉块注释但保留换行，报错行号才对得上源文件。 */
@@ -131,7 +139,10 @@ for (const file of files) {
       }
 
       const ease = easeToken(item)
-      const want = REQUIRED[role]
+      const slide = role === 'move' && key in SLIDE_REQUIRED
+      if (slide)
+        seen.add(key)
+      const want = slide ? '--xh-motion-ease-slide' : REQUIRED[role]
       if (ease === want)
         continue
 
@@ -147,6 +158,10 @@ for (const file of files) {
 for (const key of Object.keys(ROLE_OVERRIDE)) {
   if (!seen.has(key))
     problems.push(`${key}  登记在 ROLE_OVERRIDE 里却没被扫到——名单过期了`)
+}
+for (const key of Object.keys(SLIDE_REQUIRED)) {
+  if (!seen.has(key))
+    problems.push(`${key}  登记在 SLIDE_REQUIRED 里却没被扫到——名单过期了`)
 }
 
 if (problems.length) {

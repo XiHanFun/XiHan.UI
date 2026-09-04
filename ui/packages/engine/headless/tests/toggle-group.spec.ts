@@ -353,7 +353,7 @@ interface Group {
 
 function mountGroup(service: Service<ToggleGroupSchema>, declared: readonly ToggleGroupItemProps[]): Group {
   const root = document.createElement('div')
-  const items = declared.map(() => document.createElement('button'))
+  const items: HTMLElement[] = declared.map(() => document.createElement('button'))
   for (const el of items) root.appendChild(el)
   document.body.appendChild(root)
 

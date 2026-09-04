@@ -350,6 +350,12 @@
     border-start-end-radius: var(--xh-drawer-radius, var(--xh-shape-surface));
   }
 
+  /* 展开期间面板整块推到一屏之外再推回来：只在开着的这一档挂，
+     合成层随 data-state 一起收走，收起后不再占着 */
+  [data-scope='drawer'][data-part='content'][data-state='open'] {
+    will-change: translate;
+  }
+
   /* 滑入/滑出按边配对。退场一律 forwards：presence 要等 animationend 才卸载，
      不定住终态，面板会在最后一帧弹回原位再消失。 */
   [data-scope='drawer'][data-part='content'][data-side='right'][data-state='open'] {

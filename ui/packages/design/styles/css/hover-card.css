@@ -1,17 +1,24 @@
 @layer xihan.motion {
   /* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
      动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
-  @keyframes xh-pop-in {
+  /* 进场从锚点那一侧冒出来：起点朝哪个方向退让由 placement 写进四个方向槽（那一侧写 1），
+     四个都没写就退回原地缩放 */
+  @keyframes xh-overlay-pop-in {
     from {
       opacity: 0;
       scale: var(--xh-motion-scale-enter);
+      translate:
+        calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
+        calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
     }
 
     to {
       opacity: 1;
       scale: 1;
+      translate: 0 0;
     }
   }
+
   @keyframes xh-pop-out {
     from {
       opacity: 1;
@@ -20,7 +27,7 @@
 
     to {
       opacity: 0;
-      scale: var(--xh-motion-scale-enter);
+      scale: var(--xh-motion-scale-exit);
     }
   }
 }
@@ -82,6 +89,29 @@
     visibility: hidden;
   }
 
+  /* 缩放原点与进场位移按落定的那一侧给：卡片从贴着锚点的那条边涨开、沿主轴退让一小段。
+     两个槽由 content 继承。placement 是物理方向（引擎按 top / right / bottom / left 出值），
+     origin 与 translate 也是物理量，两边同轴，不随书写方向翻 */
+  [data-scope='hover-card'][data-part='positioner'][data-placement^='top'] {
+    --xh-_overlay-origin-y: 100%;
+    --xh-_overlay-enter-down: 1;
+  }
+
+  [data-scope='hover-card'][data-part='positioner'][data-placement^='bottom'] {
+    --xh-_overlay-origin-y: 0;
+    --xh-_overlay-enter-up: 1;
+  }
+
+  [data-scope='hover-card'][data-part='positioner'][data-placement^='left'] {
+    --xh-_overlay-origin-x: 100%;
+    --xh-_overlay-enter-right: 1;
+  }
+
+  [data-scope='hover-card'][data-part='positioner'][data-placement^='right'] {
+    --xh-_overlay-origin-x: 0;
+    --xh-_overlay-enter-left: 1;
+  }
+
   /* 与 tooltip 不同：卡片本体承载交互，必须吃指针——
      指针停在卡片上就不该收起，里面的链接与按钮也要点得到 */
   [data-scope='hover-card'][data-part='content'] {
@@ -108,6 +138,8 @@
     color: var(--xh-hover-card-fg, var(--xh-fg-default));
     box-shadow: var(--xh-hover-card-shadow, var(--xh-elevation-floating));
     pointer-events: auto;
+    /* 进退场的缩放锚在贴着锚点的那条边上；两个分量由 positioner 按 placement 写进私有槽 */
+    transform-origin: var(--xh-_overlay-origin-x, 50%) var(--xh-_overlay-origin-y, 50%);
   }
 
   /* 这里刻意没有 [data-part='content'][hidden] { display: none }，与 dialog 一致：
@@ -122,7 +154,9 @@
   }
 
   [data-scope='hover-card'][data-part='content'][data-state='open'] {
-    animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+    animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+    /* 只在开着的这一档挂：合成层随 data-state 一起收走，收起后不再占着 */
+    will-change: opacity, scale, translate;
   }
 
   /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，

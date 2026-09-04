@@ -37,6 +37,10 @@
     cursor: crosshair;
     /* 一划就会把画布连同旁边的文字一起刷成选中态 */
     user-select: none;
+    /* 落笔、校验不过与禁用三档各换一次描边或底色，换的过程要看得出来 */
+    transition:
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='signature-pad'][data-part='control'][data-invalid] {

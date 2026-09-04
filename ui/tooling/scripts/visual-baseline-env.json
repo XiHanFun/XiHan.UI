@@ -1,0 +1,91 @@
+{
+  "$description": "像素基线的运行环境常量真源。字体族、字体包、容器镜像、运行命令这四样散在截图用例、容器脚本、CI 与文档里，任何一处走样都只表现为「四十张基线整体判红」。本表登记每样常量出现在哪些文件里，sites 两侧反查：登记了却没命中判名单过期，命中了却没登记判新增处没入表。sites 用仓库根相对路径（ui/ 在仓库根的下一级）。",
+  "facts": {
+    "font-family": {
+      "note": "截图用例写死在文档根上的字体族名，皮肤的 font-family: inherit 最终取的就是它",
+      "value": "DejaVu Sans",
+      "sites": [
+        ".github/workflows/ci.yml",
+        "docs/guide/testing.md",
+        "ui/packages/adapters/vue/tests/browser/visual-baseline.spec.ts",
+        "ui/tooling/scripts/visual-baseline.container.sh",
+        "ui/tooling/scripts/visual-baseline.mjs"
+      ]
+    },
+    "font-package": {
+      "note": "提供该字体族的 apt 包，容器与 CI 各装一次",
+      "value": "fonts-dejavu-core",
+      "sites": [
+        ".github/workflows/ci.yml",
+        "docs/guide/testing.md",
+        "ui/packages/adapters/vue/tests/browser/visual-baseline.spec.ts",
+        "ui/tooling/scripts/visual-baseline.container.sh",
+        "ui/tooling/scripts/visual-baseline.mjs"
+      ]
+    },
+    "playwright-image": {
+      "note": "容器运行器用的镜像。版本取自 pnpm-workspace.yaml 的 catalog playwright，两边必须同版本，镜像里的浏览器二进制才与 CI 装的那一份配套",
+      "pattern": "mcr\\.microsoft\\.com/playwright:v([0-9]+\\.[0-9]+\\.[0-9]+)-[a-z]+",
+      "valueFrom": "catalog:playwright",
+      "sites": [
+        "docs/guide/testing.md",
+        "ui/tooling/scripts/visual-baseline.mjs"
+      ]
+    },
+    "runner-command": {
+      "note": "容器运行器的入口命令，package.json 里必须有同名脚本",
+      "value": "pnpm visual:baseline",
+      "script": "visual:baseline",
+      "sites": [
+        ".gitcode/PULL_REQUEST_TEMPLATE.md",
+        ".gitee/PULL_REQUEST_TEMPLATE.md",
+        ".github/PULL_REQUEST_TEMPLATE.md",
+        "docs/guide/testing.md",
+        "ui/packages/adapters/vue/tests/browser/visual-baseline.spec.ts",
+        "ui/tooling/scripts/visual-baseline.mjs"
+      ]
+    }
+  },
+  "ciFontStep": {
+    "note": "CI 的 browser job 必须先装字体再跑浏览器态用例；这一步被删掉或被挪到用例之后，四十张基线整体判红",
+    "workflow": ".github/workflows/ci.yml",
+    "job": "browser",
+    "installLine": "apt-get install -y -qq --no-install-recommends fonts-dejavu-core",
+    "testLine": "run: pnpm test:browser"
+  },
+  "scan": {
+    "note": "反查扫描范围：这些目录下的这些后缀都要扫，命中常量却不在 sites 里的文件判红",
+    "roots": [
+      ".github",
+      ".gitee",
+      ".gitcode",
+      "docs",
+      "ui"
+    ],
+    "extensions": [
+      ".css",
+      ".js",
+      ".json",
+      ".md",
+      ".mjs",
+      ".sh",
+      ".ts",
+      ".vue",
+      ".yaml",
+      ".yml"
+    ],
+    "ignoreDirs": [
+      ".git",
+      ".turbo",
+      ".vitepress",
+      "__screenshots__",
+      "dist",
+      "node_modules"
+    ],
+    "ignoreFiles": [
+      "ui/pnpm-lock.yaml",
+      "ui/tooling/scripts/check-visual-baseline-env.mjs",
+      "ui/tooling/scripts/visual-baseline-env.json"
+    ]
+  }
+}

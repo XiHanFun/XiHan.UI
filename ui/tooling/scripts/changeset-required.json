@@ -1,0 +1,18 @@
+{
+  "changesetDir": ".changeset",
+  "ignore": [
+    "README.md"
+  ],
+  "triggers": [
+    {
+      "kind": "file",
+      "path": "tooling/public-surface.json",
+      "why": "公开面基线动了，等于使用者拿到的 API 变了"
+    },
+    {
+      "kind": "component-dirs",
+      "path": "packages/engine/headless/src",
+      "why": "新增组件目录，等于多了一个对外组件"
+    }
+  ]
+}

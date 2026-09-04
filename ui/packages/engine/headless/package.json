@@ -47,8 +47,8 @@
   },
   "scripts": {
     "build": "tsdown",
-    "typecheck": "tsc --noEmit -p tsconfig.json",
-    "test": "vitest run"
+    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.test.json",
+    "test": "vitest run --coverage"
   },
   "dependencies": {
     "@internationalized/date": "catalog:",
@@ -59,6 +59,7 @@
     "@xihan-ui/pointer": "workspace:^"
   },
   "devDependencies": {
+    "@vitest/coverage-v8": "catalog:",
     "@xihan-ui/build": "workspace:*",
     "@xihan-ui/tsconfig": "workspace:*",
     "jsdom": "catalog:",

@@ -1,11 +1,13 @@
 @layer xihan.motion {
   /* 加载态自己冒出来，用户没按任何键：一段极轻的呼吸就够，别抢走正在读表的注意力 */
+  /* 一次呼吸自带来回：起止两端与中点各写一帧，声明的周期就是一次完整的明暗往返 */
   @keyframes xh-table-loading-pulse {
-    from {
+    0%,
+    100% {
       opacity: var(--xh-state-disabled-opacity);
     }
 
-    to {
+    50% {
       opacity: 1;
     }
   }
@@ -773,7 +775,8 @@
   }
 
   [data-scope='table'][data-part='loading'] {
-    animation: xh-table-loading-pulse calc(var(--xh-spin-duration) / 2) var(--xh-motion-ease-loop) infinite alternate;
+    animation: xh-table-loading-pulse var(--xh-table-loading-duration, var(--xh-shimmer-duration))
+      var(--xh-motion-ease-sweep) infinite;
   }
 
   /* 减少动效：呼吸停下，加载态只留静止的文案。两条规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */

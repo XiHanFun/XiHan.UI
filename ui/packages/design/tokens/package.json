@@ -57,7 +57,7 @@
   "scripts": {
     "gen": "node build/emit-tokens.mjs",
     "build": "node build/emit-tokens.mjs && tsdown",
-    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.test.json",
     "test": "vitest run"
   },
   "dependencies": {},

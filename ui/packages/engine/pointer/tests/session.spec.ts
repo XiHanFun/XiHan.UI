@@ -22,7 +22,7 @@ describe('指针会话', () => {
     document.dispatchEvent(pointer('pointermove', { clientX: 12, clientY: 34, pressure: 0.75 }))
 
     expect(onMove).toHaveBeenCalledTimes(1)
-    expect(onMove.mock.calls[0][0]).toMatchObject({
+    expect(onMove.mock.calls[0]![0]).toMatchObject({
       point: { clientX: 12, clientY: 34 },
       pointerId: 1,
       pressure: 0.75,
@@ -34,13 +34,13 @@ describe('指针会话', () => {
     const up = vi.fn()
     const a = createPointerSession({ doc: document, onMove: vi.fn(), onEnd: up })
     document.dispatchEvent(pointer('pointerup'))
-    expect(up.mock.calls[0][0].reason).toBe('pointerup')
+    expect(up.mock.calls[0]![0].reason).toBe('pointerup')
     a.dispose()
 
     const cancel = vi.fn()
     const b = createPointerSession({ doc: document, onMove: vi.fn(), onEnd: cancel })
     document.dispatchEvent(pointer('pointercancel'))
-    expect(cancel.mock.calls[0][0].reason).toBe('pointercancel')
+    expect(cancel.mock.calls[0]![0].reason).toBe('pointercancel')
     b.dispose()
   })
 

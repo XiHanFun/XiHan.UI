@@ -78,8 +78,8 @@ describe('safeTriangle', () => {
 describe('trackHoverIntent', () => {
   let trigger: HTMLElement
   let content: HTMLElement | null
-  let openIntent: ReturnType<typeof vi.fn>
-  let closeIntent: ReturnType<typeof vi.fn>
+  let openIntent: ReturnType<typeof vi.fn<() => void>>
+  let closeIntent: ReturnType<typeof vi.fn<() => void>>
   let dispose: (() => void) | null = null
 
   function mount(opts: { openDelay?: number, closeDelay?: number } = {}): void {
@@ -108,8 +108,8 @@ describe('trackHoverIntent', () => {
     trigger = document.createElement('button')
     document.body.appendChild(trigger)
     content = null
-    openIntent = vi.fn()
-    closeIntent = vi.fn()
+    openIntent = vi.fn<() => void>()
+    closeIntent = vi.fn<() => void>()
   })
 
   afterEach(() => {
