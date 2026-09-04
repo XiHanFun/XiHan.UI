@@ -94,7 +94,9 @@
     font-weight: var(--xh-text-label-weight);
     line-height: var(--xh-leading-none);
     cursor: pointer;
-    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='timer'][data-part='control'][hidden] {
@@ -106,8 +108,10 @@
     background: var(--xh-timer-control-bg-hover, var(--xh-bg-subtle-hover));
   }
 
-  [data-scope='timer'][data-part='control']:active {
+  /* 换底之外再压一档：起停是 timer 唯一的动作入口，按下要有回执 */
+  [data-scope='timer'][data-part='control']:active:not(:disabled) {
     background: var(--xh-timer-control-bg-active, var(--xh-bg-subtle-active));
+    scale: var(--xh-motion-scale-press);
   }
 
   [data-scope='timer'][data-part='control']:focus-visible {

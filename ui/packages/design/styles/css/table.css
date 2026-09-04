@@ -262,12 +262,20 @@
     block-size: var(--xh-table-trigger-size, var(--xh-control-indicator-size));
     border-radius: var(--xh-table-trigger-radius, var(--xh-shape-control));
     cursor: pointer;
+    transition: scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='table'][data-part='select-all-trigger'][hidden],
   [data-scope='table'][data-part='row-select-trigger'][hidden],
   [data-scope='table'][data-part='expand-trigger'][hidden] {
     display: none;
+  }
+
+  /* 三个把手按下时缩一档。缩放走 transform 通道不占版面，行高与列宽都不动 */
+  [data-scope='table'][data-part='select-all-trigger']:active:not([data-disabled]),
+  [data-scope='table'][data-part='row-select-trigger']:active:not([data-disabled]),
+  [data-scope='table'][data-part='expand-trigger']:active:not([data-disabled]) {
+    scale: var(--xh-motion-scale-press);
   }
 
   /* 两个选择把手：未选中时只剩一个空框，勾选标记靠 visibility 显隐，
@@ -332,7 +340,10 @@
   /* 展开箭头：收起时朝向行首、展开时转向下方，与逻辑书写方向一致 */
   [data-scope='table'][data-part='expand-trigger'] {
     color: var(--xh-table-expand-fg, var(--xh-fg-subtle));
-    transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+    /* 这条整份改写上面那份共用过渡，按压的 scale 要一起带回来 */
+    transition:
+      rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='table'][data-part='expand-trigger'][data-state='open'] {

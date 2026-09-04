@@ -278,8 +278,10 @@
     color: var(--xh-time-picker-action-fg-hover, var(--xh-fg-default));
   }
 
+  /* 展开钮按下时换底并微缩，与并排的清空钮同一副按下观感 */
   [data-scope='time-picker'][data-part='trigger']:active:not(:disabled) {
     background: var(--xh-time-picker-action-bg-active, var(--xh-bg-subtle-active));
+    scale: var(--xh-motion-scale-press);
   }
 
   /* 清空钮按下时换底并微缩，给指针一个按到了的反馈 */

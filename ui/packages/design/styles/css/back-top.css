@@ -54,7 +54,8 @@
     cursor: pointer;
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
   /* 悬停只在能用指针的设备上生效，触摸端不留一个按不掉的悬停态 */
@@ -65,8 +66,10 @@
     }
   }
 
+  /* 换底之外再压一档：钮浮在内容之上，缩放不牵动页面排版 */
   [data-scope='back-top'][data-part='trigger']:active {
     background: var(--xh-back-top-bg-active, var(--xh-bg-subtle-active));
+    scale: var(--xh-motion-scale-press);
   }
 
   /* 聚焦环恒是 --xh-ring-focus，不随语气走 */

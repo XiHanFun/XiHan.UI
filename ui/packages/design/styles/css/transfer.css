@@ -334,7 +334,7 @@
     font-size: var(--xh-transfer-trigger-font-size, var(--xh-text-label-size));
     line-height: var(--xh-leading-none);
     cursor: pointer;
-    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='transfer'][data-part='to-target-trigger']:hover:not(:disabled),
@@ -345,6 +345,7 @@
   [data-scope='transfer'][data-part='to-target-trigger']:active:not(:disabled),
   [data-scope='transfer'][data-part='to-source-trigger']:active:not(:disabled) {
     background: var(--xh-transfer-trigger-bg-active, var(--xh-bg-subtle-active));
+    scale: var(--xh-motion-scale-press);
   }
 
   [data-scope='transfer'][data-part='to-target-trigger']:focus-visible,

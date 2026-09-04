@@ -48,7 +48,8 @@
     user-select: none;
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
   /* 置灰与挂起都要挡掉悬停/按下的换底：挂起走的是 aria-disabled 而非原生 disabled，
@@ -57,8 +58,10 @@
     background: var(--xh-_bg-hover);
   }
 
+  /* 换底之外再压一档：四档形态都是独立控件盒，缩放只动按钮自己 */
   [data-scope='button'][data-part='root']:not([data-disabled]):not([data-loading]):active {
     background: var(--xh-_bg-active);
+    scale: var(--xh-motion-scale-press);
   }
 
   [data-scope='button'][data-part='root']:focus-visible {

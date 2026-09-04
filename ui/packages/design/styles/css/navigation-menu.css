@@ -131,7 +131,9 @@
     line-height: var(--xh-leading-none);
     white-space: nowrap;
     cursor: pointer;
-    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='navigation-menu'][data-part='trigger'][hidden] {
@@ -142,6 +144,11 @@
      不挡掉的话置灰的那一项悬停仍会换底 */
   [data-scope='navigation-menu'][data-part='trigger']:not([data-disabled]):hover {
     background: var(--xh-navigation-menu-trigger-bg-hover, var(--xh-_navigation-menu-highlight-bg));
+  }
+
+  /* 按下去要有回应：顶层按钮轻微下压，松手即弹回 */
+  [data-scope='navigation-menu'][data-part='trigger']:not([data-disabled]):active {
+    scale: var(--xh-motion-scale-press);
   }
 
   [data-scope='navigation-menu'][data-part='trigger']:focus-visible {

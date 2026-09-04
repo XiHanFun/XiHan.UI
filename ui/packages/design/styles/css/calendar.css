@@ -55,7 +55,9 @@
     font-weight: var(--xh-calendar-heading-font-weight, var(--xh-font-weight-semibold));
     line-height: var(--xh-leading-none);
     cursor: pointer;
-    transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition:
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='calendar'][data-part='heading-year-trigger'][hidden],
@@ -66,6 +68,12 @@
   [data-scope='calendar'][data-part='heading-year-trigger']:hover:not(:disabled),
   [data-scope='calendar'][data-part='heading-month-trigger']:hover:not(:disabled) {
     color: var(--xh-calendar-heading-trigger-fg-hover, var(--xh-fg-brand));
+  }
+
+  /* 按下微缩：钻进上一层时给指针一个回执 */
+  [data-scope='calendar'][data-part='heading-year-trigger']:active:not(:disabled),
+  [data-scope='calendar'][data-part='heading-month-trigger']:active:not(:disabled) {
+    scale: var(--xh-motion-scale-press);
   }
 
   /* 到顶那一层（年视图的年那一截）只作标题显示：不再是可点的东西，光标也别装成能点 */
@@ -95,7 +103,9 @@
     background: var(--xh-calendar-nav-bg, transparent);
     color: var(--xh-calendar-nav-fg, var(--xh-fg-muted));
     cursor: pointer;
-    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='calendar'][data-part='prev-year-trigger'][hidden],
@@ -111,6 +121,14 @@
   [data-scope='calendar'][data-part='next-trigger']:hover:not(:disabled) {
     background: var(--xh-calendar-nav-bg-hover, var(--xh-bg-subtle-hover));
     color: var(--xh-fg-default);
+  }
+
+  /* 换底之外再压一档：方向钮按下时缩放 */
+  [data-scope='calendar'][data-part='prev-year-trigger']:active:not(:disabled),
+  [data-scope='calendar'][data-part='prev-trigger']:active:not(:disabled),
+  [data-scope='calendar'][data-part='next-year-trigger']:active:not(:disabled),
+  [data-scope='calendar'][data-part='next-trigger']:active:not(:disabled) {
+    scale: var(--xh-motion-scale-press);
   }
 
   /* 翻月是单体控件，禁用走原生 :disabled（连接层输出的正是原生 disabled） */
@@ -294,7 +312,8 @@
     user-select: none;
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='calendar'][data-part='cell-trigger'][hidden] {
@@ -308,6 +327,11 @@
 
   [data-scope='calendar'][data-part='cell-trigger']:not([data-disabled]):not([data-selected]):hover {
     background: var(--xh-calendar-cell-bg-hover, var(--xh-bg-subtle-hover));
+  }
+
+  /* 按下微缩：缩放走 transform 通道，一格自己缩不推动整张网格；已选中的格照样压 */
+  [data-scope='calendar'][data-part='cell-trigger']:not([data-disabled]):active {
+    scale: var(--xh-motion-scale-press);
   }
 
   /* 今天：只描一圈边，不占用选中色——今天与被选中是两件事，得能同时看得出来 */

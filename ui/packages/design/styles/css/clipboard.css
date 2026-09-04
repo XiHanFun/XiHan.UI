@@ -111,7 +111,8 @@
     touch-action: manipulation;
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
   /* 上面给了 display，UA 的 [hidden]{display:none} 已被盖掉，这里补回来 */
@@ -124,8 +125,10 @@
     background: var(--xh-clipboard-trigger-bg-hover, var(--xh-bg-subtle-hover));
   }
 
+  /* 换底之外再压一档：复制钮按下时缩放 */
   [data-scope='clipboard'][data-part='trigger']:active {
     background: var(--xh-clipboard-trigger-bg-active, var(--xh-bg-subtle-active));
+    scale: var(--xh-motion-scale-press);
   }
 
   [data-scope='clipboard'][data-part='trigger']:focus-visible {

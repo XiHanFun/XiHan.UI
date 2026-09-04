@@ -39,10 +39,15 @@
     color: var(--xh-floating-panel-trigger-fg, var(--xh-fg-default));
     font-size: var(--xh-text-label-size);
     cursor: pointer;
+    transition: scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='floating-panel'][data-part='trigger'][hidden] {
     display: none;
+  }
+
+  [data-scope='floating-panel'][data-part='trigger']:active:not(:disabled) {
+    scale: var(--xh-motion-scale-press);
   }
 
   [data-scope='floating-panel'][data-part='trigger']:focus-visible {

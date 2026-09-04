@@ -33,7 +33,8 @@
     cursor: pointer;
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
   /* 半选与全选同样是「有值」，方框都得填上：
@@ -56,6 +57,12 @@
   [data-scope='checkbox'][data-part='label'][data-invalid],
   [data-scope='checkbox'][data-part='text'][data-invalid] {
     color: var(--xh-checkbox-fg-invalid, var(--xh-fg-danger));
+  }
+
+  /* 按下去要有回应：方框自己轻微下压，松手即弹回。
+     缩的是方框这一个定尺盒，文字在外层 label 里，整行排版不跟着动。只读与禁用不压 */
+  [data-scope='checkbox'][data-part='root']:not([data-disabled]):not([data-readonly]):active {
+    scale: var(--xh-motion-scale-press);
   }
 
   [data-scope='checkbox'][data-part='root'][data-disabled] {

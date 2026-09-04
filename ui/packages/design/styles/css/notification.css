@@ -304,6 +304,9 @@
     font-weight: var(--xh-notification-action-font-weight, var(--xh-font-weight-medium));
     line-height: var(--xh-leading-none);
     cursor: pointer;
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='notification'][data-part='item-action-trigger'][hidden] {
@@ -316,6 +319,7 @@
 
   [data-scope='notification'][data-part='item-action-trigger']:active:not(:disabled) {
     background: var(--xh-notification-action-bg-active, var(--xh-bg-subtle-active));
+    scale: var(--xh-motion-scale-press);
   }
 
   [data-scope='notification'][data-part='item-action-trigger']:focus-visible {

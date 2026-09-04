@@ -120,13 +120,20 @@
     line-height: var(--xh-leading-none);
     white-space: nowrap;
     cursor: pointer;
-    transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition:
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
   /* 禁用项带的是 aria-disabled 而非原生 disabled，:hover 照样命中；
      不挡掉的话置灰的那一页悬停仍会换底，看着还能点 */
   [data-scope='tabs'][data-part='trigger']:not([data-disabled]):hover {
     background: var(--xh-tabs-trigger-bg-hover, var(--xh-bg-subtle-hover));
+  }
+
+  /* 按下去要有回应：页签整块轻微下压，松手即弹回。选中页也压 */
+  [data-scope='tabs'][data-part='trigger']:not([data-disabled]):active {
+    scale: var(--xh-motion-scale-press);
   }
 
   [data-scope='tabs'][data-part='trigger']:focus-visible {

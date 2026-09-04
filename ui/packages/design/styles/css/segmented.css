@@ -140,8 +140,7 @@
     color: var(--xh-segmented-item-fg-hover, var(--xh-fg-default));
   }
 
-  /* 按下去要有回应：整段轻微下压，松手即弹回。选中段也压——按在已选段上同样是一次点击。
-     只读段不压：它本来就不接受改值，压下去等于骗人 */
+  /* 按下去要有回应：整段轻微下压，松手即弹回。选中段也压，只读段不压 */
   [data-scope='segmented'][data-part='item']:not([data-disabled]):not([data-readonly]):active {
     scale: var(--xh-segmented-item-press-scale, var(--xh-motion-scale-press));
   }

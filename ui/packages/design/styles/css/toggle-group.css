@@ -88,7 +88,8 @@
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
   /* 共边：后一段往回挪一个描边宽度，两条相邻的边重合成一条。
@@ -136,8 +137,10 @@
     background: var(--xh-_bg-hover);
   }
 
+  /* 换底之外再压一档：一段是可独立按下的控件盒，缩放只动这一段。选中段也压 */
   [data-scope='toggle-group'][data-part='item']:not([data-disabled]):active {
     background: var(--xh-_bg-active);
+    scale: var(--xh-motion-scale-press);
   }
 
   /* 选中态：单选是 role=radio + aria-checked，多选是原生按钮 + aria-pressed，
