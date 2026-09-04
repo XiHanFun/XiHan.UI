@@ -99,7 +99,6 @@
     color: var(--xh-text-field-label-fg, var(--xh-fg-default));
     font-size: var(--xh-text-field-label-font-size, var(--xh-_text-field-label-font-size));
     font-weight: var(--xh-text-field-label-font-weight, var(--xh-text-label-weight));
-    line-height: var(--xh-leading-none);
   }
 
   [data-scope='text-field'][data-part='label'][data-disabled] {
@@ -161,7 +160,6 @@
   [data-scope='text-field'][data-part='control'][data-disabled] {
     background: var(--xh-text-field-control-bg-disabled, var(--xh-bg-subtle));
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
   /* 盒内 input：无边框无底无圆角无落影，观感全归 control；行内内衬也归 control，
@@ -273,7 +271,6 @@
   [data-scope='text-field'][data-part='input']:disabled {
     background: var(--xh-text-field-input-bg-disabled, var(--xh-bg-subtle));
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
   /* 自动填充：引擎给填过的框强加一套系统色（多数是黄底黑字），盖得过 background 与 color，

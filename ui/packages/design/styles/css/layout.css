@@ -108,11 +108,6 @@
     scale: var(--xh-motion-scale-press);
   }
 
-  [data-scope='layout'][data-part='sider-trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
-  }
-
   /* —— 分隔线 —— */
   /* 后代选择器带上 data-scope：骨架里装着整页内容，光凭 data-part 会连里面别的组件同名段一起画上线 */
   [data-scope='layout'][data-part='root'][data-bordered] [data-scope='layout'][data-part='header'] {

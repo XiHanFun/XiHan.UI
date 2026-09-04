@@ -114,14 +114,12 @@
   }
 
   [data-scope='transfer'][data-part='search']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: calc(var(--xh-ring-offset) * -1);
+    --xh-_ring-offset: var(--xh-_ring-inset);
   }
 
   /* 单体控件的禁用是原生 disabled，样式只能写 :disabled；集合条目才读 data-disabled */
   [data-scope='transfer'][data-part='search']:disabled {
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
   /* 两侧列表定高：高度只由这个槽给，与条目数无关。左右两块因此恒等高，
@@ -170,15 +168,13 @@
   }
 
   [data-scope='transfer'][data-part='item']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: calc(var(--xh-ring-offset) * -1);
+    --xh-_ring-offset: var(--xh-_ring-inset);
   }
 
   /* 禁用走 aria-disabled 而非原生 disabled：条目仍要可聚焦（它还得当方向键的起点），
      所以样式只能读 data-disabled，写 :disabled 永远不命中 */
   [data-scope='transfer'][data-part='item'][data-disabled] {
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
   [data-scope='transfer'][data-part='item-text'] {
@@ -310,13 +306,11 @@
   /* 往内收，与搜索框、条目同一口径：全选格长在面板里，面板收 overflow，
      环画在外沿会被裁掉 */
   [data-scope='transfer'][data-part='select-all-trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: calc(-1 * var(--xh-ring-width));
+    --xh-_ring-offset: var(--xh-_ring-inset);
   }
 
   [data-scope='transfer'][data-part='select-all-trigger']:disabled {
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
   [data-scope='transfer'][data-part='to-target-trigger'],
@@ -348,17 +342,10 @@
     scale: var(--xh-motion-scale-press);
   }
 
-  [data-scope='transfer'][data-part='to-target-trigger']:focus-visible,
-  [data-scope='transfer'][data-part='to-source-trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
-  }
-
   /* 搬运按钮是单体控件，禁用走原生 disabled */
   [data-scope='transfer'][data-part='to-target-trigger']:disabled,
   [data-scope='transfer'][data-part='to-source-trigger']:disabled {
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
   /* 上面凡是给了 display 的角色节点都要补这条：display 声明会盖掉 UA 的 [hidden]{display:none}，

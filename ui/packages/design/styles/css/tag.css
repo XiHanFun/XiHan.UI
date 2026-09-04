@@ -88,13 +88,11 @@
 
   [data-scope='tag'][data-part='close-trigger']:disabled {
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
+  /* 环往内收：命中区贴着标签内缘，往外画会被相邻标签压住 */
   [data-scope='tag'][data-part='close-trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    /* 环往内收：命中区贴着标签内缘，往外画会被相邻标签压住 */
-    outline-offset: calc(-1 * var(--xh-ring-offset));
+    --xh-_ring-offset: var(--xh-_ring-inset);
   }
 
   /* —— 形态 —— */
@@ -171,7 +169,6 @@
     color: var(--xh-fg-disabled);
     /* 底已经退成置灰色，实心档那条内高光跟着收掉 */
     box-shadow: none;
-    cursor: not-allowed;
   }
 
   /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */

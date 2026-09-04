@@ -178,15 +178,9 @@
     scale: var(--xh-motion-scale-press);
   }
 
-  [data-scope='drawer'][data-part='trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
-  }
-
   /* trigger 是单体控件，禁用走原生 disabled */
   [data-scope='drawer'][data-part='trigger']:disabled {
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
   [data-scope='drawer'][data-part='backdrop'] {
@@ -417,13 +411,13 @@
      否则长标题会直接钻到按钮底下。只在真有关闭按钮时让位。 */
   [data-scope='drawer'][data-part='content']:has([data-scope='drawer'][data-part='close-trigger'])
     [data-scope='drawer'][data-part='title'] {
-    padding-inline-end: calc(var(--xh-drawer-close-size, var(--xh-control-h-sm)) + var(--xh-space-3));
+    padding-inline-end: calc(var(--xh-drawer-close-size, var(--xh-control-h-sm)) + var(--xh-surface-action-inset));
   }
 
   [data-scope='drawer'][data-part='close-trigger'] {
     position: absolute;
-    inset-block-start: var(--xh-space-3);
-    inset-inline-end: var(--xh-space-3);
+    inset-block-start: var(--xh-surface-action-inset);
+    inset-inline-end: var(--xh-surface-action-inset);
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -435,7 +429,8 @@
     color: var(--xh-drawer-close-fg, var(--xh-fg-muted));
     cursor: pointer;
     transition:
-      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
@@ -451,11 +446,6 @@
   [data-scope='drawer'][data-part='close-trigger']:active {
     background: var(--xh-drawer-close-bg-active, var(--xh-bg-subtle-active));
     scale: var(--xh-motion-scale-press);
-  }
-
-  [data-scope='drawer'][data-part='close-trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
   }
 
   /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */

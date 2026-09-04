@@ -83,7 +83,6 @@
     color: var(--xh-date-field-label-fg, var(--xh-fg-default));
     font-size: var(--xh-date-field-label-font-size, var(--xh-_date-field-label-font-size));
     font-weight: var(--xh-date-field-label-font-weight, var(--xh-text-label-weight));
-    line-height: var(--xh-leading-none);
   }
 
   [data-scope='date-field'][data-part='label'][hidden] {
@@ -92,7 +91,6 @@
 
   [data-scope='date-field'][data-part='label'][data-disabled] {
     color: var(--xh-date-field-label-fg-disabled, var(--xh-fg-subtle));
-    cursor: not-allowed;
   }
 
   /* 分段框整体长得像一个输入框：边框与背景长在 control 上，各段只是里面的文字 */
@@ -149,7 +147,6 @@
   [data-scope='date-field'][data-part='control'][data-disabled] {
     background: var(--xh-date-field-control-bg-disabled, var(--xh-bg-subtle));
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
   /* 段位与作者写在段间的分隔符（'/'、'年'）都在这一层里：它占满盒里剩下的宽度，
@@ -197,7 +194,6 @@
   /* 段位是集合里的条目，用 data-* 而不是 :disabled —— 它是 div，没有原生禁用态 */
   [data-scope='date-field'][data-part='segment'][data-disabled] {
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
   /* 正在编辑的那一段要看得出来：整行数字长得一模一样，光标那道线这里根本没有。

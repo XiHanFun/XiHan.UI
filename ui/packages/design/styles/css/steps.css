@@ -68,12 +68,6 @@
     align-items: stretch;
   }
 
-  /* 组内无锚点时 list 自己在 Tab 序列里（走到完成位就是这种情形），落焦要看得见 */
-  [data-scope='steps'][data-part='list']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
-  }
-
   /* 每一步与它后面那截连接线一起占一格，等分整行；min-inline-size 允许被压缩，
      标题里的省略号才有生效的余地 */
   [data-scope='steps'][data-part='item'] {
@@ -129,17 +123,6 @@
 
   [data-scope='steps'][data-part='trigger']:hover:not([data-disabled]) {
     background: var(--xh-steps-trigger-bg-hover, var(--xh-bg-subtle-hover));
-  }
-
-  [data-scope='steps'][data-part='trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
-  }
-
-  /* 禁用走 aria-disabled 而非原生 disabled：条目仍要可聚焦（它还得当方向键的起点），
-     所以只能挂 data-disabled，写 :disabled 永远不命中 */
-  [data-scope='steps'][data-part='trigger'][data-disabled] {
-    cursor: not-allowed;
   }
 
   [data-scope='steps'][data-part='item'][data-disabled] [data-scope='steps'][data-part='title'],
@@ -260,11 +243,6 @@
   [data-scope='steps'][data-part='content'] {
     padding-block: var(--xh-steps-content-py, var(--xh-stack-gap-md));
     color: var(--xh-steps-content-fg, var(--xh-fg-default));
-  }
-
-  [data-scope='steps'][data-part='content']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
   }
 
   /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */

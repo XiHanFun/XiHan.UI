@@ -22,7 +22,6 @@
     color: var(--xh-file-upload-label-fg, var(--xh-fg-default));
     font-size: var(--xh-file-upload-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-file-upload-label-font-weight, var(--xh-text-label-weight));
-    line-height: var(--xh-leading-none);
   }
 
   [data-scope='file-upload'][data-part='label'][data-disabled] {
@@ -62,12 +61,6 @@
     border-color: var(--xh-file-upload-dropzone-border-hover, var(--xh-border-control-hover));
   }
 
-  /* 投放区自己承载焦点（它就是那个大按钮），所以画环而不是 outline:none */
-  [data-scope='file-upload'][data-part='dropzone']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
-  }
-
   /* 悬停在上方：整块换成品牌色描边加浅底，比只换边框显眼得多 */
   [data-scope='file-upload'][data-part='dropzone'][data-dragging] {
     border-color: var(--xh-file-upload-dropzone-border-dragging, var(--xh-bg-brand));
@@ -83,7 +76,6 @@
     border-color: var(--xh-border-subtle);
     background: var(--xh-file-upload-dropzone-bg-disabled, var(--xh-bg-subtle));
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
   [data-scope='file-upload'][data-part='trigger'] {
@@ -122,16 +114,10 @@
     scale: var(--xh-motion-scale-press);
   }
 
-  [data-scope='file-upload'][data-part='trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
-  }
-
   /* 单体控件走原生 disabled（与集合条目的 aria-disabled 相反），因此用 :disabled */
   [data-scope='file-upload'][data-part='trigger']:disabled {
     background: var(--xh-bg-subtle);
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
   /* 连接层已经把这一套视觉隐藏写进了内联 style，这里是给元素升级前那一瞬兜底
@@ -290,14 +276,8 @@
     scale: var(--xh-motion-scale-press);
   }
 
-  [data-scope='file-upload'][data-part='item-delete-trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
-  }
-
   [data-scope='file-upload'][data-part='item-delete-trigger']:disabled {
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
   /* 清空是收尾动作，画成不带底色的文字按钮：它比"选择文件"次要 */
@@ -338,11 +318,6 @@
     scale: var(--xh-motion-scale-press);
   }
 
-  [data-scope='file-upload'][data-part='clear-trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
-  }
-
   /* 空列表时按钮照常可按（收起它会让焦点掉回 body），只把前景压淡一档 */
   [data-scope='file-upload'][data-part='clear-trigger'][data-empty] {
     color: var(--xh-fg-subtle);
@@ -350,7 +325,6 @@
 
   [data-scope='file-upload'][data-part='clear-trigger']:disabled {
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
   /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */

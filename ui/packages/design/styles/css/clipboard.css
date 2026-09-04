@@ -68,8 +68,6 @@
 
   [data-scope='clipboard'][data-part='input']:focus-visible {
     border-color: var(--xh-clipboard-input-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
   }
 
   /* 自动填充：引擎给填过的框强加一套系统色（多数是黄底黑字），盖得过 background 与 color，
@@ -129,11 +127,6 @@
   [data-scope='clipboard'][data-part='trigger']:active {
     background: var(--xh-clipboard-trigger-bg-active, var(--xh-bg-subtle-active));
     scale: var(--xh-motion-scale-press);
-  }
-
-  [data-scope='clipboard'][data-part='trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
   }
 
   /* 写入在途：指针换成 progress，同时在按钮里转一枚圆环。

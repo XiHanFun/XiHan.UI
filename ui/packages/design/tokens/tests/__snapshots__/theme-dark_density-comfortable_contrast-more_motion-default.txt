@@ -23,7 +23,7 @@
 --xh-bg-surface-raised: oklch(0.269 0.006 258)  ← var(--xh-color-neutral-800)
 --xh-border-at-limit: oklch(0.86 0.14 86)  ← var(--xh-color-warning-400)
 --xh-border-control: oklch(0.708 0.005 258)  ← var(--xh-color-neutral-400)
---xh-border-control-focus: oklch(0.708 0.005 258)  ← var(--xh-border-control)
+--xh-border-control-focus: oklch(0.702 0.165 258)  ← var(--xh-ring-focus)
 --xh-border-control-hover: oklch(0.87 0.003 258)  ← var(--xh-color-neutral-300)
 --xh-border-default: oklch(0.708 0.005 258)  ← var(--xh-color-neutral-400)
 --xh-border-invalid: oklch(0.7 0.185 25)  ← var(--xh-color-danger-400)
@@ -203,9 +203,14 @@
 --xh-stack-gap-sm: 8px  ← var(--xh-space-2)
 --xh-state-disabled-opacity: 0.5
 --xh-state-dragging-opacity: 0.6
---xh-surface-px-md: 16px  ← var(--xh-control-px-lg)
+--xh-surface-action-inset: 12px  ← var(--xh-space-3)
+--xh-surface-pad-lg: 16px  ← var(--xh-space-4)
+--xh-surface-pad-md: 12px  ← var(--xh-space-3)
+--xh-surface-pad-sm: 8px  ← var(--xh-space-2)
+--xh-surface-pad-xs: 4px  ← var(--xh-space-1)
+--xh-surface-px-md: 16px  ← var(--xh-space-4)
 --xh-surface-px-sm: 16px  ← var(--xh-space-4)
---xh-surface-py-md: 20px  ← var(--xh-section-py)
+--xh-surface-py-md: 20px  ← var(--xh-space-5)
 --xh-surface-py-sm: 12px  ← var(--xh-space-3)
 --xh-switch-track-h-lg: 28px
 --xh-switch-track-h-md: 22px

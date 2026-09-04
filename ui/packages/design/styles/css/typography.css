@@ -151,9 +151,4 @@
       color: var(--xh-typography-link-fg-hover, var(--xh-fg-brand-strong));
     }
   }
-
-  [data-scope='typography'][data-part='link']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
-  }
 }

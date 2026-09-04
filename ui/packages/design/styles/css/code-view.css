@@ -80,10 +80,9 @@
     line-height: var(--xh-code-view-line-height, var(--xh-text-code-leading));
   }
 
-  /* <pre> 带 tabindex=0，需要焦点环；偏移取负画在内侧，避免被 root 的 overflow: hidden 裁掉 */
+  /* 偏移取负画在内侧，避免被 root 的 overflow: hidden 裁掉 */
   [data-scope='code-view'][data-part='pre']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: calc(-1 * var(--xh-ring-width));
+    --xh-_ring-offset: var(--xh-_ring-inset);
   }
 
   /* 折叠时 <pre> 的高度被连接层写死，超出部分沿圆角收边 */
@@ -228,8 +227,7 @@
   }
 
   [data-scope='code-view'][data-part='fold-trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: calc(-1 * var(--xh-ring-width));
+    --xh-_ring-offset: var(--xh-_ring-inset);
   }
 
   /* 尺寸档写私有槽、由 root 基础规则消费一次：缺省与阶梯是同一个口子，

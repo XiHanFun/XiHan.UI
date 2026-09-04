@@ -200,7 +200,6 @@
   [data-scope='popselect'][data-part='control'][data-disabled] {
     background: var(--xh-popselect-control-bg-disabled, var(--xh-bg-subtle));
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
   /* 触发器退化成盒里那颗可聚焦的按钮：描边、底色与内衬归盒，它只占满剩余一行 */
@@ -230,7 +229,6 @@
   /* trigger 是单体控件，用原生 disabled（条目那边一律 aria-disabled） */
   [data-scope='popselect'][data-part='trigger']:disabled {
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
   /* 无选中：触发器上显示的是占位文字，画淡一档 */
@@ -318,8 +316,7 @@
   /* 焦点落在容器上只有一种情形：指针打开、无选中值、还没有任何条目当锚点。
      那一刻它认领着 Tab 位，环画在浮层内沿；有锚点时环长在条目上，容器不再画 */
   [data-scope='popselect'][data-part='content'][tabindex='0']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: calc(-1 * var(--xh-ring-width));
+    --xh-_ring-offset: var(--xh-_ring-inset);
   }
 
   [data-scope='popselect'][data-part='content']:not([tabindex='0']):focus-visible {
@@ -371,8 +368,7 @@
   /* 键盘走到条目上要画环：轻档底色对白底只有 1.1:1，够不上焦点指示器的对比度要求。
      指针悬停走的是程序化聚焦，鼠标模态下 :focus-visible 不匹配，不会误画 */
   [data-scope='popselect'][data-part='item']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: calc(-1 * var(--xh-ring-width));
+    --xh-_ring-offset: var(--xh-_ring-inset);
   }
 
   [data-scope='popselect'][data-part='item']:focus:not(:focus-visible) {
@@ -382,7 +378,6 @@
   /* 禁用走 aria-disabled 而非原生 disabled，条目仍可聚焦，样式由 data-disabled 表达 */
   [data-scope='popselect'][data-part='item'][data-disabled] {
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
   [data-scope='popselect'][data-part='item-text'] {

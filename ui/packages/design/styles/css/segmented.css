@@ -66,7 +66,6 @@
 
   [data-scope='segmented'][data-part='root'][data-disabled] {
     background: var(--xh-segmented-bg-disabled, var(--xh-bg-muted));
-    cursor: not-allowed;
   }
 
   /* 整组禁用时指示器落回轨道平面（不再浮起），但底色一点不兑淡：
@@ -146,7 +145,7 @@
   }
 
   /* 只读：值改不动，但对比度不降，光标也不摆出"禁止"的样子 */
-  [data-scope='segmented'][data-part='item'][data-readonly] {
+  [data-scope='segmented'][data-part='item'][data-readonly]:not([data-disabled]) {
     cursor: default;
   }
 
@@ -155,7 +154,6 @@
      用了 fg-disabled 就不再叠 opacity：半透明会把底下的指示器透出来 */
   [data-scope='segmented'][data-part='item'][data-disabled] {
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
   /* 禁用且选中的那一段不换文字色：它压着的是指示器的实心底，换成 fg-disabled 后
@@ -167,8 +165,7 @@
 
   /* 焦点环往内收一格：段贴着轨道内缘，往外画会被 root 的描边切掉一半 */
   [data-scope='segmented'][data-part='item']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: calc(-1 * var(--xh-ring-offset));
+    --xh-_ring-offset: var(--xh-_ring-inset);
   }
 
   [data-scope='segmented'][data-part='item-text'] {

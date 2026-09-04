@@ -115,12 +115,13 @@
 
   /* 焦点环往里画：分隔条只有几像素粗，往外画的那圈会被 root 的 overflow: hidden 切掉 */
   [data-scope='splitter'][data-part='resize-trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: calc(var(--xh-ring-offset) * -1);
+    --xh-_ring-offset: var(--xh-_ring-inset);
   }
 
   /* 分隔条是 div、role=separator，原生 disabled 在它身上不生效，
-     禁用只表达成 aria-disabled 与 data-disabled，写 :disabled 永远不命中 */
+     禁用只表达成 aria-disabled 与 data-disabled，写 :disabled 永远不命中。
+     光标不交给公共层：上面两条按走向给的 col-resize / row-resize 特异性相同又排在后面，
+     公共层那条压不过它们 */
   [data-scope='splitter'][data-part='resize-trigger'][data-disabled] {
     background: var(--xh-splitter-trigger-bg-disabled, var(--xh-border-subtle));
     cursor: not-allowed;

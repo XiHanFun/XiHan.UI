@@ -801,6 +801,7 @@
     }
   },
   "surface": {
+    "$description": "面板外壳的内衬两把尺。py-*/px-* 给横竖不等的铺开面（对话框、抽屉、引导卡、面板正文），pad-* 给四边等宽的浮层面（气泡、悬浮卡、确认气泡、菜单外壳、通知卡）。两把尺都逐档直写原语，compact 档在自己那份表里逐档覆盖。",
     "py-sm": {
       "$type": "dimension",
       "$value": "{space.3}"
@@ -811,11 +812,33 @@
     },
     "py-md": {
       "$type": "dimension",
-      "$value": "{section.py}"
+      "$value": "{space.5}"
     },
     "px-md": {
       "$type": "dimension",
-      "$value": "{control.px-lg}"
+      "$value": "{space.4}"
+    },
+    "pad-xs": {
+      "$description": "菜单外壳那一档：条目自带内衬，外壳只留一圈让高亮块不贴着边框。",
+      "$type": "dimension",
+      "$value": "{space.1}"
+    },
+    "pad-sm": {
+      "$type": "dimension",
+      "$value": "{space.2}"
+    },
+    "pad-md": {
+      "$type": "dimension",
+      "$value": "{space.3}"
+    },
+    "pad-lg": {
+      "$type": "dimension",
+      "$value": "{space.4}"
+    },
+    "action-inset": {
+      "$description": "钉在面板角上的钮离两条边的距离。标题给这颗钮让出的那一段也取它，让位量与实际落点恒一致。",
+      "$type": "dimension",
+      "$value": "{space.3}"
     }
   }
 }

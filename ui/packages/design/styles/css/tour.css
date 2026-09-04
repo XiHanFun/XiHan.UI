@@ -263,7 +263,7 @@
      否则长标题会直接钻到按钮底下。只在真有关闭按钮时让位。 */
   [data-scope='tour'][data-part='content']:has([data-scope='tour'][data-part='close-trigger'])
     [data-scope='tour'][data-part='title'] {
-    padding-inline-end: calc(var(--xh-tour-close-size, var(--xh-control-h-sm)) + var(--xh-space-2));
+    padding-inline-end: calc(var(--xh-tour-close-size, var(--xh-control-h-sm)) + var(--xh-surface-action-inset));
   }
 
   [data-scope='tour'][data-part='description'] {
@@ -340,13 +340,12 @@
   [data-scope='tour'][data-part='prev-trigger']:disabled {
     color: var(--xh-fg-disabled);
     border-color: var(--xh-border-subtle);
-    cursor: not-allowed;
   }
 
   [data-scope='tour'][data-part='close-trigger'] {
     position: absolute;
-    inset-block-start: var(--xh-space-2);
-    inset-inline-end: var(--xh-space-2);
+    inset-block-start: var(--xh-surface-action-inset);
+    inset-inline-end: var(--xh-surface-action-inset);
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -358,7 +357,8 @@
     color: var(--xh-tour-close-fg, var(--xh-fg-muted));
     cursor: pointer;
     transition:
-      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
@@ -374,14 +374,6 @@
   [data-scope='tour'][data-part='close-trigger']:active {
     background: var(--xh-tour-close-bg-active, var(--xh-bg-subtle-active));
     scale: var(--xh-motion-scale-press);
-  }
-
-  [data-scope='tour'][data-part='prev-trigger']:focus-visible,
-  [data-scope='tour'][data-part='next-trigger']:focus-visible,
-  [data-scope='tour'][data-part='skip-trigger']:focus-visible,
-  [data-scope='tour'][data-part='close-trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
   }
 
   /* 箭头的底色与描边色，几何在 overlay-arrow.css。

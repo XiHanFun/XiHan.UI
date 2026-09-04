@@ -92,22 +92,7 @@ const HOOKS = {
   'prompt-input:data-state': '输入框的机器态；能看见的运行态在提交钮的 data-mode 上',
   'rating:data-state': '星的填充走 data-highlighted 与 data-half',
   'number-animation:data-state': '数字滚动的外观不随相位变，相位只留给作者接线',
-  // 禁用：视觉走真正落在可聚焦控件上的那一位——原生 :disabled，或集合条目的 aria-disabled
-  'alert:data-disabled': '关闭钮是原生按钮，禁用观感走 :disabled',
-  'carousel:data-disabled': 'carousel.css:132 已写明：单体控件用 :disabled，这一位是留给作者的钩子',
-  'download-trigger:data-disabled': '原生按钮，禁用观感走 :disabled',
-  'dynamic-input:data-disabled': '集合里的钮用 aria-disabled 保住焦点，观感挂在那一位上（dynamic-input.css:124 :173）',
-  'form:data-disabled': 'form.css:160 已写明：单体控件用 :disabled，集合条目才用 [data-disabled]',
-  'image-viewer:data-disabled': '工具栏是原生按钮，禁用观感走 :disabled',
-  'notification:data-disabled': '关闭钮是原生按钮，禁用观感走 :disabled',
-  'pagination:data-disabled': 'pagination.css:157 已写明：翻页钮必须用 :disabled，这一位是作者钩子',
-  'reasoning:data-disabled': '展开钮是原生按钮，禁用观感走 :disabled',
-  'sortable:data-disabled': '拖拽把手用 aria-disabled，观感挂在那一位上（sortable.css:93）',
-  'toast:data-disabled': '关闭钮是原生按钮，禁用观感走 :disabled',
-  'tool-call:data-disabled': '展开钮是原生按钮，禁用观感走 :disabled',
-  'hover-card:data-disabled': '停用即不弹，没有可画的东西',
-  'tooltip:data-disabled': '停用即不弹，没有可画的东西',
-  'infinite-scroll:data-disabled': 'infinite-scroll.css:9 已写明：这一层不占版面，只往身上挂钩子供作者取用',
+  // 禁用不在这张表里：pointer.css 那条与组件无关的规则消费全库的 data-disabled
   'infinite-scroll:data-loading': 'infinite-scroll.css:9 已写明：加载中的观感由作者自己的哨兵内容表出',
   'table:data-loading': '加载中的观感由 loading 部件承载（table.css:746 起，收起时 hidden）',
   // 只读：观感落在真正的输入件身上

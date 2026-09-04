@@ -86,17 +86,10 @@
     scale: var(--xh-motion-scale-press);
   }
 
-  /* trigger 自带 Tab 位（整条菜单栏唯一的那个），必须画得出焦点 */
-  [data-scope='menubar'][data-part='trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
-  }
-
   /* 禁用走 aria-disabled 而非原生 disabled：trigger 仍要可聚焦（它还得当方向键的起点），
      所以只能靠 data-disabled 表达，写 :disabled 永远不命中 */
   [data-scope='menubar'][data-part='trigger'][data-disabled] {
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
   /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
@@ -165,8 +158,8 @@
     /* 两道上限取更小的那道：自己的高度上限，以及落定那一侧真正剩下的空间。
        列表族的 16rem 对命令菜单偏矮，这里另给一档 */
     max-block-size: min(var(--xh-menubar-max-h, var(--xh-overlay-menu-max-h)), var(--xh-_menubar-available-h));
-    padding-block: var(--xh-menubar-py, var(--xh-space-1));
-    padding-inline: var(--xh-menubar-px, var(--xh-space-1));
+    padding-block: var(--xh-menubar-py, var(--xh-surface-pad-xs));
+    padding-inline: var(--xh-menubar-px, var(--xh-surface-pad-xs));
     border: var(--xh-stroke-thin) solid var(--xh-menubar-border, var(--xh-border-default));
     border-radius: var(--xh-menubar-radius, var(--xh-shape-surface));
     background: var(--xh-menubar-bg, var(--xh-bg-surface));
@@ -291,8 +284,7 @@
 
   /* 键盘落焦的条目画内收环；指针触发的聚焦不画 */
   [data-scope='menubar'][data-part='item']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: calc(-1 * var(--xh-ring-width));
+    --xh-_ring-offset: var(--xh-_ring-inset);
   }
 
   [data-scope='menubar'][data-part='item']:focus:not(:focus-visible) {
@@ -301,7 +293,6 @@
 
   [data-scope='menubar'][data-part='item'][data-disabled] {
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
   [data-scope='menubar'][data-part='item-text'] {

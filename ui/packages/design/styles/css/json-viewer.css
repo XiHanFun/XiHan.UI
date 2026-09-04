@@ -86,10 +86,9 @@
     display: none;
   }
 
-  /* 这一档没有行可落焦，环画在整块上 */
+  /* 这一档没有行可落焦，环画在整块上，往内收免得被容器裁掉 */
   [data-scope='json-viewer'][data-part='text']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: calc(-1 * var(--xh-ring-width));
+    --xh-_ring-offset: var(--xh-_ring-inset);
   }
   [data-scope='json-viewer'][data-part='tree'][hidden] {
     display: none;
@@ -143,10 +142,9 @@
     user-select: none;
   }
 
-  /* 标量行的焦点环直接画在行上：它自己就是 treeitem */
+  /* 标量行自己就是 treeitem，环往内收：行是撑满宽度的，画在外沿会被容器裁掉 */
   [data-scope='json-viewer'][data-part='item']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: calc(-1 * var(--xh-ring-width));
+    --xh-_ring-offset: var(--xh-_ring-inset);
   }
 
   /* 键名不参与压缩：它短且必须完整可读，被挤掉的应该是值 */

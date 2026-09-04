@@ -32,7 +32,6 @@
     color: var(--xh-checkbox-group-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-checkbox-group-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-checkbox-group-label-font-weight, var(--xh-text-label-weight));
-    line-height: var(--xh-leading-none);
   }
 
   /* label 自己不带任何状态属性，整组禁用只写在 root 上，只能从 root 往下够 */
@@ -55,16 +54,10 @@
     cursor: pointer;
   }
 
-  [data-scope='checkbox-group'][data-part='item']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
-  }
-
   /* 条目禁用一律走 aria-disabled（原生 disabled 会让它从键盘用户眼里消失），
      所以样式只能读 data-disabled，写 :disabled 永远不命中 */
   [data-scope='checkbox-group'][data-part='item'][data-disabled] {
     color: var(--xh-checkbox-group-item-fg-disabled, var(--xh-fg-disabled));
-    cursor: not-allowed;
   }
 
   /* 只读整组都改不动，但不是禁用：颜色照常，只把"可点"这个暗示收回来。
@@ -206,14 +199,8 @@
     user-select: none;
   }
 
-  [data-scope='checkbox-group'][data-part='select-all-trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
-  }
-
   [data-scope='checkbox-group'][data-part='select-all-trigger'][data-disabled] {
     color: var(--xh-checkbox-group-select-all-trigger-fg-disabled, var(--xh-fg-disabled));
-    cursor: not-allowed;
   }
 
   /* 只读与禁用会同时出现在 trigger 上（连接层两个属性各写各的），

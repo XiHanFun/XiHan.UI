@@ -265,14 +265,8 @@
     scale: var(--xh-motion-scale-press);
   }
 
-  [data-scope='image-viewer'] button[data-part]:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
-  }
-
   [data-scope='image-viewer'] button[data-part]:disabled {
     opacity: var(--xh-state-disabled-opacity);
-    cursor: not-allowed;
   }
 
   /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */

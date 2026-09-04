@@ -60,13 +60,7 @@
     scale: var(--xh-motion-scale-press);
   }
 
-  [data-scope='collapsible'][data-part='trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
-  }
-
   [data-scope='collapsible'][data-part='trigger'][data-disabled] {
-    cursor: not-allowed;
     opacity: var(--xh-state-disabled-opacity);
   }
 

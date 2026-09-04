@@ -65,6 +65,9 @@
     /* 一档静态落影把触发框从页面里抬起一层，与描边一起画出框的边界 */
     --xh-_cascader-shadow: var(--xh-elevation-raised);
 
+    /* 强调色随语气走，只落在勾选标记上；没写 data-tone 时退回品牌色 */
+    --xh-_cascader-accent: var(--xh-_tone, var(--xh-fg-brand));
+
     /* 选中条目的文字色随语气走，没写 data-tone 时退回品牌强调色 */
     --xh-_cascader-selected-fg: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
 
@@ -196,7 +199,6 @@
   [data-scope='cascader'][data-part='control'][data-disabled] {
     background: var(--xh-cascader-control-bg-disabled, var(--xh-bg-subtle));
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
   /* 盒内那颗可聚焦的按钮：不画描边不铺底也不自带高度，只占满剩余宽度、排布回显与箭头 */
@@ -225,7 +227,6 @@
   /* trigger 是单体控件，用原生 disabled（列里的集合条目一律 aria-disabled，写 :disabled 永不命中） */
   [data-scope='cascader'][data-part='trigger']:disabled {
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
   /* 路径连起来会很长，必须能截断；框宽由盒定，这里得允许自己被压缩 */
@@ -320,13 +321,6 @@
     scale: var(--xh-motion-scale-press);
   }
 
-  /* 清空按钮退出了 Tab 序列（tabindex=-1），正常操作走不到这里；
-     留着是给程序化聚焦兜底，落焦时得看得见 */
-  [data-scope='cascader'][data-part='clear-trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
-  }
-
   /* 级联的骨架就在这一条上：列沿书写方向并排，一层一列。
      横向随列数增减，因此不设固定宽度，只给每列自己的宽度 */
   [data-scope='cascader'][data-part='content'] {
@@ -398,8 +392,7 @@
   /* 焦点落在根列上只有一种情形：指针打开、无选中值、还没有任何条目当锚点。
      那一刻它认领着 Tab 位，环画在列内沿；有锚点时环长在条目上，列不再画 */
   [data-scope='cascader'][data-part='column'][tabindex='0']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: calc(-1 * var(--xh-ring-width));
+    --xh-_ring-offset: var(--xh-_ring-inset);
   }
 
   [data-scope='cascader'][data-part='column']:not([tabindex='0']):focus-visible {
@@ -480,17 +473,15 @@
     font-weight: var(--xh-cascader-row-selected-font-weight, var(--xh-font-weight-medium));
   }
 
-  /* 条目自己就是 option，环直接画在它身上；往内收，行是撑满列宽的，环画在外沿会被裁掉 */
+  /* 环往内收：行是撑满列宽的，环画在外沿会被裁掉 */
   [data-scope='cascader'][data-part='item']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: calc(-1 * var(--xh-ring-width));
+    --xh-_ring-offset: var(--xh-_ring-inset);
   }
 
   /* 禁用走 aria-disabled 而非原生 disabled：条目仍要可聚焦（它还得当方向键的起点），
      所以只能靠 data-disabled 表达，写 :disabled 永远不命中 */
   [data-scope='cascader'][data-part='item'][data-disabled] {
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
   /* 分支条目行尾画右向小箭头：不点开也看得出还有下一级。位置由 item-text 的 flex:1 顶到行尾。
@@ -525,7 +516,7 @@
     align-items: center;
     justify-content: center;
     inline-size: var(--xh-cascader-item-indicator-size, var(--xh-control-indicator-size));
-    color: var(--xh-cascader-item-indicator-fg, var(--xh-_tone, var(--xh-fg-brand)));
+    color: var(--xh-cascader-item-indicator-fg, var(--xh-_cascader-accent));
     visibility: hidden;
   }
 
@@ -668,7 +659,6 @@
 
   [data-scope='cascader'][data-part='search-item'][data-disabled] {
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
   [data-scope='cascader'][data-part='search-item'][hidden] {

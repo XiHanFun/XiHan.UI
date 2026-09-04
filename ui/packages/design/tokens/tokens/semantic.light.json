@@ -37,7 +37,7 @@
     "strong": { "$type": "color", "$value": "{color.neutral.300}" },
     "control": { "$type": "color", "$value": "{color.neutral.450}" },
     "control-hover": { "$type": "color", "$value": "{color.neutral.500}" },
-    "control-focus": { "$type": "color", "$value": "{border.control}" },
+    "control-focus": { "$description": "聚焦时控件的描边色，与聚焦环同色；常态描边是 {border.control}，两者取值不同，聚焦才在描边上看得出来。", "$type": "color", "$value": "{ring.focus}" },
     "invalid": { "$type": "color", "$value": "{color.danger.600}" },
     "at-limit": { "$type": "color", "$value": "{color.warning.600}" }
   },

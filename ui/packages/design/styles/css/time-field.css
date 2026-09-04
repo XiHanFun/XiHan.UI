@@ -83,12 +83,10 @@
     color: var(--xh-time-field-label-fg, var(--xh-fg-default));
     font-size: var(--xh-time-field-label-font-size, var(--xh-_time-field-label-font-size));
     font-weight: var(--xh-time-field-label-font-weight, var(--xh-text-label-weight));
-    line-height: var(--xh-leading-none);
   }
 
   [data-scope='time-field'][data-part='label'][data-disabled] {
     color: var(--xh-time-field-label-fg-disabled, var(--xh-fg-subtle));
-    cursor: not-allowed;
   }
 
   /* 几段合起来看着像一个输入框：边框、高度、内边距全长在 control 上，
@@ -148,7 +146,6 @@
   [data-scope='time-field'][data-part='control'][data-disabled] {
     background: var(--xh-time-field-control-bg-disabled, var(--xh-bg-subtle));
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
   /* 段位与作者写在段间的分隔符都在这一层里：它占满盒里剩下的宽度，
@@ -213,7 +210,6 @@
   /* 段是集合条目形态（role=spinbutton 的 span），禁用走 data-disabled 而不是 :disabled */
   [data-scope='time-field'][data-part='segment'][data-disabled] {
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
   /* 清空按钮贴在框内末端：不占宽度也不撑高 control，有值时才显形。

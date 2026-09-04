@@ -1,0 +1,31 @@
+/*
+ * 指针反馈的公共层：全库共用一份。
+ *
+ * 两件事写在这里。
+ *
+ * 一、触摸点按时浏览器画的那层高亮方块。它是继承属性，一条规则打在 [data-scope] 上就覆盖
+ * 库里的每一个节点与它们的后代，不必逐个组件登记。
+ *
+ * 二、禁用态的光标。「这个控件不可用」在库里有三种条件拼写：解剖打出来的 data-disabled、
+ * 原生表单控件的 :disabled、集合条目用的 aria-disabled——三者说的是同一件事，光标也是同一个。
+ * 选择器停在两个属性加一个条件（0,3,0）：与组件皮肤里
+ * [data-scope='x'][data-part='y'][data-disabled] 同级，本份排在全部组件皮肤之前，
+ * 要另画的组件照写即可压过。
+ *
+ * 「在途」不在这里：它是另一件事，光标是 progress，挂在哪个部件上逐个组件不同，
+ * 写成通配会盖到作者自己的内容上（列表外壳、快捷键展示、可调容器都带 data-loading / data-disabled，
+ * 而它们身上的这两个标记说的是「这项行为关掉了」，不是「这个控件不可用」）。
+ *
+ * 排在全部组件皮肤之前：组件不必为了换一个光标把整条规则重写一遍。
+ */
+@layer xihan.components {
+  [data-scope] {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  [data-scope][data-part][data-disabled],
+  [data-scope][data-part]:disabled,
+  [data-scope][data-part][aria-disabled='true'] {
+    cursor: not-allowed;
+  }
+}

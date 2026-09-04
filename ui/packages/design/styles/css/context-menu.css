@@ -87,12 +87,6 @@
     background: var(--xh-context-menu-trigger-bg-pressing, var(--xh-bg-subtle));
   }
 
-  /* 触发区自带 Tab 位（Shift+F10 / 菜单键的落点），必须画得出焦点 */
-  [data-scope='context-menu'][data-part='trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
-  }
-
   [data-scope='context-menu'][data-part='content'] {
     display: flex;
     flex-direction: column;
@@ -102,8 +96,8 @@
     /* 两道上限取更小的那道：自己的高度上限，以及落定那一侧真正剩下的空间。
        列表族的 16rem 对命令菜单偏矮，这里另给一档 */
     max-block-size: min(var(--xh-context-menu-max-h, var(--xh-overlay-menu-max-h)), var(--xh-_context-menu-available-h));
-    padding-block: var(--xh-context-menu-py, var(--xh-space-1));
-    padding-inline: var(--xh-context-menu-px, var(--xh-space-1));
+    padding-block: var(--xh-context-menu-py, var(--xh-surface-pad-xs));
+    padding-inline: var(--xh-context-menu-px, var(--xh-surface-pad-xs));
     border: var(--xh-stroke-thin) solid var(--xh-context-menu-border, var(--xh-border-default));
     border-radius: var(--xh-context-menu-radius, var(--xh-shape-surface));
     background: var(--xh-context-menu-bg, var(--xh-bg-surface));
@@ -123,8 +117,7 @@
   /* 焦点落在容器上只有一种情形：指针打开、还没有任何条目当锚点。那一刻它认领着 Tab 位，
      环画在浮层内沿，用户才看得出键盘此刻在哪儿；有锚点时环长在条目上，容器不再画 */
   [data-scope='context-menu'][data-part='content'][tabindex='0']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: calc(-1 * var(--xh-ring-width));
+    --xh-_ring-offset: var(--xh-_ring-inset);
   }
 
   [data-scope='context-menu'][data-part='content']:not([tabindex='0']):focus-visible {
@@ -229,8 +222,7 @@
   /* 键盘走到条目上要画环：轻档底色只有 1.1:1，够不上焦点指示器的对比度要求。
      指针悬停走的是程序化聚焦，鼠标模态下 :focus-visible 不匹配，不会误画 */
   [data-scope='context-menu'][data-part='item']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: calc(-1 * var(--xh-ring-width));
+    --xh-_ring-offset: var(--xh-_ring-inset);
   }
 
   [data-scope='context-menu'][data-part='item']:focus:not(:focus-visible) {
@@ -241,7 +233,6 @@
      所以只能靠 data-disabled 表达，写 :disabled 永远不命中 */
   [data-scope='context-menu'][data-part='item'][data-disabled] {
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
   [data-scope='context-menu'][data-part='item-text'] {

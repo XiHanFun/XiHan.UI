@@ -112,13 +112,6 @@
     color: var(--xh-dynamic-input-item-delete-fg-hover, var(--xh-fg-danger-hover));
   }
 
-  [data-scope='dynamic-input'][data-part='item-delete-trigger']:focus-visible,
-  [data-scope='dynamic-input'][data-part='move-up-trigger']:focus-visible,
-  [data-scope='dynamic-input'][data-part='move-down-trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
-  }
-
   /* 到上下限、或整份禁用时用 aria-disabled 表达（原生 disabled 不派 click，禁用守卫走不到），
      所以样式也得认这个属性，写 :disabled 永远不命中 */
   [data-scope='dynamic-input'][data-part='item-delete-trigger'][aria-disabled='true'],
@@ -126,7 +119,6 @@
   [data-scope='dynamic-input'][data-part='move-down-trigger'][aria-disabled='true'] {
     background: transparent;
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
   /* —— 新增把手 —— */
@@ -167,16 +159,10 @@
     scale: var(--xh-motion-scale-press);
   }
 
-  [data-scope='dynamic-input'][data-part='add-trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
-  }
-
   [data-scope='dynamic-input'][data-part='add-trigger'][aria-disabled='true'] {
     border-color: var(--xh-dynamic-input-add-border-disabled, var(--xh-border-subtle));
     background: transparent;
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
   /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */

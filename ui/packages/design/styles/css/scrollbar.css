@@ -126,11 +126,9 @@
     background: var(--xh-scrollbar-thumb-bg-active, var(--xh-fg-scrollbar-thumb-active));
   }
 
-  /* 只有开了 focusable 的滑块进得了 Tab 序，环也就只画在它身上。
-     偏移取负：环画在轨道内侧，否则会被滚动容器的溢出边界裁掉半圈 */
+  /* 偏移取负：环画在轨道内侧，否则会被滚动容器的溢出边界裁掉半圈 */
   [data-scope='scrollbar'][data-part='thumb']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: calc(-1 * var(--xh-ring-width));
+    --xh-_ring-offset: var(--xh-_ring-inset);
   }
 
   /* 根与轨道都是纯容器，不承载焦点；作者若给它们加了 tabindex，也不该在这儿多画一圈 */
@@ -142,7 +140,6 @@
   /* 禁用：整条不显形，这里只兜住作者硬把它显出来的那一路 */
   [data-scope='scrollbar'][data-part='thumb'][data-disabled] {
     background: var(--xh-scrollbar-thumb-bg-disabled, var(--xh-border-subtle));
-    cursor: not-allowed;
   }
 
   /* 交叉口补丁：贴在本条末端之外的那一格，与轨道同色，跟着本条淡入淡出 */

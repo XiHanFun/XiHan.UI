@@ -97,12 +97,6 @@
     border-inline-end: var(--xh-_tabs-list-border-width) solid var(--xh-tabs-list-border, var(--xh-border-default));
   }
 
-  /* 组内无锚点时 list 自己在 Tab 序列里，落焦要看得见 */
-  [data-scope='tabs'][data-part='list']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
-  }
-
   [data-scope='tabs'][data-part='trigger'] {
     position: relative;
     display: inline-flex;
@@ -137,11 +131,6 @@
     scale: var(--xh-motion-scale-press);
   }
 
-  [data-scope='tabs'][data-part='trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
-  }
-
   [data-scope='tabs'][data-part='trigger'][data-state='active'] {
     border-color: var(--xh-tabs-trigger-border-active, var(--xh-_tabs-trigger-border-active));
     background: var(--xh-tabs-trigger-bg-active, var(--xh-_tabs-trigger-bg-active));
@@ -157,17 +146,11 @@
 
   [data-scope='tabs'][data-part='trigger'][data-disabled] {
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
   [data-scope='tabs'][data-part='content'] {
     padding-block: var(--xh-tabs-content-py, var(--xh-stack-gap-md));
     color: var(--xh-tabs-content-fg, var(--xh-fg-default));
-  }
-
-  [data-scope='tabs'][data-part='content']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
   }
 
   /* —— 标签拖拽换位 —— */
@@ -230,12 +213,6 @@
      能拖与不能拖的两张标签，文字起点会错开一格 */
   [data-scope='tabs'][data-part='tab-drag-trigger'][data-disabled] {
     color: var(--xh-tabs-drag-fg-disabled, var(--xh-fg-disabled));
-    cursor: not-allowed;
-  }
-
-  [data-scope='tabs'][data-part='tab-drag-trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
   }
 
   /* 被拖的那张标签压暗，让人看得出正在搬的是它。这里只动 opacity、cursor 与 user-select，
@@ -254,7 +231,7 @@
   [data-scope='tabs'][data-part='trigger']:is([data-drop='before'], [data-drop='after'])::after {
     content: '';
     position: absolute;
-    background: var(--xh-tabs-drop-fg, var(--xh-border-control-focus));
+    background: var(--xh-tabs-drop-fg, var(--xh-bg-brand));
   }
 
   /* 线的方向跟着标签带的排法换：方向写在 root 的 data-orientation 上，从根往下选。

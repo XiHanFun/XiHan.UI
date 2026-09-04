@@ -87,8 +87,7 @@
 
     /* 尺寸档只换这两个私有槽。popover 没有 root 部件，size 落在浮层树最外层的 content 上。
        语气不接：面板是内容容器，语气该由里面的内容表达 */
-    --xh-_popover-py: var(--xh-space-3);
-    --xh-_popover-px: var(--xh-control-px-md);
+    --xh-_popover-pad: var(--xh-surface-pad-md);
     --xh-_popover-max-w: var(--xh-overlay-max-w);
 
     position: relative;
@@ -100,8 +99,8 @@
     /* 内容由作者给，长度不可预知：不限高就整块伸出视口且滚不到 */
     max-block-size: min(var(--xh-popover-max-h, var(--xh-overlay-max-h)), var(--xh-_popover-available-h));
     overflow-y: auto;
-    padding-block: var(--xh-popover-py, var(--xh-_popover-py));
-    padding-inline: var(--xh-popover-px, var(--xh-_popover-px));
+    padding-block: var(--xh-popover-py, var(--xh-_popover-pad));
+    padding-inline: var(--xh-popover-px, var(--xh-_popover-pad));
     border: var(--xh-stroke-thin) solid var(--xh-popover-border, var(--xh-border-default));
     border-radius: var(--xh-popover-radius, var(--xh-shape-surface));
     background: var(--xh-popover-bg, var(--xh-bg-surface));
@@ -135,17 +134,14 @@
   }
 
   /* —— 尺寸 —— */
-  /* 缺省档写在 content 的基础规则里；行内内缩本就取 control-px 那把尺，上下各挪一档，
-     纵向内缩按 space 档同步 */
+  /* 缺省档写在 content 的基础规则里；四边等宽的面板内衬三档取 surface-pad 那把尺 */
   [data-scope='popover'][data-part='content'][data-size='sm'] {
-    --xh-_popover-py: var(--xh-space-2);
-    --xh-_popover-px: var(--xh-control-px-sm);
+    --xh-_popover-pad: var(--xh-surface-pad-sm);
     --xh-_popover-max-w: var(--xh-overlay-max-w-sm);
   }
 
   [data-scope='popover'][data-part='content'][data-size='lg'] {
-    --xh-_popover-py: var(--xh-space-4);
-    --xh-_popover-px: var(--xh-control-px-lg);
+    --xh-_popover-pad: var(--xh-surface-pad-lg);
     --xh-_popover-max-w: var(--xh-overlay-max-w-lg);
   }
 
@@ -169,6 +165,8 @@
     padding-inline-end: calc(var(--xh-popover-close-size, var(--xh-control-h-sm)) + var(--xh-space-2));
   }
 
+  /* 贴边比 dialog 一族的面板档（--xh-surface-action-inset）小一档：气泡的面板内衬是 12px，
+     28px 的钮按 12px 贴边会伸出面板自己的盒子，被 content 的 overflow 裁掉。 */
   [data-scope='popover'][data-part='close-trigger'] {
     position: absolute;
     inset-block-start: var(--xh-space-2);
@@ -184,7 +182,8 @@
     color: var(--xh-popover-close-fg, var(--xh-fg-muted));
     cursor: pointer;
     transition:
-      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
@@ -200,11 +199,6 @@
   [data-scope='popover'][data-part='close-trigger']:active {
     background: var(--xh-popover-close-bg-active, var(--xh-bg-subtle-active));
     scale: var(--xh-motion-scale-press);
-  }
-
-  [data-scope='popover'][data-part='close-trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
   }
 
   /* 箭头的底色与描边色，几何在 overlay-arrow.css。

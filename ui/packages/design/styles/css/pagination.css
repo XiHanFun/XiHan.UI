@@ -152,21 +152,12 @@
     scale: var(--xh-motion-scale-press);
   }
 
-  [data-scope='pagination'][data-part='prev-trigger']:focus-visible,
-  [data-scope='pagination'][data-part='next-trigger']:focus-visible,
-  [data-scope='pagination'][data-part='item']:focus-visible,
-  [data-scope='pagination'][data-part='ellipsis']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
-  }
-
   /* 首末页的上一页 / 下一页是原生 disabled（不可聚焦、进不了 Tab 序列），
      所以这里必须用 :disabled；连接层同时给的 data-disabled 只是留给作者的钩子。
      分页条目从不禁用，那边也就没有对应规则 */
   [data-scope='pagination'][data-part='prev-trigger']:disabled,
   [data-scope='pagination'][data-part='next-trigger']:disabled {
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
   /* 当前页：data-current 与 aria-current='page' 由连接层成对给出，
@@ -221,14 +212,8 @@
     border-color: var(--xh-pagination-page-size-border-hover, var(--xh-border-strong));
   }
 
-  [data-scope='pagination'][data-part='page-size-select']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
-  }
-
   [data-scope='pagination'][data-part='page-size-select']:disabled {
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
   /* 摊开省略位的定位层。三处坐标系必须同为 fixed：机器交给引擎的 strategy、

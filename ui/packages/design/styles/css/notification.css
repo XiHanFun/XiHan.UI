@@ -148,8 +148,8 @@
     /* 摞是整面视口宽的定位面且带内边距，取 100% 就等于自动让出两侧留白，
        窄屏上不必再算一遍 viewport 减法 */
     max-inline-size: 100%;
-    padding-block: var(--xh-notification-item-py, var(--xh-space-4));
-    padding-inline: var(--xh-notification-item-px, var(--xh-space-4));
+    padding-block: var(--xh-notification-item-py, var(--xh-surface-pad-lg));
+    padding-inline: var(--xh-notification-item-px, var(--xh-surface-pad-lg));
     border: var(--xh-stroke-thin) solid var(--xh-notification-item-border, var(--xh-border-default));
     border-radius: var(--xh-notification-item-radius, var(--xh-shape-surface));
     background: var(--xh-notification-item-bg, var(--xh-bg-surface-raised));
@@ -286,9 +286,13 @@
     line-height: var(--xh-notification-title-leading, var(--xh-leading-tight));
   }
 
-  /* 叉钉在右上角，标题得给它让位；说明与操作在第二行往下，不受影响 */
+  /* 叉钉在右上角，标题得给它让位；说明与操作在第二行往下，不受影响。
+     让位量与叉的贴边取同一个值，作者改了贴边槽，标题让出的那段跟着走 */
   [data-scope='notification'][data-part='item']:has([data-part='item-close-trigger']) [data-part='item-title'] {
-    padding-inline-end: calc(var(--xh-notification-close-size, var(--xh-control-h-sm)) + var(--xh-space-2));
+    padding-inline-end: calc(
+      var(--xh-notification-close-size, var(--xh-control-h-sm)) +
+      var(--xh-notification-close-inset, var(--xh-surface-action-inset))
+    );
   }
 
   [data-scope='notification'][data-part='item-description'] {
@@ -344,16 +348,11 @@
     scale: var(--xh-motion-scale-press);
   }
 
-  [data-scope='notification'][data-part='item-action-trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
-  }
-
   /* 钉在右上角的内衬处，不参与网格排布——留在流里它会变成正文下面的第三行 */
   [data-scope='notification'][data-part='item-close-trigger'] {
     position: absolute;
-    inset-block-start: var(--xh-notification-close-inset, var(--xh-space-3));
-    inset-inline-end: var(--xh-notification-close-inset, var(--xh-space-3));
+    inset-block-start: var(--xh-notification-close-inset, var(--xh-surface-action-inset));
+    inset-inline-end: var(--xh-notification-close-inset, var(--xh-surface-action-inset));
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -392,12 +391,6 @@
      但作者若在覆盖层把收起改了回来，至少还能看出这颗叉是按不动的 */
   [data-scope='notification'][data-part='item-close-trigger']:disabled {
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
-  }
-
-  [data-scope='notification'][data-part='item-close-trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
   }
 
   /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */

@@ -66,7 +66,6 @@
   }
 
   [data-scope='checkbox'][data-part='root'][data-disabled] {
-    cursor: not-allowed;
     opacity: var(--xh-state-disabled-opacity);
   }
 
@@ -76,11 +75,6 @@
   [data-scope='checkbox'][data-part='root'][data-readonly]:not([data-disabled]),
   [data-scope='checkbox'][data-part='label'][data-readonly]:not([data-disabled]) {
     cursor: default;
-  }
-
-  [data-scope='checkbox'][data-part='root']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
   }
 
   /* —— 尺寸 —— */
@@ -144,13 +138,11 @@
     gap: var(--xh-checkbox-label-gap, var(--xh-control-gap-md));
     color: var(--xh-checkbox-label-fg, var(--xh-fg-default));
     font-size: var(--xh-checkbox-label-font-size, var(--xh-text-label-size));
-    line-height: var(--xh-leading-none);
     cursor: pointer;
   }
 
   [data-scope='checkbox'][data-part='label'][data-disabled] {
     color: var(--xh-checkbox-label-fg-disabled, var(--xh-fg-disabled));
-    cursor: not-allowed;
   }
 
   [data-scope='checkbox'][data-part='text'] {

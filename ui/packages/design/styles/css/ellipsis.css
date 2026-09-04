@@ -40,12 +40,6 @@
     cursor: pointer;
   }
 
-  /* 聚焦环恒是 --xh-ring-focus，不随语气走 */
-  [data-scope='ellipsis'][data-part='root'][data-expandable]:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
-  }
-
   /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
      写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
   [data-scope='ellipsis'][data-part='root'][hidden] {

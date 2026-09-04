@@ -72,12 +72,6 @@
     scale: var(--xh-motion-scale-press);
   }
 
-  /* 聚焦环恒是 --xh-ring-focus，不随语气走 */
-  [data-scope='back-top'][data-part='trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
-  }
-
   /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
   [data-scope='back-top'][data-part='trigger']:empty::before {
     content: '';

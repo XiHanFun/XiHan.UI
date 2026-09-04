@@ -71,11 +71,6 @@
     color: var(--xh-color-picker-label-fg, var(--xh-fg-default));
     font-size: var(--xh-color-picker-label-font-size, var(--xh-_color-picker-label-font-size));
     font-weight: var(--xh-color-picker-label-font-weight, var(--xh-text-label-weight));
-    line-height: var(--xh-leading-none);
-  }
-
-  [data-scope='color-picker'][data-part='label'][data-disabled] {
-    color: var(--xh-fg-subtle);
   }
 
   /* 盒：描边、底色、控件高度与行内内衬都落在这一层，
@@ -114,7 +109,6 @@
   [data-scope='color-picker'][data-part='control'][data-disabled] {
     background: var(--xh-color-picker-control-bg-disabled, var(--xh-bg-subtle));
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
   /* 只读仍可聚焦、浮层照开，只是改不动：不置灰，只把底色压下去 */
@@ -147,7 +141,6 @@
   /* 单体控件用原生 disabled（预设色板那些格子也是原生按钮，同一条规矩） */
   [data-scope='color-picker'][data-part='trigger']:disabled {
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
   /* 当前颜色的色块。背景由连接层内联给（含透明度），这里只给形状与描边。
@@ -260,12 +253,11 @@
       linear-gradient(to left, white, transparent);
   }
 
-  [data-scope='color-picker'][data-part='area'][data-readonly] {
+  [data-scope='color-picker'][data-part='area'][data-readonly]:not([data-disabled]) {
     cursor: default;
   }
 
   [data-scope='color-picker'][data-part='area'][data-disabled] {
-    cursor: not-allowed;
     opacity: var(--xh-state-disabled-opacity);
   }
 
@@ -300,12 +292,6 @@
     margin-block-start: calc(var(--xh-color-picker-thumb-size, 14px) / -2);
   }
 
-  [data-scope='color-picker'][data-part='area-thumb']:focus-visible,
-  [data-scope='color-picker'][data-part='channel-slider-thumb']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
-  }
-
   /* 只有手真正拖着的那一处带 data-dragging：放大与光标不会三处一起变。
      放大用 scale 而不是改尺寸：变换绕自身中心发生，圆心不动，负外边距的算式不用跟着改 */
   [data-scope='color-picker'][data-part='area-thumb'][data-dragging],
@@ -314,14 +300,9 @@
     cursor: grabbing;
   }
 
-  [data-scope='color-picker'][data-part='area-thumb'][data-readonly],
-  [data-scope='color-picker'][data-part='channel-slider-thumb'][data-readonly] {
+  [data-scope='color-picker'][data-part='area-thumb'][data-readonly]:not([data-disabled]),
+  [data-scope='color-picker'][data-part='channel-slider-thumb'][data-readonly]:not([data-disabled]) {
     cursor: default;
-  }
-
-  [data-scope='color-picker'][data-part='area-thumb'][data-disabled],
-  [data-scope='color-picker'][data-part='channel-slider-thumb'][data-disabled] {
-    cursor: not-allowed;
   }
 
   /* 拇指以整条滑杆为定位上下文（拇指浮出轨道，挂在轨道上会被轨道的盒子束住）。
@@ -349,11 +330,10 @@
   }
 
   [data-scope='color-picker'][data-part='channel-slider'][data-disabled] {
-    cursor: not-allowed;
     opacity: var(--xh-state-disabled-opacity);
   }
 
-  [data-scope='color-picker'][data-part='channel-slider'][data-readonly] {
+  [data-scope='color-picker'][data-part='channel-slider'][data-readonly]:not([data-disabled]) {
     cursor: default;
   }
 
@@ -425,7 +405,6 @@
   [data-scope='color-picker'][data-part='channel-input']:disabled {
     background: var(--xh-color-picker-input-bg-disabled, var(--xh-bg-subtle));
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
   [data-scope='color-picker'][data-part='eye-dropper-trigger'] {
@@ -463,11 +442,6 @@
     scale: var(--xh-motion-scale-press);
   }
 
-  [data-scope='color-picker'][data-part='eye-dropper-trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
-  }
-
   /* 取色途中按钮保持按下的样子：屏幕取色期间浮层多半被系统的取色镜头盖着，
      这是用户回到页面时唯一能看出"刚才在取色"的痕迹 */
   [data-scope='color-picker'][data-part='eye-dropper-trigger'][data-state='picking'] {
@@ -477,7 +451,6 @@
 
   [data-scope='color-picker'][data-part='eye-dropper-trigger']:disabled {
     color: var(--xh-fg-disabled);
-    cursor: not-allowed;
   }
 
   [data-scope='color-picker'][data-part='swatch-group'] {
@@ -515,13 +488,13 @@
     outline-offset: var(--xh-ring-offset);
   }
 
+  /* 选中的色板自带一圈同特指度的环，这一条排在它之后，键盘焦点才压得住 */
   [data-scope='color-picker'][data-part='swatch-item']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
     outline-offset: var(--xh-ring-offset);
   }
 
   [data-scope='color-picker'][data-part='swatch-item']:disabled {
-    cursor: not-allowed;
     opacity: var(--xh-state-disabled-opacity);
   }
 

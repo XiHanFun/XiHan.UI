@@ -134,7 +134,7 @@ XiHan.UI 的公开面横跨五种介质，因为「丢掉自带皮肤自己写�
 | `data-name` | 表单字段名（`form`） |
 | `data-index` | 条目序号（0 基） |
 
-**样式钩子**——自带皮肤自己就消费了 126 个属性名 / 613 条「皮肤 × 属性」配对（不含解剖的 `data-scope` / `data-part`），第三方皮肤照着抄的就是这一组：
+**样式钩子**——自带皮肤自己就消费了 126 个属性名 / 618 条「皮肤 × 属性」配对（不含解剖的 `data-scope` / `data-part`），第三方皮肤照着抄的就是这一组：
 
 | 属性 | 选中它的皮肤份数 |
 | --- | --- |
@@ -190,7 +190,7 @@ brand  neutral  success  warning  danger  info
 | 语气轴槽 | 12 | `--xh-_tone`、`--xh-_tone-on`、`--xh-_tone-hover`、`--xh-_tone-subtle`、`--xh-_tone-border` 等。**这是自定义语气的唯一机制**——你写 `[data-tone='premium'] { --xh-_tone: gold; --xh-_tone-on: #000 }`，读这批槽的 58 份皮肤都会跟着走。虽然带下划线前缀，但按受约束处理 |
 | 关键帧名 | 59 | `xh-pop-in`、`xh-fade-out`、`xh-spinner-rotate`。关键帧逐皮肤自带，你在 `xihan.overrides` 层里重定义同名关键帧就换掉了那段动画（规范 §8.7 约束 3）——所以改名与删名同样是 major |
 | 跨包内联属性 | 2 | `--xh-_ellipsis-lines`、`--xh-_float-button-offset`。由 headless 写进内联 `style`，皮肤必须读。**换整套皮肤时不读这两条，`ellipsis` 不截断、`float-button` 贴边，且不报任何错** |
-| `@xihan-ui/styles` 的 CSS 子路径 | 137 | `.`、`./index.css`、`./index.unlayered.css`，与 134 条 `.css`——127 份组件皮肤加 `./layers.css`、`./tone.css`、`./reset.css`、`./overlay-arrow.css`、`./visually-hidden.css`、`./undefined.css`、`./forced-colors.css` |
+| `@xihan-ui/styles` 的 CSS 子路径 | 140 | `.`、`./index.css`、`./index.unlayered.css`，与 137 条 `.css`——127 份组件皮肤加 `./layers.css`、`./tone.css`、`./reset.css`、`./overlay-arrow.css`、`./visually-hidden.css`、`./undefined.css`、`./focus.css`、`./label.css`、`./pointer.css`、`./forced-colors.css` |
 | `@xihan-ui/tokens` 的 CSS 子路径 | 2 | `./tokens.css`、`./tokens.json` |
 
 ### 排除
@@ -202,7 +202,7 @@ brand  neutral  success  warning  danger  info
 | `index.unlayered.css` 的内部结构 | — | 它是生成的扁平镜像，**不带 `@layer`**。走这个入口就没有 `xihan.overrides` 这个覆盖槽位，层名承诺不适用 |
 
 ::: warning 命名前缀不能反推归属
-`--xh-field-py` 长得像 `field` 组件的覆盖槽，实际是全局语义令牌，而且 `field.css` 自己都不用它。同理 `--xh-text-*`（13 个全局文本令牌）与 `text-field` 的 48 条组件槽同前缀，`--xh-color-*`（41 个原语调色板令牌）与 `color-picker` 的 70 条组件槽同前缀。判断一条属性属于哪一档，看它在不在上表列的那 329 个全局令牌里，不要按前缀猜。
+`--xh-field-py` 长得像 `field` 组件的覆盖槽，实际是全局语义令牌，而且 `field.css` 自己都不用它。同理 `--xh-text-*`（13 个全局文本令牌）与 `text-field` 的 48 条组件槽同前缀，`--xh-color-*`（41 个原语调色板令牌）与 `color-picker` 的 70 条组件槽同前缀。判断一条属性属于哪一档，看它在不在上表列的那 334 个全局令牌里，不要按前缀猜。
 :::
 
 ---
@@ -384,7 +384,7 @@ Web Components 侧不构成额外约束：全部 Light DOM，不用 shadow DOM�
 | `@xihan-ui/web-components` | 130 个自定义元素 |
 | `@xihan-ui/headless` | `connect*` / `*Machine` / 各类公开类型；内部算子在排除清单里 |
 | `@xihan-ui/styles` | 127 份组件皮肤、5 个层名 |
-| `@xihan-ui/tokens` | 329 个令牌名，外加 `./runtime` 的主题控制器与种子色 API |
+| `@xihan-ui/tokens` | 334 个令牌名，外加 `./runtime` 的主题控制器与种子色 API |
 | `@xihan-ui/icons` | 图标集 |
 | `@xihan-ui/kernel` | 只有被适配器与 headless 公开消费的那部分（`createAnatomy`、`createNormalizer`、归一化规则） |
 | `@xihan-ui/machine` | 同上 |
@@ -413,11 +413,11 @@ Web Components 侧不构成额外约束：全部 Light DOM，不用 shadow DOM�
 ### 已经焊死的
 
 **六种介质的「改名 = major」现在有门禁兜着。** `pnpm gate:surface` 跑的 `check-public-surface`
-拿一份入库的基线（`ui/tooling/public-surface.json`，10513 个名字）比对当前状态：
+拿一份入库的基线（`ui/tooling/public-surface.json`，10518 个名字）比对当前状态：
 **基线里有而当前没有，就是删了或改名了，构建失败**。新增一律放行，因为那是 minor。
 
-覆盖：包名与 169 条子入口、4705 个导出名、127 个 `data-scope` 与 845 条部件配对、
-127 个组件的 1409 个 prop 名、164 种 `data-*`、28 个 `data-state` 取值、329 个令牌、
+覆盖：包名与 172 条子入口、4705 个导出名、127 个 `data-scope` 与 845 条部件配对、
+127 个组件的 1409 个 prop 名、164 种 `data-*`、28 个 `data-state` 取值、334 个令牌、
 5 个 `@layer` 名、3061 个组件覆盖槽、129 个自定义元素及其 attribute 与事件。
 
 prop 名那一维是后补的：在它进来之前，改一个 prop 名（实测 `transfer` 的 `items` 改
