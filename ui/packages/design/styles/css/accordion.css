@@ -116,7 +116,7 @@
     justify-content: center;
     flex: none;
     line-height: var(--xh-leading-none);
-    transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
   /* 没写内容就由皮肤画；作者往部件里塞了自己的图形，这条规则即不命中 */

@@ -284,7 +284,7 @@
     background: transparent;
     box-shadow: var(--xh-color-picker-thumb-shadow, var(--xh-elevation-raised));
     cursor: grab;
-    transition: scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition: scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
   /* 取色区的纵轴也由连接层给（inset-block-start），回拉同样按 block-start 那侧 */
@@ -446,7 +446,7 @@
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='color-picker'][data-part='eye-dropper-trigger']:hover:not(:disabled) {
@@ -494,7 +494,7 @@
     cursor: pointer;
     transition:
       border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
   /* 这一格的底色就是它要展示的那个颜色，换底等于把展示物盖掉，交互回执只能落在别处：

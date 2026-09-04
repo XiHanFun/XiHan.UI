@@ -332,7 +332,7 @@
   /* 展开箭头：收起时朝向行首、展开时转向下方，与逻辑书写方向一致 */
   [data-scope='table'][data-part='expand-trigger'] {
     color: var(--xh-table-expand-fg, var(--xh-fg-subtle));
-    transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='table'][data-part='expand-trigger'][data-state='open'] {

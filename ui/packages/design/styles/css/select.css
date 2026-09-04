@@ -240,7 +240,7 @@
     line-height: var(--xh-leading-none);
     cursor: pointer;
     user-select: none;
-    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='select'][data-part='clear-trigger'][hidden] {
@@ -295,7 +295,7 @@
     color: var(--xh-select-item-delete-fg, var(--xh-fg-subtle));
     font-size: inherit;
     cursor: pointer;
-    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='select'][data-part='item-delete-trigger'][hidden] {
@@ -362,7 +362,7 @@
     inline-size: var(--xh-select-action-size, var(--xh-control-action-size));
     block-size: var(--xh-select-action-size, var(--xh-control-action-size));
     color: var(--xh-select-indicator-fg, var(--xh-fg-muted));
-    transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
   /* 没写内容就由皮肤画箭头；作者往部件里塞了自己的图形，这条规则即不命中 */

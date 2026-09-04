@@ -133,7 +133,7 @@
     box-shadow: var(--xh-slider-thumb-shadow, var(--xh-elevation-raised));
     cursor: grab;
     transition:
-      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong),
       box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 

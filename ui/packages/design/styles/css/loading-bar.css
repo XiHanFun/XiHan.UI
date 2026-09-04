@@ -60,7 +60,7 @@
   [data-scope='loading-bar'][data-part='range'] {
     block-size: 100%;
     background: var(--xh-loading-bar-range, var(--xh-_tone-soft, var(--xh-bg-brand)));
-    transition: inline-size var(--xh-loading-bar-speed, var(--xh-motion-duration-enter)) var(--xh-motion-ease-enter);
+    transition: inline-size var(--xh-loading-bar-speed, var(--xh-motion-duration-enter)) var(--xh-motion-ease-continuous);
   }
 
   /* 减少动效：宽度与淡出都立刻到位。进度本身照常推进，只是不再有过渡的过程——

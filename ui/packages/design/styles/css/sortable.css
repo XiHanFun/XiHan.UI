@@ -39,7 +39,7 @@
   /* 让位期间关掉过渡，跟手的那一项才不会慢半拍粘在指针后面。
      其余项反过来要过渡：它们是被让开的，瞬移会看不出发生了什么。 */
   [data-scope='sortable'][data-part='root'][data-dragging] [data-part='item']:not([data-dragging]) {
-    transition: transform var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition: transform var(--xh-motion-duration-micro) var(--xh-motion-ease-continuous);
   }
 
   [data-scope='sortable'][data-part='item'][data-dragging] {

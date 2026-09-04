@@ -249,7 +249,7 @@
     justify-content: center;
     inline-size: var(--xh-tree-indicator-size, var(--xh-control-indicator-size));
     color: var(--xh-tree-branch-indicator-fg, var(--xh-fg-subtle));
-    transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='tree'][data-part='branch-trigger'][hidden],

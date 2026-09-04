@@ -258,8 +258,8 @@
     border-radius: var(--xh-navigation-menu-indicator-radius, var(--xh-shape-pill));
     background: var(--xh-navigation-menu-indicator-color, var(--xh-_navigation-menu-accent));
     transition:
-      inset-inline-start var(--xh-motion-duration-enter) var(--xh-motion-ease-enter),
-      inline-size var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+      inset-inline-start var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
+      inline-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous);
   }
 
   [data-scope='navigation-menu'][data-part='indicator'][hidden] {
@@ -273,8 +273,8 @@
     inline-size: var(--xh-navigation-menu-indicator-thickness, var(--xh-stroke-thick));
     block-size: auto;
     transition:
-      inset-block-start var(--xh-motion-duration-enter) var(--xh-motion-ease-enter),
-      block-size var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+      inset-block-start var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
+      block-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous);
   }
 
   /* 共享面板外壳：只管落位与统一的面板外观，里面装哪一份内容归 content。

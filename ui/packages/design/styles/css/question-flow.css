@@ -98,7 +98,7 @@
     display: block;
     overflow: hidden;
     block-size: var(--xh-question-flow-viewport-h, var(--xh-_question-flow-viewport-h));
-    transition: block-size var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+    transition: block-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous);
   }
 
   [data-scope='question-flow'][data-part='viewport'][hidden] {
@@ -113,7 +113,7 @@
     flex-direction: column;
     gap: var(--xh-question-flow-track-gap, var(--xh-_question-flow-gap));
     translate: 0 var(--xh-question-flow-track-y, var(--xh-_question-flow-track-y));
-    transition: translate var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+    transition: translate var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous);
   }
 
   [data-scope='question-flow'][data-part='track'][hidden] {
@@ -182,7 +182,7 @@
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='question-flow'][data-part='option'][hidden] {
@@ -343,7 +343,7 @@
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='question-flow'][data-part='prev-trigger'][hidden],
@@ -432,7 +432,7 @@
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='question-flow'][data-part='skip-trigger'][hidden],

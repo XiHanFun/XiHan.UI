@@ -290,7 +290,7 @@
     line-height: var(--xh-leading-none);
     cursor: pointer;
     user-select: none;
-    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
 
@@ -310,7 +310,7 @@
      按钮自带悬停底色，整个按钮转会带着底色一起转 */
   [data-scope='combobox'][data-part='trigger']:empty::before,
   [data-scope='combobox'][data-part='trigger'] > * {
-    transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
   /* 没写内容就由皮肤画箭头；作者往部件里塞了自己的图形，这条规则即不命中 */

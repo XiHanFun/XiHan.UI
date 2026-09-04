@@ -107,7 +107,7 @@
     border-radius: var(--xh-shape-pill);
     background: var(--xh-radio-group-indicator-dot, var(--xh-_radio-group-accent));
     scale: 0;
-    transition: scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition: scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='radio-group'][data-part='indicator'][data-state='checked']::before {
