@@ -431,6 +431,21 @@
       "$description": "入场与展开的强减速曲线：起步快、收尾长，位移看得清但不拖沓。",
       "$type": "cubicBezier",
       "$value": "cubic-bezier(0.23, 1, 0.32, 1)"
+    },
+    "out-fluid": {
+      "$description": "尺度大的位移与尺寸变化：起步几乎不减速，收尾一路压到零。抽屉推入、轮播换页、指示条长距离滑移走这一条。",
+      "$type": "cubicBezier",
+      "$value": "cubic-bezier(0.32, 0.72, 0, 1)"
+    },
+    "in-out": {
+      "$description": "两端都减速：往返型无限循环的折返点靠它软下来。与 easing.ts 的 easeInOut 逐值相同。",
+      "$type": "cubicBezier",
+      "$value": "cubic-bezier(0.4, 0, 0.2, 1)"
+    },
+    "out-back": {
+      "$description": "过冲后落位：终点前冲过一点再退回来。只给短边不超过 32px 的小件的 scale / rotate 用，布局尺寸与浮层进场都不许接。",
+      "$type": "cubicBezier",
+      "$value": "cubic-bezier(0.34, 1.56, 0.64, 1)"
     }
   }
 }
