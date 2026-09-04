@@ -99,7 +99,7 @@ size 换的是留白、图标框与标题字号，不传 size 即默认档
 
 ## 样式
 
-默认皮肤 `@xihan-ui/styles/result.css` 按部件选择：`[data-scope="result"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+默认皮肤 `@xihan-ui/styles/result.css` 按部件选择：`[data-scope="result"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
 
 ## 数据属性
 
@@ -115,6 +115,12 @@ size 换的是留白、图标框与标题字号，不传 size 即默认档
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-result-action-gap` · `--xh-result-description-fg` · `--xh-result-description-font-size` · `--xh-result-description-leading` · `--xh-result-description-max-w` · `--xh-result-fg` · `--xh-result-gap` · `--xh-result-icon-fg` · `--xh-result-icon-font-size` · `--xh-result-icon-size` · `--xh-result-px` · `--xh-result-py` · `--xh-result-title-fg` · `--xh-result-title-font-size` · `--xh-result-title-font-weight` · `--xh-result-title-leading`
+
+## 动效
+
+关键帧 `xh-rise-in` 随皮肤自带，不引用别处文件里的名字。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
 ## RTL
 

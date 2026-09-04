@@ -1,4 +1,4 @@
-import type { Cleanup, Layer, OverlayCloseReason, PropTypes, RuntimeConfig } from '@xihan-ui/kernel'
+import type { Cleanup, Layer, OverlayBackdropVariant, OverlayCloseReason, PropTypes, RuntimeConfig } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 import type { MultiPointerSession, PinchSnapshot, TrackedPoint } from '@xihan-ui/pointer'
 
@@ -92,6 +92,8 @@ export interface ImageViewerSchema extends MachineSchema {
     /** 点遮罩（内容之外）关闭，默认 true。 */
     closeOnInteractOutside?: boolean
     restoreFocus?: boolean
+    /** 遮罩形态：opaque / blur / transparent。落在 backdrop 上，只换那一层的底色与模糊。 */
+    variant?: OverlayBackdropVariant
     translations?: Partial<ImageViewerTranslations>
     /** open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 */
     onOpenChange?: (details: ImageViewerOpenChangeDetails) => void

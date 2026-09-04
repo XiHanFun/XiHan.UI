@@ -171,6 +171,12 @@ size 只换整条的内边距与条目间的间距，条目自身的高度与字
 
 `--xh-toolbar-bg` · `--xh-toolbar-bg-disabled` · `--xh-toolbar-border` · `--xh-toolbar-fg` · `--xh-toolbar-gap` · `--xh-toolbar-group-gap` · `--xh-toolbar-px` · `--xh-toolbar-py` · `--xh-toolbar-radius` · `--xh-toolbar-separator-color` · `--xh-toolbar-separator-gap` · `--xh-toolbar-separator-inset` · `--xh-toolbar-separator-radius` · `--xh-toolbar-separator-thickness`
 
+## 动效
+
+状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
 ## RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。

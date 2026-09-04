@@ -709,6 +709,11 @@
     "drawer-w-lg": {
       "$type": "dimension",
       "$value": "28rem"
+    },
+    "backdrop-blur": {
+      "$description": "遮罩模糊档的模糊半径。",
+      "$type": "dimension",
+      "$value": "12px"
     }
   },
   "text": {

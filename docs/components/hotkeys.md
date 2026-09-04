@@ -167,6 +167,12 @@ enabled 关掉后组合不再触发，键帽也转成不可用的样子
 
 `--xh-hotkeys-fg` · `--xh-hotkeys-font-size` · `--xh-hotkeys-gap` · `--xh-hotkeys-key-bg` · `--xh-hotkeys-key-bg-disabled` · `--xh-hotkeys-key-border` · `--xh-hotkeys-key-fg` · `--xh-hotkeys-key-fg-modifier` · `--xh-hotkeys-key-font` · `--xh-hotkeys-key-font-weight` · `--xh-hotkeys-key-min-w` · `--xh-hotkeys-key-px` · `--xh-hotkeys-key-py` · `--xh-hotkeys-key-radius` · `--xh-hotkeys-key-shadow` · `--xh-hotkeys-separator-fg`
 
+## 动效
+
+状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
 ## RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。

@@ -36,6 +36,14 @@ function availableHeightVar(available: number | undefined): Record<string, strin
   }
 }
 
+// 锚点实测宽度。content 拿它做最小宽的下界，浮层因此不窄于输入框；
+// 引擎没算出来时空串撤掉声明，退回皮肤 positioner 上那档 0
+function anchorWidthVar(width: number | undefined): Record<string, string> {
+  return {
+    '--xh-_combobox-anchor-w': width != null ? `${width}px` : '',
+  }
+}
+
 export function connectCombobox<T extends PropTypes>(
   service: Service<ComboboxSchema>,
   normalize: NormalizeProps<T>,
@@ -386,6 +394,8 @@ export function connectCombobox<T extends PropTypes>(
         top: `${position?.y ?? 0}px`,
         // content 继承这个高度上限，超出的条目在浮层内部滚
         ...availableHeightVar(position?.availableHeight),
+        // content 继承这个宽度下界，浮层至少与输入框同宽
+        ...anchorWidthVar(position?.anchorWidth),
       },
     }),
 

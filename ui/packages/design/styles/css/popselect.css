@@ -43,6 +43,9 @@
     /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，内容层继承它限高；
        引擎没算（尚未落位 / 无引擎 / 贴边归零）时退回自己那档静态上限 */
     --xh-_popselect-available-h: 100vh;
+    /* 触发器实测宽度，由定位引擎经内联自定义属性写进来，内容层拿它当最小宽的下界；
+       引擎没算（尚未落位 / 无引擎）时为 0，max 取静态档，等于不抬宽 */
+    --xh-_popselect-anchor-w: 0px;
 
     /* 候选列表的自绘条浮在内容之上：轨道不上底色，实色轨道会在列表右缘糊一条竖灰带 */
     --xh-scrollbar-track-bg: transparent;
@@ -290,7 +293,7 @@
     display: flex;
     flex-direction: column;
     gap: var(--xh-popselect-content-gap, var(--xh-list-option-gap));
-    min-inline-size: var(--xh-popselect-content-min-w, var(--xh-overlay-menu-min-w));
+    min-inline-size: max(var(--xh-popselect-content-min-w, var(--xh-overlay-menu-min-w)), var(--xh-_popselect-anchor-w));
     max-inline-size: var(--xh-popselect-content-max-w, var(--xh-overlay-max-w));
     max-block-size: min(var(--xh-popselect-content-max-h, var(--xh-overlay-menu-max-h)), var(--xh-_popselect-available-h));
     padding-block: var(--xh-popselect-content-py, var(--xh-space-1));

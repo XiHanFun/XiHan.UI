@@ -1,4 +1,5 @@
 import type { imageViewerCounterText as counterTextFn, ImageViewerApi, ImageViewerItem, ImageViewerSchema } from '@xihan-ui/headless'
+import type { OverlayBackdropVariant } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { imageViewerCounterText } from '@xihan-ui/headless'
@@ -50,6 +51,7 @@ export const XhImageViewerRoot = defineComponent({
     closeOnEscape: { type: Boolean, default: undefined },
     closeOnInteractOutside: { type: Boolean, default: undefined },
     restoreFocus: { type: Boolean, default: undefined },
+    variant: { type: String as PropType<OverlayBackdropVariant>, default: undefined },
     translations: { type: Object as PropType<ImageViewerProps['translations']>, default: undefined },
   },
   // *-change 携带 details 对象，update:* 携带裸值，支持 v-model:open 与 v-model:index

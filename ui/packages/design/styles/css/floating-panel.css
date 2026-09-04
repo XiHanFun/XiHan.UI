@@ -1,3 +1,31 @@
+@layer xihan.motion {
+  /* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
+     动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
+  @keyframes xh-pop-in {
+    from {
+      opacity: 0;
+      scale: var(--xh-motion-scale-enter);
+    }
+
+    to {
+      opacity: 1;
+      scale: 1;
+    }
+  }
+
+  @keyframes xh-pop-out {
+    from {
+      opacity: 1;
+      scale: 1;
+    }
+
+    to {
+      opacity: 0;
+      scale: var(--xh-motion-scale-exit);
+    }
+  }
+}
+
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
   [data-scope='floating-panel'] {
@@ -66,8 +94,21 @@
     display: block;
   }
 
-  [data-scope='floating-panel'][data-part='positioner'][hidden] {
-    display: none;
+  /* 这里刻意没有 [data-part='positioner'][hidden] { display: none }：收起态连接层会给
+     positioner 打 hidden，而上面那条 display 正是要盖掉 UA 的 [hidden]{display:none}——
+     面板整棵子树都在 positioner 底下，它一收就不生成盒子，退场动画一帧都播不出来。
+     真正的收起由宿主在退场结束后落成内联 display:none。 */
+
+  /* 在场那一档才提前备好合成层：属性随 data-state 一起消失，收起后不长期占着 */
+  [data-scope='floating-panel'][data-part='positioner'][data-state='open'] {
+    will-change: opacity, scale;
+    animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  }
+
+  /* 退场：收起那一帧由退场闸门押后，这里才播得出来。forwards 把末态钉住，
+     免得动画结束到真收起之间闪一下原样 */
+  [data-scope='floating-panel'][data-part='positioner'][data-state='closed'] {
+    animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
   [data-scope='floating-panel'][data-part='content'] {

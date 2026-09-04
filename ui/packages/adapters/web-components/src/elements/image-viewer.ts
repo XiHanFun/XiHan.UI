@@ -1,5 +1,5 @@
 import type { ImageViewerIndexChangeDetails, ImageViewerItem, ImageViewerOpenChangeDetails, ImageViewerSchema, ImageViewerTranslations } from '@xihan-ui/headless'
-import type { Cleanup, IdGenerator, Layer, RuntimeConfig } from '@xihan-ui/kernel'
+import type { Cleanup, IdGenerator, Layer, OverlayBackdropVariant, RuntimeConfig } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { OverlayExit } from '../overlay-exit'
 import { connectImageViewer, imageViewerAnatomy, imageViewerCounterText, imageViewerMachine, imageViewerMeta } from '@xihan-ui/headless'
@@ -13,6 +13,8 @@ import { MachineController } from '../runtime/machine-controller'
 // 三态布尔：缺席=undefined（用默认值）、="false"=false、其余=true。
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : Number(v)) }
+// 属性缺席翻成 undefined，缺省值由皮肤的缺省档决定。
+const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 
 /**
  * `<xh-image-viewer>` —— Light-DOM 行为宿主，跑 image-viewer 机器：
@@ -30,6 +32,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? un
  * @attr {boolean} close-on-escape - Esc 关闭，默认 true
  * @attr {boolean} close-on-interact-outside - 点遮罩关闭，默认 true
  * @attr {boolean} restore-focus - 关闭后把焦点归还触发元素，默认 true
+ * @attr {'opaque'|'blur'|'transparent'} variant - 遮罩形态：只换 backdrop 的底色与模糊
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @fires index-change - 下标变化；detail 为 `{ index: number }`
  * @csspart trigger - 触发按钮
@@ -67,6 +70,7 @@ export class XhImageViewerElement extends XhElement {
     closeOnEscape: { converter: BOOLEAN_CONVERTER, attribute: 'close-on-escape' },
     closeOnInteractOutside: { converter: BOOLEAN_CONVERTER, attribute: 'close-on-interact-outside' },
     restoreFocus: { converter: BOOLEAN_CONVERTER, attribute: 'restore-focus' },
+    variant: { converter: STRING_CONVERTER },
     // 对象值进不了属性，只作为 property 暴露
     items: { attribute: false },
     translations: { attribute: false },
@@ -83,6 +87,7 @@ export class XhImageViewerElement extends XhElement {
   declare closeOnEscape?: boolean
   declare closeOnInteractOutside?: boolean
   declare restoreFocus?: boolean
+  declare variant?: OverlayBackdropVariant
   /** 图片清单。看单张就给长度 1 的数组。 */
   declare items?: ImageViewerItem[]
   /** 工具条按钮的可及名与计数文案；connect 每帧重写，只能从这里给。 */
@@ -126,6 +131,7 @@ export class XhImageViewerElement extends XhElement {
       closeOnEscape: this.closeOnEscape,
       closeOnInteractOutside: this.closeOnInteractOutside,
       restoreFocus: this.restoreFocus,
+      variant: this.variant,
       translations: this.translations,
       onOpenChange: this.notifyOpen,
       onIndexChange: this.notifyIndex,

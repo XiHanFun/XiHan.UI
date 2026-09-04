@@ -112,7 +112,16 @@ export const XhFloatingPanelPositioner = defineComponent({
     return () => h(Teleport, { to: ctx.portalTarget.value }, [
       h(
         'div',
-        mergeProps(ctx.api.value.getPositionerProps() as Record<string, unknown>, attrs),
+        {
+          ...mergeProps(
+            ctx.api.value.getPositionerProps() as Record<string, unknown>,
+            attrs,
+            // 收起跟着退场闸门走：皮肤刻意没给 positioner 补 [hidden]{display:none}（补了
+            // 退场就一帧都播不出来），所以真正的收起落成内联 display
+            ctx.visible.value ? {} : { style: { display: 'none' } },
+          ),
+          ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement },
+        },
         slots.default?.(),
       ),
     ])

@@ -1,5 +1,5 @@
 import type { DrawerOpenChangeDetails, DrawerSchema } from '@xihan-ui/headless'
-import type { Cleanup, IdGenerator, Layer, RuntimeConfig, Size } from '@xihan-ui/kernel'
+import type { Cleanup, IdGenerator, Layer, OverlayBackdropVariant, RuntimeConfig, Size } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { OverlayExit } from '../overlay-exit'
 import { connectDrawer, drawerAnatomy, drawerMachine, drawerMeta } from '@xihan-ui/headless'
@@ -33,6 +33,7 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @attr {boolean} close-on-interact-outside - 点击浮层外关闭；默认跟随 modal，alertdialog 恒不关
  * @attr {boolean} restore-focus - 关闭后把焦点归还触发元素，默认 true
  * @attr {'sm'|'md'|'lg'} size - 尺寸：横放时换面板宽度、竖放时换面板高度
+ * @attr {'opaque'|'blur'|'transparent'} variant - 遮罩形态：只换 backdrop 的底色与模糊
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @csspart root - 留在页面原地的容器，承载 data-side / data-size / data-state
  * @csspart trigger - 触发按钮
@@ -58,6 +59,7 @@ export class XhDrawerElement extends XhElement {
     closeOnInteractOutside: { converter: BOOLEAN_CONVERTER, attribute: 'close-on-interact-outside' },
     restoreFocus: { converter: BOOLEAN_CONVERTER, attribute: 'restore-focus' },
     size: { converter: STRING_CONVERTER },
+    variant: { converter: STRING_CONVERTER },
     // 文案是对象，只走 property
     translations: { attribute: false },
   }
@@ -71,6 +73,7 @@ export class XhDrawerElement extends XhElement {
   declare closeOnInteractOutside?: boolean
   declare restoreFocus?: boolean
   declare size?: Size
+  declare variant?: OverlayBackdropVariant
   declare translations?: DrawerSchema['props']['translations']
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
@@ -103,6 +106,7 @@ export class XhDrawerElement extends XhElement {
       closeOnInteractOutside: this.closeOnInteractOutside,
       restoreFocus: this.restoreFocus,
       size: this.size,
+      variant: this.variant,
       translations: this.translations,
       onOpenChange: this.notify,
     }

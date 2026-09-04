@@ -9,12 +9,14 @@ import type {
   FloatingPanelStage,
   FloatingPanelStageChangeDetails,
 } from '@xihan-ui/headless'
-import type { IdGenerator } from '@xihan-ui/kernel'
+import type { IdGenerator, RuntimeConfig } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
+import type { OverlayExit } from '../overlay-exit'
 import { connectFloatingPanel, floatingPanelAnatomy, floatingPanelMachine, floatingPanelMeta } from '@xihan-ui/headless'
-import { createCounterIdGenerator, createScope } from '@xihan-ui/kernel'
+import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/kernel'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
+import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
 
 // 属性缺席翻成 undefined，缺省值的唯一事实源留在机器与 connect。
@@ -134,6 +136,9 @@ export class XhFloatingPanelElement extends XhElement {
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly panelScope = createScope(null, this.idGen)
+  private config: RuntimeConfig | null = null
+  /** 退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
+  private exit: OverlayExit | null = null
 
   private readonly notifyOpen = (details: FloatingPanelOpenChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('open-change', { detail: details, bubbles: true, composed: true }))
@@ -188,6 +193,12 @@ export class XhFloatingPanelElement extends XhElement {
     svc.refs.set('getContentEl', () => this.getPart('content'))
   }
 
+  private ensureConfig(): void {
+    if (this.config)
+      return
+    this.config = createRuntimeConfig({ scope: this.panelScope, idGenerator: this.idGen })
+  }
+
   /** 把手自报守的是哪条边；没写或写错时按右下角处理，那是最常见的那一个。 */
   private edgeOf(el: HTMLElement): FloatingPanelResizeEdge {
     const raw = el.getAttribute('edge') as FloatingPanelResizeEdge | null
@@ -225,8 +236,30 @@ export class XhFloatingPanelElement extends XhElement {
       this.spreader.spread(el, api.getStageTriggerProps({ stage: this.stageOf(el) }) as Record<string, unknown>)
 
     // 收起用内联 display，优先级高于样式表对 [hidden] 的覆盖：
-    // 作者给这两个节点写了 display 时，光靠 hidden 属性压不住
-    this.setPartHidden(this.getPart('positioner'), !api.open)
+    // 作者给这两个节点写了 display 时，光靠 hidden 属性压不住。
+    // 定位层的收起还要再押后一程：进退场动画挂在它身上，presence 读它的 animationName
+    // 决定要不要多留一会儿。必须排在 put('positioner') 之后——data-state 得先落进 DOM，
+    // 探测器才读得到退场那支动画
+    const positioner = this.getPart('positioner')
+    this.ensureConfig()
+    this.exit ??= createOverlayExit({
+      config: this.config!,
+      open: api.open,
+      onExitComplete: () => this.requestUpdate(),
+    })
+    this.exit.track(positioner)
+    this.exit.update(api.open)
+    this.setPartHidden(positioner, !this.exit.visible)
     this.setPartHidden(this.getPart('body'), api.stage === 'minimized')
+  }
+
+  override disconnectedCallback(): void {
+    super.disconnectedCallback()
+    // 退场没播完就离场：立刻结清并收起，否则作者的节点会带着已被撤掉的 data-state 留在页面上
+    this.exit?.dispose()
+    this.exit = null
+    if (this.ctrl.service.state.get() === 'closed')
+      this.setPartHidden(this.getPart('positioner'), true)
+    this.config = null // 重连时 ensureConfig 重建
   }
 }

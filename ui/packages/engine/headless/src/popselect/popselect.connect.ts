@@ -52,6 +52,14 @@ function availableHeightVar(available: number | undefined): Record<string, strin
   }
 }
 
+// 锚点实测宽度。content 拿它做最小宽的下界，浮层因此不窄于触发器；
+// 引擎没算出来时空串撤掉声明，退回皮肤 positioner 上那档 0
+function anchorWidthVar(width: number | undefined): Record<string, string> {
+  return {
+    '--xh-_popselect-anchor-w': width != null ? `${width}px` : '',
+  }
+}
+
 export function connectPopselect<T extends PropTypes>(
   service: PopselectService,
   normalize: NormalizeProps<T>,
@@ -292,6 +300,8 @@ export function connectPopselect<T extends PropTypes>(
         left: `${position?.x ?? 0}px`,
         top: `${position?.y ?? 0}px`,
         ...availableHeightVar(position?.availableHeight),
+        // content 继承这个宽度下界，浮层至少与触发器同宽
+        ...anchorWidthVar(position?.anchorWidth),
       },
     }),
 

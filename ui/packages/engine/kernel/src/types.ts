@@ -83,3 +83,10 @@ export type ControlVariant = 'outline' | 'subtle' | 'ghost'
  * button / button-group / toggle / icon-wrapper 共用。
  */
 export type ActionVariant = ControlVariant | 'solid'
+
+/**
+ * 有遮罩的浮层的遮罩形态三档：`opaque` 是缺省档，只铺底色；`blur` 在同一层底色上再糊背后的页面；
+ * `transparent` 去掉底色，只留下吃指针的那一层。
+ * dialog / drawer / image-viewer 共用。
+ */
+export type OverlayBackdropVariant = 'opaque' | 'blur' | 'transparent'

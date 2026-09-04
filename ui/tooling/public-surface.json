@@ -4467,6 +4467,7 @@
       "MaybeBooleanish",
       "NormalizeProps",
       "Orientation",
+      "OverlayBackdropVariant",
       "OverlayCloseReason",
       "PORTAL_ROOT_ID",
       "PerDocumentRegistry",
@@ -6440,7 +6441,8 @@
       "restoreFocus",
       "role",
       "size",
-      "translations"
+      "translations",
+      "variant"
     ],
     "diff-view": [
       "contextLines",
@@ -6473,7 +6475,8 @@
       "role",
       "side",
       "size",
-      "translations"
+      "translations",
+      "variant"
     ],
     "dynamic-input": [
       "createItem",
@@ -6725,6 +6728,7 @@
       "open",
       "restoreFocus",
       "translations",
+      "variant",
       "zoomStep"
     ],
     "infinite-scroll": [
@@ -8136,6 +8140,7 @@
     "--xh-motion-stagger-step",
     "--xh-nav-link-max-w",
     "--xh-overlay-arrow-size",
+    "--xh-overlay-backdrop-blur",
     "--xh-overlay-drawer-w-lg",
     "--xh-overlay-drawer-w-md",
     "--xh-overlay-drawer-w-sm",
@@ -8992,6 +8997,7 @@
     "--xh-descriptions-radius",
     "--xh-descriptions-value-fg",
     "--xh-dialog-backdrop-bg",
+    "--xh-dialog-backdrop-blur",
     "--xh-dialog-backdrop-layer",
     "--xh-dialog-bg",
     "--xh-dialog-close-bg-active",
@@ -9059,6 +9065,7 @@
     "--xh-download-trigger-px",
     "--xh-download-trigger-radius",
     "--xh-drawer-backdrop-bg",
+    "--xh-drawer-backdrop-blur",
     "--xh-drawer-backdrop-layer",
     "--xh-drawer-bg",
     "--xh-drawer-close-bg-active",
@@ -9471,6 +9478,7 @@
     "--xh-image-viewer-action-bg-active",
     "--xh-image-viewer-action-bg-hover",
     "--xh-image-viewer-backdrop-bg",
+    "--xh-image-viewer-backdrop-blur",
     "--xh-image-viewer-backdrop-layer",
     "--xh-image-viewer-chrome-bg",
     "--xh-image-viewer-close-bg-active",
@@ -11832,7 +11840,8 @@
         "open",
         "restore-focus",
         "role",
-        "size"
+        "size",
+        "variant"
       ],
       "events": [
         "open-change"
@@ -11872,7 +11881,8 @@
         "restore-focus",
         "role",
         "side",
-        "size"
+        "size",
+        "variant"
       ],
       "events": [
         "open-change"
@@ -12161,6 +12171,7 @@
         "min-scale",
         "open",
         "restore-focus",
+        "variant",
         "zoom-step"
       ],
       "events": [

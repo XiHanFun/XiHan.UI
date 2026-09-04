@@ -111,6 +111,12 @@ size 换的是整块正文的字号与段间距，不传 size 即默认档
 
 `--xh-typography-block-gap` · `--xh-typography-code-bg` · `--xh-typography-code-font` · `--xh-typography-code-font-size` · `--xh-typography-code-px` · `--xh-typography-code-py` · `--xh-typography-code-radius` · `--xh-typography-fg` · `--xh-typography-font-size` · `--xh-typography-font-weight` · `--xh-typography-heading-fg` · `--xh-typography-heading-font-size` · `--xh-typography-heading-font-weight` · `--xh-typography-heading-gap` · `--xh-typography-heading-leading` · `--xh-typography-leading` · `--xh-typography-link-fg` · `--xh-typography-link-fg-hover` · `--xh-typography-link-radius` · `--xh-typography-link-underline-offset` · `--xh-typography-measure` · `--xh-typography-text-fg-muted` · `--xh-typography-text-fg-tone` · `--xh-typography-text-font-weight`
 
+## 动效
+
+状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
 ## 响应式
 
 皮肤内置条件规则：`hover: hover`。

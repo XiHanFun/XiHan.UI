@@ -219,3 +219,79 @@ describe('wc tooltip 退场', () => {
     expect(content.style.display, '动画结束后应当收起').toBe('none')
   })
 })
+
+const FLOATING_PANEL = `
+  <xh-floating-panel open>
+    <button data-xh-part="trigger">开</button>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <div data-xh-part="header">
+          <h2 data-xh-part="title">面板</h2>
+        </div>
+        <div data-xh-part="body">正文</div>
+      </div>
+    </div>
+  </xh-floating-panel>
+`
+
+describe('wc floating-panel 退场', () => {
+  it('收起后 positioner 不立刻被写成 display:none，而是在播退场动画', async () => {
+    const el = mount(FLOATING_PANEL)
+    await settle()
+
+    const positioner = part('floating-panel', 'positioner')!
+    expect(positioner, '展开时 positioner 应已接线').not.toBeNull()
+    expect(positioner.style.display).not.toBe('none')
+
+    el.setAttribute('open', 'false')
+    await settle()
+
+    // 面板整棵子树都在 positioner 底下：它一收就不生成盒子，退场动画一帧都播不出来
+    expect(positioner.style.display, '退场动画播完之前不能写 display:none').not.toBe('none')
+    expect(getComputedStyle(positioner).animationName).toBe('xh-pop-out')
+  })
+
+  it('动画结束后才真的收起', async () => {
+    const el = mount(FLOATING_PANEL)
+    await settle()
+
+    const positioner = part('floating-panel', 'positioner')!
+    el.setAttribute('open', 'false')
+    await settle()
+
+    expect(await animationEnd(positioner), '退场动画应当真的结束一次').toBe(true)
+    await settle()
+
+    expect(positioner.style.display, '动画结束后应当收起').toBe('none')
+  })
+
+  it('退场中途重新展开，收起不会迟到落下来', async () => {
+    const el = mount(FLOATING_PANEL)
+    await settle()
+
+    const positioner = part('floating-panel', 'positioner')!
+    el.setAttribute('open', 'false')
+    await settle()
+    el.setAttribute('open', '')
+    await settle()
+
+    expect(positioner.style.display).not.toBe('none')
+    expect(getComputedStyle(positioner).animationName).toBe('xh-pop-in')
+
+    await new Promise(resolve => setTimeout(resolve, 400))
+    expect(positioner.style.display, '重新展开后不该被上一轮退场收起').not.toBe('none')
+  })
+
+  it('退场中途元素离场：立刻收起，不留在页面上', async () => {
+    const el = mount(FLOATING_PANEL)
+    await settle()
+
+    const positioner = part('floating-panel', 'positioner')!
+    el.setAttribute('open', 'false')
+    await settle()
+    el.remove()
+    await settle()
+
+    expect(positioner.style.display, '离场时必须强制结清').toBe('none')
+  })
+})

@@ -1,5 +1,5 @@
 import type { DrawerApi, DrawerSchema, DrawerSide } from '@xihan-ui/headless'
-import type { Size } from '@xihan-ui/kernel'
+import type { OverlayBackdropVariant, Size } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h, mergeProps, Teleport } from 'vue'
@@ -26,6 +26,7 @@ export const XhDrawerRoot = defineComponent({
     closeOnInteractOutside: { type: Boolean, default: undefined },
     restoreFocus: { type: Boolean, default: undefined },
     size: { type: String as PropType<Size>, default: undefined },
+    variant: { type: String as PropType<OverlayBackdropVariant>, default: undefined },
     /**
      * 挂到哪个容器（CSS 选择器或元素）。给了它就是局部抽屉：
      * 浮层搬进那个容器，遮罩与定位层从 fixed 换成 absolute，只罩住它而不是盖满整屏。
