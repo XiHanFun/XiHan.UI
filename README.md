@@ -123,7 +123,7 @@ pnpm install
 pnpm dev
 ```
 
-Changes must pass the full CI gate, and CI runs the same commands you do locally: `pnpm lint`, `pnpm typecheck`, `pnpm boundaries`, `pnpm gate` (one command runs 95 structural checks), `pnpm test`, `pnpm build`, `pnpm size` and more.
+Changes must pass the full CI gate, and CI runs the same commands you do locally: `pnpm lint`, `pnpm typecheck`, `pnpm boundaries`, `pnpm gate` (one command runs 96 structural checks), `pnpm test`, `pnpm build`, `pnpm size` and more.
 
 ## Scope
 

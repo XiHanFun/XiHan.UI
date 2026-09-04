@@ -1816,6 +1816,32 @@
 }
 
 /* styles/floating-panel.css */
+/* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
+   动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
+@keyframes xh-pop-in {
+  from {
+    opacity: 0;
+    scale: var(--xh-motion-scale-enter);
+  }
+
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+@keyframes xh-pop-out {
+  from {
+    opacity: 1;
+    scale: 1;
+  }
+
+  to {
+    opacity: 0;
+    scale: var(--xh-motion-scale-exit);
+  }
+}
+
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='floating-panel'] {
   --xh-floating-panel-skin: 1;
@@ -1883,8 +1909,21 @@
   display: block;
 }
 
-[data-scope='floating-panel'][data-part='positioner'][hidden] {
-  display: none;
+/* 这里刻意没有 [data-part='positioner'][hidden] { display: none }：收起态连接层会给
+   positioner 打 hidden，而上面那条 display 正是要盖掉 UA 的 [hidden]{display:none}——
+   面板整棵子树都在 positioner 底下，它一收就不生成盒子，退场动画一帧都播不出来。
+   真正的收起由宿主在退场结束后落成内联 display:none。 */
+
+/* 在场那一档才提前备好合成层：属性随 data-state 一起消失，收起后不长期占着 */
+[data-scope='floating-panel'][data-part='positioner'][data-state='open'] {
+  will-change: opacity, scale;
+  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+}
+
+/* 退场：收起那一帧由退场闸门押后，这里才播得出来。forwards 把末态钉住，
+   免得动画结束到真收起之间闪一下原样 */
+[data-scope='floating-panel'][data-part='positioner'][data-state='closed'] {
+  animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
 }
 
 [data-scope='floating-panel'][data-part='content'] {
@@ -6030,6 +6069,9 @@ input[data-scope='mention'][data-part='input'] {
   /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，内容层继承它限高；
      引擎没算（尚未落位 / 无引擎 / 贴边归零）时退回自己那档静态上限 */
   --xh-_popselect-available-h: 100vh;
+  /* 触发器实测宽度，由定位引擎经内联自定义属性写进来，内容层拿它当最小宽的下界；
+     引擎没算（尚未落位 / 无引擎）时为 0，max 取静态档，等于不抬宽 */
+  --xh-_popselect-anchor-w: 0px;
 
   /* 候选列表的自绘条浮在内容之上：轨道不上底色，实色轨道会在列表右缘糊一条竖灰带 */
   --xh-scrollbar-track-bg: transparent;
@@ -6277,7 +6319,7 @@ input[data-scope='mention'][data-part='input'] {
   display: flex;
   flex-direction: column;
   gap: var(--xh-popselect-content-gap, var(--xh-list-option-gap));
-  min-inline-size: var(--xh-popselect-content-min-w, var(--xh-overlay-menu-min-w));
+  min-inline-size: max(var(--xh-popselect-content-min-w, var(--xh-overlay-menu-min-w)), var(--xh-_popselect-anchor-w));
   max-inline-size: var(--xh-popselect-content-max-w, var(--xh-overlay-max-w));
   max-block-size: min(var(--xh-popselect-content-max-h, var(--xh-overlay-menu-max-h)), var(--xh-_popselect-available-h));
   padding-block: var(--xh-popselect-content-py, var(--xh-space-1));
@@ -14098,6 +14140,9 @@ input[data-scope='mention'][data-part='input'] {
   /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，内容层继承它限高；
      引擎没算（尚未落位 / 无引擎）时不额外限高 */
   --xh-_combobox-available-h: 100vh;
+  /* 输入框实测宽度，由定位引擎经内联自定义属性写进来，内容层拿它当最小宽的下界；
+     引擎没算（尚未落位 / 无引擎）时为 0，max 取静态档，等于不抬宽 */
+  --xh-_combobox-anchor-w: 0px;
 
   /* 候选列表的自绘条浮在内容之上：轨道不上底色，实色轨道会在列表右缘糊一条竖灰带 */
   --xh-scrollbar-track-bg: transparent;
@@ -14454,7 +14499,7 @@ input[data-scope='mention'][data-part='input'] {
   display: flex;
   flex-direction: column;
   gap: var(--xh-combobox-content-gap, var(--xh-list-option-gap));
-  min-inline-size: var(--xh-combobox-content-min-w, var(--xh-overlay-min-w));
+  min-inline-size: max(var(--xh-combobox-content-min-w, var(--xh-overlay-min-w)), var(--xh-_combobox-anchor-w));
   max-inline-size: var(--xh-combobox-content-max-w, var(--xh-overlay-max-w));
   max-block-size: min(var(--xh-combobox-content-max-h, var(--xh-overlay-max-h)), var(--xh-_combobox-available-h));
   padding-block: var(--xh-combobox-content-py, var(--xh-space-1));
@@ -15927,6 +15972,16 @@ input[data-scope='mention'][data-part='input'] {
   background: var(--xh-dialog-backdrop-bg, var(--xh-bg-overlay));
 }
 
+/* 同一层底色之上再糊背后的页面 */
+[data-scope='dialog'][data-part='backdrop'][data-variant='blur'] {
+  backdrop-filter: blur(var(--xh-dialog-backdrop-blur, var(--xh-overlay-backdrop-blur)));
+}
+
+/* 去掉底色，只留下这一层吃指针：交互外关闭与滚动锁定照旧 */
+[data-scope='dialog'][data-part='backdrop'][data-variant='transparent'] {
+  background: transparent;
+}
+
 [data-scope='dialog'][data-part='backdrop'][data-state='open'] {
   animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
 }
@@ -16299,6 +16354,16 @@ input[data-scope='mention'][data-part='input'] {
   padding-block-start: var(--xh-drawer-py, var(--xh-surface-py-md));
   padding-block-end: var(--xh-drawer-py, var(--xh-surface-py-md));
   padding-inline: var(--xh-drawer-px, var(--xh-surface-px-md));
+}
+
+/* 同一层底色之上再糊背后的页面 */
+[data-scope='drawer'][data-part='backdrop'][data-variant='blur'] {
+  backdrop-filter: blur(var(--xh-drawer-backdrop-blur, var(--xh-overlay-backdrop-blur)));
+}
+
+/* 去掉底色，只留下这一层吃指针：交互外关闭与滚动锁定照旧 */
+[data-scope='drawer'][data-part='backdrop'][data-variant='transparent'] {
+  background: transparent;
 }
 
 [data-scope='drawer'][data-part='backdrop'][data-state='open'] {
@@ -17933,6 +17998,16 @@ input[data-scope='mention'][data-part='input'] {
   z-index: var(--xh-image-viewer-backdrop-layer, var(--xh-layer-modal));
   /* 看片要压住页面底色，遮罩比普通对话框更深 */
   background: var(--xh-image-viewer-backdrop-bg, color-mix(in oklab, var(--xh-color-neutral-950) 78%, transparent));
+}
+
+/* 同一层底色之上再糊背后的页面 */
+[data-scope='image-viewer'][data-part='backdrop'][data-variant='blur'] {
+  backdrop-filter: blur(var(--xh-image-viewer-backdrop-blur, var(--xh-overlay-backdrop-blur)));
+}
+
+/* 去掉底色，只留下这一层吃指针：交互外关闭与滚动锁定照旧 */
+[data-scope='image-viewer'][data-part='backdrop'][data-variant='transparent'] {
+  background: transparent;
 }
 
 [data-scope='image-viewer'][data-part='backdrop'][data-state='open'] {
@@ -22791,6 +22866,9 @@ input[data-scope='mention'][data-part='input'] {
   /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，内容层继承它限高；
      引擎没算（尚未落位 / 无引擎）时不额外限高 */
   --xh-_select-available-h: 100vh;
+  /* 触发器实测宽度，由定位引擎经内联自定义属性写进来，内容层拿它当最小宽的下界；
+     引擎没算（尚未落位 / 无引擎）时为 0，max 取静态档，等于不抬宽 */
+  --xh-_select-anchor-w: 0px;
 
   position: fixed;
   z-index: var(--xh-select-layer, var(--xh-layer-popover));
@@ -23164,7 +23242,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='select'][data-part='content'] {
   display: flex;
   flex-direction: column;
-  min-inline-size: var(--xh-select-content-min-w, var(--xh-overlay-menu-min-w));
+  min-inline-size: max(var(--xh-select-content-min-w, var(--xh-overlay-menu-min-w)), var(--xh-_select-anchor-w));
   max-inline-size: var(--xh-select-content-max-w, var(--xh-overlay-max-w));
   max-block-size: min(var(--xh-select-content-max-h, var(--xh-overlay-menu-max-h)), var(--xh-_select-available-h));
   padding-block: var(--xh-select-content-py, var(--xh-space-1));
@@ -30281,6 +30359,9 @@ input[data-scope='mention'][data-part='input'] {
   /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，内容层继承它限高；
      引擎没算（尚未落位 / 无引擎）时不额外限高 */
   --xh-_tree-select-available-h: 100vh;
+  /* 触发器实测宽度，由定位引擎经内联自定义属性写进来，内容层拿它当最小宽的下界；
+     引擎没算（尚未落位 / 无引擎）时为 0，max 取静态档，等于不抬宽 */
+  --xh-_tree-select-anchor-w: 0px;
 
   /* 树的自绘条浮在内容之上：轨道不上底色，实色轨道会沿内容边缘糊出一条灰带 */
   --xh-scrollbar-track-bg: transparent;
@@ -30594,7 +30675,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='tree-select'][data-part='content'] {
   display: flex;
   flex-direction: column;
-  min-inline-size: var(--xh-tree-select-content-min-w, var(--xh-overlay-min-w));
+  min-inline-size: max(var(--xh-tree-select-content-min-w, var(--xh-overlay-min-w)), var(--xh-_tree-select-anchor-w));
   max-inline-size: var(--xh-tree-select-content-max-w, var(--xh-overlay-max-w));
   max-block-size: min(var(--xh-tree-select-content-max-h, var(--xh-overlay-max-h)), var(--xh-_tree-select-available-h));
   padding-block: var(--xh-tree-select-content-py, var(--xh-space-1));

@@ -98,6 +98,7 @@ size 落成 content 的 data-size，只改面板贴边方向上的厚度；三�
 | `closeOnInteractOutside` | `boolean` |  |  |
 | `restoreFocus` | `boolean` |  |  |
 | `size` | `Size` |  | 尺寸：sm / md / lg。横放时换面板宽度、竖放时换面板高度，随 side 而定。 |
+| `variant` | `OverlayBackdropVariant` |  | 遮罩形态：opaque / blur / transparent。落在 backdrop 上，只换那一层的底色与模糊。 |
 | `translations` | `Partial<DrawerTranslations>` |  |  |
 | `onOpenChange` | `(details: DrawerOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 
@@ -198,6 +199,7 @@ size 落成 content 的 data-size，只改面板贴边方向上的厚度；三�
 | `trigger` | `data-state` | 'open' \| 'closed' |
 | `backdrop` | `data-contained` | ''（条件成立时才出现） |
 | `backdrop` | `data-state` | 'open' \| 'closed' |
+| `backdrop` | `data-variant` | props.variant |
 | `positioner` | `data-contained` | ''（条件成立时才出现） |
 | `positioner` | `data-positioned` | '' |
 | `positioner` | `data-state` | 'open' \| 'closed' |
@@ -210,7 +212,7 @@ size 落成 content 的 data-size，只改面板贴边方向上的厚度；三�
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-drawer-backdrop-bg` · `--xh-drawer-backdrop-layer` · `--xh-drawer-bg` · `--xh-drawer-close-bg-active` · `--xh-drawer-close-bg-hover` · `--xh-drawer-close-fg` · `--xh-drawer-close-fg-hover` · `--xh-drawer-close-radius` · `--xh-drawer-close-size` · `--xh-drawer-description-fg` · `--xh-drawer-description-font-size` · `--xh-drawer-fg` · `--xh-drawer-gap` · `--xh-drawer-icon-size` · `--xh-drawer-layer` · `--xh-drawer-px` · `--xh-drawer-py` · `--xh-drawer-radius` · `--xh-drawer-shadow` · `--xh-drawer-size` · `--xh-drawer-title-fg` · `--xh-drawer-title-font-size` · `--xh-drawer-title-font-weight` · `--xh-drawer-trigger-bg` · `--xh-drawer-trigger-bg-hover` · `--xh-drawer-trigger-bg-open` · `--xh-drawer-trigger-border` · `--xh-drawer-trigger-border-hover` · `--xh-drawer-trigger-border-open` · `--xh-drawer-trigger-fg` · `--xh-drawer-trigger-font-size` · `--xh-drawer-trigger-font-weight` · `--xh-drawer-trigger-gap` · `--xh-drawer-trigger-h` · `--xh-drawer-trigger-px` · `--xh-drawer-trigger-radius`
+`--xh-drawer-backdrop-bg` · `--xh-drawer-backdrop-blur` · `--xh-drawer-backdrop-layer` · `--xh-drawer-bg` · `--xh-drawer-close-bg-active` · `--xh-drawer-close-bg-hover` · `--xh-drawer-close-fg` · `--xh-drawer-close-fg-hover` · `--xh-drawer-close-radius` · `--xh-drawer-close-size` · `--xh-drawer-description-fg` · `--xh-drawer-description-font-size` · `--xh-drawer-fg` · `--xh-drawer-gap` · `--xh-drawer-icon-size` · `--xh-drawer-layer` · `--xh-drawer-px` · `--xh-drawer-py` · `--xh-drawer-radius` · `--xh-drawer-shadow` · `--xh-drawer-size` · `--xh-drawer-title-fg` · `--xh-drawer-title-font-size` · `--xh-drawer-title-font-weight` · `--xh-drawer-trigger-bg` · `--xh-drawer-trigger-bg-active` · `--xh-drawer-trigger-bg-hover` · `--xh-drawer-trigger-bg-open` · `--xh-drawer-trigger-border` · `--xh-drawer-trigger-border-hover` · `--xh-drawer-trigger-border-open` · `--xh-drawer-trigger-fg` · `--xh-drawer-trigger-font-size` · `--xh-drawer-trigger-font-weight` · `--xh-drawer-trigger-gap` · `--xh-drawer-trigger-h` · `--xh-drawer-trigger-px` · `--xh-drawer-trigger-radius`
 
 ## 动效
 

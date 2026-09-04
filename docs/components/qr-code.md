@@ -163,6 +163,12 @@ square / dot / rounded；三种形状的墨都盖住每个模块的格心，读�
 
 `--xh-qr-code-bg` · `--xh-qr-code-eye-fg` · `--xh-qr-code-fg` · `--xh-qr-code-placeholder-bg` · `--xh-qr-code-placeholder-border` · `--xh-qr-code-radius`
 
+## 动效
+
+状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
 ## 组合
 
 - 外面套[卡片](./card)；旁边配[剪贴板](./clipboard)给出文本形式的同一内容。

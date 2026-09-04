@@ -164,6 +164,7 @@
 --xh-motion-stagger-step: 0ms
 --xh-nav-link-max-w: 12rem
 --xh-overlay-arrow-size: 8px  ← var(--xh-space-2)
+--xh-overlay-backdrop-blur: 12px
 --xh-overlay-drawer-w-lg: 28rem
 --xh-overlay-drawer-w-md: 20rem
 --xh-overlay-drawer-w-sm: 16rem

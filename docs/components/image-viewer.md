@@ -77,6 +77,7 @@ open 与 index 双受控；translations 换工具条的可及名与计数文案
 | `closeOnEscape` | `boolean` |  |  |
 | `closeOnInteractOutside` | `boolean` |  | 点遮罩（内容之外）关闭，默认 true。 |
 | `restoreFocus` | `boolean` |  |  |
+| `variant` | `OverlayBackdropVariant` |  | 遮罩形态：opaque / blur / transparent。落在 backdrop 上，只换那一层的底色与模糊。 |
 | `translations` | `Partial<ImageViewerTranslations>` |  |  |
 | `onOpenChange` | `(details: ImageViewerOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 | `onIndexChange` | `(details: ImageViewerIndexChangeDetails) => void` |  | 下标变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
@@ -210,6 +211,7 @@ open 与 index 双受控；translations 换工具条的可及名与计数文案
 | --- | --- | --- |
 | `trigger` | `data-state` | 'open' \| 'closed' |
 | `backdrop` | `data-state` | 'open' \| 'closed' |
+| `backdrop` | `data-variant` | props.variant |
 | `positioner` | `data-positioned` | '' |
 | `positioner` | `data-state` | 'open' \| 'closed' |
 | `content` | `data-state` | 'open' \| 'closed' |
@@ -226,7 +228,7 @@ open 与 index 双受控；translations 换工具条的可及名与计数文案
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-image-viewer-action-bg-active` · `--xh-image-viewer-action-bg-hover` · `--xh-image-viewer-backdrop-bg` · `--xh-image-viewer-backdrop-layer` · `--xh-image-viewer-chrome-bg` · `--xh-image-viewer-close-bg-active` · `--xh-image-viewer-close-bg-hover` · `--xh-image-viewer-close-radius` · `--xh-image-viewer-close-size` · `--xh-image-viewer-counter-padding` · `--xh-image-viewer-fg` · `--xh-image-viewer-icon-size` · `--xh-image-viewer-layer` · `--xh-image-viewer-overlay-radius` · `--xh-image-viewer-toolbar-gap` · `--xh-image-viewer-toolbar-padding` · `--xh-image-viewer-toolbar-radius`
+`--xh-image-viewer-action-bg-active` · `--xh-image-viewer-action-bg-hover` · `--xh-image-viewer-backdrop-bg` · `--xh-image-viewer-backdrop-blur` · `--xh-image-viewer-backdrop-layer` · `--xh-image-viewer-chrome-bg` · `--xh-image-viewer-close-bg-active` · `--xh-image-viewer-close-bg-hover` · `--xh-image-viewer-close-radius` · `--xh-image-viewer-close-size` · `--xh-image-viewer-counter-padding` · `--xh-image-viewer-fg` · `--xh-image-viewer-icon-size` · `--xh-image-viewer-layer` · `--xh-image-viewer-overlay-radius` · `--xh-image-viewer-toolbar-gap` · `--xh-image-viewer-toolbar-padding` · `--xh-image-viewer-toolbar-radius`
 
 ## 动效
 

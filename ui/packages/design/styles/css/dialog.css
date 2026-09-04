@@ -65,6 +65,16 @@
     background: var(--xh-dialog-backdrop-bg, var(--xh-bg-overlay));
   }
 
+  /* 同一层底色之上再糊背后的页面 */
+  [data-scope='dialog'][data-part='backdrop'][data-variant='blur'] {
+    backdrop-filter: blur(var(--xh-dialog-backdrop-blur, var(--xh-overlay-backdrop-blur)));
+  }
+
+  /* 去掉底色，只留下这一层吃指针：交互外关闭与滚动锁定照旧 */
+  [data-scope='dialog'][data-part='backdrop'][data-variant='transparent'] {
+    background: transparent;
+  }
+
   [data-scope='dialog'][data-part='backdrop'][data-state='open'] {
     animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
   }

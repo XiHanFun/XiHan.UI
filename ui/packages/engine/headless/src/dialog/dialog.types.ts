@@ -1,5 +1,5 @@
 import type { PresenceHandle } from '@xihan-ui/behavior/presence'
-import type { Cleanup, Layer, OverlayCloseReason, PropTypes, RuntimeConfig, Size } from '@xihan-ui/kernel'
+import type { Cleanup, Layer, OverlayBackdropVariant, OverlayCloseReason, PropTypes, RuntimeConfig, Size } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 
 export interface DialogTranslations {
@@ -39,6 +39,8 @@ export interface DialogSchema extends MachineSchema {
     initialFocus?: string
     /** 尺寸：sm / md / lg。只换 content 的最大宽度，落在 content 上（本组件没有 root 部件）。 */
     size?: Size
+    /** 遮罩形态：opaque / blur / transparent。落在 backdrop 上，只换那一层的底色与模糊。 */
+    variant?: OverlayBackdropVariant
     translations?: Partial<DialogTranslations>
     /** open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 */
     onOpenChange?: (details: DialogOpenChangeDetails) => void

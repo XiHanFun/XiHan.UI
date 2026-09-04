@@ -11589,6 +11589,15 @@
             },
             {
               "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "OverlayBackdropVariant | undefined"
+              },
+              "attribute": "variant"
+            },
+            {
+              "kind": "field",
               "name": "translations",
               "privacy": "public",
               "type": {
@@ -11798,6 +11807,14 @@
               "description": "尺寸：只换 content 的最大宽度，落在 content 上",
               "name": "size",
               "fieldName": "size"
+            },
+            {
+              "type": {
+                "text": "OverlayBackdropVariant | undefined"
+              },
+              "description": "遮罩形态：只换 backdrop 的底色与模糊",
+              "name": "variant",
+              "fieldName": "variant"
             }
           ],
           "superclass": {
@@ -11809,6 +11826,9 @@
           "cssProperties": [
             {
               "name": "--xh-dialog-backdrop-bg"
+            },
+            {
+              "name": "--xh-dialog-backdrop-blur"
             },
             {
               "name": "--xh-dialog-backdrop-layer"
@@ -12655,6 +12675,15 @@
             },
             {
               "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "OverlayBackdropVariant | undefined"
+              },
+              "attribute": "variant"
+            },
+            {
+              "kind": "field",
               "name": "translations",
               "privacy": "public",
               "type": {
@@ -12879,6 +12908,14 @@
               "description": "尺寸：横放时换面板宽度、竖放时换面板高度",
               "name": "size",
               "fieldName": "size"
+            },
+            {
+              "type": {
+                "text": "OverlayBackdropVariant | undefined"
+              },
+              "description": "遮罩形态：只换 backdrop 的底色与模糊",
+              "name": "variant",
+              "fieldName": "variant"
             }
           ],
           "superclass": {
@@ -12890,6 +12927,9 @@
           "cssProperties": [
             {
               "name": "--xh-drawer-backdrop-bg"
+            },
+            {
+              "name": "--xh-drawer-backdrop-blur"
             },
             {
               "name": "--xh-drawer-backdrop-layer"
@@ -12959,6 +12999,9 @@
             },
             {
               "name": "--xh-drawer-trigger-bg"
+            },
+            {
+              "name": "--xh-drawer-trigger-bg-active"
             },
             {
               "name": "--xh-drawer-trigger-bg-hover"
@@ -15475,6 +15518,9 @@
               "name": "--xh-file-upload-trigger-bg"
             },
             {
+              "name": "--xh-file-upload-trigger-bg-active"
+            },
+            {
               "name": "--xh-file-upload-trigger-bg-hover"
             },
             {
@@ -16157,6 +16203,25 @@
             },
             {
               "kind": "field",
+              "name": "config",
+              "type": {
+                "text": "RuntimeConfig | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "exit",
+              "type": {
+                "text": "OverlayExit | null"
+              },
+              "privacy": "private",
+              "default": "null",
+              "description": "退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
+            },
+            {
+              "kind": "field",
               "name": "notifyOpen",
               "privacy": "private",
               "readonly": true
@@ -16213,6 +16278,16 @@
                   }
                 }
               ]
+            },
+            {
+              "kind": "method",
+              "name": "ensureConfig",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
             },
             {
               "kind": "method",
@@ -19788,6 +19863,15 @@
             },
             {
               "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "OverlayBackdropVariant | undefined"
+              },
+              "attribute": "variant"
+            },
+            {
+              "kind": "field",
               "name": "items",
               "privacy": "public",
               "type": {
@@ -20054,6 +20138,14 @@
               "description": "关闭后把焦点归还触发元素，默认 true",
               "name": "restore-focus",
               "fieldName": "restoreFocus"
+            },
+            {
+              "type": {
+                "text": "OverlayBackdropVariant | undefined"
+              },
+              "description": "遮罩形态：只换 backdrop 的底色与模糊",
+              "name": "variant",
+              "fieldName": "variant"
             }
           ],
           "superclass": {
@@ -20071,6 +20163,9 @@
             },
             {
               "name": "--xh-image-viewer-backdrop-bg"
+            },
+            {
+              "name": "--xh-image-viewer-backdrop-blur"
             },
             {
               "name": "--xh-image-viewer-backdrop-layer"
@@ -21336,6 +21431,9 @@
             },
             {
               "name": "--xh-layout-sider-trigger-bg"
+            },
+            {
+              "name": "--xh-layout-sider-trigger-bg-active"
             },
             {
               "name": "--xh-layout-sider-trigger-bg-hover"
@@ -40845,6 +40943,9 @@
             },
             {
               "name": "--xh-table-icon-size"
+            },
+            {
+              "name": "--xh-table-loading-duration"
             },
             {
               "name": "--xh-table-max-h"

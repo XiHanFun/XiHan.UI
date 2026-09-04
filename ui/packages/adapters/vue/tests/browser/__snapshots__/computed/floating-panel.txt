@@ -203,9 +203,9 @@ background-color: rgba(0, 0, 0, 0)
 transition-property: all
 transition-duration: 0s
 transition-timing-function: ease
-animation-name: none
-animation-duration: 0s
-animation-timing-function: ease
+animation-name: xh-pop-out
+animation-duration: 0.12s
+animation-timing-function: cubic-bezier(0.4, 0, 1, 1)
 outline-width: 3px
 outline-offset: 0px
 outline-color: rgb(0, 0, 0)

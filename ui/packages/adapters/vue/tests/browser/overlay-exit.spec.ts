@@ -11,6 +11,10 @@ import {
   XhDialogContent,
   XhDialogRoot,
   XhDialogTitle,
+  XhFloatingPanelContent,
+  XhFloatingPanelPositioner,
+  XhFloatingPanelRoot,
+  XhFloatingPanelTitle,
   XhImageViewerContent,
   XhImageViewerRoot,
 } from '../../src'
@@ -180,5 +184,63 @@ describe('date-picker 退场', () => {
     const closing = part('date-picker', 'content')
     expect(closing, '退场动画播完之前 content 不能被卸载').not.toBeNull()
     expect(getComputedStyle(closing!).display, '退场帧若退回 block，两张日历会竖着堆起来闪一下').toBe('flex')
+  })
+})
+
+describe('floating-panel 退场', () => {
+  /** 面板：作者的节点始终留在原地，收起落在 positioner 的内联 display 上。 */
+  function mountPanel(): Ref<boolean> {
+    return mount(value => h(XhFloatingPanelRoot, { open: value }, {
+      default: () => [
+        h(XhFloatingPanelPositioner, null, () => [
+          h(XhFloatingPanelContent, null, () => [
+            h(XhFloatingPanelTitle, null, () => '面板'),
+          ]),
+        ]),
+      ],
+    }))
+  }
+
+  it('收起后 positioner 留在布局里，并且真的在播退场动画', async () => {
+    const open = mountPanel()
+    await settle()
+
+    const positioner = part('floating-panel', 'positioner')!
+    expect(positioner, '展开时 positioner 应在 DOM 里').not.toBeNull()
+
+    open.value = false
+    await settle()
+
+    // 面板整棵子树都在 positioner 底下：它一收就不生成盒子，退场动画一帧都播不出来
+    expect(getComputedStyle(positioner).display, 'positioner 收起态不能是 display:none').not.toBe('none')
+    expect(getComputedStyle(positioner).animationName).toBe('xh-pop-out')
+  })
+
+  it('动画结束后才真的收起', async () => {
+    const open = mountPanel()
+    await settle()
+
+    const positioner = part('floating-panel', 'positioner')!
+    open.value = false
+    await settle()
+
+    expect(await animationEnd(positioner), '退场动画应当真的结束一次').toBe(true)
+    await settle()
+
+    expect(getComputedStyle(positioner).display, '动画结束后应当收起').toBe('none')
+  })
+
+  it('退场中途重新展开不留残骸', async () => {
+    const open = mountPanel()
+    await settle()
+
+    const positioner = part('floating-panel', 'positioner')!
+    open.value = false
+    await settle()
+    open.value = true
+    await settle()
+
+    expect(getComputedStyle(positioner).display).not.toBe('none')
+    expect(getComputedStyle(positioner).animationName).toBe('xh-pop-in')
   })
 })

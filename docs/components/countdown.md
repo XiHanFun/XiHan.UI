@@ -149,6 +149,12 @@ active 翻假即停在当前剩余量，翻真从那里接着走；改 value 就
 
 `--xh-countdown-fg` · `--xh-countdown-finished-fg`
 
+## 动效
+
+状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
 ## 组合
 
 - 与[按钮](./button)配合做重发倒计时；与[警告提示](./alert)配合做过期提醒。

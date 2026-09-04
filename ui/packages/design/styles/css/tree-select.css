@@ -43,6 +43,9 @@
     /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，内容层继承它限高；
        引擎没算（尚未落位 / 无引擎）时不额外限高 */
     --xh-_tree-select-available-h: 100vh;
+    /* 触发器实测宽度，由定位引擎经内联自定义属性写进来，内容层拿它当最小宽的下界；
+       引擎没算（尚未落位 / 无引擎）时为 0，max 取静态档，等于不抬宽 */
+    --xh-_tree-select-anchor-w: 0px;
 
     /* 树的自绘条浮在内容之上：轨道不上底色，实色轨道会沿内容边缘糊出一条灰带 */
     --xh-scrollbar-track-bg: transparent;
@@ -356,7 +359,7 @@
   [data-scope='tree-select'][data-part='content'] {
     display: flex;
     flex-direction: column;
-    min-inline-size: var(--xh-tree-select-content-min-w, var(--xh-overlay-min-w));
+    min-inline-size: max(var(--xh-tree-select-content-min-w, var(--xh-overlay-min-w)), var(--xh-_tree-select-anchor-w));
     max-inline-size: var(--xh-tree-select-content-max-w, var(--xh-overlay-max-w));
     max-block-size: min(var(--xh-tree-select-content-max-h, var(--xh-overlay-max-h)), var(--xh-_tree-select-available-h));
     padding-block: var(--xh-tree-select-content-py, var(--xh-space-1));

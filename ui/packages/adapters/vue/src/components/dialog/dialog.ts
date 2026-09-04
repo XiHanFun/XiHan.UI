@@ -1,5 +1,5 @@
 import type { DialogApi, DialogSchema } from '@xihan-ui/headless'
-import type { Size } from '@xihan-ui/kernel'
+import type { OverlayBackdropVariant, Size } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h, mergeProps, Teleport } from 'vue'
@@ -25,6 +25,7 @@ export const XhDialogRoot = defineComponent({
     restoreFocus: { type: Boolean, default: true },
     initialFocus: { type: String, default: undefined },
     size: { type: String as PropType<Size>, default: undefined },
+    variant: { type: String as PropType<OverlayBackdropVariant>, default: undefined },
     translations: { type: Object as PropType<DialogProps['translations']>, default: undefined },
   },
   // open-change 携带 { open }，update:open 携带裸布尔

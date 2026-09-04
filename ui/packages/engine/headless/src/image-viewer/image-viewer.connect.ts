@@ -98,6 +98,8 @@ export function connectImageViewer<T extends PropTypes>(
       ...parts.backdrop.attrs,
       'aria-hidden': true,
       'data-state': stateAttr,
+      // 形态轴落在 backdrop 上：三档换的都是这一层自己的底色与模糊
+      'data-variant': prop('variant'),
       'hidden': !open || undefined,
     }),
 

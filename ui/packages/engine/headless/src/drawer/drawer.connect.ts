@@ -54,6 +54,8 @@ export function connectDrawer<T extends PropTypes>(
       'data-state': stateAttr,
       // 局部容器里遮罩改画在容器上，铺满视口的那份 fixed 由皮肤据此让位
       'data-contained': dataAttr(contained),
+      // 形态轴落在 backdrop 上：三档换的都是这一层自己的底色与模糊
+      'data-variant': prop('variant'),
     }),
     getPositionerProps: () => normalize.element({
       ...parts.positioner.attrs,

@@ -1,5 +1,5 @@
 import type { DialogOpenChangeDetails, DialogSchema } from '@xihan-ui/headless'
-import type { Cleanup, IdGenerator, Layer, RuntimeConfig, Size } from '@xihan-ui/kernel'
+import type { Cleanup, IdGenerator, Layer, OverlayBackdropVariant, RuntimeConfig, Size } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { OverlayExit } from '../overlay-exit'
 import { connectDialog, dialogAnatomy, dialogMachine, dialogMeta } from '@xihan-ui/headless'
@@ -28,6 +28,7 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @attr {boolean} restore-focus - 关闭后把焦点归还触发元素，默认 true
  * @attr {string} initial-focus - 展开后先聚焦到 content 内匹配此选择器的元素
  * @attr {'sm'|'md'|'lg'} size - 尺寸：只换 content 的最大宽度，落在 content 上
+ * @attr {'opaque'|'blur'|'transparent'} variant - 遮罩形态：只换 backdrop 的底色与模糊
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @csspart trigger - 触发按钮
  * @csspart backdrop - 遮罩层
@@ -49,6 +50,7 @@ export class XhDialogElement extends XhElement {
     restoreFocus: { converter: BOOLEAN_CONVERTER, attribute: 'restore-focus' },
     initialFocus: { converter: STRING_CONVERTER, attribute: 'initial-focus' },
     size: { converter: STRING_CONVERTER },
+    variant: { converter: STRING_CONVERTER },
     // 对象进不了属性，只作为 property 暴露
     translations: { attribute: false },
   }
@@ -60,6 +62,7 @@ export class XhDialogElement extends XhElement {
   declare restoreFocus?: boolean
   declare initialFocus?: string
   declare size?: Size
+  declare variant?: OverlayBackdropVariant
   /** 关闭按钮的无障碍名；connect 每帧重写 aria-label，作者写在节点上会被盖掉，只能从这里给。 */
   declare translations?: DialogSchema['props']['translations']
 
@@ -91,6 +94,7 @@ export class XhDialogElement extends XhElement {
       restoreFocus: this.restoreFocus,
       initialFocus: this.initialFocus,
       size: this.size,
+      variant: this.variant,
       translations: this.translations,
       onOpenChange: this.notify,
     }

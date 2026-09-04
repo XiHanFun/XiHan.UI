@@ -19,6 +19,7 @@ const STYLES_DIR = 'packages/design/styles/css'
 /**
  * 不必令牌化的默认值：它们是 CSS 本身的语义，不是设计档位。
  * 100% / 100vh 是「整个」，50% 是「一半」，0 0 0 transparent 是「没有阴影但占着过渡的形状」。
+ * 0px 是带类型的零：min() / max() 里各项类型必须一致，无单位的 0 在那里不合法。
  */
 const NOT_A_SCALE = new Set([
   'transparent',
@@ -27,6 +28,7 @@ const NOT_A_SCALE = new Set([
   'inherit',
   'currentColor',
   '0',
+  '0px',
   '1',
   '50%',
   '100%',

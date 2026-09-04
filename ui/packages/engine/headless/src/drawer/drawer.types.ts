@@ -1,5 +1,5 @@
 import type { PresenceHandle } from '@xihan-ui/behavior/presence'
-import type { Cleanup, Layer, OverlayCloseReason, PropTypes, RuntimeConfig, Size } from '@xihan-ui/kernel'
+import type { Cleanup, Layer, OverlayBackdropVariant, OverlayCloseReason, PropTypes, RuntimeConfig, Size } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 
 /** 抽屉贴住的那条视口边，也是滑入方向的来源。 */
@@ -50,6 +50,8 @@ export interface DrawerSchema extends MachineSchema {
     restoreFocus?: boolean
     /** 尺寸：sm / md / lg。横放时换面板宽度、竖放时换面板高度，随 side 而定。 */
     size?: Size
+    /** 遮罩形态：opaque / blur / transparent。落在 backdrop 上，只换那一层的底色与模糊。 */
+    variant?: OverlayBackdropVariant
     translations?: Partial<DrawerTranslations>
     /** open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 */
     onOpenChange?: (details: DrawerOpenChangeDetails) => void

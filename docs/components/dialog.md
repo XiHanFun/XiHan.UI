@@ -106,6 +106,7 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 | `restoreFocus` | `boolean` |  |  |
 | `initialFocus` | `string` |  | 展开后先聚焦到 content 内匹配此选择器的元素；选择器不匹配时回落默认聚焦顺序。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。只换 content 的最大宽度，落在 content 上（本组件没有 root 部件）。 |
+| `variant` | `OverlayBackdropVariant` |  | 遮罩形态：opaque / blur / transparent。落在 backdrop 上，只换那一层的底色与模糊。 |
 | `translations` | `Partial<DialogTranslations>` |  |  |
 | `onOpenChange` | `(details: DialogOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 
@@ -198,6 +199,7 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 | --- | --- | --- |
 | `trigger` | `data-state` | 'open' \| 'closed' |
 | `backdrop` | `data-state` | 'open' \| 'closed' |
+| `backdrop` | `data-variant` | props.variant |
 | `positioner` | `data-positioned` | '' |
 | `positioner` | `data-state` | 'open' \| 'closed' |
 | `content` | `data-size` | props.size |
@@ -207,7 +209,7 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-dialog-backdrop-bg` · `--xh-dialog-backdrop-layer` · `--xh-dialog-bg` · `--xh-dialog-close-bg-active` · `--xh-dialog-close-bg-hover` · `--xh-dialog-close-fg` · `--xh-dialog-close-fg-hover` · `--xh-dialog-close-radius` · `--xh-dialog-close-size` · `--xh-dialog-description-fg` · `--xh-dialog-description-font-size` · `--xh-dialog-fg` · `--xh-dialog-gap` · `--xh-dialog-icon-size` · `--xh-dialog-layer` · `--xh-dialog-max-w` · `--xh-dialog-positioner-padding` · `--xh-dialog-px` · `--xh-dialog-py` · `--xh-dialog-radius` · `--xh-dialog-shadow` · `--xh-dialog-title-fg` · `--xh-dialog-title-font-size` · `--xh-dialog-title-font-weight`
+`--xh-dialog-backdrop-bg` · `--xh-dialog-backdrop-blur` · `--xh-dialog-backdrop-layer` · `--xh-dialog-bg` · `--xh-dialog-close-bg-active` · `--xh-dialog-close-bg-hover` · `--xh-dialog-close-fg` · `--xh-dialog-close-fg-hover` · `--xh-dialog-close-radius` · `--xh-dialog-close-size` · `--xh-dialog-description-fg` · `--xh-dialog-description-font-size` · `--xh-dialog-fg` · `--xh-dialog-gap` · `--xh-dialog-icon-size` · `--xh-dialog-layer` · `--xh-dialog-max-w` · `--xh-dialog-positioner-padding` · `--xh-dialog-px` · `--xh-dialog-py` · `--xh-dialog-radius` · `--xh-dialog-shadow` · `--xh-dialog-title-fg` · `--xh-dialog-title-font-size` · `--xh-dialog-title-font-weight`
 
 ## 动效
 

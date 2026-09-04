@@ -139,6 +139,12 @@ required 落成 data-required，皮肤据此给组标题加星号；星号只是
 
 `--xh-fieldset-error-fg` · `--xh-fieldset-error-font-size` · `--xh-fieldset-gap` · `--xh-fieldset-helper-fg` · `--xh-fieldset-helper-fg-disabled` · `--xh-fieldset-helper-font-size` · `--xh-fieldset-legend-fg` · `--xh-fieldset-legend-fg-disabled` · `--xh-fieldset-legend-fg-invalid` · `--xh-fieldset-legend-font-size` · `--xh-fieldset-legend-font-weight` · `--xh-fieldset-legend-gap` · `--xh-fieldset-legend-star`
 
+## 动效
+
+状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
 ## RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。

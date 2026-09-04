@@ -37,6 +37,8 @@ export function connectDialog<T extends PropTypes>(
     getBackdropProps: () => normalize.element({
       ...parts.backdrop.attrs,
       'data-state': stateAttr,
+      // 形态轴落在 backdrop 上：三档换的都是这一层自己的底色与模糊
+      'data-variant': prop('variant'),
     }),
     getPositionerProps: () => normalize.element({
       ...parts.positioner.attrs,
