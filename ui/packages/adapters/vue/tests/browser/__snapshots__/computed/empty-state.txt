@@ -1,0 +1,176 @@
+# empty-state
+
+[action]
+padding-top: 0px
+padding-right: 0px
+padding-bottom: 0px
+padding-left: 0px
+row-gap: 8px
+column-gap: 8px
+border-top-left-radius: 0px
+border-top-right-radius: 0px
+border-bottom-right-radius: 0px
+border-bottom-left-radius: 0px
+border-top-width: 0px
+border-right-width: 0px
+border-bottom-width: 0px
+border-left-width: 0px
+border-top-color: oklch(0.145 0.005 258)
+border-right-color: oklch(0.145 0.005 258)
+border-bottom-color: oklch(0.145 0.005 258)
+border-left-color: oklch(0.145 0.005 258)
+min-height: auto
+font-size: 16px
+line-height: normal
+font-weight: 400
+color: oklch(0.145 0.005 258)
+background-color: rgba(0, 0, 0, 0)
+transition-property: all
+transition-duration: 0s
+transition-timing-function: ease
+animation-name: none
+animation-duration: 0s
+animation-timing-function: ease
+outline-width: 3px
+outline-offset: 0px
+outline-color: oklch(0.145 0.005 258)
+
+[description]
+padding-top: 0px
+padding-right: 0px
+padding-bottom: 0px
+padding-left: 0px
+row-gap: normal
+column-gap: normal
+border-top-left-radius: 0px
+border-top-right-radius: 0px
+border-bottom-right-radius: 0px
+border-bottom-left-radius: 0px
+border-top-width: 0px
+border-right-width: 0px
+border-bottom-width: 0px
+border-left-width: 0px
+border-top-color: oklch(0.439 0.006 258)
+border-right-color: oklch(0.439 0.006 258)
+border-bottom-color: oklch(0.439 0.006 258)
+border-left-color: oklch(0.439 0.006 258)
+min-height: auto
+font-size: 14px
+line-height: 21px
+font-weight: 400
+color: oklch(0.439 0.006 258)
+background-color: rgba(0, 0, 0, 0)
+transition-property: all
+transition-duration: 0s
+transition-timing-function: ease
+animation-name: none
+animation-duration: 0s
+animation-timing-function: ease
+outline-width: 3px
+outline-offset: 0px
+outline-color: oklch(0.439 0.006 258)
+
+[icon]
+padding-top: 0px
+padding-right: 0px
+padding-bottom: 0px
+padding-left: 0px
+row-gap: normal
+column-gap: normal
+border-top-left-radius: 0px
+border-top-right-radius: 0px
+border-bottom-right-radius: 0px
+border-bottom-left-radius: 0px
+border-top-width: 0px
+border-right-width: 0px
+border-bottom-width: 0px
+border-left-width: 0px
+border-top-color: oklch(0.52 0.006 258)
+border-right-color: oklch(0.52 0.006 258)
+border-bottom-color: oklch(0.52 0.006 258)
+border-left-color: oklch(0.52 0.006 258)
+min-height: auto
+font-size: 40px
+line-height: 40px
+font-weight: 400
+color: oklch(0.52 0.006 258)
+background-color: rgba(0, 0, 0, 0)
+transition-property: all
+transition-duration: 0s
+transition-timing-function: ease
+animation-name: none
+animation-duration: 0s
+animation-timing-function: ease
+outline-width: 3px
+outline-offset: 0px
+outline-color: oklch(0.52 0.006 258)
+
+[root]
+padding-top: 20px
+padding-right: 24px
+padding-bottom: 20px
+padding-left: 24px
+row-gap: 16px
+column-gap: 16px
+border-top-left-radius: 0px
+border-top-right-radius: 0px
+border-bottom-right-radius: 0px
+border-bottom-left-radius: 0px
+border-top-width: 0px
+border-right-width: 0px
+border-bottom-width: 0px
+border-left-width: 0px
+border-top-color: oklch(0.145 0.005 258)
+border-right-color: oklch(0.145 0.005 258)
+border-bottom-color: oklch(0.145 0.005 258)
+border-left-color: oklch(0.145 0.005 258)
+min-height: 0px
+font-size: 16px
+line-height: normal
+font-weight: 400
+color: oklch(0.145 0.005 258)
+background-color: rgba(0, 0, 0, 0)
+transition-property: all
+transition-duration: 0s
+transition-timing-function: ease
+animation-name: none
+animation-duration: 0s
+animation-timing-function: ease
+outline-width: 3px
+outline-offset: 0px
+outline-color: oklch(0.145 0.005 258)
+
+[title]
+padding-top: 0px
+padding-right: 0px
+padding-bottom: 0px
+padding-left: 0px
+row-gap: normal
+column-gap: normal
+border-top-left-radius: 0px
+border-top-right-radius: 0px
+border-bottom-right-radius: 0px
+border-bottom-left-radius: 0px
+border-top-width: 0px
+border-right-width: 0px
+border-bottom-width: 0px
+border-left-width: 0px
+border-top-color: oklch(0.145 0.005 258)
+border-right-color: oklch(0.145 0.005 258)
+border-bottom-color: oklch(0.145 0.005 258)
+border-left-color: oklch(0.145 0.005 258)
+min-height: auto
+font-size: 16px
+line-height: 20px
+font-weight: 600
+color: oklch(0.145 0.005 258)
+background-color: rgba(0, 0, 0, 0)
+transition-property: all
+transition-duration: 0s
+transition-timing-function: ease
+animation-name: none
+animation-duration: 0s
+animation-timing-function: ease
+outline-width: 3px
+outline-offset: 0px
+outline-color: oklch(0.145 0.005 258)
