@@ -18,14 +18,34 @@ const STYLES_DIR = 'packages/design/styles/css'
 
 /** 被推到新位置或新尺寸的属性。 */
 const MOVE = new Set([
-  'transform', 'translate',
-  'inset', 'inset-block', 'inset-inline',
-  'inset-block-start', 'inset-block-end', 'inset-inline-start', 'inset-inline-end',
-  'top', 'right', 'bottom', 'left',
-  'inline-size', 'block-size', 'width', 'height',
-  'max-inline-size', 'max-block-size', 'min-inline-size', 'min-block-size',
-  'grid-template-rows', 'grid-template-columns', 'flex-basis',
-  'margin-block-start', 'margin-block-end', 'margin-inline-start', 'margin-inline-end',
+  'transform',
+  'translate',
+  'inset',
+  'inset-block',
+  'inset-inline',
+  'inset-block-start',
+  'inset-block-end',
+  'inset-inline-start',
+  'inset-inline-end',
+  'top',
+  'right',
+  'bottom',
+  'left',
+  'inline-size',
+  'block-size',
+  'width',
+  'height',
+  'max-inline-size',
+  'max-block-size',
+  'min-inline-size',
+  'min-block-size',
+  'grid-template-rows',
+  'grid-template-columns',
+  'flex-basis',
+  'margin-block-start',
+  'margin-block-end',
+  'margin-inline-start',
+  'margin-inline-end',
 ])
 
 /** 原地形变的属性。 */
@@ -55,8 +75,12 @@ function splitTopLevel(value) {
   let start = 0
   for (let i = 0; i < value.length; i++) {
     const ch = value[i]
-    if (ch === '(') depth++
-    else if (ch === ')') depth--
+    if (ch === '(') {
+      depth++
+    }
+    else if (ch === ')') {
+      depth--
+    }
     else if (ch === ',' && depth === 0) {
       out.push(value.slice(start, i))
       start = i + 1
@@ -93,9 +117,11 @@ for (const file of files) {
     const line = css.slice(0, m.index).split('\n').length
     for (const item of splitTopLevel(m[1])) {
       const prop = animatedProp(item)
-      if (!prop) continue
+      if (!prop)
+        continue
       const role = MOVE.has(prop) ? 'move' : SHAPE.has(prop) ? 'shape' : null
-      if (!role) continue
+      if (!role)
+        continue
       checked++
 
       const key = `${comp}:${prop}`
@@ -106,7 +132,8 @@ for (const file of files) {
 
       const ease = easeToken(item)
       const want = REQUIRED[role]
-      if (ease === want) continue
+      if (ease === want)
+        continue
 
       const at = `${file}:${line}  ${item}`
       if (!ease)

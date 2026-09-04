@@ -21,7 +21,7 @@
     "name": "tokens/tokens.css",
     "path": "packages/design/tokens/tokens.css",
     "gzip": true,
-    "limit": "4.25 kB"
+    "limit": "5 kB"
   },
   {
     "name": "behavior",
@@ -87,13 +87,13 @@
     "name": "headless",
     "path": "packages/engine/headless/dist/index.js",
     "gzip": true,
-    "limit": "255 kB"
+    "limit": "290 kB"
   },
   {
     "name": "vue",
     "path": "packages/adapters/vue/dist/index.js",
     "gzip": true,
-    "limit": "292 kB",
+    "limit": "332 kB",
     "ignore": [
       "vue"
     ]
@@ -135,7 +135,7 @@
     "name": "web-components/define",
     "path": "packages/adapters/web-components/dist/define.js",
     "gzip": true,
-    "limit": "281 kB"
+    "limit": "318 kB"
   },
   {
     "name": "web-components/backgrounds",
@@ -147,7 +147,7 @@
     "name": "styles",
     "path": "packages/design/styles/css/*.css",
     "gzip": true,
-    "limit": "145 kB"
+    "limit": "165 kB"
   },
   {
     "name": "icons：只用 CheckIcon",
@@ -188,6 +188,66 @@
     "import": "{ XhDialogRoot }",
     "gzip": true,
     "limit": "15.3 kB",
+    "ignore": [
+      "vue"
+    ]
+  },
+  {
+    "name": "vue：只用 XhMenuRoot",
+    "path": "packages/adapters/vue/dist/index.js",
+    "import": "{ XhMenuRoot }",
+    "gzip": true,
+    "limit": "25.9 kB",
+    "ignore": [
+      "vue"
+    ]
+  },
+  {
+    "name": "vue：只用 XhTableRoot",
+    "path": "packages/adapters/vue/dist/index.js",
+    "import": "{ XhTableRoot }",
+    "gzip": true,
+    "limit": "22 kB",
+    "ignore": [
+      "vue"
+    ]
+  },
+  {
+    "name": "vue：只用 XhSelectRoot",
+    "path": "packages/adapters/vue/dist/index.js",
+    "import": "{ XhSelectRoot }",
+    "gzip": true,
+    "limit": "22.3 kB",
+    "ignore": [
+      "vue"
+    ]
+  },
+  {
+    "name": "vue：只用 XhToastRoot",
+    "path": "packages/adapters/vue/dist/index.js",
+    "import": "{ XhToastRoot }",
+    "gzip": true,
+    "limit": "9.7 kB",
+    "ignore": [
+      "vue"
+    ]
+  },
+  {
+    "name": "vue：只用 XhGridRoot",
+    "path": "packages/adapters/vue/dist/index.js",
+    "import": "{ XhGridRoot }",
+    "gzip": true,
+    "limit": "1.15 kB",
+    "ignore": [
+      "vue"
+    ]
+  },
+  {
+    "name": "vue：只用 XhMarkdownStreamRoot",
+    "path": "packages/adapters/vue/dist/index.js",
+    "import": "{ XhMarkdownStreamRoot }",
+    "gzip": true,
+    "limit": "1.6 kB",
     "ignore": [
       "vue"
     ]

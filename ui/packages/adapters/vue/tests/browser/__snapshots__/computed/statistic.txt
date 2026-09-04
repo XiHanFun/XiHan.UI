@@ -1,0 +1,176 @@
+# statistic
+
+[label]
+padding-top: 0px
+padding-right: 0px
+padding-bottom: 0px
+padding-left: 0px
+row-gap: normal
+column-gap: normal
+border-top-left-radius: 0px
+border-top-right-radius: 0px
+border-bottom-right-radius: 0px
+border-bottom-left-radius: 0px
+border-top-width: 0px
+border-right-width: 0px
+border-bottom-width: 0px
+border-left-width: 0px
+border-top-color: oklch(0.439 0.006 258)
+border-right-color: oklch(0.439 0.006 258)
+border-bottom-color: oklch(0.439 0.006 258)
+border-left-color: oklch(0.439 0.006 258)
+min-height: auto
+font-size: 13px
+line-height: 19.5px
+font-weight: 400
+color: oklch(0.439 0.006 258)
+background-color: rgba(0, 0, 0, 0)
+transition-property: all
+transition-duration: 0s
+transition-timing-function: ease
+animation-name: none
+animation-duration: 0s
+animation-timing-function: ease
+outline-width: 3px
+outline-offset: 0px
+outline-color: oklch(0.439 0.006 258)
+
+[prefix]
+padding-top: 0px
+padding-right: 0px
+padding-bottom: 0px
+padding-left: 0px
+row-gap: normal
+column-gap: normal
+border-top-left-radius: 0px
+border-top-right-radius: 0px
+border-bottom-right-radius: 0px
+border-bottom-left-radius: 0px
+border-top-width: 0px
+border-right-width: 0px
+border-bottom-width: 0px
+border-left-width: 0px
+border-top-color: oklch(0.439 0.006 258)
+border-right-color: oklch(0.439 0.006 258)
+border-bottom-color: oklch(0.439 0.006 258)
+border-left-color: oklch(0.439 0.006 258)
+min-height: auto
+font-size: 14px
+line-height: 17.5px
+font-weight: 400
+color: oklch(0.439 0.006 258)
+background-color: rgba(0, 0, 0, 0)
+transition-property: all
+transition-duration: 0s
+transition-timing-function: ease
+animation-name: none
+animation-duration: 0s
+animation-timing-function: ease
+outline-width: 3px
+outline-offset: 0px
+outline-color: oklch(0.439 0.006 258)
+
+[root]
+padding-top: 0px
+padding-right: 0px
+padding-bottom: 0px
+padding-left: 0px
+row-gap: 4px
+column-gap: 0px
+border-top-left-radius: 0px
+border-top-right-radius: 0px
+border-bottom-right-radius: 0px
+border-bottom-left-radius: 0px
+border-top-width: 0px
+border-right-width: 0px
+border-bottom-width: 0px
+border-left-width: 0px
+border-top-color: oklch(0.145 0.005 258)
+border-right-color: oklch(0.145 0.005 258)
+border-bottom-color: oklch(0.145 0.005 258)
+border-left-color: oklch(0.145 0.005 258)
+min-height: 0px
+font-size: 16px
+line-height: normal
+font-weight: 400
+color: oklch(0.145 0.005 258)
+background-color: rgba(0, 0, 0, 0)
+transition-property: all
+transition-duration: 0s
+transition-timing-function: ease
+animation-name: none
+animation-duration: 0s
+animation-timing-function: ease
+outline-width: 3px
+outline-offset: 0px
+outline-color: oklch(0.145 0.005 258)
+
+[suffix]
+padding-top: 0px
+padding-right: 0px
+padding-bottom: 0px
+padding-left: 0px
+row-gap: normal
+column-gap: normal
+border-top-left-radius: 0px
+border-top-right-radius: 0px
+border-bottom-right-radius: 0px
+border-bottom-left-radius: 0px
+border-top-width: 0px
+border-right-width: 0px
+border-bottom-width: 0px
+border-left-width: 0px
+border-top-color: oklch(0.439 0.006 258)
+border-right-color: oklch(0.439 0.006 258)
+border-bottom-color: oklch(0.439 0.006 258)
+border-left-color: oklch(0.439 0.006 258)
+min-height: auto
+font-size: 14px
+line-height: 17.5px
+font-weight: 400
+color: oklch(0.439 0.006 258)
+background-color: rgba(0, 0, 0, 0)
+transition-property: all
+transition-duration: 0s
+transition-timing-function: ease
+animation-name: none
+animation-duration: 0s
+animation-timing-function: ease
+outline-width: 3px
+outline-offset: 0px
+outline-color: oklch(0.439 0.006 258)
+
+[value]
+padding-top: 0px
+padding-right: 0px
+padding-bottom: 0px
+padding-left: 0px
+row-gap: normal
+column-gap: normal
+border-top-left-radius: 0px
+border-top-right-radius: 0px
+border-bottom-right-radius: 0px
+border-bottom-left-radius: 0px
+border-top-width: 0px
+border-right-width: 0px
+border-bottom-width: 0px
+border-left-width: 0px
+border-top-color: oklch(0.145 0.005 258)
+border-right-color: oklch(0.145 0.005 258)
+border-bottom-color: oklch(0.145 0.005 258)
+border-left-color: oklch(0.145 0.005 258)
+min-height: auto
+font-size: 22px
+line-height: 27.5px
+font-weight: 600
+color: oklch(0.145 0.005 258)
+background-color: rgba(0, 0, 0, 0)
+transition-property: all
+transition-duration: 0s
+transition-timing-function: ease
+animation-name: none
+animation-duration: 0s
+animation-timing-function: ease
+outline-width: 3px
+outline-offset: 0px
+outline-color: oklch(0.145 0.005 258)

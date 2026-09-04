@@ -29,6 +29,8 @@ export type {
   TestHooks,
 } from './conformance/types'
 export { coveredRows, danglingCovers, missingKeyboardRows } from './machine/transition-coverage'
+export { collectComputedSnapshot, COMPUTED_PROPS, formatComputedSnapshot, runComputedSnapshot } from './snapshot/computed'
+export type { ComputedCollectOptions, ComputedSnapshot, ComputedSnapshotOptions } from './snapshot/computed'
 export { collectDomSnapshot } from './snapshot/collect'
 export type { CollectOptions } from './snapshot/collect'
 export { normalizeAttrs } from './snapshot/normalize'
