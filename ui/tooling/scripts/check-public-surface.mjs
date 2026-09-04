@@ -58,6 +58,7 @@ diffList('data-state 取值', baseline.dataStateValues, current.dataStateValues)
 diffList('令牌', baseline.tokens, current.tokens)
 diffList('@layer 名', baseline.cssLayers, current.cssLayers)
 diffList('组件覆盖槽', baseline.cssSlots, current.cssSlots)
+diffList('关键帧', baseline.keyframes, current.keyframes)
 diffMap('自定义元素', baseline.elements, current.elements, (label, before, after) => {
   diffList(`${label} attribute`, before.attributes, after.attributes)
   diffList(`${label} 事件`, before.events, after.events)
