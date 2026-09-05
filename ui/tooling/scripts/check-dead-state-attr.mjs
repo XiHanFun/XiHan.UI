@@ -85,6 +85,10 @@ const HOOKS = {
   'image:data-state': '图与兜底各自的显隐由自己的 hidden 承载',
   'skeleton:data-state': '加载完置 hidden，整块骨架收起',
   'tag:data-state': '关掉后置 hidden',
+  // 让位判据改走 DOM 查询后，这一位留给作者按可清空态自取样式
+  'select:data-clearable': '箭头让位的判据是盒里有没有一颗没收起的清空钮，走 :has() 查 DOM；这一位供作者自取',
+  'cascader:data-clearable': '同 select',
+  'tree-select:data-clearable': '同 select',
   // 同一件事在别的部件上已经画了，根上这一位是镜像
   'code-view:data-state': '折叠的视觉在根的 data-clamped 上，触发器这一位是镜像',
   'layout:data-sider-presentation': '覆盖档的视觉画在侧栏自己的 data-presentation 与遮罩的 hidden 上，根上这一位是镜像',
