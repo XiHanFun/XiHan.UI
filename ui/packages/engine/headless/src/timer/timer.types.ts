@@ -7,6 +7,9 @@ export type TimerUnit = 'days' | 'hours' | 'minutes' | 'seconds' | 'milliseconds
 /** 四段状态：没起步 / 在走 / 停在半路 / 走到终点，同时是 data-state 的取值。 */
 export type TimerPhase = 'idle' | 'running' | 'paused' | 'completed'
 
+/** 播报档位，落成时间区上的 aria-live。 */
+export type TimerLive = 'off' | 'polite' | 'assertive'
+
 /** 起停按钮这一下要做的事，落成 control 上的 data-action。 */
 export type TimerControlAction = 'start' | 'pause' | 'resume' | 'reset'
 
@@ -69,6 +72,16 @@ export interface TimerSchema extends MachineSchema {
     targetMs?: number
     /** 倒着走，缺省假。 */
     countdown?: boolean
+    /**
+     * 受控剩余毫秒。给了它即进受控通道：它就是起点，方向锁成倒着走、终点锁成 0，
+     * startMs / targetMs / countdown 三个不再参与；改写它即把累计清零并从新值重新计时。
+     */
+    value?: number
+    /**
+     * 受控开关，缺省真。给了它即进受控通道：翻假停在当前累计值，翻真从那里接着走。
+     * 受控时起停按钮不再改状态——状态由这个 prop 说了算。
+     */
+    active?: boolean
     /** 挂载即开跑，缺省假。它只在挂载那一刻读一次，之后改它不再有作用。 */
     autoStart?: boolean
     /**
@@ -76,6 +89,12 @@ export interface TimerSchema extends MachineSchema {
      * 它只决定数字多久跳一次；到点由另一个精确落在终点上的定时器判定，不受它影响。
      */
     interval?: number
+    /** 文本模板，缺省 `HH:mm:ss`。D 天、H 时、m 分、s 秒、S 毫秒，重复字母的个数即最少位数。 */
+    format?: string
+    /** 取值粒度：0 到秒、1 到十分之一秒、2 到百分之一秒、3 到毫秒。缺省 3，即不量化。 */
+    precision?: number
+    /** 读屏播报档位，缺省 off。 */
+    live?: TimerLive
     /** 尺寸：sm / md / lg。 */
     size?: Size
     translations?: Partial<TimerTranslations>
@@ -116,14 +135,18 @@ export interface TimerSchema extends MachineSchema {
     | { type: 'CLOCK.SYNC' }
   tag: never
   guard: 'isSettled'
-  action: 'clearElapsed' | 'invokeComplete' | 'invokeTick' | 'settleElapsed' | 'syncClock'
+  action: 'clearElapsed' | 'invokeComplete' | 'invokeTick' | 'restartFromValue' | 'settleElapsed' | 'syncActive' | 'syncClock'
   effect: 'runClock'
 }
 
 export interface TimerApi<T extends PropTypes = PropTypes> {
   phase: TimerPhase
-  /** 当前该显示的毫秒，已夹在起点与终点之间。 */
+  /** 当前该显示的毫秒，已夹在起点与终点之间并按 precision 量化。 */
   value: number
+  /** 按模板铺好的文本，也就是不自己排每一段时该显示的字。 */
+  text: string
+  /** 走的是受控通道吗：给了 value 或 active 即是，此时起停按钮不改状态。 */
+  controlled: boolean
   /** 累计走了多少毫秒，与方向和起始值无关。 */
   elapsed: number
   running: boolean
@@ -145,7 +168,7 @@ export interface TimerApi<T extends PropTypes = PropTypes> {
   /** 归零并停下。 */
   reset: () => void
   getRootProps: () => T['element']
-  getAreaProps: () => T['element']
+  getDisplayProps: () => T['element']
   getItemProps: (props: TimerItemProps) => T['element']
   getSeparatorProps: () => T['element']
   getControlProps: () => T['button']

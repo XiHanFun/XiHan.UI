@@ -1,7 +1,7 @@
 <!-- 语气 | tone 换的是当前页选中态的底色与文字色，这里预置第 3 页为当前页 -->
 <script setup lang="ts">
 import {
-  XhPaginationEllipsis,
+  XhPaginationEllipsisTrigger,
   XhPaginationItem,
   XhPaginationNextTrigger,
   XhPaginationPrevTrigger,
@@ -35,7 +35,7 @@ const tones = [
       >
         <XhPaginationPrevTrigger />
         <template v-for="(p, i) in pages" :key="`${p}-${i}`">
-          <XhPaginationEllipsis v-if="p === 'ellipsis'">…</XhPaginationEllipsis>
+          <XhPaginationEllipsisTrigger v-if="p === 'ellipsis'">…</XhPaginationEllipsisTrigger>
           <XhPaginationItem v-else :value="p">{{ p }}</XhPaginationItem>
         </template>
         <XhPaginationNextTrigger />

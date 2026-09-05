@@ -20,7 +20,7 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @csspart root - 页头根容器，承载 data-size / data-bordered
  * @csspart back-trigger - 返回位，作者自己的按钮，组件只摆位置
  * @csspart title - 页面标题
- * @csspart subtitle - 与标题同行的补充信息
+ * @csspart description - 与标题同行的补充信息
  * @csspart extra - 行尾的操作区
  * @csspart footer - 整行另起的附加区，装描述、标签页或一组摘要
  */
@@ -52,7 +52,7 @@ export class XhPageHeaderElement extends XhElement {
     put('root', api.getRootProps() as Record<string, unknown>)
     put('back-trigger', api.getBackTriggerProps() as Record<string, unknown>)
     put('title', api.getTitleProps() as Record<string, unknown>)
-    put('subtitle', api.getSubtitleProps() as Record<string, unknown>)
+    put('description', api.getDescriptionProps() as Record<string, unknown>)
     put('extra', api.getExtraProps() as Record<string, unknown>)
     put('footer', api.getFooterProps() as Record<string, unknown>)
   }

@@ -23,5 +23,12 @@ export function connectFlex<T extends PropTypes>(
       'data-wrap': dataAttr(props.wrap),
       'data-inline': dataAttr(props.inline),
     }),
+
+    // 分隔符两端产出同一份属性：Vue 侧由 split 插槽在每道缝里铺一个，WC 侧由作者逐个写在 root 里。
+    // aria-hidden 恒为真：它是装饰，逐条念出来只会打断内容。
+    getSplitProps: () => normalize.element({
+      ...parts.split.attrs,
+      'aria-hidden': true,
+    }),
   }
 }

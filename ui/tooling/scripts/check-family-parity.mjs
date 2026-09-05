@@ -51,7 +51,7 @@ const FAMILIES = [
   },
   {
     name: '下拉族',
-    members: ['select', 'cascader', 'tree-select', 'popselect', 'color-picker'],
+    members: ['select', 'cascader', 'tree-select', 'color-picker'],
     parts: [
       // 盒宽的上下限一起管：只有一家给盒封顶，同一行栅格里它就比邻座窄一截
       { part: 'control', state: '', props: ['display', 'align-items', 'block-size', 'padding-inline', 'min-inline-size', 'max-inline-size'] },
@@ -82,19 +82,6 @@ const FAMILIES = [
       { part: 'trigger', state: '', props: '*' },
       { part: 'trigger', state: '[data-disabled]', props: '*' },
       { part: 'trigger', state: '[hidden]', props: '*' },
-    ],
-  },
-  {
-    // 一张图标、一行标题、一段说明、一排按钮，两家排的是同一张空面
-    name: '空态族',
-    members: ['empty-state', 'result'],
-    parts: [
-      { part: 'description', state: '', props: '*' },
-      { part: 'action', state: '', props: '*' },
-      { part: 'action', state: '[hidden]', props: '*' },
-      // color 不在此列：result 的图标按状态取色（成功绿、错误红），empty-state 恒是 fg-subtle
-      { part: 'icon', state: '', props: ['display', 'align-items', 'justify-content', 'flex', '--xh-icon-size', 'block-size', 'inline-size', 'font-size', 'line-height'] },
-      { part: 'icon', state: '[hidden]', props: '*' },
     ],
   },
 ]

@@ -93,7 +93,7 @@ size 一档换掉页码格子的高度、内边距与字号，上一页 / 下一
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-pagination>` |
-| Vue 组件 | `XhPaginationContent` `XhPaginationEllipsis` `XhPaginationItem` `XhPaginationNextTrigger` `XhPaginationPageSizeSelect` `XhPaginationPositioner` `XhPaginationPrevTrigger` `XhPaginationRoot` |
+| Vue 组件 | `XhPaginationContent` `XhPaginationEllipsisTrigger` `XhPaginationItem` `XhPaginationNextTrigger` `XhPaginationPageSizeSelect` `XhPaginationPositioner` `XhPaginationPrevTrigger` `XhPaginationRoot` |
 | 组合式函数 | `usePagination` |
 | 状态机 | `paginationMachine` |
 | 皮肤 | `@xihan-ui/styles/pagination.css` |
@@ -102,7 +102,7 @@ size 一档换掉页码格子的高度、内边距与字号，上一页 / 下一
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="pagination"`：**`root`** · `prev-trigger` · `next-trigger` · **`item`** · `ellipsis` · `page-size-select` · `positioner` · `content`
+`data-scope="pagination"`：**`root`** · `prev-trigger` · `next-trigger` · **`item`** · `ellipsis-trigger` · `page-size-select` · `positioner` · `content`
 
 ## Props
 
@@ -151,7 +151,7 @@ size 一档换掉页码格子的高度、内边距与字号，上一页 / 下一
 
 | 部件 | 取值 |
 | --- | --- |
-| `ellipsis` | 'open' \| 'closed' |
+| `ellipsis-trigger` | 'open' \| 'closed' |
 | `positioner` | 'open' \| 'closed' |
 | `content` | 'open' \| 'closed' |
 
@@ -174,7 +174,7 @@ size 一档换掉页码格子的高度、内边距与字号，上一页 / 下一
 | `pageSizeOptions` | `number[]` | 可选的每页条数档位，缺省 [10, 20, 50, 100]；已按升序去重并夹到至少 1。 |
 | `count` | `number` |  |
 | `totalPages` | `number` |  |
-| `pages` | `PaginationPage[]` | 页码序列，作者照着渲染 item 与 ellipsis。 |
+| `pages` | `PaginationPage[]` | 页码序列，作者照着渲染 item 与 ellipsis-trigger。 |
 | `pageItems` | `PaginationPageItem[]` | 同一串序列，但省略位带着被折叠的那几页——摊开省略号要靠它。 |
 | `openEllipsis` | `PaginationEllipsisSide \| null` | 此刻摊开的是哪一侧的省略位；没摊开为 null。 |
 | `pageRange` | `PaginationEntryRange` | 当前页对应的条目区间，1 基闭区间；无数据时是 { start: 0, end: 0 }。 |
@@ -189,7 +189,7 @@ size 一档换掉页码格子的高度、内边距与字号，上一页 / 下一
 | `getPrevTriggerProps` | `() => T['button']` |  |
 | `getNextTriggerProps` | `() => T['button']` |  |
 | `getItemProps` | `(props: PaginationItemProps) => T['button']` |  |
-| `getEllipsisProps` | `(props: PaginationEllipsisProps) => T['button']` | 省略位：可展开的按钮，摊开后列出被折叠的页码。 |
+| `getEllipsisTriggerProps` | `(props: PaginationEllipsisTriggerProps) => T['button']` | 省略位：可展开的按钮，摊开后列出被折叠的页码。 |
 | `getPageSizeSelectProps` | `() => T['select']` | 每页条数控制器：绑到一个原生 select 上，档位由作者按 pageSizeOptions 渲染成 option。 |
 | `getPositionerProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |
@@ -204,8 +204,8 @@ size 一档换掉页码格子的高度、内边距与字号，上一页 / 下一
 | `Enter` / `Space` | focus in item | 跳到该页码（原生按钮激活，平台把按键翻成 click） |
 | `Enter` / `Space` | focus in prev-trigger, 非首页 | 回上一页；首页时按钮是原生 disabled，焦点根本落不上去 |
 | `Enter` / `Space` | focus in next-trigger, 非末页 | 进下一页；末页时按钮是原生 disabled |
-| `Enter` / `Space` | focus in ellipsis | 摊开被折叠的那几页；再按一次收起。纯悬停会把键盘用户挡在外面，而那几页除了这里没有别的入口 |
-| `Escape` | ellipsis 已摊开 | 收起摊开的页码面板（走消解层，点面板外面同样收起） |
+| `Enter` / `Space` | focus in ellipsis-trigger | 摊开被折叠的那几页；再按一次收起。纯悬停会把键盘用户挡在外面，而那几页除了这里没有别的入口 |
+| `Escape` | ellipsis-trigger 已摊开 | 收起摊开的页码面板（走消解层，点面板外面同样收起） |
 | `Tab` / `Shift+Tab` | focus in root | 逐个走过每个可用按钮——分页不做 roving tabindex，用户要能 Tab 到某一页再确认；禁用的首尾按钮自动脱序 |
 
 ## 无障碍
@@ -219,10 +219,10 @@ size 一档换掉页码格子的高度、内边距与字号，上一页 / 下一
 | `next-trigger` | `aria-label` | label.nextTrigger |
 | `item` | `aria-current` | 'page' \| undefined |
 | `item` | `aria-label` | label.item(item.page) |
-| `ellipsis` | `aria-controls` | `content` 部件的 id \| undefined |
-| `ellipsis` | `aria-expanded` | 'true' \| 'false' |
-| `ellipsis` | `aria-haspopup` | 'true' |
-| `ellipsis` | `aria-label` | label.ellipsis( (items.find(item =&gt; item.type === 'el… |
+| `ellipsis-trigger` | `aria-controls` | `content` 部件的 id \| undefined |
+| `ellipsis-trigger` | `aria-expanded` | 'true' \| 'false' |
+| `ellipsis-trigger` | `aria-haspopup` | 'true' |
+| `ellipsis-trigger` | `aria-label` | label.ellipsis( (items.find(item =&gt; item.type === 'el… |
 | `page-size-select` | `aria-label` | label.pageSizeSelect |
 | `content` | `aria-label` | label.ellipsis(folded.length) |
 | `content` | `role` | 'group' |
@@ -243,8 +243,8 @@ size 一档换掉页码格子的高度、内边距与字号，上一页 / 下一
 | `prev-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `next-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `item` | `data-current` | ''（条件成立时才出现） |
-| `ellipsis` | `data-side` | props.side |
-| `ellipsis` | `data-state` | 'open' \| 'closed' |
+| `ellipsis-trigger` | `data-side` | props.side |
+| `ellipsis-trigger` | `data-state` | 'open' \| 'closed' |
 | `positioner` | `data-hidden` | ''（条件成立时才出现） |
 | `positioner` | `data-placement` | 定位引擎算出的实际落位 |
 | `positioner` | `data-positioned` | ''（条件成立时才出现） |
@@ -259,7 +259,7 @@ size 一档换掉页码格子的高度、内边距与字号，上一页 / 下一
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-pagination-content-bg` · `--xh-pagination-content-border` · `--xh-pagination-content-max-h` · `--xh-pagination-content-max-w` · `--xh-pagination-content-p` · `--xh-pagination-content-radius` · `--xh-pagination-content-shadow` · `--xh-pagination-ellipsis-fg` · `--xh-pagination-font-size` · `--xh-pagination-gap` · `--xh-pagination-icon-size` · `--xh-pagination-item-bg` · `--xh-pagination-item-bg-active` · `--xh-pagination-item-bg-hover` · `--xh-pagination-item-bg-selected` · `--xh-pagination-item-bg-selected-active` · `--xh-pagination-item-bg-selected-hover` · `--xh-pagination-item-border-selected` · `--xh-pagination-item-border-selected-active` · `--xh-pagination-item-border-selected-hover` · `--xh-pagination-item-fg` · `--xh-pagination-item-fg-selected` · `--xh-pagination-item-font-weight` · `--xh-pagination-item-h` · `--xh-pagination-item-min-size` · `--xh-pagination-item-px` · `--xh-pagination-item-radius` · `--xh-pagination-item-shadow` · `--xh-pagination-layer` · `--xh-pagination-page-size-bg` · `--xh-pagination-page-size-border` · `--xh-pagination-page-size-border-hover`
+`--xh-pagination-content-bg` · `--xh-pagination-content-border` · `--xh-pagination-content-max-h` · `--xh-pagination-content-max-w` · `--xh-pagination-content-p` · `--xh-pagination-content-radius` · `--xh-pagination-content-shadow` · `--xh-pagination-ellipsis-trigger-fg` · `--xh-pagination-font-size` · `--xh-pagination-gap` · `--xh-pagination-icon-size` · `--xh-pagination-item-bg` · `--xh-pagination-item-bg-active` · `--xh-pagination-item-bg-hover` · `--xh-pagination-item-bg-selected` · `--xh-pagination-item-bg-selected-active` · `--xh-pagination-item-bg-selected-hover` · `--xh-pagination-item-border-selected` · `--xh-pagination-item-border-selected-active` · `--xh-pagination-item-border-selected-hover` · `--xh-pagination-item-fg` · `--xh-pagination-item-fg-selected` · `--xh-pagination-item-font-weight` · `--xh-pagination-item-h` · `--xh-pagination-item-min-size` · `--xh-pagination-item-px` · `--xh-pagination-item-radius` · `--xh-pagination-item-shadow` · `--xh-pagination-layer` · `--xh-pagination-page-size-bg` · `--xh-pagination-page-size-bg-hover` · `--xh-pagination-page-size-border` · `--xh-pagination-page-size-border-hover`
 
 ## 动效
 

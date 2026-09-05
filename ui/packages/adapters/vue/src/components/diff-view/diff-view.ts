@@ -72,8 +72,8 @@ export const XhDiffViewHeader = defineComponent({
  *
  * 数字取自模型，默认渲染成 `+N` / `−N`；给了插槽就由插槽自己排版。
  */
-export const XhDiffViewStat = defineComponent({
-  name: 'XhDiffViewStat',
+export const XhDiffViewSummary = defineComponent({
+  name: 'XhDiffViewSummary',
   props: {
     change: { type: String as PropType<Extract<DiffChange, 'added' | 'removed'>>, required: true },
   },
@@ -87,7 +87,7 @@ export const XhDiffViewStat = defineComponent({
       const count = props.change === 'added' ? api.stats.added : api.stats.removed
       return h(
         'span',
-        api.getStatProps({ change: props.change }) as Record<string, unknown>,
+        api.getSummaryProps({ change: props.change }) as Record<string, unknown>,
         slots.default?.({ count }) ?? `${props.change === 'added' ? '+' : '−'}${count}`,
       )
     }
@@ -160,7 +160,7 @@ function renderCell(api: DiffViewApi, rowIndex: number, side: DiffSide): VNode[]
   if (segments.length > 0) {
     return segments.map((segment, i) => h(
       'span',
-      { ...api.getSegmentProps({ rowIndex, changed: segment.changed }) as Record<string, unknown>, key: `s:${i}` },
+      { ...api.getInlineChangeProps({ rowIndex, changed: segment.changed }) as Record<string, unknown>, key: `s:${i}` },
       segment.tokens.length === 0 ? segment.text : renderTokens(api, segment.tokens),
     ))
   }

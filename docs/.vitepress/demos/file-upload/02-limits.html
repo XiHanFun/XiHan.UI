@@ -15,7 +15,7 @@
       <button data-xh-part="trigger">选择图片</button>
     </div>
     <input data-xh-part="hidden-input" />
-    <div data-xh-part="item-group"></div>
+    <div data-xh-part="list"></div>
     <!-- 列表为空时清空按钮照常在位可聚焦，只打 data-empty 由皮肤压淡 -->
     <button data-xh-part="clear-trigger">清空</button>
   </div>
@@ -25,7 +25,7 @@
 
 <script type="module">
   const upload = document.getElementById("file-upload-limits");
-  const group = upload.querySelector('[data-xh-part="item-group"]');
+  const group = upload.querySelector('[data-xh-part="list"]');
   const rejected = document.getElementById("file-upload-limits-rejected");
 
   // 单条删除按钮的可及名字带上文件名，读屏才分得出删的是哪一条

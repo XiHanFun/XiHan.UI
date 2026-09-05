@@ -175,15 +175,15 @@ export const XhHeatmapRow = defineComponent({
 })
 
 /** 行首的星期名。不给行序即坐标轴那一行行首的占位，它只负责让月份与格子对齐。 */
-export const XhHeatmapWeekDayLabel = defineComponent({
-  name: 'XhHeatmapWeekDayLabel',
+export const XhHeatmapWeekDay = defineComponent({
+  name: 'XhHeatmapWeekDay',
   props: {
     value: { type: [Number, String] as PropType<number | string>, default: undefined },
   },
   setup(props, { slots }) {
     const ctx = useHeatmapContext()
     const weekDay = computed(() => numberOf(props.value))
-    return () => h('span', ctx.api.value.getWeekDayLabelProps({ weekDay: weekDay.value }) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getWeekDayProps({ weekDay: weekDay.value }) as Record<string, unknown>, slots.default?.())
   },
 })
 
@@ -324,11 +324,11 @@ function renderDefaultTree(
   // 月份行排在网格之外：它只是一条对齐用的坐标轴，进了网格就得冒充表格行
   const monthRow = h(XhHeatmapRow, null, () => [
     // 行首占位：与下面各行的星期名同宽，月份才对得上列
-    h(XhHeatmapWeekDayLabel),
+    h(XhHeatmapWeekDay),
     ...api.grid.months.map(month => h(XhHeatmapMonthLabel, { key: month.value, value: month.value }, () => month.label)),
   ])
   const weekRows = api.grid.rows.map(row => h(XhHeatmapRow, { key: row.weekDay, value: row.weekDay }, () => [
-    h(XhHeatmapWeekDayLabel, { value: row.weekDay }, () => api.grid.weekDays[row.weekDay]?.label ?? ''),
+    h(XhHeatmapWeekDay, { value: row.weekDay }, () => api.grid.weekDays[row.weekDay]?.label ?? ''),
     ...row.cells.map(cell => h(XhHeatmapCell, { key: cell.date, value: cell.date }, () => cellSlot?.(cell) ?? [])),
   ]))
   return [monthRow, h(XhHeatmapGrid, null, () => weekRows), ...tooltip, legend]
@@ -339,7 +339,7 @@ function renderMonthTree(grid: HeatmapMonthGrid, cellSlot?: (node: HeatmapCellSl
   const blocks = grid.blocks.map(block => h(XhHeatmapMonthBlock, { key: block.value, value: block.value }, () => [
     h(XhHeatmapMonthLabel, { value: block.value }, () => block.label),
     h(XhHeatmapRow, null, () => grid.weekDays.map(day =>
-      h(XhHeatmapWeekDayLabel, { key: day.weekDay, value: day.weekDay }, () => day.label))),
+      h(XhHeatmapWeekDay, { key: day.weekDay, value: day.weekDay }, () => day.label))),
     ...block.weeks.map(row => h(XhHeatmapRow, { key: row.week, value: row.week }, () =>
       row.cells.map(cell => h(XhHeatmapCell, { key: cell.date, value: cell.date }, () => cellSlot?.(cell) ?? [])))),
   ]))

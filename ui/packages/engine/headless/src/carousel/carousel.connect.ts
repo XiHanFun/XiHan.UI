@@ -192,8 +192,8 @@ export function connectCarousel<T extends PropTypes>(
       },
     }),
 
-    getItemGroupProps: () => normalize.element({
-      ...parts['item-group'].attrs,
+    getListProps: () => normalize.element({
+      ...parts.list.attrs,
       'data-orientation': orientation,
       // 供样式层在拖拽期间关掉过渡
       'data-dragging': dataAttr(dragging),

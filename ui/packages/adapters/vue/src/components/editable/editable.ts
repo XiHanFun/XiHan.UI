@@ -79,14 +79,6 @@ export const XhEditableLabel = defineComponent({
   },
 })
 
-export const XhEditableArea = defineComponent({
-  name: 'XhEditableArea',
-  setup(_, { slots }) {
-    const ctx = useEditableContext()
-    return () => h('div', ctx.api.value.getAreaProps() as Record<string, unknown>, slots.default?.())
-  },
-})
-
 export const XhEditablePreview = defineComponent({
   name: 'XhEditablePreview',
   setup(_, { slots }) {

@@ -5,10 +5,10 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick } from 'vue'
 import {
   XhSliderControl,
-  XhSliderMarks,
   XhSliderRange,
   XhSliderRoot,
   XhSliderThumb,
+  XhSliderTickGroup,
   XhSliderTrack,
 } from '../src'
 
@@ -41,7 +41,7 @@ async function mountSlider(props: Record<string, unknown>): Promise<void> {
       h(XhSliderRoot, { marks: MARKS, ...props }, () => [
         h(XhSliderControl, null, () => [
           h(XhSliderTrack, null, () => [h(XhSliderRange)]),
-          h(XhSliderMarks),
+          h(XhSliderTickGroup),
           h(XhSliderThumb, { index: 0 }),
         ]),
       ]),
@@ -68,7 +68,7 @@ function thumbValue(): string | null {
 describe('slider 刻度', () => {
   it('刻度点按百分比定位，落进已选区间的带 data-passed', async () => {
     await mountSlider({ defaultValue: [40] })
-    const dots = [...document.querySelectorAll<HTMLElement>('[data-scope="slider"][data-part="mark"]')]
+    const dots = [...document.querySelectorAll<HTMLElement>('[data-scope="slider"][data-part="tick"]')]
     expect(dots).toHaveLength(3)
     expect(dots[1]!.style.insetInlineStart).toBe('40%')
     expect(dots[0]!.hasAttribute('data-passed')).toBe(true)
@@ -78,7 +78,7 @@ describe('slider 刻度', () => {
 
   it('点刻度文案：最近的滑块跳到这一档', async () => {
     await mountSlider({ defaultValue: [0] })
-    const labels = [...document.querySelectorAll<HTMLElement>('[data-scope="slider"][data-part="mark-label"]')]
+    const labels = [...document.querySelectorAll<HTMLElement>('[data-scope="slider"][data-part="tick-label"]')]
     expect(labels.map(l => l.textContent)).toEqual(['零', '四十', '百'])
     labels[2]!.click()
     await tick()

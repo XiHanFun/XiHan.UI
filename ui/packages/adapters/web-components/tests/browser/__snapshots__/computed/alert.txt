@@ -70,7 +70,7 @@ outline-width: 3px
 outline-offset: 0px
 outline-color: oklch(0.439 0.006 258)
 
-[icon]
+[indicator]
 padding-top: 0px
 padding-right: 0px
 padding-bottom: 0px

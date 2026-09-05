@@ -1,0 +1,48 @@
+@layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='truncate'] {
+    --xh-truncate-skin: 1;
+  }
+
+  /* 单行：一行装不下就收成省略号。
+     行数由连接层写进这个盒子的内联 style，样式表这一行只是它缺席时的落点 */
+  [data-scope='truncate'][data-part='root'] {
+    --xh-_truncate-lines: 1;
+
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  /* 多行：按行数裁，裁掉的那一行末尾收省略号 */
+  [data-scope='truncate'][data-part='root'][data-multiline] {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: var(--xh-_truncate-lines);
+    white-space: normal;
+    /* 一长串没有断点的字符（网址、编号）也得断开，否则它一路撑出去，裁不住 */
+    overflow-wrap: break-word;
+  }
+
+  /* 铺开：裁剪整个撤掉。写在两档之后，压得住上面同权重的那两条 */
+  [data-scope='truncate'][data-part='root'][data-state='open'] {
+    display: block;
+    overflow: visible;
+    white-space: normal;
+  }
+
+  /* 真被裁了才是那颗按钮：装得下的短文本按下去什么都不变，摆出手型等于许一个按不动的按钮。
+     铺开态另收一条——那一档量不出"被裁"，但收回去的入口必须留着 */
+  [data-scope='truncate'][data-part='root'][data-expandable][data-overflowing],
+  [data-scope='truncate'][data-part='root'][data-expandable][data-state='open'] {
+    cursor: pointer;
+  }
+
+  /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
+     写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
+  [data-scope='truncate'][data-part='root'][hidden] {
+    display: none;
+  }
+}

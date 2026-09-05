@@ -57,7 +57,7 @@ export interface ListboxItemProps {
 }
 
 /** 分组属性，分组标题的 id 由它派生。 */
-export interface ListboxItemGroupProps {
+export interface ListboxGroupProps {
   value: string
 }
 
@@ -140,8 +140,8 @@ export interface ListboxApi<T extends PropTypes = PropTypes> {
   getRootProps: () => T['element']
   getLabelProps: () => T['element']
   getContentProps: () => T['element']
-  getItemGroupProps: (props: ListboxItemGroupProps) => T['element']
-  getItemGroupLabelProps: (props: ListboxItemGroupProps) => T['element']
+  getGroupProps: (props: ListboxGroupProps) => T['element']
+  getGroupLabelProps: (props: ListboxGroupProps) => T['element']
   getItemProps: (props: ListboxItemProps) => T['element']
   getItemTextProps: (props: ListboxItemProps) => T['element']
   getItemIndicatorProps: (props: ListboxItemProps) => T['element']

@@ -86,21 +86,21 @@
     -webkit-text-fill-color: var(--xh-clipboard-input-autofill-fg, var(--xh-fg-default));
   }
 
-  [data-scope='clipboard'][data-part='trigger'] {
+  [data-scope='clipboard'][data-part='copy-trigger'] {
     display: inline-flex;
     flex: none;
     align-items: center;
     justify-content: center;
-    gap: var(--xh-clipboard-trigger-gap, var(--xh-control-gap-sm));
-    block-size: var(--xh-clipboard-trigger-h, var(--xh-control-h-md));
-    padding-inline: var(--xh-clipboard-trigger-px, var(--xh-control-px-md));
+    gap: var(--xh-clipboard-copy-trigger-gap, var(--xh-control-gap-sm));
+    block-size: var(--xh-clipboard-copy-trigger-h, var(--xh-control-h-md));
+    padding-inline: var(--xh-clipboard-copy-trigger-px, var(--xh-control-px-md));
     padding-block: 0;
-    border: var(--xh-stroke-thin) solid var(--xh-clipboard-trigger-border, var(--xh-border-control));
-    border-radius: var(--xh-clipboard-trigger-radius, var(--xh-shape-control));
-    background: var(--xh-clipboard-trigger-bg, var(--xh-bg-canvas));
-    color: var(--xh-clipboard-trigger-fg, var(--xh-fg-default));
+    border: var(--xh-stroke-thin) solid var(--xh-clipboard-copy-trigger-border, var(--xh-border-control));
+    border-radius: var(--xh-clipboard-copy-trigger-radius, var(--xh-shape-control));
+    background: var(--xh-clipboard-copy-trigger-bg, var(--xh-bg-canvas));
+    color: var(--xh-clipboard-copy-trigger-fg, var(--xh-fg-default));
     font-family: inherit;
-    font-size: var(--xh-clipboard-trigger-font-size, var(--xh-text-body-size));
+    font-size: var(--xh-clipboard-copy-trigger-font-size, var(--xh-text-body-size));
     line-height: var(--xh-leading-none);
     white-space: nowrap;
     cursor: pointer;
@@ -115,31 +115,31 @@
   }
 
   /* 上面给了 display，UA 的 [hidden]{display:none} 已被盖掉，这里补回来 */
-  [data-scope='clipboard'][data-part='trigger'][hidden] {
+  [data-scope='clipboard'][data-part='copy-trigger'][hidden] {
     display: none;
   }
 
   /* 换底、换描边之外再抬起一档：这是一块实心的可点面，指针停上去它从输入框那一行浮出来 */
-  [data-scope='clipboard'][data-part='trigger']:hover {
-    border-color: var(--xh-clipboard-trigger-border-hover, var(--xh-border-control-hover));
-    background: var(--xh-clipboard-trigger-bg-hover, var(--xh-bg-subtle-hover));
-    box-shadow: var(--xh-clipboard-trigger-shadow-hover, var(--xh-elevation-raised));
+  [data-scope='clipboard'][data-part='copy-trigger']:hover {
+    border-color: var(--xh-clipboard-copy-trigger-border-hover, var(--xh-border-control-hover));
+    background: var(--xh-clipboard-copy-trigger-bg-hover, var(--xh-bg-subtle-hover));
+    box-shadow: var(--xh-clipboard-copy-trigger-shadow-hover, var(--xh-elevation-raised));
   }
 
   /* 换底之外再压一档：复制钮按下时缩放 */
-  [data-scope='clipboard'][data-part='trigger']:active {
-    background: var(--xh-clipboard-trigger-bg-active, var(--xh-bg-subtle-active));
+  [data-scope='clipboard'][data-part='copy-trigger']:active {
+    background: var(--xh-clipboard-copy-trigger-bg-active, var(--xh-bg-subtle-active));
     scale: var(--xh-motion-scale-press);
   }
 
   /* 写入在途：指针换成 progress，同时在按钮里转一枚圆环。
      不压透明度：那既没有令牌也没有覆盖槽，深色档下压出来的灰还会掉到读不清；
      圆环与下载键那一档同形，在途在全库读起来是同一件事 */
-  [data-scope='clipboard'][data-part='trigger'][data-state='copying'] {
+  [data-scope='clipboard'][data-part='copy-trigger'][data-state='copying'] {
     cursor: progress;
   }
 
-  [data-scope='clipboard'][data-part='trigger'][data-state='copying']::before {
+  [data-scope='clipboard'][data-part='copy-trigger'][data-state='copying']::before {
     content: '';
     flex: none;
     inline-size: 1em;
@@ -153,23 +153,23 @@
   /* 减少动效：圆环停下并整圈换成虚线，静止的形状仍然读得出"还没好"。
      两条规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
   @media (prefers-reduced-motion: reduce) {
-    [data-scope='clipboard'][data-part='trigger'][data-state='copying']::before {
+    [data-scope='clipboard'][data-part='copy-trigger'][data-state='copying']::before {
       border-style: dotted;
       border-color: currentColor;
       animation: none;
     }
   }
 
-  :where([data-motion='reduce']) [data-scope='clipboard'][data-part='trigger'][data-state='copying']::before {
+  :where([data-motion='reduce']) [data-scope='clipboard'][data-part='copy-trigger'][data-state='copying']::before {
     border-style: dotted;
     border-color: currentColor;
     animation: none;
   }
 
   /* 复制成功那一段换成成功色，撑住"这次真的写进去了"这句话 */
-  [data-scope='clipboard'][data-part='trigger'][data-copied] {
-    border-color: var(--xh-clipboard-trigger-border-copied, var(--xh-fg-success));
-    color: var(--xh-clipboard-trigger-fg-copied, var(--xh-fg-success));
+  [data-scope='clipboard'][data-part='copy-trigger'][data-copied] {
+    border-color: var(--xh-clipboard-copy-trigger-border-copied, var(--xh-fg-success));
+    color: var(--xh-clipboard-copy-trigger-fg-copied, var(--xh-fg-success));
   }
 
   [data-scope='clipboard'][data-part='indicator'] {

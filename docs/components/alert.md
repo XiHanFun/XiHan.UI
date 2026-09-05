@@ -55,7 +55,7 @@ icon 部件排在标题前面，颜色取当前语气的强调色；内容由作
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-alert>` |
-| Vue 组件 | `XhAlertCloseTrigger` `XhAlertDescription` `XhAlertIcon` `XhAlertRoot` `XhAlertTitle` |
+| Vue 组件 | `XhAlertCloseTrigger` `XhAlertDescription` `XhAlertIndicator` `XhAlertRoot` `XhAlertTitle` |
 | 状态机 | `alertMachine` |
 | 皮肤 | `@xihan-ui/styles/alert.css` |
 
@@ -63,7 +63,7 @@ icon 部件排在标题前面，颜色取当前语气的强调色；内容由作
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="alert"`：**`root`** · `icon` · `title` · `description` · `close-trigger`
+`data-scope="alert"`：**`root`** · `indicator` · `title` · `description` · `close-trigger`
 
 ## Props
 
@@ -111,7 +111,7 @@ icon 部件排在标题前面，颜色取当前语气的强调色；内容由作
 | `closable` | `boolean` |  |
 | `setOpen` | `(next: boolean) => void` |  |
 | `getRootProps` | `() => T['element']` |  |
-| `getIconProps` | `() => T['element']` |  |
+| `getIndicatorProps` | `() => T['element']` |  |
 | `getTitleProps` | `() => T['element']` |  |
 | `getDescriptionProps` | `() => T['element']` |  |
 | `getCloseTriggerProps` | `() => T['button']` |  |
@@ -135,7 +135,7 @@ icon 部件排在标题前面，颜色取当前语气的强调色；内容由作
 | `root` | `aria-labelledby` | `title` 部件的 id |
 | `root` | `aria-live` | live |
 | `root` | `role` | role |
-| `icon` | `aria-hidden` | 'true' |
+| `indicator` | `aria-hidden` | 'true' |
 | `close-trigger` | `aria-label` | props.translations.close |
 
 ## 样式
@@ -156,7 +156,7 @@ icon 部件排在标题前面，颜色取当前语气的强调色；内容由作
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-alert-bg` · `--xh-alert-border` · `--xh-alert-close-bg-active` · `--xh-alert-close-bg-hover` · `--xh-alert-close-fg` · `--xh-alert-close-fg-hover` · `--xh-alert-close-radius` · `--xh-alert-close-size` · `--xh-alert-description-fg` · `--xh-alert-description-font-size` · `--xh-alert-fg` · `--xh-alert-font-size` · `--xh-alert-gap` · `--xh-alert-icon-box` · `--xh-alert-icon-fg` · `--xh-alert-icon-size` · `--xh-alert-leading` · `--xh-alert-px` · `--xh-alert-py` · `--xh-alert-radius` · `--xh-alert-title-fg` · `--xh-alert-title-font-size` · `--xh-alert-title-font-weight` · `--xh-alert-title-leading`
+`--xh-alert-bg` · `--xh-alert-border` · `--xh-alert-close-bg-active` · `--xh-alert-close-bg-hover` · `--xh-alert-close-fg` · `--xh-alert-close-fg-hover` · `--xh-alert-close-radius` · `--xh-alert-close-size` · `--xh-alert-description-fg` · `--xh-alert-description-font-size` · `--xh-alert-fg` · `--xh-alert-font-size` · `--xh-alert-gap` · `--xh-alert-icon-size` · `--xh-alert-indicator-box` · `--xh-alert-indicator-fg` · `--xh-alert-leading` · `--xh-alert-px` · `--xh-alert-py` · `--xh-alert-radius` · `--xh-alert-title-fg` · `--xh-alert-title-font-size` · `--xh-alert-title-font-weight` · `--xh-alert-title-leading`
 
 ## 动效
 

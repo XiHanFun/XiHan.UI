@@ -6,7 +6,7 @@ import {
   XhSignaturePadGuide,
   XhSignaturePadLabel,
   XhSignaturePadRoot,
-  XhSignaturePadSegment,
+  XhSignaturePadPath,
 } from "@xihan-ui/vue";
 </script>
 
@@ -16,7 +16,7 @@ import {
       <XhSignaturePadLabel>只读</XhSignaturePadLabel>
       <XhSignaturePadControl>
         <XhSignaturePadGuide />
-        <XhSignaturePadSegment />
+        <XhSignaturePadPath />
       </XhSignaturePadControl>
       <XhSignaturePadClearTrigger>清空</XhSignaturePadClearTrigger>
     </XhSignaturePadRoot>
@@ -24,7 +24,7 @@ import {
       <XhSignaturePadLabel>禁用</XhSignaturePadLabel>
       <XhSignaturePadControl>
         <XhSignaturePadGuide />
-        <XhSignaturePadSegment />
+        <XhSignaturePadPath />
       </XhSignaturePadControl>
       <XhSignaturePadClearTrigger>清空</XhSignaturePadClearTrigger>
     </XhSignaturePadRoot>

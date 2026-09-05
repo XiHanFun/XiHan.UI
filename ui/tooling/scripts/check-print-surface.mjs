@@ -30,8 +30,8 @@ const AUTO_PARTS = ['positioner', 'backdrop']
 const REGISTERED = {
   'scrollbar.css': ['root', 'corner'],
   'back-top.css': ['root'],
-  'log.css': ['scroll-button'],
-  'message-feed.css': ['scroll-button'],
+  'log.css': ['scroll-to-end-trigger'],
+  'message-feed.css': ['scroll-to-end-trigger'],
   // 钉在视口上的那几处：纸上没有视口，它们会印在页面某处盖住正文
   'float-button.css': ['root'],
   'loading-bar.css': ['root'],

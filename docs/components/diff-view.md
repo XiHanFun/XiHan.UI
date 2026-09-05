@@ -24,7 +24,7 @@
 - `contextLines` 把 hunk 内远离变更的连续上下文折成一格，点开即展开。
   展开集合可受控，好让「全部展开」这类操作统一持有。
 - `wrap` 让长行原地折行，卡片不再横向滚动；窄栏与并排视图下尤其有用。
-- 头部自带增删统计位 `stat`，增删各一个，数字取自模型、着色跟着变更类型走。
+- 头部自带增删统计位 `summary`，增删各一个，数字取自模型、着色跟着变更类型走。
 - `maxLines` 是必须有的上限：AI 会吐超大文件，新旧两侧各自超出即从尾部砍掉。
   砍掉几行由模型带出来，`truncation` 提示条把这个数说给读的人。
 - 行号与列号一律从模型算，**绝不从 DOM 反推**。
@@ -60,7 +60,7 @@
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-diff-view>` |
-| Vue 组件 | `XhDiffViewBody` `XhDiffViewEmpty` `XhDiffViewHeader` `XhDiffViewRoot` `XhDiffViewStat` `XhDiffViewTruncation` `XhDiffViewViewport` |
+| Vue 组件 | `XhDiffViewBody` `XhDiffViewEmpty` `XhDiffViewHeader` `XhDiffViewRoot` `XhDiffViewSummary` `XhDiffViewTruncation` `XhDiffViewViewport` |
 | 组合式函数 | `useDiffView` |
 | 状态机 | `diffViewMachine` |
 | 皮肤 | `@xihan-ui/styles/diff-view.css` |
@@ -69,7 +69,7 @@
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="diff-view"`：**`root`** · `header` · `stat` · **`viewport`** · **`body`** · `row` · `line-number` · `line-content` · `change-label` · `segment` · `token` · `gap` · `gap-cell` · `gap-trigger` · `empty` · `truncation`
+`data-scope="diff-view"`：**`root`** · `header` · `summary` · **`viewport`** · **`body`** · `row` · `line-number` · `line-content` · `change-label` · `inline-change` · `token` · `gap` · `gap-cell` · `gap-trigger` · `empty` · `truncation`
 
 ## Props
 
@@ -100,7 +100,7 @@
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhDiffViewRoot` | `default` | `DiffViewRootSlotProps` |  |
-| `XhDiffViewStat` | `default` | `{ count: number }` |  |
+| `XhDiffViewSummary` | `default` | `{ count: number }` |  |
 | `XhDiffViewTruncation` | `default` | `{ count: number }` |  |
 
 ## 状态
@@ -131,14 +131,14 @@
 | `toggleGap` | `(id: string) => void` |  |
 | `getRootProps` | `() => T['element']` |  |
 | `getHeaderProps` | `() => T['element']` |  |
-| `getStatProps` | `(props: { change: DiffChange }) => T['element']` | 头部右侧的增删统计位，增删各一个。 |
+| `getSummaryProps` | `(props: { change: DiffChange }) => T['element']` | 头部右侧的增删统计位，增删各一个。 |
 | `getViewportProps` | `() => T['element']` |  |
 | `getBodyProps` | `() => T['element']` |  |
 | `getRowProps` | `(props: DiffViewRowProps) => T['element']` |  |
 | `getLineNumberProps` | `(props: DiffViewCellProps) => T['element']` |  |
 | `getLineContentProps` | `(props: DiffViewCellProps) => T['element']` |  |
 | `getChangeLabelProps` | `(props: { change: DiffChange }) => T['element']` |  |
-| `getSegmentProps` | `(props: DiffViewSegmentProps) => T['element']` |  |
+| `getInlineChangeProps` | `(props: DiffViewInlineChangeProps) => T['element']` |  |
 | `getTokenProps` | `(token: CodeToken) => T['element']` |  |
 | `getGapProps` | `(props: DiffViewGapProps) => T['element']` |  |
 | `getGapCellProps` | `() => T['element']` |  |
@@ -204,7 +204,7 @@
 | `root` | `data-truncated` | ''（条件成立时才出现） |
 | `root` | `data-view` | props.view |
 | `root` | `data-wrap` | ''（条件成立时才出现） |
-| `stat` | `data-change` | change |
+| `summary` | `data-change` | change |
 | `row` | `data-change` | lineAt(rowIndex)?.change |
 | `row` | `data-revealed` | ''（条件成立时才出现） |
 | `line-number` | `data-change` | lineAt(rowIndex)?.change |
@@ -214,7 +214,7 @@
 | `line-content` | `data-empty` | ''（条件成立时才出现） |
 | `line-content` | `data-side` | side |
 | `change-label` | `data-change` | change |
-| `segment` | `data-change` | lineAt(rowIndex)?.change \| undefined |
+| `inline-change` | `data-change` | lineAt(rowIndex)?.change \| undefined |
 | `token` | `data-kind` | token.kind |
 | `gap` | `data-expanded` | ''（条件成立时才出现） |
 | `gap` | `data-value` | hunkIndex:0 |
@@ -224,7 +224,7 @@
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-diff-view-added-bg` · `--xh-diff-view-added-fg` · `--xh-diff-view-bg` · `--xh-diff-view-border` · `--xh-diff-view-change-bar` · `--xh-diff-view-comment-fg` · `--xh-diff-view-empty-bg` · `--xh-diff-view-empty-fg` · `--xh-diff-view-font` · `--xh-diff-view-font-size` · `--xh-diff-view-gap-bg` · `--xh-diff-view-gap-bg-hover` · `--xh-diff-view-gap-fg` · `--xh-diff-view-gutter` · `--xh-diff-view-header-fg` · `--xh-diff-view-header-font-size` · `--xh-diff-view-header-gap` · `--xh-diff-view-icon-size` · `--xh-diff-view-keyword-fg` · `--xh-diff-view-keyword-weight` · `--xh-diff-view-line-height` · `--xh-diff-view-max-h` · `--xh-diff-view-number-fg` · `--xh-diff-view-number-token-fg` · `--xh-diff-view-punctuation-fg` · `--xh-diff-view-px` · `--xh-diff-view-py` · `--xh-diff-view-radius` · `--xh-diff-view-removed-bg` · `--xh-diff-view-removed-fg` · `--xh-diff-view-segment-radius` · `--xh-diff-view-shadow` · `--xh-diff-view-string-fg` · `--xh-diff-view-truncation-bg` · `--xh-diff-view-truncation-border` · `--xh-diff-view-truncation-fg` · `--xh-diff-view-truncation-gap`
+`--xh-diff-view-added-bg` · `--xh-diff-view-added-fg` · `--xh-diff-view-bg` · `--xh-diff-view-border` · `--xh-diff-view-change-bar` · `--xh-diff-view-comment-fg` · `--xh-diff-view-empty-bg` · `--xh-diff-view-empty-fg` · `--xh-diff-view-font` · `--xh-diff-view-font-size` · `--xh-diff-view-gap-bg` · `--xh-diff-view-gap-bg-hover` · `--xh-diff-view-gap-fg` · `--xh-diff-view-gutter` · `--xh-diff-view-header-fg` · `--xh-diff-view-header-font-size` · `--xh-diff-view-header-gap` · `--xh-diff-view-icon-size` · `--xh-diff-view-inline-change-radius` · `--xh-diff-view-keyword-fg` · `--xh-diff-view-keyword-weight` · `--xh-diff-view-line-height` · `--xh-diff-view-max-h` · `--xh-diff-view-number-fg` · `--xh-diff-view-number-token-fg` · `--xh-diff-view-punctuation-fg` · `--xh-diff-view-px` · `--xh-diff-view-py` · `--xh-diff-view-radius` · `--xh-diff-view-removed-bg` · `--xh-diff-view-removed-fg` · `--xh-diff-view-shadow` · `--xh-diff-view-string-fg` · `--xh-diff-view-truncation-bg` · `--xh-diff-view-truncation-border` · `--xh-diff-view-truncation-fg` · `--xh-diff-view-truncation-gap`
 
 ## 动效
 

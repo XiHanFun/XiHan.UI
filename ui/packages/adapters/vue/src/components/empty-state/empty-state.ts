@@ -1,4 +1,4 @@
-import type { EmptyStateLive, EmptyStateProps } from '@xihan-ui/headless'
+import type { EmptyStateLive, EmptyStateProps, EmptyStateStatus } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -11,6 +11,7 @@ export const XhEmptyStateRoot = defineComponent({
   props: {
     size: { type: String as PropType<'sm' | 'md' | 'lg'>, default: undefined },
     live: { type: String as PropType<EmptyStateLive>, default: undefined },
+    status: { type: String as PropType<EmptyStateStatus>, default: undefined },
   },
   setup(props, { slots }) {
     const ctx = useEmptyState(withXhConfig('empty-state', props as EmptyStateProps))
@@ -20,11 +21,11 @@ export const XhEmptyStateRoot = defineComponent({
 })
 
 // 装饰性图标容器，内容由作者塞（字形、内联 svg 都行）
-export const XhEmptyStateIcon = defineComponent({
-  name: 'XhEmptyStateIcon',
+export const XhEmptyStateIndicator = defineComponent({
+  name: 'XhEmptyStateIndicator',
   setup(_, { slots }) {
     const ctx = useEmptyStateContext()
-    return () => h('span', ctx.api.value.getIconProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getIndicatorProps() as Record<string, unknown>, slots.default?.())
   },
 })
 

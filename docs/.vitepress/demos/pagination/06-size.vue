@@ -1,7 +1,7 @@
 <!-- 尺寸 | size 一档换掉页码格子的高度、内边距与字号，上一页 / 下一页与省略号一并跟着变 -->
 <script setup lang="ts">
 import {
-  XhPaginationEllipsis,
+  XhPaginationEllipsisTrigger,
   XhPaginationItem,
   XhPaginationNextTrigger,
   XhPaginationPrevTrigger,
@@ -32,7 +32,7 @@ const sizes = [
       >
         <XhPaginationPrevTrigger />
         <template v-for="(p, i) in pages" :key="`${p}-${i}`">
-          <XhPaginationEllipsis v-if="p === 'ellipsis'">…</XhPaginationEllipsis>
+          <XhPaginationEllipsisTrigger v-if="p === 'ellipsis'">…</XhPaginationEllipsisTrigger>
           <XhPaginationItem v-else :value="p">{{ p }}</XhPaginationItem>
         </template>
         <XhPaginationNextTrigger />

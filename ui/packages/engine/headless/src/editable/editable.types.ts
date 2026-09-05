@@ -158,7 +158,6 @@ export interface EditableApi<T extends PropTypes = PropTypes> {
   cancel: () => void
   getRootProps: () => T['element']
   getLabelProps: () => T['label']
-  getAreaProps: () => T['element']
   getPreviewProps: () => T['element']
   getInputProps: () => T['input']
   getEditTriggerProps: () => T['button']

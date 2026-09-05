@@ -203,8 +203,8 @@ export function connectDiffView<T extends PropTypes>(
     }),
 
     // 增删各一个：数字由适配器从 stats 取，皮肤按 data-change 上色
-    getStatProps: ({ change }) => normalize.element({
-      ...parts.stat.attrs,
+    getSummaryProps: ({ change }) => normalize.element({
+      ...parts.summary.attrs,
       'data-change': change,
     }),
 
@@ -258,8 +258,8 @@ export function connectDiffView<T extends PropTypes>(
     }),
 
     // 只有变更处的那几段发 data-change，未变的段落是纯包裹、不着色
-    getSegmentProps: ({ rowIndex, changed }) => normalize.element({
-      ...parts.segment.attrs,
+    getInlineChangeProps: ({ rowIndex, changed }) => normalize.element({
+      ...parts['inline-change'].attrs,
       'data-change': changed ? lineAt(rowIndex)?.change : undefined,
     }),
 

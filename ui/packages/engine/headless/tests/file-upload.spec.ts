@@ -100,7 +100,7 @@ function mount(props: Props = {}): Mounted {
     applyProps(dropzone, api.getDropzoneProps() as Record<string, unknown>, bound(dropzone))
     applyProps(trigger, api.getTriggerProps() as Record<string, unknown>, bound(trigger))
     applyProps(hidden, api.getHiddenInputProps() as Record<string, unknown>, bound(hidden))
-    applyProps(group, api.getItemGroupProps() as Record<string, unknown>, bound(group))
+    applyProps(group, api.getListProps() as Record<string, unknown>, bound(group))
     applyProps(clear, api.getClearTriggerProps() as Record<string, unknown>, bound(clear))
 
     // 条目随列表重建（与 WC 宿主由作者按 acceptedFiles 渲染同语义）

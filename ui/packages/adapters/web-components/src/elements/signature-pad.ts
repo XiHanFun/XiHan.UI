@@ -12,10 +12,10 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
- * `<xh-signature-pad>` —— Light-DOM 行为宿主：作者写 root / control / segment 三个必需角色节点
+ * `<xh-signature-pad>` —— Light-DOM 行为宿主：作者写 root / control / path 三个必需角色节点
  * （可再写 label、guide、clear-trigger 与 hidden-input），元素跑 signature-pad 机器并把 connect 产出打上去。
  *
- * control 必须是 `<svg>`，guide 是它里面的 `<line>`、segment 是它里面的 `<path>`：
+ * control 必须是 `<svg>`，guide 是它里面的 `<line>`、path 是它里面的 `<path>`：
  * 笔迹是一条填充轮廓，粗细随压感变，描边给不出这个效果。viewBox 由元素按第一笔落下时
  * 量到的画布尺寸写上去，作者不要自己写。
  *
@@ -36,7 +36,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart label - 画布标题（aria-labelledby 目标）
  * @csspart control - role=img 的画布，必须是 `<svg>`，指针落笔全在它身上
  * @csspart guide - 基准线，必须是 control 里的 `<line>`；落位由连接层按百分比给出
- * @csspart segment - 全部笔迹，必须是 control 里的 `<path>`；每一笔是它的一条子路径
+ * @csspart path - 全部笔迹，必须是 control 里的 `<path>`；每一笔是它的一条子路径
  * @csspart clear-trigger - 清空按钮，必须是原生 `<button>`
  * @csspart status - 签没签的活区域（role=status）；节点里没写字时由元素填内建文案
  * @csspart hidden-input - 表单影子输入（必须是原生 input），提交的是一份独立 SVG 文档
@@ -151,7 +151,7 @@ export class XhSignaturePadElement extends XhElement {
     put('label', api.getLabelProps() as Record<string, unknown>)
     put('control', api.getControlProps() as Record<string, unknown>)
     put('guide', api.getGuideProps() as Record<string, unknown>)
-    put('segment', api.getSegmentProps() as Record<string, unknown>)
+    put('path', api.getPathProps() as Record<string, unknown>)
     put('clear-trigger', api.getClearTriggerProps() as Record<string, unknown>)
     put('status', api.getStatusProps() as Record<string, unknown>)
     put('hidden-input', api.getHiddenInputProps() as Record<string, unknown>)

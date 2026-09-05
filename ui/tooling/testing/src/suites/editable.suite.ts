@@ -85,16 +85,11 @@ export const editableSuite: ConformanceSuite = {
       // 标签与输入框都写成原生标签：for 指向不可标注的元素时这条关联当场作废
       { part: 'label', tag: 'label', text: '昵称' },
       {
-        part: 'area',
+        part: 'control',
         children: [
           // preview 刻意不写内容：显示什么由适配器填，两侧必须填出同一个东西
           { part: 'preview', tag: 'span' },
           { part: 'input', tag: 'input' },
-        ],
-      },
-      {
-        part: 'control',
-        children: [
           { part: 'edit-trigger', tag: 'button', text: '编辑' },
           { part: 'submit-trigger', tag: 'button', text: '保存' },
           { part: 'cancel-trigger', tag: 'button', text: '取消' },
@@ -108,7 +103,7 @@ export const editableSuite: ConformanceSuite = {
       spec: { apg: APG },
       props: { defaultValue: '阿旺', placeholder: '未填写' },
       initial: {
-        order: ['root', 'label', 'area', 'preview', 'input', 'control', 'edit-trigger', 'submit-trigger', 'cancel-trigger'],
+        order: ['root', 'label', 'control', 'preview', 'input', 'edit-trigger', 'submit-trigger', 'cancel-trigger'],
         parts: {
           'root': {
             'role': 'group',

@@ -49,7 +49,7 @@ export interface AlertApi<T extends PropTypes = PropTypes> {
   closable: boolean
   setOpen: (next: boolean) => void
   getRootProps: () => T['element']
-  getIconProps: () => T['element']
+  getIndicatorProps: () => T['element']
   getTitleProps: () => T['element']
   getDescriptionProps: () => T['element']
   getCloseTriggerProps: () => T['button']

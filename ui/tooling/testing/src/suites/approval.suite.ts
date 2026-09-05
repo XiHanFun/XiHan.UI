@@ -10,11 +10,11 @@ function scope(value: string, label: string, required?: boolean): FixtureNode {
   if (required)
     attrs['scope-required'] = ''
   return {
-    part: 'scope-item',
+    part: 'item',
     attrs,
     children: [
-      { part: 'scope-indicator', attrs: { 'scope-value': value } },
-      { part: 'scope-label', attrs: { 'scope-value': value }, text: label },
+      { part: 'item-indicator', attrs: { 'scope-value': value } },
+      { part: 'item-text', attrs: { 'scope-value': value }, text: label },
     ],
   }
 }
@@ -31,7 +31,7 @@ export const approvalSuite: ConformanceSuite = {
       { part: 'description', tag: 'p', text: '它想改 src/index.ts。' },
       { part: 'live-region' },
       {
-        part: 'scope-group',
+        part: 'group',
         children: [scope('read', '读文件', true), scope('write', '写文件')],
       },
       { part: 'timer' },
@@ -45,13 +45,13 @@ export const approvalSuite: ConformanceSuite = {
       spec: { apg: APG },
       props: { scopes: [{ value: 'read', required: true }, { value: 'write' }] },
       initial: {
-        counts: { 'root': 1, 'approve-trigger': 1, 'deny-trigger': 1, 'scope-item': 2 },
+        counts: { 'root': 1, 'approve-trigger': 1, 'deny-trigger': 1, 'item': 2 },
         parts: {
           'root': { 'role': 'group', 'data-state': 'pending', 'data-loading': null },
           // 待决时用 aria-disabled 而不是原生 disabled：保住可聚焦、让读屏念得到为什么按不动
           'approve-trigger': { 'type': 'button', 'aria-disabled': 'true', 'disabled': null },
           'deny-trigger': { type: 'button', disabled: null },
-          'scope-item': [
+          'item': [
             { 'role': 'checkbox', 'aria-checked': 'false', 'aria-required': 'true', 'tabindex': '0' },
             { 'role': 'checkbox', 'aria-checked': 'false', 'aria-required': 'false', 'tabindex': '0' },
           ],
@@ -70,10 +70,10 @@ export const approvalSuite: ConformanceSuite = {
       steps: [
         {
           kind: 'click',
-          part: 'scope-item[0]',
+          part: 'item[0]',
           expect: {
             parts: {
-              'scope-item': [{ 'aria-checked': 'true' }, { 'aria-checked': 'false' }],
+              'item': [{ 'aria-checked': 'true' }, { 'aria-checked': 'false' }],
               'approve-trigger': { 'aria-disabled': 'false' },
             },
             events: [{ type: 'granted-scopes-change', detail: { value: ['read'] } }],
@@ -95,7 +95,7 @@ export const approvalSuite: ConformanceSuite = {
       covers: ['approval.kbd.scope-toggle'],
       props: { scopes: [{ value: 'read' }] },
       steps: [
-        { kind: 'focus', part: 'scope-item[0]' },
+        { kind: 'focus', part: 'item[0]' },
         { kind: 'key', key: 'Enter', expect: { events: [] } },
         {
           kind: 'key',

@@ -5,7 +5,7 @@ import {
   XhFileUploadHiddenInput,
   XhFileUploadItem,
   XhFileUploadItemDeleteTrigger,
-  XhFileUploadItemGroup,
+  XhFileUploadList,
   XhFileUploadItemName,
   XhFileUploadItemSizeText,
   XhFileUploadLabel,
@@ -28,13 +28,13 @@ const noLimit = Number.POSITIVE_INFINITY;
       </div>
       <XhFileUploadHiddenInput />
       <span v-if="!empty">共 {{ acceptedFiles.length }} 个文件</span>
-      <XhFileUploadItemGroup style="max-block-size: 220px; overflow: auto">
+      <XhFileUploadList style="max-block-size: 220px; overflow: auto">
         <XhFileUploadItem v-for="file in acceptedFiles" :key="file" :file="file">
           <XhFileUploadItemName />
           <XhFileUploadItemSizeText />
           <XhFileUploadItemDeleteTrigger />
         </XhFileUploadItem>
-      </XhFileUploadItemGroup>
+      </XhFileUploadList>
     </XhFileUploadRoot>
   </div>
 </template>

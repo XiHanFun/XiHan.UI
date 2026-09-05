@@ -56,7 +56,7 @@
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-question-flow>` |
-| Vue 组件 | `XhQuestionFlowCounter` `XhQuestionFlowFooter` `XhQuestionFlowLiveRegion` `XhQuestionFlowNextTrigger` `XhQuestionFlowNote` `XhQuestionFlowOption` `XhQuestionFlowOptionGroup` `XhQuestionFlowOptionIndicator` `XhQuestionFlowOptionLabel` `XhQuestionFlowPrevTrigger` `XhQuestionFlowPrompt` `XhQuestionFlowQuestion` `XhQuestionFlowResult` `XhQuestionFlowRoot` `XhQuestionFlowSkipTrigger` `XhQuestionFlowSubmitTrigger` `XhQuestionFlowTrack` `XhQuestionFlowViewport` |
+| Vue 组件 | `XhQuestionFlowCounter` `XhQuestionFlowFooter` `XhQuestionFlowGroup` `XhQuestionFlowItem` `XhQuestionFlowItemIndicator` `XhQuestionFlowItemText` `XhQuestionFlowLiveRegion` `XhQuestionFlowNextTrigger` `XhQuestionFlowNote` `XhQuestionFlowPrevTrigger` `XhQuestionFlowPrompt` `XhQuestionFlowQuestion` `XhQuestionFlowResult` `XhQuestionFlowRoot` `XhQuestionFlowSkipTrigger` `XhQuestionFlowSubmitTrigger` `XhQuestionFlowTrack` `XhQuestionFlowViewport` |
 | 组合式函数 | `useQuestionFlow` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/question-flow.css` |
@@ -65,7 +65,7 @@
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="question-flow"`：**`root`** · `viewport` · **`track`** · **`question`** · `prompt` · `option-group` · `option` · `option-indicator` · `option-label` · `note` · `footer` · `prev-trigger` · `counter` · `next-trigger` · `skip-trigger` · **`submit-trigger`** · `result` · `live-region`
+`data-scope="question-flow"`：**`root`** · `viewport` · **`track`** · **`question`** · `prompt` · `group` · `item` · `item-indicator` · `item-text` · `note` · `footer` · `prev-trigger` · `counter` · `next-trigger` · `skip-trigger` · **`submit-trigger`** · `result` · `live-region`
 
 ## Props
 
@@ -112,7 +112,7 @@
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
-| `XhQuestionFlowOption` | `default` | `QuestionFlowOptionSlotProps` |  |
+| `XhQuestionFlowItem` | `default` | `QuestionFlowOptionSlotProps` |  |
 | `XhQuestionFlowRoot` | `default` | `QuestionFlowRootSlotProps` |  |
 
 ## 状态
@@ -122,9 +122,9 @@
 | 部件 | 取值 |
 | --- | --- |
 | `root` | state.get() |
-| `option` | 'checked' \| 'unchecked' |
-| `option-indicator` | 'checked' \| 'unchecked' |
-| `option-label` | 'checked' \| 'unchecked' |
+| `item` | 'checked' \| 'unchecked' |
+| `item-indicator` | 'checked' \| 'unchecked' |
+| `item-text` | 'checked' \| 'unchecked' |
 | `result` | state.get() |
 
 状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
@@ -169,10 +169,10 @@
 | `getTrackProps` | `() => T['element']` |  |
 | `getQuestionProps` | `(props: QuestionFlowQuestionProps) => T['element']` |  |
 | `getPromptProps` | `(props: QuestionFlowQuestionProps) => T['element']` |  |
-| `getOptionGroupProps` | `(props: QuestionFlowQuestionProps) => T['element']` |  |
-| `getOptionProps` | `(props: QuestionFlowOptionProps) => T['button']` |  |
-| `getOptionIndicatorProps` | `(props: QuestionFlowOptionProps) => T['element']` |  |
-| `getOptionLabelProps` | `(props: QuestionFlowOptionProps) => T['element']` |  |
+| `getGroupProps` | `(props: QuestionFlowQuestionProps) => T['element']` |  |
+| `getItemProps` | `(props: QuestionFlowItemProps) => T['button']` |  |
+| `getItemIndicatorProps` | `(props: QuestionFlowItemProps) => T['element']` |  |
+| `getItemTextProps` | `(props: QuestionFlowItemProps) => T['element']` |  |
 | `getNoteProps` | `(props: QuestionFlowQuestionProps) => T['input']` |  |
 | `getFooterProps` | `() => T['element']` |  |
 | `getPrevTriggerProps` | `() => T['button']` |  |
@@ -206,13 +206,13 @@
 | `question` | `aria-label` | undefined \| translations?.prompt |
 | `question` | `aria-labelledby` | `prompt` 部件的 id \| undefined |
 | `question` | `role` | 'group' |
-| `option-group` | `aria-label` | undefined \| translations?.options |
-| `option-group` | `aria-labelledby` | `prompt` 部件的 id \| undefined |
-| `option-group` | `role` | 'radiogroup' \| 'group' |
-| `option` | `aria-checked` | 'true' \| 'false' |
-| `option` | `aria-disabled` | 'true' \| 'false' |
-| `option` | `role` | 'radio' \| 'checkbox' |
-| `option-indicator` | `aria-hidden` | 'true' |
+| `group` | `aria-label` | undefined \| translations?.options |
+| `group` | `aria-labelledby` | `prompt` 部件的 id \| undefined |
+| `group` | `role` | 'radiogroup' \| 'group' |
+| `item` | `aria-checked` | 'true' \| 'false' |
+| `item` | `aria-disabled` | 'true' \| 'false' |
+| `item` | `role` | 'radio' \| 'checkbox' |
+| `item-indicator` | `aria-hidden` | 'true' |
 | `note` | `aria-label` | translations?.note |
 | `prev-trigger` | `aria-label` | translations?.prev |
 | `counter` | `aria-hidden` | 'true' |
@@ -249,14 +249,14 @@
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
 | `question` | `data-current` | ''（条件成立时才出现） |
-| `option-group` | `data-select-mode` | 'single' \| 'multiple' |
-| `option` | `data-disabled` | ''（条件成立时才出现） |
-| `option` | `data-select-mode` | 'single' \| 'multiple' |
-| `option` | `data-state` | 'checked' \| 'unchecked' |
-| `option-indicator` | `data-select-mode` | 'single' \| 'multiple' |
-| `option-indicator` | `data-state` | 'checked' \| 'unchecked' |
-| `option-label` | `data-state` | 'checked' \| 'unchecked' |
-| `option-label` | `data-value` | item.value |
+| `group` | `data-select-mode` | 'single' \| 'multiple' |
+| `item` | `data-disabled` | ''（条件成立时才出现） |
+| `item` | `data-select-mode` | 'single' \| 'multiple' |
+| `item` | `data-state` | 'checked' \| 'unchecked' |
+| `item-indicator` | `data-select-mode` | 'single' \| 'multiple' |
+| `item-indicator` | `data-state` | 'checked' \| 'unchecked' |
+| `item-text` | `data-state` | 'checked' \| 'unchecked' |
+| `item-text` | `data-value` | item.value |
 | `submit-trigger` | `data-mode` | 'send' \| 'continue' |
 | `result` | `data-state` | state.get() |
 
@@ -264,7 +264,7 @@
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-question-flow-action-font-size` · `--xh-question-flow-action-font-weight` · `--xh-question-flow-action-gap` · `--xh-question-flow-action-h` · `--xh-question-flow-action-px` · `--xh-question-flow-action-radius` · `--xh-question-flow-bg` · `--xh-question-flow-border` · `--xh-question-flow-counter-fg` · `--xh-question-flow-counter-font-size` · `--xh-question-flow-dot-radius` · `--xh-question-flow-dot-size` · `--xh-question-flow-footer-gap` · `--xh-question-flow-gap` · `--xh-question-flow-icon-size` · `--xh-question-flow-indicator-bg` · `--xh-question-flow-indicator-bg-checked` · `--xh-question-flow-indicator-border` · `--xh-question-flow-indicator-border-checked` · `--xh-question-flow-indicator-fg` · `--xh-question-flow-indicator-radius` · `--xh-question-flow-indicator-radius-single` · `--xh-question-flow-indicator-size` · `--xh-question-flow-note-bg` · `--xh-question-flow-note-border` · `--xh-question-flow-note-fg` · `--xh-question-flow-note-font-size` · `--xh-question-flow-note-px` · `--xh-question-flow-note-py` · `--xh-question-flow-note-radius` · `--xh-question-flow-option-bg` · `--xh-question-flow-option-bg-hover` · `--xh-question-flow-option-fg` · `--xh-question-flow-option-fg-checked` · `--xh-question-flow-option-font-size` · `--xh-question-flow-option-gap` · `--xh-question-flow-option-group-gap` · `--xh-question-flow-option-px` · `--xh-question-flow-option-py` · `--xh-question-flow-option-radius` · `--xh-question-flow-padding` · `--xh-question-flow-placeholder-fg` · `--xh-question-flow-prompt-fg` · `--xh-question-flow-prompt-font-size` · `--xh-question-flow-prompt-font-weight` · `--xh-question-flow-question-gap` · `--xh-question-flow-radius` · `--xh-question-flow-result-bg` · `--xh-question-flow-result-fg` · `--xh-question-flow-result-font-size` · `--xh-question-flow-result-font-weight` · `--xh-question-flow-result-gap` · `--xh-question-flow-result-px` · `--xh-question-flow-result-py` · `--xh-question-flow-result-radius` · `--xh-question-flow-shadow` · `--xh-question-flow-skip-bg` · `--xh-question-flow-skip-bg-hover` · `--xh-question-flow-skip-fg` · `--xh-question-flow-skip-fg-hover` · `--xh-question-flow-step-bg` · `--xh-question-flow-step-bg-hover` · `--xh-question-flow-step-fg` · `--xh-question-flow-step-fg-hover` · `--xh-question-flow-step-padding` · `--xh-question-flow-step-radius` · `--xh-question-flow-step-size` · `--xh-question-flow-submit-bg` · `--xh-question-flow-submit-bg-active` · `--xh-question-flow-submit-bg-hover` · `--xh-question-flow-submit-bg-off` · `--xh-question-flow-submit-fg` · `--xh-question-flow-submit-shadow` · `--xh-question-flow-track-gap` · `--xh-question-flow-track-y` · `--xh-question-flow-viewport-h`
+`--xh-question-flow-action-font-size` · `--xh-question-flow-action-font-weight` · `--xh-question-flow-action-gap` · `--xh-question-flow-action-h` · `--xh-question-flow-action-px` · `--xh-question-flow-action-radius` · `--xh-question-flow-bg` · `--xh-question-flow-border` · `--xh-question-flow-counter-fg` · `--xh-question-flow-counter-font-size` · `--xh-question-flow-dot-radius` · `--xh-question-flow-dot-size` · `--xh-question-flow-footer-gap` · `--xh-question-flow-gap` · `--xh-question-flow-group-gap` · `--xh-question-flow-icon-size` · `--xh-question-flow-indicator-bg` · `--xh-question-flow-indicator-bg-checked` · `--xh-question-flow-indicator-border` · `--xh-question-flow-indicator-border-checked` · `--xh-question-flow-indicator-fg` · `--xh-question-flow-indicator-icon-size` · `--xh-question-flow-indicator-radius` · `--xh-question-flow-indicator-radius-single` · `--xh-question-flow-indicator-size` · `--xh-question-flow-item-bg` · `--xh-question-flow-item-bg-hover` · `--xh-question-flow-item-fg` · `--xh-question-flow-item-fg-checked` · `--xh-question-flow-item-font-size` · `--xh-question-flow-item-gap` · `--xh-question-flow-item-px` · `--xh-question-flow-item-py` · `--xh-question-flow-item-radius` · `--xh-question-flow-note-bg` · `--xh-question-flow-note-border` · `--xh-question-flow-note-fg` · `--xh-question-flow-note-font-size` · `--xh-question-flow-note-px` · `--xh-question-flow-note-py` · `--xh-question-flow-note-radius` · `--xh-question-flow-padding` · `--xh-question-flow-placeholder-fg` · `--xh-question-flow-prompt-fg` · `--xh-question-flow-prompt-font-size` · `--xh-question-flow-prompt-font-weight` · `--xh-question-flow-question-gap` · `--xh-question-flow-radius` · `--xh-question-flow-result-bg` · `--xh-question-flow-result-fg` · `--xh-question-flow-result-font-size` · `--xh-question-flow-result-font-weight` · `--xh-question-flow-result-gap` · `--xh-question-flow-result-px` · `--xh-question-flow-result-py` · `--xh-question-flow-result-radius` · `--xh-question-flow-shadow` · `--xh-question-flow-skip-bg` · `--xh-question-flow-skip-bg-hover` · `--xh-question-flow-skip-fg` · `--xh-question-flow-skip-fg-hover` · `--xh-question-flow-step-bg` · `--xh-question-flow-step-bg-hover` · `--xh-question-flow-step-fg` · `--xh-question-flow-step-fg-hover` · `--xh-question-flow-step-padding` · `--xh-question-flow-step-radius` · `--xh-question-flow-step-size` · `--xh-question-flow-submit-bg` · `--xh-question-flow-submit-bg-active` · `--xh-question-flow-submit-bg-hover` · `--xh-question-flow-submit-bg-off` · `--xh-question-flow-submit-fg` · `--xh-question-flow-submit-shadow` · `--xh-question-flow-track-gap` · `--xh-question-flow-track-y` · `--xh-question-flow-viewport-h`
 
 ## 动效
 

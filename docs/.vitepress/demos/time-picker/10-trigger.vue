@@ -6,7 +6,7 @@ import {
   XhTimePickerColumn,
   XhTimePickerContent,
   XhTimePickerControl,
-  XhTimePickerInput,
+  XhTimePickerSegment,
   XhTimePickerSegmentGroup,
   XhTimePickerItem,
   XhTimePickerLabel,
@@ -23,9 +23,9 @@ const value = ref("09:30");
     <XhTimePickerLabel>会议开始</XhTimePickerLabel>
     <XhTimePickerControl>
       <XhTimePickerSegmentGroup>
-        <XhTimePickerInput segment="hour" />
+        <XhTimePickerSegment segment="hour" />
         <span>:</span>
-        <XhTimePickerInput segment="minute" />
+        <XhTimePickerSegment segment="minute" />
       </XhTimePickerSegmentGroup>
       <XhTimePickerClearTrigger />
       <!-- 写上它多一个明写的入口；不写也照样能展开——点输入行即可，

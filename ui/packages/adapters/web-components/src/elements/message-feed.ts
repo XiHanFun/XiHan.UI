@@ -42,7 +42,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @csspart list - 内容包裹层，条目必须是它的直接子节点
  * @csspart item - 一条消息，role=article + aria-posinset / aria-setsize
  * @csspart item-label - 作者名那一格，渲了它就成为该条消息的可访问名
- * @csspart scroll-button - 回到底部
+ * @csspart scroll-to-end-trigger - 回到底部
  * @csspart live-region - 视觉隐藏的原子播报区，一份会话只该有一个
  */
 export class XhMessageFeedElement extends XhElement {
@@ -144,7 +144,7 @@ export class XhMessageFeedElement extends XhElement {
     put('root', api.getRootProps() as Record<string, unknown>)
     put('viewport', api.getViewportProps() as Record<string, unknown>)
     put('list', api.getListProps() as Record<string, unknown>)
-    put('scroll-button', api.getScrollButtonProps() as Record<string, unknown>)
+    put('scroll-to-end-trigger', api.getScrollToEndTriggerProps() as Record<string, unknown>)
     put('live-region', api.getLiveRegionProps() as Record<string, unknown>)
 
     // 多实例 part 逐个打，消息有几条打几条

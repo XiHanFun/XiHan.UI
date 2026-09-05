@@ -4,7 +4,7 @@ import { ref } from "vue";
 import {
   XhPageHeaderBackTrigger,
   XhPageHeaderRoot,
-  XhPageHeaderSubtitle,
+  XhPageHeaderDescription,
   XhPageHeaderTitle,
 } from "@xihan-ui/vue";
 
@@ -17,6 +17,6 @@ const times = ref(0);
       ←
     </XhPageHeaderBackTrigger>
     <XhPageHeaderTitle>订单详情</XhPageHeaderTitle>
-    <XhPageHeaderSubtitle>已点返回 {{ times }} 次</XhPageHeaderSubtitle>
+    <XhPageHeaderDescription>已点返回 {{ times }} 次</XhPageHeaderDescription>
   </XhPageHeaderRoot>
 </template>

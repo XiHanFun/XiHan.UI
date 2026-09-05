@@ -2,7 +2,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import {
-  XhColorPickerArea,
+  XhColorPickerSaturationArea,
   XhColorPickerAreaThumb,
   XhColorPickerChannelSlider,
   XhColorPickerChannelSliderThumb,
@@ -27,9 +27,9 @@ const color = ref("#3b82f6");
     </XhColorPickerControl>
     <XhColorPickerPositioner>
       <XhColorPickerContent>
-        <XhColorPickerArea>
+        <XhColorPickerSaturationArea>
           <XhColorPickerAreaThumb />
-        </XhColorPickerArea>
+        </XhColorPickerSaturationArea>
         <XhColorPickerChannelSlider channel="hue">
           <XhColorPickerChannelSliderTrack />
           <XhColorPickerChannelSliderThumb />

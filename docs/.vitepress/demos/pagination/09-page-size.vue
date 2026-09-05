@@ -1,7 +1,7 @@
 <!-- 每页条数 | 控制器由库自带：档位从 page-size-options 来，换档时页码跟着换算，改档前第一条仍留在页内 -->
 <script setup lang="ts">
 import {
-  XhPaginationEllipsis,
+  XhPaginationEllipsisTrigger,
   XhPaginationItem,
   XhPaginationNextTrigger,
   XhPaginationPageSizeSelect,
@@ -25,7 +25,7 @@ import {
 
     <XhPaginationPrevTrigger />
     <template v-for="(p, i) in pages" :key="`${p}-${i}`">
-      <XhPaginationEllipsis v-if="p === 'ellipsis'" />
+      <XhPaginationEllipsisTrigger v-if="p === 'ellipsis'" />
       <XhPaginationItem v-else :value="p">{{ p }}</XhPaginationItem>
     </template>
     <XhPaginationNextTrigger />

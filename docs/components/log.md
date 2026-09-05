@@ -17,7 +17,7 @@
 ## 特性
 
 - 骨架四层：`root` · `viewport` · `content` · `line`；一行写什么由作者定，组件只给身份与等宽排版。
-  另有两个可缺省的部件：`scroll-button` 与 `live-region`。
+  另有两个可缺省的部件：`scroll-to-end-trigger` 与 `live-region`。
 - `rows` 按行数定高。
 - 自动跟到底部；用户往上翻时停住跟随，回到底部再恢复。
 - 内置「回到底部」：离底时冒出来，按下去归位并重新粘附。留空时皮肤画一枚向下的字形，
@@ -73,7 +73,7 @@ line 只发身份与等宽排版，级别配色、时间戳、行内标记这些
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-log>` |
-| Vue 组件 | `XhLogContent` `XhLogLine` `XhLogLiveRegion` `XhLogRoot` `XhLogScrollButton` `XhLogViewport` |
+| Vue 组件 | `XhLogContent` `XhLogLine` `XhLogLiveRegion` `XhLogRoot` `XhLogScrollToEndTrigger` `XhLogViewport` |
 | 组合式函数 | `useLog` |
 | 状态机 | `logMachine` |
 | 皮肤 | `@xihan-ui/styles/log.css` |
@@ -82,7 +82,7 @@ line 只发身份与等宽排版，级别配色、时间戳、行内标记这些
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="log"`：**`root`** · **`viewport`** · **`content`** · `line` · `scroll-button` · `live-region`
+`data-scope="log"`：**`root`** · **`viewport`** · **`content`** · `line` · `scroll-to-end-trigger` · `live-region`
 
 ## Props
 
@@ -116,7 +116,7 @@ line 只发身份与等宽排版，级别配色、时间戳、行内标记这些
 
 | 部件 | 取值 |
 | --- | --- |
-| `scroll-button` | 'visible' \| 'hidden' |
+| `scroll-to-end-trigger` | 'visible' \| 'hidden' |
 
 状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
@@ -134,13 +134,13 @@ line 只发身份与等宽排版，级别配色、时间戳、行内标记这些
 | `loading` | `boolean` |  |
 | `atBottom` | `boolean` | 当前滚动位置是否落在底部阈值内。 |
 | `sticking` | `boolean` | 新行进来时是否自动跟到底。 |
-| `showScrollButton` | `boolean` | 是否显示回到底部按钮，不在底部时为 true。 |
+| `showScrollToEndTrigger` | `boolean` | 是否显示回到底部按钮，不在底部时为 true。 |
 | `scrollToBottom` | `() => void` | 滚到底部并恢复粘附。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getViewportProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |
 | `getLineProps` | `() => T['element']` |  |
-| `getScrollButtonProps` | `() => T['button']` |  |
+| `getScrollToEndTriggerProps` | `() => T['button']` |  |
 | `getLiveRegionProps` | `() => T['element']` |  |
 
 ## 键盘
@@ -162,7 +162,7 @@ line 只发身份与等宽排版，级别配色、时间戳、行内标记这些
 | `viewport` | `aria-label` | label.log |
 | `viewport` | `aria-live` | 'off' |
 | `viewport` | `role` | 'log' |
-| `scroll-button` | `aria-label` | label.scrollToBottom |
+| `scroll-to-end-trigger` | `aria-label` | label.scrollToBottom |
 | `live-region` | `aria-atomic` | 'true' |
 | `live-region` | `aria-live` | 'polite' |
 | `live-region` | `role` | 'status' |
@@ -186,13 +186,13 @@ line 只发身份与等宽排版，级别配色、时间戳、行内标记这些
 | `root` | `data-at-bottom` | ''（条件成立时才出现） |
 | `root` | `data-loading` | ''（条件成立时才出现） |
 | `root` | `data-sticking` | ''（条件成立时才出现） |
-| `scroll-button` | `data-state` | 'visible' \| 'hidden' |
+| `scroll-to-end-trigger` | `data-state` | 'visible' \| 'hidden' |
 
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-log-bg` · `--xh-log-border` · `--xh-log-content-px` · `--xh-log-fg` · `--xh-log-font` · `--xh-log-font-size` · `--xh-log-icon-size` · `--xh-log-line-height` · `--xh-log-radius` · `--xh-log-rows` · `--xh-log-scroll-button-bg` · `--xh-log-scroll-button-bg-hover` · `--xh-log-scroll-button-border` · `--xh-log-scroll-button-fg` · `--xh-log-scroll-button-inset` · `--xh-log-scroll-button-radius` · `--xh-log-scroll-button-shadow` · `--xh-log-scroll-button-size` · `--xh-log-tab-size`
+`--xh-log-bg` · `--xh-log-border` · `--xh-log-content-px` · `--xh-log-fg` · `--xh-log-font` · `--xh-log-font-size` · `--xh-log-icon-size` · `--xh-log-line-height` · `--xh-log-radius` · `--xh-log-rows` · `--xh-log-scroll-to-end-trigger-bg` · `--xh-log-scroll-to-end-trigger-bg-hover` · `--xh-log-scroll-to-end-trigger-border` · `--xh-log-scroll-to-end-trigger-fg` · `--xh-log-scroll-to-end-trigger-inset` · `--xh-log-scroll-to-end-trigger-radius` · `--xh-log-scroll-to-end-trigger-shadow` · `--xh-log-scroll-to-end-trigger-size` · `--xh-log-tab-size`
 
 ## 动效
 

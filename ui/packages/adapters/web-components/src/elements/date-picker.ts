@@ -135,7 +135,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @csspart clear-trigger - 清空按钮，须是原生 button；不占 Tab 位，名字取 translations.clearTrigger
  * @csspart positioner - 浮层定位容器，坐标由引擎写成内联样式
  * @csspart content - role=dialog 浮层（消解层的根节点），收起时带 hidden
- * @csspart presets - 快捷选项列（role=listbox）；没给 presets 时带 hidden
+ * @csspart preset-group - 快捷选项列（role=listbox）；没给 presets 时带 hidden
  * @csspart preset - 一条快捷选项（role=option），须自带 value 属性（与 presets 数据里的 value 逐字对上）
  * @csspart calendar - 内嵌日历的挂载点，同时充当日历的根节点；并排多页时每页各写一个
  * @csspart time-column - showTime 的时间列，须自带 unit 属性（hour/minute/second）；没开时带 hidden
@@ -504,7 +504,7 @@ export class XhDatePickerElement extends XhElement {
     put('positioner', api.getPositionerProps() as Record<string, unknown>)
     put('content', api.getContentProps() as Record<string, unknown>)
     putAll('calendar', api.getCalendarProps() as Record<string, unknown>)
-    put('presets', api.getPresetsProps() as Record<string, unknown>)
+    put('preset-group', api.getPresetGroupProps() as Record<string, unknown>)
 
     // 快捷选项是多实例 part：条目自报 value
     for (const el of this.getParts('preset'))

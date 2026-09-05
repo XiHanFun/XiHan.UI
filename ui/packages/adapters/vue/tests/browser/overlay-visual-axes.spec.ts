@@ -43,17 +43,10 @@ import {
   XhMentionPositioner,
   XhMentionRoot,
   XhPaginationContent,
-  XhPaginationEllipsis,
+  XhPaginationEllipsisTrigger,
   XhPaginationItem,
   XhPaginationPositioner,
   XhPaginationRoot,
-  XhPopselectContent,
-  XhPopselectItem,
-  XhPopselectItemIndicator,
-  XhPopselectItemText,
-  XhPopselectPositioner,
-  XhPopselectRoot,
-  XhPopselectTrigger,
   XhSelectContent,
   XhSelectItem,
   XhSelectItemIndicator,
@@ -66,10 +59,10 @@ import {
   XhTimePickerColumn,
   XhTimePickerContent,
   XhTimePickerControl,
-  XhTimePickerInput,
   XhTimePickerItem,
   XhTimePickerPositioner,
   XhTimePickerRoot,
+  XhTimePickerSegment,
   XhTreeSelectContent,
   XhTreeSelectItem,
   XhTreeSelectItemIndicator,
@@ -241,11 +234,11 @@ const CASES: Record<string, Case> = {
     tonePart: 'positioner',
     toneProp: '--xh-_pagination-selected-bg',
     openByClick: true,
-    openPart: 'ellipsis',
+    openPart: 'ellipsis-trigger',
     render: axes => h(XhPaginationRoot, { ...axes, count: 2000, pageSize: 10, defaultPage: 100 }, {
       default: ({ pageItems }: { pageItems: PaginationPageItem[] }) => [
         ...pageItems.map((item, i) => (item.type === 'ellipsis'
-          ? h(XhPaginationEllipsis, { key: `ellipsis-${i}`, side: item.side })
+          ? h(XhPaginationEllipsisTrigger, { key: `ellipsis-${i}`, side: item.side })
           : h(XhPaginationItem, { key: `page-${item.value}`, value: item.value }, () => String(item.value)))),
         h(XhPaginationPositioner, null, () => [
           h(XhPaginationContent, null, {
@@ -258,33 +251,13 @@ const CASES: Record<string, Case> = {
     }),
   },
 
-  'popselect': {
-    sizePart: 'item',
-    sizeProp: 'font-size',
-    anchorPart: 'trigger',
-    tonePart: 'item-indicator',
-    toneProp: 'color',
-    openByClick: true,
-    render: axes => h(XhPopselectRoot, { ...axes, value: ['apple'] }, () => [
-      h(XhPopselectTrigger, null, () => '选一个'),
-      h(XhPopselectPositioner, null, () => [
-        h(XhPopselectContent, null, () => FRUITS.map(node =>
-          h(XhPopselectItem, { key: node.value, value: node.value }, () => [
-            h(XhPopselectItemText, null, () => node.label),
-            h(XhPopselectItemIndicator),
-          ]),
-        )),
-      ]),
-    ]),
-  },
-
   'time-picker': {
     sizePart: 'item',
     sizeProp: 'padding-inline-start',
     tonePart: 'item',
     toneProp: 'font-size',
     render: axes => h(XhTimePickerRoot, { ...axes, open: true, value: '09:30' }, () => [
-      h(XhTimePickerControl, null, () => [h(XhTimePickerInput, { segment: 'hour' })]),
+      h(XhTimePickerControl, null, () => [h(XhTimePickerSegment, { segment: 'hour' })]),
       h(XhTimePickerPositioner, null, () => [
         h(XhTimePickerContent, null, () => [
           h(XhTimePickerColumn, { unit: 'hour' }, () => [

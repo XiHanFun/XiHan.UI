@@ -20,6 +20,6 @@ export function connectAvatarGroup<T extends PropTypes>(
   return {
     getRootProps: () => normalize.element(rootAttrs),
     // 溢出计数只拿身份：内容由作者写，位置与形状由皮肤按这个身份给
-    getOverflowProps: () => normalize.element(parts.overflow.attrs),
+    getOverflowItemProps: () => normalize.element(parts['overflow-item'].attrs),
   }
 }

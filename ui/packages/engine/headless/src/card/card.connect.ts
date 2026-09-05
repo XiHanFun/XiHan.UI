@@ -22,7 +22,7 @@ export function connectCard<T extends PropTypes>(
 
   return {
     getRootProps: () => normalize.element(rootAttrs),
-    getCoverProps: () => normalize.element(parts.cover.attrs),
+    getMediaProps: () => normalize.element(parts.media.attrs),
     getHeaderProps: () => normalize.element(parts.header.attrs),
     getTitleProps: () => normalize.element(parts.title.attrs),
     getDescriptionProps: () => normalize.element(parts.description.attrs),

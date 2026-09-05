@@ -7,7 +7,7 @@ import {
   XhFileUploadHiddenInput,
   XhFileUploadItem,
   XhFileUploadItemDeleteTrigger,
-  XhFileUploadItemGroup,
+  XhFileUploadList,
   XhFileUploadItemName,
   XhFileUploadItemPreview,
   XhFileUploadItemSizeText,
@@ -60,14 +60,14 @@ const translations = {
         <XhFileUploadTrigger>选择图片</XhFileUploadTrigger>
       </div>
       <XhFileUploadHiddenInput />
-      <XhFileUploadItemGroup>
+      <XhFileUploadList>
         <XhFileUploadItem v-for="file in acceptedFiles" :key="file" :file="file">
           <XhFileUploadItemPreview />
           <XhFileUploadItemName />
           <XhFileUploadItemSizeText />
           <XhFileUploadItemDeleteTrigger />
         </XhFileUploadItem>
-      </XhFileUploadItemGroup>
+      </XhFileUploadList>
       <!-- 列表为空时清空按钮照常在位可聚焦，只打 data-empty 由皮肤压淡 -->
       <XhFileUploadClearTrigger>清空</XhFileUploadClearTrigger>
     </XhFileUploadRoot>

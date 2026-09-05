@@ -6,7 +6,7 @@ import {
   XhTimePickerColumn,
   XhTimePickerContent,
   XhTimePickerControl,
-  XhTimePickerInput,
+  XhTimePickerSegment,
   XhTimePickerSegmentGroup,
   XhTimePickerLabel,
   XhTimePickerItem,
@@ -34,9 +34,9 @@ function now() {
     <XhTimePickerLabel>提交时刻</XhTimePickerLabel>
     <XhTimePickerControl>
       <XhTimePickerSegmentGroup>
-        <XhTimePickerInput segment="hour" />
+        <XhTimePickerSegment segment="hour" />
         <span>:</span>
-        <XhTimePickerInput segment="minute" />
+        <XhTimePickerSegment segment="minute" />
       </XhTimePickerSegmentGroup>
     </XhTimePickerControl>
     <XhTimePickerPositioner>

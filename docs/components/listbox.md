@@ -34,7 +34,7 @@ selection-mode="multiple" 下空格改成切换该条，Shift + 方向键顺手�
 
 ### 分组
 
-item-group 把条目分段，group-label 是这一段的可及名字，不参与选中也不接方向键
+group 把条目分段，group-label 是这一段的可及名字，不参与选中也不接方向键
 
 <XhDemo src="listbox/03-group" />
 
@@ -67,7 +67,7 @@ selection-mode="extended" 是「裸点换一条、Ctrl 与 Shift 才扩选」，
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-listbox>` |
-| Vue 组件 | `XhListboxContent` `XhListboxItem` `XhListboxItemGroup` `XhListboxItemGroupLabel` `XhListboxItemIndicator` `XhListboxItemText` `XhListboxLabel` `XhListboxRoot` |
+| Vue 组件 | `XhListboxContent` `XhListboxGroup` `XhListboxGroupLabel` `XhListboxItem` `XhListboxItemIndicator` `XhListboxItemText` `XhListboxLabel` `XhListboxRoot` |
 | 组合式函数 | `useListbox` |
 | 状态机 | `listboxMachine` |
 | 皮肤 | `@xihan-ui/styles/listbox.css` |
@@ -76,7 +76,7 @@ selection-mode="extended" 是「裸点换一条、Ctrl 与 Shift 才扩选」，
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="listbox"`：`root` · `label` · **`content`** · **`item`** · `item-text` · `item-indicator` · `item-group` · `item-group-label`
+`data-scope="listbox"`：`root` · `label` · **`content`** · **`item`** · `item-text` · `item-indicator` · `group` · `group-label`
 
 ## Props
 
@@ -137,8 +137,8 @@ selection-mode="extended" 是「裸点换一条、Ctrl 与 Shift 才扩选」，
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |
-| `getItemGroupProps` | `(props: ListboxItemGroupProps) => T['element']` |  |
-| `getItemGroupLabelProps` | `(props: ListboxItemGroupProps) => T['element']` |  |
+| `getGroupProps` | `(props: ListboxGroupProps) => T['element']` |  |
+| `getGroupLabelProps` | `(props: ListboxGroupProps) => T['element']` |  |
 | `getItemProps` | `(props: ListboxItemProps) => T['element']` |  |
 | `getItemTextProps` | `(props: ListboxItemProps) => T['element']` |  |
 | `getItemIndicatorProps` | `(props: ListboxItemProps) => T['element']` |  |
@@ -175,8 +175,8 @@ selection-mode="extended" 是「裸点换一条、Ctrl 与 Shift 才扩选」，
 | `item` | `aria-selected` | 'true' \| 'false' |
 | `item` | `role` | 'option' |
 | `item-indicator` | `aria-hidden` | 'true' |
-| `item-group` | `aria-labelledby` | `group-label` 部件的 id |
-| `item-group` | `role` | 'group' |
+| `group` | `aria-labelledby` | `group-label` 部件的 id |
+| `group` | `role` | 'group' |
 
 ## 样式
 
@@ -193,14 +193,14 @@ selection-mode="extended" 是「裸点换一条、Ctrl 与 Shift 才扩选」，
 | `label` | `data-disabled` | ''（条件成立时才出现） |
 | `content` | `data-disabled` | ''（条件成立时才出现） |
 | `content` | `data-orientation` | props.orientation |
-| `item-group` | `data-disabled` | ''（条件成立时才出现） |
-| `item-group-label` | `data-disabled` | ''（条件成立时才出现） |
+| `group` | `data-disabled` | ''（条件成立时才出现） |
+| `group-label` | `data-disabled` | ''（条件成立时才出现） |
 
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-listbox-content-bg` · `--xh-listbox-content-border` · `--xh-listbox-content-fg` · `--xh-listbox-content-gap` · `--xh-listbox-content-max-h` · `--xh-listbox-content-px` · `--xh-listbox-content-py` · `--xh-listbox-content-radius` · `--xh-listbox-gap` · `--xh-listbox-group-gap` · `--xh-listbox-group-label-fg` · `--xh-listbox-group-label-font-size` · `--xh-listbox-group-label-font-weight` · `--xh-listbox-group-label-px` · `--xh-listbox-group-label-py` · `--xh-listbox-icon-size` · `--xh-listbox-item-bg-hover` · `--xh-listbox-item-fg` · `--xh-listbox-item-fg-selected` · `--xh-listbox-item-font-size` · `--xh-listbox-item-font-weight-selected` · `--xh-listbox-item-gap` · `--xh-listbox-item-group-gap` · `--xh-listbox-item-indicator-fg` · `--xh-listbox-item-indicator-size` · `--xh-listbox-item-leading` · `--xh-listbox-item-px` · `--xh-listbox-item-py` · `--xh-listbox-item-radius` · `--xh-listbox-label-fg` · `--xh-listbox-label-font-size` · `--xh-listbox-label-font-weight`
+`--xh-listbox-content-bg` · `--xh-listbox-content-border` · `--xh-listbox-content-fg` · `--xh-listbox-content-gap` · `--xh-listbox-content-max-h` · `--xh-listbox-content-px` · `--xh-listbox-content-py` · `--xh-listbox-content-radius` · `--xh-listbox-gap` · `--xh-listbox-group-gap` · `--xh-listbox-group-label-fg` · `--xh-listbox-group-label-font-size` · `--xh-listbox-group-label-font-weight` · `--xh-listbox-group-label-px` · `--xh-listbox-group-label-py` · `--xh-listbox-group-spacing` · `--xh-listbox-icon-size` · `--xh-listbox-item-bg-hover` · `--xh-listbox-item-fg` · `--xh-listbox-item-fg-selected` · `--xh-listbox-item-font-size` · `--xh-listbox-item-font-weight-selected` · `--xh-listbox-item-gap` · `--xh-listbox-item-indicator-fg` · `--xh-listbox-item-indicator-size` · `--xh-listbox-item-leading` · `--xh-listbox-item-px` · `--xh-listbox-item-py` · `--xh-listbox-item-radius` · `--xh-listbox-label-fg` · `--xh-listbox-label-font-size` · `--xh-listbox-label-font-weight`
 
 ## 动效
 
@@ -214,7 +214,8 @@ selection-mode="extended" 是「裸点换一条、Ctrl 与 Shift 才扩选」，
 
 ## 组合
 
-- 作为[穿梭框](./transfer)、[弹出选择](./popselect)的内层；长列表配[虚拟滚动](./virtualizer)。
+- 作为[穿梭框](./transfer)的内层；长列表配[虚拟滚动](./virtualizer)。
+- **弹出式选择**：把本组件装进[浮层](./popover)——触发器显示当前选中项，落值时自己收起浮层，浮层底部还能放操作按钮。不参与表单、也不带输入框的那种就地切换（排序方式、显示密度）走这一种写法，不必另找组件；要随表单提交才用[选择器](./select)。示例见本页「弹出式选择」。
 
 ## 最佳实践
 

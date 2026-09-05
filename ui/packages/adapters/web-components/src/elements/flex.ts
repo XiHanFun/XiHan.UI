@@ -7,6 +7,10 @@ import { XhElement } from '../element-base'
  * `<xh-flex>` —— Light-DOM 行为宿主，无状态机，把 connectFlex 产出打到 root 角色节点。
  * 六个排版参数原样落成 data-*，排布规则写在皮肤里。
  *
+ * 分隔符是一个角色节点：作者把它写在 root 里、夹在两个子项中间，元素替它打上 aria-hidden。
+ * 本元素不生成任何结构，也就没法替作者复制节点；Vue 版的 split 插槽是同一件事的另一种写法，
+ * 铺开后的 DOM 形状一致。
+ *
  * 根上不写 role：容器只做排布，里面装的是列表还是一组按钮由作者自己声明。
  *
  * @customElement xh-flex
@@ -17,6 +21,7 @@ import { XhElement } from '../element-base'
  * @attr {boolean} wrap - 一行放不下时折行
  * @attr {boolean} inline - 容器按行内盒排版，宽度收到内容
  * @csspart root - 排布容器，承载 data-orientation / data-align / data-justify / data-gap / data-wrap / data-inline
+ * @csspart split - 夹在两个子项之间的分隔符，作者逐个写在 root 里；元素替它打上 aria-hidden
  */
 export class XhFlexElement extends XhElement {
   static override partContract = { anatomy: flexAnatomy, meta: flexMeta }
@@ -52,5 +57,9 @@ export class XhFlexElement extends XhElement {
     const root = this.getPart('root')
     if (root)
       this.spreader.spread(root, api.getRootProps() as Record<string, unknown>)
+
+    // 分隔符是多实例部件：作者写几个就打几个，一个都没写也成立（只有一个子项时本就没有缝）
+    for (const el of this.getParts('split'))
+      this.spreader.spread(el, api.getSplitProps() as Record<string, unknown>)
   }
 }

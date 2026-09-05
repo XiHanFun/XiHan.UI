@@ -5,7 +5,7 @@ import {
   XhCarouselIndicator,
   XhCarouselIndicatorGroup,
   XhCarouselItem,
-  XhCarouselItemGroup,
+  XhCarouselList,
   XhCarouselNextTrigger,
   XhCarouselPrevTrigger,
   XhCarouselRoot,
@@ -50,7 +50,7 @@ function itemStyle(index: number, page: number): Record<string, string> | undefi
   >
     <XhCarouselPrevTrigger />
     <XhCarouselViewport style="block-size: 140px">
-      <XhCarouselItemGroup :style="groupStyle">
+      <XhCarouselList :style="groupStyle">
         <XhCarouselItem
           v-for="(text, i) in slides"
           :key="text"
@@ -61,7 +61,7 @@ function itemStyle(index: number, page: number): Record<string, string> | undefi
             {{ text }}
           </div>
         </XhCarouselItem>
-      </XhCarouselItemGroup>
+      </XhCarouselList>
     </XhCarouselViewport>
     <XhCarouselNextTrigger />
     <XhCarouselIndicatorGroup>

@@ -17,7 +17,7 @@ const SKINS = 'packages/design/styles/css'
 const HEADLESS = 'packages/engine/headless/src'
 
 /** ① 内嵌清空钮：组件 → 点完焦点该回到的部件（只用于提示文案，判据看 connect 里有没有 focus 调用）。 */
-const EMBEDDED = ['cascader', 'tree-select', 'combobox', 'date-picker', 'time-picker', 'text-field', 'tags-input', 'select', 'popselect', 'date-field', 'time-field']
+const EMBEDDED = ['cascader', 'tree-select', 'combobox', 'date-picker', 'time-picker', 'text-field', 'tags-input', 'select', 'date-field', 'time-field']
 /** ② 独立动作钮。 */
 const STANDALONE = ['file-upload', 'signature-pad']
 /**
@@ -35,7 +35,7 @@ const CLOSE_PART = { notification: 'item-close-trigger' }
 const CLOSE_FG_EXCEPTION = { 'image-viewer': '看图时整块 chrome 盖住页面，叉的颜色随那层继承（color: inherit），自己不定前景' }
 /** ④ 标签内移除钮（组件 → 部件）与行级删除钮。 */
 const CHIP_REMOVE = { 'tag': 'close-trigger', 'tags-input': 'item-delete-trigger', 'select': 'item-delete-trigger' }
-const ROW_DELETE = { 'file-upload': 'item-delete-trigger', 'dynamic-input': 'item-delete-trigger' }
+const ROW_DELETE = { 'file-upload': 'item-delete-trigger', 'field-array': 'item-delete-trigger' }
 
 const problems = []
 

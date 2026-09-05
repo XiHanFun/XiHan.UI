@@ -1,7 +1,7 @@
 <!-- 预设色板 | swatches 给出常用色，选中即写回 value -->
 <script setup lang="ts">
 import {
-  XhColorPickerArea,
+  XhColorPickerSaturationArea,
   XhColorPickerAreaThumb,
   XhColorPickerContent,
   XhColorPickerControl,
@@ -25,9 +25,9 @@ const swatches = ["#00a98e", "#3b82f6", "#f59e0b", "#ef4444", "#8b5cf6"];
     </XhColorPickerControl>
     <XhColorPickerPositioner>
       <XhColorPickerContent>
-        <XhColorPickerArea>
+        <XhColorPickerSaturationArea>
           <XhColorPickerAreaThumb />
-        </XhColorPickerArea>
+        </XhColorPickerSaturationArea>
         <XhColorPickerSwatchGroup>
           <XhColorPickerSwatchItem v-for="c in swatches" :key="c" :value="c" />
         </XhColorPickerSwatchGroup>

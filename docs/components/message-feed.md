@@ -75,7 +75,7 @@ stick-change 报到底，宿主据此去取下一页；先往上翻一段再滚�
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-message-feed>` |
-| Vue 组件 | `XhMessageFeedItem` `XhMessageFeedItemLabel` `XhMessageFeedList` `XhMessageFeedLiveRegion` `XhMessageFeedRoot` `XhMessageFeedScrollButton` `XhMessageFeedViewport` |
+| Vue 组件 | `XhMessageFeedItem` `XhMessageFeedItemLabel` `XhMessageFeedList` `XhMessageFeedLiveRegion` `XhMessageFeedRoot` `XhMessageFeedScrollToEndTrigger` `XhMessageFeedViewport` |
 | 组合式函数 | `useMessageFeed` |
 | 状态机 | `messageFeedMachine` |
 | 皮肤 | `@xihan-ui/styles/message-feed.css` |
@@ -84,7 +84,7 @@ stick-change 报到底，宿主据此去取下一页；先往上翻一段再滚�
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="message-feed"`：**`root`** · **`viewport`** · **`list`** · `item` · `item-label` · `scroll-button` · `live-region`
+`data-scope="message-feed"`：**`root`** · **`viewport`** · **`list`** · `item` · `item-label` · `scroll-to-end-trigger` · `live-region`
 
 ## Props
 
@@ -123,7 +123,7 @@ stick-change 报到底，宿主据此去取下一页；先往上翻一段再滚�
 | 部件 | 取值 |
 | --- | --- |
 | `root` | props.status |
-| `scroll-button` | 'hidden' \| 'visible' |
+| `scroll-to-end-trigger` | 'hidden' \| 'visible' |
 
 状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
@@ -141,7 +141,7 @@ stick-change 报到底，宿主据此去取下一页；先往上翻一段再滚�
 | `atBottom` | `boolean` |  |
 | `sticking` | `boolean` |  |
 | `focusedId` | `string \| null` | roving tabindex 的锚点。 |
-| `showScrollButton` | `boolean` | 是否显示回到底部按钮：只看在不在底，不看粘附意图。 |
+| `showScrollToEndTrigger` | `boolean` | 是否显示回到底部按钮：只看在不在底，不看粘附意图。 |
 | `scrollToBottom` | `() => void` |  |
 | `scrollToItem` | `(id: string) => void` | 把某条消息滚进可视区；那条不在活 DOM 里时什么都不做。 |
 | `focusItem` | `(id: string) => void` | 把焦点落到某条消息上；那条不在活 DOM 里时什么都不做。 |
@@ -150,7 +150,7 @@ stick-change 报到底，宿主据此去取下一页；先往上翻一段再滚�
 | `getListProps` | `() => T['element']` |  |
 | `getItemProps` | `(props: MessageFeedItemProps) => T['element']` |  |
 | `getItemLabelProps` | `(props: Pick<MessageFeedItemProps, 'id'>) => T['element']` |  |
-| `getScrollButtonProps` | `() => T['button']` |  |
+| `getScrollToEndTriggerProps` | `() => T['button']` |  |
 | `getLiveRegionProps` | `() => T['element']` |  |
 
 ## 键盘
@@ -180,7 +180,7 @@ stick-change 报到底，宿主据此去取下一页；先往上翻一段再滚�
 | `item` | `aria-posinset` | item.index + 1 |
 | `item` | `aria-setsize` | props.count |
 | `item` | `role` | 'article' |
-| `scroll-button` | `aria-label` | translations?.scrollToBottom |
+| `scroll-to-end-trigger` | `aria-label` | translations?.scrollToBottom |
 | `live-region` | `aria-atomic` | 'true' |
 | `live-region` | `aria-live` | 'polite' |
 
@@ -205,13 +205,13 @@ stick-change 报到底，宿主据此去取下一页；先往上翻一段再滚�
 | `root` | `data-state` | props.status |
 | `item` | `data-role` | item.role |
 | `item` | `data-streaming` | ''（条件成立时才出现） |
-| `scroll-button` | `data-state` | 'hidden' \| 'visible' |
+| `scroll-to-end-trigger` | `data-state` | 'hidden' \| 'visible' |
 
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-message-feed-button-bg` · `--xh-message-feed-button-bg-hover` · `--xh-message-feed-button-border` · `--xh-message-feed-button-fg` · `--xh-message-feed-button-inset` · `--xh-message-feed-button-radius` · `--xh-message-feed-button-shadow` · `--xh-message-feed-button-size` · `--xh-message-feed-gap` · `--xh-message-feed-icon-size` · `--xh-message-feed-item-gap` · `--xh-message-feed-item-radius` · `--xh-message-feed-label-fg` · `--xh-message-feed-label-font-size` · `--xh-message-feed-p`
+`--xh-message-feed-gap` · `--xh-message-feed-icon-size` · `--xh-message-feed-item-gap` · `--xh-message-feed-item-radius` · `--xh-message-feed-label-fg` · `--xh-message-feed-label-font-size` · `--xh-message-feed-p` · `--xh-message-feed-scroll-to-end-trigger-bg` · `--xh-message-feed-scroll-to-end-trigger-bg-hover` · `--xh-message-feed-scroll-to-end-trigger-border` · `--xh-message-feed-scroll-to-end-trigger-fg` · `--xh-message-feed-scroll-to-end-trigger-inset` · `--xh-message-feed-scroll-to-end-trigger-radius` · `--xh-message-feed-scroll-to-end-trigger-shadow` · `--xh-message-feed-scroll-to-end-trigger-size`
 
 ## 动效
 

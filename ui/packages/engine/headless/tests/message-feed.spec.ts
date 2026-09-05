@@ -99,12 +99,12 @@ describe('粘底', () => {
   it('回到底部按钮只看在不在底，不看粘附意图', () => {
     // 粘着但内容还没追上时按钮不该冒出来
     const rig = mount()
-    expect(rig.api().showScrollButton).toBe(false)
+    expect(rig.api().showScrollToEndTrigger).toBe(false)
     rig.service.send({ type: 'STICK.CHANGE', atBottom: false, sticking: true })
-    expect(rig.api().showScrollButton).toBe(true)
+    expect(rig.api().showScrollToEndTrigger).toBe(true)
     expect(rig.api().sticking).toBe(true)
     rig.service.send({ type: 'STICK.CHANGE', atBottom: true, sticking: false })
-    expect(rig.api().showScrollButton).toBe(false)
+    expect(rig.api().showScrollToEndTrigger).toBe(false)
   })
 
   it('句柄回报即转发给宿主', () => {

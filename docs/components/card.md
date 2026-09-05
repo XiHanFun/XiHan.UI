@@ -54,7 +54,7 @@ segmented 在段与段之间画一条分隔线；hoverable 只在能用指针的
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-card>` |
-| Vue 组件 | `XhCardBody` `XhCardCover` `XhCardDescription` `XhCardFooter` `XhCardHeader` `XhCardRoot` `XhCardTitle` |
+| Vue 组件 | `XhCardBody` `XhCardDescription` `XhCardFooter` `XhCardHeader` `XhCardMedia` `XhCardRoot` `XhCardTitle` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/card.css` |
 
@@ -62,7 +62,7 @@ segmented 在段与段之间画一条分隔线；hoverable 只在能用指针的
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="card"`：**`root`** · `cover` · `header` · `title` · `description` · `body` · `footer`
+`data-scope="card"`：**`root`** · `media` · `header` · `title` · `description` · `body` · `footer`
 
 ## Props
 
@@ -80,7 +80,7 @@ segmented 在段与段之间画一条分隔线；hoverable 只在能用指针的
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `getRootProps` | `() => T['element']` |  |
-| `getCoverProps` | `() => T['element']` |  |
+| `getMediaProps` | `() => T['element']` |  |
 | `getHeaderProps` | `() => T['element']` |  |
 | `getTitleProps` | `() => T['element']` |  |
 | `getDescriptionProps` | `() => T['element']` |  |

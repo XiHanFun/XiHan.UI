@@ -173,7 +173,7 @@ pressed-change 每次带着 details 报一次按下意图；不做受控绑定�
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-toggle-bg` · `--xh-toggle-bg-hover` · `--xh-toggle-bg-pressed` · `--xh-toggle-fg` · `--xh-toggle-fg-pressed` · `--xh-toggle-font-size` · `--xh-toggle-font-weight` · `--xh-toggle-gap` · `--xh-toggle-h` · `--xh-toggle-px` · `--xh-toggle-radius` · `--xh-toggle-shadow`
+`--xh-toggle-bg` · `--xh-toggle-bg-hover` · `--xh-toggle-bg-on` · `--xh-toggle-fg` · `--xh-toggle-fg-on` · `--xh-toggle-font-size` · `--xh-toggle-font-weight` · `--xh-toggle-gap` · `--xh-toggle-h` · `--xh-toggle-px` · `--xh-toggle-radius` · `--xh-toggle-shadow`
 
 ## 动效
 

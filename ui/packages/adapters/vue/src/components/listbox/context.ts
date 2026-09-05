@@ -1,4 +1,4 @@
-import type { ListboxItemGroupProps, ListboxItemProps } from '@xihan-ui/headless'
+import type { ListboxGroupProps, ListboxItemProps } from '@xihan-ui/headless'
 import type { ComputedRef, InjectionKey } from 'vue'
 import type { ListboxContext } from './use-listbox'
 import { inject, provide } from 'vue'
@@ -10,7 +10,7 @@ export interface ListboxItemContext {
 
 /** 分组自报的身份，供分组标题取到同一个值（标题的 id 由它派生）。 */
 export interface ListboxItemGroupContext {
-  group: ComputedRef<ListboxItemGroupProps>
+  group: ComputedRef<ListboxGroupProps>
 }
 
 const KEY: InjectionKey<ListboxContext> = Symbol.for('xh-listbox')
@@ -46,6 +46,6 @@ export function provideListboxItemGroup(ctx: ListboxItemGroupContext): void {
 export function useListboxItemGroupContext(): ListboxItemGroupContext {
   const ctx = inject(GROUP_KEY, null)
   if (!ctx)
-    throw new Error('[xh] Listbox 分组标题必须用在 XhListboxItemGroup 内')
+    throw new Error('[xh] Listbox 分组标题必须用在 XhListboxGroup 内')
   return ctx
 }

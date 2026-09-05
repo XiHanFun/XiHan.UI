@@ -16,7 +16,7 @@ const pageHeaderTree: FixtureNode = {
       attrs: { 'type': 'button', 'aria-label': '返回上一页' },
     },
     { part: 'title', text: '订单详情' },
-    { part: 'subtitle', text: '编号 SO-20260731-004' },
+    { part: 'description', text: '编号 SO-20260731-004' },
     { part: 'extra', children: [{ tag: 'button', text: '导出' }] },
     { part: 'footer', text: '创建于 7 月 31 日 09:12' },
   ],
@@ -90,12 +90,12 @@ export const pageHeaderSuite: ConformanceSuite = {
       name: '各段各一份，按返回 / 标题 / 副标题 / 操作 / 页脚的文档序排列',
       spec: { apg: APG },
       initial: {
-        order: ['root', 'back-trigger', 'title', 'subtitle', 'extra', 'footer'],
+        order: ['root', 'back-trigger', 'title', 'description', 'extra', 'footer'],
         counts: {
           'root': 1,
           'back-trigger': 1,
           'title': 1,
-          'subtitle': 1,
+          'description': 1,
           'extra': 1,
           'footer': 1,
         },
@@ -107,7 +107,7 @@ export const pageHeaderSuite: ConformanceSuite = {
       fixture: base => ({ ...base, children: [{ part: 'title', text: '订单详情' }] }),
       initial: {
         order: ['root', 'title'],
-        counts: { 'root': 1, 'title': 1, 'back-trigger': 0, 'subtitle': 0, 'extra': 0, 'footer': 0 },
+        counts: { 'root': 1, 'title': 1, 'back-trigger': 0, 'description': 0, 'extra': 0, 'footer': 0 },
       },
     },
   ],

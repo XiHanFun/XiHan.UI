@@ -47,8 +47,8 @@ export function connectPromptInput<T extends PropTypes>(
       'data-size': prop('size'),
     }),
 
-    getInputRowProps: () => normalize.element({
-      ...parts['input-row'].attrs,
+    getControlProps: () => normalize.element({
+      ...parts.control.attrs,
     }),
 
     getInputProps: () => normalize.textarea({

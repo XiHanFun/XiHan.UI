@@ -150,8 +150,8 @@ export const XhTimePickerSegmentGroup = defineComponent({
   },
 })
 
-export const XhTimePickerInput = defineComponent({
-  name: 'XhTimePickerInput',
+export const XhTimePickerSegment = defineComponent({
+  name: 'XhTimePickerSegment',
   props: {
     // 段的身份由作者声明
     segment: { type: String as PropType<TimeSegmentType>, required: true },
@@ -161,7 +161,7 @@ export const XhTimePickerInput = defineComponent({
     // 有插槽用插槽，否则显示该段的文字，空段为占位串
     return () => h(
       'span',
-      ctx.api.value.getInputProps({ segment: props.segment }) as Record<string, unknown>,
+      ctx.api.value.getSegmentProps({ segment: props.segment }) as Record<string, unknown>,
       slots.default?.() ?? ctx.api.value.getSegmentText({ segment: props.segment }),
     )
   },
@@ -222,8 +222,8 @@ export const XhTimePickerContent = defineComponent({
   },
 })
 
-export const XhTimePickerPresets = defineComponent({
-  name: 'XhTimePickerPresets',
+export const XhTimePickerPresetGroup = defineComponent({
+  name: 'XhTimePickerPresetGroup',
   slots: Object as SlotsType<{
     /** 自己铺条目；不写就按 presets 数据自动铺，两者产出的 DOM 一致。 */
     default?: (props: TimePickerPresetsSlotProps) => VNode[]
@@ -235,7 +235,7 @@ export const XhTimePickerPresets = defineComponent({
       const authored = slots.default?.({ presets: api.presets })
       return h(
         'div',
-        api.getPresetsProps() as Record<string, unknown>,
+        api.getPresetGroupProps() as Record<string, unknown>,
         slotPaints(authored)
           ? authored
           : api.presets.map(preset => h(

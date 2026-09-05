@@ -83,7 +83,7 @@ export function connectMessageFeed<T extends PropTypes>(
     sticking,
     focusedId,
     // 只看在不在底：粘着但内容还没追上时按钮不该冒出来
-    showScrollButton: !atBottom,
+    showScrollToEndTrigger: !atBottom,
     scrollToBottom: () => send({ type: 'SCROLL_TO_BOTTOM' }),
     scrollToItem: (id) => {
       itemById(id)?.scrollIntoView?.({ block: 'nearest', inline: 'nearest' })
@@ -186,8 +186,8 @@ export function connectMessageFeed<T extends PropTypes>(
       id: scope.partId('message-feed', `item-label:${id}`),
     }),
 
-    getScrollButtonProps: () => normalize.button({
-      ...parts['scroll-button'].attrs,
+    getScrollToEndTriggerProps: () => normalize.button({
+      ...parts['scroll-to-end-trigger'].attrs,
       'type': 'button',
       'aria-label': translations?.scrollToBottom ?? 'Scroll to bottom',
       'data-state': atBottom ? 'hidden' : 'visible',

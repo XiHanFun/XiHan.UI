@@ -76,7 +76,7 @@
 
 | 已删 | 换成（结构化会话） | 换成（任意内容粘底） |
 | --- | --- | --- |
-| Vue `<XhThreadRoot>` / `<XhThreadViewport>` / `<XhThreadContent>` / `<XhThreadScrollButton>` / `<XhThreadLiveRegion>` | `<XhMessageFeedRoot>` / `<XhMessageFeedViewport>` / `<XhMessageFeedList>` / `<XhMessageFeedScrollButton>` / `<XhMessageFeedLiveRegion>`（条目另有 `<XhMessageFeedItem>` / `<XhMessageFeedItemLabel>`） | `<XhLogRoot>` / `<XhLogViewport>` / `<XhLogContent>` / `<XhLogScrollButton>` / `<XhLogLiveRegion>`（行另有 `<XhLogLine>`） |
+| Vue `<XhThreadRoot>` / `<XhThreadViewport>` / `<XhThreadContent>` / `<XhThreadScrollButton>` / `<XhThreadLiveRegion>` | `<XhMessageFeedRoot>` / `<XhMessageFeedViewport>` / `<XhMessageFeedList>` / `<XhMessageFeedScrollToEndTrigger>` / `<XhMessageFeedLiveRegion>`（条目另有 `<XhMessageFeedItem>` / `<XhMessageFeedItemLabel>`） | `<XhLogRoot>` / `<XhLogViewport>` / `<XhLogContent>` / `<XhLogScrollToEndTrigger>` / `<XhLogLiveRegion>`（行另有 `<XhLogLine>`） |
 | 自定义元素 `<xh-thread>` | `<xh-message-feed>` | `<xh-log>` |
 | `useThread()` / `useThreadContext()` / `provideThread()` | `useMessageFeed()` / `useMessageFeedContext()` / `provideMessageFeed()` | `useLog()` / `useLogContext()` |
 | `connectThread` / `threadAnatomy` / `threadKeyboard` / `threadMachine` / `threadMeta` | 同名的 `messageFeed*` | 同名的 `log*` |

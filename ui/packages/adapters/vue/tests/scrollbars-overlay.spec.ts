@@ -24,17 +24,13 @@ import {
   XhMenuPositioner,
   XhMenuRoot,
   XhPaginationContent,
-  XhPaginationEllipsis,
+  XhPaginationEllipsisTrigger,
   XhPaginationItem,
   XhPaginationPositioner,
   XhPaginationRoot,
   XhPopoverContent,
   XhPopoverPositioner,
   XhPopoverRoot,
-  XhPopselectContent,
-  XhPopselectItem,
-  XhPopselectPositioner,
-  XhPopselectRoot,
 } from '../src'
 
 let unmount: (() => void) | null = null
@@ -108,7 +104,7 @@ async function mountPagination(): Promise<void> {
     default: ({ pageItems }: { pageItems: PageItem[] }) => [
       ...pageItems.map((item, i) =>
         item.type === 'ellipsis'
-          ? h(XhPaginationEllipsis, { key: `e${i}`, side: item.side as 'start' | 'end' })
+          ? h(XhPaginationEllipsisTrigger, { key: `e${i}`, side: item.side as 'start' | 'end' })
           : h(XhPaginationItem, { key: `p${i}`, value: item.value! }, () => String(item.value)),
       ),
       h(XhPaginationPositioner, null, () => [
@@ -120,7 +116,7 @@ async function mountPagination(): Promise<void> {
     ],
   }))
   await settle()
-  document.querySelector<HTMLElement>('[data-scope="pagination"][data-part="ellipsis"]')!.click()
+  document.querySelector<HTMLElement>('[data-scope="pagination"][data-part="ellipsis-trigger"]')!.click()
   await settle()
 }
 
@@ -139,16 +135,6 @@ const HOSTS: Host[] = [
   {
     scope: 'popover',
     mount: () => mountOverlay(XhPopoverRoot, XhPopoverPositioner, XhPopoverContent, { defaultOpen: true }),
-  },
-  {
-    scope: 'popselect',
-    mount: () => mountOverlay(
-      XhPopselectRoot,
-      XhPopselectPositioner,
-      XhPopselectContent,
-      { defaultOpen: true, collection: [{ value: 'apple', label: '苹果' }] },
-      () => [h(XhPopselectItem, { value: 'apple' }, () => '苹果')],
-    ),
   },
   {
     scope: 'context-menu',

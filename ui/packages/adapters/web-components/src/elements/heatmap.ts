@@ -56,7 +56,7 @@ function ancestorValue(el: HTMLElement, part: string): string | undefined {
  * 每读一次都重算一遍，取一次存下来用。
  *
  * 角色节点的身份一律取作者写在节点上的 value 属性，怎么解释由 variant 决定：
- * 日历形态里 row 与 week-day-label 上是行序 0-6（不写即网格之外那条月份行与它的行首占位）、
+ * 日历形态里 row 与 week-day 上是行序 0-6（不写即网格之外那条月份行与它的行首占位）、
  * cell 上是 ISO 日期、month-label 上是 YYYY-MM；月历形态里 month-block 上是 YYYY-MM、
  * row 上是月内周序（不写即块内那条星期名坐标轴）；矩阵形态里 row 与 row-label 上是行身份
  * （不写即表头行与角落占位）、column-label 与 cell 上是列身份，格子的行身份从所在的行取。
@@ -81,7 +81,7 @@ function ancestorValue(el: HTMLElement, part: string): string | undefined {
  * @csspart grid - role=grid 的网格容器，键盘在它身上收口
  * @csspart month-block - 月历形态里的一个自然月块
  * @csspart row - 一行；写了 value 即数据行，不写即坐标轴那一行
- * @csspart week-day-label - 星期名，只给眼睛看
+ * @csspart week-day - 星期名，只给眼睛看
  * @csspart month-label - 月份名
  * @csspart row-label - 矩阵的行名；不写 value 即表头行行首的角落占位
  * @csspart column-label - 矩阵的列名
@@ -218,8 +218,8 @@ export class XhHeatmapElement extends XhElement {
     for (const el of this.getParts('row'))
       this.spreader.spread(el, api.getRowProps(this.rowProps(el, variant)) as Record<string, unknown>)
 
-    for (const el of this.getParts('week-day-label'))
-      this.spreader.spread(el, api.getWeekDayLabelProps({ weekDay: numberOf(el) }) as Record<string, unknown>)
+    for (const el of this.getParts('week-day'))
+      this.spreader.spread(el, api.getWeekDayProps({ weekDay: numberOf(el) }) as Record<string, unknown>)
 
     for (const el of this.getParts('month-label'))
       this.spreader.spread(el, api.getMonthLabelProps({ value: el.getAttribute('value') ?? '' }) as Record<string, unknown>)

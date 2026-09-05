@@ -10,9 +10,9 @@ const APG = 'https://www.w3.org/WAI/ARIA/apg/practices/structural-roles/'
 const skeletonTree: FixtureNode = {
   part: 'root',
   children: [
-    { part: 'bone', attrs: { variant: 'circle' } },
-    { part: 'bone' },
-    { part: 'bone' },
+    { part: 'item', attrs: { variant: 'circle' } },
+    { part: 'item' },
+    { part: 'item' },
   ],
 }
 
@@ -26,8 +26,8 @@ export const skeletonSuite: ConformanceSuite = {
       name: '默认：容器报忙不隐藏，骨架条全部退出无障碍树',
       spec: { apg: APG },
       initial: {
-        order: ['root', 'bone[0]', 'bone[1]', 'bone[2]'],
-        counts: { root: 1, bone: 3 },
+        order: ['root', 'item[0]', 'item[1]', 'item[2]'],
+        counts: { root: 1, item: 3 },
         parts: {
           'root': {
             'aria-busy': 'true',
@@ -39,9 +39,9 @@ export const skeletonSuite: ConformanceSuite = {
             'role': null,
           },
           // 纯装饰，不进无障碍树，也不占 Tab 序列
-          'bone[0]': { 'aria-hidden': 'true', 'role': null, 'tabindex': null },
-          'bone[1]': { 'aria-hidden': 'true', 'role': null, 'tabindex': null },
-          'bone[2]': { 'aria-hidden': 'true' },
+          'item[0]': { 'aria-hidden': 'true', 'role': null, 'tabindex': null },
+          'item[1]': { 'aria-hidden': 'true', 'role': null, 'tabindex': null },
+          'item[2]': { 'aria-hidden': 'true' },
         },
       },
     },
@@ -50,9 +50,9 @@ export const skeletonSuite: ConformanceSuite = {
       spec: { apg: APG },
       initial: {
         parts: {
-          'bone[0]': { 'data-variant': 'circle' },
-          'bone[1]': { 'data-variant': 'text' },
-          'bone[2]': { 'data-variant': 'text' },
+          'item[0]': { 'data-variant': 'circle' },
+          'item[1]': { 'data-variant': 'text' },
+          'item[2]': { 'data-variant': 'text' },
         },
       },
     },
@@ -62,9 +62,9 @@ export const skeletonSuite: ConformanceSuite = {
       props: { variant: 'rect' },
       initial: {
         parts: {
-          'bone[0]': { 'data-variant': 'circle' },
-          'bone[1]': { 'data-variant': 'rect' },
-          'bone[2]': { 'data-variant': 'rect' },
+          'item[0]': { 'data-variant': 'circle' },
+          'item[1]': { 'data-variant': 'rect' },
+          'item[2]': { 'data-variant': 'rect' },
         },
       },
     },
@@ -73,7 +73,7 @@ export const skeletonSuite: ConformanceSuite = {
       spec: { apg: APG },
       props: { loading: false },
       initial: {
-        counts: { root: 1, bone: 3 },
+        counts: { root: 1, item: 3 },
         parts: {
           'root': {
             'aria-busy': null,
@@ -81,8 +81,8 @@ export const skeletonSuite: ConformanceSuite = {
             'hidden': '',
           },
           // 内容已就位，没有需要藏起来的装饰
-          'bone[0]': { 'aria-hidden': null, 'data-variant': 'circle' },
-          'bone[1]': { 'aria-hidden': null },
+          'item[0]': { 'aria-hidden': null, 'data-variant': 'circle' },
+          'item[1]': { 'aria-hidden': null },
         },
       },
     },
@@ -96,9 +96,9 @@ export const skeletonSuite: ConformanceSuite = {
           expect: {
             parts: {
               'root': { 'aria-busy': null, 'data-state': 'loaded', 'hidden': '' },
-              'bone[0]': { 'aria-hidden': null },
-              'bone[1]': { 'aria-hidden': null },
-              'bone[2]': { 'aria-hidden': null },
+              'item[0]': { 'aria-hidden': null },
+              'item[1]': { 'aria-hidden': null },
+              'item[2]': { 'aria-hidden': null },
             },
           },
         },
@@ -108,7 +108,7 @@ export const skeletonSuite: ConformanceSuite = {
           expect: {
             parts: {
               'root': { 'aria-busy': 'true', 'data-state': 'loading', 'hidden': null },
-              'bone[0]': { 'aria-hidden': 'true' },
+              'item[0]': { 'aria-hidden': 'true' },
             },
           },
         },

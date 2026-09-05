@@ -35,14 +35,14 @@ export function connectLog<T extends PropTypes>(
     scrollToBottom: props.translations?.scrollToBottom ?? 'Scroll to bottom',
   }
   // 只按 atBottom 判定，不看粘附意图
-  const showScrollButton = !atBottom
+  const showScrollToEndTrigger = !atBottom
 
   return {
     rows,
     loading,
     atBottom,
     sticking,
-    showScrollButton,
+    showScrollToEndTrigger,
     scrollToBottom: () => send({ type: 'SCROLL_TO_BOTTOM' }),
 
     getRootProps: () => normalize.element({
@@ -77,12 +77,12 @@ export function connectLog<T extends PropTypes>(
     }),
 
     // 收起时置 hidden，不卸载节点
-    getScrollButtonProps: () => normalize.button({
-      ...parts['scroll-button'].attrs,
+    getScrollToEndTriggerProps: () => normalize.button({
+      ...parts['scroll-to-end-trigger'].attrs,
       'type': 'button',
       'aria-label': label.scrollToBottom,
-      'data-state': showScrollButton ? 'visible' : 'hidden',
-      'hidden': !showScrollButton || undefined,
+      'data-state': showScrollToEndTrigger ? 'visible' : 'hidden',
+      'hidden': !showScrollToEndTrigger || undefined,
       'onClick': () => send({ type: 'SCROLL_TO_BOTTOM' }),
     }),
 

@@ -1,19 +1,32 @@
 import type { PropFn } from '@xihan-ui/machine'
+import type { TimerRun } from './timer.format'
 import type { TimerSchema } from './timer.types'
 import { setIntervalEffect, setTimeoutEffect, setup } from '@xihan-ui/machine'
 import { frameNow } from '@xihan-ui/motion'
-import { resolveTimerInterval, timerElapsedAt, timerTotalMs, timerValueAt } from './timer.format'
+import { resolveTimerInterval, timerElapsedAt, timerRunOf, timerRunsOnMount, timerTotalMs, timerValueAt } from './timer.format'
 
 const { createMachine } = setup<TimerSchema>()
 
+/** 这一轮的起止与方向；受控剩余量在场时由它接管。 */
+function runOf(prop: PropFn<TimerSchema>): TimerRun {
+  return timerRunOf({
+    value: prop('value'),
+    startMs: prop('startMs'),
+    targetMs: prop('targetMs'),
+    countdown: prop('countdown'),
+  })
+}
+
 /** 这一轮要跑多久，undefined 即没有终点。 */
 function totalOf(prop: PropFn<TimerSchema>): number | undefined {
-  return timerTotalMs(prop('startMs'), prop('targetMs'), !!prop('countdown'))
+  const run = runOf(prop)
+  return timerTotalMs(run.startMs, run.targetMs, run.countdown)
 }
 
 /** 累计走了 elapsed 毫秒时该显示的值。 */
 function valueOf(prop: PropFn<TimerSchema>, elapsed: number): number {
-  return timerValueAt(elapsed, prop('startMs'), prop('targetMs'), !!prop('countdown'))
+  const run = runOf(prop)
+  return timerValueAt(elapsed, run.startMs, run.targetMs, run.countdown)
 }
 
 /**
@@ -32,13 +45,17 @@ export const timerMachine = createMachine({
     elapsed: cell<number>(() => ({ defaultValue: 0 })),
   }),
   refs: () => ({ baseElapsed: 0, startedAt: 0 }),
-  // autoStart 只在这里读一次：它说的是「挂载时开不开跑」，不是一个能来回拨的开关
-  initialState: ({ prop }) => (prop('autoStart') ? 'running' : 'idle'),
+  // autoStart 只在这里读一次：它说的是「挂载时开不开跑」，不是一个能来回拨的开关。
+  // 受控通道在场时由 active 说了算，缺省真——给了剩余量就是要它走起来
+  initialState: ({ prop }) => (timerRunsOnMount(prop('value'), prop('active'), prop('autoStart')) ? 'running' : 'idle'),
   watch: ({ track, prop, action }) => {
     track(
       [() => prop('startMs'), () => prop('targetMs'), () => prop('countdown'), () => prop('interval')],
       () => action(['syncClock']),
     )
+    // 受控通道：剩余量改写即重新计时，开关翻转即停走
+    track([() => prop('value')], () => action(['restartFromValue']))
+    track([() => prop('active')], () => action(['syncActive']))
   },
   states: {
     // 没起步。累计恒为 0，显示的就是起始值
@@ -111,6 +128,14 @@ export const timerMachine = createMachine({
         prop('onComplete')?.({ value: valueOf(prop, elapsed), elapsed })
       },
       syncClock: ({ send }) => send({ type: 'CLOCK.SYNC' }),
+      // 受控剩余量换了一个数：累计清零，按 active 决定这一轮走不走
+      restartFromValue: ({ context, prop, send }) => {
+        context.set('elapsed', 0)
+        send((prop('active') ?? true) ? { type: 'RUN.START' } : { type: 'RUN.RESET' })
+      },
+      syncActive: ({ prop, send }) => {
+        send((prop('active') ?? true) ? { type: 'RUN.RESUME' } : { type: 'RUN.PAUSE' })
+      },
     },
     effects: {
       /**

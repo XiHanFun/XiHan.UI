@@ -25,9 +25,9 @@ import {
   findTimePickerColumn,
   timePickerAnatomy,
   timePickerColumnQuery,
-  timePickerInputQuery,
   timePickerItemQuery,
   timePickerPresetQuery,
+  timePickerSegmentQuery,
 } from './time-picker.anatomy'
 import {
   resolveTimeStep,
@@ -167,7 +167,7 @@ export function connectTimePicker<T extends PropTypes>(
 
   /** 快捷选项列里的全部条目，文档序。事件那一刻现查，不缓存节点数组。 */
   const presetItemsIn = (from: HTMLElement): HTMLElement[] =>
-    queryItems(from.closest<HTMLElement>(parts.presets.selector), timePickerPresetQuery)
+    queryItems(from.closest<HTMLElement>(parts['preset-group'].selector), timePickerPresetQuery)
 
   const pickPreset = (next: string): void => {
     const preset = presets.find(p => p.value === next)
@@ -199,7 +199,7 @@ export function connectTimePicker<T extends PropTypes>(
   // ── 分段输入：集合在事件那一刻现查，收起的段（granularity/hourCycle 关掉的）不参与移动 ──
 
   const liveSegments = (from: HTMLElement): HTMLElement[] =>
-    queryItems(from.closest<HTMLElement>(parts.control.selector), timePickerInputQuery)
+    queryItems(from.closest<HTMLElement>(parts.control.selector), timePickerSegmentQuery)
       .filter(el => !el.hasAttribute('hidden'))
 
   /**
@@ -212,7 +212,7 @@ export function connectTimePicker<T extends PropTypes>(
   /** 把焦点送到首段：从组件内任一节点往上找到 root，再往下取第一段。 */
   const focusFirstSegment = (from: HTMLElement): void => {
     const root = from.closest<HTMLElement>(parts.root.selector)
-    focusSafely(queryItems(root, timePickerInputQuery).find(el => !el.hasAttribute('hidden')))
+    focusSafely(queryItems(root, timePickerSegmentQuery).find(el => !el.hasAttribute('hidden')))
   }
 
   // ── 浮层：列内上下走、列间左右换，集合同样只在事件那一刻现查 ──
@@ -350,13 +350,13 @@ export function connectTimePicker<T extends PropTypes>(
       'data-invalid': dataAttr(flagged),
     }),
 
-    getInputProps: ({ segment }) => {
+    getSegmentProps: ({ segment }) => {
       // 这一段此刻参不参与显示；不参与的收起而不是卸载，granularity 改回去时要原地复现
       const active = segments.includes(segment)
       const range = segmentRange(segment, hourCycle)
       const num = segmentNumber(draft, segment, hourCycle)
       return normalize.element({
-        ...parts.input.attrs,
+        ...parts.segment.attrs,
         // 每一段都是一个可加减的数，用 spinbutton
         'role': 'spinbutton',
         // 导航与聚焦都以此为段的身份（事件那一刻现查 DOM 时按它定位）
@@ -577,7 +577,7 @@ export function connectTimePicker<T extends PropTypes>(
         }
         // 快捷选项列自己吃方向键与 Enter（它是另一套集合，不是时分秒那几列）。
         // 不早退的话上下键会跑去动时列、Enter 会把焦点格提交成另一个值
-        if ((event.target as HTMLElement | null)?.closest(parts.presets.selector))
+        if ((event.target as HTMLElement | null)?.closest(parts['preset-group'].selector))
           return
         // 上下键与 Home/End 在列内走
         const within = navIntentFromKey(event, { axis: 'vertical' })
@@ -601,8 +601,8 @@ export function connectTimePicker<T extends PropTypes>(
     }),
 
     // 键盘挂在这一列自己身上：content 的处理器管的是时分秒那几列，两套集合不能共用一个处理器
-    getPresetsProps: () => normalize.element({
-      ...parts.presets.attrs,
+    getPresetGroupProps: () => normalize.element({
+      ...parts['preset-group'].attrs,
       'role': 'listbox',
       'aria-label': prop('translations')?.presets ?? 'Shortcuts',
       'aria-orientation': 'vertical',

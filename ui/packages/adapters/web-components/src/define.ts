@@ -26,7 +26,6 @@ import { XhColorPickerElement } from './elements/color-picker'
 import { XhComboboxElement } from './elements/combobox'
 import { XhConfigElement } from './elements/config'
 import { XhContextMenuElement } from './elements/context-menu'
-import { XhCountdownElement } from './elements/countdown'
 import { XhDateFieldElement } from './elements/date-field'
 import { XhDatePickerElement } from './elements/date-picker'
 import { XhDescriptionsElement } from './elements/descriptions'
@@ -34,11 +33,10 @@ import { XhDialogElement } from './elements/dialog'
 import { XhDiffViewElement } from './elements/diff-view'
 import { XhDownloadTriggerElement } from './elements/download-trigger'
 import { XhDrawerElement } from './elements/drawer'
-import { XhDynamicInputElement } from './elements/dynamic-input'
 import { XhEditableElement } from './elements/editable'
-import { XhEllipsisElement } from './elements/ellipsis'
 import { XhEmptyStateElement } from './elements/empty-state'
 import { XhFieldElement } from './elements/field'
+import { XhFieldArrayElement } from './elements/field-array'
 import { XhFieldsetElement } from './elements/fieldset'
 import { XhFileUploadElement } from './elements/file-upload'
 import { XhFlexElement } from './elements/flex'
@@ -80,7 +78,6 @@ import { XhPasswordInputElement } from './elements/password-input'
 import { XhPinInputElement } from './elements/pin-input'
 import { XhPopconfirmElement } from './elements/popconfirm'
 import { XhPopoverElement } from './elements/popover'
-import { XhPopselectElement } from './elements/popselect'
 import { XhProgressElement } from './elements/progress'
 import { XhPromptInputElement } from './elements/prompt-input'
 import { XhQrCodeElement } from './elements/qr-code'
@@ -89,7 +86,6 @@ import { XhRadioGroupElement } from './elements/radio-group'
 import { XhRatingElement } from './elements/rating'
 import { XhReasoningElement } from './elements/reasoning'
 import { XhResizableElement } from './elements/resizable'
-import { XhResultElement } from './elements/result'
 import { XhScrollAreaElement } from './elements/scroll-area'
 import { XhScrollbarElement } from './elements/scrollbar'
 import { XhSegmentedElement } from './elements/segmented'
@@ -100,7 +96,6 @@ import { XhSignaturePadElement } from './elements/signature-pad'
 import { XhSkeletonElement } from './elements/skeleton'
 import { XhSliderElement } from './elements/slider'
 import { XhSortableElement } from './elements/sortable'
-import { XhSpaceElement } from './elements/space'
 import { XhSpinnerElement } from './elements/spinner'
 import { XhSplitterElement } from './elements/splitter'
 import { XhStatisticElement } from './elements/statistic'
@@ -111,11 +106,11 @@ import { XhTabsElement } from './elements/tabs'
 import { XhTagElement } from './elements/tag'
 import { XhTagsInputElement } from './elements/tags-input'
 import { XhTextFieldElement } from './elements/text-field'
-import { XhTimeElement } from './elements/time'
 import { XhTimeFieldElement } from './elements/time-field'
 import { XhTimePickerElement } from './elements/time-picker'
 import { XhTimelineElement } from './elements/timeline'
 import { XhTimerElement } from './elements/timer'
+import { XhTimestampElement } from './elements/timestamp'
 import { XhToastElement } from './elements/toast'
 import { XhToggleElement } from './elements/toggle'
 import { XhToggleGroupElement } from './elements/toggle-group'
@@ -126,6 +121,7 @@ import { XhTourElement } from './elements/tour'
 import { XhTransferElement } from './elements/transfer'
 import { XhTreeElement } from './elements/tree'
 import { XhTreeSelectElement } from './elements/tree-select'
+import { XhTruncateElement } from './elements/truncate'
 import { XhTypographyElement } from './elements/typography'
 import { XhVirtualizerElement } from './elements/virtualizer'
 import { XhWatermarkElement } from './elements/watermark'
@@ -138,13 +134,11 @@ export function defineXhElements(): void {
   defineElement('xh-avatar-group', XhAvatarGroupElement, VERSION)
   defineElement('xh-back-top', XhBackTopElement, VERSION)
   defineElement('xh-button-group', XhButtonGroupElement, VERSION)
-  defineElement('xh-countdown', XhCountdownElement, VERSION)
   defineElement('xh-descriptions', XhDescriptionsElement, VERSION)
   defineElement('xh-diff-view', XhDiffViewElement, VERSION)
   defineElement('xh-download-trigger', XhDownloadTriggerElement, VERSION)
-  defineElement('xh-dynamic-input', XhDynamicInputElement, VERSION)
-  defineElement('xh-ellipsis', XhEllipsisElement, VERSION)
   defineElement('xh-empty-state', XhEmptyStateElement, VERSION)
+  defineElement('xh-field-array', XhFieldArrayElement, VERSION)
   defineElement('xh-fieldset', XhFieldsetElement, VERSION)
   defineElement('xh-flex', XhFlexElement, VERSION)
   defineElement('xh-float-button', XhFloatButtonElement, VERSION)
@@ -169,16 +163,13 @@ export function defineXhElements(): void {
   defineElement('xh-page-header', XhPageHeaderElement, VERSION)
   defineElement('xh-password-input', XhPasswordInputElement, VERSION)
   defineElement('xh-popconfirm', XhPopconfirmElement, VERSION)
-  defineElement('xh-popselect', XhPopselectElement, VERSION)
   defineElement('xh-qr-code', XhQrCodeElement, VERSION)
   defineElement('xh-question-flow', XhQuestionFlowElement, VERSION)
   defineElement('xh-reasoning', XhReasoningElement, VERSION)
   defineElement('xh-resizable', XhResizableElement, VERSION)
-  defineElement('xh-result', XhResultElement, VERSION)
   defineElement('xh-segmented', XhSegmentedElement, VERSION)
   defineElement('xh-signature-pad', XhSignaturePadElement, VERSION)
   defineElement('xh-skeleton', XhSkeletonElement, VERSION)
-  defineElement('xh-space', XhSpaceElement, VERSION)
   defineElement('xh-spinner', XhSpinnerElement, VERSION)
   defineElement('xh-accordion', XhAccordionElement, VERSION)
   defineElement('xh-anchor', XhAnchorElement, VERSION)
@@ -244,11 +235,11 @@ export function defineXhElements(): void {
   defineElement('xh-tag', XhTagElement, VERSION)
   defineElement('xh-tags-input', XhTagsInputElement, VERSION)
   defineElement('xh-text-field', XhTextFieldElement, VERSION)
-  defineElement('xh-time', XhTimeElement, VERSION)
   defineElement('xh-time-field', XhTimeFieldElement, VERSION)
   defineElement('xh-time-picker', XhTimePickerElement, VERSION)
   defineElement('xh-timeline', XhTimelineElement, VERSION)
   defineElement('xh-timer', XhTimerElement, VERSION)
+  defineElement('xh-timestamp', XhTimestampElement, VERSION)
   defineElement('xh-toast', XhToastElement, VERSION)
   defineElement('xh-toggle', XhToggleElement, VERSION)
   defineElement('xh-toggle-group', XhToggleGroupElement, VERSION)
@@ -259,6 +250,7 @@ export function defineXhElements(): void {
   defineElement('xh-transfer', XhTransferElement, VERSION)
   defineElement('xh-tree', XhTreeElement, VERSION)
   defineElement('xh-tree-select', XhTreeSelectElement, VERSION)
+  defineElement('xh-truncate', XhTruncateElement, VERSION)
   defineElement('xh-typography', XhTypographyElement, VERSION)
   defineElement('xh-virtualizer', XhVirtualizerElement, VERSION)
   defineElement('xh-watermark', XhWatermarkElement, VERSION)
@@ -346,7 +338,6 @@ export {
   XhSkeletonElement,
   XhSliderElement,
   XhSortableElement,
-  XhSpaceElement,
   XhSpinnerElement,
   XhSplitterElement,
   XhStepsElement,

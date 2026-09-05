@@ -1,7 +1,7 @@
 <!-- 基础用法 | count 给的是总条数不是总页数；页码序列由 root 的插槽交出来，作者照着渲染 item 与省略号 -->
 <script setup lang="ts">
 import {
-  XhPaginationEllipsis,
+  XhPaginationEllipsisTrigger,
   XhPaginationItem,
   XhPaginationNextTrigger,
   XhPaginationPrevTrigger,
@@ -18,7 +18,7 @@ import {
   >
     <XhPaginationPrevTrigger />
     <template v-for="(p, i) in pages" :key="`${p}-${i}`">
-      <XhPaginationEllipsis v-if="p === 'ellipsis'">…</XhPaginationEllipsis>
+      <XhPaginationEllipsisTrigger v-if="p === 'ellipsis'">…</XhPaginationEllipsisTrigger>
       <XhPaginationItem v-else :value="p">{{ p }}</XhPaginationItem>
     </template>
     <XhPaginationNextTrigger />

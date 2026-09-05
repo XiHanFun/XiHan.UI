@@ -11,11 +11,11 @@ export type {
   DiffViewCellProps,
   DiffViewExpandedChangeDetails,
   DiffViewGapProps,
+  DiffViewInlineChangeProps,
   DiffViewMode,
   DiffViewRow,
   DiffViewRowProps,
   DiffViewSchema,
   DiffViewSegment,
-  DiffViewSegmentProps,
   DiffViewTranslations,
 } from './diff-view.types'

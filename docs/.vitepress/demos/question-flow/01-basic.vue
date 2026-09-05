@@ -6,10 +6,10 @@ import {
   XhQuestionFlowCounter,
   XhQuestionFlowFooter,
   XhQuestionFlowNextTrigger,
-  XhQuestionFlowOption,
-  XhQuestionFlowOptionGroup,
-  XhQuestionFlowOptionIndicator,
-  XhQuestionFlowOptionLabel,
+  XhQuestionFlowItem,
+  XhQuestionFlowGroup,
+  XhQuestionFlowItemIndicator,
+  XhQuestionFlowItemText,
   XhQuestionFlowPrevTrigger,
   XhQuestionFlowPrompt,
   XhQuestionFlowQuestion,
@@ -67,20 +67,20 @@ const sent = ref("");
         <XhQuestionFlowTrack>
           <XhQuestionFlowQuestion v-for="question in questions" :key="question.id" :question-id="question.id">
             <XhQuestionFlowPrompt :question-id="question.id">{{ question.prompt }}</XhQuestionFlowPrompt>
-            <XhQuestionFlowOptionGroup :question-id="question.id">
-              <XhQuestionFlowOption
+            <XhQuestionFlowGroup :question-id="question.id">
+              <XhQuestionFlowItem
                 v-for="option in question.options"
                 :key="option.value"
                 :question-id="question.id"
                 :option-value="option.value"
               >
                 <!-- 记号由皮肤画：指示符留空即可，不必手打 -->
-                <XhQuestionFlowOptionIndicator :question-id="question.id" :option-value="option.value" />
-                <XhQuestionFlowOptionLabel :question-id="question.id" :option-value="option.value">
+                <XhQuestionFlowItemIndicator :question-id="question.id" :option-value="option.value" />
+                <XhQuestionFlowItemText :question-id="question.id" :option-value="option.value">
                   {{ option.label }}
-                </XhQuestionFlowOptionLabel>
-              </XhQuestionFlowOption>
-            </XhQuestionFlowOptionGroup>
+                </XhQuestionFlowItemText>
+              </XhQuestionFlowItem>
+            </XhQuestionFlowGroup>
           </XhQuestionFlowQuestion>
         </XhQuestionFlowTrack>
       </XhQuestionFlowViewport>

@@ -13,13 +13,19 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 // 直接指到组件目录：包主入口的导出由接线一并补，测试不等它
 import {
   connectTimer,
+  formatTimerText,
+  isTimerControlled,
   isTimerUnit,
+  quantizeTimer,
   resolveTimerInterval,
+  resolveTimerPrecision,
   resolveTimerStart,
   resolveTimerTarget,
   splitTimer,
   timerElapsedAt,
   timerMachine,
+  timerRunOf,
+  timerRunsOnMount,
   timerSegmentText,
   timerTotalMs,
   timerValueAt,
@@ -141,7 +147,7 @@ function makeTimer(initial: Props = {}) {
     setProps: (next: Props) => props.set({ ...props.get(), ...next }),
     api: () => connectTimer(service, normalizeProps),
     root: () => connectTimer(service, normalizeProps).getRootProps() as Dict,
-    area: () => connectTimer(service, normalizeProps).getAreaProps() as Dict,
+    display: () => connectTimer(service, normalizeProps).getDisplayProps() as Dict,
     control: () => connectTimer(service, normalizeProps).getControlProps() as Dict,
     stop: () => runtime.stop(),
   }
@@ -312,22 +318,22 @@ describe('connectTimer 部件属性', () => {
 
   it('时间区是 timer 角色，播报写死关掉，名字把每段说清楚', () => {
     const t = makeTimer({ startMs: HOUR + 2 * MINUTE + 3 * SECOND })
-    const area = t.area()
-    expect(area.role).toBe('timer')
-    expect(area['aria-live']).toBe('off')
-    expect(area['aria-label']).toBe('1 hour 2 minutes 3 seconds')
+    const display = t.display()
+    expect(display.role).toBe('timer')
+    expect(display['aria-live']).toBe('off')
+    expect(display['aria-label']).toBe('1 hour 2 minutes 3 seconds')
   })
 
   it('名字里的天数为 0 就不念它', () => {
     const t = makeTimer({ startMs: DAY })
-    expect(t.area()['aria-label']).toBe('1 day 0 hours 0 minutes 0 seconds')
-    expect(makeTimer({}).area()['aria-label']).toBe('0 hours 0 minutes 0 seconds')
+    expect(t.display()['aria-label']).toBe('1 day 0 hours 0 minutes 0 seconds')
+    expect(makeTimer({}).display()['aria-label']).toBe('0 hours 0 minutes 0 seconds')
   })
 
   it('内建名字按数量分单复数：1 用单数，0 与其余用复数', () => {
-    expect(makeTimer({ startMs: HOUR + MINUTE + SECOND }).area()['aria-label'])
+    expect(makeTimer({ startMs: HOUR + MINUTE + SECOND }).display()['aria-label'])
       .toBe('1 hour 1 minute 1 second')
-    expect(makeTimer({ startMs: 2 * HOUR + 2 * MINUTE + 2 * SECOND }).area()['aria-label'])
+    expect(makeTimer({ startMs: 2 * HOUR + 2 * MINUTE + 2 * SECOND }).display()['aria-label'])
       .toBe('2 hours 2 minutes 2 seconds')
   })
 
@@ -345,7 +351,7 @@ describe('connectTimer 部件属性', () => {
       startMs: 65 * SECOND,
       translations: { time: s => `${s.minutes} 分 ${s.seconds} 秒`, start: '开始' },
     })
-    expect(t.area()['aria-label']).toBe('1 分 5 秒')
+    expect(t.display()['aria-label']).toBe('1 分 5 秒')
     expect(t.control()['aria-label']).toBe('开始')
   })
 
@@ -391,5 +397,115 @@ describe('connectTimer 部件属性', () => {
     const t = makeTimer({ startMs: 90 * SECOND })
     expect(t.api().segmentText('minutes')).toBe('01')
     expect(t.api().segmentText('seconds')).toBe('30')
+  })
+})
+
+// ── 文本、粒度与受控通道 ────────────────────────────────────────────
+
+describe('timer 铺字与粒度', () => {
+  it('缺省模板铺成 HH:mm:ss', () => {
+    expect(formatTimerText(90 * SECOND)).toBe('00:01:30')
+  })
+
+  it('模板里没写 D 时小时收下全部小时数，写了 D 才把天分出来', () => {
+    expect(formatTimerText(30 * HOUR)).toBe('30:00:00')
+    expect(formatTimerText(30 * HOUR, 'D 天 HH:mm:ss')).toBe('1 天 06:00:00')
+  })
+
+  it('位数不够补零、超了不截断；毫秒先补满三位再取前几位', () => {
+    expect(formatTimerText(100 * HOUR, 'HH')).toBe('100')
+    expect(formatTimerText(1234, 's.S')).toBe('1.2')
+    expect(formatTimerText(1234, 's.SSS')).toBe('1.234')
+  })
+
+  it('粒度缺省毫秒即不量化，写 0 才取到整秒', () => {
+    expect(resolveTimerPrecision(undefined)).toBe(3)
+    expect(resolveTimerPrecision(-1)).toBe(0)
+    expect(resolveTimerPrecision(9)).toBe(3)
+    expect(quantizeTimer(1999, 3)).toBe(1999)
+    expect(quantizeTimer(1999, 0)).toBe(1000)
+    expect(quantizeTimer(1999, 1)).toBe(1900)
+  })
+})
+
+describe('timer 受控通道', () => {
+  beforeEach(() => {
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'performance', 'Date'] })
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it('给了剩余量即接管起止与方向：起点是它、倒着走、终点是 0', () => {
+    expect(timerRunOf({ value: 5 * SECOND, startMs: 99, targetMs: 42, countdown: false }))
+      .toEqual({ startMs: 5 * SECOND, targetMs: 0, countdown: true })
+    expect(timerRunOf({ startMs: 99, targetMs: 42, countdown: true }))
+      .toEqual({ startMs: 99, targetMs: 42, countdown: true })
+  })
+
+  it('给了剩余量或开关即算受控；两个都没给才看 autoStart', () => {
+    expect(isTimerControlled(5 * SECOND, undefined)).toBe(true)
+    expect(isTimerControlled(undefined, false)).toBe(true)
+    expect(isTimerControlled(undefined, undefined)).toBe(false)
+    expect(timerRunsOnMount(5 * SECOND, undefined, undefined)).toBe(true)
+    expect(timerRunsOnMount(5 * SECOND, false, undefined)).toBe(false)
+    expect(timerRunsOnMount(undefined, undefined, true)).toBe(true)
+    expect(timerRunsOnMount(undefined, undefined, undefined)).toBe(false)
+  })
+
+  it('受控时挂载即开跑，剩余量落成显示值', () => {
+    const t = makeTimer({ value: 5 * SECOND, precision: 0 })
+    expect(t.state()).toBe('running')
+    expect(t.api().value).toBe(5 * SECOND)
+    expect(t.root()['data-controlled']).toBe('')
+    t.stop()
+  })
+
+  it('开关翻假停在当前值，翻真接着走', () => {
+    const t = makeTimer({ value: 10 * SECOND, active: true, precision: 0 })
+    vi.advanceTimersByTime(3 * SECOND)
+    t.setProps({ active: false })
+    expect(t.state()).toBe('paused')
+    expect(t.api().value).toBe(7 * SECOND)
+    t.setProps({ active: true })
+    expect(t.state()).toBe('running')
+    t.stop()
+  })
+
+  it('剩余量改写即把累计清零、从新值重新计时', () => {
+    const t = makeTimer({ value: 10 * SECOND, precision: 0 })
+    vi.advanceTimersByTime(4 * SECOND)
+    expect(t.api().value).toBe(6 * SECOND)
+    t.setProps({ value: 8 * SECOND })
+    expect(t.state()).toBe('running')
+    expect(t.api().value).toBe(8 * SECOND)
+    t.stop()
+  })
+
+  it('受控时起停按钮不改状态', () => {
+    const t = makeTimer({ value: 5 * SECOND, active: false })
+    expect(t.state()).toBe('idle')
+    ;(t.control().onClick as () => void)()
+    expect(t.state()).toBe('idle')
+    t.stop()
+  })
+
+  it('走完落 data-state=completed，不另发一支 data-finished', () => {
+    const t = makeTimer({ value: 2 * SECOND, precision: 0 })
+    vi.advanceTimersByTime(2 * SECOND)
+    expect(t.state()).toBe('completed')
+    expect(t.api().value).toBe(0)
+    expect(t.root()['data-state']).toBe('completed')
+    expect(t.root()['data-finished']).toBeUndefined()
+    t.stop()
+  })
+
+  it('播报档位落到时间区的 aria-live，缺省 off', () => {
+    const t = makeTimer({})
+    expect(t.display()['aria-live']).toBe('off')
+    t.setProps({ live: 'polite' })
+    expect(t.display()['aria-live']).toBe('polite')
+    t.stop()
   })
 })

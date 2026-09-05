@@ -162,8 +162,8 @@ export const XhQuestionFlowPrompt = defineComponent({
   },
 })
 
-export const XhQuestionFlowOptionGroup = defineComponent({
-  name: 'XhQuestionFlowOptionGroup',
+export const XhQuestionFlowGroup = defineComponent({
+  name: 'XhQuestionFlowGroup',
   props: {
     questionId: { type: String, required: true },
   },
@@ -171,14 +171,14 @@ export const XhQuestionFlowOptionGroup = defineComponent({
     const ctx = useQuestionFlowContext()
     return () => h(
       'div',
-      ctx.api.value.getOptionGroupProps({ id: props.questionId }) as Record<string, unknown>,
+      ctx.api.value.getGroupProps({ id: props.questionId }) as Record<string, unknown>,
       slots.default?.(),
     )
   },
 })
 
-export const XhQuestionFlowOption = defineComponent({
-  name: 'XhQuestionFlowOption',
+export const XhQuestionFlowItem = defineComponent({
+  name: 'XhQuestionFlowItem',
   props: {
     questionId: { type: String, required: true },
     optionValue: { type: String, required: true },
@@ -193,7 +193,7 @@ export const XhQuestionFlowOption = defineComponent({
     // 用原生 button，指针激活由平台负责
     return () => h(
       'button',
-      ctx.api.value.getOptionProps({
+      ctx.api.value.getItemProps({
         questionId: props.questionId,
         value: props.optionValue,
         disabled: props.optionDisabled,
@@ -207,8 +207,8 @@ export const XhQuestionFlowOption = defineComponent({
   },
 })
 
-export const XhQuestionFlowOptionIndicator = defineComponent({
-  name: 'XhQuestionFlowOptionIndicator',
+export const XhQuestionFlowItemIndicator = defineComponent({
+  name: 'XhQuestionFlowItemIndicator',
   props: {
     questionId: { type: String, required: true },
     optionValue: { type: String, required: true },
@@ -217,7 +217,7 @@ export const XhQuestionFlowOptionIndicator = defineComponent({
     const ctx = useQuestionFlowContext()
     return () => h(
       'span',
-      ctx.api.value.getOptionIndicatorProps({
+      ctx.api.value.getItemIndicatorProps({
         questionId: props.questionId,
         value: props.optionValue,
       }) as Record<string, unknown>,
@@ -226,8 +226,8 @@ export const XhQuestionFlowOptionIndicator = defineComponent({
   },
 })
 
-export const XhQuestionFlowOptionLabel = defineComponent({
-  name: 'XhQuestionFlowOptionLabel',
+export const XhQuestionFlowItemText = defineComponent({
+  name: 'XhQuestionFlowItemText',
   props: {
     questionId: { type: String, required: true },
     optionValue: { type: String, required: true },
@@ -237,7 +237,7 @@ export const XhQuestionFlowOptionLabel = defineComponent({
     // 排在选项之内，文本自然构成它的可及名
     return () => h(
       'span',
-      ctx.api.value.getOptionLabelProps({
+      ctx.api.value.getItemTextProps({
         questionId: props.questionId,
         value: props.optionValue,
       }) as Record<string, unknown>,

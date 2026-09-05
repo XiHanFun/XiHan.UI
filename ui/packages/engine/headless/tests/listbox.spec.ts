@@ -104,8 +104,8 @@ function mount(initial: Partial<Props> = {}): Harness {
     spread(label, api.getLabelProps() as Record<string, unknown>)
     spread(content, api.getContentProps() as Record<string, unknown>)
     for (const g of GROUPS) {
-      spread(groupEls.get(g)!, api.getItemGroupProps({ value: g }) as Record<string, unknown>)
-      spread(groupLabels.get(g)!, api.getItemGroupLabelProps({ value: g }) as Record<string, unknown>)
+      spread(groupEls.get(g)!, api.getGroupProps({ value: g }) as Record<string, unknown>)
+      spread(groupLabels.get(g)!, api.getGroupLabelProps({ value: g }) as Record<string, unknown>)
     }
     for (const item of ITEMS) {
       const decl = { value: item.value, disabled: 'disabled' in item ? item.disabled : false }
@@ -336,7 +336,7 @@ describe('方向键导航', () => {
     expect(focused()).toBe('apple')
     press(h.item('apple'), 'ArrowDown')
     expect(focused()).toBe('cherry')
-    // durian 在另一个分组里：集合按 content 归属查，中间隔着 item-group 不影响
+    // durian 在另一个分组里：集合按 content 归属查，中间隔着 group 不影响
     press(h.item('cherry'), 'ArrowDown')
     expect(focused()).toBe('durian')
   })

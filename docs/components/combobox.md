@@ -113,7 +113,7 @@ invalid 让输入行报 aria-invalid、描边转告警色；选出值后判定�
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-combobox>` |
-| Vue 组件 | `XhComboboxClearTrigger` `XhComboboxContent` `XhComboboxControl` `XhComboboxEmpty` `XhComboboxHiddenInput` `XhComboboxInput` `XhComboboxItem` `XhComboboxItemGroup` `XhComboboxItemGroupLabel` `XhComboboxItemIndicator` `XhComboboxItemText` `XhComboboxLabel` `XhComboboxPositioner` `XhComboboxRoot` `XhComboboxTrigger` |
+| Vue 组件 | `XhComboboxClearTrigger` `XhComboboxContent` `XhComboboxControl` `XhComboboxEmpty` `XhComboboxGroup` `XhComboboxGroupLabel` `XhComboboxHiddenInput` `XhComboboxInput` `XhComboboxItem` `XhComboboxItemIndicator` `XhComboboxItemText` `XhComboboxLabel` `XhComboboxPositioner` `XhComboboxRoot` `XhComboboxTrigger` |
 | 组合式函数 | `useCombobox` |
 | 状态机 | `comboboxMachine` |
 | 皮肤 | `@xihan-ui/styles/combobox.css` |
@@ -122,7 +122,7 @@ invalid 让输入行报 aria-invalid、描边转告警色；选出值后判定�
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="combobox"`：`root` · `label` · **`control`** · **`input`** · `trigger` · `clear-trigger` · `positioner` · **`content`** · `item` · `item-text` · `item-indicator` · `item-group` · `item-group-label` · `empty` · `hidden-input`
+`data-scope="combobox"`：`root` · `label` · **`control`** · **`input`** · `trigger` · `clear-trigger` · `positioner` · **`content`** · `item` · `item-text` · `item-indicator` · `group` · `group-label` · `empty` · `hidden-input`
 
 ## Props
 
@@ -230,8 +230,8 @@ invalid 让输入行报 aria-invalid、描边转告警色；选出值后判定�
 | `getClearTriggerProps` | `() => T['button']` |  |
 | `getPositionerProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |
-| `getItemGroupProps` | `(props: ComboboxItemGroupProps) => T['element']` |  |
-| `getItemGroupLabelProps` | `(props: ComboboxItemGroupProps) => T['element']` |  |
+| `getGroupProps` | `(props: ComboboxGroupProps) => T['element']` |  |
+| `getGroupLabelProps` | `(props: ComboboxGroupProps) => T['element']` |  |
 | `getItemProps` | `(props: ComboboxItemProps) => T['element']` |  |
 | `getItemTextProps` | `(props: ComboboxItemProps) => T['element']` |  |
 | `getItemIndicatorProps` | `(props: ComboboxItemProps) => T['element']` |  |
@@ -283,8 +283,8 @@ invalid 让输入行报 aria-invalid、描边转告警色；选出值后判定�
 | `item` | `aria-selected` | 'true' \| 'false' |
 | `item` | `role` | 'option' |
 | `item-indicator` | `aria-hidden` | 'true' |
-| `item-group` | `aria-labelledby` | `group-label` 部件的 id |
-| `item-group` | `role` | 'group' |
+| `group` | `aria-labelledby` | `group-label` 部件的 id |
+| `group` | `role` | 'group' |
 | `empty` | `role` | 'status' |
 
 ## 样式
@@ -331,7 +331,7 @@ invalid 让输入行报 aria-invalid、描边转告警色；选出值后判定�
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-combobox-action-bg` · `--xh-combobox-action-bg-active` · `--xh-combobox-action-bg-hover` · `--xh-combobox-action-fg` · `--xh-combobox-action-fg-hover` · `--xh-combobox-action-font-size` · `--xh-combobox-action-radius` · `--xh-combobox-action-size` · `--xh-combobox-content-bg` · `--xh-combobox-content-border` · `--xh-combobox-content-fg` · `--xh-combobox-content-gap` · `--xh-combobox-content-max-h` · `--xh-combobox-content-max-w` · `--xh-combobox-content-min-w` · `--xh-combobox-content-px` · `--xh-combobox-content-py` · `--xh-combobox-content-radius` · `--xh-combobox-content-shadow` · `--xh-combobox-control-bg` · `--xh-combobox-control-bg-disabled` · `--xh-combobox-control-bg-readonly` · `--xh-combobox-control-border` · `--xh-combobox-control-border-focus` · `--xh-combobox-control-border-hover` · `--xh-combobox-control-border-invalid` · `--xh-combobox-control-fg` · `--xh-combobox-control-gap` · `--xh-combobox-control-h` · `--xh-combobox-control-min-w` · `--xh-combobox-control-px` · `--xh-combobox-control-py` · `--xh-combobox-control-radius` · `--xh-combobox-control-shadow` · `--xh-combobox-empty-bg` · `--xh-combobox-empty-border` · `--xh-combobox-empty-fg` · `--xh-combobox-empty-font-size` · `--xh-combobox-empty-px` · `--xh-combobox-empty-py` · `--xh-combobox-empty-radius` · `--xh-combobox-empty-shadow` · `--xh-combobox-gap` · `--xh-combobox-group-gap` · `--xh-combobox-group-label-fg` · `--xh-combobox-group-label-font-size` · `--xh-combobox-group-label-font-weight` · `--xh-combobox-group-label-px` · `--xh-combobox-group-label-py` · `--xh-combobox-icon-size` · `--xh-combobox-input-autofill-bg` · `--xh-combobox-input-autofill-fg` · `--xh-combobox-input-font-size` · `--xh-combobox-item-bg-hover` · `--xh-combobox-item-fg` · `--xh-combobox-item-fg-selected` · `--xh-combobox-item-font-size` · `--xh-combobox-item-font-weight-selected` · `--xh-combobox-item-gap` · `--xh-combobox-item-group-gap` · `--xh-combobox-item-indicator-fg` · `--xh-combobox-item-indicator-size` · `--xh-combobox-item-leading` · `--xh-combobox-item-px` · `--xh-combobox-item-py` · `--xh-combobox-item-radius` · `--xh-combobox-label-fg` · `--xh-combobox-label-fg-disabled` · `--xh-combobox-label-font-size` · `--xh-combobox-label-font-weight` · `--xh-combobox-layer` · `--xh-combobox-placeholder-fg`
+`--xh-combobox-action-bg` · `--xh-combobox-action-bg-active` · `--xh-combobox-action-bg-hover` · `--xh-combobox-action-fg` · `--xh-combobox-action-fg-hover` · `--xh-combobox-action-font-size` · `--xh-combobox-action-radius` · `--xh-combobox-action-size` · `--xh-combobox-content-bg` · `--xh-combobox-content-border` · `--xh-combobox-content-fg` · `--xh-combobox-content-gap` · `--xh-combobox-content-max-h` · `--xh-combobox-content-max-w` · `--xh-combobox-content-min-w` · `--xh-combobox-content-px` · `--xh-combobox-content-py` · `--xh-combobox-content-radius` · `--xh-combobox-content-shadow` · `--xh-combobox-control-bg` · `--xh-combobox-control-bg-disabled` · `--xh-combobox-control-bg-hover` · `--xh-combobox-control-bg-readonly` · `--xh-combobox-control-border` · `--xh-combobox-control-border-focus` · `--xh-combobox-control-border-hover` · `--xh-combobox-control-border-invalid` · `--xh-combobox-control-fg` · `--xh-combobox-control-gap` · `--xh-combobox-control-h` · `--xh-combobox-control-min-w` · `--xh-combobox-control-px` · `--xh-combobox-control-py` · `--xh-combobox-control-radius` · `--xh-combobox-control-shadow` · `--xh-combobox-empty-bg` · `--xh-combobox-empty-border` · `--xh-combobox-empty-fg` · `--xh-combobox-empty-font-size` · `--xh-combobox-empty-px` · `--xh-combobox-empty-py` · `--xh-combobox-empty-radius` · `--xh-combobox-empty-shadow` · `--xh-combobox-gap` · `--xh-combobox-group-gap` · `--xh-combobox-group-label-fg` · `--xh-combobox-group-label-font-size` · `--xh-combobox-group-label-font-weight` · `--xh-combobox-group-label-px` · `--xh-combobox-group-label-py` · `--xh-combobox-group-spacing` · `--xh-combobox-icon-size` · `--xh-combobox-input-autofill-bg` · `--xh-combobox-input-autofill-fg` · `--xh-combobox-input-font-size` · `--xh-combobox-item-bg-hover` · `--xh-combobox-item-fg` · `--xh-combobox-item-fg-selected` · `--xh-combobox-item-font-size` · `--xh-combobox-item-font-weight-selected` · `--xh-combobox-item-gap` · `--xh-combobox-item-indicator-fg` · `--xh-combobox-item-indicator-size` · `--xh-combobox-item-leading` · `--xh-combobox-item-px` · `--xh-combobox-item-py` · `--xh-combobox-item-radius` · `--xh-combobox-label-fg` · `--xh-combobox-label-fg-disabled` · `--xh-combobox-label-font-size` · `--xh-combobox-label-font-weight` · `--xh-combobox-layer` · `--xh-combobox-placeholder-fg`
 
 ## 动效
 

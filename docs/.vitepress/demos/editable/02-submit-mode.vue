@@ -2,7 +2,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import {
-  XhEditableArea,
   XhEditableCancelTrigger,
   XhEditableControl,
   XhEditableEditTrigger,
@@ -25,11 +24,9 @@ const enterCommitted = ref("回车才提交");
     @value-commit="blurCommitted = $event.value"
   >
     <XhEditableLabel>submitMode = blur</XhEditableLabel>
-    <XhEditableArea>
+    <XhEditableControl>
       <XhEditablePreview />
       <XhEditableInput />
-    </XhEditableArea>
-    <XhEditableControl>
       <XhEditableEditTrigger>编辑</XhEditableEditTrigger>
       <XhEditableSubmitTrigger>保存</XhEditableSubmitTrigger>
       <XhEditableCancelTrigger>取消</XhEditableCancelTrigger>
@@ -44,11 +41,9 @@ const enterCommitted = ref("回车才提交");
     @value-commit="enterCommitted = $event.value"
   >
     <XhEditableLabel>submitMode = enter</XhEditableLabel>
-    <XhEditableArea>
+    <XhEditableControl>
       <XhEditablePreview />
       <XhEditableInput />
-    </XhEditableArea>
-    <XhEditableControl>
       <XhEditableEditTrigger>编辑</XhEditableEditTrigger>
       <XhEditableSubmitTrigger>保存</XhEditableSubmitTrigger>
       <XhEditableCancelTrigger>取消</XhEditableCancelTrigger>

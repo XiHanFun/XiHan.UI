@@ -119,8 +119,8 @@ export function connectSignaturePad<T extends PropTypes>(
       'data-disabled': dataAttr(disabled),
     }),
 
-    getSegmentProps: () => normalize.element({
-      ...parts.segment.attrs,
+    getPathProps: () => normalize.element({
+      ...parts.path.attrs,
       'd': d,
       'data-empty': dataAttr(empty),
     }),

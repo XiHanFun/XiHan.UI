@@ -110,16 +110,16 @@ export const XhApprovalLiveRegion = defineComponent({
   },
 })
 
-export const XhApprovalScopeGroup = defineComponent({
-  name: 'XhApprovalScopeGroup',
+export const XhApprovalGroup = defineComponent({
+  name: 'XhApprovalGroup',
   setup(_, { slots }) {
     const ctx = useApprovalContext()
-    return () => h('div', ctx.api.value.getScopeGroupProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getGroupProps() as Record<string, unknown>, slots.default?.())
   },
 })
 
-export const XhApprovalScopeItem = defineComponent({
-  name: 'XhApprovalScopeItem',
+export const XhApprovalItem = defineComponent({
+  name: 'XhApprovalItem',
   props: {
     scopeValue: { type: String, required: true },
     scopeLabel: { type: String, default: undefined },
@@ -139,14 +139,14 @@ export const XhApprovalScopeItem = defineComponent({
     })
     return () => h(
       'div',
-      ctx.api.value.getScopeItemProps(scope()) as Record<string, unknown>,
+      ctx.api.value.getItemProps(scope()) as Record<string, unknown>,
       slots.default?.({ scope: scope(), granted: ctx.api.value.isScopeGranted(props.scopeValue) }),
     )
   },
 })
 
-export const XhApprovalScopeIndicator = defineComponent({
-  name: 'XhApprovalScopeIndicator',
+export const XhApprovalItemIndicator = defineComponent({
+  name: 'XhApprovalItemIndicator',
   props: {
     scopeValue: { type: String, required: true },
   },
@@ -154,14 +154,14 @@ export const XhApprovalScopeIndicator = defineComponent({
     const ctx = useApprovalContext()
     return () => h(
       'span',
-      ctx.api.value.getScopeIndicatorProps({ value: props.scopeValue }) as Record<string, unknown>,
+      ctx.api.value.getItemIndicatorProps({ value: props.scopeValue }) as Record<string, unknown>,
       slots.default?.(),
     )
   },
 })
 
-export const XhApprovalScopeLabel = defineComponent({
-  name: 'XhApprovalScopeLabel',
+export const XhApprovalItemText = defineComponent({
+  name: 'XhApprovalItemText',
   props: {
     scopeValue: { type: String, required: true },
   },
@@ -170,7 +170,7 @@ export const XhApprovalScopeLabel = defineComponent({
     // 排在勾选项之内，文本自然构成它的可及名
     return () => h(
       'span',
-      ctx.api.value.getScopeLabelProps({ value: props.scopeValue }) as Record<string, unknown>,
+      ctx.api.value.getItemTextProps({ value: props.scopeValue }) as Record<string, unknown>,
       slots.default?.(),
     )
   },

@@ -21,7 +21,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
- * `<xh-editable>` —— Light-DOM 行为宿主：作者写 root/label/area/preview/input/control
+ * `<xh-editable>` —— Light-DOM 行为宿主：作者写 root/label/control/preview/input
  * 与三颗按钮的角色节点，元素跑 editable 机器并把 connect 产出打上去。
  *
  * 预览态显示 preview、编辑态显示 input，另一个带 hidden 收起而不卸载：两边都是作者写的节点，
@@ -54,10 +54,9 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @fires edit-change - 编辑态变化；detail 为 `{ edit: boolean }`
  * @csspart root - role=group 容器，承载 data-state / data-disabled / data-readonly / data-invalid / data-empty
  * @csspart label - 标题；`for` 恒写向 input，故须是原生 `<label>`
- * @csspart area - 预览区与输入框的共同落点，两者轮流上场
  * @csspart preview - 预览态的文字；留空即由元素填入显示值，作者写了内容则归作者
  * @csspart input - 编辑态的输入框，须是原生 `<input>`；键盘交互全在它身上
- * @csspart control - 三颗按钮的容器
+ * @csspart control - 预览区、输入框与三颗按钮的共同落点，预览与输入轮流上场
  * @csspart edit-trigger - 进编辑态的按钮；编辑态收起，不可编辑时置灰
  * @csspart submit-trigger - 提交按钮；预览态收起
  * @csspart cancel-trigger - 撤销按钮；预览态收起
@@ -189,7 +188,6 @@ export class XhEditableElement extends XhElement {
     }
     put('root', api.getRootProps() as Record<string, unknown>)
     put('label', api.getLabelProps() as Record<string, unknown>)
-    put('area', api.getAreaProps() as Record<string, unknown>)
     put('preview', api.getPreviewProps() as Record<string, unknown>)
     put('input', api.getInputProps() as Record<string, unknown>)
     put('control', api.getControlProps() as Record<string, unknown>)

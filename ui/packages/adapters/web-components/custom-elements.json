@@ -515,7 +515,7 @@
             },
             {
               "description": "语气图标（对读屏隐藏）",
-              "name": "icon"
+              "name": "indicator"
             },
             {
               "description": "标题（root 的 aria-labelledby 指向它）",
@@ -708,13 +708,13 @@
               "name": "--xh-alert-gap"
             },
             {
-              "name": "--xh-alert-icon-box"
-            },
-            {
-              "name": "--xh-alert-icon-fg"
-            },
-            {
               "name": "--xh-alert-icon-size"
+            },
+            {
+              "name": "--xh-alert-indicator-box"
+            },
+            {
+              "name": "--xh-alert-indicator-fg"
             },
             {
               "name": "--xh-alert-leading"
@@ -1049,6 +1049,9 @@
               "name": "--xh-anchor-leading"
             },
             {
+              "name": "--xh-anchor-link-bg-hover"
+            },
+            {
               "name": "--xh-anchor-link-fg-current"
             },
             {
@@ -1113,19 +1116,19 @@
             },
             {
               "description": "授权项那一组",
-              "name": "scope-group"
+              "name": "group"
             },
             {
               "description": "一项授权，role=checkbox，只认 Space",
-              "name": "scope-item"
+              "name": "item"
             },
             {
               "description": "勾选记号，对读屏隐藏",
-              "name": "scope-indicator"
+              "name": "item-indicator"
             },
             {
               "description": "授权项文字，排在勾选项内因而构成它的可及名",
-              "name": "scope-label"
+              "name": "item-text"
             },
             {
               "description": "附在判定上的一句自由文本",
@@ -1562,6 +1565,9 @@
               "name": "--xh-approval-gap"
             },
             {
+              "name": "--xh-approval-group-gap"
+            },
+            {
               "name": "--xh-approval-icon-size"
             },
             {
@@ -1581,6 +1587,30 @@
             },
             {
               "name": "--xh-approval-indicator-size"
+            },
+            {
+              "name": "--xh-approval-item-bg-hover"
+            },
+            {
+              "name": "--xh-approval-item-font-size"
+            },
+            {
+              "name": "--xh-approval-item-gap"
+            },
+            {
+              "name": "--xh-approval-item-px"
+            },
+            {
+              "name": "--xh-approval-item-py"
+            },
+            {
+              "name": "--xh-approval-item-radius"
+            },
+            {
+              "name": "--xh-approval-item-text-fg"
+            },
+            {
+              "name": "--xh-approval-item-text-fg-checked"
             },
             {
               "name": "--xh-approval-loading-duration"
@@ -1643,33 +1673,6 @@
               "name": "--xh-approval-result-radius"
             },
             {
-              "name": "--xh-approval-scope-bg-hover"
-            },
-            {
-              "name": "--xh-approval-scope-fg"
-            },
-            {
-              "name": "--xh-approval-scope-fg-checked"
-            },
-            {
-              "name": "--xh-approval-scope-font-size"
-            },
-            {
-              "name": "--xh-approval-scope-gap"
-            },
-            {
-              "name": "--xh-approval-scope-item-gap"
-            },
-            {
-              "name": "--xh-approval-scope-px"
-            },
-            {
-              "name": "--xh-approval-scope-py"
-            },
-            {
-              "name": "--xh-approval-scope-radius"
-            },
-            {
               "name": "--xh-approval-shadow"
             },
             {
@@ -1707,7 +1710,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-avatar-group>` —— Light-DOM 行为宿主，无状态机，把 connectAvatarGroup 产出打到各角色节点。\n\n组内每一枚头像是作者自己的节点，不是本组件的角色节点：尺寸写在根上，\n皮肤把它翻成 `--xh-avatar-*` 槽位，沿继承流给每一枚。\noverflow 可缺省：没超出上限时就没有「+N」。",
+          "description": "`<xh-avatar-group>` —— Light-DOM 行为宿主，无状态机，把 connectAvatarGroup 产出打到各角色节点。\n\n组内每一枚头像是作者自己的节点，不是本组件的角色节点：尺寸写在根上，\n皮肤把它翻成 `--xh-avatar-*` 槽位，沿继承流给每一枚。\noverflow-item 可缺省：没超出上限时就没有「+N」。",
           "name": "XhAvatarGroupElement",
           "cssParts": [
             {
@@ -1716,7 +1719,7 @@
             },
             {
               "description": "溢出计数位，内容（「+N」）由作者写",
-              "name": "overflow"
+              "name": "overflow-item"
             }
           ],
           "members": [
@@ -1790,10 +1793,10 @@
               "name": "--xh-avatar-group-font-weight"
             },
             {
-              "name": "--xh-avatar-group-overflow-bg"
+              "name": "--xh-avatar-group-overflow-item-bg"
             },
             {
-              "name": "--xh-avatar-group-overflow-fg"
+              "name": "--xh-avatar-group-overflow-item-fg"
             },
             {
               "name": "--xh-avatar-group-overlap"
@@ -3001,6 +3004,9 @@
               "name": "--xh-button-shadow"
             },
             {
+              "name": "--xh-button-shadow-hover"
+            },
+            {
               "name": "--xh-button-spin-duration"
             }
           ]
@@ -3686,7 +3692,7 @@
             },
             {
               "description": "封面位，通常放图片，压在头部之上",
-              "name": "cover"
+              "name": "media"
             },
             {
               "description": "头部，装标题与描述",
@@ -3875,7 +3881,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-carousel>` —— 走马灯行为宿主。\n\n条目总数由 `slide-count` 声明，不从 DOM 数。指示点一页一个，页数由 `slide-count` 与\n`slides-per-page` / `slides-per-move` 算出，由作者照着渲染节点，元素不生成节点。\n轨道位移写在 item-group 的内联 transform 上，样式层不得再碰那条轴。",
+          "description": "`<xh-carousel>` —— 走马灯行为宿主。\n\n条目总数由 `slide-count` 声明，不从 DOM 数。指示点一页一个，页数由 `slide-count` 与\n`slides-per-page` / `slides-per-move` 算出，由作者照着渲染节点，元素不生成节点。\n轨道位移写在 list 的内联 transform 上，样式层不得再碰那条轴。",
           "name": "XhCarouselElement",
           "cssParts": [
             {
@@ -3888,7 +3894,7 @@
             },
             {
               "description": "被位移的轨道；transform 由元素写入，样式层别碰",
-              "name": "item-group"
+              "name": "list"
             },
             {
               "description": "一张幻灯片，可自带 index 属性声明下标，缺省按文档序",
@@ -4219,6 +4225,9 @@
             },
             {
               "name": "--xh-carousel-trigger-radius"
+            },
+            {
+              "name": "--xh-carousel-trigger-shadow-hover"
             },
             {
               "name": "--xh-carousel-trigger-size"
@@ -5063,6 +5072,9 @@
               "name": "--xh-cascader-control-bg-disabled"
             },
             {
+              "name": "--xh-cascader-control-bg-hover"
+            },
+            {
               "name": "--xh-cascader-control-bg-readonly"
             },
             {
@@ -5132,10 +5144,49 @@
               "name": "--xh-cascader-input-py"
             },
             {
+              "name": "--xh-cascader-item-active-font-weight"
+            },
+            {
+              "name": "--xh-cascader-item-bg-active"
+            },
+            {
+              "name": "--xh-cascader-item-bg-hover"
+            },
+            {
+              "name": "--xh-cascader-item-fg"
+            },
+            {
+              "name": "--xh-cascader-item-fg-selected"
+            },
+            {
+              "name": "--xh-cascader-item-font-size"
+            },
+            {
+              "name": "--xh-cascader-item-gap"
+            },
+            {
               "name": "--xh-cascader-item-indicator-fg"
             },
             {
               "name": "--xh-cascader-item-indicator-size"
+            },
+            {
+              "name": "--xh-cascader-item-leading"
+            },
+            {
+              "name": "--xh-cascader-item-max-w"
+            },
+            {
+              "name": "--xh-cascader-item-px"
+            },
+            {
+              "name": "--xh-cascader-item-py"
+            },
+            {
+              "name": "--xh-cascader-item-radius"
+            },
+            {
+              "name": "--xh-cascader-item-selected-font-weight"
             },
             {
               "name": "--xh-cascader-label-fg"
@@ -5154,45 +5205,6 @@
             },
             {
               "name": "--xh-cascader-placeholder-fg"
-            },
-            {
-              "name": "--xh-cascader-row-active-font-weight"
-            },
-            {
-              "name": "--xh-cascader-row-bg-active"
-            },
-            {
-              "name": "--xh-cascader-row-bg-hover"
-            },
-            {
-              "name": "--xh-cascader-row-fg"
-            },
-            {
-              "name": "--xh-cascader-row-fg-selected"
-            },
-            {
-              "name": "--xh-cascader-row-font-size"
-            },
-            {
-              "name": "--xh-cascader-row-gap"
-            },
-            {
-              "name": "--xh-cascader-row-leading"
-            },
-            {
-              "name": "--xh-cascader-row-max-w"
-            },
-            {
-              "name": "--xh-cascader-row-px"
-            },
-            {
-              "name": "--xh-cascader-row-py"
-            },
-            {
-              "name": "--xh-cascader-row-radius"
-            },
-            {
-              "name": "--xh-cascader-row-selected-font-weight"
             },
             {
               "name": "--xh-cascader-search-divider"
@@ -6001,7 +6013,7 @@
             },
             {
               "description": "复制按钮，须是原生 `<button>`",
-              "name": "trigger"
+              "name": "copy-trigger"
             },
             {
               "description": "状态标记；写 `copied` 属性的那个是成功侧，不写的是平时那侧",
@@ -6121,6 +6133,48 @@
               "name": "--xh-clipboard-control-gap"
             },
             {
+              "name": "--xh-clipboard-copy-trigger-bg"
+            },
+            {
+              "name": "--xh-clipboard-copy-trigger-bg-active"
+            },
+            {
+              "name": "--xh-clipboard-copy-trigger-bg-hover"
+            },
+            {
+              "name": "--xh-clipboard-copy-trigger-border"
+            },
+            {
+              "name": "--xh-clipboard-copy-trigger-border-copied"
+            },
+            {
+              "name": "--xh-clipboard-copy-trigger-border-hover"
+            },
+            {
+              "name": "--xh-clipboard-copy-trigger-fg"
+            },
+            {
+              "name": "--xh-clipboard-copy-trigger-fg-copied"
+            },
+            {
+              "name": "--xh-clipboard-copy-trigger-font-size"
+            },
+            {
+              "name": "--xh-clipboard-copy-trigger-gap"
+            },
+            {
+              "name": "--xh-clipboard-copy-trigger-h"
+            },
+            {
+              "name": "--xh-clipboard-copy-trigger-px"
+            },
+            {
+              "name": "--xh-clipboard-copy-trigger-radius"
+            },
+            {
+              "name": "--xh-clipboard-copy-trigger-shadow-hover"
+            },
+            {
               "name": "--xh-clipboard-gap"
             },
             {
@@ -6170,45 +6224,6 @@
             },
             {
               "name": "--xh-clipboard-loading-duration"
-            },
-            {
-              "name": "--xh-clipboard-trigger-bg"
-            },
-            {
-              "name": "--xh-clipboard-trigger-bg-active"
-            },
-            {
-              "name": "--xh-clipboard-trigger-bg-hover"
-            },
-            {
-              "name": "--xh-clipboard-trigger-border"
-            },
-            {
-              "name": "--xh-clipboard-trigger-border-copied"
-            },
-            {
-              "name": "--xh-clipboard-trigger-border-hover"
-            },
-            {
-              "name": "--xh-clipboard-trigger-fg"
-            },
-            {
-              "name": "--xh-clipboard-trigger-fg-copied"
-            },
-            {
-              "name": "--xh-clipboard-trigger-font-size"
-            },
-            {
-              "name": "--xh-clipboard-trigger-gap"
-            },
-            {
-              "name": "--xh-clipboard-trigger-h"
-            },
-            {
-              "name": "--xh-clipboard-trigger-px"
-            },
-            {
-              "name": "--xh-clipboard-trigger-radius"
             }
           ]
         }
@@ -6968,7 +6983,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-color-picker>` —— Light-DOM 行为宿主：作者写 root/label/trigger/value-text/swatch/\npositioner/content/area/area-thumb/channel-slider/channel-input/swatch-item 等角色节点，\n元素跑 color-picker 机器并把 connect 产出打上去。浮层定位引擎在本元素里建好、经 refs 注入机器，\n锚点取 trigger，被定位的浮层取 positioner。\n\n工作色恒是 HSVA（取色区两轴为饱和度与明度），对外的值串按 format 序列化。\nformat 只在落值那一刻起作用，单独改它不重排已有的值串——要让当前颜色改按新写法产出，\n换过 format 再调一次 `setValue(当前值)`。取色区与通道滑杆的矩形只在指针事件那一刻才量。\n\n通道滑杆与数值框用 channel 属性写明自己调哪一路（`channel=\"hue\"` / `channel=\"r\"`），\n滑杆内的轨道与拇指跟随所在滑杆的通道；预设色板每格用 value 属性写明颜色。",
+          "description": "`<xh-color-picker>` —— Light-DOM 行为宿主：作者写 root/label/trigger/value-text/swatch/\npositioner/content/saturation-area/area-thumb/channel-slider/channel-input/swatch-item 等角色节点，\n元素跑 color-picker 机器并把 connect 产出打上去。浮层定位引擎在本元素里建好、经 refs 注入机器，\n锚点取 trigger，被定位的浮层取 positioner。\n\n工作色恒是 HSVA（取色区两轴为饱和度与明度），对外的值串按 format 序列化。\nformat 只在落值那一刻起作用，单独改它不重排已有的值串——要让当前颜色改按新写法产出，\n换过 format 再调一次 `setValue(当前值)`。取色区与通道滑杆的矩形只在指针事件那一刻才量。\n\n通道滑杆与数值框用 channel 属性写明自己调哪一路（`channel=\"hue\"` / `channel=\"r\"`），\n滑杆内的轨道与拇指跟随所在滑杆的通道；预设色板每格用 value 属性写明颜色。",
           "name": "XhColorPickerElement",
           "cssParts": [
             {
@@ -7005,7 +7020,7 @@
             },
             {
               "description": "二维取色区，横轴饱和度、纵轴明度；底色是当前色相",
-              "name": "area"
+              "name": "saturation-area"
             },
             {
               "description": "role=slider 的取色区拇指，两条轴的位置由连接层写成内联样式",
@@ -7585,12 +7600,6 @@
               "name": "--xh-color-picker-action-size"
             },
             {
-              "name": "--xh-color-picker-area-h"
-            },
-            {
-              "name": "--xh-color-picker-area-radius"
-            },
-            {
               "name": "--xh-color-picker-checker"
             },
             {
@@ -7625,6 +7634,9 @@
             },
             {
               "name": "--xh-color-picker-control-bg-disabled"
+            },
+            {
+              "name": "--xh-color-picker-control-bg-hover"
             },
             {
               "name": "--xh-color-picker-control-bg-readonly"
@@ -7706,6 +7718,12 @@
             },
             {
               "name": "--xh-color-picker-max-h"
+            },
+            {
+              "name": "--xh-color-picker-saturation-area-h"
+            },
+            {
+              "name": "--xh-color-picker-saturation-area-radius"
             },
             {
               "name": "--xh-color-picker-swatch-border"
@@ -7833,11 +7851,11 @@
             },
             {
               "description": "role=group 分组容器，须自带 value 属性标识身份",
-              "name": "item-group"
+              "name": "group"
             },
             {
               "description": "分组标题（本组 aria-labelledby 的目标）",
-              "name": "item-group-label"
+              "name": "group-label"
             },
             {
               "description": "type=hidden 的表单出口，省略该节点即不参与表单",
@@ -8506,6 +8524,9 @@
               "name": "--xh-combobox-control-bg-disabled"
             },
             {
+              "name": "--xh-combobox-control-bg-hover"
+            },
+            {
               "name": "--xh-combobox-control-bg-readonly"
             },
             {
@@ -8590,6 +8611,9 @@
               "name": "--xh-combobox-group-label-py"
             },
             {
+              "name": "--xh-combobox-group-spacing"
+            },
+            {
               "name": "--xh-combobox-icon-size"
             },
             {
@@ -8618,9 +8642,6 @@
             },
             {
               "name": "--xh-combobox-item-gap"
-            },
-            {
-              "name": "--xh-combobox-item-group-gap"
             },
             {
               "name": "--xh-combobox-item-indicator-fg"
@@ -9236,16 +9257,28 @@
               "name": "--xh-context-menu-arrow-size"
             },
             {
-              "name": "--xh-context-menu-bg"
+              "name": "--xh-context-menu-border"
             },
             {
-              "name": "--xh-context-menu-border"
+              "name": "--xh-context-menu-content-bg"
+            },
+            {
+              "name": "--xh-context-menu-content-fg"
             },
             {
               "name": "--xh-context-menu-content-gap"
             },
             {
-              "name": "--xh-context-menu-fg"
+              "name": "--xh-context-menu-content-px"
+            },
+            {
+              "name": "--xh-context-menu-content-py"
+            },
+            {
+              "name": "--xh-context-menu-content-radius"
+            },
+            {
+              "name": "--xh-context-menu-content-shadow"
             },
             {
               "name": "--xh-context-menu-group-gap"
@@ -9317,15 +9350,6 @@
               "name": "--xh-context-menu-min-w"
             },
             {
-              "name": "--xh-context-menu-px"
-            },
-            {
-              "name": "--xh-context-menu-py"
-            },
-            {
-              "name": "--xh-context-menu-radius"
-            },
-            {
               "name": "--xh-context-menu-separator-color"
             },
             {
@@ -9333,9 +9357,6 @@
             },
             {
               "name": "--xh-context-menu-separator-thickness"
-            },
-            {
-              "name": "--xh-context-menu-shadow"
             },
             {
               "name": "--xh-context-menu-trigger-bg-pressing"
@@ -9350,187 +9371,6 @@
           "declaration": {
             "name": "XhContextMenuElement",
             "module": "src/elements/context-menu.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/elements/countdown.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "`<xh-countdown>` —— Light-DOM 行为宿主：作者写一个 root 角色节点，\n元素跑 countdown 机器，逐帧把剩余毫秒按模板铺成时分秒写进那个节点。\n\n剩余量走的是与数值动画同一份补间：起点是这一轮开始时的剩余毫秒、终点是 0、\n时长恰好等于起点本身。改写 `value` 即把剩余量落到新值并从那里重新计时，\n停在 idle 时改 `value` 同样会重新走起来。\n\n`precision` 管的是取值粒度而不是排版：0 取到整秒、3 取到整毫秒；\n想显示毫秒得把 precision 提上去，只在 `format` 里写 `SSS` 会一直是 `000`。\n\n根是 role=\"status\" 但 aria-live 缺省写死 off：status 的隐含 aria-live 就是 polite，\n一个每秒都在变的数字用 polite 会把读屏刷爆，要播报由作者把 live 开到 polite 或 assertive。",
-          "name": "XhCountdownElement",
-          "cssParts": [
-            {
-              "description": "时间本身（承载 status 语义、data-state 与 data-finished）；文字归元素写",
-              "name": "root"
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "partContract",
-              "type": {
-                "text": "object"
-              },
-              "static": true,
-              "default": "{ anatomy: countdownAnatomy, meta: countdownMeta }"
-            },
-            {
-              "kind": "field",
-              "name": "value",
-              "privacy": "public",
-              "type": {
-                "text": "number | undefined"
-              },
-              "attribute": "value"
-            },
-            {
-              "kind": "field",
-              "name": "format",
-              "privacy": "public",
-              "type": {
-                "text": "string | undefined"
-              },
-              "attribute": "format"
-            },
-            {
-              "kind": "field",
-              "name": "active",
-              "privacy": "public",
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "attribute": "active"
-            },
-            {
-              "kind": "field",
-              "name": "precision",
-              "privacy": "public",
-              "type": {
-                "text": "number | undefined"
-              },
-              "attribute": "precision"
-            },
-            {
-              "kind": "field",
-              "name": "live",
-              "privacy": "public",
-              "type": {
-                "text": "CountdownLive | undefined"
-              },
-              "attribute": "live"
-            },
-            {
-              "kind": "field",
-              "name": "notify",
-              "privacy": "private",
-              "readonly": true
-            },
-            {
-              "kind": "field",
-              "name": "ctrl",
-              "privacy": "private",
-              "readonly": true,
-              "default": "new MachineController<CountdownSchema>(this, countdownMachine, () => this.machineProps())"
-            },
-            {
-              "kind": "method",
-              "name": "machineProps",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "Partial<CountdownSchema['props']>"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "wire",
-              "privacy": "protected",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            }
-          ],
-          "events": [
-            {
-              "description": "走到 0；detail 为 `{ value: number }`",
-              "name": "finish",
-              "type": {
-                "text": "CountdownFinishDetails"
-              }
-            }
-          ],
-          "attributes": [
-            {
-              "type": {
-                "text": "number | undefined"
-              },
-              "description": "剩余毫秒，缺省 0",
-              "name": "value",
-              "fieldName": "value"
-            },
-            {
-              "type": {
-                "text": "string | undefined"
-              },
-              "description": "模板，缺省 `HH:mm:ss`；H 时、m 分、s 秒、S 毫秒，重复字母的个数即最少位数",
-              "name": "format",
-              "fieldName": "format"
-            },
-            {
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "description": "是否在走，缺省真；`active=\"false\"` 停在当前剩余量",
-              "name": "active",
-              "fieldName": "active"
-            },
-            {
-              "type": {
-                "text": "number | undefined"
-              },
-              "description": "取值粒度：0 到秒、1 到十分之一秒、2 到百分之一秒、3 到毫秒，缺省 0",
-              "name": "precision",
-              "fieldName": "precision"
-            },
-            {
-              "type": {
-                "text": "CountdownLive | undefined"
-              },
-              "description": "读屏播报档位，缺省 off",
-              "name": "live",
-              "fieldName": "live"
-            }
-          ],
-          "superclass": {
-            "name": "XhElement",
-            "module": "/src/element-base"
-          },
-          "tagName": "xh-countdown",
-          "customElement": true,
-          "cssProperties": [
-            {
-              "name": "--xh-countdown-fg"
-            },
-            {
-              "name": "--xh-countdown-finished-fg"
-            }
-          ]
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "XhCountdownElement",
-          "declaration": {
-            "name": "XhCountdownElement",
-            "module": "src/elements/countdown.ts"
           }
         }
       ]
@@ -9954,6 +9794,9 @@
               "name": "--xh-date-field-control-bg-disabled"
             },
             {
+              "name": "--xh-date-field-control-bg-hover"
+            },
+            {
               "name": "--xh-date-field-control-bg-readonly"
             },
             {
@@ -10089,7 +9932,7 @@
             },
             {
               "description": "快捷选项列（role=listbox）；没给 presets 时带 hidden",
-              "name": "presets"
+              "name": "preset-group"
             },
             {
               "description": "一条快捷选项（role=option），须自带 value 属性（与 presets 数据里的 value 逐字对上）",
@@ -11154,6 +10997,9 @@
               "name": "--xh-date-picker-control-bg-disabled"
             },
             {
+              "name": "--xh-date-picker-control-bg-hover"
+            },
+            {
               "name": "--xh-date-picker-control-bg-readonly"
             },
             {
@@ -11235,6 +11081,15 @@
               "name": "--xh-date-picker-preset-fg-selected"
             },
             {
+              "name": "--xh-date-picker-preset-group-gap"
+            },
+            {
+              "name": "--xh-date-picker-preset-group-h"
+            },
+            {
+              "name": "--xh-date-picker-preset-group-padding"
+            },
+            {
               "name": "--xh-date-picker-preset-px"
             },
             {
@@ -11242,15 +11097,6 @@
             },
             {
               "name": "--xh-date-picker-preset-radius"
-            },
-            {
-              "name": "--xh-date-picker-presets-gap"
-            },
-            {
-              "name": "--xh-date-picker-presets-h"
-            },
-            {
-              "name": "--xh-date-picker-presets-padding"
             },
             {
               "name": "--xh-date-picker-time-column-gap"
@@ -11932,7 +11778,7 @@
             },
             {
               "description": "增删统计位，写 data-change=\"added\" / \"removed\"，数字由本元素填",
-              "name": "stat"
+              "name": "summary"
             },
             {
               "description": "滚动容器，唯一的 Tab 停靠点",
@@ -11960,7 +11806,7 @@
             },
             {
               "description": "词级片段，变更处承载 data-change",
-              "name": "segment"
+              "name": "inline-change"
             },
             {
               "description": "着色片段，承载 data-kind",
@@ -12254,6 +12100,9 @@
               "name": "--xh-diff-view-icon-size"
             },
             {
+              "name": "--xh-diff-view-inline-change-radius"
+            },
+            {
               "name": "--xh-diff-view-keyword-fg"
             },
             {
@@ -12288,9 +12137,6 @@
             },
             {
               "name": "--xh-diff-view-removed-fg"
-            },
-            {
-              "name": "--xh-diff-view-segment-radius"
             },
             {
               "name": "--xh-diff-view-shadow"
@@ -12525,6 +12371,9 @@
             },
             {
               "name": "--xh-download-trigger-radius"
+            },
+            {
+              "name": "--xh-download-trigger-shadow-hover"
             }
           ]
         }
@@ -13055,334 +12904,11 @@
     },
     {
       "kind": "javascript-module",
-      "path": "src/elements/dynamic-input.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "`<xh-dynamic-input>` —— Light-DOM 行为宿主：作者写 root/item/item-content/item-action 与\nadd-trigger、item-delete-trigger、move-up-trigger、move-down-trigger 角色节点，\n元素跑 dynamic-input 机器并把 connect 产出打上去。\n\n值是宿主自己的数据数组，元素只管增删与换序这套动作，行里放什么控件由作者写进 item-content。\n行节点由作者按当前值渲染（一行一个 item，身份取节点上的 index 属性，缺省按文档序），\n值变了要由作者那一侧增删行节点，改完 MutationObserver 会自动重新接线。\n\n数据数组、造行工厂与读屏文案都表达不成属性，三者只作为 property 暴露。",
-          "name": "XhDynamicInputElement",
-          "cssParts": [
-            {
-              "description": "整份列表的容器，承载 data-disabled / data-empty / data-at-min / data-at-max / data-movable",
-              "name": "root"
-            },
-            {
-              "description": "一行一个，可自带 index 属性声明下标，缺省按文档序",
-              "name": "item"
-            },
-            {
-              "description": "一行里放作者自己控件的位置",
-              "name": "item-content"
-            },
-            {
-              "description": "一行里放把手的位置",
-              "name": "item-action"
-            },
-            {
-              "description": "新增把手，须是原生 `<button>`；到上限转 aria-disabled 但仍可聚焦；名字取自身内容",
-              "name": "add-trigger"
-            },
-            {
-              "description": "删除把手，须是原生 `<button>`；到下限转 aria-disabled；自带 aria-label",
-              "name": "item-delete-trigger"
-            },
-            {
-              "description": "上移把手，须是原生 `<button>`；首行转 aria-disabled；自带 aria-label",
-              "name": "move-up-trigger"
-            },
-            {
-              "description": "下移把手，须是原生 `<button>`；末行转 aria-disabled；自带 aria-label",
-              "name": "move-down-trigger"
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "partContract",
-              "type": {
-                "text": "object"
-              },
-              "static": true,
-              "default": "{ anatomy: dynamicInputAnatomy, meta: dynamicInputMeta }"
-            },
-            {
-              "kind": "field",
-              "name": "value",
-              "privacy": "public",
-              "type": {
-                "text": "unknown[] | undefined"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "defaultValue",
-              "privacy": "public",
-              "type": {
-                "text": "unknown[] | undefined"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "min",
-              "privacy": "public",
-              "type": {
-                "text": "number | undefined"
-              },
-              "attribute": "min"
-            },
-            {
-              "kind": "field",
-              "name": "max",
-              "privacy": "public",
-              "type": {
-                "text": "number | undefined"
-              },
-              "attribute": "max"
-            },
-            {
-              "kind": "field",
-              "name": "createItem",
-              "privacy": "public",
-              "type": {
-                "text": "() => unknown | undefined"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "movable",
-              "privacy": "public",
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "attribute": "movable"
-            },
-            {
-              "kind": "field",
-              "name": "disabled",
-              "privacy": "public",
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "attribute": "disabled"
-            },
-            {
-              "kind": "field",
-              "name": "translations",
-              "privacy": "public",
-              "type": {
-                "text": "Partial<DynamicInputTranslations> | undefined"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "notifyValue",
-              "privacy": "private",
-              "readonly": true
-            },
-            {
-              "kind": "field",
-              "name": "ctrl",
-              "privacy": "private",
-              "readonly": true,
-              "default": "new MachineController<DynamicInputSchema>(this, dynamicInputMachine, () => this.machineProps())"
-            },
-            {
-              "kind": "method",
-              "name": "machineProps",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "Partial<DynamicInputSchema['props']>"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "partsIn",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "HTMLElement[]"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "owner",
-                  "type": {
-                    "text": "HTMLElement"
-                  }
-                },
-                {
-                  "name": "name",
-                  "type": {
-                    "text": "string"
-                  }
-                }
-              ]
-            },
-            {
-              "kind": "method",
-              "name": "wire",
-              "privacy": "protected",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            }
-          ],
-          "events": [
-            {
-              "description": "数据数组变化；detail 为 `{ value: unknown[] }`",
-              "name": "value-change",
-              "type": {
-                "text": "DynamicInputValueChangeDetails"
-              }
-            }
-          ],
-          "attributes": [
-            {
-              "type": {
-                "text": "number | undefined"
-              },
-              "description": "最少几行；到了就按不动删除把手",
-              "name": "min",
-              "fieldName": "min"
-            },
-            {
-              "type": {
-                "text": "number | undefined"
-              },
-              "description": "最多几行；到了就按不动新增把手",
-              "name": "max",
-              "fieldName": "max"
-            },
-            {
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "description": "出不出换序把手；关时两个换序把手一律收起",
-              "name": "movable",
-              "fieldName": "movable"
-            },
-            {
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "description": "禁用：新增、删除、换序三路都按不动",
-              "name": "disabled",
-              "fieldName": "disabled"
-            }
-          ],
-          "superclass": {
-            "name": "XhElement",
-            "module": "/src/element-base"
-          },
-          "tagName": "xh-dynamic-input",
-          "customElement": true,
-          "cssProperties": [
-            {
-              "name": "--xh-dynamic-input-action-gap"
-            },
-            {
-              "name": "--xh-dynamic-input-add-bg"
-            },
-            {
-              "name": "--xh-dynamic-input-add-bg-active"
-            },
-            {
-              "name": "--xh-dynamic-input-add-bg-hover"
-            },
-            {
-              "name": "--xh-dynamic-input-add-border"
-            },
-            {
-              "name": "--xh-dynamic-input-add-border-disabled"
-            },
-            {
-              "name": "--xh-dynamic-input-add-border-hover"
-            },
-            {
-              "name": "--xh-dynamic-input-add-fg"
-            },
-            {
-              "name": "--xh-dynamic-input-add-font-size"
-            },
-            {
-              "name": "--xh-dynamic-input-add-height"
-            },
-            {
-              "name": "--xh-dynamic-input-add-px"
-            },
-            {
-              "name": "--xh-dynamic-input-add-radius"
-            },
-            {
-              "name": "--xh-dynamic-input-content-gap"
-            },
-            {
-              "name": "--xh-dynamic-input-gap"
-            },
-            {
-              "name": "--xh-dynamic-input-icon-size"
-            },
-            {
-              "name": "--xh-dynamic-input-item-delete-fg-hover"
-            },
-            {
-              "name": "--xh-dynamic-input-item-gap"
-            },
-            {
-              "name": "--xh-dynamic-input-item-padding"
-            },
-            {
-              "name": "--xh-dynamic-input-item-radius"
-            },
-            {
-              "name": "--xh-dynamic-input-trigger-bg"
-            },
-            {
-              "name": "--xh-dynamic-input-trigger-bg-active"
-            },
-            {
-              "name": "--xh-dynamic-input-trigger-bg-hover"
-            },
-            {
-              "name": "--xh-dynamic-input-trigger-fg"
-            },
-            {
-              "name": "--xh-dynamic-input-trigger-fg-hover"
-            },
-            {
-              "name": "--xh-dynamic-input-trigger-font-size"
-            },
-            {
-              "name": "--xh-dynamic-input-trigger-radius"
-            },
-            {
-              "name": "--xh-dynamic-input-trigger-size"
-            }
-          ]
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "XhDynamicInputElement",
-          "declaration": {
-            "name": "XhDynamicInputElement",
-            "module": "src/elements/dynamic-input.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
       "path": "src/elements/editable.ts",
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-editable>` —— Light-DOM 行为宿主：作者写 root/label/area/preview/input/control\n与三颗按钮的角色节点，元素跑 editable 机器并把 connect 产出打上去。\n\n预览态显示 preview、编辑态显示 input，另一个带 hidden 收起而不卸载：两边都是作者写的节点，\n替他删掉他就再也拿不回来，输入法状态与他挂在节点上的东西也一并没了。\n\npreview 的文字默认由元素填（值，或值为空时的 placeholder）；作者自己写了内容就归作者，\n元素不再改写——首次见到该节点时定，之后不回读（读到的会是自己上一帧写的）。\n\nlabel 的 `for` 恒写向 input 的 id，所以 label 角色节点必须是原生 `<label>`、\ninput 角色节点必须是原生 `<input>`：任一边换成 `<div>`，读屏就念不出这个控件的名字。",
+          "description": "`<xh-editable>` —— Light-DOM 行为宿主：作者写 root/label/control/preview/input\n与三颗按钮的角色节点，元素跑 editable 机器并把 connect 产出打上去。\n\n预览态显示 preview、编辑态显示 input，另一个带 hidden 收起而不卸载：两边都是作者写的节点，\n替他删掉他就再也拿不回来，输入法状态与他挂在节点上的东西也一并没了。\n\npreview 的文字默认由元素填（值，或值为空时的 placeholder）；作者自己写了内容就归作者，\n元素不再改写——首次见到该节点时定，之后不回读（读到的会是自己上一帧写的）。\n\nlabel 的 `for` 恒写向 input 的 id，所以 label 角色节点必须是原生 `<label>`、\ninput 角色节点必须是原生 `<input>`：任一边换成 `<div>`，读屏就念不出这个控件的名字。",
           "name": "XhEditableElement",
           "cssParts": [
             {
@@ -13394,10 +12920,6 @@
               "name": "label"
             },
             {
-              "description": "预览区与输入框的共同落点，两者轮流上场",
-              "name": "area"
-            },
-            {
               "description": "预览态的文字；留空即由元素填入显示值，作者写了内容则归作者",
               "name": "preview"
             },
@@ -13406,7 +12928,7 @@
               "name": "input"
             },
             {
-              "description": "三颗按钮的容器",
+              "description": "预览区、输入框与三颗按钮的共同落点，预览与输入轮流上场",
               "name": "control"
             },
             {
@@ -13813,13 +13335,13 @@
           "customElement": true,
           "cssProperties": [
             {
-              "name": "--xh-editable-area-min-h"
-            },
-            {
-              "name": "--xh-editable-area-min-w"
-            },
-            {
               "name": "--xh-editable-control-gap"
+            },
+            {
+              "name": "--xh-editable-control-min-h"
+            },
+            {
+              "name": "--xh-editable-control-min-w"
             },
             {
               "name": "--xh-editable-gap"
@@ -13835,6 +13357,9 @@
             },
             {
               "name": "--xh-editable-input-bg-disabled"
+            },
+            {
+              "name": "--xh-editable-input-bg-hover"
             },
             {
               "name": "--xh-editable-input-bg-readonly"
@@ -13978,210 +13503,6 @@
     },
     {
       "kind": "javascript-module",
-      "path": "src/elements/ellipsis.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "`<xh-ellipsis>` —— 省略行为宿主：把一段文字夹在给定行数内，并如实报出它有没有被裁掉。\n\n量测在机器的效应里跑：挂载后推迟一拍量一次，此后跟着盒子尺寸与盒内文字的变化重量。\n结论落成 root 上的 data-overflowing，浮层不在这里做——要不要套一层提示由作者按这个属性决定。\n开了 tooltip 则另给一条不用浮层的路：真被裁了才把整段文字写进 root 的 title，交给平台的原生提示。\n\n行数写在 root 的内联 style 里（自定义属性只有这一条路能同时落到两个适配器上），\n于是 root 的内联 style 归本元素管，作者自己的内联样式写在外层元素上。",
-          "name": "XhEllipsisElement",
-          "cssParts": [
-            {
-              "description": "夹字的盒子，承载 data-lines / data-multiline / data-expandable / data-state / data-overflowing",
-              "name": "root"
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "partContract",
-              "type": {
-                "text": "object"
-              },
-              "static": true,
-              "default": "{ anatomy: ellipsisAnatomy, meta: ellipsisMeta }"
-            },
-            {
-              "kind": "field",
-              "name": "lines",
-              "privacy": "public",
-              "type": {
-                "text": "number | undefined"
-              },
-              "attribute": "lines"
-            },
-            {
-              "kind": "field",
-              "name": "expandable",
-              "privacy": "public",
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "attribute": "expandable"
-            },
-            {
-              "kind": "field",
-              "name": "expanded",
-              "privacy": "public",
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "attribute": "expanded"
-            },
-            {
-              "kind": "field",
-              "name": "defaultExpanded",
-              "privacy": "public",
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "attribute": "default-expanded"
-            },
-            {
-              "kind": "field",
-              "name": "tooltip",
-              "privacy": "public",
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "attribute": "tooltip"
-            },
-            {
-              "kind": "field",
-              "name": "notifyExpanded",
-              "privacy": "private",
-              "readonly": true
-            },
-            {
-              "kind": "field",
-              "name": "notifyOverflow",
-              "privacy": "private",
-              "readonly": true
-            },
-            {
-              "kind": "field",
-              "name": "ctrl",
-              "privacy": "private",
-              "readonly": true,
-              "default": "new MachineController<EllipsisSchema>( this, ellipsisMachine, () => this.machineProps(), { onBuilt: svc => this.injectRefs(svc) }, )"
-            },
-            {
-              "kind": "method",
-              "name": "machineProps",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "Partial<EllipsisSchema['props']>"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "injectRefs",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "svc",
-                  "type": {
-                    "text": "Service<EllipsisSchema>"
-                  }
-                }
-              ]
-            },
-            {
-              "kind": "method",
-              "name": "wire",
-              "privacy": "protected",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            }
-          ],
-          "events": [
-            {
-              "description": "展开状态变化；detail 为 `{ expanded: boolean }`",
-              "name": "expanded-change",
-              "type": {
-                "text": "EllipsisExpandedChangeDetails"
-              }
-            },
-            {
-              "description": "溢出结论翻面；detail 为 `{ overflowing: boolean }`",
-              "name": "overflow-change",
-              "type": {
-                "text": "EllipsisOverflowChangeDetails"
-              }
-            }
-          ],
-          "attributes": [
-            {
-              "type": {
-                "text": "number | undefined"
-              },
-              "description": "夹几行，1 为单行，默认 1",
-              "name": "lines",
-              "fieldName": "lines"
-            },
-            {
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "description": "点一下铺开全文",
-              "name": "expandable",
-              "fieldName": "expandable"
-            },
-            {
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "description": "受控展开；缺省该属性即非受控",
-              "name": "expanded",
-              "fieldName": "expanded"
-            },
-            {
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "description": "非受控初始为铺开",
-              "name": "default-expanded",
-              "fieldName": "defaultExpanded"
-            },
-            {
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "description": "真被裁了才把整段文字交给平台的原生提示",
-              "name": "tooltip",
-              "fieldName": "tooltip"
-            }
-          ],
-          "superclass": {
-            "name": "XhElement",
-            "module": "/src/element-base"
-          },
-          "tagName": "xh-ellipsis",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "XhEllipsisElement",
-          "declaration": {
-            "name": "XhEllipsisElement",
-            "module": "src/elements/ellipsis.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
       "path": "src/elements/empty-state.ts",
       "declarations": [
         {
@@ -14190,12 +13511,12 @@
           "name": "XhEmptyStateElement",
           "cssParts": [
             {
-              "description": "承载 role 与 data-size 的容器",
+              "description": "承载 role 与 data-size / data-status 的容器",
               "name": "root"
             },
             {
               "description": "装饰图标，对读屏隐藏",
-              "name": "icon"
+              "name": "indicator"
             },
             {
               "description": "标题",
@@ -14239,6 +13560,15 @@
               "attribute": "live"
             },
             {
+              "kind": "field",
+              "name": "status",
+              "privacy": "public",
+              "type": {
+                "text": "EmptyStateStatus | undefined"
+              },
+              "attribute": "status"
+            },
+            {
               "kind": "method",
               "name": "wire",
               "privacy": "protected",
@@ -14265,6 +13595,14 @@
               "description": "播报方式，off 时 root 不带 role",
               "name": "live",
               "fieldName": "live"
+            },
+            {
+              "type": {
+                "text": "EmptyStateStatus | undefined"
+              },
+              "description": "结果类型，写到 root 的 data-status 上",
+              "name": "status",
+              "fieldName": "status"
             }
           ],
           "superclass": {
@@ -14296,13 +13634,13 @@
               "name": "--xh-empty-state-gap"
             },
             {
-              "name": "--xh-empty-state-icon-fg"
-            },
-            {
-              "name": "--xh-empty-state-icon-font-size"
-            },
-            {
               "name": "--xh-empty-state-icon-size"
+            },
+            {
+              "name": "--xh-empty-state-indicator-fg"
+            },
+            {
+              "name": "--xh-empty-state-indicator-font-size"
             },
             {
               "name": "--xh-empty-state-px"
@@ -14332,6 +13670,329 @@
           "declaration": {
             "name": "XhEmptyStateElement",
             "module": "src/elements/empty-state.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/field-array.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-field-array>` —— Light-DOM 行为宿主：作者写 root/item/item-content/item-action 与\nadd-trigger、item-delete-trigger、move-up-trigger、move-down-trigger 角色节点，\n元素跑 field-array 机器并把 connect 产出打上去。\n\n值是宿主自己的数据数组，元素只管增删与换序这套动作，行里放什么控件由作者写进 item-content。\n行节点由作者按当前值渲染（一行一个 item，身份取节点上的 index 属性，缺省按文档序），\n值变了要由作者那一侧增删行节点，改完 MutationObserver 会自动重新接线。\n\n数据数组、造行工厂与读屏文案都表达不成属性，三者只作为 property 暴露。",
+          "name": "XhFieldArrayElement",
+          "cssParts": [
+            {
+              "description": "整份列表的容器，承载 data-disabled / data-empty / data-at-min / data-at-max / data-movable",
+              "name": "root"
+            },
+            {
+              "description": "一行一个，可自带 index 属性声明下标，缺省按文档序",
+              "name": "item"
+            },
+            {
+              "description": "一行里放作者自己控件的位置",
+              "name": "item-content"
+            },
+            {
+              "description": "一行里放把手的位置",
+              "name": "item-action"
+            },
+            {
+              "description": "新增把手，须是原生 `<button>`；到上限转 aria-disabled 但仍可聚焦；名字取自身内容",
+              "name": "add-trigger"
+            },
+            {
+              "description": "删除把手，须是原生 `<button>`；到下限转 aria-disabled；自带 aria-label",
+              "name": "item-delete-trigger"
+            },
+            {
+              "description": "上移把手，须是原生 `<button>`；首行转 aria-disabled；自带 aria-label",
+              "name": "move-up-trigger"
+            },
+            {
+              "description": "下移把手，须是原生 `<button>`；末行转 aria-disabled；自带 aria-label",
+              "name": "move-down-trigger"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: fieldArrayAnatomy, meta: fieldArrayMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "privacy": "public",
+              "type": {
+                "text": "unknown[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "defaultValue",
+              "privacy": "public",
+              "type": {
+                "text": "unknown[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "min",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "min"
+            },
+            {
+              "kind": "field",
+              "name": "max",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "max"
+            },
+            {
+              "kind": "field",
+              "name": "createItem",
+              "privacy": "public",
+              "type": {
+                "text": "() => unknown | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "movable",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "movable"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "Partial<FieldArrayTranslations> | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "notifyValue",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<FieldArraySchema>(this, fieldArrayMachine, () => this.machineProps())"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<FieldArraySchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "partsIn",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "HTMLElement[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "owner",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "name",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "数据数组变化；detail 为 `{ value: unknown[] }`",
+              "name": "value-change",
+              "type": {
+                "text": "FieldArrayValueChangeDetails"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "最少几行；到了就按不动删除把手",
+              "name": "min",
+              "fieldName": "min"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "最多几行；到了就按不动新增把手",
+              "name": "max",
+              "fieldName": "max"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "出不出换序把手；关时两个换序把手一律收起",
+              "name": "movable",
+              "fieldName": "movable"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "禁用：新增、删除、换序三路都按不动",
+              "name": "disabled",
+              "fieldName": "disabled"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-field-array",
+          "customElement": true,
+          "cssProperties": [
+            {
+              "name": "--xh-field-array-action-gap"
+            },
+            {
+              "name": "--xh-field-array-add-bg"
+            },
+            {
+              "name": "--xh-field-array-add-bg-active"
+            },
+            {
+              "name": "--xh-field-array-add-bg-hover"
+            },
+            {
+              "name": "--xh-field-array-add-border"
+            },
+            {
+              "name": "--xh-field-array-add-border-disabled"
+            },
+            {
+              "name": "--xh-field-array-add-border-hover"
+            },
+            {
+              "name": "--xh-field-array-add-fg"
+            },
+            {
+              "name": "--xh-field-array-add-font-size"
+            },
+            {
+              "name": "--xh-field-array-add-height"
+            },
+            {
+              "name": "--xh-field-array-add-px"
+            },
+            {
+              "name": "--xh-field-array-add-radius"
+            },
+            {
+              "name": "--xh-field-array-content-gap"
+            },
+            {
+              "name": "--xh-field-array-gap"
+            },
+            {
+              "name": "--xh-field-array-icon-size"
+            },
+            {
+              "name": "--xh-field-array-item-delete-fg-hover"
+            },
+            {
+              "name": "--xh-field-array-item-gap"
+            },
+            {
+              "name": "--xh-field-array-item-padding"
+            },
+            {
+              "name": "--xh-field-array-item-radius"
+            },
+            {
+              "name": "--xh-field-array-trigger-bg"
+            },
+            {
+              "name": "--xh-field-array-trigger-bg-active"
+            },
+            {
+              "name": "--xh-field-array-trigger-bg-hover"
+            },
+            {
+              "name": "--xh-field-array-trigger-fg"
+            },
+            {
+              "name": "--xh-field-array-trigger-fg-hover"
+            },
+            {
+              "name": "--xh-field-array-trigger-font-size"
+            },
+            {
+              "name": "--xh-field-array-trigger-radius"
+            },
+            {
+              "name": "--xh-field-array-trigger-size"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhFieldArrayElement",
+          "declaration": {
+            "name": "XhFieldArrayElement",
+            "module": "src/elements/field-array.ts"
           }
         }
       ]
@@ -14692,6 +14353,15 @@
           "customElement": true,
           "cssProperties": [
             {
+              "name": "--xh-fieldset-description-fg"
+            },
+            {
+              "name": "--xh-fieldset-description-fg-disabled"
+            },
+            {
+              "name": "--xh-fieldset-description-font-size"
+            },
+            {
               "name": "--xh-fieldset-error-fg"
             },
             {
@@ -14699,15 +14369,6 @@
             },
             {
               "name": "--xh-fieldset-gap"
-            },
-            {
-              "name": "--xh-fieldset-helper-fg"
-            },
-            {
-              "name": "--xh-fieldset-helper-fg-disabled"
-            },
-            {
-              "name": "--xh-fieldset-helper-font-size"
             },
             {
               "name": "--xh-fieldset-legend-fg"
@@ -14775,7 +14436,7 @@
             },
             {
               "description": "role=list 的列表容器，承载 data-empty",
-              "name": "item-group"
+              "name": "list"
             },
             {
               "description": "role=listitem 的一行，可自带 index 属性声明对应第几个文件",
@@ -15410,10 +15071,16 @@
               "name": "--xh-file-upload-dropzone-bg-dragging"
             },
             {
+              "name": "--xh-file-upload-dropzone-bg-hover"
+            },
+            {
               "name": "--xh-file-upload-dropzone-border"
             },
             {
               "name": "--xh-file-upload-dropzone-border-dragging"
+            },
+            {
+              "name": "--xh-file-upload-dropzone-border-focus"
             },
             {
               "name": "--xh-file-upload-dropzone-border-hover"
@@ -15543,6 +15210,9 @@
             },
             {
               "name": "--xh-file-upload-trigger-radius"
+            },
+            {
+              "name": "--xh-file-upload-trigger-shadow-hover"
             }
           ]
         },
@@ -15569,12 +15239,16 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-flex>` —— Light-DOM 行为宿主，无状态机，把 connectFlex 产出打到 root 角色节点。\n六个排版参数原样落成 data-*，排布规则写在皮肤里。\n\n根上不写 role：容器只做排布，里面装的是列表还是一组按钮由作者自己声明。",
+          "description": "`<xh-flex>` —— Light-DOM 行为宿主，无状态机，把 connectFlex 产出打到 root 角色节点。\n六个排版参数原样落成 data-*，排布规则写在皮肤里。\n\n分隔符是一个角色节点：作者把它写在 root 里、夹在两个子项中间，元素替它打上 aria-hidden。\n本元素不生成任何结构，也就没法替作者复制节点；Vue 版的 split 插槽是同一件事的另一种写法，\n铺开后的 DOM 形状一致。\n\n根上不写 role：容器只做排布，里面装的是列表还是一组按钮由作者自己声明。",
           "name": "XhFlexElement",
           "cssParts": [
             {
               "description": "排布容器，承载 data-orientation / data-align / data-justify / data-gap / data-wrap / data-inline",
               "name": "root"
+            },
+            {
+              "description": "夹在两个子项之间的分隔符，作者逐个写在 root 里；元素替它打上 aria-hidden",
+              "name": "split"
             }
           ],
           "members": [
@@ -17450,7 +17124,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-heatmap>` —— Light-DOM 行为宿主：作者写 root、grid、若干 row 与 cell 角色节点，\n元素跑 heatmap 机器并把 connect 产出打上去。\n\n网格由作者渲染，元素不生成节点：铺一整年不必手写三百多个格子，读 `grid` / `monthGrid` /\n`matrixGrid` 三个只读属性，照推导出来的行、列、月份段循环生成即可（三种形态各读其中一个）。\n每读一次都重算一遍，取一次存下来用。\n\n角色节点的身份一律取作者写在节点上的 value 属性，怎么解释由 variant 决定：\n日历形态里 row 与 week-day-label 上是行序 0-6（不写即网格之外那条月份行与它的行首占位）、\ncell 上是 ISO 日期、month-label 上是 YYYY-MM；月历形态里 month-block 上是 YYYY-MM、\nrow 上是月内周序（不写即块内那条星期名坐标轴）；矩阵形态里 row 与 row-label 上是行身份\n（不写即表头行与角落占位）、column-label 与 cell 上是列身份，格子的行身份从所在的行取。\nlegend-item 上是档位、legend-label 上是 low 或 high（两端那两个字，文案读 `legendText`）。\n\n数据、行列、档位下界与文案只能走 property（`el.value = [...]`）：HTML 属性装不下数组与函数。",
+          "description": "`<xh-heatmap>` —— Light-DOM 行为宿主：作者写 root、grid、若干 row 与 cell 角色节点，\n元素跑 heatmap 机器并把 connect 产出打上去。\n\n网格由作者渲染，元素不生成节点：铺一整年不必手写三百多个格子，读 `grid` / `monthGrid` /\n`matrixGrid` 三个只读属性，照推导出来的行、列、月份段循环生成即可（三种形态各读其中一个）。\n每读一次都重算一遍，取一次存下来用。\n\n角色节点的身份一律取作者写在节点上的 value 属性，怎么解释由 variant 决定：\n日历形态里 row 与 week-day 上是行序 0-6（不写即网格之外那条月份行与它的行首占位）、\ncell 上是 ISO 日期、month-label 上是 YYYY-MM；月历形态里 month-block 上是 YYYY-MM、\nrow 上是月内周序（不写即块内那条星期名坐标轴）；矩阵形态里 row 与 row-label 上是行身份\n（不写即表头行与角落占位）、column-label 与 cell 上是列身份，格子的行身份从所在的行取。\nlegend-item 上是档位、legend-label 上是 low 或 high（两端那两个字，文案读 `legendText`）。\n\n数据、行列、档位下界与文案只能走 property（`el.value = [...]`）：HTML 属性装不下数组与函数。",
           "name": "XhHeatmapElement",
           "cssParts": [
             {
@@ -17471,7 +17145,7 @@
             },
             {
               "description": "星期名，只给眼睛看",
-              "name": "week-day-label"
+              "name": "week-day"
             },
             {
               "description": "月份名",
@@ -19651,7 +19325,7 @@
               "name": "--xh-image-cropper-mask"
             },
             {
-              "name": "--xh-image-cropper-radius"
+              "name": "--xh-image-cropper-viewport-radius"
             },
             {
               "name": "--xh-image-cropper-w"
@@ -21718,11 +21392,11 @@
             },
             {
               "description": "role=group 分组容器，须自带 value 属性标识身份",
-              "name": "item-group"
+              "name": "group"
             },
             {
               "description": "分组标题（本组 aria-labelledby 的目标）",
-              "name": "item-group-label"
+              "name": "group-label"
             }
           ],
           "members": [
@@ -22062,6 +21736,9 @@
               "name": "--xh-listbox-group-label-py"
             },
             {
+              "name": "--xh-listbox-group-spacing"
+            },
+            {
               "name": "--xh-listbox-icon-size"
             },
             {
@@ -22081,9 +21758,6 @@
             },
             {
               "name": "--xh-listbox-item-gap"
-            },
-            {
-              "name": "--xh-listbox-item-group-gap"
             },
             {
               "name": "--xh-listbox-item-indicator-fg"
@@ -22444,7 +22118,7 @@
             },
             {
               "description": "回到底部按钮，在底时收起（hidden + 内联 display）",
-              "name": "scroll-button"
+              "name": "scroll-to-end-trigger"
             },
             {
               "description": "视觉隐藏的播报区（role=status + aria-live=polite + aria-atomic）",
@@ -22572,7 +22246,7 @@
                   "text": "void"
                 }
               },
-              "description": "滚回底部并恢复粘附。机器要等 hostConnected 才建，还没进 DOM 时如实什么都不做、别炸。\n作者不写 scroll-button 角色节点时，自己的按钮调它。"
+              "description": "滚回底部并恢复粘附。机器要等 hostConnected 才建，还没进 DOM 时如实什么都不做、别炸。\n作者不写 scroll-to-end-trigger 角色节点时，自己的按钮调它。"
             },
             {
               "kind": "method",
@@ -22650,28 +22324,28 @@
               "name": "--xh-log-rows"
             },
             {
-              "name": "--xh-log-scroll-button-bg"
+              "name": "--xh-log-scroll-to-end-trigger-bg"
             },
             {
-              "name": "--xh-log-scroll-button-bg-hover"
+              "name": "--xh-log-scroll-to-end-trigger-bg-hover"
             },
             {
-              "name": "--xh-log-scroll-button-border"
+              "name": "--xh-log-scroll-to-end-trigger-border"
             },
             {
-              "name": "--xh-log-scroll-button-fg"
+              "name": "--xh-log-scroll-to-end-trigger-fg"
             },
             {
-              "name": "--xh-log-scroll-button-inset"
+              "name": "--xh-log-scroll-to-end-trigger-inset"
             },
             {
-              "name": "--xh-log-scroll-button-radius"
+              "name": "--xh-log-scroll-to-end-trigger-radius"
             },
             {
-              "name": "--xh-log-scroll-button-shadow"
+              "name": "--xh-log-scroll-to-end-trigger-shadow"
             },
             {
-              "name": "--xh-log-scroll-button-size"
+              "name": "--xh-log-scroll-to-end-trigger-size"
             },
             {
               "name": "--xh-log-tab-size"
@@ -23831,6 +23505,9 @@
               "name": "--xh-mention-input-bg-disabled"
             },
             {
+              "name": "--xh-mention-input-bg-hover"
+            },
+            {
               "name": "--xh-mention-input-bg-readonly"
             },
             {
@@ -24378,16 +24055,28 @@
               "name": "--xh-menu-arrow-size"
             },
             {
-              "name": "--xh-menu-bg"
+              "name": "--xh-menu-border"
             },
             {
-              "name": "--xh-menu-border"
+              "name": "--xh-menu-content-bg"
+            },
+            {
+              "name": "--xh-menu-content-fg"
             },
             {
               "name": "--xh-menu-content-gap"
             },
             {
-              "name": "--xh-menu-fg"
+              "name": "--xh-menu-content-px"
+            },
+            {
+              "name": "--xh-menu-content-py"
+            },
+            {
+              "name": "--xh-menu-content-radius"
+            },
+            {
+              "name": "--xh-menu-content-shadow"
             },
             {
               "name": "--xh-menu-group-gap"
@@ -24453,15 +24142,6 @@
               "name": "--xh-menu-min-w"
             },
             {
-              "name": "--xh-menu-px"
-            },
-            {
-              "name": "--xh-menu-py"
-            },
-            {
-              "name": "--xh-menu-radius"
-            },
-            {
               "name": "--xh-menu-separator-color"
             },
             {
@@ -24469,9 +24149,6 @@
             },
             {
               "name": "--xh-menu-separator-thickness"
-            },
-            {
-              "name": "--xh-menu-shadow"
             },
             {
               "name": "--xh-menu-trigger-bg-active"
@@ -24988,10 +24665,31 @@
               "name": "--xh-menubar-border"
             },
             {
+              "name": "--xh-menubar-content-bg"
+            },
+            {
+              "name": "--xh-menubar-content-fg"
+            },
+            {
               "name": "--xh-menubar-content-gap"
             },
             {
+              "name": "--xh-menubar-content-px"
+            },
+            {
+              "name": "--xh-menubar-content-py"
+            },
+            {
+              "name": "--xh-menubar-content-radius"
+            },
+            {
+              "name": "--xh-menubar-content-shadow"
+            },
+            {
               "name": "--xh-menubar-fg"
+            },
+            {
+              "name": "--xh-menubar-gap"
             },
             {
               "name": "--xh-menubar-group-gap"
@@ -25072,24 +24770,6 @@
               "name": "--xh-menubar-radius"
             },
             {
-              "name": "--xh-menubar-root-bg"
-            },
-            {
-              "name": "--xh-menubar-root-fg"
-            },
-            {
-              "name": "--xh-menubar-root-gap"
-            },
-            {
-              "name": "--xh-menubar-root-px"
-            },
-            {
-              "name": "--xh-menubar-root-py"
-            },
-            {
-              "name": "--xh-menubar-root-radius"
-            },
-            {
               "name": "--xh-menubar-separator-color"
             },
             {
@@ -25097,9 +24777,6 @@
             },
             {
               "name": "--xh-menubar-separator-thickness"
-            },
-            {
-              "name": "--xh-menubar-shadow"
             },
             {
               "name": "--xh-menubar-trigger-bg-active"
@@ -25167,7 +24844,7 @@
             },
             {
               "description": "回到底部",
-              "name": "scroll-button"
+              "name": "scroll-to-end-trigger"
             },
             {
               "description": "视觉隐藏的原子播报区，一份会话只该有一个",
@@ -25422,30 +25099,6 @@
           "customElement": true,
           "cssProperties": [
             {
-              "name": "--xh-message-feed-button-bg"
-            },
-            {
-              "name": "--xh-message-feed-button-bg-hover"
-            },
-            {
-              "name": "--xh-message-feed-button-border"
-            },
-            {
-              "name": "--xh-message-feed-button-fg"
-            },
-            {
-              "name": "--xh-message-feed-button-inset"
-            },
-            {
-              "name": "--xh-message-feed-button-radius"
-            },
-            {
-              "name": "--xh-message-feed-button-shadow"
-            },
-            {
-              "name": "--xh-message-feed-button-size"
-            },
-            {
               "name": "--xh-message-feed-gap"
             },
             {
@@ -25465,6 +25118,30 @@
             },
             {
               "name": "--xh-message-feed-p"
+            },
+            {
+              "name": "--xh-message-feed-scroll-to-end-trigger-bg"
+            },
+            {
+              "name": "--xh-message-feed-scroll-to-end-trigger-bg-hover"
+            },
+            {
+              "name": "--xh-message-feed-scroll-to-end-trigger-border"
+            },
+            {
+              "name": "--xh-message-feed-scroll-to-end-trigger-fg"
+            },
+            {
+              "name": "--xh-message-feed-scroll-to-end-trigger-inset"
+            },
+            {
+              "name": "--xh-message-feed-scroll-to-end-trigger-radius"
+            },
+            {
+              "name": "--xh-message-feed-scroll-to-end-trigger-shadow"
+            },
+            {
+              "name": "--xh-message-feed-scroll-to-end-trigger-size"
             }
           ]
         }
@@ -27346,6 +27023,9 @@
               "name": "--xh-number-field-control-bg-disabled"
             },
             {
+              "name": "--xh-number-field-control-bg-hover"
+            },
+            {
               "name": "--xh-number-field-control-bg-readonly"
             },
             {
@@ -27398,6 +27078,9 @@
             },
             {
               "name": "--xh-number-field-input-bg-disabled"
+            },
+            {
+              "name": "--xh-number-field-input-bg-hover"
             },
             {
               "name": "--xh-number-field-input-bg-readonly"
@@ -27523,7 +27206,7 @@
             },
             {
               "description": "与标题同行的补充信息",
-              "name": "subtitle"
+              "name": "description"
             },
             {
               "description": "行尾的操作区",
@@ -27605,6 +27288,12 @@
               "name": "--xh-page-header-column-gap"
             },
             {
+              "name": "--xh-page-header-description-fg"
+            },
+            {
+              "name": "--xh-page-header-description-font-size"
+            },
+            {
               "name": "--xh-page-header-extra-gap"
             },
             {
@@ -27621,12 +27310,6 @@
             },
             {
               "name": "--xh-page-header-row-gap"
-            },
-            {
-              "name": "--xh-page-header-subtitle-fg"
-            },
-            {
-              "name": "--xh-page-header-subtitle-font-size"
             },
             {
               "name": "--xh-page-header-title-fg"
@@ -27657,7 +27340,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-pagination>` —— Light-DOM 行为宿主：作者写 root/prev-trigger/item/ellipsis/next-trigger\n角色节点，元素跑 pagination 机器并把 connect 产出打上去。\n\nroot 必须是 `<nav>`：分页器是\"跳到某一页\"的导航地标，元素只往上打 aria-label，\n地标语义得由标签自己给。页码按钮须自带 `value` 属性标明是第几页。\n\n页码序列（几号页、哪里该出省略号）由作者照 `pages` 渲染，元素不替作者生成节点：\n生成节点就等于收走模板控制权，外层 `<li>` 壳、图标、i18n 文案都再塞不进来。序列本身\n从元素上取（`pages` / `pageItems`），不必自己按当前页与总页数推一遍。\n\n取数口是现算的，读到的恒是此刻那一份。什么时候重读：`page-change` 与 `page-size-change`\n两条事件覆盖了运行期会改动序列的全部输入，在它们的处理器里重读即可；改 `count` /\n`sibling-count` 这类作者自己写的属性，写完当场重读，不必等事件。受控（写了 `page` 属性）时\n得先把新页码写回 `page` 再读——受控下当前页住在属性里，不写回读到的还是上一页那份序列。",
+          "description": "`<xh-pagination>` —— Light-DOM 行为宿主：作者写 root/prev-trigger/item/ellipsis-trigger/next-trigger\n角色节点，元素跑 pagination 机器并把 connect 产出打上去。\n\nroot 必须是 `<nav>`：分页器是\"跳到某一页\"的导航地标，元素只往上打 aria-label，\n地标语义得由标签自己给。页码按钮须自带 `value` 属性标明是第几页。\n\n页码序列（几号页、哪里该出省略号）由作者照 `pages` 渲染，元素不替作者生成节点：\n生成节点就等于收走模板控制权，外层 `<li>` 壳、图标、i18n 文案都再塞不进来。序列本身\n从元素上取（`pages` / `pageItems`），不必自己按当前页与总页数推一遍。\n\n取数口是现算的，读到的恒是此刻那一份。什么时候重读：`page-change` 与 `page-size-change`\n两条事件覆盖了运行期会改动序列的全部输入，在它们的处理器里重读即可；改 `count` /\n`sibling-count` 这类作者自己写的属性，写完当场重读，不必等事件。受控（写了 `page` 属性）时\n得先把新页码写回 `page` 再读——受控下当前页住在属性里，不写回读到的还是上一页那份序列。",
           "name": "XhPaginationElement",
           "cssParts": [
             {
@@ -27678,7 +27361,7 @@
             },
             {
               "description": "折进去那几页的入口，须自带 side 属性（start / end）；承载 data-side 与 aria-expanded",
-              "name": "ellipsis"
+              "name": "ellipsis-trigger"
             }
           ],
           "members": [
@@ -27965,7 +27648,7 @@
               "type": {
                 "text": "PaginationPage[]"
               },
-              "description": "页码序列：页码与省略位交替的一串，作者照它渲染 item 与 ellipsis。\n机器尚未建起时给空数组。",
+              "description": "页码序列：页码与省略位交替的一串，作者照它渲染 item 与 ellipsis-trigger。\n机器尚未建起时给空数组。",
               "readonly": true
             },
             {
@@ -28246,7 +27929,7 @@
               "name": "--xh-pagination-content-shadow"
             },
             {
-              "name": "--xh-pagination-ellipsis-fg"
+              "name": "--xh-pagination-ellipsis-trigger-fg"
             },
             {
               "name": "--xh-pagination-font-size"
@@ -28313,6 +27996,9 @@
             },
             {
               "name": "--xh-pagination-page-size-bg"
+            },
+            {
+              "name": "--xh-pagination-page-size-bg-hover"
             },
             {
               "name": "--xh-pagination-page-size-border"
@@ -28708,6 +28394,9 @@
               "name": "--xh-password-input-control-bg-disabled"
             },
             {
+              "name": "--xh-password-input-control-bg-hover"
+            },
+            {
               "name": "--xh-password-input-control-bg-readonly"
             },
             {
@@ -28757,6 +28446,9 @@
             },
             {
               "name": "--xh-password-input-input-bg-disabled"
+            },
+            {
+              "name": "--xh-password-input-input-bg-hover"
             },
             {
               "name": "--xh-password-input-input-bg-readonly"
@@ -29222,6 +28914,9 @@
             },
             {
               "name": "--xh-pin-input-box-bg-disabled"
+            },
+            {
+              "name": "--xh-pin-input-box-bg-hover"
             },
             {
               "name": "--xh-pin-input-box-border"
@@ -30136,741 +29831,6 @@
     },
     {
       "kind": "javascript-module",
-      "path": "src/elements/popselect.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "`<xh-popselect>` —— Light-DOM 行为宿主：作者写 root/trigger/positioner/content/item 角色节点，\n元素同时跑两台机器——浮层开合、定位、消解层与焦点域归 popover，选中集合与焦点锚点归 listbox——\n再把 connectPopselect 的产出打到各角色节点上。定位引擎在本元素里建好、经 refs 注入 popover 机器，\n锚点取 trigger、被定位的浮层取 positioner。\n\n条目身份取作者写在 item 上的 value 属性，禁用由条目自报 aria-disabled 或写进 collection。\n单选落值即收起浮层、焦点归还 trigger；多选保持展开继续挑。\n\n选中值是集合：单选可以直接写 value=\"apple\" 属性，多选只能走 property（`el.value = ['a','b']`），\n属性表达不了数组。",
-          "name": "XhPopselectElement",
-          "cssParts": [
-            {
-              "description": "组件根容器，承载 data-state 与三个视觉轴，浮层从这里继承私有槽",
-              "name": "root"
-            },
-            {
-              "description": "盒：触发器与清空按钮在里面并排，描边、底色、控件高度与聚焦环都长在它上面",
-              "name": "control"
-            },
-            {
-              "description": "触发按钮（aria-haspopup=listbox/aria-expanded/aria-controls 所在），同时是定位锚点，须是原生 button",
-              "name": "trigger"
-            },
-            {
-              "description": "清空按钮（盒里 trigger 的兄弟节点，须是原生 button）：有选中值才显出，点按清空全部选中并把焦点送回 trigger",
-              "name": "clear-trigger"
-            },
-            {
-              "description": "浮层定位容器，坐标由引擎写成内联样式",
-              "name": "positioner"
-            },
-            {
-              "description": "role=listbox 容器（焦点域与消解层的根节点，键盘在此收口），收起时带 hidden",
-              "name": "content"
-            },
-            {
-              "description": "role=option 条目，须自带 value 属性标识身份；禁用写 aria-disabled=\"true\"",
-              "name": "item"
-            },
-            {
-              "description": "条目文本（连打检索的取字处）",
-              "name": "item-text"
-            },
-            {
-              "description": "条目选中标记（aria-hidden）",
-              "name": "item-indicator"
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "partContract",
-              "type": {
-                "text": "object"
-              },
-              "static": true,
-              "default": "{ anatomy: popselectAnatomy, meta: popselectMeta }"
-            },
-            {
-              "kind": "field",
-              "name": "collection",
-              "privacy": "public",
-              "type": {
-                "text": "PopselectNode[] | undefined"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "value",
-              "privacy": "public",
-              "type": {
-                "text": "string | string[] | undefined"
-              },
-              "attribute": "value"
-            },
-            {
-              "kind": "field",
-              "name": "defaultValue",
-              "privacy": "public",
-              "type": {
-                "text": "string | string[] | undefined"
-              },
-              "attribute": "default-value"
-            },
-            {
-              "kind": "field",
-              "name": "multiple",
-              "privacy": "public",
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "attribute": "multiple"
-            },
-            {
-              "kind": "field",
-              "name": "disabled",
-              "privacy": "public",
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "attribute": "disabled"
-            },
-            {
-              "kind": "field",
-              "name": "loop",
-              "privacy": "public",
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "attribute": "loop"
-            },
-            {
-              "kind": "field",
-              "name": "typeahead",
-              "privacy": "public",
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "attribute": "typeahead"
-            },
-            {
-              "kind": "field",
-              "name": "direction",
-              "privacy": "public",
-              "type": {
-                "text": "Direction | undefined"
-              },
-              "attribute": "dir"
-            },
-            {
-              "kind": "field",
-              "name": "open",
-              "privacy": "public",
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "attribute": "open"
-            },
-            {
-              "kind": "field",
-              "name": "defaultOpen",
-              "privacy": "public",
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "attribute": "default-open"
-            },
-            {
-              "kind": "field",
-              "name": "placement",
-              "privacy": "public",
-              "type": {
-                "text": "Placement | undefined"
-              },
-              "attribute": "placement"
-            },
-            {
-              "kind": "field",
-              "name": "offset",
-              "privacy": "public",
-              "type": {
-                "text": "number | undefined"
-              },
-              "attribute": "offset"
-            },
-            {
-              "kind": "field",
-              "name": "closeOnEscape",
-              "privacy": "public",
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "attribute": "close-on-escape"
-            },
-            {
-              "kind": "field",
-              "name": "closeOnInteractOutside",
-              "privacy": "public",
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "attribute": "close-on-interact-outside"
-            },
-            {
-              "kind": "field",
-              "name": "variant",
-              "privacy": "public",
-              "type": {
-                "text": "ControlVariant | undefined"
-              },
-              "attribute": "variant"
-            },
-            {
-              "kind": "field",
-              "name": "tone",
-              "privacy": "public",
-              "type": {
-                "text": "Tone | undefined"
-              },
-              "attribute": "tone"
-            },
-            {
-              "kind": "field",
-              "name": "size",
-              "privacy": "public",
-              "type": {
-                "text": "Size | undefined"
-              },
-              "attribute": "size"
-            },
-            {
-              "kind": "field",
-              "name": "translations",
-              "privacy": "public",
-              "type": {
-                "text": "Partial<PopselectTranslations> | undefined"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "idGen",
-              "type": {
-                "text": "IdGenerator"
-              },
-              "privacy": "private",
-              "readonly": true
-            },
-            {
-              "kind": "field",
-              "name": "popselectScope",
-              "privacy": "private",
-              "readonly": true
-            },
-            {
-              "kind": "field",
-              "name": "positionEngine",
-              "type": {
-                "text": "PositionEnginePort"
-              },
-              "privacy": "private",
-              "readonly": true
-            },
-            {
-              "kind": "field",
-              "name": "config",
-              "type": {
-                "text": "RuntimeConfig | null"
-              },
-              "privacy": "private",
-              "default": "null"
-            },
-            {
-              "kind": "field",
-              "name": "exit",
-              "type": {
-                "text": "OverlayExit | null"
-              },
-              "privacy": "private",
-              "default": "null",
-              "description": "退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
-            },
-            {
-              "kind": "field",
-              "name": "notifyOpen",
-              "privacy": "private",
-              "readonly": true
-            },
-            {
-              "kind": "field",
-              "name": "notifyValue",
-              "privacy": "private",
-              "readonly": true
-            },
-            {
-              "kind": "field",
-              "name": "popoverCtrl",
-              "privacy": "private",
-              "readonly": true,
-              "default": "new MachineController<PopoverSchema>( this, popoverMachine, () => this.popoverProps(), { scope: this.popselectScope, onBuilt: svc => this.injectRefs(svc) }, )"
-            },
-            {
-              "kind": "field",
-              "name": "listboxCtrl",
-              "privacy": "private",
-              "readonly": true,
-              "default": "new MachineController<ListboxSchema>( this, listboxMachine, () => this.listboxProps(), { scope: this.popselectScope }, )"
-            },
-            {
-              "kind": "field",
-              "name": "bars",
-              "privacy": "private",
-              "readonly": true,
-              "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), })",
-              "description": "候选列表的自绘条：与 content 同级挂在已经 fixed 的 positioner 上"
-            },
-            {
-              "kind": "field",
-              "name": "declaredDisabled",
-              "privacy": "private",
-              "readonly": true,
-              "description": "作者声明的条目禁用，只认首见那一份；没写即 undefined，交给 collection 定夺"
-            },
-            {
-              "kind": "method",
-              "name": "popoverProps",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "Partial<PopoverSchema['props']>"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "listboxProps",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "Partial<ListboxSchema['props']>"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "ensureConfig",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "field",
-              "name": "registerLayer",
-              "privacy": "private",
-              "readonly": true
-            },
-            {
-              "kind": "method",
-              "name": "injectRefs",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "svc",
-                  "type": {
-                    "text": "Service<PopoverSchema>"
-                  }
-                }
-              ]
-            },
-            {
-              "kind": "method",
-              "name": "onPartsReleased",
-              "privacy": "protected",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "nodes",
-                  "type": {
-                    "text": "readonly HTMLElement[]"
-                  }
-                }
-              ],
-              "description": "承载焦点的条目被移出 DOM 时浏览器不派 focusout，焦点锚点会停在一个已消失的值上：\ncontent 判自己「焦点在列表内」退出 Tab 序列，又没有条目认领得了这个锚点，\n整组零个 Tab 停靠点，键盘用户再也进不来。这里替 DOM 把焦点离场如实上报。"
-            },
-            {
-              "kind": "method",
-              "name": "itemProps",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "PopselectItemProps"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "el",
-                  "type": {
-                    "text": "HTMLElement"
-                  }
-                }
-              ],
-              "description": "条目身份取作者写的 value，禁用取首见那一份声明（没写即交给 collection 定夺）。"
-            },
-            {
-              "kind": "method",
-              "name": "partsIn",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "HTMLElement[]"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "owner",
-                  "type": {
-                    "text": "HTMLElement"
-                  }
-                },
-                {
-                  "name": "name",
-                  "type": {
-                    "text": "string"
-                  }
-                }
-              ]
-            },
-            {
-              "kind": "method",
-              "name": "wire",
-              "privacy": "protected",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            }
-          ],
-          "events": [
-            {
-              "description": "选中集合变化；detail 为 `{ value: string[] }`",
-              "name": "value-change",
-              "type": {
-                "text": "ListboxValueChangeDetails"
-              }
-            },
-            {
-              "description": "open 状态变化；detail 为 `{ open: boolean }`",
-              "name": "open-change",
-              "type": {
-                "text": "PopoverOpenChangeDetails"
-              }
-            }
-          ],
-          "attributes": [
-            {
-              "type": {
-                "text": "string | string[] | undefined"
-              },
-              "description": "受控选中值（单选简写）；缺省该属性即非受控，多选请用 property",
-              "name": "value",
-              "fieldName": "value"
-            },
-            {
-              "type": {
-                "text": "string | string[] | undefined"
-              },
-              "description": "非受控初始选中值",
-              "name": "default-value",
-              "fieldName": "defaultValue"
-            },
-            {
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "description": "多选：落值即在集合里增删该项，浮层不收起",
-              "name": "multiple",
-              "fieldName": "multiple"
-            },
-            {
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "description": "整个控件禁用：trigger 用原生 disabled，键盘与点击都改不了选中值",
-              "name": "disabled",
-              "fieldName": "disabled"
-            },
-            {
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "description": "方向键走到尽头回绕，默认 true；写 loop=\"false\" 关掉",
-              "name": "loop",
-              "fieldName": "loop"
-            },
-            {
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "description": "连打检索，默认开；写 typeahead=\"false\" 关掉",
-              "name": "typeahead",
-              "fieldName": "typeahead"
-            },
-            {
-              "type": {
-                "text": "Direction | undefined"
-              },
-              "description": "文字方向，只改写左右方向键语义，默认 ltr",
-              "name": "dir",
-              "fieldName": "direction"
-            },
-            {
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "description": "受控开合；缺省该属性即非受控",
-              "name": "open",
-              "fieldName": "open"
-            },
-            {
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "description": "非受控初始为展开",
-              "name": "default-open",
-              "fieldName": "defaultOpen"
-            },
-            {
-              "type": {
-                "text": "Placement | undefined"
-              },
-              "description": "首选放置位，默认 bottom；避让后的实际位写在 data-placement 上",
-              "name": "placement",
-              "fieldName": "placement"
-            },
-            {
-              "type": {
-                "text": "number | undefined"
-              },
-              "description": "浮层与锚点的间距（px）",
-              "name": "offset",
-              "fieldName": "offset"
-            },
-            {
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "description": "Esc 关闭，默认 true；写 close-on-escape=\"false\" 关掉",
-              "name": "close-on-escape",
-              "fieldName": "closeOnEscape"
-            },
-            {
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "description": "层外交互关闭，默认 true；写 \"false\" 关掉",
-              "name": "close-on-interact-outside",
-              "fieldName": "closeOnInteractOutside"
-            },
-            {
-              "type": {
-                "text": "ControlVariant | undefined"
-              },
-              "description": "形态，决定触发器的描边与底色怎么用",
-              "name": "variant",
-              "fieldName": "variant"
-            },
-            {
-              "type": {
-                "text": "Tone | undefined"
-              },
-              "description": "语气，决定聚焦与选中强调用哪族颜色",
-              "name": "tone",
-              "fieldName": "tone"
-            },
-            {
-              "type": {
-                "text": "Size | undefined"
-              },
-              "description": "尺寸，决定触发器高度、内边距与字号档位",
-              "name": "size",
-              "fieldName": "size"
-            }
-          ],
-          "superclass": {
-            "name": "XhElement",
-            "module": "/src/element-base"
-          },
-          "tagName": "xh-popselect",
-          "customElement": true,
-          "cssProperties": [
-            {
-              "name": "--xh-popselect-action-radius"
-            },
-            {
-              "name": "--xh-popselect-action-size"
-            },
-            {
-              "name": "--xh-popselect-clear-bg-active"
-            },
-            {
-              "name": "--xh-popselect-clear-bg-hover"
-            },
-            {
-              "name": "--xh-popselect-clear-fg"
-            },
-            {
-              "name": "--xh-popselect-clear-fg-hover"
-            },
-            {
-              "name": "--xh-popselect-content-bg"
-            },
-            {
-              "name": "--xh-popselect-content-border"
-            },
-            {
-              "name": "--xh-popselect-content-fg"
-            },
-            {
-              "name": "--xh-popselect-content-gap"
-            },
-            {
-              "name": "--xh-popselect-content-max-h"
-            },
-            {
-              "name": "--xh-popselect-content-max-w"
-            },
-            {
-              "name": "--xh-popselect-content-min-w"
-            },
-            {
-              "name": "--xh-popselect-content-px"
-            },
-            {
-              "name": "--xh-popselect-content-py"
-            },
-            {
-              "name": "--xh-popselect-content-radius"
-            },
-            {
-              "name": "--xh-popselect-content-shadow"
-            },
-            {
-              "name": "--xh-popselect-control-bg"
-            },
-            {
-              "name": "--xh-popselect-control-bg-disabled"
-            },
-            {
-              "name": "--xh-popselect-control-border"
-            },
-            {
-              "name": "--xh-popselect-control-border-focus"
-            },
-            {
-              "name": "--xh-popselect-control-border-hover"
-            },
-            {
-              "name": "--xh-popselect-control-gap"
-            },
-            {
-              "name": "--xh-popselect-control-h"
-            },
-            {
-              "name": "--xh-popselect-control-min-w"
-            },
-            {
-              "name": "--xh-popselect-control-px"
-            },
-            {
-              "name": "--xh-popselect-control-radius"
-            },
-            {
-              "name": "--xh-popselect-control-shadow"
-            },
-            {
-              "name": "--xh-popselect-icon-size"
-            },
-            {
-              "name": "--xh-popselect-item-bg-hover"
-            },
-            {
-              "name": "--xh-popselect-item-fg"
-            },
-            {
-              "name": "--xh-popselect-item-fg-selected"
-            },
-            {
-              "name": "--xh-popselect-item-font-size"
-            },
-            {
-              "name": "--xh-popselect-item-font-weight-selected"
-            },
-            {
-              "name": "--xh-popselect-item-gap"
-            },
-            {
-              "name": "--xh-popselect-item-indicator-fg"
-            },
-            {
-              "name": "--xh-popselect-item-indicator-size"
-            },
-            {
-              "name": "--xh-popselect-item-leading"
-            },
-            {
-              "name": "--xh-popselect-item-px"
-            },
-            {
-              "name": "--xh-popselect-item-py"
-            },
-            {
-              "name": "--xh-popselect-item-radius"
-            },
-            {
-              "name": "--xh-popselect-layer"
-            },
-            {
-              "name": "--xh-popselect-placeholder-fg"
-            },
-            {
-              "name": "--xh-popselect-root-gap"
-            },
-            {
-              "name": "--xh-popselect-trigger-fg"
-            },
-            {
-              "name": "--xh-popselect-trigger-font-size"
-            },
-            {
-              "name": "--xh-popselect-trigger-gap"
-            }
-          ]
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "XhPopselectElement",
-          "declaration": {
-            "name": "XhPopselectElement",
-            "module": "src/elements/popselect.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
       "path": "src/elements/progress.ts",
       "declarations": [
         {
@@ -31149,7 +30109,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-prompt-input>` —— Light-DOM 行为宿主：跑 prompt-input 机器，把 connect 产出打到作者写的\nroot/input/submit-trigger 三类角色节点上，另有可选的 input-row。input 须是原生 `<textarea>`，\n值经 property 写、禁用走原生 disabled。生成期间发送按钮原位变停止，只换 `data-mode` 与 `aria-label`。",
+          "description": "`<xh-prompt-input>` —— Light-DOM 行为宿主：跑 prompt-input 机器，把 connect 产出打到作者写的\nroot/input/submit-trigger 三类角色节点上，另有可选的 control。input 须是原生 `<textarea>`，\n值经 property 写、禁用走原生 disabled。生成期间发送按钮原位变停止，只换 `data-mode` 与 `aria-label`。",
           "name": "XhPromptInputElement",
           "cssParts": [
             {
@@ -31158,7 +30118,7 @@
             },
             {
               "description": "可选的输入行：写了它，root 翻成竖排，输入框与按钮收进这一行",
-              "name": "input-row"
+              "name": "control"
             },
             {
               "description": "输入框，须是原生 `<textarea>`",
@@ -31446,10 +30406,16 @@
               "name": "--xh-prompt-input-bg-disabled"
             },
             {
+              "name": "--xh-prompt-input-bg-hover"
+            },
+            {
               "name": "--xh-prompt-input-border"
             },
             {
               "name": "--xh-prompt-input-border-focus"
+            },
+            {
+              "name": "--xh-prompt-input-border-hover"
             },
             {
               "name": "--xh-prompt-input-gap"
@@ -31813,19 +30779,19 @@
             },
             {
               "description": "选项组，单选取 radiogroup、多选取 group",
-              "name": "option-group"
+              "name": "group"
             },
             {
               "description": "一个选项，须是原生 `<button>` 并自带 option-value 属性标识身份",
-              "name": "option"
+              "name": "item"
             },
             {
               "description": "记号，对读屏隐藏",
-              "name": "option-indicator"
+              "name": "item-indicator"
             },
             {
               "description": "选项文字，排在选项内因而构成它的可及名",
-              "name": "option-label"
+              "name": "item-text"
             },
             {
               "description": "这一题的自由文本，须是原生 `<input>`",
@@ -32108,7 +31074,7 @@
               "privacy": "private",
               "return": {
                 "type": {
-                  "text": "QuestionFlowOptionProps"
+                  "text": "QuestionFlowItemProps"
                 }
               },
               "parameters": [
@@ -32334,6 +31300,9 @@
               "name": "--xh-question-flow-gap"
             },
             {
+              "name": "--xh-question-flow-group-gap"
+            },
+            {
               "name": "--xh-question-flow-icon-size"
             },
             {
@@ -32352,6 +31321,9 @@
               "name": "--xh-question-flow-indicator-fg"
             },
             {
+              "name": "--xh-question-flow-indicator-icon-size"
+            },
+            {
               "name": "--xh-question-flow-indicator-radius"
             },
             {
@@ -32359,6 +31331,33 @@
             },
             {
               "name": "--xh-question-flow-indicator-size"
+            },
+            {
+              "name": "--xh-question-flow-item-bg"
+            },
+            {
+              "name": "--xh-question-flow-item-bg-hover"
+            },
+            {
+              "name": "--xh-question-flow-item-fg"
+            },
+            {
+              "name": "--xh-question-flow-item-fg-checked"
+            },
+            {
+              "name": "--xh-question-flow-item-font-size"
+            },
+            {
+              "name": "--xh-question-flow-item-gap"
+            },
+            {
+              "name": "--xh-question-flow-item-px"
+            },
+            {
+              "name": "--xh-question-flow-item-py"
+            },
+            {
+              "name": "--xh-question-flow-item-radius"
             },
             {
               "name": "--xh-question-flow-note-bg"
@@ -32380,36 +31379,6 @@
             },
             {
               "name": "--xh-question-flow-note-radius"
-            },
-            {
-              "name": "--xh-question-flow-option-bg"
-            },
-            {
-              "name": "--xh-question-flow-option-bg-hover"
-            },
-            {
-              "name": "--xh-question-flow-option-fg"
-            },
-            {
-              "name": "--xh-question-flow-option-fg-checked"
-            },
-            {
-              "name": "--xh-question-flow-option-font-size"
-            },
-            {
-              "name": "--xh-question-flow-option-gap"
-            },
-            {
-              "name": "--xh-question-flow-option-group-gap"
-            },
-            {
-              "name": "--xh-question-flow-option-px"
-            },
-            {
-              "name": "--xh-question-flow-option-py"
-            },
-            {
-              "name": "--xh-question-flow-option-radius"
             },
             {
               "name": "--xh-question-flow-padding"
@@ -34232,162 +33201,6 @@
           "declaration": {
             "name": "XhResizableElement",
             "module": "src/elements/resizable.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/elements/result.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "`<xh-result>` —— 结果页行为宿主，无状态机，把 connectResult 产出的属性打到角色节点上。\n\n除 root 外的部件全部可缺省。图标画什么由作者塞进图标槽，库不带插画资产；\nstatus 只落成 root 的 data-status，皮肤据它给图标区上语气色。\n\nroot 上不写 role：整页结果随页面一起呈现，就地换出来的结果用 `<xh-empty-state>` 或 `<xh-alert>`。",
-          "name": "XhResultElement",
-          "cssParts": [
-            {
-              "description": "承载 data-status 与 data-size 的容器",
-              "name": "root"
-            },
-            {
-              "description": "装饰图标位，对读屏隐藏，颜色随 status 走",
-              "name": "icon"
-            },
-            {
-              "description": "结果标题",
-              "name": "title"
-            },
-            {
-              "description": "标题下的说明",
-              "name": "description"
-            },
-            {
-              "description": "操作按钮槽",
-              "name": "action"
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "partContract",
-              "type": {
-                "text": "object"
-              },
-              "static": true,
-              "default": "{ anatomy: resultAnatomy, meta: resultMeta }"
-            },
-            {
-              "kind": "field",
-              "name": "status",
-              "privacy": "public",
-              "type": {
-                "text": "ResultStatus | undefined"
-              },
-              "attribute": "status"
-            },
-            {
-              "kind": "field",
-              "name": "size",
-              "privacy": "public",
-              "type": {
-                "text": "'sm' | 'md' | 'lg' | undefined"
-              },
-              "attribute": "size"
-            },
-            {
-              "kind": "method",
-              "name": "wire",
-              "privacy": "protected",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            }
-          ],
-          "attributes": [
-            {
-              "type": {
-                "text": "ResultStatus | undefined"
-              },
-              "description": "结果类型，写到 root 的 data-status 上",
-              "name": "status",
-              "fieldName": "status"
-            },
-            {
-              "type": {
-                "text": "'sm' | 'md' | 'lg' | undefined"
-              },
-              "description": "尺寸档位，写到 root 的 data-size 上",
-              "name": "size",
-              "fieldName": "size"
-            }
-          ],
-          "superclass": {
-            "name": "XhElement",
-            "module": "/src/element-base"
-          },
-          "tagName": "xh-result",
-          "customElement": true,
-          "cssProperties": [
-            {
-              "name": "--xh-result-action-gap"
-            },
-            {
-              "name": "--xh-result-description-fg"
-            },
-            {
-              "name": "--xh-result-description-font-size"
-            },
-            {
-              "name": "--xh-result-description-leading"
-            },
-            {
-              "name": "--xh-result-description-max-w"
-            },
-            {
-              "name": "--xh-result-fg"
-            },
-            {
-              "name": "--xh-result-gap"
-            },
-            {
-              "name": "--xh-result-icon-fg"
-            },
-            {
-              "name": "--xh-result-icon-font-size"
-            },
-            {
-              "name": "--xh-result-icon-size"
-            },
-            {
-              "name": "--xh-result-px"
-            },
-            {
-              "name": "--xh-result-py"
-            },
-            {
-              "name": "--xh-result-title-fg"
-            },
-            {
-              "name": "--xh-result-title-font-size"
-            },
-            {
-              "name": "--xh-result-title-font-weight"
-            },
-            {
-              "name": "--xh-result-title-leading"
-            }
-          ]
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "XhResultElement",
-          "declaration": {
-            "name": "XhResultElement",
-            "module": "src/elements/result.ts"
           }
         }
       ]
@@ -36402,6 +35215,9 @@
               "name": "--xh-select-control-bg-disabled"
             },
             {
+              "name": "--xh-select-control-bg-hover"
+            },
+            {
               "name": "--xh-select-control-bg-readonly"
             },
             {
@@ -37203,7 +36019,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-signature-pad>` —— Light-DOM 行为宿主：作者写 root / control / segment 三个必需角色节点\n（可再写 label、guide、clear-trigger 与 hidden-input），元素跑 signature-pad 机器并把 connect 产出打上去。\n\ncontrol 必须是 `<svg>`，guide 是它里面的 `<line>`、segment 是它里面的 `<path>`：\n笔迹是一条填充轮廓，粗细随压感变，描边给不出这个效果。viewBox 由元素按第一笔落下时\n量到的画布尺寸写上去，作者不要自己写。\n\n画布本身不接键盘。签名天然依赖指针，要求签名的流程必须另给一条不依赖指针的替代路径。\n\n笔迹外形（drawing）与读屏文案（translations）是对象，只走 property。\n清空与取 SVG 另有 `clear()` / `toSvg()` 两个方法。",
+          "description": "`<xh-signature-pad>` —— Light-DOM 行为宿主：作者写 root / control / path 三个必需角色节点\n（可再写 label、guide、clear-trigger 与 hidden-input），元素跑 signature-pad 机器并把 connect 产出打上去。\n\ncontrol 必须是 `<svg>`，guide 是它里面的 `<line>`、path 是它里面的 `<path>`：\n笔迹是一条填充轮廓，粗细随压感变，描边给不出这个效果。viewBox 由元素按第一笔落下时\n量到的画布尺寸写上去，作者不要自己写。\n\n画布本身不接键盘。签名天然依赖指针，要求签名的流程必须另给一条不依赖指针的替代路径。\n\n笔迹外形（drawing）与读屏文案（translations）是对象，只走 property。\n清空与取 SVG 另有 `clear()` / `toSvg()` 两个方法。",
           "name": "XhSignaturePadElement",
           "cssParts": [
             {
@@ -37224,7 +36040,7 @@
             },
             {
               "description": "全部笔迹，必须是 control 里的 `<path>`；每一笔是它的一条子路径",
-              "name": "segment"
+              "name": "path"
             },
             {
               "description": "清空按钮，必须是原生 `<button>`",
@@ -37551,6 +36367,9 @@
               "name": "--xh-signature-pad-clear-radius"
             },
             {
+              "name": "--xh-signature-pad-clear-shadow-hover"
+            },
+            {
               "name": "--xh-signature-pad-control-border-invalid"
             },
             {
@@ -37600,7 +36419,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-skeleton>` —— 骨架屏宿主，无状态机，把 connectSkeleton 产出的属性打到角色节点上。\n\n骨架条自报形状：在 bone 节点上写 `variant`。运行期改写这个属性不触发重新接线，\n需作者自行 requestUpdate。",
+          "description": "`<xh-skeleton>` —— 骨架屏宿主，无状态机，把 connectSkeleton 产出的属性打到角色节点上。\n\n骨架条自报形状：在 item 节点上写 `variant`。运行期改写这个属性不触发重新接线，\n需作者自行 requestUpdate。",
           "name": "XhSkeletonElement",
           "cssParts": [
             {
@@ -37609,7 +36428,7 @@
             },
             {
               "description": "单根骨架条，加载期间带 aria-hidden，不进无障碍树",
-              "name": "bone"
+              "name": "item"
             }
           ],
           "members": [
@@ -37754,15 +36573,15 @@
             },
             {
               "description": "刻度容器",
-              "name": "marks"
+              "name": "tick-group"
             },
             {
               "description": "刻度点（纯装饰），须自带 value 属性；落进已选区间带 data-passed",
-              "name": "mark"
+              "name": "tick"
             },
             {
               "description": "刻度文案，须自带 value 属性；点按把最近的滑块跳到这一档",
-              "name": "mark-label"
+              "name": "tick-label"
             },
             {
               "description": "role=slider 的拇指，键盘交互全在它身上；多滑块须写 index 属性",
@@ -38226,30 +37045,6 @@
               "name": "--xh-slider-label-font-weight"
             },
             {
-              "name": "--xh-slider-mark-bg"
-            },
-            {
-              "name": "--xh-slider-mark-bg-active"
-            },
-            {
-              "name": "--xh-slider-mark-label-fg"
-            },
-            {
-              "name": "--xh-slider-mark-label-fg-active"
-            },
-            {
-              "name": "--xh-slider-mark-label-font-size"
-            },
-            {
-              "name": "--xh-slider-mark-label-gap"
-            },
-            {
-              "name": "--xh-slider-mark-radius"
-            },
-            {
-              "name": "--xh-slider-mark-size"
-            },
-            {
               "name": "--xh-slider-range-bg"
             },
             {
@@ -38281,6 +37076,30 @@
             },
             {
               "name": "--xh-slider-thumb-size"
+            },
+            {
+              "name": "--xh-slider-tick-bg"
+            },
+            {
+              "name": "--xh-slider-tick-bg-active"
+            },
+            {
+              "name": "--xh-slider-tick-label-fg"
+            },
+            {
+              "name": "--xh-slider-tick-label-fg-active"
+            },
+            {
+              "name": "--xh-slider-tick-label-font-size"
+            },
+            {
+              "name": "--xh-slider-tick-label-gap"
+            },
+            {
+              "name": "--xh-slider-tick-radius"
+            },
+            {
+              "name": "--xh-slider-tick-size"
             },
             {
               "name": "--xh-slider-track-bg"
@@ -38647,173 +37466,6 @@
           "declaration": {
             "name": "XhSortableElement",
             "module": "src/elements/sortable.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/elements/space.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "`<xh-space>` —— Light-DOM 行为宿主，无状态机，把 connectSpace 产出打到 root 角色节点。\n排布参数原样落成 data-*，排布规则写在皮肤里。\n\n方向与间距恒有值：不写也留 md 间距，这是本组件与 `<xh-flex>` 的分野。\n\n分隔符是一个角色节点：作者把它写在 root 里、夹在两个子项中间，元素替它打上 aria-hidden。\n本元素不生成任何结构，也就没法替作者复制节点；Vue 版的 split 插槽是同一件事的另一种写法，\n铺开后的 DOM 形状一致。\n\n根上不写 role：容器只做排布，里面装的是列表还是一组按钮由作者自己声明。",
-          "name": "XhSpaceElement",
-          "cssParts": [
-            {
-              "description": "排布容器，承载 data-orientation / data-gap / data-align / data-justify / data-wrap / data-inline",
-              "name": "root"
-            },
-            {
-              "description": "夹在两个子项之间的分隔符，作者逐个写在 root 里；元素替它打上 aria-hidden",
-              "name": "split"
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "partContract",
-              "type": {
-                "text": "object"
-              },
-              "static": true,
-              "default": "{ anatomy: spaceAnatomy, meta: spaceMeta }"
-            },
-            {
-              "kind": "field",
-              "name": "orientation",
-              "privacy": "public",
-              "type": {
-                "text": "SpaceProps['orientation'] | undefined"
-              },
-              "attribute": "orientation"
-            },
-            {
-              "kind": "field",
-              "name": "gap",
-              "privacy": "public",
-              "type": {
-                "text": "SpaceProps['gap'] | undefined"
-              },
-              "attribute": "gap"
-            },
-            {
-              "kind": "field",
-              "name": "align",
-              "privacy": "public",
-              "type": {
-                "text": "SpaceProps['align'] | undefined"
-              },
-              "attribute": "align"
-            },
-            {
-              "kind": "field",
-              "name": "justify",
-              "privacy": "public",
-              "type": {
-                "text": "SpaceProps['justify'] | undefined"
-              },
-              "attribute": "justify"
-            },
-            {
-              "kind": "field",
-              "name": "wrap",
-              "privacy": "public",
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "attribute": "wrap"
-            },
-            {
-              "kind": "field",
-              "name": "inline",
-              "privacy": "public",
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "attribute": "inline"
-            },
-            {
-              "kind": "method",
-              "name": "wire",
-              "privacy": "protected",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            }
-          ],
-          "attributes": [
-            {
-              "type": {
-                "text": "SpaceProps['orientation'] | undefined"
-              },
-              "description": "排布方向，缺省 horizontal",
-              "name": "orientation",
-              "fieldName": "orientation"
-            },
-            {
-              "type": {
-                "text": "SpaceProps['gap'] | undefined"
-              },
-              "description": "子项间距档位，缺省 md，逐档对应一个间距令牌",
-              "name": "gap",
-              "fieldName": "gap"
-            },
-            {
-              "type": {
-                "text": "SpaceProps['align'] | undefined"
-              },
-              "description": "交叉轴对齐",
-              "name": "align",
-              "fieldName": "align"
-            },
-            {
-              "type": {
-                "text": "SpaceProps['justify'] | undefined"
-              },
-              "description": "主轴分布",
-              "name": "justify",
-              "fieldName": "justify"
-            },
-            {
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "description": "一行放不下时折行",
-              "name": "wrap",
-              "fieldName": "wrap"
-            },
-            {
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "description": "容器按行内盒排版，宽度收到内容",
-              "name": "inline",
-              "fieldName": "inline"
-            }
-          ],
-          "superclass": {
-            "name": "XhElement",
-            "module": "/src/element-base"
-          },
-          "tagName": "xh-space",
-          "customElement": true,
-          "cssProperties": [
-            {
-              "name": "--xh-space-root-gap"
-            }
-          ]
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "XhSpaceElement",
-          "declaration": {
-            "name": "XhSpaceElement",
-            "module": "src/elements/space.ts"
           }
         }
       ]
@@ -42319,6 +40971,9 @@
               "name": "--xh-tags-input-control-bg-disabled"
             },
             {
+              "name": "--xh-tags-input-control-bg-hover"
+            },
+            {
               "name": "--xh-tags-input-control-bg-readonly"
             },
             {
@@ -42898,6 +41553,9 @@
               "name": "--xh-text-field-control-bg-disabled"
             },
             {
+              "name": "--xh-text-field-control-bg-hover"
+            },
+            {
               "name": "--xh-text-field-control-bg-readonly"
             },
             {
@@ -42953,6 +41611,9 @@
             },
             {
               "name": "--xh-text-field-input-bg-disabled"
+            },
+            {
+              "name": "--xh-text-field-input-bg-hover"
             },
             {
               "name": "--xh-text-field-input-bg-readonly"
@@ -43469,6 +42130,9 @@
               "name": "--xh-time-field-control-bg-disabled"
             },
             {
+              "name": "--xh-time-field-control-bg-hover"
+            },
+            {
               "name": "--xh-time-field-control-bg-readonly"
             },
             {
@@ -43584,7 +42248,7 @@
             },
             {
               "description": "一段一个的 spinbutton，可自带 segment 属性声明身份，缺省按文档序",
-              "name": "input"
+              "name": "segment"
             },
             {
               "description": "展开/收起按钮，须是原生 button",
@@ -43604,7 +42268,7 @@
             },
             {
               "description": "快捷选项列（role=listbox）；没给 presets 时带 hidden",
-              "name": "presets"
+              "name": "preset-group"
             },
             {
               "description": "一条快捷选项（role=option），须自带 value 属性（与 presets 数据里的 value 逐字对上）",
@@ -44269,6 +42933,9 @@
               "name": "--xh-time-picker-control-bg-disabled"
             },
             {
+              "name": "--xh-time-picker-control-bg-hover"
+            },
+            {
               "name": "--xh-time-picker-control-bg-readonly"
             },
             {
@@ -44377,6 +43044,15 @@
               "name": "--xh-time-picker-preset-fg-disabled"
             },
             {
+              "name": "--xh-time-picker-preset-group-gap"
+            },
+            {
+              "name": "--xh-time-picker-preset-group-h"
+            },
+            {
+              "name": "--xh-time-picker-preset-group-px"
+            },
+            {
               "name": "--xh-time-picker-preset-px"
             },
             {
@@ -44384,15 +43060,6 @@
             },
             {
               "name": "--xh-time-picker-preset-radius"
-            },
-            {
-              "name": "--xh-time-picker-presets-gap"
-            },
-            {
-              "name": "--xh-time-picker-presets-h"
-            },
-            {
-              "name": "--xh-time-picker-presets-px"
             },
             {
               "name": "--xh-time-picker-segment-bg-focus"
@@ -44419,189 +43086,6 @@
           "declaration": {
             "name": "XhTimePickerElement",
             "module": "src/elements/time-picker.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/elements/time.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "`<xh-time>` —— Light-DOM 行为宿主，无状态机，把 connectTime 产出打到 root 角色节点。\n\n作者写一个空的 `<time data-xh-part=\"root\"></time>`：datetime 与显示文本都是算出来的，\n两者取自同一个墙钟，元素不做时区换算。作者若自己在这个节点里写了文本，那份文本原样留着，\n元素只覆盖自己上一次铺进去的那一份。\n\n认不出的时刻落 `data-state=\"invalid\"`，此时不写 datetime——\n与其给机器一个瞎编的时间戳，不如什么都不给。\n\n数字时间戳只能走 property（`el.value = 1786000000000`）：属性里的一串数字与年份写法分不开。",
-          "name": "XhTimeElement",
-          "cssParts": [
-            {
-              "description": "那个 `<time>`，承载 datetime / data-format / data-state / data-relative",
-              "name": "root"
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "partContract",
-              "type": {
-                "text": "object"
-              },
-              "static": true,
-              "default": "{ anatomy: timeAnatomy, meta: timeMeta, // root 不是 <time> 时 datetime 只是个自定义属性，机器读不到任何时刻 tags: { root: ['time'] }, }"
-            },
-            {
-              "kind": "field",
-              "name": "value",
-              "privacy": "public",
-              "type": {
-                "text": "TimeValue | undefined"
-              },
-              "attribute": "value"
-            },
-            {
-              "kind": "field",
-              "name": "type",
-              "privacy": "public",
-              "type": {
-                "text": "TimeType | undefined"
-              },
-              "attribute": "type"
-            },
-            {
-              "kind": "field",
-              "name": "format",
-              "privacy": "public",
-              "type": {
-                "text": "string | undefined"
-              },
-              "attribute": "format"
-            },
-            {
-              "kind": "field",
-              "name": "locale",
-              "privacy": "public",
-              "type": {
-                "text": "string | undefined"
-              },
-              "attribute": "locale"
-            },
-            {
-              "kind": "field",
-              "name": "now",
-              "privacy": "public",
-              "type": {
-                "text": "TimeValue | undefined"
-              },
-              "attribute": "now"
-            },
-            {
-              "kind": "field",
-              "name": "#painted",
-              "privacy": "private",
-              "type": {
-                "text": "string | undefined"
-              },
-              "description": "上一次铺进 root 的那份文本。"
-            },
-            {
-              "kind": "method",
-              "name": "wire",
-              "privacy": "protected",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "#paintText",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "root",
-                  "type": {
-                    "text": "HTMLElement"
-                  }
-                },
-                {
-                  "name": "text",
-                  "type": {
-                    "text": "string"
-                  }
-                }
-              ],
-              "description": "把格式化好的文本铺进 root。\n节点里已有的文本不是本元素铺的（作者自己写的兜底文案）就不动它。"
-            }
-          ],
-          "attributes": [
-            {
-              "type": {
-                "text": "TimeValue | undefined"
-              },
-              "description": "要显示的时刻；只写年月日的串按本地零点解读",
-              "name": "value",
-              "fieldName": "value"
-            },
-            {
-              "type": {
-                "text": "TimeType | undefined"
-              },
-              "description": "呈现方式，缺省 datetime",
-              "name": "type",
-              "fieldName": "type"
-            },
-            {
-              "type": {
-                "text": "string | undefined"
-              },
-              "description": "自定义格式串，记号是 YYYY / YY / MM / M / DD / D / HH / H / mm / m / ss / s",
-              "name": "format",
-              "fieldName": "format"
-            },
-            {
-              "type": {
-                "text": "string | undefined"
-              },
-              "description": "BCP 47 语言标记，zh 开头用中文用词、其余英文；不给按宿主语言，宿主也没有时按 en-US。只换给人看的文本",
-              "name": "locale",
-              "fieldName": "locale"
-            },
-            {
-              "type": {
-                "text": "TimeValue | undefined"
-              },
-              "description": "算相对说法时的参照时刻，缺省取当前时刻",
-              "name": "now",
-              "fieldName": "now"
-            }
-          ],
-          "superclass": {
-            "name": "XhElement",
-            "module": "/src/element-base"
-          },
-          "tagName": "xh-time",
-          "customElement": true,
-          "cssProperties": [
-            {
-              "name": "--xh-time-fg"
-            },
-            {
-              "name": "--xh-time-placeholder-fg"
-            }
-          ]
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "XhTimeElement",
-          "declaration": {
-            "name": "XhTimeElement",
-            "module": "src/elements/time.ts"
           }
         }
       ]
@@ -44834,16 +43318,16 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-timer>` —— Light-DOM 行为宿主：作者写 root、area、若干 item 与 separator，\n需要起停就再写一个 control。元素跑 timer 机器，把 connect 产出打到角色节点上，\n并把每一段的数字写进对应的 item。\n\n时间只从单调时钟的两个时刻相减而来，一拍都不累加；`interval` 只决定数字多久跳一次，\n到点另有一个精确落在终点上的定时器判定，终点不落在整拍上也不会走过头。\n\n每个 item 用 `unit` 属性声明自己是哪一段（days / hours / minutes / seconds / milliseconds）。\n它是作者的声明、不是机器写回的状态，改它本身不会另排一次接线——停着时改完要等下一次\n属性变更或起跑才生效。\n\ncontrol 里的文字归作者写（多半是个图标），元素只按当前状态换它的 `data-action` 与读屏名字。",
+          "description": "`<xh-timer>` —— Light-DOM 行为宿主：作者写 root、display、若干 item 与 separator，\n需要起停就再写一个 control。元素跑 timer 机器，把 connect 产出打到角色节点上，\n并把每一段的数字写进对应的 item。\n\n时间只从单调时钟的两个时刻相减而来，一拍都不累加；`interval` 只决定数字多久跳一次，\n到点另有一个精确落在终点上的定时器判定，终点不落在整拍上也不会走过头。\n\n每个 item 用 `unit` 属性声明自己是哪一段（days / hours / minutes / seconds / milliseconds）。\n它是作者的声明、不是机器写回的状态，改它本身不会另排一次接线——停着时改完要等下一次\n属性变更或起跑才生效。\n\ncontrol 里的文字归作者写（多半是个图标），元素只按当前状态换它的 `data-action` 与读屏名字。",
           "name": "XhTimerElement",
           "cssParts": [
             {
-              "description": "组件根容器（承载 data-state / data-size / data-countdown）",
+              "description": "组件根容器（承载 data-state / data-size / data-countdown / data-controlled）",
               "name": "root"
             },
             {
               "description": "时间区，role=timer 并带着整段时间的读屏名字",
-              "name": "area"
+              "name": "display"
             },
             {
               "description": "一段数字，须自带 unit 属性说明它是哪一段；文字归元素写",
@@ -44897,6 +43381,24 @@
             },
             {
               "kind": "field",
+              "name": "value",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "value"
+            },
+            {
+              "kind": "field",
+              "name": "active",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "active"
+            },
+            {
+              "kind": "field",
               "name": "autoStart",
               "privacy": "public",
               "type": {
@@ -44912,6 +43414,33 @@
                 "text": "number | undefined"
               },
               "attribute": "interval"
+            },
+            {
+              "kind": "field",
+              "name": "format",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "format"
+            },
+            {
+              "kind": "field",
+              "name": "precision",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "precision"
+            },
+            {
+              "kind": "field",
+              "name": "live",
+              "privacy": "public",
+              "type": {
+                "text": "TimerLive | undefined"
+              },
+              "attribute": "live"
             },
             {
               "kind": "field",
@@ -45069,6 +43598,22 @@
             },
             {
               "type": {
+                "text": "number | undefined"
+              },
+              "description": "受控剩余毫秒；给了它即进受控通道，起点锁成它、方向锁成倒着走、终点锁成 0",
+              "name": "value",
+              "fieldName": "value"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "受控开关，缺省真；给了它即进受控通道，起停按钮不再改状态",
+              "name": "active",
+              "fieldName": "active"
+            },
+            {
+              "type": {
                 "text": "boolean | undefined"
               },
               "description": "挂载即开跑，缺省关闭；只在挂载那一刻读一次",
@@ -45082,6 +43627,30 @@
               "description": "刷新间隔毫秒，缺省 1000，下限一帧",
               "name": "interval",
               "fieldName": "interval"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "文本模板，缺省 HH:mm:ss；D 天、H 时、m 分、s 秒、S 毫秒",
+              "name": "format",
+              "fieldName": "format"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "取值粒度：0 到秒、3 到毫秒，缺省 3（不量化）",
+              "name": "precision",
+              "fieldName": "precision"
+            },
+            {
+              "type": {
+                "text": "TimerLive | undefined"
+              },
+              "description": "时间区的读屏播报档位，缺省 off",
+              "name": "live",
+              "fieldName": "live"
             },
             {
               "type": {
@@ -45099,9 +43668,6 @@
           "tagName": "xh-timer",
           "customElement": true,
           "cssProperties": [
-            {
-              "name": "--xh-timer-area-fg"
-            },
             {
               "name": "--xh-timer-completed-fg"
             },
@@ -45145,7 +43711,16 @@
               "name": "--xh-timer-control-radius"
             },
             {
+              "name": "--xh-timer-control-shadow-active"
+            },
+            {
+              "name": "--xh-timer-control-shadow-hover"
+            },
+            {
               "name": "--xh-timer-digit-font-size"
+            },
+            {
+              "name": "--xh-timer-display-fg"
             },
             {
               "name": "--xh-timer-fg"
@@ -45172,6 +43747,189 @@
           "declaration": {
             "name": "XhTimerElement",
             "module": "src/elements/timer.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/timestamp.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-timestamp>` —— Light-DOM 行为宿主，无状态机，把 connectTimestamp 产出打到 root 角色节点。\n\n作者写一个空的 `<time data-xh-part=\"root\"></time>`：datetime 与显示文本都是算出来的，\n两者取自同一个墙钟，元素不做时区换算。作者若自己在这个节点里写了文本，那份文本原样留着，\n元素只覆盖自己上一次铺进去的那一份。\n\n认不出的时刻落 `data-state=\"invalid\"`，此时不写 datetime——\n与其给机器一个瞎编的时间戳，不如什么都不给。\n\n数字时间戳只能走 property（`el.value = 1786000000000`）：属性里的一串数字与年份写法分不开。",
+          "name": "XhTimestampElement",
+          "cssParts": [
+            {
+              "description": "那个 `<time>`，承载 datetime / data-format / data-state / data-relative",
+              "name": "root"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: timestampAnatomy, meta: timestampMeta, // root 不是 <time> 时 datetime 只是个自定义属性，机器读不到任何时刻 tags: { root: ['time'] }, }"
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "privacy": "public",
+              "type": {
+                "text": "TimestampValue | undefined"
+              },
+              "attribute": "value"
+            },
+            {
+              "kind": "field",
+              "name": "type",
+              "privacy": "public",
+              "type": {
+                "text": "TimestampType | undefined"
+              },
+              "attribute": "type"
+            },
+            {
+              "kind": "field",
+              "name": "format",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "format"
+            },
+            {
+              "kind": "field",
+              "name": "locale",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "locale"
+            },
+            {
+              "kind": "field",
+              "name": "now",
+              "privacy": "public",
+              "type": {
+                "text": "TimestampValue | undefined"
+              },
+              "attribute": "now"
+            },
+            {
+              "kind": "field",
+              "name": "#painted",
+              "privacy": "private",
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "上一次铺进 root 的那份文本。"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#paintText",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "root",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "text",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "把格式化好的文本铺进 root。\n节点里已有的文本不是本元素铺的（作者自己写的兜底文案）就不动它。"
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "TimestampValue | undefined"
+              },
+              "description": "要显示的时刻；只写年月日的串按本地零点解读",
+              "name": "value",
+              "fieldName": "value"
+            },
+            {
+              "type": {
+                "text": "TimestampType | undefined"
+              },
+              "description": "呈现方式，缺省 datetime",
+              "name": "type",
+              "fieldName": "type"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "自定义格式串，记号是 YYYY / YY / MM / M / DD / D / HH / H / mm / m / ss / s",
+              "name": "format",
+              "fieldName": "format"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "BCP 47 语言标记，zh 开头用中文用词、其余英文；不给按宿主语言，宿主也没有时按 en-US。只换给人看的文本",
+              "name": "locale",
+              "fieldName": "locale"
+            },
+            {
+              "type": {
+                "text": "TimestampValue | undefined"
+              },
+              "description": "算相对说法时的参照时刻，缺省取当前时刻",
+              "name": "now",
+              "fieldName": "now"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-timestamp",
+          "customElement": true,
+          "cssProperties": [
+            {
+              "name": "--xh-timestamp-fg"
+            },
+            {
+              "name": "--xh-timestamp-placeholder-fg"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhTimestampElement",
+          "declaration": {
+            "name": "XhTimestampElement",
+            "module": "src/elements/timestamp.ts"
           }
         }
       ]
@@ -46154,13 +44912,13 @@
               "name": "--xh-toggle-bg-hover"
             },
             {
-              "name": "--xh-toggle-bg-pressed"
+              "name": "--xh-toggle-bg-on"
             },
             {
               "name": "--xh-toggle-fg"
             },
             {
-              "name": "--xh-toggle-fg-pressed"
+              "name": "--xh-toggle-fg-on"
             },
             {
               "name": "--xh-toggle-font-size"
@@ -48468,6 +47226,12 @@
               "name": "--xh-transfer-trigger-radius"
             },
             {
+              "name": "--xh-transfer-trigger-shadow-active"
+            },
+            {
+              "name": "--xh-transfer-trigger-shadow-hover"
+            },
+            {
               "name": "--xh-transfer-trigger-size"
             }
           ]
@@ -49253,6 +48017,9 @@
               "name": "--xh-tree-select-control-bg-disabled"
             },
             {
+              "name": "--xh-tree-select-control-bg-hover"
+            },
+            {
               "name": "--xh-tree-select-control-bg-readonly"
             },
             {
@@ -49301,10 +48068,40 @@
               "name": "--xh-tree-select-indicator-fg"
             },
             {
+              "name": "--xh-tree-select-item-bg-hover"
+            },
+            {
+              "name": "--xh-tree-select-item-fg"
+            },
+            {
+              "name": "--xh-tree-select-item-fg-selected"
+            },
+            {
+              "name": "--xh-tree-select-item-font-size"
+            },
+            {
+              "name": "--xh-tree-select-item-gap"
+            },
+            {
               "name": "--xh-tree-select-item-indicator-fg"
             },
             {
               "name": "--xh-tree-select-item-indicator-size"
+            },
+            {
+              "name": "--xh-tree-select-item-leading"
+            },
+            {
+              "name": "--xh-tree-select-item-px"
+            },
+            {
+              "name": "--xh-tree-select-item-py"
+            },
+            {
+              "name": "--xh-tree-select-item-radius"
+            },
+            {
+              "name": "--xh-tree-select-item-selected-font-weight"
             },
             {
               "name": "--xh-tree-select-label-fg"
@@ -49320,36 +48117,6 @@
             },
             {
               "name": "--xh-tree-select-placeholder-fg"
-            },
-            {
-              "name": "--xh-tree-select-row-bg-hover"
-            },
-            {
-              "name": "--xh-tree-select-row-fg"
-            },
-            {
-              "name": "--xh-tree-select-row-fg-selected"
-            },
-            {
-              "name": "--xh-tree-select-row-font-size"
-            },
-            {
-              "name": "--xh-tree-select-row-gap"
-            },
-            {
-              "name": "--xh-tree-select-row-leading"
-            },
-            {
-              "name": "--xh-tree-select-row-px"
-            },
-            {
-              "name": "--xh-tree-select-row-py"
-            },
-            {
-              "name": "--xh-tree-select-row-radius"
-            },
-            {
-              "name": "--xh-tree-select-row-selected-font-weight"
             },
             {
               "name": "--xh-tree-select-tree-gap"
@@ -49969,6 +48736,210 @@
           "declaration": {
             "name": "XhTreeElement",
             "module": "src/elements/tree.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/truncate.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-truncate>` —— 省略行为宿主：把一段文字夹在给定行数内，并如实报出它有没有被裁掉。\n\n量测在机器的效应里跑：挂载后推迟一拍量一次，此后跟着盒子尺寸与盒内文字的变化重量。\n结论落成 root 上的 data-overflowing，浮层不在这里做——要不要套一层提示由作者按这个属性决定。\n开了 tooltip 则另给一条不用浮层的路：真被裁了才把整段文字写进 root 的 title，交给平台的原生提示。\n\n行数写在 root 的内联 style 里（自定义属性只有这一条路能同时落到两个适配器上），\n于是 root 的内联 style 归本元素管，作者自己的内联样式写在外层元素上。",
+          "name": "XhTruncateElement",
+          "cssParts": [
+            {
+              "description": "夹字的盒子，承载 data-lines / data-multiline / data-expandable / data-state / data-overflowing",
+              "name": "root"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: truncateAnatomy, meta: truncateMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "lines",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "lines"
+            },
+            {
+              "kind": "field",
+              "name": "expandable",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "expandable"
+            },
+            {
+              "kind": "field",
+              "name": "expanded",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "expanded"
+            },
+            {
+              "kind": "field",
+              "name": "defaultExpanded",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "default-expanded"
+            },
+            {
+              "kind": "field",
+              "name": "tooltip",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "tooltip"
+            },
+            {
+              "kind": "field",
+              "name": "notifyExpanded",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyOverflow",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<TruncateSchema>( this, truncateMachine, () => this.machineProps(), { onBuilt: svc => this.injectRefs(svc) }, )"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<TruncateSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "injectRefs",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "svc",
+                  "type": {
+                    "text": "Service<TruncateSchema>"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "展开状态变化；detail 为 `{ expanded: boolean }`",
+              "name": "expanded-change",
+              "type": {
+                "text": "TruncateExpandedChangeDetails"
+              }
+            },
+            {
+              "description": "溢出结论翻面；detail 为 `{ overflowing: boolean }`",
+              "name": "overflow-change",
+              "type": {
+                "text": "TruncateOverflowChangeDetails"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "夹几行，1 为单行，默认 1",
+              "name": "lines",
+              "fieldName": "lines"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "点一下铺开全文",
+              "name": "expandable",
+              "fieldName": "expandable"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "受控展开；缺省该属性即非受控",
+              "name": "expanded",
+              "fieldName": "expanded"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "非受控初始为铺开",
+              "name": "default-expanded",
+              "fieldName": "defaultExpanded"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "真被裁了才把整段文字交给平台的原生提示",
+              "name": "tooltip",
+              "fieldName": "tooltip"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-truncate",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhTruncateElement",
+          "declaration": {
+            "name": "XhTruncateElement",
+            "module": "src/elements/truncate.ts"
           }
         }
       ]

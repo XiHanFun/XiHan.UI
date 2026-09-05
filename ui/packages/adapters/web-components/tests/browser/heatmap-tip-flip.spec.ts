@@ -73,7 +73,7 @@ async function mount(): Promise<Mounted> {
   for (const row of grid.rows) {
     const line = part('div', 'row', String(row.weekDay))
     // 行首那一列钉住的星期名：格子因此从 gutter + gap 起排
-    line.append(part('span', 'week-day-label', String(row.weekDay), grid.weekDays[row.weekDay].label))
+    line.append(part('span', 'week-day', String(row.weekDay), grid.weekDays[row.weekDay].label))
     for (const day of row.cells) line.append(part('div', 'cell', day.date))
     gridEl.append(line)
   }

@@ -10,7 +10,6 @@ import {
   menubarMeta,
   menuMeta,
   navigationMenuMeta,
-  popselectMeta,
   radioGroupMeta,
   selectMeta,
   tabsMeta,
@@ -28,10 +27,6 @@ import {
   XhMenubarRoot,
   XhMenuRoot,
   XhNavigationMenuRoot,
-  XhPopselectContent,
-  XhPopselectPositioner,
-  XhPopselectRoot,
-  XhPopselectTrigger,
   XhRadioGroupRoot,
   XhSelectRoot,
   XhTabsRoot,
@@ -117,34 +112,5 @@ describe('打字才开的那个', () => {
     const missing = mentionMeta.requiredParts.filter(part => !rendered.has(part))
     expect(missing, `mention 铺开后缺部件：${missing.join(' / ')}`).toEqual([])
     wrapper.unmount()
-  })
-})
-
-describe('内容级铺开', () => {
-  /**
-   * popselect 的铺开落在 content 部件里而不是根上：只写 `<XhPopselectRoot :collection>` 什么都不出，
-   * 浮层外壳仍要作者自己写。这一条钉住这个差别，改成根级铺开时它会红。
-   */
-  it('popselect 的根不铺开，content 才按 collection 铺条目', () => {
-    const rootOnly = mount(defineComponent({
-      setup: () => () => h(XhPopselectRoot, { collection: NODES, defaultOpen: true }),
-    }), { attachTo: document.body })
-    expect(document.querySelectorAll('[data-part="item"]')).toHaveLength(0)
-    rootOnly.unmount()
-    document.body.innerHTML = ''
-
-    const withShell = mount(defineComponent({
-      setup: () => () => h(XhPopselectRoot, { collection: NODES, defaultOpen: true }, () => [
-        h(XhPopselectTrigger, () => '打开'),
-        h(XhPopselectPositioner, () => [h(XhPopselectContent)]),
-      ]),
-    }), { attachTo: document.body })
-
-    const rendered = new Set(
-      [...document.querySelectorAll('[data-part]')].map(el => el.getAttribute('data-part')),
-    )
-    const missing = popselectMeta.requiredParts.filter(part => !rendered.has(part))
-    expect(missing, `popselect 写了外壳仍缺部件：${missing.join(' / ')}`).toEqual([])
-    withShell.unmount()
   })
 })

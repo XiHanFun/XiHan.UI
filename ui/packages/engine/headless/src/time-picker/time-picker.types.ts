@@ -76,7 +76,7 @@ export interface TimePickerValueChangeDetails {
  * 段自报家门：身份由作者在部件上声明，connect 据此产出属性。
  * connect 在 Vue 的 render 期求值，此时 DOM 尚不存在，不得反查 DOM。
  */
-export interface TimePickerInputProps {
+export interface TimePickerSegmentProps {
   segment: TimeSegmentType
 }
 
@@ -291,7 +291,7 @@ export interface TimePickerApi<T extends PropTypes = PropTypes> {
   /** 清空按钮此刻可不可按。 */
   canClear: boolean
   /** 某一段该显示的文字（空段是占位串）。两个适配器都拿它填文本，保证同构。 */
-  getSegmentText: (props: TimePickerInputProps) => string
+  getSegmentText: (props: TimePickerSegmentProps) => string
   /**
    * 某一格该显示的文字。数字列就是格子自己的值，上下午列按 locale 给出「上午 / 下午」。
    * 两个适配器都拿它填文本，保证同构。
@@ -309,13 +309,13 @@ export interface TimePickerApi<T extends PropTypes = PropTypes> {
   /** 段位与分隔符的外壳：占满盒里剩下的宽度，把尾部按钮顶到框内末端。 */
   getSegmentGroupProps: () => T['element']
   /** 分段输入：一段一个节点，与 TimeField 的段同构（role=spinbutton + roving tabindex）。 */
-  getInputProps: (props: TimePickerInputProps) => T['element']
+  getSegmentProps: (props: TimePickerSegmentProps) => T['element']
   getTriggerProps: () => T['button']
   getClearTriggerProps: () => T['button']
   getPositionerProps: () => T['element']
   getContentProps: () => T['element']
   /** 快捷选项列（role=listbox）；没给 presets 时带 hidden。 */
-  getPresetsProps: () => T['element']
+  getPresetGroupProps: () => T['element']
   /** 一条快捷选项（role=option）：点按把整份时间写进值并收起浮层。 */
   getPresetProps: (props: TimePickerPresetProps) => T['element']
   getColumnProps: (props: TimePickerColumnProps) => T['element']

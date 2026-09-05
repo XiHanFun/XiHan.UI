@@ -27,7 +27,7 @@
     line-height: var(--xh-leading-none);
   }
 
-  /* 整组禁用会把 data-disabled 一路打到 label / content / item-group 上，各处观感保持一致 */
+  /* 整组禁用会把 data-disabled 一路打到 label / content / group 上，各处观感保持一致 */
   [data-scope='listbox'][data-part='label'][data-disabled] {
     color: var(--xh-fg-subtle);
   }
@@ -67,24 +67,24 @@
     outline: none;
   }
 
-  [data-scope='listbox'][data-part='item-group'] {
+  [data-scope='listbox'][data-part='group'] {
     display: flex;
     flex-direction: column;
-    gap: var(--xh-listbox-item-group-gap, var(--xh-list-option-gap));
+    gap: var(--xh-listbox-group-gap, var(--xh-list-option-gap));
   }
 
-  [data-scope='listbox'][data-part='item-group'][hidden] {
+  [data-scope='listbox'][data-part='group'][hidden] {
     display: none;
   }
 
   /* 组间留白只加在后继分组上：首组顶上已经有 content 的内边距，再加一层会显得头重 */
-  [data-scope='listbox'][data-part='item-group'] + [data-scope='listbox'][data-part='item-group'] {
-    margin-block-start: var(--xh-listbox-group-gap, var(--xh-space-1_5));
+  [data-scope='listbox'][data-part='group'] + [data-scope='listbox'][data-part='group'] {
+    margin-block-start: var(--xh-listbox-group-spacing, var(--xh-space-1_5));
   }
 
   /* 分组标题不是选项、进不了导航，画成小号次要文字，
      内缩与条目对齐（同一个 padding-inline），标题与条目文字才在一条竖线上 */
-  [data-scope='listbox'][data-part='item-group-label'] {
+  [data-scope='listbox'][data-part='group-label'] {
     display: block;
     padding-block: var(--xh-listbox-group-label-py, var(--xh-space-1));
     padding-inline: var(--xh-listbox-group-label-px, var(--xh-control-px-md));
@@ -95,11 +95,11 @@
     user-select: none;
   }
 
-  [data-scope='listbox'][data-part='item-group-label'][hidden] {
+  [data-scope='listbox'][data-part='group-label'][hidden] {
     display: none;
   }
 
-  [data-scope='listbox'][data-part='item-group-label'][data-disabled] {
+  [data-scope='listbox'][data-part='group-label'][data-disabled] {
     color: var(--xh-fg-disabled);
   }
 

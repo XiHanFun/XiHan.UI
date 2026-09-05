@@ -272,8 +272,8 @@ export function connectColorPicker<T extends PropTypes>(
       'hidden': !open || undefined,
     }),
 
-    getAreaProps: () => normalize.element({
-      ...parts.area.attrs,
+    getSaturationAreaProps: () => normalize.element({
+      ...parts['saturation-area'].attrs,
       ...stateAttrs(),
       'data-dragging': dataAttr(dragging && dragTarget === 'area'),
       // 底色是当前色相的纯色，两层渐变（饱和度、明度）由皮肤盖在上面

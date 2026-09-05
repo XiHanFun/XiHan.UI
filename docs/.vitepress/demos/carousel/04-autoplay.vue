@@ -3,7 +3,7 @@
 import {
   XhCarouselAutoplayTrigger,
   XhCarouselItem,
-  XhCarouselItemGroup,
+  XhCarouselList,
   XhCarouselNextTrigger,
   XhCarouselPrevTrigger,
   XhCarouselRoot,
@@ -23,13 +23,13 @@ const slides = ["公告一", "公告二", "公告三"];
   >
     <XhCarouselPrevTrigger />
     <XhCarouselViewport style="block-size: 120px">
-      <XhCarouselItemGroup>
+      <XhCarouselList>
         <XhCarouselItem v-for="(text, i) in slides" :key="text" :index="i">
           <div style="display: grid; place-items: center; block-size: 100%">
             {{ text }}
           </div>
         </XhCarouselItem>
-      </XhCarouselItemGroup>
+      </XhCarouselList>
     </XhCarouselViewport>
     <XhCarouselNextTrigger />
     <XhCarouselAutoplayTrigger />

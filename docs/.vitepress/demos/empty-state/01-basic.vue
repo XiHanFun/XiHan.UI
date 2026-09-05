@@ -4,7 +4,7 @@ import {
   XhButton,
   XhEmptyStateAction,
   XhEmptyStateDescription,
-  XhEmptyStateIcon,
+  XhEmptyStateIndicator,
   XhEmptyStateRoot,
   XhEmptyStateTitle,
 } from "@xihan-ui/vue";
@@ -13,7 +13,7 @@ import {
 <template>
   <XhEmptyStateRoot style="inline-size: 100%">
     <!-- 图标是装饰性的，内容由作者塞：字形、内联 svg 都行 -->
-    <XhEmptyStateIcon>∅</XhEmptyStateIcon>
+    <XhEmptyStateIndicator>∅</XhEmptyStateIndicator>
     <XhEmptyStateTitle>还没有任何工单</XhEmptyStateTitle>
     <XhEmptyStateDescription>
       新建一条工单，或者换个筛选条件再看看。

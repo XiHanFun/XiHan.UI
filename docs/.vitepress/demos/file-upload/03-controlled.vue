@@ -7,7 +7,7 @@ import {
   XhFileUploadHiddenInput,
   XhFileUploadItem,
   XhFileUploadItemDeleteTrigger,
-  XhFileUploadItemGroup,
+  XhFileUploadList,
   XhFileUploadItemName,
   XhFileUploadItemSizeText,
   XhFileUploadLabel,
@@ -39,13 +39,13 @@ function onFilesChange(details: { files: File[] }) {
         <XhFileUploadTrigger>选择文件</XhFileUploadTrigger>
       </div>
       <XhFileUploadHiddenInput />
-      <XhFileUploadItemGroup>
+      <XhFileUploadList>
         <XhFileUploadItem v-for="file in acceptedFiles" :key="file" :file="file">
           <XhFileUploadItemName />
           <XhFileUploadItemSizeText />
           <XhFileUploadItemDeleteTrigger />
         </XhFileUploadItem>
-      </XhFileUploadItemGroup>
+      </XhFileUploadList>
     </XhFileUploadRoot>
 
     <div style="display: flex; align-items: center; gap: 12px">

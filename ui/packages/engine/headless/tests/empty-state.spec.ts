@@ -31,7 +31,7 @@ describe('connectEmptyState', () => {
   })
 
   it('图标是装饰：内容标题里已经写过，念一遍只会重复', () => {
-    expect((api().getIconProps() as Props)['aria-hidden']).toBe(true)
+    expect((api().getIndicatorProps() as Props)['aria-hidden']).toBe(true)
   })
 
   it('标题、说明、操作只带身份标记：活区会把整段读完，补 role 或标题层级都是多余的', () => {

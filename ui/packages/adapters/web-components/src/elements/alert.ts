@@ -16,7 +16,7 @@ import { MachineController } from '../runtime/machine-controller'
  * @attr {boolean} default-open - 非受控初始显隐，缺省为显示
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @csspart root - 提示根容器（实时区所在）
- * @csspart icon - 语气图标（对读屏隐藏）
+ * @csspart indicator - 语气图标（对读屏隐藏）
  * @csspart title - 标题（root 的 aria-labelledby 指向它）
  * @csspart description - 说明（root 的 aria-describedby 指向它）
  * @csspart close-trigger - 关闭按钮
@@ -74,7 +74,7 @@ export class XhAlertElement extends XhElement {
         this.spreader.spread(el, props)
     }
     put('root', api.getRootProps() as Record<string, unknown>)
-    put('icon', api.getIconProps() as Record<string, unknown>)
+    put('indicator', api.getIndicatorProps() as Record<string, unknown>)
     put('title', api.getTitleProps() as Record<string, unknown>)
     put('description', api.getDescriptionProps() as Record<string, unknown>)
     put('close-trigger', api.getCloseTriggerProps() as Record<string, unknown>)

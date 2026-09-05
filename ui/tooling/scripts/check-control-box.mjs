@@ -15,7 +15,6 @@ const COMPONENTS = [
   'select',
   'cascader',
   'tree-select',
-  'popselect',
   'color-picker',
   'combobox',
   'text-field',
@@ -48,7 +47,7 @@ const CONTENT_PARTS = new Set(['input', 'value-text', 'segment-group'])
  * 下拉族的 trigger 是那颗装着值与箭头的按钮，它就是内容区；
  * 可输入控件（combobox / date-picker / time-picker）的 trigger 是右侧那颗展开小钮，属尾钮。
  */
-const TRIGGER_IS_CONTENT = new Set(['select', 'cascader', 'tree-select', 'popselect', 'color-picker'])
+const TRIGGER_IS_CONTENT = new Set(['select', 'cascader', 'tree-select', 'color-picker'])
 
 /** 内容区里还能再套一层撑开的文字区：下拉族的 value-text 长在 trigger 里面。 */
 const NESTED_CONTENT = new Set(['value-text'])

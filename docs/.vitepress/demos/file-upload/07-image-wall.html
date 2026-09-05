@@ -10,7 +10,7 @@
     </div>
     <input data-xh-part="hidden-input" />
     <div
-      data-xh-part="item-group"
+      data-xh-part="list"
       style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr))"
     ></div>
   </div>
@@ -18,7 +18,7 @@
 
 <script type="module">
   const upload = document.getElementById("file-upload-wall");
-  const group = upload.querySelector('[data-xh-part="item-group"]');
+  const group = upload.querySelector('[data-xh-part="list"]');
   const card =
     "flex-direction: column; align-items: stretch; --xh-file-upload-preview-size: 96px";
 

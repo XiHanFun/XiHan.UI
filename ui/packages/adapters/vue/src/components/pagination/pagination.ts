@@ -128,8 +128,8 @@ export const XhPaginationItem = defineComponent({
   },
 })
 
-export const XhPaginationEllipsis = defineComponent({
-  name: 'XhPaginationEllipsis',
+export const XhPaginationEllipsisTrigger = defineComponent({
+  name: 'XhPaginationEllipsisTrigger',
   props: {
     /** 这是哪一侧的省略位：首页与窗口之间是 start，窗口与末页之间是 end。 */
     side: { type: String as PropType<PaginationEllipsisSide>, default: 'start' },
@@ -140,7 +140,7 @@ export const XhPaginationEllipsis = defineComponent({
     return () => {
       const open = ctx.api.value.openEllipsis === props.side
       return h('button', {
-        ...ctx.api.value.getEllipsisProps({ side: props.side }) as Record<string, unknown>,
+        ...ctx.api.value.getEllipsisTriggerProps({ side: props.side }) as Record<string, unknown>,
         ref: (el: unknown) => {
           if (open)
             ctx.ellipsisRef.value = el as HTMLElement

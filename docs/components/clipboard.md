@@ -43,7 +43,7 @@
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-clipboard>` |
-| Vue 组件 | `XhClipboardControl` `XhClipboardIndicator` `XhClipboardInput` `XhClipboardLabel` `XhClipboardRoot` `XhClipboardTrigger` |
+| Vue 组件 | `XhClipboardControl` `XhClipboardCopyTrigger` `XhClipboardIndicator` `XhClipboardInput` `XhClipboardLabel` `XhClipboardRoot` |
 | 组合式函数 | `useClipboard` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/clipboard.css` |
@@ -52,7 +52,7 @@
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="clipboard"`：**`root`** · `label` · `control` · `input` · **`trigger`** · `indicator`
+`data-scope="clipboard"`：**`root`** · `label` · `control` · `input` · **`copy-trigger`** · `indicator`
 
 ## Props
 
@@ -90,7 +90,7 @@
 | `label` | state.get() |
 | `control` | state.get() |
 | `input` | state.get() |
-| `trigger` | state.get() |
+| `copy-trigger` | state.get() |
 | `indicator` | state.get() |
 
 状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
@@ -111,7 +111,7 @@
 | `getLabelProps` | `() => T['label']` |  |
 | `getControlProps` | `() => T['element']` |  |
 | `getInputProps` | `() => T['input']` |  |
-| `getTriggerProps` | `() => T['button']` |  |
+| `getCopyTriggerProps` | `() => T['button']` |  |
 | `getIndicatorProps` | `(props: ClipboardIndicatorProps) => T['element']` |  |
 
 ## 键盘
@@ -143,8 +143,8 @@
 | `label` | `data-state` | state.get() |
 | `control` | `data-state` | state.get() |
 | `input` | `data-state` | state.get() |
-| `trigger` | `data-copied` | ''（条件成立时才出现） |
-| `trigger` | `data-state` | state.get() |
+| `copy-trigger` | `data-copied` | ''（条件成立时才出现） |
+| `copy-trigger` | `data-state` | state.get() |
 | `indicator` | `data-copied` | ''（条件成立时才出现） |
 | `indicator` | `data-state` | state.get() |
 
@@ -152,7 +152,7 @@
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-clipboard-control-gap` · `--xh-clipboard-gap` · `--xh-clipboard-indicator-fg-copied` · `--xh-clipboard-input-autofill-bg` · `--xh-clipboard-input-autofill-fg` · `--xh-clipboard-input-bg` · `--xh-clipboard-input-border` · `--xh-clipboard-input-border-focus` · `--xh-clipboard-input-fg` · `--xh-clipboard-input-font-size` · `--xh-clipboard-input-h` · `--xh-clipboard-input-min-w` · `--xh-clipboard-input-px` · `--xh-clipboard-input-radius` · `--xh-clipboard-label-fg` · `--xh-clipboard-label-font-size` · `--xh-clipboard-label-font-weight` · `--xh-clipboard-loading-duration` · `--xh-clipboard-trigger-bg` · `--xh-clipboard-trigger-bg-active` · `--xh-clipboard-trigger-bg-hover` · `--xh-clipboard-trigger-border` · `--xh-clipboard-trigger-border-copied` · `--xh-clipboard-trigger-border-hover` · `--xh-clipboard-trigger-fg` · `--xh-clipboard-trigger-fg-copied` · `--xh-clipboard-trigger-font-size` · `--xh-clipboard-trigger-gap` · `--xh-clipboard-trigger-h` · `--xh-clipboard-trigger-px` · `--xh-clipboard-trigger-radius`
+`--xh-clipboard-control-gap` · `--xh-clipboard-copy-trigger-bg` · `--xh-clipboard-copy-trigger-bg-active` · `--xh-clipboard-copy-trigger-bg-hover` · `--xh-clipboard-copy-trigger-border` · `--xh-clipboard-copy-trigger-border-copied` · `--xh-clipboard-copy-trigger-border-hover` · `--xh-clipboard-copy-trigger-fg` · `--xh-clipboard-copy-trigger-fg-copied` · `--xh-clipboard-copy-trigger-font-size` · `--xh-clipboard-copy-trigger-gap` · `--xh-clipboard-copy-trigger-h` · `--xh-clipboard-copy-trigger-px` · `--xh-clipboard-copy-trigger-radius` · `--xh-clipboard-copy-trigger-shadow-hover` · `--xh-clipboard-gap` · `--xh-clipboard-indicator-fg-copied` · `--xh-clipboard-input-autofill-bg` · `--xh-clipboard-input-autofill-fg` · `--xh-clipboard-input-bg` · `--xh-clipboard-input-border` · `--xh-clipboard-input-border-focus` · `--xh-clipboard-input-fg` · `--xh-clipboard-input-font-size` · `--xh-clipboard-input-h` · `--xh-clipboard-input-min-w` · `--xh-clipboard-input-px` · `--xh-clipboard-input-radius` · `--xh-clipboard-label-fg` · `--xh-clipboard-label-font-size` · `--xh-clipboard-label-font-weight` · `--xh-clipboard-loading-duration`
 
 ## 动效
 

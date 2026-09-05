@@ -24,7 +24,6 @@ const WC_ELEMENTS = 'packages/adapters/web-components/src/elements'
  * 但适配器上确实露着、也确实通到机器。登记了就要还露着：名单过期即判失败。
  */
 const COMPOSED = {
-  popselect: '复合件：自己无 schema，dir 转交内部 listbox 机器（popselect.connect.ts 读 listbox.prop(\'dir\')）',
 }
 
 /** 取 `.types.ts` 里作者面的 props 块：machine schema 的 props，或无机器组件的 <Name>Props 接口。 */

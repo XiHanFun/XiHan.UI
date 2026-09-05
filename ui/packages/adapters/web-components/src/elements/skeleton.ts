@@ -11,7 +11,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
 const VARIANTS: readonly string[] = ['text', 'circle', 'rect']
 
 /** 读单根骨架条自报的形状。 */
-function boneVariant(el: HTMLElement): SkeletonVariant | undefined {
+function itemVariant(el: HTMLElement): SkeletonVariant | undefined {
   const raw = el.getAttribute('variant')
   return raw != null && VARIANTS.includes(raw) ? raw as SkeletonVariant : undefined
 }
@@ -19,14 +19,14 @@ function boneVariant(el: HTMLElement): SkeletonVariant | undefined {
 /**
  * `<xh-skeleton>` —— 骨架屏宿主，无状态机，把 connectSkeleton 产出的属性打到角色节点上。
  *
- * 骨架条自报形状：在 bone 节点上写 `variant`。运行期改写这个属性不触发重新接线，
+ * 骨架条自报形状：在 item 节点上写 `variant`。运行期改写这个属性不触发重新接线，
  * 需作者自行 requestUpdate。
  *
  * @customElement xh-skeleton
  * @attr {boolean} loading - 是否还在加载，写 "false" 结束加载态
  * @attr {'text'|'circle'|'rect'} variant - 容器内骨架条的默认形状
  * @csspart root - 骨架容器，加载期间带 aria-busy，结束后带 hidden
- * @csspart bone - 单根骨架条，加载期间带 aria-hidden，不进无障碍树
+ * @csspart item - 单根骨架条，加载期间带 aria-hidden，不进无障碍树
  */
 export class XhSkeletonElement extends XhElement {
   static override partContract = { anatomy: skeletonAnatomy, meta: skeletonMeta }
@@ -49,7 +49,7 @@ export class XhSkeletonElement extends XhElement {
       this.spreader.spread(root, api.getRootProps() as Record<string, unknown>)
 
     // 多实例 part 逐个打，形状取该节点自报的 variant
-    for (const el of this.getParts('bone'))
-      this.spreader.spread(el, api.getBoneProps({ variant: boneVariant(el) }) as Record<string, unknown>)
+    for (const el of this.getParts('item'))
+      this.spreader.spread(el, api.getItemProps({ variant: itemVariant(el) }) as Record<string, unknown>)
   }
 }

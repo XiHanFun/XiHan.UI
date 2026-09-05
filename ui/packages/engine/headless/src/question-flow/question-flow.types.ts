@@ -69,7 +69,7 @@ export interface QuestionFlowQuestionProps {
 }
 
 /** 选项自报家门：属于哪一题、值是什么；禁用可由数据代为声明。 */
-export interface QuestionFlowOptionProps {
+export interface QuestionFlowItemProps {
   questionId: string
   value: string
   /** 逐条覆盖禁用；缺省时回 questions 里查。 */
@@ -202,10 +202,10 @@ export interface QuestionFlowApi<T extends PropTypes = PropTypes> {
   getTrackProps: () => T['element']
   getQuestionProps: (props: QuestionFlowQuestionProps) => T['element']
   getPromptProps: (props: QuestionFlowQuestionProps) => T['element']
-  getOptionGroupProps: (props: QuestionFlowQuestionProps) => T['element']
-  getOptionProps: (props: QuestionFlowOptionProps) => T['button']
-  getOptionIndicatorProps: (props: QuestionFlowOptionProps) => T['element']
-  getOptionLabelProps: (props: QuestionFlowOptionProps) => T['element']
+  getGroupProps: (props: QuestionFlowQuestionProps) => T['element']
+  getItemProps: (props: QuestionFlowItemProps) => T['button']
+  getItemIndicatorProps: (props: QuestionFlowItemProps) => T['element']
+  getItemTextProps: (props: QuestionFlowItemProps) => T['element']
   getNoteProps: (props: QuestionFlowQuestionProps) => T['input']
   getFooterProps: () => T['element']
   getPrevTriggerProps: () => T['button']

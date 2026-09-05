@@ -12,7 +12,7 @@
 
 ## 特性
 
-- 必备部件是 `root` · `content` · `area` · `area-thumb`，缺一个组件就不工作。
+- 必备部件是 `root` · `content` · `saturation-area` · `area-thumb`，缺一个组件就不工作。
 - `format` 决定值串写法；面板里也可以让用户自己切换写法。
 - `alpha` 打开透明度通道。
 - 支持屏幕取色（依赖平台能力）与数值输入。
@@ -21,7 +21,7 @@
 
 ### 基础用法
 
-必备部件是 trigger / content / area / area-thumb，缺一个组件就不工作
+必备部件是 trigger / content / saturation-area / area-thumb，缺一个组件就不工作
 
 <XhDemo src="color-picker/01-basic" />
 
@@ -84,7 +84,7 @@ format 只管对外的序列化：换过之后把当前值原样写回一次，�
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-color-picker>` |
-| Vue 组件 | `XhColorPickerArea` `XhColorPickerAreaThumb` `XhColorPickerChannelInput` `XhColorPickerChannelSlider` `XhColorPickerChannelSliderThumb` `XhColorPickerChannelSliderTrack` `XhColorPickerContent` `XhColorPickerControl` `XhColorPickerEyeDropperTrigger` `XhColorPickerHiddenInput` `XhColorPickerLabel` `XhColorPickerPositioner` `XhColorPickerRoot` `XhColorPickerSwatch` `XhColorPickerSwatchGroup` `XhColorPickerSwatchItem` `XhColorPickerTrigger` `XhColorPickerValueText` |
+| Vue 组件 | `XhColorPickerAreaThumb` `XhColorPickerChannelInput` `XhColorPickerChannelSlider` `XhColorPickerChannelSliderThumb` `XhColorPickerChannelSliderTrack` `XhColorPickerContent` `XhColorPickerControl` `XhColorPickerEyeDropperTrigger` `XhColorPickerHiddenInput` `XhColorPickerLabel` `XhColorPickerPositioner` `XhColorPickerRoot` `XhColorPickerSaturationArea` `XhColorPickerSwatch` `XhColorPickerSwatchGroup` `XhColorPickerSwatchItem` `XhColorPickerTrigger` `XhColorPickerValueText` |
 | 组合式函数 | `useColorPicker` |
 | 状态机 | `colorPickerMachine` |
 | 皮肤 | `@xihan-ui/styles/color-picker.css` |
@@ -93,7 +93,7 @@ format 只管对外的序列化：换过之后把当前值原样写回一次，�
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="color-picker"`：`root` · `label` · `control` · **`trigger`** · `value-text` · `swatch` · `positioner` · **`content`** · **`area`** · **`area-thumb`** · `channel-slider` · `channel-slider-track` · `channel-slider-thumb` · `channel-input` · `eye-dropper-trigger` · `swatch-group` · `swatch-item` · `hidden-input`
+`data-scope="color-picker"`：`root` · `label` · `control` · **`trigger`** · `value-text` · `swatch` · `positioner` · **`content`** · **`saturation-area`** · **`area-thumb`** · `channel-slider` · `channel-slider-track` · `channel-slider-thumb` · `channel-input` · `eye-dropper-trigger` · `swatch-group` · `swatch-item` · `hidden-input`
 
 ## Props
 
@@ -183,7 +183,7 @@ format 只管对外的序列化：换过之后把当前值原样写回一次，�
 | `getSwatchProps` | `() => T['element']` |  |
 | `getPositionerProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |
-| `getAreaProps` | `() => T['element']` |  |
+| `getSaturationAreaProps` | `() => T['element']` |  |
 | `getAreaThumbProps` | `() => T['element']` |  |
 | `getChannelSliderProps` | `(props: ColorPickerChannelProps) => T['element']` |  |
 | `getChannelSliderTrackProps` | `(props: ColorPickerChannelProps) => T['element']` |  |
@@ -265,7 +265,7 @@ format 只管对外的序列化：换过之后把当前值原样写回一次，�
 | `positioner` | `data-size` | props.size |
 | `positioner` | `data-state` | 'open' \| 'closed' |
 | `content` | `data-placement` | 定位引擎算出的实际落位 |
-| `area` | `data-dragging` | ''（条件成立时才出现） |
+| `saturation-area` | `data-dragging` | ''（条件成立时才出现） |
 | `area-thumb` | `data-dragging` | ''（条件成立时才出现） |
 | `channel-slider` | `data-channel` | channel |
 | `channel-slider` | `data-disabled` | ''（条件成立时才出现） |
@@ -286,7 +286,7 @@ format 只管对外的序列化：换过之后把当前值原样写回一次，�
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-color-picker-action-bg` · `--xh-color-picker-action-bg-active` · `--xh-color-picker-action-bg-hover` · `--xh-color-picker-action-border` · `--xh-color-picker-action-border-active` · `--xh-color-picker-action-fg` · `--xh-color-picker-action-fg-hover` · `--xh-color-picker-action-font-size` · `--xh-color-picker-action-radius` · `--xh-color-picker-action-size` · `--xh-color-picker-area-h` · `--xh-color-picker-area-radius` · `--xh-color-picker-checker` · `--xh-color-picker-content-bg` · `--xh-color-picker-content-border` · `--xh-color-picker-content-fg` · `--xh-color-picker-content-gap` · `--xh-color-picker-content-px` · `--xh-color-picker-content-py` · `--xh-color-picker-content-radius` · `--xh-color-picker-content-shadow` · `--xh-color-picker-content-w` · `--xh-color-picker-control-bg` · `--xh-color-picker-control-bg-disabled` · `--xh-color-picker-control-bg-readonly` · `--xh-color-picker-control-border` · `--xh-color-picker-control-border-focus` · `--xh-color-picker-control-border-hover` · `--xh-color-picker-control-fg` · `--xh-color-picker-control-gap` · `--xh-color-picker-control-h` · `--xh-color-picker-control-min-w` · `--xh-color-picker-control-px` · `--xh-color-picker-control-radius` · `--xh-color-picker-control-shadow` · `--xh-color-picker-gap` · `--xh-color-picker-input-bg` · `--xh-color-picker-input-bg-disabled` · `--xh-color-picker-input-bg-readonly` · `--xh-color-picker-input-border` · `--xh-color-picker-input-border-focus` · `--xh-color-picker-input-border-invalid` · `--xh-color-picker-input-font-size` · `--xh-color-picker-input-h` · `--xh-color-picker-input-px` · `--xh-color-picker-input-radius` · `--xh-color-picker-label-fg` · `--xh-color-picker-label-font-size` · `--xh-color-picker-label-font-weight` · `--xh-color-picker-layer` · `--xh-color-picker-max-h` · `--xh-color-picker-swatch-border` · `--xh-color-picker-swatch-border-hover` · `--xh-color-picker-swatch-gap` · `--xh-color-picker-swatch-item-size` · `--xh-color-picker-swatch-radius` · `--xh-color-picker-swatch-ring` · `--xh-color-picker-swatch-size` · `--xh-color-picker-thumb-border` · `--xh-color-picker-thumb-radius` · `--xh-color-picker-thumb-scale-dragging` · `--xh-color-picker-thumb-shadow` · `--xh-color-picker-thumb-size` · `--xh-color-picker-track-radius` · `--xh-color-picker-track-thickness` · `--xh-color-picker-trigger-fg` · `--xh-color-picker-trigger-font-size` · `--xh-color-picker-trigger-gap` · `--xh-color-picker-value-fg` · `--xh-color-picker-value-font-size`
+`--xh-color-picker-action-bg` · `--xh-color-picker-action-bg-active` · `--xh-color-picker-action-bg-hover` · `--xh-color-picker-action-border` · `--xh-color-picker-action-border-active` · `--xh-color-picker-action-fg` · `--xh-color-picker-action-fg-hover` · `--xh-color-picker-action-font-size` · `--xh-color-picker-action-radius` · `--xh-color-picker-action-size` · `--xh-color-picker-checker` · `--xh-color-picker-content-bg` · `--xh-color-picker-content-border` · `--xh-color-picker-content-fg` · `--xh-color-picker-content-gap` · `--xh-color-picker-content-px` · `--xh-color-picker-content-py` · `--xh-color-picker-content-radius` · `--xh-color-picker-content-shadow` · `--xh-color-picker-content-w` · `--xh-color-picker-control-bg` · `--xh-color-picker-control-bg-disabled` · `--xh-color-picker-control-bg-hover` · `--xh-color-picker-control-bg-readonly` · `--xh-color-picker-control-border` · `--xh-color-picker-control-border-focus` · `--xh-color-picker-control-border-hover` · `--xh-color-picker-control-fg` · `--xh-color-picker-control-gap` · `--xh-color-picker-control-h` · `--xh-color-picker-control-min-w` · `--xh-color-picker-control-px` · `--xh-color-picker-control-radius` · `--xh-color-picker-control-shadow` · `--xh-color-picker-gap` · `--xh-color-picker-input-bg` · `--xh-color-picker-input-bg-disabled` · `--xh-color-picker-input-bg-readonly` · `--xh-color-picker-input-border` · `--xh-color-picker-input-border-focus` · `--xh-color-picker-input-border-invalid` · `--xh-color-picker-input-font-size` · `--xh-color-picker-input-h` · `--xh-color-picker-input-px` · `--xh-color-picker-input-radius` · `--xh-color-picker-label-fg` · `--xh-color-picker-label-font-size` · `--xh-color-picker-label-font-weight` · `--xh-color-picker-layer` · `--xh-color-picker-max-h` · `--xh-color-picker-saturation-area-h` · `--xh-color-picker-saturation-area-radius` · `--xh-color-picker-swatch-border` · `--xh-color-picker-swatch-border-hover` · `--xh-color-picker-swatch-gap` · `--xh-color-picker-swatch-item-size` · `--xh-color-picker-swatch-radius` · `--xh-color-picker-swatch-ring` · `--xh-color-picker-swatch-size` · `--xh-color-picker-thumb-border` · `--xh-color-picker-thumb-radius` · `--xh-color-picker-thumb-scale-dragging` · `--xh-color-picker-thumb-shadow` · `--xh-color-picker-thumb-size` · `--xh-color-picker-track-radius` · `--xh-color-picker-track-thickness` · `--xh-color-picker-trigger-fg` · `--xh-color-picker-trigger-font-size` · `--xh-color-picker-trigger-gap` · `--xh-color-picker-value-fg` · `--xh-color-picker-value-font-size`
 
 ## 动效
 

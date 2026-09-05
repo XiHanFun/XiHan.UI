@@ -9,13 +9,13 @@
       <button data-xh-part="trigger">选择文件</button>
     </div>
     <input data-xh-part="hidden-input" />
-    <div data-xh-part="item-group"></div>
+    <div data-xh-part="list"></div>
   </div>
 </xh-file-upload>
 
 <script type="module">
   const upload = document.getElementById("file-upload-download");
-  const group = upload.querySelector('[data-xh-part="item-group"]');
+  const group = upload.querySelector('[data-xh-part="list"]');
   const action =
     "flex: none; font-size: 12px; color: var(--xh-fg-brand); cursor: pointer";
 

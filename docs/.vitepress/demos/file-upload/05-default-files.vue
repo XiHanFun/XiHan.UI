@@ -6,7 +6,7 @@ import {
   XhFileUploadHiddenInput,
   XhFileUploadItem,
   XhFileUploadItemDeleteTrigger,
-  XhFileUploadItemGroup,
+  XhFileUploadList,
   XhFileUploadItemName,
   XhFileUploadItemPreview,
   XhFileUploadItemSizeText,
@@ -34,14 +34,14 @@ const initialFiles = [
         <XhFileUploadTrigger>继续添加</XhFileUploadTrigger>
       </div>
       <XhFileUploadHiddenInput />
-      <XhFileUploadItemGroup>
+      <XhFileUploadList>
         <XhFileUploadItem v-for="file in acceptedFiles" :key="file" :file="file">
           <XhFileUploadItemPreview />
           <XhFileUploadItemName />
           <XhFileUploadItemSizeText />
           <XhFileUploadItemDeleteTrigger />
         </XhFileUploadItem>
-      </XhFileUploadItemGroup>
+      </XhFileUploadList>
       <XhFileUploadClearTrigger>清空</XhFileUploadClearTrigger>
     </XhFileUploadRoot>
   </div>

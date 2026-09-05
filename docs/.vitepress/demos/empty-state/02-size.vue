@@ -2,7 +2,7 @@
 <script setup lang="ts">
 import {
   XhEmptyStateDescription,
-  XhEmptyStateIcon,
+  XhEmptyStateIndicator,
   XhEmptyStateRoot,
   XhEmptyStateTitle,
 } from "@xihan-ui/vue";
@@ -10,19 +10,19 @@ import {
 
 <template>
   <XhEmptyStateRoot size="sm" style="inline-size: 220px">
-    <XhEmptyStateIcon>∅</XhEmptyStateIcon>
+    <XhEmptyStateIndicator>∅</XhEmptyStateIndicator>
     <XhEmptyStateTitle>sm</XhEmptyStateTitle>
     <XhEmptyStateDescription>塞进侧栏或卡片里的那一档。</XhEmptyStateDescription>
   </XhEmptyStateRoot>
 
   <XhEmptyStateRoot style="inline-size: 220px">
-    <XhEmptyStateIcon>∅</XhEmptyStateIcon>
+    <XhEmptyStateIndicator>∅</XhEmptyStateIndicator>
     <XhEmptyStateTitle>md</XhEmptyStateTitle>
     <XhEmptyStateDescription>缺省档，列表与表格用它。</XhEmptyStateDescription>
   </XhEmptyStateRoot>
 
   <XhEmptyStateRoot size="lg" style="inline-size: 220px">
-    <XhEmptyStateIcon>∅</XhEmptyStateIcon>
+    <XhEmptyStateIndicator>∅</XhEmptyStateIndicator>
     <XhEmptyStateTitle>lg</XhEmptyStateTitle>
     <XhEmptyStateDescription>整页只有这一块时用它。</XhEmptyStateDescription>
   </XhEmptyStateRoot>

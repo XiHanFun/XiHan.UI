@@ -78,7 +78,7 @@ slidesPerMove 与 slidesPerPage 分开给：一屏露三张、一次只挪一张
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-carousel>` |
-| Vue 组件 | `XhCarouselAutoplayTrigger` `XhCarouselIndicator` `XhCarouselIndicatorGroup` `XhCarouselItem` `XhCarouselItemGroup` `XhCarouselNextTrigger` `XhCarouselPrevTrigger` `XhCarouselRoot` `XhCarouselViewport` |
+| Vue 组件 | `XhCarouselAutoplayTrigger` `XhCarouselIndicator` `XhCarouselIndicatorGroup` `XhCarouselItem` `XhCarouselList` `XhCarouselNextTrigger` `XhCarouselPrevTrigger` `XhCarouselRoot` `XhCarouselViewport` |
 | 组合式函数 | `useCarousel` |
 | 状态机 | `carouselMachine` |
 | 皮肤 | `@xihan-ui/styles/carousel.css` |
@@ -87,7 +87,7 @@ slidesPerMove 与 slidesPerPage 分开给：一屏露三张、一次只挪一张
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="carousel"`：**`root`** · **`viewport`** · **`item-group`** · `item` · `prev-trigger` · `next-trigger` · `autoplay-trigger` · `indicator-group` · `indicator`
+`data-scope="carousel"`：**`root`** · **`viewport`** · **`list`** · `item` · `prev-trigger` · `next-trigger` · `autoplay-trigger` · `indicator-group` · `indicator`
 
 ## Props
 
@@ -169,7 +169,7 @@ slidesPerMove 与 slidesPerPage 分开给：一屏露三张、一次只挪一张
 | `resume` | `() => void` |  |
 | `getRootProps` | `() => T['element']` |  |
 | `getViewportProps` | `() => T['element']` |  |
-| `getItemGroupProps` | `() => T['element']` |  |
+| `getListProps` | `() => T['element']` |  |
 | `getItemProps` | `(props: CarouselItemProps) => T['element']` |  |
 | `getPrevTriggerProps` | `() => T['button']` |  |
 | `getNextTriggerProps` | `() => T['button']` |  |
@@ -235,8 +235,8 @@ slidesPerMove 与 slidesPerPage 分开给：一屏露三张、一次只挪一张
 | `root` | `data-paused` | ''（条件成立时才出现） |
 | `viewport` | `data-dragging` | ''（条件成立时才出现） |
 | `viewport` | `data-orientation` | props.orientation |
-| `item-group` | `data-dragging` | ''（条件成立时才出现） |
-| `item-group` | `data-orientation` | props.orientation |
+| `list` | `data-dragging` | ''（条件成立时才出现） |
+| `list` | `data-orientation` | props.orientation |
 | `item` | `data-index` | String(index) |
 | `item` | `data-inview` | ''（条件成立时才出现） |
 | `item` | `data-orientation` | props.orientation |
@@ -254,7 +254,7 @@ slidesPerMove 与 slidesPerPage 分开给：一屏露三张、一次只挪一张
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-carousel-duration` · `--xh-carousel-ease` · `--xh-carousel-gap` · `--xh-carousel-icon-size` · `--xh-carousel-indicator-bg` · `--xh-carousel-indicator-bg-hover` · `--xh-carousel-indicator-bg-selected` · `--xh-carousel-indicator-gap` · `--xh-carousel-indicator-radius` · `--xh-carousel-indicator-size` · `--xh-carousel-trigger-bg` · `--xh-carousel-trigger-bg-active` · `--xh-carousel-trigger-bg-hover` · `--xh-carousel-trigger-border` · `--xh-carousel-trigger-fg` · `--xh-carousel-trigger-radius` · `--xh-carousel-trigger-size` · `--xh-carousel-viewport-radius`
+`--xh-carousel-duration` · `--xh-carousel-ease` · `--xh-carousel-gap` · `--xh-carousel-icon-size` · `--xh-carousel-indicator-bg` · `--xh-carousel-indicator-bg-hover` · `--xh-carousel-indicator-bg-selected` · `--xh-carousel-indicator-gap` · `--xh-carousel-indicator-radius` · `--xh-carousel-indicator-size` · `--xh-carousel-trigger-bg` · `--xh-carousel-trigger-bg-active` · `--xh-carousel-trigger-bg-hover` · `--xh-carousel-trigger-border` · `--xh-carousel-trigger-fg` · `--xh-carousel-trigger-radius` · `--xh-carousel-trigger-shadow-hover` · `--xh-carousel-trigger-size` · `--xh-carousel-viewport-radius`
 
 ## 动效
 

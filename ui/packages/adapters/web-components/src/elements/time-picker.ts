@@ -89,12 +89,12 @@ function declaredUnit(el: HTMLElement, position: number): TimePickerColumnUnit {
  * @csspart label - 标题；点它会把焦点送到第一段
  * @csspart control - role=group 的输入行，同时是浮层的定位锚点
  * @csspart segment-group - 段位与分隔符的外壳，占满盒里剩下的宽度
- * @csspart input - 一段一个的 spinbutton，可自带 segment 属性声明身份，缺省按文档序
+ * @csspart segment - 一段一个的 spinbutton，可自带 segment 属性声明身份，缺省按文档序
  * @csspart trigger - 展开/收起按钮，须是原生 button
  * @csspart clear-trigger - 清空按钮，须是原生 button；不占 Tab 位，可及名走 translations.clearTrigger；没值即收起
  * @csspart positioner - 浮层定位容器，坐标由引擎写成内联样式
  * @csspart content - 浮层容器（消解层与焦点域的根节点），收起时带 hidden
- * @csspart presets - 快捷选项列（role=listbox）；没给 presets 时带 hidden
+ * @csspart preset-group - 快捷选项列（role=listbox）；没给 presets 时带 hidden
  * @csspart preset - 一条快捷选项（role=option），须自带 value 属性（与 presets 数据里的 value 逐字对上）
  * @csspart column - role=listbox 的一列，可自带 unit 属性声明单位，缺省按文档序
  * @csspart item - role=option 的一格，须自带 value 属性（两位补零的显示串；上下午列写 '00' / '01'）
@@ -293,16 +293,16 @@ export class XhTimePickerElement extends XhElement {
     put('positioner', api.getPositionerProps() as Record<string, unknown>)
     put('content', api.getContentProps() as Record<string, unknown>)
     put('hidden-input', api.getHiddenInputProps() as Record<string, unknown>)
-    put('presets', api.getPresetsProps() as Record<string, unknown>)
+    put('preset-group', api.getPresetGroupProps() as Record<string, unknown>)
 
     // 快捷选项是多实例 part：条目自报 value
     for (const el of this.getParts('preset'))
       this.spreader.spread(el, api.getPresetProps({ value: el.getAttribute('value') ?? '' }) as Record<string, unknown>)
 
     // 段逐个打；wire 跑在事件之前，换段与自动跳段时 data-scope/data-part/data-value 已在 DOM 上
-    this.getParts('input').forEach((el, position) => {
+    this.getParts('segment').forEach((el, position) => {
       const segment = declaredSegment(el, position)
-      this.spreader.spread(el, api.getInputProps({ segment }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getSegmentProps({ segment }) as Record<string, unknown>)
       this.fillText(el, api.getSegmentText({ segment }))
       // 用内联 display 收起不参与显示的段（作者层的 display 声明会盖过 [hidden]）
       this.setPartHidden(el, !api.segments.includes(segment))

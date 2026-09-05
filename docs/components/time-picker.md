@@ -91,7 +91,7 @@ presets 在列旁边多排一列，点一条整份写进值并收起；时刻在
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-time-picker>` |
-| Vue 组件 | `XhTimePickerClearTrigger` `XhTimePickerColumn` `XhTimePickerContent` `XhTimePickerControl` `XhTimePickerHiddenInput` `XhTimePickerInput` `XhTimePickerItem` `XhTimePickerLabel` `XhTimePickerPositioner` `XhTimePickerPreset` `XhTimePickerPresets` `XhTimePickerRoot` `XhTimePickerSegmentGroup` `XhTimePickerTrigger` |
+| Vue 组件 | `XhTimePickerClearTrigger` `XhTimePickerColumn` `XhTimePickerContent` `XhTimePickerControl` `XhTimePickerHiddenInput` `XhTimePickerItem` `XhTimePickerLabel` `XhTimePickerPositioner` `XhTimePickerPreset` `XhTimePickerPresetGroup` `XhTimePickerRoot` `XhTimePickerSegment` `XhTimePickerSegmentGroup` `XhTimePickerTrigger` |
 | 组合式函数 | `useTimePicker` |
 | 状态机 | `timePickerMachine` |
 | 皮肤 | `@xihan-ui/styles/time-picker.css` |
@@ -100,7 +100,7 @@ presets 在列旁边多排一列，点一条整份写进值并收起；时刻在
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="time-picker"`：**`root`** · `label` · **`control`** · `segment-group` · **`input`** · **`trigger`** · `clear-trigger` · `positioner` · **`content`** · `presets` · `preset` · `column` · `item` · `hidden-input`
+`data-scope="time-picker"`：**`root`** · `label` · **`control`** · `segment-group` · **`segment`** · **`trigger`** · `clear-trigger` · `positioner` · **`content`** · `preset-group` · `preset` · `column` · `item` · `hidden-input`
 
 ## Props
 
@@ -150,7 +150,7 @@ presets 在列旁边多排一列，点一条整份写进值并收起；时刻在
 | --- | --- | --- | --- |
 | `XhTimePickerColumn` | `default` | `TimePickerColumnSlotProps` |  |
 | `XhTimePickerPreset` | `default` | — | 条目内容；不写就用数据里的 label。 |
-| `XhTimePickerPresets` | `default` | `TimePickerPresetsSlotProps` | 自己铺条目；不写就按 presets 数据自动铺，两者产出的 DOM 一致。 |
+| `XhTimePickerPresetGroup` | `default` | `TimePickerPresetsSlotProps` | 自己铺条目；不写就按 presets 数据自动铺，两者产出的 DOM 一致。 |
 | `XhTimePickerRoot` | `default` | `TimePickerRootSlotProps` |  |
 
 ## 状态
@@ -199,7 +199,7 @@ presets 在列旁边多排一列，点一条整份写进值并收起；时刻在
 | `focusedItem` | `string \| null` |  |
 | `presets` | `readonly TimePickerPresetState[]` | 快捷选项逐条的样子，数据顺序。没给 presets 时为空数组。 |
 | `canClear` | `boolean` | 清空按钮此刻可不可按。 |
-| `getSegmentText` | `(props: TimePickerInputProps) => string` | 某一段该显示的文字（空段是占位串）。两个适配器都拿它填文本，保证同构。 |
+| `getSegmentText` | `(props: TimePickerSegmentProps) => string` | 某一段该显示的文字（空段是占位串）。两个适配器都拿它填文本，保证同构。 |
 | `getItemText` | `(props: TimePickerItemProps) => string` | 某一格该显示的文字。数字列就是格子自己的值，上下午列按 locale 给出「上午 / 下午」。 两个适配器都拿它填文本，保证同构。 |
 | `isItemSelected` | `(props: TimePickerItemProps) => boolean` |  |
 | `isItemDisabled` | `(props: TimePickerItemProps) => boolean` | 落在 min/max 之外（或整个控件禁用）：仍在列表里，但不可选、方向键跳过。 |
@@ -210,12 +210,12 @@ presets 在列旁边多排一列，点一条整份写进值并收起；时刻在
 | `getLabelProps` | `() => T['label']` |  |
 | `getControlProps` | `() => T['element']` |  |
 | `getSegmentGroupProps` | `() => T['element']` | 段位与分隔符的外壳：占满盒里剩下的宽度，把尾部按钮顶到框内末端。 |
-| `getInputProps` | `(props: TimePickerInputProps) => T['element']` | 分段输入：一段一个节点，与 TimeField 的段同构（role=spinbutton + roving tabindex）。 |
+| `getSegmentProps` | `(props: TimePickerSegmentProps) => T['element']` | 分段输入：一段一个节点，与 TimeField 的段同构（role=spinbutton + roving tabindex）。 |
 | `getTriggerProps` | `() => T['button']` |  |
 | `getClearTriggerProps` | `() => T['button']` |  |
 | `getPositionerProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |
-| `getPresetsProps` | `() => T['element']` | 快捷选项列（role=listbox）；没给 presets 时带 hidden。 |
+| `getPresetGroupProps` | `() => T['element']` | 快捷选项列（role=listbox）；没给 presets 时带 hidden。 |
 | `getPresetProps` | `(props: TimePickerPresetProps) => T['element']` | 一条快捷选项（role=option）：点按把整份时间写进值并收起浮层。 |
 | `getColumnProps` | `(props: TimePickerColumnProps) => T['element']` |  |
 | `getItemProps` | `(props: TimePickerItemProps) => T['element']` |  |
@@ -262,16 +262,16 @@ presets 在列旁边多排一列，点一条整份写进值并收起；时刻在
 | `control` | `aria-invalid` | 'true' \| 'false' |
 | `control` | `aria-labelledby` | `label` 部件的 id |
 | `control` | `role` | 'group' |
-| `input` | `aria-disabled` | 'true' \| 'false' |
-| `input` | `aria-invalid` | 'true' \| 'false' |
-| `input` | `aria-label` | prop('translations')?.[segment] |
-| `input` | `aria-readonly` | 'true' \| 'false' |
-| `input` | `aria-required` | 'true' \| 'false' |
-| `input` | `aria-valuemax` | range.max |
-| `input` | `aria-valuemin` | range.min |
-| `input` | `aria-valuenow` | segmentNumber(draft, segment, hourCycle) |
-| `input` | `aria-valuetext` | timeSegmentText(draft, segment, { hourCycle, locale }) |
-| `input` | `role` | 'spinbutton' |
+| `segment` | `aria-disabled` | 'true' \| 'false' |
+| `segment` | `aria-invalid` | 'true' \| 'false' |
+| `segment` | `aria-label` | prop('translations')?.[segment] |
+| `segment` | `aria-readonly` | 'true' \| 'false' |
+| `segment` | `aria-required` | 'true' \| 'false' |
+| `segment` | `aria-valuemax` | range.max |
+| `segment` | `aria-valuemin` | range.min |
+| `segment` | `aria-valuenow` | segmentNumber(draft, segment, hourCycle) |
+| `segment` | `aria-valuetext` | timeSegmentText(draft, segment, { hourCycle, locale }) |
+| `segment` | `role` | 'spinbutton' |
 | `trigger` | `aria-controls` | `content` 部件的 id |
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
 | `trigger` | `aria-haspopup` | 'dialog' |
@@ -280,11 +280,11 @@ presets 在列旁边多排一列，点一条整份写进值并收起；时刻在
 | `content` | `aria-labelledby` | `label` 部件的 id |
 | `content` | `aria-modal` | 'false' |
 | `content` | `role` | 'dialog' |
-| `presets` | `aria-disabled` | 'true' \| 'false' |
-| `presets` | `aria-label` | props.translations.presets |
-| `presets` | `aria-multiselectable` | 'false' |
-| `presets` | `aria-orientation` | 'vertical' |
-| `presets` | `role` | 'listbox' |
+| `preset-group` | `aria-disabled` | 'true' \| 'false' |
+| `preset-group` | `aria-label` | props.translations.presets |
+| `preset-group` | `aria-multiselectable` | 'false' |
+| `preset-group` | `aria-orientation` | 'vertical' |
+| `preset-group` | `role` | 'listbox' |
 | `preset` | `aria-disabled` | 'true' \| 'false' |
 | `preset` | `aria-selected` | 'true' \| 'false' |
 | `preset` | `role` | 'option' |
@@ -325,11 +325,11 @@ presets 在列旁边多排一列，点一条整份写进值并收起；时刻在
 | `segment-group` | `data-disabled` | ''（条件成立时才出现） |
 | `segment-group` | `data-invalid` | ''（条件成立时才出现） |
 | `segment-group` | `data-readonly` | ''（条件成立时才出现） |
-| `input` | `data-disabled` | ''（条件成立时才出现） |
-| `input` | `data-focus` | ''（条件成立时才出现） |
-| `input` | `data-invalid` | ''（条件成立时才出现） |
-| `input` | `data-placeholder` | ''（条件成立时才出现） |
-| `input` | `data-readonly` | ''（条件成立时才出现） |
+| `segment` | `data-disabled` | ''（条件成立时才出现） |
+| `segment` | `data-focus` | ''（条件成立时才出现） |
+| `segment` | `data-invalid` | ''（条件成立时才出现） |
+| `segment` | `data-placeholder` | ''（条件成立时才出现） |
+| `segment` | `data-readonly` | ''（条件成立时才出现） |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `trigger` | `data-state` | 'open' \| 'closed' |
 | `positioner` | `data-hidden` | ''（条件成立时才出现） |
@@ -353,7 +353,7 @@ presets 在列旁边多排一列，点一条整份写进值并收起；时刻在
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-time-picker-action-bg` · `--xh-time-picker-action-bg-active` · `--xh-time-picker-action-bg-hover` · `--xh-time-picker-action-fg` · `--xh-time-picker-action-fg-hover` · `--xh-time-picker-action-font-size` · `--xh-time-picker-action-radius` · `--xh-time-picker-action-size` · `--xh-time-picker-column-divider` · `--xh-time-picker-column-gap` · `--xh-time-picker-column-h` · `--xh-time-picker-column-min-w` · `--xh-time-picker-column-px` · `--xh-time-picker-content-bg` · `--xh-time-picker-content-border` · `--xh-time-picker-content-fg` · `--xh-time-picker-content-max-h` · `--xh-time-picker-content-px` · `--xh-time-picker-content-py` · `--xh-time-picker-content-radius` · `--xh-time-picker-content-shadow` · `--xh-time-picker-control-bg` · `--xh-time-picker-control-bg-disabled` · `--xh-time-picker-control-bg-readonly` · `--xh-time-picker-control-border` · `--xh-time-picker-control-border-focus` · `--xh-time-picker-control-border-hover` · `--xh-time-picker-control-border-invalid` · `--xh-time-picker-control-fg` · `--xh-time-picker-control-gap` · `--xh-time-picker-control-h` · `--xh-time-picker-control-min-w` · `--xh-time-picker-control-px` · `--xh-time-picker-control-radius` · `--xh-time-picker-control-shadow` · `--xh-time-picker-font-size` · `--xh-time-picker-gap` · `--xh-time-picker-icon-size` · `--xh-time-picker-item-bg-checked` · `--xh-time-picker-item-bg-checked-hover` · `--xh-time-picker-item-bg-hover` · `--xh-time-picker-item-fg` · `--xh-time-picker-item-fg-checked` · `--xh-time-picker-item-font-size` · `--xh-time-picker-item-px` · `--xh-time-picker-item-py` · `--xh-time-picker-item-radius` · `--xh-time-picker-item-weight-checked` · `--xh-time-picker-label-fg` · `--xh-time-picker-label-fg-disabled` · `--xh-time-picker-label-font-size` · `--xh-time-picker-label-font-weight` · `--xh-time-picker-layer` · `--xh-time-picker-placeholder-fg` · `--xh-time-picker-preset-bg-checked` · `--xh-time-picker-preset-bg-checked-hover` · `--xh-time-picker-preset-bg-hover` · `--xh-time-picker-preset-fg-checked` · `--xh-time-picker-preset-fg-disabled` · `--xh-time-picker-preset-px` · `--xh-time-picker-preset-py` · `--xh-time-picker-preset-radius` · `--xh-time-picker-presets-gap` · `--xh-time-picker-presets-h` · `--xh-time-picker-presets-px` · `--xh-time-picker-segment-bg-focus` · `--xh-time-picker-segment-bg-hover` · `--xh-time-picker-segment-fg-focus` · `--xh-time-picker-segment-px` · `--xh-time-picker-segment-radius`
+`--xh-time-picker-action-bg` · `--xh-time-picker-action-bg-active` · `--xh-time-picker-action-bg-hover` · `--xh-time-picker-action-fg` · `--xh-time-picker-action-fg-hover` · `--xh-time-picker-action-font-size` · `--xh-time-picker-action-radius` · `--xh-time-picker-action-size` · `--xh-time-picker-column-divider` · `--xh-time-picker-column-gap` · `--xh-time-picker-column-h` · `--xh-time-picker-column-min-w` · `--xh-time-picker-column-px` · `--xh-time-picker-content-bg` · `--xh-time-picker-content-border` · `--xh-time-picker-content-fg` · `--xh-time-picker-content-max-h` · `--xh-time-picker-content-px` · `--xh-time-picker-content-py` · `--xh-time-picker-content-radius` · `--xh-time-picker-content-shadow` · `--xh-time-picker-control-bg` · `--xh-time-picker-control-bg-disabled` · `--xh-time-picker-control-bg-hover` · `--xh-time-picker-control-bg-readonly` · `--xh-time-picker-control-border` · `--xh-time-picker-control-border-focus` · `--xh-time-picker-control-border-hover` · `--xh-time-picker-control-border-invalid` · `--xh-time-picker-control-fg` · `--xh-time-picker-control-gap` · `--xh-time-picker-control-h` · `--xh-time-picker-control-min-w` · `--xh-time-picker-control-px` · `--xh-time-picker-control-radius` · `--xh-time-picker-control-shadow` · `--xh-time-picker-font-size` · `--xh-time-picker-gap` · `--xh-time-picker-icon-size` · `--xh-time-picker-item-bg-checked` · `--xh-time-picker-item-bg-checked-hover` · `--xh-time-picker-item-bg-hover` · `--xh-time-picker-item-fg` · `--xh-time-picker-item-fg-checked` · `--xh-time-picker-item-font-size` · `--xh-time-picker-item-px` · `--xh-time-picker-item-py` · `--xh-time-picker-item-radius` · `--xh-time-picker-item-weight-checked` · `--xh-time-picker-label-fg` · `--xh-time-picker-label-fg-disabled` · `--xh-time-picker-label-font-size` · `--xh-time-picker-label-font-weight` · `--xh-time-picker-layer` · `--xh-time-picker-placeholder-fg` · `--xh-time-picker-preset-bg-checked` · `--xh-time-picker-preset-bg-checked-hover` · `--xh-time-picker-preset-bg-hover` · `--xh-time-picker-preset-fg-checked` · `--xh-time-picker-preset-fg-disabled` · `--xh-time-picker-preset-group-gap` · `--xh-time-picker-preset-group-h` · `--xh-time-picker-preset-group-px` · `--xh-time-picker-preset-px` · `--xh-time-picker-preset-py` · `--xh-time-picker-preset-radius` · `--xh-time-picker-segment-bg-focus` · `--xh-time-picker-segment-bg-hover` · `--xh-time-picker-segment-fg-focus` · `--xh-time-picker-segment-px` · `--xh-time-picker-segment-radius`
 
 ## 动效
 

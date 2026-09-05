@@ -19,10 +19,10 @@ const SCOPE = '[data-scope="time-picker"]'
 const BASE = { min: '08:00', max: '11:00', step: 30 } as const
 
 /** fixture 里段的排布顺序，与下标寻址一一对应。 */
-const HOUR_SEG = 'input[0]'
-const MINUTE_SEG = 'input[1]'
-const SECOND_SEG = 'input[2]'
-const DAY_PERIOD_SEG = 'input[3]'
+const HOUR_SEG = 'segment[0]'
+const MINUTE_SEG = 'segment[1]'
+const SECOND_SEG = 'segment[2]'
+const DAY_PERIOD_SEG = 'segment[3]'
 
 /** 列与格的下标寻址：时列 4 格（08-11）、分列 2 格（00/30）、秒列 2 格（00/30）、上下午列 2 格。 */
 const HOUR_COL = 'column[0]'
@@ -39,7 +39,7 @@ const SECOND_00 = 'item[6]'
 const PERIOD_AM = 'item[8]'
 const PERIOD_PM = 'item[9]'
 
-const segment = (name: string): FixtureNode => ({ part: 'input', tag: 'span', attrs: { segment: name } })
+const segment = (name: string): FixtureNode => ({ part: 'segment', tag: 'span', attrs: { segment: name } })
 const item = (value: string): FixtureNode => ({ part: 'item', attrs: { value } })
 function column(unit: string, values: readonly string[]): FixtureNode {
   return {
@@ -50,7 +50,7 @@ function column(unit: string, values: readonly string[]): FixtureNode {
 }
 
 function segmentTexts(doc: Document): string[] {
-  return [...doc.querySelectorAll<HTMLElement>(`${SCOPE}[data-part="input"]`)]
+  return [...doc.querySelectorAll<HTMLElement>(`${SCOPE}[data-part="segment"]`)]
     .filter(el => !el.hasAttribute('hidden'))
     .map(el => el.textContent ?? '')
 }
@@ -82,9 +82,9 @@ const PRESETS_MIXED = [
 ] as const
 
 /** 快捷选项列排在时分秒那几列前面，只有用到它的那条用例派生这一份。 */
-function presetsFixture(base: FixtureNode, presets: readonly { value: string, label: string }[] = PRESETS): FixtureNode {
+function presetGroupFixture(base: FixtureNode, presets: readonly { value: string, label: string }[] = PRESETS): FixtureNode {
   const list: FixtureNode = {
-    part: 'presets',
+    part: 'preset-group',
     children: presets.map(preset => ({
       part: 'preset',
       attrs: { value: preset.value },
@@ -112,7 +112,7 @@ function presetItems(doc: Document): HTMLElement[] {
   return [...doc.querySelectorAll<HTMLElement>(`${SCOPE}[data-part="preset"]`)]
 }
 
-/** 往某一条快捷选项上直接派按键；处理器挂在 presets 那一层，靠冒泡收。 */
+/** 往某一条快捷选项上直接派按键；处理器挂在 preset-group 那一层，靠冒泡收。 */
 async function pressOnPreset(ctx: RawStepContext, el: HTMLElement, key: string): Promise<void> {
   // 显式 cancelable，否则 preventDefault 是空操作
   el.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true }))
@@ -168,14 +168,14 @@ export const timePickerSuite: ConformanceSuite = {
       name: '快捷选项列自成一套键盘：上下键在条目间走，Enter 整份写进值并收起',
       spec: { apg: `${APG}#keyboardinteraction` },
       covers: ['time-picker.kbd.preset-move', 'time-picker.kbd.preset-pick'],
-      fixture: presetsFixture,
+      fixture: presetGroupFixture,
       props: { ...BASE, presets: [...PRESETS] },
       steps: [
         { kind: 'click', part: 'trigger' },
         { kind: 'settle', until: { attr: { part: 'content', name: 'hidden', value: null } } },
         {
           kind: 'raw',
-          why: '这一列的键盘处理器挂在 presets 自己身上，按键要从条目上派；条目按 data-value 认，不进快照',
+          why: '这一列的键盘处理器挂在 preset-group 自己身上，按键要从条目上派；条目按 data-value 认，不进快照',
           run: async (ctx) => {
             const items = presetItems(ctx.doc)
             // 还没有值，锚点落在头一条
@@ -198,7 +198,7 @@ export const timePickerSuite: ConformanceSuite = {
       name: '按不下去的快捷选项：方向键停得上去，Enter 与点按都不写值；带秒的时刻按精度归一后算命中',
       spec: { apg: `${APG}#keyboardinteraction` },
       covers: ['time-picker.kbd.preset-move', 'time-picker.kbd.preset-pick'],
-      fixture: base => presetsFixture(base, PRESETS_MIXED),
+      fixture: base => presetGroupFixture(base, PRESETS_MIXED),
       props: { ...BASE, defaultValue: '09:00', min: '08:00', max: '18:00', presets: [...PRESETS_MIXED] },
       steps: [
         { kind: 'click', part: 'trigger' },
@@ -241,7 +241,7 @@ export const timePickerSuite: ConformanceSuite = {
           kind: 'raw',
           why: '要把键派在真正可聚焦的段位上，而 key 步骤只往 activeElement 上派',
           run: async (ctx) => {
-            const seg = ctx.doc.querySelector('[data-scope="time-picker"][data-part="input"]')
+            const seg = ctx.doc.querySelector('[data-scope="time-picker"][data-part="segment"]')
             if (!(seg instanceof HTMLElement))
               throw new Error('找不到段位节点')
             seg.focus()
@@ -260,7 +260,7 @@ export const timePickerSuite: ConformanceSuite = {
       covers: ['time-picker.kbd.segment-open'],
       props: BASE,
       steps: [
-        { kind: 'focus', part: 'input[0]' },
+        { kind: 'focus', part: 'segment[0]' },
         { kind: 'key', key: 'ArrowDown', modifiers: ['Alt'], expect: { parts: { content: { hidden: null } } } },
       ],
     },
@@ -313,7 +313,7 @@ export const timePickerSuite: ConformanceSuite = {
           PERIOD_AM,
           PERIOD_PM,
         ],
-        counts: { input: 4, column: 4, item: 10 },
+        counts: { segment: 4, column: 4, item: 10 },
         activeElement: null,
         parts: {
           'root': { 'data-state': 'closed', 'data-empty': '', 'data-disabled': null, 'data-invalid': null },
@@ -1099,7 +1099,7 @@ export const timePickerSuite: ConformanceSuite = {
           // 段上没有 tabindex、按钮是原生 disabled，必须直接往节点上派事件才碰得到守卫
           why: '禁用时段不可聚焦、按钮不派 click，只有直接派发才碰得到守卫',
           run: async (ctx) => {
-            const hour = ctx.doc.querySelector<HTMLElement>(`${SCOPE}[data-part="input"]`)!
+            const hour = ctx.doc.querySelector<HTMLElement>(`${SCOPE}[data-part="segment"]`)!
             for (const key of ['ArrowUp', 'Backspace', '9', 'ArrowRight'])
               hour.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true }))
             ctx.doc.querySelector<HTMLElement>(`${SCOPE}[data-part="trigger"]`)!

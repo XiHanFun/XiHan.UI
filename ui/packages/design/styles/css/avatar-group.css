@@ -70,7 +70,7 @@
 
   /* —— 溢出计数 —— */
   /* 「+N」是这一排里的又一枚：直径、形状与字号跟着组走，里面写什么由作者定 */
-  [data-scope='avatar-group'][data-part='overflow'] {
+  [data-scope='avatar-group'][data-part='overflow-item'] {
     display: inline-flex;
     flex: none;
     align-items: center;
@@ -78,15 +78,15 @@
     inline-size: var(--xh-_avatar-group-size);
     block-size: var(--xh-_avatar-group-size);
     border-radius: var(--xh-avatar-group-radius, var(--xh-shape-pill));
-    background: var(--xh-avatar-group-overflow-bg, var(--xh-bg-muted));
-    color: var(--xh-avatar-group-overflow-fg, var(--xh-fg-muted));
+    background: var(--xh-avatar-group-overflow-item-bg, var(--xh-bg-muted));
+    color: var(--xh-avatar-group-overflow-item-fg, var(--xh-fg-muted));
     font-size: var(--xh-_avatar-group-font-size);
     font-weight: var(--xh-avatar-group-font-weight, var(--xh-font-weight-medium));
     line-height: var(--xh-leading-none);
     user-select: none;
   }
 
-  [data-scope='avatar-group'][data-part='overflow'][hidden] {
+  [data-scope='avatar-group'][data-part='overflow-item'][hidden] {
     display: none;
   }
 }

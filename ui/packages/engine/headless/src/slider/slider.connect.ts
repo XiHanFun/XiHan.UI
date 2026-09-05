@@ -209,20 +209,20 @@ export function connectSlider<T extends PropTypes>(
       })
     },
 
-    getMarksProps: () => normalize.element({
-      ...parts.marks.attrs,
+    getTickGroupProps: () => normalize.element({
+      ...parts['tick-group'].attrs,
       ...stateAttrs(),
     }),
 
-    getMarkProps: ({ value: v }) => normalize.element({
-      ...parts.mark.attrs,
+    getTickProps: ({ value: v }) => normalize.element({
+      ...parts.tick.attrs,
       'aria-hidden': true,
       'data-passed': dataAttr(markActive(v)),
       'style': axisStyle(valueToPercent(v, min, max)),
     }),
 
-    getMarkLabelProps: ({ value: v }) => normalize.element({
-      ...parts['mark-label'].attrs,
+    getTickLabelProps: ({ value: v }) => normalize.element({
+      ...parts['tick-label'].attrs,
       'data-passed': dataAttr(markActive(v)),
       'style': axisStyle(valueToPercent(v, min, max)),
       // 点文案把最近的滑块跳到这一档；禁用/只读由机器守卫拦

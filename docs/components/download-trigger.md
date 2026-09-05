@@ -161,7 +161,7 @@ data 给函数就是点了才算：它可以返回 Promise，这段时间状态�
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-download-trigger-bg` · `--xh-download-trigger-bg-active` · `--xh-download-trigger-bg-disabled` · `--xh-download-trigger-bg-hover` · `--xh-download-trigger-border` · `--xh-download-trigger-border-disabled` · `--xh-download-trigger-border-hover` · `--xh-download-trigger-fg` · `--xh-download-trigger-font-size` · `--xh-download-trigger-font-weight` · `--xh-download-trigger-gap` · `--xh-download-trigger-h` · `--xh-download-trigger-loading-duration` · `--xh-download-trigger-px` · `--xh-download-trigger-radius`
+`--xh-download-trigger-bg` · `--xh-download-trigger-bg-active` · `--xh-download-trigger-bg-disabled` · `--xh-download-trigger-bg-hover` · `--xh-download-trigger-border` · `--xh-download-trigger-border-disabled` · `--xh-download-trigger-border-hover` · `--xh-download-trigger-fg` · `--xh-download-trigger-font-size` · `--xh-download-trigger-font-weight` · `--xh-download-trigger-gap` · `--xh-download-trigger-h` · `--xh-download-trigger-loading-duration` · `--xh-download-trigger-px` · `--xh-download-trigger-radius` · `--xh-download-trigger-shadow-hover`
 
 ## 动效
 

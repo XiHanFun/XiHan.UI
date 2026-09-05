@@ -11,7 +11,7 @@ export interface PageHeaderApi<T extends PropTypes = PropTypes> {
   getRootProps: () => T['element']
   getBackTriggerProps: () => T['element']
   getTitleProps: () => T['element']
-  getSubtitleProps: () => T['element']
+  getDescriptionProps: () => T['element']
   getExtraProps: () => T['element']
   getFooterProps: () => T['element']
 }

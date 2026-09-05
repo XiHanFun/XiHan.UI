@@ -130,7 +130,7 @@ levels 决定分几档，图例与格子共用同一条色阶
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-heatmap>` |
-| Vue 组件 | `XhHeatmapCell` `XhHeatmapColumnLabel` `XhHeatmapGrid` `XhHeatmapLegend` `XhHeatmapLegendItem` `XhHeatmapLegendLabel` `XhHeatmapMonthBlock` `XhHeatmapMonthLabel` `XhHeatmapRoot` `XhHeatmapRow` `XhHeatmapRowLabel` `XhHeatmapTooltip` `XhHeatmapWeekDayLabel` |
+| Vue 组件 | `XhHeatmapCell` `XhHeatmapColumnLabel` `XhHeatmapGrid` `XhHeatmapLegend` `XhHeatmapLegendItem` `XhHeatmapLegendLabel` `XhHeatmapMonthBlock` `XhHeatmapMonthLabel` `XhHeatmapRoot` `XhHeatmapRow` `XhHeatmapRowLabel` `XhHeatmapTooltip` `XhHeatmapWeekDay` |
 | 组合式函数 | `useHeatmap` |
 | 状态机 | `heatmapMachine` |
 | 皮肤 | `@xihan-ui/styles/heatmap.css` |
@@ -139,7 +139,7 @@ levels 决定分几档，图例与格子共用同一条色阶
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="heatmap"`：**`root`** · **`grid`** · `month-block` · `row` · `week-day-label` · `month-label` · `row-label` · `column-label` · `cell` · `tooltip` · `legend` · `legend-label` · `legend-item`
+`data-scope="heatmap"`：**`root`** · **`grid`** · `month-block` · `row` · `week-day` · `month-label` · `row-label` · `column-label` · `cell` · `tooltip` · `legend` · `legend-label` · `legend-item`
 
 ## Props
 
@@ -214,7 +214,7 @@ levels 决定分几档，图例与格子共用同一条色阶
 | `getGridProps` | `() => T['element']` |  |
 | `getMonthBlockProps` | `(props: HeatmapMonthBlockProps) => T['element']` |  |
 | `getRowProps` | `(props: HeatmapRowProps) => T['element']` |  |
-| `getWeekDayLabelProps` | `(props: HeatmapWeekDayLabelProps) => T['element']` |  |
+| `getWeekDayProps` | `(props: HeatmapWeekDayProps) => T['element']` |  |
 | `getMonthLabelProps` | `(props: HeatmapMonthLabelProps) => T['element']` |  |
 | `getRowLabelProps` | `(props: HeatmapRowLabelProps) => T['element']` |  |
 | `getColumnLabelProps` | `(props: HeatmapColumnLabelProps) => T['element']` |  |
@@ -258,7 +258,7 @@ levels 决定分几档，图例与格子共用同一条色阶
 | `row` | `aria-label` | undefined \| grid.weekDays[row.weekDay]?.long |
 | `row` | `aria-rowindex` | 1 |
 | `row` | `role` | 'row' |
-| `week-day-label` | `aria-hidden` | 'true' |
+| `week-day` | `aria-hidden` | 'true' |
 | `month-label` | `aria-hidden` | 'true' |
 | `row-label` | `aria-colindex` | 1 |
 | `row-label` | `aria-hidden` | 'true' |
@@ -301,7 +301,7 @@ levels 决定分几档，图例与格子共用同一条色阶
 | `root` | `data-variant` | props.variant |
 | `row` | `data-week` | String(row.week) |
 | `row` | `data-week-day` | undefined \| String(row.weekDay) |
-| `week-day-label` | `data-week-day` | undefined \| String(label.weekDay) |
+| `week-day` | `data-week-day` | undefined \| String(label.weekDay) |
 | `cell` | `data-level` | String(level) |
 | `tooltip` | `data-inline-anchor` | undefined \| tip.inlineAnchor |
 | `tooltip` | `data-placement` | undefined \| ((): 'block-start' \| 'block-end' =&gt; { if (activeRef =… |

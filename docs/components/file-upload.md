@@ -91,7 +91,7 @@ remote-files 装编辑表单里已存在的附件：与本地文件同列渲染�
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-file-upload>` |
-| Vue 组件 | `XhFileUploadClearTrigger` `XhFileUploadDropzone` `XhFileUploadHiddenInput` `XhFileUploadItem` `XhFileUploadItemDeleteTrigger` `XhFileUploadItemGroup` `XhFileUploadItemName` `XhFileUploadItemPreview` `XhFileUploadItemSizeText` `XhFileUploadLabel` `XhFileUploadRoot` `XhFileUploadTrigger` |
+| Vue 组件 | `XhFileUploadClearTrigger` `XhFileUploadDropzone` `XhFileUploadHiddenInput` `XhFileUploadItem` `XhFileUploadItemDeleteTrigger` `XhFileUploadItemName` `XhFileUploadItemPreview` `XhFileUploadItemSizeText` `XhFileUploadLabel` `XhFileUploadList` `XhFileUploadRoot` `XhFileUploadTrigger` |
 | 组合式函数 | `useFileUpload` |
 | 状态机 | `fileUploadMachine` |
 | 皮肤 | `@xihan-ui/styles/file-upload.css` |
@@ -100,7 +100,7 @@ remote-files 装编辑表单里已存在的附件：与本地文件同列渲染�
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="file-upload"`：`root` · `label` · `dropzone` · `trigger` · **`hidden-input`** · `item-group` · `item` · `item-name` · `item-size-text` · `item-preview` · `item-delete-trigger` · `clear-trigger`
+`data-scope="file-upload"`：`root` · `label` · `dropzone` · `trigger` · **`hidden-input`** · `list` · `item` · `item-name` · `item-size-text` · `item-preview` · `item-delete-trigger` · `clear-trigger`
 
 ## Props
 
@@ -194,7 +194,7 @@ remote-files 装编辑表单里已存在的附件：与本地文件同列渲染�
 | `getDropzoneProps` | `() => T['element']` |  |
 | `getTriggerProps` | `() => T['button']` |  |
 | `getHiddenInputProps` | `() => T['input']` |  |
-| `getItemGroupProps` | `() => T['element']` |  |
+| `getListProps` | `() => T['element']` |  |
 | `getItemProps` | `(props: FileUploadItemProps) => T['element']` |  |
 | `getItemNameProps` | `(props: FileUploadItemProps) => T['element']` |  |
 | `getItemSizeTextProps` | `(props: FileUploadItemProps) => T['element']` |  |
@@ -224,7 +224,7 @@ remote-files 装编辑表单里已存在的附件：与本地文件同列渲染�
 | `dropzone` | `aria-label` | label.dropzone |
 | `dropzone` | `aria-labelledby` | `label` 部件的 id |
 | `dropzone` | `role` | 'button' |
-| `item-group` | `role` | 'list' |
+| `list` | `role` | 'list' |
 | `item` | `role` | 'listitem' |
 | `item-preview` | `aria-hidden` | 'true' |
 | `item-delete-trigger` | `aria-label` | label.deleteItem(file) |
@@ -249,8 +249,8 @@ remote-files 装编辑表单里已存在的附件：与本地文件同列渲染�
 | `dropzone` | `data-dragging` | ''（条件成立时才出现） |
 | `dropzone` | `data-invalid` | ''（条件成立时才出现） |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
-| `item-group` | `data-disabled` | ''（条件成立时才出现） |
-| `item-group` | `data-empty` | ''（条件成立时才出现） |
+| `list` | `data-disabled` | ''（条件成立时才出现） |
+| `list` | `data-empty` | ''（条件成立时才出现） |
 | `item` | `data-disabled` | ''（条件成立时才出现） |
 | `item` | `data-file-name` | file.name |
 | `item` | `data-file-size` | undefined \| String(file.size) \| String(file.size) |
@@ -269,7 +269,7 @@ remote-files 装编辑表单里已存在的附件：与本地文件同列渲染�
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-file-upload-clear-bg-active` · `--xh-file-upload-clear-bg-hover` · `--xh-file-upload-clear-fg` · `--xh-file-upload-clear-fg-hover` · `--xh-file-upload-clear-font-size` · `--xh-file-upload-clear-gap` · `--xh-file-upload-clear-h` · `--xh-file-upload-clear-px` · `--xh-file-upload-clear-radius` · `--xh-file-upload-delete-bg-active` · `--xh-file-upload-delete-bg-hover` · `--xh-file-upload-delete-fg` · `--xh-file-upload-delete-fg-hover` · `--xh-file-upload-delete-radius` · `--xh-file-upload-delete-size` · `--xh-file-upload-dropzone-bg` · `--xh-file-upload-dropzone-bg-disabled` · `--xh-file-upload-dropzone-bg-dragging` · `--xh-file-upload-dropzone-border` · `--xh-file-upload-dropzone-border-dragging` · `--xh-file-upload-dropzone-border-hover` · `--xh-file-upload-dropzone-border-invalid` · `--xh-file-upload-dropzone-fg` · `--xh-file-upload-dropzone-font-size` · `--xh-file-upload-dropzone-gap` · `--xh-file-upload-dropzone-min-h` · `--xh-file-upload-dropzone-px` · `--xh-file-upload-dropzone-py` · `--xh-file-upload-dropzone-radius` · `--xh-file-upload-gap` · `--xh-file-upload-icon-size` · `--xh-file-upload-item-bg` · `--xh-file-upload-item-border` · `--xh-file-upload-item-border-error` · `--xh-file-upload-item-fg` · `--xh-file-upload-item-fg-error` · `--xh-file-upload-item-font-size` · `--xh-file-upload-item-gap` · `--xh-file-upload-item-inner-gap` · `--xh-file-upload-item-px` · `--xh-file-upload-item-py` · `--xh-file-upload-item-radius` · `--xh-file-upload-label-fg` · `--xh-file-upload-label-fg-disabled` · `--xh-file-upload-label-font-size` · `--xh-file-upload-label-font-weight` · `--xh-file-upload-preview-bg` · `--xh-file-upload-preview-fg` · `--xh-file-upload-preview-fg-image` · `--xh-file-upload-preview-radius` · `--xh-file-upload-preview-size` · `--xh-file-upload-size-fg` · `--xh-file-upload-size-font-size` · `--xh-file-upload-trigger-bg` · `--xh-file-upload-trigger-bg-active` · `--xh-file-upload-trigger-bg-hover` · `--xh-file-upload-trigger-border` · `--xh-file-upload-trigger-fg` · `--xh-file-upload-trigger-font-size` · `--xh-file-upload-trigger-gap` · `--xh-file-upload-trigger-h` · `--xh-file-upload-trigger-px` · `--xh-file-upload-trigger-radius`
+`--xh-file-upload-clear-bg-active` · `--xh-file-upload-clear-bg-hover` · `--xh-file-upload-clear-fg` · `--xh-file-upload-clear-fg-hover` · `--xh-file-upload-clear-font-size` · `--xh-file-upload-clear-gap` · `--xh-file-upload-clear-h` · `--xh-file-upload-clear-px` · `--xh-file-upload-clear-radius` · `--xh-file-upload-delete-bg-active` · `--xh-file-upload-delete-bg-hover` · `--xh-file-upload-delete-fg` · `--xh-file-upload-delete-fg-hover` · `--xh-file-upload-delete-radius` · `--xh-file-upload-delete-size` · `--xh-file-upload-dropzone-bg` · `--xh-file-upload-dropzone-bg-disabled` · `--xh-file-upload-dropzone-bg-dragging` · `--xh-file-upload-dropzone-bg-hover` · `--xh-file-upload-dropzone-border` · `--xh-file-upload-dropzone-border-dragging` · `--xh-file-upload-dropzone-border-focus` · `--xh-file-upload-dropzone-border-hover` · `--xh-file-upload-dropzone-border-invalid` · `--xh-file-upload-dropzone-fg` · `--xh-file-upload-dropzone-font-size` · `--xh-file-upload-dropzone-gap` · `--xh-file-upload-dropzone-min-h` · `--xh-file-upload-dropzone-px` · `--xh-file-upload-dropzone-py` · `--xh-file-upload-dropzone-radius` · `--xh-file-upload-gap` · `--xh-file-upload-icon-size` · `--xh-file-upload-item-bg` · `--xh-file-upload-item-border` · `--xh-file-upload-item-border-error` · `--xh-file-upload-item-fg` · `--xh-file-upload-item-fg-error` · `--xh-file-upload-item-font-size` · `--xh-file-upload-item-gap` · `--xh-file-upload-item-inner-gap` · `--xh-file-upload-item-px` · `--xh-file-upload-item-py` · `--xh-file-upload-item-radius` · `--xh-file-upload-label-fg` · `--xh-file-upload-label-fg-disabled` · `--xh-file-upload-label-font-size` · `--xh-file-upload-label-font-weight` · `--xh-file-upload-preview-bg` · `--xh-file-upload-preview-fg` · `--xh-file-upload-preview-fg-image` · `--xh-file-upload-preview-radius` · `--xh-file-upload-preview-size` · `--xh-file-upload-size-fg` · `--xh-file-upload-size-font-size` · `--xh-file-upload-trigger-bg` · `--xh-file-upload-trigger-bg-active` · `--xh-file-upload-trigger-bg-hover` · `--xh-file-upload-trigger-border` · `--xh-file-upload-trigger-fg` · `--xh-file-upload-trigger-font-size` · `--xh-file-upload-trigger-gap` · `--xh-file-upload-trigger-h` · `--xh-file-upload-trigger-px` · `--xh-file-upload-trigger-radius` · `--xh-file-upload-trigger-shadow-hover`
 
 ## 动效
 

@@ -16,7 +16,7 @@ import {
   XhLogContent,
   XhLogLine,
   XhLogRoot,
-  XhLogScrollButton,
+  XhLogScrollToEndTrigger,
   XhLogViewport,
   XhSortableItem,
   XhSortableItemDragTrigger,
@@ -93,14 +93,14 @@ describe('日志的回到底部按钮画得出箭头', () => {
     return mount(() => h(XhLogRoot, { rows: 4 }, () => [
       h(XhLogViewport, null, () => h(XhLogContent, null, () =>
         Array.from({ length: 30 }, (_, i) => h(XhLogLine, { key: i }, () => `12:00:0${i % 10}  第 ${i} 行`)))),
-      slotted ? h(XhLogScrollButton, null, () => '回到最新') : h(XhLogScrollButton),
+      slotted ? h(XhLogScrollToEndTrigger, null, () => '回到最新') : h(XhLogScrollToEndTrigger),
     ]))
   }
 
   it('不写内容时画一枚字形，且那张图是真的取到了', async () => {
     mountLog()
     await nextTick()
-    expect(maskOf(part('log', 'scroll-button'))).toContain('data:image/svg')
+    expect(maskOf(part('log', 'scroll-to-end-trigger'))).toContain('data:image/svg')
   })
 
   it('字形盒与作者塞的图标同一把尺：--xh-icon-size 在 root 上声明了', async () => {
@@ -108,7 +108,7 @@ describe('日志的回到底部按钮画得出箭头', () => {
     await nextTick()
     expect(getComputedStyle(part('log', 'root')).getPropertyValue('--xh-icon-size').trim()).not.toBe('')
 
-    const box = getComputedStyle(part('log', 'scroll-button'), '::before')
+    const box = getComputedStyle(part('log', 'scroll-to-end-trigger'), '::before')
     expect(Number.parseFloat(box.inlineSize)).toBeGreaterThan(0)
     expect(box.inlineSize).toBe(box.blockSize)
   })
@@ -116,8 +116,8 @@ describe('日志的回到底部按钮画得出箭头', () => {
   it('作者塞了文字就让位，不再画字形', async () => {
     mountLog(true)
     await nextTick()
-    expect(part('log', 'scroll-button').textContent).toBe('回到最新')
-    expect(maskOf(part('log', 'scroll-button'))).not.toContain('data:image/svg')
+    expect(part('log', 'scroll-to-end-trigger').textContent).toBe('回到最新')
+    expect(maskOf(part('log', 'scroll-to-end-trigger'))).not.toContain('data:image/svg')
   })
 })
 

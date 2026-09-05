@@ -3,7 +3,7 @@
 // 要么登记在下面的表里说清为什么不该有视觉。
 //
 // 判据按 (组件, 属性) 这一对算，不按属性名算全库差集。差集口径下，属性名只要在任何一份皮肤的
-// 选择器里出现过就算活的，于是 dynamic-input 的 data-at-max 会被 tags-input 那条规则算成活的、
+// 选择器里出现过就算活的，于是 field-array 的 data-at-max 会被 tags-input 那条规则算成活的、
 // calendar 的 data-focus 会被 date-field 的规则算成活的——两者其实互不相干，规则永远选不中对方。
 //
 // 消费面不止本组件那份皮肤：
@@ -87,7 +87,6 @@ const HOOKS = {
   'tag:data-state': '关掉后置 hidden',
   // 同一件事在别的部件上已经画了，根上这一位是镜像
   'code-view:data-state': '折叠的视觉在根的 data-clamped 上，触发器这一位是镜像',
-  'countdown:data-state': '走完的视觉落在 data-finished 上',
   'markdown-stream:data-state': '流式的视觉是内容上的 data-caret',
   'prompt-input:data-state': '输入框的机器态；能看见的运行态在提交钮的 data-mode 上',
   'rating:data-state': '星的填充走 data-highlighted 与 data-half',
@@ -111,11 +110,11 @@ const HOOKS = {
   'code-view:data-foldable': '折不折得动。真正裁切的是根上的 data-clamped',
   'diff-view:data-expanded': '折叠段展开后整条 gap 置 hidden，显隐由它承载',
   'diff-view:data-truncated': '整份差异被截断的标志，作者拿它决定要不要提示"还有更多"',
-  'dynamic-input:data-at-max': '顶到上限时新增钮置 aria-disabled，观感挂在那一位上（dynamic-input.css:173）',
-  'dynamic-input:data-at-min': '到下限时删除钮置 aria-disabled，观感挂在那一位上（dynamic-input.css:124）',
-  'dynamic-input:data-first': '第一条在形上与别的条目没有差别',
-  'dynamic-input:data-last': '最后一条在形上与别的条目没有差别',
-  'dynamic-input:data-movable': '这份列表能不能排序。手柄本身收不收由 hidden 承载',
+  'field-array:data-at-max': '顶到上限时新增钮置 aria-disabled，观感挂在那一位上（field-array.css:173）',
+  'field-array:data-at-min': '到下限时删除钮置 aria-disabled，观感挂在那一位上（field-array.css:124）',
+  'field-array:data-first': '第一条在形上与别的条目没有差别',
+  'field-array:data-last': '最后一条在形上与别的条目没有差别',
+  'field-array:data-movable': '这份列表能不能排序。手柄本身收不收由 hidden 承载',
   'file-upload:data-remote': '这条是不是已在服务端的旧文件，作者拿它决定要不要重传',
   'highlight:data-case-sensitive': '匹配时区不区分大小写，是查找入参不是外观',
   'json-viewer:data-view': '树视图还是原文视图，两种视图渲染的是不同的部件',
@@ -132,9 +131,10 @@ const HOOKS = {
   'scrollbar:data-reveal-mode': '露面策略是入参；露不露由 data-state=visible|hidden 表出',
   'table:data-sortable': '这一列排不排得了序。排序钮不排序时置 hidden，箭头由 data-sort 画',
   'tags-input:data-overflowing': '越过上限时 data-at-max 同时为真（前者是 count > max，后者是 count >= max），观感由 control 上的 at-max 描边一并承载，两者不另分档',
-  'time:data-format': '按日期、时间还是两者一起渲染，换的是文本不是外观',
   'timer:data-action': '控制钮这一按是开始还是暂停，换的是文案不是外观',
+  'timer:data-controlled': '状态归 value / active 两个 prop 还是归起停按钮，两条通道画出来一模一样',
   'timer:data-countdown': '正计时还是倒计时，数字的排版两者一致',
+  'timestamp:data-format': '按日期、时间还是两者一起渲染，换的是文本不是外观',
   'tour:data-last': '走到末步。末步换的是按钮文案不是外观',
   'transfer:data-one-way': '单向还是双向。少一组钮由 hidden 承载',
   'tree-select:data-indeterminate': '解剖里没有勾选框部件，三态没有可画的地方；选中与否由 data-selected 表出',

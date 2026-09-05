@@ -84,7 +84,7 @@ export const colorPickerSuite: ConformanceSuite = {
           {
             part: 'content',
             children: [
-              { part: 'area', children: [{ part: 'area-thumb' }] },
+              { part: 'saturation-area', children: [{ part: 'area-thumb' }] },
               channelSlider('hue'),
               channelSlider('alpha'),
               { part: 'channel-input', tag: 'input', attrs: { channel: 'hex' } },
@@ -118,7 +118,7 @@ export const colorPickerSuite: ConformanceSuite = {
           'value-text',
           'positioner',
           'content',
-          'area',
+          'saturation-area',
           'area-thumb',
           'channel-slider[0]',
           'channel-slider-track[0]',
@@ -138,7 +138,7 @@ export const colorPickerSuite: ConformanceSuite = {
           'control': 1,
           'trigger': 1,
           'content': 1,
-          'area': 1,
+          'saturation-area': 1,
           'area-thumb': 1,
           'channel-slider': 2,
           'channel-slider-track': 2,

@@ -87,7 +87,7 @@
   [data-scope='pagination'][data-part='prev-trigger'],
   [data-scope='pagination'][data-part='next-trigger'],
   [data-scope='pagination'][data-part='item'],
-  [data-scope='pagination'][data-part='ellipsis'] {
+  [data-scope='pagination'][data-part='ellipsis-trigger'] {
     display: inline-flex;
     flex: none;
     align-items: center;
@@ -111,7 +111,7 @@
   [data-scope='pagination'][data-part='prev-trigger'][hidden],
   [data-scope='pagination'][data-part='next-trigger'][hidden],
   [data-scope='pagination'][data-part='item'][hidden],
-  [data-scope='pagination'][data-part='ellipsis'][hidden] {
+  [data-scope='pagination'][data-part='ellipsis-trigger'][hidden] {
     display: none;
   }
 
@@ -119,7 +119,7 @@
   [data-scope='pagination'][data-part='prev-trigger'],
   [data-scope='pagination'][data-part='next-trigger'],
   [data-scope='pagination'][data-part='item'],
-  [data-scope='pagination'][data-part='ellipsis'] {
+  [data-scope='pagination'][data-part='ellipsis-trigger'] {
     background: var(--xh-pagination-item-bg, transparent);
     color: var(--xh-pagination-item-fg, var(--xh-fg-default));
     font-weight: var(--xh-pagination-item-font-weight, var(--xh-text-label-weight));
@@ -139,7 +139,7 @@
   [data-scope='pagination'][data-part='prev-trigger']:hover:not(:disabled),
   [data-scope='pagination'][data-part='next-trigger']:hover:not(:disabled),
   [data-scope='pagination'][data-part='item']:not([data-current]):hover,
-  [data-scope='pagination'][data-part='ellipsis']:hover {
+  [data-scope='pagination'][data-part='ellipsis-trigger']:hover {
     background: var(--xh-pagination-item-bg-hover, var(--xh-bg-subtle-hover));
   }
 
@@ -147,7 +147,7 @@
   [data-scope='pagination'][data-part='prev-trigger']:active:not(:disabled),
   [data-scope='pagination'][data-part='next-trigger']:active:not(:disabled),
   [data-scope='pagination'][data-part='item']:not([data-current]):active,
-  [data-scope='pagination'][data-part='ellipsis']:active {
+  [data-scope='pagination'][data-part='ellipsis-trigger']:active {
     background: var(--xh-pagination-item-bg-active, var(--xh-bg-subtle-active));
     scale: var(--xh-motion-scale-press);
   }
@@ -184,8 +184,8 @@
   /* 省略位是可展开的按钮：折进去的那几页只有它一个入口，指针与键盘都得点得到，
      所以它跟着上面几组一起吃可点观感与聚焦环。这里只把字色压淡一档，
      与页码区分开——同权重且排在可点观感组之后，压得住那条 color */
-  [data-scope='pagination'][data-part='ellipsis'] {
-    color: var(--xh-pagination-ellipsis-fg, var(--xh-fg-subtle));
+  [data-scope='pagination'][data-part='ellipsis-trigger'] {
+    color: var(--xh-pagination-ellipsis-trigger-fg, var(--xh-fg-subtle));
   }
   /* 每页条数控制器：原生 select，抹掉系统外观后与页码格子共用同一副骨架。
      箭头用背景图而非伪元素——原生 select 不生成 ::before */

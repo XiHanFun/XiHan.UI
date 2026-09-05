@@ -214,8 +214,8 @@ export function connectFileUpload<T extends PropTypes>(
       },
     }),
 
-    getItemGroupProps: () => normalize.element({
-      ...parts['item-group'].attrs,
+    getListProps: () => normalize.element({
+      ...parts.list.attrs,
       // 报列表语义，读屏据此播报项数
       'role': 'list',
       'data-empty': dataAttr(empty),

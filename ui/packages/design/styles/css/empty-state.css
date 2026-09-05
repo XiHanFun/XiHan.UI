@@ -29,6 +29,8 @@
     --xh-_empty-state-py: var(--xh-section-py-md);
     --xh-_empty-state-icon-size: var(--xh-glyph-size-2xl);
     --xh-_empty-state-title-size: var(--xh-control-font-lg);
+    /* 图标区的语气色，由 data-status 换掉；没写 status 就退成中性 */
+    --xh-_empty-state-accent: var(--xh-fg-subtle);
 
     display: flex;
     flex-direction: column;
@@ -60,7 +62,29 @@
     --xh-_empty-state-title-size: var(--xh-text-heading-3-size);
   }
 
-  [data-scope='empty-state'][data-part='icon'] {
+  /* —— 语气 —— */
+  /* 三个状态码各并进最接近的一族：找不到=提示，没权限=警示，服务出错=危险。
+     用 500 档而不是 600：500 是装饰性强调档，600 是给实心底与文字用的 */
+  [data-scope='empty-state'][data-part='root'][data-status='success'] {
+    --xh-_empty-state-accent: var(--xh-color-success-500);
+  }
+
+  [data-scope='empty-state'][data-part='root'][data-status='warning'],
+  [data-scope='empty-state'][data-part='root'][data-status='403'] {
+    --xh-_empty-state-accent: var(--xh-color-warning-500);
+  }
+
+  [data-scope='empty-state'][data-part='root'][data-status='error'],
+  [data-scope='empty-state'][data-part='root'][data-status='500'] {
+    --xh-_empty-state-accent: var(--xh-color-danger-500);
+  }
+
+  [data-scope='empty-state'][data-part='root'][data-status='info'],
+  [data-scope='empty-state'][data-part='root'][data-status='404'] {
+    --xh-_empty-state-accent: var(--xh-color-info-500);
+  }
+
+  [data-scope='empty-state'][data-part='indicator'] {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -70,9 +94,9 @@
 
     block-size: var(--xh-empty-state-icon-size, var(--xh-_empty-state-icon-size));
     inline-size: var(--xh-empty-state-icon-size, var(--xh-_empty-state-icon-size));
-    color: var(--xh-empty-state-icon-fg, var(--xh-fg-subtle));
+    color: var(--xh-empty-state-indicator-fg, var(--xh-_empty-state-accent));
     /* 图标常是一个字形，字号跟着图标框走，line-height 不再另占高度 */
-    font-size: var(--xh-empty-state-icon-font-size, var(--xh-_empty-state-icon-size));
+    font-size: var(--xh-empty-state-indicator-font-size, var(--xh-_empty-state-icon-size));
     line-height: var(--xh-leading-none);
   }
 
@@ -102,7 +126,7 @@
 
   /* 图标、标题、说明、动作按次序开幕，间隔由交错步长派生。
      backwards 不能省：等待期间起帧不生效的话，后三段会先露一下再跳回去 */
-  [data-scope='empty-state'][data-part='icon'],
+  [data-scope='empty-state'][data-part='indicator'],
   [data-scope='empty-state'][data-part='title'],
   [data-scope='empty-state'][data-part='description'],
   [data-scope='empty-state'][data-part='action'] {
@@ -123,7 +147,7 @@
 
   /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
      写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
-  [data-scope='empty-state'][data-part='icon'][hidden],
+  [data-scope='empty-state'][data-part='indicator'][hidden],
   [data-scope='empty-state'][data-part='action'][hidden] {
     display: none;
   }

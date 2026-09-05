@@ -18,7 +18,7 @@ const timerTree: FixtureNode = {
   part: 'root',
   children: [
     {
-      part: 'area',
+      part: 'display',
       children: [
         { part: 'item', tag: 'span', attrs: { unit: 'hours' } },
         { part: 'separator', tag: 'span', text: ':' },
@@ -33,10 +33,10 @@ const timerTree: FixtureNode = {
 
 /** 每段条目里先写上作者自己的字，用来验这段文本归不归组件管。 */
 function itemsWithText(base: FixtureNode): FixtureNode {
-  const area = base.children?.[0]
+  const display = base.children?.[0]
   return {
     ...base,
-    children: base.children?.map(node => node === area
+    children: base.children?.map(node => node === display
       ? { ...node, children: node.children?.map(c => (c.part === 'item' ? { ...c, text: '作者写的' } : c)) }
       : node),
   }
@@ -62,8 +62,8 @@ export const timerSuite: ConformanceSuite = {
       name: '默认没起步：时间区是 timer 角色且播报关着，数字与记号对读屏隐藏',
       spec: { apg: SPEC },
       initial: {
-        order: ['root', 'area', 'item[0]', 'separator[0]', 'item[1]', 'separator[1]', 'item[2]', 'control'],
-        counts: { root: 1, area: 1, item: 3, separator: 2, control: 1 },
+        order: ['root', 'display', 'item[0]', 'separator[0]', 'item[1]', 'separator[1]', 'item[2]', 'control'],
+        counts: { root: 1, display: 1, item: 3, separator: 2, control: 1 },
         parts: {
           root: {
             'role': null,
@@ -72,7 +72,7 @@ export const timerSuite: ConformanceSuite = {
             'data-countdown': null,
             'data-size': null,
           },
-          area: {
+          display: {
             'role': 'timer',
             'aria-live': 'off',
             // 屏幕上只有数字与冒号，名字得把每段说清楚
@@ -104,7 +104,7 @@ export const timerSuite: ConformanceSuite = {
         parts: {
           root: { 'data-countdown': '', 'data-state': 'idle' },
           // 内建名字按数量分单复数
-          area: { 'aria-label': '0 hours 1 minute 30 seconds' },
+          display: { 'aria-label': '0 hours 1 minute 30 seconds' },
         },
       },
     },
@@ -115,7 +115,7 @@ export const timerSuite: ConformanceSuite = {
       initial: {
         parts: {
           root: { 'data-size': 'lg' },
-          area: { 'data-size': null },
+          display: { 'data-size': null },
           item: [{ 'data-size': null }, { 'data-size': null }, { 'data-size': null }],
         },
       },
@@ -131,7 +131,7 @@ export const timerSuite: ConformanceSuite = {
           expect: {
             parts: {
               root: { 'data-state': 'running' },
-              area: { 'data-state': 'running' },
+              display: { 'data-state': 'running' },
               control: { 'data-action': 'pause', 'aria-label': 'Pause' },
             },
           },
@@ -161,7 +161,7 @@ export const timerSuite: ConformanceSuite = {
       },
       initial: {
         parts: {
-          area: { 'aria-label': '1 分 5 秒' },
+          display: { 'aria-label': '1 分 5 秒' },
           control: { 'aria-label': '开始' },
         },
       },
@@ -185,7 +185,7 @@ export const timerSuite: ConformanceSuite = {
           expect: {
             parts: {
               root: { 'data-state': 'completed' },
-              area: { 'data-state': 'completed', 'aria-label': '0 hours 0 minutes 0 seconds' },
+              display: { 'data-state': 'completed', 'aria-label': '0 hours 0 minutes 0 seconds' },
               control: { 'data-action': 'reset', 'aria-label': 'Reset' },
             },
           },

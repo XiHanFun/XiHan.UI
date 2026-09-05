@@ -1,0 +1,26 @@
+<!-- 基础用法 | 渲染成 <time datetime>：文本给人看，datetime 给机器读，两者取自同一个墙钟 -->
+<div style="display: flex; flex-direction: column; gap: 8px">
+  <!-- 三种写法都收：只写年月日的串按本地零点解读，不会掉到前一天去 -->
+  <xh-timestamp value="2026-08-11T09:30:05">
+    <time data-xh-part="root"></time>
+  </xh-timestamp>
+
+  <xh-timestamp value="2026-08-11">
+    <time data-xh-part="root"></time>
+  </xh-timestamp>
+
+  <xh-timestamp id="time-basic-stamp">
+    <time data-xh-part="root"></time>
+  </xh-timestamp>
+
+  <xh-timestamp id="time-basic-date">
+    <time data-xh-part="root"></time>
+  </xh-timestamp>
+</div>
+
+<script type="module">
+  // 时间戳与 Date 只能走 property：属性里的一串数字与年份写法分不开
+  const moment = new Date(2026, 7, 11, 9, 30, 5);
+  document.getElementById("time-basic-stamp").value = moment.getTime();
+  document.getElementById("time-basic-date").value = moment;
+</script>

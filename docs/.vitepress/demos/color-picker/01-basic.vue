@@ -1,7 +1,7 @@
-<!-- 基础用法 | 必备部件是 trigger / content / area / area-thumb，缺一个组件就不工作 -->
+<!-- 基础用法 | 必备部件是 trigger / content / saturation-area / area-thumb，缺一个组件就不工作 -->
 <script setup lang="ts">
 import {
-  XhColorPickerArea,
+  XhColorPickerSaturationArea,
   XhColorPickerAreaThumb,
   XhColorPickerChannelSlider,
   XhColorPickerChannelSliderThumb,
@@ -26,9 +26,9 @@ import {
     </XhColorPickerControl>
     <XhColorPickerPositioner>
       <XhColorPickerContent>
-        <XhColorPickerArea>
+        <XhColorPickerSaturationArea>
           <XhColorPickerAreaThumb />
-        </XhColorPickerArea>
+        </XhColorPickerSaturationArea>
         <XhColorPickerChannelSlider channel="hue">
           <XhColorPickerChannelSliderTrack />
           <XhColorPickerChannelSliderThumb />

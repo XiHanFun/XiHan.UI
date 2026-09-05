@@ -4,7 +4,7 @@ import {
   XhMessageFeedItem,
   XhMessageFeedList,
   XhMessageFeedRoot,
-  XhMessageFeedScrollButton,
+  XhMessageFeedScrollToEndTrigger,
   XhMessageFeedViewport,
 } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -58,7 +58,7 @@ function onStickChange(details: { atBottom: boolean; sticking: boolean }): void 
           </XhMessageFeedItem>
         </XhMessageFeedList>
       </XhMessageFeedViewport>
-      <XhMessageFeedScrollButton />
+      <XhMessageFeedScrollToEndTrigger />
     </XhMessageFeedRoot>
 
     <span>

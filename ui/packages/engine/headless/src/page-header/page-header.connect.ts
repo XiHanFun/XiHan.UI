@@ -25,7 +25,7 @@ export function connectPageHeader<T extends PropTypes>(
     // 标题不占标题层级：页头嵌在页面哪一层由使用者决定，组件自己插一级标题会污染文档大纲
     getTitleProps: () => normalize.element({ ...parts.title.attrs }),
 
-    getSubtitleProps: () => normalize.element({ ...parts.subtitle.attrs }),
+    getDescriptionProps: () => normalize.element({ ...parts.description.attrs }),
 
     // 操作槽只圈出按钮区，按钮本身的语义归作者（或 Button 组件）
     getExtraProps: () => normalize.element({ ...parts.extra.attrs }),

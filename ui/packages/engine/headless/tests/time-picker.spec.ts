@@ -167,7 +167,7 @@ function mount(initial: Partial<Props> = {}): Harness {
     spread(label, current.getLabelProps() as Record<string, unknown>)
     spread(control, current.getControlProps() as Record<string, unknown>)
     for (const [type, el] of segments) {
-      spread(el, current.getInputProps({ segment: type }) as Record<string, unknown>)
+      spread(el, current.getSegmentProps({ segment: type }) as Record<string, unknown>)
       // 两个适配器都由自己填段上的文字（spreader 不碰文本节点），这里照做
       el.textContent = current.getSegmentText({ segment: type })
     }

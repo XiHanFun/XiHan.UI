@@ -9,8 +9,8 @@
     </div>
     <div data-xh-part="positioner">
       <div data-xh-part="content">
-        <div data-xh-part="item-group" value="asia">
-          <span data-xh-part="item-group-label">亚洲</span>
+        <div data-xh-part="group" value="asia">
+          <span data-xh-part="group-label">亚洲</span>
           <div data-xh-part="item" value="beijing">
             <span data-xh-part="item-text">Beijing 北京</span>
             <span data-xh-part="item-indicator"></span>
@@ -20,8 +20,8 @@
             <span data-xh-part="item-indicator"></span>
           </div>
         </div>
-        <div data-xh-part="item-group" value="europe">
-          <span data-xh-part="item-group-label">欧洲</span>
+        <div data-xh-part="group" value="europe">
+          <span data-xh-part="group-label">欧洲</span>
           <div data-xh-part="item" value="berlin">
             <span data-xh-part="item-text">Berlin 柏林</span>
             <span data-xh-part="item-indicator"></span>
@@ -46,7 +46,7 @@
   const labelOf = (item) => item.querySelector('[data-xh-part="item-text"]').textContent.toLowerCase();
   const groups = [...content.children].map((node) => ({
     node,
-    label: node.querySelector('[data-xh-part="item-group-label"]'),
+    label: node.querySelector('[data-xh-part="group-label"]'),
     items: [...node.querySelectorAll('[data-xh-part="item"]')],
   }));
 

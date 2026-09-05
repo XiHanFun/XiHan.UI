@@ -13,7 +13,7 @@ export const avatarGroupSuite: ConformanceSuite = {
     children: [
       { tag: 'span', text: '曦' },
       { tag: 'span', text: '寒' },
-      { part: 'overflow', text: '+2' },
+      { part: 'overflow-item', text: '+2' },
     ],
   },
   cases: [
@@ -54,8 +54,8 @@ export const avatarGroupSuite: ConformanceSuite = {
       name: '溢出计数各一份，排在这一排的末尾',
       spec: { apg: APG },
       initial: {
-        order: ['root', 'overflow'],
-        counts: { root: 1, overflow: 1 },
+        order: ['root', 'overflow-item'],
+        counts: { 'root': 1, 'overflow-item': 1 },
       },
     },
   ],

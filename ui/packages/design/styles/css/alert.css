@@ -35,15 +35,15 @@
     display: none;
   }
 
-  [data-scope='alert'][data-part='icon'] {
+  [data-scope='alert'][data-part='indicator'] {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     flex: none;
     /* 与首行文字对齐：图标框高取一行正文的行高 */
     block-size: calc(var(--xh-text-body-size) * var(--xh-leading-normal));
-    inline-size: var(--xh-alert-icon-box, var(--xh-control-indicator-size));
-    color: var(--xh-alert-icon-fg, var(--xh-_tone-fg));
+    inline-size: var(--xh-alert-indicator-box, var(--xh-control-indicator-size));
+    color: var(--xh-alert-indicator-fg, var(--xh-_tone-fg));
   }
 
   /* 标题与说明摞成一列，占满 root 剩下的横向空间，
@@ -165,7 +165,7 @@
 
   /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
      写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
-  [data-scope='alert'][data-part='icon'][hidden] {
+  [data-scope='alert'][data-part='indicator'][hidden] {
     display: none;
   }
 }

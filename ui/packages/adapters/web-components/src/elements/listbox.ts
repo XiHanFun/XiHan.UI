@@ -45,8 +45,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart item - role=option 条目，须自带 value 属性标识身份；禁用写 aria-disabled="true"
  * @csspart item-text - 条目文本（连打检索的取字处）
  * @csspart item-indicator - 条目选中标记（aria-hidden）
- * @csspart item-group - role=group 分组容器，须自带 value 属性标识身份
- * @csspart item-group-label - 分组标题（本组 aria-labelledby 的目标）
+ * @csspart group - role=group 分组容器，须自带 value 属性标识身份
+ * @csspart group-label - 分组标题（本组 aria-labelledby 的目标）
  */
 export class XhListboxElement extends XhElement {
   static override partContract = { anatomy: listboxAnatomy, meta: listboxMeta }
@@ -172,11 +172,11 @@ export class XhListboxElement extends XhElement {
     put('label', api.getLabelProps() as Record<string, unknown>)
     put('content', api.getContentProps() as Record<string, unknown>)
 
-    for (const el of this.getParts('item-group')) {
+    for (const el of this.getParts('group')) {
       const group = { value: el.getAttribute('value') ?? '' }
-      this.spreader.spread(el, api.getItemGroupProps(group) as Record<string, unknown>)
-      for (const label of this.partsIn(el, 'item-group-label'))
-        this.spreader.spread(label, api.getItemGroupLabelProps(group) as Record<string, unknown>)
+      this.spreader.spread(el, api.getGroupProps(group) as Record<string, unknown>)
+      for (const label of this.partsIn(el, 'group-label'))
+        this.spreader.spread(label, api.getGroupLabelProps(group) as Record<string, unknown>)
     }
 
     // 条目是多实例 part，逐个打：身份取作者写的 value，禁用取部件自报的 aria-disabled

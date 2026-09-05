@@ -3,7 +3,7 @@
 import { ref } from "vue";
 import {
   XhButton,
-  XhEditableArea,
+  XhEditableControl,
   XhEditableInput,
   XhEditablePreview,
   XhEditableRoot,
@@ -69,10 +69,10 @@ const head = `${cell}; text-align: start; font-weight: 500; color: var(--xh-fg-m
               placeholder="未填写"
               auto-resize
             >
-              <XhEditableArea>
+              <XhEditableControl>
                 <XhEditablePreview />
                 <XhEditableInput />
-              </XhEditableArea>
+              </XhEditableControl>
             </XhEditableRoot>
           </td>
           <td :style="cell">
@@ -82,10 +82,10 @@ const head = `${cell}; text-align: start; font-weight: 500; color: var(--xh-fg-m
               placeholder="未填写"
               auto-resize
             >
-              <XhEditableArea>
+              <XhEditableControl>
                 <XhEditablePreview />
                 <XhEditableInput />
-              </XhEditableArea>
+              </XhEditableControl>
             </XhEditableRoot>
           </td>
         </tr>

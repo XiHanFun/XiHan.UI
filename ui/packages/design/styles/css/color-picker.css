@@ -231,16 +231,16 @@
      两层都收在一个 ::before 里：它是盒树里的第一个子节点，作者写的拇指排在它后面，
      绘制顺序上就压在渐变之上；拆成 ::before + ::after 的话 ::after 是最后一个子节点，
      会反过来盖住拇指。 */
-  [data-scope='color-picker'][data-part='area'] {
+  [data-scope='color-picker'][data-part='saturation-area'] {
     position: relative;
     display: block;
-    block-size: var(--xh-color-picker-area-h, 9rem);
-    border-radius: var(--xh-color-picker-area-radius, var(--xh-shape-control));
+    block-size: var(--xh-color-picker-saturation-area-h, 9rem);
+    border-radius: var(--xh-color-picker-saturation-area-radius, var(--xh-shape-control));
     cursor: crosshair;
   }
 
   /* white / black 是 HSV 色彩空间自带的两个端点，不是主题色，因此不走令牌 */
-  [data-scope='color-picker'][data-part='area']::before {
+  [data-scope='color-picker'][data-part='saturation-area']::before {
     position: absolute;
     border-radius: inherit;
     background-image:
@@ -252,17 +252,17 @@
 
   /* 渐变方向没有逻辑关键字可用，只能靠 :dir() 分流：
      拇指走的是 inset-inline-start，rtl 下自动换向，饱和度那层渐变不跟着换就反了 */
-  [data-scope='color-picker'][data-part='area']:dir(rtl)::before {
+  [data-scope='color-picker'][data-part='saturation-area']:dir(rtl)::before {
     background-image:
       linear-gradient(to bottom, transparent, black),
       linear-gradient(to left, white, transparent);
   }
 
-  [data-scope='color-picker'][data-part='area'][data-readonly]:not([data-disabled]) {
+  [data-scope='color-picker'][data-part='saturation-area'][data-readonly]:not([data-disabled]) {
     cursor: default;
   }
 
-  [data-scope='color-picker'][data-part='area'][data-disabled] {
+  [data-scope='color-picker'][data-part='saturation-area'][data-disabled] {
     opacity: var(--xh-state-disabled-opacity);
   }
 
@@ -510,7 +510,7 @@
   [data-scope='color-picker'][data-part='trigger'][hidden],
   [data-scope='color-picker'][data-part='swatch'][hidden],
   [data-scope='color-picker'][data-part='content'][hidden],
-  [data-scope='color-picker'][data-part='area'][hidden],
+  [data-scope='color-picker'][data-part='saturation-area'][hidden],
   [data-scope='color-picker'][data-part='area-thumb'][hidden],
   [data-scope='color-picker'][data-part='channel-slider'][hidden],
   [data-scope='color-picker'][data-part='channel-slider-thumb'][hidden],
@@ -549,8 +549,8 @@
    * 退出之后它们不再跟着系统底色走，各补一圈系统描边把它们从背景里框出来。
    */
   @media (forced-colors: active) {
-    [data-scope='color-picker'][data-part='area'],
-    [data-scope='color-picker'][data-part='area']::before,
+    [data-scope='color-picker'][data-part='saturation-area'],
+    [data-scope='color-picker'][data-part='saturation-area']::before,
     [data-scope='color-picker'][data-part='channel-slider'],
     [data-scope='color-picker'][data-part='channel-slider-track'],
     [data-scope='color-picker'][data-part='swatch'],
@@ -558,7 +558,7 @@
       forced-color-adjust: none;
     }
 
-    [data-scope='color-picker'][data-part='area'],
+    [data-scope='color-picker'][data-part='saturation-area'],
     [data-scope='color-picker'][data-part='channel-slider'],
     [data-scope='color-picker'][data-part='swatch'],
     [data-scope='color-picker'][data-part='swatch-item'] {

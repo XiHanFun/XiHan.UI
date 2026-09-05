@@ -23,11 +23,11 @@ export const XhCardRoot = defineComponent({
   },
 })
 
-export const XhCardCover = defineComponent({
-  name: 'XhCardCover',
+export const XhCardMedia = defineComponent({
+  name: 'XhCardMedia',
   setup(_, { slots }) {
     const ctx = useCardContext()
-    return () => h('div', ctx.api.value.getCoverProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getMediaProps() as Record<string, unknown>, slots.default?.())
   },
 })
 

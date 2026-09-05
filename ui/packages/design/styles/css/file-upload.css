@@ -147,13 +147,13 @@
     white-space: nowrap;
   }
 
-  [data-scope='file-upload'][data-part='item-group'] {
+  [data-scope='file-upload'][data-part='list'] {
     display: flex;
     flex-direction: column;
     gap: var(--xh-file-upload-item-gap, var(--xh-space-2));
   }
 
-  [data-scope='file-upload'][data-part='item-group'][hidden] {
+  [data-scope='file-upload'][data-part='list'][hidden] {
     display: none;
   }
 

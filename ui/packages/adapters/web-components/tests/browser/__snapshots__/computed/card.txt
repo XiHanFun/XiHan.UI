@@ -35,41 +35,6 @@ outline-width: 3px
 outline-offset: 0px
 outline-color: oklch(0.145 0.005 258)
 
-[cover]
-padding-top: 0px
-padding-right: 0px
-padding-bottom: 0px
-padding-left: 0px
-row-gap: normal
-column-gap: normal
-border-top-left-radius: 0px
-border-top-right-radius: 0px
-border-bottom-right-radius: 0px
-border-bottom-left-radius: 0px
-border-top-width: 0px
-border-right-width: 0px
-border-bottom-width: 0px
-border-left-width: 0px
-border-top-color: oklch(0.145 0.005 258)
-border-right-color: oklch(0.145 0.005 258)
-border-bottom-color: oklch(0.145 0.005 258)
-border-left-color: oklch(0.145 0.005 258)
-min-height: auto
-font-size: 16px
-line-height: normal
-font-weight: 400
-color: oklch(0.145 0.005 258)
-background-color: rgba(0, 0, 0, 0)
-transition-property: all
-transition-duration: 0s
-transition-timing-function: ease
-animation-name: none
-animation-duration: 0s
-animation-timing-function: ease
-outline-width: 3px
-outline-offset: 0px
-outline-color: oklch(0.145 0.005 258)
-
 [description]
 padding-top: 0px
 padding-right: 0px
@@ -147,6 +112,41 @@ padding-bottom: 8px
 padding-left: 16px
 row-gap: 4px
 column-gap: 4px
+border-top-left-radius: 0px
+border-top-right-radius: 0px
+border-bottom-right-radius: 0px
+border-bottom-left-radius: 0px
+border-top-width: 0px
+border-right-width: 0px
+border-bottom-width: 0px
+border-left-width: 0px
+border-top-color: oklch(0.145 0.005 258)
+border-right-color: oklch(0.145 0.005 258)
+border-bottom-color: oklch(0.145 0.005 258)
+border-left-color: oklch(0.145 0.005 258)
+min-height: auto
+font-size: 16px
+line-height: normal
+font-weight: 400
+color: oklch(0.145 0.005 258)
+background-color: rgba(0, 0, 0, 0)
+transition-property: all
+transition-duration: 0s
+transition-timing-function: ease
+animation-name: none
+animation-duration: 0s
+animation-timing-function: ease
+outline-width: 3px
+outline-offset: 0px
+outline-color: oklch(0.145 0.005 258)
+
+[media]
+padding-top: 0px
+padding-right: 0px
+padding-bottom: 0px
+padding-left: 0px
+row-gap: normal
+column-gap: normal
 border-top-left-radius: 0px
 border-top-right-radius: 0px
 border-bottom-right-radius: 0px

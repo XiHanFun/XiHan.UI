@@ -28,7 +28,7 @@ function carouselTree(slides = 4, indicators = 4, editableSlide?: number): Fixtu
         part: 'viewport',
         children: [
           {
-            part: 'item-group',
+            part: 'list',
             children: Array.from({ length: slides }, (_, i): FixtureNode => (
               i === editableSlide
                 ? {
@@ -65,11 +65,11 @@ function expectTrack(transform: string): StepWithExpect {
     kind: 'raw',
     why: '内联 style 不进归一化快照；轨道位移是轮播的核心产出，必须直接读节点才验得到',
     run: ({ doc }) => {
-      const track = q(doc, 'item-group')
+      const track = q(doc, 'list')
       if (!track)
-        throw new Error('找不到 carousel 的 item-group 部件')
+        throw new Error('找不到 carousel 的 list 部件')
       if (track.style.transform !== transform)
-        throw new Error(`item-group 的位移应为 ${transform}，实际是 ${track.style.transform || '(空)'}`)
+        throw new Error(`list 的位移应为 ${transform}，实际是 ${track.style.transform || '(空)'}`)
     },
   }
 }
@@ -146,7 +146,7 @@ export const carouselSuite: ConformanceSuite = {
           'root',
           'prev-trigger',
           'viewport',
-          'item-group',
+          'list',
           'item[0]',
           'item[1]',
           'item[2]',
@@ -158,7 +158,7 @@ export const carouselSuite: ConformanceSuite = {
           'indicator[2]',
           'indicator[3]',
         ],
-        counts: { 'root': 1, 'viewport': 1, 'item-group': 1, 'item': 4, 'indicator': 4 },
+        counts: { root: 1, viewport: 1, list: 1, item: 4, indicator: 4 },
         parts: {
           'root': {
             'role': 'region',
@@ -177,7 +177,7 @@ export const carouselSuite: ConformanceSuite = {
             'aria-atomic': 'false',
             'data-orientation': 'horizontal',
           },
-          'item-group': { 'data-orientation': 'horizontal', 'data-dragging': null },
+          'list': { 'data-orientation': 'horizontal', 'data-dragging': null },
           'item[0]': {
             'role': 'group',
             'aria-roledescription': 'slide',
@@ -378,9 +378,9 @@ export const carouselSuite: ConformanceSuite = {
       props: { slideCount: 4, orientation: 'vertical' },
       initial: {
         parts: {
-          'root': { 'data-orientation': 'vertical' },
-          'viewport': { 'data-orientation': 'vertical' },
-          'item-group': { 'data-orientation': 'vertical' },
+          root: { 'data-orientation': 'vertical' },
+          viewport: { 'data-orientation': 'vertical' },
+          list: { 'data-orientation': 'vertical' },
         },
       },
       steps: [

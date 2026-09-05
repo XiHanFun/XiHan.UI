@@ -19,8 +19,8 @@ export const XhSkeletonRoot = defineComponent({
 })
 
 /** 单根骨架条：纯装饰，不进无障碍树；形状缺省跟容器，给了 variant 就按自己的来。 */
-export const XhSkeletonBone = defineComponent({
-  name: 'XhSkeletonBone',
+export const XhSkeletonItem = defineComponent({
+  name: 'XhSkeletonItem',
   props: {
     variant: { type: String as PropType<SkeletonVariant>, default: undefined },
   },
@@ -28,7 +28,7 @@ export const XhSkeletonBone = defineComponent({
     const ctx = useSkeletonContext()
     return () => h(
       'div',
-      ctx.api.value.getBoneProps({ variant: props.variant }) as Record<string, unknown>,
+      ctx.api.value.getItemProps({ variant: props.variant }) as Record<string, unknown>,
     )
   },
 })

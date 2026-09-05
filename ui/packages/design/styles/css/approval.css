@@ -51,7 +51,7 @@
     --xh-_approval-p: var(--xh-space-4);
     --xh-_approval-action-h: var(--xh-control-h-md);
     --xh-_approval-action-px: var(--xh-control-px-md);
-    --xh-_approval-scope-font-size: var(--xh-control-font-md);
+    --xh-_approval-item-font-size: var(--xh-control-font-md);
     --xh-_approval-note-font-size: var(--xh-control-font-md);
 
     display: flex;
@@ -114,47 +114,51 @@
     white-space: nowrap;
   }
 
-  [data-scope='approval'][data-part='scope-group'] {
+  [data-scope='approval'][data-part='group'] {
     display: flex;
     flex-direction: column;
-    gap: var(--xh-approval-scope-gap, var(--xh-space-1));
+    gap: var(--xh-approval-group-gap, var(--xh-space-1));
   }
 
-  [data-scope='approval'][data-part='scope-group'][hidden] {
+  [data-scope='approval'][data-part='group'][hidden] {
     display: none;
   }
 
   /* 一项授权：整行可点、可聚焦，勾选记号在左 */
-  [data-scope='approval'][data-part='scope-item'] {
+  [data-scope='approval'][data-part='item'] {
     display: flex;
     align-items: center;
-    gap: var(--xh-approval-scope-item-gap, var(--xh-space-1_5));
-    padding-inline: var(--xh-approval-scope-px, var(--xh-space-2));
-    padding-block: var(--xh-approval-scope-py, var(--xh-space-1));
-    border-radius: var(--xh-approval-scope-radius, var(--xh-shape-control));
-    font-size: var(--xh-approval-scope-font-size, var(--xh-_approval-scope-font-size));
+    gap: var(--xh-approval-item-gap, var(--xh-space-1_5));
+    padding-inline: var(--xh-approval-item-px, var(--xh-space-2));
+    padding-block: var(--xh-approval-item-py, var(--xh-space-1));
+    border-radius: var(--xh-approval-item-radius, var(--xh-shape-control));
+    font-size: var(--xh-approval-item-font-size, var(--xh-_approval-item-font-size));
     cursor: pointer;
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
-  [data-scope='approval'][data-part='scope-item'][hidden] {
+  [data-scope='approval'][data-part='item'][hidden] {
     display: none;
   }
 
   /* 禁用项带的是 aria-disabled 而非原生 disabled，:hover 照样命中；
      不挡掉的话已落定或置灰的那一条悬停仍会换底 */
-  [data-scope='approval'][data-part='scope-item']:not([data-disabled]):hover {
-    background: var(--xh-approval-scope-bg-hover, var(--xh-bg-subtle-hover));
+  [data-scope='approval'][data-part='item']:not([data-disabled]):hover {
+    background: var(--xh-approval-item-bg-hover, var(--xh-bg-subtle-hover));
   }
 
-  [data-scope='approval'][data-part='scope-item'][data-disabled] {
+  [data-scope='approval'][data-part='item']:active {
+    scale: var(--xh-motion-scale-press);
+  }
+
+  [data-scope='approval'][data-part='item'][data-disabled] {
     color: var(--xh-fg-disabled);
   }
 
   /* 勾选记号：方框 + 选中态填色，纯装饰不进可访问名 */
-  [data-scope='approval'][data-part='scope-indicator'] {
+  [data-scope='approval'][data-part='item-indicator'] {
     display: inline-flex;
     flex: none;
     align-items: center;
@@ -170,12 +174,12 @@
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
-  [data-scope='approval'][data-part='scope-indicator'][hidden] {
+  [data-scope='approval'][data-part='item-indicator'][hidden] {
     display: none;
   }
 
   /* 没写内容就由皮肤画勾；作者往部件里塞了自己的图形，这条规则即不命中 */
-  [data-scope='approval'][data-part='scope-indicator']:empty::before {
+  [data-scope='approval'][data-part='item-indicator']:empty::before {
     content: '';
     display: inline-block;
     inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
@@ -186,33 +190,33 @@
     mask: var(--xh-glyph-mark-check) center / contain no-repeat;
   }
 
-  [data-scope='approval'][data-part='scope-indicator'][data-state='checked'] {
+  [data-scope='approval'][data-part='item-indicator'][data-state='checked'] {
     border-color: var(--xh-approval-indicator-border-checked, var(--xh-bg-brand));
     background: var(--xh-approval-indicator-bg-checked, var(--xh-bg-brand));
   }
 
   /* 没勾上时把勾隐去而不是撤掉：盒子留在原位，翻面时整行不跳 */
-  [data-scope='approval'][data-part='scope-indicator'][data-state='unchecked'] {
+  [data-scope='approval'][data-part='item-indicator'][data-state='unchecked'] {
     color: transparent;
   }
 
   /* 勾上的那条读起来更重一档 */
-  [data-scope='approval'][data-part='scope-label'] {
+  [data-scope='approval'][data-part='item-text'] {
     display: block;
     flex: 1 1 auto;
-    color: var(--xh-approval-scope-fg, var(--xh-fg-muted));
+    color: var(--xh-approval-item-text-fg, var(--xh-fg-muted));
   }
 
-  [data-scope='approval'][data-part='scope-item'][data-state='checked'] [data-part='scope-label'] {
-    color: var(--xh-approval-scope-fg-checked, var(--xh-fg-default));
+  [data-scope='approval'][data-part='item'][data-state='checked'] [data-part='item-text'] {
+    color: var(--xh-approval-item-text-fg-checked, var(--xh-fg-default));
   }
 
   /* 排在勾选档之后：禁用项无论勾没勾都是禁用色 */
-  [data-scope='approval'][data-part='scope-item'][data-disabled] [data-part='scope-label'] {
+  [data-scope='approval'][data-part='item'][data-disabled] [data-part='item-text'] {
     color: var(--xh-fg-disabled);
   }
 
-  [data-scope='approval'][data-part='scope-label'][hidden] {
+  [data-scope='approval'][data-part='item-text'][hidden] {
     display: none;
   }
 
@@ -422,7 +426,7 @@
     --xh-_approval-gap: var(--xh-space-2);
     --xh-_approval-action-h: var(--xh-control-h-sm);
     --xh-_approval-action-px: var(--xh-control-px-sm);
-    --xh-_approval-scope-font-size: var(--xh-control-font-sm);
+    --xh-_approval-item-font-size: var(--xh-control-font-sm);
     --xh-_approval-note-font-size: var(--xh-control-font-sm);
   }
 
@@ -431,7 +435,7 @@
     --xh-_approval-gap: var(--xh-space-3);
     --xh-_approval-action-h: var(--xh-control-h-md);
     --xh-_approval-action-px: var(--xh-control-px-md);
-    --xh-_approval-scope-font-size: var(--xh-control-font-md);
+    --xh-_approval-item-font-size: var(--xh-control-font-md);
     --xh-_approval-note-font-size: var(--xh-control-font-md);
   }
 
@@ -440,7 +444,7 @@
     --xh-_approval-gap: var(--xh-space-4);
     --xh-_approval-action-h: var(--xh-control-h-lg);
     --xh-_approval-action-px: var(--xh-control-px-lg);
-    --xh-_approval-scope-font-size: var(--xh-control-font-lg);
+    --xh-_approval-item-font-size: var(--xh-control-font-lg);
     --xh-_approval-note-font-size: var(--xh-control-font-lg);
   }
 }

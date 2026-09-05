@@ -29,7 +29,7 @@ export const paginationSuite: ConformanceSuite = {
       { part: 'item', tag: 'button', attrs: { value: '1' }, text: '1' },
       { part: 'item', tag: 'button', attrs: { value: '2' }, text: '2' },
       { part: 'item', tag: 'button', attrs: { value: '3' }, text: '3' },
-      { part: 'ellipsis', tag: 'button', attrs: { side: 'end' }, text: '…' },
+      { part: 'ellipsis-trigger', tag: 'button', attrs: { side: 'end' }, text: '…' },
       { part: 'item', tag: 'button', attrs: { value: '10' }, text: '10' },
       { part: 'next-trigger', tag: 'button', text: '下一页' },
       {
@@ -45,8 +45,8 @@ export const paginationSuite: ConformanceSuite = {
       spec: { apg: APG, adr: ARIA_CURRENT },
       props: { count: 100, pageSize: 10 },
       initial: {
-        order: ['root', 'prev-trigger', 'item[0]', 'item[1]', 'item[2]', 'ellipsis', 'item[3]', 'next-trigger', 'positioner', 'content'],
-        counts: { 'root': 1, 'prev-trigger': 1, 'item': 4, 'ellipsis': 1, 'next-trigger': 1, 'positioner': 1, 'content': 1 },
+        order: ['root', 'prev-trigger', 'item[0]', 'item[1]', 'item[2]', 'ellipsis-trigger', 'item[3]', 'next-trigger', 'positioner', 'content'],
+        counts: { 'root': 1, 'prev-trigger': 1, 'item': 4, 'ellipsis-trigger': 1, 'next-trigger': 1, 'positioner': 1, 'content': 1 },
         parts: {
           'root': {
             'aria-label': 'Pagination',
@@ -81,7 +81,7 @@ export const paginationSuite: ConformanceSuite = {
           'item[3]': { 'aria-current': null, 'data-value': '10' },
           // 省略位是可展开的按钮：折进去那几页得有路走到，不能对读屏藏起来。
           // 名字来自 translations，读屏念的是「还有几页」而不是 "…" 这个标点
-          'ellipsis': { 'aria-hidden': null, 'aria-expanded': 'false', 'aria-haspopup': 'true' },
+          'ellipsis-trigger': { 'aria-hidden': null, 'aria-expanded': 'false', 'aria-haspopup': 'true' },
         },
       },
     },
@@ -265,19 +265,19 @@ export const paginationSuite: ConformanceSuite = {
       initial: {
         parts: {
           // 纯 hover 会把键盘用户挡在外面，而折进去那几页除了它没有别的入口
-          ellipsis: { 'aria-expanded': 'false', 'aria-haspopup': 'true', 'data-state': 'closed' },
+          'ellipsis-trigger': { 'aria-expanded': 'false', 'aria-haspopup': 'true', 'data-state': 'closed' },
         },
       },
       steps: [
         {
           kind: 'click',
-          part: 'ellipsis',
-          expect: { parts: { ellipsis: { 'aria-expanded': 'true', 'data-state': 'open' } } },
+          part: 'ellipsis-trigger',
+          expect: { parts: { 'ellipsis-trigger': { 'aria-expanded': 'true', 'data-state': 'open' } } },
         },
         {
           kind: 'click',
-          part: 'ellipsis',
-          expect: { parts: { ellipsis: { 'aria-expanded': 'false', 'data-state': 'closed' } } },
+          part: 'ellipsis-trigger',
+          expect: { parts: { 'ellipsis-trigger': { 'aria-expanded': 'false', 'data-state': 'closed' } } },
         },
       ],
     },
@@ -289,8 +289,8 @@ export const paginationSuite: ConformanceSuite = {
       steps: [
         {
           kind: 'click',
-          part: 'ellipsis',
-          expect: { parts: { ellipsis: { 'aria-expanded': 'true' } } },
+          part: 'ellipsis-trigger',
+          expect: { parts: { 'ellipsis-trigger': { 'aria-expanded': 'true' } } },
         },
         {
           kind: 'raw',
@@ -298,7 +298,7 @@ export const paginationSuite: ConformanceSuite = {
           run: ({ doc }) => {
             doc.dispatchEvent(new (doc.defaultView!).KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))
           },
-          expect: { parts: { ellipsis: { 'aria-expanded': 'false' } } },
+          expect: { parts: { 'ellipsis-trigger': { 'aria-expanded': 'false' } } },
         },
       ],
     },

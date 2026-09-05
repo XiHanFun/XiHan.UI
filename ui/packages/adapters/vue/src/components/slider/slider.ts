@@ -14,9 +14,9 @@ export type SliderRootSlotProps = Pick<
   'value' | 'thumbs' | 'range' | 'dragging' | 'setValue' | 'setThumbValue'
 >
 
-/** mark 插槽的载荷：这一档刻度的呈现数据。 */
-export interface SliderMarksMarkSlotProps {
-  mark: SliderMarkMeta
+/** tick 插槽的载荷：这一档刻度的呈现数据。 */
+export interface SliderTickGroupTickSlotProps {
+  tick: SliderMarkMeta
 }
 
 export const XhSliderRoot = defineComponent({
@@ -103,20 +103,20 @@ export const XhSliderTrack = defineComponent({
   },
 })
 
-export const XhSliderMarks = defineComponent({
-  name: 'XhSliderMarks',
+export const XhSliderTickGroup = defineComponent({
+  name: 'XhSliderTickGroup',
   slots: Object as SlotsType<{
-    mark?: (props: SliderMarksMarkSlotProps) => VNode[]
+    tick?: (props: SliderTickGroupTickSlotProps) => VNode[]
   }>,
   setup(_, { slots }) {
     const ctx = useSliderContext()
-    // 刻度整组自动铺：圆点 + 文案（点文案跳值）；mark 插槽可换文案内容
-    return () => h('div', ctx.api.value.getMarksProps() as Record<string, unknown>, ctx.api.value.marks.flatMap(mark => [
-      h('span', { ...ctx.api.value.getMarkProps({ value: mark.value }) as Record<string, unknown>, key: `dot-${mark.value}` }),
+    // 刻度整组自动铺：圆点 + 文案（点文案跳值）；tick 插槽可换文案内容
+    return () => h('div', ctx.api.value.getTickGroupProps() as Record<string, unknown>, ctx.api.value.marks.flatMap(tick => [
+      h('span', { ...ctx.api.value.getTickProps({ value: tick.value }) as Record<string, unknown>, key: `dot-${tick.value}` }),
       h(
         'span',
-        { ...ctx.api.value.getMarkLabelProps({ value: mark.value }) as Record<string, unknown>, key: `label-${mark.value}` },
-        slots.mark ? slots.mark({ mark }) : mark.label,
+        { ...ctx.api.value.getTickLabelProps({ value: tick.value }) as Record<string, unknown>, key: `label-${tick.value}` },
+        slots.tick ? slots.tick({ tick }) : tick.label,
       ),
     ]))
   },

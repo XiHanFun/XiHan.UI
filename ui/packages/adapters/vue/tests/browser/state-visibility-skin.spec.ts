@@ -14,12 +14,12 @@ import {
   XhCalendarRoot,
   XhCalendarWeekRow,
   XhCheckbox,
-  XhEllipsis,
   XhPromptInputRoot,
   XhPromptInputSubmitTrigger,
   XhRadioGroupItem,
   XhRadioGroupItemText,
   XhRadioGroupRoot,
+  XhTruncate,
 } from '../../src'
 // 皮肤要一起加载：这里查的就是皮肤算出来的取值
 import '@xihan-ui/tokens/tokens.css'
@@ -189,17 +189,17 @@ describe('prompt-input 的禁用发送钮', () => {
   })
 })
 
-describe('ellipsis 的展开手型', () => {
+describe('truncate 的展开手型', () => {
   // 量测挂在 ResizeObserver 上，等它把 data-overflowing 落上再断言
   const settled = async (): Promise<HTMLElement> => {
-    const el = part('ellipsis', 'root')
+    const el = part('truncate', 'root')
     await vi.waitFor(() => expect(el.hasAttribute('data-lines')).toBe(true))
     return el
   }
 
   function mountText(text: string, width: string): void {
     mount(() => h('div', { style: `inline-size:${width}` }, [
-      h(XhEllipsis, { expandable: true }, () => [text]),
+      h(XhTruncate, { expandable: true }, () => [text]),
     ]))
   }
 

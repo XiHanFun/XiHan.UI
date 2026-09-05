@@ -88,7 +88,7 @@ root 里除三件外还能放自己的按钮与计数；值的读写归宿主，
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-prompt-input>` |
-| Vue 组件 | `XhPromptInputInput` `XhPromptInputInputRow` `XhPromptInputRoot` `XhPromptInputSubmitTrigger` |
+| Vue 组件 | `XhPromptInputControl` `XhPromptInputInput` `XhPromptInputRoot` `XhPromptInputSubmitTrigger` |
 | 组合式函数 | `usePromptInput` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/prompt-input.css` |
@@ -97,7 +97,7 @@ root 里除三件外还能放自己的按钮与计数；值的读写归宿主，
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="prompt-input"`：**`root`** · `input-row` · **`input`** · **`submit-trigger`**
+`data-scope="prompt-input"`：**`root`** · `control` · **`input`** · **`submit-trigger`**
 
 ## Props
 
@@ -165,7 +165,7 @@ root 里除三件外还能放自己的按钮与计数；值的读写归宿主，
 | `submit` | `() => void` |  |
 | `stop` | `() => void` |  |
 | `getRootProps` | `() => T['element']` |  |
-| `getInputRowProps` | `() => T['element']` | 可选的输入行容器：渲了它，输入框与按钮并排收在这一行里，root 翻成竖排。 |
+| `getControlProps` | `() => T['element']` | 可选的输入行容器：渲了它，输入框与按钮并排收在这一行里，root 翻成竖排。 |
 | `getInputProps` | `() => T['textarea']` |  |
 | `getSubmitTriggerProps` | `() => T['button']` |  |
 
@@ -219,7 +219,7 @@ root 里除三件外还能放自己的按钮与计数；值的读写归宿主，
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-prompt-input-bg` · `--xh-prompt-input-bg-disabled` · `--xh-prompt-input-border` · `--xh-prompt-input-border-focus` · `--xh-prompt-input-gap` · `--xh-prompt-input-icon-size` · `--xh-prompt-input-input-autofill-bg` · `--xh-prompt-input-input-autofill-fg` · `--xh-prompt-input-input-fg` · `--xh-prompt-input-input-font-size` · `--xh-prompt-input-max-h` · `--xh-prompt-input-p` · `--xh-prompt-input-placeholder-fg` · `--xh-prompt-input-radius` · `--xh-prompt-input-row-gap` · `--xh-prompt-input-send-bg` · `--xh-prompt-input-send-bg-active` · `--xh-prompt-input-send-bg-hover` · `--xh-prompt-input-send-bg-off` · `--xh-prompt-input-send-fg` · `--xh-prompt-input-shadow` · `--xh-prompt-input-stop-bg` · `--xh-prompt-input-stop-bg-active` · `--xh-prompt-input-stop-bg-hover` · `--xh-prompt-input-stop-fg` · `--xh-prompt-input-stop-mark-radius` · `--xh-prompt-input-stop-mark-size` · `--xh-prompt-input-submit-font-size` · `--xh-prompt-input-submit-font-weight` · `--xh-prompt-input-submit-px` · `--xh-prompt-input-submit-radius` · `--xh-prompt-input-submit-shadow`
+`--xh-prompt-input-bg` · `--xh-prompt-input-bg-disabled` · `--xh-prompt-input-bg-hover` · `--xh-prompt-input-border` · `--xh-prompt-input-border-focus` · `--xh-prompt-input-border-hover` · `--xh-prompt-input-gap` · `--xh-prompt-input-icon-size` · `--xh-prompt-input-input-autofill-bg` · `--xh-prompt-input-input-autofill-fg` · `--xh-prompt-input-input-fg` · `--xh-prompt-input-input-font-size` · `--xh-prompt-input-max-h` · `--xh-prompt-input-p` · `--xh-prompt-input-placeholder-fg` · `--xh-prompt-input-radius` · `--xh-prompt-input-row-gap` · `--xh-prompt-input-send-bg` · `--xh-prompt-input-send-bg-active` · `--xh-prompt-input-send-bg-hover` · `--xh-prompt-input-send-bg-off` · `--xh-prompt-input-send-fg` · `--xh-prompt-input-shadow` · `--xh-prompt-input-stop-bg` · `--xh-prompt-input-stop-bg-active` · `--xh-prompt-input-stop-bg-hover` · `--xh-prompt-input-stop-fg` · `--xh-prompt-input-stop-mark-radius` · `--xh-prompt-input-stop-mark-size` · `--xh-prompt-input-submit-font-size` · `--xh-prompt-input-submit-font-weight` · `--xh-prompt-input-submit-px` · `--xh-prompt-input-submit-radius` · `--xh-prompt-input-submit-shadow`
 
 ## 动效
 
@@ -237,7 +237,7 @@ root 里除三件外还能放自己的按钮与计数；值的读写归宿主，
   有附件而正文为空时把 `allowEmptySubmit` 置真。附件条摆在输入行上方，动作行摆在下方，
   两者都是 root 的直接子节点，与输入行并列。
 - 粘贴上传由作者在输入框上自己挂 `onPaste`，处理器会与组件的链式组合。
-- 模型选择器用[弹出选择](./popselect)或[组合框](./combobox)，工具开关用[开关组](./toggle-group)，
+- 模型选择器用[选择器](./select)或[组合框](./combobox)，工具开关用[开关组](./toggle-group)，
   它们连同自己的容器一起摆进输入行下方的那一段。
 - 与[消息流](./message-feed)合起来就是一个最小对话界面。
 

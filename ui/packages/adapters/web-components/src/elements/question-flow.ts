@@ -2,9 +2,9 @@ import type {
   QuestionFlowAnswers,
   QuestionFlowAnswersChangeDetails,
   QuestionFlowIndexChangeDetails,
+  QuestionFlowItemProps,
   QuestionFlowNotes,
   QuestionFlowNotesChangeDetails,
-  QuestionFlowOptionProps,
   QuestionFlowQuestion,
   QuestionFlowSchema,
   QuestionFlowSkipDetails,
@@ -56,10 +56,10 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @csspart track - 纵向排布全部题目的轨道
  * @csspart question - 一题的整块，role=group；非当前题 aria-hidden 且 inert
  * @csspart prompt - 题干，同时是选项组的可访问名
- * @csspart option-group - 选项组，单选取 radiogroup、多选取 group
- * @csspart option - 一个选项，须是原生 `<button>` 并自带 option-value 属性标识身份
- * @csspart option-indicator - 记号，对读屏隐藏
- * @csspart option-label - 选项文字，排在选项内因而构成它的可及名
+ * @csspart group - 选项组，单选取 radiogroup、多选取 group
+ * @csspart item - 一个选项，须是原生 `<button>` 并自带 option-value 属性标识身份
+ * @csspart item-indicator - 记号，对读屏隐藏
+ * @csspart item-text - 选项文字，排在选项内因而构成它的可及名
  * @csspart note - 这一题的自由文本，须是原生 `<input>`
  * @csspart footer - 排布步进与动作的页脚
  * @csspart prev-trigger - 上一题
@@ -166,7 +166,7 @@ export class XhQuestionFlowElement extends XhElement {
   }
 
   /** 一个选项的自报家门，全部取自作者写在节点上的属性。 */
-  private optionOf(el: HTMLElement): QuestionFlowOptionProps {
+  private optionOf(el: HTMLElement): QuestionFlowItemProps {
     return {
       questionId: this.questionIdOf(el),
       value: el.getAttribute('option-value') ?? '',
@@ -224,18 +224,18 @@ export class XhQuestionFlowElement extends XhElement {
       this.spreader.spread(question, api.getQuestionProps({ id }) as Record<string, unknown>)
       for (const prompt of this.partsIn(question, 'prompt'))
         this.spreader.spread(prompt, api.getPromptProps({ id }) as Record<string, unknown>)
-      for (const group of this.partsIn(question, 'option-group'))
-        this.spreader.spread(group, api.getOptionGroupProps({ id }) as Record<string, unknown>)
+      for (const group of this.partsIn(question, 'group'))
+        this.spreader.spread(group, api.getGroupProps({ id }) as Record<string, unknown>)
       for (const note of this.partsIn(question, 'note'))
         this.spreader.spread(note, api.getNoteProps({ id }) as Record<string, unknown>)
-      for (const option of this.partsIn(question, 'option')) {
+      for (const option of this.partsIn(question, 'item')) {
         // 选项节点上可以只写 option-value，题的身份从它所属的那一题上取
         const item = { ...this.optionOf(option), questionId: id }
-        this.spreader.spread(option, api.getOptionProps(item) as Record<string, unknown>)
-        for (const indicator of this.partsIn(option, 'option-indicator'))
-          this.spreader.spread(indicator, api.getOptionIndicatorProps(item) as Record<string, unknown>)
-        for (const label of this.partsIn(option, 'option-label'))
-          this.spreader.spread(label, api.getOptionLabelProps(item) as Record<string, unknown>)
+        this.spreader.spread(option, api.getItemProps(item) as Record<string, unknown>)
+        for (const indicator of this.partsIn(option, 'item-indicator'))
+          this.spreader.spread(indicator, api.getItemIndicatorProps(item) as Record<string, unknown>)
+        for (const label of this.partsIn(option, 'item-text'))
+          this.spreader.spread(label, api.getItemTextProps(item) as Record<string, unknown>)
       }
     }
   }

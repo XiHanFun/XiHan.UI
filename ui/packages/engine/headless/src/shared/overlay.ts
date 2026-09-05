@@ -2,7 +2,7 @@ import type { Placement } from '@xihan-ui/kernel'
 
 // 浮层交给定位引擎的默认落点与间距；各族机器统一引这里，不靠引擎自己的兜底。
 
-/** 气泡类浮层（tooltip / hover-card / popover / popconfirm / popselect / tour）的默认落点：居中对着锚点。 */
+/** 气泡类浮层（tooltip / hover-card / popover / popconfirm / tour）的默认落点：居中对着锚点。 */
 export const OVERLAY_PLACEMENT_ANCHORED: Placement = 'bottom'
 
 /** 列表类浮层（select / combobox / 各 picker / menu 族）的默认落点：起始缘与锚点对齐。 */

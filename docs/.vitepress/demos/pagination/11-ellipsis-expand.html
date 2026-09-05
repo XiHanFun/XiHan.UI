@@ -9,11 +9,11 @@
   <nav data-xh-part="root">
     <button data-xh-part="prev-trigger"></button>
     <button data-xh-part="item" value="1">1</button>
-    <button data-xh-part="ellipsis" side="start">…</button>
+    <button data-xh-part="ellipsis-trigger" side="start">…</button>
     <button data-xh-part="item" value="99">99</button>
     <button data-xh-part="item" value="100">100</button>
     <button data-xh-part="item" value="101">101</button>
-    <button data-xh-part="ellipsis" side="end">…</button>
+    <button data-xh-part="ellipsis-trigger" side="end">…</button>
     <button data-xh-part="item" value="200">200</button>
     <button data-xh-part="next-trigger"></button>
 
@@ -47,12 +47,12 @@
     // 只摘行里的格子：面板里的页码也是 item，不能一起清掉
     for (const node of [...root.children]) {
       const part = node.dataset.xhPart;
-      if (part === "item" || part === "ellipsis") node.remove();
+      if (part === "item" || part === "ellipsis-trigger") node.remove();
     }
     for (const item of host.pageItems) {
       if (item.type === "ellipsis") {
         const el = document.createElement("button");
-        el.dataset.xhPart = "ellipsis";
+        el.dataset.xhPart = "ellipsis-trigger";
         el.setAttribute("side", item.side);
         el.textContent = "…";
         root.insertBefore(el, next);
@@ -79,7 +79,7 @@
 
   for (const type of ["pointerover", "click"]) {
     root.addEventListener(type, (event) => {
-      const el = event.target.closest('[data-xh-part="ellipsis"]');
+      const el = event.target.closest('[data-xh-part="ellipsis-trigger"]');
       if (el) fill(el);
     });
   }

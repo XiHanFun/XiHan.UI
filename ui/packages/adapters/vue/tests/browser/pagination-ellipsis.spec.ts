@@ -8,7 +8,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick } from 'vue'
 import {
   XhPaginationContent,
-  XhPaginationEllipsis,
+  XhPaginationEllipsisTrigger,
   XhPaginationItem,
   XhPaginationPositioner,
   XhPaginationRoot,
@@ -45,7 +45,7 @@ async function mount(): Promise<void> {
         default: ({ pageItems }: { pageItems: Array<Record<string, unknown>> }) => [
           ...pageItems.map((item, i) =>
             item.type === 'ellipsis'
-              ? h(XhPaginationEllipsis, { key: `e${i}`, side: item.side as 'start' | 'end' })
+              ? h(XhPaginationEllipsisTrigger, { key: `e${i}`, side: item.side as 'start' | 'end' })
               : h(XhPaginationItem, { key: `p${i}`, value: item.value as number }, () => String(item.value)),
           ),
           h(XhPaginationPositioner, null, () => [
@@ -62,7 +62,7 @@ async function mount(): Promise<void> {
 }
 
 function ellipses(): HTMLElement[] {
-  return [...document.querySelectorAll<HTMLElement>('[data-scope="pagination"][data-part="ellipsis"]')]
+  return [...document.querySelectorAll<HTMLElement>('[data-scope="pagination"][data-part="ellipsis-trigger"]')]
 }
 
 function positioner(): HTMLElement {

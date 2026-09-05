@@ -38,7 +38,7 @@ const NO_SLOT = {
   'popconfirm:confirm-trigger::before': '转圈的加载环',
   'switch:thumb::after': '转圈的加载环',
   'download-trigger:root::before': '转圈的加载环',
-  'clipboard:trigger::before': '转圈的加载环',
+  'clipboard:copy-trigger::before': '转圈的加载环',
   'approval:footer::before': '转圈的加载环',
 }
 

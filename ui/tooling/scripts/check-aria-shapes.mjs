@@ -15,8 +15,8 @@ import { join } from 'node:path'
 const HEADLESS = 'packages/engine/headless/src'
 const STYLES_DIR = 'packages/design/styles/css'
 
-/** 按钮式弹出列表框：触发器保持 button 角色，不扮演 combobox。 */
-const ALLOWED = new Set(['popselect'])
+/** 按钮式弹出列表框：触发器保持 button 角色，不扮演 combobox。当前一个都没有。 */
+const ALLOWED = new Set([])
 
 /**
  * 说了「正在加载」却不必报 aria-busy 的，各带理由。

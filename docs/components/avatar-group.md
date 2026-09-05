@@ -13,7 +13,7 @@
 
 ## 特性
 
-- `max` 决定显示几个，其余落进 `overflow` 计数。
+- `max` 决定显示几个，其余落进 `overflow-item` 计数。
 - 尺寸写在组上，组内头像一并跟着换。
 
 ## 示例
@@ -47,7 +47,7 @@
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-avatar-group>` |
-| Vue 组件 | `XhAvatarGroupOverflow` `XhAvatarGroupRoot` |
+| Vue 组件 | `XhAvatarGroupOverflowItem` `XhAvatarGroupRoot` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/avatar-group.css` |
 
@@ -55,13 +55,13 @@
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="avatar-group"`：**`root`** · `overflow`
+`data-scope="avatar-group"`：**`root`** · `overflow-item`
 
 ## Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `max` | `number` |  | 展示上限：这一组打算摆出几枚，其余收进 overflow 那一枚。 头像由作者渲染，所以裁到几枚、「+N」里的 N 写多少都在作者手里； 组件把这个上限如实落成根上的 data-max。 |
+| `max` | `number` |  | 展示上限：这一组打算摆出几枚，其余收进 overflow-item 那一枚。 头像由作者渲染，所以裁到几枚、「+N」里的 N 写多少都在作者手里； 组件把这个上限如实落成根上的 data-max。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，落到根上沿继承流下发给组内每一枚。 |
 
 ## connect API
@@ -71,7 +71,7 @@
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `getRootProps` | `() => T['element']` |  |
-| `getOverflowProps` | `() => T['element']` |  |
+| `getOverflowItemProps` | `() => T['element']` |  |
 
 ## 键盘
 
@@ -87,7 +87,7 @@
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-avatar-group-font-size` · `--xh-avatar-group-font-weight` · `--xh-avatar-group-overflow-bg` · `--xh-avatar-group-overflow-fg` · `--xh-avatar-group-overlap` · `--xh-avatar-group-radius` · `--xh-avatar-group-ring` · `--xh-avatar-group-size`
+`--xh-avatar-group-font-size` · `--xh-avatar-group-font-weight` · `--xh-avatar-group-overflow-item-bg` · `--xh-avatar-group-overflow-item-fg` · `--xh-avatar-group-overlap` · `--xh-avatar-group-radius` · `--xh-avatar-group-ring` · `--xh-avatar-group-size`
 
 ## RTL
 

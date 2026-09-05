@@ -1,7 +1,7 @@
 <!-- 值串写法 | format 只决定对外的序列化，工作色始终是同一套；三种写法各挑一个色，改动后按各自的写法产出 -->
 <script setup lang="ts">
 import {
-  XhColorPickerArea,
+  XhColorPickerSaturationArea,
   XhColorPickerAreaThumb,
   XhColorPickerChannelSlider,
   XhColorPickerChannelSliderThumb,
@@ -40,9 +40,9 @@ const cases = [
       </XhColorPickerControl>
       <XhColorPickerPositioner>
         <XhColorPickerContent>
-          <XhColorPickerArea>
+          <XhColorPickerSaturationArea>
             <XhColorPickerAreaThumb />
-          </XhColorPickerArea>
+          </XhColorPickerSaturationArea>
           <XhColorPickerChannelSlider channel="hue">
             <XhColorPickerChannelSliderTrack />
             <XhColorPickerChannelSliderThumb />

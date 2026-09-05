@@ -19,7 +19,7 @@ const FIXTURE: FixtureNode = {
       children: [
         { part: 'input', tag: 'input' },
         {
-          part: 'trigger',
+          part: 'copy-trigger',
           tag: 'button',
           children: [
             { part: 'indicator', tag: 'span', text: '复制' },
@@ -97,17 +97,17 @@ export const clipboardSuite: ConformanceSuite = {
   fixture: FIXTURE,
   cases: [
     {
-      name: '初始：input 只读且被 label 认领，trigger 是原生按钮，成功侧指示器收起',
+      name: '初始：input 只读且被 label 认领，复制钮是原生按钮，成功侧指示器收起',
       spec: { apg: SPEC },
       props: { value: VALUE },
       initial: {
-        order: ['root', 'label', 'control', 'input', 'trigger', 'indicator[0]', 'indicator[1]'],
-        counts: { root: 1, label: 1, control: 1, input: 1, trigger: 1, indicator: 2 },
+        order: ['root', 'label', 'control', 'input', 'copy-trigger', 'indicator[0]', 'indicator[1]'],
+        counts: { 'root': 1, 'label': 1, 'control': 1, 'input': 1, 'copy-trigger': 1, 'indicator': 2 },
         parts: {
-          root: { 'data-state': 'idle', 'data-copied': null },
-          label: { 'id': '@self', 'for': '@part(input)', 'data-state': 'idle' },
-          control: { 'data-state': 'idle' },
-          input: {
+          'root': { 'data-state': 'idle', 'data-copied': null },
+          'label': { 'id': '@self', 'for': '@part(input)', 'data-state': 'idle' },
+          'control': { 'data-state': 'idle' },
+          'input': {
             'id': '@self',
             'type': 'text',
             // 只读而不是禁用：禁用框不可聚焦也选不中，键盘用户的 Ctrl/Cmd+C 那条路会断
@@ -115,14 +115,14 @@ export const clipboardSuite: ConformanceSuite = {
             'disabled': null,
             'aria-labelledby': '@part(label)',
           },
-          trigger: { 'type': 'button', 'data-state': 'idle', 'data-copied': null },
-          indicator: [
+          'copy-trigger': { 'type': 'button', 'data-state': 'idle', 'data-copied': null },
+          'indicator': [
             { 'data-copied': null, 'hidden': null },
             { 'data-copied': '', 'hidden': '' },
           ],
         },
       },
-      steps: [nativeActivation('clipboard', 'trigger')],
+      steps: [nativeActivation('clipboard', 'copy-trigger')],
     },
     {
       name: '点复制：写入兑现前停在 copying，兑现后才落 copied 并换边',
@@ -136,13 +136,13 @@ export const clipboardSuite: ConformanceSuite = {
         },
         {
           kind: 'click',
-          part: 'trigger',
+          part: 'copy-trigger',
           expect: {
             // 写入还在路上时不先亮对钩
             parts: {
-              root: { 'data-state': 'copying', 'data-copied': null },
-              trigger: { 'data-state': 'copying' },
-              indicator: [{ hidden: null }, { hidden: '' }],
+              'root': { 'data-state': 'copying', 'data-copied': null },
+              'copy-trigger': { 'data-state': 'copying' },
+              'indicator': [{ hidden: null }, { hidden: '' }],
             },
           },
         },
@@ -152,10 +152,10 @@ export const clipboardSuite: ConformanceSuite = {
           run: finishWrite(true),
           expect: {
             parts: {
-              root: { 'data-state': 'copied', 'data-copied': '' },
-              trigger: { 'data-state': 'copied', 'data-copied': '' },
+              'root': { 'data-state': 'copied', 'data-copied': '' },
+              'copy-trigger': { 'data-state': 'copied', 'data-copied': '' },
               // 两个指示器都还在，只是换了谁露面
-              indicator: [{ hidden: '' }, { 'data-copied': '', 'hidden': null }],
+              'indicator': [{ hidden: '' }, { 'data-copied': '', 'hidden': null }],
             },
             counts: { indicator: 2 },
           },
@@ -177,17 +177,17 @@ export const clipboardSuite: ConformanceSuite = {
           why: 'jsdom 没有 navigator.clipboard，失败路径同样要自己造现场',
           run: installClipboard(),
         },
-        { kind: 'click', part: 'trigger' },
+        { kind: 'click', part: 'copy-trigger' },
         {
           kind: 'raw',
           why: '让在途的写入以拒绝收场，复现无权限 / 非安全上下文',
           run: finishWrite(false),
           expect: {
             parts: {
-              root: { 'data-state': 'idle', 'data-copied': null },
-              trigger: { 'data-state': 'idle', 'data-copied': null },
+              'root': { 'data-state': 'idle', 'data-copied': null },
+              'copy-trigger': { 'data-state': 'idle', 'data-copied': null },
               // 成功侧仍旧收着：没成功就不该露对钩
-              indicator: [{ hidden: null }, { hidden: '' }],
+              'indicator': [{ hidden: null }, { hidden: '' }],
             },
           },
         },
@@ -208,7 +208,7 @@ export const clipboardSuite: ConformanceSuite = {
           why: 'jsdom 没有 navigator.clipboard，先把接口装上',
           run: installClipboard(),
         },
-        { kind: 'click', part: 'trigger' },
+        { kind: 'click', part: 'copy-trigger' },
         {
           kind: 'raw',
           why: '兑现写入，进入停留窗口',
@@ -244,10 +244,10 @@ export const clipboardSuite: ConformanceSuite = {
           why: 'jsdom 没有 navigator.clipboard，先把接口装上',
           run: installClipboard(),
         },
-        { kind: 'click', part: 'trigger' },
+        { kind: 'click', part: 'copy-trigger' },
         {
           kind: 'click',
-          part: 'trigger',
+          part: 'copy-trigger',
           expect: {
             parts: { root: { 'data-state': 'copying' } },
           },

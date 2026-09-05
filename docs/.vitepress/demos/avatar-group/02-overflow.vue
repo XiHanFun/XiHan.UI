@@ -1,6 +1,6 @@
 <!-- 上限与溢出计数 | 摆到上限为止，其余收成一枚「+N」；裁到几枚、N 写多少由作者定，组件只给这一枚身份与位置 -->
 <script setup lang="ts">
-import { XhAvatarFallback, XhAvatarGroupOverflow, XhAvatarGroupRoot, XhAvatarImage, XhAvatarRoot } from "@xihan-ui/vue";
+import { XhAvatarFallback, XhAvatarGroupOverflowItem, XhAvatarGroupRoot, XhAvatarImage, XhAvatarRoot } from "@xihan-ui/vue";
 
 const members = ["曦", "寒", "懿", "承", "临", "旭"];
 const max = 4;
@@ -17,6 +17,6 @@ const rest = members.length - shown.length;
     </XhAvatarRoot>
 
     <!-- 计数那一枚没有图，写什么都行 -->
-    <XhAvatarGroupOverflow v-if="rest > 0">+{{ rest }}</XhAvatarGroupOverflow>
+    <XhAvatarGroupOverflowItem v-if="rest > 0">+{{ rest }}</XhAvatarGroupOverflowItem>
   </XhAvatarGroupRoot>
 </template>

@@ -175,13 +175,13 @@ outline-width: 3px
 outline-offset: 0px
 outline-color: oklch(0.439 0.006 258)
 
-[root]
+[path]
 padding-top: 0px
 padding-right: 0px
 padding-bottom: 0px
 padding-left: 0px
-row-gap: 16px
-column-gap: 16px
+row-gap: normal
+column-gap: normal
 border-top-left-radius: 0px
 border-top-right-radius: 0px
 border-bottom-right-radius: 0px
@@ -210,13 +210,13 @@ outline-width: 3px
 outline-offset: 0px
 outline-color: rgb(0, 0, 0)
 
-[segment]
+[root]
 padding-top: 0px
 padding-right: 0px
 padding-bottom: 0px
 padding-left: 0px
-row-gap: normal
-column-gap: normal
+row-gap: 16px
+column-gap: 16px
 border-top-left-radius: 0px
 border-top-right-radius: 0px
 border-bottom-right-radius: 0px

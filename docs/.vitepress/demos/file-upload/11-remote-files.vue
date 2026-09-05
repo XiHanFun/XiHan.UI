@@ -7,7 +7,7 @@ import {
   XhFileUploadHiddenInput,
   XhFileUploadItem,
   XhFileUploadItemDeleteTrigger,
-  XhFileUploadItemGroup,
+  XhFileUploadList,
   XhFileUploadItemName,
   XhFileUploadItemSizeText,
   XhFileUploadLabel,
@@ -33,7 +33,7 @@ const remoteFiles = ref<FileUploadRemoteFile[]>([
     <XhFileUploadDropzone>拖进来或点击选择</XhFileUploadDropzone>
     <XhFileUploadTrigger>选择文件</XhFileUploadTrigger>
     <XhFileUploadHiddenInput />
-    <XhFileUploadItemGroup>
+    <XhFileUploadList>
       <XhFileUploadItem
         v-for="(file, i) in allFiles"
         :key="'id' in file ? file.id : `local-${i}`"
@@ -44,7 +44,7 @@ const remoteFiles = ref<FileUploadRemoteFile[]>([
         <a v-if="'url' in file && file.url" :href="file.url" target="_blank" rel="noreferrer">查看</a>
         <XhFileUploadItemDeleteTrigger />
       </XhFileUploadItem>
-    </XhFileUploadItemGroup>
+    </XhFileUploadList>
   </XhFileUploadRoot>
   <p>剩余名额与新选文件共享；删除服务器附件只改 remote-files，落库由宿主决定。</p>
 </template>

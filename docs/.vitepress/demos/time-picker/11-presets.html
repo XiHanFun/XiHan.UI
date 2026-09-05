@@ -11,15 +11,15 @@
       <label data-xh-part="label">提交时刻</label>
       <div data-xh-part="control">
         <div data-xh-part="segment-group">
-          <span data-xh-part="input" segment="hour"></span>
+          <span data-xh-part="segment" segment="hour"></span>
           <span>:</span>
-          <span data-xh-part="input" segment="minute"></span>
+          <span data-xh-part="segment" segment="minute"></span>
         </div>
         <button data-xh-part="trigger"></button>
       </div>
       <div data-xh-part="positioner">
         <div data-xh-part="content">
-          <div data-xh-part="presets"></div>
+          <div data-xh-part="preset-group"></div>
           <div data-xh-part="column" unit="hour"></div>
           <div data-xh-part="column" unit="minute"></div>
         </div>
@@ -63,7 +63,7 @@
   fill(node.querySelector('[unit="minute"]'), 60, 15);
 
   // 条目由作者铺，身份写在 value 属性上；元素只负责把行为打上去
-  node.querySelector('[data-xh-part="presets"]').replaceChildren(
+  node.querySelector('[data-xh-part="preset-group"]').replaceChildren(
     ...presets.map((preset) => {
       const item = document.createElement("div");
       item.dataset.xhPart = "preset";

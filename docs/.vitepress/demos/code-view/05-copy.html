@@ -31,17 +31,17 @@
 }"
         timeout="1500"
         style="
-          --xh-clipboard-trigger-border: transparent;
-          --xh-clipboard-trigger-border-hover: transparent;
-          --xh-clipboard-trigger-bg: transparent;
-          --xh-clipboard-trigger-h: var(--xh-control-h-sm);
-          --xh-clipboard-trigger-px: var(--xh-control-px-sm);
-          --xh-clipboard-trigger-font-size: var(--xh-text-caption-size);
+          --xh-clipboard-copy-trigger-border: transparent;
+          --xh-clipboard-copy-trigger-border-hover: transparent;
+          --xh-clipboard-copy-trigger-bg: transparent;
+          --xh-clipboard-copy-trigger-h: var(--xh-control-h-sm);
+          --xh-clipboard-copy-trigger-px: var(--xh-control-px-sm);
+          --xh-clipboard-copy-trigger-font-size: var(--xh-text-caption-size);
         "
       >
         <div data-xh-part="root">
           <!-- 无边无底、矮一档、字号取脚注档：静息与悬停都不画描边，只换底色 -->
-          <button data-xh-part="trigger">
+          <button data-xh-part="copy-trigger">
             <span data-xh-part="indicator"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M15 6V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h1"/></svg> 复制</span>
             <span data-xh-part="indicator" copied><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5L9.5 18L20 6"/></svg> 已复制</span>
           </button>

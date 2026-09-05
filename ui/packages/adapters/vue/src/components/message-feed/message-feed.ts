@@ -21,7 +21,7 @@ export type MessageFeedRootSlotProps = Pick<
   | 'atBottom'
   | 'sticking'
   | 'focusedId'
-  | 'showScrollButton'
+  | 'showScrollToEndTrigger'
   | 'scrollToBottom'
   | 'scrollToItem'
   | 'focusItem'
@@ -59,7 +59,7 @@ export const XhMessageFeedRoot = defineComponent({
       atBottom: ctx.api.value.atBottom,
       sticking: ctx.api.value.sticking,
       focusedId: ctx.api.value.focusedId,
-      showScrollButton: ctx.api.value.showScrollButton,
+      showScrollToEndTrigger: ctx.api.value.showScrollToEndTrigger,
       scrollToBottom: ctx.api.value.scrollToBottom,
       scrollToItem: ctx.api.value.scrollToItem,
       focusItem: ctx.api.value.focusItem,
@@ -135,11 +135,11 @@ export const XhMessageFeedItemLabel = defineComponent({
   },
 })
 
-export const XhMessageFeedScrollButton = defineComponent({
-  name: 'XhMessageFeedScrollButton',
+export const XhMessageFeedScrollToEndTrigger = defineComponent({
+  name: 'XhMessageFeedScrollToEndTrigger',
   setup(_, { slots }) {
     const ctx = useMessageFeedContext()
-    return () => h('button', ctx.api.value.getScrollButtonProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getScrollToEndTriggerProps() as Record<string, unknown>, slots.default?.())
   },
 })
 

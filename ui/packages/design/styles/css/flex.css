@@ -16,13 +16,24 @@
     display: inline-flex;
   }
 
-  /* —— 方向 —— */
-  [data-scope='flex'][data-part='root'][data-orientation='horizontal'] {
-    flex-direction: row;
+  /* 分隔符：夹在两个子项之间的装饰件，样子由放进去的内容决定。
+     这里只兜住两件事——不被主轴挤扁（一条 1px 的竖线会被弹性收缩吃没），
+     交叉轴上不单独发话，跟着容器的对齐走：横排随中线、竖排随拉伸 */
+  [data-scope='flex'][data-part='split'] {
+    flex: none;
   }
 
+  /* —— 方向与缺省对齐 —— */
+  /* 横排时按中线对齐：一排里混着文字、按钮、标签，高度本就不齐，居中最不容易看出错位 */
+  [data-scope='flex'][data-part='root'][data-orientation='horizontal'] {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  /* 竖排时拉伸：一列里的块级子项该占满容器宽度 */
   [data-scope='flex'][data-part='root'][data-orientation='vertical'] {
     flex-direction: column;
+    align-items: stretch;
   }
 
   /* —— 折行 —— */
@@ -31,6 +42,7 @@
   }
 
   /* —— 交叉轴对齐 —— */
+  /* 排在方向之后：两者特指度相同，写了 align 就该压过随方向来的那份缺省 */
   [data-scope='flex'][data-part='root'][data-align='start'] {
     align-items: flex-start;
   }

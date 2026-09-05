@@ -11,7 +11,7 @@ export const cardSuite: ConformanceSuite = {
   fixture: {
     part: 'root',
     children: [
-      { part: 'cover', text: '封面' },
+      { part: 'media', text: '封面' },
       {
         part: 'header',
         children: [
@@ -69,8 +69,8 @@ export const cardSuite: ConformanceSuite = {
       name: '各段各一份，按封面 / 头 / 身 / 脚的文档序排列',
       spec: { apg: APG },
       initial: {
-        order: ['root', 'cover', 'header', 'title', 'description', 'body', 'footer'],
-        counts: { root: 1, cover: 1, header: 1, title: 1, description: 1, body: 1, footer: 1 },
+        order: ['root', 'media', 'header', 'title', 'description', 'body', 'footer'],
+        counts: { root: 1, media: 1, header: 1, title: 1, description: 1, body: 1, footer: 1 },
       },
     },
   ],

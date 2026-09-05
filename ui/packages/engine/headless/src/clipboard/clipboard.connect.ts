@@ -59,8 +59,8 @@ export function connectClipboard<T extends PropTypes>(
       },
     }),
 
-    getTriggerProps: () => normalize.button({
-      ...parts.trigger.attrs,
+    getCopyTriggerProps: () => normalize.button({
+      ...parts['copy-trigger'].attrs,
       // 不给 type 会在 form 里变成 submit，Enter 直接提交表单
       'type': 'button',
       'data-state': status,

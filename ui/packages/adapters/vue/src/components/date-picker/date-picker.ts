@@ -343,8 +343,8 @@ export const XhDatePickerCalendar = defineComponent({
   },
 })
 
-export const XhDatePickerPresets = defineComponent({
-  name: 'XhDatePickerPresets',
+export const XhDatePickerPresetGroup = defineComponent({
+  name: 'XhDatePickerPresetGroup',
   slots: Object as SlotsType<{
     /** 自己铺条目；不写就按 presets 数据自动铺，两者产出的 DOM 一致。 */
     default?: (props: DatePickerPresetsSlotProps) => VNode[]
@@ -356,7 +356,7 @@ export const XhDatePickerPresets = defineComponent({
       const authored = slots.default?.({ presets: api.presets })
       return h(
         'div',
-        api.getPresetsProps() as Record<string, unknown>,
+        api.getPresetGroupProps() as Record<string, unknown>,
         slotPaints(authored)
           ? authored
           : api.presets.map(preset => h(

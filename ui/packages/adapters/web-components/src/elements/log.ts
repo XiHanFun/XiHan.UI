@@ -25,7 +25,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @csspart viewport - 滚动容器；role=log + aria-live=off + tabindex=0，按行数定高写进内联样式
  * @csspart content - 所有行的包裹层，尺寸变化的观察目标
  * @csspart line - 一行日志，只拿身份与等宽排版
- * @csspart scroll-button - 回到底部按钮，在底时收起（hidden + 内联 display）
+ * @csspart scroll-to-end-trigger - 回到底部按钮，在底时收起（hidden + 内联 display）
  * @csspart live-region - 视觉隐藏的播报区（role=status + aria-live=polite + aria-atomic）
  */
 export class XhLogElement extends XhElement {
@@ -83,7 +83,7 @@ export class XhLogElement extends XhElement {
 
   /**
    * 滚回底部并恢复粘附。机器要等 hostConnected 才建，还没进 DOM 时如实什么都不做、别炸。
-   * 作者不写 scroll-button 角色节点时，自己的按钮调它。
+   * 作者不写 scroll-to-end-trigger 角色节点时，自己的按钮调它。
    */
   scrollToBottom(): void {
     const service = this.ctrl.service as Service<LogSchema> | undefined
@@ -104,7 +104,7 @@ export class XhLogElement extends XhElement {
     put('root', api.getRootProps() as Record<string, unknown>)
     put('viewport', api.getViewportProps() as Record<string, unknown>)
     put('content', api.getContentProps() as Record<string, unknown>)
-    put('scroll-button', api.getScrollButtonProps() as Record<string, unknown>)
+    put('scroll-to-end-trigger', api.getScrollToEndTriggerProps() as Record<string, unknown>)
     put('live-region', api.getLiveRegionProps() as Record<string, unknown>)
 
     // 多实例 part 逐个打，行有几条打几条
@@ -112,6 +112,6 @@ export class XhLogElement extends XhElement {
       this.spreader.spread(el, api.getLineProps() as Record<string, unknown>)
 
     // 除 hidden 属性外还写内联 display，压住作者层给该 part 声明的 display
-    this.setPartHidden(this.getPart('scroll-button'), !api.showScrollButton)
+    this.setPartHidden(this.getPart('scroll-to-end-trigger'), !api.showScrollToEndTrigger)
   }
 }

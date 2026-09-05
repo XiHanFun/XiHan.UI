@@ -54,14 +54,14 @@
 
 - `control` 必须是 `<svg>`；
 - `guide` 必须是 `control` 里面的 `<line>`；
-- `segment` 必须是 `control` 里面的 `<path>`；
+- `path` 必须是 `control` 里面的 `<path>`；
 - `clear-trigger` 必须是原生 `<button>`，`hidden-input` 必须是原生 `<input>`。
 
 `viewBox` 由组件自己写，作者不要在 `control` 上再写一个。
 
 ### 两个适配器的分工
 
-- **Vue**：`XhSignaturePadRoot` 的默认插槽给出 `empty` / `paths` / `drawing` / `statusText` 与 `toSvg()` / `clear()`；也可以用 `useSignaturePad()` 自己拿。`XhSignaturePadGuide` 与 `XhSignaturePadSegment` 必须写在 `XhSignaturePadControl` 里面——SVG 命名空间由那棵子树带下去，挪出去就成了 HTML 元素，画不出东西。
+- **Vue**：`XhSignaturePadRoot` 的默认插槽给出 `empty` / `paths` / `drawing` / `statusText` 与 `toSvg()` / `clear()`；也可以用 `useSignaturePad()` 自己拿。`XhSignaturePadGuide` 与 `XhSignaturePadPath` 必须写在 `XhSignaturePadControl` 里面——SVG 命名空间由那棵子树带下去，挪出去就成了 HTML 元素，画不出东西。
 - **Web Components**：结构由作者自己写（Light DOM，不投影插槽）。`<xh-signature-pad>` 上有 `clear()`、`toSvg()` 与只读的 `empty`；提交前取签名用 `toSvg()`，不必去缓存上一次 `draw-end`。
 - 两边的 `status` 部件里都不必自己写字：节点为空时由适配器填内建文案；写了字就以作者写的为准。
 

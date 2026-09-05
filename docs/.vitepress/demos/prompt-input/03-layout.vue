@@ -1,6 +1,6 @@
 <!-- 竖排布局与兜底字形 | 写一层输入行，root 就翻成竖排：输入行在上、动作行在下；按钮留空时皮肤按身份画上箭头或停止方块 -->
 <script setup lang="ts">
-import { XhPromptInputInput, XhPromptInputInputRow, XhPromptInputRoot, XhPromptInputSubmitTrigger } from "@xihan-ui/vue";
+import { XhPromptInputInput, XhPromptInputControl, XhPromptInputRoot, XhPromptInputSubmitTrigger } from "@xihan-ui/vue";
 import { ref } from "vue";
 
 const submitKey = ref<"enter" | "mod-enter" | "none">("enter");
@@ -18,10 +18,10 @@ const sent = ref<string[]>([]);
       @submit="sent.push($event.value)"
       @stop="busy = false"
     >
-      <XhPromptInputInputRow>
+      <XhPromptInputControl>
         <XhPromptInputInput rows="1" placeholder="给助手写点什么…" />
         <XhPromptInputSubmitTrigger />
-      </XhPromptInputInputRow>
+      </XhPromptInputControl>
       <div style="display: flex; align-items: center; gap: 12px; font-size: 12px;">
         <label style="display: inline-flex; align-items: center; gap: 4px;">
           <input v-model="busy" type="checkbox" />

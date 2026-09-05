@@ -12,6 +12,7 @@
 - 选项二到五个且都值得同时可见：用[单选组](./radio-group)。
 - 用户需要输入自由文本或搜索候选：用[组合框](./combobox)。
 - 选项是层级的：用[级联选择](./cascader)或[树选择](./tree-select)。
+- 值不随表单提交、只是就地切一个视图参数：把[列表框](./listbox)装进[浮层](./popover)，那一套组合更轻，也不占 `name`。
 
 ## 特性
 
@@ -362,7 +363,7 @@ footer 是 list 的兄弟：不随条目滚走，也不会被方向键与连打�
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-select-action-bg` · `--xh-select-action-bg-active` · `--xh-select-action-bg-hover` · `--xh-select-action-fg` · `--xh-select-action-fg-hover` · `--xh-select-action-font-size` · `--xh-select-action-radius` · `--xh-select-action-size` · `--xh-select-content-bg` · `--xh-select-content-border` · `--xh-select-content-fg` · `--xh-select-content-max-h` · `--xh-select-content-max-w` · `--xh-select-content-min-w` · `--xh-select-content-px` · `--xh-select-content-py` · `--xh-select-content-radius` · `--xh-select-content-shadow` · `--xh-select-control-bg` · `--xh-select-control-bg-disabled` · `--xh-select-control-bg-readonly` · `--xh-select-control-border` · `--xh-select-control-border-focus` · `--xh-select-control-border-hover` · `--xh-select-control-border-invalid` · `--xh-select-control-gap` · `--xh-select-control-h` · `--xh-select-control-min-w` · `--xh-select-control-px` · `--xh-select-control-radius` · `--xh-select-control-shadow` · `--xh-select-footer-border` · `--xh-select-footer-fg` · `--xh-select-footer-font-size` · `--xh-select-footer-gap` · `--xh-select-footer-px` · `--xh-select-footer-py` · `--xh-select-gap` · `--xh-select-icon-size` · `--xh-select-indicator-fg` · `--xh-select-item-bg-hover` · `--xh-select-item-delete-bg-active` · `--xh-select-item-delete-bg-hover` · `--xh-select-item-delete-fg` · `--xh-select-item-delete-fg-hover` · `--xh-select-item-delete-radius` · `--xh-select-item-delete-size` · `--xh-select-item-fg` · `--xh-select-item-fg-selected` · `--xh-select-item-font-size` · `--xh-select-item-font-weight-selected` · `--xh-select-item-gap` · `--xh-select-item-indicator-fg` · `--xh-select-item-indicator-size` · `--xh-select-item-leading` · `--xh-select-item-px` · `--xh-select-item-py` · `--xh-select-item-radius` · `--xh-select-label-fg` · `--xh-select-label-fg-disabled` · `--xh-select-label-font-size` · `--xh-select-label-font-weight` · `--xh-select-layer` · `--xh-select-list-gap` · `--xh-select-placeholder-fg` · `--xh-select-tag-bg` · `--xh-select-tag-fg` · `--xh-select-tag-font-size` · `--xh-select-tag-gap` · `--xh-select-tag-px` · `--xh-select-tag-radius` · `--xh-select-trigger-fg` · `--xh-select-trigger-font-size` · `--xh-select-trigger-gap`
+`--xh-select-action-bg` · `--xh-select-action-bg-active` · `--xh-select-action-bg-hover` · `--xh-select-action-fg` · `--xh-select-action-fg-hover` · `--xh-select-action-font-size` · `--xh-select-action-radius` · `--xh-select-action-size` · `--xh-select-content-bg` · `--xh-select-content-border` · `--xh-select-content-fg` · `--xh-select-content-max-h` · `--xh-select-content-max-w` · `--xh-select-content-min-w` · `--xh-select-content-px` · `--xh-select-content-py` · `--xh-select-content-radius` · `--xh-select-content-shadow` · `--xh-select-control-bg` · `--xh-select-control-bg-disabled` · `--xh-select-control-bg-hover` · `--xh-select-control-bg-readonly` · `--xh-select-control-border` · `--xh-select-control-border-focus` · `--xh-select-control-border-hover` · `--xh-select-control-border-invalid` · `--xh-select-control-gap` · `--xh-select-control-h` · `--xh-select-control-min-w` · `--xh-select-control-px` · `--xh-select-control-radius` · `--xh-select-control-shadow` · `--xh-select-footer-border` · `--xh-select-footer-fg` · `--xh-select-footer-font-size` · `--xh-select-footer-gap` · `--xh-select-footer-px` · `--xh-select-footer-py` · `--xh-select-gap` · `--xh-select-icon-size` · `--xh-select-indicator-fg` · `--xh-select-item-bg-hover` · `--xh-select-item-delete-bg-active` · `--xh-select-item-delete-bg-hover` · `--xh-select-item-delete-fg` · `--xh-select-item-delete-fg-hover` · `--xh-select-item-delete-radius` · `--xh-select-item-delete-size` · `--xh-select-item-fg` · `--xh-select-item-fg-selected` · `--xh-select-item-font-size` · `--xh-select-item-font-weight-selected` · `--xh-select-item-gap` · `--xh-select-item-indicator-fg` · `--xh-select-item-indicator-size` · `--xh-select-item-leading` · `--xh-select-item-px` · `--xh-select-item-py` · `--xh-select-item-radius` · `--xh-select-label-fg` · `--xh-select-label-fg-disabled` · `--xh-select-label-font-size` · `--xh-select-label-font-weight` · `--xh-select-layer` · `--xh-select-list-gap` · `--xh-select-placeholder-fg` · `--xh-select-tag-bg` · `--xh-select-tag-fg` · `--xh-select-tag-font-size` · `--xh-select-tag-gap` · `--xh-select-tag-px` · `--xh-select-tag-radius` · `--xh-select-trigger-fg` · `--xh-select-trigger-font-size` · `--xh-select-trigger-gap`
 
 ## 动效
 
@@ -376,7 +377,7 @@ footer 是 list 的兄弟：不随条目滚走，也不会被方向键与连打�
 
 ## 组合
 
-- 外面套[表单字段](./field)；选项文字过长时里面用[文本省略](./ellipsis)。
+- 外面套[表单字段](./field)；选项文字过长时里面用[文本截断](./truncate)。
 
 ## 最佳实践
 

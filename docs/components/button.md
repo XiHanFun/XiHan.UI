@@ -175,7 +175,7 @@ tone 决定用哪族颜色，与 variant 正交：四种形态 × 六种语气�
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-button-bg` · `--xh-button-bg-active` · `--xh-button-bg-hover` · `--xh-button-fg` · `--xh-button-font-size` · `--xh-button-font-weight` · `--xh-button-gap` · `--xh-button-h` · `--xh-button-icon-size` · `--xh-button-px` · `--xh-button-radius` · `--xh-button-shadow` · `--xh-button-spin-duration`
+`--xh-button-bg` · `--xh-button-bg-active` · `--xh-button-bg-hover` · `--xh-button-fg` · `--xh-button-font-size` · `--xh-button-font-weight` · `--xh-button-gap` · `--xh-button-h` · `--xh-button-icon-size` · `--xh-button-px` · `--xh-button-radius` · `--xh-button-shadow` · `--xh-button-shadow-hover` · `--xh-button-spin-duration`
 
 ## 动效
 

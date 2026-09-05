@@ -41,7 +41,7 @@ const COLOR_PROP = /^(?:color|background|background-color|background-image|borde
  * 多出一个没登记的照样报，登记了却扫不到的报名单过期。
  */
 const GEOMETRY = {
-  'color-picker:area::before': {
+  'color-picker:saturation-area::before': {
     reason: '饱和度/明度方块画的是 HSV 的两根坐标轴，黑与白是轴的两端，换成主题色就取不出色了',
     literals: ['black', 'white'],
   },
@@ -78,7 +78,7 @@ const PRIMITIVE_OK = {
     reason: '色板是数据可视化的配色轴，六档各指名一个颜色；借道语气槽会把语气的悬停 / 淡底 / 前景一起绑进来，也会被祖先的 data-tone 染色。灰那一族按主题分了两档，是唯一的例外',
     tokens: ['neutral-450', 'neutral-600', 'success-600', 'warning-600', 'danger-600', 'info-600', 'purple-600'],
   },
-  'result.css': {
+  'empty-state.css': {
     reason: '四档结果色标取 500 那一装饰档，与语气层实心底用的 600 档不同源',
     tokens: ['success-500', 'warning-500', 'danger-500', 'info-500'],
   },

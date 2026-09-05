@@ -66,12 +66,12 @@ export const XhClipboardInput = defineComponent({
   },
 })
 
-export const XhClipboardTrigger = defineComponent({
-  name: 'XhClipboardTrigger',
+export const XhClipboardCopyTrigger = defineComponent({
+  name: 'XhClipboardCopyTrigger',
   setup(_, { slots }) {
     const ctx = useClipboardContext()
     // 原生 <button>，激活行为交给平台
-    return () => h('button', ctx.api.value.getTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getCopyTriggerProps() as Record<string, unknown>, slots.default?.())
   },
 })
 

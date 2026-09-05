@@ -54,7 +54,7 @@ bordered 在底部画一条线，footer 整行另起，装描述或一组摘要
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-page-header>` |
-| Vue 组件 | `XhPageHeaderBackTrigger` `XhPageHeaderExtra` `XhPageHeaderFooter` `XhPageHeaderRoot` `XhPageHeaderSubtitle` `XhPageHeaderTitle` |
+| Vue 组件 | `XhPageHeaderBackTrigger` `XhPageHeaderDescription` `XhPageHeaderExtra` `XhPageHeaderFooter` `XhPageHeaderRoot` `XhPageHeaderTitle` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/page-header.css` |
 
@@ -62,7 +62,7 @@ bordered 在底部画一条线，footer 整行另起，装描述或一组摘要
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="page-header"`：**`root`** · `back-trigger` · `title` · `subtitle` · `extra` · `footer`
+`data-scope="page-header"`：**`root`** · `back-trigger` · `title` · `description` · `extra` · `footer`
 
 ## Props
 
@@ -80,7 +80,7 @@ bordered 在底部画一条线，footer 整行另起，装描述或一组摘要
 | `getRootProps` | `() => T['element']` |  |
 | `getBackTriggerProps` | `() => T['element']` |  |
 | `getTitleProps` | `() => T['element']` |  |
-| `getSubtitleProps` | `() => T['element']` |  |
+| `getDescriptionProps` | `() => T['element']` |  |
 | `getExtraProps` | `() => T['element']` |  |
 | `getFooterProps` | `() => T['element']` |  |
 
@@ -107,7 +107,7 @@ bordered 在底部画一条线，footer 整行另起，装描述或一组摘要
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-page-header-border` · `--xh-page-header-column-gap` · `--xh-page-header-extra-gap` · `--xh-page-header-fg` · `--xh-page-header-footer-fg` · `--xh-page-header-footer-font-size` · `--xh-page-header-py` · `--xh-page-header-row-gap` · `--xh-page-header-subtitle-fg` · `--xh-page-header-subtitle-font-size` · `--xh-page-header-title-fg` · `--xh-page-header-title-font-size` · `--xh-page-header-title-font-weight`
+`--xh-page-header-border` · `--xh-page-header-column-gap` · `--xh-page-header-description-fg` · `--xh-page-header-description-font-size` · `--xh-page-header-extra-gap` · `--xh-page-header-fg` · `--xh-page-header-footer-fg` · `--xh-page-header-footer-font-size` · `--xh-page-header-py` · `--xh-page-header-row-gap` · `--xh-page-header-title-fg` · `--xh-page-header-title-font-size` · `--xh-page-header-title-font-weight`
 
 ## RTL
 

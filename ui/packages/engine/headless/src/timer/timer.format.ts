@@ -120,3 +120,98 @@ export function splitTimer(value: number): TimerSegments {
 export function timerSegmentText(segments: TimerSegments, unit: TimerUnit): string {
   return String(segments[unit]).padStart(SEGMENT_WIDTH[unit], '0')
 }
+
+/** 文本模板缺省：两位时、两位分、两位秒。 */
+export const TIMER_FORMAT = 'HH:mm:ss'
+
+/** 取值粒度上限，也是缺省：毫秒，即不做量化。 */
+export const TIMER_PRECISION_MAX = 3
+
+/** 取值粒度归一：取整并夹进 [0, 3]，缺省或非有限数退回毫秒档。 */
+export function resolveTimerPrecision(precision: number | undefined): number {
+  if (precision == null || !Number.isFinite(precision))
+    return TIMER_PRECISION_MAX
+  return Math.min(Math.max(Math.trunc(precision), 0), TIMER_PRECISION_MAX)
+}
+
+/**
+ * 按粒度把显示值往下取到最近的一档：0 取到整秒，3 取到整毫秒。
+ *
+ * 往下取而不是四舍五入：还剩 900 毫秒时显示 1 秒，会让人看到「1 秒」之后直接归零，
+ * 而那一秒其实没走完。往下取的话最后一秒是真的走完了才变 0。
+ */
+export function quantizeTimer(value: number, precision: number): number {
+  const safe = Number.isFinite(value) && value > 0 ? value : 0
+  const step = 10 ** (TIMER_PRECISION_MAX - precision)
+  return Math.floor(safe / step) * step
+}
+
+// 识别的记号：D 天、H 时、m 分、s 秒、S 毫秒；重复的字母个数就是最少位数。
+// 模板里其余字符原样留下，所以 'HH 小时 mm 分' 这样写是成立的。
+const TEXT_TOKEN = /D{1,2}|H{1,2}|m{1,2}|s{1,2}|S{1,3}/g
+
+function pad(value: number, width: number): string {
+  return String(value).padStart(width, '0')
+}
+
+/**
+ * 按模板把显示值铺成一串字。位数不够补零，位数超了不截断——`HH` 遇上 100 小时就是 `100`，
+ * 截成 `00` 会把「还早着呢」说成「到点了」。
+ * 毫秒那一段先补满三位再取前几位：`S` 是十分之一秒、`SS` 是百分之一秒、`SSS` 是毫秒。
+ *
+ * 模板里没写 `D` 时，`H` 收下全部小时数（30 小时就是 `30`）；写了 `D` 才把天分出来、`H` 只剩 0-23。
+ */
+export function formatTimerText(value: number, format?: string): string {
+  const pattern = format ?? TIMER_FORMAT
+  const segments = splitTimer(value)
+  const hours = /D/.test(pattern) ? segments.hours : segments.hours + segments.days * 24
+  return pattern.replace(TEXT_TOKEN, (token) => {
+    const width = token.length
+    switch (token[0]) {
+      case 'D':
+        return pad(segments.days, width)
+      case 'H':
+        return pad(hours, width)
+      case 'm':
+        return pad(segments.minutes, width)
+      case 's':
+        return pad(segments.seconds, width)
+      default:
+        return pad(segments.milliseconds, TIMER_PRECISION_MAX).slice(0, width)
+    }
+  })
+}
+
+/** 这一轮的起点、终点与方向。 */
+export interface TimerRun {
+  startMs: number | undefined
+  targetMs: number | undefined
+  countdown: boolean
+}
+
+/**
+ * 解出这一轮的起止与方向。
+ *
+ * 受控剩余量 `value` 在场时由它接管：它就是起点，方向锁成倒着走、终点锁成 0，
+ * 此时 `startMs` / `targetMs` / `countdown` 三个都不再参与。
+ */
+export function timerRunOf(props: {
+  value?: number
+  startMs?: number
+  targetMs?: number
+  countdown?: boolean
+}): TimerRun {
+  if (props.value != null)
+    return { startMs: props.value, targetMs: 0, countdown: true }
+  return { startMs: props.startMs, targetMs: props.targetMs, countdown: !!props.countdown }
+}
+
+/** 走的是受控通道吗：给了 value 或 active 即是。 */
+export function isTimerControlled(value: number | undefined, active: boolean | undefined): boolean {
+  return value != null || active != null
+}
+
+/** 挂载那一刻开不开跑：受控时看 active（缺省真），否则看 autoStart。 */
+export function timerRunsOnMount(value: number | undefined, active: boolean | undefined, autoStart: boolean | undefined): boolean {
+  return isTimerControlled(value, active) ? (active ?? true) : !!autoStart
+}

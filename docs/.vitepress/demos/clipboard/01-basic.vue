@@ -7,7 +7,7 @@ import {
   XhClipboardInput,
   XhClipboardLabel,
   XhClipboardRoot,
-  XhClipboardTrigger,
+  XhClipboardCopyTrigger,
   XhIcon,
 } from "@xihan-ui/vue";
 
@@ -19,11 +19,11 @@ const apiToken = "xh_live_9f2c7a41b6d84e05";
     <XhClipboardLabel>接口密钥</XhClipboardLabel>
     <XhClipboardControl>
       <XhClipboardInput />
-      <XhClipboardTrigger>
+      <XhClipboardCopyTrigger>
         <!-- 两个指示器都常挂 DOM、靠 hidden 互斥显隐，来回切按钮不抖宽 -->
         <XhClipboardIndicator>复制</XhClipboardIndicator>
         <XhClipboardIndicator copied><XhIcon :icon="CheckIcon" /> 已复制</XhClipboardIndicator>
-      </XhClipboardTrigger>
+      </XhClipboardCopyTrigger>
     </XhClipboardControl>
   </XhClipboardRoot>
 </template>

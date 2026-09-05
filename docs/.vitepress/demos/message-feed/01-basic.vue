@@ -5,7 +5,7 @@ import {
   XhMessageFeedItemLabel,
   XhMessageFeedList,
   XhMessageFeedRoot,
-  XhMessageFeedScrollButton,
+  XhMessageFeedScrollToEndTrigger,
   XhMessageFeedViewport,
 } from "@xihan-ui/vue";
 
@@ -34,6 +34,6 @@ const messages = [
         </XhMessageFeedItem>
       </XhMessageFeedList>
     </XhMessageFeedViewport>
-    <XhMessageFeedScrollButton />
+    <XhMessageFeedScrollToEndTrigger />
   </XhMessageFeedRoot>
 </template>

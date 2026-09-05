@@ -5,7 +5,7 @@ import {
   XhMessageFeedList,
   XhMessageFeedLiveRegion,
   XhMessageFeedRoot,
-  XhMessageFeedScrollButton,
+  XhMessageFeedScrollToEndTrigger,
   XhMessageFeedViewport,
 } from "@xihan-ui/vue";
 import { onBeforeUnmount, onMounted, ref } from "vue";
@@ -49,7 +49,7 @@ onBeforeUnmount(() => window.clearTimeout(timer));
         </XhMessageFeedItem>
       </XhMessageFeedList>
     </XhMessageFeedViewport>
-    <XhMessageFeedScrollButton />
+    <XhMessageFeedScrollToEndTrigger />
     <!-- 一份会话只该有这一个活区：每条消息各开一个会互相打断 -->
     <XhMessageFeedLiveRegion>{{ announcement }}</XhMessageFeedLiveRegion>
   </XhMessageFeedRoot>

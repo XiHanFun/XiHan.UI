@@ -3,7 +3,7 @@
 import { getMotionOverride, setMotionOverride } from '@xihan-ui/motion'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, defineComponent, h, nextTick, ref } from 'vue'
-import { provideXhConfig, XhBadge, XhBreadcrumbRoot, XhButton, XhEmptyStateRoot, XhResultRoot, XhSpinner, XhTime } from '../src'
+import { provideXhConfig, XhBadge, XhBreadcrumbRoot, XhButton, XhEmptyStateRoot, XhSpinner, XhTimestamp } from '../src'
 
 let mounted: Array<() => void> = []
 
@@ -98,7 +98,7 @@ describe('provideXhConfig · 嵌套', () => {
     const Inner = defineComponent({
       setup() {
         provideXhConfig({ translations: { breadcrumb: { root: '面包屑' } } })
-        return () => [h(XhBreadcrumbRoot, () => '首页'), h(XhTime, { value, type: 'date' })]
+        return () => [h(XhBreadcrumbRoot, () => '首页'), h(XhTimestamp, { value, type: 'date' })]
       },
     })
     const host = mount(() => {
@@ -107,7 +107,7 @@ describe('provideXhConfig · 嵌套', () => {
     })
     expect(host.querySelector('nav')?.getAttribute('aria-label')).toBe('面包屑')
     // 外层给的 en 是 MM/DD/YYYY；被整份遮蔽的话这里会退回组件内建默认
-    expect(host.querySelector('[data-scope="time"]')?.textContent).toContain('/')
+    expect(host.querySelector('[data-scope="timestamp"]')?.textContent).toContain('/')
   })
 
   it('内层同名键压过外层，同一组件的其余文案键仍从外层继承', () => {
@@ -146,15 +146,14 @@ describe('provideXhConfig · size', () => {
       return () => [
         h(XhButton, () => '去'),
         h(XhEmptyStateRoot, () => '空'),
-        h(XhResultRoot, { status: 'success' }, () => '成'),
       ]
     })
-    const sizes = (): Array<string | null> => ['button', 'empty-state', 'result']
+    const sizes = (): Array<string | null> => ['button', 'empty-state']
       .map(scope => host.querySelector(`[data-scope="${scope}"]`)?.getAttribute('data-size') ?? null)
-    expect(sizes()).toEqual(['lg', 'lg', 'lg'])
+    expect(sizes()).toEqual(['lg', 'lg'])
     config.value = { size: 'sm' }
     await nextTick()
-    expect(sizes()).toEqual(['sm', 'sm', 'sm'])
+    expect(sizes()).toEqual(['sm', 'sm'])
   })
 })
 
@@ -165,8 +164,8 @@ describe('provideXhConfig · locale', () => {
     const host = mount(() => {
       provideXhConfig({ locale: 'en' })
       return () => [
-        h('div', { id: 'global' }, [h(XhTime, { value, type: 'date' })]),
-        h('div', { id: 'own' }, [h(XhTime, { value, type: 'date', locale: 'zh-CN' })]),
+        h('div', { id: 'global' }, [h(XhTimestamp, { value, type: 'date' })]),
+        h('div', { id: 'own' }, [h(XhTimestamp, { value, type: 'date', locale: 'zh-CN' })]),
       ]
     })
     // en 是 MM/DD/YYYY，zh-CN 是 YYYY-MM-DD

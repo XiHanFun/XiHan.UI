@@ -65,12 +65,12 @@ export const XhPromptInputRoot = defineComponent({
   },
 })
 
-export const XhPromptInputInputRow = defineComponent({
-  name: 'XhPromptInputInputRow',
+export const XhPromptInputControl = defineComponent({
+  name: 'XhPromptInputControl',
   setup(_, { slots }) {
     const ctx = usePromptInputContext()
     // 渲了这一层，输入框与按钮并排收在它里面，root 翻成竖排
-    return () => h('div', ctx.api.value.getInputRowProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getControlProps() as Record<string, unknown>, slots.default?.())
   },
 })
 

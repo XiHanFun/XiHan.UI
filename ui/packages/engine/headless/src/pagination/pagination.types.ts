@@ -22,7 +22,7 @@ export interface PaginationItemProps {
 }
 
 /** 省略位属性：哪一侧的省略位，由作者在部件上声明。至多两个，用它区分。 */
-export interface PaginationEllipsisProps {
+export interface PaginationEllipsisTriggerProps {
   side: PaginationEllipsisSide
 }
 
@@ -129,7 +129,7 @@ export interface PaginationApi<T extends PropTypes = PropTypes> {
   pageSizeOptions: number[]
   count: number
   totalPages: number
-  /** 页码序列，作者照着渲染 item 与 ellipsis。 */
+  /** 页码序列，作者照着渲染 item 与 ellipsis-trigger。 */
   pages: PaginationPage[]
   /** 同一串序列，但省略位带着被折叠的那几页——摊开省略号要靠它。 */
   pageItems: PaginationPageItem[]
@@ -153,7 +153,7 @@ export interface PaginationApi<T extends PropTypes = PropTypes> {
   getNextTriggerProps: () => T['button']
   getItemProps: (props: PaginationItemProps) => T['button']
   /** 省略位：可展开的按钮，摊开后列出被折叠的页码。 */
-  getEllipsisProps: (props: PaginationEllipsisProps) => T['button']
+  getEllipsisTriggerProps: (props: PaginationEllipsisTriggerProps) => T['button']
   /** 每页条数控制器：绑到一个原生 select 上，档位由作者按 pageSizeOptions 渲染成 option。 */
   getPageSizeSelectProps: () => T['select']
   getPositionerProps: () => T['element']

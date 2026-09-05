@@ -56,7 +56,6 @@ const EXPECTED = {
   'pagination': { content: ['floating'] },
   'popconfirm': { content: ['floating'] },
   'popover': { content: ['floating'] },
-  'popselect': { content: ['floating'] },
   'select': { content: ['floating'] },
   'side-nav': { 'branch-content': ['floating'] },
   // 拇指静止时是 raised，带 data-dragging 的那一档走 lifted：跟着手走的元素抬高一档，

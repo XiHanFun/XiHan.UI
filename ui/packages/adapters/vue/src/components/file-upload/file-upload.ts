@@ -148,11 +148,11 @@ export const XhFileUploadHiddenInput = defineComponent({
   },
 })
 
-export const XhFileUploadItemGroup = defineComponent({
-  name: 'XhFileUploadItemGroup',
+export const XhFileUploadList = defineComponent({
+  name: 'XhFileUploadList',
   setup(_, { slots }) {
     const ctx = useFileUploadContext()
-    return () => h('div', ctx.api.value.getItemGroupProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getListProps() as Record<string, unknown>, slots.default?.())
   },
 })
 

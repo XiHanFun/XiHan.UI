@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { accordionSuite, affixSuite, alertSuite, anchorSuite, approvalSuite, avatarGroupSuite, avatarSuite, backTopSuite, badgeSuite, breadcrumbSuite, buttonGroupSuite, buttonSuite, calendarSuite, cardSuite, carouselSuite, cascaderSuite, checkboxGroupSuite, checkboxSuite, clipboardSuite, codeViewSuite, collapsibleSuite, colorPickerSuite, comboboxSuite, contextMenuSuite, countdownSuite, dateFieldSuite, datePickerSuite, descriptionsSuite, dialogSuite, diffViewSuite, downloadTriggerSuite, drawerSuite, dynamicInputSuite, editableSuite, ellipsisSuite, emptyStateSuite, fieldsetSuite, fieldSuite, fileUploadSuite, flexSuite, floatButtonSuite, floatingPanelSuite, formSuite, gradientTextSuite, gridSuite, heatmapSuite, highlightSuite, hotkeysSuite, hoverCardSuite, iconSuite, iconWrapperSuite, imageCropperSuite, imageSuite, imageViewerSuite, infiniteScrollSuite, jsonViewerSuite, layoutSuite, listboxSuite, listSuite, loadingBarSuite, logSuite, markdownStreamSuite, marqueeSuite, masonrySuite, mentionSuite, menubarSuite, menuSuite, messageFeedSuite, navigationMenuSuite, notificationSuite, numberAnimationSuite, numberFieldSuite, pageHeaderSuite, paginationSuite, passwordInputSuite, pinInputSuite, popconfirmSuite, popoverSuite, popselectSuite, progressSuite, promptInputSuite, qrCodeSuite, questionFlowSuite, radioGroupSuite, ratingSuite, reasoningSuite, resizableSuite, resultSuite, runConformance, scrollAreaSuite, scrollbarSuite, segmentedSuite, selectSuite, separatorSuite, sideNavSuite, signaturePadSuite, skeletonSuite, sliderSuite, sortableSuite, spaceSuite, spinnerSuite, splitterSuite, statisticSuite, stepsSuite, switchSuite, tableSuite, tabsSuite, tagsInputSuite, tagSuite, textFieldSuite, timeFieldSuite, timelineSuite, timePickerSuite, timerSuite, timeSuite, toastSuite, toggleGroupSuite, toggleSuite, toolbarSuite, toolCallSuite, tooltipSuite, tourSuite, transferSuite, treeSelectSuite, treeSuite, typographySuite, virtualizerSuite, watermarkSuite } from '@xihan-ui/testing'
+import { accordionSuite, affixSuite, alertSuite, anchorSuite, approvalSuite, avatarGroupSuite, avatarSuite, backTopSuite, badgeSuite, breadcrumbSuite, buttonGroupSuite, buttonSuite, calendarSuite, cardSuite, carouselSuite, cascaderSuite, checkboxGroupSuite, checkboxSuite, clipboardSuite, codeViewSuite, collapsibleSuite, colorPickerSuite, comboboxSuite, contextMenuSuite, dateFieldSuite, datePickerSuite, descriptionsSuite, dialogSuite, diffViewSuite, downloadTriggerSuite, drawerSuite, editableSuite, emptyStateSuite, fieldArraySuite, fieldsetSuite, fieldSuite, fileUploadSuite, flexSuite, floatButtonSuite, floatingPanelSuite, formSuite, gradientTextSuite, gridSuite, heatmapSuite, highlightSuite, hotkeysSuite, hoverCardSuite, iconSuite, iconWrapperSuite, imageCropperSuite, imageSuite, imageViewerSuite, infiniteScrollSuite, jsonViewerSuite, layoutSuite, listboxSuite, listSuite, loadingBarSuite, logSuite, markdownStreamSuite, marqueeSuite, masonrySuite, mentionSuite, menubarSuite, menuSuite, messageFeedSuite, navigationMenuSuite, notificationSuite, numberAnimationSuite, numberFieldSuite, pageHeaderSuite, paginationSuite, passwordInputSuite, pinInputSuite, popconfirmSuite, popoverSuite, progressSuite, promptInputSuite, qrCodeSuite, questionFlowSuite, radioGroupSuite, ratingSuite, reasoningSuite, resizableSuite, runConformance, scrollAreaSuite, scrollbarSuite, segmentedSuite, selectSuite, separatorSuite, sideNavSuite, signaturePadSuite, skeletonSuite, sliderSuite, sortableSuite, spinnerSuite, splitterSuite, statisticSuite, stepsSuite, switchSuite, tableSuite, tabsSuite, tagsInputSuite, tagSuite, textFieldSuite, timeFieldSuite, timelineSuite, timePickerSuite, timerSuite, timestampSuite, toastSuite, toggleGroupSuite, toggleSuite, toolbarSuite, toolCallSuite, tooltipSuite, tourSuite, transferSuite, treeSelectSuite, treeSuite, truncateSuite, typographySuite, virtualizerSuite, watermarkSuite } from '@xihan-ui/testing'
 import { afterEach, describe, it } from 'vitest'
 import { createVueHarness } from './harness'
 
@@ -17,10 +17,9 @@ runConformance(
     avatarGroupSuite,
     backTopSuite,
     buttonGroupSuite,
-    countdownSuite,
     descriptionsSuite,
-    dynamicInputSuite,
-    ellipsisSuite,
+    fieldArraySuite,
+    truncateSuite,
     emptyStateSuite,
 
     flexSuite,
@@ -39,13 +38,11 @@ runConformance(
     numberAnimationSuite,
     pageHeaderSuite,
     popconfirmSuite,
-    popselectSuite,
     promptInputSuite,
     qrCodeSuite,
     questionFlowSuite,
     reasoningSuite,
     resizableSuite,
-    resultSuite,
     skeletonSuite,
 
     spinnerSuite,
@@ -103,7 +100,7 @@ runConformance(
     textFieldSuite,
     timeFieldSuite,
     timePickerSuite,
-    timeSuite,
+    timestampSuite,
     timelineSuite,
     toastSuite,
     toggleGroupSuite,
@@ -125,7 +122,6 @@ runConformance(
     treeSelectSuite,
     treeSuite,
     watermarkSuite,
-    spaceSuite,
     tagSuite,
     segmentedSuite,
     masonrySuite,

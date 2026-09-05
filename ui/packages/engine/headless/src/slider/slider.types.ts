@@ -103,7 +103,7 @@ export interface SliderMark {
 }
 
 /** 刻度部件自报家门：它代表哪个落点。 */
-export interface SliderMarkProps {
+export interface SliderTickProps {
   value: number
 }
 
@@ -146,11 +146,11 @@ export interface SliderApi<T extends PropTypes = PropTypes> {
   getRangeProps: () => T['element']
   getThumbProps: (index: number) => T['element']
   /** 刻度容器。 */
-  getMarksProps: () => T['element']
+  getTickGroupProps: () => T['element']
   /** 刻度点：轨道上的圆点，纯装饰。 */
-  getMarkProps: (props: SliderMarkProps) => T['element']
+  getTickProps: (props: SliderTickProps) => T['element']
   /** 刻度文案：点按把最近的滑块跳到这一档。 */
-  getMarkLabelProps: (props: SliderMarkProps) => T['element']
+  getTickLabelProps: (props: SliderTickProps) => T['element']
   getHiddenInputProps: (index: number) => T['input']
 }
 

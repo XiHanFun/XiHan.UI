@@ -373,7 +373,7 @@ export interface DatePickerApi<T extends PropTypes = PropTypes> {
   getPositionerProps: () => T['element']
   getContentProps: () => T['element']
   /** 快捷选项列（role=listbox）；没给 presets 时带 hidden。 */
-  getPresetsProps: () => T['element']
+  getPresetGroupProps: () => T['element']
   /** 一条快捷选项（role=option）：点按把整份日期写进选中值。 */
   getPresetProps: (props: DatePickerPresetProps) => T['element']
   /** 内嵌日历的挂载点，同时充当日历的根节点。 */

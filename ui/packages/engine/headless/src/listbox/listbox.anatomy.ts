@@ -8,8 +8,8 @@ export const listboxAnatomy = createAnatomy('listbox', [
   'item',
   'item-text',
   'item-indicator',
-  'item-group',
-  'item-group-label',
+  'group',
+  'group-label',
 ])
 
 const parts = listboxAnatomy.build()

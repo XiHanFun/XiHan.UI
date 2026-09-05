@@ -12,7 +12,7 @@ export type FlexGap = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
 export interface FlexProps {
   /** 主轴方向：horizontal 横排、vertical 竖排，缺省 horizontal。 */
   orientation?: Orientation
-  /** 交叉轴对齐：start / center / end / stretch / baseline，不写则由皮肤的缺省对齐决定。 */
+  /** 交叉轴对齐：start / center / end / stretch / baseline，不写则横排按中线对齐、竖排拉伸。 */
   align?: FlexAlign
   /** 主轴分布：start / center / end / between / around / evenly，不写则子项从主轴起点排起。 */
   justify?: FlexJustify
@@ -26,6 +26,8 @@ export interface FlexProps {
 
 export interface FlexApi<T extends PropTypes = PropTypes> {
   getRootProps: () => T['element']
+  /** 分隔符节点。它是装饰件，恒带 aria-hidden：一排里夹着的竖线被逐条念出来只会打断内容。 */
+  getSplitProps: () => T['element']
 }
 
 /** 读屏用的文案。本组件目前没有需要外露的文案，位先留着。 */

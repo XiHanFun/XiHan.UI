@@ -9,7 +9,7 @@ export const colorPickerAnatomy = createAnatomy('color-picker', [
   'swatch',
   'positioner',
   'content',
-  'area',
+  'saturation-area',
   'area-thumb',
   'channel-slider',
   'channel-slider-track',

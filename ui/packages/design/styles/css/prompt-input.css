@@ -46,7 +46,7 @@
 
   /* 写了输入行，root 就翻成竖排：输入框与按钮收进那一行，上下两侧腾给附件条与动作行。
      不写就是单行，输入框与按钮并排——两种写法的皮肤是同一份 */
-  [data-scope='prompt-input'][data-part='root']:has(> [data-scope='prompt-input'][data-part='input-row']) {
+  [data-scope='prompt-input'][data-part='root']:has(> [data-scope='prompt-input'][data-part='control']) {
     flex-direction: column;
     align-items: stretch;
   }
@@ -130,13 +130,13 @@
 
   /* 输入行承接单行写法下落在 root 上的那份几何：输入框与按钮并排、按钮贴着底边。
      它自己不画底也不画描边，边界仍由 root 表达 */
-  [data-scope='prompt-input'][data-part='input-row'] {
+  [data-scope='prompt-input'][data-part='control'] {
     display: flex;
     align-items: flex-end;
     gap: var(--xh-prompt-input-row-gap, var(--xh-_prompt-input-gap));
   }
 
-  [data-scope='prompt-input'][data-part='input-row'][hidden] {
+  [data-scope='prompt-input'][data-part='control'][hidden] {
     display: none;
   }
 

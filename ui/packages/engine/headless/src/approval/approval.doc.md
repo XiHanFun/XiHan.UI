@@ -37,7 +37,7 @@
 - 要弹窗就一条一个[对话框](./dialog)：`role="alertdialog"`、关掉 `closeOnEscape`，
   并把 `initialFocus` 设成本组件导出的 `APPROVAL_DENY_SELECTOR`——
   这样浮层只剩批准与拒绝两个出口，而 Escape 仍会冒泡到闸门上判拒绝。
-- 剩余时间的跳字交给[倒计时](./countdown)，判定权仍在本组件手里。
+- 剩余时间的跳字交给[计时器](./timer)，判定权仍在本组件手里。
   **别把倒计时直接当 `timer` 那个节点渲**：两套解剖打在同一节点上会互相盖，
   让 `timer` 做外层容器、倒计时住在它里面。
 - 要一次问好几件事：用[步骤条](./steps)或[走马灯](./carousel)串起若干个闸门，一步一个。

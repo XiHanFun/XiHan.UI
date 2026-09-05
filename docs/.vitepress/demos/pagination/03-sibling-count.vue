@@ -1,7 +1,7 @@
 <!-- 两侧页数 | sibling-count 决定当前页两侧各留几页，序列长度恒定，切页时省略号左右挪、按钮不抖 -->
 <script setup lang="ts">
 import {
-  XhPaginationEllipsis,
+  XhPaginationEllipsisTrigger,
   XhPaginationItem,
   XhPaginationNextTrigger,
   XhPaginationPrevTrigger,
@@ -20,7 +20,7 @@ import {
   >
     <XhPaginationPrevTrigger />
     <template v-for="(p, i) in pages" :key="`${p}-${i}`">
-      <XhPaginationEllipsis v-if="p === 'ellipsis'">…</XhPaginationEllipsis>
+      <XhPaginationEllipsisTrigger v-if="p === 'ellipsis'">…</XhPaginationEllipsisTrigger>
       <XhPaginationItem v-else :value="p">{{ p }}</XhPaginationItem>
     </template>
     <XhPaginationNextTrigger />
