@@ -94,7 +94,7 @@ XhMenuSub 内嵌一台子菜单：触发条目双重身份（父层方向键照�
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-menu>` |
-| Vue 组件 | `XhMenuArrow` `XhMenuContent` `XhMenuGroup` `XhMenuGroupLabel` `XhMenuItem` `XhMenuPositioner` `XhMenuRoot` `XhMenuSeparator` `XhMenuSub` `XhMenuSubTrigger` `XhMenuTrigger` |
+| Vue 组件 | `XhMenuArrow` `XhMenuContent` `XhMenuGroup` `XhMenuGroupLabel` `XhMenuItem` `XhMenuItemDescription` `XhMenuItemIndicator` `XhMenuItemText` `XhMenuPositioner` `XhMenuRoot` `XhMenuSeparator` `XhMenuSub` `XhMenuSubTrigger` `XhMenuTrigger` |
 | 组合式函数 | `useMenu` |
 | 状态机 | `menuMachine` |
 | 皮肤 | `@xihan-ui/styles/menu.css` |
@@ -103,7 +103,7 @@ XhMenuSub 内嵌一台子菜单：触发条目双重身份（父层方向键照�
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="menu"`：**`trigger`** · `positioner` · **`content`** · **`item`** · `separator` · `group` · `group-label` · `arrow`
+`data-scope="menu"`：**`trigger`** · `positioner` · **`content`** · **`item`** · `item-text` · `item-indicator` · `item-description` · `separator` · `group` · `group-label` · `arrow`
 
 ## Props
 
@@ -118,6 +118,9 @@ XhMenuSub 内嵌一台子菜单：触发条目双重身份（父层方向键照�
 | `dir` | `Direction` |  | 文字方向，默认 ltr。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定条目高亮用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定条目高度、内边距与字号档位。 |
+| `typeahead` | `boolean` |  | 首字符连打检索，默认开。 |
+| `disabled` | `boolean` |  | 整张菜单禁用：触发器不再展开，条目全转 aria-disabled。 |
+| `translations` | `Partial<MenuTranslations>` |  |  |
 | `submenu` | `boolean` |  | 本菜单是另一张菜单的子菜单：触发器渲染成父菜单的条目形态 （经 getSubmenuTriggerProps），缺省落位换到侧向，悬停触发缺省打开。 |
 | `openOnHover` | `boolean` |  | 悬停触发：进触发器延时展开、经安全三角离开才收。子菜单缺省开，普通菜单缺省关。 |
 | `hoverOpenDelay` | `number` |  | 悬停到展开的延时（ms），默认 100。 |
@@ -171,6 +174,7 @@ XhMenuSub 内嵌一台子菜单：触发条目双重身份（父层方向键照�
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `open` | `boolean` |  |
+| `disabled` | `boolean` | 整张菜单是否禁用。 |
 | `collection` | `readonly MenuNodeMeta[]` | collection 推出的条目元信息，按数据顺序排列；没给 collection 即空数组。 |
 | `focusedValue` | `string \| null` | 焦点锚点；收起时为 null。 |
 | `setOpen` | `(next: boolean) => void` |  |
@@ -178,6 +182,9 @@ XhMenuSub 内嵌一台子菜单：触发条目双重身份（父层方向键照�
 | `getPositionerProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |
 | `getItemProps` | `(props: MenuItemProps) => T['element']` |  |
+| `getItemTextProps` | `(props: MenuItemProps) => T['element']` |  |
+| `getItemIndicatorProps` | `(props: MenuItemProps) => T['element']` |  |
+| `getItemDescriptionProps` | `(props: MenuItemProps) => T['element']` |  |
 | `getSubmenuTriggerProps` | `(props: MenuItemProps) => T['element']` | 子菜单触发条目（submenu 模式）：既是父菜单里的一条 item（value 是它在父菜单 里的身份，父层的方向键与高亮照常认它），又是本子菜单的触发器（aria-haspopup、 悬停/点按/右方向键展开）。父层的选中会跳过带 aria-haspopup 的条目。 |
 | `getSeparatorProps` | `() => T['element']` |  |
 | `getGroupProps` | `(props: MenuGroupProps) => T['element']` |  |
@@ -209,10 +216,12 @@ XhMenuSub 内嵌一台子菜单：触发条目双重身份（父层方向键照�
 | `trigger` | `aria-controls` | `content` 部件的 id |
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
 | `trigger` | `aria-haspopup` | 'menu' |
-| `content` | `aria-labelledby` | `trigger` 部件的 id |
+| `content` | `aria-label` | props.translations.content |
+| `content` | `aria-labelledby` | `trigger` 部件的 id \| undefined |
 | `content` | `role` | 'menu' |
 | `item` | `aria-disabled` | 'true' \| 'false' |
 | `item` | `role` | 'menuitem' |
+| `item-indicator` | `aria-hidden` | 'true' |
 | `separator` | `aria-orientation` | 'horizontal' |
 | `separator` | `role` | 'separator' |
 | `group` | `aria-labelledby` | `group-label` 部件的 id |
@@ -234,6 +243,7 @@ XhMenuSub 内嵌一台子菜单：触发条目双重身份（父层方向键照�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `trigger` | `data-state` | 'open' \| 'closed' |
 | `positioner` | `data-hidden` | ''（条件成立时才出现） |
 | `positioner` | `data-placement` | 定位引擎算出的实际落位 |
@@ -253,7 +263,7 @@ XhMenuSub 内嵌一台子菜单：触发条目双重身份（父层方向键照�
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-menu-arrow-size` · `--xh-menu-border` · `--xh-menu-content-bg` · `--xh-menu-content-fg` · `--xh-menu-content-gap` · `--xh-menu-content-px` · `--xh-menu-content-py` · `--xh-menu-content-radius` · `--xh-menu-content-shadow` · `--xh-menu-group-gap` · `--xh-menu-group-label-fg` · `--xh-menu-group-label-font-size` · `--xh-menu-group-label-font-weight` · `--xh-menu-group-label-px` · `--xh-menu-group-label-py` · `--xh-menu-icon-size` · `--xh-menu-item-active-font-weight` · `--xh-menu-item-bg-active` · `--xh-menu-item-bg-hover` · `--xh-menu-item-fg` · `--xh-menu-item-font-size` · `--xh-menu-item-gap` · `--xh-menu-item-leading` · `--xh-menu-item-px` · `--xh-menu-item-py` · `--xh-menu-item-radius` · `--xh-menu-layer` · `--xh-menu-max-h` · `--xh-menu-max-w` · `--xh-menu-min-w` · `--xh-menu-separator-color` · `--xh-menu-separator-my` · `--xh-menu-separator-thickness` · `--xh-menu-trigger-bg-active`
+`--xh-menu-arrow-size` · `--xh-menu-border` · `--xh-menu-content-bg` · `--xh-menu-content-fg` · `--xh-menu-content-gap` · `--xh-menu-content-px` · `--xh-menu-content-py` · `--xh-menu-content-radius` · `--xh-menu-content-shadow` · `--xh-menu-group-gap` · `--xh-menu-group-label-fg` · `--xh-menu-group-label-font-size` · `--xh-menu-group-label-font-weight` · `--xh-menu-group-label-px` · `--xh-menu-group-label-py` · `--xh-menu-icon-size` · `--xh-menu-item-active-font-weight` · `--xh-menu-item-bg-active` · `--xh-menu-item-bg-hover` · `--xh-menu-item-description-fg` · `--xh-menu-item-description-font-size` · `--xh-menu-item-fg` · `--xh-menu-item-font-size` · `--xh-menu-item-gap` · `--xh-menu-item-indicator-fg` · `--xh-menu-item-indicator-size` · `--xh-menu-item-leading` · `--xh-menu-item-px` · `--xh-menu-item-py` · `--xh-menu-item-radius` · `--xh-menu-layer` · `--xh-menu-max-h` · `--xh-menu-max-w` · `--xh-menu-min-w` · `--xh-menu-separator-color` · `--xh-menu-separator-my` · `--xh-menu-separator-thickness` · `--xh-menu-trigger-bg-active`
 
 ## 动效
 

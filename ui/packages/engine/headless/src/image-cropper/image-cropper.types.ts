@@ -40,6 +40,10 @@ export interface ImageCropperZoomChangeDetails {
   zoom: number
 }
 
+export interface ImageCropperRotationChangeDetails {
+  rotation: number
+}
+
 /** 把手自报家门：它拉的是哪个方位。 */
 export interface ImageCropperHandleProps {
   position: ImageCropperHandlePosition
@@ -69,11 +73,24 @@ export interface ImageCropperSchema extends MachineSchema {
     /** 显示缩放倍率，默认 1。给定即受控：setZoom 只发 onZoomChange。 */
     zoom?: number
     defaultZoom?: number
+    /** 缩放滑杆的下限，默认 1。只约束滑杆，不夹取 setZoom。 */
+    minZoom?: number
+    /** 缩放滑杆的上限，默认 3。只约束滑杆，不夹取 setZoom。 */
+    maxZoom?: number
+    /** 缩放滑杆的步长，默认 0.01。 */
+    zoomStep?: number
     /**
-     * 显示旋转角度，单位度，默认 0。
+     * 显示旋转角度，单位度，默认 0。给定即受控：setRotation 只发 onRotationChange。
      * 缩放与旋转只改图片与裁切框的呈现，裁切矩形与源图像素的对应关系不变。
      */
     rotation?: number
+    defaultRotation?: number
+    /** 旋转滑杆的下限，默认 -180。 */
+    minRotation?: number
+    /** 旋转滑杆的上限，默认 180。 */
+    maxRotation?: number
+    /** 旋转滑杆的步长，默认 1。 */
+    rotationStep?: number
     /** 裁切框外形，默认 rect。 */
     shape?: ImageCropperShape
     /** 禁用：裁切框与把手退出 Tab 序列，指针与键盘都改不动，也不参与表单提交。 */
@@ -89,12 +106,16 @@ export interface ImageCropperSchema extends MachineSchema {
     onValueChangeEnd?: (details: ImageCropperValueChangeEndDetails) => void
     /** 缩放变化意图；受控时是唯一出口。 */
     onZoomChange?: (details: ImageCropperZoomChangeDetails) => void
+    /** 旋转变化意图；受控时是唯一出口。 */
+    onRotationChange?: (details: ImageCropperRotationChangeDetails) => void
   }
   context: {
     /** 当前裁切矩形，自然像素。 */
     value: ImageCropperRect
     /** 当前缩放倍率。 */
     zoom: number
+    /** 当前旋转角度，单位度。 */
+    rotation: number
     /** 图片自然尺寸，由 image 部件的 load 事件报进来；未加载时是 0×0。 */
     natural: ImageCropperSize
     /**
@@ -114,6 +135,7 @@ export interface ImageCropperSchema extends MachineSchema {
     /** 整份赋值（作者的命令式出口）；写入前照样夹进图片、吃最小尺寸与比例。 */
     | { type: 'VALUE.SET', value: ImageCropperRect }
     | { type: 'ZOOM.SET', zoom: number }
+    | { type: 'ROTATE.SET', rotation: number }
     /** 图片加载完成，报出自然尺寸；此时裁切矩形还是空的就铺一个居中的初值。 */
     | { type: 'IMAGE.LOAD', size: ImageCropperSize }
     | { type: 'CROP.NUDGE', dx: number, dy: number }
@@ -134,6 +156,7 @@ export interface ImageCropperSchema extends MachineSchema {
     | 'nudgeHandle'
     | 'resetToDefault'
     | 'setNatural'
+    | 'setRotation'
     | 'setValue'
     | 'setZoom'
     | 'trackDrag'
@@ -163,6 +186,7 @@ export interface ImageCropperApi<T extends PropTypes = PropTypes> {
   getCropRect: () => ImageCropperRect
   setValue: (next: ImageCropperRect) => void
   setZoom: (next: number) => void
+  setRotation: (next: number) => void
   getRootProps: () => T['element']
   getViewportProps: () => T['element']
   getImageProps: () => T['img']
@@ -170,6 +194,10 @@ export interface ImageCropperApi<T extends PropTypes = PropTypes> {
   getCropHandleProps: (props: ImageCropperHandleProps) => T['button']
   /** 裁切框里的构图参考线，纯装饰。 */
   getGridProps: () => T['element']
+  /** 缩放滑杆，原生 range 输入。 */
+  getZoomSliderProps: () => T['input']
+  /** 旋转滑杆，原生 range 输入。 */
+  getRotateSliderProps: () => T['input']
   getHiddenInputProps: () => T['input']
 }
 
@@ -188,4 +216,8 @@ export interface ImageCropperTranslations {
   handleBottom: string
   handleBottomLeft: string
   handleLeft: string
+  /** 缩放滑杆的可及名。 */
+  zoomSlider: string
+  /** 旋转滑杆的可及名。 */
+  rotateSlider: string
 }

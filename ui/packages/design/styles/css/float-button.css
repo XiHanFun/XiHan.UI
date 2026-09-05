@@ -31,8 +31,17 @@
 
     --xh-_float-button-offset: var(--xh-space-6);
     /* 触发器与展开的每一条动作共用这两个私有槽，换档只改这里 */
-    --xh-_float-button-size: var(--xh-float-button-size, var(--xh-control-h-lg));
+    --xh-_float-button-size: var(--xh-control-h-lg);
     --xh-_float-button-radius: var(--xh-float-button-radius, var(--xh-shape-pill));
+
+    /* 形态的落点：没写 data-variant 时这六支保持缺省档的取值，触发器读的是
+       「使用者令牌 → 这六支 → 语义令牌」三级，使用者令牌永远排在形态之前 */
+    --xh-_float-button-bg: var(--xh-bg-surface-raised);
+    --xh-_float-button-bg-hover: var(--xh-bg-subtle-hover);
+    --xh-_float-button-bg-active: var(--xh-bg-subtle-active);
+    --xh-_float-button-fg: var(--xh-_tone-fg, var(--xh-fg-default));
+    --xh-_float-button-border: var(--xh-border-control);
+    --xh-_float-button-border-hover: var(--xh-border-control-hover);
 
     position: fixed;
     z-index: var(--xh-float-button-layer, var(--xh-layer-sticky));
@@ -73,6 +82,55 @@
     --xh-_float-button-radius: var(--xh-float-button-radius, var(--xh-shape-control));
   }
 
+  /* —— 尺寸 —— */
+  /* 缺省档写在上面的基础规则里，与 lg 同值：悬浮钮起步就比行内按钮大一号 */
+  [data-scope='float-button'][data-part='root'][data-size='sm'] {
+    --xh-_float-button-size: var(--xh-control-h-sm);
+  }
+
+  [data-scope='float-button'][data-part='root'][data-size='md'] {
+    --xh-_float-button-size: var(--xh-control-h-md);
+  }
+
+  [data-scope='float-button'][data-part='root'][data-size='lg'] {
+    --xh-_float-button-size: var(--xh-control-h-lg);
+  }
+
+  /* —— 形态 ——
+     与回到顶部那颗钮逐档同形：两颗都是钉在视口角落、浮在内容之上的圆钮。
+     缺省档（没写 data-variant）不进这几块，取值仍是抬起的面 + 一圈可操作区描边 */
+  [data-scope='float-button'][data-part='root'][data-variant='solid'] {
+    --xh-_float-button-bg: var(--xh-_tone, var(--xh-bg-brand));
+    --xh-_float-button-bg-hover: var(--xh-_tone-hover, var(--xh-bg-brand-hover));
+    --xh-_float-button-bg-active: var(--xh-_tone-active, var(--xh-bg-brand-active));
+    --xh-_float-button-fg: var(--xh-_tone-on, var(--xh-fg-on-brand));
+    --xh-_float-button-border: transparent;
+    --xh-_float-button-border-hover: transparent;
+  }
+
+  [data-scope='float-button'][data-part='root'][data-variant='subtle'] {
+    --xh-_float-button-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+    --xh-_float-button-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
+    --xh-_float-button-bg-active: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
+    --xh-_float-button-fg: var(--xh-_tone-fg, var(--xh-fg-default));
+    --xh-_float-button-border: transparent;
+    --xh-_float-button-border-hover: transparent;
+  }
+
+  /* 面留着：钮浮在正文之上，透空的面在任何内容上都读不出边界 */
+  [data-scope='float-button'][data-part='root'][data-variant='outline'] {
+    --xh-_float-button-border: var(--xh-_tone-border-control, var(--xh-border-control));
+    --xh-_float-button-border-hover: var(--xh-_tone-border-control, var(--xh-border-control-hover));
+  }
+
+  [data-scope='float-button'][data-part='root'][data-variant='ghost'] {
+    --xh-_float-button-bg: transparent;
+    --xh-_float-button-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle-hover));
+    --xh-_float-button-bg-active: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-active));
+    --xh-_float-button-border: transparent;
+    --xh-_float-button-border-hover: transparent;
+  }
+
   /* —— 触发器 —— */
   /* 里面通常只放一个图标，宽高同取一档尺寸 */
   [data-scope='float-button'][data-part='trigger'] {
@@ -80,14 +138,14 @@
     flex: none;
     align-items: center;
     justify-content: center;
-    inline-size: var(--xh-_float-button-size);
-    block-size: var(--xh-_float-button-size);
+    inline-size: var(--xh-float-button-size, var(--xh-_float-button-size));
+    block-size: var(--xh-float-button-size, var(--xh-_float-button-size));
     padding: 0;
-    border: var(--xh-stroke-thin) solid var(--xh-float-button-border, var(--xh-border-control));
+    border: var(--xh-stroke-thin) solid var(--xh-float-button-border, var(--xh-_float-button-border));
     border-radius: var(--xh-_float-button-radius);
-    /* 使用者令牌排在缺省之前：写了覆盖钩子就以它为准，没写才退到中性缺省 */
-    background: var(--xh-float-button-bg, var(--xh-bg-surface-raised));
-    color: var(--xh-float-button-fg, var(--xh-fg-default));
+    /* 使用者令牌排在形态之前：写了覆盖钩子就以它为准，没写才按 data-variant 那一档取值 */
+    background: var(--xh-float-button-bg, var(--xh-_float-button-bg));
+    color: var(--xh-float-button-fg, var(--xh-_float-button-fg));
     /* 浮在内容之上，靠投影与页面拉开层次 */
     box-shadow: var(--xh-float-button-shadow, var(--xh-elevation-sheet));
     cursor: pointer;
@@ -100,14 +158,14 @@
   /* 悬停只在能用指针的设备上生效，触摸端不留一个按不掉的悬停态 */
   @media (hover: hover) {
     [data-scope='float-button'][data-part='trigger']:not([data-disabled]):hover {
-      border-color: var(--xh-float-button-border-hover, var(--xh-border-control-hover));
-      background: var(--xh-float-button-bg-hover, var(--xh-bg-subtle-hover));
+      border-color: var(--xh-float-button-border-hover, var(--xh-_float-button-border-hover));
+      background: var(--xh-float-button-bg-hover, var(--xh-_float-button-bg-hover));
     }
   }
 
   /* 换底之外再压一档：钮浮在内容之上，缩放不牵动页面排版 */
   [data-scope='float-button'][data-part='trigger']:not([data-disabled]):active {
-    background: var(--xh-float-button-bg-active, var(--xh-bg-subtle-active));
+    background: var(--xh-float-button-bg-active, var(--xh-_float-button-bg-active));
     scale: var(--xh-motion-scale-press);
   }
 
@@ -137,8 +195,8 @@
   /* 展开的每一条动作与触发器同一副身量：它们是一排里的同类，作者只管往里放按钮 */
   [data-scope='float-button'][data-part='list'] > * {
     flex: none;
-    inline-size: var(--xh-_float-button-size);
-    block-size: var(--xh-_float-button-size);
+    inline-size: var(--xh-float-button-size, var(--xh-_float-button-size));
+    block-size: var(--xh-float-button-size, var(--xh-_float-button-size));
     border-radius: var(--xh-_float-button-radius);
     /* 逐条依次冒出来，离触发器最近的那条先到。backwards 让每条在自己那份延迟里保持起始帧 */
     animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;

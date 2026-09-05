@@ -74,4 +74,6 @@ export interface LoadingBarApi<T extends PropTypes = PropTypes> {
   getRootProps: () => T['element']
   getTrackProps: () => T['element']
   getRangeProps: () => T['element']
+  /** 进度段末端那道亮边。纯装饰，作者不渲染它时条子照旧成立。 */
+  getPegProps: () => T['element']
 }

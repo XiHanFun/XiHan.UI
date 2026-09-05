@@ -1,4 +1,4 @@
-import type { Size } from '@xihan-ui/core'
+import type { Direction, Size, Tone } from '@xihan-ui/core'
 import type { CollapsibleSchema } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
@@ -15,7 +15,9 @@ export const XhCollapsibleRoot = defineComponent({
     open: { type: Boolean, default: undefined },
     defaultOpen: Boolean,
     disabled: Boolean,
+    tone: { type: String as PropType<Tone>, default: undefined },
     size: { type: String as PropType<Size>, default: undefined },
+    dir: { type: String as PropType<Direction>, default: undefined },
   },
   // open-change 携带 { open }，update:open 携带裸布尔
   emits: {
@@ -30,6 +32,15 @@ export const XhCollapsibleRoot = defineComponent({
     const ctx = useCollapsible(props as CollapsibleProps, notify)
     provideCollapsible(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+/** 触发器与其同排内容住的那一行；只写触发器时可以不用它 */
+export const XhCollapsibleHeader = defineComponent({
+  name: 'XhCollapsibleHeader',
+  setup(_, { slots }) {
+    const ctx = useCollapsibleContext()
+    return () => h('div', ctx.api.value.getHeaderProps() as Record<string, unknown>, slots.default?.())
   },
 })
 

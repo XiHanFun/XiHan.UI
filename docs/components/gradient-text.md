@@ -16,6 +16,7 @@
 - 组件是行内的，可以只包住整句话里的几个字，字号字重由外面的文字决定。
 - `from` / `to` 收颜色值并落成根上的 CSS 变量，写令牌或写具体色值都行；不给就用品牌色族。
 - `direction` 收的是档位——四条边加四个角共八档，不收任意角度。
+- `tone` 换成六族语气之一，两端自动取该族的主色与压深一档；写了 `from` / `to` 就以它们为准。
 
 ## 示例
 
@@ -65,6 +66,7 @@ direction 收的是档位，四条边加四个角共八档，逐档对应 CSS �
 | `direction` | `GradientTextDirection` |  | 渐变走向档位，缺省 to-right。 |
 | `from` | `string` |  | 起点颜色，写成 CSS 变量交给皮肤；不给则用品牌色族。 |
 | `to` | `string` |  | 终点颜色，写成 CSS 变量交给皮肤；不给则用品牌色族。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，两端取该族颜色；写了 from / to 即让位。 |
 
 ## connect API
 
@@ -91,6 +93,7 @@ direction 收的是档位，四条边加四个角共八档，逐档对应 CSS �
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-direction` | props.direction |
+| `root` | `data-tone` | props.tone |
 
 ## CSS 变量
 

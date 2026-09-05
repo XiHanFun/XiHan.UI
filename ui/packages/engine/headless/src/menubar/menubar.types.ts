@@ -47,8 +47,16 @@ export interface MenubarNode {
   value: string
   /** 展示文本，也是菜单内连打检索的取字处；缺省退回 value。 */
   label?: string
+  /** 副文本，落进 item-description 部件；只在条目上读。 */
+  description?: string
   /** 禁用：方向键跳过它，但它仍可聚焦、仍是导航起点。 */
   disabled?: boolean
+  /** 所属分组的身份；相邻同值的条目并成一个 group。只在条目上读。 */
+  group?: string
+  /** 本组的标题文本，写在组内任意一条上即可。只在条目上读。 */
+  groupLabel?: string
+  /** 本条之前画一条分隔线；写在首条上不产出分隔线。只在条目上读。 */
+  separatorBefore?: boolean
   /** 这张菜单里的条目；只在顶层节点上读。 */
   items?: MenubarNode[]
 }
@@ -58,7 +66,15 @@ export interface MenubarNodeMeta {
   value: string
   /** node.label ?? node.value，恒为字符串。 */
   label: string
+  /** 副文本原样透传，没写即为 null。 */
+  description: string | null
   disabled: boolean
+  /** 分组身份，没写即为 null。 */
+  group: string | null
+  /** 分组标题，没写即为 null。 */
+  groupLabel: string | null
+  /** 本条之前是否画分隔线。 */
+  separatorBefore: boolean
   /** 这张菜单里的条目元信息；条目自身恒为空数组。 */
   items: readonly MenubarNodeMeta[]
 }
@@ -225,9 +241,11 @@ export interface MenubarApi<T extends PropTypes = PropTypes> {
   getItemProps: (props: MenubarItemProps) => T['element']
   getItemTextProps: (props: MenubarItemProps) => T['element']
   getItemIndicatorProps: (props: MenubarItemProps) => T['element']
+  getItemDescriptionProps: (props: MenubarItemProps) => T['element']
   getSeparatorProps: () => T['element']
   getGroupProps: (props: MenubarGroupProps) => T['element']
   getGroupLabelProps: (props: MenubarGroupProps) => T['element']
+  getArrowProps: (props: MenubarContentProps) => T['element']
 }
 
 /** 读屏用的文案，默认英文。 */

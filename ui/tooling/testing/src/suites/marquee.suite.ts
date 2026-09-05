@@ -48,12 +48,30 @@ export const marqueeSuite: ConformanceSuite = {
             'data-direction': 'left',
             'data-orientation': 'horizontal',
             'data-pause-on-hover': null,
+            'data-paused': null,
             'data-auto-fill': null,
           },
         },
       },
       steps: [
         { kind: 'raw', why: '速度没给时根上不该出现那条变量；快照不采集 style', run: expectSpeed(null) },
+      ],
+    },
+    {
+      name: '受控暂停：paused 翻真落成 data-paused，翻假当场撤掉',
+      spec: { apg: APG },
+      props: { paused: true },
+      initial: {
+        parts: { root: { 'data-paused': '' } },
+      },
+      steps: [
+        {
+          kind: 'setProps',
+          props: { paused: false },
+          expect: {
+            parts: { root: { 'data-paused': null } },
+          },
+        },
       ],
     },
     {

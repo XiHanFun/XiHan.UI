@@ -63,6 +63,11 @@ export function connectAlert<T extends PropTypes>(
       'aria-hidden': true,
     }),
 
+    // 文本列只圈出标题与说明这一列，可及名字仍由 root 的 labelledby / describedby 指向两者
+    getContentProps: () => normalize.element({
+      ...parts.content.attrs,
+    }),
+
     getTitleProps: () => normalize.element({
       ...parts.title.attrs,
       id: ids.title,
@@ -71,6 +76,11 @@ export function connectAlert<T extends PropTypes>(
     getDescriptionProps: () => normalize.element({
       ...parts.description.attrs,
       id: ids.description,
+    }),
+
+    // 操作槽只圈出按钮区，按钮本身的语义归作者（或 Button 组件）
+    getActionProps: () => normalize.element({
+      ...parts.action.attrs,
     }),
 
     getCloseTriggerProps: () => normalize.button({

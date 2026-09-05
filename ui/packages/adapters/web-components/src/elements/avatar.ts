@@ -1,4 +1,4 @@
-import type { Size } from '@xihan-ui/core'
+import type { Size, Tone } from '@xihan-ui/core'
 import type { AvatarSchema, AvatarStatus, AvatarStatusChangeDetails } from '@xihan-ui/headless'
 import { avatarAnatomy, avatarMachine, avatarMeta, connectAvatar } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
@@ -15,8 +15,9 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @attr {string} src - 图片地址；缺省即直接落回退态
  * @attr {string} alt - 图片替代文本，原样写到 image 节点上
  * @attr {'sm'|'md'|'lg'} size - 尺寸档位，缺省 md
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气：换淡底与回退字的配色族
  * @fires status-change - 加载状态变化；detail 为 `{ status: 'loading' | 'loaded' | 'error' }`
- * @csspart root - 头像根容器，承载 data-state/data-size
+ * @csspart root - 头像根容器，承载 data-state/data-size/data-tone
  * @csspart image - 图片节点，必须是原生 img；src/alt 由宿主写入，未就绪时带 hidden
  * @csspart fallback - 图片之外的回退内容，图片就绪后带 hidden
  */
@@ -28,11 +29,13 @@ export class XhAvatarElement extends XhElement {
     src: { converter: STRING_CONVERTER },
     alt: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
+    tone: { converter: STRING_CONVERTER },
   }
 
   declare src?: string
   declare alt?: string
   declare size?: Size
+  declare tone?: Tone
 
   private readonly notify = (details: AvatarStatusChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('status-change', { detail: details, bubbles: true, composed: true }))
@@ -45,6 +48,7 @@ export class XhAvatarElement extends XhElement {
       src: this.src,
       alt: this.alt,
       size: this.size,
+      tone: this.tone,
       onStatusChange: this.notify,
     }
   }

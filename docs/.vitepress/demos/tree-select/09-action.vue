@@ -1,4 +1,4 @@
-<!-- 浮层里的操作区 | content 里除了树还能放别的：在浮层内点按钮不算点在外面，浮层不会因此收起 -->
+<!-- 浮层里的操作区 | footer 写在 content 里、tree 的兄弟：它不进 role=tree 的拥有关系，方向键也走不到；在浮层内点按钮不算点在外面，浮层不会因此收起 -->
 <script setup lang="ts">
 import {
   XhTreeSelectBranch,
@@ -8,6 +8,7 @@ import {
   XhTreeSelectBranchTrigger,
   XhTreeSelectContent,
   XhTreeSelectControl,
+  XhTreeSelectFooter,
   XhTreeSelectIndicator,
   XhTreeSelectItem,
   XhTreeSelectItemIndicator,
@@ -74,11 +75,11 @@ const files = [
           </XhTreeSelectBranch>
         </XhTreeSelectTree>
 
-        <div style="display: flex; gap: 8px; padding: 8px 4px 4px">
+        <XhTreeSelectFooter>
           <button type="button" @click="setExpandedValue(['docs', 'assets'])">全部展开</button>
           <button type="button" @click="setExpandedValue([])">全部收起</button>
           <button type="button" :disabled="!canClear" @click="clear()">清空</button>
-        </div>
+        </XhTreeSelectFooter>
       </XhTreeSelectContent>
     </XhTreeSelectPositioner>
   </XhTreeSelectRoot>

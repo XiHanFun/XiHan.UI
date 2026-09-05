@@ -87,6 +87,11 @@ export interface SortableSchema extends MachineSchema {
     delta: DndDelta
     /** 拾起那一刻各项的矩形快照，下标与 DOM 顺序对齐。 */
     rects: DndRect[]
+    /**
+     * 拾起那一刻容器左上角在视口里的位置，已减去容器自身的滚动量。
+     * 落点线据此把项的矩形换算成容器内坐标；没在拖是 null。
+     */
+    rootOrigin: DndDelta | null
     /** 送进 aria-live 的那句话。 */
     announcement: string
   }
@@ -149,5 +154,7 @@ export interface SortableApi<T extends PropTypes = PropTypes> {
   getRootProps: () => T['element']
   getItemProps: (props: SortableItemProps) => T['element']
   getItemDragTriggerProps: (props: SortableItemProps) => T['element']
+  /** 落点线：拖动中且落点与起点不同一位时才在场，位置由内联样式给出。 */
+  getDropIndicatorProps: () => T['element']
   getLiveRegionProps: () => T['element']
 }

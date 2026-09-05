@@ -61,7 +61,7 @@ size 换整条路径的字号与各层之间的间距，不传 size 即默认档
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-breadcrumb>` |
-| Vue 组件 | `XhBreadcrumbEllipsis` `XhBreadcrumbItem` `XhBreadcrumbLink` `XhBreadcrumbList` `XhBreadcrumbRoot` `XhBreadcrumbSeparator` |
+| Vue 组件 | `XhBreadcrumbEllipsis` `XhBreadcrumbItem` `XhBreadcrumbLink` `XhBreadcrumbLinkIcon` `XhBreadcrumbList` `XhBreadcrumbRoot` `XhBreadcrumbSeparator` |
 | 组合式函数 | `useBreadcrumb` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/breadcrumb.css` |
@@ -70,13 +70,15 @@ size 换整条路径的字号与各层之间的间距，不传 size 即默认档
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="breadcrumb"`：**`root`** · **`list`** · **`item`** · **`link`** · `separator` · `ellipsis`
+`data-scope="breadcrumb"`：**`root`** · **`list`** · **`item`** · **`link`** · `link-icon` · `separator` · `ellipsis`
 
 ## Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `collection` | `readonly BreadcrumbNode[]` |  | 层级数据，文字、链接与当前页的事实源。 缺省即回到「层级逐个写成部件」的老路。 |
 | `dir` | `Direction` |  | 文字方向，只作用于排版；作者没给就不写。 |
+| `maxItems` | `number` |  | 最多展开几层，超出的中间层折成一个省略位；不给即全列。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
 | `translations` | `Partial<BreadcrumbTranslations>` |  |  |
@@ -87,10 +89,13 @@ size 换整条路径的字号与各层之间的间距，不传 size 即默认档
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
+| `collection` | `readonly BreadcrumbNodeMeta[]` | collection 推出的层级元信息，按数据顺序排列；没给 collection 即空数组。 |
+| `items` | `readonly BreadcrumbItem[]` | 按 maxItems 折叠后的序列，省略位自带被折叠的那几层；没给 collection 即空数组。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getListProps` | `() => T['element']` |  |
 | `getItemProps` | `() => T['element']` |  |
 | `getLinkProps` | `(props: BreadcrumbLinkProps) => T['element']` |  |
+| `getLinkIconProps` | `() => T['element']` |  |
 | `getSeparatorProps` | `() => T['element']` |  |
 | `getEllipsisProps` | `() => T['element']` |  |
 
@@ -112,6 +117,7 @@ size 换整条路径的字号与各层之间的间距，不传 size 即默认档
 | `root` | `aria-label` | props.translations?.root |
 | `link` | `aria-current` | 'page' \| undefined |
 | `link` | `aria-disabled` | 'true' \| 'false' |
+| `link-icon` | `aria-hidden` | 'true' |
 | `separator` | `aria-hidden` | 'true' |
 | `ellipsis` | `aria-hidden` | 'true' |
 
@@ -133,7 +139,7 @@ size 换整条路径的字号与各层之间的间距，不传 size 即默认档
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-breadcrumb-ellipsis-size` · `--xh-breadcrumb-fg` · `--xh-breadcrumb-font-size` · `--xh-breadcrumb-gap` · `--xh-breadcrumb-icon-size` · `--xh-breadcrumb-leading` · `--xh-breadcrumb-link-bg-hover` · `--xh-breadcrumb-link-fg-current` · `--xh-breadcrumb-link-fg-hover` · `--xh-breadcrumb-link-font-weight-current` · `--xh-breadcrumb-link-gap` · `--xh-breadcrumb-link-max-w` · `--xh-breadcrumb-link-px` · `--xh-breadcrumb-link-radius` · `--xh-breadcrumb-separator-fg` · `--xh-breadcrumb-separator-size`
+`--xh-breadcrumb-ellipsis-size` · `--xh-breadcrumb-fg` · `--xh-breadcrumb-font-size` · `--xh-breadcrumb-gap` · `--xh-breadcrumb-icon-size` · `--xh-breadcrumb-leading` · `--xh-breadcrumb-link-bg-hover` · `--xh-breadcrumb-link-fg-current` · `--xh-breadcrumb-link-fg-hover` · `--xh-breadcrumb-link-font-weight-current` · `--xh-breadcrumb-link-gap` · `--xh-breadcrumb-link-icon-size` · `--xh-breadcrumb-link-max-w` · `--xh-breadcrumb-link-px` · `--xh-breadcrumb-link-radius` · `--xh-breadcrumb-separator-fg` · `--xh-breadcrumb-separator-size`
 
 ## 动效
 

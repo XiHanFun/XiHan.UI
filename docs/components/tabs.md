@@ -112,7 +112,7 @@ root 按书写顺序渲染子节点：把面板写在 list 前面，标签栏就
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-tabs>` |
-| Vue 组件 | `XhTabsContent` `XhTabsList` `XhTabsLiveRegion` `XhTabsRoot` `XhTabsTabDragTrigger` `XhTabsTrigger` |
+| Vue 组件 | `XhTabsContent` `XhTabsIndicator` `XhTabsList` `XhTabsLiveRegion` `XhTabsRoot` `XhTabsSeparator` `XhTabsTabDragTrigger` `XhTabsTrigger` |
 | 组合式函数 | `useTabs` |
 | 状态机 | `tabsMachine` |
 | 皮肤 | `@xihan-ui/styles/tabs.css` |
@@ -121,7 +121,7 @@ root 按书写顺序渲染子节点：把面板写在 list 前面，标签栏就
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="tabs"`：`root` · **`list`** · **`trigger`** · **`content`** · `tab-drag-trigger` · `live-region`
+`data-scope="tabs"`：`root` · **`list`** · **`trigger`** · `indicator` · `separator` · **`content`** · `tab-drag-trigger` · `live-region`
 
 ## Props
 
@@ -139,6 +139,8 @@ root 按书写顺序渲染子节点：把面板写在 list 前面，标签栏就
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `reorderable` | `boolean` |  | 标签可以拖着换位。整个标签都是拖动源，不另出把手。 顺序不进机器：collection 是 prop，库没有一份自己的标签序可写，只发 onTabMove。 |
 | `onTabMove` | `(details: TabsMoveDetails) => void` |  |  |
+| `closable` | `boolean` |  | 标签可关闭：trigger 上按 Delete / Backspace 即发 onTabClose。 库不持有标签序，只发意图，删不删由数据源那边决定。 |
+| `onTabClose` | `(details: TabsCloseDetails) => void` |  | 标签被关闭。 |
 | `translations` | `Partial<TabsTranslations>` |  |  |
 | `onValueChange` | `(details: TabsValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
 
@@ -150,6 +152,7 @@ root 按书写顺序渲染子节点：把面板写在 list 前面，标签栏就
 | --- | --- | --- |
 | `value-change` | `TabsValueChangeDetails` | 选中值变化；detail 为 `{ value: string \| null }` |
 | `tab-move` | `TabsMoveDetails` | 标签换了位；detail 为 `{ value, from, to, values }`，values 是重排好的整份标签序 |
+| `tab-close` | `TabsCloseDetails` | 标签被关闭；detail 为 `{ value, values }`，values 是关掉这一条之后余下的标签序 |
 
 ## 状态
 
@@ -164,7 +167,7 @@ root 按书写顺序渲染子节点：把面板写在 list 前面，标签栏就
 
 **状态**：`idle`
 
-**事件**：`VALUE.SET` · `TRIGGER.SELECT` · `TRIGGER.FOCUS` · `TRIGGER.NAVIGATE` · `LIST.BLUR` · `TAB_DRAG.START` · `TAB_DRAG.MOVE` · `TAB_DRAG.END` · `TAB_DRAG.CANCEL` · `TAB.MOVE_BY`
+**事件**：`VALUE.SET` · `TRIGGER.SELECT` · `TRIGGER.FOCUS` · `TRIGGER.NAVIGATE` · `LIST.BLUR` · `TAB_DRAG.START` · `TAB_DRAG.MOVE` · `TAB_DRAG.END` · `TAB_DRAG.CANCEL` · `TAB.MOVE_BY` · `TAB.CLOSE`
 
 **判据**：`isAutomatic`
 
@@ -183,6 +186,8 @@ root 按书写顺序渲染子节点：把面板写在 list 前面，标签栏就
 | `getRootProps` | `() => T['element']` |  |
 | `getListProps` | `() => T['element']` |  |
 | `getTriggerProps` | `(props: TabsTriggerProps) => T['button']` |  |
+| `getIndicatorProps` | `() => T['element']` | 选中标签下的滑条；位置由机器量好写成内联样式，没有选中项时 hidden。 |
+| `getSeparatorProps` | `() => T['element']` | 标签之间的细分隔线，纯装饰。 |
 | `getContentProps` | `(props: TabsContentProps) => T['element']` |  |
 | `getTabDragTriggerProps` | `(props: TabsTriggerProps) => T['element']` | 标签拖动把手。触屏那一路唯一的入口，不占 Tab 位。 常挂即可：reorderable 关着或这个标签禁用时它自报 data-disabled、也不再让出滚动， 渲了不会错。按拖不拖得动来决定渲不渲，会让 DOM 结构随状态变。 |
 | `getLiveRegionProps` | `() => T['element']` |  |
@@ -213,6 +218,8 @@ root 按书写顺序渲染子节点：把面板写在 list 前面，标签栏就
 | `trigger` | `aria-disabled` | 'true' \| 'false' |
 | `trigger` | `aria-selected` | 'true' \| 'false' |
 | `trigger` | `role` | 'tab' |
+| `indicator` | `aria-hidden` | 'true' |
+| `separator` | `aria-hidden` | 'true' |
 | `content` | `aria-labelledby` | `trigger` 部件的 id |
 | `content` | `role` | 'tabpanel' |
 | `tab-drag-trigger` | `aria-hidden` | 'true' |
@@ -234,11 +241,15 @@ root 按书写顺序渲染子节点：把面板写在 list 前面，标签栏就
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
+| `trigger` | `data-closable` | ''（条件成立时才出现） |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `trigger` | `data-draggable` | ''（条件成立时才出现） |
 | `trigger` | `data-dragging` | ''（条件成立时才出现） |
 | `trigger` | `data-drop` | 'before' \| 'after' |
 | `trigger` | `data-state` | 'active' \| 'inactive' |
+| `indicator` | `data-orientation` | props.orientation |
+| `indicator` | `data-value` | item.value |
+| `separator` | `data-orientation` | props.orientation |
 | `content` | `data-state` | 'active' \| 'inactive' |
 | `tab-drag-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `tab-drag-trigger` | `data-dragging` | ''（条件成立时才出现） |
@@ -247,13 +258,17 @@ root 按书写顺序渲染子节点：把面板写在 list 前面，标签栏就
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-tabs-content-fg` · `--xh-tabs-content-py` · `--xh-tabs-drag-fg` · `--xh-tabs-drag-fg-active` · `--xh-tabs-drag-fg-disabled` · `--xh-tabs-drag-grip-long` · `--xh-tabs-drag-grip-short` · `--xh-tabs-drag-radius` · `--xh-tabs-drag-size` · `--xh-tabs-dragging-opacity` · `--xh-tabs-drop-fg` · `--xh-tabs-drop-line` · `--xh-tabs-gap` · `--xh-tabs-list-bg` · `--xh-tabs-list-border` · `--xh-tabs-list-gap` · `--xh-tabs-list-p` · `--xh-tabs-list-radius` · `--xh-tabs-trigger-bg` · `--xh-tabs-trigger-bg-active` · `--xh-tabs-trigger-bg-active-hover` · `--xh-tabs-trigger-bg-hover` · `--xh-tabs-trigger-border` · `--xh-tabs-trigger-border-active` · `--xh-tabs-trigger-fg` · `--xh-tabs-trigger-fg-active` · `--xh-tabs-trigger-font-size` · `--xh-tabs-trigger-font-weight` · `--xh-tabs-trigger-gap` · `--xh-tabs-trigger-h` · `--xh-tabs-trigger-px` · `--xh-tabs-trigger-radius` · `--xh-tabs-trigger-shadow-active`
+`--xh-tabs-content-fg` · `--xh-tabs-content-py` · `--xh-tabs-drag-fg` · `--xh-tabs-drag-fg-active` · `--xh-tabs-drag-fg-disabled` · `--xh-tabs-drag-grip-long` · `--xh-tabs-drag-grip-short` · `--xh-tabs-drag-radius` · `--xh-tabs-drag-size` · `--xh-tabs-dragging-opacity` · `--xh-tabs-drop-fg` · `--xh-tabs-drop-line` · `--xh-tabs-gap` · `--xh-tabs-indicator-color` · `--xh-tabs-indicator-radius` · `--xh-tabs-indicator-thickness` · `--xh-tabs-list-bg` · `--xh-tabs-list-border` · `--xh-tabs-list-gap` · `--xh-tabs-list-p` · `--xh-tabs-list-radius` · `--xh-tabs-separator-color` · `--xh-tabs-separator-radius` · `--xh-tabs-separator-size` · `--xh-tabs-separator-thickness` · `--xh-tabs-trigger-bg` · `--xh-tabs-trigger-bg-active` · `--xh-tabs-trigger-bg-active-hover` · `--xh-tabs-trigger-bg-hover` · `--xh-tabs-trigger-border` · `--xh-tabs-trigger-border-active` · `--xh-tabs-trigger-fg` · `--xh-tabs-trigger-fg-active` · `--xh-tabs-trigger-font-size` · `--xh-tabs-trigger-font-weight` · `--xh-tabs-trigger-gap` · `--xh-tabs-trigger-h` · `--xh-tabs-trigger-px` · `--xh-tabs-trigger-radius` · `--xh-tabs-trigger-shadow-active`
 
 ## 动效
 
 状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+## 响应式
+
+皮肤内置条件规则：`forced-colors: active`。
 
 ## RTL
 

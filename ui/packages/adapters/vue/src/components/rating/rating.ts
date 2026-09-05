@@ -92,6 +92,19 @@ export const XhRatingControl = defineComponent({
   },
 })
 
+export const XhRatingValueText = defineComponent({
+  name: 'XhRatingValueText',
+  setup(_, { slots }) {
+    const ctx = useRatingContext()
+    // 分值文本：写在 root 里、control 的兄弟；没给内容就填当前该点亮到的那个数
+    return () => h(
+      'span',
+      ctx.api.value.getValueTextProps() as Record<string, unknown>,
+      slots.default?.() ?? ctx.api.value.valueText,
+    )
+  },
+})
+
 export const XhRatingItem = defineComponent({
   name: 'XhRatingItem',
   props: {

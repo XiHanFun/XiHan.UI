@@ -15,17 +15,28 @@ export function connectClipboard<T extends PropTypes>(
   const status = state.get()
   const copied = status === 'copied'
   const value = prop('value') ?? ''
+  const disabled = !!prop('disabled')
+  const translations = prop('translations')
+  // 播报区只在成功那一档有话说；平时是空串，读屏不会念一段旧文案
+  const announcement = copied ? (translations?.copied ?? 'Copied') : ''
 
   return {
     status,
+    disabled,
+    announcement,
     copied,
     value,
     copy: () => send({ type: 'COPY.TRIGGER' }),
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
+      // 三个视觉轴落在根上，复制按钮沿继承流取值
+      'data-variant': prop('variant'),
+      'data-tone': prop('tone'),
+      'data-size': prop('size'),
       'data-state': status,
       'data-copied': dataAttr(copied),
+      'data-disabled': dataAttr(disabled),
     }),
 
     getLabelProps: () => normalize.label({
@@ -62,8 +73,14 @@ export function connectClipboard<T extends PropTypes>(
       ...parts['copy-trigger'].attrs,
       // 不给 type 会在 form 里变成 submit，Enter 直接提交表单
       'type': 'button',
+      // 单体原生控件用原生 disabled：它本就不该被聚焦，也不该派 click
+      'disabled': disabled || undefined,
+      // 按钮里只放一个图标时没有可见文字，可及名字只能由这里给。
+      // 不给缺省值：按钮上多半写着可见的「复制」，凭空盖一个名字会让读屏念的与屏上写的对不上
+      'aria-label': translations?.copy,
       'data-state': status,
       'data-copied': dataAttr(copied),
+      'data-disabled': dataAttr(disabled),
       'onClick': () => send({ type: 'COPY.TRIGGER' }),
     }),
 
@@ -73,9 +90,20 @@ export function connectClipboard<T extends PropTypes>(
      */
     getIndicatorProps: indicator => normalize.element({
       ...parts.indicator.attrs,
+      // 不发 aria-hidden：解剖里没有单独的 label，钮上写的字就装在这里，
+      // 藏起来等于把按钮的可及名一起藏掉
       'data-state': status,
       'data-copied': dataAttr(indicator.copied),
       'hidden': indicator.copied !== copied || undefined,
+    }),
+
+    // 复制成功的文字回执：换色与换图标读屏都拿不到，这一处是唯一的通道
+    getStatusProps: () => normalize.element({
+      ...parts.status.attrs,
+      'role': 'status',
+      'aria-live': 'polite',
+      'aria-atomic': 'true',
+      'data-state': status,
     }),
   }
 }

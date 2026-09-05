@@ -1,11 +1,12 @@
 import type { Direction, Size, Tone } from '@xihan-ui/core'
-import type { BreadcrumbProps, BreadcrumbTranslations } from '@xihan-ui/headless'
+import type { BreadcrumbNode, BreadcrumbProps, BreadcrumbTranslations } from '@xihan-ui/headless'
 import { breadcrumbAnatomy, breadcrumbMeta, connectBreadcrumb } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 
 // 属性缺席翻成 undefined，缺省值由 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
+const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : Number(v)) }
 
 /** 读作者写在角色节点上的布尔声明：属性缺席或 ="false" 为假，其余为真。 */
 function authorFlag(el: HTMLElement, name: string): boolean {
@@ -20,6 +21,7 @@ function authorFlag(el: HTMLElement, name: string): boolean {
  * 运行期改写 link 上的 `current` 属性不触发重新接线，需作者自行 requestUpdate。
  *
  * @customElement xh-breadcrumb
+ * @attr {number} max-items - 最多展开几层，超出的中间层由 api.items 折成一个省略位
  * @attr {'ltr'|'rtl'} dir - 文字方向，写到 root 上；不给则继承祖先
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
@@ -27,6 +29,7 @@ function authorFlag(el: HTMLElement, name: string): boolean {
  * @csspart list - ol 容器
  * @csspart item - li 条目
  * @csspart link - a 链接；写 current 属性的那条得到 aria-current="page" 并拦住点击
+ * @csspart link-icon - 链接里的图标位，对读屏隐藏
  * @csspart separator - li 分隔符，对读屏隐藏
  * @csspart ellipsis - li 折叠占位，对读屏隐藏
  */
@@ -36,13 +39,17 @@ export class XhBreadcrumbElement extends XhElement {
   // dir 只占属性名、字段改叫 direction，避开 HTMLElement 原生 dir 访问器。
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
+    maxItems: { converter: NUMBER_CONVERTER, attribute: 'max-items' },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     tone: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
-    // 文案是对象，只走 property
+    // 层级数据与文案是对象，只走 property
+    collection: { attribute: false },
     translations: { attribute: false },
   }
 
+  declare collection?: readonly BreadcrumbNode[]
+  declare maxItems?: number
   declare direction?: Direction
   declare tone?: Tone
   declare size?: Size
@@ -50,6 +57,8 @@ export class XhBreadcrumbElement extends XhElement {
 
   protected wire(): void {
     const props: BreadcrumbProps = {
+      collection: this.collection,
+      maxItems: this.maxItems,
       dir: this.direction,
       translations: this.translations,
       tone: this.tone,
@@ -73,6 +82,9 @@ export class XhBreadcrumbElement extends XhElement {
       const attrs = api.getLinkProps({ current: authorFlag(el, 'current') })
       this.spreader.spread(el, attrs as Record<string, unknown>)
     }
+
+    for (const el of this.getParts('link-icon'))
+      this.spreader.spread(el, api.getLinkIconProps() as Record<string, unknown>)
 
     for (const el of this.getParts('separator'))
       this.spreader.spread(el, api.getSeparatorProps() as Record<string, unknown>)

@@ -43,7 +43,7 @@ steps 是唯一事实源，组件只按下标取用；每步的 target 是一个
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-tour>` |
-| Vue 组件 | `XhTourArrow` `XhTourBackdrop` `XhTourCloseTrigger` `XhTourContent` `XhTourDescription` `XhTourNextTrigger` `XhTourPositioner` `XhTourPrevTrigger` `XhTourProgressText` `XhTourRoot` `XhTourSkipTrigger` `XhTourSpotlight` `XhTourTitle` |
+| Vue 组件 | `XhTourArrow` `XhTourBackdrop` `XhTourCloseTrigger` `XhTourContent` `XhTourDescription` `XhTourNextTrigger` `XhTourPositioner` `XhTourPrevTrigger` `XhTourProgressDot` `XhTourProgressIndicator` `XhTourProgressText` `XhTourRoot` `XhTourSkipTrigger` `XhTourSpotlight` `XhTourTitle` |
 | 组合式函数 | `useTour` |
 | 状态机 | `tourMachine` |
 | 皮肤 | `@xihan-ui/styles/tour.css` |
@@ -52,7 +52,7 @@ steps 是唯一事实源，组件只按下标取用；每步的 target 是一个
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="tour"`：**`root`** · `backdrop` · `spotlight` · `positioner` · **`content`** · `title` · `description` · `progress-text` · `prev-trigger` · `next-trigger` · `skip-trigger` · `close-trigger` · `arrow`
+`data-scope="tour"`：**`root`** · `backdrop` · `spotlight` · `positioner` · **`content`** · `title` · `description` · `progress-text` · `progress-indicator` · `progress-dot` · `prev-trigger` · `next-trigger` · `skip-trigger` · `close-trigger` · `arrow`
 
 ## Props
 
@@ -147,6 +147,8 @@ steps 是唯一事实源，组件只按下标取用；每步的 target 是一个
 | `getTitleProps` | `() => T['element']` |  |
 | `getDescriptionProps` | `() => T['element']` |  |
 | `getProgressTextProps` | `() => T['element']` |  |
+| `getProgressIndicatorProps` | `() => T['element']` |  |
+| `getProgressDotProps` | `(props: TourProgressDotProps) => T['element']` |  |
 | `getPrevTriggerProps` | `() => T['button']` |  |
 | `getNextTriggerProps` | `() => T['button']` |  |
 | `getSkipTriggerProps` | `() => T['button']` |  |
@@ -177,6 +179,7 @@ steps 是唯一事实源，组件只按下标取用；每步的 target 是一个
 | `content` | `aria-modal` | 'true' |
 | `content` | `role` | 'dialog' |
 | `progress-text` | `aria-live` | 'polite' |
+| `progress-indicator` | `aria-hidden` | 'true' |
 | `next-trigger` | `aria-label` | translations?.finish \| translations?.next |
 | `close-trigger` | `aria-label` | translations?.close |
 | `arrow` | `aria-hidden` | 'true' |
@@ -204,6 +207,11 @@ steps 是唯一事实源，组件只按下标取用；每步的 target 是一个
 | `content` | `data-state` | 'open' \| 'closed' |
 | `content` | `data-step` | String(value) |
 | `progress-text` | `data-step` | String(value) |
+| `progress-indicator` | `data-count` | String(count) |
+| `progress-indicator` | `data-step` | String(value) |
+| `progress-dot` | `data-complete` | ''（条件成立时才出现） |
+| `progress-dot` | `data-current` | ''（条件成立时才出现） |
+| `progress-dot` | `data-index` | String(index) |
 | `prev-trigger` | `data-state` | 'open' \| 'closed' |
 | `next-trigger` | `data-last` | ''（条件成立时才出现） |
 | `next-trigger` | `data-state` | 'open' \| 'closed' |
@@ -214,7 +222,7 @@ steps 是唯一事实源，组件只按下标取用；每步的 target 是一个
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-tour-action-radius` · `--xh-tour-arrow-size` · `--xh-tour-backdrop-bg` · `--xh-tour-backdrop-layer` · `--xh-tour-bg` · `--xh-tour-border` · `--xh-tour-close-bg-active` · `--xh-tour-close-bg-hover` · `--xh-tour-close-fg` · `--xh-tour-close-fg-hover` · `--xh-tour-close-radius` · `--xh-tour-close-size` · `--xh-tour-description-fg` · `--xh-tour-fg` · `--xh-tour-gap` · `--xh-tour-icon-size` · `--xh-tour-max-h` · `--xh-tour-max-w` · `--xh-tour-next-bg` · `--xh-tour-next-bg-hover` · `--xh-tour-next-fg` · `--xh-tour-next-shadow` · `--xh-tour-positioner-layer` · `--xh-tour-positioner-padding` · `--xh-tour-progress-fg` · `--xh-tour-progress-font-size` · `--xh-tour-px` · `--xh-tour-py` · `--xh-tour-radius` · `--xh-tour-shadow` · `--xh-tour-skip-trigger-px` · `--xh-tour-spotlight-layer` · `--xh-tour-spotlight-radius` · `--xh-tour-spotlight-ring` · `--xh-tour-spotlight-shroud` · `--xh-tour-title-fg` · `--xh-tour-title-font-size` · `--xh-tour-title-font-weight`
+`--xh-tour-action-radius` · `--xh-tour-arrow-size` · `--xh-tour-backdrop-bg` · `--xh-tour-backdrop-layer` · `--xh-tour-bg` · `--xh-tour-border` · `--xh-tour-close-bg-active` · `--xh-tour-close-bg-hover` · `--xh-tour-close-fg` · `--xh-tour-close-fg-hover` · `--xh-tour-close-radius` · `--xh-tour-close-size` · `--xh-tour-description-fg` · `--xh-tour-fg` · `--xh-tour-gap` · `--xh-tour-icon-size` · `--xh-tour-max-h` · `--xh-tour-max-w` · `--xh-tour-next-bg` · `--xh-tour-next-bg-hover` · `--xh-tour-next-fg` · `--xh-tour-next-shadow` · `--xh-tour-positioner-layer` · `--xh-tour-positioner-padding` · `--xh-tour-progress-dot-bg` · `--xh-tour-progress-dot-bg-complete` · `--xh-tour-progress-dot-bg-current` · `--xh-tour-progress-fg` · `--xh-tour-progress-font-size` · `--xh-tour-progress-indicator-gap` · `--xh-tour-px` · `--xh-tour-py` · `--xh-tour-radius` · `--xh-tour-shadow` · `--xh-tour-skip-trigger-px` · `--xh-tour-spotlight-layer` · `--xh-tour-spotlight-radius` · `--xh-tour-spotlight-ring` · `--xh-tour-spotlight-shroud` · `--xh-tour-title-fg` · `--xh-tour-title-font-size` · `--xh-tour-title-font-weight`
 
 ## 动效
 
@@ -224,7 +232,7 @@ steps 是唯一事实源，组件只按下标取用；每步的 target 是一个
 
 ## 响应式
 
-皮肤内置条件规则：`pointer: coarse`。
+皮肤内置条件规则：`forced-colors: active` · `pointer: coarse`。
 
 ## RTL
 

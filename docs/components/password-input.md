@@ -19,6 +19,7 @@
 - 切换之后焦点留在切换钮上，框里的光标与选中范围原样放回。
 - 大写锁定提示由按键事件驱动，焦点离开输入框即熄灭。
 - `autoComplete` 缺省 `current-password`，注册表单要显式改成 `new-password`。
+- `strength` 给 0–4 五档就显出强度条；打分算法归调用方，组件只把档位画出来。
 - 形态 · 语气 · 尺寸三轴与[文本输入](./text-field)同源，并排放不会差一档。
 
 ## 示例
@@ -76,7 +77,7 @@ name 才让它参与提交，auto-complete 写成 new-password 密码管理器�
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-password-input>` |
-| Vue 组件 | `XhPasswordInputCapsLockIndicator` `XhPasswordInputControl` `XhPasswordInputInput` `XhPasswordInputLabel` `XhPasswordInputRoot` `XhPasswordInputVisibilityTrigger` |
+| Vue 组件 | `XhPasswordInputCapsLockIndicator` `XhPasswordInputControl` `XhPasswordInputInput` `XhPasswordInputLabel` `XhPasswordInputRoot` `XhPasswordInputStrengthMeter` `XhPasswordInputVisibilityTrigger` |
 | 组合式函数 | `usePasswordInput` |
 | 状态机 | `passwordInputMachine` |
 | 皮肤 | `@xihan-ui/styles/password-input.css` |
@@ -85,7 +86,7 @@ name 才让它参与提交，auto-complete 写成 new-password 密码管理器�
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="password-input"`：**`root`** · `label` · `control` · **`input`** · **`visibility-trigger`** · `caps-lock-indicator`
+`data-scope="password-input"`：**`root`** · `label` · `control` · **`input`** · **`visibility-trigger`** · `caps-lock-indicator` · `strength-meter`
 
 ## Props
 
@@ -102,6 +103,7 @@ name 才让它参与提交，auto-complete 写成 new-password 密码管理器�
 | `name` | `string` |  | 表单字段名；给了才参与提交。 |
 | `placeholder` | `string` |  |  |
 | `autoComplete` | `string` |  | 落到 input 上的 autocomplete，缺省 current-password。 密码管理器靠它决定这一格是填旧密码还是存新密码，注册表单要显式写 new-password。 |
+| `strength` | `number` |  | 强度档位，0 到 4 共五档。给了才显出强度条，缺省不显。 打分算法归调用方：口令强弱是产品规则（字典、泄漏库、业务口径），组件只负责把档位画出来。 超出区间的值被夹回区间。 |
 | `translations` | `Partial<PasswordInputTranslations>` |  | 读屏文案覆盖；没给的条目走组件内建英文。 |
 | `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定颜色怎么用。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
@@ -158,6 +160,7 @@ name 才让它参与提交，auto-complete 写成 new-password 密码管理器�
 | `invalid` | `boolean` |  |
 | `inputType` | `PasswordInputType` | 输入框此刻的 type，随 visible 走。 |
 | `capsLockMessage` | `string` | 大写锁定播报区里此刻的文字：开着时是 `translations.capsLockOn`，关着时是空串。 适配器把它落成提示部件的文本内容，读屏念的就是这一段。 |
+| `strength` | `number \| undefined` | 夹回 0–4 后的强度档位；没给 strength 时是 undefined，此时强度条收起。 |
 | `setValue` | `(next: string) => void` | 直接写值，只受 disabled / readOnly 约束。 |
 | `setVisible` | `(next: boolean) => void` | 指定明暗态；整枚控件禁用时不生效。 |
 | `toggleVisibility` | `() => void` | 翻转明暗态；整枚控件禁用时不生效。 |
@@ -167,6 +170,7 @@ name 才让它参与提交，auto-complete 写成 new-password 密码管理器�
 | `getInputProps` | `() => T['input']` |  |
 | `getVisibilityTriggerProps` | `() => T['button']` |  |
 | `getCapsLockIndicatorProps` | `() => T['element']` |  |
+| `getStrengthMeterProps` | `() => T['element']` | 强度条：档位落在 data-level 与 aria-valuenow 上；没给 strength 时带 hidden 收起。 |
 
 ## 键盘
 
@@ -191,6 +195,11 @@ name 才让它参与提交，auto-complete 写成 new-password 密码管理器�
 | `caps-lock-indicator` | `aria-atomic` | 'true' |
 | `caps-lock-indicator` | `aria-live` | 'polite' |
 | `caps-lock-indicator` | `role` | 'status' |
+| `strength-meter` | `aria-label` | label.strengthMeter |
+| `strength-meter` | `aria-valuemax` | 4 |
+| `strength-meter` | `aria-valuemin` | 0 |
+| `strength-meter` | `aria-valuenow` | undefined \| Math.min(Math.max(Math.trunc(rawStrength), 0), STRENG… |
+| `strength-meter` | `role` | 'meter' |
 
 - 切换钮的名字随状态换：隐藏时叫「显示密码」，显示时叫「隐藏密码」，两句都走 `translations`。名字既然已经说清了此刻是明是暗，就不再叠 `aria-pressed`——两个通道各说各的会念成「隐藏密码 已按下」，听的人反而分不清。
 - 切换钮的 `aria-controls` 指向输入框，读屏能顺着它跳到被切换的那一格。
@@ -225,12 +234,14 @@ name 才让它参与提交，auto-complete 写成 new-password 密码管理器�
 | `visibility-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `visibility-trigger` | `data-state` | 'visible' \| 'hidden' |
 | `caps-lock-indicator` | `data-state` | 'visible' \| 'hidden' |
+| `strength-meter` | `data-disabled` | ''（条件成立时才出现） |
+| `strength-meter` | `data-level` | undefined \| String(strength) |
 
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-password-input-caps-lock-fg` · `--xh-password-input-caps-lock-font-size` · `--xh-password-input-caps-lock-gap` · `--xh-password-input-caps-lock-px` · `--xh-password-input-control-bg` · `--xh-password-input-control-bg-disabled` · `--xh-password-input-control-bg-hover` · `--xh-password-input-control-bg-readonly` · `--xh-password-input-control-border` · `--xh-password-input-control-border-focus` · `--xh-password-input-control-border-hover` · `--xh-password-input-control-border-invalid` · `--xh-password-input-control-gap` · `--xh-password-input-control-h` · `--xh-password-input-control-min-w` · `--xh-password-input-control-px` · `--xh-password-input-control-radius` · `--xh-password-input-control-shadow` · `--xh-password-input-gap` · `--xh-password-input-icon-size` · `--xh-password-input-input-autofill-bg` · `--xh-password-input-input-autofill-fg` · `--xh-password-input-input-bg` · `--xh-password-input-input-bg-disabled` · `--xh-password-input-input-bg-hover` · `--xh-password-input-input-bg-readonly` · `--xh-password-input-input-border` · `--xh-password-input-input-border-focus` · `--xh-password-input-input-border-hover` · `--xh-password-input-input-border-invalid` · `--xh-password-input-input-fg` · `--xh-password-input-input-font-size` · `--xh-password-input-input-h` · `--xh-password-input-input-min-w` · `--xh-password-input-input-px` · `--xh-password-input-input-radius` · `--xh-password-input-input-shadow` · `--xh-password-input-label-fg` · `--xh-password-input-label-fg-disabled` · `--xh-password-input-label-font-size` · `--xh-password-input-label-font-weight` · `--xh-password-input-placeholder-fg` · `--xh-password-input-trigger-bg` · `--xh-password-input-trigger-bg-active` · `--xh-password-input-trigger-bg-hover` · `--xh-password-input-trigger-fg` · `--xh-password-input-trigger-fg-hover` · `--xh-password-input-trigger-font-size` · `--xh-password-input-trigger-radius` · `--xh-password-input-trigger-size`
+`--xh-password-input-caps-lock-fg` · `--xh-password-input-caps-lock-font-size` · `--xh-password-input-caps-lock-gap` · `--xh-password-input-caps-lock-px` · `--xh-password-input-control-bg` · `--xh-password-input-control-bg-disabled` · `--xh-password-input-control-bg-hover` · `--xh-password-input-control-bg-readonly` · `--xh-password-input-control-border` · `--xh-password-input-control-border-focus` · `--xh-password-input-control-border-hover` · `--xh-password-input-control-border-invalid` · `--xh-password-input-control-gap` · `--xh-password-input-control-h` · `--xh-password-input-control-min-w` · `--xh-password-input-control-px` · `--xh-password-input-control-radius` · `--xh-password-input-control-shadow` · `--xh-password-input-gap` · `--xh-password-input-icon-size` · `--xh-password-input-input-autofill-bg` · `--xh-password-input-input-autofill-fg` · `--xh-password-input-input-bg` · `--xh-password-input-input-bg-disabled` · `--xh-password-input-input-bg-hover` · `--xh-password-input-input-bg-readonly` · `--xh-password-input-input-border` · `--xh-password-input-input-border-focus` · `--xh-password-input-input-border-hover` · `--xh-password-input-input-border-invalid` · `--xh-password-input-input-fg` · `--xh-password-input-input-font-size` · `--xh-password-input-input-h` · `--xh-password-input-input-min-w` · `--xh-password-input-input-px` · `--xh-password-input-input-radius` · `--xh-password-input-input-shadow` · `--xh-password-input-label-fg` · `--xh-password-input-label-fg-disabled` · `--xh-password-input-label-font-size` · `--xh-password-input-label-font-weight` · `--xh-password-input-placeholder-fg` · `--xh-password-input-strength-fg` · `--xh-password-input-strength-radius` · `--xh-password-input-strength-thickness` · `--xh-password-input-strength-track` · `--xh-password-input-trigger-bg` · `--xh-password-input-trigger-bg-active` · `--xh-password-input-trigger-bg-hover` · `--xh-password-input-trigger-fg` · `--xh-password-input-trigger-fg-hover` · `--xh-password-input-trigger-font-size` · `--xh-password-input-trigger-radius` · `--xh-password-input-trigger-size`
 
 ## 动效
 

@@ -42,6 +42,14 @@ export function connectTimeline<T extends PropTypes>(
       'data-placement': placement,
     }),
 
+    // 这一条的坐标（日期、版本号）单占一列：它与内容对置，交替排布下也停在同一侧，
+    // 时间戳不再随内容左右横跳。方向与侧别再写一份，排版据部件自身的属性走
+    getLabelProps: () => normalize.element({
+      ...parts.label.attrs,
+      'data-orientation': orientation,
+      'data-placement': placement,
+    }),
+
     // 圆点是纯视觉的，这一条说了什么全在 content 里；语气色落在它身上
     getIndicatorProps: item => normalize.element({
       ...parts.indicator.attrs,

@@ -36,6 +36,16 @@
     align-items: stretch;
   }
 
+  /* —— 形态 —— */
+  /* surface 档不在这儿：它就是上面那套基础取值，写不写 data-variant 都长一个样。
+     plain 档把整条那块面撤掉，只留排布——嵌在卡片或工具栏里时，两层描边会叠成双框 */
+  [data-scope='toolbar'][data-part='root'][data-variant='plain'] {
+    padding-block: var(--xh-toolbar-py, 0);
+    padding-inline: var(--xh-toolbar-px, 0);
+    border-color: transparent;
+    background: var(--xh-toolbar-bg, transparent);
+  }
+
   /* —— 尺寸 —— */
   /* 缺省档写在上面的基础规则里。工具条自己不定条目的高度与字号（那归条目的皮肤），
      这里只换排布尺寸；缺省的 --xh-space-1 已经是控件间距那把尺的小档，容不下三档，故一律取空间尺 */

@@ -1,3 +1,4 @@
+import type { Tone } from '@xihan-ui/core'
 import type { EmptyStateLive, EmptyStateProps, EmptyStateStatus } from '@xihan-ui/headless'
 import { connectEmptyState, emptyStateAnatomy, emptyStateMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
@@ -16,7 +17,9 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @attr {'sm'|'md'|'lg'} size - 尺寸档位，写到 root 的 data-size 上
  * @attr {'polite'|'off'} live - 播报方式，off 时 root 不带 role
  * @attr {'404'|'403'|'500'|'success'|'warning'|'error'|'info'} status - 结果类型，写到 root 的 data-status 上
- * @csspart root - 承载 role 与 data-size / data-status 的容器
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气，写到 root 的 data-tone 上
+ * @csspart root - 承载 role 与 data-size / data-status / data-tone 的容器
+ * @csspart media - 装饰插画，对读屏隐藏；与 indicator 二选一
  * @csspart indicator - 装饰图标，对读屏隐藏
  * @csspart title - 标题
  * @csspart description - 说明
@@ -30,15 +33,17 @@ export class XhEmptyStateElement extends XhElement {
     size: { converter: STRING_CONVERTER },
     live: { converter: STRING_CONVERTER },
     status: { converter: STRING_CONVERTER },
+    tone: { converter: STRING_CONVERTER },
   }
 
   declare size?: 'sm' | 'md' | 'lg'
   declare live?: EmptyStateLive
   declare status?: EmptyStateStatus
+  declare tone?: Tone
 
   protected wire(): void {
     // 读响应式 property，不回读 DOM 特性
-    const props: EmptyStateProps = { size: this.size, live: this.live, status: this.status }
+    const props: EmptyStateProps = { size: this.size, live: this.live, status: this.status, tone: this.tone }
     const api = connectEmptyState(this.configured('empty-state', props), wcNormalize)
 
     const put = (name: string, attrs: Record<string, unknown>): void => {
@@ -47,6 +52,7 @@ export class XhEmptyStateElement extends XhElement {
         this.spreader.spread(el, attrs)
     }
     put('root', api.getRootProps() as Record<string, unknown>)
+    put('media', api.getMediaProps() as Record<string, unknown>)
     put('indicator', api.getIndicatorProps() as Record<string, unknown>)
     put('title', api.getTitleProps() as Record<string, unknown>)
     put('description', api.getDescriptionProps() as Record<string, unknown>)

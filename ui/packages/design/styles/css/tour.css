@@ -279,6 +279,39 @@
     color: var(--xh-tour-progress-fg, var(--xh-fg-subtle));
   }
 
+  /* 圆点组：一步一颗，横排 */
+  [data-scope='tour'][data-part='progress-indicator'] {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--xh-tour-progress-indicator-gap, var(--xh-space-1));
+  }
+
+  [data-scope='tour'][data-part='progress-indicator'][hidden] {
+    display: none;
+  }
+
+  /* 圆点：未走到的一档取中性描边色。宽度与底色都随状态换，换步那一下能看出进度在推进 */
+  [data-scope='tour'][data-part='progress-dot'] {
+    inline-size: var(--xh-space-2);
+    block-size: var(--xh-space-2);
+    border-radius: var(--xh-shape-pill);
+    background: var(--xh-tour-progress-dot-bg, var(--xh-border-default));
+    transition:
+      inline-size var(--xh-motion-duration-micro) var(--xh-motion-ease-continuous),
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  /* 走过的步：中性色加重一档 */
+  [data-scope='tour'][data-part='progress-dot'][data-complete] {
+    background: var(--xh-tour-progress-dot-bg-complete, var(--xh-border-strong));
+  }
+
+  /* 当前步：拉成胶囊并换品牌色 */
+  [data-scope='tour'][data-part='progress-dot'][data-current] {
+    inline-size: var(--xh-space-5);
+    background: var(--xh-tour-progress-dot-bg-current, var(--xh-bg-brand));
+  }
+
   [data-scope='tour'][data-part='prev-trigger'],
   [data-scope='tour'][data-part='next-trigger'],
   [data-scope='tour'][data-part='skip-trigger'] {
@@ -424,6 +457,13 @@
       content: '';
       position: absolute;
       inset: calc(-1 * var(--xh-space-2));
+    }
+  }
+
+  @media (forced-colors: active) {
+    /* 这一档丢掉底色：走过的那几颗改由一圈描边表出，当前那颗仍靠宽度分辨 */
+    [data-scope='tour'][data-part='progress-dot'][data-complete] {
+      outline: var(--xh-stroke-thin) solid CanvasText;
     }
   }
 

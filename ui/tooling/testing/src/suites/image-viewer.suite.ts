@@ -1,5 +1,5 @@
 import type { ImageViewerItem } from '@xihan-ui/headless'
-import type { ConformanceSuite, FixtureNode, StepWithExpect } from '../conformance/types'
+import type { ConformanceSuite, FixtureNode, RawStepContext, StepWithExpect } from '../conformance/types'
 import { imageViewerAnatomy, imageViewerKeyboard } from '@xihan-ui/headless'
 import { nativeActivation } from './shared/native-activation'
 
@@ -33,6 +33,27 @@ export const IMAGE_VIEWER_CONTENT_CHILDREN: readonly FixtureNode[] = [
     ],
   },
 ]
+
+/**
+ * 取图相位那条用例专用的清单：只给 alt、不给 src。
+ * 不给 src 的 <img> 在真实浏览器里既不发 load 也不发 error，相位停在 loading 等着用例自己派发；
+ * 带 src 时浏览器在用例读到那一帧之前就把 data URI 取完了，loading 那一帧根本看不到。
+ */
+export const IMAGE_VIEWER_PENDING_ITEMS: readonly Record<string, unknown>[] = [
+  { alt: '第一张' },
+  { alt: '第二张' },
+  { alt: '第三张' },
+]
+
+/** jsdom 不会真去取图，load / error 只能直接在 image 节点上派发。 */
+function dispatchOnViewerImage(type: string): (ctx: RawStepContext) => void {
+  return ({ doc }) => {
+    const image = doc.querySelector<HTMLElement>('[data-scope="image-viewer"][data-part="image"]')
+    if (!image)
+      throw new Error('fixture 里没有 image')
+    image.dispatchEvent(new Event(type))
+  }
+}
 
 /** 打开并等焦点进入 content。 */
 export function openImageViewer(): readonly StepWithExpect[] {
@@ -232,6 +253,95 @@ export const imageViewerSuite: ConformanceSuite = {
         { kind: 'key', key: 'ArrowRight', expect: imageViewerAtIndex(1) },
         { kind: 'key', key: 'Home', expect: imageViewerAtIndex(0) },
         { kind: 'key', key: 'End', expect: imageViewerAtIndex(2) },
+      ],
+    },
+    {
+      name: '缩放三键：+ 放大到上限、- 缩小到下限、0 复位；两颗缩放钮跟着开合',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      // 上下限收窄到一步之内：一次按键就走到头，禁用位当场看得见
+      props: imageViewerProps({ minScale: 0.5, maxScale: 1.5 }),
+      covers: ['image-viewer.kbd.zoom-in', 'image-viewer.kbd.zoom-out', 'image-viewer.kbd.reset'],
+      steps: [
+        ...openImageViewer(),
+        {
+          kind: 'key',
+          key: '+',
+          expect: {
+            parts: {
+              'zoom-in-trigger': { 'disabled': '', 'data-disabled': '' },
+              'zoom-out-trigger': { 'disabled': null, 'data-disabled': null },
+            },
+          },
+        },
+        {
+          kind: 'key',
+          key: '-',
+          expect: {
+            parts: {
+              'zoom-in-trigger': { 'disabled': null, 'data-disabled': null },
+              'zoom-out-trigger': { 'disabled': null, 'data-disabled': null },
+            },
+          },
+        },
+        {
+          kind: 'key',
+          key: '-',
+          expect: {
+            parts: {
+              'zoom-in-trigger': { 'disabled': null, 'data-disabled': null },
+              'zoom-out-trigger': { 'disabled': '', 'data-disabled': '' },
+            },
+          },
+        },
+        {
+          kind: 'key',
+          key: '0',
+          expect: {
+            parts: {
+              'zoom-in-trigger': { 'disabled': null, 'data-disabled': null },
+              'zoom-out-trigger': { 'disabled': null, 'data-disabled': null },
+            },
+          },
+        },
+      ],
+    },
+    {
+      name: '大图取图相位：打开是 loading，load 落位，换图重回 loading',
+      spec: { zag: 'image-viewer.machine#resetImageStatus' },
+      props: imageViewerProps({ collection: IMAGE_VIEWER_PENDING_ITEMS }),
+      steps: [
+        ...openImageViewer(),
+        {
+          kind: 'settle',
+          until: { attr: { part: 'image', name: 'data-loading', value: '' } },
+          expect: {
+            parts: {
+              image: { 'data-loading': '' },
+              viewport: { 'data-loading': '' },
+            },
+          },
+        },
+        {
+          kind: 'raw',
+          why: 'jsdom 不真加载图片，load 只能在 image 节点上直接派发',
+          run: dispatchOnViewerImage('load'),
+          expect: {
+            parts: {
+              image: { 'data-loading': null },
+              viewport: { 'data-loading': null },
+            },
+          },
+        },
+        {
+          kind: 'key',
+          key: 'ArrowRight',
+          expect: {
+            parts: {
+              image: { 'data-loading': '' },
+              viewport: { 'data-loading': '' },
+            },
+          },
+        },
       ],
     },
     {

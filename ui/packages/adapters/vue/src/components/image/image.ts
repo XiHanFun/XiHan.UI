@@ -8,7 +8,7 @@ import { useImage } from './use-image'
 type ImageProps = ImageSchema['props']
 
 /** 默认插槽的载荷：加载状态、是否已加载完，以及回退内容此刻该不该露面。 */
-export type ImageRootSlotProps = Pick<ImageApi, 'status' | 'loaded' | 'showFallback'>
+export type ImageRootSlotProps = Pick<ImageApi, 'status' | 'loaded' | 'showFallback' | 'showPlaceholder'>
 
 export const XhImageRoot = defineComponent({
   name: 'XhImageRoot',
@@ -33,6 +33,7 @@ export const XhImageRoot = defineComponent({
       status: ctx.api.value.status,
       loaded: ctx.api.value.loaded,
       showFallback: ctx.api.value.showFallback,
+      showPlaceholder: ctx.api.value.showPlaceholder,
     }))
   },
 })
@@ -58,6 +59,15 @@ export const XhImageImage = defineComponent({
       ...ctx.api.value.getImageProps() as Record<string, unknown>,
       ref: imageEl,
     })
+  },
+})
+
+export const XhImagePlaceholder = defineComponent({
+  name: 'XhImagePlaceholder',
+  setup(_, { slots }) {
+    const ctx = useImageContext()
+    // 节点常挂，靠 hidden 显隐
+    return () => h('div', ctx.api.value.getPlaceholderProps() as Record<string, unknown>, slots.default?.())
   },
 })
 

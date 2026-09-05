@@ -5,5 +5,7 @@ export const hoverCardAnatomy = createAnatomy('hover-card', [
   'trigger',
   'positioner',
   'content',
+  'title',
+  'description',
   'arrow',
 ])

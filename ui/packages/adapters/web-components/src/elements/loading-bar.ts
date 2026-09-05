@@ -47,6 +47,7 @@ const HEIGHT_CONVERTER = {
  * @csspart root - progressbar 本身（承载名字、值域、data-state 与收起态）
  * @csspart track - 背景槽
  * @csspart range - 进度段；宽度由元素写进内联样式，样式层别碰那条轴
+ * @csspart peg - 进度段末端那道亮边（对读屏隐藏）
  */
 export class XhLoadingBarElement extends XhElement {
   static override partContract = { anatomy: loadingBarAnatomy, meta: loadingBarMeta }
@@ -115,6 +116,7 @@ export class XhLoadingBarElement extends XhElement {
     put('root', api.getRootProps() as Record<string, unknown>)
     put('track', api.getTrackProps() as Record<string, unknown>)
     put('range', api.getRangeProps() as Record<string, unknown>)
+    put('peg', api.getPegProps() as Record<string, unknown>)
 
     // 收起只写 hidden 属性是不够的：作者层给 root 声明的任何一条 display
     // 都会盖过 UA 的 [hidden]{display:none}，只有内联 style.display 压得住

@@ -89,10 +89,12 @@ header-fixed 让头钉在滚动容器上沿，sider-fixed 让侧栏跟着钉住�
 | `siderWidth` | `string` |  | 展开时侧栏的宽度，任意 CSS 长度；不写则用皮肤里的档位。 |
 | `siderCollapsedWidth` | `string` |  | 折叠时侧栏的宽度，任意 CSS 长度；不写则用皮肤里的档位。 |
 | `siderPlacement` | `LayoutSiderPlacement` |  | 侧栏挂在行首还是行尾，缺省 start。 |
+| `siderBreakpoint` | `LayoutBreakpoint` |  | 侧栏的自适应断点：视口窄于这一档时侧栏按折叠宽显示。 只换宽度不改折叠态——折叠态归 siderCollapsed 那条通道，两者互不干扰。 |
 | `headerFixed` | `boolean` |  | 头吸顶：滚动时头钉在滚动容器的上沿。只落标记，钉住的实现归皮肤。 |
 | `siderFixed` | `boolean` |  | 侧栏吸附：滚动时侧栏钉在滚动容器的上沿，头也吸顶时让开头那一条。只落标记，钉住的实现归皮肤。 |
 | `bordered` | `boolean` |  | 在头、侧栏、脚与内容之间画分隔线。 |
 | `onSiderCollapsedChange` | `(details: LayoutSiderCollapsedChangeDetails) => void` |  | 折叠态变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 |
+| `onSiderBreakpoint` | `(details: LayoutSiderBreakpointDetails) => void` |  | 断点跨过去时发一次，挂载时也发一次当前值。 窄屏要把侧栏换成抽屉的，接这条：组件自己只换宽度。 |
 
 ## 事件
 
@@ -101,6 +103,7 @@ header-fixed 让头钉在滚动容器上沿，sider-fixed 让侧栏跟着钉住�
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `sider-collapsed-change` | `LayoutSiderCollapsedChangeDetails` | 折叠态变化；detail 为 `{ collapsed: boolean }` |
+| `sider-breakpoint` | `LayoutSiderBreakpointDetails` | 断点跨过去时发，挂载时也发一次当前值；detail 为 `{ matched: boolean }` |
 
 ## 状态
 
@@ -157,6 +160,7 @@ header-fixed 让头钉在滚动容器上沿，sider-fixed 让侧栏跟着钉住�
 | `root` | `data-bordered` | ''（条件成立时才出现） |
 | `root` | `data-collapsed` | ''（条件成立时才出现） |
 | `root` | `data-header-fixed` | ''（条件成立时才出现） |
+| `root` | `data-sider-breakpoint` | props.siderBreakpoint |
 | `root` | `data-sider-fixed` | ''（条件成立时才出现） |
 | `root` | `data-sider-placement` | props.siderPlacement |
 | `header` | `data-fixed` | ''（条件成立时才出现） |
@@ -176,6 +180,15 @@ header-fixed 让头钉在滚动容器上沿，sider-fixed 让侧栏跟着钉住�
 状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+## 响应式
+
+皮肤内置条件规则：`min-width: 1024px` · `min-width: 1280px` · `min-width: 640px` · `min-width: 768px`。
+
+- `siderBreakpoint` 给一档（`sm` / `md` / `lg` / `xl`），视口窄于这一档时侧栏按折叠宽显示。
+  它只换宽度、不改折叠态：折叠态归 `siderCollapsed` 那条通道，两者互不干扰。
+- 断点跨过去时发 `onSiderBreakpoint`，挂载时也发一次当前值。要在窄屏把侧栏整个换成[抽屉](./drawer)、
+  或真的把它折起来（`siderCollapsed` 置真，内容随之不换行），接这个回调。
 
 ## RTL
 

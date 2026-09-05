@@ -21,13 +21,18 @@ export function connectFieldArray<T extends PropTypes>(
   const keys = context.get('keys')
   const count = value.length
   const disabled = !!prop('disabled')
+  const readOnly = !!prop('readOnly')
+  const invalid = !!prop('invalid')
+  const name = prop('name')
   const movable = !!prop('movable')
   const min = rowBound(prop('min'))
   const max = rowBound(prop('max'))
   const atMin = atRowMin(count, min)
   const atMax = atRowMax(count, max)
   const empty = count === 0
-  const canAdd = !disabled && !atMax
+  // 只读与禁用一样按不动行数，只是不置灰
+  const editable = !disabled && !readOnly
+  const canAdd = editable && !atMax
 
   // 三个行内把手都只装得下一个图形，行号只能由名字带出来；
   // 新增把手装的是一句话，名字取它自己的内容，这里不覆盖
@@ -40,9 +45,9 @@ export function connectFieldArray<T extends PropTypes>(
 
   // 作者声明的下标可能指到列表外（行数刚变、声明还没跟上），一律按"这一行不在"处理
   const inRange = (index: number): boolean => Number.isInteger(index) && index >= 0 && index < count
-  const canRemove = (index: number): boolean => !disabled && !atMin && inRange(index)
-  const canMoveUp = (index: number): boolean => !disabled && movable && inRange(index) && index > 0
-  const canMoveDown = (index: number): boolean => !disabled && movable && inRange(index) && index + 1 < count
+  const canRemove = (index: number): boolean => editable && !atMin && inRange(index)
+  const canMoveUp = (index: number): boolean => editable && movable && inRange(index) && index > 0
+  const canMoveDown = (index: number): boolean => editable && movable && inRange(index) && index + 1 < count
 
   /**
    * 本节点当下是不是正持有焦点。
@@ -58,6 +63,8 @@ export function connectFieldArray<T extends PropTypes>(
     index,
     key: keys[index] ?? fallbackKey(index),
     value: row,
+    // 行里的控件靠它参与提交：整份数组一个名字，逐行加下标
+    name: name === undefined ? undefined : `${name}[${index}]`,
     first: index === 0,
     last: index + 1 === count,
     canRemove: canRemove(index),
@@ -69,6 +76,11 @@ export function connectFieldArray<T extends PropTypes>(
   const itemAttrs = (item: FieldArrayItemProps): Record<string, string | undefined> => ({
     'data-index': String(item.index),
     'data-disabled': dataAttr(disabled),
+    'data-readonly': dataAttr(readOnly),
+    'data-invalid': dataAttr(invalid),
+    // 行数到没到上下限：行自己也拿得到，不必回头去问根
+    'data-at-min': dataAttr(atMin),
+    'data-at-max': dataAttr(atMax),
   })
 
   const moveTriggerProps = (item: FieldArrayItemProps, step: -1 | 1): T['button'] => {
@@ -107,6 +119,8 @@ export function connectFieldArray<T extends PropTypes>(
     count,
     empty,
     disabled,
+    readOnly,
+    invalid,
     movable,
     atMin,
     atMax,
@@ -122,6 +136,8 @@ export function connectFieldArray<T extends PropTypes>(
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'data-disabled': dataAttr(disabled),
+      'data-readonly': dataAttr(readOnly),
+      'data-invalid': dataAttr(invalid),
       'data-empty': dataAttr(empty),
       'data-at-min': dataAttr(atMin),
       'data-at-max': dataAttr(atMax),
@@ -133,6 +149,12 @@ export function connectFieldArray<T extends PropTypes>(
       ...itemAttrs(item),
       'data-first': dataAttr(item.index === 0),
       'data-last': dataAttr(item.index + 1 === count),
+    }),
+
+    // 行前的行号或名目。纯标注：与行里的控件不建 for 关联，那一层的名字归作者
+    getItemLabelProps: item => normalize.element({
+      ...parts['item-label'].attrs,
+      ...itemAttrs(item),
     }),
 
     getItemContentProps: item => normalize.element({

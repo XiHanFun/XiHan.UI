@@ -52,6 +52,8 @@ export const XhTreeRoot = defineComponent({
   // 有 connect 兜底的 prop 一律 default: undefined
   props: {
     collection: { type: Array as PropType<TreeNode[]>, default: undefined },
+    /** 外框形态：surface 带描边与底色（缺省），plain 只留行。 */
+    variant: { type: String as PropType<TreeProps['variant']>, default: undefined },
     expandedValue: { type: Array as PropType<string[]>, default: undefined },
     defaultExpandedValue: { type: Array as PropType<string[]>, default: undefined },
     selection: { type: Array as PropType<string[]>, default: undefined },
@@ -63,6 +65,7 @@ export const XhTreeRoot = defineComponent({
     checkedStrategy: { type: String as PropType<TreeProps['checkedStrategy']>, default: undefined },
     expandOnClick: { type: Boolean, default: undefined },
     disabled: Boolean,
+    loading: Boolean,
     loop: { type: Boolean, default: undefined },
     typeahead: { type: Boolean, default: undefined },
     dir: { type: String as PropType<Direction>, default: undefined },
@@ -126,6 +129,25 @@ export const XhTreeTree = defineComponent({
   setup(_, { slots }) {
     const ctx = useTreeContext()
     return () => h('div', ctx.api.value.getTreeProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+export const XhTreeEmpty = defineComponent({
+  name: 'XhTreeEmpty',
+  setup(_, { slots }) {
+    const ctx = useTreeContext()
+    // 空态占位：写在 root 里、tree 的兄弟，不进 role=tree 的拥有关系。
+    // 给了 collection 时收放归连接层，节点手写时归作者
+    return () => h('div', ctx.api.value.getEmptyProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+export const XhTreeLoading = defineComponent({
+  name: 'XhTreeLoading',
+  setup(_, { slots }) {
+    const ctx = useTreeContext()
+    // 在途占位：与空态占位同一个位置，取数期间顶上来
+    return () => h('div', ctx.api.value.getLoadingProps() as Record<string, unknown>, slots.default?.())
   },
 })
 

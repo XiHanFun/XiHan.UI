@@ -1,4 +1,4 @@
-<!-- 浮层里的操作区 | content 里除了树还能放别的：在浮层内点按钮不算点在外面，浮层不会因此收起 -->
+<!-- 浮层里的操作区 | footer 写在 content 里、tree 的兄弟：它不进 role=tree 的拥有关系，方向键也走不到；在浮层内点按钮不算点在外面，浮层不会因此收起 -->
 <xh-tree-select id="tree-select-action" placeholder="选一个文件">
   <div data-xh-part="root" style="max-inline-size: 320px">
     <span data-xh-part="label">文档</span>
@@ -42,7 +42,7 @@
         </div>
 
         <!-- 浮层内的按钮直接改选中集合与展开集合 -->
-        <div style="display: flex; gap: 8px; padding: 8px 4px 4px">
+        <div data-xh-part="footer">
           <button type="button" id="tree-select-action-expand">全部展开</button>
           <button type="button" id="tree-select-action-collapse">全部收起</button>
           <button type="button" id="tree-select-action-clear" disabled>清空</button>

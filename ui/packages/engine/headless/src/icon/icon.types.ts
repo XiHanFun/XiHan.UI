@@ -1,8 +1,19 @@
-import type { IconNode, IconRecord, PropTypes, Size, Tone } from '@xihan-ui/core'
+import type { IconNode, IconRecord, PropTypes, Tone } from '@xihan-ui/core'
 
-/** 直径档位，缺省 md。 */
+/**
+ * 直径档位，缺省 md，逐档对应 --xh-glyph-size-*。
+ * text 跟着相邻文字的字号走，其余七档是固定直径。
+ */
+export type IconSize = 'text' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl'
+
 /** 描边粗细档位，缺省 regular；由皮肤用 CSS 的 stroke-width 盖掉记录里的呈现属性。 */
 export type IconWeight = 'light' | 'regular' | 'bold'
+
+/** 旋转档位：四分之一圈的整数倍，不收任意角度。 */
+export type IconRotate = 90 | 180 | 270
+
+/** 翻转轴：横轴、纵轴，或两轴都翻。 */
+export type IconFlip = 'horizontal' | 'vertical' | 'both'
 
 export interface IconProps {
   /**
@@ -17,11 +28,18 @@ export interface IconProps {
    */
   label?: string
   /** 直径档位，缺省 md；缺省档不输出 data-size。 */
-  size?: Size
+  size?: IconSize
   /** 描边粗细档位，缺省 regular；缺省档不输出 data-weight。 */
   weight?: IconWeight
   /** 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色 */
   tone?: Tone
+  /**
+   * 旋转档位：90 / 180 / 270，不转就不写。
+   * 收字符串是因为 WC 那侧的档位来自 DOM 属性；不是这三档的值一律不写出。
+   */
+  rotate?: IconRotate | string
+  /** 翻转轴：horizontal / vertical / both，不翻就不写。旋转与翻转同写时两者叠加。 */
+  flip?: IconFlip
 }
 
 export interface IconApi<T extends PropTypes = PropTypes> {

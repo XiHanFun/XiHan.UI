@@ -1,4 +1,5 @@
-import type { LogApi, LogProps, LogSchema, LogTranslations } from '@xihan-ui/headless'
+import type { Size } from '@xihan-ui/core'
+import type { LogApi, LogLevel, LogProps, LogSchema, LogTranslations } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
@@ -23,6 +24,7 @@ export const XhLogRoot = defineComponent({
   props: {
     rows: { type: Number, default: undefined },
     loading: Boolean,
+    size: { type: String as PropType<Size>, default: undefined },
     translations: { type: Object as PropType<Partial<LogTranslations>>, default: undefined },
   },
   // stick-change 携带 { atBottom, sticking }，无对应的 v-model
@@ -73,10 +75,13 @@ export const XhLogContent = defineComponent({
 
 export const XhLogLine = defineComponent({
   name: 'XhLogLine',
-  setup(_, { slots }) {
+  props: {
+    level: { type: String as PropType<LogLevel>, default: undefined },
+  },
+  setup(props, { slots }) {
     const ctx = useLogContext()
-    // 一行的文本与级别标注由作者写在插槽里
-    return () => h('div', ctx.api.value.getLineProps() as Record<string, unknown>, slots.default?.())
+    // 一行的文本与标注由作者写在插槽里，级别落成行上的 data-level
+    return () => h('div', ctx.api.value.getLineProps({ level: props.level }) as Record<string, unknown>, slots.default?.())
   },
 })
 

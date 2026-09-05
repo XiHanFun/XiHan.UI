@@ -65,6 +65,8 @@ accordion 让同层只开一枝；collapsed 折叠成图标栏（内嵌展开整
 | `disabled` | `boolean` |  | 整个侧栏禁用。 |
 | `loop` | `boolean` |  | 上下键走到首尾是否回绕，默认 false。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr；只对调左右方向键的「展开/收起」语义。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `translations` | `Partial<SideNavTranslations>` |  |  |
 | `onValueChange` | `(details: SideNavValueChangeDetails) => void` |  | 选中意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
 | `onExpandedValueChange` | `(details: SideNavExpandedValueChangeDetails) => void` |  | 展开集合变化意图回调；语义同上。 |
@@ -191,6 +193,8 @@ accordion 让同层只开一枝；collapsed 折叠成图标栏（内嵌展开整
 | --- | --- | --- |
 | `root` | `data-collapsed` | ''（条件成立时才出现） |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-size` | props.size |
+| `root` | `data-tone` | props.tone |
 | `list` | `data-collapsed` | ''（条件成立时才出现） |
 | `group-label` | `data-collapsed` | ''（条件成立时才出现） |
 | `branch` | `data-disabled` | ''（条件成立时才出现） |
@@ -211,13 +215,15 @@ accordion 让同层只开一枝；collapsed 折叠成图标栏（内嵌展开整
 | `popout-positioner` | `data-hidden` | ''（条件成立时才出现） |
 | `popout-positioner` | `data-placement` | placed?.placement |
 | `popout-positioner` | `data-positioned` | ''（条件成立时才出现） |
+| `popout-positioner` | `data-size` | props.size |
 | `popout-positioner` | `data-state` | 'open' \| 'closed' |
+| `popout-positioner` | `data-tone` | props.tone |
 
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-side-nav-collapsed-w` · `--xh-side-nav-fg` · `--xh-side-nav-gap` · `--xh-side-nav-group-label-px` · `--xh-side-nav-group-label-py` · `--xh-side-nav-icon-size` · `--xh-side-nav-indent` · `--xh-side-nav-link-gap` · `--xh-side-nav-link-px` · `--xh-side-nav-link-radius` · `--xh-side-nav-p` · `--xh-side-nav-popout-bg` · `--xh-side-nav-popout-border` · `--xh-side-nav-popout-layer` · `--xh-side-nav-popout-max-h` · `--xh-side-nav-popout-max-w` · `--xh-side-nav-popout-min-w` · `--xh-side-nav-popout-p` · `--xh-side-nav-popout-radius` · `--xh-side-nav-popout-shadow` · `--xh-side-nav-row-bg-active` · `--xh-side-nav-row-bg-hover` · `--xh-side-nav-row-fg-active` · `--xh-side-nav-row-fg-in-path` · `--xh-side-nav-row-font-weight-active` · `--xh-side-nav-w`
+`--xh-side-nav-collapsed-w` · `--xh-side-nav-fg` · `--xh-side-nav-gap` · `--xh-side-nav-group-label-px` · `--xh-side-nav-group-label-py` · `--xh-side-nav-icon-size` · `--xh-side-nav-indent` · `--xh-side-nav-link-gap` · `--xh-side-nav-link-h` · `--xh-side-nav-link-px` · `--xh-side-nav-link-radius` · `--xh-side-nav-p` · `--xh-side-nav-popout-bg` · `--xh-side-nav-popout-border` · `--xh-side-nav-popout-layer` · `--xh-side-nav-popout-max-h` · `--xh-side-nav-popout-max-w` · `--xh-side-nav-popout-min-w` · `--xh-side-nav-popout-p` · `--xh-side-nav-popout-radius` · `--xh-side-nav-popout-shadow` · `--xh-side-nav-row-bg-active` · `--xh-side-nav-row-bg-hover` · `--xh-side-nav-row-fg-active` · `--xh-side-nav-row-fg-in-path` · `--xh-side-nav-row-font-weight-active` · `--xh-side-nav-w`
 
 ## 动效
 

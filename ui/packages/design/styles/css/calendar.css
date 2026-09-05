@@ -403,6 +403,27 @@
     mask: var(--xh-glyph-mark-chevrons-right) center / contain no-repeat;
   }
 
+  /* rtl 下月份从右往左排，四支箭头跟着指向行进方向 */
+  [dir='rtl'] [data-scope='calendar'][data-part='prev-trigger']:empty::before {
+    -webkit-mask-image: var(--xh-glyph-mark-chevron-right);
+    mask-image: var(--xh-glyph-mark-chevron-right);
+  }
+
+  [dir='rtl'] [data-scope='calendar'][data-part='next-trigger']:empty::before {
+    -webkit-mask-image: var(--xh-glyph-mark-chevron-left);
+    mask-image: var(--xh-glyph-mark-chevron-left);
+  }
+
+  [dir='rtl'] [data-scope='calendar'][data-part='prev-year-trigger']:empty::before {
+    -webkit-mask-image: var(--xh-glyph-mark-chevrons-right);
+    mask-image: var(--xh-glyph-mark-chevrons-right);
+  }
+
+  [dir='rtl'] [data-scope='calendar'][data-part='next-year-trigger']:empty::before {
+    -webkit-mask-image: var(--xh-glyph-mark-chevrons-left);
+    mask-image: var(--xh-glyph-mark-chevrons-left);
+  }
+
   @media print {
     /* 打印默认丢背景色：选中片与区间底都不画，一整张网格印出来是一模一样的三十来个数字。
        两档各换一条不吃底色的通道——选中走实边加粗体，区间走格底下的一道线。 */

@@ -39,6 +39,8 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @attr {boolean} otp - 一次性验证码：补 autocomplete=one-time-code
  * @attr {string} placeholder - 空格子的占位字符
  * @attr {boolean} disabled - 禁用：每格带原生 disabled，隐藏输入不参与提交
+ * @attr {boolean} read-only - 只读：每格仍可聚焦、可复制，写不进
+ * @attr {boolean} required - 必填标注：每格带原生 required
  * @attr {boolean} invalid - 校验失败标注
  * @attr {boolean} blur-on-complete - 填满即把焦点撤走
  * @attr {string} name - 表单字段名；给了隐藏输入才带 name
@@ -49,7 +51,9 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @fires value-complete - 每格都填满；detail 同上
  * @csspart root - role=group 的容器，承载 data-disabled / data-invalid / data-complete
  * @csspart label - 标题；`for` 恒写向首格，故须是原生 `<label>` 才点得动
+ * @csspart group - 连着的几格圈成一段（123-456 这种分段写法）；纯排版，不参与下标计算
  * @csspart input - 一格一个的输入框，可自带 index 属性声明下标，缺省按文档序；aria-label 由内置文案给出
+ * @csspart separator - 段与段之间的分隔；对读屏隐藏
  * @csspart hidden-input - type=hidden 的表单出口，值是拼好的整串
  */
 export class XhPinInputElement extends XhElement {
@@ -66,6 +70,8 @@ export class XhPinInputElement extends XhElement {
     otp: { type: Boolean },
     placeholder: { converter: STRING_CONVERTER },
     disabled: { type: Boolean },
+    readOnly: { type: Boolean, attribute: 'read-only' },
+    required: { type: Boolean },
     invalid: { type: Boolean },
     blurOnComplete: { type: Boolean, attribute: 'blur-on-complete' },
     name: { converter: STRING_CONVERTER },
@@ -85,6 +91,8 @@ export class XhPinInputElement extends XhElement {
   declare otp?: boolean
   declare placeholder?: string
   declare disabled?: boolean
+  declare readOnly?: boolean
+  declare required?: boolean
   declare invalid?: boolean
   declare blurOnComplete?: boolean
   declare name?: string
@@ -115,6 +123,8 @@ export class XhPinInputElement extends XhElement {
       otp: this.otp ?? false,
       placeholder: this.placeholder,
       disabled: this.disabled ?? false,
+      readOnly: this.readOnly ?? false,
+      required: this.required ?? false,
       invalid: this.invalid ?? false,
       blurOnComplete: this.blurOnComplete ?? false,
       name: this.name,
@@ -138,6 +148,9 @@ export class XhPinInputElement extends XhElement {
     put('root', api.getRootProps() as Record<string, unknown>)
     put('label', api.getLabelProps() as Record<string, unknown>)
     put('hidden-input', api.getHiddenInputProps() as Record<string, unknown>)
+    // 分段与分隔都是纯排版角色，可以有多个，逐个打
+    this.getParts('group').forEach(el => this.spreader.spread(el, api.getGroupProps() as Record<string, unknown>))
+    this.getParts('separator').forEach(el => this.spreader.spread(el, api.getSeparatorProps() as Record<string, unknown>))
 
     // 格子是多实例 part，逐个打。打上去的 data-scope/data-part 正是移格与粘贴在事件那一刻
     // 现查 DOM 的依据，所以 wire 必须先于事件跑过——updated() 已保证。

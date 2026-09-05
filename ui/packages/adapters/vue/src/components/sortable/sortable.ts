@@ -121,6 +121,19 @@ export const XhSortableItemDragTrigger = defineComponent({
 })
 
 /**
+ * 落点线：拖动中画在松手后这一项会插进去的那条缝上，落点与起点同一位时不在场。
+ *
+ * 它是容器的绝对定位子节点，写在 Root 里、排在末项之后——那样它才画在各项之上。
+ */
+export const XhSortableDropIndicator = defineComponent({
+  name: 'XhSortableDropIndicator',
+  setup() {
+    const ctx = useSortableContext()
+    return () => h('div', ctx.api.value.getDropIndicatorProps() as Record<string, unknown>)
+  },
+})
+
+/**
  * 拖动过程的读屏播报区，视觉上不可见。
  *
  * 放进列表里就行，位置不限。它必须在拖动开始**之前**就在 DOM 上——

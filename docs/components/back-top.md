@@ -66,6 +66,7 @@ tone 决定按钮用哪族颜色，size 换一档尺寸；translations 换掉读
 | `visibilityHeight` | `number` |  | 滚过这么多像素按钮才露面，默认 200。 |
 | `behavior` | `BackTopBehavior` |  | 滚回顶部的方式，默认 smooth。 |
 | `translations` | `Partial<BackTopTranslations>` |  |  |
+| `variant` | `ActionVariant` |  | 形态：solid / subtle / outline / ghost，决定底色、描边与前景怎么用。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定按钮用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `onVisibilityChange` | `(details: BackTopVisibilityChangeDetails) => void` |  | 露面与否变化时回调。 |
@@ -144,6 +145,7 @@ tone 决定按钮用哪族颜色，size 换一档尺寸；translations 换掉读
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | 'visible' \| 'hidden' |
 | `root` | `data-tone` | props.tone |
+| `root` | `data-variant` | props.variant |
 | `trigger` | `data-state` | 'visible' \| 'hidden' |
 
 ## CSS 变量

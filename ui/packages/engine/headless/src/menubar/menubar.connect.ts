@@ -63,7 +63,11 @@ export function connectMenubar<T extends PropTypes>(
   const toMeta = (node: MenubarNode): MenubarNodeMeta => ({
     value: node.value,
     label: node.label ?? node.value,
+    description: node.description ?? null,
     disabled: !!node.disabled,
+    group: node.group ?? null,
+    groupLabel: node.groupLabel ?? null,
+    separatorBefore: !!node.separatorBefore,
     items: (node.items ?? []).map(toMeta),
   })
   const collection: MenubarNodeMeta[] = (prop('collection') ?? []).map(toMeta)
@@ -89,7 +93,7 @@ export function connectMenubar<T extends PropTypes>(
   const groupLabelId = (group: string): string => scope.partId(menubarAnatomy.name, `group-label:${group}`)
   const stateAttr = (isOpen: boolean): 'open' | 'closed' => (isOpen ? 'open' : 'closed')
 
-  // item / item-text / item-indicator 共用同一份状态标记
+  // item / item-text / item-indicator / item-description 共用同一份状态标记
   const itemStateAttrs = (item: MenubarItemProps): Record<string, string | undefined> => ({
     'data-disabled': dataAttr(itemDisabled(item)),
     // 子部件够不着条目自身的 :focus 伪类，只能读这个标记
@@ -420,6 +424,11 @@ export function connectMenubar<T extends PropTypes>(
       'aria-hidden': true,
     }),
 
+    getItemDescriptionProps: item => normalize.element({
+      ...parts['item-description'].attrs,
+      ...itemStateAttrs(item),
+    }),
+
     getSeparatorProps: () => normalize.element({
       ...parts.separator.attrs,
       'role': 'separator',
@@ -438,5 +447,21 @@ export function connectMenubar<T extends PropTypes>(
       ...parts['group-label'].attrs,
       id: groupLabelId(group.value),
     }),
+
+    // 箭头指向那张菜单自己的锚点：落点取本菜单名下那份坐标，不取共享份
+    getArrowProps: (menu) => {
+      const arrowAt = placements[menu.value]?.arrow
+      return normalize.element({
+        ...parts.arrow.attrs,
+        'aria-hidden': true,
+        'data-placement': placement,
+        // 箭头交叉轴上的落点由定位引擎给：上下两侧走行内轴、左右两侧走块轴。
+        // 两根轴每帧都写，翻面后另一根不会留着上一帧的值；空串即撤掉声明，皮肤退回居中
+        'style': {
+          '--xh-_menubar-arrow-x': arrowAt?.x != null ? `${arrowAt.x}px` : '',
+          '--xh-_menubar-arrow-y': arrowAt?.y != null ? `${arrowAt.y}px` : '',
+        },
+      })
+    },
   }
 }

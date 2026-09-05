@@ -60,7 +60,7 @@ tone 只换进度段的底色（取柔和档）；条子本身是 fixed，这里
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-loading-bar>` |
-| Vue 组件 | `XhLoadingBarRange` `XhLoadingBarRoot` `XhLoadingBarTrack` |
+| Vue 组件 | `XhLoadingBarPeg` `XhLoadingBarRange` `XhLoadingBarRoot` `XhLoadingBarTrack` |
 | 组合式函数 | `useLoadingBar` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/loading-bar.css` |
@@ -69,7 +69,7 @@ tone 只换进度段的底色（取柔和档）；条子本身是 fixed，这里
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="loading-bar"`：**`root`** · `track` · **`range`**
+`data-scope="loading-bar"`：**`root`** · `track` · **`range`** · `peg`
 
 ## Props
 
@@ -113,6 +113,7 @@ tone 只换进度段的底色（取柔和档）；条子本身是 fixed，这里
 | `root` | state.get() |
 | `track` | state.get() |
 | `range` | state.get() |
+| `peg` | state.get() |
 
 状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
@@ -131,6 +132,7 @@ tone 只换进度段的底色（取柔和档）；条子本身是 fixed，这里
 | `getRootProps` | `() => T['element']` |  |
 | `getTrackProps` | `() => T['element']` |  |
 | `getRangeProps` | `() => T['element']` |  |
+| `getPegProps` | `() => T['element']` | 进度段末端那道亮边。纯装饰，作者不渲染它时条子照旧成立。 |
 
 ## 键盘
 
@@ -149,6 +151,7 @@ tone 只换进度段的底色（取柔和档）；条子本身是 fixed，这里
 | `root` | `aria-valuemin` | '0' |
 | `root` | `aria-valuenow` | String(value) \| undefined |
 | `root` | `role` | 'progressbar' |
+| `peg` | `aria-hidden` | 'true' |
 
 ## 样式
 
@@ -165,12 +168,13 @@ tone 只换进度段的底色（取柔和档）；条子本身是 fixed，这里
 | `root` | `data-tone` | props.tone |
 | `track` | `data-state` | state.get() |
 | `range` | `data-state` | state.get() |
+| `peg` | `data-state` | state.get() |
 
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-loading-bar-fade` · `--xh-loading-bar-layer` · `--xh-loading-bar-range` · `--xh-loading-bar-speed` · `--xh-loading-bar-track`
+`--xh-loading-bar-fade` · `--xh-loading-bar-layer` · `--xh-loading-bar-peg-fg` · `--xh-loading-bar-peg-w` · `--xh-loading-bar-range` · `--xh-loading-bar-speed` · `--xh-loading-bar-track`
 
 ## 动效
 

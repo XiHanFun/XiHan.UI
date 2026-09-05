@@ -48,6 +48,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {boolean} disabled - 整个控件禁用：输入框与两个按钮都用原生 disabled
  * @attr {boolean} read-only - 只读：文字可选可复制，但展开、选中、清空一概不发生
  * @attr {boolean} invalid - 校验失败标注
+ * @attr {boolean} loading - 候选还在取：列表报 aria-busy，在途占位顶上来、空态占位让位
  * @attr {boolean} loop - 方向键走到尽头回绕，默认 true；写 loop="false" 关掉
  * @attr {string} placeholder - 输入框占位文字
  * @attr {boolean} allow-custom-value - 允许提交候选列表里没有的值
@@ -78,6 +79,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {string} name - 表单字段名；给了 hidden-input 才参与提交（多选按逗号拼成一串）
  * @csspart hidden-input - type=hidden 的表单出口，省略该节点即不参与表单
  * @csspart empty - 无匹配项提示；须放在 positioner 里当 content 的兄弟（列表内只允许 option 与 group）
+ * @csspart loading - 在途占位，与空态占位同一个位置，取数期间顶上来
  */
 export class XhComboboxElement extends XhElement {
   static override partContract = { anatomy: comboboxAnatomy, meta: comboboxMeta }
@@ -99,6 +101,7 @@ export class XhComboboxElement extends XhElement {
     disabled: { type: Boolean },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     invalid: { converter: BOOLEAN_CONVERTER },
+    loading: { converter: BOOLEAN_CONVERTER },
     loop: { converter: BOOLEAN_CONVERTER },
     placeholder: { converter: STRING_CONVERTER },
     allowCustomValue: { type: Boolean, attribute: 'allow-custom-value' },
@@ -126,6 +129,7 @@ export class XhComboboxElement extends XhElement {
   declare disabled?: boolean
   declare readOnly?: boolean
   declare invalid?: boolean
+  declare loading?: boolean
   declare loop?: boolean
   declare name?: string
   declare placeholder?: string
@@ -188,6 +192,7 @@ export class XhComboboxElement extends XhElement {
       disabled: this.disabled ?? false,
       readOnly: this.readOnly ?? false,
       invalid: this.invalid ?? false,
+      loading: this.loading ?? false,
       loop: this.loop,
       name: this.name,
       placeholder: this.placeholder,
@@ -274,6 +279,7 @@ export class XhComboboxElement extends XhElement {
     put('positioner', api.getPositionerProps() as Record<string, unknown>)
     put('content', api.getContentProps() as Record<string, unknown>)
     put('empty', api.getEmptyProps() as Record<string, unknown>)
+    put('loading', api.getLoadingProps() as Record<string, unknown>)
     put('hidden-input', api.getHiddenInputProps() as Record<string, unknown>)
 
     for (const el of this.getParts('group')) {

@@ -32,11 +32,14 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {number} remove-delay - 退场窗口毫秒，默认 200，留给退场动画
  * @attr {boolean} closable - 是否给可用的关闭按钮，默认 true；写 closable="false" 关掉
  * @attr {boolean} pause-on-page-idle - 页面切到后台时按住计时，默认关
+ * @attr {boolean} paused - 由宿主整摞一起按住计时，默认关；与指针、焦点那几路并存
  * @fires status-change - 生命周期落位；detail 为 `{ id: string, status: 'dismissing'|'unmounted' }`
  * @fires action - 操作按钮被按下；detail 为 `{ id: string }`
  * @csspart root - role=status（error 时 alert）的容器，承载 data-severity / data-tone / data-state / data-paused
+ * @csspart indicator - 严重度指示符（对读屏隐藏）；不渲染它时字形由 root 的伪元素兜住
  * @csspart title - 标题，aria-labelledby 的目标
  * @csspart action-trigger - 操作按钮：先发 action 再进入退场
+ * @csspart progress - 倒计时条；不自动消失时收起
  * @csspart close-trigger - 关闭按钮；closable=false 时转原生 disabled 并收起
  */
 export class XhToastElement extends XhElement {
@@ -53,6 +56,7 @@ export class XhToastElement extends XhElement {
     removeDelay: { converter: NUMBER_CONVERTER, attribute: 'remove-delay' },
     closable: { converter: BOOLEAN_CONVERTER },
     pauseOnPageIdle: { converter: BOOLEAN_CONVERTER, attribute: 'pause-on-page-idle' },
+    paused: { converter: BOOLEAN_CONVERTER },
     // 文案是对象，走不了属性；只作为 property 暴露，与 Vue 侧的 translations prop 对齐
     translations: { attribute: false },
   }
@@ -64,6 +68,7 @@ export class XhToastElement extends XhElement {
   declare removeDelay?: number
   declare closable?: boolean
   declare pauseOnPageIdle?: boolean
+  declare paused?: boolean
   declare translations?: Partial<ToastTranslations>
 
   private readonly notifyStatus = (details: ToastStatusChangeDetails): void => {
@@ -88,6 +93,7 @@ export class XhToastElement extends XhElement {
       removeDelay: this.removeDelay,
       closable: this.closable,
       pauseOnPageIdle: this.pauseOnPageIdle,
+      paused: this.paused,
       translations: this.translations,
       onStatusChange: this.notifyStatus,
       onAction: this.notifyAction,
@@ -131,8 +137,10 @@ export class XhToastElement extends XhElement {
         this.spreader.spread(el, props)
     }
     put('root', api.getRootProps() as Record<string, unknown>)
+    put('indicator', api.getIndicatorProps() as Record<string, unknown>)
     put('title', api.getTitleProps() as Record<string, unknown>)
     put('action-trigger', api.getActionTriggerProps() as Record<string, unknown>)
+    put('progress', api.getProgressProps() as Record<string, unknown>)
     put('close-trigger', api.getCloseTriggerProps() as Record<string, unknown>)
 
     this.fillText(this.getPart('title'), api.title)

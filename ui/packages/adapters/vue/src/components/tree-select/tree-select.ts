@@ -77,6 +77,7 @@ export const XhTreeSelectRoot = defineComponent({
     disabled: Boolean,
     readOnly: Boolean,
     invalid: Boolean,
+    loading: Boolean,
     variant: { type: String as PropType<ControlVariant>, default: undefined },
     tone: { type: String as PropType<Tone>, default: undefined },
     size: { type: String as PropType<Size>, default: undefined },
@@ -360,6 +361,35 @@ export const XhTreeSelectBranchContent = defineComponent({
     const { node } = useTreeSelectNodeContext()
     // 收起只加 hidden，不卸载子树节点
     return () => h('div', ctx.api.value.getBranchContentProps(node.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
+export const XhTreeSelectEmpty = defineComponent({
+  name: 'XhTreeSelectEmpty',
+  setup(_, { slots }) {
+    const ctx = useTreeSelectContext()
+    // 空态占位：写在 content 里、tree 的兄弟，不进 role=tree 的拥有关系。
+    // 给了 collection 时收放归连接层，节点手写时归作者
+    return () => h('div', ctx.api.value.getEmptyProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+export const XhTreeSelectLoading = defineComponent({
+  name: 'XhTreeSelectLoading',
+  setup(_, { slots }) {
+    const ctx = useTreeSelectContext()
+    // 在途占位：与空态占位同一个位置，取数期间顶上来
+    return () => h('div', ctx.api.value.getLoadingProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+export const XhTreeSelectFooter = defineComponent({
+  name: 'XhTreeSelectFooter',
+  setup(_, { slots }) {
+    const ctx = useTreeSelectContext()
+    // 浮层底部的操作区：写在 content 里、tree 的兄弟，
+    // 放在这里的按钮既不进 role=tree 的拥有关系，也走不到方向键与连打检索
+    return () => h('div', ctx.api.value.getFooterProps() as Record<string, unknown>, slots.default?.())
   },
 })
 

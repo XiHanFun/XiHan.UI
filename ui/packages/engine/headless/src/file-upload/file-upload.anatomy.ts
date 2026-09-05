@@ -13,6 +13,7 @@ export const fileUploadAnatomy = createAnatomy('file-upload', [
   'item-name',
   'item-size-text',
   'item-preview',
+  'item-progress',
   'item-delete-trigger',
   'clear-trigger',
 ])

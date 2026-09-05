@@ -417,6 +417,58 @@
     display: none;
   }
 
+  /* 空态占位：待在 content 里、tree 的兄弟（role=tree 只许拥有 treeitem 与 group）。
+     盒与阴影归 content，这里只画一句居中的次要文字 */
+  [data-scope='tree-select'][data-part='empty'] {
+    display: block;
+    flex: none;
+    padding-block: var(--xh-tree-select-empty-py, var(--xh-space-3));
+    padding-inline: var(--xh-tree-select-empty-px, var(--xh-_tree-select-row-px));
+    color: var(--xh-tree-select-empty-fg, var(--xh-fg-subtle));
+    font-size: var(--xh-tree-select-empty-font-size, var(--xh-_tree-select-font-size));
+    line-height: var(--xh-leading-none);
+    text-align: center;
+  }
+
+  /* 上面给了 display，UA 的 [hidden]{display:none} 已被盖掉，这里补回来 */
+  [data-scope='tree-select'][data-part='empty'][hidden] {
+    display: none;
+  }
+
+  /* 在途占位：与空态占位同一个位置、同一副观感，两者不同屏 */
+  [data-scope='tree-select'][data-part='loading'] {
+    display: block;
+    flex: none;
+    padding-block: var(--xh-tree-select-loading-py, var(--xh-space-3));
+    padding-inline: var(--xh-tree-select-loading-px, var(--xh-_tree-select-row-px));
+    color: var(--xh-tree-select-loading-fg, var(--xh-fg-subtle));
+    font-size: var(--xh-tree-select-loading-font-size, var(--xh-_tree-select-font-size));
+    line-height: var(--xh-leading-none);
+    text-align: center;
+  }
+
+  [data-scope='tree-select'][data-part='loading'][hidden] {
+    display: none;
+  }
+
+  /* 浮层底部的操作区：排在树下面，与树之间用一条分隔线断开；不参与收缩，行再多也压不扁它 */
+  [data-scope='tree-select'][data-part='footer'] {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: var(--xh-tree-select-footer-gap, var(--xh-space-2));
+    padding-block: var(--xh-tree-select-footer-py, var(--xh-space-2));
+    padding-inline: var(--xh-tree-select-footer-px, var(--xh-space-2));
+    border-block-start: var(--xh-stroke-thin) solid var(--xh-tree-select-footer-border, var(--xh-border-subtle));
+    color: var(--xh-tree-select-footer-fg, var(--xh-fg-muted));
+    font-size: var(--xh-tree-select-footer-font-size, var(--xh-text-secondary-size));
+  }
+
+  /* 上面给了 display，UA 的 [hidden]{display:none} 已被盖掉，这里补回来 */
+  [data-scope='tree-select'][data-part='footer'][hidden] {
+    display: none;
+  }
+
   /* 焦点落在树容器上只有一种情形：指针打开、还没有任何行当锚点。那一刻它认领着 Tab 位，
      环画在内沿，用户才看得出键盘此刻在哪儿；有锚点时环长在行上，容器不再画 */
   [data-scope='tree-select'][data-part='tree'][tabindex='0']:focus-visible {

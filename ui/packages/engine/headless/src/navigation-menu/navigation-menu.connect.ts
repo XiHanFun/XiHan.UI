@@ -29,9 +29,11 @@ export function connectNavigationMenu<T extends PropTypes>(
   }))
   const metaOf = new Map(collection.map(meta => [meta.value, meta]))
 
-  /** 入口禁用：部件上写的优先，没写就回 collection 里查。 */
+  const navDisabled = !!prop('disabled')
+
+  /** 入口禁用：整套禁用一票通过，否则部件上写的优先，没写就回 collection 里查。 */
   const triggerDisabled = (item: NavigationMenuTriggerProps): boolean =>
-    item.disabled ?? metaOf.get(item.value)?.disabled ?? false
+    navDisabled || (item.disabled ?? metaOf.get(item.value)?.disabled ?? false)
 
   const triggerId = (target: string): string => scope.partId(navigationMenuAnatomy.name, `trigger:${target}`)
   const contentId = (target: string): string => scope.partId(navigationMenuAnatomy.name, `content:${target}`)
@@ -146,6 +148,15 @@ export function connectNavigationMenu<T extends PropTypes>(
         },
       })
     },
+
+    // 入口里的方向标记是纯装饰，开合状态由 trigger 的 aria-expanded 念出来
+    getTriggerIndicatorProps: item => normalize.element({
+      ...parts['trigger-indicator'].attrs,
+      'aria-hidden': true,
+      'data-state': stateAttr(item.value === value),
+      'data-orientation': orientation,
+      'data-disabled': dataAttr(triggerDisabled(item)),
+    }),
 
     /** 面板常挂，靠 hidden 显隐。 */
     getContentProps: (item) => {

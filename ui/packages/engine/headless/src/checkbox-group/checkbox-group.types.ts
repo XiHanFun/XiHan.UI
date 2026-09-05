@@ -1,4 +1,4 @@
-import type { MachineSchema, Orientation, PropTypes } from '@xihan-ui/core'
+import type { MachineSchema, Orientation, PropTypes, Size, Tone } from '@xihan-ui/core'
 
 export interface CheckboxGroupValueChangeDetails {
   value: string[]
@@ -61,6 +61,10 @@ export interface CheckboxGroupSchema extends MachineSchema {
     name?: string
     /** 视觉排布，默认 vertical。只出 data-orientation，不出 aria-orientation。 */
     orientation?: Orientation
+    /** 语气：brand / neutral / success / warning / danger / info，决定勾选方框用哪族颜色。 */
+    tone?: Tone
+    /** 尺寸：sm / md / lg，决定方框与文字的几何档位。 */
+    size?: Size
     /** value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 */
     onValueChange?: (details: CheckboxGroupValueChangeDetails) => void
   }

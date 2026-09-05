@@ -67,6 +67,9 @@ export interface JsonViewerNodeProps {
 /** 展示形态：tree 摊成可折叠的行，text 直接出缩进过的 JSON 原文。 */
 export type JsonViewerView = 'tree' | 'text'
 
+/** 外框形态：surface 带描边与底色，plain 只留内容。 */
+export type JsonViewerVariant = 'plain' | 'surface'
+
 /** 读屏与界面上的文案，默认英文。 */
 export interface JsonViewerTranslations {
   /** 原文视图那块区域的可及名字：它是一整块可滚动的文本，不给名字读屏念不出这是什么。 */
@@ -86,6 +89,8 @@ export interface JsonViewerTranslations {
   collapsedBranchLabel: (name: string, count: number) => string
   /** 超过 maxItems 被折掉的剩余项占位文字。 */
   moreItems: (count: number) => string
+  /** 一行也摊不出来时的兜底文案，作者往空态部件里写了内容即不用它。 */
+  empty: string
 }
 
 export interface JsonViewerSchema extends MachineSchema {
@@ -98,6 +103,8 @@ export interface JsonViewerSchema extends MachineSchema {
      * 要的就是与后端下发的那份一字不差。展开集合与键盘导航在这一档上不起作用。
      */
     view?: JsonViewerView
+    /** 外框形态：surface 带描边与底色（缺省），plain 去掉描边与底色，只留内容。 */
+    variant?: JsonViewerVariant
     /** 展开集合（元素是行路径）。给定即受控：cell 直读 prop，写只发 onExpandedValueChange 不落内部值。 */
     expandedValue?: string[]
     /** 非受控初值；不给就按 defaultExpandedDepth 现算。 */
@@ -180,6 +187,10 @@ export interface JsonViewerApi<T extends PropTypes = PropTypes> {
   toggle: (value: string) => void
   /** 当前生效的展示形态。 */
   view: JsonViewerView
+  /** 摊不出任何一行——value 没给或给的是 undefined。空态部件跟着它显隐。 */
+  isEmpty: boolean
+  /** 空态的兜底文案，作者没往空态部件里写内容时铺的就是它。 */
+  emptyText: string
   /** 缩进过的 JSON 原文；键序与环路记号与树档一致。text 档之外也取得到，方便作者做「复制原文」。 */
   text: string
   getRootProps: () => T['element']
@@ -195,4 +206,5 @@ export interface JsonViewerApi<T extends PropTypes = PropTypes> {
   getBranchTextProps: (props: JsonViewerNodeProps) => T['element']
   getBranchContentProps: (props: JsonViewerNodeProps) => T['element']
   getPreviewProps: (props: JsonViewerNodeProps) => T['element']
+  getEmptyProps: () => T['element']
 }

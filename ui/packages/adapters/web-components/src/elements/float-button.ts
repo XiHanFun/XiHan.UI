@@ -1,3 +1,4 @@
+import type { ActionVariant, Size, Tone } from '@xihan-ui/core'
 import type {
   CollapsibleOpenChangeDetails,
   CollapsibleSchema,
@@ -37,6 +38,9 @@ const TRISTATE_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? 
  * @attr {number} offset - 距那两条边的距离（px），默认 24
  * @attr {'circle'|'square'} shape - 触发器外形，默认 circle
  * @attr {'hover'|'click'} expand-trigger - 展开方式，默认 click
+ * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 形态，决定底色、描边与前景怎么用
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
+ * @attr {'sm'|'md'|'lg'} size - 尺寸，缺省与 lg 同档
  * @fires open-change - 展开状态变化；detail 为 `{ open: boolean }`
  * @csspart root - 定位壳，承载 data-state / data-placement / data-shape / data-disabled
  * @csspart trigger - 触发按钮，须写成 `<button>`；可及名字由 translations.trigger 给
@@ -54,6 +58,9 @@ export class XhFloatButtonElement extends XhElement {
     offset: { converter: NUMBER_CONVERTER },
     shape: { converter: STRING_CONVERTER },
     expandTrigger: { converter: STRING_CONVERTER, attribute: 'expand-trigger' },
+    variant: { converter: STRING_CONVERTER },
+    tone: { converter: STRING_CONVERTER },
+    size: { converter: STRING_CONVERTER },
     // 文案是对象，只走 property
     translations: { attribute: false },
   }
@@ -65,6 +72,9 @@ export class XhFloatButtonElement extends XhElement {
   declare offset?: number
   declare shape?: FloatButtonShape
   declare expandTrigger?: FloatButtonExpandTrigger
+  declare variant?: ActionVariant
+  declare tone?: Tone
+  declare size?: Size
   declare translations?: Partial<FloatButtonTranslations>
 
   private readonly notify = (details: CollapsibleOpenChangeDetails): void => {
@@ -92,6 +102,9 @@ export class XhFloatButtonElement extends XhElement {
       offset: this.offset,
       shape: this.shape,
       expandTrigger: this.expandTrigger,
+      variant: this.variant,
+      tone: this.tone,
+      size: this.size,
       translations: this.translations,
     }
   }

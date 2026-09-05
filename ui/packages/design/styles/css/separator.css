@@ -4,9 +4,18 @@
     --xh-separator-skin: 1;
   }
 
+  /*
+   * 线的颜色与线型都先收进两个私有槽，再由 root（只有它一个时）与 line（有分节文字时）
+   * 各自取用：换档只改槽，画在哪个节点上互不影响。
+   */
   [data-scope='separator'][data-part='root'] {
+    --xh-_separator-color: var(--xh-separator-color, var(--xh-border-default));
+    --xh-_separator-dash: var(--xh-separator-dash-length, var(--xh-space-1_5));
+    --xh-_separator-dash-gap: var(--xh-separator-dash-gap, var(--xh-space-1_5));
+    --xh-_separator-paint: var(--xh-_separator-color);
+
     border: 0;
-    background: var(--xh-separator-color, var(--xh-border-default));
+    background: var(--xh-_separator-paint);
   }
 
   [data-scope='separator'][data-part='root'][data-orientation='horizontal'] {
@@ -18,5 +27,87 @@
     align-self: stretch;
     inline-size: var(--xh-separator-thickness, var(--xh-stroke-thin));
     block-size: 100%;
+  }
+
+  /* —— 形态 ——
+     三档只换线的深浅，缺省档写在上面的基础规则里。使用者槽排在档值前面，
+     写了 --xh-separator-color 的那一条仍然压过档值 */
+  [data-scope='separator'][data-part='root'][data-variant='subtle'] {
+    --xh-_separator-color: var(--xh-separator-color, var(--xh-border-subtle));
+  }
+
+  [data-scope='separator'][data-part='root'][data-variant='strong'] {
+    --xh-_separator-color: var(--xh-separator-color, var(--xh-border-strong));
+  }
+
+  /* —— 虚线 ——
+     实线段与空白段交替铺；方向由 data-orientation 选，表达式只写这两条 */
+  [data-scope='separator'][data-part='root'][data-dashed][data-orientation='horizontal'] {
+    --xh-_separator-paint: repeating-linear-gradient(
+      to right,
+      var(--xh-_separator-color) 0 var(--xh-_separator-dash),
+      transparent var(--xh-_separator-dash) calc(var(--xh-_separator-dash) + var(--xh-_separator-dash-gap))
+    );
+  }
+
+  [data-scope='separator'][data-part='root'][data-dashed][data-orientation='vertical'] {
+    --xh-_separator-paint: repeating-linear-gradient(
+      to bottom,
+      var(--xh-_separator-color) 0 var(--xh-_separator-dash),
+      transparent var(--xh-_separator-dash) calc(var(--xh-_separator-dash) + var(--xh-_separator-dash-gap))
+    );
+  }
+
+  /* —— 带分节文字的三段形态 ——
+     渲染了 content 之后 root 改当容器：自己不再画线，线交给两条 line。
+     形态由部件在不在决定，没有开关 */
+  [data-scope='separator'][data-part='root']:has([data-part='content']) {
+    display: flex;
+    align-items: center;
+    inline-size: 100%;
+    block-size: auto;
+    gap: var(--xh-separator-gap, var(--xh-space-3));
+    background: none;
+  }
+
+  [data-scope='separator'][data-part='root'][data-orientation='vertical']:has([data-part='content']) {
+    flex-direction: column;
+    inline-size: auto;
+    block-size: 100%;
+  }
+
+  /* 两条线等分剩下的地方；粗细与颜色跟 root 单节点时同源 */
+  [data-scope='separator'][data-part='line'] {
+    flex: 1 1 0;
+    background: var(--xh-_separator-paint);
+  }
+
+  [data-scope='separator'][data-part='line'][data-orientation='horizontal'] {
+    block-size: var(--xh-separator-thickness, var(--xh-stroke-thin));
+  }
+
+  [data-scope='separator'][data-part='line'][data-orientation='vertical'] {
+    inline-size: var(--xh-separator-thickness, var(--xh-stroke-thin));
+  }
+
+  /* 分节文字：不参与等分，也不折行 */
+  [data-scope='separator'][data-part='content'] {
+    flex: none;
+    color: var(--xh-separator-content-fg, var(--xh-fg-muted));
+    font-size: var(--xh-separator-content-font-size, var(--xh-text-secondary-size));
+    line-height: var(--xh-leading-normal);
+    white-space: nowrap;
+  }
+
+  /* 文字靠边：靠哪边就把那一侧的线收成一小截，另一侧照旧等分 */
+  [data-scope='separator'][data-part='root'][data-align='start'] > [data-part='line']:first-child,
+  [data-scope='separator'][data-part='root'][data-align='end'] > [data-part='line']:last-child {
+    flex: 0 0 var(--xh-separator-align-length, var(--xh-space-6));
+  }
+
+  /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
+     写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
+  [data-scope='separator'][data-part='root'][hidden] {
+    display: none;
   }
 }

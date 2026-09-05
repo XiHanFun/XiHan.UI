@@ -157,7 +157,11 @@
     display: none;
   }
 
+  /* 私有槽一个：传输进度的 0..1 比例，由连接层写进进度条的内联样式，
+     这里给个 0 的缺省——没接上传器时进度条根本不露面，也就没有宽度可算。 */
   [data-scope='file-upload'][data-part='item'] {
+    --xh-_file-upload-progress: 0;
+
     display: flex;
     align-items: center;
     gap: var(--xh-file-upload-item-inner-gap, var(--xh-control-gap-md));
@@ -194,6 +198,48 @@
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-warning) center / contain no-repeat;
     mask: var(--xh-glyph-mark-warning) center / contain no-repeat;
+  }
+
+  /* 传完的那一行补一枚对勾，与失败那一枚警示字形对称：
+     不标出来的话「传完了」与「还没开始」在这一行上看不出分别 */
+  [data-scope='file-upload'][data-part='item'][data-state='done']::before {
+    content: '';
+    flex: none;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    background-color: var(--xh-file-upload-item-fg-done, var(--xh-fg-success));
+    -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+  }
+
+  /* 传输进度条：只在传输中露面，宽度按连接层写下的比例走。
+     进度是连续量，走 continuous 曲线，不是入场曲线 */
+  [data-scope='file-upload'][data-part='item-progress'] {
+    display: none;
+    overflow: hidden;
+    flex: none;
+    inline-size: var(--xh-file-upload-item-progress-w, calc(var(--xh-control-h-md) * 2));
+    block-size: var(--xh-file-upload-item-progress-h, var(--xh-stroke-thick));
+    border-radius: var(--xh-file-upload-item-progress-radius, var(--xh-shape-pill));
+    background: var(--xh-file-upload-item-progress-track, var(--xh-bg-subtle));
+  }
+
+  [data-scope='file-upload'][data-part='item-progress'][data-state='uploading'] {
+    display: block;
+  }
+
+  [data-scope='file-upload'][data-part='item-progress'][data-state='uploading']::before {
+    content: '';
+    display: block;
+    block-size: 100%;
+    border-radius: inherit;
+    background: var(--xh-file-upload-item-progress-fill, var(--xh-bg-brand));
+    inline-size: calc(var(--xh-_file-upload-progress, 0) * 100%);
+    transition: inline-size var(--xh-motion-duration-micro) var(--xh-motion-ease-continuous);
+  }
+
+  [data-scope='file-upload'][data-part='item-progress'][hidden] {
+    display: none;
   }
 
   /* 缩略图占位：作者往里塞图标或真缩略图，尺寸由这里定死，一行行的图标才对得齐 */

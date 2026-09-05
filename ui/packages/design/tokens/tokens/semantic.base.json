@@ -183,6 +183,10 @@
       "$type": "icon",
       "$value": "x"
     },
+    "mark-download": {
+      "$type": "icon",
+      "$value": "download"
+    },
     "mark-chevron-down": {
       "$type": "icon",
       "$value": "chevron-down"
@@ -210,6 +214,10 @@
     "mark-arrow-up": {
       "$type": "icon",
       "$value": "arrow-up"
+    },
+    "mark-arrow-down": {
+      "$type": "icon",
+      "$value": "arrow-down"
     },
     "mark-sort": {
       "$type": "icon",
@@ -282,6 +290,16 @@
       "$description": "停住自动播放。两条竖杠，与 mark-play 成对。",
       "$type": "icon",
       "$value": "pause"
+    },
+    "mark-calendar": {
+      "$description": "展开挑日子的面板。月历方格，与挑时刻的 mark-clock 成对。",
+      "$type": "icon",
+      "$value": "calendar"
+    },
+    "mark-clock": {
+      "$description": "展开挑时刻的面板。表盘带指针，与挑日子的 mark-calendar 成对。",
+      "$type": "icon",
+      "$value": "clock"
     },
     "mark-required": {
       "$type": "string",
@@ -604,6 +622,23 @@
     "gap-xl": {
       "$type": "dimension",
       "$value": "{space.6}"
+    },
+    "col-min-xs": {
+      "$description": "自适应栅格里一列最少多宽的四档下限：放得下几列就分几列，档位由作者在 grid 的 minColWidth 上挑。",
+      "$type": "dimension",
+      "$value": "10rem"
+    },
+    "col-min-sm": {
+      "$type": "dimension",
+      "$value": "14rem"
+    },
+    "col-min-md": {
+      "$type": "dimension",
+      "$value": "18rem"
+    },
+    "col-min-lg": {
+      "$type": "dimension",
+      "$value": "22rem"
     }
   },
   "track": {

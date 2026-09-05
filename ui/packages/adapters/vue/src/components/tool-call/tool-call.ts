@@ -1,4 +1,4 @@
-import type { Size, Tone } from '@xihan-ui/core'
+import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type { ToolCallApi, ToolCallPhase, ToolCallProps, ToolCallSchema, ToolCallTranslations } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
@@ -24,6 +24,7 @@ export const XhToolCallRoot = defineComponent({
     // 用 undefined 而非裸 Boolean，缺省值由机器给出
     autoDisclosure: { type: Boolean, default: undefined },
     disabled: Boolean,
+    variant: { type: String as PropType<ControlVariant>, default: undefined },
     tone: { type: String as PropType<Tone>, default: undefined },
     size: { type: String as PropType<Size>, default: undefined },
     translations: { type: Object as PropType<Partial<ToolCallTranslations>>, default: undefined },
@@ -68,6 +69,9 @@ export const XhToolCallRoot = defineComponent({
       },
       get endTime() {
         return props.endTime
+      },
+      get variant() {
+        return props.variant
       },
       get tone() {
         return props.tone

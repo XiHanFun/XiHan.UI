@@ -1,6 +1,6 @@
 import type { Direction, Size } from '@xihan-ui/core'
-import type { JsonViewerApi, JsonViewerNode, JsonViewerSchema, JsonViewerTranslations, JsonViewerView } from '@xihan-ui/headless'
-import type { PropType, VNode } from 'vue'
+import type { JsonViewerApi, JsonViewerNode, JsonViewerSchema, JsonViewerTranslations, JsonViewerVariant, JsonViewerView } from '@xihan-ui/headless'
+import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h, ref } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -77,6 +77,8 @@ export const XhJsonViewerRoot = defineComponent({
     // 任意形状都收，类型检查交给使用方
     value: { type: null as unknown as PropType<unknown>, default: undefined as unknown },
     view: { type: String as PropType<JsonViewerView>, default: undefined },
+    /** 外框形态：surface 带描边与底色（缺省），plain 只留内容。 */
+    variant: { type: String as PropType<JsonViewerVariant>, default: undefined },
     expandedValue: { type: Array as PropType<string[]>, default: undefined },
     defaultExpandedValue: { type: Array as PropType<string[]>, default: undefined },
     defaultExpandedDepth: { type: Number, default: undefined },
@@ -88,12 +90,16 @@ export const XhJsonViewerRoot = defineComponent({
     size: { type: String as PropType<Size>, default: undefined },
     translations: { type: Object as PropType<Partial<JsonViewerTranslations>>, default: undefined },
   },
+  // 空态那一格的内容：不写即铺 translations 里的兜底文案
+  slots: Object as SlotsType<{
+    empty?: () => VNode[]
+  }>,
   // expanded-change 携带 { value }，update:expandedValue 携带裸集合
   emits: {
     'expanded-value-change': (_details: PayloadOf<JsonViewerProps, 'onExpandedValueChange'>) => true,
     'update:expandedValue': (_value: PayloadOf<JsonViewerProps, 'onExpandedValueChange'>['value']) => true,
   },
-  setup(props, { emit }) {
+  setup(props, { emit, slots }) {
     const notify: JsonViewerProps['onExpandedValueChange'] = (details) => {
       emit('expanded-value-change', details)
       emit('update:expandedValue', details.value)
@@ -117,12 +123,19 @@ export const XhJsonViewerRoot = defineComponent({
       props: () => ({ dir: props.dir }),
     })
     // 行是按数据摊出来的，作者写不出也不必写：整棵树由组件自己铺
+    // 空态与滚动层同级：一行也摊不出来时由它说话，有行可摊时 connect 给它打 hidden
+    const renderEmpty = (api: JsonViewerApi): VNode => h(
+      'div',
+      api.getEmptyProps() as Record<string, unknown>,
+      slots.empty?.() ?? api.emptyText,
+    )
     return () => {
       const api = ctx.api.value
       // 原文档不铺行：整块文本交给 pre，框选与复制才拿得到与后端一字不差的那份
       if (api.view === 'text') {
         return h('div', api.getRootProps() as Record<string, unknown>, [
           h('pre', { ...api.getTextProps() as Record<string, unknown>, ref: keepLayer }, api.text),
+          renderEmpty(api),
           ...bars.render(),
         ])
       }
@@ -130,6 +143,7 @@ export const XhJsonViewerRoot = defineComponent({
       const children = groupByParent(api.visibleNodes)
       return h('div', api.getRootProps() as Record<string, unknown>, [
         h('div', { ...api.getTreeProps() as Record<string, unknown>, ref: keepLayer }, renderRows(api, children, null)),
+        renderEmpty(api),
         ...bars.render(),
       ])
     }

@@ -506,6 +506,71 @@
     animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
+  /* 空态占位：待在 content 里、list 的兄弟；盒与阴影归 content，这里只画一句居中的次要文字 */
+  [data-scope='select'][data-part='empty'] {
+    display: block;
+    flex: none;
+    padding-block: var(--xh-select-empty-py, var(--xh-space-3));
+    padding-inline: var(--xh-select-empty-px, var(--xh-_select-item-px));
+    color: var(--xh-select-empty-fg, var(--xh-fg-subtle));
+    font-size: var(--xh-select-empty-font-size, var(--xh-_select-font-size));
+    line-height: var(--xh-leading-none);
+    text-align: center;
+  }
+
+  /* 上面给了 display，UA 的 [hidden]{display:none} 已被盖掉，这里补回来 */
+  [data-scope='select'][data-part='empty'][hidden] {
+    display: none;
+  }
+
+  /* 在途占位：与空态占位同一个位置、同一副观感，两者不同屏 */
+  [data-scope='select'][data-part='loading'] {
+    display: block;
+    flex: none;
+    padding-block: var(--xh-select-loading-py, var(--xh-space-3));
+    padding-inline: var(--xh-select-loading-px, var(--xh-_select-item-px));
+    color: var(--xh-select-loading-fg, var(--xh-fg-subtle));
+    font-size: var(--xh-select-loading-font-size, var(--xh-_select-font-size));
+    line-height: var(--xh-leading-none);
+    text-align: center;
+  }
+
+  [data-scope='select'][data-part='loading'][hidden] {
+    display: none;
+  }
+
+  [data-scope='select'][data-part='group'] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-select-group-gap, var(--xh-list-option-gap));
+  }
+
+  [data-scope='select'][data-part='group'][hidden] {
+    display: none;
+  }
+
+  /* 组间留白只加在后继分组上：首组顶上已经有 list 的内边距，再加一层会显得头重 */
+  [data-scope='select'][data-part='group'] + [data-scope='select'][data-part='group'] {
+    margin-block-start: var(--xh-select-group-spacing, var(--xh-space-1_5));
+  }
+
+  /* 分组标题不是选项、进不了导航，画成小号次要文字，
+     内缩与条目对齐（同一个 padding-inline），标题与条目文字才在一条竖线上 */
+  [data-scope='select'][data-part='group-label'] {
+    display: block;
+    padding-block: var(--xh-select-group-label-py, var(--xh-space-1));
+    padding-inline: var(--xh-select-group-label-px, var(--xh-_select-item-px));
+    color: var(--xh-select-group-label-fg, var(--xh-fg-subtle));
+    font-size: var(--xh-select-group-label-font-size, var(--xh-text-caption-size));
+    font-weight: var(--xh-select-group-label-font-weight, var(--xh-font-weight-medium));
+    line-height: var(--xh-leading-none);
+    user-select: none;
+  }
+
+  [data-scope='select'][data-part='group-label'][hidden] {
+    display: none;
+  }
+
   [data-scope='select'][data-part='item'] {
     display: flex;
     align-items: center;

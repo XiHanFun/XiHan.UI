@@ -26,6 +26,7 @@ export const spinnerSuite: ConformanceSuite = {
             'aria-live': 'polite',
             'aria-label': 'Loading',
             'data-size': null,
+            'data-variant': null,
           },
           // 文案节点只是内容，不该自带角色
           label: { 'role': null, 'aria-live': null },
@@ -62,6 +63,14 @@ export const spinnerSuite: ConformanceSuite = {
       props: { size: 'lg' },
       initial: {
         parts: { root: { 'data-size': 'lg' } },
+      },
+    },
+    {
+      name: 'variant：接线到 data-variant，缺省档不写属性',
+      spec: { apg: APG },
+      props: { variant: 'dots' },
+      initial: {
+        parts: { root: { 'data-variant': 'dots' } },
       },
     },
     {

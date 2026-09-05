@@ -38,6 +38,15 @@
     font-size: var(--xh-avatar-font-size, var(--xh-control-caption-lg));
   }
 
+  /* —— 语气 ——
+     头像只有「淡底 + 字/图」一种形态，所以语气只换淡底与字色这一档，不开形态轴。
+     两条声明都把 --xh-avatar-bg / --xh-avatar-fg 排在语气值前面：使用者槽仍是最外那一层，
+     写了 tone 的那一枚照样受外层统一控制。整块带 [data-tone] 限定，没写语气的头像逐值不变 */
+  [data-scope='avatar'][data-part='root'][data-tone] {
+    background: var(--xh-avatar-bg, var(--xh-_tone-subtle, var(--xh-bg-subtle)));
+    color: var(--xh-avatar-fg, var(--xh-_tone-fg, var(--xh-fg-muted)));
+  }
+
   /* 不声明 display，加载完成前的 hidden 直接交给浏览器的 [hidden] 规则收起 */
   [data-scope='avatar'][data-part='image'] {
     inline-size: 100%;

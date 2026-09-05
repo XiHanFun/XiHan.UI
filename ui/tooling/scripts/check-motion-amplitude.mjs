@@ -41,6 +41,7 @@ const DEGENERATE = new Set(['0', '1', '-0', '+1'])
  */
 const STATIC_GEOMETRY = {
   'markdown-stream.css · translate · -0.5px': '光标竖线与文字基线的静态对齐，半像素是视觉补正不是位移',
+  'icon.css · scale · -1': '翻转是几何不是幅度：沿轴取反把图形照到另一侧，减弱动效档压成 1 等于把翻转撤掉',
 }
 
 /** 去掉块注释但保留换行，报错行号才对得上源文件。 */

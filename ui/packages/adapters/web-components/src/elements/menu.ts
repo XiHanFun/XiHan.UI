@@ -1,5 +1,5 @@
 import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
-import type { MenuNode, MenuOpenChangeDetails, MenuSchema, MenuSelectDetails } from '@xihan-ui/headless'
+import type { MenuNode, MenuOpenChangeDetails, MenuSchema, MenuSelectDetails, MenuTranslations } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectMenu, menuAnatomy, menuMachine, menuMeta } from '@xihan-ui/headless'
@@ -33,12 +33,17 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {'ltr'|'rtl'} dir - 文字方向，默认 ltr
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
+ * @attr {boolean} typeahead - 首字符连打检索，默认开；写 typeahead="false" 关掉
+ * @attr {boolean} disabled - 整张菜单禁用：触发器不再展开，条目全转 aria-disabled
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @fires select - 条目被选中（菜单随之关闭）；detail 为 `{ value: string }`
  * @csspart trigger - 触发按钮（aria-haspopup/aria-expanded/aria-controls 所在），同时是定位锚点
  * @csspart positioner - 浮层定位容器，坐标由引擎写成内联样式
  * @csspart content - role=menu 容器（焦点域与消解层的根节点，键盘在此收口），收起时带 hidden
  * @csspart item - role=menuitem 条目，须自带 value 属性标识身份；禁用写 aria-disabled="true"
+ * @csspart item-text - 条目里的文字载体，连打检索取它
+ * @csspart item-indicator - 条目里的标记位，对读屏隐藏
+ * @csspart item-description - 条目里的副文本
  * @csspart separator - 分隔线（role=separator，不入方向键导航）
  * @csspart group - role=group 分组容器，须自带 value 属性标识身份
  * @csspart group-label - 分组标题（本组 aria-labelledby 的目标）
@@ -61,6 +66,10 @@ export class XhMenuElement extends XhElement {
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     tone: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
+    typeahead: { converter: BOOLEAN_CONVERTER },
+    disabled: { converter: BOOLEAN_CONVERTER },
+    // 文案是对象，只走 property
+    translations: { attribute: false },
     submenu: { converter: BOOLEAN_CONVERTER },
     openOnHover: { converter: BOOLEAN_CONVERTER, attribute: 'open-on-hover' },
     hoverOpenDelay: { converter: NUMBER_CONVERTER, attribute: 'hover-open-delay' },
@@ -76,6 +85,9 @@ export class XhMenuElement extends XhElement {
   declare direction?: Direction
   declare tone?: Tone
   declare size?: Size
+  declare typeahead?: boolean
+  declare disabled?: boolean
+  declare translations?: Partial<MenuTranslations>
   declare submenu?: boolean
   declare openOnHover?: boolean
   declare hoverOpenDelay?: number
@@ -123,6 +135,9 @@ export class XhMenuElement extends XhElement {
       dir: this.direction,
       tone: this.tone,
       size: this.size,
+      typeahead: this.typeahead,
+      disabled: this.disabled,
+      translations: this.translations,
       submenu: this.submenu,
       openOnHover: this.openOnHover,
       hoverOpenDelay: this.hoverOpenDelay,
@@ -234,6 +249,21 @@ export class XhMenuElement extends XhElement {
       })
       this.spreader.spread(el, props as Record<string, unknown>)
     }
+
+    // 条目子部件的身份取所属条目自报的 value，与条目本身同一份声明
+    const ownerItem = (el: HTMLElement): { value: string, disabled?: boolean } => {
+      const owner = this.getParts('item').find(item => item.contains(el))
+      return {
+        value: owner?.getAttribute('value') ?? '',
+        disabled: owner ? (this.collection ? this.declaredDisabled(owner) : isItemDisabled(owner)) : undefined,
+      }
+    }
+    for (const el of this.getParts('item-text'))
+      this.spreader.spread(el, api.getItemTextProps(ownerItem(el)) as Record<string, unknown>)
+    for (const el of this.getParts('item-indicator'))
+      this.spreader.spread(el, api.getItemIndicatorProps(ownerItem(el)) as Record<string, unknown>)
+    for (const el of this.getParts('item-description'))
+      this.spreader.spread(el, api.getItemDescriptionProps(ownerItem(el)) as Record<string, unknown>)
 
     // 分隔线也是多实例 part，但不带身份、不入导航，属性对每个都一样
     for (const el of this.getParts('separator'))

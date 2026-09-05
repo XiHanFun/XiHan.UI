@@ -10,11 +10,14 @@
   [data-scope='gradient-text'][data-part='root'] {
     /* 走向由 data-direction 换掉这一个槽，背景那条声明只写一遍 */
     --xh-_gradient-text-dir: to right;
+    /* 两端颜色各收一个私有槽：语气档换的是这两支，使用者槽仍排在它们前面 */
+    --xh-_gradient-text-from: var(--xh-gradient-brand-from);
+    --xh-_gradient-text-to: var(--xh-gradient-brand-to);
 
     background-image: linear-gradient(
       var(--xh-_gradient-text-dir),
-      var(--xh-gradient-text-from, var(--xh-gradient-brand-from)),
-      var(--xh-gradient-text-to, var(--xh-gradient-brand-to))
+      var(--xh-gradient-text-from, var(--xh-_gradient-text-from)),
+      var(--xh-gradient-text-to, var(--xh-_gradient-text-to))
     );
     -webkit-background-clip: text;
     background-clip: text;
@@ -54,6 +57,14 @@
 
   [data-scope='gradient-text'][data-part='root'][data-direction='to-top-left'] {
     --xh-_gradient-text-dir: to top left;
+  }
+
+  /* —— 语气 —— */
+  /* 两端取该族主色与它压深一档的取值，深浅两态自动跟随。
+     排在使用者槽之后：作者写了 from / to，六族语气一并让位 */
+  [data-scope='gradient-text'][data-part='root'][data-tone] {
+    --xh-_gradient-text-from: var(--xh-_tone);
+    --xh-_gradient-text-to: var(--xh-_tone-active);
   }
 
   /* 强制色模式下系统会禁掉背景图，留着透明前景整段字就彻底看不见了，这里把填充色还回去 */

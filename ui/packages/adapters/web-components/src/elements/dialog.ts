@@ -34,6 +34,7 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @csspart positioner - 浮层定位容器
  * @csspart content - 对话框内容（role/aria-modal/焦点陷阱所在）
  * @csspart header - 面板头：标题与说明所在的那一段，不跟着正文滚
+ * @csspart indicator - 语气徽记：不给内容就由皮肤按节点上的 data-tone 画兜底字形
  * @csspart title - 标题（aria-labelledby 目标）
  * @csspart description - 描述（aria-describedby 目标）
  * @csspart body - 正文：面板里唯一会滚的一段
@@ -166,6 +167,7 @@ export class XhDialogElement extends XhElement {
     put('positioner', api.getPositionerProps() as Record<string, unknown>)
     put('content', api.getContentProps() as Record<string, unknown>)
     put('header', api.getHeaderProps() as Record<string, unknown>)
+    put('indicator', api.getIndicatorProps() as Record<string, unknown>)
     put('title', api.getTitleProps() as Record<string, unknown>)
     put('description', api.getDescriptionProps() as Record<string, unknown>)
     put('body', api.getBodyProps() as Record<string, unknown>)

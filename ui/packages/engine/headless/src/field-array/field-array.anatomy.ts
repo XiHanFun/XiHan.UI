@@ -2,10 +2,12 @@ import type { Scope } from '@xihan-ui/core'
 import { createAnatomy } from '@xihan-ui/core'
 
 // data-part 直接用 kebab-case，与 CSS 选择器一致。
-// 一行分两半：item-content 装作者自己的控件，item-action 装这一行的把手。
+// 一行分两半：item-content 装作者自己的控件，item-action 装这一行的把手；
+// item-label 是这一行前面那一小段行号或名目，可选。
 export const fieldArrayAnatomy = createAnatomy('field-array', [
   'root',
   'item',
+  'item-label',
   'item-content',
   'item-action',
   'add-trigger',

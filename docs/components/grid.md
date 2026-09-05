@@ -16,9 +16,14 @@
 
 - 各列等宽，且每列的下限是 0：长内容不会把自己那列撑宽。
 - `cols` 除了整数也收断点对象，逐档写各自的列数，没写的档沿用比它窄的那一档。
-- `span` 让一格横跨几列，`offset` 把它前面几列空出来。
+- `rows` 排出显式行轨道；不写则行数由内容自己撑出来。
+- `minColWidth` 换一条路排列：给一档列宽下限，容器放得下几列就分几列，`cols` 那条轨道表让位。
+  卡片墙用它比逐档写 `cols` 省事。
+- `gap` 管两条轴，`rowGap` 与 `columnGap` 各自只管一条，不写则跟着 `gap` 走。
+- `span` 让一格横跨几列，`offset` 把它前面几列空出来；两者与 `cols` 一样收断点对象，
+  窄屏收成一列时把 `span` 也收回 1，那一格才不会溢出。
 - 四档断点取自令牌：`sm` 640px、`md` 768px、`lg` 1024px、`xl` 1280px。
-- `cols`（含断点对象的每一档）与 `span` 收 1 至 12 的整数，`offset` 收 1 至 11 的整数；
+- `cols` / `rows` / `span`（含断点对象的每一档）收 1 至 12 的整数，`offset` 收 1 至 11 的整数；
   范围外的值——0、负数、小数、超过上限——一律按没写算：`cols` 落回一列、`span` 占一列、`offset` 不错列。
 - DOM 上只出得来皮肤有规则接的取值：`data-cols` 恒在 1 至 12 之间，`data-span` 与 `data-offset`
   要么落在范围内、要么不出现。
@@ -88,8 +93,12 @@ cols 除了整数也收断点对象，逐档写各自的列数：窄视口一列
 | --- | --- | --- | --- |
 | `align` | `GridAlign` |  | 每一项在自己那格里的块向对齐：start / center / end / stretch / baseline，不写则铺满格高。 |
 | `cols` | `GridCols` |  | 列数：1 至 12 的整数，不写按一列排；范围外的值也按一列排。 各列等宽，且每列的下限是 0，长内容不会把自己那列撑宽。 也收断点对象 `{ base, sm, md, lg, xl }`，逐档写各自的列数，没写的档沿用比它窄的那一档。 |
+| `columnGap` | `GridGap` |  | 只改列间距，档位同 gap；不写则跟着 gap 走。 |
 | `gap` | `GridGap` |  | 行列间距档位：xs / sm / md / lg / xl，不写则不留间距。档位换算成多少由皮肤定。 |
 | `justifyItems` | `GridJustifyItems` |  | 每一项在自己那格里的行内对齐：start / center / end / stretch，不写则铺满格宽。 |
+| `minColWidth` | `GridMinColWidth` |  | 每列最少多宽：xs / sm / md / lg 四档，各指一个列宽下限令牌。写了它，列数改由容器宽度 除以这个下限得出（放得下几列就几列），`cols` 那条轨道表不再生效。不收裸像素值。 |
+| `rowGap` | `GridGap` |  | 只改行间距，档位同 gap；不写则跟着 gap 走。 |
+| `rows` | `GridRowCount` |  | 行数：1 至 12 的整数，不写则行数由内容自己撑出来；范围外的值也按不写算。 写了就把这几行排成显式轨道，超出的项落进隐式行。 |
 
 ## connect API
 
@@ -117,16 +126,33 @@ cols 除了整数也收断点对象，逐档写各自的列数：窄视口一列
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-align` | props.align |
+| `root` | `data-cols` | cols.base |
+| `root` | `data-cols-lg` | cols.lg |
+| `root` | `data-cols-md` | cols.md |
+| `root` | `data-cols-sm` | cols.sm |
+| `root` | `data-cols-xl` | cols.xl |
+| `root` | `data-column-gap` | props.columnGap |
 | `root` | `data-gap` | props.gap |
 | `root` | `data-justify-items` | props.justifyItems |
-| `item` | `data-offset` | tier(item.offset, MAX_COLUMN_OFFSET) |
-| `item` | `data-span` | tier(item.span, MAX_COLUMN_COUNT) |
+| `root` | `data-min-col` | props.minColWidth |
+| `root` | `data-row-gap` | props.rowGap |
+| `root` | `data-rows` | tier(props.rows, MAX_COLUMN_COUNT) |
+| `item` | `data-offset` | offset.base |
+| `item` | `data-offset-lg` | offset.lg |
+| `item` | `data-offset-md` | offset.md |
+| `item` | `data-offset-sm` | offset.sm |
+| `item` | `data-offset-xl` | offset.xl |
+| `item` | `data-span` | span.base |
+| `item` | `data-span-lg` | span.lg |
+| `item` | `data-span-md` | span.md |
+| `item` | `data-span-sm` | span.sm |
+| `item` | `data-span-xl` | span.xl |
 
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-grid-columns` · `--xh-grid-gap`
+`--xh-grid-column-gap` · `--xh-grid-columns` · `--xh-grid-gap` · `--xh-grid-row-gap` · `--xh-grid-rows`
 
 ## 响应式
 

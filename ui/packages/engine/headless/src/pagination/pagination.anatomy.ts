@@ -2,6 +2,10 @@ import { createAnatomy } from '@xihan-ui/core'
 
 export const paginationAnatomy = createAnatomy('pagination', [
   'root',
+  // "第 x-y 条，共 z 条"这段信息，文本由 api.summaryText 给
+  'summary',
+  // 跳页输入框：敲页码回车即跳
+  'jumper',
   'prev-trigger',
   'next-trigger',
   'item',

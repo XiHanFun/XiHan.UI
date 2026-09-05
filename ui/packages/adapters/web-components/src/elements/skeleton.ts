@@ -1,4 +1,4 @@
-import type { SkeletonProps, SkeletonShape } from '@xihan-ui/headless'
+import type { SkeletonAnimation, SkeletonProps, SkeletonShape } from '@xihan-ui/headless'
 import { connectSkeleton, skeletonAnatomy, skeletonMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -25,7 +25,8 @@ function itemShape(el: HTMLElement): SkeletonShape | undefined {
  * @customElement xh-skeleton
  * @attr {boolean} loading - 是否还在加载，写 "false" 结束加载态
  * @attr {'text'|'circle'|'rect'} shape - 容器内骨架条的默认形状
- * @csspart root - 骨架容器，加载期间带 aria-busy，结束后带 hidden
+ * @attr {'shimmer'|'pulse'|'none'} animation - 动效档，缺省 shimmer
+ * @csspart root - 骨架容器，加载期间带 aria-busy，结束后带 hidden，承载 data-animation
  * @csspart item - 单根骨架条，加载期间带 aria-hidden，不进无障碍树
  */
 export class XhSkeletonElement extends XhElement {
@@ -35,13 +36,15 @@ export class XhSkeletonElement extends XhElement {
   static override properties = {
     loading: { converter: BOOLEAN_CONVERTER },
     shape: { converter: STRING_CONVERTER },
+    animation: { converter: STRING_CONVERTER },
   }
 
   declare loading?: boolean
   declare shape?: SkeletonShape
+  declare animation?: SkeletonAnimation
 
   protected wire(): void {
-    const props: SkeletonProps = { loading: this.loading, shape: this.shape }
+    const props: SkeletonProps = { loading: this.loading, shape: this.shape, animation: this.animation }
     const api = connectSkeleton(props, wcNormalize)
 
     const root = this.getPart('root')

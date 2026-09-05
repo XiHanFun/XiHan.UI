@@ -10,6 +10,10 @@
     /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
     --xh-icon-size: var(--xh-json-viewer-icon-size, var(--xh-glyph-size-text));
 
+    /* 形态只换这两个私有槽，两档容器那几条边框与底色的声明只写一遍 */
+    --xh-_json-viewer-border: var(--xh-border-default);
+    --xh-_json-viewer-bg: var(--xh-bg-surface);
+
     --xh-_json-viewer-font-size: var(--xh-control-caption-md);
     --xh-_json-viewer-row-py: var(--xh-space-0_5);
     --xh-_json-viewer-indent: var(--xh-space-4);
@@ -37,6 +41,12 @@
     display: none;
   }
 
+  /* 无框档：边框留着但透明，去掉外框不会让行的位置跳一格 */
+  [data-scope='json-viewer'][data-part='root'][data-variant='plain'] {
+    --xh-_json-viewer-border: transparent;
+    --xh-_json-viewer-bg: transparent;
+  }
+
   /* 尺寸轴只换私有槽，部件从 root 继承 */
   [data-scope='json-viewer'][data-part='root'][data-size='sm'] {
     --xh-_json-viewer-font-size: var(--xh-control-caption-sm);
@@ -57,9 +67,9 @@
     max-block-size: var(--xh-json-viewer-max-h, var(--xh-viewport-max-h));
     padding-block: var(--xh-json-viewer-py, var(--xh-space-2));
     padding-inline: var(--xh-json-viewer-px, var(--xh-space-2));
-    border: var(--xh-stroke-thin) solid var(--xh-json-viewer-border, var(--xh-border-default));
+    border: var(--xh-stroke-thin) solid var(--xh-json-viewer-border, var(--xh-_json-viewer-border));
     border-radius: var(--xh-json-viewer-radius, var(--xh-shape-surface));
-    background: var(--xh-json-viewer-bg, var(--xh-bg-surface));
+    background: var(--xh-json-viewer-bg, var(--xh-_json-viewer-bg));
     overflow: auto;
   }
 
@@ -70,9 +80,9 @@
     max-block-size: var(--xh-json-viewer-max-h, var(--xh-viewport-max-h));
     padding-block: var(--xh-json-viewer-py, var(--xh-space-2));
     padding-inline: var(--xh-json-viewer-px, var(--xh-space-2));
-    border: var(--xh-stroke-thin) solid var(--xh-json-viewer-border, var(--xh-border-default));
+    border: var(--xh-stroke-thin) solid var(--xh-json-viewer-border, var(--xh-_json-viewer-border));
     border-radius: var(--xh-json-viewer-radius, var(--xh-shape-surface));
-    background: var(--xh-json-viewer-bg, var(--xh-bg-surface));
+    background: var(--xh-json-viewer-bg, var(--xh-_json-viewer-bg));
     color: var(--xh-json-viewer-text-fg, var(--xh-fg-default));
     font-family: var(--xh-json-viewer-font, var(--xh-font-family-mono));
     /* 缩进靠空格，行不折：折行会把层级读乱，横向给滚动条 */
@@ -267,6 +277,27 @@
   }
 
   [data-scope='json-viewer'][data-part='branch-content'][hidden] {
+    display: none;
+  }
+
+  /* —— 空态 —— */
+  /* 一行也摊不出来时占位的那一格：与两档容器共用同一套边框与高度令牌，空与不空盒子不跳 */
+  [data-scope='json-viewer'][data-part='empty'] {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--xh-json-viewer-empty-gap, var(--xh-space-2));
+    padding-block: var(--xh-json-viewer-empty-py, var(--xh-space-6));
+    padding-inline: var(--xh-json-viewer-empty-px, var(--xh-space-4));
+    border: var(--xh-stroke-thin) solid var(--xh-json-viewer-border, var(--xh-_json-viewer-border));
+    border-radius: var(--xh-json-viewer-radius, var(--xh-shape-surface));
+    background: var(--xh-json-viewer-bg, var(--xh-_json-viewer-bg));
+    color: var(--xh-json-viewer-empty-fg, var(--xh-fg-muted));
+    text-align: center;
+  }
+
+  [data-scope='json-viewer'][data-part='empty'][hidden] {
     display: none;
   }
 }

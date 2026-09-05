@@ -26,6 +26,12 @@
   [data-scope='log'][data-part='root'] {
     --xh-_log-line-h: var(--xh-log-line-height, 1.25rem);
 
+    /* 尺寸缺省档：不写 data-size 时的取值。三档只改这两个私有槽，
+       公开槽留在读处当首选，作者在祖先上设的覆盖才赢得过档位声明。
+       行高不在档内：视口按 rows 定高读的是同一个基准，三档同值才对得上整数行 */
+    --xh-_log-font-size: var(--xh-text-secondary-size);
+    --xh-_log-content-px: var(--xh-space-3);
+
     /* 作者塞进回到底部按钮里的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
     --xh-icon-size: var(--xh-log-icon-size, var(--xh-glyph-size-text));
 
@@ -76,9 +82,9 @@
   /* 等宽排版落在包裹层上，各行继承；行与行之间不留空隙，视口高度才等于整数行 */
   [data-scope='log'][data-part='content'] {
     display: block;
-    padding-inline: var(--xh-log-content-px, var(--xh-space-3));
+    padding-inline: var(--xh-log-content-px, var(--xh-_log-content-px));
     font-family: var(--xh-log-font, var(--xh-font-family-mono));
-    font-size: var(--xh-log-font-size, var(--xh-text-secondary-size));
+    font-size: var(--xh-log-font-size, var(--xh-_log-font-size));
   }
 
   [data-scope='log'][data-part='content'][hidden] {
@@ -90,6 +96,24 @@
     line-height: var(--xh-_log-line-h);
     white-space: pre;
     tab-size: var(--xh-log-tab-size, 4);
+  }
+
+  /* 级别只染行文颜色，不动排版：一行的高度是定高基准，四档必须等高。
+     没写级别的行走内容层的前景色 */
+  [data-scope='log'][data-part='line'][data-level='debug'] {
+    color: var(--xh-log-level-debug-fg, var(--xh-fg-subtle));
+  }
+
+  [data-scope='log'][data-part='line'][data-level='info'] {
+    color: var(--xh-log-level-info-fg, var(--xh-fg-default));
+  }
+
+  [data-scope='log'][data-part='line'][data-level='warn'] {
+    color: var(--xh-log-level-warn-fg, var(--xh-fg-warning));
+  }
+
+  [data-scope='log'][data-part='line'][data-level='error'] {
+    color: var(--xh-log-level-error-fg, var(--xh-fg-danger));
   }
 
   /* 回到底部：浮在视口右下角，收起时不卸载只隐藏 */
@@ -143,6 +167,22 @@
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
     mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
+  }
+
+  /* 尺寸档只改行文字号与内衬 */
+  [data-scope='log'][data-part='root'][data-size='sm'] {
+    --xh-_log-font-size: var(--xh-text-caption-size);
+    --xh-_log-content-px: var(--xh-space-2);
+  }
+
+  [data-scope='log'][data-part='root'][data-size='md'] {
+    --xh-_log-font-size: var(--xh-text-secondary-size);
+    --xh-_log-content-px: var(--xh-space-3);
+  }
+
+  [data-scope='log'][data-part='root'][data-size='lg'] {
+    --xh-_log-font-size: var(--xh-text-body-size);
+    --xh-_log-content-px: var(--xh-space-4);
   }
 
   /* 视觉隐藏但仍参与播报：用 clip-path 裁到不可见，不能用 display:none 或 visibility:hidden；

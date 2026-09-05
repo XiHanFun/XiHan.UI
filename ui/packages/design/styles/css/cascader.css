@@ -412,6 +412,43 @@
     outline: none;
   }
 
+  [data-scope='cascader'][data-part='group'] {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    gap: var(--xh-cascader-group-gap, var(--xh-list-option-gap));
+  }
+
+  [data-scope='cascader'][data-part='group'][hidden] {
+    display: none;
+  }
+
+  /* 组间留白只加在后继分组上：首组顶上已经有列的内边距，再加一层会显得头重 */
+  [data-scope='cascader'][data-part='group'] + [data-scope='cascader'][data-part='group'] {
+    margin-block-start: var(--xh-cascader-group-spacing, var(--xh-space-1_5));
+  }
+
+  /* 分组标题不是条目、进不了导航，画成小号次要文字，
+     内缩与条目对齐（同一个 padding-inline），标题与条目文字才在一条竖线上 */
+  [data-scope='cascader'][data-part='group-label'] {
+    display: block;
+    padding-block: var(--xh-cascader-group-label-py, var(--xh-space-1));
+    padding-inline: var(--xh-cascader-group-label-px, var(--xh-_cascader-row-px));
+    color: var(--xh-cascader-group-label-fg, var(--xh-fg-subtle));
+    font-size: var(--xh-cascader-group-label-font-size, var(--xh-text-caption-size));
+    font-weight: var(--xh-cascader-group-label-font-weight, var(--xh-font-weight-medium));
+    line-height: var(--xh-leading-none);
+    user-select: none;
+  }
+
+  [data-scope='cascader'][data-part='group-label'][hidden] {
+    display: none;
+  }
+
+  [data-scope='cascader'][data-part='group-label'][data-disabled] {
+    color: var(--xh-fg-disabled);
+  }
+
   [data-scope='cascader'][data-part='item'] {
     display: flex;
     align-items: center;
@@ -697,6 +734,48 @@
   }
 
   [data-scope='cascader'][data-part='empty'][hidden] {
+    display: none;
+  }
+
+  /* 在途占位：与空态占位同一个位置、同一副观感，两者不同屏 */
+  [data-scope='cascader'][data-part='loading'] {
+    display: flex;
+    flex: 0 0 100%;
+    align-items: center;
+    justify-content: center;
+    min-inline-size: var(--xh-cascader-loading-min-w, var(--xh-cascader-column-min-w, 7rem));
+    min-block-size: var(--xh-cascader-loading-min-h, 5rem);
+    padding: var(--xh-cascader-loading-p, var(--xh-space-3));
+    color: var(--xh-cascader-loading-fg, var(--xh-fg-subtle));
+    font-size: var(--xh-cascader-loading-font-size, var(--xh-_cascader-font-size));
+  }
+
+  [data-scope='cascader'][data-part='loading'][hidden] {
+    display: none;
+  }
+
+  /* 底栏在场时浮层壳允许换行：列照旧并排在第一行，底栏占满一整行落在列下面。
+     没写底栏的浮层不命中这条，列多到放不下时仍是整体横向滚动 */
+  [data-scope='cascader'][data-part='content']:has(> [data-part='footer']) {
+    flex-wrap: wrap;
+  }
+
+  /* 浮层底部的操作区：横跨全部列，与列之间用一条分隔线断开 */
+  [data-scope='cascader'][data-part='footer'] {
+    display: flex;
+    /* 基准就是一整行：换行容器里它因此自己独占一行，落在全部列的下面 */
+    flex-basis: 100%;
+    align-items: center;
+    gap: var(--xh-cascader-footer-gap, var(--xh-space-2));
+    padding-block: var(--xh-cascader-footer-py, var(--xh-space-2));
+    padding-inline: var(--xh-cascader-footer-px, var(--xh-space-2));
+    border-block-start: var(--xh-stroke-thin) solid var(--xh-cascader-footer-border, var(--xh-border-subtle));
+    color: var(--xh-cascader-footer-fg, var(--xh-fg-muted));
+    font-size: var(--xh-cascader-footer-font-size, var(--xh-text-secondary-size));
+  }
+
+  /* 上面给了 display，UA 的 [hidden]{display:none} 已被盖掉，这里补回来 */
+  [data-scope='cascader'][data-part='footer'][hidden] {
     display: none;
   }
 

@@ -58,6 +58,11 @@ export function connectTree<T extends PropTypes>(
   const expandedValue = context.get('expandedValue')
   const selection = context.get('selection')
   const treeDisabled = !!prop('disabled')
+  const loading = !!prop('loading')
+  // 集合交给库时相位由库判；节点手写时库数不出有几条
+  const counted = prop('collection') != null
+  // 形态恒有值：缺省 surface，读一眼 DOM 就知道这棵树有没有外框
+  const variant = prop('variant') ?? 'surface'
   const dir = prop('dir') ?? 'ltr'
   // 横排只开给末端那一层；其余一律竖排，层级得靠竖排读出来
   const leafOrientation = prop('leafOrientation') ?? 'vertical'
@@ -300,7 +305,9 @@ export function connectTree<T extends PropTypes>(
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'data-orientation': 'vertical',
+      'data-variant': variant,
       'data-disabled': dataAttr(treeDisabled),
+      'data-loading': dataAttr(loading),
     }),
 
     getLabelProps: () => normalize.element({
@@ -352,6 +359,22 @@ export function connectTree<T extends PropTypes>(
       })
     },
 
+    // 空态占位：放在 root 里、tree 的兄弟（role=tree 只许拥有 treeitem 与 group）。
+    // 给了 collection 才由连接层判定露不露面；节点手写时库数不出有几条，那一档归作者自己收放。
+    // 取数在途时让位给在途占位，两者不同屏
+    getEmptyProps: () => normalize.element({
+      ...parts.empty.attrs,
+      'data-disabled': dataAttr(treeDisabled),
+      'hidden': counted ? (loading || collection.length > 0) || undefined : loading || undefined,
+    }),
+
+    // 在途占位：与空态占位同一个位置、同一套收放判据，只是条件相反
+    getLoadingProps: () => normalize.element({
+      ...parts.loading.attrs,
+      'data-disabled': dataAttr(treeDisabled),
+      'hidden': counted ? (!loading || collection.length > 0) || undefined : !loading || undefined,
+    }),
+
     getLiveRegionProps: () => normalize.element({
       ...parts['live-region'].attrs,
       'role': 'status',
@@ -369,6 +392,8 @@ export function connectTree<T extends PropTypes>(
       // 复选与否必须显式说，省略只是没说
       'aria-multiselectable': multiselectable ? 'true' : 'false',
       'aria-disabled': treeDisabled ? 'true' : 'false',
+      // 取数在途的播报归树本体：两个相位占位自己不带这一位
+      'aria-busy': loading ? 'true' : undefined,
       'data-orientation': 'vertical',
       // 焦点在树外时容器兜底进 Tab 序列，由 onFocus 转投给节点。
       // 判据用 focusedValue 而非 anchor：anchor 可能指向已删掉、已隐藏或不在树里的值，那时无人认领 tabindex=0

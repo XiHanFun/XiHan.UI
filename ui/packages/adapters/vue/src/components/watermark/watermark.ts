@@ -1,4 +1,4 @@
-import type { WatermarkProps } from '@xihan-ui/headless'
+import type { WatermarkImageSize, WatermarkProps } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
 import { connectWatermark } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'
@@ -18,6 +18,9 @@ export const XhWatermarkRoot = defineComponent({
     gap: { type: Number, default: undefined },
     fontSize: { type: Number, default: undefined },
     opacity: { type: Number, default: undefined },
+    fontFamily: { type: String, default: undefined },
+    image: { type: String, default: undefined },
+    imageSize: { type: Object as PropType<WatermarkImageSize>, default: undefined },
   },
   setup(props, { slots }) {
     const api = computed(() => connectWatermark(props as WatermarkProps, vueNormalize))

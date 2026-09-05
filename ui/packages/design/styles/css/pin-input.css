@@ -87,6 +87,37 @@
     color: var(--xh-pin-input-label-fg-disabled, var(--xh-fg-subtle));
   }
 
+  /* 分段：连着的几格圈成一段。它只排版，格间距仍由格子自己的相邻兄弟规则给 */
+  [data-scope='pin-input'][data-part='group'] {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  [data-scope='pin-input'][data-part='group'][hidden] {
+    display: none;
+  }
+
+  /* 段间分隔：两段之间的一道短横或圆点，两侧各留一格间距 */
+  [data-scope='pin-input'][data-part='separator'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    margin-inline: var(--xh-pin-input-separator-gap, var(--xh-_pin-input-box-gap));
+    color: var(--xh-pin-input-separator-fg, var(--xh-fg-muted));
+    font-size: var(--xh-pin-input-separator-font-size, var(--xh-_pin-input-box-font-size));
+    line-height: var(--xh-leading-none);
+    user-select: none;
+  }
+
+  [data-scope='pin-input'][data-part='separator'][hidden] {
+    display: none;
+  }
+
+  [data-scope='pin-input'][data-part='separator'][data-disabled] {
+    color: var(--xh-pin-input-separator-fg-disabled, var(--xh-fg-disabled));
+  }
+
   /* 每格是等宽方框：宽高同取一个尺寸，内边距归零。
      留了内边距，单字符居中后可用宽度不足，中文与全角字符会被挤出框外 */
   [data-scope='pin-input'][data-part='input'] {
@@ -124,7 +155,7 @@
 
   /* hover 换描边与填充两条通道。只在中性态换：invalid 正拿边框颜色说事，
      被 hover 盖掉那条信息就没了 */
-  [data-scope='pin-input'][data-part='input']:hover:not(:disabled, [data-invalid]) {
+  [data-scope='pin-input'][data-part='input']:hover:not(:disabled, [data-readonly], [data-invalid]) {
     border-color: var(--xh-pin-input-box-border-hover, var(--xh-_pin-input-box-border-hover));
     background: var(--xh-pin-input-box-bg-hover, var(--xh-_pin-input-box-bg-hover));
   }
@@ -144,6 +175,11 @@
 
     /* 校验失败时环也跟着变红：两圈等宽相邻却一红一蓝，读的人不知道哪个才是当前状态 */
     --xh-_pin-input-ring: var(--xh-ring-invalid);
+  }
+
+  /* 只读仍可聚焦、可复制，所以不置灰，只把底色压下去表示"改不动" */
+  [data-scope='pin-input'][data-part='input'][data-readonly] {
+    background: var(--xh-pin-input-box-bg-readonly, var(--xh-bg-subtle));
   }
 
   /* 每格都是原生 disabled 的单体控件（禁用的格子不该能聚焦），所以用 :disabled */

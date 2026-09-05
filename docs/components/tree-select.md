@@ -17,6 +17,7 @@
 - 选中与展开两套值各自可受控。
 - `cascade` 与 `checkedStrategy` 决定勾选是否带子级、回显给哪一层。
 - 支持只挑叶子不挑分支、浮层内关键词过滤、子节点异步加载。
+- 空（`empty`）与在途（`loading`）两个相位各有部件；`loading` 为真时树报 `aria-busy`，空态让位。
 
 ## 示例
 
@@ -70,7 +71,7 @@ disabled 连键盘入口都没有；readOnly 照常展开浏览但值改不动�
 
 ### 浮层里的操作区
 
-content 里除了树还能放别的：在浮层内点按钮不算点在外面，浮层不会因此收起
+footer 写在 content 里、tree 的兄弟：它不进 role=tree 的拥有关系，方向键也走不到；在浮层内点按钮不算点在外面，浮层不会因此收起
 
 <XhDemo src="tree-select/09-action" />
 
@@ -103,7 +104,7 @@ Vue 不写默认插槽时按 collection 铺开整套部件：带 children 的节
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-tree-select>` |
-| Vue 组件 | `XhTreeSelectBranch` `XhTreeSelectBranchContent` `XhTreeSelectBranchControl` `XhTreeSelectBranchIndicator` `XhTreeSelectBranchText` `XhTreeSelectBranchTrigger` `XhTreeSelectClearTrigger` `XhTreeSelectContent` `XhTreeSelectControl` `XhTreeSelectHiddenInput` `XhTreeSelectIndicator` `XhTreeSelectItem` `XhTreeSelectItemIndicator` `XhTreeSelectItemText` `XhTreeSelectLabel` `XhTreeSelectPositioner` `XhTreeSelectRoot` `XhTreeSelectTree` `XhTreeSelectTrigger` `XhTreeSelectValueText` |
+| Vue 组件 | `XhTreeSelectBranch` `XhTreeSelectBranchContent` `XhTreeSelectBranchControl` `XhTreeSelectBranchIndicator` `XhTreeSelectBranchText` `XhTreeSelectBranchTrigger` `XhTreeSelectClearTrigger` `XhTreeSelectContent` `XhTreeSelectControl` `XhTreeSelectEmpty` `XhTreeSelectFooter` `XhTreeSelectHiddenInput` `XhTreeSelectIndicator` `XhTreeSelectItem` `XhTreeSelectItemIndicator` `XhTreeSelectItemText` `XhTreeSelectLabel` `XhTreeSelectLoading` `XhTreeSelectPositioner` `XhTreeSelectRoot` `XhTreeSelectTree` `XhTreeSelectTrigger` `XhTreeSelectValueText` |
 | 组合式函数 | `useTreeSelect` |
 | 状态机 | `treeSelectMachine` |
 | 皮肤 | `@xihan-ui/styles/tree-select.css` |
@@ -112,7 +113,7 @@ Vue 不写默认插槽时按 collection 铺开整套部件：带 children 的节
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="tree-select"`：`root` · `label` · `control` · **`trigger`** · `value-text` · `indicator` · `clear-trigger` · `positioner` · **`content`** · **`tree`** · **`item`** · `item-text` · `item-indicator` · `branch` · `branch-control` · `branch-trigger` · `branch-indicator` · `branch-text` · `branch-content` · `hidden-input`
+`data-scope="tree-select"`：`root` · `label` · `control` · **`trigger`** · `value-text` · `indicator` · `clear-trigger` · `positioner` · **`content`** · **`tree`** · **`item`** · `item-text` · `item-indicator` · `branch` · `branch-control` · `branch-trigger` · `branch-indicator` · `branch-text` · `branch-content` · `empty` · `loading` · `footer` · `hidden-input`
 
 ## Props
 
@@ -131,6 +132,7 @@ Vue 不写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `disabled` | `boolean` |  | 整个控件禁用：trigger 用原生 disabled，表单出口不参与提交。 |
 | `readOnly` | `boolean` |  | 只读：浮层照常展开、树照常浏览与展开收起，但选中值改不动、也清不掉。 disabled 则连键盘入口都没有。 |
 | `invalid` | `boolean` |  | 校验失败：trigger 报 aria-invalid，各角色节点带 data-invalid。 |
+| `loading` | `boolean` |  | 节点还在取：树报 aria-busy，在途占位顶上来、空态占位让位。 |
 | `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定触发框的描边与底色怎么用。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定触发框与树节点行的几何档位。 |
@@ -177,6 +179,9 @@ Vue 不写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `positioner` | 'open' \| 'closed' |
 | `content` | 'open' \| 'closed' |
 | `tree` | 'open' \| 'closed' |
+| `empty` | 'open' \| 'closed' |
+| `loading` | 'open' \| 'closed' |
+| `footer` | 'open' \| 'closed' |
 
 状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
@@ -234,6 +239,9 @@ Vue 不写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `getBranchIndicatorProps` | `(props: TreeSelectNodeProps) => T['element']` |  |
 | `getBranchTextProps` | `(props: TreeSelectNodeProps) => T['element']` |  |
 | `getBranchContentProps` | `(props: TreeSelectNodeProps) => T['element']` |  |
+| `getEmptyProps` | `() => T['element']` | 空态占位：放在 content 里、tree 的兄弟。 给了 collection 时由连接层按条数收放；节点手写时不写 hidden，露不露面归作者。 |
+| `getLoadingProps` | `() => T['element']` | 在途占位：与空态占位同一个位置，两者不同屏——取数期间它顶上来，空态让位。 给了 collection 时由连接层按条数收放；节点手写时只按 loading 收放。 |
+| `getFooterProps` | `() => T['element']` | 浮层底部的操作区：放在 content 里、tree 的兄弟，不入树的拥有关系，方向键也走不到。 |
 | `getHiddenInputProps` | `() => T['input']` | 表单出口：一份 type=hidden 的原生 input，选中值按逗号拼成一串随表单提交。 |
 
 ## 键盘
@@ -274,6 +282,7 @@ Vue 不写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `trigger` | `role` | 'combobox' |
 | `indicator` | `aria-hidden` | 'true' |
 | `clear-trigger` | `aria-label` | props.translations.clearTrigger |
+| `tree` | `aria-busy` | 'true' \| undefined |
 | `tree` | `aria-disabled` | 'true' \| 'false' |
 | `tree` | `aria-label` | props.translations.tree |
 | `tree` | `aria-labelledby` | `label` 部件的 id `value-text` 部件的 id |
@@ -298,6 +307,7 @@ Vue 不写默认插槽时按 collection 铺开整套部件：带 children 的节
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
 | `root` | `data-invalid` | ''（条件成立时才出现） |
+| `root` | `data-loading` | ''（条件成立时才出现） |
 | `root` | `data-readonly` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | 'open' \| 'closed' |
@@ -329,12 +339,15 @@ Vue 不写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `content` | `data-state` | 'open' \| 'closed' |
 | `tree` | `data-disabled` | ''（条件成立时才出现） |
 | `tree` | `data-state` | 'open' \| 'closed' |
+| `empty` | `data-state` | 'open' \| 'closed' |
+| `loading` | `data-state` | 'open' \| 'closed' |
+| `footer` | `data-state` | 'open' \| 'closed' |
 
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-tree-select-action-bg` · `--xh-tree-select-action-bg-active` · `--xh-tree-select-action-bg-hover` · `--xh-tree-select-action-fg` · `--xh-tree-select-action-fg-hover` · `--xh-tree-select-action-font-size` · `--xh-tree-select-action-radius` · `--xh-tree-select-action-size` · `--xh-tree-select-branch-content-gap` · `--xh-tree-select-branch-gap` · `--xh-tree-select-branch-indicator-fg` · `--xh-tree-select-branch-indicator-size` · `--xh-tree-select-content-bg` · `--xh-tree-select-content-border` · `--xh-tree-select-content-fg` · `--xh-tree-select-content-max-h` · `--xh-tree-select-content-max-w` · `--xh-tree-select-content-min-w` · `--xh-tree-select-content-px` · `--xh-tree-select-content-py` · `--xh-tree-select-content-radius` · `--xh-tree-select-content-shadow` · `--xh-tree-select-control-bg` · `--xh-tree-select-control-bg-disabled` · `--xh-tree-select-control-bg-hover` · `--xh-tree-select-control-bg-readonly` · `--xh-tree-select-control-border` · `--xh-tree-select-control-border-focus` · `--xh-tree-select-control-border-hover` · `--xh-tree-select-control-border-invalid` · `--xh-tree-select-control-fg` · `--xh-tree-select-control-gap` · `--xh-tree-select-control-h` · `--xh-tree-select-control-min-w` · `--xh-tree-select-control-px` · `--xh-tree-select-control-radius` · `--xh-tree-select-control-shadow` · `--xh-tree-select-gap` · `--xh-tree-select-icon-size` · `--xh-tree-select-indent` · `--xh-tree-select-indicator-fg` · `--xh-tree-select-item-bg-hover` · `--xh-tree-select-item-fg` · `--xh-tree-select-item-fg-selected` · `--xh-tree-select-item-font-size` · `--xh-tree-select-item-gap` · `--xh-tree-select-item-indicator-fg` · `--xh-tree-select-item-indicator-size` · `--xh-tree-select-item-leading` · `--xh-tree-select-item-px` · `--xh-tree-select-item-py` · `--xh-tree-select-item-radius` · `--xh-tree-select-item-selected-font-weight` · `--xh-tree-select-label-fg` · `--xh-tree-select-label-font-size` · `--xh-tree-select-label-font-weight` · `--xh-tree-select-layer` · `--xh-tree-select-placeholder-fg` · `--xh-tree-select-tree-gap` · `--xh-tree-select-trigger-fg` · `--xh-tree-select-trigger-font-size` · `--xh-tree-select-trigger-gap` · `--xh-tree-select-value-leading`
+`--xh-tree-select-action-bg` · `--xh-tree-select-action-bg-active` · `--xh-tree-select-action-bg-hover` · `--xh-tree-select-action-fg` · `--xh-tree-select-action-fg-hover` · `--xh-tree-select-action-font-size` · `--xh-tree-select-action-radius` · `--xh-tree-select-action-size` · `--xh-tree-select-branch-content-gap` · `--xh-tree-select-branch-gap` · `--xh-tree-select-branch-indicator-fg` · `--xh-tree-select-branch-indicator-size` · `--xh-tree-select-content-bg` · `--xh-tree-select-content-border` · `--xh-tree-select-content-fg` · `--xh-tree-select-content-max-h` · `--xh-tree-select-content-max-w` · `--xh-tree-select-content-min-w` · `--xh-tree-select-content-px` · `--xh-tree-select-content-py` · `--xh-tree-select-content-radius` · `--xh-tree-select-content-shadow` · `--xh-tree-select-control-bg` · `--xh-tree-select-control-bg-disabled` · `--xh-tree-select-control-bg-hover` · `--xh-tree-select-control-bg-readonly` · `--xh-tree-select-control-border` · `--xh-tree-select-control-border-focus` · `--xh-tree-select-control-border-hover` · `--xh-tree-select-control-border-invalid` · `--xh-tree-select-control-fg` · `--xh-tree-select-control-gap` · `--xh-tree-select-control-h` · `--xh-tree-select-control-min-w` · `--xh-tree-select-control-px` · `--xh-tree-select-control-radius` · `--xh-tree-select-control-shadow` · `--xh-tree-select-empty-fg` · `--xh-tree-select-empty-font-size` · `--xh-tree-select-empty-px` · `--xh-tree-select-empty-py` · `--xh-tree-select-footer-border` · `--xh-tree-select-footer-fg` · `--xh-tree-select-footer-font-size` · `--xh-tree-select-footer-gap` · `--xh-tree-select-footer-px` · `--xh-tree-select-footer-py` · `--xh-tree-select-gap` · `--xh-tree-select-icon-size` · `--xh-tree-select-indent` · `--xh-tree-select-indicator-fg` · `--xh-tree-select-item-bg-hover` · `--xh-tree-select-item-fg` · `--xh-tree-select-item-fg-selected` · `--xh-tree-select-item-font-size` · `--xh-tree-select-item-gap` · `--xh-tree-select-item-indicator-fg` · `--xh-tree-select-item-indicator-size` · `--xh-tree-select-item-leading` · `--xh-tree-select-item-px` · `--xh-tree-select-item-py` · `--xh-tree-select-item-radius` · `--xh-tree-select-item-selected-font-weight` · `--xh-tree-select-label-fg` · `--xh-tree-select-label-font-size` · `--xh-tree-select-label-font-weight` · `--xh-tree-select-layer` · `--xh-tree-select-loading-fg` · `--xh-tree-select-loading-font-size` · `--xh-tree-select-loading-px` · `--xh-tree-select-loading-py` · `--xh-tree-select-placeholder-fg` · `--xh-tree-select-tree-gap` · `--xh-tree-select-trigger-fg` · `--xh-tree-select-trigger-font-size` · `--xh-tree-select-trigger-gap` · `--xh-tree-select-value-leading`
 
 ## 动效
 

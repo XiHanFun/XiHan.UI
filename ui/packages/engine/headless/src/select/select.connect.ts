@@ -37,6 +37,8 @@ export function connectSelect<T extends PropTypes>(
   const { state, prop, send, context, refs, scope } = service
   const open = state.get() === 'open'
   const ids = scope.ids('select', 'label', 'trigger', 'content', 'value-text')
+  // 分组标题的 id：group 与 group-label 靠这一个值互相认领
+  const groupLabelId = (group: string): string => scope.partId(selectAnatomy.name, `group-label:${group}`)
 
   // 带 Ctrl/Meta/Alt 的组合不归连打检索管，否则 Ctrl+A / Cmd+R 会被 preventDefault 吞掉；
   // Shift+字母是大写字母，仍参与检索。
@@ -74,6 +76,9 @@ export function connectSelect<T extends PropTypes>(
   // roving tabindex 与方向键起点共用这一个锚点；收起时为 null（条目此刻不可达）
   const highlighted = context.get('highlightedValue') ?? null
   const disabled = !!prop('disabled')
+  const loading = !!prop('loading')
+  // 集合交给库时相位由库判；条目手写时库数不出有几条
+  const counted = prop('collection') != null
   const readOnly = !!prop('readOnly')
   const invalid = !!prop('invalid')
   // 只读与禁用都改不了选中值，区别在于禁用连浮层都展不开
@@ -161,6 +166,7 @@ export function connectSelect<T extends PropTypes>(
       'data-disabled': dataAttr(disabled),
       'data-readonly': dataAttr(readOnly),
       'data-invalid': dataAttr(invalid),
+      'data-loading': dataAttr(loading),
     }),
     getLabelProps: () => normalize.element({
       ...parts.label.attrs,
@@ -372,6 +378,8 @@ export function connectSelect<T extends PropTypes>(
       'aria-label': prop('translations')?.content ?? 'Options',
       // 多选语义显式报出，读屏据此播报「可多选」
       'aria-multiselectable': multiple ? 'true' : 'false',
+      // 取数在途的播报归列表本体：两个相位占位自己不带 role
+      'aria-busy': loading ? 'true' : undefined,
       // 有锚点时 Tab 位归高亮条目；展开却无锚点时由容器兜底，否则列表没有任何 Tab 停靠点。
       // 收起态不需要兜底，外层 content 此时是 hidden。
       'tabindex': open && highlighted == null ? 0 : -1,
@@ -382,6 +390,33 @@ export function connectSelect<T extends PropTypes>(
     getFooterProps: () => normalize.element({
       ...parts.footer.attrs,
       'data-state': stateAttr,
+    }),
+    // 分组容器：role=group 是 role=listbox 允许拥有的两种子节点之一，条目照常挂在它里面，
+    // 方向键与连打检索按最近的 list 归属条目，隔着分组一样走得到
+    getGroupProps: group => normalize.element({
+      ...parts.group.attrs,
+      'role': 'group',
+      // 分组标题不是选项，只能靠 aria-labelledby 挂上来
+      'aria-labelledby': groupLabelId(group.value),
+    }),
+    // 空态占位：放在 content 里、list 的兄弟（role=listbox 只许拥有 option 与 group）。
+    // 给了 collection 才由连接层判定露不露面；条目手写时库数不出有几条，那一档不写 hidden，归作者自己收放
+    getEmptyProps: () => normalize.element({
+      ...parts.empty.attrs,
+      'data-state': stateAttr,
+      'hidden': counted ? (loading || collection.length > 0) || undefined : loading || undefined,
+    }),
+
+    // 在途占位：与空态占位同一个位置、同一套收放判据，只是条件相反。
+    // 已经有条目可看时不顶上来
+    getLoadingProps: () => normalize.element({
+      ...parts.loading.attrs,
+      'data-state': stateAttr,
+      'hidden': counted ? (!loading || collection.length > 0) || undefined : !loading || undefined,
+    }),
+    getGroupLabelProps: group => normalize.element({
+      ...parts['group-label'].attrs,
+      id: groupLabelId(group.value),
     }),
     getItemProps: item => normalize.element({
       ...parts.item.attrs,

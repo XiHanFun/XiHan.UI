@@ -147,6 +147,20 @@ export const XhSliderThumb = defineComponent({
   },
 })
 
+export const XhSliderValueText = defineComponent({
+  name: 'XhSliderValueText',
+  setup(_, { slots }) {
+    const { index } = useSliderThumbContext()
+    const ctx = useSliderContext()
+    // 值气泡：写在拇指里，没给内容就填这一个拇指的值文本
+    return () => h(
+      'span',
+      ctx.api.value.getValueTextProps(index.value) as Record<string, unknown>,
+      slots.default?.() ?? ctx.api.value.valueText(index.value),
+    )
+  },
+})
+
 export const XhSliderHiddenInput = defineComponent({
   name: 'XhSliderHiddenInput',
   setup() {

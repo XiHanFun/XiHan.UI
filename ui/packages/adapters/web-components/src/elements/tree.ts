@@ -40,6 +40,7 @@ const NODE_SELECTOR = `${ITEM_SELECTOR}, ${BRANCH_SELECTOR}`
  * 键盘走 Alt + 方向键：上下在同层兄弟间挪，左右改缩进层级（rtl 下左右对调），一按就是一次完整提交。
  *
  * @customElement xh-tree
+ * @attr {'plain'|'surface'} variant - 外框形态：surface 带描边与底色（缺省），plain 只留行
  * @attr {boolean} multiple - 复选，默认关闭
  * @attr {'horizontal'|'vertical'} leaf-orientation - 末端那一层怎么排，默认 vertical；horizontal 让子节点全是叶子的那层并排铺开
  * @attr {boolean} cascade - multiple 下父子级联勾选（整枝传导/半选/禁用冻结），默认 false
@@ -53,10 +54,12 @@ const NODE_SELECTOR = `${ITEM_SELECTOR}, ${BRANCH_SELECTOR}`
  * @fires expanded-value-change - 展开集合变化；detail 为 `{ value: string[] }`
  * @fires selection-change - 选中集合变化；detail 为 `{ value: string[] }`
  * @fires node-move - 节点搬了家；detail 为 `{ value, parent, index }`，parent 为 null 即根层，index 是在那一层的落位（已算过先摘后插）
- * @csspart root - 组件根容器
+ * @csspart root - 组件根容器，承载 data-variant
  * @csspart label - 树标题（aria-labelledby 目标）
  * @csspart live-region - 视觉隐藏的播报区，拖动过程的读屏文案写在这里；写在 root 里、与 tree 部件平级（root 自己不带角色，它落不进 role=tree 的子节点集合）
  * @csspart tree - role=tree 容器，键盘在此收口，也是 roving tabindex 的兜底位
+ * @csspart empty - 空态占位，须放在 root 里当 tree 的兄弟；给了 collection 时由元素按条数收放，节点手写时归作者
+ * @csspart loading - 在途占位，与空态占位同一个位置，取数期间顶上来
  * @csspart item - role=treeitem 叶子，须自带 value 属性标识身份
  * @csspart item-text - 叶子文本
  * @csspart item-checkbox - 叶子的勾选把手，点它只勾选、不触发点行；可选
@@ -79,6 +82,7 @@ export class XhTreeElement extends XhElement {
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     collection: { attribute: false },
+    variant: { converter: STRING_CONVERTER },
     expandedValue: { attribute: false },
     defaultExpandedValue: { attribute: false },
     selection: { attribute: false },
@@ -89,6 +93,7 @@ export class XhTreeElement extends XhElement {
     checkedStrategy: { converter: STRING_CONVERTER, attribute: 'checked-strategy' },
     expandOnClick: { converter: BOOLEAN_CONVERTER, attribute: 'expand-on-click' },
     disabled: { type: Boolean },
+    loading: { converter: BOOLEAN_CONVERTER },
     loop: { converter: BOOLEAN_CONVERTER },
     typeahead: { converter: BOOLEAN_CONVERTER },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
@@ -101,6 +106,7 @@ export class XhTreeElement extends XhElement {
   }
 
   declare collection?: TreeNode[]
+  declare variant?: TreeSchema['props']['variant']
   declare expandedValue?: string[]
   declare defaultExpandedValue?: string[]
   declare selection?: string[]
@@ -111,6 +117,7 @@ export class XhTreeElement extends XhElement {
   declare checkedStrategy?: TreeSchema['props']['checkedStrategy']
   declare expandOnClick?: boolean
   declare disabled?: boolean
+  declare loading?: boolean
   declare loop?: boolean
   declare typeahead?: boolean
   declare direction?: Direction
@@ -137,6 +144,7 @@ export class XhTreeElement extends XhElement {
   private machineProps(): Partial<TreeSchema['props']> {
     return {
       collection: this.collection,
+      variant: this.variant,
       expandedValue: this.expandedValue,
       // 机器自己兜 undefined，这里不补 []：props 每次读都新建数组会造成无谓的引用变动
       defaultExpandedValue: this.defaultExpandedValue,
@@ -148,6 +156,7 @@ export class XhTreeElement extends XhElement {
       checkedStrategy: this.checkedStrategy,
       expandOnClick: this.expandOnClick,
       disabled: this.disabled ?? false,
+      loading: this.loading ?? false,
       loop: this.loop,
       typeahead: this.typeahead,
       dir: this.direction,
@@ -202,6 +211,8 @@ export class XhTreeElement extends XhElement {
     put('root', api.getRootProps() as Record<string, unknown>)
     put('label', api.getLabelProps() as Record<string, unknown>)
     put('tree', api.getTreeProps() as Record<string, unknown>)
+    put('empty', api.getEmptyProps() as Record<string, unknown>)
+    put('loading', api.getLoadingProps() as Record<string, unknown>)
 
     // 播报区收作者写的那个节点：root 自己不带角色，作者把它放在 root 里、与 tree 部件平级即可，
     // 不必由元素代建。没写就是不要读屏播报，跳过。

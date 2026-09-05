@@ -23,6 +23,8 @@
 - 错误文案带 `role="status"` + `aria-live="polite"`，节点常挂、靠 `hidden` 显隐，`invalid` 翻转时读屏排队播报，不打断当前朗读。整表提交失败时打断式播报只由 Form 的错误摘要发出。
 - `invalid` 落成 `data-invalid`，皮肤据此把组标题转成警示色，同时把错误文案接进描述链并显出。
 - `required` 落成 `data-required`，皮肤据此给组标题加星号。
+- `field-group` 把并排的几个字段圈成一段（够宽自动分栏），`actions` 承载组末尾那一行按钮。
+- `disabled` 只连坐原生表单控件：组里 `div` 型控件（滑块、评分这类）要各自接 `disabled`。
 
 ## 示例
 
@@ -61,7 +63,7 @@ required 落成 data-required，皮肤据此给组标题加星号；星号只是
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-fieldset>` |
-| Vue 组件 | `XhFieldsetDescription` `XhFieldsetErrorText` `XhFieldsetLegend` `XhFieldsetRoot` |
+| Vue 组件 | `XhFieldsetActions` `XhFieldsetDescription` `XhFieldsetErrorText` `XhFieldsetFieldGroup` `XhFieldsetLegend` `XhFieldsetRoot` |
 | 组合式函数 | `useFieldset` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/fieldset.css` |
@@ -70,7 +72,7 @@ required 落成 data-required，皮肤据此给组标题加星号；星号只是
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="fieldset"`：**`root`** · **`legend`** · `description` · `error-text`
+`data-scope="fieldset"`：**`root`** · **`legend`** · `description` · `field-group` · `actions` · `error-text`
 
 ## Props
 
@@ -93,6 +95,8 @@ required 落成 data-required，皮肤据此给组标题加星号；星号只是
 | `getRootProps` | `() => T['element']` |  |
 | `getLegendProps` | `() => T['element']` |  |
 | `getDescriptionProps` | `() => T['element']` |  |
+| `getFieldGroupProps` | `() => T['element']` | 把并排的几个字段圈成一段；纯排版，不承担分组语义（组名与描述归 root）。 |
+| `getActionsProps` | `() => T['element']` | 组末尾那一行按钮；纯排版。 |
 | `getErrorTextProps` | `() => T['element']` |  |
 
 ## 键盘
@@ -134,12 +138,14 @@ required 落成 data-required，皮肤据此给组标题加星号；星号只是
 | `root` | `data-required` | ''（条件成立时才出现） |
 | `legend` | `data-disabled` | ''（条件成立时才出现） |
 | `description` | `data-disabled` | ''（条件成立时才出现） |
+| `field-group` | `data-disabled` | ''（条件成立时才出现） |
+| `actions` | `data-disabled` | ''（条件成立时才出现） |
 
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-fieldset-description-fg` · `--xh-fieldset-description-fg-disabled` · `--xh-fieldset-description-font-size` · `--xh-fieldset-error-fg` · `--xh-fieldset-error-font-size` · `--xh-fieldset-gap` · `--xh-fieldset-legend-fg` · `--xh-fieldset-legend-fg-disabled` · `--xh-fieldset-legend-fg-invalid` · `--xh-fieldset-legend-font-size` · `--xh-fieldset-legend-font-weight` · `--xh-fieldset-legend-gap` · `--xh-fieldset-legend-star`
+`--xh-fieldset-actions-gap` · `--xh-fieldset-description-fg` · `--xh-fieldset-description-fg-disabled` · `--xh-fieldset-description-font-size` · `--xh-fieldset-error-fg` · `--xh-fieldset-error-font-size` · `--xh-fieldset-field-group-col-w` · `--xh-fieldset-field-group-gap` · `--xh-fieldset-gap` · `--xh-fieldset-legend-fg` · `--xh-fieldset-legend-fg-disabled` · `--xh-fieldset-legend-fg-invalid` · `--xh-fieldset-legend-font-size` · `--xh-fieldset-legend-font-weight` · `--xh-fieldset-legend-gap` · `--xh-fieldset-legend-star`
 
 ## 动效
 

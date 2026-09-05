@@ -187,6 +187,28 @@
     color: var(--xh-fg-disabled);
   }
 
+  /* 装饰段：货币符、单位、图标。与输入框同框，不参与分宽，弱一档前景把它与数字分开 */
+  [data-scope='number-field'][data-part='prefix'],
+  [data-scope='number-field'][data-part='suffix'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    color: var(--xh-number-field-affix-fg, var(--xh-fg-muted));
+    font-size: var(--xh-number-field-affix-font-size, var(--xh-_number-field-font-size));
+    line-height: var(--xh-leading-none);
+    white-space: nowrap;
+  }
+
+  [data-scope='number-field'][data-part='prefix'][hidden],
+  [data-scope='number-field'][data-part='suffix'][hidden] {
+    display: none;
+  }
+
+  [data-scope='number-field'][data-part='prefix'][data-disabled],
+  [data-scope='number-field'][data-part='suffix'][data-disabled] {
+    color: var(--xh-number-field-affix-fg-disabled, var(--xh-fg-disabled));
+  }
+
   /* 盒内 input：无边框无底无圆角无落影，观感全归 control；行内内衬也归 control，
      这里再留一份就是框内套了一圈空白。数字居中排在两个按钮之间；
      前后缀图标/文字直接流式排在 input 两侧，不用再绝对定位 */

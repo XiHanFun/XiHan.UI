@@ -1,5 +1,6 @@
 import type {
   NotificationApi,
+  NotificationDedupe,
   NotificationItemsChangeDetails,
   NotificationOptions,
   NotificationPlacement,
@@ -54,7 +55,8 @@ function groupPlacement(el: HTMLElement): NotificationPlacement | undefined {
  *
  * @customElement xh-notification
  * @attr {'top-start'|'top'|'top-end'|'middle-start'|'middle'|'middle-end'|'bottom-start'|'bottom'|'bottom-end'} placement - 默认落位，默认 bottom-end
- * @attr {number} max - 每个位置最多同时留几条，超出挤掉最旧的；不给即不限
+ * @attr {number} max - 每个位置最多同时留几条，超出先挤低优先级的、同级里挤最旧的；不给即不限
+ * @attr {'id'|'content'} dedupe - 重复怎么算，默认 id；content 则同一句话合并成一条并计数
  * @attr {number} gap - 同一摞内的间距（px），默认 16
  * @attr {number} duration - 单条没写 duration 时的默认停留毫秒
  * @attr {number} remove-delay - 单条没写 remove-delay 时的默认退场窗口毫秒
@@ -74,6 +76,7 @@ export class XhNotificationElement extends XhElement {
     defaultItems: { attribute: false },
     placement: { converter: STRING_CONVERTER },
     max: { converter: NUMBER_CONVERTER },
+    dedupe: { converter: STRING_CONVERTER },
     gap: { converter: NUMBER_CONVERTER },
     duration: { converter: NUMBER_CONVERTER },
     removeDelay: { converter: NUMBER_CONVERTER, attribute: 'remove-delay' },
@@ -85,6 +88,7 @@ export class XhNotificationElement extends XhElement {
   declare defaultItems?: NotificationRecord[]
   declare placement?: NotificationPlacement
   declare max?: number
+  declare dedupe?: NotificationDedupe
   declare gap?: number
   declare duration?: number
   declare removeDelay?: number
@@ -104,6 +108,7 @@ export class XhNotificationElement extends XhElement {
       defaultItems: this.defaultItems,
       placement: this.placement,
       max: this.max,
+      dedupe: this.dedupe,
       gap: this.gap,
       duration: this.duration,
       removeDelay: this.removeDelay,
@@ -228,6 +233,7 @@ const ITEM_CONTRACT = { anatomy: notificationAnatomy, meta: { component: 'notifi
  * @attr {number} remove-delay - 退场窗口毫秒，默认 200，留给退场动画
  * @attr {boolean} closable - 是否给可用的关闭按钮，默认 true；写 closable="false" 关掉
  * @attr {boolean} pause-on-page-idle - 页面切到后台时按住计时，默认关
+ * @attr {boolean} paused - 由宿主整摞一起按住计时，默认关；与指针、焦点那几路并存
  * @fires status-change - 生命周期落位；detail 为 `{ id: string, status: 'dismissing'|'unmounted' }`
  * @fires action - 操作按钮被按下；detail 为 `{ id: string }`
  * @csspart item - role=status（error 时 alert）的卡片，承载 data-severity / data-tone / data-state / data-paused
@@ -235,6 +241,7 @@ const ITEM_CONTRACT = { anatomy: notificationAnatomy, meta: { component: 'notifi
  * @csspart item-title - 标题，aria-labelledby 的目标
  * @csspart item-description - 补充说明，aria-describedby 的目标
  * @csspart item-action-trigger - 操作按钮：先发 action 再进入退场
+ * @csspart item-progress - 倒计时条；不自动消失时收起
  * @csspart item-close-trigger - 关闭按钮；closable=false 时转原生 disabled 并收起
  */
 export class XhNotificationItemElement extends XhElement {
@@ -252,6 +259,7 @@ export class XhNotificationItemElement extends XhElement {
     removeDelay: { converter: NUMBER_CONVERTER, attribute: 'remove-delay' },
     closable: { converter: BOOLEAN_CONVERTER },
     pauseOnPageIdle: { converter: BOOLEAN_CONVERTER, attribute: 'pause-on-page-idle' },
+    paused: { converter: BOOLEAN_CONVERTER },
     // 文案是对象，走不了属性；只作为 property 暴露，与 Vue 侧的 translations prop 对齐
     translations: { attribute: false },
   }
@@ -264,6 +272,7 @@ export class XhNotificationItemElement extends XhElement {
   declare removeDelay?: number
   declare closable?: boolean
   declare pauseOnPageIdle?: boolean
+  declare paused?: boolean
   declare translations?: Partial<NotificationTranslations>
 
   private readonly notifyStatus = (details: ToastStatusChangeDetails): void => {
@@ -290,6 +299,7 @@ export class XhNotificationItemElement extends XhElement {
       removeDelay: this.removeDelay,
       closable: this.closable,
       pauseOnPageIdle: this.pauseOnPageIdle,
+      paused: this.paused,
       translations: this.translations,
       onStatusChange: this.notifyStatus,
       onAction: this.notifyAction,
@@ -337,6 +347,7 @@ export class XhNotificationItemElement extends XhElement {
     put('item-title', api.getItemTitleProps() as Record<string, unknown>)
     put('item-description', api.getItemDescriptionProps() as Record<string, unknown>)
     put('item-action-trigger', api.getItemActionTriggerProps() as Record<string, unknown>)
+    put('item-progress', api.getItemProgressProps() as Record<string, unknown>)
     put('item-close-trigger', api.getItemCloseTriggerProps() as Record<string, unknown>)
 
     this.fillText(this.getPart('item-title'), api.title)

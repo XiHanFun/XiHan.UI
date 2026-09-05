@@ -10,6 +10,9 @@ export const listboxAnatomy = createAnatomy('listbox', [
   'item-indicator',
   'group',
   'group-label',
+  'empty',
+  'loading',
+  'load-more-trigger',
 ])
 
 const parts = listboxAnatomy.build()

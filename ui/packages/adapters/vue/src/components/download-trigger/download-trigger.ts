@@ -1,7 +1,9 @@
-import type { DownloadTriggerApi, DownloadTriggerData, DownloadTriggerSchema } from '@xihan-ui/headless'
+import type { ActionVariant, Size, Tone } from '@xihan-ui/core'
+import type { DownloadTriggerApi, DownloadTriggerData, DownloadTriggerSchema, DownloadTriggerTranslations } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { useDownloadTrigger } from './use-download-trigger'
 
 type DownloadTriggerProps = DownloadTriggerSchema['props']
@@ -27,6 +29,10 @@ export const XhDownloadTrigger = defineComponent({
     fileName: { type: String, default: undefined },
     mimeType: { type: String, default: undefined },
     disabled: { type: Boolean, default: undefined },
+    variant: { type: String as PropType<ActionVariant>, default: undefined },
+    tone: { type: String as PropType<Tone>, default: undefined },
+    size: { type: String as PropType<Size>, default: undefined },
+    translations: { type: Object as PropType<Partial<DownloadTriggerTranslations>>, default: undefined },
   },
   // download-complete 携带 { fileName }；download-error 携带 { error, fileName }
   emits: {
@@ -37,7 +43,7 @@ export const XhDownloadTrigger = defineComponent({
     default?: (props: DownloadTriggerSlotProps) => VNode[]
   }>,
   setup(props, { slots, emit }) {
-    const ctx = useDownloadTrigger(props as DownloadTriggerProps, {
+    const ctx = useDownloadTrigger(withXhConfig('download-trigger', props) as DownloadTriggerProps, {
       onDownloadComplete: details => emit('download-complete', details),
       onDownloadError: details => emit('download-error', details),
     })

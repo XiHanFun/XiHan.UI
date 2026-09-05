@@ -15,6 +15,7 @@ export const tagsInputAnatomy = createAnatomy('tags-input', [
   'item-delete-trigger',
   'item-input',
   'clear-trigger',
+  'count',
   'hidden-input',
 ])
 

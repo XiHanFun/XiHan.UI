@@ -9,6 +9,7 @@ export const contextMenuAnatomy = createAnatomy('context-menu', [
   'item',
   'item-text',
   'item-indicator',
+  'item-description',
   'separator',
   'group',
   'group-label',

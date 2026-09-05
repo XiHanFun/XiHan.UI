@@ -17,7 +17,19 @@ export {
 } from './image-cropper.geometry'
 export type { CropConstraints, CropProjection } from './image-cropper.geometry'
 export { imageCropperKeyboard } from './image-cropper.keyboard'
-export { EMPTY_CROP_RECT, IMAGE_CROPPER_ZOOM, imageCropperMachine, UNKNOWN_IMAGE_SIZE } from './image-cropper.machine'
+export {
+  EMPTY_CROP_RECT,
+  IMAGE_CROPPER_MAX_ROTATION,
+  IMAGE_CROPPER_MAX_ZOOM,
+  IMAGE_CROPPER_MIN_ROTATION,
+  IMAGE_CROPPER_MIN_ZOOM,
+  IMAGE_CROPPER_ROTATION,
+  IMAGE_CROPPER_ROTATION_STEP,
+  IMAGE_CROPPER_ZOOM,
+  IMAGE_CROPPER_ZOOM_STEP,
+  imageCropperMachine,
+  UNKNOWN_IMAGE_SIZE,
+} from './image-cropper.machine'
 export { imageCropperMeta } from './image-cropper.meta'
 export type {
   ImageCropperApi,
@@ -26,6 +38,7 @@ export type {
   ImageCropperHandleProps,
   ImageCropperPoint,
   ImageCropperRect,
+  ImageCropperRotationChangeDetails,
   ImageCropperSchema,
   ImageCropperShape,
   ImageCropperSize,

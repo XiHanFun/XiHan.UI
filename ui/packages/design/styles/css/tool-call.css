@@ -4,7 +4,7 @@
     --xh-tool-call-skin: 1;
   }
 
-  /* 一张抬起的表面：描边 + 圆角 + 静态海拔；不是控件也不是浮层，所以不接形态轴。
+  /* 一张抬起的表面：描边 + 圆角 + 静态海拔。
      卡片建出来时淡入并向上收一段，一屏若干张的错峰交给外层容器排 */
   [data-scope='tool-call'][data-part='root'] {
     /* 尺寸缺省档：不写 data-size 时的取值。三档都只写这三个私有槽，
@@ -13,12 +13,15 @@
     --xh-_tool-call-py: var(--xh-space-2);
     --xh-_tool-call-font-size: var(--xh-control-font-md);
 
+    /* 海拔先落进私有槽：语气档要把它与左侧色条叠成一条 box-shadow，无壳档把它关掉 */
+    --xh-_tool-call-shadow: var(--xh-tool-call-shadow, var(--xh-elevation-raised));
+
     display: block;
     overflow: hidden;
     border: var(--xh-stroke-thin) solid var(--xh-tool-call-border, var(--xh-border-subtle));
     border-radius: var(--xh-tool-call-radius, var(--xh-shape-surface));
     background: var(--xh-tool-call-bg, var(--xh-bg-surface));
-    box-shadow: var(--xh-tool-call-shadow, var(--xh-elevation-raised));
+    box-shadow: var(--xh-_tool-call-shadow);
     animation: xh-tool-call-enter var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) both;
   }
 
@@ -27,9 +30,33 @@
     display: none;
   }
 
+  /* —— 形态 —— */
+  /* 缺省档即 outline，写在上面那条基础规则里 */
+  /* 底色分区：描边让位给底色，嵌在别人的面里时不再多一圈线 */
+  [data-scope='tool-call'][data-part='root'][data-variant='subtle'] {
+    border-color: transparent;
+    background: var(--xh-tool-call-bg, var(--xh-bg-subtle));
+  }
+
+  /* 无壳内联：卡中卡时不再自带一张面，跟着外层的底走 */
+  [data-scope='tool-call'][data-part='root'][data-variant='ghost'] {
+    --xh-_tool-call-shadow: 0 0 0 transparent;
+
+    overflow: visible;
+    border-color: transparent;
+    background: none;
+  }
+
+  /* 无壳档的开关只占文字宽度，自己带圆角，悬停时才浮出一块底 */
+  [data-scope='tool-call'][data-part='root'][data-variant='ghost'] [data-scope='tool-call'][data-part='trigger'] {
+    inline-size: auto;
+    border-radius: var(--xh-tool-call-trigger-radius, var(--xh-shape-control));
+  }
+
   /* 出错态换描边色，与语气轴各管各的：语气是作者定的强调，出错是组件自己的阶段。
-     根上的 data-state 已经被开合占着，阶段从下面任一部件上读——阶段发在名字、摘要、
-     状态、用时、审批、输入、输出、错误八个部件上，渲出其中任何一个这条都命中 */
+     根上的 data-state 已经被开合占着，阶段落成 data-errored 这一位；八个承载阶段的部件
+     渲出任何一个时那条 :has() 同样命中，两条并列，作者只渲根也照样变色 */
+  [data-scope='tool-call'][data-part='root'][data-errored],
   [data-scope='tool-call'][data-part='root']:has([data-scope='tool-call'][data-state='output-error']) {
     border-color: var(--xh-tool-call-border-error, var(--xh-border-invalid));
   }
@@ -299,7 +326,7 @@
   [data-scope='tool-call'][data-part='root'][data-tone] {
     box-shadow:
       inset var(--xh-tool-call-tone-bar, var(--xh-stroke-thick)) 0 0 0 var(--xh-tool-call-tone-fg, var(--xh-_tone-soft, var(--xh-bg-brand))),
-      var(--xh-tool-call-shadow, var(--xh-elevation-raised));
+      var(--xh-_tool-call-shadow);
   }
 }
 

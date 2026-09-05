@@ -30,6 +30,8 @@ export interface FieldArrayItem {
   key: string
   /** 这一行的数据，原样取自 value[index]。 */
   value: unknown
+  /** 这一行控件该用的表单字段名 `名字[下标]`；没给 name 时是 undefined。 */
+  name: string | undefined
   first: boolean
   last: boolean
   canRemove: boolean
@@ -68,6 +70,15 @@ export interface FieldArraySchema extends MachineSchema {
     movable?: boolean
     /** 禁用：新增、删除、换序三路都按不动。 */
     disabled?: boolean
+    /** 只读：行数改不动（新增、删除、换序都按不动），行里的控件仍由作者自己置只读。 */
+    readOnly?: boolean
+    /** 校验失败标注：落到根与每一行上。 */
+    invalid?: boolean
+    /**
+     * 整份数组的表单字段名。给了之后每一行经 `item.name` 拿到 `名字[下标]`，
+     * 作者把它写到行里自己的控件上，整份数组才提交得出去。
+     */
+    name?: string
     translations?: Partial<FieldArrayTranslations>
     onValueChange?: (details: FieldArrayValueChangeDetails) => void
   }
@@ -98,9 +109,10 @@ export interface FieldArraySchema extends MachineSchema {
     | { type: 'ITEM.REMOVE', index: number, restoreFocus?: boolean }
     /** 把某一行挪到另一个位置；restoreFocus 为真时焦点跟着这一行走。 */
     | { type: 'ITEM.MOVE', from: number, to: number, restoreFocus?: boolean }
+    | { type: 'FORM.RESET' }
   tag: never
   guard: 'canAdd' | 'canRemove' | 'canMove'
-  action: 'setValue' | 'addItem' | 'removeItem' | 'moveItem' | 'syncKeys'
+  action: 'setValue' | 'addItem' | 'removeItem' | 'moveItem' | 'syncKeys' | 'resetToDefault'
   effect: never
 }
 
@@ -111,6 +123,8 @@ export interface FieldArrayApi<T extends PropTypes = PropTypes> {
   count: number
   empty: boolean
   disabled: boolean
+  readOnly: boolean
+  invalid: boolean
   movable: boolean
   /** 已到下限：再删就少于 min 了。 */
   atMin: boolean
@@ -126,6 +140,8 @@ export interface FieldArrayApi<T extends PropTypes = PropTypes> {
   moveDown: (index: number) => void
   getRootProps: () => T['element']
   getItemProps: (item: FieldArrayItemProps) => T['element']
+  /** 行前那一小段行号或名目；纯标注，不与行里的控件建立 for 关联。 */
+  getItemLabelProps: (item: FieldArrayItemProps) => T['element']
   getItemContentProps: (item: FieldArrayItemProps) => T['element']
   getItemActionProps: (item: FieldArrayItemProps) => T['element']
   getAddTriggerProps: () => T['button']

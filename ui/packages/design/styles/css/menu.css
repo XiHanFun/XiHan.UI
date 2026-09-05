@@ -182,6 +182,59 @@
     color: var(--xh-fg-disabled);
   }
 
+  /* 条目里的文字载体：占满剩余宽度，长文本自己收省略号 */
+  [data-scope='menu'][data-part='item-text'] {
+    flex: 1;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+
+  [data-scope='menu'][data-part='item-text'][hidden] {
+    display: none;
+  }
+
+  /* 标记位（勾选符号 / 图标）：定宽占位，切换内容不引起行宽抖动 */
+  [data-scope='menu'][data-part='item-indicator'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--xh-menu-item-indicator-size, var(--xh-control-indicator-size));
+    color: var(--xh-menu-item-indicator-fg, var(--xh-_tone, var(--xh-fg-brand)));
+  }
+
+  [data-scope='menu'][data-part='item-indicator'][hidden] {
+    display: none;
+  }
+
+  [data-scope='menu'][data-part='item-indicator'][data-disabled] {
+    color: var(--xh-fg-disabled);
+  }
+
+  /* 副文本另起一行：整行占满，把条目的一行内容折成两行 */
+  [data-scope='menu'][data-part='item-description'] {
+    flex: 1 0 100%;
+    color: var(--xh-menu-item-description-fg, var(--xh-fg-muted));
+    font-size: var(--xh-menu-item-description-font-size, var(--xh-text-caption-size));
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+
+  [data-scope='menu'][data-part='item-description'][hidden] {
+    display: none;
+  }
+
+  [data-scope='menu'][data-part='item-description'][data-disabled] {
+    color: var(--xh-fg-disabled);
+  }
+
+  /* 带副文本的条目改成两行排布：主文字与标记位在上一行，副文本占满下一行 */
+  [data-scope='menu'][data-part='item']:has([data-scope='menu'][data-part='item-description']) {
+    flex-wrap: wrap;
+  }
+
   /* 带子菜单的条目行尾画右向小箭头：不点开也看得出还有下一级。
      位置靠 margin 顶到行尾，图形取兜底字形令牌 */
   [data-scope='menu'][data-part='item'][aria-haspopup='menu']::after {

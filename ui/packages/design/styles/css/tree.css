@@ -8,6 +8,10 @@
     /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
     --xh-icon-size: var(--xh-tree-icon-size, var(--xh-glyph-size-text));
 
+    /* 形态只换这两个私有槽，容器那条边框与底色的声明只写一遍 */
+    --xh-_tree-border: var(--xh-border-default);
+    --xh-_tree-bg: var(--xh-bg-surface);
+
     display: flex;
     flex-direction: column;
     gap: var(--xh-tree-gap, var(--xh-space-2));
@@ -15,6 +19,12 @@
 
   [data-scope='tree'][data-part='root'][hidden] {
     display: none;
+  }
+
+  /* 无框档：边框留着但透明，去掉外框不会让行的位置跳一格 */
+  [data-scope='tree'][data-part='root'][data-variant='plain'] {
+    --xh-_tree-border: transparent;
+    --xh-_tree-bg: transparent;
   }
 
   [data-scope='tree'][data-part='label'] {
@@ -37,9 +47,9 @@
     max-block-size: var(--xh-tree-max-h, var(--xh-viewport-h-lg));
     padding-block: var(--xh-tree-py, var(--xh-space-1));
     padding-inline: var(--xh-tree-px, var(--xh-space-1));
-    border: var(--xh-stroke-thin) solid var(--xh-tree-border, var(--xh-border-default));
+    border: var(--xh-stroke-thin) solid var(--xh-tree-border, var(--xh-_tree-border));
     border-radius: var(--xh-tree-radius, var(--xh-shape-surface));
-    background: var(--xh-tree-bg, var(--xh-bg-surface));
+    background: var(--xh-tree-bg, var(--xh-_tree-bg));
     color: var(--xh-tree-fg, var(--xh-fg-default));
     /* 两轴一起给：深层节点靠缩进往右推，横向溢出是常态，得够得着 */
     overflow: auto;
@@ -48,6 +58,46 @@
   /* display 会盖掉 hidden 属性的 UA 规则，作者手动收起时要显式让位 */
   [data-scope='tree'][data-part='tree'][hidden] {
     display: none;
+  }
+
+  /* 空态占位：待在 root 里、tree 的兄弟（role=tree 只许拥有 treeitem 与 group）。
+     盒归 tree，这里只画一句居中的次要文字 */
+  [data-scope='tree'][data-part='empty'] {
+    display: block;
+    padding-block: var(--xh-tree-empty-py, var(--xh-space-3));
+    padding-inline: var(--xh-tree-empty-px, var(--xh-space-3));
+    color: var(--xh-tree-empty-fg, var(--xh-fg-subtle));
+    font-size: var(--xh-tree-empty-font-size, var(--xh-text-body-size));
+    line-height: var(--xh-leading-none);
+    text-align: center;
+  }
+
+  /* 上面给了 display，UA 的 [hidden]{display:none} 已被盖掉，这里补回来 */
+  [data-scope='tree'][data-part='empty'][hidden] {
+    display: none;
+  }
+
+  [data-scope='tree'][data-part='empty'][data-disabled] {
+    color: var(--xh-fg-disabled);
+  }
+
+  /* 在途占位：与空态占位同一个位置、同一副观感，两者不同屏 */
+  [data-scope='tree'][data-part='loading'] {
+    display: block;
+    padding-block: var(--xh-tree-loading-py, var(--xh-space-3));
+    padding-inline: var(--xh-tree-loading-px, var(--xh-space-3));
+    color: var(--xh-tree-loading-fg, var(--xh-fg-subtle));
+    font-size: var(--xh-tree-loading-font-size, var(--xh-text-body-size));
+    line-height: var(--xh-leading-none);
+    text-align: center;
+  }
+
+  [data-scope='tree'][data-part='loading'][hidden] {
+    display: none;
+  }
+
+  [data-scope='tree'][data-part='loading'][data-disabled] {
+    color: var(--xh-fg-disabled);
   }
 
   /* 焦点在树外时容器自己进 Tab 序列兜底，落焦不画环：高亮永远长在行上 */

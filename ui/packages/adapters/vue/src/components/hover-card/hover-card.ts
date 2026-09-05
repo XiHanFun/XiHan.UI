@@ -106,6 +106,28 @@ export const XhHoverCardContent = defineComponent({
   },
 })
 
+export const XhHoverCardTitle = defineComponent({
+  name: 'XhHoverCardTitle',
+  setup(_, { slots }) {
+    const ctx = useHoverCardContext()
+    return () => h('h2', {
+      ...ctx.api.value.getTitleProps() as Record<string, unknown>,
+      ref: (el: unknown) => { ctx.titleRef.value = el as HTMLElement },
+    }, slots.default?.())
+  },
+})
+
+export const XhHoverCardDescription = defineComponent({
+  name: 'XhHoverCardDescription',
+  setup(_, { slots }) {
+    const ctx = useHoverCardContext()
+    return () => h('p', {
+      ...ctx.api.value.getDescriptionProps() as Record<string, unknown>,
+      ref: (el: unknown) => { ctx.descriptionRef.value = el as HTMLElement },
+    }, slots.default?.())
+  },
+})
+
 export const XhHoverCardArrow = defineComponent({
   name: 'XhHoverCardArrow',
   setup() {

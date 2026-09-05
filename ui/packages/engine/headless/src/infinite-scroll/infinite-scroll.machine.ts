@@ -40,6 +40,8 @@ export const infiniteScrollMachine = createMachine({
       on: {
         // 只报意图，不自己切到 loading：取不取、什么时候取完，宿主说了算
         'SENTINEL.ENTER': { actions: ['invokeOnLoad'] },
+        // 按钮与哨兵是同一条通路的两个入口，取数中与关掉两段同样不响应
+        'LOAD': { actions: ['invokeOnLoad'] },
       },
     },
     // 这两段都不挂观察器，哨兵进出可视区一律不响应

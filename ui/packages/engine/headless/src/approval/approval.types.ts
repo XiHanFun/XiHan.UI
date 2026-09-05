@@ -1,4 +1,4 @@
-import type { MachineSchema, PropTypes, Size, Tone } from '@xihan-ui/core'
+import type { ControlVariant, MachineSchema, PropTypes, Size, Tone } from '@xihan-ui/core'
 
 export type ApprovalStatus = 'pending' | 'approved' | 'denied' | 'expired'
 
@@ -73,6 +73,8 @@ export interface ApprovalSchema extends MachineSchema {
     denyOnUnmount?: boolean
     /** 播报档位，默认 polite。 */
     live?: 'polite' | 'assertive'
+    /** 形态：outline 描边（缺省档）、subtle 底色分区、ghost 无壳内联。 */
+    variant?: ControlVariant
     tone?: Tone
     size?: Size
     translations?: Partial<ApprovalTranslations>

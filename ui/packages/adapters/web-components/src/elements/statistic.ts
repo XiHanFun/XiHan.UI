@@ -1,5 +1,5 @@
 import type { Size, Tone } from '@xihan-ui/core'
-import type { StatisticProps } from '@xihan-ui/headless'
+import type { StatisticProps, StatisticTrend } from '@xihan-ui/headless'
 import { connectStatistic, statisticAnatomy, statisticMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -18,11 +18,13 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @customElement xh-statistic
  * @attr {'sm'|'md'|'lg'} size - 尺寸档位，写到 root 的 data-size 上
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气，写到 root 的 data-tone 上
+ * @attr {'up'|'down'|'flat'} trend - 涨跌，写到 trend 部件的 data-direction 上；与 tone 正交
  * @csspart root - 承载 data-size 与 data-tone 的容器
  * @csspart label - 数值上方的标签
  * @csspart value - 数值本体，用等宽数字排版
  * @csspart prefix - 数值前的货币符号或升降箭头
  * @csspart suffix - 数值后的单位或百分号
+ * @csspart trend - 涨跌那一段，承载 data-direction；空着时皮肤按方向画兜底箭头
  */
 export class XhStatisticElement extends XhElement {
   static override partContract = { anatomy: statisticAnatomy, meta: statisticMeta }
@@ -31,14 +33,16 @@ export class XhStatisticElement extends XhElement {
   static override properties = {
     size: { converter: STRING_CONVERTER },
     tone: { converter: STRING_CONVERTER },
+    trend: { converter: STRING_CONVERTER },
   }
 
   declare size?: Size
   declare tone?: Tone
+  declare trend?: StatisticTrend
 
   protected wire(): void {
     // 读响应式 property，不回读 DOM 特性
-    const props: StatisticProps = { size: this.size, tone: this.tone }
+    const props: StatisticProps = { size: this.size, tone: this.tone, trend: this.trend }
     const api = connectStatistic(this.configured('statistic', props), wcNormalize)
 
     const put = (name: string, attrs: Record<string, unknown>): void => {
@@ -51,5 +55,6 @@ export class XhStatisticElement extends XhElement {
     put('value', api.getValueProps() as Record<string, unknown>)
     put('prefix', api.getPrefixProps() as Record<string, unknown>)
     put('suffix', api.getSuffixProps() as Record<string, unknown>)
+    put('trend', api.getTrendProps() as Record<string, unknown>)
   }
 }

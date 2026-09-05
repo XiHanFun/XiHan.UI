@@ -1,12 +1,13 @@
 import type { Direction, Placement, Size, Tone } from '@xihan-ui/core'
-import type { MenuApi, MenuGroupProps, MenuNode, MenuNodeMeta, MenuSchema } from '@xihan-ui/headless'
+import type { MenuApi, MenuGroupProps, MenuItemProps, MenuNode, MenuNodeMeta, MenuSchema, MenuTranslations } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { mergeProps } from '@xihan-ui/core'
 import { computed, defineComponent, h, mergeProps as mergeVueProps, onBeforeUnmount, ref, Teleport, watch } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { mergeIntoChild } from '../../runtime/as-child'
 import { useScrollbars } from '../../runtime/use-scrollbars'
-import { provideMenu, provideMenuChain, provideMenuGroup, provideMenuSub, useMenuChain, useMenuContext, useMenuGroupContext, useMenuSubContext } from './context'
+import { provideMenu, provideMenuChain, provideMenuGroup, provideMenuItem, provideMenuSub, useMenuChain, useMenuContext, useMenuGroupContext, useMenuItemContext, useMenuSubContext } from './context'
 import { useMenu } from './use-menu'
 
 type MenuProps = MenuSchema['props']
@@ -27,6 +28,9 @@ export const XhMenuRoot = defineComponent({
     dir: { type: String as PropType<Direction>, default: undefined },
     tone: { type: String as PropType<Tone>, default: undefined },
     size: { type: String as PropType<Size>, default: undefined },
+    typeahead: { type: Boolean, default: undefined },
+    disabled: { type: Boolean, default: undefined },
+    translations: { type: Object as PropType<Partial<MenuTranslations>>, default: undefined },
     openOnHover: { type: Boolean, default: undefined },
     hoverOpenDelay: { type: Number, default: undefined },
     hoverCloseDelay: { type: Number, default: undefined },
@@ -53,7 +57,7 @@ export const XhMenuRoot = defineComponent({
       emit('update:open', details.open)
     }
     const notifySelect: MenuProps['onSelect'] = details => emit('select', details)
-    const ctx = useMenu(props as MenuProps, notifyOpen, notifySelect)
+    const ctx = useMenu(withXhConfig('menu', props) as MenuProps, notifyOpen, notifySelect)
     provideMenu(ctx)
     // 任意层级子菜单的选中都汇到根：先发根的 select 再关根，各级随父关闭级联收起
     provideMenuChain({
@@ -136,6 +140,8 @@ export const XhMenuItem = defineComponent({
   },
   setup(props, { slots }) {
     const ctx = useMenuContext()
+    const item = computed<MenuItemProps>(() => ({ value: props.value, disabled: props.disabled }))
+    provideMenuItem({ item })
     // 本条目持有焦点时，value 变更按新值重报焦点条目，卸载时上报焦点丢失
     const itemEl = ref<HTMLElement | null>(null)
     watch(() => props.value, (next, prev) => {
@@ -236,6 +242,36 @@ export const XhMenuSubTrigger = defineComponent({
         ctx.triggerRef.value = el as HTMLElement
       },
     }, slots.default?.())
+  },
+})
+
+/** 条目里的文字载体：连打检索取它，图标与副文本的文字因此不进检索串 */
+export const XhMenuItemText = defineComponent({
+  name: 'XhMenuItemText',
+  setup(_, { slots }) {
+    const ctx = useMenuContext()
+    const { item } = useMenuItemContext()
+    return () => h('span', ctx.api.value.getItemTextProps(item.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
+/** 条目里的标记位（勾选、图标），纯装饰 */
+export const XhMenuItemIndicator = defineComponent({
+  name: 'XhMenuItemIndicator',
+  setup(_, { slots }) {
+    const ctx = useMenuContext()
+    const { item } = useMenuItemContext()
+    return () => h('span', ctx.api.value.getItemIndicatorProps(item.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
+/** 条目里的副文本，排在文字下一行 */
+export const XhMenuItemDescription = defineComponent({
+  name: 'XhMenuItemDescription',
+  setup(_, { slots }) {
+    const ctx = useMenuContext()
+    const { item } = useMenuItemContext()
+    return () => h('span', ctx.api.value.getItemDescriptionProps(item.value) as Record<string, unknown>, slots.default?.())
   },
 })
 

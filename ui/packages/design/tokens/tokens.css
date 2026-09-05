@@ -153,6 +153,7 @@
     --xh-glyph-mark-minus: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12H19'/%3E%3C/svg%3E");
     --xh-glyph-mark-plus: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 5V19'/%3E%3Cpath d='M5 12H19'/%3E%3C/svg%3E");
     --xh-glyph-mark-close: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 6L18 18'/%3E%3Cpath d='M18 6L6 18'/%3E%3C/svg%3E");
+    --xh-glyph-mark-download: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4'/%3E%3Cpath d='M7 10L12 15L17 10'/%3E%3Cpath d='M12 3V15'/%3E%3C/svg%3E");
     --xh-glyph-mark-chevron-down: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9L12 15L18 9'/%3E%3C/svg%3E");
     --xh-glyph-mark-chevron-up: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 15L12 9L18 15'/%3E%3C/svg%3E");
     --xh-glyph-mark-chevron-left: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 6L9 12L15 18'/%3E%3C/svg%3E");
@@ -160,6 +161,7 @@
     --xh-glyph-mark-chevrons-left: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 6L12 12L18 18'/%3E%3Cpath d='M12 6L6 12L12 18'/%3E%3C/svg%3E");
     --xh-glyph-mark-chevrons-right: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 6L12 12L6 18'/%3E%3Cpath d='M12 6L18 12L12 18'/%3E%3C/svg%3E");
     --xh-glyph-mark-arrow-up: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 20V4'/%3E%3Cpath d='M6 10L12 4L18 10'/%3E%3C/svg%3E");
+    --xh-glyph-mark-arrow-down: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 4V20'/%3E%3Cpath d='M6 14L12 20L18 14'/%3E%3C/svg%3E");
     --xh-glyph-mark-sort: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 20V4'/%3E%3Cpath d='M4 8L8 4L12 8'/%3E%3Cpath d='M16 4V20'/%3E%3Cpath d='M12 16L16 20L20 16'/%3E%3C/svg%3E");
     --xh-glyph-mark-sort-asc: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 20V4'/%3E%3Cpath d='M6 10L12 4L18 10'/%3E%3C/svg%3E");
     --xh-glyph-mark-sort-desc: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 4V20'/%3E%3Cpath d='M6 14L12 20L18 14'/%3E%3C/svg%3E");
@@ -177,6 +179,8 @@
     --xh-glyph-mark-restore: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 9h5V4'/%3E%3Cpath d='M20 9h-5V4'/%3E%3Cpath d='M20 15h-5v5'/%3E%3Cpath d='M4 15h5v5'/%3E%3C/svg%3E");
     --xh-glyph-mark-play: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 4.5L19.5 12L8 19.5Z'/%3E%3C/svg%3E");
     --xh-glyph-mark-pause: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 4.5V19.5'/%3E%3Cpath d='M15 4.5V19.5'/%3E%3C/svg%3E");
+    --xh-glyph-mark-calendar: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='5' width='18' height='16' rx='2'/%3E%3Cpath d='M3 10h18'/%3E%3Cpath d='M8 3v4'/%3E%3Cpath d='M16 3v4'/%3E%3C/svg%3E");
+    --xh-glyph-mark-clock: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 7v5.5l3.5 2'/%3E%3C/svg%3E");
     --xh-glyph-mark-required: '*';
     --xh-field-py: var(--xh-space-2);
     --xh-list-item-py-sm: var(--xh-space-2);
@@ -245,6 +249,10 @@
     --xh-layout-gap-md: var(--xh-space-3);
     --xh-layout-gap-lg: var(--xh-space-4);
     --xh-layout-gap-xl: var(--xh-space-6);
+    --xh-layout-col-min-xs: 10rem;
+    --xh-layout-col-min-sm: 14rem;
+    --xh-layout-col-min-md: 18rem;
+    --xh-layout-col-min-lg: 22rem;
     --xh-track-thickness: 6px;
     --xh-track-thumb-size: 18px;
     --xh-nav-link-max-w: 12rem;

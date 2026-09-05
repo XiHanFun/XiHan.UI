@@ -1,5 +1,5 @@
-import type { IconNode, IconRecord, Size, Tone } from '@xihan-ui/core'
-import type { IconProps, IconWeight } from '@xihan-ui/headless'
+import type { IconNode, IconRecord, Tone } from '@xihan-ui/core'
+import type { IconFlip, IconProps, IconRotate, IconSize, IconWeight } from '@xihan-ui/headless'
 import type { PropType, VNode } from 'vue'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -26,9 +26,11 @@ export const XhIcon = defineComponent({
   props: {
     icon: { type: Object as PropType<IconRecord>, default: undefined },
     label: { type: String, default: undefined },
-    size: { type: String as PropType<Size>, default: undefined },
+    size: { type: String as PropType<IconSize>, default: undefined },
     weight: { type: String as PropType<IconWeight>, default: undefined },
     tone: { type: String as PropType<Tone>, default: undefined },
+    rotate: { type: [Number, String] as PropType<IconRotate | string>, default: undefined },
+    flip: { type: String as PropType<IconFlip>, default: undefined },
   },
   setup(props, { slots }) {
     const ctx = useIcon(withXhConfig('icon', props) as IconProps)

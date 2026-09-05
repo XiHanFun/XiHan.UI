@@ -6,6 +6,13 @@ export type ProgressVariant = 'line' | 'circle' | 'dashboard'
 /** 仪表盘的缺口朝哪一侧。 */
 export type ProgressGapPosition = 'top' | 'right' | 'bottom' | 'left'
 
+/**
+ * 报的是「一件事的进度」还是「已知区间里的一个量」。
+ * progress 走 role=progressbar；meter 走 role=meter——磁盘占用、电量、评分这些量
+ * 没有"完成"可言，也不存在未知态。
+ */
+export type ProgressSemantics = 'progress' | 'meter'
+
 export interface ProgressProps {
   /** 当前进度值，越界会被夹到 [0, max]；非有限值按 0 处理。 */
   value?: number
@@ -34,11 +41,15 @@ export interface ProgressProps {
   tone?: Tone
   /** 尺寸：sm / md / lg。线形改轨道厚度，环形改直径 */
   size?: Size
+  /** 报的是进度还是量，默认 progress。meter 档发 role="meter"，且 indeterminate 不再生效。 */
+  semantics?: ProgressSemantics
 }
 
 export interface ProgressApi<T extends PropTypes = PropTypes> {
   /** 落定后的形态。 */
   variant: ProgressVariant
+  /** 落定后的语义。 */
+  semantics: ProgressSemantics
   /** 进度比例，[0,1]。 */
   ratio: number
   /** 进度百分比，取整。 */

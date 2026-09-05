@@ -51,6 +51,10 @@ export interface PinInputSchema extends MachineSchema {
     placeholder?: string
     /** 禁用：每格都带原生 disabled（不可聚焦、不可输入），隐藏输入不参与提交。 */
     disabled?: boolean
+    /** 只读：每格仍可聚焦、可复制，写不进；隐藏输入照常参与提交。 */
+    readOnly?: boolean
+    /** 必填标注：每格都带原生 required。 */
+    required?: boolean
     /** 校验失败标注。 */
     invalid?: boolean
     /** 填满即把焦点撤走，常用于"填满就自动提交"的表单。 */
@@ -106,12 +110,17 @@ export interface PinInputApi<T extends PropTypes = PropTypes> {
   /** 焦点所在格；焦点在组外时为 -1。 */
   focusedIndex: number
   disabled: boolean
+  readOnly: boolean
   invalid: boolean
   setValue: (next: string[]) => void
   clear: () => void
   getRootProps: () => T['element']
   getLabelProps: () => T['label']
+  /** 连着的几格圈成一段（123-456 这种分段写法）；纯排版，不参与下标计算。 */
+  getGroupProps: () => T['element']
   getInputProps: (props: PinInputInputProps) => T['input']
+  /** 段与段之间的分隔；对读屏隐藏，念出来只会打断验证码。 */
+  getSeparatorProps: () => T['element']
   /** 整份验证码的表单出口：一份 type=hidden 的原生输入，随表单提交拼好的串。 */
   getHiddenInputProps: () => T['input']
 }

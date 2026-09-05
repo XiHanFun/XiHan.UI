@@ -1,5 +1,5 @@
 import type { Direction, IdGenerator, Orientation, RuntimeConfig, Size, Tone } from '@xihan-ui/core'
-import type { AccordionItemProps, AccordionNode, AccordionSchema, AccordionValueChangeDetails } from '@xihan-ui/headless'
+import type { AccordionItemProps, AccordionNode, AccordionSchema, AccordionValueChangeDetails, AccordionVariant } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, isItemDisabled } from '@xihan-ui/core'
 import { accordionAnatomy, accordionMachine, accordionMeta, connectAccordion } from '@xihan-ui/headless'
@@ -17,12 +17,16 @@ const ITEM_SELECTOR = '[data-xh-part="item"]'
  * @attr {'ltr'|'rtl'} dir - 文字方向，影响水平轴左右键语义
  * @attr {boolean} multiple - 允许多项同时展开
  * @attr {boolean} collapsible - 允许把最后一个展开项收起
+ * @attr {boolean} loop - 方向键走到尽头回绕，默认关闭
+ * @attr {boolean} disabled - 整组禁用
+ * @attr {'plain'|'surface'|'bordered'} variant - 形态，缺省 plain
  * @attr {'horizontal'|'vertical'} orientation - 方向键轴向，默认 vertical
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires value-change - 展开集合变化；detail 为 `{ value: string[] }`
  * @csspart root - 手风琴根容器
  * @csspart item - 单个条目容器，作者在此写 value 与可选 disabled
+ * @csspart item-separator - 条目之间的细线，可缺省
  * @csspart header - 条目标题
  * @csspart trigger - 展开/收起按钮
  * @csspart content - 条目面板，收起时带 hidden
@@ -50,6 +54,9 @@ export class XhAccordionElement extends XhElement {
     defaultValue: { attribute: false },
     multiple: { type: Boolean },
     collapsible: { type: Boolean },
+    loop: { type: Boolean },
+    disabled: { type: Boolean },
+    variant: {},
     orientation: {},
     // property 另起名字，避开 HTMLElement 自带的 dir 存取器
     textDir: { attribute: 'dir' },
@@ -62,6 +69,9 @@ export class XhAccordionElement extends XhElement {
   declare defaultValue?: string[]
   declare multiple?: boolean
   declare collapsible?: boolean
+  declare loop?: boolean
+  declare disabled?: boolean
+  declare variant?: AccordionVariant
   declare orientation?: Orientation
   declare textDir?: Direction
   declare tone?: Tone
@@ -84,6 +94,9 @@ export class XhAccordionElement extends XhElement {
       defaultValue: this.defaultValue,
       multiple: this.multiple ?? false,
       collapsible: this.collapsible ?? false,
+      loop: this.loop ?? false,
+      disabled: this.disabled ?? false,
+      variant: this.variant,
       orientation: this.orientation,
       dir: this.textDir,
       tone: this.tone,
@@ -113,6 +126,8 @@ export class XhAccordionElement extends XhElement {
         this.spreader.spread(el, get(this.itemProps(el)) as Record<string, unknown>)
     }
     putAll('item', item => api.getItemProps(item))
+    for (const el of this.getParts('item-separator'))
+      this.spreader.spread(el, api.getItemSeparatorProps() as Record<string, unknown>)
     putAll('header', item => api.getHeaderProps(item))
     putAll('trigger', item => api.getTriggerProps(item))
     // 收起跟着退场闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场

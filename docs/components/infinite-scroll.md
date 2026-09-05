@@ -1,6 +1,6 @@
 # 无限滚动 <Badge type="info" text="infinite-scroll" />
 
-滚到接近底部时触发一次加载。
+取下一页的通用触发器，滚动只是默认的触发方式。
 
 ## 何时使用
 
@@ -16,6 +16,7 @@
 - `distance` 是提前量：距底部还有这么远就触发，用户感觉不到等待。
 - `loading` 与 `disabled` 由组件交给宿主，加载提示与结束语都由宿主自己摆。
 - 取完之后关掉即可，不会再触发。
+- `load-more-trigger` 是同一条通路的另一个入口：一颗真按钮，取数中与关掉两段自动停用。
 
 ## 示例
 
@@ -43,12 +44,18 @@ phase / loading / disabled 由组件交给宿主，加载提示与结束语都�
 
 <XhDemo src="infinite-scroll/04-slot-state" />
 
+### 取下一页的按钮
+
+与哨兵同一条通路：读屏在虚拟光标模式下不产生滚动事件，这颗按钮是它的键盘等价入口
+
+<XhDemo src="infinite-scroll/05-load-more" />
+
 ## 产物
 
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-infinite-scroll>` |
-| Vue 组件 | `XhInfiniteScrollRoot` `XhInfiniteScrollSentinel` |
+| Vue 组件 | `XhInfiniteScrollLoadMoreTrigger` `XhInfiniteScrollRoot` `XhInfiniteScrollSentinel` |
 | 组合式函数 | `useInfiniteScroll` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/infinite-scroll.css` |
@@ -57,7 +64,7 @@ phase / loading / disabled 由组件交给宿主，加载提示与结束语都�
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="infinite-scroll"`：**`root`** · **`sentinel`**
+`data-scope="infinite-scroll"`：**`root`** · **`sentinel`** · `load-more-trigger`
 
 ## Props
 
@@ -88,7 +95,7 @@ phase / loading / disabled 由组件交给宿主，加载提示与结束语都�
 
 状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
-**事件**：`SENTINEL.ENTER` · `MODE.SYNC`
+**事件**：`SENTINEL.ENTER` · `LOAD` · `MODE.SYNC`
 
 **判据**：`isPaused` · `isLoading`
 
@@ -103,6 +110,7 @@ phase / loading / disabled 由组件交给宿主，加载提示与结束语都�
 | `disabled` | `boolean` | 已关掉，不再观察。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getSentinelProps` | `() => T['element']` |  |
+| `getLoadMoreTriggerProps` | `() => T['button']` | 取下一页的按钮。文案由作者写在按钮里，组件不代填。 |
 
 ## 键盘
 
@@ -131,12 +139,24 @@ phase / loading / disabled 由组件交给宿主，加载提示与结束语都�
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
 | `root` | `data-loading` | ''（条件成立时才出现） |
+| `load-more-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `load-more-trigger` | `data-loading` | ''（条件成立时才出现） |
 
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-infinite-scroll-sentinel-size`
+`--xh-infinite-scroll-load-more-bg` · `--xh-infinite-scroll-load-more-bg-active` · `--xh-infinite-scroll-load-more-bg-hover` · `--xh-infinite-scroll-load-more-border` · `--xh-infinite-scroll-load-more-border-hover` · `--xh-infinite-scroll-load-more-fg` · `--xh-infinite-scroll-load-more-font-size` · `--xh-infinite-scroll-load-more-gap` · `--xh-infinite-scroll-load-more-h` · `--xh-infinite-scroll-load-more-px` · `--xh-infinite-scroll-load-more-radius` · `--xh-infinite-scroll-sentinel-size`
+
+## 动效
+
+状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
 
 ## 组合
 
@@ -146,6 +166,8 @@ phase / loading / disabled 由组件交给宿主，加载提示与结束语都�
 
 - 明确的结束提示："没有更多了"比无声停止好。
 - 加载失败要能重试，别静默停在那里。
+- 摆一颗 `load-more-trigger`：读屏在虚拟光标模式下不产生滚动事件，只靠哨兵那条路取不到第二页。
+- 按钮的文案写在按钮里，组件不代填名字——读屏念的与眼睛看的才是同一句。
 
 ## 反模式
 

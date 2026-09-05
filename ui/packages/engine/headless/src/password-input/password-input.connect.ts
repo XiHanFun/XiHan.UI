@@ -5,6 +5,9 @@ import { passwordInputAnatomy, passwordInputInputId } from './password-input.ana
 
 const parts = passwordInputAnatomy.build()
 
+/** 强度档位的上限：0 到 4 共五档。 */
+const STRENGTH_MAX = 4
+
 /**
  * 从按键事件里读大写锁定的开关。
  * 只有事件对象知道这件事：平台没有"现在查一下修饰键"的接口，所以提示要等用户按下第一个键才亮得起来。
@@ -37,7 +40,13 @@ export function connectPasswordInput<T extends PropTypes>(
     visibilityTriggerShow: translations?.visibilityTriggerShow ?? 'Show password',
     visibilityTriggerHide: translations?.visibilityTriggerHide ?? 'Hide password',
     capsLockOn: translations?.capsLockOn ?? 'Caps Lock is on',
+    strengthMeter: translations?.strengthMeter ?? 'Password strength',
   }
+
+  const rawStrength = prop('strength')
+  const strength = rawStrength == null || !Number.isFinite(rawStrength)
+    ? undefined
+    : Math.min(Math.max(Math.trunc(rawStrength), 0), STRENGTH_MAX)
 
   // 状态没变就不送：每敲一个字符都会走一遍这条路
   const syncCapsLock = (event: KeyboardEvent): void => {
@@ -58,6 +67,7 @@ export function connectPasswordInput<T extends PropTypes>(
     disabled,
     readOnly,
     invalid,
+    strength,
     inputType,
     capsLockMessage: capsLock ? label.capsLockOn : '',
     setValue: next => send({ type: 'VALUE.SET', value: next }),
@@ -158,6 +168,20 @@ export function connectPasswordInput<T extends PropTypes>(
       // 整段一起念：文案是一句话，只念新增的半句听不懂
       'aria-atomic': 'true',
       'data-state': capsLock ? 'visible' : 'hidden',
+    }),
+
+    // 强度条：档位由调用方打分后传进来，这里只负责把它落成读屏读得懂的量表与皮肤抓得住的档位
+    getStrengthMeterProps: () => normalize.element({
+      ...parts['strength-meter'].attrs,
+      'role': 'meter',
+      'aria-label': label.strengthMeter,
+      'aria-valuemin': 0,
+      'aria-valuemax': STRENGTH_MAX,
+      'aria-valuenow': strength,
+      // 没给 strength 时收起而不是卸载，节点是作者写的
+      'hidden': strength === undefined || undefined,
+      'data-level': strength === undefined ? undefined : String(strength),
+      'data-disabled': dataAttr(disabled),
     }),
   }
 }

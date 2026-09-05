@@ -17,7 +17,9 @@
 - `type` 覆盖 `text` / `password` / `email` / `tel` / `url` / `search`。
 - `clearable` 给出清空按钮，`maxLength` 给出字数上限。
 - 多行时可自动长高。
-- 框内前后缀、输入组、限制可输入字符都由作者组合，组件不预设。
+- `prefix` / `suffix` 在框内摆货币符、单位或图标，两段对读屏隐藏。
+- `showCount` 显出字数部件，数字取 `count` 与 `maxLength`，顶到上限时换色。
+- 输入组、限制可输入字符由作者组合，组件不预设。
 
 ## 示例
 
@@ -122,7 +124,7 @@ input 部件写成 textarea 即多行宿主；autoSize 让高度跟内容走，�
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-text-field>` |
-| Vue 组件 | `XhTextFieldClearTrigger` `XhTextFieldControl` `XhTextFieldInput` `XhTextFieldLabel` `XhTextFieldRoot` |
+| Vue 组件 | `XhTextFieldClearTrigger` `XhTextFieldControl` `XhTextFieldCount` `XhTextFieldInput` `XhTextFieldLabel` `XhTextFieldPrefix` `XhTextFieldRoot` `XhTextFieldSuffix` |
 | 组合式函数 | `useTextField` |
 | 状态机 | `textFieldMachine` |
 | 皮肤 | `@xihan-ui/styles/text-field.css` |
@@ -131,7 +133,7 @@ input 部件写成 textarea 即多行宿主；autoSize 让高度跟内容走，�
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="text-field"`：**`root`** · `label` · `control` · **`input`** · `clear-trigger`
+`data-scope="text-field"`：**`root`** · `label` · `control` · `prefix` · **`input`** · `suffix` · `clear-trigger` · `count`
 
 ## Props
 
@@ -148,6 +150,7 @@ input 部件写成 textarea 即多行宿主；autoSize 让高度跟内容走，�
 | `name` | `string` |  | 表单字段名；给了才参与提交。 |
 | `maxLength` | `number` |  | 字符数上限。同时落成原生 maxlength 与机器侧的截断，两道都要。 |
 | `clearable` | `boolean` |  | 开启清空能力：有值时显出清空按钮、Escape 接管。关掉时按钮带 hidden 收起。 |
+| `showCount` | `boolean` |  | 显出字数部件：关掉时 count 部件带 hidden 收起。 |
 | `autoSize` | `boolean \| TextFieldAutoSize` |  | 多行宿主的自动高度：跟内容长高；对象形态钉行数上下限，顶到 maxRows 后内部滚动。 |
 | `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定输入框的底与描边怎么画。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦强调用哪族颜色。 |
@@ -169,6 +172,7 @@ input 部件写成 textarea 即多行宿主；autoSize 让高度跟内容走，�
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
+| `XhTextFieldCount` | `default` | `TextFieldCountSlotProps` |  |
 | `XhTextFieldRoot` | `default` | `TextFieldRootSlotProps` |  |
 
 ## 状态
@@ -194,6 +198,9 @@ input 部件写成 textarea 即多行宿主；autoSize 让高度跟内容走，�
 | `invalid` | `boolean` |  |
 | `clearable` | `boolean` |  |
 | `atLimit` | `boolean` | 已顶到 maxLength：再敲也进不去，作者据此把字数提示标红。 |
+| `count` | `number` | 当前字数，即 value 的长度。作者拿它渲染 count 部件里的数字。 |
+| `maxLength` | `number \| undefined` | 字数上限的原样透传；没设上限时是 undefined，此时只渲当前字数。 |
+| `showCount` | `boolean` | 字数部件此刻是否显出（开了 showCount）。 |
 | `canClear` | `boolean` | 清空按钮此刻是否可用（开了 clearable、可编辑、且有值）。 |
 | `setValue` | `(next: string) => void` | 直接写值，只受 disabled/readOnly 与 maxLength 约束，与 clearable 无关。 |
 | `clear` | `() => void` | 走清空意图，受 canClear 约束；无条件清空请用 setValue('')。 |
@@ -202,7 +209,10 @@ input 部件写成 textarea 即多行宿主；autoSize 让高度跟内容走，�
 | `getControlProps` | `() => T['element']` | 视觉盒；写了它就由它画描边与聚焦环，不写时输入框自己当盒。 |
 | `getLabelProps` | `() => T['label']` |  |
 | `getInputProps` | `(props?: TextFieldInputProps) => T['input']` | 传 as: 'textarea' 即多行宿主：撤掉 type、接上自动高度。 |
+| `getPrefixProps` | `() => T['element']` | 输入框前的装饰段（货币符、单位、图标）；对读屏隐藏，不参与名字链。 |
+| `getSuffixProps` | `() => T['element']` | 输入框后的装饰段；对读屏隐藏，不参与名字链。 |
 | `getClearTriggerProps` | `() => T['button']` |  |
+| `getCountProps` | `() => T['element']` | 字数部件：承载 count / maxLength 两个数字，没开 showCount 时带 hidden 收起。 |
 
 ## 键盘
 
@@ -218,9 +228,12 @@ input 部件写成 textarea 即多行宿主；autoSize 让高度跟内容走，�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `prefix` | `aria-hidden` | 'true' |
 | `input` | `aria-invalid` | 'true' \| 'false' |
 | `input` | `aria-labelledby` | `label` 部件的 id |
+| `suffix` | `aria-hidden` | 'true' |
 | `clear-trigger` | `aria-label` | label.clearTrigger |
+| `count` | `aria-hidden` | 'true' |
 
 ## 样式
 
@@ -243,19 +256,25 @@ input 部件写成 textarea 即多行宿主；autoSize 让高度跟内容走，�
 | `label` | `data-disabled` | ''（条件成立时才出现） |
 | `control` | `data-at-max` | ''（条件成立时才出现） |
 | `control` | `data-disabled` | ''（条件成立时才出现） |
+| `control` | `data-empty` | ''（条件成立时才出现） |
 | `control` | `data-invalid` | ''（条件成立时才出现） |
 | `control` | `data-readonly` | ''（条件成立时才出现） |
+| `prefix` | `data-disabled` | ''（条件成立时才出现） |
 | `input` | `data-at-max` | ''（条件成立时才出现） |
 | `input` | `data-auto-resize` | ''（条件成立时才出现） |
 | `input` | `data-disabled` | ''（条件成立时才出现） |
+| `input` | `data-empty` | ''（条件成立时才出现） |
 | `input` | `data-invalid` | ''（条件成立时才出现） |
 | `input` | `data-multiline` | ''（条件成立时才出现） |
+| `suffix` | `data-disabled` | ''（条件成立时才出现） |
+| `count` | `data-at-max` | ''（条件成立时才出现） |
+| `count` | `data-disabled` | ''（条件成立时才出现） |
 
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-text-field-action-bg` · `--xh-text-field-action-bg-active` · `--xh-text-field-action-bg-hover` · `--xh-text-field-action-fg` · `--xh-text-field-action-fg-hover` · `--xh-text-field-action-font-size` · `--xh-text-field-action-radius` · `--xh-text-field-action-size` · `--xh-text-field-control-bg` · `--xh-text-field-control-bg-disabled` · `--xh-text-field-control-bg-hover` · `--xh-text-field-control-bg-readonly` · `--xh-text-field-control-border` · `--xh-text-field-control-border-at-max` · `--xh-text-field-control-border-focus` · `--xh-text-field-control-border-hover` · `--xh-text-field-control-border-invalid` · `--xh-text-field-control-fg` · `--xh-text-field-control-gap` · `--xh-text-field-control-h` · `--xh-text-field-control-min-w` · `--xh-text-field-control-px` · `--xh-text-field-control-radius` · `--xh-text-field-control-shadow` · `--xh-text-field-gap` · `--xh-text-field-icon-size` · `--xh-text-field-input-autofill-bg` · `--xh-text-field-input-autofill-fg` · `--xh-text-field-input-fg` · `--xh-text-field-input-font-size` · `--xh-text-field-label-fg` · `--xh-text-field-label-fg-disabled` · `--xh-text-field-label-font-size` · `--xh-text-field-label-font-weight` · `--xh-text-field-placeholder-fg` · `--xh-text-field-textarea-py`
+`--xh-text-field-action-bg` · `--xh-text-field-action-bg-active` · `--xh-text-field-action-bg-hover` · `--xh-text-field-action-fg` · `--xh-text-field-action-fg-hover` · `--xh-text-field-action-font-size` · `--xh-text-field-action-radius` · `--xh-text-field-action-size` · `--xh-text-field-affix-fg` · `--xh-text-field-affix-fg-disabled` · `--xh-text-field-affix-font-size` · `--xh-text-field-control-bg` · `--xh-text-field-control-bg-disabled` · `--xh-text-field-control-bg-hover` · `--xh-text-field-control-bg-readonly` · `--xh-text-field-control-border` · `--xh-text-field-control-border-at-max` · `--xh-text-field-control-border-focus` · `--xh-text-field-control-border-hover` · `--xh-text-field-control-border-invalid` · `--xh-text-field-control-fg` · `--xh-text-field-control-gap` · `--xh-text-field-control-h` · `--xh-text-field-control-min-w` · `--xh-text-field-control-px` · `--xh-text-field-control-radius` · `--xh-text-field-control-shadow` · `--xh-text-field-count-fg` · `--xh-text-field-count-fg-at-max` · `--xh-text-field-count-fg-disabled` · `--xh-text-field-count-font-size` · `--xh-text-field-gap` · `--xh-text-field-icon-size` · `--xh-text-field-input-autofill-bg` · `--xh-text-field-input-autofill-fg` · `--xh-text-field-input-fg` · `--xh-text-field-input-font-size` · `--xh-text-field-label-fg` · `--xh-text-field-label-fg-disabled` · `--xh-text-field-label-font-size` · `--xh-text-field-label-font-weight` · `--xh-text-field-placeholder-fg` · `--xh-text-field-textarea-py`
 
 ## 动效
 

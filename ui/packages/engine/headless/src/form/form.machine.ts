@@ -84,6 +84,12 @@ function validateOneField(params: Params<FormSchema>, values: FormValues, name: 
     if (tracker.fieldSeq[name] !== seq)
       return
     params.context.set('validating', false)
+    // 这一条的来源改记成「校验算出来的」：接下来再编辑这个字段不该把它抹掉
+    const validated = params.refs.get('validatedErrors')
+    if (all[name])
+      validated.add(name)
+    else
+      validated.delete(name)
     params.context.set('errors', mergeFormErrors(params.context.get('errors'), { [name]: all[name] }))
   }
   const outcome = runFormRules(
@@ -107,6 +113,8 @@ export const formMachine = createMachine({
   refs: () => ({
     getRootEl: () => null,
     validation: { seq: 0, fieldSeq: {} },
+    // 空表起步：作者预置的 defaultErrors 不是校验算出来的，编辑那个字段就该让它走
+    validatedErrors: new Set<string>(),
   }),
   context: ({ prop, cell }) => ({
     values: cell<FormValues>(() => ({
@@ -130,7 +138,7 @@ export const formMachine = createMachine({
     'FIELD.SET': [
       // 禁用/只读整条吃掉，连 onValuesChange 都不发：受控宿主收到意图会照写，等于绕过禁用
       { guard: not('isEditable') },
-      { actions: ['setFieldValue', 'validateChangedField'] },
+      { actions: ['setFieldValue', 'clearExternalFieldError', 'validateChangedField'] },
     ],
     'FIELD.BLUR': [
       { guard: not('isEnabled') },
@@ -187,6 +195,21 @@ export const formMachine = createMachine({
         context.set('values', setFormFieldValue(context.get('values'), e.name, e.value))
       },
 
+      /**
+       * 编辑一个字段就清掉它身上那条来自库外的错误。
+       *
+       * 服务端返回的错误是经 setFieldError 写进来的，本库的校验不认识它：validateOn
+       * 是 submit 时两次提交之间没有任何一条路径会重算它，而 validate 与 rules 都没给
+       * 的表单连提交那一路的整表替换也不发生——用户照着提示改完，错误还挂在原处。
+       * 校验自己算出来的那几条不动，它们由下一次校验负责收回。
+       */
+      clearExternalFieldError: ({ context, event, refs }) => {
+        const e = event.current()
+        if (e.type !== 'FIELD.SET' || refs.get('validatedErrors').has(e.name))
+          return
+        context.set('errors', mergeFormErrors(context.get('errors'), { [e.name]: undefined }))
+      },
+
       validateChangedField: (params) => {
         const e = params.event.current()
         if (e.type !== 'FIELD.SET' || formValidateOn(params.prop('validateOn')) !== 'change')
@@ -215,26 +238,34 @@ export const formMachine = createMachine({
         const rules = prop('rules')
         const tracker = refs.get('validation')
         const seq = ++tracker.seq
-        const settle = (errors: FormErrors): void => {
+        // computed=true 是真跑过一轮：整表被替换掉，这张表整个记成校验算出来的，
+        // 库外写进来的那几条随旧表一起作废。什么都没跑的那一路照旧不动来源登记。
+        const settle = (errors: FormErrors, computed: boolean): void => {
           if (tracker.seq !== seq)
             return
           context.set('validating', false)
+          if (computed) {
+            const validated = refs.get('validatedErrors')
+            validated.clear()
+            for (const name of formErrorNames(errors))
+              validated.add(name)
+          }
           context.set('errors', errors)
           send(formErrorNames(errors).length > 0
             ? { type: 'VALIDATION.FAIL', errors, values }
             : { type: 'VALIDATION.PASS', errors, values })
         }
         if (!validate && !rules) {
-          settle(context.get('errors'))
+          settle(context.get('errors'), false)
           return
         }
         const outcome = runFormRules(rules, validate, values, prop('validateMessages'))
         if (outcome instanceof Promise) {
           context.set('validating', true)
-          void outcome.then(settle)
+          void outcome.then(errors => settle(errors, true))
           return
         }
-        settle(outcome)
+        settle(outcome, true)
       },
 
       invokeSubmit: ({ prop, event }) => {
@@ -281,14 +312,17 @@ export const formMachine = createMachine({
           focusFormField(refs.get('getRootEl')(), e.name)
       },
 
-      setFieldError: ({ context, event }) => {
+      setFieldError: ({ context, event, refs }) => {
         const e = event.current()
         if (e.type !== 'ERROR.SET')
           return
+        // 命令式写进来的这条归库外，哪怕它顶掉的是校验刚算出来的同名错误
+        refs.get('validatedErrors').delete(e.name)
         context.set('errors', mergeFormErrors(context.get('errors'), { [e.name]: e.message }))
       },
 
-      clearErrors: ({ context }) => {
+      clearErrors: ({ context, refs }) => {
+        refs.get('validatedErrors').clear()
         // 本来就空就别写，写一份新的空表会让受控宿主白重渲一轮
         if (formErrorNames(context.get('errors')).length === 0)
           return
@@ -305,6 +339,8 @@ export const formMachine = createMachine({
         tracker.seq++
         for (const name of Object.keys(tracker.fieldSeq))
           tracker.fieldSeq[name]!++
+        // 落回去的是 defaultErrors，那份归库外
+        refs.get('validatedErrors').clear()
         context.set('validating', false)
         context.set('values', { ...(prop('defaultValues') ?? {}) })
         context.set('errors', normalizeFormErrors(prop('defaultErrors')))

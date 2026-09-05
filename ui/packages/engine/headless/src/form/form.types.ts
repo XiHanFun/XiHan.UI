@@ -105,6 +105,13 @@ export interface FormRefs {
   getRootEl: () => HTMLElement | null
   /** 运行中的校验批次号，晚到的异步结果按它判弃；整表与逐字段各记各的。 */
   validation: { seq: number, fieldSeq: Record<string, number> }
+  /**
+   * 当下这张错误表里，哪几条是本库自己校验算出来的。
+   *
+   * 不在这份名单里的错误来自库外（作者预置的 defaultErrors、受控的 errors、
+   * 服务端返回后经 setFieldError 写进来的那些），字段一被编辑就清掉它。
+   */
+  validatedErrors: Set<string>
 }
 
 export interface FormSchema extends MachineSchema {
@@ -188,6 +195,7 @@ export interface FormSchema extends MachineSchema {
   guard: 'isEnabled' | 'isEditable'
   action:
     | 'setFieldValue'
+    | 'clearExternalFieldError'
     | 'validateChangedField'
     | 'validateBlurredField'
     | 'runValidation'

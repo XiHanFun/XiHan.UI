@@ -1,6 +1,6 @@
 import type { Direction, Size, Tone } from '@xihan-ui/core'
-import type { BreadcrumbProps, BreadcrumbTranslations } from '@xihan-ui/headless'
-import type { PropType } from 'vue'
+import type { BreadcrumbItem, BreadcrumbNode, BreadcrumbNodeMeta, BreadcrumbProps, BreadcrumbTranslations } from '@xihan-ui/headless'
+import type { PropType, VNode } from 'vue'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { provideBreadcrumb, useBreadcrumbContext } from './context'
@@ -11,6 +11,8 @@ export const XhBreadcrumbRoot = defineComponent({
   name: 'XhBreadcrumbRoot',
   // 缺省值由 connect 给出，这里一律 default: undefined
   props: {
+    collection: { type: Array as PropType<readonly BreadcrumbNode[]>, default: undefined },
+    maxItems: { type: Number, default: undefined },
     dir: { type: String as PropType<Direction>, default: undefined },
     translations: { type: Object as PropType<Partial<BreadcrumbTranslations>>, default: undefined },
     tone: { type: String as PropType<Tone>, default: undefined },
@@ -19,7 +21,15 @@ export const XhBreadcrumbRoot = defineComponent({
   setup(props, { slots }) {
     const ctx = useBreadcrumb(withXhConfig('breadcrumb', props) as BreadcrumbProps)
     provideBreadcrumb(ctx)
-    return () => h('nav', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.())
+    return () => h(
+      'nav',
+      ctx.api.value.getRootProps() as Record<string, unknown>,
+      slots.default
+        ? slots.default()
+        : props.collection
+          ? renderDefaultTree(ctx.api.value.items, slots.separator, slots.ellipsis)
+          : [],
+    )
   },
 })
 
@@ -56,6 +66,15 @@ export const XhBreadcrumbLink = defineComponent({
   },
 })
 
+/** 链接里的图标位，与文字并排；纯装饰 */
+export const XhBreadcrumbLinkIcon = defineComponent({
+  name: 'XhBreadcrumbLinkIcon',
+  setup(_, { slots }) {
+    const ctx = useBreadcrumbContext()
+    return () => h('span', ctx.api.value.getLinkIconProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
 // 分隔符与省略号同为 ol 的直接子节点，渲染为 li 并对读屏隐藏
 export const XhBreadcrumbSeparator = defineComponent({
   name: 'XhBreadcrumbSeparator',
@@ -72,3 +91,45 @@ export const XhBreadcrumbEllipsis = defineComponent({
     return () => h('li', ctx.api.value.getEllipsisProps() as Record<string, unknown>, slots.default?.())
   },
 })
+
+/**
+ * 没写默认插槽时按 collection 铺开的整套结构，作者只交数据。
+ * 与手写部件产出的 DOM 完全一致，要改结构就写默认插槽，行为不变。
+ * 分隔符与省略位的内容默认是文字，写同名插槽即由作者接管。
+ */
+function renderDefaultTree(
+  items: readonly BreadcrumbItem[],
+  separatorSlot?: () => VNode[],
+  ellipsisSlot?: (nodes: readonly BreadcrumbNodeMeta[]) => VNode[],
+): VNode[] {
+  return [h(XhBreadcrumbList, null, () => renderItems(items, separatorSlot, ellipsisSlot))]
+}
+
+/** ol 里那一串：层与层之间铺分隔符，被折掉的那一段铺成一个省略位。 */
+function renderItems(
+  items: readonly BreadcrumbItem[],
+  separatorSlot?: () => VNode[],
+  ellipsisSlot?: (nodes: readonly BreadcrumbNodeMeta[]) => VNode[],
+): VNode[] {
+  const out: VNode[] = []
+  items.forEach((item, index) => {
+    if (index > 0)
+      out.push(h(XhBreadcrumbSeparator, { key: `sep-${index}` }, () => separatorSlot?.() ?? '/'))
+    if (item.type === 'ellipsis') {
+      out.push(h(XhBreadcrumbEllipsis, { key: 'ellipsis' }, () => ellipsisSlot?.(item.nodes) ?? '…'))
+      return
+    }
+    const node = item.node
+    out.push(h(XhBreadcrumbItem, { key: node.value }, () => [
+      h(
+        XhBreadcrumbLink,
+        { current: node.current, href: node.href },
+        () => [
+          node.icon ? h(XhBreadcrumbLinkIcon, null, () => node.icon) : null,
+          node.label,
+        ],
+      ),
+    ]))
+  })
+  return out
+}

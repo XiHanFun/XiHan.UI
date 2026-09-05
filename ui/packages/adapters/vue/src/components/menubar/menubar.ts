@@ -273,6 +273,28 @@ export const XhMenubarItemIndicator = defineComponent({
   },
 })
 
+/** 条目里的副文本，排在文字下一行 */
+export const XhMenubarItemDescription = defineComponent({
+  name: 'XhMenubarItemDescription',
+  setup(_, { slots }) {
+    const ctx = useMenubarContext()
+    const { item } = useMenubarItemContext()
+    return () => h('span', ctx.api.value.getItemDescriptionProps(item.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
+/** 指向本张菜单锚点的箭头，纯装饰；须写在同一张菜单的 positioner 里 */
+export const XhMenubarArrow = defineComponent({
+  name: 'XhMenubarArrow',
+  setup() {
+    const ctx = useMenubarContext()
+    const menu = useMenubarMenuContext()
+    if (!menu)
+      throw new Error('[xh] XhMenubarArrow 必须用在 XhMenubarPositioner 内')
+    return () => h('div', ctx.api.value.getArrowProps(menu.menu.value) as Record<string, unknown>)
+  },
+})
+
 export const XhMenubarSeparator = defineComponent({
   name: 'XhMenubarSeparator',
   setup() {
@@ -296,14 +318,61 @@ function renderDefaultTree(
     ),
     ...collection.map(menu =>
       h(XhMenubarPositioner, { key: `positioner:${menu.value}`, value: menu.value }, () => [
-        h(XhMenubarContent, null, () => menu.items.map(item =>
-          h(XhMenubarItem, { key: item.value, value: item.value }, () => [
-            h(XhMenubarItemText, null, () => itemSlot?.(item) ?? item.label),
-          ]),
-        )),
+        h(XhMenubarContent, null, () => renderNodes(menu.items, itemSlot)),
       ]),
     ),
   ]
+}
+
+/** 相邻同 group 的条目并成一段，没写 group 的各自成段。 */
+function groupRuns(collection: readonly MenubarNodeMeta[]): MenubarNodeMeta[][] {
+  const runs: MenubarNodeMeta[][] = []
+  for (const meta of collection) {
+    const last = runs.at(-1)
+    if (last && meta.group != null && last[0]!.group === meta.group)
+      last.push(meta)
+    else
+      runs.push([meta])
+  }
+  return runs
+}
+
+/** 单个条目：文字在上，副文本在下，没给副文本就不铺那个部件。 */
+function renderNode(
+  meta: MenubarNodeMeta,
+  itemSlot?: (node: MenubarNodeMeta) => VNode[],
+): VNode {
+  return h(XhMenubarItem, { key: meta.value, value: meta.value }, () => [
+    h(XhMenubarItemText, null, () => itemSlot?.(meta) ?? meta.label),
+    ...(meta.description != null ? [h(XhMenubarItemDescription, null, () => meta.description)] : []),
+  ])
+}
+
+/** content 的内容：分组段铺成 group，段首的分隔线落在 group 外面。 */
+function renderNodes(
+  collection: readonly MenubarNodeMeta[],
+  itemSlot?: (node: MenubarNodeMeta) => VNode[],
+): VNode[] {
+  return groupRuns(collection).flatMap((run, runIndex) => {
+    const head = run[0]!
+    // 首条上的标记不产出分隔线：菜单开头不留一道空隔
+    const lead = runIndex > 0 && head.separatorBefore
+      ? [h(XhMenubarSeparator, { key: `separator:${head.value}` })]
+      : []
+    if (head.group == null)
+      return [...lead, renderNode(head, itemSlot)]
+    const groupLabel = run.find(node => node.groupLabel != null)?.groupLabel ?? null
+    return [
+      ...lead,
+      h(XhMenubarGroup, { key: `group:${head.group}`, value: head.group }, () => [
+        ...(groupLabel != null ? [h(XhMenubarGroupLabel, null, () => groupLabel)] : []),
+        ...run.flatMap((node, index) => [
+          ...(index > 0 && node.separatorBefore ? [h(XhMenubarSeparator, { key: `separator:${node.value}` })] : []),
+          renderNode(node, itemSlot),
+        ]),
+      ]),
+    ]
+  })
 }
 
 /** XhMenubarSub 默认插槽拿到的东西。 */

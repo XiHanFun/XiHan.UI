@@ -1,5 +1,5 @@
 import type { Size, Tone } from '@xihan-ui/core'
-import type { TypographyLevel, TypographyProps, TypographyVariant } from '@xihan-ui/headless'
+import type { TypographyAlign, TypographyLevel, TypographyProps, TypographyVariant, TypographyWeight } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
 import { connectTypography } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'
@@ -12,6 +12,8 @@ export const XhTypographyRoot = defineComponent({
   name: 'XhTypographyRoot',
   props: {
     size: { type: String as PropType<Size>, default: undefined },
+    align: { type: String as PropType<TypographyAlign>, default: undefined },
+    weight: { type: String as PropType<TypographyWeight>, default: undefined },
   },
   setup(props, { slots }) {
     const api = computed(() => connectTypography(withXhConfig('typography', props) as TypographyProps, vueNormalize))
@@ -49,7 +51,7 @@ export const XhTypographyParagraph = defineComponent({
 })
 
 /**
- * 行内文字：variant 换形态，tone 换语气色。
+ * 行内文字：variant 换形态，tone 换语气色，weight 换字重。
  * as 决定渲染成哪个标签，默认 span；要 code / strong 的原生语义就自己写上去。
  */
 export const XhTypographyText = defineComponent({
@@ -57,15 +59,31 @@ export const XhTypographyText = defineComponent({
   props: {
     tone: { type: String as PropType<Tone>, default: undefined },
     variant: { type: String as PropType<TypographyVariant>, default: undefined },
+    weight: { type: String as PropType<TypographyWeight>, default: undefined },
     as: { type: String, default: 'span' },
   },
   setup(props, { slots }) {
     const ctx = useTypographyContext()
     return () => h(
       props.as,
-      ctx.api.value.getTextProps({ tone: props.tone, variant: props.variant }) as Record<string, unknown>,
+      ctx.api.value.getTextProps({ tone: props.tone, variant: props.variant, weight: props.weight }) as Record<string, unknown>,
       slots.default?.(),
     )
+  },
+})
+
+/**
+ * 富文本容器：外来的 HTML（Markdown 渲染结果）铺进来，样式按标签给。
+ * as 决定渲染成哪个标签，默认 div。
+ */
+export const XhTypographyProse = defineComponent({
+  name: 'XhTypographyProse',
+  props: {
+    as: { type: String, default: 'div' },
+  },
+  setup(props, { slots }) {
+    const ctx = useTypographyContext()
+    return () => h(props.as, ctx.api.value.getProseProps() as Record<string, unknown>, slots.default?.())
   },
 })
 

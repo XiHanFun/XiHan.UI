@@ -16,9 +16,11 @@
 ## 特性
 
 - 展开集合与选中集合两套值各自可受控。
+- `variant` 决定带不带外框，缺省 `surface`；`plain` 让树直接落在页面上。
 - `cascade` 与 `checkedStrategy` 决定勾父带不带子、以及回显给哪一层。
 - 支持只让叶子进选中集合、关键词过滤、子节点异步加载、拖放换父。
 - `expandOnClick` 决定点整行是否展开。
+- 空（`empty`）与在途（`loading`）两个相位各有部件，都放在 `root` 里当 `tree` 的兄弟；`loading` 为真时树报 `aria-busy`，空态让位。
 - `leafOrientation` 按结构判据横排：子节点全是叶子的那层跟着它走，其余恒竖排。
 - 节点上标 `childrenOrientation: 'horizontal' | 'vertical'` 指定「我这一层子节点怎么排」，
   比 `leafOrientation` 优先；标 `vertical` 能把树级的 `horizontal` 按回竖排。根层不受影响，恒竖排。
@@ -97,12 +99,18 @@ leaf-orientation 按结构判据横排「子节点全是叶子」的那层；要
 
 <XhDemo src="tree/12-range-selection" />
 
+### 形态
+
+variant="plain" 去掉外框与底色，树直接落在页面上；缺省 surface 保持带框的样子
+
+<XhDemo src="tree/13-variant" />
+
 ## 产物
 
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-tree>` |
-| Vue 组件 | `XhTreeBranch` `XhTreeBranchCheckbox` `XhTreeBranchContent` `XhTreeBranchControl` `XhTreeBranchIndicator` `XhTreeBranchText` `XhTreeBranchTrigger` `XhTreeItem` `XhTreeItemCheckbox` `XhTreeItemIndicator` `XhTreeItemText` `XhTreeLabel` `XhTreeLiveRegion` `XhTreeNodeDragTrigger` `XhTreeRoot` `XhTreeTree` |
+| Vue 组件 | `XhTreeBranch` `XhTreeBranchCheckbox` `XhTreeBranchContent` `XhTreeBranchControl` `XhTreeBranchIndicator` `XhTreeBranchText` `XhTreeBranchTrigger` `XhTreeEmpty` `XhTreeItem` `XhTreeItemCheckbox` `XhTreeItemIndicator` `XhTreeItemText` `XhTreeLabel` `XhTreeLiveRegion` `XhTreeLoading` `XhTreeNodeDragTrigger` `XhTreeRoot` `XhTreeTree` |
 | 组合式函数 | `useTree` |
 | 状态机 | `treeMachine` |
 | 皮肤 | `@xihan-ui/styles/tree.css` |
@@ -111,13 +119,14 @@ leaf-orientation 按结构判据横排「子节点全是叶子」的那层；要
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="tree"`：`root` · `label` · **`tree`** · **`item`** · `item-checkbox` · `item-indicator` · `item-text` · `branch` · `branch-checkbox` · `branch-control` · `branch-trigger` · `branch-indicator` · `branch-text` · `branch-content` · `node-drag-trigger` · `live-region`
+`data-scope="tree"`：`root` · `label` · **`tree`** · **`item`** · `item-checkbox` · `item-indicator` · `item-text` · `branch` · `branch-checkbox` · `branch-control` · `branch-trigger` · `branch-indicator` · `branch-text` · `branch-content` · `node-drag-trigger` · `empty` · `loading` · `live-region`
 
 ## Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `collection` | `TreeNode[]` |  | 树数据，层级元信息的唯一事实源。缺省为空树。 |
+| `variant` | `TreeVariant` |  | 外框形态：surface 带描边与底色（缺省），plain 去掉描边与底色，只留行。 |
 | `leafOrientation` | `Orientation` |  | 末端那一层怎么排，默认 vertical（每行一个）。horizontal 让它们并排铺开。 只作用于「子节点全是叶子」的那一层——菜单授权里就是按钮那层： 一个菜单下十几个按钮，横排一行铺完，省掉纵向翻找。中间层与整棵树恒是竖排， 它们承载的是层级本身，横过来层级就读没了。 这是结构判据，逐层自动认。要精确指定哪一层横排，在节点上标 `childrenOrientation`，它比本项优先。 只管排布，不动键盘：方向键在树上是层级操作（左右收展、上下走可见行）， 这是 treeview 的规范语义，不随排布方向改写。 |
 | `expandedValue` | `string[]` |  | 展开集合。给定即受控：cell 直读 prop，写只发 onExpandedValueChange 不落内部值。 |
 | `defaultExpandedValue` | `string[]` |  |  |
@@ -128,6 +137,7 @@ leaf-orientation 按结构判据横排「子节点全是叶子」的那层；要
 | `checkedStrategy` | `CascadeStrategy` |  | 级联下对外值的收敛策略，默认 child（只收叶）；parent = 最高整枝，all = 全部勾中节点。 |
 | `expandOnClick` | `boolean` |  | 点分支行是否顺带展开/收起，默认 true。关掉后只有 branch-trigger 与左右方向键能改展开态。 |
 | `disabled` | `boolean` |  | 整棵树禁用：所有节点转 aria-disabled，键盘与点击都不再改展开/选中。 |
+| `loading` | `boolean` |  | 节点还在取：树报 aria-busy，在途占位顶上来、空态占位让位。 |
 | `loop` | `boolean` |  | 上下键走到首尾是否回绕，默认 false。 |
 | `typeahead` | `boolean` |  | 连打检索，默认开。关掉后可打印字符一律放行给页面。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr；只对调左右方向键的「展开/收起」语义。 |
@@ -190,6 +200,8 @@ leaf-orientation 按结构判据横排「子节点全是叶子」的那层；要
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['element']` |  |
 | `getTreeProps` | `() => T['element']` |  |
+| `getEmptyProps` | `() => T['element']` | 空态占位：放在 root 里、tree 的兄弟（role=tree 只许拥有 treeitem 与 group）。 给了 collection 时由连接层按条数收放；节点手写时不写 hidden，露不露面归作者。 |
+| `getLoadingProps` | `() => T['element']` | 在途占位：与空态占位同一个位置，两者不同屏——取数期间它顶上来，空态让位。 给了 collection 时由连接层按条数收放；节点手写时只按 loading 收放。 |
 | `getNodeDragTriggerProps` | `(props: TreeNodeProps) => T['element']` | 节点拖动把手。触屏那一路唯一的入口，不占 Tab 位。 常挂即可：nodeDraggable 关着或这个节点禁用时它自报 data-disabled、也不再让出滚动， 渲了不会错。按拖不拖得动来决定渲不渲，会让 DOM 结构随状态变。 |
 | `getLiveRegionProps` | `() => T['element']` |  |
 | `getItemProps` | `(props: TreeNodeProps) => T['element']` |  |
@@ -229,6 +241,7 @@ leaf-orientation 按结构判据横排「子节点全是叶子」的那层；要
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `tree` | `aria-busy` | 'true' \| undefined |
 | `tree` | `aria-disabled` | 'true' \| 'false' |
 | `tree` | `aria-labelledby` | `label` 部件的 id |
 | `tree` | `aria-multiselectable` | 'true' \| 'false' |
@@ -258,7 +271,9 @@ leaf-orientation 按结构判据横排「子节点全是叶子」的那层；要
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-loading` | ''（条件成立时才出现） |
 | `root` | `data-orientation` | 'vertical' |
+| `root` | `data-variant` | props.variant |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
 | `tree` | `data-disabled` | ''（条件成立时才出现） |
 | `tree` | `data-orientation` | 'vertical' |
@@ -271,12 +286,14 @@ leaf-orientation 按结构判据横排「子节点全是叶子」的那层；要
 | `branch-content` | `data-orientation` | 'horizontal' \| 'vertical' |
 | `node-drag-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `node-drag-trigger` | `data-dragging` | ''（条件成立时才出现） |
+| `empty` | `data-disabled` | ''（条件成立时才出现） |
+| `loading` | `data-disabled` | ''（条件成立时才出现） |
 
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-tree-bg` · `--xh-tree-border` · `--xh-tree-branch-content-gap` · `--xh-tree-branch-gap` · `--xh-tree-branch-indicator-fg` · `--xh-tree-checkbox-bg` · `--xh-tree-checkbox-bg-checked` · `--xh-tree-checkbox-border` · `--xh-tree-checkbox-border-checked` · `--xh-tree-checkbox-border-disabled` · `--xh-tree-checkbox-fg` · `--xh-tree-checkbox-radius` · `--xh-tree-checkbox-size` · `--xh-tree-drag-fg` · `--xh-tree-drag-fg-active` · `--xh-tree-drag-fg-disabled` · `--xh-tree-drag-grip-long` · `--xh-tree-drag-grip-short` · `--xh-tree-drag-radius` · `--xh-tree-drag-size` · `--xh-tree-dragging-opacity` · `--xh-tree-drop-fg` · `--xh-tree-drop-inside-bg` · `--xh-tree-drop-line` · `--xh-tree-fg` · `--xh-tree-gap` · `--xh-tree-icon-size` · `--xh-tree-indent` · `--xh-tree-indicator-size` · `--xh-tree-item-indicator-fg` · `--xh-tree-label-fg` · `--xh-tree-label-font-size` · `--xh-tree-label-font-weight` · `--xh-tree-leaf-row-gap` · `--xh-tree-max-h` · `--xh-tree-px` · `--xh-tree-py` · `--xh-tree-radius` · `--xh-tree-row-bg-hover` · `--xh-tree-row-fg` · `--xh-tree-row-fg-selected` · `--xh-tree-row-font-size` · `--xh-tree-row-gap` · `--xh-tree-row-leading` · `--xh-tree-row-px` · `--xh-tree-row-py` · `--xh-tree-row-radius` · `--xh-tree-row-selected-font-weight` · `--xh-tree-tree-gap`
+`--xh-tree-bg` · `--xh-tree-border` · `--xh-tree-branch-content-gap` · `--xh-tree-branch-gap` · `--xh-tree-branch-indicator-fg` · `--xh-tree-checkbox-bg` · `--xh-tree-checkbox-bg-checked` · `--xh-tree-checkbox-border` · `--xh-tree-checkbox-border-checked` · `--xh-tree-checkbox-border-disabled` · `--xh-tree-checkbox-fg` · `--xh-tree-checkbox-radius` · `--xh-tree-checkbox-size` · `--xh-tree-drag-fg` · `--xh-tree-drag-fg-active` · `--xh-tree-drag-fg-disabled` · `--xh-tree-drag-grip-long` · `--xh-tree-drag-grip-short` · `--xh-tree-drag-radius` · `--xh-tree-drag-size` · `--xh-tree-dragging-opacity` · `--xh-tree-drop-fg` · `--xh-tree-drop-inside-bg` · `--xh-tree-drop-line` · `--xh-tree-empty-fg` · `--xh-tree-empty-font-size` · `--xh-tree-empty-px` · `--xh-tree-empty-py` · `--xh-tree-fg` · `--xh-tree-gap` · `--xh-tree-icon-size` · `--xh-tree-indent` · `--xh-tree-indicator-size` · `--xh-tree-item-indicator-fg` · `--xh-tree-label-fg` · `--xh-tree-label-font-size` · `--xh-tree-label-font-weight` · `--xh-tree-leaf-row-gap` · `--xh-tree-loading-fg` · `--xh-tree-loading-font-size` · `--xh-tree-loading-px` · `--xh-tree-loading-py` · `--xh-tree-max-h` · `--xh-tree-px` · `--xh-tree-py` · `--xh-tree-radius` · `--xh-tree-row-bg-hover` · `--xh-tree-row-fg` · `--xh-tree-row-fg-selected` · `--xh-tree-row-font-size` · `--xh-tree-row-gap` · `--xh-tree-row-leading` · `--xh-tree-row-px` · `--xh-tree-row-py` · `--xh-tree-row-radius` · `--xh-tree-row-selected-font-weight` · `--xh-tree-tree-gap`
 
 ## 动效
 

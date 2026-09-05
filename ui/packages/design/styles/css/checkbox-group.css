@@ -10,8 +10,31 @@
     /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
     --xh-icon-size: var(--xh-checkbox-group-icon-size, var(--xh-glyph-size-text));
 
+    /* 尺寸档只换这三个私有槽，条目、方框与全选格都从 root 继承它们，
+       换档不必给每个部件各写一条选择器。方框与字形照 checkbox 的档位走，
+       单体与集合里的同一枚方框必须一样大 */
+    --xh-_checkbox-group-box: var(--xh-control-indicator-md);
+    --xh-_checkbox-group-glyph: calc(var(--xh-_checkbox-group-box) * 0.75);
+    --xh-_checkbox-group-gap: var(--xh-control-gap-md);
+
+    /* 勾中的填色随语气走；没写 data-tone 时退回品牌色 */
+    --xh-_checkbox-group-accent: var(--xh-_tone, var(--xh-bg-brand));
+    --xh-_checkbox-group-on-accent: var(--xh-_tone-on, var(--xh-fg-on-brand));
+
     display: flex;
     gap: var(--xh-checkbox-group-gap, var(--xh-stack-gap-md));
+  }
+
+  /* —— 尺寸 —— */
+  /* 缺省档写在上面的基础规则里 */
+  [data-scope='checkbox-group'][data-part='root'][data-size='sm'] {
+    --xh-_checkbox-group-box: var(--xh-control-indicator-sm);
+    --xh-_checkbox-group-gap: var(--xh-control-gap-sm);
+  }
+
+  [data-scope='checkbox-group'][data-part='root'][data-size='lg'] {
+    --xh-_checkbox-group-box: var(--xh-control-indicator-lg);
+    --xh-_checkbox-group-gap: var(--xh-control-gap-lg);
   }
 
   /* 两种取值各写一条：连接层缺省给的是 vertical，但受控写 horizontal 时不能靠默认值兜底 */
@@ -46,7 +69,7 @@
     position: relative;
     display: inline-flex;
     align-items: center;
-    gap: var(--xh-checkbox-group-item-gap, var(--xh-control-gap-md));
+    gap: var(--xh-checkbox-group-item-gap, var(--xh-_checkbox-group-gap));
     border-radius: var(--xh-checkbox-group-item-radius, var(--xh-shape-control));
     color: var(--xh-checkbox-group-item-fg, var(--xh-fg-default));
     font-size: var(--xh-checkbox-group-item-font-size, var(--xh-text-label-size));
@@ -76,13 +99,13 @@
     flex: none;
     align-items: center;
     justify-content: center;
-    inline-size: var(--xh-checkbox-group-indicator-size, var(--xh-control-indicator-size));
-    block-size: var(--xh-checkbox-group-indicator-size, var(--xh-control-indicator-size));
+    inline-size: var(--xh-checkbox-group-indicator-size, var(--xh-_checkbox-group-box));
+    block-size: var(--xh-checkbox-group-indicator-size, var(--xh-_checkbox-group-box));
     border: var(--xh-stroke-thin) solid var(--xh-checkbox-group-indicator-border, var(--xh-border-control));
     border-radius: var(--xh-checkbox-group-indicator-radius, var(--xh-shape-inset));
     background: var(--xh-checkbox-group-indicator-bg, var(--xh-bg-canvas));
-    color: var(--xh-checkbox-group-indicator-fg, var(--xh-fg-on-brand));
-    font-size: var(--xh-checkbox-group-indicator-font-size, calc(var(--xh-control-indicator-size) * 0.75));
+    color: var(--xh-checkbox-group-indicator-fg, var(--xh-_checkbox-group-on-accent));
+    font-size: var(--xh-checkbox-group-indicator-font-size, var(--xh-_checkbox-group-glyph));
     line-height: var(--xh-leading-none);
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
@@ -105,8 +128,8 @@
   /* 选中即填色：条目是二态，全选格三态里 checked 与 indeterminate 都算"有值"，共用同一副填色 */
   [data-scope='checkbox-group'][data-part='indicator'][data-state='checked'],
   [data-scope='checkbox-group'][data-part='select-all-trigger']:is([data-state='checked'], [data-state='indeterminate'])::before {
-    border-color: var(--xh-checkbox-group-indicator-border-checked, var(--xh-bg-brand));
-    background: var(--xh-checkbox-group-indicator-bg-checked, var(--xh-bg-brand));
+    border-color: var(--xh-checkbox-group-indicator-border-checked, var(--xh-_checkbox-group-accent));
+    background: var(--xh-checkbox-group-indicator-bg-checked, var(--xh-_checkbox-group-accent));
   }
 
   /* 勾号由皮肤补，作者不必自己往 indicator 里塞字符 */
@@ -139,14 +162,14 @@
     margin-block: auto;
     margin-inline-start: calc(
       (
-        var(--xh-checkbox-group-indicator-size, var(--xh-control-indicator-size)) -
+        var(--xh-checkbox-group-indicator-size, var(--xh-_checkbox-group-box)) -
           var(--xh-icon-size, var(--xh-glyph-size-text))
       ) / 2
     );
     inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-    background-color: var(--xh-checkbox-group-indicator-fg, var(--xh-fg-on-brand));
-    font-size: var(--xh-checkbox-group-indicator-font-size, calc(var(--xh-control-indicator-size) * 0.75));
+    background-color: var(--xh-checkbox-group-indicator-fg, var(--xh-_checkbox-group-on-accent));
+    font-size: var(--xh-checkbox-group-indicator-font-size, var(--xh-_checkbox-group-glyph));
     -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
     mask: var(--xh-glyph-mark-check) center / contain no-repeat;
   }
@@ -159,14 +182,14 @@
     margin-block: auto;
     margin-inline-start: calc(
       (
-        var(--xh-checkbox-group-indicator-size, var(--xh-control-indicator-size)) -
+        var(--xh-checkbox-group-indicator-size, var(--xh-_checkbox-group-box)) -
           var(--xh-icon-size, var(--xh-glyph-size-text))
       ) / 2
     );
     inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-    background-color: var(--xh-checkbox-group-indicator-fg, var(--xh-fg-on-brand));
-    font-size: var(--xh-checkbox-group-indicator-font-size, calc(var(--xh-control-indicator-size) * 0.75));
+    background-color: var(--xh-checkbox-group-indicator-fg, var(--xh-_checkbox-group-on-accent));
+    font-size: var(--xh-checkbox-group-indicator-font-size, var(--xh-_checkbox-group-glyph));
     -webkit-mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
     mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
   }
@@ -189,7 +212,7 @@
     position: relative;
     display: inline-flex;
     align-items: center;
-    gap: var(--xh-checkbox-group-select-all-trigger-gap, var(--xh-control-gap-md));
+    gap: var(--xh-checkbox-group-select-all-trigger-gap, var(--xh-_checkbox-group-gap));
     border-radius: var(--xh-checkbox-group-select-all-trigger-radius, var(--xh-shape-control));
     color: var(--xh-checkbox-group-select-all-trigger-fg, var(--xh-fg-default));
     font-size: var(--xh-checkbox-group-select-all-trigger-font-size, var(--xh-text-label-size));

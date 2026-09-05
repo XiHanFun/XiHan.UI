@@ -1,4 +1,4 @@
-<!-- 分组 | 条目分段展示：段落壳与段标题由作者写，条目照旧归到同一份集合，方向键与连打检索跨段贯通 -->
+<!-- 分组 | 条目分段展示：group 是 role=group 的段落壳，group-label 是它的可及名字；条目照旧归到同一份集合，方向键与连打检索跨段贯通 -->
 <xh-select id="select-group" placeholder="请选择">
   <div data-xh-part="root">
     <span data-xh-part="label">食材</span>
@@ -11,14 +11,9 @@
     <div data-xh-part="positioner">
       <div data-xh-part="content">
         <div data-xh-part="list">
-          <!-- 段标题只是普通节点，不带条目标记，导航与检索都跳过它 -->
-          <div role="group" aria-labelledby="select-group-fruit">
-            <div
-              id="select-group-fruit"
-              style="padding: 4px 8px; color: var(--xh-fg-subtle); font-size: 12px"
-            >
-              水果
-            </div>
+          <!-- 段标题不带条目标记，导航与检索都跳过它 -->
+          <div data-xh-part="group" value="fruit">
+            <span data-xh-part="group-label">水果</span>
             <div data-xh-part="item" value="apple">
               <span data-xh-part="item-text">苹果</span>
               <span data-xh-part="item-indicator"></span>
@@ -28,13 +23,8 @@
               <span data-xh-part="item-indicator"></span>
             </div>
           </div>
-          <div role="group" aria-labelledby="select-group-vegetable">
-            <div
-              id="select-group-vegetable"
-              style="padding: 4px 8px; color: var(--xh-fg-subtle); font-size: 12px"
-            >
-              蔬菜
-            </div>
+          <div data-xh-part="group" value="vegetable">
+            <span data-xh-part="group-label">蔬菜</span>
             <div data-xh-part="item" value="carrot">
               <span data-xh-part="item-text">胡萝卜</span>
               <span data-xh-part="item-indicator"></span>

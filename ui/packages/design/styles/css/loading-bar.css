@@ -63,6 +63,39 @@
     transition: inline-size var(--xh-loading-bar-speed, var(--xh-motion-duration-enter)) var(--xh-motion-ease-continuous);
   }
 
+  /* 渲染了亮边才把进度段变成定位面：亮边贴在它的末端 */
+  [data-scope='loading-bar'][data-part='range']:has([data-part='peg']) {
+    position: relative;
+  }
+
+  /*
+   * 进度段末端那道亮边。它把「条子在往前走」这件事画出来：只有一条渐宽的色带时，
+   * 200ms 一跳的推进读起来像卡顿。
+   * 颜色接进度段自己的那一支，宽度与厚度各留一个槽。
+   */
+  [data-scope='loading-bar'][data-part='peg'] {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-end: 0;
+    inline-size: var(--xh-loading-bar-peg-w, var(--xh-space-8));
+    /* 两端渐隐、中间最亮：亮斑对称，文字方向翻过来也不必再配一次 */
+    background: linear-gradient(
+      90deg,
+      transparent,
+      var(--xh-loading-bar-peg-fg, var(--xh-loading-bar-range, var(--xh-_tone-soft, var(--xh-bg-brand)))),
+      transparent
+    );
+  }
+
+  /* 条子还没起步时亮边一起收着：0% 宽的进度段末端不该先亮出一道边 */
+  [data-scope='loading-bar'][data-part='peg'][data-state='idle'] {
+    opacity: 0;
+  }
+
+  [data-scope='loading-bar'][data-part='peg'][hidden] {
+    display: none;
+  }
+
   /* 减少动效：宽度与淡出都立刻到位。进度本身照常推进，只是不再有过渡的过程——
      一条按 200ms 一拍持续变宽的带子正是最容易引发不适的那种动效。
      两条规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */

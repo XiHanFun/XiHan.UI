@@ -10,7 +10,7 @@ import {
   queryItems,
   setup,
 } from '@xihan-ui/core'
-import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
+import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { menubarItemQuery, menubarTriggerQuery } from './menubar.anatomy'
 
 const { createMachine } = setup<MenubarSchema>()
@@ -327,6 +327,7 @@ export const menubarMachine = createMachine({
               dir: prop('dir'),
               // 落定那一侧的可用空间，connect 转成内联自定义属性给皮肤限高
               size: true,
+              arrow: { size: OVERLAY_ARROW_SIZE, padding: OVERLAY_ARROW_PADDING },
             },
             (result) => {
               context.set('position', result)

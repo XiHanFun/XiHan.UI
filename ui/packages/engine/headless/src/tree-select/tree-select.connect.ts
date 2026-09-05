@@ -43,6 +43,9 @@ export function connectTreeSelect<T extends PropTypes>(
   const disabled = !!prop('disabled')
   const readOnly = !!prop('readOnly')
   const invalid = !!prop('invalid')
+  const loading = !!prop('loading')
+  // 集合交给库时相位由库判；节点手写时库数不出有几条
+  const counted = prop('collection') != null
   // 只读与禁用都改不了选中值，禁用还额外禁止展开浮层
   const interactive = !disabled && !readOnly
   // 缺省不成环（与列表类组件相反）：树有层级，上键停在首行、下键停在末行才不丢上下文
@@ -196,6 +199,7 @@ export function connectTreeSelect<T extends PropTypes>(
       'data-disabled': dataAttr(disabled),
       'data-readonly': dataAttr(readOnly),
       'data-invalid': dataAttr(invalid),
+      'data-loading': dataAttr(loading),
     }),
 
     getLabelProps: () => normalize.element({
@@ -462,10 +466,34 @@ export function connectTreeSelect<T extends PropTypes>(
       // 复选与否显式输出
       'aria-multiselectable': multiple ? 'true' : 'false',
       'aria-disabled': disabled ? 'true' : 'false',
+      // 取数在途的播报归树本体：两个相位占位自己不带这一位
+      'aria-busy': loading ? 'true' : undefined,
       // 展开但无锚点时由容器兜底承担 Tab 位；判据用 focusedValue 而非锚点元素
       'tabindex': open && focusedValue == null ? 0 : -1,
       'data-state': stateAttr,
       'data-disabled': dataAttr(disabled),
+    }),
+
+    // 空态占位：放在 content 里、tree 的兄弟（role=tree 只许拥有 treeitem 与 group）。
+    // 给了 collection 才由连接层判定露不露面；节点手写时库数不出有几条，那一档不写 hidden，归作者自己收放
+    getEmptyProps: () => normalize.element({
+      ...parts.empty.attrs,
+      'data-state': stateAttr,
+      'hidden': counted ? (loading || collection.length > 0) || undefined : loading || undefined,
+    }),
+
+    // 在途占位：与空态占位同一个位置、同一套收放判据，只是条件相反
+    getLoadingProps: () => normalize.element({
+      ...parts.loading.attrs,
+      'data-state': stateAttr,
+      'hidden': counted ? (!loading || collection.length > 0) || undefined : !loading || undefined,
+    }),
+
+    // 浮层底部的操作区：作者往里放「全部展开」「清空」这类按钮。
+    // 它是 content 的子节点、tree 的兄弟，故不在 role=tree 的拥有关系里，方向键与连打检索也不认它
+    getFooterProps: () => normalize.element({
+      ...parts.footer.attrs,
+      'data-state': stateAttr,
     }),
 
     getItemProps: node => normalize.element({

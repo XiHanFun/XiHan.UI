@@ -6,8 +6,8 @@ import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
 
 /**
- * `<xh-alert>` —— Light-DOM 行为宿主，把 alert 机器打到 root/icon/title/description/close-trigger
- * 角色节点，收起时用内联 style.display 隐藏 root。
+ * `<xh-alert>` —— Light-DOM 行为宿主，把 alert 机器打到 root/indicator/content/title/description/
+ * action/close-trigger 角色节点，收起时用内联 style.display 隐藏 root。
  *
  * @customElement xh-alert
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气，决定实时区级别与配色
@@ -17,8 +17,10 @@ import { MachineController } from '../runtime/machine-controller'
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @csspart root - 提示根容器（实时区所在）
  * @csspart indicator - 语气图标（对读屏隐藏）
+ * @csspart content - 文本列容器：把标题与说明摞成一列
  * @csspart title - 标题（root 的 aria-labelledby 指向它）
  * @csspart description - 说明（root 的 aria-describedby 指向它）
+ * @csspart action - 操作槽：圈出按钮区
  * @csspart close-trigger - 关闭按钮
  */
 export class XhAlertElement extends XhElement {
@@ -75,8 +77,10 @@ export class XhAlertElement extends XhElement {
     }
     put('root', api.getRootProps() as Record<string, unknown>)
     put('indicator', api.getIndicatorProps() as Record<string, unknown>)
+    put('content', api.getContentProps() as Record<string, unknown>)
     put('title', api.getTitleProps() as Record<string, unknown>)
     put('description', api.getDescriptionProps() as Record<string, unknown>)
+    put('action', api.getActionProps() as Record<string, unknown>)
     put('close-trigger', api.getCloseTriggerProps() as Record<string, unknown>)
 
     // 收起时用内联 display 隐藏整块提示

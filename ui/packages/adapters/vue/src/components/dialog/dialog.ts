@@ -105,6 +105,15 @@ export const XhDialogHeader = defineComponent({
   },
 })
 
+/** 语气徽记：不给内容就由皮肤按节点上的 data-tone 画兜底字形，塞了节点即整枚换掉。 */
+export const XhDialogIndicator = defineComponent({
+  name: 'XhDialogIndicator',
+  setup(_, { slots }) {
+    const ctx = useDialogContext()
+    return () => h('span', ctx.api.value.getIndicatorProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhDialogTitle = defineComponent({
   name: 'XhDialogTitle',
   setup(_, { slots }) {

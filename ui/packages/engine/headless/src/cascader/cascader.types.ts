@@ -132,6 +132,11 @@ export interface CascaderItemProps {
   value: string
 }
 
+/** 分组自报身份：分组标题的 id 由它派生，group 与 group-label 靠这一个值互相认领。 */
+export interface CascaderGroupProps {
+  value: string
+}
+
 /** 列自报家门：只报层号。列里有哪些条目、这一列此刻该不该露面，都由连接层算。 */
 export interface CascaderColumnProps {
   level: number
@@ -171,6 +176,8 @@ export interface CascaderSchema extends MachineSchema {
     readOnly?: boolean
     /** 校验失败：trigger 报 aria-invalid，各角色节点带 data-invalid。 */
     invalid?: boolean
+    /** 候选还在取：浮层报 aria-busy，在途占位顶上来、空态占位让位。 */
+    loading?: boolean
     /** 空态占位的文案覆盖，默认英文。 */
     translations?: Partial<CascaderTranslations>
     /** 形态：outline / subtle / ghost，决定触发框的描边与底色怎么用。 */
@@ -338,6 +345,17 @@ export interface CascaderApi<T extends PropTypes = PropTypes> {
   getSearchItemProps: (props: CascaderSearchItemProps) => T['element']
   /** 空态占位：当前视图没有条目（搜索无候选，或根列没有条目）时露面，其余时候带 hidden。 */
   getEmptyProps: () => T['element']
+  /**
+   * 在途占位：与空态占位同一个位置，两者不同屏——取数期间它顶上来，空态让位。
+   * 文案归作者，连接层只管收放。
+   */
+  getLoadingProps: () => T['element']
+  /** 浮层底部的操作区：放在 content 里、与列并列，不入任何一列的拥有关系，方向键也走不到。 */
+  getFooterProps: () => T['element']
+  /** 分组容器：role=group，条目挂在它里面；分组标题经 aria-labelledby 关联。 */
+  getGroupProps: (props: CascaderGroupProps) => T['element']
+  /** 分组标题：不是条目、不进导航，只作为本组的可及名字。 */
+  getGroupLabelProps: (props: CascaderGroupProps) => T['element']
   getColumnProps: (props: CascaderColumnProps) => T['element']
   getItemProps: (props: CascaderItemProps) => T['element']
   getItemTextProps: (props: CascaderItemProps) => T['element']

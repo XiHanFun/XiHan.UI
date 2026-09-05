@@ -23,6 +23,8 @@
 - 错误文案带 `role="status"` + `aria-live="polite"`，节点常挂、靠 `hidden` 显隐，`invalid` 翻转时读屏排队播报，不打断当前朗读。整表提交失败时打断式播报只由 Form 的错误摘要发出。
 - `invalid` 落成 `data-invalid`，皮肤据此把组标题转成警示色，同时把错误文案接进描述链并显出。
 - `required` 落成 `data-required`，皮肤据此给组标题加星号。
+- `field-group` 把并排的几个字段圈成一段（够宽自动分栏），`actions` 承载组末尾那一行按钮。
+- `disabled` 只连坐原生表单控件：组里 `div` 型控件（滑块、评分这类）要各自接 `disabled`。
 
 ## 无障碍
 

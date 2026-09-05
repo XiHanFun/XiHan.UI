@@ -20,6 +20,10 @@ export interface HoverCardContext {
   positionerRef: Ref<HTMLElement | null>
   /** 消解层节点，也是判定焦点是否仍在卡片内的依据。 */
   contentRef: Ref<HTMLElement | null>
+  /** title 部件；作者没放它时卡片的可及名指回 trigger。 */
+  titleRef: Ref<HTMLElement | null>
+  /** description 部件；作者没放它时不发 aria-describedby。 */
+  descriptionRef: Ref<HTMLElement | null>
   /** 此刻该不该渲染：退场动画播完之前仍为真。 */
   visible: Ref<boolean>
   /** 浮层搬到哪儿：全局配置的 portalContainer > body。 */
@@ -34,6 +38,8 @@ export function useHoverCard(
   const triggerRef = ref<HTMLElement | null>(null)
   const positionerRef = ref<HTMLElement | null>(null)
   const contentRef = ref<HTMLElement | null>(null)
+  const titleRef = ref<HTMLElement | null>(null)
+  const descriptionRef = ref<HTMLElement | null>(null)
 
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
@@ -69,6 +75,8 @@ export function useHoverCard(
   service.refs.set('getAnchorEl', () => triggerRef.value)
   service.refs.set('getFloatingEl', () => positionerRef.value)
   service.refs.set('getContentEl', () => contentRef.value)
+  service.refs.set('getTitleEl', () => titleRef.value)
+  service.refs.set('getDescriptionEl', () => descriptionRef.value)
 
   const api = computed(() => connectHoverCard(service, vueNormalize))
   // 退场闸门：收起从跟着 open 走，改成跟着 presence 走
@@ -76,5 +84,5 @@ export function useHoverCard(
   // 先问全局配置的落点，没有才落 body
   const portalTarget = computed<string | Element>(() => xhConfig.value.portalContainer?.() ?? config?.portalContainer() ?? 'body')
 
-  return { visible, service, api, triggerRef, positionerRef, contentRef, portalTarget }
+  return { visible, service, api, triggerRef, positionerRef, contentRef, titleRef, descriptionRef, portalTarget }
 }

@@ -22,6 +22,7 @@ export const tableAnatomy = createAnatomy('table', [
   'expanded-row',
   'empty',
   'loading',
+  'load-more-trigger',
   'live-region',
 ])
 

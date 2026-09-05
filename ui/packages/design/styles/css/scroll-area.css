@@ -73,6 +73,64 @@
     block-size: calc(100% - var(--xh-_scrollbar-thickness));
   }
 
+  /* —— 边缘渐隐 —— */
+  /* 两条轴各铺一层遮罩，取交集：还滚得动的那一侧把内容淡出，滚到头即收成 0。
+     渐变没有逻辑方向，只能沿物理方向铺，横轴那一层的两端在 rtl 下对调（见下）。
+     遮罩里的黑白画的是 alpha 的两端，不是设计色。
+     -webkit-* 那两条排在前面兜住只认前缀写法的引擎。
+     画在视口上而不是根上：自绘滚动条是视口的兄弟节点，不会跟着一起淡掉 */
+  [data-scope='scroll-area'][data-part='viewport'][data-variant='fade'] {
+    /* 渐隐带宽跟着尺寸档走，与滚动条厚度同一个 data-size */
+    --xh-_scroll-area-fade-size: var(--xh-scroll-area-fade-size, var(--xh-space-6));
+    /* 四条边各自的带宽：到头那一侧收成 0，没到头才铺开 */
+    --xh-_scroll-area-fade-block-start: 0px;
+    --xh-_scroll-area-fade-block-end: 0px;
+    --xh-_scroll-area-fade-inline-start: 0px;
+    --xh-_scroll-area-fade-inline-end: 0px;
+    --xh-_scroll-area-fade-left: var(--xh-_scroll-area-fade-inline-start);
+    --xh-_scroll-area-fade-right: var(--xh-_scroll-area-fade-inline-end);
+
+    -webkit-mask-image:
+      linear-gradient(to bottom, transparent 0, black var(--xh-_scroll-area-fade-block-start), black calc(100% - var(--xh-_scroll-area-fade-block-end)), transparent 100%),
+      linear-gradient(to right, transparent 0, black var(--xh-_scroll-area-fade-left), black calc(100% - var(--xh-_scroll-area-fade-right)), transparent 100%);
+    mask-image:
+      linear-gradient(to bottom, transparent 0, black var(--xh-_scroll-area-fade-block-start), black calc(100% - var(--xh-_scroll-area-fade-block-end)), transparent 100%),
+      linear-gradient(to right, transparent 0, black var(--xh-_scroll-area-fade-left), black calc(100% - var(--xh-_scroll-area-fade-right)), transparent 100%);
+    -webkit-mask-composite: source-in;
+    mask-composite: intersect;
+  }
+
+  [data-scope='scroll-area'][data-part='viewport'][data-variant='fade'][data-size='sm'] {
+    --xh-_scroll-area-fade-size: var(--xh-scroll-area-fade-size, var(--xh-space-4));
+  }
+
+  [data-scope='scroll-area'][data-part='viewport'][data-variant='fade'][data-size='lg'] {
+    --xh-_scroll-area-fade-size: var(--xh-scroll-area-fade-size, var(--xh-space-8));
+  }
+
+  /* 还回得去、还去得了的那一侧才铺带：贴着那一端时属性在场，规则不命中 */
+  [data-scope='scroll-area'][data-part='viewport'][data-variant='fade']:not([data-at-min-vertical]) {
+    --xh-_scroll-area-fade-block-start: var(--xh-_scroll-area-fade-size);
+  }
+
+  [data-scope='scroll-area'][data-part='viewport'][data-variant='fade']:not([data-at-max-vertical]) {
+    --xh-_scroll-area-fade-block-end: var(--xh-_scroll-area-fade-size);
+  }
+
+  [data-scope='scroll-area'][data-part='viewport'][data-variant='fade']:not([data-at-min-horizontal]) {
+    --xh-_scroll-area-fade-inline-start: var(--xh-_scroll-area-fade-size);
+  }
+
+  [data-scope='scroll-area'][data-part='viewport'][data-variant='fade']:not([data-at-max-horizontal]) {
+    --xh-_scroll-area-fade-inline-end: var(--xh-_scroll-area-fade-size);
+  }
+
+  /* 从右往左排版时横轴的起始端在右：两端对调，逻辑那两支槽的取值不动 */
+  [dir='rtl'] [data-scope='scroll-area'][data-part='viewport'][data-variant='fade'] {
+    --xh-_scroll-area-fade-left: var(--xh-_scroll-area-fade-inline-end);
+    --xh-_scroll-area-fade-right: var(--xh-_scroll-area-fade-inline-start);
+  }
+
   /* 横向溢出全靠它撑：内容若跟着视口一起收成 100% 宽，横轴永远量不出溢出，
      横向滚动条也就永远不显形。 */
   [data-scope='scroll-area'][data-part='content'] {

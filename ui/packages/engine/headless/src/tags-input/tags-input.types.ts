@@ -53,7 +53,11 @@ export interface TagsInputSchema extends MachineSchema {
     allowOverflow?: boolean
     disabled?: boolean
     readOnly?: boolean
+    /** 必填标注：经 aria-required 上报，星号由外面的字段壳画。 */
+    required?: boolean
     invalid?: boolean
+    /** 显出计数部件：关掉时 count 部件带 hidden 收起。 */
+    showCount?: boolean
     /** 表单字段名；给了 hidden-input 才带 name，此时整份标签按 delimiter 拼成一串提交。 */
     name?: string
     placeholder?: string
@@ -148,7 +152,12 @@ export interface TagsInputApi<T extends PropTypes = PropTypes> {
   empty: boolean
   disabled: boolean
   readOnly: boolean
+  required: boolean
   invalid: boolean
+  /** 标签个数的上限；没设 max 时是 undefined，此时只渲当前个数。 */
+  max: number | undefined
+  /** 计数部件此刻是否显出（开了 showCount）。 */
+  showCount: boolean
   /** 已顶到 max：再加进不去（allowOverflow 开时只是提示，不拦）。 */
   atMax: boolean
   /** 已经越过 max（只有 allowOverflow 开着才可能为真）。 */
@@ -180,5 +189,7 @@ export interface TagsInputApi<T extends PropTypes = PropTypes> {
   getItemDeleteTriggerProps: (item: TagsInputItemProps) => T['button']
   getItemInputProps: (item: TagsInputItemProps) => T['input']
   getClearTriggerProps: () => T['button']
+  /** 计数部件：承载 count / max 两个数字，没开 showCount 时带 hidden 收起。 */
+  getCountProps: () => T['element']
   getHiddenInputProps: () => T['input']
 }

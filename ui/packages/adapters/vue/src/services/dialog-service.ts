@@ -8,8 +8,8 @@ import type { XhConfig } from '../config/config'
 import { ensurePortalRoot } from '@xihan-ui/core'
 import { createApp, defineComponent, h, reactive, shallowRef, toRaw, toValue } from 'vue'
 import { XhButton, XhButtonIndicator, XhButtonLabel } from '../components/button'
-import { XhDialogContent, XhDialogDescription, XhDialogRoot, XhDialogTitle } from '../components/dialog/dialog'
-import { spinArc, typeBadge } from './glyph'
+import { XhDialogContent, XhDialogDescription, XhDialogIndicator, XhDialogRoot, XhDialogTitle } from '../components/dialog/dialog'
+import { spinArc } from './glyph'
 import { mountServiceHost } from './mount-host'
 import { createServiceConfig } from './service-config'
 
@@ -216,8 +216,8 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
           'initialFocus': spec?.initialFocus,
         }, () => spec
           ? h(XhDialogContent, null, () => [
-              h('div', { 'style': { display: 'flex', alignItems: 'center', gap: 'var(--xh-control-gap-md)' }, 'data-tone': spec.badge ? toneOfBadge(spec.badge) : undefined }, [
-                spec.badge ? typeBadge(spec.badge) : null,
+              h('div', { style: { display: 'flex', alignItems: 'center', gap: 'var(--xh-control-gap-md)' } }, [
+                spec.badge ? h(XhDialogIndicator, { 'data-tone': toneOfBadge(spec.badge) }) : null,
                 h(XhDialogTitle, () => spec.title),
               ]),
               // 串走 description（读屏的 aria-describedby 接在它上面），渲染函数直接摊开

@@ -34,6 +34,13 @@ export function connectDownloadTrigger<T extends PropTypes>(
       'disabled': disabled || undefined,
       // 取数在途时按钮仍可聚焦、仍留在原位，只把"正在忙"如实报给读屏
       'aria-busy': preparing ? 'true' : undefined,
+      // 按钮里只放一个图标时没有可见文字，可及名字只能由这里给。
+      // 不给缺省值：按钮里多半写着「导出 CSV」这类可见文字，凭空盖一个名字上去
+      // 会让读屏念的与屏幕上写的对不上
+      'aria-label': prop('translations')?.trigger,
+      'data-variant': prop('variant'),
+      'data-tone': prop('tone'),
+      'data-size': prop('size'),
       'data-state': status,
       'data-disabled': dataAttr(disabled),
       'onClick': () => {

@@ -110,10 +110,12 @@ tone 决定用哪族颜色，与 variant 正交：四种形态 × 六种语气�
 | --- | --- | --- | --- |
 | `ariaLabel` | `string` |  | 作者写在根节点上的可及名（aria-label / aria-labelledby）。 宿主只把它们转告连接层，用来判断图标按钮有没有名字；属性本身仍由宿主写进根节点。 |
 | `ariaLabelledby` | `string` |  |  |
+| `as` | `ButtonElement` |  | 渲染成哪个标签，默认 button。 写成 a 时不再产出 type 与原生 disabled（两者在链接上无效），禁用改由 aria-disabled 表达， 点击仍被拦下。作者自行给 href。 |
 | `disabled` | `boolean` |  |  |
 | `fullWidth` | `boolean` |  | 撑满行宽：表单末尾的提交按钮与移动端常用。 |
 | `iconOnly` | `boolean` |  | 只有图标：左右内距清零、宽高相等。宽度跟着当前尺寸档的高度走， 不必把档位写进行内样式。图标按钮没有可见文字，作者须自行给可及名。 |
 | `loading` | `boolean` |  | 加载态：用 aria-disabled + 拦截事件表达，保留焦点。 |
+| `shape` | `ButtonShape` |  | 圆角档：rounded 是常规控件圆角，pill 是胶囊，square 是直角。 缺省即跟着 --xh-shape-control 走，与不写这一项时逐值相同。 |
 | `size` | `Size` |  |  |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色 |
 | `type` | `'button' \| 'submit' \| 'reset'` |  |  |
@@ -167,6 +169,7 @@ tone 决定用哪族颜色，与 variant 正交：四种形态 × 六种语气�
 | `root` | `data-full-width` | ''（条件成立时才出现） |
 | `root` | `data-icon-only` | ''（条件成立时才出现） |
 | `root` | `data-loading` | ''（条件成立时才出现） |
+| `root` | `data-shape` | props.shape |
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |

@@ -391,6 +391,60 @@ describe('formMachine 错误表的命令式口子', () => {
     expect(onErrorsChange).toHaveBeenCalledTimes(1)
   })
 
+  it('改这个字段就清掉它身上那条服务端错误，别的字段不动', () => {
+    const s = makeService()
+    s.service.send({ type: 'ERROR.SET', name: 'email', message: '该邮箱已注册' })
+    s.service.send({ type: 'ERROR.SET', name: 'code', message: '验证码错误' })
+    s.service.send({ type: 'FIELD.SET', name: 'email', value: 'b@c.d' })
+    expect(s.errors()).toEqual({ code: '验证码错误' })
+  })
+
+  it('既无 validate 又无 rules 时也清得掉：那条路连整表替换都不发生', () => {
+    const s = makeService()
+    s.service.send({ type: 'ERROR.SET', name: 'email', message: '该邮箱已注册' })
+    s.service.send({ type: 'SUBMIT' })
+    expect(s.errors()).toEqual({ email: '该邮箱已注册' })
+    s.service.send({ type: 'FIELD.SET', name: 'email', value: 'b@c.d' })
+    expect(s.errors()).toEqual({})
+  })
+
+  it('受控档经 onErrorsChange 回传，不自作主张落值', () => {
+    const onErrorsChange = vi.fn()
+    const s = makeService({ errors: { email: '该邮箱已注册' }, onErrorsChange })
+    s.service.send({ type: 'FIELD.SET', name: 'email', value: 'b@c.d' })
+    expect(onErrorsChange).toHaveBeenCalledWith({ errors: {} })
+    expect(s.errors()).toEqual({ email: '该邮箱已注册' })
+  })
+
+  it('作者预置的 defaultErrors 同样随编辑走', () => {
+    const s = makeService({ defaultErrors: { email: '该邮箱已注册' } })
+    s.service.send({ type: 'FIELD.SET', name: 'email', value: 'b@c.d' })
+    expect(s.errors()).toEqual({})
+  })
+
+  it('校验算出来的那几条不随编辑走，等下一次校验收回', () => {
+    const s = makeService({ validate: () => ({ email: '不能为空' }) })
+    s.service.send({ type: 'SUBMIT' })
+    expect(s.errors()).toEqual({ email: '不能为空' })
+    s.service.send({ type: 'FIELD.SET', name: 'email', value: 'a@b.c' })
+    expect(s.errors()).toEqual({ email: '不能为空' })
+  })
+
+  it('服务端错误顶掉校验算出来的同名错误后，改这个字段照样清得掉', () => {
+    const s = makeService({ validate: () => ({ email: '不能为空' }) })
+    s.service.send({ type: 'SUBMIT' })
+    s.service.send({ type: 'ERROR.SET', name: 'email', message: '该邮箱已注册' })
+    s.service.send({ type: 'FIELD.SET', name: 'email', value: 'a@b.c' })
+    expect(s.errors()).toEqual({})
+  })
+
+  it('禁用与只读时连清都不清：那两档整条 FIELD.SET 都吃掉', () => {
+    const s = makeService({ readOnly: true })
+    s.service.send({ type: 'ERROR.SET', name: 'email', message: '该邮箱已注册' })
+    s.service.send({ type: 'FIELD.SET', name: 'email', value: 'b@c.d' })
+    expect(s.errors()).toEqual({ email: '该邮箱已注册' })
+  })
+
   it('写同一条错误两遍只通知一次', () => {
     const onErrorsChange = vi.fn()
     const s = makeService({ onErrorsChange })

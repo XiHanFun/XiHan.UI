@@ -1,5 +1,5 @@
 import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
-import type { DescriptionsApi, DescriptionsProps } from './descriptions.types'
+import type { DescriptionsApi, DescriptionsItemProps, DescriptionsProps } from './descriptions.types'
 import { dataAttr } from '@xihan-ui/core'
 import { descriptionsAnatomy } from './descriptions.anatomy'
 
@@ -22,9 +22,26 @@ export function connectDescriptions<T extends PropTypes>(
     'data-bordered': dataAttr(props.bordered),
   }
 
+  // 跨列数钳进 1 到当前列数之间；列数没给即整份只有一列，跨列无从谈起
+  const columns = props.columns ?? 1
+  const spanOf = (item?: DescriptionsItemProps): number | undefined => {
+    if (item?.span == null)
+      return undefined
+    return Math.min(Math.max(Math.trunc(item.span), 1), columns)
+  }
+
   return {
     getRootProps: () => normalize.element(rootAttrs),
-    getItemProps: () => normalize.element(parts.item.attrs),
+
+    // 跨列写成网格轨道数，不另发状态属性：这一格占几列是排版量，皮肤无须再据它分档
+    getItemProps: (item) => {
+      const span = spanOf(item)
+      return normalize.element({
+        ...parts.item.attrs,
+        style: span == null ? undefined : { gridColumn: `span ${span}` },
+      })
+    },
+
     getLabelProps: () => normalize.element(parts.label.attrs),
     getValueProps: () => normalize.element(parts.value.attrs),
   }

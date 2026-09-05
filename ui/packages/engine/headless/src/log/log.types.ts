@@ -1,4 +1,13 @@
-import type { MachineSchema, PropTypes, RuntimeConfig, StickToBottomHandle } from '@xihan-ui/core'
+import type { MachineSchema, PropTypes, RuntimeConfig, Size, StickToBottomHandle } from '@xihan-ui/core'
+
+/** 一行日志的级别。 */
+export type LogLevel = 'debug' | 'info' | 'warn' | 'error'
+
+/** 逐行取属性时的自报家门。 */
+export interface LogLineProps {
+  /** 这一行的级别；不给就不落 data-level，行走默认前景色。 */
+  level?: LogLevel
+}
 
 export interface LogTranslations {
   /** 日志区的可访问名。 */
@@ -56,6 +65,8 @@ export interface LogProps {
   rows?: number
   /** 行还在路上：日志区报 aria-busy，根落 data-loading。 */
   loading?: boolean
+  /** 尺寸：sm / md / lg。改的是行文字号与内衬，行高不随档变。 */
+  size?: Size
   translations?: Partial<LogTranslations>
 }
 
@@ -74,7 +85,7 @@ export interface LogApi<T extends PropTypes = PropTypes> {
   getRootProps: () => T['element']
   getViewportProps: () => T['element']
   getContentProps: () => T['element']
-  getLineProps: () => T['element']
+  getLineProps: (props?: LogLineProps) => T['element']
   getScrollToEndTriggerProps: () => T['button']
   getLiveRegionProps: () => T['element']
 }

@@ -1,13 +1,23 @@
-import type { IdGenerator, RuntimeConfig, Service } from '@xihan-ui/core'
-import type { LogProps, LogSchema, LogStickChangeDetails, LogTranslations } from '@xihan-ui/headless'
+import type { IdGenerator, RuntimeConfig, Service, Size } from '@xihan-ui/core'
+import type { LogLevel, LogProps, LogSchema, LogStickChangeDetails, LogTranslations } from '@xihan-ui/headless'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectLog, logAnatomy, logMachine, logMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
 
+// 属性缺席翻成 undefined，缺省值由 connect 给出
+const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 // 空串按缺席处理，避免 Number('') 落成 0
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
+
+const LEVELS = new Set<string>(['debug', 'info', 'warn', 'error'])
+
+/** 一行的级别，取作者写在节点上的 level；四档之外一律当没写。 */
+function lineLevel(el: HTMLElement): LogLevel | undefined {
+  const raw = el.getAttribute('level')
+  return raw != null && LEVELS.has(raw) ? raw as LogLevel : undefined
+}
 
 /**
  * `<xh-log>` —— Light-DOM 行为宿主：作者写 root/viewport/content/line 角色节点，
@@ -19,11 +29,12 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @customElement xh-log
  * @attr {number} rows - 视口按多少行定高；缺省时高度由皮肤给
  * @attr {boolean} loading - 行还在路上：日志区报 aria-busy，根落 data-loading
+ * @attr {string} size - 尺寸：sm / md / lg
  * @fires stick-change - 粘底状态变化；detail 为 `{ atBottom: boolean, sticking: boolean }`
- * @csspart root - 组件根容器，承载 data-loading / data-at-bottom / data-sticking
+ * @csspart root - 组件根容器，承载 data-size / data-loading / data-at-bottom / data-sticking
  * @csspart viewport - 滚动容器；role=log + aria-live=off + tabindex=0，按行数定高写进内联样式
  * @csspart content - 所有行的包裹层，尺寸变化的观察目标
- * @csspart line - 一行日志，只拿身份与等宽排版
+ * @csspart line - 一行日志，拿身份、等宽排版与 data-level；级别写成节点上的 level 属性
  * @csspart scroll-to-end-trigger - 回到底部按钮，在底时收起（hidden + 内联 display）
  * @csspart live-region - 视觉隐藏的播报区（role=status + aria-live=polite + aria-atomic）
  */
@@ -34,12 +45,14 @@ export class XhLogElement extends XhElement {
   static override properties = {
     rows: { converter: NUMBER_CONVERTER },
     loading: { type: Boolean },
+    size: { converter: STRING_CONVERTER },
     // 对象值走不了 HTML 属性，只作为 property 暴露
     translations: { attribute: false },
   }
 
   declare rows?: number
   declare loading?: boolean
+  declare size?: Size
   /** 日志区与回到底部按钮的无障碍名，由 connect 写到节点上。 */
   declare translations?: Partial<LogTranslations>
 
@@ -76,6 +89,7 @@ export class XhLogElement extends XhElement {
     return {
       rows: this.rows,
       loading: this.loading ?? false,
+      size: this.size,
       translations: this.translations,
     }
   }
@@ -106,9 +120,9 @@ export class XhLogElement extends XhElement {
     put('scroll-to-end-trigger', api.getScrollToEndTriggerProps() as Record<string, unknown>)
     put('live-region', api.getLiveRegionProps() as Record<string, unknown>)
 
-    // 多实例 part 逐个打，行有几条打几条
+    // 多实例 part 逐个打，行有几条打几条；级别取作者写在节点上的 level
     for (const el of this.getParts('line'))
-      this.spreader.spread(el, api.getLineProps() as Record<string, unknown>)
+      this.spreader.spread(el, api.getLineProps({ level: lineLevel(el) }) as Record<string, unknown>)
 
     // 除 hidden 属性外还写内联 display，压住作者层给该 part 声明的 display
     this.setPartHidden(this.getPart('scroll-to-end-trigger'), !api.showScrollToEndTrigger)

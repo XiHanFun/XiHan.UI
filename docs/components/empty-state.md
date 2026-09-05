@@ -65,7 +65,7 @@ status 只落成 data-status，皮肤据它给图标区上语气色；画什么�
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-empty-state>` |
-| Vue 组件 | `XhEmptyStateAction` `XhEmptyStateDescription` `XhEmptyStateIndicator` `XhEmptyStateRoot` `XhEmptyStateTitle` |
+| Vue 组件 | `XhEmptyStateAction` `XhEmptyStateDescription` `XhEmptyStateIndicator` `XhEmptyStateMedia` `XhEmptyStateRoot` `XhEmptyStateTitle` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/empty-state.css` |
 
@@ -73,7 +73,7 @@ status 只落成 data-status，皮肤据它给图标区上语气色；画什么�
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="empty-state"`：**`root`** · `indicator` · `title` · `description` · `action`
+`data-scope="empty-state"`：**`root`** · `media` · `indicator` · `title` · `description` · `action`
 
 ## Props
 
@@ -82,6 +82,7 @@ status 只落成 data-status，皮肤据它给图标区上语气色；画什么�
 | `live` | `EmptyStateLive` |  | 缺省 polite。 |
 | `size` | `Size` |  | 尺寸档位，只改留白与字号，不改语义。 |
 | `status` | `EmptyStateStatus` |  | 结果类型，只落成 root 的 data-status；图标画什么由作者塞进图标槽。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。不给即维持中性。 |
 
 ## connect API
 
@@ -91,6 +92,7 @@ status 只落成 data-status，皮肤据它给图标区上语气色；画什么�
 | --- | --- | --- |
 | `live` | `EmptyStateLive` | 生效的播报方式，缺省补齐后的值。 |
 | `getRootProps` | `() => T['element']` |  |
+| `getMediaProps` | `() => T['element']` | 插画槽：按自己的尺寸档量，与字形槽二选一。 |
 | `getIndicatorProps` | `() => T['element']` |  |
 | `getTitleProps` | `() => T['element']` |  |
 | `getDescriptionProps` | `() => T['element']` |  |
@@ -109,6 +111,7 @@ status 只落成 data-status，皮肤据它给图标区上语气色；画什么�
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `role` | undefined \| 'status' |
+| `media` | `aria-hidden` | 'true' |
 | `indicator` | `aria-hidden` | 'true' |
 
 ## 样式
@@ -123,12 +126,13 @@ status 只落成 data-status，皮肤据它给图标区上语气色；画什么�
 | --- | --- | --- |
 | `root` | `data-size` | props.size |
 | `root` | `data-status` | props.status |
+| `root` | `data-tone` | props.tone |
 
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-empty-state-action-gap` · `--xh-empty-state-description-fg` · `--xh-empty-state-description-font-size` · `--xh-empty-state-description-leading` · `--xh-empty-state-description-max-w` · `--xh-empty-state-fg` · `--xh-empty-state-gap` · `--xh-empty-state-icon-size` · `--xh-empty-state-indicator-fg` · `--xh-empty-state-indicator-font-size` · `--xh-empty-state-px` · `--xh-empty-state-py` · `--xh-empty-state-title-fg` · `--xh-empty-state-title-font-size` · `--xh-empty-state-title-font-weight` · `--xh-empty-state-title-leading`
+`--xh-empty-state-action-gap` · `--xh-empty-state-description-fg` · `--xh-empty-state-description-font-size` · `--xh-empty-state-description-leading` · `--xh-empty-state-description-max-w` · `--xh-empty-state-fg` · `--xh-empty-state-gap` · `--xh-empty-state-icon-size` · `--xh-empty-state-indicator-fg` · `--xh-empty-state-indicator-font-size` · `--xh-empty-state-media-fg` · `--xh-empty-state-media-size` · `--xh-empty-state-px` · `--xh-empty-state-py` · `--xh-empty-state-title-fg` · `--xh-empty-state-title-font-size` · `--xh-empty-state-title-font-weight` · `--xh-empty-state-title-leading`
 
 ## 动效
 

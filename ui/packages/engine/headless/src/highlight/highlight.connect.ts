@@ -29,9 +29,11 @@ export function connectHighlight<T extends PropTypes>(
     text,
     segments,
 
+    // 语气落在根上：命中片段有好几个，用哪族颜色是整段的属性
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'data-case-sensitive': dataAttr(caseSensitive),
+      'data-tone': props.tone,
     }),
 
     getMarkProps: () => normalize.element({ ...parts.mark.attrs }),

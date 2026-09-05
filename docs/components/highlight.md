@@ -16,6 +16,7 @@
 - `text` 收单个词或一组词。
 - `caseSensitive` 决定是否区分大小写。
 - 命中片段落在 `mark` 部件上，样式归皮肤。
+- `tone` 换命中片段用哪族颜色，落在 `root` 上——一段里有好几个命中，语气是整段的属性。
 
 ## 示例
 
@@ -65,6 +66,7 @@
 | `caseSensitive` | `boolean` |  | 区分大小写，缺省不区分。 |
 | `keyword` | `string \| readonly string[]` |  | 关键词，一个或一组。空串会被丢掉。 |
 | `text` | `string` |  | 要显示的整段文本。命中位置按这个串逐字符算出来。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定命中片段用哪族颜色。 |
 
 ## connect API
 
@@ -94,12 +96,13 @@
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-case-sensitive` | ''（条件成立时才出现） |
+| `root` | `data-tone` | props.tone |
 
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-highlight-mark-bg` · `--xh-highlight-mark-fg` · `--xh-highlight-mark-px` · `--xh-highlight-mark-radius`
+`--xh-highlight-mark-bg` · `--xh-highlight-mark-fg` · `--xh-highlight-mark-font-weight` · `--xh-highlight-mark-px` · `--xh-highlight-mark-radius`
 
 ## RTL
 

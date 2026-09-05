@@ -32,10 +32,62 @@
     flex-direction: column;
   }
 
+  /* 撑满行宽：整组占满可用宽度，每段等分剩余空间。inline-flex 改成 flex：行内盒撑不满一行 */
+  [data-scope='button-group'][data-part='root'][data-full-width] {
+    display: flex;
+    inline-size: 100%;
+  }
+
+  /* 分隔线不参与等分：它有自己的厚度，跟着拉伸就成了一条粗带 */
+  [data-scope='button-group'][data-part='root'][data-full-width] > *:not([data-part='separator']) {
+    flex: 1;
+  }
+
   /* 给了 display 的角色节点必须补这条：display 声明会盖掉 UA 的 [hidden]{display:none}，
      不补的话作者给节点加 hidden 后它照样显示 */
   [data-scope='button-group'][data-part='root'][hidden] {
     display: none;
+  }
+
+  /* —— 段间的线 —— */
+  /* 装饰性的一条线，读屏不念。段本来靠共边连成一体，插了它就是把一排按钮分成几组。
+     朝向是这条线自己的（横排里是竖线），与 root 的排布相反 */
+  [data-scope='button-group'][data-part='separator'] {
+    flex: none;
+    align-self: stretch;
+    border-radius: var(--xh-button-group-separator-radius, var(--xh-shape-pill));
+    background: var(--xh-button-group-separator-color, var(--xh-border-default));
+  }
+
+  [data-scope='button-group'][data-part='separator'][data-orientation='vertical'] {
+    inline-size: var(--xh-button-group-separator-thickness, var(--xh-stroke-thin));
+    margin-block: var(--xh-button-group-separator-inset, var(--xh-space-1));
+    margin-inline: var(--xh-button-group-separator-gap, var(--xh-space-1));
+  }
+
+  [data-scope='button-group'][data-part='separator'][data-orientation='horizontal'] {
+    block-size: var(--xh-button-group-separator-thickness, var(--xh-stroke-thin));
+    margin-block: var(--xh-button-group-separator-gap, var(--xh-space-1));
+    margin-inline: var(--xh-button-group-separator-inset, var(--xh-space-1));
+  }
+
+  /* 整组禁用：段真正的禁用由适配器落到每一段的原生 disabled 上，
+     置灰的原生按钮不收指针事件，指针形状只能由这一层给 */
+  [data-scope='button-group'][data-part='root'][data-disabled] {
+    cursor: not-allowed;
+  }
+
+  /* 段都按不动了，段间那条线跟着退到弱边一档 */
+  [data-scope='button-group'][data-part='separator'][data-disabled] {
+    background: var(--xh-button-group-separator-color-disabled, var(--xh-border-subtle));
+  }
+
+  @media (forced-colors: active) {
+    /* 段间那条线画的是一块纯底色，这一档里底色被统一换成 Canvas，线整条消失，
+       几组按钮就连成了一长串。换成前景色画回来 */
+    [data-scope='button-group'][data-part='separator'] {
+      background: CanvasText;
+    }
   }
 
   /* —— 尺寸 —— */
@@ -104,12 +156,15 @@
   }
 
   /* 后一段往回挪一个描边宽度，相邻的两条边重合成一条。
-     方向跟着 data-orientation 走，横排收 inline 轴、竖排收 block 轴 */
-  [data-scope='button-group'][data-part='root'][data-orientation='horizontal'] > * + * {
+     方向跟着 data-orientation 走，横排收 inline 轴、竖排收 block 轴。
+     分隔线两侧不合边：那两段本来就是被这条线分开的，再压一次会把线盖掉一半 */
+  [data-scope='button-group'][data-part='root'][data-orientation='horizontal']
+    > *:not([data-part='separator']) + *:not([data-part='separator']) {
     margin-inline-start: calc(-1 * var(--xh-stroke-thin));
   }
 
-  [data-scope='button-group'][data-part='root'][data-orientation='vertical'] > * + * {
+  [data-scope='button-group'][data-part='root'][data-orientation='vertical']
+    > *:not([data-part='separator']) + *:not([data-part='separator']) {
     margin-block-start: calc(-1 * var(--xh-stroke-thin));
   }
 

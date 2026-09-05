@@ -65,7 +65,7 @@ create 返回的就是队列身份 id，存下来随时 dismiss 掉那一条；d
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-notification>` |
-| Vue 组件 | `XhNotificationGroup` `XhNotificationItem` `XhNotificationItemActionTrigger` `XhNotificationItemCloseTrigger` `XhNotificationItemDescription` `XhNotificationItemIndicator` `XhNotificationItemTitle` `XhNotificationRoot` |
+| Vue 组件 | `XhNotificationGroup` `XhNotificationItem` `XhNotificationItemActionTrigger` `XhNotificationItemCloseTrigger` `XhNotificationItemDescription` `XhNotificationItemIndicator` `XhNotificationItemProgress` `XhNotificationItemTitle` `XhNotificationRoot` |
 | 组合式函数 | `useNotification` |
 | 状态机 | `notificationMachine` |
 | 皮肤 | `@xihan-ui/styles/notification.css` |
@@ -74,7 +74,7 @@ create 返回的就是队列身份 id，存下来随时 dismiss 掉那一条；d
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="notification"`：**`root`** · **`group`** · `item` · `item-indicator` · `item-title` · `item-description` · `item-action-trigger` · `item-close-trigger`
+`data-scope="notification"`：**`root`** · **`group`** · `item` · `item-indicator` · `item-title` · `item-description` · `item-action-trigger` · `item-progress` · `item-close-trigger`
 
 ## Props
 
@@ -83,7 +83,8 @@ create 返回的就是队列身份 id，存下来随时 dismiss 掉那一条；d
 | `items` | `NotificationRecord[]` |  | 受控队列：给了就由宿主说了算，内部写入只发 onItemsChange。 |
 | `defaultItems` | `NotificationRecord[]` |  |  |
 | `placement` | `NotificationPlacement` |  | 默认落位，默认 bottom-end。 |
-| `max` | `number` |  | 每个位置最多同时留几条，超出挤掉最旧的。不给即不限。 |
+| `max` | `number` |  | 每个位置最多同时留几条，超出先挤低优先级、同级里挤最旧的。不给即不限。 |
+| `dedupe` | `NotificationDedupe` |  | 重复怎么算，默认 'id'。 |
 | `gap` | `number` |  | 同一摞内的间距（px），默认 16。 |
 | `duration` | `number` |  | 单条没写 duration 时的默认停留毫秒。 |
 | `removeDelay` | `number` |  | 单条没写 removeDelay 时的默认退场窗口毫秒。 |
@@ -116,6 +117,7 @@ create 返回的就是队列身份 id，存下来随时 dismiss 掉那一条；d
 | 部件 | 取值 |
 | --- | --- |
 | `item` | toStatus(state.get()) |
+| `item-progress` | toStatus(state.get()) |
 
 状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
@@ -160,6 +162,7 @@ create 返回的就是队列身份 id，存下来随时 dismiss 掉那一条；d
 | `item` | `aria-live` | 'assertive' \| 'polite' |
 | `item` | `role` | 'alert' \| 'status' |
 | `item-indicator` | `aria-hidden` | 'true' |
+| `item-progress` | `aria-hidden` | 'true' |
 | `item-close-trigger` | `aria-label` | props.translations.close |
 
 ## 样式
@@ -181,17 +184,18 @@ create 返回的就是队列身份 id，存下来随时 dismiss 掉那一条；d
 | `item` | `data-severity` | props.type |
 | `item` | `data-state` | toStatus(state.get()) |
 | `item` | `data-tone` | toneOf(type) |
+| `item-progress` | `data-state` | toStatus(state.get()) |
 | `item-close-trigger` | `data-disabled` | ''（条件成立时才出现） |
 
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-notification-action-bg` · `--xh-notification-action-bg-active` · `--xh-notification-action-bg-hover` · `--xh-notification-action-border` · `--xh-notification-action-fg` · `--xh-notification-action-font-weight` · `--xh-notification-action-h` · `--xh-notification-action-px` · `--xh-notification-action-radius` · `--xh-notification-close-bg-active` · `--xh-notification-close-bg-hover` · `--xh-notification-close-fg` · `--xh-notification-close-fg-hover` · `--xh-notification-close-inset` · `--xh-notification-close-radius` · `--xh-notification-close-size` · `--xh-notification-description-fg` · `--xh-notification-description-font-size` · `--xh-notification-icon-size` · `--xh-notification-indicator-fg` · `--xh-notification-indicator-size` · `--xh-notification-inset` · `--xh-notification-item-bg` · `--xh-notification-item-border` · `--xh-notification-item-fg` · `--xh-notification-item-font-size` · `--xh-notification-item-gap` · `--xh-notification-item-leading` · `--xh-notification-item-px` · `--xh-notification-item-py` · `--xh-notification-item-radius` · `--xh-notification-item-row-gap` · `--xh-notification-item-shadow` · `--xh-notification-item-w` · `--xh-notification-layer` · `--xh-notification-title-fg` · `--xh-notification-title-font-size` · `--xh-notification-title-font-weight` · `--xh-notification-title-leading`
+`--xh-notification-action-bg` · `--xh-notification-action-bg-active` · `--xh-notification-action-bg-hover` · `--xh-notification-action-border` · `--xh-notification-action-fg` · `--xh-notification-action-font-weight` · `--xh-notification-action-h` · `--xh-notification-action-px` · `--xh-notification-action-radius` · `--xh-notification-close-bg-active` · `--xh-notification-close-bg-hover` · `--xh-notification-close-fg` · `--xh-notification-close-fg-hover` · `--xh-notification-close-inset` · `--xh-notification-close-radius` · `--xh-notification-close-size` · `--xh-notification-description-fg` · `--xh-notification-description-font-size` · `--xh-notification-icon-size` · `--xh-notification-indicator-fg` · `--xh-notification-indicator-size` · `--xh-notification-inset` · `--xh-notification-item-bg` · `--xh-notification-item-border` · `--xh-notification-item-fg` · `--xh-notification-item-font-size` · `--xh-notification-item-gap` · `--xh-notification-item-leading` · `--xh-notification-item-px` · `--xh-notification-item-py` · `--xh-notification-item-radius` · `--xh-notification-item-row-gap` · `--xh-notification-item-shadow` · `--xh-notification-item-w` · `--xh-notification-layer` · `--xh-notification-progress-bg` · `--xh-notification-progress-duration` · `--xh-notification-progress-radius` · `--xh-notification-progress-thickness` · `--xh-notification-title-fg` · `--xh-notification-title-font-size` · `--xh-notification-title-font-weight` · `--xh-notification-title-leading`
 
 ## 动效
 
-关键帧 `xh-notification-in` · `xh-notification-out` · `xh-notification-spin` 随皮肤自带，不引用别处文件里的名字；状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-countdown` · `xh-notification-in` · `xh-notification-out` · `xh-notification-spin` 随皮肤自带，不引用别处文件里的名字；状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 

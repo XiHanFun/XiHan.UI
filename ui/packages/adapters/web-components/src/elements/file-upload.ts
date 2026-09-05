@@ -72,6 +72,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @csspart list - role=list 的列表容器，承载 data-empty
  * @csspart item - role=listitem 的一行，可自带 index 属性声明对应第几个文件
  * @csspart item-preview - 缩略图占位（aria-hidden），带 data-file-type 供皮肤挑图标
+ * @csspart item-progress - 传输进度条（aria-hidden），带 data-state 与写着进度比例的私有槽
  * @csspart item-name - 文件名（元素代填）
  * @csspart item-size-text - 人读的文件大小（元素代填）
  * @csspart item-delete-trigger - 删掉这一条
@@ -240,7 +241,7 @@ export class XhFileUploadElement extends XhElement {
   }
 
   /** 条目内的子部件名，交还与逐个打属性都按这一份走。 */
-  private static readonly ITEM_PARTS = ['item-preview', 'item-name', 'item-size-text', 'item-delete-trigger'] as const
+  private static readonly ITEM_PARTS = ['item-preview', 'item-progress', 'item-name', 'item-size-text', 'item-delete-trigger'] as const
 
   /** 位子比文件多时整条交还：撤掉上一帧写的属性与处理器，代填的文字一并抹掉。 */
   private releaseItem(el: HTMLElement): void {
@@ -286,6 +287,8 @@ export class XhFileUploadElement extends XhElement {
       this.spreader.spread(el, api.getItemProps(item) as Record<string, unknown>)
       for (const preview of this.partsIn(el, 'item-preview'))
         this.spreader.spread(preview, api.getItemPreviewProps(item) as Record<string, unknown>)
+      for (const progress of this.partsIn(el, 'item-progress'))
+        this.spreader.spread(progress, api.getItemProgressProps(item) as Record<string, unknown>)
       for (const name of this.partsIn(el, 'item-name')) {
         this.spreader.spread(name, api.getItemNameProps(item) as Record<string, unknown>)
         this.fillText(name, file.name)

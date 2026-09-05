@@ -94,15 +94,24 @@ const HOOKS = {
   // 禁用不在这张表里：pointer.css 那条与组件无关的规则消费全库的 data-disabled
   'infinite-scroll:data-loading': 'infinite-scroll.css:9 已写明：加载中的观感由作者自己的哨兵内容表出',
   'table:data-loading': '加载中的观感由 loading 部件承载（table.css:746 起，收起时 hidden）',
+  // 集合件取条目在途：那一格由只在取数期在场的 loading 部件顶上来
+  'cascader:data-loading': '在途的观感由只在取数期在场的 loading 部件承载，根上这一位是给作者接线的镜像',
+  'combobox:data-loading': '在途的观感由只在取数期在场的 loading 部件承载，根上这一位是给作者接线的镜像',
+  'listbox:data-loading': '在途的观感由只在取数期在场的 loading 部件承载，根上这一位是给作者接线的镜像',
+  'mention:data-loading': '在途的观感由只在取数期在场的 loading 部件承载，根上这一位是给作者接线的镜像',
+  'select:data-loading': '在途的观感由只在取数期在场的 loading 部件承载，根上这一位是给作者接线的镜像',
+  'transfer:data-loading': '在途的观感由只在取数期在场的 loading 部件承载，根上这一位是给作者接线的镜像',
+  'tree:data-loading': '在途的观感由只在取数期在场的 loading 部件承载，根上这一位是给作者接线的镜像',
+  'tree-select:data-loading': '在途的观感由只在取数期在场的 loading 部件承载，根上这一位是给作者接线的镜像',
   // 只读：观感落在真正的输入件身上
   'field:data-readonly': '只读的观感落在各输入件自己身上（text-field.css:155 那一类），这一层只往下传状态',
+  'field-array:data-readonly': '行数改不动的观感落在三个把手的 aria-disabled 上，行里控件的只读由作者自己置，这一层只往下传状态',
+  'field-array:data-invalid': '校验失败的观感落在行里各输入件自己身上，这一层只往下传状态',
   'form:data-readonly': '整份表单置只读时由逐个控件自己表出',
   // 忙：锁住的观感由提交钮的身份切换承载
   'prompt-input:data-loading': '在途时提交钮切成 data-mode=stop，观感挂在那一位上',
-  // 暂停：自动播放钮自己有 running / paused 两档；另两家解剖里没有能承载停表的部件
+  // 暂停：自动播放钮自己有 running / paused 两档
   'carousel:data-paused': '暂停的视觉在自动播放钮的 data-state=paused 上（carousel.css:248）',
-  'notification:data-paused': '解剖里没有进度部件能承载停表；与 toast 那一条成对',
-  'toast:data-paused': '解剖里没有进度部件能承载停表；与 notification 那一条成对',
   // 其余逐条
   'calendar:data-focus': '漫游焦点的锚点位。看得见的聚焦环走 :focus-visible',
   'carousel:data-autoplay': '自动播放开没开，视觉在自动播放钮的 data-state 上',
@@ -126,12 +135,14 @@ const HOOKS = {
   'message-feed:data-streaming': '这条消息还在流，气泡本身不随它改样子',
   'qr-code:data-logo': '中心留没留出徽标位。真正挖洞的是 connect 算出来的内联 style',
   'question-flow:data-mode': '提交钮是"继续"还是"发送"，换的是文案不是外观',
+  'tabs:data-closable': '这个标签关不关得掉。关的入口是键盘（焦点落在标签上按 Delete / Backspace），库不渲染关闭钮，也就没有随它变的外观',
   'scroll-area:data-dragging': '拖的是滚动条部件，滚块的观感由 scrollbar.css:125 那条画',
   'scroll-area:data-reveal-mode': '露面策略是入参；露不露由 data-state=visible|hidden 表出',
   'scrollbar:data-reveal-mode': '露面策略是入参；露不露由 data-state=visible|hidden 表出',
   'table:data-sortable': '这一列排不排得了序。排序钮不排序时置 hidden，箭头由 data-sort 画',
   'tags-input:data-overflowing': '越过上限时 data-at-max 同时为真（前者是 count > max，后者是 count >= max），观感由 control 上的 at-max 描边一并承载，两者不另分档',
   'timer:data-action': '控制钮这一按是开始还是暂停，换的是文案不是外观',
+  'tool-call:data-settled': '跑完没跑完看的是状态文字与用时那两格；跑砸了另有 data-errored 换描边色',
   'timer:data-controlled': '状态归 value / active 两个 prop 还是归起停按钮，两条通道画出来一模一样',
   'timer:data-countdown': '正计时还是倒计时，数字的排版两者一致',
   'timestamp:data-format': '按日期、时间还是两者一起渲染，换的是文本不是外观',

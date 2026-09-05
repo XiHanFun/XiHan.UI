@@ -24,6 +24,10 @@ export interface FieldsetApi<T extends PropTypes = PropTypes> {
   getRootProps: () => T['element']
   getLegendProps: () => T['element']
   getDescriptionProps: () => T['element']
+  /** 把并排的几个字段圈成一段；纯排版，不承担分组语义（组名与描述归 root）。 */
+  getFieldGroupProps: () => T['element']
+  /** 组末尾那一行按钮；纯排版。 */
+  getActionsProps: () => T['element']
   getErrorTextProps: () => T['element']
 }
 

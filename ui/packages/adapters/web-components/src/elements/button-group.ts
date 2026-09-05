@@ -15,7 +15,10 @@ import { XhElement } from '../element-base'
  * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 形态，决定底色、描边与前景怎么用
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气，决定用哪族颜色
  * @attr {'sm'|'md'|'lg'} size - 尺寸，决定各段的高度、内边距与字号
+ * @attr {boolean} disabled - 整组禁用：组内每一段都写上原生 disabled；段自己写了禁用的仍然禁用
+ * @attr {boolean} full-width - 撑满行宽，每段等分剩余空间
  * @csspart root - 组容器，承载 role=group 与 data-orientation / data-variant / data-tone / data-size
+ * @csspart separator - 段间的装饰线，可选；读屏不念
  */
 export class XhButtonGroupElement extends XhElement {
   static override partContract = { anatomy: buttonGroupAnatomy, meta: buttonGroupMeta }
@@ -26,12 +29,23 @@ export class XhButtonGroupElement extends XhElement {
     variant: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
     tone: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
     size: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
+    disabled: { type: Boolean },
+    fullWidth: { type: Boolean, attribute: 'full-width' },
   }
 
   declare orientation?: string
   declare variant?: ActionVariant
   declare tone?: Tone
   declare size?: Size
+  declare disabled?: boolean
+  declare fullWidth?: boolean
+
+  /**
+   * 作者在标记里写的段禁用，按元素记住头一回见到的那一份。
+   * 整组禁用期间每一段上都被写了 disabled，第二帧起现读分不清是作者写的还是自己上一帧写的，
+   * 解禁时就再也解不开。
+   */
+  private readonly declaredDisabled = new WeakMap<Element, boolean>()
 
   protected wire(): void {
     // 读响应式 property，不回读 DOM 特性
@@ -40,10 +54,35 @@ export class XhButtonGroupElement extends XhElement {
       variant: this.variant,
       tone: this.tone,
       size: this.size,
+      disabled: this.disabled,
+      fullWidth: this.fullWidth,
     } satisfies ButtonGroupProps), wcNormalize)
 
     const root = this.getPart('root')
     if (root)
       this.spreader.spread(root, api.getRootProps() as Record<string, unknown>)
+
+    // 分隔线是可选角色节点，作者写了才接
+    const separators = this.getParts('separator')
+    for (const el of separators)
+      this.spreader.spread(el, api.getSeparatorProps() as Record<string, unknown>)
+
+    if (root)
+      this.applyGroupDisabled(root, api.disabled, separators)
+  }
+
+  /**
+   * 把整组的禁用落到每一段的原生 disabled 上。
+   * 只打 data-* 是假禁用——段照样可聚焦、照样派 click。
+   * 分隔线不是段，跳过它。
+   */
+  private applyGroupDisabled(root: HTMLElement, groupDisabled: boolean, separators: readonly HTMLElement[]): void {
+    for (const child of root.children) {
+      if (separators.includes(child as HTMLElement))
+        continue
+      if (!this.declaredDisabled.has(child))
+        this.declaredDisabled.set(child, child.hasAttribute('disabled'))
+      child.toggleAttribute('disabled', groupDisabled || this.declaredDisabled.get(child)!)
+    }
   }
 }

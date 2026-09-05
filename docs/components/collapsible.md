@@ -60,7 +60,7 @@ size 换的是触发按钮的高度、内边距与字号，三档并排对照
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-collapsible>` |
-| Vue 组件 | `XhCollapsibleContent` `XhCollapsibleIndicator` `XhCollapsibleRoot` `XhCollapsibleTrigger` |
+| Vue 组件 | `XhCollapsibleContent` `XhCollapsibleHeader` `XhCollapsibleIndicator` `XhCollapsibleRoot` `XhCollapsibleTrigger` |
 | 组合式函数 | `useCollapsible` |
 | 状态机 | `collapsibleMachine` |
 | 皮肤 | `@xihan-ui/styles/collapsible.css` |
@@ -69,7 +69,7 @@ size 换的是触发按钮的高度、内边距与字号，三档并排对照
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="collapsible"`：`root` · `trigger` · **`content`** · `indicator`
+`data-scope="collapsible"`：`root` · `header` · `trigger` · **`content`** · `indicator`
 
 ## Props
 
@@ -78,7 +78,9 @@ size 换的是触发按钮的高度、内边距与字号，三档并排对照
 | `open` | `boolean` |  |  |
 | `defaultOpen` | `boolean` |  |  |
 | `disabled` | `boolean` |  |  |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
+| `dir` | `Direction` |  | 文字方向，只作用于排版；作者没给就不写。 |
 | `onOpenChange` | `(details: CollapsibleOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 |
 
 ## 事件
@@ -96,6 +98,7 @@ size 换的是触发按钮的高度、内边距与字号，三档并排对照
 | 部件 | 取值 |
 | --- | --- |
 | `root` | 'open' \| 'closed' |
+| `header` | 'open' \| 'closed' |
 | `trigger` | 'open' \| 'closed' |
 | `content` | 'open' \| 'closed' |
 | `indicator` | 'open' \| 'closed' |
@@ -117,6 +120,7 @@ size 换的是触发按钮的高度、内边距与字号，三档并排对照
 | `open` | `boolean` |  |
 | `setOpen` | `(next: boolean) => void` |  |
 | `getRootProps` | `() => T['element']` |  |
+| `getHeaderProps` | `() => T['element']` |  |
 | `getTriggerProps` | `() => T['button']` |  |
 | `getContentProps` | `() => T['element']` |  |
 | `getIndicatorProps` | `() => T['element']` |  |
@@ -152,6 +156,9 @@ size 换的是触发按钮的高度、内边距与字号，三档并排对照
 | `root` | `data-disabled` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | 'open' \| 'closed' |
+| `root` | `data-tone` | props.tone |
+| `header` | `data-disabled` | ''（条件成立时才出现） |
+| `header` | `data-state` | 'open' \| 'closed' |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `trigger` | `data-state` | 'open' \| 'closed' |
 | `content` | `data-state` | 'open' \| 'closed' |
@@ -162,7 +169,7 @@ size 换的是触发按钮的高度、内边距与字号，三档并排对照
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-collapsible-content-fg` · `--xh-collapsible-content-py` · `--xh-collapsible-icon-size` · `--xh-collapsible-trigger-bg` · `--xh-collapsible-trigger-bg-hover` · `--xh-collapsible-trigger-fg` · `--xh-collapsible-trigger-font-size` · `--xh-collapsible-trigger-font-weight` · `--xh-collapsible-trigger-gap` · `--xh-collapsible-trigger-h` · `--xh-collapsible-trigger-px` · `--xh-collapsible-trigger-radius`
+`--xh-collapsible-content-fg` · `--xh-collapsible-content-py` · `--xh-collapsible-header-gap` · `--xh-collapsible-icon-size` · `--xh-collapsible-trigger-bg` · `--xh-collapsible-trigger-bg-hover` · `--xh-collapsible-trigger-fg` · `--xh-collapsible-trigger-fg-open` · `--xh-collapsible-trigger-font-size` · `--xh-collapsible-trigger-font-weight` · `--xh-collapsible-trigger-gap` · `--xh-collapsible-trigger-h` · `--xh-collapsible-trigger-px` · `--xh-collapsible-trigger-radius`
 
 ## 动效
 

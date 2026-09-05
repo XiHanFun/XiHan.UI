@@ -6,6 +6,7 @@ import { MachineController } from '../runtime/machine-controller'
 
 // 属性缺席翻成 undefined，以此区分受控与非受控。
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
+const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 // 三态布尔：缺席=undefined（走缺省）、="false"=false、其余=true。
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
@@ -34,9 +35,13 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @attr {number} max - 最多几行；到了就按不动新增把手
  * @attr {boolean} movable - 出不出换序把手；关时两个换序把手一律收起
  * @attr {boolean} disabled - 禁用：新增、删除、换序三路都按不动
+ * @attr {boolean} read-only - 只读：行数改不动，行里的控件由作者自己置只读
+ * @attr {boolean} invalid - 校验失败标注；落到根与每一行上
+ * @attr {string} name - 整份数组的表单字段名；每一行经 item.name 拿到 名字[下标]
  * @fires value-change - 数据数组变化；detail 为 `{ value: unknown[] }`
  * @csspart root - 整份列表的容器，承载 data-disabled / data-empty / data-at-min / data-at-max / data-movable
  * @csspart item - 一行一个，可自带 index 属性声明下标，缺省按文档序
+ * @csspart item-label - 一行前面的行号或名目；纯标注
  * @csspart item-content - 一行里放作者自己控件的位置
  * @csspart item-action - 一行里放把手的位置
  * @csspart add-trigger - 新增把手，须是原生 `<button>`；到上限转 aria-disabled 但仍可聚焦；名字取自身内容
@@ -57,6 +62,9 @@ export class XhFieldArrayElement extends XhElement {
     createItem: { attribute: false },
     movable: { converter: BOOLEAN_CONVERTER },
     disabled: { converter: BOOLEAN_CONVERTER },
+    readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
+    invalid: { converter: BOOLEAN_CONVERTER },
+    name: { converter: STRING_CONVERTER },
     translations: { attribute: false },
   }
 
@@ -67,6 +75,9 @@ export class XhFieldArrayElement extends XhElement {
   declare createItem?: () => unknown
   declare movable?: boolean
   declare disabled?: boolean
+  declare readOnly?: boolean
+  declare invalid?: boolean
+  declare name?: string
   declare translations?: Partial<FieldArrayTranslations>
 
   private readonly notifyValue = (details: FieldArrayValueChangeDetails): void => {
@@ -86,6 +97,9 @@ export class XhFieldArrayElement extends XhElement {
       createItem: this.createItem,
       movable: this.movable ?? false,
       disabled: this.disabled ?? false,
+      readOnly: this.readOnly ?? false,
+      invalid: this.invalid ?? false,
+      name: this.name,
       translations: this.translations,
       onValueChange: this.notifyValue,
     }
@@ -111,6 +125,8 @@ export class XhFieldArrayElement extends XhElement {
     this.getParts('item').forEach((el, position) => {
       const item: FieldArrayItemProps = { index: declaredIndex(el, position) }
       this.spreader.spread(el, api.getItemProps(item) as Record<string, unknown>)
+      for (const label of this.partsIn(el, 'item-label'))
+        this.spreader.spread(label, api.getItemLabelProps(item) as Record<string, unknown>)
       for (const content of this.partsIn(el, 'item-content'))
         this.spreader.spread(content, api.getItemContentProps(item) as Record<string, unknown>)
       for (const action of this.partsIn(el, 'item-action'))

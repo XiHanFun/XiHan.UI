@@ -18,6 +18,7 @@ export const XhAnchorRoot = defineComponent({
     defaultValue: { type: String as PropType<string | null>, default: undefined },
     collection: { type: Array as PropType<readonly string[]>, default: undefined },
     offset: { type: Number, default: undefined },
+    bounds: { type: Number, default: undefined },
     smooth: { type: Boolean, default: undefined },
     orientation: { type: String as PropType<Orientation>, default: undefined },
     dir: { type: String as PropType<Direction>, default: undefined },
@@ -77,6 +78,15 @@ export const XhAnchorLink = defineComponent({
       ctx.api.value.getLinkProps({ value: props.value }) as Record<string, unknown>,
       slots.default?.(),
     )
+  },
+})
+
+/** 链接里的文字载体：链接内另有图标时，省略号只裁这一段 */
+export const XhAnchorLinkText = defineComponent({
+  name: 'XhAnchorLinkText',
+  setup(_, { slots }) {
+    const ctx = useAnchorContext()
+    return () => h('span', ctx.api.value.getLinkTextProps() as Record<string, unknown>, slots.default?.())
   },
 })
 

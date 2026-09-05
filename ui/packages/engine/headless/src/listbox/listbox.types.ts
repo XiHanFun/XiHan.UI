@@ -1,4 +1,4 @@
-import type { Direction, MachineSchema, Orientation, PropTypes, Typeahead } from '@xihan-ui/core'
+import type { Direction, MachineSchema, Orientation, PropTypes, Size, Tone, Typeahead } from '@xihan-ui/core'
 
 /**
  * 焦点模型：roving tabindex（不做 aria-activedescendant 变体）。焦点真的落在条目上，
@@ -78,6 +78,16 @@ export interface ListboxSchema extends MachineSchema {
     selectionMode?: ListboxSelectionMode
     /** 整个列表禁用，键盘与点击都不再改选中值。 */
     disabled?: boolean
+    /** 只读：条目照常浏览与聚焦，但选中值改不动。禁用则连焦点带都退出。 */
+    readOnly?: boolean
+    /** 条目还在取：列表报 aria-busy，在途占位顶上来，空态占位让位。 */
+    loading?: boolean
+    /** 校验失败：列表报 aria-invalid，各角色节点带 data-invalid。 */
+    invalid?: boolean
+    /** 语气：brand / neutral / success / warning / danger / info，决定勾选标记用哪族颜色。 */
+    tone?: Tone
+    /** 尺寸：sm / md / lg，决定条目的几何档位。 */
+    size?: Size
     /** 方向键走到尽头是否回绕，默认 true。 */
     loop?: boolean
     /** 文字方向，默认 ltr。 */
@@ -130,6 +140,9 @@ export interface ListboxApi<T extends PropTypes = PropTypes> {
   /** 焦点锚点；焦点不在列表内时为 null。 */
   focusedValue: string | null
   disabled: boolean
+  readOnly: boolean
+  invalid: boolean
+  loading: boolean
   isSelected: (value: string) => boolean
   setValue: (next: string[]) => void
   /** 只留这一个；加选用 toggle。 */
@@ -138,6 +151,21 @@ export interface ListboxApi<T extends PropTypes = PropTypes> {
   getRootProps: () => T['element']
   getLabelProps: () => T['element']
   getContentProps: () => T['element']
+  /**
+   * 空态占位：放在 root 里、content 的兄弟。
+   * 给了 collection 时由连接层按条数收放；条目手写时不写 hidden，露不露面归作者。
+   */
+  getEmptyProps: () => T['element']
+  /**
+   * 在途占位：与空态占位同一个位置，两者不同屏——取数期间它顶上来，空态让位。
+   * 给了 collection 时由连接层按条数收放；条目手写时只按 loading 收放。
+   */
+  getLoadingProps: () => T['element']
+  /**
+   * 取下一页的入口：库不知道还有没有下一页，露不露面与点了做什么都归作者，
+   * 连接层只保证取数在途与整列禁用两档点不动。
+   */
+  getLoadMoreTriggerProps: () => T['element']
   getGroupProps: (props: ListboxGroupProps) => T['element']
   getGroupLabelProps: (props: ListboxGroupProps) => T['element']
   getItemProps: (props: ListboxItemProps) => T['element']

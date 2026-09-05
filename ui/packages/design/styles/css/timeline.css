@@ -265,6 +265,58 @@
     padding-block-end: var(--xh-timeline-content-pb, var(--xh-space-2));
   }
 
+  /* —— 坐标 —— */
+  /* 与内容对置的那一列。竖排三种侧别各给它一条轨道，横排不单开轨道、按流排在末尾 */
+  [data-scope='timeline'][data-part='label'] {
+    grid-column: var(--xh-_timeline-label-col, auto);
+    grid-row: var(--xh-_timeline-label-row, auto);
+    align-self: start;
+    min-inline-size: 0;
+    color: var(--xh-timeline-label-fg, var(--xh-fg-subtle));
+    font-size: var(--xh-timeline-label-font-size, var(--xh-_timeline-caption-font-size));
+    /* 等宽数字：日期里的 1 与 7 在比例字体里宽度不同，不定住会让整列坐标左右抖一格 */
+    font-variant-numeric: tabular-nums;
+    line-height: var(--xh-leading-tight);
+    text-align: var(--xh-_timeline-label-align, end);
+  }
+
+  /* 内容落在结束侧时坐标占线之前的那一列，圆点与连线让到第二列 */
+  [data-scope='timeline'][data-part='item'][data-orientation='vertical']:where(:not([data-placement]), [data-placement='end']):has(> [data-scope='timeline'][data-part='label']) {
+    --xh-_timeline-label-col: 1;
+    --xh-_timeline-label-row: 1;
+
+    grid-template-columns: auto auto minmax(0, 1fr);
+  }
+
+  [data-scope='timeline'][data-part='item'][data-orientation='vertical']:where(:not([data-placement]), [data-placement='end']):has(> [data-scope='timeline'][data-part='label']) > [data-scope='timeline'][data-part='indicator'],
+  [data-scope='timeline'][data-part='item'][data-orientation='vertical']:where(:not([data-placement]), [data-placement='end']):has(> [data-scope='timeline'][data-part='label']) > [data-scope='timeline'][data-part='connector'] {
+    grid-column: 2;
+  }
+
+  [data-scope='timeline'][data-part='item'][data-orientation='vertical']:where(:not([data-placement]), [data-placement='end']):has(> [data-scope='timeline'][data-part='label']) > [data-scope='timeline'][data-part='content'] {
+    grid-column: 3;
+  }
+
+  /* 内容落在起始侧时坐标占线之后的那一列 */
+  [data-scope='timeline'][data-part='item'][data-orientation='vertical'][data-placement='start']:has(> [data-scope='timeline'][data-part='label']) {
+    --xh-_timeline-label-col: 3;
+    --xh-_timeline-label-row: 1;
+    --xh-_timeline-label-align: start;
+
+    grid-template-columns: minmax(0, 1fr) auto auto;
+  }
+
+  /* 逐条交替时坐标恒在内容的对面，时间戳因此不跟着内容左右横跳 */
+  [data-scope='timeline'][data-part='item'][data-orientation='vertical'][data-placement='alternate'] {
+    --xh-_timeline-label-col: 1;
+    --xh-_timeline-label-row: 1;
+  }
+
+  [data-scope='timeline'][data-part='item'][data-orientation='vertical'][data-placement='alternate']:nth-child(even) {
+    --xh-_timeline-label-col: 3;
+    --xh-_timeline-label-align: start;
+  }
+
   /* —— 文字 —— */
   [data-scope='timeline'][data-part='title'] {
     color: var(--xh-timeline-title-fg, var(--xh-fg-default));

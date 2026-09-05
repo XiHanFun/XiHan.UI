@@ -30,6 +30,8 @@ export function connectToggle<T extends PropTypes>(
       'data-variant': prop('variant'),
       'data-tone': prop('tone'),
       'data-size': prop('size'),
+      'data-icon-only': dataAttr(!!prop('iconOnly')),
+      'data-full-width': dataAttr(!!prop('fullWidth')),
       'data-disabled': dataAttr(disabled),
       'onClick': () => {
         if (!disabled)

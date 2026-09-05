@@ -36,6 +36,15 @@ export const XhTimelineItem = defineComponent({
   },
 })
 
+// 这一条的坐标（日期、版本号），与内容对置的那一列
+export const XhTimelineLabel = defineComponent({
+  name: 'XhTimelineLabel',
+  setup(_, { slots }) {
+    const ctx = useTimelineContext()
+    return () => h('div', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhTimelineIndicator = defineComponent({
   name: 'XhTimelineIndicator',
   setup(_, { slots }) {

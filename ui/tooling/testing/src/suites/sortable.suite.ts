@@ -75,7 +75,7 @@ export const sortableSuite: ConformanceSuite = {
   keyboard: sortableKeyboard,
   fixture: {
     part: 'root',
-    children: [itemNode('a', '甲'), itemNode('b', '乙'), itemNode('c', '丙'), { part: 'live-region' }],
+    children: [itemNode('a', '甲'), itemNode('b', '乙'), itemNode('c', '丙'), { part: 'drop-indicator' }, { part: 'live-region' }],
   },
   cases: [
     {
@@ -106,6 +106,24 @@ export const sortableSuite: ConformanceSuite = {
           },
         },
       },
+    },
+    {
+      name: '落点线：拾起时不在场，挪一格后落到目标项那条缝上，落下即撤',
+      spec: { apg: APG },
+      props: { ids: ['a', 'b', 'c'] },
+      steps: [
+        { kind: 'raw', why: LAYOUT_WHY, run: layout },
+        { kind: 'focus', part: 'item-drag-trigger' },
+        // 落点还在起点那一位，没有缝可指
+        { kind: 'key', key: ' ', expect: { parts: { 'drop-indicator': { hidden: '' } } } },
+        {
+          kind: 'key',
+          key: 'ArrowDown',
+          // 落点与起点不同一位，线露面；具体坐标写在内联样式里，不同适配器的序列化各不相同
+          expect: { parts: { 'drop-indicator': { 'hidden': null, 'aria-hidden': 'true' } } },
+        },
+        { kind: 'key', key: ' ', expect: { parts: { 'drop-indicator': { hidden: '' } } } },
+      ],
     },
     {
       name: '空格拾起，方向键挪一格，空格落下',

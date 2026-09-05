@@ -8,6 +8,8 @@ export const layoutMachine = createMachine({
   name: 'layout',
   initialState: ({ prop }) => ((prop('siderCollapsed') ?? prop('defaultSiderCollapsed')) ? 'collapsed' : 'expanded'),
   watch: ({ track, prop, action }) => track([() => prop('siderCollapsed')], () => action(['syncSiderCollapsed'])),
+  // 挂根级：断点与折叠态无关，跟着状态挂会在每次折叠时重挂并重发一次当前值
+  effects: ['trackSiderBreakpoint'],
   states: {
     expanded: {
       on: {
@@ -50,6 +52,31 @@ export const layoutMachine = createMachine({
         if (collapsed === undefined)
           return
         send(collapsed ? { type: 'CONTROLLED.COLLAPSE' } : { type: 'CONTROLLED.EXPAND' })
+      },
+    },
+    effects: {
+      /**
+       * 跟住 siderBreakpoint 那一档的媒体查询，跨过去发一次、挂载时也发一次当前值。
+       * 档位的像素宽度取自断点令牌，JS 里不另抄一份；令牌样式表没引入时这条不跑。
+       * 档位在挂载时读一次。
+       */
+      trackSiderBreakpoint: ({ prop, scope }) => {
+        const tier = prop('siderBreakpoint')
+        if (!tier)
+          return undefined
+        const win = scope.getWin()
+        if (typeof win.matchMedia !== 'function')
+          return undefined
+        const width = scope.getComputedStyle(scope.getDoc().documentElement)
+          .getPropertyValue(`--xh-breakpoint-${tier}`)
+          .trim()
+        if (!width)
+          return undefined
+        const query = win.matchMedia(`(min-width: ${width})`)
+        const notify = (): void => prop('onSiderBreakpoint')?.({ matched: query.matches })
+        notify()
+        query.addEventListener('change', notify)
+        return () => query.removeEventListener('change', notify)
       },
     },
   },

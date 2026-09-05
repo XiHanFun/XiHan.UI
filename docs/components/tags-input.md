@@ -18,6 +18,8 @@
 - `editable` 让已有标签双击就地改。
 - `max` 与 `allowOverflow` 一对：超出上限是拒收还是标红。
 - 标签的值可以是对象，不必是字符串。
+- `showCount` 显出计数部件，数字取 `count` 与 `max`，顶到上限与越界各换一档颜色。
+- `required` 经 `aria-required` 上报必填。
 
 ## 示例
 
@@ -98,7 +100,7 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-tags-input>` |
-| Vue 组件 | `XhTagsInputClearTrigger` `XhTagsInputControl` `XhTagsInputHiddenInput` `XhTagsInputInput` `XhTagsInputItem` `XhTagsInputItemDeleteTrigger` `XhTagsInputItemInput` `XhTagsInputItemPreview` `XhTagsInputItemText` `XhTagsInputLabel` `XhTagsInputRoot` |
+| Vue 组件 | `XhTagsInputClearTrigger` `XhTagsInputControl` `XhTagsInputCount` `XhTagsInputHiddenInput` `XhTagsInputInput` `XhTagsInputItem` `XhTagsInputItemDeleteTrigger` `XhTagsInputItemInput` `XhTagsInputItemPreview` `XhTagsInputItemText` `XhTagsInputLabel` `XhTagsInputRoot` |
 | 组合式函数 | `useTagsInput` |
 | 状态机 | `tagsInputMachine` |
 | 皮肤 | `@xihan-ui/styles/tags-input.css` |
@@ -107,7 +109,7 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="tags-input"`：**`root`** · `label` · **`control`** · **`input`** · `item` · `item-preview` · `item-text` · `item-delete-trigger` · `item-input` · `clear-trigger` · `hidden-input`
+`data-scope="tags-input"`：**`root`** · `label` · **`control`** · **`input`** · `item` · `item-preview` · `item-text` · `item-delete-trigger` · `item-input` · `clear-trigger` · `count` · `hidden-input`
 
 ## Props
 
@@ -121,7 +123,9 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 | `allowOverflow` | `boolean` |  | 允许越过 max。 关（默认）：顶到上限后这一次输入整体不生效，文本原样留在框里，绝不悄悄吞掉。 开：照加不误，只在 root / control 上打出 data-overflowing 供样式与提示使用。 |
 | `disabled` | `boolean` |  |  |
 | `readOnly` | `boolean` |  |  |
+| `required` | `boolean` |  | 必填标注：经 aria-required 上报，星号由外面的字段壳画。 |
 | `invalid` | `boolean` |  |  |
+| `showCount` | `boolean` |  | 显出计数部件：关掉时 count 部件带 hidden 收起。 |
 | `name` | `string` |  | 表单字段名；给了 hidden-input 才带 name，此时整份标签按 delimiter 拼成一串提交。 |
 | `placeholder` | `string` |  |  |
 | `delimiter` | `string` |  | 断词符，默认逗号。打字打出它即断词成标签，粘贴时也按它拆。 显式给空串即关掉断词：此时只有 Enter 能把文本变成标签。 |
@@ -150,6 +154,7 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
+| `XhTagsInputCount` | `default` | `TagsInputCountSlotProps` |  |
 | `XhTagsInputRoot` | `default` | `TagsInputRootSlotProps` |  |
 
 ## 状态
@@ -174,7 +179,10 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 | `empty` | `boolean` | 一个标签都没有。 |
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
+| `required` | `boolean` |  |
 | `invalid` | `boolean` |  |
+| `max` | `number \| undefined` | 标签个数的上限；没设 max 时是 undefined，此时只渲当前个数。 |
+| `showCount` | `boolean` | 计数部件此刻是否显出（开了 showCount）。 |
 | `atMax` | `boolean` | 已顶到 max：再加进不去（allowOverflow 开时只是提示，不拦）。 |
 | `overflow` | `boolean` | 已经越过 max（只有 allowOverflow 开着才可能为真）。 |
 | `highlightedValue` | `string \| null` | 光标停着的标签；没在标签间走时为 null。 |
@@ -197,6 +205,7 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 | `getItemDeleteTriggerProps` | `(item: TagsInputItemProps) => T['button']` |  |
 | `getItemInputProps` | `(item: TagsInputItemProps) => T['input']` |  |
 | `getClearTriggerProps` | `() => T['button']` |  |
+| `getCountProps` | `() => T['element']` | 计数部件：承载 count / max 两个数字，没开 showCount 时带 hidden 收起。 |
 | `getHiddenInputProps` | `() => T['input']` |  |
 
 ## 键盘
@@ -230,9 +239,11 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 | `control` | `role` | 'group' |
 | `input` | `aria-invalid` | 'true' \| 'false' |
 | `input` | `aria-labelledby` | `label` 部件的 id |
+| `input` | `aria-required` | 'true' \| 'false' |
 | `item-delete-trigger` | `aria-label` | label.deleteItem(item.value) |
 | `item-input` | `aria-label` | label.editTagInput(item.value) |
 | `clear-trigger` | `aria-label` | label.clearTrigger |
+| `count` | `aria-hidden` | 'true' |
 
 ## 样式
 
@@ -244,6 +255,7 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `root` | `data-required` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
@@ -251,12 +263,14 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 | `input` | `data-disabled` | ''（条件成立时才出现） |
 | `input` | `data-invalid` | ''（条件成立时才出现） |
 | `input` | `data-readonly` | ''（条件成立时才出现） |
+| `count` | `data-at-max` | ''（条件成立时才出现） |
+| `count` | `data-disabled` | ''（条件成立时才出现） |
 
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-tags-input-action-bg` · `--xh-tags-input-action-bg-active` · `--xh-tags-input-action-bg-hover` · `--xh-tags-input-action-fg` · `--xh-tags-input-action-fg-hover` · `--xh-tags-input-action-font-size` · `--xh-tags-input-action-radius` · `--xh-tags-input-action-size` · `--xh-tags-input-control-bg` · `--xh-tags-input-control-bg-disabled` · `--xh-tags-input-control-bg-hover` · `--xh-tags-input-control-bg-readonly` · `--xh-tags-input-control-border` · `--xh-tags-input-control-border-at-max` · `--xh-tags-input-control-border-focus` · `--xh-tags-input-control-border-hover` · `--xh-tags-input-control-border-invalid` · `--xh-tags-input-control-fg` · `--xh-tags-input-control-gap` · `--xh-tags-input-control-h` · `--xh-tags-input-control-min-w` · `--xh-tags-input-control-px` · `--xh-tags-input-control-py` · `--xh-tags-input-control-radius` · `--xh-tags-input-control-shadow` · `--xh-tags-input-delete-bg` · `--xh-tags-input-delete-bg-active` · `--xh-tags-input-delete-bg-hover` · `--xh-tags-input-delete-fg` · `--xh-tags-input-delete-fg-highlight` · `--xh-tags-input-delete-fg-hover` · `--xh-tags-input-delete-font-size` · `--xh-tags-input-delete-radius` · `--xh-tags-input-delete-size` · `--xh-tags-input-gap` · `--xh-tags-input-icon-size` · `--xh-tags-input-input-autofill-bg` · `--xh-tags-input-input-autofill-fg` · `--xh-tags-input-input-basis` · `--xh-tags-input-input-font-size` · `--xh-tags-input-input-min-w` · `--xh-tags-input-item-bg` · `--xh-tags-input-item-bg-highlight` · `--xh-tags-input-item-fg` · `--xh-tags-input-item-fg-highlight` · `--xh-tags-input-item-font-size` · `--xh-tags-input-item-gap` · `--xh-tags-input-item-input-bg` · `--xh-tags-input-item-input-border` · `--xh-tags-input-item-input-fg` · `--xh-tags-input-item-px` · `--xh-tags-input-item-py` · `--xh-tags-input-item-radius` · `--xh-tags-input-label-fg` · `--xh-tags-input-label-fg-disabled` · `--xh-tags-input-label-font-size` · `--xh-tags-input-label-font-weight` · `--xh-tags-input-placeholder-fg`
+`--xh-tags-input-action-bg` · `--xh-tags-input-action-bg-active` · `--xh-tags-input-action-bg-hover` · `--xh-tags-input-action-fg` · `--xh-tags-input-action-fg-hover` · `--xh-tags-input-action-font-size` · `--xh-tags-input-action-radius` · `--xh-tags-input-action-size` · `--xh-tags-input-control-bg` · `--xh-tags-input-control-bg-disabled` · `--xh-tags-input-control-bg-hover` · `--xh-tags-input-control-bg-readonly` · `--xh-tags-input-control-border` · `--xh-tags-input-control-border-at-max` · `--xh-tags-input-control-border-focus` · `--xh-tags-input-control-border-hover` · `--xh-tags-input-control-border-invalid` · `--xh-tags-input-control-fg` · `--xh-tags-input-control-gap` · `--xh-tags-input-control-h` · `--xh-tags-input-control-min-w` · `--xh-tags-input-control-px` · `--xh-tags-input-control-py` · `--xh-tags-input-control-radius` · `--xh-tags-input-control-shadow` · `--xh-tags-input-count-fg` · `--xh-tags-input-count-fg-at-max` · `--xh-tags-input-count-fg-disabled` · `--xh-tags-input-count-font-size` · `--xh-tags-input-delete-bg` · `--xh-tags-input-delete-bg-active` · `--xh-tags-input-delete-bg-hover` · `--xh-tags-input-delete-fg` · `--xh-tags-input-delete-fg-highlight` · `--xh-tags-input-delete-fg-hover` · `--xh-tags-input-delete-font-size` · `--xh-tags-input-delete-radius` · `--xh-tags-input-delete-size` · `--xh-tags-input-gap` · `--xh-tags-input-icon-size` · `--xh-tags-input-input-autofill-bg` · `--xh-tags-input-input-autofill-fg` · `--xh-tags-input-input-basis` · `--xh-tags-input-input-font-size` · `--xh-tags-input-input-min-w` · `--xh-tags-input-item-bg` · `--xh-tags-input-item-bg-highlight` · `--xh-tags-input-item-fg` · `--xh-tags-input-item-fg-highlight` · `--xh-tags-input-item-font-size` · `--xh-tags-input-item-gap` · `--xh-tags-input-item-input-bg` · `--xh-tags-input-item-input-border` · `--xh-tags-input-item-input-fg` · `--xh-tags-input-item-px` · `--xh-tags-input-item-py` · `--xh-tags-input-item-radius` · `--xh-tags-input-label-fg` · `--xh-tags-input-label-fg-disabled` · `--xh-tags-input-label-font-size` · `--xh-tags-input-label-font-weight` · `--xh-tags-input-placeholder-fg`
 
 ## 动效
 

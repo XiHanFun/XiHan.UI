@@ -1,4 +1,4 @@
-import type { SkeletonProps, SkeletonShape } from '@xihan-ui/headless'
+import type { SkeletonAnimation, SkeletonProps, SkeletonShape } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
 import { defineComponent, h } from 'vue'
 import { provideSkeleton, useSkeletonContext } from './context'
@@ -10,6 +10,7 @@ export const XhSkeletonRoot = defineComponent({
   props: {
     loading: { type: Boolean, default: true },
     shape: { type: String as PropType<SkeletonShape>, default: undefined },
+    animation: { type: String as PropType<SkeletonAnimation>, default: undefined },
   },
   setup(props, { slots }) {
     const ctx = useSkeleton(props as SkeletonProps)

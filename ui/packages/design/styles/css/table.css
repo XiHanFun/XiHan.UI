@@ -758,6 +758,44 @@
       var(--xh-motion-ease-sweep) infinite;
   }
 
+  /* 取下一页的按钮：铺满一行摆在表尾，与表格同一套内衬 */
+  [data-scope='table'][data-part='load-more-trigger'] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 100%;
+    gap: var(--xh-table-load-more-trigger-gap, var(--xh-space-2));
+    padding-block: var(--xh-table-load-more-trigger-py, var(--xh-space-3));
+    padding-inline: var(--xh-table-load-more-trigger-px, var(--xh-space-4));
+    border-radius: var(--xh-table-load-more-trigger-radius, var(--xh-shape-control));
+    background: none;
+    color: var(--xh-table-load-more-trigger-fg, var(--xh-fg-brand-strong));
+    font-size: var(--xh-table-load-more-trigger-font-size, var(--xh-_table-font-size));
+    line-height: var(--xh-leading-normal);
+    cursor: pointer;
+    transition:
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+  }
+
+  [data-scope='table'][data-part='load-more-trigger'][hidden] {
+    display: none;
+  }
+
+  [data-scope='table'][data-part='load-more-trigger']:hover {
+    background-color: var(--xh-table-load-more-trigger-bg-hover, var(--xh-bg-subtle));
+  }
+
+  [data-scope='table'][data-part='load-more-trigger']:active {
+    scale: var(--xh-motion-scale-press);
+  }
+
+  /* 取数在途那一段点不动：手势指示与前景色一起收回 */
+  [data-scope='table'][data-part='load-more-trigger']:disabled {
+    color: var(--xh-fg-disabled);
+    cursor: default;
+  }
+
   /* 减少动效：呼吸停下，加载态只留静止的文案。两条规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
   @media (prefers-reduced-motion: reduce) {
     [data-scope='table'][data-part='loading'] {

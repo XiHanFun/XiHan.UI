@@ -1,5 +1,5 @@
 import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
-import type { AccordionNode, AccordionNodeMeta, AccordionSchema } from '@xihan-ui/headless'
+import type { AccordionNode, AccordionNodeMeta, AccordionSchema, AccordionVariant } from '@xihan-ui/headless'
 import type { PropType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h, ref } from 'vue'
@@ -17,6 +17,9 @@ export const XhAccordionRoot = defineComponent({
     defaultValue: { type: Array as PropType<string[]>, default: undefined },
     multiple: Boolean,
     collapsible: Boolean,
+    loop: Boolean,
+    disabled: Boolean,
+    variant: { type: String as PropType<AccordionVariant>, default: undefined },
     orientation: { type: String as PropType<Orientation>, default: undefined },
     // 只改水平轴上左右键的语义，不写进 DOM
     dir: { type: String as PropType<Direction>, default: undefined },
@@ -62,6 +65,15 @@ export const XhAccordionItem = defineComponent({
       ctx.api.value.getItemProps({ value: props.value, disabled: props.disabled }) as Record<string, unknown>,
       slots.default?.(),
     )
+  },
+})
+
+/** 条目之间的那条细线，纯视觉；不渲染它时条目直接相邻 */
+export const XhAccordionItemSeparator = defineComponent({
+  name: 'XhAccordionItemSeparator',
+  setup(_, { slots }) {
+    const ctx = useAccordionContext()
+    return () => h('div', ctx.api.value.getItemSeparatorProps() as Record<string, unknown>, slots.default?.())
   },
 })
 

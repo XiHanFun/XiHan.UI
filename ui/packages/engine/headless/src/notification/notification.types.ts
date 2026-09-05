@@ -28,7 +28,24 @@ export interface NotificationRecord {
   closable?: boolean
   /** 单条覆盖落位；不给就用 notification 的 placement。 */
   placement?: NotificationPlacement
+  /**
+   * 行内动作钮的文案。给了才渲染动作部件。
+   * 只放文案不放回调：这一条记录要能被整份替换、序列化、比对，
+   * 按下之后做什么由宿主按 id 自己查。
+   */
+  actionLabel?: string
+  /** 挤条时先挤低的。不给则按语气派生：error=2 / warning=1 / 其余=0。 */
+  priority?: number
+  /** 按内容合并后的条数，>1 时由宿主在标题后追加计数。 */
+  count?: number
 }
+
+/**
+ * 重复怎么算。
+ * 'id'（默认）只按 id 寻址，同 id 就地改写，其余各占一条；
+ * 'content' 在此之上再按「语气与两层文本全同」合并，并累加 count。
+ */
+export type NotificationDedupe = 'id' | 'content'
 
 /** create 的入参：id 可省，省了就现生成一个并由 create 返回。 */
 export type NotificationOptions = Omit<NotificationRecord, 'id'> & { id?: string }
@@ -41,6 +58,8 @@ export interface ResolvedNotification extends NotificationRecord {
   removeDelay: number
   closable: boolean
   pauseOnPageIdle: boolean
+  /** 合并计数，没并过就是 1。 */
+  count: number
 }
 
 export interface NotificationItemsChangeDetails {
@@ -66,8 +85,10 @@ export interface NotificationSchema extends MachineSchema {
     defaultItems?: NotificationRecord[]
     /** 默认落位，默认 bottom-end。 */
     placement?: NotificationPlacement
-    /** 每个位置最多同时留几条，超出挤掉最旧的。不给即不限。 */
+    /** 每个位置最多同时留几条，超出先挤低优先级、同级里挤最旧的。不给即不限。 */
     max?: number
+    /** 重复怎么算，默认 'id'。 */
+    dedupe?: NotificationDedupe
     /** 同一摞内的间距（px），默认 16。 */
     gap?: number
     /** 单条没写 duration 时的默认停留毫秒。 */
@@ -131,6 +152,8 @@ export interface NotificationItemApi<T extends PropTypes = PropTypes> {
   /** 指针停在卡片上、或焦点落在里面时为真：计时被按住。 */
   paused: boolean
   closable: boolean
+  /** 停留总时长（毫秒）；不自动消失的那些恒为 Infinity。 */
+  duration: number
   /** 还剩多少毫秒；不自动消失的那些恒为 Infinity。 */
   remaining: number
   dismiss: () => void
@@ -141,5 +164,7 @@ export interface NotificationItemApi<T extends PropTypes = PropTypes> {
   getItemTitleProps: () => T['element']
   getItemDescriptionProps: () => T['element']
   getItemActionTriggerProps: () => T['button']
+  /** 倒计时条：不自动消失时收起。 */
+  getItemProgressProps: () => T['element']
   getItemCloseTriggerProps: () => T['button']
 }

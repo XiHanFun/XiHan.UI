@@ -16,7 +16,9 @@ import { XhElement } from '../element-base'
  * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 视觉变体
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
- * @csspart root - 承载 data-scope/data-part/data-* 的原生 button
+ * @attr {'rounded'|'pill'|'square'} shape - 圆角档；缺省跟着控件圆角走
+ * @attr {'button'|'a'} as - 根节点写成哪个标签，默认 button；写 a 时不再产出 type 与原生 disabled
+ * @csspart root - 承载 data-scope/data-part/data-* 的原生 button（as="a" 时是 a）
  */
 export class XhButtonElement extends XhElement {
   static override partContract = { anatomy: buttonAnatomy, meta: buttonMeta }
@@ -30,6 +32,8 @@ export class XhButtonElement extends XhElement {
     variant: {},
     tone: {},
     size: {},
+    shape: {},
+    as: {},
   }
 
   declare type?: 'button' | 'submit' | 'reset'
@@ -40,6 +44,8 @@ export class XhButtonElement extends XhElement {
   declare variant?: ActionVariant
   declare tone?: Tone
   declare size?: Size
+  declare shape?: ButtonProps['shape']
+  declare as?: ButtonProps['as']
 
   protected wire(): void {
     const root = this.getPart('root')
@@ -52,6 +58,8 @@ export class XhButtonElement extends XhElement {
       variant: this.variant,
       tone: this.tone,
       size: this.size,
+      shape: this.shape,
+      as: this.as,
       iconOnly: this.iconOnly,
       fullWidth: this.fullWidth,
       // 作者写在根节点上的可及名转告连接层，图标按钮缺名时由它提醒

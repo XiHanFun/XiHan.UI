@@ -61,7 +61,7 @@ disabled 只关掉卡片本身，触发器照样可点、可聚焦，也照样�
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-hover-card>` |
-| Vue 组件 | `XhHoverCardArrow` `XhHoverCardContent` `XhHoverCardPositioner` `XhHoverCardRoot` `XhHoverCardTrigger` |
+| Vue 组件 | `XhHoverCardArrow` `XhHoverCardContent` `XhHoverCardDescription` `XhHoverCardPositioner` `XhHoverCardRoot` `XhHoverCardTitle` `XhHoverCardTrigger` |
 | 组合式函数 | `useHoverCard` |
 | 状态机 | `hoverCardMachine` |
 | 皮肤 | `@xihan-ui/styles/hover-card.css` |
@@ -70,7 +70,7 @@ disabled 只关掉卡片本身，触发器照样可点、可聚焦，也照样�
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="hover-card"`：`root` · **`trigger`** · `positioner` · **`content`** · `arrow`
+`data-scope="hover-card"`：`root` · **`trigger`** · `positioner` · **`content`** · `title` · `description` · `arrow`
 
 ## Props
 
@@ -134,6 +134,8 @@ disabled 只关掉卡片本身，触发器照样可点、可聚焦，也照样�
 | `getTriggerProps` | `() => T['button']` |  |
 | `getPositionerProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |
+| `getTitleProps` | `() => T['element']` |  |
+| `getDescriptionProps` | `() => T['element']` |  |
 | `getArrowProps` | `() => T['element']` |  |
 
 ## 键盘
@@ -154,7 +156,8 @@ disabled 只关掉卡片本身，触发器照样可点、可聚焦，也照样�
 | `trigger` | `aria-controls` | `content` 部件的 id |
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
 | `trigger` | `aria-haspopup` | 'dialog' |
-| `content` | `aria-labelledby` | `trigger` 部件的 id |
+| `content` | `aria-describedby` | `description` 部件的 id \| undefined |
+| `content` | `aria-labelledby` | `title` 部件的 id \| `trigger` 部件的 id |
 | `content` | `aria-modal` | 'false' |
 | `content` | `role` | 'dialog' |
 | `arrow` | `aria-hidden` | 'true' |
@@ -186,7 +189,7 @@ disabled 只关掉卡片本身，触发器照样可点、可聚焦，也照样�
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-hover-card-arrow-size` · `--xh-hover-card-bg` · `--xh-hover-card-border` · `--xh-hover-card-fg` · `--xh-hover-card-gap` · `--xh-hover-card-layer` · `--xh-hover-card-max-h` · `--xh-hover-card-max-w` · `--xh-hover-card-px` · `--xh-hover-card-py` · `--xh-hover-card-radius` · `--xh-hover-card-shadow` · `--xh-hover-card-trigger-gap`
+`--xh-hover-card-arrow-size` · `--xh-hover-card-bg` · `--xh-hover-card-border` · `--xh-hover-card-description-fg` · `--xh-hover-card-fg` · `--xh-hover-card-gap` · `--xh-hover-card-layer` · `--xh-hover-card-max-h` · `--xh-hover-card-max-w` · `--xh-hover-card-px` · `--xh-hover-card-py` · `--xh-hover-card-radius` · `--xh-hover-card-shadow` · `--xh-hover-card-title-fg` · `--xh-hover-card-title-font-size` · `--xh-hover-card-title-font-weight` · `--xh-hover-card-trigger-gap`
 
 ## 动效
 

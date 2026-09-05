@@ -99,6 +99,9 @@ toast.error('保存失败，请重试', { duration: 8000 })
 | `dismiss(id)` / `dismissAll()` | — | 手动收走 |
 | `info` / `success` / `warning` / `error` | `string`（id） | 类型糖，第一参是正文 |
 | `loading(message, options)` | `string`（id） | 返回 id，之后用 `update` 收尾 |
+| `promise(input, options)` | `Promise<T>` | 先弹 loading，落定后就地改写成成功/失败 |
+| `pauseAll()` / `resumeAll()` | — | 整摞一起按住计时、再放开 |
+| `setConfig(next)` | — | 换一份全局配置源（切语言用） |
 | `dispose()` | — | 卸载宿主应用并移除容器 |
 
 ### 在途 → 完成
@@ -115,6 +118,39 @@ catch {
   toast.update(id, { type: 'error', title: '上传失败' })
 }
 ```
+
+同一条链有现成的写法，结果与拒绝都原样交回来：
+
+```ts
+const url = await toast.promise(upload(file), {
+  loading: '正在上传…',
+  success: result => `上传完成：${result.name}`,
+  error: reason => `上传失败：${(reason as Error).message}`,
+})
+```
+
+### 行内动作
+
+给了 `actionLabel` 才渲染那颗钮，按下去做什么写在 `onAction` 里：
+
+```ts
+toast.info('已删除 3 条记录', { duration: 8000, actionLabel: '撤销', onAction: () => restore() })
+```
+
+文案进队列记录、回调存在服务里——记录只放能被整份替换、序列化、比对的纯数据。
+
+### 重复与优先级
+
+同一句错误连发几次时，`dedupe: 'content'` 把它们并成一条并在标题后追加计数：
+
+```ts
+const toast = createToastService({ dedupe: 'content' })
+toast.error('同步失败')
+toast.error('同步失败') // 界面上是「同步失败 ×2」
+```
+
+超出 `max` 时先挤低优先级的、同级里挤最旧的。优先级不给就按语气派生（`error` 最高、
+`warning` 次之、其余持平），也可以逐条写 `priority`——**一条报错不该被随后的五条提示顶掉**。
 
 服务档的默认落位是 `top`，最多同时留 5 条，超出的挤掉最旧的。落位是整个服务的口径——
 一次操作的反馈不该逐条各去一处，写在 `createToastService({ placement })` 里一次定好。
@@ -143,8 +179,12 @@ notify.error('同步失败', { description: '网络中断，稍后自动重试',
 | `update(id, options)` | — | 改写已在显示的那一条 |
 | `dismiss(id)` / `dismissAll()` | — | 手动收走 |
 | `info` / `success` / `warning` / `error` | `string`（id） | 类型糖，第一参是标题，正文写在 `options.description` |
+| `pauseAll()` / `resumeAll()` | — | 把当下这些卡片的计时一起按住、再放开 |
 | `setConfig(next)` | — | 换一份全局配置源（切语言用） |
 | `dispose()` | — | 卸载宿主应用并移除容器 |
+
+行内动作、`dedupe` 与 `priority` 与轻提示同形——两者跑的是同一台队列机器，上限、挤条与
+合并计数只有一份实现。
 
 与轻提示的两处不同：条目有标题与正文两层，且**单条可以用 `options.placement` 覆盖落位**——
 消息各有轻重，逐条决定去哪一格是说得通的。`duration: 0` 即常驻不消失，让用户自己收走。
@@ -182,9 +222,9 @@ http.interceptors.response.use(
 | `dispose()` | 卸载宿主应用并移除容器 |
 
 **在途计数是这层壳的要点**。写成布尔开关的话，三个并发请求里第一个回来就把条子收了，剩下两个还在跑——进度条比请求先结束。
-## 切语言要跟得上
+## 切语言要跟得上（Vue 侧）
 
-三个服务都自建宿主应用，接不到组件树里的 `provideXhConfig`，所以配置要从 `config` 选项给。**传 ref 或 getter**，不要传一次性的对象——传对象的话文案只在建服务那一刻求值一次，之后应用切了语言，服务子树里的按钮与读屏名不跟；队列里排着的对话框还会跨过这次切换。
+Vue 的四个服务都自建宿主应用，接不到组件树里的 `provideXhConfig`，所以配置要从 `config` 选项给。**传 ref 或 getter**，不要传一次性的对象——传对象的话文案只在建服务那一刻求值一次，之后应用切了语言，服务子树里的按钮与读屏名不跟；队列里排着的对话框还会跨过这次切换。
 
 ```ts
 const dialog = createDialogService({
@@ -198,6 +238,28 @@ dialog.setConfig({ locale: 'en-US' })
 ```
 
 取值优先级：**调用点 > 服务选项 > `config.translations.<组件>` > 组件内建默认**。
+## Web Components 侧
+
+同样四个工厂，从 `@xihan-ui/web-components/services` 取，句柄的方法与 Vue 侧同名同形：
+
+```ts
+import { createToastService } from '@xihan-ui/web-components/services'
+
+const toast = createToastService({ placement: 'top', max: 5 })
+toast.success('已保存')
+```
+
+服务自己生成真实的自定义元素与角色节点（`<xh-toast>`、`<xh-notification>`、`<xh-dialog>`、
+`<xh-loading-bar>`），拿到的仍是一棵可查、可选中的 DOM；用到的元素在服务建起来时按需注册，
+不必先 `import '@xihan-ui/web-components/define'`。
+
+与 Vue 侧的两处不同都来自这一侧的身份：
+
+- **没有 `config` 入参，也没有 `setConfig`**。全局配置沿 DOM 祖先链解析，服务的宿主容器就挂在
+  文档里，语言、尺寸、浮层落点由 `setXhConfig` 与外层 `<xh-config>` 直接说了算。
+- **对话框的正文渲染函数收的是节点**：`content: (body) => { … }` 拿到正文那个角色节点自己往里写，
+  没有 `prompt`——取值型弹窗要放表单，直接写 `<xh-dialog>`。
+
 ## 什么时候不要用服务
 
 - **确认可以撤销的操作**：直接做，然后发一条带"撤销"按钮的轻提示。事前确认对用户是一道额外的关，撤销才是真的兜底。

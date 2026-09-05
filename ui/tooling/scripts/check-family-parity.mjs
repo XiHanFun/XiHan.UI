@@ -75,6 +75,16 @@ const FAMILIES = [
     ],
   },
   {
+    // 钉在视口一角、浮在内容之上的圆钮：两家的按钮块从盒型到三轴取值逐条同源。
+    // 宽高与圆角不在此列——一颗是回顶钮（缺省中档），一颗是悬浮动作钮（缺省大一档），
+    // 那是两件东西各自的身量，不是分叉
+    name: '角落浮钮族',
+    members: ['float-button', 'back-top'],
+    parts: [
+      { part: 'trigger', state: '', props: ['display', 'align-items', 'justify-content', 'padding', 'border', 'background', 'color', 'box-shadow', 'cursor', 'transition'] },
+    ],
+  },
+  {
     // 展开收起的触发条：两家跑的是同一套开合，触发条从盒型到字号逐条同源
     name: '折叠族',
     members: ['accordion', 'collapsible'],

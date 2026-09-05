@@ -26,6 +26,8 @@ export const XhToastRoot = defineComponent({
     removeDelay: { type: Number, default: undefined },
     closable: { type: Boolean, default: undefined },
     pauseOnPageIdle: { type: Boolean, default: undefined },
+    // 由宿主整摞一起按住计时；与指针、焦点那几路并存，最后一个松开才继续走
+    paused: { type: Boolean, default: undefined },
     translations: { type: Object as PropType<Partial<ToastTranslations>>, default: undefined },
   },
   // status-change 携带 { id, status }，action 携带 { id }
@@ -58,6 +60,14 @@ export const XhToastRoot = defineComponent({
   },
 })
 
+export const XhToastIndicator = defineComponent({
+  name: 'XhToastIndicator',
+  setup(_, { slots }) {
+    const ctx = useToastContext()
+    return () => h('span', ctx.api.value.getIndicatorProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhToastTitle = defineComponent({
   name: 'XhToastTitle',
   setup(_, { slots }) {
@@ -77,6 +87,14 @@ export const XhToastActionTrigger = defineComponent({
     const ctx = useToastContext()
     // 原生 <button>，激活行为交给平台
     return () => h('button', ctx.api.value.getActionTriggerProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+export const XhToastProgress = defineComponent({
+  name: 'XhToastProgress',
+  setup(_, { slots }) {
+    const ctx = useToastContext()
+    return () => h('div', ctx.api.value.getProgressProps() as Record<string, unknown>, slots.default?.())
   },
 })
 

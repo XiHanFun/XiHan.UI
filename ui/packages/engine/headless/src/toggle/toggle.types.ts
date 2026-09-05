@@ -15,6 +15,13 @@ export interface ToggleSchema extends MachineSchema {
     tone?: Tone
     /** 尺寸：sm / md / lg */
     size?: Size
+    /**
+     * 只有图标：左右内距清零、宽高相等。宽度跟着当前尺寸档的高度走，
+     * 不必把档位写进行内样式。图标按钮没有可见文字，作者须自行给可及名。
+     */
+    iconOnly?: boolean
+    /** 撑满行宽：工具条里一列开关常用。 */
+    fullWidth?: boolean
     /** pressed 变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 */
     onPressedChange?: (details: TogglePressedChangeDetails) => void
   }

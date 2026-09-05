@@ -80,6 +80,7 @@ tone 只换圆环起始边那一段颜色，轨道留在中性描边上，转到
 | `size` | `Size` |  | 直径档位，缺省 md；缺省档不输出 data-size。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色 |
 | `translations` | `Partial<SpinnerTranslations>` |  |  |
+| `variant` | `SpinnerVariant` |  | 形态，缺省 ring；缺省档不输出 data-variant。 |
 
 ## connect API
 
@@ -119,6 +120,7 @@ tone 只换圆环起始边那一段颜色，轨道留在中性描边上，转到
 | --- | --- | --- |
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
+| `root` | `data-variant` | props.variant |
 
 ## CSS 变量
 
@@ -128,9 +130,13 @@ tone 只换圆环起始边那一段颜色，轨道留在中性描边上，转到
 
 ## 动效
 
-关键帧 `xh-spinner-rotate` 随皮肤自带，不引用别处文件里的名字。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-spinner-dots` · `xh-spinner-rotate` 随皮肤自带，不引用别处文件里的名字。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
+
+## 响应式
+
+皮肤内置条件规则：`forced-colors: active`。
 
 ## 组合
 

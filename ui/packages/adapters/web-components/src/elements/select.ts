@@ -33,6 +33,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {boolean} disabled - 整个控件禁用：trigger 用原生 disabled，表单影子不参与提交
  * @attr {boolean} read-only - 只读：浮层照常展开、条目照常浏览，但选中值改不动、也清不掉
  * @attr {boolean} invalid - 校验错误态：trigger 标红并输出 aria-invalid
+ * @attr {boolean} loading - 条目还在取：列表报 aria-busy，在途占位顶上来、空态占位让位
  * @attr {number} max-tag-count - 多选标签最多摆几个，其余折进 api 的 overflowCount；缺省全摆
  * @attr {boolean} required - 原生表单校验：无选中值时提交被拦下；多选下的门槛是至少选中一项
  * @attr {string} name - 表单字段名；给定后表单影子才带 name 并参与提交
@@ -60,6 +61,10 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart content - 浮层外壳（焦点域与消解层的根节点，键盘在此收口），收起时带 hidden
  * @csspart list - role=listbox 本体，条目放在它里面；滚动也在这一层
  * @csspart footer - 浮层底部的操作区，是 list 的兄弟；不进列表框的拥有关系，方向键与连打检索也不认它
+ * @csspart empty - 空态占位，须放在 content 里当 list 的兄弟；给了 collection 时由元素按条数收放，条目手写时归作者
+ * @csspart loading - 在途占位，与空态占位同一个位置，取数期间顶上来
+ * @csspart group - role=group 分组容器，须自带 value 属性标识身份；条目挂在它里面
+ * @csspart group-label - 分组标题（本组 aria-labelledby 的目标），须放在 group 里
  * @csspart item - role=option 条目，须自带 value 属性标识身份；禁用写 aria-disabled="true"
  * @csspart item-text - 条目文本（连打检索与 value-text 的取字处）
  * @csspart item-indicator - 条目选中标记（aria-hidden）
@@ -80,6 +85,7 @@ export class XhSelectElement extends XhElement {
     disabled: { type: Boolean },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     invalid: { type: Boolean },
+    loading: { type: Boolean },
     required: { type: Boolean },
     name: { converter: STRING_CONVERTER },
     placeholder: { converter: STRING_CONVERTER },
@@ -104,6 +110,7 @@ export class XhSelectElement extends XhElement {
   declare disabled?: boolean
   declare readOnly?: boolean
   declare invalid?: boolean
+  declare loading?: boolean
   declare required?: boolean
   declare name?: string
   declare placeholder?: string
@@ -159,6 +166,7 @@ export class XhSelectElement extends XhElement {
       disabled: this.disabled ?? false,
       readOnly: this.readOnly ?? false,
       invalid: this.invalid ?? false,
+      loading: this.loading ?? false,
       required: this.required ?? false,
       name: this.name,
       placeholder: this.placeholder,
@@ -323,6 +331,16 @@ export class XhSelectElement extends XhElement {
     put('content', api.getContentProps() as Record<string, unknown>)
     put('list', api.getListProps() as Record<string, unknown>)
     put('footer', api.getFooterProps() as Record<string, unknown>)
+    put('empty', api.getEmptyProps() as Record<string, unknown>)
+    put('loading', api.getLoadingProps() as Record<string, unknown>)
+
+    // 分组是多实例 part：身份取自己的 value 属性，组内标题跟着同一份身份
+    for (const el of this.getParts('group')) {
+      const group = { value: el.getAttribute('value') ?? '' }
+      this.spreader.spread(el, api.getGroupProps(group) as Record<string, unknown>)
+      for (const label of this.partsIn(el, 'group-label'))
+        this.spreader.spread(label, api.getGroupLabelProps(group) as Record<string, unknown>)
+    }
 
     // 属性先落，再填显示文字
     const valueText = this.getPart('value-text')

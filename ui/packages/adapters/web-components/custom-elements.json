@@ -20,6 +20,10 @@
               "name": "item"
             },
             {
+              "description": "条目之间的细线，可缺省",
+              "name": "item-separator"
+            },
+            {
               "description": "条目标题",
               "name": "header"
             },
@@ -128,6 +132,33 @@
                 "text": "boolean | undefined"
               },
               "attribute": "collapsible"
+            },
+            {
+              "kind": "field",
+              "name": "loop",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "loop"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "AccordionVariant | undefined"
+              },
+              "attribute": "variant"
             },
             {
               "kind": "field",
@@ -254,6 +285,30 @@
             },
             {
               "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "方向键走到尽头回绕，默认关闭",
+              "name": "loop",
+              "fieldName": "loop"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "整组禁用",
+              "name": "disabled",
+              "fieldName": "disabled"
+            },
+            {
+              "type": {
+                "text": "AccordionVariant | undefined"
+              },
+              "description": "形态，缺省 plain",
+              "name": "variant",
+              "fieldName": "variant"
+            },
+            {
+              "type": {
                 "text": "Orientation | undefined"
               },
               "description": "方向键轴向，默认 vertical",
@@ -297,7 +352,19 @@
               "name": "--xh-accordion-icon-size"
             },
             {
+              "name": "--xh-accordion-item-bg"
+            },
+            {
               "name": "--xh-accordion-item-border"
+            },
+            {
+              "name": "--xh-accordion-item-gap"
+            },
+            {
+              "name": "--xh-accordion-item-radius"
+            },
+            {
+              "name": "--xh-accordion-item-shadow"
             },
             {
               "name": "--xh-accordion-trigger-bg"
@@ -506,7 +573,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-alert>` —— Light-DOM 行为宿主，把 alert 机器打到 root/icon/title/description/close-trigger\n角色节点，收起时用内联 style.display 隐藏 root。",
+          "description": "`<xh-alert>` —— Light-DOM 行为宿主，把 alert 机器打到 root/indicator/content/title/description/\naction/close-trigger 角色节点，收起时用内联 style.display 隐藏 root。",
           "name": "XhAlertElement",
           "cssParts": [
             {
@@ -518,12 +585,20 @@
               "name": "indicator"
             },
             {
+              "description": "文本列容器：把标题与说明摞成一列",
+              "name": "content"
+            },
+            {
               "description": "标题（root 的 aria-labelledby 指向它）",
               "name": "title"
             },
             {
               "description": "说明（root 的 aria-describedby 指向它）",
               "name": "description"
+            },
+            {
+              "description": "操作槽：圈出按钮区",
+              "name": "action"
             },
             {
               "description": "关闭按钮",
@@ -669,6 +744,9 @@
           "customElement": true,
           "cssProperties": [
             {
+              "name": "--xh-alert-action-gap"
+            },
+            {
               "name": "--xh-alert-bg"
             },
             {
@@ -691,6 +769,9 @@
             },
             {
               "name": "--xh-alert-close-size"
+            },
+            {
+              "name": "--xh-alert-content-gap"
             },
             {
               "name": "--xh-alert-description-fg"
@@ -780,6 +861,10 @@
               "name": "link"
             },
             {
+              "description": "链接里的文字载体；链接内另有图标时，省略号只裁这一段",
+              "name": "link-text"
+            },
+            {
               "description": "指示条，须写成 `<li>` 并住在 list 里；对读屏隐藏， 位置由机器量好写成内联样式，无激活项时 hidden",
               "name": "indicator"
             }
@@ -820,6 +905,15 @@
                 "text": "number | undefined"
               },
               "attribute": "offset"
+            },
+            {
+              "kind": "field",
+              "name": "bounds",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "bounds"
             },
             {
               "kind": "field",
@@ -975,6 +1069,14 @@
               "description": "判定线距滚动容器视口顶边的距离（px），默认 0",
               "name": "offset",
               "fieldName": "offset"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "压线判定的容差（px），默认 1",
+              "name": "bounds",
+              "fieldName": "bounds"
             },
             {
               "type": {
@@ -1257,6 +1359,15 @@
             },
             {
               "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "ControlVariant | undefined"
+              },
+              "attribute": "variant"
+            },
+            {
+              "kind": "field",
               "name": "tone",
               "privacy": "public",
               "type": {
@@ -1335,7 +1446,7 @@
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
-              "default": "new MachineController<ApprovalSchema>(this, approvalMachine, () => ({ requestId: this.requestId, status: this.status, defaultStatus: this.defaultStatus, timeoutMs: this.timeoutMs, scopes: this.scopes, grantedScopes: this.grantedScopes, defaultGrantedScopes: this.defaultGrantedScopes, note: this.note, defaultNote: this.defaultNote, loading: this.loading, denyOnEscape: this.denyOnEscape, denyOnUnmount: this.denyOnUnmount, live: this.live, tone: this.tone, size: this.size, translations: this.translations, onDecision: this.notifyDecision, onGrantedScopesChange: this.notifyScopes, onNoteChange: this.notifyNote, }))"
+              "default": "new MachineController<ApprovalSchema>(this, approvalMachine, () => ({ requestId: this.requestId, status: this.status, defaultStatus: this.defaultStatus, timeoutMs: this.timeoutMs, scopes: this.scopes, grantedScopes: this.grantedScopes, defaultGrantedScopes: this.defaultGrantedScopes, note: this.note, defaultNote: this.defaultNote, loading: this.loading, denyOnEscape: this.denyOnEscape, denyOnUnmount: this.denyOnUnmount, live: this.live, variant: this.variant, tone: this.tone, size: this.size, translations: this.translations, onDecision: this.notifyDecision, onGrantedScopesChange: this.notifyScopes, onNoteChange: this.notifyNote, }))"
             },
             {
               "kind": "method",
@@ -1470,6 +1581,14 @@
               "description": "播报档位：polite（默认）或 assertive",
               "name": "live",
               "fieldName": "live"
+            },
+            {
+              "type": {
+                "text": "ControlVariant | undefined"
+              },
+              "description": "形态：描边（缺省档）/ 底色分区 / 无壳内联",
+              "name": "variant",
+              "fieldName": "variant"
             },
             {
               "type": {
@@ -1834,7 +1953,7 @@
           "name": "XhAvatarElement",
           "cssParts": [
             {
-              "description": "头像根容器，承载 data-state/data-size",
+              "description": "头像根容器，承载 data-state/data-size/data-tone",
               "name": "root"
             },
             {
@@ -1882,6 +2001,15 @@
                 "text": "Size | undefined"
               },
               "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "Tone | undefined"
+              },
+              "attribute": "tone"
             },
             {
               "kind": "field",
@@ -1969,6 +2097,14 @@
               "description": "尺寸档位，缺省 md",
               "name": "size",
               "fieldName": "size"
+            },
+            {
+              "type": {
+                "text": "Tone | undefined"
+              },
+              "description": "语气：换淡底与回退字的配色族",
+              "name": "tone",
+              "fieldName": "tone"
             }
           ],
           "superclass": {
@@ -2020,7 +2156,7 @@
           "name": "XhBackTopElement",
           "cssParts": [
             {
-              "description": "定位壳，承载 data-state（visible / hidden）/ data-tone / data-size；收起时带 hidden",
+              "description": "定位壳，承载 data-state（visible / hidden）/ data-variant / data-tone / data-size；收起时带 hidden",
               "name": "root"
             },
             {
@@ -2055,6 +2191,15 @@
                 "text": "BackTopBehavior | undefined"
               },
               "attribute": "behavior"
+            },
+            {
+              "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "ActionVariant | undefined"
+              },
+              "attribute": "variant"
             },
             {
               "kind": "field",
@@ -2167,6 +2312,14 @@
               "description": "滚回顶部的方式，默认 smooth",
               "name": "behavior",
               "fieldName": "behavior"
+            },
+            {
+              "type": {
+                "text": "ActionVariant | undefined"
+              },
+              "description": "形态，决定底色、描边与前景怎么用",
+              "name": "variant",
+              "fieldName": "variant"
             },
             {
               "type": {
@@ -2499,6 +2652,10 @@
               "name": "link"
             },
             {
+              "description": "链接里的图标位，对读屏隐藏",
+              "name": "link-icon"
+            },
+            {
               "description": "li 分隔符，对读屏隐藏",
               "name": "separator"
             },
@@ -2516,6 +2673,23 @@
               },
               "static": true,
               "default": "{ anatomy: breadcrumbAnatomy, meta: breadcrumbMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "collection",
+              "privacy": "public",
+              "type": {
+                "text": "readonly BreadcrumbNode[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "maxItems",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "max-items"
             },
             {
               "kind": "field",
@@ -2564,6 +2738,14 @@
             }
           ],
           "attributes": [
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "最多展开几层，超出的中间层由 api.items 折成一个省略位",
+              "name": "max-items",
+              "fieldName": "maxItems"
+            },
             {
               "type": {
                 "text": "Direction | undefined"
@@ -2630,6 +2812,9 @@
               "name": "--xh-breadcrumb-link-gap"
             },
             {
+              "name": "--xh-breadcrumb-link-icon-size"
+            },
+            {
               "name": "--xh-breadcrumb-link-max-w"
             },
             {
@@ -2670,6 +2855,10 @@
             {
               "description": "组容器，承载 role=group 与 data-orientation / data-variant / data-tone / data-size",
               "name": "root"
+            },
+            {
+              "description": "段间的装饰线，可选；读屏不念",
+              "name": "separator"
             }
           ],
           "members": [
@@ -2719,6 +2908,32 @@
               "attribute": "size"
             },
             {
+              "kind": "field",
+              "name": "disabled",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "fullWidth",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "full-width"
+            },
+            {
+              "kind": "field",
+              "name": "declaredDisabled",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new WeakMap<Element, boolean>()",
+              "description": "作者在标记里写的段禁用，按元素记住头一回见到的那一份。\n整组禁用期间每一段上都被写了 disabled，第二帧起现读分不清是作者写的还是自己上一帧写的，\n解禁时就再也解不开。"
+            },
+            {
               "kind": "method",
               "name": "wire",
               "privacy": "protected",
@@ -2727,6 +2942,37 @@
                   "text": "void"
                 }
               }
+            },
+            {
+              "kind": "method",
+              "name": "applyGroupDisabled",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "root",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "groupDisabled",
+                  "type": {
+                    "text": "boolean"
+                  }
+                },
+                {
+                  "name": "separators",
+                  "type": {
+                    "text": "readonly HTMLElement[]"
+                  }
+                }
+              ],
+              "description": "把整组的禁用落到每一段的原生 disabled 上。\n只打 data-* 是假禁用——段照样可聚焦、照样派 click。\n分隔线不是段，跳过它。"
             }
           ],
           "attributes": [
@@ -2761,6 +3007,22 @@
               "description": "尺寸，决定各段的高度、内边距与字号",
               "name": "size",
               "fieldName": "size"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "整组禁用：组内每一段都写上原生 disabled；段自己写了禁用的仍然禁用",
+              "name": "disabled",
+              "fieldName": "disabled"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "撑满行宽，每段等分剩余空间",
+              "name": "full-width",
+              "fieldName": "fullWidth"
             }
           ],
           "superclass": {
@@ -2772,6 +3034,24 @@
           "cssProperties": [
             {
               "name": "--xh-button-group-radius"
+            },
+            {
+              "name": "--xh-button-group-separator-color"
+            },
+            {
+              "name": "--xh-button-group-separator-color-disabled"
+            },
+            {
+              "name": "--xh-button-group-separator-gap"
+            },
+            {
+              "name": "--xh-button-group-separator-inset"
+            },
+            {
+              "name": "--xh-button-group-separator-radius"
+            },
+            {
+              "name": "--xh-button-group-separator-thickness"
             }
           ]
         }
@@ -2797,7 +3077,7 @@
           "name": "XhButtonElement",
           "cssParts": [
             {
-              "description": "承载 data-scope/data-part/data-* 的原生 button",
+              "description": "承载 data-scope/data-part/data-* 的原生 button（as=\"a\" 时是 a）",
               "name": "root"
             }
           ],
@@ -2884,6 +3164,24 @@
               "attribute": "size"
             },
             {
+              "kind": "field",
+              "name": "shape",
+              "privacy": "public",
+              "type": {
+                "text": "ButtonProps['shape'] | undefined"
+              },
+              "attribute": "shape"
+            },
+            {
+              "kind": "field",
+              "name": "as",
+              "privacy": "public",
+              "type": {
+                "text": "ButtonProps['as'] | undefined"
+              },
+              "attribute": "as"
+            },
+            {
               "kind": "method",
               "name": "wire",
               "privacy": "protected",
@@ -2958,6 +3256,22 @@
               "description": "尺寸",
               "name": "size",
               "fieldName": "size"
+            },
+            {
+              "type": {
+                "text": "ButtonProps['shape'] | undefined"
+              },
+              "description": "圆角档；缺省跟着控件圆角走",
+              "name": "shape",
+              "fieldName": "shape"
+            },
+            {
+              "type": {
+                "text": "ButtonProps['as'] | undefined"
+              },
+              "description": "根节点写成哪个标签，默认 button；写 a 时不再产出 type 与原生 disabled",
+              "name": "as",
+              "fieldName": "as"
             }
           ],
           "superclass": {
@@ -4307,12 +4621,24 @@
               "name": "search-item"
             },
             {
+              "description": "在途占位，与空态占位同一个位置，取数期间顶上来；文案归作者",
+              "name": "loading"
+            },
+            {
               "description": "空态占位：搜索无候选或 collection 为空时露面，其余时候带 hidden。标记里没写就由元素在 content 末尾补一个并填缺省文案；写了就用作者那份，文案也归作者",
               "name": "empty"
             },
             {
               "description": "role=listbox 的一列，须自带 level 属性标识它是第几列；砍掉时带 hidden",
               "name": "column"
+            },
+            {
+              "description": "role=group 分组容器，须自带 value 属性标识身份；条目挂在它里面",
+              "name": "group"
+            },
+            {
+              "description": "分组标题（本组 aria-labelledby 的目标），须放在 group 里",
+              "name": "group-label"
             },
             {
               "description": "role=option 的条目，须自带 value 属性标识身份；不在当前列里时带 hidden",
@@ -4325,6 +4651,10 @@
             {
               "description": "条目选中标记（aria-hidden）",
               "name": "item-indicator"
+            },
+            {
+              "description": "浮层底部的操作区，写在 content 里与列并列，横跨全部列；不进任何一列的拥有关系，方向键也走不到",
+              "name": "footer"
             }
           ],
           "members": [
@@ -4459,6 +4789,15 @@
                 "text": "boolean | undefined"
               },
               "attribute": "invalid"
+            },
+            {
+              "kind": "field",
+              "name": "loading",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "loading"
             },
             {
               "kind": "field",
@@ -4700,6 +5039,31 @@
             },
             {
               "kind": "method",
+              "name": "partsIn",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "HTMLElement[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "owner",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "name",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "某个容器内的同名角色节点：getParts 收的是整个元素范围，按子树过滤才归得对身份。"
+            },
+            {
+              "kind": "method",
               "name": "itemOf",
               "privacy": "private",
               "return": {
@@ -4921,6 +5285,14 @@
             },
             {
               "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "候选还在取：浮层报 aria-busy，在途占位顶上来、空态占位让位",
+              "name": "loading",
+              "fieldName": "loading"
+            },
+            {
+              "type": {
                 "text": "ControlVariant | undefined"
               },
               "description": "视觉变体",
@@ -5120,7 +5492,46 @@
               "name": "--xh-cascader-empty-p"
             },
             {
+              "name": "--xh-cascader-footer-border"
+            },
+            {
+              "name": "--xh-cascader-footer-fg"
+            },
+            {
+              "name": "--xh-cascader-footer-font-size"
+            },
+            {
+              "name": "--xh-cascader-footer-gap"
+            },
+            {
+              "name": "--xh-cascader-footer-px"
+            },
+            {
+              "name": "--xh-cascader-footer-py"
+            },
+            {
               "name": "--xh-cascader-gap"
+            },
+            {
+              "name": "--xh-cascader-group-gap"
+            },
+            {
+              "name": "--xh-cascader-group-label-fg"
+            },
+            {
+              "name": "--xh-cascader-group-label-font-size"
+            },
+            {
+              "name": "--xh-cascader-group-label-font-weight"
+            },
+            {
+              "name": "--xh-cascader-group-label-px"
+            },
+            {
+              "name": "--xh-cascader-group-label-py"
+            },
+            {
+              "name": "--xh-cascader-group-spacing"
             },
             {
               "name": "--xh-cascader-icon-size"
@@ -5202,6 +5613,21 @@
             },
             {
               "name": "--xh-cascader-layer"
+            },
+            {
+              "name": "--xh-cascader-loading-fg"
+            },
+            {
+              "name": "--xh-cascader-loading-font-size"
+            },
+            {
+              "name": "--xh-cascader-loading-min-h"
+            },
+            {
+              "name": "--xh-cascader-loading-min-w"
+            },
+            {
+              "name": "--xh-cascader-loading-p"
             },
             {
               "name": "--xh-cascader-placeholder-fg"
@@ -5356,6 +5782,24 @@
                 "text": "Orientation | undefined"
               },
               "attribute": "orientation"
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "Tone | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "Size | undefined"
+              },
+              "attribute": "size"
             },
             {
               "kind": "field",
@@ -5557,6 +6001,22 @@
               "description": "视觉排布，默认 vertical",
               "name": "orientation",
               "fieldName": "orientation"
+            },
+            {
+              "type": {
+                "text": "Tone | undefined"
+              },
+              "description": "语气",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "Size | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
             },
             {
               "type": {
@@ -6018,6 +6478,10 @@
             {
               "description": "状态标记；写 `copied` 属性的那个是成功侧，不写的是平时那侧",
               "name": "indicator"
+            },
+            {
+              "description": "复制成功的播报区，可选；视觉隐藏，不写内容即由宿主填 announcement",
+              "name": "status"
             }
           ],
           "members": [
@@ -6047,6 +6511,58 @@
                 "text": "number | undefined"
               },
               "attribute": "timeout"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "ActionVariant | undefined"
+              },
+              "attribute": "variant"
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "Tone | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "Size | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "Partial<ClipboardTranslations> | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "authoredStatus",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new WeakMap<HTMLElement, boolean>()",
+              "description": "播报区的内容归谁：作者头一回就写了字的归作者，空着的归宿主填。"
             },
             {
               "kind": "field",
@@ -6120,6 +6636,38 @@
               "description": "复制成功后指示器保持的毫秒数，默认 3000；<=0 表示不自动回落",
               "name": "timeout",
               "fieldName": "timeout"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "禁用，复制按钮点不动；作者调 api.copy() 也不动",
+              "name": "disabled",
+              "fieldName": "disabled"
+            },
+            {
+              "type": {
+                "text": "ActionVariant | undefined"
+              },
+              "description": "形态，决定复制按钮的颜色怎么用",
+              "name": "variant",
+              "fieldName": "variant"
+            },
+            {
+              "type": {
+                "text": "Tone | undefined"
+              },
+              "description": "语气",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "Size | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
             }
           ],
           "superclass": {
@@ -6139,6 +6687,9 @@
               "name": "--xh-clipboard-copy-trigger-bg-active"
             },
             {
+              "name": "--xh-clipboard-copy-trigger-bg-disabled"
+            },
+            {
               "name": "--xh-clipboard-copy-trigger-bg-hover"
             },
             {
@@ -6146,6 +6697,9 @@
             },
             {
               "name": "--xh-clipboard-copy-trigger-border-copied"
+            },
+            {
+              "name": "--xh-clipboard-copy-trigger-border-disabled"
             },
             {
               "name": "--xh-clipboard-copy-trigger-border-hover"
@@ -6742,6 +7296,10 @@
               "name": "root"
             },
             {
+              "description": "触发器与其同排内容住的那一行，可缺省",
+              "name": "header"
+            },
+            {
               "description": "触发按钮（aria-expanded/aria-controls 所在）",
               "name": "trigger"
             },
@@ -6836,12 +7394,30 @@
             },
             {
               "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "Tone | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
               "name": "size",
               "privacy": "public",
               "type": {
                 "text": "Size | undefined"
               },
               "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "textDir",
+              "privacy": "public",
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "attribute": "dir"
             },
             {
               "kind": "field",
@@ -6913,11 +7489,27 @@
             },
             {
               "type": {
+                "text": "Tone | undefined"
+              },
+              "description": "语气",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
                 "text": "Size | undefined"
               },
               "description": "尺寸",
               "name": "size",
               "fieldName": "size"
+            },
+            {
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "description": "文字方向，写到 root 上；不给则继承祖先",
+              "name": "dir",
+              "fieldName": "textDir"
             }
           ],
           "superclass": {
@@ -6934,6 +7526,9 @@
               "name": "--xh-collapsible-content-py"
             },
             {
+              "name": "--xh-collapsible-header-gap"
+            },
+            {
               "name": "--xh-collapsible-icon-size"
             },
             {
@@ -6944,6 +7539,9 @@
             },
             {
               "name": "--xh-collapsible-trigger-fg"
+            },
+            {
+              "name": "--xh-collapsible-trigger-fg-open"
             },
             {
               "name": "--xh-collapsible-trigger-font-size"
@@ -7864,6 +8462,10 @@
             {
               "description": "无匹配项提示；须放在 positioner 里当 content 的兄弟（列表内只允许 option 与 group）",
               "name": "empty"
+            },
+            {
+              "description": "在途占位，与空态占位同一个位置，取数期间顶上来",
+              "name": "loading"
             }
           ],
           "members": [
@@ -7981,6 +8583,15 @@
                 "text": "boolean | undefined"
               },
               "attribute": "invalid"
+            },
+            {
+              "kind": "field",
+              "name": "loading",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "loading"
             },
             {
               "kind": "field",
@@ -8360,6 +8971,14 @@
               "type": {
                 "text": "boolean | undefined"
               },
+              "description": "候选还在取：列表报 aria-busy，在途占位顶上来、空态占位让位",
+              "name": "loading",
+              "fieldName": "loading"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
               "description": "方向键走到尽头回绕，默认 true；写 loop=\"false\" 关掉",
               "name": "loop",
               "fieldName": "loop"
@@ -8677,6 +9296,30 @@
               "name": "--xh-combobox-layer"
             },
             {
+              "name": "--xh-combobox-loading-bg"
+            },
+            {
+              "name": "--xh-combobox-loading-border"
+            },
+            {
+              "name": "--xh-combobox-loading-fg"
+            },
+            {
+              "name": "--xh-combobox-loading-font-size"
+            },
+            {
+              "name": "--xh-combobox-loading-px"
+            },
+            {
+              "name": "--xh-combobox-loading-py"
+            },
+            {
+              "name": "--xh-combobox-loading-radius"
+            },
+            {
+              "name": "--xh-combobox-loading-shadow"
+            },
+            {
               "name": "--xh-combobox-placeholder-fg"
             }
           ]
@@ -8838,6 +9481,10 @@
             {
               "description": "条目标记位（勾选符号 / 图标 / 快捷键提示），aria-hidden",
               "name": "item-indicator"
+            },
+            {
+              "description": "条目副文本，排在文字下一行",
+              "name": "item-description"
             },
             {
               "description": "分隔线（role=separator，不入方向键导航）",
@@ -9309,6 +9956,12 @@
             },
             {
               "name": "--xh-context-menu-item-bg-hover"
+            },
+            {
+              "name": "--xh-context-menu-item-description-fg"
+            },
+            {
+              "name": "--xh-context-menu-item-description-font-size"
             },
             {
               "name": "--xh-context-menu-item-fg"
@@ -11153,7 +11806,7 @@
               "name": "root"
             },
             {
-              "description": "一组「标签 + 取值」，占网格里的一格",
+              "description": "一组「标签 + 取值」，占网格里的一格；作者在此写 span（这一格横跨几列）",
               "name": "item"
             },
             {
@@ -11350,6 +12003,10 @@
             {
               "description": "面板头：标题与说明所在的那一段，不跟着正文滚",
               "name": "header"
+            },
+            {
+              "description": "语气徽记：不给内容就由皮肤按节点上的 data-tone 画兜底字形",
+              "name": "indicator"
             },
             {
               "description": "标题（aria-labelledby 目标）",
@@ -11738,6 +12395,21 @@
             },
             {
               "name": "--xh-dialog-icon-size"
+            },
+            {
+              "name": "--xh-dialog-indicator-bg"
+            },
+            {
+              "name": "--xh-dialog-indicator-fg"
+            },
+            {
+              "name": "--xh-dialog-indicator-mark-size"
+            },
+            {
+              "name": "--xh-dialog-indicator-radius"
+            },
+            {
+              "name": "--xh-dialog-indicator-size"
             },
             {
               "name": "--xh-dialog-layer"
@@ -12256,6 +12928,41 @@
             },
             {
               "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "ActionVariant | undefined"
+              },
+              "attribute": "variant"
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "Tone | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "Size | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "Partial<DownloadTriggerTranslations> | undefined"
+              }
+            },
+            {
+              "kind": "field",
               "name": "notifyComplete",
               "privacy": "private",
               "readonly": true
@@ -12342,6 +13049,30 @@
               "description": "禁用，按钮不可聚焦也点不动",
               "name": "disabled",
               "fieldName": "disabled"
+            },
+            {
+              "type": {
+                "text": "ActionVariant | undefined"
+              },
+              "description": "形态，决定颜色怎么用",
+              "name": "variant",
+              "fieldName": "variant"
+            },
+            {
+              "type": {
+                "text": "Tone | undefined"
+              },
+              "description": "语气",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "Size | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
             }
           ],
           "superclass": {
@@ -12386,6 +13117,9 @@
             },
             {
               "name": "--xh-download-trigger-h"
+            },
+            {
+              "name": "--xh-download-trigger-icon-size"
             },
             {
               "name": "--xh-download-trigger-loading-duration"
@@ -13130,6 +13864,33 @@
             },
             {
               "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "ControlVariant | undefined"
+              },
+              "attribute": "variant"
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "Tone | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "Size | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
               "name": "ownsPreviewText",
               "privacy": "private",
               "readonly": true,
@@ -13373,6 +14134,30 @@
               "description": "输入框宽度跟着内容走（落成原生 size）",
               "name": "auto-resize",
               "fieldName": "autoResize"
+            },
+            {
+              "type": {
+                "text": "ControlVariant | undefined"
+              },
+              "description": "视觉变体",
+              "name": "variant",
+              "fieldName": "variant"
+            },
+            {
+              "type": {
+                "text": "Tone | undefined"
+              },
+              "description": "语气",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "Size | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
             }
           ],
           "superclass": {
@@ -13559,8 +14344,12 @@
           "name": "XhEmptyStateElement",
           "cssParts": [
             {
-              "description": "承载 role 与 data-size / data-status 的容器",
+              "description": "承载 role 与 data-size / data-status / data-tone 的容器",
               "name": "root"
+            },
+            {
+              "description": "装饰插画，对读屏隐藏；与 indicator 二选一",
+              "name": "media"
             },
             {
               "description": "装饰图标，对读屏隐藏",
@@ -13617,6 +14406,15 @@
               "attribute": "status"
             },
             {
+              "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "Tone | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
               "kind": "method",
               "name": "wire",
               "privacy": "protected",
@@ -13651,6 +14449,14 @@
               "description": "结果类型，写到 root 的 data-status 上",
               "name": "status",
               "fieldName": "status"
+            },
+            {
+              "type": {
+                "text": "Tone | undefined"
+              },
+              "description": "语气，写到 root 的 data-tone 上",
+              "name": "tone",
+              "fieldName": "tone"
             }
           ],
           "superclass": {
@@ -13689,6 +14495,12 @@
             },
             {
               "name": "--xh-empty-state-indicator-font-size"
+            },
+            {
+              "name": "--xh-empty-state-media-fg"
+            },
+            {
+              "name": "--xh-empty-state-media-size"
             },
             {
               "name": "--xh-empty-state-px"
@@ -13738,6 +14550,10 @@
             {
               "description": "一行一个，可自带 index 属性声明下标，缺省按文档序",
               "name": "item"
+            },
+            {
+              "description": "一行前面的行号或名目；纯标注",
+              "name": "item-label"
             },
             {
               "description": "一行里放作者自己控件的位置",
@@ -13833,6 +14649,33 @@
                 "text": "boolean | undefined"
               },
               "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "readOnly",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "read-only"
+            },
+            {
+              "kind": "field",
+              "name": "invalid",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "invalid"
+            },
+            {
+              "kind": "field",
+              "name": "name",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "name"
             },
             {
               "kind": "field",
@@ -13941,6 +14784,30 @@
               "description": "禁用：新增、删除、换序三路都按不动",
               "name": "disabled",
               "fieldName": "disabled"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "只读：行数改不动，行里的控件由作者自己置只读",
+              "name": "read-only",
+              "fieldName": "readOnly"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "校验失败标注；落到根与每一行上",
+              "name": "invalid",
+              "fieldName": "invalid"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "整份数组的表单字段名；每一行经 item.name 拿到 名字[下标]",
+              "name": "name",
+              "fieldName": "name"
             }
           ],
           "superclass": {
@@ -14000,6 +14867,12 @@
             },
             {
               "name": "--xh-field-array-item-gap"
+            },
+            {
+              "name": "--xh-field-array-item-label-fg"
+            },
+            {
+              "name": "--xh-field-array-item-label-font-size"
             },
             {
               "name": "--xh-field-array-item-padding"
@@ -14287,6 +15160,14 @@
               "name": "description"
             },
             {
+              "description": "把并排的几个字段圈成一段；纯排版",
+              "name": "field-group"
+            },
+            {
+              "description": "组末尾那一行按钮；纯排版",
+              "name": "actions"
+            },
+            {
               "description": "错误文案（role=status，排队播报不打断）；非 invalid 时带 hidden 收起，节点不卸载",
               "name": "error-text"
             }
@@ -14401,6 +15282,9 @@
           "customElement": true,
           "cssProperties": [
             {
+              "name": "--xh-fieldset-actions-gap"
+            },
+            {
               "name": "--xh-fieldset-description-fg"
             },
             {
@@ -14414,6 +15298,12 @@
             },
             {
               "name": "--xh-fieldset-error-font-size"
+            },
+            {
+              "name": "--xh-fieldset-field-group-col-w"
+            },
+            {
+              "name": "--xh-fieldset-field-group-gap"
             },
             {
               "name": "--xh-fieldset-gap"
@@ -14493,6 +15383,10 @@
             {
               "description": "缩略图占位（aria-hidden），带 data-file-type 供皮肤挑图标",
               "name": "item-preview"
+            },
+            {
+              "description": "传输进度条（aria-hidden），带 data-state 与写着进度比例的私有槽",
+              "name": "item-progress"
             },
             {
               "description": "文件名（元素代填）",
@@ -14887,9 +15781,9 @@
               "privacy": "private",
               "static": true,
               "readonly": true,
-              "default": "['item-preview', 'item-name', 'item-size-text', 'item-delete-trigger']",
+              "default": "['item-preview', 'item-progress', 'item-name', 'item-size-text', 'item-delete-trigger']",
               "type": {
-                "text": "['item-preview', 'item-name', 'item-size-text', 'item-delete-trigger']"
+                "text": "['item-preview', 'item-progress', 'item-name', 'item-size-text', 'item-delete-trigger']"
               },
               "description": "条目内的子部件名，交还与逐个打属性都按这一份走。"
             },
@@ -15176,6 +16070,9 @@
               "name": "--xh-file-upload-item-fg"
             },
             {
+              "name": "--xh-file-upload-item-fg-done"
+            },
+            {
               "name": "--xh-file-upload-item-fg-error"
             },
             {
@@ -15186,6 +16083,21 @@
             },
             {
               "name": "--xh-file-upload-item-inner-gap"
+            },
+            {
+              "name": "--xh-file-upload-item-progress-fill"
+            },
+            {
+              "name": "--xh-file-upload-item-progress-h"
+            },
+            {
+              "name": "--xh-file-upload-item-progress-radius"
+            },
+            {
+              "name": "--xh-file-upload-item-progress-track"
+            },
+            {
+              "name": "--xh-file-upload-item-progress-w"
             },
             {
               "name": "--xh-file-upload-item-px"
@@ -15545,6 +16457,33 @@
             },
             {
               "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "ActionVariant | undefined"
+              },
+              "attribute": "variant"
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "Tone | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "Size | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
               "name": "translations",
               "privacy": "public",
               "type": {
@@ -15660,6 +16599,30 @@
               "description": "展开方式，默认 click",
               "name": "expand-trigger",
               "fieldName": "expandTrigger"
+            },
+            {
+              "type": {
+                "text": "ActionVariant | undefined"
+              },
+              "description": "形态，决定底色、描边与前景怎么用",
+              "name": "variant",
+              "fieldName": "variant"
+            },
+            {
+              "type": {
+                "text": "Tone | undefined"
+              },
+              "description": "语气",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "Size | undefined"
+              },
+              "description": "尺寸，缺省与 lg 同档",
+              "name": "size",
+              "fieldName": "size"
             }
           ],
           "superclass": {
@@ -16925,7 +17888,7 @@
           "name": "XhGradientTextElement",
           "cssParts": [
             {
-              "description": "被上色的文字容器，承载 data-direction 与两端颜色变量",
+              "description": "被上色的文字容器，承载 data-direction、data-tone 与两端颜色变量",
               "name": "root"
             }
           ],
@@ -16967,6 +17930,15 @@
               "attribute": "direction"
             },
             {
+              "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "Tone | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
               "kind": "method",
               "name": "wire",
               "privacy": "protected",
@@ -17001,6 +17973,14 @@
               "description": "渐变走向档位，缺省 to-right",
               "name": "direction",
               "fieldName": "direction"
+            },
+            {
+              "type": {
+                "text": "Tone | undefined"
+              },
+              "description": "语气，两端取该族颜色；写了 from / to 即让位",
+              "name": "tone",
+              "fieldName": "tone"
             }
           ],
           "superclass": {
@@ -17036,15 +18016,15 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-grid>` —— Light-DOM 行为宿主，无状态机，把 connectGrid 产出打到 root 与各 item 角色节点。\n列数、间距档位与两条对齐轴原样落成 data-*，排布规则写在皮肤里。\n列数可以逐档写：`cols='{\"base\":1,\"md\":3}'` 落成 data-cols 与 data-cols-md，\n窄视口分一列、宽到 md 断点后分三列。\n\n每一格的跨列与错列写在 item 角色节点自己的 `span` / `offset` 属性上：\nspan 收 1 至 12、offset 收 1 至 11，范围外的值按没写算。\n运行期改写这两个属性不触发重新接线，需作者自行 requestUpdate。\n\n根上不写 role：容器只做排布，里面装的是列表还是一组卡片由作者自己声明。",
+          "description": "`<xh-grid>` —— Light-DOM 行为宿主，无状态机，把 connectGrid 产出打到 root 与各 item 角色节点。\n列数、间距档位与两条对齐轴原样落成 data-*，排布规则写在皮肤里。\n列数可以逐档写：`cols='{\"base\":1,\"md\":3}'` 落成 data-cols 与 data-cols-md，\n窄视口分一列、宽到 md 断点后分三列。\n\n每一格的跨列与错列写在 item 角色节点自己的 `span` / `offset` 属性上：\nspan 收 1 至 12、offset 收 1 至 11，范围外的值按没写算；两者同样收 JSON 对象逐档写\n（`span='{\"base\":1,\"md\":6}'`）。\n运行期改写这两个属性不触发重新接线，需作者自行 requestUpdate。\n\n根上不写 role：容器只做排布，里面装的是列表还是一组卡片由作者自己声明。",
           "name": "XhGridElement",
           "cssParts": [
             {
-              "description": "排布容器，承载 data-cols（及逐档的 data-cols-sm/-md/-lg/-xl）/ data-gap / data-align / data-justify-items",
+              "description": "排布容器，承载 data-cols（及逐档的 data-cols-sm/-md/-lg/-xl）/ data-rows / data-min-col / data-gap / data-row-gap / data-column-gap / data-align / data-justify-items",
               "name": "root"
             },
             {
-              "description": "一格，承载自报的 data-span / data-offset",
+              "description": "一格，承载自报的 data-span / data-offset（及各自逐档的 -sm/-md/-lg/-xl）",
               "name": "item"
             }
           ],
@@ -17069,12 +18049,48 @@
             },
             {
               "kind": "field",
+              "name": "rows",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "rows"
+            },
+            {
+              "kind": "field",
+              "name": "minColWidth",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "min-col-width"
+            },
+            {
+              "kind": "field",
               "name": "gap",
               "privacy": "public",
               "type": {
                 "text": "string | undefined"
               },
               "attribute": "gap"
+            },
+            {
+              "kind": "field",
+              "name": "rowGap",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "row-gap"
+            },
+            {
+              "kind": "field",
+              "name": "columnGap",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "column-gap"
             },
             {
               "kind": "field",
@@ -17116,11 +18132,43 @@
             },
             {
               "type": {
+                "text": "number | undefined"
+              },
+              "description": "行数（1 至 12 的整数），不写则行数由内容撑出来",
+              "name": "rows",
+              "fieldName": "rows"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "每列最少多宽；写了它列数改由容器宽度除以这个下限得出",
+              "name": "min-col-width",
+              "fieldName": "minColWidth"
+            },
+            {
+              "type": {
                 "text": "string | undefined"
               },
               "description": "行列间距档位，逐档对应一个间距令牌",
               "name": "gap",
               "fieldName": "gap"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "只改行间距，不写则跟着 gap 走",
+              "name": "row-gap",
+              "fieldName": "rowGap"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "只改列间距，不写则跟着 gap 走",
+              "name": "column-gap",
+              "fieldName": "columnGap"
             },
             {
               "type": {
@@ -17147,10 +18195,19 @@
           "customElement": true,
           "cssProperties": [
             {
+              "name": "--xh-grid-column-gap"
+            },
+            {
               "name": "--xh-grid-columns"
             },
             {
               "name": "--xh-grid-gap"
+            },
+            {
+              "name": "--xh-grid-row-gap"
+            },
+            {
+              "name": "--xh-grid-rows"
             }
           ]
         }
@@ -17691,7 +18748,7 @@
           "name": "XhHighlightElement",
           "cssParts": [
             {
-              "description": "包住整段文本的容器，承载 data-case-sensitive",
+              "description": "包住整段文本的容器，承载 data-case-sensitive 与 data-tone",
               "name": "root"
             },
             {
@@ -17735,6 +18792,15 @@
                 "text": "boolean | undefined"
               },
               "attribute": "case-sensitive"
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "Tone | undefined"
+              },
+              "attribute": "tone"
             },
             {
               "kind": "field",
@@ -17805,6 +18871,14 @@
               "description": "区分大小写，缺省不区分",
               "name": "case-sensitive",
               "fieldName": "caseSensitive"
+            },
+            {
+              "type": {
+                "text": "Tone | undefined"
+              },
+              "description": "语气，决定命中片段用哪族颜色",
+              "name": "tone",
+              "fieldName": "tone"
             }
           ],
           "superclass": {
@@ -17819,6 +18893,9 @@
             },
             {
               "name": "--xh-highlight-mark-fg"
+            },
+            {
+              "name": "--xh-highlight-mark-font-weight"
             },
             {
               "name": "--xh-highlight-mark-px"
@@ -18192,6 +19269,14 @@
               "name": "content"
             },
             {
+              "description": "标题（aria-labelledby 目标；缺席时可及名指回 trigger）",
+              "name": "title"
+            },
+            {
+              "description": "说明（aria-describedby 目标）",
+              "name": "description"
+            },
+            {
               "description": "指向锚点的箭头（aria-hidden，data-placement 随实际放置位翻转）",
               "name": "arrow"
             }
@@ -18506,6 +19591,9 @@
               "name": "--xh-hover-card-border"
             },
             {
+              "name": "--xh-hover-card-description-fg"
+            },
+            {
               "name": "--xh-hover-card-fg"
             },
             {
@@ -18531,6 +19619,15 @@
             },
             {
               "name": "--xh-hover-card-shadow"
+            },
+            {
+              "name": "--xh-hover-card-title-fg"
+            },
+            {
+              "name": "--xh-hover-card-title-font-size"
+            },
+            {
+              "name": "--xh-hover-card-title-font-weight"
             },
             {
               "name": "--xh-hover-card-trigger-gap"
@@ -18686,7 +19783,7 @@
           "name": "XhIconElement",
           "cssParts": [
             {
-              "description": "根 `<svg>`，承载 viewBox/data-icon/命名属性/data-size/data-weight/data-tone",
+              "description": "根 `<svg>`，承载 viewBox/data-icon/命名属性/data-size/data-weight/data-tone/data-rotate/data-flip",
               "name": "root"
             },
             {
@@ -18718,7 +19815,7 @@
               "name": "size",
               "privacy": "public",
               "type": {
-                "text": "Size | undefined"
+                "text": "IconSize | undefined"
               },
               "attribute": "size"
             },
@@ -18739,6 +19836,24 @@
                 "text": "Tone | undefined"
               },
               "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "rotate",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "rotate"
+            },
+            {
+              "kind": "field",
+              "name": "flip",
+              "privacy": "public",
+              "type": {
+                "text": "IconFlip | undefined"
+              },
+              "attribute": "flip"
             },
             {
               "kind": "field",
@@ -18880,9 +19995,9 @@
             },
             {
               "type": {
-                "text": "Size | undefined"
+                "text": "IconSize | undefined"
               },
-              "description": "直径档位，缺省 md",
+              "description": "直径档位，缺省 md；text 跟着相邻文字的字号走",
               "name": "size",
               "fieldName": "size"
             },
@@ -18901,6 +20016,22 @@
               "description": "语气",
               "name": "tone",
               "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "旋转档位，不转就不写",
+              "name": "rotate",
+              "fieldName": "rotate"
+            },
+            {
+              "type": {
+                "text": "IconFlip | undefined"
+              },
+              "description": "翻转轴，不翻就不写",
+              "name": "flip",
+              "fieldName": "flip"
             }
           ],
           "superclass": {
@@ -18968,6 +20099,14 @@
             {
               "description": "裁切框里的构图参考线，纯装饰",
               "name": "grid"
+            },
+            {
+              "description": "缩放滑杆，须是原生 `<input type=\"range\">`；min / max / step / value 由宿主写入",
+              "name": "zoom-slider"
+            },
+            {
+              "description": "旋转滑杆，须是原生 `<input type=\"range\">`；min / max / step / value 由宿主写入",
+              "name": "rotate-slider"
             },
             {
               "description": "表单影子（须是原生 input）",
@@ -19067,12 +20206,75 @@
             },
             {
               "kind": "field",
+              "name": "minZoom",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "min-zoom"
+            },
+            {
+              "kind": "field",
+              "name": "maxZoom",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "max-zoom"
+            },
+            {
+              "kind": "field",
+              "name": "zoomStep",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "zoom-step"
+            },
+            {
+              "kind": "field",
               "name": "rotation",
               "privacy": "public",
               "type": {
                 "text": "number | undefined"
               },
               "attribute": "rotation"
+            },
+            {
+              "kind": "field",
+              "name": "defaultRotation",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "default-rotation"
+            },
+            {
+              "kind": "field",
+              "name": "minRotation",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "min-rotation"
+            },
+            {
+              "kind": "field",
+              "name": "maxRotation",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "max-rotation"
+            },
+            {
+              "kind": "field",
+              "name": "rotationStep",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "rotation-step"
             },
             {
               "kind": "field",
@@ -19133,6 +20335,12 @@
             {
               "kind": "field",
               "name": "notifyZoom",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyRotation",
               "privacy": "private",
               "readonly": true
             },
@@ -19222,6 +20430,13 @@
               "type": {
                 "text": "ImageCropperZoomChangeDetails"
               }
+            },
+            {
+              "description": "旋转角度变化；detail 为 `{ rotation: number }`",
+              "name": "rotation-change",
+              "type": {
+                "text": "ImageCropperRotationChangeDetails"
+              }
             }
           ],
           "attributes": [
@@ -19301,9 +20516,65 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "显示旋转角度，单位度，默认 0",
+              "description": "受控旋转角度，单位度；缺省该属性即非受控",
               "name": "rotation",
               "fieldName": "rotation"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "非受控初始旋转角度，默认 0",
+              "name": "default-rotation",
+              "fieldName": "defaultRotation"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "缩放滑杆下限，默认 1",
+              "name": "min-zoom",
+              "fieldName": "minZoom"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "缩放滑杆上限，默认 3",
+              "name": "max-zoom",
+              "fieldName": "maxZoom"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "缩放滑杆步长，默认 0.01",
+              "name": "zoom-step",
+              "fieldName": "zoomStep"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "旋转滑杆下限，默认 -180",
+              "name": "min-rotation",
+              "fieldName": "minRotation"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "旋转滑杆上限，默认 180",
+              "name": "max-rotation",
+              "fieldName": "maxRotation"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "旋转滑杆步长，默认 1",
+              "name": "rotation-step",
+              "fieldName": "rotationStep"
             },
             {
               "type": {
@@ -19371,6 +20642,12 @@
             },
             {
               "name": "--xh-image-cropper-mask"
+            },
+            {
+              "name": "--xh-image-cropper-slider-accent"
+            },
+            {
+              "name": "--xh-image-cropper-slider-w"
             },
             {
               "name": "--xh-image-cropper-viewport-radius"
@@ -19920,6 +21197,15 @@
               "name": "--xh-image-viewer-layer"
             },
             {
+              "name": "--xh-image-viewer-loading-bg"
+            },
+            {
+              "name": "--xh-image-viewer-loading-radius"
+            },
+            {
+              "name": "--xh-image-viewer-loading-size"
+            },
+            {
               "name": "--xh-image-viewer-overlay-radius"
             },
             {
@@ -19961,6 +21247,10 @@
             {
               "description": "图片节点，必须是原生 img；src/alt 由宿主写入（作者别自己写，会被覆盖或清掉），未就绪时带 hidden",
               "name": "image"
+            },
+            {
+              "description": "加载期间铺在图位上的占位层；图片落位或失败后带 hidden",
+              "name": "placeholder"
             },
             {
               "description": "回退内容（占位图、骨架屏、图标）；加载失败恒显，加载途中要看延迟门槛",
@@ -20118,6 +21408,12 @@
               "name": "--xh-image-h"
             },
             {
+              "name": "--xh-image-placeholder-bg"
+            },
+            {
+              "name": "--xh-image-placeholder-fg"
+            },
+            {
               "name": "--xh-image-radius"
             },
             {
@@ -20156,6 +21452,10 @@
             {
               "description": "哨兵，摆在列表末尾；对读屏隐藏",
               "name": "sentinel"
+            },
+            {
+              "description": "取下一页的按钮，与哨兵同一条通路；文案由作者写在按钮里",
+              "name": "load-more-trigger"
             }
           ],
           "members": [
@@ -20295,6 +21595,39 @@
           "customElement": true,
           "cssProperties": [
             {
+              "name": "--xh-infinite-scroll-load-more-bg"
+            },
+            {
+              "name": "--xh-infinite-scroll-load-more-bg-active"
+            },
+            {
+              "name": "--xh-infinite-scroll-load-more-bg-hover"
+            },
+            {
+              "name": "--xh-infinite-scroll-load-more-border"
+            },
+            {
+              "name": "--xh-infinite-scroll-load-more-border-hover"
+            },
+            {
+              "name": "--xh-infinite-scroll-load-more-fg"
+            },
+            {
+              "name": "--xh-infinite-scroll-load-more-font-size"
+            },
+            {
+              "name": "--xh-infinite-scroll-load-more-gap"
+            },
+            {
+              "name": "--xh-infinite-scroll-load-more-h"
+            },
+            {
+              "name": "--xh-infinite-scroll-load-more-px"
+            },
+            {
+              "name": "--xh-infinite-scroll-load-more-radius"
+            },
+            {
               "name": "--xh-infinite-scroll-sentinel-size"
             }
           ]
@@ -20313,6 +21646,106 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/input-group.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-input-group>` —— Light-DOM 行为宿主，无状态机，把 connectInputGroup 产出打到各角色节点。\n\n组内每一段是作者自己的控件，不是本组件的角色节点：中缝合并、首尾圆角与层叠顺序\n由皮肤按根的身份给。item 可缺省：一组只有控件、没有固定前后缀时就没有它。",
+          "name": "XhInputGroupElement",
+          "cssParts": [
+            {
+              "description": "组容器，承载 data-size",
+              "name": "root"
+            },
+            {
+              "description": "前后缀块，内容由作者写",
+              "name": "item"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: inputGroupAnatomy, meta: inputGroupMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "Size | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "Size | undefined"
+              },
+              "description": "尺寸，决定 item 的高度、内衬与字号；不写时跟着组内控件的档走",
+              "name": "size",
+              "fieldName": "size"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-input-group",
+          "customElement": true,
+          "cssProperties": [
+            {
+              "name": "--xh-input-group-item-bg"
+            },
+            {
+              "name": "--xh-input-group-item-border"
+            },
+            {
+              "name": "--xh-input-group-item-fg"
+            },
+            {
+              "name": "--xh-input-group-item-font-size"
+            },
+            {
+              "name": "--xh-input-group-item-h"
+            },
+            {
+              "name": "--xh-input-group-item-px"
+            },
+            {
+              "name": "--xh-input-group-radius"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhInputGroupElement",
+          "declaration": {
+            "name": "XhInputGroupElement",
+            "module": "src/elements/input-group.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/json-viewer.ts",
       "declarations": [
         {
@@ -20321,7 +21754,7 @@
           "name": "XhJsonViewerElement",
           "cssParts": [
             {
-              "description": "组件根容器，由作者写出；承载 data-size",
+              "description": "组件根容器，由作者写出；承载 data-size 与 data-variant",
               "name": "root"
             },
             {
@@ -20367,6 +21800,10 @@
             {
               "description": "role=group 的子层容器，只在展开时存在",
               "name": "branch-content"
+            },
+            {
+              "description": "一行也摊不出来时的占位，铺 translations.empty 那句话；有行可摊时带 hidden",
+              "name": "empty"
             }
           ],
           "members": [
@@ -20448,6 +21885,15 @@
                 "text": "'tree' | 'text' | undefined"
               },
               "attribute": "view"
+            },
+            {
+              "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "JsonViewerVariant | undefined"
+              },
+              "attribute": "variant"
             },
             {
               "kind": "field",
@@ -20541,6 +21987,15 @@
                 "text": "HTMLElement | undefined"
               },
               "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "emptyEl",
+              "type": {
+                "text": "HTMLElement | undefined"
+              },
+              "privacy": "private",
+              "description": "空态那一格，两档共用一个；有行可摊时由 connect 给它打 hidden。"
             },
             {
               "kind": "field",
@@ -20643,6 +22098,31 @@
                   "text": "void"
                 }
               }
+            },
+            {
+              "kind": "method",
+              "name": "paintEmpty",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "root",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "JsonViewerApi"
+                  }
+                }
+              ],
+              "description": "空态那一格：铺 translations 里的兜底文案，挂在 root 的末尾、与两档滚动层同级。\n有行可摊时 connect 给它打 hidden，它不占位置。"
             },
             {
               "kind": "method",
@@ -20762,6 +22242,14 @@
               "fieldName": "size"
             },
             {
+              "type": {
+                "text": "JsonViewerVariant | undefined"
+              },
+              "description": "外框形态：surface 带描边与底色（缺省），plain 只留内容",
+              "name": "variant",
+              "fieldName": "variant"
+            },
+            {
               "name": "view",
               "type": {
                 "text": "'tree' | 'text' | undefined"
@@ -20784,6 +22272,18 @@
             },
             {
               "name": "--xh-json-viewer-border"
+            },
+            {
+              "name": "--xh-json-viewer-empty-fg"
+            },
+            {
+              "name": "--xh-json-viewer-empty-gap"
+            },
+            {
+              "name": "--xh-json-viewer-empty-px"
+            },
+            {
+              "name": "--xh-json-viewer-empty-py"
             },
             {
               "name": "--xh-json-viewer-fg"
@@ -20884,7 +22384,7 @@
           "name": "XhLayoutElement",
           "cssParts": [
             {
-              "description": "骨架根容器，承载 data-sider-placement / data-collapsed / data-header-fixed / data-sider-fixed / data-bordered",
+              "description": "骨架根容器，承载 data-sider-placement / data-sider-breakpoint / data-collapsed / data-header-fixed / data-sider-fixed / data-bordered",
               "name": "root"
             },
             {
@@ -20965,6 +22465,15 @@
             },
             {
               "kind": "field",
+              "name": "siderBreakpoint",
+              "privacy": "public",
+              "type": {
+                "text": "LayoutBreakpoint | undefined"
+              },
+              "attribute": "sider-breakpoint"
+            },
+            {
+              "kind": "field",
               "name": "headerFixed",
               "privacy": "public",
               "type": {
@@ -20993,6 +22502,12 @@
             {
               "kind": "field",
               "name": "notify",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyBreakpoint",
               "privacy": "private",
               "readonly": true
             },
@@ -21030,6 +22545,13 @@
               "name": "sider-collapsed-change",
               "type": {
                 "text": "LayoutSiderCollapsedChangeDetails"
+              }
+            },
+            {
+              "description": "断点跨过去时发，挂载时也发一次当前值；detail 为 `{ matched: boolean }`",
+              "name": "sider-breakpoint",
+              "type": {
+                "text": "LayoutSiderBreakpointDetails"
               }
             }
           ],
@@ -21073,6 +22595,14 @@
               "description": "侧栏挂在行首还是行尾，缺省 start",
               "name": "sider-placement",
               "fieldName": "siderPlacement"
+            },
+            {
+              "type": {
+                "text": "LayoutBreakpoint | undefined"
+              },
+              "description": "侧栏的自适应断点：视口窄于这一档时侧栏按折叠宽显示，折叠态不变",
+              "name": "sider-breakpoint",
+              "fieldName": "siderBreakpoint"
             },
             {
               "type": {
@@ -21439,6 +22969,18 @@
               "name": "item-indicator"
             },
             {
+              "description": "空态占位，须放在 root 里当 content 的兄弟；给了 collection 时由元素按条数收放，条目手写时归作者",
+              "name": "empty"
+            },
+            {
+              "description": "在途占位，与空态占位同一个位置，取数期间顶上来",
+              "name": "loading"
+            },
+            {
+              "description": "取下一页的按钮，点了做什么归作者；取数在途与整列禁用两档自动停用",
+              "name": "load-more-trigger"
+            },
+            {
               "description": "role=group 分组容器，须自带 value 属性标识身份",
               "name": "group"
             },
@@ -21500,6 +23042,51 @@
                 "text": "boolean | undefined"
               },
               "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "readOnly",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "read-only"
+            },
+            {
+              "kind": "field",
+              "name": "invalid",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "invalid"
+            },
+            {
+              "kind": "field",
+              "name": "loading",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "loading"
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "Tone | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "Size | undefined"
+              },
+              "attribute": "size"
             },
             {
               "kind": "field",
@@ -21702,6 +23289,46 @@
               "type": {
                 "text": "boolean | undefined"
               },
+              "description": "只读：条目照常浏览与聚焦，但选中值改不动",
+              "name": "read-only",
+              "fieldName": "readOnly"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "校验失败标注",
+              "name": "invalid",
+              "fieldName": "invalid"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "条目还在取：列表报 aria-busy，在途占位顶上来、空态占位让位",
+              "name": "loading",
+              "fieldName": "loading"
+            },
+            {
+              "type": {
+                "text": "Tone | undefined"
+              },
+              "description": "语气",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "Size | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
               "description": "方向键走到尽头回绕，默认 true；写 loop=\"false\" 关掉",
               "name": "loop",
               "fieldName": "loop"
@@ -21745,6 +23372,9 @@
               "name": "--xh-listbox-content-border"
             },
             {
+              "name": "--xh-listbox-content-border-invalid"
+            },
+            {
               "name": "--xh-listbox-content-fg"
             },
             {
@@ -21761,6 +23391,18 @@
             },
             {
               "name": "--xh-listbox-content-radius"
+            },
+            {
+              "name": "--xh-listbox-empty-fg"
+            },
+            {
+              "name": "--xh-listbox-empty-font-size"
+            },
+            {
+              "name": "--xh-listbox-empty-px"
+            },
+            {
+              "name": "--xh-listbox-empty-py"
             },
             {
               "name": "--xh-listbox-gap"
@@ -21833,6 +23475,39 @@
             },
             {
               "name": "--xh-listbox-label-font-weight"
+            },
+            {
+              "name": "--xh-listbox-load-more-trigger-bg-hover"
+            },
+            {
+              "name": "--xh-listbox-load-more-trigger-fg"
+            },
+            {
+              "name": "--xh-listbox-load-more-trigger-font-size"
+            },
+            {
+              "name": "--xh-listbox-load-more-trigger-gap"
+            },
+            {
+              "name": "--xh-listbox-load-more-trigger-px"
+            },
+            {
+              "name": "--xh-listbox-load-more-trigger-py"
+            },
+            {
+              "name": "--xh-listbox-load-more-trigger-radius"
+            },
+            {
+              "name": "--xh-listbox-loading-fg"
+            },
+            {
+              "name": "--xh-listbox-loading-font-size"
+            },
+            {
+              "name": "--xh-listbox-loading-px"
+            },
+            {
+              "name": "--xh-listbox-loading-py"
             }
           ]
         }
@@ -21868,6 +23543,10 @@
             {
               "description": "进度段；宽度由元素写进内联样式，样式层别碰那条轴",
               "name": "range"
+            },
+            {
+              "description": "进度段末端那道亮边（对读屏隐藏）",
+              "name": "peg"
             }
           ],
           "members": [
@@ -22117,6 +23796,12 @@
               "name": "--xh-loading-bar-layer"
             },
             {
+              "name": "--xh-loading-bar-peg-fg"
+            },
+            {
+              "name": "--xh-loading-bar-peg-w"
+            },
+            {
               "name": "--xh-loading-bar-range"
             },
             {
@@ -22149,7 +23834,7 @@
           "name": "XhLogElement",
           "cssParts": [
             {
-              "description": "组件根容器，承载 data-loading / data-at-bottom / data-sticking",
+              "description": "组件根容器，承载 data-size / data-loading / data-at-bottom / data-sticking",
               "name": "root"
             },
             {
@@ -22161,7 +23846,7 @@
               "name": "content"
             },
             {
-              "description": "一行日志，只拿身份与等宽排版",
+              "description": "一行日志，拿身份、等宽排版与 data-level；级别写成节点上的 level 属性",
               "name": "line"
             },
             {
@@ -22200,6 +23885,15 @@
                 "text": "boolean | undefined"
               },
               "attribute": "loading"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "Size | undefined"
+              },
+              "attribute": "size"
             },
             {
               "kind": "field",
@@ -22332,6 +24026,14 @@
               "description": "行还在路上：日志区报 aria-busy，根落 data-loading",
               "name": "loading",
               "fieldName": "loading"
+            },
+            {
+              "type": {
+                "text": "Size | undefined"
+              },
+              "description": "尺寸：sm / md / lg",
+              "name": "size",
+              "fieldName": "size"
             }
           ],
           "superclass": {
@@ -22361,6 +24063,18 @@
             },
             {
               "name": "--xh-log-icon-size"
+            },
+            {
+              "name": "--xh-log-level-debug-fg"
+            },
+            {
+              "name": "--xh-log-level-error-fg"
+            },
+            {
+              "name": "--xh-log-level-info-fg"
+            },
+            {
+              "name": "--xh-log-level-warn-fg"
             },
             {
               "name": "--xh-log-line-height"
@@ -22554,7 +24268,7 @@
               "type": {
                 "text": "MarkdownStreamProps['announce'] | undefined"
               },
-              "description": "播报档位：off（默认）或 polite",
+              "description": "播报档位：off（默认）/ polite / assertive",
               "name": "announce",
               "fieldName": "announce"
             },
@@ -22653,7 +24367,7 @@
           "name": "XhMarqueeElement",
           "cssParts": [
             {
-              "description": "只露出一段的窗口，承载 data-direction / data-orientation / data-pause-on-hover / data-auto-fill",
+              "description": "只露出一段的窗口，承载 data-direction / data-orientation / data-pause-on-hover / data-paused / data-auto-fill",
               "name": "root"
             },
             {
@@ -22700,6 +24414,15 @@
             },
             {
               "kind": "field",
+              "name": "paused",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "paused"
+            },
+            {
+              "kind": "field",
               "name": "autoFill",
               "privacy": "public",
               "type": {
@@ -22742,6 +24465,14 @@
               "description": "指针停在窗口上时暂停，键盘焦点落进窗口时同样暂停",
               "name": "pause-on-hover",
               "fieldName": "pauseOnHover"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "受控暂停：停在当前位置，比 pause-on-hover 优先",
+              "name": "paused",
+              "fieldName": "paused"
             },
             {
               "type": {
@@ -23016,7 +24747,11 @@
               "name": "root"
             },
             {
-              "description": "输入框，写 textarea（推荐）或 input；可及名字由作者自己给",
+              "description": "标题；`for` 恒写向输入框，故须是原生 `<label>` 才点得动",
+              "name": "label"
+            },
+            {
+              "description": "输入框，写 textarea（推荐）或 input；没给 translations.input 时名字取自 label 部件",
               "name": "input"
             },
             {
@@ -23026,6 +24761,14 @@
             {
               "description": "role=listbox 容器（消解层的根节点），收起时带 hidden",
               "name": "content"
+            },
+            {
+              "description": "一条候选都没有时显出的空态；须与 content 同级（listbox 里只许放 option）",
+              "name": "empty"
+            },
+            {
+              "description": "在途占位，与空态占位同一个位置，取数期间顶上来",
+              "name": "loading"
             },
             {
               "description": "role=option 候选，须自带 value 属性标识身份；禁用写 aria-disabled=\"true\"",
@@ -23100,6 +24843,15 @@
             },
             {
               "kind": "field",
+              "name": "loading",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "loading"
+            },
+            {
+              "kind": "field",
               "name": "readOnly",
               "privacy": "public",
               "type": {
@@ -23124,6 +24876,15 @@
                 "text": "string | undefined"
               },
               "attribute": "placeholder"
+            },
+            {
+              "kind": "field",
+              "name": "name",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "name"
             },
             {
               "kind": "field",
@@ -23423,6 +25184,14 @@
               "type": {
                 "text": "boolean | undefined"
               },
+              "description": "候选还在取：候选面板报 aria-busy，在途占位顶上来、空态占位让位",
+              "name": "loading",
+              "fieldName": "loading"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
               "description": "只读：仍可聚焦与复制，写不进，候选也不开",
               "name": "read-only",
               "fieldName": "readOnly"
@@ -23442,6 +25211,14 @@
               "description": "输入框占位文字；不写就保留作者标在 input 部件上的那份",
               "name": "placeholder",
               "fieldName": "placeholder"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "表单字段名；给了输入框才带 name，整段正文随表单一并提交",
+              "name": "name",
+              "fieldName": "name"
             },
             {
               "type": {
@@ -23541,6 +25318,30 @@
               "name": "--xh-mention-content-shadow"
             },
             {
+              "name": "--xh-mention-empty-bg"
+            },
+            {
+              "name": "--xh-mention-empty-border"
+            },
+            {
+              "name": "--xh-mention-empty-fg"
+            },
+            {
+              "name": "--xh-mention-empty-font-size"
+            },
+            {
+              "name": "--xh-mention-empty-px"
+            },
+            {
+              "name": "--xh-mention-empty-py"
+            },
+            {
+              "name": "--xh-mention-empty-radius"
+            },
+            {
+              "name": "--xh-mention-empty-shadow"
+            },
+            {
               "name": "--xh-mention-input-autofill-bg"
             },
             {
@@ -23619,7 +25420,46 @@
               "name": "--xh-mention-item-radius"
             },
             {
+              "name": "--xh-mention-label-fg"
+            },
+            {
+              "name": "--xh-mention-label-fg-disabled"
+            },
+            {
+              "name": "--xh-mention-label-font-size"
+            },
+            {
+              "name": "--xh-mention-label-font-weight"
+            },
+            {
+              "name": "--xh-mention-label-gap"
+            },
+            {
               "name": "--xh-mention-layer"
+            },
+            {
+              "name": "--xh-mention-loading-bg"
+            },
+            {
+              "name": "--xh-mention-loading-border"
+            },
+            {
+              "name": "--xh-mention-loading-fg"
+            },
+            {
+              "name": "--xh-mention-loading-font-size"
+            },
+            {
+              "name": "--xh-mention-loading-px"
+            },
+            {
+              "name": "--xh-mention-loading-py"
+            },
+            {
+              "name": "--xh-mention-loading-radius"
+            },
+            {
+              "name": "--xh-mention-loading-shadow"
             },
             {
               "name": "--xh-mention-placeholder-fg"
@@ -23662,6 +25502,18 @@
             {
               "description": "role=menuitem 条目，须自带 value 属性标识身份；禁用写 aria-disabled=\"true\"",
               "name": "item"
+            },
+            {
+              "description": "条目里的文字载体，连打检索取它",
+              "name": "item-text"
+            },
+            {
+              "description": "条目里的标记位，对读屏隐藏",
+              "name": "item-indicator"
+            },
+            {
+              "description": "条目里的副文本",
+              "name": "item-description"
             },
             {
               "description": "分隔线（role=separator，不入方向键导航）",
@@ -23769,6 +25621,32 @@
                 "text": "Size | undefined"
               },
               "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "typeahead",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "typeahead"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "Partial<MenuTranslations> | undefined"
+              }
             },
             {
               "kind": "field",
@@ -24064,6 +25942,22 @@
               "fieldName": "size"
             },
             {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "首字符连打检索，默认开；写 typeahead=\"false\" 关掉",
+              "name": "typeahead",
+              "fieldName": "typeahead"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "整张菜单禁用：触发器不再展开，条目全转 aria-disabled",
+              "name": "disabled",
+              "fieldName": "disabled"
+            },
+            {
               "name": "submenu",
               "type": {
                 "text": "boolean | undefined"
@@ -24157,6 +26051,12 @@
               "name": "--xh-menu-item-bg-hover"
             },
             {
+              "name": "--xh-menu-item-description-fg"
+            },
+            {
+              "name": "--xh-menu-item-description-font-size"
+            },
+            {
               "name": "--xh-menu-item-fg"
             },
             {
@@ -24164,6 +26064,12 @@
             },
             {
               "name": "--xh-menu-item-gap"
+            },
+            {
+              "name": "--xh-menu-item-indicator-fg"
+            },
+            {
+              "name": "--xh-menu-item-indicator-size"
             },
             {
               "name": "--xh-menu-item-leading"
@@ -24253,6 +26159,10 @@
               "name": "item-indicator"
             },
             {
+              "description": "条目副文本，排在文字下一行",
+              "name": "item-description"
+            },
+            {
               "description": "分隔线（role=separator，不入方向键导航）",
               "name": "separator"
             },
@@ -24263,6 +26173,10 @@
             {
               "description": "分组标题，靠 id 被同组 group 的 aria-labelledby 指着",
               "name": "group-label"
+            },
+            {
+              "description": "指向锚点的箭头（aria-hidden），须写在同一张菜单的 positioner 里",
+              "name": "arrow"
             }
           ],
           "members": [
@@ -24707,6 +26621,9 @@
           "customElement": true,
           "cssProperties": [
             {
+              "name": "--xh-menubar-arrow-size"
+            },
+            {
               "name": "--xh-menubar-bg"
             },
             {
@@ -24768,6 +26685,12 @@
             },
             {
               "name": "--xh-menubar-item-bg-hover"
+            },
+            {
+              "name": "--xh-menubar-item-description-fg"
+            },
+            {
+              "name": "--xh-menubar-item-description-font-size"
             },
             {
               "name": "--xh-menubar-item-fg"
@@ -25231,6 +27154,10 @@
               "name": "trigger"
             },
             {
+              "description": "入口里的方向标记，须自带 value 属性与所在 trigger 配对；对读屏隐藏",
+              "name": "trigger-indicator"
+            },
+            {
               "description": "面板，须自带 value 属性与 trigger 配对；收起时 hidden",
               "name": "content"
             },
@@ -25345,6 +27272,15 @@
                 "text": "boolean | undefined"
               },
               "attribute": "loop"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "disabled"
             },
             {
               "kind": "field",
@@ -25523,6 +27459,14 @@
             },
             {
               "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "整套导航禁用：入口全转 aria-disabled，面板不再展开",
+              "name": "disabled",
+              "fieldName": "disabled"
+            },
+            {
+              "type": {
                 "text": "Tone | undefined"
               },
               "description": "语气",
@@ -25577,6 +27521,9 @@
             },
             {
               "name": "--xh-navigation-menu-gap"
+            },
+            {
+              "name": "--xh-navigation-menu-icon-size"
             },
             {
               "name": "--xh-navigation-menu-indicator-color"
@@ -25716,6 +27663,15 @@
                 "text": "number | undefined"
               },
               "attribute": "max"
+            },
+            {
+              "kind": "field",
+              "name": "dedupe",
+              "privacy": "public",
+              "type": {
+                "text": "NotificationDedupe | undefined"
+              },
+              "attribute": "dedupe"
             },
             {
               "kind": "field",
@@ -25947,9 +27903,17 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "每个位置最多同时留几条，超出挤掉最旧的；不给即不限",
+              "description": "每个位置最多同时留几条，超出先挤低优先级的、同级里挤最旧的；不给即不限",
               "name": "max",
               "fieldName": "max"
+            },
+            {
+              "type": {
+                "text": "NotificationDedupe | undefined"
+              },
+              "description": "重复怎么算，默认 id；content 则同一句话合并成一条并计数",
+              "name": "dedupe",
+              "fieldName": "dedupe"
             },
             {
               "type": {
@@ -26097,6 +28061,18 @@
               "name": "--xh-notification-layer"
             },
             {
+              "name": "--xh-notification-progress-bg"
+            },
+            {
+              "name": "--xh-notification-progress-duration"
+            },
+            {
+              "name": "--xh-notification-progress-radius"
+            },
+            {
+              "name": "--xh-notification-progress-thickness"
+            },
+            {
               "name": "--xh-notification-title-fg"
             },
             {
@@ -26134,6 +28110,10 @@
             {
               "description": "操作按钮：先发 action 再进入退场",
               "name": "item-action-trigger"
+            },
+            {
+              "description": "倒计时条；不自动消失时收起",
+              "name": "item-progress"
             },
             {
               "description": "关闭按钮；closable=false 时转原生 disabled 并收起",
@@ -26221,6 +28201,15 @@
                 "text": "boolean | undefined"
               },
               "attribute": "pause-on-page-idle"
+            },
+            {
+              "kind": "field",
+              "name": "paused",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "paused"
             },
             {
               "kind": "field",
@@ -26383,6 +28372,14 @@
               "description": "页面切到后台时按住计时，默认关",
               "name": "pause-on-page-idle",
               "fieldName": "pauseOnPageIdle"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "由宿主整摞一起按住计时，默认关；与指针、焦点那几路并存",
+              "name": "paused",
+              "fieldName": "paused"
             }
           ],
           "superclass": {
@@ -26700,8 +28697,16 @@
               "name": "control"
             },
             {
+              "description": "输入框前的装饰段（货币符、单位、图标）；对读屏隐藏",
+              "name": "prefix"
+            },
+            {
               "description": "role=spinbutton 的输入框，键盘交互全在它身上",
               "name": "input"
+            },
+            {
+              "description": "输入框后的装饰段；对读屏隐藏",
+              "name": "suffix"
             },
             {
               "description": "加一步；贴住 max 时转 disabled",
@@ -27065,6 +29070,15 @@
           "customElement": true,
           "cssProperties": [
             {
+              "name": "--xh-number-field-affix-fg"
+            },
+            {
+              "name": "--xh-number-field-affix-fg-disabled"
+            },
+            {
+              "name": "--xh-number-field-affix-font-size"
+            },
+            {
               "name": "--xh-number-field-control-bg"
             },
             {
@@ -27394,6 +29408,14 @@
             {
               "description": "nav 地标，承载 aria-label 与 data-empty",
               "name": "root"
+            },
+            {
+              "description": "信息区容器；文本由作者放，缺省文案取 api.summaryText",
+              "name": "summary"
+            },
+            {
+              "description": "跳页输入框（input），敲页码按回车即跳",
+              "name": "jumper"
             },
             {
               "description": "上一页；首页时转原生 disabled",
@@ -28040,6 +30062,21 @@
               "name": "--xh-pagination-item-shadow"
             },
             {
+              "name": "--xh-pagination-jumper-bg"
+            },
+            {
+              "name": "--xh-pagination-jumper-bg-hover"
+            },
+            {
+              "name": "--xh-pagination-jumper-border"
+            },
+            {
+              "name": "--xh-pagination-jumper-border-hover"
+            },
+            {
+              "name": "--xh-pagination-jumper-w"
+            },
+            {
               "name": "--xh-pagination-layer"
             },
             {
@@ -28053,6 +30090,9 @@
             },
             {
               "name": "--xh-pagination-page-size-border-hover"
+            },
+            {
+              "name": "--xh-pagination-summary-fg"
             }
           ]
         }
@@ -28100,6 +30140,10 @@
             {
               "description": "大写锁定提示；节点留空即可，文字由元素写入，是 role=status 的活区域",
               "name": "caps-lock-indicator"
+            },
+            {
+              "description": "强度条，role=meter；档位落在 data-level 与 aria-valuenow 上，没给 strength 时收起",
+              "name": "strength-meter"
             }
           ],
           "members": [
@@ -28210,6 +30254,15 @@
                 "text": "string | undefined"
               },
               "attribute": "auto-complete"
+            },
+            {
+              "kind": "field",
+              "name": "strength",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "strength"
             },
             {
               "kind": "field",
@@ -28393,6 +30446,14 @@
             },
             {
               "type": {
+                "text": "number | undefined"
+              },
+              "description": "强度档位 0–4；给了才显出强度条，打分算法归调用方",
+              "name": "strength",
+              "fieldName": "strength"
+            },
+            {
+              "type": {
                 "text": "ControlVariant | undefined"
               },
               "description": "视觉变体",
@@ -28550,6 +30611,18 @@
               "name": "--xh-password-input-placeholder-fg"
             },
             {
+              "name": "--xh-password-input-strength-fg"
+            },
+            {
+              "name": "--xh-password-input-strength-radius"
+            },
+            {
+              "name": "--xh-password-input-strength-thickness"
+            },
+            {
+              "name": "--xh-password-input-strength-track"
+            },
+            {
               "name": "--xh-password-input-trigger-bg"
             },
             {
@@ -28605,8 +30678,16 @@
               "name": "label"
             },
             {
+              "description": "连着的几格圈成一段（123-456 这种分段写法）；纯排版，不参与下标计算",
+              "name": "group"
+            },
+            {
               "description": "一格一个的输入框，可自带 index 属性声明下标，缺省按文档序；aria-label 由内置文案给出",
               "name": "input"
+            },
+            {
+              "description": "段与段之间的分隔；对读屏隐藏",
+              "name": "separator"
             },
             {
               "description": "type=hidden 的表单出口，值是拼好的整串",
@@ -28703,6 +30784,24 @@
                 "text": "boolean | undefined"
               },
               "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "readOnly",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "read-only"
+            },
+            {
+              "kind": "field",
+              "name": "required",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "required"
             },
             {
               "kind": "field",
@@ -28899,6 +30998,22 @@
               "type": {
                 "text": "boolean | undefined"
               },
+              "description": "只读：每格仍可聚焦、可复制，写不进",
+              "name": "read-only",
+              "fieldName": "readOnly"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "必填标注：每格带原生 required",
+              "name": "required",
+              "fieldName": "required"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
               "description": "校验失败标注",
               "name": "invalid",
               "fieldName": "invalid"
@@ -28967,6 +31082,9 @@
               "name": "--xh-pin-input-box-bg-hover"
             },
             {
+              "name": "--xh-pin-input-box-bg-readonly"
+            },
+            {
               "name": "--xh-pin-input-box-border"
             },
             {
@@ -29016,6 +31134,18 @@
             },
             {
               "name": "--xh-pin-input-placeholder-fg"
+            },
+            {
+              "name": "--xh-pin-input-separator-fg"
+            },
+            {
+              "name": "--xh-pin-input-separator-fg-disabled"
+            },
+            {
+              "name": "--xh-pin-input-separator-font-size"
+            },
+            {
+              "name": "--xh-pin-input-separator-gap"
             }
           ]
         }
@@ -29071,6 +31201,10 @@
             {
               "description": "取消按钮",
               "name": "cancel-trigger"
+            },
+            {
+              "description": "指向锚点的箭头（aria-hidden，data-placement 随实际放置位翻转）",
+              "name": "arrow"
             }
           ],
           "members": [
@@ -29372,6 +31506,9 @@
             },
             {
               "name": "--xh-popconfirm-action-radius"
+            },
+            {
+              "name": "--xh-popconfirm-arrow-size"
             },
             {
               "name": "--xh-popconfirm-bg"
@@ -29887,7 +32024,7 @@
           "name": "XhProgressElement",
           "cssParts": [
             {
-              "description": "role=progressbar 的容器（承载 aria-valuenow/aria-valuemax/data-state）",
+              "description": "role=progressbar（semantics=meter 时 role=meter）的容器（承载 aria-valuenow/aria-valuemax/data-state）",
               "name": "root"
             },
             {
@@ -30008,6 +32145,15 @@
               "attribute": "size"
             },
             {
+              "kind": "field",
+              "name": "semantics",
+              "privacy": "public",
+              "type": {
+                "text": "ProgressSemantics | undefined"
+              },
+              "attribute": "semantics"
+            },
+            {
               "kind": "method",
               "name": "wire",
               "privacy": "protected",
@@ -30098,6 +32244,14 @@
               "description": "尺寸：线形改厚度，环形改直径",
               "name": "size",
               "fieldName": "size"
+            },
+            {
+              "type": {
+                "text": "ProgressSemantics | undefined"
+              },
+              "description": "报的是进度还是量，默认 progress；meter 发 role=meter 且不接 indeterminate",
+              "name": "semantics",
+              "fieldName": "semantics"
             }
           ],
           "superclass": {
@@ -32038,6 +34192,10 @@
               "name": "item"
             },
             {
+              "description": "分值文本（aria-hidden），须放在 root 里当 control 的兄弟；留空即由元素填入当前分值，作者写了内容则归作者",
+              "name": "value-text"
+            },
+            {
               "description": "表单影子输入（必须是原生 input）",
               "name": "hidden-input"
             }
@@ -32217,6 +34375,39 @@
               "description": "承载焦点的星被移出 DOM 时浏览器不派 focusout，焦点锚点会停在一颗已消失的星上：\n容器判自己\"焦点在带内\"退出 Tab 序列，又没有条目认领得了这个锚点，\n整条评分带零个 Tab 停靠点，键盘用户再也进不来。这里替 DOM 把焦点离场如实上报。"
             },
             {
+              "kind": "field",
+              "name": "ownsValueText",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new WeakMap<HTMLElement, boolean>()",
+              "description": "分值文本是否归元素填：首次见到该节点时定，之后不再回读（回读到的会是自己写的字）。"
+            },
+            {
+              "kind": "method",
+              "name": "fillValueText",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "el",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "text",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "填入分值文本；首次见到该节点时若已有内容则归作者，之后不再改写。"
+            },
+            {
               "kind": "method",
               "name": "itemProps",
               "privacy": "private",
@@ -32393,6 +34584,12 @@
             },
             {
               "name": "--xh-rating-label-font-weight"
+            },
+            {
+              "name": "--xh-rating-value-text-fg"
+            },
+            {
+              "name": "--xh-rating-value-text-font-size"
             }
           ]
         }
@@ -33267,7 +35464,7 @@
               "name": "root"
             },
             {
-              "description": "真正 overflow:auto 的那层，带 tabindex=0 让键盘用户落得进来；承载 data-lane-vertical / data-lane-horizontal",
+              "description": "真正 overflow:auto 的那层，带 tabindex=0 让键盘用户落得进来；承载 data-lane-vertical / data-lane-horizontal 与两条轴各自的 data-at-min-* / data-at-max-*",
               "name": "viewport"
             },
             {
@@ -33327,6 +35524,15 @@
                 "text": "ScrollAreaOrientation | undefined"
               },
               "attribute": "orientation"
+            },
+            {
+              "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "ScrollAreaVariant | undefined"
+              },
+              "attribute": "variant"
             },
             {
               "kind": "field",
@@ -33518,9 +35724,17 @@
             },
             {
               "type": {
+                "text": "ScrollAreaVariant | undefined"
+              },
+              "description": "形态档，默认 plain；fade 在那一头还滚得动时把该侧内容淡出",
+              "name": "variant",
+              "fieldName": "variant"
+            },
+            {
+              "type": {
                 "text": "Size | undefined"
               },
-              "description": "尺寸档，换的是滚动条厚度",
+              "description": "尺寸档，换的是滚动条厚度，也是边缘渐隐的带宽",
               "name": "size",
               "fieldName": "size"
             },
@@ -33546,7 +35760,12 @@
             "module": "/src/element-base"
           },
           "tagName": "xh-scroll-area",
-          "customElement": true
+          "customElement": true,
+          "cssProperties": [
+            {
+              "name": "--xh-scroll-area-fade-size"
+            }
+          ]
         }
       ],
       "exports": [
@@ -34548,6 +36767,22 @@
               "name": "footer"
             },
             {
+              "description": "空态占位，须放在 content 里当 list 的兄弟；给了 collection 时由元素按条数收放，条目手写时归作者",
+              "name": "empty"
+            },
+            {
+              "description": "在途占位，与空态占位同一个位置，取数期间顶上来",
+              "name": "loading"
+            },
+            {
+              "description": "role=group 分组容器，须自带 value 属性标识身份；条目挂在它里面",
+              "name": "group"
+            },
+            {
+              "description": "分组标题（本组 aria-labelledby 的目标），须放在 group 里",
+              "name": "group-label"
+            },
+            {
               "description": "role=option 条目，须自带 value 属性标识身份；禁用写 aria-disabled=\"true\"",
               "name": "item"
             },
@@ -34644,6 +36879,15 @@
                 "text": "boolean | undefined"
               },
               "attribute": "invalid"
+            },
+            {
+              "kind": "field",
+              "name": "loading",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "loading"
             },
             {
               "kind": "field",
@@ -35100,6 +37344,14 @@
             },
             {
               "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "条目还在取：列表报 aria-busy，在途占位顶上来、空态占位让位",
+              "name": "loading",
+              "fieldName": "loading"
+            },
+            {
+              "type": {
                 "text": "number | undefined"
               },
               "description": "多选标签最多摆几个，其余折进 api 的 overflowCount；缺省全摆",
@@ -35299,6 +37551,18 @@
               "name": "--xh-select-control-shadow"
             },
             {
+              "name": "--xh-select-empty-fg"
+            },
+            {
+              "name": "--xh-select-empty-font-size"
+            },
+            {
+              "name": "--xh-select-empty-px"
+            },
+            {
+              "name": "--xh-select-empty-py"
+            },
+            {
               "name": "--xh-select-footer-border"
             },
             {
@@ -35318,6 +37582,27 @@
             },
             {
               "name": "--xh-select-gap"
+            },
+            {
+              "name": "--xh-select-group-gap"
+            },
+            {
+              "name": "--xh-select-group-label-fg"
+            },
+            {
+              "name": "--xh-select-group-label-font-size"
+            },
+            {
+              "name": "--xh-select-group-label-font-weight"
+            },
+            {
+              "name": "--xh-select-group-label-px"
+            },
+            {
+              "name": "--xh-select-group-label-py"
+            },
+            {
+              "name": "--xh-select-group-spacing"
             },
             {
               "name": "--xh-select-icon-size"
@@ -35398,6 +37683,18 @@
               "name": "--xh-select-list-gap"
             },
             {
+              "name": "--xh-select-loading-fg"
+            },
+            {
+              "name": "--xh-select-loading-font-size"
+            },
+            {
+              "name": "--xh-select-loading-px"
+            },
+            {
+              "name": "--xh-select-loading-py"
+            },
+            {
               "name": "--xh-select-placeholder-fg"
             },
             {
@@ -35447,12 +37744,20 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-separator>` —— Light-DOM 行为宿主，无状态机，把 connectSeparator 产出打到 root 角色节点。",
+          "description": "`<xh-separator>` —— Light-DOM 行为宿主，无状态机，把 connectSeparator 产出打到三个角色节点上。\n\n只写 root 就是一条线；在 root 里摆「line · content · line」三个节点，就是带分节文字的那一档。",
           "name": "XhSeparatorElement",
           "cssParts": [
             {
-              "description": "承载 role/aria-orientation/data-orientation 的分隔节点",
+              "description": "承载 role/aria-orientation/data-orientation 的分隔节点；有分节文字时它是容器",
               "name": "root"
+            },
+            {
+              "description": "分节文字两侧的线，纯装饰",
+              "name": "line"
+            },
+            {
+              "description": "夹在两条线中间的分节文字",
+              "name": "content"
             }
           ],
           "members": [
@@ -35484,6 +37789,33 @@
               "attribute": "decorative"
             },
             {
+              "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "variant"
+            },
+            {
+              "kind": "field",
+              "name": "dashed",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "dashed"
+            },
+            {
+              "kind": "field",
+              "name": "align",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "align"
+            },
+            {
               "kind": "method",
               "name": "wire",
               "privacy": "protected",
@@ -35510,6 +37842,30 @@
               "description": "装饰性分隔，仅视觉分组（role=none，退出无障碍树）",
               "name": "decorative",
               "fieldName": "decorative"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "线怎么画：默认线 / 弱线 / 强线",
+              "name": "variant",
+              "fieldName": "variant"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "画成虚线",
+              "name": "dashed",
+              "fieldName": "dashed"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "分节文字落在哪一侧，缺省居中",
+              "name": "align",
+              "fieldName": "align"
             }
           ],
           "superclass": {
@@ -35520,7 +37876,25 @@
           "customElement": true,
           "cssProperties": [
             {
+              "name": "--xh-separator-align-length"
+            },
+            {
               "name": "--xh-separator-color"
+            },
+            {
+              "name": "--xh-separator-content-fg"
+            },
+            {
+              "name": "--xh-separator-content-font-size"
+            },
+            {
+              "name": "--xh-separator-dash-gap"
+            },
+            {
+              "name": "--xh-separator-dash-length"
+            },
+            {
+              "name": "--xh-separator-gap"
             },
             {
               "name": "--xh-separator-thickness"
@@ -35682,6 +38056,24 @@
                 "text": "SideNavSchema['props']['dir'] | undefined"
               },
               "attribute": "dir"
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "Tone | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "Size | undefined"
+              },
+              "attribute": "size"
             },
             {
               "kind": "field",
@@ -35960,6 +38352,22 @@
               "description": "文字方向，只对调左右方向键的展开/收起语义，默认 ltr",
               "name": "dir",
               "fieldName": "direction"
+            },
+            {
+              "type": {
+                "text": "Tone | undefined"
+              },
+              "description": "语气",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "Size | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
             }
           ],
           "superclass": {
@@ -35992,6 +38400,9 @@
             },
             {
               "name": "--xh-side-nav-link-gap"
+            },
+            {
+              "name": "--xh-side-nav-link-h"
             },
             {
               "name": "--xh-side-nav-link-px"
@@ -36471,7 +38882,7 @@
           "name": "XhSkeletonElement",
           "cssParts": [
             {
-              "description": "骨架容器，加载期间带 aria-busy，结束后带 hidden",
+              "description": "骨架容器，加载期间带 aria-busy，结束后带 hidden，承载 data-animation",
               "name": "root"
             },
             {
@@ -36508,6 +38919,15 @@
               "attribute": "shape"
             },
             {
+              "kind": "field",
+              "name": "animation",
+              "privacy": "public",
+              "type": {
+                "text": "SkeletonAnimation | undefined"
+              },
+              "attribute": "animation"
+            },
+            {
               "kind": "method",
               "name": "wire",
               "privacy": "protected",
@@ -36534,6 +38954,14 @@
               "description": "容器内骨架条的默认形状",
               "name": "shape",
               "fieldName": "shape"
+            },
+            {
+              "type": {
+                "text": "SkeletonAnimation | undefined"
+              },
+              "description": "动效档，缺省 shimmer",
+              "name": "animation",
+              "fieldName": "animation"
             }
           ],
           "superclass": {
@@ -36557,6 +38985,9 @@
             },
             {
               "name": "--xh-skeleton-gap"
+            },
+            {
+              "name": "--xh-skeleton-pulse-duration"
             },
             {
               "name": "--xh-skeleton-radius"
@@ -36634,6 +39065,10 @@
             {
               "description": "role=slider 的拇指，键盘交互全在它身上；多滑块须写 index 属性",
               "name": "thumb"
+            },
+            {
+              "description": "拇指内的值气泡（aria-hidden）；留空即由元素填入该拇指的值文本，作者写了内容则归作者",
+              "name": "value-text"
             },
             {
               "description": "拇指内的表单影子（须是原生 input）",
@@ -36891,6 +39326,39 @@
                 }
               ],
               "description": "拇指自报的下标。多滑块时作者在节点上写 index=\"1\"，与 Vue 侧的 `:index` 是同一份声明；\n写不出数字（没写、写错）时退回 0，单滑块因此不必写。"
+            },
+            {
+              "kind": "field",
+              "name": "ownsValueText",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new WeakMap<HTMLElement, boolean>()",
+              "description": "值气泡的文字是否归元素填：首次见到该节点时定，之后不再回读（回读到的会是自己写的字）。"
+            },
+            {
+              "kind": "method",
+              "name": "fillValueText",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "el",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "text",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "填入拇指的值文本；首次见到该节点时若已有内容则归作者，之后不再改写。"
             },
             {
               "kind": "method",
@@ -37159,6 +39627,27 @@
               "name": "--xh-slider-track-thickness"
             },
             {
+              "name": "--xh-slider-value-text-bg"
+            },
+            {
+              "name": "--xh-slider-value-text-fg"
+            },
+            {
+              "name": "--xh-slider-value-text-font-size"
+            },
+            {
+              "name": "--xh-slider-value-text-offset"
+            },
+            {
+              "name": "--xh-slider-value-text-px"
+            },
+            {
+              "name": "--xh-slider-value-text-py"
+            },
+            {
+              "name": "--xh-slider-value-text-radius"
+            },
+            {
               "name": "--xh-slider-vertical-length"
             }
           ]
@@ -37195,6 +39684,10 @@
             {
               "description": "role=button 的拖拽手柄，指针与键盘交互全在它身上",
               "name": "item-drag-trigger"
+            },
+            {
+              "description": "落点线；拖动中画在松手后这一项会插进去的那条缝上，位置由内联样式给出，节点排在末项之后",
+              "name": "drop-indicator"
             },
             {
               "description": "视觉隐藏的播报区，拖动过程的读屏文案写在这里",
@@ -37496,6 +39989,15 @@
               "name": "--xh-sortable-drag-size"
             },
             {
+              "name": "--xh-sortable-drop-indicator-bg"
+            },
+            {
+              "name": "--xh-sortable-drop-indicator-radius"
+            },
+            {
+              "name": "--xh-sortable-drop-indicator-size"
+            },
+            {
               "name": "--xh-sortable-gap"
             },
             {
@@ -37528,7 +40030,7 @@
           "name": "XhSpinnerElement",
           "cssParts": [
             {
-              "description": "role=status 的活区容器，承载 aria-live/aria-label/data-size/data-tone",
+              "description": "role=status 的活区容器，承载 aria-live/aria-label/data-size/data-variant/data-tone",
               "name": "root"
             },
             {
@@ -37563,6 +40065,15 @@
                 "text": "Size | undefined"
               },
               "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "SpinnerVariant | undefined"
+              },
+              "attribute": "variant"
             },
             {
               "kind": "field",
@@ -37608,6 +40119,14 @@
               "description": "直径档位，缺省 md",
               "name": "size",
               "fieldName": "size"
+            },
+            {
+              "type": {
+                "text": "SpinnerVariant | undefined"
+              },
+              "description": "形态，缺省 ring",
+              "name": "variant",
+              "fieldName": "variant"
             },
             {
               "type": {
@@ -37672,7 +40191,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-splitter>` —— Light-DOM 行为宿主：作者写 root/panel/resize-trigger 角色节点，\n元素跑 splitter 机器并把 connect 产出打上去。\n\n面板尺寸是百分比，总和恒为 100；每块的尺寸由元素每帧写进内联样式（flex-basis），\n作者的样式表不要再碰这条轴。\n\n拖拽挂在分隔条上（按下—跟手—松手），像素与百分比的换算取 root 的矩形——\n矩形在拖拽开始那一刻才量，连接期一律不碰 DOM。\n键盘全在分隔条上：方向键按 step 推、Shift+方向键按 largeStep 推、\nHome/End 取该面板眼下能到的两端、Enter 折叠或展开可折叠的面板。\n\n面板与分隔条都要用 index 属性写明自己是第几个（`index=\"1\"`）；\n第 index 条分隔条坐在第 index 与第 index+1 块面板之间，调整的是前一块。",
+          "description": "`<xh-splitter>` —— Light-DOM 行为宿主：作者写 root/panel/resize-trigger 角色节点，\n元素跑 splitter 机器并把 connect 产出打上去。\n\n面板尺寸是百分比，总和恒为 100；每块的尺寸由元素每帧写进内联样式（flex-basis），\n作者的样式表不要再碰这条轴。\n\n拖拽挂在分隔条上（按下—跟手—松手），像素与百分比的换算取 root 的矩形——\n矩形在拖拽开始那一刻才量，连接期一律不碰 DOM。\n键盘全在分隔条上：方向键按 step 推、Shift+方向键按 largeStep 推、\nHome/End 取该面板眼下能到的两端、Enter 折叠或展开可折叠的面板。\n拖动途中按 Escape 放弃这一场，布局退回按下那一刻。\n\n面板与分隔条都要用 index 属性写明自己是第几个（`index=\"1\"`）；\n第 index 条分隔条坐在第 index 与第 index+1 块面板之间，调整的是前一块。",
           "name": "XhSplitterElement",
           "cssParts": [
             {
@@ -37769,6 +40288,15 @@
                 "text": "number | undefined"
               },
               "attribute": "large-step"
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "SplitterSchema['props']['translations'] | undefined"
+              },
+              "description": "整组面板与各条分隔条的无障碍名。"
             },
             {
               "kind": "field",
@@ -38014,6 +40542,10 @@
             {
               "description": "数值后的单位或百分号",
               "name": "suffix"
+            },
+            {
+              "description": "涨跌那一段，承载 data-direction；空着时皮肤按方向画兜底箭头",
+              "name": "trend"
             }
           ],
           "members": [
@@ -38045,6 +40577,15 @@
               "attribute": "tone"
             },
             {
+              "kind": "field",
+              "name": "trend",
+              "privacy": "public",
+              "type": {
+                "text": "StatisticTrend | undefined"
+              },
+              "attribute": "trend"
+            },
+            {
               "kind": "method",
               "name": "wire",
               "privacy": "protected",
@@ -38071,6 +40612,14 @@
               "description": "语气，写到 root 的 data-tone 上",
               "name": "tone",
               "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "StatisticTrend | undefined"
+              },
+              "description": "涨跌，写到 trend 部件的 data-direction 上；与 tone 正交",
+              "name": "trend",
+              "fieldName": "trend"
             }
           ],
           "superclass": {
@@ -38100,6 +40649,18 @@
             },
             {
               "name": "--xh-statistic-row-gap"
+            },
+            {
+              "name": "--xh-statistic-trend-fg"
+            },
+            {
+              "name": "--xh-statistic-trend-font-size"
+            },
+            {
+              "name": "--xh-statistic-trend-gap"
+            },
+            {
+              "name": "--xh-statistic-trend-offset"
             },
             {
               "name": "--xh-statistic-value-fg"
@@ -38233,12 +40794,45 @@
             },
             {
               "kind": "field",
+              "name": "loop",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "loop"
+            },
+            {
+              "kind": "field",
               "name": "direction",
               "privacy": "public",
               "type": {
                 "text": "Direction | undefined"
               },
               "attribute": "dir"
+            },
+            {
+              "kind": "field",
+              "name": "collection",
+              "privacy": "public",
+              "type": {
+                "text": "StepNode[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "statuses",
+              "privacy": "public",
+              "type": {
+                "text": "Record<number, StepStatus> | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "Partial<StepsTranslations> | undefined"
+              }
             },
             {
               "kind": "field",
@@ -38390,6 +40984,14 @@
             },
             {
               "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "方向键走到尽头回绕，默认关闭",
+              "name": "loop",
+              "fieldName": "loop"
+            },
+            {
+              "type": {
                 "text": "Direction | undefined"
               },
               "description": "文字方向，只影响水平轴上 ArrowLeft/ArrowRight 的前后语义，默认 ltr",
@@ -38457,6 +41059,12 @@
               "name": "--xh-steps-indicator-border-disabled"
             },
             {
+              "name": "--xh-steps-indicator-border-error"
+            },
+            {
+              "name": "--xh-steps-indicator-border-warning"
+            },
+            {
               "name": "--xh-steps-indicator-fg"
             },
             {
@@ -38467,6 +41075,12 @@
             },
             {
               "name": "--xh-steps-indicator-fg-disabled"
+            },
+            {
+              "name": "--xh-steps-indicator-fg-error"
+            },
+            {
+              "name": "--xh-steps-indicator-fg-warning"
             },
             {
               "name": "--xh-steps-indicator-font-size"
@@ -38506,6 +41120,12 @@
             },
             {
               "name": "--xh-steps-title-fg-active"
+            },
+            {
+              "name": "--xh-steps-title-fg-error"
+            },
+            {
+              "name": "--xh-steps-title-fg-warning"
             },
             {
               "name": "--xh-steps-title-font-size"
@@ -38969,6 +41589,10 @@
             {
               "description": "加载态节点，表体为空且正在加载时显形",
               "name": "loading"
+            },
+            {
+              "description": "取下一页的按钮，摆在表尾；点了做什么归作者，取数在途时自动停用",
+              "name": "load-more-trigger"
             }
           ],
           "members": [
@@ -39645,6 +42269,27 @@
               "name": "--xh-table-icon-size"
             },
             {
+              "name": "--xh-table-load-more-trigger-bg-hover"
+            },
+            {
+              "name": "--xh-table-load-more-trigger-fg"
+            },
+            {
+              "name": "--xh-table-load-more-trigger-font-size"
+            },
+            {
+              "name": "--xh-table-load-more-trigger-gap"
+            },
+            {
+              "name": "--xh-table-load-more-trigger-px"
+            },
+            {
+              "name": "--xh-table-load-more-trigger-py"
+            },
+            {
+              "name": "--xh-table-load-more-trigger-radius"
+            },
+            {
               "name": "--xh-table-loading-duration"
             },
             {
@@ -39791,6 +42436,14 @@
               "name": "live-region"
             },
             {
+              "description": "选中标签下的滑条，须住在 list 里；对读屏隐藏，位置由机器量好写成内联样式",
+              "name": "indicator"
+            },
+            {
+              "description": "标签之间的细分隔线，对读屏隐藏",
+              "name": "separator"
+            },
+            {
               "description": "role=tab 的标签按钮，须自带 value 属性标识身份",
               "name": "trigger"
             },
@@ -39913,6 +42566,15 @@
             },
             {
               "kind": "field",
+              "name": "closable",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "closable"
+            },
+            {
+              "kind": "field",
               "name": "translations",
               "privacy": "public",
               "type": {
@@ -39933,10 +42595,16 @@
             },
             {
               "kind": "field",
+              "name": "notifyTabClose",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
-              "default": "new MachineController<TabsSchema>(this, tabsMachine, () => this.machineProps())"
+              "default": "new MachineController<TabsSchema>( this, tabsMachine, () => this.machineProps(), // 指示条量测在机器的 action 里跑，DOM 侧的取值口经 refs 交进去 { onBuilt: svc => svc.refs.set('getListEl', () => this.getPart('list')) }, )"
             },
             {
               "kind": "field",
@@ -40017,6 +42685,13 @@
               "name": "tab-move",
               "type": {
                 "text": "TabsMoveDetails"
+              }
+            },
+            {
+              "description": "标签被关闭；detail 为 `{ value, values }`，values 是关掉这一条之后余下的标签序",
+              "name": "tab-close",
+              "type": {
+                "text": "TabsCloseDetails"
               }
             }
           ],
@@ -40100,6 +42775,13 @@
               "description": "标签可以拖着换位，默认关",
               "name": "reorderable",
               "fieldName": "reorderable"
+            },
+            {
+              "name": "closable",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "fieldName": "closable"
             }
           ],
           "superclass": {
@@ -40149,6 +42831,15 @@
               "name": "--xh-tabs-gap"
             },
             {
+              "name": "--xh-tabs-indicator-color"
+            },
+            {
+              "name": "--xh-tabs-indicator-radius"
+            },
+            {
+              "name": "--xh-tabs-indicator-thickness"
+            },
+            {
               "name": "--xh-tabs-list-bg"
             },
             {
@@ -40162,6 +42853,18 @@
             },
             {
               "name": "--xh-tabs-list-radius"
+            },
+            {
+              "name": "--xh-tabs-separator-color"
+            },
+            {
+              "name": "--xh-tabs-separator-radius"
+            },
+            {
+              "name": "--xh-tabs-separator-size"
+            },
+            {
+              "name": "--xh-tabs-separator-thickness"
             },
             {
               "name": "--xh-tabs-trigger-bg"
@@ -40218,6 +42921,683 @@
           "declaration": {
             "name": "XhTabsElement",
             "module": "src/elements/tabs.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/tag-group.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-tag-group>` —— Light-DOM 行为宿主：作者写 root/label/list 与若干 item（内含 cell）角色节点，\n元素跑 tag-group 机器并把 connect 产出打上去。条目身份取自条目节点上的 value 属性，\n禁用由条目自报 aria-disabled，可摘由条目自报 deletable 属性。\n\n整组只占一个 Tab 停靠点：组内走方向键，摘除走 Delete / Backspace，\n每枚标签的摘除钮一律 tabindex=-1。\n\n条目的去留归宿主：item-delete 只报「用户要摘这一枚」，作者收到后自己把节点摘掉。\n\n选中值是集合：单选可以直接写 value=\"a\" 属性，多选只能走 property（`el.value = ['a','b']`），\n属性表达不了数组。",
+          "name": "XhTagGroupElement",
+          "cssParts": [
+            {
+              "description": "组件根容器（承载三视觉轴与 data-orientation/data-disabled）",
+              "name": "root"
+            },
+            {
+              "description": "组标题（aria-labelledby 目标）",
+              "name": "label"
+            },
+            {
+              "description": "role=grid 容器，键盘在此收口，也是 roving tabindex 的兜底位",
+              "name": "list"
+            },
+            {
+              "description": "role=row 标签，须自带 value 属性标识身份；禁用写 aria-disabled=\"true\"",
+              "name": "item"
+            },
+            {
+              "description": "role=gridcell，标签里那一格，文字与摘除钮都写在它之内",
+              "name": "cell"
+            },
+            {
+              "description": "标签文字（连打检索的取字处）",
+              "name": "item-text"
+            },
+            {
+              "description": "摘除钮，不占 Tab 位",
+              "name": "item-delete-trigger"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: tagGroupAnatomy, meta: tagGroupMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "collection",
+              "privacy": "public",
+              "type": {
+                "text": "TagGroupNode[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "Partial<TagGroupTranslations> | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "privacy": "public",
+              "type": {
+                "text": "string | string[] | undefined"
+              },
+              "attribute": "value"
+            },
+            {
+              "kind": "field",
+              "name": "defaultValue",
+              "privacy": "public",
+              "type": {
+                "text": "string | string[] | undefined"
+              },
+              "attribute": "default-value"
+            },
+            {
+              "kind": "field",
+              "name": "selectionMode",
+              "privacy": "public",
+              "type": {
+                "text": "TagGroupSelectionMode | undefined"
+              },
+              "attribute": "selection-mode"
+            },
+            {
+              "kind": "field",
+              "name": "deletable",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "deletable"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "readOnly",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "read-only"
+            },
+            {
+              "kind": "field",
+              "name": "loop",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "loop"
+            },
+            {
+              "kind": "field",
+              "name": "direction",
+              "privacy": "public",
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "attribute": "dir"
+            },
+            {
+              "kind": "field",
+              "name": "orientation",
+              "privacy": "public",
+              "type": {
+                "text": "Orientation | undefined"
+              },
+              "attribute": "orientation"
+            },
+            {
+              "kind": "field",
+              "name": "typeahead",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "typeahead"
+            },
+            {
+              "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "TagVariant | undefined"
+              },
+              "attribute": "variant"
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "Tone | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "Size | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "declaredDisabled",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new WeakMap<HTMLElement, boolean>()"
+            },
+            {
+              "kind": "field",
+              "name": "wasGroupDisabled",
+              "type": {
+                "text": "boolean"
+              },
+              "privacy": "private",
+              "default": "false",
+              "description": "上一帧是否整组禁用：解禁当帧 DOM 上还留着机器写回的 aria-disabled，读不得。"
+            },
+            {
+              "kind": "field",
+              "name": "notify",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyDelete",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<TagGroupSchema>(this, tagGroupMachine, () => this.machineProps())"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<TagGroupSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "onPartsReleased",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "nodes",
+                  "type": {
+                    "text": "readonly HTMLElement[]"
+                  }
+                }
+              ],
+              "description": "承载焦点的标签被移出 DOM 时浏览器不派 focusout，焦点锚点会停在一个已消失的值上：\n容器判自己「焦点在组内」退出 Tab 序列，又没有条目认领得了这个锚点，\n整组零个 Tab 停靠点，键盘用户再也进不来。这里替 DOM 把焦点离场如实上报。"
+            },
+            {
+              "kind": "field",
+              "name": "declaredItemDisabled",
+              "privacy": "private",
+              "readonly": true,
+              "description": "作者声明的条目禁用，只认首见那一份；没写即 undefined，交给 collection 定夺"
+            },
+            {
+              "kind": "method",
+              "name": "declaredDeletable",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "boolean | undefined"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "el",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                }
+              ],
+              "description": "作者声明的可摘：条目上写了 deletable 属性即为真，写 deletable=\"false\" 即为假，\n没写返回 undefined 交给 collection 与整组定夺。\nconnect 写回的是 data-deletable，与这个属性名分开，回读不会读到自己上一帧的产物。"
+            },
+            {
+              "kind": "method",
+              "name": "itemProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "TagGroupItemProps"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "el",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "partsIn",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "HTMLElement[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "owner",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "name",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "api",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "TagGroupApi | null"
+                }
+              },
+              "description": "取数口与命令共用的取法。机器要到进文档才建，\n而这些都是公开面，作者拿到元素随时可能读、可能调——还没进文档时如实给空，不抛错。"
+            },
+            {
+              "kind": "field",
+              "name": "selectedValues",
+              "type": {
+                "text": "string[]"
+              },
+              "description": "此刻选中的那几枚（`value` 属性是受控入参，可能缺席，这里是结果）。\n机器尚未建起时给空数组。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "currentSelectionMode",
+              "type": {
+                "text": "TagGroupSelectionMode"
+              },
+              "description": "生效的选择模式（`selection-mode` 属性缺席时的缺省档只有这里读得到）。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "focusedValue",
+              "type": {
+                "text": "string | null"
+              },
+              "description": "焦点锚点；焦点不在组内时为 null。",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "isSelected",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "这一枚选中没有。机器尚未建起时一律给假。"
+            },
+            {
+              "kind": "method",
+              "name": "setValue",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "next",
+                  "type": {
+                    "text": "string[]"
+                  }
+                }
+              ],
+              "description": "整体改写选中集合。受控时只发 value-change，值归宿主写回。机器尚未建起时不动。"
+            },
+            {
+              "kind": "method",
+              "name": "select",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "只留这一枚；加选用 toggle。机器尚未建起时不动。"
+            },
+            {
+              "kind": "method",
+              "name": "toggle",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "切换这一枚的选中态。机器尚未建起时不动。"
+            },
+            {
+              "kind": "method",
+              "name": "deleteItem",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "摘掉一枚：从选中集合里去掉并派 item-delete，不搬焦点。机器尚未建起时不动。"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "选中集合变化；detail 为 `{ value: string[] }`",
+              "name": "value-change",
+              "type": {
+                "text": "TagGroupValueChangeDetails"
+              }
+            },
+            {
+              "description": "用户要摘掉某一枚；detail 为 `{ value: string }`",
+              "name": "item-delete",
+              "type": {
+                "text": "TagGroupItemDeleteDetails"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "string | string[] | undefined"
+              },
+              "description": "受控选中值（单选简写）；缺省该属性即非受控，多选请用 property",
+              "name": "value",
+              "fieldName": "value"
+            },
+            {
+              "type": {
+                "text": "string | string[] | undefined"
+              },
+              "description": "非受控初始选中值",
+              "name": "default-value",
+              "fieldName": "defaultValue"
+            },
+            {
+              "type": {
+                "text": "TagGroupSelectionMode | undefined"
+              },
+              "description": "选择模式，默认 none",
+              "name": "selection-mode",
+              "fieldName": "selectionMode"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "给出摘除钮，默认关；条目上写 deletable 可逐枚覆盖",
+              "name": "deletable",
+              "fieldName": "deletable"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "整组禁用：改不了选中值，也摘不掉任何一枚",
+              "name": "disabled",
+              "fieldName": "disabled"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "只读：可聚焦、可导航，但改不动",
+              "name": "read-only",
+              "fieldName": "readOnly"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "方向键走到尽头回绕，默认 true；写 loop=\"false\" 关掉",
+              "name": "loop",
+              "fieldName": "loop"
+            },
+            {
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "description": "文字方向，只改写左右方向键语义，默认 ltr",
+              "name": "dir",
+              "fieldName": "direction"
+            },
+            {
+              "type": {
+                "text": "Orientation | undefined"
+              },
+              "description": "方向键轴向，默认 horizontal",
+              "name": "orientation",
+              "fieldName": "orientation"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "连打检索，默认开；写 typeahead=\"false\" 关掉",
+              "name": "typeahead",
+              "fieldName": "typeahead"
+            },
+            {
+              "type": {
+                "text": "TagVariant | undefined"
+              },
+              "description": "视觉变体，沿继承流下发给每一枚标签",
+              "name": "variant",
+              "fieldName": "variant"
+            },
+            {
+              "type": {
+                "text": "Tone | undefined"
+              },
+              "description": "语气",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "Size | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-tag-group",
+          "customElement": true,
+          "cssProperties": [
+            {
+              "name": "--xh-tag-group-cell-gap"
+            },
+            {
+              "name": "--xh-tag-group-gap"
+            },
+            {
+              "name": "--xh-tag-group-item-bg"
+            },
+            {
+              "name": "--xh-tag-group-item-bg-disabled"
+            },
+            {
+              "name": "--xh-tag-group-item-bg-hover"
+            },
+            {
+              "name": "--xh-tag-group-item-border"
+            },
+            {
+              "name": "--xh-tag-group-item-border-disabled"
+            },
+            {
+              "name": "--xh-tag-group-item-border-selected"
+            },
+            {
+              "name": "--xh-tag-group-item-delete-bg-active"
+            },
+            {
+              "name": "--xh-tag-group-item-delete-bg-hover"
+            },
+            {
+              "name": "--xh-tag-group-item-delete-fg"
+            },
+            {
+              "name": "--xh-tag-group-item-delete-radius"
+            },
+            {
+              "name": "--xh-tag-group-item-delete-size"
+            },
+            {
+              "name": "--xh-tag-group-item-fg"
+            },
+            {
+              "name": "--xh-tag-group-item-fg-selected"
+            },
+            {
+              "name": "--xh-tag-group-item-font-size"
+            },
+            {
+              "name": "--xh-tag-group-item-font-weight"
+            },
+            {
+              "name": "--xh-tag-group-item-icon-size"
+            },
+            {
+              "name": "--xh-tag-group-item-px"
+            },
+            {
+              "name": "--xh-tag-group-item-px-deletable"
+            },
+            {
+              "name": "--xh-tag-group-item-py"
+            },
+            {
+              "name": "--xh-tag-group-item-radius"
+            },
+            {
+              "name": "--xh-tag-group-item-shadow"
+            },
+            {
+              "name": "--xh-tag-group-label-fg"
+            },
+            {
+              "name": "--xh-tag-group-label-font-size"
+            },
+            {
+              "name": "--xh-tag-group-label-font-weight"
+            },
+            {
+              "name": "--xh-tag-group-list-gap"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhTagGroupElement",
+          "declaration": {
+            "name": "XhTagGroupElement",
+            "module": "src/elements/tag-group.ts"
           }
         }
       ]
@@ -40551,6 +43931,10 @@
               "name": "clear-trigger"
             },
             {
+              "description": "标签个数；文本由元素按「已用 / 上限」填，作者写了自己的内容即不覆盖；没开 show-count 时收起",
+              "name": "count"
+            },
+            {
               "description": "type=hidden 的表单出口，值是按 delimiter 拼好的整串",
               "name": "hidden-input"
             }
@@ -40636,6 +44020,24 @@
                 "text": "boolean | undefined"
               },
               "attribute": "read-only"
+            },
+            {
+              "kind": "field",
+              "name": "required",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "required"
+            },
+            {
+              "kind": "field",
+              "name": "showCount",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "show-count"
             },
             {
               "kind": "field",
@@ -40809,6 +44211,38 @@
               ]
             },
             {
+              "kind": "field",
+              "name": "ownsText",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new WeakMap<HTMLElement, boolean>()",
+              "description": "首次见到该节点时若已有内容则判为归作者，之后一概不碰。"
+            },
+            {
+              "kind": "method",
+              "name": "fillOwnedText",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "el",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "text",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ]
+            },
+            {
               "kind": "method",
               "name": "wire",
               "privacy": "protected",
@@ -40899,6 +44333,22 @@
               "description": "只读：仍可聚焦与复制，加删改都走不通",
               "name": "read-only",
               "fieldName": "readOnly"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "必填标注：经 aria-required 上报，星号由外面的字段壳画",
+              "name": "required",
+              "fieldName": "required"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "显出计数部件；关掉时该部件收起",
+              "name": "show-count",
+              "fieldName": "showCount"
             },
             {
               "type": {
@@ -41064,6 +44514,18 @@
               "name": "--xh-tags-input-control-shadow"
             },
             {
+              "name": "--xh-tags-input-count-fg"
+            },
+            {
+              "name": "--xh-tags-input-count-fg-at-max"
+            },
+            {
+              "name": "--xh-tags-input-count-fg-disabled"
+            },
+            {
+              "name": "--xh-tags-input-count-font-size"
+            },
+            {
               "name": "--xh-tags-input-delete-bg"
             },
             {
@@ -41202,8 +44664,20 @@
               "name": "input"
             },
             {
+              "description": "输入框前的装饰段（货币符、单位、图标）；对读屏隐藏",
+              "name": "prefix"
+            },
+            {
+              "description": "输入框后的装饰段；对读屏隐藏",
+              "name": "suffix"
+            },
+            {
               "description": "清空按钮，须是原生 button；不占 Tab 位，名字取 translations.clearTrigger；清不了时收起",
               "name": "clear-trigger"
+            },
+            {
+              "description": "字数；文本由元素按 `已用 / 上限` 填，作者写了自己的内容即不覆盖；没开 show-count 时收起",
+              "name": "count"
             }
           ],
           "members": [
@@ -41317,6 +44791,15 @@
             },
             {
               "kind": "field",
+              "name": "showCount",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "show-count"
+            },
+            {
+              "kind": "field",
               "name": "autoSize",
               "privacy": "public",
               "type": {
@@ -41394,6 +44877,15 @@
               "readonly": true
             },
             {
+              "kind": "field",
+              "name": "count",
+              "type": {
+                "text": "number"
+              },
+              "description": "当前字数，即值的长度。机器尚未建起时为 0。",
+              "readonly": true
+            },
+            {
               "kind": "method",
               "name": "setValue",
               "return": {
@@ -41420,6 +44912,38 @@
                 }
               },
               "description": "走清空意图，canClear 不成立时按兵不动；无条件清空请用 setValue('')。\n机器尚未建起时是空操作。"
+            },
+            {
+              "kind": "field",
+              "name": "ownsText",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new WeakMap<HTMLElement, boolean>()",
+              "description": "首次见到该节点时若已有内容则判为归作者，之后一概不碰。"
+            },
+            {
+              "kind": "method",
+              "name": "fillOwnedText",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "el",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "text",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ]
             },
             {
               "kind": "method",
@@ -41532,6 +45056,14 @@
             },
             {
               "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "显出字数部件；关掉时该部件收起",
+              "name": "show-count",
+              "fieldName": "showCount"
+            },
+            {
+              "type": {
                 "text": "TextFieldSchema['props']['autoSize'] | undefined"
               },
               "description": "布尔走 auto-size 属性；行数界限对象进不了属性，只作为 property 赋。",
@@ -41595,6 +45127,15 @@
               "name": "--xh-text-field-action-size"
             },
             {
+              "name": "--xh-text-field-affix-fg"
+            },
+            {
+              "name": "--xh-text-field-affix-fg-disabled"
+            },
+            {
+              "name": "--xh-text-field-affix-font-size"
+            },
+            {
               "name": "--xh-text-field-control-bg"
             },
             {
@@ -41641,6 +45182,18 @@
             },
             {
               "name": "--xh-text-field-control-shadow"
+            },
+            {
+              "name": "--xh-text-field-count-fg"
+            },
+            {
+              "name": "--xh-text-field-count-fg-at-max"
+            },
+            {
+              "name": "--xh-text-field-count-fg-disabled"
+            },
+            {
+              "name": "--xh-text-field-count-font-size"
             },
             {
               "name": "--xh-text-field-gap"
@@ -42209,6 +45762,9 @@
             },
             {
               "name": "--xh-time-field-segment-px"
+            },
+            {
+              "name": "--xh-time-field-segment-py"
             },
             {
               "name": "--xh-time-field-segment-radius"
@@ -43114,6 +46670,10 @@
               "name": "item"
             },
             {
+              "description": "与内容对置的那一列，装这一条的坐标（日期、版本号）",
+              "name": "label"
+            },
+            {
               "description": "事件那一刻的圆点，对读屏隐藏，颜色随所属条目的 tone 走",
               "name": "indicator"
             },
@@ -43288,6 +46848,12 @@
             },
             {
               "name": "--xh-timeline-item-gap"
+            },
+            {
+              "name": "--xh-timeline-label-fg"
+            },
+            {
+              "name": "--xh-timeline-label-font-size"
             },
             {
               "name": "--xh-timeline-time-fg"
@@ -43954,12 +47520,20 @@
               "name": "root"
             },
             {
+              "description": "严重度指示符（对读屏隐藏）；不渲染它时字形由 root 的伪元素兜住",
+              "name": "indicator"
+            },
+            {
               "description": "标题，aria-labelledby 的目标",
               "name": "title"
             },
             {
               "description": "操作按钮：先发 action 再进入退场",
               "name": "action-trigger"
+            },
+            {
+              "description": "倒计时条；不自动消失时收起",
+              "name": "progress"
             },
             {
               "description": "关闭按钮；closable=false 时转原生 disabled 并收起",
@@ -44038,6 +47612,15 @@
                 "text": "boolean | undefined"
               },
               "attribute": "pause-on-page-idle"
+            },
+            {
+              "kind": "field",
+              "name": "paused",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "paused"
             },
             {
               "kind": "field",
@@ -44192,6 +47775,14 @@
               "description": "页面切到后台时按住计时，默认关",
               "name": "pause-on-page-idle",
               "fieldName": "pauseOnPageIdle"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "由宿主整摞一起按住计时，默认关；与指针、焦点那几路并存",
+              "name": "paused",
+              "fieldName": "paused"
             }
           ],
           "superclass": {
@@ -44277,6 +47868,15 @@
               "name": "--xh-toast-leading"
             },
             {
+              "name": "--xh-toast-progress-bg"
+            },
+            {
+              "name": "--xh-toast-progress-duration"
+            },
+            {
+              "name": "--xh-toast-progress-thickness"
+            },
+            {
               "name": "--xh-toast-px"
             },
             {
@@ -44333,6 +47933,14 @@
             {
               "description": "开关按钮，须是原生 `<button>` 并自带 value 属性标识身份",
               "name": "item"
+            },
+            {
+              "description": "段间的装饰线，可选；读屏不念",
+              "name": "separator"
+            },
+            {
+              "description": "表单出口，可选；须是原生 `<input>`",
+              "name": "hidden-input"
             }
           ],
           "members": [
@@ -44400,6 +48008,15 @@
             },
             {
               "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "ActionVariant | undefined"
+              },
+              "attribute": "variant"
+            },
+            {
+              "kind": "field",
               "name": "tone",
               "privacy": "public",
               "type": {
@@ -44415,6 +48032,24 @@
                 "text": "Size | undefined"
               },
               "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "fullWidth",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "full-width"
+            },
+            {
+              "kind": "field",
+              "name": "name",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "name"
             },
             {
               "kind": "field",
@@ -44599,6 +48234,14 @@
             },
             {
               "type": {
+                "text": "ActionVariant | undefined"
+              },
+              "description": "形态，决定段的底色与描边怎么用",
+              "name": "variant",
+              "fieldName": "variant"
+            },
+            {
+              "type": {
                 "text": "Tone | undefined"
               },
               "description": "语气",
@@ -44612,6 +48255,22 @@
               "description": "尺寸",
               "name": "size",
               "fieldName": "size"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "撑满行宽，每段等分剩余空间",
+              "name": "full-width",
+              "fieldName": "fullWidth"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "表单字段名；给了它隐藏输入才带 name 并参与提交",
+              "name": "name",
+              "fieldName": "name"
             },
             {
               "type": {
@@ -44718,6 +48377,24 @@
             },
             {
               "name": "--xh-toggle-group-item-shadow"
+            },
+            {
+              "name": "--xh-toggle-group-separator-color"
+            },
+            {
+              "name": "--xh-toggle-group-separator-color-disabled"
+            },
+            {
+              "name": "--xh-toggle-group-separator-gap"
+            },
+            {
+              "name": "--xh-toggle-group-separator-inset"
+            },
+            {
+              "name": "--xh-toggle-group-separator-radius"
+            },
+            {
+              "name": "--xh-toggle-group-separator-thickness"
             }
           ]
         }
@@ -44813,6 +48490,24 @@
             },
             {
               "kind": "field",
+              "name": "iconOnly",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "icon-only"
+            },
+            {
+              "kind": "field",
+              "name": "fullWidth",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "full-width"
+            },
+            {
+              "kind": "field",
               "name": "notify",
               "privacy": "private",
               "readonly": true
@@ -44902,6 +48597,22 @@
               "description": "尺寸",
               "name": "size",
               "fieldName": "size"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "只有图标：左右内距清零、宽高相等；作者须自行给可及名",
+              "name": "icon-only",
+              "fieldName": "iconOnly"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "撑满行宽",
+              "name": "full-width",
+              "fieldName": "fullWidth"
             }
           ],
           "superclass": {
@@ -44939,6 +48650,9 @@
               "name": "--xh-toggle-h"
             },
             {
+              "name": "--xh-toggle-icon-size"
+            },
+            {
               "name": "--xh-toggle-px"
             },
             {
@@ -44971,7 +48685,7 @@
           "name": "XhToolCallElement",
           "cssParts": [
             {
-              "description": "外壳，承载 data-state（开合）/ data-loading",
+              "description": "外壳，承载 data-state（开合）/ data-loading / data-settled / data-errored 与三视觉轴",
               "name": "root"
             },
             {
@@ -45137,6 +48851,15 @@
             },
             {
               "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "ControlVariant | undefined"
+              },
+              "attribute": "variant"
+            },
+            {
+              "kind": "field",
               "name": "tone",
               "privacy": "public",
               "type": {
@@ -45262,6 +48985,14 @@
               "description": "禁用折叠开关",
               "name": "disabled",
               "fieldName": "disabled"
+            },
+            {
+              "type": {
+                "text": "ControlVariant | undefined"
+              },
+              "description": "形态：描边（缺省档）/ 底色分区 / 无壳内联",
+              "name": "variant",
+              "fieldName": "variant"
             },
             {
               "type": {
@@ -45397,6 +49128,9 @@
             },
             {
               "name": "--xh-tool-call-trigger-gap"
+            },
+            {
+              "name": "--xh-tool-call-trigger-radius"
             }
           ]
         }
@@ -45483,6 +49217,15 @@
                 "text": "boolean | undefined"
               },
               "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "ToolbarVariant | undefined"
+              },
+              "attribute": "variant"
             },
             {
               "kind": "field",
@@ -45607,6 +49350,14 @@
               "description": "整条禁用：条目全转 aria-disabled，方向键不再接管",
               "name": "disabled",
               "fieldName": "disabled"
+            },
+            {
+              "type": {
+                "text": "ToolbarVariant | undefined"
+              },
+              "description": "形态，缺省 surface；plain 让工具条不画自己那块面",
+              "name": "variant",
+              "fieldName": "variant"
             },
             {
               "type": {
@@ -46088,6 +49839,14 @@
             {
               "description": "\"第 m 步，共 n 步\"（aria-live=polite）；作者没写内容时由元素填",
               "name": "progress-text"
+            },
+            {
+              "description": "圆点组（aria-hidden，带 data-count）",
+              "name": "progress-indicator"
+            },
+            {
+              "description": "一步一个的圆点，可自带 index 属性；走过的带 data-complete，当前那颗带 data-current",
+              "name": "progress-dot"
             },
             {
               "description": "上一步（首步时原生 disabled）",
@@ -46668,10 +50427,22 @@
               "name": "--xh-tour-positioner-padding"
             },
             {
+              "name": "--xh-tour-progress-dot-bg"
+            },
+            {
+              "name": "--xh-tour-progress-dot-bg-complete"
+            },
+            {
+              "name": "--xh-tour-progress-dot-bg-current"
+            },
+            {
               "name": "--xh-tour-progress-fg"
             },
             {
               "name": "--xh-tour-progress-font-size"
+            },
+            {
+              "name": "--xh-tour-progress-indicator-gap"
             },
             {
               "name": "--xh-tour-px"
@@ -46763,6 +50534,22 @@
             {
               "description": "role=listbox 容器，键盘在此收口，也是 roving tabindex 的兜底位",
               "name": "list"
+            },
+            {
+              "description": "空态占位，须放在面板里当 list 的兄弟；本侧没有可见条目时由元素放它出面",
+              "name": "empty"
+            },
+            {
+              "description": "在途占位，与空态占位同一个位置，取数期间顶上来",
+              "name": "loading"
+            },
+            {
+              "description": "role=group 分组容器，须自带 value 属性标识身份；条目挂在它里面，两侧各挂一份",
+              "name": "group"
+            },
+            {
+              "description": "分组标题（本组 aria-labelledby 的目标），须放在 group 里",
+              "name": "group-label"
             },
             {
               "description": "role=option 条目，须自带 value 属性标识身份；禁用写在 collection 里，不写在节点上",
@@ -46864,6 +50651,51 @@
                 "text": "boolean | undefined"
               },
               "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "readOnly",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "read-only"
+            },
+            {
+              "kind": "field",
+              "name": "invalid",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "invalid"
+            },
+            {
+              "kind": "field",
+              "name": "loading",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "loading"
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "Tone | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "Size | undefined"
+              },
+              "attribute": "size"
             },
             {
               "kind": "field",
@@ -47038,6 +50870,46 @@
               "type": {
                 "text": "boolean | undefined"
               },
+              "description": "只读：两侧照常浏览与搜索，但勾选改不动、也搬不动",
+              "name": "read-only",
+              "fieldName": "readOnly"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "校验失败标注",
+              "name": "invalid",
+              "fieldName": "invalid"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "条目还在取：两侧列表报 aria-busy，在途占位顶上来、空态占位让位",
+              "name": "loading",
+              "fieldName": "loading"
+            },
+            {
+              "type": {
+                "text": "Tone | undefined"
+              },
+              "description": "语气",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "Size | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
               "description": "只能往右不能往回：往回搬那条路封死，右侧也不再接受勾选",
               "name": "one-way",
               "fieldName": "oneWay"
@@ -47097,10 +50969,43 @@
               "name": "--xh-transfer-checkbox-size"
             },
             {
+              "name": "--xh-transfer-empty-fg"
+            },
+            {
+              "name": "--xh-transfer-empty-font-size"
+            },
+            {
+              "name": "--xh-transfer-empty-px"
+            },
+            {
+              "name": "--xh-transfer-empty-py"
+            },
+            {
               "name": "--xh-transfer-fg"
             },
             {
               "name": "--xh-transfer-gap"
+            },
+            {
+              "name": "--xh-transfer-group-gap"
+            },
+            {
+              "name": "--xh-transfer-group-label-fg"
+            },
+            {
+              "name": "--xh-transfer-group-label-font-size"
+            },
+            {
+              "name": "--xh-transfer-group-label-font-weight"
+            },
+            {
+              "name": "--xh-transfer-group-label-px"
+            },
+            {
+              "name": "--xh-transfer-group-label-py"
+            },
+            {
+              "name": "--xh-transfer-group-spacing"
             },
             {
               "name": "--xh-transfer-icon-size"
@@ -47142,6 +51047,18 @@
               "name": "--xh-transfer-list-py"
             },
             {
+              "name": "--xh-transfer-loading-fg"
+            },
+            {
+              "name": "--xh-transfer-loading-font-size"
+            },
+            {
+              "name": "--xh-transfer-loading-px"
+            },
+            {
+              "name": "--xh-transfer-loading-py"
+            },
+            {
               "name": "--xh-transfer-panel-bg"
             },
             {
@@ -47149,6 +51066,9 @@
             },
             {
               "name": "--xh-transfer-panel-border"
+            },
+            {
+              "name": "--xh-transfer-panel-border-invalid"
             },
             {
               "name": "--xh-transfer-panel-count-fg"
@@ -47340,6 +51260,18 @@
               "name": "branch-content"
             },
             {
+              "description": "空态占位，须放在 content 里当 tree 的兄弟；给了 collection 时由元素按条数收放，节点手写时归作者",
+              "name": "empty"
+            },
+            {
+              "description": "在途占位，与空态占位同一个位置，取数期间顶上来",
+              "name": "loading"
+            },
+            {
+              "description": "浮层底部的操作区，写在 content 里、tree 的兄弟；不进树的拥有关系，方向键与连打检索也走不到",
+              "name": "footer"
+            },
+            {
               "description": "type=hidden 的表单出口，省略该节点即不参与表单",
               "name": "hidden-input"
             }
@@ -47467,6 +51399,15 @@
                 "text": "boolean | undefined"
               },
               "attribute": "invalid"
+            },
+            {
+              "kind": "field",
+              "name": "loading",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "loading"
             },
             {
               "kind": "field",
@@ -47872,6 +51813,14 @@
             },
             {
               "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "节点还在取：树报 aria-busy，在途占位顶上来、空态占位让位",
+              "name": "loading",
+              "fieldName": "loading"
+            },
+            {
+              "type": {
                 "text": "ControlVariant | undefined"
               },
               "description": "视觉变体",
@@ -48062,6 +52011,36 @@
               "name": "--xh-tree-select-control-shadow"
             },
             {
+              "name": "--xh-tree-select-empty-fg"
+            },
+            {
+              "name": "--xh-tree-select-empty-font-size"
+            },
+            {
+              "name": "--xh-tree-select-empty-px"
+            },
+            {
+              "name": "--xh-tree-select-empty-py"
+            },
+            {
+              "name": "--xh-tree-select-footer-border"
+            },
+            {
+              "name": "--xh-tree-select-footer-fg"
+            },
+            {
+              "name": "--xh-tree-select-footer-font-size"
+            },
+            {
+              "name": "--xh-tree-select-footer-gap"
+            },
+            {
+              "name": "--xh-tree-select-footer-px"
+            },
+            {
+              "name": "--xh-tree-select-footer-py"
+            },
+            {
               "name": "--xh-tree-select-gap"
             },
             {
@@ -48122,6 +52101,18 @@
               "name": "--xh-tree-select-layer"
             },
             {
+              "name": "--xh-tree-select-loading-fg"
+            },
+            {
+              "name": "--xh-tree-select-loading-font-size"
+            },
+            {
+              "name": "--xh-tree-select-loading-px"
+            },
+            {
+              "name": "--xh-tree-select-loading-py"
+            },
+            {
               "name": "--xh-tree-select-placeholder-fg"
             },
             {
@@ -48163,7 +52154,7 @@
           "name": "XhTreeElement",
           "cssParts": [
             {
-              "description": "组件根容器",
+              "description": "组件根容器，承载 data-variant",
               "name": "root"
             },
             {
@@ -48177,6 +52168,14 @@
             {
               "description": "role=tree 容器，键盘在此收口，也是 roving tabindex 的兜底位",
               "name": "tree"
+            },
+            {
+              "description": "空态占位，须放在 root 里当 tree 的兄弟；给了 collection 时由元素按条数收放，节点手写时归作者",
+              "name": "empty"
+            },
+            {
+              "description": "在途占位，与空态占位同一个位置，取数期间顶上来",
+              "name": "loading"
             },
             {
               "description": "role=treeitem 叶子，须自带 value 属性标识身份",
@@ -48244,6 +52243,15 @@
               "type": {
                 "text": "TreeNode[] | undefined"
               }
+            },
+            {
+              "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "TreeSchema['props']['variant'] | undefined"
+              },
+              "attribute": "variant"
             },
             {
               "kind": "field",
@@ -48330,6 +52338,15 @@
                 "text": "boolean | undefined"
               },
               "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "loading",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "loading"
             },
             {
               "kind": "field",
@@ -48499,6 +52516,14 @@
           "attributes": [
             {
               "type": {
+                "text": "TreeSchema['props']['variant'] | undefined"
+              },
+              "description": "外框形态：surface 带描边与底色（缺省），plain 只留行",
+              "name": "variant",
+              "fieldName": "variant"
+            },
+            {
+              "type": {
                 "text": "boolean | undefined"
               },
               "description": "复选，默认关闭",
@@ -48576,6 +52601,13 @@
               "description": "节点可以拖着搬家，默认关；不叫 draggable 是因为那是 HTML 全局属性，写在元素上浏览器会拿它接管原生拖放，指针就到不了这里",
               "name": "node-draggable",
               "fieldName": "nodeDraggable"
+            },
+            {
+              "name": "loading",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "fieldName": "loading"
             }
           ],
           "superclass": {
@@ -48658,6 +52690,18 @@
               "name": "--xh-tree-drop-line"
             },
             {
+              "name": "--xh-tree-empty-fg"
+            },
+            {
+              "name": "--xh-tree-empty-font-size"
+            },
+            {
+              "name": "--xh-tree-empty-px"
+            },
+            {
+              "name": "--xh-tree-empty-py"
+            },
+            {
               "name": "--xh-tree-fg"
             },
             {
@@ -48686,6 +52730,18 @@
             },
             {
               "name": "--xh-tree-leaf-row-gap"
+            },
+            {
+              "name": "--xh-tree-loading-fg"
+            },
+            {
+              "name": "--xh-tree-loading-font-size"
+            },
+            {
+              "name": "--xh-tree-loading-px"
+            },
+            {
+              "name": "--xh-tree-loading-py"
             },
             {
               "name": "--xh-tree-max-h"
@@ -48936,7 +52992,12 @@
             "module": "/src/element-base"
           },
           "tagName": "xh-truncate",
-          "customElement": true
+          "customElement": true,
+          "cssProperties": [
+            {
+              "name": "--xh-truncate-lines"
+            }
+          ]
         }
       ],
       "exports": [
@@ -48956,11 +53017,11 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-typography>` —— Light-DOM 行为宿主，无状态机，把 connectTypography 产出打到各角色节点。\n\n标签全由作者写：`<h2 data-xh-part=\"heading\">`、`<p data-xh-part=\"paragraph\">`、\n`<span data-xh-part=\"text\">`、`<a data-xh-part=\"link\">`，皮肤认的是 data-scope + data-part。\n标题的字号档位取节点上的 `level`，行内文字的形态与语气取节点上的 `variant` 与 `tone`。\n运行期改写这三个属性不触发重新接线，需作者自行 requestUpdate。",
+          "description": "`<xh-typography>` —— Light-DOM 行为宿主，无状态机，把 connectTypography 产出打到各角色节点。\n\n标签全由作者写：`<h2 data-xh-part=\"heading\">`、`<p data-xh-part=\"paragraph\">`、\n`<span data-xh-part=\"text\">`、`<a data-xh-part=\"link\">`，皮肤认的是 data-scope + data-part。\n标题的字号档位取节点上的 `level`，行内文字的形态、语气与字重取节点上的 `variant`、`tone` 与 `weight`。\n运行期改写这四个属性不触发重新接线，需作者自行 requestUpdate。",
           "name": "XhTypographyElement",
           "cssParts": [
             {
-              "description": "正文块容器，管段间距与最大行宽，承载 data-size",
+              "description": "正文块容器，管段间距与最大行宽，承载 data-size / data-align / data-weight",
               "name": "root"
             },
             {
@@ -48972,12 +53033,16 @@
               "name": "paragraph"
             },
             {
-              "description": "行内文字，写 variant=\"muted|strong|code\" 换形态、tone 换语气色",
+              "description": "行内文字，写 variant=\"muted|strong|code\" 换形态、tone 换语气色、weight 换字重",
               "name": "text"
             },
             {
               "description": "行内链接",
               "name": "link"
+            },
+            {
+              "description": "富文本容器，外来的 HTML 铺进来按标签上样式",
+              "name": "prose"
             }
           ],
           "members": [
@@ -49000,6 +53065,24 @@
               "attribute": "size"
             },
             {
+              "kind": "field",
+              "name": "align",
+              "privacy": "public",
+              "type": {
+                "text": "TypographyAlign | undefined"
+              },
+              "attribute": "align"
+            },
+            {
+              "kind": "field",
+              "name": "weight",
+              "privacy": "public",
+              "type": {
+                "text": "TypographyWeight | undefined"
+              },
+              "attribute": "weight"
+            },
+            {
               "kind": "method",
               "name": "wire",
               "privacy": "protected",
@@ -49018,6 +53101,22 @@
               "description": "尺寸，整块正文的字号与段间距跟着换档",
               "name": "size",
               "fieldName": "size"
+            },
+            {
+              "type": {
+                "text": "TypographyAlign | undefined"
+              },
+              "description": "对齐，整块正文跟着换",
+              "name": "align",
+              "fieldName": "align"
+            },
+            {
+              "type": {
+                "text": "TypographyWeight | undefined"
+              },
+              "description": "字重，整块正文跟着换",
+              "name": "weight",
+              "fieldName": "weight"
             }
           ],
           "superclass": {
@@ -49089,6 +53188,93 @@
             },
             {
               "name": "--xh-typography-measure"
+            },
+            {
+              "name": "--xh-typography-prose-block-gap"
+            },
+            {
+              "name": "--xh-typography-prose-cell-border"
+            },
+            {
+              "name": "--xh-typography-prose-cell-px"
+            },
+            {
+              "name": "--xh-typography-prose-cell-py"
+            },
+            {
+              "name": "--xh-typography-prose-fg"
+            },
+            {
+              "name": "--xh-typography-prose-font-size"
+            },
+            {
+              "name": "--xh-typography-prose-h1"
+            },
+            {
+              "name": "--xh-typography-prose-h2"
+            },
+            {
+              "name": "--xh-typography-prose-h3"
+            },
+            {
+              "name": "--xh-typography-prose-h4"
+            },
+            {
+              "name": "--xh-typography-prose-h5"
+            },
+            {
+              "name": "--xh-typography-prose-h6"
+            },
+            {
+              "name": "--xh-typography-prose-heading-fg"
+            },
+            {
+              "name": "--xh-typography-prose-heading-font-weight"
+            },
+            {
+              "name": "--xh-typography-prose-heading-gap"
+            },
+            {
+              "name": "--xh-typography-prose-item-gap"
+            },
+            {
+              "name": "--xh-typography-prose-leading"
+            },
+            {
+              "name": "--xh-typography-prose-link-fg"
+            },
+            {
+              "name": "--xh-typography-prose-link-radius"
+            },
+            {
+              "name": "--xh-typography-prose-list-ps"
+            },
+            {
+              "name": "--xh-typography-prose-pre-bg"
+            },
+            {
+              "name": "--xh-typography-prose-pre-padding"
+            },
+            {
+              "name": "--xh-typography-prose-pre-radius"
+            },
+            {
+              "name": "--xh-typography-prose-quote-border"
+            },
+            {
+              "name": "--xh-typography-prose-quote-fg"
+            },
+            {
+              "name": "--xh-typography-prose-quote-ps"
+            },
+            {
+              "name": "--xh-typography-prose-rule-border"
+            },
+            {
+              "name": "--xh-typography-prose-strong-font-weight"
+            },
+            {
+              "name": "--xh-typography-prose-th-font-weight"
             },
             {
               "name": "--xh-typography-text-fg-muted"
@@ -49563,6 +53749,33 @@
               "attribute": "opacity"
             },
             {
+              "kind": "field",
+              "name": "fontFamily",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "font-family"
+            },
+            {
+              "kind": "field",
+              "name": "image",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "image"
+            },
+            {
+              "kind": "field",
+              "name": "imageSize",
+              "privacy": "public",
+              "type": {
+                "text": "WatermarkImageSize | undefined"
+              },
+              "description": "图片尺寸是个对象，只走 property，不设特性。"
+            },
+            {
               "kind": "method",
               "name": "wire",
               "privacy": "protected",
@@ -49613,6 +53826,22 @@
               "description": "印子的深浅，0 到 1，缺省 0.15",
               "name": "opacity",
               "fieldName": "opacity"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "印文字用的字体，缺省 sans-serif；图样取不到页面字体，字体名要写全",
+              "name": "font-family",
+              "fieldName": "fontFamily"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "印在文字上方的图片，只收 data:image/ 开头的内联图片；印出来是剪影",
+              "name": "image",
+              "fieldName": "image"
             }
           ],
           "superclass": {

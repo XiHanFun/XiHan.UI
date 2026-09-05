@@ -47,6 +47,7 @@ import {
   imageCropperSuite,
   imageSuite,
   infiniteScrollSuite,
+  inputGroupSuite,
   jsonViewerSuite,
   layoutSuite,
   listSuite,
@@ -225,6 +226,7 @@ const SUITES: readonly ConformanceSuite[] = [
   reasoningSuite,
   questionFlowSuite,
   promptInputSuite,
+  inputGroupSuite,
 ]
 
 /** 暂不做逐帧比对的套件与理由。它们的跨适配器保证由两侧各自跑同一份 conformance 规格提供。 */
@@ -253,6 +255,7 @@ const EXCLUDED: Readonly<Record<string, string>> = {
   'steps': '两端作者侧的禁用声明 API 不同：Vue 是组件 prop（被消费、不落 DOM），WC 要作者写 aria-disabled，逐帧比对不适用',
   'switch': 'WC 侧 thumb 由作者手写，Vue 版组件内部渲染，fixture 不同构',
   'tabs': '两端作者侧的禁用声明 API 不同：Vue 是组件 prop（被消费、不落 DOM），WC 要作者写 aria-disabled，逐帧比对不适用',
+  'tag-group': '两端作者侧的禁用声明 API 不同：Vue 是组件 prop（被消费、不落 DOM），WC 要作者写 aria-disabled，逐帧比对不适用',
   'toggle-group': '两端作者侧的禁用声明 API 不同：Vue 是组件 prop（被消费、不落 DOM），WC 要作者写 aria-disabled，逐帧比对不适用',
   'toolbar': '两端作者侧的禁用声明 API 不同：Vue 是组件 prop（被消费、不落 DOM），WC 要作者写 aria-disabled，逐帧比对不适用',
 }

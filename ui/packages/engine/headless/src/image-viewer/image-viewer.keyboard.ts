@@ -14,5 +14,8 @@ export const imageViewerKeyboard: KeyboardTable = {
     { id: 'image-viewer.kbd.next', keys: ['ArrowRight'], when: 'open', does: '下一张' },
     { id: 'image-viewer.kbd.first', keys: ['Home'], when: 'open', does: '跳到第一张' },
     { id: 'image-viewer.kbd.last', keys: ['End'], when: 'open', does: '跳到最后一张' },
+    { id: 'image-viewer.kbd.zoom-in', keys: ['+', '='], when: 'open', does: '放大一档（zoomStep），到 maxScale 停住' },
+    { id: 'image-viewer.kbd.zoom-out', keys: ['-'], when: 'open', does: '缩小一档，到 minScale 停住' },
+    { id: 'image-viewer.kbd.reset', keys: ['0'], when: 'open', does: '缩放、旋转、翻转与平移一并复位' },
   ],
 }

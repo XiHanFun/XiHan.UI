@@ -98,11 +98,13 @@ export const splitterMachine = createMachine({
       },
     },
     dragging: {
-      effects: ['trackPointer'],
+      effects: ['trackPointer', 'trackCancelKey'],
       on: {
         'DRAG.MOVE': { actions: ['dragBoundary'] },
         // 收尾通知只在这里发一次，拖动途中 onSizesChange 已连发多次
-        'DRAG.END': { target: 'idle', actions: ['invokeChangeEnd'] },
+        'DRAG.END': { target: 'idle', actions: ['invokeChangeEnd', 'clearDrag'] },
+        // 取消不发收尾通知：这一场当作没发生过
+        'DRAG.CANCEL': { target: 'idle', actions: ['cancelDrag'] },
       },
     },
   },
@@ -212,6 +214,16 @@ export const splitterMachine = createMachine({
           index: context.get('activeIndex'),
         })
       },
+      clearDrag: ({ refs }) => {
+        refs.set('drag', null)
+      },
+      // 布局退回按下那一刻的快照；受控时这一步只发 onSizesChange，由宿主写回
+      cancelDrag: ({ context, refs }) => {
+        const session = refs.get('drag')
+        if (session)
+          context.set('sizes', [...session.sizes])
+        refs.set('drag', null)
+      },
     },
     effects: {
       /**
@@ -238,10 +250,24 @@ export const splitterMachine = createMachine({
           onMove: ({ point }) => send({ type: 'DRAG.MOVE', point }),
           onEnd: () => send({ type: 'DRAG.END' }),
         })
-        return () => {
-          refs.set('drag', null)
-          session.dispose()
+        // 快照留给离开 dragging 的那两条转移去清：效应的收尾排在转移动作之前，
+        // 在这里清掉，取消动作就读不到要还原的布局了
+        return () => session.dispose()
+      },
+
+      /** 拖动期间按 Escape 放弃这一场。监听挂在文档上：指针拖出容器时焦点未必还在分隔条上。 */
+      trackCancelKey: ({ refs, send }) => {
+        const doc = resolveSessionDoc(refs.get('getRootEl')())
+        if (!doc)
+          return undefined
+        const onKeyDown = (event: KeyboardEvent): void => {
+          if (event.key !== 'Escape')
+            return
+          event.preventDefault()
+          send({ type: 'DRAG.CANCEL' })
         }
+        doc.addEventListener('keydown', onKeyDown)
+        return () => doc.removeEventListener('keydown', onKeyDown)
       },
     },
   },

@@ -32,6 +32,8 @@ export const XhMentionRoot = defineComponent({
     value: { type: String, default: undefined },
     defaultValue: { type: String, default: undefined },
     disabled: Boolean,
+    loading: Boolean,
+    name: { type: String, default: undefined },
     readOnly: Boolean,
     invalid: Boolean,
     placeholder: { type: String, default: undefined },
@@ -57,6 +59,8 @@ export const XhMentionRoot = defineComponent({
     default?: (props: MentionRootSlotProps) => VNode[]
     /** 铺开 collection 时每条候选的文本插槽。 */
     item?: (props: MentionNodeMeta) => VNode[]
+    /** 铺开 collection 时空态里那句话；不写走内建英文。 */
+    empty?: () => VNode[]
   }>,
   setup(props, { slots, emit }) {
     const notifyValue: MentionProps['onValueChange'] = (details) => {
@@ -93,9 +97,18 @@ export const XhMentionRoot = defineComponent({
             close: ctx.api.value.close,
           })
         : props.collection
-          ? renderDefaultTree(ctx.api.value.collection, slots.item)
+          ? renderDefaultTree(ctx.api.value.collection, slots.item, slots.empty)
           : [],
     )
+  },
+})
+
+/** 标题；必须是原生 label，getLabelProps 的 for 恒写向输入框。 */
+export const XhMentionLabel = defineComponent({
+  name: 'XhMentionLabel',
+  setup(_, { slots }) {
+    const ctx = useMentionContext()
+    return () => h('label', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
   },
 })
 
@@ -154,6 +167,24 @@ export const XhMentionContent = defineComponent({
   },
 })
 
+/** 一条候选都没有时显出的空态；与候选面板同级。 */
+export const XhMentionEmpty = defineComponent({
+  name: 'XhMentionEmpty',
+  setup(_, { slots }) {
+    const ctx = useMentionContext()
+    return () => h('div', ctx.api.value.getEmptyProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+/** 候选还在取时顶上来的在途占位；与候选面板同级。 */
+export const XhMentionLoading = defineComponent({
+  name: 'XhMentionLoading',
+  setup(_, { slots }) {
+    const ctx = useMentionContext()
+    return () => h('div', ctx.api.value.getLoadingProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhMentionItem = defineComponent({
   name: 'XhMentionItem',
   props: {
@@ -191,7 +222,9 @@ export const XhMentionItemText = defineComponent({
 function renderDefaultTree(
   collection: readonly MentionNodeMeta[],
   itemSlot?: (node: MentionNodeMeta) => VNode[],
+  emptySlot?: () => VNode[],
 ): VNode[] {
+  const emptyText = emptySlot?.() ?? 'No results'
   return [
     h(XhMentionInput),
     h(XhMentionPositioner, null, () => [
@@ -200,6 +233,7 @@ function renderDefaultTree(
           h(XhMentionItemText, null, () => itemSlot?.(node) ?? node.label),
         ]),
       )),
+      h(XhMentionEmpty, null, () => emptyText),
     ]),
   ]
 }

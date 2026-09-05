@@ -222,6 +222,15 @@ export const XhFileUploadItemPreview = defineComponent({
   },
 })
 
+export const XhFileUploadItemProgress = defineComponent({
+  name: 'XhFileUploadItemProgress',
+  setup(_, { slots }) {
+    const ctx = useFileUploadContext()
+    const { item } = useFileUploadItemContext()
+    return () => h('div', ctx.api.value.getItemProgressProps(item.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhFileUploadItemDeleteTrigger = defineComponent({
   name: 'XhFileUploadItemDeleteTrigger',
   setup(_, { slots }) {

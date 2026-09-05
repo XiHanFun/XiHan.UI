@@ -26,8 +26,48 @@
     pointer-events: none;
   }
 
+  /*
+   * 取下一页的按钮：与哨兵同一条通路的键盘入口，摆在列表末尾自成一行。
+   * 高度只给下限，作者往里塞图标或两行文字都撑得开。
+   */
+  [data-scope='infinite-scroll'][data-part='load-more-trigger'] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--xh-infinite-scroll-load-more-gap, var(--xh-control-gap-md));
+    min-block-size: var(--xh-infinite-scroll-load-more-h, var(--xh-control-h-md));
+    padding-block: 0;
+    padding-inline: var(--xh-infinite-scroll-load-more-px, var(--xh-control-px-md));
+    border: var(--xh-stroke-thin) solid var(--xh-infinite-scroll-load-more-border, var(--xh-border-control));
+    border-radius: var(--xh-infinite-scroll-load-more-radius, var(--xh-shape-control));
+    background: var(--xh-infinite-scroll-load-more-bg, var(--xh-bg-canvas));
+    color: var(--xh-infinite-scroll-load-more-fg, var(--xh-fg-default));
+    font-family: inherit;
+    font-size: var(--xh-infinite-scroll-load-more-font-size, var(--xh-text-body-size));
+    line-height: var(--xh-leading-none);
+    cursor: pointer;
+    /* 到底了连点是常态，触屏上默认会当成双击缩放 */
+    user-select: none;
+    touch-action: manipulation;
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+  }
+
+  [data-scope='infinite-scroll'][data-part='load-more-trigger']:hover {
+    border-color: var(--xh-infinite-scroll-load-more-border-hover, var(--xh-border-control-hover));
+    background: var(--xh-infinite-scroll-load-more-bg-hover, var(--xh-bg-subtle-hover));
+  }
+
+  [data-scope='infinite-scroll'][data-part='load-more-trigger']:active {
+    background: var(--xh-infinite-scroll-load-more-bg-active, var(--xh-bg-subtle-active));
+    scale: var(--xh-motion-scale-press);
+  }
+
   /* 声明过 display 就盖掉了 UA 的 [hidden]{display:none}，作者要藏哨兵时得自己补回来 */
-  [data-scope='infinite-scroll'][data-part='sentinel'][hidden] {
+  [data-scope='infinite-scroll'][data-part='sentinel'][hidden],
+  [data-scope='infinite-scroll'][data-part='load-more-trigger'][hidden] {
     display: none;
   }
 }

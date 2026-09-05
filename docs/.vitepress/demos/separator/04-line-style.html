@@ -1,4 +1,4 @@
-<!-- 线型、粗细与颜色 | 线是拿背景画出来的：颜色槽位收的是背景值，填一段重复渐变就是虚线；粗细是另一个槽位 -->
+<!-- 线型、粗细与颜色 | variant 三档换深浅，dashed 画虚线（横竖各自成立），粗细与颜色仍是两个槽位 -->
 <div style="width: 100%; display: grid; gap: 10px">
   <span style="font-size: 13px">实线（缺省）</span>
   <!-- 宿主不占布局，分隔线本体直接落进外层排版 -->
@@ -6,20 +6,24 @@
     <div data-xh-part="root"></div>
   </xh-separator>
 
-  <span style="font-size: 13px">虚线</span>
-  <!-- 实线段与空白段交替：横线沿 to right 铺 -->
-  <xh-separator decorative style="display: contents">
-    <div
-      data-xh-part="root"
-      style="--xh-separator-color: repeating-linear-gradient(to right, var(--xh-border-default) 0 6px, transparent 6px 12px)"
-    ></div>
+  <span style="font-size: 13px">弱线 / 强线</span>
+  <xh-separator decorative variant="subtle" style="display: contents">
+    <div data-xh-part="root"></div>
+  </xh-separator>
+  <xh-separator decorative variant="strong" style="display: contents">
+    <div data-xh-part="root"></div>
   </xh-separator>
 
-  <span style="font-size: 13px">点线</span>
-  <xh-separator decorative style="display: contents">
+  <span style="font-size: 13px">虚线</span>
+  <xh-separator decorative dashed style="display: contents">
+    <div data-xh-part="root"></div>
+  </xh-separator>
+
+  <span style="font-size: 13px">虚线段拉长、空白收窄</span>
+  <xh-separator decorative dashed style="display: contents">
     <div
       data-xh-part="root"
-      style="--xh-separator-color: repeating-linear-gradient(to right, var(--xh-border-default) 0 2px, transparent 2px 6px)"
+      style="--xh-separator-dash-length: 12px; --xh-separator-dash-gap: 4px"
     ></div>
   </xh-separator>
 
@@ -31,14 +35,11 @@
     ></div>
   </xh-separator>
 
-  <!-- 竖向同样成立，只把渐变方向换成 to bottom -->
+  <!-- 竖向同样成立：虚线的方向由 data-orientation 决定，不用另写表达式 -->
   <div style="display: flex; align-items: center; gap: 12px; height: 32px">
     <span style="font-size: 13px">左</span>
-    <xh-separator orientation="vertical" decorative style="display: contents">
-      <div
-        data-xh-part="root"
-        style="--xh-separator-color: repeating-linear-gradient(to bottom, var(--xh-border-default) 0 6px, transparent 6px 12px)"
-      ></div>
+    <xh-separator orientation="vertical" decorative dashed style="display: contents">
+      <div data-xh-part="root"></div>
     </xh-separator>
     <span style="font-size: 13px">右</span>
   </div>

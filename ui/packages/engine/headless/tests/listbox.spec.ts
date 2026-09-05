@@ -605,3 +605,54 @@ describe('连打检索', () => {
     expect(focused()).toBe('durian')
   })
 })
+
+describe('集合相位三件套', () => {
+  it('给了 collection：空态与在途两个占位按条数与 loading 收放，永不同屏', () => {
+    const h = mount({ collection: [] })
+    // 一条都没有、也不在取：只有空态露面
+    expect((h.api().getEmptyProps() as Record<string, unknown>).hidden).toBeUndefined()
+    expect((h.api().getLoadingProps() as Record<string, unknown>).hidden).toBe(true)
+
+    h.setProps({ loading: true })
+    // 取数在途：空态让位，在途顶上来
+    expect((h.api().getEmptyProps() as Record<string, unknown>).hidden).toBe(true)
+    expect((h.api().getLoadingProps() as Record<string, unknown>).hidden).toBeUndefined()
+
+    h.setProps({ loading: false, collection: [{ value: 'apple' }] })
+    // 有条目可看：两个占位都退场
+    expect((h.api().getEmptyProps() as Record<string, unknown>).hidden).toBe(true)
+    expect((h.api().getLoadingProps() as Record<string, unknown>).hidden).toBe(true)
+  })
+
+  it('没给 collection：空态的显隐归作者，在途仍按 loading 收放', () => {
+    const h = mount()
+    // 条目手写时库数不出有几条，那一档不写 hidden
+    expect((h.api().getEmptyProps() as Record<string, unknown>).hidden).toBeUndefined()
+    expect((h.api().getLoadingProps() as Record<string, unknown>).hidden).toBe(true)
+
+    h.setProps({ loading: true })
+    expect((h.api().getEmptyProps() as Record<string, unknown>).hidden).toBe(true)
+    expect((h.api().getLoadingProps() as Record<string, unknown>).hidden).toBeUndefined()
+  })
+
+  it('取数在途时列表报 aria-busy，根上同时转述一位 data-loading', () => {
+    const h = mount({ loading: true })
+    expect(h.content.getAttribute('aria-busy')).toBe('true')
+    expect(h.root.getAttribute('data-loading')).toBe('')
+
+    h.setProps({ loading: false })
+    expect(h.content.getAttribute('aria-busy')).toBeNull()
+    expect(h.root.getAttribute('data-loading')).toBeNull()
+  })
+
+  it('取下一页的钮：在途与整列禁用两档都点不动', () => {
+    const h = mount()
+    expect((h.api().getLoadMoreTriggerProps() as Record<string, unknown>).disabled).toBeUndefined()
+
+    h.setProps({ loading: true })
+    expect((h.api().getLoadMoreTriggerProps() as Record<string, unknown>).disabled).toBe(true)
+
+    h.setProps({ loading: false, disabled: true })
+    expect((h.api().getLoadMoreTriggerProps() as Record<string, unknown>).disabled).toBe(true)
+  })
+})

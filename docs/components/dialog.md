@@ -82,7 +82,7 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-dialog>` |
-| Vue 组件 | `XhDialogBody` `XhDialogCloseTrigger` `XhDialogContent` `XhDialogDescription` `XhDialogFooter` `XhDialogHeader` `XhDialogRoot` `XhDialogTitle` `XhDialogTrigger` |
+| Vue 组件 | `XhDialogBody` `XhDialogCloseTrigger` `XhDialogContent` `XhDialogDescription` `XhDialogFooter` `XhDialogHeader` `XhDialogIndicator` `XhDialogRoot` `XhDialogTitle` `XhDialogTrigger` |
 | 组合式函数 | `useDialog` |
 | 状态机 | `dialogMachine` |
 | 皮肤 | `@xihan-ui/styles/dialog.css` |
@@ -91,7 +91,7 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="dialog"`：`trigger` · `backdrop` · `positioner` · **`content`** · `header` · `title` · `description` · `body` · `footer` · `close-trigger`
+`data-scope="dialog"`：`trigger` · `backdrop` · `positioner` · **`content`** · `header` · `indicator` · `title` · `description` · `body` · `footer` · `close-trigger`
 
 ## Props
 
@@ -158,6 +158,7 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 | `getPositionerProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |
 | `getHeaderProps` | `() => T['element']` |  |
+| `getIndicatorProps` | `() => T['element']` |  |
 | `getTitleProps` | `() => T['element']` |  |
 | `getDescriptionProps` | `() => T['element']` |  |
 | `getBodyProps` | `() => T['element']` |  |
@@ -188,6 +189,7 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 | `content` | `aria-labelledby` | `title` 部件的 id |
 | `content` | `aria-modal` | 'true' \| 'false' |
 | `content` | `role` | props.role |
+| `indicator` | `aria-hidden` | 'true' |
 | `close-trigger` | `aria-label` | props.translations.close |
 
 ## 样式
@@ -212,7 +214,7 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-dialog-backdrop-bg` · `--xh-dialog-backdrop-blur` · `--xh-dialog-backdrop-layer` · `--xh-dialog-bg` · `--xh-dialog-close-bg-active` · `--xh-dialog-close-bg-hover` · `--xh-dialog-close-fg` · `--xh-dialog-close-fg-hover` · `--xh-dialog-close-radius` · `--xh-dialog-close-size` · `--xh-dialog-description-fg` · `--xh-dialog-description-font-size` · `--xh-dialog-fg` · `--xh-dialog-footer-gap` · `--xh-dialog-footer-pt` · `--xh-dialog-gap` · `--xh-dialog-header-gap` · `--xh-dialog-header-pb` · `--xh-dialog-icon-size` · `--xh-dialog-layer` · `--xh-dialog-max-w` · `--xh-dialog-positioner-padding` · `--xh-dialog-px` · `--xh-dialog-py` · `--xh-dialog-radius` · `--xh-dialog-shadow` · `--xh-dialog-title-fg` · `--xh-dialog-title-font-size` · `--xh-dialog-title-font-weight`
+`--xh-dialog-backdrop-bg` · `--xh-dialog-backdrop-blur` · `--xh-dialog-backdrop-layer` · `--xh-dialog-bg` · `--xh-dialog-close-bg-active` · `--xh-dialog-close-bg-hover` · `--xh-dialog-close-fg` · `--xh-dialog-close-fg-hover` · `--xh-dialog-close-radius` · `--xh-dialog-close-size` · `--xh-dialog-description-fg` · `--xh-dialog-description-font-size` · `--xh-dialog-fg` · `--xh-dialog-footer-gap` · `--xh-dialog-footer-pt` · `--xh-dialog-gap` · `--xh-dialog-header-gap` · `--xh-dialog-header-pb` · `--xh-dialog-icon-size` · `--xh-dialog-indicator-bg` · `--xh-dialog-indicator-fg` · `--xh-dialog-indicator-mark-size` · `--xh-dialog-indicator-radius` · `--xh-dialog-indicator-size` · `--xh-dialog-layer` · `--xh-dialog-max-w` · `--xh-dialog-positioner-padding` · `--xh-dialog-px` · `--xh-dialog-py` · `--xh-dialog-radius` · `--xh-dialog-shadow` · `--xh-dialog-title-fg` · `--xh-dialog-title-font-size` · `--xh-dialog-title-font-weight`
 
 ## 动效
 

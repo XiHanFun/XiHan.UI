@@ -1,4 +1,4 @@
-import type { PropTypes } from '@xihan-ui/core'
+import type { ActionVariant, PropTypes, Size, Tone } from '@xihan-ui/core'
 import type { CollapsibleOpenChangeDetails, CollapsibleSchema } from '../collapsible'
 
 /**
@@ -41,6 +41,12 @@ export interface FloatButtonAppearance {
   shape?: FloatButtonShape
   /** 展开方式，默认 click。 */
   expandTrigger?: FloatButtonExpandTrigger
+  /** 形态：solid / subtle / outline / ghost，决定底色、描边与前景怎么用。 */
+  variant?: ActionVariant
+  /** 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 */
+  tone?: Tone
+  /** 尺寸：sm / md / lg，缺省与 lg 同档——悬浮钮要够得着，起步就比行内按钮大一号。 */
+  size?: Size
   translations?: Partial<FloatButtonTranslations>
 }
 

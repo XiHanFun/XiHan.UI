@@ -17,8 +17,75 @@
     --xh-_toggle-group-gap: var(--xh-control-gap-md);
     --xh-_toggle-group-font-size: var(--xh-control-font-md);
 
+    /* 形态的落点：没写 data-variant 时这十支保持缺省档的取值，段的规则读的是
+       「使用者令牌 → 这十支 → 语义令牌」三级，使用者令牌永远排在形态之前。
+       未选中那五支管段的壳，选中那五支管当前值那一段 */
+    --xh-_toggle-group-item-bg: var(--xh-bg-canvas);
+    --xh-_toggle-group-item-bg-hover: var(--xh-bg-subtle-hover);
+    --xh-_toggle-group-item-bg-active: var(--xh-bg-subtle-active);
+    --xh-_toggle-group-item-fg: var(--xh-fg-default);
+    --xh-_toggle-group-item-border: var(--xh-border-control);
+    --xh-_toggle-group-item-bg-on: var(--xh-_tone, var(--xh-bg-brand));
+    --xh-_toggle-group-item-bg-on-hover: var(--xh-_tone-hover, var(--xh-bg-brand-hover));
+    --xh-_toggle-group-item-bg-on-active: var(--xh-_tone-active, var(--xh-bg-brand-active));
+    --xh-_toggle-group-item-fg-on: var(--xh-_tone-on, var(--xh-fg-on-brand));
+    --xh-_toggle-group-item-border-on: var(--xh-_tone, var(--xh-bg-brand));
+    /* 选中段是实心底才画内高光；淡底的那几档在自己的形态块里收成 none */
+    --xh-_toggle-group-item-highlight-on: var(--xh-_highlight-tone);
+
     display: inline-flex;
     align-items: stretch;
+  }
+
+  /* —— 形态 ——
+     四档与 toggle 一处对一处：未选中那些段长什么样在这里定，选中那一段用哪一档底也在这里定，
+     切换仍由 data-state='on' 那一条统一完成。
+     缺省档（没写 data-variant）不进这几块，取值仍是画布底 + 一圈可操作区描边 + 语气实心的选中段 */
+  [data-scope='toggle-group'][data-part='root'][data-variant='solid'] {
+    --xh-_toggle-group-item-bg: transparent;
+    --xh-_toggle-group-item-border: transparent;
+  }
+
+  [data-scope='toggle-group'][data-part='root'][data-variant='subtle'] {
+    --xh-_toggle-group-item-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+    --xh-_toggle-group-item-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
+    --xh-_toggle-group-item-bg-active: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
+    --xh-_toggle-group-item-fg: var(--xh-_tone-fg, var(--xh-fg-default));
+    --xh-_toggle-group-item-border: transparent;
+    --xh-_toggle-group-item-bg-on: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
+    --xh-_toggle-group-item-bg-on-hover: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
+    --xh-_toggle-group-item-bg-on-active: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
+    --xh-_toggle-group-item-fg-on: var(--xh-_tone-fg, var(--xh-fg-default));
+    --xh-_toggle-group-item-border-on: transparent;
+    --xh-_toggle-group-item-highlight-on: none;
+  }
+
+  [data-scope='toggle-group'][data-part='root'][data-variant='outline'] {
+    --xh-_toggle-group-item-bg: transparent;
+    --xh-_toggle-group-item-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle-hover));
+    --xh-_toggle-group-item-bg-active: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-active));
+    --xh-_toggle-group-item-fg: var(--xh-_tone-fg, var(--xh-fg-default));
+    --xh-_toggle-group-item-border: var(--xh-_tone-border-control, var(--xh-border-control));
+    --xh-_toggle-group-item-bg-on: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
+    --xh-_toggle-group-item-bg-on-hover: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
+    --xh-_toggle-group-item-bg-on-active: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
+    --xh-_toggle-group-item-fg-on: var(--xh-_tone-fg, var(--xh-fg-default));
+    --xh-_toggle-group-item-border-on: var(--xh-_tone-border-control, var(--xh-border-control));
+    --xh-_toggle-group-item-highlight-on: none;
+  }
+
+  [data-scope='toggle-group'][data-part='root'][data-variant='ghost'] {
+    --xh-_toggle-group-item-bg: transparent;
+    --xh-_toggle-group-item-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle-hover));
+    --xh-_toggle-group-item-bg-active: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-active));
+    --xh-_toggle-group-item-fg: var(--xh-_tone-fg, var(--xh-fg-default));
+    --xh-_toggle-group-item-border: transparent;
+    --xh-_toggle-group-item-bg-on: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
+    --xh-_toggle-group-item-bg-on-hover: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
+    --xh-_toggle-group-item-bg-on-active: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
+    --xh-_toggle-group-item-fg-on: var(--xh-_tone-fg, var(--xh-fg-default));
+    --xh-_toggle-group-item-border-on: transparent;
+    --xh-_toggle-group-item-highlight-on: none;
   }
 
   /* —— 尺寸 —— */
@@ -54,11 +121,11 @@
   [data-scope='toggle-group'][data-part='item'] {
     /* 私有槽位：组件令牌 → 语义令牌两级回退。状态规则只改写槽位，
        底色/描边/前景三者永远同步换，不会出现选中了底色却没跟上描边 */
-    --xh-_bg: var(--xh-toggle-group-item-bg, var(--xh-bg-canvas));
-    --xh-_bg-hover: var(--xh-toggle-group-item-bg-hover, var(--xh-bg-subtle-hover));
-    --xh-_bg-active: var(--xh-toggle-group-item-bg-active, var(--xh-bg-subtle-active));
-    --xh-_fg: var(--xh-toggle-group-item-fg, var(--xh-fg-default));
-    --xh-_border: var(--xh-toggle-group-item-border, var(--xh-border-control));
+    --xh-_bg: var(--xh-toggle-group-item-bg, var(--xh-_toggle-group-item-bg));
+    --xh-_bg-hover: var(--xh-toggle-group-item-bg-hover, var(--xh-_toggle-group-item-bg-hover));
+    --xh-_bg-active: var(--xh-toggle-group-item-bg-active, var(--xh-_toggle-group-item-bg-active));
+    --xh-_fg: var(--xh-toggle-group-item-fg, var(--xh-_toggle-group-item-fg));
+    --xh-_border: var(--xh-toggle-group-item-border, var(--xh-_toggle-group-item-border));
 
     /* 相邻两段靠负外边距压掉一条重边，谁的描边浮在上面必须能指定，
        因此条目必须是定位元素——静态元素的 z-index 不生效 */
@@ -146,13 +213,13 @@
      整组落在语气容器里也算；没有语气就退回品牌配色，与不接语气时逐值相同。
      使用者令牌排在语气之前：写了组件槽就以它为准 */
   [data-scope='toggle-group'][data-part='item'][data-state='on'] {
-    --xh-_bg: var(--xh-toggle-group-item-bg-on, var(--xh-_tone, var(--xh-bg-brand)));
-    --xh-_bg-hover: var(--xh-toggle-group-item-bg-on-hover, var(--xh-_tone-hover, var(--xh-bg-brand-hover)));
-    --xh-_bg-active: var(--xh-toggle-group-item-bg-on-active, var(--xh-_tone-active, var(--xh-bg-brand-active)));
-    --xh-_fg: var(--xh-toggle-group-item-fg-on, var(--xh-_tone-on, var(--xh-fg-on-brand)));
-    --xh-_border: var(--xh-toggle-group-item-border-on, var(--xh-_tone, var(--xh-bg-brand)));
+    --xh-_bg: var(--xh-toggle-group-item-bg-on, var(--xh-_toggle-group-item-bg-on));
+    --xh-_bg-hover: var(--xh-toggle-group-item-bg-on-hover, var(--xh-_toggle-group-item-bg-on-hover));
+    --xh-_bg-active: var(--xh-toggle-group-item-bg-on-active, var(--xh-_toggle-group-item-bg-on-active));
+    --xh-_fg: var(--xh-toggle-group-item-fg-on, var(--xh-_toggle-group-item-fg-on));
+    --xh-_border: var(--xh-toggle-group-item-border-on, var(--xh-_toggle-group-item-border-on));
     /* 选中的这一段是实心底，顶边画一条极浅的内高光把它衬出厚度；未选中的段是透明底，不画 */
-    --xh-_toggle-group-highlight: var(--xh-_highlight-tone);
+    --xh-_toggle-group-highlight: var(--xh-_toggle-group-item-highlight-on);
 
     box-shadow: var(--xh-toggle-group-item-shadow, var(--xh-_toggle-group-highlight));
 
@@ -178,10 +245,10 @@
   [data-scope='toggle-group'][data-part='item'][data-disabled][data-state='on'] {
     --xh-_bg: var(
       --xh-toggle-group-item-bg-on-disabled,
-      color-mix(in oklab, var(--xh-_tone, var(--xh-bg-brand)) 50%, var(--xh-bg-muted))
+      color-mix(in oklab, var(--xh-_toggle-group-item-bg-on) 50%, var(--xh-bg-muted))
     );
-    --xh-_fg: var(--xh-toggle-group-item-fg-on-disabled, var(--xh-_tone-on, var(--xh-fg-on-brand)));
-    --xh-_border: var(--xh-toggle-group-item-border-on-disabled, var(--xh-_tone, var(--xh-bg-brand)));
+    --xh-_fg: var(--xh-toggle-group-item-fg-on-disabled, var(--xh-_toggle-group-item-fg-on));
+    --xh-_border: var(--xh-toggle-group-item-border-on-disabled, var(--xh-_toggle-group-item-border-on));
   }
 
   /* 焦点环要浮在共边之上：outline 画在元素外侧，不抬层就会被后一段的底色与描边盖掉一半 */
@@ -189,10 +256,98 @@
     z-index: 2;
   }
 
+  /* —— 撑满行宽 —— */
+  /* 整组占满可用宽度，每段等分剩余空间。inline-flex 改成 flex：行内盒撑不满一行 */
+  [data-scope='toggle-group'][data-part='root'][data-full-width] {
+    display: flex;
+    inline-size: 100%;
+  }
+
+  [data-scope='toggle-group'][data-part='root'][data-full-width]
+    > [data-scope='toggle-group'][data-part='item'] {
+    flex: 1;
+  }
+
+  /* —— 段间的线 —— */
+  /* 装饰性的一条线，读屏不念。段本来靠共边连成一体，插了它就是把一排开关分成几组。
+     朝向是这条线自己的（横排里是竖线），与 root 的排布相反 */
+  [data-scope='toggle-group'][data-part='separator'] {
+    flex: none;
+    align-self: stretch;
+    border-radius: var(--xh-toggle-group-separator-radius, var(--xh-shape-pill));
+    background: var(--xh-toggle-group-separator-color, var(--xh-border-default));
+  }
+
+  [data-scope='toggle-group'][data-part='separator'][data-orientation='vertical'] {
+    inline-size: var(--xh-toggle-group-separator-thickness, var(--xh-stroke-thin));
+    margin-block: var(--xh-toggle-group-separator-inset, var(--xh-space-1));
+    margin-inline: var(--xh-toggle-group-separator-gap, var(--xh-space-1));
+  }
+
+  [data-scope='toggle-group'][data-part='separator'][data-orientation='horizontal'] {
+    block-size: var(--xh-toggle-group-separator-thickness, var(--xh-stroke-thin));
+    margin-block: var(--xh-toggle-group-separator-gap, var(--xh-space-1));
+    margin-inline: var(--xh-toggle-group-separator-inset, var(--xh-space-1));
+  }
+
+  /* 段都按不动了，段间那条线跟着退到弱边一档 */
+  [data-scope='toggle-group'][data-part='separator'][data-disabled] {
+    background: var(--xh-toggle-group-separator-color-disabled, var(--xh-border-subtle));
+  }
+
+  /* 插了分隔线之后首末两段不再是 root 的首末子节点，圆角改按元素类型认：
+     条目是原生 button，分隔线不是。没有分隔线时这两条与上面按子节点认的那几条同值 */
+  [data-scope='toggle-group'][data-part='root'][data-orientation='horizontal']
+    > [data-scope='toggle-group'][data-part='item']:first-of-type {
+    border-start-start-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-control));
+    border-end-start-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-control));
+  }
+
+  [data-scope='toggle-group'][data-part='root'][data-orientation='horizontal']
+    > [data-scope='toggle-group'][data-part='item']:last-of-type {
+    border-start-end-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-control));
+    border-end-end-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-control));
+  }
+
+  [data-scope='toggle-group'][data-part='root'][data-orientation='vertical']
+    > [data-scope='toggle-group'][data-part='item']:first-of-type {
+    border-start-start-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-control));
+    border-start-end-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-control));
+  }
+
+  [data-scope='toggle-group'][data-part='root'][data-orientation='vertical']
+    > [data-scope='toggle-group'][data-part='item']:last-of-type {
+    border-end-start-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-control));
+    border-end-end-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-control));
+  }
+
+  /* 连接层把它写成 type=hidden，UA 自己就不渲染；这里的视觉隐藏是给元素升级前那一瞬兜底
+     （作者手写的是一个普通 input，升级完成前它是可见的文本框）。
+     刻意不写 display：写了反而会盖掉 UA 对 type=hidden 的收起，把它显出来 */
+  [data-scope='toggle-group'][data-part='hidden-input'] {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    padding: 0;
+    margin: -1px;
+    border: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
   /* 给了 display 的角色节点必须补这条：display 声明会盖掉 UA 的 [hidden]{display:none}，
      不补的话作者给节点加 hidden 后它照样显示 */
   [data-scope='toggle-group'][data-part='root'][hidden],
   [data-scope='toggle-group'][data-part='item'][hidden] {
     display: none;
+  }
+
+  @media (forced-colors: active) {
+    /* 段间那条线画的是一块纯底色，这一档里底色被统一换成 Canvas，线整条消失，
+       几组开关就连成了一长串。换成前景色画回来 */
+    [data-scope='toggle-group'][data-part='separator'] {
+      background: CanvasText;
+    }
   }
 }

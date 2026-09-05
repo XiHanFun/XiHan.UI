@@ -40,6 +40,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart control - role=radiogroup 的星星带，键盘交互全在它身上
  * @csspart item - role=radio 的一颗星，作者用 value 属性声明它是第几颗；
  *   点亮看 data-highlighted，半亮看 data-half
+ * @csspart value-text - 分值文本（aria-hidden），须放在 root 里当 control 的兄弟；留空即由元素填入当前分值，作者写了内容则归作者
  * @csspart hidden-input - 表单影子输入（必须是原生 input）
  */
 export class XhRatingElement extends XhElement {
@@ -129,6 +130,21 @@ export class XhRatingElement extends XhElement {
       send({ type: 'CONTROL.BLUR' })
   }
 
+  /** 分值文本是否归元素填：首次见到该节点时定，之后不再回读（回读到的会是自己写的字）。 */
+  private readonly ownsValueText = new WeakMap<HTMLElement, boolean>()
+
+  /** 填入分值文本；首次见到该节点时若已有内容则归作者，之后不再改写。 */
+  private fillValueText(el: HTMLElement, text: string): void {
+    let owned = this.ownsValueText.get(el)
+    if (owned === undefined) {
+      owned = (el.textContent ?? '').trim() === ''
+      this.ownsValueText.set(el, owned)
+    }
+    if (!owned || el.textContent === text)
+      return
+    el.textContent = text
+  }
+
   /** 条目身份取自作者写的 value 属性；没写就不是一颗合法的星，交给 connect 按非法值处理。 */
   private itemProps(el: HTMLElement): RatingItemProps {
     return { value: Number(el.getAttribute('value')) }
@@ -146,6 +162,13 @@ export class XhRatingElement extends XhElement {
     put('label', api.getLabelProps() as Record<string, unknown>)
     put('control', api.getControlProps() as Record<string, unknown>)
     put('hidden-input', api.getHiddenInputProps() as Record<string, unknown>)
+
+    // 属性先落，再填显示文字；作者自己写了内容就归作者，元素不再改写
+    const valueText = this.getPart('value-text')
+    if (valueText) {
+      this.spreader.spread(valueText, api.getValueTextProps() as Record<string, unknown>)
+      this.fillValueText(valueText, api.valueText)
+    }
 
     for (const el of this.getParts('item'))
       this.spreader.spread(el, api.getItemProps(this.itemProps(el)) as Record<string, unknown>)

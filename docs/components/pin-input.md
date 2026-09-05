@@ -17,6 +17,8 @@
 - 粘贴一整串会按格拆开填进去。
 - `mask` 遮蔽字符、`type` 与 `pattern` 限制可输入字符类别。
 - `onValueComplete` 在填满那一刻发一次，用来自动提交。
+- `group` 与 `separator` 把格子分段排（123-456），下标仍按文档序算。
+- `readOnly` 让格子只能看与复制，`required` 给每格补上原生必填。
 
 ## 示例
 
@@ -91,7 +93,7 @@ pattern 是一段正则源码，逐个字符整格匹配；写坏了退回 type 
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-pin-input>` |
-| Vue 组件 | `XhPinInputHiddenInput` `XhPinInputInput` `XhPinInputLabel` `XhPinInputRoot` |
+| Vue 组件 | `XhPinInputGroup` `XhPinInputHiddenInput` `XhPinInputInput` `XhPinInputLabel` `XhPinInputRoot` `XhPinInputSeparator` |
 | 组合式函数 | `usePinInput` |
 | 状态机 | `pinInputMachine` |
 | 皮肤 | `@xihan-ui/styles/pin-input.css` |
@@ -100,7 +102,7 @@ pattern 是一段正则源码，逐个字符整格匹配；写坏了退回 type 
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="pin-input"`：**`root`** · `label` · **`input`** · `hidden-input`
+`data-scope="pin-input"`：**`root`** · `label` · `group` · **`input`** · `separator` · `hidden-input`
 
 ## Props
 
@@ -115,6 +117,8 @@ pattern 是一段正则源码，逐个字符整格匹配；写坏了退回 type 
 | `otp` | `boolean` |  | 一次性验证码：补 autocomplete=one-time-code，短信验证码才能被系统自动填入。 |
 | `placeholder` | `string` |  | 空格子的占位字符。 |
 | `disabled` | `boolean` |  | 禁用：每格都带原生 disabled（不可聚焦、不可输入），隐藏输入不参与提交。 |
+| `readOnly` | `boolean` |  | 只读：每格仍可聚焦、可复制，写不进；隐藏输入照常参与提交。 |
+| `required` | `boolean` |  | 必填标注：每格都带原生 required。 |
 | `invalid` | `boolean` |  | 校验失败标注。 |
 | `blurOnComplete` | `boolean` |  | 填满即把焦点撤走，常用于"填满就自动提交"的表单。 |
 | `name` | `string` |  | 表单字段名；给了隐藏输入才带 name，整串值随表单一并提交。 |
@@ -164,12 +168,15 @@ pattern 是一段正则源码，逐个字符整格匹配；写坏了退回 type 
 | `length` | `number` |  |
 | `focusedIndex` | `number` | 焦点所在格；焦点在组外时为 -1。 |
 | `disabled` | `boolean` |  |
+| `readOnly` | `boolean` |  |
 | `invalid` | `boolean` |  |
 | `setValue` | `(next: string[]) => void` |  |
 | `clear` | `() => void` |  |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['label']` |  |
+| `getGroupProps` | `() => T['element']` | 连着的几格圈成一段（123-456 这种分段写法）；纯排版，不参与下标计算。 |
 | `getInputProps` | `(props: PinInputInputProps) => T['input']` |  |
+| `getSeparatorProps` | `() => T['element']` | 段与段之间的分隔；对读屏隐藏，念出来只会打断验证码。 |
 | `getHiddenInputProps` | `() => T['input']` | 整份验证码的表单出口：一份 type=hidden 的原生输入，随表单提交拼好的串。 |
 
 ## 键盘
@@ -195,6 +202,7 @@ pattern 是一段正则源码，逐个字符整格匹配；写坏了退回 type 
 | `root` | `role` | 'group' |
 | `input` | `aria-invalid` | 'true' \| 'false' |
 | `input` | `aria-label` | label.input(index + 1, length) |
+| `separator` | `aria-hidden` | 'true' |
 
 ## 样式
 
@@ -209,20 +217,26 @@ pattern 是一段正则源码，逐个字符整格匹配；写坏了退回 type 
 | `root` | `data-complete` | ''（条件成立时才出现） |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
 | `root` | `data-invalid` | ''（条件成立时才出现） |
+| `root` | `data-readonly` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
+| `group` | `data-disabled` | ''（条件成立时才出现） |
+| `group` | `data-invalid` | ''（条件成立时才出现） |
 | `input` | `data-disabled` | ''（条件成立时才出现） |
+| `input` | `data-empty` | ''（条件成立时才出现） |
 | `input` | `data-focus` | ''（条件成立时才出现） |
 | `input` | `data-index` | String(index) |
 | `input` | `data-invalid` | ''（条件成立时才出现） |
+| `input` | `data-readonly` | ''（条件成立时才出现） |
+| `separator` | `data-disabled` | ''（条件成立时才出现） |
 
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-pin-input-box-autofill-bg` · `--xh-pin-input-box-autofill-fg` · `--xh-pin-input-box-bg` · `--xh-pin-input-box-bg-disabled` · `--xh-pin-input-box-bg-hover` · `--xh-pin-input-box-border` · `--xh-pin-input-box-border-complete` · `--xh-pin-input-box-border-focus` · `--xh-pin-input-box-border-hover` · `--xh-pin-input-box-border-invalid` · `--xh-pin-input-box-fg` · `--xh-pin-input-box-font-size` · `--xh-pin-input-box-gap` · `--xh-pin-input-box-radius` · `--xh-pin-input-box-shadow` · `--xh-pin-input-box-size` · `--xh-pin-input-gap` · `--xh-pin-input-label-fg` · `--xh-pin-input-label-fg-disabled` · `--xh-pin-input-label-font-size` · `--xh-pin-input-label-font-weight` · `--xh-pin-input-placeholder-fg`
+`--xh-pin-input-box-autofill-bg` · `--xh-pin-input-box-autofill-fg` · `--xh-pin-input-box-bg` · `--xh-pin-input-box-bg-disabled` · `--xh-pin-input-box-bg-hover` · `--xh-pin-input-box-bg-readonly` · `--xh-pin-input-box-border` · `--xh-pin-input-box-border-complete` · `--xh-pin-input-box-border-focus` · `--xh-pin-input-box-border-hover` · `--xh-pin-input-box-border-invalid` · `--xh-pin-input-box-fg` · `--xh-pin-input-box-font-size` · `--xh-pin-input-box-gap` · `--xh-pin-input-box-radius` · `--xh-pin-input-box-shadow` · `--xh-pin-input-box-size` · `--xh-pin-input-gap` · `--xh-pin-input-label-fg` · `--xh-pin-input-label-fg-disabled` · `--xh-pin-input-label-font-size` · `--xh-pin-input-label-font-weight` · `--xh-pin-input-placeholder-fg` · `--xh-pin-input-separator-fg` · `--xh-pin-input-separator-fg-disabled` · `--xh-pin-input-separator-font-size` · `--xh-pin-input-separator-gap`
 
 ## 动效
 

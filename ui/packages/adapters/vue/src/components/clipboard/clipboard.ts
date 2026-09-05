@@ -1,7 +1,9 @@
-import type { ClipboardApi, ClipboardSchema } from '@xihan-ui/headless'
-import type { SlotsType, VNode } from 'vue'
+import type { ActionVariant, Size, Tone } from '@xihan-ui/core'
+import type { ClipboardApi, ClipboardSchema, ClipboardTranslations } from '@xihan-ui/headless'
+import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { provideClipboard, useClipboardContext } from './context'
 import { useClipboard } from './use-clipboard'
 
@@ -16,6 +18,11 @@ export const XhClipboardRoot = defineComponent({
     // 属性缺席即没给要复制的文本，落回空串
     value: { type: String, default: undefined },
     timeout: { type: Number, default: undefined },
+    disabled: { type: Boolean, default: undefined },
+    variant: { type: String as PropType<ActionVariant>, default: undefined },
+    tone: { type: String as PropType<Tone>, default: undefined },
+    size: { type: String as PropType<Size>, default: undefined },
+    translations: { type: Object as PropType<Partial<ClipboardTranslations>>, default: undefined },
   },
   // status-change 携带 { status }；copy-error 携带 { error, value }
   emits: {
@@ -26,7 +33,7 @@ export const XhClipboardRoot = defineComponent({
     default?: (props: ClipboardRootSlotProps) => VNode[]
   }>,
   setup(props, { slots, emit }) {
-    const ctx = useClipboard(props as ClipboardProps, {
+    const ctx = useClipboard(withXhConfig('clipboard', props) as ClipboardProps, {
       onStatusChange: details => emit('status-change', details),
       onCopyError: details => emit('copy-error', details),
     })
@@ -72,6 +79,19 @@ export const XhClipboardCopyTrigger = defineComponent({
     const ctx = useClipboardContext()
     // 原生 <button>，激活行为交给平台
     return () => h('button', ctx.api.value.getCopyTriggerProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+/** 复制成功的播报区：读屏念得到，屏幕上不占位。不给内容时念 announcement。 */
+export const XhClipboardStatus = defineComponent({
+  name: 'XhClipboardStatus',
+  setup(_, { slots }) {
+    const ctx = useClipboardContext()
+    return () => h(
+      'span',
+      ctx.api.value.getStatusProps() as Record<string, unknown>,
+      slots.default?.() ?? ctx.api.value.announcement,
+    )
   },
 })
 

@@ -32,6 +32,7 @@ export function connectCascader<T extends PropTypes>(
   const disabled = !!prop('disabled')
   const readOnly = !!prop('readOnly')
   const invalid = !!prop('invalid')
+  const loading = !!prop('loading')
   // 只读与禁用都改不了选中值，区别在于禁用连浮层都展不开
   const interactive = !disabled && !readOnly
   const loop = prop('loop') ?? true
@@ -100,6 +101,8 @@ export function connectCascader<T extends PropTypes>(
 
   /** 条目 id。值先编码再拼：aria-labelledby 只认单个 IDREF，值里带空格会把它劈成两截。 */
   const itemId = (v: string): string => scope.partId(cascaderAnatomy.name, `item:${encodeURIComponent(v)}`)
+  // 分组标题的 id：group 与 group-label 靠这一个值互相认领
+  const groupLabelId = (group: string): string => scope.partId(cascaderAnatomy.name, `group-label:${encodeURIComponent(group)}`)
 
   /**
    * 把焦点交给某个条目。落点由 collection 算出，元素在事件那一刻按值现查活 DOM。
@@ -223,6 +226,7 @@ export function connectCascader<T extends PropTypes>(
       'data-disabled': dataAttr(disabled),
       'data-readonly': dataAttr(readOnly),
       'data-invalid': dataAttr(invalid),
+      'data-loading': dataAttr(loading),
     }),
 
     getLabelProps: () => normalize.element({
@@ -368,6 +372,8 @@ export function connectCascader<T extends PropTypes>(
       'data-placement': placement,
       // 皮肤据此把列视图让位给候选列表
       'data-searching': dataAttr(searching),
+      // 取数在途的播报归浮层壳：两个相位占位自己不带这一位
+      'aria-busy': loading ? 'true' : undefined,
       // 根列没有条目（collection 为空）：皮肤据此把列让位给空态占位
       'data-empty': dataAttr(collection.length === 0),
       // 收起时留在 DOM 只隐藏，不卸载作者节点
@@ -538,7 +544,37 @@ export function connectCascader<T extends PropTypes>(
     // 空态占位：搜索视图看候选、列视图看根列，哪边有条目就藏起来
     getEmptyProps: () => normalize.element({
       ...parts.empty.attrs,
-      hidden: (searching ? searchResults.length > 0 : collection.length > 0) || undefined,
+      hidden: loading || (searching ? searchResults.length > 0 : collection.length > 0) || undefined,
+    }),
+
+    // 在途占位：与空态占位同一个位置，两者不同屏
+    getLoadingProps: () => normalize.element({
+      ...parts.loading.attrs,
+      hidden: !loading || undefined,
+    }),
+
+    // 浮层底部的操作区：作者往里放「清空」「确定」这类按钮。
+    // 它是 content 的子节点、与列并列，列表框语义在每一列上，故不在任何列的拥有关系里，
+    // 方向键与列导航也不认它
+    getFooterProps: () => normalize.element({
+      ...parts.footer.attrs,
+      'data-state': stateAttr,
+    }),
+
+    // 分组容器：role=group 是 role=listbox 允许拥有的两种子节点之一，条目照常挂在它里面，
+    // 方向键按最近的 content 归属条目，隔着分组一样跨列走得到
+    getGroupProps: group => normalize.element({
+      ...parts.group.attrs,
+      'role': 'group',
+      // 分组标题不是条目，只能靠 aria-labelledby 挂上来
+      'aria-labelledby': groupLabelId(group.value),
+      'data-disabled': dataAttr(disabled),
+    }),
+
+    getGroupLabelProps: group => normalize.element({
+      ...parts['group-label'].attrs,
+      'id': groupLabelId(group.value),
+      'data-disabled': dataAttr(disabled),
     }),
 
     getColumnProps: (column) => {

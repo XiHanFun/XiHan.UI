@@ -1,8 +1,8 @@
 import type { NavIntent, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { MenuApi, MenuItemProps, MenuNodeMeta, MenuSchema } from './menu.types'
-import { dataAttr, focusItem, focusSafely, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
+import { dataAttr, focusItem, focusSafely, indexOfValue, isItemDisabled, ITEM_VALUE_ATTR, itemValue, matchTypeahead, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
 import { overlayPositioned } from '../shared/overlay'
-import { menuAnatomy, menuItemQuery } from './menu.anatomy'
+import { menuAnatomy, menuItemQuery, menuItemText } from './menu.anatomy'
 import { menuFallbackPlacement } from './menu.machine'
 
 const parts = menuAnatomy.build()
@@ -25,7 +25,7 @@ export function connectMenu<T extends PropTypes>(
   service: Service<MenuSchema>,
   normalize: NormalizeProps<T>,
 ): MenuApi<T> {
-  const { state, prop, send, context, scope } = service
+  const { state, prop, send, context, refs, scope } = service
   const open = state.get() === 'open'
   const ids = scope.ids('menu', 'trigger', 'content')
   const stateAttr = open ? 'open' : 'closed'
@@ -38,6 +38,8 @@ export function connectMenu<T extends PropTypes>(
   const anchor = context.get('focusedValue') ?? null
   const loop = prop('loop') ?? true
   const dir = prop('dir')
+  const typeaheadOn = prop('typeahead') ?? true
+  const menuDisabled = !!prop('disabled')
 
   // collection 推出的条目元信息：显示文本与禁用都在这里定案，条目部件只报 value
   const collection: MenuNodeMeta[] = (prop('collection') ?? []).map(node => ({
@@ -48,9 +50,16 @@ export function connectMenu<T extends PropTypes>(
   }))
   const metaOf = new Map(collection.map(meta => [meta.value, meta]))
 
-  /** 条目禁用：部件上写的优先，没写就回 collection 里查。 */
+  /** 条目禁用：整张菜单禁用一票通过，否则部件上写的优先，没写就回 collection 里查。 */
   const itemDisabled = (item: MenuItemProps): boolean =>
-    item.disabled ?? metaOf.get(item.value)?.disabled ?? false
+    menuDisabled || (item.disabled ?? metaOf.get(item.value)?.disabled ?? false)
+
+  // item / item-text / item-indicator / item-description 共用同一份状态标记，样式层各处一致
+  const itemStateAttrs = (item: MenuItemProps): Record<string, string | undefined> => ({
+    'data-disabled': dataAttr(itemDisabled(item)),
+    // 子部件够不着条目的 :focus 伪类，只能读这个标记
+    'data-highlighted': dataAttr(anchor === item.value),
+  })
 
   const groupLabelId = (group: string): string =>
     scope.partId(menuAnatomy.name, `group-label:${group}`)
@@ -70,6 +79,20 @@ export function connectMenu<T extends PropTypes>(
     send({ type: 'ITEM.FOCUS', value: next })
   }
 
+  /** 连打检索落点：从当前锚点的下一个绕一圈找，禁用条目跳过；未命中保持原状。 */
+  const focusMatch = (content: HTMLElement, query: string): void => {
+    const items = queryItems(content, menuItemQuery)
+    const target = matchTypeahead(items, indexOfValue(items, anchor), query, {
+      text: menuItemText,
+      skip: isItemDisabled,
+    })
+    const next = itemValue(target)
+    if (next == null)
+      return
+    focusItem(target)
+    send({ type: 'ITEM.FOCUS', value: next })
+  }
+
   /** 确认键：选中焦点所在的非禁用条目；子菜单触发条目（带 aria-haspopup）归子层管。 */
   const activate = (event: KeyboardEvent): void => {
     const item = (event.target as HTMLElement).closest<HTMLElement>(parts.item.selector)
@@ -82,6 +105,7 @@ export function connectMenu<T extends PropTypes>(
 
   return {
     open,
+    disabled: menuDisabled,
     collection,
     focusedValue: anchor,
     setOpen,
@@ -92,9 +116,16 @@ export function connectMenu<T extends PropTypes>(
       'aria-haspopup': 'menu',
       'aria-expanded': open ? 'true' : 'false',
       'aria-controls': ids.content,
+      'disabled': menuDisabled || undefined,
       'data-state': stateAttr,
-      'onClick': () => send({ type: 'TOGGLE', focus: 'first' }),
+      'data-disabled': dataAttr(menuDisabled),
+      'onClick': () => {
+        if (!menuDisabled)
+          send({ type: 'TOGGLE', focus: 'first' })
+      },
       'onKeydown': (event: KeyboardEvent) => {
+        if (menuDisabled)
+          return
         // 纵向轴且不收 Home/End：ArrowDown 从首个条目进、ArrowUp 从末个进
         const intent = navIntentFromKey(event, { axis: 'vertical', home: false })
         if (intent) {
@@ -133,7 +164,9 @@ export function connectMenu<T extends PropTypes>(
       ...parts.content.attrs,
       'id': ids.content,
       'role': 'menu',
-      'aria-labelledby': ids.trigger,
+      // 作者给了名字就用它，没给仍由触发器代为命名
+      'aria-label': prop('translations')?.content,
+      'aria-labelledby': prop('translations')?.content == null ? ids.trigger : undefined,
       // Tab 位归锚点条目，展开却无锚点时由容器兜底
       'tabindex': open && anchor == null ? 0 : -1,
       'data-state': stateAttr,
@@ -167,6 +200,16 @@ export function connectMenu<T extends PropTypes>(
         // 不拦默认行为，焦点按 Tab 序列自然离开
         if (event.key === 'Tab') {
           send({ type: 'CLOSE', src: 'tab' })
+          return
+        }
+        // 连打检索只搬焦点。缓冲区空时空格不算字符（push 返回 null），落到下面当确认键；
+        // 缓冲区非空时归检索。带 Ctrl/Meta/Alt 的组合不归检索管，否则 Ctrl+F 之类会被吞掉
+        const query = typeaheadOn && !event.ctrlKey && !event.metaKey && !event.altKey
+          ? refs.get('typeahead').push(event.key)
+          : null
+        if (query != null) {
+          event.preventDefault()
+          focusMatch(event.currentTarget as HTMLElement, query)
           return
         }
         if (event.key === 'Enter' || event.key === ' ')
@@ -217,6 +260,23 @@ export function connectMenu<T extends PropTypes>(
         content.focus()
       },
     }),
+    getItemTextProps: item => normalize.element({
+      ...parts['item-text'].attrs,
+      ...itemStateAttrs(item),
+    }),
+
+    getItemIndicatorProps: item => normalize.element({
+      ...parts['item-indicator'].attrs,
+      ...itemStateAttrs(item),
+      // 标记位是纯装饰，语义由条目自己给出
+      'aria-hidden': true,
+    }),
+
+    getItemDescriptionProps: item => normalize.element({
+      ...parts['item-description'].attrs,
+      ...itemStateAttrs(item),
+    }),
+
     // 双重身份：value 是它在父菜单里的条目身份（父层导航与高亮照常认），
     // 其余属性都是本子菜单的触发器。父层的选中经 aria-haspopup 嗅探跳过它。
     getSubmenuTriggerProps: item => normalize.element({

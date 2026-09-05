@@ -1,5 +1,5 @@
 import type { ItemQuery, NavIntent, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
-import type { StepsApi, StepsItemProps, StepsItemState, StepsSchema } from './steps.types'
+import type { StepNodeMeta, StepsApi, StepsItemProps, StepsItemState, StepsSchema } from './steps.types'
 import { contains, dataAttr, focusItem, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
 import { stepsAnatomy } from './steps.anatomy'
 import { clampStep, normalizeStepCount } from './steps.machine'
@@ -15,7 +15,19 @@ export function connectSteps<T extends PropTypes>(
 ): StepsApi<T> {
   const { context, prop, send, scope } = service
 
-  const count = normalizeStepCount(prop('count'))
+  // collection 推出的步骤元信息：标题、说明、状态与禁用都在这里定案，条目部件只报下标
+  const collection: StepNodeMeta[] = (prop('collection') ?? []).map((node, index) => ({
+    index,
+    title: node.title ?? '',
+    description: node.description,
+    status: node.status,
+    disabled: !!node.disabled,
+  }))
+  const metaOf = new Map(collection.map(meta => [meta.index, meta]))
+  const statuses = prop('statuses')
+
+  // 步数缺省取 collection 的长度：只交数据时不必再报一遍总步数
+  const count = normalizeStepCount(prop('count') ?? (collection.length || undefined))
   // 显示用的步序一律夹过：count 改小后内部值会停在一个已不存在的步上
   const value = clampStep(context.get('value'), count)
   const focusedStep = context.get('focusedStep') ?? null
@@ -25,6 +37,8 @@ export function connectSteps<T extends PropTypes>(
   const dir = prop('dir')
   const linear = !!prop('linear')
   const disabled = !!prop('disabled')
+  const loop = !!prop('loop')
+  const listLabel = prop('translations')?.list
   const complete = count > 0 && value >= count
 
   const triggerId = (index: number): string => scope.partId(stepsAnatomy.name, `trigger:${index}`)
@@ -33,13 +47,17 @@ export function connectSteps<T extends PropTypes>(
   const getItemState = (item: StepsItemProps): StepsItemState => {
     const completed = item.index < value
     const current = item.index === value
+    const meta = metaOf.get(item.index)
+    // 显式指定的状态优先：error / warning 只能从 statuses 或 collection 来
+    const status = statuses?.[item.index] ?? meta?.status
+      ?? (completed ? 'completed' : current ? 'current' : 'incomplete')
     return {
       index: item.index,
-      status: completed ? 'completed' : current ? 'current' : 'incomplete',
+      status,
       completed,
       current,
-      // 三条独立判据：整组禁用、作者标禁用、linear 下 index > value 未解锁
-      disabled: disabled || !!item.disabled || (linear && item.index > value),
+      // 四条独立判据：整组禁用、作者标禁用、collection 里标的禁用、linear 下 index > value 未解锁
+      disabled: disabled || !!item.disabled || !!meta?.disabled || (linear && item.index > value),
     }
   }
 
@@ -49,7 +67,7 @@ export function connectSteps<T extends PropTypes>(
    * 锚点的推进交给落点条目自己的 onFocus，聚焦失败时锚点不会跟着说谎。
    */
   const navigate = (list: HTMLElement, intent: NavIntent): void => {
-    focusItem(navigateItems(queryItems(list, ITEM_QUERY), String(anchor), intent, { loop: false }))
+    focusItem(navigateItems(queryItems(list, ITEM_QUERY), String(anchor), intent, { loop }))
   }
 
   /**
@@ -75,6 +93,7 @@ export function connectSteps<T extends PropTypes>(
   return {
     value,
     count,
+    collection,
     complete,
     focusedStep,
     getItemState,
@@ -99,6 +118,8 @@ export function connectSteps<T extends PropTypes>(
     getListProps: () => normalize.element({
       ...parts.list.attrs,
       'role': 'tablist',
+      // 作者给了名字才写：省略时读屏只报角色，指向不存在的名字更糟
+      'aria-label': listLabel,
       'aria-orientation': orientation,
       'data-orientation': orientation,
       // 显式 true/false：省略是"没说"，显式 false 是"明确说了不是"

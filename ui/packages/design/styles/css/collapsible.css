@@ -14,6 +14,23 @@
     --xh-_collapsible-trigger-px: var(--xh-control-px-md);
     --xh-_collapsible-trigger-gap: var(--xh-control-gap-md);
     --xh-_collapsible-trigger-font-size: var(--xh-control-font-md);
+
+    /* 语气落在展开着的触发器上，指示器写在触发器里、跟着继承这个色，不另立规则。
+       没写 data-tone 时 --xh-_tone-fg 没被声明，退回原来的前景色。
+       聚焦环不在其列，它恒是 --xh-ring-focus */
+    --xh-_collapsible-open-fg: var(--xh-_tone-fg, var(--xh-fg-default));
+  }
+
+  /* 触发器与其同排内容住的那一行；触发器自己已经是整行宽，这里只负责把两者摆平 */
+  [data-scope='collapsible'][data-part='header'] {
+    display: flex;
+    align-items: center;
+    gap: var(--xh-collapsible-header-gap, var(--xh-_collapsible-trigger-gap));
+    inline-size: 100%;
+  }
+
+  [data-scope='collapsible'][data-part='header'][hidden] {
+    display: none;
   }
 
   /* —— 尺寸 —— */
@@ -58,6 +75,11 @@
   /* 按下去要有回应：整条按钮轻微下压，松手即弹回 */
   [data-scope='collapsible'][data-part='trigger']:not([data-disabled]):active {
     scale: var(--xh-motion-scale-press);
+  }
+
+  /* 展开着的那一档单开一个槽：与常态共用一个的话，作者一改常态字色就把展开态也改掉了 */
+  [data-scope='collapsible'][data-part='trigger'][data-state='open'] {
+    color: var(--xh-collapsible-trigger-fg-open, var(--xh-_collapsible-open-fg));
   }
 
   [data-scope='collapsible'][data-part='trigger'][data-disabled] {

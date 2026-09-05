@@ -1,3 +1,4 @@
+import type { Tone } from '@xihan-ui/core'
 import type { GradientTextDirection, GradientTextProps } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
 import { connectGradientText } from '@xihan-ui/headless'
@@ -11,6 +12,7 @@ export const XhGradientText = defineComponent({
     from: { type: String, default: undefined },
     to: { type: String, default: undefined },
     direction: { type: String as PropType<GradientTextDirection>, default: undefined },
+    tone: { type: String as PropType<Tone>, default: undefined },
   },
   setup(props, { slots }) {
     return () => h(

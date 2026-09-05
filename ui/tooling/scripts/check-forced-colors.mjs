@@ -77,6 +77,7 @@ const EXEMPT = {
  */
 const DECORATIVE = {
   'image-cropper.css': '三分参考线是构图辅助，裁切框自己的描边与四角把手在这一档里都还在',
+  'loading-bar.css': '进度段末端那道亮边是装饰，进度本身由 range 的底色与 root 上的 aria-valuenow 表出',
 }
 
 /** 去掉块注释但保留换行，行号才对得上源文件。 */

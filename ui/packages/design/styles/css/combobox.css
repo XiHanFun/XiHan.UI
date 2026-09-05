@@ -600,6 +600,26 @@
     display: none;
   }
 
+  /* 在途占位：与空态占位同一个位置、同一副观感，两者不同屏 */
+  [data-scope='combobox'][data-part='loading'] {
+    display: block;
+    padding-block: var(--xh-combobox-loading-py, var(--xh-space-3));
+    padding-inline: var(--xh-combobox-loading-px, var(--xh-control-px-md));
+    border: var(--xh-stroke-thin) solid var(--xh-combobox-loading-border, var(--xh-border-default));
+    border-radius: var(--xh-combobox-loading-radius, var(--xh-shape-surface));
+    background: var(--xh-combobox-loading-bg, var(--xh-bg-surface));
+    color: var(--xh-combobox-loading-fg, var(--xh-fg-subtle));
+    font-size: var(--xh-combobox-loading-font-size, var(--xh-_combobox-font-size));
+    line-height: var(--xh-leading-none);
+    box-shadow: var(--xh-combobox-loading-shadow, var(--xh-elevation-floating));
+    text-align: center;
+    pointer-events: auto;
+  }
+
+  [data-scope='combobox'][data-part='loading'][hidden] {
+    display: none;
+  }
+
   @media print {
     /* 打印：定位层与遮罩是交互期才存在的东西，落到纸上只会盖住底下的正文。
        收起写在这份皮肤里而不是 reset：reset 层排在组件层之前，组件层里任何一条 display 都压得住它。 */

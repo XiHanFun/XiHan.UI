@@ -1,4 +1,4 @@
-<!-- 浮层底栏 | content 的子节点全由作者写：列装进一层横排容器，底栏与它并列，就横跨了全部列 -->
+<!-- 浮层底栏 | footer 写在 content 里、与列并列，横跨全部列；它不进任何一列的拥有关系，方向键也走不到 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import {
@@ -6,6 +6,7 @@ import {
   XhCascaderColumn,
   XhCascaderContent,
   XhCascaderControl,
+  XhCascaderFooter,
   XhCascaderIndicator,
   XhCascaderItem,
   XhCascaderItemIndicator,
@@ -56,42 +57,28 @@ const picked = ref<string[][]>([["fruit", "apple"]]);
       </XhCascaderTrigger>
     </XhCascaderControl>
     <XhCascaderPositioner>
-      <!-- 浮层壳改成竖排：上半是并排的列，下半是横跨全宽的底栏 -->
-      <XhCascaderContent style="flex-direction: column">
-        <div style="display: flex; flex-direction: row; align-items: stretch">
-          <XhCascaderColumn
-            v-for="lv in levels"
-            :key="lv.level"
-            :level="lv.level"
-          >
-            <XhCascaderItem
-              v-for="node in lv.items"
-              :key="node.value"
-              :value="node.value"
-            >
-              <XhCascaderItemText>{{ node.label }}</XhCascaderItemText>
-              <XhCascaderItemIndicator />
-            </XhCascaderItem>
-          </XhCascaderColumn>
-        </div>
-        <div
-          style="
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            justify-content: space-between;
-            padding: 8px;
-            border-block-start: 1px solid var(--xh-border-subtle);
-          "
+      <XhCascaderContent>
+        <XhCascaderColumn
+          v-for="lv in levels"
+          :key="lv.level"
+          :level="lv.level"
         >
-          <span style="color: var(--xh-fg-subtle); font-size: 12px">
-            已选 {{ value.length }} 条
-          </span>
+          <XhCascaderItem
+            v-for="node in lv.items"
+            :key="node.value"
+            :value="node.value"
+          >
+            <XhCascaderItemText>{{ node.label }}</XhCascaderItemText>
+            <XhCascaderItemIndicator />
+          </XhCascaderItem>
+        </XhCascaderColumn>
+        <XhCascaderFooter style="justify-content: space-between">
+          <span>已选 {{ value.length }} 条</span>
           <span style="display: flex; gap: 8px">
             <XhButton size="sm" variant="ghost" @click="clear()">清空</XhButton>
             <XhButton size="sm" @click="setOpen(false)">完成</XhButton>
           </span>
-        </div>
+        </XhCascaderFooter>
       </XhCascaderContent>
     </XhCascaderPositioner>
   </XhCascaderRoot>

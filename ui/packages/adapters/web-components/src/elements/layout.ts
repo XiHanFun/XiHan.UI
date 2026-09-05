@@ -1,4 +1,4 @@
-import type { LayoutSchema, LayoutSiderCollapsedChangeDetails, LayoutSiderPlacement } from '@xihan-ui/headless'
+import type { LayoutBreakpoint, LayoutSchema, LayoutSiderBreakpointDetails, LayoutSiderCollapsedChangeDetails, LayoutSiderPlacement } from '@xihan-ui/headless'
 import { connectLayout, layoutAnatomy, layoutMachine, layoutMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -24,11 +24,13 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @attr {string} sider-width - 展开时侧栏的宽度，任意 CSS 长度
  * @attr {string} sider-collapsed-width - 折叠时侧栏的宽度，任意 CSS 长度
  * @attr {'start'|'end'} sider-placement - 侧栏挂在行首还是行尾，缺省 start
+ * @attr {'sm'|'md'|'lg'|'xl'} sider-breakpoint - 侧栏的自适应断点：视口窄于这一档时侧栏按折叠宽显示，折叠态不变
  * @attr {boolean} header-fixed - 头吸顶：滚动时头钉在滚动容器的上沿
  * @attr {boolean} sider-fixed - 侧栏吸附：滚动时侧栏钉在滚动容器的上沿，头也吸顶时让开头那一条
  * @attr {boolean} bordered - 在头、侧栏、脚与内容之间画分隔线
  * @fires sider-collapsed-change - 折叠态变化；detail 为 `{ collapsed: boolean }`
- * @csspart root - 骨架根容器，承载 data-sider-placement / data-collapsed / data-header-fixed / data-sider-fixed / data-bordered
+ * @fires sider-breakpoint - 断点跨过去时发，挂载时也发一次当前值；detail 为 `{ matched: boolean }`
+ * @csspart root - 骨架根容器，承载 data-sider-placement / data-sider-breakpoint / data-collapsed / data-header-fixed / data-sider-fixed / data-bordered
  * @csspart header - 顶部横幅区，横贯整行；吸顶时带 data-fixed
  * @csspart sider - 侧栏，折叠时带 data-collapsed、宽度随之在两档之间切换；吸附时带 data-fixed
  * @csspart content - 主内容区
@@ -53,6 +55,7 @@ export class XhLayoutElement extends XhElement {
     siderWidth: { attribute: 'sider-width', converter: STRING_CONVERTER },
     siderCollapsedWidth: { attribute: 'sider-collapsed-width', converter: STRING_CONVERTER },
     siderPlacement: { attribute: 'sider-placement', converter: STRING_CONVERTER },
+    siderBreakpoint: { attribute: 'sider-breakpoint', converter: STRING_CONVERTER },
     headerFixed: { type: Boolean, attribute: 'header-fixed' },
     siderFixed: { type: Boolean, attribute: 'sider-fixed' },
     bordered: { type: Boolean },
@@ -63,12 +66,17 @@ export class XhLayoutElement extends XhElement {
   declare siderWidth?: string
   declare siderCollapsedWidth?: string
   declare siderPlacement?: LayoutSiderPlacement
+  declare siderBreakpoint?: LayoutBreakpoint
   declare headerFixed?: boolean
   declare siderFixed?: boolean
   declare bordered?: boolean
 
   private readonly notify = (details: LayoutSiderCollapsedChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('sider-collapsed-change', { detail: details, bubbles: true, composed: true }))
+  }
+
+  private readonly notifyBreakpoint = (details: LayoutSiderBreakpointDetails): void => {
+    this.dispatchEvent(new CustomEvent('sider-breakpoint', { detail: details, bubbles: true, composed: true }))
   }
 
   private readonly ctrl = new MachineController<LayoutSchema>(this, layoutMachine, () => this.machineProps())
@@ -80,10 +88,12 @@ export class XhLayoutElement extends XhElement {
       siderWidth: this.siderWidth,
       siderCollapsedWidth: this.siderCollapsedWidth,
       siderPlacement: this.siderPlacement,
+      siderBreakpoint: this.siderBreakpoint,
       headerFixed: this.headerFixed ?? false,
       siderFixed: this.siderFixed ?? false,
       bordered: this.bordered ?? false,
       onSiderCollapsedChange: this.notify,
+      onSiderBreakpoint: this.notifyBreakpoint,
     }
   }
 

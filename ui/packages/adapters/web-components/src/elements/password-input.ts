@@ -10,6 +10,8 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 // 三态布尔：缺席=undefined（用默认值）、="false"=false、其余=true。
 // Lit 默认的 Boolean 转换器是 v !== null，受控的 visible 会因此再也表达不了「宿主没管」
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
+// 数值缺席或空串翻成 undefined，以此区分"没给"与 0。
+const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 
 /**
  * `<xh-password-input>` —— Light-DOM 行为宿主：作者写 root/label/control/input/
@@ -37,6 +39,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {string} name - 表单字段名；给了才参与提交
  * @attr {string} placeholder - 占位文案
  * @attr {string} auto-complete - 落到 input 上的 autocomplete，缺省 current-password；注册表单要写 new-password
+ * @attr {number} strength - 强度档位 0–4；给了才显出强度条，打分算法归调用方
  * @attr {'outline'|'subtle'|'ghost'} variant - 视觉变体
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
@@ -48,6 +51,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart input - 真正的输入框，须是原生 `<input>`；type 随明暗在 password / text 之间换
  * @csspart visibility-trigger - 明暗切换钮，须是原生 `<button>`；名字随状态换，里面放图标即可
  * @csspart caps-lock-indicator - 大写锁定提示；节点留空即可，文字由元素写入，是 role=status 的活区域
+ * @csspart strength-meter - 强度条，role=meter；档位落在 data-level 与 aria-valuenow 上，没给 strength 时收起
  */
 export class XhPasswordInputElement extends XhElement {
   static override partContract = { anatomy: passwordInputAnatomy, meta: passwordInputMeta }
@@ -65,6 +69,7 @@ export class XhPasswordInputElement extends XhElement {
     name: { converter: STRING_CONVERTER },
     placeholder: { converter: STRING_CONVERTER },
     autoComplete: { converter: STRING_CONVERTER, attribute: 'auto-complete' },
+    strength: { converter: NUMBER_CONVERTER },
     variant: { converter: STRING_CONVERTER },
     tone: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
@@ -83,6 +88,7 @@ export class XhPasswordInputElement extends XhElement {
   declare name?: string
   declare placeholder?: string
   declare autoComplete?: string
+  declare strength?: number
   declare variant?: ControlVariant
   declare tone?: Tone
   declare size?: Size
@@ -112,6 +118,7 @@ export class XhPasswordInputElement extends XhElement {
       name: this.name,
       placeholder: this.placeholder,
       autoComplete: this.autoComplete,
+      strength: this.strength,
       variant: this.variant,
       tone: this.tone,
       size: this.size,
@@ -135,6 +142,7 @@ export class XhPasswordInputElement extends XhElement {
     put('input', api.getInputProps() as Record<string, unknown>)
     put('visibility-trigger', api.getVisibilityTriggerProps() as Record<string, unknown>)
     put('caps-lock-indicator', api.getCapsLockIndicatorProps() as Record<string, unknown>)
+    put('strength-meter', api.getStrengthMeterProps() as Record<string, unknown>)
     // 输入框的 value 不必在这里另外回写：spreader 把 value/checked/selected 三个键当 property 写，
     // 属性写法只管初值、盖不住用户输入过的框
 

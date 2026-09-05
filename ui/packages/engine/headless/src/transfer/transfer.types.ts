@@ -1,4 +1,4 @@
-import type { Direction, MachineSchema, PropTypes } from '@xihan-ui/core'
+import type { Direction, MachineSchema, PropTypes, Size, Tone } from '@xihan-ui/core'
 
 /**
  * 哪一侧。source 是还没选进来的，target 是已经选进来的；
@@ -45,6 +45,15 @@ export interface TransferPanelProps {
 }
 
 /**
+ * 分组自报身份：值 + 它挂在哪一侧的面板里。
+ * 两侧各挂一份同名分组，分组标题的 id 因此要连 side 一起派生。
+ */
+export interface TransferGroupProps {
+  value: string
+  side: TransferSide
+}
+
+/**
  * 条目自报家门：值 + 它挂在哪一侧的面板里；禁用与标签一律回 collection 里查。
  * 两侧面板各挂一份全集，不属于本侧的条目由连接层打上 hidden 而非卸载，
  * 所以同一个 value 会有两个节点，side 就是它们各自的身份。
@@ -72,6 +81,16 @@ export interface TransferSchema extends MachineSchema {
     filter?: TransferFilter
     /** 整个控件禁用：条目转 aria-disabled，三个按钮与搜索框用原生 disabled。 */
     disabled?: boolean
+    /** 只读：两侧照常浏览与搜索，但勾选改不动、也搬不动。禁用还额外收走键盘入口。 */
+    readOnly?: boolean
+    /** 校验失败：两侧列表报 aria-invalid，各角色节点带 data-invalid。 */
+    invalid?: boolean
+    /** 条目还在取：两侧列表报 aria-busy，在途占位顶上来、空态占位让位。 */
+    loading?: boolean
+    /** 语气：brand / neutral / success / warning / danger / info，决定勾选标记用哪族颜色。 */
+    tone?: Tone
+    /** 尺寸：sm / md / lg，决定条目与勾选格的几何档位。 */
+    size?: Size
     /** 只能往右不能往回：往回搬那条路整个封死，target 侧也不再接受勾选。 */
     oneWay?: boolean
     /** 列表内方向键走到尽头是否回绕，默认 true。 */
@@ -142,6 +161,8 @@ export interface TransferApi<T extends PropTypes = PropTypes> {
   /** 两侧合起来被勾中的值。 */
   selection: string[]
   disabled: boolean
+  readOnly: boolean
+  invalid: boolean
   oneWay: boolean
   searchable: boolean
   /** 某一侧当下看得见的条目（分侧 + 搜索之后），顺序恒为 collection 原序。 */
@@ -170,6 +191,14 @@ export interface TransferApi<T extends PropTypes = PropTypes> {
   getSearchProps: (props: TransferPanelProps) => T['input']
   getListProps: (props: TransferPanelProps) => T['element']
   getSelectAllTriggerProps: (props: TransferPanelProps) => T['button']
+  /** 空态占位：放在面板里、list 的兄弟；本侧一条可见条目都没有时露面，其余时候带 hidden。 */
+  getEmptyProps: (props: TransferPanelProps) => T['element']
+  /** 在途占位：与空态占位同一个位置，两者不同屏——取数期间它顶上来，空态让位。 */
+  getLoadingProps: (props: TransferPanelProps) => T['element']
+  /** 分组容器：role=group，条目挂在它里面；分组标题经 aria-labelledby 关联。 */
+  getGroupProps: (props: TransferGroupProps) => T['element']
+  /** 分组标题：不是选项、不进导航，只作为本组的可及名字。 */
+  getGroupLabelProps: (props: TransferGroupProps) => T['element']
   getItemProps: (props: TransferItemProps) => T['element']
   getItemTextProps: (props: TransferItemProps) => T['element']
   getItemCheckboxProps: (props: TransferItemProps) => T['element']

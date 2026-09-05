@@ -1,5 +1,5 @@
 import type { Size, Tone } from '@xihan-ui/core'
-import type { SpinnerProps, SpinnerTranslations } from '@xihan-ui/headless'
+import type { SpinnerProps, SpinnerTranslations, SpinnerVariant } from '@xihan-ui/headless'
 import { connectSpinner, spinnerAnatomy, spinnerMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -14,8 +14,9 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @customElement xh-spinner
  * @attr {string} label - 可及名字；label 角色节点显示的应当是同一段文案
  * @attr {'sm'|'md'|'lg'} size - 直径档位，缺省 md
+ * @attr {'ring'|'arc'|'dots'} variant - 形态，缺省 ring
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
- * @csspart root - role=status 的活区容器，承载 aria-live/aria-label/data-size/data-tone
+ * @csspart root - role=status 的活区容器，承载 aria-live/aria-label/data-size/data-variant/data-tone
  * @csspart label - 可见文案节点，可省
  */
 export class XhSpinnerElement extends XhElement {
@@ -25,6 +26,7 @@ export class XhSpinnerElement extends XhElement {
   static override properties = {
     label: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
+    variant: { converter: STRING_CONVERTER },
     tone: { converter: STRING_CONVERTER },
     // 文案是对象，只走 property
     translations: { attribute: false },
@@ -32,6 +34,7 @@ export class XhSpinnerElement extends XhElement {
 
   declare label?: string
   declare size?: Size
+  declare variant?: SpinnerVariant
   declare tone?: Tone
   declare translations?: Partial<SpinnerTranslations>
 
@@ -39,6 +42,7 @@ export class XhSpinnerElement extends XhElement {
     const props: SpinnerProps = {
       label: this.label,
       size: this.size,
+      variant: this.variant,
       tone: this.tone,
       translations: this.translations,
     }

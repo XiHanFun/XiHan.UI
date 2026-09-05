@@ -43,7 +43,7 @@
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-clipboard>` |
-| Vue 组件 | `XhClipboardControl` `XhClipboardCopyTrigger` `XhClipboardIndicator` `XhClipboardInput` `XhClipboardLabel` `XhClipboardRoot` |
+| Vue 组件 | `XhClipboardControl` `XhClipboardCopyTrigger` `XhClipboardIndicator` `XhClipboardInput` `XhClipboardLabel` `XhClipboardRoot` `XhClipboardStatus` |
 | 组合式函数 | `useClipboard` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/clipboard.css` |
@@ -52,7 +52,7 @@
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="clipboard"`：**`root`** · `label` · `control` · `input` · **`copy-trigger`** · `indicator`
+`data-scope="clipboard"`：**`root`** · `label` · `control` · `input` · **`copy-trigger`** · `indicator` · `status`
 
 ## Props
 
@@ -60,6 +60,11 @@
 | --- | --- | --- | --- |
 | `value` | `string` |  | 要复制的文本；缺省即复制空串。 |
 | `timeout` | `number` |  | 复制成功后指示器保持多久（毫秒），默认 3000；&lt;=0 或非有限数表示不自动回落。 |
+| `disabled` | `boolean` |  | 禁用：复制按钮点不动，作者调 api.copy() 也不动（守卫在机器层）。 |
+| `variant` | `ActionVariant` |  | 形态：solid / subtle / outline / ghost，决定复制按钮的颜色怎么用。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg。 |
+| `translations` | `Partial<ClipboardTranslations>` |  |  |
 | `onStatusChange` | `(details: ClipboardStatusChangeDetails) => void` |  | 状态每次落位时通知一次；挂载那一刻的 idle 是初始态，不通知。 |
 | `onCopyError` | `(details: ClipboardCopyErrorDetails) => void` |  | 写入失败时通知；此时状态已经回到 idle。 |
 
@@ -92,10 +97,13 @@
 | `input` | state.get() |
 | `copy-trigger` | state.get() |
 | `indicator` | state.get() |
+| `status` | state.get() |
 
 状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **事件**：`COPY.TRIGGER` · `COPY.SUCCESS` · `COPY.ERROR` · `after.timeout`
+
+**判据**：`isDisabled`
 
 ## connect API
 
@@ -104,6 +112,8 @@
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `status` | `ClipboardStatus` |  |
+| `disabled` | `boolean` |  |
+| `announcement` | `string` | 播报区不给内容时念的那一句；没到已复制这一档时是空串。 |
 | `copied` | `boolean` | 已经复制成功且还在停留窗口内。指示器与样式的唯一判据。 |
 | `value` | `string` | 当前要复制的文本（prop 缺省时是空串）。 |
 | `copy` | `() => void` | 走一次复制意图，与点按钮同一条路。 |
@@ -113,6 +123,7 @@
 | `getInputProps` | `() => T['input']` |  |
 | `getCopyTriggerProps` | `() => T['button']` |  |
 | `getIndicatorProps` | `(props: ClipboardIndicatorProps) => T['element']` |  |
+| `getStatusProps` | `() => T['element']` | 复制成功的播报区，视觉隐藏；不给内容时念 announcement。 |
 
 ## 键盘
 
@@ -127,6 +138,10 @@
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `input` | `aria-labelledby` | `label` 部件的 id |
+| `copy-trigger` | `aria-label` | translations?.copy |
+| `status` | `aria-atomic` | 'true' |
+| `status` | `aria-live` | 'polite' |
+| `status` | `role` | 'status' |
 
 ## 样式
 
@@ -139,20 +154,26 @@
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-copied` | ''（条件成立时才出现） |
+| `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-size` | props.size |
 | `root` | `data-state` | state.get() |
+| `root` | `data-tone` | props.tone |
+| `root` | `data-variant` | props.variant |
 | `label` | `data-state` | state.get() |
 | `control` | `data-state` | state.get() |
 | `input` | `data-state` | state.get() |
 | `copy-trigger` | `data-copied` | ''（条件成立时才出现） |
+| `copy-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `copy-trigger` | `data-state` | state.get() |
 | `indicator` | `data-copied` | ''（条件成立时才出现） |
 | `indicator` | `data-state` | state.get() |
+| `status` | `data-state` | state.get() |
 
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-clipboard-control-gap` · `--xh-clipboard-copy-trigger-bg` · `--xh-clipboard-copy-trigger-bg-active` · `--xh-clipboard-copy-trigger-bg-hover` · `--xh-clipboard-copy-trigger-border` · `--xh-clipboard-copy-trigger-border-copied` · `--xh-clipboard-copy-trigger-border-hover` · `--xh-clipboard-copy-trigger-fg` · `--xh-clipboard-copy-trigger-fg-copied` · `--xh-clipboard-copy-trigger-font-size` · `--xh-clipboard-copy-trigger-gap` · `--xh-clipboard-copy-trigger-h` · `--xh-clipboard-copy-trigger-px` · `--xh-clipboard-copy-trigger-radius` · `--xh-clipboard-copy-trigger-shadow-hover` · `--xh-clipboard-gap` · `--xh-clipboard-indicator-fg-copied` · `--xh-clipboard-input-autofill-bg` · `--xh-clipboard-input-autofill-fg` · `--xh-clipboard-input-bg` · `--xh-clipboard-input-border` · `--xh-clipboard-input-border-focus` · `--xh-clipboard-input-fg` · `--xh-clipboard-input-font-size` · `--xh-clipboard-input-h` · `--xh-clipboard-input-min-w` · `--xh-clipboard-input-px` · `--xh-clipboard-input-radius` · `--xh-clipboard-label-fg` · `--xh-clipboard-label-font-size` · `--xh-clipboard-label-font-weight` · `--xh-clipboard-loading-duration`
+`--xh-clipboard-control-gap` · `--xh-clipboard-copy-trigger-bg` · `--xh-clipboard-copy-trigger-bg-active` · `--xh-clipboard-copy-trigger-bg-disabled` · `--xh-clipboard-copy-trigger-bg-hover` · `--xh-clipboard-copy-trigger-border` · `--xh-clipboard-copy-trigger-border-copied` · `--xh-clipboard-copy-trigger-border-disabled` · `--xh-clipboard-copy-trigger-border-hover` · `--xh-clipboard-copy-trigger-fg` · `--xh-clipboard-copy-trigger-fg-copied` · `--xh-clipboard-copy-trigger-font-size` · `--xh-clipboard-copy-trigger-gap` · `--xh-clipboard-copy-trigger-h` · `--xh-clipboard-copy-trigger-px` · `--xh-clipboard-copy-trigger-radius` · `--xh-clipboard-copy-trigger-shadow-hover` · `--xh-clipboard-gap` · `--xh-clipboard-indicator-fg-copied` · `--xh-clipboard-input-autofill-bg` · `--xh-clipboard-input-autofill-fg` · `--xh-clipboard-input-bg` · `--xh-clipboard-input-border` · `--xh-clipboard-input-border-focus` · `--xh-clipboard-input-fg` · `--xh-clipboard-input-font-size` · `--xh-clipboard-input-h` · `--xh-clipboard-input-min-w` · `--xh-clipboard-input-px` · `--xh-clipboard-input-radius` · `--xh-clipboard-label-fg` · `--xh-clipboard-label-font-size` · `--xh-clipboard-label-font-weight` · `--xh-clipboard-loading-duration`
 
 ## 动效
 

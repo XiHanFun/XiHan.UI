@@ -163,6 +163,49 @@
     cursor: default;
   }
 
+  /* 值气泡：挂在拇指里，跟着拇指一起走位。
+     两侧 inset 都钉在 50% 再靠自动外边距回中：气泡宽度由文字撑出，用 translate 回中的话
+     rtl 下 inset-inline-start 映射到 right，位移是物理方向的，会把气泡推向错误的一侧。
+     默认只在推动那一刻露面，静止时留在 DOM 里但不占视线 */
+  [data-scope='slider'][data-part='value-text'] {
+    position: absolute;
+    inset-block-end: 100%;
+    inset-inline: 50%;
+    inline-size: max-content;
+    margin-block-end: var(--xh-slider-value-text-offset, var(--xh-space-2));
+    margin-inline: auto;
+    padding-block: var(--xh-slider-value-text-py, var(--xh-space-0_5));
+    padding-inline: var(--xh-slider-value-text-px, var(--xh-space-2));
+    border-radius: var(--xh-slider-value-text-radius, var(--xh-shape-control));
+    background: var(--xh-slider-value-text-bg, var(--xh-_tone, var(--xh-bg-brand)));
+    color: var(--xh-slider-value-text-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
+    font-size: var(--xh-slider-value-text-font-size, var(--xh-text-caption-size));
+    line-height: var(--xh-leading-normal);
+    white-space: nowrap;
+    /* 气泡贴在拇指上方，指针要落到拇指上，不能被它挡住 */
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='slider'][data-part='value-text'][hidden] {
+    display: none;
+  }
+
+  /* 只有手真正推着的那一个拇指带 data-dragging，多拇指时气泡不会全组一起冒出来 */
+  [data-scope='slider'][data-part='value-text'][data-dragging] {
+    opacity: 1;
+  }
+
+  /* 竖排轨道的气泡挪到行侧：压在拇指上方会挡住上一档的值 */
+  [data-scope='slider'][data-part='value-text'][data-orientation='vertical'] {
+    inset-block: 50%;
+    inset-inline: 100% auto;
+    block-size: max-content;
+    margin-block: auto;
+    margin-inline: var(--xh-slider-value-text-offset, var(--xh-space-2)) 0;
+  }
+
   /* —— 尺寸 —— */
   /* 尺寸只改 root 上那两个槽位，control / track / thumb 跟着一起走；中间档不写规则，缺省即中档。
      两档都保持"拇指是轨道的三倍厚"这个比例，换档时圆点与底槽的关系看着不变。 */

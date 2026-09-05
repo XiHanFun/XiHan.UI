@@ -248,6 +248,8 @@ export interface FileUploadApi<T extends PropTypes = PropTypes> {
   getItemNameProps: (props: FileUploadItemProps) => T['element']
   getItemSizeTextProps: (props: FileUploadItemProps) => T['element']
   getItemPreviewProps: (props: FileUploadItemProps) => T['element']
+  /** 这一条的传输进度条，纯装饰；进度比例写在私有槽上供皮肤算宽度。 */
+  getItemProgressProps: (props: FileUploadItemProps) => T['element']
   getItemDeleteTriggerProps: (props: FileUploadItemProps) => T['button']
   getClearTriggerProps: () => T['button']
 }

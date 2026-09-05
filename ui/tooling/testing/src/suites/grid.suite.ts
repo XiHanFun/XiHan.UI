@@ -30,7 +30,11 @@ export const gridSuite: ConformanceSuite = {
             'data-cols-md': null,
             'data-cols-lg': null,
             'data-cols-xl': null,
+            'data-rows': null,
+            'data-min-col': null,
             'data-gap': null,
+            'data-row-gap': null,
+            'data-column-gap': null,
             'data-align': null,
             'data-justify-items': null,
           },
@@ -108,6 +112,57 @@ export const gridSuite: ConformanceSuite = {
             'data-cols-md': null,
             'data-cols-lg': '3',
             'data-cols-xl': null,
+          },
+        },
+      },
+    },
+    {
+      name: '行数、自适应列宽与行列间距分离都如实落到根上',
+      spec: { apg: APG },
+      props: { rows: 3, minColWidth: 'sm', rowGap: 'lg', columnGap: 'xs' },
+      initial: {
+        parts: {
+          root: {
+            'data-rows': '3',
+            'data-min-col': 'sm',
+            'data-row-gap': 'lg',
+            'data-column-gap': 'xs',
+          },
+        },
+      },
+    },
+    {
+      name: '行数越界按没写算：行轨道交回内容自己撑',
+      spec: { apg: APG },
+      props: { rows: 13 },
+      initial: {
+        parts: { root: { 'data-rows': null } },
+      },
+    },
+    {
+      name: '跨列与错列给断点对象：base 落 data-span / data-offset，其余各档逐档落',
+      spec: { apg: APG },
+      props: { cols: { base: 1, md: 4 } },
+      fixture: (base): FixtureNode => ({
+        ...base,
+        children: [
+          { part: 'item', attrs: { span: '{"base":1,"md":2}', offset: '{"md":1}' }, text: '甲' },
+          { part: 'item', text: '乙' },
+        ],
+      }),
+      initial: {
+        parts: {
+          'item[0]': {
+            'data-span': '1',
+            'data-span-sm': null,
+            'data-span-md': '2',
+            'data-offset': null,
+            'data-offset-md': '1',
+          },
+          'item[1]': {
+            'data-span': null,
+            'data-span-md': null,
+            'data-offset-md': null,
           },
         },
       },

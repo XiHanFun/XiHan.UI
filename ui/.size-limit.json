@@ -9,7 +9,7 @@
     "name": "tokens",
     "path": "packages/design/tokens/dist/index.js",
     "gzip": true,
-    "limit": "7 kB"
+    "limit": "7.9 kB"
   },
   {
     "name": "tokens/tokens.css",
@@ -132,6 +132,12 @@
     "limit": "21 kB"
   },
   {
+    "name": "web-components/services",
+    "path": "packages/adapters/web-components/dist/services.js",
+    "gzip": true,
+    "limit": "31 kB"
+  },
+  {
     "name": "styles",
     "path": "packages/design/styles/css/*.css",
     "gzip": true,
@@ -165,7 +171,7 @@
     "path": "packages/adapters/vue/dist/index.js",
     "import": "{ XhButton }",
     "gzip": true,
-    "limit": "1.4 kB",
+    "limit": "1.65 kB",
     "ignore": [
       "vue"
     ]
@@ -225,7 +231,7 @@
     "path": "packages/adapters/vue/dist/index.js",
     "import": "{ XhGridRoot }",
     "gzip": true,
-    "limit": "1.15 kB",
+    "limit": "1.4 kB",
     "ignore": [
       "vue"
     ]

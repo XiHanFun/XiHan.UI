@@ -69,6 +69,7 @@ export interface DialogApi<T extends PropTypes = PropTypes> {
   getPositionerProps: () => T['element']
   getContentProps: () => T['element']
   getHeaderProps: () => T['element']
+  getIndicatorProps: () => T['element']
   getTitleProps: () => T['element']
   getDescriptionProps: () => T['element']
   getBodyProps: () => T['element']

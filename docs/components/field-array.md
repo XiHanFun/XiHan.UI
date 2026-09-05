@@ -17,6 +17,9 @@
 - `movable` 给出上移下移。
 - `createItem` 决定新增一行时的初值。
 - 一行里可以放多个字段。
+- `name` 给整份数组一个字段名，每行经 `item.name` 拿到 `名字[下标]` 写到自己的控件上。
+- `readOnly` 让行数改不动，`invalid` 把校验状态传到每一行。
+- `item-label` 承载行前的行号或名目。
 
 ## 示例
 
@@ -55,7 +58,7 @@ movable 开了才出上下把手；挪完焦点跟着这一行走，键盘可以
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-field-array>` |
-| Vue 组件 | `XhFieldArrayAddTrigger` `XhFieldArrayItem` `XhFieldArrayItemAction` `XhFieldArrayItemContent` `XhFieldArrayItemDeleteTrigger` `XhFieldArrayMoveDownTrigger` `XhFieldArrayMoveUpTrigger` `XhFieldArrayRoot` |
+| Vue 组件 | `XhFieldArrayAddTrigger` `XhFieldArrayItem` `XhFieldArrayItemAction` `XhFieldArrayItemContent` `XhFieldArrayItemDeleteTrigger` `XhFieldArrayItemLabel` `XhFieldArrayMoveDownTrigger` `XhFieldArrayMoveUpTrigger` `XhFieldArrayRoot` |
 | 组合式函数 | `useFieldArray` |
 | 状态机 | `fieldArrayMachine` |
 | 皮肤 | `@xihan-ui/styles/field-array.css` |
@@ -64,7 +67,7 @@ movable 开了才出上下把手；挪完焦点跟着这一行走，键盘可以
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="field-array"`：**`root`** · `item` · `item-content` · `item-action` · `add-trigger` · `item-delete-trigger` · `move-up-trigger` · `move-down-trigger`
+`data-scope="field-array"`：**`root`** · `item` · `item-label` · `item-content` · `item-action` · `add-trigger` · `item-delete-trigger` · `move-up-trigger` · `move-down-trigger`
 
 ## Props
 
@@ -77,6 +80,9 @@ movable 开了才出上下把手；挪完焦点跟着这一行走，键盘可以
 | `createItem` | `() => unknown` |  | 新增一行时造一个空项。不给就插一个 null。 |
 | `movable` | `boolean` |  | 出不出换序把手。关（默认）时两个换序把手一律收起。 |
 | `disabled` | `boolean` |  | 禁用：新增、删除、换序三路都按不动。 |
+| `readOnly` | `boolean` |  | 只读：行数改不动（新增、删除、换序都按不动），行里的控件仍由作者自己置只读。 |
+| `invalid` | `boolean` |  | 校验失败标注：落到根与每一行上。 |
+| `name` | `string` |  | 整份数组的表单字段名。给了之后每一行经 `item.name` 拿到 `名字[下标]`， 作者把它写到行里自己的控件上，整份数组才提交得出去。 |
 | `translations` | `Partial<FieldArrayTranslations>` |  |  |
 | `onValueChange` | `(details: FieldArrayValueChangeDetails) => void` |  |  |
 
@@ -102,7 +108,7 @@ movable 开了才出上下把手；挪完焦点跟着这一行走，键盘可以
 
 **状态**：`idle`
 
-**事件**：`VALUE.SET` · `ITEM.ADD` · `ITEM.REMOVE` · `ITEM.MOVE`
+**事件**：`VALUE.SET` · `ITEM.ADD` · `ITEM.REMOVE` · `ITEM.MOVE` · `FORM.RESET`
 
 **判据**：`canAdd` · `canRemove` · `canMove`
 
@@ -117,6 +123,8 @@ movable 开了才出上下把手；挪完焦点跟着这一行走，键盘可以
 | `count` | `number` |  |
 | `empty` | `boolean` |  |
 | `disabled` | `boolean` |  |
+| `readOnly` | `boolean` |  |
+| `invalid` | `boolean` |  |
 | `movable` | `boolean` |  |
 | `atMin` | `boolean` | 已到下限：再删就少于 min 了。 |
 | `atMax` | `boolean` | 已到上限：再加就多于 max 了。 |
@@ -129,6 +137,7 @@ movable 开了才出上下把手；挪完焦点跟着这一行走，键盘可以
 | `moveDown` | `(index: number) => void` |  |
 | `getRootProps` | `() => T['element']` |  |
 | `getItemProps` | `(item: FieldArrayItemProps) => T['element']` |  |
+| `getItemLabelProps` | `(item: FieldArrayItemProps) => T['element']` | 行前那一小段行号或名目；纯标注，不与行里的控件建立 for 关联。 |
 | `getItemContentProps` | `(item: FieldArrayItemProps) => T['element']` |  |
 | `getItemActionProps` | `(item: FieldArrayItemProps) => T['element']` |  |
 | `getAddTriggerProps` | `() => T['button']` |  |
@@ -166,7 +175,9 @@ movable 开了才出上下把手；挪完焦点跟着这一行走，键盘可以
 | `root` | `data-at-min` | ''（条件成立时才出现） |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
 | `root` | `data-empty` | ''（条件成立时才出现） |
+| `root` | `data-invalid` | ''（条件成立时才出现） |
 | `root` | `data-movable` | ''（条件成立时才出现） |
+| `root` | `data-readonly` | ''（条件成立时才出现） |
 | `item` | `data-first` | ''（条件成立时才出现） |
 | `item` | `data-last` | ''（条件成立时才出现） |
 | `add-trigger` | `data-disabled` | ''（条件成立时才出现） |
@@ -176,7 +187,7 @@ movable 开了才出上下把手；挪完焦点跟着这一行走，键盘可以
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-field-array-action-gap` · `--xh-field-array-add-bg` · `--xh-field-array-add-bg-active` · `--xh-field-array-add-bg-hover` · `--xh-field-array-add-border` · `--xh-field-array-add-border-disabled` · `--xh-field-array-add-border-hover` · `--xh-field-array-add-fg` · `--xh-field-array-add-font-size` · `--xh-field-array-add-height` · `--xh-field-array-add-px` · `--xh-field-array-add-radius` · `--xh-field-array-content-gap` · `--xh-field-array-gap` · `--xh-field-array-icon-size` · `--xh-field-array-item-delete-fg-hover` · `--xh-field-array-item-gap` · `--xh-field-array-item-padding` · `--xh-field-array-item-radius` · `--xh-field-array-trigger-bg` · `--xh-field-array-trigger-bg-active` · `--xh-field-array-trigger-bg-hover` · `--xh-field-array-trigger-fg` · `--xh-field-array-trigger-fg-hover` · `--xh-field-array-trigger-font-size` · `--xh-field-array-trigger-radius` · `--xh-field-array-trigger-size`
+`--xh-field-array-action-gap` · `--xh-field-array-add-bg` · `--xh-field-array-add-bg-active` · `--xh-field-array-add-bg-hover` · `--xh-field-array-add-border` · `--xh-field-array-add-border-disabled` · `--xh-field-array-add-border-hover` · `--xh-field-array-add-fg` · `--xh-field-array-add-font-size` · `--xh-field-array-add-height` · `--xh-field-array-add-px` · `--xh-field-array-add-radius` · `--xh-field-array-content-gap` · `--xh-field-array-gap` · `--xh-field-array-icon-size` · `--xh-field-array-item-delete-fg-hover` · `--xh-field-array-item-gap` · `--xh-field-array-item-label-fg` · `--xh-field-array-item-label-font-size` · `--xh-field-array-item-padding` · `--xh-field-array-item-radius` · `--xh-field-array-trigger-bg` · `--xh-field-array-trigger-bg-active` · `--xh-field-array-trigger-bg-hover` · `--xh-field-array-trigger-fg` · `--xh-field-array-trigger-fg-hover` · `--xh-field-array-trigger-font-size` · `--xh-field-array-trigger-radius` · `--xh-field-array-trigger-size`
 
 ## 动效
 

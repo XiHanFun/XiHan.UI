@@ -34,7 +34,7 @@ export interface MarkdownStreamProps {
   /** 这一段正文是否仍在增长，只落 data-streaming。 */
   streaming?: boolean
   /** 播报档位，默认 off——会话级播报区在消息流那一层，别在每条回复里各开一个。 */
-  announce?: 'off' | 'polite'
+  announce?: 'off' | 'polite' | 'assertive'
   /** 画不画流式光标，默认画。设成 false 时 data-caret 一处都不发。 */
   caret?: boolean
   /** 尺寸：sm / md / lg。 */

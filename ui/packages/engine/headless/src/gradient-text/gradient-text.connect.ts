@@ -34,6 +34,7 @@ export function connectGradientText<T extends PropTypes>(
       ...parts.root.attrs,
       // 走向恒有值：读一眼 DOM 就知道这段字往哪个方向渐变
       'data-direction': props.direction ?? 'to-right',
+      'data-tone': props.tone,
       ...(style ? { style } : {}),
     }),
   }

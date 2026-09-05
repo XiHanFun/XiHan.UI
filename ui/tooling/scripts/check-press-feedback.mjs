@@ -41,6 +41,11 @@ const PRESSABLE = {
   'back-top': ['trigger'],
   'float-button': ['trigger'],
   'clipboard': ['copy-trigger'],
+  'infinite-scroll': ['load-more-trigger'],
+  // 集合件尾部的「取下一页」：一颗铺满一行的按钮，整条就是点击目标
+  'listbox': ['load-more-trigger'],
+  // 一枚标签就是一颗紧凑的芯片，整枚就是点击目标
+  'tag-group': ['item', 'item-delete-trigger'],
   // 清空 / 关闭 / 移除按钮四类（契约见 check-clear-trigger）
   'cascader': ['clear-trigger'],
   'tree-select': ['clear-trigger'],
@@ -108,8 +113,8 @@ const PRESSABLE = {
   'menubar': ['trigger'],
   'navigation-menu': ['trigger'],
   'tabs': ['trigger'],
-  // 表格里的勾选与展开把手
-  'table': ['select-all-trigger', 'row-select-trigger', 'expand-trigger'],
+  // 表格里的勾选与展开把手，以及表尾那颗「取下一页」
+  'table': ['select-all-trigger', 'row-select-trigger', 'expand-trigger', 'load-more-trigger'],
   // 走马灯的翻页钮、播放钮与圆点
   'carousel': ['prev-trigger', 'next-trigger', 'autoplay-trigger', 'indicator'],
   'layout': ['sider-trigger'],

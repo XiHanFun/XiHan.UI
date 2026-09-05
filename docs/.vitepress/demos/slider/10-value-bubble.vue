@@ -1,6 +1,5 @@
-<!-- 拖动时的值气泡 | thumb 自己是定位上下文，气泡挂在它上方就跟着走位；dragging 决定露不露面，气泡里的文字由作者的格式化函数产出 -->
+<!-- 拖动时的值气泡 | value-text 挂在 thumb 里就跟着走位；推动那一刻由皮肤放它出面，气泡里的文字取自作者的格式化函数 -->
 <script setup lang="ts">
-import type { CSSProperties } from "vue";
 import { ref } from "vue";
 import {
   XhSliderControl,
@@ -10,6 +9,7 @@ import {
   XhSliderRoot,
   XhSliderThumb,
   XhSliderTrack,
+  XhSliderValueText,
 } from "@xihan-ui/vue";
 
 const budget = ref([1800]);
@@ -22,27 +22,10 @@ function money(value: number) {
 function valueText({ value }: { value: number }) {
   return money(value);
 }
-
-const bubble: CSSProperties = {
-  position: "absolute",
-  insetBlockEnd: "100%",
-  insetInlineStart: "50%",
-  transform: "translateX(-50%)",
-  marginBlockEnd: "8px",
-  padding: "2px 8px",
-  borderRadius: "var(--xh-shape-control)",
-  background: "var(--xh-bg-brand)",
-  color: "var(--xh-fg-on-brand)",
-  fontSize: "11px",
-  lineHeight: "18px",
-  whiteSpace: "nowrap",
-  pointerEvents: "none",
-};
 </script>
 
 <template>
   <XhSliderRoot
-    v-slot="{ value, dragging }"
     v-model:value="budget"
     :min="0"
     :max="5000"
@@ -57,9 +40,10 @@ const bubble: CSSProperties = {
         <XhSliderRange />
       </XhSliderTrack>
       <XhSliderThumb>
-        <span v-if="dragging" :style="bubble">{{ money(value[0]) }}</span>
+        <XhSliderValueText />
         <XhSliderHiddenInput />
       </XhSliderThumb>
     </XhSliderControl>
   </XhSliderRoot>
+  <p>已选：{{ money(budget[0]) }}</p>
 </template>

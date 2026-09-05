@@ -30,6 +30,8 @@ export function connectPinInput<T extends PropTypes>(
   const type = prop('type') ?? 'numeric'
   const pattern = prop('pattern')
   const disabled = !!prop('disabled')
+  const readOnly = !!prop('readOnly')
+  const required = !!prop('required')
   const invalid = !!prop('invalid')
   const mask = !!prop('mask')
   const otp = !!prop('otp')
@@ -89,6 +91,7 @@ export function connectPinInput<T extends PropTypes>(
     length,
     focusedIndex,
     disabled,
+    readOnly,
     invalid,
     setValue: next => send({ type: 'VALUE.SET', value: next }),
     clear: () => send({ type: 'VALUE.CLEAR' }),
@@ -103,8 +106,23 @@ export function connectPinInput<T extends PropTypes>(
       'data-tone': prop('tone'),
       'data-size': prop('size'),
       'data-disabled': dataAttr(disabled),
+      'data-readonly': dataAttr(readOnly),
       'data-invalid': dataAttr(invalid),
       'data-complete': dataAttr(complete),
+    }),
+
+    // 分段：连着的几格圈成一段，纯排版。格子的下标由作者在部件上声明，与嵌不嵌套无关
+    getGroupProps: () => normalize.element({
+      ...parts.group.attrs,
+      'data-disabled': dataAttr(disabled),
+      'data-invalid': dataAttr(invalid),
+    }),
+
+    // 段间分隔：读屏念出来只会打断验证码，这里一律不进可及树
+    getSeparatorProps: () => normalize.element({
+      ...parts.separator.attrs,
+      'aria-hidden': true,
+      'data-disabled': dataAttr(disabled),
     }),
 
     getLabelProps: () => normalize.label({
@@ -120,7 +138,10 @@ export function connectPinInput<T extends PropTypes>(
       'id': inputId(index),
       'data-index': String(index),
       'data-disabled': dataAttr(disabled),
+      'data-readonly': dataAttr(readOnly),
       'data-invalid': dataAttr(invalid),
+      // 这一格填没填上；皮肤据此把填过的格子与还空着的分开
+      'data-empty': dataAttr((value[index] ?? '') === ''),
       'data-focus': dataAttr(focusedIndex === index),
       // 每格自带名字，读屏念得出这是第几格、一共几格；
       // label 部件命名的是整组（root 的 aria-labelledby），单格的名字只能由这里给
@@ -135,6 +156,9 @@ export function connectPinInput<T extends PropTypes>(
       'value': value[index] ?? '',
       // 单体表单控件用原生 disabled，禁用的格子不可聚焦
       'disabled': disabled || undefined,
+      // 只读仍可聚焦、可复制，写不进
+      'readonly': readOnly || undefined,
+      'required': required || undefined,
       'aria-invalid': invalid ? 'true' : 'false',
       'onInput': (event: Event) => {
         const el = event.currentTarget as HTMLInputElement

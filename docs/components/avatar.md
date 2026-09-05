@@ -15,6 +15,7 @@
 
 - 加载状态会回调；失败时自动落到 `fallback`。
 - 直径与配色都是组件令牌，可以逐实例覆盖。
+- `tone` 换淡底与回退字的配色族；没写它时用中性缺省。
 - 状态点与角标由作者挂在外面，组件不预设。
 
 ## 示例
@@ -79,6 +80,12 @@ status-change 在状态落位时通知，过渡态 idle 不通知；没给地址
 
 <XhDemo src="avatar/10-badge" />
 
+### 语气
+
+tone 换淡底与回退字的配色族；不写 tone 就是中性缺省，直径与字号都不受影响
+
+<XhDemo src="avatar/11-tone" />
+
 ## 产物
 
 | 层 | 值 |
@@ -102,6 +109,7 @@ status-change 在状态落位时通知，过渡态 idle 不通知；没给地址
 | `src` | `string` |  |  |
 | `alt` | `string` |  |  |
 | `size` | `Size` |  | 尺寸：sm / md / lg，缺省 md；缺省档不输出 data-size |
+| `tone` | `Tone` |  | 语气：决定底色与回退字用哪一族颜色；缺席即不输出 data-tone，走皮肤的中性缺省 |
 | `onStatusChange` | `(details: AvatarStatusChangeDetails) => void` |  | 状态落位时通知，过渡态 idle 不通知。 |
 
 ## 事件
@@ -158,6 +166,7 @@ status-change 在状态落位时通知，过渡态 idle 不通知；没给地址
 | --- | --- | --- |
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | state.get() |
+| `root` | `data-tone` | props.tone |
 | `image` | `data-state` | state.get() |
 | `fallback` | `data-state` | state.get() |
 

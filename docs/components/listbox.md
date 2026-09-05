@@ -16,7 +16,9 @@
 
 - 三种选择模式：单选、多选、以及带 Shift 范围扩展的模式。
 - `typeahead` 连打检索。
-- 定高滚动与空态都有对应部件。
+- 定高滚动与三种非条目相位都有对应部件：空（`empty`）、在途（`loading`）、还有更多（`load-more-trigger`）。
+- `loading` 为真时列表报 `aria-busy`，在途占位顶上来、空态占位让位；给了 `collection` 时两者的收放归连接层。
+- `load-more-trigger` 是取下一页的入口：还有没有下一页、点了做什么都归作者，连接层只保证在途与整列禁用两档点不动。
 
 ## 示例
 
@@ -62,12 +64,18 @@ selection-mode="extended" 是「裸点换一条、Ctrl 与 Shift 才扩选」，
 
 <XhDemo src="listbox/07-empty" />
 
+### 三种相位
+
+空、在途、还有更多各有部件：给了 collection 时前两者的收放归组件，取下一页那颗钮点了做什么归你
+
+<XhDemo src="listbox/08-phases" />
+
 ## 产物
 
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-listbox>` |
-| Vue 组件 | `XhListboxContent` `XhListboxGroup` `XhListboxGroupLabel` `XhListboxItem` `XhListboxItemIndicator` `XhListboxItemText` `XhListboxLabel` `XhListboxRoot` |
+| Vue 组件 | `XhListboxContent` `XhListboxEmpty` `XhListboxGroup` `XhListboxGroupLabel` `XhListboxItem` `XhListboxItemIndicator` `XhListboxItemText` `XhListboxLabel` `XhListboxLoadMoreTrigger` `XhListboxLoading` `XhListboxRoot` |
 | 组合式函数 | `useListbox` |
 | 状态机 | `listboxMachine` |
 | 皮肤 | `@xihan-ui/styles/listbox.css` |
@@ -76,7 +84,7 @@ selection-mode="extended" 是「裸点换一条、Ctrl 与 Shift 才扩选」，
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="listbox"`：`root` · `label` · **`content`** · **`item`** · `item-text` · `item-indicator` · `group` · `group-label`
+`data-scope="listbox"`：`root` · `label` · **`content`** · **`item`** · `item-text` · `item-indicator` · `group` · `group-label` · `empty` · `loading` · `load-more-trigger`
 
 ## Props
 
@@ -87,6 +95,11 @@ selection-mode="extended" 是「裸点换一条、Ctrl 与 Shift 才扩选」，
 | `defaultValue` | `string \| string[]` |  |  |
 | `selectionMode` | `ListboxSelectionMode` |  | 选择模式，默认 single。 |
 | `disabled` | `boolean` |  | 整个列表禁用，键盘与点击都不再改选中值。 |
+| `readOnly` | `boolean` |  | 只读：条目照常浏览与聚焦，但选中值改不动。禁用则连焦点带都退出。 |
+| `loading` | `boolean` |  | 条目还在取：列表报 aria-busy，在途占位顶上来，空态占位让位。 |
+| `invalid` | `boolean` |  | 校验失败：列表报 aria-invalid，各角色节点带 data-invalid。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定勾选标记用哪族颜色。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg，决定条目的几何档位。 |
 | `loop` | `boolean` |  | 方向键走到尽头是否回绕，默认 true。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr。 |
 | `orientation` | `Orientation` |  | 方向键轴向，默认 vertical。 |
@@ -130,6 +143,9 @@ selection-mode="extended" 是「裸点换一条、Ctrl 与 Shift 才扩选」，
 | `selectionMode` | `ListboxSelectionMode` | 生效的选择模式。 |
 | `focusedValue` | `string \| null` | 焦点锚点；焦点不在列表内时为 null。 |
 | `disabled` | `boolean` |  |
+| `readOnly` | `boolean` |  |
+| `invalid` | `boolean` |  |
+| `loading` | `boolean` |  |
 | `isSelected` | `(value: string) => boolean` |  |
 | `setValue` | `(next: string[]) => void` |  |
 | `select` | `(value: string) => void` | 只留这一个；加选用 toggle。 |
@@ -137,6 +153,9 @@ selection-mode="extended" 是「裸点换一条、Ctrl 与 Shift 才扩选」，
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |
+| `getEmptyProps` | `() => T['element']` | 空态占位：放在 root 里、content 的兄弟。 给了 collection 时由连接层按条数收放；条目手写时不写 hidden，露不露面归作者。 |
+| `getLoadingProps` | `() => T['element']` | 在途占位：与空态占位同一个位置，两者不同屏——取数期间它顶上来，空态让位。 给了 collection 时由连接层按条数收放；条目手写时只按 loading 收放。 |
+| `getLoadMoreTriggerProps` | `() => T['element']` | 取下一页的入口：库不知道还有没有下一页，露不露面与点了做什么都归作者， 连接层只保证取数在途与整列禁用两档点不动。 |
 | `getGroupProps` | `(props: ListboxGroupProps) => T['element']` |  |
 | `getGroupLabelProps` | `(props: ListboxGroupProps) => T['element']` |  |
 | `getItemProps` | `(props: ListboxItemProps) => T['element']` |  |
@@ -166,10 +185,13 @@ selection-mode="extended" 是「裸点换一条、Ctrl 与 Shift 才扩选」，
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `content` | `aria-busy` | 'true' \| undefined |
 | `content` | `aria-disabled` | 'true' \| 'false' |
+| `content` | `aria-invalid` | 'true' \| 'false' |
 | `content` | `aria-labelledby` | `label` 部件的 id |
 | `content` | `aria-multiselectable` | 'true' \| 'false' |
 | `content` | `aria-orientation` | props.orientation |
+| `content` | `aria-readonly` | 'true' \| 'false' |
 | `content` | `role` | 'listbox' |
 | `item` | `aria-disabled` | 'true' \| 'false' |
 | `item` | `aria-selected` | 'true' \| 'false' |
@@ -189,18 +211,29 @@ selection-mode="extended" 是「裸点换一条、Ctrl 与 Shift 才扩选」，
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-invalid` | ''（条件成立时才出现） |
+| `root` | `data-loading` | ''（条件成立时才出现） |
 | `root` | `data-orientation` | props.orientation |
+| `root` | `data-readonly` | ''（条件成立时才出现） |
+| `root` | `data-size` | props.size |
+| `root` | `data-tone` | props.tone |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
 | `content` | `data-disabled` | ''（条件成立时才出现） |
+| `content` | `data-invalid` | ''（条件成立时才出现） |
 | `content` | `data-orientation` | props.orientation |
+| `content` | `data-readonly` | ''（条件成立时才出现） |
 | `group` | `data-disabled` | ''（条件成立时才出现） |
 | `group-label` | `data-disabled` | ''（条件成立时才出现） |
+| `empty` | `data-disabled` | ''（条件成立时才出现） |
+| `loading` | `data-disabled` | ''（条件成立时才出现） |
+| `load-more-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `load-more-trigger` | `data-loading` | ''（条件成立时才出现） |
 
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-listbox-content-bg` · `--xh-listbox-content-border` · `--xh-listbox-content-fg` · `--xh-listbox-content-gap` · `--xh-listbox-content-max-h` · `--xh-listbox-content-px` · `--xh-listbox-content-py` · `--xh-listbox-content-radius` · `--xh-listbox-gap` · `--xh-listbox-group-gap` · `--xh-listbox-group-label-fg` · `--xh-listbox-group-label-font-size` · `--xh-listbox-group-label-font-weight` · `--xh-listbox-group-label-px` · `--xh-listbox-group-label-py` · `--xh-listbox-group-spacing` · `--xh-listbox-icon-size` · `--xh-listbox-item-bg-hover` · `--xh-listbox-item-fg` · `--xh-listbox-item-fg-selected` · `--xh-listbox-item-font-size` · `--xh-listbox-item-font-weight-selected` · `--xh-listbox-item-gap` · `--xh-listbox-item-indicator-fg` · `--xh-listbox-item-indicator-size` · `--xh-listbox-item-leading` · `--xh-listbox-item-px` · `--xh-listbox-item-py` · `--xh-listbox-item-radius` · `--xh-listbox-label-fg` · `--xh-listbox-label-font-size` · `--xh-listbox-label-font-weight`
+`--xh-listbox-content-bg` · `--xh-listbox-content-border` · `--xh-listbox-content-border-invalid` · `--xh-listbox-content-fg` · `--xh-listbox-content-gap` · `--xh-listbox-content-max-h` · `--xh-listbox-content-px` · `--xh-listbox-content-py` · `--xh-listbox-content-radius` · `--xh-listbox-empty-fg` · `--xh-listbox-empty-font-size` · `--xh-listbox-empty-px` · `--xh-listbox-empty-py` · `--xh-listbox-gap` · `--xh-listbox-group-gap` · `--xh-listbox-group-label-fg` · `--xh-listbox-group-label-font-size` · `--xh-listbox-group-label-font-weight` · `--xh-listbox-group-label-px` · `--xh-listbox-group-label-py` · `--xh-listbox-group-spacing` · `--xh-listbox-icon-size` · `--xh-listbox-item-bg-hover` · `--xh-listbox-item-fg` · `--xh-listbox-item-fg-selected` · `--xh-listbox-item-font-size` · `--xh-listbox-item-font-weight-selected` · `--xh-listbox-item-gap` · `--xh-listbox-item-indicator-fg` · `--xh-listbox-item-indicator-size` · `--xh-listbox-item-leading` · `--xh-listbox-item-px` · `--xh-listbox-item-py` · `--xh-listbox-item-radius` · `--xh-listbox-label-fg` · `--xh-listbox-label-font-size` · `--xh-listbox-label-font-weight` · `--xh-listbox-load-more-trigger-bg-hover` · `--xh-listbox-load-more-trigger-fg` · `--xh-listbox-load-more-trigger-font-size` · `--xh-listbox-load-more-trigger-gap` · `--xh-listbox-load-more-trigger-px` · `--xh-listbox-load-more-trigger-py` · `--xh-listbox-load-more-trigger-radius` · `--xh-listbox-loading-fg` · `--xh-listbox-loading-font-size` · `--xh-listbox-loading-px` · `--xh-listbox-loading-py`
 
 ## 动效
 

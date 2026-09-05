@@ -1,4 +1,4 @@
-import type { PropTypes } from '@xihan-ui/core'
+import type { PropTypes, Tone } from '@xihan-ui/core'
 
 /**
  * 渐变走向档位，逐档对应 CSS 的 `to <边或角>`。
@@ -15,6 +15,8 @@ export interface GradientTextProps {
   to?: string
   /** 渐变走向档位，缺省 to-right。 */
   direction?: GradientTextDirection
+  /** 语气：brand / neutral / success / warning / danger / info，两端取该族颜色；写了 from / to 即让位。 */
+  tone?: Tone
 }
 
 export interface GradientTextApi<T extends PropTypes = PropTypes> {

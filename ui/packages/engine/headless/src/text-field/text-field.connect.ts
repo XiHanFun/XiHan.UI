@@ -31,6 +31,8 @@ export function connectTextField<T extends PropTypes>(
   const editable = !disabled && !readOnly
   const atLimit = isAtLimit(value, maxLength)
   const autoSize = prop('autoSize') ?? false
+  const showCount = !!prop('showCount')
+  const count = [...value].length
   // 与机器里 canClear 守卫同义。两处都要：这里决定按钮长什么样，那里挡住绕过 DOM 的调用
   const canClear = clearable && editable && !empty
 
@@ -42,6 +44,9 @@ export function connectTextField<T extends PropTypes>(
     invalid,
     clearable,
     atLimit,
+    count,
+    maxLength,
+    showCount,
     canClear,
     autoSize,
     setValue: next => send({ type: 'VALUE.SET', value: next }),
@@ -66,6 +71,7 @@ export function connectTextField<T extends PropTypes>(
       'data-disabled': dataAttr(disabled),
       'data-readonly': dataAttr(readOnly),
       'data-invalid': dataAttr(invalid),
+      'data-empty': dataAttr(empty),
       'data-at-max': dataAttr(atLimit),
     }),
 
@@ -101,6 +107,7 @@ export function connectTextField<T extends PropTypes>(
       'data-auto-resize': dataAttr((input.as ?? 'input') === 'textarea' && !!autoSize),
       'data-disabled': dataAttr(disabled),
       'data-invalid': dataAttr(invalid),
+      'data-empty': dataAttr(empty),
       'data-at-max': dataAttr(atLimit),
       'onInput': (event: Event) => {
         const el = event.target as HTMLInputElement | HTMLTextAreaElement
@@ -121,6 +128,19 @@ export function connectTextField<T extends PropTypes>(
         event.preventDefault()
         send({ type: 'VALUE.CLEAR' })
       },
+    }),
+
+    // 装饰段：货币符、单位、图标。名字由 label 部件给，这两段一律不进名字链
+    getPrefixProps: () => normalize.element({
+      ...parts.prefix.attrs,
+      'aria-hidden': true,
+      'data-disabled': dataAttr(disabled),
+    }),
+
+    getSuffixProps: () => normalize.element({
+      ...parts.suffix.attrs,
+      'aria-hidden': true,
+      'data-disabled': dataAttr(disabled),
     }),
 
     getClearTriggerProps: () => normalize.button({
@@ -145,6 +165,17 @@ export function connectTextField<T extends PropTypes>(
         // 清完把焦点送回输入框，接着打字不用再点一次
         scope.getById(ids.input)?.focus()
       },
+    }),
+
+    // 字数：数字由作者用 count / maxLength 渲。对读屏隐藏——它是 maxlength 的视觉镜像，
+    // 每敲一个字就播报一次的活区反而盖住了正在输入的内容
+    getCountProps: () => normalize.element({
+      ...parts.count.attrs,
+      'aria-hidden': true,
+      // 没开 showCount 时收起而不是卸载，节点是作者写的
+      'hidden': !showCount || undefined,
+      'data-disabled': dataAttr(disabled),
+      'data-at-max': dataAttr(atLimit),
     }),
   }
 }

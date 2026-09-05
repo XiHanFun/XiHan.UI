@@ -95,6 +95,19 @@ export function connectNumberField<T extends PropTypes>(
       'data-invalid': dataAttr(invalid),
     }),
 
+    // 装饰段：货币符、单位、图标。名字由 label 部件给，这两段一律不进名字链
+    getPrefixProps: () => normalize.element({
+      ...parts.prefix.attrs,
+      'aria-hidden': true,
+      'data-disabled': dataAttr(disabled),
+    }),
+
+    getSuffixProps: () => normalize.element({
+      ...parts.suffix.attrs,
+      'aria-hidden': true,
+      'data-disabled': dataAttr(disabled),
+    }),
+
     getInputProps: () => normalize.input({
       ...parts.input.attrs,
       'id': ids.input,

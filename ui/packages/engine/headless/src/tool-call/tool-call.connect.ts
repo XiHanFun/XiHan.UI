@@ -2,7 +2,7 @@ import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { ToolCallApi, ToolCallProps, ToolCallSchema } from './tool-call.types'
 import { dataAttr } from '@xihan-ui/core'
 import { toolCallAnatomy } from './tool-call.anatomy'
-import { isToolCallRunning, toolCallDuration, toolCallStatusText } from './tool-call.types'
+import { isToolCallErrored, isToolCallRunning, isToolCallSettled, toolCallDuration, toolCallStatusText } from './tool-call.types'
 
 const parts = toolCallAnatomy.build()
 
@@ -20,6 +20,8 @@ export function connectToolCall<T extends PropTypes>(
   const disabled = !!prop('disabled')
   const phase = props.phase ?? 'input-available'
   const running = isToolCallRunning(phase)
+  const settled = isToolCallSettled(phase)
+  const errored = isToolCallErrored(phase)
   const ids = scope.ids('tool-call', 'trigger', 'content', 'error')
   const stateAttr = open ? 'open' : 'closed'
 
@@ -32,6 +34,8 @@ export function connectToolCall<T extends PropTypes>(
     open,
     phase,
     running,
+    settled,
+    errored,
     disabled,
     statusText: toolCallStatusText(phase, props.translations),
     // 两个时刻都由宿主给：连接层是渲染期纯函数，不读时钟也不起定时器
@@ -44,10 +48,15 @@ export function connectToolCall<T extends PropTypes>(
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'data-state': stateAttr,
+      'data-variant': props.variant,
       'data-tone': props.tone,
       'data-size': props.size,
       'data-disabled': dataAttr(disabled),
       'data-loading': dataAttr(running),
+      // 判定落定与出错两位布尔：阶段被开合占了 data-state，选中「已经跑完」与
+      // 「跑完但出错」这两件事需要能直接落在根上
+      'data-settled': dataAttr(settled),
+      'data-errored': dataAttr(errored),
     }),
 
     getTriggerProps: () => normalize.button({

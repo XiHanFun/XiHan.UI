@@ -12,6 +12,7 @@ const SRC = join(import.meta.dirname, '../src')
 const EXEMPT: Record<string, string> = {
   'carousel': 'onKeyDown 开头就用 isEditableTarget 把可编辑目标整个放行',
   'file-upload': 'onKeyDown 挂在 dropzone 的 div 上，只接 Enter / Space',
+  'image-cropper': 'onKeyDown 挂在 crop-area 与 crop-handle 上，只接方向键；两处 HTMLInputElement 是 type=range 的两条滑杆，只有 onInput',
   'transfer': 'onKeyDown 挂在 list 上；search 与 list 在解剖里是兄弟节点，按键不冒泡过去，且 search 只有 onInput',
 }
 

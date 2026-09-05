@@ -19,9 +19,21 @@ export interface DescriptionsProps {
   size?: Size
 }
 
+/**
+ * 一格自报家门。
+ * connect 在 Vue 的 render 期求值，此时 DOM 尚不存在，不得反查 DOM。
+ */
+export interface DescriptionsItemProps {
+  /**
+   * 这一格横跨几列，不写即占一列。
+   * 小于 1 按 1 算，超过当前列数按列数算——跨出网格的格子会另起一行，比截断更难看。
+   */
+  span?: number
+}
+
 export interface DescriptionsApi<T extends PropTypes = PropTypes> {
   getRootProps: () => T['element']
-  getItemProps: () => T['element']
+  getItemProps: (props?: DescriptionsItemProps) => T['element']
   getLabelProps: () => T['element']
   getValueProps: () => T['element']
 }

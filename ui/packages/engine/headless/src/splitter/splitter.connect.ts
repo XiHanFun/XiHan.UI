@@ -23,6 +23,7 @@ export function connectSplitter<T extends PropTypes>(
   const orientation = prop('orientation') ?? 'horizontal'
   const dir = prop('dir') ?? 'ltr'
   const disabled = !!prop('disabled')
+  const translations = prop('translations')
   const vertical = orientation === 'vertical'
   // 只有水平排布才看 dir：竖直排布上下不随文字方向换向，几何换算那边也是这条规矩
   const flipHorizontal = !vertical && dir === 'rtl'
@@ -99,7 +100,8 @@ export function connectSplitter<T extends PropTypes>(
       ...parts.root.attrs,
       ...stateAttrs(),
       // 一组彼此关联的面板与分隔条，读屏据此知道它们是一伙的
-      role: 'group',
+      'role': 'group',
+      'aria-label': translations?.root ?? 'Split panels',
     }),
 
     getPanelProps: (index) => {
@@ -135,6 +137,8 @@ export function connectSplitter<T extends PropTypes>(
          * 因为 aria-orientation 不适用于 root 的 group 角色。
          */
         'aria-orientation': vertical ? 'horizontal' : 'vertical',
+        // 一组分隔条彼此长得一样，名字里带上位次才分得开
+        'aria-label': translations?.resizeTrigger?.(boundary, Math.max(0, lastPanel)) ?? `Resize panel ${boundary + 1}`,
         'aria-valuenow': String(panel.size),
         // 区间取这块面板眼下真能走到的范围，纸面上的 min/max 可能走不到
         'aria-valuemin': String(panel.min),

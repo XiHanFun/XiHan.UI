@@ -27,6 +27,9 @@ export interface ImageViewerTranslations {
   counter: (index: number, count: number) => string
 }
 
+/** 当前那张大图的取图相位：进浮层与换图都从 loading 起算。 */
+export type ImageViewerImageStatus = 'loading' | 'loaded' | 'error'
+
 /** 当前图的变换：缩放、旋转（度）、翻转与平移（px）。 */
 export interface ImageViewerTransform {
   scale: number
@@ -106,6 +109,8 @@ export interface ImageViewerSchema extends MachineSchema {
     transform: ImageViewerTransform
     /** 正在拖拽平移。 */
     panning: boolean
+    /** 当前那张大图的取图相位。换图与重开都回到 loading。 */
+    imageStatus: ImageViewerImageStatus
   }
   computed: Record<string, never>
   refs: ImageViewerRefs
@@ -123,6 +128,9 @@ export interface ImageViewerSchema extends MachineSchema {
     | { type: 'ROTATE.BY', delta: number }
     | { type: 'FLIP', axis: 'x' | 'y' }
     | { type: 'TRANSFORM.RESET' }
+    /** 大图自己派发的 DOM 事件，由 connect 挂在 image 上回送。 */
+    | { type: 'IMAGE.LOAD' }
+    | { type: 'IMAGE.ERROR' }
     /** 平移到绝对偏移（px），由视口的指针会话驱动。 */
     | { type: 'PAN.MOVE', x: number, y: number }
     /** 一根手指落在图上。连接层只报落点，跟不跟得住归会话管。 */
@@ -153,6 +161,9 @@ export interface ImageViewerSchema extends MachineSchema {
     | 'flip'
     | 'resetTransform'
     | 'panEnd'
+    | 'resetImageStatus'
+    | 'setImageLoaded'
+    | 'setImageError'
   effect: 'trackOverlay' | 'trackPointers'
 }
 
@@ -166,6 +177,8 @@ export interface ImageViewerApi<T extends PropTypes = PropTypes> {
   transform: ImageViewerTransform
   /** 正在拖拽平移。 */
   panning: boolean
+  /** 当前那张大图的取图相位；换图与重开都回到 loading。 */
+  imageStatus: ImageViewerImageStatus
   /** 往前还翻得动（loop 且多于一张时恒为 true）。 */
   canPrev: boolean
   canNext: boolean

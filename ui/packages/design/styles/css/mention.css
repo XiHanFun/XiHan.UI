@@ -114,6 +114,24 @@
     display: none;
   }
 
+  /* 标题：与输入框上下排，行距不留额外空白 */
+  [data-scope='mention'][data-part='label'] {
+    display: block;
+    margin-block-end: var(--xh-mention-label-gap, var(--xh-space-1));
+    color: var(--xh-mention-label-fg, var(--xh-fg-default));
+    font-size: var(--xh-mention-label-font-size, var(--xh-_mention-font-size));
+    font-weight: var(--xh-mention-label-font-weight, var(--xh-text-label-weight));
+    line-height: var(--xh-leading-none);
+  }
+
+  [data-scope='mention'][data-part='label'][hidden] {
+    display: none;
+  }
+
+  [data-scope='mention'][data-part='label'][data-disabled] {
+    color: var(--xh-mention-label-fg-disabled, var(--xh-fg-subtle));
+  }
+
   /* —— 尺寸 —— */
   /* 缺省档写在上面的基础规则里 */
   [data-scope='mention']:is([data-part='root'], [data-part='positioner'])[data-size='sm'] {
@@ -367,6 +385,44 @@
 
   [data-scope='mention'][data-part='item'][data-disabled] [data-part='item-text'] {
     color: var(--xh-fg-disabled);
+  }
+
+  /* 空态与候选面板同形：它是 content 的兄弟节点，两者只会有一个显出来 */
+  [data-scope='mention'][data-part='empty'] {
+    display: block;
+    padding-block: var(--xh-mention-empty-py, var(--xh-space-3));
+    padding-inline: var(--xh-mention-empty-px, var(--xh-_mention-item-px));
+    border: var(--xh-stroke-thin) solid var(--xh-mention-empty-border, var(--xh-border-default));
+    border-radius: var(--xh-mention-empty-radius, var(--xh-shape-surface));
+    background: var(--xh-mention-empty-bg, var(--xh-bg-surface));
+    box-shadow: var(--xh-mention-empty-shadow, var(--xh-elevation-floating));
+    color: var(--xh-mention-empty-fg, var(--xh-fg-subtle));
+    font-size: var(--xh-mention-empty-font-size, var(--xh-_mention-font-size));
+    line-height: var(--xh-leading-none);
+    text-align: center;
+  }
+
+  [data-scope='mention'][data-part='empty'][hidden] {
+    display: none;
+  }
+
+  /* 在途占位：与空态占位同一个位置、同一副观感，两者不同屏 */
+  [data-scope='mention'][data-part='loading'] {
+    display: block;
+    padding-block: var(--xh-mention-loading-py, var(--xh-space-3));
+    padding-inline: var(--xh-mention-loading-px, var(--xh-_mention-item-px));
+    border: var(--xh-stroke-thin) solid var(--xh-mention-loading-border, var(--xh-border-default));
+    border-radius: var(--xh-mention-loading-radius, var(--xh-shape-surface));
+    background: var(--xh-mention-loading-bg, var(--xh-bg-surface));
+    box-shadow: var(--xh-mention-loading-shadow, var(--xh-elevation-floating));
+    color: var(--xh-mention-loading-fg, var(--xh-fg-subtle));
+    font-size: var(--xh-mention-loading-font-size, var(--xh-_mention-font-size));
+    line-height: var(--xh-leading-none);
+    text-align: center;
+  }
+
+  [data-scope='mention'][data-part='loading'][hidden] {
+    display: none;
   }
 
   @media print {

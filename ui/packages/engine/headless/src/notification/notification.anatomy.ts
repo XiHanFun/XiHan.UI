@@ -14,5 +14,7 @@ export const notificationAnatomy = createAnatomy('notification', [
   'item-title',
   'item-description',
   'item-action-trigger',
+  // 倒计时条：机器算出的停留时长落在它的时长槽上，计时被按住时动画一并停住
+  'item-progress',
   'item-close-trigger',
 ])

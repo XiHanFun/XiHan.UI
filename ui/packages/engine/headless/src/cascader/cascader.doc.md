@@ -20,6 +20,7 @@
 - 多选时 `cascade` 与 `checkedStrategy` 一对：前者决定勾父带不带子，后者决定回显给出哪一层。
 - 子节点可按需加载；长列表只渲可视区。
 - 后端字段名不一致时在进组件前转一道，组件只认 `label` / `value` / `children`。
+- 空（`empty`）与在途（`loading`）两个相位各有部件；`loading` 为真时浮层报 `aria-busy`，空态让位。
 
 ## 组合
 

@@ -171,6 +171,51 @@
     padding-block-end: var(--xh-dialog-header-pb, var(--xh-space-2));
   }
 
+  /* 语气徽记：圆底与字形两层。圆底是这个节点自己（底色、直径、圆角），字形走下面那条
+     :empty::before；作者往里塞了节点，兜底那几条即不命中，整枚换成他的图形。
+     底与前景取语气层派生好的槽，不在这儿另兑一遍——兑法差一档，字形压上去的对比度
+     就跟着差一档。节点自己带 data-tone 时那一族的槽就声明在它身上。 */
+  [data-scope='dialog'][data-part='indicator'] {
+    /* 圆底里的图形四边各收一个 space-1，不顶到圆边上；
+       这把尺同时给作者塞进来的图标，换成 XhIcon 也不会撑破圆底 */
+    --xh-icon-size: var(--xh-dialog-indicator-mark-size, calc(var(--xh-dialog-indicator-size, var(--xh-glyph-size-md)) - 2 * var(--xh-space-1)));
+
+    flex: none;
+    display: grid;
+    place-items: center;
+    inline-size: var(--xh-dialog-indicator-size, var(--xh-glyph-size-md));
+    block-size: var(--xh-dialog-indicator-size, var(--xh-glyph-size-md));
+    border-radius: var(--xh-dialog-indicator-radius, var(--xh-shape-pill));
+    background: var(--xh-dialog-indicator-bg, var(--xh-_tone-subtle, var(--xh-bg-muted)));
+    color: var(--xh-dialog-indicator-fg, var(--xh-_tone-fg, var(--xh-fg-default)));
+  }
+
+  [data-scope='dialog'][data-part='indicator']:empty::before {
+    content: '';
+    display: inline-block;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-info) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-info) center / contain no-repeat;
+  }
+
+  /* 画哪枚字形跟着语气走，与命令式服务弹出来的那一枚同一套映射 */
+  [data-scope='dialog'][data-part='indicator'][data-tone='success']:empty::before {
+    -webkit-mask-image: var(--xh-glyph-mark-check);
+    mask-image: var(--xh-glyph-mark-check);
+  }
+
+  [data-scope='dialog'][data-part='indicator'][data-tone='warning']:empty::before {
+    -webkit-mask-image: var(--xh-glyph-mark-warning);
+    mask-image: var(--xh-glyph-mark-warning);
+  }
+
+  [data-scope='dialog'][data-part='indicator'][data-tone='danger']:empty::before {
+    -webkit-mask-image: var(--xh-glyph-mark-close);
+    mask-image: var(--xh-glyph-mark-close);
+  }
+
   /* 正文段：面板里唯一会滚的一段。最小高度归零，
      否则弹性项按内容撑高，容器再矮也不产生溢出，滚动条永远出不来 */
   [data-scope='dialog'][data-part='body'] {
@@ -276,7 +321,8 @@
 
   /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
      写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
-  [data-scope='dialog'][data-part='positioner'][hidden] {
+  [data-scope='dialog'][data-part='positioner'][hidden],
+  [data-scope='dialog'][data-part='indicator'][hidden] {
     display: none;
   }
 

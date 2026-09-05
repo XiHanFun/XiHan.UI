@@ -174,7 +174,7 @@ export const scrollAreaSuite: ConformanceSuite = {
           },
           // 滚动区里可能一个可聚焦元素都没有，不给 Tab 位键盘用户就落不进来；
           // always 恒占道，两条轴都让出一条道
-          'viewport': { 'tabindex': '0', 'data-orientation': 'both', 'role': null, 'data-lane-vertical': '', 'data-lane-horizontal': '' },
+          'viewport': { 'tabindex': '0', 'data-orientation': 'both', 'role': null, 'data-variant': null, 'data-lane-vertical': '', 'data-lane-horizontal': '' },
           'scrollbar[0]': {
             // 键盘与读屏走的是原生滚动那条路，再报一个 role=scrollbar 等于把同一件事说两遍
             'aria-hidden': 'true',
@@ -198,6 +198,54 @@ export const scrollAreaSuite: ConformanceSuite = {
           'thumb[1]': { 'data-orientation': 'horizontal' },
           'corner': { 'data-orientation': 'vertical', 'data-state': 'visible', 'hidden': null },
         }),
+      ],
+    },
+    {
+      name: '边缘渐隐：形态档落到根与视口上，两条轴各自到没到头逐条落在视口上',
+      spec: { apg: WCAG },
+      props: { variant: 'fade' },
+      initial: {
+        parts: {
+          // 尺寸还没量到（挂载那一次全是 0），两头都算到头，没有可渐隐的一侧
+          root: { 'data-variant': 'fade' },
+          viewport: {
+            'data-variant': 'fade',
+            'data-at-min-vertical': '',
+            'data-at-max-vertical': '',
+            'data-at-min-horizontal': '',
+            'data-at-max-horizontal': '',
+          },
+        },
+      },
+      steps: [
+        {
+          ...layoutStep,
+          // 两条轴都溢出且停在起点：起始端到头、末端没到
+          expect: {
+            parts: {
+              viewport: {
+                'data-at-min-vertical': '',
+                'data-at-max-vertical': null,
+                'data-at-min-horizontal': '',
+                'data-at-max-horizontal': null,
+              },
+            },
+          },
+        },
+        {
+          ...scrollTo(300),
+          // 纵轴滚到底：两头对调；横轴没动，仍停在起点
+          expect: {
+            parts: {
+              viewport: {
+                'data-at-min-vertical': null,
+                'data-at-max-vertical': '',
+                'data-at-min-horizontal': '',
+                'data-at-max-horizontal': null,
+              },
+            },
+          },
+        },
       ],
     },
     {

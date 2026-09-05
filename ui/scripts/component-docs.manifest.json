@@ -243,6 +243,10 @@
           "name": "图片裁切"
         },
         {
+          "id": "input-group",
+          "name": "输入组"
+        },
+        {
           "id": "listbox",
           "name": "列表框"
         },
@@ -285,6 +289,10 @@
         {
           "id": "switch",
           "name": "开关"
+        },
+        {
+          "id": "tag-group",
+          "name": "标签组"
         },
         {
           "id": "tags-input",

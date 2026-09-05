@@ -95,6 +95,7 @@
     --xh-_popconfirm-pad: var(--xh-surface-pad-md);
     --xh-_popconfirm-max-w: var(--xh-overlay-max-w);
 
+    position: relative;
     display: grid;
     grid-template-columns: 1fr auto auto;
     align-items: center;
@@ -115,6 +116,11 @@
 
   [data-scope='popconfirm'][data-part='content'] > * {
     grid-column: 1 / -1;
+  }
+
+  /* 箭头绝对定位挂在 content 上，不占格：吃到栅格位的话它的贴边就从格线起算，被内衬推进面里 */
+  [data-scope='popconfirm'][data-part='content'] > [data-part='arrow'] {
+    grid-column: auto;
   }
 
   /* 这里刻意没有 [data-part='content'][hidden] { display: none }，与 dialog 一致：
@@ -163,6 +169,19 @@
     font-size: var(--xh-text-body-size);
     line-height: var(--xh-leading-normal);
     color: var(--xh-popconfirm-description-fg, var(--xh-fg-muted));
+  }
+
+  /* 箭头的底色与描边色，几何在 overlay-arrow.css。
+     交叉轴落点由定位引擎经内联自定义属性写进来，没给时退回居中 */
+  [data-scope='popconfirm'][data-part='arrow'] {
+    --xh-_popconfirm-arrow-x: 50%;
+    --xh-_popconfirm-arrow-y: 50%;
+    --xh-_overlay-arrow-size: var(--xh-popconfirm-arrow-size, var(--xh-overlay-arrow-size));
+    --xh-_overlay-arrow-x: var(--xh-_popconfirm-arrow-x);
+    --xh-_overlay-arrow-y: var(--xh-_popconfirm-arrow-y);
+
+    background: var(--xh-popconfirm-bg, var(--xh-bg-surface));
+    border: var(--xh-stroke-thin) solid var(--xh-popconfirm-border, var(--xh-border-default));
   }
 
   /* —— 两颗按钮 —— */

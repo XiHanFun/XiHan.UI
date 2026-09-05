@@ -9,6 +9,7 @@ const FIXTURE: FixtureNode = {
   children: [
     { tag: 'div', text: '第 1 条' },
     { part: 'sentinel' },
+    { part: 'load-more-trigger', tag: 'button', text: '加载更多' },
   ],
 }
 
@@ -149,8 +150,8 @@ export const infiniteScrollSuite: ConformanceSuite = {
       name: '缺省：等着触发，两个部件各一份，哨兵不进无障碍树',
       spec: { apg: APG },
       initial: {
-        order: ['root', 'sentinel'],
-        counts: { root: 1, sentinel: 1 },
+        order: ['root', 'sentinel', 'load-more-trigger'],
+        counts: { 'root': 1, 'sentinel': 1, 'load-more-trigger': 1 },
         parts: {
           root: {
             'data-loading': null,
@@ -225,6 +226,45 @@ export const infiniteScrollSuite: ConformanceSuite = {
           kind: 'setProps',
           props: { disabled: false },
           expect: { parts: { root: { 'data-disabled': null, 'data-loading': null } } },
+        },
+      ],
+    },
+    {
+      name: '等着触发的那一段按钮可点：它是哨兵那条路的键盘等价通路',
+      spec: { apg: APG },
+      initial: {
+        parts: {
+          'load-more-trigger': {
+            'disabled': null,
+            'data-loading': null,
+            'data-disabled': null,
+            // 文案由作者写在按钮里，组件不代填名字
+            'aria-label': null,
+          },
+        },
+      },
+    },
+    {
+      name: '取数中与关掉两段按钮都停用，点不动也就不会报第二次',
+      spec: { apg: APG },
+      props: { loading: true },
+      initial: {
+        parts: { 'load-more-trigger': { 'disabled': '', 'data-loading': '' } },
+      },
+      steps: [
+        {
+          kind: 'setProps',
+          props: { loading: false, disabled: true },
+          expect: {
+            parts: { 'load-more-trigger': { 'disabled': '', 'data-disabled': '', 'data-loading': null } },
+          },
+        },
+        {
+          kind: 'setProps',
+          props: { disabled: false },
+          expect: {
+            parts: { 'load-more-trigger': { 'disabled': null, 'data-disabled': null } },
+          },
         },
       ],
     },

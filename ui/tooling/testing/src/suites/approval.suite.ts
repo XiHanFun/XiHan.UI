@@ -63,6 +63,16 @@ export const approvalSuite: ConformanceSuite = {
       },
     },
     {
+      name: '形态档落到根上：三档由皮肤按 data-variant 选，连接层只如实转述',
+      spec: { apg: APG },
+      props: { variant: 'ghost' },
+      initial: {
+        parts: {
+          root: { 'data-variant': 'ghost' },
+        },
+      },
+    },
+    {
       name: '勾满必选项之后才批得动，判定载荷带着批的是哪几项',
       spec: { apg: APG },
       covers: ['approval.kbd.scope-toggle', 'approval.kbd.approve'],

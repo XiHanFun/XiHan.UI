@@ -58,6 +58,8 @@ export interface ContextMenuNode {
   disabled?: boolean
   /** 标记位文字（勾选符号这类装饰）；缺省即本条不铺 item-indicator。 */
   indicator?: string
+  /** 副文本，落进 item-description 部件；缺省即本条不铺那个部件。 */
+  description?: string
   /** 归属分组的身份值；相邻同值的条目收进同一个 group 部件。缺省即本条直接落在 content 上。 */
   group?: string
   /** 分组标题文字，取本组首个给出它的条目；本组无人给出即不铺 group-label。 */
@@ -74,6 +76,8 @@ export interface ContextMenuNodeMeta {
   disabled: boolean
   /** 标记位文字；没给即 null。 */
   indicator: string | null
+  /** 副文本；没给即 null。 */
+  description: string | null
   /** 分组身份；没给即 null。 */
   group: string | null
   /** 分组标题；没给即 null。 */
@@ -215,6 +219,7 @@ export interface ContextMenuApi<T extends PropTypes = PropTypes> {
   getItemProps: (props: ContextMenuItemProps) => T['element']
   getItemTextProps: (props: ContextMenuItemProps) => T['element']
   getItemIndicatorProps: (props: ContextMenuItemProps) => T['element']
+  getItemDescriptionProps: (props: ContextMenuItemProps) => T['element']
   getSeparatorProps: () => T['element']
   getGroupProps: (props: ContextMenuGroupProps) => T['element']
   getGroupLabelProps: (props: ContextMenuGroupProps) => T['element']

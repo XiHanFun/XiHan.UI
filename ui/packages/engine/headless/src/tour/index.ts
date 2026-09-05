@@ -16,6 +16,7 @@ export type {
   TourApi,
   TourCompleteDetails,
   TourOpenChangeDetails,
+  TourProgressDotProps,
   TourRefs,
   TourSchema,
   TourSkipDetails,

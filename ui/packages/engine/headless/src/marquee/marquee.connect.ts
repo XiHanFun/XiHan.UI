@@ -32,6 +32,7 @@ export function connectMarquee<T extends PropTypes>(
     'data-direction': direction,
     'data-orientation': HORIZONTAL.includes(direction) ? 'horizontal' : 'vertical',
     'data-pause-on-hover': dataAttr(props.pauseOnHover),
+    'data-paused': dataAttr(props.paused),
     'data-auto-fill': dataAttr(autoFill),
     ...(speed === undefined ? {} : { style: `--xh-marquee-speed: ${speed}` }),
   }

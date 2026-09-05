@@ -24,6 +24,9 @@ export const treeSelectAnatomy = createAnatomy('tree-select', [
   'branch-indicator',
   'branch-text',
   'branch-content',
+  'empty',
+  'loading',
+  'footer',
   'hidden-input',
 ])
 

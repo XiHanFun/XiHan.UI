@@ -1,3 +1,4 @@
+import type { ActionVariant, Size, Tone } from '@xihan-ui/core'
 import type {
   FloatButtonApi,
   FloatButtonExpandTrigger,
@@ -29,6 +30,9 @@ export const XhFloatButtonRoot = defineComponent({
     offset: { type: Number, default: undefined },
     shape: { type: String as PropType<FloatButtonShape>, default: undefined },
     expandTrigger: { type: String as PropType<FloatButtonExpandTrigger>, default: undefined },
+    variant: { type: String as PropType<ActionVariant>, default: undefined },
+    tone: { type: String as PropType<Tone>, default: undefined },
+    size: { type: String as PropType<Size>, default: undefined },
     translations: { type: Object as PropType<Partial<FloatButtonTranslations>>, default: undefined },
   },
   // open-change 携带 { open }，update:open 携带裸布尔

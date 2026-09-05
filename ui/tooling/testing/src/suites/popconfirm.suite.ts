@@ -26,6 +26,7 @@ export const popconfirmSuite: ConformanceSuite = {
               // 取消写在前面：它是文档序里第一个可聚焦元素，展开时焦点先落在退路上
               { part: 'cancel-trigger', tag: 'button', text: '取消' },
               { part: 'confirm-trigger', tag: 'button', text: '删除' },
+              { part: 'arrow' },
             ],
           },
         ],
@@ -48,7 +49,7 @@ export const popconfirmSuite: ConformanceSuite = {
       name: '初始收起：trigger aria-expanded=false，content 是带 hidden 的 alertdialog',
       spec: { apg: APG },
       initial: {
-        order: ['root', 'trigger', 'positioner', 'content', 'title', 'description', 'cancel-trigger', 'confirm-trigger'],
+        order: ['root', 'trigger', 'positioner', 'content', 'title', 'description', 'cancel-trigger', 'confirm-trigger', 'arrow'],
         counts: {
           'root': 1,
           'trigger': 1,
@@ -58,6 +59,7 @@ export const popconfirmSuite: ConformanceSuite = {
           'description': 1,
           'cancel-trigger': 1,
           'confirm-trigger': 1,
+          'arrow': 1,
         },
         parts: {
           'root': { 'data-state': 'closed' },
@@ -82,6 +84,7 @@ export const popconfirmSuite: ConformanceSuite = {
           },
           'confirm-trigger': { type: 'button' },
           'cancel-trigger': { type: 'button' },
+          'arrow': { 'aria-hidden': 'true', 'data-placement': 'bottom' },
         },
       },
     },

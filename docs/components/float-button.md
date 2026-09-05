@@ -66,6 +66,7 @@ shape 换圆角档，offset 决定距那两条边多远；translations 换掉读
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `defaultOpen` | `boolean` |  |  |
+| `dir` | `Direction` |  | 文字方向，只作用于排版；作者没给就不写。 |
 | `disabled` | `boolean` |  |  |
 | `expandTrigger` | `FloatButtonExpandTrigger` |  | 展开方式，默认 click。 |
 | `offset` | `number` |  | 距那两条边的距离（px），默认 24。 |
@@ -73,7 +74,10 @@ shape 换圆角档，offset 决定距那两条边多远；translations 换掉读
 | `open` | `boolean` |  |  |
 | `placement` | `FloatButtonPlacement` |  | 钉在哪一角，默认 bottom-end。 |
 | `shape` | `FloatButtonShape` |  | 触发器外形，默认 circle。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg，缺省与 lg 同档——悬浮钮要够得着，起步就比行内按钮大一号。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
 | `translations` | `Partial<FloatButtonTranslations>` |  |  |
+| `variant` | `ActionVariant` |  | 形态：solid / subtle / outline / ghost，决定底色、描边与前景怎么用。 |
 
 ## 事件
 
@@ -148,7 +152,10 @@ shape 换圆角档，offset 决定距那两条边多远；translations 换掉读
 | `root` | `data-disabled` | ''（条件成立时才出现） |
 | `root` | `data-placement` | props.placement |
 | `root` | `data-shape` | props.shape |
+| `root` | `data-size` | props.size |
 | `root` | `data-state` | 'open' \| 'closed' |
+| `root` | `data-tone` | props.tone |
+| `root` | `data-variant` | props.variant |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `trigger` | `data-shape` | props.shape |
 | `trigger` | `data-state` | 'open' \| 'closed' |

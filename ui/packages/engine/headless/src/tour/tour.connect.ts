@@ -176,6 +176,25 @@ export function connectTour<T extends PropTypes>(
       'data-step': stepAttr,
     }),
 
+    /** 圆点组：同一句进度的视觉版，读屏只念 progress-text 那一份。 */
+    getProgressIndicatorProps: () => normalize.element({
+      ...parts['progress-indicator'].attrs,
+      'aria-hidden': true,
+      'data-step': stepAttr,
+      'data-count': String(count),
+    }),
+
+    /** 一步一个圆点：走过的带 data-complete，当前那颗带 data-current。 */
+    getProgressDotProps: (dot) => {
+      const index = Number.isFinite(dot.index) ? Math.trunc(dot.index) : -1
+      return normalize.element({
+        ...parts['progress-dot'].attrs,
+        'data-index': String(index),
+        'data-current': dataAttr(index === value),
+        'data-complete': dataAttr(index >= 0 && index < value),
+      })
+    },
+
     // 上一步/下一步/跳过/关闭都是单体控件，禁用一律用原生 disabled
     getPrevTriggerProps: () => normalize.button({
       ...parts['prev-trigger'].attrs,

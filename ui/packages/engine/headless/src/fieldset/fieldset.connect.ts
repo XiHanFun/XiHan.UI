@@ -44,6 +44,16 @@ export function connectFieldset<T extends PropTypes>(
       'id': ids.description,
       'data-disabled': dataAttr(disabled),
     }),
+    // 并排字段的一段。不发 role=group：组名与描述已经挂在 root 上，再开一层分组
+    // 会让读屏进组时多念一遍没有名字的空组
+    getFieldGroupProps: () => normalize.element({
+      ...parts['field-group'].attrs,
+      'data-disabled': dataAttr(disabled),
+    }),
+    getActionsProps: () => normalize.element({
+      ...parts.actions.attrs,
+      'data-disabled': dataAttr(disabled),
+    }),
     getErrorTextProps: () => normalize.element({
       ...parts['error-text'].attrs,
       'id': ids['error-text'],

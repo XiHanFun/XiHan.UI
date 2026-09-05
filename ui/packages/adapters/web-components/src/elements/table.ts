@@ -96,6 +96,7 @@ const FOOTER_SELECTOR = '[data-xh-part="footer"]'
  * @csspart expanded-row - role=row 详情行，须自带 value 属性与它所属的数据行配对，内部须放一个 cell 承载详情；收起时 data-state=closed
  * @csspart empty - 空态节点，表体为空且不在加载时显形
  * @csspart loading - 加载态节点，表体为空且正在加载时显形
+ * @csspart load-more-trigger - 取下一页的按钮，摆在表尾；点了做什么归作者，取数在途时自动停用
  */
 export class XhTableElement extends XhElement {
   static override partContract = { anatomy: tableAnatomy, meta: tableMeta }
@@ -301,6 +302,7 @@ export class XhTableElement extends XhElement {
     const loadingProps = api.getLoadingProps() as Record<string, unknown>
     put('empty', emptyProps)
     put('loading', loadingProps)
+    put('load-more-trigger', api.getLoadMoreTriggerProps() as Record<string, unknown>)
 
     // 集合类 part 逐个 spread，身份由节点自报，不依赖下标。
     // wire 跑在事件之前，按键时 data-scope/data-part/data-value 已在 DOM 上供连接层现查。

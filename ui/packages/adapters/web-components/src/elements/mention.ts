@@ -49,9 +49,11 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {string} value - 受控正文；缺省该属性即非受控
  * @attr {string} default-value - 非受控初始正文
  * @attr {boolean} disabled - 整个控件禁用：输入框用原生 disabled，候选一概不开
+ * @attr {boolean} loading - 候选还在取：候选面板报 aria-busy，在途占位顶上来、空态占位让位
  * @attr {boolean} read-only - 只读：仍可聚焦与复制，写不进，候选也不开
  * @attr {boolean} invalid - 校验失败标注
  * @attr {string} placeholder - 输入框占位文字；不写就保留作者标在 input 部件上的那份
+ * @attr {string} name - 表单字段名；给了输入框才带 name，整段正文随表单一并提交
  * @attr {boolean} loop - 方向键走到尽头回绕，默认 true；写 loop="false" 关掉
  * @attr {string} placement - 首选放置位，默认 bottom-start；避让后的实际位写在 data-placement 上
  * @attr {number} offset - 浮层与输入框的间距（px）
@@ -64,9 +66,12 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @fires select - 候选被插进正文；detail 为 `{ value, label, prefix }`
  * @fires open-change - 浮层开合；detail 为 `{ open: boolean }`
  * @csspart root - 组件根容器（承载 data-state/data-disabled 与三个视觉轴）
- * @csspart input - 输入框，写 textarea（推荐）或 input；可及名字由作者自己给
+ * @csspart label - 标题；`for` 恒写向输入框，故须是原生 `<label>` 才点得动
+ * @csspart input - 输入框，写 textarea（推荐）或 input；没给 translations.input 时名字取自 label 部件
  * @csspart positioner - 浮层定位容器，坐标由引擎写成内联样式
  * @csspart content - role=listbox 容器（消解层的根节点），收起时带 hidden
+ * @csspart empty - 一条候选都没有时显出的空态；须与 content 同级（listbox 里只许放 option）
+ * @csspart loading - 在途占位，与空态占位同一个位置，取数期间顶上来
  * @csspart item - role=option 候选，须自带 value 属性标识身份；禁用写 aria-disabled="true"
  * @csspart item-text - 候选文本，也是插回正文的取字处
  */
@@ -83,9 +88,11 @@ export class XhMentionElement extends XhElement {
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
     disabled: { type: Boolean },
+    loading: { type: Boolean },
     readOnly: { type: Boolean, attribute: 'read-only' },
     invalid: { type: Boolean },
     placeholder: { converter: STRING_CONVERTER },
+    name: { converter: STRING_CONVERTER },
     loop: { converter: BOOLEAN_CONVERTER },
     placement: { converter: STRING_CONVERTER },
     offset: { converter: NUMBER_CONVERTER },
@@ -103,9 +110,11 @@ export class XhMentionElement extends XhElement {
   declare value?: string
   declare defaultValue?: string
   declare disabled?: boolean
+  declare loading?: boolean
   declare readOnly?: boolean
   declare invalid?: boolean
   declare placeholder?: string
+  declare name?: string
   declare loop?: boolean
   declare placement?: Placement
   declare offset?: number
@@ -160,9 +169,11 @@ export class XhMentionElement extends XhElement {
       value: this.value,
       defaultValue: this.defaultValue,
       disabled: this.disabled ?? false,
+      loading: this.loading ?? false,
       readOnly: this.readOnly ?? false,
       invalid: this.invalid ?? false,
       placeholder: this.placeholder,
+      name: this.name,
       loop: this.loop,
       placement: this.placement,
       offset: this.offset,
@@ -232,6 +243,9 @@ export class XhMentionElement extends XhElement {
     }
 
     put('root', api.getRootProps() as Record<string, unknown>)
+    put('label', api.getLabelProps() as Record<string, unknown>)
+    put('empty', api.getEmptyProps() as Record<string, unknown>)
+    put('loading', api.getLoadingProps() as Record<string, unknown>)
 
     // 宿主标签直接读作者写的标记：作者摆的是 textarea 还是 input，DOM 已经说明白了
     const inputEl = this.getPart('input') as MentionInputEl | null

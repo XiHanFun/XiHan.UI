@@ -95,7 +95,7 @@ export interface ResizableSchema extends MachineSchema {
     | 'endResize'
     | 'cancelResize'
     | 'invokeChangeEnd'
-  effect: 'trackPointer'
+  effect: 'trackPointer' | 'trackCancelKey'
   computed: Record<string, never>
   tag: string
 }

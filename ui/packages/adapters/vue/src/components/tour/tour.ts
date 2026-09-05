@@ -196,6 +196,36 @@ export const XhTourProgressText = defineComponent({
   },
 })
 
+/** 圆点组：不给默认插槽就按步数铺出圆点，作者给了就照作者的来。 */
+export const XhTourProgressIndicator = defineComponent({
+  name: 'XhTourProgressIndicator',
+  setup(_, { slots }) {
+    const ctx = useTourContext()
+    return () => {
+      const api = ctx.api.value
+      const dots = Array.from({ length: api.count }, (_, index) =>
+        h('div', api.getProgressDotProps({ index }) as Record<string, unknown>))
+      return h(
+        'div',
+        api.getProgressIndicatorProps() as Record<string, unknown>,
+        slots.default?.() ?? dots,
+      )
+    }
+  },
+})
+
+export const XhTourProgressDot = defineComponent({
+  name: 'XhTourProgressDot',
+  props: {
+    // 圆点对应的步序，0 基；兼收字符串
+    index: { type: [Number, String] as PropType<number | string>, required: true },
+  },
+  setup(props) {
+    const ctx = useTourContext()
+    return () => h('div', ctx.api.value.getProgressDotProps({ index: Number(props.index) }) as Record<string, unknown>)
+  },
+})
+
 export const XhTourPrevTrigger = defineComponent({
   name: 'XhTourPrevTrigger',
   setup(_, { slots }) {

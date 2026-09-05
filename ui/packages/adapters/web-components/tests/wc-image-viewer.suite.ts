@@ -1,8 +1,18 @@
-import type { ConformanceSuite } from '@xihan-ui/testing'
+import type { ConformanceSuite, RawStepContext } from '@xihan-ui/testing'
 import { imageViewerAnatomy, imageViewerKeyboard } from '@xihan-ui/headless'
-import { IMAGE_VIEWER_CONTENT_CHILDREN, imageViewerAtIndex, imageViewerProps, nativeActivation, openImageViewer } from '@xihan-ui/testing'
+import { IMAGE_VIEWER_CONTENT_CHILDREN, IMAGE_VIEWER_PENDING_ITEMS, imageViewerAtIndex, imageViewerProps, nativeActivation, openImageViewer } from '@xihan-ui/testing'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/'
+
+/** jsdom 不会真去取图，load / error 只能直接在 image 节点上派发。 */
+function dispatchOnViewerImage(type: string): (ctx: RawStepContext) => void {
+  return ({ doc }) => {
+    const image = doc.querySelector<HTMLElement>('[data-scope="image-viewer"][data-part="image"]')
+    if (!image)
+      throw new Error('fixture 里没有 image')
+    image.dispatchEvent(new Event(type))
+  }
+}
 
 /**
  * WC 专属 image-viewer 规格。
@@ -181,6 +191,69 @@ export const wcImageViewerSuite: ConformanceSuite = {
         { kind: 'key', key: 'ArrowRight', expect: imageViewerAtIndex(1) },
         { kind: 'key', key: 'Home', expect: imageViewerAtIndex(0) },
         { kind: 'key', key: 'End', expect: imageViewerAtIndex(2) },
+      ],
+    },
+    {
+      name: '缩放三键：+ 放大到上限、- 缩小到下限、0 复位；两颗缩放钮跟着开合',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      props: imageViewerProps({ minScale: 0.5, maxScale: 1.5 }),
+      covers: ['image-viewer.kbd.zoom-in', 'image-viewer.kbd.zoom-out', 'image-viewer.kbd.reset'],
+      steps: [
+        ...openImageViewer(),
+        {
+          kind: 'key',
+          key: '+',
+          expect: {
+            parts: {
+              'zoom-in-trigger': { 'disabled': '', 'data-disabled': '' },
+              'zoom-out-trigger': { 'disabled': null, 'data-disabled': null },
+            },
+          },
+        },
+        {
+          kind: 'key',
+          key: '-',
+          expect: { parts: { 'zoom-in-trigger': { 'disabled': null, 'data-disabled': null } } },
+        },
+        {
+          kind: 'key',
+          key: '-',
+          expect: { parts: { 'zoom-out-trigger': { 'disabled': '', 'data-disabled': '' } } },
+        },
+        {
+          kind: 'key',
+          key: '0',
+          expect: {
+            parts: {
+              'zoom-in-trigger': { 'disabled': null, 'data-disabled': null },
+              'zoom-out-trigger': { 'disabled': null, 'data-disabled': null },
+            },
+          },
+        },
+      ],
+    },
+    {
+      name: '大图取图相位：打开是 loading，load 落位，换图重回 loading',
+      spec: { zag: 'image-viewer.machine#resetImageStatus' },
+      props: imageViewerProps({ collection: IMAGE_VIEWER_PENDING_ITEMS }),
+      steps: [
+        ...openImageViewer(),
+        {
+          kind: 'settle',
+          until: { attr: { part: 'image', name: 'data-loading', value: '' } },
+          expect: { parts: { image: { 'data-loading': '' }, viewport: { 'data-loading': '' } } },
+        },
+        {
+          kind: 'raw',
+          why: 'jsdom 不真加载图片，load 只能在 image 节点上直接派发',
+          run: dispatchOnViewerImage('load'),
+          expect: { parts: { image: { 'data-loading': null }, viewport: { 'data-loading': null } } },
+        },
+        {
+          kind: 'key',
+          key: 'ArrowRight',
+          expect: { parts: { image: { 'data-loading': '' }, viewport: { 'data-loading': '' } } },
+        },
       ],
     },
     {

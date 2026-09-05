@@ -13,7 +13,7 @@ export interface ImageCropperContext {
   viewportRef: Ref<HTMLElement | null>
 }
 
-type Handlers = Pick<ImageCropperSchema['props'], 'onValueChange' | 'onValueChangeEnd' | 'onZoomChange'>
+type Handlers = Pick<ImageCropperSchema['props'], 'onValueChange' | 'onValueChangeEnd' | 'onZoomChange' | 'onRotationChange'>
 
 // 不建 scope：connect 不派生任何 id
 export function useImageCropper(

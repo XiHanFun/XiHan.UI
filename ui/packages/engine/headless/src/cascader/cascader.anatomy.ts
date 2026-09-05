@@ -15,10 +15,14 @@ export const cascaderAnatomy = createAnatomy('cascader', [
   'search-list',
   'search-item',
   'column',
+  'group',
+  'group-label',
   'item',
   'item-text',
   'item-indicator',
   'empty',
+  'loading',
+  'footer',
 ])
 
 /**

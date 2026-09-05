@@ -176,13 +176,15 @@
   [data-scope='time-field'][data-part='segment'] {
     display: inline-block;
     padding-inline: var(--xh-time-field-segment-px, var(--xh-space-1));
-    padding-block: 0;
+    padding-block: var(--xh-time-field-segment-py, var(--xh-space-0));
     border-radius: var(--xh-time-field-segment-radius, var(--xh-shape-inset));
     color: inherit;
     font-variant-numeric: inherit;
     text-align: center;
     /* 段是 role=spinbutton 的展示节点，双击选中一段文字只会碍事 */
     user-select: none;
+    /* 触屏上连点两下不该被当成缩放手势 */
+    touch-action: manipulation;
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);

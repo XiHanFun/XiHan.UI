@@ -103,6 +103,8 @@ export interface RatingApi<T extends PropTypes = PropTypes> {
   hoveredValue: number | null
   /** 当前该点亮到哪：有预览就是预览值，否则就是评分。样式与 data-highlighted 用的都是它。 */
   highlightedValue: number
+  /** 分值文本：当前该点亮到的那个数，指针预览期间跟着预览值走。 */
+  valueText: string
   count: number
   /** 还没评（value 为 0）。 */
   empty: boolean
@@ -115,6 +117,8 @@ export interface RatingApi<T extends PropTypes = PropTypes> {
   getRootProps: () => T['element']
   getLabelProps: () => T['element']
   getControlProps: () => T['element']
+  /** 分值文本：写在 root 里、control 的兄弟；aria-hidden，读屏走星星自己的可及名。 */
+  getValueTextProps: () => T['element']
   getItemProps: (props: RatingItemProps) => T['element']
   /** 表单出口：一份视觉隐藏的原生输入，随表单提交当前评分。 */
   getHiddenInputProps: () => T['input']

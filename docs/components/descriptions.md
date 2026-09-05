@@ -16,6 +16,7 @@
 - 语义是 `dt` / `dd`，组件只给身份与排版。
 - `columns` 决定每行几组，不传即每行一组。
 - 标签位置可以在值的上方或左侧；`bordered` 给出外框。
+- 每一格可以写 `span` 横跨几列，上限是当前列数。
 
 ## 示例
 
@@ -49,6 +50,12 @@ size 换的是每格的内边距、组与组的间距与整体字号，不传 si
 
 <XhDemo src="descriptions/05-size" />
 
+### 跨列
+
+一格写 span 横跨几列，上限是当前列数；长文本字段因此不必另开一份描述列表
+
+<XhDemo src="descriptions/06-span" />
+
 ## 产物
 
 | 层 | 值 |
@@ -80,7 +87,7 @@ size 换的是每格的内边距、组与组的间距与整体字号，不传 si
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `getRootProps` | `() => T['element']` |  |
-| `getItemProps` | `() => T['element']` |  |
+| `getItemProps` | `(props?: DescriptionsItemProps) => T['element']` |  |
 | `getLabelProps` | `() => T['element']` |  |
 | `getValueProps` | `() => T['element']` |  |
 
@@ -112,6 +119,7 @@ size 换的是每格的内边距、组与组的间距与整体字号，不传 si
 
 - 值为空时写"—"，别留空白——用户分不清是没有还是没加载出来。
 - 标签左置时给它们统一宽度，值才对得齐。
+- 长文本字段写 `span` 占满整行，别为它另开一份描述列表。
 
 ## 反模式
 

@@ -55,6 +55,40 @@
     --xh-_typography-heading-gap: var(--xh-space-8);
   }
 
+  /* —— 对齐与字重 —— */
+  /* 两轴都画在根上，整块正文一起换；各段沿继承拿到 */
+  [data-scope='typography'][data-part='root'][data-align='start'] {
+    text-align: start;
+  }
+
+  [data-scope='typography'][data-part='root'][data-align='center'] {
+    text-align: center;
+  }
+
+  [data-scope='typography'][data-part='root'][data-align='end'] {
+    text-align: end;
+  }
+
+  [data-scope='typography'][data-part='root'][data-align='justify'] {
+    text-align: justify;
+  }
+
+  [data-scope='typography'][data-part='root'][data-weight='regular'] {
+    font-weight: var(--xh-typography-font-weight, var(--xh-font-weight-regular));
+  }
+
+  [data-scope='typography'][data-part='root'][data-weight='medium'] {
+    font-weight: var(--xh-typography-font-weight, var(--xh-font-weight-medium));
+  }
+
+  [data-scope='typography'][data-part='root'][data-weight='semibold'] {
+    font-weight: var(--xh-typography-font-weight, var(--xh-font-weight-semibold));
+  }
+
+  [data-scope='typography'][data-part='root'][data-weight='bold'] {
+    font-weight: var(--xh-typography-font-weight, var(--xh-font-weight-bold));
+  }
+
   /* —— 块级段落 —— */
   /* 库里没有全局 preflight，作者写的 hN / p 带着 UA 外边距，在这儿抹平 */
   [data-scope='typography'][data-part='heading'],
@@ -136,6 +170,23 @@
     color: var(--xh-typography-text-fg-tone, var(--xh-_tone-fg));
   }
 
+  /* 字重排在形态之后：与 strong 一起写时，粗到哪一档由字重说了算 */
+  [data-scope='typography'][data-part='text'][data-weight='regular'] {
+    font-weight: var(--xh-font-weight-regular);
+  }
+
+  [data-scope='typography'][data-part='text'][data-weight='medium'] {
+    font-weight: var(--xh-font-weight-medium);
+  }
+
+  [data-scope='typography'][data-part='text'][data-weight='semibold'] {
+    font-weight: var(--xh-font-weight-semibold);
+  }
+
+  [data-scope='typography'][data-part='text'][data-weight='bold'] {
+    font-weight: var(--xh-font-weight-bold);
+  }
+
   /* —— 行内链接 —— */
   [data-scope='typography'][data-part='link'] {
     border-radius: var(--xh-typography-link-radius, var(--xh-shape-inset));
@@ -150,5 +201,164 @@
     [data-scope='typography'][data-part='link']:hover {
       color: var(--xh-typography-link-fg-hover, var(--xh-fg-brand-strong));
     }
+  }
+
+  /* —— 富文本 —— */
+  /*
+   * 外来的整段 HTML 铺在这里：Markdown 渲染结果、后端返回的富文本，节点由内容自己带，
+   * 作者写不出 data-part，所以样式按标签给。
+   *
+   * 标签一律包进 :where()，整条规则的特异度只剩 prose 这一层，块里嵌 XiHan 组件时
+   * 那份皮肤仍然赢。字号档位与段间距取根上那几支私有槽，跟着 data-size 一起换。
+   */
+  [data-scope='typography'][data-part='prose'] {
+    color: var(--xh-typography-prose-fg, var(--xh-fg-default));
+    font-size: var(--xh-typography-prose-font-size, var(--xh-_typography-body-size));
+    line-height: var(--xh-typography-prose-leading, var(--xh-text-prose-leading));
+  }
+
+  /* 库里没有全局 preflight，外来节点带着 UA 外边距，先在这儿抹平 */
+  [data-scope='typography'][data-part='prose']
+    :where(h1, h2, h3, h4, h5, h6, p, ul, ol, pre, blockquote, table, hr) {
+    margin: 0;
+  }
+
+  /* 间距画在后一块的上边，块与块之间只留一份，末块也不多出一截 */
+  [data-scope='typography'][data-part='prose']
+    :where(h1, h2, h3, h4, h5, h6, p, ul, ol, pre, blockquote, table, hr)
+    + :where(h1, h2, h3, h4, h5, h6, p, ul, ol, pre, blockquote, table, hr) {
+    margin-block-start: var(--xh-typography-prose-block-gap, var(--xh-_typography-block-gap));
+  }
+
+  /* 标题上面留得更开，它带起的是下面一整段 */
+  [data-scope='typography'][data-part='prose']
+    :where(h1, h2, h3, h4, h5, h6, p, ul, ol, pre, blockquote, table, hr)
+    + :where(h1, h2, h3, h4, h5, h6) {
+    margin-block-start: var(--xh-typography-prose-heading-gap, var(--xh-_typography-heading-gap));
+  }
+
+  [data-scope='typography'][data-part='prose'] :where(h1, h2, h3, h4, h5, h6) {
+    color: var(--xh-typography-prose-heading-fg, var(--xh-fg-default));
+    font-weight: var(--xh-typography-prose-heading-font-weight, var(--xh-font-weight-semibold));
+    line-height: var(--xh-leading-tight);
+    text-wrap: balance;
+  }
+
+  /* 六档字号与 heading 部件同源：同一块正文里，作者写的标题与外来的标题一样大 */
+  [data-scope='typography'][data-part='prose'] :where(h1) {
+    font-size: var(--xh-typography-prose-h1, var(--xh-_typography-h1));
+  }
+
+  [data-scope='typography'][data-part='prose'] :where(h2) {
+    font-size: var(--xh-typography-prose-h2, var(--xh-_typography-h2));
+  }
+
+  [data-scope='typography'][data-part='prose'] :where(h3) {
+    font-size: var(--xh-typography-prose-h3, var(--xh-_typography-h3));
+  }
+
+  [data-scope='typography'][data-part='prose'] :where(h4) {
+    font-size: var(--xh-typography-prose-h4, var(--xh-_typography-h4));
+  }
+
+  [data-scope='typography'][data-part='prose'] :where(h5) {
+    font-size: var(--xh-typography-prose-h5, var(--xh-_typography-h5));
+  }
+
+  [data-scope='typography'][data-part='prose'] :where(h6) {
+    font-size: var(--xh-typography-prose-h6, var(--xh-_typography-h6));
+  }
+
+  /* 列表：项目符号要留在容器里面，缩进画在列表自己的起始内衬上 */
+  [data-scope='typography'][data-part='prose'] :where(ul, ol) {
+    padding-inline-start: var(--xh-typography-prose-list-ps, var(--xh-space-6));
+  }
+
+  [data-scope='typography'][data-part='prose'] :where(li + li) {
+    margin-block-start: var(--xh-typography-prose-item-gap, var(--xh-space-1));
+  }
+
+  /* 嵌套列表贴着上一项走，不按块与块之间那一档拉开 */
+  [data-scope='typography'][data-part='prose'] :where(li) > :where(ul, ol) {
+    margin-block-start: var(--xh-typography-prose-item-gap, var(--xh-space-1));
+  }
+
+  /* 富文本里的链接缺省跟着 link 部件走：同一块正文里两处不同源就会有两种链接样式 */
+  [data-scope='typography'][data-part='prose'] :where(a) {
+    border-radius: var(--xh-typography-prose-link-radius, var(--xh-typography-link-radius, var(--xh-shape-inset)));
+    color: var(--xh-typography-prose-link-fg, var(--xh-typography-link-fg, var(--xh-fg-brand)));
+    text-decoration: underline;
+    text-underline-offset: var(
+      --xh-typography-prose-link-underline-offset,
+      var(--xh-typography-link-underline-offset, var(--xh-space-0_5))
+    );
+  }
+
+  [data-scope='typography'][data-part='prose'] :where(strong) {
+    font-weight: var(--xh-typography-prose-strong-font-weight, var(--xh-font-weight-semibold));
+  }
+
+  /* 行内代码与 text 部件的 code 形态同源，同一块正文里两条路写出来一个样 */
+  [data-scope='typography'][data-part='prose'] :where(code) {
+    padding-block: var(--xh-typography-code-py, var(--xh-space-0_5));
+    padding-inline: var(--xh-typography-code-px, var(--xh-space-1));
+    border-radius: var(--xh-typography-code-radius, var(--xh-shape-inset));
+    background: var(--xh-typography-code-bg, var(--xh-bg-subtle));
+    font-family: var(--xh-typography-code-font, var(--xh-font-family-mono));
+    font-size: var(--xh-typography-code-font-size, var(--xh-_typography-code-size));
+  }
+
+  /* 代码块自己成一片面，长行横向滚动而不是把整块正文撑宽 */
+  [data-scope='typography'][data-part='prose'] :where(pre) {
+    overflow-x: auto;
+    padding: var(--xh-typography-prose-pre-padding, var(--xh-space-4));
+    border-radius: var(--xh-typography-prose-pre-radius, var(--xh-shape-surface));
+    background: var(--xh-typography-prose-pre-bg, var(--xh-bg-subtle));
+    font-family: var(--xh-typography-code-font, var(--xh-font-family-mono));
+    font-size: var(--xh-typography-code-font-size, var(--xh-_typography-code-size));
+  }
+
+  /* 代码块里的 code 已经在 pre 那片面里，不再各自套一层内衬与底色 */
+  [data-scope='typography'][data-part='prose'] :where(pre) :where(code) {
+    padding: 0;
+    border-radius: 0;
+    background: none;
+    font-size: inherit;
+  }
+
+  [data-scope='typography'][data-part='prose'] :where(blockquote) {
+    padding-inline-start: var(--xh-typography-prose-quote-ps, var(--xh-space-4));
+    border-inline-start: var(--xh-stroke-thick) solid
+      var(--xh-typography-prose-quote-border, var(--xh-border-subtle));
+    color: var(--xh-typography-prose-quote-fg, var(--xh-fg-muted));
+  }
+
+  [data-scope='typography'][data-part='prose'] :where(hr) {
+    border: none;
+    border-block-start: var(--xh-stroke-thin) solid
+      var(--xh-typography-prose-rule-border, var(--xh-border-subtle));
+  }
+
+  /* 图片不许把整块正文撑宽，高度跟着缩才不变形 */
+  [data-scope='typography'][data-part='prose'] :where(img) {
+    max-inline-size: 100%;
+    block-size: auto;
+  }
+
+  [data-scope='typography'][data-part='prose'] :where(table) {
+    inline-size: 100%;
+    border-collapse: collapse;
+  }
+
+  [data-scope='typography'][data-part='prose'] :where(th, td) {
+    padding-block: var(--xh-typography-prose-cell-py, var(--xh-space-2));
+    padding-inline: var(--xh-typography-prose-cell-px, var(--xh-space-3));
+    border-block-end: var(--xh-stroke-thin) solid
+      var(--xh-typography-prose-cell-border, var(--xh-border-subtle));
+    text-align: start;
+  }
+
+  [data-scope='typography'][data-part='prose'] :where(th) {
+    font-weight: var(--xh-typography-prose-th-font-weight, var(--xh-font-weight-semibold));
   }
 }

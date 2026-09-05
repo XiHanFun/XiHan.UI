@@ -1,4 +1,4 @@
-import type { Size, Tone } from '@xihan-ui/core'
+import type { ActionVariant, Size, Tone } from '@xihan-ui/core'
 import type { BackTopApi, BackTopBehavior, BackTopSchema, BackTopTranslations } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
@@ -20,6 +20,7 @@ export const XhBackTopRoot = defineComponent({
     visibilityHeight: { type: Number, default: undefined },
     behavior: { type: String as PropType<BackTopBehavior>, default: undefined },
     translations: { type: Object as PropType<Partial<BackTopTranslations>>, default: undefined },
+    variant: { type: String as PropType<ActionVariant>, default: undefined },
     tone: { type: String as PropType<Tone>, default: undefined },
     size: { type: String as PropType<Size>, default: undefined },
     /** 滚动容器，缺省即整页滚动；经 refs 交给观察器。 */

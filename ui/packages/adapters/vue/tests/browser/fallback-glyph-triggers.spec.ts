@@ -7,6 +7,10 @@ import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick } from 'vue'
 import {
+  XhDialogContent,
+  XhDialogIndicator,
+  XhDialogRoot,
+  XhDialogTitle,
   XhFloatingPanelContent,
   XhFloatingPanelHeader,
   XhFloatingPanelPositioner,
@@ -166,5 +170,51 @@ describe('形态钮按它切到哪一档换字形', () => {
     expect(maximize.dataset.state).toBe('on')
     // 可访问名由连接层按 target 定死（按下的仍念「铺满面板」），字形跟着按下态改就与名字对不上
     expect(windowStateMasks()).toEqual(before)
+  })
+})
+
+describe('对话框的语气徽记画得出图形', () => {
+  function mountDialog(tone?: string): void {
+    // 浮层留在 portal 落点，不跟着 host 走：换一档之前先把上一个拆掉，
+    // 否则 part() 查到的一直是第一次挂的那一枚
+    app?.unmount()
+    host?.remove()
+    mount(() => h(XhDialogRoot, { defaultOpen: true, modal: false }, () => [
+      h(XhDialogContent, null, () => [
+        h(XhDialogIndicator, tone ? { 'data-tone': tone } : null),
+        h(XhDialogTitle, () => '确认'),
+      ]),
+    ]))
+  }
+
+  async function indicatorMask(tone?: string): Promise<string> {
+    mountDialog(tone)
+    await nextTick()
+    await nextTick()
+    return maskOf(part('dialog', 'indicator'))
+  }
+
+  it('不写内容时画一枚字形，圆底也占得出面积', async () => {
+    mountDialog()
+    await nextTick()
+    await nextTick()
+    const badge = part('dialog', 'indicator')
+
+    expect(maskOf(badge)).toContain('data:image/svg')
+    expect(badge.getBoundingClientRect().width).toBeGreaterThan(0)
+  })
+
+  it('画哪枚跟着 data-tone 走，四档互不相同', async () => {
+    const masks = [
+      await indicatorMask(),
+      await indicatorMask('success'),
+      await indicatorMask('warning'),
+      await indicatorMask('danger'),
+    ]
+
+    for (const mask of masks)
+      expect(mask).toContain('data:image/svg')
+    // 同一张图说明分档没生效，弹出来的是告知还是警告全靠读文案
+    expect(new Set(masks).size).toBe(masks.length)
   })
 })

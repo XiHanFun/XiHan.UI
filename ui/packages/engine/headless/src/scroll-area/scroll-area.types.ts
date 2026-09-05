@@ -5,6 +5,12 @@ import type { ScrollbarSchema, ScrollbarType } from '../scrollbar/scrollbar.type
 export type ScrollAreaOrientation = Orientation | 'both'
 
 /**
+ * 形态档：plain 是缺省，内容边缘齐平切断；
+ * fade 在那一头还滚得动时把该侧内容淡出，滚到头即收，带宽跟着 size 走。
+ */
+export type ScrollAreaVariant = 'plain' | 'fade'
+
+/**
  * 滚动区域自己没有机器：它只是视口加两条 scrollbar 的组装。滚动条的显隐、拖动、
  * 键盘与尺寸测量全在 scrollbar 那两台机器里，这里按轴各跑一台。
  */
@@ -15,7 +21,9 @@ export interface ScrollAreaProps {
   hideDelay?: number
   /** 哪几条轴归本组件管，默认 both。 */
   orientation?: ScrollAreaOrientation
-  /** 尺寸：sm / md / lg，换的是滚动条厚度。 */
+  /** 形态：plain / fade，默认 plain。 */
+  variant?: ScrollAreaVariant
+  /** 尺寸：sm / md / lg，换的是滚动条厚度，也是边缘渐隐的带宽。 */
   size?: Size
   /**
    * 排版方向，默认随文档。只影响横轴：RTL 下滚动量的正负、指针位移的方向都要翻一次。
@@ -47,6 +55,10 @@ export interface ScrollAreaAxisState {
   size: number
   /** 滑块起点占轨道的比例，0-1。 */
   offset: number
+  /** 已经贴着这条轴的起始端，再往回滚不动了；内容不溢出时与 atMax 同时为真。 */
+  atMin: boolean
+  /** 已经贴着这条轴的末端。 */
+  atMax: boolean
 }
 
 export interface ScrollAreaApi<T extends PropTypes = PropTypes> {

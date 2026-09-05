@@ -14,11 +14,12 @@ export interface LayoutContext {
 export function useLayout(
   props: LayoutSchema['props'],
   onSiderCollapsedChange?: LayoutSchema['props']['onSiderCollapsedChange'],
+  onSiderBreakpoint?: LayoutSchema['props']['onSiderBreakpoint'],
 ): LayoutContext {
   // 把手要用 aria-controls 指向侧栏，两者的 id 必须同源，所以显式建 scope
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
-  const service = useMachine(layoutMachine, () => ({ ...props, onSiderCollapsedChange }), scope)
+  const service = useMachine(layoutMachine, () => ({ ...props, onSiderCollapsedChange, onSiderBreakpoint }), scope)
   const api = computed(() => connectLayout(service, vueNormalize))
   return { api }
 }

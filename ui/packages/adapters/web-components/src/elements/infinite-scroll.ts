@@ -25,6 +25,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @fires load - 该取下一页了
  * @csspart root - 列表外壳，承载 data-loading / data-disabled 与 aria-busy
  * @csspart sentinel - 哨兵，摆在列表末尾；对读屏隐藏
+ * @csspart load-more-trigger - 取下一页的按钮，与哨兵同一条通路；文案由作者写在按钮里
  */
 export class XhInfiniteScrollElement extends XhElement {
   static override partContract = { anatomy: infiniteScrollAnatomy, meta: infiniteScrollMeta }
@@ -81,5 +82,6 @@ export class XhInfiniteScrollElement extends XhElement {
 
     put('root', api.getRootProps() as Record<string, unknown>)
     put('sentinel', api.getSentinelProps() as Record<string, unknown>)
+    put('load-more-trigger', api.getLoadMoreTriggerProps() as Record<string, unknown>)
   }
 }

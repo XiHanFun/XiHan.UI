@@ -16,6 +16,7 @@ export const comboboxAnatomy = createAnatomy('combobox', [
   'group',
   'group-label',
   'empty',
+  'loading',
   'hidden-input',
 ])
 

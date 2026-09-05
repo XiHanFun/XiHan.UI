@@ -1,4 +1,4 @@
-import type { IdGenerator, RuntimeConfig, Size, Tone } from '@xihan-ui/core'
+import type { ControlVariant, IdGenerator, RuntimeConfig, Size, Tone } from '@xihan-ui/core'
 import type { ToolCallOpenChangeDetails, ToolCallPhase, ToolCallProps, ToolCallSchema, ToolCallTranslations } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
@@ -29,10 +29,11 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @attr {boolean} default-open - 非受控初值
  * @attr {boolean} auto-disclosure - 跟着阶段自动开合，默认开；写 auto-disclosure="false" 关掉
  * @attr {boolean} disabled - 禁用折叠开关
+ * @attr {'outline'|'subtle'|'ghost'} variant - 形态：描边（缺省档）/ 底色分区 / 无壳内联
  * @attr {string} tone - 语气
  * @attr {string} size - 尺寸：sm / md / lg
  * @fires open-change - 开合变化；detail 为 `{ open: boolean, source: 'user' | 'auto' | 'api' }`
- * @csspart root - 外壳，承载 data-state（开合）/ data-loading
+ * @csspart root - 外壳，承载 data-state（开合）/ data-loading / data-settled / data-errored 与三视觉轴
  * @csspart trigger - 折叠开关，承载 aria-expanded / aria-controls
  * @csspart indicator - 纯装饰指示，对读屏隐藏
  * @csspart name - 工具名，排在开关内因而计入它的可访问名
@@ -69,6 +70,7 @@ export class XhToolCallElement extends XhElement {
     defaultOpen: { converter: BOOLEAN_CONVERTER, attribute: 'default-open' },
     autoDisclosure: { converter: BOOLEAN_CONVERTER, attribute: 'auto-disclosure' },
     disabled: { converter: BOOLEAN_CONVERTER },
+    variant: { converter: STRING_CONVERTER },
     tone: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
     // 对象值走不了 HTML 属性，只作为 property 暴露
@@ -82,6 +84,7 @@ export class XhToolCallElement extends XhElement {
   declare defaultOpen?: boolean
   declare autoDisclosure?: boolean
   declare disabled?: boolean
+  declare variant?: ControlVariant
   declare tone?: Tone
   declare size?: Size
   /** 各阶段的状态文案。 */
@@ -107,6 +110,7 @@ export class XhToolCallElement extends XhElement {
       phase: this.phase,
       startTime: this.startTime,
       endTime: this.endTime,
+      variant: this.variant,
       tone: this.tone,
       size: this.size,
       translations: this.translations,

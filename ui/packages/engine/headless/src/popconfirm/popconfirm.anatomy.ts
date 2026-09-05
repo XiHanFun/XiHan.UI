@@ -10,4 +10,5 @@ export const popconfirmAnatomy = createAnatomy('popconfirm', [
   'description',
   'confirm-trigger',
   'cancel-trigger',
+  'arrow',
 ])

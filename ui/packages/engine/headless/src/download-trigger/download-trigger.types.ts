@@ -1,4 +1,4 @@
-import type { MachineSchema, PropTypes } from '@xihan-ui/core'
+import type { ActionVariant, MachineSchema, PropTypes, Size, Tone } from '@xihan-ui/core'
 
 /**
  * 下载状态。
@@ -42,6 +42,13 @@ export interface DownloadTriggerSchema extends MachineSchema {
     mimeType?: string
     /** 禁用：按钮不可聚焦、点不动。 */
     disabled?: boolean
+    /** 形态：solid / subtle / outline / ghost，决定颜色怎么用。 */
+    variant?: ActionVariant
+    /** 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 */
+    tone?: Tone
+    /** 尺寸：sm / md / lg。 */
+    size?: Size
+    translations?: Partial<DownloadTriggerTranslations>
     /** 数据已交给浏览器时通知一次。到这里只说明下载已经发起，浏览器把文件写没写到盘上组件看不见。 */
     onDownloadComplete?: (details: DownloadTriggerCompleteDetails) => void
     /** 取数失败或造不出下载时通知；此刻状态已经回到 idle。 */
@@ -83,5 +90,8 @@ export interface DownloadTriggerApi<T extends PropTypes = PropTypes> {
   getRootProps: () => T['button']
 }
 
-/** 读屏用的文案。本组件目前没有需要外露的文案，位先留着。 */
-export interface DownloadTriggerTranslations {}
+/** 读屏用的文案，默认英文。 */
+export interface DownloadTriggerTranslations {
+  /** 按钮的可及名字。按钮里只放一个图标时，名字只能由这里给。 */
+  trigger: string
+}

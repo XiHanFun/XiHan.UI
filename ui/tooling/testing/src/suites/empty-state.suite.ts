@@ -10,6 +10,7 @@ export const emptyStateSuite: ConformanceSuite = {
   fixture: {
     part: 'root',
     children: [
+      { part: 'media' },
       { part: 'indicator', tag: 'span', children: [{ text: '∅' }] },
       { part: 'title', tag: 'p', children: [{ text: '没有匹配的结果' }] },
       { part: 'description', tag: 'p', children: [{ text: '换个关键词，或者把筛选条件放宽一些' }] },
@@ -21,8 +22,8 @@ export const emptyStateSuite: ConformanceSuite = {
       name: '默认：root 是 role=status 活区，图标对读屏隐藏，不写 data-size',
       spec: { apg: APG },
       initial: {
-        order: ['root', 'indicator', 'title', 'description', 'action'],
-        counts: { root: 1, indicator: 1, title: 1, description: 1, action: 1 },
+        order: ['root', 'media', 'indicator', 'title', 'description', 'action'],
+        counts: { root: 1, media: 1, indicator: 1, title: 1, description: 1, action: 1 },
         parts: {
           root: {
             'role': 'status',
@@ -30,6 +31,7 @@ export const emptyStateSuite: ConformanceSuite = {
             // 活区自己念内容，root 不再借标题当名字
             'aria-labelledby': null,
           },
+          media: { 'aria-hidden': 'true', 'role': null },
           indicator: { 'aria-hidden': 'true', 'role': null },
           // 标题与说明只是普通文本，不占标题层级、不带 role
           title: { role: null },

@@ -17,6 +17,7 @@
 - 两栏都可搜索，`filter` 可自定义匹配规则。
 - `oneWay` 单向搬运：只能往目标搬，搬完不再退回。
 - 一万条时只渲可视区。
+- 每一侧的空（`empty`）与在途（`loading`）各有部件；`loading` 为真时两侧列表报 `aria-busy`，空态让位。
 
 ## 示例
 
@@ -52,7 +53,7 @@ oneWay 把往回搬那条路整个封死，右侧不再接受勾选，往回的�
 
 ### 列表分组
 
-面板插槽给出本侧此刻看得见的条目，据此分组渲染；小标题是普通节点，不入方向键也不入搬运
+本侧此刻看得见的条目由组件给出，据此分组渲染；group 是 role=group 的段落壳，段标题不入方向键也不入搬运
 
 <XhDemo src="transfer/06-grouped-list" />
 
@@ -79,7 +80,7 @@ oneWay 把往回搬那条路整个封死，右侧不再接受勾选，往回的�
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-transfer>` |
-| Vue 组件 | `XhTransferItem` `XhTransferItemCheckbox` `XhTransferItemText` `XhTransferList` `XhTransferPanelCount` `XhTransferPanelHeader` `XhTransferPanelTitle` `XhTransferRoot` `XhTransferSearch` `XhTransferSelectAllTrigger` `XhTransferSourcePanel` `XhTransferTargetPanel` `XhTransferToSourceTrigger` `XhTransferToTargetTrigger` |
+| Vue 组件 | `XhTransferEmpty` `XhTransferGroup` `XhTransferGroupLabel` `XhTransferItem` `XhTransferItemCheckbox` `XhTransferItemText` `XhTransferList` `XhTransferLoading` `XhTransferPanelCount` `XhTransferPanelHeader` `XhTransferPanelTitle` `XhTransferRoot` `XhTransferSearch` `XhTransferSelectAllTrigger` `XhTransferSourcePanel` `XhTransferTargetPanel` `XhTransferToSourceTrigger` `XhTransferToTargetTrigger` |
 | 组合式函数 | `useTransfer` |
 | 状态机 | `transferMachine` |
 | 皮肤 | `@xihan-ui/styles/transfer.css` |
@@ -88,7 +89,7 @@ oneWay 把往回搬那条路整个封死，右侧不再接受勾选，往回的�
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="transfer"`：`root` · **`source-panel`** · **`target-panel`** · `panel-header` · `panel-title` · `panel-count` · `search` · **`list`** · `item` · `item-text` · `item-checkbox` · **`to-target-trigger`** · `to-source-trigger` · `select-all-trigger`
+`data-scope="transfer"`：`root` · **`source-panel`** · **`target-panel`** · `panel-header` · `panel-title` · `panel-count` · `search` · **`list`** · `group` · `group-label` · `item` · `item-text` · `item-checkbox` · `empty` · `loading` · **`to-target-trigger`** · `to-source-trigger` · `select-all-trigger`
 
 ## Props
 
@@ -102,6 +103,11 @@ oneWay 把往回搬那条路整个封死，右侧不再接受勾选，往回的�
 | `searchable` | `boolean` |  | 每侧带一个搜索框；关掉时搜索框仍在 DOM 里但带 hidden，且搜索串一律按空处理。 |
 | `filter` | `TransferFilter` |  | 自定义匹配规则；缺省是标签大小写不敏感包含。 |
 | `disabled` | `boolean` |  | 整个控件禁用：条目转 aria-disabled，三个按钮与搜索框用原生 disabled。 |
+| `readOnly` | `boolean` |  | 只读：两侧照常浏览与搜索，但勾选改不动、也搬不动。禁用还额外收走键盘入口。 |
+| `invalid` | `boolean` |  | 校验失败：两侧列表报 aria-invalid，各角色节点带 data-invalid。 |
+| `loading` | `boolean` |  | 条目还在取：两侧列表报 aria-busy，在途占位顶上来、空态占位让位。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定勾选标记用哪族颜色。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg，决定条目与勾选格的几何档位。 |
 | `oneWay` | `boolean` |  | 只能往右不能往回：往回搬那条路整个封死，target 侧也不再接受勾选。 |
 | `loop` | `boolean` |  | 列表内方向键走到尽头是否回绕，默认 true。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr；决定列表内哪个横向方向键是"搬向对面"。 |
@@ -150,6 +156,8 @@ oneWay 把往回搬那条路整个封死，右侧不再接受勾选，往回的�
 | `value` | `string[]` | 落在 target 侧的值。 |
 | `selection` | `string[]` | 两侧合起来被勾中的值。 |
 | `disabled` | `boolean` |  |
+| `readOnly` | `boolean` |  |
+| `invalid` | `boolean` |  |
 | `oneWay` | `boolean` |  |
 | `searchable` | `boolean` |  |
 | `visibleItems` | `(side: TransferSide) => readonly TransferItem[]` | 某一侧当下看得见的条目（分侧 + 搜索之后），顺序恒为 collection 原序。 |
@@ -173,6 +181,10 @@ oneWay 把往回搬那条路整个封死，右侧不再接受勾选，往回的�
 | `getSearchProps` | `(props: TransferPanelProps) => T['input']` |  |
 | `getListProps` | `(props: TransferPanelProps) => T['element']` |  |
 | `getSelectAllTriggerProps` | `(props: TransferPanelProps) => T['button']` |  |
+| `getEmptyProps` | `(props: TransferPanelProps) => T['element']` | 空态占位：放在面板里、list 的兄弟；本侧一条可见条目都没有时露面，其余时候带 hidden。 |
+| `getLoadingProps` | `(props: TransferPanelProps) => T['element']` | 在途占位：与空态占位同一个位置，两者不同屏——取数期间它顶上来，空态让位。 |
+| `getGroupProps` | `(props: TransferGroupProps) => T['element']` | 分组容器：role=group，条目挂在它里面；分组标题经 aria-labelledby 关联。 |
+| `getGroupLabelProps` | `(props: TransferGroupProps) => T['element']` | 分组标题：不是选项、不进导航，只作为本组的可及名字。 |
 | `getItemProps` | `(props: TransferItemProps) => T['element']` |  |
 | `getItemTextProps` | `(props: TransferItemProps) => T['element']` |  |
 | `getItemCheckboxProps` | `(props: TransferItemProps) => T['element']` |  |
@@ -205,10 +217,15 @@ oneWay 把往回搬那条路整个封死，右侧不再接受勾选，往回的�
 | --- | --- | --- |
 | `search` | `aria-controls` | listId[panel.side] |
 | `search` | `aria-labelledby` | titleId[panel.side] |
+| `list` | `aria-busy` | 'true' \| undefined |
 | `list` | `aria-disabled` | 'true' \| 'false' |
+| `list` | `aria-invalid` | 'true' \| 'false' |
 | `list` | `aria-labelledby` | titleId[panel.side] |
 | `list` | `aria-multiselectable` | 'true' \| 'false' |
+| `list` | `aria-readonly` | 'true' \| 'false' |
 | `list` | `role` | 'listbox' |
+| `group` | `aria-labelledby` | `group-label` 部件的 id |
+| `group` | `role` | 'group' |
 | `item` | `aria-disabled` | 'true' \| 'false' |
 | `item` | `aria-selected` | 'true' \| 'false' |
 | `item` | `role` | 'option' |
@@ -232,7 +249,12 @@ oneWay 把往回搬那条路整个封死，右侧不再接受勾选，往回的�
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-invalid` | ''（条件成立时才出现） |
+| `root` | `data-loading` | ''（条件成立时才出现） |
 | `root` | `data-one-way` | ''（条件成立时才出现） |
+| `root` | `data-readonly` | ''（条件成立时才出现） |
+| `root` | `data-size` | props.size |
+| `root` | `data-tone` | props.tone |
 | `panel-header` | `data-disabled` | ''（条件成立时才出现） |
 | `panel-header` | `data-side` | panel.side |
 | `panel-title` | `data-side` | panel.side |
@@ -241,7 +263,17 @@ oneWay 把往回搬那条路整个封死，右侧不再接受勾选，往回的�
 | `panel-count` | `data-side` | panel.side |
 | `search` | `data-side` | panel.side |
 | `list` | `data-disabled` | ''（条件成立时才出现） |
+| `list` | `data-invalid` | ''（条件成立时才出现） |
+| `list` | `data-readonly` | ''（条件成立时才出现） |
 | `list` | `data-side` | panel.side |
+| `group` | `data-disabled` | ''（条件成立时才出现） |
+| `group` | `data-side` | group.side |
+| `group-label` | `data-disabled` | ''（条件成立时才出现） |
+| `group-label` | `data-side` | group.side |
+| `empty` | `data-disabled` | ''（条件成立时才出现） |
+| `empty` | `data-side` | panel.side |
+| `loading` | `data-disabled` | ''（条件成立时才出现） |
+| `loading` | `data-side` | panel.side |
 | `to-target-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `to-source-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `select-all-trigger` | `data-disabled` | ''（条件成立时才出现） |
@@ -254,7 +286,7 @@ oneWay 把往回搬那条路整个封死，右侧不再接受勾选，往回的�
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-transfer-checkbox-bg` · `--xh-transfer-checkbox-bg-checked` · `--xh-transfer-checkbox-bg-disabled` · `--xh-transfer-checkbox-border` · `--xh-transfer-checkbox-border-checked` · `--xh-transfer-checkbox-border-disabled` · `--xh-transfer-checkbox-fg` · `--xh-transfer-checkbox-font-size` · `--xh-transfer-checkbox-radius` · `--xh-transfer-checkbox-size` · `--xh-transfer-fg` · `--xh-transfer-gap` · `--xh-transfer-icon-size` · `--xh-transfer-item-bg-hover` · `--xh-transfer-item-fg` · `--xh-transfer-item-font-size` · `--xh-transfer-item-gap` · `--xh-transfer-item-leading` · `--xh-transfer-item-px` · `--xh-transfer-item-py` · `--xh-transfer-item-radius` · `--xh-transfer-list-gap` · `--xh-transfer-list-h` · `--xh-transfer-list-px` · `--xh-transfer-list-py` · `--xh-transfer-panel-bg` · `--xh-transfer-panel-bg-disabled` · `--xh-transfer-panel-border` · `--xh-transfer-panel-count-fg` · `--xh-transfer-panel-count-font-size` · `--xh-transfer-panel-header-gap` · `--xh-transfer-panel-header-px` · `--xh-transfer-panel-header-py` · `--xh-transfer-panel-radius` · `--xh-transfer-panel-title-fg` · `--xh-transfer-panel-title-font-size` · `--xh-transfer-panel-title-font-weight` · `--xh-transfer-search-bg` · `--xh-transfer-search-border` · `--xh-transfer-search-fg` · `--xh-transfer-search-font-size` · `--xh-transfer-search-h` · `--xh-transfer-search-px` · `--xh-transfer-select-all-fg` · `--xh-transfer-select-all-font-size` · `--xh-transfer-select-all-gap` · `--xh-transfer-select-all-radius` · `--xh-transfer-trigger-bg` · `--xh-transfer-trigger-bg-active` · `--xh-transfer-trigger-bg-hover` · `--xh-transfer-trigger-border` · `--xh-transfer-trigger-fg` · `--xh-transfer-trigger-font-size` · `--xh-transfer-trigger-px` · `--xh-transfer-trigger-radius` · `--xh-transfer-trigger-shadow-active` · `--xh-transfer-trigger-shadow-hover` · `--xh-transfer-trigger-size`
+`--xh-transfer-checkbox-bg` · `--xh-transfer-checkbox-bg-checked` · `--xh-transfer-checkbox-bg-disabled` · `--xh-transfer-checkbox-border` · `--xh-transfer-checkbox-border-checked` · `--xh-transfer-checkbox-border-disabled` · `--xh-transfer-checkbox-fg` · `--xh-transfer-checkbox-font-size` · `--xh-transfer-checkbox-radius` · `--xh-transfer-checkbox-size` · `--xh-transfer-empty-fg` · `--xh-transfer-empty-font-size` · `--xh-transfer-empty-px` · `--xh-transfer-empty-py` · `--xh-transfer-fg` · `--xh-transfer-gap` · `--xh-transfer-group-gap` · `--xh-transfer-group-label-fg` · `--xh-transfer-group-label-font-size` · `--xh-transfer-group-label-font-weight` · `--xh-transfer-group-label-px` · `--xh-transfer-group-label-py` · `--xh-transfer-group-spacing` · `--xh-transfer-icon-size` · `--xh-transfer-item-bg-hover` · `--xh-transfer-item-fg` · `--xh-transfer-item-font-size` · `--xh-transfer-item-gap` · `--xh-transfer-item-leading` · `--xh-transfer-item-px` · `--xh-transfer-item-py` · `--xh-transfer-item-radius` · `--xh-transfer-list-gap` · `--xh-transfer-list-h` · `--xh-transfer-list-px` · `--xh-transfer-list-py` · `--xh-transfer-loading-fg` · `--xh-transfer-loading-font-size` · `--xh-transfer-loading-px` · `--xh-transfer-loading-py` · `--xh-transfer-panel-bg` · `--xh-transfer-panel-bg-disabled` · `--xh-transfer-panel-border` · `--xh-transfer-panel-border-invalid` · `--xh-transfer-panel-count-fg` · `--xh-transfer-panel-count-font-size` · `--xh-transfer-panel-header-gap` · `--xh-transfer-panel-header-px` · `--xh-transfer-panel-header-py` · `--xh-transfer-panel-radius` · `--xh-transfer-panel-title-fg` · `--xh-transfer-panel-title-font-size` · `--xh-transfer-panel-title-font-weight` · `--xh-transfer-search-bg` · `--xh-transfer-search-border` · `--xh-transfer-search-fg` · `--xh-transfer-search-font-size` · `--xh-transfer-search-h` · `--xh-transfer-search-px` · `--xh-transfer-select-all-fg` · `--xh-transfer-select-all-font-size` · `--xh-transfer-select-all-gap` · `--xh-transfer-select-all-radius` · `--xh-transfer-trigger-bg` · `--xh-transfer-trigger-bg-active` · `--xh-transfer-trigger-bg-hover` · `--xh-transfer-trigger-border` · `--xh-transfer-trigger-fg` · `--xh-transfer-trigger-font-size` · `--xh-transfer-trigger-px` · `--xh-transfer-trigger-radius` · `--xh-transfer-trigger-shadow-active` · `--xh-transfer-trigger-shadow-hover` · `--xh-transfer-trigger-size`
 
 ## 动效
 

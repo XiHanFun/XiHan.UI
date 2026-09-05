@@ -2,6 +2,7 @@ import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui
 import type {
   CascaderApi,
   CascaderExpandTrigger,
+  CascaderGroupProps,
   CascaderItemProps,
   CascaderNode,
   CascaderSchema,
@@ -16,7 +17,7 @@ import { computed, defineComponent, h, mergeProps, onBeforeUnmount, ref, Telepor
 import { withXhConfig } from '../../config/config'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
-import { provideCascader, provideCascaderItem, useCascaderContext, useCascaderItemContext } from './context'
+import { provideCascader, provideCascaderGroup, provideCascaderItem, useCascaderContext, useCascaderGroupContext, useCascaderItemContext } from './context'
 import { useCascader } from './use-cascader'
 
 type CascaderProps = CascaderSchema['props']
@@ -92,6 +93,7 @@ export const XhCascaderRoot = defineComponent({
     disabled: Boolean,
     readOnly: Boolean,
     invalid: Boolean,
+    loading: Boolean,
     translations: { type: Object as PropType<Partial<CascaderTranslations>>, default: undefined },
     variant: { type: String as PropType<ControlVariant>, default: undefined },
     tone: { type: String as PropType<Tone>, default: undefined },
@@ -264,6 +266,15 @@ export const XhCascaderContent = defineComponent({
   },
 })
 
+export const XhCascaderLoading = defineComponent({
+  name: 'XhCascaderLoading',
+  setup(_, { slots }) {
+    const ctx = useCascaderContext()
+    // 在途占位：与空态占位同一个位置，取数期间顶上来；文案归作者
+    return () => h('div', ctx.api.value.getLoadingProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhCascaderInput = defineComponent({
   name: 'XhCascaderInput',
   setup() {
@@ -313,6 +324,29 @@ export const XhCascaderColumn = defineComponent({
   },
 })
 
+export const XhCascaderGroup = defineComponent({
+  name: 'XhCascaderGroup',
+  props: {
+    value: { type: String, required: true },
+  },
+  setup(props, { slots }) {
+    const ctx = useCascaderContext()
+    const group = computed<CascaderGroupProps>(() => ({ value: props.value }))
+    provideCascaderGroup({ group })
+    // 分组容器：写在列里，条目照常挂在它下面
+    return () => h('div', ctx.api.value.getGroupProps(group.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
+export const XhCascaderGroupLabel = defineComponent({
+  name: 'XhCascaderGroupLabel',
+  setup(_, { slots }) {
+    const ctx = useCascaderContext()
+    const { group } = useCascaderGroupContext()
+    return () => h('span', ctx.api.value.getGroupLabelProps(group.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhCascaderItem = defineComponent({
   name: 'XhCascaderItem',
   props: {
@@ -347,5 +381,15 @@ export const XhCascaderItemIndicator = defineComponent({
     const ctx = useCascaderContext()
     const { item } = useCascaderItemContext()
     return () => h('span', ctx.api.value.getItemIndicatorProps(item.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
+export const XhCascaderFooter = defineComponent({
+  name: 'XhCascaderFooter',
+  setup(_, { slots }) {
+    const ctx = useCascaderContext()
+    // 浮层底部的操作区：写在 content 里、与列并列，横跨全部列；
+    // 列表框语义在每一列上，放在这里的按钮既不进列的拥有关系，也走不到方向键
+    return () => h('div', ctx.api.value.getFooterProps() as Record<string, unknown>, slots.default?.())
   },
 })

@@ -32,10 +32,39 @@
     --xh-side-nav-skin: 1;
   }
 
-  [data-scope='side-nav'][data-part='root'] {
+  /* 私有槽同时声明在根与定位层上：折叠态的弹出面板被搬到 portal 落点，
+     不是根的后代，继承不过去。面板里的行与栏内那些消费的是同一批槽 */
+  [data-scope='side-nav']:is([data-part='root'], [data-part='positioner']) {
     /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
     --xh-icon-size: var(--xh-side-nav-icon-size, var(--xh-glyph-size-text));
 
+    /* 尺寸档只换这三个私有槽，行从这两处继承它们，换档不必给每个部件各写一条选择器 */
+    --xh-_side-nav-row-h: var(--xh-control-h-md);
+    --xh-_side-nav-row-px: var(--xh-control-px-md);
+    --xh-_side-nav-row-gap: var(--xh-control-gap-md);
+
+    /* 选中行与在途行随语气走。没写 data-tone 时 --xh-_tone-* 都没被声明，退回原来的品牌配色。
+       聚焦环不在其列，它恒是 --xh-ring-focus */
+    --xh-_side-nav-accent-bg: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
+    --xh-_side-nav-accent-fg: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
+    --xh-_side-nav-in-path-fg: var(--xh-_tone-fg, var(--xh-fg-brand));
+  }
+
+  /* —— 尺寸 —— */
+  /* 缺省档写在上面那条里 */
+  [data-scope='side-nav']:is([data-part='root'], [data-part='positioner'])[data-size='sm'] {
+    --xh-_side-nav-row-h: var(--xh-control-h-sm);
+    --xh-_side-nav-row-px: var(--xh-control-px-sm);
+    --xh-_side-nav-row-gap: var(--xh-control-gap-sm);
+  }
+
+  [data-scope='side-nav']:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
+    --xh-_side-nav-row-h: var(--xh-control-h-lg);
+    --xh-_side-nav-row-px: var(--xh-control-px-lg);
+    --xh-_side-nav-row-gap: var(--xh-control-gap-lg);
+  }
+
+  [data-scope='side-nav'][data-part='root'] {
     inline-size: var(--xh-side-nav-w, 240px);
     display: flex;
     flex-direction: column;
@@ -107,10 +136,10 @@
   [data-scope='side-nav'][data-part='link'] {
     display: flex;
     align-items: center;
-    gap: var(--xh-side-nav-link-gap, var(--xh-control-gap-md));
+    gap: var(--xh-side-nav-link-gap, var(--xh-_side-nav-row-gap));
     inline-size: 100%;
-    min-block-size: var(--xh-control-h-md);
-    padding-inline: var(--xh-side-nav-link-px, var(--xh-control-px-md));
+    min-block-size: var(--xh-side-nav-link-h, var(--xh-_side-nav-row-h));
+    padding-inline: var(--xh-side-nav-link-px, var(--xh-_side-nav-row-px));
     border: none;
     border-radius: var(--xh-side-nav-link-radius, var(--xh-shape-control));
     background: none;
@@ -130,15 +159,15 @@
   /* 选中的那条：品牌淡底 + 强调字。
      守卫与轻档那条同特指度，写在其后才压得住——键盘走到当前页那一行时底色仍是品牌淡底 */
   [data-scope='side-nav'][data-part='link']:not([data-disabled])[data-current] {
-    background: var(--xh-side-nav-row-bg-active, var(--xh-bg-brand-subtle));
+    background: var(--xh-side-nav-row-bg-active, var(--xh-_side-nav-accent-bg));
     /* 淡底上的字走 strong 档：fg-brand（600）压在 brand-subtle（100）上只有 4.21 */
-    color: var(--xh-side-nav-row-fg-active, var(--xh-fg-brand-strong));
+    color: var(--xh-side-nav-row-fg-active, var(--xh-_side-nav-accent-fg));
     font-weight: var(--xh-side-nav-row-font-weight-active, var(--xh-font-weight-medium));
   }
 
   /* 选中项的祖先枝：只染字色，一路指到当前页 */
   [data-scope='side-nav'][data-part='branch-trigger'][data-in-path] {
-    color: var(--xh-side-nav-row-fg-in-path, var(--xh-fg-brand));
+    color: var(--xh-side-nav-row-fg-in-path, var(--xh-_side-nav-in-path-fg));
   }
 
   [data-scope='side-nav'][data-part='branch-trigger'][data-disabled],

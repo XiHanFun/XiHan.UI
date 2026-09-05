@@ -49,7 +49,7 @@
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-button-group>` |
-| Vue 组件 | `XhButtonGroup` |
+| Vue 组件 | `XhButtonGroup` `XhButtonGroupSeparator` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/button-group.css` |
 
@@ -57,12 +57,14 @@
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="button-group"`：**`root`**
+`data-scope="button-group"`：**`root`** · `separator`
 
 ## Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `disabled` | `boolean` |  | 整组禁用：适配器把它落到组内每一段的原生 disabled 上，段自己写了禁用的仍然禁用。 |
+| `fullWidth` | `boolean` |  | 撑满行宽：整组占满可用宽度，每段等分剩余空间。 |
 | `orientation` | `'horizontal' \| 'vertical'` |  | 排布：horizontal / vertical，决定相邻两段在哪个轴上合边。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，落到根上供皮肤写进组内按钮的高度、内边距与字号槽位。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，落到根上沿继承流给组内每一段。 |
@@ -74,7 +76,9 @@
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
+| `disabled` | `boolean` | 整组是否禁用。适配器据此把禁用传给组内每一段——只打 data-* 是假禁用。 |
 | `getRootProps` | `() => T['element']` |  |
+| `getSeparatorProps` | `() => T['element']` | 段与段之间的装饰线，纯视觉、读屏不念。 |
 
 ## 键盘
 
@@ -89,6 +93,7 @@
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `role` | 'group' |
+| `separator` | `aria-hidden` | 'true' |
 
 ## 样式
 
@@ -100,16 +105,24 @@
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-full-width` | ''（条件成立时才出现） |
 | `root` | `data-orientation` | props.orientation |
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
+| `separator` | `data-disabled` | ''（条件成立时才出现） |
+| `separator` | `data-orientation` | 'vertical' \| 'horizontal' |
 
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-button-group-radius`
+`--xh-button-group-radius` · `--xh-button-group-separator-color` · `--xh-button-group-separator-color-disabled` · `--xh-button-group-separator-gap` · `--xh-button-group-separator-inset` · `--xh-button-group-separator-radius` · `--xh-button-group-separator-thickness`
+
+## 响应式
+
+皮肤内置条件规则：`forced-colors: active`。
 
 ## RTL
 

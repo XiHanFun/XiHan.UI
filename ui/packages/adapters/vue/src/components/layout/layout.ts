@@ -1,4 +1,4 @@
-import type { LayoutSchema, LayoutSiderPlacement } from '@xihan-ui/headless'
+import type { LayoutBreakpoint, LayoutSchema, LayoutSiderPlacement } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
@@ -17,6 +17,7 @@ export const XhLayoutRoot = defineComponent({
     siderWidth: { type: String, default: undefined },
     siderCollapsedWidth: { type: String, default: undefined },
     siderPlacement: { type: String as PropType<LayoutSiderPlacement>, default: undefined },
+    siderBreakpoint: { type: String as PropType<LayoutBreakpoint>, default: undefined },
     headerFixed: Boolean,
     siderFixed: Boolean,
     bordered: Boolean,
@@ -25,13 +26,15 @@ export const XhLayoutRoot = defineComponent({
   emits: {
     'sider-collapsed-change': (_details: PayloadOf<LayoutProps, 'onSiderCollapsedChange'>) => true,
     'update:siderCollapsed': (_siderCollapsed: PayloadOf<LayoutProps, 'onSiderCollapsedChange'>['collapsed']) => true,
+    'sider-breakpoint': (_details: PayloadOf<LayoutProps, 'onSiderBreakpoint'>) => true,
   },
   setup(props, { slots, emit }) {
     const notify: LayoutProps['onSiderCollapsedChange'] = (details) => {
       emit('sider-collapsed-change', details)
       emit('update:siderCollapsed', details.collapsed)
     }
-    const ctx = useLayout(props as LayoutProps, notify)
+    const notifyBreakpoint: LayoutProps['onSiderBreakpoint'] = details => emit('sider-breakpoint', details)
+    const ctx = useLayout(props as LayoutProps, notify, notifyBreakpoint)
     provideLayout(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.())
   },

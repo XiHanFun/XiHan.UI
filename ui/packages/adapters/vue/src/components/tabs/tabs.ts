@@ -26,6 +26,8 @@ export const XhTabsRoot = defineComponent({
     size: { type: String as PropType<Size>, default: undefined },
     /** 标签可以拖着换位。整个标签都是拖动源，不另出把手。 */
     reorderable: Boolean,
+    /** 标签可关闭：焦点落在标签上按 Delete / Backspace 即发 tab-close。 */
+    closable: Boolean,
     translations: { type: Object as PropType<TabsProps['translations']>, default: undefined },
   },
   // value-change 携带 { value }，update:value 携带裸值
@@ -34,6 +36,8 @@ export const XhTabsRoot = defineComponent({
     'update:value': (_value: PayloadOf<TabsProps, 'onValueChange'>['value']) => true,
     // 换位是通知，标签序的真源在使用者的数据里，故没有配对的 update:*
     'tab-move': (_details: PayloadOf<TabsProps, 'onTabMove'>) => true,
+    // 关闭同理：库不持有标签序，只发意图
+    'tab-close': (_details: PayloadOf<TabsProps, 'onTabClose'>) => true,
   },
   setup(props, { slots, emit }) {
     const notify: TabsProps['onValueChange'] = (details) => {
@@ -44,7 +48,10 @@ export const XhTabsRoot = defineComponent({
     const onTabMove: TabsProps['onTabMove'] = (details) => {
       emit('tab-move', details)
     }
-    const ctx = useTabs(withXhConfig('tabs', props) as TabsProps, notify, onTabMove)
+    const onTabClose: TabsProps['onTabClose'] = (details) => {
+      emit('tab-close', details)
+    }
+    const ctx = useTabs(withXhConfig('tabs', props) as TabsProps, notify, onTabMove, onTabClose)
     provideTabs(ctx)
     return () => {
       // 默认插槽里有真内容就照旧交给作者；只剩注释或空白时当没写，给了 collection 就按数据铺开整套结构
@@ -61,7 +68,28 @@ export const XhTabsList = defineComponent({
   name: 'XhTabsList',
   setup(_, { slots }) {
     const ctx = useTabsContext()
-    return () => h('div', ctx.api.value.getListProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', {
+      ...ctx.api.value.getListProps() as Record<string, unknown>,
+      ref: (el: unknown) => { ctx.listRef.value = el as HTMLElement },
+    }, slots.default?.())
+  },
+})
+
+/** 选中标签下的滑条：位置由机器量好写进内联样式；住在 list 里，以 list 为定位参照系 */
+export const XhTabsIndicator = defineComponent({
+  name: 'XhTabsIndicator',
+  setup() {
+    const ctx = useTabsContext()
+    return () => h('div', ctx.api.value.getIndicatorProps() as Record<string, unknown>)
+  },
+})
+
+/** 标签之间的细分隔线，纯装饰 */
+export const XhTabsSeparator = defineComponent({
+  name: 'XhTabsSeparator',
+  setup() {
+    const ctx = useTabsContext()
+    return () => h('div', ctx.api.value.getSeparatorProps() as Record<string, unknown>)
   },
 })
 

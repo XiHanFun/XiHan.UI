@@ -20,11 +20,45 @@
     grid-template-rows: auto minmax(0, 1fr) auto;
     background: var(--xh-layout-bg, var(--xh-bg-page));
     color: var(--xh-layout-fg, var(--xh-fg-default));
-    --xh-_layout-sider-w: var(--xh-layout-sider-w, 15rem);
+    --xh-_layout-sider-expanded-w: var(--xh-layout-sider-w, 15rem);
+    --xh-_layout-sider-w: var(--xh-_layout-sider-expanded-w);
     --xh-_layout-sider-collapsed-w: var(--xh-layout-sider-collapsed-w, 4rem);
     --xh-_layout-header-h: var(--xh-layout-header-h, 3.5rem);
     /* 侧栏吸附时钉在哪条线上：缺省贴滚动容器上沿，头也吸顶时改成让开头的高度 */
     --xh-_layout-sider-offset: 0px;
+  }
+
+  /* —— 侧栏断点 —— */
+  /* 写了断点档就先按窄屏排（折叠宽），视口宽到那一档再还原成展开宽。
+     移动优先、四档只用 min-width：媒体查询不改选择器权重，同时命中好几档时由源码序决定谁生效。
+     宽度写字面量：自定义属性在 @media 条件里不参与求值，令牌变量写在这里等于没写条件。
+     换的只是宽度，折叠态不动——那条通道归 siderCollapsed。 */
+  [data-scope='layout'][data-part='root'][data-sider-breakpoint] {
+    --xh-_layout-sider-w: var(--xh-_layout-sider-collapsed-w);
+  }
+
+  @media (min-width: 640px) {
+    [data-scope='layout'][data-part='root'][data-sider-breakpoint='sm'] {
+      --xh-_layout-sider-w: var(--xh-_layout-sider-expanded-w);
+    }
+  }
+
+  @media (min-width: 768px) {
+    [data-scope='layout'][data-part='root'][data-sider-breakpoint='md'] {
+      --xh-_layout-sider-w: var(--xh-_layout-sider-expanded-w);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    [data-scope='layout'][data-part='root'][data-sider-breakpoint='lg'] {
+      --xh-_layout-sider-w: var(--xh-_layout-sider-expanded-w);
+    }
+  }
+
+  @media (min-width: 1280px) {
+    [data-scope='layout'][data-part='root'][data-sider-breakpoint='xl'] {
+      --xh-_layout-sider-w: var(--xh-_layout-sider-expanded-w);
+    }
   }
 
   /* 侧栏挂到行尾：两列对调，内容在前 */

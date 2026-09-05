@@ -45,6 +45,8 @@ export interface TextFieldSchema extends MachineSchema {
     maxLength?: number
     /** 开启清空能力：有值时显出清空按钮、Escape 接管。关掉时按钮带 hidden 收起。 */
     clearable?: boolean
+    /** 显出字数部件：关掉时 count 部件带 hidden 收起。 */
+    showCount?: boolean
     /** 多行宿主的自动高度：跟内容长高；对象形态钉行数上下限，顶到 maxRows 后内部滚动。 */
     autoSize?: boolean | TextFieldAutoSize
     /** 形态：outline / subtle / ghost，决定输入框的底与描边怎么画。 */
@@ -86,6 +88,12 @@ export interface TextFieldApi<T extends PropTypes = PropTypes> {
   clearable: boolean
   /** 已顶到 maxLength：再敲也进不去，作者据此把字数提示标红。 */
   atLimit: boolean
+  /** 当前字数，即 value 的长度。作者拿它渲染 count 部件里的数字。 */
+  count: number
+  /** 字数上限的原样透传；没设上限时是 undefined，此时只渲当前字数。 */
+  maxLength: number | undefined
+  /** 字数部件此刻是否显出（开了 showCount）。 */
+  showCount: boolean
   /** 清空按钮此刻是否可用（开了 clearable、可编辑、且有值）。 */
   canClear: boolean
   /** 直接写值，只受 disabled/readOnly 与 maxLength 约束，与 clearable 无关。 */
@@ -100,7 +108,13 @@ export interface TextFieldApi<T extends PropTypes = PropTypes> {
   getLabelProps: () => T['label']
   /** 传 as: 'textarea' 即多行宿主：撤掉 type、接上自动高度。 */
   getInputProps: (props?: TextFieldInputProps) => T['input']
+  /** 输入框前的装饰段（货币符、单位、图标）；对读屏隐藏，不参与名字链。 */
+  getPrefixProps: () => T['element']
+  /** 输入框后的装饰段；对读屏隐藏，不参与名字链。 */
+  getSuffixProps: () => T['element']
   getClearTriggerProps: () => T['button']
+  /** 字数部件：承载 count / maxLength 两个数字，没开 showCount 时带 hidden 收起。 */
+  getCountProps: () => T['element']
 }
 
 /** 读屏用的文案，默认英文。 */

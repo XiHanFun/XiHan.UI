@@ -64,5 +64,12 @@ export function connectLoadingBar<T extends PropTypes>(
       // 两个样式键每帧都写全，用不上的写空串清掉
       'style': { inlineSize: `${value}%`, background: color ?? '' },
     }),
+
+    // 亮边贴在进度段末端，是纯装饰：进度值由 root 的 aria-valuenow 报出
+    getPegProps: () => normalize.element({
+      ...parts.peg.attrs,
+      'aria-hidden': true,
+      'data-state': phase,
+    }),
   }
 }

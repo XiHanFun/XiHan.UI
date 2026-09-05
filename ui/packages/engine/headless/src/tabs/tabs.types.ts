@@ -43,6 +43,21 @@ export interface TabsContentProps {
   value: string
 }
 
+/** 指示条相对 list 的位置与尺寸（px）；起始缘按逻辑方向算，RTL 从右边缘量起。 */
+export interface TabsIndicatorRect {
+  blockStart: number
+  blockSize: number
+  inlineStart: number
+  inlineSize: number
+}
+
+/** 关闭一个标签：谁被关、关掉后剩下哪些。 */
+export interface TabsCloseDetails {
+  value: string
+  /** 关掉这一条之后余下的标签序，可直接拿去写回数据源。 */
+  values: string[]
+}
+
 export interface TabsSchema extends MachineSchema {
   props: {
     /**
@@ -74,6 +89,13 @@ export interface TabsSchema extends MachineSchema {
      */
     reorderable?: boolean
     onTabMove?: (details: TabsMoveDetails) => void
+    /**
+     * 标签可关闭：trigger 上按 Delete / Backspace 即发 onTabClose。
+     * 库不持有标签序，只发意图，删不删由数据源那边决定。
+     */
+    closable?: boolean
+    /** 标签被关闭。 */
+    onTabClose?: (details: TabsCloseDetails) => void
     translations?: Partial<TabsTranslations>
     /** value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 */
     onValueChange?: (details: TabsValueChangeDetails) => void
@@ -89,9 +111,13 @@ export interface TabsSchema extends MachineSchema {
     dropTarget: DropTarget | null
     /** 读屏播报文本。写进视觉隐藏的活动区域，不进视觉版面。 */
     announcement: string
+    /** 指示条的量测结果；没有选中项或量不到时为 null。 */
+    indicator: TabsIndicatorRect | null
   }
   computed: Record<string, never>
   refs: {
+    /** 标签集合的查询容器（list），同时是指示条定位的参照系。 */
+    getListEl: () => HTMLElement | null
     /** 跟手的会话，整个生命周期都在。调用方在按下时把那一根指针交进来。 */
     gesture: MultiPointerSession | null
     /**
@@ -125,6 +151,8 @@ export interface TabsSchema extends MachineSchema {
     | { type: 'TAB_DRAG.CANCEL' }
     /** 键盘换位：一按就是一次完整提交，不进拖动态。 */
     | { type: 'TAB.MOVE_BY', value: string, target: DropTarget }
+    /** 关闭一个标签：只发意图，库不改标签序。 */
+    | { type: 'TAB.CLOSE', value: string, values: string[] }
   tag: never
   guard: 'isAutomatic'
   action:
@@ -136,7 +164,9 @@ export interface TabsSchema extends MachineSchema {
     | 'endTabDrag'
     | 'cancelTabDrag'
     | 'moveTabBy'
-  effect: 'trackPointer'
+    | 'invokeOnTabClose'
+    | 'measureIndicator'
+  effect: 'trackPointer' | 'trackResize'
 }
 
 export interface TabsApi<T extends PropTypes = PropTypes> {
@@ -154,6 +184,10 @@ export interface TabsApi<T extends PropTypes = PropTypes> {
   getRootProps: () => T['element']
   getListProps: () => T['element']
   getTriggerProps: (props: TabsTriggerProps) => T['button']
+  /** 选中标签下的滑条；位置由机器量好写成内联样式，没有选中项时 hidden。 */
+  getIndicatorProps: () => T['element']
+  /** 标签之间的细分隔线，纯装饰。 */
+  getSeparatorProps: () => T['element']
   getContentProps: (props: TabsContentProps) => T['element']
   /**
    * 拖动过程的读屏播报区。视觉隐藏，文本从 announcement 取。

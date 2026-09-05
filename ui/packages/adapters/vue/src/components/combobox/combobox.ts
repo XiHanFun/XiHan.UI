@@ -45,6 +45,7 @@ export const XhComboboxRoot = defineComponent({
     disabled: Boolean,
     readOnly: Boolean,
     invalid: Boolean,
+    loading: Boolean,
     loop: { type: Boolean, default: undefined },
     placeholder: { type: String, default: undefined },
     /** 自动铺开时是否渲染清空钮；手写部件模式不看它，写了节点即可清 */
@@ -295,6 +296,15 @@ export const XhComboboxEmpty = defineComponent({
     const ctx = useComboboxContext()
     // 放在 positioner 里作 content 的兄弟节点，不进 role=listbox
     return () => h('div', ctx.api.value.getEmptyProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+export const XhComboboxLoading = defineComponent({
+  name: 'XhComboboxLoading',
+  setup(_, { slots }) {
+    const ctx = useComboboxContext()
+    // 在途占位：与空态占位同一个位置，取数期间顶上来
+    return () => h('div', ctx.api.value.getLoadingProps() as Record<string, unknown>, slots.default?.())
   },
 })
 

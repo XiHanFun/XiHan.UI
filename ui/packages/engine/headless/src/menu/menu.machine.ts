@@ -1,6 +1,6 @@
 import type { Placement, PositionResult } from '@xihan-ui/core'
 import type { MenuFocusIntent, MenuSchema } from './menu.types'
-import { createDismissLayer, createFocusScope, itemValue, navigateItems, queryItems, setup, trackHoverIntent } from '@xihan-ui/core'
+import { createDismissLayer, createFocusScope, createTypeahead, itemValue, navigateItems, queryItems, setup, trackHoverIntent } from '@xihan-ui/core'
 import { closeReasonOf } from '../shared/close-reason'
 import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { menuItemQuery } from './menu.anatomy'
@@ -34,6 +34,7 @@ export const menuMachine = createMachine({
     getAnchorEl: () => null,
     getFloatingEl: () => null,
     getContentEl: () => null,
+    typeahead: createTypeahead(),
   }),
   initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
   // 悬停意图跟机器不跟状态位：关着要接得住进入、开着要接得住离开
@@ -58,7 +59,7 @@ export const menuMachine = createMachine({
     open: {
       // 进入展开态时挑好锚点，由它认领 tabindex=0
       entry: ['setInitialFocusedValue'],
-      exit: ['clearFocusedValue'],
+      exit: ['clearFocusedValue', 'clearTypeahead'],
       effects: ['trackPosition', 'trackLayer'],
       on: {
         'CLOSE': [
@@ -138,6 +139,7 @@ export const menuMachine = createMachine({
             pick()
         })
       },
+      clearTypeahead: ({ refs }) => refs.get('typeahead').clear(),
       clearFocusedValue: ({ context }) => context.set('focusedValue', null),
     },
     effects: {

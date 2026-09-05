@@ -1,7 +1,8 @@
 import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
-import type { BreadcrumbApi, BreadcrumbProps } from './breadcrumb.types'
+import type { BreadcrumbApi, BreadcrumbNodeMeta, BreadcrumbProps } from './breadcrumb.types'
 import { dataAttr } from '@xihan-ui/core'
 import { breadcrumbAnatomy } from './breadcrumb.anatomy'
+import { buildBreadcrumbItems, normalizeBreadcrumbNodes } from './breadcrumb.range'
 
 const parts = breadcrumbAnatomy.build()
 
@@ -12,8 +13,14 @@ export function connectBreadcrumb<T extends PropTypes>(
   normalize: NormalizeProps<T>,
 ): BreadcrumbApi<T> {
   const label = props.translations?.root ?? 'Breadcrumb'
+  // collection 推出的层级元信息，折叠序列由它派生，两处数学只有一份
+  const collection: BreadcrumbNodeMeta[] = normalizeBreadcrumbNodes(props.collection ?? [])
+  const items = buildBreadcrumbItems(collection, props.maxItems)
 
   return {
+    collection,
+    items,
+
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'aria-label': label,
@@ -49,6 +56,12 @@ export function connectBreadcrumb<T extends PropTypes>(
         },
       })
     },
+
+    // 链接里的图标纯装饰，文字才是可及名
+    getLinkIconProps: () => normalize.element({
+      ...parts['link-icon'].attrs,
+      'aria-hidden': true,
+    }),
 
     // 分隔符纯视觉，不进读屏
     getSeparatorProps: () => normalize.element({

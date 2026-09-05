@@ -97,6 +97,8 @@ export interface TreeSelectSchema extends MachineSchema {
     readOnly?: boolean
     /** 校验失败：trigger 报 aria-invalid，各角色节点带 data-invalid。 */
     invalid?: boolean
+    /** 节点还在取：树报 aria-busy，在途占位顶上来、空态占位让位。 */
+    loading?: boolean
     /** 形态：outline / subtle / ghost，决定触发框的描边与底色怎么用。 */
     variant?: ControlVariant
     /** 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中用哪族颜色。 */
@@ -238,6 +240,18 @@ export interface TreeSelectApi<T extends PropTypes = PropTypes> {
   getBranchIndicatorProps: (props: TreeSelectNodeProps) => T['element']
   getBranchTextProps: (props: TreeSelectNodeProps) => T['element']
   getBranchContentProps: (props: TreeSelectNodeProps) => T['element']
+  /**
+   * 空态占位：放在 content 里、tree 的兄弟。
+   * 给了 collection 时由连接层按条数收放；节点手写时不写 hidden，露不露面归作者。
+   */
+  getEmptyProps: () => T['element']
+  /**
+   * 在途占位：与空态占位同一个位置，两者不同屏——取数期间它顶上来，空态让位。
+   * 给了 collection 时由连接层按条数收放；节点手写时只按 loading 收放。
+   */
+  getLoadingProps: () => T['element']
+  /** 浮层底部的操作区：放在 content 里、tree 的兄弟，不入树的拥有关系，方向键也走不到。 */
+  getFooterProps: () => T['element']
   /** 表单出口：一份 type=hidden 的原生 input，选中值按逗号拼成一串随表单提交。 */
   getHiddenInputProps: () => T['input']
 }

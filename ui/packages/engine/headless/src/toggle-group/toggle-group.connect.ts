@@ -96,9 +96,11 @@ export function connectToggleGroup<T extends PropTypes>(
       // aria-orientation 只有 radiogroup 收，role=group 给了是无效 ARIA；
       // 排布信息一律走 data-orientation
       'aria-orientation': multiple ? undefined : orientation,
+      'data-variant': prop('variant'),
       'data-tone': prop('tone'),
       'data-size': prop('size'),
       'data-orientation': orientation,
+      'data-full-width': dataAttr(!!prop('fullWidth')),
       'data-disabled': dataAttr(groupDisabled),
       'tabindex': rootTabIndex(),
       // 键盘全在容器上收口：条目只管声明自己，一次冒泡一个处理器
@@ -156,5 +158,27 @@ export function connectToggleGroup<T extends PropTypes>(
         'onFocus': () => send({ type: 'ITEM.FOCUS', value: item.value }),
       })
     },
+
+    // 段间的装饰线：不是条目，方向键跳过它，读屏也不念。
+    // 画的是这条线自己的朝向（横排里是竖线），与 root 的 data-orientation 相反
+    getSeparatorProps: () => normalize.element({
+      ...parts.separator.attrs,
+      'aria-hidden': true,
+      'data-orientation': orientation === 'horizontal' ? 'vertical' : 'horizontal',
+      'data-disabled': dataAttr(groupDisabled),
+    }),
+
+    // 表单出口：整组只有一份，提交的就是当前选中值
+    getHiddenInputProps: () => normalize.input({
+      ...parts['hidden-input'].attrs,
+      // type 须先于 value 写入：改 type 会重置输入的值
+      type: 'hidden',
+      // 未给 name 时不产出该属性，这份输入便不参与提交
+      name: prop('name'),
+      // 多选把整组值并成一串：一份隐藏输入只提交得出一个值
+      value: value.join(','),
+      // 禁用的控件不该提交出值
+      disabled: groupDisabled || undefined,
+    }),
   }
 }

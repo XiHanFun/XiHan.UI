@@ -55,6 +55,7 @@ import { XhImageElement } from './elements/image'
 import { XhImageCropperElement } from './elements/image-cropper'
 import { XhImageViewerElement } from './elements/image-viewer'
 import { XhInfiniteScrollElement } from './elements/infinite-scroll'
+import { XhInputGroupElement } from './elements/input-group'
 import { XhJsonViewerElement } from './elements/json-viewer'
 import { XhLayoutElement } from './elements/layout'
 import { XhListElement } from './elements/list'
@@ -104,6 +105,7 @@ import { XhSwitchElement } from './elements/switch'
 import { XhTableElement } from './elements/table'
 import { XhTabsElement } from './elements/tabs'
 import { XhTagElement } from './elements/tag'
+import { XhTagGroupElement } from './elements/tag-group'
 import { XhTagsInputElement } from './elements/tags-input'
 import { XhTextFieldElement } from './elements/text-field'
 import { XhTimeFieldElement } from './elements/time-field'
@@ -151,6 +153,7 @@ export function defineXhElements(): void {
   defineElement('xh-icon-wrapper', XhIconWrapperElement, VERSION)
   defineElement('xh-image-cropper', XhImageCropperElement, VERSION)
   defineElement('xh-infinite-scroll', XhInfiniteScrollElement, VERSION)
+  defineElement('xh-input-group', XhInputGroupElement, VERSION)
   defineElement('xh-json-viewer', XhJsonViewerElement, VERSION)
   defineElement('xh-layout', XhLayoutElement, VERSION)
   defineElement('xh-list', XhListElement, VERSION)
@@ -233,6 +236,7 @@ export function defineXhElements(): void {
   defineElement('xh-table', XhTableElement, VERSION)
   defineElement('xh-tabs', XhTabsElement, VERSION)
   defineElement('xh-tag', XhTagElement, VERSION)
+  defineElement('xh-tag-group', XhTagGroupElement, VERSION)
   defineElement('xh-tags-input', XhTagsInputElement, VERSION)
   defineElement('xh-text-field', XhTextFieldElement, VERSION)
   defineElement('xh-time-field', XhTimeFieldElement, VERSION)
@@ -305,6 +309,7 @@ export {
   XhImageCropperElement,
   XhImageElement,
   XhImageViewerElement,
+  XhInputGroupElement,
   XhJsonViewerElement,
   XhListboxElement,
   XhLoadingBarElement,
@@ -345,6 +350,7 @@ export {
   XhTableElement,
   XhTabsElement,
   XhTagElement,
+  XhTagGroupElement,
   XhTagsInputElement,
   XhTextFieldElement,
   XhTimeFieldElement,

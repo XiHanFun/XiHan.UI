@@ -1,4 +1,4 @@
-import type { PropTypes, Size } from '@xihan-ui/core'
+import type { PropTypes, Size, Tone } from '@xihan-ui/core'
 
 /** 播报方式：polite 让 root 成为 role=status 活区，off 让它只是个普通容器。 */
 export type EmptyStateLive = 'polite' | 'off'
@@ -13,12 +13,16 @@ export interface EmptyStateProps {
   live?: EmptyStateLive
   /** 结果类型，只落成 root 的 data-status；图标画什么由作者塞进图标槽。 */
   status?: EmptyStateStatus
+  /** 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。不给即维持中性。 */
+  tone?: Tone
 }
 
 export interface EmptyStateApi<T extends PropTypes = PropTypes> {
   /** 生效的播报方式，缺省补齐后的值。 */
   live: EmptyStateLive
   getRootProps: () => T['element']
+  /** 插画槽：按自己的尺寸档量，与字形槽二选一。 */
+  getMediaProps: () => T['element']
   getIndicatorProps: () => T['element']
   getTitleProps: () => T['element']
   getDescriptionProps: () => T['element']

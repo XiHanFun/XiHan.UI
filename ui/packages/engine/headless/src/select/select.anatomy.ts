@@ -18,9 +18,13 @@ export const selectAnatomy = createAnatomy('select', [
   'content',
   'list',
   'footer',
+  'group',
+  'group-label',
   'item',
   'item-text',
   'item-indicator',
+  'empty',
+  'loading',
   'hidden-select',
 ])
 

@@ -32,6 +32,21 @@
     display: none;
   }
 
+  /* 行前的行号或名目：不参与分宽，弱一档前景把它与行里的内容分开 */
+  [data-scope='field-array'][data-part='item-label'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    color: var(--xh-field-array-item-label-fg, var(--xh-fg-muted));
+    font-size: var(--xh-field-array-item-label-font-size, var(--xh-text-secondary-size));
+    line-height: var(--xh-leading-none);
+    white-space: nowrap;
+  }
+
+  [data-scope='field-array'][data-part='item-label'][hidden] {
+    display: none;
+  }
+
   /* 行里放什么控件归作者，这里只给它一条能撑开也能收窄的轨道。
      min-inline-size 归零：不写的话里面的输入框按 UA 默认宽度顶住，长内容会把整行撑破 */
   [data-scope='field-array'][data-part='item-content'] {

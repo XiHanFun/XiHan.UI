@@ -5,8 +5,33 @@ export interface StepsValueChangeDetails {
   value: number
 }
 
-/** 单步的三态。 */
-export type StepStatus = 'completed' | 'current' | 'incomplete'
+/** 单步的状态。前三档由步序算出，后两档只能由 statuses 或 collection 显式指定。 */
+export type StepStatus = 'completed' | 'current' | 'incomplete' | 'error' | 'warning'
+
+/** 单步的数据。给了 collection，标题、说明、状态与禁用就以它为准。 */
+export interface StepNode {
+  /** 标题文本。 */
+  title?: string
+  /** 说明文本。 */
+  description?: string
+  /** 覆盖这一步的状态；不给即由步序算出。 */
+  status?: StepStatus
+  /** 这一步不可点。 */
+  disabled?: boolean
+}
+
+/** 单步的元信息，由 collection 推出，不含步序算出来的那部分。 */
+export interface StepNodeMeta {
+  /** 第几步，0 起。 */
+  index: number
+  /** node.title ?? ''，恒为字符串。 */
+  title: string
+  /** 说明原样透传，没写即为 undefined。 */
+  description?: string
+  /** 显式指定的状态，没写即为 undefined。 */
+  status?: StepStatus
+  disabled: boolean
+}
 
 /**
  * 条目自报家门：这是第几步（0 起）、作者有没有把它标成不可点。
@@ -39,6 +64,16 @@ export interface StepsSchema extends MachineSchema {
     /** 非受控初值，默认 0。 */
     defaultValue?: number
     /**
+     * 步骤数据，标题、说明、状态与禁用的事实源。给了它，count 缺省即取它的长度。
+     * 缺省即回到「文本与状态都写在部件上」的老路。
+     */
+    collection?: StepNode[]
+    /**
+     * 按下标覆盖单步状态，优先于 collection 与步序算出来的那档。
+     * error / warning 两档只能从这里或 collection 来。
+     */
+    statuses?: Record<number, StepStatus>
+    /**
      * 总步数，是步序的上界与读屏"第 k 步，共 n 步"的分母。
      * 缺省按 0 处理：此时 root 带 data-empty，步序被夹死在 0。
      */
@@ -52,8 +87,11 @@ export interface StepsSchema extends MachineSchema {
     linear?: boolean
     /** 整组不可交互：trigger 全部退出 Tab 序列，指针与键盘都不认。 */
     disabled?: boolean
+    /** 方向键走到尽头是否回绕，默认 false。 */
+    loop?: boolean
     /** 文字方向，默认 ltr；只影响水平轴上 ArrowLeft/ArrowRight 的前后语义。 */
     dir?: Direction
+    translations?: Partial<StepsTranslations>
     /** 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 */
     tone?: Tone
     /** 尺寸：sm / md / lg。 */
@@ -87,6 +125,8 @@ export interface StepsApi<T extends PropTypes = PropTypes> {
   /** 当前步序，恒在 [0, count] 内：count 变小后停在越界步也读得到一个可用的值。 */
   value: number
   count: number
+  /** collection 推出的步骤元信息，按数据顺序排列；没给 collection 即空数组。 */
+  collection: readonly StepNodeMeta[]
   /** 全部走完（value 走到 count）。此时没有任何一步是 current，作者据此渲染完成页。 */
   complete: boolean
   /** 焦点在组外时为 null。 */
@@ -111,5 +151,8 @@ export interface StepsApi<T extends PropTypes = PropTypes> {
   getContentProps: (props: StepsItemProps) => T['element']
 }
 
-/** 读屏用的文案。本组件目前没有需要外露的文案，位先留着。 */
-export interface StepsTranslations {}
+/** 读屏用的文案，默认英文。 */
+export interface StepsTranslations {
+  /** 步骤列表容器的 aria-label，用于区分同页的多条步骤条。 */
+  list: string
+}

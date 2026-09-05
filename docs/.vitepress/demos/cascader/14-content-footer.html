@@ -1,4 +1,4 @@
-<!-- 浮层底栏 | content 的子节点全由作者写：列装进一层横排容器，底栏与它并列，就横跨了全部列 -->
+<!-- 浮层底栏 | footer 写在 content 里、与列并列，横跨全部列；它不进任何一列的拥有关系，方向键也走不到 -->
 <xh-cascader
   id="cascader-content-footer"
   multiple
@@ -14,58 +14,41 @@
       </button>
     </div>
     <div data-xh-part="positioner">
-      <!-- 浮层壳改成竖排：上半是并排的列，下半是横跨全宽的底栏 -->
-      <div data-xh-part="content" style="flex-direction: column">
-        <div style="display: flex; flex-direction: row; align-items: stretch">
-          <div data-xh-part="column" level="0">
-            <div data-xh-part="item" value="fruit">
-              <span data-xh-part="item-text">水果</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-            <div data-xh-part="item" value="vegetable">
-              <span data-xh-part="item-text">蔬菜</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
+      <div data-xh-part="content">
+        <div data-xh-part="column" level="0">
+          <div data-xh-part="item" value="fruit">
+            <span data-xh-part="item-text">水果</span>
+            <span data-xh-part="item-indicator"></span>
           </div>
-          <div data-xh-part="column" level="1">
-            <div data-xh-part="item" value="apple">
-              <span data-xh-part="item-text">苹果</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-            <div data-xh-part="item" value="banana">
-              <span data-xh-part="item-text">香蕉</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-            <div data-xh-part="item" value="grape">
-              <span data-xh-part="item-text">葡萄</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-            <div data-xh-part="item" value="tomato">
-              <span data-xh-part="item-text">番茄</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-            <div data-xh-part="item" value="potato">
-              <span data-xh-part="item-text">土豆</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
+          <div data-xh-part="item" value="vegetable">
+            <span data-xh-part="item-text">蔬菜</span>
+            <span data-xh-part="item-indicator"></span>
           </div>
         </div>
-        <div
-          style="
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            justify-content: space-between;
-            padding: 8px;
-            border-block-start: 1px solid var(--xh-border-subtle);
-          "
-        >
-          <span
-            id="cascader-content-footer-count"
-            style="color: var(--xh-fg-subtle); font-size: 12px"
-          >
-            已选 1 条
-          </span>
+        <div data-xh-part="column" level="1">
+          <div data-xh-part="item" value="apple">
+            <span data-xh-part="item-text">苹果</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="banana">
+            <span data-xh-part="item-text">香蕉</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="grape">
+            <span data-xh-part="item-text">葡萄</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="tomato">
+            <span data-xh-part="item-text">番茄</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="potato">
+            <span data-xh-part="item-text">土豆</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+        </div>
+        <div data-xh-part="footer" style="justify-content: space-between">
+          <span id="cascader-content-footer-count">已选 1 条</span>
           <span style="display: flex; gap: 8px">
             <xh-button size="sm" variant="ghost">
               <button data-xh-part="root" id="cascader-content-footer-clear">

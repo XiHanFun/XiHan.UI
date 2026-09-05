@@ -37,6 +37,9 @@
     /* 尺寸档只换这五个私有槽，trigger 与面板里的链接都从 root 继承它们，
        换档不必给每个部件各写一条选择器。面板与共享外壳都是 root 的后代，一并继承。
        trigger 写的是 font: inherit，字号跟着 root 这一档走，不另立槽 */
+    /* 作者塞进方向标记槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+    --xh-icon-size: var(--xh-navigation-menu-icon-size, var(--xh-glyph-size-text));
+
     --xh-_navigation-menu-font-size: var(--xh-control-font-md);
     --xh-_navigation-menu-trigger-h: var(--xh-control-h-md);
     --xh-_navigation-menu-trigger-px: var(--xh-control-px-md);
@@ -242,6 +245,40 @@
   [data-scope='navigation-menu'][data-part='link'][data-current] {
     color: var(--xh-navigation-menu-link-fg-current, var(--xh-_navigation-menu-current-fg));
     font-weight: var(--xh-navigation-menu-link-font-weight-current, var(--xh-font-weight-medium));
+  }
+
+  /* 入口里表示"底下还有一张面板"的标记，排在入口文字之后，展开时转向 */
+  [data-scope='navigation-menu'][data-part='trigger-indicator'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    line-height: var(--xh-leading-none);
+    transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+  }
+
+  [data-scope='navigation-menu'][data-part='trigger-indicator'][hidden] {
+    display: none;
+  }
+
+  /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这条规则即不命中 */
+  [data-scope='navigation-menu'][data-part='trigger-indicator']:empty::before {
+    content: '';
+    display: inline-block;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
+  }
+
+  [data-scope='navigation-menu'][data-part='trigger-indicator'][data-state='open'] {
+    rotate: 180deg;
+  }
+
+  [data-scope='navigation-menu'][data-part='trigger-indicator'][data-disabled] {
+    color: var(--xh-fg-disabled);
   }
 
   /* 主轴上的位置与长度由连接层写成内联样式（它量得到，样式表量不到）；

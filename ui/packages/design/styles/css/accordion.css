@@ -64,6 +64,53 @@
     border-inline-start: var(--xh-stroke-thin) solid var(--xh-accordion-item-border, var(--xh-border-subtle));
   }
 
+  /* 作者显式渲染的分隔线。渲染了它，上面那条 item + item 的相邻规则就不再命中，
+     两条线不会同时出现 */
+  [data-scope='accordion'][data-part='item-separator'] {
+    flex: none;
+    block-size: var(--xh-stroke-thin);
+    border: 0;
+    margin: 0;
+    background: var(--xh-accordion-item-border, var(--xh-border-subtle));
+  }
+
+  [data-scope='accordion'][data-part='item-separator'][hidden] {
+    display: none;
+  }
+
+  [data-scope='accordion'][data-part='root'][data-orientation='horizontal']
+    > [data-scope='accordion'][data-part='item-separator'] {
+    block-size: auto;
+    inline-size: var(--xh-stroke-thin);
+  }
+
+  /* —— 形态 —— */
+  /* plain 档不在这儿：它就是上面那套基础取值，写不写 data-variant 都长一个样 */
+  [data-scope='accordion'][data-part='root']:is([data-variant='surface'], [data-variant='bordered']) {
+    gap: var(--xh-accordion-item-gap, var(--xh-space-2));
+  }
+
+  /* 条目自己有了外框，条与条之间就不再靠那条相邻边分开 */
+  [data-scope='accordion'][data-part='root']:is([data-variant='surface'], [data-variant='bordered'])
+    > [data-scope='accordion'][data-part='item']
+    + [data-scope='accordion'][data-part='item'] {
+    border-block-start: 0;
+    border-inline-start: 0;
+  }
+
+  [data-scope='accordion'][data-part='root'][data-variant='surface']
+    > [data-scope='accordion'][data-part='item'] {
+    border-radius: var(--xh-accordion-item-radius, var(--xh-shape-surface));
+    background: var(--xh-accordion-item-bg, var(--xh-bg-surface));
+    box-shadow: var(--xh-accordion-item-shadow, var(--xh-elevation-raised));
+  }
+
+  [data-scope='accordion'][data-part='root'][data-variant='bordered']
+    > [data-scope='accordion'][data-part='item'] {
+    border: var(--xh-stroke-thin) solid var(--xh-accordion-item-border, var(--xh-border-subtle));
+    border-radius: var(--xh-accordion-item-radius, var(--xh-shape-surface));
+  }
+
   [data-scope='accordion'][data-part='header'] {
     margin: 0;
     font: inherit;

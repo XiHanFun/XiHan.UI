@@ -18,6 +18,8 @@
 - 两个回调分工明确：`onSizesChange` 拖动途中连着发，`onSizesChangeEnd` 松手才发一次，存布局用后者。
 - 方向键按 `step` 推、Shift 加方向键按 `largeStep` 推；`collapsible` 的面板在分隔条上按 Enter 折叠。
 - 面板里再放一套分栏即可拆出第二根轴，里外两层各管各的尺寸。
+- 拖到一半按 Escape 放弃这一场：布局退回按下那一刻，`onSizesChangeEnd` 不发。
+- `translations` 给整组面板与各条分隔条起名，读屏念到的就不再是一串无名的盒子。
 
 ## 示例
 
@@ -85,6 +87,7 @@ disabled 后拖不动也推不动，分隔条整个退出 Tab 序列，方向键
 | `disabled` | `boolean` |  | 禁用：分隔条退出 Tab 序列、拖不动也推不动。 |
 | `step` | `number` |  | 方向键的步长（百分比），默认 1。 |
 | `largeStep` | `number` |  | Shift + 方向键的步长（百分比），默认 10。 |
+| `translations` | `Partial<SplitterTranslations>` |  |  |
 | `onSizesChange` | `(details: SplitterSizesChangeDetails) => void` |  | 每次尺寸变化都发；拖动过程中会连续发很多次。 |
 | `onSizesChangeEnd` | `(details: SplitterSizesChangeEndDetails) => void` |  | 只在一次操作结束时发一次，适合拿来存布局。 |
 
@@ -111,7 +114,7 @@ disabled 后拖不动也推不动，分隔条整个退出 Tab 序列，方向键
 
 **状态**：`idle` · `dragging`
 
-**事件**：`SIZES.SET` · `BOUNDARY.STEP` · `BOUNDARY.TO_MIN` · `BOUNDARY.TO_MAX` · `BOUNDARY.SET` · `BOUNDARY.FOCUS` · `PANEL.COLLAPSE` · `PANEL.EXPAND` · `DRAG.START` · `DRAG.MOVE` · `DRAG.END`
+**事件**：`SIZES.SET` · `BOUNDARY.STEP` · `BOUNDARY.TO_MIN` · `BOUNDARY.TO_MAX` · `BOUNDARY.SET` · `BOUNDARY.FOCUS` · `PANEL.COLLAPSE` · `PANEL.EXPAND` · `DRAG.START` · `DRAG.MOVE` · `DRAG.END` · `DRAG.CANCEL`
 
 **判据**：`canResize`
 
@@ -146,6 +149,7 @@ disabled 后拖不动也推不动，分隔条整个退出 Tab 序列，方向键
 | `Shift+ArrowLeft` / `Shift+ArrowUp` | focus in resize-trigger, not disabled | 按 largeStep 压小 |
 | `Home` | focus in resize-trigger, not disabled | 把前一块面板收到它眼下能到的最小尺寸 |
 | `End` | focus in resize-trigger, not disabled | 把前一块面板撑到它眼下能到的最大尺寸 |
+| `Escape` | 拖动中 | 放弃这一场拖拽，布局退回按下那一刻；收尾回调不发 |
 | `Enter` | focus in resize-trigger 且它调整的面板 collapsible，not disabled | 折叠 / 展开该面板；展开回到折叠前的尺寸。面板不可折叠时不接这个键 |
 
 ## 无障碍
@@ -154,9 +158,11 @@ disabled 后拖不动也推不动，分隔条整个退出 Tab 序列，方向键
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `root` | `aria-label` | translations?.root |
 | `root` | `role` | 'group' |
 | `resize-trigger` | `aria-controls` | `panel` 部件的 id |
 | `resize-trigger` | `aria-disabled` | 'true' \| 'false' |
+| `resize-trigger` | `aria-label` | translations?.resizeTrigger?.(boundary, Math.max(0, l… |
 | `resize-trigger` | `aria-orientation` | 'horizontal' \| 'vertical' |
 | `resize-trigger` | `aria-valuemax` | String(panel.max) |
 | `resize-trigger` | `aria-valuemin` | String(panel.min) |

@@ -15,6 +15,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
 
 /** 换位事件的 detail：从机器 props 上的回调取，不在适配器里另抄一份类型。 */
 type TabsMoveDetails = Parameters<NonNullable<TabsSchema['props']['onTabMove']>>[0]
+type TabsCloseDetails = Parameters<NonNullable<TabsSchema['props']['onTabClose']>>[0]
 
 /** 标签一系的归属容器：标签内的把手向上找最近的那个 trigger。 */
 const TRIGGER_SELECTOR = '[data-xh-part="trigger"]'
@@ -43,9 +44,12 @@ const TRIGGER_SELECTOR = '[data-xh-part="trigger"]'
  * @attr {boolean} reorderable - 标签可以拖着换位，默认关
  * @fires value-change - 选中值变化；detail 为 `{ value: string | null }`
  * @fires tab-move - 标签换了位；detail 为 `{ value, from, to, values }`，values 是重排好的整份标签序
+ * @fires tab-close - 标签被关闭；detail 为 `{ value, values }`，values 是关掉这一条之后余下的标签序
  * @csspart root - 组件根容器（承载 data-orientation）
  * @csspart list - role=tablist 容器（方向键与 Tab 序列在此收口）
  * @csspart live-region - 视觉隐藏的播报区，拖动过程的读屏文案写在这里；写在 root 里、与 list 部件平级（root 自己不带角色，它落不进 role=tablist 的子节点集合）
+ * @csspart indicator - 选中标签下的滑条，须住在 list 里；对读屏隐藏，位置由机器量好写成内联样式
+ * @csspart separator - 标签之间的细分隔线，对读屏隐藏
  * @csspart trigger - role=tab 的标签按钮，须自带 value 属性标识身份
  * @csspart content - role=tabpanel 的面板，须自带 value 属性与 trigger 配对；未选中时 hidden
  * @csspart tab-drag-trigger - 标签拖拽把手，触屏那一路的入口（自带 touch-action: none，按下即拖）；对读屏隐藏且不占 Tab 位，键盘那一路由标签带上的 Alt + 方向键承担
@@ -70,6 +74,7 @@ export class XhTabsElement extends XhElement {
     // 缺席即关，没有第二种来路，用 Lit 自带的 Boolean 转换器就够；
     // 三态转换器只留给缺省为真的开关（如 loop），那种开关摘属性会落回默认值、写 "false" 才关得掉
     reorderable: { type: Boolean },
+    closable: { type: Boolean },
     // 对象走不了属性，只作为 property 暴露
     translations: { attribute: false },
   }
@@ -85,6 +90,7 @@ export class XhTabsElement extends XhElement {
   declare tone?: Tone
   declare size?: Size
   declare reorderable?: boolean
+  declare closable?: boolean
   declare translations?: Partial<TabsTranslations>
 
   private readonly notify = (details: TabsValueChangeDetails): void => {
@@ -95,7 +101,17 @@ export class XhTabsElement extends XhElement {
     this.dispatchEvent(new CustomEvent('tab-move', { detail: details, bubbles: true, composed: true }))
   }
 
-  private readonly ctrl = new MachineController<TabsSchema>(this, tabsMachine, () => this.machineProps())
+  private readonly notifyTabClose = (details: TabsCloseDetails): void => {
+    this.dispatchEvent(new CustomEvent('tab-close', { detail: details, bubbles: true, composed: true }))
+  }
+
+  private readonly ctrl = new MachineController<TabsSchema>(
+    this,
+    tabsMachine,
+    () => this.machineProps(),
+    // 指示条量测在机器的 action 里跑，DOM 侧的取值口经 refs 交进去
+    { onBuilt: svc => svc.refs.set('getListEl', () => this.getPart('list')) },
+  )
 
   /** 作者声明的条目禁用，只认首见那一份；给了 collection 时用它，否则现读 */
   private readonly declaredDisabled = createDeclaredDisabled()
@@ -113,9 +129,11 @@ export class XhTabsElement extends XhElement {
       tone: this.tone,
       size: this.size,
       reorderable: this.reorderable ?? false,
+      closable: this.closable ?? false,
       translations: this.translations,
       onValueChange: this.notify,
       onTabMove: this.notifyTabMove,
+      onTabClose: this.notifyTabClose,
     }
   }
 
@@ -162,6 +180,18 @@ export class XhTabsElement extends XhElement {
       // 播报文案由元素写，不经属性铺开：它是文本内容不是属性
       live.textContent = this.ctrl.service.context.get('announcement')
     }
+
+    // 指示条的 style 是对象（主轴的落点与长度），spreader 会逐条写成内联样式
+    const indicator = this.getPart('indicator')
+    if (indicator) {
+      const props = api.getIndicatorProps() as Record<string, unknown>
+      this.spreader.spread(indicator, props)
+      // 按本帧产出的 hidden 用内联 display 收起
+      this.setPartHidden(indicator, props.hidden === true)
+    }
+
+    for (const el of this.getParts('separator'))
+      this.spreader.spread(el, api.getSeparatorProps() as Record<string, unknown>)
 
     // 条目是多实例 part，逐个打：身份取作者写的 value，禁用取部件自报的 aria-disabled
     for (const el of this.getParts('trigger')) {

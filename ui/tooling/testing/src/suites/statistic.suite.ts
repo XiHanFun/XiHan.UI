@@ -12,9 +12,10 @@ export const statisticSuite: ConformanceSuite = {
     part: 'root',
     children: [
       { part: 'label', tag: 'span', text: '本月新增用户' },
-      { part: 'prefix', tag: 'span', text: '↑' },
+      { part: 'prefix', tag: 'span', text: '¥' },
       { part: 'value', tag: 'span', text: '12,480' },
       { part: 'suffix', tag: 'span', text: '人' },
+      { part: 'trend', tag: 'span', text: '同比 12%' },
     ],
   },
   cases: [
@@ -85,11 +86,36 @@ export const statisticSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '各段各一份，按标签 / 前缀 / 数值 / 后缀的文档序排列',
+      name: '不写 trend 时涨跌那一段不带方向，皮肤也就画不出箭头',
       spec: { apg: APG },
       initial: {
-        order: ['root', 'label', 'prefix', 'value', 'suffix'],
-        counts: { root: 1, label: 1, prefix: 1, value: 1, suffix: 1 },
+        parts: { trend: { 'data-direction': null } },
+      },
+    },
+    {
+      name: 'trend 落成 trend 部件的 data-direction，与语气正交：跌也可以是好事',
+      spec: { apg: APG },
+      props: { trend: 'down', tone: 'success' },
+      initial: {
+        parts: {
+          root: { 'data-tone': 'success', 'data-direction': null },
+          trend: { 'data-direction': 'down', 'data-tone': null },
+        },
+      },
+      steps: [
+        {
+          kind: 'setProps',
+          props: { trend: 'flat' },
+          expect: { parts: { trend: { 'data-direction': 'flat' } } },
+        },
+      ],
+    },
+    {
+      name: '各段各一份，按标签 / 前缀 / 数值 / 后缀 / 涨跌的文档序排列',
+      spec: { apg: APG },
+      initial: {
+        order: ['root', 'label', 'prefix', 'value', 'suffix', 'trend'],
+        counts: { root: 1, label: 1, prefix: 1, value: 1, suffix: 1, trend: 1 },
       },
     },
   ],

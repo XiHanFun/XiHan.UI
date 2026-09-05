@@ -438,3 +438,12 @@ export const XhTableLoading = defineComponent({
     return () => h('div', ctx.api.value.getLoadingProps() as Record<string, unknown>, slots.default?.())
   },
 })
+
+export const XhTableLoadMoreTrigger = defineComponent({
+  name: 'XhTableLoadMoreTrigger',
+  setup(_, { slots }) {
+    const ctx = useTableContext()
+    // 取下一页的入口：摆在表尾，点了做什么归作者
+    return () => h('button', ctx.api.value.getLoadMoreTriggerProps() as Record<string, unknown>, slots.default?.())
+  },
+})

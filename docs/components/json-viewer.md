@@ -22,7 +22,8 @@
 - `maxStringLength` 截长字符串，`maxItems` 折超长数组，`sortKeys` 让对象键按字典序排。
 - 循环引用摊到就停，标成 `[Circular]`，不会无限递归。
 - 每一行带 `data-value-type`，六种值形态各自上色。
-- 尺寸一轴与其余组件同源。
+- 尺寸一轴与其余组件同源；`variant` 决定带不带外框，缺省 `surface`。
+- 一行也摊不出来时由 `empty` 那一格说话，文案走 `translations.empty`，作者也可以自己往里写内容。
 - **只认 JSON 能表达的形状**，喂进活对象时呈现是有损的：`Date` / `Map` / `Set` 一律按自有可枚举键摊，因此显示成 `{}`；`undefined` 归 `null` 一档、显示成 `undefined`；`bigint` 归 `number`；函数与 symbol 归 `string`，按各自的字符串形式呈现。要如实展示这些值，先自己转成 JSON 能表达的形状。
 - 自定义元素侧：`value` 属性收的是一段 JSON 文本（解析不了就当一个字符串值展示），对象与数组直接赋 property（`el.value = { … }`）；`expandedValue` / `defaultExpandedValue` / `translations` **没有对应属性，只能走 property**，写成 `expanded-value='["$"]'` 不会生效。
 
@@ -76,6 +77,12 @@ view="text" 直接出缩进过的 JSON 原文：整块可框选可复制，且�
 
 <XhDemo src="json-viewer/08-text" />
 
+### 空态与形态
+
+一行也摊不出来时空态那一格站出来说话；variant="plain" 去掉外框与底色
+
+<XhDemo src="json-viewer/09-empty" />
+
 ## 产物
 
 | 层 | 值 |
@@ -90,7 +97,7 @@ view="text" 直接出缩进过的 JSON 原文：整块可框选可复制，且�
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="json-viewer"`：**`root`** · `tree` · `item` · `item-key` · `item-value` · `branch` · `branch-control` · `branch-trigger` · `branch-indicator` · `branch-text` · `branch-content` · `preview` · `text`
+`data-scope="json-viewer"`：**`root`** · `tree` · `item` · `item-key` · `item-value` · `branch` · `branch-control` · `branch-trigger` · `branch-indicator` · `branch-text` · `branch-content` · `preview` · `text` · `empty`
 
 ## Props
 
@@ -98,6 +105,7 @@ view="text" 直接出缩进过的 JSON 原文：整块可框选可复制，且�
 | --- | --- | --- | --- |
 | `value` | `unknown` |  | 要展示的值，任意形状。缺省即空视图（一行也不摊）。 |
 | `view` | `JsonViewerView` |  | 展示形态，默认 tree。 text 档直接出 JSON 原文：整块可框选可复制，且不受 maxStringLength / maxItems 折减—— 要的就是与后端下发的那份一字不差。展开集合与键盘导航在这一档上不起作用。 |
+| `variant` | `JsonViewerVariant` |  | 外框形态：surface 带描边与底色（缺省），plain 去掉描边与底色，只留内容。 |
 | `expandedValue` | `string[]` |  | 展开集合（元素是行路径）。给定即受控：cell 直读 prop，写只发 onExpandedValueChange 不落内部值。 |
 | `defaultExpandedValue` | `string[]` |  | 非受控初值；不给就按 defaultExpandedDepth 现算。 |
 | `defaultExpandedDepth` | `number` |  | 初始展开到第几层（层级号不超过它的分支全部展开），默认 1，即只展开根行。 |
@@ -117,6 +125,14 @@ view="text" 直接出缩进过的 JSON 原文：整块可框选可复制，且�
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `expanded-value-change` | `JsonViewerExpandedValueChangeDetails` | 展开集合变化；detail 为 `{ value: string[] }` |
+
+## 插槽
+
+作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhJsonViewerRoot` | `empty` | — |  |
 
 ## 状态
 
@@ -144,6 +160,8 @@ view="text" 直接出缩进过的 JSON 原文：整块可框选可复制，且�
 | `collapse` | `(value: string) => void` |  |
 | `toggle` | `(value: string) => void` |  |
 | `view` | `JsonViewerView` | 当前生效的展示形态。 |
+| `isEmpty` | `boolean` | 摊不出任何一行——value 没给或给的是 undefined。空态部件跟着它显隐。 |
+| `emptyText` | `string` | 空态的兜底文案，作者没往空态部件里写内容时铺的就是它。 |
 | `text` | `string` | 缩进过的 JSON 原文；键序与环路记号与树档一致。text 档之外也取得到，方便作者做「复制原文」。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getTreeProps` | `() => T['element']` |  |
@@ -158,6 +176,7 @@ view="text" 直接出缩进过的 JSON 原文：整块可框选可复制，且�
 | `getBranchTextProps` | `(props: JsonViewerNodeProps) => T['element']` |  |
 | `getBranchContentProps` | `(props: JsonViewerNodeProps) => T['element']` |  |
 | `getPreviewProps` | `(props: JsonViewerNodeProps) => T['element']` |  |
+| `getEmptyProps` | `() => T['element']` |  |
 
 ## 键盘
 
@@ -209,13 +228,14 @@ view="text" 直接出缩进过的 JSON 原文：整块可框选可复制，且�
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-size` | props.size |
+| `root` | `data-variant` | props.variant |
 | `root` | `data-view` | props.view |
 
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-json-viewer-bg` · `--xh-json-viewer-boolean-fg` · `--xh-json-viewer-border` · `--xh-json-viewer-fg` · `--xh-json-viewer-font` · `--xh-json-viewer-font-size` · `--xh-json-viewer-icon-size` · `--xh-json-viewer-indent` · `--xh-json-viewer-indicator-fg` · `--xh-json-viewer-indicator-size` · `--xh-json-viewer-key-fg` · `--xh-json-viewer-key-font-weight` · `--xh-json-viewer-max-h` · `--xh-json-viewer-null-fg` · `--xh-json-viewer-number-fg` · `--xh-json-viewer-preview-fg` · `--xh-json-viewer-preview-font-size` · `--xh-json-viewer-punctuation-fg` · `--xh-json-viewer-px` · `--xh-json-viewer-py` · `--xh-json-viewer-radius` · `--xh-json-viewer-row-bg-hover` · `--xh-json-viewer-row-gap` · `--xh-json-viewer-row-px` · `--xh-json-viewer-row-py` · `--xh-json-viewer-row-radius` · `--xh-json-viewer-string-fg` · `--xh-json-viewer-text-fg`
+`--xh-json-viewer-bg` · `--xh-json-viewer-boolean-fg` · `--xh-json-viewer-border` · `--xh-json-viewer-empty-fg` · `--xh-json-viewer-empty-gap` · `--xh-json-viewer-empty-px` · `--xh-json-viewer-empty-py` · `--xh-json-viewer-fg` · `--xh-json-viewer-font` · `--xh-json-viewer-font-size` · `--xh-json-viewer-icon-size` · `--xh-json-viewer-indent` · `--xh-json-viewer-indicator-fg` · `--xh-json-viewer-indicator-size` · `--xh-json-viewer-key-fg` · `--xh-json-viewer-key-font-weight` · `--xh-json-viewer-max-h` · `--xh-json-viewer-null-fg` · `--xh-json-viewer-number-fg` · `--xh-json-viewer-preview-fg` · `--xh-json-viewer-preview-font-size` · `--xh-json-viewer-punctuation-fg` · `--xh-json-viewer-px` · `--xh-json-viewer-py` · `--xh-json-viewer-radius` · `--xh-json-viewer-row-bg-hover` · `--xh-json-viewer-row-gap` · `--xh-json-viewer-row-px` · `--xh-json-viewer-row-py` · `--xh-json-viewer-row-radius` · `--xh-json-viewer-string-fg` · `--xh-json-viewer-text-fg`
 
 ## 动效
 

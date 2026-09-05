@@ -13,6 +13,7 @@ export const XhMarqueeRoot = defineComponent({
     direction: { type: String as PropType<MarqueeDirection>, default: undefined },
     speed: { type: Number, default: undefined },
     pauseOnHover: Boolean,
+    paused: Boolean,
     autoFill: Boolean,
   },
   setup(props, { slots }) {

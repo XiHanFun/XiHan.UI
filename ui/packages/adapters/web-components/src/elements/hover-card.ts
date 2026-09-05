@@ -48,6 +48,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart trigger - 悬停/聚焦的锚点（aria-expanded/aria-controls 所在），同时是定位锚点
  * @csspart positioner - 浮层定位容器，坐标由引擎写成内联样式
  * @csspart content - role=dialog 的卡片内容（消解层的根节点），收起时带 hidden
+ * @csspart title - 标题（aria-labelledby 目标；缺席时可及名指回 trigger）
+ * @csspart description - 说明（aria-describedby 目标）
  * @csspart arrow - 指向锚点的箭头（aria-hidden，data-placement 随实际放置位翻转）
  */
 export class XhHoverCardElement extends XhElement {
@@ -150,6 +152,8 @@ export class XhHoverCardElement extends XhElement {
     svc.refs.set('getAnchorEl', () => this.getPart('trigger'))
     svc.refs.set('getFloatingEl', () => this.getPart('positioner'))
     svc.refs.set('getContentEl', () => this.getPart('content'))
+    svc.refs.set('getTitleEl', () => this.getPart('title'))
+    svc.refs.set('getDescriptionEl', () => this.getPart('description'))
   }
 
   /**
@@ -175,6 +179,8 @@ export class XhHoverCardElement extends XhElement {
     // positioner 的 style 是坐标对象，spreader 会逐条写成内联样式
     put('positioner', api.getPositionerProps() as Record<string, unknown>)
     put('content', api.getContentProps() as Record<string, unknown>)
+    put('title', api.getTitleProps() as Record<string, unknown>)
+    put('description', api.getDescriptionProps() as Record<string, unknown>)
     put('arrow', api.getArrowProps() as Record<string, unknown>)
 
     // Light DOM content 常驻，WC 自管可见性：本仓的 hover-card.css 给 content 设了 display:flex，

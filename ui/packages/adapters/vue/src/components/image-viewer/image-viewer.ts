@@ -19,6 +19,7 @@ export type ImageViewerRootSlotProps = Pick<
   | 'count'
   | 'currentItem'
   | 'transform'
+  | 'imageStatus'
   | 'canPrev'
   | 'canNext'
   | 'setOpen'
@@ -83,6 +84,7 @@ export const XhImageViewerRoot = defineComponent({
       count: ctx.api.value.count,
       currentItem: ctx.api.value.currentItem,
       transform: ctx.api.value.transform,
+      imageStatus: ctx.api.value.imageStatus,
       canPrev: ctx.api.value.canPrev,
       canNext: ctx.api.value.canNext,
       setOpen: ctx.api.value.setOpen,

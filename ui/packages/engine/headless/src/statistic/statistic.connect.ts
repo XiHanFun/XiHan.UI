@@ -11,6 +11,8 @@ export function connectStatistic<T extends PropTypes>(
   normalize: NormalizeProps<T>,
 ): StatisticApi<T> {
   return {
+    trend: props.trend,
+
     // 两个轴只落在根上，各段从根上继承私有槽与语气槽，子部件不重复标注。
     // 根上不写 role：一块统计数是不是列表项、要不要可及名字，由它被摆在哪里决定。
     getRootProps: () => normalize.element({
@@ -29,5 +31,12 @@ export function connectStatistic<T extends PropTypes>(
     getPrefixProps: () => normalize.element({ ...parts.prefix.attrs }),
 
     getSuffixProps: () => normalize.element({ ...parts.suffix.attrs }),
+
+    // 涨跌只画一个箭头，说的话由作者写在部件里（「同比 +12%」）；
+    // 部件空着时皮肤按方向出兜底字形，那个箭头是装饰，对读屏隐藏由作者的文案兜住
+    getTrendProps: () => normalize.element({
+      ...parts.trend.attrs,
+      'data-direction': props.trend,
+    }),
   }
 }

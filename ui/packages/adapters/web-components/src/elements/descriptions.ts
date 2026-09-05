@@ -20,7 +20,7 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @attr {'top'|'left'} placement - 标签在上还是在左；不写即在上
  * @attr {'sm'|'md'|'lg'} size - 尺寸，决定每格的内边距、组与组的间距与整体字号
  * @csspart root - 网格容器，承载 data-columns / data-placement / data-size / data-bordered
- * @csspart item - 一组「标签 + 取值」，占网格里的一格
+ * @csspart item - 一组「标签 + 取值」，占网格里的一格；作者在此写 span（这一格横跨几列）
  * @csspart label - 标签
  * @csspart value - 取值
  */
@@ -59,7 +59,12 @@ export class XhDescriptionsElement extends XhElement {
         this.spreader.spread(el, attrs)
     }
 
-    putAll('item', api.getItemProps() as Record<string, unknown>)
+    // 跨列数写在格子自己的 span 特性上，类型系统够不着；写了非数字即当作没写
+    for (const el of this.getParts('item')) {
+      const raw = Number(el.getAttribute('span'))
+      const span = Number.isFinite(raw) && raw > 0 ? raw : undefined
+      this.spreader.spread(el, api.getItemProps({ span }) as Record<string, unknown>)
+    }
     putAll('label', api.getLabelProps() as Record<string, unknown>)
     putAll('value', api.getValueProps() as Record<string, unknown>)
   }

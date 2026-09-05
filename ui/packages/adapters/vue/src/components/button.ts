@@ -5,6 +5,7 @@ import { connectButton } from '@xihan-ui/headless'
 import { computed, defineComponent, h, inject, provide, useAttrs } from 'vue'
 import { withXhConfig } from '../config/config'
 import { vueNormalize } from '../runtime/normalize-props'
+import { useButtonGroupDisabled } from './button-group/context'
 
 /** 从实际调用推出 api 形状，免得再写一遍 normalize 的类型参数。 */
 type VueButtonApi = ReturnType<typeof connectButton<PropTypes>>
@@ -29,19 +30,25 @@ export const XhButton = defineComponent({
     variant: String as PropType<ButtonProps['variant']>,
     tone: String as PropType<ButtonProps['tone']>,
     size: String as PropType<ButtonProps['size']>,
+    shape: String as PropType<ButtonProps['shape']>,
+    /** 渲染成哪个标签，默认 button；写成 a 时作者自行给 href。 */
+    as: { type: String as PropType<ButtonProps['as']>, default: 'button' },
   },
   setup(props, { slots }) {
     const attrs = useAttrs()
     // withXhConfig 只能在 setup 期调，连接层在渲染期读这份代理
     const configured = withXhConfig('button', props as ButtonProps)
+    // 外层按钮组禁用时整组一起禁用；段自己写了禁用的仍然禁用
+    const groupDisabled = useButtonGroupDisabled()
     // 作者写在根节点上的可及名转告连接层，图标按钮缺名时由它提醒
     const api = computed(() => connectButton({
       ...configured,
+      disabled: configured.disabled || !!groupDisabled?.value,
       ariaLabel: attrs['aria-label'] as string | undefined,
       ariaLabelledby: attrs['aria-labelledby'] as string | undefined,
     }, vueNormalize))
     provide(ButtonKey, api)
-    return () => h('button', api.value.getRootProps() as Record<string, unknown>, slots.default?.())
+    return () => h(props.as, api.value.getRootProps() as Record<string, unknown>, slots.default?.())
   },
 })
 

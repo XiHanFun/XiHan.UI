@@ -1,5 +1,5 @@
 import type { Direction, Orientation, Size } from '@xihan-ui/core'
-import type { ScrollAreaApi, ScrollAreaOrientation, ScrollAreaProps, ScrollAreaScrollbarProps, ScrollbarType } from '@xihan-ui/headless'
+import type { ScrollAreaApi, ScrollAreaOrientation, ScrollAreaProps, ScrollAreaScrollbarProps, ScrollAreaVariant, ScrollbarType } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import { computed, defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -21,6 +21,7 @@ export const XhScrollAreaRoot = defineComponent({
     type: { type: String as PropType<ScrollbarType>, default: undefined },
     hideDelay: { type: Number, default: undefined },
     orientation: { type: String as PropType<ScrollAreaOrientation>, default: undefined },
+    variant: { type: String as PropType<ScrollAreaVariant>, default: undefined },
     size: { type: String as PropType<Size>, default: undefined },
     dir: { type: String as PropType<Direction>, default: undefined },
     /** 触屏（粗指针）上也画自绘滚动条；缺省交给原生滚动。 */

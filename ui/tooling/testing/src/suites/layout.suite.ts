@@ -33,6 +33,7 @@ export const layoutSuite: ConformanceSuite = {
           'root': {
             'role': null,
             'data-sider-placement': 'start',
+            'data-sider-breakpoint': null,
             'data-collapsed': null,
             'data-header-fixed': null,
             'data-sider-fixed': null,
@@ -129,6 +130,17 @@ export const layoutSuite: ConformanceSuite = {
           },
         },
       ],
+    },
+    {
+      name: '侧栏断点：档位如实落到根上，折叠态不受它牵连',
+      spec: { apg: APG },
+      props: { siderBreakpoint: 'md' },
+      initial: {
+        parts: {
+          root: { 'data-sider-breakpoint': 'md', 'data-collapsed': null },
+          sider: { 'data-collapsed': null },
+        },
+      },
     },
     {
       name: '侧栏挂到行尾：根与侧栏都如实落成 end',

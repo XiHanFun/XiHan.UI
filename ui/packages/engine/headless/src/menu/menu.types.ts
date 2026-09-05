@@ -1,4 +1,4 @@
-import type { Cleanup, Direction, Layer, MachineSchema, OverlayCloseReason, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/core'
+import type { Cleanup, Direction, Layer, MachineSchema, OverlayCloseReason, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone, Typeahead } from '@xihan-ui/core'
 
 /** 展开时的落焦端：'first'/'last' 从集合两端进，'none' 不预先挑锚点。 */
 export type MenuFocusIntent = 'first' | 'last' | 'none'
@@ -16,6 +16,8 @@ export interface MenuRefs {
   getFloatingEl: () => HTMLElement | null
   /** 焦点域容器、消解层节点，同时是条目集合的查询容器。 */
   getContentEl: () => HTMLElement | null
+  /** 连打检索的缓冲区，收起时清空。 */
+  typeahead: Typeahead
 }
 
 export interface MenuOpenChangeDetails {
@@ -86,6 +88,11 @@ export interface MenuSchema extends MachineSchema {
     tone?: Tone
     /** 尺寸：sm / md / lg，决定条目高度、内边距与字号档位。 */
     size?: Size
+    /** 首字符连打检索，默认开。 */
+    typeahead?: boolean
+    /** 整张菜单禁用：触发器不再展开，条目全转 aria-disabled。 */
+    disabled?: boolean
+    translations?: Partial<MenuTranslations>
     /**
      * 本菜单是另一张菜单的子菜单：触发器渲染成父菜单的条目形态
      * （经 getSubmenuTriggerProps），缺省落位换到侧向，悬停触发缺省打开。
@@ -139,11 +146,14 @@ export interface MenuSchema extends MachineSchema {
     | 'setFocusedValue'
     | 'setInitialFocusedValue'
     | 'clearFocusedValue'
+    | 'clearTypeahead'
   effect: 'trackPosition' | 'trackLayer' | 'trackHover'
 }
 
 export interface MenuApi<T extends PropTypes = PropTypes> {
   open: boolean
+  /** 整张菜单是否禁用。 */
+  disabled: boolean
   /** collection 推出的条目元信息，按数据顺序排列；没给 collection 即空数组。 */
   collection: readonly MenuNodeMeta[]
   /** 焦点锚点；收起时为 null。 */
@@ -153,6 +163,9 @@ export interface MenuApi<T extends PropTypes = PropTypes> {
   getPositionerProps: () => T['element']
   getContentProps: () => T['element']
   getItemProps: (props: MenuItemProps) => T['element']
+  getItemTextProps: (props: MenuItemProps) => T['element']
+  getItemIndicatorProps: (props: MenuItemProps) => T['element']
+  getItemDescriptionProps: (props: MenuItemProps) => T['element']
   /**
    * 子菜单触发条目（submenu 模式）：既是父菜单里的一条 item（value 是它在父菜单
    * 里的身份，父层的方向键与高亮照常认它），又是本子菜单的触发器（aria-haspopup、
@@ -165,5 +178,8 @@ export interface MenuApi<T extends PropTypes = PropTypes> {
   getArrowProps: () => T['element']
 }
 
-/** 读屏用的文案。本组件目前没有需要外露的文案，位先留着。 */
-export interface MenuTranslations {}
+/** 读屏用的文案，默认英文。 */
+export interface MenuTranslations {
+  /** 菜单容器的名字。缺省不写，读屏改由 aria-labelledby 指向触发器取名。 */
+  content: string
+}

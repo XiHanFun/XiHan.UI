@@ -1,5 +1,5 @@
 import type { PinchSnapshot, TrackedPoint } from '@xihan-ui/pointer'
-import type { ImageViewerItem, ImageViewerRefs, ImageViewerSchema, ImageViewerTransform } from './image-viewer.types'
+import type { ImageViewerImageStatus, ImageViewerItem, ImageViewerRefs, ImageViewerSchema, ImageViewerTransform } from './image-viewer.types'
 import { acquireScrollLock, createDismissLayer, createFocusScope, hideOutside, setup } from '@xihan-ui/core'
 import { createMultiPointerSession, pinchChange, pinchSnapshot, resolveSessionDoc } from '@xihan-ui/pointer'
 import { closeReasonOf } from '../shared/close-reason'
@@ -65,6 +65,7 @@ export const imageViewerMachine = createMachine({
     })),
     transform: cell<ImageViewerTransform>(() => ({ defaultValue: IMAGE_VIEWER_IDENTITY, isEqual: sameTransform })),
     panning: cell<boolean>(() => ({ defaultValue: false })),
+    imageStatus: cell<ImageViewerImageStatus>(() => ({ defaultValue: 'loading' })),
   }),
   refs: () => ({
     config: null,
@@ -79,7 +80,7 @@ export const imageViewerMachine = createMachine({
     // 受控时用户事件只发意图回调；宿主写回 open 后由这里派发 CONTROLLED.* 无条件回写
     track([() => prop('open')], () => action(['syncOpen']))
     // 换图即弃掉上一张的缩放与平移，受控写回的下标也走这一条
-    track([context.dep('index')], () => action(['resetTransform']))
+    track([context.dep('index')], () => action(['resetTransform', 'resetImageStatus']))
   },
   states: {
     closed: {
@@ -93,7 +94,7 @@ export const imageViewerMachine = createMachine({
     },
     open: {
       // 每次展开都从基准态看起
-      entry: ['resetTransform'],
+      entry: ['resetTransform', 'resetImageStatus'],
       effects: ['trackOverlay', 'trackPointers'],
       exit: ['pointersEnd'],
       on: {
@@ -109,6 +110,8 @@ export const imageViewerMachine = createMachine({
         'ROTATE.BY': { actions: ['rotateBy'] },
         'FLIP': { actions: ['flip'] },
         'TRANSFORM.RESET': { actions: ['resetTransform'] },
+        'IMAGE.LOAD': { actions: ['setImageLoaded'] },
+        'IMAGE.ERROR': { actions: ['setImageError'] },
         'POINTERS.DOWN': { actions: ['pointersDown'] },
         'POINTERS.CHANGE': { actions: ['pointersChange'] },
         'POINTERS.END': { actions: ['pointersEnd'] },
@@ -187,6 +190,9 @@ export const imageViewerMachine = createMachine({
         context.set('transform', e.axis === 'x' ? { ...t, flipX: !t.flipX } : { ...t, flipY: !t.flipY })
       },
       resetTransform: ({ context }) => context.set('transform', IMAGE_VIEWER_IDENTITY),
+      resetImageStatus: ({ context }) => context.set('imageStatus', 'loading'),
+      setImageLoaded: ({ context }) => context.set('imageStatus', 'loaded'),
+      setImageError: ({ context }) => context.set('imageStatus', 'error'),
       /** 一根手指落在图上：交给会话跟着，并按当前点数拍基准。 */
       pointersDown: ({ context, refs, event }) => {
         const e = event.current()

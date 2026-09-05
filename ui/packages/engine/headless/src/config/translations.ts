@@ -55,6 +55,7 @@ import type { ImageCropperTranslations } from '../image-cropper/image-cropper.ty
 import type { ImageViewerTranslations } from '../image-viewer/image-viewer.types'
 import type { ImageTranslations } from '../image/image.types'
 import type { InfiniteScrollTranslations } from '../infinite-scroll/infinite-scroll.types'
+import type { InputGroupTranslations } from '../input-group/input-group.types'
 import type { JsonViewerTranslations } from '../json-viewer/json-viewer.types'
 import type { LayoutTranslations } from '../layout/layout.types'
 import type { ListTranslations } from '../list/list.types'
@@ -104,6 +105,7 @@ import type { SwitchTranslations } from '../switch/switch.types'
 import type { TableTranslations } from '../table/table.types'
 import type { TabsTranslations } from '../tabs/tabs.types'
 import type { TagTranslations } from '../tag/tag.types'
+import type { TagGroupTranslations } from '../tag-group/tag-group.types'
 import type { TagsInputTranslations } from '../tags-input/tags-input.types'
 import type { TextFieldTranslations } from '../text-field/text-field.types'
 import type { TimeFieldTranslations } from '../time-field/time-field.types'
@@ -181,6 +183,7 @@ export interface XhTranslationOverrides {
   'image-cropper'?: Partial<ImageCropperTranslations>
   'image-viewer'?: Partial<ImageViewerTranslations>
   'infinite-scroll'?: Partial<InfiniteScrollTranslations>
+  'input-group'?: Partial<InputGroupTranslations>
   'json-viewer'?: Partial<JsonViewerTranslations>
   'layout'?: Partial<LayoutTranslations>
   'list'?: Partial<ListTranslations>
@@ -229,6 +232,7 @@ export interface XhTranslationOverrides {
   'table'?: Partial<TableTranslations>
   'tabs'?: Partial<TabsTranslations>
   'tag'?: Partial<TagTranslations>
+  'tag-group'?: Partial<TagGroupTranslations>
   'tags-input'?: Partial<TagsInputTranslations>
   'text-field'?: Partial<TextFieldTranslations>
   'time-field'?: Partial<TimeFieldTranslations>

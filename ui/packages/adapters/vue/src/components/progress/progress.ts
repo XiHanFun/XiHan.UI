@@ -1,5 +1,5 @@
 import type { Size, Tone } from '@xihan-ui/core'
-import type { ProgressGapPosition, ProgressProps, ProgressVariant } from '@xihan-ui/headless'
+import type { ProgressGapPosition, ProgressProps, ProgressSemantics, ProgressVariant } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
 import { connectProgress } from '@xihan-ui/headless'
 import { defineComponent, h } from 'vue'
@@ -21,6 +21,7 @@ export const XhProgress = defineComponent({
     valueText: { type: String, default: undefined },
     tone: String as PropType<Tone>,
     size: String as PropType<Size>,
+    semantics: { type: String as PropType<ProgressSemantics>, default: undefined },
   },
   setup(props, { slots }) {
     // withXhConfig 只能在 setup 期调，连接层在渲染期读这份代理

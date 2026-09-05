@@ -18,6 +18,7 @@
 - `activationMode` 决定单击、双击还是只能按编辑按钮进编辑态。
 - 三个回调分开：提交、还原、编辑态变化。
 - `autoResize` 让输入框跟着内容长。
+- 形态 · 语气 · 尺寸三轴与[文本输入](./text-field)同源：形态只改编辑态那个框的底与描边，语气落在聚焦描边与提交钮上。
 
 ## 示例
 
@@ -91,6 +92,9 @@ edit 受控就由宿主统一调度：一个开关把整张表切进编辑，放
 | `activationMode` | `EditableActivationMode` |  | 预览区的激活方式，默认 click。 |
 | `selectOnFocus` | `boolean` |  | 进编辑态时全选已有内容，默认开。关掉则光标停在原处。 |
 | `autoResize` | `boolean` |  | 输入框宽度跟着内容走：连接层把字符数落成原生 size 属性。 |
+| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定编辑态输入框的底与描边怎么画。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦描边与提交钮用哪族颜色。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg，决定预览区、输入框与三颗按钮的几何档位。 |
 | `onValueChange` | `(details: EditableValueChangeDetails) => void` |  | 值变化意图回调；编辑途中每次输入都发，受控时是唯一出口。 |
 | `onValueCommit` | `(details: EditableValueCommitDetails) => void` |  | 提交那一刻才发；编辑途中的输入不会惊动它。 |
 | `onValueRevert` | `(details: EditableValueRevertDetails) => void` |  | 撤销那一刻发（Escape、取消按钮、不算提交的离场）。 |
@@ -203,7 +207,10 @@ edit 受控就由宿主统一调度：一个开关把整张表切进编辑，放
 | `root` | `data-empty` | ''（条件成立时才出现） |
 | `root` | `data-invalid` | ''（条件成立时才出现） |
 | `root` | `data-readonly` | ''（条件成立时才出现） |
+| `root` | `data-size` | props.size |
 | `root` | `data-state` | 'edit' \| 'preview' |
+| `root` | `data-tone` | props.tone |
+| `root` | `data-variant` | props.variant |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
 | `label` | `data-state` | 'edit' \| 'preview' |
 | `control` | `data-disabled` | ''（条件成立时才出现） |

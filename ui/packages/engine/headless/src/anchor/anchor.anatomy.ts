@@ -6,6 +6,8 @@ export const anchorAnatomy = createAnatomy('anchor', [
   'list',
   'item',
   'link',
+  // 链接里承载文字的那一层。作者在链接里另塞图标时，省略号只该裁文字这一段
+  'link-text',
   'indicator',
 ])
 

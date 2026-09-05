@@ -53,6 +53,8 @@ export interface AnchorSchema extends MachineSchema {
     collection?: readonly string[]
     /** 判定线距滚动容器视口顶边的距离（px），默认 0。 */
     offset?: number
+    /** 压线判定的容差（px），默认 1；区块顶边落在判定线下方这个距离内仍算越过。 */
+    bounds?: number
     /** 点链接时平滑滚动到目标，默认 false。 */
     smooth?: boolean
     /** 文字方向，作用于排版与指示条的起始缘。 */
@@ -101,5 +103,6 @@ export interface AnchorApi<T extends PropTypes = PropTypes> {
   getListProps: () => T['element']
   getItemProps: () => T['element']
   getLinkProps: (props: AnchorLinkProps) => T['element']
+  getLinkTextProps: () => T['element']
   getIndicatorProps: () => T['element']
 }

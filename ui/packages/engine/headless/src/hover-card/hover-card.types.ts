@@ -17,6 +17,10 @@ export interface HoverCardRefs {
   getFloatingEl: () => HTMLElement | null
   /** 消解层的根节点，即 content。 */
   getContentEl: () => HTMLElement | null
+  /** title 部件，缺席时卡片的可及名指回 trigger。 */
+  getTitleEl: () => HTMLElement | null
+  /** description 部件，缺席时不发 aria-describedby。 */
+  getDescriptionEl: () => HTMLElement | null
 }
 
 export interface HoverCardSchema extends MachineSchema {
@@ -84,6 +88,8 @@ export interface HoverCardApi<T extends PropTypes = PropTypes> {
   getTriggerProps: () => T['button']
   getPositionerProps: () => T['element']
   getContentProps: () => T['element']
+  getTitleProps: () => T['element']
+  getDescriptionProps: () => T['element']
   getArrowProps: () => T['element']
 }
 

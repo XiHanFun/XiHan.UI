@@ -120,6 +120,27 @@ export const markdownStreamSuite: ConformanceSuite = {
       ],
     },
     {
+      name: '抢读那一档：活区换成 alert 与 aria-live=assertive，写完照样只念一句',
+      spec: { apg: WCAG },
+      props: { blocks: SETTLED, streaming: false, announce: 'assertive' },
+      initial: {
+        parts: {
+          'live-region': { 'role': 'alert', 'aria-live': 'assertive', 'aria-atomic': 'true' },
+        },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: '播报文本是节点内容不是属性，属性快照看不到',
+          run: ({ doc }: RawStepContext) => {
+            const live = doc.querySelector<HTMLElement>('[data-scope="markdown-stream"][data-part="live-region"]')
+            if (live?.textContent !== 'Response complete')
+              throw new Error(`抢读档写完也该念一句，实际念了「${live?.textContent}」`)
+          },
+        },
+      ],
+    },
+    {
       name: '块列表换了：key 没变的块原地留着，只有内容跟着走',
       spec: { apg: WCAG },
       props: { blocks: GROWING, streaming: true },

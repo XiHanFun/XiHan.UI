@@ -25,6 +25,7 @@ export const XhNavigationMenuRoot = defineComponent({
     skipDelayDuration: { type: Number, default: undefined },
     dir: { type: String as PropType<Direction>, default: undefined },
     loop: { type: Boolean, default: undefined },
+    disabled: { type: Boolean, default: undefined },
     translations: { type: Object as PropType<Partial<NavigationMenuTranslations>>, default: undefined },
     tone: { type: String as PropType<Tone>, default: undefined },
     size: { type: String as PropType<Size>, default: undefined },
@@ -94,6 +95,23 @@ export const XhNavigationMenuTrigger = defineComponent({
 })
 
 // 面板常挂，靠 hidden 显隐，不做懒挂载
+/** 入口里表示"底下还有一张面板"的标记，展开时转向；身份与所在 trigger 同一份声明 */
+export const XhNavigationMenuTriggerIndicator = defineComponent({
+  name: 'XhNavigationMenuTriggerIndicator',
+  props: {
+    value: { type: String, required: true },
+    disabled: { type: Boolean, default: undefined },
+  },
+  setup(props, { slots }) {
+    const ctx = useNavigationMenuContext()
+    return () => h(
+      'span',
+      ctx.api.value.getTriggerIndicatorProps({ value: props.value, disabled: props.disabled }) as Record<string, unknown>,
+      slots.default?.(),
+    )
+  },
+})
+
 export const XhNavigationMenuContent = defineComponent({
   name: 'XhNavigationMenuContent',
   props: {

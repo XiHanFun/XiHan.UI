@@ -1,5 +1,5 @@
 import type { Size, Tone } from '@xihan-ui/core'
-import type { ProgressGapPosition, ProgressVariant } from '@xihan-ui/headless'
+import type { ProgressGapPosition, ProgressSemantics, ProgressVariant } from '@xihan-ui/headless'
 import { connectProgress, progressAnatomy, progressMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -30,7 +30,8 @@ import { XhElement } from '../element-base'
  * @attr {string} value-text - 读屏播报的文字，覆盖默认的数值播报
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸：线形改厚度，环形改直径
- * @csspart root - role=progressbar 的容器（承载 aria-valuenow/aria-valuemax/data-state）
+ * @attr {'progress'|'meter'} semantics - 报的是进度还是量，默认 progress；meter 发 role=meter 且不接 indeterminate
+ * @csspart root - role=progressbar（semantics=meter 时 role=meter）的容器（承载 aria-valuenow/aria-valuemax/data-state）
  * @csspart canvas - 承载环的 svg（线形不用）
  * @csspart track - 进度轨道：线形是满长背景，环形是整段弧
  * @csspart range - 已完成区段：线形写内联 inline-size，环形写 stroke-dashoffset
@@ -50,6 +51,7 @@ export class XhProgressElement extends XhElement {
     valueText: { attribute: 'value-text' },
     tone: {},
     size: {},
+    semantics: {},
   }
 
   declare value?: number
@@ -62,6 +64,7 @@ export class XhProgressElement extends XhElement {
   declare valueText?: string
   declare tone?: Tone
   declare size?: Size
+  declare semantics?: ProgressSemantics
 
   protected wire(): void {
     const api = connectProgress(this.configured('progress', {
@@ -75,6 +78,7 @@ export class XhProgressElement extends XhElement {
       valueText: this.valueText,
       tone: this.tone,
       size: this.size,
+      semantics: this.semantics,
     }), wcNormalize)
 
     const put = (name: 'root' | 'canvas' | 'track' | 'range' | 'label', props: unknown): void => {

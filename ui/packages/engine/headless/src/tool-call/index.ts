@@ -3,7 +3,7 @@ export { connectToolCall } from './tool-call.connect'
 export { toolCallKeyboard } from './tool-call.keyboard'
 export { toolCallMachine } from './tool-call.machine'
 export { toolCallMeta } from './tool-call.meta'
-export { isToolCallRunning, toneOfToolCallPhase, toolCallDuration, toolCallStatusText } from './tool-call.types'
+export { isToolCallErrored, isToolCallRunning, isToolCallSettled, toneOfToolCallPhase, toolCallDuration, toolCallStatusText } from './tool-call.types'
 export type {
   ToolCallApi,
   ToolCallOpenChangeDetails,

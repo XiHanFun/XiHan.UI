@@ -1,3 +1,4 @@
+import type { Size, Tone } from '@xihan-ui/core'
 import type { SideNavApi, SideNavNode, SideNavSchema } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
@@ -43,6 +44,8 @@ export const XhSideNavRoot = defineComponent({
     disabled: Boolean,
     loop: { type: Boolean, default: undefined },
     dir: { type: String as PropType<SideNavProps['dir']>, default: undefined },
+    tone: { type: String as PropType<Tone>, default: undefined },
+    size: { type: String as PropType<Size>, default: undefined },
     translations: { type: Object as PropType<SideNavProps['translations']>, default: undefined },
   },
   // *-change 携带 details 对象，update:* 携带裸值，支持 v-model:value 与 v-model:expanded-value

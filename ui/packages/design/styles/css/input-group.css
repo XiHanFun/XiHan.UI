@@ -1,0 +1,127 @@
+@layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='input-group'] {
+    --xh-input-group-skin: 1;
+  }
+
+  /* 输入框与它的前后缀、动作钮拼成一个盒：段与段之间不留缝，靠共边接上，所以不设 gap。 */
+  [data-scope='input-group'][data-part='root'] {
+    /* 段之间那几档层号只在自己人之间排序：建一个层叠上下文把它们关起来，
+       既不让页面上的层号插进来，也不让它们漏出去压住别人 */
+    isolation: isolate;
+
+    /* 缺省档。item 的高度、内衬与字号从这三个槽取，换档只改这里 */
+    --xh-_input-group-h: var(--xh-control-h-md);
+    --xh-_input-group-px: var(--xh-control-px-md);
+    --xh-_input-group-font-size: var(--xh-control-font-md);
+
+    display: inline-flex;
+    align-items: stretch;
+  }
+
+  /* 给了 display 的角色节点必须补这条：display 声明会盖掉 UA 的 [hidden]{display:none}，
+     不补的话作者给节点加 hidden 后它照样显示 */
+  [data-scope='input-group'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  /* —— 尺寸 —— */
+  /* 档位跟着组内控件走：控件的档位就写在它自己的根上，组读得到，
+     于是前后缀块与邻座同高，作者不必把同一档在组上再写一遍。
+     缺省档写在上面的基础规则里 */
+  [data-scope='input-group'][data-part='root']:has([data-size='sm']) {
+    --xh-_input-group-h: var(--xh-control-h-sm);
+    --xh-_input-group-px: var(--xh-control-px-sm);
+    --xh-_input-group-font-size: var(--xh-control-font-sm);
+  }
+
+  [data-scope='input-group'][data-part='root']:has([data-size='lg']) {
+    --xh-_input-group-h: var(--xh-control-h-lg);
+    --xh-_input-group-px: var(--xh-control-px-lg);
+    --xh-_input-group-font-size: var(--xh-control-font-lg);
+  }
+
+  /* 组上写了档位时以它为准：排在自动档后面，同特指度下压得住 */
+  [data-scope='input-group'][data-part='root'][data-size='sm'] {
+    --xh-_input-group-h: var(--xh-control-h-sm);
+    --xh-_input-group-px: var(--xh-control-px-sm);
+    --xh-_input-group-font-size: var(--xh-control-font-sm);
+  }
+
+  [data-scope='input-group'][data-part='root'][data-size='md'] {
+    --xh-_input-group-h: var(--xh-control-h-md);
+    --xh-_input-group-px: var(--xh-control-px-md);
+    --xh-_input-group-font-size: var(--xh-control-font-md);
+  }
+
+  [data-scope='input-group'][data-part='root'][data-size='lg'] {
+    --xh-_input-group-h: var(--xh-control-h-lg);
+    --xh-_input-group-px: var(--xh-control-px-lg);
+    --xh-_input-group-font-size: var(--xh-control-font-lg);
+  }
+
+  /* —— 合边 —— */
+  /* 相邻两段的边重合在同一像素上，谁的描边浮在上面必须能指定，
+     因此每一段都是定位元素——静态元素的 z-index 不生效 */
+  [data-scope='input-group'][data-part='root'] > * {
+    position: relative;
+  }
+
+  /* 后一段往回挪一个描边宽度，相邻的两条边重合成一条 */
+  [data-scope='input-group'][data-part='root'] > * + * {
+    margin-inline-start: calc(-1 * var(--xh-stroke-thin));
+  }
+
+  /* 悬停或拿到焦点的那一段抬到最上层：聚焦环画在盒外侧，
+     不抬层就会被后一段的底色与描边盖掉一半 */
+  [data-scope='input-group'][data-part='root'] > *:hover,
+  [data-scope='input-group'][data-part='root'] > *:focus-within {
+    z-index: 1;
+  }
+
+  /* —— 两端圆角 —— */
+  /* 画着描边的那个盒子有三种落点：段本身、段就是控件盒、控件盒在段里一层。
+     :is() 取其中最特指的一支算特指度，三种落点因此都压得住控件自己那条圆角规则。
+     只认直接子节点与它下面那一层：更深的节点是控件的内部结构，圆错了位置比直角更糟 */
+  [data-scope='input-group'][data-part='root'] > :is(*, [data-part='control'], [data-part='root']),
+  [data-scope='input-group'][data-part='root'] > * :is([data-part='control'], [data-part='root']) {
+    border-start-start-radius: 0;
+    border-start-end-radius: 0;
+    border-end-start-radius: 0;
+    border-end-end-radius: 0;
+  }
+
+  /* 逻辑角属性写，rtl 跟着换边，不必另写一套 */
+  [data-scope='input-group'][data-part='root'] > :is(*, [data-part='control'], [data-part='root']):first-child,
+  [data-scope='input-group'][data-part='root'] > *:first-child :is([data-part='control'], [data-part='root']) {
+    border-start-start-radius: var(--xh-input-group-radius, var(--xh-shape-control));
+    border-end-start-radius: var(--xh-input-group-radius, var(--xh-shape-control));
+  }
+
+  [data-scope='input-group'][data-part='root'] > :is(*, [data-part='control'], [data-part='root']):last-child,
+  [data-scope='input-group'][data-part='root'] > *:last-child :is([data-part='control'], [data-part='root']) {
+    border-start-end-radius: var(--xh-input-group-radius, var(--xh-shape-control));
+    border-end-end-radius: var(--xh-input-group-radius, var(--xh-shape-control));
+  }
+
+  /* —— 前后缀块 —— */
+  /* 与邻座同高、同一条描边、同一档字号：它是框的一部分，不是框旁边的一段文字。
+     不可交互，所以不接按压反馈也不进 Tab 序列 */
+  [data-scope='input-group'][data-part='item'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    block-size: var(--xh-input-group-item-h, var(--xh-_input-group-h));
+    padding-inline: var(--xh-input-group-item-px, var(--xh-_input-group-px));
+    border: var(--xh-stroke-thin) solid var(--xh-input-group-item-border, var(--xh-border-control));
+    background: var(--xh-input-group-item-bg, var(--xh-bg-subtle));
+    color: var(--xh-input-group-item-fg, var(--xh-fg-muted));
+    font-size: var(--xh-input-group-item-font-size, var(--xh-_input-group-font-size));
+    line-height: var(--xh-leading-none);
+    white-space: nowrap;
+  }
+
+  [data-scope='input-group'][data-part='item'][hidden] {
+    display: none;
+  }
+}

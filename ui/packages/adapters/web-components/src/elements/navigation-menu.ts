@@ -58,6 +58,7 @@ function authorDisabled(el: HTMLElement): boolean {
  * @attr {number} skip-delay-duration - 收起之后的静默毫秒，默认 300；窗口内再碰 trigger 直接展开
  * @attr {'ltr'|'rtl'} dir - 文字方向，只影响水平轴上 ArrowLeft/ArrowRight 的前后语义
  * @attr {boolean} loop - 方向键走到尽头回绕，默认开启；写 loop="false" 关掉
+ * @attr {boolean} disabled - 整套导航禁用：入口全转 aria-disabled，面板不再展开
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires value-change - 展开项变化；detail 为 `{ value: string | null }`
@@ -65,6 +66,7 @@ function authorDisabled(el: HTMLElement): boolean {
  * @csspart list - ul 容器，同时是指示条定位的参照系
  * @csspart item - li 条目，一项一个
  * @csspart trigger - 展开面板的按钮，须自带 value 属性标识身份；禁用写 aria-disabled="true"
+ * @csspart trigger-indicator - 入口里的方向标记，须自带 value 属性与所在 trigger 配对；对读屏隐藏
  * @csspart content - 面板，须自带 value 属性与 trigger 配对；收起时 hidden
  * @csspart link - 面板里的链接；指向当前页面的那条写 current 属性，得到 aria-current="page"
  * @csspart indicator - 指示条，须写成 `<li>` 并住在 list 里；对读屏隐藏，位置由机器量好写成内联样式
@@ -91,6 +93,7 @@ export class XhNavigationMenuElement extends XhElement {
     skipDelayDuration: { converter: NUMBER_CONVERTER, attribute: 'skip-delay-duration' },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     loop: { converter: BOOLEAN_CONVERTER },
+    disabled: { converter: BOOLEAN_CONVERTER },
     tone: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
     // 文案是对象，走不了属性；只作为 property 暴露，与 Vue 侧的 translations prop 对齐
@@ -105,6 +108,7 @@ export class XhNavigationMenuElement extends XhElement {
   declare skipDelayDuration?: number
   declare direction?: Direction
   declare loop?: boolean
+  declare disabled?: boolean
   declare tone?: Tone
   declare size?: Size
   declare translations?: Partial<NavigationMenuTranslations>
@@ -136,6 +140,7 @@ export class XhNavigationMenuElement extends XhElement {
       dir: this.direction,
       // 布尔属性缺席即 undefined，把缺省交回 connect（回绕默认开）
       loop: this.loop,
+      disabled: this.disabled,
       tone: this.tone,
       size: this.size,
       translations: this.translations,
@@ -195,6 +200,14 @@ export class XhNavigationMenuElement extends XhElement {
         disabled: authorDisabled(el),
       })
       this.spreader.spread(el, props as Record<string, unknown>)
+    }
+
+    // 方向标记与所在 trigger 同一份声明，身份取节点自报的 value
+    for (const el of this.getParts('trigger-indicator')) {
+      this.spreader.spread(el, api.getTriggerIndicatorProps({
+        value: el.getAttribute('value') ?? '',
+        disabled: authorDisabled(el),
+      }) as Record<string, unknown>)
     }
 
     // 面板常挂，未展开的由 connect 输出 hidden；styles 给 content 设了 display，

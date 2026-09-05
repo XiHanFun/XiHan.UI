@@ -35,16 +35,17 @@ afterEach(() => {
 })
 
 describe('xh-json-viewer', () => {
-  it('root 的内容整份归元素接管，只留一个树容器', async () => {
+  it('root 的内容整份归元素接管，只留树容器与空态那一格', async () => {
     const el = create('<div data-xh-part="root"><span id="stale">占位</span></div>')
     el.value = { a: 1 }
     await el.updateComplete
     const root = part(el, 'root')!
     expect(root.querySelector('#stale')).toBeNull()
-    // 自绘条也挂在 root 上、不带 data-xh-part；这一档的容器只留树这一个
+    // 自绘条也挂在 root 上、不带 data-xh-part；这一档的容器只留树与空态两个
     const owned = [...root.children].filter(child => child.getAttribute('data-scope') !== 'scrollbar')
-    expect(owned).toHaveLength(1)
-    expect(root.firstElementChild!.getAttribute('data-part')).toBe('tree')
+    expect(owned.map(child => child.getAttribute('data-part'))).toEqual(['tree', 'empty'])
+    // 有行可摊时空态收起来，不占位置
+    expect(part(el, 'empty')!.hasAttribute('hidden')).toBe(true)
   })
 
   it('重新铺一遍不动树容器与行元素：焦点留在原地', async () => {

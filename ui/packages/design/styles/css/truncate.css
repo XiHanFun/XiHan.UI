@@ -20,7 +20,9 @@
     display: -webkit-box;
     overflow: hidden;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: var(--xh-_truncate-lines);
+    /* 使用者槽排在前面：连接层把行数写成根上的内联私有槽，
+       在外层写一句 --xh-truncate-lines 即可整片改档，不必逐处改标记 */
+    -webkit-line-clamp: var(--xh-truncate-lines, var(--xh-_truncate-lines));
     white-space: normal;
     /* 一长串没有断点的字符（网址、编号）也得断开，否则它一路撑出去，裁不住 */
     overflow-wrap: break-word;

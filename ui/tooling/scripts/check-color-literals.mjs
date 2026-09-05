@@ -45,6 +45,10 @@ const GEOMETRY = {
     reason: '饱和度/明度方块画的是 HSV 的两根坐标轴，黑与白是轴的两端，换成主题色就取不出色了',
     literals: ['black', 'white'],
   },
+  'scroll-area:viewport': {
+    reason: '边缘渐隐的两层遮罩画的是 alpha 坡道，黑与白是不透明与全透两端，换成主题色遮罩就不成形了',
+    literals: ['black'],
+  },
   'color-picker:channel-slider-track': {
     reason: '色相条画的是色相本身，七段取的是色环上的等分角度，跟着主题换色就不是色相条了',
     literals: [

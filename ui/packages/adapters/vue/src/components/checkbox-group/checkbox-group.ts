@@ -1,4 +1,4 @@
-import type { Orientation } from '@xihan-ui/core'
+import type { Orientation, Size, Tone } from '@xihan-ui/core'
 import type {
   CheckboxGroupApi,
   CheckboxGroupItemProps,
@@ -40,6 +40,8 @@ export const XhCheckboxGroupRoot = defineComponent({
     invalid: Boolean,
     name: { type: String, default: undefined },
     orientation: { type: String as PropType<Orientation>, default: undefined },
+    tone: { type: String as PropType<Tone>, default: undefined },
+    size: { type: String as PropType<Size>, default: undefined },
   },
   // value-change 携带 { value }，update:value 携带裸数组
   emits: {

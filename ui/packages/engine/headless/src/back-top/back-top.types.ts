@@ -1,4 +1,4 @@
-import type { MachineSchema, PropTypes, Size, Tone } from '@xihan-ui/core'
+import type { ActionVariant, MachineSchema, PropTypes, Size, Tone } from '@xihan-ui/core'
 
 /** 滚回顶部的方式：auto 一步到位，smooth 平滑滚过去。 */
 export type BackTopBehavior = 'auto' | 'smooth'
@@ -27,6 +27,8 @@ export interface BackTopSchema extends MachineSchema {
     /** 滚回顶部的方式，默认 smooth。 */
     behavior?: BackTopBehavior
     translations?: Partial<BackTopTranslations>
+    /** 形态：solid / subtle / outline / ghost，决定底色、描边与前景怎么用。 */
+    variant?: ActionVariant
     /** 语气：brand / neutral / success / warning / danger / info，决定按钮用哪族颜色。 */
     tone?: Tone
     /** 尺寸：sm / md / lg。 */

@@ -12,6 +12,9 @@ import type { DragRect, DragTranslations, DropTarget } from '../shared/drag'
  */
 export type TreeFocusModel = 'roving-tabindex'
 
+/** 外框形态：surface 带描边与底色，plain 只留行。 */
+export type TreeVariant = 'plain' | 'surface'
+
 /**
  * 作者给的树数据，是层级元信息（层级号、同层序号、同层总数、父子关系）的唯一事实源：
  * 连接层据此产出 aria-level / aria-posinset / aria-setsize，作者的标记只管长相。
@@ -114,6 +117,8 @@ export interface TreeSchema extends MachineSchema {
   props: {
     /** 树数据，层级元信息的唯一事实源。缺省为空树。 */
     collection?: TreeNode[]
+    /** 外框形态：surface 带描边与底色（缺省），plain 去掉描边与底色，只留行。 */
+    variant?: TreeVariant
     /**
      * 末端那一层怎么排，默认 vertical（每行一个）。horizontal 让它们并排铺开。
      *
@@ -147,6 +152,8 @@ export interface TreeSchema extends MachineSchema {
     expandOnClick?: boolean
     /** 整棵树禁用：所有节点转 aria-disabled，键盘与点击都不再改展开/选中。 */
     disabled?: boolean
+    /** 节点还在取：树报 aria-busy，在途占位顶上来、空态占位让位。 */
+    loading?: boolean
     /** 上下键走到首尾是否回绕，默认 false。 */
     loop?: boolean
     /** 连打检索，默认开。关掉后可打印字符一律放行给页面。 */
@@ -271,6 +278,16 @@ export interface TreeApi<T extends PropTypes = PropTypes> {
   getRootProps: () => T['element']
   getLabelProps: () => T['element']
   getTreeProps: () => T['element']
+  /**
+   * 空态占位：放在 root 里、tree 的兄弟（role=tree 只许拥有 treeitem 与 group）。
+   * 给了 collection 时由连接层按条数收放；节点手写时不写 hidden，露不露面归作者。
+   */
+  getEmptyProps: () => T['element']
+  /**
+   * 在途占位：与空态占位同一个位置，两者不同屏——取数期间它顶上来，空态让位。
+   * 给了 collection 时由连接层按条数收放；节点手写时只按 loading 收放。
+   */
+  getLoadingProps: () => T['element']
   /**
    * 拖动过程的读屏播报区。视觉隐藏，文本从 announcement 取。
    * 它必须在拖动开始之前就在 DOM 上——读屏不播报后插入的节点。

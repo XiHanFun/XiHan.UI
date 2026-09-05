@@ -14,6 +14,7 @@ export {
 export { imageViewerMeta } from './image-viewer.meta'
 export type {
   ImageViewerApi,
+  ImageViewerImageStatus,
   ImageViewerIndexChangeDetails,
   ImageViewerItem,
   ImageViewerOpenChangeDetails,

@@ -11,6 +11,9 @@ export const ANCHOR_DEFAULT_OFFSET = 0
 /** 压线判定的容差（px）。布局尺寸带小数，平滑滚动停稳时目标顶边常落在 offset+0.34 这类位置，严格比较会判成还没到。 */
 const EDGE_TOLERANCE = 1
 
+/** bounds 缺省时的容差，与 EDGE_TOLERANCE 同值。 */
+export const ANCHOR_DEFAULT_BOUNDS = EDGE_TOLERANCE
+
 /** 平滑滚动期间不采信观察器结果的兜底时长（ms）。 */
 const SCROLL_LOCK_MS = 1000
 
@@ -20,11 +23,13 @@ const SCROLL_LOCK_MS = 1000
  * @param targets 按文档序排好的目标区块，取最后一个越过判定线的
  * @param offset 判定线距容器视口顶边的距离
  * @param atEnd 滚动容器是否已经到底
+ * @param bounds 压线容差，缺省 ANCHOR_DEFAULT_BOUNDS
  */
 export function resolveActiveAnchor(
   targets: readonly AnchorTargetOffset[],
   offset: number,
   atEnd: boolean,
+  bounds: number = ANCHOR_DEFAULT_BOUNDS,
 ): string | null {
   if (targets.length === 0)
     return null
@@ -33,7 +38,7 @@ export function resolveActiveAnchor(
     return targets[targets.length - 1]!.value
   let active: string | null = null
   for (const target of targets) {
-    if (target.top - offset <= EDGE_TOLERANCE)
+    if (target.top - offset <= bounds)
       active = target.value
   }
   // 一节都没越过 = 还停在首节上方（大图、简介），此时宁可谁都不亮
@@ -230,7 +235,12 @@ export const anchorMachine = createMachine({
             return
           send({
             type: 'SPY.RESOLVE',
-            value: resolveActiveAnchor(offsets, prop('offset') ?? ANCHOR_DEFAULT_OFFSET, isScrolledToEnd(container, win)),
+            value: resolveActiveAnchor(
+              offsets,
+              prop('offset') ?? ANCHOR_DEFAULT_OFFSET,
+              isScrolledToEnd(container, win),
+              prop('bounds') ?? ANCHOR_DEFAULT_BOUNDS,
+            ),
           })
         }
 

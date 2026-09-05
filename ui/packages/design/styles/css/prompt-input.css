@@ -28,6 +28,10 @@
     --xh-_prompt-input-border-focus: var(--xh-_tone, var(--xh-border-control-focus));
     --xh-_prompt-input-shadow: var(--xh-elevation-raised);
 
+    /* 整框内衬的当前值，随尺寸档与 --xh-prompt-input-p 一起变。
+       附件条与动作行由作者写在 root 里、不是本组件的部件，它们靠读这一支对齐同一条内衬线 */
+    --xh-prompt-input-computed-px: var(--xh-prompt-input-p, var(--xh-_prompt-input-px));
+
     display: flex;
     align-items: flex-end;
     gap: var(--xh-prompt-input-gap, var(--xh-_prompt-input-gap));

@@ -50,6 +50,27 @@
     gap: var(--xh-rating-item-gap, var(--xh-_rating-item-gap));
   }
 
+  /* 分值文本在场时根改成两列栅格：星星带与分值并排，标题仍独占一整行。
+     没写这个部件的评分不命中这条，还是原来的竖排 */
+  [data-scope='rating'][data-part='root']:has(> [data-part='value-text']) {
+    display: inline-grid;
+    grid-template-columns: auto auto;
+    align-items: center;
+    justify-content: start;
+  }
+
+  [data-scope='rating'][data-part='root']:has(> [data-part='value-text']) > [data-part='label'] {
+    grid-column: 1 / -1;
+  }
+
+  /* 数字等宽：指针从一颗星划到另一颗时分值在原地变，不带着星星左右挪 */
+  [data-scope='rating'][data-part='value-text'] {
+    color: var(--xh-rating-value-text-fg, var(--xh-fg-muted));
+    font-size: var(--xh-rating-value-text-font-size, var(--xh-_rating-font-size));
+    font-variant-numeric: tabular-nums;
+    line-height: var(--xh-leading-none);
+  }
+
   /* 容器只是焦点域的兜底落点（焦点从带外进来先落在它身上，随即被转投给某颗星），
      落焦不画环：高亮永远长在星星上，容器再画一圈只是重影。 */
   [data-scope='rating'][data-part='control']:focus-visible {

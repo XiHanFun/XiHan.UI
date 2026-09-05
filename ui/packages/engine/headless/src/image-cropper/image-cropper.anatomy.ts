@@ -9,5 +9,7 @@ export const imageCropperAnatomy = createAnatomy('image-cropper', [
   'crop-area',
   'crop-handle',
   'grid',
+  'zoom-slider',
+  'rotate-slider',
   'hidden-input',
 ])

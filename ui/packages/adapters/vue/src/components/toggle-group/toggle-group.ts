@@ -1,4 +1,4 @@
-import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
+import type { ActionVariant, Direction, Orientation, Size, Tone } from '@xihan-ui/core'
 import type { ToggleGroupNode, ToggleGroupNodeMeta, ToggleGroupSchema, ToggleGroupValue } from '@xihan-ui/headless'
 import type { PropType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
@@ -18,8 +18,11 @@ export const XhToggleGroupRoot = defineComponent({
     multiple: { type: Boolean, default: undefined },
     disabled: { type: Boolean, default: undefined },
     disallowEmpty: { type: Boolean, default: undefined },
+    variant: { type: String as PropType<ActionVariant>, default: undefined },
     tone: { type: String as PropType<Tone>, default: undefined },
     size: { type: String as PropType<Size>, default: undefined },
+    fullWidth: { type: Boolean, default: undefined },
+    name: { type: String, default: undefined },
     orientation: { type: String as PropType<Orientation>, default: undefined },
     dir: { type: String as PropType<Direction>, default: undefined },
     loop: { type: Boolean, default: undefined },
@@ -83,6 +86,24 @@ export const XhToggleGroupItem = defineComponent({
       { ...ctx.api.value.getItemProps({ value: props.value, disabled: props.disabled }) as Record<string, unknown>, ref: itemEl },
       slots.default?.(),
     )
+  },
+})
+
+/** 段与段之间的装饰线；纯视觉，方向键与读屏都跳过它。 */
+export const XhToggleGroupSeparator = defineComponent({
+  name: 'XhToggleGroupSeparator',
+  setup() {
+    const ctx = useToggleGroupContext()
+    return () => h('span', ctx.api.value.getSeparatorProps() as Record<string, unknown>)
+  },
+})
+
+/** 表单出口：整组只有一份，给了 name 才参与提交。 */
+export const XhToggleGroupHiddenInput = defineComponent({
+  name: 'XhToggleGroupHiddenInput',
+  setup() {
+    const ctx = useToggleGroupContext()
+    return () => h('input', ctx.api.value.getHiddenInputProps() as Record<string, unknown>)
   },
 })
 

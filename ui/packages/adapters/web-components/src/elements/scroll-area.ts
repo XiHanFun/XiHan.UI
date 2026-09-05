@@ -1,5 +1,5 @@
 import type { Direction, IdGenerator, Orientation, Service, Size } from '@xihan-ui/core'
-import type { ScrollAreaOrientation, ScrollAreaProps, ScrollAreaScrollbarProps, ScrollbarSchema, ScrollbarType } from '@xihan-ui/headless'
+import type { ScrollAreaOrientation, ScrollAreaProps, ScrollAreaScrollbarProps, ScrollAreaVariant, ScrollbarSchema, ScrollbarType } from '@xihan-ui/headless'
 import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
 import { connectScrollArea, scrollAreaAnatomy, scrollAreaMeta, scrollAreaScrollbarProps, scrollbarAnatomy, scrollbarMachine } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
@@ -31,11 +31,12 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {'auto'|'always'|'scroll'|'hover'|'scroll-hover'} type - 滚动条露面的时机，默认 scroll-hover
  * @attr {number} hide-delay - 收起前的等待毫秒（type 为 scroll / hover / scroll-hover 时生效），默认 600
  * @attr {'horizontal'|'vertical'|'both'} orientation - 哪几条轴归本组件管，默认 both
- * @attr {'sm'|'md'|'lg'} size - 尺寸档，换的是滚动条厚度
+ * @attr {'plain'|'fade'} variant - 形态档，默认 plain；fade 在那一头还滚得动时把该侧内容淡出
+ * @attr {'sm'|'md'|'lg'} size - 尺寸档，换的是滚动条厚度，也是边缘渐隐的带宽
  * @attr {'ltr'|'rtl'} dir - 排版方向，只改写横轴的滚动量正负与指针位移方向
  * @attr {boolean} force-visible - 触屏（粗指针）上也画自绘滚动条；缺省交给原生滚动
  * @csspart root - 组件根容器（承载 data-orientation / data-reveal-mode / data-dragging），定位上下文
- * @csspart viewport - 真正 overflow:auto 的那层，带 tabindex=0 让键盘用户落得进来；承载 data-lane-vertical / data-lane-horizontal
+ * @csspart viewport - 真正 overflow:auto 的那层，带 tabindex=0 让键盘用户落得进来；承载 data-lane-vertical / data-lane-horizontal 与两条轴各自的 data-at-min-* / data-at-max-*
  * @csspart content - 内容包裹层，横向溢出靠它撑出宽度
  * @csspart scrollbar - 某条轴的滚动条挂载点，须用 orientation 属性写明轴向；同时是那条 scrollbar 的根，承载 data-state / data-gutter / data-native
  * @csspart track - 轨道（data-scope="scrollbar"），点空白处把滑块中心挪过去
@@ -57,6 +58,7 @@ export class XhScrollAreaElement extends XhElement {
     type: { converter: STRING_CONVERTER },
     hideDelay: { converter: NUMBER_CONVERTER, attribute: 'hide-delay' },
     orientation: { converter: STRING_CONVERTER },
+    variant: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     forceVisible: { converter: BOOLEAN_CONVERTER, attribute: 'force-visible' },
@@ -65,6 +67,7 @@ export class XhScrollAreaElement extends XhElement {
   declare type?: ScrollbarType
   declare hideDelay?: number
   declare orientation?: ScrollAreaOrientation
+  declare variant?: ScrollAreaVariant
   declare size?: Size
   declare direction?: Direction
   declare forceVisible?: boolean
@@ -92,6 +95,7 @@ export class XhScrollAreaElement extends XhElement {
       type: this.type,
       hideDelay: this.hideDelay,
       orientation: this.orientation,
+      variant: this.variant,
       size: this.size,
       dir: this.direction,
       forceVisible: this.forceVisible ?? false,

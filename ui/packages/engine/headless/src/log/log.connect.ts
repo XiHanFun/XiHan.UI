@@ -1,5 +1,5 @@
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
-import type { LogApi, LogProps, LogSchema } from './log.types'
+import type { LogApi, LogLineProps, LogProps, LogSchema } from './log.types'
 import { dataAttr } from '@xihan-ui/core'
 import { logAnatomy } from './log.anatomy'
 
@@ -46,6 +46,7 @@ export function connectLog<T extends PropTypes>(
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
+      'data-size': props.size,
       'data-loading': dataAttr(loading),
       'data-at-bottom': dataAttr(atBottom),
       'data-sticking': dataAttr(sticking),
@@ -70,9 +71,10 @@ export function connectLog<T extends PropTypes>(
       ...parts.content.attrs,
     }),
 
-    // 行只拿身份与等宽排版，文本、级别、标注全由作者写
-    getLineProps: () => normalize.element({
+    // 行拿身份、等宽排版与级别；文本、时间戳、标注全由作者写
+    getLineProps: (line?: LogLineProps) => normalize.element({
       ...parts.line.attrs,
+      'data-level': line?.level,
     }),
 
     // 收起时置 hidden，不卸载节点

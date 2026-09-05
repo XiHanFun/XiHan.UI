@@ -5,6 +5,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { defineComponent, h, nextTick } from 'vue'
 import {
   XhMentionContent,
+  XhMentionEmpty,
   XhMentionInput,
   XhMentionItem,
   XhMentionItemText,
@@ -40,6 +41,7 @@ function mountFromParts() {
             h(XhMentionItemText, () => node.label),
           ]),
         )),
+        h(XhMentionEmpty, () => 'No results'),
       ]),
     ]),
   }), { attachTo: document.body })
@@ -87,6 +89,7 @@ describe('mention 的 collection', () => {
       'item-text',
       'item',
       'item-text',
+      'empty',
     ])
     w.unmount()
   })
