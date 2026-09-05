@@ -15980,6 +15980,9 @@
               "name": "--xh-field-label-gap"
             },
             {
+              "name": "--xh-field-label-gap-block"
+            },
+            {
               "name": "--xh-field-label-leading"
             },
             {
@@ -18157,7 +18160,7 @@
               "name": "root"
             },
             {
-              "description": "单个字段的容器，须自带 value 属性标识字段名；带 id 供摘要链接指向。 组里的 `<xh-field>` 由表单驱动 invalid/required/disabled，作者显式设的会被顶掉",
+              "description": "单个字段的容器，须自带 value 属性标识字段名；带 id 供摘要链接指向。 grid 排布下再写个 `span` 属性（1 至 4，或 full 占满整行）就是这一格占多宽，落成 data-span； 运行期改写它不触发重新接线，需作者自行 requestUpdate。 组里的 `<xh-field>` 由表单驱动 invalid/required/disabled，作者显式设的会被顶掉",
               "name": "field-group"
             },
             {
@@ -18261,6 +18264,15 @@
                 "text": "FormSchema['props']['layout'] | undefined"
               },
               "attribute": "layout"
+            },
+            {
+              "kind": "field",
+              "name": "columns",
+              "privacy": "public",
+              "type": {
+                "text": "FormColumns | undefined"
+              },
+              "attribute": "columns"
             },
             {
               "kind": "field",
@@ -18570,9 +18582,17 @@
               "type": {
                 "text": "FormSchema['props']['layout'] | undefined"
               },
-              "description": "排布：vertical（默认）/ horizontal（标签左置两列）/ inline（横排一行流）",
+              "description": "排布：vertical（默认）/ horizontal（标签左置两列）/ inline（横排一行流）/ grid（等宽列的网格）",
               "name": "layout",
               "fieldName": "layout"
+            },
+            {
+              "type": {
+                "text": "FormColumns | undefined"
+              },
+              "description": "grid 下分几列（1 至 4 的整数），不写或超出范围按一列排；写 JSON 对象则逐档给列数（base / sm / md / lg / xl）",
+              "name": "columns",
+              "fieldName": "columns"
             },
             {
               "type": {
@@ -50049,6 +50069,9 @@
             },
             {
               "name": "--xh-tool-call-font-size"
+            },
+            {
+              "name": "--xh-tool-call-icon-size"
             },
             {
               "name": "--xh-tool-call-indicator-fg"

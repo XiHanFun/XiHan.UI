@@ -96,9 +96,15 @@ rules 按字段声明 required/min/max/pattern/type，一个字段多条规则�
 
 ### 排布
 
-layout 三档：vertical 竖排（默认）、horizontal 标签左置两列（labelWidth 统一列宽、labelAlign 换对齐缘）、inline 横排一行流；整表标签对齐一个开关搞定，不必逐字段写栅格
+layout 四档：vertical 竖排（默认）、horizontal 标签左置两列（labelWidth 统一列宽、labelAlign 换对齐缘）、inline 横排一行流、grid 等宽列的网格（columns 给列数）；整表排布一个开关搞定，不必逐字段写栅格
 
 <XhDemo src="form/13-layout" />
+
+### 网格排布
+
+columns 给列数、窄视口自动收成一列；字段自报 span 跨列，span="full" 占满整行且跟着当下列数走
+
+<XhDemo src="form/14-grid" />
 
 ## 产物
 
@@ -129,6 +135,7 @@ layout 三档：vertical 竖排（默认）、horizontal 标签左置两列（la
 | `validateMessages` | `FormValidateMessages` |  | 规则文案模板，{name}/{min}/{max} 现场代入；缺省用内置英文模板。 |
 | `validateOn` | `FormValidateOn` |  | 校验时机，默认 submit。 |
 | `layout` | `FormLayout` |  | 排布，默认 vertical。 |
+| `columns` | `FormColumns` |  | grid 排布下分几列：1 至 4 的整数，不写按一列排；范围外的值也按一列排。 也收断点对象 `{ base, sm, md, lg, xl }`，逐档写各自的列数，没写的档沿用比它窄的那一档。 其余三档排布下不参与排版。 |
 | `labelWidth` | `number \| string` |  | horizontal 下标签列宽（number 视作 px），整表统一、字段据此对齐。 |
 | `labelAlign` | `'start' \| 'end'` |  | horizontal 下标签文字的对齐缘，默认 end（贴着控件）。 |
 | `disabled` | `boolean` |  | 整个表单禁用：提交、重置、写值一概不发生，两颗按钮带原生 disabled。 |
@@ -237,6 +244,11 @@ layout 三档：vertical 竖排（默认）、horizontal 标签左置两列（la
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `root` | `data-columns` | columns.base |
+| `root` | `data-columns-lg` | columns.lg |
+| `root` | `data-columns-md` | columns.md |
+| `root` | `data-columns-sm` | columns.sm |
+| `root` | `data-columns-xl` | columns.xl |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
 | `root` | `data-invalid` | ''（条件成立时才出现） |
 | `root` | `data-label-align` | props.labelAlign |
@@ -246,6 +258,7 @@ layout 三档：vertical 竖排（默认）、horizontal 标签左置两列（la
 | `field-group` | `data-disabled` | ''（条件成立时才出现） |
 | `field-group` | `data-invalid` | ''（条件成立时才出现） |
 | `field-group` | `data-readonly` | ''（条件成立时才出现） |
+| `field-group` | `data-span` | fieldSpan(field.span) |
 | `error-summary` | `data-count` | String(errorCount) |
 | `error-summary` | `data-state` | 'invalid' \| 'idle' |
 | `error-summary-item` | `data-invalid` | ''（条件成立时才出现） |
@@ -263,6 +276,10 @@ layout 三档：vertical 竖排（默认）、horizontal 标签左置两列（la
 关键帧 `xh-form-summary-enter` 随皮肤自带，不引用别处文件里的名字；`background` · `box-shadow` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+## 响应式
+
+皮肤按视口分档：`min-width: 1024px` · `min-width: 1280px` · `min-width: 640px` · `min-width: 768px`。
 
 ## RTL
 

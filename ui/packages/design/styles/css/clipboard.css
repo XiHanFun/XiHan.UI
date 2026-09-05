@@ -272,6 +272,24 @@
     box-shadow: none;
   }
 
+  /* 手指落点：命中区由绝对定位的伪元素向块轴两侧外扩，钮的盒一点不动——
+     加高按钮会把它与同一行的输入框顶得高低不齐。
+     只扩块轴：行内轴上紧挨着输入框，往两侧扩会盖到输入框的命中区上。
+     取 8px 是按最矮的 sm 档算的（28 + 8 × 2 = 44），md 与 lg 档更宽裕。
+     用 ::after：::before 已经被写入在途那枚圆环占着 */
+  @media (pointer: coarse) {
+    [data-scope='clipboard'][data-part='copy-trigger'] {
+      position: relative;
+    }
+
+    [data-scope='clipboard'][data-part='copy-trigger']::after {
+      content: '';
+      position: absolute;
+      inset-block: -8px;
+      inset-inline: 0;
+    }
+  }
+
   /* 复制成功的文字回执：读屏念得到，屏幕上不占位。
      视觉隐藏的配方与 .xh-visually-hidden 逐条同值——1px 盒绝对定位、裁掉、文本不换行。
      刻意不写 display：display:none 的节点读屏根本不念 */

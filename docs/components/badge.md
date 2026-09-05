@@ -46,6 +46,12 @@ tone 决定用哪族颜色——角标现实里主要是未读红点与在线/�
 
 <XhDemo src="badge/03-tone-size" />
 
+### 自定义角标内容
+
+拆成 Root + Indicator 两件：角标里能自己排版，插槽拿得到算好的计数；不写内容才回落那串数字，showZero 让 0 留在原地
+
+<XhDemo src="badge/04-custom-indicator" />
+
 ## 产物
 
 | 层 | 值 |

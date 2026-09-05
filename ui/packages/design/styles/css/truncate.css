@@ -40,6 +40,14 @@
   [data-scope='truncate'][data-part='root'][data-expandable][data-overflowing],
   [data-scope='truncate'][data-part='root'][data-expandable][data-state='open'] {
     cursor: pointer;
+    transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  /* 是按钮的那一档才提亮：指针停在上面时这段文字与正文分开，
+     按不动的短文本不给这个反馈 */
+  [data-scope='truncate'][data-part='root'][data-expandable][data-overflowing]:hover,
+  [data-scope='truncate'][data-part='root'][data-expandable][data-state='open']:hover {
+    color: var(--xh-fg-default);
   }
 
   /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。

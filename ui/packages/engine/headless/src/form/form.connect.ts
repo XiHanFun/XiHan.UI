@@ -1,5 +1,5 @@
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
-import type { FormApi, FormSchema } from './form.types'
+import type { FormApi, FormColumns, FormColumnsByBreakpoint, FormFieldSpan, FormSchema } from './form.types'
 import { contains, dataAttr } from '@xihan-ui/core'
 import { FORM_FIELD_NAME_ATTR, formAnatomy, formFieldId } from './form.anatomy'
 import { formErrorNames } from './form.errors'
@@ -7,6 +7,44 @@ import { formValidateOn } from './form.machine'
 import { hasRequiredRule } from './form.rules'
 
 const parts = formAnatomy.build()
+
+/** 断点档位，自窄到宽。 */
+const COLUMN_BREAKPOINTS = ['sm', 'md', 'lg', 'xl'] as const
+
+/** 列数与跨列的取值上限，与皮肤逐值写出的那一批规则同一个范围。 */
+const MAX_COLUMN_COUNT = 4
+
+/**
+ * 列数落成字符串，两个适配器写到 DOM 上的值一致；没给就不写这个属性。
+ * 只有 1 到上限的整数落得下去，0、负数、小数与超出上限的一律按没写算——
+ * 类型只管得住 TypeScript 那一路，特性写的是字符串、property 也收得下任意数字，
+ * 落一个皮肤没有规则接的值，等于既不生效又看不出写错在哪。
+ */
+function columnTier(value: number | undefined): string | undefined {
+  if (value == null || !Number.isInteger(value) || value < 1 || value > MAX_COLUMN_COUNT)
+    return undefined
+  return String(value)
+}
+
+/** 逐档落到 DOM 上的字符串，档位名与断点令牌同名。 */
+type ColumnTiers = Record<'base' | typeof COLUMN_BREAKPOINTS[number], string | undefined>
+
+/**
+ * 列数归一成五档字符串：给整数或不给时只有 base 那一格有值；
+ * 给断点对象时逐档取，没写的档是 undefined。
+ */
+function columnTiers(value: FormColumns | undefined): ColumnTiers {
+  const byTier: FormColumnsByBreakpoint = value != null && typeof value === 'object' ? value : { base: value }
+  const out = { base: columnTier(byTier.base) } as ColumnTiers
+  for (const at of COLUMN_BREAKPOINTS)
+    out[at] = columnTier(byTier[at])
+  return out
+}
+
+/** 跨列落成字符串：'full' 原样落下，数字走列数那一套范围判定。 */
+function fieldSpan(value: FormFieldSpan | undefined): string | undefined {
+  return value === 'full' ? 'full' : columnTier(value)
+}
 
 export function connectForm<T extends PropTypes>(
   service: Service<FormSchema>,
@@ -54,35 +92,44 @@ export function connectForm<T extends PropTypes>(
     submit: () => send({ type: 'SUBMIT' }),
     reset: () => send({ type: 'RESET' }),
 
-    getRootProps: () => normalize.element({
-      ...parts.root.attrs,
-      // 关掉浏览器自带的约束校验：首个不合规的控件会让 submit 事件压根不派发。
-      // 值写空串不写 true：两个适配器对布尔属性的落法不同，空串两侧落出的 DOM 才逐字相同
-      'novalidate': '',
-      'data-state': stateAttr,
-      'data-layout': prop('layout'),
-      'data-label-align': prop('labelAlign'),
-      // 标签列宽写成 CSS 变量：横排下整表字段照它对齐
-      'style': prop('labelWidth') != null
-        ? { '--xh-form-label-w': typeof prop('labelWidth') === 'number' ? `${prop('labelWidth')}px` : String(prop('labelWidth')) }
-        : undefined,
-      'data-disabled': dataAttr(disabled),
-      'data-readonly': dataAttr(readOnly),
-      'data-invalid': dataAttr(invalid),
-      'onSubmit': (event: Event) => {
-        // 一律拦，包括禁用时：不拦则禁用的表单会真的提交出去
-        event.preventDefault()
-        // WC 侧组件自己派发同名语义事件，这条原生事件再往上冒会让作者收到两条
-        event.stopPropagation()
-        send({ type: 'SUBMIT' })
-      },
-      'onReset': (event: Event) => {
-        // 放行重置的默认行为，非受控的原生控件靠它还原成初始值；只在改不动时才拦
-        if (!editable)
+    getRootProps: () => {
+      // 列数逐档落成 data-columns 与 data-columns-<档>，哪一档在多宽的视口上接管由皮肤定
+      const columns = columnTiers(prop('columns'))
+      return normalize.element({
+        ...parts.root.attrs,
+        // 关掉浏览器自带的约束校验：首个不合规的控件会让 submit 事件压根不派发。
+        // 值写空串不写 true：两个适配器对布尔属性的落法不同，空串两侧落出的 DOM 才逐字相同
+        'novalidate': '',
+        'data-state': stateAttr,
+        'data-layout': prop('layout'),
+        'data-columns': columns.base,
+        'data-columns-sm': columns.sm,
+        'data-columns-md': columns.md,
+        'data-columns-lg': columns.lg,
+        'data-columns-xl': columns.xl,
+        'data-label-align': prop('labelAlign'),
+        // 标签列宽写成 CSS 变量：横排下整表字段照它对齐
+        'style': prop('labelWidth') != null
+          ? { '--xh-form-label-w': typeof prop('labelWidth') === 'number' ? `${prop('labelWidth')}px` : String(prop('labelWidth')) }
+          : undefined,
+        'data-disabled': dataAttr(disabled),
+        'data-readonly': dataAttr(readOnly),
+        'data-invalid': dataAttr(invalid),
+        'onSubmit': (event: Event) => {
+          // 一律拦，包括禁用时：不拦则禁用的表单会真的提交出去
           event.preventDefault()
-        send({ type: 'RESET' })
-      },
-    }),
+          // WC 侧组件自己派发同名语义事件，这条原生事件再往上冒会让作者收到两条
+          event.stopPropagation()
+          send({ type: 'SUBMIT' })
+        },
+        'onReset': (event: Event) => {
+          // 放行重置的默认行为，非受控的原生控件靠它还原成初始值；只在改不动时才拦
+          if (!editable)
+            event.preventDefault()
+          send({ type: 'RESET' })
+        },
+      })
+    },
 
     // 不给 role：字段的名字与描述由里面的 Field 自己接线，这里只负责身份、状态与失焦上报
     getFieldGroupProps: field => normalize.element({
@@ -92,6 +139,8 @@ export function connectForm<T extends PropTypes>(
       [FORM_FIELD_NAME_ATTR]: field.name,
       // 容器里的控件全禁用时，焦点至少落得到这块区域上
       'tabindex': -1,
+      // 网格排布下这一格占多宽，其余排布下皮肤不接这个属性
+      'data-span': fieldSpan(field.span),
       'data-invalid': dataAttr(fieldError(field.name) !== undefined),
       'data-disabled': dataAttr(disabled),
       'data-readonly': dataAttr(readOnly),

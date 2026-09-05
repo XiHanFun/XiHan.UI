@@ -1,3 +1,17 @@
+@layer xihan.motion {
+  /* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
+     动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
+  @keyframes xh-fade-in {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+}
+
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
   [data-scope='avatar'] {
@@ -47,12 +61,15 @@
     color: var(--xh-avatar-fg, var(--xh-_tone-fg, var(--xh-fg-muted)));
   }
 
-  /* 不声明 display，加载完成前的 hidden 直接交给浏览器的 [hidden] 规则收起 */
+  /* 不声明 display，加载完成前的 hidden 直接交给浏览器的 [hidden] 规则收起。
+     载完那一刻 hidden 撤掉、这个节点从不显示变为显示，淡入在那一刻起跑，
+     图片不是硬切上来盖掉回退字 */
   [data-scope='avatar'][data-part='image'] {
     inline-size: 100%;
     block-size: 100%;
     border-radius: inherit;
     object-fit: cover;
+    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
   }
 
   [data-scope='avatar'][data-part='fallback'] {

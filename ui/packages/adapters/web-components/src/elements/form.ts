@@ -1,7 +1,11 @@
 import type {
   FormApi,
+  FormColumnCount,
+  FormColumns,
+  FormColumnsByBreakpoint,
   FormErrorPatch,
   FormErrorsChangeDetails,
+  FormFieldSpan,
   FormInvalidDetails,
   FormSchema,
   FormSubmitDetails,
@@ -19,6 +23,43 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 // 三态布尔：缺席=undefined（走缺省）、在场=true、显式写 "false"=false。
 // Lit 自带的 Boolean 转换器判的是 v !== null，写 disabled="false" 反而成了真
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
+
+/**
+ * 列数写整数就是各档同一个列数（`columns="2"`），写 JSON 对象就是逐档的列数
+ * （`columns='{"base":1,"md":2}'`）。解析不出对象时当没写：落一个半截对象进去，
+ * 缺的那几档会安静地退回一列，而作者看不出是哪里写坏了。
+ */
+const COLUMNS_CONVERTER = {
+  fromAttribute: (v: string | null) => {
+    if (v === null)
+      return undefined
+    if (!v.trimStart().startsWith('{'))
+      return Number(v) as FormColumnCount
+    try {
+      const parsed: unknown = JSON.parse(v)
+      return parsed !== null && typeof parsed === 'object' && !Array.isArray(parsed)
+        ? (parsed as FormColumnsByBreakpoint)
+        : undefined
+    }
+    catch {
+      return undefined
+    }
+  },
+}
+
+/**
+ * 读字段容器自报的跨列：属性缺席或为空时当作没写。
+ * 写 full 就是占满整行，写整数就是跨这么多列；取值范围由 connect 判。
+ */
+function fieldSpanOf(el: HTMLElement): FormFieldSpan | undefined {
+  const raw = el.getAttribute('span')
+  if (raw == null || raw.trim() === '')
+    return undefined
+  if (raw.trim() === 'full')
+    return 'full'
+  const n = Number(raw)
+  return Number.isFinite(n) ? (n as FormColumnCount) : undefined
+}
 
 /**
  * 字段容器与摘要条目自报的字段名，取作者写的 `value` 属性。
@@ -50,7 +91,8 @@ function fieldNameOf(el: HTMLElement): string {
  *
  * @customElement xh-form
  * @attr {string} validate-on - 校验时机：submit（默认）/ blur / change
- * @attr {string} layout - 排布：vertical（默认）/ horizontal（标签左置两列）/ inline（横排一行流）
+ * @attr {string} layout - 排布：vertical（默认）/ horizontal（标签左置两列）/ inline（横排一行流）/ grid（等宽列的网格）
+ * @attr {number|string} columns - grid 下分几列（1 至 4 的整数），不写或超出范围按一列排；写 JSON 对象则逐档给列数（base / sm / md / lg / xl）
  * @attr {string} label-width - horizontal 下标签列宽（CSS 长度），整表统一对齐
  * @attr {string} label-align - horizontal 下标签对齐缘：end（默认，贴控件）/ start
  * @attr {boolean} disabled - 整个表单禁用：提交、重置、写值一概不发生，两颗按钮带原生 disabled
@@ -61,6 +103,8 @@ function fieldNameOf(el: HTMLElement): string {
  * @fires invalid - 校验不通过时派发；detail 为 `{ errors, values }`
  * @csspart root - 表单根容器，必须是原生 `<form>`（承载 data-state/data-disabled/data-readonly/data-invalid）
  * @csspart field-group - 单个字段的容器，须自带 value 属性标识字段名；带 id 供摘要链接指向。
+ *   grid 排布下再写个 `span` 属性（1 至 4，或 full 占满整行）就是这一格占多宽，落成 data-span；
+ *   运行期改写它不触发重新接线，需作者自行 requestUpdate。
  *   组里的 `<xh-field>` 由表单驱动 invalid/required/disabled，作者显式设的会被顶掉
  * @csspart error-summary - role=alert 的错误汇总（一次提交失败里唯一打断朗读的活区），提交失败且仍有错误时才显形
  * @csspart error-summary-item - 摘要里的一条，须是原生 `<a>` 且自带 value 属性标识字段名；无对应错误时带 hidden
@@ -83,6 +127,7 @@ export class XhFormElement extends XhElement {
     validateMessages: { attribute: false },
     validateOn: { converter: STRING_CONVERTER, attribute: 'validate-on' },
     layout: { converter: STRING_CONVERTER },
+    columns: { converter: COLUMNS_CONVERTER },
     labelWidth: { converter: STRING_CONVERTER, attribute: 'label-width' },
     labelAlign: { converter: STRING_CONVERTER, attribute: 'label-align' },
     disabled: { converter: BOOLEAN_CONVERTER },
@@ -99,6 +144,7 @@ export class XhFormElement extends XhElement {
   declare validateMessages?: FormSchema['props']['validateMessages']
   declare validateOn?: FormValidateOn
   declare layout?: FormSchema['props']['layout']
+  declare columns?: FormColumns
   declare labelWidth?: string
   declare labelAlign?: FormSchema['props']['labelAlign']
   declare disabled?: boolean
@@ -142,6 +188,7 @@ export class XhFormElement extends XhElement {
       validateMessages: this.validateMessages,
       validateOn: this.validateOn,
       layout: this.layout,
+      columns: this.columns,
       labelWidth: this.labelWidth,
       labelAlign: this.labelAlign,
       disabled: this.disabled ?? false,
@@ -236,7 +283,7 @@ export class XhFormElement extends XhElement {
     // 字段容器与摘要条目都是多实例 part，逐个打：身份取作者写的 value 属性
     for (const el of this.getParts('field-group')) {
       const name = fieldNameOf(el)
-      this.spreader.spread(el, api.getFieldGroupProps({ name }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getFieldGroupProps({ name, span: fieldSpanOf(el) }) as Record<string, unknown>)
       // Form-Field 打通：组里的 xh-field 由表单驱动校验态与必填标记，
       // 表单不禁用时 disabled 交还元素自己的缺省
       for (const field of el.querySelectorAll<HTMLElement & { invalid?: boolean, required?: boolean, disabled?: boolean }>('xh-field')) {

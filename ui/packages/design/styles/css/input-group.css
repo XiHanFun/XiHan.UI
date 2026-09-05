@@ -106,7 +106,9 @@
 
   /* —— 前后缀块 —— */
   /* 与邻座同高、同一条描边、同一档字号：它是框的一部分，不是框旁边的一段文字。
-     不可交互，所以不接按压反馈也不进 Tab 序列 */
+     不可交互，所以不接按压反馈也不进 Tab 序列。
+     三个色槽换值时按 micro 走一遍：这块的描边与邻座控件那条边是同一根线，
+     控件那侧五态换色是过渡过去的，这一侧硬切就会看见半根线先变 */
   [data-scope='input-group'][data-part='item'] {
     display: inline-flex;
     flex: none;
@@ -119,6 +121,10 @@
     font-size: var(--xh-input-group-item-font-size, var(--xh-_input-group-font-size));
     line-height: var(--xh-leading-none);
     white-space: nowrap;
+    transition:
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='input-group'][data-part='item'][hidden] {

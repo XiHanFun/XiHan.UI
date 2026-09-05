@@ -1,4 +1,4 @@
-<!-- 排布 | layout 三档：vertical 竖排（默认）、horizontal 标签左置两列（labelWidth 统一列宽、labelAlign 换对齐缘）、inline 横排一行流；整表标签对齐一个开关搞定，不必逐字段写栅格 -->
+<!-- 排布 | layout 四档：vertical 竖排（默认）、horizontal 标签左置两列（labelWidth 统一列宽、labelAlign 换对齐缘）、inline 横排一行流、grid 等宽列的网格（columns 给列数）；整表排布一个开关搞定，不必逐字段写栅格 -->
 <div style="display: grid; gap: 16px; justify-items: start">
   <label style="display: flex; gap: 8px; align-items: center; font-size: 13px">
     排布
@@ -6,10 +6,16 @@
       <option value="vertical">vertical</option>
       <option value="horizontal" selected>horizontal</option>
       <option value="inline">inline</option>
+      <option value="grid">grid</option>
     </select>
   </label>
 
-  <xh-form id="form-layout" layout="horizontal" label-width="96px">
+  <xh-form
+    id="form-layout"
+    layout="horizontal"
+    columns='{"base":1,"md":2}'
+    label-width="96px"
+  >
     <form data-xh-part="root" style="inline-size: 100%; max-inline-size: 460px">
       <div data-xh-part="field-group" value="username">
         <xh-field>

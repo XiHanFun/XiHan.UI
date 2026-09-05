@@ -39,7 +39,19 @@
     position: absolute;
     z-index: 1;
     display: block;
+    background: transparent;
     touch-action: none;
+    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  /* 指针停到可抓的那一条上，那条就显形；正在拖的那一条另换一档。
+     两档都只在把手自己那几像素上着色，容器里的内容不受影响 */
+  [data-scope='resizable'][data-part='handle']:hover {
+    background: var(--xh-bg-subtle-active);
+  }
+
+  [data-scope='resizable'][data-part='handle'][data-resizing] {
+    background: var(--xh-bg-brand);
   }
 
   [data-scope='resizable'][data-part='handle'][hidden] {
@@ -110,5 +122,13 @@
   /* 没开放的边不显示把手：留着一个抓不动的区域只会让人反复去试 */
   [data-scope='resizable'][data-part='handle'][data-disabled] {
     display: none;
+  }
+
+  @media (forced-colors: active) {
+    /* 把手那两档全是底色画出来的，这一档里底色被统一换成系统底色，两档与静息塌成一个样子。
+       改由描边把正在拖的那一条画出来 */
+    [data-scope='resizable'][data-part='handle'][data-resizing] {
+      outline: var(--xh-stroke-thick) solid Highlight;
+    }
   }
 }
