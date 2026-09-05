@@ -392,8 +392,10 @@
     color: var(--xh-select-placeholder-fg, var(--xh-fg-subtle));
   }
 
-  /* 有值时清空钮顶上来，箭头让位：两个图标并排堆着，用户分不清点哪个 */
-  [data-scope='select'][data-part='indicator'][data-clearable] {
+  /* 有值时清空钮顶上来，箭头让位：两个图标并排堆着，用户分不清点哪个。
+     判据查的是盒里此刻真有一颗没收起的清空钮，不是「有没有值」——
+     作者没摆清空钮时箭头照常留着，不然让了位没人接，指示符整个消失 */
+  [data-scope='select'][data-part='control']:has([data-part='clear-trigger']:not([hidden])) [data-part='indicator'] {
     display: none;
   }
 
