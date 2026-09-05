@@ -46,7 +46,7 @@ XiHan.UI 以框架无关的 Headless Core 为核心：一个组件的状态、�
 
 ## 安装
 
-18 个公开包全部发布在 npm，版本以上方的 npm 徽章为准。
+16 个公开包全部发布在 npm，版本以上方的 npm 徽章为准。
 
 ```bash
 pnpm add @xihan-ui/vue @xihan-ui/tokens @xihan-ui/styles
