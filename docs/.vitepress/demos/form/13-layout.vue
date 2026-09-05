@@ -1,4 +1,4 @@
-<!-- 排布 | layout 三档：vertical 竖排（默认）、horizontal 标签左置两列（labelWidth 统一列宽、labelAlign 换对齐缘）、inline 横排一行流；整表标签对齐一个开关搞定，不必逐字段写栅格 -->
+<!-- 排布 | layout 四档：vertical 竖排（默认）、horizontal 标签左置两列（labelWidth 统一列宽、labelAlign 换对齐缘）、inline 横排一行流、grid 等宽列的网格（columns 给列数）；整表排布一个开关搞定，不必逐字段写栅格 -->
 <script setup lang="ts">
 import type { FormLayout } from "@xihan-ui/headless";
 import { ref } from "vue";
@@ -13,7 +13,7 @@ import {
 } from "@xihan-ui/vue";
 
 const layout = ref<FormLayout>("horizontal");
-const layouts: FormLayout[] = ["vertical", "horizontal", "inline"];
+const layouts: FormLayout[] = ["vertical", "horizontal", "inline", "grid"];
 
 const fields = [
   { name: "username", label: "用户名", placeholder: "字母开头" },
@@ -38,6 +38,7 @@ const rules = {
 
     <XhFormRoot
       :layout="layout"
+      :columns="{ base: 1, md: 2 }"
       :label-width="96"
       :rules="rules"
       :default-values="{ username: '', email: '', city: '' }"

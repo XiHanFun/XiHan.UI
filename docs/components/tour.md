@@ -38,6 +38,12 @@ steps 是唯一事实源，组件只按下标取用；每步的 target 是一个
 
 <XhDemo src="tour/03-controlled" />
 
+### 按步定制正文
+
+标题与说明之外，正文按当前步的 id 换成自己的一块内容；showBackdrop 关掉那层压暗，引导与页面一起看
+
+<XhDemo src="tour/04-per-step" />
+
 ## 产物
 
 | 层 | 值 |

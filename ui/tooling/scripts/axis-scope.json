@@ -1,0 +1,374 @@
+{
+  "accordion": [
+    "variant",
+    "size"
+  ],
+  "affix": [],
+  "alert": [],
+  "anchor": [
+    "size"
+  ],
+  "approval": [
+    "variant",
+    "size"
+  ],
+  "avatar": [
+    "tone",
+    "size"
+  ],
+  "avatar-group": [
+    "size"
+  ],
+  "back-top": [
+    "variant",
+    "size"
+  ],
+  "badge": [
+    "size"
+  ],
+  "breadcrumb": [
+    "size"
+  ],
+  "button": [
+    "variant",
+    "size"
+  ],
+  "button-group": [
+    "variant",
+    "size"
+  ],
+  "calendar": [],
+  "card": [
+    "variant",
+    "size"
+  ],
+  "carousel": [],
+  "cascader": [
+    "variant",
+    "size"
+  ],
+  "checkbox": [
+    "size"
+  ],
+  "checkbox-group": [
+    "size"
+  ],
+  "clipboard": [
+    "variant",
+    "size"
+  ],
+  "code-view": [
+    "size"
+  ],
+  "collapsible": [
+    "size"
+  ],
+  "color-picker": [
+    "size"
+  ],
+  "combobox": [
+    "variant",
+    "size"
+  ],
+  "command": [
+    "variant",
+    "size"
+  ],
+  "context-menu": [
+    "size"
+  ],
+  "date-field": [
+    "variant",
+    "size"
+  ],
+  "date-picker": [
+    "variant",
+    "size"
+  ],
+  "descriptions": [
+    "size"
+  ],
+  "dialog": [
+    "variant",
+    "tone",
+    "size"
+  ],
+  "diff-view": [
+    "size"
+  ],
+  "download-trigger": [
+    "variant",
+    "size"
+  ],
+  "drawer": [
+    "variant",
+    "size"
+  ],
+  "editable": [
+    "variant",
+    "size"
+  ],
+  "empty-state": [
+    "tone",
+    "size"
+  ],
+  "field": [],
+  "field-array": [],
+  "fieldset": [],
+  "file-upload": [],
+  "flex": [],
+  "float-button": [
+    "variant",
+    "size"
+  ],
+  "floating-panel": [],
+  "form": [],
+  "gradient-text": [
+    "tone"
+  ],
+  "grid": [],
+  "heatmap": [
+    "variant",
+    "tone",
+    "size"
+  ],
+  "highlight": [
+    "tone"
+  ],
+  "hotkeys": [
+    "size"
+  ],
+  "hover-card": [
+    "size"
+  ],
+  "icon": [
+    "tone",
+    "size"
+  ],
+  "icon-wrapper": [
+    "variant",
+    "size"
+  ],
+  "image": [],
+  "image-cropper": [],
+  "image-viewer": [
+    "variant"
+  ],
+  "infinite-scroll": [],
+  "input-group": [
+    "size"
+  ],
+  "json-viewer": [
+    "variant",
+    "size"
+  ],
+  "layout": [],
+  "list": [
+    "size"
+  ],
+  "listbox": [
+    "size"
+  ],
+  "loading-bar": [],
+  "log": [
+    "size"
+  ],
+  "markdown-stream": [
+    "size"
+  ],
+  "marquee": [],
+  "masonry": [],
+  "mention": [
+    "variant",
+    "size"
+  ],
+  "menu": [
+    "size"
+  ],
+  "menubar": [
+    "size"
+  ],
+  "message-feed": [
+    "size"
+  ],
+  "navigation-menu": [
+    "size"
+  ],
+  "notification": [],
+  "number-animation": [
+    "size"
+  ],
+  "number-field": [
+    "variant",
+    "size"
+  ],
+  "page-header": [
+    "variant",
+    "size"
+  ],
+  "pagination": [
+    "size"
+  ],
+  "password-input": [
+    "variant",
+    "tone",
+    "size"
+  ],
+  "pin-input": [
+    "variant",
+    "size"
+  ],
+  "popconfirm": [
+    "size"
+  ],
+  "popover": [
+    "size"
+  ],
+  "progress": [
+    "variant",
+    "size"
+  ],
+  "prompt-input": [
+    "variant",
+    "size"
+  ],
+  "qr-code": [],
+  "question-flow": [
+    "variant",
+    "size"
+  ],
+  "radio-group": [
+    "size"
+  ],
+  "rating": [
+    "size"
+  ],
+  "reasoning": [
+    "variant",
+    "tone",
+    "size"
+  ],
+  "resizable": [],
+  "scroll-area": [
+    "variant",
+    "size"
+  ],
+  "scrollbar": [
+    "size"
+  ],
+  "segmented": [
+    "tone",
+    "size"
+  ],
+  "select": [
+    "variant",
+    "size"
+  ],
+  "separator": [
+    "variant"
+  ],
+  "side-nav": [
+    "size"
+  ],
+  "signature-pad": [],
+  "skeleton": [],
+  "slider": [
+    "size"
+  ],
+  "sortable": [],
+  "spinner": [
+    "variant",
+    "tone",
+    "size"
+  ],
+  "splitter": [],
+  "statistic": [
+    "size"
+  ],
+  "steps": [
+    "size"
+  ],
+  "switch": [
+    "size"
+  ],
+  "table": [
+    "size"
+  ],
+  "tabs": [
+    "variant",
+    "size"
+  ],
+  "tag": [
+    "variant",
+    "tone",
+    "size"
+  ],
+  "tag-group": [
+    "variant",
+    "tone",
+    "size"
+  ],
+  "tags-input": [
+    "variant",
+    "size"
+  ],
+  "text-field": [
+    "variant",
+    "size"
+  ],
+  "time-field": [
+    "variant",
+    "size"
+  ],
+  "time-picker": [
+    "variant",
+    "size"
+  ],
+  "timeline": [
+    "size"
+  ],
+  "timer": [
+    "size"
+  ],
+  "timestamp": [],
+  "toast": [],
+  "toggle": [
+    "variant",
+    "size"
+  ],
+  "toggle-group": [
+    "variant",
+    "size"
+  ],
+  "tool-call": [
+    "variant",
+    "tone",
+    "size"
+  ],
+  "toolbar": [
+    "variant",
+    "size"
+  ],
+  "tooltip": [
+    "size"
+  ],
+  "tour": [],
+  "transfer": [
+    "size"
+  ],
+  "tree": [
+    "variant"
+  ],
+  "tree-select": [
+    "variant",
+    "size"
+  ],
+  "truncate": [],
+  "typography": [
+    "variant",
+    "tone",
+    "size"
+  ],
+  "virtualizer": [],
+  "watermark": []
+}

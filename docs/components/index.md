@@ -61,11 +61,11 @@
 | [页头](./page-header) | `page-header` | 8 | 0 | 7 |
 | [分页](./pagination) | `pagination` | 10 | 6 | 11 |
 | [分段控制器](./segmented) | `segmented` | 5 | 6 | 8 |
-| [侧栏导航](./side-nav) | `side-nav` | 13 | 10 | 3 |
+| [侧栏导航](./side-nav) | `side-nav` | 13 | 10 | 4 |
 | [步骤条](./steps) | `steps` | 9 | 6 | 8 |
 | [标签页](./tabs) | `tabs` | 8 | 7 | 14 |
 | [工具栏](./toolbar) | `toolbar` | 4 | 6 | 8 |
-| [引导](./tour) | `tour` | 15 | 4 | 3 |
+| [引导](./tour) | `tour` | 15 | 4 | 4 |
 
 ## 数据录入
 
@@ -85,9 +85,9 @@
 | [字段数组](./field-array) | `field-array` | 9 | 0 | 5 |
 | [字段集](./fieldset) | `fieldset` | 6 | 0 | 5 |
 | [文件上传](./file-upload) | `file-upload` | 13 | 5 | 11 |
-| [表单](./form) | `form` | 6 | 0 | 13 |
+| [表单](./form) | `form` | 6 | 0 | 14 |
 | [图片裁切](./image-cropper) | `image-cropper` | 9 | 5 | 7 |
-| [输入组](./input-group) | `input-group` | 2 | 0 | 3 |
+| [输入组](./input-group) | `input-group` | 2 | 0 | 4 |
 | [列表框](./listbox) | `listbox` | 11 | 10 | 9 |
 | [提及](./mention) | `mention` | 9 | 9 | 6 |
 | [数字输入](./number-field) | `number-field` | 8 | 6 | 14 |
@@ -99,7 +99,7 @@
 | [签名板](./signature-pad) | `signature-pad` | 8 | 1 | 6 |
 | [滑块](./slider) | `slider` | 11 | 6 | 11 |
 | [开关](./switch) | `switch` | 5 | 1 | 11 |
-| [标签组](./tag-group) | `tag-group` | 7 | 10 | 3 |
+| [标签组](./tag-group) | `tag-group` | 7 | 10 | 4 |
 | [标签输入](./tags-input) | `tags-input` | 12 | 13 | 12 |
 | [文本输入](./text-field) | `text-field` | 8 | 1 | 16 |
 | [时间输入](./time-field) | `time-field` | 7 | 9 | 9 |
@@ -148,7 +148,7 @@
 | 组件 | 标识 | 部件数 | 键盘条目 | 示例 |
 | --- | --- | --- | --- | --- |
 | [警告提示](./alert) | `alert` | 7 | 1 | 5 |
-| [徽标](./badge) | `badge` | 2 | 0 | 3 |
+| [徽标](./badge) | `badge` | 2 | 0 | 4 |
 | [加载条](./loading-bar) | `loading-bar` | 4 | 0 | 6 |
 | [进度条](./progress) | `progress` | 5 | 0 | 10 |
 | [骨架屏](./skeleton) | `skeleton` | 2 | 0 | 4 |
@@ -162,7 +162,7 @@ portal 到统一落点、由定位引擎摆位的一层，共用浮层容器与�
 
 | 组件 | 标识 | 部件数 | 键盘条目 | 示例 |
 | --- | --- | --- | --- | --- |
-| [命令面板](./command) | `command` | 13 | 8 | 3 |
+| [命令面板](./command) | `command` | 13 | 8 | 4 |
 | [对话框](./dialog) | `dialog` | 11 | 4 | 9 |
 | [抽屉](./drawer) | `drawer` | 11 | 4 | 8 |
 | [浮动面板](./floating-panel) | `floating-panel` | 11 | 6 | 6 |
@@ -185,5 +185,5 @@ AI 对话界面的组件。
 | [消息流](./message-feed) | `message-feed` | 7 | 7 | 7 |
 | [提示输入框](./prompt-input) | `prompt-input` | 4 | 8 | 10 |
 | [澄清问卷](./question-flow) | `question-flow` | 18 | 6 | 4 |
-| [思考过程](./reasoning) | `reasoning` | 7 | 1 | 3 |
+| [思考过程](./reasoning) | `reasoning` | 7 | 1 | 4 |
 | [工具调用](./tool-call) | `tool-call` | 12 | 1 | 5 |

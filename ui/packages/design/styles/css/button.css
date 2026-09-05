@@ -201,6 +201,23 @@
     display: none;
   }
 
+  /* 手指落点：命中区由绝对定位的伪元素向块轴两侧外扩，按钮的盒一点不动——
+     加高盒子会把同一行里的控件顶得高低不齐。
+     只扩块轴：行内那两边由内距与文字撑开，进了按钮组的段还与相邻段首尾相接。
+     取 8px 是按最矮的 sm 档算的（28 + 8 × 2 = 44），md 与 lg 档更宽裕 */
+  @media (pointer: coarse) {
+    [data-scope='button'][data-part='root'] {
+      position: relative;
+    }
+
+    [data-scope='button'][data-part='root']::after {
+      content: '';
+      position: absolute;
+      inset-block: -8px;
+      inset-inline: 0;
+    }
+  }
+
   @media print {
     /* 打印：动画会被定格在任意一帧——转了一半的圈、扫到一半的微光。这里换成静止的表达，
        取值与减弱动效那一档相同。两档各写一块、不并进一条媒体查询列表：减弱动效另有一份

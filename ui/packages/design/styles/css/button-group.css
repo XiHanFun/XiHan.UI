@@ -57,6 +57,7 @@
     align-self: stretch;
     border-radius: var(--xh-button-group-separator-radius, var(--xh-shape-pill));
     background: var(--xh-button-group-separator-color, var(--xh-border-default));
+    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='button-group'][data-part='separator'][data-orientation='vertical'] {
@@ -77,7 +78,8 @@
     cursor: not-allowed;
   }
 
-  /* 段都按不动了，段间那条线跟着退到弱边一档 */
+  /* 段都按不动了，段间那条线跟着退到弱边一档；换色按 micro 走一遍，
+     与两侧那几段自己的禁用过渡同拍 */
   [data-scope='button-group'][data-part='separator'][data-disabled] {
     background: var(--xh-button-group-separator-color-disabled, var(--xh-border-subtle));
   }

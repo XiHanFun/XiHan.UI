@@ -119,13 +119,12 @@
     },
     "button:root": {
       "px": 28,
-      "why": "按钮本体，手指直接落上去；28px 是 sm 档，md 与 lg 档更高",
-      "pending": "皮肤里没有粗指针块，触屏下命中区仍是控件行高本身"
+      "why": "按钮本体，手指直接落上去；28px 是 sm 档，md 与 lg 档更高"
     },
     "carousel:indicator": {
       "px": 8,
       "why": "走马灯底部的圆点，手指直接落上去翻页",
-      "pending": "皮肤里没有粗指针块，触屏下命中区仍是 8px 的圆点本身"
+      "pending": "圆点直径 8px、点间距 4px，外扩到 44 要每侧 18px，相邻两点的命中区会大幅叠上；块轴单扩到 44 只会得到 8×44 的一条竖带，行内那一边仍是 8px"
     },
     "carousel:next-trigger": {
       "px": 32,
@@ -141,8 +140,7 @@
     },
     "clipboard:copy-trigger": {
       "px": 32,
-      "why": "复制钮，手指直接落上去",
-      "pending": "皮肤里没有粗指针块，触屏下命中区仍是 32px 的视觉盒"
+      "why": "复制钮，手指直接落上去"
     },
     "dialog:close-trigger": {
       "px": 28,
@@ -150,8 +148,7 @@
     },
     "download-trigger:root": {
       "px": 28,
-      "why": "下载钮本体，手指直接落上去；28px 是 sm 档，md 与 lg 档更高",
-      "pending": "皮肤里没有粗指针块，触屏下命中区仍是控件行高本身"
+      "why": "下载钮本体，手指直接落上去；28px 是 sm 档，md 与 lg 档更高"
     },
     "drawer:close-trigger": {
       "px": 28,
@@ -167,18 +164,15 @@
     },
     "pagination:item": {
       "px": 32,
-      "why": "页码格，手指直接落上去",
-      "pending": "皮肤里没有粗指针块，触屏下命中区仍是 32px 的视觉盒"
+      "why": "页码格，手指直接落上去"
     },
     "pagination:next-trigger": {
       "px": 32,
-      "why": "翻页钮，手指直接落上去",
-      "pending": "皮肤里没有粗指针块，触屏下命中区仍是 32px 的视觉盒"
+      "why": "翻页钮，手指直接落上去"
     },
     "pagination:prev-trigger": {
       "px": 32,
-      "why": "翻页钮，手指直接落上去",
-      "pending": "皮肤里没有粗指针块，触屏下命中区仍是 32px 的视觉盒"
+      "why": "翻页钮，手指直接落上去"
     },
     "popover:close-trigger": {
       "px": 28,
@@ -194,8 +188,7 @@
     },
     "tabs:trigger": {
       "px": 32,
-      "why": "页签，手指直接落上去",
-      "pending": "皮肤里没有粗指针块，触屏下命中区仍是 32px 的页签高"
+      "why": "页签，手指直接落上去"
     },
     "timer:control": {
       "px": 32,
@@ -207,13 +200,11 @@
     },
     "toggle-group:item": {
       "px": 32,
-      "why": "切换组的每一格，手指直接落上去",
-      "pending": "皮肤里没有粗指针块，触屏下命中区仍是 32px 的格高"
+      "why": "切换组的每一格，手指直接落上去"
     },
     "toggle:root": {
       "px": 28,
-      "why": "切换钮本体，手指直接落上去",
-      "pending": "皮肤里没有粗指针块，触屏下命中区仍是 28px 的控件行高"
+      "why": "切换钮本体，手指直接落上去"
     },
     "tour:close-trigger": {
       "px": 28,

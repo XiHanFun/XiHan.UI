@@ -1,4 +1,4 @@
-import type { FormApi, FormErrorPatch, FormSchema, FormValidateOn, FormValues } from '@xihan-ui/headless'
+import type { FormApi, FormColumns, FormErrorPatch, FormFieldSpan, FormSchema, FormValidateOn, FormValues } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
@@ -57,6 +57,8 @@ export const XhFormRoot = defineComponent({
     validateMessages: { type: Object as PropType<FormProps['validateMessages']>, default: undefined },
     validateOn: { type: String as PropType<FormValidateOn>, default: undefined },
     layout: { type: String as PropType<FormProps['layout']>, default: undefined },
+    /** grid 排布下分几列：整数即各档同一个列数，断点对象 `{ base, sm, md, lg, xl }` 则逐档取值。 */
+    columns: { type: [Number, Object] as PropType<FormColumns>, default: undefined },
     labelWidth: { type: [Number, String], default: undefined },
     labelAlign: { type: String as PropType<FormProps['labelAlign']>, default: undefined },
     disabled: Boolean,
@@ -116,6 +118,8 @@ export const XhFormFieldGroup = defineComponent({
   props: {
     /** 字段名，与 values / errors 表里的键一致。 */
     value: { type: String, required: true },
+    /** grid 排布下这一格占多宽：1 至 4 跨这么多列，'full' 占满整行；不写占一列。 */
+    span: { type: [Number, String] as PropType<FormFieldSpan>, default: undefined },
   },
   slots: Object as SlotsType<{
     default?: (props: FormFieldGroupSlotProps) => VNode[]
@@ -127,7 +131,7 @@ export const XhFormFieldGroup = defineComponent({
     // 作用域插槽暴露本字段的值、错误与写入方法
     return () => h(
       'div',
-      ctx.api.value.getFieldGroupProps({ name: props.value }) as Record<string, unknown>,
+      ctx.api.value.getFieldGroupProps({ name: props.value, span: props.span }) as Record<string, unknown>,
       slots.default?.({
         name: props.value,
         value: ctx.api.value.getFieldValue(props.value),

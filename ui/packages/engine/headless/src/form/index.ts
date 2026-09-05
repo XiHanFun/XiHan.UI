@@ -26,4 +26,4 @@ export {
 } from './form.machine'
 export { formMeta } from './form.meta'
 export { isEmptyFormValue, runFieldRules, runFormRules } from './form.rules'
-export type { FormApi, FormErrorsChangeDetails, FormErrorSummaryItemProps, FormFieldGroupProps, FormInvalidDetails, FormLayout, FormRefs, FormRule, FormRules, FormRuleType, FormSchema, FormSubmitDetails, FormTranslations, FormValidateMessages, FormValidateOn, FormValues, FormValuesChangeDetails } from './form.types'
+export type { FormApi, FormColumnCount, FormColumns, FormColumnsByBreakpoint, FormErrorsChangeDetails, FormErrorSummaryItemProps, FormFieldGroupProps, FormFieldSpan, FormInvalidDetails, FormLayout, FormRefs, FormRule, FormRules, FormRuleType, FormSchema, FormSubmitDetails, FormTranslations, FormValidateMessages, FormValidateOn, FormValues, FormValuesChangeDetails } from './form.types'

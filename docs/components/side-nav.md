@@ -40,6 +40,12 @@ tone 换选中行与展开枝用哪族颜色，size 换行高与缩进档；两�
 
 <XhDemo src="side-nav/03-tone-size" />
 
+### 受控展开与禁用
+
+展开集合交给宿主：一次全展开或全收起，也能按当前路由把该开的那一枝开上；collection 里标了 disabled 的入口方向键跳过，点它也不落值
+
+<XhDemo src="side-nav/04-controlled-expand" />
+
 ## 产物
 
 | 层 | 值 |

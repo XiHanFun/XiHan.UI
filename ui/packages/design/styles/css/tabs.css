@@ -337,6 +337,20 @@
     display: none;
   }
 
+  /* 手指落点：命中区由伪元素向块轴两侧外扩，标签的盒与标签带的高度一点不动——
+     加高标签会把基线与滑条一起顶下去。
+     只扩块轴：标签在行内轴上首尾相接（segment 档只留半格缝），往两侧扩会与相邻标签的命中区叠上。
+     取 8px 是按最矮的 sm 档算的（28 + 8 × 2 = 44），md 与 lg 档更宽裕。
+     用 ::before：::after 已经被换位时的落点线占着 */
+  @media (pointer: coarse) {
+    [data-scope='tabs'][data-part='trigger']::before {
+      content: '';
+      position: absolute;
+      inset-block: -8px;
+      inset-inline: 0;
+    }
+  }
+
   @media (forced-colors: active) {
     /* 滑条与分隔线画的都是一块纯底色，这一档里底色被统一换成 Canvas，两者整根消失。
        滑条换成系统高亮色、分隔线换成前景色画回来 */

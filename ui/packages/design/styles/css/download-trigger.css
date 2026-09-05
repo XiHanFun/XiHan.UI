@@ -197,4 +197,24 @@
     /* 置灰的按钮仍然会命中 :hover，抬起那一档要在这里收掉 */
     box-shadow: none;
   }
+
+  /* 手指落点：命中区由绝对定位的伪元素向块轴两侧外扩，按钮的盒一点不动——
+     加高盒子会把同一行里的控件顶得高低不齐。
+     只扩块轴：行内那两边由内距与文字撑开。
+     取 8px 是按最矮的 sm 档算的（28 + 8 × 2 = 44），md 与 lg 档更宽裕。
+     两颗伪元素轮着用：取数在途时 ::before 是那枚圆环，此外 ::after 可能是兜底字形，
+     两条选择器各挑当前空着的那一颗，不覆盖已被占用的那颗的定位与尺寸 */
+  @media (pointer: coarse) {
+    [data-scope='download-trigger'][data-part='root'] {
+      position: relative;
+    }
+
+    [data-scope='download-trigger'][data-part='root']:not([data-state='preparing'])::before,
+    [data-scope='download-trigger'][data-part='root'][data-state='preparing']::after {
+      content: '';
+      position: absolute;
+      inset-block: -8px;
+      inset-inline: 0;
+    }
+  }
 }

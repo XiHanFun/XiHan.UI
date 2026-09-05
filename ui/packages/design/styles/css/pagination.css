@@ -361,6 +361,28 @@
     mask-image: var(--xh-glyph-mark-chevron-left);
   }
 
+  /* 手指落点：命中区由绝对定位的伪元素向块轴两侧外扩，格子的盒一点不动——
+     加高格子会把整条 nav 撑高，行宽也会跟着当前页抖。
+     只扩块轴：格与格在行内轴上只隔一格间距，往两侧扩会与相邻格的命中区叠上。
+     取 8px 是按最矮的 sm 档算的（28 + 8 × 2 = 44），md 与 lg 档更宽裕。
+     用 ::after：::before 已经被两枚箭头的兜底字形占着 */
+  @media (pointer: coarse) {
+    [data-scope='pagination'][data-part='prev-trigger'],
+    [data-scope='pagination'][data-part='next-trigger'],
+    [data-scope='pagination'][data-part='item'] {
+      position: relative;
+    }
+
+    [data-scope='pagination'][data-part='prev-trigger']::after,
+    [data-scope='pagination'][data-part='next-trigger']::after,
+    [data-scope='pagination'][data-part='item']::after {
+      content: '';
+      position: absolute;
+      inset-block: -8px;
+      inset-inline: 0;
+    }
+  }
+
   @media print {
     /* 打印：定位层与遮罩是交互期才存在的东西，落到纸上只会盖住底下的正文。
        收起写在这份皮肤里而不是 reset：reset 层排在组件层之前，组件层里任何一条 display 都压得住它。 */

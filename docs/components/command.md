@@ -43,6 +43,12 @@ variant 只落在 backdrop 那一层：opaque 压一层底、blur 糊掉背后�
 
 <XhDemo src="command/03-variant" />
 
+### 远程检索
+
+filter 关掉：交进来的 collection 就是此刻该显示的那几条，筛选归服务端；取数期间 loading 让在途占位顶上来、列表压暗一档，空态让位
+
+<XhDemo src="command/04-async" />
+
 ## 产物
 
 | 层 | 值 |

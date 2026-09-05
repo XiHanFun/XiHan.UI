@@ -343,6 +343,18 @@
     display: none;
   }
 
+  /* 手指落点：命中区由伪元素向块轴两侧外扩，条目的盒与整组的外廓一点不动。
+     只扩块轴——条目在行内轴上靠负外边距共边相接，往两侧扩会与相邻条目的命中区叠上。
+     取 8px 是按最矮的 sm 档算的（28 + 8 × 2 = 44），md 与 lg 档更宽裕 */
+  @media (pointer: coarse) {
+    [data-scope='toggle-group'][data-part='item']::after {
+      content: '';
+      position: absolute;
+      inset-block: -8px;
+      inset-inline: 0;
+    }
+  }
+
   @media (forced-colors: active) {
     /* 段间那条线画的是一块纯底色，这一档里底色被统一换成 Canvas，线整条消失，
        几组开关就连成了一长串。换成前景色画回来 */

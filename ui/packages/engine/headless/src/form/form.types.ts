@@ -49,8 +49,36 @@ export interface FormValidateMessages {
  * - vertical：竖排一列（默认）。
  * - horizontal：标签左置成两列，整表标签列宽统一对齐。
  * - inline：字段横排一行流，放不下自动折行。
+ * - grid：字段排进等宽列的网格，列数由 columns 给，单个字段可自报跨列。
  */
-export type FormLayout = 'vertical' | 'horizontal' | 'inline'
+export type FormLayout = 'vertical' | 'horizontal' | 'inline' | 'grid'
+
+/** grid 排布的列数取值：1 至 4，逐值对应一条皮肤规则。 */
+export type FormColumnCount = 1 | 2 | 3 | 4
+
+/** 逐档的列数：档与档之间自窄到宽依次接管，写了哪档就在哪档换列数。 */
+export interface FormColumnsByBreakpoint {
+  /** 未达到任何断点时分几列，不写按一列排。 */
+  base?: FormColumnCount
+  /** 视口宽度达到 sm 断点后分几列。 */
+  sm?: FormColumnCount
+  /** 视口宽度达到 md 断点后分几列。 */
+  md?: FormColumnCount
+  /** 视口宽度达到 lg 断点后分几列。 */
+  lg?: FormColumnCount
+  /** 视口宽度达到 xl 断点后分几列。 */
+  xl?: FormColumnCount
+}
+
+/** 列数：整数即各档同一个列数；断点对象则逐档取值。 */
+export type FormColumns = FormColumnCount | FormColumnsByBreakpoint
+
+/**
+ * 一个字段在网格里占多宽：
+ * - 1 至 4：固定跨这么多列。
+ * - full：占满整行，跟着当下的列数走。
+ */
+export type FormFieldSpan = FormColumnCount | 'full'
 
 /**
  * 什么时候跑校验：
@@ -91,6 +119,13 @@ export interface FormInvalidDetails {
 export interface FormFieldGroupProps {
   /** 字段名，与 values / errors 表里的键一致。 */
   name: string
+  /**
+   * grid 排布下这个字段占多宽：1 至 4 是固定跨几列，'full' 占满整行；不写占一列。
+   * 范围外的值按不写算。'full' 跟着当下的列数走，窄视口收成一列时它仍是一整行；
+   * 写数字则是固定跨度，比当下列数还大会多撑出一列。
+   * 其余三档排布下不参与排版。
+   */
+  span?: FormFieldSpan
 }
 
 /** 错误摘要里的一条：指向哪个字段由作者声明。 */
@@ -137,6 +172,12 @@ export interface FormSchema extends MachineSchema {
     validateOn?: FormValidateOn
     /** 排布，默认 vertical。 */
     layout?: FormLayout
+    /**
+     * grid 排布下分几列：1 至 4 的整数，不写按一列排；范围外的值也按一列排。
+     * 也收断点对象 `{ base, sm, md, lg, xl }`，逐档写各自的列数，没写的档沿用比它窄的那一档。
+     * 其余三档排布下不参与排版。
+     */
+    columns?: FormColumns
     /** horizontal 下标签列宽（number 视作 px），整表统一、字段据此对齐。 */
     labelWidth?: number | string
     /** horizontal 下标签文字的对齐缘，默认 end（贴着控件）。 */

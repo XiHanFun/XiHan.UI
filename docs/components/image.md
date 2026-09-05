@@ -157,7 +157,7 @@ src 是响应式的：进入视口前不给地址，观察器命中再换上，�
 
 ## 样式
 
-默认皮肤 `@xihan-ui/styles/image.css` 按部件选择：`[data-scope="image"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+默认皮肤 `@xihan-ui/styles/image.css` 按部件选择：`[data-scope="image"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
 
 ## 数据属性
 
@@ -178,7 +178,9 @@ src 是响应式的：进入视口前不给地址，观察器命中再换上，�
 
 ## 动效
 
-本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
+关键帧 `xh-fade-in` 随皮肤自带，不引用别处文件里的名字。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
 ## 组合
 

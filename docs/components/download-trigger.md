@@ -183,6 +183,10 @@ data 给函数就是点了才算：它可以返回 Promise，这段时间状态�
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
+## 响应式
+
+皮肤另按输入能力分档：`pointer: coarse`——同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
+
 ## RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。

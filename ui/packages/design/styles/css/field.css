@@ -22,6 +22,8 @@
   [data-scope='form'][data-part='root'][data-layout='horizontal'] [data-scope='field'][data-part='label'] {
     grid-column: 1;
     justify-self: end;
+    /* 横排下标签与控件是左右两列，间距归 --xh-field-label-gap 管，竖排那段补白在这儿清零 */
+    margin-block-end: 0;
     /* 与控件的首行文字对齐：行高保持正文行距（标签折行时每行不会撑成一个控件高），
        上下留白把单行文本盒撑到控件高度；配的是哪一档控件由 --xh-field-control-h 告诉它 */
     line-height: var(--xh-field-label-leading, var(--xh-leading-normal));
@@ -37,6 +39,12 @@
   }
 
   [data-scope='field'][data-part='label'] {
+    /* 竖排时标签与控件之间的距离：容器的 gap 之上补一段差值，
+       --xh-field-label-gap-block 给多少最终就是多少；不给时差值算成 0，
+       这段距离仍由 --xh-field-gap 与描述、错误文案那两段同宽。 */
+    margin-block-end: calc(
+      var(--xh-field-label-gap-block, var(--xh-field-gap, var(--xh-space-1))) - var(--xh-field-gap, var(--xh-space-1))
+    );
     color: var(--xh-field-label-fg, var(--xh-fg-default));
     font-size: var(--xh-field-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-field-label-font-weight, var(--xh-text-label-weight));

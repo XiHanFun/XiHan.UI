@@ -195,16 +195,20 @@
     "xh-fade-in": {
       "content": "from{opacity:0}to{opacity:1}",
       "definedIn": [
+        "avatar.css",
         "command.css",
         "dialog.css",
         "drawer.css",
         "image-viewer.css",
+        "image.css",
         "tour.css"
       ],
       "consumers": [
+        "avatar",
         "command",
         "dialog",
         "drawer",
+        "image",
         "image-viewer",
         "tour"
       ]

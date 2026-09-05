@@ -505,6 +505,7 @@
   align-self: stretch;
   border-radius: var(--xh-button-group-separator-radius, var(--xh-shape-pill));
   background: var(--xh-button-group-separator-color, var(--xh-border-default));
+  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='button-group'][data-part='separator'][data-orientation='vertical'] {
@@ -525,7 +526,8 @@
   cursor: not-allowed;
 }
 
-/* 段都按不动了，段间那条线跟着退到弱边一档 */
+/* 段都按不动了，段间那条线跟着退到弱边一档；换色按 micro 走一遍，
+   与两侧那几段自己的禁用过渡同拍 */
 [data-scope='button-group'][data-part='separator'][data-disabled] {
   background: var(--xh-button-group-separator-color-disabled, var(--xh-border-subtle));
 }
@@ -1482,6 +1484,26 @@
   color: var(--xh-fg-disabled);
   /* 置灰的按钮仍然会命中 :hover，抬起那一档要在这里收掉 */
   box-shadow: none;
+}
+
+/* 手指落点：命中区由绝对定位的伪元素向块轴两侧外扩，按钮的盒一点不动——
+   加高盒子会把同一行里的控件顶得高低不齐。
+   只扩块轴：行内那两边由内距与文字撑开。
+   取 8px 是按最矮的 sm 档算的（28 + 8 × 2 = 44），md 与 lg 档更宽裕。
+   两颗伪元素轮着用：取数在途时 ::before 是那枚圆环，此外 ::after 可能是兜底字形，
+   两条选择器各挑当前空着的那一颗，不覆盖已被占用的那颗的定位与尺寸 */
+@media (pointer: coarse) {
+  [data-scope='download-trigger'][data-part='root'] {
+    position: relative;
+  }
+
+  [data-scope='download-trigger'][data-part='root']:not([data-state='preparing'])::before,
+  [data-scope='download-trigger'][data-part='root'][data-state='preparing']::after {
+    content: '';
+    position: absolute;
+    inset-block: -8px;
+    inset-inline: 0;
+  }
 }
 
 /* styles/field-array.css */
@@ -4703,7 +4725,9 @@
 
 /* —— 前后缀块 —— */
 /* 与邻座同高、同一条描边、同一档字号：它是框的一部分，不是框旁边的一段文字。
-   不可交互，所以不接按压反馈也不进 Tab 序列 */
+   不可交互，所以不接按压反馈也不进 Tab 序列。
+   三个色槽换值时按 micro 走一遍：这块的描边与邻座控件那条边是同一根线，
+   控件那侧五态换色是过渡过去的，这一侧硬切就会看见半根线先变 */
 [data-scope='input-group'][data-part='item'] {
   display: inline-flex;
   flex: none;
@@ -4716,6 +4740,10 @@
   font-size: var(--xh-input-group-item-font-size, var(--xh-_input-group-font-size));
   line-height: var(--xh-leading-none);
   white-space: nowrap;
+  transition:
+    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='input-group'][data-part='item'][hidden] {
@@ -8247,7 +8275,19 @@ input[data-scope='mention'][data-part='input'] {
   position: absolute;
   z-index: 1;
   display: block;
+  background: transparent;
   touch-action: none;
+  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+/* 指针停到可抓的那一条上，那条就显形；正在拖的那一条另换一档。
+   两档都只在把手自己那几像素上着色，容器里的内容不受影响 */
+[data-scope='resizable'][data-part='handle']:hover {
+  background: var(--xh-bg-subtle-active);
+}
+
+[data-scope='resizable'][data-part='handle'][data-resizing] {
+  background: var(--xh-bg-brand);
 }
 
 [data-scope='resizable'][data-part='handle'][hidden] {
@@ -8318,6 +8358,14 @@ input[data-scope='mention'][data-part='input'] {
 /* 没开放的边不显示把手：留着一个抓不动的区域只会让人反复去试 */
 [data-scope='resizable'][data-part='handle'][data-disabled] {
   display: none;
+}
+
+@media (forced-colors: active) {
+  /* 把手那两档全是底色画出来的，这一档里底色被统一换成系统底色，两档与静息塌成一个样子。
+     改由描边把正在拖的那一条画出来 */
+  [data-scope='resizable'][data-part='handle'][data-resizing] {
+    outline: var(--xh-stroke-thick) solid Highlight;
+  }
 }
 
 /* styles/segmented.css */
@@ -9111,6 +9159,11 @@ input[data-scope='mention'][data-part='input'] {
   color: var(--xh-timeline-indicator-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
   font-size: var(--xh-timeline-indicator-font-size, var(--xh-_timeline-caption-font-size));
   line-height: var(--xh-leading-none);
+  /* 语气色由每条自己的数据给，同一条的语气改了（事情办成了、出错了）走一遍过渡，
+     整列圆点不在数据回来的那一帧集体跳色 */
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='timeline'][data-part='indicator'][hidden] {
@@ -9588,6 +9641,14 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='truncate'][data-part='root'][data-expandable][data-overflowing],
 [data-scope='truncate'][data-part='root'][data-expandable][data-state='open'] {
   cursor: pointer;
+  transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+/* 是按钮的那一档才提亮：指针停在上面时这段文字与正文分开，
+   按不动的短文本不给这个反馈 */
+[data-scope='truncate'][data-part='root'][data-expandable][data-overflowing]:hover,
+[data-scope='truncate'][data-part='root'][data-expandable][data-state='open']:hover {
+  color: var(--xh-fg-default);
 }
 
 /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
@@ -11797,6 +11858,18 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 /* styles/avatar.css */
+/* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
+   动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
+@keyframes xh-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='avatar'] {
   --xh-avatar-skin: 1;
@@ -11845,12 +11918,15 @@ input[data-scope='mention'][data-part='input'] {
   color: var(--xh-avatar-fg, var(--xh-_tone-fg, var(--xh-fg-muted)));
 }
 
-/* 不声明 display，加载完成前的 hidden 直接交给浏览器的 [hidden] 规则收起 */
+/* 不声明 display，加载完成前的 hidden 直接交给浏览器的 [hidden] 规则收起。
+   载完那一刻 hidden 撤掉、这个节点从不显示变为显示，淡入在那一刻起跑，
+   图片不是硬切上来盖掉回退字 */
 [data-scope='avatar'][data-part='image'] {
   inline-size: 100%;
   block-size: 100%;
   border-radius: inherit;
   object-fit: cover;
+  animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
 }
 
 [data-scope='avatar'][data-part='fallback'] {
@@ -12380,6 +12456,23 @@ input[data-scope='mention'][data-part='input'] {
    写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
 [data-scope='button'][data-part='root'][hidden] {
   display: none;
+}
+
+/* 手指落点：命中区由绝对定位的伪元素向块轴两侧外扩，按钮的盒一点不动——
+   加高盒子会把同一行里的控件顶得高低不齐。
+   只扩块轴：行内那两边由内距与文字撑开，进了按钮组的段还与相邻段首尾相接。
+   取 8px 是按最矮的 sm 档算的（28 + 8 × 2 = 44），md 与 lg 档更宽裕 */
+@media (pointer: coarse) {
+  [data-scope='button'][data-part='root'] {
+    position: relative;
+  }
+
+  [data-scope='button'][data-part='root']::after {
+    content: '';
+    position: absolute;
+    inset-block: -8px;
+    inset-inline: 0;
+  }
 }
 
 @media print {
@@ -14812,6 +14905,24 @@ input[data-scope='mention'][data-part='input'] {
   color: var(--xh-fg-disabled);
   /* 置灰的按钮仍然会命中 :hover，抬起那一档要在这里收掉 */
   box-shadow: none;
+}
+
+/* 手指落点：命中区由绝对定位的伪元素向块轴两侧外扩，钮的盒一点不动——
+   加高按钮会把它与同一行的输入框顶得高低不齐。
+   只扩块轴：行内轴上紧挨着输入框，往两侧扩会盖到输入框的命中区上。
+   取 8px 是按最矮的 sm 档算的（28 + 8 × 2 = 44），md 与 lg 档更宽裕。
+   用 ::after：::before 已经被写入在途那枚圆环占着 */
+@media (pointer: coarse) {
+  [data-scope='clipboard'][data-part='copy-trigger'] {
+    position: relative;
+  }
+
+  [data-scope='clipboard'][data-part='copy-trigger']::after {
+    content: '';
+    position: absolute;
+    inset-block: -8px;
+    inset-inline: 0;
+  }
 }
 
 /* 复制成功的文字回执：读屏念得到，屏幕上不占位。
@@ -19352,6 +19463,8 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='form'][data-part='root'][data-layout='horizontal'] [data-scope='field'][data-part='label'] {
   grid-column: 1;
   justify-self: end;
+  /* 横排下标签与控件是左右两列，间距归 --xh-field-label-gap 管，竖排那段补白在这儿清零 */
+  margin-block-end: 0;
   /* 与控件的首行文字对齐：行高保持正文行距（标签折行时每行不会撑成一个控件高），
      上下留白把单行文本盒撑到控件高度；配的是哪一档控件由 --xh-field-control-h 告诉它 */
   line-height: var(--xh-field-label-leading, var(--xh-leading-normal));
@@ -19367,6 +19480,12 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='field'][data-part='label'] {
+  /* 竖排时标签与控件之间的距离：容器的 gap 之上补一段差值，
+     --xh-field-label-gap-block 给多少最终就是多少；不给时差值算成 0，
+     这段距离仍由 --xh-field-gap 与描述、错误文案那两段同宽。 */
+  margin-block-end: calc(
+    var(--xh-field-label-gap-block, var(--xh-field-gap, var(--xh-space-1))) - var(--xh-field-gap, var(--xh-space-1))
+  );
   color: var(--xh-field-label-fg, var(--xh-fg-default));
   font-size: var(--xh-field-label-font-size, var(--xh-text-label-size));
   font-weight: var(--xh-field-label-font-weight, var(--xh-text-label-weight));
@@ -19854,6 +19973,15 @@ input[data-scope='mention'][data-part='input'] {
   margin: 0;
 }
 
+/* 网格：字段排进等宽列，各列下限写 0，一段长文本不会把自己那列撑宽。
+   列数由 data-columns 逐档给，换档只改 --xh-_form-cols 这一个槽 */
+[data-scope='form'][data-part='root'][data-layout='grid'] {
+  display: grid;
+  grid-template-columns: repeat(var(--xh-_form-cols), minmax(0, 1fr));
+
+  --xh-_form-cols: 1;
+}
+
 /* 只要声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
 [data-scope='form'][data-part='root'][hidden] {
   display: none;
@@ -19871,6 +19999,96 @@ input[data-scope='mention'][data-part='input'] {
   column-gap: var(--xh-form-inline-gap, var(--xh-space-4));
 }
 
+/* 一列是网格档的缺省，这里从两列起逐档写 */
+[data-scope='form'][data-part='root'][data-columns='2'] {
+  --xh-_form-cols: 2;
+}
+
+[data-scope='form'][data-part='root'][data-columns='3'] {
+  --xh-_form-cols: 3;
+}
+
+[data-scope='form'][data-part='root'][data-columns='4'] {
+  --xh-_form-cols: 4;
+}
+
+/* 逐档列数：移动优先，先按 data-columns 排定，视口每宽到一档就换成那一档的列数，
+   没写的档沿用比它窄的那一档。四档自窄到宽依次写，只用 min-width：媒体查询不改选择器权重，
+   宽视口上同时命中好几档时由源码序决定谁生效。
+   宽度写字面量：自定义属性在 @media 条件里不参与求值。
+   每档都从一列写起：base 分多列、某一档收回一列同样是合法的一档 */
+@media (min-width: 640px) {
+  [data-scope='form'][data-part='root'][data-columns-sm='1'] {
+    --xh-_form-cols: 1;
+  }
+
+  [data-scope='form'][data-part='root'][data-columns-sm='2'] {
+    --xh-_form-cols: 2;
+  }
+
+  [data-scope='form'][data-part='root'][data-columns-sm='3'] {
+    --xh-_form-cols: 3;
+  }
+
+  [data-scope='form'][data-part='root'][data-columns-sm='4'] {
+    --xh-_form-cols: 4;
+  }
+}
+
+@media (min-width: 768px) {
+  [data-scope='form'][data-part='root'][data-columns-md='1'] {
+    --xh-_form-cols: 1;
+  }
+
+  [data-scope='form'][data-part='root'][data-columns-md='2'] {
+    --xh-_form-cols: 2;
+  }
+
+  [data-scope='form'][data-part='root'][data-columns-md='3'] {
+    --xh-_form-cols: 3;
+  }
+
+  [data-scope='form'][data-part='root'][data-columns-md='4'] {
+    --xh-_form-cols: 4;
+  }
+}
+
+@media (min-width: 1024px) {
+  [data-scope='form'][data-part='root'][data-columns-lg='1'] {
+    --xh-_form-cols: 1;
+  }
+
+  [data-scope='form'][data-part='root'][data-columns-lg='2'] {
+    --xh-_form-cols: 2;
+  }
+
+  [data-scope='form'][data-part='root'][data-columns-lg='3'] {
+    --xh-_form-cols: 3;
+  }
+
+  [data-scope='form'][data-part='root'][data-columns-lg='4'] {
+    --xh-_form-cols: 4;
+  }
+}
+
+@media (min-width: 1280px) {
+  [data-scope='form'][data-part='root'][data-columns-xl='1'] {
+    --xh-_form-cols: 1;
+  }
+
+  [data-scope='form'][data-part='root'][data-columns-xl='2'] {
+    --xh-_form-cols: 2;
+  }
+
+  [data-scope='form'][data-part='root'][data-columns-xl='3'] {
+    --xh-_form-cols: 3;
+  }
+
+  [data-scope='form'][data-part='root'][data-columns-xl='4'] {
+    --xh-_form-cols: 4;
+  }
+}
+
 /* 字段容器只管排版与状态标记：标题、控件、描述、错误文案都是里面那个 Field 的活儿 */
 [data-scope='form'][data-part='field-group'] {
   display: flex;
@@ -19880,6 +20098,29 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='form'][data-part='field-group'][hidden] {
   display: none;
+}
+
+/* 网格排布下这一格占多宽，不写就占一列 */
+[data-scope='form'][data-part='root'][data-layout='grid'] [data-scope='form'][data-part='field-group'] {
+  grid-column: var(--xh-_form-span, auto);
+}
+
+/* 占一列是上面的缺省，这里从跨两列起逐档写 */
+[data-scope='form'][data-part='field-group'][data-span='2'] {
+  --xh-_form-span: auto / span 2;
+}
+
+[data-scope='form'][data-part='field-group'][data-span='3'] {
+  --xh-_form-span: auto / span 3;
+}
+
+[data-scope='form'][data-part='field-group'][data-span='4'] {
+  --xh-_form-span: auto / span 4;
+}
+
+/* 占满整行：从第一条列线排到最后一条，列数换档时不必跟着改跨度 */
+[data-scope='form'][data-part='field-group'][data-span='full'] {
+  --xh-_form-span: 1 / -1;
 }
 
 /* 出错的字段在起始缘竖一条色带：读屏之外还得有一眼看得见的定位标记。
@@ -20411,6 +20652,18 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 /* styles/image.css */
+/* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
+   动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
+@keyframes xh-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='image'] {
   --xh-image-skin: 1;
@@ -20434,11 +20687,14 @@ input[data-scope='mention'][data-part='input'] {
   display: none;
 }
 
-/* 不声明 display：加载完成前的 hidden 直接交给浏览器的 [hidden] 规则收起 */
+/* 不声明 display：加载完成前的 hidden 直接交给浏览器的 [hidden] 规则收起。
+   载完那一刻 hidden 撤掉、这个节点从不显示变为显示，淡入在那一刻起跑，
+   图片不是硬切上来盖掉占位层 */
 [data-scope='image'][data-part='image'] {
   inline-size: 100%;
   block-size: 100%;
   object-fit: var(--xh-image-fit, cover);
+  animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
 }
 
 /* 铺满图位的占位层：加载期间占住画面，作者往里放骨架屏或模糊小图 */
@@ -23875,6 +24131,28 @@ input[data-scope='mention'][data-part='input'] {
 [dir='rtl'] [data-scope='pagination'][data-part='next-trigger']:empty::before {
   -webkit-mask-image: var(--xh-glyph-mark-chevron-left);
   mask-image: var(--xh-glyph-mark-chevron-left);
+}
+
+/* 手指落点：命中区由绝对定位的伪元素向块轴两侧外扩，格子的盒一点不动——
+   加高格子会把整条 nav 撑高，行宽也会跟着当前页抖。
+   只扩块轴：格与格在行内轴上只隔一格间距，往两侧扩会与相邻格的命中区叠上。
+   取 8px 是按最矮的 sm 档算的（28 + 8 × 2 = 44），md 与 lg 档更宽裕。
+   用 ::after：::before 已经被两枚箭头的兜底字形占着 */
+@media (pointer: coarse) {
+  [data-scope='pagination'][data-part='prev-trigger'],
+  [data-scope='pagination'][data-part='next-trigger'],
+  [data-scope='pagination'][data-part='item'] {
+    position: relative;
+  }
+
+  [data-scope='pagination'][data-part='prev-trigger']::after,
+  [data-scope='pagination'][data-part='next-trigger']::after,
+  [data-scope='pagination'][data-part='item']::after {
+    content: '';
+    position: absolute;
+    inset-block: -8px;
+    inset-inline: 0;
+  }
 }
 
 @media print {
@@ -29312,6 +29590,20 @@ input[data-scope='mention'][data-part='input'] {
   display: none;
 }
 
+/* 手指落点：命中区由伪元素向块轴两侧外扩，标签的盒与标签带的高度一点不动——
+   加高标签会把基线与滑条一起顶下去。
+   只扩块轴：标签在行内轴上首尾相接（segment 档只留半格缝），往两侧扩会与相邻标签的命中区叠上。
+   取 8px 是按最矮的 sm 档算的（28 + 8 × 2 = 44），md 与 lg 档更宽裕。
+   用 ::before：::after 已经被换位时的落点线占着 */
+@media (pointer: coarse) {
+  [data-scope='tabs'][data-part='trigger']::before {
+    content: '';
+    position: absolute;
+    inset-block: -8px;
+    inset-inline: 0;
+  }
+}
+
 @media (forced-colors: active) {
   /* 滑条与分隔线画的都是一块纯底色，这一档里底色被统一换成 Canvas，两者整根消失。
      滑条换成系统高亮色、分隔线换成前景色画回来 */
@@ -31964,6 +32256,23 @@ input[data-scope='mention'][data-part='input'] {
   display: none;
 }
 
+/* 手指落点：命中区由绝对定位的伪元素向块轴两侧外扩，钮的盒一点不动——
+   加高盒子会把同一行里的控件顶得高低不齐。
+   只扩块轴：行内那两边由内距与文字撑开。
+   取 8px 是按最矮的 sm 档算的（28 + 8 × 2 = 44），md 与 lg 档更宽裕 */
+@media (pointer: coarse) {
+  [data-scope='toggle'][data-part='root'] {
+    position: relative;
+  }
+
+  [data-scope='toggle'][data-part='root']::after {
+    content: '';
+    position: absolute;
+    inset-block: -8px;
+    inset-inline: 0;
+  }
+}
+
 @media print {
   /* 打印默认丢底色与投影：按下那一档只换了底（实心档另有一条内高光），落到纸上与没按下的
      一模一样。改用描边与字重两条印得出来的通道——常态那圈边是透明的，这里把它显出来。 */
@@ -32316,6 +32625,18 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='toggle-group'][data-part='root'][hidden],
 [data-scope='toggle-group'][data-part='item'][hidden] {
   display: none;
+}
+
+/* 手指落点：命中区由伪元素向块轴两侧外扩，条目的盒与整组的外廓一点不动。
+   只扩块轴——条目在行内轴上靠负外边距共边相接，往两侧扩会与相邻条目的命中区叠上。
+   取 8px 是按最矮的 sm 档算的（28 + 8 × 2 = 44），md 与 lg 档更宽裕 */
+@media (pointer: coarse) {
+  [data-scope='toggle-group'][data-part='item']::after {
+    content: '';
+    position: absolute;
+    inset-block: -8px;
+    inset-inline: 0;
+  }
 }
 
 @media (forced-colors: active) {

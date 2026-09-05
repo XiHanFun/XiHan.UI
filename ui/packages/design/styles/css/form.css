@@ -12,6 +12,15 @@
     margin: 0;
   }
 
+  /* 网格：字段排进等宽列，各列下限写 0，一段长文本不会把自己那列撑宽。
+     列数由 data-columns 逐档给，换档只改 --xh-_form-cols 这一个槽 */
+  [data-scope='form'][data-part='root'][data-layout='grid'] {
+    display: grid;
+    grid-template-columns: repeat(var(--xh-_form-cols), minmax(0, 1fr));
+
+    --xh-_form-cols: 1;
+  }
+
   /* 只要声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
   [data-scope='form'][data-part='root'][hidden] {
     display: none;
@@ -29,6 +38,96 @@
     column-gap: var(--xh-form-inline-gap, var(--xh-space-4));
   }
 
+  /* 一列是网格档的缺省，这里从两列起逐档写 */
+  [data-scope='form'][data-part='root'][data-columns='2'] {
+    --xh-_form-cols: 2;
+  }
+
+  [data-scope='form'][data-part='root'][data-columns='3'] {
+    --xh-_form-cols: 3;
+  }
+
+  [data-scope='form'][data-part='root'][data-columns='4'] {
+    --xh-_form-cols: 4;
+  }
+
+  /* 逐档列数：移动优先，先按 data-columns 排定，视口每宽到一档就换成那一档的列数，
+     没写的档沿用比它窄的那一档。四档自窄到宽依次写，只用 min-width：媒体查询不改选择器权重，
+     宽视口上同时命中好几档时由源码序决定谁生效。
+     宽度写字面量：自定义属性在 @media 条件里不参与求值。
+     每档都从一列写起：base 分多列、某一档收回一列同样是合法的一档 */
+  @media (min-width: 640px) {
+    [data-scope='form'][data-part='root'][data-columns-sm='1'] {
+      --xh-_form-cols: 1;
+    }
+
+    [data-scope='form'][data-part='root'][data-columns-sm='2'] {
+      --xh-_form-cols: 2;
+    }
+
+    [data-scope='form'][data-part='root'][data-columns-sm='3'] {
+      --xh-_form-cols: 3;
+    }
+
+    [data-scope='form'][data-part='root'][data-columns-sm='4'] {
+      --xh-_form-cols: 4;
+    }
+  }
+
+  @media (min-width: 768px) {
+    [data-scope='form'][data-part='root'][data-columns-md='1'] {
+      --xh-_form-cols: 1;
+    }
+
+    [data-scope='form'][data-part='root'][data-columns-md='2'] {
+      --xh-_form-cols: 2;
+    }
+
+    [data-scope='form'][data-part='root'][data-columns-md='3'] {
+      --xh-_form-cols: 3;
+    }
+
+    [data-scope='form'][data-part='root'][data-columns-md='4'] {
+      --xh-_form-cols: 4;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    [data-scope='form'][data-part='root'][data-columns-lg='1'] {
+      --xh-_form-cols: 1;
+    }
+
+    [data-scope='form'][data-part='root'][data-columns-lg='2'] {
+      --xh-_form-cols: 2;
+    }
+
+    [data-scope='form'][data-part='root'][data-columns-lg='3'] {
+      --xh-_form-cols: 3;
+    }
+
+    [data-scope='form'][data-part='root'][data-columns-lg='4'] {
+      --xh-_form-cols: 4;
+    }
+  }
+
+  @media (min-width: 1280px) {
+    [data-scope='form'][data-part='root'][data-columns-xl='1'] {
+      --xh-_form-cols: 1;
+    }
+
+    [data-scope='form'][data-part='root'][data-columns-xl='2'] {
+      --xh-_form-cols: 2;
+    }
+
+    [data-scope='form'][data-part='root'][data-columns-xl='3'] {
+      --xh-_form-cols: 3;
+    }
+
+    [data-scope='form'][data-part='root'][data-columns-xl='4'] {
+      --xh-_form-cols: 4;
+    }
+  }
+
   /* 字段容器只管排版与状态标记：标题、控件、描述、错误文案都是里面那个 Field 的活儿 */
   [data-scope='form'][data-part='field-group'] {
     display: flex;
@@ -38,6 +137,29 @@
 
   [data-scope='form'][data-part='field-group'][hidden] {
     display: none;
+  }
+
+  /* 网格排布下这一格占多宽，不写就占一列 */
+  [data-scope='form'][data-part='root'][data-layout='grid'] [data-scope='form'][data-part='field-group'] {
+    grid-column: var(--xh-_form-span, auto);
+  }
+
+  /* 占一列是上面的缺省，这里从跨两列起逐档写 */
+  [data-scope='form'][data-part='field-group'][data-span='2'] {
+    --xh-_form-span: auto / span 2;
+  }
+
+  [data-scope='form'][data-part='field-group'][data-span='3'] {
+    --xh-_form-span: auto / span 3;
+  }
+
+  [data-scope='form'][data-part='field-group'][data-span='4'] {
+    --xh-_form-span: auto / span 4;
+  }
+
+  /* 占满整行：从第一条列线排到最后一条，列数换档时不必跟着改跨度 */
+  [data-scope='form'][data-part='field-group'][data-span='full'] {
+    --xh-_form-span: 1 / -1;
   }
 
   /* 出错的字段在起始缘竖一条色带：读屏之外还得有一眼看得见的定位标记。

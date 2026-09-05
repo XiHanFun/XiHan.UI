@@ -1,0 +1,109 @@
+<!-- 按步定制正文 | 标题与说明之外，正文按当前步的 id 换成自己的一块内容；showBackdrop 关掉那层压暗，引导与页面一起看 -->
+<xh-tour id="tour-per-step" show-backdrop="false">
+  <div data-xh-part="root">
+    <div style="display: grid; gap: 16px; justify-items: start">
+      <div style="display: flex; flex-wrap: wrap; gap: 12px">
+        <div
+          id="tour-per-step-search"
+          style="padding: 8px 14px; border: 1px solid var(--vp-c-divider); border-radius: 8px"
+        >
+          搜索
+        </div>
+        <div
+          id="tour-per-step-filter"
+          style="padding: 8px 14px; border: 1px solid var(--vp-c-divider); border-radius: 8px"
+        >
+          筛选
+        </div>
+        <div
+          id="tour-per-step-export"
+          style="padding: 8px 14px; border: 1px solid var(--vp-c-divider); border-radius: 8px"
+        >
+          导出
+        </div>
+      </div>
+      <xh-button variant="solid">
+        <button data-xh-part="root" id="tour-per-step-start">开始引导</button>
+      </xh-button>
+    </div>
+
+    <div data-xh-part="spotlight"></div>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <h3 data-xh-part="title"></h3>
+        <p data-xh-part="description"></p>
+        <!-- 按当前步换的那一块：标题与说明照旧由元素按 steps 填 -->
+        <ul id="tour-per-step-tips" style="margin: 0; padding-inline-start: 18px"></ul>
+        <p data-xh-part="progress-text"></p>
+        <div style="display: flex; align-items: center; gap: 8px">
+          <button data-xh-part="prev-trigger">上一步</button>
+          <button data-xh-part="next-trigger">下一步</button>
+          <button data-xh-part="skip-trigger">跳过</button>
+        </div>
+        <button data-xh-part="close-trigger"></button>
+        <div data-xh-part="arrow"></div>
+      </div>
+    </div>
+  </div>
+</xh-tour>
+
+<script type="module">
+  const tour = document.getElementById("tour-per-step");
+  const tipList = document.getElementById("tour-per-step-tips");
+
+  tour.steps = [
+    {
+      id: "search",
+      target: "#tour-per-step-search",
+      title: "全站搜索",
+      description: "按名称或编号找记录。",
+    },
+    {
+      id: "filter",
+      target: "#tour-per-step-filter",
+      title: "筛选",
+      description: "条件会记在本地，下次进来还在。",
+    },
+    {
+      id: "export",
+      target: "#tour-per-step-export",
+      title: "导出",
+      description: "导出当前筛选后的全部数据。",
+    },
+  ];
+
+  tour.translations = {
+    close: "关闭",
+    progress: (step, count) => `第 ${step} 步，共 ${count} 步`,
+  };
+
+  // 各步自己的那块正文：键就是 steps 里的 id
+  const tips = {
+    search: ["支持拼音首字母", "编号可以只输后六位"],
+    filter: ["状态与时间区间可以叠加", "清空条件用一次「重置」"],
+    export: ["走后台队列，导完站内信通知", "单次上限十万行"],
+  };
+
+  function paint(index) {
+    const step = tour.steps[index];
+    tipList.replaceChildren(
+      ...(tips[step?.id] ?? []).map((tip) => {
+        const li = document.createElement("li");
+        li.textContent = tip;
+        return li;
+      }),
+    );
+  }
+
+  paint(0);
+
+  // 开合由宿主保管：按钮打开，元素要关时写回
+  document.getElementById("tour-per-step-start").addEventListener("click", () => {
+    tour.open = true;
+  });
+  tour.addEventListener("open-change", (event) => {
+    tour.open = event.detail.open;
+  });
+
+  tour.addEventListener("value-change", (event) => paint(event.detail.value));
+</script>
