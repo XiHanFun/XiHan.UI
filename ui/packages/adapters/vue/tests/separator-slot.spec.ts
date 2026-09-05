@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils'
 // @vitest-environment jsdom
-import { onDiagnostic, resetDiagnostics } from '@xihan-ui/kernel'
+import { onDiagnostic, resetDiagnostics } from '@xihan-ui/core'
 import { afterEach, describe, expect, it } from 'vitest'
 import { defineComponent, h } from 'vue'
 import { XhSeparator } from '../src'

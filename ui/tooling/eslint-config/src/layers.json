@@ -1,16 +1,10 @@
 {
   "$comment": "分层依赖拓扑单一事实源。被 .dependency-cruiser.cjs 消费。键是 packages/ 下的两级路径，必须与实际目录一一对应，多一个少一个都会被门禁抛错。层级越低越基础，只能向下依赖。",
   "layers": {
-    "engine/kernel": {
+    "engine/core": {
       "level": 1,
       "canDependOn": [
         "engine/motion"
-      ]
-    },
-    "engine/machine": {
-      "level": 1,
-      "canDependOn": [
-        "engine/kernel"
       ]
     },
     "design/tokens": {
@@ -25,32 +19,16 @@
       "level": 1,
       "canDependOn": []
     },
-    "engine/behavior": {
-      "level": 2,
-      "canDependOn": [
-        "engine/kernel",
-        "engine/machine",
-        "engine/motion"
-      ]
-    },
     "engine/position": {
       "level": 2,
       "canDependOn": [
-        "engine/kernel"
-      ]
-    },
-    "engine/code-highlight": {
-      "level": 2,
-      "canDependOn": [
-        "engine/kernel"
+        "engine/core"
       ]
     },
     "engine/headless": {
       "level": 3,
       "canDependOn": [
-        "engine/kernel",
-        "engine/machine",
-        "engine/behavior",
+        "engine/core",
         "design/tokens",
         "engine/motion",
         "engine/pointer"
@@ -63,20 +41,17 @@
     "features/backgrounds": {
       "level": 3,
       "canDependOn": [
-        "engine/kernel",
-        "engine/behavior",
+        "engine/core",
         "engine/motion"
       ]
     },
     "adapters/vue": {
       "level": 4,
       "canDependOn": [
-        "engine/kernel",
-        "engine/machine",
-        "engine/behavior",
+        "engine/core",
         "engine/headless",
         "engine/position",
-        "engine/code-highlight",
+        "features/code-highlight",
         "design/tokens",
         "features/backgrounds",
         "features/sound",
@@ -87,12 +62,10 @@
     "adapters/web-components": {
       "level": 4,
       "canDependOn": [
-        "engine/kernel",
-        "engine/machine",
-        "engine/behavior",
+        "engine/core",
         "engine/headless",
         "engine/position",
-        "engine/code-highlight",
+        "features/code-highlight",
         "design/tokens",
         "features/backgrounds",
         "engine/motion",
@@ -102,25 +75,31 @@
     "features/chat-stream": {
       "level": 2,
       "canDependOn": [
-        "engine/kernel"
+        "engine/core"
       ]
     },
     "features/markdown": {
       "level": 2,
       "canDependOn": [
-        "engine/kernel"
+        "engine/core"
+      ]
+    },
+    "features/code-highlight": {
+      "level": 2,
+      "canDependOn": [
+        "engine/core"
       ]
     },
     "features/sound": {
       "level": 2,
       "canDependOn": [
-        "engine/kernel"
+        "engine/core"
       ]
     },
     "features/animations": {
       "level": 2,
       "canDependOn": [
-        "engine/kernel",
+        "engine/core",
         "engine/motion"
       ]
     },

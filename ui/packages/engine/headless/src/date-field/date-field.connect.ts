@@ -1,6 +1,4 @@
-import type { ItemQuery } from '@xihan-ui/behavior'
-import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
-import type { Service } from '@xihan-ui/machine'
+import type { ItemQuery, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type {
   DateFieldApi,
   DateFieldSchema,
@@ -10,8 +8,7 @@ import type {
   DateSegmentType,
 } from './date-field.types'
 import { getLocalTimeZone, parseDateTime } from '@internationalized/date'
-import { focusSafely, navIntentFromKey, queryItems, readDirection, stepIndex } from '@xihan-ui/behavior'
-import { dataAttr, resolveLocale } from '@xihan-ui/kernel'
+import { dataAttr, focusSafely, navIntentFromKey, queryItems, readDirection, resolveLocale, stepIndex } from '@xihan-ui/core'
 import { dateFieldAnatomy } from './date-field.anatomy'
 import { isMetaSegment } from './date-field.blocks'
 import {

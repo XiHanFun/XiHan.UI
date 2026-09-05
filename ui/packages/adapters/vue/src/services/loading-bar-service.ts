@@ -1,12 +1,12 @@
+import type { Tone } from '@xihan-ui/core'
 // 全局命令式顶部进度条：自带一个挂到 body 的宿主应用，
 // start/finish 在任意模块作用域可调（路由守卫、请求拦截器），不要求调用点在组件树内。
 // 组件树内的组合用法仍走 XhLoadingBarRoot。
 import type { LoadingBarTranslations } from '@xihan-ui/headless'
-import type { Tone } from '@xihan-ui/kernel'
 import type { App, MaybeRefOrGetter } from 'vue'
 import type { XhConfig } from '../config/config'
+import { ensurePortalRoot } from '@xihan-ui/core'
 import { connectLoadingBar, loadingBarMachine } from '@xihan-ui/headless'
-import { ensurePortalRoot } from '@xihan-ui/kernel'
 import { computed, createApp, defineComponent, h, reactive, toValue } from 'vue'
 import { vueNormalize } from '../runtime/normalize-props'
 import { useMachine } from '../runtime/use-machine'

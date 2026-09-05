@@ -1,5 +1,4 @@
-import type { Direction, Orientation, PropTypes } from '@xihan-ui/kernel'
-import type { MachineSchema } from '@xihan-ui/machine'
+import type { Direction, MachineSchema, Orientation, PropTypes } from '@xihan-ui/core'
 import type { MultiPointerSession } from '@xihan-ui/pointer'
 
 /** 按住自动播放的来源。可同时有多个按住，最后一个松开才继续走。 */

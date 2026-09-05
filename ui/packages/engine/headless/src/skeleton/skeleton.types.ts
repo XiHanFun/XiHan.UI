@@ -1,4 +1,4 @@
-import type { PropTypes } from '@xihan-ui/kernel'
+import type { PropTypes } from '@xihan-ui/core'
 
 /** 骨架条的形状：一行文字、一个圆、一块矩形。 */
 export type SkeletonShape = 'text' | 'circle' | 'rect'

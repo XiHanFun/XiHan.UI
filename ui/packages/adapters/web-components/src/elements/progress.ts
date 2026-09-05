@@ -1,5 +1,5 @@
+import type { Size, Tone } from '@xihan-ui/core'
 import type { ProgressGapPosition, ProgressVariant } from '@xihan-ui/headless'
-import type { Size, Tone } from '@xihan-ui/kernel'
 import { connectProgress, progressAnatomy, progressMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'

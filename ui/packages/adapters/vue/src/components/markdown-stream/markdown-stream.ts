@@ -1,5 +1,5 @@
+import type { Size } from '@xihan-ui/core'
 import type { MarkdownBlock, MarkdownStreamApi, MarkdownStreamProps, MarkdownStreamTranslations } from '@xihan-ui/headless'
-import type { Size } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
 import { markdownBlockHtml } from '@xihan-ui/headless'
 import { defineComponent, h } from 'vue'

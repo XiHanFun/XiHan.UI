@@ -1,6 +1,6 @@
 import type { ResizeConstraints, ResizeEdge } from '@xihan-ui/pointer'
 import type { ResizableDimensions, ResizableSchema } from './resizable.types'
-import { setup } from '@xihan-ui/machine'
+import { setup } from '@xihan-ui/core'
 import { clampSize, createPointerSession, resizeRect, resolveSessionDoc } from '@xihan-ui/pointer'
 
 const { createMachine } = setup<ResizableSchema>()

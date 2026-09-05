@@ -1,4 +1,4 @@
-import type { PropTypes } from '@xihan-ui/kernel'
+import type { PropTypes } from '@xihan-ui/core'
 
 /** 间距档位，逐档对应一个间距令牌；档位名与 Grid 同一套。 */
 export type MasonryGap = 'xs' | 'sm' | 'md' | 'lg' | 'xl'

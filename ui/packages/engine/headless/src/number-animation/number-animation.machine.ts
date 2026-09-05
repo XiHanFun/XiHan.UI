@@ -1,6 +1,6 @@
-import type { Scope } from '@xihan-ui/kernel'
+import type { Scope } from '@xihan-ui/core'
 import type { NumberAnimationSchema } from './number-animation.types'
-import { setup } from '@xihan-ui/machine'
+import { setup } from '@xihan-ui/core'
 import { frameLoop, frameNow, isTweenDone, resolveMotionPreference, tweenValueAt } from '@xihan-ui/motion'
 
 const { createMachine } = setup<NumberAnimationSchema>()

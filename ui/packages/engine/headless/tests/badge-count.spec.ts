@@ -2,7 +2,7 @@
 // 角标说的是「有事情发生了」：计数、上限截断、0 值收起、小红点都归它算，
 // 不该由每个宿主各拼一遍——上限口径散在各处迟早不一致。
 // 这些属性住在 indicator 那一层：root 只是锚点，被标记的东西放在它里面。
-import { normalizeProps } from '@xihan-ui/kernel'
+import { normalizeProps } from '@xihan-ui/core'
 import { describe, expect, it } from 'vitest'
 import { connectBadge } from '../src/badge'
 

@@ -1,4 +1,4 @@
-import type { PropTypes, Size } from '@xihan-ui/kernel'
+import type { PropTypes, Size } from '@xihan-ui/core'
 import type { HotkeySegment, HotkeysPlatform, HotkeysResolvedPlatform } from './hotkeys.keys'
 
 /** 监听装在哪儿：整篇文档，还是只在组件所在的那一层父节点里。 */

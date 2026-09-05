@@ -1,11 +1,11 @@
 # 框架元数据
 
-框架名称、版本、版权与运行时信息的**单一事实源**在 `@xihan-ui/kernel` 的 `XIHAN_UI_METADATA` 里，与 [XiHan.Framework](https://github.com/XiHanFun/XiHan.Framework) 的 `XiHanMetadata` 同构：常量集中维护在一份文件里，版本从 package.json 派生，运行时信息由适配器登记。
+框架名称、版本、版权与运行时信息的**单一事实源**在 `@xihan-ui/core` 的 `XIHAN_UI_METADATA` 里，与 [XiHan.Framework](https://github.com/XiHanFun/XiHan.Framework) 的 `XiHanMetadata` 同构：常量集中维护在一份文件里，版本从 package.json 派生，运行时信息由适配器登记。
 
 ## 元数据对象
 
 ```ts
-import { XIHAN_UI_METADATA, XIHAN_UI_VERSION } from '@xihan-ui/kernel/metadata'
+import { XIHAN_UI_METADATA, XIHAN_UI_VERSION } from '@xihan-ui/core/metadata'
 
 XIHAN_UI_METADATA.name            // 'XiHan.UI'
 XIHAN_UI_METADATA.displayName     // '曦寒视图组件'
@@ -30,17 +30,17 @@ XIHAN_UI_METADATA.adapters        // 渲染适配器（vue / web-components）
 标志与寄语不在这个对象里，是两个独立导出：
 
 ```ts
-import { XIHAN_UI_LOGO, XIHAN_UI_SEND_WORD } from '@xihan-ui/kernel/metadata'
+import { XIHAN_UI_LOGO, XIHAN_UI_SEND_WORD } from '@xihan-ui/core/metadata'
 ```
 
 对象被整体引用时打包器摇不掉它里面的字段，并进去这两样就会跟着浏览器产物发到每个访问者手上。单独导出之后没人引用就整个消失——它们是给开发者看的，见下文的终端横幅。
 
-版本不在元数据里手写：`version` / `majorVersion` / `minorVersion` / `patchVersion` / `prerelease` 全部由 `XIHAN_UI_VERSION` 从 kernel 的 package.json 解析而来。改版本只改 package.json 一处，元数据自动跟上。
+版本不在元数据里手写：`version` / `majorVersion` / `minorVersion` / `patchVersion` / `prerelease` 全部由 `XIHAN_UI_VERSION` 从 core 的 package.json 解析而来。改版本只改 package.json 一处，元数据自动跟上。
 
 ## 运行时信息
 
 ```ts
-import { getRuntimeInfo, getRuntimeHost } from '@xihan-ui/kernel/metadata'
+import { getRuntimeInfo, getRuntimeHost } from '@xihan-ui/core/metadata'
 
 getRuntimeInfo()
 // { mode: 'development' | 'production', ssr: boolean, host: { name, version } | null }
@@ -54,7 +54,7 @@ getRuntimeInfo()
 与 Framework 的 `GetSummary()` / `GetDetails()` 同款：
 
 ```ts
-import { getMetadataSummary, getMetadataDetails, printMetadataSummary } from '@xihan-ui/kernel/metadata'
+import { getMetadataSummary, getMetadataDetails, printMetadataSummary } from '@xihan-ui/core/metadata'
 
 const summary = getMetadataSummary()
 // XiHan.UI 曦寒视图 v<当前版本>
@@ -71,11 +71,11 @@ printMetadataDetails()
 
 ### 启动横幅：打在开发者的终端里
 
-对齐 [XiHan.Framework](https://github.com/XiHanFun/XiHan.Framework) 的 `XiHanApplicationBase`——应用构造时自动印 Logo 与摘要。UI 库的等价位置是**开发服务器启动的那个终端**，由 `@xihan-ui/kernel/vite` 子入口负责：
+对齐 [XiHan.Framework](https://github.com/XiHanFun/XiHan.Framework) 的 `XiHanApplicationBase`——应用构造时自动印 Logo 与摘要。UI 库的等价位置是**开发服务器启动的那个终端**，由 `@xihan-ui/core/vite` 子入口负责：
 
 ```ts
 // vite.config.ts
-import { xihanUiBanner } from '@xihan-ui/kernel/vite'
+import { xihanUiBanner } from '@xihan-ui/core/vite'
 import { defineConfig } from 'vite'
 
 export default defineConfig({ plugins: [xihanUiBanner()] })
@@ -104,7 +104,7 @@ XiHan.UI 曦寒视图 v<当前版本>
 适配器启动时也能往浏览器控制台打一次摘要，但**默认关着**：控制台是访问网站的人也看得见的地方，横幅是给开发者看的。要打就显式开，开关只影响之后的启动，手动 `print` 不受影响：
 
 ```ts
-import { setMetadataAutoPrint } from '@xihan-ui/kernel/metadata'
+import { setMetadataAutoPrint } from '@xihan-ui/core/metadata'
 
 setMetadataAutoPrint(true)
 ```

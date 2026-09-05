@@ -1,5 +1,5 @@
+import type { CodeToken, Size } from '@xihan-ui/core'
 import type { DiffLine, DiffModel, DiffSide, DiffViewApi, DiffViewExpandedValueChangeDetails, DiffViewMode, DiffViewSchema, DiffViewTranslations } from '@xihan-ui/headless'
-import type { CodeToken, Size } from '@xihan-ui/kernel'
 import { connectDiffView, diffViewAnatomy, diffViewMachine, diffViewMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'

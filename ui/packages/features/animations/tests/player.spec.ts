@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { onDiagnostic, resetDiagnostics, setDiagnosticsConsoleOutput } from '@xihan-ui/kernel'
+import { onDiagnostic, resetDiagnostics, setDiagnosticsConsoleOutput } from '@xihan-ui/core'
 import { setMotionOverride } from '@xihan-ui/motion'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createMotionPlayer } from '../src/player'

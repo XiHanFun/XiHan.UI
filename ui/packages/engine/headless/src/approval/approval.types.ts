@@ -1,5 +1,4 @@
-import type { PropTypes, Size, Tone } from '@xihan-ui/kernel'
-import type { MachineSchema } from '@xihan-ui/machine'
+import type { MachineSchema, PropTypes, Size, Tone } from '@xihan-ui/core'
 
 export type ApprovalStatus = 'pending' | 'approved' | 'denied' | 'expired'
 

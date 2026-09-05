@@ -17,16 +17,16 @@ describe('codegen 子路径的声明与运行期一致', () => {
     expect([...declared].sort()).toEqual([...exported].sort())
   })
 
-  it('声明里不引 kernel，也不引 dist——前者消费方解析不到，后者源码树里还不存在', async () => {
+  it('声明里不引 core，也不引 dist——前者消费方解析不到，后者源码树里还不存在', async () => {
     const source = await readFile(fileURLToPath(new URL('../build/index.d.mts', import.meta.url)), 'utf8')
-    expect(source).not.toContain('@xihan-ui/kernel')
+    expect(source).not.toContain('@xihan-ui/core')
     expect(source).not.toMatch(/from '\.\.\/dist\//)
   })
 
-  it('自带的 IconRecord / IconNode 与 kernel 那份逐字段一致', async () => {
+  it('自带的 IconRecord / IconNode 与 core 那份逐字段一致', async () => {
     const local = await readFile(fileURLToPath(new URL('../build/index.d.mts', import.meta.url)), 'utf8')
     const core = await readFile(
-      fileURLToPath(new URL('../../../engine/kernel/src/types/icon.ts', import.meta.url)),
+      fileURLToPath(new URL('../../../engine/core/src/kernel/types/icon.ts', import.meta.url)),
       'utf8',
     )
 

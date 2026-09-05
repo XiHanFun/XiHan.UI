@@ -1,5 +1,5 @@
+import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type { TimeFieldSchema, TimeFieldValueChangeDetails, TimeGranularity, TimeHourCycle, TimeSegmentType } from '@xihan-ui/headless'
-import type { ControlVariant, Size, Tone } from '@xihan-ui/kernel'
 import { connectTimeField, timeFieldAnatomy, timeFieldMachine, timeFieldMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'

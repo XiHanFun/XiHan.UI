@@ -1,5 +1,4 @@
-import type { PropTypes, Size, Tone } from '@xihan-ui/kernel'
-import type { MachineSchema } from '@xihan-ui/machine'
+import type { MachineSchema, PropTypes, Size, Tone } from '@xihan-ui/core'
 import type { EasingName } from '@xihan-ui/motion'
 
 /** 缓动：曲线名，或一条 `cubic-bezier(...)` / `linear` 串。取值与 CSS 侧同源。 */

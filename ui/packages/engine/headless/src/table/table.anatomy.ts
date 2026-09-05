@@ -1,5 +1,5 @@
-import type { ItemQuery } from '@xihan-ui/behavior'
-import { createAnatomy } from '@xihan-ui/kernel'
+import type { ItemQuery } from '@xihan-ui/core'
+import { createAnatomy } from '@xihan-ui/core'
 
 // data-part 直接用 kebab-case，与 CSS 选择器一致。
 // empty 与 loading 是表体的两个占位节点，成对命名：一个装「一行都没有」、一个装「还在取」。

@@ -1,7 +1,7 @@
 import type { CodeViewApi, CodeViewProps } from '@xihan-ui/headless'
 import type { ComputedRef, Ref } from 'vue'
+import { createScope } from '@xihan-ui/core'
 import { connectCodeView } from '@xihan-ui/headless'
-import { createScope } from '@xihan-ui/kernel'
 import { computed, ref } from 'vue'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { createVueIdGenerator } from '../../runtime/vue-id'

@@ -1,5 +1,5 @@
+import type { Direction, Size } from '@xihan-ui/core'
 import type { JsonViewerApi, JsonViewerExpandedValueChangeDetails, JsonViewerNode, JsonViewerSchema, JsonViewerTranslations } from '@xihan-ui/headless'
-import type { Direction, Size } from '@xihan-ui/kernel'
 import { connectJsonViewer, jsonViewerAnatomy, jsonViewerMachine, jsonViewerMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'

@@ -1,4 +1,4 @@
-import { createAnatomy } from '@xihan-ui/kernel'
+import { createAnatomy } from '@xihan-ui/core'
 
 // root 是作者自己那棵树里的容器（触发器与面板都在它底下），positioner 摆位置与尺寸，
 // content 承载 role=dialog 与键盘收口；header 一行里放标题、拖拽把手与三类按钮，body 是正文。

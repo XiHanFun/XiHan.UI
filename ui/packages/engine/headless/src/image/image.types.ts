@@ -1,5 +1,4 @@
-import type { PropTypes } from '@xihan-ui/kernel'
-import type { MachineSchema } from '@xihan-ui/machine'
+import type { MachineSchema, PropTypes } from '@xihan-ui/core'
 
 /** 图片加载状态。idle 是来源决议前的过渡态，其余三态对外稳定。 */
 export type ImageStatus = 'idle' | 'loading' | 'loaded' | 'error'

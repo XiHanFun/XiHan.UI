@@ -1,5 +1,5 @@
+import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type { DateFieldSchema, DateFieldSegmentProps, DateFieldTranslations, DateFieldValueChangeDetails, DateGranularity, DateSegmentSet, DateSegmentType } from '@xihan-ui/headless'
-import type { ControlVariant, Size, Tone } from '@xihan-ui/kernel'
 import { connectDateField, dateFieldAnatomy, dateFieldMachine, dateFieldMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'

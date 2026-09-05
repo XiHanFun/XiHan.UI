@@ -1,15 +1,9 @@
 [
   {
-    "name": "kernel",
-    "path": "packages/engine/kernel/dist/index.js",
+    "name": "core",
+    "path": "packages/engine/core/dist/index.js",
     "gzip": true,
-    "limit": "3.9 kB"
-  },
-  {
-    "name": "machine",
-    "path": "packages/engine/machine/dist/index.js",
-    "gzip": true,
-    "limit": "5.5 kB"
+    "limit": "16 kB"
   },
   {
     "name": "tokens",
@@ -22,12 +16,6 @@
     "path": "packages/design/tokens/tokens.css",
     "gzip": true,
     "limit": "5 kB"
-  },
-  {
-    "name": "behavior",
-    "path": "packages/engine/behavior/dist/index.js",
-    "gzip": true,
-    "limit": "7.8 kB"
   },
   {
     "name": "motion",
@@ -49,7 +37,7 @@
   },
   {
     "name": "code-highlight",
-    "path": "packages/engine/code-highlight/dist/index.js",
+    "path": "packages/features/code-highlight/dist/index.js",
     "gzip": true,
     "limit": "2.6 kB"
   },

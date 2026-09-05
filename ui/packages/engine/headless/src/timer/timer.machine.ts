@@ -1,7 +1,7 @@
-import type { PropFn } from '@xihan-ui/machine'
+import type { PropFn } from '@xihan-ui/core'
 import type { TimerRun } from './timer.format'
 import type { TimerSchema } from './timer.types'
-import { setIntervalEffect, setTimeoutEffect, setup } from '@xihan-ui/machine'
+import { setIntervalEffect, setTimeoutEffect, setup } from '@xihan-ui/core'
 import { frameNow } from '@xihan-ui/motion'
 import { resolveTimerInterval, timerElapsedAt, timerRunOf, timerRunsOnMount, timerTotalMs, timerValueAt } from './timer.format'
 

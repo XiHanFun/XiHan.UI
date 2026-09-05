@@ -1,4 +1,4 @@
-import type { ActionVariant, PropTypes, Size, Tone } from '@xihan-ui/kernel'
+import type { ActionVariant, PropTypes, Size, Tone } from '@xihan-ui/core'
 
 export interface IconWrapperProps {
   /** 形态：solid / subtle / outline / ghost，决定底色、描边与前景怎么用。 */

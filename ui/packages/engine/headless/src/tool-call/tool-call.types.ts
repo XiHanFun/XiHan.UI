@@ -1,5 +1,4 @@
-import type { PropTypes, Size, Tone } from '@xihan-ui/kernel'
-import type { MachineSchema } from '@xihan-ui/machine'
+import type { MachineSchema, PropTypes, Size, Tone } from '@xihan-ui/core'
 
 /**
  * 一次工具调用走到哪一步。

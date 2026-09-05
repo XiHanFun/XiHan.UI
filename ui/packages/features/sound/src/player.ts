@@ -5,7 +5,7 @@
 import type { SoundContext } from './engine/context'
 import type { Voice } from './engine/voice'
 import type { PlayOptions, SoundPlayer, SoundPlayerOptions, SoundSpec, SoundTheme } from './types'
-import { DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/kernel'
+import { DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/core'
 import { createSoundContext, isAudioSupported } from './engine/context'
 import { playSpec } from './engine/voice'
 import { clampSpec } from './spec'

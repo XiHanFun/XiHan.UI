@@ -1,5 +1,5 @@
 // 会话状态容器：把事件流收敛成一组消息与一个运行状态，对外提供订阅。
-import type { Cleanup } from '@xihan-ui/kernel'
+import type { Cleanup } from '@xihan-ui/core'
 import type { ChatRequest, UIMessage } from '../model/message'
 import type { ReduceState } from '../reduce/parts-reducer'
 import type { Transport } from '../transport/transport'

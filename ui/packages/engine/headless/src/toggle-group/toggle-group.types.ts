@@ -1,5 +1,4 @@
-import type { Direction, Orientation, PropTypes, Size, Tone } from '@xihan-ui/kernel'
-import type { MachineSchema } from '@xihan-ui/machine'
+import type { Direction, MachineSchema, Orientation, PropTypes, Size, Tone } from '@xihan-ui/core'
 
 /**
  * 作者那一侧的值形态：单个值、值集合，或 null（无选中）。

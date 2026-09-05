@@ -1,3 +1,4 @@
+import type { Cleanup, ControlVariant, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
 import type {
   TreeNode,
   TreeSelectExpandedValueChangeDetails,
@@ -6,12 +7,9 @@ import type {
   TreeSelectSchema,
   TreeSelectValueChangeDetails,
 } from '@xihan-ui/headless'
-import type { Cleanup, ControlVariant, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
-import type { Service } from '@xihan-ui/machine'
 import type { OverlayExit } from '../overlay-exit'
-import { ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
+import { createCounterIdGenerator, createRuntimeConfig, createScope, ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectTreeSelect, treeSelectAnatomy, treeSelectMachine, treeSelectMeta } from '@xihan-ui/headless'
-import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/kernel'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'

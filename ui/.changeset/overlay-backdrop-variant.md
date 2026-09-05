@@ -1,5 +1,5 @@
 ---
-"@xihan-ui/kernel": minor
+"@xihan-ui/core": minor
 "@xihan-ui/headless": minor
 "@xihan-ui/vue": minor
 "@xihan-ui/web-components": minor

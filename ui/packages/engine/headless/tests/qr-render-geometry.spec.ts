@@ -3,7 +3,7 @@
 // 这里不看 d 是怎么写的，只看墨最后落在哪儿：自带一个 SVG 路径求值器——记号解析、
 // 圆弧展成折线、按非零填充规则算绕数——然后照读码器的取样规则，在每个模块的几何中心
 // 问一句「这一点有没有墨」。回环解码那份验的是矩阵本身，这份验的是矩阵被画成了什么样。
-import type { DiagnosticRecord } from '@xihan-ui/kernel'
+import type { DiagnosticRecord } from '@xihan-ui/core'
 import type { QrCodeLogoArea, QrCodeProps, QrEyeShape, QrLevel, QrModuleShape } from '../src/qr-code'
 import {
   DIAGNOSTIC_CODES,
@@ -13,7 +13,7 @@ import {
   setDiagnosticsConsoleOutput,
   setDiagnosticsDedupe,
   setDiagnosticsLevel,
-} from '@xihan-ui/kernel'
+} from '@xihan-ui/core'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { connectQrCode, qrAlignmentPositions, qrCapacityBytes, qrEncode } from '../src/qr-code'
 

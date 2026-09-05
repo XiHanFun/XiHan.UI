@@ -1,5 +1,5 @@
 ---
-"@xihan-ui/kernel": major
+"@xihan-ui/core": major
 "@xihan-ui/web-components": major
 ---
 

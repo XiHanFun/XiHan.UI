@@ -1,5 +1,5 @@
 import type { RadioGroupSchema } from './radio-group.types'
-import { resetDeclaredValue, setup } from '@xihan-ui/machine'
+import { resetDeclaredValue, setup } from '@xihan-ui/core'
 
 const { createMachine } = setup<RadioGroupSchema>()
 

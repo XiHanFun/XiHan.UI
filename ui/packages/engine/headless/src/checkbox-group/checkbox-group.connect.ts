@@ -1,6 +1,4 @@
-import type { ItemQuery } from '@xihan-ui/behavior'
-import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
-import type { Service } from '@xihan-ui/machine'
+import type { ItemQuery, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type {
   CheckboxGroupApi,
   CheckboxGroupCheckedState,
@@ -8,8 +6,7 @@ import type {
   CheckboxGroupNodeMeta,
   CheckboxGroupSchema,
 } from './checkbox-group.types'
-import { isItemDisabled, ITEM_VALUE_ATTR, itemValue, queryItems } from '@xihan-ui/behavior'
-import { dataAttr } from '@xihan-ui/kernel'
+import { dataAttr, isItemDisabled, ITEM_VALUE_ATTR, itemValue, queryItems } from '@xihan-ui/core'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { checkboxGroupAnatomy } from './checkbox-group.anatomy'
 

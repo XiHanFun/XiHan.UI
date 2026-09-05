@@ -5,7 +5,7 @@
  * @vitest-environment jsdom
  */
 
-import type { Service } from '@xihan-ui/machine'
+import type { Service } from '@xihan-ui/core'
 import type {
   FloatingPanelDimensionsChangeDetails,
   FloatingPanelOpenChangeDetails,
@@ -14,9 +14,8 @@ import type {
   FloatingPanelSchema,
   FloatingPanelWindowStateChangeDetails,
 } from '../src/floating-panel'
-import { normalizeProps } from '@xihan-ui/kernel'
-import { createService } from '@xihan-ui/machine'
-import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
+import { createService, normalizeProps } from '@xihan-ui/core'
+import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it } from 'vitest'
 import {
   clampFloatingPanelSize,

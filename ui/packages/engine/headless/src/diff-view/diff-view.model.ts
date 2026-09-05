@@ -1,4 +1,4 @@
-import type { CodeToken, HighlighterPort } from '@xihan-ui/kernel'
+import type { CodeToken, HighlighterPort } from '@xihan-ui/core'
 import { splitCodeLines } from '../code-view'
 
 /** 一行的变更类型。 */

@@ -1,4 +1,4 @@
-import { declaredItemDisabled } from '@xihan-ui/behavior'
+import { declaredItemDisabled } from '@xihan-ui/core'
 
 /**
  * 作者在标记里声明的条目禁用，按元素记住头一回见到的那一份。

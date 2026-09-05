@@ -1,3 +1,4 @@
+import type { Scope } from '@xihan-ui/core'
 import type {
   FileUploadApi,
   FileUploadCompleteDetails,
@@ -10,9 +11,8 @@ import type {
   FileUploadSchema,
   FileUploadTranslations,
 } from '@xihan-ui/headless'
-import type { Scope } from '@xihan-ui/kernel'
+import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
 import { connectFileUpload, fileUploadAnatomy, fileUploadMachine, fileUploadMeta } from '@xihan-ui/headless'
-import { createCounterIdGenerator, createScope } from '@xihan-ui/kernel'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'

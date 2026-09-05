@@ -1,9 +1,8 @@
 // @vitest-environment jsdom
 // 行拖拽：纯算法（行组并块、降级判定、命令）与机器/连接层（激活阈值、长按、播报）。
 import type { TableRowDef, TableSchema } from '../src/table'
-import { normalizeProps } from '@xihan-ui/kernel'
-import { createService } from '@xihan-ui/machine'
-import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
+import { createService, normalizeProps } from '@xihan-ui/core'
+import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { flatMoveCommand, flatMoveIntentFromKey, reorderFlat } from '../src/shared/drag'
 import {

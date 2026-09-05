@@ -1,5 +1,4 @@
-import type { ActionVariant, PropTypes, Size, Tone } from '@xihan-ui/kernel'
-import type { MachineSchema } from '@xihan-ui/machine'
+import type { ActionVariant, MachineSchema, PropTypes, Size, Tone } from '@xihan-ui/core'
 
 export interface TogglePressedChangeDetails {
   pressed: boolean

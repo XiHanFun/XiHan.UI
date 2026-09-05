@@ -1,5 +1,4 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
-import type { Service } from '@xihan-ui/machine'
+import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { ColorPickerChannel, ColorPickerInputChannel } from './color-picker.color'
 import type {
   ColorPickerApi,
@@ -10,8 +9,7 @@ import type {
   ColorPickerSwatchItemProps,
   ColorPickerTranslations,
 } from './color-picker.types'
-import { ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
-import { dataAttr, isComposingEvent } from '@xihan-ui/kernel'
+import { dataAttr, isComposingEvent, ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { overlayPositioned } from '../shared/overlay'
 import { colorPickerAnatomy } from './color-picker.anatomy'
 import {

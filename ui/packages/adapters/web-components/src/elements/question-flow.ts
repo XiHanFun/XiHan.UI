@@ -1,3 +1,4 @@
+import type { ControlVariant, Service, Size, Tone } from '@xihan-ui/core'
 import type {
   QuestionFlowAnswers,
   QuestionFlowAnswersChangeDetails,
@@ -12,8 +13,6 @@ import type {
   QuestionFlowSubmitDetails,
   QuestionFlowTranslations,
 } from '@xihan-ui/headless'
-import type { ControlVariant, Size, Tone } from '@xihan-ui/kernel'
-import type { Service } from '@xihan-ui/machine'
 import { connectQuestionFlow, questionFlowAnatomy, questionFlowMachine, questionFlowMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'

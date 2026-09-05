@@ -1,9 +1,7 @@
-import type { Disposable, Scope } from '@xihan-ui/kernel'
-import type { MachineConfig, MachineSchema, Service } from '@xihan-ui/machine'
+import type { Disposable, MachineConfig, MachineSchema, Scope, Service } from '@xihan-ui/core'
 import type { ReactiveController, ReactiveControllerHost } from '../reactive'
 import type { LitRuntime } from './lit-runtime'
-import { createFormResetBridge } from '@xihan-ui/behavior'
-import { createService, declaresFormReset, FORM_RESET_EVENT } from '@xihan-ui/machine'
+import { createFormResetBridge, createService, declaresFormReset, FORM_RESET_EVENT } from '@xihan-ui/core'
 import { withXhConfig } from '../config'
 
 import { createLitRuntime } from './lit-runtime'

@@ -1,7 +1,7 @@
 ---
 "@xihan-ui/pointer": patch
 "@xihan-ui/vue": patch
-"@xihan-ui/behavior": patch
+"@xihan-ui/core": patch
 "@xihan-ui/chat-stream": patch
 "@xihan-ui/web-components": patch
 ---

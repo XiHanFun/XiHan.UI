@@ -1,3 +1,4 @@
+import type { Size, Tone } from '@xihan-ui/core'
 import type {
   ApprovalDecisionDetails,
   ApprovalNoteChangeDetails,
@@ -7,7 +8,6 @@ import type {
   ApprovalStatus,
   ApprovalTranslations,
 } from '@xihan-ui/headless'
-import type { Size, Tone } from '@xihan-ui/kernel'
 import { approvalAnatomy, approvalMachine, approvalMeta, connectApproval } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'

@@ -1,5 +1,5 @@
 import type { RatingSchema } from './rating.types'
-import { resetDeclaredValue, setup } from '@xihan-ui/machine'
+import { resetDeclaredValue, setup } from '@xihan-ui/core'
 
 const { createMachine } = setup<RatingSchema>()
 

@@ -1,6 +1,6 @@
-import type { CodeToken, HighlighterPort } from '@xihan-ui/kernel'
+import type { CodeToken, HighlighterPort } from '@xihan-ui/core'
 import type { CodeViewApi, CodeViewProps } from '../src/code-view'
-import { createCounterIdGenerator, createScope, normalizeProps } from '@xihan-ui/kernel'
+import { createCounterIdGenerator, createScope, normalizeProps } from '@xihan-ui/core'
 import { describe, expect, it, vi } from 'vitest'
 // 直接从组件目录导入，不经包主入口
 import { connectCodeView, parseLineRanges, splitCodeLines } from '../src/code-view'
@@ -104,6 +104,14 @@ describe('着色取舍', () => {
   it('着色实现返回 null 是合法结果，退回纯文本', () => {
     const none: HighlighterPort = { highlight: () => null }
     expect(api({ code: 'x', complete: true, highlighter: none }).lines[0]!.tokens).toEqual([])
+  })
+
+  it('压根没有着色实现时逐行原文照旧，行结构与行号一并保留', () => {
+    const a = api({ code: 'const a = 1\nconst b = 2', complete: true, lineNumbers: true })
+    expect(a.lines.map(line => line.text)).toEqual(['const a = 1', 'const b = 2'])
+    expect(a.lines.every(line => line.tokens.length === 0)).toBe(true)
+    expect(a.lineCount).toBe(2)
+    expect(a.lineNumberAt(1)).toBe(2)
   })
 })
 

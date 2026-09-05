@@ -1,5 +1,4 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
-import type { Service } from '@xihan-ui/machine'
+import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type {
   HeatmapCellDetails,
   HeatmapCellRef,
@@ -11,8 +10,7 @@ import type {
   HeatmapTipRect,
 } from './heatmap.grid'
 import type { HeatmapApi, HeatmapSchema } from './heatmap.types'
-import { focusItem, ITEM_VALUE_ATTR, itemValue, queryItems, readDirection } from '@xihan-ui/behavior'
-import { contains } from '@xihan-ui/kernel'
+import { contains, focusItem, ITEM_VALUE_ATTR, itemValue, queryItems, readDirection } from '@xihan-ui/core'
 import { heatmapAnatomy, heatmapCellQuery } from './heatmap.anatomy'
 import {
   buildHeatmapGrid,

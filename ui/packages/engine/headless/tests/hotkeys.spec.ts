@@ -5,7 +5,7 @@
  */
 
 import type { HotkeysProps, HotkeysTriggerDetails } from '../src/hotkeys/index'
-import { normalizeProps } from '@xihan-ui/kernel'
+import { normalizeProps } from '@xihan-ui/core'
 import { afterEach, describe, expect, it } from 'vitest'
 import {
   connectHotkeys,

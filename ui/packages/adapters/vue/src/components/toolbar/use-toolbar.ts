@@ -1,5 +1,5 @@
+import type { Service } from '@xihan-ui/core'
 import type { ToolbarApi, ToolbarSchema } from '@xihan-ui/headless'
-import type { Service } from '@xihan-ui/machine'
 import type { ComputedRef } from 'vue'
 import { connectToolbar, toolbarMachine } from '@xihan-ui/headless'
 import { computed } from 'vue'

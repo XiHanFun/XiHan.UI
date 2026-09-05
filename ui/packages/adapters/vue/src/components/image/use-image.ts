@@ -1,5 +1,5 @@
+import type { Service } from '@xihan-ui/core'
 import type { ImageApi, ImageSchema } from '@xihan-ui/headless'
-import type { Service } from '@xihan-ui/machine'
 import type { ComputedRef } from 'vue'
 import { connectImage, imageMachine } from '@xihan-ui/headless'
 import { computed } from 'vue'

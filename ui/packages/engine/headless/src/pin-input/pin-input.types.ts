@@ -1,5 +1,4 @@
-import type { ControlVariant, PropTypes, Size, Tone } from '@xihan-ui/kernel'
-import type { MachineSchema } from '@xihan-ui/machine'
+import type { ControlVariant, MachineSchema, PropTypes, Size, Tone } from '@xihan-ui/core'
 
 /** 每格接受的字符类别：决定字符过滤规则与移动端键盘类型。 */
 export type PinInputType = 'numeric' | 'alphanumeric' | 'alphabetic'

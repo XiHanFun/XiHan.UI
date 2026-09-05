@@ -2,9 +2,8 @@
 // 菜单栏要能容下子菜单：带 aria-haspopup 的条目是子菜单入口，不是可选中的条目；
 // 子层处理掉的键不再由本层接管；焦点走进子菜单不算离场。
 import type { MenubarSchema } from '../src/menubar'
-import { normalizeProps } from '@xihan-ui/kernel'
-import { createService } from '@xihan-ui/machine'
-import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
+import { createService, normalizeProps } from '@xihan-ui/core'
+import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { describe, expect, it, vi } from 'vitest'
 import { connectMenubar, menubarMachine } from '../src/menubar'
 

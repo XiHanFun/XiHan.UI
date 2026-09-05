@@ -1,5 +1,4 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
-import type { Service } from '@xihan-ui/machine'
+import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { NumberAnimationApi, NumberAnimationSchema } from './number-animation.types'
 import { numberAnimationAnatomy } from './number-animation.anatomy'
 import { formatNumberAnimation, resolveNumberAnimationPrecision } from './number-animation.format'

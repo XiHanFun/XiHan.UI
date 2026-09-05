@@ -1,4 +1,4 @@
-import type { Direction, Orientation } from '@xihan-ui/kernel'
+import type { Direction, Orientation } from '@xihan-ui/core'
 import { clamp, snapDecimals } from '../shared/number'
 
 /**

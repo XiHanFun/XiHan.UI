@@ -1,6 +1,6 @@
+import type { Orientation } from '@xihan-ui/core'
 import type { CheckboxGroupItemProps, CheckboxGroupNode, CheckboxGroupSchema, CheckboxGroupValueChangeDetails } from '@xihan-ui/headless'
-import type { Orientation } from '@xihan-ui/kernel'
-import { isItemDisabled } from '@xihan-ui/behavior'
+import { isItemDisabled } from '@xihan-ui/core'
 import { checkboxGroupAnatomy, checkboxGroupMachine, checkboxGroupMeta, connectCheckboxGroup } from '@xihan-ui/headless'
 import { createDeclaredDisabled } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'

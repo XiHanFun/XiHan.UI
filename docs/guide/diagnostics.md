@@ -36,7 +36,7 @@ export const DIAGNOSTIC_CODES = {
   wcWrongPartTag: 'wc.wrong-part-tag', // 角色节点的标签不满足要求，原生语义会静默失效
   qrCodeLogoDamage: 'qr-code.logo-damage', // 中心 logo 挖掉的码字超出纠错级别能恢复的量
   stylesMissingSkin: 'styles.missing-skin', // 页面上出现了组件，但它那份皮肤没被引入
-  versionMismatch: 'core.version-mismatch', // 适配器与 kernel 的版本不一致，锁步发版被打破
+  versionMismatch: 'core.version-mismatch', // 适配器与 core 的版本不一致，锁步发版被打破
   ignoredSlot: 'core.ignored-slot', // 作者给了默认插槽，但该组件不渲染插槽内容
   overlayStackingTrap: 'overlay.stacking-trap', // 浮层的祖先建了层叠上下文，浮层的层号被困在其中
   scrollbarMissingScrollable: 'scrollbar.missing-scrollable', // 滚动条挂载时找不到它要管的滚动容器
@@ -44,14 +44,14 @@ export const DIAGNOSTIC_CODES = {
 }
 ```
 
-这份清单与 `@xihan-ui/kernel` 里的码表逐条对账，不会漏码，可以直接照它写分流。
+这份清单与 `@xihan-ui/core` 里的码表逐条对账，不会漏码，可以直接照它写分流。
 
 三条 `wc.*` 是 Web Components 适配器的部件契约校验，也是日常最容易撞上的三条——手写 DOM 时漏一个 `data-xh-part` 或者写错名字，通道会明确告诉你哪个节点、哪个部件。
 
 ## 用法
 
 ```ts
-import { onDiagnostic, setDiagnosticsLevel, setDiagnosticsConsoleOutput } from '@xihan-ui/kernel'
+import { onDiagnostic, setDiagnosticsLevel, setDiagnosticsConsoleOutput } from '@xihan-ui/core'
 
 // 订阅
 const off = onDiagnostic((record) => {
@@ -88,7 +88,7 @@ setDiagnosticsConsoleOutput(false)
 
 ## 隔离性
 
-- 通道挂在全局，同一页面里多份 `@xihan-ui/kernel` 副本共用一条通道；
+- 通道挂在全局，同一页面里多份 `@xihan-ui/core` 副本共用一条通道；
 - **订阅方抛错不会回流进组件**——你的上报逻辑炸了不会连累界面。
 
 ## 在测试里用
@@ -96,7 +96,7 @@ setDiagnosticsConsoleOutput(false)
 把阈值调到 `warn` 并订阅，就能把契约违约变成用例失败：
 
 ```ts
-import { onDiagnostic, resetDiagnostics, setDiagnosticsLevel } from '@xihan-ui/kernel'
+import { onDiagnostic, resetDiagnostics, setDiagnosticsLevel } from '@xihan-ui/core'
 
 beforeEach(() => {
   resetDiagnostics()

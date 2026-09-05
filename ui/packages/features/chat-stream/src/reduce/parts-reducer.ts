@@ -3,7 +3,7 @@ import type { Role, UIMessage } from '../model/message'
 import type { ReasoningPart, TextPart, ToolPart, UIMessagePart } from '../model/part-kinds'
 import type { BlockIndex, ToolIndex } from './block-registry'
 import type { BlockKey, NormalizedEvent } from './events'
-import { warn } from '@xihan-ui/kernel'
+import { warn } from '@xihan-ui/core'
 import { withEntry, withoutEntry } from './block-registry'
 
 export interface ReduceState {

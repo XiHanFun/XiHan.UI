@@ -1,4 +1,4 @@
-import type { Bindable, CellParams, Dep, ReactiveRuntime } from '@xihan-ui/machine'
+import type { Bindable, CellParams, Dep, ReactiveRuntime } from '@xihan-ui/core'
 import type { ReactiveControllerHost } from '../reactive'
 
 // 把机器的 ReactiveRuntime 契约桥到自定义元素基类的 controller 生命周期。

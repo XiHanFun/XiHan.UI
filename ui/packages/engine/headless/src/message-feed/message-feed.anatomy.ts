@@ -1,5 +1,5 @@
-import type { ItemQuery } from '@xihan-ui/behavior'
-import { createAnatomy } from '@xihan-ui/kernel'
+import type { ItemQuery } from '@xihan-ui/core'
+import { createAnatomy } from '@xihan-ui/core'
 
 // root 是最外层，承载容器兜底的 Tab 位与键盘模型；viewport 是 overflow:auto 的那层；
 // list 是内容包裹层，条目必须是它的直接子节点；item 是一条消息（role=article）；

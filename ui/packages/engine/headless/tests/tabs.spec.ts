@@ -3,9 +3,8 @@
 // tabs 的机器级基线：受控/非受控、两种激活模式、roving 锚点。
 // 这份网是为后面改机器而织的——它钉的是改之前就有的行为。
 import type { TabsSchema } from '../src/tabs'
-import { normalizeProps } from '@xihan-ui/kernel'
-import { createService } from '@xihan-ui/machine'
-import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
+import { createService, normalizeProps } from '@xihan-ui/core'
+import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { connectTabs, tabsMachine } from '../src/tabs'
 

@@ -1,5 +1,5 @@
+import type { OverlayBackdropVariant } from '@xihan-ui/core'
 import type { imageViewerCounterText as counterTextFn, ImageViewerApi, ImageViewerItem, ImageViewerSchema } from '@xihan-ui/headless'
-import type { OverlayBackdropVariant } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { imageViewerCounterText } from '@xihan-ui/headless'

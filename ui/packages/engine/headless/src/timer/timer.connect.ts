@@ -1,7 +1,6 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
-import type { Service } from '@xihan-ui/machine'
+import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { TimerApi, TimerControlAction, TimerSchema, TimerSegments } from './timer.types'
-import { dataAttr } from '@xihan-ui/kernel'
+import { dataAttr } from '@xihan-ui/core'
 import { timerAnatomy } from './timer.anatomy'
 import { formatTimerText, isTimerControlled, quantizeTimer, resolveTimerPrecision, splitTimer, timerRunOf, timerSegmentText, timerValueAt } from './timer.format'
 

@@ -8,15 +8,13 @@
 
 123 个组件，每个都有 headless 内核、Vue 组件、自定义元素与默认皮肤。
 
-> 18 个公开包锁步发版，全部发布在 npm，文档站在 https://ui.docs.xihanfun.com。无障碍扫描跑在真实 Chromium 上，存量违规登记表只剩三条（共用表里 tag 的禁用态对比度与 prompt-input 归作者的可访问名、WC 侧 steps 的必需子节点），另有一条 breadcrumb 的步骤重放豁免。
+> 16 个公开包锁步发版，全部发布在 npm，文档站在 https://ui.docs.xihanfun.com。无障碍扫描跑在真实 Chromium 上，存量违规登记表只剩三条（共用表里 tag 的禁用态对比度与 prompt-input 归作者的可访问名、WC 侧 steps 的必需子节点），另有一条 breadcrumb 的步骤重放豁免。
 
 ## 包一览
 
 | 包 | 职责 |
 | --- | --- |
-| `@xihan-ui/kernel` | 结构原语：anatomy、`mergeProps`、`normalizeProps`、Scope、context、id |
-| `@xihan-ui/machine` | 状态机运行时：`createMachine`、解释器契约、受控值绑定 |
-| `@xihan-ui/behavior` | 行为原语：dismissable layer、焦点域、滚动锁、进出场、集合、typeahead |
+| `@xihan-ui/core` | 运行时底座：anatomy、`mergeProps`、`normalizeProps`、Scope、id；`createMachine` 状态机运行时；dismissable layer、焦点域、滚动锁、进出场、集合、typeahead |
 | `@xihan-ui/motion` | 动效原语：缓动单一真源、纯补间、帧循环、减弱动效偏好、解析解弹簧、Web Animations 薄封装 |
 | `@xihan-ui/pointer` | 指针会话：一根指针从按下到抬起的跟手、过滤与收尾，自研，零依赖 |
 | `@xihan-ui/headless` | 123 个组件的 anatomy + machine + `connect`，无样式、无框架 |
@@ -26,7 +24,7 @@
 | `@xihan-ui/tokens` | 设计令牌（源自 DTCG）与主题运行时（明暗 / 品牌 / 密度 / 对比度 / 书写方向） |
 | `@xihan-ui/position` | 浮层定位，自研实现，无第三方运行时依赖 |
 | `@xihan-ui/chat-stream` | AI 协议内核：SSE 读取 → 协议归一 → parts 归约 → 会话 store（零 DOM、零框架） |
-| `@xihan-ui/code-highlight` | 代码着色，自研粗粒度词法器，无第三方运行时依赖 |
+| `@xihan-ui/code-highlight` | 代码着色，自研粗粒度词法器，无第三方运行时依赖；适配器的可选 peer |
 | `@xihan-ui/markdown` | 流式 Markdown 渲染内核：增量切块 + 稳定 key + 消毒（CommonMark 子集，一致率 489/652） |
 | `@xihan-ui/backgrounds` | 背景层：WebGL2 效果与数据驱动的粒子云，框架无关 |
 | `@xihan-ui/sound` | 声音层：纯 Web Audio 程序化 UI 音效，零音频文件，框架无关 |
@@ -55,7 +53,7 @@ pnpm typecheck
 pnpm lint
 pnpm boundaries   # 分层依赖门禁（dependency-cruiser）
 pnpm build
-pnpm size         # 体积棘轮：先构建，再核对 .size-limit.json 里的 34 条产物限额
+pnpm size         # 体积棘轮：先构建，再核对 .size-limit.json 里的 32 条产物限额
 ```
 
 ## 约定

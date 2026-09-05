@@ -3,9 +3,9 @@
 // Light DOM 下元素无权增删作者的节点，所以这里被 presence 拉长的不是「节点存在的时间」
 // 而是「可见的时间」——收起从跟着 open 走，改成跟着 presence 走。
 
-import type { PresenceHandle } from '@xihan-ui/behavior/presence'
-import type { Cleanup, RuntimeConfig } from '@xihan-ui/kernel'
-import { attachCssExit, createPresence } from '@xihan-ui/behavior/presence'
+import type { Cleanup, RuntimeConfig } from '@xihan-ui/core'
+import type { PresenceHandle } from '@xihan-ui/core/presence'
+import { attachCssExit, createPresence } from '@xihan-ui/core/presence'
 
 export interface OverlayExit {
   /** 浮层子树此刻是否应当可见：展开时为真，退场动画播完之前也为真。 */

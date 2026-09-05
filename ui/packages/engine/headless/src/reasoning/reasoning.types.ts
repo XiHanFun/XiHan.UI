@@ -1,4 +1,4 @@
-import type { ControlVariant, PropTypes, Size, Tone } from '@xihan-ui/kernel'
+import type { ControlVariant, PropTypes, Size, Tone } from '@xihan-ui/core'
 
 /** 视图属性，走 connect 的第二参。机器属性与 tool-call 共用一组。 */
 export interface ReasoningProps {

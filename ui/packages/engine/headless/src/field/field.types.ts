@@ -1,4 +1,4 @@
-import type { PropTypes } from '@xihan-ui/kernel'
+import type { PropTypes } from '@xihan-ui/core'
 
 export interface FieldProps {
   /** 校验失败态：控件上 aria-invalid=true，错误文案接入描述链并显出。 */

@@ -1,7 +1,6 @@
-import type { StickToBottomHandle } from '@xihan-ui/behavior'
+import type { StickToBottomHandle } from '@xihan-ui/core'
 import type { MessageFeedSchema } from './message-feed.types'
-import { createStickToBottom } from '@xihan-ui/behavior'
-import { setup } from '@xihan-ui/machine'
+import { createStickToBottom, setup } from '@xihan-ui/core'
 
 const { createMachine } = setup<MessageFeedSchema>()
 

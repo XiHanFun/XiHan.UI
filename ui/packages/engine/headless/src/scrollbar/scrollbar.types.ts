@@ -1,5 +1,4 @@
-import type { Direction, Orientation, PropTypes, Size } from '@xihan-ui/kernel'
-import type { MachineSchema } from '@xihan-ui/machine'
+import type { Direction, MachineSchema, Orientation, PropTypes, Size } from '@xihan-ui/core'
 import type { ScrollAxisMetrics } from '../shared/scroll-geometry'
 
 /**

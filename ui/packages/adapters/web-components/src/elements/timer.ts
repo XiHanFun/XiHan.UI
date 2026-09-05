@@ -1,5 +1,5 @@
+import type { Size } from '@xihan-ui/core'
 import type { TimerCompleteDetails, TimerLive, TimerSchema, TimerTickDetails, TimerUnit } from '@xihan-ui/headless'
-import type { Size } from '@xihan-ui/kernel'
 import { connectTimer, isTimerUnit, timerAnatomy, timerMachine, timerMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'

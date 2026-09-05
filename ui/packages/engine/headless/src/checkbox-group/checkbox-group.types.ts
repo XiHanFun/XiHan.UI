@@ -1,5 +1,4 @@
-import type { Orientation, PropTypes } from '@xihan-ui/kernel'
-import type { MachineSchema } from '@xihan-ui/machine'
+import type { MachineSchema, Orientation, PropTypes } from '@xihan-ui/core'
 
 export interface CheckboxGroupValueChangeDetails {
   value: string[]

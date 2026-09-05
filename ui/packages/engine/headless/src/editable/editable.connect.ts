@@ -1,7 +1,6 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
-import type { Service } from '@xihan-ui/machine'
+import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { EditableActivationMode, EditableApi, EditableSchema } from './editable.types'
-import { dataAttr, isComposingEvent } from '@xihan-ui/kernel'
+import { dataAttr, isComposingEvent } from '@xihan-ui/core'
 import { editableAnatomy } from './editable.anatomy'
 import {
   EDITABLE_DEFAULT_ACTIVATION_MODE,

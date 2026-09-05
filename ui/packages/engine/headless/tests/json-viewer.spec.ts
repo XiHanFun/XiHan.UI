@@ -5,9 +5,8 @@
  */
 
 import type { JsonViewerApi, JsonViewerNode, JsonViewerSchema } from '../src/json-viewer'
-import { normalizeProps } from '@xihan-ui/kernel'
-import { createService } from '@xihan-ui/machine'
-import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
+import { createService, normalizeProps } from '@xihan-ui/core'
+import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
   connectJsonViewer,

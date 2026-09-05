@@ -1,4 +1,4 @@
-import type { Orientation, PropTypes, Size, Tone } from '@xihan-ui/kernel'
+import type { Orientation, PropTypes, Size, Tone } from '@xihan-ui/core'
 
 /**
  * 内容落在线的哪一侧。

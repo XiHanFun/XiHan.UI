@@ -1,5 +1,5 @@
 import type { VNode } from 'vue'
-import { DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/kernel'
+import { DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/core'
 import { cloneVNode, Comment, Fragment, Text } from 'vue'
 
 /**

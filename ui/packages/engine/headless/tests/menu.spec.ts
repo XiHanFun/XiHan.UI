@@ -1,8 +1,7 @@
 // @vitest-environment jsdom
 import type { MenuSchema } from '../src/menu'
-import { normalizeProps } from '@xihan-ui/kernel'
-import { createService } from '@xihan-ui/machine'
-import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
+import { createService, normalizeProps } from '@xihan-ui/core'
+import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { describe, expect, it } from 'vitest'
 import { connectMenu, menuMachine } from '../src/menu'
 

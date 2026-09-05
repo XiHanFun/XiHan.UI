@@ -1,6 +1,6 @@
 // @xihan-ui/vue/behavior —— 行为原语的 Vue 包装。
 //
-// @xihan-ui/behavior 里的原语都是框架无关的：收一份配置与几个元素 getter，
+// @xihan-ui/core 里的原语都是框架无关的：收一份配置与几个元素 getter，
 // 返回一个要自己释放的句柄。接进 Vue 无非是把释放挂到作用域结束，
 // 于是这些包装只做那一件事，不改原语的语义、也不加新概念。
 //
@@ -10,14 +10,14 @@
 // 那种场景请直接用库里现成的浮层组件。
 import type {
   HoverIntentOptions,
+  RuntimeConfig,
   ScrollMetrics,
   ScrollTrackerOptions,
   StickToBottomOptions,
   StickToBottomState,
   Typeahead,
   TypeaheadOptions,
-} from '@xihan-ui/behavior'
-import type { RuntimeConfig } from '@xihan-ui/kernel'
+} from '@xihan-ui/core'
 import type { MaybeRefOrGetter, Ref } from 'vue'
 import {
   acquireScrollLock,
@@ -25,7 +25,7 @@ import {
   createStickToBottom,
   createTypeahead,
   trackHoverIntent,
-} from '@xihan-ui/behavior'
+} from '@xihan-ui/core'
 import { onScopeDispose, ref, toValue, watch } from 'vue'
 
 /**

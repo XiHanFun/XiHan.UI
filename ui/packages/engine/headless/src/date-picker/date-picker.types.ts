@@ -1,5 +1,4 @@
-import type { Cleanup, ControlVariant, Direction, Layer, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
-import type { MachineSchema, Service } from '@xihan-ui/machine'
+import type { Cleanup, ControlVariant, Direction, Layer, MachineSchema, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
 import type { CalendarApi, CalendarSchema, CalendarSelectionMode, CalendarView, CalendarViewChangeDetails } from '../calendar'
 import type { DateFieldSchema, DateFieldSegmentProps, DateFieldSegmentState, DateSegmentSet } from '../date-field'
 import type { TimePickerColumn, TimePickerColumnUnit } from '../time-picker'

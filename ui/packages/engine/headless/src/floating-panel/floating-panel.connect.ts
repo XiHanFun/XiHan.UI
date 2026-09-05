@@ -1,5 +1,4 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
-import type { Service } from '@xihan-ui/machine'
+import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type {
   FloatingPanelApi,
   FloatingPanelResizeEdge,
@@ -7,8 +6,7 @@ import type {
   FloatingPanelSize,
   FloatingPanelWindowState,
 } from './floating-panel.types'
-import { focusSafely } from '@xihan-ui/behavior'
-import { dataAttr } from '@xihan-ui/kernel'
+import { dataAttr, focusSafely } from '@xihan-ui/core'
 import { floatingPanelAnatomy } from './floating-panel.anatomy'
 import {
   FLOATING_PANEL_DEFAULT_POSITION,

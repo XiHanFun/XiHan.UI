@@ -1,5 +1,5 @@
-import { isDev, VERSION as KERNEL_VERSION } from '@xihan-ui/kernel'
-import { checkLockstepVersion, printMetadataBannerOnce, registerRuntimeHost } from '@xihan-ui/kernel/metadata'
+import { VERSION as CORE_VERSION, isDev } from '@xihan-ui/core'
+import { checkLockstepVersion, printMetadataBannerOnce, registerRuntimeHost } from '@xihan-ui/core/metadata'
 import { version as VERSION } from '../package.json'
 import { XhAccordionElement } from './elements/accordion'
 import { XhAffixElement } from './elements/affix'
@@ -261,7 +261,7 @@ export function defineXhElements(): void {
   printMetadataBannerOnce()
 
   if (isDev())
-    checkLockstepVersion('web-components', VERSION, KERNEL_VERSION)
+    checkLockstepVersion('web-components', VERSION, CORE_VERSION)
 }
 
 export {

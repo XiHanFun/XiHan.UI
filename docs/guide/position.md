@@ -4,7 +4,7 @@
 
 ## 端口与实现是分开的
 
-定位能力在 `@xihan-ui/kernel` 里以**端口**形式声明，`@xihan-ui/position` 只是它的一个实现：
+定位能力在 `@xihan-ui/core` 里以**端口**形式声明，`@xihan-ui/position` 只是它的一个实现：
 
 ```ts
 export interface PositionEnginePort {

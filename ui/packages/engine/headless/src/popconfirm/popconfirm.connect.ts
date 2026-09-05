@@ -1,8 +1,7 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
-import type { Service } from '@xihan-ui/machine'
+import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { PopoverSchema } from '../popover'
 import type { PopconfirmApi, PopconfirmIntents } from './popconfirm.types'
-import { dataAttr } from '@xihan-ui/kernel'
+import { dataAttr } from '@xihan-ui/core'
 import { OVERLAY_PLACEMENT_ANCHORED, overlayPositioned } from '../shared/overlay'
 import { popconfirmAnatomy } from './popconfirm.anatomy'
 

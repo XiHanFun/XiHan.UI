@@ -1,3 +1,4 @@
+import type { Direction, Size } from '@xihan-ui/core'
 import type {
   TableColumnDef,
   TableColumnKind,
@@ -13,8 +14,7 @@ import type {
   TableSortChangeDetails,
   TableSortDescriptor,
 } from '@xihan-ui/headless'
-import type { Direction, Size } from '@xihan-ui/kernel'
-import { ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
+import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectTable, tableAnatomy, tableMachine, tableMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'

@@ -1,7 +1,6 @@
-import type { Params, RefsFacade } from '@xihan-ui/machine'
+import type { Params, RefsFacade } from '@xihan-ui/core'
 import type { FieldArrayFocusTarget, FieldArrayPendingKeys, FieldArraySchema } from './field-array.types'
-import { focusSafely } from '@xihan-ui/behavior'
-import { setup } from '@xihan-ui/machine'
+import { focusSafely, setup } from '@xihan-ui/core'
 import { fieldArrayTriggerId } from './field-array.anatomy'
 
 const { createMachine } = setup<FieldArraySchema>()

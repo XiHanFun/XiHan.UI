@@ -1,7 +1,7 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
 import type { TimestampType } from './timestamp.format'
 import type { TimestampApi, TimestampProps, TimestampState } from './timestamp.types'
-import { dataAttr, resolveLocale } from '@xihan-ui/kernel'
+import { dataAttr, resolveLocale } from '@xihan-ui/core'
 import { timestampAnatomy } from './timestamp.anatomy'
 import { formatRelativeTime, formatTimePattern, timestampMachineStamp, timestampWords, toTimeDate } from './timestamp.format'
 

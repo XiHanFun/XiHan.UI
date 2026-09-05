@@ -1,4 +1,4 @@
-import type { Placement, PositionEnginePort } from '@xihan-ui/kernel'
+import type { Placement, PositionEnginePort } from '@xihan-ui/core'
 import type { TestHooks } from '../conformance/types'
 import {
   attachProbe,

@@ -1,7 +1,5 @@
 import type { DialogSchema } from './dialog.types'
-import { acquireScrollLock, createDismissLayer, createFocusScope } from '@xihan-ui/behavior'
-import { hideOutside, warn } from '@xihan-ui/kernel'
-import { setup } from '@xihan-ui/machine'
+import { acquireScrollLock, createDismissLayer, createFocusScope, hideOutside, setup, warn } from '@xihan-ui/core'
 import { closeReasonOf } from '../shared/close-reason'
 
 const { createMachine } = setup<DialogSchema>()

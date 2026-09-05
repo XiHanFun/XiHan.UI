@@ -1,4 +1,4 @@
-import type { Size } from '@xihan-ui/kernel'
+import type { Size } from '@xihan-ui/core'
 import type { PropType } from 'vue'
 import { connectList } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'

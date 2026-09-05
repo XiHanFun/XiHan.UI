@@ -1,4 +1,4 @@
-import type { PropTypes, Size } from '@xihan-ui/kernel'
+import type { PropTypes, Size } from '@xihan-ui/core'
 
 /** 形态。取值与 card.css 的选择器一一对应。 */
 export type CardVariant = 'elevated' | 'ghost' | 'outline' | 'subtle'

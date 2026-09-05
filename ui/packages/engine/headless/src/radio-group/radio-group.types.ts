@@ -1,5 +1,4 @@
-import type { Direction, Orientation, PropTypes, Size, Tone } from '@xihan-ui/kernel'
-import type { MachineSchema } from '@xihan-ui/machine'
+import type { Direction, MachineSchema, Orientation, PropTypes, Size, Tone } from '@xihan-ui/core'
 
 export interface RadioGroupValueChangeDetails {
   value: string | null

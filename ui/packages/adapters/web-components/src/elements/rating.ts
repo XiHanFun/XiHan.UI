@@ -1,6 +1,6 @@
+import type { Direction, Size, Tone } from '@xihan-ui/core'
 import type { RatingHoverChangeDetails, RatingItemProps, RatingSchema, RatingTranslations, RatingValueChangeDetails } from '@xihan-ui/headless'
-import type { Direction, Size, Tone } from '@xihan-ui/kernel'
-import { ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
+import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectRating, ratingAnatomy, ratingMachine, ratingMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'

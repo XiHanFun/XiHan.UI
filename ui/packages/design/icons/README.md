@@ -30,7 +30,7 @@ npx xihan-icons ./node_modules/lucide-static/icons --out src/icons.mjs --dts
 
 ## 记录形状
 
-`IconRecord` 的真源在 `packages/engine/kernel/src/types/icon.ts`。这个包不依赖 core，管线把那份文件逐字节复制成 `dist/types.d.mts`，测试断言两份一致。
+`IconRecord` 的真源在 `packages/engine/core/src/kernel/types/icon.ts`。这个包不依赖 core，管线把那份文件逐字节复制成 `dist/types.d.mts`，测试断言两份一致。
 
 ```ts
 interface IconRecord {

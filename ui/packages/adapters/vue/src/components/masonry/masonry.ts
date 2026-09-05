@@ -1,6 +1,6 @@
 import type { MasonryColumns, MasonryProps } from '@xihan-ui/headless'
 import type { PropType, VNode } from 'vue'
-import { queryItems } from '@xihan-ui/behavior'
+import { queryItems } from '@xihan-ui/core'
 import { connectMasonry, distributeMasonry, masonryItemQuery, resolveMasonryColumns } from '@xihan-ui/headless'
 import { Comment, defineComponent, Fragment, h, onBeforeUnmount, onMounted, onUpdated, ref, Text } from 'vue'
 import { vueNormalize } from '../../runtime/normalize-props'

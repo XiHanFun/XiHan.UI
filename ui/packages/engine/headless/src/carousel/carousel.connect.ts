@@ -1,8 +1,6 @@
-import type { Dict, NormalizeProps, PropTypes } from '@xihan-ui/kernel'
-import type { Service } from '@xihan-ui/machine'
+import type { Dict, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { CarouselApi, CarouselSchema } from './carousel.types'
-import { navIntentFromKey } from '@xihan-ui/behavior'
-import { dataAttr, isHTMLElement } from '@xihan-ui/kernel'
+import { dataAttr, isHTMLElement, navIntentFromKey } from '@xihan-ui/core'
 import { carouselAnatomy } from './carousel.anatomy'
 import { resolveAutoplayInterval } from './carousel.machine'
 import {

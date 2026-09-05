@@ -1,5 +1,5 @@
 import type { ImageSchema } from './image.types'
-import { setTimeoutEffect, setup } from '@xihan-ui/machine'
+import { setTimeoutEffect, setup } from '@xihan-ui/core'
 
 const { createMachine } = setup<ImageSchema>()
 

@@ -1,9 +1,8 @@
 // @vitest-environment jsdom
-import type { Service } from '@xihan-ui/machine'
+import type { Service } from '@xihan-ui/core'
 import type { ApprovalApi, ApprovalDecisionDetails, ApprovalSchema } from '../src/approval'
-import { normalizeProps } from '@xihan-ui/kernel'
-import { createService } from '@xihan-ui/machine'
-import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
+import { createService, normalizeProps } from '@xihan-ui/core'
+import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { describe, expect, it, vi } from 'vitest'
 // 直接从组件目录导入，不经包主入口
 import { approvalMachine, connectApproval } from '../src/approval'

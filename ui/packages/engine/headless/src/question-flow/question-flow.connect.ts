@@ -1,13 +1,11 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
-import type { Service } from '@xihan-ui/machine'
+import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type {
   QuestionFlowApi,
   QuestionFlowItemProps,
   QuestionFlowQuestion,
   QuestionFlowSchema,
 } from './question-flow.types'
-import { focusItem, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/behavior'
-import { dataAttr, isComposingEvent } from '@xihan-ui/kernel'
+import { dataAttr, focusItem, isComposingEvent, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
 import { questionFlowAnatomy, questionFlowItemQuery } from './question-flow.anatomy'
 import { canAdvanceQuestion, clampQuestionIndex } from './question-flow.types'
 

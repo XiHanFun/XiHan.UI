@@ -1,4 +1,4 @@
-import type { ActionFn, ContextFacade, PropFn } from '@xihan-ui/machine'
+import type { ActionFn, ContextFacade, PropFn } from '@xihan-ui/core'
 import type {
   FileRejectReason,
   FileUploadRejection,
@@ -7,7 +7,7 @@ import type {
   FileUploadSnapshot,
   FileUploadValidationResult,
 } from './file-upload.types'
-import { resetDeclaredValue, setup } from '@xihan-ui/machine'
+import { resetDeclaredValue, setup } from '@xihan-ui/core'
 import { fileUploadHiddenInputId } from './file-upload.anatomy'
 
 const { createMachine } = setup<FileUploadSchema>()

@@ -1,5 +1,4 @@
-import type { ControlVariant, PropTypes, Size, Tone } from '@xihan-ui/kernel'
-import type { MachineSchema } from '@xihan-ui/machine'
+import type { ControlVariant, MachineSchema, PropTypes, Size, Tone } from '@xihan-ui/core'
 
 export interface NumberFieldValueChangeDetails {
   /** 原始输入串，也是提交进 FormData 的值。 */

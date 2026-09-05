@@ -1,5 +1,4 @@
-import type { ControlVariant, PropTypes, Size, Tone } from '@xihan-ui/kernel'
-import type { MachineSchema } from '@xihan-ui/machine'
+import type { ControlVariant, MachineSchema, PropTypes, Size, Tone } from '@xihan-ui/core'
 
 /** 一段的身份。日期三段恒在，时间三段由 granularity 决定要不要。 */
 /**

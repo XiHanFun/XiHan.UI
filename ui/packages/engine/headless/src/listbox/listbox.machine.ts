@@ -1,6 +1,5 @@
 import type { ListboxSchema, ListboxSelectionMode } from './listbox.types'
-import { createTypeahead } from '@xihan-ui/behavior'
-import { setup } from '@xihan-ui/machine'
+import { createTypeahead, setup } from '@xihan-ui/core'
 
 const { createMachine } = setup<ListboxSchema>()
 

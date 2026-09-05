@@ -1,6 +1,5 @@
 ---
-"@xihan-ui/kernel": major
-"@xihan-ui/behavior": patch
+"@xihan-ui/core": major
 ---
 
 **移除** `@xihan-ui/kernel` 上 12 个导出。

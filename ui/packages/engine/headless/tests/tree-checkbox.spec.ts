@@ -2,9 +2,8 @@
 // 勾选把手：把「勾这一项」与「点这一行」分成两个可点区域。
 // 点行的语义（单选替换、分支展开）归 item / branch-control，把手只管勾选。
 import type { TreeSchema } from '../src/tree'
-import { normalizeProps } from '@xihan-ui/kernel'
-import { createService } from '@xihan-ui/machine'
-import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
+import { createService, normalizeProps } from '@xihan-ui/core'
+import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { describe, expect, it, vi } from 'vitest'
 import { connectTree, treeMachine } from '../src/tree'
 

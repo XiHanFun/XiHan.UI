@@ -1,9 +1,6 @@
-import type { NavIntent } from '@xihan-ui/behavior'
-import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
-import type { Service } from '@xihan-ui/machine'
+import type { NavIntent, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { CascaderApi, CascaderNodeMeta, CascaderSchema, CascaderSearchResult, CascaderTranslations } from './cascader.types'
-import { cascadeState, focusItem, ITEM_VALUE_ATTR, navIntentFromKey } from '@xihan-ui/behavior'
-import { dataAttr, isComposingEvent } from '@xihan-ui/kernel'
+import { cascadeState, dataAttr, focusItem, isComposingEvent, ITEM_VALUE_ATTR, navIntentFromKey } from '@xihan-ui/core'
 import { overlayPositioned } from '../shared/overlay'
 import { cascaderAnatomy } from './cascader.anatomy'
 import {

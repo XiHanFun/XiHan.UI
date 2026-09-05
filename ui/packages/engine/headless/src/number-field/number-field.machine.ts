@@ -1,7 +1,7 @@
-import type { Params } from '@xihan-ui/machine'
+import type { Params } from '@xihan-ui/core'
 import type { NumberCodec } from '../shared/number'
 import type { NumberFieldSchema } from './number-field.types'
-import { resetDeclaredValue, setIntervalEffect, setTimeoutEffect, setup } from '@xihan-ui/machine'
+import { resetDeclaredValue, setIntervalEffect, setTimeoutEffect, setup } from '@xihan-ui/core'
 import { decodeNumber, encodeNumber, normalizeValue, stepValue } from '../shared/number'
 
 const { createMachine } = setup<NumberFieldSchema>()

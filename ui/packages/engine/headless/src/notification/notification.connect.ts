@@ -1,8 +1,7 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
-import type { Service } from '@xihan-ui/machine'
+import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { ToastSchema, ToastStatus, ToastType } from '../toast'
 import type { NotificationApi, NotificationItemApi, NotificationPlacement, NotificationRecord, NotificationSchema, ResolvedNotification } from './notification.types'
-import { DATA_INERT_EXEMPT, dataAttr } from '@xihan-ui/kernel'
+import { DATA_INERT_EXEMPT, dataAttr } from '@xihan-ui/core'
 import { resolveToastId, TOAST_DURATION, TOAST_REMOVE_DELAY } from '../toast'
 import { notificationAnatomy } from './notification.anatomy'
 import {

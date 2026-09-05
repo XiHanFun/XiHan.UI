@@ -1,4 +1,4 @@
-import { createAnatomy } from '@xihan-ui/kernel'
+import { createAnatomy } from '@xihan-ui/core'
 
 // root 是外壳并承载阶段与三视觉轴；trigger 是折叠开关，indicator/label/summary/status/duration
 // 是它里面的排版位——summary 放一行参数摘要，收起时也看得见查了什么，duration 放耗时；

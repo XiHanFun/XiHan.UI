@@ -1,7 +1,6 @@
 import type { AlertOpenChangeDetails, AlertSchema } from '../src/alert'
-import { normalizeProps } from '@xihan-ui/kernel'
-import { createService } from '@xihan-ui/machine'
-import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
+import { createService, normalizeProps } from '@xihan-ui/core'
+import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { describe, expect, it } from 'vitest'
 // 直接指向组件目录：包主入口的导出由接线一并补，测试不等它
 import { alertMachine, connectAlert } from '../src/alert'

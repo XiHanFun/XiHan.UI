@@ -1,4 +1,4 @@
-import { createAnatomy } from '@xihan-ui/kernel'
+import { createAnatomy } from '@xihan-ui/core'
 
 // 两个角色节点：承载整张码的 <svg> 是 root，摆在码面正中、由作者放自己图形的那块是 logo。
 // 除码眼外的深色模块与三个码眼各合成一条 <path>，logo 底下那块挖空是一个 <rect>——

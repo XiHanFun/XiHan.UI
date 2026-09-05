@@ -19,7 +19,7 @@ import type {
 } from '@xihan-ui/backgrounds'
 import type { PropertyValues } from './reactive'
 import { createBackgroundSurface, registerBuiltinEffects } from '@xihan-ui/backgrounds'
-import { DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/kernel'
+import { DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/core'
 import { version as VERSION } from '../package.json'
 import { XhReactiveElement } from './reactive'
 import { defineElement } from './runtime/registry'

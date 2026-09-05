@@ -1,6 +1,6 @@
-import type { NormalizeProps, PropTypes, Scope } from '@xihan-ui/kernel'
+import type { NormalizeProps, PropTypes, Scope } from '@xihan-ui/core'
 import type { FieldsetApi, FieldsetProps } from './fieldset.types'
-import { dataAttr } from '@xihan-ui/kernel'
+import { dataAttr } from '@xihan-ui/core'
 import { fieldsetAnatomy } from './fieldset.anatomy'
 
 const parts = fieldsetAnatomy.build()

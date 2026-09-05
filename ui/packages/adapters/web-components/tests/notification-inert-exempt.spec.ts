@@ -2,7 +2,7 @@
 //
 // 通知画在模态遮罩之上，被背景失活的 inert 一并罩住就成了看得见点不动。
 // 豁免标记由连接层产出，这里钉住 WC 侧确实把它打到了 root 与 group 上。
-import { DATA_INERT_EXEMPT } from '@xihan-ui/kernel'
+import { DATA_INERT_EXEMPT } from '@xihan-ui/core'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { defineXhElements } from '../src/define'
 

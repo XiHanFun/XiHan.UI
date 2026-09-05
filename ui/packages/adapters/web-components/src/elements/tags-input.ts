@@ -1,3 +1,4 @@
+import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type {
   TagsInputBlurBehavior,
   TagsInputInputValueChangeDetails,
@@ -5,8 +6,7 @@ import type {
   TagsInputSchema,
   TagsInputValueChangeDetails,
 } from '@xihan-ui/headless'
-import type { ControlVariant, Size, Tone } from '@xihan-ui/kernel'
-import { ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
+import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectTagsInput, tagsInputAnatomy, tagsInputMachine, tagsInputMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'

@@ -3,9 +3,8 @@
 // 关闭按钮与 Tab 各自带 src），此前只用来决定要不要归还焦点，没有交到使用者手上。
 // 拿它可以区分「用户主动取消」与「选完自动收起」，前者常要回滚草稿。
 import type { PopoverOpenChangeDetails } from '../src/popover'
-import { normalizeProps } from '@xihan-ui/kernel'
-import { createService } from '@xihan-ui/machine'
-import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
+import { createService, normalizeProps } from '@xihan-ui/core'
+import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { describe, expect, it, vi } from 'vitest'
 import { dialogMachine } from '../src/dialog'
 import { connectPopover, popoverMachine } from '../src/popover'

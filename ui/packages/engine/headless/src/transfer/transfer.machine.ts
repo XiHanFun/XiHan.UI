@@ -1,7 +1,6 @@
-import type { ContextFacade, Params, PropFn } from '@xihan-ui/machine'
+import type { ContextFacade, Params, PropFn } from '@xihan-ui/core'
 import type { TransferSchema, TransferSide } from './transfer.types'
-import { applySelection } from '@xihan-ui/behavior'
-import { setup } from '@xihan-ui/machine'
+import { applySelection, setup } from '@xihan-ui/core'
 import {
   transferCheckedValues,
   transferIsCheckable,

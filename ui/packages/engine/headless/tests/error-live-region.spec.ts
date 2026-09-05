@@ -1,6 +1,5 @@
-import { createCounterIdGenerator, createScope, normalizeProps } from '@xihan-ui/kernel'
-import { createService } from '@xihan-ui/machine'
-import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
+import { createCounterIdGenerator, createScope, createService, normalizeProps } from '@xihan-ui/core'
+import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { describe, expect, it } from 'vitest'
 import { connectField } from '../src/field/index'
 import { connectFieldset } from '../src/fieldset/index'

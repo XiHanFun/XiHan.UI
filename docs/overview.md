@@ -21,24 +21,22 @@ XiHan.UI 是一个 pnpm + turbo 的 monorepo。它的组织方式只服务于一
 
 | 层 | 包 | 可依赖 |
 | --- | --- | --- |
-| 1 | `kernel` | `motion` |
-| 1 | `machine` | `kernel` |
+| 1 | `core` | `motion` |
 | 1 | `motion` | — |
 | 1 | `tokens` | — |
 | 1 | `icons` | — |
 | 1 | `pointer` | — |
-| 2 | `behavior` | `kernel` `machine` `motion` |
-| 2 | `position` | `kernel` |
-| 2 | `code-highlight` | `kernel` |
-| 2 | `chat-stream` | `kernel` |
-| 2 | `markdown` | `kernel` |
-| 2 | `sound` | `kernel` |
-| 2 | `animations` | `kernel` `motion` |
-| 3 | `headless` | `kernel` `machine` `behavior` `tokens` `motion` `pointer` |
+| 2 | `position` | `core` |
+| 2 | `code-highlight` | `core` |
+| 2 | `chat-stream` | `core` |
+| 2 | `markdown` | `core` |
+| 2 | `sound` | `core` |
+| 2 | `animations` | `core` `motion` |
+| 3 | `headless` | `core` `tokens` `motion` `pointer` |
 | 3 | `styles` | —（纯 CSS，不得依赖任何 JS 包） |
-| 3 | `backgrounds` | `kernel` `behavior` `motion` |
-| 4 | `vue` | `kernel` `machine` `behavior` `headless` `position` `code-highlight` `tokens` `backgrounds` `sound` `motion` `pointer` |
-| 4 | `web-components` | `kernel` `machine` `behavior` `headless` `position` `code-highlight` `tokens` `backgrounds` `motion` `pointer` |
+| 3 | `backgrounds` | `core` `motion` |
+| 4 | `vue` | `core` `headless` `position` `code-highlight` `tokens` `backgrounds` `sound` `motion` `pointer` |
+| 4 | `web-components` | `core` `headless` `position` `code-highlight` `tokens` `backgrounds` `motion` `pointer` |
 
 除分层外还有三条硬规则，同样由门禁执行：
 
@@ -57,12 +55,12 @@ XiHan.UI 是一个 pnpm + turbo 的 monorepo。它的组织方式只服务于一
 适配器把 DOM 事件交给 connect 产出的 onClick        （vue / web-components）
    │
    ▼
-service.send({ type: 'TRIGGER.CLICK' })            （machine）
+service.send({ type: 'TRIGGER.CLICK' })            （core）
    │
    ▼
-状态机转移 closed → open，执行 entry 动作           （machine）
+状态机转移 closed → open，执行 entry 动作           （core）
    │
-   ├─► 行为原语接管：锁滚动、建焦点域、压入层栈      （behavior）
+   ├─► 行为原语接管：锁滚动、建焦点域、压入层栈      （core）
    ├─► 浮层族还会请定位引擎算坐标                    （position）
    │
    ▼
@@ -82,9 +80,7 @@ service.send({ type: 'TRIGGER.CLICK' })            （machine）
 
 | 包 | 职责 |
 | --- | --- |
-| `@xihan-ui/kernel` | 结构原语：解剖、`mergeProps`、`normalizeProps`、Scope、层栈、诊断通道 |
-| `@xihan-ui/machine` | 薄状态机运行时：`createMachine`、解释器契约、受控值绑定 |
-| `@xihan-ui/behavior` | 交互行为原语：消隐层、焦点域、滚动锁、进出场、集合导航、typeahead |
+| `@xihan-ui/core` | 运行时底座：解剖、`mergeProps`、`normalizeProps`、Scope、层栈、诊断通道；薄状态机运行时（`createMachine`、解释器契约、受控值绑定）；交互行为原语（消隐层、焦点域、滚动锁、进出场、集合导航、typeahead） |
 | `@xihan-ui/motion` | 动效原语：缓动单一真源、纯补间、帧循环、减弱动效偏好、解析解弹簧 |
 | `@xihan-ui/position` | 浮层定位引擎，自研，零第三方依赖 |
 | `@xihan-ui/pointer` | 指针会话：一根指针从按下到抬起的跟手、过滤与收尾，自研，零依赖 |
@@ -111,7 +107,7 @@ service.send({ type: 'TRIGGER.CLICK' })            （machine）
 | --- | --- |
 | `@xihan-ui/chat-stream` | AI 协议内核：SSE 读取 → 协议归一 → parts 归约 → 会话 store |
 | `@xihan-ui/markdown` | 流式 Markdown 渲染内核，增量切块 + 稳定 key |
-| `@xihan-ui/code-highlight` | 代码着色，自研粗粒度词法器 |
+| `@xihan-ui/code-highlight` | 代码着色，自研粗粒度词法器；适配器的可选 peer，不装就渲纯文本 |
 | `@xihan-ui/backgrounds` | WebGL2 背景效果与数据驱动粒子点云 |
 | `@xihan-ui/sound` | 纯 Web Audio 程序化 UI 音效，零音频文件 |
 | `@xihan-ui/animations` | 现成的进场与注意动效、错开起播、文字拆分 |
@@ -126,8 +122,8 @@ XiHan.UI/
 │   ├── packages/            # 对外发布的库包，按角色分四组
 │   │   ├── adapters/        # vue · web-components——你选一个
 │   │   ├── design/          # tokens · styles · icons——外观
-│   │   ├── features/        # markdown · chat-stream · backgrounds · sound · animations——按需自选
-│   │   └── engine/          # kernel · machine · motion · pointer · behavior · position · code-highlight · headless
+│   │   ├── features/        # markdown · chat-stream · backgrounds · sound · animations · code-highlight——按需自选
+│   │   └── engine/          # core · motion · pointer · position · headless
 │   └── tooling/             # 内部构建与质量工具
 │       ├── build/           # 打包配置与 exports 回写
 │       ├── eslint-config/   # lint 规则 + 分层拓扑事实源

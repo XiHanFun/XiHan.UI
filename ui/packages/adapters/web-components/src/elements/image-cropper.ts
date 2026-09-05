@@ -1,3 +1,4 @@
+import type { Service } from '@xihan-ui/core'
 import type {
   ImageCropperHandlePosition,
   ImageCropperRect,
@@ -7,9 +8,8 @@ import type {
   ImageCropperValueChangeEndDetails,
   ImageCropperZoomChangeDetails,
 } from '@xihan-ui/headless'
-import type { Service } from '@xihan-ui/machine'
+import { DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/core'
 import { connectImageCropper, imageCropperAnatomy, imageCropperMachine, imageCropperMeta } from '@xihan-ui/headless'
-import { DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/kernel'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'

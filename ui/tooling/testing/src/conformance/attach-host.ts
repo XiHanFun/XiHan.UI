@@ -1,4 +1,4 @@
-import { PORTAL_ROOT_ID } from '@xihan-ui/kernel'
+import { PORTAL_ROOT_ID } from '@xihan-ui/core'
 
 // 测试宿主的落位：portal 落点必须始终是 body 的最后一个孩子。
 //

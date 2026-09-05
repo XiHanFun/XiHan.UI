@@ -1,5 +1,5 @@
+import type { Direction, Placement } from '@xihan-ui/core'
 import type { TourApi, TourSchema, TourStep } from '@xihan-ui/headless'
-import type { Direction, Placement } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h, mergeProps, Teleport } from 'vue'

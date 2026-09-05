@@ -4,9 +4,8 @@
 // 半透明的退场动画就在视口左上角播。所以坐标逐菜单记账：
 // 收起中的取自己名下的那份留在原地；新展开的名下无账，藏到拿到新坐标为止。
 import type { MenubarSchema } from '../src/menubar'
-import { normalizeProps } from '@xihan-ui/kernel'
-import { createService } from '@xihan-ui/machine'
-import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
+import { createService, normalizeProps } from '@xihan-ui/core'
+import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { describe, expect, it } from 'vitest'
 import { connectMenubar, menubarMachine } from '../src/menubar'
 

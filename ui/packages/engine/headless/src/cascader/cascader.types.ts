@@ -1,6 +1,4 @@
-import type { CascadeStrategy } from '@xihan-ui/behavior'
-import type { Cleanup, ControlVariant, Direction, Layer, OverlayCloseReason, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
-import type { MachineSchema } from '@xihan-ui/machine'
+import type { CascadeStrategy, Cleanup, ControlVariant, Direction, Layer, MachineSchema, OverlayCloseReason, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/core'
 
 /**
  * 树数据，层级、显示文本与条目禁用的唯一事实源。

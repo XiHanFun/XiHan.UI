@@ -1,9 +1,8 @@
 // @vitest-environment jsdom
 // 节点拖拽：纯算法（落点合法性、折算、命令）与机器/连接层（激活、三档落点、播报）。
 import type { TreeNode, TreeNodeMeta, TreeSchema } from '../src/tree'
-import { normalizeProps } from '@xihan-ui/kernel'
-import { createService } from '@xihan-ui/machine'
-import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
+import { createService, normalizeProps } from '@xihan-ui/core'
+import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   connectTree,

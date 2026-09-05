@@ -1,8 +1,6 @@
-import type { PositionResult, Scope } from '@xihan-ui/kernel'
-import type { PropFn } from '@xihan-ui/machine'
+import type { PositionResult, PropFn, Scope } from '@xihan-ui/core'
 import type { TourSchema, TourSpotlightRect, TourStep } from './tour.types'
-import { canTakeFocus, createDismissLayer, createFocusScope } from '@xihan-ui/behavior'
-import { setup } from '@xihan-ui/machine'
+import { canTakeFocus, createDismissLayer, createFocusScope, setup } from '@xihan-ui/core'
 import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_PLACEMENT_ANCHORED } from '../shared/overlay'
 import { sameTourSpotlight, tourSpotlightBox } from './tour.spotlight'
 

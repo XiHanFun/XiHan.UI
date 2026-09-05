@@ -1,9 +1,7 @@
-import type { PositionResult } from '@xihan-ui/kernel'
-import type { PropFn } from '@xihan-ui/machine'
+import type { PositionResult, PropFn } from '@xihan-ui/core'
 import type { PaginationEllipsisSide } from './pagination.range'
 import type { PaginationSchema } from './pagination.types'
-import { createDismissLayer } from '@xihan-ui/behavior'
-import { setup } from '@xihan-ui/machine'
+import { createDismissLayer, setup } from '@xihan-ui/core'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { clampPage, normalizePageSize, pageForResize, totalPagesOf } from './pagination.range'
 

@@ -1,7 +1,7 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
 import type { HotkeySegment } from './hotkeys.keys'
 import type { HotkeysApi, HotkeysProps } from './hotkeys.types'
-import { dataAttr, isComposingEvent } from '@xihan-ui/kernel'
+import { dataAttr, isComposingEvent } from '@xihan-ui/core'
 import { hotkeysAnatomy } from './hotkeys.anatomy'
 import { formatHotkey, isTypingTarget, matchesHotkey, resolveHotkeysPlatform } from './hotkeys.keys'
 

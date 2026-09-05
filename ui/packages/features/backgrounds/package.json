@@ -51,8 +51,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@xihan-ui/behavior": "workspace:^",
-    "@xihan-ui/kernel": "workspace:^",
+    "@xihan-ui/core": "workspace:^",
     "@xihan-ui/motion": "workspace:^"
   },
   "devDependencies": {

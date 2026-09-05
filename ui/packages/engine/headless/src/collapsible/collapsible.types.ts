@@ -1,5 +1,4 @@
-import type { PropTypes, Size } from '@xihan-ui/kernel'
-import type { MachineSchema } from '@xihan-ui/machine'
+import type { MachineSchema, PropTypes, Size } from '@xihan-ui/core'
 
 export interface CollapsibleOpenChangeDetails {
   open: boolean

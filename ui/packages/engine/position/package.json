@@ -52,7 +52,7 @@
     "test:browser": "vitest run --config vitest.browser.config.ts"
   },
   "dependencies": {
-    "@xihan-ui/kernel": "workspace:^"
+    "@xihan-ui/core": "workspace:^"
   },
   "devDependencies": {
     "@vitest/browser": "catalog:",

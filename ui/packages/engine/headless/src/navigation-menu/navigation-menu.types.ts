@@ -1,5 +1,4 @@
-import type { Cleanup, Direction, Layer, Orientation, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
-import type { MachineSchema } from '@xihan-ui/machine'
+import type { Cleanup, Direction, Layer, MachineSchema, Orientation, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/core'
 
 /** 读屏用的文案，默认英文。 */
 export interface NavigationMenuTranslations {

@@ -1,4 +1,4 @@
-import type { ActionVariant, PropTypes, Size, Tone } from '@xihan-ui/kernel'
+import type { ActionVariant, PropTypes, Size, Tone } from '@xihan-ui/core'
 
 export interface ButtonGroupProps {
   /** 排布：horizontal / vertical，决定相邻两段在哪个轴上合边。 */

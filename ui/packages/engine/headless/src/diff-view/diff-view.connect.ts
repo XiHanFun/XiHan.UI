@@ -1,8 +1,7 @@
-import type { CodeToken, NormalizeProps, PropTypes } from '@xihan-ui/kernel'
-import type { Service } from '@xihan-ui/machine'
+import type { CodeToken, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { DiffChange, DiffLine, DiffModel } from './diff-view.model'
 import type { DiffSide, DiffViewApi, DiffViewCellProps, DiffViewRow, DiffViewSchema, DiffViewSegment } from './diff-view.types'
-import { dataAttr } from '@xihan-ui/kernel'
+import { dataAttr } from '@xihan-ui/core'
 import { diffViewAnatomy } from './diff-view.anatomy'
 import { diffStats } from './diff-view.model'
 

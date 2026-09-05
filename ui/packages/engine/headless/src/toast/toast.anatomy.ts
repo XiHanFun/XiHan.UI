@@ -1,4 +1,4 @@
-import { createAnatomy } from '@xihan-ui/kernel'
+import { createAnatomy } from '@xihan-ui/core'
 
 // 轻提示只做一件事：把刚才那个操作的结果用一句话说清楚，然后自己消失。
 // 两层文本、九宫格落位、堆叠上限那些是「主动推来的一条消息」才需要的，归 notification。

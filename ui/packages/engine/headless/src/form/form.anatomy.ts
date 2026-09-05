@@ -1,6 +1,5 @@
-import type { ItemQuery } from '@xihan-ui/behavior'
-import type { Scope } from '@xihan-ui/kernel'
-import { createAnatomy } from '@xihan-ui/kernel'
+import type { ItemQuery, Scope } from '@xihan-ui/core'
+import { createAnatomy } from '@xihan-ui/core'
 
 // field-group 是一个字段在表单里的落脚点：作者把整个 Field 塞进去，表单只认它自报的字段名。
 export const formAnatomy = createAnatomy('form', [

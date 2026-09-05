@@ -1,5 +1,5 @@
 import type { MarkdownBlock, MarkdownStreamApi, MarkdownStreamProps } from '../src/markdown-stream'
-import { normalizeProps } from '@xihan-ui/kernel'
+import { normalizeProps } from '@xihan-ui/core'
 import { describe, expect, it } from 'vitest'
 // 直接从组件目录导入，不经包主入口
 import { connectMarkdownStream, isLiveMarkdownBlock, MARKDOWN_STREAM_LIVE_KEY, markdownBlockHtml } from '../src/markdown-stream'

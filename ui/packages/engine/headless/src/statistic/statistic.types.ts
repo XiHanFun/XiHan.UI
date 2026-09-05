@@ -1,4 +1,4 @@
-import type { PropTypes, Size, Tone } from '@xihan-ui/kernel'
+import type { PropTypes, Size, Tone } from '@xihan-ui/core'
 
 /** 尺寸档位，只改字号与行间距。 */
 

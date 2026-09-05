@@ -1,5 +1,4 @@
-import type { PropTypes } from '@xihan-ui/kernel'
-import type { MachineSchema } from '@xihan-ui/machine'
+import type { MachineSchema, PropTypes } from '@xihan-ui/core'
 
 /** 裁切框的外形：方框，或圆形（圆形只改遮罩与描边，矩形数据不变）。 */
 export type ImageCropperShape = 'rect' | 'round'

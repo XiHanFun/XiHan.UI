@@ -1,5 +1,5 @@
-import type { ItemQuery } from '@xihan-ui/behavior'
-import { createAnatomy } from '@xihan-ui/kernel'
+import type { ItemQuery } from '@xihan-ui/core'
+import { createAnatomy } from '@xihan-ui/core'
 
 // item-text 是可选的文本壳：不写它时文字直接落在条目里，写了它状态标记才铺得到文字上。
 // indicator 是那块会滑动的选中标记，hidden-input 是表单出口，两者都可以不渲染。

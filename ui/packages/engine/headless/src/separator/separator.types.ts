@@ -1,4 +1,4 @@
-import type { PropTypes } from '@xihan-ui/kernel'
+import type { PropTypes } from '@xihan-ui/core'
 
 export interface SeparatorProps {
   orientation?: 'horizontal' | 'vertical'

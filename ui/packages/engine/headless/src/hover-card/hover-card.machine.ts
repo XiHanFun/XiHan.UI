@@ -1,8 +1,6 @@
-import type { PositionResult } from '@xihan-ui/kernel'
-import type { Transition } from '@xihan-ui/machine'
+import type { PositionResult, Transition } from '@xihan-ui/core'
 import type { HoverCardSchema } from './hover-card.types'
-import { createDismissLayer } from '@xihan-ui/behavior'
-import { setTimeoutEffect, setup } from '@xihan-ui/machine'
+import { createDismissLayer, setTimeoutEffect, setup } from '@xihan-ui/core'
 import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_OFFSET, OVERLAY_PLACEMENT_ANCHORED } from '../shared/overlay'
 
 /** 没传 placement 时浮层交给定位引擎的落点。 */

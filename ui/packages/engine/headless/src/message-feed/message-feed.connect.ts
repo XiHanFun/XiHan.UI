@@ -1,9 +1,6 @@
-import type { NavIntent } from '@xihan-ui/behavior'
-import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
-import type { Service } from '@xihan-ui/machine'
+import type { NavIntent, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { MessageFeedApi, MessageFeedItemRole, MessageFeedSchema, MessageFeedStatus } from './message-feed.types'
-import { focusItem, getTabbables, ITEM_VALUE_ATTR, itemValue, navigateItems, queryItems } from '@xihan-ui/behavior'
-import { contains, dataAttr } from '@xihan-ui/kernel'
+import { contains, dataAttr, focusItem, getTabbables, ITEM_VALUE_ATTR, itemValue, navigateItems, queryItems } from '@xihan-ui/core'
 import { messageFeedAnatomy, messageFeedItemQuery } from './message-feed.anatomy'
 
 const parts = messageFeedAnatomy.build()

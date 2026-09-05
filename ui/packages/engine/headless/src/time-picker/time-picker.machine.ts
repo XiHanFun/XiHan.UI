@@ -1,5 +1,4 @@
-import type { PositionResult } from '@xihan-ui/kernel'
-import type { Params } from '@xihan-ui/machine'
+import type { Params, PositionResult } from '@xihan-ui/core'
 import type { TimeDraft, TimeGranularity, TimeHourCycle, TimeSegmentType } from '../time-field'
 import type {
   TimePickerColumn,
@@ -8,8 +7,7 @@ import type {
   TimePickerFocusIntent,
   TimePickerSchema,
 } from './time-picker.types'
-import { createDismissLayer, createFocusScope } from '@xihan-ui/behavior'
-import { resetDeclaredValue, setup } from '@xihan-ui/machine'
+import { createDismissLayer, createFocusScope, resetDeclaredValue, setup } from '@xihan-ui/core'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import {
   appendSegmentDigit,

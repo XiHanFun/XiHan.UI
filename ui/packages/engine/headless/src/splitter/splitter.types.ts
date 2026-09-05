@@ -1,5 +1,4 @@
-import type { Direction, Orientation, PropTypes } from '@xihan-ui/kernel'
-import type { MachineSchema } from '@xihan-ui/machine'
+import type { Direction, MachineSchema, Orientation, PropTypes } from '@xihan-ui/core'
 
 /**
  * 一块面板的约束声明。数组顺序即面板在容器里的顺序，与作者写下的面板节点一一对应。

@@ -1,8 +1,6 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
-import type { Service } from '@xihan-ui/machine'
+import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { SegmentedApi, SegmentedItemProps, SegmentedNodeMeta, SegmentedSchema } from './segmented.types'
-import { anchorItem, focusItem, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems, readDirection } from '@xihan-ui/behavior'
-import { contains, dataAttr } from '@xihan-ui/kernel'
+import { anchorItem, contains, dataAttr, focusItem, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems, readDirection } from '@xihan-ui/core'
 import { segmentedAnatomy, segmentedItemQuery } from './segmented.anatomy'
 
 const parts = segmentedAnatomy.build()

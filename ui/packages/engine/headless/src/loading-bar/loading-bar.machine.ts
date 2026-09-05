@@ -1,5 +1,5 @@
 import type { LoadingBarSchema } from './loading-bar.types'
-import { setTimeoutEffect, setup } from '@xihan-ui/machine'
+import { setTimeoutEffect, setup } from '@xihan-ui/core'
 import {
   clampLoadingBarValue,
   isLoadingBarDeterminate,

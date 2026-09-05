@@ -1,5 +1,5 @@
 import type { NotificationPlacement, NotificationRecord, NotificationSchema } from './notification.types'
-import { setup } from '@xihan-ui/machine'
+import { setup } from '@xihan-ui/core'
 
 const { createMachine } = setup<NotificationSchema>()
 

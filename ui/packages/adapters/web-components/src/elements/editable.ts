@@ -1,3 +1,4 @@
+import type { Service } from '@xihan-ui/core'
 import type {
   EditableActivationMode,
   EditableEditChangeDetails,
@@ -7,7 +8,6 @@ import type {
   EditableValueCommitDetails,
   EditableValueRevertDetails,
 } from '@xihan-ui/headless'
-import type { Service } from '@xihan-ui/machine'
 import { connectEditable, editableAnatomy, editableMachine, editableMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'

@@ -4,8 +4,8 @@
  * dispose 后还能重建。
  */
 
-import type { DiagnosticRecord } from '@xihan-ui/kernel'
-import { onDiagnostic, resetDiagnostics, setDiagnosticsConsoleOutput, setDiagnosticsDedupe, setDiagnosticsLevel } from '@xihan-ui/kernel'
+import type { DiagnosticRecord } from '@xihan-ui/core'
+import { onDiagnostic, resetDiagnostics, setDiagnosticsConsoleOutput, setDiagnosticsDedupe, setDiagnosticsLevel } from '@xihan-ui/core'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createSoundPlayer } from '../src/player'
 import { FakeGain, installFakeAudio } from './fake-audio'

@@ -1,7 +1,6 @@
-import type { Scope } from '@xihan-ui/kernel'
+import type { Scope } from '@xihan-ui/core'
 import type { AnchorIndicatorRect, AnchorSchema, AnchorTargetOffset } from './anchor.types'
-import { itemValue, queryItems, resolveScrollBehavior } from '@xihan-ui/behavior'
-import { setTimeoutEffect, setup } from '@xihan-ui/machine'
+import { itemValue, queryItems, resolveScrollBehavior, setTimeoutEffect, setup } from '@xihan-ui/core'
 import { anchorItemQuery } from './anchor.anatomy'
 
 const { createMachine } = setup<AnchorSchema>()

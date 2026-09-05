@@ -1,5 +1,5 @@
 import type { ToggleGroupSchema, ToggleGroupValue } from './toggle-group.types'
-import { setup } from '@xihan-ui/machine'
+import { setup } from '@xihan-ui/core'
 
 const { createMachine } = setup<ToggleGroupSchema>()
 

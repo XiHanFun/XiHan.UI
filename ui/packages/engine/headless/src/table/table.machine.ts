@@ -9,8 +9,7 @@ import type {
   TableSelectionMode,
   TableSortDescriptor,
 } from './table.types'
-import { applySelection } from '@xihan-ui/behavior'
-import { setup } from '@xihan-ui/machine'
+import { applySelection, setup } from '@xihan-ui/core'
 import { clampSize, createPointerSession, resolveSessionDoc, shouldActivate } from '@xihan-ui/pointer'
 import { dragAnnouncement, hitAlong, hitAlongNested, insertionIndex } from '../shared/drag'
 import { snapshotDrift } from '../shared/drag-drift'

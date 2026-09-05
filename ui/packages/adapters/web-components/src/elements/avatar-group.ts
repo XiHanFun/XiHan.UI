@@ -1,5 +1,5 @@
+import type { Size } from '@xihan-ui/core'
 import type { AvatarGroupProps } from '@xihan-ui/headless'
-import type { Size } from '@xihan-ui/kernel'
 import { avatarGroupAnatomy, avatarGroupMeta, connectAvatarGroup } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'

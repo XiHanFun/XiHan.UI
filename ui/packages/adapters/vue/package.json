@@ -65,6 +65,7 @@
   },
   "peerDependencies": {
     "@xihan-ui/backgrounds": "workspace:^",
+    "@xihan-ui/code-highlight": "workspace:^",
     "@xihan-ui/sound": "workspace:^",
     "vue": "^3.5.0"
   },
@@ -72,16 +73,16 @@
     "@xihan-ui/backgrounds": {
       "optional": true
     },
+    "@xihan-ui/code-highlight": {
+      "optional": true
+    },
     "@xihan-ui/sound": {
       "optional": true
     }
   },
   "dependencies": {
-    "@xihan-ui/behavior": "workspace:^",
-    "@xihan-ui/code-highlight": "workspace:^",
+    "@xihan-ui/core": "workspace:^",
     "@xihan-ui/headless": "workspace:^",
-    "@xihan-ui/kernel": "workspace:^",
-    "@xihan-ui/machine": "workspace:^",
     "@xihan-ui/motion": "workspace:^",
     "@xihan-ui/pointer": "workspace:^",
     "@xihan-ui/position": "workspace:^"
@@ -92,6 +93,7 @@
     "@vue/test-utils": "catalog:",
     "@xihan-ui/backgrounds": "workspace:*",
     "@xihan-ui/build": "workspace:*",
+    "@xihan-ui/code-highlight": "workspace:*",
     "@xihan-ui/sound": "workspace:*",
     "@xihan-ui/styles": "workspace:*",
     "@xihan-ui/testing": "workspace:*",

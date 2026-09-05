@@ -1,5 +1,5 @@
 import type { MarqueeApi, MarqueeDirection, MarqueeProps } from '../src/marquee'
-import { normalizeProps } from '@xihan-ui/kernel'
+import { normalizeProps } from '@xihan-ui/core'
 import { describe, expect, it } from 'vitest'
 // 直接从组件目录导入，不经包主入口
 import { connectMarquee } from '../src/marquee'

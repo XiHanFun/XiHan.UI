@@ -1,6 +1,6 @@
+import type { Direction, Orientation } from '@xihan-ui/core'
 import type { ListboxItemProps, ListboxNode, ListboxSchema, ListboxSelectionMode, ListboxValueChangeDetails } from '@xihan-ui/headless'
-import type { Direction, Orientation } from '@xihan-ui/kernel'
-import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
+import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectListbox, listboxAnatomy, listboxMachine, listboxMeta } from '@xihan-ui/headless'
 import { createDeclaredDisabled } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'

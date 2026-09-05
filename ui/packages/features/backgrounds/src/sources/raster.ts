@@ -1,7 +1,7 @@
 // 光栅化：把任何能画到 2D 画布上的东西变成一份 RGBA 像素。
 // 图片、文字、SVG 走的都是这一条路，所以它们的采样行为完全一致。
 
-import { isSSR } from '@xihan-ui/kernel'
+import { isSSR } from '@xihan-ui/core'
 
 export interface RasterResult {
   readonly data: Uint8ClampedArray

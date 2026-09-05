@@ -1,6 +1,4 @@
-import type { Typeahead } from '@xihan-ui/behavior'
-import type { Cleanup, Direction, Layer, OverlayCloseReason, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
-import type { MachineSchema } from '@xihan-ui/machine'
+import type { Cleanup, Direction, Layer, MachineSchema, OverlayCloseReason, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone, Typeahead } from '@xihan-ui/core'
 
 /**
  * 展开时焦点落在集合的哪一端：ArrowUp 那类反向入口从末尾进，键盘入口从首个可用条目进。

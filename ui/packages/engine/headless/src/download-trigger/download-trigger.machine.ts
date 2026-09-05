@@ -1,6 +1,6 @@
-import type { Scope } from '@xihan-ui/kernel'
+import type { Scope } from '@xihan-ui/core'
 import type { DownloadTriggerContent, DownloadTriggerData, DownloadTriggerSchema } from './download-trigger.types'
-import { setup } from '@xihan-ui/machine'
+import { setup } from '@xihan-ui/core'
 
 const { createMachine } = setup<DownloadTriggerSchema>()
 

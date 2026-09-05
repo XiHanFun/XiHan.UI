@@ -1,4 +1,4 @@
-import type { PropTypes, Size, Tone } from '@xihan-ui/kernel'
+import type { PropTypes, Size, Tone } from '@xihan-ui/core'
 
 /** 直径档位，缺省 md。 */
 

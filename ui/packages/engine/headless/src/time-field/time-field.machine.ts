@@ -1,4 +1,4 @@
-import type { Params } from '@xihan-ui/machine'
+import type { Params } from '@xihan-ui/core'
 import type {
   TimeDayPeriod,
   TimeDraft,
@@ -8,7 +8,7 @@ import type {
   TimeSegmentType,
 } from './time-field.types'
 import { parseTime, Time } from '@internationalized/date'
-import { resetDeclaredValue, setup } from '@xihan-ui/machine'
+import { resetDeclaredValue, setup } from '@xihan-ui/core'
 import { dayPeriodLabel } from '../shared/day-period'
 
 const { createMachine } = setup<TimeFieldSchema>()

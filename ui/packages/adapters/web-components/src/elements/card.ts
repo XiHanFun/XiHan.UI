@@ -1,5 +1,5 @@
+import type { Size } from '@xihan-ui/core'
 import type { CardProps, CardVariant } from '@xihan-ui/headless'
-import type { Size } from '@xihan-ui/kernel'
 import { cardAnatomy, cardMeta, connectCard } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'

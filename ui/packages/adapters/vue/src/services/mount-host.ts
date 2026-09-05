@@ -1,5 +1,5 @@
 import type { App } from 'vue'
-import { DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/kernel'
+import { DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/core'
 
 /**
  * 把命令式服务的宿主应用挂上去，挂不起来也不连累调用方。

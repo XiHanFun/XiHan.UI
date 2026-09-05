@@ -1,6 +1,5 @@
+import type { Service, Size, Tone } from '@xihan-ui/core'
 import type { BackTopBehavior, BackTopSchema, BackTopTranslations, BackTopVisibilityChangeDetails } from '@xihan-ui/headless'
-import type { Size, Tone } from '@xihan-ui/kernel'
-import type { Service } from '@xihan-ui/machine'
 import { backTopAnatomy, backTopMachine, backTopMeta, connectBackTop } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'

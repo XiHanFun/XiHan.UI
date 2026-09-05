@@ -1,5 +1,5 @@
 import type { WatermarkApi, WatermarkProps } from '../src/watermark'
-import { normalizeProps } from '@xihan-ui/kernel'
+import { normalizeProps } from '@xihan-ui/core'
 import { describe, expect, it } from 'vitest'
 // 直接从组件目录导入，不经包主入口
 import { connectWatermark } from '../src/watermark'

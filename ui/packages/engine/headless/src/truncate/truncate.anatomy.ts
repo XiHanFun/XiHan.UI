@@ -1,4 +1,4 @@
-import { createAnatomy } from '@xihan-ui/kernel'
+import { createAnatomy } from '@xihan-ui/core'
 
 // 只有一个部件：夹字、量溢出、承载展开交互，全落在同一个盒子上。
 export const truncateAnatomy = createAnatomy('truncate', ['root'])

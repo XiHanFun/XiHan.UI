@@ -1,4 +1,4 @@
-import { onDiagnostic, resetDiagnostics } from '@xihan-ui/kernel'
+import { onDiagnostic, resetDiagnostics } from '@xihan-ui/core'
 // @vitest-environment jsdom
 // 触发器的 asChild：借用作者的节点当触发器，不再自己渲染 <button> 包裹。
 // 元素子节点整套属性都拿；组件子节点保留自己的解剖标记只拿接线属性；

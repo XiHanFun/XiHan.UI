@@ -369,7 +369,7 @@ const truth = {
   placement取值数: {
     how: 'kernel 的 Side × Align 组合数（center 写成无后缀）',
     async value() {
-      const src = await read('packages/engine/kernel/src/types/position.ts')
+      const src = await read('packages/engine/core/src/kernel/types/position.ts')
       const sides = (src.match(/export type Side = ([^\n]+)/)?.[1].match(/'[^']+'/g) ?? []).length
       const aligns = (src.match(/export type Align = ([^\n]+)/)?.[1].match(/'[^']+'/g) ?? []).length
       return sides * aligns
@@ -450,15 +450,15 @@ const truth = {
     },
   },
   内核端口数: {
-    how: 'packages/engine/kernel/src/types 下的 .ts 文件数——一个端口一份类型契约文件',
+    how: 'packages/engine/core/src/kernel/types 下的 .ts 文件数——一个端口一份类型契约文件',
     async value() {
-      return (await readdir(join(uiRoot, 'packages/engine/kernel/src/types'))).filter(f => f.endsWith('.ts')).length
+      return (await readdir(join(uiRoot, 'packages/engine/core/src/kernel/types'))).filter(f => f.endsWith('.ts')).length
     },
   },
   着色记号种类数: {
     how: 'kernel 的 CodeTokenKind 联合成员数减去 plain（plain 是「没着色」，不算一类记号）',
     async value() {
-      const src = await read('packages/engine/kernel/src/types/highlighter.ts')
+      const src = await read('packages/engine/core/src/kernel/types/highlighter.ts')
       return unionMembers(src, 'CodeTokenKind').filter(m => m !== 'plain').length
     },
   },
@@ -954,9 +954,9 @@ async function thirdPartyRuntimeDeps() {
 }
 
 truth.诊断码名单 = {
-  how: 'packages/engine/kernel/src/diagnostics/codes.ts 里 DIAGNOSTIC_CODES 的「键=码」全表，按源码顺序',
+  how: 'packages/engine/core/src/kernel/diagnostics/codes.ts 里 DIAGNOSTIC_CODES 的「键=码」全表，按源码顺序',
   async value() {
-    const src = await read('packages/engine/kernel/src/diagnostics/codes.ts')
+    const src = await read('packages/engine/core/src/kernel/diagnostics/codes.ts')
     return codePairs(src.slice(src.indexOf('DIAGNOSTIC_CODES')))
   },
 }
@@ -1160,8 +1160,8 @@ const TABLE = [
   ['ui/packages/adapters/web-components/README.md', /dialog 在这 (\d+) 个里/, 'parity排除套件数'],
   ['ui/packages/engine/headless/README.md', /^(\d+) 个组件的无视觉实现/m, '组件数'],
   ['ui/packages/design/styles/README.md', /^默认皮肤：(\d+) 份纯 CSS/m, '皮肤份数'],
-  ['ui/packages/engine/kernel/README.md', /以及([\d一二三四五六七八九十两]+)个端口的类型契约/, '内核端口数'],
-  ['ui/packages/engine/code-highlight/README.md', /只分([\d一二三四五六七八九十两]+)类：注释、字符串、数字、关键字、标点/, '着色记号种类数'],
+  ['ui/packages/engine/core/README.md', /以及([\d一二三四五六七八九十两]+)个端口的类型契约/, '内核端口数'],
+  ['ui/packages/features/code-highlight/README.md', /只分([\d一二三四五六七八九十两]+)类：注释、字符串、数字、关键字、标点/, '着色记号种类数'],
   ['ui/packages/features/sound/README.md', /([\d一二三四五六七八九十两]+)套内置主题/, '内置音效主题数'],
   ['ui/packages/features/animations/README.md', /(\d+) 个进场预设/, '进场预设数'],
   ['ui/packages/features/animations/README.md', /(\d+) 个注意预设/, '注意预设数'],
@@ -1259,7 +1259,7 @@ const TABLE = [
   ['docs/guide/versioning.md', /不是全部 (\d+) 个 \|/, '公开包数'],
 
   // 适配器：kernel 里那份手写清单读不到文件系统，只能靠门禁比对目录
-  ['ui/packages/engine/kernel/src/metadata.ts', /adapters: Object\.freeze\(\[([^\]]*)\]\)/, '适配器名单字面量'],
+  ['ui/packages/engine/core/src/kernel/metadata.ts', /adapters: Object\.freeze\(\[([^\]]*)\]\)/, '适配器名单字面量'],
   ['docs/guide/metadata.md', /渲染适配器（([^）]+)）/, '适配器名单'],
   ['docs/guide/metadata.md', /：([\d一二三四五六七八九十两]+)个适配器的接入方式/, '适配器数'],
 

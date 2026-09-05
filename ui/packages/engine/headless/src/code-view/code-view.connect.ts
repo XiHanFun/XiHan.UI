@@ -1,6 +1,6 @@
-import type { CodeToken, NormalizeProps, PropTypes, Scope } from '@xihan-ui/kernel'
+import type { CodeToken, NormalizeProps, PropTypes, Scope } from '@xihan-ui/core'
 import type { CodeViewApi, CodeViewLineProps, CodeViewProps } from './code-view.types'
-import { dataAttr, resolveLabelling } from '@xihan-ui/kernel'
+import { dataAttr, resolveLabelling } from '@xihan-ui/core'
 import { codeViewAnatomy } from './code-view.anatomy'
 import {
   CODE_VIEW_FALLBACK_LANG,

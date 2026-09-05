@@ -1,8 +1,8 @@
 // @xihan-ui/icons/codegen —— 把任意 SVG 目录转成 IconRecord 的构建期管线。
 // 手写而非生成：管线是 .mjs，没有对应的 TS 源可发射声明。
 
-// 图标记录的形状在这里自带一份，不引 kernel 也不引 dist：
-// kernel 只在 devDependencies 里，消费方装的只有本包；而 dist 是构建产物，
+// 图标记录的形状在这里自带一份，不引 core 也不引 dist：
+// core 只在 devDependencies 里，消费方装的只有本包；而 dist 是构建产物，
 // 源码树里还不存在，静态分析会判定这条 import 解析不掉。
 // 与随包发布的 dist/types.d.mts 逐字段一致，由 tests/codegen-surface.spec.ts 盯着不许漂。
 export interface IconNode {
@@ -61,7 +61,7 @@ export declare function renderDeclaration(icons: readonly IngestedIcon[]): strin
 /** 单枚记录渲染成字面量源码。自建发射器时用。 */
 export declare function recordLiteral(record: IconRecord): string
 
-/** 由 kernel 的图标类型源渲染出随包发布的类型声明。 */
+/** 由 core 的图标类型源渲染出随包发布的类型声明。 */
 export declare function renderTypes(coreSource: string): string
 
 /** 渲染类型声明对应的运行期空模块。 */

@@ -1,5 +1,5 @@
-import type { Scope } from '@xihan-ui/kernel'
-import { createAnatomy } from '@xihan-ui/kernel'
+import type { Scope } from '@xihan-ui/core'
+import { createAnatomy } from '@xihan-ui/core'
 
 // control 是唯一的视觉盒：输入框、明暗切换钮与大写锁定提示都排在它里面，
 // 描边、底色与聚焦环画在它身上，整枚控件从头到尾只有一道边。

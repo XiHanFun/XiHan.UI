@@ -1,7 +1,6 @@
-import type { Disposable } from '@xihan-ui/kernel'
+import type { Disposable } from '@xihan-ui/core'
 import type { InfiniteScrollPhase, InfiniteScrollSchema } from './infinite-scroll.types'
-import { createViewportEntry } from '@xihan-ui/behavior'
-import { setup } from '@xihan-ui/machine'
+import { createViewportEntry, setup } from '@xihan-ui/core'
 
 const { createMachine } = setup<InfiniteScrollSchema>()
 

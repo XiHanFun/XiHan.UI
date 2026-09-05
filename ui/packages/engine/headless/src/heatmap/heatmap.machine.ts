@@ -1,9 +1,7 @@
-import type { Scope } from '@xihan-ui/kernel'
-import type { PropFn } from '@xihan-ui/machine'
+import type { PropFn, Scope } from '@xihan-ui/core'
 import type { HeatmapCellRef, HeatmapGridOptions, HeatmapTipRect } from './heatmap.grid'
 import type { HeatmapSchema } from './heatmap.types'
-import { resolveLocale } from '@xihan-ui/kernel'
-import { setup } from '@xihan-ui/machine'
+import { resolveLocale, setup } from '@xihan-ui/core'
 import { heatmapCellKey, heatmapDetailsOf, sameHeatmapCell, sameHeatmapTip } from './heatmap.grid'
 
 const { createMachine } = setup<HeatmapSchema>()

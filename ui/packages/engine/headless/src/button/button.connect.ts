@@ -1,6 +1,6 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
 import type { ButtonApi, ButtonProps } from './button.types'
-import { dataAttr, isDev } from '@xihan-ui/kernel'
+import { dataAttr, isDev } from '@xihan-ui/core'
 import { buttonAnatomy } from './button.anatomy'
 
 const parts = buttonAnatomy.build()

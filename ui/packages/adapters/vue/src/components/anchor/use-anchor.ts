@@ -1,5 +1,5 @@
+import type { Service } from '@xihan-ui/core'
 import type { AnchorApi, AnchorSchema } from '@xihan-ui/headless'
-import type { Service } from '@xihan-ui/machine'
 import type { ComputedRef, Ref } from 'vue'
 import { anchorMachine, connectAnchor } from '@xihan-ui/headless'
 import { computed, ref } from 'vue'

@@ -1,4 +1,4 @@
-import { onDiagnostic, resetDiagnostics } from '@xihan-ui/kernel'
+import { onDiagnostic, resetDiagnostics } from '@xihan-ui/core'
 // @vitest-environment jsdom
 // 命令式服务的宿主挂不起来时，不许把调用方一起拖下水。
 //

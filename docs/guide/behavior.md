@@ -1,8 +1,8 @@
 # 行为原语
 
-`@xihan-ui/behavior` 收的是**跨组件复用的交互机制**：对话框、抽屉、气泡、菜单、右键菜单、悬浮卡片……它们的差别在触发方式和视觉，但「点外面要关」「焦点要陷住」「背景不能滚」这些是同一套东西。写在这里一次，组件只管调用。
+`@xihan-ui/core` 里的行为原语收的是**跨组件复用的交互机制**：对话框、抽屉、气泡、菜单、右键菜单、悬浮卡片……它们的差别在触发方式和视觉，但「点外面要关」「焦点要陷住」「背景不能滚」这些是同一套东西。写在这里一次，组件只管调用。
 
-配套的层栈与背景失活在 `@xihan-ui/kernel` 里（它们是结构原语，比行为更底层）。
+配套的层栈与背景失活也在 `@xihan-ui/core` 里（它们是结构原语，比行为更底层）。
 
 ## 在 Vue 里用
 
@@ -66,7 +66,7 @@ export interface Layer {
 ## 消隐层
 
 ```ts
-import { createDismissLayer } from '@xihan-ui/behavior'
+import { createDismissLayer } from '@xihan-ui/core'
 
 const layer = createDismissLayer({
   config, // RuntimeConfig：scope + 层注册表 + 豁免配置
@@ -87,7 +87,7 @@ const layer = createDismissLayer({
 ## 焦点域
 
 ```ts
-import { createFocusScope } from '@xihan-ui/behavior'
+import { createFocusScope } from '@xihan-ui/core'
 
 const scope = createFocusScope({
   config,
@@ -110,7 +110,7 @@ const scope = createFocusScope({
 ## 滚动锁
 
 ```ts
-import { acquireScrollLock } from '@xihan-ui/behavior'
+import { acquireScrollLock } from '@xihan-ui/core'
 
 const lock = acquireScrollLock({ config })
 lock.dispose()
@@ -133,7 +133,7 @@ lock.dispose()
 ## 背景失活
 
 ```ts
-import { hideOutside } from '@xihan-ui/kernel'
+import { hideOutside } from '@xihan-ui/core'
 
 const restore = hideOutside(() => [contentEl, ...branches, ...registry.elementsAbove(layer)], scope, {
   exemptSelectors: ['.my-portal-root'],
@@ -172,7 +172,7 @@ export interface PresenceHandle {
 列表型组件（菜单、列表框、组合框、树、标签页）共用一套条目导航：
 
 ```ts
-import { focusItem, navIntentFromKey, navigateItems, queryItems } from '@xihan-ui/behavior'
+import { focusItem, navIntentFromKey, navigateItems, queryItems } from '@xihan-ui/core'
 
 const items = queryItems(rootEl, { scope: 'menu', part: 'item' })
 const intent = navIntentFromKey(event, { axis: 'vertical', dir: 'ltr' })
@@ -189,7 +189,7 @@ if (intent) {
 ## Typeahead
 
 ```ts
-import { createTypeahead } from '@xihan-ui/behavior'
+import { createTypeahead } from '@xihan-ui/core'
 
 const typeahead = createTypeahead({ timeout: 350 })
 const query = typeahead.push(event.key) // 不参与检索的键返回 null
@@ -203,7 +203,7 @@ typeahead.clear() // 收起浮层、切换焦点组时丢弃缓冲
 流式输出的消息列表需要「新内容来了自动滚到底，但用户往上翻之后就别抢」：
 
 ```ts
-import { createStickToBottom } from '@xihan-ui/behavior'
+import { createStickToBottom } from '@xihan-ui/core'
 
 const stick = createStickToBottom({
   config,

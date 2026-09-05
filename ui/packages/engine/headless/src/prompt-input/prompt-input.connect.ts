@@ -1,7 +1,6 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
-import type { Service } from '@xihan-ui/machine'
+import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { PromptInputApi, PromptInputSchema } from './prompt-input.types'
-import { dataAttr, isComposingEvent } from '@xihan-ui/kernel'
+import { dataAttr, isComposingEvent } from '@xihan-ui/core'
 import { promptInputAnatomy } from './prompt-input.anatomy'
 
 const parts = promptInputAnatomy.build()

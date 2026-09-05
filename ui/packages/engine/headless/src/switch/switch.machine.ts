@@ -1,5 +1,5 @@
 import type { SwitchSchema } from './switch.types'
-import { setup } from '@xihan-ui/machine'
+import { setup } from '@xihan-ui/core'
 
 const { createMachine } = setup<SwitchSchema>()
 

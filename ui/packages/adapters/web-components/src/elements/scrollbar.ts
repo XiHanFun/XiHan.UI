@@ -1,6 +1,5 @@
+import type { Direction, Orientation, Service, Size } from '@xihan-ui/core'
 import type { ScrollbarSchema, ScrollbarType } from '@xihan-ui/headless'
-import type { Direction, Orientation, Size } from '@xihan-ui/kernel'
-import type { Service } from '@xihan-ui/machine'
 import { connectScrollbar, scrollbarAnatomy, scrollbarMachine, scrollbarMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'

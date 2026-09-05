@@ -1,3 +1,4 @@
+import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type {
   PromptInputSchema,
   PromptInputSubmitDetails,
@@ -5,7 +6,6 @@ import type {
   PromptInputTranslations,
   PromptInputValueChangeDetails,
 } from '@xihan-ui/headless'
-import type { ControlVariant, Size, Tone } from '@xihan-ui/kernel'
 import { connectPromptInput, promptInputAnatomy, promptInputMachine, promptInputMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'

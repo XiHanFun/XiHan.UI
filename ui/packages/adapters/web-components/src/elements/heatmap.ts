@@ -1,3 +1,4 @@
+import type { Direction, Size, Tone } from '@xihan-ui/core'
 import type {
   HeatmapAxisInput,
   HeatmapCellDetails,
@@ -12,9 +13,8 @@ import type {
   HeatmapValue,
   HeatmapVariant,
 } from '@xihan-ui/headless'
-import type { Direction, Size, Tone } from '@xihan-ui/kernel'
+import { DATA_PART, DATA_SCOPE } from '@xihan-ui/core'
 import { buildHeatmapGrid, connectHeatmap, HEATMAP_LEGEND_TEXT, heatmapAnatomy, heatmapMachine, heatmapMeta } from '@xihan-ui/headless'
-import { DATA_PART, DATA_SCOPE } from '@xihan-ui/kernel'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'

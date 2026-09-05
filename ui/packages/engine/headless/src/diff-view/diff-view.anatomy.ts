@@ -1,4 +1,4 @@
-import { createAnatomy } from '@xihan-ui/kernel'
+import { createAnatomy } from '@xihan-ui/core'
 
 // root 是外壳；header 放文件名与增删统计，summary 是统计位（增删各一个）；
 // viewport 是滚动容器与唯一的 Tab 停靠点；

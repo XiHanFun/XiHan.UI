@@ -1,5 +1,5 @@
+import type { Size } from '@xihan-ui/core'
 import type { XhTranslationOverrides } from '@xihan-ui/headless'
-import type { Size } from '@xihan-ui/kernel'
 import type { MotionPreference } from '@xihan-ui/motion'
 import type { XhConfig, XhConfigScope } from '../config'
 import type { PropertyValues } from '../reactive'

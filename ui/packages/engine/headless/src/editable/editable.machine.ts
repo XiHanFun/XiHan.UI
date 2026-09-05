@@ -1,7 +1,6 @@
-import type { Scope } from '@xihan-ui/kernel'
+import type { Scope } from '@xihan-ui/core'
 import type { EditableSchema, EditableSubmitMode } from './editable.types'
-import { focusSafely } from '@xihan-ui/behavior'
-import { resetDeclaredValue, setup } from '@xihan-ui/machine'
+import { focusSafely, resetDeclaredValue, setup } from '@xihan-ui/core'
 
 const { createMachine, guards } = setup<EditableSchema>()
 const { and, not } = guards

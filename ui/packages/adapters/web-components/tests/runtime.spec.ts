@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
-import type { MachineSchema } from '@xihan-ui/machine'
+import type { MachineSchema } from '@xihan-ui/core'
 import type { ReactiveControllerHost } from '../src/reactive'
-import { setup } from '@xihan-ui/machine'
+import { setup } from '@xihan-ui/core'
 import { describe, expect, it } from 'vitest'
 import { XhReactiveElement } from '../src/reactive'
 import { createLitRuntime } from '../src/runtime/lit-runtime'

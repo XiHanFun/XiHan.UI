@@ -1,7 +1,5 @@
-import type { Disposable } from '@xihan-ui/kernel'
-import type { MachineSchema, Service } from '@xihan-ui/machine'
-import { createFormResetBridge } from '@xihan-ui/behavior'
-import { declaresFormReset, FORM_RESET_EVENT } from '@xihan-ui/machine'
+import type { Disposable, MachineSchema, Service } from '@xihan-ui/core'
+import { createFormResetBridge, declaresFormReset, FORM_RESET_EVENT } from '@xihan-ui/core'
 import { getCurrentInstance, onBeforeUnmount, onMounted } from 'vue'
 
 /**

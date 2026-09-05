@@ -1,5 +1,5 @@
+import type { Size } from '@xihan-ui/core'
 import type { AvatarGroupProps } from '@xihan-ui/headless'
-import type { Size } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import { connectAvatarGroup } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'

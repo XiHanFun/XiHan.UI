@@ -5,7 +5,7 @@
 // 收进 partMap，野节点告警与重接线环一并找上门）；壳不在场时安全早退，且此时滚动层
 // 绝不能被打上标记（原生条被藏、自绘条又没来，那是一条滚动条都没有）、也不投诊断；
 // 多轮更新只建一次；作者换掉壳时整套跟过去。
-import { DIAGNOSTIC_CODES, onDiagnostic, setDiagnosticsDedupe } from '@xihan-ui/kernel'
+import { DIAGNOSTIC_CODES, onDiagnostic, setDiagnosticsDedupe } from '@xihan-ui/core'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { defineXhElements } from '../src/define'
 

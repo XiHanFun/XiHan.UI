@@ -1,8 +1,6 @@
 import type { PinchSnapshot, TrackedPoint } from '@xihan-ui/pointer'
 import type { ImageViewerItem, ImageViewerRefs, ImageViewerSchema, ImageViewerTransform } from './image-viewer.types'
-import { acquireScrollLock, createDismissLayer, createFocusScope } from '@xihan-ui/behavior'
-import { hideOutside } from '@xihan-ui/kernel'
-import { setup } from '@xihan-ui/machine'
+import { acquireScrollLock, createDismissLayer, createFocusScope, hideOutside, setup } from '@xihan-ui/core'
 import { createMultiPointerSession, pinchChange, pinchSnapshot, resolveSessionDoc } from '@xihan-ui/pointer'
 import { closeReasonOf } from '../shared/close-reason'
 

@@ -1,7 +1,6 @@
-import type { ScrollTrackerHandle } from '@xihan-ui/behavior'
+import type { ScrollTrackerHandle } from '@xihan-ui/core'
 import type { BackTopSchema } from './back-top.types'
-import { createScrollTracker, scrollBlockTo } from '@xihan-ui/behavior'
-import { setup } from '@xihan-ui/machine'
+import { createScrollTracker, scrollBlockTo, setup } from '@xihan-ui/core'
 
 const { createMachine } = setup<BackTopSchema>()
 

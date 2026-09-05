@@ -1,4 +1,4 @@
-import { normalizeProps } from '@xihan-ui/kernel'
+import { normalizeProps } from '@xihan-ui/core'
 import { describe, expect, it } from 'vitest'
 import { connectMasonry, distributeMasonry, resolveMasonryColumns } from '../src/masonry/index'
 

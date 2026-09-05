@@ -2,7 +2,7 @@
 //
 // 翻写与判定全程不读 navigator：服务端渲染时没有它，读了会炸；平台由适配器挂载后
 // 调 detectHotkeysPlatform 测出来往下传。
-import { isHTMLElement } from '@xihan-ui/kernel'
+import { isHTMLElement } from '@xihan-ui/core'
 
 /** 平台写法。'auto' 表示还没测出来，由适配器挂载后换成实测值。 */
 export type HotkeysPlatform = 'auto' | 'mac' | 'other'

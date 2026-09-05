@@ -4,9 +4,8 @@
 // 焦点域默认按「创建前谁持有焦点」归还，指针入口下这个快照并不可靠：各平台对
 // 「点按按钮给不给焦点」的处理不一致，快照可能是 body。这里就按那种情形建场景——
 // 展开之前焦点停在 body 上，关掉之后必须落在 trigger 上，而不是留在 body。
-import { createRuntimeConfig, normalizeProps } from '@xihan-ui/kernel'
-import { createService } from '@xihan-ui/machine'
-import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
+import { createRuntimeConfig, createService, normalizeProps } from '@xihan-ui/core'
+import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it } from 'vitest'
 import { connectDialog, dialogMachine } from '../src/dialog'
 import { connectDrawer, drawerMachine } from '../src/drawer'

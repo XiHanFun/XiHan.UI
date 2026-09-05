@@ -1,4 +1,4 @@
-import type { Anatomy } from '@xihan-ui/kernel'
+import type { Anatomy } from '@xihan-ui/core'
 import type { AdapterHarness, ConformanceSuite, TestHooks } from '../conformance/types'
 
 /**

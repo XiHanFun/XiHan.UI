@@ -1,4 +1,4 @@
-import type { ActionVariant, PropTypes, Size, Tone } from '@xihan-ui/kernel'
+import type { ActionVariant, PropTypes, Size, Tone } from '@xihan-ui/core'
 
 export interface ButtonProps {
   type?: 'button' | 'submit' | 'reset'

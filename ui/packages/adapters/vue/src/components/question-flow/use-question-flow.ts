@@ -1,7 +1,7 @@
 import type { QuestionFlowApi, QuestionFlowSchema } from '@xihan-ui/headless'
 import type { ComputedRef, Ref } from 'vue'
+import { createScope } from '@xihan-ui/core'
 import { connectQuestionFlow, questionFlowMachine } from '@xihan-ui/headless'
-import { createScope } from '@xihan-ui/kernel'
 import { computed, ref } from 'vue'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'

@@ -1,5 +1,4 @@
-import type { Direction, Orientation, PropTypes, Size, Tone } from '@xihan-ui/kernel'
-import type { MachineSchema } from '@xihan-ui/machine'
+import type { Direction, MachineSchema, Orientation, PropTypes, Size, Tone } from '@xihan-ui/core'
 
 export interface SegmentedValueChangeDetails {
   /** 当前选中值；一个都没选中时为 null。 */

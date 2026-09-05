@@ -1,3 +1,4 @@
+import type { Direction, Placement, Size } from '@xihan-ui/core'
 import type {
   ColorPickerApi,
   ColorPickerChannel,
@@ -6,7 +7,6 @@ import type {
   ColorPickerSchema,
   ColorPickerTranslations,
 } from '@xihan-ui/headless'
-import type { Direction, Placement, Size } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { colorPickerToChannel, colorPickerToInputChannel } from '@xihan-ui/headless'

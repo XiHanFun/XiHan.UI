@@ -1,5 +1,5 @@
 import type { ToolCallSchema } from './tool-call.types'
-import { setup } from '@xihan-ui/machine'
+import { setup } from '@xihan-ui/core'
 
 const { createMachine, guards } = setup<ToolCallSchema>()
 

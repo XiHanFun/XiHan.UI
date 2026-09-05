@@ -1,6 +1,4 @@
-import type { StickToBottomHandle } from '@xihan-ui/behavior'
-import type { PropTypes, RuntimeConfig } from '@xihan-ui/kernel'
-import type { MachineSchema } from '@xihan-ui/machine'
+import type { MachineSchema, PropTypes, RuntimeConfig, StickToBottomHandle } from '@xihan-ui/core'
 
 export interface LogTranslations {
   /** 日志区的可访问名。 */

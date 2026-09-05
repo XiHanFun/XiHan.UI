@@ -9,8 +9,8 @@ const ROOT = dirname(dirname(fileURLToPath(import.meta.url)))
 const SVG_DIR = join(ROOT, 'src', 'svg')
 const DIST = join(ROOT, 'dist')
 
-/** kernel 里的 icon 类型真源；这个包不依赖 kernel，只把它逐字节复制进产物。 */
-const CORE_ICON_TYPES = join(ROOT, '..', '..', 'engine', 'kernel', 'src', 'types', 'icon.ts')
+/** core 里的 icon 类型真源；这个包不依赖 core，只把它逐字节复制进产物。 */
+const CORE_ICON_TYPES = join(ROOT, '..', '..', 'engine', 'core', 'src', 'kernel', 'types', 'icon.ts')
 
 async function main() {
   const icons = await buildIconSet(SVG_DIR)

@@ -1,6 +1,6 @@
-import type { NavIntent, StepOptions } from '@xihan-ui/behavior'
+import type { NavIntent, StepOptions } from '@xihan-ui/core'
 import type { CascaderColumn, CascaderLevel, CascaderNode, CascaderNodeMeta } from './cascader.types'
-import { stepIndex } from '@xihan-ui/behavior'
+import { stepIndex } from '@xihan-ui/core'
 
 // 级联的纯算法层：不碰 DOM、不认识状态机（connect 在 render 期求值，此时 DOM 尚不存在）。
 

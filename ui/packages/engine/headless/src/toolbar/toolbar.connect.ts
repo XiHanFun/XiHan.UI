@@ -1,8 +1,6 @@
-import type { NormalizeProps, Orientation, PropTypes } from '@xihan-ui/kernel'
-import type { Service } from '@xihan-ui/machine'
+import type { NormalizeProps, Orientation, PropTypes, Service } from '@xihan-ui/core'
 import type { ToolbarApi, ToolbarItemProps, ToolbarSchema } from './toolbar.types'
-import { focusItem, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/behavior'
-import { contains, dataAttr } from '@xihan-ui/kernel'
+import { contains, dataAttr, focusItem, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
 import { toolbarAnatomy, toolbarItemQuery } from './toolbar.anatomy'
 
 const parts = toolbarAnatomy.build()

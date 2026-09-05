@@ -1,4 +1,4 @@
-import type { Orientation, PropTypes } from '@xihan-ui/kernel'
+import type { Orientation, PropTypes } from '@xihan-ui/core'
 
 /** 交叉轴对齐。 */
 export type FlexAlign = 'start' | 'center' | 'end' | 'stretch' | 'baseline'

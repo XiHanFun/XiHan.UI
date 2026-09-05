@@ -1,4 +1,4 @@
-import type { PropTypes, Size } from '@xihan-ui/kernel'
+import type { PropTypes, Size } from '@xihan-ui/core'
 
 /** 每行摆几组「标签 + 取值」。皮肤逐档给出列数，一到六列。 */
 export type DescriptionsColumns = 1 | 2 | 3 | 4 | 5 | 6

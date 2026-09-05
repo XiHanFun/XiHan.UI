@@ -5,8 +5,7 @@ import type {
   QuestionFlowSchema,
   QuestionFlowViewport,
 } from './question-flow.types'
-import { queryItems } from '@xihan-ui/behavior'
-import { setTimeoutEffect, setup } from '@xihan-ui/machine'
+import { queryItems, setTimeoutEffect, setup } from '@xihan-ui/core'
 import { toggleItemValue } from '../checkbox-group'
 import { questionFlowQuestionQuery } from './question-flow.anatomy'
 import { clampQuestionIndex } from './question-flow.types'

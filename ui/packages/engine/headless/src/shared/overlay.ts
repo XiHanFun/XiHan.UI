@@ -1,4 +1,4 @@
-import type { Placement } from '@xihan-ui/kernel'
+import type { Placement } from '@xihan-ui/core'
 
 // 浮层交给定位引擎的默认落点与间距；各族机器统一引这里，不靠引擎自己的兜底。
 

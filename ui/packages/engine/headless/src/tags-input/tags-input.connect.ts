@@ -1,8 +1,6 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
-import type { Service } from '@xihan-ui/machine'
+import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { TagsInputApi, TagsInputItemProps, TagsInputSchema } from './tags-input.types'
-import { ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
-import { contains, dataAttr, isComposingEvent } from '@xihan-ui/kernel'
+import { contains, dataAttr, isComposingEvent, ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { tagsInputAnatomy, tagsInputEditInputId } from './tags-input.anatomy'
 import { appendTags, isAtMax, isOverflow, splitTags, tagsDelimiter } from './tags-input.machine'
 

@@ -1,4 +1,4 @@
-import type { Align, Direction, Placement, Side } from '@xihan-ui/kernel'
+import type { Align, Direction, Placement, Side } from '@xihan-ui/core'
 
 /**
  * 摆放浮层的纯计算层：给定锚点矩形、浮层尺寸与可用区域，算出浮层该落在哪儿。

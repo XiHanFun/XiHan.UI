@@ -1,5 +1,4 @@
-import type { Direction, PropTypes } from '@xihan-ui/kernel'
-import type { MachineSchema } from '@xihan-ui/machine'
+import type { Direction, MachineSchema, PropTypes } from '@xihan-ui/core'
 import type { ResizeEdge } from '@xihan-ui/pointer'
 
 export interface ResizableDimensions {

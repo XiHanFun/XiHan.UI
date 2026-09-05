@@ -1,7 +1,7 @@
 import type { FieldApi, FieldProps } from '@xihan-ui/headless'
 import type { ComputedRef } from 'vue'
+import { createScope } from '@xihan-ui/core'
 import { connectField } from '@xihan-ui/headless'
-import { createScope } from '@xihan-ui/kernel'
 import { computed } from 'vue'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { createVueIdGenerator } from '../../runtime/vue-id'

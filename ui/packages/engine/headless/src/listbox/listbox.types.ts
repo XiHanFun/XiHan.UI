@@ -1,6 +1,4 @@
-import type { Typeahead } from '@xihan-ui/behavior'
-import type { Direction, Orientation, PropTypes } from '@xihan-ui/kernel'
-import type { MachineSchema } from '@xihan-ui/machine'
+import type { Direction, MachineSchema, Orientation, PropTypes, Typeahead } from '@xihan-ui/core'
 
 /**
  * 焦点模型：roving tabindex（不做 aria-activedescendant 变体）。焦点真的落在条目上，
