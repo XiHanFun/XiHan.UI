@@ -1,5 +1,4 @@
-import type { PropTypes, Size } from '@xihan-ui/kernel'
-import type { MachineSchema } from '@xihan-ui/machine'
+import type { MachineSchema, PropTypes, Size } from '@xihan-ui/core'
 
 /** 一段数字的单位，也是条目上 data-unit 的取值。 */
 export type TimerUnit = 'days' | 'hours' | 'minutes' | 'seconds' | 'milliseconds'

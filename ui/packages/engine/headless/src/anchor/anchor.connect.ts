@@ -1,8 +1,6 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
-import type { Service } from '@xihan-ui/machine'
+import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { AnchorApi, AnchorSchema } from './anchor.types'
-import { ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
-import { dataAttr } from '@xihan-ui/kernel'
+import { dataAttr, ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { anchorAnatomy } from './anchor.anatomy'
 
 const parts = anchorAnatomy.build()

@@ -1,3 +1,3 @@
-import { createAnatomy } from '@xihan-ui/kernel'
+import { createAnatomy } from '@xihan-ui/core'
 
 export const tooltipAnatomy = createAnatomy('tooltip', ['trigger', 'positioner', 'content', 'arrow'])

@@ -1,6 +1,4 @@
-import type { CascadeStrategy, Typeahead } from '@xihan-ui/behavior'
-import type { Cleanup, ControlVariant, Direction, Layer, OverlayCloseReason, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
-import type { MachineSchema } from '@xihan-ui/machine'
+import type { CascadeStrategy, Cleanup, ControlVariant, Direction, Layer, MachineSchema, OverlayCloseReason, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone, Typeahead } from '@xihan-ui/core'
 import type { TreeNode, TreeVisibleNode } from '../tree'
 
 /**

@@ -1,5 +1,5 @@
+import type { Size, Tone } from '@xihan-ui/core'
 import type { BadgePlacement, BadgeProps } from '@xihan-ui/headless'
-import type { Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
 import { connectBadge } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'

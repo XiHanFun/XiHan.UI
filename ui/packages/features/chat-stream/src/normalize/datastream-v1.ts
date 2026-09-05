@@ -5,7 +5,7 @@ import type { SourceDocumentPart, SourceUrlPart } from '../model/source'
 import type { MessageMetadata } from '../model/usage'
 import type { NormalizedEvent } from '../reduce/events'
 import type { RawFrame } from '../transport/sse-reader'
-import { isDict, warn } from '@xihan-ui/kernel'
+import { isDict, warn } from '@xihan-ui/core'
 import { asBlockKey } from '../reduce/events'
 
 export const DATA_STREAM_DONE = '[DONE]'

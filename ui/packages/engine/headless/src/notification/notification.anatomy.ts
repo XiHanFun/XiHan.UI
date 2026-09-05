@@ -1,4 +1,4 @@
-import { createAnatomy } from '@xihan-ui/kernel'
+import { createAnatomy } from '@xihan-ui/core'
 
 // root 是作用域包装（它不占布局），group 是某一个位置上的那一摞、也是地标
 // （九个位各一个，作者按需渲染）。

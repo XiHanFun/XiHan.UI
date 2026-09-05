@@ -1,5 +1,5 @@
+import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type { NumberFieldSchema, NumberFieldValueChangeDetails } from '@xihan-ui/headless'
-import type { ControlVariant, Size, Tone } from '@xihan-ui/kernel'
 import { connectNumberField, numberFieldAnatomy, numberFieldMachine, numberFieldMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'

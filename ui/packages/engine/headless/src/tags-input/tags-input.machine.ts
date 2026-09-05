@@ -1,6 +1,6 @@
-import type { Params } from '@xihan-ui/machine'
+import type { Params } from '@xihan-ui/core'
 import type { TagsInputSchema } from './tags-input.types'
-import { resetDeclaredValue, setup } from '@xihan-ui/machine'
+import { resetDeclaredValue, setup } from '@xihan-ui/core'
 import { tagsInputEditInputId } from './tags-input.anatomy'
 
 const { createMachine } = setup<TagsInputSchema>()

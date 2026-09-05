@@ -1,7 +1,6 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
-import type { Service } from '@xihan-ui/machine'
+import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { FieldArrayApi, FieldArrayItem, FieldArrayItemProps, FieldArraySchema } from './field-array.types'
-import { contains, dataAttr } from '@xihan-ui/kernel'
+import { contains, dataAttr } from '@xihan-ui/core'
 import { fieldArrayAnatomy, fieldArrayTriggerId } from './field-array.anatomy'
 import { atRowMax, atRowMin, rowBound } from './field-array.machine'
 

@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import type { IconRecord } from '@xihan-ui/kernel'
+import type { IconRecord } from '@xihan-ui/core'
 import { mount } from '@vue/test-utils'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createSSRApp, h } from 'vue'

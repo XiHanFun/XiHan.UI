@@ -1,3 +1,4 @@
+import type { IdGenerator, RuntimeConfig, Service } from '@xihan-ui/core'
 import type {
   MessageFeedItemFocusDetails,
   MessageFeedItemProps,
@@ -6,10 +7,8 @@ import type {
   MessageFeedStickChangeDetails,
   MessageFeedTranslations,
 } from '@xihan-ui/headless'
-import type { IdGenerator, RuntimeConfig } from '@xihan-ui/kernel'
-import type { Service } from '@xihan-ui/machine'
+import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectMessageFeed, messageFeedAnatomy, messageFeedMachine, messageFeedMeta } from '@xihan-ui/headless'
-import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/kernel'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'

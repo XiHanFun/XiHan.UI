@@ -58,7 +58,7 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@xihan-ui/kernel": "workspace:^",
+    "@xihan-ui/core": "workspace:^",
     "@xihan-ui/tsconfig": "workspace:*",
     "vitest": "catalog:"
   }

@@ -1,5 +1,5 @@
 import type { TextFieldSchema } from './text-field.types'
-import { resetDeclaredValue, setup } from '@xihan-ui/machine'
+import { resetDeclaredValue, setup } from '@xihan-ui/core'
 
 const { createMachine } = setup<TextFieldSchema>()
 

@@ -1,5 +1,4 @@
-import type { PropTypes } from '@xihan-ui/kernel'
-import type { MachineSchema } from '@xihan-ui/machine'
+import type { MachineSchema, PropTypes } from '@xihan-ui/core'
 import type { VirtualizerAlign } from './virtualizer.geometry'
 import type { VirtualizerKernel } from './virtualizer.kernel'
 import type { VirtualizerItemState, VirtualizerSnapshot } from './virtualizer.sizing'

@@ -6,8 +6,8 @@
 packages/
   adapters/   vue  web-components                                   ← 你选一个
   design/     tokens  styles  icons                                 ← 你的外观
-  features/   markdown  chat-stream  backgrounds  sound  animations ← 按需自选
-  engine/     kernel  machine  motion  pointer  behavior  position  code-highlight  headless   ← 你不用管
+  features/   markdown  chat-stream  backgrounds  sound  animations  code-highlight ← 按需自选
+  engine/     core  motion  pointer  position  headless               ← 你不用管
 ```
 
 ## 入组判据
@@ -39,9 +39,12 @@ packages/
 
 ## 几条容易踩的
 
-**归属跟着设计决定走，不跟着口味走。** `code-highlight` 今天在 `engine`，因为它是两个
-适配器的硬依赖。哪天把它改成可选 peer（只有 `code-view` 一个组件用它，摇树角度有理由
-这么做），它就自动该去 `features`——规则决定，不必重新讨论一次。
+**归属跟着设计决定走，不跟着口味走。** `code-highlight` 曾经在 `engine`，因为那时它是两个
+适配器的硬依赖；改成可选 peer 之后它就该去 `features`——规则决定，不必重新讨论一次。
+
+**可选 peer 必须真的可选。** 声明成可选却在主入口静态 import，等于把「可选」写成谎话：
+使用者不装它，模块解析就地报错。`code-view` 对 `code-highlight` 是动态引入 + 载不到就
+保持不着色，代码按纯文本渲染，两个适配器各有用例守着这条降级路径。
 
 **`engine` 不是「底层的东西」。** 它是「使用者做不了取舍的东西」。`headless` 的 123 个
 组件在 `engine` 里，不是因为它底层，是因为装了适配器就一定有它。
@@ -51,5 +54,5 @@ packages/
 
 **不按组件拆包。** 反向教训明确：Chakra v3 把约 70 个细粒度包收敛成一个，
 Radix 2025-01 补发单包消化细拆后遗症。123 个组件共享同一套机器，拆了每个适配器都得
-复制一份逻辑。同理，`behavior` 里的 `focus-scope` / `collection`、`kernel` 里的 `a11y`
+复制一份逻辑。同理，`core` 里的 `focus-scope` / `collection` / `a11y`
 都不单独成包——它们各自两三百行，独立成包换来的只是一套 package.json 的维护成本。

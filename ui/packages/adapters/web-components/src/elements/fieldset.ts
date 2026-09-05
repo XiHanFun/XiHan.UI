@@ -1,7 +1,7 @@
+import type { Scope } from '@xihan-ui/core'
 import type { FieldsetProps, FieldsetTranslations } from '@xihan-ui/headless'
-import type { Scope } from '@xihan-ui/kernel'
+import { createCounterIdGenerator, createScope, DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/core'
 import { connectFieldset, fieldsetAnatomy, fieldsetMeta } from '@xihan-ui/headless'
-import { createCounterIdGenerator, createScope, DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/kernel'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 

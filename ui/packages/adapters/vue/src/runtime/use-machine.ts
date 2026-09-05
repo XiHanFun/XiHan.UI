@@ -1,9 +1,7 @@
-import type { Scope } from '@xihan-ui/kernel'
-import type { MachineConfig, MachineSchema, Service } from '@xihan-ui/machine'
+import type { MachineConfig, MachineSchema, Scope, Service } from '@xihan-ui/core'
 import type { MaybeRefOrGetter } from 'vue'
-import { isDev, VERSION as KERNEL_VERSION } from '@xihan-ui/kernel'
-import { checkLockstepVersion, printMetadataBannerOnce, registerRuntimeHost } from '@xihan-ui/kernel/metadata'
-import { createService } from '@xihan-ui/machine'
+import { VERSION as CORE_VERSION, createService, isDev } from '@xihan-ui/core'
+import { checkLockstepVersion, printMetadataBannerOnce, registerRuntimeHost } from '@xihan-ui/core/metadata'
 import { toValue } from 'vue'
 import { version as VUE_VERSION } from '../../package.json'
 import { attachFormReset } from './attach-form-reset'
@@ -21,7 +19,7 @@ function ensureDevChecks(): void {
   // 宿主登记不分 dev/prod:元数据要能报出运行在哪个适配器上
   registerRuntimeHost('vue', VUE_VERSION)
   if (isDev()) {
-    checkLockstepVersion('vue', VUE_VERSION, KERNEL_VERSION)
+    checkLockstepVersion('vue', VUE_VERSION, CORE_VERSION)
     // 引用即打印:首个组件建机器时打一次启动横幅(整页一次,生产静默)
     printMetadataBannerOnce()
   }

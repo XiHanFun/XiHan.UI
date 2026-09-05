@@ -1,4 +1,4 @@
-import type { PropTypes, Size } from '@xihan-ui/kernel'
+import type { PropTypes, Size } from '@xihan-ui/core'
 
 /**
  * 生长中那一块的固定 key。

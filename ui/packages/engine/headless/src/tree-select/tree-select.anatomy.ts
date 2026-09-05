@@ -1,5 +1,5 @@
-import type { ItemQuery } from '@xihan-ui/behavior'
-import { createAnatomy } from '@xihan-ui/kernel'
+import type { ItemQuery } from '@xihan-ui/core'
+import { createAnatomy } from '@xihan-ui/core'
 
 // data-part 直接用 kebab-case，与 CSS 选择器一致。
 // 前半截（trigger/value-text/indicator/positioner/content）是浮层那一套，

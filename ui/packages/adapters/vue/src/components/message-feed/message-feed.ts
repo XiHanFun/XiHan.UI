@@ -1,5 +1,5 @@
+import type { Size } from '@xihan-ui/core'
 import type { MessageFeedApi, MessageFeedItemRole, MessageFeedSchema, MessageFeedStatus, MessageFeedTranslations } from '@xihan-ui/headless'
-import type { Size } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h, onBeforeUnmount, onMounted, ref } from 'vue'

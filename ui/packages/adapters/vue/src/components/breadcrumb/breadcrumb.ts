@@ -1,5 +1,5 @@
+import type { Direction, Size, Tone } from '@xihan-ui/core'
 import type { BreadcrumbProps, BreadcrumbTranslations } from '@xihan-ui/headless'
-import type { Direction, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'

@@ -1,7 +1,6 @@
-import type { PositionResult } from '@xihan-ui/kernel'
+import type { PositionResult } from '@xihan-ui/core'
 import type { PopoverSchema } from './popover.types'
-import { createDismissLayer, createFocusScope } from '@xihan-ui/behavior'
-import { setup } from '@xihan-ui/machine'
+import { createDismissLayer, createFocusScope, setup } from '@xihan-ui/core'
 import { closeReasonOf } from '../shared/close-reason'
 import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_OFFSET, OVERLAY_PLACEMENT_ANCHORED } from '../shared/overlay'
 

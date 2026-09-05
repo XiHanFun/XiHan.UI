@@ -1,7 +1,6 @@
-import type { PositionResult } from '@xihan-ui/kernel'
+import type { PositionResult } from '@xihan-ui/core'
 import type { SideNavNode, SideNavSchema } from './side-nav.types'
-import { createDismissLayer, createFocusScope, navigateItems, trackHoverIntent } from '@xihan-ui/behavior'
-import { setup } from '@xihan-ui/machine'
+import { createDismissLayer, createFocusScope, navigateItems, setup, trackHoverIntent } from '@xihan-ui/core'
 import { OVERLAY_OFFSET } from '../shared/overlay'
 import { indexTree } from '../tree'
 

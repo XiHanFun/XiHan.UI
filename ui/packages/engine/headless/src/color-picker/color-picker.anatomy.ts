@@ -1,4 +1,4 @@
-import { createAnatomy } from '@xihan-ui/kernel'
+import { createAnatomy } from '@xihan-ui/core'
 
 export const colorPickerAnatomy = createAnatomy('color-picker', [
   'root',

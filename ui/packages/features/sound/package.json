@@ -51,7 +51,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@xihan-ui/kernel": "workspace:^"
+    "@xihan-ui/core": "workspace:^"
   },
   "devDependencies": {
     "@xihan-ui/build": "workspace:*",

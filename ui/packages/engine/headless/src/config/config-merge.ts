@@ -1,4 +1,4 @@
-import type { Size } from '@xihan-ui/kernel'
+import type { Size } from '@xihan-ui/core'
 import type { MotionPreference } from '@xihan-ui/motion'
 import type { XhTranslationOverrides } from './translations'
 

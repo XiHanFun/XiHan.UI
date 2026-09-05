@@ -1,5 +1,4 @@
-import type { Cleanup, Direction, Layer, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig } from '@xihan-ui/kernel'
-import type { MachineSchema } from '@xihan-ui/machine'
+import type { Cleanup, Direction, Layer, MachineSchema, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig } from '@xihan-ui/core'
 
 /** 一步引导的声明。整份清单由作者给出，组件只按下标取用，不反查 DOM。 */
 export interface TourStep {

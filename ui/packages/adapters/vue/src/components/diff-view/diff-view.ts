@@ -1,5 +1,5 @@
+import type { CodeToken, Size } from '@xihan-ui/core'
 import type { DiffChange, DiffModel, DiffSide, DiffViewApi, DiffViewMode, DiffViewSchema, DiffViewTranslations } from '@xihan-ui/headless'
-import type { CodeToken, Size } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'

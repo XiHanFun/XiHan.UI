@@ -1,3 +1,4 @@
+import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size } from '@xihan-ui/core'
 import type {
   ColorPickerChannel,
   ColorPickerFormat,
@@ -6,11 +7,9 @@ import type {
   ColorPickerTranslations,
   ColorPickerValueChangeDetails,
 } from '@xihan-ui/headless'
-import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Size } from '@xihan-ui/kernel'
-import type { Service } from '@xihan-ui/machine'
 import type { OverlayExit } from '../overlay-exit'
+import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { colorPickerAnatomy, colorPickerMachine, colorPickerMeta, colorPickerToChannel, colorPickerToInputChannel, connectColorPicker } from '@xihan-ui/headless'
-import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/kernel'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'

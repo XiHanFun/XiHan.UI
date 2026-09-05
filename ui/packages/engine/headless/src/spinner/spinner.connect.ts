@@ -1,4 +1,4 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
 import type { SpinnerApi, SpinnerProps } from './spinner.types'
 import { spinnerAnatomy } from './spinner.anatomy'
 

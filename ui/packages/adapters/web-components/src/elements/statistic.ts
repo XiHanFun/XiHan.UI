@@ -1,5 +1,5 @@
+import type { Size, Tone } from '@xihan-ui/core'
 import type { StatisticProps } from '@xihan-ui/headless'
-import type { Size, Tone } from '@xihan-ui/kernel'
 import { connectStatistic, statisticAnatomy, statisticMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'

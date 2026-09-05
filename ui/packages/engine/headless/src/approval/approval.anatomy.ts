@@ -1,4 +1,4 @@
-import { createAnatomy } from '@xihan-ui/kernel'
+import { createAnatomy } from '@xihan-ui/core'
 
 // root 是 role=group 的闸门本体；title 与 description 给它命名与描述；
 // live-region 是可配档位的活区，念的那句文本在 api.announcement 上；

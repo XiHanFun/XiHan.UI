@@ -1,12 +1,12 @@
 # 状态机运行时
 
-`@xihan-ui/machine` 是一个**薄**的有限状态机运行时：零运行时依赖，只依赖 `@xihan-ui/kernel`。组件的全部行为写在这里，因此它必须与框架无关——响应式由宿主框架经一个 `ReactiveRuntime` 接口注入。
+`@xihan-ui/core` 里的状态机是一台**薄**的有限状态机运行时：零第三方运行时依赖。组件的全部行为写在这里，因此它必须与框架无关——响应式由宿主框架经一个 `ReactiveRuntime` 接口注入。
 
 ## 一台机器长什么样
 
 ```ts
 import type { AccordionSchema } from './accordion.types'
-import { setup } from '@xihan-ui/machine'
+import { setup } from '@xihan-ui/core'
 
 const { createMachine } = setup<AccordionSchema>()
 
@@ -116,7 +116,7 @@ states: {
 机器配置是纯数据，跑起来需要一个**服务**：
 
 ```ts
-import { createService } from '@xihan-ui/machine'
+import { createService } from '@xihan-ui/core'
 
 const service = createService(accordionMachine, {
   props: () => ({ multiple: true, defaultValue: ['a'] }),
@@ -130,7 +130,7 @@ const service = createService(accordionMachine, {
 | 运行时 | 来源 | 用在哪 |
 | --- | --- | --- |
 | Vue | `@xihan-ui/vue` 内部的 `createVueRuntime()` | Vue 适配器 |
-| vanilla | `@xihan-ui/machine/vanilla` 的 `createVanillaRuntime()` | Web Components 适配器、测试、benchmark |
+| vanilla | `@xihan-ui/core/vanilla` 的 `createVanillaRuntime()` | Web Components 适配器、测试、benchmark |
 
 vanilla 运行时是一个同步 dirty 循环的微 signal 实现，也是这套契约的参考实现——想接第三个框架，照它写一份即可。
 

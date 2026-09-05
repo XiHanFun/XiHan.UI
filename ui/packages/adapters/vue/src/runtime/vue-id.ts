@@ -1,4 +1,4 @@
-import type { IdGenerator } from '@xihan-ui/kernel'
+import type { IdGenerator } from '@xihan-ui/core'
 import { useId } from 'vue'
 
 let fallbackSeq = 0

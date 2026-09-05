@@ -5,8 +5,8 @@
 // 摆出来的轴与宿主报的一致（cascader 只摆横的，tree-select 与 json-viewer 两条都摆）；
 // 双轴的让位跟着另一条轴的实测溢出走、交叉口只画在竖条里；
 // json-viewer 两档互斥，条子跟到此刻在场的那个容器。
-import type { Orientation } from '@xihan-ui/kernel'
-import { DIAGNOSTIC_CODES, onDiagnostic, setDiagnosticsDedupe } from '@xihan-ui/kernel'
+import type { Orientation } from '@xihan-ui/core'
+import { DIAGNOSTIC_CODES, onDiagnostic, setDiagnosticsDedupe } from '@xihan-ui/core'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, defineComponent, h, nextTick, ref } from 'vue'
 import {

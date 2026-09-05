@@ -1,9 +1,8 @@
 // @vitest-environment jsdom
-import type { Service } from '@xihan-ui/machine'
+import type { Service } from '@xihan-ui/core'
 import type { VirtualizerApi, VirtualizerSchema } from '../src/virtualizer'
-import { normalizeProps } from '@xihan-ui/kernel'
-import { createService } from '@xihan-ui/machine'
-import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
+import { createService, normalizeProps } from '@xihan-ui/core'
+import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 // 直接指向组件目录：包主入口的导出由接线一并补，测试不等它
 import {

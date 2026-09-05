@@ -18,7 +18,7 @@
 
 ## 契约不变量
 
-- **规格零框架**：`src/suites/**` 只从 `@xihan-ui/kernel` / `@xihan-ui/headless` 取纯数据
+- **规格零框架**：`src/suites/**` 只从 `@xihan-ui/core` / `@xihan-ui/headless` 取纯数据
   （anatomy、键盘表、类型），不 import 任何框架。
 - **只断言归一化快照**：断言对象只能是 `DomSnapshot`，不碰组件实例、内部 ref、shadowRoot。
 - **快照适配器无关**：id 值、`data-v-*` 等适配器痕迹在采集阶段抹掉；IDREF 属性翻译成

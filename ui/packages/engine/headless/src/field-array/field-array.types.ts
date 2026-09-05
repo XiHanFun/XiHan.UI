@@ -1,5 +1,4 @@
-import type { PropTypes } from '@xihan-ui/kernel'
-import type { MachineSchema } from '@xihan-ui/machine'
+import type { MachineSchema, PropTypes } from '@xihan-ui/core'
 
 export interface FieldArrayValueChangeDetails {
   /** 变化后的整份数据数组，顺序即界面上从上到下的顺序。 */

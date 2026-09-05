@@ -1,5 +1,5 @@
-import type { ItemQuery } from '@xihan-ui/behavior'
-import { createAnatomy } from '@xihan-ui/kernel'
+import type { ItemQuery } from '@xihan-ui/core'
+import { createAnatomy } from '@xihan-ui/core'
 
 // viewport 定高并裁切，track 是纵向排布全部题目的轨道，靠位移把当前题推进视口；
 // question 是一题的整块，prompt 是题干，group 按题型取单选组或普通组；

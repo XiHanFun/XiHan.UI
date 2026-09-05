@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import type { SkeletonProps } from '../src/skeleton'
-import { normalizeProps } from '@xihan-ui/kernel'
+import { normalizeProps } from '@xihan-ui/core'
 import { describe, expect, it } from 'vitest'
 import { connectSkeleton, skeletonAnatomy, skeletonMeta } from '../src/skeleton'
 

@@ -1,3 +1,4 @@
+import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui/core'
 import type {
   CascaderApi,
   CascaderExpandTrigger,
@@ -8,7 +9,6 @@ import type {
   CascaderTranslations,
   CascaderValue,
 } from '@xihan-ui/headless'
-import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, Ref, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import type { CascaderContext } from './use-cascader'

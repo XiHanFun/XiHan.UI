@@ -1,8 +1,6 @@
-import type { Transition } from '@xihan-ui/machine'
+import type { Transition } from '@xihan-ui/core'
 import type { NavigationMenuIndicatorRect, NavigationMenuSchema } from './navigation-menu.types'
-import { createDismissLayer, focusItem, itemValue, queryItems } from '@xihan-ui/behavior'
-import { contains } from '@xihan-ui/kernel'
-import { setTimeoutEffect, setup } from '@xihan-ui/machine'
+import { contains, createDismissLayer, focusItem, itemValue, queryItems, setTimeoutEffect, setup } from '@xihan-ui/core'
 import { navigationMenuTriggerQuery } from './navigation-menu.anatomy'
 
 const { createMachine } = setup<NavigationMenuSchema>()

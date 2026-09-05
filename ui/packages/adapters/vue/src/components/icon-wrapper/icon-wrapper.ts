@@ -1,5 +1,5 @@
+import type { ActionVariant, Size, Tone } from '@xihan-ui/core'
 import type { IconWrapperProps } from '@xihan-ui/headless'
-import type { ActionVariant, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import { connectIconWrapper } from '@xihan-ui/headless'
 import { defineComponent, h } from 'vue'

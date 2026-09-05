@@ -1,5 +1,5 @@
+import type { Direction, Orientation, Size } from '@xihan-ui/core'
 import type { ScrollbarApi, ScrollbarSchema, ScrollbarType } from '@xihan-ui/headless'
-import type { Direction, Orientation, Size } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import type { ScrollbarSource, ScrollbarTarget } from './use-scrollbar'

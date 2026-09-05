@@ -54,7 +54,7 @@ function rewriteIds(node, mapping) {
  *
  * 一次性建全：分步挂属性会让推断类型停在首个字面量上，产出就不再静态满足 IconNode。
  *
- * @returns {import('@xihan-ui/kernel').IconNode}
+ * @returns {import('@xihan-ui/core').IconNode}
  */
 function toIconNode(node) {
   return {
@@ -112,7 +112,7 @@ function take(raw, where, transform, ctx) {
  *
  * name 是规范化的图标名（`arrow-down` 这类），同时用作 id 重写的前缀。
  *
- * @returns {{ record: import('@xihan-ui/kernel').IconRecord, notes: string[] }}
+ * @returns {{ record: import('@xihan-ui/core').IconRecord, notes: string[] }}
  */
 export function svgToIconRecord(source, name, file = `${name}.svg`, { lenient = false } = {}) {
   if (!NAME_RE.test(name))

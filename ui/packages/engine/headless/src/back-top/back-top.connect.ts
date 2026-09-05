@@ -1,5 +1,4 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
-import type { Service } from '@xihan-ui/machine'
+import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { BackTopApi, BackTopSchema } from './back-top.types'
 import { backTopAnatomy } from './back-top.anatomy'
 

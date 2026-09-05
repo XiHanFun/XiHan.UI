@@ -1,5 +1,4 @@
-import type { PropTypes } from '@xihan-ui/kernel'
-import type { MachineSchema } from '@xihan-ui/machine'
+import type { MachineSchema, PropTypes } from '@xihan-ui/core'
 
 /**
  * 面板的三种形态：常规（作者摆出来的位置与尺寸）、收拢（只留标题栏）、铺满（占满视口）。

@@ -1,7 +1,6 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
-import type { Service } from '@xihan-ui/machine'
+import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { PasswordInputApi, PasswordInputSchema } from './password-input.types'
-import { dataAttr, isComposingEvent } from '@xihan-ui/kernel'
+import { dataAttr, isComposingEvent } from '@xihan-ui/core'
 import { passwordInputAnatomy, passwordInputInputId } from './password-input.anatomy'
 
 const parts = passwordInputAnatomy.build()

@@ -1,5 +1,5 @@
 import type { CollapsibleSchema } from './collapsible.types'
-import { setup } from '@xihan-ui/machine'
+import { setup } from '@xihan-ui/core'
 
 const { createMachine } = setup<CollapsibleSchema>()
 

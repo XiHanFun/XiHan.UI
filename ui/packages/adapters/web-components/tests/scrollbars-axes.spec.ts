@@ -1,3 +1,4 @@
+import type { Orientation } from '@xihan-ui/core'
 // @vitest-environment jsdom
 //
 // 轴不止一条、壳不止 positioner 的那几个宿主。
@@ -6,7 +7,6 @@
 // 摆出来的轴与宿主报的一致（cascader 只摆横的，tree-select 与 json-viewer 两条都摆）；
 // 交叉口只画在双轴宿主的竖条里；json-viewer 两档互斥，换档时条子不被整份重铺抹掉。
 import type { CascaderNode, TreeNode } from '@xihan-ui/headless'
-import type { Orientation } from '@xihan-ui/kernel'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { defineXhElements } from '../src/define'
 

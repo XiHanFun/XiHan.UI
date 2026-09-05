@@ -1,4 +1,4 @@
-import type { Direction } from '@xihan-ui/kernel'
+import type { Direction } from '@xihan-ui/core'
 
 // 热力图的纯数学与纯格式化：把一段日期区间摊成「周列 × 星期行」的网格，把计数分成档位，
 // 再把方向键翻成落点。不碰 DOM、不认识状态机，也不引日期库——日期一律是 ISO 的 YYYY-MM-DD 串。

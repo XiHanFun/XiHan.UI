@@ -1,3 +1,4 @@
+import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service } from '@xihan-ui/core'
 import type {
   TourCompleteDetails,
   TourOpenChangeDetails,
@@ -7,11 +8,9 @@ import type {
   TourTranslations,
   TourValueChangeDetails,
 } from '@xihan-ui/headless'
-import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig } from '@xihan-ui/kernel'
-import type { Service } from '@xihan-ui/machine'
 import type { OverlayExit } from '../overlay-exit'
+import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectTour, tourAnatomy, tourMachine, tourMeta } from '@xihan-ui/headless'
-import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/kernel'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'

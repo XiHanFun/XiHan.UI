@@ -2,11 +2,10 @@
 // 滚动区没有自己的机器：它是视口加两条 scrollbar 的组装。
 // 这里只验组装那一层——轴的开关、占道、交叉口让位、props 透传；
 // 滚动条自身的显隐、拖动、键盘与几何在 scrollbar.spec 里验。
-import type { Orientation } from '@xihan-ui/kernel'
+import type { Orientation } from '@xihan-ui/core'
 import type { ScrollAreaApi, ScrollAreaProps, ScrollAreaServices } from '../src/scroll-area'
-import { normalizeProps } from '@xihan-ui/kernel'
-import { createService } from '@xihan-ui/machine'
-import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
+import { createService, normalizeProps } from '@xihan-ui/core'
+import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it } from 'vitest'
 import { connectScrollArea, scrollAreaScrollbarProps } from '../src/scroll-area'
 import { SCROLLBAR_HOST_ATTR, scrollbarMachine } from '../src/scrollbar'

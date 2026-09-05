@@ -1,5 +1,5 @@
+import type { Size } from '@xihan-ui/core'
 import type { HotkeysApi, HotkeysPlatform, HotkeysProps, HotkeysTarget, HotkeysTranslations, HotkeysTriggerDetails } from '@xihan-ui/headless'
-import type { Size } from '@xihan-ui/kernel'
 import { connectHotkeys, detectHotkeysPlatform, hotkeysAnatomy, hotkeysMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'

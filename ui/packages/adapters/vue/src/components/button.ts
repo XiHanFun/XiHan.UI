@@ -1,5 +1,5 @@
+import type { PropTypes } from '@xihan-ui/core'
 import type { ButtonProps } from '@xihan-ui/headless'
-import type { PropTypes } from '@xihan-ui/kernel'
 import type { InjectionKey, PropType, Ref } from 'vue'
 import { connectButton } from '@xihan-ui/headless'
 import { computed, defineComponent, h, inject, provide, useAttrs } from 'vue'

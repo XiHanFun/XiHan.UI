@@ -83,7 +83,7 @@ const STAGE_ID = 'xh-visual-stage'
 /** 舞台里那一列内容的 id。 */
 const SLOT_ID = 'xh-visual-slot'
 
-/** 单件浮层单元的 portal 落点 id，与 kernel 的常量一致。 */
+/** 单件浮层单元的 portal 落点 id，与 core 的常量一致。 */
 const PORTAL_ROOT_ID = 'xh-portal-root'
 
 /** 等画面静止的上限；超时说明有东西一直在动，那种情况本就不该出基线。 */

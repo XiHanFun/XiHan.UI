@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 // 分段控件的横向导航要跟着视觉顺序走：整页切成 rtl 后年月日、时分秒、验证码格子
 // 的视觉次序整体翻转，此时 ArrowRight 该走向序号更小的那一段。
-import { navIntentFromKey, readDirection } from '@xihan-ui/behavior'
+import { navIntentFromKey, readDirection } from '@xihan-ui/core'
 import { afterEach, describe, expect, it } from 'vitest'
 
 function elementIn(direction: 'ltr' | 'rtl'): HTMLElement {

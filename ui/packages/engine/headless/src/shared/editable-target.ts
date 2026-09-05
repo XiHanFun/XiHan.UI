@@ -1,5 +1,5 @@
 // 按键落在可编辑控件上时，不归外层那个键盘处理器管。
-import { isHTMLElement } from '@xihan-ui/kernel'
+import { isHTMLElement } from '@xihan-ui/core'
 
 /**
  * 这个事件目标是不是可编辑控件（或它的后代）。

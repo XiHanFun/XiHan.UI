@@ -10,6 +10,16 @@ const highlighter = createHighlighter()
 
 把它交给[代码视图](../components/code-view)组件的 `highlighter` prop 即可。组件本身不认任何具体的着色器——它只认这个端口。
 
+## 装不装它
+
+它是两个适配器的**可选 peer**，不随适配器一起来：
+
+```bash
+pnpm add @xihan-ui/code-highlight
+```
+
+装了它，[代码视图](../components/code-view)自动着色，`highlighter` prop 一个字都不用写；不装，代码视图渲纯文本，不报错。要换成别的实现（典型是接 Shiki），照旧走 `highlighter` prop。
+
 ## 它分得出什么，分不出什么
 
 只分五类：**注释、字符串、数字、关键字、标点**。

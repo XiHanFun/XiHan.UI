@@ -1,5 +1,4 @@
-import type { PropTypes, Tone } from '@xihan-ui/kernel'
-import type { MachineSchema } from '@xihan-ui/machine'
+import type { MachineSchema, PropTypes, Tone } from '@xihan-ui/core'
 
 export interface AlertOpenChangeDetails {
   open: boolean

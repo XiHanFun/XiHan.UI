@@ -4,7 +4,7 @@
 // 这里钉住四件事：条子是滚动层的兄弟、挂在壳上；建出来的节点一个 data-xh-part 都不带
 // （带了会被 WC 侧宿主的 discoverParts 收进 partMap）；滚动容器被打上标记好让皮肤藏掉原生条；
 // 双轴时交叉口只画在竖条里、让位跟着另一条轴的实测溢出走。
-import type { Orientation } from '@xihan-ui/kernel'
+import type { Orientation } from '@xihan-ui/core'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, defineComponent, h, nextTick, ref } from 'vue'
 import { XhComboboxRoot } from '../src'

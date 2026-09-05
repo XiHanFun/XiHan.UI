@@ -1,3 +1,4 @@
+import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui/core'
 import type {
   TimeGranularity,
   TimeHourCycle,
@@ -9,7 +10,6 @@ import type {
   TimePickerSchema,
   TimeSegmentType,
 } from '@xihan-ui/headless'
-import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h, mergeProps, Teleport } from 'vue'

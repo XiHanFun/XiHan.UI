@@ -1,18 +1,19 @@
-import type { NavIntent } from '@xihan-ui/behavior'
-import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
-import type { Service } from '@xihan-ui/machine'
+import type { NavIntent, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { MeasuredRow } from './table.drag'
 import type { TableApi, TableColumn, TableColumnDef, TableSchema, TableVisibleRow } from './table.types'
 import {
+  contains,
+  dataAttr,
   focusItem,
+  isComposingEvent,
   isItemDisabled,
   ITEM_VALUE_ATTR,
   itemValue,
   navigateItems,
   navIntentFromKey,
   queryItems,
-} from '@xihan-ui/behavior'
-import { contains, dataAttr, isComposingEvent, warn } from '@xihan-ui/kernel'
+  warn,
+} from '@xihan-ui/core'
 import { flatMoveIntentFromKey } from '../shared/drag'
 import { isEditableTarget } from '../shared/editable-target'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'

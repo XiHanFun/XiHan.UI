@@ -1,4 +1,4 @@
-import { createAnatomy } from '@xihan-ui/kernel'
+import { createAnatomy } from '@xihan-ui/core'
 
 // data-part 直接用 kebab-case，与 CSS 选择器一致。
 // viewport 是真正 overflow:auto 的那层；content 是内容包裹层，横向溢出靠它撑出宽度；

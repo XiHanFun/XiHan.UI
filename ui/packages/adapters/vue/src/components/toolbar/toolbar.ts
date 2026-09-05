@@ -1,5 +1,5 @@
+import type { Direction, Orientation, Size } from '@xihan-ui/core'
 import type { ToolbarApi, ToolbarSchema } from '@xihan-ui/headless'
-import type { Direction, Orientation, Size } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
 import { defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import { provideToolbar, useToolbarContext } from './context'

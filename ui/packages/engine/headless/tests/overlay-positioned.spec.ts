@@ -5,9 +5,8 @@
 //   open + 还没量完       → 藏
 //   open + 有坐标         → 露
 //   open + 引擎置 hidden  → 锚点滚出可视区——藏
-import { normalizeProps } from '@xihan-ui/kernel'
-import { createService } from '@xihan-ui/machine'
-import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
+import { createService, normalizeProps } from '@xihan-ui/core'
+import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { describe, expect, it } from 'vitest'
 import { connectMenu, menuMachine } from '../src/menu'
 import { overlayPositioned } from '../src/shared/overlay'

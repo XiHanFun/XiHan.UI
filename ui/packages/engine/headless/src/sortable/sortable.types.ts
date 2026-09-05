@@ -1,5 +1,4 @@
-import type { Direction, PropTypes } from '@xihan-ui/kernel'
-import type { MachineSchema } from '@xihan-ui/machine'
+import type { Direction, MachineSchema, PropTypes } from '@xihan-ui/core'
 import type { DndDelta, DndRect, SortableAxis } from '@xihan-ui/pointer'
 
 /** 拖动是谁发起的。键盘那条路没有指针位移，让位量另算。 */

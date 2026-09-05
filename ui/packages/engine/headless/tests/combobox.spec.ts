@@ -1,10 +1,9 @@
 // @vitest-environment jsdom
-import type { RuntimeConfig } from '@xihan-ui/kernel'
-import type { VanillaRuntime } from '@xihan-ui/machine/vanilla'
+import type { RuntimeConfig } from '@xihan-ui/core'
+import type { VanillaRuntime } from '@xihan-ui/core/vanilla'
 import type { ComboboxApi, ComboboxSchema } from '../src/combobox'
-import { createCounterIdGenerator, createRuntimeConfig, createScope, normalizeProps } from '@xihan-ui/kernel'
-import { createService } from '@xihan-ui/machine'
-import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
+import { createCounterIdGenerator, createRuntimeConfig, createScope, createService, normalizeProps } from '@xihan-ui/core'
+import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { comboboxMachine, connectCombobox } from '../src/combobox'
 

@@ -1,6 +1,5 @@
-import type { ItemQuery } from '@xihan-ui/behavior'
-import { itemValue, queryItems } from '@xihan-ui/behavior'
-import { createAnatomy } from '@xihan-ui/kernel'
+import type { ItemQuery } from '@xihan-ui/core'
+import { createAnatomy, itemValue, queryItems } from '@xihan-ui/core'
 
 // data-part 直接用 kebab-case，与 CSS 选择器一致。
 // segment-group 把全部段位与作者写的分隔符兜成一块，占满盒里剩下的宽度，尾部按钮靠在末端。

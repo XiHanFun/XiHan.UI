@@ -1,4 +1,4 @@
-import type { PropTypes, Size, Tone } from '@xihan-ui/kernel'
+import type { PropTypes, Size, Tone } from '@xihan-ui/core'
 
 /** 形态：线形是一条横轨，环形与仪表盘把同一份进度画成一个圆。 */
 export type ProgressVariant = 'line' | 'circle' | 'dashboard'

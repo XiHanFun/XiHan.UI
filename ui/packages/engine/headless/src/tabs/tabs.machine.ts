@@ -1,6 +1,6 @@
 import type { DragAnnounceKind, DropTarget } from '../shared/drag'
 import type { TabsSchema } from './tabs.types'
-import { setup } from '@xihan-ui/machine'
+import { setup } from '@xihan-ui/core'
 import { createMultiPointerSession, resolveSessionDoc, shouldActivate } from '@xihan-ui/pointer'
 import { dragAnnouncement, hitAlong, reorderFlat } from '../shared/drag'
 import { snapshotDrift } from '../shared/drag-drift'

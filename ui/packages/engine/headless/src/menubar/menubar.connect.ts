@@ -1,8 +1,8 @@
-import type { NavIntent } from '@xihan-ui/behavior'
-import type { NormalizeProps, Orientation, PropTypes } from '@xihan-ui/kernel'
-import type { Service } from '@xihan-ui/machine'
+import type { NavIntent, NormalizeProps, Orientation, PropTypes, Service } from '@xihan-ui/core'
 import type { MenubarApi, MenubarItemProps, MenubarNode, MenubarNodeMeta, MenubarSchema, MenubarTriggerProps } from './menubar.types'
 import {
+  contains,
+  dataAttr,
   focusItem,
   indexOfValue,
   isItemDisabled,
@@ -12,8 +12,7 @@ import {
   navigateItems,
   navIntentFromKey,
   queryItems,
-} from '@xihan-ui/behavior'
-import { contains, dataAttr } from '@xihan-ui/kernel'
+} from '@xihan-ui/core'
 import { overlayPositioned } from '../shared/overlay'
 import {
   menubarAnatomy,

@@ -1,6 +1,4 @@
-import type { StickToBottomHandle } from '@xihan-ui/behavior'
-import type { PropTypes, RuntimeConfig, Size } from '@xihan-ui/kernel'
-import type { MachineSchema } from '@xihan-ui/machine'
+import type { MachineSchema, PropTypes, RuntimeConfig, Size, StickToBottomHandle } from '@xihan-ui/core'
 
 /** 一轮对话的运行态，由宿主持有，组件只把它透出成 data 属性。 */
 export type MessageFeedStatus = 'idle' | 'submitted' | 'streaming' | 'error'

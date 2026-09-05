@@ -1,4 +1,4 @@
-import type { PropTypes, Size } from '@xihan-ui/kernel'
+import type { PropTypes, Size } from '@xihan-ui/core'
 
 /** 尺寸档位，只改条目的内边距、图文间距与两行文字的字号。 */
 

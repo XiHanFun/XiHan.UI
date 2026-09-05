@@ -115,13 +115,12 @@ function insertIntoInlineImport(source, importRe, item) {
 function templates(n, label) {
   const t = {}
 
-  t['headless-anatomy'] = `import { createAnatomy } from '@xihan-ui/kernel'
+  t['headless-anatomy'] = `import { createAnatomy } from '@xihan-ui/core'
 
 export const ${n.camel}Anatomy = createAnatomy('${n.c}', ['root'])
 `
 
-  t['headless-types'] = `import type { ActionVariant, PropTypes, Size, Tone } from '@xihan-ui/kernel'
-import type { MachineSchema } from '@xihan-ui/machine'
+  t['headless-types'] = `import type { ActionVariant, MachineSchema, PropTypes, Size, Tone } from '@xihan-ui/core'
 
 export interface ${n.P}PressedChangeDetails {
   pressed: boolean
@@ -167,7 +166,7 @@ export interface ${n.P}Translations {}
 `
 
   t['headless-machine'] = `import type { ${n.P}Schema } from './${n.c}.types'
-import { setup } from '@xihan-ui/machine'
+import { setup } from '@xihan-ui/core'
 
 const { createMachine } = setup<${n.P}Schema>()
 
@@ -215,10 +214,9 @@ export const ${n.camel}Machine = createMachine({
 })
 `
 
-  t['headless-connect'] = `import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
-import type { Service } from '@xihan-ui/machine'
+  t['headless-connect'] = `import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { ${n.P}Api, ${n.P}Schema } from './${n.c}.types'
-import { dataAttr } from '@xihan-ui/kernel'
+import { dataAttr } from '@xihan-ui/core'
 import { ${n.camel}Anatomy } from './${n.c}.anatomy'
 
 const parts = ${n.camel}Anatomy.build()
@@ -334,7 +332,7 @@ export function use${n.P}(
 `
 
   t['vue-component'] = `import type { ${n.P}Schema } from '@xihan-ui/headless'
-import type { ActionVariant, Size, Tone } from '@xihan-ui/kernel'
+import type { ActionVariant, Size, Tone } from '@xihan-ui/core'
 import type { PropType } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
@@ -369,7 +367,7 @@ export const Xh${n.P} = defineComponent({
 `
 
   t['wc-element'] = `import type { ${n.P}PressedChangeDetails, ${n.P}Schema } from '@xihan-ui/headless'
-import type { ActionVariant, Size, Tone } from '@xihan-ui/kernel'
+import type { ActionVariant, Size, Tone } from '@xihan-ui/core'
 import { connect${n.P}, ${n.camel}Anatomy, ${n.camel}Machine, ${n.camel}Meta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'

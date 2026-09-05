@@ -1,8 +1,7 @@
 // @vitest-environment jsdom
 import type { TextFieldSchema, TextFieldValueChangeDetails } from '../src/text-field/index'
-import { normalizeProps } from '@xihan-ui/kernel'
-import { createService } from '@xihan-ui/machine'
-import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
+import { createService, normalizeProps } from '@xihan-ui/core'
+import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { describe, expect, it, vi } from 'vitest'
 import { clampToMaxLength, connectTextField, isAtLimit, textFieldMachine } from '../src/text-field/index'
 

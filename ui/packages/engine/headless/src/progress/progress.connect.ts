@@ -1,6 +1,6 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
 import type { ProgressApi, ProgressProps } from './progress.types'
-import { dataAttr } from '@xihan-ui/kernel'
+import { dataAttr } from '@xihan-ui/core'
 import { progressAnatomy } from './progress.anatomy'
 import { PROGRESS_VIEW, progressRing, resolveMax, resolveValue } from './progress.geometry'
 

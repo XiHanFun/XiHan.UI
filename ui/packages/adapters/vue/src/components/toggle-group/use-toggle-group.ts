@@ -1,5 +1,5 @@
+import type { Service } from '@xihan-ui/core'
 import type { ToggleGroupApi, ToggleGroupSchema } from '@xihan-ui/headless'
-import type { Service } from '@xihan-ui/machine'
 import type { ComputedRef } from 'vue'
 import { connectToggleGroup, toggleGroupMachine } from '@xihan-ui/headless'
 import { computed } from 'vue'

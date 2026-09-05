@@ -1,5 +1,5 @@
-import type { ItemQuery } from '@xihan-ui/behavior'
-import { createAnatomy } from '@xihan-ui/kernel'
+import type { ItemQuery } from '@xihan-ui/core'
+import { createAnatomy } from '@xihan-ui/core'
 
 // 三种形态共用同一套部件，各自只用得上其中一部分：
 // 日历形态是月份行 + 七行星期；月历形态在网格里再分出月块，块内一行是一周；

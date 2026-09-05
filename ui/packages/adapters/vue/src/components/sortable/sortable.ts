@@ -1,5 +1,5 @@
+import type { Direction } from '@xihan-ui/core'
 import type { SortableItemState, SortableMode, SortableSchema, SortableTranslations } from '@xihan-ui/headless'
-import type { Direction } from '@xihan-ui/kernel'
 import type { SortableAxis } from '@xihan-ui/pointer'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'

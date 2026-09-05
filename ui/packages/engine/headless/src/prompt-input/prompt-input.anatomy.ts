@@ -1,4 +1,4 @@
-import { createAnatomy } from '@xihan-ui/kernel'
+import { createAnatomy } from '@xihan-ui/core'
 
 // 三件必需：root 是焦点环与三视觉轴的落点，input 是值，submit-trigger 缺了就没有指针入口。
 // control 可选：写了它，root 翻成竖排、输入框与按钮收进这一行，上下两侧腾出来放别的东西；

@@ -1,8 +1,7 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
-import type { Service } from '@xihan-ui/machine'
+import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { ResizeEdge } from '@xihan-ui/pointer'
 import type { ResizableApi, ResizableSchema } from './resizable.types'
-import { dataAttr } from '@xihan-ui/kernel'
+import { dataAttr } from '@xihan-ui/core'
 import { resizableAnatomy } from './resizable.anatomy'
 import { RESIZABLE_EDGES, RESIZABLE_LARGE_STEP, RESIZABLE_STEP } from './resizable.machine'
 

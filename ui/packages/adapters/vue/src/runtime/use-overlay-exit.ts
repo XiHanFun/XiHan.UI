@@ -1,7 +1,7 @@
-import type { PresenceHandle } from '@xihan-ui/behavior/presence'
-import type { RuntimeConfig } from '@xihan-ui/kernel'
+import type { RuntimeConfig } from '@xihan-ui/core'
+import type { PresenceHandle } from '@xihan-ui/core/presence'
 import type { Ref } from 'vue'
-import { attachCssExit, createPresence } from '@xihan-ui/behavior/presence'
+import { attachCssExit, createPresence } from '@xihan-ui/core/presence'
 import { onBeforeUnmount, ref, watch } from 'vue'
 
 // 退场闸门：把「几时真的收起浮层」从展开态挪到 presence 上。

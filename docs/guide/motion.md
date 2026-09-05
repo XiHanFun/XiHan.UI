@@ -2,7 +2,7 @@
 
 `@xihan-ui/motion` 是动效的地基层：缓动曲线与时长常量、不持有计时器的纯补间、逐帧循环、减弱动效偏好，以及解析解弹簧与 Web Animations 的薄封装。零第三方依赖，`import` 无副作用，SSR 安全。
 
-装了任意一个适配器就自动拿到它——`headless` 的数字动画与倒计时、`behavior` 的缓动表都从这里取。要自己写动画的话，它也可以单独装。
+装了任意一个适配器就自动拿到它——`headless` 的数字动画与倒计时、`core` 的缓动表都从这里取。要自己写动画的话，它也可以单独装。
 
 ## 缓动
 
@@ -98,7 +98,7 @@ const off = onMotionPreferenceChange(preference => console.log(preference))
 
 没有 `matchMedia` 的宿主（SSR、jsdom）一律按「不减弱」：`prefersReducedMotion()` 返回 `false`，`getMotionPreference()` 返回 `'no-preference'`。
 
-这是仓内唯一的探测通道：`@xihan-ui/kernel` 的 `RuntimeConfig.reducedMotion`（退场租约、贴底滚动）、`headless` 的数字动画、`behavior` 的平滑滚动、反馈服务的加载弧线与 `backgrounds` 的画面都经 `resolveMotionPreference` 读，应用级 override 一处设、处处生效。门禁 `check-reduced-motion-channel` 守着：除 motion 包自身外，源码里不许再出现 `matchMedia('(prefers-reduced-motion')`。
+这是仓内唯一的探测通道：`@xihan-ui/core` 的 `RuntimeConfig.reducedMotion`（退场租约、贴底滚动）与平滑滚动、`headless` 的数字动画、反馈服务的加载弧线与 `backgrounds` 的画面都经 `resolveMotionPreference` 读，应用级 override 一处设、处处生效。门禁 `check-reduced-motion-channel` 守着：除 motion 包自身外，源码里不许再出现 `matchMedia('(prefers-reduced-motion')`。
 
 ### 减弱动效的两步
 

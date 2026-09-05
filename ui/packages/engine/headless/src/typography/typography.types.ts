@@ -1,4 +1,4 @@
-import type { PropTypes, Size, Tone } from '@xihan-ui/kernel'
+import type { PropTypes, Size, Tone } from '@xihan-ui/core'
 
 /** 形态。取值与 typography.css 的选择器一一对应。 */
 export type TypographyVariant = 'code' | 'muted' | 'strong'

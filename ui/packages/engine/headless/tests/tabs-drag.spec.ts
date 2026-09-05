@@ -2,9 +2,8 @@
 // 标签拖拽：激活阈值、轴向跟随、键盘命令与播报。
 // 一维重排的算术归 shared/drag 的 reorderFlat / flatMoveCommand，那边另有单测。
 import type { TabsNode, TabsSchema } from '../src/tabs'
-import { normalizeProps } from '@xihan-ui/kernel'
-import { createService } from '@xihan-ui/machine'
-import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
+import { createService, normalizeProps } from '@xihan-ui/core'
+import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { connectTabs, tabsMachine } from '../src/tabs'
 

@@ -1,6 +1,4 @@
-import type { NavIntent } from '@xihan-ui/behavior'
-import type { Dict, NormalizeProps, PropTypes } from '@xihan-ui/kernel'
-import type { Service } from '@xihan-ui/machine'
+import type { Dict, NavIntent, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { DateFieldApi, DateFieldSchema, DateSegmentType } from '../date-field'
 import type { TimePickerColumn } from '../time-picker'
 import type {
@@ -11,8 +9,7 @@ import type {
   DatePickerTimeUnit,
   DatePickerTranslations,
 } from './date-picker.types'
-import { focusSafely, navIntentFromKey, readDirection, stepIndex } from '@xihan-ui/behavior'
-import { dataAttr, normalizeProps } from '@xihan-ui/kernel'
+import { dataAttr, focusSafely, navIntentFromKey, normalizeProps, readDirection, stepIndex } from '@xihan-ui/core'
 import { connectCalendar } from '../calendar'
 import {
   applySegmentDigit,

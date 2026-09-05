@@ -1,5 +1,5 @@
+import type { Size, Tone } from '@xihan-ui/core'
 import type { ProgressGapPosition, ProgressProps, ProgressVariant } from '@xihan-ui/headless'
-import type { Size, Tone } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import { connectProgress } from '@xihan-ui/headless'
 import { defineComponent, h } from 'vue'

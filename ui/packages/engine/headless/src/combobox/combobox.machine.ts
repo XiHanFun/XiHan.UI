@@ -1,7 +1,6 @@
-import type { PositionResult } from '@xihan-ui/kernel'
+import type { PositionResult } from '@xihan-ui/core'
 import type { ComboboxFocusIntent, ComboboxSchema } from './combobox.types'
-import { createDismissLayer, isItemDisabled, itemValue, navigateItems, queryItems } from '@xihan-ui/behavior'
-import { resetDeclaredValue, setup } from '@xihan-ui/machine'
+import { createDismissLayer, isItemDisabled, itemValue, navigateItems, queryItems, resetDeclaredValue, setup } from '@xihan-ui/core'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { comboboxItemQuery, comboboxItemText } from './combobox.anatomy'
 

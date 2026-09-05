@@ -3,7 +3,7 @@
 //
 // 这是 docs/guide/versioning.md 的承诺:混装版本的后果不是编译错误而是运行时硬故障
 // (wc 侧同一个 xh- 标签被两个版本注册会直接抛错)。此前这个承诺只靠自觉:改一个包的
-// version 而不动其余 17 个,没有任何一条门禁会响。这条门禁把 version 字段本身变成
+// version 而不动其余 15 个,没有任何一条门禁会响。这条门禁把 version 字段本身变成
 // 一致性的机械保证——新包进 packages/ 也必须并轨,否则同样失败。
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'

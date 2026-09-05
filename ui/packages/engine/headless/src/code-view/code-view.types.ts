@@ -1,4 +1,4 @@
-import type { CodeToken, HighlighterPort, PropTypes, Size } from '@xihan-ui/kernel'
+import type { CodeToken, HighlighterPort, PropTypes, Size } from '@xihan-ui/core'
 
 /** 语言未知时的取值。 */
 export const CODE_VIEW_FALLBACK_LANG = 'plaintext'

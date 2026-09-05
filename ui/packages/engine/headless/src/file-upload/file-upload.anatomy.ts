@@ -1,5 +1,5 @@
-import type { Scope } from '@xihan-ui/kernel'
-import { createAnatomy } from '@xihan-ui/kernel'
+import type { Scope } from '@xihan-ui/core'
+import { createAnatomy } from '@xihan-ui/core'
 
 // data-part 用 kebab-case，与 CSS 选择器一致。
 export const fileUploadAnatomy = createAnatomy('file-upload', [

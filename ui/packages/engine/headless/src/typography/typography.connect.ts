@@ -1,4 +1,4 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
 import type { TypographyApi, TypographyHeadingProps, TypographyProps } from './typography.types'
 import { typographyAnatomy } from './typography.anatomy'
 

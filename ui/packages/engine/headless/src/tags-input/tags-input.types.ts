@@ -1,5 +1,4 @@
-import type { ControlVariant, PropTypes, Size, Tone } from '@xihan-ui/kernel'
-import type { MachineSchema } from '@xihan-ui/machine'
+import type { ControlVariant, MachineSchema, PropTypes, Size, Tone } from '@xihan-ui/core'
 
 export interface TagsInputValueChangeDetails {
   /** 变化后的标签集合：已去重、去掉首尾空白，顺序即加入顺序。 */

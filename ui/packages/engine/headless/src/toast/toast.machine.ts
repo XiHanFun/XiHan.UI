@@ -1,6 +1,6 @@
-import type { Scope } from '@xihan-ui/kernel'
+import type { Scope } from '@xihan-ui/core'
 import type { ToastPauseSource, ToastPlacement, ToastSchema, ToastType } from './toast.types'
-import { setTimeoutEffect, setup } from '@xihan-ui/machine'
+import { setTimeoutEffect, setup } from '@xihan-ui/core'
 
 const { createMachine } = setup<ToastSchema>()
 

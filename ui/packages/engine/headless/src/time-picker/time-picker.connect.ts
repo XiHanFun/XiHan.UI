@@ -1,10 +1,7 @@
-import type { NavIntent } from '@xihan-ui/behavior'
-import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
-import type { Service } from '@xihan-ui/machine'
+import type { NavIntent, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { TimeSegmentType } from '../time-field'
 import type { TimePickerApi, TimePickerColumnUnit, TimePickerPresetState, TimePickerSchema } from './time-picker.types'
-import { focusItem, focusSafely, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems, readDirection } from '@xihan-ui/behavior'
-import { dataAttr } from '@xihan-ui/kernel'
+import { dataAttr, focusItem, focusSafely, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems, readDirection } from '@xihan-ui/core'
 import { overlayPositioned } from '../shared/overlay'
 import {
   appendSegmentDigit,

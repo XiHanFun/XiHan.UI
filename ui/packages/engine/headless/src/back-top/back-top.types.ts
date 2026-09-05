@@ -1,5 +1,4 @@
-import type { PropTypes, Size, Tone } from '@xihan-ui/kernel'
-import type { MachineSchema } from '@xihan-ui/machine'
+import type { MachineSchema, PropTypes, Size, Tone } from '@xihan-ui/core'
 
 /** 滚回顶部的方式：auto 一步到位，smooth 平滑滚过去。 */
 export type BackTopBehavior = 'auto' | 'smooth'

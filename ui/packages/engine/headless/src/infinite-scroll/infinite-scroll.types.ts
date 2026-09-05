@@ -1,5 +1,4 @@
-import type { PropTypes } from '@xihan-ui/kernel'
-import type { MachineSchema } from '@xihan-ui/machine'
+import type { MachineSchema, PropTypes } from '@xihan-ui/core'
 
 /** 三段状态，经 api.phase 暴露；DOM 上由 data-loading / data-disabled 布尔属性表达。 */
 export type InfiniteScrollPhase = 'idle' | 'loading' | 'paused'

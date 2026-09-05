@@ -1,5 +1,5 @@
 import type { SliderPoint, SliderSchema } from './slider.types'
-import { resetDeclaredValue, setup } from '@xihan-ui/machine'
+import { resetDeclaredValue, setup } from '@xihan-ui/core'
 import { createPointerSession, resolveSessionDoc } from '@xihan-ui/pointer'
 import { clamp, clampIndex } from '../shared/number'
 import { closestThumb, normalizeMarkValues, pointToValue, setThumbValue, snapToMarkValues, snapToStep, stepMarkValue } from './slider.geometry'

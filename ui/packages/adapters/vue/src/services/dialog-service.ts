@@ -2,10 +2,10 @@
 // 自带标题徽记、正文与按钮行。同一时刻只挂一个对话框，后来的排队顺次弹出，
 // 避开多层模态叠加。onOk 返回 Promise 时确认钮自动进入 pending 并拦住关闭，
 // 失败保持打开以便重试或取消。
-import type { Tone } from '@xihan-ui/kernel'
+import type { Tone } from '@xihan-ui/core'
 import type { App, MaybeRefOrGetter, VNodeChild } from 'vue'
 import type { XhConfig } from '../config/config'
-import { ensurePortalRoot } from '@xihan-ui/kernel'
+import { ensurePortalRoot } from '@xihan-ui/core'
 import { createApp, defineComponent, h, reactive, shallowRef, toRaw, toValue } from 'vue'
 import { XhButton, XhButtonIndicator, XhButtonLabel } from '../components/button'
 import { XhDialogContent, XhDialogDescription, XhDialogRoot, XhDialogTitle } from '../components/dialog/dialog'

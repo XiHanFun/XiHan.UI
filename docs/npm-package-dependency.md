@@ -6,55 +6,52 @@ XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（�
 
 | 包 | 依赖 | peer 依赖 | 层 |
 | --- | --- | --- | --- |
-| `@xihan-ui/kernel` | `motion` | — | 1 |
-| `@xihan-ui/machine` | `kernel` | — | 1 |
+| `@xihan-ui/core` | `motion` | — | 1 |
 | `@xihan-ui/tokens` | — | — | 1 |
 | `@xihan-ui/icons` | — | — | 1 |
 | `@xihan-ui/motion` | — | — | 1 |
 | `@xihan-ui/pointer` | — | — | 1 |
-| `@xihan-ui/behavior` | `kernel` `motion` | — | 2 |
-| `@xihan-ui/position` | `kernel` | — | 2 |
-| `@xihan-ui/code-highlight` | `kernel` | — | 2 |
-| `@xihan-ui/chat-stream` | `kernel` | — | 2 |
+| `@xihan-ui/position` | `core` | — | 2 |
+| `@xihan-ui/code-highlight` | `core` | — | 2 |
+| `@xihan-ui/chat-stream` | `core` | — | 2 |
 | `@xihan-ui/markdown` | — | — | 2 |
-| `@xihan-ui/sound` | `kernel` | — | 2 |
-| `@xihan-ui/animations` | `kernel` `motion` | — | 2 |
-| `@xihan-ui/headless` | `kernel` `machine` `behavior` `motion` `pointer` + `@internationalized/date` | — | 3 |
+| `@xihan-ui/sound` | `core` | — | 2 |
+| `@xihan-ui/animations` | `core` `motion` | — | 2 |
+| `@xihan-ui/headless` | `core` `motion` `pointer` + `@internationalized/date` | — | 3 |
 | `@xihan-ui/styles` | `tokens`（只取其 CSS 产物） | — | 3 |
-| `@xihan-ui/backgrounds` | `kernel` `behavior` `motion` | — | 3 |
-| `@xihan-ui/vue` | `kernel` `machine` `behavior` `motion` `pointer` `headless` `position` `code-highlight` | `vue`、`backgrounds`（可选）、`sound`（可选） | 4 |
-| `@xihan-ui/web-components` | `kernel` `machine` `behavior` `motion` `pointer` `headless` `position` `code-highlight` | `backgrounds`（可选） | 4 |
+| `@xihan-ui/backgrounds` | `core` `motion` | — | 3 |
+| `@xihan-ui/vue` | `core` `motion` `pointer` `headless` `position` | `vue`、`backgrounds`（可选）、`sound`（可选）、`code-highlight`（可选） | 4 |
+| `@xihan-ui/web-components` | `core` `motion` `pointer` `headless` `position` | `backgrounds`（可选）、`code-highlight`（可选） | 4 |
 
 发布走 changesets，所有库包同属一个 fixed 版本组，一起升到同一个版本号。
 
 ## 依赖图
 
-箭头方向 = 依赖方向，只画实际声明的依赖。同层之间只有 `machine → kernel` 与 `kernel → motion` 两条横向依赖。
+箭头方向 = 依赖方向，只画实际声明的依赖。同层之间只有 `core → motion` 一条横向依赖。
 
 ```
 层 4   ┌─────────────┐       ┌──────────────────┐
-       │     vue     │       │  web-components  │  peer: backgrounds（可选）；vue 另有 peer: sound（可选）、vue
+       │     vue     │       │  web-components  │  peer: backgrounds · code-highlight（可选）；vue 另有 peer: sound（可选）、vue
        └──────┬──────┘       └────────┬─────────┘
-              │  kernel · machine · motion · pointer · behavior · headless · position · code-highlight
+              │  core · motion · pointer · headless · position
               └───────────┬───────────┘
                           ▼
 层 3   ┌──────────────┐  ┌───────────────────┐   ┌────────────────┐
        │   headless   │  │    backgrounds    │   │ styles（纯CSS）│
        └──────┬───────┘  └─────────┬─────────┘   └───────┬────────┘
-  kernel·machine·behavior·motion  kernel·behavior·motion   tokens 的 CSS 产物
-      ·pointer + @internationalized/date
+   core·motion·pointer             core·motion            tokens 的 CSS 产物
+    + @internationalized/date
               │                    │
               ▼                    ▼
-层 2   ┌──────────┐ ┌──────────┐ ┌────────────────┐ ┌─────────────┐ ┌───────┐ ┌────────────┐ ┌──────────┐
-       │ behavior │ │ position │ │ code-highlight │ │ chat-stream │ │ sound │ │ animations │ │ markdown │
-       └────┬─────┘ └────┬─────┘ └───────┬────────┘ └──────┬──────┘ └───┬───┘ └─────┬──────┘ └──────────┘
-            └────────────┴───────────────┴─────────────────┴───────────┴───────────┘            无依赖
+层 2   ┌──────────┐ ┌────────────────┐ ┌─────────────┐ ┌───────┐ ┌────────────┐ ┌──────────┐
+       │ position │ │ code-highlight │ │ chat-stream │ │ sound │ │ animations │ │ markdown │
+       └────┬─────┘ └───────┬────────┘ └──────┬──────┘ └───┬───┘ └─────┬──────┘ └──────────┘
+            └───────────────┴─────────────────┴───────────┴───────────┘            无依赖
                           ▼
-层 1   ┌──────────┐  ┌──────────┐  ┌──────────┐   ┌──────────┐  ┌───────┐  ┌─────────┐
-       │  kernel  │◄─┤ machine  │  │  motion  │   │  tokens  │  │ icons │  │ pointer │
-       └────┬─────┘  └──────────┘  └──────────┘   └──────────┘  └───────┘  └─────────┘
-            └──────────────────────────▲            无依赖        无依赖      无依赖
-                                  零运行时依赖
+层 1   ┌──────────┐  ┌──────────┐   ┌──────────┐  ┌───────┐  ┌─────────┐
+       │   core   │─►│  motion  │   │  tokens  │  │ icons │  │ pointer │
+       └──────────┘  └──────────┘   └──────────┘  └───────┘  └─────────┘
+                     零运行时依赖      无依赖        无依赖      无依赖
 ```
 
 三个包完全独立、可以单独用：
@@ -88,7 +85,7 @@ XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（�
 | 代码着色 | `code-highlight` | Shiki / Prism |
 | Web Components 响应式基类 | `web-components` | Lit |
 | Markdown 渲染 | `markdown` | markdown-it / marked |
-| 状态机 | `machine` | XState |
+| 状态机 | `core` | XState |
 
 要新增第三方运行时依赖，必须逐条登记进白名单并写明理由与摘除条件，`check-runtime-deps` 门禁盯着这件事。
 
@@ -119,9 +116,7 @@ XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（�
 
 | 包 | 子路径 |
 | --- | --- |
-| `@xihan-ui/kernel` | `./metadata` `./skin-check` `./vite` |
-| `@xihan-ui/machine` | `./vanilla` |
-| `@xihan-ui/behavior` | `./presence` |
+| `@xihan-ui/core` | `./metadata` `./skin-check` `./vite` `./vanilla` `./presence` |
 | `@xihan-ui/tokens` | `./runtime` `./tokens.css` `./tokens.json` |
 | `@xihan-ui/icons` | `./codegen` |
 | `@xihan-ui/vue` | `./backgrounds` `./behavior` `./sound` |

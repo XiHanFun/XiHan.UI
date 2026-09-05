@@ -26,7 +26,7 @@ BasicApp 的前端约定请看[基础应用前端手册](https://basicapp.docs.x
 
 目前只有 Vue 与 Web Components 两个适配器。
 
-自定义元素在这些框架里都能直接用（Light DOM，无 Shadow DOM 封装），这是当前的通用路径。要写原生适配器的话需要三样东西：一份 `ReactiveRuntime`（五个口子）、一份 `NormalizeProps`、一层组件包装。`@xihan-ui/machine/vanilla` 是这套契约的参考实现。
+自定义元素在这些框架里都能直接用（Light DOM，无 Shadow DOM 封装），这是当前的通用路径。要写原生适配器的话需要三样东西：一份 `ReactiveRuntime`（五个口子）、一份 `NormalizeProps`、一层组件包装。`@xihan-ui/core/vanilla` 是这套契约的参考实现。
 
 ## 为什么自定义元素要我自己写 HTML
 

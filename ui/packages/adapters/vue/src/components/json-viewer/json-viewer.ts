@@ -1,5 +1,5 @@
+import type { Direction, Size } from '@xihan-ui/core'
 import type { JsonViewerApi, JsonViewerNode, JsonViewerSchema, JsonViewerTranslations, JsonViewerView } from '@xihan-ui/headless'
-import type { Direction, Size } from '@xihan-ui/kernel'
 import type { PropType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h, ref } from 'vue'

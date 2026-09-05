@@ -1,5 +1,5 @@
+import type { Service } from '@xihan-ui/core'
 import type { JsonViewerApi, JsonViewerSchema } from '@xihan-ui/headless'
-import type { Service } from '@xihan-ui/machine'
 import type { ComputedRef } from 'vue'
 import { connectJsonViewer, jsonViewerMachine } from '@xihan-ui/headless'
 import { computed } from 'vue'

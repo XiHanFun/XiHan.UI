@@ -1,5 +1,4 @@
-import type { PropTypes, Size, Tone } from '@xihan-ui/kernel'
-import type { MachineSchema } from '@xihan-ui/machine'
+import type { MachineSchema, PropTypes, Size, Tone } from '@xihan-ui/core'
 
 /**
  * 三态。半选是「由外部数据算出来的显示态」，不是用户能切进去的态——

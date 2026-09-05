@@ -1,5 +1,5 @@
+import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type { PasswordInputSchema, PasswordInputTranslations, PasswordInputValueChangeDetails, PasswordInputVisibilityChangeDetails } from '@xihan-ui/headless'
-import type { ControlVariant, Size, Tone } from '@xihan-ui/kernel'
 import { connectPasswordInput, passwordInputAnatomy, passwordInputMachine, passwordInputMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'

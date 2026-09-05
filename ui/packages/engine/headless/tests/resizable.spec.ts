@@ -1,8 +1,7 @@
 // @vitest-environment jsdom
 import type { ResizableSchema } from '../src/resizable'
-import { normalizeProps } from '@xihan-ui/kernel'
-import { createService } from '@xihan-ui/machine'
-import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
+import { createService, normalizeProps } from '@xihan-ui/core'
+import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { connectResizable, RESIZABLE_LARGE_STEP, RESIZABLE_STEP, resizableMachine } from '../src/resizable'
 

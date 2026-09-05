@@ -1,5 +1,5 @@
 import type { FieldsetProps } from '../src/fieldset/index'
-import { createCounterIdGenerator, createScope, normalizeProps } from '@xihan-ui/kernel'
+import { createCounterIdGenerator, createScope, normalizeProps } from '@xihan-ui/core'
 import { describe, expect, it } from 'vitest'
 import { connectFieldset } from '../src/fieldset/index'
 

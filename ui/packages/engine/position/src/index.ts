@@ -1,4 +1,4 @@
-import type { Anchor, PositionEnginePort, PositionOptions, PositionResult } from '@xihan-ui/kernel'
+import type { Anchor, PositionEnginePort, PositionOptions, PositionResult } from '@xihan-ui/core'
 import type { PositionBox } from './compute'
 import { computePlacement, intersectEdges, isFullyClipped } from './compute'
 import {

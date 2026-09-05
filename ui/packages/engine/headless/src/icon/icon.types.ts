@@ -1,4 +1,4 @@
-import type { IconNode, IconRecord, PropTypes, Size, Tone } from '@xihan-ui/kernel'
+import type { IconNode, IconRecord, PropTypes, Size, Tone } from '@xihan-ui/core'
 
 /** 直径档位，缺省 md。 */
 /** 描边粗细档位，缺省 regular；由皮肤用 CSS 的 stroke-width 盖掉记录里的呈现属性。 */

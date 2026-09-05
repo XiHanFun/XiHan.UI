@@ -1,7 +1,6 @@
 import type { DndRect } from '@xihan-ui/pointer'
 import type { SortableSchema } from './sortable.types'
-import { ITEM_VALUE_ATTR, queryItems } from '@xihan-ui/behavior'
-import { setup } from '@xihan-ui/machine'
+import { ITEM_VALUE_ATTR, queryItems, setup } from '@xihan-ui/core'
 import {
   createPointerSession,
   edgeScrollDelta,

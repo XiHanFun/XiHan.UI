@@ -1,5 +1,5 @@
+import type { Size } from '@xihan-ui/core'
 import type { AvatarSchema } from '@xihan-ui/headless'
-import type { Size } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h, ref, watch } from 'vue'

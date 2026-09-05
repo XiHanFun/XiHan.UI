@@ -1,6 +1,5 @@
 import type { SegmentedBox, SegmentedIndicatorRect, SegmentedNode, SegmentedSchema } from './segmented.types'
-import { itemValue, queryItems, readDirection } from '@xihan-ui/behavior'
-import { resetDeclaredValue, setup } from '@xihan-ui/machine'
+import { itemValue, queryItems, readDirection, resetDeclaredValue, setup } from '@xihan-ui/core'
 import { segmentedItemQuery } from './segmented.anatomy'
 
 const { createMachine } = setup<SegmentedSchema>()

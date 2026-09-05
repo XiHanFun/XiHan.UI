@@ -1,9 +1,8 @@
 // @vitest-environment jsdom
 // 列拖拽：纯算法（谁能拖、落点折算）与机器/连接层（指针拖动、键盘命令、播报）。
 import type { TableColumn, TableColumnDef, TableSchema } from '../src/table'
-import { normalizeProps } from '@xihan-ui/kernel'
-import { createService } from '@xihan-ui/machine'
-import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
+import { createService, normalizeProps } from '@xihan-ui/core'
+import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   columnDragRects,

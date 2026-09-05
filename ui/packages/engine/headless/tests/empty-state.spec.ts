@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import type { EmptyStateProps } from '../src/empty-state'
-import { normalizeProps } from '@xihan-ui/kernel'
+import { normalizeProps } from '@xihan-ui/core'
 import { describe, expect, it } from 'vitest'
 import { connectEmptyState, emptyStateAnatomy, emptyStateMeta } from '../src/empty-state'
 

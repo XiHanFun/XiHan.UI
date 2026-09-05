@@ -1,6 +1,6 @@
-import type { Scope } from '@xihan-ui/kernel'
+import type { Scope } from '@xihan-ui/core'
 import type { ClipboardSchema } from './clipboard.types'
-import { setTimeoutEffect, setup } from '@xihan-ui/machine'
+import { setTimeoutEffect, setup } from '@xihan-ui/core'
 
 const { createMachine } = setup<ClipboardSchema>()
 

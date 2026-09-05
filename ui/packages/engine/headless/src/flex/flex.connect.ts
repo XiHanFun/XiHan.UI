@@ -1,6 +1,6 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
 import type { FlexApi, FlexProps } from './flex.types'
-import { dataAttr } from '@xihan-ui/kernel'
+import { dataAttr } from '@xihan-ui/core'
 import { flexAnatomy } from './flex.anatomy'
 
 const parts = flexAnatomy.build()

@@ -1,5 +1,5 @@
+import type { Service } from '@xihan-ui/core'
 import type { TruncateOpenChangeDetails, TruncateOverflowChangeDetails, TruncateSchema } from '@xihan-ui/headless'
-import type { Service } from '@xihan-ui/machine'
 import { connectTruncate, truncateAnatomy, truncateMachine, truncateMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'

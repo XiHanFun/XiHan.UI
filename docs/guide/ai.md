@@ -6,7 +6,7 @@
 | --- | --- |
 | `@xihan-ui/chat-stream` | SSE 读取 → 协议归一 → parts 归约 → 会话 store |
 | `@xihan-ui/markdown` | 流式 Markdown 渲染：增量切块、稳定 key、消毒 |
-| `@xihan-ui/code-highlight` | 代码着色，自研粗粒度词法器 |
+| `@xihan-ui/code-highlight` | 代码着色，自研粗粒度词法器；可选 peer，装了才有 |
 
 配套的组件按职责分成四件：[消息流](../components/message-feed)渲结构化会话，[日志](../components/log)渲任意会往下追加的内容，[提示输入框](../components/prompt-input)收话，[代码视图](../components/code-view)呈现代码。
 
@@ -140,7 +140,7 @@ const tokens = highlighter.highlight(code, 'typescript') // CodeToken[] | null
 
 认不出的语言、超长代码一律返回 `null`，调用方原样渲染纯文本。
 
-`HighlighterPort` 同样是 `@xihan-ui/kernel` 里的端口。想要更高精度，把别的高亮库接到同一个端口上即可，`code-view` 组件侧不用改。
+`HighlighterPort` 同样是 `@xihan-ui/core` 里的端口。想要更高精度，把别的高亮库接到同一个端口上即可，`code-view` 组件侧不用改。
 
 ## 相关
 

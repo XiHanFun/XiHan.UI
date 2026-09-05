@@ -1,6 +1,6 @@
+import type { Direction, Orientation, Size } from '@xihan-ui/core'
 import type { ToolbarItemProps, ToolbarSchema } from '@xihan-ui/headless'
-import type { Direction, Orientation, Size } from '@xihan-ui/kernel'
-import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
+import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectToolbar, toolbarAnatomy, toolbarMachine, toolbarMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'

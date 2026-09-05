@@ -1,5 +1,5 @@
+import type { Tone } from '@xihan-ui/core'
 import type { AlertOpenChangeDetails, AlertSchema } from '@xihan-ui/headless'
-import type { Tone } from '@xihan-ui/kernel'
 import { alertAnatomy, alertMachine, alertMeta, connectAlert } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'

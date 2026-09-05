@@ -1,4 +1,4 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
 import type { EmptyStateApi, EmptyStateProps } from './empty-state.types'
 import { emptyStateAnatomy } from './empty-state.anatomy'
 

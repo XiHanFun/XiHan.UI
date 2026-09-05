@@ -1,5 +1,4 @@
-import type { CodeToken, PropTypes, Size } from '@xihan-ui/kernel'
-import type { MachineSchema } from '@xihan-ui/machine'
+import type { CodeToken, MachineSchema, PropTypes, Size } from '@xihan-ui/core'
 import type { DiffChange, DiffLine, DiffModel } from './diff-view.model'
 
 export type DiffViewMode = 'unified' | 'split'

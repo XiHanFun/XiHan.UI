@@ -1,5 +1,5 @@
+import type { Size, Tone } from '@xihan-ui/core'
 import type { TypographyLevel, TypographyProps, TypographyVariant } from '@xihan-ui/headless'
-import type { Size, Tone } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import { connectTypography } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'

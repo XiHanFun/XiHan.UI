@@ -1,4 +1,4 @@
-import type { Bindable, CellParams, Dep, ReactiveRuntime } from '@xihan-ui/machine'
+import type { Bindable, CellParams, Dep, ReactiveRuntime } from '@xihan-ui/core'
 import { getCurrentInstance, nextTick, onBeforeUnmount, onMounted, shallowRef, triggerRef, watch } from 'vue'
 
 // 用 Vue 响应式实现 machine 的 ReactiveRuntime

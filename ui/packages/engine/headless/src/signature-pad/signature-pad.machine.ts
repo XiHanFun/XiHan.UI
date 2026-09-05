@@ -1,5 +1,5 @@
 import type { SignaturePadDrawingOptions, SignaturePadPointerPoint, SignaturePadSchema, SignaturePadStroke, SignaturePadSurface } from './signature-pad.types'
-import { setup } from '@xihan-ui/machine'
+import { setup } from '@xihan-ui/core'
 import { createPointerSession, resolveSessionDoc } from '@xihan-ui/pointer'
 import { lastStrokePath, pointDistance, SIGNATURE_PAD_MIN_DISTANCE, signaturePadSvg, simulatedPressure, strokesToPaths } from './signature-pad.geometry'
 

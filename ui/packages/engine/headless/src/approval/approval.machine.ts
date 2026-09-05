@@ -1,5 +1,5 @@
 import type { ApprovalSchema } from './approval.types'
-import { setTimeoutEffect, setup } from '@xihan-ui/machine'
+import { setTimeoutEffect, setup } from '@xihan-ui/core'
 import { toggleItemValue } from '../checkbox-group'
 import { canApproveScopes } from './approval.types'
 

@@ -1,5 +1,4 @@
-import type { PropTypes } from '@xihan-ui/kernel'
-import type { MachineSchema } from '@xihan-ui/machine'
+import type { MachineSchema, PropTypes } from '@xihan-ui/core'
 import type { ToastStatus, ToastType } from '../toast'
 
 /**

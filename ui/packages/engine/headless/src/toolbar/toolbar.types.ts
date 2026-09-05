@@ -1,5 +1,4 @@
-import type { Direction, Orientation, PropTypes, Size } from '@xihan-ui/kernel'
-import type { MachineSchema } from '@xihan-ui/machine'
+import type { Direction, MachineSchema, Orientation, PropTypes, Size } from '@xihan-ui/core'
 
 /**
  * 条目自报家门：值与禁用由作者在部件上声明，connect 据此产出属性。

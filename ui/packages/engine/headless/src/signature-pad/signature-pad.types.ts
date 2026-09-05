@@ -1,5 +1,4 @@
-import type { PropTypes } from '@xihan-ui/kernel'
-import type { MachineSchema } from '@xihan-ui/machine'
+import type { MachineSchema, PropTypes } from '@xihan-ui/core'
 
 /** 笔迹上的一点。坐标以画布左上角为原点、单位是像素；压感 0..1。 */
 export interface SignaturePadPoint {

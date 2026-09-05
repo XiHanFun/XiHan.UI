@@ -1,5 +1,5 @@
+import type { Direction, Placement, Size } from '@xihan-ui/core'
 import type { HoverCardApi, HoverCardSchema } from '@xihan-ui/headless'
-import type { Direction, Placement, Size } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h, mergeProps, Teleport } from 'vue'

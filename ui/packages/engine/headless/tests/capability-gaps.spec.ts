@@ -2,9 +2,8 @@
 // 本轮补的三处能力缺口：输入类型出口、进度不确定态、看图器两端直达。
 import type { ImageViewerSchema } from '../src/image-viewer'
 import type { TextFieldSchema } from '../src/text-field'
-import { normalizeProps } from '@xihan-ui/kernel'
-import { createService } from '@xihan-ui/machine'
-import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
+import { createService, normalizeProps } from '@xihan-ui/core'
+import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { describe, expect, it } from 'vitest'
 import { connectButton } from '../src/button'
 import { connectImageViewer, imageViewerMachine } from '../src/image-viewer'

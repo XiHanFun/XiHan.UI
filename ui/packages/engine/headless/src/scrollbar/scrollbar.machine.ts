@@ -1,9 +1,7 @@
-import type { Direction, Orientation } from '@xihan-ui/kernel'
-import type { Params, Transition } from '@xihan-ui/machine'
+import type { Direction, Orientation, Params, Transition } from '@xihan-ui/core'
 import type { ScrollAxisMetrics } from '../shared/scroll-geometry'
 import type { ScrollbarSchema, ScrollbarType } from './scrollbar.types'
-import { DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/kernel'
-import { setTimeoutEffect, setup } from '@xihan-ui/machine'
+import { DIAGNOSTIC_CODES, reportDiagnostic, setTimeoutEffect, setup } from '@xihan-ui/core'
 import { createPointerSession, resolveSessionDoc } from '@xihan-ui/pointer'
 import { clamp } from '../shared/number'
 import {

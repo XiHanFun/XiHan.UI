@@ -1,5 +1,5 @@
 import type { FloatingPanelSchema } from './floating-panel.types'
-import { setup } from '@xihan-ui/machine'
+import { setup } from '@xihan-ui/core'
 import { createPointerSession, resolveSessionDoc } from '@xihan-ui/pointer'
 import {
   clampFloatingPanelSize,

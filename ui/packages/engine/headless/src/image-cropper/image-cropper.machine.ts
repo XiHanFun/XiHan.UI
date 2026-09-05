@@ -1,7 +1,7 @@
-import type { Params } from '@xihan-ui/machine'
+import type { Params } from '@xihan-ui/core'
 import type { CropConstraints } from './image-cropper.geometry'
 import type { ImageCropperRect, ImageCropperSchema, ImageCropperSize } from './image-cropper.types'
-import { resetDeclaredValue, setup } from '@xihan-ui/machine'
+import { resetDeclaredValue, setup } from '@xihan-ui/core'
 import { createPointerSession, resolveSessionDoc } from '@xihan-ui/pointer'
 import {
   initialCropRect,

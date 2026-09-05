@@ -1,4 +1,4 @@
-import { createAnatomy } from '@xihan-ui/kernel'
+import { createAnatomy } from '@xihan-ui/core'
 
 // root 是排序容器，item 是一项；item-drag-trigger 是那一项的拖拽手柄，
 // 与 tabs 的 tab-drag-trigger、table 的 row-drag-trigger 同名同形——

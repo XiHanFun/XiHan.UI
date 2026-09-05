@@ -1,6 +1,6 @@
-import type { Params } from '@xihan-ui/machine'
+import type { Params } from '@xihan-ui/core'
 import type { TruncateMetrics, TruncateSchema } from './truncate.types'
-import { setup } from '@xihan-ui/machine'
+import { setup } from '@xihan-ui/core'
 
 const { createMachine } = setup<TruncateSchema>()
 

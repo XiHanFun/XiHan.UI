@@ -4,14 +4,14 @@
 // 判据一与二只有在真浏览器里才成立——jsdom 不升级自定义元素。
 //
 // 只跑指定组件：置环境变量 XH_WC_DEMOS=select,dialog（由 tooling/scripts/check-wc-demos.mjs 传入）。
-import type { DiagnosticRecord } from '@xihan-ui/kernel'
-import * as headless from '@xihan-ui/headless'
+import type { DiagnosticRecord } from '@xihan-ui/core'
 import {
   onDiagnostic,
   setDiagnosticsConsoleOutput,
   setDiagnosticsDedupe,
   setDiagnosticsLevel,
-} from '@xihan-ui/kernel'
+} from '@xihan-ui/core'
+import * as headless from '@xihan-ui/headless'
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest'
 import { defineXhElements } from '../../src/define'
 import { discoverParts } from '../../src/dom/parts'

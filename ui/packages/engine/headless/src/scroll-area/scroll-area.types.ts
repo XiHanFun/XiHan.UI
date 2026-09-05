@@ -1,5 +1,4 @@
-import type { Direction, Orientation, PropTypes, Size } from '@xihan-ui/kernel'
-import type { Service } from '@xihan-ui/machine'
+import type { Direction, Orientation, PropTypes, Service, Size } from '@xihan-ui/core'
 import type { ScrollbarSchema, ScrollbarType } from '../scrollbar/scrollbar.types'
 
 /** 哪几条轴归本组件管。被关掉的那条轴滚动条恒不显形，视口那一向也不滚。 */

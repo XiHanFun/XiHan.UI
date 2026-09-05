@@ -1,11 +1,10 @@
-import type { PresenceHandle } from '@xihan-ui/behavior/presence'
+import type { Cleanup, Layer, RuntimeConfig, Service } from '@xihan-ui/core'
+import type { PresenceHandle } from '@xihan-ui/core/presence'
 import type { DrawerApi, DrawerSchema } from '@xihan-ui/headless'
-import type { Cleanup, Layer, RuntimeConfig } from '@xihan-ui/kernel'
-import type { Service } from '@xihan-ui/machine'
 import type { ComputedRef, Ref } from 'vue'
-import { attachCssExit, createPresence } from '@xihan-ui/behavior/presence'
+import { createRuntimeConfig, createScope } from '@xihan-ui/core'
+import { attachCssExit, createPresence } from '@xihan-ui/core/presence'
 import { connectDrawer, drawerMachine } from '@xihan-ui/headless'
-import { createRuntimeConfig, createScope } from '@xihan-ui/kernel'
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
@@ -27,7 +26,7 @@ export function useDrawer(
   onOpenChange?: DrawerSchema['props']['onOpenChange'],
   container?: () => string | Element | null | undefined,
 ): DrawerContext {
-  // 应用级默认挂载点：kernel 的 RuntimeConfig 一直留着这个字段，这里把它真正接上
+  // 应用级默认挂载点：core 的 RuntimeConfig 一直留着这个字段，这里把它真正接上
   const xhConfig = useXhConfig()
   const contentRef = ref<HTMLElement | null>(null)
   const backdropRef = ref<HTMLElement | null>(null)

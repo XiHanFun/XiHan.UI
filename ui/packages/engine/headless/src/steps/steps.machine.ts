@@ -1,6 +1,6 @@
-import type { PropFn } from '@xihan-ui/machine'
+import type { PropFn } from '@xihan-ui/core'
 import type { StepsSchema } from './steps.types'
-import { setup } from '@xihan-ui/machine'
+import { setup } from '@xihan-ui/core'
 
 const { createMachine } = setup<StepsSchema>()
 

@@ -1,5 +1,4 @@
-import type { PropTypes, Size } from '@xihan-ui/kernel'
-import type { MachineSchema } from '@xihan-ui/machine'
+import type { MachineSchema, PropTypes, Size } from '@xihan-ui/core'
 
 /** 图片加载状态；idle 是来源决议前的过渡态。 */
 export type AvatarStatus = 'idle' | 'loading' | 'loaded' | 'error'

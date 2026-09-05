@@ -1,6 +1,6 @@
-import type { PropFn } from '@xihan-ui/machine'
+import type { PropFn } from '@xihan-ui/core'
 import type { CarouselPauseSource, CarouselSchema } from './carousel.types'
-import { setTimeoutEffect, setup } from '@xihan-ui/machine'
+import { setTimeoutEffect, setup } from '@xihan-ui/core'
 import { resolveMotionPreference } from '@xihan-ui/motion'
 import { createMultiPointerSession, resolveSessionDoc } from '@xihan-ui/pointer'
 import { carouselDragDelta, carouselPageCount, clampCarouselPage } from './carousel.pages'

@@ -1,5 +1,5 @@
 import type { CheckboxSchema } from './checkbox.types'
-import { setup } from '@xihan-ui/machine'
+import { setup } from '@xihan-ui/core'
 
 const { createMachine } = setup<CheckboxSchema>()
 

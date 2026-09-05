@@ -1,5 +1,5 @@
 import type { ToolbarSchema } from './toolbar.types'
-import { setup } from '@xihan-ui/machine'
+import { setup } from '@xihan-ui/core'
 
 const { createMachine } = setup<ToolbarSchema>()
 

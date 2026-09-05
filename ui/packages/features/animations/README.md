@@ -33,7 +33,7 @@ motion.play(el, { frames: [{ opacity: 0, y: 40 }, { opacity: 1, y: 0 }], duratio
 
 `splitText` 把原文挂到容器的 `aria-label`、把拆出来的每一段标 `aria-hidden`——逐字的 `span` 会让部分读屏逐字念出来。要拿到无障碍名，容器的角色得支持命名（标题、按钮、链接这类）；套在裸 `div` 上读屏可能读不到，那种情况自己另给可访问文本。
 
-滚动进入视口再播，用 `@xihan-ui/behavior` 的 `createViewportEntry` 观察，回调里调 `play`——观察不是动画，不收在这个包里。
+滚动进入视口再播，用 `@xihan-ui/core` 的 `createViewportEntry` 观察，回调里调 `play`——观察不是动画，不收在这个包里。
 
 ## 装
 

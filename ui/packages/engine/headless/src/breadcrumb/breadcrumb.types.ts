@@ -1,4 +1,4 @@
-import type { Direction, PropTypes, Size, Tone } from '@xihan-ui/kernel'
+import type { Direction, PropTypes, Size, Tone } from '@xihan-ui/core'
 
 /** 读屏用的文案，默认英文。 */
 export interface BreadcrumbTranslations {

@@ -1,6 +1,6 @@
-import type { Params } from '@xihan-ui/machine'
+import type { Params } from '@xihan-ui/core'
 import type { PasswordInputSchema } from './password-input.types'
-import { resetDeclaredValue, setup } from '@xihan-ui/machine'
+import { resetDeclaredValue, setup } from '@xihan-ui/core'
 import { passwordInputInputId } from './password-input.anatomy'
 
 const { createMachine } = setup<PasswordInputSchema>()

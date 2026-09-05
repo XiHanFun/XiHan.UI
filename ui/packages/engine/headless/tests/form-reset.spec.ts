@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
-import type { MachineConfig, MachineSchema, Service } from '@xihan-ui/machine'
-import { createService } from '@xihan-ui/machine'
-import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
+import type { MachineConfig, MachineSchema, Service } from '@xihan-ui/core'
+import { createService } from '@xihan-ui/core'
+import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { describe, expect, it, vi } from 'vitest'
 import { checkboxGroupMachine } from '../src/checkbox-group'
 import { colorPickerMachine } from '../src/color-picker'

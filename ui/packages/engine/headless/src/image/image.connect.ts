@@ -1,5 +1,4 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
-import type { Service } from '@xihan-ui/machine'
+import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { ImageApi, ImageSchema } from './image.types'
 import { imageAnatomy } from './image.anatomy'
 

@@ -2,7 +2,7 @@
 
 ## 从 npm 安装
 
-XiHan.UI 的 18 个公开包都已发布到 npm，同属一个版本组、始终同号。当前版本号以 npm 为准：`npm view @xihan-ui/vue version`。
+XiHan.UI 的 16 个公开包都已发布到 npm，同属一个版本组、始终同号。当前版本号以 npm 为准：`npm view @xihan-ui/vue version`。
 
 装哪几个包取决于你用哪个适配器：
 
@@ -16,13 +16,16 @@ pnpm add @xihan-ui/web-components @xihan-ui/styles
 # 只要设计令牌，皮肤自己写
 pnpm add @xihan-ui/tokens
 
-# 背景层是可选 peer，用到才装
+# 背景层与代码着色都是可选 peer，用到才装
 pnpm add @xihan-ui/backgrounds
+pnpm add @xihan-ui/code-highlight
 ```
 
 `@xihan-ui/styles` 不是必需的：组件不依赖默认皮肤，只拿令牌自己写样式是完全可行的一条路，见下文「样式的三种接法」。
 
-适配器的引擎侧依赖（`kernel` / `machine` / `motion` / `pointer` / `behavior` / `headless` / `position` / `code-highlight`）写在 `dependencies` 里，装适配器就一并带进来，不用单独列。`@xihan-ui/vue` 的 peer 依赖是 `vue@^3.5.0`，由你的项目提供。
+适配器的引擎侧依赖（`core` / `motion` / `pointer` / `headless` / `position`）写在 `dependencies` 里，装适配器就一并带进来，不用单独列。`@xihan-ui/vue` 的 peer 依赖是 `vue@^3.5.0`，由你的项目提供。
+
+`backgrounds` / `sound` / `code-highlight` 是可选 peer，装不装由你定。没装 `code-highlight`，代码视图渲纯文本，不报错。
 
 除了从 npm 装，还有两条本地路径：
 
@@ -99,7 +102,7 @@ cd XiHan.UI/ui && pnpm build
 }
 ```
 
-`@xihan-ui/vue` 会顺着 `dependencies` 把 `kernel` / `machine` / `motion` / `pointer` / `behavior` / `headless` / `position` / `code-highlight` 一并带进来，这几个不用单独链接。`vue` 本身是它的 peer 依赖，由你的项目提供。
+`@xihan-ui/vue` 会顺着 `dependencies` 把 `core` / `motion` / `pointer` / `headless` / `position` 一并带进来，这几个不用单独链接。`vue` 本身是它的 peer 依赖，由你的项目提供。
 
 ## 接入 Vue 项目
 
@@ -194,7 +197,7 @@ import '@xihan-ui/tokens/tokens.css'
 
 ```ts
 if (import.meta.env.DEV) {
-  const { startSkinCheck } = await import('@xihan-ui/kernel/skin-check')
+  const { startSkinCheck } = await import('@xihan-ui/core/skin-check')
   startSkinCheck()
 }
 ```

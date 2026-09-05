@@ -1,7 +1,5 @@
 ---
-"@xihan-ui/kernel": major
-"@xihan-ui/machine": major
-"@xihan-ui/behavior": major
+"@xihan-ui/core": major
 "@xihan-ui/position": major
 "@xihan-ui/code-highlight": major
 ---
@@ -18,7 +16,7 @@
 
 留下的是各包 tsdown 显式声明的入口：kernel 的 `.` `./metadata` `./skin-check` `./vite`、machine 的 `.` `./vanilla`、behavior 的 `.` `./presence`，position 与 code-highlight 只剩 `.`。
 
-**迁移**：这些子路径暴露的名字主入口全都有，把 `import { x } from '@xihan-ui/kernel/anatomy'` 改成 `import { x } from '@xihan-ui/kernel'` 即可，按需引入靠 tree-shaking。
+**迁移**：这些子路径暴露的名字主入口全都有，把 `import { x } from '@xihan-ui/kernel/anatomy'` 改成 `import { x } from '@xihan-ui/core'` 即可，按需引入靠 tree-shaking。
 
 **新增** `@xihan-ui/machine` 主入口再导出类型 `Setup`。它是公开函数 `setup()` 的返回类型，此前只能从 `@xihan-ui/machine/setup` 拿到；随该子路径一起消失的话，`setup()` 的结果就写不出类型标注了。
 

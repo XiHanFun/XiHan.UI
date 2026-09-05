@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 //
 // Light DOM 搬不动浮层，只能在展开时把「祖先建了层叠上下文」这件事报出来。
-import type { DiagnosticRecord } from '@xihan-ui/kernel'
+import type { DiagnosticRecord } from '@xihan-ui/core'
 import {
   DIAGNOSTIC_CODES,
   onDiagnostic,
@@ -9,7 +9,7 @@ import {
   setDiagnosticsConsoleOutput,
   setDiagnosticsDedupe,
   setDiagnosticsLevel,
-} from '@xihan-ui/kernel'
+} from '@xihan-ui/core'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { defineXhElements } from '../src/define'
 import { findStackingTrap, stackingCauseOf } from '../src/dom/stacking-context'

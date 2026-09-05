@@ -1,4 +1,4 @@
-import type { PropTypes } from '@xihan-ui/kernel'
+import type { PropTypes } from '@xihan-ui/core'
 import type { TimestampType, TimestampValue } from './timestamp.format'
 
 /** 根的三态：拿到了一个认得出的时刻 / 没给时刻 / 给了但认不出。 */

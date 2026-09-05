@@ -19,7 +19,7 @@ import type {
   UniformMap,
 } from '../types'
 import type { GlProgram } from './program'
-import { DIAGNOSTIC_CODES, isSSR, reportDiagnostic } from '@xihan-ui/kernel'
+import { DIAGNOSTIC_CODES, isSSR, reportDiagnostic } from '@xihan-ui/core'
 import { onMotionPreferenceChange, resolveMotionPreference } from '@xihan-ui/motion'
 import { resolveEffect } from '../effects/registry'
 import { num, resolveParams } from '../params'

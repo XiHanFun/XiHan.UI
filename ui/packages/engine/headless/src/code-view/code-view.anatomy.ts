@@ -1,4 +1,4 @@
-import { createAnatomy } from '@xihan-ui/kernel'
+import { createAnatomy } from '@xihan-ui/core'
 
 // root 是外壳并承载语言、闭合与折叠标记，header 是文件名与语言角标那一行，
 // pre 是滚动容器与 Tab 停靠点，code 承载全部行，line 是一行，

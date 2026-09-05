@@ -117,10 +117,10 @@ await motion.play(el, reverseSpec(motionPresets['fade-up']))
 
 ## 滚动进入视口再播
 
-观察不是动画，不收在这个包里。用 `@xihan-ui/behavior` 的 `createViewportEntry` 观察，回调里调 `play`：
+观察不是动画，不收在这个包里。用 `@xihan-ui/core` 的 `createViewportEntry` 观察，回调里调 `play`：
 
 ```ts
-import { createViewportEntry } from '@xihan-ui/behavior'
+import { createViewportEntry } from '@xihan-ui/core'
 
 createViewportEntry({
   scope,

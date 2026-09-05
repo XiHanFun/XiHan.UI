@@ -1,5 +1,5 @@
-import type { Scope } from '@xihan-ui/kernel'
-import { createAnatomy } from '@xihan-ui/kernel'
+import type { Scope } from '@xihan-ui/core'
+import { createAnatomy } from '@xihan-ui/core'
 
 // data-part 直接用 kebab-case，与 CSS 选择器一致。
 // 一行分两半：item-content 装作者自己的控件，item-action 装这一行的把手。

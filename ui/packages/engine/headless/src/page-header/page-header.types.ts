@@ -1,4 +1,4 @@
-import type { PropTypes, Size } from '@xihan-ui/kernel'
+import type { PropTypes, Size } from '@xihan-ui/core'
 
 export interface PageHeaderProps {
   /** 尺寸：sm / md / lg，决定标题字号与整块的上下留白。 */

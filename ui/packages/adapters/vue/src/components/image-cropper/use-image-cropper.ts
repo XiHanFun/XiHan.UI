@@ -1,5 +1,5 @@
+import type { Service } from '@xihan-ui/core'
 import type { ImageCropperApi, ImageCropperSchema } from '@xihan-ui/headless'
-import type { Service } from '@xihan-ui/machine'
 import type { ComputedRef, Ref } from 'vue'
 import { connectImageCropper, imageCropperMachine } from '@xihan-ui/headless'
 import { computed, ref } from 'vue'

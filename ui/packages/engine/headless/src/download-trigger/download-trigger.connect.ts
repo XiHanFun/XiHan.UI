@@ -1,7 +1,6 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
-import type { Service } from '@xihan-ui/machine'
+import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { DownloadTriggerApi, DownloadTriggerSchema } from './download-trigger.types'
-import { dataAttr } from '@xihan-ui/kernel'
+import { dataAttr } from '@xihan-ui/core'
 import { downloadTriggerAnatomy } from './download-trigger.anatomy'
 import { resolveDownloadFileName } from './download-trigger.machine'
 

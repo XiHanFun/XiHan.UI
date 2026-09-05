@@ -1,7 +1,7 @@
 import type { MessageFeedApi, MessageFeedSchema } from '@xihan-ui/headless'
 import type { ComputedRef, Ref } from 'vue'
+import { createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectMessageFeed, messageFeedMachine } from '@xihan-ui/headless'
-import { createRuntimeConfig, createScope } from '@xihan-ui/kernel'
 import { computed, ref, watch } from 'vue'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'

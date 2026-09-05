@@ -1,5 +1,5 @@
+import type { Service } from '@xihan-ui/core'
 import type { AffixChangeDetails, AffixSchema } from '@xihan-ui/headless'
-import type { Service } from '@xihan-ui/machine'
 import { affixAnatomy, affixMachine, affixMeta, connectAffix } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'

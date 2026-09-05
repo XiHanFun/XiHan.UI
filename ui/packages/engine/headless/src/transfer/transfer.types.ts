@@ -1,5 +1,4 @@
-import type { Direction, PropTypes } from '@xihan-ui/kernel'
-import type { MachineSchema } from '@xihan-ui/machine'
+import type { Direction, MachineSchema, PropTypes } from '@xihan-ui/core'
 
 /**
  * 哪一侧。source 是还没选进来的，target 是已经选进来的；

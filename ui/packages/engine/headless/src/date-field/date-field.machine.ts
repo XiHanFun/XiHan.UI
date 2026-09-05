@@ -1,4 +1,4 @@
-import type { Params } from '@xihan-ui/machine'
+import type { Params } from '@xihan-ui/core'
 import type {
   DateFieldSchema,
   DateGranularity,
@@ -8,8 +8,7 @@ import type {
   DateSegmentType,
 } from './date-field.types'
 import { CalendarDate, getLocalTimeZone, parseDateTime, Time, today } from '@internationalized/date'
-import { resolveLocale } from '@xihan-ui/kernel'
-import { resetDeclaredValue, setup } from '@xihan-ui/machine'
+import { resetDeclaredValue, resolveLocale, setup } from '@xihan-ui/core'
 import { dayPeriodLabel } from '../shared/day-period'
 import {
   blockRange,

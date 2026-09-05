@@ -1,7 +1,6 @@
 import type { NotificationSchema } from '../src/notification'
-import { DATA_INERT_EXEMPT, normalizeProps } from '@xihan-ui/kernel'
-import { createService } from '@xihan-ui/machine'
-import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
+import { createService, DATA_INERT_EXEMPT, normalizeProps } from '@xihan-ui/core'
+import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { describe, expect, it } from 'vitest'
 import { connectNotification, notificationMachine } from '../src/notification'
 

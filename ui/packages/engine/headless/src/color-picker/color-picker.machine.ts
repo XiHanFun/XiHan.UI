@@ -1,10 +1,8 @@
-import type { Scope } from '@xihan-ui/kernel'
-import type { Params } from '@xihan-ui/machine'
+import type { Params, Scope } from '@xihan-ui/core'
 import type { ColorPickerChannel, ColorPickerHsva } from './color-picker.color'
 import type { ColorPickerPoint } from './color-picker.geometry'
 import type { ColorPickerDragTarget, ColorPickerSchema } from './color-picker.types'
-import { createDismissLayer, createFocusScope } from '@xihan-ui/behavior'
-import { resetDeclaredValue, setup } from '@xihan-ui/machine'
+import { createDismissLayer, createFocusScope, resetDeclaredValue, setup } from '@xihan-ui/core'
 import { createPointerSession, resolveSessionDoc } from '@xihan-ui/pointer'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import {

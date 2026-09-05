@@ -1,5 +1,5 @@
+import type { ActionVariant, Size, Tone } from '@xihan-ui/core'
 import type { TogglePressedChangeDetails, ToggleSchema } from '@xihan-ui/headless'
-import type { ActionVariant, Size, Tone } from '@xihan-ui/kernel'
 import { connectToggle, toggleAnatomy, toggleMachine, toggleMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'

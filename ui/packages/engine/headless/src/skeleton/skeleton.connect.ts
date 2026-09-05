@@ -1,4 +1,4 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
 import type { SkeletonApi, SkeletonItemProps, SkeletonProps } from './skeleton.types'
 import { skeletonAnatomy } from './skeleton.anatomy'
 

@@ -1,7 +1,7 @@
-import type { Params } from '@xihan-ui/machine'
+import type { Params } from '@xihan-ui/core'
 import type { VirtualizerKernel, VirtualizerKernelOptions } from './virtualizer.kernel'
 import type { VirtualizerSchema } from './virtualizer.types'
-import { setup } from '@xihan-ui/machine'
+import { setup } from '@xihan-ui/core'
 import {
   resolveVirtualizerEstimate,
   resolveVirtualizerLanes,

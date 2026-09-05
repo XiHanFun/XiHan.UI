@@ -1,8 +1,7 @@
 // @vitest-environment jsdom
 import type { HoverCardOpenChangeDetails, HoverCardSchema } from '../src/hover-card'
-import { createRuntimeConfig, normalizeProps } from '@xihan-ui/kernel'
-import { createService } from '@xihan-ui/machine'
-import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
+import { createRuntimeConfig, createService, normalizeProps } from '@xihan-ui/core'
+import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 // 直接指向组件目录：包主入口的导出由接线一并补，测试不等它
 import { connectHoverCard, hoverCardMachine } from '../src/hover-card'

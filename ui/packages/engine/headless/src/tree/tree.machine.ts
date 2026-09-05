@@ -1,7 +1,6 @@
 import type { DragAnnounceKind, DropTarget } from '../shared/drag'
 import type { TreeMove, TreeNode, TreeNodeMeta, TreeSchema, TreeVisibleNode } from './tree.types'
-import { applySelection, cascadeToggle, collapseChecked, createTypeahead } from '@xihan-ui/behavior'
-import { setup } from '@xihan-ui/machine'
+import { applySelection, cascadeToggle, collapseChecked, createTypeahead, setup } from '@xihan-ui/core'
 import { createMultiPointerSession, resolveSessionDoc, shouldActivate } from '@xihan-ui/pointer'
 import { dragAnnouncement, hitAlongNested } from '../shared/drag'
 import { snapshotDrift } from '../shared/drag-drift'

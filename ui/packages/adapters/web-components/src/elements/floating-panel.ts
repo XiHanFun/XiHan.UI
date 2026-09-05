@@ -1,3 +1,4 @@
+import type { IdGenerator, RuntimeConfig, Service } from '@xihan-ui/core'
 import type {
   FloatingPanelDimensionsChangeDetails,
   FloatingPanelOpenChangeDetails,
@@ -9,11 +10,9 @@ import type {
   FloatingPanelWindowState,
   FloatingPanelWindowStateChangeDetails,
 } from '@xihan-ui/headless'
-import type { IdGenerator, RuntimeConfig } from '@xihan-ui/kernel'
-import type { Service } from '@xihan-ui/machine'
 import type { OverlayExit } from '../overlay-exit'
+import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectFloatingPanel, floatingPanelAnatomy, floatingPanelMachine, floatingPanelMeta } from '@xihan-ui/headless'
-import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/kernel'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'

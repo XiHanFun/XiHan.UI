@@ -6,7 +6,7 @@ import { buildIconSet, exportNameOf, renderDeclaration, renderModule, renderType
 
 const ROOT = dirname(dirname(fileURLToPath(import.meta.url)))
 const SVG_DIR = join(ROOT, 'src', 'svg')
-const CORE_ICON_TYPES = join(ROOT, '..', '..', 'engine', 'kernel', 'src', 'types', 'icon.ts')
+const CORE_ICON_TYPES = join(ROOT, '..', '..', 'engine', 'core', 'src', 'kernel', 'types', 'icon.ts')
 
 /** 首方集要覆盖的语义。少一个就有界面还在拿 Unicode 字符顶；这份清单是意图，不是目录的倒影。 */
 const EXPECTED = [
@@ -342,7 +342,7 @@ describe('产物', () => {
       expect(dts).toContain(`export declare const ${exportName}: IconRecord`)
   })
 
-  it('类型副本是 kernel 那份逐字节原文，只在最前面多一行来源说明', async () => {
+  it('类型副本是 core 那份逐字节原文，只在最前面多一行来源说明', async () => {
     const core = await readFile(CORE_ICON_TYPES, 'utf8')
     const copy = renderTypes(core)
     expect(copy.startsWith(`${TYPES_HEADER}\n`)).toBe(true)

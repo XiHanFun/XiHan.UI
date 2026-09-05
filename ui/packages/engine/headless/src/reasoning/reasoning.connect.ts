@@ -1,8 +1,7 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
-import type { Service } from '@xihan-ui/machine'
+import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { ToolCallSchema } from '../tool-call'
 import type { ReasoningApi, ReasoningProps } from './reasoning.types'
-import { dataAttr } from '@xihan-ui/kernel'
+import { dataAttr } from '@xihan-ui/core'
 import { reasoningAnatomy } from './reasoning.anatomy'
 import { reasoningDuration, reasoningStatusText } from './reasoning.types'
 

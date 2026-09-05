@@ -1,11 +1,10 @@
 // @vitest-environment jsdom
 // 展开期的两个消解开关：Escape 与层外交互。要真 DOM，因此走 jsdom——
 // 机器把 config/registerLayer/getContentEl 塞进 refs 后，trackOverlay 才会装配消解层。
-import type { Service } from '@xihan-ui/machine'
+import type { Service } from '@xihan-ui/core'
 import type { ImageViewerOpenChangeDetails, ImageViewerSchema } from '../src/image-viewer'
-import { createRuntimeConfig } from '@xihan-ui/kernel'
-import { createService } from '@xihan-ui/machine'
-import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
+import { createRuntimeConfig, createService } from '@xihan-ui/core'
+import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it } from 'vitest'
 import { imageViewerMachine } from '../src/image-viewer'
 

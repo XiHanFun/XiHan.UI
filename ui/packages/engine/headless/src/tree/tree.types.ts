@@ -1,6 +1,4 @@
-import type { CascadeStrategy, Typeahead } from '@xihan-ui/behavior'
-import type { Direction, Orientation, PropTypes } from '@xihan-ui/kernel'
-import type { MachineSchema } from '@xihan-ui/machine'
+import type { CascadeStrategy, Direction, MachineSchema, Orientation, PropTypes, Typeahead } from '@xihan-ui/core'
 import type { MultiPointerSession } from '@xihan-ui/pointer'
 import type { DragRect, DragTranslations, DropTarget } from '../shared/drag'
 

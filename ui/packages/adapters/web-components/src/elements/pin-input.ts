@@ -1,5 +1,5 @@
+import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type { PinInputSchema, PinInputTranslations, PinInputType, PinInputValueChangeDetails } from '@xihan-ui/headless'
-import type { ControlVariant, Size, Tone } from '@xihan-ui/kernel'
 import { connectPinInput, pinInputAnatomy, pinInputMachine, pinInputMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'

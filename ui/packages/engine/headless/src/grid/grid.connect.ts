@@ -1,4 +1,4 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
 import type { GridApi, GridBreakpoint, GridCols, GridColsByBreakpoint, GridProps } from './grid.types'
 import { gridAnatomy } from './grid.anatomy'
 

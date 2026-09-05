@@ -5,11 +5,10 @@
  * @vitest-environment jsdom
  */
 
-import type { Service } from '@xihan-ui/machine'
+import type { Service } from '@xihan-ui/core'
 import type { PasswordInputSchema, PasswordInputValueChangeDetails, PasswordInputVisibilityChangeDetails } from '../src/password-input'
-import { normalizeProps } from '@xihan-ui/kernel'
-import { createService, FORM_RESET_EVENT } from '@xihan-ui/machine'
-import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
+import { createService, FORM_RESET_EVENT, normalizeProps } from '@xihan-ui/core'
+import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it } from 'vitest'
 // 直接指向组件目录：包主入口的导出由接线一并补，测试不等它
 import { connectPasswordInput, passwordInputMachine } from '../src/password-input'

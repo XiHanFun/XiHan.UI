@@ -1,9 +1,8 @@
 // 折叠面板的收起窗口：皮肤给 content 声明了 display，UA 的 [hidden]{display:none} 被盖掉，
 // 收起动画播完之前节点仍在渲染——这一段窗口靠 inert 把内容挡在读屏与 Tab 序之外。
 import type { CollapsibleSchema } from '../src/collapsible'
-import { normalizeProps } from '@xihan-ui/kernel'
-import { createService } from '@xihan-ui/machine'
-import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
+import { createService, normalizeProps } from '@xihan-ui/core'
+import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { describe, expect, it } from 'vitest'
 import { accordionMachine, connectAccordion } from '../src/accordion'
 import { collapsibleMachine, connectCollapsible } from '../src/collapsible'

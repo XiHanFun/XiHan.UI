@@ -1,5 +1,5 @@
+import type { Direction } from '@xihan-ui/core'
 import type { TreeApi, TreeNode, TreeNodeProps, TreeSchema } from '@xihan-ui/headless'
-import type { Direction } from '@xihan-ui/kernel'
 import type { PropType, Ref, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import type { TreeContext } from './use-tree'

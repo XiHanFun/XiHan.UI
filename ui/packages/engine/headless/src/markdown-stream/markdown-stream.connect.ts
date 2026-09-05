@@ -1,6 +1,6 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
 import type { MarkdownStreamApi, MarkdownStreamProps } from './markdown-stream.types'
-import { dataAttr } from '@xihan-ui/kernel'
+import { dataAttr } from '@xihan-ui/core'
 import { markdownStreamAnatomy } from './markdown-stream.anatomy'
 import { isLiveMarkdownBlock } from './markdown-stream.types'
 

@@ -1,9 +1,6 @@
-import type { ItemQuery, NavIntent } from '@xihan-ui/behavior'
-import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
-import type { Service } from '@xihan-ui/machine'
+import type { ItemQuery, NavIntent, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { StepsApi, StepsItemProps, StepsItemState, StepsSchema } from './steps.types'
-import { focusItem, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/behavior'
-import { contains, dataAttr } from '@xihan-ui/kernel'
+import { contains, dataAttr, focusItem, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
 import { stepsAnatomy } from './steps.anatomy'
 import { clampStep, normalizeStepCount } from './steps.machine'
 

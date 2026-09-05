@@ -1,5 +1,4 @@
-import type { PropTypes } from '@xihan-ui/kernel'
-import type { MachineSchema } from '@xihan-ui/machine'
+import type { MachineSchema, PropTypes } from '@xihan-ui/core'
 
 /** 轻提示的语气。loading 例外：它表达"事情还没完"，不自动消失。 */
 export type ToastType = 'info' | 'success' | 'warning' | 'error' | 'loading'

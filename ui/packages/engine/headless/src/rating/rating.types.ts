@@ -1,5 +1,4 @@
-import type { Direction, PropTypes, Size, Tone } from '@xihan-ui/kernel'
-import type { MachineSchema } from '@xihan-ui/machine'
+import type { Direction, MachineSchema, PropTypes, Size, Tone } from '@xihan-ui/core'
 
 export interface RatingValueChangeDetails {
   /** 已经钉到合法档位并夹进 [0, count] 的评分；0 表示还没评。 */

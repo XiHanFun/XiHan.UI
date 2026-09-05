@@ -1,6 +1,6 @@
+import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
 import type { ToggleGroupItemProps, ToggleGroupNode, ToggleGroupSchema, ToggleGroupValueChangeDetails } from '@xihan-ui/headless'
-import type { Direction, Orientation, Size, Tone } from '@xihan-ui/kernel'
-import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
+import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectToggleGroup, toggleGroupAnatomy, toggleGroupMachine, toggleGroupMeta } from '@xihan-ui/headless'
 import { createDeclaredDisabled } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'

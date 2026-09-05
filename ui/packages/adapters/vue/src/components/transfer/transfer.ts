@@ -1,3 +1,4 @@
+import type { Direction } from '@xihan-ui/core'
 import type {
   TransferCheckState,
   TransferFilter,
@@ -7,7 +8,6 @@ import type {
   TransferSchema,
   TransferSide,
 } from '@xihan-ui/headless'
-import type { Direction } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'

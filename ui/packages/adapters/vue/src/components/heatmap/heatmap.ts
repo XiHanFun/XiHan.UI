@@ -1,3 +1,4 @@
+import type { Direction, Size, Tone } from '@xihan-ui/core'
 import type {
   HeatmapApi,
   HeatmapAxisInput,
@@ -14,7 +15,6 @@ import type {
   HeatmapValue,
   HeatmapVariant,
 } from '@xihan-ui/headless'
-import type { Direction, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { heatmapMatrixKey } from '@xihan-ui/headless'

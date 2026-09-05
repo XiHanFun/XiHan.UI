@@ -1,4 +1,4 @@
-import type { PropTypes, Size, Tone } from '@xihan-ui/kernel'
+import type { PropTypes, Size, Tone } from '@xihan-ui/core'
 
 /** 角标挂在宿主的哪个角上。取值与 badge.css 的选择器一一对应。 */
 export type BadgePlacement = 'top-end' | 'top-start' | 'bottom-end' | 'bottom-start'

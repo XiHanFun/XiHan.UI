@@ -1,6 +1,6 @@
+import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
 import type { StepsItemProps, StepsSchema, StepsValueChangeDetails } from '@xihan-ui/headless'
-import type { Direction, Orientation, Size, Tone } from '@xihan-ui/kernel'
-import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
+import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectSteps, stepsAnatomy, stepsMachine, stepsMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'

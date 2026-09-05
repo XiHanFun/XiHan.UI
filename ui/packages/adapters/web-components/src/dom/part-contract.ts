@@ -1,6 +1,6 @@
 // 角色节点契约校验：作者写的 Light DOM 与组件解剖对不上时投递诊断。
 import type { ComponentMeta } from '@xihan-ui/headless'
-import { DIAGNOSTIC_CODES, getDiagnostics, reportDiagnostic } from '@xihan-ui/kernel'
+import { DIAGNOSTIC_CODES, getDiagnostics, reportDiagnostic } from '@xihan-ui/core'
 
 /** 只取校验用得上的两项，避免把 `Anatomy<具体 part 联合>` 收窄成 `Anatomy<string>` 时不可赋值。 */
 export interface PartContract {

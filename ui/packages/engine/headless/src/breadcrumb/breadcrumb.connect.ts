@@ -1,6 +1,6 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
 import type { BreadcrumbApi, BreadcrumbProps } from './breadcrumb.types'
-import { dataAttr } from '@xihan-ui/kernel'
+import { dataAttr } from '@xihan-ui/core'
 import { breadcrumbAnatomy } from './breadcrumb.anatomy'
 
 const parts = breadcrumbAnatomy.build()

@@ -1,5 +1,4 @@
-import type { Direction, PropTypes, Size } from '@xihan-ui/kernel'
-import type { MachineSchema } from '@xihan-ui/machine'
+import type { Direction, MachineSchema, PropTypes, Size } from '@xihan-ui/core'
 
 /**
  * 值的类型标签，直接落到 data-value-type 上供皮肤逐类型上色。

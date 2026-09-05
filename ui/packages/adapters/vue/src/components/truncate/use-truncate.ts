@@ -1,5 +1,5 @@
+import type { Service } from '@xihan-ui/core'
 import type { TruncateApi, TruncateSchema } from '@xihan-ui/headless'
-import type { Service } from '@xihan-ui/machine'
 import type { ComputedRef, Ref } from 'vue'
 import { connectTruncate, truncateMachine } from '@xihan-ui/headless'
 import { computed, ref } from 'vue'

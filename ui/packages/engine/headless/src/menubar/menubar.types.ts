@@ -1,6 +1,4 @@
-import type { Typeahead } from '@xihan-ui/behavior'
-import type { Cleanup, Direction, Layer, Orientation, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
-import type { MachineSchema } from '@xihan-ui/machine'
+import type { Cleanup, Direction, Layer, MachineSchema, Orientation, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone, Typeahead } from '@xihan-ui/core'
 
 /** 展开菜单时的落焦端：'first'/'last' 从集合两端进，'none' 焦点留在 trigger 上。 */
 export type MenubarFocusIntent = 'first' | 'last' | 'none'

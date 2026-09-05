@@ -1,4 +1,4 @@
-import type { OverlayCloseReason } from '@xihan-ui/kernel'
+import type { OverlayCloseReason } from '@xihan-ui/core'
 
 /** 关闭事件的最小形状：类型加一个可选的来源标记。 */
 export interface CloseEventLike {

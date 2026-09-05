@@ -1,5 +1,4 @@
-import type { Direction, PropTypes, Size } from '@xihan-ui/kernel'
-import type { MachineSchema } from '@xihan-ui/machine'
+import type { Direction, MachineSchema, PropTypes, Size } from '@xihan-ui/core'
 import type { DragRect, DragTranslations, DropTarget } from '../shared/drag'
 
 /**

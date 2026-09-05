@@ -1,5 +1,4 @@
-import type { Cleanup, Layer, OverlayBackdropVariant, OverlayCloseReason, PropTypes, RuntimeConfig } from '@xihan-ui/kernel'
-import type { MachineSchema } from '@xihan-ui/machine'
+import type { Cleanup, Layer, MachineSchema, OverlayBackdropVariant, OverlayCloseReason, PropTypes, RuntimeConfig } from '@xihan-ui/core'
 import type { MultiPointerSession, PinchSnapshot, TrackedPoint } from '@xihan-ui/pointer'
 
 /** 一张待看的图。 */

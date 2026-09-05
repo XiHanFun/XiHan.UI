@@ -161,21 +161,12 @@ importers:
 
   packages/adapters/vue:
     dependencies:
-      '@xihan-ui/behavior':
+      '@xihan-ui/core':
         specifier: workspace:^
-        version: link:../../engine/behavior
-      '@xihan-ui/code-highlight':
-        specifier: workspace:^
-        version: link:../../engine/code-highlight
+        version: link:../../engine/core
       '@xihan-ui/headless':
         specifier: workspace:^
         version: link:../../engine/headless
-      '@xihan-ui/kernel':
-        specifier: workspace:^
-        version: link:../../engine/kernel
-      '@xihan-ui/machine':
-        specifier: workspace:^
-        version: link:../../engine/machine
       '@xihan-ui/motion':
         specifier: workspace:^
         version: link:../../engine/motion
@@ -201,6 +192,9 @@ importers:
       '@xihan-ui/build':
         specifier: workspace:*
         version: link:../../../tooling/build
+      '@xihan-ui/code-highlight':
+        specifier: workspace:*
+        version: link:../../features/code-highlight
       '@xihan-ui/sound':
         specifier: workspace:*
         version: link:../../features/sound
@@ -231,21 +225,12 @@ importers:
 
   packages/adapters/web-components:
     dependencies:
-      '@xihan-ui/behavior':
+      '@xihan-ui/core':
         specifier: workspace:^
-        version: link:../../engine/behavior
-      '@xihan-ui/code-highlight':
-        specifier: workspace:^
-        version: link:../../engine/code-highlight
+        version: link:../../engine/core
       '@xihan-ui/headless':
         specifier: workspace:^
         version: link:../../engine/headless
-      '@xihan-ui/kernel':
-        specifier: workspace:^
-        version: link:../../engine/kernel
-      '@xihan-ui/machine':
-        specifier: workspace:^
-        version: link:../../engine/machine
       '@xihan-ui/motion':
         specifier: workspace:^
         version: link:../../engine/motion
@@ -274,6 +259,9 @@ importers:
       '@xihan-ui/build':
         specifier: workspace:*
         version: link:../../../tooling/build
+      '@xihan-ui/code-highlight':
+        specifier: workspace:*
+        version: link:../../features/code-highlight
       '@xihan-ui/styles':
         specifier: workspace:*
         version: link:../../design/styles
@@ -298,9 +286,9 @@ importers:
 
   packages/design/icons:
     devDependencies:
-      '@xihan-ui/kernel':
+      '@xihan-ui/core':
         specifier: workspace:^
-        version: link:../../engine/kernel
+        version: link:../../engine/core
       '@xihan-ui/tsconfig':
         specifier: workspace:*
         version: link:../../../tooling/tsconfig
@@ -329,11 +317,8 @@ importers:
         specifier: 'catalog:'
         version: 4.1.10(@types/node@24.13.3)(@vitest/browser-playwright@4.1.10)(@vitest/coverage-v8@4.1.11)(jsdom@27.4.0)(vite@8.1.5(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.6.1)(tsx@4.19.4)(yaml@2.9.0))
 
-  packages/engine/behavior:
+  packages/engine/core:
     dependencies:
-      '@xihan-ui/kernel':
-        specifier: workspace:^
-        version: link:../kernel
       '@xihan-ui/motion':
         specifier: workspace:^
         version: link:../motion
@@ -351,36 +336,14 @@ importers:
         specifier: 'catalog:'
         version: 4.1.10(@types/node@24.13.3)(@vitest/browser-playwright@4.1.10)(@vitest/coverage-v8@4.1.11)(jsdom@27.4.0)(vite@8.1.5(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.6.1)(tsx@4.19.4)(yaml@2.9.0))
 
-  packages/engine/code-highlight:
-    dependencies:
-      '@xihan-ui/kernel':
-        specifier: workspace:^
-        version: link:../kernel
-    devDependencies:
-      '@xihan-ui/build':
-        specifier: workspace:*
-        version: link:../../../tooling/build
-      '@xihan-ui/tsconfig':
-        specifier: workspace:*
-        version: link:../../../tooling/tsconfig
-      vitest:
-        specifier: 'catalog:'
-        version: 4.1.10(@types/node@24.13.3)(@vitest/browser-playwright@4.1.10)(@vitest/coverage-v8@4.1.11)(jsdom@27.4.0)(vite@8.1.5(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.6.1)(tsx@4.19.4)(yaml@2.9.0))
-
   packages/engine/headless:
     dependencies:
       '@internationalized/date':
         specifier: 'catalog:'
         version: 3.12.2
-      '@xihan-ui/behavior':
+      '@xihan-ui/core':
         specifier: workspace:^
-        version: link:../behavior
-      '@xihan-ui/kernel':
-        specifier: workspace:^
-        version: link:../kernel
-      '@xihan-ui/machine':
-        specifier: workspace:^
-        version: link:../machine
+        version: link:../core
       '@xihan-ui/motion':
         specifier: workspace:^
         version: link:../motion
@@ -400,38 +363,6 @@ importers:
       jsdom:
         specifier: 'catalog:'
         version: 27.4.0
-      vitest:
-        specifier: 'catalog:'
-        version: 4.1.10(@types/node@24.13.3)(@vitest/browser-playwright@4.1.10)(@vitest/coverage-v8@4.1.11)(jsdom@27.4.0)(vite@8.1.5(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.6.1)(tsx@4.19.4)(yaml@2.9.0))
-
-  packages/engine/kernel:
-    dependencies:
-      '@xihan-ui/motion':
-        specifier: workspace:^
-        version: link:../motion
-    devDependencies:
-      '@xihan-ui/build':
-        specifier: workspace:*
-        version: link:../../../tooling/build
-      '@xihan-ui/tsconfig':
-        specifier: workspace:*
-        version: link:../../../tooling/tsconfig
-      vitest:
-        specifier: 'catalog:'
-        version: 4.1.10(@types/node@24.13.3)(@vitest/browser-playwright@4.1.10)(@vitest/coverage-v8@4.1.11)(jsdom@27.4.0)(vite@8.1.5(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.6.1)(tsx@4.19.4)(yaml@2.9.0))
-
-  packages/engine/machine:
-    dependencies:
-      '@xihan-ui/kernel':
-        specifier: workspace:^
-        version: link:../kernel
-    devDependencies:
-      '@xihan-ui/build':
-        specifier: workspace:*
-        version: link:../../../tooling/build
-      '@xihan-ui/tsconfig':
-        specifier: workspace:*
-        version: link:../../../tooling/tsconfig
       vitest:
         specifier: 'catalog:'
         version: 4.1.10(@types/node@24.13.3)(@vitest/browser-playwright@4.1.10)(@vitest/coverage-v8@4.1.11)(jsdom@27.4.0)(vite@8.1.5(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.6.1)(tsx@4.19.4)(yaml@2.9.0))
@@ -468,9 +399,9 @@ importers:
 
   packages/engine/position:
     dependencies:
-      '@xihan-ui/kernel':
+      '@xihan-ui/core':
         specifier: workspace:^
-        version: link:../kernel
+        version: link:../core
     devDependencies:
       '@vitest/browser':
         specifier: 'catalog:'
@@ -499,9 +430,9 @@ importers:
 
   packages/features/animations:
     dependencies:
-      '@xihan-ui/kernel':
+      '@xihan-ui/core':
         specifier: workspace:^
-        version: link:../../engine/kernel
+        version: link:../../engine/core
       '@xihan-ui/motion':
         specifier: workspace:^
         version: link:../../engine/motion
@@ -521,12 +452,9 @@ importers:
 
   packages/features/backgrounds:
     dependencies:
-      '@xihan-ui/behavior':
+      '@xihan-ui/core':
         specifier: workspace:^
-        version: link:../../engine/behavior
-      '@xihan-ui/kernel':
-        specifier: workspace:^
-        version: link:../../engine/kernel
+        version: link:../../engine/core
       '@xihan-ui/motion':
         specifier: workspace:^
         version: link:../../engine/motion
@@ -546,9 +474,25 @@ importers:
 
   packages/features/chat-stream:
     dependencies:
-      '@xihan-ui/kernel':
+      '@xihan-ui/core':
         specifier: workspace:^
-        version: link:../../engine/kernel
+        version: link:../../engine/core
+    devDependencies:
+      '@xihan-ui/build':
+        specifier: workspace:*
+        version: link:../../../tooling/build
+      '@xihan-ui/tsconfig':
+        specifier: workspace:*
+        version: link:../../../tooling/tsconfig
+      vitest:
+        specifier: 'catalog:'
+        version: 4.1.10(@types/node@24.13.3)(@vitest/browser-playwright@4.1.10)(@vitest/coverage-v8@4.1.11)(jsdom@27.4.0)(vite@8.1.5(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.6.1)(tsx@4.19.4)(yaml@2.9.0))
+
+  packages/features/code-highlight:
+    dependencies:
+      '@xihan-ui/core':
+        specifier: workspace:^
+        version: link:../../engine/core
     devDependencies:
       '@xihan-ui/build':
         specifier: workspace:*
@@ -577,9 +521,9 @@ importers:
 
   packages/features/sound:
     dependencies:
-      '@xihan-ui/kernel':
+      '@xihan-ui/core':
         specifier: workspace:^
-        version: link:../../engine/kernel
+        version: link:../../engine/core
     devDependencies:
       '@xihan-ui/build':
         specifier: workspace:*
@@ -609,12 +553,12 @@ importers:
 
   tooling/testing:
     dependencies:
+      '@xihan-ui/core':
+        specifier: workspace:*
+        version: link:../../packages/engine/core
       '@xihan-ui/headless':
         specifier: workspace:*
         version: link:../../packages/engine/headless
-      '@xihan-ui/kernel':
-        specifier: workspace:*
-        version: link:../../packages/engine/kernel
       axe-core:
         specifier: 'catalog:'
         version: 4.12.1

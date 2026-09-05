@@ -8,15 +8,13 @@ Framework-agnostic component library. State machines and accessibility live in a
 
 123 components, each shipping a headless core, a Vue component, a custom element, and a default skin.
 
-> The 18 public packages are released in lockstep and published to npm; the documentation site is at https://ui.docs.xihanfun.com. Accessibility is scanned in real Chromium; the backlog is down to three recorded entries (the shared table’s `tag` disabled-state contrast and `prompt-input`’s author-owned accessible name, plus the WC-side `steps` required-children), plus one replay exemption for `breadcrumb`.
+> The 16 public packages are released in lockstep and published to npm; the documentation site is at https://ui.docs.xihanfun.com. Accessibility is scanned in real Chromium; the backlog is down to three recorded entries (the shared table’s `tag` disabled-state contrast and `prompt-input`’s author-owned accessible name, plus the WC-side `steps` required-children), plus one replay exemption for `breadcrumb`.
 
 ## Packages
 
 | Package | Responsibility |
 | --- | --- |
-| `@xihan-ui/kernel` | Structural primitives: anatomy, `mergeProps`, `normalizeProps`, scope, context, ids |
-| `@xihan-ui/machine` | State machine runtime: `createMachine`, interpreter contract, controlled bindings |
-| `@xihan-ui/behavior` | Behavior primitives: dismissable layer, focus scope, scroll lock, presence, collection, typeahead |
+| `@xihan-ui/core` | Runtime base: anatomy, `mergeProps`, `normalizeProps`, scope, ids; the `createMachine` state machine runtime; dismissable layer, focus scope, scroll lock, presence, collection, typeahead |
 | `@xihan-ui/motion` | Motion primitives: easing single source, tweening, frame loop, reduced-motion preference, closed-form springs, Web Animations wrapper |
 | `@xihan-ui/headless` | 123 components as anatomy + machine + `connect` — no styles, no framework |
 | `@xihan-ui/vue` | Vue 3 adapter |
@@ -26,7 +24,7 @@ Framework-agnostic component library. State machines and accessibility live in a
 | `@xihan-ui/position` | Floating layer positioning — self-implemented, no third-party runtime dependency |
 | `@xihan-ui/pointer` | Pointer session: one pointer from press to release — tracking, filtering, teardown; self-implemented, zero dependencies |
 | `@xihan-ui/chat-stream` | AI protocol core: SSE reading → protocol normalization → parts reduction → thread store (no DOM, no framework) |
-| `@xihan-ui/code-highlight` | Code highlighting — self-implemented coarse tokenizer, no third-party runtime dependency |
+| `@xihan-ui/code-highlight` | Code highlighting — self-implemented coarse tokenizer, no third-party runtime dependency; an optional peer of the adapters |
 | `@xihan-ui/markdown` | Streaming markdown renderer: incremental block splitting, stable keys, sanitization (CommonMark subset, 489/652) |
 | `@xihan-ui/backgrounds` | Background layer: WebGL2 effects and data-driven particle clouds, framework agnostic |
 | `@xihan-ui/sound` | Procedural UI sounds synthesized with the Web Audio API — zero audio files, framework agnostic |
@@ -55,7 +53,7 @@ pnpm typecheck
 pnpm lint
 pnpm boundaries   # layered dependency gate (dependency-cruiser)
 pnpm build
-pnpm size         # bundle size ratchet — builds, then checks the 34 budgets in .size-limit.json
+pnpm size         # bundle size ratchet — builds, then checks the 32 budgets in .size-limit.json
 ```
 
 ## Conventions

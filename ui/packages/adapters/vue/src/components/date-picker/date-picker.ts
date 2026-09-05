@@ -1,3 +1,4 @@
+import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui/core'
 import type {
   CalendarApi,
   CalendarCellProps,
@@ -12,7 +13,6 @@ import type {
   DateSegmentSet,
   DateSegmentType,
 } from '@xihan-ui/headless'
-import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui/kernel'
 import type { ComputedRef, PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h, mergeProps, Teleport } from 'vue'

@@ -1,7 +1,7 @@
 import type { SeparatorProps } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
+import { DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/core'
 import { connectSeparator } from '@xihan-ui/headless'
-import { DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/kernel'
 import { defineComponent, h } from 'vue'
 import { vueNormalize } from '../../runtime/normalize-props'
 

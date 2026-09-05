@@ -1,7 +1,6 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
-import type { Service } from '@xihan-ui/machine'
+import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { ToolCallApi, ToolCallProps, ToolCallSchema } from './tool-call.types'
-import { dataAttr } from '@xihan-ui/kernel'
+import { dataAttr } from '@xihan-ui/core'
 import { toolCallAnatomy } from './tool-call.anatomy'
 import { isToolCallRunning, toolCallDuration, toolCallStatusText } from './tool-call.types'
 

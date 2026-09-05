@@ -1,4 +1,4 @@
-import { createAnatomy } from '@xihan-ui/kernel'
+import { createAnatomy } from '@xihan-ui/core'
 
 // root 是外壳；trigger 是折叠开关，icon/indicator/label/duration 是它里面的排版位；
 // content 是思考正文。label 与 duration 排在 trigger 之内，

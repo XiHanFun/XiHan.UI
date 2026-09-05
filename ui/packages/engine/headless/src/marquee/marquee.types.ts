@@ -1,4 +1,4 @@
-import type { PropTypes } from '@xihan-ui/kernel'
+import type { PropTypes } from '@xihan-ui/core'
 
 /**
  * 滚动方向：内容往这个方向走。

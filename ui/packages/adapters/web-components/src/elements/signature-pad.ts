@@ -1,5 +1,5 @@
+import type { Service } from '@xihan-ui/core'
 import type { SignaturePadApi, SignaturePadDrawDetails, SignaturePadDrawEndDetails, SignaturePadDrawingOptions, SignaturePadSchema, SignaturePadTranslations } from '@xihan-ui/headless'
-import type { Service } from '@xihan-ui/machine'
 import { connectSignaturePad, signaturePadAnatomy, signaturePadMachine, signaturePadMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'

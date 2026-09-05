@@ -1,6 +1,6 @@
 import type { PanelConstraint } from './splitter.sizing'
 import type { SplitterSchema } from './splitter.types'
-import { setup } from '@xihan-ui/machine'
+import { setup } from '@xihan-ui/core'
 import { createPointerSession, resolveSessionDoc } from '@xihan-ui/pointer'
 import { clampIndex } from '../shared/number'
 import {

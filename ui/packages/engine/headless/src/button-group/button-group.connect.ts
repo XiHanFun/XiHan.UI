@@ -1,4 +1,4 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
 import type { ButtonGroupApi, ButtonGroupProps } from './button-group.types'
 import { buttonGroupAnatomy } from './button-group.anatomy'
 

@@ -117,7 +117,7 @@ if ($forcedLevel) {
         exit
     }
     $synthetic = Join-Path $uiRoot ".changeset\version-upgrade-$forcedLevel.md"
-    $body = "---`n`"@xihan-ui/kernel`": $forcedLevel`n---`n`n$reason`n"
+    $body = "---`n`"@xihan-ui/core`": $forcedLevel`n---`n`n$reason`n"
     [System.IO.File]::WriteAllText($synthetic, $body, (New-Object System.Text.UTF8Encoding $false))
     Write-Output "已写入合成变更集：$synthetic"
 }

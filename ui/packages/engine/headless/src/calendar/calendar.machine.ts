@@ -2,8 +2,7 @@ import type { CalendarDate } from '@internationalized/date'
 import type { CalendarView } from './calendar.grid'
 import type { CalendarSchema, CalendarSelectionMode } from './calendar.types'
 import { getLocalTimeZone, startOfMonth, today } from '@internationalized/date'
-import { focusItem, itemValue, queryItems } from '@xihan-ui/behavior'
-import { setup } from '@xihan-ui/machine'
+import { focusItem, itemValue, queryItems, setup } from '@xihan-ui/core'
 import { calendarCellTriggerQuery } from './calendar.anatomy'
 import {
   calendarPageMonths,

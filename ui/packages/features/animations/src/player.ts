@@ -11,7 +11,7 @@ import type {
   StaggerFrom,
   StaggerOptions,
 } from './types'
-import { DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/kernel'
+import { DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/core'
 import { animate } from '@xihan-ui/motion'
 import { motionPresets } from './presets'
 import { clampSpec, DEFAULT_DURATION, toKeyframes } from './spec'

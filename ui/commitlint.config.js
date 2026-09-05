@@ -9,9 +9,7 @@ export default {
       'always',
       [
         // —— 库包（与 packages/ 下的包名一一对应）——
-        'kernel',
-        'machine',
-        'behavior',
+        'core',
         'motion',
         'position',
         'pointer',

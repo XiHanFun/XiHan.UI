@@ -1,5 +1,5 @@
 import type { DiffViewSchema } from './diff-view.types'
-import { setup } from '@xihan-ui/machine'
+import { setup } from '@xihan-ui/core'
 import { toggleItemValue } from '../checkbox-group'
 
 const { createMachine } = setup<DiffViewSchema>()

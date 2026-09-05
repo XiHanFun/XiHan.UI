@@ -1,5 +1,5 @@
-import type { ItemQuery } from '@xihan-ui/behavior'
-import { createAnatomy } from '@xihan-ui/kernel'
+import type { ItemQuery } from '@xihan-ui/core'
+import { createAnatomy } from '@xihan-ui/core'
 
 export const listboxAnatomy = createAnatomy('listbox', [
   'root',

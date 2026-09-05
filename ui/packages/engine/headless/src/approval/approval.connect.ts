@@ -1,7 +1,6 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
-import type { Service } from '@xihan-ui/machine'
+import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { ApprovalApi, ApprovalSchema, ApprovalScope, ApprovalStatus } from './approval.types'
-import { dataAttr, isComposingEvent } from '@xihan-ui/kernel'
+import { dataAttr, isComposingEvent } from '@xihan-ui/core'
 import { approvalAnatomy } from './approval.anatomy'
 import { canApproveScopes } from './approval.types'
 

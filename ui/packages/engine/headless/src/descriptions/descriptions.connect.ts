@@ -1,6 +1,6 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
 import type { DescriptionsApi, DescriptionsProps } from './descriptions.types'
-import { dataAttr } from '@xihan-ui/kernel'
+import { dataAttr } from '@xihan-ui/core'
 import { descriptionsAnatomy } from './descriptions.anatomy'
 
 const parts = descriptionsAnatomy.build()

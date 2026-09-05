@@ -5,7 +5,7 @@
 ## 声明
 
 ```ts
-import { createAnatomy } from '@xihan-ui/kernel'
+import { createAnatomy } from '@xihan-ui/core'
 
 export const accordionAnatomy = createAnatomy('accordion', [
   'root',
@@ -127,7 +127,7 @@ export function connectAccordion<T extends PropTypes>(
 ): AccordionApi<T>
 ```
 
-`normalize` 按元素类型分成 `element` / `button` / `input` / `label` / `img` 等若干 getter，各框架各实现一份。Vue 适配器传 `vueNormalize`，Web Components 适配器传 `wcNormalize`，无头场景直接用 `@xihan-ui/kernel` 的恒等归一化器 `normalizeProps`。
+`normalize` 按元素类型分成 `element` / `button` / `input` / `label` / `img` 等若干 getter，各框架各实现一份。Vue 适配器传 `vueNormalize`，Web Components 适配器传 `wcNormalize`，无头场景直接用 `@xihan-ui/core` 的恒等归一化器 `normalizeProps`。
 
 需要把自己的属性叠上去时用 `mergeProps`，它的合并语义是固定的：
 

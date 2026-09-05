@@ -1,5 +1,4 @@
-import type { Direction, Orientation, PropTypes, Size, Tone } from '@xihan-ui/kernel'
-import type { MachineSchema } from '@xihan-ui/machine'
+import type { Direction, MachineSchema, Orientation, PropTypes, Size, Tone } from '@xihan-ui/core'
 
 export interface StepsValueChangeDetails {
   /** 变化后的步序，恒在 [0, count] 内。 */
