@@ -1,4 +1,4 @@
-import type { Size, Tone } from '@xihan-ui/core'
+import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type {
   ApprovalDecisionDetails,
   ApprovalNoteChangeDetails,
@@ -38,6 +38,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @attr {boolean} deny-on-escape - Escape 判为拒绝，默认开
  * @attr {boolean} deny-on-unmount - 卸载时若仍待决就按拒绝派一次，默认关
  * @attr {string} live - 播报档位：polite（默认）或 assertive
+ * @attr {'outline'|'subtle'|'ghost'} variant - 形态：描边（缺省档）/ 底色分区 / 无壳内联
  * @attr {string} tone - 语气
  * @attr {string} size - 尺寸：sm / md / lg
  * @fires decision - 判定落定；detail 为 `{ requestId, decision, source, scopes }`
@@ -73,6 +74,7 @@ export class XhApprovalElement extends XhElement {
     denyOnEscape: { converter: BOOLEAN_CONVERTER, attribute: 'deny-on-escape' },
     denyOnUnmount: { converter: BOOLEAN_CONVERTER, attribute: 'deny-on-unmount' },
     live: { converter: STRING_CONVERTER },
+    variant: { converter: STRING_CONVERTER },
     tone: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
     // 数组与对象值走不了 HTML 属性，只作为 property 暴露
@@ -92,6 +94,7 @@ export class XhApprovalElement extends XhElement {
   declare denyOnEscape?: boolean
   declare denyOnUnmount?: boolean
   declare live?: 'polite' | 'assertive'
+  declare variant?: ControlVariant
   declare tone?: Tone
   declare size?: Size
   /** 可勾选的授权范围；不给就没有勾选那一段。 */
@@ -122,6 +125,7 @@ export class XhApprovalElement extends XhElement {
     denyOnEscape: this.denyOnEscape,
     denyOnUnmount: this.denyOnUnmount,
     live: this.live,
+    variant: this.variant,
     tone: this.tone,
     size: this.size,
     translations: this.translations,

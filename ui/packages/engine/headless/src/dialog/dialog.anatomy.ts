@@ -7,6 +7,7 @@ export const dialogAnatomy = createAnatomy('dialog', [
   'positioner',
   'content',
   'header',
+  'indicator',
   'title',
   'description',
   'body',

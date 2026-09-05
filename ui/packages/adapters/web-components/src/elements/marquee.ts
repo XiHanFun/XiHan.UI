@@ -23,8 +23,9 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @attr {'left'|'right'|'up'|'down'} direction - 滚动方向，缺省 left
  * @attr {number} speed - 每秒滚过的像素数，写成 root 上的 --xh-marquee-speed
  * @attr {boolean} pause-on-hover - 指针停在窗口上时暂停，键盘焦点落进窗口时同样暂停
+ * @attr {boolean} paused - 受控暂停：停在当前位置，比 pause-on-hover 优先
  * @attr {boolean} auto-fill - 轨道里铺两份内容，走完一份正好接上第二份
- * @csspart root - 只露出一段的窗口，承载 data-direction / data-orientation / data-pause-on-hover / data-auto-fill
+ * @csspart root - 只露出一段的窗口，承载 data-direction / data-orientation / data-pause-on-hover / data-paused / data-auto-fill
  * @csspart content - 在窗口里走的轨道，动画挂在它身上
  */
 export class XhMarqueeElement extends XhElement {
@@ -35,12 +36,14 @@ export class XhMarqueeElement extends XhElement {
     direction: { converter: STRING_CONVERTER },
     speed: { converter: NUMBER_CONVERTER },
     pauseOnHover: { type: Boolean, attribute: 'pause-on-hover' },
+    paused: { type: Boolean },
     autoFill: { type: Boolean, attribute: 'auto-fill' },
   }
 
   declare direction?: MarqueeDirection
   declare speed?: number
   declare pauseOnHover?: boolean
+  declare paused?: boolean
   declare autoFill?: boolean
 
   protected wire(): void {
@@ -49,6 +52,7 @@ export class XhMarqueeElement extends XhElement {
       direction: this.direction,
       speed: this.speed,
       pauseOnHover: this.pauseOnHover ?? false,
+      paused: this.paused ?? false,
       autoFill: this.autoFill ?? false,
     } satisfies MarqueeProps, wcNormalize)
 

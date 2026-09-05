@@ -222,6 +222,53 @@
     color: var(--xh-fg-disabled);
   }
 
+  /* 信息区：一段次要文字，与页码格子同一条基线 */
+  [data-scope='pagination'][data-part='summary'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    block-size: var(--xh-pagination-item-h, var(--xh-_pagination-item-size));
+    color: var(--xh-pagination-summary-fg, var(--xh-fg-muted));
+    font-size: var(--xh-pagination-font-size, var(--xh-_pagination-font-size));
+    line-height: var(--xh-leading-none);
+    white-space: nowrap;
+  }
+
+  [data-scope='pagination'][data-part='summary'][hidden] {
+    display: none;
+  }
+
+  /* 跳页输入框：与每页条数控制器同一副外观，宽度按页码位数留够 */
+  [data-scope='pagination'][data-part='jumper'] {
+    flex: none;
+    inline-size: var(--xh-pagination-jumper-w, calc(var(--xh-space-8) * 2));
+    block-size: var(--xh-pagination-item-h, var(--xh-_pagination-item-size));
+    padding-inline: var(--xh-pagination-item-px, var(--xh-_pagination-item-px));
+    border: var(--xh-stroke-thin) solid var(--xh-pagination-jumper-border, var(--xh-border-default));
+    border-radius: var(--xh-pagination-item-radius, var(--xh-shape-control));
+    background: var(--xh-pagination-jumper-bg, var(--xh-bg-surface));
+    color: var(--xh-pagination-item-fg, var(--xh-fg-default));
+    font-size: var(--xh-pagination-font-size, var(--xh-_pagination-font-size));
+    line-height: var(--xh-leading-none);
+    appearance: none;
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='pagination'][data-part='jumper'][hidden] {
+    display: none;
+  }
+
+  [data-scope='pagination'][data-part='jumper']:hover:not(:disabled) {
+    border-color: var(--xh-pagination-jumper-border-hover, var(--xh-border-strong));
+    background: var(--xh-pagination-jumper-bg-hover, var(--xh-bg-subtle-hover));
+  }
+
+  [data-scope='pagination'][data-part='jumper']:disabled {
+    color: var(--xh-fg-disabled);
+  }
+
   /* 摊开省略位的定位层。三处坐标系必须同为 fixed：机器交给引擎的 strategy、
      连接层的内联 position、这里 —— 差一处就会算在错的坐标系里 */
   [data-scope='pagination'][data-part='positioner'] {

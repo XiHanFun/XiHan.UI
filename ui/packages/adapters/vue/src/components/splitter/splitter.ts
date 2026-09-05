@@ -1,8 +1,9 @@
 import type { Direction, Orientation } from '@xihan-ui/core'
-import type { SplitterApi, SplitterPanelProps, SplitterPanelState, SplitterSchema } from '@xihan-ui/headless'
+import type { SplitterApi, SplitterPanelProps, SplitterPanelState, SplitterSchema, SplitterTranslations } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { provideSplitter, useSplitterContext } from './context'
 import { useSplitter } from './use-splitter'
 
@@ -40,6 +41,7 @@ export const XhSplitterRoot = defineComponent({
     disabled: Boolean,
     step: { type: Number, default: undefined },
     largeStep: { type: Number, default: undefined },
+    translations: { type: Object as PropType<Partial<SplitterTranslations>>, default: undefined },
   },
   // sizes-change 携带 { sizes }，update:sizes 携带裸数组；sizes-change-end 只在操作收尾时发一次
   emits: {
@@ -58,7 +60,7 @@ export const XhSplitterRoot = defineComponent({
     const notifyEnd: SplitterProps['onSizesChangeEnd'] = (details) => {
       emit('sizes-change-end', details)
     }
-    const ctx = useSplitter(props as SplitterProps, notify, notifyEnd)
+    const ctx = useSplitter(withXhConfig('splitter', props) as SplitterProps, notify, notifyEnd)
     provideSplitter(ctx)
     // 容器节点交给机器，矩形在拖拽开始时现量
     return () => h('div', {

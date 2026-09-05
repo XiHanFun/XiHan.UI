@@ -1,4 +1,4 @@
-import type { SelectItemProps } from '@xihan-ui/headless'
+import type { SelectGroupProps, SelectItemProps } from '@xihan-ui/headless'
 import type { ComputedRef, InjectionKey } from 'vue'
 import type { SelectContext } from './use-select'
 import { inject, provide } from 'vue'
@@ -30,6 +30,24 @@ export function useSelectItemContext(): SelectItemContext {
   const ctx = inject(ITEM_KEY, null)
   if (!ctx)
     throw new Error('[xh] Select 条目子部件必须用在 XhSelectItem 内')
+  return ctx
+}
+
+/** 分组自报的身份，供分组标题取到同一个值（标题的 id 由它派生）。 */
+export interface SelectGroupContext {
+  group: ComputedRef<SelectGroupProps>
+}
+
+const GROUP_KEY: InjectionKey<SelectGroupContext> = Symbol.for('xh-select-group')
+
+export function provideSelectGroup(ctx: SelectGroupContext): void {
+  provide(GROUP_KEY, ctx)
+}
+
+export function useSelectGroupContext(): SelectGroupContext {
+  const ctx = inject(GROUP_KEY, null)
+  if (!ctx)
+    throw new Error('[xh] Select 分组标题必须用在 XhSelectGroup 内')
   return ctx
 }
 

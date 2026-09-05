@@ -20,6 +20,7 @@
 - 按下之后要走够 `activationDistance`（默认 5px）才算拖动，因此条目本身仍然可以点击。
 - 拖到容器边缘会自动滚动，视口外的落点够得着。
 - `orientation` 三档：竖排、横排，以及换行网格用的 `both`——网格按最近中心判落点。
+- 写一个 `drop-indicator` 节点（排在末项之后），拖动中会在松手后条目要插进去的那条缝上画一条线；落点回到起点时它自动收起。
 
 ## 示例
 
@@ -52,7 +53,7 @@ orientation 三档：竖排、横排，换行网格用 both，落点按最近中
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-sortable>` |
-| Vue 组件 | `XhSortableItem` `XhSortableItemDragTrigger` `XhSortableLiveRegion` `XhSortableRoot` |
+| Vue 组件 | `XhSortableDropIndicator` `XhSortableItem` `XhSortableItemDragTrigger` `XhSortableLiveRegion` `XhSortableRoot` |
 | 组合式函数 | `useSortable` |
 | 状态机 | `sortableMachine` |
 | 皮肤 | `@xihan-ui/styles/sortable.css` |
@@ -61,7 +62,7 @@ orientation 三档：竖排、横排，换行网格用 both，落点按最近中
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="sortable"`：**`root`** · **`item`** · `item-drag-trigger` · `live-region`
+`data-scope="sortable"`：**`root`** · **`item`** · `item-drag-trigger` · `drop-indicator` · `live-region`
 
 ## Props
 
@@ -123,6 +124,7 @@ orientation 三档：竖排、横排，换行网格用 both，落点按最近中
 | `getRootProps` | `() => T['element']` |  |
 | `getItemProps` | `(props: SortableItemProps) => T['element']` |  |
 | `getItemDragTriggerProps` | `(props: SortableItemProps) => T['element']` |  |
+| `getDropIndicatorProps` | `() => T['element']` | 落点线：拖动中且落点与起点不同一位时才在场，位置由内联样式给出。 |
 | `getLiveRegionProps` | `() => T['element']` |  |
 
 ## 键盘
@@ -150,6 +152,7 @@ orientation 三档：竖排、横排，换行网格用 both，落点按最近中
 | `item-drag-trigger` | `aria-pressed` | 'true' \| 'false' |
 | `item-drag-trigger` | `aria-roledescription` | 'sortable' |
 | `item-drag-trigger` | `role` | 'button' |
+| `drop-indicator` | `aria-hidden` | 'true' |
 | `live-region` | `aria-atomic` | 'true' |
 | `live-region` | `aria-live` | 'polite' |
 | `live-region` | `role` | 'status' |
@@ -174,13 +177,15 @@ orientation 三档：竖排、横排，换行网格用 both，落点按最近中
 | `item` | `data-disabled` | ''（条件成立时才出现） |
 | `item` | `data-dragging` | ''（条件成立时才出现） |
 | `item` | `data-index` | String(item?.index ?? -1) |
+| `item-drag-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `item-drag-trigger` | `data-dragging` | ''（条件成立时才出现） |
+| `drop-indicator` | `data-orientation` | props.orientation |
 
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-sortable-drag-bg-hover` · `--xh-sortable-drag-fg` · `--xh-sortable-drag-fg-disabled` · `--xh-sortable-drag-fg-hover` · `--xh-sortable-drag-grip-h` · `--xh-sortable-drag-grip-w` · `--xh-sortable-drag-radius` · `--xh-sortable-drag-size` · `--xh-sortable-gap` · `--xh-sortable-item-opacity-dragging` · `--xh-sortable-item-shadow-dragging`
+`--xh-sortable-drag-bg-hover` · `--xh-sortable-drag-fg` · `--xh-sortable-drag-fg-disabled` · `--xh-sortable-drag-fg-hover` · `--xh-sortable-drag-grip-h` · `--xh-sortable-drag-grip-w` · `--xh-sortable-drag-radius` · `--xh-sortable-drag-size` · `--xh-sortable-drop-indicator-bg` · `--xh-sortable-drop-indicator-radius` · `--xh-sortable-drop-indicator-size` · `--xh-sortable-gap` · `--xh-sortable-item-opacity-dragging` · `--xh-sortable-item-shadow-dragging`
 
 ## 动效
 

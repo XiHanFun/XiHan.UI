@@ -34,6 +34,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {string} name - 表单字段名；给了才参与提交
  * @attr {number} max-length - 字符数上限；同时落成原生 maxlength 与机器侧截断
  * @attr {boolean} clearable - 开启清空：有值时清空按钮显出，Escape 接管
+ * @attr {boolean} show-count - 显出字数部件；关掉时该部件收起
  * @attr {boolean} auto-size - 多行宿主（input 部件写成 textarea）的自动高度；行数界限对象经 autoSize property 赋
  * @attr {'outline'|'subtle'|'ghost'} variant - 视觉变体
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
@@ -44,7 +45,10 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart control - 视觉盒；写了它就由它画描边、底色与聚焦环，输入框与清空按钮排在它里面
  * @csspart label - 标题；`for` 恒写向 input，故须是原生 `<label>` 才点得动
  * @csspart input - 真正的输入框，须是原生 `<input>`；键盘交互全在它身上
+ * @csspart prefix - 输入框前的装饰段（货币符、单位、图标）；对读屏隐藏
+ * @csspart suffix - 输入框后的装饰段；对读屏隐藏
  * @csspart clear-trigger - 清空按钮，须是原生 button；不占 Tab 位，名字取 translations.clearTrigger；清不了时收起
+ * @csspart count - 字数；文本由元素按 `已用 / 上限` 填，作者写了自己的内容即不覆盖；没开 show-count 时收起
  */
 export class XhTextFieldElement extends XhElement {
   static override partContract = { anatomy: textFieldAnatomy, meta: textFieldMeta }
@@ -62,6 +66,7 @@ export class XhTextFieldElement extends XhElement {
     name: { converter: STRING_CONVERTER },
     maxLength: { converter: NUMBER_CONVERTER, attribute: 'max-length' },
     clearable: { converter: BOOLEAN_CONVERTER },
+    showCount: { converter: BOOLEAN_CONVERTER, attribute: 'show-count' },
     autoSize: { converter: BOOLEAN_CONVERTER, attribute: 'auto-size' },
     variant: { converter: STRING_CONVERTER },
     tone: { converter: STRING_CONVERTER },
@@ -80,6 +85,7 @@ export class XhTextFieldElement extends XhElement {
   declare name?: string
   declare maxLength?: number
   declare clearable?: boolean
+  declare showCount?: boolean
   /** 布尔走 auto-size 属性；行数界限对象进不了属性，只作为 property 赋。 */
   declare autoSize?: TextFieldSchema['props']['autoSize']
   declare variant?: ControlVariant
@@ -106,6 +112,7 @@ export class XhTextFieldElement extends XhElement {
       name: this.name,
       maxLength: this.maxLength,
       clearable: this.clearable ?? false,
+      showCount: this.showCount ?? false,
       autoSize: this.autoSize,
       variant: this.variant,
       tone: this.tone,
@@ -121,6 +128,11 @@ export class XhTextFieldElement extends XhElement {
    */
   get canClear(): boolean {
     return this.ctrl.service ? connectTextField(this.ctrl.service, wcNormalize).canClear : false
+  }
+
+  /** 当前字数，即值的长度。机器尚未建起时为 0。 */
+  get count(): number {
+    return this.ctrl.service ? connectTextField(this.ctrl.service, wcNormalize).count : 0
   }
 
   /**
@@ -141,6 +153,20 @@ export class XhTextFieldElement extends XhElement {
       connectTextField(this.ctrl.service, wcNormalize).clear()
   }
 
+  /** 首次见到该节点时若已有内容则判为归作者，之后一概不碰。 */
+  private readonly ownsText = new WeakMap<HTMLElement, boolean>()
+
+  private fillOwnedText(el: HTMLElement, text: string): void {
+    let owned = this.ownsText.get(el)
+    if (owned === undefined) {
+      owned = (el.textContent ?? '').trim() === ''
+      this.ownsText.set(el, owned)
+    }
+    if (!owned || el.textContent === text)
+      return
+    el.textContent = text
+  }
+
   protected wire(): void {
     const api = connectTextField(this.ctrl.service, wcNormalize)
 
@@ -159,7 +185,14 @@ export class XhTextFieldElement extends XhElement {
     // 程序化写值不触发 input 事件，spread 后补量一次
     if (host === 'textarea' && inputEl)
       autoSizeTextarea(inputEl as HTMLTextAreaElement, api.autoSize)
+    put('prefix', api.getPrefixProps() as Record<string, unknown>)
+    put('suffix', api.getSuffixProps() as Record<string, unknown>)
     put('clear-trigger', api.getClearTriggerProps() as Record<string, unknown>)
+    put('count', api.getCountProps() as Record<string, unknown>)
+    // 字数的数字由元素填；作者第一次就写了内容的节点判为归作者，之后一概不碰
+    const countEl = this.getPart('count')
+    if (countEl)
+      this.fillOwnedText(countEl, api.maxLength === undefined ? `${api.count}` : `${api.count} / ${api.maxLength}`)
     // 输入框的 value 不必在这里另外回写：spreader 把 value/checked/selected 三个键
     // 当 property 写（dom/spread.ts 的 PROP_KEYS），属性写法只管初值、盖不住用户输入过的框
 

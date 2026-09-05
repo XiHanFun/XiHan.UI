@@ -16,7 +16,8 @@
 
 - 传的是图标记录本身而不是名字：按名字查表就得把整张表静态引进来，摇树全废。
 - 命名只有两态：给了非空白 `label` 就是 `role="img"` 加 `aria-label`；没给就是 `aria-hidden="true"` 的装饰件。没有第三种。
-- `size` 三档改直径、`weight` 三档改描边粗细；缺省档不落 `data-*`，皮肤的基础规则就是缺省档。
+- `size` 八档改直径（`text` 跟着相邻文字的字号走，其余七档是固定直径）、`weight` 三档改描边粗细；缺省档 `md` 不落 `data-*`，皮肤的基础规则就是缺省档。
+- `rotate` 只收 90 / 180 / 270 三档，`flip` 沿横轴或纵轴取反；两者同写时叠加，都是静态几何，不带过渡。
 - 图标没有底色，语气只落在前景上。
 
 ## 示例
@@ -29,7 +30,7 @@
 
 ### 尺寸与描边
 
-size 三档改直径、weight 三档改 stroke-width；缺省档不落 data-* 属性，皮肤的基础规则就是缺省档
+size 八档改直径（text 跟着相邻文字的字号走）、weight 三档改 stroke-width；缺省档 md 不落 data-* 属性，皮肤的基础规则就是缺省档
 
 <XhDemo src="icon/02-size-weight" />
 
@@ -57,6 +58,12 @@ size 三档改直径、weight 三档改 stroke-width；缺省档不落 data-* �
 
 <XhDemo src="icon/06-depth" />
 
+### 旋转与翻转
+
+rotate 只收 90 / 180 / 270 三档，flip 沿横轴或纵轴取反；两者是独立属性，同写即叠加
+
+<XhDemo src="icon/07-rotate-flip" />
+
 ## 产物
 
 | 层 | 值 |
@@ -77,9 +84,11 @@ size 三档改直径、weight 三档改 stroke-width；缺省档不落 data-* �
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `flip` | `IconFlip` |  | 翻转轴：horizontal / vertical / both，不翻就不写。旋转与翻转同写时两者叠加。 |
 | `icon` | `IconRecord` |  | 要画的图标。传的是记录本身而不是名字： 名字要走运行期查表，查表就必须把全表静态引进来，摇树全废。 |
 | `label` | `string` |  | 可及名字。 给了非空白文本 = 这个图标是页面上唯一说出这件事的东西，输出 role="img" + aria-label； 缺席或全空白 = 装饰，输出 aria-hidden="true"。没有第三种形态。 |
-| `size` | `Size` |  | 直径档位，缺省 md；缺省档不输出 data-size。 |
+| `rotate` | `IconRotate \| string` |  | 旋转档位：90 / 180 / 270，不转就不写。 收字符串是因为 WC 那侧的档位来自 DOM 属性；不是这三档的值一律不写出。 |
+| `size` | `IconSize` |  | 直径档位，缺省 md；缺省档不输出 data-size。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色 |
 | `weight` | `IconWeight` |  | 描边粗细档位，缺省 regular；缺省档不输出 data-weight。 |
 
@@ -122,7 +131,9 @@ size 三档改直径、weight 三档改 stroke-width；缺省档不落 data-* �
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `root` | `data-flip` | props.flip |
 | `root` | `data-icon` | icon?.name |
+| `root` | `data-rotate` | rotateAttr(props.rotate) |
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
 | `root` | `data-weight` | props.weight |

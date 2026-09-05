@@ -50,6 +50,7 @@ const ID_LIST_CONVERTER = {
  * @csspart root - 承载 data-orientation / data-disabled / data-dragging 的容器
  * @csspart item - 一项；位移由内联 transform 给出，被拖的那项带 data-dragging
  * @csspart item-drag-trigger - role=button 的拖拽手柄，指针与键盘交互全在它身上
+ * @csspart drop-indicator - 落点线；拖动中画在松手后这一项会插进去的那条缝上，位置由内联样式给出，节点排在末项之后
  * @csspart live-region - 视觉隐藏的播报区，拖动过程的读屏文案写在这里
  */
 export class XhSortableElement extends XhElement {
@@ -149,6 +150,10 @@ export class XhSortableElement extends XhElement {
 
     for (const el of this.getParts('item-drag-trigger'))
       this.spreader.spread(el, api.getItemDragTriggerProps({ id: this.partId(el), disabled: this.partDisabled(el) }) as Record<string, unknown>)
+
+    const indicator = this.getPart('drop-indicator')
+    if (indicator)
+      this.spreader.spread(indicator, api.getDropIndicatorProps() as Record<string, unknown>)
 
     const live = this.getPart('live-region')
     if (live) {

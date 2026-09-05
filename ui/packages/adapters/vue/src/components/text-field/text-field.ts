@@ -14,8 +14,11 @@ type TextFieldProps = TextFieldSchema['props']
 /** 默认插槽的载荷：当前值、值状态标志与写值方法。 */
 export type TextFieldRootSlotProps = Pick<
   TextFieldApi,
-  'value' | 'empty' | 'atLimit' | 'canClear' | 'setValue' | 'clear'
+  'value' | 'empty' | 'atLimit' | 'count' | 'canClear' | 'setValue' | 'clear'
 >
+
+/** 字数部件默认插槽的载荷：当前字数、上限与顶到上限的标志。 */
+export type TextFieldCountSlotProps = Pick<TextFieldApi, 'count' | 'maxLength' | 'atLimit'>
 
 export const XhTextFieldRoot = defineComponent({
   name: 'XhTextFieldRoot',
@@ -32,6 +35,7 @@ export const XhTextFieldRoot = defineComponent({
     name: { type: String, default: undefined },
     maxLength: { type: Number, default: undefined },
     clearable: Boolean,
+    showCount: Boolean,
     autoSize: { type: [Boolean, Object] as PropType<TextFieldProps['autoSize']>, default: undefined },
     variant: { type: String as PropType<ControlVariant>, default: undefined },
     tone: { type: String as PropType<Tone>, default: undefined },
@@ -57,6 +61,7 @@ export const XhTextFieldRoot = defineComponent({
       value: ctx.api.value.value,
       empty: ctx.api.value.empty,
       atLimit: ctx.api.value.atLimit,
+      count: ctx.api.value.count,
       canClear: ctx.api.value.canClear,
       setValue: ctx.api.value.setValue,
       clear: ctx.api.value.clear,
@@ -115,10 +120,46 @@ export const XhTextFieldInput = defineComponent({
   },
 })
 
+export const XhTextFieldPrefix = defineComponent({
+  name: 'XhTextFieldPrefix',
+  setup(_, { slots }) {
+    const ctx = useTextFieldContext()
+    return () => h('span', ctx.api.value.getPrefixProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+export const XhTextFieldSuffix = defineComponent({
+  name: 'XhTextFieldSuffix',
+  setup(_, { slots }) {
+    const ctx = useTextFieldContext()
+    return () => h('span', ctx.api.value.getSuffixProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhTextFieldClearTrigger = defineComponent({
   name: 'XhTextFieldClearTrigger',
   setup(_, { slots }) {
     const ctx = useTextFieldContext()
     return () => h('button', ctx.api.value.getClearTriggerProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+/** 字数：不写内容时渲 `已用 / 上限`，没设上限就只渲已用。 */
+export const XhTextFieldCount = defineComponent({
+  name: 'XhTextFieldCount',
+  slots: Object as SlotsType<{
+    default?: (props: TextFieldCountSlotProps) => VNode[]
+  }>,
+  setup(_, { slots }) {
+    const ctx = useTextFieldContext()
+    return () => {
+      const api = ctx.api.value
+      const fallback = api.maxLength === undefined ? `${api.count}` : `${api.count} / ${api.maxLength}`
+      return h(
+        'span',
+        api.getCountProps() as Record<string, unknown>,
+        slots.default?.({ count: api.count, maxLength: api.maxLength, atLimit: api.atLimit }) ?? fallback,
+      )
+    }
   },
 })

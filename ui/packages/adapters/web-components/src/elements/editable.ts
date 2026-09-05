@@ -1,4 +1,4 @@
-import type { Service } from '@xihan-ui/core'
+import type { ControlVariant, Service, Size, Tone } from '@xihan-ui/core'
 import type {
   EditableActivationMode,
   EditableEditChangeDetails,
@@ -48,6 +48,9 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {'click'|'dblclick'|'focus'|'none'} activation-mode - 预览区怎么进编辑态，默认 click
  * @attr {boolean} select-on-focus - 进编辑态时全选，默认开；写 select-on-focus="false" 关掉
  * @attr {boolean} auto-resize - 输入框宽度跟着内容走（落成原生 size）
+ * @attr {'outline'|'subtle'|'ghost'} variant - 视觉变体
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
+ * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires value-change - 编辑途中的值变化；detail 为 `{ value: string }`
  * @fires value-commit - 提交；detail 为 `{ value: string, previousValue: string }`
  * @fires value-revert - 撤销；detail 为 `{ value: string, discardedValue: string }`
@@ -80,6 +83,9 @@ export class XhEditableElement extends XhElement {
     activationMode: { converter: STRING_CONVERTER, attribute: 'activation-mode' },
     selectOnFocus: { converter: BOOLEAN_CONVERTER, attribute: 'select-on-focus' },
     autoResize: { converter: BOOLEAN_CONVERTER, attribute: 'auto-resize' },
+    variant: { converter: STRING_CONVERTER },
+    tone: { converter: STRING_CONVERTER },
+    size: { converter: STRING_CONVERTER },
   }
 
   declare value?: string
@@ -96,6 +102,9 @@ export class XhEditableElement extends XhElement {
   declare activationMode?: EditableActivationMode
   declare selectOnFocus?: boolean
   declare autoResize?: boolean
+  declare variant?: ControlVariant
+  declare tone?: Tone
+  declare size?: Size
 
   /** preview 的文字是否归元素填：首次见到该节点时定，之后不再回读。 */
   private readonly ownsPreviewText = new WeakMap<HTMLElement, boolean>()
@@ -139,6 +148,9 @@ export class XhEditableElement extends XhElement {
       activationMode: this.activationMode,
       selectOnFocus: this.selectOnFocus,
       autoResize: this.autoResize ?? false,
+      variant: this.variant,
+      tone: this.tone,
+      size: this.size,
       onValueChange: this.notifyValue,
       onValueCommit: this.notifyCommit,
       onValueRevert: this.notifyRevert,

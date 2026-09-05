@@ -1,4 +1,4 @@
-import type { GridColumnCount, GridColumnOffset, GridProps } from '@xihan-ui/headless'
+import type { GridColumnCount, GridItemProps, GridProps } from '@xihan-ui/headless'
 import { connectGrid, gridAnatomy, gridMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -31,11 +31,26 @@ const COLS_CONVERTER = {
   },
 }
 
-/** 读作者写在角色节点上的数值声明：属性缺席、为空或不是数字时当作没写；取值范围由 connect 判。 */
-function authorNumber(el: HTMLElement, name: string): number | undefined {
+/**
+ * 读作者写在角色节点上的占位声明：属性缺席或为空时当作没写。
+ * 写整数就是各档同一个值，写 JSON 对象（`span='{"base":1,"md":6}'`）就是逐档的值；
+ * 解析不出对象、或不是数字时同样当没写，取值范围由 connect 判。
+ */
+function authorTier(el: HTMLElement, name: string): number | Record<string, number> | undefined {
   const raw = el.getAttribute(name)
   if (raw == null || raw.trim() === '')
     return undefined
+  if (raw.trimStart().startsWith('{')) {
+    try {
+      const parsed: unknown = JSON.parse(raw)
+      return parsed !== null && typeof parsed === 'object' && !Array.isArray(parsed)
+        ? (parsed as Record<string, number>)
+        : undefined
+    }
+    catch {
+      return undefined
+    }
+  }
   const n = Number(raw)
   return Number.isFinite(n) ? n : undefined
 }
@@ -47,18 +62,23 @@ function authorNumber(el: HTMLElement, name: string): number | undefined {
  * 窄视口分一列、宽到 md 断点后分三列。
  *
  * 每一格的跨列与错列写在 item 角色节点自己的 `span` / `offset` 属性上：
- * span 收 1 至 12、offset 收 1 至 11，范围外的值按没写算。
+ * span 收 1 至 12、offset 收 1 至 11，范围外的值按没写算；两者同样收 JSON 对象逐档写
+ * （`span='{"base":1,"md":6}'`）。
  * 运行期改写这两个属性不触发重新接线，需作者自行 requestUpdate。
  *
  * 根上不写 role：容器只做排布，里面装的是列表还是一组卡片由作者自己声明。
  *
  * @customElement xh-grid
  * @attr {number|string} cols - 列数（1 至 12 的整数），不写或超出范围按一列排；写 JSON 对象则逐档给列数（base / sm / md / lg / xl）
+ * @attr {number} rows - 行数（1 至 12 的整数），不写则行数由内容撑出来
+ * @attr {'xs'|'sm'|'md'|'lg'} min-col-width - 每列最少多宽；写了它列数改由容器宽度除以这个下限得出
  * @attr {'xs'|'sm'|'md'|'lg'|'xl'} gap - 行列间距档位，逐档对应一个间距令牌
+ * @attr {'xs'|'sm'|'md'|'lg'|'xl'} row-gap - 只改行间距，不写则跟着 gap 走
+ * @attr {'xs'|'sm'|'md'|'lg'|'xl'} column-gap - 只改列间距，不写则跟着 gap 走
  * @attr {'start'|'center'|'end'|'stretch'|'baseline'} align - 每一项在自己那格里的块向对齐
  * @attr {'start'|'center'|'end'|'stretch'} justify-items - 每一项在自己那格里的行内对齐
- * @csspart root - 排布容器，承载 data-cols（及逐档的 data-cols-sm/-md/-lg/-xl）/ data-gap / data-align / data-justify-items
- * @csspart item - 一格，承载自报的 data-span / data-offset
+ * @csspart root - 排布容器，承载 data-cols（及逐档的 data-cols-sm/-md/-lg/-xl）/ data-rows / data-min-col / data-gap / data-row-gap / data-column-gap / data-align / data-justify-items
+ * @csspart item - 一格，承载自报的 data-span / data-offset（及各自逐档的 -sm/-md/-lg/-xl）
  */
 export class XhGridElement extends XhElement {
   static override partContract = { anatomy: gridAnatomy, meta: gridMeta }
@@ -66,13 +86,21 @@ export class XhGridElement extends XhElement {
   // 描述符逐个写全，CEM 分析器读不了对象展开
   static override properties = {
     cols: { converter: COLS_CONVERTER },
+    rows: { converter: { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) } },
+    minColWidth: { converter: STRING_CONVERTER, attribute: 'min-col-width' },
     gap: { converter: STRING_CONVERTER },
+    rowGap: { converter: STRING_CONVERTER, attribute: 'row-gap' },
+    columnGap: { converter: STRING_CONVERTER, attribute: 'column-gap' },
     align: { converter: STRING_CONVERTER },
     justifyItems: { converter: STRING_CONVERTER, attribute: 'justify-items' },
   }
 
   declare cols?: GridColumnCount | ColsByBreakpoint
+  declare rows?: number
+  declare minColWidth?: string
   declare gap?: string
+  declare rowGap?: string
+  declare columnGap?: string
   declare align?: string
   declare justifyItems?: string
 
@@ -80,7 +108,11 @@ export class XhGridElement extends XhElement {
     // 读响应式 property，不回读 DOM 特性
     const api = connectGrid({
       cols: this.cols,
+      rows: this.rows as GridProps['rows'],
+      minColWidth: this.minColWidth as GridProps['minColWidth'],
       gap: this.gap as GridProps['gap'],
+      rowGap: this.rowGap as GridProps['rowGap'],
+      columnGap: this.columnGap as GridProps['columnGap'],
       align: this.align as GridProps['align'],
       justifyItems: this.justifyItems as GridProps['justifyItems'],
     } satisfies GridProps, wcNormalize)
@@ -92,8 +124,8 @@ export class XhGridElement extends XhElement {
     // 多实例 part 逐个打，每一格的占位取作者写的 span 与 offset
     for (const el of this.getParts('item')) {
       const attrs = api.getItemProps({
-        span: authorNumber(el, 'span') as GridColumnCount | undefined,
-        offset: authorNumber(el, 'offset') as GridColumnOffset | undefined,
+        span: authorTier(el, 'span') as GridItemProps['span'],
+        offset: authorTier(el, 'offset') as GridItemProps['offset'],
       })
       this.spreader.spread(el, attrs as Record<string, unknown>)
     }

@@ -44,13 +44,14 @@ export function connectMention<T extends PropTypes>(
 ): MentionApi<T> {
   const { state, prop, send, context, refs, scope } = service
   const open = state.get() === 'open'
-  const ids = scope.ids('mention', 'content')
+  const ids = scope.ids('mention', 'content', 'label', 'input')
 
   const value = context.get('value')
   const trigger = context.get('trigger')
   // 高亮不承载焦点，只经 aria-activedescendant 上报；收起时为 null
   const highlighted = context.get('highlightedValue') ?? null
   const disabled = !!prop('disabled')
+  const loading = !!prop('loading')
   const readOnly = !!prop('readOnly')
   const invalid = !!prop('invalid')
   const loop = prop('loop') ?? true
@@ -69,6 +70,8 @@ export function connectMention<T extends PropTypes>(
     disabled: !!node.disabled,
   }))
   const metaOf = new Map(collection.map(meta => [meta.value, meta]))
+  // 没给 collection 时条目是作者自己铺的，组件无从判空
+  const empty = nodes !== undefined && collection.length === 0
 
   const isHighlighted = (v: string): boolean => highlighted === v
 
@@ -120,6 +123,7 @@ export function connectMention<T extends PropTypes>(
   return {
     open,
     collection,
+    empty,
     value,
     query: trigger?.query ?? null,
     activePrefix: trigger?.prefix ?? null,
@@ -139,6 +143,15 @@ export function connectMention<T extends PropTypes>(
       'data-disabled': dataAttr(disabled),
       'data-readonly': dataAttr(readOnly),
       'data-invalid': dataAttr(invalid),
+      'data-loading': dataAttr(loading),
+    }),
+
+    // 标题指向真正的输入框：指到外层包裹会丢掉名字与聚焦
+    getLabelProps: () => normalize.label({
+      ...parts.label.attrs,
+      'id': ids.label,
+      'for': ids.input,
+      'data-disabled': dataAttr(disabled),
     }),
 
     /**
@@ -148,7 +161,11 @@ export function connectMention<T extends PropTypes>(
      */
     getInputProps: (input = {}) => normalize.textarea({
       ...parts.input.attrs,
-      ...(inputLabel === undefined ? {} : { 'aria-label': inputLabel }),
+      'id': ids.input,
+      'name': prop('name'),
+      // 给了 translations.input 就走 aria-label；没给才指向 label 部件——
+      // 两条同时写时 aria-labelledby 优先，会把作者那句盖掉
+      ...(inputLabel === undefined ? { 'aria-labelledby': ids.label } : { 'aria-label': inputLabel }),
       ...(placeholder === undefined ? {} : { placeholder }),
       // textarea 没有 type 属性
       'type': isMultilineHost(input) ? undefined : 'text',
@@ -274,6 +291,8 @@ export function connectMention<T extends PropTypes>(
       'role': 'listbox',
       // role=listbox 必须有可及名字，而这里没有可指的标题部件，只能自带一句
       'aria-label': prop('translations')?.content ?? 'Mentions',
+      // 取数在途的播报归候选面板：两个相位占位自己不带这一位
+      'aria-busy': loading ? 'true' : undefined,
       // tabindex 写 -1 不能省：可滚动容器会被某些浏览器自动塞进 Tab 序列
       'tabindex': -1,
       'data-state': stateAttr,
@@ -284,6 +303,25 @@ export function connectMention<T extends PropTypes>(
         // 不拦的话按下候选会让输入框失焦、浮层随即收起；在冒泡途中拦同样有效
         event.preventDefault()
       },
+    }),
+
+    // 空态节点必须待在 role=listbox 之外（列表里只允许 option），放 positioner 里当 content 的兄弟；
+    // role=status 自带 polite 活区
+    getEmptyProps: () => normalize.element({
+      ...parts.empty.attrs,
+      'role': 'status',
+      'data-state': stateAttr,
+      // 取数在途时让位给在途占位，两者不同屏
+      'hidden': !empty || loading || undefined,
+    }),
+
+    // 在途占位：与空态占位同一个位置、同一副观感，两者不同屏。
+    // 唤起了才顶上来：没唤起时整块候选浮层都不在场
+    getLoadingProps: () => normalize.element({
+      ...parts.loading.attrs,
+      'role': 'status',
+      'data-state': stateAttr,
+      'hidden': !(open && loading) || undefined,
     }),
 
     getItemProps: item => normalize.element({

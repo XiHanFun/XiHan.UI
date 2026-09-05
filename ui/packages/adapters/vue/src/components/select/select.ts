@@ -1,10 +1,10 @@
 import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui/core'
-import type { SelectApi, SelectItemProps, SelectNode, SelectNodeMeta, SelectOpenChangeDetails, SelectSchema, SelectValueChangeDetails } from '@xihan-ui/headless'
+import type { SelectApi, SelectGroupProps, SelectItemProps, SelectNode, SelectNodeMeta, SelectOpenChangeDetails, SelectSchema, SelectValueChangeDetails } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import { computed, defineComponent, h, mergeProps, onBeforeUnmount, ref, Teleport, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
-import { provideSelect, provideSelectItem, provideSelectTag, useSelectContext, useSelectItemContext, useSelectTagContext } from './context'
+import { provideSelect, provideSelectGroup, provideSelectItem, provideSelectTag, useSelectContext, useSelectGroupContext, useSelectItemContext, useSelectTagContext } from './context'
 import { useSelect } from './use-select'
 
 type SelectProps = SelectSchema['props']
@@ -33,6 +33,7 @@ export const XhSelectRoot = defineComponent({
     /** 自动渲染树里是否带清空按钮；手写部件不看它，写了节点即可清。 */
     clearable: Boolean,
     invalid: { type: Boolean, default: undefined },
+    loading: { type: Boolean, default: undefined },
     required: Boolean,
     name: { type: String, default: undefined },
     translations: { type: Object as PropType<SelectProps['translations']>, default: undefined },
@@ -238,6 +239,48 @@ export const XhSelectFooter = defineComponent({
     // 浮层底部的操作区：是 list 的兄弟，不进列表框的拥有关系，
     // 放在里面的按钮既不违反 listbox 的子节点约束，也不会被方向键与连打检索走到
     return () => h('div', ctx.api.value.getFooterProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+export const XhSelectEmpty = defineComponent({
+  name: 'XhSelectEmpty',
+  setup(_, { slots }) {
+    const ctx = useSelectContext()
+    // 空态占位：写在 content 里、list 的兄弟，不进列表框的拥有关系。
+    // 给了 collection 时收放归连接层，条目手写时归作者
+    return () => h('div', ctx.api.value.getEmptyProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+export const XhSelectLoading = defineComponent({
+  name: 'XhSelectLoading',
+  setup(_, { slots }) {
+    const ctx = useSelectContext()
+    // 在途占位：与空态占位同一个位置，取数期间顶上来
+    return () => h('div', ctx.api.value.getLoadingProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+export const XhSelectGroup = defineComponent({
+  name: 'XhSelectGroup',
+  props: {
+    value: { type: String, required: true },
+  },
+  setup(props, { slots }) {
+    const ctx = useSelectContext()
+    const group = computed<SelectGroupProps>(() => ({ value: props.value }))
+    provideSelectGroup({ group })
+    // 分组容器：条目照常挂在它里面，role=group 是列表框允许拥有的两种子节点之一
+    return () => h('div', ctx.api.value.getGroupProps(group.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
+export const XhSelectGroupLabel = defineComponent({
+  name: 'XhSelectGroupLabel',
+  setup(_, { slots }) {
+    const ctx = useSelectContext()
+    const { group } = useSelectGroupContext()
+    return () => h('span', ctx.api.value.getGroupLabelProps(group.value) as Record<string, unknown>, slots.default?.())
   },
 })
 

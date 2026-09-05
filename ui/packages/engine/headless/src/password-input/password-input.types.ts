@@ -35,6 +35,12 @@ export interface PasswordInputSchema extends MachineSchema {
      * 密码管理器靠它决定这一格是填旧密码还是存新密码，注册表单要显式写 new-password。
      */
     autoComplete?: string
+    /**
+     * 强度档位，0 到 4 共五档。给了才显出强度条，缺省不显。
+     * 打分算法归调用方：口令强弱是产品规则（字典、泄漏库、业务口径），组件只负责把档位画出来。
+     * 超出区间的值被夹回区间。
+     */
+    strength?: number
     /** 读屏文案覆盖；没给的条目走组件内建英文。 */
     translations?: Partial<PasswordInputTranslations>
     /** 形态：outline / subtle / ghost，决定颜色怎么用。 */
@@ -90,6 +96,8 @@ export interface PasswordInputApi<T extends PropTypes = PropTypes> {
    * 适配器把它落成提示部件的文本内容，读屏念的就是这一段。
    */
   capsLockMessage: string
+  /** 夹回 0–4 后的强度档位；没给 strength 时是 undefined，此时强度条收起。 */
+  strength: number | undefined
   /** 直接写值，只受 disabled / readOnly 约束。 */
   setValue: (next: string) => void
   /** 指定明暗态；整枚控件禁用时不生效。 */
@@ -102,6 +110,8 @@ export interface PasswordInputApi<T extends PropTypes = PropTypes> {
   getInputProps: () => T['input']
   getVisibilityTriggerProps: () => T['button']
   getCapsLockIndicatorProps: () => T['element']
+  /** 强度条：档位落在 data-level 与 aria-valuenow 上；没给 strength 时带 hidden 收起。 */
+  getStrengthMeterProps: () => T['element']
 }
 
 /** 读屏用的文案，默认英文。 */
@@ -112,4 +122,6 @@ export interface PasswordInputTranslations {
   visibilityTriggerHide: string
   /** 大写锁定提示的正文：这一句既是屏幕上看得见的字，也是活区域播报出去的内容。 */
   capsLockOn: string
+  /** 强度条的可及名：条里通常只有几段色块，读屏念不出这是在说什么。 */
+  strengthMeter: string
 }

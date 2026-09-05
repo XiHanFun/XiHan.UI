@@ -79,6 +79,38 @@ export const toolCallSuite: ConformanceSuite = {
       },
     },
     {
+      name: '形态档落到根上：三档由皮肤按 data-variant 选，连接层只如实转述',
+      spec: { apg: APG },
+      props: { variant: 'ghost' },
+      initial: {
+        parts: {
+          root: { 'data-variant': 'ghost' },
+        },
+      },
+    },
+    {
+      name: '落定与出错落成根上两位布尔：开合占着 data-state，阶段另走这两位',
+      spec: { apg: APG },
+      props: { phase: 'output-error' },
+      initial: {
+        parts: {
+          root: { 'data-settled': '', 'data-errored': '' },
+        },
+      },
+      steps: [
+        {
+          kind: 'setProps',
+          props: { phase: 'output-available' },
+          expect: { parts: { root: { 'data-settled': '', 'data-errored': null } }, events: [] },
+        },
+        {
+          kind: 'setProps',
+          props: { phase: 'awaiting-approval' },
+          expect: { parts: { root: { 'data-settled': null, 'data-errored': null } }, events: [] },
+        },
+      ],
+    },
+    {
       name: '跑完自动收起',
       spec: { apg: APG },
       props: { phase: 'input-streaming' },

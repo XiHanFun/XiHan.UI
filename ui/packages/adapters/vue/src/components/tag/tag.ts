@@ -4,10 +4,19 @@ import type { PropType } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { slotIsPlainText } from '../../runtime/slot-content'
 import { provideTag, useTagContext } from './context'
 import { useTag } from './use-tag'
 
 type TagProps = TagSchema['props']
+
+export const XhTagLabel = defineComponent({
+  name: 'XhTagLabel',
+  setup(_, { slots }) {
+    const ctx = useTagContext()
+    return () => h('span', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
+  },
+})
 
 export const XhTagRoot = defineComponent({
   name: 'XhTagRoot',
@@ -35,15 +44,13 @@ export const XhTagRoot = defineComponent({
     const ctx = useTag(withXhConfig('tag', props) as TagProps, notify)
     provideTag(ctx)
     // 标签随文排，根用 span 才能落在一行文字里
-    return () => h('span', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.())
-  },
-})
-
-export const XhTagLabel = defineComponent({
-  name: 'XhTagLabel',
-  setup(_, { slots }) {
-    const ctx = useTagContext()
-    return () => h('span', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
+    return () => {
+      const content = slots.default?.()
+      // 默认插槽里只有文字时替它包一层 label：截断规则挂在 label 上，
+      // 直接摊在 root 上的文字过长会把关闭钮挤出去。作者自己写了节点就原样放行
+      const children = slotIsPlainText(content) ? [h(XhTagLabel, null, () => content)] : content
+      return h('span', ctx.api.value.getRootProps() as Record<string, unknown>, children)
+    }
   },
 })
 

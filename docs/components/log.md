@@ -50,9 +50,9 @@ loading 让日志区报 aria-busy 并把指针换成忙碌态；「正在拉取�
 
 <XhDemo src="log/04-loading" />
 
-### 行的样子归作者
+### 级别
 
-line 只发身份与等宽排版，级别配色、时间戳、行内标记这些都写在行里
+行上写 level，四档 debug / info / warn / error 由皮肤染色；时间戳与行内标记仍归作者
 
 <XhDemo src="log/05-levels" />
 
@@ -92,6 +92,7 @@ line 只发身份与等宽排版，级别配色、时间戳、行内标记这些
 | `onStickChange` | `(details: LogStickChangeDetails) => void` |  | 粘底状态变化时通知宿主。 |
 | `loading` | `boolean` |  | 行还在路上：日志区报 aria-busy，根落 data-loading。 |
 | `rows` | `number` |  | 视口按多少行定高；缺省时高度由皮肤给。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg。改的是行文字号与内衬，行高不随档变。 |
 | `translations` | `Partial<LogTranslations>` |  |  |
 
 ## 事件
@@ -139,7 +140,7 @@ line 只发身份与等宽排版，级别配色、时间戳、行内标记这些
 | `getRootProps` | `() => T['element']` |  |
 | `getViewportProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |
-| `getLineProps` | `() => T['element']` |  |
+| `getLineProps` | `(props?: LogLineProps) => T['element']` |  |
 | `getScrollToEndTriggerProps` | `() => T['button']` |  |
 | `getLiveRegionProps` | `() => T['element']` |  |
 
@@ -185,14 +186,16 @@ line 只发身份与等宽排版，级别配色、时间戳、行内标记这些
 | --- | --- | --- |
 | `root` | `data-at-bottom` | ''（条件成立时才出现） |
 | `root` | `data-loading` | ''（条件成立时才出现） |
+| `root` | `data-size` | props.size |
 | `root` | `data-sticking` | ''（条件成立时才出现） |
+| `line` | `data-level` | line?.level |
 | `scroll-to-end-trigger` | `data-state` | 'visible' \| 'hidden' |
 
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-log-bg` · `--xh-log-border` · `--xh-log-content-px` · `--xh-log-fg` · `--xh-log-font` · `--xh-log-font-size` · `--xh-log-icon-size` · `--xh-log-line-height` · `--xh-log-radius` · `--xh-log-rows` · `--xh-log-scroll-to-end-trigger-bg` · `--xh-log-scroll-to-end-trigger-bg-hover` · `--xh-log-scroll-to-end-trigger-border` · `--xh-log-scroll-to-end-trigger-fg` · `--xh-log-scroll-to-end-trigger-inset` · `--xh-log-scroll-to-end-trigger-radius` · `--xh-log-scroll-to-end-trigger-shadow` · `--xh-log-scroll-to-end-trigger-size` · `--xh-log-tab-size`
+`--xh-log-bg` · `--xh-log-border` · `--xh-log-content-px` · `--xh-log-fg` · `--xh-log-font` · `--xh-log-font-size` · `--xh-log-icon-size` · `--xh-log-level-debug-fg` · `--xh-log-level-error-fg` · `--xh-log-level-info-fg` · `--xh-log-level-warn-fg` · `--xh-log-line-height` · `--xh-log-radius` · `--xh-log-rows` · `--xh-log-scroll-to-end-trigger-bg` · `--xh-log-scroll-to-end-trigger-bg-hover` · `--xh-log-scroll-to-end-trigger-border` · `--xh-log-scroll-to-end-trigger-fg` · `--xh-log-scroll-to-end-trigger-inset` · `--xh-log-scroll-to-end-trigger-radius` · `--xh-log-scroll-to-end-trigger-shadow` · `--xh-log-scroll-to-end-trigger-size` · `--xh-log-tab-size`
 
 ## 动效
 

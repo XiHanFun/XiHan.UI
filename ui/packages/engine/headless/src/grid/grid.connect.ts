@@ -1,5 +1,5 @@
 import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
-import type { GridApi, GridBreakpoint, GridCols, GridColsByBreakpoint, GridProps } from './grid.types'
+import type { GridApi, GridBreakpoint, GridCols, GridColsByBreakpoint, GridOffset, GridProps, GridSpan } from './grid.types'
 import { gridAnatomy } from './grid.anatomy'
 
 const parts = gridAnatomy.build()
@@ -24,19 +24,20 @@ function tier(value: number | undefined, max: number): string | undefined {
   return String(value)
 }
 
+/** 逐档落到 DOM 上的字符串，档位名与断点令牌同名。 */
+type Tiers = Record<'base' | GridBreakpoint, string | undefined>
+
 /**
- * 列数落成属性：给整数或不给时只写 data-cols；给断点对象时 base 写 data-cols、
- * 其余各档写 data-cols-<档>，没写的档不写属性。
+ * 一个可逐档写的数归一成五档字符串：给整数或不给时只有 base 那一格有值；
+ * 给断点对象时逐档取，没写的档是 undefined。
+ * 属性名不由这里拼——它们是公开面，得在调用处按字面写着才盯得住改名。
  */
-function colsAttrs(cols: GridCols | undefined): Record<string, string | undefined> {
-  const byTier: GridColsByBreakpoint = cols != null && typeof cols === 'object' ? cols : { base: cols }
-  const attrs: Record<string, string | undefined> = {
-    // 列数恒有值：不写就是一列，读一眼 DOM 就知道这一层分几列
-    'data-cols': tier(byTier.base, MAX_COLUMN_COUNT) ?? '1',
-  }
-  for (const name of BREAKPOINTS)
-    attrs[`data-cols-${name}`] = tier(byTier[name], MAX_COLUMN_COUNT)
-  return attrs
+function tiers(value: GridCols | GridSpan | GridOffset | undefined, max: number): Tiers {
+  const byTier: GridColsByBreakpoint = value != null && typeof value === 'object' ? value : { base: value }
+  const out = { base: tier(byTier.base, max) } as Tiers
+  for (const at of BREAKPOINTS)
+    out[at] = tier(byTier[at], max)
+  return out
 }
 
 // Grid 无状态机：二维排布不持有任何状态，列数、间距档位与两条对齐轴原样落成 data-*，
@@ -48,19 +49,43 @@ export function connectGrid<T extends PropTypes>(
   normalize: NormalizeProps<T>,
 ): GridApi<T> {
   return {
-    getRootProps: () => normalize.element({
-      ...parts.root.attrs,
-      ...colsAttrs(props.cols),
-      'data-gap': props.gap,
-      'data-align': props.align,
-      'data-justify-items': props.justifyItems,
-    }),
+    getRootProps: () => {
+      const cols = tiers(props.cols, MAX_COLUMN_COUNT)
+      return normalize.element({
+        ...parts.root.attrs,
+        // 列数恒有值：不写就是一列，读一眼 DOM 就知道这一层分几列
+        'data-cols': cols.base ?? '1',
+        'data-cols-sm': cols.sm,
+        'data-cols-md': cols.md,
+        'data-cols-lg': cols.lg,
+        'data-cols-xl': cols.xl,
+        'data-rows': tier(props.rows, MAX_COLUMN_COUNT),
+        'data-min-col': props.minColWidth,
+        'data-gap': props.gap,
+        'data-row-gap': props.rowGap,
+        'data-column-gap': props.columnGap,
+        'data-align': props.align,
+        'data-justify-items': props.justifyItems,
+      })
+    },
 
     // 跨列与错列是每一格自报的声明，都不写就按文档序占一格
-    getItemProps: (item = {}) => normalize.element({
-      ...parts.item.attrs,
-      'data-span': tier(item.span, MAX_COLUMN_COUNT),
-      'data-offset': tier(item.offset, MAX_COLUMN_OFFSET),
-    }),
+    getItemProps: (item = {}) => {
+      const span = tiers(item.span, MAX_COLUMN_COUNT)
+      const offset = tiers(item.offset, MAX_COLUMN_OFFSET)
+      return normalize.element({
+        ...parts.item.attrs,
+        'data-span': span.base,
+        'data-span-sm': span.sm,
+        'data-span-md': span.md,
+        'data-span-lg': span.lg,
+        'data-span-xl': span.xl,
+        'data-offset': offset.base,
+        'data-offset-sm': offset.sm,
+        'data-offset-md': offset.md,
+        'data-offset-lg': offset.lg,
+        'data-offset-xl': offset.xl,
+      })
+    },
   }
 }

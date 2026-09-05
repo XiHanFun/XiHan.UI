@@ -27,6 +27,35 @@ export const progressSuite: ConformanceSuite = {
       },
     },
     {
+      name: 'semantics=meter：报的是量不是进度，role 换成 meter，值照常发',
+      spec: { apg: APG },
+      props: { value: 50, semantics: 'meter' },
+      initial: {
+        parts: {
+          root: {
+            'role': 'meter',
+            'aria-valuemin': '0',
+            'aria-valuemax': '100',
+            'aria-valuenow': '50',
+          },
+        },
+      },
+    },
+    {
+      name: 'semantics=meter 不接 indeterminate：量没有未知这一档，值仍要报出去',
+      spec: { apg: APG },
+      props: { value: 50, semantics: 'meter', indeterminate: true },
+      initial: {
+        parts: {
+          root: {
+            'role': 'meter',
+            'aria-valuenow': '50',
+            'data-state': 'loading',
+          },
+        },
+      },
+    },
+    {
       name: '满值：value=max=100 时 aria-valuenow=100、data-state=complete',
       spec: { apg: APG },
       props: { value: 100 },

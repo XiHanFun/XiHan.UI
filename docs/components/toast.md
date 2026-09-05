@@ -63,7 +63,7 @@ action-trigger 按下时先发 action 事件，再让这条进入退场；closab
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-toast>` |
-| Vue 组件 | `XhToastActionTrigger` `XhToastCloseTrigger` `XhToastRoot` `XhToastTitle` |
+| Vue 组件 | `XhToastActionTrigger` `XhToastCloseTrigger` `XhToastIndicator` `XhToastProgress` `XhToastRoot` `XhToastTitle` |
 | 组合式函数 | `useToast` |
 | 状态机 | `toastMachine` |
 | 皮肤 | `@xihan-ui/styles/toast.css` |
@@ -72,7 +72,7 @@ action-trigger 按下时先发 action 事件，再让这条进入退场；closab
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="toast"`：**`root`** · `title` · `action-trigger` · `close-trigger` · `group`
+`data-scope="toast"`：**`root`** · `indicator` · `title` · `action-trigger` · `progress` · `close-trigger` · `group`
 
 ## Props
 
@@ -86,6 +86,7 @@ action-trigger 按下时先发 action 事件，再让这条进入退场；closab
 | `removeDelay` | `number` |  | 退场窗口毫秒，默认 200：进入 dismissing 后停留这么久再转 unmounted，留给退场动画。 |
 | `closable` | `boolean` |  | 是否显示可用的关闭按钮，默认 true。 |
 | `pauseOnPageIdle` | `boolean` |  | 页面切到后台时暂停计时，默认 false。由服务档统一下发。 |
+| `paused` | `boolean` |  | 由宿主按住计时，默认 false。整摞一起暂停走这条： 置真时登记 'service' 这个暂停来源，置假时把它摘掉，与指针、焦点那几路并存。 |
 | `translations` | `Partial<ToastTranslations>` |  |  |
 | `onStatusChange` | `(details: ToastStatusChangeDetails) => void` |  | 生命周期落位时通知：dismissing 与 unmounted 各一次。宿主据此把条目移出队列。 |
 | `onAction` | `(details: ToastActionDetails) => void` |  | 操作按钮被按下。 |
@@ -114,6 +115,7 @@ action-trigger 按下时先发 action 事件，再让这条进入退场；closab
 | 部件 | 取值 |
 | --- | --- |
 | `root` | toStatus(state.get()) |
+| `progress` | toStatus(state.get()) |
 
 状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
@@ -139,9 +141,12 @@ action-trigger 按下时先发 action 事件，再让这条进入退场；closab
 | `dismiss` | `() => void` |  |
 | `pause` | `() => void` |  |
 | `resume` | `() => void` |  |
+| `duration` | `number` | 停留总时长（毫秒）；不自动消失时为 Infinity。 |
 | `getRootProps` | `() => T['element']` |  |
+| `getIndicatorProps` | `() => T['element']` | 严重度指示符：作者塞自己的图形，不塞则由皮肤画兜底字形。 |
 | `getTitleProps` | `() => T['element']` |  |
 | `getActionTriggerProps` | `() => T['button']` |  |
+| `getProgressProps` | `() => T['element']` | 倒计时条：不自动消失时收起。 |
 | `getCloseTriggerProps` | `() => T['button']` |  |
 
 ## 键盘
@@ -163,6 +168,8 @@ action-trigger 按下时先发 action 事件，再让这条进入退场；closab
 | `root` | `aria-labelledby` | `title` 部件的 id |
 | `root` | `aria-live` | 'assertive' \| 'polite' |
 | `root` | `role` | 'alert' \| 'status' |
+| `indicator` | `aria-hidden` | 'true' |
+| `progress` | `aria-hidden` | 'true' |
 | `close-trigger` | `aria-label` | props.translations.close |
 
 ## 样式
@@ -179,17 +186,19 @@ action-trigger 按下时先发 action 事件，再让这条进入退场；closab
 | `root` | `data-severity` | props.type |
 | `root` | `data-state` | toStatus(state.get()) |
 | `root` | `data-tone` | toneOf(type) |
+| `indicator` | `data-severity` | props.type |
+| `progress` | `data-state` | toStatus(state.get()) |
 | `close-trigger` | `data-disabled` | ''（条件成立时才出现） |
 
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-toast-action-bg` · `--xh-toast-action-bg-active` · `--xh-toast-action-bg-hover` · `--xh-toast-action-border` · `--xh-toast-action-fg` · `--xh-toast-action-font-weight` · `--xh-toast-action-h` · `--xh-toast-action-px` · `--xh-toast-action-radius` · `--xh-toast-bg` · `--xh-toast-border` · `--xh-toast-close-bg-active` · `--xh-toast-close-bg-hover` · `--xh-toast-close-fg` · `--xh-toast-close-fg-hover` · `--xh-toast-close-radius` · `--xh-toast-close-size` · `--xh-toast-fg` · `--xh-toast-font-size` · `--xh-toast-gap` · `--xh-toast-icon-fg` · `--xh-toast-icon-size` · `--xh-toast-inset` · `--xh-toast-layer` · `--xh-toast-leading` · `--xh-toast-px` · `--xh-toast-py` · `--xh-toast-radius` · `--xh-toast-shadow` · `--xh-toast-title-fg` · `--xh-toast-title-font-size` · `--xh-toast-title-font-weight` · `--xh-toast-title-leading` · `--xh-toast-w`
+`--xh-toast-action-bg` · `--xh-toast-action-bg-active` · `--xh-toast-action-bg-hover` · `--xh-toast-action-border` · `--xh-toast-action-fg` · `--xh-toast-action-font-weight` · `--xh-toast-action-h` · `--xh-toast-action-px` · `--xh-toast-action-radius` · `--xh-toast-bg` · `--xh-toast-border` · `--xh-toast-close-bg-active` · `--xh-toast-close-bg-hover` · `--xh-toast-close-fg` · `--xh-toast-close-fg-hover` · `--xh-toast-close-radius` · `--xh-toast-close-size` · `--xh-toast-fg` · `--xh-toast-font-size` · `--xh-toast-gap` · `--xh-toast-icon-fg` · `--xh-toast-icon-size` · `--xh-toast-inset` · `--xh-toast-layer` · `--xh-toast-leading` · `--xh-toast-progress-bg` · `--xh-toast-progress-duration` · `--xh-toast-progress-thickness` · `--xh-toast-px` · `--xh-toast-py` · `--xh-toast-radius` · `--xh-toast-shadow` · `--xh-toast-title-fg` · `--xh-toast-title-font-size` · `--xh-toast-title-font-weight` · `--xh-toast-title-leading` · `--xh-toast-w`
 
 ## 动效
 
-关键帧 `xh-toast-in` · `xh-toast-out` · `xh-toast-spin` 随皮肤自带，不引用别处文件里的名字；状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-countdown` · `xh-toast-in` · `xh-toast-out` · `xh-toast-spin` 随皮肤自带，不引用别处文件里的名字；状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 

@@ -1,5 +1,5 @@
-import type { IconNode, IconRecord, Size, Tone } from '@xihan-ui/core'
-import type { IconApi, IconProps, IconWeight } from '@xihan-ui/headless'
+import type { IconNode, IconRecord, Tone } from '@xihan-ui/core'
+import type { IconApi, IconFlip, IconProps, IconSize, IconWeight } from '@xihan-ui/headless'
 import { DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/core'
 import { connectIcon, iconAnatomy, iconMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
@@ -37,10 +37,12 @@ function buildNode(doc: Document, node: IconNode): SVGElement {
  *
  * @customElement xh-icon
  * @attr {string} label - 可及名字；非空白时输出 role=img + aria-label，否则输出 aria-hidden=true
- * @attr {'sm'|'md'|'lg'} size - 直径档位，缺省 md
+ * @attr {'text'|'sm'|'md'|'lg'|'xl'|'2xl'|'3xl'|'4xl'} size - 直径档位，缺省 md；text 跟着相邻文字的字号走
  * @attr {'light'|'regular'|'bold'} weight - 描边粗细档位，缺省 regular
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
- * @csspart root - 根 `<svg>`，承载 viewBox/data-icon/命名属性/data-size/data-weight/data-tone
+ * @attr {'90'|'180'|'270'} rotate - 旋转档位，不转就不写
+ * @attr {'horizontal'|'vertical'|'both'} flip - 翻转轴，不翻就不写
+ * @csspart root - 根 `<svg>`，承载 viewBox/data-icon/命名属性/data-size/data-weight/data-tone/data-rotate/data-flip
  * @csspart glyph - 作者留出的空 `<g>`，图元铺在它内部
  */
 export class XhIconElement extends XhElement {
@@ -57,14 +59,18 @@ export class XhIconElement extends XhElement {
     size: { converter: STRING_CONVERTER },
     weight: { converter: STRING_CONVERTER },
     tone: { converter: STRING_CONVERTER },
+    rotate: { converter: STRING_CONVERTER },
+    flip: { converter: STRING_CONVERTER },
     // 记录是对象，只走 property
     icon: { attribute: false },
   }
 
   declare label?: string
-  declare size?: Size
+  declare size?: IconSize
   declare weight?: IconWeight
   declare tone?: Tone
+  declare rotate?: string
+  declare flip?: IconFlip
   declare icon?: IconRecord
 
   /** 一个 glyph 节点归谁，首次见到时定死。 */
@@ -80,6 +86,8 @@ export class XhIconElement extends XhElement {
       size: this.size,
       weight: this.weight,
       tone: this.tone,
+      rotate: this.rotate,
+      flip: this.flip,
     }
     const api = connectIcon(this.configured('icon', props), wcNormalize)
 

@@ -134,6 +134,7 @@ export function connectRating<T extends PropTypes>(
     value,
     hoveredValue,
     highlightedValue,
+    valueText: String(highlightedValue),
     count,
     empty,
     disabled,
@@ -155,6 +156,17 @@ export function connectRating<T extends PropTypes>(
       ...parts.label.attrs,
       'id': ids.label,
       'data-disabled': dataAttr(disabled),
+    }),
+
+    // 分值文本：写在 root 里、control 的兄弟（role=radiogroup 的子节点该是星星本身）。
+    // aria-hidden：同一个分值整条带子已由每颗星的可及名报过，念第二遍是重复
+    getValueTextProps: () => normalize.element({
+      ...parts['value-text'].attrs,
+      'aria-hidden': true,
+      'data-disabled': dataAttr(disabled),
+      'data-readonly': dataAttr(readOnly),
+      // 一颗星没点亮：作者据此换一句「暂无评分」
+      'data-empty': dataAttr(highlightedValue === 0),
     }),
 
     getControlProps: () => normalize.element({

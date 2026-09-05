@@ -79,7 +79,9 @@
 --xh-fg-warning: oklch(0.795 0.161 86)  ← var(--xh-color-warning-500)
 --xh-field-py: 6px  ← var(--xh-space-1_5)
 --xh-glyph-baseline-shift: -0.125em
+--xh-glyph-mark-arrow-down: url("data:image/svg+xml,…")  sha256:a07f0e76013b
 --xh-glyph-mark-arrow-up: url("data:image/svg+xml,…")  sha256:9ed79f28ca55
+--xh-glyph-mark-calendar: url("data:image/svg+xml,…")  sha256:a6c129f5e687
 --xh-glyph-mark-check: url("data:image/svg+xml,…")  sha256:cc929bebd056
 --xh-glyph-mark-chevron-down: url("data:image/svg+xml,…")  sha256:7ab6018cc6aa
 --xh-glyph-mark-chevron-left: url("data:image/svg+xml,…")  sha256:60879582dadb
@@ -87,7 +89,9 @@
 --xh-glyph-mark-chevron-up: url("data:image/svg+xml,…")  sha256:46747891ba6d
 --xh-glyph-mark-chevrons-left: url("data:image/svg+xml,…")  sha256:71cb31c7dd71
 --xh-glyph-mark-chevrons-right: url("data:image/svg+xml,…")  sha256:6f309e052402
+--xh-glyph-mark-clock: url("data:image/svg+xml,…")  sha256:c83cb32c22e1
 --xh-glyph-mark-close: url("data:image/svg+xml,…")  sha256:247de13c80d0
+--xh-glyph-mark-download: url("data:image/svg+xml,…")  sha256:ed3f64d86adf
 --xh-glyph-mark-eye: url("data:image/svg+xml,…")  sha256:0038fceca8f4
 --xh-glyph-mark-eye-off: url("data:image/svg+xml,…")  sha256:9adea7064151
 --xh-glyph-mark-flip-horizontal: url("data:image/svg+xml,…")  sha256:e520b8e3e17b
@@ -127,6 +131,10 @@
 --xh-layer-sticky: 100  ← var(--xh-z-sticky)
 --xh-layer-toast: 1300  ← var(--xh-z-toast)
 --xh-layer-tooltip: 1400  ← var(--xh-z-tooltip)
+--xh-layout-col-min-lg: 22rem
+--xh-layout-col-min-md: 18rem
+--xh-layout-col-min-sm: 14rem
+--xh-layout-col-min-xs: 10rem
 --xh-layout-gap-lg: 12px  ← var(--xh-space-3)
 --xh-layout-gap-md: 10px  ← var(--xh-space-2_5)
 --xh-layout-gap-sm: 6px  ← var(--xh-space-1_5)

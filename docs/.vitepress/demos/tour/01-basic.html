@@ -5,19 +5,31 @@
       <div style="display: flex; flex-wrap: wrap; gap: 12px">
         <div
           id="tour-basic-search"
-          style="padding: 8px 14px; border: 1px solid var(--vp-c-divider); border-radius: 8px"
+          style="
+            padding: 8px 14px;
+            border: 1px solid var(--vp-c-divider);
+            border-radius: 8px;
+          "
         >
           搜索
         </div>
         <div
           id="tour-basic-filter"
-          style="padding: 8px 14px; border: 1px solid var(--vp-c-divider); border-radius: 8px"
+          style="
+            padding: 8px 14px;
+            border: 1px solid var(--vp-c-divider);
+            border-radius: 8px;
+          "
         >
           筛选
         </div>
         <div
           id="tour-basic-export"
-          style="padding: 8px 14px; border: 1px solid var(--vp-c-divider); border-radius: 8px"
+          style="
+            padding: 8px 14px;
+            border: 1px solid var(--vp-c-divider);
+            border-radius: 8px;
+          "
         >
           导出
         </div>
@@ -34,9 +46,16 @@
         <h3 data-xh-part="title"></h3>
         <p data-xh-part="description"></p>
         <p data-xh-part="progress-text"></p>
+        <div data-xh-part="progress-indicator">
+          <div data-xh-part="progress-dot" index="0"></div>
+          <div data-xh-part="progress-dot" index="1"></div>
+          <div data-xh-part="progress-dot" index="2"></div>
+        </div>
         <div style="display: flex; align-items: center; gap: 8px">
           <button data-xh-part="prev-trigger">上一步</button>
-          <button data-xh-part="next-trigger" id="tour-basic-next">下一步</button>
+          <button data-xh-part="next-trigger" id="tour-basic-next">
+            下一步
+          </button>
           <button data-xh-part="skip-trigger">跳过</button>
         </div>
         <button data-xh-part="close-trigger"></button>

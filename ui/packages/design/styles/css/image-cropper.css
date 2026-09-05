@@ -208,6 +208,14 @@
     cursor: not-allowed;
   }
 
+  /* 两条控制轴用原生 range：拇指与轨道交给平台画，这里只给横向铺满与品牌色。
+     不写 block-size：原生 range 的高度由 UA 与拇指尺寸定，写死会把拇指切掉一截。 */
+  [data-scope='image-cropper'][data-part='zoom-slider'],
+  [data-scope='image-cropper'][data-part='rotate-slider'] {
+    inline-size: var(--xh-image-cropper-slider-w, 100%);
+    accent-color: var(--xh-image-cropper-slider-accent, var(--xh-bg-brand));
+  }
+
   /* 禁用的整体压暗只做一次，落在最外层：视口、裁切框、把手各自再叠一层会越叠越黑。
      这里只用 opacity、不换前景色：框里是图像，没有文字可换。 */
   [data-scope='image-cropper'][data-part='root'][data-disabled] {

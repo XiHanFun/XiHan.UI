@@ -1,4 +1,5 @@
-import type { DownloadTriggerCompleteDetails, DownloadTriggerData, DownloadTriggerErrorDetails, DownloadTriggerSchema } from '@xihan-ui/headless'
+import type { ActionVariant, Size, Tone } from '@xihan-ui/core'
+import type { DownloadTriggerCompleteDetails, DownloadTriggerData, DownloadTriggerErrorDetails, DownloadTriggerSchema, DownloadTriggerTranslations } from '@xihan-ui/headless'
 import { connectDownloadTrigger, downloadTriggerAnatomy, downloadTriggerMachine, downloadTriggerMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -22,6 +23,9 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {string} file-name - 写出的文件名；缺省或空串退回内建名 download
  * @attr {string} mime-type - 内容类型；给了它就以它为准，连 Blob 自带的类型也照它重包
  * @attr {boolean} disabled - 禁用，按钮不可聚焦也点不动
+ * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 形态，决定颜色怎么用
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
+ * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires download-complete - 数据已交给浏览器；detail 为 `{ fileName }`
  * @fires download-error - 取数失败或造不出下载；detail 为 `{ error, fileName }`，此刻状态已经回到 idle
  * @csspart root - 触发下载的按钮，须是原生 `<button>`（承载 data-state / aria-busy）
@@ -35,6 +39,11 @@ export class XhDownloadTriggerElement extends XhElement {
     fileName: { converter: STRING_CONVERTER, attribute: 'file-name' },
     mimeType: { converter: STRING_CONVERTER, attribute: 'mime-type' },
     disabled: { converter: BOOLEAN_CONVERTER },
+    variant: { converter: STRING_CONVERTER },
+    tone: { converter: STRING_CONVERTER },
+    size: { converter: STRING_CONVERTER },
+    // 文案是对象，只走 property
+    translations: { attribute: false },
   }
 
   // 属性只喂得进字符串，property 还能直接喂 Blob 与取数函数
@@ -42,6 +51,10 @@ export class XhDownloadTriggerElement extends XhElement {
   declare fileName?: string
   declare mimeType?: string
   declare disabled?: boolean
+  declare variant?: ActionVariant
+  declare tone?: Tone
+  declare size?: Size
+  declare translations?: Partial<DownloadTriggerTranslations>
 
   private readonly notifyComplete = (details: DownloadTriggerCompleteDetails): void => {
     this.dispatchEvent(new CustomEvent('download-complete', { detail: details, bubbles: true, composed: true }))
@@ -59,6 +72,10 @@ export class XhDownloadTriggerElement extends XhElement {
       fileName: this.fileName,
       mimeType: this.mimeType,
       disabled: this.disabled,
+      variant: this.variant,
+      tone: this.tone,
+      size: this.size,
+      translations: this.translations,
       onDownloadComplete: this.notifyComplete,
       onDownloadError: this.notifyError,
     }

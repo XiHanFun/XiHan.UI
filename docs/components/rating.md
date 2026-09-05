@@ -78,7 +78,7 @@ allowClear 缺省就开：点中当前那一档清回“还没评”，键盘在
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-rating>` |
-| Vue 组件 | `XhRatingControl` `XhRatingHiddenInput` `XhRatingItem` `XhRatingLabel` `XhRatingRoot` |
+| Vue 组件 | `XhRatingControl` `XhRatingHiddenInput` `XhRatingItem` `XhRatingLabel` `XhRatingRoot` `XhRatingValueText` |
 | 组合式函数 | `useRating` |
 | 状态机 | `ratingMachine` |
 | 皮肤 | `@xihan-ui/styles/rating.css` |
@@ -87,7 +87,7 @@ allowClear 缺省就开：点中当前那一档清回“还没评”，键盘在
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="rating"`：**`root`** · `label` · **`control`** · **`item`** · `hidden-input`
+`data-scope="rating"`：**`root`** · `label` · **`control`** · `value-text` · **`item`** · `hidden-input`
 
 ## Props
 
@@ -152,6 +152,7 @@ allowClear 缺省就开：点中当前那一档清回“还没评”，键盘在
 | `value` | `number` | 已归一化的评分：非法与越界的宿主输入在这里就被夹回来了。 |
 | `hoveredValue` | `number \| null` | 指针预览值；没有预览（或不可交互）时为 null。 |
 | `highlightedValue` | `number` | 当前该点亮到哪：有预览就是预览值，否则就是评分。样式与 data-highlighted 用的都是它。 |
+| `valueText` | `string` | 分值文本：当前该点亮到的那个数，指针预览期间跟着预览值走。 |
 | `count` | `number` |  |
 | `empty` | `boolean` | 还没评（value 为 0）。 |
 | `disabled` | `boolean` |  |
@@ -162,6 +163,7 @@ allowClear 缺省就开：点中当前那一档清回“还没评”，键盘在
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['element']` |  |
 | `getControlProps` | `() => T['element']` |  |
+| `getValueTextProps` | `() => T['element']` | 分值文本：写在 root 里、control 的兄弟；aria-hidden，读屏走星星自己的可及名。 |
 | `getItemProps` | `(props: RatingItemProps) => T['element']` |  |
 | `getHiddenInputProps` | `() => T['input']` | 表单出口：一份视觉隐藏的原生输入，随表单提交当前评分。 |
 
@@ -189,6 +191,7 @@ allowClear 缺省就开：点中当前那一档清回“还没评”，键盘在
 | `control` | `aria-readonly` | 'true' \| 'false' |
 | `control` | `aria-required` | 'true' \| 'false' |
 | `control` | `role` | 'radiogroup' |
+| `value-text` | `aria-hidden` | 'true' |
 | `item` | `aria-checked` | 'true' \| 'false' |
 | `item` | `aria-disabled` | 'true' \| 'false' |
 | `item` | `aria-label` | itemLabel?.(item.value, count) |
@@ -215,6 +218,9 @@ allowClear 缺省就开：点中当前那一档清回“还没评”，键盘在
 | `label` | `data-disabled` | ''（条件成立时才出现） |
 | `control` | `data-disabled` | ''（条件成立时才出现） |
 | `control` | `data-readonly` | ''（条件成立时才出现） |
+| `value-text` | `data-disabled` | ''（条件成立时才出现） |
+| `value-text` | `data-empty` | ''（条件成立时才出现） |
+| `value-text` | `data-readonly` | ''（条件成立时才出现） |
 | `item` | `data-disabled` | ''（条件成立时才出现） |
 | `item` | `data-half` | ''（条件成立时才出现） |
 | `item` | `data-highlighted` | ''（条件成立时才出现） |
@@ -226,7 +232,7 @@ allowClear 缺省就开：点中当前那一档清回“还没评”，键盘在
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-rating-gap` · `--xh-rating-item-fg` · `--xh-rating-item-fg-highlighted` · `--xh-rating-item-font-size` · `--xh-rating-item-gap` · `--xh-rating-item-radius` · `--xh-rating-label-fg` · `--xh-rating-label-font-size` · `--xh-rating-label-font-weight`
+`--xh-rating-gap` · `--xh-rating-item-fg` · `--xh-rating-item-fg-highlighted` · `--xh-rating-item-font-size` · `--xh-rating-item-gap` · `--xh-rating-item-radius` · `--xh-rating-label-fg` · `--xh-rating-label-font-size` · `--xh-rating-label-font-weight` · `--xh-rating-value-text-fg` · `--xh-rating-value-text-font-size`
 
 ## 动效
 

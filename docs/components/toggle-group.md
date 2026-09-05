@@ -70,7 +70,7 @@ multiple 换的是整套 ARIA：root 退回 group、条目退回原生按钮 + a
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-toggle-group>` |
-| Vue 组件 | `XhToggleGroupItem` `XhToggleGroupRoot` |
+| Vue 组件 | `XhToggleGroupHiddenInput` `XhToggleGroupItem` `XhToggleGroupRoot` `XhToggleGroupSeparator` |
 | 组合式函数 | `useToggleGroup` |
 | 状态机 | `toggleGroupMachine` |
 | 皮肤 | `@xihan-ui/styles/toggle-group.css` |
@@ -79,7 +79,7 @@ multiple 换的是整套 ARIA：root 退回 group、条目退回原生按钮 + a
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="toggle-group"`：**`root`** · **`item`**
+`data-scope="toggle-group"`：**`root`** · **`item`** · `separator` · `hidden-input`
 
 ## Props
 
@@ -91,8 +91,11 @@ multiple 换的是整套 ARIA：root 退回 group、条目退回原生按钮 + a
 | `multiple` | `boolean` |  | 允许多项同时选中；false 时选中一项即挤掉其余。 |
 | `disabled` | `boolean` |  | 整组禁用：条目全部 aria-disabled，点击与方向键都不生效。 |
 | `disallowEmpty` | `boolean` |  | 不许把值清空：单选模式下点当前选中项不再取消它，多选模式下摘不掉最后一个。 默认 false（可以点成无选中）。 |
+| `variant` | `ActionVariant` |  | 形态：solid / subtle / outline / ghost，决定段的底色与描边怎么用。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
+| `fullWidth` | `boolean` |  | 撑满行宽：整组占满可用宽度，每段等分剩余空间。 |
+| `name` | `string` |  | 表单字段名。给定后隐藏输入才带 name 并参与提交。 |
 | `orientation` | `Orientation` |  | 视觉排布，默认 horizontal。方向键接受的轴与它无关（四个方向键恒响应）。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr；只改写左右方向键的语义，上下键与之无关。 |
 | `loop` | `boolean` |  | 方向键走到尽头是否回绕，默认 true。 |
@@ -119,7 +122,7 @@ multiple 换的是整套 ARIA：root 退回 group、条目退回原生按钮 + a
 
 **状态**：`idle`
 
-**事件**：`VALUE.SET` · `ITEM.TOGGLE` · `ITEM.FOCUS` · `GROUP.BLUR`
+**事件**：`VALUE.SET` · `ITEM.TOGGLE` · `ITEM.FOCUS` · `GROUP.BLUR` · `FORM.RESET`
 
 ## connect API
 
@@ -136,6 +139,8 @@ multiple 换的是整套 ARIA：root 退回 group、条目退回原生按钮 + a
 | `setValue` | `(next: ToggleGroupValue) => void` | 传单值 / 数组 / null 皆可，内部按 multiple 归一。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getItemProps` | `(props: ToggleGroupItemProps) => T['button']` |  |
+| `getSeparatorProps` | `() => T['element']` | 段与段之间的装饰竖线，纯视觉、读屏不念。 |
+| `getHiddenInputProps` | `() => T['input']` | 表单出口：整组只有一份，提交的就是当前选中值。 |
 
 ## 键盘
 
@@ -162,6 +167,7 @@ multiple 换的是整套 ARIA：root 退回 group、条目退回原生按钮 + a
 | `item` | `aria-disabled` | 'true' \| 'false' |
 | `item` | `aria-pressed` | 'true' \| 'false' \| undefined |
 | `item` | `role` | undefined \| 'radio' |
+| `separator` | `aria-hidden` | 'true' |
 
 ## 样式
 
@@ -174,23 +180,31 @@ multiple 换的是整套 ARIA：root 退回 group、条目退回原生按钮 + a
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-full-width` | ''（条件成立时才出现） |
 | `root` | `data-orientation` | props.orientation |
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
+| `root` | `data-variant` | props.variant |
 | `item` | `data-disabled` | ''（条件成立时才出现） |
 | `item` | `data-state` | 'on' \| 'off' |
+| `separator` | `data-disabled` | ''（条件成立时才出现） |
+| `separator` | `data-orientation` | 'vertical' \| 'horizontal' |
 
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-toggle-group-item-bg` · `--xh-toggle-group-item-bg-active` · `--xh-toggle-group-item-bg-disabled` · `--xh-toggle-group-item-bg-hover` · `--xh-toggle-group-item-bg-on` · `--xh-toggle-group-item-bg-on-active` · `--xh-toggle-group-item-bg-on-hover` · `--xh-toggle-group-item-border` · `--xh-toggle-group-item-border-disabled` · `--xh-toggle-group-item-border-on` · `--xh-toggle-group-item-border-on-disabled` · `--xh-toggle-group-item-fg` · `--xh-toggle-group-item-fg-disabled` · `--xh-toggle-group-item-fg-on` · `--xh-toggle-group-item-fg-on-disabled` · `--xh-toggle-group-item-font-size` · `--xh-toggle-group-item-font-weight` · `--xh-toggle-group-item-gap` · `--xh-toggle-group-item-h` · `--xh-toggle-group-item-px` · `--xh-toggle-group-item-radius` · `--xh-toggle-group-item-shadow`
+`--xh-toggle-group-item-bg` · `--xh-toggle-group-item-bg-active` · `--xh-toggle-group-item-bg-disabled` · `--xh-toggle-group-item-bg-hover` · `--xh-toggle-group-item-bg-on` · `--xh-toggle-group-item-bg-on-active` · `--xh-toggle-group-item-bg-on-hover` · `--xh-toggle-group-item-border` · `--xh-toggle-group-item-border-disabled` · `--xh-toggle-group-item-border-on` · `--xh-toggle-group-item-border-on-disabled` · `--xh-toggle-group-item-fg` · `--xh-toggle-group-item-fg-disabled` · `--xh-toggle-group-item-fg-on` · `--xh-toggle-group-item-fg-on-disabled` · `--xh-toggle-group-item-font-size` · `--xh-toggle-group-item-font-weight` · `--xh-toggle-group-item-gap` · `--xh-toggle-group-item-h` · `--xh-toggle-group-item-px` · `--xh-toggle-group-item-radius` · `--xh-toggle-group-item-shadow` · `--xh-toggle-group-separator-color` · `--xh-toggle-group-separator-color-disabled` · `--xh-toggle-group-separator-gap` · `--xh-toggle-group-separator-inset` · `--xh-toggle-group-separator-radius` · `--xh-toggle-group-separator-thickness`
 
 ## 动效
 
 状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+## 响应式
+
+皮肤内置条件规则：`forced-colors: active`。
 
 ## RTL
 

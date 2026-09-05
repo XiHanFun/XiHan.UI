@@ -13,12 +13,55 @@
     /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
     --xh-icon-size: var(--xh-transfer-icon-size, var(--xh-glyph-size-text));
 
+    /* 尺寸档只换这五个私有槽，面板头、搜索框、条目与勾选格都从 root 继承它们，
+       换档不必给每个部件各写一条选择器 */
+    --xh-_transfer-item-py: var(--xh-list-option-py-md);
+    --xh-_transfer-px: var(--xh-control-px-md);
+    --xh-_transfer-gap: var(--xh-control-gap-md);
+    --xh-_transfer-font-size: var(--xh-control-font-md);
+    --xh-_transfer-box: var(--xh-control-indicator-md);
+
+    /* 勾选格的填色随语气走；没写 data-tone 时退回品牌色 */
+    --xh-_transfer-accent: var(--xh-_tone, var(--xh-bg-brand));
+    --xh-_transfer-on-accent: var(--xh-_tone-on, var(--xh-fg-on-brand));
+
     display: grid;
     grid-template-rows: 1fr 1fr;
     grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
     gap: var(--xh-transfer-gap, var(--xh-space-3));
     align-items: center;
     color: var(--xh-transfer-fg, var(--xh-fg-default));
+  }
+
+  /* —— 尺寸 —— */
+  /* 缺省档写在上面的基础规则里 */
+  [data-scope='transfer'][data-part='root'][data-size='sm'] {
+    --xh-_transfer-item-py: var(--xh-list-option-py-sm);
+    --xh-_transfer-px: var(--xh-control-px-sm);
+    --xh-_transfer-gap: var(--xh-control-gap-sm);
+    --xh-_transfer-font-size: var(--xh-control-font-sm);
+    --xh-_transfer-box: var(--xh-control-indicator-sm);
+  }
+
+  [data-scope='transfer'][data-part='root'][data-size='lg'] {
+    --xh-_transfer-item-py: var(--xh-list-option-py-lg);
+    --xh-_transfer-px: var(--xh-control-px-lg);
+    --xh-_transfer-gap: var(--xh-control-gap-lg);
+    --xh-_transfer-font-size: var(--xh-control-font-lg);
+    --xh-_transfer-box: var(--xh-control-indicator-lg);
+  }
+
+  /* 校验失败：两侧面板换成错误描边，与其余表单控件同一套表达 */
+  [data-scope='transfer'][data-part='root'][data-invalid]
+    :is([data-scope='transfer'][data-part='source-panel'], [data-scope='transfer'][data-part='target-panel']) {
+    border-color: var(--xh-transfer-panel-border-invalid, var(--xh-border-invalid));
+  }
+
+  /* 只读勾不动也搬不动，但不是禁用：颜色照常，只把"可点"这个暗示收回来。
+     排掉禁用项是因为这条选择器权重高过条目那条，不排就会把禁用的手势指示覆盖回 default */
+  [data-scope='transfer'][data-part='root'][data-readonly]
+    [data-scope='transfer'][data-part='item']:not([data-disabled]) {
+    cursor: default;
   }
 
   [data-scope='transfer'][data-part='source-panel'] {
@@ -65,10 +108,10 @@
   /* 面板内三个角色的槽都带 panel- 段，与部件名逐字对上 */
   [data-scope='transfer'][data-part='panel-header'] {
     display: flex;
-    gap: var(--xh-transfer-panel-header-gap, var(--xh-control-gap-md));
+    gap: var(--xh-transfer-panel-header-gap, var(--xh-_transfer-gap));
     align-items: center;
     padding-block: var(--xh-transfer-panel-header-py, var(--xh-space-2));
-    padding-inline: var(--xh-transfer-panel-header-px, var(--xh-control-px-md));
+    padding-inline: var(--xh-transfer-panel-header-px, var(--xh-_transfer-px));
     border-block-end: var(--xh-stroke-thin) solid var(--xh-transfer-panel-border, var(--xh-border-default));
   }
 
@@ -104,13 +147,13 @@
     display: block;
     inline-size: 100%;
     block-size: var(--xh-transfer-search-h, var(--xh-control-h-sm));
-    padding-inline: var(--xh-transfer-search-px, var(--xh-control-px-md));
+    padding-inline: var(--xh-transfer-search-px, var(--xh-_transfer-px));
     border: 0;
     border-block-end: var(--xh-stroke-thin) solid var(--xh-transfer-search-border, var(--xh-border-control));
     background: var(--xh-transfer-search-bg, transparent);
     color: var(--xh-transfer-search-fg, var(--xh-fg-default));
     font: inherit;
-    font-size: var(--xh-transfer-search-font-size, var(--xh-text-body-size));
+    font-size: var(--xh-transfer-search-font-size, var(--xh-_transfer-font-size));
   }
 
   [data-scope='transfer'][data-part='search']:focus-visible {
@@ -141,16 +184,101 @@
     outline: none;
   }
 
+  /* 空态占位：待在面板里、list 的兄弟（列表框只许拥有 option 与 group）。
+     盒归面板，这里只画一句居中的次要文字 */
+  [data-scope='transfer'][data-part='empty'] {
+    display: block;
+    flex: none;
+    padding-block: var(--xh-transfer-empty-py, var(--xh-space-3));
+    padding-inline: var(--xh-transfer-empty-px, var(--xh-_transfer-px));
+    color: var(--xh-transfer-empty-fg, var(--xh-fg-subtle));
+    font-size: var(--xh-transfer-empty-font-size, var(--xh-_transfer-font-size));
+    line-height: var(--xh-leading-none);
+    text-align: center;
+  }
+
+  /* 上面给了 display，UA 的 [hidden]{display:none} 已被盖掉，这里补回来 */
+  [data-scope='transfer'][data-part='empty'][hidden] {
+    display: none;
+  }
+
+  [data-scope='transfer'][data-part='empty'][data-disabled] {
+    color: var(--xh-fg-disabled);
+  }
+
+  /* 在途占位：与空态占位同一个位置、同一副观感，两者不同屏 */
+  [data-scope='transfer'][data-part='loading'] {
+    display: block;
+    flex: none;
+    padding-block: var(--xh-transfer-loading-py, var(--xh-space-3));
+    padding-inline: var(--xh-transfer-loading-px, var(--xh-_transfer-px));
+    color: var(--xh-transfer-loading-fg, var(--xh-fg-subtle));
+    font-size: var(--xh-transfer-loading-font-size, var(--xh-_transfer-font-size));
+    line-height: var(--xh-leading-none);
+    text-align: center;
+  }
+
+  [data-scope='transfer'][data-part='loading'][hidden] {
+    display: none;
+  }
+
+  [data-scope='transfer'][data-part='loading'][data-disabled] {
+    color: var(--xh-fg-disabled);
+  }
+
+  [data-scope='transfer'][data-part='group'] {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    gap: var(--xh-transfer-group-gap, var(--xh-list-option-gap));
+  }
+
+  [data-scope='transfer'][data-part='group'][hidden] {
+    display: none;
+  }
+
+  /* 组内条目搬到对面、或被搜索筛掉时都只是打 hidden，一条不剩的分组连标题一起撤下，
+     免得列表里留着一排够不着的标题 */
+  [data-scope='transfer'][data-part='group']:not(:has([data-part='item']:not([hidden]))) {
+    display: none;
+  }
+
+  /* 组间留白只加在后继分组上：首组顶上已经有 list 的内边距，再加一层会显得头重 */
+  [data-scope='transfer'][data-part='group'] + [data-scope='transfer'][data-part='group'] {
+    margin-block-start: var(--xh-transfer-group-spacing, var(--xh-space-1_5));
+  }
+
+  /* 分组标题不是选项、进不了导航，画成小号次要文字，
+     内缩与条目对齐（同一个 padding-inline），标题与条目文字才在一条竖线上 */
+  [data-scope='transfer'][data-part='group-label'] {
+    display: block;
+    padding-block: var(--xh-transfer-group-label-py, var(--xh-space-1));
+    padding-inline: var(--xh-transfer-group-label-px, var(--xh-_transfer-px));
+    color: var(--xh-transfer-group-label-fg, var(--xh-fg-subtle));
+    font-size: var(--xh-transfer-group-label-font-size, var(--xh-text-caption-size));
+    font-weight: var(--xh-transfer-group-label-font-weight, var(--xh-font-weight-medium));
+    line-height: var(--xh-leading-none);
+    user-select: none;
+  }
+
+  [data-scope='transfer'][data-part='group-label'][hidden] {
+    display: none;
+  }
+
+  [data-scope='transfer'][data-part='group-label'][data-disabled] {
+    color: var(--xh-fg-disabled);
+  }
+
   [data-scope='transfer'][data-part='item'] {
     display: flex;
     flex: none;
-    gap: var(--xh-transfer-item-gap, var(--xh-control-gap-md));
+    gap: var(--xh-transfer-item-gap, var(--xh-_transfer-gap));
     align-items: center;
-    padding-block: var(--xh-transfer-item-py, var(--xh-space-1_5));
-    padding-inline: var(--xh-transfer-item-px, var(--xh-control-px-md));
+    padding-block: var(--xh-transfer-item-py, var(--xh-_transfer-item-py));
+    padding-inline: var(--xh-transfer-item-px, var(--xh-_transfer-px));
     border-radius: var(--xh-transfer-item-radius, var(--xh-shape-control));
     color: var(--xh-transfer-item-fg, var(--xh-fg-default));
-    font-size: var(--xh-transfer-item-font-size, var(--xh-text-body-size));
+    font-size: var(--xh-transfer-item-font-size, var(--xh-_transfer-font-size));
     /* 行高留出文字的上下伸展空间，行内那层 overflow:hidden 才不会把字削掉 */
     line-height: var(--xh-transfer-item-leading, var(--xh-leading-normal));
     white-space: nowrap;
@@ -193,13 +321,13 @@
     flex: none;
     align-items: center;
     justify-content: center;
-    inline-size: var(--xh-transfer-checkbox-size, var(--xh-control-indicator-size));
-    block-size: var(--xh-transfer-checkbox-size, var(--xh-control-indicator-size));
+    inline-size: var(--xh-transfer-checkbox-size, var(--xh-_transfer-box));
+    block-size: var(--xh-transfer-checkbox-size, var(--xh-_transfer-box));
     border: var(--xh-stroke-thin) solid var(--xh-transfer-checkbox-border, var(--xh-border-control));
     border-radius: var(--xh-transfer-checkbox-radius, var(--xh-shape-inset));
     background: var(--xh-transfer-checkbox-bg, var(--xh-bg-canvas));
-    color: var(--xh-transfer-checkbox-fg, var(--xh-fg-on-brand));
-    font-size: var(--xh-transfer-checkbox-font-size, calc(var(--xh-control-indicator-size) * 0.75));
+    color: var(--xh-transfer-checkbox-fg, var(--xh-_transfer-on-accent));
+    font-size: var(--xh-transfer-checkbox-font-size, calc(var(--xh-_transfer-box) * 0.75));
     line-height: var(--xh-leading-none);
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
@@ -215,8 +343,8 @@
   /* 勾中即填色。全选格三态里 all 与 some 都算"有值"，与条目共用同一副填色 */
   [data-scope='transfer'][data-part='item-checkbox'][data-state='checked'],
   [data-scope='transfer'][data-part='select-all-trigger']:is([data-state='checked'], [data-state='indeterminate'])::before {
-    border-color: var(--xh-transfer-checkbox-border-checked, var(--xh-bg-brand));
-    background: var(--xh-transfer-checkbox-bg-checked, var(--xh-bg-brand));
+    border-color: var(--xh-transfer-checkbox-border-checked, var(--xh-_transfer-accent));
+    background: var(--xh-transfer-checkbox-bg-checked, var(--xh-_transfer-accent));
   }
 
   /* 没写内容就由皮肤画勾；作者往格子里塞了自己的图形，这条规则即不命中。
@@ -249,13 +377,13 @@
     inset-inline-start: 0;
     margin-block: auto;
     margin-inline-start: calc(
-      (var(--xh-transfer-checkbox-size, var(--xh-control-indicator-size)) - var(--xh-icon-size, var(--xh-glyph-size-text))) /
+      (var(--xh-transfer-checkbox-size, var(--xh-_transfer-box)) - var(--xh-icon-size, var(--xh-glyph-size-text))) /
         2
     );
     inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-    background-color: var(--xh-transfer-checkbox-fg, var(--xh-fg-on-brand));
-    font-size: var(--xh-transfer-checkbox-font-size, calc(var(--xh-control-indicator-size) * 0.75));
+    background-color: var(--xh-transfer-checkbox-fg, var(--xh-_transfer-on-accent));
+    font-size: var(--xh-transfer-checkbox-font-size, calc(var(--xh-_transfer-box) * 0.75));
     -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
     mask: var(--xh-glyph-mark-check) center / contain no-repeat;
   }
@@ -267,13 +395,13 @@
     inset-inline-start: 0;
     margin-block: auto;
     margin-inline-start: calc(
-      (var(--xh-transfer-checkbox-size, var(--xh-control-indicator-size)) - var(--xh-icon-size, var(--xh-glyph-size-text))) /
+      (var(--xh-transfer-checkbox-size, var(--xh-_transfer-box)) - var(--xh-icon-size, var(--xh-glyph-size-text))) /
         2
     );
     inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-    background-color: var(--xh-transfer-checkbox-fg, var(--xh-fg-on-brand));
-    font-size: var(--xh-transfer-checkbox-font-size, calc(var(--xh-control-indicator-size) * 0.75));
+    background-color: var(--xh-transfer-checkbox-fg, var(--xh-_transfer-on-accent));
+    font-size: var(--xh-transfer-checkbox-font-size, calc(var(--xh-_transfer-box) * 0.75));
     -webkit-mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
     mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
   }

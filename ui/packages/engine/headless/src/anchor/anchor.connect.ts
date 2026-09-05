@@ -67,6 +67,10 @@ export function connectAnchor<T extends PropTypes>(
       })
     },
 
+    getLinkTextProps: () => normalize.element({
+      ...parts['link-text'].attrs,
+    }),
+
     // 指示条位置铺成内联样式
     getIndicatorProps: () => normalize.element({
       ...parts.indicator.attrs,

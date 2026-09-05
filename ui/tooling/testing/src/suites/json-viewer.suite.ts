@@ -89,6 +89,7 @@ export const jsonViewerSuite: ConformanceSuite = {
           'branch-indicator[2]',
           'branch-text[1]',
           'preview[2]',
+          'empty',
         ],
         counts: {
           'root': 1,
@@ -103,9 +104,13 @@ export const jsonViewerSuite: ConformanceSuite = {
           'item': 2,
           'item-key': 2,
           'item-value': 2,
+          'empty': 1,
         },
         parts: {
-          'root': { 'data-size': null },
+          // 形态恒有值：缺省 surface，读一眼 DOM 就知道这块有没有外框
+          'root': { 'data-size': null, 'data-variant': 'surface' },
+          // 有行可摊时空态收起来，不占位置
+          'empty': { hidden: '' },
           'tree': {
             // 这一片行没有可见标题，名字必须自己给
             'role': 'tree',
@@ -414,6 +419,36 @@ export const jsonViewerSuite: ConformanceSuite = {
         parts: {
           'item[0]': { 'aria-posinset': '1', 'aria-setsize': '3', 'data-truncated': null },
           'item[2]': { 'aria-posinset': '3', 'aria-setsize': '3', 'data-truncated': '', 'data-value-type': 'array' },
+        },
+      },
+    },
+    {
+      name: 'value 没给：一行也摊不出来，空态那一格站出来说话',
+      spec: { apg: APG },
+      props: {},
+      initial: {
+        order: ['root', 'tree', 'empty'],
+        counts: { empty: 1 },
+        parts: {
+          empty: { hidden: null },
+        },
+      },
+      steps: [
+        {
+          kind: 'setProps',
+          props: { value: VALUE },
+          expect: { parts: { empty: { hidden: '' } } },
+        },
+      ],
+    },
+    {
+      name: 'variant 只落在 root 上，无框档不动任何语义',
+      spec: { apg: APG },
+      props: props({ variant: 'plain' }),
+      initial: {
+        parts: {
+          root: { 'data-variant': 'plain' },
+          tree: { 'role': 'tree', 'data-variant': null },
         },
       },
     },

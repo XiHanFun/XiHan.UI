@@ -9,6 +9,12 @@ export interface WatermarkTile {
   readonly height: number
 }
 
+/** 图片印子的像素尺寸。 */
+export interface WatermarkImageSize {
+  readonly width: number
+  readonly height: number
+}
+
 export interface WatermarkProps {
   /**
    * 水印文字。给数组就是多行，单个字符串里的换行同样断行；
@@ -23,6 +29,23 @@ export interface WatermarkProps {
   fontSize?: number
   /** 印子的深浅，0 到 1，缺省 0.15。 */
   opacity?: number
+  /**
+   * 印文字用的字体，缺省 `sans-serif`。
+   *
+   * 图样是一张当遮罩用的 SVG，取不到页面里的字体，所以要在这里把字体名写全
+   * （例如 `'PingFang SC, sans-serif'`）；写的字体在运行环境里不存在时由平台自己回退。
+   */
+  fontFamily?: string
+  /**
+   * 印在文字上方的图片，只收 `data:image/` 开头的内联图片。
+   *
+   * 图样是当遮罩用的，遮罩只取图样的透明度：印出来是这张图的剪影，颜色仍由
+   * `--xh-watermark-fg` 给。外部地址一律不收——SVG 当图片用时取不到外部资源，
+   * 收了也印不出东西。
+   */
+  image?: string
+  /** 图片的像素尺寸，缺省 64 × 64。 */
+  imageSize?: WatermarkImageSize
 }
 
 export interface WatermarkApi<T extends PropTypes = PropTypes> {

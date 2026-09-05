@@ -44,6 +44,7 @@ export const imageSuite: ConformanceSuite = {
     part: 'root',
     children: [
       { part: 'image', tag: 'img' },
+      { part: 'placeholder' },
       { part: 'fallback', children: [{ text: '加载中' }] },
     ],
   },
@@ -52,12 +53,16 @@ export const imageSuite: ConformanceSuite = {
       name: '无 src：直接落回退态，image 带 hidden、fallback 可见',
       spec: { apg: APG, zag: 'image.machine#resolveSrc' },
       initial: {
-        order: ['root', 'image', 'fallback'],
-        counts: { root: 1, image: 1, fallback: 1 },
+        order: ['root', 'image', 'placeholder', 'fallback'],
+        counts: { root: 1, image: 1, placeholder: 1, fallback: 1 },
         parts: {
           root: { 'data-state': 'error' },
           image: {
             'role': null,
+            'data-state': 'error',
+            'hidden': '',
+          },
+          placeholder: {
             'data-state': 'error',
             'hidden': '',
           },
@@ -76,6 +81,7 @@ export const imageSuite: ConformanceSuite = {
         parts: {
           root: { 'data-state': 'loading' },
           image: { 'data-state': 'loading', 'hidden': '' },
+          placeholder: { 'data-state': 'loading', 'hidden': null },
           fallback: { 'data-state': 'loading', 'hidden': null },
         },
       },
@@ -88,7 +94,7 @@ export const imageSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '图片就绪：image 显出、fallback 收起',
+      name: '图片就绪：image 显出、placeholder 与 fallback 收起',
       spec: { apg: APG, zag: 'image.machine#loading' },
       // 图显出来了就得有替代文本，alt 由作者给
       props: { src: SRC, alt: '一张示例图' },
@@ -101,6 +107,7 @@ export const imageSuite: ConformanceSuite = {
             parts: {
               root: { 'data-state': 'loaded' },
               image: { 'data-state': 'loaded', 'hidden': null },
+              placeholder: { 'data-state': 'loaded', 'hidden': '' },
               fallback: { 'data-state': 'loaded', 'hidden': '' },
             },
           },

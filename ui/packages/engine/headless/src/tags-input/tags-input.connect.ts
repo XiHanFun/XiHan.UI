@@ -29,6 +29,8 @@ export function connectTagsInput<T extends PropTypes>(
   const disabled = !!prop('disabled')
   const readOnly = !!prop('readOnly')
   const invalid = !!prop('invalid')
+  const required = !!prop('required')
+  const showCount = !!prop('showCount')
   const editable = !disabled && !readOnly
   const canEditTags = editable && !!prop('editable')
   const delimiter = tagsDelimiter(prop('delimiter'))
@@ -110,7 +112,10 @@ export function connectTagsInput<T extends PropTypes>(
     empty,
     disabled,
     readOnly,
+    required,
     invalid,
+    max,
+    showCount,
     atMax,
     overflow,
     highlightedValue,
@@ -131,6 +136,8 @@ export function connectTagsInput<T extends PropTypes>(
       'data-variant': prop('variant'),
       'data-tone': prop('tone'),
       'data-size': prop('size'),
+      // 必填标记只做钩子：星号由外面的字段壳画
+      'data-required': dataAttr(required),
     }),
 
     getLabelProps: () => normalize.label({
@@ -175,6 +182,8 @@ export function connectTagsInput<T extends PropTypes>(
       'readonly': readOnly || undefined,
       // 作者把 label 换成非 <label> 元素时 for 会失效，这条兜住名字
       'aria-labelledby': ids.label,
+      // 表单出口是 hidden-input，原生 required 挂上去也不参与校验，必填只经 aria 上报
+      'aria-required': required ? 'true' : 'false',
       'aria-invalid': invalid ? 'true' : 'false',
       'data-disabled': dataAttr(disabled),
       'data-readonly': dataAttr(readOnly),
@@ -415,6 +424,17 @@ export function connectTagsInput<T extends PropTypes>(
         send({ type: 'VALUE.CLEAR' })
         restore?.focus()
       },
+    }),
+
+    // 计数：数字由作者用 count / max 渲。对读屏隐藏——它是标签个数的视觉镜像，
+    // 每加一个标签就播报一次的活区反而盖住了刚加进去的那一个
+    getCountProps: () => normalize.element({
+      ...parts.count.attrs,
+      'aria-hidden': true,
+      // 没开 showCount 时收起而不是卸载，节点是作者写的
+      'hidden': !showCount || undefined,
+      'data-disabled': dataAttr(disabled),
+      'data-at-max': dataAttr(atMax),
     }),
 
     getHiddenInputProps: () => normalize.input({

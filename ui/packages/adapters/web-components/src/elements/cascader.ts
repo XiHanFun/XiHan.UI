@@ -58,6 +58,7 @@ const ITEM_SELECTOR = '[data-xh-part="item"]'
  * @attr {boolean} disabled - 整个控件禁用：trigger 用原生 disabled，浮层展不开
  * @attr {boolean} read-only - 只读：浮层照常展开、列照常浏览，但选中值改不动、也清不掉
  * @attr {boolean} invalid - 校验失败标注
+ * @attr {boolean} loading - 候选还在取：浮层报 aria-busy，在途占位顶上来、空态占位让位
  * @attr {'outline'|'subtle'|'ghost'} variant - 视觉变体
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
@@ -81,11 +82,15 @@ const ITEM_SELECTOR = '[data-xh-part="item"]'
  * @csspart input - 搜索框（content 顶部）；没开 searchable 时带 hidden。上下键走候选、Enter 选中、Escape 先清词
  * @csspart search-list - 候选列表容器；不在搜索视图时带 hidden，无候选时带 data-empty
  * @csspart search-item - 一条候选，须用 value 属性写整条路径的 JSON 数组串（如 value='["a","b"]'）；词换了不匹配的带 hidden
+ * @csspart loading - 在途占位，与空态占位同一个位置，取数期间顶上来；文案归作者
  * @csspart empty - 空态占位：搜索无候选或 collection 为空时露面，其余时候带 hidden。标记里没写就由元素在 content 末尾补一个并填缺省文案；写了就用作者那份，文案也归作者
  * @csspart column - role=listbox 的一列，须自带 level 属性标识它是第几列；砍掉时带 hidden
+ * @csspart group - role=group 分组容器，须自带 value 属性标识身份；条目挂在它里面
+ * @csspart group-label - 分组标题（本组 aria-labelledby 的目标），须放在 group 里
  * @csspart item - role=option 的条目，须自带 value 属性标识身份；不在当前列里时带 hidden
  * @csspart item-text - 条目文本
  * @csspart item-indicator - 条目选中标记（aria-hidden）
+ * @csspart footer - 浮层底部的操作区，写在 content 里与列并列，横跨全部列；不进任何一列的拥有关系，方向键也走不到
  */
 export class XhCascaderElement extends XhElement {
   static override partContract = { anatomy: cascaderAnatomy, meta: cascaderMeta }
@@ -107,6 +112,7 @@ export class XhCascaderElement extends XhElement {
     disabled: { type: Boolean },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     invalid: { converter: BOOLEAN_CONVERTER },
+    loading: { converter: BOOLEAN_CONVERTER },
     variant: { converter: STRING_CONVERTER },
     tone: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
@@ -133,6 +139,7 @@ export class XhCascaderElement extends XhElement {
   declare disabled?: boolean
   declare readOnly?: boolean
   declare invalid?: boolean
+  declare loading?: boolean
   declare variant?: ControlVariant
   declare tone?: Tone
   declare size?: Size
@@ -200,6 +207,7 @@ export class XhCascaderElement extends XhElement {
       disabled: this.disabled ?? false,
       readOnly: this.readOnly ?? false,
       invalid: this.invalid ?? false,
+      loading: this.loading ?? false,
       variant: this.variant,
       tone: this.tone,
       size: this.size,
@@ -277,6 +285,11 @@ export class XhCascaderElement extends XhElement {
       send({ type: 'ITEM.LOST' })
   }
 
+  /** 某个容器内的同名角色节点：getParts 收的是整个元素范围，按子树过滤才归得对身份。 */
+  private partsIn(owner: HTMLElement, name: string): HTMLElement[] {
+    return this.getParts(name).filter(el => owner.contains(el))
+  }
+
   /**
    * 取角色节点所属的条目身份：value 写在 item 上，行内文本与勾选标记向上找本宿主内最近的 item，
    * 没有则读节点自身。
@@ -347,6 +360,8 @@ export class XhCascaderElement extends XhElement {
     put('content', api.getContentProps() as Record<string, unknown>)
     put('input', api.getInputProps() as Record<string, unknown>)
     put('search-list', api.getSearchListProps() as Record<string, unknown>)
+    put('footer', api.getFooterProps() as Record<string, unknown>)
+    put('loading', api.getLoadingProps() as Record<string, unknown>)
 
     // 空态占位标记里没写就补一个：露不露面归连接层，文案按当前视图取无匹配或无数据
     const empty = this.ensureEmpty()
@@ -382,6 +397,13 @@ export class XhCascaderElement extends XhElement {
     this.getParts('column').forEach((el, position) => {
       this.spreader.spread(el, api.getColumnProps({ level: this.levelOf(el, position) }) as Record<string, unknown>)
     })
+    // 分组是多实例 part：身份取自己的 value 属性，组内标题跟着同一份身份
+    for (const el of this.getParts('group')) {
+      const group = { value: el.getAttribute('value') ?? '' }
+      this.spreader.spread(el, api.getGroupProps(group) as Record<string, unknown>)
+      for (const label of this.partsIn(el, 'group-label'))
+        this.spreader.spread(label, api.getGroupLabelProps(group) as Record<string, unknown>)
+    }
     for (const el of this.getParts('item')) {
       this.stripNativeDisabled(el)
       this.spreader.spread(el, api.getItemProps(this.itemOf(el)) as Record<string, unknown>)

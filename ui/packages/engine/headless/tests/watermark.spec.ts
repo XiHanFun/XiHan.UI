@@ -149,3 +149,65 @@ describe('watermark 的数值', () => {
     expect(loose.tile.height - tight.tile.height).toBe(60)
   })
 })
+
+// 字体名与图片来源同样是作者给的串，两处都拼进 SVG 的属性里，收口与文字那一段同源。
+describe('watermark 的字体与图片', () => {
+  const PNG = 'data:image/png;base64,iVBORw0KGgo='
+
+  it('不给字体时仍是通用无衬线，产出与从前逐字相同', () => {
+    expect(svg({ text: '曦寒' })).toContain('font-family="sans-serif"')
+    expect(api({ text: '曦寒' }).image).toBe(api({ text: '曦寒', fontFamily: undefined }).image)
+  })
+
+  it('给了字体就写进图样；空白与非串退回缺省', () => {
+    expect(svg({ text: '曦寒', fontFamily: 'PingFang SC, sans-serif' }))
+      .toContain('font-family="PingFang SC, sans-serif"')
+    for (const bad of ['', '   ']) {
+      expect(svg({ text: '曦寒', fontFamily: bad })).toContain('font-family="sans-serif"')
+    }
+  })
+
+  it('字体名出不了自己那个属性', () => {
+    const doc = svg({ text: '曦寒', fontFamily: '" onload="alert(1)" x="' })
+    const group = /<g ([^>]*)>/.exec(doc)?.[1] ?? ''
+    // 逐对取「名="值"」：转义没兜住的话，注进去的那两个名字会在这里现形
+    const names = [...group.matchAll(/([a-z-]+)="[^"]*"/gi)].map(m => m[1]!.toLowerCase())
+    expect(new Set(names)).toEqual(new Set(['transform', 'fill', 'fill-opacity', 'font-family', 'font-size', 'text-anchor']))
+  })
+
+  it('图片只收内联的图片 data URI，别的来源一张都不印', () => {
+    expect(svg({ text: '曦寒', image: PNG })).toContain('<image')
+    for (const bad of [
+      'https://example.test/logo.png',
+      'http://example.test/logo.png',
+      'javascript:alert(1)',
+      'data:text/html,<script>alert(1)</script>',
+      '  ',
+    ]) {
+      expect(svg({ text: '曦寒', image: bad })).not.toContain('<image')
+    }
+  })
+
+  it('只有图片没有文字时照样画得出图样', () => {
+    const only = api({ image: PNG })
+    expect(only.state).toBe('ready')
+    expect(only.tile.width).toBeGreaterThan(0)
+    expect(lineCount(decodeURIComponent(only.image.slice(IMAGE_PREFIX.length)))).toBe(0)
+  })
+
+  it('图片摞在文字上面，步距为两者让出地方', () => {
+    const textOnly = api({ text: '曦寒' })
+    const withPicture = api({ text: '曦寒', image: PNG })
+    expect(withPicture.tile.height).toBeGreaterThan(textOnly.tile.height)
+  })
+
+  it('图片尺寸可给，且有上下限', () => {
+    expect(svg({ image: PNG, imageSize: { width: 120, height: 40 } })).toContain('width="120" height="40"')
+    expect(svg({ image: PNG, imageSize: { width: 0, height: -5 } })).toContain('width="1" height="1"')
+    expect(svg({ image: PNG, imageSize: { width: 9999, height: 9999 } })).toContain('width="512" height="512"')
+  })
+
+  it('图片的深浅跟着 opacity 走：遮罩上 fill-opacity 管不到图片', () => {
+    expect(svg({ image: PNG, opacity: 0.4 })).toContain('opacity="0.4"')
+  })
+})

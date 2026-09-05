@@ -5,6 +5,7 @@ export {
   XhAccordionHeader,
   XhAccordionIndicator,
   XhAccordionItem,
+  XhAccordionItemSeparator,
   XhAccordionRoot,
   XhAccordionTrigger,
 } from './components/accordion/accordion'
@@ -15,11 +16,12 @@ export type { AffixRootSlotProps } from './components/affix/affix'
 export { provideAffix, useAffixContext } from './components/affix/context'
 export { useAffix } from './components/affix/use-affix'
 export type { AffixContext } from './components/affix/use-affix'
-export { XhAlertCloseTrigger, XhAlertDescription, XhAlertIndicator, XhAlertRoot, XhAlertTitle } from './components/alert/alert'
+export { XhAlertAction, XhAlertCloseTrigger, XhAlertContent, XhAlertDescription, XhAlertIndicator, XhAlertRoot, XhAlertTitle } from './components/alert/alert'
 export {
   XhAnchorIndicator,
   XhAnchorItem,
   XhAnchorLink,
+  XhAnchorLinkText,
   XhAnchorList,
   XhAnchorRoot,
 } from './components/anchor/anchor'
@@ -46,6 +48,7 @@ export {
   XhBreadcrumbEllipsis,
   XhBreadcrumbItem,
   XhBreadcrumbLink,
+  XhBreadcrumbLinkIcon,
   XhBreadcrumbList,
   XhBreadcrumbRoot,
   XhBreadcrumbSeparator,
@@ -53,7 +56,7 @@ export {
 export { useBreadcrumb } from './components/breadcrumb/use-breadcrumb'
 export type { BreadcrumbContext } from './components/breadcrumb/use-breadcrumb'
 export { XhButton, XhButtonIndicator, XhButtonLabel, XhButtonPrefix, XhButtonSuffix } from './components/button'
-export { XhButtonGroup } from './components/button-group/button-group'
+export { XhButtonGroup, XhButtonGroupSeparator } from './components/button-group/button-group'
 export {
   XhCalendarCell,
   XhCalendarCellTrigger,
@@ -105,12 +108,16 @@ export {
   XhCascaderColumn,
   XhCascaderContent,
   XhCascaderControl,
+  XhCascaderFooter,
+  XhCascaderGroup,
+  XhCascaderGroupLabel,
   XhCascaderIndicator,
   XhCascaderInput,
   XhCascaderItem,
   XhCascaderItemIndicator,
   XhCascaderItemText,
   XhCascaderLabel,
+  XhCascaderLoading,
   XhCascaderPositioner,
   XhCascaderRoot,
   XhCascaderSearchList,
@@ -141,6 +148,7 @@ export {
   XhClipboardInput,
   XhClipboardLabel,
   XhClipboardRoot,
+  XhClipboardStatus,
 } from './components/clipboard/clipboard'
 export type { ClipboardRootSlotProps } from './components/clipboard/clipboard'
 export { useClipboard } from './components/clipboard/use-clipboard'
@@ -159,6 +167,7 @@ export { useCodeView } from './components/code-view/use-code-view'
 export type { CodeViewContext } from './components/code-view/use-code-view'
 export {
   XhCollapsibleContent,
+  XhCollapsibleHeader,
   XhCollapsibleIndicator,
   XhCollapsibleRoot,
   XhCollapsibleTrigger,
@@ -201,6 +210,7 @@ export {
   XhComboboxItemIndicator,
   XhComboboxItemText,
   XhComboboxLabel,
+  XhComboboxLoading,
   XhComboboxPositioner,
   XhComboboxRoot,
   XhComboboxTrigger,
@@ -216,6 +226,7 @@ export {
   XhContextMenuGroup,
   XhContextMenuGroupLabel,
   XhContextMenuItem,
+  XhContextMenuItemDescription,
   XhContextMenuItemIndicator,
   XhContextMenuItemText,
   XhContextMenuPositioner,
@@ -286,6 +297,7 @@ export {
   XhDialogDescription,
   XhDialogFooter,
   XhDialogHeader,
+  XhDialogIndicator,
   XhDialogRoot,
   XhDialogTitle,
   XhDialogTrigger,
@@ -329,10 +341,10 @@ export {
 export type { EditableRootSlotProps } from './components/editable/editable'
 export { useEditable } from './components/editable/use-editable'
 export type { EditableCallbacks, EditableContext } from './components/editable/use-editable'
-export { XhEmptyStateAction, XhEmptyStateDescription, XhEmptyStateIndicator, XhEmptyStateRoot, XhEmptyStateTitle } from './components/empty-state/empty-state'
+export { XhEmptyStateAction, XhEmptyStateDescription, XhEmptyStateIndicator, XhEmptyStateMedia, XhEmptyStateRoot, XhEmptyStateTitle } from './components/empty-state/empty-state'
 export { provideFieldArray, provideFieldArrayItem, useFieldArrayContext, useFieldArrayItemContext } from './components/field-array/context'
 export type { FieldArrayItemContext } from './components/field-array/context'
-export { XhFieldArrayAddTrigger, XhFieldArrayItem, XhFieldArrayItemAction, XhFieldArrayItemContent, XhFieldArrayItemDeleteTrigger, XhFieldArrayMoveDownTrigger, XhFieldArrayMoveUpTrigger, XhFieldArrayRoot } from './components/field-array/field-array'
+export { XhFieldArrayAddTrigger, XhFieldArrayItem, XhFieldArrayItemAction, XhFieldArrayItemContent, XhFieldArrayItemDeleteTrigger, XhFieldArrayItemLabel, XhFieldArrayMoveDownTrigger, XhFieldArrayMoveUpTrigger, XhFieldArrayRoot } from './components/field-array/field-array'
 export type { FieldArrayRootSlotProps } from './components/field-array/field-array'
 export { useFieldArray } from './components/field-array/use-field-array'
 export type { FieldArrayContext } from './components/field-array/use-field-array'
@@ -343,7 +355,7 @@ export { useField } from './components/field/use-field'
 export type { FieldContext } from './components/field/use-field'
 export { useFieldControl, useFieldLabelWiring, useFieldStateWiring } from './components/field/use-field-control'
 export { useFieldsetContext } from './components/fieldset/context'
-export { XhFieldsetDescription, XhFieldsetErrorText, XhFieldsetLegend, XhFieldsetRoot } from './components/fieldset/fieldset'
+export { XhFieldsetActions, XhFieldsetDescription, XhFieldsetErrorText, XhFieldsetFieldGroup, XhFieldsetLegend, XhFieldsetRoot } from './components/fieldset/fieldset'
 export { useFieldset } from './components/fieldset/use-fieldset'
 export type { FieldsetContext } from './components/fieldset/use-fieldset'
 export {
@@ -354,6 +366,7 @@ export {
   XhFileUploadItemDeleteTrigger,
   XhFileUploadItemName,
   XhFileUploadItemPreview,
+  XhFileUploadItemProgress,
   XhFileUploadItemSizeText,
   XhFileUploadLabel,
   XhFileUploadList,
@@ -403,8 +416,10 @@ export type { HotkeysHandle, UseHotkeysOptions } from './components/hotkeys/use-
 export {
   XhHoverCardArrow,
   XhHoverCardContent,
+  XhHoverCardDescription,
   XhHoverCardPositioner,
   XhHoverCardRoot,
+  XhHoverCardTitle,
   XhHoverCardTrigger,
 } from './components/hover-card/hover-card'
 export type { HoverCardRootSlotProps } from './components/hover-card/hover-card'
@@ -415,7 +430,7 @@ export { XhIcon } from './components/icon/icon'
 export { useIcon } from './components/icon/use-icon'
 export type { IconContext } from './components/icon/use-icon'
 export { useImageCropperContext } from './components/image-cropper/context'
-export { XhImageCropperCropArea, XhImageCropperCropHandle, XhImageCropperGrid, XhImageCropperHiddenInput, XhImageCropperImage, XhImageCropperRoot, XhImageCropperViewport } from './components/image-cropper/image-cropper'
+export { XhImageCropperCropArea, XhImageCropperCropHandle, XhImageCropperGrid, XhImageCropperHiddenInput, XhImageCropperImage, XhImageCropperRoot, XhImageCropperRotateSlider, XhImageCropperViewport, XhImageCropperZoomSlider } from './components/image-cropper/image-cropper'
 export type { ImageCropperRootSlotProps } from './components/image-cropper/image-cropper'
 export { useImageCropper } from './components/image-cropper/use-image-cropper'
 export type { ImageCropperContext } from './components/image-cropper/use-image-cropper'
@@ -445,16 +460,20 @@ export type { ImageViewerContext } from './components/image-viewer/use-image-vie
 export {
   XhImageFallback,
   XhImageImage,
+  XhImagePlaceholder,
   XhImageRoot,
 } from './components/image/image'
 export type { ImageRootSlotProps } from './components/image/image'
 export { useImage } from './components/image/use-image'
 export type { ImageContext } from './components/image/use-image'
 export { provideInfiniteScroll, useInfiniteScrollContext } from './components/infinite-scroll/context'
-export { XhInfiniteScrollRoot, XhInfiniteScrollSentinel } from './components/infinite-scroll/infinite-scroll'
+export { XhInfiniteScrollLoadMoreTrigger, XhInfiniteScrollRoot, XhInfiniteScrollSentinel } from './components/infinite-scroll/infinite-scroll'
 export type { InfiniteScrollRootSlotProps } from './components/infinite-scroll/infinite-scroll'
 export { useInfiniteScroll } from './components/infinite-scroll/use-infinite-scroll'
 export type { InfiniteScrollContext } from './components/infinite-scroll/use-infinite-scroll'
+export { provideInputGroup, useInputGroupContext } from './components/input-group/context'
+export type { InputGroupContext } from './components/input-group/context'
+export { XhInputGroupItem, XhInputGroupRoot } from './components/input-group/input-group'
 export { XhJsonViewerRoot } from './components/json-viewer/json-viewer'
 export { useJsonViewer } from './components/json-viewer/use-json-viewer'
 export type { JsonViewerContext } from './components/json-viewer/use-json-viewer'
@@ -467,18 +486,22 @@ export type { ListContext } from './components/list/context'
 export { XhListItem, XhListItemAction, XhListItemContent, XhListItemDescription, XhListItemMedia, XhListItemTitle, XhListRoot } from './components/list/list'
 export {
   XhListboxContent,
+  XhListboxEmpty,
   XhListboxGroup,
   XhListboxGroupLabel,
   XhListboxItem,
   XhListboxItemIndicator,
   XhListboxItemText,
   XhListboxLabel,
+  XhListboxLoading,
+  XhListboxLoadMoreTrigger,
   XhListboxRoot,
 } from './components/listbox/listbox'
 export type { ListboxRootSlotProps } from './components/listbox/listbox'
 export { useListbox } from './components/listbox/use-listbox'
 export type { ListboxContext } from './components/listbox/use-listbox'
 export {
+  XhLoadingBarPeg,
   XhLoadingBarRange,
   XhLoadingBarRoot,
   XhLoadingBarTrack,
@@ -509,7 +532,7 @@ export { XhMarqueeContent, XhMarqueeRoot } from './components/marquee/marquee'
 export { XhMasonry } from './components/masonry/masonry'
 export { provideMention, provideMentionItem, useMentionContext, useMentionItemContext } from './components/mention/context'
 export type { MentionItemContext } from './components/mention/context'
-export { XhMentionContent, XhMentionInput, XhMentionItem, XhMentionItemText, XhMentionPositioner, XhMentionRoot } from './components/mention/mention'
+export { XhMentionContent, XhMentionEmpty, XhMentionInput, XhMentionItem, XhMentionItemText, XhMentionLabel, XhMentionLoading, XhMentionPositioner, XhMentionRoot } from './components/mention/mention'
 export type { MentionRootSlotProps } from './components/mention/mention'
 export { useMention } from './components/mention/use-mention'
 export type { MentionContext } from './components/mention/use-mention'
@@ -521,6 +544,9 @@ export {
   XhMenuGroup,
   XhMenuGroupLabel,
   XhMenuItem,
+  XhMenuItemDescription,
+  XhMenuItemIndicator,
+  XhMenuItemText,
   XhMenuPositioner,
   XhMenuRoot,
   XhMenuSeparator,
@@ -534,10 +560,12 @@ export type { MenuContext } from './components/menu/use-menu'
 export { provideMenubarChain, provideMenubarSub, useMenubarChain, useMenubarSubContext } from './components/menubar/context'
 export type { MenubarChain, MenubarSubHandle } from './components/menubar/context'
 export {
+  XhMenubarArrow,
   XhMenubarContent,
   XhMenubarGroup,
   XhMenubarGroupLabel,
   XhMenubarItem,
+  XhMenubarItemDescription,
   XhMenubarItemIndicator,
   XhMenubarItemText,
   XhMenubarPositioner,
@@ -564,6 +592,7 @@ export {
   XhNavigationMenuList,
   XhNavigationMenuRoot,
   XhNavigationMenuTrigger,
+  XhNavigationMenuTriggerIndicator,
   XhNavigationMenuViewport,
 } from './components/navigation-menu/navigation-menu'
 export { useNavigationMenu } from './components/navigation-menu/use-navigation-menu'
@@ -577,6 +606,7 @@ export {
   XhNotificationItemCloseTrigger,
   XhNotificationItemDescription,
   XhNotificationItemIndicator,
+  XhNotificationItemProgress,
   XhNotificationItemTitle,
   XhNotificationRoot,
 } from './components/notification/notification'
@@ -590,7 +620,9 @@ export {
   XhNumberFieldIncrementTrigger,
   XhNumberFieldInput,
   XhNumberFieldLabel,
+  XhNumberFieldPrefix,
   XhNumberFieldRoot,
+  XhNumberFieldSuffix,
 } from './components/number-field/number-field'
 export type { NumberFieldRootSlotProps } from './components/number-field/number-field'
 export { useNumberField } from './components/number-field/use-number-field'
@@ -602,31 +634,35 @@ export {
   XhPaginationContent,
   XhPaginationEllipsisTrigger,
   XhPaginationItem,
+  XhPaginationJumper,
   XhPaginationNextTrigger,
   XhPaginationPageSizeSelect,
   XhPaginationPositioner,
   XhPaginationPrevTrigger,
   XhPaginationRoot,
+  XhPaginationSummary,
 } from './components/pagination/pagination'
 export type { PaginationRootSlotProps } from './components/pagination/pagination'
 export { usePagination } from './components/pagination/use-pagination'
 export type { PaginationContext } from './components/pagination/use-pagination'
 export { usePasswordInputContext } from './components/password-input/context'
-export { XhPasswordInputCapsLockIndicator, XhPasswordInputControl, XhPasswordInputInput, XhPasswordInputLabel, XhPasswordInputRoot, XhPasswordInputVisibilityTrigger } from './components/password-input/password-input'
+export { XhPasswordInputCapsLockIndicator, XhPasswordInputControl, XhPasswordInputInput, XhPasswordInputLabel, XhPasswordInputRoot, XhPasswordInputStrengthMeter, XhPasswordInputVisibilityTrigger } from './components/password-input/password-input'
 export type { PasswordInputRootSlotProps } from './components/password-input/password-input'
 export { usePasswordInput } from './components/password-input/use-password-input'
 export type { PasswordInputContext } from './components/password-input/use-password-input'
 export {
+  XhPinInputGroup,
   XhPinInputHiddenInput,
   XhPinInputInput,
   XhPinInputLabel,
   XhPinInputRoot,
+  XhPinInputSeparator,
 } from './components/pin-input/pin-input'
 export type { PinInputRootSlotProps } from './components/pin-input/pin-input'
 export { usePinInput } from './components/pin-input/use-pin-input'
 export type { PinInputContext } from './components/pin-input/use-pin-input'
 export { providePopconfirm, usePopconfirmContext } from './components/popconfirm/context'
-export { XhPopconfirmCancelTrigger, XhPopconfirmConfirmTrigger, XhPopconfirmContent, XhPopconfirmDescription, XhPopconfirmPositioner, XhPopconfirmRoot, XhPopconfirmTitle, XhPopconfirmTrigger } from './components/popconfirm/popconfirm'
+export { XhPopconfirmArrow, XhPopconfirmCancelTrigger, XhPopconfirmConfirmTrigger, XhPopconfirmContent, XhPopconfirmDescription, XhPopconfirmPositioner, XhPopconfirmRoot, XhPopconfirmTitle, XhPopconfirmTrigger } from './components/popconfirm/popconfirm'
 export type { PopconfirmRootSlotProps } from './components/popconfirm/popconfirm'
 export { usePopconfirm } from './components/popconfirm/use-popconfirm'
 export type { PopconfirmContext } from './components/popconfirm/use-popconfirm'
@@ -691,6 +727,7 @@ export {
   XhRatingItem,
   XhRatingLabel,
   XhRatingRoot,
+  XhRatingValueText,
 } from './components/rating/rating'
 export type { RatingItemSlotProps, RatingRootSlotProps } from './components/rating/rating'
 export { useRating } from './components/rating/use-rating'
@@ -732,7 +769,10 @@ export {
   XhSelectClearTrigger,
   XhSelectContent,
   XhSelectControl,
+  XhSelectEmpty,
   XhSelectFooter,
+  XhSelectGroup,
+  XhSelectGroupLabel,
   XhSelectIndicator,
   XhSelectItem,
   XhSelectItemDeleteTrigger,
@@ -740,6 +780,7 @@ export {
   XhSelectItemText,
   XhSelectLabel,
   XhSelectList,
+  XhSelectLoading,
   XhSelectPositioner,
   XhSelectRoot,
   XhSelectTag,
@@ -749,7 +790,7 @@ export {
 export type { SelectRootSlotProps } from './components/select/select'
 export { useSelect } from './components/select/use-select'
 export type { SelectContext } from './components/select/use-select'
-export { XhSeparator } from './components/separator/separator'
+export { XhSeparator, XhSeparatorContent, XhSeparatorLine, XhSeparatorRoot } from './components/separator/separator'
 export { provideSideNav, provideSideNavNode, useSideNavContext, useSideNavNodeContext } from './components/side-nav/context'
 export {
   XhSideNavBranch,
@@ -783,12 +824,13 @@ export {
   XhSliderThumb,
   XhSliderTickGroup,
   XhSliderTrack,
+  XhSliderValueText,
 } from './components/slider/slider'
 export type { SliderRootSlotProps, SliderTickGroupTickSlotProps } from './components/slider/slider'
 export { useSlider } from './components/slider/use-slider'
 export type { SliderContext } from './components/slider/use-slider'
 export { provideSortable, useSortableContext } from './components/sortable/context'
-export { XhSortableItem, XhSortableItemDragTrigger, XhSortableLiveRegion, XhSortableRoot } from './components/sortable/sortable'
+export { XhSortableDropIndicator, XhSortableItem, XhSortableItemDragTrigger, XhSortableLiveRegion, XhSortableRoot } from './components/sortable/sortable'
 export type { SortableItemSlotProps, SortableRootSlotProps } from './components/sortable/sortable'
 export { useSortable } from './components/sortable/use-sortable'
 export type { SortableContext } from './components/sortable/use-sortable'
@@ -803,7 +845,7 @@ export { useSplitter } from './components/splitter/use-splitter'
 export type { SplitterContext } from './components/splitter/use-splitter'
 export { provideStatistic, useStatisticContext } from './components/statistic/context'
 export type { StatisticContext } from './components/statistic/context'
-export { XhStatisticLabel, XhStatisticPrefix, XhStatisticRoot, XhStatisticSuffix, XhStatisticValue } from './components/statistic/statistic'
+export { XhStatisticLabel, XhStatisticPrefix, XhStatisticRoot, XhStatisticSuffix, XhStatisticTrend, XhStatisticValue } from './components/statistic/statistic'
 export {
   XhStepsContent,
   XhStepsDescription,
@@ -834,6 +876,7 @@ export {
   XhTableFooter,
   XhTableHeader,
   XhTableLoading,
+  XhTableLoadMoreTrigger,
   XhTableRoot,
   XhTableRow,
   XhTableRowDragTrigger,
@@ -846,14 +889,30 @@ export { useTable } from './components/table/use-table'
 export type { TableContext } from './components/table/use-table'
 export {
   XhTabsContent,
+  XhTabsIndicator,
   XhTabsList,
   XhTabsLiveRegion,
   XhTabsRoot,
+  XhTabsSeparator,
   XhTabsTabDragTrigger,
   XhTabsTrigger,
 } from './components/tabs/tabs'
 export { useTabs } from './components/tabs/use-tabs'
 export type { TabsContext } from './components/tabs/use-tabs'
+export { useTagGroupContext, useTagGroupItemContext } from './components/tag-group/context'
+export type { TagGroupItemContext } from './components/tag-group/context'
+export {
+  XhTagGroupCell,
+  XhTagGroupItem,
+  XhTagGroupItemDeleteTrigger,
+  XhTagGroupItemText,
+  XhTagGroupLabel,
+  XhTagGroupList,
+  XhTagGroupRoot,
+} from './components/tag-group/tag-group'
+export type { TagGroupRootSlotProps } from './components/tag-group/tag-group'
+export { useTagGroup } from './components/tag-group/use-tag-group'
+export type { TagGroupContext } from './components/tag-group/use-tag-group'
 export { useTagContext } from './components/tag/context'
 export { XhTagCloseTrigger, XhTagLabel, XhTagRoot } from './components/tag/tag'
 export { useTag } from './components/tag/use-tag'
@@ -861,6 +920,7 @@ export type { TagContext } from './components/tag/use-tag'
 export {
   XhTagsInputClearTrigger,
   XhTagsInputControl,
+  XhTagsInputCount,
   XhTagsInputHiddenInput,
   XhTagsInputInput,
   XhTagsInputItem,
@@ -871,17 +931,20 @@ export {
   XhTagsInputLabel,
   XhTagsInputRoot,
 } from './components/tags-input/tags-input'
-export type { TagsInputRootSlotProps } from './components/tags-input/tags-input'
+export type { TagsInputCountSlotProps, TagsInputRootSlotProps } from './components/tags-input/tags-input'
 export { useTagsInput } from './components/tags-input/use-tags-input'
 export type { TagsInputContext } from './components/tags-input/use-tags-input'
 export {
   XhTextFieldClearTrigger,
   XhTextFieldControl,
+  XhTextFieldCount,
   XhTextFieldInput,
   XhTextFieldLabel,
+  XhTextFieldPrefix,
   XhTextFieldRoot,
+  XhTextFieldSuffix,
 } from './components/text-field/text-field'
-export type { TextFieldRootSlotProps } from './components/text-field/text-field'
+export type { TextFieldCountSlotProps, TextFieldRootSlotProps } from './components/text-field/text-field'
 export { useTextField } from './components/text-field/use-text-field'
 export type { TextFieldContext } from './components/text-field/use-text-field'
 export {
@@ -917,7 +980,7 @@ export { useTimePicker } from './components/time-picker/use-time-picker'
 export type { TimePickerContext } from './components/time-picker/use-time-picker'
 export { provideTimeline, provideTimelineItem, useTimelineContext, useTimelineItem } from './components/timeline/context'
 export type { TimelineContext } from './components/timeline/context'
-export { XhTimelineConnector, XhTimelineContent, XhTimelineDescription, XhTimelineIndicator, XhTimelineItem, XhTimelineRoot, XhTimelineTime, XhTimelineTitle } from './components/timeline/timeline'
+export { XhTimelineConnector, XhTimelineContent, XhTimelineDescription, XhTimelineIndicator, XhTimelineItem, XhTimelineLabel, XhTimelineRoot, XhTimelineTime, XhTimelineTitle } from './components/timeline/timeline'
 export { useTimerContext } from './components/timer/context'
 export { XhTimerControl, XhTimerDisplay, XhTimerItem, XhTimerRoot, XhTimerSeparator } from './components/timer/timer'
 export type { TimerRootSlotProps } from './components/timer/timer'
@@ -927,6 +990,8 @@ export { XhTimestamp } from './components/timestamp/timestamp'
 export {
   XhToastActionTrigger,
   XhToastCloseTrigger,
+  XhToastIndicator,
+  XhToastProgress,
   XhToastRoot,
   XhToastTitle,
 } from './components/toast/toast'
@@ -934,8 +999,10 @@ export type { ToastRootSlotProps } from './components/toast/toast'
 export { useToast } from './components/toast/use-toast'
 export type { ToastContext } from './components/toast/use-toast'
 export {
+  XhToggleGroupHiddenInput,
   XhToggleGroupItem,
   XhToggleGroupRoot,
+  XhToggleGroupSeparator,
 } from './components/toggle-group/toggle-group'
 export { useToggleGroup } from './components/toggle-group/use-toggle-group'
 export type { ToggleGroupContext } from './components/toggle-group/use-toggle-group'
@@ -975,6 +1042,8 @@ export {
   XhTourNextTrigger,
   XhTourPositioner,
   XhTourPrevTrigger,
+  XhTourProgressDot,
+  XhTourProgressIndicator,
   XhTourProgressText,
   XhTourRoot,
   XhTourSkipTrigger,
@@ -985,10 +1054,14 @@ export type { TourRootSlotProps } from './components/tour/tour'
 export { useTour } from './components/tour/use-tour'
 export type { TourContext } from './components/tour/use-tour'
 export {
+  XhTransferEmpty,
+  XhTransferGroup,
+  XhTransferGroupLabel,
   XhTransferItem,
   XhTransferItemCheckbox,
   XhTransferItemText,
   XhTransferList,
+  XhTransferLoading,
   XhTransferPanelCount,
   XhTransferPanelHeader,
   XhTransferPanelTitle,
@@ -1013,12 +1086,15 @@ export {
   XhTreeSelectClearTrigger,
   XhTreeSelectContent,
   XhTreeSelectControl,
+  XhTreeSelectEmpty,
+  XhTreeSelectFooter,
   XhTreeSelectHiddenInput,
   XhTreeSelectIndicator,
   XhTreeSelectItem,
   XhTreeSelectItemIndicator,
   XhTreeSelectItemText,
   XhTreeSelectLabel,
+  XhTreeSelectLoading,
   XhTreeSelectPositioner,
   XhTreeSelectRoot,
   XhTreeSelectTree,
@@ -1036,12 +1112,14 @@ export {
   XhTreeBranchIndicator,
   XhTreeBranchText,
   XhTreeBranchTrigger,
+  XhTreeEmpty,
   XhTreeItem,
   XhTreeItemCheckbox,
   XhTreeItemIndicator,
   XhTreeItemText,
   XhTreeLabel,
   XhTreeLiveRegion,
+  XhTreeLoading,
   XhTreeNodeDragTrigger,
   XhTreeRoot,
   XhTreeTree,
@@ -1055,7 +1133,7 @@ export { useTruncate } from './components/truncate/use-truncate'
 export type { TruncateContext } from './components/truncate/use-truncate'
 export { provideTypography, useTypographyContext } from './components/typography/context'
 export type { TypographyContext } from './components/typography/context'
-export { XhTypographyHeading, XhTypographyLink, XhTypographyParagraph, XhTypographyRoot, XhTypographyText } from './components/typography/typography'
+export { XhTypographyHeading, XhTypographyLink, XhTypographyParagraph, XhTypographyProse, XhTypographyRoot, XhTypographyText } from './components/typography/typography'
 export { useVirtualizer } from './components/virtualizer/use-virtualizer'
 export type { VirtualizerContext } from './components/virtualizer/use-virtualizer'
 export {

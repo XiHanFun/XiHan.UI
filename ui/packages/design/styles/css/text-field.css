@@ -179,6 +179,28 @@
     min-block-size: var(--xh-text-field-control-h, var(--xh-_text-field-h));
   }
 
+  /* 装饰段：货币符、单位、图标。与输入框同框，不参与分宽，弱一档前景把它与正文分开 */
+  [data-scope='text-field'][data-part='prefix'],
+  [data-scope='text-field'][data-part='suffix'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    color: var(--xh-text-field-affix-fg, var(--xh-fg-muted));
+    font-size: var(--xh-text-field-affix-font-size, var(--xh-_text-field-font-size));
+    line-height: var(--xh-leading-none);
+    white-space: nowrap;
+  }
+
+  [data-scope='text-field'][data-part='prefix'][hidden],
+  [data-scope='text-field'][data-part='suffix'][hidden] {
+    display: none;
+  }
+
+  [data-scope='text-field'][data-part='prefix'][data-disabled],
+  [data-scope='text-field'][data-part='suffix'][data-disabled] {
+    color: var(--xh-text-field-affix-fg-disabled, var(--xh-fg-disabled));
+  }
+
   /* input 是框里的一段，不自己画盒：描边、底色、圆角、落影与行内内衬全归 control，
      这里再留一份就是框内套了一圈空白。它占满剩余宽度，把清空按钮顶到最右 */
   [data-scope='text-field'][data-part='input'] {
@@ -297,5 +319,29 @@
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
     mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+  }
+
+  /* 字数：排在控件行下面靠尾端的一行小字，与标题分列 root 的两端 */
+  [data-scope='text-field'][data-part='count'] {
+    align-self: flex-end;
+    color: var(--xh-text-field-count-fg, var(--xh-fg-muted));
+    font-size: var(--xh-text-field-count-font-size, var(--xh-_text-field-action-font-size));
+    font-variant-numeric: tabular-nums;
+    line-height: var(--xh-leading-normal);
+  }
+
+  /* 没开 showCount 时连接层给的是 hidden 属性；上面那条 align-self 不影响显隐，
+     但作者层给这个 part 声明任何一条 display 都会盖掉 UA 规则，这条把它还回去 */
+  [data-scope='text-field'][data-part='count'][hidden] {
+    display: none;
+  }
+
+  /* 顶到上限：数字先于边框被看见，与 control 那条 at-max 描边同族颜色 */
+  [data-scope='text-field'][data-part='count'][data-at-max] {
+    color: var(--xh-text-field-count-fg-at-max, var(--xh-fg-warning));
+  }
+
+  [data-scope='text-field'][data-part='count'][data-disabled] {
+    color: var(--xh-text-field-count-fg-disabled, var(--xh-fg-disabled));
   }
 }

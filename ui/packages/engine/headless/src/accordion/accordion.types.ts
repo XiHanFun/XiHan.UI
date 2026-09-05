@@ -1,5 +1,8 @@
 import type { Direction, MachineSchema, Orientation, PropTypes, Size, Tone } from '@xihan-ui/core'
 
+/** 形态：条目怎么与页面分开。缺省 plain 就是条目直接相邻、不画容器。 */
+export type AccordionVariant = 'plain' | 'surface' | 'bordered'
+
 export interface AccordionValueChangeDetails {
   value: string[]
 }
@@ -47,6 +50,12 @@ export interface AccordionSchema extends MachineSchema {
     multiple?: boolean
     /** 允许把最后一个展开项收起，默认 false。 */
     collapsible?: boolean
+    /** 方向键走到尽头是否回绕，默认 false。 */
+    loop?: boolean
+    /** 整组禁用：所有条目都不可切换，条目上写的 disabled 只能更严不能放宽。 */
+    disabled?: boolean
+    /** 形态：plain / surface / bordered，决定条目怎么与页面分开。缺省 plain。 */
+    variant?: AccordionVariant
     /** 方向键轴向，默认 vertical。 */
     orientation?: Orientation
     /** 文字方向，默认 ltr；影响水平轴上 ArrowLeft/ArrowRight 的语义。 */
@@ -80,6 +89,7 @@ export interface AccordionApi<T extends PropTypes = PropTypes> {
   isOpen: (value: string) => boolean
   getRootProps: () => T['element']
   getItemProps: (props: AccordionItemProps) => T['element']
+  getItemSeparatorProps: () => T['element']
   getHeaderProps: (props: AccordionItemProps) => T['element']
   getTriggerProps: (props: AccordionItemProps) => T['button']
   getContentProps: (props: AccordionItemProps) => T['element']

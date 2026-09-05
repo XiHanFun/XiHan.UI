@@ -69,6 +69,12 @@ export function connectSlider<T extends PropTypes>(
     'data-dragging': dataAttr(dragging),
   })
 
+  /** 一个拇指的值文本：有格式化函数就用它，没有就念数字本身。 */
+  const valueTextOf = (index: number): string => {
+    const thumb = thumbAt(index)
+    return prop('getValueText')?.({ value: thumb.value, index: thumb.index }) ?? String(thumb.value)
+  }
+
   const stepBy = (index: number, direction: 1 | -1, large = false): void => {
     send({ type: 'THUMB.STEP', index, direction, large })
   }
@@ -108,6 +114,7 @@ export function connectSlider<T extends PropTypes>(
     dragging,
     disabled,
     readOnly,
+    valueText: index => valueTextOf(clampIndex(index)),
     setValue: next => send({ type: 'VALUE.SET', value: next }),
     setThumbValue: (index, next) => send({ type: 'THUMB.SET', index: clampIndex(index), value: next }),
 
@@ -203,6 +210,20 @@ export function connectSlider<T extends PropTypes>(
           event.preventDefault()
           handler()
         },
+      })
+    },
+
+    // 值气泡：挂在拇指里，显示这一个拇指的当前值。
+    // aria-hidden：同一个值拇指已用 aria-valuetext / aria-valuenow 报过，念第二遍是重复
+    getValueTextProps: (index) => {
+      const thumb = thumbAt(index)
+      return normalize.element({
+        ...parts['value-text'].attrs,
+        ...stateAttrs(),
+        'aria-hidden': true,
+        'data-index': String(thumb.index),
+        // 只有正被推动的那个拇指算 dragging，皮肤据此决定气泡露不露面
+        'data-dragging': dataAttr(dragging && thumb.index === activeIndex),
       })
     },
 

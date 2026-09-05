@@ -69,12 +69,12 @@ export const resizableMachine = createMachine({
       },
     },
     resizing: {
-      effects: ['trackPointer'],
+      effects: ['trackPointer', 'trackCancelKey'],
       on: {
         'RESIZE.MOVE': { actions: ['trackResize'] },
         // 收尾通知只在这里发一次，拖动途中 onDimensionsChange 已连发多次
         'RESIZE.END': { target: 'idle', actions: ['invokeChangeEnd', 'endResize'] },
-        // 系统收走指针按取消算：尺寸退回按下那一刻
+        // 系统收走指针、或按下 Escape 都按取消算：尺寸退回按下那一刻
         'RESIZE.CANCEL': { target: 'idle', actions: ['cancelResize'] },
       },
     },
@@ -185,6 +185,21 @@ export const resizableMachine = createMachine({
           onEnd: ({ reason }) => send({ type: reason === 'pointercancel' ? 'RESIZE.CANCEL' : 'RESIZE.END' }),
         })
         return () => session.dispose()
+      },
+
+      /** 调整期间按 Escape 放弃这一次。监听挂在文档上：指针拖出把手时焦点未必还在把手上。 */
+      trackCancelKey: ({ refs, send }) => {
+        const doc = resolveSessionDoc(refs.get('getRootEl')())
+        if (!doc)
+          return undefined
+        const onKeyDown = (event: KeyboardEvent): void => {
+          if (event.key !== 'Escape')
+            return
+          event.preventDefault()
+          send({ type: 'RESIZE.CANCEL' })
+        }
+        doc.addEventListener('keydown', onKeyDown)
+        return () => doc.removeEventListener('keydown', onKeyDown)
       },
     },
   },

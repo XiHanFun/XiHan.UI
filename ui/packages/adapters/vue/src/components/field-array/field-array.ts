@@ -38,6 +38,9 @@ export const XhFieldArrayRoot = defineComponent({
     createItem: { type: Function as PropType<() => unknown>, default: undefined },
     movable: Boolean,
     disabled: Boolean,
+    readOnly: Boolean,
+    invalid: Boolean,
+    name: { type: String, default: undefined },
     translations: { type: Object as PropType<Partial<FieldArrayTranslations>>, default: undefined },
   },
   // value-change 携带 { value }，update:value 携带裸数组
@@ -85,6 +88,16 @@ export const XhFieldArrayItem = defineComponent({
     const item = computed<FieldArrayItemProps>(() => ({ index: Math.trunc(Number(props.index)) }))
     provideFieldArrayItem({ item })
     return () => h('div', ctx.api.value.getItemProps(item.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
+/** 行前的行号或名目；纯标注，不与行里的控件建 for 关联。 */
+export const XhFieldArrayItemLabel = defineComponent({
+  name: 'XhFieldArrayItemLabel',
+  setup(_, { slots }) {
+    const ctx = useFieldArrayContext()
+    const { item } = useFieldArrayItemContext()
+    return () => h('span', ctx.api.value.getItemLabelProps(item.value) as Record<string, unknown>, slots.default?.())
   },
 })
 

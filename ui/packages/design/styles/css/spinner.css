@@ -6,6 +6,13 @@
       transform: rotate(1turn);
     }
   }
+
+  /* 三点档的呼吸：一拍里淡到禁用档再回来 */
+  @keyframes xh-spinner-dots {
+    50% {
+      opacity: var(--xh-state-disabled-opacity);
+    }
+  }
 }
 
 @layer xihan.components {
@@ -60,6 +67,69 @@
     border-block-start-color: var(--xh-spinner-fg, var(--xh-_tone, var(--xh-bg-brand)));
   }
 
+  /*
+   * 渐隐弧：一整圈的色相由角度扫过来，再用一圈环形遮罩把中心挖空，剩下的就是一段
+   * 由浓到无的弧。转的还是同一条 xh-spinner-rotate——这一档只换画法，不换节拍。
+   * 遮罩只吃 alpha，用 currentColor 当不透明的那一端即可。
+   */
+  [data-scope='spinner'][data-part='root'][data-variant='arc']::before {
+    border: 0;
+    background: conic-gradient(transparent, var(--xh-spinner-fg, var(--xh-bg-brand)));
+    -webkit-mask: radial-gradient(
+      farthest-side,
+      transparent calc(100% - var(--xh-spinner-thickness, var(--xh-stroke-thick))),
+      currentColor 0
+    );
+    mask: radial-gradient(
+      farthest-side,
+      transparent calc(100% - var(--xh-spinner-thickness, var(--xh-stroke-thick))),
+      currentColor 0
+    );
+  }
+
+  [data-scope='spinner'][data-part='root'][data-variant='arc'][data-tone]::before {
+    background: conic-gradient(transparent, var(--xh-spinner-fg, var(--xh-_tone, var(--xh-bg-brand))));
+  }
+
+  /*
+   * 三点：一行三枚圆点，整组一起呼吸。它不转，因此圆角与描边都撤掉，
+   * 图形改由三层径向渐变画；点的颜色走 currentColor，语气档只换这一处。
+   */
+  [data-scope='spinner'][data-part='root'][data-variant='dots']::before {
+    border: 0;
+    border-radius: 0;
+    background:
+      radial-gradient(circle closest-side, var(--xh-spinner-fg, var(--xh-bg-brand)) 100%, transparent) 0 50% / 25% 25% no-repeat,
+      radial-gradient(circle closest-side, var(--xh-spinner-fg, var(--xh-bg-brand)) 100%, transparent) 50% 50% / 25% 25% no-repeat,
+      radial-gradient(circle closest-side, var(--xh-spinner-fg, var(--xh-bg-brand)) 100%, transparent) 100% 50% / 25% 25% no-repeat;
+    animation: xh-spinner-dots var(--xh-spinner-duration, var(--xh-spin-duration)) var(--xh-motion-ease-sweep) infinite;
+  }
+
+  [data-scope='spinner'][data-part='root'][data-variant='dots'][data-tone]::before {
+    background:
+      radial-gradient(circle closest-side, var(--xh-spinner-fg, var(--xh-_tone, var(--xh-bg-brand))) 100%, transparent) 0 50% / 25% 25% no-repeat,
+      radial-gradient(circle closest-side, var(--xh-spinner-fg, var(--xh-_tone, var(--xh-bg-brand))) 100%, transparent) 50% 50% / 25% 25% no-repeat,
+      radial-gradient(circle closest-side, var(--xh-spinner-fg, var(--xh-_tone, var(--xh-bg-brand))) 100%, transparent) 100% 50% / 25% 25% no-repeat;
+  }
+
+  /* 三点档的呼吸自带一条动画，压不住上面那两块基础降级里的 animation: none，
+     因此这一档各自再写一份。两组规则是同一件事的两个触发条件 */
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope='spinner'][data-part='root'][data-variant='dots']::before {
+      animation: none;
+    }
+  }
+
+  :where([data-motion='reduce']) [data-scope='spinner'][data-part='root'][data-variant='dots']::before {
+    animation: none;
+  }
+
+  @media print {
+    [data-scope='spinner'][data-part='root'][data-variant='dots']::before {
+      animation: none;
+    }
+  }
+
   [data-scope='spinner'][data-part='label'] {
     color: var(--xh-spinner-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-spinner-label-size, var(--xh-text-secondary-size));
@@ -111,6 +181,20 @@
 
     [data-scope='spinner'][data-part='root'][data-tone]::before {
       border-color: var(--xh-spinner-fg, var(--xh-_tone, var(--xh-bg-brand)));
+    }
+  }
+
+  /*
+   * 高对比档：这一档把整层背景图丢掉，而渐隐弧与三点都画在背景上——屏幕上会一片空白。
+   * 两档一并退回描边画法：一圈系统轨道色加一段高亮的起始边，转的还是同一条动画。
+   */
+  @media (forced-colors: active) {
+    [data-scope='spinner'][data-part='root'][data-variant='arc']::before,
+    [data-scope='spinner'][data-part='root'][data-variant='dots']::before {
+      border: var(--xh-spinner-thickness, var(--xh-stroke-thick)) solid CanvasText;
+      border-block-start-color: Highlight;
+      border-radius: var(--xh-spinner-radius, var(--xh-shape-pill));
+      background-image: none;
     }
   }
 }

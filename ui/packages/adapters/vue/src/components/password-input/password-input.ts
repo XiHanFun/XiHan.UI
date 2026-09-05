@@ -31,6 +31,7 @@ export const XhPasswordInputRoot = defineComponent({
     name: { type: String, default: undefined },
     placeholder: { type: String, default: undefined },
     autoComplete: { type: String, default: undefined },
+    strength: { type: Number, default: undefined },
     variant: { type: String as PropType<ControlVariant>, default: undefined },
     tone: { type: String as PropType<Tone>, default: undefined },
     size: { type: String as PropType<Size>, default: undefined },
@@ -119,5 +120,14 @@ export const XhPasswordInputCapsLockIndicator = defineComponent({
     const ctx = usePasswordInputContext()
     // 区内文字由组件写：活区域播报的是内容，不是名字。关着时是空串，节点仍在场
     return () => h('span', ctx.api.value.getCapsLockIndicatorProps() as Record<string, unknown>, ctx.api.value.capsLockMessage)
+  },
+})
+
+/** 强度条：档位由调用方打分后经 strength 传进来，没给就收起。 */
+export const XhPasswordInputStrengthMeter = defineComponent({
+  name: 'XhPasswordInputStrengthMeter',
+  setup(_, { slots }) {
+    const ctx = usePasswordInputContext()
+    return () => h('div', ctx.api.value.getStrengthMeterProps() as Record<string, unknown>, slots.default?.())
   },
 })

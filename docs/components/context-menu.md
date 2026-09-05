@@ -81,7 +81,7 @@ XhContextMenuSub 在右键菜单里嵌一台子菜单：触发条目双重身份
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-context-menu>` |
-| Vue 组件 | `XhContextMenuArrow` `XhContextMenuContent` `XhContextMenuGroup` `XhContextMenuGroupLabel` `XhContextMenuItem` `XhContextMenuItemIndicator` `XhContextMenuItemText` `XhContextMenuPositioner` `XhContextMenuRoot` `XhContextMenuSeparator` `XhContextMenuSub` `XhContextMenuSubTrigger` `XhContextMenuTrigger` |
+| Vue 组件 | `XhContextMenuArrow` `XhContextMenuContent` `XhContextMenuGroup` `XhContextMenuGroupLabel` `XhContextMenuItem` `XhContextMenuItemDescription` `XhContextMenuItemIndicator` `XhContextMenuItemText` `XhContextMenuPositioner` `XhContextMenuRoot` `XhContextMenuSeparator` `XhContextMenuSub` `XhContextMenuSubTrigger` `XhContextMenuTrigger` |
 | 组合式函数 | `useContextMenu` |
 | 状态机 | `contextMenuMachine` |
 | 皮肤 | `@xihan-ui/styles/context-menu.css` |
@@ -90,7 +90,7 @@ XhContextMenuSub 在右键菜单里嵌一台子菜单：触发条目双重身份
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="context-menu"`：`root` · **`trigger`** · `positioner` · **`content`** · **`item`** · `item-text` · `item-indicator` · `separator` · `group` · `group-label` · `arrow`
+`data-scope="context-menu"`：`root` · **`trigger`** · `positioner` · **`content`** · **`item`** · `item-text` · `item-indicator` · `item-description` · `separator` · `group` · `group-label` · `arrow`
 
 ## Props
 
@@ -170,6 +170,7 @@ XhContextMenuSub 在右键菜单里嵌一台子菜单：触发条目双重身份
 | `getItemProps` | `(props: ContextMenuItemProps) => T['element']` |  |
 | `getItemTextProps` | `(props: ContextMenuItemProps) => T['element']` |  |
 | `getItemIndicatorProps` | `(props: ContextMenuItemProps) => T['element']` |  |
+| `getItemDescriptionProps` | `(props: ContextMenuItemProps) => T['element']` |  |
 | `getSeparatorProps` | `() => T['element']` |  |
 | `getGroupProps` | `(props: ContextMenuGroupProps) => T['element']` |  |
 | `getGroupLabelProps` | `(props: ContextMenuGroupProps) => T['element']` |  |
@@ -240,7 +241,7 @@ XhContextMenuSub 在右键菜单里嵌一台子菜单：触发条目双重身份
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-context-menu-arrow-size` · `--xh-context-menu-border` · `--xh-context-menu-content-bg` · `--xh-context-menu-content-fg` · `--xh-context-menu-content-gap` · `--xh-context-menu-content-px` · `--xh-context-menu-content-py` · `--xh-context-menu-content-radius` · `--xh-context-menu-content-shadow` · `--xh-context-menu-group-gap` · `--xh-context-menu-group-label-fg` · `--xh-context-menu-group-label-font-size` · `--xh-context-menu-group-label-font-weight` · `--xh-context-menu-group-label-px` · `--xh-context-menu-group-label-py` · `--xh-context-menu-icon-size` · `--xh-context-menu-item-active-font-weight` · `--xh-context-menu-item-bg-active` · `--xh-context-menu-item-bg-hover` · `--xh-context-menu-item-fg` · `--xh-context-menu-item-font-size` · `--xh-context-menu-item-gap` · `--xh-context-menu-item-indicator-fg` · `--xh-context-menu-item-indicator-size` · `--xh-context-menu-item-leading` · `--xh-context-menu-item-px` · `--xh-context-menu-item-py` · `--xh-context-menu-item-radius` · `--xh-context-menu-layer` · `--xh-context-menu-max-h` · `--xh-context-menu-max-w` · `--xh-context-menu-min-w` · `--xh-context-menu-separator-color` · `--xh-context-menu-separator-my` · `--xh-context-menu-separator-thickness` · `--xh-context-menu-trigger-bg-pressing`
+`--xh-context-menu-arrow-size` · `--xh-context-menu-border` · `--xh-context-menu-content-bg` · `--xh-context-menu-content-fg` · `--xh-context-menu-content-gap` · `--xh-context-menu-content-px` · `--xh-context-menu-content-py` · `--xh-context-menu-content-radius` · `--xh-context-menu-content-shadow` · `--xh-context-menu-group-gap` · `--xh-context-menu-group-label-fg` · `--xh-context-menu-group-label-font-size` · `--xh-context-menu-group-label-font-weight` · `--xh-context-menu-group-label-px` · `--xh-context-menu-group-label-py` · `--xh-context-menu-icon-size` · `--xh-context-menu-item-active-font-weight` · `--xh-context-menu-item-bg-active` · `--xh-context-menu-item-bg-hover` · `--xh-context-menu-item-description-fg` · `--xh-context-menu-item-description-font-size` · `--xh-context-menu-item-fg` · `--xh-context-menu-item-font-size` · `--xh-context-menu-item-gap` · `--xh-context-menu-item-indicator-fg` · `--xh-context-menu-item-indicator-size` · `--xh-context-menu-item-leading` · `--xh-context-menu-item-px` · `--xh-context-menu-item-py` · `--xh-context-menu-item-radius` · `--xh-context-menu-layer` · `--xh-context-menu-max-h` · `--xh-context-menu-max-w` · `--xh-context-menu-min-w` · `--xh-context-menu-separator-color` · `--xh-context-menu-separator-my` · `--xh-context-menu-separator-thickness` · `--xh-context-menu-trigger-bg-pressing`
 
 ## 动效
 

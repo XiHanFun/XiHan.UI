@@ -23,6 +23,7 @@ export function connectImageViewer<T extends PropTypes>(
   const currentItem = collection[index] ?? null
   const transform = context.get('transform')
   const panning = context.get('panning')
+  const imageStatus = context.get('imageStatus')
   const loop = prop('loop') ?? true
   const minScale = prop('minScale') ?? IMAGE_VIEWER_MIN_SCALE
   const maxScale = prop('maxScale') ?? IMAGE_VIEWER_MAX_SCALE
@@ -67,6 +68,7 @@ export function connectImageViewer<T extends PropTypes>(
     currentItem,
     transform,
     panning,
+    imageStatus,
     canPrev,
     canNext,
     setOpen: next => send({ type: next ? 'OPEN' : 'CLOSE' }),
@@ -141,6 +143,22 @@ export function connectImageViewer<T extends PropTypes>(
           event.preventDefault()
           send({ type: 'INDEX.SET', index: count - 1 })
         }
+        // 缩放三键照看片惯例：+ / = 放大、- 缩小、0 把变换整体复位。
+        // 带 Ctrl / Meta 的同样按键归浏览器的页面缩放，这里不接
+        else if (!event.ctrlKey && !event.metaKey) {
+          if (event.key === '+' || event.key === '=') {
+            event.preventDefault()
+            send({ type: 'ZOOM.BY', delta: 1 })
+          }
+          else if (event.key === '-') {
+            event.preventDefault()
+            send({ type: 'ZOOM.BY', delta: -1 })
+          }
+          else if (event.key === '0') {
+            event.preventDefault()
+            send({ type: 'TRANSFORM.RESET' })
+          }
+        }
       },
     }),
 
@@ -148,6 +166,9 @@ export function connectImageViewer<T extends PropTypes>(
       ...parts.viewport.attrs,
       'data-state': stateAttr,
       'data-dragging': dataAttr(panning),
+      // 视口这块在等原图落位，读屏据此不去念一块还没内容的区域
+      'aria-busy': imageStatus === 'loading' || undefined,
+      'data-loading': dataAttr(imageStatus === 'loading'),
       // 滚轮就是缩放：向上放大、向下缩小。preventDefault 拦掉页面滚动，
       // 适配器须以 passive:false 绑定这个监听
       'onWheel': (event: WheelEvent) => {
@@ -175,6 +196,10 @@ export function connectImageViewer<T extends PropTypes>(
       'draggable': false,
       'data-state': stateAttr,
       'data-dragging': dataAttr(panning),
+      'data-loading': dataAttr(imageStatus === 'loading'),
+      // 原图动辄几 MB，取图相位由这张图自己回送
+      'onLoad': () => send({ type: 'IMAGE.LOAD' }),
+      'onError': () => send({ type: 'IMAGE.ERROR' }),
       'style': {
         transform: [
           `translate(${transform.x}px, ${transform.y}px)`,

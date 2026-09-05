@@ -1,3 +1,4 @@
+import type { Tone } from '@xihan-ui/core'
 import type { HighlightProps } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
 import { connectHighlight } from '@xihan-ui/headless'
@@ -17,12 +18,14 @@ export const XhHighlight = defineComponent({
     text: { type: String, default: undefined },
     keyword: { type: [String, Array] as PropType<string | readonly string[]>, default: undefined },
     caseSensitive: Boolean,
+    tone: { type: String as PropType<Tone>, default: undefined },
   },
   setup(props) {
     const api = computed(() => connectHighlight({
       text: props.text,
       keyword: props.keyword,
       caseSensitive: props.caseSensitive,
+      tone: props.tone,
     } satisfies HighlightProps, vueNormalize))
 
     return () => {

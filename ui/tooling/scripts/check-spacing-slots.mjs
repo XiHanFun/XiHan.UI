@@ -63,14 +63,15 @@ const CROSS_PART = {
   'diff-view.empty': ['line-content'],
   // 图例里那几个方块就是格子本身的缩略，形状与底色同源才对得上图上的深浅
   'heatmap.cell': ['legend-item'],
-  // 每页条数下拉与页码钮并排在同一行，盒型取同一族才平齐
-  'pagination.item': ['page-size-select'],
+  // 每页条数下拉、信息区与跳页框都与页码钮并排在同一行，盒型取同一族才平齐
+  'pagination.item': ['page-size-select', 'summary', 'jumper'],
   // 星星之间的间距由装它们的那一行排
   'rating.item': ['control'],
   // 文件条目之间的间距由装它们的那一列排
   'file-upload.item': ['list'],
   // 箭头是面板那片面探出来的尖角，底色与 content 同源，接缝处才不会出现两种底
   'menu.content': ['arrow'],
+  'menubar.content': ['arrow'],
   'context-menu.content': ['arrow'],
   // 外壳与面板是同一片面的两种形态（单面板直接画在 content 上、多面板共用 viewport），
   // 底、描边与落影必须同源，否则两种形态并存时看得出接缝

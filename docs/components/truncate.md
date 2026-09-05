@@ -152,6 +152,12 @@ expandable 让整块文字变成一颗按钮，Enter / Space 也按得动
 | `root` | `data-overflowing` | ''（条件成立时才出现） |
 | `root` | `data-state` | 'open' \| 'closed' |
 
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-truncate-lines`
+
 ## 组合
 
 - 外面套[文字提示](./tooltip)，按溢出回调开关，可以拿到与站点一致的提示样式。

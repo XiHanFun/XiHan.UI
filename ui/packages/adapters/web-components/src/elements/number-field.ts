@@ -39,7 +39,9 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @csspart root - 承载 data-disabled / data-readonly / data-invalid / data-empty 的容器
  * @csspart label - 标题；`for` 恒写向 input，故须是原生 `<label>` 才点得动
  * @csspart control - 输入框与加减钮的包裹层；皮肤把视觉盒画在它身上，减在左、加在右、输入框居中
+ * @csspart prefix - 输入框前的装饰段（货币符、单位、图标）；对读屏隐藏
  * @csspart input - role=spinbutton 的输入框，键盘交互全在它身上
+ * @csspart suffix - 输入框后的装饰段；对读屏隐藏
  * @csspart increment-trigger - 加一步；贴住 max 时转 disabled
  * @csspart decrement-trigger - 减一步；贴住 min 时转 disabled
  */
@@ -129,7 +131,9 @@ export class XhNumberFieldElement extends XhElement {
     put('root', api.getRootProps() as Record<string, unknown>)
     put('label', api.getLabelProps() as Record<string, unknown>)
     put('control', api.getControlProps() as Record<string, unknown>)
+    put('prefix', api.getPrefixProps() as Record<string, unknown>)
     put('input', api.getInputProps() as Record<string, unknown>)
+    put('suffix', api.getSuffixProps() as Record<string, unknown>)
     put('increment-trigger', api.getIncrementTriggerProps() as Record<string, unknown>)
     put('decrement-trigger', api.getDecrementTriggerProps() as Record<string, unknown>)
     // 输入框的 value 不需要在这里另外回写：spreader 把 value/checked/selected 三个键

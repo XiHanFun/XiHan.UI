@@ -81,9 +81,9 @@
     border-inline: var(--xh-stroke-thin) solid currentColor;
   }
 
-  /* 抓手禁用走 aria-disabled 而非原生 disabled（宿主未必是 <button>），:hover 照样命中；
-     不挡掉的话拖不动的那颗悬停仍会换底 */
-  [data-scope='sortable'][data-part='item-drag-trigger']:not([aria-disabled='true']):hover {
+  /* 禁用走 data-disabled，与同族的分隔条、把手、滑块同一条选择器；
+     :hover 在禁用态照样命中，不挡掉的话拖不动的那颗悬停仍会换底 */
+  [data-scope='sortable'][data-part='item-drag-trigger']:not([data-disabled]):hover {
     background: var(--xh-sortable-drag-bg-hover, var(--xh-bg-subtle-hover));
     color: var(--xh-sortable-drag-fg-hover, var(--xh-fg-default));
   }
@@ -92,8 +92,38 @@
     cursor: grabbing;
   }
 
-  [data-scope='sortable'][data-part='item-drag-trigger'][aria-disabled='true'] {
+  [data-scope='sortable'][data-part='item-drag-trigger'][data-disabled] {
     color: var(--xh-sortable-drag-fg-disabled, var(--xh-fg-disabled));
+  }
+
+  /* 落点线：容器的绝对定位子节点，起点与长度由连接层每帧写内联，这里只给粗细与颜色。
+     容器要自建定位上下文，线才落在它自己的坐标系里 */
+  [data-scope='sortable'][data-part='root']:has([data-part='drop-indicator']) {
+    position: relative;
+  }
+
+  /* 不写层号：它是定位子节点，写在末项之后就画在各项之上，组件内不另立层序 */
+  [data-scope='sortable'][data-part='drop-indicator'] {
+    position: absolute;
+    display: block;
+    /* 线不接指针：它盖在项上面，接了就挡住落点那一格 */
+    pointer-events: none;
+    border-radius: var(--xh-sortable-drop-indicator-radius, var(--xh-shape-pill));
+    background: var(--xh-sortable-drop-indicator-bg, var(--xh-bg-brand));
+    /* 落点一格一格地跳，线跟着滑过去 */
+    transition: transform var(--xh-motion-duration-micro) var(--xh-motion-ease-continuous);
+  }
+
+  /* 竖排时是一条横线铺满容器，横排与换行网格时是一条竖线 */
+  [data-scope='sortable'][data-part='drop-indicator'][data-orientation='vertical'] {
+    inline-size: 100%;
+    block-size: var(--xh-sortable-drop-indicator-size, var(--xh-stroke-thick));
+  }
+
+  [data-scope='sortable'][data-part='drop-indicator'][data-orientation='horizontal'],
+  [data-scope='sortable'][data-part='drop-indicator'][data-orientation='both'] {
+    inline-size: var(--xh-sortable-drop-indicator-size, var(--xh-stroke-thick));
+    block-size: 100%;
   }
 
   /* 活动区域只说给读屏听，不占版面。声明与 shared/visually-hidden.ts 逐条同值。 */
@@ -111,7 +141,8 @@
   /* 给了 display 的角色节点必须补这条：display 声明会盖掉 UA 的 [hidden]{display:none}，
      不补的话作者给节点加 hidden 后它照样显示 */
   [data-scope='sortable'][data-part='root'][hidden],
-  [data-scope='sortable'][data-part='item-drag-trigger'][hidden] {
+  [data-scope='sortable'][data-part='item-drag-trigger'][hidden],
+  [data-scope='sortable'][data-part='drop-indicator'][hidden] {
     display: none;
   }
 }

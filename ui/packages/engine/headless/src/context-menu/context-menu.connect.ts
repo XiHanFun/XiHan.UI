@@ -63,6 +63,7 @@ export function connectContextMenu<T extends PropTypes>(
     label: node.label ?? node.value,
     disabled: !!node.disabled,
     indicator: node.indicator ?? null,
+    description: node.description ?? null,
     group: node.group ?? null,
     groupLabel: node.groupLabel ?? null,
     separatorBefore: !!node.separatorBefore,
@@ -76,7 +77,7 @@ export function connectContextMenu<T extends PropTypes>(
   const groupLabelId = (group: string): string =>
     scope.partId(contextMenuAnatomy.name, `group-label:${group}`)
 
-  // item / item-text / item-indicator 共用同一份状态标记，样式层各处一致
+  // item / item-text / item-indicator / item-description 共用同一份状态标记，样式层各处一致
   const itemStateAttrs = (item: ContextMenuItemProps): Record<string, string | undefined> => ({
     'data-disabled': dataAttr(itemDisabled(item)),
     // 子部件够不着条目的 :focus 伪类，只能读这个标记
@@ -323,6 +324,11 @@ export function connectContextMenu<T extends PropTypes>(
       ...itemStateAttrs(item),
       // 标记位是纯装饰，语义由条目自己给出
       'aria-hidden': true,
+    }),
+
+    getItemDescriptionProps: item => normalize.element({
+      ...parts['item-description'].attrs,
+      ...itemStateAttrs(item),
     }),
 
     getSeparatorProps: () => normalize.element({

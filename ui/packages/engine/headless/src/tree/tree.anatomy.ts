@@ -18,6 +18,8 @@ export const treeAnatomy = createAnatomy('tree', [
   'branch-text',
   'branch-content',
   'node-drag-trigger',
+  'empty',
+  'loading',
   'live-region',
 ])
 

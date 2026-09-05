@@ -1,4 +1,4 @@
-import type { Direction, Orientation } from '@xihan-ui/core'
+import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
 import type { ListboxApi, ListboxGroupProps, ListboxItemProps, ListboxNode, ListboxNodeMeta, ListboxSchema, ListboxSelectionMode } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
@@ -32,6 +32,11 @@ export const XhListboxRoot = defineComponent({
     defaultValue: { type: [String, Array] as PropType<string | string[]>, default: undefined },
     selectionMode: { type: String as PropType<ListboxSelectionMode>, default: undefined },
     disabled: Boolean,
+    readOnly: Boolean,
+    invalid: Boolean,
+    loading: Boolean,
+    tone: { type: String as PropType<Tone>, default: undefined },
+    size: { type: String as PropType<Size>, default: undefined },
     loop: { type: Boolean, default: undefined },
     typeahead: { type: Boolean, default: undefined },
     dir: { type: String as PropType<Direction>, default: undefined },
@@ -89,6 +94,34 @@ export const XhListboxContent = defineComponent({
   setup(_, { slots }) {
     const ctx = useListboxContext()
     return () => h('div', ctx.api.value.getContentProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+export const XhListboxEmpty = defineComponent({
+  name: 'XhListboxEmpty',
+  setup(_, { slots }) {
+    const ctx = useListboxContext()
+    // 空态占位：写在 root 里、content 的兄弟，不进列表框的拥有关系。
+    // 给了 collection 时收放归连接层，条目手写时归作者
+    return () => h('div', ctx.api.value.getEmptyProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+export const XhListboxLoading = defineComponent({
+  name: 'XhListboxLoading',
+  setup(_, { slots }) {
+    const ctx = useListboxContext()
+    // 在途占位：与空态占位同一个位置，取数期间顶上来
+    return () => h('div', ctx.api.value.getLoadingProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+export const XhListboxLoadMoreTrigger = defineComponent({
+  name: 'XhListboxLoadMoreTrigger',
+  setup(_, { slots }) {
+    const ctx = useListboxContext()
+    // 取下一页的入口：点了做什么归作者，这里只把在途与禁用两档焊成点不动
+    return () => h('button', ctx.api.value.getLoadMoreTriggerProps() as Record<string, unknown>, slots.default?.())
   },
 })
 

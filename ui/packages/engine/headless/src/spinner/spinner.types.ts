@@ -1,6 +1,7 @@
 import type { PropTypes, Size, Tone } from '@xihan-ui/core'
 
-/** 直径档位，缺省 md。 */
+/** 转圈的形态：整圈轨道加一段起始边、渐隐弧、三点。 */
+export type SpinnerVariant = 'ring' | 'arc' | 'dots'
 
 /** 读屏用的文案，默认英文。 */
 export interface SpinnerTranslations {
@@ -17,6 +18,8 @@ export interface SpinnerProps {
   label?: string
   /** 直径档位，缺省 md；缺省档不输出 data-size。 */
   size?: Size
+  /** 形态，缺省 ring；缺省档不输出 data-variant。 */
+  variant?: SpinnerVariant
   /** 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色 */
   tone?: Tone
   translations?: Partial<SpinnerTranslations>

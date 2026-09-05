@@ -11,6 +11,9 @@
 /* 排在全部组件皮肤之前：字段族标签的公共层，组件另写行距即可压过。 */
 @import './css/label.css';
 
+/* 排在全部组件皮肤之前：字段族说明文字的公共层，无效时把说明让给错误文案。 */
+@import './css/description.css';
+
 /* 排在全部组件皮肤之前：指针反馈的公共层，组件另写光标即可压过。 */
 @import './css/pointer.css';
 
@@ -35,6 +38,7 @@
 @import './css/icon-wrapper.css';
 @import './css/image-cropper.css';
 @import './css/infinite-scroll.css';
+@import './css/input-group.css';
 @import './css/json-viewer.css';
 @import './css/layout.css';
 @import './css/list.css';
@@ -126,6 +130,7 @@
 @import './css/switch.css';
 @import './css/table.css';
 @import './css/tabs.css';
+@import './css/tag-group.css';
 @import './css/tags-input.css';
 @import './css/text-field.css';
 @import './css/time-field.css';

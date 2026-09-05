@@ -79,6 +79,8 @@ export const imageCropperSuite: ConformanceSuite = {
           },
         ],
       },
+      { part: 'zoom-slider', tag: 'input' },
+      { part: 'rotate-slider', tag: 'input' },
       { part: 'hidden-input', tag: 'input' },
     ],
   },
@@ -88,8 +90,8 @@ export const imageCropperSuite: ConformanceSuite = {
       spec: { apg: `${APG}#roles_states_properties` },
       covers: ['image-cropper.kbd.tab'],
       initial: {
-        order: ['root', 'viewport', 'image', 'crop-area', 'grid', 'crop-handle[0]', 'crop-handle[1]', 'hidden-input'],
-        counts: { 'root': 1, 'viewport': 1, 'image': 1, 'crop-area': 1, 'grid': 1, 'crop-handle': 2, 'hidden-input': 1 },
+        order: ['root', 'viewport', 'image', 'crop-area', 'grid', 'crop-handle[0]', 'crop-handle[1]', 'zoom-slider', 'rotate-slider', 'hidden-input'],
+        counts: { 'root': 1, 'viewport': 1, 'image': 1, 'crop-area': 1, 'grid': 1, 'crop-handle': 2, 'zoom-slider': 1, 'rotate-slider': 1, 'hidden-input': 1 },
         parts: {
           'root': {
             'data-shape': 'rect',
@@ -127,10 +129,45 @@ export const imageCropperSuite: ConformanceSuite = {
             },
             { 'aria-label': 'Bottom right handle', 'data-position': 'se', 'disabled': null },
           ],
+          'zoom-slider': { 'type': 'range', 'aria-label': 'Zoom', 'data-disabled': null, 'disabled': null },
+          'rotate-slider': { 'type': 'range', 'aria-label': 'Rotate', 'data-disabled': null, 'disabled': null },
           'hidden-input': { type: 'hidden', name: null },
         },
         activeElement: null,
       },
+    },
+    {
+      name: '两条滑杆改的是呈现：缩放与旋转都落到图片与裁切框的同一份变换上',
+      spec: { zag: 'image-cropper.machine#setRotation' },
+      steps: [
+        {
+          kind: 'raw',
+          why: '区间与值不进归一化快照，只能直接读 DOM；改完还要自己派一次 input，变换同样写在内联 style 上',
+          run: async ({ doc, flush }) => {
+            loadImage(doc)
+            await flush()
+            for (const [part, range] of [['zoom-slider', ['1', '3', '0.01']], ['rotate-slider', ['-180', '180', '1']]] as const) {
+              const el = findPart(doc, part)
+              const got = ['min', 'max', 'step'].map(name => el.getAttribute(name))
+              if (got.join() !== range.join())
+                throw new Error(`${part} 的区间不符：期望 ${range.join()}，实际 ${got.join()}`)
+            }
+            const zoom = findPart(doc, 'zoom-slider') as HTMLInputElement
+            zoom.value = '2'
+            zoom.dispatchEvent(new Event('input', { bubbles: true }))
+            await flush()
+            const rotate = findPart(doc, 'rotate-slider') as HTMLInputElement
+            rotate.value = '45'
+            rotate.dispatchEvent(new Event('input', { bubbles: true }))
+            await flush()
+            for (const part of ['image', 'crop-area']) {
+              const transform = findPart(doc, part).style.transform
+              if (!transform.includes('scale(2)') || !transform.includes('rotate(45deg)'))
+                throw new Error(`${part} 的变换不符：实际 ${transform}`)
+            }
+          },
+        },
+      ],
     },
     {
       name: '替代文本由根上的 alt 写进 image 部件，不给时落空串',

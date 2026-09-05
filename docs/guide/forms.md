@@ -116,7 +116,7 @@ const controlProps = useFieldControl()
 
 ## 哪些组件参与
 
-24 个：checkbox、checkbox-group、color-picker、combobox、date-field、date-picker、editable、
+27 个：checkbox、checkbox-group、color-picker、combobox、date-field、date-picker、editable、
 file-upload、image-cropper、number-field、password-input、pin-input、radio-group、rating、
 segmented、select、signature-pad、slider、switch、tags-input、text-field、time-field、
 time-picker、tree-select。

@@ -15,7 +15,11 @@
 ## 特性
 
 - `decorative` 开启后读屏跳过它（`role="none"`，不出 `aria-orientation`）；只是排版用的横线应该这么写。
-- 线是拿背景画出来的：颜色槽位收的是背景值，填一段重复渐变就是虚线；粗细是另一个槽位。
+- 给了 `content` 就自动排成「线 · 文字 · 线」三段：间距、字号与线长都走令牌，不必在外层手搓。
+- `align` 把分节文字挪到靠左或靠右，那一侧的线收成一小截。
+- `variant` 三档只换线的深浅：默认线 / 弱线 / 强线。
+- `dashed` 画虚线，横竖两个朝向各自成立；段长走 `--xh-separator-dash-length` / `-dash-gap`。
+- 线是拿背景画出来的：颜色槽位收的是背景值，粗细是另一个槽位。
 - 竖向分隔线需要父容器有确定高度。
 
 ## 示例
@@ -34,13 +38,13 @@ decorative 开启后读屏跳过它；只是排版用的横线应该这么写
 
 ### 分节标题
 
-分隔线自己不排版：一行里放两条、中间留出标题，两侧各自撑开；语义由标题文字给，线只是装饰
+分隔线自己排成「线 · 文字 · 线」三段；align 把文字挪到一侧，那一侧的线收成一小截
 
 <XhDemo src="separator/03-section-title" />
 
 ### 线型、粗细与颜色
 
-线是拿背景画出来的：颜色槽位收的是背景值，填一段重复渐变就是虚线；粗细是另一个槽位
+variant 三档换深浅，dashed 画虚线（横竖各自成立），粗细与颜色仍是两个槽位
 
 <XhDemo src="separator/04-line-style" />
 
@@ -49,7 +53,7 @@ decorative 开启后读屏跳过它；只是排版用的横线应该这么写
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-separator>` |
-| Vue 组件 | `XhSeparator` |
+| Vue 组件 | `XhSeparator` `XhSeparatorContent` `XhSeparatorLine` `XhSeparatorRoot` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/separator.css` |
 
@@ -57,14 +61,17 @@ decorative 开启后读屏跳过它；只是排版用的横线应该这么写
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="separator"`：**`root`**
+`data-scope="separator"`：**`root`** · `line` · `content`
 
 ## Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `align` | `SeparatorAlign` |  | 分节文字落在哪一侧，缺省居中；缺省档不输出 data-align。 |
+| `dashed` | `boolean` |  | 画成虚线；实线段与空白段的长度走 --xh-separator-dash-length / -dash-gap 两个槽。 |
 | `decorative` | `boolean` |  | 装饰性分隔：仅视觉分组，不进无障碍树（role=none，无 aria-orientation）。 |
 | `orientation` | `'horizontal' \| 'vertical'` |  |  |
+| `variant` | `SeparatorVariant` |  | 线怎么画，缺省 default；缺省档不输出 data-variant。 |
 
 ## connect API
 
@@ -73,6 +80,8 @@ decorative 开启后读屏跳过它；只是排版用的横线应该这么写
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `getRootProps` | `() => T['element']` |  |
+| `getLineProps` | `() => T['element']` |  |
+| `getContentProps` | `() => T['element']` |  |
 
 ## 键盘
 
@@ -88,6 +97,7 @@ decorative 开启后读屏跳过它；只是排版用的横线应该这么写
 | --- | --- | --- |
 | `root` | `aria-orientation` | 'vertical' \| undefined |
 | `root` | `role` | 'none' \| 'separator' |
+| `line` | `role` | 'none' |
 
 ## 样式
 
@@ -99,13 +109,17 @@ decorative 开启后读屏跳过它；只是排版用的横线应该这么写
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `root` | `data-align` | props.align |
+| `root` | `data-dashed` | ''（条件成立时才出现） |
 | `root` | `data-orientation` | props.orientation |
+| `root` | `data-variant` | props.variant |
+| `line` | `data-orientation` | props.orientation |
 
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-separator-color` · `--xh-separator-thickness`
+`--xh-separator-align-length` · `--xh-separator-color` · `--xh-separator-content-fg` · `--xh-separator-content-font-size` · `--xh-separator-dash-gap` · `--xh-separator-dash-length` · `--xh-separator-gap` · `--xh-separator-thickness`
 
 ## 组合
 

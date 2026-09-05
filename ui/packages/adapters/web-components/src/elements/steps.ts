@@ -1,5 +1,5 @@
 import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
-import type { StepsItemProps, StepsSchema, StepsValueChangeDetails } from '@xihan-ui/headless'
+import type { StepNode, StepsItemProps, StepsSchema, StepStatus, StepsTranslations, StepsValueChangeDetails } from '@xihan-ui/headless'
 import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectSteps, stepsAnatomy, stepsMachine, stepsMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
@@ -41,6 +41,7 @@ function stepIndexOf(el: HTMLElement): number {
  * @attr {'horizontal'|'vertical'} orientation - 方向键轴向，默认 horizontal
  * @attr {boolean} linear - 线性模式：跳不到还没走到的步（那些 trigger 一律禁用）
  * @attr {boolean} disabled - 整组不可交互，连 Tab 停靠点都不留
+ * @attr {boolean} loop - 方向键走到尽头回绕，默认关闭
  * @attr {'ltr'|'rtl'} dir - 文字方向，只影响水平轴上 ArrowLeft/ArrowRight 的前后语义，默认 ltr
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
@@ -68,7 +69,12 @@ export class XhStepsElement extends XhElement {
     orientation: { converter: STRING_CONVERTER },
     linear: { converter: BOOLEAN_CONVERTER },
     disabled: { converter: BOOLEAN_CONVERTER },
+    loop: { converter: BOOLEAN_CONVERTER },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
+    // 数组与对象进不了属性，只作为 property 暴露
+    collection: { attribute: false },
+    statuses: { attribute: false },
+    translations: { attribute: false },
     tone: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
   }
@@ -79,7 +85,11 @@ export class XhStepsElement extends XhElement {
   declare orientation?: Orientation
   declare linear?: boolean
   declare disabled?: boolean
+  declare loop?: boolean
   declare direction?: Direction
+  declare collection?: StepNode[]
+  declare statuses?: Record<number, StepStatus>
+  declare translations?: Partial<StepsTranslations>
   declare tone?: Tone
   declare size?: Size
 
@@ -95,10 +105,14 @@ export class XhStepsElement extends XhElement {
       value: this.value,
       defaultValue: this.defaultValue,
       count: this.count,
+      collection: this.collection,
+      statuses: this.statuses,
+      translations: this.translations,
       orientation: this.orientation,
       // 布尔属性缺席即 undefined，把缺省交回 connect
       linear: this.linear,
       disabled: this.disabled,
+      loop: this.loop,
       dir: this.direction,
       tone: this.tone,
       size: this.size,

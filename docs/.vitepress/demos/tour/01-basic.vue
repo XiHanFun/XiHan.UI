@@ -10,6 +10,7 @@ import {
   XhTourNextTrigger,
   XhTourPositioner,
   XhTourPrevTrigger,
+  XhTourProgressIndicator,
   XhTourProgressText,
   XhTourRoot,
   XhTourSkipTrigger,
@@ -72,9 +73,12 @@ const panel =
         <XhTourTitle />
         <XhTourDescription />
         <XhTourProgressText />
+        <XhTourProgressIndicator />
         <div style="display: flex; align-items: center; gap: 8px">
           <XhTourPrevTrigger>上一步</XhTourPrevTrigger>
-          <XhTourNextTrigger>{{ lastStep ? "完成" : "下一步" }}</XhTourNextTrigger>
+          <XhTourNextTrigger>{{
+            lastStep ? "完成" : "下一步"
+          }}</XhTourNextTrigger>
           <XhTourSkipTrigger>跳过</XhTourSkipTrigger>
         </div>
         <XhTourCloseTrigger />

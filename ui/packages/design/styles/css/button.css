@@ -29,6 +29,10 @@
        组里的段共边焊成一条，由组把这个槽收回常态那一档 */
     --xh-_button-shadow-hover: var(--xh-_button-group-shadow-hover, var(--xh-elevation-raised));
 
+    /* 圆角档的落点：没写 data-shape 时取常规控件圆角，与不写这一项时逐值相同。
+       进了按钮组的段仍以组给的 0 为准——组把段的圆角收成直角，两端再补回来 */
+    --xh-_button-radius: var(--xh-_button-group-radius, var(--xh-shape-control));
+
     /* 作者塞进来的图标跟着按钮的尺寸档走：xh-icon 的直径读的就是这个继承槽，
        它自己显式写了 size 时特异性更高，仍以作者写的为准 */
     --xh-icon-size: var(--xh-button-icon-size, var(--xh-glyph-size-md));
@@ -40,7 +44,7 @@
     block-size: var(--xh-button-h, var(--xh-_button-group-h, var(--xh-control-h-md)));
     padding-inline: var(--xh-button-px, var(--xh-_button-group-px, var(--xh-control-px-md)));
     border: var(--xh-stroke-thin) solid transparent;
-    border-radius: var(--xh-button-radius, var(--xh-_button-group-radius, var(--xh-shape-control)));
+    border-radius: var(--xh-button-radius, var(--xh-_button-radius));
     background: var(--xh-_bg);
     color: var(--xh-_fg);
     box-shadow: var(--xh-button-shadow, var(--xh-_button-highlight));
@@ -128,6 +132,22 @@
      写在形态之后：与形态那几条同权重，靠后写压得住 */
   [data-scope='button'][data-part='root']:is([data-disabled], [data-loading]) {
     --xh-_button-highlight: none;
+  }
+
+  /* —— 圆角 ——
+     只换圆角这一个私有槽，不写进尺寸档里：尺寸档改的是高度、内距与字号，
+     圆角跟着尺寸走会让同一句 shape="pill" 在三档上各长各的。
+     进了按钮组的段一律以组给的直角为准，组把两端的圆角另行补回来 */
+  [data-scope='button'][data-part='root'][data-shape='rounded'] {
+    --xh-_button-radius: var(--xh-_button-group-radius, var(--xh-shape-control));
+  }
+
+  [data-scope='button'][data-part='root'][data-shape='pill'] {
+    --xh-_button-radius: var(--xh-_button-group-radius, var(--xh-shape-pill));
+  }
+
+  [data-scope='button'][data-part='root'][data-shape='square'] {
+    --xh-_button-radius: var(--xh-_button-group-radius, 0);
   }
 
   /* —— 尺寸 —— */

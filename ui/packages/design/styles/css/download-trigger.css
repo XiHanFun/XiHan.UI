@@ -19,6 +19,18 @@
    * 要换成品牌样式的作者改 --xh-download-trigger-* 这一族槽位，或直接写自己的类名。
    */
   [data-scope='download-trigger'][data-part='root'] {
+    /* 形态的落点：没写 data-variant 时这六支保持缺省档的取值，规则读的是
+       「使用者令牌 → 这六支 → 语义令牌」三级，使用者令牌永远排在形态之前 */
+    --xh-_download-trigger-bg: var(--xh-bg-canvas);
+    --xh-_download-trigger-bg-hover: var(--xh-bg-subtle-hover);
+    --xh-_download-trigger-bg-active: var(--xh-bg-subtle-active);
+    --xh-_download-trigger-fg: var(--xh-fg-default);
+    --xh-_download-trigger-border: var(--xh-border-control);
+    --xh-_download-trigger-border-hover: var(--xh-border-control-hover);
+
+    /* 作者塞进来的图标跟着尺寸档走，与皮肤画的兜底字形同一把尺 */
+    --xh-icon-size: var(--xh-download-trigger-icon-size, var(--xh-glyph-size-md));
+
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -26,10 +38,10 @@
     block-size: var(--xh-download-trigger-h, var(--xh-control-h-md));
     padding-inline: var(--xh-download-trigger-px, var(--xh-control-px-md));
     padding-block: 0;
-    border: var(--xh-stroke-thin) solid var(--xh-download-trigger-border, var(--xh-border-control));
+    border: var(--xh-stroke-thin) solid var(--xh-download-trigger-border, var(--xh-_download-trigger-border));
     border-radius: var(--xh-download-trigger-radius, var(--xh-shape-control));
-    background: var(--xh-download-trigger-bg, var(--xh-bg-canvas));
-    color: var(--xh-download-trigger-fg, var(--xh-fg-default));
+    background: var(--xh-download-trigger-bg, var(--xh-_download-trigger-bg));
+    color: var(--xh-download-trigger-fg, var(--xh-_download-trigger-fg));
     /* 表单控件不继承页面字体，只给字号会让按钮用 UA 默认字族 */
     font-family: inherit;
     font-size: var(--xh-download-trigger-font-size, var(--xh-text-label-size));
@@ -54,15 +66,87 @@
 
   /* 换底、换描边之外再抬起一档：这是一块实心的可点面，指针停上去它从页面里浮出来 */
   [data-scope='download-trigger'][data-part='root']:hover {
-    border-color: var(--xh-download-trigger-border-hover, var(--xh-border-control-hover));
-    background: var(--xh-download-trigger-bg-hover, var(--xh-bg-subtle-hover));
+    border-color: var(--xh-download-trigger-border-hover, var(--xh-_download-trigger-border-hover));
+    background: var(--xh-download-trigger-bg-hover, var(--xh-_download-trigger-bg-hover));
     box-shadow: var(--xh-download-trigger-shadow-hover, var(--xh-elevation-raised));
   }
 
   /* 换底之外再压一档：取数在途前的那一下按压给出回执 */
   [data-scope='download-trigger'][data-part='root']:active {
-    background: var(--xh-download-trigger-bg-active, var(--xh-bg-subtle-active));
+    background: var(--xh-download-trigger-bg-active, var(--xh-_download-trigger-bg-active));
     scale: var(--xh-motion-scale-press);
+  }
+
+  /* —— 形态 ——
+     四档与按钮一处对一处：形态只决定颜色怎么用，用哪族颜色由 data-tone 决定。
+     缺省档（没写 data-variant）不进这几块，取值仍是画布底 + 一圈可操作区描边 */
+  [data-scope='download-trigger'][data-part='root'][data-variant='solid'] {
+    --xh-_download-trigger-bg: var(--xh-_tone, var(--xh-bg-brand));
+    --xh-_download-trigger-bg-hover: var(--xh-_tone-hover, var(--xh-bg-brand-hover));
+    --xh-_download-trigger-bg-active: var(--xh-_tone-active, var(--xh-bg-brand-active));
+    --xh-_download-trigger-fg: var(--xh-_tone-on, var(--xh-fg-on-brand));
+    --xh-_download-trigger-border: transparent;
+    --xh-_download-trigger-border-hover: transparent;
+  }
+
+  [data-scope='download-trigger'][data-part='root'][data-variant='subtle'] {
+    --xh-_download-trigger-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+    --xh-_download-trigger-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
+    --xh-_download-trigger-bg-active: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
+    --xh-_download-trigger-fg: var(--xh-_tone-fg, var(--xh-fg-default));
+    --xh-_download-trigger-border: transparent;
+    --xh-_download-trigger-border-hover: transparent;
+  }
+
+  [data-scope='download-trigger'][data-part='root'][data-variant='outline'] {
+    --xh-_download-trigger-bg: transparent;
+    --xh-_download-trigger-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+    --xh-_download-trigger-bg-active: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-active));
+    --xh-_download-trigger-fg: var(--xh-_tone-fg, var(--xh-fg-default));
+    --xh-_download-trigger-border: var(--xh-_tone-border-control, var(--xh-border-control));
+    --xh-_download-trigger-border-hover: var(--xh-_tone-border-control, var(--xh-border-control-hover));
+  }
+
+  [data-scope='download-trigger'][data-part='root'][data-variant='ghost'] {
+    --xh-_download-trigger-bg: transparent;
+    --xh-_download-trigger-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+    --xh-_download-trigger-bg-active: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-active));
+    --xh-_download-trigger-fg: var(--xh-_tone-fg, var(--xh-fg-default));
+    --xh-_download-trigger-border: transparent;
+    --xh-_download-trigger-border-hover: transparent;
+  }
+
+  /* —— 尺寸 —— */
+  [data-scope='download-trigger'][data-part='root'][data-size='sm'] {
+    --xh-icon-size: var(--xh-download-trigger-icon-size, var(--xh-glyph-size-sm));
+
+    gap: var(--xh-download-trigger-gap, var(--xh-control-gap-sm));
+    block-size: var(--xh-download-trigger-h, var(--xh-control-h-sm));
+    padding-inline: var(--xh-download-trigger-px, var(--xh-control-px-sm));
+    font-size: var(--xh-download-trigger-font-size, var(--xh-control-font-sm));
+  }
+
+  [data-scope='download-trigger'][data-part='root'][data-size='lg'] {
+    --xh-icon-size: var(--xh-download-trigger-icon-size, var(--xh-glyph-size-lg));
+
+    gap: var(--xh-download-trigger-gap, var(--xh-control-gap-lg));
+    block-size: var(--xh-download-trigger-h, var(--xh-control-h-lg));
+    padding-inline: var(--xh-download-trigger-px, var(--xh-control-px-lg));
+    font-size: var(--xh-download-trigger-font-size, var(--xh-control-font-lg));
+  }
+
+  /* 没写内容就由皮肤画兜底字形；作者往按钮里塞了文字或自己的图形，这几条即不命中。
+     字形另起一颗 ::after：::before 是转圈那枚圆环的方框，mask 会把描边裁成字形轮廓、圆环就此消失。
+     取数在途那一档不画字形，那一格让给圆环 */
+  [data-scope='download-trigger'][data-part='root']:empty:not([data-state='preparing'])::after {
+    content: '';
+    display: inline-block;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-download) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-download) center / contain no-repeat;
   }
 
   /* 取数在途：指针换成 progress，同时在按钮里转一枚圆环。

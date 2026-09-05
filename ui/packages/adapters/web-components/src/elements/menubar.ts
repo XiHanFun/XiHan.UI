@@ -55,9 +55,11 @@ function authorDisabled(el: HTMLElement): boolean {
  * @csspart item - role=menuitem 条目，须自带 value 属性；禁用写 aria-disabled="true"
  * @csspart item-text - 条目文本（连打检索取的就是它），对读屏透明
  * @csspart item-indicator - 条目标记位（勾选符号/图标/快捷键提示），aria-hidden
+ * @csspart item-description - 条目副文本，排在文字下一行
  * @csspart separator - 分隔线（role=separator，不入方向键导航）
  * @csspart group - 一组条目（role=group），须自带 value 属性
  * @csspart group-label - 分组标题，靠 id 被同组 group 的 aria-labelledby 指着
+ * @csspart arrow - 指向锚点的箭头（aria-hidden），须写在同一张菜单的 positioner 里
  */
 export class XhMenubarElement extends XhElement {
   /** 逐个 content 一份退场闸门：一个菜单一份，它们各开各的。 */
@@ -273,6 +275,15 @@ export class XhMenubarElement extends XhElement {
         this.spreader.spread(text, api.getItemTextProps(item) as Record<string, unknown>)
       for (const indicator of this.partsIn(el, 'item-indicator'))
         this.spreader.spread(indicator, api.getItemIndicatorProps(item) as Record<string, unknown>)
+      for (const description of this.partsIn(el, 'item-description'))
+        this.spreader.spread(description, api.getItemDescriptionProps(item) as Record<string, unknown>)
+    }
+
+    // 箭头跟着它所在那张菜单的 positioner 走，身份取 positioner 自报的 value
+    for (const el of this.getParts('positioner')) {
+      const menu = { value: el.getAttribute('value') ?? '' }
+      for (const arrow of this.partsIn(el, 'arrow'))
+        this.spreader.spread(arrow, api.getArrowProps(menu) as Record<string, unknown>)
     }
 
     // 分隔线不带身份，属性对每个都一样

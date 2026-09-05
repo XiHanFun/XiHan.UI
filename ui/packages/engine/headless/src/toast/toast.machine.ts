@@ -37,14 +37,22 @@ export const toastMachine = createMachine({
   context: ({ prop, cell }) => ({
     remaining: cell<number>(() => ({ defaultValue: resolveToastDuration(prop('type'), prop('duration')) })),
     // 暂停来源做成集合而不是布尔：指针悬停与焦点停留会同时按住计时，最后一个松开才继续走
-    pausedBy: cell<ToastPauseSource[]>(() => ({ defaultValue: [] })),
+    pausedBy: cell<ToastPauseSource[]>(() => ({ defaultValue: prop('paused') ? ['service'] : [] })),
   }),
-  initialState: () => 'visible',
-  // 语气或时长被改写要重算预算，否则 loading 转 success 后仍带着永不消失的预算
-  watch: ({ track, prop, action }) => track(
-    [() => prop('type'), () => prop('duration')],
-    () => action(['syncDuration']),
-  ),
+  // 建出来就被宿主按住的那种直接落 paused 子态：watch 只在值变了才响，起手为真的这一条它看不见
+  initialState: ({ prop }) => (prop('paused') ? 'visible.paused' : 'visible'),
+  watch: ({ track, prop, action }) => {
+    // 语气或时长被改写要重算预算，否则 loading 转 success 后仍带着永不消失的预算
+    track(
+      [() => prop('type'), () => prop('duration')],
+      () => action(['syncDuration']),
+    )
+    // 宿主整摞一起按住/放开
+    track(
+      [() => prop('paused') ?? false],
+      () => action(['syncPaused']),
+    )
+  },
   // 页面可见性要跨整条生命周期盯着，因此挂根级
   effects: ['trackPageIdle'],
   states: {
@@ -120,6 +128,9 @@ export const toastMachine = createMachine({
         context.set('remaining', resolveToastDuration(prop('type'), prop('duration')))
       },
       syncDuration: ({ send }) => send({ type: 'TOAST.RESET' }),
+      syncPaused: ({ prop, send }) => send(prop('paused')
+        ? { type: 'TOAST.PAUSE', src: 'service' }
+        : { type: 'TOAST.RESUME', src: 'service' }),
       invokeAction: ({ prop, scope }) => prop('onAction')?.({ id: resolveToastId(prop('id'), scope) }),
       invokeDismissing: ({ prop, scope }) =>
         prop('onStatusChange')?.({ id: resolveToastId(prop('id'), scope), status: 'dismissing' }),

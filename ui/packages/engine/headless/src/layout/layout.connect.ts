@@ -39,6 +39,8 @@ export function connectLayout<T extends PropTypes>(
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'data-sider-placement': placement,
+      // 断点档位落在根上：宽度未达档时由皮肤把侧栏换成折叠宽
+      'data-sider-breakpoint': prop('siderBreakpoint'),
       'data-collapsed': dataAttr(collapsed),
       'data-header-fixed': dataAttr(headerFixed),
       'data-sider-fixed': dataAttr(siderFixed),

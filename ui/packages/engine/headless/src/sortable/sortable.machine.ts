@@ -27,6 +27,17 @@ export function toDndRect(el: HTMLElement): DndRect {
   return { x: r.x, y: r.y, width: r.width, height: r.height }
 }
 
+/**
+ * 容器左上角在视口里的位置，减去它自身的滚动量。
+ * 项的矩形是视口坐标，落点线是容器的绝对定位子节点，两者差的就是这个原点。
+ */
+function rootOriginOf(root: HTMLElement | null): { x: number, y: number } | null {
+  if (!root)
+    return null
+  const rect = root.getBoundingClientRect()
+  return { x: rect.x - root.scrollLeft, y: rect.y - root.scrollTop }
+}
+
 /** 这一项在 DOM 里排第几。找不到返回 -1。 */
 function indexOfId(root: HTMLElement | null, id: string): number {
   return itemElements(root).findIndex(el => el.getAttribute(ITEM_VALUE_ATTR) === id)
@@ -54,6 +65,11 @@ export const sortableMachine = createMachine({
       defaultValue: [],
       // 每帧都是新数组，默认的 Object.is 会把「没变」也判成变了
       isEqual: (a, b) => Array.isArray(b) && a.length === b.length && a.every((r, i) => r === b.at(i)),
+    })),
+    rootOrigin: cell<SortableSchema['context']['rootOrigin']>(() => ({
+      defaultValue: null,
+      // 每次拾起都是新对象，默认的 Object.is 会把「没变」也判成变了
+      isEqual: (a, b) => a === b || (!!a && !!b && a.x === b.x && a.y === b.y),
     })),
     announcement: cell<string>(() => ({ defaultValue: '' })),
   }),
@@ -119,7 +135,9 @@ export const sortableMachine = createMachine({
         const e = event.current()
         if (e.type !== 'POINTER.MOVE')
           return
-        context.set('rects', itemElements(refs.get('getRootEl')()).map(toDndRect))
+        const root = refs.get('getRootEl')()
+        context.set('rects', itemElements(root).map(toDndRect))
+        context.set('rootOrigin', rootOriginOf(root))
         context.set('mode', 'pointer')
         context.set('delta', deltaFrom(refs.get('origin'), e.point))
         context.set('to', context.get('from'))
@@ -139,6 +157,7 @@ export const sortableMachine = createMachine({
         context.set('mode', 'keyboard')
         context.set('delta', ZERO)
         context.set('rects', itemElements(root).map(toDndRect))
+        context.set('rootOrigin', rootOriginOf(root))
         say(context, prop, refs, 'picked')
         prop('onDragStart')?.({ id: e.id, from: index, mode: 'keyboard' })
       },
@@ -211,6 +230,7 @@ export const sortableMachine = createMachine({
         context.set('mode', null)
         context.set('delta', ZERO)
         context.set('rects', [])
+        context.set('rootOrigin', null)
       },
     },
     effects: {

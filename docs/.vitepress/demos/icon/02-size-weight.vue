@@ -1,4 +1,4 @@
-<!-- 尺寸与描边 | size 三档改直径、weight 三档改 stroke-width；缺省档不落 data-* 属性，皮肤的基础规则就是缺省档 -->
+<!-- 尺寸与描边 | size 八档改直径（text 跟着相邻文字的字号走）、weight 三档改 stroke-width；缺省档 md 不落 data-* 属性，皮肤的基础规则就是缺省档 -->
 <script setup lang="ts">
 import { XhIcon } from "@xihan-ui/vue";
 
@@ -25,10 +25,12 @@ const StarIcon = {
 
 <template>
   <span style="display: inline-flex; align-items: center; gap: 10px;">
+    <XhIcon :icon="StarIcon" size="text" />
     <XhIcon :icon="StarIcon" size="sm" />
     <XhIcon :icon="StarIcon" />
     <XhIcon :icon="StarIcon" size="lg" />
-    <span style="font-size: 13px;">sm / md（缺省）/ lg</span>
+    <XhIcon :icon="StarIcon" size="xl" />
+    <span style="font-size: 13px;">text / sm / md（缺省）/ lg / xl，另有 2xl / 3xl / 4xl</span>
   </span>
 
   <span style="display: inline-flex; align-items: center; gap: 10px;">

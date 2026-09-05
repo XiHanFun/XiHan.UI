@@ -83,6 +83,22 @@ export const XhNumberFieldControl = defineComponent({
   },
 })
 
+export const XhNumberFieldPrefix = defineComponent({
+  name: 'XhNumberFieldPrefix',
+  setup(_, { slots }) {
+    const ctx = useNumberFieldContext()
+    return () => h('span', ctx.api.value.getPrefixProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+export const XhNumberFieldSuffix = defineComponent({
+  name: 'XhNumberFieldSuffix',
+  setup(_, { slots }) {
+    const ctx = useNumberFieldContext()
+    return () => h('span', ctx.api.value.getSuffixProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhNumberFieldInput = defineComponent({
   name: 'XhNumberFieldInput',
   setup() {

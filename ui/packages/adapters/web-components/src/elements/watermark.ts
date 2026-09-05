@@ -1,4 +1,4 @@
-import type { WatermarkProps } from '@xihan-ui/headless'
+import type { WatermarkImageSize, WatermarkProps } from '@xihan-ui/headless'
 import { connectWatermark, watermarkAnatomy, watermarkMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -24,6 +24,8 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @attr {number} gap - 两块图样之间的空白（像素），缺省 24
  * @attr {number} font-size - 字号（像素），缺省 14
  * @attr {number} opacity - 印子的深浅，0 到 1，缺省 0.15
+ * @attr {string} font-family - 印文字用的字体，缺省 sans-serif；图样取不到页面字体，字体名要写全
+ * @attr {string} image - 印在文字上方的图片，只收 data:image/ 开头的内联图片；印出来是剪影
  * @csspart root - 盖水印的那块地，承载 data-state 与图样、步距两个变量
  * @csspart content - 被盖住的那段内容
  */
@@ -37,6 +39,9 @@ export class XhWatermarkElement extends XhElement {
     gap: { converter: NUMBER_CONVERTER },
     fontSize: { converter: NUMBER_CONVERTER, attribute: 'font-size' },
     opacity: { converter: NUMBER_CONVERTER },
+    fontFamily: { converter: STRING_CONVERTER, attribute: 'font-family' },
+    image: { converter: STRING_CONVERTER },
+    imageSize: { attribute: false },
   }
 
   declare text?: string | string[]
@@ -44,6 +49,10 @@ export class XhWatermarkElement extends XhElement {
   declare gap?: number
   declare fontSize?: number
   declare opacity?: number
+  declare fontFamily?: string
+  declare image?: string
+  /** 图片尺寸是个对象，只走 property，不设特性。 */
+  declare imageSize?: WatermarkImageSize
 
   protected wire(): void {
     // 读响应式 property，不回读 DOM 特性
@@ -53,6 +62,9 @@ export class XhWatermarkElement extends XhElement {
       gap: this.gap,
       fontSize: this.fontSize,
       opacity: this.opacity,
+      fontFamily: this.fontFamily,
+      image: this.image,
+      imageSize: this.imageSize,
     } satisfies WatermarkProps, wcNormalize)
 
     const put = (name: string, props: Record<string, unknown>): void => {

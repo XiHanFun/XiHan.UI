@@ -24,6 +24,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart root - 原生 `<fieldset>`，承载原生 disabled 与 data-disabled/data-invalid/data-required
  * @csspart legend - 原生 `<legend>`，这一组的名字；须是 root 的首个子节点
  * @csspart description - 常驻说明文案，恒在 root 的描述链里
+ * @csspart field-group - 把并排的几个字段圈成一段；纯排版
+ * @csspart actions - 组末尾那一行按钮；纯排版
  * @csspart error-text - 错误文案（role=status，排队播报不打断）；非 invalid 时带 hidden 收起，节点不卸载
  */
 export class XhFieldsetElement extends XhElement {
@@ -71,6 +73,11 @@ export class XhFieldsetElement extends XhElement {
     put('root', api.getRootProps() as Record<string, unknown>)
     put('legend', api.getLegendProps() as Record<string, unknown>)
     put('description', api.getDescriptionProps() as Record<string, unknown>)
+    // 一段与一行按钮都可以有多个，逐个打
+    for (const el of this.getParts('field-group'))
+      this.spreader.spread(el, api.getFieldGroupProps() as Record<string, unknown>)
+    for (const el of this.getParts('actions'))
+      this.spreader.spread(el, api.getActionsProps() as Record<string, unknown>)
     put('error-text', api.getErrorTextProps() as Record<string, unknown>)
 
     // 错误文案常挂，非 invalid 时用内联 display 收起（作者层的 display 会盖过 UA 的 [hidden] 规则）

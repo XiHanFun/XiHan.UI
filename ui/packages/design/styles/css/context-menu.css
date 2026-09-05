@@ -264,6 +264,29 @@
     color: var(--xh-fg-disabled);
   }
 
+  /* 副文本另起一行：整行占满，把条目的一行内容折成两行 */
+  [data-scope='context-menu'][data-part='item-description'] {
+    flex: 1 0 100%;
+    color: var(--xh-context-menu-item-description-fg, var(--xh-fg-muted));
+    font-size: var(--xh-context-menu-item-description-font-size, var(--xh-text-caption-size));
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+
+  [data-scope='context-menu'][data-part='item-description'][hidden] {
+    display: none;
+  }
+
+  [data-scope='context-menu'][data-part='item-description'][data-disabled] {
+    color: var(--xh-fg-disabled);
+  }
+
+  /* 带副文本的条目改成两行排布：主文字与标记位在上一行，副文本占满下一行 */
+  [data-scope='context-menu'][data-part='item']:has([data-scope='context-menu'][data-part='item-description']) {
+    flex-wrap: wrap;
+  }
+
   [data-scope='context-menu'][data-part='separator'] {
     block-size: var(--xh-context-menu-separator-thickness, var(--xh-stroke-thin));
     margin-block: var(--xh-context-menu-separator-my, var(--xh-space-0_5));

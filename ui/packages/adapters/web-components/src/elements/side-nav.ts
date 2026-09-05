@@ -1,4 +1,4 @@
-import type { Cleanup, IdGenerator, Layer, PositionEnginePort, RuntimeConfig, Service } from '@xihan-ui/core'
+import type { Cleanup, IdGenerator, Layer, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
 import type { SideNavExpandedValueChangeDetails, SideNavNode, SideNavNodeProps, SideNavSchema, SideNavTranslations, SideNavValueChangeDetails } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
@@ -33,6 +33,8 @@ const GROUP_SELECTOR = '[data-xh-part="group"]'
  * @attr {boolean} disabled - 整个侧栏禁用
  * @attr {boolean} loop - 上下键走到首尾回绕，默认关
  * @attr {'ltr'|'rtl'} dir - 文字方向，只对调左右方向键的展开/收起语义，默认 ltr
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
+ * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires value-change - 选中变化；detail 为 `{ value: string | null }`
  * @fires expanded-value-change - 展开集合变化；detail 为 `{ value: string[] }`
  * @csspart root - nav 地标根容器（aria-label 由 translations.root 给）
@@ -62,6 +64,8 @@ export class XhSideNavElement extends XhElement {
     disabled: { converter: BOOLEAN_CONVERTER },
     loop: { converter: BOOLEAN_CONVERTER },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
+    tone: { converter: STRING_CONVERTER },
+    size: { converter: STRING_CONVERTER },
     // 数组与对象进不了属性，只作为 property 暴露
     collection: { attribute: false },
     expandedValue: { attribute: false },
@@ -77,6 +81,8 @@ export class XhSideNavElement extends XhElement {
   declare disabled?: boolean
   declare loop?: boolean
   declare direction?: SideNavSchema['props']['dir']
+  declare tone?: Tone
+  declare size?: Size
   /** 入口树，href/禁用/层级的唯一事实源，须与标记同源。 */
   declare collection?: SideNavNode[]
   declare expandedValue?: string[]
@@ -118,6 +124,8 @@ export class XhSideNavElement extends XhElement {
       disabled: this.disabled,
       loop: this.loop,
       dir: this.direction,
+      tone: this.tone,
+      size: this.size,
       translations: this.translations,
       onValueChange: this.notifyValue,
       onExpandedValueChange: this.notifyExpanded,

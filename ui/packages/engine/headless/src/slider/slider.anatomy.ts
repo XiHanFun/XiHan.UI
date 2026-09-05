@@ -7,6 +7,7 @@ export const sliderAnatomy = createAnatomy('slider', [
   'track',
   'range',
   'thumb',
+  'value-text',
   'tick-group',
   'tick',
   'tick-label',

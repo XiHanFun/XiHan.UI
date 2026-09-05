@@ -13,8 +13,14 @@ export const alertSuite: ConformanceSuite = {
     part: 'root',
     children: [
       { part: 'indicator', tag: 'span', text: 'i' },
-      { part: 'title', text: '连接已断开' },
-      { part: 'description', text: '正在尝试重连' },
+      {
+        part: 'content',
+        children: [
+          { part: 'title', text: '连接已断开' },
+          { part: 'description', text: '正在尝试重连' },
+        ],
+      },
+      { part: 'action' },
       { part: 'close-trigger', tag: 'button' },
     ],
   },
@@ -23,8 +29,8 @@ export const alertSuite: ConformanceSuite = {
       name: '默认 info：role=status + polite，标题与说明关联到 root，初始展开',
       spec: { apg: APG },
       initial: {
-        order: ['root', 'indicator', 'title', 'description', 'close-trigger'],
-        counts: { 'root': 1, 'indicator': 1, 'title': 1, 'description': 1, 'close-trigger': 1 },
+        order: ['root', 'indicator', 'content', 'title', 'description', 'action', 'close-trigger'],
+        counts: { 'root': 1, 'indicator': 1, 'content': 1, 'title': 1, 'description': 1, 'action': 1, 'close-trigger': 1 },
         parts: {
           'root': {
             'role': 'status',

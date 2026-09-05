@@ -87,6 +87,7 @@ size 只换整条的内边距与条目间的间距，条目自身的高度与字
 | `dir` | `Direction` |  | 文字方向，默认 ltr；只改写水平主轴上左右方向键的语义。 |
 | `loop` | `boolean` |  | 方向键走到尽头是否回绕，默认 true。 |
 | `disabled` | `boolean` |  | 整条禁用：条目全部转 aria-disabled，方向键不再接管。 |
+| `variant` | `ToolbarVariant` |  | 形态：plain / surface，决定工具条自己画不画一块面。缺省 surface。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。工具条是布局容器，只换排布尺寸，不带语气。 |
 
 ## 插槽
@@ -160,6 +161,7 @@ size 只换整条的内边距与条目间的间距，条目自身的高度与字
 | `root` | `data-disabled` | ''（条件成立时才出现） |
 | `root` | `data-orientation` | props.orientation |
 | `root` | `data-size` | props.size |
+| `root` | `data-variant` | props.variant |
 | `group` | `data-disabled` | ''（条件成立时才出现） |
 | `group` | `data-orientation` | props.orientation |
 | `item` | `data-disabled` | ''（条件成立时才出现） |

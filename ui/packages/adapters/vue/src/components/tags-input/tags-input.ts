@@ -10,6 +10,9 @@ import { useTagsInput } from './use-tags-input'
 
 type TagsInputProps = TagsInputSchema['props']
 
+/** 计数部件默认插槽的载荷：当前个数、上限与顶到上限、越界两个标志。 */
+export type TagsInputCountSlotProps = Pick<TagsInputApi, 'count' | 'max' | 'atMax' | 'overflow'>
+
 /** 默认插槽的载荷：标签集合与输入文本、数量与越界标志、光标与编辑锚点，以及增删改与清空的动作。 */
 export type TagsInputRootSlotProps = Pick<
   TagsInputApi,
@@ -44,7 +47,9 @@ export const XhTagsInputRoot = defineComponent({
     allowOverflow: Boolean,
     disabled: Boolean,
     readOnly: Boolean,
+    required: Boolean,
     invalid: Boolean,
+    showCount: Boolean,
     name: { type: String, default: undefined },
     placeholder: { type: String, default: undefined },
     delimiter: { type: String, default: undefined },
@@ -202,6 +207,26 @@ export const XhTagsInputClearTrigger = defineComponent({
   setup(_, { slots }) {
     const ctx = useTagsInputContext()
     return () => h('button', ctx.api.value.getClearTriggerProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+/** 计数：不写内容时渲「已用 / 上限」，没设上限就只渲已用。 */
+export const XhTagsInputCount = defineComponent({
+  name: 'XhTagsInputCount',
+  slots: Object as SlotsType<{
+    default?: (props: TagsInputCountSlotProps) => VNode[]
+  }>,
+  setup(_, { slots }) {
+    const ctx = useTagsInputContext()
+    return () => {
+      const api = ctx.api.value
+      const fallback = api.max === undefined ? `${api.count}` : `${api.count} / ${api.max}`
+      return h(
+        'span',
+        api.getCountProps() as Record<string, unknown>,
+        slots.default?.({ count: api.count, max: api.max, atMax: api.atMax, overflow: api.overflow }) ?? fallback,
+      )
+    }
   },
 })
 

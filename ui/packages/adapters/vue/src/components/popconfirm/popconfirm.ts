@@ -146,3 +146,11 @@ export const XhPopconfirmCancelTrigger = defineComponent({
     return () => h('button', ctx.api.value.getCancelTriggerProps() as Record<string, unknown>, slots.default?.())
   },
 })
+
+export const XhPopconfirmArrow = defineComponent({
+  name: 'XhPopconfirmArrow',
+  setup() {
+    const ctx = usePopconfirmContext()
+    return () => h('div', ctx.api.value.getArrowProps() as Record<string, unknown>)
+  },
+})

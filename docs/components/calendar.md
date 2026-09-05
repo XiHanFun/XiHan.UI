@@ -253,7 +253,7 @@ cell-trigger 的内容全由作者写，日号之外还能塞自己的标记
 
 ## RTL
 
-皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。
 
 ## 组合
 

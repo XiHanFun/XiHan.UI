@@ -22,6 +22,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {string} value - 受控激活项；缺省该属性即非受控
  * @attr {string} default-value - 非受控的初始激活项
  * @attr {number} offset - 判定线距滚动容器视口顶边的距离（px），默认 0
+ * @attr {number} bounds - 压线判定的容差（px），默认 1
  * @attr {boolean} smooth - 点链接时平滑滚动到目标，默认关闭
  * @attr {'horizontal'|'vertical'} orientation - 列表轴向，默认 vertical
  * @attr {'ltr'|'rtl'} dir - 文字方向；不给则继承祖先
@@ -32,6 +33,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart list - ul 容器，同时是指示条定位的参照系
  * @csspart item - li 条目
  * @csspart link - a 链接，须自带 value 属性标识目标区块 id；当前那条报 aria-current="location"
+ * @csspart link-text - 链接里的文字载体；链接内另有图标时，省略号只裁这一段
  * @csspart indicator - 指示条，须写成 `<li>` 并住在 list 里；对读屏隐藏，
  *   位置由机器量好写成内联样式，无激活项时 hidden
  */
@@ -44,6 +46,7 @@ export class XhAnchorElement extends XhElement {
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
     offset: { converter: NUMBER_CONVERTER },
+    bounds: { converter: NUMBER_CONVERTER },
     smooth: { converter: BOOLEAN_CONVERTER },
     orientation: { converter: STRING_CONVERTER },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
@@ -59,6 +62,7 @@ export class XhAnchorElement extends XhElement {
   declare value?: string
   declare defaultValue?: string
   declare offset?: number
+  declare bounds?: number
   declare smooth?: boolean
   declare orientation?: Orientation
   declare direction?: Direction
@@ -85,6 +89,7 @@ export class XhAnchorElement extends XhElement {
       defaultValue: this.defaultValue,
       collection: this.collection,
       offset: this.offset,
+      bounds: this.bounds,
       smooth: this.smooth,
       orientation: this.orientation,
       dir: this.direction,
@@ -120,6 +125,9 @@ export class XhAnchorElement extends XhElement {
       const props = api.getLinkProps({ value: el.getAttribute('value') ?? '' })
       this.spreader.spread(el, props as Record<string, unknown>)
     }
+
+    for (const el of this.getParts('link-text'))
+      this.spreader.spread(el, api.getLinkTextProps() as Record<string, unknown>)
 
     const indicator = this.getPart('indicator')
     if (indicator) {

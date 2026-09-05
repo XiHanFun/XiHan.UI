@@ -1,4 +1,4 @@
-<!-- 分节标题 | 分隔线自己不排版：一行里放两条、中间留出标题，两侧各自撑开；语义由标题文字给，线只是装饰 -->
+<!-- 分节标题 | 分隔线自己排成「线 · 文字 · 线」三段；align 把文字挪到一侧，那一侧的线收成一小截 -->
 <script setup lang="ts">
 import { XhSeparator } from "@xihan-ui/vue";
 </script>
@@ -6,20 +6,18 @@ import { XhSeparator } from "@xihan-ui/vue";
 <template>
   <div style="width: 100%; display: grid; gap: 12px">
     <!-- 标题居中：两侧各一条，等分剩下的宽度 -->
-    <div style="display: flex; align-items: center; gap: 12px">
-      <XhSeparator decorative style="flex: 1" />
-      <span style="font-size: 13px">基本信息</span>
-      <XhSeparator decorative style="flex: 1" />
-    </div>
+    <XhSeparator decorative>基本信息</XhSeparator>
 
     <p style="margin: 0">姓名、部门、入职时间</p>
 
-    <!-- 标题靠左：只在右边留一条 -->
-    <div style="display: flex; align-items: center; gap: 12px">
-      <span style="font-size: 13px">联系方式</span>
-      <XhSeparator decorative style="flex: 1" />
-    </div>
+    <!-- 标题靠左：左边那条收成一小截 -->
+    <XhSeparator decorative align="start">联系方式</XhSeparator>
 
     <p style="margin: 0">邮箱、电话</p>
+
+    <!-- 标题靠右 -->
+    <XhSeparator decorative align="end">备注</XhSeparator>
+
+    <p style="margin: 0">其他补充说明</p>
   </div>
 </template>

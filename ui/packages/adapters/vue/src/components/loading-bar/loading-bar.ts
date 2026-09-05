@@ -68,3 +68,11 @@ export const XhLoadingBarRange = defineComponent({
     return () => h('div', ctx.api.value.getRangeProps() as Record<string, unknown>, slots.default?.())
   },
 })
+
+export const XhLoadingBarPeg = defineComponent({
+  name: 'XhLoadingBarPeg',
+  setup(_, { slots }) {
+    const ctx = useLoadingBarContext()
+    return () => h('div', ctx.api.value.getPegProps() as Record<string, unknown>, slots.default?.())
+  },
+})

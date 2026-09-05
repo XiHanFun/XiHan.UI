@@ -18,6 +18,7 @@
 - 长按加减钮连续步进，首跳延时与间隔都可调。
 - `parse` / `format` 一对，用来接固定小数位、千分位、货币符号或自定义换算。
 - 越界的值在提交时机被夹回区间。
+- `prefix` / `suffix` 在框内摆货币符、单位或图标，两段对读屏隐藏。
 
 ## 示例
 
@@ -110,7 +111,7 @@ parse 把显示串读成数、format 把数写回显示串；两个方向必须�
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-number-field>` |
-| Vue 组件 | `XhNumberFieldControl` `XhNumberFieldDecrementTrigger` `XhNumberFieldIncrementTrigger` `XhNumberFieldInput` `XhNumberFieldLabel` `XhNumberFieldRoot` |
+| Vue 组件 | `XhNumberFieldControl` `XhNumberFieldDecrementTrigger` `XhNumberFieldIncrementTrigger` `XhNumberFieldInput` `XhNumberFieldLabel` `XhNumberFieldPrefix` `XhNumberFieldRoot` `XhNumberFieldSuffix` |
 | 组合式函数 | `useNumberField` |
 | 状态机 | `numberFieldMachine` |
 | 皮肤 | `@xihan-ui/styles/number-field.css` |
@@ -119,7 +120,7 @@ parse 把显示串读成数、format 把数写回显示串；两个方向必须�
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="number-field"`：**`root`** · `label` · `control` · **`input`** · `increment-trigger` · `decrement-trigger`
+`data-scope="number-field"`：**`root`** · `label` · `control` · `prefix` · **`input`** · `suffix` · `increment-trigger` · `decrement-trigger`
 
 ## Props
 
@@ -191,7 +192,9 @@ parse 把显示串读成数、format 把数写回显示串；两个方向必须�
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['label']` |  |
 | `getControlProps` | `() => T['element']` | 输入框与加减钮的包裹层：皮肤把视觉盒画在它身上，减在左、加在右、输入框居中。 |
+| `getPrefixProps` | `() => T['element']` | 输入框前的装饰段（货币符、单位、图标）；对读屏隐藏，不参与名字链。 |
 | `getInputProps` | `() => T['input']` |  |
+| `getSuffixProps` | `() => T['element']` | 输入框后的装饰段；对读屏隐藏，不参与名字链。 |
 | `getIncrementTriggerProps` | `() => T['button']` |  |
 | `getDecrementTriggerProps` | `() => T['button']` |  |
 
@@ -214,12 +217,14 @@ parse 把显示串读成数、format 把数写回显示串；两个方向必须�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `prefix` | `aria-hidden` | 'true' |
 | `input` | `aria-invalid` | 'true' \| 'false' |
 | `input` | `aria-labelledby` | `label` 部件的 id |
 | `input` | `aria-valuemax` | props.max |
 | `input` | `aria-valuemin` | props.min |
 | `input` | `aria-valuenow` | undefined \| decodeNumber(value, { parse: prop('parse'), format: p… |
 | `input` | `role` | 'spinbutton' |
+| `suffix` | `aria-hidden` | 'true' |
 
 ## 样式
 
@@ -242,8 +247,10 @@ parse 把显示串读成数、format 把数写回显示串；两个方向必须�
 | `control` | `data-disabled` | ''（条件成立时才出现） |
 | `control` | `data-invalid` | ''（条件成立时才出现） |
 | `control` | `data-readonly` | ''（条件成立时才出现） |
+| `prefix` | `data-disabled` | ''（条件成立时才出现） |
 | `input` | `data-disabled` | ''（条件成立时才出现） |
 | `input` | `data-invalid` | ''（条件成立时才出现） |
+| `suffix` | `data-disabled` | ''（条件成立时才出现） |
 | `increment-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `decrement-trigger` | `data-disabled` | ''（条件成立时才出现） |
 
@@ -251,7 +258,7 @@ parse 把显示串读成数、format 把数写回显示串；两个方向必须�
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-number-field-control-bg` · `--xh-number-field-control-bg-disabled` · `--xh-number-field-control-bg-hover` · `--xh-number-field-control-bg-readonly` · `--xh-number-field-control-border` · `--xh-number-field-control-border-focus` · `--xh-number-field-control-border-hover` · `--xh-number-field-control-border-invalid` · `--xh-number-field-control-gap` · `--xh-number-field-control-h` · `--xh-number-field-control-min-w` · `--xh-number-field-control-px` · `--xh-number-field-control-radius` · `--xh-number-field-control-shadow` · `--xh-number-field-gap` · `--xh-number-field-icon-size` · `--xh-number-field-input-align` · `--xh-number-field-input-autofill-bg` · `--xh-number-field-input-autofill-fg` · `--xh-number-field-input-bg` · `--xh-number-field-input-bg-disabled` · `--xh-number-field-input-bg-hover` · `--xh-number-field-input-bg-readonly` · `--xh-number-field-input-border` · `--xh-number-field-input-border-focus` · `--xh-number-field-input-border-hover` · `--xh-number-field-input-border-invalid` · `--xh-number-field-input-fg` · `--xh-number-field-input-font-size` · `--xh-number-field-input-h` · `--xh-number-field-input-px` · `--xh-number-field-input-radius` · `--xh-number-field-input-shadow` · `--xh-number-field-input-w` · `--xh-number-field-label-fg` · `--xh-number-field-label-fg-disabled` · `--xh-number-field-label-font-size` · `--xh-number-field-label-font-weight` · `--xh-number-field-placeholder-fg` · `--xh-number-field-trigger-bg` · `--xh-number-field-trigger-bg-active` · `--xh-number-field-trigger-bg-disabled` · `--xh-number-field-trigger-bg-hover` · `--xh-number-field-trigger-border` · `--xh-number-field-trigger-border-disabled` · `--xh-number-field-trigger-border-hover` · `--xh-number-field-trigger-fg` · `--xh-number-field-trigger-fg-hover` · `--xh-number-field-trigger-font-size` · `--xh-number-field-trigger-radius` · `--xh-number-field-trigger-size`
+`--xh-number-field-affix-fg` · `--xh-number-field-affix-fg-disabled` · `--xh-number-field-affix-font-size` · `--xh-number-field-control-bg` · `--xh-number-field-control-bg-disabled` · `--xh-number-field-control-bg-hover` · `--xh-number-field-control-bg-readonly` · `--xh-number-field-control-border` · `--xh-number-field-control-border-focus` · `--xh-number-field-control-border-hover` · `--xh-number-field-control-border-invalid` · `--xh-number-field-control-gap` · `--xh-number-field-control-h` · `--xh-number-field-control-min-w` · `--xh-number-field-control-px` · `--xh-number-field-control-radius` · `--xh-number-field-control-shadow` · `--xh-number-field-gap` · `--xh-number-field-icon-size` · `--xh-number-field-input-align` · `--xh-number-field-input-autofill-bg` · `--xh-number-field-input-autofill-fg` · `--xh-number-field-input-bg` · `--xh-number-field-input-bg-disabled` · `--xh-number-field-input-bg-hover` · `--xh-number-field-input-bg-readonly` · `--xh-number-field-input-border` · `--xh-number-field-input-border-focus` · `--xh-number-field-input-border-hover` · `--xh-number-field-input-border-invalid` · `--xh-number-field-input-fg` · `--xh-number-field-input-font-size` · `--xh-number-field-input-h` · `--xh-number-field-input-px` · `--xh-number-field-input-radius` · `--xh-number-field-input-shadow` · `--xh-number-field-input-w` · `--xh-number-field-label-fg` · `--xh-number-field-label-fg-disabled` · `--xh-number-field-label-font-size` · `--xh-number-field-label-font-weight` · `--xh-number-field-placeholder-fg` · `--xh-number-field-trigger-bg` · `--xh-number-field-trigger-bg-active` · `--xh-number-field-trigger-bg-disabled` · `--xh-number-field-trigger-bg-hover` · `--xh-number-field-trigger-border` · `--xh-number-field-trigger-border-disabled` · `--xh-number-field-trigger-border-hover` · `--xh-number-field-trigger-fg` · `--xh-number-field-trigger-fg-hover` · `--xh-number-field-trigger-font-size` · `--xh-number-field-trigger-radius` · `--xh-number-field-trigger-size`
 
 ## 动效
 

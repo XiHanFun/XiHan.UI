@@ -39,6 +39,24 @@ export const XhFieldsetDescription = defineComponent({
   },
 })
 
+/** 把并排的几个字段圈成一段；纯排版。 */
+export const XhFieldsetFieldGroup = defineComponent({
+  name: 'XhFieldsetFieldGroup',
+  setup(_, { slots }) {
+    const ctx = useFieldsetContext()
+    return () => h('div', ctx.api.value.getFieldGroupProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+/** 组末尾那一行按钮；纯排版。 */
+export const XhFieldsetActions = defineComponent({
+  name: 'XhFieldsetActions',
+  setup(_, { slots }) {
+    const ctx = useFieldsetContext()
+    return () => h('div', ctx.api.value.getActionsProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhFieldsetErrorText = defineComponent({
   name: 'XhFieldsetErrorText',
   setup(_, { slots }) {

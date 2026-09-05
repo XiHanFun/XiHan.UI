@@ -84,6 +84,7 @@
 | `startTime` | `number` |  | 这次调用开始的时刻，毫秒时间戳。 |
 | `tone` | `Tone` |  |  |
 | `translations` | `Partial<ToolCallTranslations>` |  |  |
+| `variant` | `ControlVariant` |  | 形态：outline 描边（缺省档）、subtle 底色分区、ghost 无壳内联。 |
 
 ## 事件
 
@@ -137,6 +138,8 @@
 | `open` | `boolean` |  |
 | `phase` | `ToolCallPhase` |  |
 | `running` | `boolean` | 这一档算不算在跑。 |
+| `settled` | `boolean` | 这一档算不算已经落定：跑完了，或者跑砸了。 |
+| `errored` | `boolean` | 这一档算不算跑砸了。 |
 | `disabled` | `boolean` |  |
 | `statusText` | `string` | 读屏用的一句话，由宿主写进会话级的那一个播报区。 |
 | `durationMs` | `number \| undefined` | 跑了多久，毫秒；两个时刻任一缺席即 undefined。 |
@@ -191,10 +194,13 @@
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-errored` | ''（条件成立时才出现） |
 | `root` | `data-loading` | ''（条件成立时才出现） |
+| `root` | `data-settled` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | 'open' \| 'closed' |
 | `root` | `data-tone` | props.tone |
+| `root` | `data-variant` | props.variant |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `trigger` | `data-state` | 'open' \| 'closed' |
 | `indicator` | `data-state` | 'open' \| 'closed' |
@@ -213,7 +219,7 @@
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-tool-call-bg` · `--xh-tool-call-border` · `--xh-tool-call-border-error` · `--xh-tool-call-content-gap` · `--xh-tool-call-duration-fg` · `--xh-tool-call-error-fg` · `--xh-tool-call-font-size` · `--xh-tool-call-indicator-fg` · `--xh-tool-call-label-font` · `--xh-tool-call-px` · `--xh-tool-call-py` · `--xh-tool-call-radius` · `--xh-tool-call-shadow` · `--xh-tool-call-shimmer-duration` · `--xh-tool-call-status-bg-approval` · `--xh-tool-call-status-bg-done` · `--xh-tool-call-status-bg-error` · `--xh-tool-call-status-fg` · `--xh-tool-call-status-fg-approval` · `--xh-tool-call-status-fg-done` · `--xh-tool-call-status-fg-error` · `--xh-tool-call-status-font-size` · `--xh-tool-call-status-px` · `--xh-tool-call-status-py` · `--xh-tool-call-status-radius` · `--xh-tool-call-status-shimmer-base` · `--xh-tool-call-status-shimmer-sheen` · `--xh-tool-call-summary-bg` · `--xh-tool-call-summary-fg` · `--xh-tool-call-summary-font-size` · `--xh-tool-call-summary-px` · `--xh-tool-call-summary-radius` · `--xh-tool-call-tone-bar` · `--xh-tool-call-tone-fg` · `--xh-tool-call-trigger-bg-hover` · `--xh-tool-call-trigger-fg` · `--xh-tool-call-trigger-gap`
+`--xh-tool-call-bg` · `--xh-tool-call-border` · `--xh-tool-call-border-error` · `--xh-tool-call-content-gap` · `--xh-tool-call-duration-fg` · `--xh-tool-call-error-fg` · `--xh-tool-call-font-size` · `--xh-tool-call-indicator-fg` · `--xh-tool-call-label-font` · `--xh-tool-call-px` · `--xh-tool-call-py` · `--xh-tool-call-radius` · `--xh-tool-call-shadow` · `--xh-tool-call-shimmer-duration` · `--xh-tool-call-status-bg-approval` · `--xh-tool-call-status-bg-done` · `--xh-tool-call-status-bg-error` · `--xh-tool-call-status-fg` · `--xh-tool-call-status-fg-approval` · `--xh-tool-call-status-fg-done` · `--xh-tool-call-status-fg-error` · `--xh-tool-call-status-font-size` · `--xh-tool-call-status-px` · `--xh-tool-call-status-py` · `--xh-tool-call-status-radius` · `--xh-tool-call-status-shimmer-base` · `--xh-tool-call-status-shimmer-sheen` · `--xh-tool-call-summary-bg` · `--xh-tool-call-summary-fg` · `--xh-tool-call-summary-font-size` · `--xh-tool-call-summary-px` · `--xh-tool-call-summary-radius` · `--xh-tool-call-tone-bar` · `--xh-tool-call-tone-fg` · `--xh-tool-call-trigger-bg-hover` · `--xh-tool-call-trigger-fg` · `--xh-tool-call-trigger-gap` · `--xh-tool-call-trigger-radius`
 
 ## 动效
 

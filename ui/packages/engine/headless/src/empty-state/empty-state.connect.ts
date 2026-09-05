@@ -26,6 +26,14 @@ export function connectEmptyState<T extends PropTypes>(
       'role': live === 'off' ? undefined : 'status',
       'data-size': props.size,
       'data-status': props.status,
+      // 语气轴只挂在 root 上，子部件靠继承拿到语气槽
+      'data-tone': props.tone,
+    }),
+
+    // 插画同样是纯装饰：它替代的是图标那一层，不是内容
+    getMediaProps: () => normalize.element({
+      ...parts.media.attrs,
+      'aria-hidden': true,
     }),
 
     // 图标是纯装饰：它表达的信息标题里已经写了，念出来只会重复一遍

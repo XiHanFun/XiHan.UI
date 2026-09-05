@@ -7,6 +7,8 @@ export const navigationMenuAnatomy = createAnatomy('navigation-menu', [
   'list',
   'item',
   'trigger',
+  // 入口里表示"底下还有一张面板"的标记，皮肤按 data-state 转向
+  'trigger-indicator',
   'content',
   'link',
   'indicator',

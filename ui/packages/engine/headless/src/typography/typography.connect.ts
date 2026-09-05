@@ -26,6 +26,8 @@ export function connectTypography<T extends PropTypes>(
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'data-size': props.size,
+      'data-align': props.align,
+      'data-weight': props.weight,
     }),
 
     // 不写 role="heading" 与 aria-level：档位只管字号，进不进文档大纲由作者写的标签决定
@@ -41,9 +43,13 @@ export function connectTypography<T extends PropTypes>(
       ...parts.text.attrs,
       'data-tone': text.tone,
       'data-variant': text.variant,
+      'data-weight': text.weight,
     }),
 
     // 链接只拿身份：href、target、rel 与点击行为全归作者
     getLinkProps: () => normalize.element({ ...parts.link.attrs }),
+
+    // 富文本容器只拿身份：里面的标签由内容自己带，样式按标签给
+    getProseProps: () => normalize.element({ ...parts.prose.attrs }),
   }
 }

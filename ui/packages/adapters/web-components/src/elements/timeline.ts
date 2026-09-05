@@ -28,6 +28,7 @@ const ITEM_SELECTOR = '[data-xh-part="item"]'
  * @attr {'sm'|'md'|'lg'} size - 尺寸，决定圆点直径、条目间距与字号
  * @csspart root - role=list 的容器，承载 data-orientation / data-placement / data-size
  * @csspart item - role=listitem 的单条事件；作者在此写 tone（这一条的语气色）
+ * @csspart label - 与内容对置的那一列，装这一条的坐标（日期、版本号）
  * @csspart indicator - 事件那一刻的圆点，对读屏隐藏，颜色随所属条目的 tone 走
  * @csspart connector - 圆点之间的连线，对读屏隐藏；长度与首尾裁切归皮肤
  * @csspart content - 这一条的文字容器
@@ -82,6 +83,7 @@ export class XhTimelineElement extends XhElement {
         this.spreader.spread(el, get(el) as Record<string, unknown>)
     }
     putAll('item', () => api.getItemProps())
+    putAll('label', () => api.getLabelProps())
     putAll('indicator', el => api.getIndicatorProps(this.itemProps(el)))
     putAll('connector', () => api.getConnectorProps())
     putAll('content', () => api.getContentProps())

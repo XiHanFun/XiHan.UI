@@ -2,6 +2,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import {
+  XhPopconfirmArrow,
   XhPopconfirmCancelTrigger,
   XhPopconfirmConfirmTrigger,
   XhPopconfirmContent,
@@ -27,6 +28,7 @@ const answer = ref("还没答复");
           </XhPopconfirmDescription>
           <XhPopconfirmCancelTrigger>取消</XhPopconfirmCancelTrigger>
           <XhPopconfirmConfirmTrigger>删除</XhPopconfirmConfirmTrigger>
+          <XhPopconfirmArrow />
         </XhPopconfirmContent>
       </XhPopconfirmPositioner>
     </XhPopconfirmRoot>

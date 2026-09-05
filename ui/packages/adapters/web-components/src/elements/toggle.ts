@@ -15,6 +15,8 @@ import { MachineController } from '../runtime/machine-controller'
  * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 视觉变体
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
+ * @attr {boolean} icon-only - 只有图标：左右内距清零、宽高相等；作者须自行给可及名
+ * @attr {boolean} full-width - 撑满行宽
  * @fires pressed-change - pressed 状态变化；detail 为 `{ pressed: boolean }`
  * @csspart root - role=button 的按钮（承载 aria-pressed / data-state）
  */
@@ -28,6 +30,8 @@ export class XhToggleElement extends XhElement {
     variant: {},
     tone: {},
     size: {},
+    iconOnly: { type: Boolean, attribute: 'icon-only' },
+    fullWidth: { type: Boolean, attribute: 'full-width' },
   }
 
   declare pressed?: boolean
@@ -36,6 +40,8 @@ export class XhToggleElement extends XhElement {
   declare variant?: ActionVariant
   declare tone?: Tone
   declare size?: Size
+  declare iconOnly?: boolean
+  declare fullWidth?: boolean
 
   private readonly notify = (details: TogglePressedChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('pressed-change', { detail: details, bubbles: true, composed: true }))
@@ -51,6 +57,8 @@ export class XhToggleElement extends XhElement {
       variant: this.variant,
       tone: this.tone,
       size: this.size,
+      iconOnly: this.iconOnly,
+      fullWidth: this.fullWidth,
       onPressedChange: this.notify,
     }
   }

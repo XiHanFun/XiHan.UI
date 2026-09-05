@@ -1,6 +1,6 @@
 import type { PositionResult } from '@xihan-ui/core'
 import type { MentionSchema, MentionTrigger } from './mention.types'
-import { createDismissLayer, itemValue, navigateItems, queryItems, setup } from '@xihan-ui/core'
+import { createDismissLayer, itemValue, navigateItems, queryItems, resetDeclaredValue, setup } from '@xihan-ui/core'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { mentionItemQuery } from './mention.anatomy'
 import { findMentionTrigger, insertMention, normalizeMentionPrefixes } from './mention.trigger'
@@ -64,6 +64,8 @@ export const mentionMachine = createMachine({
   // 挂载时光标在哪还不知道，一律从收起态起步
   initialState: () => 'closed',
   on: {
+    // 表单重置从任何状态都要认。不设禁用/只读守卫：原生表单的重置算法不看这两个标志
+    'FORM.RESET': { actions: ['resetToDefault'] },
     // 这三件事与开合无关，两个状态里都得认
     'INPUT.CHANGE': { actions: ['setValue', 'syncTrigger', 'refreshCandidates'] },
     'CARET.SYNC': { actions: ['syncTrigger', 'refreshCandidates'] },
@@ -92,6 +94,8 @@ export const mentionMachine = createMachine({
   },
   implementations: {
     actions: {
+      resetToDefault: params => void resetDeclaredValue(params, 'value', 'value', 'defaultValue'),
+
       invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
       invokeOnClose: ({ prop }) => prop('onOpenChange')?.({ open: false }),
 

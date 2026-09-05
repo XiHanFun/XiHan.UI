@@ -12,6 +12,7 @@ export const splitterKeyboard: KeyboardTable = {
     { id: 'splitter.kbd.large-shrink', keys: ['Shift+ArrowLeft', 'Shift+ArrowUp'], when: 'focus in resize-trigger, not disabled', does: '按 largeStep 压小' },
     { id: 'splitter.kbd.min', keys: ['Home'], when: 'focus in resize-trigger, not disabled', does: '把前一块面板收到它眼下能到的最小尺寸' },
     { id: 'splitter.kbd.max', keys: ['End'], when: 'focus in resize-trigger, not disabled', does: '把前一块面板撑到它眼下能到的最大尺寸' },
+    { id: 'splitter.kbd.cancel', keys: ['Escape'], when: '拖动中', does: '放弃这一场拖拽，布局退回按下那一刻；收尾回调不发' },
     { id: 'splitter.kbd.toggle', keys: ['Enter'], when: 'focus in resize-trigger 且它调整的面板 collapsible，not disabled', does: '折叠 / 展开该面板；展开回到折叠前的尺寸。面板不可折叠时不接这个键' },
   ],
 }

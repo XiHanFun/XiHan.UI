@@ -29,6 +29,7 @@ export type {
   CascaderColumnProps,
   CascaderExpandTrigger,
   CascaderFocusIntent,
+  CascaderGroupProps,
   CascaderItemProps,
   CascaderLevel,
   CascaderNode,

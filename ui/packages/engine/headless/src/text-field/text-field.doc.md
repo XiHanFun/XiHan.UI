@@ -17,7 +17,9 @@
 - `type` 覆盖 `text` / `password` / `email` / `tel` / `url` / `search`。
 - `clearable` 给出清空按钮，`maxLength` 给出字数上限。
 - 多行时可自动长高。
-- 框内前后缀、输入组、限制可输入字符都由作者组合，组件不预设。
+- `prefix` / `suffix` 在框内摆货币符、单位或图标，两段对读屏隐藏。
+- `showCount` 显出字数部件，数字取 `count` 与 `maxLength`，顶到上限时换色。
+- 输入组、限制可输入字符由作者组合，组件不预设。
 
 ## 组合
 

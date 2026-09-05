@@ -94,6 +94,8 @@ export interface NavigationMenuSchema extends MachineSchema {
     dir?: Direction
     /** 方向键走到尽头是否回绕，默认 true。 */
     loop?: boolean
+    /** 整套导航禁用：所有入口都转 aria-disabled，面板不再展开。 */
+    disabled?: boolean
     translations?: Partial<NavigationMenuTranslations>
     /** 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 */
     tone?: Tone
@@ -163,6 +165,7 @@ export interface NavigationMenuApi<T extends PropTypes = PropTypes> {
   getListProps: () => T['element']
   getItemProps: () => T['element']
   getTriggerProps: (props: NavigationMenuTriggerProps) => T['button']
+  getTriggerIndicatorProps: (props: NavigationMenuTriggerProps) => T['element']
   getContentProps: (props: NavigationMenuContentProps) => T['element']
   getLinkProps: (props: NavigationMenuLinkProps) => T['element']
   getIndicatorProps: () => T['element']

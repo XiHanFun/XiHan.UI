@@ -24,6 +24,15 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? un
 // 缺省为真的开关（Esc 退出、画遮罩）只有三态才关得掉。
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
+/** 读作者写在部件上的下标，缺席或写坏了退回文档序。 */
+function declaredIndex(el: HTMLElement, position: number): number {
+  const raw = el.getAttribute('index')
+  if (raw == null || raw.trim() === '')
+    return position
+  const parsed = Number(raw)
+  return Number.isFinite(parsed) ? Math.trunc(parsed) : position
+}
+
 /**
  * `<xh-tour>` —— Light-DOM 行为宿主：用户写 root/backdrop/spotlight/positioner/content/... 角色节点，
  * 元素跑 tour 机器并把 connect 产出打上去。浮层定位引擎在本元素里建好、经 refs 注入机器，
@@ -54,6 +63,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart title - 标题（aria-labelledby 目标）；作者没写内容时由元素填当前步的 title
  * @csspart description - 描述（aria-describedby 目标）；作者没写内容时填当前步的 description
  * @csspart progress-text - "第 m 步，共 n 步"（aria-live=polite）；作者没写内容时由元素填
+ * @csspart progress-indicator - 圆点组（aria-hidden，带 data-count）
+ * @csspart progress-dot - 一步一个的圆点，可自带 index 属性；走过的带 data-complete，当前那颗带 data-current
  * @csspart prev-trigger - 上一步（首步时原生 disabled）
  * @csspart next-trigger - 下一步（末步带 data-last，语义是"完成"）
  * @csspart skip-trigger - 跳过（发 skip 事件后关闭）
@@ -247,11 +258,17 @@ export class XhTourElement extends XhElement {
     put('title', api.getTitleProps() as Record<string, unknown>)
     put('description', api.getDescriptionProps() as Record<string, unknown>)
     put('progress-text', api.getProgressTextProps() as Record<string, unknown>)
+    put('progress-indicator', api.getProgressIndicatorProps() as Record<string, unknown>)
     put('prev-trigger', api.getPrevTriggerProps() as Record<string, unknown>)
     put('next-trigger', api.getNextTriggerProps() as Record<string, unknown>)
     put('skip-trigger', api.getSkipTriggerProps() as Record<string, unknown>)
     put('close-trigger', api.getCloseTriggerProps() as Record<string, unknown>)
     put('arrow', api.getArrowProps() as Record<string, unknown>)
+
+    // 圆点是多实例 part，逐个打：身份取作者写的 index，缺省按文档序
+    this.getParts('progress-dot').forEach((el, position) => {
+      this.spreader.spread(el, api.getProgressDotProps({ index: declaredIndex(el, position) }) as Record<string, unknown>)
+    })
 
     this.fillText(this.getPart('title'), api.currentStep?.title)
     this.fillText(this.getPart('description'), api.currentStep?.description)

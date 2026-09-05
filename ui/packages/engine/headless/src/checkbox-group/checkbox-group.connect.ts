@@ -104,6 +104,9 @@ export function connectCheckboxGroup<T extends PropTypes>(
       'aria-labelledby': ids.label,
       // role=group 不接受 aria-orientation，只出 data-orientation
       'data-orientation': orientation,
+      // 两个视觉轴打在根上，条目与方框从这里继承私有槽，子部件不重复标注
+      'data-tone': prop('tone'),
+      'data-size': prop('size'),
       'data-disabled': dataAttr(groupDisabled),
       'data-readonly': dataAttr(readOnly),
       'data-invalid': dataAttr(invalid),

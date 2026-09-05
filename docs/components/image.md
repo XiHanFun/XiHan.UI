@@ -73,7 +73,7 @@ src 是响应式的：进入视口前不给地址，观察器命中再换上，�
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-image>` |
-| Vue 组件 | `XhImageFallback` `XhImageImage` `XhImageRoot` |
+| Vue 组件 | `XhImageFallback` `XhImageImage` `XhImagePlaceholder` `XhImageRoot` |
 | 组合式函数 | `useImage` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/image.css` |
@@ -82,7 +82,7 @@ src 是响应式的：进入视口前不给地址，观察器命中再换上，�
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="image"`：**`root`** · **`image`** · `fallback`
+`data-scope="image"`：**`root`** · **`image`** · `placeholder` · `fallback`
 
 ## Props
 
@@ -117,6 +117,7 @@ src 是响应式的：进入视口前不给地址，观察器命中再换上，�
 | --- | --- |
 | `root` | state.get() |
 | `image` | state.get() |
+| `placeholder` | state.get() |
 | `fallback` | state.get() |
 
 状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
@@ -134,8 +135,10 @@ src 是响应式的：进入视口前不给地址，观察器命中再换上，�
 | `status` | `ImageStatus` |  |
 | `loaded` | `boolean` |  |
 | `showFallback` | `boolean` | 回退内容此刻是否该露面：加载失败恒为真，加载途中要看 fallbackDelay 是否已过。 |
+| `showPlaceholder` | `boolean` | 占位层此刻是否该露面：来源决议中与加载中为真，落位或失败后为假。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getImageProps` | `() => T['img']` |  |
+| `getPlaceholderProps` | `() => T['element']` | 加载期间铺在图位上的占位层，纯装饰。 |
 | `getFallbackProps` | `() => T['element']` |  |
 
 ## 键盘
@@ -143,6 +146,14 @@ src 是响应式的：进入视口前不给地址，观察器命中再换上，�
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
+
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `placeholder` | `aria-hidden` | 'true' |
 
 ## 样式
 
@@ -156,13 +167,14 @@ src 是响应式的：进入视口前不给地址，观察器命中再换上，�
 | --- | --- | --- |
 | `root` | `data-state` | state.get() |
 | `image` | `data-state` | state.get() |
+| `placeholder` | `data-state` | state.get() |
 | `fallback` | `data-state` | state.get() |
 
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-image-bg` · `--xh-image-fallback-fg` · `--xh-image-fallback-font-size` · `--xh-image-fallback-min-h` · `--xh-image-fit` · `--xh-image-h` · `--xh-image-radius` · `--xh-image-ratio` · `--xh-image-w`
+`--xh-image-bg` · `--xh-image-fallback-fg` · `--xh-image-fallback-font-size` · `--xh-image-fallback-min-h` · `--xh-image-fit` · `--xh-image-h` · `--xh-image-placeholder-bg` · `--xh-image-placeholder-fg` · `--xh-image-radius` · `--xh-image-ratio` · `--xh-image-w`
 
 ## 组合
 

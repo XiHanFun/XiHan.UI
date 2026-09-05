@@ -325,6 +325,42 @@
     color: var(--xh-fg-disabled);
   }
 
+  /* 副文本另起一行：整行占满，把条目的一行内容折成两行 */
+  [data-scope='menubar'][data-part='item-description'] {
+    flex: 1 0 100%;
+    color: var(--xh-menubar-item-description-fg, var(--xh-fg-muted));
+    font-size: var(--xh-menubar-item-description-font-size, var(--xh-text-caption-size));
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+
+  [data-scope='menubar'][data-part='item-description'][hidden] {
+    display: none;
+  }
+
+  [data-scope='menubar'][data-part='item-description'][data-disabled] {
+    color: var(--xh-fg-disabled);
+  }
+
+  /* 带副文本的条目改成两行排布：主文字与标记位在上一行，副文本占满下一行 */
+  [data-scope='menubar'][data-part='item']:has([data-scope='menubar'][data-part='item-description']) {
+    flex-wrap: wrap;
+  }
+
+  /* 箭头的底色与描边色，几何在 overlay-arrow.css。
+     交叉轴落点由定位引擎经内联自定义属性写进来，没给时退回居中 */
+  [data-scope='menubar'][data-part='arrow'] {
+    --xh-_menubar-arrow-x: 50%;
+    --xh-_menubar-arrow-y: 50%;
+    --xh-_overlay-arrow-size: var(--xh-menubar-arrow-size, var(--xh-overlay-arrow-size));
+    --xh-_overlay-arrow-x: var(--xh-_menubar-arrow-x);
+    --xh-_overlay-arrow-y: var(--xh-_menubar-arrow-y);
+
+    background: var(--xh-menubar-content-bg, var(--xh-bg-surface));
+    border: var(--xh-stroke-thin) solid var(--xh-menubar-border, var(--xh-border-default));
+  }
+
   /* 分隔线横跨菜单，与菜单栏自身的 orientation 无关：菜单永远是一列条目。
      不给 display，因此 UA 的 [hidden]{display:none} 自己就压得住 */
   [data-scope='menubar'][data-part='separator'] {

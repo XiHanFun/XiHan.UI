@@ -315,6 +315,16 @@ export const XhContextMenuItemIndicator = defineComponent({
   },
 })
 
+/** 条目里的副文本，排在文字下一行 */
+export const XhContextMenuItemDescription = defineComponent({
+  name: 'XhContextMenuItemDescription',
+  setup(_, { slots }) {
+    const ctx = useContextMenuContext()
+    const { item } = useContextMenuItemContext()
+    return () => h('span', ctx.api.value.getItemDescriptionProps(item.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhContextMenuSeparator = defineComponent({
   name: 'XhContextMenuSeparator',
   setup() {
@@ -400,5 +410,6 @@ function renderItem(
   return h(XhContextMenuItem, { key: meta.value, value: meta.value }, () => [
     ...(meta.indicator != null ? [h(XhContextMenuItemIndicator, null, () => meta.indicator)] : []),
     h(XhContextMenuItemText, null, () => itemSlot?.(meta) ?? meta.label),
+    ...(meta.description != null ? [h(XhContextMenuItemDescription, null, () => meta.description)] : []),
   ])
 }

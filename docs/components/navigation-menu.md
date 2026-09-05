@@ -85,7 +85,7 @@ defaultValue 只定首帧展开哪一项，之后照常由交互接管；指针�
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-navigation-menu>` |
-| Vue 组件 | `XhNavigationMenuContent` `XhNavigationMenuIndicator` `XhNavigationMenuItem` `XhNavigationMenuLink` `XhNavigationMenuList` `XhNavigationMenuRoot` `XhNavigationMenuTrigger` `XhNavigationMenuViewport` |
+| Vue 组件 | `XhNavigationMenuContent` `XhNavigationMenuIndicator` `XhNavigationMenuItem` `XhNavigationMenuLink` `XhNavigationMenuList` `XhNavigationMenuRoot` `XhNavigationMenuTrigger` `XhNavigationMenuTriggerIndicator` `XhNavigationMenuViewport` |
 | 组合式函数 | `useNavigationMenu` |
 | 状态机 | `navigationMenuMachine` |
 | 皮肤 | `@xihan-ui/styles/navigation-menu.css` |
@@ -94,7 +94,7 @@ defaultValue 只定首帧展开哪一项，之后照常由交互接管；指针�
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="navigation-menu"`：**`root`** · **`list`** · **`item`** · `trigger` · `content` · **`link`** · `indicator` · `viewport`
+`data-scope="navigation-menu"`：**`root`** · **`list`** · **`item`** · `trigger` · `trigger-indicator` · `content` · **`link`** · `indicator` · `viewport`
 
 ## Props
 
@@ -108,6 +108,7 @@ defaultValue 只定首帧展开哪一项，之后照常由交互接管；指针�
 | `skipDelayDuration` | `number` |  | 收起之后的静默窗口，默认 300ms；窗口内再碰任意 trigger 直接展开。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr。 |
 | `loop` | `boolean` |  | 方向键走到尽头是否回绕，默认 true。 |
+| `disabled` | `boolean` |  | 整套导航禁用：所有入口都转 aria-disabled，面板不再展开。 |
 | `translations` | `Partial<NavigationMenuTranslations>` |  |  |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
@@ -129,6 +130,7 @@ defaultValue 只定首帧展开哪一项，之后照常由交互接管；指针�
 | --- | --- |
 | `root` | 'open' \| 'closed' |
 | `trigger` | 'open' \| 'closed' |
+| `trigger-indicator` | 'open' \| 'closed' |
 | `content` | 'open' \| 'closed' |
 | `indicator` | 'open' \| 'closed' |
 | `viewport` | 'open' \| 'closed' |
@@ -156,6 +158,7 @@ defaultValue 只定首帧展开哪一项，之后照常由交互接管；指针�
 | `getListProps` | `() => T['element']` |  |
 | `getItemProps` | `() => T['element']` |  |
 | `getTriggerProps` | `(props: NavigationMenuTriggerProps) => T['button']` |  |
+| `getTriggerIndicatorProps` | `(props: NavigationMenuTriggerProps) => T['element']` |  |
 | `getContentProps` | `(props: NavigationMenuContentProps) => T['element']` |  |
 | `getLinkProps` | `(props: NavigationMenuLinkProps) => T['element']` |  |
 | `getIndicatorProps` | `() => T['element']` |  |
@@ -185,6 +188,7 @@ defaultValue 只定首帧展开哪一项，之后照常由交互接管；指针�
 | `trigger` | `aria-controls` | `content` 部件的 id |
 | `trigger` | `aria-disabled` | 'true' \| 'false' |
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
+| `trigger-indicator` | `aria-hidden` | 'true' |
 | `content` | `aria-labelledby` | `trigger` 部件的 id |
 | `content` | `role` | 'group' |
 | `link` | `aria-current` | 'page' \| undefined |
@@ -208,6 +212,9 @@ defaultValue 只定首帧展开哪一项，之后照常由交互接管；指针�
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `trigger` | `data-orientation` | props.orientation |
 | `trigger` | `data-state` | 'open' \| 'closed' |
+| `trigger-indicator` | `data-disabled` | ''（条件成立时才出现） |
+| `trigger-indicator` | `data-orientation` | props.orientation |
+| `trigger-indicator` | `data-state` | 'open' \| 'closed' |
 | `content` | `data-orientation` | props.orientation |
 | `content` | `data-state` | 'open' \| 'closed' |
 | `link` | `data-current` | ''（条件成立时才出现） |
@@ -221,7 +228,7 @@ defaultValue 只定首帧展开哪一项，之后照常由交互接管；指针�
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-navigation-menu-content-bg` · `--xh-navigation-menu-content-border` · `--xh-navigation-menu-content-gap` · `--xh-navigation-menu-content-min-w` · `--xh-navigation-menu-content-offset` · `--xh-navigation-menu-content-p` · `--xh-navigation-menu-content-radius` · `--xh-navigation-menu-content-shadow` · `--xh-navigation-menu-fg` · `--xh-navigation-menu-font-size` · `--xh-navigation-menu-gap` · `--xh-navigation-menu-indicator-color` · `--xh-navigation-menu-indicator-radius` · `--xh-navigation-menu-indicator-thickness` · `--xh-navigation-menu-layer` · `--xh-navigation-menu-link-bg-hover` · `--xh-navigation-menu-link-fg` · `--xh-navigation-menu-link-fg-current` · `--xh-navigation-menu-link-font-size` · `--xh-navigation-menu-link-font-weight-current` · `--xh-navigation-menu-link-px` · `--xh-navigation-menu-link-py` · `--xh-navigation-menu-link-radius` · `--xh-navigation-menu-trigger-bg-active` · `--xh-navigation-menu-trigger-bg-hover` · `--xh-navigation-menu-trigger-fg` · `--xh-navigation-menu-trigger-font-weight` · `--xh-navigation-menu-trigger-gap` · `--xh-navigation-menu-trigger-h` · `--xh-navigation-menu-trigger-px` · `--xh-navigation-menu-trigger-radius` · `--xh-navigation-menu-viewport-p`
+`--xh-navigation-menu-content-bg` · `--xh-navigation-menu-content-border` · `--xh-navigation-menu-content-gap` · `--xh-navigation-menu-content-min-w` · `--xh-navigation-menu-content-offset` · `--xh-navigation-menu-content-p` · `--xh-navigation-menu-content-radius` · `--xh-navigation-menu-content-shadow` · `--xh-navigation-menu-fg` · `--xh-navigation-menu-font-size` · `--xh-navigation-menu-gap` · `--xh-navigation-menu-icon-size` · `--xh-navigation-menu-indicator-color` · `--xh-navigation-menu-indicator-radius` · `--xh-navigation-menu-indicator-thickness` · `--xh-navigation-menu-layer` · `--xh-navigation-menu-link-bg-hover` · `--xh-navigation-menu-link-fg` · `--xh-navigation-menu-link-fg-current` · `--xh-navigation-menu-link-font-size` · `--xh-navigation-menu-link-font-weight-current` · `--xh-navigation-menu-link-px` · `--xh-navigation-menu-link-py` · `--xh-navigation-menu-link-radius` · `--xh-navigation-menu-trigger-bg-active` · `--xh-navigation-menu-trigger-bg-hover` · `--xh-navigation-menu-trigger-fg` · `--xh-navigation-menu-trigger-font-weight` · `--xh-navigation-menu-trigger-gap` · `--xh-navigation-menu-trigger-h` · `--xh-navigation-menu-trigger-px` · `--xh-navigation-menu-trigger-radius` · `--xh-navigation-menu-viewport-p`
 
 ## 动效
 

@@ -10,6 +10,13 @@
       background-position: -200% 0;
     }
   }
+
+  /* 呼吸档：整根条子在原色与禁用档之间来回淡。往返由 alternate 给，帧里只写一端 */
+  @keyframes xh-skeleton-pulse {
+    to {
+      opacity: var(--xh-state-disabled-opacity);
+    }
+  }
 }
 
 @layer xihan.components {
@@ -69,6 +76,40 @@
   [data-scope='skeleton'][data-part='item'][data-shape='rect'] {
     min-block-size: var(--xh-skeleton-rect-block-size, var(--xh-control-h-lg));
     border-radius: var(--xh-skeleton-rect-radius, var(--xh-shape-surface));
+  }
+
+  /*
+   * 呼吸档：撤掉微光那层，整根条子在原色与禁用档之间来回淡。
+   * 微光扫的是一道亮带，呼吸改的是整根的浓淡——两者都表达"还在等"，
+   * 换哪一档由作者定，缺省仍是微光。
+   */
+  [data-scope='skeleton'][data-part='root'][data-animation='pulse'] [data-part='item'] {
+    background-image: none;
+    animation: xh-skeleton-pulse var(--xh-skeleton-pulse-duration, var(--xh-shimmer-duration)) var(--xh-motion-ease-sweep) infinite alternate;
+  }
+
+  /* 静止档：底色留着，两层动效都撤掉 */
+  [data-scope='skeleton'][data-part='root'][data-animation='none'] [data-part='item'] {
+    background-image: none;
+    animation: none;
+  }
+
+  /* 呼吸档自带一条动画，压不住下面基础降级里的 animation: none，这一档各自再写一份。
+     两组规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope='skeleton'][data-part='root'][data-animation='pulse'] [data-part='item'] {
+      animation: none;
+    }
+  }
+
+  :where([data-motion='reduce']) [data-scope='skeleton'][data-part='root'][data-animation='pulse'] [data-part='item'] {
+    animation: none;
+  }
+
+  @media print {
+    [data-scope='skeleton'][data-part='root'][data-animation='pulse'] [data-part='item'] {
+      animation: none;
+    }
   }
 
   /*

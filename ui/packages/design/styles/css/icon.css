@@ -30,17 +30,47 @@
     display: none;
   }
 
-  /* 三档直径，缺省档写在上面的基础规则里。
+  /* 八档直径，缺省档 md 写在上面的基础规则里。
      每一档都把 --xh-icon-size 排在自己的档值前面：这个槽是外层统一图元直径的通道，
      档值直接写终值的话，写了 data-size 的那一枚就脱离外层控制，作者在祖先上的覆盖也改不动它 */
+  [data-scope='icon'][data-part='root'][data-size='text'] {
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  }
+
   [data-scope='icon'][data-part='root'][data-size='sm'] {
     inline-size: var(--xh-icon-size, var(--xh-glyph-size-sm));
     block-size: var(--xh-icon-size, var(--xh-glyph-size-sm));
   }
 
+  [data-scope='icon'][data-part='root'][data-size='md'] {
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+  }
+
   [data-scope='icon'][data-part='root'][data-size='lg'] {
     inline-size: var(--xh-icon-size, var(--xh-glyph-size-lg));
     block-size: var(--xh-icon-size, var(--xh-glyph-size-lg));
+  }
+
+  [data-scope='icon'][data-part='root'][data-size='xl'] {
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-xl));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-xl));
+  }
+
+  [data-scope='icon'][data-part='root'][data-size='2xl'] {
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-2xl));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-2xl));
+  }
+
+  [data-scope='icon'][data-part='root'][data-size='3xl'] {
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-3xl));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-3xl));
+  }
+
+  [data-scope='icon'][data-part='root'][data-size='4xl'] {
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-4xl));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-4xl));
   }
 
   /* 三档描边，缺省档同样写在基础规则里；--xh-icon-stroke 同样排在档值前面 */
@@ -57,5 +87,32 @@
      那个节点上，放在语气容器里的装饰图标会跟着一起改色 */
   [data-scope='icon'][data-part='root'][data-tone] {
     color: var(--xh-icon-fg, var(--xh-_tone-fg, currentColor));
+  }
+
+  /* 旋转：四分之一圈的整数倍，是把箭头指向别处的结构性角度，不是可调幅度。
+     没有过渡也没有动画——转到位就停在那儿，减弱动效那一档碰不到它 */
+  [data-scope='icon'][data-part='root'][data-rotate='90'] {
+    rotate: 90deg;
+  }
+
+  [data-scope='icon'][data-part='root'][data-rotate='180'] {
+    rotate: 180deg;
+  }
+
+  [data-scope='icon'][data-part='root'][data-rotate='270'] {
+    rotate: 270deg;
+  }
+
+  /* 翻转：沿轴取反，同样是静态几何。与旋转是两个独立属性，同写时自然叠加 */
+  [data-scope='icon'][data-part='root'][data-flip='horizontal'] {
+    scale: -1 1;
+  }
+
+  [data-scope='icon'][data-part='root'][data-flip='vertical'] {
+    scale: 1 -1;
+  }
+
+  [data-scope='icon'][data-part='root'][data-flip='both'] {
+    scale: -1 -1;
   }
 }

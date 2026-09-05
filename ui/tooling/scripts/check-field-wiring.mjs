@@ -21,6 +21,8 @@ const NOT_SINGLE_CONTROL = {
   'field': '它自己就是字段',
   'fieldset': '同上，分组容器',
   'checkbox-group': '分组：根是 role=group，读屏进组即念说明',
+  'listbox': '分组：content 是 role=listbox，焦点在各条目上',
+  'transfer': '分组：两侧各一个 role=listbox，没有单一可聚焦控件',
   'radio-group': '分组：根是 role=radiogroup',
   'segmented': '分组：根是 role=radiogroup',
   'date-field': '分段输入：焦点在各段上，没有单一可聚焦控件',
@@ -30,6 +32,7 @@ const NOT_SINGLE_CONTROL = {
   'signature-pad': '图形控件：画布自己承担名字与描述',
   'file-upload': '根是投放区，触发钮只是其中一个入口',
   'editable': '预览态与编辑态是两个不同的焦点目标',
+  'field-array': '一列行，每行里的控件各自是焦点目标；这一层没有单一可聚焦控件',
 }
 
 const problems = []

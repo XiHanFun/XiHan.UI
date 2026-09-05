@@ -55,6 +55,7 @@ const BRANCH_SELECTOR = '[data-xh-part="branch"]'
  * @attr {boolean} disabled - 整个控件禁用：trigger 用原生 disabled，表单出口不参与提交
  * @attr {boolean} read-only - 只读：浮层照常展开、树照常浏览，但选中值改不动、也清不掉
  * @attr {boolean} invalid - 校验失败标注
+ * @attr {boolean} loading - 节点还在取：树报 aria-busy，在途占位顶上来、空态占位让位
  * @attr {'outline'|'subtle'|'ghost'} variant - 视觉变体
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
@@ -86,6 +87,9 @@ const BRANCH_SELECTOR = '[data-xh-part="branch"]'
  * @csspart branch-indicator - 展开方向指示符（aria-hidden）
  * @csspart branch-text - 分支文本
  * @csspart branch-content - role=group 子层容器，收起时隐藏
+ * @csspart empty - 空态占位，须放在 content 里当 tree 的兄弟；给了 collection 时由元素按条数收放，节点手写时归作者
+ * @csspart loading - 在途占位，与空态占位同一个位置，取数期间顶上来
+ * @csspart footer - 浮层底部的操作区，写在 content 里、tree 的兄弟；不进树的拥有关系，方向键与连打检索也走不到
  * @csspart hidden-input - type=hidden 的表单出口，省略该节点即不参与表单
  */
 export class XhTreeSelectElement extends XhElement {
@@ -107,6 +111,7 @@ export class XhTreeSelectElement extends XhElement {
     disabled: { type: Boolean },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     invalid: { converter: BOOLEAN_CONVERTER },
+    loading: { converter: BOOLEAN_CONVERTER },
     variant: { converter: STRING_CONVERTER },
     tone: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
@@ -132,6 +137,7 @@ export class XhTreeSelectElement extends XhElement {
   declare disabled?: boolean
   declare readOnly?: boolean
   declare invalid?: boolean
+  declare loading?: boolean
   declare variant?: ControlVariant
   declare tone?: Tone
   declare size?: Size
@@ -201,6 +207,7 @@ export class XhTreeSelectElement extends XhElement {
       disabled: this.disabled ?? false,
       readOnly: this.readOnly ?? false,
       invalid: this.invalid ?? false,
+      loading: this.loading ?? false,
       variant: this.variant,
       tone: this.tone,
       size: this.size,
@@ -318,6 +325,9 @@ export class XhTreeSelectElement extends XhElement {
     put('positioner', api.getPositionerProps() as Record<string, unknown>)
     put('content', api.getContentProps() as Record<string, unknown>)
     put('tree', api.getTreeProps() as Record<string, unknown>)
+    put('footer', api.getFooterProps() as Record<string, unknown>)
+    put('empty', api.getEmptyProps() as Record<string, unknown>)
+    put('loading', api.getLoadingProps() as Record<string, unknown>)
     // 表单出口可缺省
     put('hidden-input', api.getHiddenInputProps() as Record<string, unknown>)
 

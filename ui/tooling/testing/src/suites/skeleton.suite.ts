@@ -35,6 +35,7 @@ export const skeletonSuite: ConformanceSuite = {
             // 加载态就再也报不出去了
             'aria-hidden': null,
             'data-state': 'loading',
+            'data-animation': null,
             'hidden': null,
             'role': null,
           },
@@ -43,6 +44,14 @@ export const skeletonSuite: ConformanceSuite = {
           'item[1]': { 'aria-hidden': 'true', 'role': null, 'tabindex': null },
           'item[2]': { 'aria-hidden': 'true' },
         },
+      },
+    },
+    {
+      name: 'animation：接线到容器的 data-animation，缺省档不写属性',
+      spec: { apg: APG },
+      props: { animation: 'pulse' },
+      initial: {
+        parts: { root: { 'data-animation': 'pulse' } },
       },
     },
     {

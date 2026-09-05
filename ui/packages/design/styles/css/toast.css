@@ -24,6 +24,17 @@
     }
   }
 
+  /* 倒计时条：从占满一整条收到零。走一遍就到头，时长由连接层写进时长槽 */
+  @keyframes xh-countdown {
+    from {
+      inline-size: 100%;
+    }
+
+    to {
+      inline-size: 0%;
+    }
+  }
+
   @keyframes xh-toast-out {
     from {
       opacity: 1;
@@ -235,6 +246,71 @@
     animation: none;
   }
 
+  /* 作者渲染了指示符部件，行首那枚兜底字形就让位给它，一行里不出现两枚图形 */
+  [data-scope='toast'][data-part='root']:has([data-part='indicator'])::before {
+    content: none;
+  }
+
+  /* 指示符部件：字形与 root 上那枚同尺同色，作者往里塞节点即整枚换掉 */
+  [data-scope='toast'][data-part='indicator'] {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    color: var(--xh-toast-icon-fg, var(--xh-_tone-fg));
+  }
+
+  /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
+  [data-scope='toast'][data-part='indicator']:empty::before {
+    content: '';
+    display: inline-block;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-info) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-info) center / contain no-repeat;
+  }
+
+  [data-scope='toast'][data-part='indicator'][data-severity='success']:empty::before {
+    -webkit-mask-image: var(--xh-glyph-mark-check);
+    mask-image: var(--xh-glyph-mark-check);
+  }
+
+  [data-scope='toast'][data-part='indicator'][data-severity='warning']:empty::before {
+    -webkit-mask-image: var(--xh-glyph-mark-warning);
+    mask-image: var(--xh-glyph-mark-warning);
+  }
+
+  [data-scope='toast'][data-part='indicator'][data-severity='error']:empty::before {
+    -webkit-mask-image: var(--xh-glyph-mark-close);
+    mask-image: var(--xh-glyph-mark-close);
+  }
+
+  [data-scope='toast'][data-part='indicator'][data-severity='loading']:empty::before {
+    -webkit-mask-image: var(--xh-glyph-mark-rotate-right);
+    mask-image: var(--xh-glyph-mark-rotate-right);
+    animation: xh-toast-spin var(--xh-spin-duration) var(--xh-motion-ease-loop) infinite;
+  }
+
+  /* 减少动效：与 root 上那枚同一处理——转圈停下，静止的箭头仍读得出「还没好」。
+     两组规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope='toast'][data-part='indicator'][data-severity='loading']:empty::before {
+      animation: none;
+    }
+  }
+
+  :where([data-motion='reduce']) [data-scope='toast'][data-part='indicator'][data-severity='loading']:empty::before {
+    animation: none;
+  }
+
+  [data-scope='toast'][data-part='indicator'][hidden] {
+    display: none;
+  }
+
   [data-scope='toast'][data-part='title'] {
     /* 作者可能把它写成 h2/p，外边距得先归零，否则条子内的行距对不上 */
     margin: 0;
@@ -293,6 +369,35 @@
   [data-scope='toast'][data-part='action-trigger']:active:not(:disabled) {
     background: var(--xh-toast-action-bg-active, var(--xh-bg-subtle-active));
     scale: var(--xh-motion-scale-press);
+  }
+
+  /* 渲染了倒计时条才把条子变成定位面：它贴在卡片下沿，不占那一行的位置 */
+  [data-scope='toast'][data-part='root']:has([data-part='progress']) {
+    position: relative;
+  }
+
+  /*
+   * 倒计时条。总时长由连接层写进 --xh-toast-progress-duration（不自动消失的那些整条收起），
+   * 计时被按住时动画一并停住——停表这件事此前没有任何可画的地方。
+   * 取装饰档 --xh-_tone-soft：压在同族淡底上仍看得出来。
+   */
+  [data-scope='toast'][data-part='progress'] {
+    position: absolute;
+    inset-block-end: 0;
+    inset-inline-start: 0;
+    overflow: hidden;
+    inline-size: 100%;
+    block-size: var(--xh-toast-progress-thickness, var(--xh-space-0_5));
+    background: var(--xh-toast-progress-bg, var(--xh-_tone-soft));
+    animation: xh-countdown var(--xh-toast-progress-duration, var(--xh-motion-duration-slide)) var(--xh-motion-ease-loop) forwards;
+  }
+
+  [data-scope='toast'][data-part='root'][data-paused] [data-part='progress'] {
+    animation-play-state: paused;
+  }
+
+  [data-scope='toast'][data-part='progress'][hidden] {
+    display: none;
   }
 
   [data-scope='toast'][data-part='close-trigger'] {

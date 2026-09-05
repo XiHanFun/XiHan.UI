@@ -18,6 +18,7 @@
 - 表头吸顶与列吸附、条纹、密度、边框都是开关。
 - 支持多行表头与表头分组、跨列单元格、树形表格、单元格就地编辑、列过滤、拖拽调列宽。
 - 行数很大时只渲窗口内的行。
+- 三种非条目相位各有部件：空（`empty`）、在途（`loading`）、还有更多（`load-more-trigger`）。取下一页的按钮点了做什么归作者，取数在途时自动停用。
 
 ## 示例
 
@@ -164,7 +165,7 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-table>` |
-| Vue 组件 | `XhTableBody` `XhTableCaption` `XhTableCell` `XhTableColumnDragTrigger` `XhTableColumnHeader` `XhTableColumnResizeTrigger` `XhTableEmpty` `XhTableExpandTrigger` `XhTableExpandedRow` `XhTableFooter` `XhTableHeader` `XhTableLoading` `XhTableRoot` `XhTableRow` `XhTableRowDragTrigger` `XhTableRowSelectTrigger` `XhTableSelectAllTrigger` `XhTableSortTrigger` |
+| Vue 组件 | `XhTableBody` `XhTableCaption` `XhTableCell` `XhTableColumnDragTrigger` `XhTableColumnHeader` `XhTableColumnResizeTrigger` `XhTableEmpty` `XhTableExpandTrigger` `XhTableExpandedRow` `XhTableFooter` `XhTableHeader` `XhTableLoadMoreTrigger` `XhTableLoading` `XhTableRoot` `XhTableRow` `XhTableRowDragTrigger` `XhTableRowSelectTrigger` `XhTableSelectAllTrigger` `XhTableSortTrigger` |
 | 组合式函数 | `useTable` |
 | 状态机 | `tableMachine` |
 | 皮肤 | `@xihan-ui/styles/table.css` |
@@ -173,7 +174,7 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="table"`：**`root`** · `header` · **`body`** · `footer` · `row` · `column-header` · `cell` · `caption` · `select-all-trigger` · `row-select-trigger` · `sort-trigger` · `column-resize-trigger` · `column-drag-trigger` · `row-drag-trigger` · `expand-trigger` · `expanded-row` · `empty` · `loading` · `live-region`
+`data-scope="table"`：**`root`** · `header` · **`body`** · `footer` · `row` · `column-header` · `cell` · `caption` · `select-all-trigger` · `row-select-trigger` · `sort-trigger` · `column-resize-trigger` · `column-drag-trigger` · `row-drag-trigger` · `expand-trigger` · `expanded-row` · `empty` · `loading` · `load-more-trigger` · `live-region`
 
 ## Props
 
@@ -309,6 +310,7 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 | `getExpandedRowProps` | `(props: TableRowProps) => T['element']` |  |
 | `getEmptyProps` | `() => T['element']` |  |
 | `getLoadingProps` | `() => T['element']` |  |
+| `getLoadMoreTriggerProps` | `() => T['element']` | 取下一页的入口：还有没有下一页、点了做什么都归作者， 连接层只保证取数在途那一段点不动。 |
 | `getLiveRegionProps` | `() => T['element']` | 拖动过程的读屏播报区。视觉隐藏，文本从 `announcement` 取。 它必须在拖动开始之前就在 DOM 上——读屏不播报后插入的节点。 |
 
 ## 键盘
@@ -439,6 +441,7 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 | `row-drag-trigger` | `data-dragging` | ''（条件成立时才出现） |
 | `expanded-row` | `data-dragging` | ''（条件成立时才出现） |
 | `expanded-row` | `data-state` | 'open' \| 'closed' |
+| `load-more-trigger` | `data-loading` | ''（条件成立时才出现） |
 | `header-row` | `data-section` | 'header' |
 | `footer-row` | `data-section` | 'footer' |
 
@@ -446,7 +449,7 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-table-bg` · `--xh-table-border` · `--xh-table-caption-fg` · `--xh-table-caption-font-size` · `--xh-table-caption-font-weight` · `--xh-table-caption-px` · `--xh-table-caption-py` · `--xh-table-cell-gap` · `--xh-table-cell-min-w` · `--xh-table-cell-px` · `--xh-table-cell-py` · `--xh-table-cell-py-lg` · `--xh-table-cell-py-md` · `--xh-table-cell-py-sm` · `--xh-table-column-fg` · `--xh-table-column-font-weight` · `--xh-table-detail-bg` · `--xh-table-detail-px` · `--xh-table-detail-py` · `--xh-table-drag-fg` · `--xh-table-drag-fg-active` · `--xh-table-drag-fg-disabled` · `--xh-table-drag-grip-h` · `--xh-table-drag-grip-w` · `--xh-table-drag-size` · `--xh-table-dragging-opacity` · `--xh-table-drop-fg` · `--xh-table-drop-inside-bg` · `--xh-table-drop-line` · `--xh-table-expand-fg` · `--xh-table-fg` · `--xh-table-font-size` · `--xh-table-footer-bg` · `--xh-table-footer-font-weight` · `--xh-table-header-bg` · `--xh-table-icon-size` · `--xh-table-loading-duration` · `--xh-table-max-h` · `--xh-table-radius` · `--xh-table-resize-fg` · `--xh-table-resize-fg-active` · `--xh-table-resize-line` · `--xh-table-resize-line-length` · `--xh-table-resize-radius` · `--xh-table-resize-width` · `--xh-table-row-bg` · `--xh-table-row-bg-hover` · `--xh-table-row-bg-selected` · `--xh-table-row-bg-striped` · `--xh-table-row-border` · `--xh-table-row-drag-fg` · `--xh-table-row-drag-fg-active` · `--xh-table-row-drag-fg-disabled` · `--xh-table-row-drag-grip-long` · `--xh-table-row-drag-grip-short` · `--xh-table-row-drag-size` · `--xh-table-sort-fg` · `--xh-table-sort-fg-active` · `--xh-table-sort-gap` · `--xh-table-state-fg` · `--xh-table-state-gap` · `--xh-table-state-min-h` · `--xh-table-state-px` · `--xh-table-state-py` · `--xh-table-sticky-column-layer` · `--xh-table-sticky-header-layer` · `--xh-table-sticky-inset` · `--xh-table-trigger-bg-checked` · `--xh-table-trigger-border` · `--xh-table-trigger-border-checked` · `--xh-table-trigger-fg` · `--xh-table-trigger-radius` · `--xh-table-trigger-size`
+`--xh-table-bg` · `--xh-table-border` · `--xh-table-caption-fg` · `--xh-table-caption-font-size` · `--xh-table-caption-font-weight` · `--xh-table-caption-px` · `--xh-table-caption-py` · `--xh-table-cell-gap` · `--xh-table-cell-min-w` · `--xh-table-cell-px` · `--xh-table-cell-py` · `--xh-table-cell-py-lg` · `--xh-table-cell-py-md` · `--xh-table-cell-py-sm` · `--xh-table-column-fg` · `--xh-table-column-font-weight` · `--xh-table-detail-bg` · `--xh-table-detail-px` · `--xh-table-detail-py` · `--xh-table-drag-fg` · `--xh-table-drag-fg-active` · `--xh-table-drag-fg-disabled` · `--xh-table-drag-grip-h` · `--xh-table-drag-grip-w` · `--xh-table-drag-size` · `--xh-table-dragging-opacity` · `--xh-table-drop-fg` · `--xh-table-drop-inside-bg` · `--xh-table-drop-line` · `--xh-table-expand-fg` · `--xh-table-fg` · `--xh-table-font-size` · `--xh-table-footer-bg` · `--xh-table-footer-font-weight` · `--xh-table-header-bg` · `--xh-table-icon-size` · `--xh-table-load-more-trigger-bg-hover` · `--xh-table-load-more-trigger-fg` · `--xh-table-load-more-trigger-font-size` · `--xh-table-load-more-trigger-gap` · `--xh-table-load-more-trigger-px` · `--xh-table-load-more-trigger-py` · `--xh-table-load-more-trigger-radius` · `--xh-table-loading-duration` · `--xh-table-max-h` · `--xh-table-radius` · `--xh-table-resize-fg` · `--xh-table-resize-fg-active` · `--xh-table-resize-line` · `--xh-table-resize-line-length` · `--xh-table-resize-radius` · `--xh-table-resize-width` · `--xh-table-row-bg` · `--xh-table-row-bg-hover` · `--xh-table-row-bg-selected` · `--xh-table-row-bg-striped` · `--xh-table-row-border` · `--xh-table-row-drag-fg` · `--xh-table-row-drag-fg-active` · `--xh-table-row-drag-fg-disabled` · `--xh-table-row-drag-grip-long` · `--xh-table-row-drag-grip-short` · `--xh-table-row-drag-size` · `--xh-table-sort-fg` · `--xh-table-sort-fg-active` · `--xh-table-sort-gap` · `--xh-table-state-fg` · `--xh-table-state-gap` · `--xh-table-state-min-h` · `--xh-table-state-px` · `--xh-table-state-py` · `--xh-table-sticky-column-layer` · `--xh-table-sticky-header-layer` · `--xh-table-sticky-inset` · `--xh-table-trigger-bg-checked` · `--xh-table-trigger-border` · `--xh-table-trigger-border-checked` · `--xh-table-trigger-fg` · `--xh-table-trigger-radius` · `--xh-table-trigger-size`
 
 ## 动效
 

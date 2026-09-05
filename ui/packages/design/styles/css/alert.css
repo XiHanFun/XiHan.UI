@@ -46,6 +46,30 @@
     color: var(--xh-alert-indicator-fg, var(--xh-_tone-fg));
   }
 
+  /* 文本列：作者套上这一层时，标题与说明由它排成一列，不再靠 root 的换行凑。
+     不套这一层时下面那几条照旧生效，两种写法都成立 */
+  [data-scope='alert'][data-part='content'] {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: var(--xh-alert-content-gap, var(--xh-space-1));
+    min-inline-size: 0;
+  }
+
+  /* 列里的两段文字不再参与 root 那一行的伸缩：宽度由列自己给 */
+  [data-scope='alert'][data-part='content'] [data-part='title'],
+  [data-scope='alert'][data-part='content'] [data-part='description'] {
+    flex: none;
+  }
+
+  /* 操作槽自占一行：它排在说明之后，与标题、叉不在同一条基线上 */
+  [data-scope='alert'][data-part='action'] {
+    display: flex;
+    flex: 1 1 100%;
+    align-items: center;
+    gap: var(--xh-alert-action-gap, var(--xh-space-2));
+  }
+
   /* 标题与说明摞成一列，占满 root 剩下的横向空间，
      关闭按钮才推得到行尾 */
   [data-scope='alert'][data-part='title'],
@@ -166,6 +190,14 @@
   /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
      写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
   [data-scope='alert'][data-part='indicator'][hidden] {
+    display: none;
+  }
+
+  [data-scope='alert'][data-part='content'][hidden] {
+    display: none;
+  }
+
+  [data-scope='alert'][data-part='action'][hidden] {
     display: none;
   }
 }

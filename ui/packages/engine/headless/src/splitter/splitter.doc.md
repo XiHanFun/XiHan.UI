@@ -18,6 +18,8 @@
 - 两个回调分工明确：`onSizesChange` 拖动途中连着发，`onSizesChangeEnd` 松手才发一次，存布局用后者。
 - 方向键按 `step` 推、Shift 加方向键按 `largeStep` 推；`collapsible` 的面板在分隔条上按 Enter 折叠。
 - 面板里再放一套分栏即可拆出第二根轴，里外两层各管各的尺寸。
+- 拖到一半按 Escape 放弃这一场：布局退回按下那一刻，`onSizesChangeEnd` 不发。
+- `translations` 给整组面板与各条分隔条起名，读屏念到的就不再是一串无名的盒子。
 
 ## 组合
 

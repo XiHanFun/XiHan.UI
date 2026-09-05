@@ -26,7 +26,15 @@ export function connectCollapsible<T extends PropTypes>(
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'data-state': stateAttr,
+      'data-tone': prop('tone'),
       'data-size': prop('size'),
+      'data-disabled': dataAttr(disabled),
+      // 只在作者显式给了时才写：写死 ltr 会切断从 RTL 祖先继承来的方向
+      'dir': prop('dir'),
+    }),
+    getHeaderProps: () => normalize.element({
+      ...parts.header.attrs,
+      'data-state': stateAttr,
       'data-disabled': dataAttr(disabled),
     }),
     getTriggerProps: () => normalize.button({

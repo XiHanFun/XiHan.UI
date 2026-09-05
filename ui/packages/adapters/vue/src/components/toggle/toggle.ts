@@ -16,6 +16,8 @@ export const XhToggle = defineComponent({
     variant: String as PropType<ActionVariant>,
     tone: String as PropType<Tone>,
     size: String as PropType<Size>,
+    iconOnly: Boolean,
+    fullWidth: Boolean,
   },
   // pressed-change 携带 { pressed }；update:pressed 携带裸布尔，支持 v-model:pressed
   emits: {

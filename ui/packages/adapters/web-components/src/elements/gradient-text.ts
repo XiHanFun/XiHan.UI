@@ -1,3 +1,4 @@
+import type { Tone } from '@xihan-ui/core'
 import type { GradientTextDirection, GradientTextProps } from '@xihan-ui/headless'
 import { connectGradientText, gradientTextAnatomy, gradientTextMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
@@ -18,7 +19,8 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @attr {string} from - 起点颜色，写成 root 上的 --xh-gradient-text-from
  * @attr {string} to - 终点颜色，写成 root 上的 --xh-gradient-text-to
  * @attr {'to-right'|'to-left'|'to-bottom'|'to-top'|'to-bottom-right'|'to-bottom-left'|'to-top-right'|'to-top-left'} direction - 渐变走向档位，缺省 to-right
- * @csspart root - 被上色的文字容器，承载 data-direction 与两端颜色变量
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气，两端取该族颜色；写了 from / to 即让位
+ * @csspart root - 被上色的文字容器，承载 data-direction、data-tone 与两端颜色变量
  */
 export class XhGradientTextElement extends XhElement {
   static override partContract = { anatomy: gradientTextAnatomy, meta: gradientTextMeta }
@@ -28,15 +30,17 @@ export class XhGradientTextElement extends XhElement {
     from: { converter: STRING_CONVERTER },
     to: { converter: STRING_CONVERTER },
     direction: { converter: STRING_CONVERTER },
+    tone: { converter: STRING_CONVERTER },
   }
 
   declare from?: string
   declare to?: string
   declare direction?: GradientTextDirection
+  declare tone?: Tone
 
   protected wire(): void {
     // 读响应式 property，不回读 DOM 特性
-    const props: GradientTextProps = { from: this.from, to: this.to, direction: this.direction }
+    const props: GradientTextProps = { from: this.from, to: this.to, direction: this.direction, tone: this.tone }
     const api = connectGradientText(props, wcNormalize)
 
     const root = this.getPart('root')

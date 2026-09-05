@@ -63,6 +63,7 @@ loading 期间容器报 aria-busy，翻成 false 后整块收起，位置让给�
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `animation` | `SkeletonAnimation` |  | 动效档，默认 'shimmer'；缺省档不输出 data-animation。 |
 | `loading` | `boolean` |  | 是否还在加载，默认 true。 |
 | `shape` | `SkeletonShape` |  | 容器内骨架条的默认形状，默认 'text'。 |
 
@@ -109,6 +110,7 @@ loading 期间容器报 aria-busy，翻成 false 后整块收起，位置让给�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `root` | `data-animation` | props.animation |
 | `root` | `data-state` | 'loading' \| 'loaded' |
 | `item` | `data-shape` | item.shape |
 
@@ -116,11 +118,11 @@ loading 期间容器报 aria-busy，翻成 false 后整块收起，位置让给�
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-skeleton-bg` · `--xh-skeleton-circle-radius` · `--xh-skeleton-circle-size` · `--xh-skeleton-duration` · `--xh-skeleton-gap` · `--xh-skeleton-radius` · `--xh-skeleton-rect-block-size` · `--xh-skeleton-rect-radius` · `--xh-skeleton-sheen` · `--xh-skeleton-text-block-size` · `--xh-skeleton-text-radius`
+`--xh-skeleton-bg` · `--xh-skeleton-circle-radius` · `--xh-skeleton-circle-size` · `--xh-skeleton-duration` · `--xh-skeleton-gap` · `--xh-skeleton-pulse-duration` · `--xh-skeleton-radius` · `--xh-skeleton-rect-block-size` · `--xh-skeleton-rect-radius` · `--xh-skeleton-sheen` · `--xh-skeleton-text-block-size` · `--xh-skeleton-text-radius`
 
 ## 动效
 
-关键帧 `xh-skeleton-shimmer` 随皮肤自带，不引用别处文件里的名字。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-skeleton-pulse` · `xh-skeleton-shimmer` 随皮肤自带，不引用别处文件里的名字。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 

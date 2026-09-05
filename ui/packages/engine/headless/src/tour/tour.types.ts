@@ -57,6 +57,14 @@ export interface TourRefs {
   reanchor: (() => void) | null
 }
 
+/**
+ * 圆点的身份。connect 在 render 期求值，此时 DOM 尚不存在，序号由调用方给。
+ */
+export interface TourProgressDotProps {
+  /** 圆点对应的步序，0 基。一步一个。 */
+  index: number
+}
+
 export interface TourValueChangeDetails {
   /** 变化后的步序，恒在 [0, count - 1] 内。 */
   value: number
@@ -187,6 +195,8 @@ export interface TourApi<T extends PropTypes = PropTypes> {
   getTitleProps: () => T['element']
   getDescriptionProps: () => T['element']
   getProgressTextProps: () => T['element']
+  getProgressIndicatorProps: () => T['element']
+  getProgressDotProps: (props: TourProgressDotProps) => T['element']
   getPrevTriggerProps: () => T['button']
   getNextTriggerProps: () => T['button']
   getSkipTriggerProps: () => T['button']

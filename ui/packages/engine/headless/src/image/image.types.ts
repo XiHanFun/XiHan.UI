@@ -45,8 +45,12 @@ export interface ImageApi<T extends PropTypes = PropTypes> {
   loaded: boolean
   /** 回退内容此刻是否该露面：加载失败恒为真，加载途中要看 fallbackDelay 是否已过。 */
   showFallback: boolean
+  /** 占位层此刻是否该露面：来源决议中与加载中为真，落位或失败后为假。 */
+  showPlaceholder: boolean
   getRootProps: () => T['element']
   getImageProps: () => T['img']
+  /** 加载期间铺在图位上的占位层，纯装饰。 */
+  getPlaceholderProps: () => T['element']
   getFallbackProps: () => T['element']
 }
 

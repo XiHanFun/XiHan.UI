@@ -15,7 +15,7 @@ export function connectMarkdownStream<T extends PropTypes>(
   const caret = props.caret !== false
   const announce = props.announce ?? 'off'
   // 还在增长时不播报：每来一个 token 念一次会把读屏刷爆
-  const announcement = announce === 'polite' && !streaming
+  const announcement = announce !== 'off' && !streaming
     ? props.translations?.completed ?? 'Response complete'
     : undefined
 
@@ -50,8 +50,9 @@ export function connectMarkdownStream<T extends PropTypes>(
 
     getLiveRegionProps: () => normalize.element({
       ...parts['live-region'].attrs,
-      'role': 'status',
-      'aria-live': 'polite',
+      // 抢读那一档换成 alert：role 与 aria-live 成对，两者对不上时读屏各挑各的
+      'role': announce === 'assertive' ? 'alert' : 'status',
+      'aria-live': announce === 'assertive' ? 'assertive' : 'polite',
       'aria-atomic': 'true',
     }),
   }

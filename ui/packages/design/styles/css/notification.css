@@ -26,6 +26,17 @@
     }
   }
 
+  /* 倒计时条：从占满一整条收到零。走一遍就到头，时长由连接层写进时长槽 */
+  @keyframes xh-countdown {
+    from {
+      inline-size: 100%;
+    }
+
+    to {
+      inline-size: 0%;
+    }
+  }
+
   @keyframes xh-notification-out {
     from {
       opacity: 1;
@@ -310,6 +321,33 @@
 
   [data-scope='notification'][data-part='item-title'][hidden],
   [data-scope='notification'][data-part='item-description'][hidden] {
+    display: none;
+  }
+
+  /* 倒计时条横跨整张卡片：它不是正文的一部分，不跟着第二列走 */
+  [data-scope='notification'][data-part='item'] > [data-part='item-progress'] {
+    grid-column: 1 / -1;
+  }
+
+  /*
+   * 倒计时条。总时长由连接层写进 --xh-notification-progress-duration（不自动消失的那些
+   * 整条收起），计时被按住时动画一并停住——停表这件事此前没有任何可画的地方。
+   * 取装饰档 --xh-_tone-soft：压在卡片底色上仍看得出来。
+   */
+  [data-scope='notification'][data-part='item-progress'] {
+    overflow: hidden;
+    inline-size: 100%;
+    block-size: var(--xh-notification-progress-thickness, var(--xh-space-0_5));
+    border-radius: var(--xh-notification-progress-radius, var(--xh-shape-pill));
+    background: var(--xh-notification-progress-bg, var(--xh-_tone-soft));
+    animation: xh-countdown var(--xh-notification-progress-duration, var(--xh-motion-duration-slide)) var(--xh-motion-ease-loop) forwards;
+  }
+
+  [data-scope='notification'][data-part='item'][data-paused] [data-part='item-progress'] {
+    animation-play-state: paused;
+  }
+
+  [data-scope='notification'][data-part='item-progress'][hidden] {
     display: none;
   }
 

@@ -71,6 +71,14 @@ export const gradientTextSuite: ConformanceSuite = {
       ],
     },
     {
+      name: '语气如实落到根上；不写就不输出',
+      spec: { apg: APG },
+      props: { tone: 'success' },
+      initial: {
+        parts: { root: { 'data-tone': 'success' } },
+      },
+    },
+    {
       name: '解剖只有根：被上色的是作者的文字，不额外产生角色节点',
       spec: { apg: APG },
       initial: {

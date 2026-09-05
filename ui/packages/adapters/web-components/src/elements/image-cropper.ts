@@ -2,6 +2,7 @@ import type { Service } from '@xihan-ui/core'
 import type {
   ImageCropperHandlePosition,
   ImageCropperRect,
+  ImageCropperRotationChangeDetails,
   ImageCropperSchema,
   ImageCropperShape,
   ImageCropperValueChangeDetails,
@@ -69,7 +70,14 @@ const HANDLE_POSITIONS: Record<ImageCropperHandlePosition, true> = {
  * @attr {number} min-height - 裁切框最小高度，自然像素，默认 0
  * @attr {number} zoom - 受控缩放倍率；缺省该属性即非受控
  * @attr {number} default-zoom - 非受控初始缩放倍率，默认 1
- * @attr {number} rotation - 显示旋转角度，单位度，默认 0
+ * @attr {number} rotation - 受控旋转角度，单位度；缺省该属性即非受控
+ * @attr {number} default-rotation - 非受控初始旋转角度，默认 0
+ * @attr {number} min-zoom - 缩放滑杆下限，默认 1
+ * @attr {number} max-zoom - 缩放滑杆上限，默认 3
+ * @attr {number} zoom-step - 缩放滑杆步长，默认 0.01
+ * @attr {number} min-rotation - 旋转滑杆下限，默认 -180
+ * @attr {number} max-rotation - 旋转滑杆上限，默认 180
+ * @attr {number} rotation-step - 旋转滑杆步长，默认 1
  * @attr {'rect'|'round'} shape - 裁切框外形，默认 rect
  * @attr {boolean} disabled - 禁用：裁切框与把手退出 Tab 序列、改不动、不参与表单提交
  * @attr {boolean} read-only - 只读：仍可聚焦与被读屏念出，改不动
@@ -77,12 +85,15 @@ const HANDLE_POSITIONS: Record<ImageCropperHandlePosition, true> = {
  * @fires value-change - 裁切矩形变化（拖动途中会连发）；detail 为 `{ value: { x, y, width, height } }`
  * @fires value-change-end - 一次指针拖动松手发一次，一次方向键微调也发一次；detail 为 `{ value: { x, y, width, height } }`
  * @fires zoom-change - 缩放倍率变化；detail 为 `{ zoom: number }`
+ * @fires rotation-change - 旋转角度变化；detail 为 `{ rotation: number }`
  * @csspart root - 承载 data-disabled / data-readonly / data-dragging / data-resizing / data-shape 的容器
  * @csspart viewport - 量坐标的那个盒子，图片铺满它、裁切框绝对定位在它里面
  * @csspart image - 源图，须是原生 `<img>`；自然尺寸与加载完成都由它报出来，src / alt 由宿主写入（作者别自己写，会被覆盖或清掉）
  * @csspart crop-area - role=application 的裁切框，可聚焦，方向键平移
  * @csspart crop-handle - 改尺寸的把手，须是原生 `<button>` 并自带 position 属性标识方位
  * @csspart grid - 裁切框里的构图参考线，纯装饰
+ * @csspart zoom-slider - 缩放滑杆，须是原生 `<input type="range">`；min / max / step / value 由宿主写入
+ * @csspart rotate-slider - 旋转滑杆，须是原生 `<input type="range">`；min / max / step / value 由宿主写入
  * @csspart hidden-input - 表单影子（须是原生 input）
  */
 export class XhImageCropperElement extends XhElement {
@@ -99,7 +110,14 @@ export class XhImageCropperElement extends XhElement {
     minHeight: { converter: NUMBER_CONVERTER, attribute: 'min-height' },
     zoom: { converter: NUMBER_CONVERTER },
     defaultZoom: { converter: NUMBER_CONVERTER, attribute: 'default-zoom' },
+    minZoom: { converter: NUMBER_CONVERTER, attribute: 'min-zoom' },
+    maxZoom: { converter: NUMBER_CONVERTER, attribute: 'max-zoom' },
+    zoomStep: { converter: NUMBER_CONVERTER, attribute: 'zoom-step' },
     rotation: { converter: NUMBER_CONVERTER },
+    defaultRotation: { converter: NUMBER_CONVERTER, attribute: 'default-rotation' },
+    minRotation: { converter: NUMBER_CONVERTER, attribute: 'min-rotation' },
+    maxRotation: { converter: NUMBER_CONVERTER, attribute: 'max-rotation' },
+    rotationStep: { converter: NUMBER_CONVERTER, attribute: 'rotation-step' },
     shape: { converter: STRING_CONVERTER },
     disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
@@ -117,7 +135,14 @@ export class XhImageCropperElement extends XhElement {
   declare minHeight?: number
   declare zoom?: number
   declare defaultZoom?: number
+  declare minZoom?: number
+  declare maxZoom?: number
+  declare zoomStep?: number
   declare rotation?: number
+  declare defaultRotation?: number
+  declare minRotation?: number
+  declare maxRotation?: number
+  declare rotationStep?: number
   declare shape?: ImageCropperShape
   declare disabled?: boolean
   declare readOnly?: boolean
@@ -134,6 +159,10 @@ export class XhImageCropperElement extends XhElement {
 
   private readonly notifyZoom = (details: ImageCropperZoomChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('zoom-change', { detail: details, bubbles: true, composed: true }))
+  }
+
+  private readonly notifyRotation = (details: ImageCropperRotationChangeDetails): void => {
+    this.dispatchEvent(new CustomEvent('rotation-change', { detail: details, bubbles: true, composed: true }))
   }
 
   private readonly ctrl = new MachineController<ImageCropperSchema>(
@@ -154,7 +183,14 @@ export class XhImageCropperElement extends XhElement {
       minHeight: this.minHeight,
       zoom: this.zoom,
       defaultZoom: this.defaultZoom,
+      minZoom: this.minZoom,
+      maxZoom: this.maxZoom,
+      zoomStep: this.zoomStep,
       rotation: this.rotation,
+      defaultRotation: this.defaultRotation,
+      minRotation: this.minRotation,
+      maxRotation: this.maxRotation,
+      rotationStep: this.rotationStep,
       shape: this.shape,
       // 布尔一律原样透传：属性不在即 undefined，把缺省交回 connect
       disabled: this.disabled,
@@ -164,6 +200,7 @@ export class XhImageCropperElement extends XhElement {
       onValueChange: this.notifyValue,
       onValueChangeEnd: this.notifyValueEnd,
       onZoomChange: this.notifyZoom,
+      onRotationChange: this.notifyRotation,
     }
   }
 
@@ -196,6 +233,8 @@ export class XhImageCropperElement extends XhElement {
     put('image', api.getImageProps() as Record<string, unknown>)
     put('crop-area', api.getCropAreaProps() as Record<string, unknown>)
     put('grid', api.getGridProps() as Record<string, unknown>)
+    put('zoom-slider', api.getZoomSliderProps() as Record<string, unknown>)
+    put('rotate-slider', api.getRotateSliderProps() as Record<string, unknown>)
     put('hidden-input', api.getHiddenInputProps() as Record<string, unknown>)
 
     // 把手是多实例 part：身份取节点自报的 position 属性。

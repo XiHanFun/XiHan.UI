@@ -63,6 +63,31 @@
     color: var(--xh-fieldset-description-fg-disabled, var(--xh-fg-subtle));
   }
 
+  /* 并排字段的一段：窄屏一列，够宽了按列宽自动分栏。列宽下限由槽给，作者按字段类型改 */
+  [data-scope='fieldset'][data-part='field-group'] {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(var(--xh-fieldset-field-group-col-w, var(--xh-layout-col-min-sm)), 1fr));
+    gap: var(--xh-fieldset-field-group-gap, var(--xh-space-3));
+    align-items: start;
+  }
+
+  [data-scope='fieldset'][data-part='field-group'][hidden] {
+    display: none;
+  }
+
+  /* 组末尾那一行按钮：靠尾端排，窄屏换行 */
+  [data-scope='fieldset'][data-part='actions'] {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--xh-fieldset-actions-gap, var(--xh-space-2));
+  }
+
+  [data-scope='fieldset'][data-part='actions'][hidden] {
+    display: none;
+  }
+
   /* 不 invalid 时节点带 hidden：此处不声明 display，交给浏览器的 [hidden] 规则收起 */
   [data-scope='fieldset'][data-part='error-text'] {
     margin: 0;

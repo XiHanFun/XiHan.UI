@@ -1,5 +1,5 @@
 import type { Size, Tone } from '@xihan-ui/core'
-import type { StatisticProps } from '@xihan-ui/headless'
+import type { StatisticProps, StatisticTrend } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
 import { connectStatistic } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'
@@ -13,6 +13,7 @@ export const XhStatisticRoot = defineComponent({
   props: {
     size: { type: String as PropType<Size>, default: undefined },
     tone: { type: String as PropType<Tone>, default: undefined },
+    trend: { type: String as PropType<StatisticTrend>, default: undefined },
   },
   setup(props, { slots }) {
     const api = computed(() => connectStatistic(withXhConfig('statistic', props) as StatisticProps, vueNormalize))
@@ -52,5 +53,14 @@ export const XhStatisticSuffix = defineComponent({
   setup(_, { slots }) {
     const ctx = useStatisticContext()
     return () => h('span', ctx.api.value.getSuffixProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+// 涨跌那一段：方向由 root 的 trend 给，箭头由皮肤画，比数（同比、环比）由作者写进来
+export const XhStatisticTrend = defineComponent({
+  name: 'XhStatisticTrend',
+  setup(_, { slots }) {
+    const ctx = useStatisticContext()
+    return () => h('span', ctx.api.value.getTrendProps() as Record<string, unknown>, slots.default?.())
   },
 })

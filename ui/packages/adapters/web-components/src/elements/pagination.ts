@@ -55,6 +55,8 @@ function itemPage(el: HTMLElement): number {
  * @attr {number} default-page-size - 非受控初始每页条数，默认 10
  * @prop {number[]} pageSizeOptions - 可选的每页条数档位，默认 [10, 20, 50, 100]
  * @csspart root - nav 地标，承载 aria-label 与 data-empty
+ * @csspart summary - 信息区容器；文本由作者放，缺省文案取 api.summaryText
+ * @csspart jumper - 跳页输入框（input），敲页码按回车即跳
  * @csspart prev-trigger - 上一页；首页时转原生 disabled
  * @csspart next-trigger - 下一页；末页时转原生 disabled
  * @csspart item - 页码按钮，须自带 value 属性；当前页带 aria-current="page" 与 data-current
@@ -291,6 +293,8 @@ export class XhPaginationElement extends XhElement {
         this.spreader.spread(el, props)
     }
     put('root', api.getRootProps() as Record<string, unknown>)
+    put('summary', api.getSummaryProps() as Record<string, unknown>)
+    put('jumper', api.getJumperProps() as Record<string, unknown>)
     put('prev-trigger', api.getPrevTriggerProps() as Record<string, unknown>)
     put('next-trigger', api.getNextTriggerProps() as Record<string, unknown>)
 

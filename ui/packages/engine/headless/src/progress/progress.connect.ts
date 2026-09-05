@@ -15,7 +15,9 @@ export function connectProgress<T extends PropTypes>(
   const value = resolveValue(props.value, max)
   const ratio = value / max
   const percent = Math.round(ratio * 100)
-  const indeterminate = !!props.indeterminate
+  const semantics = props.semantics ?? 'progress'
+  // 量没有"未知"这一档：role=meter 的值恒在，进度未知说的是另一件事
+  const indeterminate = semantics === 'meter' ? false : !!props.indeterminate
   // 进度未知时谈不上完成
   const complete = !indeterminate && value >= max
 
@@ -39,13 +41,14 @@ export function connectProgress<T extends PropTypes>(
 
   return {
     variant,
+    semantics,
     ratio,
     percent,
 
     // 视觉两轴只落在 root：语气与尺寸都靠自定义属性向下继承，track / range 不必各写一份
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
-      'role': 'progressbar',
+      'role': semantics === 'meter' ? 'meter' : 'progressbar',
       'aria-valuemin': '0',
       'aria-valuemax': String(max),
       // 不确定态一律不发：ARIA 以该属性缺席表达「进度未知」

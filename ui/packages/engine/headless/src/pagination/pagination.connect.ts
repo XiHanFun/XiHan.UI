@@ -44,7 +44,11 @@ export function connectPagination<T extends PropTypes>(
     ellipsis: translations?.ellipsis ?? ((n: number) => `${n} more pages`),
     pageSizeSelect: translations?.pageSizeSelect ?? 'Items per page',
     pageSizeOption: translations?.pageSizeOption ?? ((size: number) => `${size} / page`),
+    summary: translations?.summary ?? ((start: number, end: number, total: number) => `${start}-${end} of ${total}`),
+    jumper: translations?.jumper ?? 'Go to page',
   }
+
+  const pageRange = pageRangeOf(page, pageSize, count)
 
   const setPage = (next: number): void => {
     send({ type: 'PAGE.SET', page: next })
@@ -76,7 +80,8 @@ export function connectPagination<T extends PropTypes>(
     pages: buildPageSequence(page, totalPages, siblingCount),
     pageItems: items,
     openEllipsis,
-    pageRange: pageRangeOf(page, pageSize, count),
+    pageRange,
+    summaryText: label.summary(pageRange.start, pageRange.end, count),
     previousPage: canGoPrev ? page - 1 : null,
     nextPage: canGoNext ? page + 1 : null,
     setPage,
@@ -95,6 +100,36 @@ export function connectPagination<T extends PropTypes>(
       'data-tone': prop('tone'),
       'data-size': prop('size'),
       'data-empty': dataAttr(totalPages === 0),
+    }),
+
+    // 信息区只承载文本，语义由文本本身给；不发 aria-live，翻页不该抢读屏的话头
+    getSummaryProps: () => normalize.element({
+      ...parts.summary.attrs,
+      'data-empty': dataAttr(totalPages === 0),
+    }),
+
+    // 跳页输入框：敲页码按回车即跳，越界值由 setPage 夹回合法区间
+    getJumperProps: () => normalize.input({
+      ...parts.jumper.attrs,
+      'type': 'number',
+      'inputmode': 'numeric',
+      'min': 1,
+      'max': Math.max(totalPages, 1),
+      'aria-label': label.jumper,
+      'disabled': totalPages === 0 || undefined,
+      'data-empty': dataAttr(totalPages === 0),
+      'onKeydown': (event: KeyboardEvent) => {
+        if (event.key !== 'Enter')
+          return
+        const raw = (event.currentTarget as HTMLInputElement).value.trim()
+        if (raw === '')
+          return
+        const next = Number(raw)
+        if (!Number.isFinite(next))
+          return
+        event.preventDefault()
+        setPage(Math.trunc(next))
+      },
     }),
 
     // 首尾两端的按钮是单体控件，用原生 disabled（不可聚焦、脱出 Tab 序列）

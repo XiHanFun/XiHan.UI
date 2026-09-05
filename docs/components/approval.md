@@ -84,6 +84,7 @@
 | `denyOnEscape` | `boolean` |  | Escape 判为拒绝，默认开。 |
 | `denyOnUnmount` | `boolean` |  | 卸载时若仍待决就按拒绝派发一次，**默认关**。 机理成立不等于默认值成立：列表换 key、路由切换、热更新任何一次重挂， 都会替用户发出他没做过的判定。 |
 | `live` | `'polite' \| 'assertive'` |  | 播报档位，默认 polite。 |
+| `variant` | `ControlVariant` |  | 形态：outline 描边（缺省档）、subtle 底色分区、ghost 无壳内联。 |
 | `tone` | `Tone` |  |  |
 | `size` | `Size` |  |  |
 | `translations` | `Partial<ApprovalTranslations>` |  |  |
@@ -224,6 +225,7 @@
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | state.get() |
 | `root` | `data-tone` | props.tone |
+| `root` | `data-variant` | props.variant |
 | `item` | `data-disabled` | ''（条件成立时才出现） |
 | `item` | `data-state` | 'checked' \| 'unchecked' |
 | `item` | `data-value` | item.value |

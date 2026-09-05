@@ -31,6 +31,8 @@ export function connectSkeleton<T extends PropTypes>(
       ...parts.root.attrs,
       'aria-busy': loading ? 'true' : undefined,
       'data-state': loading ? 'loading' : 'loaded',
+      // 动效档挂在容器上，逐根骨架条靠后代选择器接到，不必各写一份
+      'data-animation': props.animation,
       // 收起时留着节点，只加 hidden
       'hidden': !loading || undefined,
     }),

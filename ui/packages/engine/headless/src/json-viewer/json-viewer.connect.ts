@@ -34,6 +34,7 @@ export function connectJsonViewer<T extends PropTypes>(
     collapsedBranchLabel: translations?.collapsedBranchLabel
       ?? ((name: string, count: number) => `${name}, ${count === 1 ? '1 item' : `${count} items`}`),
     moreItems: translations?.moreItems ?? ((count: number) => `… ${count} more`),
+    empty: translations?.empty ?? 'No data',
   }
 
   // 焦点锚点投影成可见的：分支一收起，它底下的行就不在 DOM 里了，
@@ -45,6 +46,10 @@ export function connectJsonViewer<T extends PropTypes>(
   const highlighted = isFocusWithin ? anchor : null
 
   const view = prop('view') ?? 'tree'
+  // 形态恒有值：缺省 surface，读一眼 DOM 就知道这块有没有外框
+  const variant = prop('variant') ?? 'surface'
+  // 顶层没给值就一行也摊不出来，这时候容器里空空如也，交给空态部件说话
+  const isEmpty = rows.length === 0
   // 键序与环路记号跟树同源，两档切过去内容对得上
   const text = jsonText(prop('value'), !!prop('sortKeys'))
 
@@ -135,6 +140,8 @@ export function connectJsonViewer<T extends PropTypes>(
   return {
     visibleNodes: rows,
     view,
+    isEmpty,
+    emptyText: label.empty,
     text,
     expandedValue,
     focusedValue: anchor,
@@ -151,6 +158,7 @@ export function connectJsonViewer<T extends PropTypes>(
       ...parts.root.attrs,
       'data-size': prop('size'),
       'data-view': view,
+      'data-variant': variant,
     }),
 
     // 原文档：一整块可框选的文本。这一档没有行、没有展开态，键盘只需要能滚，
@@ -359,6 +367,12 @@ export function connectJsonViewer<T extends PropTypes>(
       ...branchState(nodeOf(props.value), props.value),
       // 摘要是括号加省略号的排版记号，念出来只有噪音；里头的成员数已折进分支的可及名字
       'aria-hidden': true,
+    }),
+
+    // 空态由组件自己收起：有行可摊时它不该占位置。文案由作者写在部件里
+    getEmptyProps: () => normalize.element({
+      ...parts.empty.attrs,
+      hidden: !isEmpty || undefined,
     }),
   }
 }

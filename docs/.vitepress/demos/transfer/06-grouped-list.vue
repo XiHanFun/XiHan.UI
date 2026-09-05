@@ -1,7 +1,9 @@
-<!-- 列表分组 | 面板插槽给出本侧此刻看得见的条目，据此分组渲染；小标题是普通节点，不入方向键也不入搬运 -->
+<!-- 列表分组 | 本侧此刻看得见的条目由组件给出，据此分组渲染；group 是 role=group 的段落壳，段标题不入方向键也不入搬运 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import {
+  XhTransferGroup,
+  XhTransferGroupLabel,
   XhTransferItem,
   XhTransferItemCheckbox,
   XhTransferItemText,
@@ -57,18 +59,8 @@ const value = ref<string[]>(["list"]);
         </XhTransferPanelHeader>
         <XhTransferSearch placeholder="搜索" />
         <XhTransferList>
-          <template v-for="g in groups" :key="g.key">
-            <div
-              v-if="inGroup(items, g.key).length"
-              style="
-                padding-block: 4px;
-                padding-inline: 8px;
-                color: var(--xh-fg-subtle);
-                font-size: 12px;
-              "
-            >
-              {{ g.label }}
-            </div>
+          <XhTransferGroup v-for="g in groups" :key="g.key" :value="g.key">
+            <XhTransferGroupLabel>{{ g.label }}</XhTransferGroupLabel>
             <XhTransferItem
               v-for="item in inGroup(items, g.key)"
               :key="item.value"
@@ -77,7 +69,7 @@ const value = ref<string[]>(["list"]);
               <XhTransferItemCheckbox />
               <XhTransferItemText>{{ item.label }}</XhTransferItemText>
             </XhTransferItem>
-          </template>
+          </XhTransferGroup>
         </XhTransferList>
       </XhTransferSourcePanel>
 
@@ -91,18 +83,8 @@ const value = ref<string[]>(["list"]);
         </XhTransferPanelHeader>
         <XhTransferSearch placeholder="搜索" />
         <XhTransferList>
-          <template v-for="g in groups" :key="g.key">
-            <div
-              v-if="inGroup(items, g.key).length"
-              style="
-                padding-block: 4px;
-                padding-inline: 8px;
-                color: var(--xh-fg-subtle);
-                font-size: 12px;
-              "
-            >
-              {{ g.label }}
-            </div>
+          <XhTransferGroup v-for="g in groups" :key="g.key" :value="g.key">
+            <XhTransferGroupLabel>{{ g.label }}</XhTransferGroupLabel>
             <XhTransferItem
               v-for="item in inGroup(items, g.key)"
               :key="item.value"
@@ -111,7 +93,7 @@ const value = ref<string[]>(["list"]);
               <XhTransferItemCheckbox />
               <XhTransferItemText>{{ item.label }}</XhTransferItemText>
             </XhTransferItem>
-          </template>
+          </XhTransferGroup>
         </XhTransferList>
       </XhTransferTargetPanel>
     </XhTransferRoot>

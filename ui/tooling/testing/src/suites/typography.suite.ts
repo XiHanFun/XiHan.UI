@@ -5,7 +5,7 @@ import { typographyAnatomy, typographyKeyboard } from '@xihan-ui/headless'
 // 各段拿得到自己的身份，组件不替作者补标题语义」。
 const APG = 'https://www.w3.org/WAI/ARIA/apg/'
 
-/** 一块正文：一个标题、两段文字，其中一段里夹着弱化文字、行内代码与链接。 */
+/** 一块正文：一个标题、两段文字，其中一段里夹着弱化文字、行内代码与链接，末尾摆一块富文本。 */
 const typographyTree: FixtureNode = {
   part: 'root',
   children: [
@@ -20,6 +20,11 @@ const typographyTree: FixtureNode = {
       ],
     },
     { part: 'paragraph', tag: 'p', text: '标签由作者写在自己的节点上。' },
+    {
+      part: 'prose',
+      tag: 'div',
+      children: [{ tag: 'p', text: '外来的整段 HTML 铺在这里。' }],
+    },
   ],
 }
 
@@ -48,6 +53,46 @@ export const typographySuite: ConformanceSuite = {
       initial: {
         parts: {
           root: { 'data-size': 'sm' },
+        },
+      },
+    },
+    {
+      name: '对齐与字重如实落到根上；不写就不输出',
+      spec: { apg: APG },
+      props: { align: 'center', weight: 'bold' },
+      initial: {
+        parts: {
+          root: { 'data-align': 'center', 'data-weight': 'bold' },
+        },
+      },
+    },
+    {
+      name: '行内文字的字重落在那一段上，与形态是两个轴',
+      spec: { apg: APG },
+      fixture: base => ({
+        ...base,
+        children: [
+          {
+            part: 'paragraph',
+            tag: 'p',
+            children: [
+              { part: 'text', tag: 'span', text: '重点', attrs: { variant: 'code', weight: 'semibold' } },
+            ],
+          },
+        ],
+      }),
+      initial: {
+        parts: {
+          text: { 'data-variant': 'code', 'data-weight': 'semibold' },
+        },
+      },
+    },
+    {
+      name: '富文本容器只拿身份：不补 role，里面的节点原样留着',
+      spec: { apg: APG },
+      initial: {
+        parts: {
+          prose: { role: null },
         },
       },
     },
@@ -131,8 +176,8 @@ export const typographySuite: ConformanceSuite = {
       name: '段落与行内文字可以有多份，按文档序排列',
       spec: { apg: APG },
       initial: {
-        order: ['root', 'heading', 'paragraph[0]', 'text[0]', 'text[1]', 'link', 'paragraph[1]'],
-        counts: { root: 1, heading: 1, paragraph: 2, text: 2, link: 1 },
+        order: ['root', 'heading', 'paragraph[0]', 'text[0]', 'text[1]', 'link', 'paragraph[1]', 'prose'],
+        counts: { root: 1, heading: 1, paragraph: 2, text: 2, link: 1, prose: 1 },
       },
     },
   ],

@@ -14,6 +14,13 @@ export function connectListbox<T extends PropTypes>(
   const focusedValue = context.get('focusedValue') ?? null
   const anchorValue = context.get('anchorValue') ?? null
   const listDisabled = !!prop('disabled')
+  const readOnly = !!prop('readOnly')
+  const invalid = !!prop('invalid')
+  const loading = !!prop('loading')
+  // 集合交给库时相位由库判；条目手写时库数不出有几条
+  const counted = prop('collection') != null
+  // 只读与禁用都改不了选中值，区别在于禁用连焦点带都退出
+  const editable = !listDisabled && !readOnly
   const orientation = prop('orientation') ?? 'vertical'
   const dir = prop('dir') ?? 'ltr'
   const loop = prop('loop') ?? true
@@ -76,9 +83,9 @@ export function connectListbox<T extends PropTypes>(
     }))
   }
 
-  /** 确认键：作用于焦点所在的非禁用条目。 */
+  /** 确认键：作用于焦点所在的非禁用条目。只读时只搬焦点、不改值。 */
   const commit = (content: HTMLElement, kind: 'replace' | 'toggle'): void => {
-    if (focusedValue == null)
+    if (focusedValue == null || !editable)
       return
     const el = items(content).find(item => itemValue(item) === focusedValue)
     if (!el || isItemDisabled(el))
@@ -98,6 +105,8 @@ export function connectListbox<T extends PropTypes>(
   }
 
   const extendTo = (content: HTMLElement, to: string): void => {
+    if (!editable)
+      return
     const next = applySelection({
       state: { selected: value, anchor: anchorValue ?? to },
       mode: 'multiple',
@@ -110,6 +119,8 @@ export function connectListbox<T extends PropTypes>(
 
   /** 全选/取消全选；取消时保留选中的禁用条目。 */
   const selectAll = (content: HTMLElement): void => {
+    if (!editable)
+      return
     const next = toggleSelectAll({ selected: value, anchor: anchorValue }, orderOf(content))
     send({ type: 'VALUE.SET', value: [...next.selected] })
   }
@@ -120,6 +131,9 @@ export function connectListbox<T extends PropTypes>(
     selectionMode: mode,
     focusedValue,
     disabled: listDisabled,
+    readOnly,
+    invalid,
+    loading,
     isSelected,
     setValue: next => send({ type: 'VALUE.SET', value: next }),
     select: v => send({ type: 'ITEM.SELECT', value: v }),
@@ -128,7 +142,13 @@ export function connectListbox<T extends PropTypes>(
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'data-orientation': orientation,
+      // 两个视觉轴打在根上，条目与勾选标记从这里继承私有槽，子部件不重复标注
+      'data-tone': prop('tone'),
+      'data-size': prop('size'),
       'data-disabled': dataAttr(listDisabled),
+      'data-readonly': dataAttr(readOnly),
+      'data-invalid': dataAttr(invalid),
+      'data-loading': dataAttr(loading),
     }),
 
     getLabelProps: () => normalize.element({
@@ -146,11 +166,17 @@ export function connectListbox<T extends PropTypes>(
       'aria-multiselectable': multiselectable ? 'true' : 'false',
       'aria-orientation': orientation,
       'aria-disabled': listDisabled ? 'true' : 'false',
+      'aria-readonly': readOnly ? 'true' : 'false',
+      'aria-invalid': invalid ? 'true' : 'false',
+      // 取数在途的播报归列表本体：两个相位占位自己不带 role
+      'aria-busy': loading ? 'true' : undefined,
       // 焦点在列表外时容器进 Tab 序列，onFocus 再转投给条目。
       // 判据只能用 focusedValue：anchor 可能指向一个不存在的条目，那时没有条目认领 tabindex=0
       'tabindex': focusedValue == null ? 0 : -1,
       'data-orientation': orientation,
       'data-disabled': dataAttr(listDisabled),
+      'data-readonly': dataAttr(readOnly),
+      'data-invalid': dataAttr(invalid),
       'onKeyDown': (event: KeyboardEvent) => {
         if (listDisabled)
           return
@@ -187,7 +213,7 @@ export function connectListbox<T extends PropTypes>(
           event.preventDefault()
           const next = focusBy(content, intent)
           // 扩选只认前后一步，Shift+Home/End 只搬焦点
-          if (next != null && event.shiftKey && multiselectable && (intent === 'next' || intent === 'prev'))
+          if (next != null && event.shiftKey && multiselectable && editable && (intent === 'next' || intent === 'prev'))
             send({ type: 'ITEM.TOGGLE', value: next })
           return
         }
@@ -230,6 +256,33 @@ export function connectListbox<T extends PropTypes>(
       },
     }),
 
+    // 空态占位：放在 root 里、content 的兄弟（role=listbox 只许拥有 option 与 group）。
+    // 给了 collection 才由连接层判定露不露面；条目手写时库数不出有几条，那一档不写 hidden，归作者自己收放。
+    // 取数在途时让位给在途占位，两者不同屏
+    getEmptyProps: () => normalize.element({
+      ...parts.empty.attrs,
+      'data-disabled': dataAttr(listDisabled),
+      'hidden': counted ? (loading || collection.length > 0) || undefined : loading || undefined,
+    }),
+
+    // 在途占位：与空态占位同一个位置、同一套收放判据，只是条件相反。
+    // 已经有条目可看时不顶上来，翻下一页的回执归 load-more-trigger
+    getLoadingProps: () => normalize.element({
+      ...parts.loading.attrs,
+      'data-disabled': dataAttr(listDisabled),
+      'hidden': counted ? (!loading || collection.length > 0) || undefined : !loading || undefined,
+    }),
+
+    // 取下一页的入口：还有没有下一页只有作者知道，露不露面与点了做什么都归他，
+    // 连接层只焊死「在途中与整列禁用点不动」
+    getLoadMoreTriggerProps: () => normalize.button({
+      ...parts['load-more-trigger'].attrs,
+      'type': 'button',
+      'disabled': loading || listDisabled || undefined,
+      'data-loading': dataAttr(loading),
+      'data-disabled': dataAttr(listDisabled),
+    }),
+
     getGroupProps: group => normalize.element({
       ...parts.group.attrs,
       'role': 'group',
@@ -257,7 +310,7 @@ export function connectListbox<T extends PropTypes>(
       // roving tabindex：整组只有锚点条目留在 Tab 序列内
       'tabindex': anchor === item.value ? 0 : -1,
       'onClick': (event: MouseEvent) => {
-        if (isDisabled(item))
+        if (isDisabled(item) || !editable)
           return
         if (mode === 'single') {
           send({ type: 'ITEM.SELECT', value: item.value })

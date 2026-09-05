@@ -10,9 +10,11 @@ export const menubarAnatomy = createAnatomy('menubar', [
   'item',
   'item-text',
   'item-indicator',
+  'item-description',
   'separator',
   'group',
   'group-label',
+  'arrow',
 ])
 
 const parts = menubarAnatomy.build()

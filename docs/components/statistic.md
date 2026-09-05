@@ -15,6 +15,7 @@
 
 - 标签、值、前缀、后缀各占一段。
 - 数字用等宽字形，位数变化时不会左右晃。
+- `trend` 给出涨跌方向，箭头由皮肤画；它与 `tone` 正交——跌也可以是好事。
 
 ## 示例
 
@@ -48,12 +49,18 @@ tone 决定数值与前后缀用哪族颜色，标签始终保持弱前景
 
 <XhDemo src="statistic/05-tabular" />
 
+### 涨跌
+
+trend 落成 trend 部件的 data-direction，箭头由皮肤画；与 tone 正交——跌也可以是好事
+
+<XhDemo src="statistic/06-trend" />
+
 ## 产物
 
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-statistic>` |
-| Vue 组件 | `XhStatisticLabel` `XhStatisticPrefix` `XhStatisticRoot` `XhStatisticSuffix` `XhStatisticValue` |
+| Vue 组件 | `XhStatisticLabel` `XhStatisticPrefix` `XhStatisticRoot` `XhStatisticSuffix` `XhStatisticTrend` `XhStatisticValue` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/statistic.css` |
 
@@ -61,7 +68,7 @@ tone 决定数值与前后缀用哪族颜色，标签始终保持弱前景
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="statistic"`：**`root`** · `label` · `value` · `prefix` · `suffix`
+`data-scope="statistic"`：**`root`** · `label` · `value` · `prefix` · `suffix` · `trend`
 
 ## Props
 
@@ -69,6 +76,7 @@ tone 决定数值与前后缀用哪族颜色，标签始终保持弱前景
 | --- | --- | --- | --- |
 | `size` | `Size` |  | 尺寸：sm / md / lg，只落成 root 的 data-size。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，只落成 root 的 data-tone。 |
+| `trend` | `StatisticTrend` |  | 涨跌：up / down / flat，落成 trend 部件的 data-direction，皮肤据它出兜底箭头。 与 tone 正交，方向与颜色互不联动——跌也可以是好事（差错率、退货率）。 |
 
 ## connect API
 
@@ -76,11 +84,13 @@ tone 决定数值与前后缀用哪族颜色，标签始终保持弱前景
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
+| `trend` | `StatisticTrend` | 当前涨跌方向；没给即 undefined。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['element']` |  |
 | `getValueProps` | `() => T['element']` |  |
 | `getPrefixProps` | `() => T['element']` |  |
 | `getSuffixProps` | `() => T['element']` |  |
+| `getTrendProps` | `() => T['element']` |  |
 
 ## 键盘
 
@@ -100,12 +110,17 @@ tone 决定数值与前后缀用哪族颜色，标签始终保持弱前景
 | --- | --- | --- |
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
+| `trend` | `data-direction` | props.trend |
 
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-statistic-affix-fg` · `--xh-statistic-affix-font-size` · `--xh-statistic-fg` · `--xh-statistic-gap` · `--xh-statistic-label-fg` · `--xh-statistic-label-font-size` · `--xh-statistic-row-gap` · `--xh-statistic-value-fg` · `--xh-statistic-value-font-size`
+`--xh-statistic-affix-fg` · `--xh-statistic-affix-font-size` · `--xh-statistic-fg` · `--xh-statistic-gap` · `--xh-statistic-label-fg` · `--xh-statistic-label-font-size` · `--xh-statistic-row-gap` · `--xh-statistic-trend-fg` · `--xh-statistic-trend-font-size` · `--xh-statistic-trend-gap` · `--xh-statistic-trend-offset` · `--xh-statistic-value-fg` · `--xh-statistic-value-font-size`
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
 
 ## 组合
 

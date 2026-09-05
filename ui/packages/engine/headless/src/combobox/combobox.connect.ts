@@ -73,6 +73,7 @@ export function connectCombobox<T extends PropTypes>(
   const disabled = !!prop('disabled')
   const readOnly = !!prop('readOnly')
   const invalid = !!prop('invalid')
+  const loading = !!prop('loading')
   const loop = prop('loop') ?? true
   const inputBehavior = prop('inputBehavior') ?? 'none'
   // 只读与禁用都不改值也不展开；两者的区别只在输入框可不可聚焦、文字能不能选
@@ -176,6 +177,7 @@ export function connectCombobox<T extends PropTypes>(
       'data-disabled': dataAttr(disabled),
       'data-readonly': dataAttr(readOnly),
       'data-invalid': dataAttr(invalid),
+      'data-loading': dataAttr(loading),
     }),
 
     getLabelProps: () => normalize.label({
@@ -403,6 +405,8 @@ export function connectCombobox<T extends PropTypes>(
       'aria-labelledby': ids.label,
       // 单选也显式写 'false'，不省略
       'aria-multiselectable': multiple ? 'true' : 'false',
+      // 取数在途的播报归列表本体：两个相位占位自己不带这一位
+      'aria-busy': loading ? 'true' : undefined,
       // tabindex 写 -1 不能省：可滚动容器会被某些浏览器自动塞进 Tab 序列
       'tabindex': -1,
       'data-state': stateAttr,
@@ -485,7 +489,17 @@ export function connectCombobox<T extends PropTypes>(
       // role=status 自带 polite 活区
       'role': 'status',
       'data-state': stateAttr,
-      'hidden': !empty || undefined,
+      // 取数在途时让位给在途占位，两者不同屏
+      'hidden': !empty || loading || undefined,
+    }),
+
+    // 在途占位：与空态占位同一个位置、同一副观感，两者不同屏。
+    // 展开着才顶上来：收起时整块浮层都不在场
+    getLoadingProps: () => normalize.element({
+      ...parts.loading.attrs,
+      'role': 'status',
+      'data-state': stateAttr,
+      'hidden': !(open && loading) || undefined,
     }),
 
     getHiddenInputProps: () => normalize.input({

@@ -1,4 +1,4 @@
-export { menuAnatomy } from './menu.anatomy'
+export { menuAnatomy, menuItemText } from './menu.anatomy'
 export { connectMenu } from './menu.connect'
 export { menuKeyboard } from './menu.keyboard'
 export { MENU_DEFAULT_PLACEMENT, menuMachine } from './menu.machine'

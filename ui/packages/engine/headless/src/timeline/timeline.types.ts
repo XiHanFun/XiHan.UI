@@ -27,6 +27,8 @@ export interface TimelineItemProps {
 export interface TimelineApi<T extends PropTypes = PropTypes> {
   getRootProps: () => T['element']
   getItemProps: () => T['element']
+  /** 与内容对置的那一列，装这一条的坐标；排布随整条线的方向与侧别走。 */
+  getLabelProps: () => T['element']
   /** 圆点的语气取自它所属的条目。 */
   getIndicatorProps: (props: TimelineItemProps) => T['element']
   getConnectorProps: () => T['element']

@@ -29,6 +29,8 @@ export const XhPinInputRoot = defineComponent({
     otp: Boolean,
     placeholder: { type: String, default: undefined },
     disabled: Boolean,
+    readOnly: Boolean,
+    required: Boolean,
     invalid: Boolean,
     blurOnComplete: Boolean,
     name: { type: String, default: undefined },
@@ -72,6 +74,24 @@ export const XhPinInputLabel = defineComponent({
     const ctx = usePinInputContext()
     // 必须是原生 label，getLabelProps 的 for 恒写向首格
     return () => h('label', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+/** 分段：连着的几格圈成一段（123-456 这种分段写法）。 */
+export const XhPinInputGroup = defineComponent({
+  name: 'XhPinInputGroup',
+  setup(_, { slots }) {
+    const ctx = usePinInputContext()
+    return () => h('div', ctx.api.value.getGroupProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+/** 段与段之间的分隔；对读屏隐藏。 */
+export const XhPinInputSeparator = defineComponent({
+  name: 'XhPinInputSeparator',
+  setup(_, { slots }) {
+    const ctx = usePinInputContext()
+    return () => h('span', ctx.api.value.getSeparatorProps() as Record<string, unknown>, slots.default?.())
   },
 })
 

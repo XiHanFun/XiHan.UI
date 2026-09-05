@@ -7,7 +7,7 @@ const SPEC = 'https://www.w3.org/TR/wai-aria-1.2/#progressbar'
 const FIXTURE: FixtureNode = {
   part: 'root',
   children: [
-    { part: 'track', children: [{ part: 'range' }] },
+    { part: 'track', children: [{ part: 'range', children: [{ part: 'peg' }] }] },
   ],
 }
 
@@ -77,7 +77,7 @@ export const loadingBarSuite: ConformanceSuite = {
       spec: { apg: SPEC },
       props: { loading: false },
       initial: {
-        order: ['root', 'track', 'range'],
+        order: ['root', 'track', 'range', 'peg'],
         counts: { root: 1, track: 1, range: 1 },
         parts: {
           root: {

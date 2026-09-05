@@ -87,6 +87,11 @@ export interface SelectItemProps {
   disabled?: boolean
 }
 
+/** 分组自报身份：分组标题的 id 由它派生，group 与 group-label 靠这一个值互相认领。 */
+export interface SelectGroupProps {
+  value: string
+}
+
 export interface SelectSchema extends MachineSchema {
   props: {
     /**
@@ -112,6 +117,8 @@ export interface SelectSchema extends MachineSchema {
     readOnly?: boolean
     /** 校验错误态：trigger 标红并输出 aria-invalid。 */
     invalid?: boolean
+    /** 条目还在取：列表报 aria-busy，在途占位顶上来、空态占位让位。 */
+    loading?: boolean
     /** 读屏用的文案，默认英文。 */
     translations?: Partial<SelectTranslations>
     /** 多选标签最多摆几个，其余折进 overflowCount；缺省全摆。 */
@@ -244,6 +251,20 @@ export interface SelectApi<T extends PropTypes = PropTypes> {
   getListProps: () => T['element']
   /** 浮层底部的操作区，是 list 的兄弟；不在列表框的拥有关系里，也不参与方向键与连打检索。 */
   getFooterProps: () => T['element']
+  /**
+   * 空态占位：放在 content 里、list 的兄弟。
+   * 给了 collection 时由连接层按条数收放；条目手写时不写 hidden，露不露面归作者。
+   */
+  getEmptyProps: () => T['element']
+  /**
+   * 在途占位：与空态占位同一个位置，两者不同屏——取数期间它顶上来，空态让位。
+   * 给了 collection 时由连接层按条数收放；条目手写时只按 loading 收放。
+   */
+  getLoadingProps: () => T['element']
+  /** 分组容器：role=group，条目挂在它里面；分组标题经 aria-labelledby 关联。 */
+  getGroupProps: (props: SelectGroupProps) => T['element']
+  /** 分组标题：不是选项、不进导航，只作为本组的可及名字。 */
+  getGroupLabelProps: (props: SelectGroupProps) => T['element']
   getItemProps: (props: SelectItemProps) => T['element']
   getItemTextProps: (props: SelectItemProps) => T['element']
   getItemIndicatorProps: (props: SelectItemProps) => T['element']

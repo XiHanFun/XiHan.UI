@@ -108,6 +108,22 @@
     cursor: grabbing;
   }
 
+  /* 原图还在路上：指针先报出来，此刻拖也没有东西可拖 */
+  [data-scope='image-viewer'][data-part='viewport'][data-loading] {
+    cursor: progress;
+  }
+
+  /* 取图期间在画面正中垫一块占位面：不垫的话打开一张几 MB 的原图，
+     台前是一整块什么都没有的暗底，用户分不清是在加载还是这张图坏了 */
+  [data-scope='image-viewer'][data-part='viewport'][data-loading]::after {
+    content: '';
+    position: absolute;
+    inline-size: var(--xh-image-viewer-loading-size, calc(var(--xh-control-h-lg) * 3));
+    block-size: var(--xh-image-viewer-loading-size, calc(var(--xh-control-h-lg) * 3));
+    border-radius: var(--xh-image-viewer-loading-radius, var(--xh-shape-surface));
+    background: var(--xh-image-viewer-loading-bg, var(--xh-bg-surface-raised));
+  }
+
   [data-scope='image-viewer'][data-part='image'] {
     max-inline-size: 90%;
     max-block-size: 85%;

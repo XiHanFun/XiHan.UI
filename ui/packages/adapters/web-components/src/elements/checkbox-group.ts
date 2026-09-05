@@ -1,4 +1,4 @@
-import type { Orientation } from '@xihan-ui/core'
+import type { Orientation, Size, Tone } from '@xihan-ui/core'
 import type { CheckboxGroupItemProps, CheckboxGroupNode, CheckboxGroupSchema, CheckboxGroupValueChangeDetails } from '@xihan-ui/headless'
 import { isItemDisabled } from '@xihan-ui/core'
 import { checkboxGroupAnatomy, checkboxGroupMachine, checkboxGroupMeta, connectCheckboxGroup } from '@xihan-ui/headless'
@@ -34,6 +34,8 @@ const LIST_CONVERTER = {
  * @attr {boolean} read-only - 只读：可聚焦可朗读，改不动
  * @attr {boolean} invalid - 校验失败标注
  * @attr {'horizontal'|'vertical'} orientation - 视觉排布，默认 vertical
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
+ * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @attr {string} name - 表单字段名；给定后隐藏输入才带 name 并参与提交
  * @fires value-change - 选中值变化；detail 为 `{ value: string[] }`
  * @csspart root - role=group 容器
@@ -58,6 +60,8 @@ export class XhCheckboxGroupElement extends XhElement {
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     invalid: { converter: BOOLEAN_CONVERTER },
     orientation: { converter: STRING_CONVERTER },
+    tone: { converter: STRING_CONVERTER },
+    size: { converter: STRING_CONVERTER },
     name: { converter: STRING_CONVERTER },
   }
 
@@ -69,6 +73,8 @@ export class XhCheckboxGroupElement extends XhElement {
   declare readOnly?: boolean
   declare invalid?: boolean
   declare orientation?: Orientation
+  declare tone?: Tone
+  declare size?: Size
   declare name?: string
 
   /** 条目自身 disabled 声明的快照，整组禁用期间 DOM 上的 aria-disabled 不可信。 */
@@ -92,6 +98,8 @@ export class XhCheckboxGroupElement extends XhElement {
       readOnly: this.readOnly ?? false,
       invalid: this.invalid ?? false,
       orientation: this.orientation,
+      tone: this.tone,
+      size: this.size,
       name: this.name,
       onValueChange: this.notify,
     }

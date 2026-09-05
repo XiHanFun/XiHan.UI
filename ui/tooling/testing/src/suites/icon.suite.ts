@@ -208,6 +208,40 @@ export const iconSuite: ConformanceSuite = {
       },
     },
     {
+      name: '直径放宽到八档：text 与 4xl 两端都如实落成 data-size',
+      spec: { apg: APG },
+      props: { icon: CHECK, size: 'text' },
+      initial: {
+        parts: { root: { 'data-size': 'text' } },
+      },
+      steps: [
+        {
+          kind: 'setProps',
+          props: { size: '4xl' },
+          expect: {
+            parts: { root: { 'data-size': '4xl' } },
+          },
+        },
+      ],
+    },
+    {
+      name: '旋转与翻转：只收三个旋转档，其余值不写出；两者可以同写',
+      spec: { apg: APG },
+      props: { icon: CHECK, rotate: 90, flip: 'horizontal' },
+      initial: {
+        parts: { root: { 'data-rotate': '90', 'data-flip': 'horizontal' } },
+      },
+      steps: [
+        {
+          kind: 'setProps',
+          props: { rotate: 45 },
+          expect: {
+            parts: { root: { 'data-rotate': null, 'data-flip': 'horizontal' } },
+          },
+        },
+      ],
+    },
+    {
       name: '换记录：data-icon 跟着换，glyph 重铺成新记录的图元',
       spec: { apg: APG },
       props: { icon: CHECK },

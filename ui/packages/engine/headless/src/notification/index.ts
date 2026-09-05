@@ -6,12 +6,16 @@ export {
   NOTIFICATION_PLACEMENT,
   NOTIFICATION_PLACEMENTS,
   notificationMachine,
+  notificationMergeTarget,
   notificationPlacementOf,
+  notificationPriorityOf,
+  sameNotificationContent,
   visibleNotifications,
 } from './notification.machine'
 export { notificationMeta } from './notification.meta'
 export type {
   NotificationApi,
+  NotificationDedupe,
   NotificationGroupProps,
   NotificationItemApi,
   NotificationItemsChangeDetails,

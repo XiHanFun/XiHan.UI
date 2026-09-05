@@ -62,6 +62,11 @@ export function connectDialog<T extends PropTypes>(
     }),
     // 面板三段：头与尾定在原处，正文自己滚
     getHeaderProps: () => normalize.element({ ...parts.header.attrs }),
+    // 语气徽记：纯装饰，读屏内容由标题与说明承担。画什么图形由节点自己那份 data-tone 决定
+    getIndicatorProps: () => normalize.element({
+      ...parts.indicator.attrs,
+      'aria-hidden': true,
+    }),
     getTitleProps: () => normalize.element({ ...parts.title.attrs, id: ids.title }),
     getDescriptionProps: () => normalize.element({ ...parts.description.attrs, id: ids.description }),
     getBodyProps: () => normalize.element({ ...parts.body.attrs }),

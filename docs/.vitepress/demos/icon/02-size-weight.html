@@ -1,9 +1,11 @@
-<!-- 尺寸与描边 | size 三档改直径、weight 三档改 stroke-width；缺省档不落 data-* 属性，皮肤的基础规则就是缺省档 -->
+<!-- 尺寸与描边 | size 八档改直径（text 跟着相邻文字的字号走）、weight 三档改 stroke-width；缺省档 md 不落 data-* 属性，皮肤的基础规则就是缺省档 -->
 <span id="icon-size" style="display: inline-flex; align-items: center; gap: 10px">
+  <xh-icon size="text"><svg data-xh-part="root"><g data-xh-part="glyph"></g></svg></xh-icon>
   <xh-icon size="sm"><svg data-xh-part="root"><g data-xh-part="glyph"></g></svg></xh-icon>
   <xh-icon><svg data-xh-part="root"><g data-xh-part="glyph"></g></svg></xh-icon>
   <xh-icon size="lg"><svg data-xh-part="root"><g data-xh-part="glyph"></g></svg></xh-icon>
-  <span style="font-size: 13px">sm / md（缺省）/ lg</span>
+  <xh-icon size="xl"><svg data-xh-part="root"><g data-xh-part="glyph"></g></svg></xh-icon>
+  <span style="font-size: 13px">text / sm / md（缺省）/ lg / xl，另有 2xl / 3xl / 4xl</span>
 </span>
 
 <span id="icon-weight" style="display: inline-flex; align-items: center; gap: 10px">

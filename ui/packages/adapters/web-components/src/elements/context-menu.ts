@@ -48,6 +48,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart item - role=menuitem 条目，须自带 value 属性标识身份；禁用写 aria-disabled="true"
  * @csspart item-text - 条目文本（连打检索的取字处）
  * @csspart item-indicator - 条目标记位（勾选符号 / 图标 / 快捷键提示），aria-hidden
+ * @csspart item-description - 条目副文本，排在文字下一行
  * @csspart separator - 分隔线（role=separator，不入方向键导航）
  * @csspart group - role=group 分组容器，须自带 value 属性标识身份
  * @csspart group-label - 分组标题（本组 aria-labelledby 的目标）
@@ -247,6 +248,8 @@ export class XhContextMenuElement extends XhElement {
         this.spreader.spread(text, api.getItemTextProps(item) as Record<string, unknown>)
       for (const indicator of this.partsIn(el, 'item-indicator'))
         this.spreader.spread(indicator, api.getItemIndicatorProps(item) as Record<string, unknown>)
+      for (const description of this.partsIn(el, 'item-description'))
+        this.spreader.spread(description, api.getItemDescriptionProps(item) as Record<string, unknown>)
     }
 
     // 分隔线也是多实例 part，但不带身份、不入导航，属性对每个都一样

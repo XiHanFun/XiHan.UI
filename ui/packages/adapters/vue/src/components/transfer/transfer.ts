@@ -1,7 +1,8 @@
-import type { Direction } from '@xihan-ui/core'
+import type { Direction, Size, Tone } from '@xihan-ui/core'
 import type {
   TransferCheckState,
   TransferFilter,
+  TransferGroupProps,
   TransferItem,
   TransferItemProps,
   TransferPanelProps,
@@ -14,9 +15,11 @@ import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
 import {
   provideTransfer,
+  provideTransferGroup,
   provideTransferItem,
   provideTransferPanel,
   useTransferContext,
+  useTransferGroupContext,
   useTransferItemContext,
   useTransferPanelContext,
 } from './context'
@@ -65,6 +68,11 @@ export const XhTransferRoot = defineComponent({
     searchable: Boolean,
     filter: { type: Function as PropType<TransferFilter>, default: undefined },
     disabled: Boolean,
+    readOnly: Boolean,
+    invalid: Boolean,
+    loading: Boolean,
+    tone: { type: String as PropType<Tone>, default: undefined },
+    size: { type: String as PropType<Size>, default: undefined },
     oneWay: Boolean,
     loop: { type: Boolean, default: undefined },
     dir: { type: String as PropType<Direction>, default: undefined },
@@ -192,6 +200,50 @@ export const XhTransferSelectAllTrigger = defineComponent({
     const { panel } = useTransferPanelContext()
     // 用原生 button，激活与禁用交给平台
     return () => h('button', ctx.api.value.getSelectAllTriggerProps(panel.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
+export const XhTransferEmpty = defineComponent({
+  name: 'XhTransferEmpty',
+  setup(_, { slots }) {
+    const ctx = useTransferContext()
+    const { panel } = useTransferPanelContext()
+    // 空态占位：写在面板里、list 的兄弟；本侧没有可见条目时由连接层放它出面
+    return () => h('div', ctx.api.value.getEmptyProps(panel.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
+export const XhTransferLoading = defineComponent({
+  name: 'XhTransferLoading',
+  setup(_, { slots }) {
+    const ctx = useTransferContext()
+    const { panel } = useTransferPanelContext()
+    // 在途占位：与空态占位同一个位置，取数期间顶上来
+    return () => h('div', ctx.api.value.getLoadingProps(panel.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
+export const XhTransferGroup = defineComponent({
+  name: 'XhTransferGroup',
+  props: {
+    value: { type: String, required: true },
+  },
+  setup(props, { slots }) {
+    const ctx = useTransferContext()
+    const { panel } = useTransferPanelContext()
+    // 两侧各挂一份同名分组，身份连 side 一起算，两边的标题 id 才不撞
+    const group = computed<TransferGroupProps>(() => ({ value: props.value, side: panel.value.side }))
+    provideTransferGroup({ group })
+    return () => h('div', ctx.api.value.getGroupProps(group.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
+export const XhTransferGroupLabel = defineComponent({
+  name: 'XhTransferGroupLabel',
+  setup(_, { slots }) {
+    const ctx = useTransferContext()
+    const { group } = useTransferGroupContext()
+    return () => h('span', ctx.api.value.getGroupLabelProps(group.value) as Record<string, unknown>, slots.default?.())
   },
 })
 

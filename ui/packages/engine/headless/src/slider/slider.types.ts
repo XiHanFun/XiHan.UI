@@ -136,6 +136,8 @@ export interface SliderApi<T extends PropTypes = PropTypes> {
   dragging: boolean
   disabled: boolean
   readOnly: boolean
+  /** 某个拇指的值文本：给了 getValueText 就是它的产出，否则是值本身。 */
+  valueText: (index: number) => string
   setValue: (next: number[]) => void
   setThumbValue: (index: number, next: number) => void
   getRootProps: () => T['element']
@@ -144,6 +146,8 @@ export interface SliderApi<T extends PropTypes = PropTypes> {
   getTrackProps: () => T['element']
   getRangeProps: () => T['element']
   getThumbProps: (index: number) => T['element']
+  /** 值气泡：挂在拇指里显示这一个拇指的当前值；aria-hidden，读屏走拇指自己的 aria-valuetext。 */
+  getValueTextProps: (index: number) => T['element']
   /** 刻度容器。 */
   getTickGroupProps: () => T['element']
   /** 刻度点：轨道上的圆点，纯装饰。 */

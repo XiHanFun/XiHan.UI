@@ -1,4 +1,4 @@
-import type { PropTypes } from '@xihan-ui/core'
+import type { PropTypes, Tone } from '@xihan-ui/core'
 import type { HighlightSegment } from './highlight.split'
 
 export interface HighlightProps {
@@ -8,6 +8,8 @@ export interface HighlightProps {
   keyword?: string | readonly string[]
   /** 区分大小写，缺省不区分。 */
   caseSensitive?: boolean
+  /** 语气：brand / neutral / success / warning / danger / info，决定命中片段用哪族颜色。 */
+  tone?: Tone
 }
 
 export interface HighlightApi<T extends PropTypes = PropTypes> {

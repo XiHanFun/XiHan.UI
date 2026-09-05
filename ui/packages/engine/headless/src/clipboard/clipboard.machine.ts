@@ -44,7 +44,12 @@ export const clipboardMachine = createMachine({
   states: {
     idle: {
       on: {
-        'COPY.TRIGGER': { target: 'copying' },
+        // 禁用守卫在机器这一层：点击、键盘激活与 api.copy() 都从这里过，
+        // 只在连接层挡的话，作者直接调 api 就能绕开禁用把值写进剪贴板
+        'COPY.TRIGGER': [
+          { guard: 'isDisabled' },
+          { target: 'copying' },
+        ],
       },
     },
     copying: {
@@ -63,11 +68,17 @@ export const clipboardMachine = createMachine({
       on: {
         'after.timeout': { target: 'idle', actions: ['invokeIdle'] },
         // 停留窗口里再点一次重新写
-        'COPY.TRIGGER': { target: 'copying' },
+        'COPY.TRIGGER': [
+          { guard: 'isDisabled' },
+          { target: 'copying' },
+        ],
       },
     },
   },
   implementations: {
+    guards: {
+      isDisabled: ({ prop }) => !!prop('disabled'),
+    },
     actions: {
       invokeCopying: ({ prop }) => prop('onStatusChange')?.({ status: 'copying' }),
       invokeCopied: ({ prop }) => prop('onStatusChange')?.({ status: 'copied' }),

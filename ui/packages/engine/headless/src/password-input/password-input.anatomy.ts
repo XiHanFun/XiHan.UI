@@ -10,6 +10,7 @@ export const passwordInputAnatomy = createAnatomy('password-input', [
   'input',
   'visibility-trigger',
   'caps-lock-indicator',
+  'strength-meter',
 ])
 
 /**

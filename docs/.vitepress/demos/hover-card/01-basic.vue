@@ -5,8 +5,10 @@ import {
   XhButton,
   XhHoverCardArrow,
   XhHoverCardContent,
+  XhHoverCardDescription,
   XhHoverCardPositioner,
   XhHoverCardRoot,
+  XhHoverCardTitle,
   XhHoverCardTrigger,
 } from "@xihan-ui/vue";
 
@@ -21,8 +23,10 @@ const following = ref(false);
       <XhHoverCardPositioner>
         <XhHoverCardContent>
           <XhHoverCardArrow />
-          <strong>XiHan.UI</strong>
-          <span>框架无关的设计系统运行时，Vue 与 Web Components 共用同一套无头内核。</span>
+          <XhHoverCardTitle>XiHan.UI</XhHoverCardTitle>
+          <XhHoverCardDescription>
+            框架无关的设计系统运行时，Vue 与 Web Components 共用同一套无头内核。
+          </XhHoverCardDescription>
           <XhButton size="sm" variant="outline" @click="following = !following">
             {{ following ? "已关注" : "关注" }}
           </XhButton>

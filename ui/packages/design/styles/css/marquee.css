@@ -139,6 +139,11 @@
     --xh-_marquee-play: paused;
   }
 
+  /* 受控暂停：作者说了停就停，排在悬停两条之后，指针离开也不会把它带回去走 */
+  [data-scope='marquee'][data-part='root'][data-paused] {
+    --xh-_marquee-play: paused;
+  }
+
   /* 轨道：走的是这一层，一圈走完立刻回到起点接着走 */
   [data-scope='marquee'][data-part='content'] {
     display: flex;

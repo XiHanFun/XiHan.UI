@@ -17,6 +17,10 @@
 - 多种前缀各自映射一份候选。
 - `onQueryChange` 给出当前查询串，异步候选据此拉取。
 - 正文可受控，选中时另有回调。
+- `label` 部件给输入框一个点得动的标题；给了 `translations.input` 时仍走 `aria-label`。
+- 给了 `collection` 却一条都不剩时显出 `empty` 部件。
+- 候选还在取时改由 `loading` 部件顶上来，空态让位；候选面板同时报 `aria-busy`。
+- `name` 让整段正文随表单提交，表单重置回落到 `defaultValue`。
 
 ## 组合
 

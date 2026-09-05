@@ -1,9 +1,15 @@
-import type { MenuGroupProps } from '@xihan-ui/headless'
+import type { MenuGroupProps, MenuItemProps } from '@xihan-ui/headless'
 import type { ComputedRef, InjectionKey } from 'vue'
 import type { MenuContext } from './use-menu'
 import { inject, provide } from 'vue'
 
+/** 条目自报的值与禁用，供 item-text / item-indicator / item-description 这类子部件复用同一份声明。 */
+export interface MenuItemContext {
+  item: ComputedRef<MenuItemProps>
+}
+
 const KEY: InjectionKey<MenuContext> = Symbol.for('xh-menu')
+const ITEM_KEY: InjectionKey<MenuItemContext> = Symbol.for('xh-menu-item')
 
 export function provideMenu(ctx: MenuContext): void {
   provide(KEY, ctx)
@@ -13,6 +19,17 @@ export function useMenuContext(): MenuContext {
   const ctx = inject(KEY, null)
   if (!ctx)
     throw new Error('[xh] Menu 部件必须用在 XhMenuRoot 内')
+  return ctx
+}
+
+export function provideMenuItem(ctx: MenuItemContext): void {
+  provide(ITEM_KEY, ctx)
+}
+
+export function useMenuItemContext(): MenuItemContext {
+  const ctx = inject(ITEM_KEY, null)
+  if (!ctx)
+    throw new Error('[xh] Menu 条目子部件必须用在 XhMenuItem 内')
   return ctx
 }
 

@@ -23,6 +23,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @fires status-change - 加载状态变化；detail 为 `{ status: 'loading' | 'loaded' | 'error' }`
  * @csspart root - 图片根容器（承载 data-state）
  * @csspart image - 图片节点，必须是原生 img；src/alt 由宿主写入（作者别自己写，会被覆盖或清掉），未就绪时带 hidden
+ * @csspart placeholder - 加载期间铺在图位上的占位层；图片落位或失败后带 hidden
  * @csspart fallback - 回退内容（占位图、骨架屏、图标）；加载失败恒显，加载途中要看延迟门槛
  */
 export class XhImageElement extends XhElement {
@@ -93,6 +94,7 @@ export class XhImageElement extends XhElement {
     // src 写在 onLoad/onError 之前也不漏事件：图片的 load/error 一律异步派发，
     // 而这两个监听器在同一段同步代码里就挂上了。
     put('image', api.getImageProps() as Record<string, unknown>)
+    put('placeholder', api.getPlaceholderProps() as Record<string, unknown>)
     put('fallback', api.getFallbackProps() as Record<string, unknown>)
 
     // 两个节点都常挂、互斥显隐，WC 自管可见性。connect 已置 hidden，但宿主不能指望作者装了

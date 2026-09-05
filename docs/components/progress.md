@@ -104,6 +104,7 @@ variant="dashboard" 在环上留一个缺口，gapDegree 与 gapPosition 决定�
 | `gapPosition` | `ProgressGapPosition` |  | 缺口朝向，默认 bottom。只对 dashboard 生效。 |
 | `indeterminate` | `boolean` |  | 进度未知：条子改为往复动画，读屏那侧不报数。 置真时 aria-valuenow 整个不发——ARIA 规定不确定进度以该属性缺席表达。 |
 | `max` | `number` |  | 满值上限，默认 100；非有限值或不为正时回落 100。 |
+| `semantics` | `ProgressSemantics` |  | 报的是进度还是量，默认 progress。meter 档发 role="meter"，且 indeterminate 不再生效。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。线形改轨道厚度，环形改直径 |
 | `strokeWidth` | `number` |  | 环的线宽，走 viewBox 单位（整个环画在 100×100 里），默认 6。 只对 circle / dashboard 生效——它改的是几何（半径跟着往里收），所以是 prop 不是令牌； 线形的厚度仍走 --xh-progress-thickness。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色 |
@@ -127,6 +128,7 @@ variant="dashboard" 在环上留一个缺口，gapDegree 与 gapPosition 决定�
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `variant` | `ProgressVariant` | 落定后的形态。 |
+| `semantics` | `ProgressSemantics` | 落定后的语义。 |
 | `ratio` | `number` | 进度比例，[0,1]。 |
 | `percent` | `number` | 进度百分比，取整。 |
 | `getRootProps` | `() => T['element']` |  |
@@ -151,7 +153,7 @@ variant="dashboard" 在环上留一个缺口，gapDegree 与 gapPosition 决定�
 | `root` | `aria-valuemin` | '0' |
 | `root` | `aria-valuenow` | undefined \| String(value) |
 | `root` | `aria-valuetext` | props.valueText |
-| `root` | `role` | 'progressbar' |
+| `root` | `role` | 'meter' \| 'progressbar' |
 | `canvas` | `aria-hidden` | 'true' |
 
 ## 样式

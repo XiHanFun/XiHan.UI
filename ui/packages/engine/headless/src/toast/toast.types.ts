@@ -9,8 +9,11 @@ export type ToastType = 'info' | 'success' | 'warning' | 'error' | 'loading'
  */
 export type ToastStatus = 'visible' | 'dismissing' | 'unmounted'
 
-/** 暂停来源。可同时有多个按住计时，最后一个松开才继续走。 */
-export type ToastPauseSource = 'pointer' | 'focus' | 'page-idle' | 'api'
+/**
+ * 暂停来源。可同时有多个按住计时，最后一个松开才继续走。
+ * 'service' 是宿主整摞一起按住的那一路，走 `paused` prop。
+ */
+export type ToastPauseSource = 'pointer' | 'focus' | 'page-idle' | 'api' | 'service'
 
 /** 那一摞落在视口的哪一格。第一段是纵向、第二段是横向（start/end 跟随文字方向）。 */
 export type ToastPlacement
@@ -33,6 +36,16 @@ export interface ToastRecord {
    * 走不掉的（loading、duration 给 0）才出——那种条子没有叉就没有出口。
    */
   closable?: boolean
+  /**
+   * 行内动作钮的文案。给了才渲染 action-trigger 部件。
+   * 只放文案不放回调：这一条记录要能被整份替换、序列化、比对，
+   * 按下之后做什么由宿主按 id 自己查。
+   */
+  actionLabel?: string
+  /** 挤条时先挤低的。不给则按语气派生：error=2 / warning=1 / 其余=0。 */
+  priority?: number
+  /** 按内容合并后的条数，>1 时由宿主在标题后追加计数。 */
+  count?: number
 }
 
 /** create 的入参：id 可省，省了就现生成一个并由 create 返回。 */
@@ -73,6 +86,11 @@ export interface ToastSchema extends MachineSchema {
     closable?: boolean
     /** 页面切到后台时暂停计时，默认 false。由服务档统一下发。 */
     pauseOnPageIdle?: boolean
+    /**
+     * 由宿主按住计时，默认 false。整摞一起暂停走这条：
+     * 置真时登记 'service' 这个暂停来源，置假时把它摘掉，与指针、焦点那几路并存。
+     */
+    paused?: boolean
     translations?: Partial<ToastTranslations>
     /** 生命周期落位时通知：dismissing 与 unmounted 各一次。宿主据此把条目移出队列。 */
     onStatusChange?: (details: ToastStatusChangeDetails) => void
@@ -109,6 +127,7 @@ export interface ToastSchema extends MachineSchema {
     | 'removePauseSource'
     | 'resetDuration'
     | 'syncDuration'
+    | 'syncPaused'
     | 'invokeAction'
     | 'invokeDismissing'
     | 'invokeUnmounted'
@@ -128,8 +147,14 @@ export interface ToastApi<T extends PropTypes = PropTypes> {
   dismiss: () => void
   pause: () => void
   resume: () => void
+  /** 停留总时长（毫秒）；不自动消失时为 Infinity。 */
+  duration: number
   getRootProps: () => T['element']
+  /** 严重度指示符：作者塞自己的图形，不塞则由皮肤画兜底字形。 */
+  getIndicatorProps: () => T['element']
   getTitleProps: () => T['element']
   getActionTriggerProps: () => T['button']
+  /** 倒计时条：不自动消失时收起。 */
+  getProgressProps: () => T['element']
   getCloseTriggerProps: () => T['button']
 }

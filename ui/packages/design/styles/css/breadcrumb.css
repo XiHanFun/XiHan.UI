@@ -86,6 +86,20 @@
     display: none;
   }
 
+  /* 图标位跟着字号走，与文字并排；不参与省略，压缩时先压文字 */
+  [data-scope='breadcrumb'][data-part='link-icon'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--xh-breadcrumb-link-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-breadcrumb-link-icon-size, var(--xh-glyph-size-text));
+  }
+
+  [data-scope='breadcrumb'][data-part='link-icon'][hidden] {
+    display: none;
+  }
+
   /* 当前页那条不再是"可去的地方"：不给悬停反馈，指针也不摆出可点的样子。
      连接层同时拦下了它的点击并把它移出了 Tab 序列，这里只负责说清楚这件事 */
   [data-scope='breadcrumb'][data-part='link']:not([data-current]):hover {

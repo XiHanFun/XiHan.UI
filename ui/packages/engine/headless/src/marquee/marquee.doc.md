@@ -14,8 +14,8 @@
 ## 特性
 
 - `autoFill` 自动重复内容铺满容器，接缝处不留空。
-- `direction` 换方向，`speed` 调速度。
-- `pauseOnHover` 悬停暂停。
+- `direction` 换方向，`speed` 调速度；速度按 `--xh-marquee-span` 换算成一圈时长，要逐字对上每秒像素数就把这支槽改到内容的真实长度。
+- `pauseOnHover` 悬停暂停，`paused` 由作者说了算——受控那一档比悬停优先。
 
 ## 组合
 

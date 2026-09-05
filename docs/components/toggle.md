@@ -101,6 +101,8 @@ pressed-change 每次带着 details 报一次按下意图；不做受控绑定�
 | `variant` | `ActionVariant` |  | 形态：solid / subtle / outline / ghost，决定颜色怎么用 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色 |
 | `size` | `Size` |  | 尺寸：sm / md / lg |
+| `iconOnly` | `boolean` |  | 只有图标：左右内距清零、宽高相等。宽度跟着当前尺寸档的高度走， 不必把档位写进行内样式。图标按钮没有可见文字，作者须自行给可及名。 |
+| `fullWidth` | `boolean` |  | 撑满行宽：工具条里一列开关常用。 |
 | `onPressedChange` | `(details: TogglePressedChangeDetails) => void` |  | pressed 变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 |
 
 ## 事件
@@ -164,6 +166,8 @@ pressed-change 每次带着 details 报一次按下意图；不做受控绑定�
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-full-width` | ''（条件成立时才出现） |
+| `root` | `data-icon-only` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | 'on' \| 'off' |
 | `root` | `data-tone` | props.tone |
@@ -173,7 +177,7 @@ pressed-change 每次带着 details 报一次按下意图；不做受控绑定�
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-toggle-bg` · `--xh-toggle-bg-hover` · `--xh-toggle-bg-on` · `--xh-toggle-fg` · `--xh-toggle-fg-on` · `--xh-toggle-font-size` · `--xh-toggle-font-weight` · `--xh-toggle-gap` · `--xh-toggle-h` · `--xh-toggle-px` · `--xh-toggle-radius` · `--xh-toggle-shadow`
+`--xh-toggle-bg` · `--xh-toggle-bg-hover` · `--xh-toggle-bg-on` · `--xh-toggle-fg` · `--xh-toggle-fg-on` · `--xh-toggle-font-size` · `--xh-toggle-font-weight` · `--xh-toggle-gap` · `--xh-toggle-h` · `--xh-toggle-icon-size` · `--xh-toggle-px` · `--xh-toggle-radius` · `--xh-toggle-shadow`
 
 ## 动效
 

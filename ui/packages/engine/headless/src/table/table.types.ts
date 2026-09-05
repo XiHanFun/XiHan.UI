@@ -574,6 +574,11 @@ export interface TableApi<T extends PropTypes = PropTypes> {
   getEmptyProps: () => T['element']
   getLoadingProps: () => T['element']
   /**
+   * 取下一页的入口：还有没有下一页、点了做什么都归作者，
+   * 连接层只保证取数在途那一段点不动。
+   */
+  getLoadMoreTriggerProps: () => T['element']
+  /**
    * 拖动过程的读屏播报区。视觉隐藏，文本从 `announcement` 取。
    * 它必须在拖动开始之前就在 DOM 上——读屏不播报后插入的节点。
    */

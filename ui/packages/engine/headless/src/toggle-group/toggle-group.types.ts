@@ -1,4 +1,4 @@
-import type { Direction, MachineSchema, Orientation, PropTypes, Size, Tone } from '@xihan-ui/core'
+import type { ActionVariant, Direction, MachineSchema, Orientation, PropTypes, Size, Tone } from '@xihan-ui/core'
 
 /**
  * 作者那一侧的值形态：单个值、值集合，或 null（无选中）。
@@ -57,10 +57,16 @@ export interface ToggleGroupSchema extends MachineSchema {
      * 默认 false（可以点成无选中）。
      */
     disallowEmpty?: boolean
+    /** 形态：solid / subtle / outline / ghost，决定段的底色与描边怎么用。 */
+    variant?: ActionVariant
     /** 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 */
     tone?: Tone
     /** 尺寸：sm / md / lg。 */
     size?: Size
+    /** 撑满行宽：整组占满可用宽度，每段等分剩余空间。 */
+    fullWidth?: boolean
+    /** 表单字段名。给定后隐藏输入才带 name 并参与提交。 */
+    name?: string
     /** 视觉排布，默认 horizontal。方向键接受的轴与它无关（四个方向键恒响应）。 */
     orientation?: Orientation
     /** 文字方向，默认 ltr；只改写左右方向键的语义，上下键与之无关。 */
@@ -93,9 +99,11 @@ export interface ToggleGroupSchema extends MachineSchema {
     | { type: 'ITEM.TOGGLE', value: string }
     | { type: 'ITEM.FOCUS', value: string }
     | { type: 'GROUP.BLUR' }
+    /** 所在表单被重置，选中集合回到 defaultValue。 */
+    | { type: 'FORM.RESET' }
   tag: never
   guard: never
-  action: 'setValue' | 'toggleItem' | 'setFocusedValue' | 'clearFocusedValue'
+  action: 'setValue' | 'toggleItem' | 'setFocusedValue' | 'clearFocusedValue' | 'resetToDefault'
   effect: never
 }
 
@@ -113,6 +121,10 @@ export interface ToggleGroupApi<T extends PropTypes = PropTypes> {
   setValue: (next: ToggleGroupValue) => void
   getRootProps: () => T['element']
   getItemProps: (props: ToggleGroupItemProps) => T['button']
+  /** 段与段之间的装饰竖线，纯视觉、读屏不念。 */
+  getSeparatorProps: () => T['element']
+  /** 表单出口：整组只有一份，提交的就是当前选中值。 */
+  getHiddenInputProps: () => T['input']
 }
 
 /** 读屏用的文案。本组件目前没有需要外露的文案，位先留着。 */

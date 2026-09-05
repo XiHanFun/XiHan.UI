@@ -3,11 +3,16 @@ import type { PropTypes } from '@xihan-ui/core'
 /** 骨架条的形状：一行文字、一个圆、一块矩形。 */
 export type SkeletonShape = 'text' | 'circle' | 'rect'
 
+/** 骨架条的动效档：扫光、呼吸、静止。 */
+export type SkeletonAnimation = 'shimmer' | 'pulse' | 'none'
+
 export interface SkeletonProps {
   /** 是否还在加载，默认 true。 */
   loading?: boolean
   /** 容器内骨架条的默认形状，默认 'text'。 */
   shape?: SkeletonShape
+  /** 动效档，默认 'shimmer'；缺省档不输出 data-animation。 */
+  animation?: SkeletonAnimation
 }
 
 /** 单根骨架条自报的声明。 */

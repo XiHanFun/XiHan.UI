@@ -162,6 +162,40 @@ export const logSuite: ConformanceSuite = {
       ],
     },
     {
+      name: '尺寸档落到根上：三档由皮肤按 data-size 选，连接层只如实转述',
+      spec: { apg: APG },
+      props: { size: 'lg' },
+      initial: {
+        parts: {
+          root: { 'data-size': 'lg' },
+        },
+      },
+    },
+    {
+      name: '级别落到行上：写了 level 的行带 data-level，没写的不带',
+      spec: { apg: APG },
+      fixture: base => ({
+        ...base,
+        children: base.children?.map(node => (node.part === 'viewport'
+          ? {
+              ...node,
+              children: node.children?.map(content => ({
+                ...content,
+                children: content.children?.map((line, i) => (
+                  i === 0 ? { ...line, attrs: { level: 'warn' } } : line
+                )),
+              })),
+            }
+          : node)),
+      }),
+      initial: {
+        parts: {
+          'line[0]': { 'data-level': 'warn' },
+          'line[1]': { 'data-level': null },
+        },
+      },
+    },
+    {
       name: '取行中：根落 data-loading，日志区报 aria-busy',
       spec: { apg: LIVE },
       props: { loading: true },

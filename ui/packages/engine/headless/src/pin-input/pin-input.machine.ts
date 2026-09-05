@@ -125,8 +125,8 @@ export const pinInputMachine = createMachine({
   },
   implementations: {
     guards: {
-      // 挡住绕过原生 disabled、直接派事件那一路
-      canEdit: ({ prop }) => !prop('disabled'),
+      // 挡住绕过原生 disabled / readonly、直接派事件那一路
+      canEdit: ({ prop }) => !prop('disabled') && !prop('readOnly'),
     },
     actions: {
       resetToDefault: params => void resetDeclaredValue(params, 'value', 'value', 'defaultValue'),

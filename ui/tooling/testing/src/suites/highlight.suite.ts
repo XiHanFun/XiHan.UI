@@ -127,5 +127,17 @@ export const highlightSuite: ConformanceSuite = {
       },
       steps: [{ kind: 'raw', why: WHY, run: expectWhole(TEXT) }],
     },
+    {
+      name: '语气落在根上不落在 mark 上：命中片段有好几个，用哪族颜色是整段的属性',
+      spec: { apg: HTML },
+      props: { text: TEXT, keyword: 'UI', tone: 'warning' },
+      initial: {
+        counts: { root: 1, mark: 1 },
+        parts: {
+          root: { 'data-tone': 'warning' },
+          mark: { 'data-tone': null },
+        },
+      },
+    },
   ],
 }

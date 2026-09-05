@@ -92,6 +92,8 @@ export const splitterSuite: ConformanceSuite = {
         parts: {
           'root': {
             'role': 'group',
+            // 一副骨架整体有个名字，读屏才说得出这堆盒子是一伙的
+            'aria-label': 'Split panels',
             'aria-orientation': null,
             'data-orientation': 'horizontal',
             'data-disabled': null,
@@ -103,6 +105,8 @@ export const splitterSuite: ConformanceSuite = {
             'role': 'separator',
             // 分隔条自身横竖与面板的排布轴垂直：并排的两块之间竖着一条
             'aria-orientation': 'vertical',
+            // 分隔条彼此长得一样，名字里带位次
+            'aria-label': 'Resize panel 1',
             'aria-valuenow': '40',
             // 区间取这块面板眼下真走得到的范围
             'aria-valuemin': '20',
@@ -340,6 +344,41 @@ export const splitterSuite: ConformanceSuite = {
           run: ({ doc }) => movePointer(doc, 20),
           // 这条期望在本步冲刷之后才比，布局真被拖走了就在这里炸
           expect: { parts: { 'resize-trigger': { 'aria-valuenow': '75' } } },
+        },
+      ],
+    },
+    {
+      name: 'Escape 取消：布局退回按下那一刻，之后再动指针也不跟',
+      spec: { apg: APG_KBD },
+      covers: ['splitter.kbd.cancel'],
+      props: { defaultSizes: [50, 50] },
+      steps: [
+        {
+          kind: 'raw',
+          why: '拖到一半再取消，指针那三件事 harness 的步骤表达不了',
+          run: ({ doc }) => {
+            layoutRoot(doc)
+            pressTrigger(doc, 100)
+            movePointer(doc, 150)
+          },
+          expect: { parts: { 'resize-trigger': { 'aria-valuenow': '75', 'data-dragging': '' } } },
+        },
+        {
+          kind: 'raw',
+          why: 'Escape 的监听挂在文档上，指针拖出容器后焦点未必还在分隔条上',
+          run: ({ doc }) => { doc.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true })) },
+          expect: {
+            parts: {
+              'resize-trigger': { 'aria-valuenow': '50', 'data-dragging': null },
+              'root': { 'data-dragging': null },
+            },
+          },
+        },
+        {
+          kind: 'raw',
+          why: '取消后监听器同样该撤干净',
+          run: ({ doc }) => movePointer(doc, 20),
+          expect: { parts: { 'resize-trigger': { 'aria-valuenow': '50' } } },
         },
       ],
     },

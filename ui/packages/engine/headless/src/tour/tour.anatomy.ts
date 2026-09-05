@@ -10,6 +10,8 @@ export const tourAnatomy = createAnatomy('tour', [
   'title',
   'description',
   'progress-text',
+  'progress-indicator',
+  'progress-dot',
   'prev-trigger',
   'next-trigger',
   'skip-trigger',

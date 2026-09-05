@@ -17,6 +17,8 @@
 - 粘贴一整串会按格拆开填进去。
 - `mask` 遮蔽字符、`type` 与 `pattern` 限制可输入字符类别。
 - `onValueComplete` 在填满那一刻发一次，用来自动提交。
+- `group` 与 `separator` 把格子分段排（123-456），下标仍按文档序算。
+- `readOnly` 让格子只能看与复制，`required` 给每格补上原生必填。
 
 ## 组合
 

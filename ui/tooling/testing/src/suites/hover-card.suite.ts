@@ -1,4 +1,4 @@
-import type { ConformanceSuite, RawStepContext } from '../conformance/types'
+import type { ConformanceSuite, FixtureNode, RawStepContext } from '../conformance/types'
 import { hoverCardAnatomy, hoverCardKeyboard } from '@xihan-ui/headless'
 
 // 无对应 APG 模式：卡片本体是非模态对话框，语义按 dialog 这一节对齐。
@@ -43,7 +43,8 @@ export const hoverCardSuite: ConformanceSuite = {
             part: 'content',
             children: [
               { part: 'arrow' },
-              { text: '西涵 UI' },
+              { part: 'title', text: '西涵 UI' },
+              { part: 'description', text: '一套跨框架的设计系统运行时。' },
               { tag: 'a', text: '主页', attrs: { 'href': '#profile', 'data-testid': 'card-link' } },
             ],
           },
@@ -53,11 +54,32 @@ export const hoverCardSuite: ConformanceSuite = {
   },
   cases: [
     {
+      name: '没写 title：卡片的可及名指回 trigger',
+      spec: { apg: `${APG}#roles_states_properties` },
+      // 卡片里只剩一段正文，title 与 description 两个部件都不渲染
+      fixture: (base): FixtureNode => ({
+        ...base,
+        children: [
+          { part: 'trigger', tag: 'button', text: '@xihan' },
+          {
+            part: 'positioner',
+            children: [{ part: 'content', children: [{ text: '西涵 UI' }] }],
+          },
+        ],
+      }),
+      initial: {
+        order: ['root', 'trigger', 'positioner', 'content'],
+        parts: {
+          content: { 'aria-labelledby': '@part(trigger)' },
+        },
+      },
+    },
+    {
       name: '初始收起：content 常挂但带 hidden，trigger aria-expanded=false',
       spec: { apg: APG, zag: 'hover-card.machine#initialState' },
       initial: {
-        order: ['root', 'trigger', 'positioner', 'content', 'arrow'],
-        counts: { root: 1, trigger: 1, positioner: 1, content: 1, arrow: 1 },
+        order: ['root', 'trigger', 'positioner', 'content', 'arrow', 'title', 'description'],
+        counts: { root: 1, trigger: 1, positioner: 1, content: 1, arrow: 1, title: 1, description: 1 },
         parts: {
           root: {
             'data-state': 'closed',
@@ -81,7 +103,8 @@ export const hoverCardSuite: ConformanceSuite = {
             'role': 'dialog',
             'tabindex': '-1',
             'aria-modal': 'false',
-            'aria-labelledby': '@part(trigger)',
+            'aria-labelledby': '@part(title)',
+            'aria-describedby': '@part(description)',
             'hidden': '',
             'data-state': 'closed',
           },

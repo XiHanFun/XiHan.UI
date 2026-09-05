@@ -1,3 +1,4 @@
+import type { Tone } from '@xihan-ui/core'
 import type { EmptyStateLive, EmptyStateProps, EmptyStateStatus } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
 import { defineComponent, h } from 'vue'
@@ -12,11 +13,21 @@ export const XhEmptyStateRoot = defineComponent({
     size: { type: String as PropType<'sm' | 'md' | 'lg'>, default: undefined },
     live: { type: String as PropType<EmptyStateLive>, default: undefined },
     status: { type: String as PropType<EmptyStateStatus>, default: undefined },
+    tone: { type: String as PropType<Tone>, default: undefined },
   },
   setup(props, { slots }) {
     const ctx = useEmptyState(withXhConfig('empty-state', props as EmptyStateProps))
     provideEmptyState(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+// 插画槽，内容由作者塞（img、内联 svg 都行）；与图标槽二选一
+export const XhEmptyStateMedia = defineComponent({
+  name: 'XhEmptyStateMedia',
+  setup(_, { slots }) {
+    const ctx = useEmptyStateContext()
+    return () => h('div', ctx.api.value.getMediaProps() as Record<string, unknown>, slots.default?.())
   },
 })
 

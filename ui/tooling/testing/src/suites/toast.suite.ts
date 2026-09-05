@@ -34,8 +34,10 @@ export const toastSuite: ConformanceSuite = {
   fixture: {
     part: 'root',
     children: [
+      { part: 'indicator', tag: 'span' },
       { part: 'title', text: '已保存' },
       { part: 'action-trigger', tag: 'button', text: '撤销' },
+      { part: 'progress' },
       { part: 'close-trigger', tag: 'button', text: '关闭' },
     ],
   },
@@ -46,7 +48,7 @@ export const toastSuite: ConformanceSuite = {
       // duration=0 即关掉自动消失：这条用例要的是一个不会自己走掉的稳定初始帧
       props: { duration: 0 },
       initial: {
-        order: ['root', 'title', 'action-trigger', 'close-trigger'],
+        order: ['root', 'indicator', 'title', 'action-trigger', 'progress', 'close-trigger'],
         parts: {
           'root': {
             'role': 'status',

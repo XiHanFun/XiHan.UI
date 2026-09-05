@@ -43,6 +43,8 @@ const ARRAY_CONVERTER = {
  * @attr {boolean} allow-overflow - 允许越过 max，越过后打出 data-overflowing
  * @attr {boolean} disabled - 禁用：输入框与各按钮都不可用
  * @attr {boolean} read-only - 只读：仍可聚焦与复制，加删改都走不通
+ * @attr {boolean} required - 必填标注：经 aria-required 上报，星号由外面的字段壳画
+ * @attr {boolean} show-count - 显出计数部件；关掉时该部件收起
  * @attr {boolean} invalid - 校验失败标注
  * @attr {string} name - 表单字段名；给了 hidden-input 才参与提交（按 delimiter 拼成一串）
  * @attr {string} placeholder - 输入框占位文案
@@ -65,6 +67,7 @@ const ARRAY_CONVERTER = {
  * @csspart item-delete-trigger - 删除按钮，须是原生 `<button>`；不占 Tab 位，自带 aria-label
  * @csspart item-input - 就地编辑框，须是原生 `<input>`；不编辑时收起
  * @csspart clear-trigger - 清空按钮；没东西可清时收起（hidden）
+ * @csspart count - 标签个数；文本由元素按「已用 / 上限」填，作者写了自己的内容即不覆盖；没开 show-count 时收起
  * @csspart hidden-input - type=hidden 的表单出口，值是按 delimiter 拼好的整串
  */
 export class XhTagsInputElement extends XhElement {
@@ -80,6 +83,8 @@ export class XhTagsInputElement extends XhElement {
     allowOverflow: { converter: BOOLEAN_CONVERTER, attribute: 'allow-overflow' },
     disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
+    required: { converter: BOOLEAN_CONVERTER },
+    showCount: { converter: BOOLEAN_CONVERTER, attribute: 'show-count' },
     invalid: { converter: BOOLEAN_CONVERTER },
     name: { converter: STRING_CONVERTER },
     placeholder: { converter: STRING_CONVERTER },
@@ -102,6 +107,8 @@ export class XhTagsInputElement extends XhElement {
   declare allowOverflow?: boolean
   declare disabled?: boolean
   declare readOnly?: boolean
+  declare required?: boolean
+  declare showCount?: boolean
   declare invalid?: boolean
   declare name?: string
   declare placeholder?: string
@@ -137,6 +144,8 @@ export class XhTagsInputElement extends XhElement {
       allowOverflow: this.allowOverflow ?? false,
       disabled: this.disabled ?? false,
       readOnly: this.readOnly ?? false,
+      required: this.required ?? false,
+      showCount: this.showCount ?? false,
       invalid: this.invalid ?? false,
       name: this.name,
       placeholder: this.placeholder,
@@ -179,6 +188,20 @@ export class XhTagsInputElement extends XhElement {
     return this.getParts(name).filter(el => owner.contains(el))
   }
 
+  /** 首次见到该节点时若已有内容则判为归作者，之后一概不碰。 */
+  private readonly ownsText = new WeakMap<HTMLElement, boolean>()
+
+  private fillOwnedText(el: HTMLElement, text: string): void {
+    let owned = this.ownsText.get(el)
+    if (owned === undefined) {
+      owned = (el.textContent ?? '').trim() === ''
+      this.ownsText.set(el, owned)
+    }
+    if (!owned || el.textContent === text)
+      return
+    el.textContent = text
+  }
+
   protected wire(): void {
     const api = connectTagsInput(this.ctrl.service, wcNormalize)
 
@@ -192,6 +215,11 @@ export class XhTagsInputElement extends XhElement {
     put('control', api.getControlProps() as Record<string, unknown>)
     put('input', api.getInputProps() as Record<string, unknown>)
     put('clear-trigger', api.getClearTriggerProps() as Record<string, unknown>)
+    put('count', api.getCountProps() as Record<string, unknown>)
+    // 计数的数字由元素填；作者第一次就写了内容的节点判为归作者，之后一概不碰
+    const countEl = this.getPart('count')
+    if (countEl)
+      this.fillOwnedText(countEl, api.max === undefined ? String(api.count) : api.count + ' / ' + api.max)
     put('hidden-input', api.getHiddenInputProps() as Record<string, unknown>)
     // 输入框的 value 不必另外回写：spreader 把 value/checked/selected 三个键当 property 写
     // （dom/spread.ts 的 PROP_KEYS），属性写法只管初值、盖不住用户输入过的框

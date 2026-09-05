@@ -9,10 +9,18 @@ export interface ButtonGroupProps {
   tone?: Tone
   /** 尺寸：sm / md / lg，落到根上供皮肤写进组内按钮的高度、内边距与字号槽位。 */
   size?: Size
+  /** 整组禁用：适配器把它落到组内每一段的原生 disabled 上，段自己写了禁用的仍然禁用。 */
+  disabled?: boolean
+  /** 撑满行宽：整组占满可用宽度，每段等分剩余空间。 */
+  fullWidth?: boolean
 }
 
 export interface ButtonGroupApi<T extends PropTypes = PropTypes> {
+  /** 整组是否禁用。适配器据此把禁用传给组内每一段——只打 data-* 是假禁用。 */
+  disabled: boolean
   getRootProps: () => T['element']
+  /** 段与段之间的装饰线，纯视觉、读屏不念。 */
+  getSeparatorProps: () => T['element']
 }
 
 /** 读屏用的文案。本组件目前没有需要外露的文案，位先留着。 */

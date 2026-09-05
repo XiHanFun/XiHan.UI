@@ -71,7 +71,7 @@ markdown 块铺 html，代码块拿 source 交出去——照 html 渲会让同�
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `announce` | `'off' \| 'polite'` |  | 播报档位，默认 off——会话级播报区在消息流那一层，别在每条回复里各开一个。 |
+| `announce` | `'off' \| 'polite' \| 'assertive'` |  | 播报档位，默认 off——会话级播报区在消息流那一层，别在每条回复里各开一个。 |
 | `blocks` | `readonly MarkdownBlock[]` | 是 | 已渲染好的块列表。 |
 | `caret` | `boolean` |  | 画不画流式光标，默认画。设成 false 时 data-caret 一处都不发。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
@@ -124,8 +124,8 @@ markdown 块铺 html，代码块拿 source 交出去——照 html 渲会让同�
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `live-region` | `aria-atomic` | 'true' |
-| `live-region` | `aria-live` | 'polite' |
-| `live-region` | `role` | 'status' |
+| `live-region` | `aria-live` | 'assertive' \| 'polite' |
+| `live-region` | `role` | 'alert' \| 'status' |
 
 - 正文不套 role，也不做成活区——每来一个 token 播报一次会把读屏刷爆。
 - 要在一段回复写完时播报一句，把 `announce` 设成 `polite` 并渲出播报区。

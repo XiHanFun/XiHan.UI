@@ -7,4 +7,5 @@ export const typographyAnatomy = createAnatomy('typography', [
   'paragraph',
   'text',
   'link',
+  'prose',
 ])

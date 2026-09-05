@@ -52,6 +52,7 @@ import { imageCropperSuite } from './image-cropper.suite'
 import { imageViewerSuite } from './image-viewer.suite'
 import { imageSuite } from './image.suite'
 import { infiniteScrollSuite } from './infinite-scroll.suite'
+import { inputGroupSuite } from './input-group.suite'
 import { jsonViewerSuite } from './json-viewer.suite'
 import { layoutSuite } from './layout.suite'
 import { listSuite } from './list.suite'
@@ -101,6 +102,7 @@ import { switchSuite } from './switch.suite'
 import { tableSuite } from './table.suite'
 import { tabsSuite } from './tabs.suite'
 import { tagSuite } from './tag.suite'
+import { tagGroupSuite } from './tag-group.suite'
 import { tagsInputSuite } from './tags-input.suite'
 import { textFieldSuite } from './text-field.suite'
 import { timeFieldSuite } from './time-field.suite'
@@ -248,4 +250,6 @@ export const allSuites: readonly ConformanceSuite[] = [
   typographySuite,
   virtualizerSuite,
   watermarkSuite,
+  tagGroupSuite,
+  inputGroupSuite,
 ]

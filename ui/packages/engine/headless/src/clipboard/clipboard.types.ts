@@ -1,4 +1,4 @@
-import type { MachineSchema, PropTypes } from '@xihan-ui/core'
+import type { ActionVariant, MachineSchema, PropTypes, Size, Tone } from '@xihan-ui/core'
 
 /**
  * 复制状态。
@@ -30,6 +30,15 @@ export interface ClipboardSchema extends MachineSchema {
     value?: string
     /** 复制成功后指示器保持多久（毫秒），默认 3000；<=0 或非有限数表示不自动回落。 */
     timeout?: number
+    /** 禁用：复制按钮点不动，作者调 api.copy() 也不动（守卫在机器层）。 */
+    disabled?: boolean
+    /** 形态：solid / subtle / outline / ghost，决定复制按钮的颜色怎么用。 */
+    variant?: ActionVariant
+    /** 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 */
+    tone?: Tone
+    /** 尺寸：sm / md / lg。 */
+    size?: Size
+    translations?: Partial<ClipboardTranslations>
     /** 状态每次落位时通知一次；挂载那一刻的 idle 是初始态，不通知。 */
     onStatusChange?: (details: ClipboardStatusChangeDetails) => void
     /** 写入失败时通知；此时状态已经回到 idle。 */
@@ -53,13 +62,16 @@ export interface ClipboardSchema extends MachineSchema {
     /** 停留计时到点，指示器该收回去了。 */
     | { type: 'after.timeout' }
   tag: never
-  guard: never
+  guard: 'isDisabled'
   action: 'invokeCopying' | 'invokeCopied' | 'invokeIdle' | 'invokeCopyError'
   effect: 'writeValue' | 'trackTimeout'
 }
 
 export interface ClipboardApi<T extends PropTypes = PropTypes> {
   status: ClipboardStatus
+  disabled: boolean
+  /** 播报区不给内容时念的那一句；没到已复制这一档时是空串。 */
+  announcement: string
   /** 已经复制成功且还在停留窗口内。指示器与样式的唯一判据。 */
   copied: boolean
   /** 当前要复制的文本（prop 缺省时是空串）。 */
@@ -72,7 +84,14 @@ export interface ClipboardApi<T extends PropTypes = PropTypes> {
   getInputProps: () => T['input']
   getCopyTriggerProps: () => T['button']
   getIndicatorProps: (props: ClipboardIndicatorProps) => T['element']
+  /** 复制成功的播报区，视觉隐藏；不给内容时念 announcement。 */
+  getStatusProps: () => T['element']
 }
 
-/** 读屏用的文案。本组件目前没有需要外露的文案，位先留着。 */
-export interface ClipboardTranslations {}
+/** 读屏用的文案，默认英文。 */
+export interface ClipboardTranslations {
+  /** 复制按钮的可及名字。按钮里只放一个图标时，名字只能由这里给。 */
+  copy: string
+  /** 复制成功后播报的那一句。 */
+  copied: string
+}

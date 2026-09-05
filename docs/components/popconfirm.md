@@ -53,7 +53,7 @@ size 换的是面板的内边距与最大宽度，三个档位落在 content 上
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-popconfirm>` |
-| Vue 组件 | `XhPopconfirmCancelTrigger` `XhPopconfirmConfirmTrigger` `XhPopconfirmContent` `XhPopconfirmDescription` `XhPopconfirmPositioner` `XhPopconfirmRoot` `XhPopconfirmTitle` `XhPopconfirmTrigger` |
+| Vue 组件 | `XhPopconfirmArrow` `XhPopconfirmCancelTrigger` `XhPopconfirmConfirmTrigger` `XhPopconfirmContent` `XhPopconfirmDescription` `XhPopconfirmPositioner` `XhPopconfirmRoot` `XhPopconfirmTitle` `XhPopconfirmTrigger` |
 | 组合式函数 | `usePopconfirm` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/popconfirm.css` |
@@ -62,7 +62,7 @@ size 换的是面板的内边距与最大宽度，三个档位落在 content 上
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="popconfirm"`：**`root`** · **`trigger`** · `positioner` · **`content`** · `title` · `description` · **`confirm-trigger`** · **`cancel-trigger`**
+`data-scope="popconfirm"`：**`root`** · **`trigger`** · `positioner` · **`content`** · `title` · `description` · **`confirm-trigger`** · **`cancel-trigger`** · `arrow`
 
 ## Props
 
@@ -128,6 +128,7 @@ size 换的是面板的内边距与最大宽度，三个档位落在 content 上
 | `getDescriptionProps` | `() => T['element']` |  |
 | `getConfirmTriggerProps` | `() => T['button']` |  |
 | `getCancelTriggerProps` | `() => T['button']` |  |
+| `getArrowProps` | `() => T['element']` |  |
 
 ## 键盘
 
@@ -153,6 +154,7 @@ size 换的是面板的内边距与最大宽度，三个档位落在 content 上
 | `content` | `aria-labelledby` | `title` 部件的 id |
 | `content` | `role` | 'alertdialog' |
 | `confirm-trigger` | `aria-busy` | 'true' \| undefined |
+| `arrow` | `aria-hidden` | 'true' |
 
 ## 样式
 
@@ -174,12 +176,13 @@ size 换的是面板的内边距与最大宽度，三个档位落在 content 上
 | `content` | `data-size` | props.size |
 | `content` | `data-state` | 'open' \| 'closed' |
 | `confirm-trigger` | `data-loading` | ''（条件成立时才出现） |
+| `arrow` | `data-placement` | 定位引擎算出的实际落位 |
 
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-popconfirm-action-px` · `--xh-popconfirm-action-radius` · `--xh-popconfirm-bg` · `--xh-popconfirm-border` · `--xh-popconfirm-cancel-bg` · `--xh-popconfirm-cancel-fg` · `--xh-popconfirm-confirm-bg` · `--xh-popconfirm-confirm-fg` · `--xh-popconfirm-confirm-shadow` · `--xh-popconfirm-description-fg` · `--xh-popconfirm-fg` · `--xh-popconfirm-gap` · `--xh-popconfirm-layer` · `--xh-popconfirm-loading-duration` · `--xh-popconfirm-max-w` · `--xh-popconfirm-px` · `--xh-popconfirm-py` · `--xh-popconfirm-radius` · `--xh-popconfirm-shadow` · `--xh-popconfirm-title-fg` · `--xh-popconfirm-title-font-size` · `--xh-popconfirm-title-font-weight`
+`--xh-popconfirm-action-px` · `--xh-popconfirm-action-radius` · `--xh-popconfirm-arrow-size` · `--xh-popconfirm-bg` · `--xh-popconfirm-border` · `--xh-popconfirm-cancel-bg` · `--xh-popconfirm-cancel-fg` · `--xh-popconfirm-confirm-bg` · `--xh-popconfirm-confirm-fg` · `--xh-popconfirm-confirm-shadow` · `--xh-popconfirm-description-fg` · `--xh-popconfirm-fg` · `--xh-popconfirm-gap` · `--xh-popconfirm-layer` · `--xh-popconfirm-loading-duration` · `--xh-popconfirm-max-w` · `--xh-popconfirm-px` · `--xh-popconfirm-py` · `--xh-popconfirm-radius` · `--xh-popconfirm-shadow` · `--xh-popconfirm-title-fg` · `--xh-popconfirm-title-font-size` · `--xh-popconfirm-title-font-weight`
 
 ## 动效
 

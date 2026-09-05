@@ -118,7 +118,7 @@ open 与 index 双受控；translations 换工具条的可及名与计数文案
 
 **状态**：`open` · `closed`
 
-**事件**：`OPEN` · `CLOSE` · `INDEX.SET` · `INDEX.NEXT` · `INDEX.PREV` · `ZOOM.BY` · `ZOOM.SET` · `ROTATE.BY` · `FLIP` · `TRANSFORM.RESET` · `PAN.MOVE` · `POINTERS.DOWN` · `POINTERS.CHANGE` · `POINTERS.END` · `PAN.END` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE`
+**事件**：`OPEN` · `CLOSE` · `INDEX.SET` · `INDEX.NEXT` · `INDEX.PREV` · `ZOOM.BY` · `ZOOM.SET` · `ROTATE.BY` · `FLIP` · `TRANSFORM.RESET` · `IMAGE.LOAD` · `IMAGE.ERROR` · `PAN.MOVE` · `POINTERS.DOWN` · `POINTERS.CHANGE` · `POINTERS.END` · `PAN.END` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE`
 
 **判据**：`isOpenControlled`
 
@@ -134,6 +134,7 @@ open 与 index 双受控；translations 换工具条的可及名与计数文案
 | `currentItem` | `ImageViewerItem \| null` | 当前那张图；清单为空时为 null。 |
 | `transform` | `ImageViewerTransform` |  |
 | `panning` | `boolean` | 正在拖拽平移。 |
+| `imageStatus` | `ImageViewerImageStatus` | 当前那张大图的取图相位；换图与重开都回到 loading。 |
 | `canPrev` | `boolean` | 往前还翻得动（loop 且多于一张时恒为 true）。 |
 | `canNext` | `boolean` |  |
 | `setOpen` | `(next: boolean) => void` |  |
@@ -181,6 +182,9 @@ open 与 index 双受控；translations 换工具条的可及名与计数文案
 | `ArrowRight` | open | 下一张 |
 | `Home` | open | 跳到第一张 |
 | `End` | open | 跳到最后一张 |
+| `+` / `=` | open | 放大一档（zoomStep），到 maxScale 停住 |
+| `-` | open | 缩小一档，到 minScale 停住 |
+| `0` | open | 缩放、旋转、翻转与平移一并复位 |
 
 ## 无障碍
 
@@ -195,6 +199,7 @@ open 与 index 双受控；translations 换工具条的可及名与计数文案
 | `content` | `aria-label` | currentItem?.alt |
 | `content` | `aria-modal` | 'true' |
 | `content` | `role` | 'dialog' |
+| `viewport` | `aria-busy` | imageStatus === 'loading' \|\| undefined |
 | `toolbar` | `aria-label` | label.toolbar |
 | `toolbar` | `role` | 'toolbar' |
 | `counter` | `aria-live` | 'polite' |
@@ -216,8 +221,10 @@ open 与 index 双受控；translations 换工具条的可及名与计数文案
 | `positioner` | `data-state` | 'open' \| 'closed' |
 | `content` | `data-state` | 'open' \| 'closed' |
 | `viewport` | `data-dragging` | ''（条件成立时才出现） |
+| `viewport` | `data-loading` | ''（条件成立时才出现） |
 | `viewport` | `data-state` | 'open' \| 'closed' |
 | `image` | `data-dragging` | ''（条件成立时才出现） |
+| `image` | `data-loading` | ''（条件成立时才出现） |
 | `image` | `data-state` | 'open' \| 'closed' |
 | `toolbar` | `data-state` | 'open' \| 'closed' |
 | `counter` | `data-count` | String(count) |
@@ -228,7 +235,7 @@ open 与 index 双受控；translations 换工具条的可及名与计数文案
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-image-viewer-action-bg-active` · `--xh-image-viewer-action-bg-hover` · `--xh-image-viewer-backdrop-bg` · `--xh-image-viewer-backdrop-blur` · `--xh-image-viewer-backdrop-layer` · `--xh-image-viewer-chrome-bg` · `--xh-image-viewer-close-bg-active` · `--xh-image-viewer-close-bg-hover` · `--xh-image-viewer-close-radius` · `--xh-image-viewer-close-size` · `--xh-image-viewer-counter-padding` · `--xh-image-viewer-fg` · `--xh-image-viewer-icon-size` · `--xh-image-viewer-layer` · `--xh-image-viewer-overlay-radius` · `--xh-image-viewer-toolbar-gap` · `--xh-image-viewer-toolbar-padding` · `--xh-image-viewer-toolbar-radius`
+`--xh-image-viewer-action-bg-active` · `--xh-image-viewer-action-bg-hover` · `--xh-image-viewer-backdrop-bg` · `--xh-image-viewer-backdrop-blur` · `--xh-image-viewer-backdrop-layer` · `--xh-image-viewer-chrome-bg` · `--xh-image-viewer-close-bg-active` · `--xh-image-viewer-close-bg-hover` · `--xh-image-viewer-close-radius` · `--xh-image-viewer-close-size` · `--xh-image-viewer-counter-padding` · `--xh-image-viewer-fg` · `--xh-image-viewer-icon-size` · `--xh-image-viewer-layer` · `--xh-image-viewer-loading-bg` · `--xh-image-viewer-loading-radius` · `--xh-image-viewer-loading-size` · `--xh-image-viewer-overlay-radius` · `--xh-image-viewer-toolbar-gap` · `--xh-image-viewer-toolbar-padding` · `--xh-image-viewer-toolbar-radius`
 
 ## 动效
 

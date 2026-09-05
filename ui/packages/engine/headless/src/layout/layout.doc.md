@@ -20,6 +20,13 @@
 - 展开与折叠各一档宽度，两档都接受任意 CSS 长度。
 - `headerFixed` 与 `siderFixed` 各自独立；两个一起用时侧栏自动让开头的高度。
 
+## 响应式
+
+- `siderBreakpoint` 给一档（`sm` / `md` / `lg` / `xl`），视口窄于这一档时侧栏按折叠宽显示。
+  它只换宽度、不改折叠态：折叠态归 `siderCollapsed` 那条通道，两者互不干扰。
+- 断点跨过去时发 `onSiderBreakpoint`，挂载时也发一次当前值。要在窄屏把侧栏整个换成[抽屉](./drawer)、
+  或真的把它折起来（`siderCollapsed` 置真，内容随之不换行），接这个回调。
+
 ## 组合
 
 - `sider` 里放[侧栏导航](./side-nav)，`header` 里放[菜单栏](./menubar)或[工具栏](./toolbar)，`content` 里放[页头](./page-header)。

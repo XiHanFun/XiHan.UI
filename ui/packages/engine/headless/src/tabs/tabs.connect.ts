@@ -25,6 +25,8 @@ export function connectTabs<T extends PropTypes>(
   const dir = prop('dir')
   const loop = prop('loop') ?? true
   const horizontal = orientation === 'horizontal'
+  const closable = !!prop('closable')
+  const indicator = context.get('indicator')
 
   // collection 推出的条目元信息：标签文本与禁用都在这里定案，trigger 部件只报 value
   const collection: TabsNodeMeta[] = (prop('collection') ?? []).map(node => ({
@@ -217,6 +219,17 @@ export function connectTabs<T extends PropTypes>(
           navigate(event.currentTarget as HTMLElement, intent)
           return
         }
+        // 可关闭时 Delete / Backspace 关掉焦点所在那一条，只发意图不改标签序
+        if (closable && (event.key === 'Delete' || event.key === 'Backspace') && focusedValue != null
+          && !metaOf.get(focusedValue)?.disabled) {
+          event.preventDefault()
+          send({
+            type: 'TAB.CLOSE',
+            value: focusedValue,
+            values: collection.map(node => node.value).filter(v => v !== focusedValue),
+          })
+          return
+        }
         // manual 模式的确认键；automatic 下焦点已带着选中一起走，这里是幂等的
         if (event.key === 'Enter' || event.key === ' ')
           activate(event)
@@ -257,6 +270,7 @@ export function connectTabs<T extends PropTypes>(
       'data-dragging': dataAttr(draggingTab === item.value),
       'data-drop': dropSide(item.value),
       'data-draggable': dataAttr(reorderable && !itemDisabled(item)),
+      'data-closable': dataAttr(closable && !itemDisabled(item)),
       'onPointerDown': (event: PointerEvent) => onTabDragStart(event, item),
       'onClick': () => {
         if (!itemDisabled(item))
@@ -264,6 +278,29 @@ export function connectTabs<T extends PropTypes>(
       },
       'onFocus': () => send({ type: 'TRIGGER.FOCUS', value: item.value }),
     }),
+    // 主轴上的位置与长度由机器量成内联样式（它量得到，样式表量不到）；
+    // 交叉轴的贴边与粗细归皮肤
+    getIndicatorProps: () => normalize.element({
+      ...parts.indicator.attrs,
+      'aria-hidden': true,
+      'data-orientation': orientation,
+      'data-value': value ?? undefined,
+      'hidden': indicator == null || undefined,
+      // 只写主轴那一条
+      'style': indicator
+        ? (horizontal
+            ? { insetInlineStart: `${indicator.inlineStart}px`, inlineSize: `${indicator.inlineSize}px` }
+            : { insetBlockStart: `${indicator.blockStart}px`, blockSize: `${indicator.blockSize}px` })
+        : undefined,
+    }),
+
+    // 标签之间的细线纯装饰
+    getSeparatorProps: () => normalize.element({
+      ...parts.separator.attrs,
+      'aria-hidden': true,
+      'data-orientation': orientation,
+    }),
+
     // 全部 panel 常挂，靠 hidden 显隐：不做懒挂载，panel 内的滚动位置与表单态才留得住
     getContentProps: item => normalize.element({
       ...parts.content.attrs,

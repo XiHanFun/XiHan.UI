@@ -1,0 +1,289 @@
+// 全局命令式轻提示服务：自带一个挂到浮层落点的宿主容器与默认模板，
+// info/success 等命令在任意模块作用域可调（请求拦截器、store），不要求调用点在文档树的某一处。
+//
+// 摞落在哪儿是整个服务的口径，因此库里没有对应的自定义元素；
+// 队列跑的是 notification 那台队列机器，上限、挤条与合并计数全库一份实现。
+import type { Service } from '@xihan-ui/core'
+import type { NotificationApi, NotificationSchema, ToastRecord, ToastType } from '@xihan-ui/headless'
+import type { XhToastElement } from '../elements/toast'
+import type { ToastCreateOptions, ToastMessageOptions, ToastPromiseOptions, ToastService, ToastServiceOptions } from './types'
+import { createService, DATA_INERT_EXEMPT } from '@xihan-ui/core'
+import {
+  connectNotification,
+  notificationMachine,
+  TOAST_DURATION,
+  TOAST_GAP,
+  TOAST_PLACEMENT,
+  toastAnatomy,
+  visibleNotifications,
+} from '@xihan-ui/headless'
+import { withXhConfig } from '../config'
+import { wcNormalize } from '../dom/normalize'
+import { createLitRuntime } from '../runtime/lit-runtime'
+import { createServiceHolder, createServiceReactiveHost, partNode, reportServiceFailure } from './host'
+import { defineFeedbackElements } from './register'
+
+const parts = toastAnatomy.build()
+
+/**
+ * 这一条会不会自己走掉。loading 一直挂着，duration <= 0 与非有限值也是。
+ * 走不掉的必须留个出口，否则界面上一个可点、可聚焦的节点都没有。
+ */
+function selfDismissing(toast: ToastRecord, fallback: number | undefined): boolean {
+  if (toast.type === 'loading')
+    return false
+  const duration = toast.duration ?? fallback ?? TOAST_DURATION
+  return Number.isFinite(duration) && duration > 0
+}
+
+/** 合并过的在标题后追加计数，没并过就是原话。 */
+function toastTitle(toast: ToastRecord): string | undefined {
+  const count = toast.count ?? 1
+  if (count <= 1 || toast.title == null)
+    return toast.title
+  return `${toast.title} ×${count}`
+}
+
+export function createToastService(options: ToastServiceOptions = {}): ToastService {
+  if (typeof document === 'undefined')
+    throw new Error('createToastService 需要 document；SSR 里请等到客户端再创建')
+
+  defineFeedbackElements()
+
+  const {
+    target,
+    placement = TOAST_PLACEMENT,
+    gap = TOAST_GAP,
+    max = 5,
+    dedupe,
+    toastTranslations,
+    ...defaults
+  } = options
+  const { holder, release } = createServiceHolder(target)
+
+  // 摞没有对应的自定义元素，属性直接从解剖里取
+  const group = document.createElement('div')
+  for (const [name, value] of Object.entries(parts.group.attrs))
+    group.setAttribute(name, String(value))
+  group.setAttribute('data-placement', placement)
+  group.style.gap = `${gap}px`
+  // 模态浮层给背景施加 inert 时跳过这一摞：轻提示画在遮罩之上，
+  // 一并罩住就成了看得见、点不动、读屏也跳过
+  group.setAttribute(DATA_INERT_EXEMPT, '')
+  holder.appendChild(group)
+
+  // 行内动作的回调按 id 存这儿：队列记录只放可搬运的纯数据，回调进不去
+  const actions = new Map<string, () => void>()
+  const nodes = new Map<string, XhToastElement>()
+  // 这一条当下渲染成了什么形状；变了才重搭子节点，没变只刷属性
+  const shapes = new Map<string, string>()
+  let pausedAll = false
+  let seq = 0
+  let disposed = false
+
+  const machineProps = (): Partial<NotificationSchema['props']> => withXhConfig('notification', {
+    placement,
+    max,
+    dedupe,
+    duration: defaults.duration,
+    removeDelay: defaults.removeDelay,
+    pauseOnPageIdle: defaults.pauseOnPageIdle,
+  }, holder)
+
+  const host = createServiceReactiveHost(() => render())
+  const runtime = createLitRuntime(host)
+  let service: Service<NotificationSchema> | null = null
+  try {
+    service = createService(notificationMachine, { props: machineProps, runtime })
+    runtime.mount()
+  }
+  catch (error) {
+    reportServiceFailure('toast', error)
+    service = null
+    release()
+  }
+
+  const api = (): NotificationApi | null => (service ? connectNotification(service, wcNormalize) : null)
+
+  function ensureNode(item: ToastRecord): XhToastElement {
+    // 到点自己走的默认不出叉，多一颗叉就多一个「要不要点」的判断；
+    // 走不掉的反过来默认给叉。两者都能用 closable 显式改口
+    const closable = item.closable ?? !selfDismissing(item, defaults.duration)
+    let node = nodes.get(item.id)
+    if (!node) {
+      node = document.createElement('xh-toast') as XhToastElement
+      nodes.set(item.id, node)
+    }
+    const shape = `${closable ? 'c' : ''}${item.actionLabel ? 'a' : ''}`
+    if (shapes.get(item.id) !== shape) {
+      shapes.set(item.id, shape)
+      const root = partNode('div', 'root')
+      // 节点平铺，不再套一层行容器：横排是皮肤的事，模板套一层只会与它打架。
+      // 字形不在这儿渲染：它由皮肤按 root 上的 data-severity 画
+      root.appendChild(partNode('div', 'title'))
+      if (item.actionLabel)
+        root.appendChild(partNode('button', 'action-trigger'))
+      if (closable)
+        root.appendChild(partNode('button', 'close-trigger'))
+      node.replaceChildren(root)
+    }
+    const action = node.querySelector<HTMLElement>('[data-xh-part="action-trigger"]')
+    if (action && action.textContent !== (item.actionLabel ?? ''))
+      action.textContent = item.actionLabel ?? ''
+
+    node.toastId = item.id
+    node.titleText = toastTitle(item)
+    // 语气跟着机器的缺省走（type 缺席即 info）
+    node.type = item.type ?? 'info'
+    // 单条 > 服务档 > 机器内建默认
+    node.duration = item.duration ?? defaults.duration
+    node.removeDelay = item.removeDelay ?? defaults.removeDelay
+    node.closable = closable
+    node.pauseOnPageIdle = defaults.pauseOnPageIdle
+    node.paused = pausedAll
+    node.translations = toastTranslations
+    return node
+  }
+
+  /** 队列里没有的节点撤掉，剩下的按记录刷一遍属性并排到该在的位置。 */
+  function render(): void {
+    if (!service || disposed)
+      return
+    const items = visibleNotifications(service.context.get('items'), max, placement)
+    const living = new Set(items.map(item => item.id))
+    for (const [id, node] of nodes) {
+      if (living.has(id))
+        continue
+      node.remove()
+      nodes.delete(id)
+      shapes.delete(id)
+    }
+    group.setAttribute('data-count', String(items.length))
+    // 队列空着时整面定位面撤掉：留着白白多一个罩住整块视口的合成层
+    group.toggleAttribute('hidden', items.length === 0)
+
+    let previous: Element | null = null
+    for (const item of items) {
+      const node = ensureNode(item)
+      // 队列顺序就是视觉顺序：位置对不上就搬过去，对得上不动它
+      const anchor: Element | null = previous ? previous.nextElementSibling : group.firstElementChild
+      if (anchor !== node)
+        group.insertBefore(node, anchor)
+      previous = node
+    }
+  }
+
+  function remove(id: string): void {
+    actions.delete(id)
+    api()?.dismiss(id)
+  }
+
+  /** 走完退场的那条从队列里删掉。 */
+  const onStatus = (event: Event): void => {
+    const el = event.target as Element | null
+    if (el?.tagName.toLowerCase() !== 'xh-toast')
+      return
+    const detail = (event as CustomEvent<{ id: string, status: string }>).detail
+    if (detail?.status === 'unmounted')
+      remove(detail.id)
+  }
+  /** 行内动作按 id 现查那张回调表。 */
+  const onPress = (event: Event): void => {
+    const el = event.target as Element | null
+    if (el?.tagName.toLowerCase() !== 'xh-toast')
+      return
+    const detail = (event as CustomEvent<{ id: string }>).detail
+    if (detail?.id)
+      actions.get(detail.id)?.()
+  }
+  group.addEventListener('status-change', onStatus)
+  group.addEventListener('action', onPress)
+
+  /**
+   * 宿主没建起来时命令一律空转：把提示丢掉好过让调用点（拦截器、store）连锁崩掉。
+   * 已卸载则是另一回事——那是调用方拿着一个死服务在用，明说好过静默吞掉。
+   */
+  const alive = (): boolean => {
+    if (disposed)
+      throw new Error('toast 服务已卸载')
+    return service != null
+  }
+
+  /** 入队一条；回调另存一张表，队列记录里只留文案。 */
+  const create = (opts: ToastCreateOptions = {}): string => {
+    const { onAction, ...record } = opts
+    const id = api()!.create({ ...record, id: record.id ?? `toast-${++seq}` })
+    if (onAction)
+      actions.set(id, onAction)
+    return id
+  }
+
+  const sugar = (type: ToastType) => (message: string, opts: ToastMessageOptions = {}): string =>
+    alive() ? create({ ...opts, type, title: message }) : ''
+
+  return {
+    create: opts => (alive() ? create(opts) : ''),
+    update: (id, opts) => {
+      if (alive())
+        api()!.update(id, opts)
+    },
+    dismiss: (id) => {
+      if (alive())
+        remove(id)
+    },
+    dismissAll: () => {
+      if (alive()) {
+        actions.clear()
+        api()!.dismissAll()
+      }
+    },
+    info: sugar('info'),
+    success: sugar('success'),
+    warning: sugar('warning'),
+    error: sugar('error'),
+    loading: sugar('loading'),
+    promise: <T>(input: Promise<T> | (() => Promise<T>), opts: ToastPromiseOptions<T>): Promise<T> => {
+      const { loading, success, error, ...rest } = opts
+      const running = typeof input === 'function' ? input() : input
+      if (!alive())
+        return running
+      const id = create({ ...rest, type: 'loading', title: loading })
+      return running.then(
+        (value) => {
+          if (!disposed)
+            api()?.update(id, { type: 'success', title: typeof success === 'function' ? success(value) : success })
+          return value
+        },
+        (reason: unknown) => {
+          if (!disposed)
+            api()?.update(id, { type: 'error', title: typeof error === 'function' ? error(reason) : error })
+          throw reason
+        },
+      )
+    },
+    pauseAll: () => {
+      if (alive()) {
+        pausedAll = true
+        render()
+      }
+    },
+    resumeAll: () => {
+      if (alive()) {
+        pausedAll = false
+        render()
+      }
+    },
+    dispose: () => {
+      disposed = true
+      group.removeEventListener('status-change', onStatus)
+      group.removeEventListener('action', onPress)
+      runtime.unmount()
+      service = null
+      actions.clear()
+      nodes.clear()
+      shapes.clear()
+      group.remove()
+      release()
+    },
+  }
+}

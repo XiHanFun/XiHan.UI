@@ -16,6 +16,7 @@
 - 逐条可以有自己的语气（成功 / 失败 / 进行中）。
 - 内容可以固定在一侧，也可以左右交替。
 - 支持横排。
+- `label` 是与内容对置的那一列，装这一条的坐标（日期、版本号）；逐条交替排布时时间戳因此不跟着内容左右横跳。
 
 ## 示例
 
@@ -49,12 +50,18 @@ size 换的是圆点直径、条目间距与字号，不传 size 即默认档
 
 <XhDemo src="timeline/05-size" />
 
+### 坐标列
+
+label 与内容对置：逐条交替排布时时间戳仍停在同一侧，不跟着内容左右横跳
+
+<XhDemo src="timeline/06-label" />
+
 ## 产物
 
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-timeline>` |
-| Vue 组件 | `XhTimelineConnector` `XhTimelineContent` `XhTimelineDescription` `XhTimelineIndicator` `XhTimelineItem` `XhTimelineRoot` `XhTimelineTime` `XhTimelineTitle` |
+| Vue 组件 | `XhTimelineConnector` `XhTimelineContent` `XhTimelineDescription` `XhTimelineIndicator` `XhTimelineItem` `XhTimelineLabel` `XhTimelineRoot` `XhTimelineTime` `XhTimelineTitle` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/timeline.css` |
 
@@ -62,7 +69,7 @@ size 换的是圆点直径、条目间距与字号，不传 size 即默认档
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="timeline"`：**`root`** · **`item`** · `indicator` · `connector` · `content` · `title` · `description` · `time`
+`data-scope="timeline"`：**`root`** · **`item`** · `label` · `indicator` · `connector` · `content` · `title` · `description` · `time`
 
 ## Props
 
@@ -80,6 +87,7 @@ size 换的是圆点直径、条目间距与字号，不传 size 即默认档
 | --- | --- | --- |
 | `getRootProps` | `() => T['element']` |  |
 | `getItemProps` | `() => T['element']` |  |
+| `getLabelProps` | `() => T['element']` | 与内容对置的那一列，装这一条的坐标；排布随整条线的方向与侧别走。 |
 | `getIndicatorProps` | `(props: TimelineItemProps) => T['element']` | 圆点的语气取自它所属的条目。 |
 | `getConnectorProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |
@@ -119,6 +127,8 @@ size 换的是圆点直径、条目间距与字号，不传 size 即默认档
 | `root` | `data-size` | props.size |
 | `item` | `data-orientation` | props.orientation |
 | `item` | `data-placement` | props.placement |
+| `label` | `data-orientation` | props.orientation |
+| `label` | `data-placement` | props.placement |
 | `indicator` | `data-tone` | item.tone |
 | `connector` | `data-orientation` | props.orientation |
 
@@ -126,7 +136,7 @@ size 换的是圆点直径、条目间距与字号，不传 size 即默认档
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-timeline-connector-bg` · `--xh-timeline-connector-min-length` · `--xh-timeline-connector-radius` · `--xh-timeline-connector-thickness` · `--xh-timeline-content-gap` · `--xh-timeline-content-pb` · `--xh-timeline-content-pt` · `--xh-timeline-description-fg` · `--xh-timeline-description-font-size` · `--xh-timeline-fg` · `--xh-timeline-gutter` · `--xh-timeline-indicator-bg` · `--xh-timeline-indicator-fg` · `--xh-timeline-indicator-font-size` · `--xh-timeline-indicator-radius` · `--xh-timeline-indicator-size` · `--xh-timeline-item-gap` · `--xh-timeline-time-fg` · `--xh-timeline-time-font-size` · `--xh-timeline-title-fg` · `--xh-timeline-title-font-size` · `--xh-timeline-title-font-weight`
+`--xh-timeline-connector-bg` · `--xh-timeline-connector-min-length` · `--xh-timeline-connector-radius` · `--xh-timeline-connector-thickness` · `--xh-timeline-content-gap` · `--xh-timeline-content-pb` · `--xh-timeline-content-pt` · `--xh-timeline-description-fg` · `--xh-timeline-description-font-size` · `--xh-timeline-fg` · `--xh-timeline-gutter` · `--xh-timeline-indicator-bg` · `--xh-timeline-indicator-fg` · `--xh-timeline-indicator-font-size` · `--xh-timeline-indicator-radius` · `--xh-timeline-indicator-size` · `--xh-timeline-item-gap` · `--xh-timeline-label-fg` · `--xh-timeline-label-font-size` · `--xh-timeline-time-fg` · `--xh-timeline-time-font-size` · `--xh-timeline-title-fg` · `--xh-timeline-title-font-size` · `--xh-timeline-title-font-weight`
 
 ## RTL
 

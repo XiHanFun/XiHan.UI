@@ -176,6 +176,7 @@ export function connectSortable<T extends PropTypes>(
         'aria-disabled': off ? 'true' : 'false',
         'aria-pressed': isDragging ? 'true' : 'false',
         'data-dragging': dataAttr(isDragging),
+        'data-disabled': dataAttr(off),
         // 不关掉这一轴的默认手势，触屏上手指一划就被系统收走（pointercancel）
         'style': { touchAction: off ? undefined : 'none' },
         'onPointerDown': (event: PointerEvent) => {
@@ -205,6 +206,41 @@ export function connectSortable<T extends PropTypes>(
             send({ type: 'ITEM.PICKUP', id })
           }
         },
+      })
+    },
+
+    /**
+     * 落点线画在松手后这一项会插进去的那条缝上：往后挪落在目标项的后缘，往前挪落在它的前缘。
+     * 起点钉在容器左上角、位移写 transform：矩形是屏幕坐标，换成逻辑属性会在 rtl 下落到另一头。
+     * 四个键每帧都写全（用不上的写空串清掉）：WC 侧 Object.assign 到 style 上不会撤掉上一帧的旧键。
+     */
+    getDropIndicatorProps: () => {
+      const rect = dragging ? context.get('rects')[to] : undefined
+      const origin = context.get('rootOrigin')
+      const active = !!rect && !!origin && from >= 0 && to !== from
+      let offset = ''
+      let blockSize = ''
+      if (active && rect && origin) {
+        const after = to > from
+        if (axis === 'vertical') {
+          offset = `translate3d(0, ${(after ? rect.y + rect.height : rect.y) - origin.y}px, 0)`
+        }
+        else {
+          const x = (after ? rect.x + rect.width : rect.x) - origin.x
+          // 换行网格里线只有目标那一格那么高，单轴横排则整条铺满容器（高度归皮肤）
+          offset = axis === 'both'
+            ? `translate3d(${x}px, ${rect.y - origin.y}px, 0)`
+            : `translate3d(${x}px, 0, 0)`
+          blockSize = axis === 'both' ? `${rect.height}px` : ''
+        }
+      }
+      return normalize.element({
+        ...parts['drop-indicator'].attrs,
+        // 落点由播报区念给读屏，这条线只是同一件事的视觉形态
+        'aria-hidden': true,
+        'data-orientation': axis,
+        'hidden': !active || undefined,
+        'style': { left: '0px', top: '0px', transform: offset, blockSize },
       })
     },
 

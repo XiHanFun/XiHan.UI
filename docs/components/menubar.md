@@ -86,7 +86,7 @@ XhMenubarSub 在菜单栏的一张菜单里再嵌一层：触发条目双重身�
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-menubar>` |
-| Vue 组件 | `XhMenubarContent` `XhMenubarGroup` `XhMenubarGroupLabel` `XhMenubarItem` `XhMenubarItemIndicator` `XhMenubarItemText` `XhMenubarPositioner` `XhMenubarRoot` `XhMenubarSeparator` `XhMenubarSub` `XhMenubarSubTrigger` `XhMenubarTrigger` |
+| Vue 组件 | `XhMenubarArrow` `XhMenubarContent` `XhMenubarGroup` `XhMenubarGroupLabel` `XhMenubarItem` `XhMenubarItemDescription` `XhMenubarItemIndicator` `XhMenubarItemText` `XhMenubarPositioner` `XhMenubarRoot` `XhMenubarSeparator` `XhMenubarSub` `XhMenubarSubTrigger` `XhMenubarTrigger` |
 | 组合式函数 | `useMenubar` |
 | 状态机 | `menubarMachine` |
 | 皮肤 | `@xihan-ui/styles/menubar.css` |
@@ -95,7 +95,7 @@ XhMenubarSub 在菜单栏的一张菜单里再嵌一层：触发条目双重身�
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="menubar"`：**`root`** · **`trigger`** · `positioner` · **`content`** · **`item`** · `item-text` · `item-indicator` · `separator` · `group` · `group-label`
+`data-scope="menubar"`：**`root`** · **`trigger`** · `positioner` · **`content`** · **`item`** · `item-text` · `item-indicator` · `item-description` · `separator` · `group` · `group-label` · `arrow`
 
 ## Props
 
@@ -177,9 +177,11 @@ XhMenubarSub 在菜单栏的一张菜单里再嵌一层：触发条目双重身�
 | `getItemProps` | `(props: MenubarItemProps) => T['element']` |  |
 | `getItemTextProps` | `(props: MenubarItemProps) => T['element']` |  |
 | `getItemIndicatorProps` | `(props: MenubarItemProps) => T['element']` |  |
+| `getItemDescriptionProps` | `(props: MenubarItemProps) => T['element']` |  |
 | `getSeparatorProps` | `() => T['element']` |  |
 | `getGroupProps` | `(props: MenubarGroupProps) => T['element']` |  |
 | `getGroupLabelProps` | `(props: MenubarGroupProps) => T['element']` |  |
+| `getArrowProps` | `(props: MenubarContentProps) => T['element']` |  |
 
 ## 键盘
 
@@ -227,6 +229,7 @@ XhMenubarSub 在菜单栏的一张菜单里再嵌一层：触发条目双重身�
 | `separator` | `role` | 'separator' |
 | `group` | `aria-labelledby` | `group-label` 部件的 id |
 | `group` | `role` | 'group' |
+| `arrow` | `aria-hidden` | 'true' |
 
 ## 样式
 
@@ -254,12 +257,13 @@ XhMenubarSub 在菜单栏的一张菜单里再嵌一层：触发条目双重身�
 | `content` | `data-instant` | ''（条件成立时才出现） |
 | `content` | `data-placement` | 定位引擎算出的实际落位 \| undefined |
 | `content` | `data-state` | 'open' \| 'closed' |
+| `arrow` | `data-placement` | 定位引擎算出的实际落位 |
 
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-menubar-bg` · `--xh-menubar-border` · `--xh-menubar-content-bg` · `--xh-menubar-content-fg` · `--xh-menubar-content-gap` · `--xh-menubar-content-px` · `--xh-menubar-content-py` · `--xh-menubar-content-radius` · `--xh-menubar-content-shadow` · `--xh-menubar-fg` · `--xh-menubar-gap` · `--xh-menubar-group-gap` · `--xh-menubar-group-label-fg` · `--xh-menubar-group-label-font-size` · `--xh-menubar-group-label-font-weight` · `--xh-menubar-group-label-px` · `--xh-menubar-group-label-py` · `--xh-menubar-icon-size` · `--xh-menubar-item-active-font-weight` · `--xh-menubar-item-bg-active` · `--xh-menubar-item-bg-hover` · `--xh-menubar-item-fg` · `--xh-menubar-item-font-size` · `--xh-menubar-item-gap` · `--xh-menubar-item-indicator-fg` · `--xh-menubar-item-indicator-size` · `--xh-menubar-item-leading` · `--xh-menubar-item-px` · `--xh-menubar-item-py` · `--xh-menubar-item-radius` · `--xh-menubar-layer` · `--xh-menubar-max-h` · `--xh-menubar-max-w` · `--xh-menubar-min-w` · `--xh-menubar-px` · `--xh-menubar-py` · `--xh-menubar-radius` · `--xh-menubar-separator-color` · `--xh-menubar-separator-my` · `--xh-menubar-separator-thickness` · `--xh-menubar-trigger-bg-active` · `--xh-menubar-trigger-bg-hover` · `--xh-menubar-trigger-font-size` · `--xh-menubar-trigger-gap` · `--xh-menubar-trigger-px` · `--xh-menubar-trigger-py` · `--xh-menubar-trigger-radius`
+`--xh-menubar-arrow-size` · `--xh-menubar-bg` · `--xh-menubar-border` · `--xh-menubar-content-bg` · `--xh-menubar-content-fg` · `--xh-menubar-content-gap` · `--xh-menubar-content-px` · `--xh-menubar-content-py` · `--xh-menubar-content-radius` · `--xh-menubar-content-shadow` · `--xh-menubar-fg` · `--xh-menubar-gap` · `--xh-menubar-group-gap` · `--xh-menubar-group-label-fg` · `--xh-menubar-group-label-font-size` · `--xh-menubar-group-label-font-weight` · `--xh-menubar-group-label-px` · `--xh-menubar-group-label-py` · `--xh-menubar-icon-size` · `--xh-menubar-item-active-font-weight` · `--xh-menubar-item-bg-active` · `--xh-menubar-item-bg-hover` · `--xh-menubar-item-description-fg` · `--xh-menubar-item-description-font-size` · `--xh-menubar-item-fg` · `--xh-menubar-item-font-size` · `--xh-menubar-item-gap` · `--xh-menubar-item-indicator-fg` · `--xh-menubar-item-indicator-size` · `--xh-menubar-item-leading` · `--xh-menubar-item-px` · `--xh-menubar-item-py` · `--xh-menubar-item-radius` · `--xh-menubar-layer` · `--xh-menubar-max-h` · `--xh-menubar-max-w` · `--xh-menubar-min-w` · `--xh-menubar-px` · `--xh-menubar-py` · `--xh-menubar-radius` · `--xh-menubar-separator-color` · `--xh-menubar-separator-my` · `--xh-menubar-separator-thickness` · `--xh-menubar-trigger-bg-active` · `--xh-menubar-trigger-bg-hover` · `--xh-menubar-trigger-font-size` · `--xh-menubar-trigger-gap` · `--xh-menubar-trigger-px` · `--xh-menubar-trigger-py` · `--xh-menubar-trigger-radius`
 
 ## 动效
 

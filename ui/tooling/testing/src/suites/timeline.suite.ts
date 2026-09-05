@@ -14,6 +14,7 @@ const timelineTree: FixtureNode = {
       part: 'item',
       tag: 'li',
       children: [
+        { part: 'label', text: '07-01' },
         { part: 'indicator', tag: 'span' },
         { part: 'connector', tag: 'span' },
         {
@@ -31,6 +32,7 @@ const timelineTree: FixtureNode = {
       tag: 'li',
       attrs: { tone: 'success' },
       children: [
+        { part: 'label', text: '07-01' },
         { part: 'indicator', tag: 'span' },
         { part: 'connector', tag: 'span' },
         {
@@ -48,6 +50,7 @@ const timelineTree: FixtureNode = {
       tag: 'li',
       attrs: { tone: 'danger' },
       children: [
+        { part: 'label', text: '07-02' },
         { part: 'indicator', tag: 'span' },
         { part: 'connector', tag: 'span' },
         {
@@ -67,6 +70,7 @@ const timelineTree: FixtureNode = {
 const FULL_ORDER = [
   'root',
   'item[0]',
+  'label[0]',
   'indicator[0]',
   'connector[0]',
   'content[0]',
@@ -74,6 +78,7 @@ const FULL_ORDER = [
   'title[0]',
   'description[0]',
   'item[1]',
+  'label[1]',
   'indicator[1]',
   'connector[1]',
   'content[1]',
@@ -81,6 +86,7 @@ const FULL_ORDER = [
   'title[1]',
   'description[1]',
   'item[2]',
+  'label[2]',
   'indicator[2]',
   'connector[2]',
   'content[2]',
@@ -96,13 +102,14 @@ export const timelineSuite: ConformanceSuite = {
   fixture: timelineTree,
   cases: [
     {
-      name: '整棵部件树各就各位：三条事件，每条一份圆点、连线与内容',
+      name: '整棵部件树各就各位：三条事件，每条一份坐标、圆点、连线与内容',
       spec: { apg: APG },
       initial: {
         order: FULL_ORDER,
         counts: {
           root: 1,
           item: 3,
+          label: 3,
           indicator: 3,
           connector: 3,
           content: 3,
@@ -154,6 +161,11 @@ export const timelineSuite: ConformanceSuite = {
             'data-orientation': 'horizontal',
             // 侧别不落到连线上：线走哪一列由条目的网格决定
             'data-placement': null,
+          },
+          // 坐标那一列排在内容对面，方向与侧别据部件自身的属性走
+          'label[0]': {
+            'data-orientation': 'horizontal',
+            'data-placement': 'alternate',
           },
         },
       },

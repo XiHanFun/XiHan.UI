@@ -1,5 +1,5 @@
 import type { Direction, Size } from '@xihan-ui/core'
-import type { JsonViewerApi, JsonViewerExpandedValueChangeDetails, JsonViewerNode, JsonViewerSchema, JsonViewerTranslations } from '@xihan-ui/headless'
+import type { JsonViewerApi, JsonViewerExpandedValueChangeDetails, JsonViewerNode, JsonViewerSchema, JsonViewerTranslations, JsonViewerVariant } from '@xihan-ui/headless'
 import { connectJsonViewer, jsonViewerAnatomy, jsonViewerMachine, jsonViewerMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -101,8 +101,9 @@ function scrollLayerOf(root: HTMLElement | null): HTMLElement | null {
  * @attr {boolean} loop - 上下键走到首尾回绕，默认关闭
  * @attr {'ltr'|'rtl'} dir - 文字方向，只对调左右方向键的展开/收起语义；不写即从 DOM 现读
  * @attr {'sm'|'md'|'lg'} size - 尺寸
+ * @attr {'plain'|'surface'} variant - 外框形态：surface 带描边与底色（缺省），plain 只留内容
  * @fires expanded-value-change - 展开集合变化；detail 为 `{ value: string[] }`
- * @csspart root - 组件根容器，由作者写出；承载 data-size
+ * @csspart root - 组件根容器，由作者写出；承载 data-size 与 data-variant
  * @csspart tree - role=tree 的树容器（键盘在此收口，焦点在树外时它兜底占 Tab 位）
  * @csspart item - 标量行，role=treeitem，带 data-value-type
  * @csspart item-key - 标量行的键名
@@ -114,6 +115,7 @@ function scrollLayerOf(root: HTMLElement | null): HTMLElement | null {
  * @csspart branch-text - 分支的键名
  * @csspart preview - 收起摘要（如 `{…} 3`），对读屏隐藏
  * @csspart branch-content - role=group 的子层容器，只在展开时存在
+ * @csspart empty - 一行也摊不出来时的占位，铺 translations.empty 那句话；有行可摊时带 hidden
  */
 export class XhJsonViewerElement extends XhElement {
   static override partContract = { anatomy: jsonViewerAnatomy, meta: jsonViewerMeta }
@@ -130,6 +132,7 @@ export class XhJsonViewerElement extends XhElement {
     maxItems: { converter: NUMBER_CONVERTER, attribute: 'max-items' },
     sortKeys: { converter: BOOLEAN_CONVERTER, attribute: 'sort-keys' },
     view: { attribute: 'view' },
+    variant: { converter: STRING_CONVERTER },
     loop: { converter: BOOLEAN_CONVERTER },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     size: { converter: STRING_CONVERTER },
@@ -144,6 +147,7 @@ export class XhJsonViewerElement extends XhElement {
   declare maxItems?: number
   declare sortKeys?: boolean
   declare view?: 'tree' | 'text'
+  declare variant?: JsonViewerVariant
   declare loop?: boolean
   declare direction?: Direction
   declare size?: Size
@@ -182,6 +186,7 @@ export class XhJsonViewerElement extends XhElement {
       // 布尔一律原样透传：属性不在即 undefined，把缺省交回 connect
       sortKeys: this.sortKeys,
       view: this.view,
+      variant: this.variant,
       loop: this.loop,
       dir: this.direction,
       size: this.size,
@@ -193,6 +198,8 @@ export class XhJsonViewerElement extends XhElement {
   /** 树容器与每一行都归本元素建，按路径留着复用。 */
   private treeEl: HTMLElement | undefined
   private textEl: HTMLElement | undefined
+  /** 空态那一格，两档共用一个；有行可摊时由 connect 给它打 hidden。 */
+  private emptyEl: HTMLElement | undefined
   private readonly rows = new Map<string, JsonRow>()
 
   /**
@@ -304,6 +311,8 @@ export class XhJsonViewerElement extends XhElement {
     const api = connectJsonViewer(this.ctrl.service, wcNormalize)
     this.spreader.spread(root, api.getRootProps() as Record<string, unknown>)
 
+    this.paintEmpty(root, api)
+
     // 原文档不铺行：root 里换成一个 pre，整块可框选可复制
     if (api.view === 'text') {
       const pre = this.textEl ?? (this.textEl = this.ownerDocument.createElement('pre'))
@@ -333,6 +342,18 @@ export class XhJsonViewerElement extends XhElement {
   }
 
   /**
+   * 空态那一格：铺 translations 里的兜底文案，挂在 root 的末尾、与两档滚动层同级。
+   * 有行可摊时 connect 给它打 hidden，它不占位置。
+   */
+  private paintEmpty(root: HTMLElement, api: JsonViewerApi): void {
+    const empty = this.emptyEl ?? (this.emptyEl = this.ownerDocument.createElement('div'))
+    if (empty.parentNode !== root)
+      root.appendChild(empty)
+    this.spreader.spread(empty, api.getEmptyProps() as Record<string, unknown>)
+    setText(empty, api.emptyText)
+  }
+
+  /**
    * 把条子接到此刻在场的那一档容器上。
    * 机器的追踪器在本轮渲染之前就跑完了，这一轮换掉的容器它看不见；
    * 换了档就再催一轮，下一轮的追踪器才把滚动监听与容器标记挪过去。
@@ -354,7 +375,7 @@ export class XhJsonViewerElement extends XhElement {
   private adopt(root: HTMLElement, keep: HTMLElement, drop: HTMLElement | undefined): void {
     drop?.remove()
     for (const child of [...root.children]) {
-      if (child !== keep && child.getAttribute('data-scope') !== 'scrollbar')
+      if (child !== keep && child !== this.emptyEl && child.getAttribute('data-scope') !== 'scrollbar')
         child.remove()
     }
     if (root.firstChild !== keep)

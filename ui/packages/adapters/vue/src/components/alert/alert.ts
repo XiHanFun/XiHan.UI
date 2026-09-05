@@ -43,6 +43,14 @@ export const XhAlertIndicator = defineComponent({
   },
 })
 
+export const XhAlertContent = defineComponent({
+  name: 'XhAlertContent',
+  setup(_, { slots }) {
+    const ctx = useAlertContext()
+    return () => h('div', ctx.api.value.getContentProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhAlertTitle = defineComponent({
   name: 'XhAlertTitle',
   setup(_, { slots }) {
@@ -56,6 +64,14 @@ export const XhAlertDescription = defineComponent({
   setup(_, { slots }) {
     const ctx = useAlertContext()
     return () => h('div', ctx.api.value.getDescriptionProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+export const XhAlertAction = defineComponent({
+  name: 'XhAlertAction',
+  setup(_, { slots }) {
+    const ctx = useAlertContext()
+    return () => h('div', ctx.api.value.getActionProps() as Record<string, unknown>, slots.default?.())
   },
 })
 

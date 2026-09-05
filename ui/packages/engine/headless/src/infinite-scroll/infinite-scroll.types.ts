@@ -34,6 +34,8 @@ export interface InfiniteScrollSchema extends MachineSchema {
   event:
     /** 哨兵进了可视区。 */
     | { type: 'SENTINEL.ENTER' }
+    /** 有人按了取下一页的按钮。与哨兵进可视区走同一段。 */
+    | { type: 'LOAD' }
     /** disabled / loading 被改写，重新落到对应的状态。 */
     | { type: 'MODE.SYNC' }
   tag: never
@@ -50,6 +52,8 @@ export interface InfiniteScrollApi<T extends PropTypes = PropTypes> {
   disabled: boolean
   getRootProps: () => T['element']
   getSentinelProps: () => T['element']
+  /** 取下一页的按钮。文案由作者写在按钮里，组件不代填。 */
+  getLoadMoreTriggerProps: () => T['button']
 }
 
 /** 读屏用的文案。本组件目前没有需要外露的文案，位先留着。 */

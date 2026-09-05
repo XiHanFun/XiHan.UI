@@ -1,4 +1,4 @@
-import type { Direction } from '@xihan-ui/core'
+import type { Direction, Size, Tone } from '@xihan-ui/core'
 import type {
   TransferFilter,
   TransferItem,
@@ -55,6 +55,11 @@ function stripNativeDisabled(el: HTMLElement): void {
  * @customElement xh-transfer
  * @attr {boolean} searchable - 每侧带一个搜索框；关掉时搜索框仍在 DOM 里但带 hidden
  * @attr {boolean} disabled - 整个控件禁用：条目转 aria-disabled，按钮与搜索框用原生 disabled
+ * @attr {boolean} read-only - 只读：两侧照常浏览与搜索，但勾选改不动、也搬不动
+ * @attr {boolean} invalid - 校验失败标注
+ * @attr {boolean} loading - 条目还在取：两侧列表报 aria-busy，在途占位顶上来、空态占位让位
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
+ * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @attr {boolean} one-way - 只能往右不能往回：往回搬那条路封死，右侧也不再接受勾选
  * @attr {boolean} loop - 列表内方向键走到尽头回绕，默认 true；写 loop="false" 关掉
  * @attr {'ltr'|'rtl'} dir - 文字方向，决定列表内哪个横向方向键是"搬向对面"，默认 ltr
@@ -68,6 +73,10 @@ function stripNativeDisabled(el: HTMLElement): void {
  * @csspart panel-count - 计数节点，只带 data-count / data-checked-count，文案由作者写
  * @csspart search - 本侧搜索框，须是原生 input；searchable 关掉时带 hidden
  * @csspart list - role=listbox 容器，键盘在此收口，也是 roving tabindex 的兜底位
+ * @csspart empty - 空态占位，须放在面板里当 list 的兄弟；本侧没有可见条目时由元素放它出面
+ * @csspart loading - 在途占位，与空态占位同一个位置，取数期间顶上来
+ * @csspart group - role=group 分组容器，须自带 value 属性标识身份；条目挂在它里面，两侧各挂一份
+ * @csspart group-label - 分组标题（本组 aria-labelledby 的目标），须放在 group 里
  * @csspart item - role=option 条目，须自带 value 属性标识身份；禁用写在 collection 里，不写在节点上
  * @csspart item-text - 条目文本
  * @csspart item-checkbox - 条目勾选标记（aria-hidden）；oneWay 下右侧的那一份带 hidden
@@ -90,6 +99,11 @@ export class XhTransferElement extends XhElement {
     filter: { attribute: false },
     searchable: { type: Boolean },
     disabled: { type: Boolean },
+    readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
+    invalid: { converter: BOOLEAN_CONVERTER },
+    loading: { converter: BOOLEAN_CONVERTER },
+    tone: { converter: STRING_CONVERTER },
+    size: { converter: STRING_CONVERTER },
     oneWay: { type: Boolean, attribute: 'one-way' },
     loop: { converter: BOOLEAN_CONVERTER },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
@@ -105,6 +119,11 @@ export class XhTransferElement extends XhElement {
   declare filter?: TransferFilter
   declare searchable?: boolean
   declare disabled?: boolean
+  declare readOnly?: boolean
+  declare invalid?: boolean
+  declare loading?: boolean
+  declare tone?: Tone
+  declare size?: Size
   declare oneWay?: boolean
   declare loop?: boolean
   declare direction?: Direction
@@ -132,6 +151,11 @@ export class XhTransferElement extends XhElement {
       filter: this.filter,
       searchable: this.searchable ?? false,
       disabled: this.disabled ?? false,
+      readOnly: this.readOnly,
+      invalid: this.invalid,
+      loading: this.loading,
+      tone: this.tone,
+      size: this.size,
       oneWay: this.oneWay ?? false,
       loop: this.loop,
       dir: this.direction,
@@ -215,6 +239,26 @@ export class XhTransferElement extends XhElement {
 
       for (const el of this.partsIn(panel, 'list'))
         this.spreader.spread(el, api.getListProps(props) as Record<string, unknown>)
+
+      for (const el of this.partsIn(panel, 'empty')) {
+        const empty = api.getEmptyProps(props) as Record<string, unknown>
+        this.spreader.spread(el, empty)
+        this.setPartHidden(el, empty.hidden === true)
+      }
+
+      for (const el of this.partsIn(panel, 'loading')) {
+        const pending = api.getLoadingProps(props) as Record<string, unknown>
+        this.spreader.spread(el, pending)
+        this.setPartHidden(el, pending.hidden === true)
+      }
+
+      // 分组是多实例 part：身份取自己的 value 属性加上所在面板的 side，组内标题跟着同一份身份
+      for (const el of this.partsIn(panel, 'group')) {
+        const group = { value: el.getAttribute('value') ?? '', side }
+        this.spreader.spread(el, api.getGroupProps(group) as Record<string, unknown>)
+        for (const label of this.partsIn(el, 'group-label'))
+          this.spreader.spread(label, api.getGroupLabelProps(group) as Record<string, unknown>)
+      }
 
       // 条目是多实例 part，逐个打：身份取作者写的 value，归属取它落在哪个面板里
       for (const el of this.partsIn(panel, 'item')) {

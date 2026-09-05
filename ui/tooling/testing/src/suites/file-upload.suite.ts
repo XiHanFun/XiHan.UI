@@ -89,6 +89,7 @@ function itemNode(index: number): FixtureNode {
     attrs: { index: String(index) },
     children: [
       { part: 'item-preview' },
+      { part: 'item-progress' },
       { part: 'item-name', tag: 'span' },
       { part: 'item-size-text', tag: 'span' },
       { part: 'item-delete-trigger', tag: 'button', text: '删除' },
@@ -193,17 +194,19 @@ export const fileUploadSuite: ConformanceSuite = {
           'list',
           'item[0]',
           'item-preview[0]',
+          'item-progress[0]',
           'item-name[0]',
           'item-size-text[0]',
           'item-delete-trigger[0]',
           'item[1]',
           'item-preview[1]',
+          'item-progress[1]',
           'item-name[1]',
           'item-size-text[1]',
           'item-delete-trigger[1]',
           'clear-trigger',
         ],
-        counts: { 'item': 2, 'item-preview': 2, 'item-name': 2, 'item-size-text': 2, 'item-delete-trigger': 2 },
+        counts: { 'item': 2, 'item-preview': 2, 'item-progress': 2, 'item-name': 2, 'item-size-text': 2, 'item-delete-trigger': 2 },
         parts: {
           'root': { 'data-empty': null },
           'list': { 'role': 'list', 'data-empty': null },
@@ -215,6 +218,9 @@ export const fileUploadSuite: ConformanceSuite = {
           'item-preview[0]': { 'aria-hidden': 'true', 'data-file-type': 'image/png' },
           // 系统给不出 MIME 时落成 unknown，皮肤才分得开"未知类型"与"属性没写"
           'item-preview[1]': { 'aria-hidden': 'true', 'data-file-type': 'unknown' },
+          // 没接上传器时没有传输快照，进度条不带相位、皮肤据此收起
+          'item-progress[0]': { 'aria-hidden': 'true', 'data-state': null },
+          'item-progress[1]': { 'aria-hidden': 'true', 'data-state': null },
           // 每条的删除按钮长得一模一样，不带文件名读屏念出来是一串"删除、删除"
           'item-delete-trigger[0]': { 'type': 'button', 'aria-label': 'Delete photo.png', 'disabled': null },
           'item-delete-trigger[1]': { 'type': 'button', 'aria-label': 'Delete notes.txt' },

@@ -68,6 +68,14 @@ export const tourSuite: ConformanceSuite = {
               { part: 'title' },
               { part: 'description' },
               { part: 'progress-text' },
+              {
+                part: 'progress-indicator',
+                children: [
+                  { part: 'progress-dot', attrs: { index: '0' } },
+                  { part: 'progress-dot', attrs: { index: '1' } },
+                  { part: 'progress-dot', attrs: { index: '2' } },
+                ],
+              },
               // 必须是 button：WC 侧由 fixture 的 tag 决定，div 不可聚焦、原生 disabled 也拦不住点击
               { part: 'prev-trigger', tag: 'button', text: '上一步' },
               { part: 'next-trigger', tag: 'button', text: '下一步' },
@@ -95,12 +103,16 @@ export const tourSuite: ConformanceSuite = {
           'title',
           'description',
           'progress-text',
+          'progress-indicator',
+          'progress-dot[0]',
+          'progress-dot[1]',
+          'progress-dot[2]',
           'prev-trigger',
           'next-trigger',
           'skip-trigger',
           'close-trigger',
         ],
-        counts: { root: 1, backdrop: 1, spotlight: 1, positioner: 1, content: 1, arrow: 1 },
+        counts: { 'root': 1, 'backdrop': 1, 'spotlight': 1, 'positioner': 1, 'content': 1, 'arrow': 1, 'progress-indicator': 1, 'progress-dot': 3 },
         parts: {
           'root': { 'data-state': 'closed', 'data-step': '0' },
           'backdrop': { 'aria-hidden': 'true', 'hidden': '', 'data-state': 'closed' },
@@ -118,6 +130,9 @@ export const tourSuite: ConformanceSuite = {
           'prev-trigger': { type: 'button', disabled: '' },
           'next-trigger': { type: 'button', disabled: null },
           'progress-text': { 'aria-live': 'polite', 'data-step': '0' },
+          'progress-indicator': { 'aria-hidden': 'true', 'data-step': '0', 'data-count': '3' },
+          'progress-dot[0]': { 'data-index': '0', 'data-current': '', 'data-complete': null },
+          'progress-dot[1]': { 'data-index': '1', 'data-current': null, 'data-complete': null },
         },
       },
     },
@@ -168,8 +183,11 @@ export const tourSuite: ConformanceSuite = {
           key: 'Enter',
           expect: {
             parts: {
-              root: { 'data-step': '1' },
-              content: { 'data-step': '1' },
+              'root': { 'data-step': '1' },
+              'content': { 'data-step': '1' },
+              // 走过的那颗改标 data-complete，当前那颗跟着换过去
+              'progress-dot[0]': { 'data-current': null, 'data-complete': '' },
+              'progress-dot[1]': { 'data-current': '', 'data-complete': null },
             },
             // 走步不是开合：这一下只发 value-change，不该有 open-change
             events: [{ type: 'value-change', detail: { value: 1 } }],
@@ -187,6 +205,7 @@ export const tourSuite: ConformanceSuite = {
               'positioner': { 'data-position': 'center' },
               'next-trigger': { 'data-last': '' },
               'progress-text': { 'data-step': '2' },
+              'progress-dot[2]': { 'data-current': '', 'data-complete': null },
             },
           },
         },

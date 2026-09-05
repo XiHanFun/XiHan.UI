@@ -1,4 +1,4 @@
-import type { Cleanup, Direction, Layer, MachineSchema, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig } from '@xihan-ui/core'
+import type { Cleanup, Direction, Layer, MachineSchema, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/core'
 
 // 适配器在挂载前填入 DOM 环境、定位引擎与元素 getter，缺省时弹出层相关副作用短路。
 export interface SideNavRefs {
@@ -71,6 +71,10 @@ export interface SideNavSchema extends MachineSchema {
     loop?: boolean
     /** 文字方向，默认 ltr；只对调左右方向键的「展开/收起」语义。 */
     dir?: Direction
+    /** 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 */
+    tone?: Tone
+    /** 尺寸：sm / md / lg。 */
+    size?: Size
     translations?: Partial<SideNavTranslations>
     /** 选中意图回调；受控时是唯一出口，非受控随内部写入一并通知。 */
     onValueChange?: (details: SideNavValueChangeDetails) => void

@@ -1,4 +1,4 @@
-<!-- 列表分组 | 面板插槽给出本侧此刻看得见的条目，据此分组渲染；小标题是普通节点，不入方向键也不入搬运 -->
+<!-- 列表分组 | 本侧此刻看得见的条目由组件给出，据此分组渲染；group 是 role=group 的段落壳，段标题不入方向键也不入搬运 -->
 <div id="transfer-grouped" style="inline-size: 100%; max-inline-size: 520px">
   <xh-transfer searchable>
     <div data-xh-part="root">
@@ -60,13 +60,15 @@
     ),
   }));
 
-  function labelNode(text) {
+  // 段落壳自报 value，组内标题由元素接上 aria-labelledby
+  function groupNode(group, items) {
     const el = document.createElement("div");
-    el.style.paddingBlock = "4px";
-    el.style.paddingInline = "8px";
-    el.style.color = "var(--xh-fg-subtle)";
-    el.style.fontSize = "12px";
-    el.textContent = text;
+    el.dataset.xhPart = "group";
+    el.setAttribute("value", group.key);
+    const label = document.createElement("span");
+    label.dataset.xhPart = "group-label";
+    label.textContent = group.label;
+    el.append(label, ...items.map(itemNode));
     return el;
   }
 
@@ -92,9 +94,9 @@
         const inGroup = shown.filter(
           (item) => groupOf.get(item.value) === group.key,
         );
-        // 本组一条都不剩时小标题跟着不出
+        // 本组一条都不剩时整段跟着不出
         if (inGroup.length === 0) continue;
-        nodes.push(labelNode(group.label), ...inGroup.map(itemNode));
+        nodes.push(groupNode(group, inGroup));
       }
       panel.list.replaceChildren(...nodes);
     }

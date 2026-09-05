@@ -97,6 +97,8 @@ orientation 只出 data-orientation 交给皮肤排版，role=group 不接受 ar
 | `invalid` | `boolean` |  | 校验失败标注，落到每个条目的 aria-invalid 上。 |
 | `name` | `string` |  | 表单字段名；给定后每个条目的隐藏输入才带 name，同名多值一并提交。 |
 | `orientation` | `Orientation` |  | 视觉排布，默认 vertical。只出 data-orientation，不出 aria-orientation。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定勾选方框用哪族颜色。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg，决定方框与文字的几何档位。 |
 | `onValueChange` | `(details: CheckboxGroupValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
 
 ## 事件
@@ -201,6 +203,8 @@ orientation 只出 data-orientation 交给皮肤排版，role=group 不接受 ar
 | `root` | `data-invalid` | ''（条件成立时才出现） |
 | `root` | `data-orientation` | props.orientation |
 | `root` | `data-readonly` | ''（条件成立时才出现） |
+| `root` | `data-size` | props.size |
+| `root` | `data-tone` | props.tone |
 | `select-all-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `select-all-trigger` | `data-readonly` | ''（条件成立时才出现） |
 | `select-all-trigger` | `data-state` | resolveCheckedState(value, prop('itemValues') ?? []) |

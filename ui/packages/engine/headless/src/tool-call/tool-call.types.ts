@@ -1,4 +1,4 @@
-import type { MachineSchema, PropTypes, Size, Tone } from '@xihan-ui/core'
+import type { ControlVariant, MachineSchema, PropTypes, Size, Tone } from '@xihan-ui/core'
 
 /**
  * 一次工具调用走到哪一步。
@@ -16,6 +16,16 @@ export type ToolCallPhase
 /** 这一档算不算「正在跑」。等人批准是在等，不是在跑。 */
 export function isToolCallRunning(phase: ToolCallPhase): boolean {
   return phase === 'input-streaming'
+}
+
+/** 这一档算不算已经落定。等人批准与还在跑都没落定，出错也是一种落定。 */
+export function isToolCallSettled(phase: ToolCallPhase): boolean {
+  return phase === 'output-available' || phase === 'output-error'
+}
+
+/** 这一档算不算跑砸了。 */
+export function isToolCallErrored(phase: ToolCallPhase): boolean {
+  return phase === 'output-error'
 }
 
 /** 阶段对应的语气，给徽章之类的纯样式联动用。 */
@@ -80,6 +90,8 @@ export interface ToolCallProps {
   startTime?: number
   /** 这次调用结束的时刻。**可能缺席**：还在跑，或者流被中止时兜底收尾不写这一个。 */
   endTime?: number
+  /** 形态：outline 描边（缺省档）、subtle 底色分区、ghost 无壳内联。 */
+  variant?: ControlVariant
   tone?: Tone
   size?: Size
   translations?: Partial<ToolCallTranslations>
@@ -90,6 +102,10 @@ export interface ToolCallApi<T extends PropTypes = PropTypes> {
   phase: ToolCallPhase
   /** 这一档算不算在跑。 */
   running: boolean
+  /** 这一档算不算已经落定：跑完了，或者跑砸了。 */
+  settled: boolean
+  /** 这一档算不算跑砸了。 */
+  errored: boolean
   disabled: boolean
   /** 读屏用的一句话，由宿主写进会话级的那一个播报区。 */
   statusText: string

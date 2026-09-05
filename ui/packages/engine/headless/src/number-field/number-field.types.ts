@@ -90,7 +90,11 @@ export interface NumberFieldApi<T extends PropTypes = PropTypes> {
   getLabelProps: () => T['label']
   /** 输入框与加减钮的包裹层：皮肤把视觉盒画在它身上，减在左、加在右、输入框居中。 */
   getControlProps: () => T['element']
+  /** 输入框前的装饰段（货币符、单位、图标）；对读屏隐藏，不参与名字链。 */
+  getPrefixProps: () => T['element']
   getInputProps: () => T['input']
+  /** 输入框后的装饰段；对读屏隐藏，不参与名字链。 */
+  getSuffixProps: () => T['element']
   getIncrementTriggerProps: () => T['button']
   getDecrementTriggerProps: () => T['button']
 }

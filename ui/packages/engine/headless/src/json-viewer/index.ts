@@ -21,6 +21,7 @@ export type {
   JsonViewerSchema,
   JsonViewerTranslations,
   JsonViewerValueType,
+  JsonViewerVariant,
   JsonViewerView,
   JsonViewerWalkOptions,
 } from './json-viewer.types'

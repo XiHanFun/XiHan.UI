@@ -7,4 +7,5 @@ export const statisticAnatomy = createAnatomy('statistic', [
   'value',
   'prefix',
   'suffix',
+  'trend',
 ])

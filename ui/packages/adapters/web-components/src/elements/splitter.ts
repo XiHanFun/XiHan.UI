@@ -55,6 +55,7 @@ const PANELS_CONVERTER = {
  * 矩形在拖拽开始那一刻才量，连接期一律不碰 DOM。
  * 键盘全在分隔条上：方向键按 step 推、Shift+方向键按 largeStep 推、
  * Home/End 取该面板眼下能到的两端、Enter 折叠或展开可折叠的面板。
+ * 拖动途中按 Escape 放弃这一场，布局退回按下那一刻。
  *
  * 面板与分隔条都要用 index 属性写明自己是第几个（`index="1"`）；
  * 第 index 条分隔条坐在第 index 与第 index+1 块面板之间，调整的是前一块。
@@ -89,6 +90,8 @@ export class XhSplitterElement extends XhElement {
     disabled: { converter: BOOLEAN_CONVERTER },
     step: { converter: NUMBER_CONVERTER },
     largeStep: { converter: NUMBER_CONVERTER, attribute: 'large-step' },
+    // 对象进不了属性，只作为 property 暴露
+    translations: { attribute: false },
   }
 
   declare sizes?: number[]
@@ -99,6 +102,8 @@ export class XhSplitterElement extends XhElement {
   declare disabled?: boolean
   declare step?: number
   declare largeStep?: number
+  /** 整组面板与各条分隔条的无障碍名。 */
+  declare translations?: SplitterSchema['props']['translations']
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly splitterScope = createScope(null, this.idGen)
@@ -128,6 +133,7 @@ export class XhSplitterElement extends XhElement {
       disabled: this.disabled ?? false,
       step: this.step,
       largeStep: this.largeStep,
+      translations: this.translations,
       onSizesChange: this.notifySize,
       onSizesChangeEnd: this.notifySizeEnd,
     }

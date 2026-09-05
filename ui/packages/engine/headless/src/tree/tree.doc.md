@@ -16,9 +16,11 @@
 ## 特性
 
 - 展开集合与选中集合两套值各自可受控。
+- `variant` 决定带不带外框，缺省 `surface`；`plain` 让树直接落在页面上。
 - `cascade` 与 `checkedStrategy` 决定勾父带不带子、以及回显给哪一层。
 - 支持只让叶子进选中集合、关键词过滤、子节点异步加载、拖放换父。
 - `expandOnClick` 决定点整行是否展开。
+- 空（`empty`）与在途（`loading`）两个相位各有部件，都放在 `root` 里当 `tree` 的兄弟；`loading` 为真时树报 `aria-busy`，空态让位。
 - `leafOrientation` 按结构判据横排：子节点全是叶子的那层跟着它走，其余恒竖排。
 - 节点上标 `childrenOrientation: 'horizontal' | 'vertical'` 指定「我这一层子节点怎么排」，
   比 `leafOrientation` 优先；标 `vertical` 能把树级的 `horizontal` 按回竖排。根层不受影响，恒竖排。

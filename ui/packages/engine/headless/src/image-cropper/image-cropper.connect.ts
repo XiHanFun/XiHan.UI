@@ -3,7 +3,15 @@ import type { ImageCropperApi, ImageCropperHandlePosition, ImageCropperRect, Ima
 import { dataAttr, focusItem } from '@xihan-ui/core'
 import { imageCropperAnatomy } from './image-cropper.anatomy'
 import { serializeCropRect } from './image-cropper.geometry'
-import { IMAGE_CROPPER_ZOOM } from './image-cropper.machine'
+import {
+  IMAGE_CROPPER_MAX_ROTATION,
+  IMAGE_CROPPER_MAX_ZOOM,
+  IMAGE_CROPPER_MIN_ROTATION,
+  IMAGE_CROPPER_MIN_ZOOM,
+  IMAGE_CROPPER_ROTATION_STEP,
+  IMAGE_CROPPER_ZOOM,
+  IMAGE_CROPPER_ZOOM_STEP,
+} from './image-cropper.machine'
 
 const parts = imageCropperAnatomy.build()
 
@@ -57,7 +65,7 @@ export function connectImageCropper<T extends PropTypes>(
   const value = context.get('value')
   const natural = context.get('natural')
   const zoom = context.get('zoom')
-  const rotation = prop('rotation') ?? 0
+  const rotation = context.get('rotation')
   const dragging = state.matches('dragging')
   const resizing = state.matches('resizing')
   const disabled = !!prop('disabled')
@@ -66,6 +74,12 @@ export function connectImageCropper<T extends PropTypes>(
   const shape = prop('shape') ?? 'rect'
   const minWidth = Math.max(0, prop('minWidth') ?? 0)
   const minHeight = Math.max(0, prop('minHeight') ?? 0)
+  const minZoom = prop('minZoom') ?? IMAGE_CROPPER_MIN_ZOOM
+  const maxZoom = prop('maxZoom') ?? IMAGE_CROPPER_MAX_ZOOM
+  const zoomStep = prop('zoomStep') ?? IMAGE_CROPPER_ZOOM_STEP
+  const minRotation = prop('minRotation') ?? IMAGE_CROPPER_MIN_ROTATION
+  const maxRotation = prop('maxRotation') ?? IMAGE_CROPPER_MAX_ROTATION
+  const rotationStep = prop('rotationStep') ?? IMAGE_CROPPER_ROTATION_STEP
 
   const translations = prop('translations')
   const label = {
@@ -74,6 +88,8 @@ export function connectImageCropper<T extends PropTypes>(
       const { key, en } = HANDLE_LABELS[position]
       return translations?.[key] ?? en
     },
+    zoomSlider: translations?.zoomSlider ?? 'Zoom',
+    rotateSlider: translations?.rotateSlider ?? 'Rotate',
     // 二维控件只报得出一个 aria-valuenow，另外三个数只能写进播报文本
     valueText: translations?.valueText
       ?? ((rect: ImageCropperRect) => `X ${rect.x}, Y ${rect.y}, width ${rect.width}, height ${rect.height}`),
@@ -126,6 +142,7 @@ export function connectImageCropper<T extends PropTypes>(
     getCropRect: () => ({ ...value }),
     setValue: next => send({ type: 'VALUE.SET', value: next }),
     setZoom: next => send({ type: 'ZOOM.SET', zoom: next }),
+    setRotation: next => send({ type: 'ROTATE.SET', rotation: next }),
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
@@ -242,6 +259,39 @@ export function connectImageCropper<T extends PropTypes>(
       ...parts.grid.attrs,
       'aria-hidden': true,
       'data-shape': shape,
+    }),
+
+    // 两条常用轴收进解剖：行为归原生 range，值仍旧只改呈现，不动裁切矩形
+    getZoomSliderProps: () => normalize.input({
+      ...parts['zoom-slider'].attrs,
+      'type': 'range',
+      'aria-label': label.zoomSlider,
+      'min': String(minZoom),
+      'max': String(maxZoom),
+      'step': String(zoomStep),
+      'value': String(zoom),
+      'disabled': disabled || undefined,
+      'data-disabled': dataAttr(disabled),
+      'onInput': (event: Event) => {
+        const el = event.currentTarget as HTMLInputElement
+        send({ type: 'ZOOM.SET', zoom: Number(el.value) })
+      },
+    }),
+
+    getRotateSliderProps: () => normalize.input({
+      ...parts['rotate-slider'].attrs,
+      'type': 'range',
+      'aria-label': label.rotateSlider,
+      'min': String(minRotation),
+      'max': String(maxRotation),
+      'step': String(rotationStep),
+      'value': String(rotation),
+      'disabled': disabled || undefined,
+      'data-disabled': dataAttr(disabled),
+      'onInput': (event: Event) => {
+        const el = event.currentTarget as HTMLInputElement
+        send({ type: 'ROTATE.SET', rotation: Number(el.value) })
+      },
     }),
 
     // 表单出口：裁切矩形靠这份原生输入随表单提交，序列化成 `x,y,width,height`

@@ -2,12 +2,13 @@ import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { ToastSchema, ToastStatus, ToastType } from '../toast'
 import type { NotificationApi, NotificationItemApi, NotificationPlacement, NotificationRecord, NotificationSchema, ResolvedNotification } from './notification.types'
 import { DATA_INERT_EXEMPT, dataAttr } from '@xihan-ui/core'
-import { resolveToastId, TOAST_DURATION, TOAST_REMOVE_DELAY } from '../toast'
+import { resolveToastDuration, resolveToastId, TOAST_DURATION, TOAST_REMOVE_DELAY } from '../toast'
 import { notificationAnatomy } from './notification.anatomy'
 import {
   NOTIFICATION_GAP,
   NOTIFICATION_PLACEMENT,
   NOTIFICATION_PLACEMENTS,
+  notificationMergeTarget,
   notificationPlacementOf,
   visibleNotifications,
 } from './notification.machine'
@@ -35,6 +36,7 @@ export function connectNotification<T extends PropTypes>(
     removeDelay: item.removeDelay ?? prop('removeDelay') ?? TOAST_REMOVE_DELAY,
     closable: item.closable ?? true,
     pauseOnPageIdle,
+    count: item.count ?? 1,
   })
 
   const list = visibleNotifications(context.get('items'), prop('max'), fallback).map(resolve)
@@ -50,8 +52,10 @@ export function connectNotification<T extends PropTypes>(
 
     create: (options = {}) => {
       const id = options.id ?? `notification-${scope.id}-${context.get('seq')}`
-      send({ type: 'ITEMS.CREATE', item: { ...options, id } })
-      return id
+      const item = { ...options, id }
+      send({ type: 'ITEMS.CREATE', item })
+      // 并进了别人就把那一条的 id 交回去：调用方随后的 update/dismiss 才寻址得到
+      return notificationMergeTarget(context.get('items'), item, prop('dedupe'))?.id ?? id
     },
     update: (id, options) => send({ type: 'ITEMS.UPDATE', id, patch: options }),
     dismiss: id => send({ type: 'ITEMS.DISMISS', id }),
@@ -126,6 +130,8 @@ export function connectNotificationItem<T extends PropTypes>(
   const closable = prop('closable') ?? true
   const id = resolveToastId(prop('id'), scope)
   const unmounted = status === 'unmounted'
+  const duration = resolveToastDuration(prop('type'), prop('duration'))
+  const autoDismiss = Number.isFinite(duration)
 
   return {
     id,
@@ -135,6 +141,7 @@ export function connectNotificationItem<T extends PropTypes>(
     description: prop('description'),
     paused,
     closable,
+    duration,
     remaining: context.get('remaining'),
     dismiss: () => send({ type: 'TOAST.DISMISS' }),
     pause: () => send({ type: 'TOAST.PAUSE', src: 'api' }),
@@ -192,6 +199,16 @@ export function connectNotificationItem<T extends PropTypes>(
       ...parts['item-action-trigger'].attrs,
       type: 'button',
       onClick: () => send({ type: 'TOAST.ACTION' }),
+    }),
+
+    // 倒计时条：时长交给皮肤的时长槽，走一遍就到头，按住计时时由皮肤停住动画。
+    // 不自动消失的那些没有可走的计时，整条收起
+    getItemProgressProps: () => normalize.element({
+      ...parts['item-progress'].attrs,
+      'aria-hidden': true,
+      'data-state': status,
+      'hidden': !autoDismiss || undefined,
+      'style': { '--xh-notification-progress-duration': autoDismiss ? `${duration}ms` : '' },
     }),
 
     getItemCloseTriggerProps: () => normalize.button({

@@ -177,6 +177,19 @@
     --xh-_hover-card-max-w: var(--xh-overlay-max-w-lg);
   }
 
+  [data-scope='hover-card'][data-part='title'] {
+    margin: 0;
+    font-size: var(--xh-hover-card-title-font-size, var(--xh-text-label-size));
+    font-weight: var(--xh-hover-card-title-font-weight, var(--xh-font-weight-semibold));
+    color: var(--xh-hover-card-title-fg, var(--xh-fg-default));
+  }
+
+  [data-scope='hover-card'][data-part='description'] {
+    margin: 0;
+    font-size: var(--xh-text-body-size);
+    color: var(--xh-hover-card-description-fg, var(--xh-fg-muted));
+  }
+
   /* 箭头的底色与描边色，几何在 overlay-arrow.css。
      交叉轴落点由定位引擎经内联自定义属性写进来，没给时退回居中 */
   [data-scope='hover-card'][data-part='arrow'] {

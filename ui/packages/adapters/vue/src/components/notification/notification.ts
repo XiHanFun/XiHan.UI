@@ -1,4 +1,4 @@
-import type { NotificationItemApi, NotificationOptions, NotificationPlacement, NotificationRecord, NotificationSchema, NotificationTranslations, ResolvedNotification, ToastSchema, ToastType } from '@xihan-ui/headless'
+import type { NotificationDedupe, NotificationItemApi, NotificationOptions, NotificationPlacement, NotificationRecord, NotificationSchema, NotificationTranslations, ResolvedNotification, ToastSchema, ToastType } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, Fragment, h } from 'vue'
@@ -28,6 +28,7 @@ export const XhNotificationRoot = defineComponent({
     defaultItems: { type: Array as PropType<NotificationRecord[]>, default: undefined },
     placement: { type: String as PropType<NotificationPlacement>, default: undefined },
     max: { type: Number, default: undefined },
+    dedupe: { type: String as PropType<NotificationDedupe>, default: undefined },
     gap: { type: Number, default: undefined },
     duration: { type: Number, default: undefined },
     removeDelay: { type: Number, default: undefined },
@@ -108,6 +109,8 @@ export const XhNotificationItem = defineComponent({
     removeDelay: { type: Number, default: undefined },
     closable: { type: Boolean, default: undefined },
     pauseOnPageIdle: { type: Boolean, default: undefined },
+    // 由宿主整摞一起按住计时；与指针、焦点那几路并存，最后一个松开才继续走
+    paused: { type: Boolean, default: undefined },
     translations: { type: Object as PropType<Partial<NotificationTranslations>>, default: undefined },
   },
   emits: {
@@ -173,6 +176,14 @@ export const XhNotificationItemActionTrigger = defineComponent({
   setup(_, { slots }) {
     const ctx = useNotificationItemContext()
     return () => h('button', ctx.api.value.getItemActionTriggerProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+export const XhNotificationItemProgress = defineComponent({
+  name: 'XhNotificationItemProgress',
+  setup(_, { slots }) {
+    const ctx = useNotificationItemContext()
+    return () => h('div', ctx.api.value.getItemProgressProps() as Record<string, unknown>, slots.default?.())
   },
 })
 

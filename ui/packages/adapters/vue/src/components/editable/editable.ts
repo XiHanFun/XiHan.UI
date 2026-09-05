@@ -1,3 +1,4 @@
+import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type { EditableActivationMode, EditableApi, EditableSchema, EditableSubmitMode } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
@@ -31,6 +32,9 @@ export const XhEditableRoot = defineComponent({
     activationMode: { type: String as PropType<EditableActivationMode>, default: undefined },
     selectOnFocus: { type: Boolean, default: undefined },
     autoResize: Boolean,
+    variant: { type: String as PropType<ControlVariant>, default: undefined },
+    tone: { type: String as PropType<Tone>, default: undefined },
+    size: { type: String as PropType<Size>, default: undefined },
   },
   // value-change / edit-change 携带 details，update:* 携带裸值；提交与撤销只有语义事件
   emits: {

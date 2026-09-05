@@ -45,6 +45,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart description - 问题正文（aria-describedby 目标）
  * @csspart confirm-trigger - 确认按钮
  * @csspart cancel-trigger - 取消按钮
+ * @csspart arrow - 指向锚点的箭头（aria-hidden，data-placement 随实际放置位翻转）
  */
 export class XhPopconfirmElement extends XhElement {
   static override partContract = { anatomy: popconfirmAnatomy, meta: popconfirmMeta }
@@ -186,6 +187,7 @@ export class XhPopconfirmElement extends XhElement {
     put('description', api.getDescriptionProps() as Record<string, unknown>)
     put('confirm-trigger', api.getConfirmTriggerProps() as Record<string, unknown>)
     put('cancel-trigger', api.getCancelTriggerProps() as Record<string, unknown>)
+    put('arrow', api.getArrowProps() as Record<string, unknown>)
 
     // content 常驻 Light DOM，收起态由宿主用内联 display 兜住：皮肤给 content 设了 display，
     // 会盖过 UA 的 [hidden]{display:none}，只有内联 style.display 压得住。

@@ -1,4 +1,4 @@
-import type { Size } from '@xihan-ui/core'
+import type { Size, Tone } from '@xihan-ui/core'
 import type { AvatarSchema } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
@@ -15,6 +15,7 @@ export const XhAvatarRoot = defineComponent({
     src: { type: String, default: undefined },
     alt: { type: String, default: undefined },
     size: { type: String as PropType<Size>, default: undefined },
+    tone: { type: String as PropType<Tone>, default: undefined },
   },
   // status-change 携带 { status }
   emits: {

@@ -1,11 +1,20 @@
 import type { DragAnnounceKind, DropTarget } from '../shared/drag'
-import type { TabsSchema } from './tabs.types'
-import { setup } from '@xihan-ui/core'
+import type { TabsIndicatorRect, TabsSchema } from './tabs.types'
+import { itemValue, queryItems, setup } from '@xihan-ui/core'
 import { createMultiPointerSession, resolveSessionDoc, shouldActivate } from '@xihan-ui/pointer'
 import { dragAnnouncement, hitAlong, reorderFlat } from '../shared/drag'
 import { snapshotDrift } from '../shared/drag-drift'
+import { tabsTriggerQuery } from './tabs.anatomy'
 
 const { createMachine } = setup<TabsSchema>()
+
+/** 两次量测是否一样。作 cell 的 isEqual 用：不给的话每次量测都是新对象，版本号会一直空转自增。 */
+function sameRect(a: TabsIndicatorRect | null, b: TabsIndicatorRect | null | undefined): boolean {
+  if (a == null || b == null)
+    return a === b
+  return a.blockStart === b.blockStart && a.blockSize === b.blockSize
+    && a.inlineStart === b.inlineStart && a.inlineSize === b.inlineSize
+}
 
 // 选中值住在 context 的 cell 里，受控/非受控在 cell 收口，不需要影子事件与受控守卫。
 export const tabsMachine = createMachine({
@@ -21,11 +30,20 @@ export const tabsMachine = createMachine({
     draggingTab: cell<string | null>(() => ({ defaultValue: null })),
     dropTarget: cell<DropTarget | null>(() => ({ defaultValue: null })),
     announcement: cell<string>(() => ({ defaultValue: '' })),
+    // 量测结果不受控、不对外通知
+    indicator: cell<TabsIndicatorRect | null>(() => ({ defaultValue: null, isEqual: sameRect })),
   }),
+  // 挂载即量一次，让指示条首帧就在位
+  entry: ['measureIndicator'],
+  watch: ({ track, context, action }) => {
+    // 选中值一变就重量指示条
+    track([context.dep('value')], () => action(['measureIndicator']))
+  },
   // 跟手的会话整个生命周期都在，不按拖动状态挂卸。常驻的代价只是几个早退的
   // pointermove，换来的是状态树一行都不用改
-  effects: ['trackPointer'],
+  effects: ['trackPointer', 'trackResize'],
   refs: () => ({
+    getListEl: () => null,
     gesture: null,
     tabDrag: null,
   }),
@@ -49,11 +67,28 @@ export const tabsMachine = createMachine({
         'TAB_DRAG.CANCEL': { actions: ['cancelTabDrag'] },
         // 键盘换位不进拖动态：按一下就是一次已过守卫的完整提交
         'TAB.MOVE_BY': { actions: ['moveTabBy'] },
+        // 关闭只发意图，标签序归数据源
+        'TAB.CLOSE': { actions: ['invokeOnTabClose'] },
       },
     },
   },
   implementations: {
     effects: {
+      // 挂 resize 监听器重量指示条；disposed 标记挡掉 cleanup 后仍被触发的那一次
+      trackResize: ({ scope, action }) => {
+        let disposed = false
+        const win = scope.getWin()
+        const onResize = (): void => {
+          if (!disposed)
+            action(['measureIndicator'])
+        }
+        win.addEventListener('resize', onResize)
+        return () => {
+          disposed = true
+          win.removeEventListener('resize', onResize)
+        }
+      },
+
       /**
        * 跟住按在标签上的那根手指。
        *
@@ -158,6 +193,47 @@ export const tabsMachine = createMachine({
         if (e.type !== 'TAB.MOVE_BY')
           return
         commitTabMove(context, prop, e.value, e.target, 'moved')
+      },
+
+      invokeOnTabClose: ({ prop, event }) => {
+        const e = event.current()
+        if (e.type !== 'TAB.CLOSE')
+          return
+        prop('onTabClose')?.({ value: e.value, values: e.values })
+      },
+
+      /**
+       * 量指示条。必须量两遍：同步那遍照顾"标签早就在 DOM 里"的常规情形，推迟那遍照顾首帧
+       * （WC 侧的身份标记要等首次 wire 才写上，这一刻一个标签都查不到）。
+       * cell 带 isEqual，量到同一结果不会多推更新。
+       */
+      measureIndicator: ({ refs, prop, context, flush }) => {
+        const run = (): void => {
+          const list = refs.get('getListEl')()
+          const value = context.get('value') ?? null
+          if (!list || value == null) {
+            context.set('indicator', null)
+            return
+          }
+          const trigger = queryItems(list, tabsTriggerQuery).find(el => itemValue(el) === value)
+          if (!trigger) {
+            context.set('indicator', null)
+            return
+          }
+          const listRect = list.getBoundingClientRect()
+          const rect = trigger.getBoundingClientRect()
+          context.set('indicator', {
+            blockStart: rect.top - listRect.top,
+            blockSize: rect.height,
+            // 起始缘按逻辑方向算，RTL 从右边缘量起
+            inlineStart: (prop('dir') ?? 'ltr') === 'rtl'
+              ? listRect.right - rect.right
+              : rect.left - listRect.left,
+            inlineSize: rect.width,
+          })
+        }
+        run()
+        flush(run)
       },
     },
   },

@@ -65,6 +65,7 @@ const NUMBER_LIST_CONVERTER = {
  * @csspart tick - 刻度点（纯装饰），须自带 value 属性；落进已选区间带 data-passed
  * @csspart tick-label - 刻度文案，须自带 value 属性；点按把最近的滑块跳到这一档
  * @csspart thumb - role=slider 的拇指，键盘交互全在它身上；多滑块须写 index 属性
+ * @csspart value-text - 拇指内的值气泡（aria-hidden）；留空即由元素填入该拇指的值文本，作者写了内容则归作者
  * @csspart hidden-input - 拇指内的表单影子（须是原生 input）
  */
 export class XhSliderElement extends XhElement {
@@ -173,6 +174,21 @@ export class XhSliderElement extends XhElement {
     return Number.isFinite(raw) ? raw : 0
   }
 
+  /** 值气泡的文字是否归元素填：首次见到该节点时定，之后不再回读（回读到的会是自己写的字）。 */
+  private readonly ownsValueText = new WeakMap<HTMLElement, boolean>()
+
+  /** 填入拇指的值文本；首次见到该节点时若已有内容则归作者，之后不再改写。 */
+  private fillValueText(el: HTMLElement, text: string): void {
+    let owned = this.ownsValueText.get(el)
+    if (owned === undefined) {
+      owned = (el.textContent ?? '').trim() === ''
+      this.ownsValueText.set(el, owned)
+    }
+    if (!owned || el.textContent === text)
+      return
+    el.textContent = text
+  }
+
   // 拇指内的子部件：getParts 收的是整个元素范围，按拇指子树过滤才归得对下标。
   private partsIn(thumb: HTMLElement, name: string): HTMLElement[] {
     return this.getParts(name).filter(el => thumb.contains(el))
@@ -204,6 +220,11 @@ export class XhSliderElement extends XhElement {
       this.spreader.spread(el, api.getThumbProps(index) as Record<string, unknown>)
       for (const input of this.partsIn(el, 'hidden-input'))
         this.spreader.spread(input, api.getHiddenInputProps(index) as Record<string, unknown>)
+      // 属性先落，再填显示文字；作者自己写了内容就归作者，元素不再改写
+      for (const bubble of this.partsIn(el, 'value-text')) {
+        this.spreader.spread(bubble, api.getValueTextProps(index) as Record<string, unknown>)
+        this.fillValueText(bubble, api.valueText(index))
+      }
     }
   }
 }

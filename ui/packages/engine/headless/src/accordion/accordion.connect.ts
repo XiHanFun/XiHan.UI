@@ -26,9 +26,11 @@ export function connectAccordion<T extends PropTypes>(
   }))
   const metaOf = new Map(collection.map(meta => [meta.value, meta]))
 
-  /** 条目禁用：部件上写的优先，没写就回 collection 里查。 */
+  const groupDisabled = !!prop('disabled')
+
+  /** 条目禁用：整组禁用一票通过，否则部件上写的优先，没写就回 collection 里查。 */
   const itemDisabled = (item: AccordionItemProps): boolean =>
-    item.disabled ?? metaOf.get(item.value)?.disabled ?? false
+    groupDisabled || (item.disabled ?? metaOf.get(item.value)?.disabled ?? false)
 
   const isOpen = (target: string): boolean => value.includes(target)
   const stateAttr = (item: AccordionItemProps): 'open' | 'closed' => (isOpen(item.value) ? 'open' : 'closed')
@@ -47,7 +49,7 @@ export function connectAccordion<T extends PropTypes>(
       return
     event.preventDefault()
     const root = (event.currentTarget as HTMLElement).closest<HTMLElement>(parts.root.selector)
-    focusItem(navigateItems(queryItems(root, TRIGGER_QUERY), item.value, intent, { loop: false }))
+    focusItem(navigateItems(queryItems(root, TRIGGER_QUERY), item.value, intent, { loop: !!prop('loop') }))
   }
 
   return {
@@ -58,13 +60,20 @@ export function connectAccordion<T extends PropTypes>(
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'data-orientation': orientation,
+      'data-variant': prop('variant'),
       'data-tone': prop('tone'),
       'data-size': prop('size'),
+      'data-disabled': dataAttr(groupDisabled),
     }),
     getItemProps: item => normalize.element({
       ...parts.item.attrs,
       'data-state': stateAttr(item),
       'data-disabled': dataAttr(itemDisabled(item)),
+    }),
+    // 条目之间的那条细线，纯视觉
+    getItemSeparatorProps: () => normalize.element({
+      ...parts['item-separator'].attrs,
+      'aria-hidden': true,
     }),
     getHeaderProps: item => normalize.element({
       ...parts.header.attrs,

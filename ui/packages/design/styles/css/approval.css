@@ -54,6 +54,9 @@
     --xh-_approval-item-font-size: var(--xh-control-font-md);
     --xh-_approval-note-font-size: var(--xh-control-font-md);
 
+    /* 海拔先落进私有槽：无壳档要把它关掉 */
+    --xh-_approval-shadow: var(--xh-approval-shadow, var(--xh-elevation-raised));
+
     display: flex;
     flex-direction: column;
     gap: var(--xh-approval-gap, var(--xh-_approval-gap));
@@ -61,7 +64,7 @@
     border: var(--xh-stroke-thin) solid var(--xh-approval-border, var(--xh-_tone, var(--xh-border-strong)));
     border-radius: var(--xh-approval-radius, var(--xh-shape-surface));
     background: var(--xh-approval-bg, var(--xh-bg-surface));
-    box-shadow: var(--xh-approval-shadow, var(--xh-elevation-raised));
+    box-shadow: var(--xh-_approval-shadow);
     transition: border-color var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
     animation: xh-approval-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
@@ -74,6 +77,23 @@
   /* 判过了就不再抢注意力 */
   [data-scope='approval'][data-part='root']:not([data-state='pending']) {
     border-color: var(--xh-approval-border-settled, var(--xh-border-subtle));
+  }
+
+  /* —— 形态 —— */
+  /* 缺省档即 outline，写在上面那条基础规则里。
+     两档排在落定那条之后：它们把描边整个撤掉，排在前面会被落定那条按同等特指度盖回来 */
+  /* 底色分区：描边让位给底色，闸门嵌在别人的面里时不再多一圈线 */
+  [data-scope='approval'][data-part='root'][data-variant='subtle'] {
+    border-color: transparent;
+    background: var(--xh-approval-bg, var(--xh-bg-subtle));
+  }
+
+  /* 无壳内联：卡中卡时不再自带一张面，跟着外层的底走 */
+  [data-scope='approval'][data-part='root'][data-variant='ghost'] {
+    --xh-_approval-shadow: 0 0 0 transparent;
+
+    border-color: transparent;
+    background: none;
   }
 
   [data-scope='approval'][data-part='title'] {

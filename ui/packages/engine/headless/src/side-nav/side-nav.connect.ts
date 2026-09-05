@@ -242,6 +242,8 @@ export function connectSideNav<T extends PropTypes>(
       'aria-label': rootLabel,
       'data-collapsed': dataAttr(collapsed),
       'data-disabled': dataAttr(disabled),
+      'data-tone': prop('tone'),
+      'data-size': prop('size'),
       'dir': dir === 'rtl' ? 'rtl' : undefined,
     }),
 
@@ -350,6 +352,9 @@ export function connectSideNav<T extends PropTypes>(
         // 定位层被搬到 portal 落点，继承不到作者子树上的方向；作者没给就不写，交给落点处的继承
         'dir': prop('dir'),
         'data-state': open ? 'open' : 'closed',
+        // 浮层被搬去落点、继承不到根上的私有槽，视觉轴在这里再打一遍
+        'data-tone': prop('tone'),
+        'data-size': prop('size'),
         'data-placement': placed?.placement ?? (dir === 'rtl' ? 'left-start' : 'right-start'),
         // 落位才露：展开或换枝后这一枝的坐标已清，引擎量完之前藏着
         'data-positioned': dataAttr(overlayPositioned(placed)),

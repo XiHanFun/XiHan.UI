@@ -77,7 +77,7 @@ thumb 是个普通容器，往里放什么都由作者说了算；放得下靠 -
 
 ### 拖动时的值气泡
 
-thumb 自己是定位上下文，气泡挂在它上方就跟着走位；dragging 决定露不露面，气泡里的文字由作者的格式化函数产出
+value-text 挂在 thumb 里就跟着走位；推动那一刻由皮肤放它出面，气泡里的文字取自作者的格式化函数
 
 <XhDemo src="slider/10-value-bubble" />
 
@@ -92,7 +92,7 @@ thumb 自己是定位上下文，气泡挂在它上方就跟着走位；dragging
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-slider>` |
-| Vue 组件 | `XhSliderControl` `XhSliderHiddenInput` `XhSliderLabel` `XhSliderRange` `XhSliderRoot` `XhSliderThumb` `XhSliderTickGroup` `XhSliderTrack` |
+| Vue 组件 | `XhSliderControl` `XhSliderHiddenInput` `XhSliderLabel` `XhSliderRange` `XhSliderRoot` `XhSliderThumb` `XhSliderTickGroup` `XhSliderTrack` `XhSliderValueText` |
 | 组合式函数 | `useSlider` |
 | 状态机 | `sliderMachine` |
 | 皮肤 | `@xihan-ui/styles/slider.css` |
@@ -101,7 +101,7 @@ thumb 自己是定位上下文，气泡挂在它上方就跟着走位；dragging
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="slider"`：**`root`** · `label` · **`control`** · **`track`** · `range` · **`thumb`** · `tick-group` · `tick` · `tick-label` · `hidden-input`
+`data-scope="slider"`：**`root`** · `label` · **`control`** · **`track`** · `range` · **`thumb`** · `value-text` · `tick-group` · `tick` · `tick-label` · `hidden-input`
 
 ## Props
 
@@ -169,6 +169,7 @@ thumb 自己是定位上下文，气泡挂在它上方就跟着走位；dragging
 | `dragging` | `boolean` |  |
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
+| `valueText` | `(index: number) => string` | 某个拇指的值文本：给了 getValueText 就是它的产出，否则是值本身。 |
 | `setValue` | `(next: number[]) => void` |  |
 | `setThumbValue` | `(index: number, next: number) => void` |  |
 | `getRootProps` | `() => T['element']` |  |
@@ -177,6 +178,7 @@ thumb 自己是定位上下文，气泡挂在它上方就跟着走位；dragging
 | `getTrackProps` | `() => T['element']` |  |
 | `getRangeProps` | `() => T['element']` |  |
 | `getThumbProps` | `(index: number) => T['element']` |  |
+| `getValueTextProps` | `(index: number) => T['element']` | 值气泡：挂在拇指里显示这一个拇指的当前值；aria-hidden，读屏走拇指自己的 aria-valuetext。 |
 | `getTickGroupProps` | `() => T['element']` | 刻度容器。 |
 | `getTickProps` | `(props: SliderTickProps) => T['element']` | 刻度点：轨道上的圆点，纯装饰。 |
 | `getTickLabelProps` | `(props: SliderTickProps) => T['element']` | 刻度文案：点按把最近的滑块跳到这一档。 |
@@ -209,6 +211,7 @@ thumb 自己是定位上下文，气泡挂在它上方就跟着走位；dragging
 | `thumb` | `aria-valuenow` | String(thumb.value) |
 | `thumb` | `aria-valuetext` | prop('getValueText')?.({ value: thumb.value, index: t… |
 | `thumb` | `role` | 'slider' |
+| `value-text` | `aria-hidden` | 'true' |
 | `tick` | `aria-hidden` | 'true' |
 
 ## 样式
@@ -225,6 +228,8 @@ thumb 自己是定位上下文，气泡挂在它上方就跟着走位；dragging
 | `root` | `data-tone` | props.tone |
 | `thumb` | `data-dragging` | ''（条件成立时才出现） |
 | `thumb` | `data-index` | String(thumb.index) |
+| `value-text` | `data-dragging` | ''（条件成立时才出现） |
+| `value-text` | `data-index` | String(thumb.index) |
 | `tick` | `data-passed` | ''（条件成立时才出现） |
 | `tick-label` | `data-passed` | ''（条件成立时才出现） |
 | `hidden-input` | `data-index` | String(thumb.index) |
@@ -233,7 +238,7 @@ thumb 自己是定位上下文，气泡挂在它上方就跟着走位；dragging
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-slider-gap` · `--xh-slider-label-fg` · `--xh-slider-label-font-size` · `--xh-slider-label-font-weight` · `--xh-slider-range-bg` · `--xh-slider-range-bg-invalid` · `--xh-slider-range-radius` · `--xh-slider-thumb-bg` · `--xh-slider-thumb-bg-invalid` · `--xh-slider-thumb-border` · `--xh-slider-thumb-radius` · `--xh-slider-thumb-scale-dragging` · `--xh-slider-thumb-shadow` · `--xh-slider-thumb-shadow-dragging` · `--xh-slider-thumb-size` · `--xh-slider-tick-bg` · `--xh-slider-tick-bg-active` · `--xh-slider-tick-label-fg` · `--xh-slider-tick-label-fg-active` · `--xh-slider-tick-label-font-size` · `--xh-slider-tick-label-gap` · `--xh-slider-tick-radius` · `--xh-slider-tick-size` · `--xh-slider-track-bg` · `--xh-slider-track-radius` · `--xh-slider-track-thickness` · `--xh-slider-vertical-length`
+`--xh-slider-gap` · `--xh-slider-label-fg` · `--xh-slider-label-font-size` · `--xh-slider-label-font-weight` · `--xh-slider-range-bg` · `--xh-slider-range-bg-invalid` · `--xh-slider-range-radius` · `--xh-slider-thumb-bg` · `--xh-slider-thumb-bg-invalid` · `--xh-slider-thumb-border` · `--xh-slider-thumb-radius` · `--xh-slider-thumb-scale-dragging` · `--xh-slider-thumb-shadow` · `--xh-slider-thumb-shadow-dragging` · `--xh-slider-thumb-size` · `--xh-slider-tick-bg` · `--xh-slider-tick-bg-active` · `--xh-slider-tick-label-fg` · `--xh-slider-tick-label-fg-active` · `--xh-slider-tick-label-font-size` · `--xh-slider-tick-label-gap` · `--xh-slider-tick-radius` · `--xh-slider-tick-size` · `--xh-slider-track-bg` · `--xh-slider-track-radius` · `--xh-slider-track-thickness` · `--xh-slider-value-text-bg` · `--xh-slider-value-text-fg` · `--xh-slider-value-text-font-size` · `--xh-slider-value-text-offset` · `--xh-slider-value-text-px` · `--xh-slider-value-text-py` · `--xh-slider-value-text-radius` · `--xh-slider-vertical-length`
 
 ## 动效
 

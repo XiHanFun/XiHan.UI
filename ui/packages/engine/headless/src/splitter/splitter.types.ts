@@ -47,6 +47,14 @@ export interface SplitterDragSession {
   sizes: number[]
 }
 
+/** 读屏用的文案，默认英文。分隔条彼此长得一样，位次是它们唯一的区分。 */
+export interface SplitterTranslations {
+  /** 整组面板的名字。 */
+  root: string
+  /** 第 index 条分隔条叫什么；index 从 0 数起，total 是分隔条总条数。 */
+  resizeTrigger: (index: number, total: number) => string
+}
+
 export interface SplitterSchema extends MachineSchema {
   props: {
     /** 每块面板的百分比。给定即受控：内部不再自改，只发 onSizesChange。 */
@@ -65,6 +73,7 @@ export interface SplitterSchema extends MachineSchema {
     step?: number
     /** Shift + 方向键的步长（百分比），默认 10。 */
     largeStep?: number
+    translations?: Partial<SplitterTranslations>
     /** 每次尺寸变化都发；拖动过程中会连续发很多次。 */
     onSizesChange?: (details: SplitterSizesChangeDetails) => void
     /** 只在一次操作结束时发一次，适合拿来存布局。 */
@@ -99,6 +108,8 @@ export interface SplitterSchema extends MachineSchema {
     | { type: 'DRAG.START', index: number, point: SplitterPoint }
     | { type: 'DRAG.MOVE', point: SplitterPoint }
     | { type: 'DRAG.END' }
+    /** 中途放弃这一场拖拽：布局退回按下那一刻，收尾回调不发。 */
+    | { type: 'DRAG.CANCEL' }
   tag: never
   guard: 'canResize'
   action:
@@ -112,7 +123,9 @@ export interface SplitterSchema extends MachineSchema {
     | 'expand'
     | 'dragBoundary'
     | 'invokeChangeEnd'
-  effect: 'trackPointer'
+    | 'clearDrag'
+    | 'cancelDrag'
+  effect: 'trackPointer' | 'trackCancelKey'
 }
 
 export interface SplitterPanelState {
@@ -150,6 +163,3 @@ export interface SplitterApi<T extends PropTypes = PropTypes> {
   /** 第 index 条分隔条坐在第 index 与第 index+1 块面板之间，调整的是前一块。 */
   getResizeTriggerProps: (index: number) => T['element']
 }
-
-/** 读屏用的文案。本组件目前没有需要外露的文案，位先留着。 */
-export interface SplitterTranslations {}

@@ -148,6 +148,17 @@ export const treeSuite: ConformanceSuite = {
   fixture: FIXTURE,
   cases: [
     {
+      name: 'variant 落成根上的 data-variant，无框档只换外观、不动任何语义',
+      spec: { apg: `${APG}#roles_states_properties` },
+      props: props({ variant: 'plain' }),
+      initial: {
+        parts: {
+          root: { 'data-variant': 'plain' },
+          tree: { 'role': 'tree', 'data-variant': null },
+        },
+      },
+    },
+    {
       name: '初始：tree 是 role=tree，叶子与分支都是 treeitem，层级三件套取自 collection',
       spec: { apg: `${APG}#roles_states_properties` },
       props: props(),
@@ -213,7 +224,8 @@ export const treeSuite: ConformanceSuite = {
           'node-drag-trigger': 7,
         },
         parts: {
-          'root': { 'data-disabled': null },
+          // 形态恒有值：缺省 surface，读一眼 DOM 就知道这棵树有没有外框
+          'root': { 'data-disabled': null, 'data-variant': 'surface' },
           'label': { id: '@self' },
           'tree': {
             'id': '@self',

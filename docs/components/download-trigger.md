@@ -77,6 +77,10 @@ data 给函数就是点了才算：它可以返回 Promise，这段时间状态�
 | `fileName` | `string` |  | 写出的文件名；缺省或空串退回内建默认名。 |
 | `mimeType` | `string` |  | 内容类型；给了它就以它为准，连 Blob 自带的类型也照它重包一次。缺省时文本按纯文本处理。 |
 | `disabled` | `boolean` |  | 禁用：按钮不可聚焦、点不动。 |
+| `variant` | `ActionVariant` |  | 形态：solid / subtle / outline / ghost，决定颜色怎么用。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg。 |
+| `translations` | `Partial<DownloadTriggerTranslations>` |  |  |
 | `onDownloadComplete` | `(details: DownloadTriggerCompleteDetails) => void` |  | 数据已交给浏览器时通知一次。到这里只说明下载已经发起，浏览器把文件写没写到盘上组件看不见。 |
 | `onDownloadError` | `(details: DownloadTriggerErrorDetails) => void` |  | 取数失败或造不出下载时通知；此刻状态已经回到 idle。 |
 
@@ -139,6 +143,7 @@ data 给函数就是点了才算：它可以返回 Promise，这段时间状态�
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `aria-busy` | 'true' \| undefined |
+| `root` | `aria-label` | props.translations.trigger |
 
 - 触发器是原生 `<button type="button">`，Enter 与 Space 的激活由平台负责。
 - 取数在途时按钮不变成禁用，只挂 `aria-busy="true"`：禁用会把焦点从按钮上弹走，键盘用户等回来时不知道自己在哪。
@@ -155,13 +160,16 @@ data 给函数就是点了才算：它可以返回 Promise，这段时间状态�
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-size` | props.size |
 | `root` | `data-state` | state.get() |
+| `root` | `data-tone` | props.tone |
+| `root` | `data-variant` | props.variant |
 
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-download-trigger-bg` · `--xh-download-trigger-bg-active` · `--xh-download-trigger-bg-disabled` · `--xh-download-trigger-bg-hover` · `--xh-download-trigger-border` · `--xh-download-trigger-border-disabled` · `--xh-download-trigger-border-hover` · `--xh-download-trigger-fg` · `--xh-download-trigger-font-size` · `--xh-download-trigger-font-weight` · `--xh-download-trigger-gap` · `--xh-download-trigger-h` · `--xh-download-trigger-loading-duration` · `--xh-download-trigger-px` · `--xh-download-trigger-radius` · `--xh-download-trigger-shadow-hover`
+`--xh-download-trigger-bg` · `--xh-download-trigger-bg-active` · `--xh-download-trigger-bg-disabled` · `--xh-download-trigger-bg-hover` · `--xh-download-trigger-border` · `--xh-download-trigger-border-disabled` · `--xh-download-trigger-border-hover` · `--xh-download-trigger-fg` · `--xh-download-trigger-font-size` · `--xh-download-trigger-font-weight` · `--xh-download-trigger-gap` · `--xh-download-trigger-h` · `--xh-download-trigger-icon-size` · `--xh-download-trigger-loading-duration` · `--xh-download-trigger-px` · `--xh-download-trigger-radius` · `--xh-download-trigger-shadow-hover`
 
 ## 动效
 

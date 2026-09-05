@@ -19,6 +19,8 @@ export function connectBackTop<T extends PropTypes>(
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'data-state': visible ? 'visible' : 'hidden',
+      // 三个视觉轴落在壳上，按钮沿继承流取值
+      'data-variant': prop('variant'),
       'data-tone': prop('tone'),
       'data-size': prop('size'),
       // 收起时留着节点，只加 hidden：靠不透明度藏起来的按钮仍然可聚焦、仍然被读屏念到

@@ -18,10 +18,17 @@
     border-radius: var(--xh-highlight-mark-radius, var(--xh-shape-inset));
     background: var(--xh-highlight-mark-bg, var(--xh-bg-brand-subtle));
     color: var(--xh-highlight-mark-fg, var(--xh-fg-brand-strong));
-    font-weight: var(--xh-font-weight-medium);
+    font-weight: var(--xh-highlight-mark-font-weight, var(--xh-font-weight-medium));
     /* 命中片段跨行时两半各自收边，否则圆角与内边距只画在整段的首尾。
        两条都写：WebKit 只认带前缀那条 */
     -webkit-box-decoration-break: clone;
     box-decoration-break: clone;
+  }
+
+  /* 语气落在根上而不是每个 mark 上：命中片段有好几个，用哪族颜色是整段的属性。
+     使用者槽排在语气之前：写死了 mark 的底与字色，六族语气一并让位 */
+  [data-scope='highlight'][data-part='root'][data-tone] [data-part='mark'] {
+    background: var(--xh-highlight-mark-bg, var(--xh-_tone-subtle));
+    color: var(--xh-highlight-mark-fg, var(--xh-_tone-fg));
   }
 }

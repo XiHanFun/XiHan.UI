@@ -18,6 +18,8 @@
 - `editable` 让已有标签双击就地改。
 - `max` 与 `allowOverflow` 一对：超出上限是拒收还是标红。
 - 标签的值可以是对象，不必是字符串。
+- `showCount` 显出计数部件，数字取 `count` 与 `max`，顶到上限与越界各换一档颜色。
+- `required` 经 `aria-required` 上报必填。
 
 ## 组合
 

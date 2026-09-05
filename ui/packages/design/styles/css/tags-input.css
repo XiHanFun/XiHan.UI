@@ -426,4 +426,27 @@
     -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
     mask: var(--xh-glyph-mark-close) center / contain no-repeat;
   }
+  /* 计数：排在控件行下面靠尾端的一行小字，与标题分列 root 的两端 */
+  [data-scope='tags-input'][data-part='count'] {
+    align-self: flex-end;
+    color: var(--xh-tags-input-count-fg, var(--xh-fg-muted));
+    font-size: var(--xh-tags-input-count-font-size, var(--xh-_tags-input-item-font-size));
+    font-variant-numeric: tabular-nums;
+    line-height: var(--xh-leading-normal);
+  }
+
+  /* 没开 showCount 时连接层给的是 hidden 属性；上面那条 align-self 不影响显隐，
+     但作者层给这个 part 声明任何一条 display 都会盖掉 UA 规则，这条把它还回去 */
+  [data-scope='tags-input'][data-part='count'][hidden] {
+    display: none;
+  }
+
+  /* 顶到上限：数字先于框被看见，与越界那一档同族颜色 */
+  [data-scope='tags-input'][data-part='count'][data-at-max] {
+    color: var(--xh-tags-input-count-fg-at-max, var(--xh-fg-warning));
+  }
+
+  [data-scope='tags-input'][data-part='count'][data-disabled] {
+    color: var(--xh-tags-input-count-fg-disabled, var(--xh-fg-disabled));
+  }
 }

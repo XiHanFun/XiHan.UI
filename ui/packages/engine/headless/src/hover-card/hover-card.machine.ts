@@ -63,6 +63,8 @@ export const hoverCardMachine = createMachine({
     getAnchorEl: () => null,
     getFloatingEl: () => null,
     getContentEl: () => null,
+    getTitleEl: () => null,
+    getDescriptionEl: () => null,
   }),
   initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'visible' : 'closed'),
   watch: ({ track, prop, action }) => track([() => prop('open')], () => action(['syncOpen'])),

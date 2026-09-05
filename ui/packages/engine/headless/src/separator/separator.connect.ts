@@ -1,5 +1,6 @@
 import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
 import type { SeparatorApi, SeparatorProps } from './separator.types'
+import { dataAttr } from '@xihan-ui/core'
 import { separatorAnatomy } from './separator.anatomy'
 
 const parts = separatorAnatomy.build()
@@ -19,6 +20,21 @@ export function connectSeparator<T extends PropTypes>(
       'role': decorative ? 'none' : 'separator',
       'aria-orientation': (!decorative && orientation === 'vertical') ? 'vertical' : undefined,
       'data-orientation': orientation,
+      // 缺省档不写属性：皮肤的基础规则就是缺省档
+      'data-variant': props.variant,
+      'data-align': props.align,
+      'data-dashed': dataAttr(!!props.dashed),
+    }),
+
+    // 两条线是纯装饰：语义由 root 上的 role=separator 给，线再报一次就成了两条分隔
+    getLineProps: () => normalize.element({
+      ...parts.line.attrs,
+      'role': 'none',
+      'data-orientation': orientation,
+    }),
+
+    getContentProps: () => normalize.element({
+      ...parts.content.attrs,
     }),
   }
 }

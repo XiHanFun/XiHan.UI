@@ -1,5 +1,5 @@
 import type { ToggleGroupSchema, ToggleGroupValue } from './toggle-group.types'
-import { setup } from '@xihan-ui/core'
+import { resetDeclaredValue, setup } from '@xihan-ui/core'
 
 const { createMachine } = setup<ToggleGroupSchema>()
 
@@ -57,6 +57,9 @@ export const toggleGroupMachine = createMachine({
     focusedValue: cell<string | null>(() => ({ defaultValue: null })),
   }),
   initialState: () => 'idle',
+  on: {
+    'FORM.RESET': { actions: ['resetToDefault'] },
+  },
   states: {
     idle: {
       on: {
@@ -70,6 +73,9 @@ export const toggleGroupMachine = createMachine({
   },
   implementations: {
     actions: {
+      // 受控（给了 value 却没给 defaultValue）时不自改，交给宿主回写
+      resetToDefault: params => void resetDeclaredValue(params, 'value', 'value', 'defaultValue'),
+
       setValue: ({ context, prop, event }) => {
         const e = event.current()
         if (e.type !== 'VALUE.SET')

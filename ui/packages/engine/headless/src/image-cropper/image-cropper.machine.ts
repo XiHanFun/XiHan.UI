@@ -23,6 +23,17 @@ export const UNKNOWN_IMAGE_SIZE: ImageCropperSize = { width: 0, height: 0 }
 
 export const IMAGE_CROPPER_ZOOM = 1
 
+/** 没有旋转的基准角度。 */
+export const IMAGE_CROPPER_ROTATION = 0
+
+/** 两条滑杆的缺省区间与步长。只约束滑杆，命令式赋值不受它们夹取。 */
+export const IMAGE_CROPPER_MIN_ZOOM = 1
+export const IMAGE_CROPPER_MAX_ZOOM = 3
+export const IMAGE_CROPPER_ZOOM_STEP = 0.01
+export const IMAGE_CROPPER_MIN_ROTATION = -180
+export const IMAGE_CROPPER_MAX_ROTATION = 180
+export const IMAGE_CROPPER_ROTATION_STEP = 1
+
 type Props = ImageCropperSchema['props']
 type PropReader = <K extends keyof Props>(key: K) => Props[K]
 
@@ -69,6 +80,11 @@ export const imageCropperMachine = createMachine({
       defaultValue: prop('defaultZoom') ?? IMAGE_CROPPER_ZOOM,
       onChange: zoom => prop('onZoomChange')?.({ zoom }),
     })),
+    rotation: cell<number>(() => ({
+      value: prop('rotation'),
+      defaultValue: prop('defaultRotation') ?? IMAGE_CROPPER_ROTATION,
+      onChange: rotation => prop('onRotationChange')?.({ rotation }),
+    })),
     // 自然尺寸由 image 部件的 load 事件报进来，不受控、不对外通知
     natural: cell<ImageCropperSize>(() => ({ defaultValue: UNKNOWN_IMAGE_SIZE, isEqual: sameCropSize })),
     origin: cell<ImageCropperSchema['context']['origin']>(() => ({ defaultValue: null })),
@@ -82,8 +98,9 @@ export const imageCropperMachine = createMachine({
   on: {
     'FORM.RESET': { actions: ['resetToDefault'] },
     'VALUE.SET': { guard: 'canEdit', actions: ['setValue'] },
-    // 缩放只改呈现、不改数据，禁用与只读都不拦它
+    // 缩放与旋转只改呈现、不改数据，禁用与只读都不拦它
     'ZOOM.SET': { actions: ['setZoom'] },
+    'ROTATE.SET': { actions: ['setRotation'] },
     'IMAGE.LOAD': { actions: ['setNatural'] },
     'CROP.NUDGE': { guard: 'canEdit', actions: ['nudgeCrop'] },
     'HANDLE.NUDGE': { guard: 'canEdit', actions: ['nudgeHandle'] },
@@ -147,6 +164,16 @@ export const imageCropperMachine = createMachine({
         context.set('zoom', e.zoom)
       },
 
+      setRotation: ({ context, event }) => {
+        const e = event.current()
+        if (e.type !== 'ROTATE.SET')
+          return
+        // 非有限角度会让位移换算里的三角函数出 NaN，把裁切框整个算没
+        if (!Number.isFinite(e.rotation))
+          return
+        context.set('rotation', e.rotation)
+      },
+
       setNatural: ({ context, prop, event }) => {
         const e = event.current()
         if (e.type !== 'IMAGE.LOAD')
@@ -207,7 +234,7 @@ export const imageCropperMachine = createMachine({
         const delta = unprojectDelta(
           e.point.clientX - origin.point.clientX,
           e.point.clientY - origin.point.clientY,
-          { scale, zoom: context.get('zoom'), rotation: prop('rotation') ?? 0 },
+          { scale, zoom: context.get('zoom'), rotation: context.get('rotation') },
         )
         const c = constraints(prop, natural)
         const handle = context.get('activeHandle')

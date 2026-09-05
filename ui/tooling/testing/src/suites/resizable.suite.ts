@@ -147,6 +147,28 @@ export const resizableSuite: ConformanceSuite = {
       ],
     },
     {
+      name: 'Escape 取消：尺寸退回按下那一刻，收尾回调不发',
+      spec: { apg: APG_KBD },
+      covers: ['resizable.kbd.cancel'],
+      props: { defaultDimensions: { width: 200, height: 100 } },
+      steps: [
+        { kind: 'raw', why: LAYOUT_WHY, run: layout },
+        { kind: 'raw', why: '指针按下要带真实坐标，按键步骤造不出', run: press('e', 300) },
+        {
+          kind: 'raw',
+          why: '往右拖 60px',
+          run: move(360),
+          expect: { parts: { 'root': { 'data-resizing': '' }, 'handle[2]': { 'aria-valuenow': '260' } } },
+        },
+        {
+          kind: 'raw',
+          why: '按 Escape 的监听挂在文档上，指针拖出把手后焦点未必还在把手上',
+          run: ({ doc }) => { doc.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true })) },
+          expect: { parts: { 'root': { 'data-resizing': null }, 'handle[2]': { 'aria-valuenow': '200' } } },
+        },
+      ],
+    },
+    {
       name: '只开放部分边时，其余把手退出 Tab 序列',
       spec: { apg: APG },
       props: { defaultDimensions: { width: 200, height: 100 }, edges: ['e', 's', 'se'] },

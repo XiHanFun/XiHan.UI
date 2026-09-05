@@ -121,8 +121,12 @@ export interface MentionSchema extends MachineSchema {
     readOnly?: boolean
     /** 校验失败标注：描边与聚焦环换成失败色，同时经 aria-invalid 上报。 */
     invalid?: boolean
+    /** 候选还在取：候选面板报 aria-busy，在途占位顶上来、空态占位让位。 */
+    loading?: boolean
     /** 输入框占位文字。不给就整条不输出，作者写在 input 部件上的那份因此留得住。 */
     placeholder?: string
+    /** 表单字段名；给了输入框才带 name，整段正文随表单一并提交。 */
+    name?: string
     /** 方向键走到尽头是否回绕，默认 true。 */
     loop?: boolean
     placement?: Placement
@@ -181,9 +185,11 @@ export interface MentionSchema extends MachineSchema {
      * 适配器每次提交完 DOM 都要发一次——过滤是调用方做的，机器无从预知何时变。
      */
     | { type: 'ITEMS.SYNC' }
+    | { type: 'FORM.RESET' }
   tag: never
   guard: never
   action:
+    | 'resetToDefault'
     | 'invokeOnOpen'
     | 'invokeOnClose'
     | 'setValue'
@@ -213,15 +219,26 @@ export interface MentionApi<T extends PropTypes = PropTypes> {
   /** 高亮候选；收起时为 null。焦点不在它身上，只经 aria-activedescendant 上报。 */
   highlightedValue: string | null
   disabled: boolean
+  /** 没有候选可显：给了 collection 且一条都不剩。作者据此显出空态部件。 */
+  empty: boolean
   isHighlighted: (value: string) => boolean
   /** 整段改写正文，浮层随之收起。 */
   setValue: (next: string) => void
   close: () => void
   getRootProps: () => T['element']
+  /** 标题；`for` 恒写向 input，故须是原生 `<label>`。 */
+  getLabelProps: () => T['label']
   /** 不传参即多行 textarea。 */
   getInputProps: (props?: MentionInputProps) => T['textarea']
   getPositionerProps: () => T['element']
   getContentProps: () => T['element']
+  /** 一条候选都没有时显出的空态；有候选时带 hidden 收起。 */
+  getEmptyProps: () => T['element']
+  /**
+   * 在途占位：与空态占位同一个位置，两者不同屏——取数期间它顶上来，空态让位。
+   * 同样是 content 的兄弟，不进 role=listbox。
+   */
+  getLoadingProps: () => T['element']
   getItemProps: (props: MentionItemProps) => T['element']
   getItemTextProps: (props: MentionItemProps) => T['element']
 }

@@ -49,7 +49,11 @@ export interface AlertApi<T extends PropTypes = PropTypes> {
   setOpen: (next: boolean) => void
   getRootProps: () => T['element']
   getIndicatorProps: () => T['element']
+  /** 文本列容器：把标题与说明摞成一列。 */
+  getContentProps: () => T['element']
   getTitleProps: () => T['element']
   getDescriptionProps: () => T['element']
+  /** 操作槽：圈出按钮区，按钮本身归作者。 */
+  getActionProps: () => T['element']
   getCloseTriggerProps: () => T['button']
 }

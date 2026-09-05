@@ -257,6 +257,18 @@ export function connectFileUpload<T extends PropTypes>(
       'data-disabled': dataAttr(disabled),
     }),
 
+    // 传输进度：比例走私有槽给皮肤算宽度，相位与条目同源
+    getItemProgressProps: ({ file }) => normalize.element({
+      ...parts['item-progress'].attrs,
+      // 进度已经由条目的 data-state 与文件名一起念出来，条子本身不必再念一遍
+      'aria-hidden': true,
+      'data-state': uploadOf(file)?.status,
+      'data-disabled': dataAttr(disabled),
+      'style': {
+        '--xh-_file-upload-progress': String(Math.min(1, Math.max(0, (uploadOf(file)?.progress ?? 0) / 100))),
+      },
+    }),
+
     getItemDeleteTriggerProps: ({ file }) => normalize.button({
       ...parts['item-delete-trigger'].attrs,
       'type': 'button',

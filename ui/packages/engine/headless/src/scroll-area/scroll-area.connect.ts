@@ -8,6 +8,9 @@ import { scrollAreaAnatomy } from './scroll-area.anatomy'
 
 const parts = scrollAreaAnatomy.build()
 
+/** 判定「已经贴着一端」的容差（px）：滚动量是小数，差半像素不算还能滚。 */
+const EDGE_EPSILON = 1
+
 /** 哪几条轴归这块滚动区管。 */
 function axisEnabled(props: Pick<ScrollAreaProps, 'orientation'>, axis: Orientation): boolean {
   const orientation = props.orientation ?? 'both'
@@ -50,11 +53,17 @@ export function connectScrollArea<T extends PropTypes>(
 
   const axisState = (axis: Orientation): ScrollAreaAxisState => {
     const bar = bars[axis]
+    // orientation 关掉的那条轴视口那一向也不滚：报成两端都贴着，渐隐带因此一侧都不铺——
+    // 铺了就是在说「这边还有」，而那个方向根本走不过去
+    const scrollable = axisEnabled(props, axis)
     return {
       overflow: bar.overflow,
       visible: enabled(axis) && bar.visible,
       size: bar.thumbSize,
       offset: bar.thumbOffset,
+      // 判据取滚动量而不是滑块起点：滑块长度有像素下限，贴着末端时那个比例到不了 1
+      atMin: !scrollable || bar.scroll <= EDGE_EPSILON,
+      atMax: !scrollable || bar.scroll >= bar.max - EDGE_EPSILON,
     }
   }
   const vertical = axisState('vertical')
@@ -97,6 +106,7 @@ export function connectScrollArea<T extends PropTypes>(
       'data-reveal-mode': type,
       'data-dragging': dataAttr(draggingAxis != null),
       // 缺省档不写属性：皮肤的基础规则就是缺省档
+      'data-variant': props.variant,
       'data-size': props.size,
     }),
 
@@ -106,6 +116,15 @@ export function connectScrollArea<T extends PropTypes>(
       ...parts.viewport.attrs,
       'tabindex': 0,
       'data-orientation': orientation,
+      // 渐隐画在视口上（自绘滚动条是它的兄弟节点，不会跟着一起淡掉），
+      // 形态与尺寸两档因此也要落到这里
+      'data-variant': props.variant,
+      'data-size': props.size,
+      // 两条轴各自到没到头：还没到的那一侧才铺渐隐带
+      'data-at-min-vertical': dataAttr(vertical.atMin),
+      'data-at-max-vertical': dataAttr(vertical.atMax),
+      'data-at-min-horizontal': dataAttr(horizontal.atMin),
+      'data-at-max-horizontal': dataAttr(horizontal.atMax),
       // 皮肤据此把视口在该轴上缩掉一条道的宽度，末端内容不再被压在滚动条底下
       'data-lane-vertical': dataAttr(lane('vertical')),
       'data-lane-horizontal': dataAttr(lane('horizontal')),

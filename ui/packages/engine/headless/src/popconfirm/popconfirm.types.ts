@@ -49,6 +49,7 @@ export interface PopconfirmApi<T extends PropTypes = PropTypes> {
   getDescriptionProps: () => T['element']
   getConfirmTriggerProps: () => T['button']
   getCancelTriggerProps: () => T['button']
+  getArrowProps: () => T['element']
 }
 
 /** 读屏用的文案。本组件目前没有需要外露的文案，位先留着。 */

@@ -22,6 +22,7 @@ export type {
   ModifierKey,
   PartRef,
   PartSnapshot,
+  RawStepContext,
   SettleCondition,
   SnapshotExpectation,
   Step,
@@ -85,9 +86,10 @@ export { hoverCardSuite } from './suites/hover-card.suite'
 export { iconWrapperSuite } from './suites/icon-wrapper.suite'
 export { iconSuite } from './suites/icon.suite'
 export { imageCropperSuite } from './suites/image-cropper.suite'
-export { IMAGE_VIEWER_CONTENT_CHILDREN, imageViewerAtIndex, imageViewerProps, imageViewerSuite, openImageViewer } from './suites/image-viewer.suite'
+export { IMAGE_VIEWER_CONTENT_CHILDREN, IMAGE_VIEWER_PENDING_ITEMS, imageViewerAtIndex, imageViewerProps, imageViewerSuite, openImageViewer } from './suites/image-viewer.suite'
 export { imageSuite } from './suites/image.suite'
 export { infiniteScrollSuite } from './suites/infinite-scroll.suite'
+export { inputGroupSuite } from './suites/input-group.suite'
 export { jsonViewerSuite } from './suites/json-viewer.suite'
 export { layoutSuite } from './suites/layout.suite'
 export { listSuite } from './suites/list.suite'
@@ -138,6 +140,7 @@ export { stepsSuite } from './suites/steps.suite'
 export { switchSuite } from './suites/switch.suite'
 export { tableSuite } from './suites/table.suite'
 export { tabsSuite } from './suites/tabs.suite'
+export { tagGroupSuite } from './suites/tag-group.suite'
 export { tagSuite } from './suites/tag.suite'
 export { tagsInputSuite } from './suites/tags-input.suite'
 export { textFieldSuite } from './suites/text-field.suite'

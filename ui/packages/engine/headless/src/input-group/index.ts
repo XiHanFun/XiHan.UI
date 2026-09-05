@@ -1,0 +1,5 @@
+export { inputGroupAnatomy } from './input-group.anatomy'
+export { connectInputGroup } from './input-group.connect'
+export { inputGroupKeyboard } from './input-group.keyboard'
+export { inputGroupMeta } from './input-group.meta'
+export type { InputGroupApi, InputGroupProps, InputGroupTranslations } from './input-group.types'

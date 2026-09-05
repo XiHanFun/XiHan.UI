@@ -173,6 +173,18 @@
     box-shadow: var(--xh-steps-indicator-shadow, var(--xh-_steps-highlight));
   }
 
+  /* 出错与警示两档只能由 statuses / collection 显式指定，画法与当前步同构：
+     空心描边加同色数字，不动实心那档的内高光 */
+  [data-scope='steps'][data-part='indicator'][data-state='error'] {
+    border-color: var(--xh-steps-indicator-border-error, var(--xh-fg-danger));
+    color: var(--xh-steps-indicator-fg-error, var(--xh-fg-danger));
+  }
+
+  [data-scope='steps'][data-part='indicator'][data-state='warning'] {
+    border-color: var(--xh-steps-indicator-border-warning, var(--xh-fg-warning));
+    color: var(--xh-steps-indicator-fg-warning, var(--xh-fg-warning));
+  }
+
   [data-scope='steps'][data-part='item'][data-disabled] [data-scope='steps'][data-part='indicator'] {
     border-color: var(--xh-steps-indicator-border-disabled, var(--xh-border-subtle));
     color: var(--xh-steps-indicator-fg-disabled, var(--xh-fg-disabled));
@@ -195,6 +207,14 @@
 
   [data-scope='steps'][data-part='title']:is([data-state='current'], [data-state='completed']) {
     color: var(--xh-steps-title-fg-active, var(--xh-fg-default));
+  }
+
+  [data-scope='steps'][data-part='title'][data-state='error'] {
+    color: var(--xh-steps-title-fg-error, var(--xh-fg-danger));
+  }
+
+  [data-scope='steps'][data-part='title'][data-state='warning'] {
+    color: var(--xh-steps-title-fg-warning, var(--xh-fg-warning));
   }
 
   [data-scope='steps'][data-part='description'] {

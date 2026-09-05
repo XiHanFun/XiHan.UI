@@ -1,8 +1,9 @@
 import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
-import type { StepsApi, StepsSchema } from '@xihan-ui/headless'
+import type { StepNode, StepsApi, StepsSchema, StepStatus, StepsTranslations } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { provideSteps, provideStepsItem, useStepsContext, useStepsItem } from './context'
 import { useSteps } from './use-steps'
 
@@ -21,10 +22,14 @@ export const XhStepsRoot = defineComponent({
     value: { type: Number, default: undefined },
     defaultValue: { type: Number, default: undefined },
     count: { type: Number, default: undefined },
+    collection: { type: Array as PropType<StepNode[]>, default: undefined },
+    statuses: { type: Object as PropType<Record<number, StepStatus>>, default: undefined },
     orientation: { type: String as PropType<Orientation>, default: undefined },
     linear: { type: Boolean, default: undefined },
     disabled: { type: Boolean, default: undefined },
+    loop: { type: Boolean, default: undefined },
     dir: { type: String as PropType<Direction>, default: undefined },
+    translations: { type: Object as PropType<Partial<StepsTranslations>>, default: undefined },
     tone: { type: String as PropType<Tone>, default: undefined },
     size: { type: String as PropType<Size>, default: undefined },
   },
@@ -41,7 +46,7 @@ export const XhStepsRoot = defineComponent({
       emit('value-change', details)
       emit('update:value', details.value)
     }
-    const ctx = useSteps(props as StepsProps, notify)
+    const ctx = useSteps(withXhConfig('steps', props) as StepsProps, notify)
     provideSteps(ctx)
     // 经插槽暴露状态与前进/后退方法，供步骤条外的按钮使用
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({

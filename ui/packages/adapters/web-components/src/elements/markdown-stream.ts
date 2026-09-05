@@ -20,7 +20,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * 由作者监听块节点自行接管。
  *
  * @customElement xh-markdown-stream
- * @attr {string} announce - 播报档位：off（默认）或 polite
+ * @attr {'off'|'polite'|'assertive'} announce - 播报档位：off（默认）/ polite / assertive
  * @attr {boolean} streaming - 正文是否仍在增长，只落 data-streaming
  * @attr {boolean} caret - 画不画流式光标，缺席时画，写 caret="false" 关掉
  * @attr {string} size - 尺寸：sm / md / lg

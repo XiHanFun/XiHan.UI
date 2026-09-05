@@ -39,6 +39,10 @@ export interface PaginationTranslations {
   pageSizeSelect: string
   /** 每一档的显示文字，如「10 条/页」。 */
   pageSizeOption: (size: number) => string
+  /** 信息区文本，如「第 1-10 条，共 42 条」；无数据时 start 与 end 都是 0。 */
+  summary: (start: number, end: number, count: number) => string
+  /** 跳页输入框的 aria-label。 */
+  jumper: string
 }
 
 export interface PaginationSchema extends MachineSchema {
@@ -136,6 +140,8 @@ export interface PaginationApi<T extends PropTypes = PropTypes> {
   openEllipsis: PaginationEllipsisSide | null
   /** 当前页对应的条目区间，1 基闭区间；无数据时是 { start: 0, end: 0 }。 */
   pageRange: PaginationEntryRange
+  /** 信息区文本，由 translations.summary 与 pageRange / count 算出。 */
+  summaryText: string
   /** 上一页页码；已在首页（或无数据）时为 null。 */
   previousPage: number | null
   nextPage: number | null
@@ -148,6 +154,10 @@ export interface PaginationApi<T extends PropTypes = PropTypes> {
   /** 按当前页从整份数据里切出这一页。 */
   slice: <V>(data: readonly V[]) => V[]
   getRootProps: () => T['element']
+  /** 信息区容器；文本作者自己放，缺省用 api.summaryText。 */
+  getSummaryProps: () => T['element']
+  /** 跳页输入框：敲页码按回车即跳，越界值由 setPage 夹回合法区间。 */
+  getJumperProps: () => T['input']
   getPrevTriggerProps: () => T['button']
   getNextTriggerProps: () => T['button']
   getItemProps: (props: PaginationItemProps) => T['button']

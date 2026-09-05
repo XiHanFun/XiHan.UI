@@ -1,4 +1,4 @@
-import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
+import type { ActionVariant, Direction, Orientation, Size, Tone } from '@xihan-ui/core'
 import type { ToggleGroupItemProps, ToggleGroupNode, ToggleGroupSchema, ToggleGroupValueChangeDetails } from '@xihan-ui/headless'
 import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectToggleGroup, toggleGroupAnatomy, toggleGroupMachine, toggleGroupMeta } from '@xihan-ui/headless'
@@ -31,8 +31,11 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {boolean} multiple - 允许多项同时选中，默认关闭
  * @attr {boolean} disabled - 整组禁用
  * @attr {boolean} disallow-empty - 不许把值点空（最后一个选中项摘不掉）
+ * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 形态，决定段的底色与描边怎么用
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
+ * @attr {boolean} full-width - 撑满行宽，每段等分剩余空间
+ * @attr {string} name - 表单字段名；给了它隐藏输入才带 name 并参与提交
  * @attr {'horizontal'|'vertical'} orientation - 视觉排布，默认 horizontal；方向键四个恒响应，与它无关
  * @attr {'ltr'|'rtl'} dir - 文字方向，只改写左右方向键语义，默认 ltr
  * @attr {boolean} loop - 方向键走到尽头回绕，默认开启
@@ -40,6 +43,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @fires value-change - 选中值变化；detail 为 `{ value: string | string[] | null }`（形态跟着 multiple 走）
  * @csspart root - role=radiogroup / group 的容器（承载键盘收口与 Tab 兜底位）
  * @csspart item - 开关按钮，须是原生 `<button>` 并自带 value 属性标识身份
+ * @csspart separator - 段间的装饰线，可选；读屏不念
+ * @csspart hidden-input - 表单出口，可选；须是原生 `<input>`
  */
 export class XhToggleGroupElement extends XhElement {
   static override partContract = { anatomy: toggleGroupAnatomy, meta: toggleGroupMeta }
@@ -56,8 +61,11 @@ export class XhToggleGroupElement extends XhElement {
     multiple: { converter: BOOLEAN_CONVERTER },
     disabled: { converter: BOOLEAN_CONVERTER },
     disallowEmpty: { converter: BOOLEAN_CONVERTER, attribute: 'disallow-empty' },
+    variant: { converter: STRING_CONVERTER },
     tone: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
+    fullWidth: { converter: BOOLEAN_CONVERTER, attribute: 'full-width' },
+    name: { converter: STRING_CONVERTER },
     orientation: { converter: STRING_CONVERTER },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     loop: { converter: BOOLEAN_CONVERTER },
@@ -71,8 +79,11 @@ export class XhToggleGroupElement extends XhElement {
   declare multiple?: boolean
   declare disabled?: boolean
   declare disallowEmpty?: boolean
+  declare variant?: ActionVariant
   declare tone?: Tone
   declare size?: Size
+  declare fullWidth?: boolean
+  declare name?: string
   declare orientation?: Orientation
   declare direction?: Direction
   declare loop?: boolean
@@ -101,8 +112,11 @@ export class XhToggleGroupElement extends XhElement {
       multiple: this.multiple,
       disabled: this.disabled,
       disallowEmpty: this.disallowEmpty,
+      variant: this.variant,
       tone: this.tone,
       size: this.size,
+      fullWidth: this.fullWidth,
+      name: this.name,
       orientation: this.orientation,
       dir: this.direction,
       loop: this.loop,
@@ -170,6 +184,14 @@ export class XhToggleGroupElement extends XhElement {
     // 所以 wire 必须先于事件跑过——updated() 已保证。
     for (const el of this.getParts('item'))
       this.spreader.spread(el, api.getItemProps(this.itemProps(el)) as Record<string, unknown>)
+
+    // 分隔线与表单出口都是可选角色节点，作者写了才接
+    for (const el of this.getParts('separator'))
+      this.spreader.spread(el, api.getSeparatorProps() as Record<string, unknown>)
+
+    const hiddenInput = this.getPart('hidden-input')
+    if (hiddenInput)
+      this.spreader.spread(hiddenInput, api.getHiddenInputProps() as Record<string, unknown>)
 
     // 本帧的写回已落地，下一帧才知道 DOM 上的 aria-disabled 可不可信
     this.wasGroupDisabled = !!this.disabled

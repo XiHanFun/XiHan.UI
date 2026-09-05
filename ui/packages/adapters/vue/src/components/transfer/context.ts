@@ -1,4 +1,4 @@
-import type { TransferItemProps, TransferPanelProps } from '@xihan-ui/headless'
+import type { TransferGroupProps, TransferItemProps, TransferPanelProps } from '@xihan-ui/headless'
 import type { ComputedRef, InjectionKey } from 'vue'
 import type { TransferContext } from './use-transfer'
 import { inject, provide } from 'vue'
@@ -8,6 +8,11 @@ export interface TransferPanelContext {
   panel: ComputedRef<TransferPanelProps>
 }
 
+/** 分组自报的值与所属面板，供分组标题取到同一份身份（标题的 id 由它派生）。 */
+export interface TransferGroupContext {
+  group: ComputedRef<TransferGroupProps>
+}
+
 /** 条目自报的值与所属面板，供 item-text / item-checkbox 复用同一份声明。 */
 export interface TransferItemContext {
   item: ComputedRef<TransferItemProps>
@@ -15,6 +20,7 @@ export interface TransferItemContext {
 
 const KEY: InjectionKey<TransferContext> = Symbol.for('xh-transfer')
 const PANEL_KEY: InjectionKey<TransferPanelContext> = Symbol.for('xh-transfer-panel')
+const GROUP_KEY: InjectionKey<TransferGroupContext> = Symbol.for('xh-transfer-group')
 const ITEM_KEY: InjectionKey<TransferItemContext> = Symbol.for('xh-transfer-item')
 
 export function provideTransfer(ctx: TransferContext): void {
@@ -36,6 +42,17 @@ export function useTransferPanelContext(): TransferPanelContext {
   const ctx = inject(PANEL_KEY, null)
   if (!ctx)
     throw new Error('[xh] Transfer 面板子部件必须用在 XhTransferSourcePanel / XhTransferTargetPanel 内')
+  return ctx
+}
+
+export function provideTransferGroup(ctx: TransferGroupContext): void {
+  provide(GROUP_KEY, ctx)
+}
+
+export function useTransferGroupContext(): TransferGroupContext {
+  const ctx = inject(GROUP_KEY, null)
+  if (!ctx)
+    throw new Error('[xh] Transfer 分组标题必须用在 XhTransferGroup 内')
   return ctx
 }
 

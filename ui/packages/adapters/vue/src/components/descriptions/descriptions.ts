@@ -38,10 +38,16 @@ export const XhDescriptionsItem = defineComponent({
   props: {
     /** 每一格渲染成哪个标签，默认 div。 */
     as: { type: String, default: 'div' },
+    /** 这一格横跨几列，不写即占一列；上限是根上的 columns。 */
+    span: { type: Number, default: undefined },
   },
   setup(props, { slots }) {
     const ctx = useDescriptionsContext()
-    return () => h(props.as, ctx.api.value.getItemProps() as Record<string, unknown>, slots.default?.())
+    return () => h(
+      props.as,
+      ctx.api.value.getItemProps({ span: props.span }) as Record<string, unknown>,
+      slots.default?.(),
+    )
   },
 })
 

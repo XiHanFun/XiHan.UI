@@ -2,7 +2,7 @@ import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { ToastApi, ToastSchema, ToastStatus, ToastType } from './toast.types'
 import { dataAttr } from '@xihan-ui/core'
 import { toastAnatomy } from './toast.anatomy'
-import { resolveToastId } from './toast.machine'
+import { resolveToastDuration, resolveToastId } from './toast.machine'
 
 const parts = toastAnatomy.build()
 
@@ -39,6 +39,8 @@ export function connectToast<T extends PropTypes>(
   const closable = prop('closable') ?? true
   const id = resolveToastId(prop('id'), scope)
   const unmounted = status === 'unmounted'
+  const duration = resolveToastDuration(prop('type'), prop('duration'))
+  const autoDismiss = Number.isFinite(duration)
 
   return {
     id,
@@ -47,6 +49,7 @@ export function connectToast<T extends PropTypes>(
     title: prop('title'),
     paused,
     closable,
+    duration,
     remaining: context.get('remaining'),
     dismiss: () => send({ type: 'TOAST.DISMISS' }),
     pause: () => send({ type: 'TOAST.PAUSE', src: 'api' }),
@@ -82,6 +85,13 @@ export function connectToast<T extends PropTypes>(
       },
     }),
 
+    // 严重度这枚图形读屏念出来是重复信息：它表达的意思标题里已经写了
+    getIndicatorProps: () => normalize.element({
+      ...parts.indicator.attrs,
+      'aria-hidden': true,
+      'data-severity': type,
+    }),
+
     getTitleProps: () => normalize.element({
       ...parts.title.attrs,
       id: ids.title,
@@ -92,6 +102,16 @@ export function connectToast<T extends PropTypes>(
       ...parts['action-trigger'].attrs,
       type: 'button',
       onClick: () => send({ type: 'TOAST.ACTION' }),
+    }),
+
+    // 倒计时条：时长交给皮肤的时长槽，走一遍就到头，按住计时时由皮肤停住动画。
+    // 不自动消失的那些没有可走的计时，整条收起
+    getProgressProps: () => normalize.element({
+      ...parts.progress.attrs,
+      'aria-hidden': true,
+      'data-state': status,
+      'hidden': !autoDismiss || undefined,
+      'style': { '--xh-toast-progress-duration': autoDismiss ? `${duration}ms` : '' },
     }),
 
     getCloseTriggerProps: () => normalize.button({

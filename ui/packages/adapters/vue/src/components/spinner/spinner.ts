@@ -1,5 +1,5 @@
 import type { Size, Tone } from '@xihan-ui/core'
-import type { SpinnerProps, SpinnerTranslations } from '@xihan-ui/headless'
+import type { SpinnerProps, SpinnerTranslations, SpinnerVariant } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -13,6 +13,7 @@ export const XhSpinner = defineComponent({
   props: {
     label: { type: String, default: undefined },
     size: { type: String as PropType<Size>, default: undefined },
+    variant: { type: String as PropType<SpinnerVariant>, default: undefined },
     tone: { type: String as PropType<Tone>, default: undefined },
     translations: { type: Object as PropType<Partial<SpinnerTranslations>>, default: undefined },
   },

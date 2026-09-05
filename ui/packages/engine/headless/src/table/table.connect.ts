@@ -1039,5 +1039,13 @@ export function connectTable<T extends PropTypes>(
       ...parts.loading.attrs,
       hidden: !showLoading || undefined,
     }),
+
+    // 取下一页的入口：摆在表尾，还有没有下一页归作者判定；这里只焊死取数在途点不动
+    getLoadMoreTriggerProps: () => normalize.button({
+      ...parts['load-more-trigger'].attrs,
+      'type': 'button',
+      'disabled': loading || undefined,
+      'data-loading': dataAttr(loading),
+    }),
   }
 }

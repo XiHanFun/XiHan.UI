@@ -26,7 +26,7 @@ export function connectHoverCard<T extends PropTypes>(
   // visible 的两个子态下浮层都可见
   const open = state.matches('visible')
   const disabled = !!prop('disabled')
-  const ids = scope.ids('hover-card', 'trigger', 'content')
+  const ids = scope.ids('hover-card', 'trigger', 'content', 'title', 'description')
   const stateAttr = open ? 'open' : 'closed'
   const position = context.get('position')
   // 箭头落点：引擎没算（没要箭头 / 尚未落位）时缺席，皮肤退回居中
@@ -58,6 +58,11 @@ export function connectHoverCard<T extends PropTypes>(
     if (next !== open)
       send({ type: next ? 'OPEN' : 'CLOSE' })
   }
+
+  // 卡片的可及名指 title 部件；作者没放 title 时指回 trigger
+  const labelledBy = refs.get('getTitleEl')() ? ids.title : ids.trigger
+  // 说明部件在场才发 aria-describedby：指向不存在的 id 等于没有说明，还多一条空指
+  const describedBy = refs.get('getDescriptionEl')() ? ids.description : undefined
 
   return {
     open,
@@ -114,7 +119,8 @@ export function connectHoverCard<T extends PropTypes>(
       'tabindex': -1,
       // 显式 false，不省略：读屏对"没说"与"明确说了不是模态"的处理并不一样
       'aria-modal': 'false',
-      'aria-labelledby': ids.trigger,
+      'aria-labelledby': labelledBy,
+      'aria-describedby': describedBy,
       'data-state': stateAttr,
       'data-placement': placement,
       // 尺寸轴落在 content 上而非 root：root 是可选部件，面板几何也长在 content 上
@@ -128,6 +134,9 @@ export function connectHoverCard<T extends PropTypes>(
       'onFocusOut': onFocusLeave,
       'onKeydown': onEscapeKey,
     }),
+
+    getTitleProps: () => normalize.element({ ...parts.title.attrs, id: ids.title }),
+    getDescriptionProps: () => normalize.element({ ...parts.description.attrs, id: ids.description }),
 
     getArrowProps: () => normalize.element({
       ...parts.arrow.attrs,

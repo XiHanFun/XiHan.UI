@@ -61,6 +61,7 @@ export function connectApproval<T extends PropTypes>(
       'aria-describedby': ids.description,
       'data-state': status,
       'data-loading': dataAttr(loading),
+      'data-variant': prop('variant'),
       'data-tone': prop('tone'),
       'data-size': prop('size'),
       'onKeyDown': (event: KeyboardEvent) => {

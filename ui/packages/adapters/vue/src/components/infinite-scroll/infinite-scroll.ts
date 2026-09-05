@@ -39,6 +39,23 @@ export const XhInfiniteScrollRoot = defineComponent({
   },
 })
 
+/**
+ * 取下一页的按钮：与哨兵是同一条通路的两个入口。
+ * 读屏在虚拟光标模式下不产生滚动事件，哨兵那条路够不着，这个按钮是它的键盘等价通路。
+ * 文案写在插槽里，组件不代填。
+ */
+export const XhInfiniteScrollLoadMoreTrigger = defineComponent({
+  name: 'XhInfiniteScrollLoadMoreTrigger',
+  setup(_, { slots }) {
+    const ctx = useInfiniteScrollContext()
+    return () => h(
+      'button',
+      ctx.api.value.getLoadMoreTriggerProps() as Record<string, unknown>,
+      slots.default?.(),
+    )
+  },
+})
+
 /** 摆在列表末尾的哨兵，进可视区即报"该取下一页了"。 */
 export const XhInfiniteScrollSentinel = defineComponent({
   name: 'XhInfiniteScrollSentinel',

@@ -1,4 +1,4 @@
-import type { Size, Tone } from '@xihan-ui/core'
+import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type { ApprovalApi, ApprovalSchema, ApprovalScope, ApprovalStatus, ApprovalTranslations } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
@@ -38,6 +38,7 @@ export const XhApprovalRoot = defineComponent({
     denyOnEscape: { type: Boolean, default: undefined },
     denyOnUnmount: { type: Boolean, default: undefined },
     live: { type: String as PropType<'polite' | 'assertive'>, default: undefined },
+    variant: { type: String as PropType<ControlVariant>, default: undefined },
     tone: { type: String as PropType<Tone>, default: undefined },
     size: { type: String as PropType<Size>, default: undefined },
     translations: { type: Object as PropType<Partial<ApprovalTranslations>>, default: undefined },

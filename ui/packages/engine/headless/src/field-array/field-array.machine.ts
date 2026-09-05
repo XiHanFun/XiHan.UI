@@ -1,6 +1,6 @@
 import type { Params, RefsFacade } from '@xihan-ui/core'
 import type { FieldArrayFocusTarget, FieldArrayPendingKeys, FieldArraySchema } from './field-array.types'
-import { focusSafely, setup } from '@xihan-ui/core'
+import { focusSafely, resetDeclaredValue, setup } from '@xihan-ui/core'
 import { fieldArrayTriggerId } from './field-array.anatomy'
 
 const { createMachine } = setup<FieldArraySchema>()
@@ -92,6 +92,10 @@ export const fieldArrayMachine = createMachine({
   initialState: () => 'idle',
   // 值一变就把号对上，受控写回与作者整份替换都经这里
   watch: ({ track, context, action }) => track([context.dep('value')], () => action(['syncKeys'])),
+  // 表单重置从任何状态都要认，所以挂根级。不设禁用/只读守卫：原生表单的重置算法不看这两个标志
+  on: {
+    'FORM.RESET': { actions: ['resetToDefault'] },
+  },
   states: {
     idle: {
       // 省略 target：只跑 actions，不换状态
@@ -106,11 +110,13 @@ export const fieldArrayMachine = createMachine({
   },
   implementations: {
     guards: {
-      canAdd: ({ prop, context }) => !prop('disabled') && !atRowMax(context.get('value').length, rowBound(prop('max'))),
-      canRemove: ({ prop, context }) => !prop('disabled') && !atRowMin(context.get('value').length, rowBound(prop('min'))),
-      canMove: ({ prop }) => !prop('disabled') && !!prop('movable'),
+      canAdd: ({ prop, context }) => !prop('disabled') && !prop('readOnly') && !atRowMax(context.get('value').length, rowBound(prop('max'))),
+      canRemove: ({ prop, context }) => !prop('disabled') && !prop('readOnly') && !atRowMin(context.get('value').length, rowBound(prop('min'))),
+      canMove: ({ prop }) => !prop('disabled') && !prop('readOnly') && !!prop('movable'),
     },
     actions: {
+      resetToDefault: params => void resetDeclaredValue(params, 'value', 'value', 'defaultValue'),
+
       setValue: ({ context, event }) => {
         const e = event.current()
         if (e.type === 'VALUE.SET')

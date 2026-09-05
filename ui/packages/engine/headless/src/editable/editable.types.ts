@@ -1,4 +1,4 @@
-import type { MachineSchema, PropTypes } from '@xihan-ui/core'
+import type { ControlVariant, MachineSchema, PropTypes, Size, Tone } from '@xihan-ui/core'
 
 /**
  * 编辑态怎么收尾：
@@ -83,6 +83,12 @@ export interface EditableSchema extends MachineSchema {
     selectOnFocus?: boolean
     /** 输入框宽度跟着内容走：连接层把字符数落成原生 size 属性。 */
     autoResize?: boolean
+    /** 形态：outline / subtle / ghost，决定编辑态输入框的底与描边怎么画。 */
+    variant?: ControlVariant
+    /** 语气：brand / neutral / success / warning / danger / info，决定聚焦描边与提交钮用哪族颜色。 */
+    tone?: Tone
+    /** 尺寸：sm / md / lg，决定预览区、输入框与三颗按钮的几何档位。 */
+    size?: Size
     /** 值变化意图回调；编辑途中每次输入都发，受控时是唯一出口。 */
     onValueChange?: (details: EditableValueChangeDetails) => void
     /** 提交那一刻才发；编辑途中的输入不会惊动它。 */

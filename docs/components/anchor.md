@@ -79,7 +79,7 @@ size 换条目的字号与左右内边距，不传 size 即默认档
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-anchor>` |
-| Vue 组件 | `XhAnchorIndicator` `XhAnchorItem` `XhAnchorLink` `XhAnchorList` `XhAnchorRoot` |
+| Vue 组件 | `XhAnchorIndicator` `XhAnchorItem` `XhAnchorLink` `XhAnchorLinkText` `XhAnchorList` `XhAnchorRoot` |
 | 组合式函数 | `useAnchor` |
 | 状态机 | `anchorMachine` |
 | 皮肤 | `@xihan-ui/styles/anchor.css` |
@@ -88,7 +88,7 @@ size 换条目的字号与左右内边距，不传 size 即默认档
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="anchor"`：**`root`** · **`list`** · **`item`** · **`link`** · `indicator`
+`data-scope="anchor"`：**`root`** · **`list`** · **`item`** · **`link`** · `link-text` · `indicator`
 
 ## Props
 
@@ -98,6 +98,7 @@ size 换条目的字号与左右内边距，不传 size 即默认档
 | `defaultValue` | `string \| null` |  |  |
 | `collection` | `readonly string[]` |  | 目标区块的 id 清单，按文档序给；不给则按渲染出来的 link 现查。 |
 | `offset` | `number` |  | 判定线距滚动容器视口顶边的距离（px），默认 0。 |
+| `bounds` | `number` |  | 压线判定的容差（px），默认 1；区块顶边落在判定线下方这个距离内仍算越过。 |
 | `smooth` | `boolean` |  | 点链接时平滑滚动到目标，默认 false。 |
 | `dir` | `Direction` |  | 文字方向，作用于排版与指示条的起始缘。 |
 | `orientation` | `Orientation` |  | 列表轴向，默认 vertical，只影响样式。 |
@@ -137,6 +138,7 @@ size 换条目的字号与左右内边距，不传 size 即默认档
 | `getListProps` | `() => T['element']` |  |
 | `getItemProps` | `() => T['element']` |  |
 | `getLinkProps` | `(props: AnchorLinkProps) => T['element']` |  |
+| `getLinkTextProps` | `() => T['element']` |  |
 | `getIndicatorProps` | `() => T['element']` |  |
 
 ## 键盘

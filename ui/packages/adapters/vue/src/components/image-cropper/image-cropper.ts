@@ -18,7 +18,7 @@ type ImageCropperProps = ImageCropperSchema['props']
 export type ImageCropperRootSlotProps = Pick<
   ImageCropperApi,
   'value' | 'zoom' | 'rotation' | 'natural' | 'dragging' | 'resizing' | 'disabled' | 'readOnly'
-  | 'getCropRect' | 'setValue' | 'setZoom'
+  | 'getCropRect' | 'setValue' | 'setZoom' | 'setRotation'
 >
 
 export const XhImageCropperRoot = defineComponent({
@@ -34,7 +34,14 @@ export const XhImageCropperRoot = defineComponent({
     minHeight: { type: Number, default: undefined },
     zoom: { type: Number, default: undefined },
     defaultZoom: { type: Number, default: undefined },
+    minZoom: { type: Number, default: undefined },
+    maxZoom: { type: Number, default: undefined },
+    zoomStep: { type: Number, default: undefined },
     rotation: { type: Number, default: undefined },
+    defaultRotation: { type: Number, default: undefined },
+    minRotation: { type: Number, default: undefined },
+    maxRotation: { type: Number, default: undefined },
+    rotationStep: { type: Number, default: undefined },
     shape: { type: String as PropType<ImageCropperShape>, default: undefined },
     disabled: { type: Boolean, default: undefined },
     readOnly: { type: Boolean, default: undefined },
@@ -52,6 +59,8 @@ export const XhImageCropperRoot = defineComponent({
     'value-change-end': (_details: PayloadOf<ImageCropperProps, 'onValueChangeEnd'>) => true,
     'zoom-change': (_details: PayloadOf<ImageCropperProps, 'onZoomChange'>) => true,
     'update:zoom': (_zoom: PayloadOf<ImageCropperProps, 'onZoomChange'>['zoom']) => true,
+    'rotation-change': (_details: PayloadOf<ImageCropperProps, 'onRotationChange'>) => true,
+    'update:rotation': (_rotation: PayloadOf<ImageCropperProps, 'onRotationChange'>['rotation']) => true,
   },
   slots: Object as SlotsType<{
     default?: (props: ImageCropperRootSlotProps) => VNode[]
@@ -68,9 +77,13 @@ export const XhImageCropperRoot = defineComponent({
       emit('zoom-change', details)
       emit('update:zoom', details.zoom)
     }
+    const onRotationChange: ImageCropperProps['onRotationChange'] = (details) => {
+      emit('rotation-change', details)
+      emit('update:rotation', details.rotation)
+    }
     const ctx = useImageCropper(
       withXhConfig('image-cropper', props) as ImageCropperProps,
-      { onValueChange, onValueChangeEnd, onZoomChange },
+      { onValueChange, onValueChangeEnd, onZoomChange, onRotationChange },
     )
     provideImageCropper(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
@@ -85,6 +98,7 @@ export const XhImageCropperRoot = defineComponent({
       getCropRect: ctx.api.value.getCropRect,
       setValue: ctx.api.value.setValue,
       setZoom: ctx.api.value.setZoom,
+      setRotation: ctx.api.value.setRotation,
     }))
   },
 })
@@ -140,6 +154,23 @@ export const XhImageCropperGrid = defineComponent({
   setup(_, { slots }) {
     const ctx = useImageCropperContext()
     return () => h('div', ctx.api.value.getGridProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+export const XhImageCropperZoomSlider = defineComponent({
+  name: 'XhImageCropperZoomSlider',
+  setup() {
+    const ctx = useImageCropperContext()
+    // 用原生 range：拇指拖动、方向键步进与读屏播报都归它
+    return () => h('input', ctx.api.value.getZoomSliderProps() as Record<string, unknown>)
+  },
+})
+
+export const XhImageCropperRotateSlider = defineComponent({
+  name: 'XhImageCropperRotateSlider',
+  setup() {
+    const ctx = useImageCropperContext()
+    return () => h('input', ctx.api.value.getRotateSliderProps() as Record<string, unknown>)
   },
 })
 

@@ -1,4 +1,4 @@
-import type { MachineSchema, PropTypes, Size } from '@xihan-ui/core'
+import type { Direction, MachineSchema, PropTypes, Size, Tone } from '@xihan-ui/core'
 
 export interface CollapsibleOpenChangeDetails {
   open: boolean
@@ -9,8 +9,12 @@ export interface CollapsibleSchema extends MachineSchema {
     open?: boolean
     defaultOpen?: boolean
     disabled?: boolean
+    /** 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 */
+    tone?: Tone
     /** 尺寸：sm / md / lg。 */
     size?: Size
+    /** 文字方向，只作用于排版；作者没给就不写。 */
+    dir?: Direction
     /** open 变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 */
     onOpenChange?: (details: CollapsibleOpenChangeDetails) => void
   }
@@ -35,6 +39,7 @@ export interface CollapsibleApi<T extends PropTypes = PropTypes> {
   open: boolean
   setOpen: (next: boolean) => void
   getRootProps: () => T['element']
+  getHeaderProps: () => T['element']
   getTriggerProps: () => T['button']
   getContentProps: () => T['element']
   getIndicatorProps: () => T['element']

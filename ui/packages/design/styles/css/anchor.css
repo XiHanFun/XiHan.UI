@@ -94,6 +94,14 @@
     display: none;
   }
 
+  /* 链接里另有图标时，省略号只裁这一段文字 */
+  [data-scope='anchor'][data-part='link-text'] {
+    min-inline-size: 0;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+
   /* 悬停走列表族的轻档：中性灰底，与面包屑的链接同一副回执。
      只把 muted 提到 default 的话，一行小字上那点色差在长目录里几乎读不出来 */
   [data-scope='anchor'][data-part='link']:hover {

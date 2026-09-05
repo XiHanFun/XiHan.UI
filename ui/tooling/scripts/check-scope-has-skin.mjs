@@ -18,6 +18,7 @@ const STYLES_DIR = 'packages/design/styles/css'
  * 这条就成了一张过期的免检通行证，由下面的名单核验报出来。
  */
 const SHARED = {
+  'description': '字段族说明文字的公共层，按 [data-part=\'description\'] 匹配逐个列出的 scope',
   'focus': '聚焦环的公共层，按 [data-scope][data-part] 匹配全部库节点，不挑具体哪一个',
   'forced-colors': '高对比档的公共补救层，按状态词汇表匹配全部库节点，不挑具体哪一个',
   'label': '字段族标签的公共层，按 [data-part=\'label\'] 匹配逐个列出的 scope',

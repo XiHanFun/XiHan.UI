@@ -1,4 +1,4 @@
-import type { Service, Size, Tone } from '@xihan-ui/core'
+import type { ActionVariant, Service, Size, Tone } from '@xihan-ui/core'
 import type { BackTopBehavior, BackTopSchema, BackTopTranslations, BackTopVisibilityChangeDetails } from '@xihan-ui/headless'
 import { backTopAnatomy, backTopMachine, backTopMeta, connectBackTop } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
@@ -19,10 +19,11 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @customElement xh-back-top
  * @attr {number} visibility-height - 滚过这么多像素按钮才露面，默认 200
  * @attr {'auto'|'smooth'} behavior - 滚回顶部的方式，默认 smooth
+ * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 形态，决定底色、描边与前景怎么用
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires visibility-change - 露面与否变化；detail 为 `{ visible: boolean }`
- * @csspart root - 定位壳，承载 data-state（visible / hidden）/ data-tone / data-size；收起时带 hidden
+ * @csspart root - 定位壳，承载 data-state（visible / hidden）/ data-variant / data-tone / data-size；收起时带 hidden
  * @csspart trigger - 按钮，须写成 `<button>`；可及名字由 translations.trigger 给
  */
 export class XhBackTopElement extends XhElement {
@@ -32,6 +33,7 @@ export class XhBackTopElement extends XhElement {
   static override properties = {
     visibilityHeight: { converter: NUMBER_CONVERTER, attribute: 'visibility-height' },
     behavior: { converter: STRING_CONVERTER },
+    variant: { converter: STRING_CONVERTER },
     tone: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
     // 文案是对象，只走 property
@@ -42,6 +44,7 @@ export class XhBackTopElement extends XhElement {
 
   declare visibilityHeight?: number
   declare behavior?: BackTopBehavior
+  declare variant?: ActionVariant
   declare tone?: Tone
   declare size?: Size
   declare translations?: Partial<BackTopTranslations>
@@ -63,6 +66,7 @@ export class XhBackTopElement extends XhElement {
       visibilityHeight: this.visibilityHeight,
       behavior: this.behavior,
       translations: this.translations,
+      variant: this.variant,
       tone: this.tone,
       size: this.size,
       onVisibilityChange: this.notify,

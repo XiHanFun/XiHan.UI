@@ -150,6 +150,41 @@ export const XhPaginationEllipsisTrigger = defineComponent({
   },
 })
 
+/** 信息区：不写默认插槽时铺 api.summaryText */
+export const XhPaginationSummary = defineComponent({
+  name: 'XhPaginationSummary',
+  slots: Object as SlotsType<{
+    default?: (props: { summaryText: string, start: number, end: number, count: number }) => VNode[]
+  }>,
+  setup(_, { slots }) {
+    const ctx = usePaginationContext()
+    return () => {
+      const api = ctx.api.value
+      return h(
+        'div',
+        api.getSummaryProps() as Record<string, unknown>,
+        slots.default
+          ? slots.default({
+              summaryText: api.summaryText,
+              start: api.pageRange.start,
+              end: api.pageRange.end,
+              count: api.count,
+            })
+          : api.summaryText,
+      )
+    }
+  },
+})
+
+/** 跳页输入框：敲页码按回车即跳 */
+export const XhPaginationJumper = defineComponent({
+  name: 'XhPaginationJumper',
+  setup() {
+    const ctx = usePaginationContext()
+    return () => h('input', ctx.api.value.getJumperProps() as Record<string, unknown>)
+  },
+})
+
 export const XhPaginationPageSizeSelect = defineComponent({
   name: 'XhPaginationPageSizeSelect',
   slots: Object as SlotsType<{

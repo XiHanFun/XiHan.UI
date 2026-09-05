@@ -1,3 +1,4 @@
+import type { Tone } from '@xihan-ui/core'
 import type { HighlightApi, HighlightProps } from '@xihan-ui/headless'
 import { connectHighlight, highlightAnatomy, highlightMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
@@ -22,7 +23,8 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @attr {string} text - 要显示的整段文本
  * @attr {string} keyword - 一个关键词；一组关键词走 property
  * @attr {boolean} case-sensitive - 区分大小写，缺省不区分
- * @csspart root - 包住整段文本的容器，承载 data-case-sensitive
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气，决定命中片段用哪族颜色
+ * @csspart root - 包住整段文本的容器，承载 data-case-sensitive 与 data-tone
  * @csspart mark - 命中关键词的那一小段，渲染成 `<mark>`
  */
 export class XhHighlightElement extends XhElement {
@@ -33,11 +35,13 @@ export class XhHighlightElement extends XhElement {
     text: { converter: STRING_CONVERTER },
     keyword: { converter: STRING_CONVERTER },
     caseSensitive: { type: Boolean, attribute: 'case-sensitive' },
+    tone: { converter: STRING_CONVERTER },
   }
 
   declare text?: string
   declare keyword?: string | readonly string[]
   declare caseSensitive?: boolean
+  declare tone?: Tone
 
   /** 上一次往哪个 root 铺过哪一串片段。 */
   #painted?: { host: Element, key: string }
@@ -52,6 +56,7 @@ export class XhHighlightElement extends XhElement {
       text: this.text,
       keyword: this.keyword,
       caseSensitive: this.caseSensitive,
+      tone: this.tone,
     } satisfies HighlightProps, wcNormalize)
 
     this.spreader.spread(root, api.getRootProps() as Record<string, unknown>)

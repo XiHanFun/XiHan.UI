@@ -92,7 +92,7 @@ indicator 是可选部件，不渲染它就没有默认字形；标记由作者�
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-accordion>` |
-| Vue 组件 | `XhAccordionContent` `XhAccordionHeader` `XhAccordionIndicator` `XhAccordionItem` `XhAccordionRoot` `XhAccordionTrigger` |
+| Vue 组件 | `XhAccordionContent` `XhAccordionHeader` `XhAccordionIndicator` `XhAccordionItem` `XhAccordionItemSeparator` `XhAccordionRoot` `XhAccordionTrigger` |
 | 组合式函数 | `useAccordion` |
 | 状态机 | `accordionMachine` |
 | 皮肤 | `@xihan-ui/styles/accordion.css` |
@@ -101,7 +101,7 @@ indicator 是可选部件，不渲染它就没有默认字形；标记由作者�
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="accordion"`：`root` · `item` · `header` · **`trigger`** · **`content`** · `indicator`
+`data-scope="accordion"`：`root` · `item` · `item-separator` · `header` · **`trigger`** · **`content`** · `indicator`
 
 ## Props
 
@@ -112,6 +112,9 @@ indicator 是可选部件，不渲染它就没有默认字形；标记由作者�
 | `defaultValue` | `string[]` |  |  |
 | `multiple` | `boolean` |  | 允许多项同时展开；false 时展开一项即收起其余。 |
 | `collapsible` | `boolean` |  | 允许把最后一个展开项收起，默认 false。 |
+| `loop` | `boolean` |  | 方向键走到尽头是否回绕，默认 false。 |
+| `disabled` | `boolean` |  | 整组禁用：所有条目都不可切换，条目上写的 disabled 只能更严不能放宽。 |
+| `variant` | `AccordionVariant` |  | 形态：plain / surface / bordered，决定条目怎么与页面分开。缺省 plain。 |
 | `orientation` | `Orientation` |  | 方向键轴向，默认 vertical。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr；影响水平轴上 ArrowLeft/ArrowRight 的语义。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
@@ -156,6 +159,7 @@ indicator 是可选部件，不渲染它就没有默认字形；标记由作者�
 | `isOpen` | `(value: string) => boolean` |  |
 | `getRootProps` | `() => T['element']` |  |
 | `getItemProps` | `(props: AccordionItemProps) => T['element']` |  |
+| `getItemSeparatorProps` | `() => T['element']` |  |
 | `getHeaderProps` | `(props: AccordionItemProps) => T['element']` |  |
 | `getTriggerProps` | `(props: AccordionItemProps) => T['button']` |  |
 | `getContentProps` | `(props: AccordionItemProps) => T['element']` |  |
@@ -180,6 +184,7 @@ indicator 是可选部件，不渲染它就没有默认字形；标记由作者�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `item-separator` | `aria-hidden` | 'true' |
 | `header` | `aria-level` | 3 |
 | `header` | `role` | 'heading' |
 | `trigger` | `aria-controls` | `content` 部件的 id |
@@ -199,9 +204,11 @@ indicator 是可选部件，不渲染它就没有默认字形；标记由作者�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `root` | `data-disabled` | ''（条件成立时才出现） |
 | `root` | `data-orientation` | props.orientation |
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
+| `root` | `data-variant` | props.variant |
 | `item` | `data-disabled` | ''（条件成立时才出现） |
 | `item` | `data-state` | 'open' \| 'closed' |
 | `header` | `data-disabled` | ''（条件成立时才出现） |
@@ -216,7 +223,7 @@ indicator 是可选部件，不渲染它就没有默认字形；标记由作者�
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-accordion-content-fg` · `--xh-accordion-content-px` · `--xh-accordion-content-py` · `--xh-accordion-icon-size` · `--xh-accordion-item-border` · `--xh-accordion-trigger-bg` · `--xh-accordion-trigger-bg-hover` · `--xh-accordion-trigger-fg` · `--xh-accordion-trigger-fg-open` · `--xh-accordion-trigger-font-size` · `--xh-accordion-trigger-font-weight` · `--xh-accordion-trigger-gap` · `--xh-accordion-trigger-h` · `--xh-accordion-trigger-px` · `--xh-accordion-trigger-radius`
+`--xh-accordion-content-fg` · `--xh-accordion-content-px` · `--xh-accordion-content-py` · `--xh-accordion-icon-size` · `--xh-accordion-item-bg` · `--xh-accordion-item-border` · `--xh-accordion-item-gap` · `--xh-accordion-item-radius` · `--xh-accordion-item-shadow` · `--xh-accordion-trigger-bg` · `--xh-accordion-trigger-bg-hover` · `--xh-accordion-trigger-fg` · `--xh-accordion-trigger-fg-open` · `--xh-accordion-trigger-font-size` · `--xh-accordion-trigger-font-weight` · `--xh-accordion-trigger-gap` · `--xh-accordion-trigger-h` · `--xh-accordion-trigger-px` · `--xh-accordion-trigger-radius`
 
 ## 动效
 

@@ -56,6 +56,10 @@ export function connectFloatButton<T extends PropTypes>(
       'data-state': stateAttr,
       'data-placement': placement,
       'data-shape': shape,
+      // 三个视觉轴落在壳上，触发器与展开的每一条动作沿继承流取值
+      'data-variant': props.variant,
+      'data-tone': props.tone,
+      'data-size': props.size,
       'data-disabled': dataAttr(disabled),
       // 贴边距离写成内联自定义属性：贴的是哪两条边由皮肤按 data-placement 决定，这里只给数
       'style': `--xh-_float-button-offset: ${offset}px`,

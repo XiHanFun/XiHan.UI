@@ -7,6 +7,7 @@
 // 队列要长在页面结构里（比如通知中心那一栏自己排版）时，用组件形态的
 // XhNotificationRoot，那是另一条路，两者不共享队列。
 import type {
+  NotificationDedupe,
   NotificationOptions,
   NotificationPlacement,
   NotificationTranslations,
@@ -16,9 +17,10 @@ import type { App, MaybeRefOrGetter, VNode } from 'vue'
 import type { NotificationContext } from '../components/notification/context'
 import type { XhConfig } from '../config/config'
 import { ensurePortalRoot } from '@xihan-ui/core'
-import { computed, createApp, defineComponent, Fragment, h, toValue } from 'vue'
+import { computed, createApp, defineComponent, Fragment, h, shallowRef, toValue } from 'vue'
 import {
   XhNotificationItem,
+  XhNotificationItemActionTrigger,
   XhNotificationItemCloseTrigger,
   XhNotificationItemDescription,
   XhNotificationItemIndicator,
@@ -31,8 +33,10 @@ import { createServiceConfig } from './service-config'
 export interface NotificationServiceOptions {
   /** 默认落位，默认 bottom-end；单条可用 options.placement 覆盖。 */
   placement?: NotificationPlacement
-  /** 每个位置最多同时留几条，超出挤掉最旧的。不给即不限。 */
+  /** 每个位置最多同时留几条，超出先挤低优先级的、同级里挤最旧的。不给即不限。 */
   max?: number
+  /** 重复怎么算，默认 'id'；给 'content' 则同一句话合并成一条并计数。 */
+  dedupe?: NotificationDedupe
   /** 同一摞内的间距（px），默认 16。 */
   gap?: number
   duration?: number
@@ -50,12 +54,20 @@ export interface NotificationServiceOptions {
   target?: HTMLElement
 }
 
+/**
+ * create 的入参。`actionLabel` 是卡片上那颗行内动作钮的文案，`onAction` 是按下它做什么——
+ * 回调不进队列记录（那份要能被整份替换、序列化、比对），服务按 id 单独存一张表。
+ */
+export interface NotificationCreateOptions extends NotificationOptions {
+  onAction?: () => void
+}
+
 /** 类型糖的入参：只差 type 与 title，其余同 create。 */
-export type NotificationMessageOptions = Omit<NotificationOptions, 'type' | 'title'>
+export type NotificationMessageOptions = Omit<NotificationCreateOptions, 'type' | 'title'>
 
 export interface NotificationService {
-  /** 入队并返回 id；同 id 已存在则就地改写，位置不动。 */
-  create: (options?: NotificationOptions) => string
+  /** 入队并返回 id；同 id 已存在则就地改写，合并掉的返回被并进的那一条。 */
+  create: (options?: NotificationCreateOptions) => string
   update: (id: string, options: Partial<NotificationOptions>) => void
   dismiss: (id: string) => void
   dismissAll: () => void
@@ -63,31 +75,45 @@ export interface NotificationService {
   success: (title: string, options?: NotificationMessageOptions) => string
   warning: (title: string, options?: NotificationMessageOptions) => string
   error: (title: string, options?: NotificationMessageOptions) => string
+  /** 把当下这些卡片的计时全按住，'service' 这一路与指针、焦点并存。 */
+  pauseAll: () => void
+  resumeAll: () => void
   /** 换一份全局配置源。 */
   setConfig: (next: MaybeRefOrGetter<XhConfig> | undefined) => void
   /** 卸载宿主应用并移除容器。 */
   dispose: () => void
 }
 
+/** 合并过的在标题后追加计数，没并过就是原话。 */
+function cardTitle(item: ResolvedNotification): string | undefined {
+  if (item.count <= 1 || item.title == null)
+    return item.title
+  return `${item.title} ×${item.count}`
+}
+
 function defaultCard(
   item: ResolvedNotification,
   translations: Partial<NotificationTranslations> | undefined,
+  paused: boolean,
   onUnmounted: (id: string) => void,
+  onAction: (id: string) => void,
 ): VNode {
   return h(XhNotificationItem, {
     id: item.id,
-    title: item.title,
+    title: cardTitle(item),
     description: item.description,
     type: item.type,
     duration: item.duration,
     removeDelay: item.removeDelay,
     closable: item.closable,
     pauseOnPageIdle: item.pauseOnPageIdle,
+    paused,
     translations,
     onStatusChange: ({ id, status }: { id: string, status: string }) => {
       if (status === 'unmounted')
         onUnmounted(id)
     },
+    onAction: () => onAction(item.id),
   }, () => [
     // 四个节点平铺：两列网格与右上角那颗叉都归皮肤，模板套一层行容器只会与它打架。
     // 指示符与说明都恒渲染——皮肤的 :empty 规则负责把空盒收走，
@@ -95,6 +121,7 @@ function defaultCard(
     h(XhNotificationItemIndicator),
     h(XhNotificationItemTitle),
     h(XhNotificationItemDescription),
+    item.actionLabel ? h(XhNotificationItemActionTrigger, () => item.actionLabel) : null,
     item.closable !== false ? h(XhNotificationItemCloseTrigger) : null,
   ])
 }
@@ -110,6 +137,14 @@ export function createNotificationService(options: NotificationServiceOptions = 
     ensurePortalRoot(document).appendChild(holder)
 
   let ctx: NotificationContext | null = null
+  // 行内动作的回调按 id 存这儿：队列记录只放可搬运的纯数据，回调进不去
+  const actions = new Map<string, () => void>()
+  const pausedAll = shallowRef(false)
+
+  const remove = (id: string): void => {
+    actions.delete(id)
+    ctx?.dismiss(id)
+  }
 
   const Host = defineComponent({
     name: 'XhNotificationServiceHost',
@@ -129,7 +164,13 @@ export function createNotificationService(options: NotificationServiceOptions = 
             { key: placement, ...value.getGroupProps({ placement }) as Record<string, unknown> },
             // 按队列身份 id 给 key，避免节点被就地复用
             value.getItemsByPlacement(placement).map(item => h(Fragment, { key: item.id }, [
-              defaultCard(item, toValue(queueProps.translations), inner.dismiss),
+              defaultCard(
+                item,
+                toValue(queueProps.translations),
+                pausedAll.value,
+                remove,
+                id => actions.get(id)?.(),
+              ),
             ])),
           )))
       }
@@ -149,25 +190,54 @@ export function createNotificationService(options: NotificationServiceOptions = 
       throw new Error('notification 服务已卸载')
     return mounted ? ctx : null
   }
+  /** 入队一条；回调另存一张表，队列记录里只留文案。 */
+  const create = (opts: NotificationCreateOptions = {}): string => {
+    const queue = use()
+    if (!queue)
+      return ''
+    const { onAction, ...record } = opts
+    const id = queue.create(record)
+    if (onAction)
+      actions.set(id, onAction)
+    return id
+  }
+
   const sugar = (type: NotificationOptions['type']) =>
     (title: string, opts: NotificationMessageOptions = {}): string =>
-      use()?.create({ ...opts, type, title }) ?? ''
+      create({ ...opts, type, title })
 
   return {
-    create: opts => use()?.create(opts) ?? '',
+    create,
     update: (id, opts) => use()?.update(id, opts),
-    dismiss: id => use()?.dismiss(id),
-    dismissAll: () => use()?.dismissAll(),
+    dismiss: (id) => {
+      if (use())
+        remove(id)
+    },
+    dismissAll: () => {
+      if (use()) {
+        actions.clear()
+        ctx?.dismissAll()
+      }
+    },
     info: sugar('info'),
     success: sugar('success'),
     warning: sugar('warning'),
     error: sugar('error'),
+    pauseAll: () => {
+      if (use())
+        pausedAll.value = true
+    },
+    resumeAll: () => {
+      if (use())
+        pausedAll.value = false
+    },
     setConfig: next => configSource.set(next),
     dispose: () => {
       if (mounted)
         app.unmount()
       disposed = true
       ctx = null
+      actions.clear()
       if (!target)
         holder.remove()
     },

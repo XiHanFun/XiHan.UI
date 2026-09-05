@@ -74,7 +74,7 @@ shape 只改遮罩与描边的样子，裁切矩形还是那个矩形；配 1:1 
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-image-cropper>` |
-| Vue 组件 | `XhImageCropperCropArea` `XhImageCropperCropHandle` `XhImageCropperGrid` `XhImageCropperHiddenInput` `XhImageCropperImage` `XhImageCropperRoot` `XhImageCropperViewport` |
+| Vue 组件 | `XhImageCropperCropArea` `XhImageCropperCropHandle` `XhImageCropperGrid` `XhImageCropperHiddenInput` `XhImageCropperImage` `XhImageCropperRoot` `XhImageCropperRotateSlider` `XhImageCropperViewport` `XhImageCropperZoomSlider` |
 | 组合式函数 | `useImageCropper` |
 | 状态机 | `imageCropperMachine` |
 | 皮肤 | `@xihan-ui/styles/image-cropper.css` |
@@ -83,7 +83,7 @@ shape 只改遮罩与描边的样子，裁切矩形还是那个矩形；配 1:1 
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="image-cropper"`：**`root`** · **`viewport`** · **`image`** · **`crop-area`** · `crop-handle` · `grid` · `hidden-input`
+`data-scope="image-cropper"`：**`root`** · **`viewport`** · **`image`** · **`crop-area`** · `crop-handle` · `grid` · `zoom-slider` · `rotate-slider` · `hidden-input`
 
 ## Props
 
@@ -98,7 +98,14 @@ shape 只改遮罩与描边的样子，裁切矩形还是那个矩形；配 1:1 
 | `minHeight` | `number` |  | 裁切框的最小高度，自然像素，默认 0。 |
 | `zoom` | `number` |  | 显示缩放倍率，默认 1。给定即受控：setZoom 只发 onZoomChange。 |
 | `defaultZoom` | `number` |  |  |
-| `rotation` | `number` |  | 显示旋转角度，单位度，默认 0。 缩放与旋转只改图片与裁切框的呈现，裁切矩形与源图像素的对应关系不变。 |
+| `minZoom` | `number` |  | 缩放滑杆的下限，默认 1。只约束滑杆，不夹取 setZoom。 |
+| `maxZoom` | `number` |  | 缩放滑杆的上限，默认 3。只约束滑杆，不夹取 setZoom。 |
+| `zoomStep` | `number` |  | 缩放滑杆的步长，默认 0.01。 |
+| `rotation` | `number` |  | 显示旋转角度，单位度，默认 0。给定即受控：setRotation 只发 onRotationChange。 缩放与旋转只改图片与裁切框的呈现，裁切矩形与源图像素的对应关系不变。 |
+| `defaultRotation` | `number` |  |  |
+| `minRotation` | `number` |  | 旋转滑杆的下限，默认 -180。 |
+| `maxRotation` | `number` |  | 旋转滑杆的上限，默认 180。 |
+| `rotationStep` | `number` |  | 旋转滑杆的步长，默认 1。 |
 | `shape` | `ImageCropperShape` |  | 裁切框外形，默认 rect。 |
 | `disabled` | `boolean` |  | 禁用：裁切框与把手退出 Tab 序列，指针与键盘都改不动，也不参与表单提交。 |
 | `readOnly` | `boolean` |  | 只读：仍可聚焦与被读屏念出，改不动。 |
@@ -107,6 +114,7 @@ shape 只改遮罩与描边的样子，裁切矩形还是那个矩形；配 1:1 
 | `onValueChange` | `(details: ImageCropperValueChangeDetails) => void` |  | 每次裁切矩形变化都发；拖动过程中会连续发很多次。 |
 | `onValueChangeEnd` | `(details: ImageCropperValueChangeEndDetails) => void` |  | 只在一次拖动结束时发一次，适合拿来做裁切导出。 |
 | `onZoomChange` | `(details: ImageCropperZoomChangeDetails) => void` |  | 缩放变化意图；受控时是唯一出口。 |
+| `onRotationChange` | `(details: ImageCropperRotationChangeDetails) => void` |  | 旋转变化意图；受控时是唯一出口。 |
 
 ## 事件
 
@@ -117,6 +125,7 @@ shape 只改遮罩与描边的样子，裁切矩形还是那个矩形；配 1:1 
 | `value-change` | `ImageCropperValueChangeDetails` | 裁切矩形变化（拖动途中会连发）；detail 为 `{ value: { x, y, width, height } }` |
 | `value-change-end` | `ImageCropperValueChangeEndDetails` | 一次指针拖动松手发一次，一次方向键微调也发一次；detail 为 `{ value: { x, y, width, height } }` |
 | `zoom-change` | `ImageCropperZoomChangeDetails` | 缩放倍率变化；detail 为 `{ zoom: number }` |
+| `rotation-change` | `ImageCropperRotationChangeDetails` | 旋转角度变化；detail 为 `{ rotation: number }` |
 
 ## 插槽
 
@@ -132,7 +141,7 @@ shape 只改遮罩与描边的样子，裁切矩形还是那个矩形；配 1:1 
 
 **状态**：`dragging` · `idle` · `resizing`
 
-**事件**：`VALUE.SET` · `ZOOM.SET` · `IMAGE.LOAD` · `CROP.NUDGE` · `HANDLE.NUDGE` · `DRAG.START` · `RESIZE.START` · `DRAG.MOVE` · `DRAG.END` · `FORM.RESET`
+**事件**：`VALUE.SET` · `ZOOM.SET` · `ROTATE.SET` · `IMAGE.LOAD` · `CROP.NUDGE` · `HANDLE.NUDGE` · `DRAG.START` · `RESIZE.START` · `DRAG.MOVE` · `DRAG.END` · `FORM.RESET`
 
 **判据**：`canEdit`
 
@@ -153,12 +162,15 @@ shape 只改遮罩与描边的样子，裁切矩形还是那个矩形；配 1:1 
 | `getCropRect` | `() => ImageCropperRect` | 取一份当前裁切矩形的副本，交给 cropToCanvas 出图。 |
 | `setValue` | `(next: ImageCropperRect) => void` |  |
 | `setZoom` | `(next: number) => void` |  |
+| `setRotation` | `(next: number) => void` |  |
 | `getRootProps` | `() => T['element']` |  |
 | `getViewportProps` | `() => T['element']` |  |
 | `getImageProps` | `() => T['img']` |  |
 | `getCropAreaProps` | `() => T['element']` |  |
 | `getCropHandleProps` | `(props: ImageCropperHandleProps) => T['button']` |  |
 | `getGridProps` | `() => T['element']` | 裁切框里的构图参考线，纯装饰。 |
+| `getZoomSliderProps` | `() => T['input']` | 缩放滑杆，原生 range 输入。 |
+| `getRotateSliderProps` | `() => T['input']` | 旋转滑杆，原生 range 输入。 |
 | `getHiddenInputProps` | `() => T['input']` |  |
 
 ## 键盘
@@ -190,6 +202,8 @@ shape 只改遮罩与描边的样子，裁切矩形还是那个矩形；配 1:1 
 | `crop-handle` | `aria-valuetext` | label.valueText({ ...value }) |
 | `crop-handle` | `role` | 'slider' |
 | `grid` | `aria-hidden` | 'true' |
+| `zoom-slider` | `aria-label` | label.zoomSlider |
+| `rotate-slider` | `aria-label` | label.rotateSlider |
 
 - 读屏在浏览模式下把方向键收给虚拟光标，节点报成普通分组就等于键盘调整到不了组件。裁切框因此报成 `role="application"`：焦点落进来读屏自动切焦点模式，方向键归组件。代价是这一小块（框内的参考线与把手）读不了虚拟光标的浏览命令；图片与它的 `alt` 在框外，不受影响。
 - 八个把手各自报成 `role="slider"`——它们是叶子节点，报成 slider 才有值语义。裁切框本身不能报 slider：规范里 slider 的子节点一律当装饰，那样八个把手会整批从无障碍树里消失。
@@ -217,12 +231,14 @@ shape 只改遮罩与描边的样子，裁切矩形还是那个矩形；配 1:1 
 | `crop-handle` | `data-readonly` | ''（条件成立时才出现） |
 | `crop-handle` | `data-resizing` | ''（条件成立时才出现） |
 | `grid` | `data-shape` | props.shape |
+| `zoom-slider` | `data-disabled` | ''（条件成立时才出现） |
+| `rotate-slider` | `data-disabled` | ''（条件成立时才出现） |
 
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-image-cropper-bg` · `--xh-image-cropper-crop-border` · `--xh-image-cropper-grid-line` · `--xh-image-cropper-handle-bg` · `--xh-image-cropper-handle-bg-resizing` · `--xh-image-cropper-handle-border` · `--xh-image-cropper-handle-radius` · `--xh-image-cropper-handle-size` · `--xh-image-cropper-mask` · `--xh-image-cropper-viewport-radius` · `--xh-image-cropper-w`
+`--xh-image-cropper-bg` · `--xh-image-cropper-crop-border` · `--xh-image-cropper-grid-line` · `--xh-image-cropper-handle-bg` · `--xh-image-cropper-handle-bg-resizing` · `--xh-image-cropper-handle-border` · `--xh-image-cropper-handle-radius` · `--xh-image-cropper-handle-size` · `--xh-image-cropper-mask` · `--xh-image-cropper-slider-accent` · `--xh-image-cropper-slider-w` · `--xh-image-cropper-viewport-radius` · `--xh-image-cropper-w`
 
 ## 动效
 

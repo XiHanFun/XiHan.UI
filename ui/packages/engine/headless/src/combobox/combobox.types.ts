@@ -125,6 +125,8 @@ export interface ComboboxSchema extends MachineSchema {
     readOnly?: boolean
     /** 校验失败：输入框报 aria-invalid，各角色节点带 data-invalid。 */
     invalid?: boolean
+    /** 候选还在取：列表报 aria-busy，在途占位顶上来、空态占位让位。 */
+    loading?: boolean
     /** 方向键走到尽头是否回绕，默认 true。 */
     loop?: boolean
     /** 输入框占位文字。 */
@@ -268,6 +270,11 @@ export interface ComboboxApi<T extends PropTypes = PropTypes> {
   getItemTextProps: (props: ComboboxItemProps) => T['element']
   getItemIndicatorProps: (props: ComboboxItemProps) => T['element']
   getEmptyProps: () => T['element']
+  /**
+   * 在途占位：与空态占位同一个位置，两者不同屏——取数期间它顶上来，空态让位。
+   * 与 content 是兄弟，同样不进 role=listbox。
+   */
+  getLoadingProps: () => T['element']
   /** 表单影子：选中值随表单提交。给了 name 才带 name，不给就不参与提交。 */
   getHiddenInputProps: () => T['input']
 }

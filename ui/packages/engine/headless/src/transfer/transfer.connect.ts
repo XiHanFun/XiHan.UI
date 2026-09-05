@@ -2,6 +2,7 @@ import type { NavIntent, NormalizeProps, PropTypes, Service } from '@xihan-ui/co
 import type {
   TransferApi,
   TransferCheckState,
+  TransferGroupProps,
   TransferItemProps,
   TransferSchema,
   TransferSide,
@@ -36,6 +37,9 @@ export function connectTransfer<T extends PropTypes>(
   const value = context.get('value')
   const selection = context.get('selection')
   const disabled = !!prop('disabled')
+  const loading = !!prop('loading')
+  const readOnly = !!prop('readOnly')
+  const invalid = !!prop('invalid')
   const oneWay = !!prop('oneWay')
   const searchable = !!prop('searchable')
   const loop = prop('loop') ?? true
@@ -49,6 +53,9 @@ export function connectTransfer<T extends PropTypes>(
   const ids = scope.ids('transfer', 'source-title', 'target-title', 'source-list', 'target-list')
 
   const titleId: BySide<string> = { source: ids['source-title'], target: ids['target-title'] }
+  // 分组标题的 id：两侧各挂一份同名分组，身份要连 side 一起算
+  const groupLabelId = (group: TransferGroupProps): string =>
+    scope.partId(transferAnatomy.name, `group-label:${group.side}:${group.value}`)
   const listId: BySide<string> = { source: ids['source-list'], target: ids['target-list'] }
 
   /** 条目元信息的唯一事实源是 collection，不是标记。 */
@@ -63,7 +70,8 @@ export function connectTransfer<T extends PropTypes>(
   const checkStates = bySide<TransferCheckState>(side => transferCheckState(operable[side], selection))
 
   const selectable = bySide(side => transferIsCheckable(side, oneWay))
-  const editable = bySide(side => !disabled && selectable[side])
+  // 只读与禁用都改不了勾选、也搬不动，区别在于禁用连键盘入口都收走
+  const editable = bySide(side => !disabled && !readOnly && selectable[side])
 
   const visibleSet = bySide(side => new Set(visible[side].map(item => item.value)))
 
@@ -83,7 +91,7 @@ export function connectTransfer<T extends PropTypes>(
 
   /** 往 to 侧搬此刻是否可行。 */
   const canMove = (to: TransferSide): boolean => {
-    if (disabled)
+    if (disabled || readOnly)
       return false
     if (to === 'source' && oneWay)
       return false
@@ -165,6 +173,8 @@ export function connectTransfer<T extends PropTypes>(
     value,
     selection,
     disabled,
+    readOnly,
+    invalid,
     oneWay,
     searchable,
     visibleItems: side => visible[side],
@@ -183,7 +193,13 @@ export function connectTransfer<T extends PropTypes>(
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
+      // 两个视觉轴打在根上，两侧面板与条目从这里继承私有槽，子部件不重复标注
+      'data-tone': prop('tone'),
+      'data-size': prop('size'),
       'data-disabled': dataAttr(disabled),
+      'data-readonly': dataAttr(readOnly),
+      'data-invalid': dataAttr(invalid),
+      'data-loading': dataAttr(loading),
       'data-one-way': dataAttr(oneWay),
       // 只在作者显式给了 dir 时才写，默认写 ltr 会盖掉外层文档的 rtl
       'dir': prop('dir'),
@@ -245,10 +261,16 @@ export function connectTransfer<T extends PropTypes>(
       // 复选与否必须显式输出，oneWay 下 target 侧确实选不了
       'aria-multiselectable': selectable[panel.side] ? 'true' : 'false',
       'aria-disabled': disabled ? 'true' : 'false',
+      'aria-readonly': readOnly ? 'true' : 'false',
+      'aria-invalid': invalid ? 'true' : 'false',
+      // 取数在途的播报归列表本体：两个相位占位自己不带这一位
+      'aria-busy': loading ? 'true' : undefined,
       // 判据用 focusedValue 而非锚点：锚点可能指向已搬走的值，那时没有条目认领 tabindex=0
       'tabindex': focusedValue[panel.side] == null ? 0 : -1,
       'data-side': panel.side,
       'data-disabled': dataAttr(disabled),
+      'data-readonly': dataAttr(readOnly),
+      'data-invalid': dataAttr(invalid),
       'onKeyDown': (event: KeyboardEvent) => {
         if (disabled)
           return
@@ -357,6 +379,42 @@ export function connectTransfer<T extends PropTypes>(
         },
       })
     },
+
+    // 空态占位：放在面板里、list 的兄弟（role=listbox 只许拥有 option 与 group）。
+    // 本侧一条可见条目都没有时露面：搬空了、或搜索把它筛干净了都算
+    getEmptyProps: panel => normalize.element({
+      ...parts.empty.attrs,
+      'data-side': panel.side,
+      'data-disabled': dataAttr(disabled),
+      // 取数在途时让位给在途占位，两者不同屏
+      'hidden': loading || visible[panel.side].length > 0 || undefined,
+    }),
+
+    // 在途占位：与空态占位同一个位置、同一副观感，两者不同屏
+    getLoadingProps: panel => normalize.element({
+      ...parts.loading.attrs,
+      'data-side': panel.side,
+      'data-disabled': dataAttr(disabled),
+      'hidden': !loading || undefined,
+    }),
+
+    // 分组容器：role=group 是 role=listbox 允许拥有的两种子节点之一，条目照常挂在它里面，
+    // 方向键与勾选按最近的 list 归属条目，隔着分组一样走得到
+    getGroupProps: group => normalize.element({
+      ...parts.group.attrs,
+      'role': 'group',
+      // 分组标题不是选项，只能靠 aria-labelledby 挂上来
+      'aria-labelledby': groupLabelId(group),
+      'data-side': group.side,
+      'data-disabled': dataAttr(disabled),
+    }),
+
+    getGroupLabelProps: group => normalize.element({
+      ...parts['group-label'].attrs,
+      'id': groupLabelId(group),
+      'data-side': group.side,
+      'data-disabled': dataAttr(disabled),
+    }),
 
     getItemProps: (item) => {
       const shown = isShown(item)

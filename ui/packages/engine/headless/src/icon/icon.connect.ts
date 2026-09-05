@@ -7,6 +7,17 @@ const parts = iconAnatomy.build()
 // 没传图标时透出的空树，恒等以免每次调用都换一个新数组。
 const EMPTY_NODES: readonly IconNode[] = []
 
+/** 收下的三个旋转档，写成串好与 DOM 属性直接比对。 */
+const ROTATIONS = new Set(['90', '180', '270'])
+
+/** 落成属性的旋转档；不是那三档的一律不写出，皮肤退回不转。 */
+function rotateAttr(rotate: IconProps['rotate']): string | undefined {
+  if (rotate == null || rotate === '')
+    return undefined
+  const text = String(rotate).trim()
+  return ROTATIONS.has(text) ? text : undefined
+}
+
 /**
  * Icon 无状态机：属性全部来自 props，不读 document、不生成 id、不掷随机数。
  *
@@ -46,6 +57,9 @@ export function connectIcon<T extends PropTypes>(
       'data-size': props.size,
       'data-weight': props.weight,
       'data-tone': props.tone,
+      // 旋转与翻转是几何档位，不转不翻就不写属性
+      'data-rotate': rotateAttr(props.rotate),
+      'data-flip': props.flip,
     }),
 
     getGlyphProps: () => normalize.element({

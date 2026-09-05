@@ -1,4 +1,4 @@
-import type { Direction, Orientation } from '@xihan-ui/core'
+import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
 import type { ListboxItemProps, ListboxNode, ListboxSchema, ListboxSelectionMode, ListboxValueChangeDetails } from '@xihan-ui/headless'
 import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectListbox, listboxAnatomy, listboxMachine, listboxMeta } from '@xihan-ui/headless'
@@ -34,6 +34,11 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {string} default-value - 非受控初始选中值
  * @attr {'single'|'multiple'|'extended'} selection-mode - 选择模式，默认 single
  * @attr {boolean} disabled - 整列禁用：条目全转 aria-disabled，键盘与点击都改不了选中值
+ * @attr {boolean} read-only - 只读：条目照常浏览与聚焦，但选中值改不动
+ * @attr {boolean} invalid - 校验失败标注
+ * @attr {boolean} loading - 条目还在取：列表报 aria-busy，在途占位顶上来、空态占位让位
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
+ * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @attr {boolean} loop - 方向键走到尽头回绕，默认 true；写 loop="false" 关掉
  * @attr {'ltr'|'rtl'} dir - 文字方向，只改写左右方向键语义，默认 ltr
  * @attr {'horizontal'|'vertical'} orientation - 方向键轴向，默认 vertical
@@ -45,6 +50,9 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart item - role=option 条目，须自带 value 属性标识身份；禁用写 aria-disabled="true"
  * @csspart item-text - 条目文本（连打检索的取字处）
  * @csspart item-indicator - 条目选中标记（aria-hidden）
+ * @csspart empty - 空态占位，须放在 root 里当 content 的兄弟；给了 collection 时由元素按条数收放，条目手写时归作者
+ * @csspart loading - 在途占位，与空态占位同一个位置，取数期间顶上来
+ * @csspart load-more-trigger - 取下一页的按钮，点了做什么归作者；取数在途与整列禁用两档自动停用
  * @csspart group - role=group 分组容器，须自带 value 属性标识身份
  * @csspart group-label - 分组标题（本组 aria-labelledby 的目标）
  */
@@ -62,6 +70,11 @@ export class XhListboxElement extends XhElement {
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
     selectionMode: { converter: STRING_CONVERTER, attribute: 'selection-mode' },
     disabled: { type: Boolean },
+    readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
+    invalid: { converter: BOOLEAN_CONVERTER },
+    loading: { converter: BOOLEAN_CONVERTER },
+    tone: { converter: STRING_CONVERTER },
+    size: { converter: STRING_CONVERTER },
     loop: { converter: BOOLEAN_CONVERTER },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     orientation: { converter: STRING_CONVERTER },
@@ -73,6 +86,11 @@ export class XhListboxElement extends XhElement {
   declare defaultValue?: string | string[]
   declare selectionMode?: ListboxSelectionMode
   declare disabled?: boolean
+  declare readOnly?: boolean
+  declare invalid?: boolean
+  declare loading?: boolean
+  declare tone?: Tone
+  declare size?: Size
   declare loop?: boolean
   declare direction?: Direction
   declare orientation?: Orientation
@@ -99,6 +117,11 @@ export class XhListboxElement extends XhElement {
       defaultValue: this.defaultValue,
       selectionMode: this.selectionMode,
       disabled: this.disabled ?? false,
+      readOnly: this.readOnly,
+      invalid: this.invalid,
+      loading: this.loading,
+      tone: this.tone,
+      size: this.size,
       loop: this.loop,
       dir: this.direction,
       orientation: this.orientation,
@@ -171,6 +194,9 @@ export class XhListboxElement extends XhElement {
     put('root', api.getRootProps() as Record<string, unknown>)
     put('label', api.getLabelProps() as Record<string, unknown>)
     put('content', api.getContentProps() as Record<string, unknown>)
+    put('empty', api.getEmptyProps() as Record<string, unknown>)
+    put('loading', api.getLoadingProps() as Record<string, unknown>)
+    put('load-more-trigger', api.getLoadMoreTriggerProps() as Record<string, unknown>)
 
     for (const el of this.getParts('group')) {
       const group = { value: el.getAttribute('value') ?? '' }
