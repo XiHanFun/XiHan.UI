@@ -178,7 +178,7 @@ tone 只换进度段的底色（取柔和档）；条子本身是 fixed，这里
 
 ## 动效
 
-状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`inline-size` · `opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 

@@ -160,7 +160,7 @@ ${await declarations(reduce, '      ')}
 ${await declarations(reduce)}
   }
 
-  /* 打印：三支海拔角色取消。皮肤消费的是 var(--xh-<组件>-…-shadow, var(--xh-elevation-<角色>))，
+  /* 打印：四支海拔角色取消。皮肤消费的是 var(--xh-<组件>-…-shadow, var(--xh-elevation-<角色>))，
      角色变 none 就整层不画，皮肤一处都不用改，也不必跟皮肤里的 box-shadow 比特指度——
      那条路走不通：拆层版本里两者按特指度重新竞争，皮肤选择器最深到六个属性，赢不过。
      落点是 [data-scope] 而不是 :root：宿主页面自己的投影归宿主决定，本库只管自己的节点。

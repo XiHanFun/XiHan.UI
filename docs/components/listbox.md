@@ -70,6 +70,12 @@ selection-mode="extended" 是「裸点换一条、Ctrl 与 Shift 才扩选」，
 
 <XhDemo src="listbox/08-phases" />
 
+### 语气
+
+tone 决定选中条目的勾选标记用哪族颜色，未选中的条目不受影响
+
+<XhDemo src="listbox/09-tone" />
+
 ## 产物
 
 | 层 | 值 |
@@ -237,7 +243,7 @@ selection-mode="extended" 是「裸点换一条、Ctrl 与 Shift 才扩选」，
 
 ## 动效
 
-状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background` · `background-color` · `color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

@@ -1,0 +1,100 @@
+<!-- 形态 | variant 换按钮的底色、描边与前景怎么用；这里把露面门槛设成 0，不滚也看得见 -->
+<div style="display: flex; flex-wrap: wrap; gap: 16px">
+  <div style="position: relative; inline-size: 200px">
+    <div
+      id="back-top-variant-solid"
+      style="
+        block-size: 160px;
+        overflow: auto;
+        padding: 12px;
+        border: 1px solid var(--xh-border-default);
+        border-radius: 8px;
+      "
+    ></div>
+    <template id="back-top-variant-solid-tpl">
+      <xh-back-top variant="solid" visibility-height="0">
+        <div
+          data-xh-part="root"
+          style="
+            position: absolute;
+            --xh-back-top-inset-block: 12px;
+            --xh-back-top-inset-inline: 12px;
+          "
+        >
+          <button data-xh-part="trigger"></button>
+        </div>
+      </xh-back-top>
+    </template>
+  </div>
+
+  <div style="position: relative; inline-size: 200px">
+    <div
+      id="back-top-variant-outline"
+      style="
+        block-size: 160px;
+        overflow: auto;
+        padding: 12px;
+        border: 1px solid var(--xh-border-default);
+        border-radius: 8px;
+      "
+    ></div>
+    <template id="back-top-variant-outline-tpl">
+      <xh-back-top variant="outline" visibility-height="0">
+        <div
+          data-xh-part="root"
+          style="
+            position: absolute;
+            --xh-back-top-inset-block: 12px;
+            --xh-back-top-inset-inline: 12px;
+          "
+        >
+          <button data-xh-part="trigger"></button>
+        </div>
+      </xh-back-top>
+    </template>
+  </div>
+
+  <div style="position: relative; inline-size: 200px">
+    <div
+      id="back-top-variant-ghost"
+      style="
+        block-size: 160px;
+        overflow: auto;
+        padding: 12px;
+        border: 1px solid var(--xh-border-default);
+        border-radius: 8px;
+      "
+    ></div>
+    <template id="back-top-variant-ghost-tpl">
+      <xh-back-top variant="ghost" visibility-height="0">
+        <div
+          data-xh-part="root"
+          style="
+            position: absolute;
+            --xh-back-top-inset-block: 12px;
+            --xh-back-top-inset-inline: 12px;
+          "
+        >
+          <button data-xh-part="trigger"></button>
+        </div>
+      </xh-back-top>
+    </template>
+  </div>
+</div>
+
+<script type="module">
+  // 三档形态各配一个滚动容器：句柄只走属性，先交句柄再进 DOM，观察器才挂得到这一层
+  for (const name of ["solid", "outline", "ghost"]) {
+    const box = document.getElementById(`back-top-variant-${name}`);
+    for (let i = 1; i <= 12; i++) {
+      const line = document.createElement("p");
+      line.style.margin = "0 0 12px";
+      line.textContent = `${name} ${i}`;
+      box.append(line);
+    }
+    const template = document.getElementById(`back-top-variant-${name}-tpl`);
+    const backTop = template.content.firstElementChild;
+    backTop.target = box;
+    template.replaceWith(backTop);
+  }
+</script>

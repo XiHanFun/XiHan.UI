@@ -126,6 +126,10 @@ bordered 在底部画一条线，footer 整行另起，装描述或一组摘要
 
 `--xh-page-header-bg` · `--xh-page-header-border` · `--xh-page-header-breadcrumb-fg` · `--xh-page-header-breadcrumb-font-size` · `--xh-page-header-column-gap` · `--xh-page-header-description-fg` · `--xh-page-header-description-font-size` · `--xh-page-header-extra-gap` · `--xh-page-header-fg` · `--xh-page-header-footer-fg` · `--xh-page-header-footer-font-size` · `--xh-page-header-px` · `--xh-page-header-py` · `--xh-page-header-radius` · `--xh-page-header-row-gap` · `--xh-page-header-shadow` · `--xh-page-header-title-fg` · `--xh-page-header-title-font-size` · `--xh-page-header-title-font-weight`
 
+## 动效
+
+本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
+
 ## RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。

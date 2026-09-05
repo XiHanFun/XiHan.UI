@@ -97,6 +97,10 @@
 
 `--xh-input-group-item-bg` · `--xh-input-group-item-border` · `--xh-input-group-item-fg` · `--xh-input-group-item-font-size` · `--xh-input-group-item-h` · `--xh-input-group-item-px` · `--xh-input-group-radius`
 
+## 动效
+
+本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
+
 ## RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。

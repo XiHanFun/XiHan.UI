@@ -55,6 +55,12 @@ size 换的是触发按钮的高度、内边距与字号，三档并排对照
 
 <XhDemo src="collapsible/06-transition" />
 
+### 语气
+
+tone 落在触发按钮的展开态上，六种语气各展开一份做对照
+
+<XhDemo src="collapsible/07-tone" />
+
 ## 产物
 
 | 层 | 值 |
@@ -173,7 +179,9 @@ size 换的是触发按钮的高度、内边距与字号，三档并排对照
 
 ## 动效
 
-关键帧 `xh-collapsible-collapse` · `xh-collapsible-expand` 随皮肤自带，不引用别处文件里的名字；状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-collapsible-collapse` · `xh-collapsible-expand` 随皮肤自带，不引用别处文件里的名字；`rotate` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

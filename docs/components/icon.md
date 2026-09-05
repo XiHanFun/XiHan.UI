@@ -144,6 +144,10 @@ rotate 只收 90 / 180 / 270 三档，flip 沿横轴或纵轴取反；两者是�
 
 `--xh-icon-fg` · `--xh-icon-shift` · `--xh-icon-size` · `--xh-icon-stroke`
 
+## 动效
+
+本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
+
 ## 组合
 
 - 放进[按钮](./button)的 `prefix` / `suffix`，或[图标块](./icon-wrapper)的底座里。

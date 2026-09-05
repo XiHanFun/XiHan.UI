@@ -100,6 +100,10 @@
 
 `--xh-icon-wrapper-bg` · `--xh-icon-wrapper-fg` · `--xh-icon-wrapper-glyph-size` · `--xh-icon-wrapper-radius` · `--xh-icon-wrapper-shadow` · `--xh-icon-wrapper-size`
 
+## 动效
+
+本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
+
 ## 组合
 
 - 里面放[图标](./icon)；外面常与[空状态](./empty-state)、[列表](./list)一起用。

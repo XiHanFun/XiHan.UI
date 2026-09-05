@@ -1,0 +1,98 @@
+<!-- 形态 | surface 让工具条自己画一块面，plain 不画：贴在编辑区顶上时用 plain，浮在内容之上时用 surface -->
+<div style="display: flex; flex-direction: column; gap: 12px">
+  <div style="display: flex; flex-direction: column; gap: 6px">
+    <span>surface（缺省）</span>
+    <xh-toolbar variant="surface">
+      <div data-xh-part="root">
+        <button
+          type="button"
+          data-xh-part="item"
+          value="surface-bold"
+          style="
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--xh-border-default);
+            background: var(--xh-bg-surface);
+          "
+        >
+          粗体
+        </button>
+        <button
+          type="button"
+          data-xh-part="item"
+          value="surface-italic"
+          style="
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--xh-border-default);
+            background: var(--xh-bg-surface);
+          "
+        >
+          斜体
+        </button>
+        <div data-xh-part="separator"></div>
+        <button
+          type="button"
+          data-xh-part="item"
+          value="surface-link"
+          style="
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--xh-border-default);
+            background: var(--xh-bg-surface);
+          "
+        >
+          链接
+        </button>
+      </div>
+    </xh-toolbar>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 6px">
+    <span>plain</span>
+    <xh-toolbar variant="plain">
+      <div data-xh-part="root">
+        <button
+          type="button"
+          data-xh-part="item"
+          value="plain-bold"
+          style="
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--xh-border-default);
+            background: var(--xh-bg-surface);
+          "
+        >
+          粗体
+        </button>
+        <button
+          type="button"
+          data-xh-part="item"
+          value="plain-italic"
+          style="
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--xh-border-default);
+            background: var(--xh-bg-surface);
+          "
+        >
+          斜体
+        </button>
+        <div data-xh-part="separator"></div>
+        <button
+          type="button"
+          data-xh-part="item"
+          value="plain-link"
+          style="
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--xh-border-default);
+            background: var(--xh-bg-surface);
+          "
+        >
+          链接
+        </button>
+      </div>
+    </xh-toolbar>
+  </div>
+</div>

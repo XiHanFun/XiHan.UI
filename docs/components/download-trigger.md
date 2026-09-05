@@ -53,6 +53,12 @@ data 给函数就是点了才算：它可以返回 Promise，这段时间状态�
 
 <XhDemo src="download-trigger/05-disabled" />
 
+### 形态、语气与尺寸
+
+三轴只改按钮外观，取数与落盘那条链一个字都不动
+
+<XhDemo src="download-trigger/06-variant-tone-size" />
+
 ## 产物
 
 | 层 | 值 |
@@ -173,7 +179,7 @@ data 给函数就是点了才算：它可以返回 Promise，这段时间状态�
 
 ## 动效
 
-关键帧 `xh-download-trigger-rotate` 随皮肤自带，不引用别处文件里的名字；状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-download-trigger-rotate` 随皮肤自带，不引用别处文件里的名字；`background` · `border-color` · `box-shadow` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 

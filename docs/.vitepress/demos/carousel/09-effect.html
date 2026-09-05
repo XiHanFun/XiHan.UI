@@ -10,8 +10,8 @@
     inset: 0;
     opacity: 0;
     transition:
-      opacity 320ms ease,
-      scale 320ms ease;
+      opacity var(--xh-motion-duration-slide) var(--xh-motion-ease-slide),
+      scale var(--xh-motion-duration-slide) var(--xh-motion-ease-slide);
   }
   /* 露在外面的那一张由组件标出来，样式跟着它走 */
   #carousel-effect:not([data-effect="slide"]) [data-xh-part="item"][data-inview] {

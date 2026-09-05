@@ -37,7 +37,8 @@ function itemStyle(index: number, page: number): Record<string, string> | undefi
     inset: "0",
     opacity: current ? "1" : "0",
     scale: effect.value === "zoom" && !current ? "0.9" : "1",
-    transition: "opacity 320ms ease, scale 320ms ease",
+    transition:
+      "opacity var(--xh-motion-duration-slide) var(--xh-motion-ease-slide), scale var(--xh-motion-duration-slide) var(--xh-motion-ease-slide)",
   };
 }
 </script>

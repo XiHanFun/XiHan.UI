@@ -51,7 +51,7 @@ for (const file of files) {
   }
 
   // 跨块叠加：root / control / item 这类容器部件压了 opacity，后代文字部件再写 fg-disabled。
-  // label 不算后代：单体控件（checkbox / switch）的 label 是 root 的兄弟文字，各自表达禁用是对的
+  // label 不算后代：单体控件（checkbox / switch）的 label 是 root 的祖先，各自表达禁用是对的
   if (dimmedParts.size && fgParts.size) {
     const containers = [...dimmedParts].filter(p => ['root', 'control', 'item', 'trigger', 'content'].includes(p))
     for (const [part, selector] of fgParts) {

@@ -58,6 +58,12 @@ edit 受控就由宿主统一调度：一个开关把整张表切进编辑，放
 
 <XhDemo src="editable/06-switchable" />
 
+### 形态与语气
+
+variant 换编辑态输入框的底与描边，tone 换聚焦描边与提交钮的色族；预览态不吃这两轴
+
+<XhDemo src="editable/07-variant-tone" />
+
 ## 产物
 
 | 层 | 值 |
@@ -241,7 +247,7 @@ edit 受控就由宿主统一调度：一个开关把整张表切进编辑，放
 
 ## 动效
 
-状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background` · `border-color` · `box-shadow` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

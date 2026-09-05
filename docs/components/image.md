@@ -176,6 +176,10 @@ src 是响应式的：进入视口前不给地址，观察器命中再换上，�
 
 `--xh-image-bg` · `--xh-image-fallback-fg` · `--xh-image-fallback-font-size` · `--xh-image-fallback-min-h` · `--xh-image-fit` · `--xh-image-h` · `--xh-image-placeholder-bg` · `--xh-image-placeholder-fg` · `--xh-image-radius` · `--xh-image-ratio` · `--xh-image-w`
 
+## 动效
+
+本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
+
 ## 组合
 
 - 与[图片预览](./image-viewer)配合点开看大图；一组图共用一个预览层。

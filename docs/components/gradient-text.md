@@ -44,6 +44,12 @@ direction 收的是档位，四条边加四个角共八档，逐档对应 CSS �
 
 <XhDemo src="gradient-text/04-partial" />
 
+### 语气
+
+tone 决定两端取哪族颜色；写了 from / to 就由它们说了算，tone 让位
+
+<XhDemo src="gradient-text/05-tone" />
+
 ## 产物
 
 | 层 | 值 |
@@ -86,6 +92,8 @@ direction 收的是档位，四条边加四个角共八档，逐档对应 CSS �
 
 默认皮肤 `@xihan-ui/styles/gradient-text.css` 按部件选择：`[data-scope="gradient-text"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
 
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
+
 ## 数据属性
 
 由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
@@ -101,9 +109,9 @@ direction 收的是档位，四条边加四个角共八档，逐档对应 CSS �
 
 `--xh-gradient-text-from` · `--xh-gradient-text-to`
 
-## 响应式
+## 动效
 
-皮肤内置条件规则：`forced-colors: active`。
+本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
 
 ## 组合
 

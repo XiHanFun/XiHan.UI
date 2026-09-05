@@ -89,6 +89,21 @@ BasicApp 的前端约定请看[基础应用前端手册](https://basicapp.docs.x
 
 登记表有一条自净规则：一条都不再命中时判登记过期，修好了必须从表里删掉。
 
+## 怎么让 AI 写对这套库的代码
+
+模型没见过这套契约，凭印象写出来的多半是 React 那一套：给组件传 `class`、用 `color` 当形态 prop、样式里写死颜色与时长。喂给它这几份就行，它们都由文档站构建期生成，与库同源：
+
+| 地址 | 收什么 |
+| --- | --- |
+| [`/llms.txt`](https://ui.docs.xihanfun.com/llms.txt) | 全站索引，每行一页 |
+| [`/llms-components.txt`](https://ui.docs.xihanfun.com/llms-components.txt) | 全部组件参考页 |
+| [`/llms-guide.txt`](https://ui.docs.xihanfun.com/llms-guide.txt) | 核心概念、两个适配器与运行时 |
+| [`/llms-tokens.txt`](https://ui.docs.xihanfun.com/llms-tokens.txt) | 令牌全表：名字、类型、缺省取值 |
+
+只要一页的话，把地址后缀成 `.md`——`https://ui.docs.xihanfun.com/components/button.md` 就是按钮那一页，示例已内联成代码块。每页正文右上角的「取本页 Markdown」指向的也是它。
+
+支持 Agent Skills 的工具另有一份现成的：仓库根的 `skills/xihan-ui/`，站点上是 [`/skills/xihan-ui/SKILL.md`](https://ui.docs.xihanfun.com/skills/xihan-ui/SKILL.md)。里面是判废表（哪些写法这套库不认、该换成什么）与四个取数脚本，脚本有检出读检出、没有就读站点。
+
 ## 还有别的问题
 
 - 源码仓库：[GitHub](https://github.com/XiHanFun/XiHan.UI) · [Gitee](https://gitee.com/XiHanFun/XiHan.UI) · [GitCode](https://gitcode.com/XiHanFun/XiHan.UI)

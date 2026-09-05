@@ -45,6 +45,12 @@ shape 换圆角档，offset 决定距那两条边多远；translations 换掉读
 
 <XhDemo src="float-button/04-shape-offset" />
 
+### 形态与尺寸
+
+variant 换触发器的用色方式，size 换直径；缺省档与 lg 同高，悬浮钮起步就比行内按钮大一号
+
+<XhDemo src="float-button/05-variant-size" />
+
 ## 产物
 
 | 层 | 值 |
@@ -170,13 +176,13 @@ shape 换圆角档，offset 决定距那两条边多远；translations 换掉读
 
 ## 动效
 
-关键帧 `xh-pop-in` 随皮肤自带，不引用别处文件里的名字；状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-pop-in` 随皮肤自带，不引用别处文件里的名字；`background` · `border-color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
 ## 响应式
 
-皮肤内置条件规则：`hover: hover` · `pointer: coarse`。
+皮肤另按输入能力分档：`hover: hover` · `pointer: coarse`——同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
 ## RTL
 

@@ -51,6 +51,12 @@
 
 <XhDemo src="question-flow/03-controlled" />
 
+### 尺寸
+
+size 换问句、选项行与页脚按钮的几何档，三档共用同一份问题
+
+<XhDemo src="question-flow/04-size" />
+
 ## 产物
 
 | 层 | 值 |
@@ -268,7 +274,7 @@
 
 ## 动效
 
-关键帧 `xh-question-flow-in` · `xh-question-flow-result-in` · `xh-rise-in` 随皮肤自带，不引用别处文件里的名字；状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-question-flow-in` · `xh-question-flow-result-in` · `xh-rise-in` 随皮肤自带，不引用别处文件里的名字；`background` · `block-size` · `border-color` · `box-shadow` · `color` · `opacity` · `scale` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

@@ -153,6 +153,12 @@ duration 定跑多久，easing 定快慢怎么分配；同一段距离四档并�
 
 `--xh-number-animation-fg` · `--xh-number-animation-font-size`
 
+## 动效
+
+皮肤里没有过渡也没有关键帧，本组件的动效不在皮肤里：值由内核逐帧算出（`frameLoop` · `isTweenDone` · `tweenValueAt`），皮肤里看不到这段；内核读系统的减弱动效偏好，据此决定要不要动。时长与缓动仍读[动效令牌](../guide/motion)。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
 ## 组合
 
 - 放进[统计数值](./statistic)的值位。

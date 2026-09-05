@@ -191,13 +191,13 @@ sider-presentation="sheet" 把侧栏移出画外，唤出来时盖在内容之�
 
 ## 动效
 
-状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background` · `inline-size` · `opacity` · `scale` · `translate` · `visibility` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
 ## 响应式
 
-皮肤内置条件规则：`min-width: 1024px` · `min-width: 1280px` · `min-width: 640px` · `min-width: 768px`。
+皮肤按视口分档：`min-width: 1024px` · `min-width: 1280px` · `min-width: 640px` · `min-width: 768px`。
 
 - `siderBreakpoint` 给一档（`sm` / `md` / `lg` / `xl`），视口窄于这一档时侧栏按折叠宽显示。
   它只换宽度、不改折叠态：折叠态归 `siderCollapsed` 那条通道，两者互不干扰。

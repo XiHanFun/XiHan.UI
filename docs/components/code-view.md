@@ -69,6 +69,12 @@ clamped 是纯受控的：组件只发意图，落不落由宿主决定，好让
 
 <XhDemo src="code-view/07-streaming-highlight" />
 
+### 尺寸
+
+size 换字号、行高与内边距三档，行号槽与折叠钮跟着一起走
+
+<XhDemo src="code-view/08-size" />
+
 ## 产物
 
 | 层 | 值 |
@@ -215,7 +221,7 @@ clamped 是纯受控的：组件只发意图，落不落由宿主决定，好让
 
 ## 动效
 
-状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background` · `box-shadow` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

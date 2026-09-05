@@ -70,6 +70,9 @@ jobs:
       - name: 构建文档站（编译 .vue 示例 + 站内死链）
         working-directory: ./docs
         run: pnpm build
+      # 机读资产由文档站构建期落盘，必须排在上一步之后
+      - name: 机读资产与库对账
+        run: pnpm gate:llms
       - name: Commit message
         if: github.event_name == 'pull_request'
         run: pnpm exec commitlint --from origin/${{ github.base_ref }} --to HEAD

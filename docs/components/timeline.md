@@ -138,6 +138,10 @@ label 与内容对置：逐条交替排布时时间戳仍停在同一侧，不�
 
 `--xh-timeline-connector-bg` · `--xh-timeline-connector-min-length` · `--xh-timeline-connector-radius` · `--xh-timeline-connector-thickness` · `--xh-timeline-content-gap` · `--xh-timeline-content-pb` · `--xh-timeline-content-pt` · `--xh-timeline-description-fg` · `--xh-timeline-description-font-size` · `--xh-timeline-fg` · `--xh-timeline-gutter` · `--xh-timeline-indicator-bg` · `--xh-timeline-indicator-fg` · `--xh-timeline-indicator-font-size` · `--xh-timeline-indicator-radius` · `--xh-timeline-indicator-size` · `--xh-timeline-item-gap` · `--xh-timeline-label-fg` · `--xh-timeline-label-font-size` · `--xh-timeline-time-fg` · `--xh-timeline-time-font-size` · `--xh-timeline-title-fg` · `--xh-timeline-title-font-size` · `--xh-timeline-title-font-weight`
 
+## 动效
+
+本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
+
 ## RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。

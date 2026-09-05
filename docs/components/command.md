@@ -37,6 +37,12 @@ Mod+K 打开，命中的字由文本高亮标出来，行尾挂各命令自己�
 
 <XhDemo src="command/02-hotkey" />
 
+### 遮罩形态
+
+variant 只落在 backdrop 那一层：opaque 压一层底、blur 糊掉背后、transparent 只挡点击
+
+<XhDemo src="command/03-variant" />
+
 ## 产物
 
 | 层 | 值 |
@@ -234,7 +240,9 @@ Mod+K 打开，命中的字由文本高亮标出来，行尾挂各命令自己�
 
 ## 动效
 
-关键帧 `xh-fade-in` · `xh-fade-out` · `xh-overlay-pop-in` · `xh-pop-out` · `xh-rise-in` 随皮肤自带，不引用别处文件里的名字；状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-fade-in` · `xh-fade-out` · `xh-overlay-pop-in` · `xh-pop-out` · `xh-rise-in` 随皮肤自带，不引用别处文件里的名字；`background` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

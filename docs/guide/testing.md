@@ -132,7 +132,7 @@ pnpm visual:baseline --update   # 生成 / 更新基线并写回库里
 
 ## 结构门禁
 
-`pnpm gate` 跑 97 项结构检查，它们查的是**判据查不到的东西**——静默失效、悬空承诺、没被命名的决策：
+`pnpm gate` 跑 98 项结构检查，它们查的是**判据查不到的东西**——静默失效、悬空承诺、没被命名的决策：
 
 | 门禁 | 拦什么 |
 | --- | --- |
@@ -158,7 +158,7 @@ pnpm visual:baseline --update   # 生成 / 更新基线并写回库里
 | `check-package-roles` | 包所在的角色组与它 `package.json` 里的依赖声明对不上 |
 | `check-public-surface` | 公开面基线里有而当前没有的名字——被删了或改名了 |
 
-另有分层依赖检查与八项单独的门禁：
+另有分层依赖检查与九项单独的门禁：
 
 ```bash
 pnpm boundaries   # 分层依赖 + 禁循环 + styles 不依赖 JS + 库包不引第三方
@@ -170,7 +170,10 @@ pnpm gate:exports # 重新生成子路径导出后比对 package.json
 pnpm gate:surface # 公开面基线：基线里有而当前没有的名字判失败
 pnpm gate:demos   # 真实 Chromium 里跑文档站的自定义元素示例
 pnpm gate:publish # 逐包跑 publint 与 attw，校验 exports 条件与类型解析
+pnpm gate:llms    # 文档站的机读资产：页数、组件数、令牌数与库对账，示例不许留站点标签
 ```
+
+`gate:llms` 吃文档站的构建产物，跑之前先在 `docs/` 下跑一次 `pnpm build`。
 
 `gate:publish` 按包声明的支持面校验：ESM-only、`engines.node >= 18`，不提供 CJS，也不承诺 node10 的旧式解析。
 

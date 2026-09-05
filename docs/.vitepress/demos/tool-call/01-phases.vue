@@ -25,7 +25,7 @@ const phases: ToolCallPhase[] = [
   <div style="display: flex; flex-direction: column; gap: 8px;">
     <XhToolCallRoot v-for="phase in phases" :key="phase" :phase="phase">
       <XhToolCallTrigger>
-        <XhToolCallIndicator>›</XhToolCallIndicator>
+        <XhToolCallIndicator />
         <XhToolCallLabel>search</XhToolCallLabel>
         <XhToolCallStatus />
       </XhToolCallTrigger>

@@ -44,6 +44,12 @@
 
 <XhDemo src="highlight/04-search" />
 
+### 语气
+
+tone 决定命中片段用哪族颜色，没命中的文本不受影响
+
+<XhDemo src="highlight/05-tone" />
+
 ## 产物
 
 | 层 | 值 |
@@ -103,6 +109,10 @@
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-highlight-mark-bg` · `--xh-highlight-mark-fg` · `--xh-highlight-mark-font-weight` · `--xh-highlight-mark-px` · `--xh-highlight-mark-radius`
+
+## 动效
+
+本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
 
 ## RTL
 

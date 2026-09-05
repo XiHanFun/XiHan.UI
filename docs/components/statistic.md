@@ -118,6 +118,10 @@ trend 落成 trend 部件的 data-direction，箭头由皮肤画；与 tone 正�
 
 `--xh-statistic-affix-fg` · `--xh-statistic-affix-font-size` · `--xh-statistic-fg` · `--xh-statistic-gap` · `--xh-statistic-label-fg` · `--xh-statistic-label-font-size` · `--xh-statistic-row-gap` · `--xh-statistic-trend-fg` · `--xh-statistic-trend-font-size` · `--xh-statistic-trend-gap` · `--xh-statistic-trend-offset` · `--xh-statistic-value-fg` · `--xh-statistic-value-font-size`
 
+## 动效
+
+本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
+
 ## RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。

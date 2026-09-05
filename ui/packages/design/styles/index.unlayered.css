@@ -7050,7 +7050,7 @@ input[data-scope='mention'][data-part='input'] {
    换了色也等于没画 */
 [data-scope='password-input'][data-part='control'] [data-part='visibility-trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-_password-input-ring);
-  outline-offset: calc(-1 * var(--xh-ring-offset));
+  outline-offset: calc(-1 * var(--xh-ring-width));
 }
 
 /* 明暗两态各一枚字形：换的是这个槽，兜底盒的量法只写一遍 */
@@ -31246,7 +31246,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='time-picker'][data-part='item']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-_time-picker-ring);
   /* 往内收：选项在滚动列里挨着排，环画在外沿会被列的溢出裁掉 */
-  outline-offset: calc(-1 * var(--xh-ring-offset));
+  outline-offset: calc(-1 * var(--xh-ring-width));
 }
 
 /* 禁用走 aria-disabled 而非原生 disabled（原生 disabled 不派 click，禁用守卫就走不到），
@@ -32341,6 +32341,8 @@ input[data-scope='mention'][data-part='input'] {
   /* 海拔先落进私有槽：语气档要把它与左侧色条叠成一条 box-shadow，无壳档把它关掉 */
   --xh-_tool-call-shadow: var(--xh-tool-call-shadow, var(--xh-elevation-raised));
 
+  --xh-icon-size: var(--xh-tool-call-icon-size, var(--xh-glyph-size-text));
+
   display: block;
   overflow: hidden;
   border: var(--xh-stroke-thin) solid var(--xh-tool-call-border, var(--xh-border-subtle));
@@ -32436,11 +32438,33 @@ input[data-scope='mention'][data-part='input'] {
   transition: rotate var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
+/* 没写内容就由皮肤画；作者往部件里塞了自己的图形，这条规则即不命中 */
+[data-scope='tool-call'][data-part='indicator']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
+}
+
 [data-scope='tool-call'][data-part='indicator'][hidden] {
   display: none;
 }
 
+/* 收起时朝向行首、展开时转向下方，与逻辑书写方向一致：
+   rtl 下 inline-start 在右侧，箭头因此要反着转 */
 [data-scope='tool-call'][data-part='indicator'][data-state='open'] {
+  rotate: 90deg;
+}
+
+[dir='rtl'] [data-scope='tool-call'][data-part='indicator'] {
+  rotate: 180deg;
+}
+
+[dir='rtl'] [data-scope='tool-call'][data-part='indicator'][data-state='open'] {
   rotate: 90deg;
 }
 

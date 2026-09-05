@@ -72,7 +72,7 @@ pnpm lint         # oxlint + eslint + stylelint
 pnpm test         # 单元测试与跨适配器一致性测试（jsdom）
 pnpm test:browser # 真实 Chromium 里的无障碍扫描与浮层定位契约
 pnpm boundaries   # 分层依赖门禁
-pnpm gate         # 97 项结构门禁
+pnpm gate         # 98 项结构门禁
 pnpm size         # 产物体积棘轮
 ```
 
@@ -256,6 +256,8 @@ import '@xihan-ui/styles/index.unlayered.css'
 反过来只能单向：`@import url('...') layer(x)` 可以给无层样式套一层，但没有办法给已经层化的样式脱层——所以这份无层产物由库这边提供，而不是让你自己想办法拆。
 
 本文档站用的就是无层版：VitePress 自带无层的 `button` 重置，用 `index.css` 的话所有示例都会渲染成纯文本。
+
+**因此本站的示例全部跑在无层版本上，层序在这里根本不成立。** 上面这张表、`@layer xihan.overrides` 的覆盖写法、以及任何与层序有关的表现，本站的示例都演示不出来，也验不出来——要看它们，请在你自己的项目里引 `index.css` 之后验。
 
 ## 服务端渲染
 
