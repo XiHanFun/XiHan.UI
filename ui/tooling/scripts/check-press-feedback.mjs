@@ -62,7 +62,7 @@ const PRESSABLE = {
   'tour': ['close-trigger', 'prev-trigger', 'next-trigger', 'skip-trigger'],
   'toast': ['close-trigger', 'action-trigger'],
   'alert': ['close-trigger'],
-  'floating-panel': ['close-trigger', 'trigger', 'stage-trigger'],
+  'floating-panel': ['close-trigger', 'trigger', 'window-state-trigger'],
   'popconfirm': ['confirm-trigger', 'cancel-trigger'],
   'image-viewer': [
     'close-trigger',

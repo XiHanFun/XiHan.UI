@@ -474,8 +474,8 @@ export function connectHeatmap<T extends PropTypes>(
     getTooltipProps: () => normalize.element({
       ...parts.tooltip.attrs,
       'aria-hidden': true,
-      // 收起时靠 hidden 属性，皮肤的 [hidden] 兜底把它藏掉
-      'hidden': activeRef == null || undefined,
+      // 露不露是从「哪一格是活的」算出来的派生显隐，皮肤按这一位把它藏掉
+      'data-state': activeRef == null ? 'hidden' : 'visible',
       'data-placement': activeRef == null ? undefined : tipPlacement,
       // 条往格子的哪一缘长：量测那一刻定的，取格子两侧空间大的那一边。
       // 不叫 data-inline：flex 与 space 用那个名字当「横排」开关，同名一布尔一枚举，

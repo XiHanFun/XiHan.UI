@@ -78,12 +78,12 @@
 | `model` | `DiffModel` |  | 差异模型，唯一入口。补丁与新旧两版文本都先归一到它。 |
 | `view` | `DiffViewMode` |  |  |
 | `contextLines` | `number` |  | 变更两侧各露几行上下文，其余折起来；不给或非有限值即不折叠。 |
-| `expanded` | `readonly string[]` |  | 展开的折叠格 id 集合，给了即受控。 |
-| `defaultExpanded` | `readonly string[]` |  |  |
+| `expandedValue` | `readonly string[]` |  | 展开的折叠格 id 集合，给了即受控。 |
+| `defaultExpandedValue` | `readonly string[]` |  |  |
 | `wrap` | `boolean` |  | 长行原地折行，不再横向滚动；默认关。 |
 | `size` | `Size` |  |  |
 | `translations` | `Partial<DiffViewTranslations>` |  |  |
-| `onExpandedChange` | `(details: DiffViewExpandedChangeDetails) => void` |  |  |
+| `onExpandedValueChange` | `(details: DiffViewExpandedValueChangeDetails) => void` |  |  |
 
 ## 事件
 
@@ -91,7 +91,7 @@
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `expanded-change` | `DiffViewExpandedChangeDetails` | 展开集合变化；detail 为 `{ expanded: string[] }` |
+| `expanded-value-change` | `DiffViewExpandedValueChangeDetails` | 展开集合变化；detail 为 `{ value: string[] }` |
 
 ## 插槽
 
@@ -121,13 +121,13 @@
 | --- | --- | --- |
 | `view` | `DiffViewMode` |  |
 | `rows` | `readonly DiffViewRow[]` | 折叠后的可见行序，含折起来的那些格。 |
-| `expanded` | `string[]` |  |
+| `expandedValue` | `string[]` |  |
 | `stats` | `{ added: number, removed: number }` | 增删各多少行。 |
 | `truncated` | `boolean` | 模型被上限截断过。 |
 | `truncatedLines` | `number` | 被上限砍掉、压根没进这份模型的源文本行数；没截断就是 0。 |
 | `truncationText` | `string` | 截断提示条的文字，已把行数代进去；没截断时是空串。 |
 | `isEmpty` | `boolean` | 一条变更都没有。 |
-| `setExpanded` | `(next: string[]) => void` |  |
+| `setExpandedValue` | `(next: string[]) => void` |  |
 | `toggleGap` | `(id: string) => void` |  |
 | `getRootProps` | `() => T['element']` |  |
 | `getHeaderProps` | `() => T['element']` |  |

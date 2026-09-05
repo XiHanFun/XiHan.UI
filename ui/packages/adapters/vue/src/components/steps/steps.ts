@@ -11,15 +11,15 @@ type StepsProps = StepsSchema['props']
 /** 默认插槽的载荷：当前步序、总步数、是否走完，以及跳步与前进后退的方法。 */
 export type StepsRootSlotProps = Pick<
   StepsApi,
-  'step' | 'count' | 'complete' | 'setStep' | 'goToNextStep' | 'goToPrevStep'
+  'value' | 'count' | 'complete' | 'setValue' | 'goToNextStep' | 'goToPrevStep'
 >
 
 export const XhStepsRoot = defineComponent({
   name: 'XhStepsRoot',
   // 全部 default: undefined，缺省值由 connect 决定
   props: {
-    step: { type: Number, default: undefined },
-    defaultStep: { type: Number, default: undefined },
+    value: { type: Number, default: undefined },
+    defaultValue: { type: Number, default: undefined },
     count: { type: Number, default: undefined },
     orientation: { type: String as PropType<Orientation>, default: undefined },
     linear: { type: Boolean, default: undefined },
@@ -28,27 +28,27 @@ export const XhStepsRoot = defineComponent({
     tone: { type: String as PropType<Tone>, default: undefined },
     size: { type: String as PropType<Size>, default: undefined },
   },
-  // step-change 携带 { step }，update:step 携带裸下标
+  // value-change 携带 { value }，update:value 携带裸下标
   emits: {
-    'step-change': (_details: PayloadOf<StepsProps, 'onStepChange'>) => true,
-    'update:step': (_step: PayloadOf<StepsProps, 'onStepChange'>['step']) => true,
+    'value-change': (_details: PayloadOf<StepsProps, 'onValueChange'>) => true,
+    'update:value': (_value: PayloadOf<StepsProps, 'onValueChange'>['value']) => true,
   },
   slots: Object as SlotsType<{
     default?: (props: StepsRootSlotProps) => VNode[]
   }>,
   setup(props, { slots, emit }) {
-    const notify: StepsProps['onStepChange'] = (details) => {
-      emit('step-change', details)
-      emit('update:step', details.step)
+    const notify: StepsProps['onValueChange'] = (details) => {
+      emit('value-change', details)
+      emit('update:value', details.value)
     }
     const ctx = useSteps(props as StepsProps, notify)
     provideSteps(ctx)
     // 经插槽暴露状态与前进/后退方法，供步骤条外的按钮使用
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
-      step: ctx.api.value.step,
+      value: ctx.api.value.value,
       count: ctx.api.value.count,
       complete: ctx.api.value.complete,
-      setStep: ctx.api.value.setStep,
+      setValue: ctx.api.value.setValue,
       goToNextStep: ctx.api.value.goToNextStep,
       goToPrevStep: ctx.api.value.goToPrevStep,
     }))

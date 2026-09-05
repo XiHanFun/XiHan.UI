@@ -12,7 +12,7 @@ type Props = PromptInputSchema['props']
 /** 默认插槽的载荷：草稿文本与四个状态，以及改写、提交、停止三个动作。 */
 export type PromptInputRootSlotProps = Pick<
   PromptInputApi,
-  'value' | 'isComposing' | 'canSubmit' | 'busy' | 'disabled' | 'setValue' | 'submit' | 'stop'
+  'value' | 'isComposing' | 'canSubmit' | 'loading' | 'disabled' | 'setValue' | 'submit' | 'stop'
 >
 
 export const XhPromptInputRoot = defineComponent({
@@ -22,7 +22,7 @@ export const XhPromptInputRoot = defineComponent({
     value: { type: String, default: undefined },
     defaultValue: { type: String, default: undefined },
     disabled: Boolean,
-    busy: Boolean,
+    loading: Boolean,
     submitKey: { type: String as PropType<PromptInputSubmitKey>, default: undefined },
     // 用 undefined 而非裸 Boolean，缺省值由机器与 connect 给出
     allowEmptySubmit: { type: Boolean, default: undefined },
@@ -56,7 +56,7 @@ export const XhPromptInputRoot = defineComponent({
       value: ctx.api.value.value,
       isComposing: ctx.api.value.isComposing,
       canSubmit: ctx.api.value.canSubmit,
-      busy: ctx.api.value.busy,
+      loading: ctx.api.value.loading,
       disabled: ctx.api.value.disabled,
       setValue: ctx.api.value.setValue,
       submit: ctx.api.value.submit,

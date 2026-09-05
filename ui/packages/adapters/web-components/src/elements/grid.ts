@@ -56,8 +56,8 @@ function authorNumber(el: HTMLElement, name: string): number | undefined {
  * @attr {number|string} cols - 列数（1 至 12 的整数），不写或超出范围按一列排；写 JSON 对象则逐档给列数（base / sm / md / lg / xl）
  * @attr {'xs'|'sm'|'md'|'lg'|'xl'} gap - 行列间距档位，逐档对应一个间距令牌
  * @attr {'start'|'center'|'end'|'stretch'|'baseline'} align - 每一项在自己那格里的块向对齐
- * @attr {'start'|'center'|'end'|'stretch'} justify - 每一项在自己那格里的行内对齐
- * @csspart root - 排布容器，承载 data-cols（及逐档的 data-cols-sm/-md/-lg/-xl）/ data-gap / data-align / data-justify
+ * @attr {'start'|'center'|'end'|'stretch'} justify-items - 每一项在自己那格里的行内对齐
+ * @csspart root - 排布容器，承载 data-cols（及逐档的 data-cols-sm/-md/-lg/-xl）/ data-gap / data-align / data-justify-items
  * @csspart item - 一格，承载自报的 data-span / data-offset
  */
 export class XhGridElement extends XhElement {
@@ -68,13 +68,13 @@ export class XhGridElement extends XhElement {
     cols: { converter: COLS_CONVERTER },
     gap: { converter: STRING_CONVERTER },
     align: { converter: STRING_CONVERTER },
-    justify: { converter: STRING_CONVERTER },
+    justifyItems: { converter: STRING_CONVERTER, attribute: 'justify-items' },
   }
 
   declare cols?: GridColumnCount | ColsByBreakpoint
   declare gap?: string
   declare align?: string
-  declare justify?: string
+  declare justifyItems?: string
 
   protected wire(): void {
     // 读响应式 property，不回读 DOM 特性
@@ -82,7 +82,7 @@ export class XhGridElement extends XhElement {
       cols: this.cols,
       gap: this.gap as GridProps['gap'],
       align: this.align as GridProps['align'],
-      justify: this.justify as GridProps['justify'],
+      justifyItems: this.justifyItems as GridProps['justifyItems'],
     } satisfies GridProps, wcNormalize)
 
     const root = this.getPart('root')

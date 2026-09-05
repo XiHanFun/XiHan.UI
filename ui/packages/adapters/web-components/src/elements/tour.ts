@@ -4,8 +4,8 @@ import type {
   TourSchema,
   TourSkipDetails,
   TourStep,
-  TourStepChangeDetails,
   TourTranslations,
+  TourValueChangeDetails,
 } from '@xihan-ui/headless'
 import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
@@ -33,8 +33,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @customElement xh-tour
  * @attr {boolean} open - 受控开合；缺省该属性即非受控
  * @attr {boolean} default-open - 非受控初始为展开
- * @attr {number} step - 受控步序（0 起）；缺省该属性即非受控
- * @attr {number} default-step - 非受控初始步序，默认 0
+ * @attr {number} value - 受控步序（0 起）；缺省该属性即非受控
+ * @attr {number} default-value - 非受控初始步序，默认 0
  * @attr {string} placement - 整份引导的首选放置位，默认 bottom；单步可用自己的 placement 覆盖
  * @attr {number} offset - 气泡与目标的间距（px）
  * @attr {'ltr'|'rtl'} dir - 文字方向，翻转浮层在行内轴上 start 与 end 的落点；只在显式给了才写到定位层上
@@ -44,7 +44,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {number} spotlight-padding - 高亮框在目标四周留出的空白（px），默认 8
  * @attr {boolean} auto-scroll - 展开与换步时自动把目标滚进视口（nearest），默认 true；写 auto-scroll="false" 关掉
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
- * @fires step-change - 步序变化；detail 为 `{ step: number }`
+ * @fires value-change - 步序变化；detail 为 `{ value: number }`
  * @fires complete - 末步再按下一步；detail 为 `{ step: number }`
  * @fires skip - 用户放弃（跳过按钮或 Escape）；detail 为 `{ step: number }`
  * @csspart root - 引导根节点（data-state/data-step 所在）
@@ -68,8 +68,8 @@ export class XhTourElement extends XhElement {
   static override properties = {
     open: { converter: BOOLEAN_CONVERTER },
     defaultOpen: { type: Boolean, attribute: 'default-open' },
-    step: { converter: NUMBER_CONVERTER },
-    defaultStep: { converter: NUMBER_CONVERTER, attribute: 'default-step' },
+    value: { converter: NUMBER_CONVERTER },
+    defaultValue: { converter: NUMBER_CONVERTER, attribute: 'default-value' },
     placement: { converter: STRING_CONVERTER },
     offset: { converter: NUMBER_CONVERTER },
     // dir 只占属性名、字段改叫 direction：HTMLElement 原生 dir 是 string 访问器，
@@ -87,8 +87,8 @@ export class XhTourElement extends XhElement {
 
   declare open?: boolean
   declare defaultOpen?: boolean
-  declare step?: number
-  declare defaultStep?: number
+  declare value?: number
+  declare defaultValue?: number
   declare placement?: Placement
   declare offset?: number
   declare direction?: Direction
@@ -118,7 +118,7 @@ export class XhTourElement extends XhElement {
   }
 
   private readonly notifyOpen = (details: TourOpenChangeDetails): void => this.emit('open-change', details)
-  private readonly notifyStep = (details: TourStepChangeDetails): void => this.emit('step-change', details)
+  private readonly notifyValue = (details: TourValueChangeDetails): void => this.emit('value-change', details)
   private readonly notifyComplete = (details: TourCompleteDetails): void => this.emit('complete', details)
   private readonly notifySkip = (details: TourSkipDetails): void => this.emit('skip', details)
 
@@ -132,8 +132,8 @@ export class XhTourElement extends XhElement {
   private machineProps(): Partial<TourSchema['props']> {
     return {
       steps: this.steps,
-      step: this.step,
-      defaultStep: this.defaultStep,
+      value: this.value,
+      defaultValue: this.defaultValue,
       open: this.open,
       defaultOpen: this.defaultOpen ?? false,
       placement: this.placement,
@@ -146,7 +146,7 @@ export class XhTourElement extends XhElement {
       autoScroll: this.autoScroll,
       translations: this.translations,
       onOpenChange: this.notifyOpen,
-      onStepChange: this.notifyStep,
+      onValueChange: this.notifyValue,
       onComplete: this.notifyComplete,
       onSkip: this.notifySkip,
     }

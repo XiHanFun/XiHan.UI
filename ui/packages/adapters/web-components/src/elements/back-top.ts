@@ -1,4 +1,4 @@
-import type { BackTopBehavior, BackTopSchema, BackTopTranslations, BackTopVisibleChangeDetails } from '@xihan-ui/headless'
+import type { BackTopBehavior, BackTopSchema, BackTopTranslations, BackTopVisibilityChangeDetails } from '@xihan-ui/headless'
 import type { Size, Tone } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import { backTopAnatomy, backTopMachine, backTopMeta, connectBackTop } from '@xihan-ui/headless'
@@ -22,7 +22,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @attr {'auto'|'smooth'} behavior - 滚回顶部的方式，默认 smooth
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
- * @fires visible-change - 露面与否变化；detail 为 `{ visible: boolean }`
+ * @fires visibility-change - 露面与否变化；detail 为 `{ visible: boolean }`
  * @csspart root - 定位壳，承载 data-state（visible / hidden）/ data-tone / data-size；收起时带 hidden
  * @csspart trigger - 按钮，须写成 `<button>`；可及名字由 translations.trigger 给
  */
@@ -48,8 +48,8 @@ export class XhBackTopElement extends XhElement {
   declare translations?: Partial<BackTopTranslations>
   declare target?: HTMLElement | null
 
-  private readonly notify = (details: BackTopVisibleChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('visible-change', { detail: details, bubbles: true, composed: true }))
+  private readonly notify = (details: BackTopVisibilityChangeDetails): void => {
+    this.dispatchEvent(new CustomEvent('visibility-change', { detail: details, bubbles: true, composed: true }))
   }
 
   private readonly ctrl = new MachineController<BackTopSchema>(
@@ -66,7 +66,7 @@ export class XhBackTopElement extends XhElement {
       translations: this.translations,
       tone: this.tone,
       size: this.size,
-      onVisibleChange: this.notify,
+      onVisibilityChange: this.notify,
     }
   }
 

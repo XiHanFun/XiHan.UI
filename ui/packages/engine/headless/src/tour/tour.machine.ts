@@ -68,10 +68,10 @@ function resolveTourTarget(scope: Scope, step: TourStep | null): HTMLElement | n
 export const tourMachine = createMachine({
   name: 'tour',
   context: ({ prop, cell }) => ({
-    step: cell<number>(() => ({
-      value: prop('step'),
-      defaultValue: prop('defaultStep') ?? 0,
-      onChange: step => prop('onStepChange')?.({ step }),
+    value: cell<number>(() => ({
+      value: prop('value'),
+      defaultValue: prop('defaultValue') ?? 0,
+      onChange: value => prop('onValueChange')?.({ value }),
     })),
     // 位置结果由 trackPosition 里的引擎回填；connect 只读这里，不碰 DOM
     position: cell<PositionResult | null>(() => ({ defaultValue: null })),
@@ -92,7 +92,7 @@ export const tourMachine = createMachine({
     track([() => prop('open')], () => action(['syncOpen']))
     // 步序变了要先把目标滚进视口，再换锚点、重量高亮框；挂在 watch 上，
     // 受控时步序是宿主写进来的，不经过走步动作
-    track([context.dep('step')], () => action(['scrollTargetIntoView', 'reanchorPosition', 'measureSpotlight']))
+    track([context.dep('value')], () => action(['scrollTargetIntoView', 'reanchorPosition', 'measureSpotlight']))
   },
   states: {
     closed: {
@@ -115,7 +115,7 @@ export const tourMachine = createMachine({
           { guard: 'isOpenControlled', actions: ['invokeOnClose'] },
           { target: 'closed', actions: ['invokeOnClose'] },
         ],
-        'STEP.SET': { actions: ['setStep'] },
+        'VALUE.SET': { actions: ['setValue'] },
         'STEP.PREV': { actions: ['goPrev'] },
         // 末步再走一步即完成：先发 onComplete 再按受控与否关闭
         'STEP.NEXT': [
@@ -137,23 +137,23 @@ export const tourMachine = createMachine({
       isOpenControlled: ({ prop }) => prop('open') !== undefined,
       isLastStep: ({ prop, context }) => {
         const count = tourStepCount(prop('steps'))
-        return isTourLastStep(clampTourStep(context.get('step'), count), count)
+        return isTourLastStep(clampTourStep(context.get('value'), count), count)
       },
       // 末步与受控要一起判：守卫是且的关系，而转移数组按顺序取第一条命中的
       isLastStepOpenControlled: ({ prop, context }) => {
         if (prop('open') === undefined)
           return false
         const count = tourStepCount(prop('steps'))
-        return isTourLastStep(clampTourStep(context.get('step'), count), count)
+        return isTourLastStep(clampTourStep(context.get('value'), count), count)
       },
     },
     actions: {
       invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
       invokeOnClose: ({ prop }) => prop('onOpenChange')?.({ open: false }),
       invokeOnComplete: ({ prop, context }) =>
-        prop('onComplete')?.({ step: stepOf(prop, context.get('step')) }),
+        prop('onComplete')?.({ step: stepOf(prop, context.get('value')) }),
       invokeOnSkip: ({ prop, context }) =>
-        prop('onSkip')?.({ step: stepOf(prop, context.get('step')) }),
+        prop('onSkip')?.({ step: stepOf(prop, context.get('value')) }),
       // 只在受控（open 为布尔）时回写；open 变回 undefined = 转非受控，不强制关闭
       syncOpen: ({ prop, send }) => {
         const open = prop('open')
@@ -162,15 +162,15 @@ export const tourMachine = createMachine({
         send(open ? { type: 'CONTROLLED.OPEN' } : { type: 'CONTROLLED.CLOSE' })
       },
       // 越界步序在写入口就夹掉，受控宿主拿到的回调值永远可用
-      setStep: ({ context, prop, event }) => {
+      setValue: ({ context, prop, event }) => {
         const e = event.current()
-        if (e.type === 'STEP.SET')
-          context.set('step', stepOf(prop, e.step))
+        if (e.type === 'VALUE.SET')
+          context.set('value', stepOf(prop, e.value))
       },
       // 先把当前值夹回合法区间再加减：清单变短后内部值可能停在已不存在的步上，
       // 而界面显示的是夹过的那一步
-      goPrev: ({ context, prop }) => context.set('step', stepOf(prop, stepOf(prop, context.get('step')) - 1)),
-      goNext: ({ context, prop }) => context.set('step', stepOf(prop, stepOf(prop, context.get('step')) + 1)),
+      goPrev: ({ context, prop }) => context.set('value', stepOf(prop, stepOf(prop, context.get('value')) - 1)),
+      goNext: ({ context, prop }) => context.set('value', stepOf(prop, stepOf(prop, context.get('value')) + 1)),
       clearGeometry: ({ context }) => {
         context.set('position', null)
         context.set('spotlight', null)
@@ -180,7 +180,7 @@ export const tourMachine = createMachine({
       scrollTargetIntoView: ({ prop, context, scope }) => {
         if (prop('autoScroll') === false)
           return
-        const step = currentTourStep(prop('steps'), stepOf(prop, context.get('step')))
+        const step = currentTourStep(prop('steps'), stepOf(prop, context.get('value')))
         const target = resolveTourTarget(scope, step)
         target?.scrollIntoView?.({ block: 'nearest', inline: 'nearest' })
       },
@@ -196,7 +196,7 @@ export const tourMachine = createMachine({
             context.set('spotlight', null)
             return
           }
-          const step = currentTourStep(prop('steps'), stepOf(prop, context.get('step')))
+          const step = currentTourStep(prop('steps'), stepOf(prop, context.get('value')))
           const target = resolveTourTarget(scope, step)
           if (!target) {
             context.set('spotlight', null)
@@ -228,7 +228,7 @@ export const tourMachine = createMachine({
           stop?.()
           stop = undefined
           const floating = refs.get('getFloatingEl')()
-          const step = currentTourStep(prop('steps'), stepOf(prop, context.get('step')))
+          const step = currentTourStep(prop('steps'), stepOf(prop, context.get('value')))
           const target = resolveTourTarget(scope, step)
           // 居中步没有锚点，位置结果一并清掉，否则会留着上一步的坐标
           if (!floating || !target) {

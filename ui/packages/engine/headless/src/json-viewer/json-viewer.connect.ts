@@ -20,7 +20,7 @@ export function connectJsonViewer<T extends PropTypes>(
 
   // 摊平是 (value, 展开集合) 的纯函数；connect 在渲染期求值，此时 DOM 尚不存在
   const rows = flattenJson(prop('value'), {
-    expanded: expandedValue,
+    expandedValue,
     maxItems: prop('maxItems'),
     maxStringLength: prop('maxStringLength'),
     sortKeys: prop('sortKeys'),

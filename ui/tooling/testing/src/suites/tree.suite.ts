@@ -104,7 +104,7 @@ function branchesSelected(...values: readonly string[]): readonly AttrExpectatio
   }))
 }
 
-/** 三个分支的展开期望；子层容器的 hidden 与它逐一对应，一起写才拦得住"标了开却没露出来"。 */
+/** 三个分支的展开期望；子层容器的 data-state 与它逐一对应，一起写才拦得住"标了开却没露出来"。 */
 function branchesExpanded(...values: readonly string[]): readonly AttrExpectation[] {
   return ['src', 'utils', 'docs'].map(v => ({
     'aria-expanded': values.includes(v) ? 'true' : 'false',
@@ -113,7 +113,7 @@ function branchesExpanded(...values: readonly string[]): readonly AttrExpectatio
 }
 
 function contentsShown(...values: readonly string[]): readonly AttrExpectation[] {
-  return ['src', 'utils', 'docs'].map(v => ({ hidden: values.includes(v) ? null : '' }))
+  return ['src', 'utils', 'docs'].map(v => ({ 'data-state': values.includes(v) ? 'open' : 'closed' }))
 }
 
 /**
@@ -260,7 +260,7 @@ export const treeSuite: ConformanceSuite = {
             'aria-expanded': 'false',
             'data-value': 'docs',
           },
-          'branch-content[0]': { 'role': 'group', 'hidden': '', 'data-state': 'closed' },
+          'branch-content[0]': { 'role': 'group', 'data-state': 'closed' },
           // 展开箭头只是重复了分支自己的语义：退出可及树，也不占 Tab 位
           'branch-trigger[0]': { 'aria-hidden': 'true', 'tabindex': '-1' },
           'item[0]': {
@@ -276,7 +276,7 @@ export const treeSuite: ConformanceSuite = {
             'tabindex': '-1',
             'disabled': null,
           },
-          // 收起分支里的节点只是 hidden，没被卸载，层级属性照发
+          // 收起分支里的节点只是收起，没被卸载，层级属性照发
           'item[1]': { 'aria-level': '3', 'aria-posinset': '1', 'aria-setsize': '1', 'data-value': 'dom' },
           'item[2]': { 'aria-disabled': 'true', 'data-disabled': '', 'data-value': 'readme', 'disabled': null },
           'item[3]': { 'aria-level': '1', 'aria-posinset': '3', 'aria-setsize': '3', 'data-value': 'license' },
@@ -328,7 +328,7 @@ export const treeSuite: ConformanceSuite = {
       spec: { apg: APG },
       props: props({ defaultSelection: ['dom'] }),
       initial: {
-        // 锚点落在 hidden 节点上时它认领了 tabindex=0 却聚不了焦，容器须兜底
+        // 锚点落在收起的节点上时它认领了 tabindex=0 却聚不了焦，容器须兜底
         parts: { 'item[1]': { tabindex: '-1' }, 'tree': { tabindex: '0' } },
       },
       steps: [

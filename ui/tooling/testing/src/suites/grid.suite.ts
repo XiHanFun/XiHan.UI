@@ -32,7 +32,7 @@ export const gridSuite: ConformanceSuite = {
             'data-cols-xl': null,
             'data-gap': null,
             'data-align': null,
-            'data-justify': null,
+            'data-justify-items': null,
           },
           'item[0]': {
             'role': null,
@@ -115,12 +115,12 @@ export const gridSuite: ConformanceSuite = {
     {
       name: '两条对齐轴如实落到根上',
       spec: { apg: APG },
-      props: { align: 'center', justify: 'end' },
+      props: { align: 'center', justifyItems: 'end' },
       initial: {
         parts: {
           root: {
             'data-align': 'center',
-            'data-justify': 'end',
+            'data-justify-items': 'end',
           },
         },
       },

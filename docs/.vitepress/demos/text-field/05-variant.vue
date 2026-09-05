@@ -1,6 +1,11 @@
 <!-- 形态 | variant 决定底与描边怎么画：描边、淡色填底、无框；输入框没有实心档 -->
 <script setup lang="ts">
-import { XhTextFieldInput, XhTextFieldLabel, XhTextFieldRoot } from "@xihan-ui/vue";
+import {
+  XhTextFieldControl,
+  XhTextFieldInput,
+  XhTextFieldLabel,
+  XhTextFieldRoot,
+} from "@xihan-ui/vue";
 
 const variants = ["outline", "subtle", "ghost"] as const;
 </script>
@@ -14,6 +19,8 @@ const variants = ["outline", "subtle", "ghost"] as const;
     placeholder="请输入内容"
   >
     <XhTextFieldLabel>{{ v }}</XhTextFieldLabel>
-    <XhTextFieldInput style="inline-size: 180px" />
+    <XhTextFieldControl style="inline-size: 180px">
+      <XhTextFieldInput />
+    </XhTextFieldControl>
   </XhTextFieldRoot>
 </template>

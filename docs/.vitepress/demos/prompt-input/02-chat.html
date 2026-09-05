@@ -14,7 +14,7 @@
     </div>
   </xh-message-feed>
 
-  <!-- busy 期间按钮换成停止，输入框仍可编辑：用户还要能改下一句 -->
+  <!-- loading 期间按钮换成停止，输入框仍可编辑：用户还要能改下一句 -->
   <xh-prompt-input id="chat-input">
     <div data-xh-part="root">
       <textarea data-xh-part="input" rows="1" placeholder="给助手写点什么…"></textarea>
@@ -49,9 +49,9 @@
     return item;
   };
 
-  const setBusy = (busy) => {
-    input.toggleAttribute("busy", busy);
-    button.textContent = busy ? "停止" : "发送";
+  const setBusy = (loading) => {
+    input.toggleAttribute("loading", loading);
+    button.textContent = loading ? "停止" : "发送";
   };
 
   input.addEventListener("submit", (event) => {

@@ -1,6 +1,6 @@
 <!-- 点击切步与禁用某步 | 点标签直接切到那一步；单步标了 disabled 就点不动，方向键也跳过它 -->
 <div style="display: flex; flex-direction: column; gap: 12px; inline-size: 100%">
-  <xh-steps id="steps-click" step="0" count="4">
+  <xh-steps id="steps-click" value="0" count="4">
     <div data-xh-part="root">
       <div data-xh-part="list">
         <div data-xh-part="item" value="0">
@@ -41,7 +41,7 @@
     </div>
   </xh-steps>
 
-  <span>当前 step：<span id="steps-click-value">0</span>（第三步禁用，点它没有反应）</span>
+  <span>当前 value：<span id="steps-click-value">0</span>（第三步禁用，点它没有反应）</span>
 </div>
 
 <script type="module">
@@ -50,9 +50,9 @@
   const readout = document.getElementById("steps-click-value");
   const indicators = [...steps.querySelectorAll('[data-xh-part="indicator"]')];
 
-  steps.addEventListener("step-change", (event) => {
-    const next = event.detail.step;
-    steps.step = next;
+  steps.addEventListener("value-change", (event) => {
+    const next = event.detail.value;
+    steps.value = next;
     readout.textContent = String(next);
     indicators.forEach((indicator, index) => {
       indicator.textContent = next > index ? "" : String(index + 1);

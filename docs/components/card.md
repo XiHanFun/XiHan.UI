@@ -15,7 +15,7 @@
 ## 特性
 
 - 七个部件全部可选，只写用得上的那几段。
-- `segmented` 在各段之间画线，`hoverable` 给出悬停反馈。
+- `split` 在各段之间画线，`hoverable` 给出悬停反馈。
 
 ## 示例
 
@@ -39,9 +39,9 @@ size 换的是各段的内边距与标题字号，不写 size 即默认档
 
 ### 分段与悬停
 
-segmented 在段与段之间画一条分隔线；hoverable 只在能用指针的设备上抬起
+split 在段与段之间画一条分隔线；hoverable 只在能用指针的设备上抬起
 
-<XhDemo src="card/04-segmented" />
+<XhDemo src="card/04-split" />
 
 ### 带封面
 
@@ -69,8 +69,8 @@ segmented 在段与段之间画一条分隔线；hoverable 只在能用指针的
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `hoverable` | `boolean` |  | 指针悬停时抬起：只落 data-hoverable，抬多少由皮肤定。 |
-| `segmented` | `boolean` |  | 分段：在头、身、脚之间画分隔线。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定各段的内边距与标题字号。 |
+| `split` | `boolean` |  | 分段：在头、身、脚之间画分隔线。 |
 | `variant` | `CardVariant` |  | 形态：outline / subtle / elevated / ghost，决定描边、底色与投影怎么用。 |
 
 ## connect API

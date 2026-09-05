@@ -1,7 +1,7 @@
 <!-- 基础用法 | 八条边各一个把手；拖动改尺寸，Tab 到把手用方向键也能推 -->
 <!-- 留出余量：把手压在边上，往外挪了半个身位 -->
 <div style="padding: 12px">
-  <xh-resizable id="rz" default-size="260x140" min-width="120" min-height="80" max-width="480">
+  <xh-resizable id="rz" default-dimensions="260x140" min-width="120" min-height="80" max-width="480">
     <div
       data-xh-part="root"
       style="border: 1px solid var(--xh-border-default); border-radius: var(--xh-shape-surface); padding: 12px"
@@ -23,8 +23,8 @@
 <script type="module">
   const el = document.getElementById("rz");
   const out = document.getElementById("rz-out");
-  el.addEventListener("size-change", (event) => {
-    const { width, height } = event.detail.size;
+  el.addEventListener("dimensions-change", (event) => {
+    const { width, height } = event.detail.dimensions;
     out.textContent = `${Math.round(width)} × ${Math.round(height)}`;
   });
 </script>

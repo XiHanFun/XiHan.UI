@@ -67,10 +67,10 @@ expandable 让整块文字变成一颗按钮，Enter / Space 也按得动
 | --- | --- | --- | --- |
 | `lines` | `number` |  | 夹几行，1 为单行，默认 1。 |
 | `expandable` | `boolean` |  | 点一下铺开全文。 |
-| `expanded` | `boolean` |  | 受控展开；缺省即非受控。 |
-| `defaultExpanded` | `boolean` |  | 非受控时的初始展开态。 |
+| `open` | `boolean` |  | 受控展开；缺省即非受控。 |
+| `defaultOpen` | `boolean` |  | 非受控时的初始展开态。 |
 | `tooltip` | `boolean` |  | 真被裁掉了才把整段文字交给平台的原生提示。 |
-| `onExpandedChange` | `(details: TruncateExpandedChangeDetails) => void` |  | expanded 变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 |
+| `onOpenChange` | `(details: TruncateOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 |
 | `onOverflowChange` | `(details: TruncateOverflowChangeDetails) => void` |  | 量出来的溢出结论翻面时回调。 |
 
 ## 事件
@@ -79,7 +79,7 @@ expandable 让整块文字变成一颗按钮，Enter / Space 也按得动
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `expanded-change` | `TruncateExpandedChangeDetails` | 展开状态变化；detail 为 `{ expanded: boolean }` |
+| `open-change` | `TruncateOpenChangeDetails` | 展开状态变化；detail 为 `{ open: boolean }` |
 | `overflow-change` | `TruncateOverflowChangeDetails` | 溢出结论翻面；detail 为 `{ overflowing: boolean }` |
 
 ## 插槽
@@ -100,11 +100,11 @@ expandable 让整块文字变成一颗按钮，Enter / Space 也按得动
 
 状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
-**状态**：`collapsed` · `expanded`
+**状态**：`closed` · `open`
 
-**事件**：`MEASURE` · `TOGGLE` · `CONTROLLED.EXPAND` · `CONTROLLED.COLLAPSE`
+**事件**：`MEASURE` · `TOGGLE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE`
 
-**判据**：`isExpandedControlled`
+**判据**：`isOpenControlled`
 
 ## connect API
 
@@ -112,9 +112,9 @@ expandable 让整块文字变成一颗按钮，Enter / Space 也按得动
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `expanded` | `boolean` | 此刻是不是铺开了全文。 |
+| `open` | `boolean` | 此刻是不是铺开了全文。 |
 | `overflowing` | `boolean` | 夹住的那一版有没有被裁掉内容。作者据此决定要不要套一层提示。 |
-| `setExpanded` | `(next: boolean) => void` | 程序化展开 / 收回，与点一下走同一条路。 |
+| `setOpen` | `(next: boolean) => void` | 程序化展开 / 收回，与点一下走同一条路。 |
 | `measure` | `() => void` | 手动重量一次：字体到位、外层换了布局这类观察器看不见的变化，由作者补一枪。 |
 | `getRootProps` | `() => T['element']` |  |
 

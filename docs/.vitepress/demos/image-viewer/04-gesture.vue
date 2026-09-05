@@ -16,7 +16,7 @@ const items = [{ src: "data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/20
 </script>
 
 <template>
-  <XhImageViewerRoot :items="items" :min-scale="0.5" :max-scale="4">
+  <XhImageViewerRoot :collection="items" :min-scale="0.5" :max-scale="4">
     <XhImageViewerTrigger>
       <img
         :src="items[0]!.src"

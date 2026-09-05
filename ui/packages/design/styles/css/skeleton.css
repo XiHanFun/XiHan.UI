@@ -52,13 +52,13 @@
   }
 
   /* 一行文字的高度取正文字号，圆角拉满，看起来就是一行还没排出来的字 */
-  [data-scope='skeleton'][data-part='item'][data-variant='text'] {
+  [data-scope='skeleton'][data-part='item'][data-shape='text'] {
     block-size: var(--xh-skeleton-text-block-size, var(--xh-text-body-size));
     border-radius: var(--xh-skeleton-text-radius, var(--xh-shape-pill));
   }
 
   /* 头像位：正方形加满圆角。宽度定死不跟着容器拉长，高度也不许被主轴压扁 */
-  [data-scope='skeleton'][data-part='item'][data-variant='circle'] {
+  [data-scope='skeleton'][data-part='item'][data-shape='circle'] {
     flex: none;
     inline-size: var(--xh-skeleton-circle-size, var(--xh-control-h-lg));
     aspect-ratio: 1;
@@ -66,7 +66,7 @@
   }
 
   /* 图片、卡片这类成块的占位：给个最小高度，撑开由作者决定 */
-  [data-scope='skeleton'][data-part='item'][data-variant='rect'] {
+  [data-scope='skeleton'][data-part='item'][data-shape='rect'] {
     min-block-size: var(--xh-skeleton-rect-block-size, var(--xh-control-h-lg));
     border-radius: var(--xh-skeleton-rect-radius, var(--xh-shape-surface));
   }

@@ -9,7 +9,7 @@ import {
   XhFloatingPanelPositioner,
   XhFloatingPanelResizeTrigger,
   XhFloatingPanelRoot,
-  XhFloatingPanelStageTrigger,
+  XhFloatingPanelWindowStateTrigger,
   XhFloatingPanelTitle,
   XhFloatingPanelTrigger,
 } from "@xihan-ui/vue";
@@ -24,8 +24,8 @@ import {
           <XhFloatingPanelTitle>播放器</XhFloatingPanelTitle>
           <XhFloatingPanelDragTrigger />
           <!-- 当前形态的那个钮会被压住（aria-pressed=true） -->
-          <XhFloatingPanelStageTrigger stage="minimized" />
-          <XhFloatingPanelStageTrigger stage="maximized" />
+          <XhFloatingPanelWindowStateTrigger window-state="minimized" />
+          <XhFloatingPanelWindowStateTrigger window-state="maximized" />
           <XhFloatingPanelCloseTrigger />
         </XhFloatingPanelHeader>
         <XhFloatingPanelBody>

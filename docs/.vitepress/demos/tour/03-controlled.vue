@@ -1,4 +1,4 @@
-<!-- 受控 | 传了 open 与 step 就由宿主说了算：内部不再自改，只发意图，浮层里的按钮与外面的进度读的是同一份状态 -->
+<!-- 受控 | 传了 open 与 value 就由宿主说了算：内部不再自改，只发意图，浮层里的按钮与外面的进度读的是同一份状态 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import {
@@ -61,7 +61,7 @@ function onSkip(details: { step: number }): void {
 <template>
   <XhTourRoot
     v-model:open="open"
-    v-model:step="step"
+    v-model:value="step"
     :steps="steps"
     @complete="onComplete"
     @skip="onSkip"
@@ -76,7 +76,7 @@ function onSkip(details: { step: number }): void {
         <XhButton variant="solid" @click="start(0)">从头开始</XhButton>
         <XhButton variant="outline" @click="start(2)">直接跳到第 3 步</XhButton>
         <span style="font-size: 13px; opacity: 0.75">
-          open={{ open }} · step={{ step }} · {{ log }}
+          open={{ open }} · value={{ step }} · {{ log }}
         </span>
       </div>
     </div>

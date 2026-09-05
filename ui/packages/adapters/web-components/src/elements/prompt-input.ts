@@ -25,7 +25,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {string} value - 受控值，缺省该属性即非受控
  * @attr {string} default-value - 非受控初值
  * @attr {boolean} disabled - 禁用，输入框带原生 disabled，提交与停止一并吃掉
- * @attr {boolean} busy - 正在生成：发送按钮原位变停止，提交路径全部挡下
+ * @attr {boolean} loading - 正在生成：发送按钮原位变停止，提交路径全部挡下
  * @attr {'enter'|'mod-enter'|'none'} submit-key - 按哪一档提交，默认 enter；none 档键盘不提交
  * @attr {boolean} allow-empty-submit - 允许空值提交，默认关；有附件时置真
  * @attr {boolean} clear-on-submit - 提交后清空，默认开；写 clear-on-submit="false" 关掉
@@ -49,7 +49,7 @@ export class XhPromptInputElement extends XhElement {
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
     disabled: { converter: BOOLEAN_CONVERTER },
-    busy: { converter: BOOLEAN_CONVERTER },
+    loading: { converter: BOOLEAN_CONVERTER },
     submitKey: { converter: STRING_CONVERTER, attribute: 'submit-key' },
     allowEmptySubmit: { converter: BOOLEAN_CONVERTER, attribute: 'allow-empty-submit' },
     clearOnSubmit: { converter: BOOLEAN_CONVERTER, attribute: 'clear-on-submit' },
@@ -63,7 +63,7 @@ export class XhPromptInputElement extends XhElement {
   declare value?: string
   declare defaultValue?: string
   declare disabled?: boolean
-  declare busy?: boolean
+  declare loading?: boolean
   declare submitKey?: PromptInputSubmitKey
   declare allowEmptySubmit?: boolean
   declare clearOnSubmit?: boolean
@@ -90,7 +90,7 @@ export class XhPromptInputElement extends XhElement {
       value: this.value,
       defaultValue: this.defaultValue,
       disabled: this.disabled,
-      busy: this.busy,
+      loading: this.loading,
       submitKey: this.submitKey,
       allowEmptySubmit: this.allowEmptySubmit,
       clearOnSubmit: this.clearOnSubmit,

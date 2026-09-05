@@ -15,7 +15,7 @@ const expanded = ref<string[]>([]);
 </script>
 
 <template>
-  <XhDiffViewRoot v-model:expanded="expanded" :model="model" view="split" :context-lines="3">
+  <XhDiffViewRoot v-model:expanded-value="expanded" :model="model" view="split" :context-lines="3">
     <XhDiffViewHeader>
       <span>src/pipeline.ts</span>
       <XhDiffViewSummary change="added" />

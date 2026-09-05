@@ -105,7 +105,7 @@ export const treeMachine = createMachine({
       value: prop('expandedValue'),
       defaultValue: prop('defaultExpandedValue') ?? [],
       isEqual: sameValues,
-      onChange: value => prop('onExpandedChange')?.({ value }),
+      onChange: value => prop('onExpandedValueChange')?.({ value }),
     })),
     selection: cell<string[]>(() => ({
       value: prop('selection'),

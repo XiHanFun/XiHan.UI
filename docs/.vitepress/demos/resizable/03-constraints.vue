@@ -12,7 +12,7 @@ const snapped = ref({ width: 240, height: 120 });
     <div>
       <p style="margin-bottom: 8px">锁 16:9——推一条边，另一轴跟着算</p>
       <XhResizableRoot
-        v-model:size="ratio"
+        v-model:dimensions="ratio"
         :aspect-ratio="16 / 9"
         :edges="['e', 's', 'se']"
         :min-width="160"
@@ -26,7 +26,7 @@ const snapped = ref({ width: 240, height: 120 });
     <div>
       <p style="margin-bottom: 8px">吸附到 40 的整数倍</p>
       <XhResizableRoot
-        v-model:size="snapped"
+        v-model:dimensions="snapped"
         :step="40"
         :edges="['e', 's', 'se']"
         :min-width="120"

@@ -27,7 +27,7 @@ const steps = [
       <XhStepsRoot
         :tone="t"
         :count="steps.length"
-        :default-step="1"
+        :default-value="1"
         style="inline-size: 100%"
       >
         <XhStepsList>

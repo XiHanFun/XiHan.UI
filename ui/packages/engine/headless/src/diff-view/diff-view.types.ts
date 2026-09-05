@@ -7,8 +7,8 @@ export type DiffViewMode = 'unified' | 'split'
 /** split 视图里的两侧。unified 只有一列，恒为 old。 */
 export type DiffSide = 'old' | 'new'
 
-export interface DiffViewExpandedChangeDetails {
-  expanded: string[]
+export interface DiffViewExpandedValueChangeDetails {
+  value: string[]
 }
 
 /** 铺出来的一行：要么是一行差异，要么是折起来的那一格。 */
@@ -62,16 +62,16 @@ export interface DiffViewSchema extends MachineSchema {
     /** 变更两侧各露几行上下文，其余折起来；不给或非有限值即不折叠。 */
     contextLines?: number
     /** 展开的折叠格 id 集合，给了即受控。 */
-    expanded?: readonly string[]
-    defaultExpanded?: readonly string[]
+    expandedValue?: readonly string[]
+    defaultExpandedValue?: readonly string[]
     /** 长行原地折行，不再横向滚动；默认关。 */
     wrap?: boolean
     size?: Size
     translations?: Partial<DiffViewTranslations>
-    onExpandedChange?: (details: DiffViewExpandedChangeDetails) => void
+    onExpandedValueChange?: (details: DiffViewExpandedValueChangeDetails) => void
   }
   context: {
-    expanded: string[]
+    expandedValue: string[]
   }
   computed: Record<string, never>
   refs: Record<string, never>
@@ -79,7 +79,7 @@ export interface DiffViewSchema extends MachineSchema {
   event:
     | { type: 'GAP.EXPAND', id: string }
     | { type: 'GAP.COLLAPSE', id: string }
-    // 受控回写：宿主改 expanded 后由 watch 派发，无条件写入、不再通知
+    // 受控回写：宿主改 expandedValue 后由 watch 派发，无条件写入、不再通知
     | { type: 'CONTROLLED.EXPANDED.SET', value: string[] }
   tag: never
   guard: 'isExpandedControlled'
@@ -91,7 +91,7 @@ export interface DiffViewApi<T extends PropTypes = PropTypes> {
   view: DiffViewMode
   /** 折叠后的可见行序，含折起来的那些格。 */
   rows: readonly DiffViewRow[]
-  expanded: string[]
+  expandedValue: string[]
   /** 增删各多少行。 */
   stats: { added: number, removed: number }
   /** 模型被上限截断过。 */
@@ -102,7 +102,7 @@ export interface DiffViewApi<T extends PropTypes = PropTypes> {
   truncationText: string
   /** 一条变更都没有。 */
   isEmpty: boolean
-  setExpanded: (next: string[]) => void
+  setExpandedValue: (next: string[]) => void
   toggleGap: (id: string) => void
   getRootProps: () => T['element']
   getHeaderProps: () => T['element']

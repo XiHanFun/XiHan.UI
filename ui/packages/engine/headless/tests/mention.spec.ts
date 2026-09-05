@@ -284,7 +284,7 @@ describe('按前缀在光标处触发', () => {
 
   it('多种前缀并存，onQueryChange 报回是哪一个前缀触发的', () => {
     const seen: Array<string | null> = []
-    const m = mount({ prefix: ['@', '#'], onQueryChange: d => seen.push(d.prefix) })
+    const m = mount({ triggerPrefix: ['@', '#'], onQueryChange: d => seen.push(d.prefix) })
     type(m.input, '#tag')
     expect(m.api().activePrefix).toBe('#')
     type(m.input, '#tag @li')

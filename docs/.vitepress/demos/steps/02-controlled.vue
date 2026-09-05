@@ -1,4 +1,4 @@
-<!-- 受控 | 传了 step 就由宿主说了算，组件自己不再改步序；切步意图从 step-change 出来，写回才真的切 -->
+<!-- 受控 | 传了 value 就由宿主说了算，组件自己不再改步序；切步意图从 value-change 出来，写回才真的切 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import {
@@ -18,7 +18,7 @@ const current = ref(1);
 
 <template>
   <div style="display: flex; flex-direction: column; gap: 12px; inline-size: 100%">
-    <XhStepsRoot v-model:step="current" :count="steps.length">
+    <XhStepsRoot v-model:value="current" :count="steps.length">
       <XhStepsList>
         <XhStepsItem v-for="(s, i) in steps" :key="s" :value="i">
           <XhStepsTrigger>
@@ -33,7 +33,7 @@ const current = ref(1);
     <div style="display: flex; align-items: center; gap: 8px">
       <XhButton variant="outline" @click="current = 0">回到第一步</XhButton>
       <XhButton variant="outline" @click="current = steps.length">直接完成</XhButton>
-      <span>当前 step：{{ current }}</span>
+      <span>当前 value：{{ current }}</span>
     </div>
   </div>
 </template>

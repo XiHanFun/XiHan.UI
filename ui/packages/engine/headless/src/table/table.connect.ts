@@ -79,7 +79,7 @@ function measureColumns(header: HTMLElement): Record<string, number> {
  * 量出可见行此刻的纵向位置。事件处理器里碰 DOM 是允许的，渲染期才不许。
  *
  * 数据行与详情行一起量，并块归 rowGroupRects：不并的话拖过展开着的行时落点会来回跳。
- * 收起的详情行带 hidden，跳过——它不占版面，量出来是一条零高的假行。
+ * 收起的详情行带 data-state=closed，跳过——它不占版面，量出来是一条零高的假行。
  */
 function measureRowGroups(body: HTMLElement): MeasuredRow[] {
   const out: MeasuredRow[] = []
@@ -91,8 +91,9 @@ function measureRowGroups(body: HTMLElement): MeasuredRow[] {
     if (node.parentElement?.closest('[data-scope="table"][data-part="body"]') !== body)
       continue
     // 收起的那一枝连同里面的一切都不占版面。查祖先而不是只看自己：
-    // hidden 落在容器上时，里面的行自己并不带这个属性
-    if (node.closest('[hidden]'))
+    // 收起态落在详情行上时，写在它里面的行自己并不带这个状态。
+    // 作者自己给行加的 hidden 一并跳过
+    if (node.closest('[hidden]') || node.closest('[data-scope="table"][data-part="expanded-row"][data-state="closed"]'))
       continue
     const rect = node.getBoundingClientRect()
     out.push({
@@ -140,7 +141,7 @@ export function connectTable<T extends PropTypes>(
   )
   const sort = context.get('sort')
   const selection = context.get('selection')
-  const expandedValue = context.get('expanded')
+  const expandedValue = context.get('expandedValue')
   const focusedRow = context.get('focusedRow')
   const mode = tableSelectionMode(prop('selectionMode'))
   const loading = !!prop('loading')
@@ -1019,11 +1020,10 @@ export function connectTable<T extends PropTypes>(
         'aria-level': hierarchical ? (metaIndex.get(row.value)?.level ?? 1) + 1 : undefined,
         'aria-posinset': hierarchical ? 1 : undefined,
         'aria-setsize': hierarchical ? 1 : undefined,
+        // 收起只翻这一位，不卸载作者节点，详情里的输入框与滚动位置得留着
         'data-state': meta?.expanded ? 'open' : 'closed',
         // 详情行跟着所属数据行一起标：落点判定把两者算作一整块
         'data-dragging': dataAttr(draggingRow === row.value),
-        // 收起只加 hidden，不卸载作者节点，详情里的输入框与滚动位置得留着
-        'hidden': !meta?.expanded || undefined,
       })
     },
 

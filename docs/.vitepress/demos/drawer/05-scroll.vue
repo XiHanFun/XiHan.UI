@@ -1,10 +1,13 @@
-<!-- 内容滚动 | 面板本身定高，把中间那段设成可伸缩并开滚动，标题与底部操作就钉在两头 -->
+<!-- 头尾固定、正文滚动 | header / body / footer 把面板切成三段：头与尾定在原处，只有正文那一段在滚 -->
 <script setup lang="ts">
 import {
   XhButton,
+  XhDrawerBody,
   XhDrawerCloseTrigger,
   XhDrawerContent,
   XhDrawerDescription,
+  XhDrawerFooter,
+  XhDrawerHeader,
   XhDrawerRoot,
   XhDrawerTitle,
   XhDrawerTrigger,
@@ -20,9 +23,11 @@ const records = Array.from({ length: 24 }, (_, i) => ({
   <XhDrawerRoot v-slot="{ setOpen }" :translations="{ close: '关闭' }">
     <XhDrawerTrigger>查看操作记录</XhDrawerTrigger>
     <XhDrawerContent>
-      <XhDrawerTitle>操作记录</XhDrawerTitle>
-      <XhDrawerDescription>共 {{ records.length }} 条，往下翻。</XhDrawerDescription>
-      <div style="flex: 1; min-block-size: 0; overflow: auto">
+      <XhDrawerHeader>
+        <XhDrawerTitle>操作记录</XhDrawerTitle>
+        <XhDrawerDescription>共 {{ records.length }} 条，往下翻。</XhDrawerDescription>
+      </XhDrawerHeader>
+      <XhDrawerBody>
         <p
           v-for="r in records"
           :key="r.id"
@@ -34,8 +39,10 @@ const records = Array.from({ length: 24 }, (_, i) => ({
         >
           {{ r.text }}
         </p>
-      </div>
-      <XhButton variant="solid" @click="setOpen(false)">看完了</XhButton>
+      </XhDrawerBody>
+      <XhDrawerFooter>
+        <XhButton variant="solid" @click="setOpen(false)">看完了</XhButton>
+      </XhDrawerFooter>
       <XhDrawerCloseTrigger />
     </XhDrawerContent>
   </XhDrawerRoot>

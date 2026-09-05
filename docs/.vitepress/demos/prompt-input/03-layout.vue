@@ -4,7 +4,7 @@ import { XhPromptInputInput, XhPromptInputControl, XhPromptInputRoot, XhPromptIn
 import { ref } from "vue";
 
 const submitKey = ref<"enter" | "mod-enter" | "none">("enter");
-const busy = ref(false);
+const loading = ref(false);
 const sent = ref<string[]>([]);
 </script>
 
@@ -12,11 +12,11 @@ const sent = ref<string[]>([]);
   <div style="display: flex; flex-direction: column; gap: 12px;">
     <XhPromptInputRoot
       v-slot="{ value }"
-      :busy="busy"
+      :loading="loading"
       :submit-key="submitKey"
       :translations="{ input: '给助手写点什么' }"
       @submit="sent.push($event.value)"
-      @stop="busy = false"
+      @stop="loading = false"
     >
       <XhPromptInputControl>
         <XhPromptInputInput rows="1" placeholder="给助手写点什么…" />
@@ -24,7 +24,7 @@ const sent = ref<string[]>([]);
       </XhPromptInputControl>
       <div style="display: flex; align-items: center; gap: 12px; font-size: 12px;">
         <label style="display: inline-flex; align-items: center; gap: 4px;">
-          <input v-model="busy" type="checkbox" />
+          <input v-model="loading" type="checkbox" />
           生成中
         </label>
         <select v-model="submitKey" aria-label="按哪一档提交">

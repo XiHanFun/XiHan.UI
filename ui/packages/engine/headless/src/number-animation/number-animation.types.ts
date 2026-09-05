@@ -1,9 +1,9 @@
 import type { PropTypes, Size, Tone } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
-import type { TweenEasing } from '@xihan-ui/motion'
+import type { EasingName } from '@xihan-ui/motion'
 
-/** 缓动档位，取值与共用补间的档位一致。 */
-export type NumberAnimationEasing = TweenEasing
+/** 缓动：曲线名，或一条 `cubic-bezier(...)` / `linear` 串。取值与 CSS 侧同源。 */
+export type NumberAnimationEasing = EasingName | (string & {})
 
 /** 尺寸档位，只改字号。 */
 
@@ -15,7 +15,7 @@ export type NumberAnimationPhase = 'idle' | 'running'
 /** 播报档位，落成根上的 aria-live。 */
 export type NumberAnimationLive = 'off' | 'polite' | 'assertive'
 
-export interface NumberAnimationFinishDetails {
+export interface NumberAnimationCompleteDetails {
   /** 停下那一刻的数值，也就是终点。 */
   value: number
 }
@@ -28,7 +28,7 @@ export interface NumberAnimationSchema extends MachineSchema {
     to?: number
     /** 时长毫秒，缺省 1000；<=0 即一步到位。 */
     duration?: number
-    /** 缓动：linear / ease-in / ease-out / ease-in-out，缺省 linear。 */
+    /** 缓动：曲线名（linear / standard / easeIn / easeOut / easeInOut …）或 cubic-bezier 串，缺省线性。 */
     easing?: NumberAnimationEasing
     /** 小数位，缺省 0。夹进 [0, 20]。 */
     precision?: number
@@ -43,7 +43,7 @@ export interface NumberAnimationSchema extends MachineSchema {
     /** 读屏播报档位，缺省 off。 */
     live?: NumberAnimationLive
     /** 走到终点时通知一次。中途被停掉不通知。 */
-    onFinish?: (details: NumberAnimationFinishDetails) => void
+    onComplete?: (details: NumberAnimationCompleteDetails) => void
   }
   context: {
     /** 当前显示的数值（未格式化）。 */
@@ -68,7 +68,7 @@ export interface NumberAnimationSchema extends MachineSchema {
     | { type: 'FRAME' }
   tag: never
   guard: 'isSettled' | 'isActive'
-  action: 'syncActive' | 'resetToFrom' | 'syncRun' | 'advance' | 'invokeFinish'
+  action: 'syncActive' | 'resetToFrom' | 'syncRun' | 'advance' | 'invokeComplete'
   effect: 'trackFrames'
 }
 

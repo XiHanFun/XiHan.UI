@@ -133,7 +133,7 @@ export const mentionMachine = createMachine({
         if (e.type === 'CARET.SYNC' && e.value !== context.get('value'))
           return
 
-        const found = findMentionTrigger(e.value, e.caret, normalizeMentionPrefixes(prop('prefix')))
+        const found = findMentionTrigger(e.value, e.caret, normalizeMentionPrefixes(prop('triggerPrefix')))
         const dismissed = context.get('dismissedIndex')
         // 触发点换了地方，上一次 Escape 的记录随之作废
         if (!found || found.index !== dismissed)

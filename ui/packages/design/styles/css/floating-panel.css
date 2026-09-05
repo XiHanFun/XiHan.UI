@@ -126,7 +126,7 @@
   /* 最大化时几何层把面板写成铺满视口（left/top 归零、宽高 100%），四条边全贴着视口：
      圆角会在四角把底下的页面露出来，描边缩成一圈贴边的多余框线，投影整块落在视口之外。
      三样一起撤，与抽屉贴住视口的那条边不圆角是同一回事。 */
-  [data-scope='floating-panel'][data-part='content'][data-stage='maximized'] {
+  [data-scope='floating-panel'][data-part='content'][data-window-state='maximized'] {
     border: 0;
     border-radius: 0;
     box-shadow: none;
@@ -284,7 +284,7 @@
   }
 
   /* —— 标题栏上的按钮 —— */
-  [data-scope='floating-panel'][data-part='stage-trigger'],
+  [data-scope='floating-panel'][data-part='window-state-trigger'],
   [data-scope='floating-panel'][data-part='close-trigger'] {
     flex: 0 0 auto;
     display: inline-flex;
@@ -301,7 +301,7 @@
   }
 
   /* 两颗钮同高同圆角，尺寸与圆角槽按各自角色命名 */
-  [data-scope='floating-panel'][data-part='stage-trigger'] {
+  [data-scope='floating-panel'][data-part='window-state-trigger'] {
     inline-size: var(--xh-floating-panel-action-size, var(--xh-control-h-sm));
     block-size: var(--xh-floating-panel-action-size, var(--xh-control-h-sm));
     border-radius: var(--xh-floating-panel-action-radius, var(--xh-shape-control));
@@ -313,18 +313,18 @@
     border-radius: var(--xh-floating-panel-close-radius, var(--xh-shape-control));
   }
 
-  [data-scope='floating-panel'][data-part='stage-trigger'][hidden],
+  [data-scope='floating-panel'][data-part='window-state-trigger'][hidden],
   [data-scope='floating-panel'][data-part='close-trigger'][hidden] {
     display: none;
   }
 
-  [data-scope='floating-panel'][data-part='stage-trigger']:hover,
+  [data-scope='floating-panel'][data-part='window-state-trigger']:hover,
   [data-scope='floating-panel'][data-part='close-trigger']:hover {
     background: var(--xh-floating-panel-action-bg-hover, var(--xh-bg-subtle-hover));
     color: var(--xh-floating-panel-action-fg-hover, var(--xh-fg-default));
   }
 
-  [data-scope='floating-panel'][data-part='stage-trigger']:active,
+  [data-scope='floating-panel'][data-part='window-state-trigger']:active,
   [data-scope='floating-panel'][data-part='close-trigger']:active {
     background: var(--xh-floating-panel-action-bg-active, var(--xh-bg-subtle-active));
     scale: var(--xh-motion-scale-press);
@@ -333,13 +333,13 @@
   /* 当前形态的那个按钮压着不放，用户一眼看得出面板正处于哪一档。
      按下态的前景取 fg-default 而不是品牌色：品牌色压在这块底上只有 3.4:1（深色皮肤 2.9:1），
      按钮里通常就一个字形，够不着文字该有的对比度。 */
-  [data-scope='floating-panel'][data-part='stage-trigger'][data-state='on'] {
+  [data-scope='floating-panel'][data-part='window-state-trigger'][data-state='on'] {
     background: var(--xh-floating-panel-action-bg-active, var(--xh-bg-subtle-active));
     color: var(--xh-floating-panel-action-fg-active, var(--xh-fg-default));
   }
 
   /* 只换前景不叠 opacity：叠了之后禁用文字的对比度会掉到读不出来 */
-  [data-scope='floating-panel'][data-part='stage-trigger'][data-disabled] {
+  [data-scope='floating-panel'][data-part='window-state-trigger'][data-disabled] {
     background: transparent;
     color: var(--xh-fg-disabled);
   }
@@ -373,11 +373,11 @@
      还原是四角朝内、铺满是四角朝外、收拢是一条横线。不分档的话标题栏上排着的
      两三颗钮长得一模一样，按哪颗全靠猜。
      这条打底画「还原」，另两档在下面换掉 mask-image。
-     选的是 data-target-stage 而不是面板身上的 data-stage：后者说的是面板此刻在哪一档，
+     选的是 data-target-window-state 而不是面板身上的 data-window-state：后者说的是面板此刻在哪一档，
      用它会让排在一起的几颗钮同时换成同一枚字形。
      字形也不随 data-state='on' 翻面：可访问名由连接层按 target 定死（按下的仍念「铺满面板」），
      字形跟着按下态改就与念出来的名字对不上了 */
-  [data-scope='floating-panel'][data-part='stage-trigger']:empty::before {
+  [data-scope='floating-panel'][data-part='window-state-trigger']:empty::before {
     content: '';
     display: inline-block;
     inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
@@ -388,12 +388,12 @@
     mask: var(--xh-glyph-mark-restore) center / contain no-repeat;
   }
 
-  [data-scope='floating-panel'][data-part='stage-trigger'][data-target-stage='maximized']:empty::before {
+  [data-scope='floating-panel'][data-part='window-state-trigger'][data-target-window-state='maximized']:empty::before {
     -webkit-mask-image: var(--xh-glyph-mark-maximize);
     mask-image: var(--xh-glyph-mark-maximize);
   }
 
-  [data-scope='floating-panel'][data-part='stage-trigger'][data-target-stage='minimized']:empty::before {
+  [data-scope='floating-panel'][data-part='window-state-trigger'][data-target-window-state='minimized']:empty::before {
     -webkit-mask-image: var(--xh-glyph-mark-minus);
     mask-image: var(--xh-glyph-mark-minus);
   }

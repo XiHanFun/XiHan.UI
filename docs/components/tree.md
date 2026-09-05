@@ -119,7 +119,7 @@ leaf-orientation 按结构判据横排「子节点全是叶子」的那层；要
 | --- | --- | --- | --- |
 | `collection` | `TreeNode[]` |  | 树数据，层级元信息的唯一事实源。缺省为空树。 |
 | `leafOrientation` | `Orientation` |  | 末端那一层怎么排，默认 vertical（每行一个）。horizontal 让它们并排铺开。 只作用于「子节点全是叶子」的那一层——菜单授权里就是按钮那层： 一个菜单下十几个按钮，横排一行铺完，省掉纵向翻找。中间层与整棵树恒是竖排， 它们承载的是层级本身，横过来层级就读没了。 这是结构判据，逐层自动认。要精确指定哪一层横排，在节点上标 `childrenOrientation`，它比本项优先。 只管排布，不动键盘：方向键在树上是层级操作（左右收展、上下走可见行）， 这是 treeview 的规范语义，不随排布方向改写。 |
-| `expandedValue` | `string[]` |  | 展开集合。给定即受控：cell 直读 prop，写只发 onExpandedChange 不落内部值。 |
+| `expandedValue` | `string[]` |  | 展开集合。给定即受控：cell 直读 prop，写只发 onExpandedValueChange 不落内部值。 |
 | `defaultExpandedValue` | `string[]` |  |  |
 | `selection` | `string[]` |  | 选中集合。给定即受控，语义同上。 |
 | `defaultSelection` | `string[]` |  |  |
@@ -135,7 +135,7 @@ leaf-orientation 按结构判据横排「子节点全是叶子」的那层；要
 | `nodeDraggable` | `boolean` |  | 节点可以拖着搬家。整个节点都是拖动源，不另出把手。 |
 | `allowDrop` | `(move: TreeMove) => boolean` |  | 这一次搬家许不许。收到的是折算好的落点（搬到哪个父下面的第几位）。 不给即都许——「落进自己的后代」与「落在禁用节点上」两条库自己会拦。 |
 | `onNodeMove` | `(move: TreeMove) => void` |  |  |
-| `onExpandedChange` | `(details: TreeExpandedChangeDetails) => void` |  |  |
+| `onExpandedValueChange` | `(details: TreeExpandedValueChangeDetails) => void` |  |  |
 | `onSelectionChange` | `(details: TreeSelectionChangeDetails) => void` |  |  |
 
 ## 事件
@@ -144,7 +144,7 @@ leaf-orientation 按结构判据横排「子节点全是叶子」的那层；要
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `expanded-change` | `TreeExpandedChangeDetails` | 展开集合变化；detail 为 `{ value: string[] }` |
+| `expanded-value-change` | `TreeExpandedValueChangeDetails` | 展开集合变化；detail 为 `{ value: string[] }` |
 | `selection-change` | `TreeSelectionChangeDetails` | 选中集合变化；detail 为 `{ value: string[] }` |
 | `node-move` | `TreeNodeMoveDetails` | 节点搬了家；detail 为 `{ value, parent, index }`，parent 为 null 即根层，index 是在那一层的落位（已算过先摘后插） |
 

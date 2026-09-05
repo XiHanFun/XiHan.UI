@@ -40,8 +40,8 @@ export const floatingPanelSuite: ConformanceSuite = {
                 children: [
                   { part: 'title', tag: 'h2', text: '调试面板' },
                   { part: 'drag-trigger', tag: 'button' },
-                  { part: 'stage-trigger', tag: 'button', attrs: { stage: 'minimized' } },
-                  { part: 'stage-trigger', tag: 'button', attrs: { stage: 'maximized' } },
+                  { part: 'window-state-trigger', tag: 'button', attrs: { 'window-state': 'minimized' } },
+                  { part: 'window-state-trigger', tag: 'button', attrs: { 'window-state': 'maximized' } },
                   { part: 'close-trigger', tag: 'button', text: '✕' },
                 ],
               },
@@ -69,17 +69,17 @@ export const floatingPanelSuite: ConformanceSuite = {
           'header',
           'title',
           'drag-trigger',
-          'stage-trigger[0]',
-          'stage-trigger[1]',
+          'window-state-trigger[0]',
+          'window-state-trigger[1]',
           'close-trigger',
           'body',
           'resize-trigger[0]',
           'resize-trigger[1]',
           'resize-trigger[2]',
         ],
-        counts: { 'root': 1, 'positioner': 1, 'content': 1, 'stage-trigger': 2, 'resize-trigger': 3 },
+        counts: { 'root': 1, 'positioner': 1, 'content': 1, 'window-state-trigger': 2, 'resize-trigger': 3 },
         parts: {
-          'root': { 'data-state': 'closed', 'data-stage': 'default', 'data-disabled': null },
+          'root': { 'data-state': 'closed', 'data-window-state': 'default', 'data-disabled': null },
           'trigger': {
             'type': 'button',
             'aria-haspopup': 'dialog',
@@ -117,9 +117,9 @@ export const floatingPanelSuite: ConformanceSuite = {
             { 'role': 'separator', 'aria-orientation': 'vertical', 'aria-valuenow': '360', 'aria-valuemin': '160', 'data-edge': 'e' },
             { 'aria-orientation': 'vertical', 'aria-valuenow': '360', 'data-edge': 'se' },
           ],
-          'stage-trigger': [
-            { 'type': 'button', 'aria-pressed': 'false', 'data-target-stage': 'minimized', 'data-state': 'off' },
-            { 'aria-pressed': 'false', 'data-target-stage': 'maximized' },
+          'window-state-trigger': [
+            { 'type': 'button', 'aria-pressed': 'false', 'data-target-window-state': 'minimized', 'data-state': 'off' },
+            { 'aria-pressed': 'false', 'data-target-window-state': 'maximized' },
           ],
         },
         activeElement: null,
@@ -169,24 +169,24 @@ export const floatingPanelSuite: ConformanceSuite = {
       steps: [
         {
           kind: 'click',
-          part: 'stage-trigger[0]',
+          part: 'window-state-trigger[0]',
           expect: {
             parts: {
-              'content': { 'data-stage': 'minimized' },
+              'content': { 'data-window-state': 'minimized' },
               // 正文连同其中的可聚焦元素一起退出：只压高度的话读屏与 Tab 照样进得去
               'body': { hidden: '' },
-              'stage-trigger': [{ 'aria-pressed': 'true', 'data-state': 'on' }, { 'aria-pressed': 'false' }],
+              'window-state-trigger': [{ 'aria-pressed': 'true', 'data-state': 'on' }, { 'aria-pressed': 'false' }],
             },
           },
         },
         {
           kind: 'click',
-          part: 'stage-trigger[0]',
+          part: 'window-state-trigger[0]',
           expect: {
             parts: {
-              'content': { 'data-stage': 'default' },
+              'content': { 'data-window-state': 'default' },
               'body': { hidden: null },
-              'stage-trigger': [{ 'aria-pressed': 'false', 'data-state': 'off' }],
+              'window-state-trigger': [{ 'aria-pressed': 'false', 'data-state': 'off' }],
             },
           },
         },
@@ -195,7 +195,7 @@ export const floatingPanelSuite: ConformanceSuite = {
     {
       name: '铺满：把手改报推不动，矩形贴满视口',
       spec: { apg: APG },
-      props: { defaultOpen: true, defaultStage: 'maximized' },
+      props: { defaultOpen: true, defaultWindowState: 'maximized' },
       steps: [
         {
           kind: 'raw',
@@ -205,7 +205,7 @@ export const floatingPanelSuite: ConformanceSuite = {
       ],
       expect: {
         parts: {
-          'content': { 'data-stage': 'maximized' },
+          'content': { 'data-window-state': 'maximized' },
           'drag-trigger': { 'aria-disabled': 'true', 'data-disabled': '' },
           'resize-trigger': [{ 'aria-disabled': 'true' }],
         },
@@ -218,12 +218,12 @@ export const floatingPanelSuite: ConformanceSuite = {
       steps: [
         {
           kind: 'click',
-          part: 'stage-trigger[1]',
+          part: 'window-state-trigger[1]',
           expect: {
             parts: {
-              'content': { 'data-stage': 'default', 'data-disabled': '' },
+              'content': { 'data-window-state': 'default', 'data-disabled': '' },
               'drag-trigger': { 'aria-disabled': 'true' },
-              'stage-trigger': [{ 'aria-disabled': 'true' }, { 'aria-pressed': 'false' }],
+              'window-state-trigger': [{ 'aria-disabled': 'true' }, { 'aria-pressed': 'false' }],
             },
             // 不写这一条就只验了"形态没变"，没验"没往外报"
             events: [],
@@ -288,7 +288,7 @@ export const floatingPanelSuite: ConformanceSuite = {
       props: {
         defaultOpen: true,
         defaultPosition: { x: 100, y: 100 },
-        defaultSize: { width: 300, height: 200 },
+        defaultDimensions: { width: 300, height: 200 },
       },
       steps: [
         { kind: 'focus', part: 'resize-trigger[1]' },

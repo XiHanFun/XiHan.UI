@@ -711,7 +711,7 @@
     --xh-_ring-offset: var(--xh-_ring-inset);
   }
 
-  /* 详情行：靠 hidden 收起，不卸载作者节点。内容长在它的单元格里，行本身只画底色 */
+  /* 详情行：靠 data-state 收起，不卸载作者节点。内容长在它的单元格里，行本身只画底色 */
   [data-scope='table'][data-part='expanded-row'] {
     display: flex;
     align-items: stretch;
@@ -726,8 +726,10 @@
     white-space: normal;
   }
 
-  /* 收起态的唯一开关：display 会盖掉 hidden 属性的 UA 规则，漏了这条详情行就收不起来 */
-  [data-scope='table'][data-part='expanded-row'][hidden] {
+  /* 收起态的唯一开关：display 会盖掉 hidden 属性的 UA 规则，漏了这条详情行就收不起来。
+     作者写的 hidden 与连接层发的 data-state=closed 都收在这里 */
+  [data-scope='table'][data-part='expanded-row'][hidden],
+  [data-scope='table'][data-part='expanded-row'][data-state='closed'] {
     display: none;
   }
 

@@ -28,7 +28,7 @@
 
 ### 形状
 
-容器的 variant 是这一组的默认形状，单根骨架条自带 variant 就按自己的来
+容器的 shape 是这一组的默认形状，单根骨架条自带 shape 就按自己的来
 
 <XhDemo src="skeleton/02-variant" />
 
@@ -64,7 +64,7 @@ loading 期间容器报 aria-busy，翻成 false 后整块收起，位置让给�
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `loading` | `boolean` |  | 是否还在加载，默认 true。 |
-| `variant` | `SkeletonVariant` |  | 容器内骨架条的默认形状，默认 'text'。 |
+| `shape` | `SkeletonShape` |  | 容器内骨架条的默认形状，默认 'text'。 |
 
 ## 状态
 
@@ -110,7 +110,7 @@ loading 期间容器报 aria-busy，翻成 false 后整块收起，位置让给�
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-state` | 'loading' \| 'loaded' |
-| `item` | `data-variant` | item.variant |
+| `item` | `data-shape` | item.shape |
 
 ## CSS 变量
 

@@ -75,7 +75,7 @@ export interface TreeMove {
   index: number
 }
 
-export interface TreeExpandedChangeDetails {
+export interface TreeExpandedValueChangeDetails {
   value: string[]
 }
 
@@ -130,7 +130,7 @@ export interface TreeSchema extends MachineSchema {
      * 这是 treeview 的规范语义，不随排布方向改写。
      */
     leafOrientation?: Orientation
-    /** 展开集合。给定即受控：cell 直读 prop，写只发 onExpandedChange 不落内部值。 */
+    /** 展开集合。给定即受控：cell 直读 prop，写只发 onExpandedValueChange 不落内部值。 */
     expandedValue?: string[]
     defaultExpandedValue?: string[]
     /** 选中集合。给定即受控，语义同上。 */
@@ -166,7 +166,7 @@ export interface TreeSchema extends MachineSchema {
      */
     allowDrop?: (move: TreeMove) => boolean
     onNodeMove?: (move: TreeMove) => void
-    onExpandedChange?: (details: TreeExpandedChangeDetails) => void
+    onExpandedValueChange?: (details: TreeExpandedValueChangeDetails) => void
     onSelectionChange?: (details: TreeSelectionChangeDetails) => void
   }
   context: {

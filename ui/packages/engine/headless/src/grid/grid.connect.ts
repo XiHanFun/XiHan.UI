@@ -53,7 +53,7 @@ export function connectGrid<T extends PropTypes>(
       ...colsAttrs(props.cols),
       'data-gap': props.gap,
       'data-align': props.align,
-      'data-justify': props.justify,
+      'data-justify-items': props.justifyItems,
     }),
 
     // 跨列与错列是每一格自报的声明，都不写就按文档序占一格

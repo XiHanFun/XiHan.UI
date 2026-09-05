@@ -1,4 +1,4 @@
-import type { TruncateExpandedChangeDetails, TruncateOverflowChangeDetails, TruncateSchema } from '@xihan-ui/headless'
+import type { TruncateOpenChangeDetails, TruncateOverflowChangeDetails, TruncateSchema } from '@xihan-ui/headless'
 import type { Service } from '@xihan-ui/machine'
 import { connectTruncate, truncateAnatomy, truncateMachine, truncateMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
@@ -23,10 +23,10 @@ const TRISTATE_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? 
  * @customElement xh-truncate
  * @attr {number} lines - 夹几行，1 为单行，默认 1
  * @attr {boolean} expandable - 点一下铺开全文
- * @attr {boolean} expanded - 受控展开；缺省该属性即非受控
- * @attr {boolean} default-expanded - 非受控初始为铺开
+ * @attr {boolean} open - 受控展开；缺省该属性即非受控
+ * @attr {boolean} default-open - 非受控初始为铺开
  * @attr {boolean} tooltip - 真被裁了才把整段文字交给平台的原生提示
- * @fires expanded-change - 展开状态变化；detail 为 `{ expanded: boolean }`
+ * @fires open-change - 展开状态变化；detail 为 `{ open: boolean }`
  * @fires overflow-change - 溢出结论翻面；detail 为 `{ overflowing: boolean }`
  * @csspart root - 夹字的盒子，承载 data-lines / data-multiline / data-expandable / data-state / data-overflowing
  */
@@ -37,19 +37,19 @@ export class XhTruncateElement extends XhElement {
   static override properties = {
     lines: { converter: NUMBER_CONVERTER },
     expandable: { type: Boolean },
-    expanded: { converter: TRISTATE_CONVERTER },
-    defaultExpanded: { type: Boolean, attribute: 'default-expanded' },
+    open: { converter: TRISTATE_CONVERTER },
+    defaultOpen: { type: Boolean, attribute: 'default-open' },
     tooltip: { type: Boolean },
   }
 
   declare lines?: number
   declare expandable?: boolean
-  declare expanded?: boolean
-  declare defaultExpanded?: boolean
+  declare open?: boolean
+  declare defaultOpen?: boolean
   declare tooltip?: boolean
 
-  private readonly notifyExpanded = (details: TruncateExpandedChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('expanded-change', { detail: details, bubbles: true, composed: true }))
+  private readonly notifyOpen = (details: TruncateOpenChangeDetails): void => {
+    this.dispatchEvent(new CustomEvent('open-change', { detail: details, bubbles: true, composed: true }))
   }
 
   private readonly notifyOverflow = (details: TruncateOverflowChangeDetails): void => {
@@ -67,10 +67,10 @@ export class XhTruncateElement extends XhElement {
     return {
       lines: this.lines,
       expandable: this.expandable ?? false,
-      expanded: this.expanded,
-      defaultExpanded: this.defaultExpanded ?? false,
+      open: this.open,
+      defaultOpen: this.defaultOpen ?? false,
       tooltip: this.tooltip ?? false,
-      onExpandedChange: this.notifyExpanded,
+      onOpenChange: this.notifyOpen,
       onOverflowChange: this.notifyOverflow,
     }
   }

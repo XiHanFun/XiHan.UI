@@ -7,7 +7,7 @@ import { XhSkeletonItem, XhSkeletonRoot } from "@xihan-ui/vue";
   <!-- 卡片位：一块封面加两行正文，末行收窄，看起来像一段还没排出来的字 -->
   <XhSkeletonRoot style="inline-size: 240px">
     <XhSkeletonItem
-      variant="rect"
+      shape="rect"
       style="--xh-skeleton-rect-block-size: 120px"
     />
     <XhSkeletonItem />
@@ -19,15 +19,15 @@ import { XhSkeletonItem, XhSkeletonRoot } from "@xihan-ui/vue";
     style="inline-size: 240px; flex-direction: row; align-items: center"
   >
     <XhSkeletonItem
-      variant="circle"
+      shape="circle"
       style="--xh-skeleton-circle-size: 28px"
     />
     <XhSkeletonItem
-      variant="rect"
+      shape="rect"
       style="inline-size: 96px; --xh-skeleton-rect-block-size: 32px"
     />
     <XhSkeletonItem
-      variant="rect"
+      shape="rect"
       style="inline-size: 64px; --xh-skeleton-rect-block-size: 32px"
     />
   </XhSkeletonRoot>

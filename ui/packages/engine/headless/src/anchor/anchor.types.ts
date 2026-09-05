@@ -51,7 +51,7 @@ export interface AnchorSchema extends MachineSchema {
     value?: string | null
     defaultValue?: string | null
     /** 目标区块的 id 清单，按文档序给；不给则按渲染出来的 link 现查。 */
-    targets?: readonly string[]
+    collection?: readonly string[]
     /** 判定线距滚动容器视口顶边的距离（px），默认 0。 */
     offset?: number
     /** 点链接时平滑滚动到目标，默认 false。 */

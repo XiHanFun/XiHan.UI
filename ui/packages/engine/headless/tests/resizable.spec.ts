@@ -13,7 +13,7 @@ type Dict = Record<string, unknown>
 const BOX = { x: 100, y: 50, width: 200, height: 100 }
 
 function mount(initial: Partial<Props> = {}) {
-  const props: Partial<Props> = { defaultSize: { width: BOX.width, height: BOX.height }, ...initial }
+  const props: Partial<Props> = { defaultDimensions: { width: BOX.width, height: BOX.height }, ...initial }
   const runtime = createVanillaRuntime()
   const service = createService(resizableMachine, { props: () => props, runtime })
 
@@ -32,7 +32,7 @@ function mount(initial: Partial<Props> = {}) {
     service,
     api: () => connectResizable(service, normalizeProps),
     state: () => service.state.get(),
-    size: () => service.context.get('size'),
+    dimensions: () => service.context.get('dimensions'),
     offset: () => service.context.get('offset'),
     setProps: (next: Partial<Props>) => Object.assign(props, next),
   }
@@ -80,7 +80,7 @@ describe('可调容器 · 指针', () => {
     const h = mount()
     press(h, 'e', 300)
     move(360)
-    expect(h.size()).toEqual({ width: 260, height: 100 })
+    expect(h.dimensions()).toEqual({ width: 260, height: 100 })
     expect(h.offset()).toEqual({ x: 0, y: 0 })
   })
 
@@ -88,14 +88,14 @@ describe('可调容器 · 指针', () => {
     const h = mount()
     press(h, 's', 0, 150)
     move(0, 190)
-    expect(h.size()).toEqual({ width: 200, height: 140 })
+    expect(h.dimensions()).toEqual({ width: 200, height: 140 })
   })
 
   it('推西边：宽变了，位移跟着走——对边才钉得住', () => {
     const h = mount()
     press(h, 'w', 100)
     move(60)
-    expect(h.size().width).toBe(240)
+    expect(h.dimensions().width).toBe(240)
     expect(h.offset().x).toBe(-40)
   })
 
@@ -103,7 +103,7 @@ describe('可调容器 · 指针', () => {
     const h = mount()
     press(h, 'n', 0, 50)
     move(0, 20)
-    expect(h.size().height).toBe(130)
+    expect(h.dimensions().height).toBe(130)
     expect(h.offset().y).toBe(-30)
   })
 
@@ -111,7 +111,7 @@ describe('可调容器 · 指针', () => {
     const h = mount()
     press(h, 'se', 300, 150)
     move(340, 180)
-    expect(h.size()).toEqual({ width: 240, height: 130 })
+    expect(h.dimensions()).toEqual({ width: 240, height: 130 })
   })
 
   it('基准是按下那一刻，不是上一帧', () => {
@@ -119,25 +119,25 @@ describe('可调容器 · 指针', () => {
     press(h, 'e', 300)
     move(360)
     move(320)
-    expect(h.size().width).toBe(220)
+    expect(h.dimensions().width).toBe(220)
   })
 
   it('吃上下限', () => {
     const h = mount({ minWidth: 150, maxWidth: 300 })
     press(h, 'e', 300)
     move(-9999)
-    expect(h.size().width).toBe(150)
+    expect(h.dimensions().width).toBe(150)
     release()
     press(h, 'e', 300)
     move(9999)
-    expect(h.size().width).toBe(300)
+    expect(h.dimensions().width).toBe(300)
   })
 
   it('顶到下限之后西边的位移不再走——对边不会被推过去', () => {
     const h = mount({ minWidth: 150 })
     press(h, 'w', 100)
     move(9999)
-    expect(h.size().width).toBe(150)
+    expect(h.dimensions().width).toBe(150)
     expect(h.offset().x).toBe(50)
   })
 
@@ -145,21 +145,21 @@ describe('可调容器 · 指针', () => {
     const h = mount({ aspectRatio: 2 })
     press(h, 'e', 300)
     move(400)
-    expect(h.size()).toEqual({ width: 300, height: 150 })
+    expect(h.dimensions()).toEqual({ width: 300, height: 150 })
   })
 
   it('吸附步进', () => {
     const h = mount({ step: 25 })
     press(h, 'e', 300)
     move(318)
-    expect(h.size().width).toBe(225)
+    expect(h.dimensions().width).toBe(225)
   })
 
   it('rtl 下往左拖行尾侧那条边才是变宽', () => {
     const h = mount({ dir: 'rtl' })
     press(h, 'e', 300)
     move(260)
-    expect(h.size().width).toBe(240)
+    expect(h.dimensions().width).toBe(240)
   })
 
   it('rtl 下动的是屏幕左那一头：位移跟着走，右边缘钉住', () => {
@@ -174,9 +174,9 @@ describe('可调容器 · 指针', () => {
     const h = mount()
     press(h, 'w', 100)
     move(60)
-    expect(h.size().width).toBe(240)
+    expect(h.dimensions().width).toBe(240)
     document.dispatchEvent(new PointerEvent('pointercancel', { bubbles: true }))
-    expect(h.size().width).toBe(200)
+    expect(h.dimensions().width).toBe(200)
     expect(h.offset().x).toBe(0)
     expect(h.state()).toBe('idle')
   })
@@ -195,18 +195,18 @@ describe('可调容器 · 指针', () => {
     expect(h.state()).toBe('resizing')
   })
 
-  it('拖动途中连着发 onSizeChange，收尾只发一次 onSizeChangeEnd', () => {
-    const onSizeChange = vi.fn()
-    const onSizeChangeEnd = vi.fn()
-    const h = mount({ onSizeChange, onSizeChangeEnd })
+  it('拖动途中连着发 onDimensionsChange，收尾只发一次 onDimensionsChangeEnd', () => {
+    const onDimensionsChange = vi.fn()
+    const onDimensionsChangeEnd = vi.fn()
+    const h = mount({ onDimensionsChange, onDimensionsChangeEnd })
     press(h, 'e', 300)
     move(320)
     move(340)
-    expect(onSizeChange.mock.calls.length).toBeGreaterThanOrEqual(2)
-    expect(onSizeChangeEnd).not.toHaveBeenCalled()
+    expect(onDimensionsChange.mock.calls.length).toBeGreaterThanOrEqual(2)
+    expect(onDimensionsChangeEnd).not.toHaveBeenCalled()
     release()
-    expect(onSizeChangeEnd).toHaveBeenCalledTimes(1)
-    expect(onSizeChangeEnd.mock.calls[0]![0]).toEqual({ size: { width: 240, height: 100 }, edge: 'e' })
+    expect(onDimensionsChangeEnd).toHaveBeenCalledTimes(1)
+    expect(onDimensionsChangeEnd.mock.calls[0]![0]).toEqual({ dimensions: { width: 240, height: 100 }, edge: 'e' })
   })
 })
 
@@ -214,45 +214,45 @@ describe('可调容器 · 键盘', () => {
   it('方向键按屏幕方向推：推东边时右键变宽', () => {
     const h = mount()
     key(h, 'e', 'ArrowRight')
-    expect(h.size().width).toBe(200 + RESIZABLE_STEP)
+    expect(h.dimensions().width).toBe(200 + RESIZABLE_STEP)
   })
 
   it('推西边时右键是变窄——与拖动同义，不是「变大 / 变小」', () => {
     const h = mount()
     key(h, 'w', 'ArrowRight')
-    expect(h.size().width).toBe(200 - RESIZABLE_STEP)
+    expect(h.dimensions().width).toBe(200 - RESIZABLE_STEP)
   })
 
   it('按住 Shift 走大步', () => {
     const h = mount()
     key(h, 'e', 'ArrowRight', true)
-    expect(h.size().width).toBe(200 + RESIZABLE_LARGE_STEP)
+    expect(h.dimensions().width).toBe(200 + RESIZABLE_LARGE_STEP)
   })
 
   it('推南边认上下键', () => {
     const h = mount()
     key(h, 's', 'ArrowDown')
-    expect(h.size().height).toBe(100 + RESIZABLE_STEP)
+    expect(h.dimensions().height).toBe(100 + RESIZABLE_STEP)
   })
 
   it('按 Home / End 推到这条边能到的两端', () => {
     const h = mount({ minWidth: 120, maxWidth: 400 })
     key(h, 'e', 'End')
-    expect(h.size().width).toBe(400)
+    expect(h.dimensions().width).toBe(400)
     key(h, 'e', 'Home')
-    expect(h.size().width).toBe(120)
+    expect(h.dimensions().width).toBe(120)
   })
 
   it('没给上限时 End 不动', () => {
     const h = mount()
     key(h, 'e', 'End')
-    expect(h.size().width).toBe(200)
+    expect(h.dimensions().width).toBe(200)
   })
 
   it('rtl 下按的仍是屏幕方向：行尾侧那条边落在屏幕左，往左推才是变宽', () => {
     const h = mount({ dir: 'rtl' })
     key(h, 'e', 'ArrowLeft')
-    expect(h.size().width).toBe(200 + RESIZABLE_STEP)
+    expect(h.dimensions().width).toBe(200 + RESIZABLE_STEP)
   })
 
   it('键盘不进调整态：按一下就是一次完整的调整', () => {
@@ -262,27 +262,27 @@ describe('可调容器 · 键盘', () => {
   })
 
   it('键盘按一下也发一次收尾通知', () => {
-    const onSizeChangeEnd = vi.fn()
-    const h = mount({ onSizeChangeEnd })
+    const onDimensionsChangeEnd = vi.fn()
+    const h = mount({ onDimensionsChangeEnd })
     key(h, 'e', 'ArrowRight')
-    expect(onSizeChangeEnd).toHaveBeenCalledTimes(1)
-    expect(onSizeChangeEnd.mock.calls[0]![0].edge).toBe('e')
+    expect(onDimensionsChangeEnd).toHaveBeenCalledTimes(1)
+    expect(onDimensionsChangeEnd.mock.calls[0]![0].edge).toBe('e')
   })
 
   it('键盘同样吃上下限', () => {
     const h = mount({ minWidth: 190 })
     key(h, 'e', 'ArrowLeft', true)
-    expect(h.size().width).toBe(190)
+    expect(h.dimensions().width).toBe(190)
   })
 
   it('disabled 与没开放的边都不认方向键', () => {
     const off = mount({ disabled: true })
     key(off, 'e', 'ArrowRight')
-    expect(off.size().width).toBe(200)
+    expect(off.dimensions().width).toBe(200)
 
     const partial = mount({ edges: ['e'] })
     key(partial, 'w', 'ArrowRight')
-    expect(partial.size().width).toBe(200)
+    expect(partial.dimensions().width).toBe(200)
   })
 })
 
@@ -344,18 +344,18 @@ describe('可调容器 · 产出的属性', () => {
 
   it('命令式赋值先过约束', () => {
     const h = mount({ minWidth: 150 })
-    h.api().setSize({ width: 10, height: 10 })
-    expect(h.size().width).toBe(150)
+    h.api().setDimensions({ width: 10, height: 10 })
+    expect(h.dimensions().width).toBe(150)
   })
 })
 
 describe('可调容器 · 受控', () => {
-  it('给了 size 就由外面说了算，内部只发意图', () => {
-    const onSizeChange = vi.fn()
-    const h = mount({ size: { width: 300, height: 200 }, onSizeChange })
+  it('给了 dimensions 就由外面说了算，内部只发意图', () => {
+    const onDimensionsChange = vi.fn()
+    const h = mount({ dimensions: { width: 300, height: 200 }, onDimensionsChange })
     key(h, 'e', 'ArrowRight')
-    expect(h.size()).toEqual({ width: 300, height: 200 })
-    expect(onSizeChange).toHaveBeenCalled()
+    expect(h.dimensions()).toEqual({ width: 300, height: 200 })
+    expect(onDimensionsChange).toHaveBeenCalled()
   })
 })
 

@@ -106,7 +106,7 @@ root 里除三件外还能放自己的按钮与计数；值的读写归宿主，
 | `value` | `string` |  |  |
 | `defaultValue` | `string` |  |  |
 | `disabled` | `boolean` |  |  |
-| `busy` | `boolean` |  | 正在生成：按钮换成停止身份，所有提交路径被挡下。 用一个布尔而不是四档运行态字符串——组件只需要二值判断， 「这一轮走到哪一步」是宿主的事，透传成 data 属性属于作者的容器。 |
+| `loading` | `boolean` |  | 正在生成：按钮换成停止身份，所有提交路径被挡下。 用一个布尔而不是四档运行态字符串——组件只需要二值判断， 「这一轮走到哪一步」是宿主的事，透传成 data 属性属于作者的容器。 |
 | `submitKey` | `PromptInputSubmitKey` |  | 按哪一档提交，默认 enter。 |
 | `allowEmptySubmit` | `boolean` |  | 允许空值提交，默认 false；有附件时由作者置真。这是唯一为附件留的钩子。 |
 | `clearOnSubmit` | `boolean` |  | 提交后清空，默认 true。 |
@@ -148,7 +148,7 @@ root 里除三件外还能放自己的按钮与计数；值的读写归宿主，
 
 **事件**：`VALUE.SET` · `COMPOSITION.START` · `COMPOSITION.END` · `KEY.SUBMIT` · `SUBMIT` · `STOP` · `CONTROLLED.DISABLE` · `CONTROLLED.ENABLE` · `CONTROLLED.VALUE.EMPTY` · `CONTROLLED.VALUE.FILLED`
 
-**判据**：`canSubmit` · `isBusy` · `isValueEmpty` · `isNextValueEmpty`
+**判据**：`canSubmit` · `isLoading` · `isValueEmpty` · `isNextValueEmpty`
 
 ## connect API
 
@@ -159,7 +159,7 @@ root 里除三件外还能放自己的按钮与计数；值的读写归宿主，
 | `value` | `string` |  |
 | `isComposing` | `boolean` |  |
 | `canSubmit` | `boolean` | 能不能提交。比机器守卫多一条「非禁用」，供按钮置灰用。 |
-| `busy` | `boolean` |  |
+| `loading` | `boolean` |  |
 | `disabled` | `boolean` |  |
 | `setValue` | `(next: string) => void` |  |
 | `submit` | `() => void` |  |
@@ -244,7 +244,7 @@ root 里除三件外还能放自己的按钮与计数；值的读写归宿主，
 ## 最佳实践
 
 - 受控用法下提交后由宿主清空；`clearOnSubmit` 关掉时组件不动值。
-- 生成期间把 `busy` 置真而不是把整个输入框禁用：用户还要能改下一句。
+- 生成期间把 `loading` 置真而不是把整个输入框禁用：用户还要能改下一句。
 - 要药丸形状不必换形态轴：在任意祖先上写一行 `--xh-prompt-input-radius: var(--xh-shape-pill)`，
   按钮那一颗另有 `--xh-prompt-input-submit-radius`。形态轴只管底与描边怎么画。
 

@@ -4,4 +4,4 @@ export { isSelfOrDescendant, isTreeDropAllowed, treeMoveCommand, treeMoveIntentF
 export { treeKeyboard } from './tree.keyboard'
 export { flattenTree, indexTree, treeMachine } from './tree.machine'
 export { treeMeta } from './tree.meta'
-export type { TreeApi, TreeExpandedChangeDetails, TreeFocusModel, TreeMove, TreeNode, TreeNodeMeta, TreeNodeProps, TreeRefs, TreeSchema, TreeSelectionChangeDetails, TreeTranslations, TreeVisibleNode } from './tree.types'
+export type { TreeApi, TreeExpandedValueChangeDetails, TreeFocusModel, TreeMove, TreeNode, TreeNodeMeta, TreeNodeProps, TreeRefs, TreeSchema, TreeSelectionChangeDetails, TreeTranslations, TreeVisibleNode } from './tree.types'

@@ -90,7 +90,7 @@ const twistySpacer =
   <div style="width: 100%; max-width: 560px; display: grid; gap: 12px">
     <XhTableRoot
       v-slot="{ visibleRows }"
-      v-model:expanded="expanded"
+      v-model:expanded-value="expanded"
       :columns="columns"
       :rows="rows"
       :allow-row-drop="allowRowDrop"

@@ -12,7 +12,7 @@ type Props = ApprovalSchema['props']
 /** 默认插槽的载荷：判定状态、能不能批，以及三个动作入口。 */
 export type ApprovalRootSlotProps = Pick<
   ApprovalApi,
-  'status' | 'settled' | 'busy' | 'grantedScopes' | 'note' | 'canApprove' | 'announcement' | 'approve' | 'deny' | 'setGrantedScopes' | 'setNote'
+  'status' | 'settled' | 'loading' | 'grantedScopes' | 'note' | 'canApprove' | 'announcement' | 'approve' | 'deny' | 'setGrantedScopes' | 'setNote'
 >
 
 /** 逐项插槽的载荷。 */
@@ -33,7 +33,7 @@ export const XhApprovalRoot = defineComponent({
     defaultGrantedScopes: { type: Array as PropType<readonly string[]>, default: undefined },
     note: { type: String, default: undefined },
     defaultNote: { type: String, default: undefined },
-    busy: Boolean,
+    loading: Boolean,
     // 用 undefined 而非裸 Boolean，缺省值由机器与 connect 给出
     denyOnEscape: { type: Boolean, default: undefined },
     denyOnUnmount: { type: Boolean, default: undefined },
@@ -68,7 +68,7 @@ export const XhApprovalRoot = defineComponent({
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       status: ctx.api.value.status,
       settled: ctx.api.value.settled,
-      busy: ctx.api.value.busy,
+      loading: ctx.api.value.loading,
       grantedScopes: ctx.api.value.grantedScopes,
       note: ctx.api.value.note,
       canApprove: ctx.api.value.canApprove,

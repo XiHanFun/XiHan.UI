@@ -1,13 +1,13 @@
 import type {
+  FloatingPanelDimensionsChangeDetails,
   FloatingPanelOpenChangeDetails,
   FloatingPanelPosition,
   FloatingPanelPositionChangeDetails,
   FloatingPanelResizeEdge,
   FloatingPanelSchema,
   FloatingPanelSize,
-  FloatingPanelSizeChangeDetails,
-  FloatingPanelStage,
-  FloatingPanelStageChangeDetails,
+  FloatingPanelWindowState,
+  FloatingPanelWindowStateChangeDetails,
 } from '@xihan-ui/headless'
 import type { IdGenerator, RuntimeConfig } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
@@ -48,7 +48,7 @@ const SIZE_CONVERTER = {
 }
 
 const EDGES: readonly FloatingPanelResizeEdge[] = ['n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw']
-const STAGES: readonly FloatingPanelStage[] = ['default', 'minimized', 'maximized']
+const WINDOW_STATES: readonly FloatingPanelWindowState[] = ['default', 'minimized', 'maximized']
 
 /**
  * `<xh-floating-panel>` —— Light-DOM 行为宿主：作者写 root / positioner / content 等角色节点，
@@ -57,10 +57,10 @@ const STAGES: readonly FloatingPanelStage[] = ['default', 'minimized', 'maximize
  * 面板的落位与尺寸由元素每帧写进 positioner 的内联样式（position/left/top/width/height），
  * 作者的样式表不要再碰这五个属性。收起态用内联 display 收住 positioner，正文收拢时同样收住。
  *
- * 改尺把手要在节点上写明守哪条边（`edge="se"`），形态按钮要写明切到哪个形态（`stage="minimized"`），
- * 与 Vue 侧的 `:edge` / `:stage` 是同一份声明。
+ * 改尺把手要在节点上写明守哪条边（`edge="se"`），形态按钮要写明切到哪个形态（`window-state="minimized"`），
+ * 与 Vue 侧的 `:edge` / `:window-state` 是同一份声明。
  *
- * 位置与尺寸的属性形式是逗号分隔的一对数（`default-position="24,24"`、`default-size="360,240"`）；
+ * 位置与尺寸的属性形式是逗号分隔的一对数（`default-position="24,24"`、`default-dimensions="360,240"`）；
  * 也可以直接喂 property（`el.position = { x: 24, y: 24 }`）。
  *
  * @customElement xh-floating-panel
@@ -68,19 +68,19 @@ const STAGES: readonly FloatingPanelStage[] = ['default', 'minimized', 'maximize
  * @attr {boolean} default-open - 非受控初始为展开
  * @attr {string} position - 受控落点，写成 "x,y"（px，相对视口）
  * @attr {string} default-position - 非受控初始落点，默认 "24,24"
- * @attr {string} size - 受控尺寸，写成 "宽,高"（px）
- * @attr {string} default-size - 非受控初始尺寸，默认 "360,240"
+ * @attr {string} dimensions - 受控尺寸，写成 "宽,高"（px）
+ * @attr {string} default-dimensions - 非受控初始尺寸，默认 "360,240"
  * @attr {string} min-size - 尺寸下限，默认 "160,120"
  * @attr {string} max-size - 尺寸上限，不写即不封顶
- * @attr {'default'|'minimized'|'maximized'} stage - 受控形态
- * @attr {'default'|'minimized'|'maximized'} default-stage - 非受控初始形态，默认 default
+ * @attr {'default'|'minimized'|'maximized'} window-state - 受控形态
+ * @attr {'default'|'minimized'|'maximized'} default-window-state - 非受控初始形态，默认 default
  * @attr {boolean} panel-draggable - 允不允许搬动面板，默认开启；铺满形态下恒不可搬。不叫 draggable：那是 HTML 全局属性，写上去宿主会变成原生拖放源
  * @attr {boolean} resizable - 允不允许改尺寸，默认开启；只有常规形态下才改得动
  * @attr {boolean} disabled - 禁用：搬不动、改不了尺寸、切不了形态；开合与关闭不受影响
  * @fires open-change - 展开态变化；detail 为 `{ open: boolean }`
  * @fires position-change - 落点变化（拖动途中会连发）；detail 为 `{ position: { x, y } }`
- * @fires size-change - 尺寸变化（改尺途中会连发）；detail 为 `{ size: { width, height } }`
- * @fires stage-change - 形态变化；detail 为 `{ stage: 'default' | 'minimized' | 'maximized' }`
+ * @fires dimensions-change - 尺寸变化（改尺途中会连发）；detail 为 `{ dimensions: { width, height } }`
+ * @fires window-state-change - 形态变化；detail 为 `{ windowState: 'default' | 'minimized' | 'maximized' }`
  * @csspart root - 面板与触发器共同的容器
  * @csspart trigger - 打开面板的按钮
  * @csspart positioner - 承载落位与尺寸的定位容器，收起时被内联 display 收住
@@ -89,7 +89,7 @@ const STAGES: readonly FloatingPanelStage[] = ['default', 'minimized', 'maximize
  * @csspart title - 标题（aria-labelledby 目标）
  * @csspart drag-trigger - 拖拽把手，须是原生 `<button>`
  * @csspart resize-trigger - 改尺把手，自带 edge 属性；接线后是 `role="separator"`，别写成 `<button>`
- * @csspart stage-trigger - 形态按钮，须是原生 `<button>` 并自带 stage 属性
+ * @csspart window-state-trigger - 形态按钮，须是原生 `<button>` 并自带 window-state 属性
  * @csspart close-trigger - 关闭按钮
  * @csspart body - 正文，收拢时带 hidden
  */
@@ -106,12 +106,12 @@ export class XhFloatingPanelElement extends XhElement {
     defaultOpen: { converter: BOOLEAN_CONVERTER, attribute: 'default-open' },
     position: { converter: POSITION_CONVERTER },
     defaultPosition: { converter: POSITION_CONVERTER, attribute: 'default-position' },
-    size: { converter: SIZE_CONVERTER },
-    defaultSize: { converter: SIZE_CONVERTER, attribute: 'default-size' },
+    dimensions: { converter: SIZE_CONVERTER },
+    defaultDimensions: { converter: SIZE_CONVERTER, attribute: 'default-dimensions' },
     minSize: { converter: SIZE_CONVERTER, attribute: 'min-size' },
     maxSize: { converter: SIZE_CONVERTER, attribute: 'max-size' },
-    stage: { converter: STRING_CONVERTER },
-    defaultStage: { converter: STRING_CONVERTER, attribute: 'default-stage' },
+    windowState: { converter: STRING_CONVERTER, attribute: 'window-state' },
+    defaultWindowState: { converter: STRING_CONVERTER, attribute: 'default-window-state' },
     panelDraggable: { converter: BOOLEAN_CONVERTER, attribute: 'panel-draggable' },
     resizable: { converter: BOOLEAN_CONVERTER },
     disabled: { converter: BOOLEAN_CONVERTER },
@@ -123,12 +123,12 @@ export class XhFloatingPanelElement extends XhElement {
   declare defaultOpen?: boolean
   declare position?: FloatingPanelPosition
   declare defaultPosition?: FloatingPanelPosition
-  declare size?: FloatingPanelSize
-  declare defaultSize?: FloatingPanelSize
+  declare dimensions?: FloatingPanelSize
+  declare defaultDimensions?: FloatingPanelSize
   declare minSize?: FloatingPanelSize
   declare maxSize?: FloatingPanelSize
-  declare stage?: FloatingPanelStage
-  declare defaultStage?: FloatingPanelStage
+  declare windowState?: FloatingPanelWindowState
+  declare defaultWindowState?: FloatingPanelWindowState
   declare panelDraggable?: boolean
   declare resizable?: boolean
   declare disabled?: boolean
@@ -148,12 +148,12 @@ export class XhFloatingPanelElement extends XhElement {
     this.dispatchEvent(new CustomEvent('position-change', { detail: details, bubbles: true, composed: true }))
   }
 
-  private readonly notifySize = (details: FloatingPanelSizeChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('size-change', { detail: details, bubbles: true, composed: true }))
+  private readonly notifyDimensions = (details: FloatingPanelDimensionsChangeDetails): void => {
+    this.dispatchEvent(new CustomEvent('dimensions-change', { detail: details, bubbles: true, composed: true }))
   }
 
-  private readonly notifyStage = (details: FloatingPanelStageChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('stage-change', { detail: details, bubbles: true, composed: true }))
+  private readonly notifyWindowState = (details: FloatingPanelWindowStateChangeDetails): void => {
+    this.dispatchEvent(new CustomEvent('window-state-change', { detail: details, bubbles: true, composed: true }))
   }
 
   private readonly ctrl = new MachineController<FloatingPanelSchema>(
@@ -169,12 +169,12 @@ export class XhFloatingPanelElement extends XhElement {
       defaultOpen: this.defaultOpen,
       position: this.position,
       defaultPosition: this.defaultPosition,
-      size: this.size,
-      defaultSize: this.defaultSize,
+      dimensions: this.dimensions,
+      defaultDimensions: this.defaultDimensions,
       minSize: this.minSize,
       maxSize: this.maxSize,
-      stage: this.stage,
-      defaultStage: this.defaultStage,
+      windowState: this.windowState,
+      defaultWindowState: this.defaultWindowState,
       // 布尔一律原样透传：属性不在即 undefined，把缺省交回机器
       draggable: this.panelDraggable,
       resizable: this.resizable,
@@ -182,8 +182,8 @@ export class XhFloatingPanelElement extends XhElement {
       translations: this.translations,
       onOpenChange: this.notifyOpen,
       onPositionChange: this.notifyPosition,
-      onSizeChange: this.notifySize,
-      onStageChange: this.notifyStage,
+      onDimensionsChange: this.notifyDimensions,
+      onWindowStateChange: this.notifyWindowState,
     }
   }
 
@@ -206,9 +206,9 @@ export class XhFloatingPanelElement extends XhElement {
   }
 
   /** 形态按钮自报切到哪个形态；没写或写错时按常规处理。 */
-  private stageOf(el: HTMLElement): FloatingPanelStage {
-    const raw = el.getAttribute('stage') as FloatingPanelStage | null
-    return raw && STAGES.includes(raw) ? raw : 'default'
+  private windowStateOf(el: HTMLElement): FloatingPanelWindowState {
+    const raw = el.getAttribute('window-state') as FloatingPanelWindowState | null
+    return raw && WINDOW_STATES.includes(raw) ? raw : 'default'
   }
 
   protected wire(): void {
@@ -232,8 +232,8 @@ export class XhFloatingPanelElement extends XhElement {
     // 把手与形态按钮是多实例 part，逐个打：身份取作者写在节点上的声明
     for (const el of this.getParts('resize-trigger'))
       this.spreader.spread(el, api.getResizeTriggerProps({ edge: this.edgeOf(el) }) as Record<string, unknown>)
-    for (const el of this.getParts('stage-trigger'))
-      this.spreader.spread(el, api.getStageTriggerProps({ stage: this.stageOf(el) }) as Record<string, unknown>)
+    for (const el of this.getParts('window-state-trigger'))
+      this.spreader.spread(el, api.getWindowStateTriggerProps({ windowState: this.windowStateOf(el) }) as Record<string, unknown>)
 
     // 收起用内联 display，优先级高于样式表对 [hidden] 的覆盖：
     // 作者给这两个节点写了 display 时，光靠 hidden 属性压不住。
@@ -250,7 +250,7 @@ export class XhFloatingPanelElement extends XhElement {
     this.exit.track(positioner)
     this.exit.update(api.open)
     this.setPartHidden(positioner, !this.exit.visible)
-    this.setPartHidden(this.getPart('body'), api.stage === 'minimized')
+    this.setPartHidden(this.getPart('body'), api.windowState === 'minimized')
   }
 
   override disconnectedCallback(): void {

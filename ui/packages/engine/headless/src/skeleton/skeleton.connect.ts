@@ -22,7 +22,7 @@ export function connectSkeleton<T extends PropTypes>(
   normalize: NormalizeProps<T>,
 ): SkeletonApi<T> {
   const loading = props.loading ?? true
-  const variant = props.variant ?? 'text'
+  const shape = props.shape ?? 'text'
 
   return {
     loading,
@@ -38,7 +38,7 @@ export function connectSkeleton<T extends PropTypes>(
     getItemProps: (item: SkeletonItemProps = {}) => normalize.element({
       ...parts.item.attrs,
       'aria-hidden': loading ? true : undefined,
-      'data-variant': item.variant ?? variant,
+      'data-shape': item.shape ?? shape,
     }),
   }
 }

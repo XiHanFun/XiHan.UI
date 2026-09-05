@@ -13,14 +13,14 @@ type TourProps = TourSchema['props']
 export type TourRootSlotProps = Pick<
   TourApi,
   | 'open'
-  | 'step'
+  | 'value'
   | 'count'
   | 'currentStep'
   | 'firstStep'
   | 'lastStep'
   | 'progressText'
   | 'setOpen'
-  | 'setStep'
+  | 'setValue'
   | 'goToNextStep'
   | 'goToPrevStep'
   | 'skip'
@@ -32,8 +32,8 @@ export const XhTourRoot = defineComponent({
   // 全部 default: undefined —— 缺省值的唯一事实源在 machine 与 connect
   props: {
     steps: { type: Array as PropType<TourStep[]>, default: undefined },
-    step: { type: Number, default: undefined },
-    defaultStep: { type: Number, default: undefined },
+    value: { type: Number, default: undefined },
+    defaultValue: { type: Number, default: undefined },
     open: { type: Boolean, default: undefined },
     defaultOpen: { type: Boolean, default: undefined },
     placement: { type: String as PropType<Placement>, default: undefined },
@@ -47,12 +47,12 @@ export const XhTourRoot = defineComponent({
     autoScroll: { type: Boolean, default: undefined },
     translations: { type: Object as PropType<TourProps['translations']>, default: undefined },
   },
-  // open-change / step-change 携带对象；update:* 携带裸值，支持 v-model:open 与 v-model:step
+  // open-change / value-change 携带对象；update:* 携带裸值，支持 v-model:open 与 v-model:value
   emits: {
     'open-change': (_details: PayloadOf<TourProps, 'onOpenChange'>) => true,
     'update:open': (_open: PayloadOf<TourProps, 'onOpenChange'>['open']) => true,
-    'step-change': (_details: PayloadOf<TourProps, 'onStepChange'>) => true,
-    'update:step': (_step: PayloadOf<TourProps, 'onStepChange'>['step']) => true,
+    'value-change': (_details: PayloadOf<TourProps, 'onValueChange'>) => true,
+    'update:value': (_value: PayloadOf<TourProps, 'onValueChange'>['value']) => true,
     'complete': (_details: PayloadOf<TourProps, 'onComplete'>) => true,
     'skip': (_details: PayloadOf<TourProps, 'onSkip'>) => true,
   },
@@ -65,9 +65,9 @@ export const XhTourRoot = defineComponent({
         emit('open-change', details)
         emit('update:open', details.open)
       },
-      onStepChange: (details) => {
-        emit('step-change', details)
-        emit('update:step', details.step)
+      onValueChange: (details) => {
+        emit('value-change', details)
+        emit('update:value', details.value)
       },
       onComplete: details => emit('complete', details),
       onSkip: details => emit('skip', details),
@@ -76,14 +76,14 @@ export const XhTourRoot = defineComponent({
     // 经插槽暴露状态与走步、放弃等命令，供浮层外的按钮使用
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       open: ctx.api.value.open,
-      step: ctx.api.value.step,
+      value: ctx.api.value.value,
       count: ctx.api.value.count,
       currentStep: ctx.api.value.currentStep,
       firstStep: ctx.api.value.firstStep,
       lastStep: ctx.api.value.lastStep,
       progressText: ctx.api.value.progressText,
       setOpen: ctx.api.value.setOpen,
-      setStep: ctx.api.value.setStep,
+      setValue: ctx.api.value.setValue,
       goToNextStep: ctx.api.value.goToNextStep,
       goToPrevStep: ctx.api.value.goToPrevStep,
       skip: ctx.api.value.skip,

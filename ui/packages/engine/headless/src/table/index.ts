@@ -36,4 +36,4 @@ export {
   tableToggleSort,
 } from './table.sort'
 export type { TableToggleSortOptions } from './table.sort'
-export type { TableApi, TableCellProps, TableColumn, TableColumnDef, TableColumnKind, TableColumnPreference, TableColumnPreferenceChangeDetails, TableColumnProps, TableDropTarget, TableExpandedChangeDetails, TableFocusModel, TableRowDef, TableRowMoveDetails, TableRowProps, TableRowReorderReason, TableSchema, TableSelection, TableSelectionChangeDetails, TableSelectionMode, TableSelectionState, TableSortChangeDetails, TableSortDescriptor, TableSortDirection, TableTranslations, TableVisibleRow } from './table.types'
+export type { TableApi, TableCellProps, TableColumn, TableColumnDef, TableColumnKind, TableColumnPreference, TableColumnPreferenceChangeDetails, TableColumnProps, TableDropTarget, TableExpandedValueChangeDetails, TableFocusModel, TableRowDef, TableRowMoveDetails, TableRowProps, TableRowReorderReason, TableSchema, TableSelection, TableSelectionChangeDetails, TableSelectionMode, TableSelectionState, TableSortChangeDetails, TableSortDescriptor, TableSortDirection, TableTranslations, TableVisibleRow } from './table.types'

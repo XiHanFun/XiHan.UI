@@ -91,10 +91,10 @@ export const XhTreeSelectRoot = defineComponent({
   // *-change 携带 details 对象，update:* 携带裸值；选中值恒为数组，单选时长度 ≤ 1
   emits: {
     'value-change': (_details: PayloadOf<TreeSelectProps, 'onValueChange'>) => true,
-    'expanded-change': (_details: PayloadOf<TreeSelectProps, 'onExpandedChange'>) => true,
+    'expanded-value-change': (_details: PayloadOf<TreeSelectProps, 'onExpandedValueChange'>) => true,
     'open-change': (_details: PayloadOf<TreeSelectProps, 'onOpenChange'>) => true,
     'update:value': (_value: PayloadOf<TreeSelectProps, 'onValueChange'>['value']) => true,
-    'update:expandedValue': (_value: PayloadOf<TreeSelectProps, 'onExpandedChange'>['value']) => true,
+    'update:expandedValue': (_value: PayloadOf<TreeSelectProps, 'onExpandedValueChange'>['value']) => true,
     'update:open': (_open: PayloadOf<TreeSelectProps, 'onOpenChange'>['open']) => true,
   },
   slots: Object as SlotsType<{
@@ -106,8 +106,8 @@ export const XhTreeSelectRoot = defineComponent({
       emit('value-change', details)
       emit('update:value', details.value)
     }
-    const notifyExpanded: TreeSelectProps['onExpandedChange'] = (details) => {
-      emit('expanded-change', details)
+    const notifyExpanded: TreeSelectProps['onExpandedValueChange'] = (details) => {
+      emit('expanded-value-change', details)
       emit('update:expandedValue', details.value)
     }
     const notifyOpen: TreeSelectProps['onOpenChange'] = (details) => {
@@ -116,7 +116,7 @@ export const XhTreeSelectRoot = defineComponent({
     }
     const ctx = useTreeSelect(withXhConfig('tree-select', props) as TreeSelectProps, {
       onValueChange: notifyValue,
-      onExpandedChange: notifyExpanded,
+      onExpandedValueChange: notifyExpanded,
       onOpenChange: notifyOpen,
     })
     provideTreeSelect(ctx)

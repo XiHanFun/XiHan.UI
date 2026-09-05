@@ -1,4 +1,4 @@
-import type { ResizableSchema, ResizableSize, ResizableSizeChangeDetails, ResizableSizeChangeEndDetails } from '@xihan-ui/headless'
+import type { ResizableDimensions, ResizableDimensionsChangeDetails, ResizableDimensionsChangeEndDetails, ResizableSchema } from '@xihan-ui/headless'
 import type { Direction, IdGenerator } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { ResizeEdge } from '@xihan-ui/pointer'
@@ -14,7 +14,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 /** 尺寸写成 `宽x高`（如 `320x200`）。解析不出两个有限数就当没写。 */
 const SIZE_CONVERTER = {
-  fromAttribute: (v: string | null): ResizableSize | undefined => {
+  fromAttribute: (v: string | null): ResizableDimensions | undefined => {
     if (v == null || v.trim() === '')
       return undefined
     const [w, h] = v.split(/[x,\s]+/).map(Number)
@@ -46,8 +46,8 @@ const EDGES_CONVERTER = {
  * 按住 Shift 走大步，Home / End 推到这条边能到的两端。
  *
  * @customElement xh-resizable
- * @attr {string} size - 受控尺寸，写成 `宽x高`（如 `320x200`）；缺省该属性即非受控
- * @attr {string} default-size - 非受控初值，同样写成 `宽x高`
+ * @attr {string} dimensions - 受控尺寸，写成 `宽x高`（如 `320x200`）；缺省该属性即非受控
+ * @attr {string} default-dimensions - 非受控初值，同样写成 `宽x高`
  * @attr {number} min-width - 宽度下限
  * @attr {number} min-height - 高度下限
  * @attr {number} max-width - 宽度上限；不给即不封顶
@@ -59,8 +59,8 @@ const EDGES_CONVERTER = {
  * @attr {string} edges - 开放哪几条边，逗号分隔（如 `e,s,se`）；默认八向全开
  * @attr {boolean} disabled - 禁用：把手退出 Tab 序列，按下也不进调整
  * @attr {'ltr'|'rtl'} dir - 文字方向，只对调水平位移与左右两键的正负，默认 ltr
- * @fires size-change - 尺寸变化（拖动途中会连发）；detail 为 `{ size }`
- * @fires size-change-end - 一次调整收尾发一次；detail 为 `{ size, edge }`
+ * @fires dimensions-change - 尺寸变化（拖动途中会连发）；detail 为 `{ dimensions }`
+ * @fires dimensions-change-end - 一次调整收尾发一次；detail 为 `{ dimensions, edge }`
  * @csspart root - 承载 data-resizing / data-edge / data-disabled 的容器，尺寸写在它的内联样式上
  * @csspart handle - role=separator 的把手，指针与键盘交互全在它身上
  */
@@ -70,8 +70,8 @@ export class XhResizableElement extends XhElement {
   // dir 只占属性名、字段改叫 direction：HTMLElement 原生 dir 是 string 访问器，
   // 同名响应式字段会与基类类型打架。描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
-    size: { converter: SIZE_CONVERTER },
-    defaultSize: { converter: SIZE_CONVERTER, attribute: 'default-size' },
+    dimensions: { converter: SIZE_CONVERTER },
+    defaultDimensions: { converter: SIZE_CONVERTER, attribute: 'default-dimensions' },
     minWidth: { converter: NUMBER_CONVERTER, attribute: 'min-width' },
     minHeight: { converter: NUMBER_CONVERTER, attribute: 'min-height' },
     maxWidth: { converter: NUMBER_CONVERTER, attribute: 'max-width' },
@@ -87,8 +87,8 @@ export class XhResizableElement extends XhElement {
     translations: { attribute: false },
   }
 
-  declare size?: ResizableSize
-  declare defaultSize?: ResizableSize
+  declare dimensions?: ResizableDimensions
+  declare defaultDimensions?: ResizableDimensions
   declare minWidth?: number
   declare minHeight?: number
   declare maxWidth?: number
@@ -106,12 +106,12 @@ export class XhResizableElement extends XhElement {
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly resizableScope = createScope(null, this.idGen)
 
-  private readonly notifySize = (details: ResizableSizeChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('size-change', { detail: details, bubbles: true, composed: true }))
+  private readonly notifyDimensions = (details: ResizableDimensionsChangeDetails): void => {
+    this.dispatchEvent(new CustomEvent('dimensions-change', { detail: details, bubbles: true, composed: true }))
   }
 
-  private readonly notifySizeEnd = (details: ResizableSizeChangeEndDetails): void => {
-    this.dispatchEvent(new CustomEvent('size-change-end', { detail: details, bubbles: true, composed: true }))
+  private readonly notifyDimensionsEnd = (details: ResizableDimensionsChangeEndDetails): void => {
+    this.dispatchEvent(new CustomEvent('dimensions-change-end', { detail: details, bubbles: true, composed: true }))
   }
 
   private readonly ctrl = new MachineController<ResizableSchema>(
@@ -123,8 +123,8 @@ export class XhResizableElement extends XhElement {
 
   private machineProps(): Partial<ResizableSchema['props']> {
     return {
-      size: this.size,
-      defaultSize: this.defaultSize,
+      dimensions: this.dimensions,
+      defaultDimensions: this.defaultDimensions,
       minWidth: this.minWidth,
       minHeight: this.minHeight,
       maxWidth: this.maxWidth,
@@ -137,8 +137,8 @@ export class XhResizableElement extends XhElement {
       disabled: this.disabled ?? false,
       dir: this.direction,
       translations: this.translations,
-      onSizeChange: this.notifySize,
-      onSizeChangeEnd: this.notifySizeEnd,
+      onDimensionsChange: this.notifyDimensions,
+      onDimensionsChangeEnd: this.notifyDimensionsEnd,
     }
   }
 

@@ -102,7 +102,7 @@
   // 行序与父子归属的事实源就是这份数组。分组行标上 expandable：
   // 有子行的行本来就展得开，标了它的分组被搬空之后也仍收得下东西
   function render() {
-    table.expanded = expanded;
+    table.expandedValue = expanded;
     table.rows = tasks.map((task) => ({
       id: task.id,
       parentId: task.parentId ?? undefined,
@@ -116,7 +116,7 @@
   // 剩下的是这份数据的规矩：已归档那一组只出不进。它是函数，只走属性
   table.allowRowDrop = (move) => move.parent !== "archive";
 
-  table.addEventListener("expanded-change", (event) => {
+  table.addEventListener("expanded-value-change", (event) => {
     expanded = event.detail.value;
     render();
   });

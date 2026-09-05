@@ -171,8 +171,8 @@ export const tourSuite: ConformanceSuite = {
               root: { 'data-step': '1' },
               content: { 'data-step': '1' },
             },
-            // 走步不是开合：这一下不该有 open-change
-            events: [],
+            // 走步不是开合：这一下只发 value-change，不该有 open-change
+            events: [{ type: 'value-change', detail: { value: 1 } }],
           },
         },
         {
@@ -195,7 +195,7 @@ export const tourSuite: ConformanceSuite = {
     {
       name: '末步再走一步 = 完成：浮层收起并派发 open-change',
       spec: { zag: 'tour.machine#STEP.NEXT' },
-      props: { ...PROPS, defaultOpen: true, defaultStep: 2 },
+      props: { ...PROPS, defaultOpen: true, defaultValue: 2 },
       steps: [
         {
           kind: 'click',
@@ -390,16 +390,16 @@ export const tourSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '受控 step：点下一步不自改步序，父写回 step 后才走',
+      name: '受控 value：点下一步不自改步序，父写回 value 后才走',
       spec: { adr: 'controlled-uncontrolled' },
-      props: { ...PROPS, defaultOpen: true, step: 0 },
+      props: { ...PROPS, defaultOpen: true, value: 0 },
       steps: [
         {
           kind: 'click',
           part: 'next-trigger',
           expect: { parts: { content: { 'data-step': '0' } } },
         },
-        { kind: 'setProps', props: { step: 1 } },
+        { kind: 'setProps', props: { value: 1 } },
         {
           kind: 'settle',
           until: { attr: { part: 'content', name: 'data-step', value: '1' } },

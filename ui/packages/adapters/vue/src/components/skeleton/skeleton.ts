@@ -1,4 +1,4 @@
-import type { SkeletonProps, SkeletonVariant } from '@xihan-ui/headless'
+import type { SkeletonProps, SkeletonShape } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
 import { defineComponent, h } from 'vue'
 import { provideSkeleton, useSkeletonContext } from './context'
@@ -9,7 +9,7 @@ export const XhSkeletonRoot = defineComponent({
   name: 'XhSkeletonRoot',
   props: {
     loading: { type: Boolean, default: true },
-    variant: { type: String as PropType<SkeletonVariant>, default: undefined },
+    shape: { type: String as PropType<SkeletonShape>, default: undefined },
   },
   setup(props, { slots }) {
     const ctx = useSkeleton(props as SkeletonProps)
@@ -18,17 +18,17 @@ export const XhSkeletonRoot = defineComponent({
   },
 })
 
-/** 单根骨架条：纯装饰，不进无障碍树；形状缺省跟容器，给了 variant 就按自己的来。 */
+/** 单根骨架条：纯装饰，不进无障碍树；形状缺省跟容器，给了 shape 就按自己的来。 */
 export const XhSkeletonItem = defineComponent({
   name: 'XhSkeletonItem',
   props: {
-    variant: { type: String as PropType<SkeletonVariant>, default: undefined },
+    shape: { type: String as PropType<SkeletonShape>, default: undefined },
   },
   setup(props) {
     const ctx = useSkeletonContext()
     return () => h(
       'div',
-      ctx.api.value.getItemProps({ variant: props.variant }) as Record<string, unknown>,
+      ctx.api.value.getItemProps({ shape: props.shape }) as Record<string, unknown>,
     )
   },
 })

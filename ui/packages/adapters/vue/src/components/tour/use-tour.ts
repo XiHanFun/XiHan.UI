@@ -28,7 +28,7 @@ export interface TourContext {
 
 export function useTour(
   props: TourSchema['props'],
-  notify: Pick<TourSchema['props'], 'onOpenChange' | 'onStepChange' | 'onComplete' | 'onSkip'> = {},
+  notify: Pick<TourSchema['props'], 'onOpenChange' | 'onValueChange' | 'onComplete' | 'onSkip'> = {},
 ): TourContext {
   const xhConfig = useXhConfig()
   const backdropRef = ref<HTMLElement | null>(null)

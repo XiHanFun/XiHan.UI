@@ -138,21 +138,21 @@ describe('numberAnimationMachine', () => {
   })
 
   it('走到终点通知一次，而且只有一次', () => {
-    const onFinish = vi.fn()
-    const n = makeNumberAnimation({ from: 0, to: 10, duration: 50, onFinish })
+    const onComplete = vi.fn()
+    const n = makeNumberAnimation({ from: 0, to: 10, duration: 50, onComplete })
     vi.advanceTimersByTime(500)
-    expect(onFinish).toHaveBeenCalledTimes(1)
-    expect(onFinish).toHaveBeenCalledWith({ value: 10 })
+    expect(onComplete).toHaveBeenCalledTimes(1)
+    expect(onComplete).toHaveBeenCalledWith({ value: 10 })
     expect(n.state()).toBe('idle')
   })
 
   it('active 为假就停着：时间过去多久数字都不挪，也不通知', () => {
-    const onFinish = vi.fn()
-    const n = makeNumberAnimation({ from: 3, to: 900, duration: 50, active: false, onFinish })
+    const onComplete = vi.fn()
+    const n = makeNumberAnimation({ from: 3, to: 900, duration: 50, active: false, onComplete })
     expect(n.state()).toBe('idle')
     vi.advanceTimersByTime(1000)
     expect(n.api().value).toBe(3)
-    expect(onFinish).not.toHaveBeenCalled()
+    expect(onComplete).not.toHaveBeenCalled()
   })
 
   it('active 翻真从当前值接着走，翻假当场停在看到的那个数上', () => {

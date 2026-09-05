@@ -46,7 +46,7 @@ export interface TreeSelectValueChangeDetails {
   value: string[]
 }
 
-export interface TreeSelectExpandedChangeDetails {
+export interface TreeSelectExpandedValueChangeDetails {
   value: string[]
 }
 
@@ -120,7 +120,7 @@ export interface TreeSelectSchema extends MachineSchema {
     /** value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 */
     onValueChange?: (details: TreeSelectValueChangeDetails) => void
     /** 展开集合变化意图回调；语义同上。 */
-    onExpandedChange?: (details: TreeSelectExpandedChangeDetails) => void
+    onExpandedValueChange?: (details: TreeSelectExpandedValueChangeDetails) => void
     /** open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 */
     onOpenChange?: (details: TreeSelectOpenChangeDetails) => void
   }

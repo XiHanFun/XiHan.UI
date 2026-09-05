@@ -117,7 +117,7 @@ describe('前缀列', () => {
       page: 3,
       pageSize: 10,
       rows: [{ id: 'a' }, { id: 'a1', parentId: 'a' }, { id: 'b' }],
-      defaultExpanded: ['a'],
+      defaultExpandedValue: ['a'],
     })
     await tick()
     // 页偏移只对平表的「第几条」有意义；大纲编号说的是层级位置

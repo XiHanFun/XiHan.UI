@@ -5,7 +5,7 @@ export { findTreeSelectNodeEl, TREE_SELECT_DEFAULT_PLACEMENT, treeSelectMachine,
 export { treeSelectMeta } from './tree-select.meta'
 export type {
   TreeSelectApi,
-  TreeSelectExpandedChangeDetails,
+  TreeSelectExpandedValueChangeDetails,
   TreeSelectFocusIntent,
   TreeSelectNodeProps,
   TreeSelectOpenChangeDetails,

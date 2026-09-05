@@ -80,7 +80,7 @@
 | `defaultGrantedScopes` | `readonly string[]` |  |  |
 | `note` | `string` |  | 附在判定上的一句自由文本。给定即受控。 它只随判定载荷发出，不参与「必选项勾满了没有」的判断。 |
 | `defaultNote` | `string` |  |  |
-| `busy` | `boolean` |  | 判定在途：只挡重复批准，不挡拒绝。 |
+| `loading` | `boolean` |  | 判定在途：只挡重复批准，不挡拒绝。 |
 | `denyOnEscape` | `boolean` |  | Escape 判为拒绝，默认开。 |
 | `denyOnUnmount` | `boolean` |  | 卸载时若仍待决就按拒绝派发一次，**默认关**。 机理成立不等于默认值成立：列表换 key、路由切换、热更新任何一次重挂， 都会替用户发出他没做过的判定。 |
 | `live` | `'polite' \| 'assertive'` |  | 播报档位，默认 polite。 |
@@ -139,7 +139,7 @@
 | --- | --- | --- |
 | `status` | `ApprovalStatus` |  |
 | `settled` | `boolean` | 已经判过了：两颗按钮都收起出口。 |
-| `busy` | `boolean` |  |
+| `loading` | `boolean` |  |
 | `grantedScopes` | `string[]` |  |
 | `note` | `string` | 备注里的文字；没写过是空串。 |
 | `canApprove` | `boolean` | 必选项是不是都勾满了。 |

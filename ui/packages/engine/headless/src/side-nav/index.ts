@@ -5,7 +5,7 @@ export { accordionSiblings, sideNavMachine } from './side-nav.machine'
 export { sideNavMeta } from './side-nav.meta'
 export type {
   SideNavApi,
-  SideNavExpandedChangeDetails,
+  SideNavExpandedValueChangeDetails,
   SideNavNode,
   SideNavNodeProps,
   SideNavSchema,

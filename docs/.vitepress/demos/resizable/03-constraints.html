@@ -2,7 +2,7 @@
 <div style="display: grid; gap: 24px">
   <div>
     <p style="margin-bottom: 8px">锁 16:9——推一条边，另一轴跟着算</p>
-    <xh-resizable id="rz-ratio" default-size="240x135" edges="e,s,se" min-width="160">
+    <xh-resizable id="rz-ratio" default-dimensions="240x135" edges="e,s,se" min-width="160">
       <div
         data-xh-part="root"
         style="border: 1px solid var(--xh-border-default); border-radius: var(--xh-shape-surface); padding: 12px"
@@ -19,7 +19,7 @@
     <p style="margin-bottom: 8px">吸附到 40 的整数倍</p>
     <xh-resizable
       id="rz-step"
-      default-size="240x120"
+      default-dimensions="240x120"
       step="40"
       edges="e,s,se"
       min-width="120"
@@ -45,14 +45,14 @@
   // 宽高比是个数，写成属性只能取近似值，直接给 property
   ratio.aspectRatio = 16 / 9;
 
-  ratio.addEventListener("size-change", (event) => {
-    const { width, height } = event.detail.size;
+  ratio.addEventListener("dimensions-change", (event) => {
+    const { width, height } = event.detail.dimensions;
     document.getElementById("rz-ratio-out").textContent =
       `${Math.round(width)} × ${Math.round(height)}`;
   });
 
-  step.addEventListener("size-change", (event) => {
-    const { width, height } = event.detail.size;
+  step.addEventListener("dimensions-change", (event) => {
+    const { width, height } = event.detail.dimensions;
     document.getElementById("rz-step-out").textContent = `${width} × ${height}`;
   });
 </script>

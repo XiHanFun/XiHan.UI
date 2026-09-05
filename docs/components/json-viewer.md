@@ -42,7 +42,7 @@ defaultExpandedDepth 决定初次摊到第几层：1 只展开根行，3 连孙�
 
 ### 受控展开
 
-传了 expandedValue 就由宿主说了算，组件只发 expanded-change 不落内部值，写回它才动
+传了 expandedValue 就由宿主说了算，组件只发 expanded-value-change 不落内部值，写回它才动
 
 <XhDemo src="json-viewer/03-controlled" />
 
@@ -98,7 +98,7 @@ view="text" 直接出缩进过的 JSON 原文：整块可框选可复制，且�
 | --- | --- | --- | --- |
 | `value` | `unknown` |  | 要展示的值，任意形状。缺省即空视图（一行也不摊）。 |
 | `view` | `JsonViewerView` |  | 展示形态，默认 tree。 text 档直接出 JSON 原文：整块可框选可复制，且不受 maxStringLength / maxItems 折减—— 要的就是与后端下发的那份一字不差。展开集合与键盘导航在这一档上不起作用。 |
-| `expandedValue` | `string[]` |  | 展开集合（元素是行路径）。给定即受控：cell 直读 prop，写只发 onExpandedChange 不落内部值。 |
+| `expandedValue` | `string[]` |  | 展开集合（元素是行路径）。给定即受控：cell 直读 prop，写只发 onExpandedValueChange 不落内部值。 |
 | `defaultExpandedValue` | `string[]` |  | 非受控初值；不给就按 defaultExpandedDepth 现算。 |
 | `defaultExpandedDepth` | `number` |  | 初始展开到第几层（层级号不超过它的分支全部展开），默认 1，即只展开根行。 |
 | `maxStringLength` | `number` |  | 字符串值超过这么多字符就截断并补省略号；不给即不截断。 |
@@ -108,7 +108,7 @@ view="text" 直接出缩进过的 JSON 原文：整块可框选可复制，且�
 | `dir` | `Direction` |  | 文字方向，只对调左右方向键的展开/收起语义；不给即从 DOM 现读。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `translations` | `Partial<JsonViewerTranslations>` |  |  |
-| `onExpandedChange` | `(details: JsonViewerExpandedChangeDetails) => void` |  |  |
+| `onExpandedValueChange` | `(details: JsonViewerExpandedValueChangeDetails) => void` |  |  |
 
 ## 事件
 
@@ -116,7 +116,7 @@ view="text" 直接出缩进过的 JSON 原文：整块可框选可复制，且�
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `expanded-change` | `JsonViewerExpandedChangeDetails` | 展开集合变化；detail 为 `{ value: string[] }` |
+| `expanded-value-change` | `JsonViewerExpandedValueChangeDetails` | 展开集合变化；detail 为 `{ value: string[] }` |
 
 ## 状态
 

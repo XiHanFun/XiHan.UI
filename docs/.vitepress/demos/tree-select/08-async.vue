@@ -60,7 +60,7 @@ function fetchChildren(value: string): void {
   }, 800);
 }
 
-function onExpandedChange(details: { value: string[] }): void {
+function onExpandedValueChange(details: { value: string[] }): void {
   expanded.value = details.value;
   for (const value of details.value) fetchChildren(value);
 }
@@ -73,7 +73,7 @@ function onExpandedChange(details: { value: string[] }): void {
     :expanded-value="expanded"
     placeholder="选一个城市"
     style="max-inline-size: 320px"
-    @expanded-change="onExpandedChange"
+    @expanded-value-change="onExpandedValueChange"
   >
     <XhTreeSelectLabel>投放城市</XhTreeSelectLabel>
     <XhTreeSelectControl>

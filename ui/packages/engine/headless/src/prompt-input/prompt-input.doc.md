@@ -46,7 +46,7 @@
 ## 最佳实践
 
 - 受控用法下提交后由宿主清空；`clearOnSubmit` 关掉时组件不动值。
-- 生成期间把 `busy` 置真而不是把整个输入框禁用：用户还要能改下一句。
+- 生成期间把 `loading` 置真而不是把整个输入框禁用：用户还要能改下一句。
 - 要药丸形状不必换形态轴：在任意祖先上写一行 `--xh-prompt-input-radius: var(--xh-shape-pill)`，
   按钮那一颗另有 `--xh-prompt-input-submit-radius`。形态轴只管底与描边怎么画。
 

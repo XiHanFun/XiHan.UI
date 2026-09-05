@@ -27,7 +27,7 @@ export interface TreeSelectContext {
 
 export function useTreeSelect(
   props: TreeSelectSchema['props'],
-  handlers: Pick<TreeSelectSchema['props'], 'onValueChange' | 'onExpandedChange' | 'onOpenChange'> = {},
+  handlers: Pick<TreeSelectSchema['props'], 'onValueChange' | 'onExpandedValueChange' | 'onOpenChange'> = {},
 ): TreeSelectContext {
   const xhConfig = useXhConfig()
   const triggerRef = ref<HTMLElement | null>(null)

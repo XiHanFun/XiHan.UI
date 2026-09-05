@@ -117,11 +117,11 @@ export function connectDiffView<T extends PropTypes>(
   const model = prop('model') ?? EMPTY_MODEL
   const view = prop('view') ?? 'unified'
   const split = view === 'split'
-  const expanded = context.get('expanded')
+  const expandedValue = context.get('expandedValue')
   const translations = prop('translations')
   const ids = scope.ids('diff-view', 'header')
 
-  const rows = buildRows(model, prop('contextLines'), expanded)
+  const rows = buildRows(model, prop('contextLines'), expandedValue)
   const rowAt = (rowIndex: number): DiffViewRow | undefined => rows[rowIndex - 1]
   const lineAt = (rowIndex: number): DiffLine | undefined => rowAt(rowIndex)?.line
   const stats = diffStats(model)
@@ -179,14 +179,14 @@ export function connectDiffView<T extends PropTypes>(
   return {
     view,
     rows,
-    expanded,
+    expandedValue,
     stats,
     truncated,
     truncatedLines,
     truncationText,
     isEmpty,
-    setExpanded: next => send({ type: 'CONTROLLED.EXPANDED.SET', value: next }),
-    toggleGap: id => send({ type: expanded.includes(id) ? 'GAP.COLLAPSE' : 'GAP.EXPAND', id }),
+    setExpandedValue: next => send({ type: 'CONTROLLED.EXPANDED.SET', value: next }),
+    toggleGap: id => send({ type: expandedValue.includes(id) ? 'GAP.COLLAPSE' : 'GAP.EXPAND', id }),
 
     // 不发 aria-busy：族级规则
     getRootProps: () => normalize.element({
@@ -271,7 +271,7 @@ export function connectDiffView<T extends PropTypes>(
     getGapProps: ({ gapId }) => normalize.element({
       'role': 'row',
       ...parts.gap.attrs,
-      'data-expanded': dataAttr(expanded.includes(gapId)),
+      'data-expanded': dataAttr(expandedValue.includes(gapId)),
       'data-value': gapId,
     }),
 
@@ -285,11 +285,11 @@ export function connectDiffView<T extends PropTypes>(
     getGapTriggerProps: ({ gapId }) => normalize.button({
       ...parts['gap-trigger'].attrs,
       'type': 'button',
-      'aria-expanded': expanded.includes(gapId) ? 'true' : 'false',
+      'aria-expanded': expandedValue.includes(gapId) ? 'true' : 'false',
       // 按钮上写的是「⋯ 12」，读出来就是"⋯ 12"，什么都没说明；名字必须自带动作与量词
       'aria-label': expandGapLabel(hiddenCountOf(gapId)),
       'data-value': gapId,
-      'onClick': () => send({ type: expanded.includes(gapId) ? 'GAP.COLLAPSE' : 'GAP.EXPAND', id: gapId }),
+      'onClick': () => send({ type: expandedValue.includes(gapId) ? 'GAP.COLLAPSE' : 'GAP.EXPAND', id: gapId }),
     }),
 
     // 无变更时的占位。播报交给宿主，这里不开活区

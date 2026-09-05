@@ -23,7 +23,7 @@ interface Message {
 const messages = ref<Message[]>([
   { id: "m0", role: "assistant", who: "助手", text: "问点什么试试。" },
 ]);
-const busy = ref(false);
+const loading = ref(false);
 
 let timer = 0;
 let seq = 0;
@@ -40,7 +40,7 @@ const reply = (question: string) => {
       timer = window.setTimeout(tick, 60);
       return;
     }
-    busy.value = false;
+    loading.value = false;
   };
   tick();
 };
@@ -50,13 +50,13 @@ const onSubmit = ({ value }: { value: string }) => {
     ...messages.value,
     { id: `u${(seq += 1)}`, role: "user", who: "我", text: value },
   ];
-  busy.value = true;
+  loading.value = true;
   reply(value);
 };
 
 const onStop = () => {
   window.clearTimeout(timer);
-  busy.value = false;
+  loading.value = false;
 };
 
 onBeforeUnmount(() => window.clearTimeout(timer));
@@ -64,7 +64,7 @@ onBeforeUnmount(() => window.clearTimeout(timer));
 
 <template>
   <div style="display: flex; flex-direction: column; gap: 12px; block-size: 320px;">
-    <XhMessageFeedRoot :count="messages.length" :status="busy ? 'streaming' : 'idle'" style="flex: 1; min-block-size: 0;">
+    <XhMessageFeedRoot :count="messages.length" :status="loading ? 'streaming' : 'idle'" style="flex: 1; min-block-size: 0;">
       <XhMessageFeedViewport>
         <XhMessageFeedList>
           <XhMessageFeedItem
@@ -73,7 +73,7 @@ onBeforeUnmount(() => window.clearTimeout(timer));
             :item-id="message.id"
             :item-index="index"
             :item-role="message.role"
-            :item-streaming="busy && index === messages.length - 1"
+            :item-streaming="loading && index === messages.length - 1"
           >
             <XhMessageFeedItemLabel>{{ message.who }}</XhMessageFeedItemLabel>
             <div>{{ message.text }}</div>
@@ -83,15 +83,15 @@ onBeforeUnmount(() => window.clearTimeout(timer));
       <XhMessageFeedScrollToEndTrigger>↓</XhMessageFeedScrollToEndTrigger>
     </XhMessageFeedRoot>
 
-    <!-- busy 期间按钮换成停止，输入框仍可编辑：用户还要能改下一句 -->
+    <!-- loading 期间按钮换成停止，输入框仍可编辑：用户还要能改下一句 -->
     <XhPromptInputRoot
-      :busy="busy"
+      :loading="loading"
       :translations="{ input: '给助手写点什么' }"
       @submit="onSubmit"
       @stop="onStop"
     >
       <XhPromptInputInput rows="1" placeholder="给助手写点什么…" />
-      <XhPromptInputSubmitTrigger>{{ busy ? "停止" : "发送" }}</XhPromptInputSubmitTrigger>
+      <XhPromptInputSubmitTrigger>{{ loading ? "停止" : "发送" }}</XhPromptInputSubmitTrigger>
     </XhPromptInputRoot>
   </div>
 </template>

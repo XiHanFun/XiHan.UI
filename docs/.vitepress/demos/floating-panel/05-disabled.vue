@@ -9,7 +9,7 @@ import {
   XhFloatingPanelPositioner,
   XhFloatingPanelResizeTrigger,
   XhFloatingPanelRoot,
-  XhFloatingPanelStageTrigger,
+  XhFloatingPanelWindowStateTrigger,
   XhFloatingPanelTitle,
   XhFloatingPanelTrigger,
 } from "@xihan-ui/vue";
@@ -23,7 +23,7 @@ import {
         <XhFloatingPanelHeader>
           <XhFloatingPanelTitle>只读面板</XhFloatingPanelTitle>
           <XhFloatingPanelDragTrigger />
-          <XhFloatingPanelStageTrigger stage="minimized" />
+          <XhFloatingPanelWindowStateTrigger window-state="minimized" />
           <XhFloatingPanelCloseTrigger />
         </XhFloatingPanelHeader>
         <XhFloatingPanelBody>

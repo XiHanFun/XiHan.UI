@@ -5,7 +5,7 @@ import type {
   FloatingPanelResizeEdge,
   FloatingPanelSchema,
   FloatingPanelSize,
-  FloatingPanelStage,
+  FloatingPanelWindowState,
 } from './floating-panel.types'
 import { focusSafely } from '@xihan-ui/behavior'
 import { dataAttr } from '@xihan-ui/kernel'
@@ -33,7 +33,7 @@ const EDGE_LABEL: Record<FloatingPanelResizeEdge, string> = {
 }
 
 /** 内建的形态按钮说法：按钮上通常只有一个图标。 */
-const STAGE_LABEL: Record<FloatingPanelStage, string> = {
+const WINDOW_STATE_LABEL: Record<FloatingPanelWindowState, string> = {
   default: 'Restore panel',
   maximized: 'Maximize panel',
   minimized: 'Minimize panel',
@@ -61,14 +61,14 @@ export function connectFloatingPanel<T extends PropTypes>(
   const open = state.matches('open')
   const dragging = state.matches('open.dragging')
   const resizing = state.matches('open.resizing')
-  const stage = context.get('stage')
+  const windowState = context.get('windowState')
   const position = context.get('position')
-  const size = context.get('size')
+  const dimensions = context.get('dimensions')
 
   const disabled = !!prop('disabled')
   // 与机器里那两条守卫同一份判据：按钮的可用状态必须与事件到底认不认一致
-  const canDrag = !disabled && (prop('draggable') ?? true) && stage !== 'maximized'
-  const canResize = !disabled && (prop('resizable') ?? true) && stage === 'default'
+  const canDrag = !disabled && (prop('draggable') ?? true) && windowState !== 'maximized'
+  const canResize = !disabled && (prop('resizable') ?? true) && windowState === 'default'
 
   const ids = scope.ids('floating-panel', 'content', 'title')
   const stateAttr = open ? 'open' : 'closed'
@@ -79,7 +79,7 @@ export function connectFloatingPanel<T extends PropTypes>(
     resizeTrigger: translations?.resizeTrigger ?? ((edge: FloatingPanelResizeEdge) => `Resize ${EDGE_LABEL[edge]}`),
     resizeValueText: translations?.resizeValueText
       ?? ((rect: FloatingPanelSize) => `Width ${Math.round(rect.width)}, height ${Math.round(rect.height)}`),
-    stageTrigger: translations?.stageTrigger ?? ((next: FloatingPanelStage) => STAGE_LABEL[next]),
+    windowStateTrigger: translations?.windowStateTrigger ?? ((next: FloatingPanelWindowState) => WINDOW_STATE_LABEL[next]),
     close: translations?.close ?? 'Close',
   }
 
@@ -92,7 +92,7 @@ export function connectFloatingPanel<T extends PropTypes>(
   // 整块面板的状态标记，几个角色节点共用一份，样式层各处一致
   const panelAttrs = (): Record<string, string | undefined> => ({
     'data-state': stateAttr,
-    'data-stage': stage,
+    'data-window-state': windowState,
     'data-disabled': dataAttr(disabled),
     'data-dragging': dataAttr(dragging),
     'data-resizing': dataAttr(resizing),
@@ -105,9 +105,9 @@ export function connectFloatingPanel<T extends PropTypes>(
 
   return {
     open,
-    stage,
+    windowState,
     position,
-    size,
+    dimensions,
     dragging,
     resizing,
     disabled,
@@ -115,8 +115,8 @@ export function connectFloatingPanel<T extends PropTypes>(
     canResize,
     setOpen,
     setPosition: next => send({ type: 'POSITION.SET', position: next }),
-    setSize: next => send({ type: 'SIZE.SET', size: next }),
-    setStage: next => send({ type: 'STAGE.SET', stage: next }),
+    setDimensions: next => send({ type: 'DIMENSIONS.SET', dimensions: next }),
+    setWindowState: next => send({ type: 'WINDOW_STATE.SET', windowState: next }),
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
@@ -136,11 +136,11 @@ export function connectFloatingPanel<T extends PropTypes>(
     getPositionerProps: () => normalize.element({
       ...parts.positioner.attrs,
       'data-state': stateAttr,
-      'data-stage': stage,
+      'data-window-state': windowState,
       // 坐标由自己的拖拽状态每帧写死，不问引擎、没有「还没量完」的窗口：恒已落位
       'data-positioned': '',
       // 落位与尺寸每帧写死，皮肤不要再碰这四个属性
-      'style': floatingPanelRectStyle(stage, position, size),
+      'style': floatingPanelRectStyle(windowState, position, dimensions),
       // 收起态自带 hidden：面板整棵子树都在 positioner 底下，收住它就够
       'hidden': !open || undefined,
     }),
@@ -165,7 +165,7 @@ export function connectFloatingPanel<T extends PropTypes>(
 
     getHeaderProps: () => normalize.element({
       ...parts.header.attrs,
-      'data-stage': stage,
+      'data-window-state': windowState,
       'data-dragging': dataAttr(dragging),
     }),
 
@@ -227,12 +227,12 @@ export function connectFloatingPanel<T extends PropTypes>(
         'role': 'separator',
         'aria-orientation': horizontal ? 'vertical' : 'horizontal',
         'aria-label': label.resizeTrigger(item.edge),
-        'aria-valuenow': String(Math.round(horizontal ? size.width : size.height)),
+        'aria-valuenow': String(Math.round(horizontal ? dimensions.width : dimensions.height)),
         'aria-valuemin': String(Math.round(horizontal ? minSize.width : minSize.height)),
         // 不给 maxSize 即不封顶，这一条随之缺席
         'aria-valuemax': valueMax != null && Number.isFinite(valueMax) ? String(Math.round(valueMax)) : undefined,
         // 上限缺席时读屏会拿 0–100 去归一一个像素数，这条人话把播报接管过来
-        'aria-valuetext': label.resizeValueText(size),
+        'aria-valuetext': label.resizeValueText(dimensions),
         'aria-controls': ids.content,
         'aria-disabled': canResize ? 'false' : 'true',
         // 推不动时仍留在 Tab 序列里：抽掉 Tab 位，键盘用户连"这里本来能改尺寸"都读不到
@@ -266,30 +266,30 @@ export function connectFloatingPanel<T extends PropTypes>(
             return
           event.preventDefault()
           const step = event.shiftKey ? FLOATING_PANEL_LARGE_STEP : FLOATING_PANEL_STEP
-          send({ type: 'SIZE.NUDGE', edge: item.edge, dx: delta.dx * step, dy: delta.dy * step })
+          send({ type: 'DIMENSIONS.NUDGE', edge: item.edge, dx: delta.dx * step, dy: delta.dy * step })
         },
       })
     },
 
-    getStageTriggerProps: (item) => {
-      const active = stage === item.stage
+    getWindowStateTriggerProps: (item) => {
+      const active = windowState === item.windowState
       return normalize.button({
-        ...parts['stage-trigger'].attrs,
+        ...parts['window-state-trigger'].attrs,
         'type': 'button',
-        'aria-label': label.stageTrigger(item.stage),
+        'aria-label': label.windowStateTrigger(item.windowState),
         // 按下即处于该形态，读屏据此念"已按下"
         'aria-pressed': active ? 'true' : 'false',
         'aria-disabled': disabled ? 'true' : 'false',
-        // 按下它切到哪个形态。与面板身上那个 data-stage 是两回事，故另取一个名字：
-        // 同名的话皮肤写 [data-stage='minimized'] 会把"收拢按钮"与"已收拢的面板"一起选中
-        'data-target-stage': item.stage,
+        // 按下它切到哪个形态。与面板身上那个 data-window-state 是两回事，故另取一个名字：
+        // 同名的话皮肤写 [data-window-state='minimized'] 会把"收拢按钮"与"已收拢的面板"一起选中
+        'data-target-window-state': item.windowState,
         'data-state': active ? 'on' : 'off',
         'data-disabled': dataAttr(disabled),
         'onClick': () => {
           if (disabled)
             return
           // 再按一次回到常规形态：收拢着的面板按"收拢"应当展开，不然那一下没有出口
-          send({ type: 'STAGE.SET', stage: active ? 'default' : item.stage })
+          send({ type: 'WINDOW_STATE.SET', windowState: active ? 'default' : item.windowState })
         },
       })
     },
@@ -303,9 +303,9 @@ export function connectFloatingPanel<T extends PropTypes>(
 
     getBodyProps: () => normalize.element({
       ...parts.body.attrs,
-      'data-stage': stage,
+      'data-window-state': windowState,
       // 收拢时正文连同它的可聚焦元素一起退出：只把高度压到 0 的话读屏与 Tab 照样进得去
-      'hidden': stage === 'minimized' || undefined,
+      'hidden': windowState === 'minimized' || undefined,
     }),
   }
 }

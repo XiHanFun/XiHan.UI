@@ -65,7 +65,7 @@ open 与 index 双受控；translations 换工具条的可及名与计数文案
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `items` | `ImageViewerItem[]` |  | 图片清单。看单张就给长度 1 的数组。缺省为空，此时打开也只有工具条与空视口。 |
+| `collection` | `ImageViewerItem[]` |  | 图片清单。看单张就给长度 1 的数组。缺省为空，此时打开也只有工具条与空视口。 |
 | `open` | `boolean` |  |  |
 | `defaultOpen` | `boolean` |  |  |
 | `index` | `number` |  | 当前下标（0 起）。给定即受控：内部不再自改，只发 onIndexChange。 |

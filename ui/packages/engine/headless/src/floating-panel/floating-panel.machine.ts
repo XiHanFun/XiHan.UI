@@ -27,23 +27,23 @@ export const floatingPanelMachine = createMachine({
       // 通知必须挂在 cell 上：受控时 set 不写内部值，只有这条回调能把用户意图送出去
       onChange: position => prop('onPositionChange')?.({ position }),
     })),
-    size: cell(() => {
+    dimensions: cell(() => {
       const min = prop('minSize')
       const max = prop('maxSize')
-      const controlled = prop('size')
+      const controlled = prop('dimensions')
       return {
         // 受控值也要过一遍上下限：作者写进来的尺寸同样不该小于 minSize。
         // undefined 原样留着，那是"非受控"的唯一表达
         value: controlled === undefined ? undefined : clampFloatingPanelSize(controlled, min, max),
-        defaultValue: clampFloatingPanelSize(prop('defaultSize') ?? FLOATING_PANEL_DEFAULT_SIZE, min, max),
+        defaultValue: clampFloatingPanelSize(prop('defaultDimensions') ?? FLOATING_PANEL_DEFAULT_SIZE, min, max),
         isEqual: sameFloatingPanelSize,
-        onChange: size => prop('onSizeChange')?.({ size }),
+        onChange: dimensions => prop('onDimensionsChange')?.({ dimensions }),
       }
     }),
-    stage: cell(() => ({
-      value: prop('stage'),
-      defaultValue: prop('defaultStage') ?? 'default',
-      onChange: stage => prop('onStageChange')?.({ stage }),
+    windowState: cell(() => ({
+      value: prop('windowState'),
+      defaultValue: prop('defaultWindowState') ?? 'default',
+      onChange: windowState => prop('onWindowStateChange')?.({ windowState }),
     })),
   }),
   refs: () => ({
@@ -57,9 +57,9 @@ export const floatingPanelMachine = createMachine({
   on: {
     'POSITION.SET': { guard: 'canInteract', actions: ['setPosition'] },
     'POSITION.NUDGE': { guard: 'canDrag', actions: ['nudgePosition'] },
-    'SIZE.SET': { guard: 'canInteract', actions: ['setSize'] },
-    'SIZE.NUDGE': { guard: 'canResize', actions: ['nudgeSize'] },
-    'STAGE.SET': { guard: 'canInteract', actions: ['setStage'] },
+    'DIMENSIONS.SET': { guard: 'canInteract', actions: ['setDimensions'] },
+    'DIMENSIONS.NUDGE': { guard: 'canResize', actions: ['nudgeDimensions'] },
+    'WINDOW_STATE.SET': { guard: 'canInteract', actions: ['setWindowState'] },
   },
   states: {
     closed: {
@@ -120,10 +120,10 @@ export const floatingPanelMachine = createMachine({
       canInteract: ({ prop }) => !prop('disabled'),
       // 铺满的面板没有"位置"可言，搬它等于把它从视口里推出去
       canDrag: ({ prop, context }) =>
-        !prop('disabled') && (prop('draggable') ?? true) && context.get('stage') !== 'maximized',
-      // 收拢与铺满两种形态的尺寸都不由 size 决定，此时改尺寸是改一个看不见的值
+        !prop('disabled') && (prop('draggable') ?? true) && context.get('windowState') !== 'maximized',
+      // 收拢与铺满两种形态的尺寸都不由 dimensions 决定，此时改尺寸是改一个看不见的值
       canResize: ({ prop, context }) =>
-        !prop('disabled') && (prop('resizable') ?? true) && context.get('stage') === 'default',
+        !prop('disabled') && (prop('resizable') ?? true) && context.get('windowState') === 'default',
     },
     actions: {
       invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
@@ -148,20 +148,20 @@ export const floatingPanelMachine = createMachine({
           return
         context.set('position', moveFloatingPanel(context.get('position'), e.dx, e.dy))
       },
-      setSize: ({ context, prop, event }) => {
+      setDimensions: ({ context, prop, event }) => {
         const e = event.current()
-        if (e.type !== 'SIZE.SET')
+        if (e.type !== 'DIMENSIONS.SET')
           return
         // 公开出口不得造出界面造不出的值：小于下限的尺寸拖也拖不出来
-        context.set('size', clampFloatingPanelSize(e.size, prop('minSize'), prop('maxSize')))
+        context.set('dimensions', clampFloatingPanelSize(e.dimensions, prop('minSize'), prop('maxSize')))
       },
-      nudgeSize: ({ context, prop, event }) => {
+      nudgeDimensions: ({ context, prop, event }) => {
         const e = event.current()
-        if (e.type !== 'SIZE.NUDGE')
+        if (e.type !== 'DIMENSIONS.NUDGE')
           return
         const next = resizeFloatingPanel(
           context.get('position'),
-          context.get('size'),
+          context.get('dimensions'),
           e.edge,
           e.dx,
           e.dy,
@@ -169,13 +169,13 @@ export const floatingPanelMachine = createMachine({
           prop('maxSize'),
         )
         context.set('position', next.position)
-        context.set('size', next.size)
+        context.set('dimensions', next.size)
       },
-      setStage: ({ context, event }) => {
+      setWindowState: ({ context, event }) => {
         const e = event.current()
-        if (e.type !== 'STAGE.SET')
+        if (e.type !== 'WINDOW_STATE.SET')
           return
-        context.set('stage', e.stage)
+        context.set('windowState', e.windowState)
       },
 
       /**
@@ -191,7 +191,7 @@ export const floatingPanelMachine = createMachine({
           edge: e.type === 'RESIZE.START' ? e.edge : null,
           origin: { clientX: e.point.clientX, clientY: e.point.clientY },
           position: { ...context.get('position') },
-          size: { ...context.get('size') },
+          size: { ...context.get('dimensions') },
         })
       },
       dragMove: ({ context, prop, refs, event }) => {
@@ -220,7 +220,7 @@ export const floatingPanelMachine = createMachine({
           prop('maxSize'),
         )
         context.set('position', next.position)
-        context.set('size', next.size)
+        context.set('dimensions', next.size)
       },
     },
     effects: {

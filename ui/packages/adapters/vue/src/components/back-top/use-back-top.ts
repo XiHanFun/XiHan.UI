@@ -14,10 +14,10 @@ export interface BackTopContext {
 /** getTargetEl 返回滚动容器，null 即整页滚动；滚动量的观察在机器的效应里跑。 */
 export function useBackTop(
   props: BackTopSchema['props'],
-  onVisibleChange?: BackTopSchema['props']['onVisibleChange'],
+  onVisibilityChange?: BackTopSchema['props']['onVisibilityChange'],
   getTargetEl: () => HTMLElement | null = () => null,
 ): BackTopContext {
-  const service = useMachine(backTopMachine, () => ({ ...props, onVisibleChange }))
+  const service = useMachine(backTopMachine, () => ({ ...props, onVisibilityChange }))
 
   service.refs.set('getTargetEl', getTargetEl)
 

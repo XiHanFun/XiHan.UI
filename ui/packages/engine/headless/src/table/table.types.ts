@@ -197,7 +197,7 @@ export interface TableSelectionChangeDetails {
   value: TableSelection
 }
 
-export interface TableExpandedChangeDetails {
+export interface TableExpandedValueChangeDetails {
   value: string[]
 }
 
@@ -235,8 +235,8 @@ export interface TableSchema extends MachineSchema {
     selection?: TableSelection
     defaultSelection?: TableSelection
     /** 展开集合。给定即受控，语义同上。 */
-    expanded?: string[]
-    defaultExpanded?: string[]
+    expandedValue?: string[]
+    defaultExpandedValue?: string[]
     /** 默认 none：不声明则没有选择机制，行也不报 aria-selected。 */
     selectionMode?: TableSelectionMode
     /**
@@ -294,7 +294,7 @@ export interface TableSchema extends MachineSchema {
     onColumnPreferenceChange?: (details: TableColumnPreferenceChangeDetails) => void
     onSortChange?: (details: TableSortChangeDetails) => void
     onSelectionChange?: (details: TableSelectionChangeDetails) => void
-    onExpandedChange?: (details: TableExpandedChangeDetails) => void
+    onExpandedValueChange?: (details: TableExpandedValueChangeDetails) => void
   }
   context: {
     /** 排序链，有序且按 id 去重。受控（sort 给定）时 cell 直读 prop。 */
@@ -302,7 +302,7 @@ export interface TableSchema extends MachineSchema {
     /** 选中集合，可能是裸 'all'。单选时长度 ≤ 1。 */
     selection: TableSelection
     /** 展开集合，恒为数组。 */
-    expanded: string[]
+    expandedValue: string[]
     /** 焦点位于表体时的瞬态锚点，焦点离开即清空。 */
     focusedRow: string | null
     /**

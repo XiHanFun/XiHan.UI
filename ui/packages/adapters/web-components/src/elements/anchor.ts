@@ -14,7 +14,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
 
 /**
  * `<xh-anchor>` —— 锚点导航行为宿主，激活项由机器的滚动观察器结算，
- * 目标区块按 link 上的 value 属性（或 targets 清单）里的 id 现查。
+ * 目标区块按 link 上的 value 属性（或 collection 清单）里的 id 现查。
  *
  * 作者须写对标签：root 是 `<nav>`，list 是 `<ul>`，item 是 `<li>`，link 是 `<a>`；
  * href 由元素按 value 派生。
@@ -51,7 +51,7 @@ export class XhAnchorElement extends XhElement {
     tone: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
     // 清单与文案是对象，只走 property
-    targets: { attribute: false },
+    collection: { attribute: false },
     translations: { attribute: false },
     // 滚动容器是 DOM 句柄，只走 property；不给即挂在窗口上
     scrollElement: { attribute: false },
@@ -65,7 +65,7 @@ export class XhAnchorElement extends XhElement {
   declare direction?: Direction
   declare tone?: Tone
   declare size?: Size
-  declare targets?: readonly string[]
+  declare collection?: readonly string[]
   declare translations?: Partial<AnchorTranslations>
   declare scrollElement?: HTMLElement | null
 
@@ -84,7 +84,7 @@ export class XhAnchorElement extends XhElement {
     return {
       value: this.value,
       defaultValue: this.defaultValue,
-      targets: this.targets,
+      collection: this.collection,
       offset: this.offset,
       smooth: this.smooth,
       orientation: this.orientation,

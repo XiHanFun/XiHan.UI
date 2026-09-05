@@ -80,7 +80,7 @@
     treeSelect.value = event.detail.value;
     valueOut.textContent = event.detail.value.join("、") || "（无）";
   });
-  treeSelect.addEventListener("expanded-change", (event) => {
+  treeSelect.addEventListener("expanded-value-change", (event) => {
     treeSelect.expandedValue = event.detail.value;
     expandedOut.textContent = event.detail.value.join("、") || "（无）";
   });

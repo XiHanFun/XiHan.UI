@@ -16,11 +16,11 @@ export interface StepsContext {
 
 export function useSteps(
   props: StepsSchema['props'],
-  onStepChange?: StepsSchema['props']['onStepChange'],
+  onValueChange?: StepsSchema['props']['onValueChange'],
 ): StepsContext {
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
-  const service = useMachine(stepsMachine, () => ({ ...props, onStepChange }), scope)
+  const service = useMachine(stepsMachine, () => ({ ...props, onValueChange }), scope)
   const api = computed(() => connectSteps(service, vueNormalize))
   return { api, service }
 }

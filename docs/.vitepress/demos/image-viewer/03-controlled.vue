@@ -34,7 +34,7 @@ const translations = {
   <XhImageViewerRoot
     v-model:open="open"
     v-model:index="index"
-    :items="items"
+    :collection="items"
     :translations="translations"
   >
     <div style="display: flex; align-items: center; gap: 8px">

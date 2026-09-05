@@ -280,9 +280,12 @@ export { provideDescriptions, useDescriptionsContext } from './components/descri
 export type { DescriptionsContext } from './components/descriptions/context'
 export { XhDescriptionsItem, XhDescriptionsLabel, XhDescriptionsRoot, XhDescriptionsValue } from './components/descriptions/descriptions'
 export {
+  XhDialogBody,
   XhDialogCloseTrigger,
   XhDialogContent,
   XhDialogDescription,
+  XhDialogFooter,
+  XhDialogHeader,
   XhDialogRoot,
   XhDialogTitle,
   XhDialogTrigger,
@@ -300,9 +303,12 @@ export type { DownloadTriggerSlotProps } from './components/download-trigger/dow
 export { useDownloadTrigger } from './components/download-trigger/use-download-trigger'
 export type { DownloadTriggerContext } from './components/download-trigger/use-download-trigger'
 export {
+  XhDrawerBody,
   XhDrawerCloseTrigger,
   XhDrawerContent,
   XhDrawerDescription,
+  XhDrawerFooter,
+  XhDrawerHeader,
   XhDrawerRoot,
   XhDrawerTitle,
   XhDrawerTrigger,
@@ -366,7 +372,7 @@ export type { FloatButtonRootSlotProps } from './components/float-button/float-b
 export { useFloatButton } from './components/float-button/use-float-button'
 export type { FloatButtonContext } from './components/float-button/use-float-button'
 export { useFloatingPanelContext } from './components/floating-panel/context'
-export { XhFloatingPanelBody, XhFloatingPanelCloseTrigger, XhFloatingPanelContent, XhFloatingPanelDragTrigger, XhFloatingPanelHeader, XhFloatingPanelPositioner, XhFloatingPanelResizeTrigger, XhFloatingPanelRoot, XhFloatingPanelStageTrigger, XhFloatingPanelTitle, XhFloatingPanelTrigger } from './components/floating-panel/floating-panel'
+export { XhFloatingPanelBody, XhFloatingPanelCloseTrigger, XhFloatingPanelContent, XhFloatingPanelDragTrigger, XhFloatingPanelHeader, XhFloatingPanelPositioner, XhFloatingPanelResizeTrigger, XhFloatingPanelRoot, XhFloatingPanelTitle, XhFloatingPanelTrigger, XhFloatingPanelWindowStateTrigger } from './components/floating-panel/floating-panel'
 export type { FloatingPanelRootSlotProps } from './components/floating-panel/floating-panel'
 export { useFloatingPanel } from './components/floating-panel/use-floating-panel'
 export type { FloatingPanelContext } from './components/floating-panel/use-floating-panel'

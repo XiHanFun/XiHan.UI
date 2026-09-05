@@ -6,7 +6,7 @@
 
 - 长时间挂着的辅助界面：调试面板、图层属性、正在进行的通话、播放器。
 - 用户需要一边看页面一边改东西，弹窗那种"必须先处理完"的语气不合适。
-- 位置和大小要由用户自己定，并且值得记下来（`onPositionChange` / `onSizeChange` / `onStageChange` 就是为此留的）。
+- 位置和大小要由用户自己定，并且值得记下来（`onPositionChange` / `onDimensionsChange` / `onWindowStateChange` 就是为此留的）。
 
 ## 何时不用
 
@@ -17,11 +17,11 @@
 
 ## 特性
 
-- 三种形态：常规、收拢（只留标题栏）、铺满（占满视口），由 `stage` 一个值表达，可受控。
-- 位置与尺寸各自成对（`position` / `defaultPosition`、`size` / `defaultSize`），两态齐全。
+- 三种形态：常规、收拢（只留标题栏）、铺满（占满视口），由 `windowState` 一个值表达，可受控。
+- 位置与尺寸各自成对（`position` / `defaultPosition`、`dimensions` / `defaultDimensions`），两态齐全。
 - 八个改尺把手在节点上自报守的是哪条边，西边与北边的把手会同时改位置。
 - 键盘全程可达：拖拽把手上方向键平移、Shift 快移、Enter / Space 送回初始落点；改尺把手上方向键推边；Esc 关闭。
-- `minSize` / `maxSize` 在每一处入口都生效——拖、推、`setSize` 走的是同一个夹取函数。
+- `minSize` / `maxSize` 在每一处入口都生效——拖、推、`setDimensions` 走的是同一个夹取函数。
 
 ## 示例
 
@@ -35,11 +35,11 @@
 
 收拢只留标题栏、铺满占满视口；按着的那个钮再按一次回到常规
 
-<XhDemo src="floating-panel/02-stage" />
+<XhDemo src="floating-panel/02-window-state" />
 
 ### 八个改尺把手
 
-四条边加四个角；min-size 与 max-size 在拖、推、setSize 三处同时生效
+四条边加四个角；min-size 与 max-size 在拖、推、setDimensions 三处同时生效
 
 <XhDemo src="floating-panel/03-resize" />
 
@@ -66,7 +66,7 @@ open 与 position 都交给外面握着：面板只报意图，值写回来才�
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-floating-panel>` |
-| Vue 组件 | `XhFloatingPanelBody` `XhFloatingPanelCloseTrigger` `XhFloatingPanelContent` `XhFloatingPanelDragTrigger` `XhFloatingPanelHeader` `XhFloatingPanelPositioner` `XhFloatingPanelResizeTrigger` `XhFloatingPanelRoot` `XhFloatingPanelStageTrigger` `XhFloatingPanelTitle` `XhFloatingPanelTrigger` |
+| Vue 组件 | `XhFloatingPanelBody` `XhFloatingPanelCloseTrigger` `XhFloatingPanelContent` `XhFloatingPanelDragTrigger` `XhFloatingPanelHeader` `XhFloatingPanelPositioner` `XhFloatingPanelResizeTrigger` `XhFloatingPanelRoot` `XhFloatingPanelTitle` `XhFloatingPanelTrigger` `XhFloatingPanelWindowStateTrigger` |
 | 组合式函数 | `useFloatingPanel` |
 | 状态机 | `floatingPanelMachine` |
 | 皮肤 | `@xihan-ui/styles/floating-panel.css` |
@@ -75,7 +75,7 @@ open 与 position 都交给外面握着：面板只报意图，值写回来才�
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="floating-panel"`：`root` · `trigger` · **`positioner`** · **`content`** · `header` · `title` · `drag-trigger` · `resize-trigger` · `stage-trigger` · `close-trigger` · `body`
+`data-scope="floating-panel"`：`root` · `trigger` · **`positioner`** · **`content`** · `header` · `title` · `drag-trigger` · `resize-trigger` · `window-state-trigger` · `close-trigger` · `body`
 
 ## Props
 
@@ -85,20 +85,20 @@ open 与 position 都交给外面握着：面板只报意图，值写回来才�
 | `defaultOpen` | `boolean` |  |  |
 | `position` | `FloatingPanelPosition` |  | 面板左上角坐标（px，相对视口）。给定即受控。 |
 | `defaultPosition` | `FloatingPanelPosition` |  |  |
-| `size` | `FloatingPanelSize` |  | 面板尺寸（px）。给定即受控。 |
-| `defaultSize` | `FloatingPanelSize` |  |  |
+| `dimensions` | `FloatingPanelSize` |  | 面板尺寸（px）。给定即受控。 |
+| `defaultDimensions` | `FloatingPanelSize` |  |  |
 | `minSize` | `FloatingPanelSize` |  | 尺寸下限，默认 160×120。 |
 | `maxSize` | `FloatingPanelSize` |  | 尺寸上限，不给即不封顶。与 minSize 冲突时以 minSize 为准。 |
-| `stage` | `FloatingPanelStage` |  | 形态。给定即受控。 |
-| `defaultStage` | `FloatingPanelStage` |  |  |
+| `windowState` | `FloatingPanelWindowState` |  | 形态。给定即受控。 |
+| `defaultWindowState` | `FloatingPanelWindowState` |  |  |
 | `draggable` | `boolean` |  | 允不允许搬动面板，默认 true；铺满形态下恒不可搬。 |
 | `resizable` | `boolean` |  | 允不允许改尺寸，默认 true；只有常规形态下才改得动。 |
 | `disabled` | `boolean` |  | 禁用：搬不动、改不了尺寸、切不了形态；开合与关闭不受影响。 |
 | `translations` | `Partial<FloatingPanelTranslations>` |  |  |
 | `onOpenChange` | `(details: FloatingPanelOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 |
 | `onPositionChange` | `(details: FloatingPanelPositionChangeDetails) => void` |  | 位置变化意图回调；拖动过程中会连续发很多次。 |
-| `onSizeChange` | `(details: FloatingPanelSizeChangeDetails) => void` |  | 尺寸变化意图回调；改尺过程中会连续发很多次。 |
-| `onStageChange` | `(details: FloatingPanelStageChangeDetails) => void` |  |  |
+| `onDimensionsChange` | `(details: FloatingPanelDimensionsChangeDetails) => void` |  | 尺寸变化意图回调；改尺过程中会连续发很多次。 |
+| `onWindowStateChange` | `(details: FloatingPanelWindowStateChangeDetails) => void` |  |  |
 
 ## 事件
 
@@ -108,8 +108,8 @@ open 与 position 都交给外面握着：面板只报意图，值写回来才�
 | --- | --- | --- |
 | `open-change` | `FloatingPanelOpenChangeDetails` | 展开态变化；detail 为 `{ open: boolean }` |
 | `position-change` | `FloatingPanelPositionChangeDetails` | 落点变化（拖动途中会连发）；detail 为 `{ position: { x, y } }` |
-| `size-change` | `FloatingPanelSizeChangeDetails` | 尺寸变化（改尺途中会连发）；detail 为 `{ size: { width, height } }` |
-| `stage-change` | `FloatingPanelStageChangeDetails` | 形态变化；detail 为 `{ stage: 'default' \| 'minimized' \| 'maximized' }` |
+| `dimensions-change` | `FloatingPanelDimensionsChangeDetails` | 尺寸变化（改尺途中会连发）；detail 为 `{ dimensions: { width, height } }` |
+| `window-state-change` | `FloatingPanelWindowStateChangeDetails` | 形态变化；detail 为 `{ windowState: 'default' \| 'minimized' \| 'maximized' }` |
 
 ## 插槽
 
@@ -127,13 +127,13 @@ open 与 position 都交给外面握着：面板只报意图，值写回来才�
 | --- | --- |
 | `trigger` | 'open' \| 'closed' |
 | `positioner` | 'open' \| 'closed' |
-| `stage-trigger` | 'on' \| 'off' |
+| `window-state-trigger` | 'on' \| 'off' |
 
 状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`closed` · `open` · `open.dragging` · `open.idle` · `open.resizing`
 
-**事件**：`OPEN` · `CLOSE` · `TOGGLE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `POSITION.SET` · `POSITION.NUDGE` · `SIZE.SET` · `SIZE.NUDGE` · `STAGE.SET` · `DRAG.START` · `RESIZE.START` · `DRAG.MOVE` · `DRAG.END`
+**事件**：`OPEN` · `CLOSE` · `TOGGLE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `POSITION.SET` · `POSITION.NUDGE` · `DIMENSIONS.SET` · `DIMENSIONS.NUDGE` · `WINDOW_STATE.SET` · `DRAG.START` · `RESIZE.START` · `DRAG.MOVE` · `DRAG.END`
 
 **判据**：`canDrag` · `canInteract` · `canResize` · `isOpenControlled`
 
@@ -144,9 +144,9 @@ open 与 position 都交给外面握着：面板只报意图，值写回来才�
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `open` | `boolean` |  |
-| `stage` | `FloatingPanelStage` |  |
+| `windowState` | `FloatingPanelWindowState` |  |
 | `position` | `FloatingPanelPosition` |  |
-| `size` | `FloatingPanelSize` |  |
+| `dimensions` | `FloatingPanelSize` |  |
 | `dragging` | `boolean` | 正在被指针搬动。 |
 | `resizing` | `boolean` | 正在被指针改尺。 |
 | `disabled` | `boolean` |  |
@@ -154,8 +154,8 @@ open 与 position 都交给外面握着：面板只报意图，值写回来才�
 | `canResize` | `boolean` | 眼下改不改得了尺寸：作者允许、未禁用、且是常规形态。 |
 | `setOpen` | `(next: boolean) => void` |  |
 | `setPosition` | `(next: FloatingPanelPosition) => void` |  |
-| `setSize` | `(next: FloatingPanelSize) => void` | 尺寸会被夹进 minSize / maxSize 之后才落地。 |
-| `setStage` | `(next: FloatingPanelStage) => void` |  |
+| `setDimensions` | `(next: FloatingPanelSize) => void` | 尺寸会被夹进 minSize / maxSize 之后才落地。 |
+| `setWindowState` | `(next: FloatingPanelWindowState) => void` |  |
 | `getRootProps` | `() => T['element']` |  |
 | `getTriggerProps` | `() => T['button']` |  |
 | `getPositionerProps` | `() => T['element']` |  |
@@ -164,7 +164,7 @@ open 与 position 都交给外面握着：面板只报意图，值写回来才�
 | `getTitleProps` | `() => T['element']` |  |
 | `getDragTriggerProps` | `() => T['button']` |  |
 | `getResizeTriggerProps` | `(props: FloatingPanelResizeTriggerProps) => T['element']` | 把手是 role=separator 的元素而不是按钮：方向键推边，激活键在这里没有语义。 |
-| `getStageTriggerProps` | `(props: FloatingPanelStageTriggerProps) => T['button']` |  |
+| `getWindowStateTriggerProps` | `(props: FloatingPanelWindowStateTriggerProps) => T['button']` |  |
 | `getCloseTriggerProps` | `() => T['button']` |  |
 | `getBodyProps` | `() => T['element']` |  |
 
@@ -201,12 +201,12 @@ open 与 position 都交给外面握着：面板只报意图，值写回来才�
 | `resize-trigger` | `aria-orientation` | 'vertical' \| 'horizontal' |
 | `resize-trigger` | `aria-valuemax` | String(Math.round(valueMax)) \| undefined |
 | `resize-trigger` | `aria-valuemin` | String(Math.round(horizontal ? minSize.width : minSiz… |
-| `resize-trigger` | `aria-valuenow` | String(Math.round(horizontal ? size.width : size.heig… |
-| `resize-trigger` | `aria-valuetext` | label.resizeValueText(size) |
+| `resize-trigger` | `aria-valuenow` | String(Math.round(horizontal ? dimensions.width : dim… |
+| `resize-trigger` | `aria-valuetext` | label.resizeValueText(dimensions) |
 | `resize-trigger` | `role` | 'separator' |
-| `stage-trigger` | `aria-disabled` | 'true' \| 'false' |
-| `stage-trigger` | `aria-label` | label.stageTrigger(item.stage) |
-| `stage-trigger` | `aria-pressed` | 'true' \| 'false' |
+| `window-state-trigger` | `aria-disabled` | 'true' \| 'false' |
+| `window-state-trigger` | `aria-label` | label.windowStateTrigger(item.windowState) |
+| `window-state-trigger` | `aria-pressed` | 'true' \| 'false' |
 | `close-trigger` | `aria-label` | label.close |
 
 - 面板是 `role="dialog"` 且 `aria-modal="false"`：它不夺走焦点，页面其余部分照常可达。
@@ -229,19 +229,19 @@ open 与 position 都交给外面握着：面板只报意图，值写回来才�
 | --- | --- | --- |
 | `trigger` | `data-state` | 'open' \| 'closed' |
 | `positioner` | `data-positioned` | '' |
-| `positioner` | `data-stage` | context.get('stage') |
 | `positioner` | `data-state` | 'open' \| 'closed' |
+| `positioner` | `data-window-state` | context.get('windowState') |
 | `header` | `data-dragging` | ''（条件成立时才出现） |
-| `header` | `data-stage` | context.get('stage') |
+| `header` | `data-window-state` | context.get('windowState') |
 | `drag-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `drag-trigger` | `data-dragging` | ''（条件成立时才出现） |
 | `resize-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `resize-trigger` | `data-edge` | item.edge |
 | `resize-trigger` | `data-resizing` | ''（条件成立时才出现） |
-| `stage-trigger` | `data-disabled` | ''（条件成立时才出现） |
-| `stage-trigger` | `data-state` | 'on' \| 'off' |
-| `stage-trigger` | `data-target-stage` | item.stage |
-| `body` | `data-stage` | context.get('stage') |
+| `window-state-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `window-state-trigger` | `data-state` | 'on' \| 'off' |
+| `window-state-trigger` | `data-target-window-state` | item.windowState |
+| `body` | `data-window-state` | context.get('windowState') |
 
 ## CSS 变量
 

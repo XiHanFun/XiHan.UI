@@ -185,8 +185,8 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 | `defaultSort` | `TableSortDescriptor[]` |  |  |
 | `selection` | `TableSelection` |  | 选中集合。给定即受控，语义同上。 |
 | `defaultSelection` | `TableSelection` |  |  |
-| `expanded` | `string[]` |  | 展开集合。给定即受控，语义同上。 |
-| `defaultExpanded` | `string[]` |  |  |
+| `expandedValue` | `string[]` |  | 展开集合。给定即受控，语义同上。 |
+| `defaultExpandedValue` | `string[]` |  |  |
 | `selectionMode` | `TableSelectionMode` |  | 默认 none：不声明则没有选择机制，行也不报 aria-selected。 |
 | `prefixColumns` | `TableColumnKind[]` |  | 要哪几列前缀列，按给定顺序插在最前面，默认一列都不插。 它们由库插入并**占住列号**——不占的话右侧所有列的 aria-colindex 会整体串位， 而这正是使用者手工往 columns 里塞假列的原因。作者照 `api.columns` 渲染即可， 每一项都自报 `kind`。 |
 | `columnPreference` | `TableColumnPreference` |  | 列偏好。给定即受控：内部不自改，写只发 onColumnPreferenceChange。 持久化归使用者——库只负责把它算进生效列。 |
@@ -210,7 +210,7 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 | `onColumnPreferenceChange` | `(details: TableColumnPreferenceChangeDetails) => void` |  |  |
 | `onSortChange` | `(details: TableSortChangeDetails) => void` |  |  |
 | `onSelectionChange` | `(details: TableSelectionChangeDetails) => void` |  |  |
-| `onExpandedChange` | `(details: TableExpandedChangeDetails) => void` |  |  |
+| `onExpandedValueChange` | `(details: TableExpandedValueChangeDetails) => void` |  |  |
 
 ## 事件
 
@@ -221,7 +221,7 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 | `sort-change` | `TableSortChangeDetails` | 排序链变化；detail 为 `{ value: { id, direction }[] }` |
 | `column-preference-change` | `` | 列偏好变化；detail 为 `{ value: TableColumnPreference }` |
 | `selection-change` | `TableSelectionChangeDetails` | 选中集合变化；detail 为 `{ value: string[] \| 'all' }` |
-| `expanded-change` | `TableExpandedChangeDetails` | 展开集合变化；detail 为 `{ value: string[] }` |
+| `expanded-value-change` | `TableExpandedValueChangeDetails` | 展开集合变化；detail 为 `{ value: string[] }` |
 | `row-move` | `TableRowMoveDetails` | 行换了位置；detail 为 `{ id, parent, index, ids }`，parent 为 null 即根层，index 是在那一层的落位（已算过先摘后插），ids 是重排好的整份行序 |
 
 ## 插槽

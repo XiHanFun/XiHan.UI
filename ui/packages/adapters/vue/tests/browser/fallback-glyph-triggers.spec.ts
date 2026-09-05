@@ -11,8 +11,8 @@ import {
   XhFloatingPanelHeader,
   XhFloatingPanelPositioner,
   XhFloatingPanelRoot,
-  XhFloatingPanelStageTrigger,
   XhFloatingPanelTitle,
+  XhFloatingPanelWindowStateTrigger,
   XhLogContent,
   XhLogLine,
   XhLogRoot,
@@ -127,15 +127,15 @@ describe('形态钮按它切到哪一档换字形', () => {
       h(XhFloatingPanelPositioner, null, () => h(XhFloatingPanelContent, null, () => [
         h(XhFloatingPanelHeader, null, () => [
           h(XhFloatingPanelTitle, null, () => '播放器'),
-          h(XhFloatingPanelStageTrigger, { stage: 'minimized' }),
-          h(XhFloatingPanelStageTrigger, { stage: 'maximized' }),
+          h(XhFloatingPanelWindowStateTrigger, { windowState: 'minimized' }),
+          h(XhFloatingPanelWindowStateTrigger, { windowState: 'maximized' }),
         ]),
       ])),
     ]))
   }
 
-  function stageMasks(): string[] {
-    return [...document.querySelectorAll<HTMLElement>('[data-scope="floating-panel"][data-part="stage-trigger"]')]
+  function windowStateMasks(): string[] {
+    return [...document.querySelectorAll<HTMLElement>('[data-scope="floating-panel"][data-part="window-state-trigger"]')]
       .map(el => maskOf(el))
   }
 
@@ -143,7 +143,7 @@ describe('形态钮按它切到哪一档换字形', () => {
     mountPanel()
     await nextTick()
     await nextTick()
-    const masks = stageMasks()
+    const masks = windowStateMasks()
 
     expect(masks).toHaveLength(2)
     for (const mask of masks)
@@ -152,19 +152,19 @@ describe('形态钮按它切到哪一档换字形', () => {
     expect(masks[0]).not.toBe(masks[1])
   })
 
-  it('字形只随 data-target-stage 走，不随按下态翻面', async () => {
+  it('字形只随 data-target-window-state 走，不随按下态翻面', async () => {
     mountPanel()
     await nextTick()
     await nextTick()
-    const before = stageMasks()
+    const before = windowStateMasks()
 
-    const maximize = document.querySelector<HTMLElement>('[data-part="stage-trigger"][data-target-stage="maximized"]')!
+    const maximize = document.querySelector<HTMLElement>('[data-part="window-state-trigger"][data-target-window-state="maximized"]')!
     maximize.click()
     await nextTick()
     await nextTick()
 
     expect(maximize.dataset.state).toBe('on')
     // 可访问名由连接层按 target 定死（按下的仍念「铺满面板」），字形跟着按下态改就与名字对不上
-    expect(stageMasks()).toEqual(before)
+    expect(windowStateMasks()).toEqual(before)
   })
 })

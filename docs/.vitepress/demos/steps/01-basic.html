@@ -1,6 +1,6 @@
-<!-- 基础用法 | 不传 step 即为非受控；方向键只搬焦点，按 Enter 或空格才切步，进退方法由 root 的插槽交出来 -->
+<!-- 基础用法 | 不传 value 即为非受控；方向键只搬焦点，按 Enter 或空格才切步，进退方法由 root 的插槽交出来 -->
 <div style="display: flex; flex-direction: column; gap: 12px; inline-size: 100%">
-  <!-- 不写 step：步序住在组件里，宿主只跟着它回显 -->
+  <!-- 不写 value：步序住在组件里，宿主只跟着它回显 -->
   <xh-steps id="steps-basic" count="3">
     <div data-xh-part="root">
       <div data-xh-part="list">
@@ -56,7 +56,7 @@
   const triggers = [...steps.querySelectorAll('[data-xh-part="trigger"]')];
   const indicators = [...steps.querySelectorAll('[data-xh-part="indicator"]')];
 
-  // 步序不在这里持有，只从 step-change 抄一份用来画圆点与开合按钮
+  // 步序不在这里持有，只从 value-change 抄一份用来画圆点与开合按钮
   let step = 0;
 
   function paint(current) {
@@ -73,6 +73,6 @@
   prev.addEventListener("click", () => triggers[step - 1]?.click());
   next.addEventListener("click", () => triggers[step + 1]?.click());
 
-  steps.addEventListener("step-change", (event) => paint(event.detail.step));
+  steps.addEventListener("value-change", (event) => paint(event.detail.value));
   paint(0);
 </script>

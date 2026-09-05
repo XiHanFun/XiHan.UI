@@ -1,4 +1,4 @@
-import type { NumberAnimationApi, NumberAnimationEasing, NumberAnimationFinishDetails, NumberAnimationLive, NumberAnimationSchema } from '@xihan-ui/headless'
+import type { NumberAnimationApi, NumberAnimationCompleteDetails, NumberAnimationEasing, NumberAnimationLive, NumberAnimationSchema } from '@xihan-ui/headless'
 import type { Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
@@ -35,16 +35,16 @@ export const XhNumberAnimation = defineComponent({
     live: { type: String as PropType<NumberAnimationLive>, default: undefined },
   },
   emits: {
-    finish: (_details: PayloadOf<NumberAnimationProps, 'onFinish'>) => true,
+    complete: (_details: PayloadOf<NumberAnimationProps, 'onComplete'>) => true,
   },
   slots: Object as SlotsType<{
     default?: (props: NumberAnimationSlotProps) => VNode[]
   }>,
   setup(props, { slots, emit }) {
-    const notify: NumberAnimationProps['onFinish'] = (details: NumberAnimationFinishDetails) => {
-      emit('finish', details)
+    const notify: NumberAnimationProps['onComplete'] = (details: NumberAnimationCompleteDetails) => {
+      emit('complete', details)
     }
-    const service = useMachine(numberAnimationMachine, () => ({ ...props, onFinish: notify }))
+    const service = useMachine(numberAnimationMachine, () => ({ ...props, onComplete: notify }))
     const api = computed(() => connectNumberAnimation(service, vueNormalize))
 
     return () => {

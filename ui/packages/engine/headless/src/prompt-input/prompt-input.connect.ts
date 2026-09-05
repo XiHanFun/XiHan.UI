@@ -15,7 +15,7 @@ export function connectPromptInput<T extends PropTypes>(
   const value = context.get('value')
   const isComposing = context.get('isComposing')
   const disabled = state.matches('disabled')
-  const busy = prop('busy') === true
+  const loading = prop('loading') === true
   const submitKey = prop('submitKey') ?? 'enter'
   const allowEmptySubmit = prop('allowEmptySubmit') === true
   const translations = prop('translations')
@@ -24,13 +24,13 @@ export function connectPromptInput<T extends PropTypes>(
    * 比机器守卫多一条「非禁用」：守卫管事件放不放行，这一份管按钮长什么样。
    * 两处必须一起改，否则会出现「按钮亮着但按不动」。
    */
-  const canSubmit = !disabled && !busy && !isComposing && (allowEmptySubmit || value.trim() !== '')
+  const canSubmit = !disabled && !loading && !isComposing && (allowEmptySubmit || value.trim() !== '')
 
   return {
     value,
     isComposing,
     canSubmit,
-    busy,
+    loading,
     disabled,
     setValue: next => send({ type: 'VALUE.SET', value: next }),
     submit: () => send({ type: 'SUBMIT' }),
@@ -41,7 +41,7 @@ export function connectPromptInput<T extends PropTypes>(
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'data-disabled': dataAttr(disabled),
-      'data-loading': dataAttr(busy),
+      'data-loading': dataAttr(loading),
       'data-variant': prop('variant'),
       'data-tone': prop('tone'),
       'data-size': prop('size'),
@@ -101,13 +101,13 @@ export function connectPromptInput<T extends PropTypes>(
     getSubmitTriggerProps: () => normalize.button({
       ...parts['submit-trigger'].attrs,
       'type': 'button',
-      // 同一颗按钮按 busy 在发送与停止两种身份间切换
-      'data-mode': busy ? 'stop' : 'send',
-      'aria-label': busy ? (translations?.stop ?? 'Stop generating') : (translations?.send ?? 'Send'),
+      // 同一颗按钮按 loading 在发送与停止两种身份间切换
+      'data-mode': loading ? 'stop' : 'send',
+      'aria-label': loading ? (translations?.stop ?? 'Stop generating') : (translations?.send ?? 'Send'),
       // 生成期间恒可用，此刻按钮的语义是停止
-      'disabled': (!busy && !canSubmit) || undefined,
+      'disabled': (!loading && !canSubmit) || undefined,
       'onClick': () => {
-        send(busy ? { type: 'STOP' } : { type: 'SUBMIT' })
+        send(loading ? { type: 'STOP' } : { type: 'SUBMIT' })
       },
     }),
   }

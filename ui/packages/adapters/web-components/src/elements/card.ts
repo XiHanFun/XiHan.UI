@@ -14,7 +14,7 @@ import { XhElement } from '../element-base'
  * @attr {'outline'|'subtle'|'elevated'|'ghost'} variant - 形态，决定描边、底色与投影怎么用
  * @attr {'sm'|'md'|'lg'} size - 尺寸，决定各段的内边距与标题字号
  * @attr {boolean} hoverable - 指针悬停时抬起
- * @attr {boolean} segmented - 在头、身、脚之间画分隔线
+ * @attr {boolean} split - 在头、身、脚之间画分隔线
  * @csspart root - 卡片根容器，承载 data-variant / data-size / data-hoverable / data-split
  * @csspart media - 封面位，通常放图片，压在头部之上
  * @csspart header - 头部，装标题与描述
@@ -31,13 +31,13 @@ export class XhCardElement extends XhElement {
     variant: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
     size: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
     hoverable: { type: Boolean },
-    segmented: { type: Boolean },
+    split: { type: Boolean },
   }
 
   declare variant?: CardVariant
   declare size?: Size
   declare hoverable?: boolean
-  declare segmented?: boolean
+  declare split?: boolean
 
   protected wire(): void {
     // 读响应式 property，不回读 DOM 特性
@@ -45,7 +45,7 @@ export class XhCardElement extends XhElement {
       variant: this.variant,
       size: this.size,
       hoverable: this.hoverable ?? false,
-      segmented: this.segmented ?? false,
+      split: this.split ?? false,
     } satisfies CardProps), wcNormalize)
 
     const put = (name: string, props: Record<string, unknown>): void => {

@@ -189,7 +189,7 @@ describe('truncate 展开', () => {
 
     ;(rig.rootProps().onClick as () => void)()
     await settle()
-    expect(rig.api().expanded).toBe(true)
+    expect(rig.api().open).toBe(true)
     expect(rig.rootProps()['data-state']).toBe('open')
     expect(rig.rootProps()['aria-expanded']).toBe('true')
 
@@ -200,7 +200,7 @@ describe('truncate 展开', () => {
 
     ;(rig.rootProps().onClick as () => void)()
     await settle()
-    expect(rig.api().expanded).toBe(false)
+    expect(rig.api().open).toBe(false)
     expect(rig.api().overflowing).toBe(false)
   })
 
@@ -235,7 +235,7 @@ describe('truncate 展开', () => {
   it('铺开态恒留着收回去的入口：那一档量不出"被裁"', async () => {
     // 铺开着起步时量测整个跳过，overflowing 停在初值 false，
     // 只按它判就会把这颗按钮撤掉，用户再也收不回去
-    const rig = makeRig({ expandable: true, defaultExpanded: true }, { sw: 400, cw: 100, sh: 100, ch: 100 })
+    const rig = makeRig({ expandable: true, defaultOpen: true }, { sw: 400, cw: 100, sh: 100, ch: 100 })
     await settle()
     expect(rig.api().overflowing).toBe(false)
     expect(rig.rootProps().role).toBe('button')
@@ -243,7 +243,7 @@ describe('truncate 展开', () => {
 
     ;(rig.rootProps().onClick as () => void)()
     await settle()
-    expect(rig.api().expanded).toBe(false)
+    expect(rig.api().open).toBe(false)
   })
 
   it('enter / Space 切换并拦掉 Space 的翻页，其它键不管', async () => {
@@ -257,30 +257,30 @@ describe('truncate 展开', () => {
 
     expect(press('Enter')).toBe(true)
     await settle()
-    expect(rig.api().expanded).toBe(true)
+    expect(rig.api().open).toBe(true)
 
     expect(press(' ')).toBe(true)
     await settle()
-    expect(rig.api().expanded).toBe(false)
+    expect(rig.api().open).toBe(false)
 
     expect(press('a')).toBe(false)
     await settle()
-    expect(rig.api().expanded).toBe(false)
+    expect(rig.api().open).toBe(false)
   })
 
-  it('受控 expanded：只发意图不自改，父写回才铺开', async () => {
+  it('受控 open：只发意图不自改，父写回才铺开', async () => {
     const seen: boolean[] = []
-    const rig = makeRig({ expandable: true, expanded: false, onExpandedChange: d => seen.push(d.expanded) })
+    const rig = makeRig({ expandable: true, open: false, onOpenChange: d => seen.push(d.open) })
     await settle()
 
     ;(rig.rootProps().onClick as () => void)()
     await settle()
     expect(seen).toEqual([true])
-    expect(rig.api().expanded).toBe(false)
+    expect(rig.api().open).toBe(false)
 
-    rig.setProps({ expanded: true })
+    rig.setProps({ open: true })
     await settle()
-    expect(rig.api().expanded).toBe(true)
+    expect(rig.api().open).toBe(true)
   })
 })
 

@@ -8,7 +8,10 @@ export const drawerAnatomy = createAnatomy('drawer', [
   'backdrop',
   'positioner',
   'content',
+  'header',
   'title',
   'description',
+  'body',
+  'footer',
   'close-trigger',
 ])

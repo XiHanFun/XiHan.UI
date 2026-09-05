@@ -16,7 +16,7 @@ export interface TreeContext {
 
 export function useTree(
   props: TreeSchema['props'],
-  onExpandedChange?: TreeSchema['props']['onExpandedChange'],
+  onExpandedValueChange?: TreeSchema['props']['onExpandedValueChange'],
   onSelectionChange?: TreeSchema['props']['onSelectionChange'],
   onNodeMove?: TreeSchema['props']['onNodeMove'],
 ): TreeContext {
@@ -25,7 +25,7 @@ export function useTree(
   // 连打检索缓冲存在机器的 refs 里，适配器不必注入 refs
   const service = useMachine(
     treeMachine,
-    () => ({ ...props, onExpandedChange, onSelectionChange, onNodeMove }),
+    () => ({ ...props, onExpandedValueChange, onSelectionChange, onNodeMove }),
     scope,
   )
   const api = computed(() => connectTree(service, vueNormalize))

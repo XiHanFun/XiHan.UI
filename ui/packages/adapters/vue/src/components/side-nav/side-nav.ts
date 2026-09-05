@@ -49,8 +49,8 @@ export const XhSideNavRoot = defineComponent({
   emits: {
     'value-change': (_details: PayloadOf<SideNavProps, 'onValueChange'>) => true,
     'update:value': (_value: PayloadOf<SideNavProps, 'onValueChange'>['value']) => true,
-    'expanded-change': (_details: PayloadOf<SideNavProps, 'onExpandedChange'>) => true,
-    'update:expandedValue': (_value: PayloadOf<SideNavProps, 'onExpandedChange'>['value']) => true,
+    'expanded-value-change': (_details: PayloadOf<SideNavProps, 'onExpandedValueChange'>) => true,
+    'update:expandedValue': (_value: PayloadOf<SideNavProps, 'onExpandedValueChange'>['value']) => true,
   },
   slots: Object as SlotsType<{
     default?: (props: SideNavRootSlotProps) => VNode[]
@@ -61,8 +61,8 @@ export const XhSideNavRoot = defineComponent({
         emit('value-change', details)
         emit('update:value', details.value)
       },
-      onExpandedChange: (details) => {
-        emit('expanded-change', details)
+      onExpandedValueChange: (details) => {
+        emit('expanded-value-change', details)
         emit('update:expandedValue', details.value)
       },
     })

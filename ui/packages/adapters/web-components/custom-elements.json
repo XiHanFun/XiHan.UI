@@ -760,7 +760,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-anchor>` —— 锚点导航行为宿主，激活项由机器的滚动观察器结算，\n目标区块按 link 上的 value 属性（或 targets 清单）里的 id 现查。\n\n作者须写对标签：root 是 `<nav>`，list 是 `<ul>`，item 是 `<li>`，link 是 `<a>`；\nhref 由元素按 value 派生。",
+          "description": "`<xh-anchor>` —— 锚点导航行为宿主，激活项由机器的滚动观察器结算，\n目标区块按 link 上的 value 属性（或 collection 清单）里的 id 现查。\n\n作者须写对标签：root 是 `<nav>`，list 是 `<ul>`，item 是 `<li>`，link 是 `<a>`；\nhref 由元素按 value 派生。",
           "name": "XhAnchorElement",
           "cssParts": [
             {
@@ -868,7 +868,7 @@
             },
             {
               "kind": "field",
-              "name": "targets",
+              "name": "collection",
               "privacy": "public",
               "type": {
                 "text": "readonly string[] | undefined"
@@ -1221,12 +1221,12 @@
             },
             {
               "kind": "field",
-              "name": "busy",
+              "name": "loading",
               "privacy": "public",
               "type": {
                 "text": "boolean | undefined"
               },
-              "attribute": "busy"
+              "attribute": "loading"
             },
             {
               "kind": "field",
@@ -1335,7 +1335,7 @@
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
-              "default": "new MachineController<ApprovalSchema>(this, approvalMachine, () => ({ requestId: this.requestId, status: this.status, defaultStatus: this.defaultStatus, timeoutMs: this.timeoutMs, scopes: this.scopes, grantedScopes: this.grantedScopes, defaultGrantedScopes: this.defaultGrantedScopes, note: this.note, defaultNote: this.defaultNote, busy: this.busy, denyOnEscape: this.denyOnEscape, denyOnUnmount: this.denyOnUnmount, live: this.live, tone: this.tone, size: this.size, translations: this.translations, onDecision: this.notifyDecision, onGrantedScopesChange: this.notifyScopes, onNoteChange: this.notifyNote, }))"
+              "default": "new MachineController<ApprovalSchema>(this, approvalMachine, () => ({ requestId: this.requestId, status: this.status, defaultStatus: this.defaultStatus, timeoutMs: this.timeoutMs, scopes: this.scopes, grantedScopes: this.grantedScopes, defaultGrantedScopes: this.defaultGrantedScopes, note: this.note, defaultNote: this.defaultNote, loading: this.loading, denyOnEscape: this.denyOnEscape, denyOnUnmount: this.denyOnUnmount, live: this.live, tone: this.tone, size: this.size, translations: this.translations, onDecision: this.notifyDecision, onGrantedScopesChange: this.notifyScopes, onNoteChange: this.notifyNote, }))"
             },
             {
               "kind": "method",
@@ -1444,8 +1444,8 @@
                 "text": "boolean | undefined"
               },
               "description": "判定在途：只挡重复批准，不挡拒绝",
-              "name": "busy",
-              "fieldName": "busy"
+              "name": "loading",
+              "fieldName": "loading"
             },
             {
               "type": {
@@ -2145,9 +2145,9 @@
           "events": [
             {
               "description": "露面与否变化；detail 为 `{ visible: boolean }`",
-              "name": "visible-change",
+              "name": "visibility-change",
               "type": {
-                "text": "BackTopVisibleChangeDetails"
+                "text": "BackTopVisibilityChangeDetails"
               }
             }
           ],
@@ -3754,12 +3754,12 @@
             },
             {
               "kind": "field",
-              "name": "segmented",
+              "name": "split",
               "privacy": "public",
               "type": {
                 "text": "boolean | undefined"
               },
-              "attribute": "segmented"
+              "attribute": "split"
             },
             {
               "kind": "method",
@@ -3802,8 +3802,8 @@
                 "text": "boolean | undefined"
               },
               "description": "在头、身、脚之间画分隔线",
-              "name": "segmented",
-              "fieldName": "segmented"
+              "name": "split",
+              "fieldName": "split"
             }
           ],
           "superclass": {
@@ -11348,12 +11348,24 @@
               "name": "content"
             },
             {
+              "description": "面板头：标题与说明所在的那一段，不跟着正文滚",
+              "name": "header"
+            },
+            {
               "description": "标题（aria-labelledby 目标）",
               "name": "title"
             },
             {
               "description": "描述（aria-describedby 目标）",
               "name": "description"
+            },
+            {
+              "description": "正文：面板里唯一会滚的一段",
+              "name": "body"
+            },
+            {
+              "description": "面板尾：动作按钮所在的那一段，不跟着正文滚",
+              "name": "footer"
             },
             {
               "description": "关闭按钮",
@@ -11710,7 +11722,19 @@
               "name": "--xh-dialog-fg"
             },
             {
+              "name": "--xh-dialog-footer-gap"
+            },
+            {
+              "name": "--xh-dialog-footer-pt"
+            },
+            {
               "name": "--xh-dialog-gap"
+            },
+            {
+              "name": "--xh-dialog-header-gap"
+            },
+            {
+              "name": "--xh-dialog-header-pb"
             },
             {
               "name": "--xh-dialog-icon-size"
@@ -11890,7 +11914,7 @@
             },
             {
               "kind": "field",
-              "name": "expanded",
+              "name": "expandedValue",
               "privacy": "public",
               "type": {
                 "text": "readonly string[] | undefined"
@@ -11898,7 +11922,7 @@
             },
             {
               "kind": "field",
-              "name": "defaultExpanded",
+              "name": "defaultExpandedValue",
               "privacy": "public",
               "type": {
                 "text": "readonly string[] | undefined"
@@ -11923,7 +11947,7 @@
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
-              "default": "new MachineController<DiffViewSchema>(this, diffViewMachine, () => ({ model: this.model, view: this.view, contextLines: this.contextLines, wrap: this.wrap, expanded: this.expanded, defaultExpanded: this.defaultExpanded, size: this.size, translations: this.translations, onExpandedChange: this.notify, }))"
+              "default": "new MachineController<DiffViewSchema>(this, diffViewMachine, () => ({ model: this.model, view: this.view, contextLines: this.contextLines, wrap: this.wrap, expandedValue: this.expandedValue, defaultExpandedValue: this.defaultExpandedValue, size: this.size, translations: this.translations, onExpandedValueChange: this.notify, }))"
             },
             {
               "kind": "field",
@@ -11997,10 +12021,10 @@
           ],
           "events": [
             {
-              "description": "展开集合变化；detail 为 `{ expanded: string[] }`",
-              "name": "expanded-change",
+              "description": "展开集合变化；detail 为 `{ value: string[] }`",
+              "name": "expanded-value-change",
               "type": {
-                "text": "DiffViewExpandedChangeDetails"
+                "text": "DiffViewExpandedValueChangeDetails"
               }
             }
           ],
@@ -12419,12 +12443,24 @@
               "name": "content"
             },
             {
+              "description": "面板头：标题与说明所在的那一段，不跟着正文滚",
+              "name": "header"
+            },
+            {
               "description": "标题（aria-labelledby 目标）",
               "name": "title"
             },
             {
               "description": "描述（aria-describedby 目标）",
               "name": "description"
+            },
+            {
+              "description": "正文：面板里唯一会滚的一段",
+              "name": "body"
+            },
+            {
+              "description": "面板尾：动作按钮所在的那一段，不跟着正文滚",
+              "name": "footer"
             },
             {
               "description": "关闭按钮",
@@ -12814,7 +12850,19 @@
               "name": "--xh-drawer-fg"
             },
             {
+              "name": "--xh-drawer-footer-gap"
+            },
+            {
+              "name": "--xh-drawer-footer-pt"
+            },
+            {
               "name": "--xh-drawer-gap"
+            },
+            {
+              "name": "--xh-drawer-header-gap"
+            },
+            {
+              "name": "--xh-drawer-header-pb"
             },
             {
               "name": "--xh-drawer-icon-size"
@@ -15677,7 +15725,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-floating-panel>` —— Light-DOM 行为宿主：作者写 root / positioner / content 等角色节点，\n元素跑 floating-panel 机器并把 connect 产出打上去。\n\n面板的落位与尺寸由元素每帧写进 positioner 的内联样式（position/left/top/width/height），\n作者的样式表不要再碰这五个属性。收起态用内联 display 收住 positioner，正文收拢时同样收住。\n\n改尺把手要在节点上写明守哪条边（`edge=\"se\"`），形态按钮要写明切到哪个形态（`stage=\"minimized\"`），\n与 Vue 侧的 `:edge` / `:stage` 是同一份声明。\n\n位置与尺寸的属性形式是逗号分隔的一对数（`default-position=\"24,24\"`、`default-size=\"360,240\"`）；\n也可以直接喂 property（`el.position = { x: 24, y: 24 }`）。",
+          "description": "`<xh-floating-panel>` —— Light-DOM 行为宿主：作者写 root / positioner / content 等角色节点，\n元素跑 floating-panel 机器并把 connect 产出打上去。\n\n面板的落位与尺寸由元素每帧写进 positioner 的内联样式（position/left/top/width/height），\n作者的样式表不要再碰这五个属性。收起态用内联 display 收住 positioner，正文收拢时同样收住。\n\n改尺把手要在节点上写明守哪条边（`edge=\"se\"`），形态按钮要写明切到哪个形态（`window-state=\"minimized\"`），\n与 Vue 侧的 `:edge` / `:window-state` 是同一份声明。\n\n位置与尺寸的属性形式是逗号分隔的一对数（`default-position=\"24,24\"`、`default-dimensions=\"360,240\"`）；\n也可以直接喂 property（`el.position = { x: 24, y: 24 }`）。",
           "name": "XhFloatingPanelElement",
           "cssParts": [
             {
@@ -15713,8 +15761,8 @@
               "name": "resize-trigger"
             },
             {
-              "description": "形态按钮，须是原生 `<button>` 并自带 stage 属性",
-              "name": "stage-trigger"
+              "description": "形态按钮，须是原生 `<button>` 并自带 window-state 属性",
+              "name": "window-state-trigger"
             },
             {
               "description": "关闭按钮",
@@ -15773,21 +15821,21 @@
             },
             {
               "kind": "field",
-              "name": "size",
+              "name": "dimensions",
               "privacy": "public",
               "type": {
                 "text": "FloatingPanelSize | undefined"
               },
-              "attribute": "size"
+              "attribute": "dimensions"
             },
             {
               "kind": "field",
-              "name": "defaultSize",
+              "name": "defaultDimensions",
               "privacy": "public",
               "type": {
                 "text": "FloatingPanelSize | undefined"
               },
-              "attribute": "default-size"
+              "attribute": "default-dimensions"
             },
             {
               "kind": "field",
@@ -15809,21 +15857,21 @@
             },
             {
               "kind": "field",
-              "name": "stage",
+              "name": "windowState",
               "privacy": "public",
               "type": {
-                "text": "FloatingPanelStage | undefined"
+                "text": "FloatingPanelWindowState | undefined"
               },
-              "attribute": "stage"
+              "attribute": "window-state"
             },
             {
               "kind": "field",
-              "name": "defaultStage",
+              "name": "defaultWindowState",
               "privacy": "public",
               "type": {
-                "text": "FloatingPanelStage | undefined"
+                "text": "FloatingPanelWindowState | undefined"
               },
-              "attribute": "default-stage"
+              "attribute": "default-window-state"
             },
             {
               "kind": "field",
@@ -15908,13 +15956,13 @@
             },
             {
               "kind": "field",
-              "name": "notifySize",
+              "name": "notifyDimensions",
               "privacy": "private",
               "readonly": true
             },
             {
               "kind": "field",
-              "name": "notifyStage",
+              "name": "notifyWindowState",
               "privacy": "private",
               "readonly": true
             },
@@ -15984,11 +16032,11 @@
             },
             {
               "kind": "method",
-              "name": "stageOf",
+              "name": "windowStateOf",
               "privacy": "private",
               "return": {
                 "type": {
-                  "text": "FloatingPanelStage"
+                  "text": "FloatingPanelWindowState"
                 }
               },
               "parameters": [
@@ -16028,17 +16076,17 @@
               }
             },
             {
-              "description": "尺寸变化（改尺途中会连发）；detail 为 `{ size: { width, height } }`",
-              "name": "size-change",
+              "description": "尺寸变化（改尺途中会连发）；detail 为 `{ dimensions: { width, height } }`",
+              "name": "dimensions-change",
               "type": {
-                "text": "FloatingPanelSizeChangeDetails"
+                "text": "FloatingPanelDimensionsChangeDetails"
               }
             },
             {
-              "description": "形态变化；detail 为 `{ stage: 'default' | 'minimized' | 'maximized' }`",
-              "name": "stage-change",
+              "description": "形态变化；detail 为 `{ windowState: 'default' | 'minimized' | 'maximized' }`",
+              "name": "window-state-change",
               "type": {
-                "text": "FloatingPanelStageChangeDetails"
+                "text": "FloatingPanelWindowStateChangeDetails"
               }
             }
           ],
@@ -16080,16 +16128,16 @@
                 "text": "FloatingPanelSize | undefined"
               },
               "description": "受控尺寸，写成 \"宽,高\"（px）",
-              "name": "size",
-              "fieldName": "size"
+              "name": "dimensions",
+              "fieldName": "dimensions"
             },
             {
               "type": {
                 "text": "FloatingPanelSize | undefined"
               },
               "description": "非受控初始尺寸，默认 \"360,240\"",
-              "name": "default-size",
-              "fieldName": "defaultSize"
+              "name": "default-dimensions",
+              "fieldName": "defaultDimensions"
             },
             {
               "type": {
@@ -16109,19 +16157,19 @@
             },
             {
               "type": {
-                "text": "FloatingPanelStage | undefined"
+                "text": "FloatingPanelWindowState | undefined"
               },
               "description": "受控形态",
-              "name": "stage",
-              "fieldName": "stage"
+              "name": "window-state",
+              "fieldName": "windowState"
             },
             {
               "type": {
-                "text": "FloatingPanelStage | undefined"
+                "text": "FloatingPanelWindowState | undefined"
               },
               "description": "非受控初始形态，默认 default",
-              "name": "default-stage",
-              "fieldName": "defaultStage"
+              "name": "default-window-state",
+              "fieldName": "defaultWindowState"
             },
             {
               "type": {
@@ -16992,7 +17040,7 @@
           "name": "XhGridElement",
           "cssParts": [
             {
-              "description": "排布容器，承载 data-cols（及逐档的 data-cols-sm/-md/-lg/-xl）/ data-gap / data-align / data-justify",
+              "description": "排布容器，承载 data-cols（及逐档的 data-cols-sm/-md/-lg/-xl）/ data-gap / data-align / data-justify-items",
               "name": "root"
             },
             {
@@ -17039,12 +17087,12 @@
             },
             {
               "kind": "field",
-              "name": "justify",
+              "name": "justifyItems",
               "privacy": "public",
               "type": {
                 "text": "string | undefined"
               },
-              "attribute": "justify"
+              "attribute": "justify-items"
             },
             {
               "kind": "method",
@@ -17087,8 +17135,8 @@
                 "text": "string | undefined"
               },
               "description": "每一项在自己那格里的行内对齐",
-              "name": "justify",
-              "fieldName": "justify"
+              "name": "justify-items",
+              "fieldName": "justifyItems"
             }
           ],
           "superclass": {
@@ -19546,7 +19594,7 @@
             },
             {
               "kind": "field",
-              "name": "items",
+              "name": "collection",
               "privacy": "public",
               "type": {
                 "text": "ImageViewerItem[] | undefined"
@@ -20642,9 +20690,9 @@
           "events": [
             {
               "description": "展开集合变化；detail 为 `{ value: string[] }`",
-              "name": "expanded-change",
+              "name": "expanded-value-change",
               "type": {
-                "text": "JsonViewerExpandedChangeDetails"
+                "text": "JsonViewerExpandedValueChangeDetails"
               }
             }
           ],
@@ -23021,7 +23069,7 @@
               "type": {
                 "text": "string | string[] | undefined"
               },
-              "attribute": "prefix"
+              "attribute": "trigger-prefix"
             },
             {
               "kind": "field",
@@ -23344,7 +23392,7 @@
                 "text": "string | string[] | undefined"
               },
               "description": "开候选的前缀字符，默认 '@'；多种前缀并存请用 property 传数组",
-              "name": "prefix",
+              "name": "trigger-prefix",
               "fieldName": "triggerPrefix"
             },
             {
@@ -26515,9 +26563,9 @@
           "events": [
             {
               "description": "走到终点；detail 为 `{ value: number }`",
-              "name": "finish",
+              "name": "complete",
               "type": {
-                "text": "NumberAnimationFinishDetails"
+                "text": "NumberAnimationCompleteDetails"
               }
             }
           ],
@@ -26550,7 +26598,7 @@
               "type": {
                 "text": "NumberAnimationEasing | undefined"
               },
-              "description": "缓动，缺省 linear",
+              "description": "缓动：曲线名（linear / standard / easeIn / easeOut / easeInOut …）或 cubic-bezier 串，缺省线性",
               "name": "easing",
               "fieldName": "easing"
             },
@@ -30168,12 +30216,12 @@
             },
             {
               "kind": "field",
-              "name": "busy",
+              "name": "loading",
               "privacy": "public",
               "type": {
                 "text": "boolean | undefined"
               },
-              "attribute": "busy"
+              "attribute": "loading"
             },
             {
               "kind": "field",
@@ -30340,8 +30388,8 @@
                 "text": "boolean | undefined"
               },
               "description": "正在生成：发送按钮原位变停止，提交路径全部挡下",
-              "name": "busy",
-              "fieldName": "busy"
+              "name": "loading",
+              "fieldName": "loading"
             },
             {
               "type": {
@@ -32840,21 +32888,21 @@
             },
             {
               "kind": "field",
-              "name": "size",
+              "name": "dimensions",
               "privacy": "public",
               "type": {
-                "text": "ResizableSize | undefined"
+                "text": "ResizableDimensions | undefined"
               },
-              "attribute": "size"
+              "attribute": "dimensions"
             },
             {
               "kind": "field",
-              "name": "defaultSize",
+              "name": "defaultDimensions",
               "privacy": "public",
               "type": {
-                "text": "ResizableSize | undefined"
+                "text": "ResizableDimensions | undefined"
               },
-              "attribute": "default-size"
+              "attribute": "default-dimensions"
             },
             {
               "kind": "field",
@@ -32981,13 +33029,13 @@
             },
             {
               "kind": "field",
-              "name": "notifySize",
+              "name": "notifyDimensions",
               "privacy": "private",
               "readonly": true
             },
             {
               "kind": "field",
-              "name": "notifySizeEnd",
+              "name": "notifyDimensionsEnd",
               "privacy": "private",
               "readonly": true
             },
@@ -33058,36 +33106,36 @@
           ],
           "events": [
             {
-              "description": "尺寸变化（拖动途中会连发）；detail 为 `{ size }`",
-              "name": "size-change",
+              "description": "尺寸变化（拖动途中会连发）；detail 为 `{ dimensions }`",
+              "name": "dimensions-change",
               "type": {
-                "text": "ResizableSizeChangeDetails"
+                "text": "ResizableDimensionsChangeDetails"
               }
             },
             {
-              "description": "一次调整收尾发一次；detail 为 `{ size, edge }`",
-              "name": "size-change-end",
+              "description": "一次调整收尾发一次；detail 为 `{ dimensions, edge }`",
+              "name": "dimensions-change-end",
               "type": {
-                "text": "ResizableSizeChangeEndDetails"
+                "text": "ResizableDimensionsChangeEndDetails"
               }
             }
           ],
           "attributes": [
             {
               "type": {
-                "text": "ResizableSize | undefined"
+                "text": "ResizableDimensions | undefined"
               },
               "description": "受控尺寸，写成 `宽x高`（如 `320x200`）；缺省该属性即非受控",
-              "name": "size",
-              "fieldName": "size"
+              "name": "dimensions",
+              "fieldName": "dimensions"
             },
             {
               "type": {
-                "text": "ResizableSize | undefined"
+                "text": "ResizableDimensions | undefined"
               },
               "description": "非受控初值，同样写成 `宽x高`",
-              "name": "default-size",
-              "fieldName": "defaultSize"
+              "name": "default-dimensions",
+              "fieldName": "defaultDimensions"
             },
             {
               "type": {
@@ -35842,9 +35890,9 @@
             },
             {
               "description": "展开集合变化；detail 为 `{ value: string[] }`",
-              "name": "expanded-change",
+              "name": "expanded-value-change",
               "type": {
-                "text": "SideNavExpandedChangeDetails"
+                "text": "SideNavExpandedValueChangeDetails"
               }
             }
           ],
@@ -36419,7 +36467,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-skeleton>` —— 骨架屏宿主，无状态机，把 connectSkeleton 产出的属性打到角色节点上。\n\n骨架条自报形状：在 item 节点上写 `variant`。运行期改写这个属性不触发重新接线，\n需作者自行 requestUpdate。",
+          "description": "`<xh-skeleton>` —— 骨架屏宿主，无状态机，把 connectSkeleton 产出的属性打到角色节点上。\n\n骨架条自报形状：在 item 节点上写 `shape`。运行期改写这个属性不触发重新接线，\n需作者自行 requestUpdate。",
           "name": "XhSkeletonElement",
           "cssParts": [
             {
@@ -36452,12 +36500,12 @@
             },
             {
               "kind": "field",
-              "name": "variant",
+              "name": "shape",
               "privacy": "public",
               "type": {
-                "text": "SkeletonVariant | undefined"
+                "text": "SkeletonShape | undefined"
               },
-              "attribute": "variant"
+              "attribute": "shape"
             },
             {
               "kind": "method",
@@ -36481,11 +36529,11 @@
             },
             {
               "type": {
-                "text": "SkeletonVariant | undefined"
+                "text": "SkeletonShape | undefined"
               },
               "description": "容器内骨架条的默认形状",
-              "name": "variant",
-              "fieldName": "variant"
+              "name": "shape",
+              "fieldName": "shape"
             }
           ],
           "superclass": {
@@ -38131,21 +38179,21 @@
             },
             {
               "kind": "field",
-              "name": "step",
+              "name": "value",
               "privacy": "public",
               "type": {
                 "text": "number | undefined"
               },
-              "attribute": "step"
+              "attribute": "value"
             },
             {
               "kind": "field",
-              "name": "defaultStep",
+              "name": "defaultValue",
               "privacy": "public",
               "type": {
                 "text": "number | undefined"
               },
-              "attribute": "default-step"
+              "attribute": "default-value"
             },
             {
               "kind": "field",
@@ -38284,10 +38332,10 @@
           ],
           "events": [
             {
-              "description": "步序变化；detail 为 `{ step: number }`",
-              "name": "step-change",
+              "description": "步序变化；detail 为 `{ value: number }`",
+              "name": "value-change",
               "type": {
-                "text": "StepsStepChangeDetails"
+                "text": "StepsValueChangeDetails"
               }
             }
           ],
@@ -38297,16 +38345,16 @@
                 "text": "number | undefined"
               },
               "description": "受控步序（0 起）；缺省该属性即非受控",
-              "name": "step",
-              "fieldName": "step"
+              "name": "value",
+              "fieldName": "value"
             },
             {
               "type": {
                 "text": "number | undefined"
               },
               "description": "非受控初始步序，默认 0",
-              "name": "default-step",
-              "fieldName": "defaultStep"
+              "name": "default-value",
+              "fieldName": "defaultValue"
             },
             {
               "type": {
@@ -38911,7 +38959,7 @@
               "name": "expand-trigger"
             },
             {
-              "description": "role=row 详情行，须自带 value 属性与它所属的数据行配对，内部须放一个 cell 承载详情；收起时 hidden",
+              "description": "role=row 详情行，须自带 value 属性与它所属的数据行配对，内部须放一个 cell 承载详情；收起时 data-state=closed",
               "name": "expanded-row"
             },
             {
@@ -38983,7 +39031,7 @@
             },
             {
               "kind": "field",
-              "name": "expanded",
+              "name": "expandedValue",
               "privacy": "public",
               "type": {
                 "text": "string[] | undefined"
@@ -38991,7 +39039,7 @@
             },
             {
               "kind": "field",
-              "name": "defaultExpanded",
+              "name": "defaultExpandedValue",
               "privacy": "public",
               "type": {
                 "text": "string[] | undefined"
@@ -39356,9 +39404,9 @@
             },
             {
               "description": "展开集合变化；detail 为 `{ value: string[] }`",
-              "name": "expanded-change",
+              "name": "expanded-value-change",
               "type": {
-                "text": "TableExpandedChangeDetails"
+                "text": "TableExpandedValueChangeDetails"
               }
             },
             {
@@ -41607,52 +41655,10 @@
               "name": "--xh-text-field-input-autofill-fg"
             },
             {
-              "name": "--xh-text-field-input-bg"
-            },
-            {
-              "name": "--xh-text-field-input-bg-disabled"
-            },
-            {
-              "name": "--xh-text-field-input-bg-hover"
-            },
-            {
-              "name": "--xh-text-field-input-bg-readonly"
-            },
-            {
-              "name": "--xh-text-field-input-border"
-            },
-            {
-              "name": "--xh-text-field-input-border-at-max"
-            },
-            {
-              "name": "--xh-text-field-input-border-focus"
-            },
-            {
-              "name": "--xh-text-field-input-border-hover"
-            },
-            {
-              "name": "--xh-text-field-input-border-invalid"
-            },
-            {
               "name": "--xh-text-field-input-fg"
             },
             {
               "name": "--xh-text-field-input-font-size"
-            },
-            {
-              "name": "--xh-text-field-input-h"
-            },
-            {
-              "name": "--xh-text-field-input-min-w"
-            },
-            {
-              "name": "--xh-text-field-input-px"
-            },
-            {
-              "name": "--xh-text-field-input-radius"
-            },
-            {
-              "name": "--xh-text-field-input-shadow"
             },
             {
               "name": "--xh-text-field-label-fg"
@@ -46134,21 +46140,21 @@
             },
             {
               "kind": "field",
-              "name": "step",
+              "name": "value",
               "privacy": "public",
               "type": {
                 "text": "number | undefined"
               },
-              "attribute": "step"
+              "attribute": "value"
             },
             {
               "kind": "field",
-              "name": "defaultStep",
+              "name": "defaultValue",
               "privacy": "public",
               "type": {
                 "text": "number | undefined"
               },
-              "attribute": "default-step"
+              "attribute": "default-value"
             },
             {
               "kind": "field",
@@ -46323,7 +46329,7 @@
             },
             {
               "kind": "field",
-              "name": "notifyStep",
+              "name": "notifyValue",
               "privacy": "private",
               "readonly": true
             },
@@ -46463,10 +46469,10 @@
               }
             },
             {
-              "description": "步序变化；detail 为 `{ step: number }`",
-              "name": "step-change",
+              "description": "步序变化；detail 为 `{ value: number }`",
+              "name": "value-change",
               "type": {
-                "text": "TourStepChangeDetails"
+                "text": "TourValueChangeDetails"
               }
             },
             {
@@ -46506,16 +46512,16 @@
                 "text": "number | undefined"
               },
               "description": "受控步序（0 起）；缺省该属性即非受控",
-              "name": "step",
-              "fieldName": "step"
+              "name": "value",
+              "fieldName": "value"
             },
             {
               "type": {
                 "text": "number | undefined"
               },
               "description": "非受控初始步序，默认 0",
-              "name": "default-step",
-              "fieldName": "defaultStep"
+              "name": "default-value",
+              "fieldName": "defaultValue"
             },
             {
               "type": {
@@ -47770,9 +47776,9 @@
             },
             {
               "description": "展开集合变化；detail 为 `{ value: string[] }`",
-              "name": "expanded-change",
+              "name": "expanded-value-change",
               "type": {
-                "text": "TreeSelectExpandedChangeDetails"
+                "text": "TreeSelectExpandedValueChangeDetails"
               }
             },
             {
@@ -48470,9 +48476,9 @@
           "events": [
             {
               "description": "展开集合变化；detail 为 `{ value: string[] }`",
-              "name": "expanded-change",
+              "name": "expanded-value-change",
               "type": {
-                "text": "TreeExpandedChangeDetails"
+                "text": "TreeExpandedValueChangeDetails"
               }
             },
             {
@@ -48784,21 +48790,21 @@
             },
             {
               "kind": "field",
-              "name": "expanded",
+              "name": "open",
               "privacy": "public",
               "type": {
                 "text": "boolean | undefined"
               },
-              "attribute": "expanded"
+              "attribute": "open"
             },
             {
               "kind": "field",
-              "name": "defaultExpanded",
+              "name": "defaultOpen",
               "privacy": "public",
               "type": {
                 "text": "boolean | undefined"
               },
-              "attribute": "default-expanded"
+              "attribute": "default-open"
             },
             {
               "kind": "field",
@@ -48811,7 +48817,7 @@
             },
             {
               "kind": "field",
-              "name": "notifyExpanded",
+              "name": "notifyOpen",
               "privacy": "private",
               "readonly": true
             },
@@ -48869,10 +48875,10 @@
           ],
           "events": [
             {
-              "description": "展开状态变化；detail 为 `{ expanded: boolean }`",
-              "name": "expanded-change",
+              "description": "展开状态变化；detail 为 `{ open: boolean }`",
+              "name": "open-change",
               "type": {
-                "text": "TruncateExpandedChangeDetails"
+                "text": "TruncateOpenChangeDetails"
               }
             },
             {
@@ -48905,16 +48911,16 @@
                 "text": "boolean | undefined"
               },
               "description": "受控展开；缺省该属性即非受控",
-              "name": "expanded",
-              "fieldName": "expanded"
+              "name": "open",
+              "fieldName": "open"
             },
             {
               "type": {
                 "text": "boolean | undefined"
               },
               "description": "非受控初始为铺开",
-              "name": "default-expanded",
-              "fieldName": "defaultExpanded"
+              "name": "default-open",
+              "fieldName": "defaultOpen"
             },
             {
               "type": {

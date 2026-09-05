@@ -77,7 +77,7 @@ describe('imageViewer 的两端直达', () => {
   const items = [{ src: 'a' }, { src: 'b' }, { src: 'c' }]
 
   it('end 跳到最后一张', () => {
-    const get = imageViewer({ items, defaultOpen: true })
+    const get = imageViewer({ collection: items, defaultOpen: true })
     const { event, wasPrevented } = keyEvent('End')
     ;((get().getContentProps() as Record<string, unknown>).onKeydown as (e: KeyboardEvent) => void)(event)
     expect(get().index).toBe(2)
@@ -85,13 +85,13 @@ describe('imageViewer 的两端直达', () => {
   })
 
   it('home 跳回第一张', () => {
-    const get = imageViewer({ items, defaultOpen: true, defaultIndex: 2 })
+    const get = imageViewer({ collection: items, defaultOpen: true, defaultIndex: 2 })
     ;((get().getContentProps() as Record<string, unknown>).onKeydown as (e: KeyboardEvent) => void)(keyEvent('Home').event)
     expect(get().index).toBe(0)
   })
 
   it('方向键照旧', () => {
-    const get = imageViewer({ items, defaultOpen: true })
+    const get = imageViewer({ collection: items, defaultOpen: true })
     ;((get().getContentProps() as Record<string, unknown>).onKeydown as (e: KeyboardEvent) => void)(keyEvent('ArrowRight').event)
     expect(get().index).toBe(1)
   })

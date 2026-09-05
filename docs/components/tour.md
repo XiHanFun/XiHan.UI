@@ -34,7 +34,7 @@ steps 是唯一事实源，组件只按下标取用；每步的 target 是一个
 
 ### 受控
 
-传了 open 与 step 就由宿主说了算：内部不再自改，只发意图，浮层里的按钮与外面的进度读的是同一份状态
+传了 open 与 value 就由宿主说了算：内部不再自改，只发意图，浮层里的按钮与外面的进度读的是同一份状态
 
 <XhDemo src="tour/03-controlled" />
 
@@ -59,8 +59,8 @@ steps 是唯一事实源，组件只按下标取用；每步的 target 是一个
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `steps` | `TourStep[]` |  | 步骤清单。它同时是步序的上界与读屏"第 m 步，共 n 步"的分母。 |
-| `step` | `number` |  | 当前步序（0 起）。给定即受控：内部不再自改，只发 onStepChange。 |
-| `defaultStep` | `number` |  | 非受控初值，默认 0。 |
+| `value` | `number` |  | 当前步序（0 起）。给定即受控：内部不再自改，只发 onValueChange。 |
+| `defaultValue` | `number` |  | 非受控初值，默认 0。 |
 | `open` | `boolean` |  |  |
 | `defaultOpen` | `boolean` |  |  |
 | `placement` | `Placement` |  | 整份引导的首选放置位，默认 bottom；单步可用自己的 placement 覆盖。 |
@@ -72,7 +72,7 @@ steps 是唯一事实源，组件只按下标取用；每步的 target 是一个
 | `spotlightPadding` | `number` |  | 高亮框在目标四周留出的空白（px），默认 8。 |
 | `autoScroll` | `boolean` |  | 展开与换步时自动把目标滚进视口（nearest，已可见时不动），默认 true。 |
 | `translations` | `Partial<TourTranslations>` |  |  |
-| `onStepChange` | `(details: TourStepChangeDetails) => void` |  | 步序变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
+| `onValueChange` | `(details: TourValueChangeDetails) => void` |  | 步序变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
 | `onOpenChange` | `(details: TourOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 | `onComplete` | `(details: TourCompleteDetails) => void` |  | 末步再按"下一步"：先发它，再按 onOpenChange 关闭。 |
 | `onSkip` | `(details: TourSkipDetails) => void` |  | 用户主动放弃（skip-trigger 或 Escape）：先发它，再按 onOpenChange 关闭。 |
@@ -84,7 +84,7 @@ steps 是唯一事实源，组件只按下标取用；每步的 target 是一个
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `open-change` | `TourOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
-| `step-change` | `TourStepChangeDetails` | 步序变化；detail 为 `{ step: number }` |
+| `value-change` | `TourValueChangeDetails` | 步序变化；detail 为 `{ value: number }` |
 | `complete` | `TourCompleteDetails` | 末步再按下一步；detail 为 `{ step: number }` |
 | `skip` | `TourSkipDetails` | 用户放弃（跳过按钮或 Escape）；detail 为 `{ step: number }` |
 
@@ -115,7 +115,7 @@ steps 是唯一事实源，组件只按下标取用；每步的 target 是一个
 
 **状态**：`open` · `closed`
 
-**事件**：`OPEN` · `CLOSE` · `STEP.SET` · `STEP.PREV` · `STEP.NEXT` · `SKIP` · `GEOMETRY.SYNC` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE`
+**事件**：`OPEN` · `CLOSE` · `VALUE.SET` · `STEP.PREV` · `STEP.NEXT` · `SKIP` · `GEOMETRY.SYNC` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE`
 
 **判据**：`isOpenControlled` · `isLastStep` · `isLastStepOpenControlled`
 
@@ -126,7 +126,7 @@ steps 是唯一事实源，组件只按下标取用；每步的 target 是一个
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `open` | `boolean` |  |
-| `step` | `number` | 当前步序，恒在 [0, count - 1] 内；清单为空时为 0。 |
+| `value` | `number` | 当前步序，恒在 [0, count - 1] 内；清单为空时为 0。 |
 | `count` | `number` |  |
 | `currentStep` | `TourStep \| null` | 当前步的声明；清单为空时为 null。 |
 | `firstStep` | `boolean` | 停在首步：上一步按钮据此禁用。 |
@@ -134,7 +134,7 @@ steps 是唯一事实源，组件只按下标取用；每步的 target 是一个
 | `anchored` | `boolean` | 这一步锚定了页面元素：居中步为 false，此时不画高亮框也不出箭头。 |
 | `progressText` | `string` | "第 m 步，共 n 步"。作者没写 progress-text 的内容时由适配器填上。 |
 | `setOpen` | `(next: boolean) => void` |  |
-| `setStep` | `(next: number) => void` | 直接跳到某一步；越界会被夹回 [0, count - 1]。 |
+| `setValue` | `(next: number) => void` | 直接跳到某一步；越界会被夹回 [0, count - 1]。 |
 | `goToNextStep` | `() => void` | 末步再走一步 = 完成：先发 onComplete，再关闭。 |
 | `goToPrevStep` | `() => void` |  |
 | `skip` | `() => void` | 放弃引导：先发 onSkip，再关闭。 |
@@ -193,7 +193,7 @@ steps 是唯一事实源，组件只按下标取用；每步的 target 是一个
 | --- | --- | --- |
 | `root` | `data-empty` | ''（条件成立时才出现） |
 | `root` | `data-state` | 'open' \| 'closed' |
-| `root` | `data-step` | String(step) |
+| `root` | `data-step` | String(value) |
 | `backdrop` | `data-state` | 'open' \| 'closed' |
 | `spotlight` | `data-state` | 'open' \| 'closed' |
 | `positioner` | `data-placement` | 定位引擎算出的实际落位 |
@@ -202,8 +202,8 @@ steps 是唯一事实源，组件只按下标取用；每步的 target 是一个
 | `positioner` | `data-state` | 'open' \| 'closed' |
 | `content` | `data-placement` | 定位引擎算出的实际落位 |
 | `content` | `data-state` | 'open' \| 'closed' |
-| `content` | `data-step` | String(step) |
-| `progress-text` | `data-step` | String(step) |
+| `content` | `data-step` | String(value) |
+| `progress-text` | `data-step` | String(value) |
 | `prev-trigger` | `data-state` | 'open' \| 'closed' |
 | `next-trigger` | `data-last` | ''（条件成立时才出现） |
 | `next-trigger` | `data-state` | 'open' \| 'closed' |

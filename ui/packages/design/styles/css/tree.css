@@ -302,8 +302,10 @@
     flex: none;
   }
 
-  /* 收起态的唯一开关：display 会盖掉 hidden 属性的 UA 规则，漏了这条整棵子树就收不起来 */
-  [data-scope='tree'][data-part='branch-content'][hidden] {
+  /* 收起态的唯一开关：display 会盖掉 hidden 属性的 UA 规则，漏了这条整棵子树就收不起来。
+     作者写的 hidden 与连接层发的 data-state=closed 都收在这里 */
+  [data-scope='tree'][data-part='branch-content'][hidden],
+  [data-scope='tree'][data-part='branch-content'][data-state='closed'] {
     display: none;
   }
 

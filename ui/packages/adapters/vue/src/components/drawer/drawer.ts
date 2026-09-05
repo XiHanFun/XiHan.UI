@@ -117,6 +117,14 @@ export const XhDrawerContent = defineComponent({
   },
 })
 
+export const XhDrawerHeader = defineComponent({
+  name: 'XhDrawerHeader',
+  setup(_, { slots }) {
+    const ctx = useDrawerContext()
+    return () => h('header', ctx.api.value.getHeaderProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhDrawerTitle = defineComponent({
   name: 'XhDrawerTitle',
   setup(_, { slots }) {
@@ -130,6 +138,22 @@ export const XhDrawerDescription = defineComponent({
   setup(_, { slots }) {
     const ctx = useDrawerContext()
     return () => h('p', ctx.api.value.getDescriptionProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+export const XhDrawerBody = defineComponent({
+  name: 'XhDrawerBody',
+  setup(_, { slots }) {
+    const ctx = useDrawerContext()
+    return () => h('div', ctx.api.value.getBodyProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+export const XhDrawerFooter = defineComponent({
+  name: 'XhDrawerFooter',
+  setup(_, { slots }) {
+    const ctx = useDrawerContext()
+    return () => h('footer', ctx.api.value.getFooterProps() as Record<string, unknown>, slots.default?.())
   },
 })
 

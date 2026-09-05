@@ -9,16 +9,16 @@ const { createMachine } = setup<DiffViewSchema>()
 export const diffViewMachine = createMachine({
   name: 'diff-view',
   context: ({ prop, cell }) => ({
-    expanded: cell<string[]>(() => ({
-      value: prop('expanded') as string[] | undefined,
-      defaultValue: (prop('defaultExpanded') as string[] | undefined) ?? [],
+    expandedValue: cell<string[]>(() => ({
+      value: prop('expandedValue') as string[] | undefined,
+      defaultValue: (prop('defaultExpandedValue') as string[] | undefined) ?? [],
       // 数组要逐项比：不给的话受控父组件写回一份等价数组就会多派一次回调
       isEqual: (a, b) => Array.isArray(b) && a.length === b.length && a.every((v, i) => v === b[i]),
-      onChange: expanded => prop('onExpandedChange')?.({ expanded }),
+      onChange: value => prop('onExpandedValueChange')?.({ value }),
     })),
   }),
   initialState: () => 'idle',
-  watch: ({ track, prop, action }) => track([() => prop('expanded')], () => action(['syncExpanded'])),
+  watch: ({ track, prop, action }) => track([() => prop('expandedValue')], () => action(['syncExpanded'])),
   states: {
     idle: {
       on: {
@@ -37,27 +37,27 @@ export const diffViewMachine = createMachine({
   },
   implementations: {
     guards: {
-      isExpandedControlled: ({ prop }) => prop('expanded') !== undefined,
+      isExpandedControlled: ({ prop }) => prop('expandedValue') !== undefined,
     },
     actions: {
       toggleGap: ({ context, event }) => {
         const e = event.current()
         if (e.type === 'GAP.EXPAND' || e.type === 'GAP.COLLAPSE')
-          context.set('expanded', toggleItemValue(context.get('expanded'), e.id))
+          context.set('expandedValue', toggleItemValue(context.get('expandedValue'), e.id))
       },
       // 受控时不自改状态，只把翻转后的集合报给宿主
       invokeExpandedChange: ({ context, prop, event }) => {
         const e = event.current()
         if (e.type !== 'GAP.EXPAND' && e.type !== 'GAP.COLLAPSE')
           return
-        prop('onExpandedChange')?.({ expanded: toggleItemValue(context.get('expanded'), e.id) })
+        prop('onExpandedValueChange')?.({ value: toggleItemValue(context.get('expandedValue'), e.id) })
       },
-      // 只在受控（expanded 有值）时回写
+      // 只在受控（expandedValue 有值）时回写
       syncExpanded: ({ prop, context }) => {
-        const expanded = prop('expanded')
-        if (expanded === undefined)
+        const next = prop('expandedValue')
+        if (next === undefined)
           return
-        context.set('expanded', [...expanded])
+        context.set('expandedValue', [...next])
       },
     },
   },

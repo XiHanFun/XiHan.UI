@@ -29,5 +29,5 @@ export type { MotionPreference } from './reduced-motion'
 export { createSpring, springFromPerceptual, springPresets, springToLinearEasing, supportsLinearEasing } from './spring'
 export type { SpringPerceptual, SpringPhysical, SpringPresetName, SpringSolver, SpringSpec } from './spring'
 // 补间
-export { isTweenDone, resolveTweenEasing, tweenEasings, tweenProgress, tweenValueAt } from './tween'
-export type { TweenEasing, TweenSpec } from './tween'
+export { isTweenDone, tweenProgress, tweenValueAt } from './tween'
+export type { TweenSpec } from './tween'

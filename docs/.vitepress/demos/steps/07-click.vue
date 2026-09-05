@@ -23,7 +23,7 @@ const current = ref(0);
 
 <template>
   <div style="display: flex; flex-direction: column; gap: 12px; inline-size: 100%">
-    <XhStepsRoot v-model:step="current" :count="steps.length">
+    <XhStepsRoot v-model:value="current" :count="steps.length">
       <XhStepsList>
         <XhStepsItem
           v-for="(s, i) in steps"
@@ -45,6 +45,6 @@ const current = ref(0);
       <XhStepsContent :value="steps.length">全部完成。</XhStepsContent>
     </XhStepsRoot>
 
-    <span>当前 step：{{ current }}（第三步禁用，点它没有反应）</span>
+    <span>当前 value：{{ current }}（第三步禁用，点它没有反应）</span>
   </div>
 </template>

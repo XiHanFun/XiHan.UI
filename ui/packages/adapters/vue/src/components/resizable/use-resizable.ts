@@ -17,14 +17,14 @@ export interface ResizableContext {
 
 export function useResizable(
   props: ResizableSchema['props'],
-  onSizeChange?: ResizableSchema['props']['onSizeChange'],
-  onSizeChangeEnd?: ResizableSchema['props']['onSizeChangeEnd'],
+  onDimensionsChange?: ResizableSchema['props']['onDimensionsChange'],
+  onDimensionsChangeEnd?: ResizableSchema['props']['onDimensionsChangeEnd'],
 ): ResizableContext {
   const rootRef = ref<HTMLElement | null>(null)
 
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
-  const service = useMachine(resizableMachine, () => ({ ...props, onSizeChange, onSizeChangeEnd }), scope)
+  const service = useMachine(resizableMachine, () => ({ ...props, onDimensionsChange, onDimensionsChangeEnd }), scope)
 
   // 传 getter 而非节点，ref 在挂载后才有值
   service.refs.set('getRootEl', () => rootRef.value)

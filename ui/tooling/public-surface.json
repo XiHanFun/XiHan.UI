@@ -684,9 +684,12 @@
       "XhDescriptionsLabel",
       "XhDescriptionsRoot",
       "XhDescriptionsValue",
+      "XhDialogBody",
       "XhDialogCloseTrigger",
       "XhDialogContent",
       "XhDialogDescription",
+      "XhDialogFooter",
+      "XhDialogHeader",
       "XhDialogRoot",
       "XhDialogTitle",
       "XhDialogTrigger",
@@ -698,9 +701,12 @@
       "XhDiffViewTruncation",
       "XhDiffViewViewport",
       "XhDownloadTrigger",
+      "XhDrawerBody",
       "XhDrawerCloseTrigger",
       "XhDrawerContent",
       "XhDrawerDescription",
+      "XhDrawerFooter",
+      "XhDrawerHeader",
       "XhDrawerRoot",
       "XhDrawerTitle",
       "XhDrawerTrigger",
@@ -759,9 +765,9 @@
       "XhFloatingPanelPositioner",
       "XhFloatingPanelResizeTrigger",
       "XhFloatingPanelRoot",
-      "XhFloatingPanelStageTrigger",
       "XhFloatingPanelTitle",
       "XhFloatingPanelTrigger",
+      "XhFloatingPanelWindowStateTrigger",
       "XhFormErrorSummary",
       "XhFormErrorSummaryItem",
       "XhFormFieldGroup",
@@ -2035,7 +2041,7 @@
       "BackTopRefs",
       "BackTopSchema",
       "BackTopTranslations",
-      "BackTopVisibleChangeDetails",
+      "BackTopVisibilityChangeDetails",
       "BadgeApi",
       "BadgePlacement",
       "BadgeProps",
@@ -2280,7 +2286,7 @@
       "DiffSide",
       "DiffViewApi",
       "DiffViewCellProps",
-      "DiffViewExpandedChangeDetails",
+      "DiffViewExpandedValueChangeDetails",
       "DiffViewGapProps",
       "DiffViewInlineChangeProps",
       "DiffViewMode",
@@ -2312,6 +2318,7 @@
       "EDITABLE_DEFAULT_ACTIVATION_MODE",
       "EDITABLE_DEFAULT_SUBMIT_MODE",
       "EMPTY_CROP_RECT",
+      "EasingName",
       "EditableActivationMode",
       "EditableApi",
       "EditableEditChangeDetails",
@@ -2386,6 +2393,7 @@
       "FloatButtonShape",
       "FloatButtonTranslations",
       "FloatingPanelApi",
+      "FloatingPanelDimensionsChangeDetails",
       "FloatingPanelDragSession",
       "FloatingPanelOpenChangeDetails",
       "FloatingPanelPoint",
@@ -2396,11 +2404,10 @@
       "FloatingPanelResizeTriggerProps",
       "FloatingPanelSchema",
       "FloatingPanelSize",
-      "FloatingPanelSizeChangeDetails",
-      "FloatingPanelStage",
-      "FloatingPanelStageChangeDetails",
-      "FloatingPanelStageTriggerProps",
       "FloatingPanelTranslations",
+      "FloatingPanelWindowState",
+      "FloatingPanelWindowStateChangeDetails",
+      "FloatingPanelWindowStateTriggerProps",
       "FormApi",
       "FormErrorPatch",
       "FormErrorSummaryItemProps",
@@ -2433,7 +2440,7 @@
       "GridColumnOffset",
       "GridGap",
       "GridItemProps",
-      "GridJustify",
+      "GridJustifyItems",
       "GridProps",
       "GridTranslations",
       "HEATMAP_FIRST_DAY_OF_WEEK",
@@ -2550,7 +2557,7 @@
       "InfiniteScrollTranslations",
       "JSON_VIEWER_ROOT_PATH",
       "JsonViewerApi",
-      "JsonViewerExpandedChangeDetails",
+      "JsonViewerExpandedValueChangeDetails",
       "JsonViewerFlattenOptions",
       "JsonViewerNode",
       "JsonViewerNodeProps",
@@ -2705,8 +2712,8 @@
       "NotificationTranslations",
       "NotificationType",
       "NumberAnimationApi",
+      "NumberAnimationCompleteDetails",
       "NumberAnimationEasing",
-      "NumberAnimationFinishDetails",
       "NumberAnimationLive",
       "NumberAnimationPhase",
       "NumberAnimationSchema",
@@ -2809,7 +2816,7 @@
       "QuestionFlowType",
       "QuestionFlowViewport",
       "RATING_COUNT",
-      "RESIZABLE_DEFAULT_SIZE",
+      "RESIZABLE_DEFAULT_DIMENSIONS",
       "RESIZABLE_EDGES",
       "RESIZABLE_LARGE_STEP",
       "RESIZABLE_STEP",
@@ -2833,12 +2840,12 @@
       "ReasoningProps",
       "ReasoningTranslations",
       "ResizableApi",
+      "ResizableDimensions",
+      "ResizableDimensionsChangeDetails",
+      "ResizableDimensionsChangeEndDetails",
       "ResizableOffset",
       "ResizableRefs",
       "ResizableSchema",
-      "ResizableSize",
-      "ResizableSizeChangeDetails",
-      "ResizableSizeChangeEndDetails",
       "ResizableTranslations",
       "ResolvedNotification",
       "SCROLLBAR_DEFAULT_TYPE",
@@ -2903,7 +2910,7 @@
       "SeparatorProps",
       "SeparatorTranslations",
       "SideNavApi",
-      "SideNavExpandedChangeDetails",
+      "SideNavExpandedValueChangeDetails",
       "SideNavNode",
       "SideNavNodeProps",
       "SideNavSchema",
@@ -2922,8 +2929,8 @@
       "SkeletonApi",
       "SkeletonItemProps",
       "SkeletonProps",
+      "SkeletonShape",
       "SkeletonTranslations",
-      "SkeletonVariant",
       "SliderApi",
       "SliderMark",
       "SliderMarkMeta",
@@ -2966,8 +2973,8 @@
       "StepsItemProps",
       "StepsItemState",
       "StepsSchema",
-      "StepsStepChangeDetails",
       "StepsTranslations",
+      "StepsValueChangeDetails",
       "SwitchApi",
       "SwitchCheckedChangeDetails",
       "SwitchSchema",
@@ -3006,7 +3013,7 @@
       "TableColumnPreferenceChangeDetails",
       "TableColumnProps",
       "TableDropTarget",
-      "TableExpandedChangeDetails",
+      "TableExpandedValueChangeDetails",
       "TableFocusModel",
       "TableRowDef",
       "TableRowMove",
@@ -3152,8 +3159,8 @@
       "TourSkipDetails",
       "TourSpotlightRect",
       "TourStep",
-      "TourStepChangeDetails",
       "TourTranslations",
+      "TourValueChangeDetails",
       "TrackRect",
       "TransferApi",
       "TransferCheckState",
@@ -3169,7 +3176,7 @@
       "TransferTranslations",
       "TransferValueChangeDetails",
       "TreeApi",
-      "TreeExpandedChangeDetails",
+      "TreeExpandedValueChangeDetails",
       "TreeFocusModel",
       "TreeMove",
       "TreeNode",
@@ -3178,7 +3185,7 @@
       "TreeRefs",
       "TreeSchema",
       "TreeSelectApi",
-      "TreeSelectExpandedChangeDetails",
+      "TreeSelectExpandedValueChangeDetails",
       "TreeSelectFocusIntent",
       "TreeSelectNodeProps",
       "TreeSelectOpenChangeDetails",
@@ -3190,13 +3197,12 @@
       "TreeTranslations",
       "TreeVisibleNode",
       "TruncateApi",
-      "TruncateExpandedChangeDetails",
       "TruncateMetrics",
+      "TruncateOpenChangeDetails",
       "TruncateOverflowChangeDetails",
       "TruncateRefs",
       "TruncateSchema",
       "TruncateTranslations",
-      "TweenEasing",
       "TypographyApi",
       "TypographyHeadingProps",
       "TypographyLevel",
@@ -4570,7 +4576,6 @@
       "SpringPresetName",
       "SpringSolver",
       "SpringSpec",
-      "TweenEasing",
       "TweenSpec",
       "animate",
       "createSpring",
@@ -4587,14 +4592,12 @@
       "prefersReducedMotion",
       "resolveEasing",
       "resolveMotionPreference",
-      "resolveTweenEasing",
       "setMotionOverride",
       "springFromPerceptual",
       "springPresets",
       "springToLinearEasing",
       "supportsLinearEasing",
       "toLinearEasing",
-      "tweenEasings",
       "tweenProgress",
       "tweenValueAt"
     ],
@@ -5139,9 +5142,12 @@
     ],
     "dialog": [
       "backdrop",
+      "body",
       "close-trigger",
       "content",
       "description",
+      "footer",
+      "header",
       "positioner",
       "title",
       "trigger"
@@ -5169,9 +5175,12 @@
     ],
     "drawer": [
       "backdrop",
+      "body",
       "close-trigger",
       "content",
       "description",
+      "footer",
+      "header",
       "positioner",
       "root",
       "title",
@@ -5249,9 +5258,9 @@
       "positioner",
       "resize-trigger",
       "root",
-      "stage-trigger",
       "title",
-      "trigger"
+      "trigger",
+      "window-state-trigger"
     ],
     "form": [
       "error-summary",
@@ -5980,6 +5989,7 @@
       "translations"
     ],
     "anchor": [
+      "collection",
       "defaultValue",
       "dir",
       "offset",
@@ -5987,13 +5997,11 @@
       "orientation",
       "size",
       "smooth",
-      "targets",
       "tone",
       "translations",
       "value"
     ],
     "approval": [
-      "busy",
       "defaultGrantedScopes",
       "defaultNote",
       "defaultStatus",
@@ -6001,6 +6009,7 @@
       "denyOnUnmount",
       "grantedScopes",
       "live",
+      "loading",
       "note",
       "onDecision",
       "onGrantedScopesChange",
@@ -6025,7 +6034,7 @@
     ],
     "back-top": [
       "behavior",
-      "onVisibleChange",
+      "onVisibilityChange",
       "size",
       "tone",
       "translations",
@@ -6091,8 +6100,8 @@
     ],
     "card": [
       "hoverable",
-      "segmented",
       "size",
+      "split",
       "variant"
     ],
     "carousel": [
@@ -6341,10 +6350,10 @@
     ],
     "diff-view": [
       "contextLines",
-      "defaultExpanded",
-      "expanded",
+      "defaultExpandedValue",
+      "expandedValue",
       "model",
-      "onExpandedChange",
+      "onExpandedValueChange",
       "size",
       "translations",
       "view",
@@ -6467,24 +6476,24 @@
       "translations"
     ],
     "floating-panel": [
+      "defaultDimensions",
       "defaultOpen",
       "defaultPosition",
-      "defaultSize",
-      "defaultStage",
+      "defaultWindowState",
+      "dimensions",
       "disabled",
       "draggable",
       "maxSize",
       "minSize",
+      "onDimensionsChange",
       "onOpenChange",
       "onPositionChange",
-      "onSizeChange",
-      "onStageChange",
+      "onWindowStateChange",
       "open",
       "position",
       "resizable",
-      "size",
-      "stage",
-      "translations"
+      "translations",
+      "windowState"
     ],
     "form": [
       "defaultErrors",
@@ -6514,7 +6523,7 @@
       "align",
       "cols",
       "gap",
-      "justify"
+      "justifyItems"
     ],
     "heatmap": [
       "columns",
@@ -6603,10 +6612,10 @@
     "image-viewer": [
       "closeOnEscape",
       "closeOnInteractOutside",
+      "collection",
       "defaultIndex",
       "defaultOpen",
       "index",
-      "items",
       "loop",
       "maxScale",
       "minScale",
@@ -6632,7 +6641,7 @@
       "loop",
       "maxItems",
       "maxStringLength",
-      "onExpandedChange",
+      "onExpandedValueChange",
       "size",
       "sortKeys",
       "translations",
@@ -6722,11 +6731,11 @@
       "onValueChange",
       "placeholder",
       "placement",
-      "prefix",
       "readOnly",
       "size",
       "tone",
       "translations",
+      "triggerPrefix",
       "value",
       "variant"
     ],
@@ -6806,7 +6815,7 @@
       "easing",
       "from",
       "live",
-      "onFinish",
+      "onComplete",
       "precision",
       "separator",
       "size",
@@ -6936,10 +6945,10 @@
     ],
     "prompt-input": [
       "allowEmptySubmit",
-      "busy",
       "clearOnSubmit",
       "defaultValue",
       "disabled",
+      "loading",
       "onStop",
       "onSubmit",
       "onValueChange",
@@ -7027,7 +7036,8 @@
     ],
     "resizable": [
       "aspectRatio",
-      "defaultSize",
+      "defaultDimensions",
+      "dimensions",
       "dir",
       "disabled",
       "edges",
@@ -7037,9 +7047,8 @@
       "maxWidth",
       "minHeight",
       "minWidth",
-      "onSizeChange",
-      "onSizeChangeEnd",
-      "size",
+      "onDimensionsChange",
+      "onDimensionsChangeEnd",
       "step",
       "translations"
     ],
@@ -7127,7 +7136,7 @@
       "disabled",
       "expandedValue",
       "loop",
-      "onExpandedChange",
+      "onExpandedValueChange",
       "onValueChange",
       "translations",
       "value"
@@ -7145,7 +7154,7 @@
     ],
     "skeleton": [
       "loading",
-      "variant"
+      "shape"
     ],
     "slider": [
       "defaultValue",
@@ -7205,15 +7214,15 @@
     ],
     "steps": [
       "count",
-      "defaultStep",
+      "defaultValue",
       "dir",
       "disabled",
       "linear",
-      "onStepChange",
+      "onValueChange",
       "orientation",
       "size",
-      "step",
-      "tone"
+      "tone",
+      "value"
     ],
     "switch": [
       "checked",
@@ -7235,17 +7244,17 @@
       "columnPreference",
       "columns",
       "defaultColumnPreference",
-      "defaultExpanded",
+      "defaultExpandedValue",
       "defaultSelection",
       "defaultSort",
       "dir",
       "empty",
-      "expanded",
+      "expandedValue",
       "footer",
       "loading",
       "loop",
       "onColumnPreferenceChange",
-      "onExpandedChange",
+      "onExpandedValueChange",
       "onRowMove",
       "onSelectionChange",
       "onSortChange",
@@ -7484,20 +7493,20 @@
       "closeOnEscape",
       "closeOnInteractOutside",
       "defaultOpen",
-      "defaultStep",
+      "defaultValue",
       "dir",
       "offset",
       "onComplete",
       "onOpenChange",
       "onSkip",
-      "onStepChange",
+      "onValueChange",
       "open",
       "placement",
       "showBackdrop",
       "spotlightPadding",
-      "step",
       "steps",
-      "translations"
+      "translations",
+      "value"
     ],
     "transfer": [
       "collection",
@@ -7530,7 +7539,7 @@
       "loop",
       "multiple",
       "nodeDraggable",
-      "onExpandedChange",
+      "onExpandedValueChange",
       "onNodeMove",
       "onSelectionChange",
       "selection",
@@ -7552,7 +7561,7 @@
       "multiple",
       "name",
       "offset",
-      "onExpandedChange",
+      "onExpandedValueChange",
       "onOpenChange",
       "onValueChange",
       "open",
@@ -7566,12 +7575,12 @@
       "variant"
     ],
     "truncate": [
-      "defaultExpanded",
+      "defaultOpen",
       "expandable",
-      "expanded",
       "lines",
-      "onExpandedChange",
+      "onOpenChange",
       "onOverflowChange",
+      "open",
       "tooltip"
     ],
     "typography": [
@@ -7673,6 +7682,7 @@
     "data-invalid",
     "data-inview",
     "data-justify",
+    "data-justify-items",
     "data-kind",
     "data-label-align",
     "data-lane",
@@ -7742,14 +7752,13 @@
     "data-sortable",
     "data-span",
     "data-split",
-    "data-stage",
     "data-state",
     "data-status",
     "data-step",
     "data-sticking",
     "data-streaming",
     "data-striped",
-    "data-target-stage",
+    "data-target-window-state",
     "data-today",
     "data-tone",
     "data-truncated",
@@ -7762,6 +7771,7 @@
     "data-week",
     "data-week-day",
     "data-weight",
+    "data-window-state",
     "data-wrap"
   ],
   "dataStateValues": [
@@ -8906,7 +8916,11 @@
     "--xh-dialog-description-fg",
     "--xh-dialog-description-font-size",
     "--xh-dialog-fg",
+    "--xh-dialog-footer-gap",
+    "--xh-dialog-footer-pt",
     "--xh-dialog-gap",
+    "--xh-dialog-header-gap",
+    "--xh-dialog-header-pb",
     "--xh-dialog-icon-size",
     "--xh-dialog-layer",
     "--xh-dialog-max-w",
@@ -8975,7 +8989,11 @@
     "--xh-drawer-description-fg",
     "--xh-drawer-description-font-size",
     "--xh-drawer-fg",
+    "--xh-drawer-footer-gap",
+    "--xh-drawer-footer-pt",
     "--xh-drawer-gap",
+    "--xh-drawer-header-gap",
+    "--xh-drawer-header-pb",
     "--xh-drawer-icon-size",
     "--xh-drawer-layer",
     "--xh-drawer-px",
@@ -10630,22 +10648,8 @@
     "--xh-text-field-icon-size",
     "--xh-text-field-input-autofill-bg",
     "--xh-text-field-input-autofill-fg",
-    "--xh-text-field-input-bg",
-    "--xh-text-field-input-bg-disabled",
-    "--xh-text-field-input-bg-hover",
-    "--xh-text-field-input-bg-readonly",
-    "--xh-text-field-input-border",
-    "--xh-text-field-input-border-at-max",
-    "--xh-text-field-input-border-focus",
-    "--xh-text-field-input-border-hover",
-    "--xh-text-field-input-border-invalid",
     "--xh-text-field-input-fg",
     "--xh-text-field-input-font-size",
-    "--xh-text-field-input-h",
-    "--xh-text-field-input-min-w",
-    "--xh-text-field-input-px",
-    "--xh-text-field-input-radius",
-    "--xh-text-field-input-shadow",
     "--xh-text-field-label-fg",
     "--xh-text-field-label-fg-disabled",
     "--xh-text-field-label-font-size",
@@ -11284,12 +11288,12 @@
     },
     "xh-approval": {
       "attributes": [
-        "busy",
         "default-note",
         "default-status",
         "deny-on-escape",
         "deny-on-unmount",
         "live",
+        "loading",
         "note",
         "request-id",
         "size",
@@ -11328,7 +11332,7 @@
         "visibility-height"
       ],
       "events": [
-        "visible-change"
+        "visibility-change"
       ]
     },
     "xh-badge": {
@@ -11404,8 +11408,8 @@
     "xh-card": {
       "attributes": [
         "hoverable",
-        "segmented",
         "size",
+        "split",
         "variant"
       ],
       "events": []
@@ -11703,7 +11707,7 @@
         "wrap"
       ],
       "events": [
-        "expanded-change"
+        "expanded-value-change"
       ]
     },
     "xh-download-trigger": {
@@ -11846,10 +11850,11 @@
     },
     "xh-floating-panel": {
       "attributes": [
+        "default-dimensions",
         "default-open",
         "default-position",
-        "default-size",
-        "default-stage",
+        "default-window-state",
+        "dimensions",
         "disabled",
         "max-size",
         "min-size",
@@ -11857,14 +11862,13 @@
         "panel-draggable",
         "position",
         "resizable",
-        "size",
-        "stage"
+        "window-state"
       ],
       "events": [
+        "dimensions-change",
         "open-change",
         "position-change",
-        "size-change",
-        "stage-change"
+        "window-state-change"
       ]
     },
     "xh-form": {
@@ -11896,7 +11900,7 @@
         "align",
         "cols",
         "gap",
-        "justify"
+        "justify-items"
       ],
       "events": []
     },
@@ -12048,7 +12052,7 @@
         "view"
       ],
       "events": [
-        "expanded-change"
+        "expanded-value-change"
       ]
     },
     "xh-layout": {
@@ -12152,10 +12156,10 @@
         "offset",
         "placeholder",
         "placement",
-        "prefix",
         "read-only",
         "size",
         "tone",
+        "trigger-prefix",
         "value",
         "variant"
       ],
@@ -12277,7 +12281,7 @@
         "tone"
       ],
       "events": [
-        "finish"
+        "complete"
       ]
     },
     "xh-number-field": {
@@ -12426,10 +12430,10 @@
     "xh-prompt-input": {
       "attributes": [
         "allow-empty-submit",
-        "busy",
         "clear-on-submit",
         "default-value",
         "disabled",
+        "loading",
         "size",
         "submit-key",
         "tone",
@@ -12534,7 +12538,8 @@
     "xh-resizable": {
       "attributes": [
         "aspect-ratio",
-        "default-size",
+        "default-dimensions",
+        "dimensions",
         "dir",
         "disabled",
         "edges",
@@ -12544,12 +12549,11 @@
         "max-width",
         "min-height",
         "min-width",
-        "size",
         "step"
       ],
       "events": [
-        "size-change",
-        "size-change-end"
+        "dimensions-change",
+        "dimensions-change-end"
       ]
     },
     "xh-scroll-area": {
@@ -12652,7 +12656,7 @@
         "value"
       ],
       "events": [
-        "expanded-change",
+        "expanded-value-change",
         "value-change"
       ]
     },
@@ -12672,7 +12676,7 @@
     "xh-skeleton": {
       "attributes": [
         "loading",
-        "variant"
+        "shape"
       ],
       "events": []
     },
@@ -12749,17 +12753,17 @@
     "xh-steps": {
       "attributes": [
         "count",
-        "default-step",
+        "default-value",
         "dir",
         "disabled",
         "linear",
         "orientation",
         "size",
-        "step",
-        "tone"
+        "tone",
+        "value"
       ],
       "events": [
-        "step-change"
+        "value-change"
       ]
     },
     "xh-switch": {
@@ -12799,7 +12803,7 @@
       ],
       "events": [
         "column-preference-change",
-        "expanded-change",
+        "expanded-value-change",
         "row-move",
         "selection-change",
         "sort-change"
@@ -13069,20 +13073,20 @@
         "close-on-escape",
         "close-on-interact-outside",
         "default-open",
-        "default-step",
+        "default-value",
         "dir",
         "offset",
         "open",
         "placement",
         "show-backdrop",
         "spotlight-padding",
-        "step"
+        "value"
       ],
       "events": [
         "complete",
         "open-change",
         "skip",
-        "step-change"
+        "value-change"
       ]
     },
     "xh-transfer": {
@@ -13121,7 +13125,7 @@
         "variant"
       ],
       "events": [
-        "expanded-change",
+        "expanded-value-change",
         "open-change",
         "value-change"
       ]
@@ -13140,21 +13144,21 @@
         "typeahead"
       ],
       "events": [
-        "expanded-change",
+        "expanded-value-change",
         "node-move",
         "selection-change"
       ]
     },
     "xh-truncate": {
       "attributes": [
-        "default-expanded",
+        "default-open",
         "expandable",
-        "expanded",
         "lines",
+        "open",
         "tooltip"
       ],
       "events": [
-        "expanded-change",
+        "open-change",
         "overflow-change"
       ]
     },

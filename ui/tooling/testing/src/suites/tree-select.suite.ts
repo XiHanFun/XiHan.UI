@@ -124,7 +124,7 @@ function branchesSelected(...values: readonly string[]): readonly AttrExpectatio
   }))
 }
 
-/** 三个分支的展开期望；子层容器的 hidden 与它逐一对应。 */
+/** 三个分支的展开期望；子层容器的 data-state 与它逐一对应。 */
 function branchesExpanded(...values: readonly string[]): readonly AttrExpectation[] {
   return ['src', 'utils', 'docs'].map(v => ({
     'aria-expanded': values.includes(v) ? 'true' : 'false',
@@ -133,7 +133,7 @@ function branchesExpanded(...values: readonly string[]): readonly AttrExpectatio
 }
 
 function branchContentsShown(...values: readonly string[]): readonly AttrExpectation[] {
-  return ['src', 'utils', 'docs'].map(v => ({ hidden: values.includes(v) ? null : '' }))
+  return ['src', 'utils', 'docs'].map(v => ({ 'data-state': values.includes(v) ? 'open' : 'closed' }))
 }
 
 /** 快照只采属性，显示文字直接读 DOM。 */
@@ -167,7 +167,7 @@ function expectTabStops(expected: number): StepWithExpect {
   }
 }
 
-// content 与 branch-content 始终在 DOM，显隐靠 hidden 属性。
+// content 与 branch-content 始终在 DOM；content 的显隐靠 hidden，branch-content 靠 data-state。
 // 浮层坐标异步回填且快照不采 style，data-placement / data-hidden 只在初始帧断言。
 export const treeSelectSuite: ConformanceSuite = {
   component: 'tree-select',
@@ -343,7 +343,7 @@ export const treeSelectSuite: ConformanceSuite = {
             'aria-expanded': 'false',
             'data-value': 'docs',
           },
-          'branch-content[0]': { 'role': 'group', 'hidden': '', 'data-state': 'closed' },
+          'branch-content[0]': { 'role': 'group', 'hidden': null, 'data-state': 'closed' },
           // 展开箭头与分支的左右方向键同义，退出可及树且不占 Tab 位
           'branch-trigger[0]': { 'aria-hidden': 'true', 'tabindex': '-1' },
           'item[0]': {
@@ -903,7 +903,7 @@ export const treeSelectSuite: ConformanceSuite = {
               'branch-content': branchContentsShown('src'),
               'branch': branchesSelected('src'),
             },
-            events: [{ type: 'expanded-change', detail: { value: ['src'] } }],
+            events: [{ type: 'expanded-value-change', detail: { value: ['src'] } }],
           },
         },
         {

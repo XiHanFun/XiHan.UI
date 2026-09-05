@@ -51,7 +51,7 @@ span 让一格横跨几列；offset 让一格改从第 offset + 1 条列线起�
 
 ### 格内对齐
 
-align 管每一项在自己那格里的块向落点，justify 管行内落点；两轴缺省都是铺满整格
+align 管每一项在自己那格里的块向落点，justify-items 管行内落点；两轴缺省都是铺满整格
 
 <XhDemo src="grid/05-align-justify" />
 
@@ -89,7 +89,7 @@ cols 除了整数也收断点对象，逐档写各自的列数：窄视口一列
 | `align` | `GridAlign` |  | 每一项在自己那格里的块向对齐：start / center / end / stretch / baseline，不写则铺满格高。 |
 | `cols` | `GridCols` |  | 列数：1 至 12 的整数，不写按一列排；范围外的值也按一列排。 各列等宽，且每列的下限是 0，长内容不会把自己那列撑宽。 也收断点对象 `{ base, sm, md, lg, xl }`，逐档写各自的列数，没写的档沿用比它窄的那一档。 |
 | `gap` | `GridGap` |  | 行列间距档位：xs / sm / md / lg / xl，不写则不留间距。档位换算成多少由皮肤定。 |
-| `justify` | `GridJustify` |  | 每一项在自己那格里的行内对齐：start / center / end / stretch，不写则铺满格宽。 |
+| `justifyItems` | `GridJustifyItems` |  | 每一项在自己那格里的行内对齐：start / center / end / stretch，不写则铺满格宽。 |
 
 ## connect API
 
@@ -118,7 +118,7 @@ cols 除了整数也收断点对象，逐档写各自的列数：窄视口一列
 | --- | --- | --- |
 | `root` | `data-align` | props.align |
 | `root` | `data-gap` | props.gap |
-| `root` | `data-justify` | props.justify |
+| `root` | `data-justify-items` | props.justifyItems |
 | `item` | `data-offset` | tier(item.offset, MAX_COLUMN_OFFSET) |
 | `item` | `data-span` | tier(item.span, MAX_COLUMN_COUNT) |
 

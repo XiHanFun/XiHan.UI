@@ -1,4 +1,4 @@
-<!-- 基础用法 | 不传 step 即为非受控；方向键只搬焦点，按 Enter 或空格才切步，进退方法由 root 的插槽交出来 -->
+<!-- 基础用法 | 不传 value 即为非受控；方向键只搬焦点，按 Enter 或空格才切步，进退方法由 root 的插槽交出来 -->
 <script setup lang="ts">
 import {
   XhButton,
@@ -22,7 +22,7 @@ const steps = [
 
 <template>
   <XhStepsRoot
-    v-slot="{ step, count, complete, goToPrevStep, goToNextStep }"
+    v-slot="{ value, count, complete, goToPrevStep, goToNextStep }"
     :count="steps.length"
     style="inline-size: 100%"
   >
@@ -30,7 +30,7 @@ const steps = [
       <XhStepsItem v-for="(s, i) in steps" :key="s.title" :value="i">
         <XhStepsTrigger>
           <!-- 圆点里的字符是作者内容：皮肤只按 data-state 管描边与填充 -->
-          <XhStepsIndicator>{{ step > i ? "" : i + 1 }}</XhStepsIndicator>
+          <XhStepsIndicator>{{ value > i ? "" : i + 1 }}</XhStepsIndicator>
           <XhStepsTitle>{{ s.title }}</XhStepsTitle>
           <XhStepsDescription>{{ s.description }}</XhStepsDescription>
         </XhStepsTrigger>
@@ -45,13 +45,13 @@ const steps = [
     <XhStepsContent :value="steps.length">全部完成：订单已提交。</XhStepsContent>
 
     <div style="display: flex; align-items: center; gap: 8px">
-      <XhButton variant="outline" :disabled="step === 0" @click="goToPrevStep()">
+      <XhButton variant="outline" :disabled="value === 0" @click="goToPrevStep()">
         上一步
       </XhButton>
       <XhButton variant="solid" :disabled="complete" @click="goToNextStep()">
         下一步
       </XhButton>
-      <span>{{ complete ? "当前：全部完成" : `当前：第 ${step + 1} / ${count} 步` }}</span>
+      <span>{{ complete ? "当前：全部完成" : `当前：第 ${value + 1} / ${count} 步` }}</span>
     </div>
   </XhStepsRoot>
 </template>

@@ -172,7 +172,7 @@ function mount(initial: Partial<Props> = {}) {
     // 展开着的行后面跟一条详情行，落点判定要把两者算作一整块。
     // 有子行的行展开出的是子行、不是详情行——与 flattenTableRows 同一口径
     const hasKids = (props.rows ?? []).some(r => r.parentId === row.id)
-    if (!hasKids && (props.defaultExpanded ?? []).includes(row.id)) {
+    if (!hasKids && (props.defaultExpandedValue ?? []).includes(row.id)) {
       const detail = document.createElement('div')
       detail.setAttribute('data-scope', 'table')
       detail.setAttribute('data-part', 'expanded-row')
@@ -316,7 +316,7 @@ describe('行拖拽 · 落点与提交', () => {
   })
 
   it('展开着的行按整块算：详情行不自成一个落点', () => {
-    const h = mount({ defaultExpanded: ['b'] })
+    const h = mount({ defaultExpandedValue: ['b'] })
     press(h, 'a', 20)
     // b 占 40-80，它的详情行占 80-140；并块之后 40-140 整段都是 b
     move(120)
@@ -341,7 +341,7 @@ describe('行拖拽 · 落点与提交', () => {
   })
 
   it('被拖的行与它的详情行一起标 data-dragging：它们是同一块', () => {
-    const h = mount({ defaultExpanded: ['a'] })
+    const h = mount({ defaultExpandedValue: ['a'] })
     press(h, 'a', 20)
     move(30)
     expect((h.api().getRowProps({ value: 'a' }) as Dict)['data-dragging']).toBe('')
@@ -368,7 +368,7 @@ describe('行拖拽 · 三条降级', () => {
 
   it('有可展开的行不算树形：详情行是跟着数据行一起搬的，不妨碍换位', () => {
     // 判据是「有行声明了 parentId」，不是「有行可展开」——后者把详情行也算了进去
-    const h = mount({ rows: [{ id: 'a', expandable: true }, { id: 'b' }], defaultExpanded: ['a'] })
+    const h = mount({ rows: [{ id: 'a', expandable: true }, { id: 'b' }], defaultExpandedValue: ['a'] })
     expect(h.api().rowReorderDisabledReason).toBeNull()
     press(h, 'a', 20)
     expect(h.state()).toBe('rowDragging')
@@ -378,7 +378,7 @@ describe('行拖拽 · 三条降级', () => {
     // 展开着 a，b 才是可见行；夹具按 rows 渲，不展开就与可见行数对不上
     const h = mount({
       rows: [{ id: 'a', expandable: true }, { id: 'b', parentId: 'a' }],
-      defaultExpanded: ['a'],
+      defaultExpandedValue: ['a'],
     })
     expect(h.api().rowReorderDisabledReason).toBeNull()
     press(h, 'a', 20)
@@ -699,7 +699,7 @@ describe('行拖不动的判定要能恢复，也别把别人的行算进来', (
       rows,
       columns: COLUMNS,
       rowReorderable: true,
-      defaultExpanded: ['a'],
+      defaultExpandedValue: ['a'],
     }
     const runtime = createVanillaRuntime()
     const service = createService(tableMachine, { props: () => props, runtime })
@@ -961,7 +961,7 @@ describe('树形行 · 端到端换父', () => {
   ]
 
   function nested(extra: Partial<Props> = {}) {
-    return mount({ rows: NESTED_ROWS, defaultExpanded: ['inbox'], ...extra })
+    return mount({ rows: NESTED_ROWS, defaultExpandedValue: ['inbox'], ...extra })
   }
 
   it('拖到一行的中段 = 落进它里面，换父', () => {

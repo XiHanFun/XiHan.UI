@@ -37,7 +37,7 @@ function onQuery(details: { query: string | null; prefix: string | null }): void
 <template>
   <XhMentionRoot
     v-model:value="text"
-    :prefix="['@', '#']"
+    :trigger-prefix="['@', '#']"
     :collection="filtered"
     placeholder="@ 提及同事，# 打标签"
     :translations="{ input: '正文', content: '候选' }"

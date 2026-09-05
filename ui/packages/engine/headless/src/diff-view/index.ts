@@ -9,7 +9,7 @@ export type {
   DiffSide,
   DiffViewApi,
   DiffViewCellProps,
-  DiffViewExpandedChangeDetails,
+  DiffViewExpandedValueChangeDetails,
   DiffViewGapProps,
   DiffViewInlineChangeProps,
   DiffViewMode,

@@ -7,6 +7,7 @@ import {
   XhPaginationNextTrigger,
   XhPaginationPrevTrigger,
   XhPaginationRoot,
+  XhTextFieldControl,
   XhTextFieldInput,
   XhTextFieldRoot,
 } from "@xihan-ui/vue";
@@ -39,11 +40,9 @@ function jump(setPage: (page: number) => void): void {
     <XhPaginationNextTrigger />
 
     <XhTextFieldRoot v-model:value="target" size="sm" placeholder="页码">
-      <XhTextFieldInput
-        style="inline-size: 72px"
-        aria-label="跳至页码"
-        @keydown.enter="jump(setPage)"
-      />
+      <XhTextFieldControl style="inline-size: 72px">
+        <XhTextFieldInput aria-label="跳至页码" @keydown.enter="jump(setPage)" />
+      </XhTextFieldControl>
     </XhTextFieldRoot>
   </XhPaginationRoot>
 </template>

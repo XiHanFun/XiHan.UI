@@ -605,7 +605,8 @@
   }
 
   /* 收起态的唯一开关：display 盖掉了 UA 的 [hidden]{display:none}，漏了这条整棵子树就收不起来 */
-  [data-scope='tree-select'][data-part='branch-content'][hidden] {
+  [data-scope='tree-select'][data-part='branch-content'][hidden],
+  [data-scope='tree-select'][data-part='branch-content'][data-state='closed'] {
     display: none;
   }
 

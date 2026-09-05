@@ -385,8 +385,13 @@
     box-shadow: inset 0 0 0 var(--xh-stroke-thin) var(--xh-heatmap-cell-border, var(--xh-border-default));
   }
 
+  /* 详情条的收起态：没有哪一格是活的时候整条藏起来 */
+  [data-scope='heatmap'][data-part='tooltip'][data-state='hidden'] {
+    display: none;
+  }
+
   /* 给了 display 的角色节点必须补这条：display 声明会盖掉 UA 的 [hidden]{display:none}，
-     不补的话作者给节点加 hidden 后它照样显示。详情条收起靠的正是这一条。
+     不补的话作者给节点加 hidden 后它照样显示。
      格子没有声明 display，UA 那条兜得住，不必列在这里 */
   [data-scope='heatmap'][data-part='root'][hidden],
   [data-scope='heatmap'][data-part='grid'][hidden],

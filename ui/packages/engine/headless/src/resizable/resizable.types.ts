@@ -2,7 +2,7 @@ import type { Direction, PropTypes } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 import type { ResizeEdge } from '@xihan-ui/pointer'
 
-export interface ResizableSize {
+export interface ResizableDimensions {
   width: number
   height: number
 }
@@ -13,12 +13,12 @@ export interface ResizableOffset {
   y: number
 }
 
-export interface ResizableSizeChangeDetails {
-  size: ResizableSize
+export interface ResizableDimensionsChangeDetails {
+  dimensions: ResizableDimensions
 }
 
-export interface ResizableSizeChangeEndDetails {
-  size: ResizableSize
+export interface ResizableDimensionsChangeEndDetails {
+  dimensions: ResizableDimensions
   /** 这一次调整推的是哪条边。 */
   edge: ResizeEdge
 }
@@ -40,8 +40,8 @@ export interface ResizableRefs {
 export interface ResizableSchema extends MachineSchema {
   props: {
     /** 受控尺寸。给了就由外面说了算，内部只发意图。 */
-    size?: ResizableSize
-    defaultSize?: ResizableSize
+    dimensions?: ResizableDimensions
+    defaultDimensions?: ResizableDimensions
     minWidth?: number
     minHeight?: number
     maxWidth?: number
@@ -63,12 +63,12 @@ export interface ResizableSchema extends MachineSchema {
     dir?: Direction
     translations?: Partial<ResizableTranslations>
     /** 尺寸变化意图。拖动途中连着发。 */
-    onSizeChange?: (details: ResizableSizeChangeDetails) => void
-    /** 一次调整收尾发一次。存尺寸用它，别用 onSizeChange。 */
-    onSizeChangeEnd?: (details: ResizableSizeChangeEndDetails) => void
+    onDimensionsChange?: (details: ResizableDimensionsChangeDetails) => void
+    /** 一次调整收尾发一次。存尺寸用它，别用 onDimensionsChange。 */
+    onDimensionsChangeEnd?: (details: ResizableDimensionsChangeEndDetails) => void
   }
   context: {
-    size: ResizableSize
+    dimensions: ResizableDimensions
     /** 推西边与北边产生的累计位移，写成 root 的 left / top。 */
     offset: ResizableOffset
     /** 正在推的那条边；没在推是 null。 */
@@ -85,14 +85,14 @@ export interface ResizableSchema extends MachineSchema {
     | { type: 'RESIZE.NUDGE', edge: ResizeEdge, dx: number, dy: number }
     /** 推到这条边能到的一端。 */
     | { type: 'RESIZE.TO_BOUND', edge: ResizeEdge, bound: 'min' | 'max' }
-    | { type: 'SIZE.SET', size: ResizableSize }
+    | { type: 'DIMENSIONS.SET', dimensions: ResizableDimensions }
   guard: 'canResize'
   action:
     | 'startResize'
     | 'trackResize'
     | 'nudge'
     | 'toBound'
-    | 'setSize'
+    | 'setDimensions'
     | 'endResize'
     | 'cancelResize'
     | 'invokeChangeEnd'
@@ -102,7 +102,7 @@ export interface ResizableSchema extends MachineSchema {
 }
 
 export interface ResizableApi<T extends PropTypes = PropTypes> {
-  size: ResizableSize
+  dimensions: ResizableDimensions
   offset: ResizableOffset
   /** 正在调整（拖动中）。键盘推一步不算。 */
   resizing: boolean
@@ -111,7 +111,7 @@ export interface ResizableApi<T extends PropTypes = PropTypes> {
   /** 这条边是否开放。 */
   edgeEnabled: (edge: ResizeEdge) => boolean
   /** 整份赋值：先过约束再落地。 */
-  setSize: (size: ResizableSize) => void
+  setDimensions: (dimensions: ResizableDimensions) => void
   getRootProps: () => T['element']
   getHandleProps: (props: { edge: ResizeEdge }) => T['element']
 }

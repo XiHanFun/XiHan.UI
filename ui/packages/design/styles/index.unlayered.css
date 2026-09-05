@@ -2008,7 +2008,7 @@
 /* 最大化时几何层把面板写成铺满视口（left/top 归零、宽高 100%），四条边全贴着视口：
    圆角会在四角把底下的页面露出来，描边缩成一圈贴边的多余框线，投影整块落在视口之外。
    三样一起撤，与抽屉贴住视口的那条边不圆角是同一回事。 */
-[data-scope='floating-panel'][data-part='content'][data-stage='maximized'] {
+[data-scope='floating-panel'][data-part='content'][data-window-state='maximized'] {
   border: 0;
   border-radius: 0;
   box-shadow: none;
@@ -2166,7 +2166,7 @@
 }
 
 /* —— 标题栏上的按钮 —— */
-[data-scope='floating-panel'][data-part='stage-trigger'],
+[data-scope='floating-panel'][data-part='window-state-trigger'],
 [data-scope='floating-panel'][data-part='close-trigger'] {
   flex: 0 0 auto;
   display: inline-flex;
@@ -2183,7 +2183,7 @@
 }
 
 /* 两颗钮同高同圆角，尺寸与圆角槽按各自角色命名 */
-[data-scope='floating-panel'][data-part='stage-trigger'] {
+[data-scope='floating-panel'][data-part='window-state-trigger'] {
   inline-size: var(--xh-floating-panel-action-size, var(--xh-control-h-sm));
   block-size: var(--xh-floating-panel-action-size, var(--xh-control-h-sm));
   border-radius: var(--xh-floating-panel-action-radius, var(--xh-shape-control));
@@ -2195,18 +2195,18 @@
   border-radius: var(--xh-floating-panel-close-radius, var(--xh-shape-control));
 }
 
-[data-scope='floating-panel'][data-part='stage-trigger'][hidden],
+[data-scope='floating-panel'][data-part='window-state-trigger'][hidden],
 [data-scope='floating-panel'][data-part='close-trigger'][hidden] {
   display: none;
 }
 
-[data-scope='floating-panel'][data-part='stage-trigger']:hover,
+[data-scope='floating-panel'][data-part='window-state-trigger']:hover,
 [data-scope='floating-panel'][data-part='close-trigger']:hover {
   background: var(--xh-floating-panel-action-bg-hover, var(--xh-bg-subtle-hover));
   color: var(--xh-floating-panel-action-fg-hover, var(--xh-fg-default));
 }
 
-[data-scope='floating-panel'][data-part='stage-trigger']:active,
+[data-scope='floating-panel'][data-part='window-state-trigger']:active,
 [data-scope='floating-panel'][data-part='close-trigger']:active {
   background: var(--xh-floating-panel-action-bg-active, var(--xh-bg-subtle-active));
   scale: var(--xh-motion-scale-press);
@@ -2215,13 +2215,13 @@
 /* 当前形态的那个按钮压着不放，用户一眼看得出面板正处于哪一档。
    按下态的前景取 fg-default 而不是品牌色：品牌色压在这块底上只有 3.4:1（深色皮肤 2.9:1），
    按钮里通常就一个字形，够不着文字该有的对比度。 */
-[data-scope='floating-panel'][data-part='stage-trigger'][data-state='on'] {
+[data-scope='floating-panel'][data-part='window-state-trigger'][data-state='on'] {
   background: var(--xh-floating-panel-action-bg-active, var(--xh-bg-subtle-active));
   color: var(--xh-floating-panel-action-fg-active, var(--xh-fg-default));
 }
 
 /* 只换前景不叠 opacity：叠了之后禁用文字的对比度会掉到读不出来 */
-[data-scope='floating-panel'][data-part='stage-trigger'][data-disabled] {
+[data-scope='floating-panel'][data-part='window-state-trigger'][data-disabled] {
   background: transparent;
   color: var(--xh-fg-disabled);
 }
@@ -2255,11 +2255,11 @@
    还原是四角朝内、铺满是四角朝外、收拢是一条横线。不分档的话标题栏上排着的
    两三颗钮长得一模一样，按哪颗全靠猜。
    这条打底画「还原」，另两档在下面换掉 mask-image。
-   选的是 data-target-stage 而不是面板身上的 data-stage：后者说的是面板此刻在哪一档，
+   选的是 data-target-window-state 而不是面板身上的 data-window-state：后者说的是面板此刻在哪一档，
    用它会让排在一起的几颗钮同时换成同一枚字形。
    字形也不随 data-state='on' 翻面：可访问名由连接层按 target 定死（按下的仍念「铺满面板」），
    字形跟着按下态改就与念出来的名字对不上了 */
-[data-scope='floating-panel'][data-part='stage-trigger']:empty::before {
+[data-scope='floating-panel'][data-part='window-state-trigger']:empty::before {
   content: '';
   display: inline-block;
   inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
@@ -2270,12 +2270,12 @@
   mask: var(--xh-glyph-mark-restore) center / contain no-repeat;
 }
 
-[data-scope='floating-panel'][data-part='stage-trigger'][data-target-stage='maximized']:empty::before {
+[data-scope='floating-panel'][data-part='window-state-trigger'][data-target-window-state='maximized']:empty::before {
   -webkit-mask-image: var(--xh-glyph-mark-maximize);
   mask-image: var(--xh-glyph-mark-maximize);
 }
 
-[data-scope='floating-panel'][data-part='stage-trigger'][data-target-stage='minimized']:empty::before {
+[data-scope='floating-panel'][data-part='window-state-trigger'][data-target-window-state='minimized']:empty::before {
   -webkit-mask-image: var(--xh-glyph-mark-minus);
   mask-image: var(--xh-glyph-mark-minus);
 }
@@ -2668,19 +2668,19 @@
 }
 
 /* —— 行内对齐 —— */
-[data-scope='grid'][data-part='root'][data-justify='start'] {
+[data-scope='grid'][data-part='root'][data-justify-items='start'] {
   justify-items: start;
 }
 
-[data-scope='grid'][data-part='root'][data-justify='center'] {
+[data-scope='grid'][data-part='root'][data-justify-items='center'] {
   justify-items: center;
 }
 
-[data-scope='grid'][data-part='root'][data-justify='end'] {
+[data-scope='grid'][data-part='root'][data-justify-items='end'] {
   justify-items: end;
 }
 
-[data-scope='grid'][data-part='root'][data-justify='stretch'] {
+[data-scope='grid'][data-part='root'][data-justify-items='stretch'] {
   justify-items: stretch;
 }
 
@@ -3181,8 +3181,13 @@
   box-shadow: inset 0 0 0 var(--xh-stroke-thin) var(--xh-heatmap-cell-border, var(--xh-border-default));
 }
 
+/* 详情条的收起态：没有哪一格是活的时候整条藏起来 */
+[data-scope='heatmap'][data-part='tooltip'][data-state='hidden'] {
+  display: none;
+}
+
 /* 给了 display 的角色节点必须补这条：display 声明会盖掉 UA 的 [hidden]{display:none}，
-   不补的话作者给节点加 hidden 后它照样显示。详情条收起靠的正是这一条。
+   不补的话作者给节点加 hidden 后它照样显示。
    格子没有声明 display，UA 那条兜得住，不必列在这里 */
 [data-scope='heatmap'][data-part='root'][hidden],
 [data-scope='heatmap'][data-part='grid'][hidden],
@@ -8867,13 +8872,13 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 /* 一行文字的高度取正文字号，圆角拉满，看起来就是一行还没排出来的字 */
-[data-scope='skeleton'][data-part='item'][data-variant='text'] {
+[data-scope='skeleton'][data-part='item'][data-shape='text'] {
   block-size: var(--xh-skeleton-text-block-size, var(--xh-text-body-size));
   border-radius: var(--xh-skeleton-text-radius, var(--xh-shape-pill));
 }
 
 /* 头像位：正方形加满圆角。宽度定死不跟着容器拉长，高度也不许被主轴压扁 */
-[data-scope='skeleton'][data-part='item'][data-variant='circle'] {
+[data-scope='skeleton'][data-part='item'][data-shape='circle'] {
   flex: none;
   inline-size: var(--xh-skeleton-circle-size, var(--xh-control-h-lg));
   aspect-ratio: 1;
@@ -8881,7 +8886,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 /* 图片、卡片这类成块的占位：给个最小高度，撑开由作者决定 */
-[data-scope='skeleton'][data-part='item'][data-variant='rect'] {
+[data-scope='skeleton'][data-part='item'][data-shape='rect'] {
   min-block-size: var(--xh-skeleton-rect-block-size, var(--xh-control-h-lg));
   border-radius: var(--xh-skeleton-rect-radius, var(--xh-shape-surface));
 }
@@ -15583,6 +15588,52 @@ input[data-scope='mention'][data-part='input'] {
   animation: xh-dialog-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
 }
 
+/* —— 面板三段 —— */
+/* header / body / footer 把面板切成「头尾定在原处、正文自己滚」三段，
+   与抽屉、浮动面板同一套角色划分：头尾不参与压缩，正文吃掉剩下的高度并自己滚。
+   面板的内衬仍由 content 一层给出，三段只接手段与段之间那道缝——
+   内衬换成三段各留一份，安全区与局部容器两档就要在三处各算一遍。
+   写了正文段的这一档同时封顶：不封顶正文永远没有可滚的余量，滚动条出不来。 */
+[data-scope='dialog'][data-part='content']:has([data-scope='dialog'][data-part='body']) {
+  max-block-size: 100%;
+  gap: 0;
+  overflow: hidden;
+}
+
+/* 头段：标题与说明纵向堆叠；不参与压缩，正文再长也压不扁它 */
+[data-scope='dialog'][data-part='header'] {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--xh-dialog-header-gap, var(--xh-stack-gap-sm));
+  padding-block-end: var(--xh-dialog-header-pb, var(--xh-space-2));
+}
+
+/* 正文段：面板里唯一会滚的一段。最小高度归零，
+   否则弹性项按内容撑高，容器再矮也不产生溢出，滚动条永远出不来 */
+[data-scope='dialog'][data-part='body'] {
+  flex: 1 1 auto;
+  min-block-size: 0;
+  overflow: auto;
+}
+
+/* 尾段：动作按钮排一行靠尾；同样不参与压缩 */
+[data-scope='dialog'][data-part='footer'] {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--xh-dialog-footer-gap, var(--xh-control-gap-md));
+  padding-block-start: var(--xh-dialog-footer-pt, var(--xh-space-2));
+}
+
+/* 声明过 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
+[data-scope='dialog'][data-part='header'][hidden],
+[data-scope='dialog'][data-part='body'][hidden],
+[data-scope='dialog'][data-part='footer'][hidden] {
+  display: none;
+}
+
 [data-scope='dialog'][data-part='title'] {
   margin: 0;
   font-size: var(--xh-dialog-title-font-size, var(--xh-text-heading-3-size));
@@ -16068,6 +16119,51 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='drawer'][data-part='content'][data-side='bottom'][data-state='closed'] {
   animation: xh-drawer-out-bottom var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+}
+
+/* —— 面板三段 —— */
+/* header / body / footer 把面板切成「头尾定在原处、正文自己滚」三段，
+   与弹窗、浮动面板同一套角色划分：头尾不参与压缩，正文吃掉剩下的高度并自己滚。
+   面板的内衬与安全区让位仍由 content 一层给出，三段只接手段与段之间那道缝；
+   整块的滚动交还给正文段——两层都能滚时滚轮落在哪一层要看指针停在哪，
+   贴边的头尾会跟着一起走。 */
+[data-scope='drawer'][data-part='content']:has([data-scope='drawer'][data-part='body']) {
+  gap: 0;
+  overflow: hidden;
+}
+
+/* 头段：标题与说明纵向堆叠；不参与压缩，正文再长也压不扁它 */
+[data-scope='drawer'][data-part='header'] {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--xh-drawer-header-gap, var(--xh-stack-gap-sm));
+  padding-block-end: var(--xh-drawer-header-pb, var(--xh-space-2));
+}
+
+/* 正文段：面板里唯一会滚的一段。最小高度归零，
+   否则弹性项按内容撑高，容器再矮也不产生溢出，滚动条永远出不来 */
+[data-scope='drawer'][data-part='body'] {
+  flex: 1 1 auto;
+  min-block-size: 0;
+  overflow: auto;
+}
+
+/* 尾段：动作按钮排一行靠尾；同样不参与压缩 */
+[data-scope='drawer'][data-part='footer'] {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--xh-drawer-footer-gap, var(--xh-control-gap-md));
+  padding-block-start: var(--xh-drawer-footer-pt, var(--xh-space-2));
+}
+
+/* 声明过 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
+[data-scope='drawer'][data-part='header'][hidden],
+[data-scope='drawer'][data-part='body'][hidden],
+[data-scope='drawer'][data-part='footer'][hidden] {
+  display: none;
 }
 
 [data-scope='drawer'][data-part='title'] {
@@ -24931,7 +25027,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_ring-offset: var(--xh-_ring-inset);
 }
 
-/* 详情行：靠 hidden 收起，不卸载作者节点。内容长在它的单元格里，行本身只画底色 */
+/* 详情行：靠 data-state 收起，不卸载作者节点。内容长在它的单元格里，行本身只画底色 */
 [data-scope='table'][data-part='expanded-row'] {
   display: flex;
   align-items: stretch;
@@ -24946,8 +25042,10 @@ input[data-scope='mention'][data-part='input'] {
   white-space: normal;
 }
 
-/* 收起态的唯一开关：display 会盖掉 hidden 属性的 UA 规则，漏了这条详情行就收不起来 */
-[data-scope='table'][data-part='expanded-row'][hidden] {
+/* 收起态的唯一开关：display 会盖掉 hidden 属性的 UA 规则，漏了这条详情行就收不起来。
+   作者写的 hidden 与连接层发的 data-state=closed 都收在这里 */
+[data-scope='table'][data-part='expanded-row'][hidden],
+[data-scope='table'][data-part='expanded-row'][data-state='closed'] {
   display: none;
 }
 
@@ -25787,9 +25885,8 @@ input[data-scope='mention'][data-part='input'] {
   --xh-text-field-skin: 1;
 }
 
-/* root 只负责纵向堆叠：标签一行、输入行一行。
-   输入框与清空按钮收进 control 部件即得一体式：视觉盒画在 control 上，框内两件都退成透明分段。
-   不写 control 时退回两件并排的观感（下方 input 与清空按钮的基础规则原样生效） */
+/* root 只负责纵向堆叠：标签一行、控件行一行。
+   视觉盒只有一个，画在 control 上：输入框与清空按钮排在它里面，两件都是透明分段。 */
 [data-scope='text-field'][data-part='root'] {
   /* 作者塞进来的图标跟着控件的尺寸档走；它自己写了 size 时仍以作者的为准 */
   --xh-icon-size: var(--xh-text-field-icon-size, var(--xh-glyph-size-md));
@@ -25818,7 +25915,7 @@ input[data-scope='mention'][data-part='input'] {
   /* 语气只落在聚焦这一处：环与聚焦态描边。正文颜色不归它管。
      没写 data-tone 时 --xh-_tone 没被声明，两者各自退回缺省的聚焦环色与聚焦描边色。
      常态描边的槽不接在这条链上：设了它只改常态那一档，聚焦档由
-     --xh-text-field-control-border-focus / --xh-text-field-input-border-focus 各自管 */
+     --xh-text-field-control-border-focus 管 */
   --xh-_text-field-ring: var(--xh-ring-focus);
   --xh-_text-field-border-focus: var(--xh-_tone, var(--xh-border-control-focus));
 
@@ -25955,69 +26052,36 @@ input[data-scope='mention'][data-part='input'] {
   color: var(--xh-fg-disabled);
 }
 
-/* 盒内 input：无边框无底无圆角无落影，观感全归 control；行内内衬也归 control，
+/* 多行宿主在框里：盒的定高换成由行数撑起，纵向内衬由 input 自己留（见下），
+   清空按钮贴着第一行而不是浮在整块的正中 */
+[data-scope='text-field'][data-part='control']:has([data-part='input'][data-multiline]) {
+  align-items: flex-start;
+  block-size: auto;
+  min-block-size: var(--xh-text-field-control-h, var(--xh-_text-field-h));
+}
+
+/* input 是框里的一段，不自己画盒：描边、底色、圆角、落影与行内内衬全归 control，
    这里再留一份就是框内套了一圈空白。它占满剩余宽度，把清空按钮顶到最右 */
-[data-scope='text-field'][data-part='control'] [data-part='input'] {
+[data-scope='text-field'][data-part='input'] {
   flex: 1 1 auto;
   min-inline-size: 0;
   block-size: 100%;
-  padding-inline: 0;
+  padding: 0;
   border: 0;
   border-radius: 0;
   background: transparent;
   box-shadow: none;
-}
-
-/* 盒内 input 不再自己画各态，全部交还 control。hover 这条带上与基础规则同样的
-   :not 条件：基础 hover 的特异度里有它们，不带就打不过 */
-[data-scope='text-field'][data-part='control'] [data-part='input']:hover:not(:disabled, [data-invalid], [data-at-max]) {
-  border-color: transparent;
-  background: transparent;
-}
-
-[data-scope='text-field'][data-part='control'] [data-part='input']:focus-visible {
-  border-color: transparent;
-  outline: none;
-}
-
-[data-scope='text-field'][data-part='control'] [data-part='input'][data-at-max],
-[data-scope='text-field'][data-part='control'] [data-part='input'][data-invalid] {
-  border-color: transparent;
-}
-
-[data-scope='text-field'][data-part='control'] [data-part='input']:disabled,
-[data-scope='text-field'][data-part='control'] [data-part='input'][readonly] {
-  background: transparent;
-}
-
-/* 尾部动作钮不参与分宽，宽度由它自己的方钮尺寸决定 */
-[data-scope='text-field'][data-part='control'] [data-part='clear-trigger'] {
-  flex: none;
-}
-
-[data-scope='text-field'][data-part='input'] {
-  min-inline-size: var(--xh-text-field-input-min-w, var(--xh-control-min-w));
-  block-size: var(--xh-text-field-input-h, var(--xh-_text-field-h));
-  padding-inline: var(--xh-text-field-input-px, var(--xh-_text-field-px));
-  padding-block: 0;
-  border: var(--xh-stroke-thin) solid var(--xh-text-field-input-border, var(--xh-_text-field-border));
-  border-radius: var(--xh-text-field-input-radius, var(--xh-shape-control));
-  background: var(--xh-text-field-input-bg, var(--xh-_text-field-bg));
-  box-shadow: var(--xh-text-field-input-shadow, var(--xh-_text-field-shadow));
   color: var(--xh-text-field-input-fg, var(--xh-fg-default));
   /* 表单控件不继承页面字体，只给字号会让输入框用 UA 默认字族，与周围文本对不上 */
   font-family: inherit;
   font-size: var(--xh-text-field-input-font-size, var(--xh-_text-field-font-size));
   line-height: var(--xh-leading-normal);
-  transition:
-    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
-/* 多行宿主：定高换成行数撑高，纵向留出内边距；autoSize 接管高度后拉柄与滚动都收掉 */
+/* 多行宿主：高度由行数撑起，纵向留出内边距；autoSize 接管高度后拉柄与滚动都收掉。
+   最小高度归上面那条 control 规则，这里不再留一份 */
 [data-scope='text-field'][data-part='input'][data-multiline] {
   block-size: auto;
-  min-block-size: var(--xh-text-field-input-h, var(--xh-_text-field-h));
   padding-block: var(--xh-text-field-textarea-py, var(--xh-space-2));
   resize: vertical;
 }
@@ -26031,42 +26095,14 @@ input[data-scope='mention'][data-part='input'] {
   color: var(--xh-text-field-placeholder-fg, var(--xh-fg-subtle));
 }
 
-/* hover 换描边与填充两条通道。只在中性态换：invalid 与 at-max 正拿边框颜色说事，
-   被 hover 盖掉那条信息就没了；只读也排掉，它的底色本身就是"改不动"这句话 */
-[data-scope='text-field'][data-part='input']:hover:not(:disabled, [readonly], [data-invalid], [data-at-max]) {
-  border-color: var(--xh-text-field-input-border-hover, var(--xh-_text-field-border-hover));
-  background: var(--xh-text-field-input-bg-hover, var(--xh-_text-field-bg-hover));
-}
-
-/* 聚焦态描边与环共用一族语气色。这条特异度低于上面的 hover、也低于下面的
-   at-max 与 invalid，三者仍按原来的次序赢过它 */
+/* 焦点落在框里的 input 上，环由 control 的 :focus-within 画：这里把它自己那圈收掉，
+   否则框内框外各一圈 */
 [data-scope='text-field'][data-part='input']:focus-visible {
-  border-color: var(--xh-text-field-input-border-focus, var(--xh-_text-field-border-focus));
-  outline: var(--xh-ring-width) solid var(--xh-_text-field-ring);
-  outline-offset: var(--xh-ring-offset);
+  outline: none;
 }
 
-/* 顶到字数上限：再敲进不去，边框先给个提示。放在 invalid 之前，
-   两者同时成立时按源序让 invalid 赢——真出错比"写满了"要紧 */
-[data-scope='text-field'][data-part='input'][data-at-max] {
-  border-color: var(--xh-text-field-input-border-at-max, var(--xh-border-at-limit));
-}
-
-[data-scope='text-field'][data-part='input'][data-invalid] {
-  border-color: var(--xh-text-field-input-border-invalid, var(--xh-border-invalid));
-
-  /* 校验失败时环也跟着变红：两圈等宽相邻却一红一蓝，读的人不知道哪个才是当前状态 */
-  --xh-_text-field-ring: var(--xh-ring-invalid);
-}
-
-/* 只读仍可聚焦、可复制，所以不置灰，只把底色压下去表示"改不动" */
-[data-scope='text-field'][data-part='input'][readonly] {
-  background: var(--xh-text-field-input-bg-readonly, var(--xh-bg-subtle));
-}
-
-/* input 是单体表单控件，禁用走原生 disabled */
+/* 盒的禁用档只换得动它自己的前景，input 上那条显式字色挡在中间，得自己灰下去 */
 [data-scope='text-field'][data-part='input']:disabled {
-  background: var(--xh-text-field-input-bg-disabled, var(--xh-bg-subtle));
   color: var(--xh-fg-disabled);
 }
 
@@ -26077,32 +26113,18 @@ input[data-scope='mention'][data-part='input'] {
    两个选择器名分写两条：一条选择器列表里只要有一个名字不被认识，整条规则就被丢弃。
    底取一支不透明的面令牌而不是 --xh-_text-field-bg：后者在 ghost / subtle 档下是透明的，
    铺一层透明等于没铺，系统底照样透出来。
-   自带的落影列在铺底之后一并写出，不然这条会把框的边界连同投影一起抹掉。 */
+   落影不在这里列出：框的描边与投影画在 control 上，input 自己没有影子可保。 */
 [data-scope='text-field'][data-part='input']:autofill {
-  box-shadow:
-    inset 0 0 0 100vmax var(--xh-text-field-input-autofill-bg, var(--xh-bg-canvas)),
-    var(--xh-text-field-input-shadow, var(--xh-_text-field-shadow));
+  box-shadow: inset 0 0 0 100vmax var(--xh-text-field-input-autofill-bg, var(--xh-bg-canvas));
   -webkit-text-fill-color: var(--xh-text-field-input-autofill-fg, var(--xh-fg-default));
 }
 
 [data-scope='text-field'][data-part='input']:-webkit-autofill {
-  box-shadow:
-    inset 0 0 0 100vmax var(--xh-text-field-input-autofill-bg, var(--xh-bg-canvas)),
-    var(--xh-text-field-input-shadow, var(--xh-_text-field-shadow));
+  box-shadow: inset 0 0 0 100vmax var(--xh-text-field-input-autofill-bg, var(--xh-bg-canvas));
   -webkit-text-fill-color: var(--xh-text-field-input-autofill-fg, var(--xh-fg-default));
 }
 
-/* 盒内 input 的落影归 control，这里只铺底；特异度高过上面那两条，与源序无关 */
-[data-scope='text-field'][data-part='control'] [data-part='input']:autofill {
-  box-shadow: inset 0 0 0 100vmax var(--xh-text-field-input-autofill-bg, var(--xh-bg-canvas));
-}
-
-[data-scope='text-field'][data-part='control'] [data-part='input']:-webkit-autofill {
-  box-shadow: inset 0 0 0 100vmax var(--xh-text-field-input-autofill-bg, var(--xh-bg-canvas));
-}
-
-/* 清空按钮是 input 的兄弟节点而不是子节点，由作者与 input 排成一行；
-   它按行内动作钮的尺寸画，在作者那一行里居中即与框对齐 */
+/* 清空按钮是 input 在框里的兄弟节点，不参与分宽，按行内动作钮的尺寸画 */
 [data-scope='text-field'][data-part='clear-trigger'] {
   display: inline-flex;
   flex: none;
@@ -29646,8 +29668,10 @@ input[data-scope='mention'][data-part='input'] {
   flex: none;
 }
 
-/* 收起态的唯一开关：display 会盖掉 hidden 属性的 UA 规则，漏了这条整棵子树就收不起来 */
-[data-scope='tree'][data-part='branch-content'][hidden] {
+/* 收起态的唯一开关：display 会盖掉 hidden 属性的 UA 规则，漏了这条整棵子树就收不起来。
+   作者写的 hidden 与连接层发的 data-state=closed 都收在这里 */
+[data-scope='tree'][data-part='branch-content'][hidden],
+[data-scope='tree'][data-part='branch-content'][data-state='closed'] {
   display: none;
 }
 
@@ -30410,7 +30434,8 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 /* 收起态的唯一开关：display 盖掉了 UA 的 [hidden]{display:none}，漏了这条整棵子树就收不起来 */
-[data-scope='tree-select'][data-part='branch-content'][hidden] {
+[data-scope='tree-select'][data-part='branch-content'][hidden],
+[data-scope='tree-select'][data-part='branch-content'][data-state='closed'] {
   display: none;
 }
 

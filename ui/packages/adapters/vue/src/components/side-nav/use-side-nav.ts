@@ -20,7 +20,7 @@ export interface SideNavContext {
 
 export function useSideNav(
   props: SideNavSchema['props'],
-  handlers: Pick<SideNavSchema['props'], 'onValueChange' | 'onExpandedChange'> = {},
+  handlers: Pick<SideNavSchema['props'], 'onValueChange' | 'onExpandedValueChange'> = {},
 ): SideNavContext {
   // scope id 走 Vue 的 useId，保证同页多实例的配对 id 不相撞
   const idGen = createVueIdGenerator()

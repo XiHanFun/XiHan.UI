@@ -73,9 +73,9 @@
   // 外面这行文字跟着步序走
   const current = document.getElementById("tour-centered-current");
   const next = document.getElementById("tour-centered-next");
-  tour.addEventListener("step-change", (event) => {
-    current.textContent = `当前步：${tour.steps[event.detail.step].id}`;
+  tour.addEventListener("value-change", (event) => {
+    current.textContent = `当前步：${tour.steps[event.detail.value].id}`;
     next.textContent =
-      event.detail.step === tour.steps.length - 1 ? "完成" : "下一步";
+      event.detail.value === tour.steps.length - 1 ? "完成" : "下一步";
   });
 </script>

@@ -42,4 +42,4 @@
 | `--xh-text-field-control-border-at-limit` | `--xh-text-field-control-border-at-max` |
 | `--xh-text-field-input-border-at-limit` | `--xh-text-field-input-border-at-max` |
 
-全局语义令牌 `--xh-border-at-limit` 不在这次范围里，名字不变；`tags-input` 一直就是这么接的（组件槽叫 `-at-max`，兜底取 `--xh-border-at-limit`），`text-field` 这一改是与它对齐。各组件的 prop 名（`borderless` / `ruled` / `stickyHeader` / `autoSize` / `segmented` / `allowOverflow`）一个都没动，默认渲染逐像素不变。
+全局语义令牌 `--xh-border-at-limit` 不在这次范围里，名字不变；`tags-input` 一直就是这么接的（组件槽叫 `-at-max`，兜底取 `--xh-border-at-limit`），`text-field` 这一改是与它对齐。本条不动各组件的 prop 名（`borderless` / `ruled` / `stickyHeader` / `autoSize` / `allowOverflow`），默认渲染逐像素不变。`card` 的 `segmented` 另由 prop 改名那一条改成 `split`，与它自己发的 `data-split` 对齐。

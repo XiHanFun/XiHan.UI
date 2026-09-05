@@ -430,21 +430,21 @@ describe('展开集合（复用 Tree 的摊平模型）', () => {
     expect(h.api().visibleNodes.map(r => r.value)).toEqual(['src', 'docs', 'license'])
   })
 
-  it('展开态同步到 branch-content 的 hidden 与分支的 aria-expanded', () => {
+  it('展开态同步到 branch-content 的 data-state 与分支的 aria-expanded', () => {
     const h = mount()
-    expect(h.branch('src').content.hasAttribute('hidden')).toBe(true)
+    expect(h.branch('src').content.getAttribute('data-state')).toBe('closed')
     expect(h.branch('src').branch.getAttribute('aria-expanded')).toBe('false')
     h.api().expand('src')
-    expect(h.branch('src').content.hasAttribute('hidden')).toBe(false)
+    expect(h.branch('src').content.getAttribute('data-state')).toBe('open')
     expect(h.branch('src').branch.getAttribute('aria-expanded')).toBe('true')
   })
 
   it('受控 expandedValue：宿主不写回则纹丝不动', () => {
-    const onExpandedChange = vi.fn()
-    const h = mount({ expandedValue: [], onExpandedChange })
+    const onExpandedValueChange = vi.fn()
+    const h = mount({ expandedValue: [], onExpandedValueChange })
     h.api().expand('src')
     expect(h.expanded()).toEqual([])
-    expect(onExpandedChange).toHaveBeenCalledWith({ value: ['src'] })
+    expect(onExpandedValueChange).toHaveBeenCalledWith({ value: ['src'] })
     h.setProps({ expandedValue: ['src'] })
     expect(h.api().isExpanded('src')).toBe(true)
   })

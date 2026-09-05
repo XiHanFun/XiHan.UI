@@ -61,8 +61,7 @@ export function connectTextField<T extends PropTypes>(
       'data-at-max': dataAttr(atLimit),
     }),
 
-    // 视觉盒：写了这个节点就由它画描边、底色与聚焦环，输入框与清空按钮排在它里面；
-    // 不写时输入框自己当盒
+    // 视觉盒：描边、底色与聚焦环画在这个节点上，输入框与清空按钮排在它里面
     getControlProps: () => normalize.element({
       ...parts.control.attrs,
       'data-disabled': dataAttr(disabled),

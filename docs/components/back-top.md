@@ -68,7 +68,7 @@ tone 决定按钮用哪族颜色，size 换一档尺寸；translations 换掉读
 | `translations` | `Partial<BackTopTranslations>` |  |  |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定按钮用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
-| `onVisibleChange` | `(details: BackTopVisibleChangeDetails) => void` |  | 露面与否变化时回调。 |
+| `onVisibilityChange` | `(details: BackTopVisibilityChangeDetails) => void` |  | 露面与否变化时回调。 |
 
 ## 事件
 
@@ -76,7 +76,7 @@ tone 决定按钮用哪族颜色，size 换一档尺寸；translations 换掉读
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `visible-change` | `BackTopVisibleChangeDetails` | 露面与否变化；detail 为 `{ visible: boolean }` |
+| `visibility-change` | `BackTopVisibilityChangeDetails` | 露面与否变化；detail 为 `{ visible: boolean }` |
 
 ## 插槽
 

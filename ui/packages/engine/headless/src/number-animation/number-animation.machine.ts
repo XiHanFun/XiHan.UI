@@ -73,7 +73,7 @@ export const numberAnimationMachine = createMachine({
         'RUN.SYNC': { target: 'running', reenter: true },
         // 内部转移，不重挂循环
         'FRAME': [
-          { guard: 'isSettled', target: 'idle', actions: ['advance', 'invokeFinish'] },
+          { guard: 'isSettled', target: 'idle', actions: ['advance', 'invokeComplete'] },
           { actions: ['advance'] },
         ],
       },
@@ -106,8 +106,8 @@ export const numberAnimationMachine = createMachine({
           easing: prop('easing'),
         }, elapsed))
       },
-      invokeFinish: ({ context, prop }) => {
-        prop('onFinish')?.({ value: context.get('value') })
+      invokeComplete: ({ context, prop }) => {
+        prop('onComplete')?.({ value: context.get('value') })
       },
     },
     effects: {

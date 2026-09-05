@@ -7,7 +7,7 @@ import { vueNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'
 
 /** 对外的两个回调。 */
-export type TruncateNotifiers = Pick<TruncateSchema['props'], 'onExpandedChange' | 'onOverflowChange'>
+export type TruncateNotifiers = Pick<TruncateSchema['props'], 'onOpenChange' | 'onOverflowChange'>
 
 export interface TruncateContext {
   api: ComputedRef<TruncateApi>

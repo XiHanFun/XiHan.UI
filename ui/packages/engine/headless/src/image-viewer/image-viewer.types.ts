@@ -73,7 +73,7 @@ export interface ImageViewerIndexChangeDetails {
 export interface ImageViewerSchema extends MachineSchema {
   props: {
     /** 图片清单。看单张就给长度 1 的数组。缺省为空，此时打开也只有工具条与空视口。 */
-    items?: ImageViewerItem[]
+    collection?: ImageViewerItem[]
     open?: boolean
     defaultOpen?: boolean
     /** 当前下标（0 起）。给定即受控：内部不再自改，只发 onIndexChange。 */

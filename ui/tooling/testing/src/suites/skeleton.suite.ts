@@ -10,7 +10,7 @@ const APG = 'https://www.w3.org/WAI/ARIA/apg/practices/structural-roles/'
 const skeletonTree: FixtureNode = {
   part: 'root',
   children: [
-    { part: 'item', attrs: { variant: 'circle' } },
+    { part: 'item', attrs: { shape: 'circle' } },
     { part: 'item' },
     { part: 'item' },
   ],
@@ -50,21 +50,21 @@ export const skeletonSuite: ConformanceSuite = {
       spec: { apg: APG },
       initial: {
         parts: {
-          'item[0]': { 'data-variant': 'circle' },
-          'item[1]': { 'data-variant': 'text' },
-          'item[2]': { 'data-variant': 'text' },
+          'item[0]': { 'data-shape': 'circle' },
+          'item[1]': { 'data-shape': 'text' },
+          'item[2]': { 'data-shape': 'text' },
         },
       },
     },
     {
-      name: '容器 variant 换成 rect：没自报形状的跟着换，自报的那根不受影响',
+      name: '容器 shape 换成 rect：没自报形状的跟着换，自报的那根不受影响',
       spec: { apg: APG },
-      props: { variant: 'rect' },
+      props: { shape: 'rect' },
       initial: {
         parts: {
-          'item[0]': { 'data-variant': 'circle' },
-          'item[1]': { 'data-variant': 'rect' },
-          'item[2]': { 'data-variant': 'rect' },
+          'item[0]': { 'data-shape': 'circle' },
+          'item[1]': { 'data-shape': 'rect' },
+          'item[2]': { 'data-shape': 'rect' },
         },
       },
     },
@@ -81,7 +81,7 @@ export const skeletonSuite: ConformanceSuite = {
             'hidden': '',
           },
           // 内容已就位，没有需要藏起来的装饰
-          'item[0]': { 'aria-hidden': null, 'data-variant': 'circle' },
+          'item[0]': { 'aria-hidden': null, 'data-shape': 'circle' },
           'item[1]': { 'aria-hidden': null },
         },
       },

@@ -3,31 +3,56 @@
   "data-state": {
     "open": {
       "$description": "开合（有开合交互的）：浮层、手风琴、树节点、折叠面板、标签的关闭。配对 aria-expanded。",
-      "values": ["open", "closed"]
+      "values": [
+        "open",
+        "closed"
+      ]
     },
     "checked": {
       "$description": "勾选：checkbox / radio / switch / 选项 / 行，以及 checkbox-group / table 表头 / transfer 列头的组级汇总（部分勾选同样是 indeterminate）。配对 aria-checked（混合态 mixed ↔ indeterminate）。",
-      "values": ["checked", "unchecked", "indeterminate"]
+      "values": [
+        "checked",
+        "unchecked",
+        "indeterminate"
+      ]
     },
     "pressed": {
       "$description": "按压开关：toggle / toggle-group 条目 / floating-panel 钉住。配对 aria-pressed。",
-      "values": ["on", "off"]
+      "values": [
+        "on",
+        "off"
+      ]
     },
     "visibility": {
       "$description": "派生的显隐（没有开合交互、由别的状态算出来）：toast、滚动条、密码明文、回到顶部。",
-      "values": ["visible", "hidden"]
+      "values": [
+        "visible",
+        "hidden"
+      ]
     },
     "activation": {
       "$description": "激活：tabs 的页签与面板。配对 aria-selected。",
-      "values": ["active", "inactive"]
+      "values": [
+        "active",
+        "inactive"
+      ]
     },
     "step": {
       "$description": "步骤：steps 的每一步（timer 走完也落 completed）。配对 aria-current=step。",
-      "values": ["completed", "current", "incomplete"]
+      "values": [
+        "completed",
+        "current",
+        "incomplete"
+      ]
     },
     "decision": {
       "$description": "人在环判定：待决、批准、拒绝、超时按拒绝收口。四值互斥，一个闸门在任一时刻只取其中一个。",
-      "values": ["pending", "approved", "denied", "expired"]
+      "values": [
+        "pending",
+        "approved",
+        "denied",
+        "expired"
+      ]
     },
     "phase": {
       "$description": "过程阶段：异步或时序型组件的生命周期（头像/图片加载、剪贴板、下载、上传、计时器、进度条、签名板、二维码、时间输入、取色器、工具调用）。相位只有这一个属性名，不另开 data-phase。",
@@ -67,7 +92,15 @@
   },
   "data-status": {
     "$description": "结果种类——不是相位。result 报的是这一页在说哪一类结果（找不到 / 没权限 / 服务器错 / 成功 / 警告 / 出错 / 提示），它没有生命周期，也不会随时间往前走。相位一律走 data-state 的 phase 族。",
-    "values": ["404", "403", "500", "success", "warning", "error", "info"]
+    "values": [
+      "404",
+      "403",
+      "500",
+      "success",
+      "warning",
+      "error",
+      "info"
+    ]
   },
   "enum": {
     "$description": "取值域随组件变化的枚举属性。同一个名字在两个组件里取值域互不相交时，要么在这里写明它在两处问的是同一个问题，要么就是一名多义——一个名字答两个问题，使用者看见 [data-x] 猜不出选中的是什么，得各取一个说得清的名字。登记项写「这个名字问的是什么」，一句话说不清的即须拆名。判据⑨；登记了却没有任何一对组件取值域互不相交的算名单过期。",
@@ -196,16 +229,51 @@
     "data-visible": "派生显隐改 data-state=visible|hidden"
   },
   "aria": {
-    "aria-expanded": { "attr": "data-state", "family": "open" },
-    "aria-checked": { "attr": "data-state", "family": "checked" },
-    "aria-pressed": { "attr": "data-state", "family": "pressed" },
-    "aria-selected": { "attr": "data-selected", "family": null, "$description": "treeitem / row / option 的选中用布尔 data-selected；tabs 例外走 activation 族。" },
-    "aria-current": { "attr": "data-current", "family": null, "$description": "导航族的当前项；steps 例外走 step 族。" },
-    "aria-disabled": { "attr": "data-disabled", "family": null },
-    "aria-invalid": { "attr": "data-invalid", "family": null },
-    "aria-readonly": { "attr": "data-readonly", "family": null },
-    "aria-required": { "attr": "data-required", "family": null },
-    "aria-busy": { "attr": "data-loading", "family": null },
-    "aria-orientation": { "attr": "data-orientation", "family": null }
+    "aria-expanded": {
+      "attr": "data-state",
+      "family": "open"
+    },
+    "aria-checked": {
+      "attr": "data-state",
+      "family": "checked"
+    },
+    "aria-pressed": {
+      "attr": "data-state",
+      "family": "pressed"
+    },
+    "aria-selected": {
+      "attr": "data-selected",
+      "family": null,
+      "$description": "treeitem / row / option 的选中用布尔 data-selected；tabs 例外走 activation 族。"
+    },
+    "aria-current": {
+      "attr": "data-current",
+      "family": null,
+      "$description": "导航族的当前项；steps 例外走 step 族。"
+    },
+    "aria-disabled": {
+      "attr": "data-disabled",
+      "family": null
+    },
+    "aria-invalid": {
+      "attr": "data-invalid",
+      "family": null
+    },
+    "aria-readonly": {
+      "attr": "data-readonly",
+      "family": null
+    },
+    "aria-required": {
+      "attr": "data-required",
+      "family": null
+    },
+    "aria-busy": {
+      "attr": "data-loading",
+      "family": null
+    },
+    "aria-orientation": {
+      "attr": "data-orientation",
+      "family": null
+    }
   }
 }

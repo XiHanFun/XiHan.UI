@@ -74,7 +74,7 @@
   // 展开集合与选中集合都是数组，只走属性；宿主写回它们才动
   tree.expandedValue = ["cn", "north"];
   tree.addEventListener(
-    "expanded-change",
+    "expanded-value-change",
     (event) => (tree.expandedValue = event.detail.value),
   );
 

@@ -55,7 +55,7 @@ export const cardSuite: ConformanceSuite = {
     {
       name: '两个开关落成 data-*，关掉时不留空属性',
       spec: { apg: APG },
-      props: { hoverable: true, segmented: false },
+      props: { hoverable: true, split: false },
       initial: {
         parts: {
           root: {

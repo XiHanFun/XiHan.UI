@@ -78,7 +78,7 @@ export function connectTree<T extends PropTypes>(
   const childrenOrientations = collectChildrenOrientations(collection)
   const visible = new Map(rows.map(row => [row.value, row]))
 
-  // 焦点锚点投影成可见的：祖先分支收起后节点仍在 DOM 里但 hidden、不可聚焦，
+  // 焦点锚点投影成可见的：祖先分支收起后节点仍在 DOM 里但已收起、不可聚焦，
   // 让它继续认领 tabindex=0 会让整棵树没有 Tab 停靠点
   const rawFocused = context.get('focusedValue')
   const focusedValue = rawFocused != null && visible.has(rawFocused) ? rawFocused : null
@@ -114,7 +114,7 @@ export function connectTree<T extends PropTypes>(
     childrenOrientations.get(value) ?? (leafOnlyBranches.has(value) ? leafOrientation : 'vertical')
 
   // roving tabindex 的唯一锚点：焦点在树内跟焦点走，否则落在首个可见的选中节点上。
-  // 取可见序而非选中集合的第一个，后者可能藏在收起的分支里、hidden 不可聚焦。
+  // 取可见序而非选中集合的第一个，后者可能藏在收起的分支里、不可聚焦。
   const anchor = focusedValue ?? rows.find(row => selection.includes(row.value))?.value ?? null
 
   /** 节点（item 与 branch）共用的 ARIA 与身份属性。 */
@@ -189,7 +189,8 @@ export function connectTree<T extends PropTypes>(
     for (const el of treeEl.querySelectorAll<HTMLElement>(
       '[data-scope="tree"][data-part="item"],[data-scope="tree"][data-part="branch-control"]',
     )) {
-      if (el.closest('[hidden]'))
+      // 收起的子层连同里面的一切都不占版面；作者自己给节点加的 hidden 一并跳过
+      if (el.closest('[hidden]') || el.closest('[data-scope="tree"][data-part="branch-content"][data-state="closed"]'))
         continue
       const value = el.getAttribute(ITEM_VALUE_ATTR)
         ?? el.closest<HTMLElement>('[data-scope="tree"][data-part="branch"]')?.getAttribute(ITEM_VALUE_ATTR)
@@ -664,6 +665,7 @@ export function connectTree<T extends PropTypes>(
       ...branchState(node.value),
     }),
 
+    // 收起只翻 branchState 里的 data-state，不卸载作者节点，子树里的输入框与滚动位置得留着
     getBranchContentProps: node => normalize.element({
       ...parts['branch-content'].attrs,
       ...branchState(node.value),
@@ -671,8 +673,6 @@ export function connectTree<T extends PropTypes>(
       'role': 'group',
       // group 不收 aria-orientation，排布方向只以 data 形式交给皮肤
       'data-orientation': branchOrientation(node.value),
-      // 收起只加 hidden，不卸载作者节点，子树里的输入框与滚动位置得留着
-      'hidden': !isExpanded(node.value) || undefined,
     }),
   }
 }

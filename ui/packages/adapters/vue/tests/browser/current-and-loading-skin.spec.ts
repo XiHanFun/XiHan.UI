@@ -200,22 +200,22 @@ describe('判定闸门在途的那一档', () => {
   it('在途转一枚圆环，两颗钮不再借用「按不动」那档灰', async () => {
     await mount(() => [
       APPROVAL({}),
-      APPROVAL({ busy: true }),
+      APPROVAL({ loading: true }),
       APPROVAL({ scopes: [{ value: 'write', required: true }] }),
     ])
     // 底色走 micro 档过渡，中途读到的是插值
     await settled()
 
     const live = part('approval', 'approve-trigger', 0)
-    const busy = part('approval', 'approve-trigger', 1)
+    const loading = part('approval', 'approve-trigger', 1)
     const gated = part('approval', 'approve-trigger', 2)
 
     // 两种情形在 aria 上是同一位，光看它分不出该等还是该去补勾
-    expect(busy.getAttribute('aria-disabled')).toBe('true')
+    expect(loading.getAttribute('aria-disabled')).toBe('true')
     expect(gated.getAttribute('aria-disabled')).toBe('true')
 
     // 在途保持能按时的底色，只有闸门没过才置灰
-    expect(styleOf(busy, 'background-color')).toBe(styleOf(live, 'background-color'))
+    expect(styleOf(loading, 'background-color')).toBe(styleOf(live, 'background-color'))
     expect(styleOf(gated, 'background-color')).not.toBe(styleOf(live, 'background-color'))
 
     // 圆环只在在途那一格转，且真占了一格盒子
@@ -226,14 +226,14 @@ describe('判定闸门在途的那一档', () => {
     expect(beforeOf(part('approval', 'footer', 0), 'animation-name')).toBe('none')
 
     // 指针同样分档，只是它在触屏上不存在，所以不能是唯一通道
-    expect(styleOf(busy, 'cursor')).toBe('progress')
+    expect(styleOf(loading, 'cursor')).toBe('progress')
     expect(styleOf(part('approval', 'deny-trigger', 1), 'cursor')).toBe('progress')
     expect(styleOf(gated, 'cursor')).toBe('not-allowed')
   })
 
   it('转圈时长认使用者槽', async () => {
     setSlot('--xh-approval-loading-duration', '3s')
-    await mount(() => APPROVAL({ busy: true }))
+    await mount(() => APPROVAL({ loading: true }))
     expect(beforeOf(part('approval', 'footer'), 'animation-duration')).toBe('3s')
   })
 })

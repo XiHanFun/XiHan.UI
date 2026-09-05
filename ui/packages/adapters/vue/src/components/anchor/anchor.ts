@@ -16,7 +16,7 @@ export const XhAnchorRoot = defineComponent({
   props: {
     value: { type: String as PropType<string | null>, default: undefined },
     defaultValue: { type: String as PropType<string | null>, default: undefined },
-    targets: { type: Array as PropType<readonly string[]>, default: undefined },
+    collection: { type: Array as PropType<readonly string[]>, default: undefined },
     offset: { type: Number, default: undefined },
     smooth: { type: Boolean, default: undefined },
     orientation: { type: String as PropType<Orientation>, default: undefined },

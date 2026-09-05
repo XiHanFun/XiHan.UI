@@ -9,5 +9,5 @@ export type {
   BackTopRefs,
   BackTopSchema,
   BackTopTranslations,
-  BackTopVisibleChangeDetails,
+  BackTopVisibilityChangeDetails,
 } from './back-top.types'

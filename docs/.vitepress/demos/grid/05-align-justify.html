@@ -1,4 +1,4 @@
-<!-- 格内对齐 | align 管每一项在自己那格里的块向落点，justify 管行内落点；两轴缺省都是铺满整格 -->
+<!-- 格内对齐 | align 管每一项在自己那格里的块向落点，justify-items 管行内落点；两轴缺省都是铺满整格 -->
 <style>
   #grid-align-justify [data-cell],
   #grid-align-justify [data-tall] {
@@ -75,8 +75,8 @@
 
     <!-- 内容比列窄，才看得出行内落点；stretch 下每一格铺满整列 -->
     <div data-xh-part="item">
-      <div data-label>justify = start</div>
-      <xh-grid cols="3" gap="sm" justify="start" style="display: contents">
+      <div data-label>justify-items = start</div>
+      <xh-grid cols="3" gap="sm" justify-items="start" style="display: contents">
         <div data-xh-part="root" data-track>
           <div data-xh-part="item" data-cell>甲</div>
           <div data-xh-part="item" data-cell>乙</div>
@@ -86,8 +86,8 @@
     </div>
 
     <div data-xh-part="item">
-      <div data-label>justify = center</div>
-      <xh-grid cols="3" gap="sm" justify="center" style="display: contents">
+      <div data-label>justify-items = center</div>
+      <xh-grid cols="3" gap="sm" justify-items="center" style="display: contents">
         <div data-xh-part="root" data-track>
           <div data-xh-part="item" data-cell>甲</div>
           <div data-xh-part="item" data-cell>乙</div>
@@ -97,8 +97,8 @@
     </div>
 
     <div data-xh-part="item">
-      <div data-label>justify = end</div>
-      <xh-grid cols="3" gap="sm" justify="end" style="display: contents">
+      <div data-label>justify-items = end</div>
+      <xh-grid cols="3" gap="sm" justify-items="end" style="display: contents">
         <div data-xh-part="root" data-track>
           <div data-xh-part="item" data-cell>甲</div>
           <div data-xh-part="item" data-cell>乙</div>
@@ -108,8 +108,8 @@
     </div>
 
     <div data-xh-part="item">
-      <div data-label>justify = stretch</div>
-      <xh-grid cols="3" gap="sm" justify="stretch" style="display: contents">
+      <div data-label>justify-items = stretch</div>
+      <xh-grid cols="3" gap="sm" justify-items="stretch" style="display: contents">
         <div data-xh-part="root" data-track>
           <div data-xh-part="item" data-cell>甲</div>
           <div data-xh-part="item" data-cell>乙</div>

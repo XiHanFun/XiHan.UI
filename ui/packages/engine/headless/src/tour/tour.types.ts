@@ -58,9 +58,9 @@ export interface TourRefs {
   reanchor: (() => void) | null
 }
 
-export interface TourStepChangeDetails {
+export interface TourValueChangeDetails {
   /** 变化后的步序，恒在 [0, count - 1] 内。 */
-  step: number
+  value: number
 }
 
 export interface TourOpenChangeDetails {
@@ -81,10 +81,10 @@ export interface TourSchema extends MachineSchema {
   props: {
     /** 步骤清单。它同时是步序的上界与读屏"第 m 步，共 n 步"的分母。 */
     steps?: TourStep[]
-    /** 当前步序（0 起）。给定即受控：内部不再自改，只发 onStepChange。 */
-    step?: number
+    /** 当前步序（0 起）。给定即受控：内部不再自改，只发 onValueChange。 */
+    value?: number
     /** 非受控初值，默认 0。 */
-    defaultStep?: number
+    defaultValue?: number
     open?: boolean
     defaultOpen?: boolean
     /** 整份引导的首选放置位，默认 bottom；单步可用自己的 placement 覆盖。 */
@@ -106,7 +106,7 @@ export interface TourSchema extends MachineSchema {
     autoScroll?: boolean
     translations?: Partial<TourTranslations>
     /** 步序变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 */
-    onStepChange?: (details: TourStepChangeDetails) => void
+    onValueChange?: (details: TourValueChangeDetails) => void
     /** open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 */
     onOpenChange?: (details: TourOpenChangeDetails) => void
     /** 末步再按"下一步"：先发它，再按 onOpenChange 关闭。 */
@@ -115,8 +115,8 @@ export interface TourSchema extends MachineSchema {
     onSkip?: (details: TourSkipDetails) => void
   }
   context: {
-    /** 当前步序。受控（step 给定）时 cell 直读 prop，写只发 onStepChange 不改内部值。 */
-    step: number
+    /** 当前步序。受控（value 给定）时 cell 直读 prop，写只发 onValueChange 不改内部值。 */
+    value: number
     /** 定位引擎回填的最新结果；connect 只读它，不碰 DOM 也不调引擎。 */
     position: PositionResult | null
     /** 高亮框几何，由效应量出来写进来；居中步与收起态恒为 null。 */
@@ -128,7 +128,7 @@ export interface TourSchema extends MachineSchema {
   event:
     | { type: 'OPEN' }
     | { type: 'CLOSE', src?: 'esc' | 'close-trigger' | 'interact-outside' | 'complete' | 'skip' }
-    | { type: 'STEP.SET', step: number }
+    | { type: 'VALUE.SET', value: number }
     | { type: 'STEP.PREV' }
     | { type: 'STEP.NEXT' }
     | { type: 'SKIP' }
@@ -145,7 +145,7 @@ export interface TourSchema extends MachineSchema {
     | 'invokeOnComplete'
     | 'invokeOnSkip'
     | 'syncOpen'
-    | 'setStep'
+    | 'setValue'
     | 'goPrev'
     | 'goNext'
     | 'measureSpotlight'
@@ -158,7 +158,7 @@ export interface TourSchema extends MachineSchema {
 export interface TourApi<T extends PropTypes = PropTypes> {
   open: boolean
   /** 当前步序，恒在 [0, count - 1] 内；清单为空时为 0。 */
-  step: number
+  value: number
   count: number
   /** 当前步的声明；清单为空时为 null。 */
   currentStep: TourStep | null
@@ -172,7 +172,7 @@ export interface TourApi<T extends PropTypes = PropTypes> {
   progressText: string
   setOpen: (next: boolean) => void
   /** 直接跳到某一步；越界会被夹回 [0, count - 1]。 */
-  setStep: (next: number) => void
+  setValue: (next: number) => void
   /** 末步再走一步 = 完成：先发 onComplete，再关闭。 */
   goToNextStep: () => void
   goToPrevStep: () => void

@@ -10,7 +10,7 @@ import {
   XhFloatingPanelPositioner,
   XhFloatingPanelResizeTrigger,
   XhFloatingPanelRoot,
-  XhFloatingPanelStageTrigger,
+  XhFloatingPanelWindowStateTrigger,
   XhFloatingPanelTitle,
   XhFloatingPanelTrigger,
 } from "@xihan-ui/vue";
@@ -27,7 +27,7 @@ const EDGE_LABEL = {
   nw: "左上角",
 };
 
-const STAGE_LABEL = {
+const WINDOW_STATE_LABEL = {
   default: "还原面板",
   minimized: "收起面板",
   maximized: "最大化面板",
@@ -37,7 +37,7 @@ const translations: FloatingPanelSchema["props"]["translations"] = {
   dragTrigger: "移动面板",
   resizeTrigger: (edge) => `拖动${EDGE_LABEL[edge]}改变大小`,
   resizeValueText: (size) => `宽 ${size.width}、高 ${size.height} 像素`,
-  stageTrigger: (stage) => STAGE_LABEL[stage],
+  windowStateTrigger: (windowState) => WINDOW_STATE_LABEL[windowState],
   close: "关闭面板",
 };
 </script>
@@ -53,7 +53,7 @@ const translations: FloatingPanelSchema["props"]["translations"] = {
         <XhFloatingPanelHeader>
           <XhFloatingPanelTitle>中文面板</XhFloatingPanelTitle>
           <XhFloatingPanelDragTrigger />
-          <XhFloatingPanelStageTrigger stage="minimized" />
+          <XhFloatingPanelWindowStateTrigger window-state="minimized" />
           <XhFloatingPanelCloseTrigger />
         </XhFloatingPanelHeader>
         <XhFloatingPanelBody>

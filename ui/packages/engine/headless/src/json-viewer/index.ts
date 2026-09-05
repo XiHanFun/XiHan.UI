@@ -14,7 +14,7 @@ export {
 export { jsonViewerMeta } from './json-viewer.meta'
 export type {
   JsonViewerApi,
-  JsonViewerExpandedChangeDetails,
+  JsonViewerExpandedValueChangeDetails,
   JsonViewerFlattenOptions,
   JsonViewerNode,
   JsonViewerNodeProps,

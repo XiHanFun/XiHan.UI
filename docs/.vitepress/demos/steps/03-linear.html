@@ -1,6 +1,6 @@
 <!-- 线性模式 | linear 下还没走到的步一律禁用，只能回头看走过的；它只拦界面上的乱跳，逐步前进照常 -->
 <div style="display: flex; flex-direction: column; gap: 12px; inline-size: 100%">
-  <xh-steps id="steps-linear" step="0" count="3" linear>
+  <xh-steps id="steps-linear" value="0" count="3" linear>
     <div data-xh-part="root">
       <div data-xh-part="list">
         <div data-xh-part="item" value="0">
@@ -55,9 +55,9 @@
   let step = 0;
 
   // 两颗按钮直接写步序：linear 拦的是标签上的乱跳，逐步前进不受它管
-  function setStep(current) {
+  function setValue(current) {
     step = current;
-    steps.step = current;
+    steps.value = current;
     prev.disabled = current === 0;
     next.disabled = current === COUNT;
     readout.textContent =
@@ -67,10 +67,10 @@
     });
   }
 
-  prev.addEventListener("click", () => setStep(step - 1));
-  next.addEventListener("click", () => setStep(step + 1));
+  prev.addEventListener("click", () => setValue(step - 1));
+  next.addEventListener("click", () => setValue(step + 1));
 
   // 点已经走过的标签能回头看，还没解锁的那些按不动
-  steps.addEventListener("step-change", (event) => setStep(event.detail.step));
-  setStep(0);
+  steps.addEventListener("value-change", (event) => setValue(event.detail.value));
+  setValue(0);
 </script>

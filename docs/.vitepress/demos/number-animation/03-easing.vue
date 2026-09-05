@@ -3,7 +3,7 @@
 import { ref } from "vue";
 import { XhButton, XhNumberAnimation } from "@xihan-ui/vue";
 
-const easings = ["linear", "ease-in", "ease-out", "ease-in-out"] as const;
+const easings = ["linear", "easeIn", "easeOut", "easeInOut"] as const;
 
 // 终点在两个数之间来回换，每换一次四档都从当前数字重新走一遍
 const to = ref(10000);

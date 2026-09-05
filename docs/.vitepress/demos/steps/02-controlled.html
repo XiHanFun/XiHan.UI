@@ -1,6 +1,6 @@
-<!-- 受控 | 传了 step 就由宿主说了算，组件自己不再改步序；切步意图从 step-change 出来，写回才真的切 -->
+<!-- 受控 | 传了 value 就由宿主说了算，组件自己不再改步序；切步意图从 value-change 出来，写回才真的切 -->
 <div style="display: flex; flex-direction: column; gap: 12px; inline-size: 100%">
-  <xh-steps id="steps-controlled" step="1" count="4">
+  <xh-steps id="steps-controlled" value="1" count="4">
     <div data-xh-part="root">
       <div data-xh-part="list">
         <div data-xh-part="item" value="0">
@@ -42,7 +42,7 @@
     <xh-button id="steps-controlled-complete" variant="outline">
       <button data-xh-part="root">直接完成</button>
     </xh-button>
-    <span>当前 step：<span id="steps-controlled-value">1</span></span>
+    <span>当前 value：<span id="steps-controlled-value">1</span></span>
   </div>
 </div>
 
@@ -54,15 +54,15 @@
   const complete = document.getElementById("steps-controlled-complete");
   const indicators = [...steps.querySelectorAll('[data-xh-part="indicator"]')];
 
-  function setStep(next) {
-    steps.step = next;
+  function setValue(next) {
+    steps.value = next;
     readout.textContent = String(next);
     indicators.forEach((indicator, index) => {
       indicator.textContent = next > index ? "" : String(index + 1);
     });
   }
 
-  steps.addEventListener("step-change", (event) => setStep(event.detail.step));
-  first.addEventListener("click", () => setStep(0));
-  complete.addEventListener("click", () => setStep(4));
+  steps.addEventListener("value-change", (event) => setValue(event.detail.value));
+  first.addEventListener("click", () => setValue(0));
+  complete.addEventListener("click", () => setValue(4));
 </script>

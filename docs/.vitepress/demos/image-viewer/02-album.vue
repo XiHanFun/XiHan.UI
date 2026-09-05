@@ -23,7 +23,7 @@ const items = [
 </script>
 
 <template>
-  <XhImageViewerRoot v-slot="{ setIndex, setOpen }" :items="items">
+  <XhImageViewerRoot v-slot="{ setIndex, setOpen }" :collection="items">
     <div style="display: flex; gap: 8px">
       <button
         v-for="(item, i) in items"

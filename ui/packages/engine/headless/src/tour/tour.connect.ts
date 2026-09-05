@@ -36,16 +36,16 @@ export function connectTour<T extends PropTypes>(
   const steps = prop('steps')
   const count = tourStepCount(steps)
   // 显示用的步序一律夹过：清单改短后内部值会停在一个已不存在的步上
-  const step = clampTourStep(context.get('step'), count)
-  const currentStep = currentTourStep(steps, step)
-  const firstStep = step <= 0
-  const lastStep = isTourLastStep(step, count)
+  const value = clampTourStep(context.get('value'), count)
+  const currentStep = currentTourStep(steps, value)
+  const firstStep = value <= 0
+  const lastStep = isTourLastStep(value, count)
   // 锚定与否只看这一步自己的声明，不看量出来的框：量是推迟到宿主提交之后的
   const anchored = !!currentStep?.target
 
   const ids = scope.ids('tour', 'content', 'title', 'description')
   const stateAttr = open ? 'open' : 'closed'
-  const stepAttr = String(step)
+  const stepAttr = String(value)
 
   // 位置与高亮框都由效应写进 context，这里只读结果，不量 DOM、不调引擎
   const position = context.get('position')
@@ -58,7 +58,7 @@ export function connectTour<T extends PropTypes>(
   const closeLabel = translations?.close ?? 'Close'
   const progress = translations?.progress ?? ((m: number, n: number) => `Step ${m} of ${n}`)
   // 空清单时序号写 0，避免念出第 1 步共 0 步
-  const progressText = count > 0 ? progress(step + 1, count) : progress(0, 0)
+  const progressText = count > 0 ? progress(value + 1, count) : progress(0, 0)
 
   const setOpen = (next: boolean): void => {
     if (next !== open)
@@ -67,7 +67,7 @@ export function connectTour<T extends PropTypes>(
 
   return {
     open,
-    step,
+    value,
     count,
     currentStep,
     firstStep,
@@ -75,7 +75,7 @@ export function connectTour<T extends PropTypes>(
     anchored,
     progressText,
     setOpen,
-    setStep: next => send({ type: 'STEP.SET', step: next }),
+    setValue: next => send({ type: 'VALUE.SET', value: next }),
     goToNextStep: () => send({ type: 'STEP.NEXT' }),
     goToPrevStep: () => send({ type: 'STEP.PREV' }),
     skip: () => send({ type: 'SKIP' }),

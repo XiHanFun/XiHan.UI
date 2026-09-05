@@ -178,7 +178,7 @@ export const promptInputSuite: ConformanceSuite = {
       name: '生成中：按钮原位变停止且恒可用，提交路径全部挡下',
       spec: { apg: APG },
       covers: ['prompt-input.kbd.submit-press'],
-      props: { busy: true, defaultValue: '这句还没发' },
+      props: { loading: true, defaultValue: '这句还没发' },
       initial: {
         parts: {
           'root': { 'data-loading': '' },

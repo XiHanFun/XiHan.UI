@@ -1,4 +1,4 @@
-import type { ResizableOffset, ResizableSchema, ResizableSize, ResizableTranslations } from '@xihan-ui/headless'
+import type { ResizableDimensions, ResizableOffset, ResizableSchema, ResizableTranslations } from '@xihan-ui/headless'
 import type { Direction } from '@xihan-ui/kernel'
 import type { ResizeEdge } from '@xihan-ui/pointer'
 import type { PropType, SlotsType, VNode } from 'vue'
@@ -12,7 +12,7 @@ type ResizableProps = ResizableSchema['props']
 
 /** 默认插槽的载荷：当前尺寸、位移与调整态。 */
 export interface ResizableRootSlotProps {
-  size: ResizableSize
+  dimensions: ResizableDimensions
   offset: ResizableOffset
   resizing: boolean
   activeEdge: ResizeEdge | null
@@ -21,8 +21,8 @@ export interface ResizableRootSlotProps {
 export const XhResizableRoot = defineComponent({
   name: 'XhResizableRoot',
   props: {
-    size: { type: Object as PropType<ResizableSize>, default: undefined },
-    defaultSize: { type: Object as PropType<ResizableSize>, default: undefined },
+    dimensions: { type: Object as PropType<ResizableDimensions>, default: undefined },
+    defaultDimensions: { type: Object as PropType<ResizableDimensions>, default: undefined },
     minWidth: { type: Number, default: undefined },
     minHeight: { type: Number, default: undefined },
     maxWidth: { type: Number, default: undefined },
@@ -36,29 +36,29 @@ export const XhResizableRoot = defineComponent({
     dir: { type: String as PropType<Direction>, default: undefined },
     translations: { type: Object as PropType<Partial<ResizableTranslations>>, default: undefined },
   },
-  // size-change 携带 { size }，update:size 携带裸尺寸（v-model:size）；
-  // size-change-end 只在一次调整收尾时发一次，存尺寸用它
+  // dimensions-change 携带 { dimensions }，update:dimensions 携带裸尺寸（v-model:dimensions）；
+  // dimensions-change-end 只在一次调整收尾时发一次，存尺寸用它
   emits: {
-    'size-change': (_details: PayloadOf<ResizableProps, 'onSizeChange'>) => true,
-    'update:size': (_size: PayloadOf<ResizableProps, 'onSizeChange'>['size']) => true,
-    'size-change-end': (_details: PayloadOf<ResizableProps, 'onSizeChangeEnd'>) => true,
+    'dimensions-change': (_details: PayloadOf<ResizableProps, 'onDimensionsChange'>) => true,
+    'update:dimensions': (_dimensions: PayloadOf<ResizableProps, 'onDimensionsChange'>['dimensions']) => true,
+    'dimensions-change-end': (_details: PayloadOf<ResizableProps, 'onDimensionsChangeEnd'>) => true,
   },
   slots: Object as SlotsType<{
     default?: (props: ResizableRootSlotProps) => VNode[]
   }>,
   setup(props, { slots, emit }) {
-    const notify: ResizableProps['onSizeChange'] = (details) => {
-      emit('size-change', details)
-      emit('update:size', details.size)
+    const notify: ResizableProps['onDimensionsChange'] = (details) => {
+      emit('dimensions-change', details)
+      emit('update:dimensions', details.dimensions)
     }
-    const ctx = useResizable(withXhConfig('resizable', props) as ResizableProps, notify, details => emit('size-change-end', details))
+    const ctx = useResizable(withXhConfig('resizable', props) as ResizableProps, notify, details => emit('dimensions-change-end', details))
     provideResizable(ctx)
 
     return () => h('div', {
       ...ctx.api.value.getRootProps() as Record<string, unknown>,
       ref: ctx.rootRef,
     }, slots.default?.({
-      size: ctx.api.value.size,
+      dimensions: ctx.api.value.dimensions,
       offset: ctx.api.value.offset,
       resizing: ctx.api.value.resizing,
       activeEdge: ctx.api.value.activeEdge,

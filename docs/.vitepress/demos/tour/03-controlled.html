@@ -1,5 +1,5 @@
-<!-- 受控 | 传了 open 与 step 就由宿主说了算：内部不再自改，只发意图，浮层里的按钮与外面的进度读的是同一份状态 -->
-<xh-tour id="tour-controlled" open="false" step="0">
+<!-- 受控 | 传了 open 与 value 就由宿主说了算：内部不再自改，只发意图，浮层里的按钮与外面的进度读的是同一份状态 -->
+<xh-tour id="tour-controlled" open="false" value="0">
   <div data-xh-part="root">
     <div style="display: grid; gap: 16px; justify-items: start">
       <div style="display: flex; flex-wrap: wrap; gap: 12px">
@@ -32,7 +32,7 @@
           </button>
         </xh-button>
         <span id="tour-controlled-readout" style="font-size: 13px; opacity: 0.75">
-          open=false · step=0 · （未开始）
+          open=false · value=0 · （未开始）
         </span>
       </div>
     </div>
@@ -81,12 +81,12 @@
   ];
 
   function render() {
-    readout.textContent = `open=${tour.open} · step=${tour.step} · ${log}`;
+    readout.textContent = `open=${tour.open} · value=${tour.value} · ${log}`;
   }
 
   // 从第几步起都由宿主先落值，再打开
   function start(from) {
-    tour.step = from;
+    tour.value = from;
     tour.open = true;
     render();
   }
@@ -103,16 +103,16 @@
     tour.open = event.detail.open;
     render();
   });
-  tour.addEventListener("step-change", (event) => {
-    tour.step = event.detail.step;
+  tour.addEventListener("value-change", (event) => {
+    tour.value = event.detail.value;
     render();
   });
   tour.addEventListener("complete", (event) => {
-    log = `走完了第 ${event.detail.step + 1} 步`;
+    log = `走完了第 ${event.detail.value + 1} 步`;
     render();
   });
   tour.addEventListener("skip", (event) => {
-    log = `在第 ${event.detail.step + 1} 步放弃`;
+    log = `在第 ${event.detail.value + 1} 步放弃`;
     render();
   });
 </script>

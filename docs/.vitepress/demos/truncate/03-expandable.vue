@@ -11,8 +11,8 @@ const text =
 
 <template>
   <div style="display: grid; gap: 12px; inline-size: 100%; max-inline-size: 420px">
-    <!-- v-model:expanded 走受控：状态在外面，组件只发意图 -->
-    <XhTruncate v-model:expanded="expanded" :lines="2" expandable>
+    <!-- v-model:open 走受控：状态在外面，组件只发意图 -->
+    <XhTruncate v-model:open="expanded" :lines="2" expandable>
       {{ text }}
     </XhTruncate>
 

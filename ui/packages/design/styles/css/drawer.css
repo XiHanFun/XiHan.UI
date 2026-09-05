@@ -394,6 +394,51 @@
     animation: xh-drawer-out-bottom var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
+  /* —— 面板三段 —— */
+  /* header / body / footer 把面板切成「头尾定在原处、正文自己滚」三段，
+     与弹窗、浮动面板同一套角色划分：头尾不参与压缩，正文吃掉剩下的高度并自己滚。
+     面板的内衬与安全区让位仍由 content 一层给出，三段只接手段与段之间那道缝；
+     整块的滚动交还给正文段——两层都能滚时滚轮落在哪一层要看指针停在哪，
+     贴边的头尾会跟着一起走。 */
+  [data-scope='drawer'][data-part='content']:has([data-scope='drawer'][data-part='body']) {
+    gap: 0;
+    overflow: hidden;
+  }
+
+  /* 头段：标题与说明纵向堆叠；不参与压缩，正文再长也压不扁它 */
+  [data-scope='drawer'][data-part='header'] {
+    flex: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-drawer-header-gap, var(--xh-stack-gap-sm));
+    padding-block-end: var(--xh-drawer-header-pb, var(--xh-space-2));
+  }
+
+  /* 正文段：面板里唯一会滚的一段。最小高度归零，
+     否则弹性项按内容撑高，容器再矮也不产生溢出，滚动条永远出不来 */
+  [data-scope='drawer'][data-part='body'] {
+    flex: 1 1 auto;
+    min-block-size: 0;
+    overflow: auto;
+  }
+
+  /* 尾段：动作按钮排一行靠尾；同样不参与压缩 */
+  [data-scope='drawer'][data-part='footer'] {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--xh-drawer-footer-gap, var(--xh-control-gap-md));
+    padding-block-start: var(--xh-drawer-footer-pt, var(--xh-space-2));
+  }
+
+  /* 声明过 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
+  [data-scope='drawer'][data-part='header'][hidden],
+  [data-scope='drawer'][data-part='body'][hidden],
+  [data-scope='drawer'][data-part='footer'][hidden] {
+    display: none;
+  }
+
   [data-scope='drawer'][data-part='title'] {
     margin: 0;
     font-size: var(--xh-drawer-title-font-size, var(--xh-text-heading-3-size));

@@ -22,7 +22,7 @@ const steps = [
 <template>
   <XhStepsRoot
     :count="steps.length"
-    :default-step="1"
+    :default-value="1"
     orientation="vertical"
     style="inline-size: 100%"
   >

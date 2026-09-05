@@ -6,7 +6,7 @@ import { XhResizableHandle, XhResizableRoot } from "@xihan-ui/vue";
 <template>
   <XhResizableRoot
     disabled
-    :default-size="{ width: 240, height: 120 }"
+    :default-dimensions="{ width: 240, height: 120 }"
     style="border: 1px solid var(--xh-border-default); border-radius: var(--xh-shape-surface); padding: 12px"
   >
     <span>尺寸锁定</span>
